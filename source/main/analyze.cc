@@ -3335,7 +3335,7 @@ void cAnalyze::CommandRecombine(cString cur_string)
 
       assert(num_compare!=0);
       // And do the tests...
-      for (int iter=1; iter < num_compare; iter++) {
+      for (int iter=0; iter < num_compare; iter++) {
         cCPUMemory test_genome0 = genotype1->GetGenome(); 
 	cCPUMemory test_genome1 = genotype2->GetGenome(); 
 
