@@ -574,18 +574,18 @@
 			);
 			buildSettings = {
 				INSTALL_PATH = /usr/local/bin;
-				OPTIMIZATION_CFLAGS = "";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = pyuic;
+				PRODUCT_NAME = "echo \"done compiling .ui files\"";
+				PYUIC_EXE = "$(SRCROOT)/pyuic";
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
 			};
 			dependencies = (
 			);
 			isa = PBXNativeTarget;
-			name = pyuic;
+			name = "pyui .ui files";
 			productName = pyuic;
 			productReference = DC0BFF3307DE17DB00AAE422;
 			productType = "com.apple.product-type.tool";
@@ -594,7 +594,7 @@
 			explicitFileType = "compiled.mach-o.executable";
 			includeInIndex = 0;
 			isa = PBXFileReference;
-			path = pyuic;
+			path = "echo \"done compiling .ui files\"";
 			refType = 3;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -616,7 +616,7 @@
 			outputFiles = (
 				"$(INPUT_FILE_DIR)/$(INPUT_FILE_BASE).py",
 			);
-			script = "$(SRCROOT)/pyuic -o $(INPUT_FILE_DIR)/$(INPUT_FILE_BASE).py $(INPUT_FILE_PATH)";
+			script = "$(PYUIC_EXE) -o $(INPUT_FILE_DIR)/$(INPUT_FILE_BASE).py $(INPUT_FILE_PATH)";
 		};
 		DC0BFF4B07DE1AE800AAE422 = {
 			fileRef = DC0BFE7407DDD78500AAE422;
