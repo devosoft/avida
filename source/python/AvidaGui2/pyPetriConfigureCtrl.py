@@ -168,7 +168,7 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
   def CreateFilesFromPetriSlot(self, out_dir = None):
     self.full_petri_dict["SETTINGS"] = self.Form2Dictionary()
     print "in CreateFilesFromPetriSlot keys = " + str(self.full_petri_dict.keys())
-    write_object = pyWriteGenesis(self.full_petri_dict, "freezer/", "test/")
+    write_object = pyWriteGenesis(self.full_petri_dict, self.m_session_mdl.current_freezer, "test/")
     self.m_session_mdl.m_session_mdtr.emit(
       PYSIGNAL("doInitializeAvidaPhaseIISig"), ("test/genesis.avida",))
       
@@ -205,7 +205,7 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
   def FreezePetriSlot(self, freeze_dir = None, population_dict = None):
     tmp_dict["SETTINGS"] = self.Form2Dictionary()
     m_pop_up_freezer_file_name = pyFreezeDialogCtrl()
-    file_name = m_pop_up_freezer_file_name.showDialog("freezer/")
+    file_name = m_pop_up_freezer_file_name.showDialog(self.m_session_mdl.current_freezer)
     if (m_pop_up_freezer_file_name.isEmpty() == False):
       os.mkdir(file_name)
       file_name = file_name + "/petri_dish"

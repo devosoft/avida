@@ -90,6 +90,7 @@ Python:from pyTwoPopulationCtrl import pyTwoPopulationCtrl
         <action name="fileNewAction"/>
         <action name="fileOpenAction"/>
         <action name="fileClose_WorkspaceAction"/>
+        <action name="fileOpenFreezerAction"/>
         <separator/>
         <action name="fileSaveAction"/>
         <action name="fileSaveAsAction"/>
@@ -124,6 +125,10 @@ Python:from pyTwoPopulationCtrl import pyTwoPopulationCtrl
         <action name="helpIndexAction"/>
         <separator/>
         <action name="helpAboutAction"/>
+    </item>
+    <item text="new menu" name="new_menu">
+    </item>
+    <item text="new menu" name="new_menu_2">
     </item>
 </menubar>
 <toolbars>
@@ -531,6 +536,14 @@ Python:from pyTwoPopulationCtrl import pyTwoPopulationCtrl
         </property>
         <property name="menuText">
             <string>Minimize Window</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>fileOpenFreezerAction</cstring>
+        </property>
+        <property name="text">
+            <string>Open Freezer</string>
         </property>
     </action>
 </actions>

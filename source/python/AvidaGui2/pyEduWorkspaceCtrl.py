@@ -52,6 +52,7 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
 
     self.connect(self.m_nav_bar_ctrl.m_list_view, SIGNAL("clicked(QListViewItem *)"), self.navBarItemClickedSlot)
     self.connect(self.m_widget_stack, SIGNAL("aboutToShow(QWidget *)"), self.ctrlAboutToShowSlot)
+    self.connect(self.fileOpenFreezerAction,SIGNAL("activated()"),self.freezerOpen)
 
     self.m_nav_bar_ctrl.m_one_population_cli.setState(QCheckListItem.On)
     self.m_widget_stack.raiseWidget(self.m_one_population_ctrl)
@@ -65,7 +66,11 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
       del self.m_ctrl_to_cli_dict[key]
 
   def navBarItemClickedSlot(self, item):
+    print "called navBarItemClickedSlot"
     if item:
+      print "item true"
+      print item
+      dir (item)
       if self.m_cli_to_ctrl_dict.has_key(item):
         self.m_widget_stack.raiseWidget(self.m_cli_to_ctrl_dict[item])
 
@@ -99,6 +104,20 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
 
   def fileOpen(self):
     print "pyEduWorkspaceCtrl.fileOpen(): Not implemented yet"
+
+  # public slot
+
+  def freezerOpen(self):
+    freezer_dir = QFileDialog.getExistingDirectory(
+                    self.m_session_mdl.current_freezer,
+                    None,
+                    "get existing directory",
+                    "Choose a directory",
+                    True);
+    print freezer_dir;
+    self.m_session_mdl.current_freezer = str(freezer_dir) + "/"
+    self.m_session_mdl.m_session_mdtr.emit(
+      PYSIGNAL("doRefreshFreezerInventory"), ())
 
   # public slot
 

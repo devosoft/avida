@@ -20,12 +20,20 @@ class pyFreezerCtrl(pyFreezerView):
 
   def construct(self, session_mdl):
     self.m_session_mdl = session_mdl
+    self.connect(self.m_session_mdl.m_session_mdtr,
+      PYSIGNAL("doRefreshFreezerInventory"),
+      self.createFreezerIndexSlot)
+    self.createFreezerIndexSlot()
+    
+  def createFreezerIndexSlot(self):
     empty_item = self.m_list_view.firstChild()
+#    if empty_item.firstChild():
+#      print empty_item.firstChild().text(0)
     full_item = empty_item.nextSibling()
     organism_item = full_item.nextSibling()
-    if os.path.exists("freezer") == False:
-      os.mkdir("freezer")
-    freezer_dir =  os.listdir("freezer")
+    if os.path.exists(self.m_session_mdl.current_freezer) == False:
+      os.mkdir(self.m_session_mdl.current_freezer)
+    freezer_dir =  os.listdir(self.m_session_mdl.current_freezer)
     for file in freezer_dir:
       if file.endswith(".empty"):
         dish_name = file[:-6]
@@ -59,7 +67,7 @@ class pyFreezerCtrl(pyFreezerView):
         file_name = str(item.text(0)) + ".full/petri_dish"
       elif str(top_level.text(0)).startswith(" Organism"):
         file_name = str(item.text(0)) + ".organism"
-      file_name = "freezer/" + file_name
+      file_name = self.m_session_mdl.current_freezer + file_name
       thawed_item = pyReadFreezer(file_name)
       self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("doDefrostDishSig"),
         (thawed_item,))
