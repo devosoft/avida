@@ -233,6 +233,8 @@ cInstLibCPU *cHardwareCPU::initInstLib(void){
 
     cInstEntryCPU("send",      &cHardwareCPU::Inst_Send),
     cInstEntryCPU("receive",   &cHardwareCPU::Inst_Receive),
+    cInstEntryCPU("sense",     &cHardwareCPU::Inst_Sense),
+
     cInstEntryCPU("donate-rnd",  &cHardwareCPU::Inst_DonateRandom),
     cInstEntryCPU("donate-kin",  &cHardwareCPU::Inst_DonateKin),
     cInstEntryCPU("donate-edt",  &cHardwareCPU::Inst_DonateEditDist),
@@ -2842,6 +2844,24 @@ bool cHardwareCPU::Inst_Receive()
 {
   const int reg_used = FindModifiedRegister(REG_BX);
   Register(reg_used) = organism->ReceiveValue();
+  return true;
+}
+
+bool cHardwareCPU::Inst_Sense()
+{
+  const tArray<double> & res_count = organism->PopInterface().GetResources();
+  const int reg_used = FindModifiedRegister(REG_BX);
+
+  // If there are no resources to measure, this instruction fails.
+  if (res_count.GetSize() == 0) return false;
+
+  // Always get the first resource, and convert it to and int.
+  Register(reg_used) = (int) res_count[0];
+
+  // @CAO Since resources are sometimes less than one, perhaps we should
+  // multiply it by some constant?  Or perhaps taking the log would be more
+  // useful so they can easily scan across orders of magnitude?
+
   return true;
 }
 

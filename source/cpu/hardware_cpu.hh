@@ -377,6 +377,7 @@ public:
   bool Inst_TaskIO();
   bool Inst_Send();
   bool Inst_Receive();
+  bool Inst_Sense();
 
   void DoDonate(cOrganism * to_org);
   bool Inst_DonateRandom();
