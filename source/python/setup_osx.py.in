@@ -41,7 +41,7 @@ svn_metadata_files = [
 ]
 
 setup(  
-  app=['AvidaEd.py'],
+  app=['Avida-ED.py'],
   options = dict(
     py2app = dict(
       includes = ['iqt', 'qt', 'qwt', 'readline', 'unittest', 'IPython', 'AvidaGui2', 'AvidaCore'],
