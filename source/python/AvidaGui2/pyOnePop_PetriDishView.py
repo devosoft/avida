@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'pyOnePop_PetriDishView.ui'
 #
-# Created: Tue Mar 8 11:55:58 2005
-#      by: The PyQt User Interface Compiler (pyuic) 3.14
+# Created: Mon Mar 21 13:54:16 2005
+#      by: The PyQt User Interface Compiler (pyuic) 3.13
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -261,13 +261,13 @@ class pyOnePop_PetriDishView(QWidget):
         layout179 = QHBoxLayout(None,0,6,"layout179")
 
         self.pixmapLabel1 = QLabel(self,"pixmapLabel1")
-        self.pixmapLabel1.setSizePolicy(QSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed,0,0,self.pixmapLabel1.sizePolicy().hasHeightForWidth()))
+        self.pixmapLabel1.setSizePolicy(QSizePolicy(0,0,0,0,self.pixmapLabel1.sizePolicy().hasHeightForWidth()))
         self.pixmapLabel1.setPixmap(self.image0)
         self.pixmapLabel1.setScaledContents(1)
         layout179.addWidget(self.pixmapLabel1)
 
         self.textLabel3 = QLabel(self,"textLabel3")
-        self.textLabel3.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.Preferred,0,0,self.textLabel3.sizePolicy().hasHeightForWidth()))
+        self.textLabel3.setSizePolicy(QSizePolicy(3,5,0,0,self.textLabel3.sizePolicy().hasHeightForWidth()))
         textLabel3_font = QFont(self.textLabel3.font())
         textLabel3_font.setPointSize(11)
         self.textLabel3.setFont(textLabel3_font)
@@ -298,11 +298,11 @@ class pyOnePop_PetriDishView(QWidget):
         layout91 = QHBoxLayout(None,0,6,"layout91")
 
         self.m_petri_dish_ctrl = pyPetriDishCtrl(self.WStackPage,"m_petri_dish_ctrl")
-        self.m_petri_dish_ctrl.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.MinimumExpanding,5,0,self.m_petri_dish_ctrl.sizePolicy().hasHeightForWidth()))
+        self.m_petri_dish_ctrl.setSizePolicy(QSizePolicy(3,3,5,0,self.m_petri_dish_ctrl.sizePolicy().hasHeightForWidth()))
         layout91.addWidget(self.m_petri_dish_ctrl)
 
         self.m_gradient_scale_ctrl = pyGradientScaleCtrl(self.WStackPage,"m_gradient_scale_ctrl")
-        self.m_gradient_scale_ctrl.setSizePolicy(QSizePolicy(QSizePolicy.Fixed,QSizePolicy.Minimum,1,0,self.m_gradient_scale_ctrl.sizePolicy().hasHeightForWidth()))
+        self.m_gradient_scale_ctrl.setSizePolicy(QSizePolicy(0,1,1,0,self.m_gradient_scale_ctrl.sizePolicy().hasHeightForWidth()))
         self.m_gradient_scale_ctrl.setMinimumSize(QSize(50,50))
         self.m_gradient_scale_ctrl.setBackgroundMode(pyGradientScaleCtrl.PaletteDark)
         layout91.addWidget(self.m_gradient_scale_ctrl)
@@ -311,26 +311,26 @@ class pyOnePop_PetriDishView(QWidget):
         layout1 = QHBoxLayout(None,0,6,"layout1")
 
         self.textLabel11 = QLabel(self.WStackPage,"textLabel11")
-        self.textLabel11.setSizePolicy(QSizePolicy(QSizePolicy.Fixed,QSizePolicy.Minimum,0,0,self.textLabel11.sizePolicy().hasHeightForWidth()))
+        self.textLabel11.setSizePolicy(QSizePolicy(0,1,0,0,self.textLabel11.sizePolicy().hasHeightForWidth()))
         layout1.addWidget(self.textLabel11)
 
         self.m_update_label = QLabel(self.WStackPage,"m_update_label")
-        self.m_update_label.setSizePolicy(QSizePolicy(QSizePolicy.Fixed,QSizePolicy.Minimum,0,0,self.m_update_label.sizePolicy().hasHeightForWidth()))
+        self.m_update_label.setSizePolicy(QSizePolicy(0,1,0,0,self.m_update_label.sizePolicy().hasHeightForWidth()))
         layout1.addWidget(self.m_update_label)
 
         self.m_mode_combobox = QComboBox(0,self.WStackPage,"m_mode_combobox")
-        self.m_mode_combobox.setSizePolicy(QSizePolicy(QSizePolicy.Minimum,QSizePolicy.Fixed,0,0,self.m_mode_combobox.sizePolicy().hasHeightForWidth()))
+        self.m_mode_combobox.setSizePolicy(QSizePolicy(1,0,0,0,self.m_mode_combobox.sizePolicy().hasHeightForWidth()))
         m_mode_combobox_font = QFont(self.m_mode_combobox.font())
         m_mode_combobox_font.setPointSize(11)
         self.m_mode_combobox.setFont(m_mode_combobox_font)
         layout1.addWidget(self.m_mode_combobox)
 
         self.textLabel10 = QLabel(self.WStackPage,"textLabel10")
-        self.textLabel10.setSizePolicy(QSizePolicy(QSizePolicy.Fixed,QSizePolicy.Minimum,0,0,self.textLabel10.sizePolicy().hasHeightForWidth()))
+        self.textLabel10.setSizePolicy(QSizePolicy(0,1,0,0,self.textLabel10.sizePolicy().hasHeightForWidth()))
         layout1.addWidget(self.textLabel10)
 
         self.m_zoom_spinbox = QSpinBox(self.WStackPage,"m_zoom_spinbox")
-        self.m_zoom_spinbox.setSizePolicy(QSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed,0,0,self.m_zoom_spinbox.sizePolicy().hasHeightForWidth()))
+        self.m_zoom_spinbox.setSizePolicy(QSizePolicy(0,0,0,0,self.m_zoom_spinbox.sizePolicy().hasHeightForWidth()))
         layout1.addWidget(self.m_zoom_spinbox)
         layout10.addLayout(layout1)
 
@@ -339,7 +339,7 @@ class pyOnePop_PetriDishView(QWidget):
         layout229.addItem(spacer169_2)
 
         self.m_live_controls_ctrl = pyLiveControlsCtrl(self.WStackPage,"m_live_controls_ctrl")
-        self.m_live_controls_ctrl.setSizePolicy(QSizePolicy(QSizePolicy.Fixed,QSizePolicy.Fixed,0,0,self.m_live_controls_ctrl.sizePolicy().hasHeightForWidth()))
+        self.m_live_controls_ctrl.setSizePolicy(QSizePolicy(0,0,0,0,self.m_live_controls_ctrl.sizePolicy().hasHeightForWidth()))
         self.m_live_controls_ctrl.setMinimumSize(QSize(0,50))
         layout229.addWidget(self.m_live_controls_ctrl)
         spacer169 = QSpacerItem(10,10,QSizePolicy.MinimumExpanding,QSizePolicy.Minimum)
@@ -352,7 +352,7 @@ class pyOnePop_PetriDishView(QWidget):
         WStackPageLayout_2 = QHBoxLayout(self.WStackPage_2,11,6,"WStackPageLayout_2")
 
         self.m_petri_configure_ctrl = pyPetriConfigureCtrl(self.WStackPage_2,"m_petri_configure_ctrl")
-        self.m_petri_configure_ctrl.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.MinimumExpanding,0,0,self.m_petri_configure_ctrl.sizePolicy().hasHeightForWidth()))
+        self.m_petri_configure_ctrl.setSizePolicy(QSizePolicy(3,3,0,0,self.m_petri_configure_ctrl.sizePolicy().hasHeightForWidth()))
         self.m_petri_configure_ctrl.setAcceptDrops(1)
         WStackPageLayout_2.addWidget(self.m_petri_configure_ctrl)
         self.m_petri_dish_widget_stack.addWidget(self.WStackPage_2,1)

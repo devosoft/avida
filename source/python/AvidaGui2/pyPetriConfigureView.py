@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'pyPetriConfigureView.ui'
 #
-# Created: Thu Mar 17 15:21:49 2005
-#      by: The PyQt User Interface Compiler (pyuic) 3.14
+# Created: Mon Mar 21 13:53:44 2005
+#      by: The PyQt User Interface Compiler (pyuic) 3.13
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -97,7 +97,7 @@ class pyPetriConfigureView(QWidget):
         layout94 = QHBoxLayout(None,0,6,"layout94")
 
         self.DeathButtonGroup = QButtonGroup(self,"DeathButtonGroup")
-        self.DeathButtonGroup.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding,QSizePolicy.MinimumExpanding,1,0,self.DeathButtonGroup.sizePolicy().hasHeightForWidth()))
+        self.DeathButtonGroup.setSizePolicy(QSizePolicy(3,3,1,0,self.DeathButtonGroup.sizePolicy().hasHeightForWidth()))
         self.DeathButtonGroup.setFrameShadow(QButtonGroup.Plain)
         self.DeathButtonGroup.setLineWidth(0)
         self.DeathButtonGroup.setFlat(1)

@@ -13,7 +13,6 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
 
   def construct(self, session_mdl):
     self.m_session_mdl = session_mdl
-
     self.m_petri_dish_ctrl.construct(self.m_session_mdl)
     self.m_gradient_scale_ctrl.construct(self.m_session_mdl)
     self.m_live_controls_ctrl.construct(self.m_session_mdl)
