@@ -15,6 +15,10 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
     self.connect(
       self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"),
       self.setAvidaSlot)
+    self.connect(
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("orgClickedOnSig"),
+      self.updateOrgReportSlot)
+    self.clickedCellNumber = -99
 
   def setAvidaSlot(self, avida):
     old_avida = self.m_avida
@@ -103,3 +107,58 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
       self.m_num_equals.setText(QString("yes"))
     else:
       self.m_num_equals.setText(QString("no"))
+    
+    if self.clickedCellNumber>= 0: 
+      self.updateOrgReportSlot(self.clickedCellNumber)
+
+
+
+  def updateOrgReportSlot(self, clickedCellNum):
+    print "an organism was just clicked on!"
+  
+    self.clickedCellNumber = clickedCellNum
+    
+    clickedCell = self.m_avida.m_population.GetCell(int(clickedCellNum))
+
+    print "clickedCell.IsOccupied() returns " 
+    print clickedCell.IsOccupied()
+
+    if not clickedCell.IsOccupied():
+      #PAINT the stats fields empty
+      self.m_org_name.setText('empty cell')
+      self.m_org_fitness.setText('-')
+#      self.m_cur_task_count.setText('-')
+#      self.m_org_genome_length.setText('-')
+      self.m_org_gestation_time.setText('-')
+      self.m_org_age.setText('-')
+      return
+ 
+    organism = clickedCell.GetOrganism()
+    phenotype = organism.GetPhenotype()
+    genotype = organism.GetGenotype()
+
+    m_org_fitness = phenotype.GetFitness()
+    self.m_org_fitness.setText(QString("%1").arg(m_org_fitness))    
+
+    m_org_name = genotype.GetName()
+    self.m_org_name.setText(str(m_org_name))
+
+#    self.m_org_name.setText(('-'))
+
+#    m_cur_task_count = phenotype.GetCurTaskCount().GetSize()
+#    print "m_cur_task_count is "
+#    print m_cur_task_count(1)
+
+#    if we want to display length
+#    m_org_genome_length = phenotype.GetGenomeLength()
+#    print "m_org_genome_length is %f" %(m_org_genome_length)
+#    self.m_org_genome_length.setText(QString("%1").arg(m_org_genome_length))
+
+    m_org_gestation_time = phenotype.GetGestationTime()
+    self.m_org_gestation_time.setText(QString("%1").arg(m_org_gestation_time))
+
+    m_org_age = phenotype.GetAge()
+    self.m_org_age.setText(QString("%1").arg(m_org_age))
+    
+
+

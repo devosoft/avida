@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 
 from AvidaCore import cConfig
@@ -19,6 +20,7 @@ class pyPetriDishCtrl(QWidget):
 
     self.resize(QSize(202,202).expandedTo(self.minimumSizeHint()))
     self.clearWState(Qt.WState_Polished)
+
 
   def setAvidaSlot(self, avida):
     print "pyPetriDishCtrl.setAvidaSlot() : called."
@@ -57,31 +59,29 @@ class pyPetriDishCtrl(QWidget):
         self.m_cell_info[x][y].setPen(QPen(QColor(x*255/world_w, y*255/world_h, x*y*255/(world_w*world_h))))
         self.m_cell_info[x][y].show()
 
-
-
   def mousePressEvent(self,e):
     if e.button() != Qt.LeftButton:
       return
     print "mouse pressed"
+
+    #if the run has not started yet, do nothing
+    if self.m_avida == None:
+      return
+
     a = e.x()
     b = e.y()
 
     world_w = cConfig.GetWorldX()
     world_h = cConfig.GetWorldY()
 
-    print "world_w is %d, world_h is %d" %(world_w,world_h)
-    
-
-    print "e.x is %f, e.y is %f" %(a,b)
-	
-	
-    clicked_map_cell_w = round(float(e.x())/2.0)						 
+    clicked_map_cell_w = round(float(e.x())/2.0)				 
     clicked_map_cell_h = round(float(e.y())/2.0)
 
-
-    print "clicked_map_cell_w is %f, clicked_map_cell_h is %f" %(clicked_map_cell_w,clicked_map_cell_h)    
-
-
+    #if the user clicks outside the area that has organisms, do nothing
+    if (clicked_map_cell_w > world_w) or (clicked_map_cell_h > world_h):
+      return
+    
+    
     #get the cell number in avida that corresponds to this coordinate
     world_w_mid = world_w/2
     world_h_mid = world_h/2
@@ -97,41 +97,14 @@ class pyPetriDishCtrl(QWidget):
       clickedCellNum = ( (clicked_map_cell_h - (world_h_mid + 1))*world_w ) + world_h_mid + clicked_map_cell_w
     elif clicked_map_cell_h < world_h_mid:  #if below the spilt
       clickedCellNum = ( bottom_left_cell + ( ((clicked_map_cell_h - 1)* world_w) + clicked_map_cell_w) )
-    else:
-      print "ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-
-    print "clickedCellNum is %f" %(clickedCellNum)
-
-#    clickedCell = self.m_avida.m_population.GetCell(int(clickedCellNum))
-#    print "clickedCell.IsOccupied() returns "
 
 
-
-    #get the cell number in avida that corresponds to this coordinate
-#    world_w_mid = world_w/2
-#    world_h_mid = world_h/2
-    
-#    if clicked_map_cell_h == world_h_mid:   #if it is on the y midpoint line that gets split...
-#      if clicked_map_cell_w >= world_w_mid: #and it is after the origin (first avida cell)
-#        clickedCellNum = clicked_map_cell_w - world_w_mid
-#      else:
-#        clickedCellNum = (world_h*world_w)+BOTTOMLEFT+clicked_map_cell_w
-#    elif clicked_map_cell_h > world_h_mid:  #if above the split
-#      clickedCellNum = ( (clicked_map_cell_h - (world_h_mid + 1))*world_w ) + clicked_map_cell_w
-#    elif clicked_map_cell_h < world_h_mid:  #if below the spilt
-#      clickedCellNum = ( ( ( (world_h+1)-world_w_mid)*world_w) - world_w_mid) + clicked_map_cell_w 
-#    else: 
-#      print "ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"    
-
-    clickedCellNum = 20000
-    print "clickedCellNum is %f" %(clickedCellNum)
-
-      
-    #the line below does not work, delete
-    #clickedCell = self.m_avida.m_population.GetCell(int(clicked_map_cell_w) + world_w*int(clicked_map_cell_h))
     clickedCell = self.m_avida.m_population.GetCell(int(clickedCellNum))
-    print "clickedCell.IsOccupied() returns " 
-    print clickedCell.IsOccupied()
+
+    #broadcast that an organism was clicked on
+    self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("orgClickedOnSig"), (clickedCellNum,))
+
+
 
 
 
