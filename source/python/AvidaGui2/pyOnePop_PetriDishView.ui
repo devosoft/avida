@@ -253,7 +253,7 @@ Python:from pyPetriConfigureCtrl import pyPetriConfigureCtrl</comment>
                                             </sizepolicy>
                                         </property>
                                         <property name="text">
-                                            <string>&lt;font size="-1"&gt;10000&lt;/font&gt;</string>
+                                            <string>&lt;font size="-1"&gt;-&lt;/font&gt;</string>
                                         </property>
                                     </widget>
                                     <widget class="QComboBox">

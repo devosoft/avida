@@ -42,7 +42,7 @@ Python:from pyTwoPopulationCtrl import pyTwoPopulationCtrl
         </size>
     </property>
     <property name="caption">
-        <string>pyEduWorkspaceView</string>
+        <string>Avida-ED</string>
     </property>
     <vbox>
         <property name="name">

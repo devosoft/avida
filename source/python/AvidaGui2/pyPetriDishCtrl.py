@@ -36,8 +36,8 @@ class pyPetriDishCtrl(QWidget):
         self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
         self.avidaUpdatedSlot)
 
-    self.m_map_cell_w = 2
-    self.m_map_cell_h = 2
+    self.m_map_cell_w = 5
+    self.m_map_cell_h = 5
     world_w = cConfig.GetWorldX()
     world_h = cConfig.GetWorldY()
 
@@ -68,15 +68,16 @@ class pyPetriDishCtrl(QWidget):
     if self.m_avida == None:
       return
 
-    a = e.x()
-    b = e.y()
-
     world_w = cConfig.GetWorldX()
     world_h = cConfig.GetWorldY()
 
-    clicked_map_cell_w = round(float(e.x())/2.0)				 
-    clicked_map_cell_h = round(float(e.y())/2.0)
+    clicked_map_cell_w = round(float(e.x()-3)/self.m_map_cell_w)				 
+    clicked_map_cell_h = round(float(e.y()-3)/self.m_map_cell_h)
 
+    print "clicked_map_cell_w is %f, clicked_map_cell_h is %f" %(clicked_map_cell_w,clicked_map_cell_h)
+
+
+   
     #if the user clicks outside the area that has organisms, do nothing
     if (clicked_map_cell_w > world_w) or (clicked_map_cell_h > world_h):
       return
@@ -152,7 +153,7 @@ class pyPetriDishCtrl(QWidget):
     return state
 
   def avidaUpdatedSlot(self):
-    print "pyPetriDishCtrl.avidaUpdatedSlot() : called."
+#    print "pyPetriDishCtrl.avidaUpdatedSlot() : called."
     self.calcColorScale()
     world_w = cConfig.GetWorldX()
     world_h = cConfig.GetWorldY()

@@ -31,9 +31,9 @@ class pyAvidaThreadedDriver(pyAvidaDriver):
     pass
 
   def __del__(self):
-    print("pyAvidaThreadedDriver.__del__()...")
+#    print("pyAvidaThreadedDriver.__del__()...")
     self.doExit()
-    print("pyAvidaThreadedDriver.__del__() done.")
+#    print("pyAvidaThreadedDriver.__del__() done.")
 
   def ___threadloop___(self):
     while True:
@@ -56,17 +56,17 @@ class pyAvidaThreadedDriver(pyAvidaDriver):
         return
 
   def doExit(self):
-    print("pyAvidaThreadedDriver.doExit()...")
+#    print("pyAvidaThreadedDriver.doExit()...")
     self.m_lock.acquire()
     self.setDoneFlag()
     self.m_lock.release()
     self.doUpdate()
-    print("pyAvidaThreadedDriver.doExit() done.")
+#    print("pyAvidaThreadedDriver.doExit() done.")
 
   def doUpdate(self):
-    print("pyAvidaThreadedDriver.doUpdate()...")
+#    print("pyAvidaThreadedDriver.doUpdate()...")
     self.m_do_update_semaphore.release()
-    print("pyAvidaThreadedDriver.doUpdate() done.")
+#    print("pyAvidaThreadedDriver.doUpdate() done.")
 
   def doSetProcessBitesize(self, bitesize):
     self.m_lock.acquire()

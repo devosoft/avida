@@ -145,7 +145,7 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
 
 #    self.m_org_name.setText(('-'))
 
-#    m_cur_task_count = phenotype.GetCurTaskCount().GetSize()
+#    m_cur_task_count = phenotype.GetCurTaskCount()
 #    print "m_cur_task_count is "
 #    print m_cur_task_count(1)
 

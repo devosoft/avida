@@ -13,6 +13,7 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
 
   def construct(self, session_mdl):
     self.m_session_mdl = session_mdl
+    self.m_avida = None
     self.m_petri_dish_ctrl.construct(self.m_session_mdl)
     self.m_gradient_scale_ctrl.construct(self.m_session_mdl)
     self.m_live_controls_ctrl.construct(self.m_session_mdl)
@@ -21,6 +22,23 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
       self.m_petri_dish_ctrl.extractPopulationSlot)
     self.connect(self.m_petri_dish_ctrl, PYSIGNAL("freezeDishPhaseIISig"), 
       self.m_petri_configure_ctrl.FreezePetriSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"),
+      self.setAvidaSlot)
+
+  def setAvidaSlot(self, avida):
+    old_avida = self.m_avida
+    self.m_avida = avida
+    if(old_avida):
+      self.disconnect(
+        self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
+        self.avidaUpdatedSlot)
+      del old_avida
+    if(self.m_avida):
+      self.connect(
+        self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
+        self.avidaUpdatedSlot)
+
+
 
   def ToogleDish (self):
     current_page = self.m_petri_dish_widget_stack.visibleWidget()
@@ -29,3 +47,9 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
        self.m_petri_dish_widget_stack.raiseWidget(1)
     else:
        self.m_petri_dish_widget_stack.raiseWidget(0)
+
+  def avidaUpdatedSlot (self):
+    stats = self.m_avida.m_population.GetStats()
+    update = stats.GetUpdate()
+    self.m_update_label.setText(QString("%1").arg(update))
+

@@ -67,7 +67,7 @@
                         </font>
                     </property>
                     <property name="text">
-                        <string>Graph</string>
+                        <string></string>
                     </property>
                 </widget>
                 <widget class="QLayoutWidget">

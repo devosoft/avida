@@ -53,7 +53,7 @@
                         </font>
                     </property>
                     <property name="title">
-                        <string>Task Outlook</string>
+                        <string>Population Task Report</string>
                     </property>
                     <vbox>
                         <property name="name">
@@ -777,7 +777,7 @@
                                         </font>
                                     </property>
                                     <property name="text">
-                                        <string>abcdef</string>
+                                        <string>-</string>
                                     </property>
                                 </widget>
                             </hbox>
