@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from AvidaCore import cConfig
 from qt import *
 from pyPetriConfigureView import pyPetriConfigureView
 from pyWriteGenesis import pyWriteGenesis
+from pyFreezeDialogCtrl import pyFreezeDialogCtrl
 
 
 class pyPetriConfigureCtrl(pyPetriConfigureView):
@@ -165,7 +165,7 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
       settings_info["MAX_UPDATES"] = -1
     settings_info["WORLD-X"] = self.WorldSizeSlider.value()
     settings_info["WORLD-Y"] = self.WorldSizeSlider.value()
-    if self.RandomFixedRadioButton.isChecked == True:
+    if self.RandomFixedRadioButton.isChecked() == True:
       settings_info["RANDOM_SEED"] = self.RandomSpinBox.value()
     else:
       settings_info["RANDOM_SEED"] = 0
@@ -183,7 +183,13 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     return tmp_dict
     
   def FreezePetriSlot(self, freeze_dir = None, population_dict = None):
-    print "called FreezePetriSlot"
+    m_pop_up_freezer_file_name = pyFreezeDialogCtrl()
+    file_name = m_pop_up_freezer_file_name.showDialog("freezer/")
+    isEmpty = m_pop_up_freezer_file_name.isEmpty()
+    print str(m_pop_up_freezer_file_name.FileNameLineEdit.text())
+#    print "Name = " + str(m_pop_up_freezer_file_name.FileNameLineEdit.text())
+#    print "Empty? = " + str (m_pop_up_freezer_file_name.EmptyRadioButton.isChecked())
+#    print "Result = " + str(m_pop_up_freezer_file_name.result())
     tmp_dict = self.Form2Dictionary()
     tmp_dict["POPULATION"] = population_dict
     print tmp_dict

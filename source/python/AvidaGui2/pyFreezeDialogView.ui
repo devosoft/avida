@@ -1,0 +1,127 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>pyFreezeDialogView</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>pyFreezeDialogView</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>392</width>
+            <height>152</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Freeze</string>
+    </property>
+    <vbox>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>MainMessageTextLabel</cstring>
+            </property>
+            <property name="text">
+                <string>Enter Name of Item to Freeze</string>
+            </property>
+            <property name="alignment">
+                <set>AlignCenter</set>
+            </property>
+        </widget>
+        <widget class="QLineEdit">
+            <property name="name">
+                <cstring>FileNameLineEdit</cstring>
+            </property>
+        </widget>
+        <widget class="QButtonGroup">
+            <property name="name">
+                <cstring>FullEmptyButtonGroup</cstring>
+            </property>
+            <property name="frameShape">
+                <enum>NoFrame</enum>
+            </property>
+            <property name="title">
+                <string></string>
+            </property>
+            <widget class="QRadioButton">
+                <property name="name">
+                    <cstring>FullRadioButton</cstring>
+                </property>
+                <property name="geometry">
+                    <rect>
+                        <x>170</x>
+                        <y>10</y>
+                        <width>117</width>
+                        <height>22</height>
+                    </rect>
+                </property>
+                <property name="text">
+                    <string>Full Petri Dish</string>
+                </property>
+            </widget>
+            <widget class="QRadioButton">
+                <property name="name">
+                    <cstring>EmptyRadioButton</cstring>
+                </property>
+                <property name="geometry">
+                    <rect>
+                        <x>10</x>
+                        <y>10</y>
+                        <width>140</width>
+                        <height>22</height>
+                    </rect>
+                </property>
+                <property name="text">
+                    <string>Empty Petri Dish</string>
+                </property>
+                <property name="checked">
+                    <bool>true</bool>
+                </property>
+            </widget>
+        </widget>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout1</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>SaveToFreezerPushButton</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Freeze</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>CancelPushButton</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Cancel</string>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+    </vbox>
+</widget>
+<connections>
+    <connection>
+        <sender>SaveToFreezerPushButton</sender>
+        <signal>clicked()</signal>
+        <receiver>pyFreezeDialogView</receiver>
+        <slot>accept()</slot>
+    </connection>
+    <connection>
+        <sender>CancelPushButton</sender>
+        <signal>clicked()</signal>
+        <receiver>pyFreezeDialogView</receiver>
+        <slot>reject()</slot>
+    </connection>
+</connections>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>
