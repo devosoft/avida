@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'pyEduWorkspaceView.ui'
+# Form implementation generated from reading ui file './pyEduWorkspaceView.ui'
 #
-# Created: Thu Mar 31 04:19:18 2005
+# Created: Wed Apr 6 13:11:51 2005
 #      by: The PyQt User Interface Compiler (pyuic) 3.13
 #
 # WARNING! All changes made in this file will be lost!
@@ -317,8 +317,8 @@ class pyEduWorkspaceView(QMainWindow):
             self.setName("pyEduWorkspaceView")
 
         self.setSizePolicy(QSizePolicy(0,0,0,0,self.sizePolicy().hasHeightForWidth()))
-        self.setMinimumSize(QSize(1024,768))
-        self.setMaximumSize(QSize(1024,768))
+        self.setMinimumSize(QSize(1000,768))
+        self.setMaximumSize(QSize(1000,768))
 
         self.setCentralWidget(QWidget(self,"qt_central_widget"))
         pyEduWorkspaceViewLayout = QVBoxLayout(self.centralWidget(),11,6,"pyEduWorkspaceViewLayout")
@@ -422,7 +422,7 @@ class pyEduWorkspaceView(QMainWindow):
 
         self.languageChange()
 
-        self.resize(QSize(1024,768).expandedTo(self.minimumSizeHint()))
+        self.resize(QSize(1000,768).expandedTo(self.minimumSizeHint()))
         self.clearWState(Qt.WState_Polished)
 
         self.connect(self.fileNewAction,SIGNAL("activated()"),self.fileNew)

@@ -15,9 +15,9 @@ Python:from pyTwoPopulationCtrl import pyTwoPopulationCtrl
     </property>
     <property name="geometry">
         <rect>
-            <x>0</x>
+            <x>12</x>
             <y>0</y>
-            <width>1024</width>
+            <width>1000</width>
             <height>768</height>
         </rect>
     </property>
@@ -31,13 +31,13 @@ Python:from pyTwoPopulationCtrl import pyTwoPopulationCtrl
     </property>
     <property name="minimumSize">
         <size>
-            <width>1024</width>
+            <width>1000</width>
             <height>768</height>
         </size>
     </property>
     <property name="maximumSize">
         <size>
-            <width>1024</width>
+            <width>1000</width>
             <height>768</height>
         </size>
     </property>
@@ -109,16 +109,6 @@ Python:from pyTwoPopulationCtrl import pyTwoPopulationCtrl
     <item text="&amp;File" name="File">
         <action name="fileNewAction"/>
         <action name="fileOpenAction"/>
-        <!-- <action name="fileClose_WorkspaceAction"/> -->
-        <action name="fileOpenFreezerAction"/>
-        <separator/>
-        <action name="fileSaveAction"/>
-        <action name="fileSaveAsAction"/>
-        <separator/>
-        <action name="fileImportAction"/>
-        <action name="fileExportAction"/>
-        <separator/>
-        <action name="fileExitAction"/>
     </item>
     <item text="&amp;Edit" name="editMenu">
         <action name="editUndoAction"/>
@@ -159,7 +149,7 @@ Python:from pyTwoPopulationCtrl import pyTwoPopulationCtrl
         </sizehint>
         <container>0</container>
         <sizepolicy>
-            <hordata>3</hordata>
+            <hordata>0</hordata>
             <verdata>0</verdata>
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
@@ -170,6 +160,8 @@ Python:from pyTwoPopulationCtrl import pyTwoPopulationCtrl
         <property type="3">-1</property>
         <property type="1">pyFreezerView</property>
         <property type="3">-1</property>
+        <property type="1">pyFreezerView</property>
+        <property type="4">-1</property>
         <property type="1">pyFreezerView</property>
         <property type="4">-1</property>
         <property type="pyFreezerView"></property>
@@ -184,7 +176,7 @@ Python:from pyTwoPopulationCtrl import pyTwoPopulationCtrl
         </sizehint>
         <container>0</container>
         <sizepolicy>
-            <hordata>3</hordata>
+            <hordata>0</hordata>
             <verdata>0</verdata>
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
@@ -195,6 +187,8 @@ Python:from pyTwoPopulationCtrl import pyTwoPopulationCtrl
         <property type="3">-1</property>
         <property type="1">pyNavBarView</property>
         <property type="3">-1</property>
+        <property type="1">pyNavBarView</property>
+        <property type="4">-1</property>
         <property type="1">pyNavBarView</property>
         <property type="4">-1</property>
         <property type="pyNavBarView"></property>
@@ -558,14 +552,6 @@ Python:from pyTwoPopulationCtrl import pyTwoPopulationCtrl
             <string>Minimize Window</string>
         </property>
     </action>
-    <!-- <action>
-        <property name="name">
-            <cstring>fileOpenFreezerAction</cstring>
-        </property>
-        <property name="text">
-            <string>Open Freezer</string>
-        </property>
-    </action> -->
 </actions>
 <images>
     <image name="image0">
