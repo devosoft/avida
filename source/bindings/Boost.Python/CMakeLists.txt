@@ -1,13 +1,9 @@
-# Uses PYTHON_EXE PYTHON_LIBRARY PYTHON_INCLUDE_PATH PY_BOOST_INCLUDE_PATH PY_BOOST_LIBRARIES PY_BOOST_LIBNAME AvidaPysteScript 
+# Uses PYTHON_EXE PYTHON_LIBRARY PYTHON_INCLUDE_PATH PY_BOOST_INCLUDE_PATH PY_BOOST_LIBRARIES PY_BOOST_LIBNAME
 
 INCLUDE(${PROJECT_SOURCE_DIR}/CMakeModules/AddPysteModule.cmake)
 
 INCLUDE_DIRECTORIES(${ALL_INC_DIRS})
 LINK_DIRECTORIES(${LIBRARY_OUTPUT_PATH})
-
-CONFIGURE_FILE(
-  ${PROJECT_SOURCE_DIR}/source/bindings/Boost.Python/AvidaPyste.py.in
-  ${PROJECT_BINARY_DIR}/source/bindings/Boost.Python/AvidaPyste.py)
 
 #
 # example unittest-style test suite.
@@ -38,7 +34,7 @@ SET(libkaben_brainstorms_SOURCES kaben_brainstorms.cc)
 SET_SOURCE_FILES_PROPERTIES(${libkaben_brainstorms_SOURCES} PROPERTIES COMPILE_FLAGS ${BOOST_PYTHON_COMPILE_FLAGS})
 ADD_LIBRARY(kaben_brainstorms MODULE ${libkaben_brainstorms_SOURCES})
 SET_TARGET_PROPERTIES(kaben_brainstorms PROPERTIES PREFIX "")
-TARGET_LINK_LIBRARIES(kaben_brainstorms main cpu event main tools ${PY_BOOST_LIBNAME} ${PYTHON_LIBRARY})
+TARGET_LINK_LIBRARIES(kaben_brainstorms main cpu event main tools ${BOOST_LIBRARY} ${PYTHON_LIBRARY})
 
 
 #
@@ -222,10 +218,10 @@ SET(PyAvida_Includes
   -I ${PyAvida_Includes}
   -I ${PROJECT_SOURCE_DIR}/source/third-party/yaktest
   -I ${CMAKE_CURRENT_SOURCE_DIR}
-  -I ${PY_BOOST_INCLUDE_PATH})
+  -I ${BOOST_INCLUDE_PATH})
 SET(PyAvida_Defines)
 SET(PyAvida_ExtraDepends)
-SET(PyAvida_LinkLibraries PyAvidaRepairHacks ${PY_BOOST_LIBNAME} ${PYTHON_LIBRARY})
+SET(PyAvida_LinkLibraries PyAvidaRepairHacks ${BOOST_LIBRARY} ${PYTHON_LIBRARY})
 ADD_PYSTE_PACKAGE("AvidaCore"
   PyAvida_Pyste_Bases
   PyAvida_Includes
@@ -234,25 +230,3 @@ ADD_PYSTE_PACKAGE("AvidaCore"
   PyAvida_Extra_Cpp_Files
   PyAvida_LinkLibraries
   /lib)
-
-IF(AVD_GUI_PYQT)
-  FILE(GLOB_RECURSE PYUI_FILES "*.ui")
-  FOREACH(PYUI_FILE ${PYUI_FILES})
-    GET_FILENAME_COMPONENT(PYUI_PATH ${PYUI_FILE} PATH)
-    GET_FILENAME_COMPONENT(PYUI_MODULE ${PYUI_FILE} NAME_WE)
-    SET(ABS_PYUI_MODULE ${PYUI_PATH}/${PYUI_MODULE})
-    ADD_CUSTOM_TARGET(
-      ${ABS_PYUI_MODULE}.py
-      ALL
-      ${PYUIC}
-      -p 2 -o
-      ${ABS_PYUI_MODULE}.py
-      ${ABS_PYUI_MODULE}.ui
-      DEPENDS
-      ${ABS_PYUI_MODULE}.ui
-    )
-  ENDFOREACH(PYUI_FILE ${PYUI_FILES})
-ENDIF(AVD_GUI_PYQT)
-
-CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/bs.py.in ${LIBRARY_OUTPUT_PATH}/bs.py)
-CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/bs2.py.in ${LIBRARY_OUTPUT_PATH}/bs2.py)

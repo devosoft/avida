@@ -2,6 +2,7 @@
 INCLUDE_DIRECTORIES(
   ${ALL_INC_DIRS}
   ${THIRDPARTY_SRC_DIR}
+  ${BOOST_INCLUDE_PATH}
 )
 
 # Each of the test-names below must match the prefix of the source file
