@@ -1,4 +1,4 @@
-Avida 2.0
+Avida 2.2
 ----------------------------------------------------------------------
 Digital Evolution Laboratory at Michigan State University
 
@@ -100,4 +100,4 @@ $ cmake -DAVD_CONSISTENCY_TEST_PRIMITIVE:BOOL=OFF \
 
 
 
-Revised 2004-12-07 DMB
+Revised 2005-14-02 DMB
