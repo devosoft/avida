@@ -176,7 +176,8 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
   # public slot
 
   def filePrint(self):
-    print "pyEduWorkspaceCtrl.filePrint(): Not implemented yet"
+    print "pyEduWorkspaceCtrl.filePrint() emitting printGraphSig via self.m_session_mdl.m_session_mdtr.m_workspace_mdtr"
+    self.m_session_mdl.m_session_mdtr.m_workspace_mdtr.emit(PYSIGNAL("printGraphSig"), ())
 
   # public slot
 
