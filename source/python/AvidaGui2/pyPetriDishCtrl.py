@@ -1,12 +1,66 @@
 
 # -*- coding: utf-8 -*-
 
+# Notes:
+# - w*h population cell_info_items;
+#   - cell_info_item[0] refers to population cell(0).
+#   - x ord of item[n]: 
+#   - stores normalized_index
+#
+
+# Coordinates for grid cells in toroidal geometry:
+# x: n % w
+# y: n / w
+# xm: (x + w/2) % w
+# ym: (y + h/2) % h
+#
+# xm: (n%w + w/2) % w
+# ym: (n/w + h/2) % h
+
+# Coordinates for grid cells in bounded geometry:
+# x: n % w
+# y: n / w
+#
+# xm, ym not needed. replace w/ x & y.
+
+print """
+XXX fixme: in pyPetriDishCtrl.py,
+pyPetriDishCtrl.setAvidaSlot(),
+most of the code in this function should only be performed when
+self.m_avida is not None.
+@kgn
+"""
+
 from AvidaCore import cConfig
 
 from math import exp
 from qt import *
 from qtcanvas import *
 #from pyPetriDishView import pyPetriDishView
+
+class pyPopulationCellItem:
+  def __init__(self, population_cell, x, y, w, h, canvas):
+    self.m_population_cell = population_cell
+    self.m_canvas_rectangle = QCanvasRectangle(x, y, w, h, canvas)
+    self.m_canvas_rectangle.show()
+    self.m_index = 0
+
+  def checkNormalizedIndexUsingFunctor(self, functor, min, range):
+    index = 1.0
+    if 0.0 < range: index = (functor(self.m_population_cell) - min) / range
+    if 1.0 < index: index = 1.0
+    elif index < 0.0: index = 0.0
+
+    if self.m_index == index:
+      return False
+    else:
+      self.m_index = index
+      return True
+
+  def updateColorUsingFunctor(self, functor):
+    color = functor(self.m_index)
+    self.m_canvas_rectangle.setBrush(QBrush(color))
+    self.m_canvas_rectangle.setPen(QPen(color))
 
 #class pyPetriDishCtrl(pyPetriDishView):
 class pyPetriDishCtrl(QWidget):
@@ -28,8 +82,9 @@ class pyPetriDishCtrl(QWidget):
     self.m_avida = avida
     if(old_avida):
       self.disconnect(
-        self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
+        old_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
         self.avidaUpdatedSlot)
+      old_avida.removeGuiWorkFunctor(self)
       del old_avida
     if(self.m_avida):
       self.connect(
@@ -46,18 +101,24 @@ class pyPetriDishCtrl(QWidget):
     self.m_canvas_view.setCanvas(self.m_canvas)
 
     if self.m_cell_info: del self.m_cell_info
-    self.m_cell_info = [[QCanvasRectangle(
-      x * self.m_map_cell_w,
-      y * self.m_map_cell_h,
+    self.m_cell_info = [pyPopulationCellItem(
+      self.m_avida.m_population.GetCell(n),
+      (n%world_w) * self.m_map_cell_w,
+      (n/world_w) * self.m_map_cell_h,
       self.m_map_cell_w,
       self.m_map_cell_h,
-      self.m_canvas) for y in range(world_h)] for x in range(world_w)]
+      self.m_canvas) for  n in range(world_w * world_h)]
 
-    for x in range(world_w):
-      for y in range(world_h):
-        self.m_cell_info[x][y].setBrush(QBrush(QColor(x*255/world_w, y*255/world_h, x*y*255/(world_w*world_h))))
-        self.m_cell_info[x][y].setPen(QPen(QColor(x*255/world_w, y*255/world_h, x*y*255/(world_w*world_h))))
-        self.m_cell_info[x][y].show()
+    self.m_thread_work_cell_item_index = 0
+
+    self.m_cs_min_value = 0
+    self.m_cs_value_range = 0
+
+    self.m_changed_cell_items = self.m_cell_info[:]
+    while self.doSomeWork(self.m_avida): pass
+    self.avidaUpdatedSlot()
+
+    self.m_avida.addGuiWorkFunctor(self)
 
   def mousePressEvent(self,e):
     if e.button() != Qt.LeftButton:
@@ -122,7 +183,7 @@ class pyPetriDishCtrl(QWidget):
     self.m_petri_dish_layout.setResizeMode(QLayout.Minimum)
     self.m_canvas_view = QCanvasView(None, self,"m_canvas_view")
     self.m_petri_dish_layout.addWidget(self.m_canvas_view)
-    
+
   def calcColorScale(self):
     self.m_cs_min_value = 0
     self.m_cs_value_range = self.m_avida.m_population.GetStats().GetMaxFitness()
@@ -152,19 +213,43 @@ class pyPetriDishCtrl(QWidget):
       state = self.doubleToColor(dbl)
     return state
 
+  def doSomeWork(self, avida):
+    def temp_normalized_index_functor(population_cell):
+      dbl = 0.0
+      if population_cell.IsOccupied():
+        dbl = population_cell.GetOrganism().GetPhenotype().GetFitness()
+      return dbl
+
+    for x in range(3600):
+      if len(self.m_cell_info) <= self.m_thread_work_cell_item_index:
+        self.m_thread_work_cell_item_index = 0
+        return False
+      else:
+        cell_info_item = self.m_cell_info[self.m_thread_work_cell_item_index]
+        if cell_info_item.checkNormalizedIndexUsingFunctor(
+          temp_normalized_index_functor,
+          self.m_cs_min_value,
+          self.m_cs_value_range
+        ):
+          self.m_changed_cell_items.append(cell_info_item)
+        self.m_thread_work_cell_item_index += 1
+    return True
+
+
   def avidaUpdatedSlot(self):
-#    print "pyPetriDishCtrl.avidaUpdatedSlot() : called."
+    def temp_color_functor(index):
+      def sigmoid(w, midpoint, steepness):
+        val = steepness*(w-midpoint)
+        return exp(val)/(1+exp(val))     
+      h = (index*360.0 + 100.0) % 360.0
+      v = sigmoid(index, 0.3, 10.0) * 255.0
+      s = sigmoid(1.0 - index, 0.1, 30.0) * 255.0
+      return QColor(h, s, v, QColor.Hsv)
+      
     self.calcColorScale()
-    world_w = cConfig.GetWorldX()
-    world_h = cConfig.GetWorldY()
-    for x in range(world_w):
-      for y in range(world_h):
-        cell = self.m_avida.m_population.GetCell(x + world_w*y)
-        color = self.calcCellState(cell)
-        xm = (x + world_w/2) % world_w
-        ym = (y + world_h/2) % world_h
-        self.m_cell_info[xm][ym].setBrush(QBrush(color))
-        self.m_cell_info[xm][ym].setPen(QPen(color))
+    for cell_info_item in self.m_changed_cell_items:
+      cell_info_item.updateColorUsingFunctor(temp_color_functor)
+    self.m_changed_cell_items = []
     self.m_canvas.update()
     
   def extractPopulationSlot(self):

@@ -28,6 +28,8 @@ class pyAvidaThreadedDriver(pyAvidaDriver):
     # to exit, preventing the python process from exiting.
     atexit.register(self.__del__)
 
+    self.m_work_functors = []
+
     pass
 
   def __del__(self):
@@ -48,12 +50,30 @@ class pyAvidaThreadedDriver(pyAvidaDriver):
         self.m_lock.acquire()
         # continue update.
         self.m_updating = self.ProcessSome(self.m_process_bitesize)
+      # do work on behalf of gui.
+      for work_functor in self.m_work_functors:
+        functor_still_working = True
+        while functor_still_working:
+          self.m_lock.release()
+          self.m_lock.acquire()
+          functor_still_working = work_functor.doSomeWork(self)
+          
       self.m_lock.release()
       # tell other threads that an update has completed (possibly
       # unsuccessfully).
       self.m_updated_semaphore.release()
       if self.getDoneFlag():
         return
+
+  def addGuiWorkFunctor(self, thread_work_functor):
+    self.m_lock.acquire()
+    self.m_work_functors.append(thread_work_functor)
+    self.m_lock.release()
+    
+  def removeGuiWorkFunctor(self, thread_work_functor):
+    self.m_lock.acquire()
+    self.m_work_functors.remove(thread_work_functor)
+    self.m_lock.release()
 
   def doExit(self):
 #    print("pyAvidaThreadedDriver.doExit()...")

@@ -51,6 +51,7 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
     #for ctrl in self.m_ctrl_to_cli_dict.keys():
     #  ctrl.construct(self.m_session_mdl)
     self.m_one_population_ctrl.construct(self.m_session_mdl)
+    self.m_one_organism_ctrl.construct(self.m_session_mdl)
 
     self.connect(self.m_nav_bar_ctrl.m_list_view, SIGNAL("clicked(QListViewItem *)"), self.navBarItemClickedSlot)
     self.connect(self.m_widget_stack, SIGNAL("aboutToShow(QWidget *)"), self.ctrlAboutToShowSlot)

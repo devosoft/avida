@@ -25,16 +25,26 @@ class pyEduMainCtrl(qt.QObject):
     self.m_main_mdl.m_main_mdtr = pyMdtr()
     self.m_main_controller_factory = pyMainControllerFactory()
     self.m_main_controller_factory.construct(self.m_main_mdl)
-    self.m_main_controller_factory.addControllerCreator("pyEduMainMenuBarHdlr", pyEduMainMenuBarHdlr)
-    ##self.m_main_controller_factory.addControllerCreator("pyEduMainConsoleCtrl", pyEduMainConsoleCtrlCreator())
-    ##self.m_main_controller_factory.addControllerCreator("pyEduMainPrefsCtrl", pyEduMainPrefsCtrlCreator())
-    ##self.m_main_controller_factory.addControllerCreator("pyMainQuitHdlr", pyMainQuitHdlrCreator())
-    self.m_main_controller_factory.addControllerCreator("pySessionCtrl", pySessionCtrl)
+    self.m_main_controller_factory.addControllerCreator(
+      "pyEduMainMenuBarHdlr", pyEduMainMenuBarHdlr)
+    #self.m_main_controller_factory.addControllerCreator(
+    #  "pyEduMainConsoleCtrl", pyEduMainConsoleCtrlCreator())
+    #self.m_main_controller_factory.addControllerCreator(
+    #  "pyEduMainPrefsCtrl", pyEduMainPrefsCtrlCreator())
+    #self.m_main_controller_factory.addControllerCreator(
+    #  "pyMainQuitHdlr", pyMainQuitHdlrCreator())
+    self.m_main_controller_factory.addControllerCreator(
+      "pySessionCtrl", pySessionCtrl)
 
-    self.m_main_mdl.m_main_mdtr.m_main_controller_factory_mdtr.emit( qt.PYSIGNAL("newMainControllerSig"), ("pyEduMainMenuBarHdlr",))
+    self.m_main_mdl.m_main_mdtr.m_main_controller_factory_mdtr.emit(
+      qt.PYSIGNAL("newMainControllerSig"), ("pyEduMainMenuBarHdlr",))
     return self
   def unitTest(self, recurse = False):
-    return pyUnitTestSuiteRecurser("pyEduMainCtrl", globals(), recurse).construct().runTest().lastResult()
+    return pyUnitTestSuiteRecurser(
+      "pyEduMainCtrl",
+      globals(),
+      recurse
+    ).construct().runTest().lastResult()
 
 
 # Unit tests.
@@ -65,7 +75,8 @@ class pyUnitTestSuite_pyEduMainCtrl(pyUnitTestSuite):
           edu_main_ctrl = pyEduMainCtrl()
           edu_main_ctrl.construct()
           edu_main_ctrl.m_main_mdl.m_main_mdtr.m_main_controller_factory_mdtr.emit(
-            qt.PYSIGNAL("newMainControllerSig"), ("pySessionCtrl", cString("genesis.avida"), ))
+            qt.PYSIGNAL("newMainControllerSig"),
+            ("pySessionCtrl", cString("genesis.avida"), ))
           return edu_main_ctrl
 
         print """

@@ -1,6 +1,6 @@
 <!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>pyOneOrganismView</class>
-<comment>Python:from pyTwoOrg_VivisectionCtrl import pyTwoOrg_VivisectionCtrl
+<comment>Python:from pyOneOrg_ScopeCtrl import pyOneOrg_ScopeCtrl
 Python:from pyTimelineCtrl import pyTimelineCtrl
 </comment>
 <widget class="QWidget">
@@ -142,16 +142,16 @@ Python:from pyTimelineCtrl import pyTimelineCtrl
                 </widget>
             </hbox>
         </widget>
-        <widget class="pyTwoOrg_VivisectionCtrl">
+        <widget class="pyOneOrg_ScopeCtrl">
             <property name="name">
-                <cstring>pyTwoOrg_VivisectionCtrl1</cstring>
+                <cstring>m_one_org_scope_ctrl</cstring>
             </property>
             <property name="sizePolicy">
                 <sizepolicy>
-                    <hsizetype>3</hsizetype>
+                    <hsizetype>5</hsizetype>
                     <vsizetype>3</vsizetype>
                     <horstretch>0</horstretch>
-                    <verstretch>5</verstretch>
+                    <verstretch>1</verstretch>
                 </sizepolicy>
             </property>
         </widget>
@@ -180,7 +180,7 @@ Python:from pyTimelineCtrl import pyTimelineCtrl
         </sizehint>
         <container>0</container>
         <sizepolicy>
-            <hordata>3</hordata>
+            <hordata>0</hordata>
             <verdata>0</verdata>
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
@@ -193,15 +193,17 @@ Python:from pyTimelineCtrl import pyTimelineCtrl
         <property type="3">-1</property>
         <property type="1">pyTimelineCtrl</property>
         <property type="4">-1</property>
+        <property type="1">pyTimelineCtrl</property>
+        <property type="4">-1</property>
         <property type="pyTimelineCtrl"></property>
         <property type="-1">1</property>
     </customwidget>
     <customwidget>
-        <class>pyTwoOrg_VivisectionCtrl</class>
-        <header location="global">1</header>
+        <class>pyOneOrg_ScopeCtrl</class>
+        <header location="local">1</header>
         <sizehint>
             <width>-1</width>
-            <height>0</height>
+            <height>-1</height>
         </sizehint>
         <container>0</container>
         <sizepolicy>
@@ -211,9 +213,6 @@ Python:from pyTimelineCtrl import pyTimelineCtrl
             <verstretch>0</verstretch>
         </sizepolicy>
         <pixmap>image2</pixmap>
-        <property type="0">3</property>
-        <property type="pyTwoOrg_VivisectionCtrl"></property>
-        <property type="-1">1</property>
     </customwidget>
 </customwidgets>
 <images>
@@ -229,7 +228,7 @@ Python:from pyTimelineCtrl import pyTimelineCtrl
 </images>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
-    <includehint>pytwoorg_vivisectionctrl.h</includehint>
+    <includehint>pyoneorg_scopectrl.h</includehint>
     <includehint>pytimelinectrl.h</includehint>
 </includehints>
 </UI>

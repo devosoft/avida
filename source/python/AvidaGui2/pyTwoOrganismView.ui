@@ -1,8 +1,5 @@
 <!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>pyTwoOrganismView</class>
-<comment>Python:from pyTwoOrg_VivisectionCtrl import pyTwoOrg_VivisectionCtrl
-Python:from pyTimelineCtrl import pyTimelineCtrl
-</comment>
 <widget class="QWidget">
     <property name="name">
         <cstring>pyTwoOrganismView</cstring>
@@ -22,229 +19,18 @@ Python:from pyTimelineCtrl import pyTimelineCtrl
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
-        <widget class="QLayoutWidget">
+        <widget class="QLabel">
             <property name="name">
-                <cstring>layout79</cstring>
+                <cstring>textLabel1</cstring>
             </property>
-            <hbox>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <spacer>
-                    <property name="name">
-                        <cstring>spacer34</cstring>
-                    </property>
-                    <property name="orientation">
-                        <enum>Horizontal</enum>
-                    </property>
-                    <property name="sizeType">
-                        <enum>Expanding</enum>
-                    </property>
-                    <property name="sizeHint">
-                        <size>
-                            <width>16</width>
-                            <height>16</height>
-                        </size>
-                    </property>
-                </spacer>
-                <widget class="QLabel">
-                    <property name="name">
-                        <cstring>pixmapLabel2</cstring>
-                    </property>
-                    <property name="maximumSize">
-                        <size>
-                            <width>20</width>
-                            <height>32</height>
-                        </size>
-                    </property>
-                    <property name="pixmap">
-                        <pixmap>image0</pixmap>
-                    </property>
-                    <property name="scaledContents">
-                        <bool>true</bool>
-                    </property>
-                </widget>
-                <widget class="QLabel">
-                    <property name="name">
-                        <cstring>textLabel13</cstring>
-                    </property>
-                    <property name="sizePolicy">
-                        <sizepolicy>
-                            <hsizetype>3</hsizetype>
-                            <vsizetype>5</vsizetype>
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                        </sizepolicy>
-                    </property>
-                    <property name="text">
-                        <string>LowMutVers.</string>
-                    </property>
-                </widget>
-                <widget class="QLabel">
-                    <property name="name">
-                        <cstring>textLabel6</cstring>
-                    </property>
-                    <property name="text">
-                        <string>vs.</string>
-                    </property>
-                </widget>
-                <widget class="QLabel">
-                    <property name="name">
-                        <cstring>pixmapLabel2_2</cstring>
-                    </property>
-                    <property name="maximumSize">
-                        <size>
-                            <width>20</width>
-                            <height>32</height>
-                        </size>
-                    </property>
-                    <property name="pixmap">
-                        <pixmap>image0</pixmap>
-                    </property>
-                    <property name="scaledContents">
-                        <bool>true</bool>
-                    </property>
-                </widget>
-                <widget class="QLabel">
-                    <property name="name">
-                        <cstring>textLabel13_2</cstring>
-                    </property>
-                    <property name="sizePolicy">
-                        <sizepolicy>
-                            <hsizetype>3</hsizetype>
-                            <vsizetype>5</vsizetype>
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                        </sizepolicy>
-                    </property>
-                    <property name="text">
-                        <string>HighMutVers.</string>
-                    </property>
-                </widget>
-                <spacer>
-                    <property name="name">
-                        <cstring>spacer33</cstring>
-                    </property>
-                    <property name="orientation">
-                        <enum>Horizontal</enum>
-                    </property>
-                    <property name="sizeType">
-                        <enum>Expanding</enum>
-                    </property>
-                    <property name="sizeHint">
-                        <size>
-                            <width>16</width>
-                            <height>16</height>
-                        </size>
-                    </property>
-                </spacer>
-                <widget class="QToolButton">
-                    <property name="name">
-                        <cstring>toolButton4</cstring>
-                    </property>
-                    <property name="text">
-                        <string>...</string>
-                    </property>
-                </widget>
-            </hbox>
-        </widget>
-        <widget class="pyTwoOrg_VivisectionCtrl">
-            <property name="name">
-                <cstring>pyTwoOrg_VivisectionCtrl1</cstring>
+            <property name="text">
+                <string>Contents of this space are temporarily removed.</string>
             </property>
-            <property name="sizePolicy">
-                <sizepolicy>
-                    <hsizetype>3</hsizetype>
-                    <vsizetype>3</vsizetype>
-                    <horstretch>0</horstretch>
-                    <verstretch>5</verstretch>
-                </sizepolicy>
-            </property>
-        </widget>
-        <widget class="pyTimelineCtrl">
-            <property name="name">
-                <cstring>pyTimelineCtrl3</cstring>
-            </property>
-            <property name="sizePolicy">
-                <sizepolicy>
-                    <hsizetype>3</hsizetype>
-                    <vsizetype>3</vsizetype>
-                    <horstretch>0</horstretch>
-                    <verstretch>1</verstretch>
-                </sizepolicy>
-            </property>
-        </widget>
-        <widget class="pyTwoOrg_VivisectionCtrl">
-            <property name="name">
-                <cstring>pyTwoOrg_VivisectionCtrl1_2</cstring>
-            </property>
-            <property name="sizePolicy">
-                <sizepolicy>
-                    <hsizetype>3</hsizetype>
-                    <vsizetype>3</vsizetype>
-                    <horstretch>0</horstretch>
-                    <verstretch>5</verstretch>
-                </sizepolicy>
+            <property name="alignment">
+                <set>AlignCenter</set>
             </property>
         </widget>
     </vbox>
 </widget>
-<customwidgets>
-    <customwidget>
-        <class>pyTimelineCtrl</class>
-        <header location="global">1</header>
-        <sizehint>
-            <width>-1</width>
-            <height>0</height>
-        </sizehint>
-        <container>0</container>
-        <sizepolicy>
-            <hordata>3</hordata>
-            <verdata>3</verdata>
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-        </sizepolicy>
-        <pixmap>image1</pixmap>
-        <property type="0">3</property>
-        <property type="1">pyTimelineCtrl</property>
-        <property type="3">-1</property>
-        <property type="1">pyTimelineCtrl</property>
-        <property type="3">-1</property>
-        <property type="pyTimelineCtrl"></property>
-        <property type="-1">1</property>
-    </customwidget>
-    <customwidget>
-        <class>pyTwoOrg_VivisectionCtrl</class>
-        <header location="local"></header>
-        <sizehint>
-            <width>-1</width>
-            <height>-1</height>
-        </sizehint>
-        <container>0</container>
-        <sizepolicy>
-            <hordata>5</hordata>
-            <verdata>5</verdata>
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-        </sizepolicy>
-        <pixmap>image2</pixmap>
-    </customwidget>
-</customwidgets>
-<images>
-    <image name="image0">
-        <data format="PNG" length="3280">89504e470d0a1a0a0000000d494844520000002a000000410806000000a7f036c200000c9749444154789cbd9a7f7053d795c73fb22521e9e93d83c08a2d2774fd23fe813db6c14e8414192664439dce941f69e93a09743749a15db2bbb3ed7686d9994c42193a3be99090b2db9440376d6960d99a2c6e76434cba09d428569c106c272196bdb6d998b56c04968d7ed991646bff787e0fdb10c08e9c33a391dfd37d773ebef7dc73cff7dca7397dfa34733197cb958c7ed607c0b98b7d9a3975320bd3cee521a7c3913cf9b3bd08af1e06a0e2dd53c9f6f6f679854d9bcb43cdefbe8bf0ea61daf30a688c8539b4652b76bb3d996ab8a9362750fba52e4a2d756cd2440118f0b6110c06713a1c4997cb352fc0b302adaaaa4a56555525dfb910e2c8c2b374f5f8a8d59ba9d59be9bbd847241a251e8f331fb0b7eda3252525c9f527f601f08de8088f6aa2906f635f4717b57a33916088c1c101b2b2b2494f9bd344dd1ad46eb727c7c6c6104511b7db7ddda270b95cc9b5af3d37ed5e578f0f8025751b09396a1081702442301844abd5e272b99237ea6bae96c6c444f2c0a62d1cdab29589f171f507bbdd9ef40d5e4c8622c1e48b3bff51bd1f3b76125ddb050af36d14e6dba85ef310a1d0557cfe7e22c110d168844422912a3ed5b4d56f3650a889b2afa38b48545e1c252525c9e37f3886377810822061e78d753f22ee1be0dc4fea8120e4dbe8eaf111f70dce31c8cd1214ae4de3a12d5b8957e626dbf7fc0b43ebfc007c73c5f3946d29239148d0e2790f1d50986f432a2e801e1f97b5f22c88620600269380569b7a726df2999f92fb37011e38f32e6fef7c06bc6d00e8d7d978a4663f77de7917c16090b1b13174b62cdef97b095ef4418f8fb30f3f886db223d168e68eec2c0c06c3bc80a6198d462c160b8535f7f1c0ce5dea0f529f1d8b6531814080406008ff653f91f73ee407ff69069021cbca6548310341123199044c26133a9dee868bf24b8102241209a2d1080b8befa6e689ef0370e5e8713ace9fc77fd9cfa58141062f0dd0dddc826e781500458e9aeb3a33180c2cd0eb530ea98282ec5b00c2ca2ab28b2bd5069160885d973dec0d7f4c81d30e407b5ec1b44e44a319b320a0d7eb494b4f4f35e3355083c180c160c02c08089248e6e6f532d00b2f71f69d3701392c2df79c22bea889016f1b69ed9d32e494699f0fdf5441dd6eb746a7d32149125959d95833add8ac3964175712afcca5fa3ffec8373e1e511f5022c4444511a298a18ea62449f336ed3039a20aac603221491277646751f1a3ed14396a28ccb7f168fb791aff4c7687c65818f7729bda81329a068361dea65d0555609b3d1e8dc160c06259cc1dd959884633e7ff6233fb3aba087abbd9d7d1a542767ace60180e03b2eba4a7a5cddb684e03554ca7d3613299309904eec8ce6261f1dd2ca9dbc8be8e2e005cadf2d43774b6f0f6ce6718f1fecf7cb1dd1cd4ed766b16e8f5582c164c2601b320a06bbb40ad5e8e9fd9c5956c28b2abeddbbdad0402430c8f8c5064347fb5f9685a7a3a0a2c4081d34ea9a58e5abd9902a75d0df420c7dbdf7e731d67fff5109d8f7f0f7753d3bce4a3370475bbdd1a057661504e54e28b9a0038f3cacb78830759f320b897db702fb7f1fe4f1fa723eae7e95289c66ddb38f9b3bd002905fec20c57815dbcac88d5c317e9eaf1d1189317cf3b7f94db282e103b769286ce16368d5aa9d59b39f3cacb449a3f48c6eb7f85b3aa2a25b0378dd069131344fd97097bbbd57b4bea36b2bdac5cce96726087a3864ecf198a1c351886c344fafae1959759ee3905b9eb18ffafc3381f7e3cd9ecf17ca9887053d0c4e79fa37bff2df5baf6c0017cfe7e0042a1abea7d5b59b97cbd288390366b720b8e327ce475ba7a7ce43a1ffad219ff6d899bae1e1fed79050892a8e69d334d14330885ae12cf7b8ba1757eea932674c3ab28b5d4f1c9e1df13afff154e8763ce6e7053d0e60f3fd48ce455d3180b33e06de3b5ba47d4202f8a19d8ac39ea2790598f3778909eb6cf008857e6cadf8b9a58932b327eee53c6feaf7fce0bec9659446655254bea3672e5e871408e9bb6b2729efbcd1eb5cdc15dfb09f56e42275dc5f7c947acdef01d2205218eb4bd44458f8fea739f12f476d3f5d9ff5265cd9c931bdc1274627c9c8ae2e5bc8d0cdad0d9029d2deaefbbff7a275959d9582c8b191b1b235a5145381221341aa6c069a7bae45a5ee0f3f753122d9d934abdadbc2cd6d7affeed6af551befb59443183f2b20a2449baae7d241802e06a5e16c1c3a7d00dafa27ea18f3c3183406008bd5e3f6bed7f4bd0b4f474f44b73d4eb25751bb159731024916834725dfb7024c2aecb1ef942030f4e2a824d9a28e787c3aaf637180cb31ad55b4ffde8288ef6f7d0e9cd34c6c2b28e1f95175424184290c469ed77f45c0b67b16327313ae4f4f0fc1b3e627dfd446c599069259148a0d3e96e87f1f640b50b1630be621985de6e1a3bba88fb06e9f4b6aa9a29341a2690590f80ae772ddf632977171433786980ac1d6bf9d35ba7593d7c11905d4100a2d1c80d5de64b8102c4ef5d4beb8510d949932ca927cd56564e3cef2d35243db57e2d26938944228135d3ca859e1e560f5f24e8ed26b2f9b15981cdb45b7a745373b34667cba6fac9efe2dcb943adde5d397a9c975e93e3667ee5d778a466bf0a190c0689462314eedd43fa8a6537ec77b6fa6ad66aac70b29403b069d48a73c50e96deb514804020a02eb0eede6eaa80f02f46a85f68221ef553241601d714ef6c6c5631c22c0874fdf0c76a1655e0b4631604028121fa2ef6e1bfec271c89108e4454bf05a8e8eda6c464bdaebf94c7d1f4b4344c2613636363089248f9ee67f9e8e99fd0dddc827e690eb1be7e8495558446c3ec0d7f0cc05fe622d7a7f051e8b5d13ad9971225e665ead3d2d3d16ab5ea4a5574d280b78d819d6d641757f287fc98da3e76ec2423a356829aa159c1dc94e1761acd94d3775655527be000f7fdfc05b28b2ba9e8ed66fdef5ad5f6dbbfb59502a79dae1e9f2a0abf125005362d3d9d99727a59ddc3002a6cecd8493213e96aeccc2eaea4d5713f57f3b2be1a500576aa9c1624119d2d8bc8e6c7d438e96af551faefafaacf1438edd7411a0c86f905556017e8f548928435d38a2089082bab1056560150ab37b3e8d17504bddd14e6dbe888fad5647b6a316db649c99c8e2f1417980a0bb0acee611a63610e1cfe6f35c3d7b55da0d373868cde41aadf6c6061308a56ab9d75f9674ee537b7dbad71b95cc9a9a3e20722c07d3f7f8195fff4e9b4f6578e1e47d09b390bb477f8d8f08be7c9c9c9613636e70321a55625984c582c1675640dc361e28b9ad43a4081d34ecd13dfa73116a63daf80016f1b0d4ffd03a3a3a3b392259ab99e2e4f35a7c391fc3c1623fc6927e2b143a4af58c6f091d73952518a4d91d6c885b5129395ee6659213cf16fbfc66834128fc7696969b9e92e959223b6668f4763341a01087abb193f274f7d89c93a4db53674b6f07c7e8c7aa39f016f1b4dffbc9f53477f0f0dbf6595d379d3d14dc9882a565151917cee9e7bd482dacc5aea5453aa82007f575288e6e95d748e86bf7054535acb16b45ab28b2b699c3c029a0ab9fd5b5ba7d704fe4afeeafde52174c3d5bcfff62956fded0f92cacccc4c58520a3ae6bfcc932536829a28f549131b8a646d6f2b2be7ee826240962fa1d130a1d0d569e0f79e18e7c3951f5075cf3d28b0f306da1f1ba377d15ddc3b6c83856755b9221acdd7e92b05325e998bf1731fa31e1b857bf7d0e4b89f150fdc4f91d19c9cea0a2905b55816b3e4c4f8b47b536b54534dc95733d7c1fed7b3787451135271812c5d763f43578f0f676b8b5a5c4bd9c17a6e6e6ef2e8934f6174f8303a7cea99d44c584112f9a0ff5a95a5a7ed33746d176875dc4f704ad5b03116667864447dab2265a0d6e637d9f6d89f03b0fbf80975ef17c50c7c9f7cc473bfd983cfdfcfe0a501f5195def5ad614ecc4b97307faa5399c7eec11cebe216f14e5bb9f0550dfaa4849785a71d7d264dafe17d5ebddc74fc8858ab2725e7aede0b4b687f7fc0e8bc542229120168b11080c716960505d60ca3f271acd08928835d38a2449a9f151c39d390c7dfbbb24775f93d2578e1ea761b9bc03e9bffd75007ebd72b37a2ef0459030dd55fcc869614a409b3d1e8dcbe54aba7ff8631ab76d03e48479d328646e5ecff272d90d0c0603814000908b10e1c8b592d017d55d154bd9aa9f181fa7a4b494b39325ca81c9a05f61ddae024d05534c90c4ebca428a9905019349ce5f53063a3e3101c0ea0ddfe14fc8fbfa8622bb5aa79a096716646daf68fc1b65fd7abd1ead562b7f52059a9e96865eafc72c0854af79483d8b9aea6fca02310b0216cbe269204a1f334d49b05306aa486a454b89a3193784b4665a5575a054f36ea710913250b7dbad713a1c4965552b70c0b45134994c68b5da59bfce91d22db4d9e399061b9de287922461301866358a532da5f9a8624e8723393e31c1d8d81820976f164cbec631d7b3a6ff070e5916dbc1509ee90000000049454e44ae426082</data>
-    </image>
-    <image name="image1">
-        <data format="PNG" length="1002">89504e470d0a1a0a0000000d4948445200000016000000160806000000c4b46c3b000003b149444154789cad945f4c5b551cc73fe7dc4b7b4bcba0762d45c43114323599ee6192609c51d883892ce083f1718b3ebb185f8dc91e972cf39d2d2a2f1af664b6f1e0fe3863a0718969700eb0c52142da0242a1bd6d696f7bcff101585203ceb8fd9ece39f99dcff9fe7edf939f88c562ec465f5f9fe609442c161362173c3e3eae7b7a7ac8e7f36432196cdbfe4f907c3e4f2291201e8fe338cec3737357e9e8e828aded1e229d650e1f2d51754b082110124c13a4dc5ea341eb9dc284c0558a853f3ce8cb0677ef500fde7d39d2596679e326597b8e9abb85d7a770ab16ab6983ec5a05b487a70e36f0f4e10afe408d6a558310980108478dba4a1e8233990c5d474b64ed39aa3a8fe5f3317fbf81dbd70bccfeb205947632fd74f6589c1c6ea2f70d03a58ba0c1f2c9bdc1b66de3b8256a6e11cbe7e3ee1d181b590124fe2693aeee08d223c82c3a2c24b7b874bec8f26288774f7bd054504aef0dde6e99c0eb83f9fb266323cb80a27fb0958141836044605a2ee5523393371cc646fee2da37195aa35d0c0c5b4859ac03d7e91712dcaac5adab3650a3ff9d08ef7dd8404bb48869e5d958b5b87dadc4c9a1464e9f0d0326df7ebd86bd2e310cb1bf62d384d59441f2d70a070e1c60e09489929b988681bdd9cc97170bcc4c65595f71f8e0e3301337fc24a7732467831875a47f289652b0be5e4151e6d07316c1b0c0340d8ab92023e76d66a6b2840e36d2fb7a13fee632475e6edc367ea98a90fb98b7dd6310ca0328a44761582e1bab41befabcc0ec940d28bc5e93b68e064cab84e1d9beaeb48934eac1f53b01c1b000fca496aa54b61a99fcde61662a4b4b4b23d1680be9d426173e4df3602a48ea411989a4fd590f52a8fd156b05ed9d350e3defe3cfdf4b4c7ce770ea7d3fb9f520afbe1620daeee5c26735d20b9b9cfb6811a754a439e4e5c5639a4caa1e5caf586bfc0197b78702005cb9b4cae4cd3267ce8638fe964bd72b393e39d74928d242617303a756a37f284447770dcdbffc6384a05a85de1306e9a52057c7527c7131c3c42d3f475eb2303c82d4fc3276d6811db37efeb148723082d9b08f79f97c1e5729109a9a28307cc622d2d6cdf52b2b24efe548dedb00142009862cfa879ee1a71f6cec928353511472fbf4389148b0b0e0c108081412458dfe21c9f11351e67e7358595468246d1d1e5e38a6e9e851bc39d84ab502a669331dafec0d8ec7e3e8cb06e1a881d727d1ae40180a434a8c9db129a54126ad48a7358c2b4c5352c8c374bcccdab2bb37d8719cba79fab8211f9df218e0582c261e95f8bfc04f1a1e8bc5c4dfe0a19017a725d8c60000000049454e44ae426082</data>
-    </image>
-    <image name="image2">
-        <data format="PNG" length="1125">89504e470d0a1a0a0000000d4948445200000016000000160806000000c4b46c3b0000042c49444154789cb5954f6c14551cc73fefcd7476b65bdaae4bb78bb5502a14d404e4801c88182d1c4c2c693da847400f9c24c68b878684238660e2b1e01f12c19493012ef2478c814412d354a46017a8a564bb6da5bbedccee767776e63d0ffb073751d483bfe49799974c3eeffb7ebf37df9fd05a530b2184040cc0042420aaf9a4d0d554800f045a6b256ae0e1e1e1d6bebebe838ee31c48a7d39b5cd7fd075e251cc7617272f2ded8d8d819cff33e0316819259537aead4a9839d5dd6d1784f91f55b0a94830242088404d304292bef68a89f520802a598fecddaa04f1a876f5c250c7c0a64cdeac686e33807e23d45e6b297c8b877f1831542614550b6599835c83c2a81b6786a75134faf2f1169f12997350881d9021d0903e06de0745d3160a6d3e94dbd5b0a64dcbb94b5831d0e3375ab892b1772dcf9790528543f8dd0d367b36768153b5e31503a0f1aecb004580b44ffac58baae8b1714f0833c7638cc8dab303a320f4822ab4c7a37c69196203de3319d5ce1c4d13c733331dedc67a129a154fd128401ab0616d55a130ac3d42d93d1913940d13fd0c9ee0183685c60da01c5421bd72f7a8c8efccef9afd374267ad93d642365be0636a0d28ec7600941d9e6f23917f0e97f23ce5bef35d19ec863da0ed9059b2be70bec196c66dfa10ec0e49b338f7017258651bf95021035c595429bb0903248fe52a2b5b595dd7b4d945cc2340cdca536be389ee3f67886c5798f773fe8e0dac508c989659277a2180da4ca4ff07821058b8b251445d63d6b13ed1098a6417e39cac85197dbe31962ab9bd9f1f22a226d45366f6d0620fdb08c900d281af6110284b20085b414861d905d88f2e52739ee8cbb8022143259d3dd84691730aa2d52da441a8de0c6958068870022a41e9629ad3473fd3b8fdbe319dadb9b4924da994d2d716c7896fbe35152f78b48245d6b2da4507faf582be8eaf159b721cc837b05ae7debb1f79d08cb8b515edad942a22bc4b1c33eb3d34b1c797f06af90a72d16e2f96d9a74aa11dca8586b222d01af0fb60070f6c402d72f15d97f28c6f6d7027a5f5ce6c3233dc4e2ede496b278be4fff608cee8d3e1add806aeca51094cbb06397c1ecc328e746537c7e3ccdb5cb1136bf60635882d4d41c6ec6836ab37efa214f72208ed9f4d7cdd38ee310280542e38b1c43fb6de26b3672e1ec3cc99bcb246f66a938a3241ab3e91f7c861fbf77710b1e5e49915bae974203ba0e9e9c9cbc373d6d6d305a040a89c2a77f50b27d5782bbbf7acccf28349235dd16cf6dd374f7295e1de8a45c02d37499182b01cc0201a085d61a2144d8b2ac8fb6ed340e77240c4261890e04c250185262546d534a032154b59e0ad394e41c98182bf268ce6721ed9f064e0253356f6da2e24c1f030f783c15fe6da680af8021602bd051532ca9b8521488559f61aa86c29343578fbf0264a94c906c7d3409214c20043457a116ff6de6795578012889ff6b98fe016ea0ce1c203e47720000000049454e44ae426082</data>
-    </image>
-</images>
 <layoutdefaults spacing="6" margin="11"/>
-<includehints>
-    <includehint>pytwoorg_vivisectionctrl.h</includehint>
-    <includehint>pytimelinectrl.h</includehint>
-    <includehint>pytwoorg_vivisectionctrl.h</includehint>
-</includehints>
 </UI>

@@ -78,6 +78,12 @@ class pyAvida(qt.QObject):
 
     return self
 
+  def addGuiWorkFunctor(self, thread_work_functor):
+    self.m_avida_threaded_driver.addGuiWorkFunctor(thread_work_functor)
+    
+  def removeGuiWorkFunctor(self, thread_work_functor):
+    self.m_avida_threaded_driver.removeGuiWorkFunctor(thread_work_functor)
+
   def destruct(self):
     self.m_avida_thread_mdtr.emit(qt.PYSIGNAL("doCloseAvidaSig"),())
     if hasattr(self, "m_update_ck_timer"):

@@ -52,19 +52,18 @@ class pySessionDumbCtrl(pySessionDumbView):
         PYSIGNAL("fromLiveCtrlUpdateAvidaSig"),
         self.m_avida.m_avida_thread_mdtr, PYSIGNAL("doUpdateAvidaSig"))
     
-#  def setupCustomMenus(self, edu_session_menu_bar_hdlr):
-#    self.m_debugging_menu = QPopupMenu()
-#    self.m_zoom_window_wmi_id = self.m_debugging_menu.insertItem(
-#      "Load Petri Dish Config File",
-#      self, PYSIGNAL("doLoadPetriDishConfigFileSig"))
-#    self.m_menu_bar.insertItem("Debugging", self.m_debugging_menu)
-#
-#    self.connect(
-#      self, PYSIGNAL("doLoadPetriDishConfigFileSig"),
-#      self.doLoadPetriDishConfigFileSlot)
-#
+  def setupCustomMenus(self, edu_session_menu_bar_hdlr):
+    self.m_debugging_menu = QPopupMenu()
+    self.m_load_organism_wmi_id = self.m_debugging_menu.insertItem(
+      "Load Organism",
+      self, PYSIGNAL("doDebugLoadOrganismSig"))
+    self.m_menu_bar.insertItem("Debugging", self.m_debugging_menu)
+
+    self.connect(
+      self, PYSIGNAL("doDebugLoadOrganismSig"),
+      self.doDebugLoadOrganismSlot)
+
   def doLoadPetriDishConfigFileSlot(self, genesisFileName = None):
-    print "pySessionDumbCtrl.doLoadPetriDishConfigFileSlot()."
 #    s = QFileDialog.getOpenFileName(
 #      ".",
 #      "(*.avida)",
@@ -88,11 +87,32 @@ class pySessionDumbCtrl(pySessionDumbView):
       self.setAvidaSlot)
     self.m_session_mdl.m_session_mdtr.emit(
       PYSIGNAL("setAvidaSig"),
-    (self.m_avida,))
+      (self.m_avida,))
     self.connect(
       self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"),
       self.setAvidaSlot)
       
+  def doDebugLoadOrganismSlot(self):
+    if self.m_avida:
+      organism_file_name = QFileDialog.getOpenFileName(
+        ".",
+        "(*)",
+        None,
+        "open file dialog",
+        "Choose an organism file")
+      self.m_session_mdl.m_session_mdtr.emit(
+        PYSIGNAL("setDebugOrganismFileSig"),
+        (organism_file_name,))
+    else:
+      QMessageBox.information(
+        None,
+        "Can't load organism file yet",
+        """
+This version of AvidaEd requires that a genesis file
+be opened before an organism file.
+"""
+      )
+
   def construct(self, session_mdl):
     self.m_session_mdl = session_mdl
     self.sessionInitialized = False
@@ -165,7 +185,7 @@ class pySessionDumbCtrl(pySessionDumbView):
   def doStart(self):
     if self.sessionInitialized == False:
       self.m_session_mdl.m_session_mdtr.emit(
-      PYSIGNAL("doInitializeAvidaPhaseISig"), 
+        PYSIGNAL("doInitializeAvidaPhaseISig"),
         (self.m_session_mdl.m_tempdir,))
       self.sessionInitialized = True
     self.m_should_update = True

@@ -60,6 +60,7 @@ exclude(cPopulationInterface.SetFun_UpdateResources)
 exclude(cPopulationInterface.SetFun_KillCell)
 exclude(cPopulationInterface.SetFun_KillSurroundCell)
 exclude(cPopulationInterface.SetFun_SendMessage)
+exclude(cPopulationInterface.SetFun_ReceiveValue)
 exclude(cPopulationInterface.SetFun_InjectParasite)
 exclude(cPopulationInterface.SetFun_UpdateMerit)
 

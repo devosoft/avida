@@ -18,8 +18,7 @@ def AvidaEd():
   edu_main_controller = AvidaGui2.pyEduMainCtrl.pyEduMainCtrl()
   edu_main_controller.construct()
   edu_main_controller.m_main_mdl.m_main_mdtr.m_main_controller_factory_mdtr.emit(
-    qt.PYSIGNAL("newMainControllerSig"), ("pySessionCtrl",
-    AvidaCore.cString("genesis.avida"), ))
+    qt.PYSIGNAL("newMainControllerSig"), ("pySessionCtrl",))
   return edu_main_controller
 
 AvidaCore.cConfig.InitGroupList()

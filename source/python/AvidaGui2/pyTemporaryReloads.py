@@ -45,6 +45,7 @@ test_module_names = [
 nontest_module_names = [
   "AvidaGui2.pyAnalyzeControlsView",
   "AvidaGui2.pyAnalyzeControlsCtrl",
+  "AvidaGui2.pyAvidaStatsInterface",
   "AvidaGui2.pyFreezeDialogView",
   "AvidaGui2.pyFreezeDialogCtrl",
   "AvidaGui2.pyFreezerView",
@@ -58,6 +59,8 @@ nontest_module_names = [
   "AvidaGui2.pyLiveControlsCtrl",
   "AvidaGui2.pyNavBarView",
   "AvidaGui2.pyNavBarCtrl",
+  "AvidaGui2.pyOrganismScopeView",
+  "AvidaGui2.pyOrganismScopeCtrl",
   "AvidaGui2.pyPetriConfigureView",
   "AvidaGui2.pyPetriConfigureCtrl",
   "AvidaGui2.pyPetriDishView",
@@ -65,8 +68,6 @@ nontest_module_names = [
   "AvidaGui2.pyReadFreezer",
   "AvidaGui2.pyTimelineView",
   "AvidaGui2.pyTimelineCtrl",
-  "AvidaGui2.pyVivisectionView",
-  "AvidaGui2.pyVivisectionCtrl",
   "AvidaGui2.pyWriteGenesis",
   "AvidaGui2.pyWriteToFreezer",
   
@@ -79,6 +80,9 @@ nontest_module_names = [
   "AvidaGui2.pyOneAna_TimelineView",
   "AvidaGui2.pyOneAna_TimelineCtrl",
 
+  "AvidaGui2.pyOneOrg_ScopeView",
+  "AvidaGui2.pyOneOrg_ScopeCtrl",
+
   "AvidaGui2.pyOnePop_GraphView",
   "AvidaGui2.pyOnePop_GraphCtrl",
   "AvidaGui2.pyOnePop_PetriDishView",
@@ -88,8 +92,6 @@ nontest_module_names = [
   "AvidaGui2.pyOnePop_TimelineView",
   "AvidaGui2.pyOnePop_TimelineCtrl",
 
-  "AvidaGui2.pyTwoOrg_VivisectionView",
-  "AvidaGui2.pyTwoOrg_VivisectionCtrl",
 
   "AvidaGui2.pyTwoPop_GraphView",
   "AvidaGui2.pyTwoPop_GraphCtrl",
