@@ -45,7 +45,6 @@
 		};
 		DCC30C490762532C008F7A48 = {
 			children = (
-				DCE60DB307C580B200B002E1,
 				703F684207B437B800C1CA76,
 				DCC30C670762539A008F7A48,
 				DCC3164E07626CF3008F7A48,
@@ -57,6 +56,14 @@
 		DCC30C4B0762532C008F7A48 = {
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				GCC_DEBUGGING_SYMBOLS = full;
+				GCC_DYNAMIC_NO_PIC = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_CPU = G4;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				OTHER_CFLAGS = "-ffast-math -mdynamic-no-pic";
+				OTHER_CPLUSPLUSFLAGS = "-ffast-math -mdynamic-no-pic";
+				ZERO_LINK = YES;
 			};
 			isa = PBXBuildStyle;
 			name = Development;
@@ -64,6 +71,13 @@
 		DCC30C4C0762532C008F7A48 = {
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				GCC_DYNAMIC_NO_PIC = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_CPU = G4;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
+				OTHER_CFLAGS = "-ffast-math -mdynamic-no-pic";
+				OTHER_CPLUSPLUSFLAGS = "-ffast-math -mdynamic-no-pic";
 			};
 			isa = PBXBuildStyle;
 			name = Deployment;
@@ -10600,11 +10614,18 @@
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
 				GCC_DEBUGGING_SYMBOLS = full;
+				GCC_DYNAMIC_NO_PIC = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_CPU = G4;
+				GCC_NO_COMMON_BLOCKS = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_REUSE_STRINGS = NO;
 				HEADER_SEARCH_PATHS = source/event/;
 				INSTALL_PATH = /usr/local/bin;
-				OTHER_CFLAGS = "";
+				OTHER_CFLAGS = "-ffast-math -mdynamic-no-pic";
+				OTHER_CPLUSPLUSFLAGS = "-ffast-math -mdynamic-no-pic";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = primitive;
@@ -11367,15 +11388,6 @@
 			isa = PBXBuildFile;
 			settings = {
 			};
-		};
-		DCE60DB307C580B200B002E1 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.xml;
-			name = "third-party-osx.xml";
-			path = "documentation/xdocs/admin/third-party-osx.xml";
-			refType = 4;
-			sourceTree = "<group>";
 		};
 	};
 	rootObject = DCC30C4D0762532C008F7A48;

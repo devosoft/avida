@@ -22,7 +22,7 @@
 #ifndef STATS_HH
 #include "stats.hh"
 #endif
-#ifndef STRING_hH
+#ifndef STRING_HH
 #include "string.hh"
 #endif
 #ifndef TARRAY_HH
