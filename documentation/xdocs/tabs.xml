@@ -16,8 +16,8 @@
 -->
 <!DOCTYPE tabs PUBLIC "-//APACHE//DTD Cocoon Documentation Tab V1.1//EN" "http://forrest.apache.org/dtd/tab-cocoon-v11.dtd">
 
-<tabs software="MyProj"
-  title="MyProj"
+<tabs software="Avida"
+  title="Avida"
   copyright="Foo"
   xmlns:xlink="http://www.w3.org/1999/xlink">
 
@@ -33,14 +33,8 @@
   -->
 
   <tab id="" label="Home" dir="" indexfile="index.html"/>
-  <tab id="samples" label="Samples" dir="samples" indexfile="sample.html">
-    <tab id="samples-index" label="Index" dir="samples" indexfile="index.html"/>
-    <tab id="samples-sample2" label="Sample2" dir="samples" indexfile="static.html"/>
-  </tab>
-  <tab label="Apache XML Projects" href="http://xml.apache.org">
-    <tab label="Forrest" href="http://forrest.apache.org"/>
-    <tab label="Xerces" href="http://xml.apache.org/xerces"/>
-  </tab>
+  <tab id="using" label="Using Avida" dir="using"/>
+  <tab id="admin" label="Administration" dir="admin"/>
   <!-- Add new tabs here, eg:
   <tab label="How-Tos" dir="community/howto/"/>
   <tab label="XML Site" dir="xml-site/"/>

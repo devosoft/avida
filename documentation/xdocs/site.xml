@@ -29,52 +29,21 @@ This file contains an outline of the site's information content.  It is used to:
 See http://forrest.apache.org/docs/linking.html for more info
 -->
 
-<site label="MyProj" href="" xmlns="http://apache.org/forrest/linkmap/1.0" tab="">
+<site label="Avida" href="" xmlns="http://apache.org/forrest/linkmap/1.0" tab="">
 
   <about label="About">
-    <index label="Index" href="index.html" description="Welcome to MyProj"/>
+    <index label="Index" href="index.html" description="Welcome to Avida"/>
     <changes label="Changes" href="changes.html" description="History of Changes" />
     <todo label="Todo" href="todo.html" description="Todo List" />
   </about>
 
-  <samples label="Samples" href="samples/" tab="samples">
+  <admin label="Administration" href="admin/" tab="admin">
     <index href="index.html"/>
-    <sample label="Apache doc v2.0" href="sample.html" 
-      description="A nonsense document using all possible elements in the current document v2.0">
-      <top href="#top"/>
-      <section href="#section"/>
-    </sample>
-    <document-v13 label="Apache doc v1.3" href="document-v13.html" 
-      description="A nonsense document using all possible elements in the document v1.3">
-      <top href="#top"/>
-      <section href="#section"/>
-    </document-v13>
-    <static label="Static content" href="static.html" 
-      description="Static raw un-processed content" />
-    <linking label="Linking" href="linking.html" 
-      description="Linking explained and demonstrated" />
-    <sample-wiki label="Wiki page" href="wiki-sample.html" 
-      description="wiki-sample" />
-    <sample-ihtml label="ihtml page" href="ihtml-sample.html" 
-      description="Test iHTML page" />
-    <sample-ascii-art label="ascii-art page" href="ascii-art.html" 
-      description="Sample Ascii Art page" />
-    <sample-openoffice-writer label="OpenOffice Writer" href="openoffice-writer.html" 
-      description="Openoffice Writer sample" />       
-    <faq label="FAQ" href="faq.html" description="Frequently Asked Questions" />
-    <sdocbook label="Simplifed Docbook" href="sdocbook.html" 
-      description="Simplified DocBook example" />     
-    <subdir label="Subdir" href="subdir/">
-      <index label="Index" href="index.html" 
-        description="Page generated from a sub-directory"/>
-    </subdir>
-  </samples>
+  </admin>
 
-  <files>
-    <hello_print href="hello.pdf" />
-    <test1 href="test1.html" />
-    <test3 href="samples/test3.html" />
-  </files>
+  <using label="Using Avida" href="using/" tab="using">
+    <index href="index.html" />
+  </using>
 
   <!--
   The href must be wholesite.html/pdf  You can change the labels and node names

@@ -24,7 +24,7 @@
 
   <changes>
     <!-- Add new releases here -->
-    <release version="2.1 (r1)" date="unreleased">
+    <release version="2.2 (r?)" date="currently unreleased">
       <!-- Some action types have associated images. By default, images are
       defined for 'add', 'fix', 'remove', 'update' and 'hack'. If you add
       src/documentation/resources/images/<foo>.jpg images, these will
@@ -36,7 +36,42 @@
       <action dev="DMB" type="add" context="admin">
         Added support for Forrest Documentation
       </action>
+      <action dev="CAO" type="fix" context="bug">
+        Repair offspring merit calculation.
+      </action>
     </release>
+    <release version="2.1" date="8 January 2005">
+      <action dev="KGN" type="update" context="build">
+        Windows release of latest updates for Discover Magazine article.
+      </action>
+    </release>
+    <release version="2.0.x" date="various">
+      <action dev="CAO" type="add" context="feature">
+        New CPU model, GUI components, and various research specific improvements.
+      </action>
+    </release>
+    <release version="1.6" date="29 September 2000">
+      <action dev="CAO" type="add" context="feature">
+        Many new features, see info for details.
+      </action>
+    </release>
+    <release version="1.4" date="29 September 2000">
+      <action dev="CAO" type="add" context="feature">
+        Added events and other features.
+      </action>
+    </release>
+    <release version="1.3.2" date="11 November 1999">
+      <action dev="CAO" type="fix" context="bug">
+        Fixed ncurses under RedHat Linux 6.x, as well as other bugs.
+      </action>
+    </release>
+    <release version="1.3.1" date="7 September 1999">
+      <action dev="CAO" type="fix" context="bug">
+        Fixed ncurses under RedHat Linux 5.x.
+      </action>
+    </release>
+    <release version="1.3" date="12 August 1999"/>
+    <release version="1.0.1" date="7 May 1998"/>
   </changes>
 
   <todo>
