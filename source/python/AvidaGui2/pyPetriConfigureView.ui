@@ -8,7 +8,7 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>309</width>
+            <width>310</width>
             <height>451</height>
         </rect>
     </property>
@@ -84,11 +84,14 @@
                                         <font>
                                         </font>
                                     </property>
+                                    <property name="minValue">
+                                        <number>-40</number>
+                                    </property>
                                     <property name="maxValue">
-                                        <number>1000</number>
+                                        <number>20</number>
                                     </property>
                                     <property name="value">
-                                        <number>500</number>
+                                        <number>-20</number>
                                     </property>
                                     <property name="orientation">
                                         <enum>Horizontal</enum>
@@ -106,7 +109,7 @@
                                         </font>
                                     </property>
                                     <property name="text">
-                                        <string>100 %</string>
+                                        <string>0.01 %</string>
                                     </property>
                                 </widget>
                             </hbox>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'pyPetriConfigureView.ui'
 #
-# Created: Mon Mar 14 14:51:31 2005
+# Created: Thu Mar 17 15:21:49 2005
 #      by: The PyQt User Interface Compiler (pyuic) 3.14
 #
 # WARNING! All changes made in this file will be lost!
@@ -41,8 +41,9 @@ class pyPetriConfigureView(QWidget):
         self.MutationSlider = QSlider(self,"MutationSlider")
         MutationSlider_font = QFont(self.MutationSlider.font())
         self.MutationSlider.setFont(MutationSlider_font)
-        self.MutationSlider.setMaxValue(1000)
-        self.MutationSlider.setValue(500)
+        self.MutationSlider.setMinValue(-40)
+        self.MutationSlider.setMaxValue(20)
+        self.MutationSlider.setValue(-20)
         self.MutationSlider.setOrientation(QSlider.Horizontal)
         layout75.addWidget(self.MutationSlider)
 
@@ -275,7 +276,7 @@ class pyPetriConfigureView(QWidget):
 
         self.languageChange()
 
-        self.resize(QSize(309,451).expandedTo(self.minimumSizeHint()))
+        self.resize(QSize(310,451).expandedTo(self.minimumSizeHint()))
         self.clearWState(Qt.WState_Polished)
 
         self.connect(self.RadomGeneratedRadioButton,SIGNAL("clicked()"),self.RandomFixedRadioButton.toggle)
@@ -287,7 +288,7 @@ class pyPetriConfigureView(QWidget):
         self.MutationRateHeadTextLabel.setText(self.__tr("Mutation Rate"))
         QToolTip.add(self.MutationRateHeadTextLabel,self.__tr("Set the rate of mutation from 0 to 1"))
         QToolTip.add(self.MutationSlider,self.__tr("Set Mutation Rate from 0 to 100 %"))
-        self.MutationPercentTextLabel.setText(self.__tr("100 %"))
+        self.MutationPercentTextLabel.setText(self.__tr("0.01 %"))
         self.WorldSizeHeadTextLable.setText(self.__tr("World Size"))
         self.WorldSizeTextLabel.setText(self.__tr("60 x 60 cells"))
         self.DeathLabel.setText(self.__tr("Do organisms die of old age?"))

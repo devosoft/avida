@@ -68,6 +68,7 @@ nontest_module_names = [
   "AvidaGui2.pyVivisectionView",
   "AvidaGui2.pyVivisectionCtrl",
   "AvidaGui2.pyWriteGenesis",
+  "AvidaGui2.pyWriteToFreezer",
   
   "AvidaGui2.pyOneAna_GraphView",
   "AvidaGui2.pyOneAna_GraphCtrl",

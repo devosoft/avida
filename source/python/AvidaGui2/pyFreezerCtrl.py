@@ -16,7 +16,7 @@ class pyFreezerCtrl(pyFreezerView):
     #   self.clicked_item)
     self.connect(self.m_list_view, 
       SIGNAL("clicked(QListViewItem*, const QPoint &, int )"),
-      self.clicked_item)
+      self.clicked_itemSlot)
 
   def construct(self, session_mdl):
     self.m_session_mdl = session_mdl
@@ -42,7 +42,7 @@ class pyFreezerCtrl(pyFreezerView):
 
   # if freezer item is clicked read file/directory assocatied with item
 
-  def clicked_item(self, item):
+  def clicked_itemSlot(self, item):
    
     # check that the item is not at the top level 
 

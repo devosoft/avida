@@ -12,6 +12,8 @@ class pyWriteGenesis:
     # incoming dictionary
 
     shutil.copyfile("events.default", out_dir + "events.cfg")
+    if in_dict.has_key("CELLS"):
+      self.createInjects(in_dict, out_dir + "events.cfg")
     shutil.copyfile("environment.default", out_dir + "environment.cfg")
     shutil.copyfile("inst_set.default", out_dir + "inst_set.default")
     shutil.copyfile(freeze_dir + settings_dict["START_CREATURE"],
@@ -48,3 +50,16 @@ class pyWriteGenesis:
       else:
          out_genesis_file.write(line)
     out_genesis_file.close()
+    
+  def createInjects(self, in_dict, out_file):
+    cells_dict = in_dict["CELLS"]
+    organisms_dict = in_dict["ORGANISMS"]
+    event_out_file = open(out_file, 'a')
+    for cell in cells_dict.keys():
+      part1 = "u 0 inject_sequence " +  organisms_dict[cells_dict[cell]] + " " 
+      part2 = cell + " " + str(int(cell)+1) + " -1 "
+      part3 = cells_dict[cell] + "\n"
+      event_out_file.write(part1 +  part2 + part3)
+    event_out_file.close()
+    
+    
