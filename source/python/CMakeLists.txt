@@ -35,7 +35,7 @@ IF(AVD_GUI_PYQT)
       #  DEPENDS ${EXECUTABLE_OUTPUT_PATH}/AvidaEd.app/Contents/MacOS/AvidaEd
       #)
       ADD_CUSTOM_COMMAND(
-        OUTPUT ${EXECUTABLE_OUTPUT_PATH}/AvidaEd.app/Contents/MacOS/AvidaEd
+        OUTPUT ${EXECUTABLE_OUTPUT_PATH}/AvidaEd.app
         COMMAND ${PYTHON_EXE}
         DEPENDS ${LIBRARY_OUTPUT_PATH}/libPyAvidaRepairHacks.dylib
         ARGS setup.py py2app
