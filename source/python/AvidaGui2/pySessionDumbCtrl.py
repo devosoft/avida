@@ -20,10 +20,10 @@ class pySessionDumbCtrl(pySessionDumbView):
         old_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
         self.avidaUpdatedSlot)
       self.disconnect(
-        self, PYSIGNAL("doStartAvidaSig"),
+       self.m_session_mdl.m_session_mdtr, PYSIGNAL("doStartAvidaSig"),
         old_avida.m_avida_thread_mdtr, PYSIGNAL("doStartAvidaSig"))
       self.disconnect(
-        self, PYSIGNAL("doPauseAvidaSig"),
+        self.m_session_mdl.m_session_mdtr, PYSIGNAL("doPauseAvidaSig"),
         old_avida.m_avida_thread_mdtr, PYSIGNAL("doPauseAvidaSig"))
       self.disconnect(
         self, PYSIGNAL("doUpdateAvidaSig"),
@@ -35,10 +35,10 @@ class pySessionDumbCtrl(pySessionDumbView):
         self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
         self.avidaUpdatedSlot)
       self.connect(
-        self, PYSIGNAL("doStartAvidaSig"),
+        self.m_session_mdl.m_session_mdtr, PYSIGNAL("doStartAvidaSig"),
         self.m_avida.m_avida_thread_mdtr, PYSIGNAL("doStartAvidaSig"))
       self.connect(
-        self, PYSIGNAL("doPauseAvidaSig"),
+        self.m_session_mdl.m_session_mdtr, PYSIGNAL("doPauseAvidaSig"),
         self.m_avida.m_avida_thread_mdtr,  PYSIGNAL("doPauseAvidaSig"))
       self.connect(
         self, PYSIGNAL("doUpdateAvidaSig"),
@@ -122,6 +122,14 @@ class pySessionDumbCtrl(pySessionDumbView):
       self.m_session_mdl.m_session_mdtr, 
       PYSIGNAL("doInitializeAvidaPhaseIISig"),
       self.doLoadPetriDishConfigFileSlot)
+    self.connect(
+      self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("fromLiveCtrlPauseAvidaSig"),
+      self.doPause)
+    self.connect(
+      self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("fromLiveCtrlStartAvidaSig"),
+      self.doStart)
 
 
     self.m_start_pb_text = "Start..."
@@ -157,7 +165,7 @@ class pySessionDumbCtrl(pySessionDumbView):
     self.m_control_menu.setItemVisible(self.m_pause_cmi_id, True)
     self.m_control_menu.setItemVisible(self.m_start_cmi_id, False)
     self.m_control_menu.setItemEnabled(self.m_next_update_cmi_id, False)
-    self.emit(PYSIGNAL("doStartAvidaSig"), ())
+    self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("doStartAvidaSig"), ())
 
   def doPause(self):
     self.m_should_update = False
@@ -166,7 +174,7 @@ class pySessionDumbCtrl(pySessionDumbView):
     self.m_control_menu.setItemVisible(self.m_pause_cmi_id, False)
     self.m_control_menu.setItemVisible(self.m_start_cmi_id, True)
     self.m_control_menu.setItemEnabled(self.m_next_update_cmi_id, True)
-    self.emit(PYSIGNAL("doPauseAvidaSig"), ())
+    self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("doPauseAvidaSig"), ())
 
   def startPausePBClickedSlot(self):
     if True == self.m_should_update: self.doPause()
