@@ -92,7 +92,7 @@ SET(LIBRARY_OUTPUT_PATH
 # PROJECT_BUILD_DIR aren't yet defined).
 
 PROJECT(AVIDA)
-SUBDIRS(source doc)
+SUBDIRS(source documentation/htmldocs)
 
 # Experimental Boost.Python interface to avida is disabled by default.
 OPTION(AVD_PY_BINDINGS
