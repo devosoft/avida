@@ -26,6 +26,8 @@ class pyOnePop_GraphCtrl(pyOnePop_GraphView):
     self.m_combo_box.setInsertionPolicy(QComboBox.AtBottom)
     for entry in self.m_avida_stats_interface.m_entries:
       self.m_combo_box.insertItem(entry[0])
+    self.connect(
+      self.m_combo_box, SIGNAL("activated(int)"), self.modeActivatedSlot)
 
     self.m_x_array = zeros(2, Float)
     self.m_y_array = zeros(2, Float)
@@ -72,13 +74,18 @@ class pyOnePop_GraphCtrl(pyOnePop_GraphView):
   def avidaUpdatedSlot(self):
     if self.m_combo_box.currentItem():
       self.m_x_array = concatenate(
-        (self.m_x_array, [self.m_session_mdl.m_population.GetStats().GetUpdate()]),
+        (self.m_x_array, [self.m_avida.m_population.GetStats().GetUpdate()]),
         1
       )
       self.m_y_array = concatenate(
         (self.m_y_array,
-          [self.m_avida_stats_interface.getValue(self.m_combo_box.currentItem(), self.m_session_mdl.m_population)]),
+          [self.m_avida_stats_interface.getValue(
+            self.m_combo_box.currentItem(),
+            self.m_avida.m_population.GetStats()
+          )]
+        ),
         1
       )
-      self.m_graph_ctrl.setCurveData(self.m_graph_ctrl.m_curve, self.m_x_array, self.m_y_array)
+      if hasattr(self.m_graph_ctrl, "m_curve"):
+        self.m_graph_ctrl.setCurveData(self.m_graph_ctrl.m_curve, self.m_x_array, self.m_y_array)
       self.m_graph_ctrl.replot()

@@ -43,7 +43,7 @@ class pySessionCtrl(qt.QObject):
     self.m_session_mdl.m_current_freezer = "freezer/"
 
     # Create a temporary subdirectory for general use in this session.
-    self.m_session_mdl.m_tempdir = tempfile.mkdtemp('-pid%d'%os.getpid(),'AvidaEd-') + "/"
+    self.m_session_mdl.m_tempdir = tempfile.mkdtemp('','AvidaEd-pid%d-'%os.getpid())
 
     # Create session mediator.
     self.m_session_mdl.m_session_mdtr = pyMdtr()
