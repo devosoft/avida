@@ -18,7 +18,7 @@ Python:from pyTwoPopulationCtrl import pyTwoPopulationCtrl
             <x>12</x>
             <y>0</y>
             <width>1000</width>
-            <height>768</height>
+            <height>744</height>
         </rect>
     </property>
     <property name="sizePolicy">
@@ -31,14 +31,14 @@ Python:from pyTwoPopulationCtrl import pyTwoPopulationCtrl
     </property>
     <property name="minimumSize">
         <size>
-            <width>1000</width>
-            <height>768</height>
+            <width>51</width>
+            <height>341</height>
         </size>
     </property>
     <property name="maximumSize">
         <size>
             <width>1000</width>
-            <height>768</height>
+            <height>744</height>
         </size>
     </property>
     <property name="caption">
@@ -109,6 +109,8 @@ Python:from pyTwoPopulationCtrl import pyTwoPopulationCtrl
     <item text="&amp;File" name="File">
         <action name="fileNewAction"/>
         <action name="fileOpenAction"/>
+        <separator/>
+        <action name="m_graph_print_action"/>
     </item>
     <item text="&amp;Edit" name="editMenu">
         <action name="editUndoAction"/>
@@ -263,16 +265,16 @@ Python:from pyTwoPopulationCtrl import pyTwoPopulationCtrl
     </action>
     <action>
         <property name="name">
-            <cstring>filePrintAction</cstring>
+            <cstring>m_graph_print_action</cstring>
         </property>
         <property name="iconSet">
             <iconset>image4</iconset>
         </property>
         <property name="text">
-            <string>Print</string>
+            <string>&amp;Print Graph...</string>
         </property>
         <property name="menuText">
-            <string>&amp;Print...</string>
+            <string>&amp;Print Graph...</string>
         </property>
         <property name="accel">
             <string>Ctrl+P</string>
@@ -614,7 +616,7 @@ Python:from pyTwoPopulationCtrl import pyTwoPopulationCtrl
         <slot>fileSaveAs()</slot>
     </connection>
     <connection>
-        <sender>filePrintAction</sender>
+        <sender>m_graph_print_action</sender>
         <signal>activated()</signal>
         <receiver>pyEduWorkspaceView</receiver>
         <slot>filePrint()</slot>
