@@ -313,8 +313,8 @@ public:
   // Find by summing values until a specified total is reached.  
   T * FindSummedValue(int sum, int (T::*fun)() const) {
     int total = 0;
-    tListNode<T> * test = root.next;
-    while (test != &root && total < sum) {
+    tListNode<T> * test = this->root.next;
+    while (test != &(this->root) && total < sum) {
       total += (test->data->*fun)();
       test = test->next;
     }
@@ -322,8 +322,8 @@ public:
   }
 
   T * PopIntValue(int (T::*fun)() const, int value) {
-    tListNode<T> * test = root.next;
-    while (test != &root) {
+    tListNode<T> * test = this->root.next;
+    while (test != &(this->root)) {
       if ( (test->data->*fun)() == value) return RemoveNode(test);
       test = test->next;
     }
@@ -331,11 +331,11 @@ public:
   }
 
   T * PopIntMax(int (T::*fun)() const) { 
-    if (size == 0) return NULL;
-    tListNode<T> * test = root.next;
+    if (this->size == 0) return NULL;
+    tListNode<T> * test = this->root.next;
     tListNode<T> * best = test;
     int max_val = (test->data->*fun)();
-    while (test != &root) {
+    while (test != &(this->root)) {
       const int cur_val = (test->data->*fun)();
       if ( cur_val > max_val ) {
 	max_val = cur_val;
@@ -347,11 +347,11 @@ public:
   }
 
   T * PopDoubleMax(double (T::*fun)() const) {
-    if (size == 0) return NULL;
-    tListNode<T> * test = root.next;
+    if (this->size == 0) return NULL;
+    tListNode<T> * test = this->root.next;
     tListNode<T> * best = test;
     double max_val = (test->data->*fun)();
-    while (test != &root) {
+    while (test != &(this->root)) {
       const double cur_val = (test->data->*fun)();
       if ( cur_val > max_val ) {
 	max_val = cur_val;
@@ -364,8 +364,8 @@ public:
 
   int Count(int (T::*fun)() const) {
     int total = 0;
-    tListNode<T> * test = root.next;
-    while (test != &root) {
+    tListNode<T> * test = this->root.next;
+    while (test != &(this->root)) {
       total += (test->data->*fun)();
       test = test->next;
     }

@@ -42,19 +42,19 @@ public:
       DataSet(_funS), DataCompare(_funC) { ; }
 
   bool Print(std::ostream & fp) const {
-    if (target == NULL) return false;
-    fp << (target->*DataRetrieval)();
+    if (this->target == NULL) return false;
+    fp << (this->target->*DataRetrieval)();
     return true;
   }
 
   //int Compare(T * other) const { return (target->*DataCompare)(other); }
   int Compare(T * other) const {
-    return (DataCompare)?((target->*DataCompare)(other)):(0);
+    return (DataCompare)?((this->target->*DataCompare)(other)):(0);
   }
   bool Set(const cString & value) {
     OUT new_value(0);
     if (DataSet == 0) return false;
-    (target->*DataSet)( cStringUtil::Convert(value, new_value) );
+    (this->target->*DataSet)( cStringUtil::Convert(value, new_value) );
     return true;
   }
 };

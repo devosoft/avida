@@ -34,14 +34,14 @@ public:
       DataRetrieval(_funR), DataCompare(_funC), arg(_arg) { ; }
 
   bool Print(std::ostream & fp) const {
-    if (target == NULL) return false;
-    fp << (target->*DataRetrieval)(arg);
+    if (this->target == NULL) return false;
+    fp << (this->target->*DataRetrieval)(arg);
     return true;
   }
 
   //int Compare(T * other) const { return (target->*DataCompare)(other, arg); }
   int Compare(T * other) const {
-    return (DataCompare)?((target->*DataCompare)(other, arg)):(0);
+    return (DataCompare)?((this->target->*DataCompare)(other, arg)):(0);
   }
 };
 
