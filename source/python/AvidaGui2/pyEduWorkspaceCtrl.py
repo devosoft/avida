@@ -109,13 +109,12 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
 
   def freezerOpen(self):
     freezer_dir = QFileDialog.getExistingDirectory(
-                    self.m_session_mdl.current_freezer,
+                    self.m_session_mdl.m_current_freezer,
                     None,
                     "get existing directory",
                     "Choose a directory",
                     True);
-    print freezer_dir;
-    self.m_session_mdl.current_freezer = str(freezer_dir) + "/"
+    self.m_session_mdl.m_current_freezer = str(freezer_dir) + "/"
     self.m_session_mdl.m_session_mdtr.emit(
       PYSIGNAL("doRefreshFreezerInventory"), ())
 

@@ -91,7 +91,6 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
   
   def FillDishSlot(self, petri_dict):
     self.full_petri_dict = petri_dict.dictionary
-    print "in FillDishSlot keys = " + str(self.full_petri_dict.keys())
     settings_dict =  petri_dict.dictionary["SETTINGS"]
     self.AncestorComboBox.removeItem (0)
     start_creature = settings_dict["START_CREATURE"]
@@ -167,10 +166,10 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
 
   def CreateFilesFromPetriSlot(self, out_dir = None):
     self.full_petri_dict["SETTINGS"] = self.Form2Dictionary()
-    print "in CreateFilesFromPetriSlot keys = " + str(self.full_petri_dict.keys())
-    write_object = pyWriteGenesis(self.full_petri_dict, self.m_session_mdl.current_freezer, "test/")
+    write_object = pyWriteGenesis(self.full_petri_dict, 
+      self.m_session_mdl.m_current_freezer, self.m_session_mdl.m_tempdir)
     self.m_session_mdl.m_session_mdtr.emit(
-      PYSIGNAL("doInitializeAvidaPhaseIISig"), ("test/genesis.avida",))
+      PYSIGNAL("doInitializeAvidaPhaseIISig"), (self.m_session_mdl.m_tempdir + "genesis.avida",))
       
   def Form2Dictionary(self):
     settings_dict = {}
@@ -203,13 +202,17 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     return settings_dict
     
   def FreezePetriSlot(self, freeze_dir = None, population_dict = None):
+    tmp_dict = {}
     tmp_dict["SETTINGS"] = self.Form2Dictionary()
     m_pop_up_freezer_file_name = pyFreezeDialogCtrl()
-    file_name = m_pop_up_freezer_file_name.showDialog(self.m_session_mdl.current_freezer)
+    file_name = m_pop_up_freezer_file_name.showDialog(self.m_session_mdl.m_current_freezer)
     if (m_pop_up_freezer_file_name.isEmpty() == False):
       os.mkdir(file_name)
       file_name = file_name + "/petri_dish"
       tmp_dict["POPULATION"] = population_dict
     is_empty_dish = m_pop_up_freezer_file_name.EmptyRadioButton.isChecked()
     freezer_file = pyWriteToFreezer(tmp_dict, is_empty_dish, file_name)
+    self.m_session_mdl.m_session_mdtr.emit(
+      PYSIGNAL("doRefreshFreezerInventory"), ())
+
     

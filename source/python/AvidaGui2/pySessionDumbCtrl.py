@@ -157,7 +157,8 @@ class pySessionDumbCtrl(pySessionDumbView):
   def doStart(self):
     if self.sessionInitialized == False:
       self.m_session_mdl.m_session_mdtr.emit(
-      PYSIGNAL("doInitializeAvidaPhaseISig"), ("test/",))
+      PYSIGNAL("doInitializeAvidaPhaseISig"), 
+        (self.m_session_mdl.m_tempdir,))
       self.sessionInitialized = True
     self.m_should_update = True
     self.m_startpause_avida_pb.setText(self.m_pause_pb_text)
