@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>309</width>
-            <height>414</height>
+            <height>451</height>
         </rect>
     </property>
     <property name="font">
@@ -311,6 +311,9 @@
                                     <property name="name">
                                         <cstring>DeathTextLabel2</cstring>
                                     </property>
+                                    <property name="enabled">
+                                        <bool>false</bool>
+                                    </property>
                                     <property name="font">
                                         <font>
                                         </font>
@@ -331,6 +334,9 @@
                                             <property name="name">
                                                 <cstring>LifeSpanSpinBox</cstring>
                                             </property>
+                                            <property name="enabled">
+                                                <bool>false</bool>
+                                            </property>
                                             <property name="maxValue">
                                                 <number>99999</number>
                                             </property>
@@ -347,6 +353,9 @@
                                         <widget class="QLabel">
                                             <property name="name">
                                                 <cstring>DeathTextLabel3</cstring>
+                                            </property>
+                                            <property name="enabled">
+                                                <bool>false</bool>
                                             </property>
                                             <property name="font">
                                                 <font>
@@ -430,6 +439,9 @@
                             <property name="name">
                                 <cstring>RandomSpinBox</cstring>
                             </property>
+                            <property name="enabled">
+                                <bool>false</bool>
+                            </property>
                             <property name="font">
                                 <font>
                                 </font>
@@ -492,7 +504,7 @@
                 <widget class="QComboBox">
                     <item>
                         <property name="text">
-                            <string>&lt;default&gt;</string>
+                            <string>default.organism</string>
                         </property>
                     </item>
                     <property name="name">
@@ -668,6 +680,9 @@
                                     <property name="name">
                                         <cstring>StopAtSpinBox</cstring>
                                     </property>
+                                    <property name="enabled">
+                                        <bool>false</bool>
+                                    </property>
                                     <property name="font">
                                         <font>
                                         </font>
@@ -693,6 +708,18 @@
                     </hbox>
                 </widget>
             </vbox>
+        </widget>
+        <widget class="QPushButton">
+            <property name="name">
+                <cstring>SavePetriPushButton</cstring>
+            </property>
+            <property name="font">
+                <font>
+                </font>
+            </property>
+            <property name="text">
+                <string>Freeze Petri Dish</string>
+            </property>
         </widget>
     </vbox>
 </widget>

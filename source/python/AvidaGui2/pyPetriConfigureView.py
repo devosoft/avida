@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'pyPetriConfigureView.ui'
 #
-# Created: Tue Mar 8 10:54:37 2005
+# Created: Mon Mar 14 14:51:31 2005
 #      by: The PyQt User Interface Compiler (pyuic) 3.14
 #
 # WARNING! All changes made in this file will be lost!
@@ -116,6 +116,7 @@ class pyPetriConfigureView(QWidget):
         layout92 = QVBoxLayout(None,0,6,"layout92")
 
         self.DeathTextLabel2 = QLabel(self,"DeathTextLabel2")
+        self.DeathTextLabel2.setEnabled(0)
         DeathTextLabel2_font = QFont(self.DeathTextLabel2.font())
         self.DeathTextLabel2.setFont(DeathTextLabel2_font)
         layout92.addWidget(self.DeathTextLabel2)
@@ -123,12 +124,14 @@ class pyPetriConfigureView(QWidget):
         layout91 = QHBoxLayout(None,0,6,"layout91")
 
         self.LifeSpanSpinBox = QSpinBox(self,"LifeSpanSpinBox")
+        self.LifeSpanSpinBox.setEnabled(0)
         self.LifeSpanSpinBox.setMaxValue(99999)
         self.LifeSpanSpinBox.setMinValue(1)
         self.LifeSpanSpinBox.setValue(10)
         layout91.addWidget(self.LifeSpanSpinBox)
 
         self.DeathTextLabel3 = QLabel(self,"DeathTextLabel3")
+        self.DeathTextLabel3.setEnabled(0)
         DeathTextLabel3_font = QFont(self.DeathTextLabel3.font())
         self.DeathTextLabel3.setFont(DeathTextLabel3_font)
         layout91.addWidget(self.DeathTextLabel3)
@@ -161,6 +164,7 @@ class pyPetriConfigureView(QWidget):
         layout85.addWidget(self.RandomFixedRadioButton)
 
         self.RandomSpinBox = QSpinBox(self,"RandomSpinBox")
+        self.RandomSpinBox.setEnabled(0)
         RandomSpinBox_font = QFont(self.RandomSpinBox.font())
         self.RandomSpinBox.setFont(RandomSpinBox_font)
         self.RandomSpinBox.setMaxValue(32767)
@@ -252,6 +256,7 @@ class pyPetriConfigureView(QWidget):
         layout81.addWidget(self.StopAtRadioButton)
 
         self.StopAtSpinBox = QSpinBox(self.StopButtonGroup,"StopAtSpinBox")
+        self.StopAtSpinBox.setEnabled(0)
         StopAtSpinBox_font = QFont(self.StopAtSpinBox.font())
         self.StopAtSpinBox.setFont(StopAtSpinBox_font)
         self.StopAtSpinBox.setMaxValue(10000000)
@@ -263,9 +268,14 @@ class pyPetriConfigureView(QWidget):
         layout83.addWidget(self.StopButtonGroup)
         pyPetriConfigureViewLayout.addLayout(layout83)
 
+        self.SavePetriPushButton = QPushButton(self,"SavePetriPushButton")
+        SavePetriPushButton_font = QFont(self.SavePetriPushButton.font())
+        self.SavePetriPushButton.setFont(SavePetriPushButton_font)
+        pyPetriConfigureViewLayout.addWidget(self.SavePetriPushButton)
+
         self.languageChange()
 
-        self.resize(QSize(309,414).expandedTo(self.minimumSizeHint()))
+        self.resize(QSize(309,451).expandedTo(self.minimumSizeHint()))
         self.clearWState(Qt.WState_Polished)
 
         self.connect(self.RadomGeneratedRadioButton,SIGNAL("clicked()"),self.RandomFixedRadioButton.toggle)
@@ -294,7 +304,7 @@ class pyPetriConfigureView(QWidget):
         self.RandomFixedRadioButton.setText(self.__tr("Set at"))
         self.AncestorHeadTextLabel.setText(self.__tr("Ancestral Organism(s)"))
         self.AncestorComboBox.clear()
-        self.AncestorComboBox.insertItem(self.__tr("<default>"))
+        self.AncestorComboBox.insertItem(self.__tr("default.organism"))
         self.AncestorComboBox.setCurrentItem(0)
         self.BirthHeadTextLabel.setText(self.__tr("Where should new organism be placed?"))
         self.BirthButtonGroup.setTitle(QString.null)
@@ -305,6 +315,7 @@ class pyPetriConfigureView(QWidget):
         self.StopManuallyRadioButton.setText(self.__tr("Manually"))
         self.StopAtRadioButton.setText(QString.null)
         self.StopAtSpinBox.setSuffix(self.__tr(" updates"))
+        self.SavePetriPushButton.setText(self.__tr("Freeze Petri Dish"))
 
 
     def __tr(self,s,c = None):
