@@ -57,6 +57,7 @@ for file in dir_listing:
       if response.startswith('Y'):
         os.system(command)
 
+print "------------------------------------------------------"
 for py_name in py_dict.keys():
   if py_dict[py_name] == 0:
     ui_name = py_name.replace(".py", ".ui")

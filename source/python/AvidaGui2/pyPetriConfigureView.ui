@@ -350,7 +350,7 @@
                                 <string>No</string>
                             </property>
                             <property name="checked">
-                                <bool>true</bool>
+                                <bool>false</bool>
                             </property>
                             <property name="toolTip" stdset="0">
                                 <string>Organisms only die when replaced by new oranisims</string>
@@ -366,6 +366,9 @@
                             </property>
                             <property name="text">
                                 <string>Yes</string>
+                            </property>
+                            <property name="checked">
+                                <bool>true</bool>
                             </property>
                             <property name="toolTip" stdset="0">
                                 <string>Organism can die without being replaced</string>
@@ -384,7 +387,7 @@
                                         <cstring>DeathTextLabel2</cstring>
                                     </property>
                                     <property name="enabled">
-                                        <bool>false</bool>
+                                        <bool>true</bool>
                                     </property>
                                     <property name="sizePolicy">
                                         <sizepolicy>
@@ -415,7 +418,7 @@
                                                 <cstring>LifeSpanSpinBox</cstring>
                                             </property>
                                             <property name="enabled">
-                                                <bool>false</bool>
+                                                <bool>true</bool>
                                             </property>
                                             <property name="sizePolicy">
                                                 <sizepolicy>
@@ -446,7 +449,7 @@
                                                 <cstring>DeathTextLabel3</cstring>
                                             </property>
                                             <property name="enabled">
-                                                <bool>false</bool>
+                                                <bool>true</bool>
                                             </property>
                                             <property name="sizePolicy">
                                                 <sizepolicy>
