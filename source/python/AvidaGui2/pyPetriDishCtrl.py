@@ -34,63 +34,49 @@ self.m_avida is not None.
 from AvidaCore import cConfig
 
 from math import exp
-from qt import *
-from qtcanvas import *
+from qt import Qt, QWidget, QSize, QVBoxLayout, QLayout, QColor, QWMatrix, PYSIGNAL
+from qtcanvas import QCanvas
+from pyPetriCanvasView import pyPetriCanvasView
+from pyPopulationCellItem import pyPopulationCellItem
 #from pyPetriDishView import pyPetriDishView
-
-class pyPopulationCellItem:
-  def __init__(self, population_cell, x, y, w, h, canvas):
-    self.m_population_cell = population_cell
-    self.m_canvas_rectangle = QCanvasRectangle(x, y, w, h, canvas)
-    self.m_canvas_rectangle.show()
-    self.m_index = 0
-
-  def checkNormalizedIndexUsingFunctor(self, functor, min, range):
-    index = 1.0
-    if 0.0 < range: index = (functor(self.m_population_cell) - min) / range
-    if 1.0 < index: index = 1.0
-    elif index < 0.0: index = 0.0
-
-    if self.m_index == index:
-      return False
-    else:
-      self.m_index = index
-      return True
-
-  def updateColorUsingFunctor(self, functor):
-    color = functor(self.m_index)
-    self.m_canvas_rectangle.setBrush(QBrush(color))
-    self.m_canvas_rectangle.setPen(QPen(color))
 
 #class pyPetriDishCtrl(pyPetriDishView):
 class pyPetriDishCtrl(QWidget):
-
   def __init__(self,parent = None,name = None,fl = 0):
     #pyPetriDishView.__init__(self,parent,name,fl)
     QWidget.__init__(self,parent,name,fl)
-
-    if not name:
-      self.setName("pyPetriDishCtrl")
+    if not name: self.setName("pyPetriDishCtrl")
 
     self.resize(QSize(202,202).expandedTo(self.minimumSizeHint()))
     self.clearWState(Qt.WState_Polished)
 
+  def construct(self, session_mdl):
+    self.m_session_mdl = session_mdl
+    self.m_avida = None
+
+    self.m_canvas = None
+    self.m_cell_info = None
+    self.m_petri_dish_layout = QVBoxLayout(self,0,0,"m_petri_dish_layout")
+    self.m_petri_dish_layout.setResizeMode(QLayout.Minimum)
+    self.m_canvas_view = pyPetriCanvasView(None, self,"m_canvas_view")
+    self.m_petri_dish_layout.addWidget(self.m_canvas_view)
+    self.m_changed_cell_items = []
+    self.m_indexer = None
+
+    self.connect(
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"),
+      self.setAvidaSlot)
+    self.connect(
+      self.m_canvas_view, PYSIGNAL("orgClickedOnSig"),
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("orgClickedOnSig"))
 
   def setAvidaSlot(self, avida):
-    print "pyPetriDishCtrl.setAvidaSlot() : called."
     old_avida = self.m_avida
     self.m_avida = avida
     if(old_avida):
-      #self.disconnect(
-      #  old_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
-      #  self.avidaUpdatedSlot)
       old_avida.removeGuiWorkFunctor(self)
       del old_avida
-      pass
     if(self.m_avida):
-      #self.connect(
-      #  self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
-      #  self.avidaUpdatedSlot)
       pass
 
     self.m_map_cell_w = 5
@@ -112,84 +98,12 @@ class pyPetriDishCtrl(QWidget):
       self.m_canvas) for  n in range(world_w * world_h)]
 
     self.m_thread_work_cell_item_index = 0
-
     self.m_cs_min_value = 0
     self.m_cs_value_range = 0
-
     self.m_changed_cell_items = self.m_cell_info[:]
     while self.doSomeWork(self.m_avida): pass
     self.avidaUpdatedSlot()
-
     self.m_avida.addGuiWorkFunctor(self)
-
-  def mousePressEvent(self,e):
-    if e.button() != Qt.LeftButton:
-      return
-
-
-    #if the run has not started yet, do nothing
-    if self.m_avida == None:
-      return
-
-    world_w = cConfig.GetWorldX()
-    world_h = cConfig.GetWorldY()
-
-    clicked_map_cell_w = round(float(e.x())/self.m_map_cell_w)				 
-    clicked_map_cell_h = round(float(e.y())/self.m_map_cell_h)
-
-#    print "clicked_map_cell_w is %f, clicked_map_cell_h is %f" %(clicked_map_cell_w,clicked_map_cell_h)
-
-
-   
-    #if the user clicks outside the area that has organisms, do nothing
-    if (clicked_map_cell_w > world_w) or (clicked_map_cell_h > world_h):
-      return
-    
-    
-    #get the cell number in avida that corresponds to this coordinate under the system where the 0th cell is in the middle
-    #this code is obsolete if the 0th cell is in the top right corner
-#    world_w_mid = world_w/2
-#    world_h_mid = world_h/2
-#    bottom_left_cell = ((((world_h+1)-world_w_mid)*world_w) - world_w_mid)
-
-#    if clicked_map_cell_h == world_h_mid:   #if it is on the y midpoint line that gets split...
-#      if clicked_map_cell_w >= world_w_mid: #and it is after the origin (first avida cell)
-#        clickedCellNum = clicked_map_cell_w - world_w_mid
-#      else:
-#        clickedCellNum = ((world_h_mid-1)*world_w)+ bottom_left_cell + clicked_map_cell_w
-#    elif clicked_map_cell_h > world_h_mid:  #if above the split
-#      clickedCellNum = ( (clicked_map_cell_h - (world_h_mid + 1))*world_w ) + world_h_mid + clicked_map_cell_w
-#    elif clicked_map_cell_h < world_h_mid:  #if below the spilt
-#      clickedCellNum = ( bottom_left_cell + ( ((clicked_map_cell_h - 1)* world_w) + clicked_map_cell_w) )
-
-
-    clickedCellNum = (((clicked_map_cell_h-1)*world_h) + clicked_map_cell_w-1)
-
-
-    clickedCell = self.m_avida.m_population.GetCell(int(clickedCellNum))
-
-    #broadcast that an organism was clicked on
-    self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("orgClickedOnSig"), (clickedCellNum,))
-
-
-
-
-
-  def construct(self, session_mdl):
-    self.m_session_mdl = session_mdl
-    self.m_avida = None
-    self.connect(
-      self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"),
-      self.setAvidaSlot)
-
-    self.m_canvas = None
-    self.m_cell_info = None
-    self.m_petri_dish_layout = QVBoxLayout(self,0,0,"m_petri_dish_layout")
-    self.m_petri_dish_layout.setResizeMode(QLayout.Minimum)
-    self.m_canvas_view = QCanvasView(None, self,"m_canvas_view")
-    self.m_petri_dish_layout.addWidget(self.m_canvas_view)
-    self.m_changed_cell_items = []
-    self.m_indexer = None
 
   def calcColorScale(self):
     self.m_cs_min_value = 0
