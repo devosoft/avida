@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'pyNavBarView.ui'
+# Form implementation generated from reading ui file './pyNavBarView.ui'
 #
-# Created: Thu Mar 31 04:19:20 2005
+# Created: Mon Apr 4 12:34:58 2005
 #      by: The PyQt User Interface Compiler (pyuic) 3.13
 #
 # WARNING! All changes made in this file will be lost!
@@ -443,6 +443,9 @@ class pyNavBarView(QWidget):
         self.m_list_view.header().setClickEnabled(0,self.m_list_view.header().count() - 1)
         self.m_list_view.header().setResizeEnabled(0,self.m_list_view.header().count() - 1)
         self.m_list_view.setSizePolicy(QSizePolicy(5,5,0,0,self.m_list_view.sizePolicy().hasHeightForWidth()))
+        m_list_view_font = QFont(self.m_list_view.font())
+        m_list_view_font.setPointSize(9)
+        self.m_list_view.setFont(m_list_view_font)
         self.m_list_view.setAcceptDrops(1)
         self.m_list_view.setFrameShape(QListView.StyledPanel)
         self.m_list_view.setFrameShadow(QListView.Sunken)

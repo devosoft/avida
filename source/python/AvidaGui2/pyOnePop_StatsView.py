@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'pyOnePop_StatsView.ui'
+# Form implementation generated from reading ui file './pyOnePop_StatsView.ui'
 #
-# Created: Fri Apr 1 00:24:13 2005
+# Created: Tue Apr 5 15:43:51 2005
 #      by: The PyQt User Interface Compiler (pyuic) 3.13
 #
 # WARNING! All changes made in this file will be lost!
@@ -205,10 +205,13 @@ class pyOnePop_StatsView(QWidget):
         groupBox5Layout.addWidget(self.m_dom_fitness,1,1)
 
         self.m_avg_fitness = QLabel(self.groupBox5,"m_avg_fitness")
-        self.m_avg_fitness.setSizePolicy(QSizePolicy(5,5,0,0,self.m_avg_fitness.sizePolicy().hasHeightForWidth()))
+        self.m_avg_fitness.setSizePolicy(QSizePolicy(0,0,0,0,self.m_avg_fitness.sizePolicy().hasHeightForWidth()))
+        self.m_avg_fitness.setMinimumSize(QSize(45,10))
+        self.m_avg_fitness.setMaximumSize(QSize(45,5))
         m_avg_fitness_font = QFont(self.m_avg_fitness.font())
         m_avg_fitness_font.setPointSize(10)
         self.m_avg_fitness.setFont(m_avg_fitness_font)
+        self.m_avg_fitness.setLineWidth(7)
 
         groupBox5Layout.addWidget(self.m_avg_fitness,0,1)
 
@@ -280,7 +283,9 @@ class pyOnePop_StatsView(QWidget):
         layout80 = QGridLayout(None,1,1,0,6,"layout80")
 
         self.m_org_name = QLabel(self.groupBox4,"m_org_name")
-        self.m_org_name.setSizePolicy(QSizePolicy(5,5,0,0,self.m_org_name.sizePolicy().hasHeightForWidth()))
+        self.m_org_name.setSizePolicy(QSizePolicy(0,0,0,0,self.m_org_name.sizePolicy().hasHeightForWidth()))
+        self.m_org_name.setMinimumSize(QSize(70,15))
+        self.m_org_name.setMaximumSize(QSize(70,15))
         m_org_name_font = QFont(self.m_org_name.font())
         m_org_name_font.setPointSize(10)
         self.m_org_name.setFont(m_org_name_font)
@@ -305,14 +310,6 @@ class pyOnePop_StatsView(QWidget):
 
         layout80.addWidget(self.textLabel14_3_3_3,0,0)
 
-        self.textLabel14_3_3_3_3_2 = QLabel(self.groupBox4,"textLabel14_3_3_3_3_2")
-        self.textLabel14_3_3_3_3_2.setSizePolicy(QSizePolicy(5,5,0,0,self.textLabel14_3_3_3_3_2.sizePolicy().hasHeightForWidth()))
-        textLabel14_3_3_3_3_2_font = QFont(self.textLabel14_3_3_3_3_2.font())
-        textLabel14_3_3_3_3_2_font.setPointSize(10)
-        self.textLabel14_3_3_3_3_2.setFont(textLabel14_3_3_3_3_2_font)
-
-        layout80.addWidget(self.textLabel14_3_3_3_3_2,4,1)
-
         self.m_org_age = QLabel(self.groupBox4,"m_org_age")
         m_org_age_font = QFont(self.m_org_age.font())
         m_org_age_font.setPointSize(10)
@@ -327,15 +324,6 @@ class pyOnePop_StatsView(QWidget):
         self.m_org_fitness.setFont(m_org_fitness_font)
 
         layout80.addWidget(self.m_org_fitness,1,1)
-
-        self.textLabel14_3_3_2_3 = QLabel(self.groupBox4,"textLabel14_3_3_2_3")
-        self.textLabel14_3_3_2_3.setSizePolicy(QSizePolicy(5,5,0,0,self.textLabel14_3_3_2_3.sizePolicy().hasHeightForWidth()))
-        self.textLabel14_3_3_2_3.setMaximumSize(QSize(32767,40))
-        textLabel14_3_3_2_3_font = QFont(self.textLabel14_3_3_2_3.font())
-        textLabel14_3_3_2_3_font.setPointSize(10)
-        self.textLabel14_3_3_2_3.setFont(textLabel14_3_3_2_3_font)
-
-        layout80.addWidget(self.textLabel14_3_3_2_3,4,0)
 
         self.textLabel1 = QLabel(self.groupBox4,"textLabel1")
         textLabel1_font = QFont(self.textLabel1.font())
@@ -375,7 +363,7 @@ class pyOnePop_StatsView(QWidget):
         self.setCaption(self.__tr("pyOnePop_StatsView"))
         self.groupBox3.setTitle(self.__tr("Population Task Report"))
         self.textLabel14.setText(self.__tr("Task"))
-        self.textLabel14_2.setText(self.__tr("being done?"))
+        self.textLabel14_2.setText(self.__tr("orgs performing"))
         self.textLabel14_3.setText(self.__tr("not"))
         self.m_num_not.setText(self.__tr("-"))
         self.textLabel4.setText(self.__tr("nand"))
@@ -394,23 +382,21 @@ class pyOnePop_StatsView(QWidget):
         self.m_num_xor.setText(self.__tr("-"))
         self.textLabel18.setText(self.__tr("equals"))
         self.m_num_equals.setText(self.__tr("-"))
-        self.groupBox5.setTitle(self.__tr("Statistics"))
-        self.m_dom_fitness.setText(self.__tr("0000"))
-        self.m_avg_fitness.setText(self.__tr("0000"))
+        self.groupBox5.setTitle(self.__tr("Population Statistics"))
+        self.m_dom_fitness.setText(self.__tr("-"))
+        self.m_avg_fitness.setText(self.__tr("-"))
         self.textLabel14_3_3_2.setText(self.__tr("Dominant Org. Fitness:"))
-        self.m_num_orgs.setText(self.__tr("0000"))
+        self.m_num_orgs.setText(self.__tr("-"))
         self.textLabel14_3_3.setText(self.__tr("Avg. Fitness:"))
         self.textLabel14_3_3_2_2_2.setText(self.__tr("Avg. Gestation (instructions):"))
-        self.m_avg_gest.setText(self.__tr("0000"))
+        self.m_avg_gest.setText(self.__tr("-"))
         self.textLabel14_3_3_2_2.setText(self.__tr("Population Size:"))
         self.groupBox4.setTitle(self.__tr("Org. Clicked on  Report"))
         self.m_org_name.setText(self.__tr("-"))
         self.textLabel14_3_3_2_2_2_2.setText(self.__tr("Gestation (instructions):"))
         self.textLabel14_3_3_3.setText(self.__tr("Name:"))
-        self.textLabel14_3_3_3_3_2.setText(self.__tr("-"))
         self.m_org_age.setText(self.__tr("-"))
         self.m_org_fitness.setText(self.__tr("-"))
-        self.textLabel14_3_3_2_3.setText(self.__tr("Tasks:"))
         self.textLabel1.setText(self.__tr("Age (updates):"))
         self.textLabel14_3_3_2_2_3.setText(self.__tr("Fitness:"))
         self.m_org_gestation_time.setText(self.__tr("-"))

@@ -37,76 +37,105 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
     stats = self.m_avida.m_population.GetStats()
              
     #STATISTICS WINDOW
-    avg_fitness = stats.GetAveFitness()
-    self.m_avg_fitness.setText(QString("%1").arg(avg_fitness))
+    string_output_length = 7
 
-    dom_fitness = stats.GetDomFitness()
-    self.m_dom_fitness.setText(QString("%1").arg(dom_fitness))
+    if stats.GetAveFitness()<100000 : 
+      avg_fitness = str(stats.GetAveFitness())
+      string_length = len(avg_fitness)
+      while string_length < string_output_length:
+        avg_fitness = avg_fitness + '0'
+        string_length = string_length+1
+      self.m_avg_fitness.setText(avg_fitness[0:string_output_length])
+    else:
+      avg_fitness = "%.2g" %(stats.GetAveFitness())
+      self.m_avg_fitness.setText(avg_fitness)
+
+
+    dom_fitness = str(stats.GetDomFitness())
+#    string_length = len(dom_fitness)
+#    while string_length < string_output_length:
+#      dom_fitness = dom_fitness + '0'
+#      string_length = string_length+1
+    self.m_dom_fitness.setText(dom_fitness[0:string_output_length])
 
     num_orgs = stats.GetNumCreatures()
     self.m_num_orgs.setText(QString("%1").arg(num_orgs))
 
-    avg_gest = stats.GetAveGestation()
+    avg_gest = "%d" %(stats.GetAveGestation())
+#    string_length = len(avg_gest)
+#    while string_length < string_output_length:
+#      avg_gest = avg_gest + '0'
+#      string_length = string_length+1
     self.m_avg_gest.setText(QString("%1").arg(avg_gest))
+
 
     #TASK OUTLOOK 
     
     #if num_orgs_doing_a_given_task is above this number, we say the pop is doing this task
     m_org_threshold = 1   
  
-    num_not = stats.GetTaskLastCount(0)
-    if num_not > m_org_threshold:
-      self.m_num_not.setText(QString("yes"))
-    else:
-      self.m_num_not.setText(QString("no"))
+    num_not = str(stats.GetTaskLastCount(0))
+#    if num_not > m_org_threshold:
+#      self.m_num_not.setText(QString("yes"))
+#    else:
+#      self.m_num_not.setText(QString("no"))
+    self.m_num_not.setText(num_not)
+    
+    num_nand = str(stats.GetTaskLastCount(1))
+#    if num_nand > m_org_threshold:
+#      self.m_num_nand.setText(QString("yes"))
+#    else:
+#      self.m_num_nand.setText(QString("no"))
+    self.m_num_nand.setText(num_nand)
 
-    num_nand = stats.GetTaskLastCount(1)
-    if num_nand > m_org_threshold:
-      self.m_num_nand.setText(QString("yes"))
-    else:
-      self.m_num_nand.setText(QString("no"))
+    num_and = str(stats.GetTaskLastCount(2))
+#    if num_and > m_org_threshold:
+#      self.m_num_and.setText(QString("yes"))
+#    else:
+#      self.m_num_and.setText(QString("no"))
+    self.m_num_and.setText(num_and)
 
-    num_and = stats.GetTaskLastCount(2)
-    if num_and > m_org_threshold:
-      self.m_num_and.setText(QString("yes"))
-    else:
-      self.m_num_and.setText(QString("no"))
+    num_ornot = str(stats.GetTaskLastCount(3))
+#    if num_ornot > m_org_threshold:
+#      self.m_num_ornot.setText(QString("yes"))
+#    else:
+#      self.m_num_ornot.setText(QString("no"))
+    self.m_num_ornot.setText(num_ornot)
 
-    num_ornot = stats.GetTaskLastCount(3)
-    if num_ornot > m_org_threshold:
-      self.m_num_ornot.setText(QString("yes"))
-    else:
-      self.m_num_ornot.setText(QString("no"))
+    num_or = str(stats.GetTaskLastCount(4))
+#    if num_or > m_org_threshold:
+#      self.m_num_or.setText(QString("yes"))
+#    else:
+#      self.m_num_or.setText(QString("no"))
+    self.m_num_or.setText(num_or)
 
-    num_or = stats.GetTaskLastCount(4)
-    if num_or > m_org_threshold:
-      self.m_num_or.setText(QString("yes"))
-    else:
-      self.m_num_or.setText(QString("no"))
+    num_andnot = str(stats.GetTaskLastCount(5))
+#    if num_andnot > m_org_threshold:
+#      self.m_num_andnot.setText(QString("yes"))
+#    else:
+#      self.m_num_andnot.setText(QString("no"))
+    self.m_num_andnot.setText(num_andnot)
 
-    num_andnot = stats.GetTaskLastCount(5)
-    if num_andnot > m_org_threshold:
-      self.m_num_andnot.setText(QString("yes"))
-    else:
-      self.m_num_andnot.setText(QString("no"))
+    num_nor = str(stats.GetTaskLastCount(6))
+#    if num_nor > m_org_threshold:
+#      self.m_num_nor.setText(QString("yes"))
+#    else:
+#      self.m_num_nor.setText(QString("no"))
+    self.m_num_nor.setText(num_nor)
 
-    num_nor = stats.GetTaskLastCount(6)
-    if num_nor > m_org_threshold:
-      self.m_num_nor.setText(QString("yes"))
-    else:
-      self.m_num_nor.setText(QString("no"))
+    num_xor = str(stats.GetTaskLastCount(7))
+#    if num_xor > m_org_threshold:
+#      self.m_num_xor.setText(QString("yes"))
+#    else:
+#      self.m_num_xor.setText(QString("no"))
+    self.m_num_xor.setText(num_xor)
 
-    num_xor = stats.GetTaskLastCount(7)
-    if num_xor > m_org_threshold:
-      self.m_num_xor.setText(QString("yes"))
-    else:
-      self.m_num_xor.setText(QString("no"))
-
-    num_equals = stats.GetTaskLastCount(8)
-    if num_equals > m_org_threshold:
-      self.m_num_equals.setText(QString("yes"))
-    else:
-      self.m_num_equals.setText(QString("no"))
+    num_equals = str(stats.GetTaskLastCount(8))
+#    if num_equals > m_org_threshold:
+#      self.m_num_equals.setText(QString("yes"))
+#    else:
+#      self.m_num_equals.setText(QString("no"))
+    self.m_num_equals.setText(num_equals)
     
     if self.clickedCellNumber>= 0: 
       self.updateOrgReportSlot(self.clickedCellNumber)
