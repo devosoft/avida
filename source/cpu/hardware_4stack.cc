@@ -386,8 +386,10 @@ void cHardware4Stack::SingleProcess()
 #endif
     
     // Print the status of this CPU at each step...
-    const cString & next_name = inst_set->GetName(IP().GetInst())();
-    if (trace_fp != NULL) organism->PrintStatus(*trace_fp, next_name);
+    if (trace_fp != NULL) {
+      const cString & next_name = inst_set->GetName(IP().GetInst())();
+      organism->PrintStatus(*trace_fp, next_name);
+    }
     
     // Find the instruction to be executed
     const cInstruction & cur_inst = IP().GetInst();
@@ -494,9 +496,11 @@ void cHardware4Stack::ProcessBonusInst(const cInstruction & inst)
 
   // @CAO FIX PRINTING TO INDICATE THIS IS A BONUS
   // Print the status of this CPU at each step...
-  cString next_name = cStringUtil::Stringf("%s (bonus instruction)",
-					   inst_set->GetName(inst)());
-  if (trace_fp != NULL) organism->PrintStatus(*trace_fp, next_name);
+  if (trace_fp != NULL) {
+    cString next_name = cStringUtil::Stringf("%s (bonus instruction)",
+					     inst_set->GetName(inst)());
+    organism->PrintStatus(*trace_fp, next_name);
+  }
     
   SingleProcess_ExecuteInst(inst);
 
