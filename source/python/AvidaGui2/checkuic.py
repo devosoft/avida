@@ -5,7 +5,7 @@ for file in dir_listing:
   if file.endswith('View.py'):
     py_dict['./' + file] = 0
 for file in dir_listing:
-  if file.endswith('.ui'):
+  if file.endswith('View.ui'):
     if re.compile('junk').search(file,1):
       print "============== " + file + " =============="
     ui_name = './' + file

@@ -19,6 +19,7 @@ import qt
 class pyEduMainCtrl(qt.QObject):
   def __init__(self):
     qt.QObject.__init__(self, None, self.__class__.__name__)
+    
   def construct(self):
     class pyMdl: pass
     self.m_main_mdl = pyMdl()
@@ -39,6 +40,7 @@ class pyEduMainCtrl(qt.QObject):
     self.m_main_mdl.m_main_mdtr.m_main_controller_factory_mdtr.emit(
       qt.PYSIGNAL("newMainControllerSig"), ("pyEduMainMenuBarHdlr",))
     return self
+    
   def unitTest(self, recurse = False):
     return pyUnitTestSuiteRecurser(
       "pyEduMainCtrl",

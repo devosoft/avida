@@ -261,9 +261,10 @@ class pyPetriDishCtrl(QWidget):
     world_h = cConfig.GetWorldY()
     for x in range(world_w):
       for y in range(world_h):
-        cell = self.m_avida.m_population.GetCell(x + world_w*y)
-        if cell.IsOccupied() == True:
-          organism = cell.GetOrganism()
-          genome = organism.GetGenome()
-          population_dict[cell.GetID()] = str(genome.AsString())
+        if self.m_avida != None:
+          cell = self.m_avida.m_population.GetCell(x + world_w*y)
+          if cell.IsOccupied() == True:
+            organism = cell.GetOrganism()
+            genome = organism.GetGenome()
+            population_dict[cell.GetID()] = str(genome.AsString())
     self.emit(PYSIGNAL("freezeDishPhaseIISig"), ("/freezer", population_dict, ))

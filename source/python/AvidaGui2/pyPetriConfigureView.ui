@@ -65,7 +65,7 @@
                 </property>
                 <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>layout10</cstring>
+                        <cstring>layout12</cstring>
                     </property>
                     <vbox>
                         <property name="name">
@@ -92,7 +92,7 @@
                         </widget>
                         <widget class="QLayoutWidget">
                             <property name="name">
-                                <cstring>layout9</cstring>
+                                <cstring>layout11</cstring>
                             </property>
                             <hbox>
                                 <property name="name">
@@ -107,16 +107,16 @@
                                         </font>
                                     </property>
                                     <property name="minValue">
-                                        <number>-40</number>
+                                        <number>-300</number>
                                     </property>
                                     <property name="maxValue">
-                                        <number>20</number>
+                                        <number>200</number>
                                     </property>
                                     <property name="pageStep">
                                         <number>1</number>
                                     </property>
                                     <property name="value">
-                                        <number>3</number>
+                                        <number>50</number>
                                     </property>
                                     <property name="orientation">
                                         <enum>Horizontal</enum>
@@ -137,12 +137,18 @@
                                             <verstretch>0</verstretch>
                                         </sizepolicy>
                                     </property>
+                                    <property name="minimumSize">
+                                        <size>
+                                            <width>40</width>
+                                            <height>0</height>
+                                        </size>
+                                    </property>
                                     <property name="font">
                                         <font>
                                         </font>
                                     </property>
                                     <property name="text">
-                                        <string>3 %</string>
+                                        <string>%</string>
                                     </property>
                                 </widget>
                             </hbox>
@@ -223,7 +229,7 @@
                                         </font>
                                     </property>
                                     <property name="text">
-                                        <string>30 x 30 cells</string>
+                                        <string>0 x 0 cells</string>
                                     </property>
                                 </widget>
                             </hbox>
@@ -425,11 +431,14 @@
                                             <property name="minValue">
                                                 <number>1</number>
                                             </property>
-                                            <property name="value">
+                                            <property name="lineStep">
                                                 <number>10</number>
                                             </property>
+                                            <property name="value">
+                                                <number>100</number>
+                                            </property>
                                             <property name="toolTip" stdset="0">
-                                                <string>How long</string>
+                                                <string>How long to let organism live</string>
                                             </property>
                                         </widget>
                                         <widget class="QLabel">

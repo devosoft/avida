@@ -64,7 +64,7 @@ class pyFreezerCtrl(pyFreezerView):
    
     # check that the item is not at the top level 
 
-    if item.depth() > 0:
+    if item != None and item.depth() > 0:
       top_level = item
       while top_level.parent():
         top_level = top_level.parent()
@@ -80,4 +80,4 @@ class pyFreezerCtrl(pyFreezerView):
       file_name = self.m_session_mdl.m_current_freezer + file_name
       thawed_item = pyReadFreezer(file_name)
       self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("doDefrostDishSig"),
-        (thawed_item,))
+        (item.text(0), thawed_item,))

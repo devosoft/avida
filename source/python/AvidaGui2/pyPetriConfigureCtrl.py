@@ -44,19 +44,21 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
       self.DisablePetriConfigureSlot)
     self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("doInitializeAvidaPhaseISig"),
       self.CreateFilesFromPetriSlot)
+    self.ChangeMutationTextSlot()
+    self.ChangeWorldSizeTextSlot()
     self.populated = False
     self.run_started = False    
 
   def ChangeMutationTextSlot(self):
-    slide_value = float(self.MutationSlider.value())/10.0
+    slide_value = float(self.MutationSlider.value())/100.0
     slide_value = pow(10,slide_value)
-    if slide_value < 0.0002:
-      slide_value = 0
-    if slide_value > 1:
+    if slide_value < 0.0011:
+      slide_value = 0.0
+    if slide_value > 1 or slide_value < 0.00001:
       slide_value_txt = ("%1.1f" % (slide_value)) + "%"
     elif slide_value > 0.1:
       slide_value_txt = ("%1.2f" % (slide_value)) + "%"
-    elif slide_value > 0.001:
+    elif slide_value > 0.01:
       slide_value_txt = ("%1.3f" % (slide_value)) + "%"
     else:
       slide_value_txt = ("%1.4f" % (slide_value)) + "%"
@@ -89,7 +91,7 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     else:
       self.StopAtSpinBox.setEnabled(True)
   
-  def FillDishSlot(self, petri_dict):
+  def FillDishSlot(self, dish_name, petri_dict):
     self.full_petri_dict = petri_dict.dictionary
     settings_dict =  petri_dict.dictionary["SETTINGS"]
     self.AncestorComboBox.removeItem (0)
@@ -113,7 +115,10 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
        self.RadomGeneratedRadioButton.setChecked(False)
        self.RandomFixedRadioButton.setChecked(True)
     copy_mutation_percent = float(settings_dict["COPY_MUT_PROB"]) * 100;
-    self.MutationSlider.setValue(int(math.log10(copy_mutation_percent) * 10))
+    if copy_mutation_percent > 0.00000001:
+      self.MutationSlider.setValue(int(math.log10(copy_mutation_percent) * 100))
+    else:
+      self.MutationSlider.setValue(-300)
     if int(settings_dict["BIRTH_METHOD"]) in [0, 1, 2, 3]:
        self.LocalBirthRadioButton.setChecked(True)
        self.MassActionRadioButton.setChecked(False)
@@ -186,15 +191,15 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
       settings_dict["RANDOM_SEED"] = self.RandomSpinBox.value()
     else:
       settings_dict["RANDOM_SEED"] = 0
-    slide_value = float(self.MutationSlider.value())/10.0
+    slide_value = float(self.MutationSlider.value())/100.0
     slide_value = pow(10,slide_value)
-    if slide_value < 0.0002:
+    if slide_value < 0.0011:
       slide_value = 0.0
     settings_dict["COPY_MUT_PROB"] = slide_value/100.0
     if self.LocalBirthRadioButton.isChecked() == True:
       settings_dict["BIRTH_METHOD"] = 0
     else:
-      settings_dict["BIRTH_METHOD"] = 0
+      settings_dict["BIRTH_METHOD"] = 4
     settings_dict["AGE_LIMIT"] = self.LifeSpanSpinBox.value()
     if self.DieNoButton.isChecked() == True:
       settings_dict["DEATH_METHOD"] = 0

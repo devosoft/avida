@@ -15,8 +15,8 @@ Python:from pyPetriConfigureCtrl import pyPetriConfigureCtrl</comment>
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>520</width>
-            <height>536</height>
+            <width>528</width>
+            <height>540</height>
         </rect>
     </property>
     <property name="caption">
@@ -32,386 +32,402 @@ Python:from pyPetriConfigureCtrl import pyPetriConfigureCtrl</comment>
         <property name="resizeMode">
             <enum>Minimum</enum>
         </property>
-        <widget class="QLayoutWidget">
+        <widget class="QFrame">
             <property name="name">
-                <cstring>layout179</cstring>
-            </property>
-            <hbox>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <widget class="QLabel">
-                    <property name="name">
-                        <cstring>pixmapLabel1</cstring>
-                    </property>
-                    <property name="sizePolicy">
-                        <sizepolicy>
-                            <hsizetype>0</hsizetype>
-                            <vsizetype>0</vsizetype>
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                        </sizepolicy>
-                    </property>
-                    <property name="pixmap">
-                        <pixmap>image0</pixmap>
-                    </property>
-                    <property name="scaledContents">
-                        <bool>true</bool>
-                    </property>
-                </widget>
-                <widget class="QLabel">
-                    <property name="name">
-                        <cstring>textLabel3</cstring>
-                    </property>
-                    <property name="sizePolicy">
-                        <sizepolicy>
-                            <hsizetype>3</hsizetype>
-                            <vsizetype>5</vsizetype>
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                        </sizepolicy>
-                    </property>
-                    <property name="font">
-                        <font>
-                            <pointsize>11</pointsize>
-                        </font>
-                    </property>
-                    <property name="text">
-                        <string>[population]</string>
-                    </property>
-                </widget>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>layout178</cstring>
-                    </property>
-                    <vbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer126</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Vertical</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Minimum</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>1</width>
-                                    <height>1</height>
-                                </size>
-                            </property>
-                        </spacer>
-                        <widget class="QToolButton">
-                            <property name="name">
-                                <cstring>m_petri_dish_toogle</cstring>
-                            </property>
-                            <property name="font">
-                                <font>
-                                    <pointsize>10</pointsize>
-                                </font>
-                            </property>
-                            <property name="text">
-                                <string></string>
-                            </property>
-                            <property name="iconSet">
-                                <iconset>image1</iconset>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer126_2</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Vertical</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Minimum</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>1</width>
-                                    <height>1</height>
-                                </size>
-                            </property>
-                        </spacer>
-                    </vbox>
-                </widget>
-            </hbox>
-        </widget>
-        <widget class="QWidgetStack">
-            <property name="name">
-                <cstring>m_petri_dish_widget_stack</cstring>
+                <cstring>OnPop_PetriFrame</cstring>
             </property>
             <property name="frameShape">
-                <enum>Panel</enum>
+                <enum>GroupBoxPanel</enum>
             </property>
             <property name="frameShadow">
                 <enum>Sunken</enum>
             </property>
-            <widget class="QWidget">
+            <vbox>
                 <property name="name">
-                    <cstring>WStackPage</cstring>
+                    <cstring>unnamed</cstring>
                 </property>
-                <attribute name="id">
-                    <number>0</number>
-                </attribute>
-                <vbox>
+                <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>unnamed</cstring>
+                        <cstring>layout179</cstring>
                     </property>
-                    <widget class="QLayoutWidget">
+                    <hbox>
                         <property name="name">
-                            <cstring>layout10</cstring>
+                            <cstring>unnamed</cstring>
                         </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>pixmapLabel1</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>0</hsizetype>
+                                    <vsizetype>0</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="pixmap">
+                                <pixmap>image0</pixmap>
+                            </property>
+                            <property name="scaledContents">
+                                <bool>true</bool>
+                            </property>
+                        </widget>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>PopulationTextLabel</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>3</hsizetype>
+                                    <vsizetype>5</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="font">
+                                <font>
+                                    <pointsize>11</pointsize>
+                                </font>
+                            </property>
+                            <property name="text">
+                                <string>[population]</string>
+                            </property>
+                        </widget>
+                        <widget class="QLayoutWidget">
+                            <property name="name">
+                                <cstring>layout178</cstring>
+                            </property>
+                            <vbox>
+                                <property name="name">
+                                    <cstring>unnamed</cstring>
+                                </property>
+                                <spacer>
+                                    <property name="name">
+                                        <cstring>spacer126</cstring>
+                                    </property>
+                                    <property name="orientation">
+                                        <enum>Vertical</enum>
+                                    </property>
+                                    <property name="sizeType">
+                                        <enum>Minimum</enum>
+                                    </property>
+                                    <property name="sizeHint">
+                                        <size>
+                                            <width>1</width>
+                                            <height>1</height>
+                                        </size>
+                                    </property>
+                                </spacer>
+                                <widget class="QToolButton">
+                                    <property name="name">
+                                        <cstring>m_petri_dish_toggle</cstring>
+                                    </property>
+                                    <property name="font">
+                                        <font>
+                                            <pointsize>10</pointsize>
+                                        </font>
+                                    </property>
+                                    <property name="text">
+                                        <string></string>
+                                    </property>
+                                    <property name="iconSet">
+                                        <iconset>image1</iconset>
+                                    </property>
+                                </widget>
+                                <spacer>
+                                    <property name="name">
+                                        <cstring>spacer126_2</cstring>
+                                    </property>
+                                    <property name="orientation">
+                                        <enum>Vertical</enum>
+                                    </property>
+                                    <property name="sizeType">
+                                        <enum>Minimum</enum>
+                                    </property>
+                                    <property name="sizeHint">
+                                        <size>
+                                            <width>1</width>
+                                            <height>1</height>
+                                        </size>
+                                    </property>
+                                </spacer>
+                            </vbox>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QWidgetStack">
+                    <property name="name">
+                        <cstring>m_petri_dish_widget_stack</cstring>
+                    </property>
+                    <property name="frameShape">
+                        <enum>NoFrame</enum>
+                    </property>
+                    <property name="frameShadow">
+                        <enum>Sunken</enum>
+                    </property>
+                    <widget class="QWidget">
+                        <property name="name">
+                            <cstring>WStackPage</cstring>
+                        </property>
+                        <attribute name="id">
+                            <number>0</number>
+                        </attribute>
                         <vbox>
                             <property name="name">
                                 <cstring>unnamed</cstring>
                             </property>
                             <widget class="QLayoutWidget">
                                 <property name="name">
-                                    <cstring>layout91</cstring>
+                                    <cstring>layout10</cstring>
                                 </property>
-                                <hbox>
+                                <vbox>
                                     <property name="name">
                                         <cstring>unnamed</cstring>
                                     </property>
-                                    <widget class="pyPetriDishCtrl">
+                                    <widget class="QLayoutWidget">
                                         <property name="name">
-                                            <cstring>m_petri_dish_ctrl</cstring>
+                                            <cstring>layout91</cstring>
                                         </property>
-                                        <property name="sizePolicy">
-                                            <sizepolicy>
-                                                <hsizetype>3</hsizetype>
-                                                <vsizetype>3</vsizetype>
-                                                <horstretch>5</horstretch>
-                                                <verstretch>0</verstretch>
-                                            </sizepolicy>
-                                        </property>
-                                    </widget>
-                                    <widget class="pyGradientScaleCtrl">
-                                        <property name="name">
-                                            <cstring>m_gradient_scale_ctrl</cstring>
-                                        </property>
-                                        <property name="sizePolicy">
-                                            <sizepolicy>
-                                                <hsizetype>0</hsizetype>
-                                                <vsizetype>1</vsizetype>
-                                                <horstretch>1</horstretch>
-                                                <verstretch>0</verstretch>
-                                            </sizepolicy>
-                                        </property>
-                                        <property name="minimumSize">
-                                            <size>
-                                                <width>50</width>
-                                                <height>50</height>
-                                            </size>
-                                        </property>
-                                        <property name="backgroundMode">
-                                            <enum>PaletteDark</enum>
-                                        </property>
-                                    </widget>
-                                </hbox>
-                            </widget>
-                            <widget class="QLayoutWidget">
-                                <property name="name">
-                                    <cstring>layout1</cstring>
-                                </property>
-                                <hbox>
-                                    <property name="name">
-                                        <cstring>unnamed</cstring>
-                                    </property>
-                                    <widget class="QLabel">
-                                        <property name="name">
-                                            <cstring>textLabel11</cstring>
-                                        </property>
-                                        <property name="sizePolicy">
-                                            <sizepolicy>
-                                                <hsizetype>0</hsizetype>
-                                                <vsizetype>1</vsizetype>
-                                                <horstretch>0</horstretch>
-                                                <verstretch>0</verstretch>
-                                            </sizepolicy>
-                                        </property>
-                                        <property name="text">
-                                            <string>&lt;font size="-1"&gt;&lt;p align="right"&gt;Update:&lt;/p&gt;&lt;/font&gt;</string>
-                                        </property>
-                                    </widget>
-                                    <widget class="QLabel">
-                                        <property name="name">
-                                            <cstring>m_update_label</cstring>
-                                        </property>
-                                        <property name="sizePolicy">
-                                            <sizepolicy>
-                                                <hsizetype>0</hsizetype>
-                                                <vsizetype>1</vsizetype>
-                                                <horstretch>0</horstretch>
-                                                <verstretch>0</verstretch>
-                                            </sizepolicy>
-                                        </property>
-                                        <property name="text">
-                                            <string>&lt;font size="-1"&gt;-&lt;/font&gt;</string>
-                                        </property>
-                                    </widget>
-                                    <widget class="QComboBox">
-                                        <item>
-                                            <property name="text">
-                                                <string>Merit</string>
+                                        <hbox>
+                                            <property name="name">
+                                                <cstring>unnamed</cstring>
                                             </property>
-                                        </item>
-                                        <property name="name">
-                                            <cstring>m_mode_combobox</cstring>
-                                        </property>
-                                        <property name="sizePolicy">
-                                            <sizepolicy>
-                                                <hsizetype>1</hsizetype>
-                                                <vsizetype>0</vsizetype>
-                                                <horstretch>0</horstretch>
-                                                <verstretch>0</verstretch>
-                                            </sizepolicy>
-                                        </property>
-                                        <property name="font">
-                                            <font>
-                                                <pointsize>11</pointsize>
-                                            </font>
-                                        </property>
+                                            <widget class="pyPetriDishCtrl">
+                                                <property name="name">
+                                                    <cstring>m_petri_dish_ctrl</cstring>
+                                                </property>
+                                                <property name="sizePolicy">
+                                                    <sizepolicy>
+                                                        <hsizetype>3</hsizetype>
+                                                        <vsizetype>3</vsizetype>
+                                                        <horstretch>5</horstretch>
+                                                        <verstretch>0</verstretch>
+                                                    </sizepolicy>
+                                                </property>
+                                            </widget>
+                                            <widget class="pyGradientScaleCtrl">
+                                                <property name="name">
+                                                    <cstring>m_gradient_scale_ctrl</cstring>
+                                                </property>
+                                                <property name="sizePolicy">
+                                                    <sizepolicy>
+                                                        <hsizetype>0</hsizetype>
+                                                        <vsizetype>1</vsizetype>
+                                                        <horstretch>1</horstretch>
+                                                        <verstretch>0</verstretch>
+                                                    </sizepolicy>
+                                                </property>
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>50</width>
+                                                        <height>50</height>
+                                                    </size>
+                                                </property>
+                                                <property name="backgroundMode">
+                                                    <enum>PaletteDark</enum>
+                                                </property>
+                                            </widget>
+                                        </hbox>
                                     </widget>
-                                    <widget class="QLabel">
+                                    <widget class="QLayoutWidget">
                                         <property name="name">
-                                            <cstring>textLabel10</cstring>
+                                            <cstring>layout1</cstring>
                                         </property>
-                                        <property name="sizePolicy">
-                                            <sizepolicy>
-                                                <hsizetype>0</hsizetype>
-                                                <vsizetype>1</vsizetype>
-                                                <horstretch>0</horstretch>
-                                                <verstretch>0</verstretch>
-                                            </sizepolicy>
-                                        </property>
-                                        <property name="text">
-                                            <string>&lt;font size="-1"&gt;&lt;p align="right"&gt;Zoom:&lt;/p&gt;&lt;/font&gt;</string>
-                                        </property>
+                                        <hbox>
+                                            <property name="name">
+                                                <cstring>unnamed</cstring>
+                                            </property>
+                                            <widget class="QLabel">
+                                                <property name="name">
+                                                    <cstring>textLabel11</cstring>
+                                                </property>
+                                                <property name="sizePolicy">
+                                                    <sizepolicy>
+                                                        <hsizetype>0</hsizetype>
+                                                        <vsizetype>1</vsizetype>
+                                                        <horstretch>0</horstretch>
+                                                        <verstretch>0</verstretch>
+                                                    </sizepolicy>
+                                                </property>
+                                                <property name="text">
+                                                    <string>&lt;font size="-1"&gt;&lt;p align="right"&gt;Update:&lt;/p&gt;&lt;/font&gt;</string>
+                                                </property>
+                                            </widget>
+                                            <widget class="QLabel">
+                                                <property name="name">
+                                                    <cstring>m_update_label</cstring>
+                                                </property>
+                                                <property name="sizePolicy">
+                                                    <sizepolicy>
+                                                        <hsizetype>0</hsizetype>
+                                                        <vsizetype>1</vsizetype>
+                                                        <horstretch>0</horstretch>
+                                                        <verstretch>0</verstretch>
+                                                    </sizepolicy>
+                                                </property>
+                                                <property name="text">
+                                                    <string>&lt;font size="-1"&gt;-&lt;/font&gt;</string>
+                                                </property>
+                                            </widget>
+                                            <widget class="QComboBox">
+                                                <item>
+                                                    <property name="text">
+                                                        <string>Merit</string>
+                                                    </property>
+                                                </item>
+                                                <property name="name">
+                                                    <cstring>m_mode_combobox</cstring>
+                                                </property>
+                                                <property name="sizePolicy">
+                                                    <sizepolicy>
+                                                        <hsizetype>1</hsizetype>
+                                                        <vsizetype>0</vsizetype>
+                                                        <horstretch>0</horstretch>
+                                                        <verstretch>0</verstretch>
+                                                    </sizepolicy>
+                                                </property>
+                                                <property name="font">
+                                                    <font>
+                                                        <pointsize>11</pointsize>
+                                                    </font>
+                                                </property>
+                                            </widget>
+                                            <widget class="QLabel">
+                                                <property name="name">
+                                                    <cstring>textLabel10</cstring>
+                                                </property>
+                                                <property name="sizePolicy">
+                                                    <sizepolicy>
+                                                        <hsizetype>0</hsizetype>
+                                                        <vsizetype>1</vsizetype>
+                                                        <horstretch>0</horstretch>
+                                                        <verstretch>0</verstretch>
+                                                    </sizepolicy>
+                                                </property>
+                                                <property name="text">
+                                                    <string>&lt;font size="-1"&gt;&lt;p align="right"&gt;Zoom:&lt;/p&gt;&lt;/font&gt;</string>
+                                                </property>
+                                            </widget>
+                                            <widget class="QSpinBox">
+                                                <property name="name">
+                                                    <cstring>m_zoom_spinbox</cstring>
+                                                </property>
+                                                <property name="sizePolicy">
+                                                    <sizepolicy>
+                                                        <hsizetype>0</hsizetype>
+                                                        <vsizetype>0</vsizetype>
+                                                        <horstretch>0</horstretch>
+                                                        <verstretch>0</verstretch>
+                                                    </sizepolicy>
+                                                </property>
+                                            </widget>
+                                        </hbox>
                                     </widget>
-                                    <widget class="QSpinBox">
+                                    <widget class="QLayoutWidget">
                                         <property name="name">
-                                            <cstring>m_zoom_spinbox</cstring>
+                                            <cstring>layout229</cstring>
                                         </property>
-                                        <property name="sizePolicy">
-                                            <sizepolicy>
-                                                <hsizetype>0</hsizetype>
-                                                <vsizetype>0</vsizetype>
-                                                <horstretch>0</horstretch>
-                                                <verstretch>0</verstretch>
-                                            </sizepolicy>
-                                        </property>
+                                        <hbox>
+                                            <property name="name">
+                                                <cstring>unnamed</cstring>
+                                            </property>
+                                            <spacer>
+                                                <property name="name">
+                                                    <cstring>spacer169_2</cstring>
+                                                </property>
+                                                <property name="orientation">
+                                                    <enum>Horizontal</enum>
+                                                </property>
+                                                <property name="sizeType">
+                                                    <enum>MinimumExpanding</enum>
+                                                </property>
+                                                <property name="sizeHint">
+                                                    <size>
+                                                        <width>10</width>
+                                                        <height>10</height>
+                                                    </size>
+                                                </property>
+                                            </spacer>
+                                            <widget class="pyLiveControlsCtrl">
+                                                <property name="name">
+                                                    <cstring>m_live_controls_ctrl</cstring>
+                                                </property>
+                                                <property name="sizePolicy">
+                                                    <sizepolicy>
+                                                        <hsizetype>0</hsizetype>
+                                                        <vsizetype>0</vsizetype>
+                                                        <horstretch>0</horstretch>
+                                                        <verstretch>0</verstretch>
+                                                    </sizepolicy>
+                                                </property>
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>0</width>
+                                                        <height>50</height>
+                                                    </size>
+                                                </property>
+                                            </widget>
+                                            <spacer>
+                                                <property name="name">
+                                                    <cstring>spacer169</cstring>
+                                                </property>
+                                                <property name="orientation">
+                                                    <enum>Horizontal</enum>
+                                                </property>
+                                                <property name="sizeType">
+                                                    <enum>MinimumExpanding</enum>
+                                                </property>
+                                                <property name="sizeHint">
+                                                    <size>
+                                                        <width>10</width>
+                                                        <height>10</height>
+                                                    </size>
+                                                </property>
+                                            </spacer>
+                                        </hbox>
                                     </widget>
-                                </hbox>
-                            </widget>
-                            <widget class="QLayoutWidget">
-                                <property name="name">
-                                    <cstring>layout229</cstring>
-                                </property>
-                                <hbox>
-                                    <property name="name">
-                                        <cstring>unnamed</cstring>
-                                    </property>
-                                    <spacer>
-                                        <property name="name">
-                                            <cstring>spacer169_2</cstring>
-                                        </property>
-                                        <property name="orientation">
-                                            <enum>Horizontal</enum>
-                                        </property>
-                                        <property name="sizeType">
-                                            <enum>MinimumExpanding</enum>
-                                        </property>
-                                        <property name="sizeHint">
-                                            <size>
-                                                <width>10</width>
-                                                <height>10</height>
-                                            </size>
-                                        </property>
-                                    </spacer>
-                                    <widget class="pyLiveControlsCtrl">
-                                        <property name="name">
-                                            <cstring>m_live_controls_ctrl</cstring>
-                                        </property>
-                                        <property name="sizePolicy">
-                                            <sizepolicy>
-                                                <hsizetype>0</hsizetype>
-                                                <vsizetype>0</vsizetype>
-                                                <horstretch>0</horstretch>
-                                                <verstretch>0</verstretch>
-                                            </sizepolicy>
-                                        </property>
-                                        <property name="minimumSize">
-                                            <size>
-                                                <width>0</width>
-                                                <height>50</height>
-                                            </size>
-                                        </property>
-                                    </widget>
-                                    <spacer>
-                                        <property name="name">
-                                            <cstring>spacer169</cstring>
-                                        </property>
-                                        <property name="orientation">
-                                            <enum>Horizontal</enum>
-                                        </property>
-                                        <property name="sizeType">
-                                            <enum>MinimumExpanding</enum>
-                                        </property>
-                                        <property name="sizeHint">
-                                            <size>
-                                                <width>10</width>
-                                                <height>10</height>
-                                            </size>
-                                        </property>
-                                    </spacer>
-                                </hbox>
+                                </vbox>
                             </widget>
                         </vbox>
                     </widget>
-                </vbox>
-            </widget>
-            <widget class="QWidget">
-                <property name="name">
-                    <cstring>WStackPage</cstring>
-                </property>
-                <attribute name="id">
-                    <number>1</number>
-                </attribute>
-                <hbox>
-                    <property name="name">
-                        <cstring>unnamed</cstring>
-                    </property>
-                    <property name="margin">
-                        <number>2</number>
-                    </property>
-                    <property name="spacing">
-                        <number>2</number>
-                    </property>
-                    <widget class="pyPetriConfigureCtrl">
+                    <widget class="QWidget">
                         <property name="name">
-                            <cstring>m_petri_configure_ctrl</cstring>
+                            <cstring>WStackPage</cstring>
                         </property>
-                        <property name="sizePolicy">
-                            <sizepolicy>
-                                <hsizetype>3</hsizetype>
-                                <vsizetype>3</vsizetype>
-                                <horstretch>0</horstretch>
-                                <verstretch>0</verstretch>
-                            </sizepolicy>
-                        </property>
-                        <property name="acceptDrops">
-                            <bool>true</bool>
-                        </property>
+                        <attribute name="id">
+                            <number>1</number>
+                        </attribute>
+                        <hbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <property name="margin">
+                                <number>2</number>
+                            </property>
+                            <property name="spacing">
+                                <number>2</number>
+                            </property>
+                            <widget class="pyPetriConfigureCtrl">
+                                <property name="name">
+                                    <cstring>m_petri_configure_ctrl</cstring>
+                                </property>
+                                <property name="sizePolicy">
+                                    <sizepolicy>
+                                        <hsizetype>3</hsizetype>
+                                        <vsizetype>3</vsizetype>
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                    </sizepolicy>
+                                </property>
+                                <property name="acceptDrops">
+                                    <bool>true</bool>
+                                </property>
+                            </widget>
+                        </hbox>
                     </widget>
-                </hbox>
-            </widget>
+                </widget>
+            </vbox>
         </widget>
     </vbox>
 </widget>
@@ -440,6 +456,8 @@ Python:from pyPetriConfigureCtrl import pyPetriConfigureCtrl</comment>
         <property type="4">-1</property>
         <property type="1">pyPetriDishCtrl</property>
         <property type="4">-1</property>
+        <property type="1">pyPetriDishCtrl</property>
+        <property type="0">-1</property>
         <property type="1">pyPetriDishCtrl</property>
         <property type="0">-1</property>
         <property type="1">pyPetriDishCtrl</property>
@@ -507,6 +525,8 @@ Python:from pyPetriConfigureCtrl import pyPetriConfigureCtrl</comment>
         <property type="0">-1</property>
         <property type="1">pyGradientScaleCtrl</property>
         <property type="0">-1</property>
+        <property type="1">pyGradientScaleCtrl</property>
+        <property type="0">-1</property>
         <property type="pyGradientScaleCtrl"></property>
         <property type="-1">1</property>
     </customwidget>
@@ -534,6 +554,8 @@ Python:from pyPetriConfigureCtrl import pyPetriConfigureCtrl</comment>
         <property type="4">-1</property>
         <property type="1">pyLiveControlsCtrl</property>
         <property type="4">-1</property>
+        <property type="1">pyLiveControlsCtrl</property>
+        <property type="0">-1</property>
         <property type="1">pyLiveControlsCtrl</property>
         <property type="0">-1</property>
         <property type="1">pyLiveControlsCtrl</property>
