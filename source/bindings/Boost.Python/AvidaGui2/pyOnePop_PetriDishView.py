@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/kaben/Projects/Software/Avida/branch.kaben/avida--current--2.0--base-0/source/bindings/Boost.Python/AvidaGui2/pyOnePop_PetriDishView.ui'
+# Form implementation generated from reading ui file '/Users/kaben/Projects/Software/Avida/svn/avida2/trunk/source/bindings/Boost.Python/AvidaGui2/pyOnePop_PetriDishView.ui'
 #
-# Created: Fri Dec 3 10:26:52 2004
-#      by: The PyQt User Interface Compiler (pyuic) 3.12
+# Created: Thu Feb 17 15:14:30 2005
+#      by: The PyQt User Interface Compiler (pyuic) 3.13
 #
 # WARNING! All changes made in this file will be lost!
 
