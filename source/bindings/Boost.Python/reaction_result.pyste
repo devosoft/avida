@@ -1,1 +1,3 @@
 cReactionResult = Class("cReactionResult", "reaction_result.hh")
+
+set_policy(cReactionResult.GetInstArray, return_internal_reference())
