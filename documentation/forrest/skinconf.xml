@@ -108,7 +108,12 @@ which will be used to configure the chosen Forrest skin.
     <link1 name="Devolab" href="http://devolab.cse.msu.edu/"/>
     <link2 name="Software" href="http://devolab.cse.msu.edu/software/"/>
     <link3 name="Avida" href="http://devolab.cse.msu.edu/software/avida/"/>
+  <!-- Disabled to quiet forrest complaint that Element type "link4"
+    must be declared. @KGN
+
     <link4 name="" href=""/>
+
+  -->
   </trail>
 
   <!-- Configure the TOC, i.e. the Table of Contents.

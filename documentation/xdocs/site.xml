@@ -39,7 +39,7 @@ See http://forrest.apache.org/docs/linking.html for more info
 
   <admin label="Administration" href="admin/" tab="admin">
     <index label ="Index" href="index.html" description="Information for Avida Developers"/>
-    <third-party label="Third Party Software" href="thirdparty.html"
+    <third-party-osx label="Mac OS X Third Party Software" href="third-party-osx.html"
       description="Directions for installing required third party software"/>
   </admin>
 
