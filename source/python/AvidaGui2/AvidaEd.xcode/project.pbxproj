@@ -43,7 +43,7 @@
 				DC00C17007D6FB1700E90B4B,
 				DC00C17107D6FB1700E90B4B,
 			);
-			hasScannedForEncodings = 0;
+			hasScannedForEncodings = 1;
 			isa = PBXProject;
 			mainGroup = DC00C16E07D6FB1700E90B4B;
 			productRefGroup = DC0BFF3407DE17DB00AAE422;
@@ -98,8 +98,6 @@
 				DC0BFE8807DDD7C600AAE422,
 				DC3A641607DD02DE00A043AD,
 				DC0BFE8707DDD7C600AAE422,
-				DC0BFF0D07DE11BF00AAE422,
-				DC0BFEF007DDE14800AAE422,
 				DC3A640907DD02DE00A043AD,
 				DC3A640807DD02DE00A043AD,
 				DC3A640507DD02DE00A043AD,
@@ -492,14 +490,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		DC0BFEF007DDE14800AAE422 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = pyOrganismScopeView.ui;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DC0BFEFA07DE0B0000AAE422 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -513,14 +503,6 @@
 			isa = PBXFileReference;
 			lastKnownFileType = text.script.python;
 			path = pyOneOrg_ScopeCtrl.py;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DC0BFF0D07DE11BF00AAE422 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.python;
-			path = pyOrganismScopeCtrl.py;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -542,7 +524,6 @@
 				DC0BFF5707DE1AE800AAE422,
 				DC0BFF5A07DE1AE800AAE422,
 				DC0BFF5C07DE1AE800AAE422,
-				DC0BFF5D07DE1AE800AAE422,
 				DC0BFF5E07DE1AE800AAE422,
 				DC0BFF5F07DE1AE800AAE422,
 				DC0BFF6007DE1AE800AAE422,
@@ -577,7 +558,7 @@
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = "echo \"done compiling .ui files\"";
+				PRODUCT_NAME = "echo done compiling .ui files";
 				PYUIC_EXE = "$(SRCROOT)/pyuic";
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
@@ -594,7 +575,7 @@
 			explicitFileType = "compiled.mach-o.executable";
 			includeInIndex = 0;
 			isa = PBXFileReference;
-			path = "echo \"done compiling .ui files\"";
+			path = "echo done compiling .ui files";
 			refType = 3;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -704,12 +685,6 @@
 		};
 		DC0BFF5C07DE1AE800AAE422 = {
 			fileRef = DC0BFE9307DDD7C600AAE422;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		DC0BFF5D07DE1AE800AAE422 = {
-			fileRef = DC0BFEF007DDE14800AAE422;
 			isa = PBXBuildFile;
 			settings = {
 			};

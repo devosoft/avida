@@ -72,6 +72,9 @@ class pySessionDumbCtrl(pySessionDumbView):
     avida = pyAvida()
     avida.construct(genesis)
     self.setAvidaSlot(avida)
+
+    # Stops self from hearing own setAvidaSig signal
+
     self.disconnect(
       self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"),
       self.setAvidaSlot)

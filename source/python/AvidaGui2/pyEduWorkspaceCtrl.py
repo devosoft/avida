@@ -8,6 +8,7 @@ from pyOnePopulationCtrl import pyOnePopulationCtrl
 from pyTwoAnalyzeCtrl import pyTwoAnalyzeCtrl
 from pyTwoOrganismCtrl import pyTwoOrganismCtrl
 from pyTwoPopulationCtrl import pyTwoPopulationCtrl
+from pyPetriConfigureCtrl import pyPetriConfigureCtrl
 
 from qt import *
 
