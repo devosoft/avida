@@ -44,30 +44,30 @@ class pySessionDumbCtrl(pySessionDumbView):
         self, PYSIGNAL("doUpdateAvidaSig"),
         self.m_avida.m_avida_thread_mdtr, PYSIGNAL("doUpdateAvidaSig"))
     
-  def setupCustomMenus(self, edu_session_menu_bar_hdlr):
-    self.m_debugging_menu = QPopupMenu()
-    self.m_zoom_window_wmi_id = self.m_debugging_menu.insertItem(
-      "Load Petri Dish Config File",
-      self, PYSIGNAL("doLoadPetriDishConfigFileSig"))
-    self.m_menu_bar.insertItem("Debugging", self.m_debugging_menu)
-
-    self.connect(
-      self, PYSIGNAL("doLoadPetriDishConfigFileSig"),
-      self.doLoadPetriDishConfigFileSlot)
-
-  def doLoadPetriDishConfigFileSlot(self):
+#  def setupCustomMenus(self, edu_session_menu_bar_hdlr):
+#    self.m_debugging_menu = QPopupMenu()
+#    self.m_zoom_window_wmi_id = self.m_debugging_menu.insertItem(
+#      "Load Petri Dish Config File",
+#      self, PYSIGNAL("doLoadPetriDishConfigFileSig"))
+#    self.m_menu_bar.insertItem("Debugging", self.m_debugging_menu)
+#
+#    self.connect(
+#      self, PYSIGNAL("doLoadPetriDishConfigFileSig"),
+#      self.doLoadPetriDishConfigFileSlot)
+#
+  def doLoadPetriDishConfigFileSlot(self, genesisFileName = None):
     print "pySessionDumbCtrl.doLoadPetriDishConfigFileSlot()."
-    s = QFileDialog.getOpenFileName(
-      ".",
-      "(*.avida)",
-      None,
-      "open file dialog",
-      "Choose a file")
-    print "s:", s
+#    s = QFileDialog.getOpenFileName(
+#      ".",
+#      "(*.avida)",
+#      None,
+#      "open file dialog",
+#      "Choose a file")
+#    print "s:", s
     genesis = cGenesis()
-    genesis.Open(cString(s.ascii()))
+    genesis.Open(cString(genesisFileName))
     if 0 == genesis.IsOpen():
-      print "Warning: Unable to find file '", s
+      print "Warning: Unable to find file '", genesisFileName
       return
     avida = pyAvida()
     avida.construct(genesis)
@@ -80,13 +80,15 @@ class pySessionDumbCtrl(pySessionDumbView):
       self.setAvidaSlot)
     self.m_session_mdl.m_session_mdtr.emit(
       PYSIGNAL("setAvidaSig"),
-      (self.m_avida,))
+    (self.m_avida,))
     self.connect(
       self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"),
       self.setAvidaSlot)
-
+      
   def construct(self, session_mdl):
     self.m_session_mdl = session_mdl
+    self.sessionInitialized = False
+    
     self.m_avida = None
     self.connect(
       self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"),
@@ -115,6 +117,12 @@ class pySessionDumbCtrl(pySessionDumbView):
     self.connect(
       self.m_update_avida_pb, SIGNAL("clicked()"),
       self.updatePBClickedSlot)
+      
+    self.connect(
+      self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("doInitializeAvidaPhaseIISig"),
+      self.doLoadPetriDishConfigFileSlot)
+
 
     self.m_start_pb_text = "Start..."
     self.m_pause_pb_text = "Pause..."
@@ -139,6 +147,10 @@ class pySessionDumbCtrl(pySessionDumbView):
       (None,))
       
   def doStart(self):
+    if self.sessionInitialized == False:
+      self.m_session_mdl.m_session_mdtr.emit(
+      PYSIGNAL("doInitializeAvidaPhaseISig"), ("test/",))
+      self.sessionInitialized = True
     self.m_should_update = True
     self.m_startpause_avida_pb.setText(self.m_pause_pb_text)
     self.m_update_avida_pb.setEnabled(False)
