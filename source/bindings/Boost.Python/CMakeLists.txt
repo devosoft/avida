@@ -54,7 +54,7 @@ SET(PyAvida_Pyste_Bases
   # XXX skip for now. Boost is unhappy with references to bools.
   #cpu_memory::${CMAKE_CURRENT_SOURCE_DIR}/genome.pyste:
   # XXX I can't figure out how it works.
-#  tArray::${CMAKE_CURRENT_SOURCE_DIR}/organism.pyste:${CMAKE_CURRENT_SOURCE_DIR}/merit.pyste:${CMAKE_CURRENT_SOURCE_DIR}/mutation.pyste:${CMAKE_CURRENT_SOURCE_DIR}/int_sum.pyste:
+  tArray::${CMAKE_CURRENT_SOURCE_DIR}/organism.pyste:${CMAKE_CURRENT_SOURCE_DIR}/merit.pyste:${CMAKE_CURRENT_SOURCE_DIR}/mutation.pyste:${CMAKE_CURRENT_SOURCE_DIR}/int_sum.pyste:
   # XXX Boost doesn't like that tMatrix returns refs to doubles.
   #tMatrix::
 
