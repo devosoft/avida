@@ -14,3 +14,4 @@ class pyOnePopulationCtrl(pyOnePopulationView):
     self.m_one_pop_petri_dish_ctrl.construct(self.m_session_mdl)
     self.m_one_pop_graph_ctrl.construct(self.m_session_mdl)
     self.m_one_pop_stats_ctrl.construct(self.m_session_mdl)
+    self.m_one_pop_timeline_ctrl.hide()
