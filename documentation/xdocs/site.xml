@@ -38,7 +38,9 @@ See http://forrest.apache.org/docs/linking.html for more info
   </about>
 
   <admin label="Administration" href="admin/" tab="admin">
-    <index href="index.html"/>
+    <index label ="Index" href="index.html" description="Information for Avida Developers"/>
+    <third-party label="Third Party Software" href="thirdparty.html"
+      description="Directions for installing required third party software"/>
   </admin>
 
   <using label="Using Avida" href="using/" tab="using">
