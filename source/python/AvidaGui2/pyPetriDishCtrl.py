@@ -114,3 +114,16 @@ class pyPetriDishCtrl(QWidget):
         self.m_cell_info[xm][ym].setBrush(QBrush(color))
         self.m_cell_info[xm][ym].setPen(QPen(color))
     self.m_canvas.update()
+    
+  def extractPopulationSlot(self):
+    population_dict = {}
+    world_w = cConfig.GetWorldX()
+    world_h = cConfig.GetWorldY()
+    for x in range(world_w):
+      for y in range(world_h):
+        cell = self.m_avida.m_population.GetCell(x + world_w*y)
+        if cell.IsOccupied() == True:
+          organism = cell.GetOrganism()
+          genome = organism.GetGenome()
+          population_dict[cell.GetID()] = str(genome.AsString())
+    self.emit(PYSIGNAL("freezeDishPhaseIISig"), ("/freezer", population_dict, ))
