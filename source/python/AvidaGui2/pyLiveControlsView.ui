@@ -29,6 +29,9 @@
             <property name="name">
                 <cstring>m_rate_slider</cstring>
             </property>
+            <property name="value">
+                <number>99</number>
+            </property>
             <property name="orientation">
                 <enum>Horizontal</enum>
             </property>
@@ -105,7 +108,7 @@
                 </spacer>
                 <widget class="QWidgetStack">
                     <property name="name">
-                        <cstring>widgetStack3</cstring>
+                        <cstring>m_play_pause_widgetStack</cstring>
                     </property>
                     <widget class="QWidget">
                         <property name="name">

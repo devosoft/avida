@@ -15,6 +15,18 @@ class pyLiveControlsCtrl(pyLiveControlsView):
     self.connect(
       self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"),
       self.setAvidaSlot)
+    self.connect(
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("doPauseAvidaSig"),
+      self.doPauseAvidaSlot)
+    self.connect(
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("doStartAvidaSig"),
+      self.doStartAvidaSlot)
+    self.connect(
+      self.m_play_button, SIGNAL("clicked()"),
+      self.clickedStartAvidaSlot)
+    self.connect(
+      self.m_pause_button, SIGNAL("clicked()"),
+      self.clickedPauseAvidaSlot)
 
   def setAvidaSlot(self, avida):
     old_avida = self.m_avida
@@ -31,3 +43,17 @@ class pyLiveControlsCtrl(pyLiveControlsView):
 
   def avidaUpdatedSlot(self):
     pass
+    
+  def doPauseAvidaSlot(self):
+    self.m_play_pause_widgetStack.raiseWidget(0)
+    
+  def doStartAvidaSlot(self):
+    self.m_play_pause_widgetStack.raiseWidget(1)
+    
+  def clickedPauseAvidaSlot(self):
+    self.m_session_mdl.m_session_mdtr.emit(
+      PYSIGNAL("fromLiveCtrlPauseAvidaSig"), ())
+    
+  def clickedStartAvidaSlot(self):
+    self.m_session_mdl.m_session_mdtr.emit(
+      PYSIGNAL("fromLiveCtrlStartAvidaSig"), ())
