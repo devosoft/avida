@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'pyGraphView.ui'
+# Form implementation generated from reading ui file './pyGraphView.ui'
 #
-# Created: Thu Mar 31 04:19:19 2005
+# Created: Thu Mar 31 12:36:38 2005
 #      by: The PyQt User Interface Compiler (pyuic) 3.13
 #
 # WARNING! All changes made in this file will be lost!

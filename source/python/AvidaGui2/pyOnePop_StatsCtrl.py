@@ -37,11 +37,11 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
     stats = self.m_avida.m_population.GetStats()
              
     #STATISTICS WINDOW
-    avg_merit = stats.GetAveMerit()
-    self.m_avg_merit.setText(QString("%1").arg(avg_merit))
+    avg_fitness = stats.GetAveFitness()
+    self.m_avg_fitness.setText(QString("%1").arg(avg_fitness))
 
-    dom_merit = stats.GetDomMerit()
-    self.m_dom_merit.setText(QString("%1").arg(dom_merit))
+    dom_fitness = stats.GetDomFitness()
+    self.m_dom_fitness.setText(QString("%1").arg(dom_fitness))
 
     num_orgs = stats.GetNumCreatures()
     self.m_num_orgs.setText(QString("%1").arg(num_orgs))
@@ -114,14 +114,13 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
 
 
   def updateOrgReportSlot(self, clickedCellNum):
-    print "an organism was just clicked on!"
   
     self.clickedCellNumber = clickedCellNum
     
     clickedCell = self.m_avida.m_population.GetCell(int(clickedCellNum))
 
-    print "clickedCell.IsOccupied() returns " 
-    print clickedCell.IsOccupied()
+#    print "clickedCell.IsOccupied() returns " 
+#    print clickedCell.IsOccupied()
 
     if not clickedCell.IsOccupied():
       #PAINT the stats fields empty
@@ -140,7 +139,10 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
     m_org_fitness = phenotype.GetFitness()
     self.m_org_fitness.setText(QString("%1").arg(m_org_fitness))    
 
-    m_org_name = genotype.GetName()
+    m_org_name = str(genotype.GetName())
+    hyphen_position = m_org_name.find('-')
+    m_org_name = m_org_name[hyphen_position+1:]   
+
     self.m_org_name.setText(str(m_org_name))
 
 #    self.m_org_name.setText(('-'))

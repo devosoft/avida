@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'pyOnePop_StatsView.ui'
 #
-# Created: Thu Mar 31 04:19:23 2005
+# Created: Fri Apr 1 00:24:13 2005
 #      by: The PyQt User Interface Compiler (pyuic) 3.13
 #
 # WARNING! All changes made in this file will be lost!
@@ -196,21 +196,21 @@ class pyOnePop_StatsView(QWidget):
         groupBox5Layout = QGridLayout(self.groupBox5.layout())
         groupBox5Layout.setAlignment(Qt.AlignTop)
 
-        self.m_dom_merit = QLabel(self.groupBox5,"m_dom_merit")
-        self.m_dom_merit.setSizePolicy(QSizePolicy(5,5,0,0,self.m_dom_merit.sizePolicy().hasHeightForWidth()))
-        m_dom_merit_font = QFont(self.m_dom_merit.font())
-        m_dom_merit_font.setPointSize(10)
-        self.m_dom_merit.setFont(m_dom_merit_font)
+        self.m_dom_fitness = QLabel(self.groupBox5,"m_dom_fitness")
+        self.m_dom_fitness.setSizePolicy(QSizePolicy(5,5,0,0,self.m_dom_fitness.sizePolicy().hasHeightForWidth()))
+        m_dom_fitness_font = QFont(self.m_dom_fitness.font())
+        m_dom_fitness_font.setPointSize(10)
+        self.m_dom_fitness.setFont(m_dom_fitness_font)
 
-        groupBox5Layout.addWidget(self.m_dom_merit,1,1)
+        groupBox5Layout.addWidget(self.m_dom_fitness,1,1)
 
-        self.m_avg_merit = QLabel(self.groupBox5,"m_avg_merit")
-        self.m_avg_merit.setSizePolicy(QSizePolicy(5,5,0,0,self.m_avg_merit.sizePolicy().hasHeightForWidth()))
-        m_avg_merit_font = QFont(self.m_avg_merit.font())
-        m_avg_merit_font.setPointSize(10)
-        self.m_avg_merit.setFont(m_avg_merit_font)
+        self.m_avg_fitness = QLabel(self.groupBox5,"m_avg_fitness")
+        self.m_avg_fitness.setSizePolicy(QSizePolicy(5,5,0,0,self.m_avg_fitness.sizePolicy().hasHeightForWidth()))
+        m_avg_fitness_font = QFont(self.m_avg_fitness.font())
+        m_avg_fitness_font.setPointSize(10)
+        self.m_avg_fitness.setFont(m_avg_fitness_font)
 
-        groupBox5Layout.addWidget(self.m_avg_merit,0,1)
+        groupBox5Layout.addWidget(self.m_avg_fitness,0,1)
 
         self.textLabel14_3_3_2 = QLabel(self.groupBox5,"textLabel14_3_3_2")
         self.textLabel14_3_3_2.setSizePolicy(QSizePolicy(5,5,0,0,self.textLabel14_3_3_2.sizePolicy().hasHeightForWidth()))
@@ -277,63 +277,15 @@ class pyOnePop_StatsView(QWidget):
         groupBox4Layout = QVBoxLayout(self.groupBox4.layout())
         groupBox4Layout.setAlignment(Qt.AlignTop)
 
-        layout32 = QVBoxLayout(None,0,6,"layout32")
-
-        layout26 = QHBoxLayout(None,0,6,"layout26")
-
-        self.textLabel14_3_3_3 = QLabel(self.groupBox4,"textLabel14_3_3_3")
-        self.textLabel14_3_3_3.setSizePolicy(QSizePolicy(5,5,0,0,self.textLabel14_3_3_3.sizePolicy().hasHeightForWidth()))
-        self.textLabel14_3_3_3.setMaximumSize(QSize(32767,40))
-        textLabel14_3_3_3_font = QFont(self.textLabel14_3_3_3.font())
-        textLabel14_3_3_3_font.setPointSize(10)
-        self.textLabel14_3_3_3.setFont(textLabel14_3_3_3_font)
-        layout26.addWidget(self.textLabel14_3_3_3)
+        layout80 = QGridLayout(None,1,1,0,6,"layout80")
 
         self.m_org_name = QLabel(self.groupBox4,"m_org_name")
         self.m_org_name.setSizePolicy(QSizePolicy(5,5,0,0,self.m_org_name.sizePolicy().hasHeightForWidth()))
         m_org_name_font = QFont(self.m_org_name.font())
         m_org_name_font.setPointSize(10)
         self.m_org_name.setFont(m_org_name_font)
-        layout26.addWidget(self.m_org_name)
-        layout32.addLayout(layout26)
 
-        layout27 = QHBoxLayout(None,0,6,"layout27")
-
-        self.textLabel14_3_3_2_3 = QLabel(self.groupBox4,"textLabel14_3_3_2_3")
-        self.textLabel14_3_3_2_3.setSizePolicy(QSizePolicy(5,5,0,0,self.textLabel14_3_3_2_3.sizePolicy().hasHeightForWidth()))
-        self.textLabel14_3_3_2_3.setMaximumSize(QSize(32767,40))
-        textLabel14_3_3_2_3_font = QFont(self.textLabel14_3_3_2_3.font())
-        textLabel14_3_3_2_3_font.setPointSize(10)
-        self.textLabel14_3_3_2_3.setFont(textLabel14_3_3_2_3_font)
-        layout27.addWidget(self.textLabel14_3_3_2_3)
-
-        self.textLabel14_3_3_3_3_2 = QLabel(self.groupBox4,"textLabel14_3_3_3_3_2")
-        self.textLabel14_3_3_3_3_2.setSizePolicy(QSizePolicy(5,5,0,0,self.textLabel14_3_3_3_3_2.sizePolicy().hasHeightForWidth()))
-        textLabel14_3_3_3_3_2_font = QFont(self.textLabel14_3_3_3_3_2.font())
-        textLabel14_3_3_3_3_2_font.setPointSize(10)
-        self.textLabel14_3_3_3_3_2.setFont(textLabel14_3_3_3_3_2_font)
-        layout27.addWidget(self.textLabel14_3_3_3_3_2)
-        layout32.addLayout(layout27)
-
-        layout29 = QHBoxLayout(None,0,6,"layout29")
-
-        self.textLabel14_3_3_2_2_3 = QLabel(self.groupBox4,"textLabel14_3_3_2_2_3")
-        self.textLabel14_3_3_2_2_3.setSizePolicy(QSizePolicy(5,5,0,0,self.textLabel14_3_3_2_2_3.sizePolicy().hasHeightForWidth()))
-        self.textLabel14_3_3_2_2_3.setMaximumSize(QSize(32767,40))
-        textLabel14_3_3_2_2_3_font = QFont(self.textLabel14_3_3_2_2_3.font())
-        textLabel14_3_3_2_2_3_font.setPointSize(10)
-        self.textLabel14_3_3_2_2_3.setFont(textLabel14_3_3_2_2_3_font)
-        layout29.addWidget(self.textLabel14_3_3_2_2_3)
-
-        self.m_org_fitness = QLabel(self.groupBox4,"m_org_fitness")
-        self.m_org_fitness.setSizePolicy(QSizePolicy(5,5,0,0,self.m_org_fitness.sizePolicy().hasHeightForWidth()))
-        m_org_fitness_font = QFont(self.m_org_fitness.font())
-        m_org_fitness_font.setPointSize(10)
-        self.m_org_fitness.setFont(m_org_fitness_font)
-        layout29.addWidget(self.m_org_fitness)
-        layout32.addLayout(layout29)
-
-        layout30 = QHBoxLayout(None,0,6,"layout30")
+        layout80.addWidget(self.m_org_name,0,1)
 
         self.textLabel14_3_3_2_2_2_2 = QLabel(self.groupBox4,"textLabel14_3_3_2_2_2_2")
         self.textLabel14_3_3_2_2_2_2.setSizePolicy(QSizePolicy(5,5,0,0,self.textLabel14_3_3_2_2_2_2.sizePolicy().hasHeightForWidth()))
@@ -341,33 +293,76 @@ class pyOnePop_StatsView(QWidget):
         textLabel14_3_3_2_2_2_2_font = QFont(self.textLabel14_3_3_2_2_2_2.font())
         textLabel14_3_3_2_2_2_2_font.setPointSize(10)
         self.textLabel14_3_3_2_2_2_2.setFont(textLabel14_3_3_2_2_2_2_font)
-        layout30.addWidget(self.textLabel14_3_3_2_2_2_2)
+
+        layout80.addWidget(self.textLabel14_3_3_2_2_2_2,2,0)
+
+        self.textLabel14_3_3_3 = QLabel(self.groupBox4,"textLabel14_3_3_3")
+        self.textLabel14_3_3_3.setSizePolicy(QSizePolicy(5,5,0,0,self.textLabel14_3_3_3.sizePolicy().hasHeightForWidth()))
+        self.textLabel14_3_3_3.setMaximumSize(QSize(32767,40))
+        textLabel14_3_3_3_font = QFont(self.textLabel14_3_3_3.font())
+        textLabel14_3_3_3_font.setPointSize(10)
+        self.textLabel14_3_3_3.setFont(textLabel14_3_3_3_font)
+
+        layout80.addWidget(self.textLabel14_3_3_3,0,0)
+
+        self.textLabel14_3_3_3_3_2 = QLabel(self.groupBox4,"textLabel14_3_3_3_3_2")
+        self.textLabel14_3_3_3_3_2.setSizePolicy(QSizePolicy(5,5,0,0,self.textLabel14_3_3_3_3_2.sizePolicy().hasHeightForWidth()))
+        textLabel14_3_3_3_3_2_font = QFont(self.textLabel14_3_3_3_3_2.font())
+        textLabel14_3_3_3_3_2_font.setPointSize(10)
+        self.textLabel14_3_3_3_3_2.setFont(textLabel14_3_3_3_3_2_font)
+
+        layout80.addWidget(self.textLabel14_3_3_3_3_2,4,1)
+
+        self.m_org_age = QLabel(self.groupBox4,"m_org_age")
+        m_org_age_font = QFont(self.m_org_age.font())
+        m_org_age_font.setPointSize(10)
+        self.m_org_age.setFont(m_org_age_font)
+
+        layout80.addWidget(self.m_org_age,3,1)
+
+        self.m_org_fitness = QLabel(self.groupBox4,"m_org_fitness")
+        self.m_org_fitness.setSizePolicy(QSizePolicy(5,5,0,0,self.m_org_fitness.sizePolicy().hasHeightForWidth()))
+        m_org_fitness_font = QFont(self.m_org_fitness.font())
+        m_org_fitness_font.setPointSize(10)
+        self.m_org_fitness.setFont(m_org_fitness_font)
+
+        layout80.addWidget(self.m_org_fitness,1,1)
+
+        self.textLabel14_3_3_2_3 = QLabel(self.groupBox4,"textLabel14_3_3_2_3")
+        self.textLabel14_3_3_2_3.setSizePolicy(QSizePolicy(5,5,0,0,self.textLabel14_3_3_2_3.sizePolicy().hasHeightForWidth()))
+        self.textLabel14_3_3_2_3.setMaximumSize(QSize(32767,40))
+        textLabel14_3_3_2_3_font = QFont(self.textLabel14_3_3_2_3.font())
+        textLabel14_3_3_2_3_font.setPointSize(10)
+        self.textLabel14_3_3_2_3.setFont(textLabel14_3_3_2_3_font)
+
+        layout80.addWidget(self.textLabel14_3_3_2_3,4,0)
+
+        self.textLabel1 = QLabel(self.groupBox4,"textLabel1")
+        textLabel1_font = QFont(self.textLabel1.font())
+        textLabel1_font.setPointSize(10)
+        self.textLabel1.setFont(textLabel1_font)
+
+        layout80.addWidget(self.textLabel1,3,0)
+
+        self.textLabel14_3_3_2_2_3 = QLabel(self.groupBox4,"textLabel14_3_3_2_2_3")
+        self.textLabel14_3_3_2_2_3.setSizePolicy(QSizePolicy(5,5,0,0,self.textLabel14_3_3_2_2_3.sizePolicy().hasHeightForWidth()))
+        self.textLabel14_3_3_2_2_3.setMaximumSize(QSize(32767,40))
+        textLabel14_3_3_2_2_3_font = QFont(self.textLabel14_3_3_2_2_3.font())
+        textLabel14_3_3_2_2_3_font.setPointSize(10)
+        self.textLabel14_3_3_2_2_3.setFont(textLabel14_3_3_2_2_3_font)
+
+        layout80.addWidget(self.textLabel14_3_3_2_2_3,1,0)
 
         self.m_org_gestation_time = QLabel(self.groupBox4,"m_org_gestation_time")
         self.m_org_gestation_time.setSizePolicy(QSizePolicy(5,5,0,0,self.m_org_gestation_time.sizePolicy().hasHeightForWidth()))
         m_org_gestation_time_font = QFont(self.m_org_gestation_time.font())
         m_org_gestation_time_font.setPointSize(10)
         self.m_org_gestation_time.setFont(m_org_gestation_time_font)
-        layout30.addWidget(self.m_org_gestation_time)
-        layout32.addLayout(layout30)
 
-        layout31 = QHBoxLayout(None,0,6,"layout31")
-
-        self.textLabel1 = QLabel(self.groupBox4,"textLabel1")
-        textLabel1_font = QFont(self.textLabel1.font())
-        textLabel1_font.setPointSize(10)
-        self.textLabel1.setFont(textLabel1_font)
-        layout31.addWidget(self.textLabel1)
-
-        self.m_org_age = QLabel(self.groupBox4,"m_org_age")
-        m_org_age_font = QFont(self.m_org_age.font())
-        m_org_age_font.setPointSize(10)
-        self.m_org_age.setFont(m_org_age_font)
-        layout31.addWidget(self.m_org_age)
-        layout32.addLayout(layout31)
+        layout80.addWidget(self.m_org_gestation_time,2,1)
+        groupBox4Layout.addLayout(layout80)
         spacer1_2_2 = QSpacerItem(16,16,QSizePolicy.Minimum,QSizePolicy.Minimum)
-        layout32.addItem(spacer1_2_2)
-        groupBox4Layout.addLayout(layout32)
+        groupBox4Layout.addItem(spacer1_2_2)
         pyOnePop_StatsViewLayout.addWidget(self.groupBox4)
 
         self.languageChange()
@@ -400,25 +395,25 @@ class pyOnePop_StatsView(QWidget):
         self.textLabel18.setText(self.__tr("equals"))
         self.m_num_equals.setText(self.__tr("-"))
         self.groupBox5.setTitle(self.__tr("Statistics"))
-        self.m_dom_merit.setText(self.__tr("0000"))
-        self.m_avg_merit.setText(self.__tr("0000"))
-        self.textLabel14_3_3_2.setText(self.__tr("Dom. Merit:"))
+        self.m_dom_fitness.setText(self.__tr("0000"))
+        self.m_avg_fitness.setText(self.__tr("0000"))
+        self.textLabel14_3_3_2.setText(self.__tr("Dominant Org. Fitness:"))
         self.m_num_orgs.setText(self.__tr("0000"))
-        self.textLabel14_3_3.setText(self.__tr("Avg. Merit:"))
-        self.textLabel14_3_3_2_2_2.setText(self.__tr("Avg. Gest:"))
+        self.textLabel14_3_3.setText(self.__tr("Avg. Fitness:"))
+        self.textLabel14_3_3_2_2_2.setText(self.__tr("Avg. Gestation (instructions):"))
         self.m_avg_gest.setText(self.__tr("0000"))
-        self.textLabel14_3_3_2_2.setText(self.__tr("Num. Orgs:"))
-        self.groupBox4.setTitle(self.__tr("Org Report"))
-        self.textLabel14_3_3_3.setText(self.__tr("Name:"))
+        self.textLabel14_3_3_2_2.setText(self.__tr("Population Size:"))
+        self.groupBox4.setTitle(self.__tr("Org. Clicked on  Report"))
         self.m_org_name.setText(self.__tr("-"))
-        self.textLabel14_3_3_2_3.setText(self.__tr("Tasks:"))
+        self.textLabel14_3_3_2_2_2_2.setText(self.__tr("Gestation (instructions):"))
+        self.textLabel14_3_3_3.setText(self.__tr("Name:"))
         self.textLabel14_3_3_3_3_2.setText(self.__tr("-"))
-        self.textLabel14_3_3_2_2_3.setText(self.__tr("Fitness:"))
-        self.m_org_fitness.setText(self.__tr("-"))
-        self.textLabel14_3_3_2_2_2_2.setText(self.__tr("Gestation:"))
-        self.m_org_gestation_time.setText(self.__tr("-"))
-        self.textLabel1.setText(self.__tr("Age:"))
         self.m_org_age.setText(self.__tr("-"))
+        self.m_org_fitness.setText(self.__tr("-"))
+        self.textLabel14_3_3_2_3.setText(self.__tr("Tasks:"))
+        self.textLabel1.setText(self.__tr("Age (updates):"))
+        self.textLabel14_3_3_2_2_3.setText(self.__tr("Fitness:"))
+        self.m_org_gestation_time.setText(self.__tr("-"))
 
 
     def __tr(self,s,c = None):

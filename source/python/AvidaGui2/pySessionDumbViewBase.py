@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'pySessionDumbViewBase.ui'
+# Form implementation generated from reading ui file './pySessionDumbViewBase.ui'
 #
-# Created: Thu Mar 31 04:19:24 2005
+# Created: Fri Apr 1 00:21:38 2005
 #      by: The PyQt User Interface Compiler (pyuic) 3.13
 #
 # WARNING! All changes made in this file will be lost!

@@ -91,8 +91,8 @@ class pyPetriDishCtrl(QWidget):
         self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
         self.avidaUpdatedSlot)
 
-    self.m_map_cell_w = 5
-    self.m_map_cell_h = 5
+    self.m_map_cell_w = 10
+    self.m_map_cell_h = 10
     world_w = cConfig.GetWorldX()
     world_h = cConfig.GetWorldY()
 
@@ -123,7 +123,7 @@ class pyPetriDishCtrl(QWidget):
   def mousePressEvent(self,e):
     if e.button() != Qt.LeftButton:
       return
-    print "mouse pressed"
+
 
     #if the run has not started yet, do nothing
     if self.m_avida == None:
@@ -132,10 +132,10 @@ class pyPetriDishCtrl(QWidget):
     world_w = cConfig.GetWorldX()
     world_h = cConfig.GetWorldY()
 
-    clicked_map_cell_w = round(float(e.x()-3)/self.m_map_cell_w)				 
-    clicked_map_cell_h = round(float(e.y()-3)/self.m_map_cell_h)
+    clicked_map_cell_w = round(float(e.x())/self.m_map_cell_w)				 
+    clicked_map_cell_h = round(float(e.y())/self.m_map_cell_h)
 
-    print "clicked_map_cell_w is %f, clicked_map_cell_h is %f" %(clicked_map_cell_w,clicked_map_cell_h)
+#    print "clicked_map_cell_w is %f, clicked_map_cell_h is %f" %(clicked_map_cell_w,clicked_map_cell_h)
 
 
    
@@ -144,21 +144,24 @@ class pyPetriDishCtrl(QWidget):
       return
     
     
-    #get the cell number in avida that corresponds to this coordinate
-    world_w_mid = world_w/2
-    world_h_mid = world_h/2
-    bottom_left_cell = ((((world_h+1)-world_w_mid)*world_w) - world_w_mid)
+    #get the cell number in avida that corresponds to this coordinate under the system where the 0th cell is in the middle
+    #this code is obsolete if the 0th cell is in the top right corner
+#    world_w_mid = world_w/2
+#    world_h_mid = world_h/2
+#    bottom_left_cell = ((((world_h+1)-world_w_mid)*world_w) - world_w_mid)
 
-    if clicked_map_cell_h == world_h_mid:   #if it is on the y midpoint line that gets split...
-      if clicked_map_cell_w >= world_w_mid: #and it is after the origin (first avida cell)
-        clickedCellNum = clicked_map_cell_w - world_w_mid
-      else:
-        clickedCellNum = ((world_h_mid-1)*world_w)+ bottom_left_cell + clicked_map_cell_w
-    elif clicked_map_cell_h > world_h_mid:  #if above the split
-      print "here"
-      clickedCellNum = ( (clicked_map_cell_h - (world_h_mid + 1))*world_w ) + world_h_mid + clicked_map_cell_w
-    elif clicked_map_cell_h < world_h_mid:  #if below the spilt
-      clickedCellNum = ( bottom_left_cell + ( ((clicked_map_cell_h - 1)* world_w) + clicked_map_cell_w) )
+#    if clicked_map_cell_h == world_h_mid:   #if it is on the y midpoint line that gets split...
+#      if clicked_map_cell_w >= world_w_mid: #and it is after the origin (first avida cell)
+#        clickedCellNum = clicked_map_cell_w - world_w_mid
+#      else:
+#        clickedCellNum = ((world_h_mid-1)*world_w)+ bottom_left_cell + clicked_map_cell_w
+#    elif clicked_map_cell_h > world_h_mid:  #if above the split
+#      clickedCellNum = ( (clicked_map_cell_h - (world_h_mid + 1))*world_w ) + world_h_mid + clicked_map_cell_w
+#    elif clicked_map_cell_h < world_h_mid:  #if below the spilt
+#      clickedCellNum = ( bottom_left_cell + ( ((clicked_map_cell_h - 1)* world_w) + clicked_map_cell_w) )
+
+
+    clickedCellNum = (((clicked_map_cell_h-1)*world_h) + clicked_map_cell_w-1)
 
 
     clickedCell = self.m_avida.m_population.GetCell(int(clickedCellNum))
