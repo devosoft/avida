@@ -81,18 +81,20 @@ class pyPetriDishCtrl(QWidget):
     old_avida = self.m_avida
     self.m_avida = avida
     if(old_avida):
-      self.disconnect(
-        old_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
-        self.avidaUpdatedSlot)
+      #self.disconnect(
+      #  old_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
+      #  self.avidaUpdatedSlot)
       old_avida.removeGuiWorkFunctor(self)
       del old_avida
+      pass
     if(self.m_avida):
-      self.connect(
-        self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
-        self.avidaUpdatedSlot)
+      #self.connect(
+      #  self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
+      #  self.avidaUpdatedSlot)
+      pass
 
-    self.m_map_cell_w = 10
-    self.m_map_cell_h = 10
+    self.m_map_cell_w = 5
+    self.m_map_cell_h = 5
     world_w = cConfig.GetWorldX()
     world_h = cConfig.GetWorldY()
 
@@ -186,10 +188,16 @@ class pyPetriDishCtrl(QWidget):
     self.m_petri_dish_layout.setResizeMode(QLayout.Minimum)
     self.m_canvas_view = QCanvasView(None, self,"m_canvas_view")
     self.m_petri_dish_layout.addWidget(self.m_canvas_view)
+    self.m_changed_cell_items = []
+    self.m_indexer = None
 
   def calcColorScale(self):
     self.m_cs_min_value = 0
     self.m_cs_value_range = self.m_avida.m_population.GetStats().GetMaxFitness()
+
+  def setRange(self, min, max):
+    self.m_cs_min_value = min
+    self.m_cs_value_range = max - min
 
   def doubleToColor(self, x):
     def sigmoid(w, midpoint, steepness):
@@ -216,28 +224,74 @@ class pyPetriDishCtrl(QWidget):
       state = self.doubleToColor(dbl)
     return state
 
+  def setIndexer(self, indexer):
+    print "pyPetriDishCtrl.setIndexer"
+    self.m_indexer = indexer
+
+    if self.m_cell_info:
+      def temp_color_functor(index):
+        return QColor(0, 0, 0)
+      for cell_info_item in self.m_cell_info:
+        cell_info_item.updateColorUsingFunctor(temp_color_functor)
+      self.m_canvas.update()
+      self.m_changed_cell_items = self.m_cell_info[:]
+
+
+  #def doSomeWork(self, avida):
+  #  def temp_normalized_index_functor(population_cell):
+  #    #dbl = 0.0
+  #    #if population_cell.IsOccupied():
+  #    #  dbl = population_cell.GetOrganism().GetPhenotype().GetFitness()
+  #    #return dbl
+  #    return population_cell.IsOccupied() and population_cell.GetOrganism().GetPhenotype().GetFitness() or 0.0
+
+  #  for x in range(3600):
+  #    if len(self.m_cell_info) <= self.m_thread_work_cell_item_index:
+  #      self.m_thread_work_cell_item_index = 0
+  #      return False
+  #    else:
+  #      cell_info_item = self.m_cell_info[self.m_thread_work_cell_item_index]
+  #      if cell_info_item.checkNormalizedIndexUsingFunctor(
+  #        temp_normalized_index_functor,
+  #        self.m_cs_min_value,
+  #        self.m_cs_value_range
+  #      ):
+  #        self.m_changed_cell_items.append(cell_info_item)
+  #      self.m_thread_work_cell_item_index += 1
+  #  return True
+
   def doSomeWork(self, avida):
     def temp_normalized_index_functor(population_cell):
-      dbl = 0.0
-      if population_cell.IsOccupied():
-        dbl = population_cell.GetOrganism().GetPhenotype().GetFitness()
-      return dbl
+      return population_cell.IsOccupied() and population_cell.GetOrganism().GetPhenotype().GetFitness() or 0.0
 
-    for x in range(3600):
-      if len(self.m_cell_info) <= self.m_thread_work_cell_item_index:
-        self.m_thread_work_cell_item_index = 0
-        return False
-      else:
-        cell_info_item = self.m_cell_info[self.m_thread_work_cell_item_index]
-        if cell_info_item.checkNormalizedIndexUsingFunctor(
-          temp_normalized_index_functor,
-          self.m_cs_min_value,
-          self.m_cs_value_range
-        ):
-          self.m_changed_cell_items.append(cell_info_item)
-        self.m_thread_work_cell_item_index += 1
-    return True
+    if self.m_indexer:
+      for x in range(len(self.m_cell_info)):
+        if len(self.m_cell_info) <= self.m_thread_work_cell_item_index:
+          self.m_thread_work_cell_item_index = 0
+          return False
+        else:
+          cell_info_item = self.m_cell_info[self.m_thread_work_cell_item_index]
+          if self.m_indexer(cell_info_item, self.m_cs_min_value, self.m_cs_value_range):
+            self.m_changed_cell_items.append(cell_info_item)
+          self.m_thread_work_cell_item_index += 1
+      return True
+    else:
+      return False
 
+  def updateCellItems(self):
+    def temp_color_functor(index):
+      def sigmoid(w, midpoint, steepness):
+        val = steepness*(w-midpoint)
+        return exp(val)/(1+exp(val))     
+      h = (index*360.0 + 100.0) % 360.0
+      v = sigmoid(index, 0.3, 10.0) * 255.0
+      s = sigmoid(1.0 - index, 0.1, 30.0) * 255.0
+      return QColor(h, s, v, QColor.Hsv)
+      
+    for cell_info_item in self.m_changed_cell_items:
+      cell_info_item.updateColorUsingFunctor(temp_color_functor)
+    self.m_changed_cell_items = []
+    if self.m_canvas: self.m_canvas.update()
 
   def avidaUpdatedSlot(self):
     def temp_color_functor(index):
@@ -268,3 +322,11 @@ class pyPetriDishCtrl(QWidget):
             genome = organism.GetGenome()
             population_dict[cell.GetID()] = str(genome.AsString())
     self.emit(PYSIGNAL("freezeDishPhaseIISig"), ("/freezer", population_dict, ))
+
+  def zoomSlot(self, zoom_factor):
+    #print "pyPetriDishCtrl.zoomSlot zoom_factor", zoom_factor
+    if self.m_canvas_view:
+      m = QWMatrix()
+      m.scale(zoom_factor/5.0, zoom_factor/5.0)
+      self.m_canvas_view.setWorldMatrix(m)
+
