@@ -45,6 +45,7 @@
 		};
 		DCC30C490762532C008F7A48 = {
 			children = (
+				DCE60DB307C580B200B002E1,
 				703F684207B437B800C1CA76,
 				DCC30C670762539A008F7A48,
 				DCC3164E07626CF3008F7A48,
@@ -799,7 +800,6 @@
 				DCC30E5B0762539C008F7A48,
 				DCC30E5C0762539C008F7A48,
 				DCC30E5D0762539C008F7A48,
-				DCC30E5E0762539C008F7A48,
 				DCC30E5F0762539C008F7A48,
 				DCC30E600762539C008F7A48,
 				DCC30E610762539C008F7A48,
@@ -807,42 +807,31 @@
 				DCC30E630762539C008F7A48,
 				DCC30E640762539C008F7A48,
 				DCC30E650762539C008F7A48,
-				DCC30E660762539C008F7A48,
 				DCC30E670762539C008F7A48,
 				DCC30E680762539C008F7A48,
-				DCC30E690762539C008F7A48,
 				DCC30E6A0762539C008F7A48,
 				DCC30E6B0762539C008F7A48,
-				DCC30E6C0762539C008F7A48,
 				DCC30E6D0762539C008F7A48,
 				DCC30E6E0762539C008F7A48,
 				DCC30E6F0762539C008F7A48,
 				DCC30E700762539C008F7A48,
 				DCC30E710762539C008F7A48,
-				DCC30E720762539C008F7A48,
 				DCC30E730762539C008F7A48,
 				DCC30E740762539C008F7A48,
 				DCC30E750762539C008F7A48,
 				DCC30E760762539C008F7A48,
-				DCC30E770762539C008F7A48,
 				DCC30E780762539C008F7A48,
 				DCC30E790762539C008F7A48,
-				DCC30E7A0762539C008F7A48,
 				DCC30E7B0762539C008F7A48,
 				DCC30E7C0762539C008F7A48,
-				DCC30E7D0762539C008F7A48,
 				DCC30E7E0762539C008F7A48,
 				DCC30E7F0762539C008F7A48,
-				DCC30E800762539C008F7A48,
 				DCC30E810762539C008F7A48,
 				DCC30E820762539C008F7A48,
-				DCC30E830762539C008F7A48,
 				DCC30E840762539C008F7A48,
 				DCC30E850762539C008F7A48,
-				DCC30E860762539C008F7A48,
 				DCC30E870762539C008F7A48,
 				DCC30E880762539C008F7A48,
-				DCC30E890762539C008F7A48,
 				DCC30E8A0762539C008F7A48,
 				DCC30E8B0762539C008F7A48,
 				DCC30E8C0762539C008F7A48,
@@ -851,13 +840,10 @@
 				DCC30E8F0762539C008F7A48,
 				DCC30E900762539C008F7A48,
 				DCC30E910762539C008F7A48,
-				DCC30E920762539C008F7A48,
 				DCC30E930762539C008F7A48,
 				DCC30E940762539C008F7A48,
-				DCC30E950762539C008F7A48,
 				DCC30E960762539C008F7A48,
 				DCC30E970762539C008F7A48,
-				DCC30E980762539C008F7A48,
 				DCC30E990762539C008F7A48,
 				DCC30E9A0762539C008F7A48,
 				DCC30E9B0762539C008F7A48,
@@ -866,7 +852,6 @@
 				DCC30E9E0762539C008F7A48,
 				DCC30E9F0762539C008F7A48,
 				DCC30EA00762539C008F7A48,
-				DCC30EA10762539C008F7A48,
 				DCC30EA20762539C008F7A48,
 				DCC30EA30762539C008F7A48,
 				DCC30EA40762539C008F7A48,
@@ -874,36 +859,26 @@
 				DCC30EA60762539C008F7A48,
 				DCC30EA70762539C008F7A48,
 				DCC30EA80762539C008F7A48,
-				DCC30EA90762539C008F7A48,
 				DCC30EAA0762539C008F7A48,
 				DCC30EAB0762539C008F7A48,
-				DCC30EAC0762539C008F7A48,
 				DCC30EAD0762539C008F7A48,
 				DCC30EAE0762539D008F7A48,
-				DCC30EAF0762539D008F7A48,
 				DCC30EB00762539D008F7A48,
 				DCC30EB10762539D008F7A48,
-				DCC30EB20762539D008F7A48,
 				DCC30EB30762539D008F7A48,
 				DCC30EB40762539D008F7A48,
-				DCC30EB50762539D008F7A48,
 				DCC30EB60762539D008F7A48,
 				DCC30EB70762539D008F7A48,
-				DCC30EB80762539D008F7A48,
 				DCC30EB90762539D008F7A48,
 				DCC30EBA0762539D008F7A48,
-				DCC30EBB0762539D008F7A48,
 				DCC30EBC0762539D008F7A48,
 				DCC30EBD0762539D008F7A48,
-				DCC30EBE0762539D008F7A48,
 				DCC30EBF0762539D008F7A48,
 				DCC30EC00762539D008F7A48,
-				DCC30EC10762539D008F7A48,
 				DCC30EC20762539D008F7A48,
 				DCC30EC30762539D008F7A48,
 				DCC30EC40762539D008F7A48,
 				DCC30EC50762539D008F7A48,
-				DCC30EC60762539D008F7A48,
 				DCC30EC70762539D008F7A48,
 				DCC30EC80762539D008F7A48,
 				DCC30EC90762539D008F7A48,
@@ -1260,14 +1235,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		DCC30E5E0762539C008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.python;
-			path = pyAnalyzeControlsView.py;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DCC30E5F0762539C008F7A48 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -1324,14 +1291,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		DCC30E660762539C008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.python;
-			path = pyEduWorkspaceView.py;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DCC30E670762539C008F7A48 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -1348,14 +1307,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		DCC30E690762539C008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.python;
-			path = pyFreezerView.py;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DCC30E6A0762539C008F7A48 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -1369,14 +1320,6 @@
 			isa = PBXFileReference;
 			lastKnownFileType = text.script.python;
 			path = pyGradientScaleCtrl.py;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC30E6C0762539C008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.python;
-			path = pyGradientScaleView.py;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -1420,14 +1363,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		DCC30E720762539C008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.python;
-			path = pyLiveControlsView.py;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DCC30E730762539C008F7A48 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -1460,14 +1395,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		DCC30E770762539C008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.python;
-			path = pyNavBarView.py;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DCC30E780762539C008F7A48 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -1481,14 +1408,6 @@
 			isa = PBXFileReference;
 			lastKnownFileType = text.script.python;
 			path = pyOneAna_GraphCtrl.py;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC30E7A0762539C008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.python;
-			path = pyOneAna_GraphView.py;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -1508,14 +1427,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		DCC30E7D0762539C008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.python;
-			path = pyOneAna_PetriDishView.py;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DCC30E7E0762539C008F7A48 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -1529,14 +1440,6 @@
 			isa = PBXFileReference;
 			lastKnownFileType = text.script.python;
 			path = pyOneAna_StatsCtrl.py;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC30E800762539C008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.python;
-			path = pyOneAna_StatsView.py;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -1556,14 +1459,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		DCC30E830762539C008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.python;
-			path = pyOneAna_TimelineView.py;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DCC30E840762539C008F7A48 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -1580,14 +1475,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		DCC30E860762539C008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.python;
-			path = pyOneAnalyzeView.py;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DCC30E870762539C008F7A48 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -1601,14 +1488,6 @@
 			isa = PBXFileReference;
 			lastKnownFileType = text.script.python;
 			path = pyOneOrganismCtrl.py;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC30E890762539C008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.python;
-			path = pyOneOrganismView.py;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -1676,14 +1555,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		DCC30E920762539C008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.python;
-			path = pyOnePop_StatsView.py;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DCC30E930762539C008F7A48 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -1700,14 +1571,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		DCC30E950762539C008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.python;
-			path = pyOnePop_TimelineView.py;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DCC30E960762539C008F7A48 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -1721,14 +1584,6 @@
 			isa = PBXFileReference;
 			lastKnownFileType = text.script.python;
 			path = pyOnePopulationCtrl.py;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC30E980762539C008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.python;
-			path = pyOnePopulationView.py;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -1796,14 +1651,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		DCC30EA10762539C008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.python;
-			path = pySessionDumbViewBase.py;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DCC30EA20762539C008F7A48 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -1860,14 +1707,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		DCC30EA90762539C008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.python;
-			path = pyTimelineView.py;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DCC30EAA0762539C008F7A48 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -1881,14 +1720,6 @@
 			isa = PBXFileReference;
 			lastKnownFileType = text.script.python;
 			path = pyTwoAnalyzeCtrl.py;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC30EAC0762539C008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.python;
-			path = pyTwoAnalyzeView.py;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -1908,14 +1739,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		DCC30EAF0762539D008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.python;
-			path = pyTwoOrg_VivisectionView.py;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DCC30EB00762539D008F7A48 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -1929,14 +1752,6 @@
 			isa = PBXFileReference;
 			lastKnownFileType = text.script.python;
 			path = pyTwoOrganismCtrl.py;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC30EB20762539D008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.python;
-			path = pyTwoOrganismView.py;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -1956,14 +1771,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		DCC30EB50762539D008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.python;
-			path = pyTwoPop_GraphView.py;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DCC30EB60762539D008F7A48 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -1977,14 +1784,6 @@
 			isa = PBXFileReference;
 			lastKnownFileType = text.script.python;
 			path = pyTwoPop_PetriDishesCtrl.py;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC30EB80762539D008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.python;
-			path = pyTwoPop_PetriDishesView.py;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -2004,14 +1803,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		DCC30EBB0762539D008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.python;
-			path = pyTwoPop_StatsView.py;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DCC30EBC0762539D008F7A48 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -2028,14 +1819,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		DCC30EBE0762539D008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.python;
-			path = pyTwoPop_TimelineView.py;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DCC30EBF0762539D008F7A48 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -2049,14 +1832,6 @@
 			isa = PBXFileReference;
 			lastKnownFileType = text.script.python;
 			path = pyTwoPopulationCtrl.py;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC30EC10762539D008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.python;
-			path = pyTwoPopulationView.py;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -2089,14 +1864,6 @@
 			isa = PBXFileReference;
 			lastKnownFileType = text.script.python;
 			path = pyVivisectionCtrl.py;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC30EC60762539D008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.script.python;
-			path = pyVivisectionView.py;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -11600,6 +11367,15 @@
 			isa = PBXBuildFile;
 			settings = {
 			};
+		};
+		DCE60DB307C580B200B002E1 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.xml;
+			name = "third-party-osx.xml";
+			path = "documentation/xdocs/admin/third-party-osx.xml";
+			refType = 4;
+			sourceTree = "<group>";
 		};
 	};
 	rootObject = DCC30C4D0762532C008F7A48;

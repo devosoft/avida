@@ -1,30 +1,11 @@
 // !$*UTF8*$!
 {
-	DC2763F5076441F20025BF28 = {
-		fRef = DCC310900762539E008F7A48;
-		isa = PBXTextBookmark;
-		name = "  int organism_index = 0;\n";
-		rLen = 26;
-		rLoc = 136450;
-		rType = 0;
-		vrLen = 550;
-		vrLoc = 0;
-	};
-	DCBB565D0763ECAA00FA9C7E = {
-		fRef = DCC310900762539E008F7A48;
-		isa = PBXTextBookmark;
-		name = "  int organism_index = 0;\n";
-		rLen = 26;
-		rLoc = 136450;
-		rType = 0;
-		vrLen = 0;
-		vrLoc = 0;
-	};
 	DCC30C4D0762532C008F7A48 = {
 		activeBuildStyle = DCC30C4B0762532C008F7A48;
 		activeExecutable = DCC3164F07626CF3008F7A48;
 		activeTarget = DCC3164C07626CF3008F7A48;
 		addToTargets = (
+			DCC3164C07626CF3008F7A48,
 		);
 		breakpoints = (
 		);
@@ -62,18 +43,44 @@
 				);
 			};
 			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = 1;
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_SCM_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					161,
+					20,
+					31,
+					43,
+					43,
+					20,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+					PBXFileDataSource_SCM_ColumnID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.XCSCMDataSource = {
 				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
 				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
 				PBXFileTableDataSourceColumnWidthsKey = (
 					20,
-					178,
 					20,
-					38,
+					161,
+					20,
+					31,
 					43,
 					43,
 					20,
 				);
 				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_SCM_ColumnID,
 					PBXFileDataSource_FiletypeID,
 					PBXFileDataSource_Filename_ColumnID,
 					PBXFileDataSource_Built_ColumnID,
@@ -105,7 +112,7 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 123996176;
+			PBXPerProjectTemplateStateSaveDate = 130319458;
 			PBXPrepackagedSmartGroups_v2 = (
 				{
 					PBXTransientLocationAtTop = bottom;
@@ -282,11 +289,7 @@
 					};
 				},
 			);
-			PBXWorkspaceStateSaveDate = 123996176;
-		};
-		perUserProjectItems = {
-			DC2763F5076441F20025BF28 = DC2763F5076441F20025BF28;
-			DCBB565D0763ECAA00FA9C7E = DCBB565D0763ECAA00FA9C7E;
+			PBXWorkspaceStateSaveDate = 130319458;
 		};
 		sourceControlManager = DCC30C4E0762532C008F7A48;
 		userBuildSettings = {
@@ -294,11 +297,11 @@
 	};
 	DCC30C4E0762532C008F7A48 = {
 		fallbackIsa = XCSourceControlManager;
-		isSCMEnabled = 0;
+		isSCMEnabled = 1;
 		isa = PBXSourceControlManager;
 		scmConfiguration = {
 		};
-		scmType = "";
+		scmType = scm.subversion;
 	};
 	DCC30C4F0762532C008F7A48 = {
 		indexTemplatePath = "";
@@ -313,14 +316,6 @@
 		wantsCodeCompletionPlaceholdersInserted = 1;
 		wantsCodeCompletionTabCompletes = 1;
 		wantsIndex = 1;
-	};
-	DCC30C550762539A008F7A48 = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {2300, 3471}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRect = "{{0, 2993}, {705, 428}}";
-			sepNavWindowFrame = "{{291, 419}, {750, 502}}";
-		};
 	};
 	DCC30FA70762539D008F7A48 = {
 		uiCtxt = {
