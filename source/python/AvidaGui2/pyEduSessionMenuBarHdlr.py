@@ -124,7 +124,8 @@ class pyEduSessionMenuBarHdlr(qt.QObject):
       self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr, qt.PYSIGNAL("doMinimizeWindowSig"))
     main_window.m_menu_bar.insertItem("Window", main_window.m_window_menu)
 
-    # main_window.setupCustomMenus(self)
+    if hasattr(main_window, 'setupCustomMenus'):
+      main_window.setupCustomMenus(self)
 
 # Unit tests.
 
