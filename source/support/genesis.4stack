@@ -3,7 +3,7 @@
 # For more information, see doc/genesis.html
 #############################################################################
 
-VERSION_ID 2.2.1		# Do not change this value!
+VERSION_ID 2.3.0		# Do not change this value!
 
 ### Architecture Variables ###
 MAX_UPDATES  -1         # Maximum updates to run simulation (-1 = no limit)

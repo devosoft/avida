@@ -75,7 +75,7 @@ FIXME:  remove asap, switching to file-configureable option
 // the macro VERSION is defined by automake (in the file 'configure.in' in
 // the top-level directory).
 #ifndef VERSION
- #define VERSION "2.2.1"
+ #define VERSION "2.3.0"
 #endif
 #define AVIDA_VERSION VERSION
 
