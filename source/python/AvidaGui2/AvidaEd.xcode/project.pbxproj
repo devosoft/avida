@@ -7,66 +7,16 @@
 	objects = {
 		DC00C16E07D6FB1700E90B4B = {
 			children = (
-				DC3A63D707DD02DD00A043AD,
-				DC3A63D807DD02DE00A043AD,
-				DC3A63DA07DD02DE00A043AD,
-				DC3A63DB07DD02DE00A043AD,
-				DC3A63DC07DD02DE00A043AD,
-				DC3A63DD07DD02DE00A043AD,
-				DC3A63DF07DD02DE00A043AD,
-				DC3A63E007DD02DE00A043AD,
-				DC3A63E107DD02DE00A043AD,
-				DC3A63E207DD02DE00A043AD,
-				DC3A63E407DD02DE00A043AD,
-				DC3A63E507DD02DE00A043AD,
-				DC3A63E707DD02DE00A043AD,
-				DC3A63E807DD02DE00A043AD,
-				DC3A63EA07DD02DE00A043AD,
-				DC3A63EB07DD02DE00A043AD,
-				DC3A63EC07DD02DE00A043AD,
-				DC3A63ED07DD02DE00A043AD,
-				DC3A63EE07DD02DE00A043AD,
-				DC3A63EF07DD02DE00A043AD,
-				DC3A63F007DD02DE00A043AD,
-				DC3A63F107DD02DE00A043AD,
-				DC3A63F207DD02DE00A043AD,
-				DC3A63F307DD02DE00A043AD,
-				DC3A63F507DD02DE00A043AD,
-				DC3A63F607DD02DE00A043AD,
-				DC3A63F707DD02DE00A043AD,
-				DC3A63F907DD02DE00A043AD,
+				DC0BFDC407DDB79A00AAE422,
+				DC0BFDC707DDB7B100AAE422,
+				DC0BFDCC07DDB84300AAE422,
+				DC0BFDB007DDB49200AAE422,
+				DC0BFDC207DDB69300AAE422,
+				DC0BFDCF07DDB88900AAE422,
+				DC0BFDD207DDB8B600AAE422,
+				DC0BFDC307DDB76B00AAE422,
 				DC3A63FA07DD02DE00A043AD,
-				DC3A63FB07DD02DE00A043AD,
-				DC3A63FC07DD02DE00A043AD,
-				DC3A63FE07DD02DE00A043AD,
-				DC3A63FF07DD02DE00A043AD,
-				DC3A640207DD02DE00A043AD,
-				DC3A640407DD02DE00A043AD,
-				DC3A640507DD02DE00A043AD,
-				DC3A640607DD02DE00A043AD,
-				DC3A640707DD02DE00A043AD,
-				DC3A640807DD02DE00A043AD,
-				DC3A640907DD02DE00A043AD,
-				DC3A640A07DD02DE00A043AD,
-				DC3A640C07DD02DE00A043AD,
-				DC3A640E07DD02DE00A043AD,
-				DC3A641007DD02DE00A043AD,
-				DC3A641207DD02DE00A043AD,
-				DC3A641407DD02DE00A043AD,
-				DC3A641607DD02DE00A043AD,
-				DC3A641707DD02DE00A043AD,
-				DC3A641807DD02DE00A043AD,
-				DC3A641907DD02DE00A043AD,
-				DC3A641A07DD02DE00A043AD,
-				DC3A641C07DD02DE00A043AD,
-				DC3A641D07DD02DE00A043AD,
-				DC3A641E07DD02DE00A043AD,
-				DC3A642007DD02DE00A043AD,
-				DC3A642207DD02DE00A043AD,
-				DC3A642407DD02DE00A043AD,
-				DC3A642607DD02DE00A043AD,
-				DC3A642907DD02DE00A043AD,
-				DC3A642B07DD02DE00A043AD,
+				DC0BFF3407DE17DB00AAE422,
 			);
 			isa = PBXGroup;
 			refType = 4;
@@ -96,9 +46,733 @@
 			hasScannedForEncodings = 0;
 			isa = PBXProject;
 			mainGroup = DC00C16E07D6FB1700E90B4B;
+			productRefGroup = DC0BFF3407DE17DB00AAE422;
 			projectDirPath = "";
 			targets = (
+				DC0BFF3207DE17DB00AAE422,
 			);
+		};
+		DC0BFDAE07DDB3BB00AAE422 = {
+			children = (
+				DC3A640C07DD02DE00A043AD,
+				DC0BFE8107DDD7C600AAE422,
+				DC0BFF0507DE119F00AAE422,
+				DC0BFEFA07DE0B0000AAE422,
+			);
+			isa = PBXGroup;
+			name = "One-Organism View";
+			path = "";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFDAF07DDB43E00AAE422 = {
+			children = (
+				DC3A640A07DD02DE00A043AD,
+				DC3A63F607DD02DE00A043AD,
+				DC3A63DC07DD02DE00A043AD,
+				DC3A63DB07DD02DE00A043AD,
+				DC3A63DA07DD02DE00A043AD,
+				DC0BFE9507DDD7C600AAE422,
+				DC3A63F307DD02DE00A043AD,
+				DC3A63F207DD02DE00A043AD,
+				DC3A641707DD02DE00A043AD,
+				DC0BFE9307DDD7C600AAE422,
+			);
+			isa = PBXGroup;
+			name = "One-Population View";
+			path = "";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFDB007DDB49200AAE422 = {
+			children = (
+				DC3A63F907DD02DE00A043AD,
+				DC0BFE7407DDD78500AAE422,
+				DC3A63F507DD02DE00A043AD,
+				DC0BFE7B07DDD7A800AAE422,
+				DC3A63E407DD02DE00A043AD,
+				DC0BFE9807DDD7C600AAE422,
+				DC3A63E207DD02DE00A043AD,
+				DC3A63E107DD02DE00A043AD,
+				DC3A63DF07DD02DE00A043AD,
+				DC0BFE8807DDD7C600AAE422,
+				DC3A641607DD02DE00A043AD,
+				DC0BFE8707DDD7C600AAE422,
+				DC0BFF0D07DE11BF00AAE422,
+				DC0BFEF007DDE14800AAE422,
+				DC3A640907DD02DE00A043AD,
+				DC3A640807DD02DE00A043AD,
+				DC3A640507DD02DE00A043AD,
+				DC3A63EE07DD02DE00A043AD,
+				DC3A63FC07DD02DE00A043AD,
+				DC0BFE9207DDD7C600AAE422,
+				DC3A641C07DD02DE00A043AD,
+				DC0BFE8907DDD7C600AAE422,
+			);
+			isa = PBXGroup;
+			name = "Miscellaneous Views";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFDB107DDB53600AAE422 = {
+			children = (
+				DC3A642907DD02DE00A043AD,
+				DC0BFE8607DDD7C600AAE422,
+				DC3A642B07DD02DE00A043AD,
+				DC0BFE8507DDD7C600AAE422,
+				DC3A641907DD02DE00A043AD,
+				DC0BFE8407DDD7C600AAE422,
+				DC3A63F707DD02DE00A043AD,
+				DC0BFE8307DDD7C600AAE422,
+				DC3A640E07DD02DE00A043AD,
+				DC0BFE8207DDD7C600AAE422,
+			);
+			isa = PBXGroup;
+			name = "One-Analyze View";
+			path = "";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFDB407DDB55400AAE422 = {
+			children = (
+				DC3A641207DD02DE00A043AD,
+				DC0BFE9107DDD7C600AAE422,
+			);
+			isa = PBXGroup;
+			name = "Two-Analyze View";
+			path = "";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFDB707DDB55D00AAE422 = {
+			children = (
+				DC3A63E507DD02DE00A043AD,
+				DC0BFE8E07DDD7C600AAE422,
+				DC3A642607DD02DE00A043AD,
+				DC0BFE8D07DDD7C600AAE422,
+				DC3A642407DD02DE00A043AD,
+				DC0BFE8C07DDD7C600AAE422,
+				DC3A642207DD02DE00A043AD,
+				DC0BFE8B07DDD7C600AAE422,
+				DC3A642007DD02DE00A043AD,
+				DC0BFE8A07DDD7C600AAE422,
+			);
+			isa = PBXGroup;
+			name = "Two-Population View";
+			path = "";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFDBA07DDB56600AAE422 = {
+			children = (
+				DC3A640407DD02DE00A043AD,
+				DC0BFE9007DDD7C600AAE422,
+				DC3A640207DD02DE00A043AD,
+				DC0BFE8F07DDD7C600AAE422,
+			);
+			isa = PBXGroup;
+			name = "Two-Organism View";
+			path = "";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFDC207DDB69300AAE422 = {
+			children = (
+				DC3A641807DD02DE00A043AD,
+				DC3A63E007DD02DE00A043AD,
+				DC3A63DD07DD02DE00A043AD,
+				DC3A63EC07DD02DE00A043AD,
+				DC3A63EB07DD02DE00A043AD,
+				DC3A641E07DD02DE00A043AD,
+				DC3A641D07DD02DE00A043AD,
+				DC3A63D807DD02DE00A043AD,
+				DC3A63F107DD02DE00A043AD,
+				DC3A63F007DD02DE00A043AD,
+				DC3A63EF07DD02DE00A043AD,
+			);
+			isa = PBXGroup;
+			name = "Testing Stuff";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFDC307DDB76B00AAE422 = {
+			children = (
+				DC3A641007DD02DE00A043AD,
+				DC0BFE9707DDD7C600AAE422,
+				DC0BFE9607DDD7C600AAE422,
+				DC0BFE9407DDD7C600AAE422,
+				DC3A63ED07DD02DE00A043AD,
+			);
+			isa = PBXGroup;
+			name = "Unused Stuff";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFDC407DDB79A00AAE422 = {
+			children = (
+				DC3A641A07DD02DE00A043AD,
+				DC3A63FB07DD02DE00A043AD,
+				DC3A63E807DD02DE00A043AD,
+			);
+			isa = PBXGroup;
+			name = Main;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFDC707DDB7B100AAE422 = {
+			children = (
+				DC3A63FF07DD02DE00A043AD,
+				DC3A640707DD02DE00A043AD,
+				DC3A640607DD02DE00A043AD,
+			);
+			isa = PBXGroup;
+			name = Sessions;
+			path = "";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFDCC07DDB84300AAE422 = {
+			children = (
+				DC3A63FE07DD02DE00A043AD,
+				DC0BFE7807DDD79500AAE422,
+				DC0BFDAF07DDB43E00AAE422,
+				DC0BFDAE07DDB3BB00AAE422,
+				DC0BFDB107DDB53600AAE422,
+				DC0BFDB707DDB55D00AAE422,
+				DC0BFDBA07DDB56600AAE422,
+				DC0BFDB407DDB55400AAE422,
+			);
+			isa = PBXGroup;
+			name = "Workspace View";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFDCF07DDB88900AAE422 = {
+			children = (
+				DC3A641407DD02DE00A043AD,
+				DC3A63D707DD02DD00A043AD,
+				DC3A63EA07DD02DE00A043AD,
+			);
+			isa = PBXGroup;
+			name = "Access to Avida Proper";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFDD207DDB8B600AAE422 = {
+			children = (
+				DC3A63E707DD02DE00A043AD,
+				DC0BFEE007DDDF9200AAE422,
+			);
+			isa = PBXGroup;
+			name = Miscellaneous;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFE7407DDD78500AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyAnalyzeControlsView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFE7807DDD79500AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyEduWorkspaceView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFE7B07DDD7A800AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyFreezerView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFE8107DDD7C600AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyOneOrganismView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFE8207DDD7C600AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyOneAnalyzeView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFE8307DDD7C600AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyOneAna_TimelineView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFE8407DDD7C600AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyOneAna_StatsView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFE8507DDD7C600AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyOneAna_PetriDishView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFE8607DDD7C600AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyOneAna_GraphView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFE8707DDD7C600AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyNavBarView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFE8807DDD7C600AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyLiveControlsView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFE8907DDD7C600AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyVivisectionView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFE8A07DDD7C600AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyTwoPopulationView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFE8B07DDD7C600AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyTwoPop_TimelineView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFE8C07DDD7C600AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyTwoPop_StatsView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFE8D07DDD7C600AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyTwoPop_PetriDishesView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFE8E07DDD7C600AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyTwoPop_GraphView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFE8F07DDD7C600AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyTwoOrganismView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFE9007DDD7C600AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyTwoOrg_VivisectionView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFE9107DDD7C600AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyTwoAnalyzeView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFE9207DDD7C600AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyTimelineView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFE9307DDD7C600AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyOnePopulationView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFE9407DDD7C600AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyOnePop_TimelineView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFE9507DDD7C600AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyOnePop_StatsView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFE9607DDD7C600AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyOnePop_PetriDishView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFE9707DDD7C600AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyOnePop_GraphView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFE9807DDD7C600AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyGradientScaleView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFEE007DDDF9200AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = _Custom_Widgets.cw;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFEF007DDE14800AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyOrganismScopeView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFEFA07DE0B0000AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyOneOrg_ScopeView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFF0507DE119F00AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyOneOrg_ScopeCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFF0D07DE11BF00AAE422 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyOrganismScopeCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFF3007DE17DB00AAE422 = {
+			buildActionMask = 2147483647;
+			files = (
+				DC0BFF4B07DE1AE800AAE422,
+				DC0BFF4C07DE1AE800AAE422,
+				DC0BFF4D07DE1AE800AAE422,
+				DC0BFF4E07DE1AE800AAE422,
+				DC0BFF4F07DE1AE800AAE422,
+				DC0BFF5007DE1AE800AAE422,
+				DC0BFF5107DE1AE800AAE422,
+				DC0BFF5207DE1AE800AAE422,
+				DC0BFF5307DE1AE800AAE422,
+				DC0BFF5407DE1AE800AAE422,
+				DC0BFF5507DE1AE800AAE422,
+				DC0BFF5607DE1AE800AAE422,
+				DC0BFF5707DE1AE800AAE422,
+				DC0BFF5A07DE1AE800AAE422,
+				DC0BFF5C07DE1AE800AAE422,
+				DC0BFF5D07DE1AE800AAE422,
+				DC0BFF5E07DE1AE800AAE422,
+				DC0BFF5F07DE1AE800AAE422,
+				DC0BFF6007DE1AE800AAE422,
+				DC0BFF6107DE1AE800AAE422,
+				DC0BFF6207DE1AE800AAE422,
+				DC0BFF6307DE1AE800AAE422,
+				DC0BFF6407DE1AE800AAE422,
+				DC0BFF6507DE1AE800AAE422,
+				DC0BFF6607DE1AE800AAE422,
+				DC0BFF6707DE1AE800AAE422,
+			);
+			isa = PBXSourcesBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DC0BFF3107DE17DB00AAE422 = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			isa = PBXFrameworksBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DC0BFF3207DE17DB00AAE422 = {
+			buildPhases = (
+				DC0BFF3007DE17DB00AAE422,
+				DC0BFF3107DE17DB00AAE422,
+			);
+			buildRules = (
+				DC0BFF3607DE17F700AAE422,
+			);
+			buildSettings = {
+				INSTALL_PATH = /usr/local/bin;
+				OPTIMIZATION_CFLAGS = "";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = pyuic;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
+			};
+			dependencies = (
+			);
+			isa = PBXNativeTarget;
+			name = pyuic;
+			productName = pyuic;
+			productReference = DC0BFF3307DE17DB00AAE422;
+			productType = "com.apple.product-type.tool";
+		};
+		DC0BFF3307DE17DB00AAE422 = {
+			explicitFileType = "compiled.mach-o.executable";
+			includeInIndex = 0;
+			isa = PBXFileReference;
+			path = pyuic;
+			refType = 3;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		DC0BFF3407DE17DB00AAE422 = {
+			children = (
+				DC0BFF3307DE17DB00AAE422,
+			);
+			isa = PBXGroup;
+			name = Products;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC0BFF3607DE17F700AAE422 = {
+			compilerSpec = com.apple.compilers.proxy.script;
+			filePatterns = "*.ui";
+			fileType = pattern.proxy;
+			isEditable = 1;
+			isa = PBXBuildRule;
+			outputFiles = (
+				"$(INPUT_FILE_DIR)/$(INPUT_FILE_BASE).py",
+			);
+			script = "$(SRCROOT)/pyuic -o $(INPUT_FILE_DIR)/$(INPUT_FILE_BASE).py $(INPUT_FILE_PATH)";
+		};
+		DC0BFF4B07DE1AE800AAE422 = {
+			fileRef = DC0BFE7407DDD78500AAE422;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DC0BFF4C07DE1AE800AAE422 = {
+			fileRef = DC0BFE7807DDD79500AAE422;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DC0BFF4D07DE1AE800AAE422 = {
+			fileRef = DC0BFE7B07DDD7A800AAE422;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DC0BFF4E07DE1AE800AAE422 = {
+			fileRef = DC0BFE9807DDD7C600AAE422;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DC0BFF4F07DE1AE800AAE422 = {
+			fileRef = DC0BFE8807DDD7C600AAE422;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DC0BFF5007DE1AE800AAE422 = {
+			fileRef = DC0BFE8707DDD7C600AAE422;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DC0BFF5107DE1AE800AAE422 = {
+			fileRef = DC0BFE8607DDD7C600AAE422;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DC0BFF5207DE1AE800AAE422 = {
+			fileRef = DC0BFE8507DDD7C600AAE422;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DC0BFF5307DE1AE800AAE422 = {
+			fileRef = DC0BFE8407DDD7C600AAE422;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DC0BFF5407DE1AE800AAE422 = {
+			fileRef = DC0BFE8307DDD7C600AAE422;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DC0BFF5507DE1AE800AAE422 = {
+			fileRef = DC0BFE8207DDD7C600AAE422;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DC0BFF5607DE1AE800AAE422 = {
+			fileRef = DC0BFEFA07DE0B0000AAE422;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DC0BFF5707DE1AE800AAE422 = {
+			fileRef = DC0BFE8107DDD7C600AAE422;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DC0BFF5A07DE1AE800AAE422 = {
+			fileRef = DC0BFE9507DDD7C600AAE422;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DC0BFF5C07DE1AE800AAE422 = {
+			fileRef = DC0BFE9307DDD7C600AAE422;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DC0BFF5D07DE1AE800AAE422 = {
+			fileRef = DC0BFEF007DDE14800AAE422;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DC0BFF5E07DE1AE800AAE422 = {
+			fileRef = DC0BFE9207DDD7C600AAE422;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DC0BFF5F07DE1AE800AAE422 = {
+			fileRef = DC0BFE9107DDD7C600AAE422;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DC0BFF6007DE1AE800AAE422 = {
+			fileRef = DC0BFE9007DDD7C600AAE422;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DC0BFF6107DE1AE800AAE422 = {
+			fileRef = DC0BFE8F07DDD7C600AAE422;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DC0BFF6207DE1AE800AAE422 = {
+			fileRef = DC0BFE8E07DDD7C600AAE422;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DC0BFF6307DE1AE800AAE422 = {
+			fileRef = DC0BFE8D07DDD7C600AAE422;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DC0BFF6407DE1AE800AAE422 = {
+			fileRef = DC0BFE8C07DDD7C600AAE422;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DC0BFF6507DE1AE800AAE422 = {
+			fileRef = DC0BFE8B07DDD7C600AAE422;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DC0BFF6607DE1AE800AAE422 = {
+			fileRef = DC0BFE8A07DDD7C600AAE422;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DC0BFF6707DE1AE800AAE422 = {
+			fileRef = DC0BFE8907DDD7C600AAE422;
+			isa = PBXBuildFile;
+			settings = {
+			};
 		};
 		DC3A63D707DD02DD00A043AD = {
 			fileEncoding = 30;
