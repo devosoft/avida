@@ -3572,7 +3572,6 @@
 				DCC30FC40762539D008F7A48,
 				DCC30FC50762539D008F7A48,
 				DCC30FC60762539D008F7A48,
-				DCC30FC70762539D008F7A48,
 				DCC30FC80762539D008F7A48,
 				DCC30FC90762539D008F7A48,
 				DCC30FCA0762539D008F7A48,
@@ -3841,14 +3840,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		DCC30FC70762539D008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = Makefile.am;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DCC30FC80762539D008F7A48 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -3934,7 +3925,6 @@
 				DCC30FFB0762539D008F7A48,
 				DCC30FFC0762539D008F7A48,
 				DCC30FFD0762539D008F7A48,
-				DCC30FFE0762539D008F7A48,
 				DCC30FFF0762539D008F7A48,
 				DCC310000762539D008F7A48,
 				DCC310010762539D008F7A48,
@@ -4097,14 +4087,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		DCC30FFE0762539D008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = Makefile.am;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DCC30FFF0762539D008F7A48 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -4225,7 +4207,6 @@
 				DCC310EF0762539E008F7A48,
 				DCC310F00762539E008F7A48,
 				DCC310F10762539E008F7A48,
-				DCC310F20762539E008F7A48,
 				DCC310F30762539E008F7A48,
 				DCC310F40762539E008F7A48,
 				DCC310F50762539E008F7A48,
@@ -4970,14 +4951,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		DCC310F20762539E008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = Makefile.am;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DCC310F30762539E008F7A48 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -5505,7 +5478,6 @@
 				DCC311850762539F008F7A48,
 				DCC311860762539F008F7A48,
 				DCC311870762539F008F7A48,
-				DCC311880762539F008F7A48,
 				DCC311890762539F008F7A48,
 				DCC3118A0762539F008F7A48,
 				DCC3118B0762539F008F7A48,
@@ -5820,14 +5792,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		DCC311880762539F008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = Makefile.am;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DCC311890762539F008F7A48 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -5856,7 +5820,6 @@
 			children = (
 				DCC311940762539F008F7A48,
 				DCC311950762539F008F7A48,
-				DCC311960762539F008F7A48,
 				DCC311970762539F008F7A48,
 				DCC311980762539F008F7A48,
 			);
@@ -5881,14 +5844,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		DCC311960762539F008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = Makefile.am;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DCC311970762539F008F7A48 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -5909,7 +5864,6 @@
 			children = (
 				DCC3119E0762539F008F7A48,
 				DCC3119F0762539F008F7A48,
-				DCC311FD0762539F008F7A48,
 				DCC311FE0762539F008F7A48,
 			);
 			isa = PBXGroup;
@@ -5933,7 +5887,6 @@
 				DCC311D00762539F008F7A48,
 				DCC311E30762539F008F7A48,
 				DCC311E60762539F008F7A48,
-				DCC311E90762539F008F7A48,
 				DCC311EA0762539F008F7A48,
 			);
 			isa = PBXGroup;
@@ -6223,14 +6176,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		DCC311E90762539F008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = Makefile.am;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DCC311EA0762539F008F7A48 = {
 			children = (
 				DCC311F50762539F008F7A48,
@@ -6308,14 +6253,6 @@
 			isa = PBXFileReference;
 			lastKnownFileType = text.script.sh;
 			path = tail.sh;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC311FD0762539F008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = Makefile.am;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -6402,7 +6339,6 @@
 				DCC312FE076253A0008F7A48,
 				DCC312FF076253A0008F7A48,
 				DCC31300076253A0008F7A48,
-				DCC31301076253A0008F7A48,
 				DCC31302076253A0008F7A48,
 				DCC31303076253A0008F7A48,
 				DCC31304076253A0008F7A48,
@@ -7087,7 +7023,6 @@
 				DCC312EC076253A0008F7A48,
 				DCC312ED076253A0008F7A48,
 				DCC312EE076253A0008F7A48,
-				DCC312EF076253A0008F7A48,
 				DCC312F0076253A0008F7A48,
 				DCC312F1076253A0008F7A48,
 				DCC312F2076253A0008F7A48,
@@ -7161,14 +7096,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		DCC312EF076253A0008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = Makefile.am;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DCC312F0076253A0008F7A48 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -7198,7 +7125,6 @@
 				DCC312FA076253A0008F7A48,
 				DCC312FB076253A0008F7A48,
 				DCC312FC076253A0008F7A48,
-				DCC312FD076253A0008F7A48,
 			);
 			isa = PBXGroup;
 			path = level_1;
@@ -7229,14 +7155,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		DCC312FD076253A0008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = Makefile.am;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DCC312FE076253A0008F7A48 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -7258,14 +7176,6 @@
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			path = local_mutations.t.cc;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC31301076253A0008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = Makefile.am;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -7753,7 +7663,6 @@
 			children = (
 				DCC31345076253A0008F7A48,
 				DCC31346076253A0008F7A48,
-				DCC31401076253A1008F7A48,
 				DCC31402076253A1008F7A48,
 				DCC3141D076253A1008F7A48,
 				DCC31426076253A1008F7A48,
@@ -7784,7 +7693,6 @@
 				DCC31368076253A0008F7A48,
 				DCC31369076253A0008F7A48,
 				DCC3136A076253A0008F7A48,
-				DCC3136B076253A0008F7A48,
 				DCC3136C076253A0008F7A48,
 				DCC313B3076253A1008F7A48,
 				DCC313B4076253A1008F7A48,
@@ -7871,14 +7779,6 @@
 			isa = PBXFileReference;
 			lastKnownFileType = text;
 			path = Loki.pri;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC3136B076253A0008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = Makefile.am;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -8565,14 +8465,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		DCC31401076253A1008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = Makefile.am;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DCC31402076253A1008F7A48 = {
 			children = (
 				DCC31405076253A1008F7A48,
@@ -8702,7 +8594,6 @@
 				DCC3143D076253A1008F7A48,
 				DCC31454076253A1008F7A48,
 				DCC31455076253A1008F7A48,
-				DCC3146A076253A1008F7A48,
 				DCC3146B076253A1008F7A48,
 				DCC3146C076253A1008F7A48,
 				DCC3146D076253A1008F7A48,
@@ -8928,14 +8819,6 @@
 			isa = PBXFileReference;
 			lastKnownFileType = text;
 			path = trio.css;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC3146A076253A1008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = Makefile.am;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -9192,7 +9075,6 @@
 				DCC314BF076253A2008F7A48,
 				DCC314C0076253A2008F7A48,
 				DCC314C1076253A2008F7A48,
-				DCC314CE076253A2008F7A48,
 				DCC314CF076253A2008F7A48,
 				DCC314D0076253A2008F7A48,
 				DCC314D1076253A2008F7A48,
@@ -9290,7 +9172,6 @@
 		};
 		DCC314C1076253A2008F7A48 = {
 			children = (
-				DCC314C9076253A2008F7A48,
 				DCC314CA076253A2008F7A48,
 				DCC314CB076253A2008F7A48,
 				DCC314CC076253A2008F7A48,
@@ -9298,14 +9179,6 @@
 			);
 			isa = PBXGroup;
 			path = example;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC314C9076253A2008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = Makefile.am;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -9338,14 +9211,6 @@
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			path = test_point.cpp;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC314CE076253A2008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = Makefile.am;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -9474,7 +9339,6 @@
 				DCC31575076253A4008F7A48,
 				DCC31576076253A4008F7A48,
 				DCC31577076253A4008F7A48,
-				DCC31578076253A4008F7A48,
 				DCC31579076253A4008F7A48,
 				DCC3157A076253A4008F7A48,
 				DCC3157B076253A4008F7A48,
@@ -9941,14 +9805,6 @@
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.h;
 			path = integrated_schedule_node.hh;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC31578076253A4008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = Makefile.am;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -10538,7 +10394,6 @@
 				DCC315FD076253A5008F7A48,
 				DCC315FE076253A5008F7A48,
 				DCC315FF076253A5008F7A48,
-				DCC31600076253A5008F7A48,
 				DCC31601076253A5008F7A48,
 				DCC31602076253A5008F7A48,
 				DCC31603076253A5008F7A48,
@@ -10644,14 +10499,6 @@
 			isa = PBXFileReference;
 			lastKnownFileType = text;
 			path = key_chart;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC31600076253A5008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = Makefile.am;
 			refType = 4;
 			sourceTree = "<group>";
 		};

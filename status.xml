@@ -17,6 +17,7 @@
 <status>
 
   <developers>
+    <person name="Brian Baer" email="baerb@msu.edu" id="BDB" />
     <person name="David Bryson" email="brysonda@msu.edu" id="DMB" />
     <person name="Dusan Misevic" email="" id="DM" />
     <person name="Kaben Nanlohy" email="" id="KGN" />
@@ -25,6 +26,18 @@
 
   <changes>
     <!-- Add new releases here -->
+    <release version="2.2.1 (r15) date="16 February 2005">
+      <action dev="BDB" type="fix" context="platform support">
+        Allow code to compile on Linux with GCC version 3.4.
+      </action>
+      <action dev="DMB" type="fix" context="bug">
+        Modified bonus instructions to save and restore the previous
+        execution state of the organism.  Without this step, organisms
+        could be prematurely marked as 'not running'.  When combined
+        with death, the objects could therefore be deleted twice. 
+        This would lead to stochastic memory corruption and crashes.
+      </action>
+    </release>
     <release version="2.2 (r12)" date="14 February 2005">
       <!-- Some action types have associated images. By default, images are
       defined for 'add', 'fix', 'remove', 'update' and 'hack'. If you add

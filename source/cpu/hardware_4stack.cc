@@ -489,6 +489,7 @@ bool cHardware4Stack::SingleProcess_ExecuteInst(const cInstruction & cur_inst)
 void cHardware4Stack::ProcessBonusInst(const cInstruction & inst)
 {
   // Mark this organism as running...
+  bool prev_run_state = organism->GetIsRunning();
   organism->SetRunning(true);
 
   // @CAO FIX PRINTING TO INDICATE THIS IS A BONUS
@@ -499,7 +500,7 @@ void cHardware4Stack::ProcessBonusInst(const cInstruction & inst)
     
   SingleProcess_ExecuteInst(inst);
 
-  organism->SetRunning(false);
+  organism->SetRunning(prev_run_state);
 }
 
 
