@@ -15,10 +15,10 @@ Python:from pyTwoPopulationCtrl import pyTwoPopulationCtrl
     </property>
     <property name="geometry">
         <rect>
-            <x>12</x>
-            <y>0</y>
-            <width>1000</width>
-            <height>744</height>
+            <x>0</x>
+            <y>22</y>
+            <width>1024</width>
+            <height>700</height>
         </rect>
     </property>
     <property name="sizePolicy">
@@ -31,14 +31,14 @@ Python:from pyTwoPopulationCtrl import pyTwoPopulationCtrl
     </property>
     <property name="minimumSize">
         <size>
-            <width>51</width>
-            <height>341</height>
+            <width>1024</width>
+            <height>700</height>
         </size>
     </property>
     <property name="maximumSize">
         <size>
-            <width>1000</width>
-            <height>744</height>
+            <width>1024</width>
+            <height>700</height>
         </size>
     </property>
     <property name="caption">
@@ -166,6 +166,8 @@ Python:from pyTwoPopulationCtrl import pyTwoPopulationCtrl
         <property type="4">-1</property>
         <property type="1">pyFreezerView</property>
         <property type="4">-1</property>
+        <property type="1">pyFreezerView</property>
+        <property type="0">-1</property>
         <property type="pyFreezerView"></property>
         <property type="-1">1</property>
     </customwidget>
@@ -193,6 +195,8 @@ Python:from pyTwoPopulationCtrl import pyTwoPopulationCtrl
         <property type="4">-1</property>
         <property type="1">pyNavBarView</property>
         <property type="4">-1</property>
+        <property type="1">pyNavBarView</property>
+        <property type="0">-1</property>
         <property type="pyNavBarView"></property>
         <property type="-1">1</property>
     </customwidget>
