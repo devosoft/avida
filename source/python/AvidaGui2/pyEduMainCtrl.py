@@ -15,6 +15,7 @@ import pySessionCtrl; reload(pySessionCtrl)
 from pySessionCtrl import *
 
 import qt
+import os, os.path
 
 class pyEduMainCtrl(qt.QObject):
   def __init__(self):
@@ -39,6 +40,14 @@ class pyEduMainCtrl(qt.QObject):
 
     self.m_main_mdl.m_main_mdtr.m_main_controller_factory_mdtr.emit(
       qt.PYSIGNAL("newMainControllerSig"), ("pyEduMainMenuBarHdlr",))
+      
+    # Very crude fix get graphs to show correctly
+    
+    if os.path.exists("./average.dat"):
+      os.remove("./average.dat")
+    if os.path.exists("./count.dat"):
+      os.remove("./count.dat")
+    
     return self
     
   def unitTest(self, recurse = False):

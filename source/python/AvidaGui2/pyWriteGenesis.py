@@ -35,6 +35,7 @@ class pyWriteGenesis:
     
     shutil.copyfile(workspace_dir + "environment.default", out_dir + "environment.cfg")
     shutil.copyfile(workspace_dir + "inst_set.default", out_dir + "inst_set.default")
+
     # shutil.copyfile(freeze_dir + settings_dict["START_CREATURE"],
     #                 out_dir + settings_dict["START_CREATURE"])
     settings_dict["EVENT_FILE"] = out_dir + "events.cfg"
