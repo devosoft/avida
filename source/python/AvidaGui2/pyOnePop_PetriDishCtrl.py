@@ -18,6 +18,10 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     self.m_gradient_scale_ctrl.construct(self.m_session_mdl)
     self.m_live_controls_ctrl.construct(self.m_session_mdl)
     self.m_petri_configure_ctrl.construct(self.m_session_mdl)
+    self.connect(self.m_petri_configure_ctrl, PYSIGNAL("freezeDishPhaseISig"), 
+      self.m_petri_dish_ctrl.extractPopulationSlot)
+    self.connect(self.m_petri_dish_ctrl, PYSIGNAL("freezeDishPhaseIISig"), 
+      self.m_petri_configure_ctrl.FreezePetriSlot)
 
   def ToogleDish (self):
     current_page = self.m_petri_dish_widget_stack.visibleWidget()
