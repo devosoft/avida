@@ -100,19 +100,31 @@ OPTION(AVD_PY_BINDINGS
   OFF
 )
 IF(AVD_PY_BINDINGS)
-  #FIND_PACKAGE(PythonLibs REQUIRED)
   INCLUDE(${PROJECT_SOURCE_DIR}/CMakeModules/avdFindPython.cmake)
   AVD_FIND_PYTHON(2.4 /Library/Frameworks)
-  #
-  SET(PY_BOOST_LIBNAME "boost_python-d-1_31" CACHE STRING "Library name of the Boost Python Library")
-  FIND_PATH(PY_BOOST_LIBRARIES ${PY_BOOST_LIBNAME}.a /usr/local/lib DOC "Path where the Boost Python Library can be found")
-  FIND_PATH(PY_BOOST_INCLUDE_PATH boost/python/def.hpp /usr/local/include)
-  FIND_PATH(PY_BOOST_PYSTE_MODULE Pyste/pyste.py /usr/local/lib DOC "Path to where the Pyste/pyste.py module can be found")
-  FIND_PATH(PY_BOOST_ELEMENTTREE_MODULE elementtree/ElementTree.py /usr/local/lib)
-  #FIND_PATH(Python_PyQtModuleDir pyqtconfig.py /usr/local/lib)
-  #FIND_PATH(Python_PyQwtModuleDir qwt/PyCute2.py /usr/local/lib)
-  #FIND_PATH(Python_SIPModuleDir sipconfig.py /usr/local/lib)
-  FIND_PROGRAM(GCCXML gccxml DOC "gccxml must be specified within your PATH environment variable in order for pyste to operate")
+  SET( BOOST_VERSION "1_32" CACHE STRING "Version of Boost Library to use")
+  FIND_LIBRARY(
+    BOOST_LIBRARY
+    NAMES
+      boost_python-${BOOST_VERSION}
+      boost_python
+    PATHS
+      /usr/local/lib
+    DOC "Path where the Boost Python Library can be found"
+  )
+  FIND_PATH(
+    BOOST_INCLUDE_PATH
+    boost/python/def.hpp
+    /usr/local/include
+    /usr/local/include/boost
+    /usr/local/include/boost-${BOOST_VERSION}
+    DOC "Path where the Boost Python header files can be found"
+  )
+  FIND_PROGRAM(
+    GCCXML
+    gccxml
+    DOC "gccxml must be in the search path specified by your PATH environment variable in order for pyste to operate"
+  )
   SET(UNIT_TESTS TRUE)
 ENDIF(AVD_PY_BINDINGS)
 
@@ -232,8 +244,6 @@ SET(ALL_INC_DIRS
   ${EVENT_BLD_DIR}
   ${MAIN_SRC_DIR}
   ${PROJECT_SOURCE_DIR}/source
-  ${PYTHON_INCLUDE_PATH}
-  ${PY_BOOST_INCLUDE_PATH}
 )
 
 # A list of all build subdirectories (convenient for naming
@@ -244,7 +254,4 @@ SET(ALL_LIB_DIRS
   ${EVENT_BLD_DIR}
   ${MAIN_BLD_DIR}
   ${LIBRARY_OUTPUT_PATH}
-  ${PYTHON_LIBRARIES}
-  ${PY_BOOST_LIBRARIES}
 )
-		

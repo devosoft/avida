@@ -1,0 +1,57 @@
+"""
+Script for building AvidaEd.app.
+
+Usage: 
+    python setup.py py2app
+"""
+
+from distutils.core import setup
+from glob import glob
+import py2app
+import site
+
+#avida_ed_python_basedir = '../../source/bindings/Boost.Python'
+avida_ed_python_basedir = '${CMAKE_CURRENT_SOURCE_DIR}'
+site.addsitedir(avida_ed_python_basedir)
+site.addsitedir('${LIBRARY_OUTPUT_PATH}')
+
+# make a list of subversion metadata files in AvidaGui2/.svn
+svn_source_dir = avida_ed_python_basedir + '/AvidaGui2/.svn'
+svn_target_dir = '../Resources/Python/site-packages/AvidaGui2/.svn'
+svn_metadata_files = [
+  (svn_target_dir + '/' + svn_subdir, glob(svn_source_dir + '/' + svn_subdir + '/*'))
+  for svn_subdir in ['prop-base', 'props', 'text-base', 'wcprops']
+] + [
+  (svn_target_dir, [ svn_source_dir + '/' + svn_file for svn_file in ['empty-file', 'entries', 'format', 'README.txt']]),
+]
+
+setup(  
+  app=['AvidaEd.py'],
+  options = dict(
+    py2app = dict(
+      includes = ['iqt', 'qt', 'qwt', 'readline', 'unittest', 'IPython', 'AvidaGui2', 'AvidaCore'],
+      packages = ['IPython', 'AvidaGui2'],
+      dist_dir = '${EXECUTABLE_OUTPUT_PATH}',
+    )
+  ),
+  data_files=[
+    ('../Resources',
+      # script to launch AvidaEd from command-line, then drop into
+      # python shell (for convenience of developers)
+      [ '${CMAKE_CURRENT_SOURCE_DIR}/AvidaEd-interactive.py' ]
+      +
+      # Avida configuration files
+      # FIXME # these only temporarily live in Resources, until we make
+      # a file-open dialog.
+      # @kgn
+      [
+        '${PROJECT_SOURCE_DIR}/source/support/' + configuration_file
+        for configuration_file in ['genesis', 'environment.cfg',
+        'events.cfg', 'inst_set.default', 'organism.default']
+      ]
+    ),
+  ]
+  # subversion metadata files
+  + svn_metadata_files,
+)
+
