@@ -1,0 +1,69 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>pyQuitDialogView</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>pyQuitDialogView</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>322</width>
+            <height>54</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Quit</string>
+    </property>
+    <hbox>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QPushButton">
+            <property name="name">
+                <cstring>SaveToFreezerPushButton</cstring>
+            </property>
+            <property name="text">
+                <string>Freeze and Quit</string>
+            </property>
+        </widget>
+        <widget class="QPushButton">
+            <property name="name">
+                <cstring>QuitPushButton</cstring>
+            </property>
+            <property name="text">
+                <string>Quit</string>
+            </property>
+        </widget>
+        <widget class="QPushButton">
+            <property name="name">
+                <cstring>CancelPushButton</cstring>
+            </property>
+            <property name="text">
+                <string>Cancel</string>
+            </property>
+        </widget>
+    </hbox>
+</widget>
+<connections>
+    <connection>
+        <sender>SaveToFreezerPushButton</sender>
+        <signal>clicked()</signal>
+        <receiver>pyQuitDialogView</receiver>
+        <slot>accept()</slot>
+    </connection>
+    <connection>
+        <sender>CancelPushButton</sender>
+        <signal>clicked()</signal>
+        <receiver>pyQuitDialogView</receiver>
+        <slot>reject()</slot>
+    </connection>
+    <connection>
+        <sender>QuitPushButton</sender>
+        <signal>clicked()</signal>
+        <receiver>pyQuitDialogView</receiver>
+        <slot>close()</slot>
+    </connection>
+</connections>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>
