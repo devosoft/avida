@@ -1,0 +1,9 @@
+
+Import("event_factory.pyste")
+
+Include("event.hh")
+Include("string.hh")
+Include("population.hh")
+
+cPopulationEventFactory = Class("cPopulationEventFactory", "population_event_factory.hh")
+set_policy(cPopulationEventFactory.ConstructEvent, return_internal_reference())

@@ -1,0 +1,29 @@
+##############################################################################
+#
+# This is the setup file for the task/resource system.  From here, you can
+# setup the available resources (including their inflow and outflow rates) as
+# well as the reactions that the organisms can trigger by performing tasks.
+#
+# This environmental setup as an inflow of the resources for not and nand. 
+# After that, all other resources are a cascade of products from the first,
+# requiring more and more complex tasks to make use of them.
+#
+# For information on how to use this file, see:  doc/environment.html
+# For other sample environments, see:  source/support/config/ 
+#
+##############################################################################
+
+RESOURCE  resNOT:inflow=100:outflow=0.01   resNAND:inflow=100:outflow=0.01
+RESOURCE  resAND:outflow=0.01    resORN:outflow=0.01   resOR:outflow=0.01
+RESOURCE  resANDN:outflow=0.01   resNOR:outflow=0.01   resXOR:outflow=0.01
+RESOURCE  resEQU:outflow=0.01
+
+REACTION  NOT  not   process:resource=resNOT:frac=0.0025:max=25:product=resAND
+REACTION  NAND nand  process:resource=resNAND:frac=0.0025:max=25:product=resORN
+REACTION  AND  and   process:resource=resAND:frac=0.0025:max=25:product=resOR
+REACTION  ORN  orn   process:resource=resORN:frac=0.0025:max=25:product=resANDN
+REACTION  OR   or    process:resource=resOR:frac=0.0025:max=25:product=resNOR
+REACTION  ANDN andn  process:resource=resANDN:frac=0.0025:max=25:product=resXOR
+REACTION  NOR  nor   process:resource=resNOR:frac=0.0025:max=25:product=resEQU
+REACTION  XOR  xor   process:resource=resXOR:frac=0.0025:max=25:product=resEQU
+REACTION  EQU  equ   process:resource=resEQU:frac=0.0025:max=25

@@ -1,0 +1,3 @@
+Include("inst_set.hh")
+
+cFitnessMatrix = Class("cFitnessMatrix", "fitness_matrix.hh")

@@ -1,0 +1,95 @@
+
+main {
+  HEADERS += \
+             $$MAIN_HH/analyze.hh \
+             $$MAIN_HH/analyze_util.hh \
+             $$MAIN_HH/avida.hh \
+             $$MAIN_HH/birth_chamber.hh \
+             $$MAIN_HH/callback_util.hh \
+             $$MAIN_HH/config.hh \
+             $$MAIN_HH/environment.hh \
+             $$MAIN_HH/fitness_matrix.hh \
+             $$MAIN_HH/genebank.hh \
+             $$MAIN_HH/genome.hh \
+             $$MAIN_HH/genome_util.hh \
+             $$MAIN_HH/genotype.hh \
+             $$MAIN_HH/inject_genotype.hh \
+             $$MAIN_HH/inject_genebank.hh \
+             $$MAIN_HH/instruction.hh \
+             $$MAIN_HH/inst_lib_base.hh \
+             $$MAIN_HH/inst_set.hh \
+             $$MAIN_HH/inst_util.hh \
+             $$MAIN_HH/landscape.hh \
+             $$MAIN_HH/lineage.hh \
+             $$MAIN_HH/lineage_control.hh \
+             $$MAIN_HH/organism.hh \
+             $$MAIN_HH/phenotype.hh \
+             $$MAIN_HH/population_interface.hh \
+             $$MAIN_HH/population.hh \
+             $$MAIN_HH/population_cell.hh \
+             $$MAIN_HH/reaction.hh \
+             $$MAIN_HH/reaction_result.hh \
+             $$MAIN_HH/resource.hh \
+             $$MAIN_HH/resource_count.hh \
+             $$MAIN_HH/resource_lib.hh \
+             $$MAIN_HH/species.hh \
+             $$MAIN_HH/stats.hh
+
+  SOURCES += \
+             $$MAIN_CC/analyze.cc \
+             $$MAIN_CC/analyze_util.cc \
+             $$MAIN_CC/analyze_genotype.cc \
+             $$MAIN_CC/avida.cc \
+             $$MAIN_CC/avida_driver_analyze.cc \
+             $$MAIN_CC/avida_driver_base.cc \
+             $$MAIN_CC/avida_driver_population.cc \
+             $$MAIN_CC/birth_chamber.cc \
+             $$MAIN_CC/callback_util.cc \
+             $$MAIN_CC/config.cc \
+             $$MAIN_CC/environment.cc \
+             $$MAIN_CC/fitness_matrix.cc \
+             $$MAIN_CC/genebank.cc \
+             $$MAIN_CC/genome.cc \
+             $$MAIN_CC/genome_util.cc \
+             $$MAIN_CC/genotype.cc \
+             $$MAIN_CC/genotype_birth_data.cc \
+             $$MAIN_CC/genotype_control.cc \
+             $$MAIN_CC/genotype_test_data.cc \
+             $$MAIN_CC/instruction.cc \
+             $$MAIN_CC/inst_set.cc \
+             $$MAIN_CC/inst_util.cc \
+             $$MAIN_CC/inject_genebank.cc \
+             $$MAIN_CC/inject_genotype.cc \
+             $$MAIN_CC/inject_genotype_birth_data.cc \
+             $$MAIN_CC/inject_genotype_control.cc \
+             $$MAIN_CC/inject_genotype_queue.cc \
+             $$MAIN_CC/landscape.cc \
+             $$MAIN_CC/lineage.cc \
+             $$MAIN_CC/lineage_control.cc \
+             $$MAIN_CC/local_mutations.cc \
+             $$MAIN_CC/mutation_lib.cc \
+             $$MAIN_CC/mutation_rates.cc \
+             $$MAIN_CC/mutation.cc \
+             $$MAIN_CC/mx_code_array.cc \
+             $$MAIN_CC/organism.cc \
+             $$MAIN_CC/phenotype.cc \
+             $$MAIN_CC/population_interface.cc \
+             $$MAIN_CC/population.cc \
+             $$MAIN_CC/population_cell.cc \
+             $$MAIN_CC/reaction.cc \
+             $$MAIN_CC/reaction_lib.cc \
+             $$MAIN_CC/reaction_process.cc \
+             $$MAIN_CC/reaction_requisite.cc \
+             $$MAIN_CC/reaction_result.cc \
+             $$MAIN_CC/resource.cc \
+             $$MAIN_CC/resource_count.cc \
+             $$MAIN_CC/resource_lib.cc \
+             $$MAIN_CC/spatial_count_elem.cc \
+             $$MAIN_CC/spatial_res_count.cc \
+             $$MAIN_CC/species.cc \
+             $$MAIN_CC/species_control.cc \
+             $$MAIN_CC/species_queue.cc \
+             $$MAIN_CC/stats.cc \
+             $$MAIN_CC/task_entry.cc \
+             $$MAIN_CC/task_lib.cc
+}

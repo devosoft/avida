@@ -1,0 +1,1 @@
+cIntSum = Class("cIntSum", "int_sum.hh")

@@ -1,0 +1,15 @@
+This material was originally written and compiled by Charles Ofria from
+1993-2002 primarily at the California Institute of Technology and Michigan
+State University.
+
+The 2.0 release series contains many improvements over earlier releases.
+These improvements were written in 2000-2002 by Charles Ofria, Claus O. Wilke
+and Kaben Nanlohy.
+
+The core avida system was designed by Chris Adami, C. Titus Brown, and
+Charles Ofria in 1993-1998.  Portions of the design were supported by NSF
+grant #PHY91-15574, NSF grant #DEB-9981397, a Caltech divisional fellowship, 
+the 1993 Caltech SURF program, and the 1993 SUNY Stony Brook URECA program.
+
+Portions of Avida have been implemented by: Charles Ofria, Claus O. Wilke,
+Kaben Nanlohy, Travis Collier, Dusan Misevic, and Dennis Adler.

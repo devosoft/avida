@@ -1,0 +1,23 @@
+
+Include("environment.hh")
+Include("genebank.hh" )
+Include("inject_genebank.hh")
+Include("lineage_control.hh")
+Include("organism.hh")
+Include("population_cell.hh")
+
+cPopulation = Class("cPopulation", "population.hh")
+
+set_policy(cPopulation.GetCell, return_internal_reference())
+set_policy(cPopulation.GetBirthChamber, return_internal_reference())
+set_policy(cPopulation.GetStats, return_internal_reference())
+set_policy(cPopulation.GetGenebank, return_internal_reference())
+set_policy(cPopulation.GetInjectGenebank, return_internal_reference())
+set_policy(cPopulation.GetLineageControl, return_internal_reference())
+
+print("""
+FIXME for population.pyste:
+I'm probably using the wrong call policy on
+cPopulation.GetEnvironment().
+""")
+set_policy(cPopulation.GetEnvironment, return_internal_reference())

@@ -1,0 +1,29 @@
+# start with:
+#   makekdedoc --rule-file avida_doc.rules --srcdir . --outputdir doc
+# in directory source
+#
+# In order to put the documentation on the web, it has to be
+# copied to /home/httpd/html/avida/html/doc_current on myxo.css.msu.edu.
+#
+#
+# documentation is generated for the following directories:
+doc_MODULES = tools cpu main event viewers
+
+# rules for tools
+  tools_FILES = *.hh
+
+# rules for cpu
+  cpu_FILES = *.hh
+  cpu_LIBS = -ltools
+
+# rules for main
+  main_FILES = *.hh
+  main_LIBS = -ltools -lcpu
+
+# rules for event
+  event_FILES = *.hh
+  event_LIBS = -ltools -lcpu -lmain
+
+# rules for viewers
+  viewers_FILES = *.hh
+  viewers_LIBS = -ltools -lcpu -lmain

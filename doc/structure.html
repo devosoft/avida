@@ -1,0 +1,513 @@
+<html>
+<title>Directory and File Structure of Avida</title>
+<body
+ bgcolor="#FFFFFF"
+ text="#000000"
+ link="#0000AA"
+ alink="#0000FF"
+ vlink="#000044">
+
+<h2 align=center>Directory and File Structure of Avida</h2>
+
+<p>
+This document contains a guide to all of the files present in avida, and
+where they are located.
+
+
+<h3>Filenames</h3>
+
+<p>
+Source code files in avida follow a standard naming convention.
+A file that ended in "<tt><font color="000088">.hh</font></tt>" is a called
+a "header" file, while one that ends in
+"<tt><font color="000088">.cc</font></tt>" is a "code" file.  Headers
+tend to contain class descriptions with only the declaration of their
+methods, while their corresponding code files contain the method
+definitions.  When one file needs to use a class defined in another, all
+that it needs to do is reference the header file.  Since the bulk of the
+source code will be in the code file, this minimized cross-compilation.
+
+<p>
+When you compile a program in C++, it goes through a "compilation" phase
+and then a "link" phase.  The compilation phase takes each code (<tt>.cc</tt>)
+file and compiles it independently into an object (<tt>.o</tt>) file.  In the
+link phase, all of these compiled object files are linked together into a
+single executable (such as "<tt>primitive</tt>").
+
+<p>
+Since the bodies of the methods are only in the code files, they only need
+to be compiled once into a single object file.  If you place a function
+body in the header file it will get compiled again each time another
+class includes that header.  Since a header will often be included because
+only one or two methods from a class are required, this can create real 
+bloat -- a function will be compiled as long as its body is included, even
+if the method is never directly called within the object file being created.
+
+<p>
+For example: The cOrganism object is declared in the file
+"<tt><font color="#000088">organism.hh"</font></tt>" and the fully
+defined in "<tt><font color="#000088">organism.cc"</font></tt>".  When
+this file is compiled, it creates the object file
+"<tt><font color="#000088">organism.o</font></tt>".  Both the cPopulation
+class ("<tt><font color="#000088">population.cc</font></tt>") and the
+cTestCPU class ("<tt><font color="#000088">test_cpu.cc</font></tt>") use
+the cOrganism object, but its methods are in
+"<tt><font color="#000088">organism.cc"</font></tt>", so they only need to
+be compiled once, and are then linked in at the link stage.
+
+<p>
+Occasionally you want short functions to have their bodies directly in the
+header file.  When a function compiled in one object file is run from another,
+the linker basically points the caller to the location of that function.
+There are an extra few CPU cycles expended while it goes to find that function
+and starts it up.  A small function can be made "<tt>inline</tt>", which
+means it will be placed, as a whole, right inside of the function that calls
+it.  If the function is short enough, it only takes up as much space as the
+call to it would have taken anyway, and hence does not increase the size
+of the executable.
+
+<p>
+This will probably start to make more sense when you are directly modifying
+the code.
+
+<h3>Directory: <tt><font color="#008844">current/</font></tt></h3>
+
+All of the files for the current version of avida reside in the directory
+labeled "<font color="#008844"><tt>current/</tt></font>", which is
+automatically created when you check avida out of the CVS.  In addition to
+the subdirectories "<tt><font color="#008844">doc/</font></tt>",
+"<tt><font color="#008844">source/</font></tt>" and
+"<tt><font color="#008844">work/</font></tt>" (all described below),
+this directory contains several key information and automatic compilation
+files.  The most important of these are described here.
+
+<p>
+<table cellpadding=4>
+<tr><td valign=top><tt><font color="#000088">configure</font></tt>
+    <td>This is a script used to choose which portions of avida should be
+        compiled and how.  In particular, it allows the user to choose
+        "<tt><font color="#000000">--enable-debug</font></tt>" for debugging
+	options (which slow avida down substantially, but turn on checks
+	to make sure nothing is going wrong) or
+	"<tt><font color="#000000">--enable-viewer</font></tt>" for the
+	ncurses viewer and
+	"<tt><font color="#000000">--enable-qt-viewer</font></tt>" for the
+	graphical viewer.  Several other options can be listed by typing
+	"<tt><font color="#000000">./configure --help</font></tt>" in this
+        directory.
+<tr><td valign=top><tt><font color="#000088">Makefile</font></tt>
+    <td>This file performs the compilation after the
+        configure script is run.  When you make changes to the source code,
+	you can type "<tt>make</tt>" to process the Makefile
+	without needing to re-configure.
+<tr><td valign=top><tt><font color="#000088">AUTHORS</font></tt>
+    <td>This file contains information about the authorship of avida.
+<tr><td valign=top><tt><font color="#000088">COPYING</font></tt><br>
+		<tt><font color="#000088">COPYING.gpl</font></tt>
+    <td valign=top>These files contain copyright information.
+<tr><td valign=top><tt><font color="#000088">README</font></tt>
+    <td>A general guide on how to get started once you put the avida files on
+	your machine.
+<tr><td valign=top><tt><font color="#000088">README.cvs</font></tt>
+    <td>How-to guide on setting up avida from the CVS
+<tr><td valign=top><tt><font color="#000088">INSTALL</font></tt>
+    <td>How to install avida on your machine.
+<tr><td valign=top><tt><font color="#000088">NEWS</font></tt>
+    <td>Ideally a list of all recent changes to avida.  In practice, its
+	not being kept as up-to-date as it should be.
+</table>
+
+<h3>Directory: <tt><font color="#008844">current/work/</font></tt></h3>
+
+<p>
+After you type "<tt>make install</tt>", this directory will contain all of
+the configuration files for avida (explained in more detail under in their
+own documentation files).  The key files and directories
+here are:
+
+<p>
+<table cellpadding=4>
+<tr><td valign=top><tt><font color="#000088">analyze.cfg</font></tt>
+    <td>The default file used to write analysis scripts.
+<tr><td valign=top><tt><font color="#000088">environment.cfg</font></tt>
+    <td>This file contains the default environment information.
+<tr><td valign=top><tt><font color="#000088">events.cfg</font></tt>
+    <td>This file contains the default event list.
+<tr><td valign=top><tt><font color="#000088">genesis</font></tt>
+    <td>This is the main configuration file that is used by default.
+<tr><td valign=top><tt><font color="#000088">inst_set.default</font></tt>
+    <td>This is the main, heads-based instruction set that is used by
+	default.
+<tr><td valign=top><tt><font color="#000088">organism.default</font></tt>
+    <td>This file contains a short, default starting ancestor.  Watch
+	out because sometimes it can get stuck at a small length and not
+	acquire any tasks.
+<tr><td valign=top><tt><font color="#000088">organism.heads.100</font></tt>
+    <td>This is a longer (length 100), hand written ancestor.  It is nearly
+	identical to <tt><font color="#000088">organism.default</font></tt>,
+	but contains a long sequence of the "<tt>nop-C</tt>" instruction to
+	pad its length.
+<tr><td valign=top><tt><font color="#008844">genebank/</font></tt>
+    <td>This directory is created when you run avida.  If you save any
+	individual genotypes during the course of a run, their files will
+	be placed here by default.
+</table>
+
+
+<h3>Directory: <tt><font color="#008844">current/source/</font></tt></h3>
+
+This is a large sub-directory structure that contains all of the source
+code that makes up avida.  Each sub-directory here will include its own
+Makefile information.  The only two important files directly in this
+directory are:
+
+<p>
+<table cellpadding=4>
+<tr><td valign=top><tt><font color="#000088">LEVELS</font></tt>
+    <td>This is a "levelization" map of most of the avida files.  It is
+	good programming technique to keep track of which files depend on
+	each other, and to make sure there are no "circular dependencies".
+	This file keeps track of all of the dependencies, placing each
+	component on a level, where they only depend on files in lower
+	levels.  See the <a href="level_map.html">levelization map</a> for more
+	information on this.
+<tr><td valign=top><tt><font color="#000088">defs.hh</font></tt>
+    <td>This is a header file that contains all of the definitions required
+	globally throughout the avida source.
+</table>
+
+
+<h3>Directory: <tt><font color="#008844">current/source/main/</font></tt></h3>
+
+This sub-directory contains all of the core source code files for the software.
+For ease, I'm listing them in three groups of "more important components",
+"less important components", and "utility components", each in alphabetical
+order.  The syntax "<tt>name.??</tt>" indicates that I am referring to both
+of the files, "<tt>name.hh</tt>" and "<tt>name.cc</tt>".   The more important
+files are:
+
+<p>
+<table cellpadding=6>
+<tr><td valign=top><tt><font color="#000088">analyze.??</font></tt>
+    <td valign=top>These files define the class cAnalyze and associated
+	helper classes, which work together to run the analyze mode in avida.
+	All of the code to process the analyze.cfg file is located here.
+<tr><td valign=top><tt><font color="#000088">avida.??</font></tt>
+    <td valign=top>These are the main files that manage an avida run.  They
+	process
+	command line arguments, setup global classes, and hand control over
+	to the driver class that will actually run the avida experiment.
+<tr><td valign=top><tt><font color="#000088">config.??</font></tt>
+    <td valign=top>These files define the cConfig object that maintains the
+	current configuration state of avida.  This class is initialized
+	by the genesis file, but can later be modified by the event list.
+<tr><td valign=top><tt><font color="#000088">environment.??</font></tt>
+    <td valign=top>This file defines the cEnvironment object, which controls
+	all of the
+	environmental interactions in an avida run.  It makes use of reactions,
+	resources, and tasks.
+<tr><td valign=top><tt><font color="#000088">genebank.??</font></tt>
+    <td valign=top>The cGenebank object, defined here, keeps track of
+	genotype (and
+	species) formation in the population.  Every time a new organism is
+	born, the genebank assigns it a genotype.
+<tr><td valign=top><tt><font color="#000088">genome.??</font></tt>
+    <td valign=top>The cGenome object maintains of a sequence of objects of
+	class cInstruction.
+<tr><td valign=top><tt><font color="#000088">genotype.??</font></tt>
+    <td valign=top>The cGenotype object maintains statistics about those
+	organisms that have the associated identical genome.
+<tr><td valign=top><tt><font color="#000088">inst.??</font></tt>
+    <td valign=top>The cInstruction class is very simple, maintaining a
+	single instruction in avida.
+<tr><td valign=top><tt><font color="#000088">inst_lib.??</font></tt>
+    <td valign=top>The cInstLib class associates instructions with their
+	corresponding
+	functionality in the hardware, and keeps track of the full set of
+	possible instructions available in the current run.
+<tr><td valign=top><tt><font color="#000088">mutations.??</font></tt>
+    <td valign=top>These files contain the cMutationRates class which
+	maintain the probability of occurrence for each type of mutation.
+<tr><td valign=top><tt><font color="#000088">organism.??</font></tt>
+    <td valign=top>The cOrganism class represents a single organism, and
+	contains the initial genome of that organism, its phenotypic 
+	information, its virtual hardware, etc.
+<tr><td valign=top><tt><font color="#000088">phenotype.??</font></tt>
+    <td valign=top>The cPhenotype class maintains information about what a
+	single organism has done over the course of its life.
+<tr><td valign=top><tt><font color="#000088">population.??</font></tt>
+    <td valign=top>The cPopulation class manages the organisms that
+	exist in an avida population.  It maintains a collection of
+	cPopulationCell objects 
+	(either as A grid, or independent cells for mass action)
+	and contains the scheduler, genebank, event manager, etc.
+<tr><td valign=top><tt><font color="#000088">population_cell.??</font></tt>
+    <td valign=top>A cPopulationCell is a single location in an avida
+	population.  It can contain an organism, and has its own mutation
+	rates (but not yet its own environment.)
+<tr><td valign=top><tt><font color="#000088">stats.??</font></tt>
+    <td valign=top>A cStatistics object maintains track of many different
+	population-wide statistics.
+</table>
+
+
+<p>
+Next, we have the less important files, which are basically various forms
+of helper classes:
+
+<p>
+<table cellpadding=6>
+<tr><td valign=top><tt><font color="#000088">fitness_matrix.??</font></tt>
+    <td valign=top>The cFitnessMatrix class is used to calculate the
+	quasi-species around a genotype.
+<tr><td valign=top><tt><font color="#000088">landscape.??</font></tt>
+    <td valign=top>The cLandscape class is used to study the local region
+	of genotype space around a genotype.  All possible single (or more,
+	if desired) mutations are performed, and statistics are kept about
+	the results.
+<tr><td valign=top><tt><font color="#000088">pop_interface.??</font></tt>
+    <td valign=top>The cPopulationInterface class is used by organisms
+	to interact back with the population (or test CPU).
+<tr><td valign=top><tt><font color="#000088">primitive.cc</font></tt>
+    <td valign=top>This file defines the primitive avida driver, when no
+	interactive user interface is being used.
+<tr><td valign=top><tt><font color="#000088">reaction.??</font></tt>
+    <td valign=top>The cReaction class contains all of the information for
+	what triggers a reaction, its restrictions, and the process that
+	occurs.
+<tr><td valign=top><tt><font color="#000088">reaction_result.??</font></tt>
+    <td valign=top>The cReactionResult class contains all of the information
+	about the results of a reaction after one occurs, such as the amount
+	of resources consumed, what the merit change is, what tasks triggered
+	it, etc.
+<tr><td valign=top><tt><font color="#000088">resource.??</font></tt>
+    <td valign=top>The cResource class contains information about a single
+	resource, such as its inflow rate, outflow, name, etc.
+<tr><td valign=top><tt><font color="#000088">resource_count.??</font></tt>
+    <td valign=top>The resource count keeps track of how much of each
+	resource is present in the region being tracked.
+<tr><td valign=top><tt><font color="#000088">species.??</font></tt>
+    <td valign=top>The cSpecies class represents a group of genotypes that
+	can be crossed over with a high probability of producing a viable
+	result.
+<tr><td valign=top><tt><font color="#000088">tasks.??</font></tt>
+    <td valign=top>These files contain all of the information associated
+	with tasks, including the cTaskLibrary, and the cTaskEntry classes.
+	A task entry contains the task name and a pointer to the function
+	that will check its completion.
+</table>
+
+<p>
+Finally, we have the utility classes.  A utility class is different from
+normal classes in that they include <i>only</i> methods and no data.  This
+is basically for collecting functions that don't need to be part of a
+class, but I want to keep them nice, neat and organized.
+
+<p>
+<table cellpadding=6>
+<tr><td valign=top><tt><font color="#000088">analyze_util.??</font></tt>
+    <td valign=top>The cAnalyzeUtil class contains functions to analyze the
+	state of avida populations.
+<tr><td valign=top><tt><font color="#000088">callback_util.??</font></tt>
+    <td valign=top>The cCallbackUtil class contains functions to enable
+	the cPopulationInterface to interact smoothly with the population.
+<tr><td valign=top><tt><font color="#000088">genome_util.??</font></tt>
+    <td valign=top>The cGenomeUtil class contains functions to analyze
+	individual genomes, such as scanning if they contain a specific
+	instruction or to find the edit distance between two genomes.
+<tr><td valign=top><tt><font color="#000088">inst_util.??</font></tt>
+    <td valign=top>The cInstUtil class is for functions that used both
+	a genome and the instruction library, such as loading a new genome
+	or randomizing a genome.
+</table>
+
+
+
+<h3>Directory: <tt><font color="#008844">current/source/cpu/</font></tt></h3>
+
+This sub-directory contains the files used to define the virtual CPUs in
+Avida.
+
+<p>
+<table cellpadding=6>
+
+<tr><td valign=top><tt><font color="#000088">cpu_defs.hh</font></tt>
+    <td valign=top>This header file only contains definitions relating
+	to virtual CPUs.
+<tr><td valign=top><tt><font color="#000088">cpu_memory.??</font></tt>
+    <td valign=top>The cCPUMemory class inherits from the cGenome class,
+	extending its functionality to facilitate insertions and deletions.
+	It also associates flags with each instruction in the genome to
+	mark if they have been executed, copied, mutated, etc.
+<tr><td valign=top><tt><font color="#000088">cpu_stack.??</font></tt>
+    <td valign=top>The cCPUStack class is an integer-stack component in the
+	virtual CPUs.
+<tr><td valign=top><tt><font color="#000088">cpu_stats.hh</font></tt>
+    <td valign=top>The cCPUStats class tracks mutations that have
+	occurred during an organism's life, and the number
+	of times each instruction has been executed.
+<tr><td valign=top><tt><font color="#000088">hardware_base.??</font></tt>
+    <td valign=top>The cHardwareBase class is an abstract base class that
+	all other hardware types must be overloaded from.  It has minimal
+	built in functionality.
+<tr><td valign=top><tt><font color="#000088">hardware_cpu.??</font></tt>
+    <td valign=top>The cHardwareCPU class extends cHardwareBase into a
+	proper virtual CPU, with registers, stacks, memory, IO Buffers,
+	etc.
+<tr><td valign=top><tt><font color="#000088">hardware_factory.??</font></tt>
+    <td valign=top>The cHardwareFactory manages the building of new hardware
+	as well as the recycling of old hardware after an organism dies.
+	Recycling hardware rather than making a new one each time can 
+	provide a performance increase.
+<tr><td valign=top><tt><font color="#000088">hardware_util.??</font></tt>
+    <td valign=top>The cHardwareUtil class is a utility class that currently
+	only manages the loading of instruction sets into a virtual CPU.
+<tr><td valign=top><tt><font color="#000088">head.hh</font></tt>
+    <td valign=top>The cCPUHead class implements a head pointing to a
+	position in the memory of a virtual CPU.
+<tr><td valign=top><tt><font color="#000088">label.hh</font></tt>
+    <td valign=top>The cLabel class marks labels (series of no-operation
+	instruction) in a genome.  These are used when a
+	label needs to be used as an instruction argument.
+<tr><td valign=top><tt><font color="#000088">test_cpu.hh</font></tt>
+    <td valign=top>The cTestCPU class maintains a test environment to
+	run organisms in that we don't want to be able to directly affect
+	the real population.
+<tr><td valign=top><tt><font color="#000088">test_util.hh</font></tt>
+    <td valign=top>The cTestUtil utility class is for test-related functions
+	that require a test CPU, such as printing out a genome to a file with
+	collected information.
+</table>
+
+
+<h3>Directory: <tt><font color="#008844">current/source/events/</font></tt></h3>
+
+<p>
+The events sub-directory contains files that manage the scheduling and
+processing of user-defined events.  Many of the files here are actually
+automatically generated by the
+<font color="#000088"><tt>make_events.pl</tt></font> script, which is written
+in the language Perl, and automatically run by the Makefile.  This script
+will convert <font color="#000088"><tt>cPopulation.events</tt></font> into
+the proper C++ files.
+
+<h3>Directory: <tt><font color="#008844">current/source/tools/</font></tt></h3>
+
+<p>
+The tools sub-directory contains C++ source code that is used throughout 
+avida, but is not specific to the project.  I will list the proper classes
+first, and then the template class.
+
+<p>
+<table cellpadding=6>
+<tr><td valign=top><tt><font color="#000088">assert.??</font></tt>
+    <td valign=top>A collection of tests that start up the debugger if any
+  of the tests fail.  When running the code in an optimized mode, these tests
+  are not performed for speedup.
+<tr><td valign=top><tt><font color="#000088">data_entry.??</font></tt>
+    <td valign=top>Associates data names with functions for printing out data
+  file with a user specified format.
+<tr><td valign=top><tt><font color="#000088">data_manager.??</font></tt>
+    <td valign=top>This class manages a collection of data entries and handles
+  the creation and output of user-designed data files at runtime.
+<tr><td valign=top><tt><font color="#000088">datafile.??</font></tt>
+    <td valign=top>A set of classes useful for handling output files, and
+  a manager to track output files by name.
+<tr><td valign=top><tt><font color="#000088">debug.??</font></tt>
+    <td valign=top>This is used to track of problems with the
+  code.  You can call methods in a debug object to set errors, warnings
+  or leave comments.  In practice, assert is cleaner.
+<tr><td valign=top><tt><font color="#000088">file.??</font></tt>
+    <td valign=top>A set of classes useful for loading input files and removing
+	comments.
+<tr><td valign=top><tt><font color="#000088">functions.hh</font></tt>
+    <td valign=top>Some useful math functions such as Min, Max, and Log.
+<tr><td valign=top><tt><font color="#000088">help.??</font></tt>
+    <td valign=top>This still needs to be integrated into avida proper, (it
+  is being used some in analyze mode) but can output useful HTML help files.
+<tr><td valign=top><tt><font color="#000088">merit.??</font></tt>
+    <td valign=top>Provides a very large integer number, dissectable in useful
+  ways.
+<tr><td valign=top><tt><font color="#000088">random.??</font></tt>
+    <td valign=top>A powerful random number generator, that can output numbers
+  in a variety of formats.
+<tr><td valign=top><tt><font color="#000088">slice.??</font></tt>
+    <td valign=top> A scheduling class that can operate at high precision.
+<tr><td valign=top><tt><font color="#000088">stat.??</font></tt>
+    <td valign=top>A set of classes used to collect statistics on data.
+<tr><td valign=top><tt><font color="#000088">string.??</font></tt>
+    <td valign=top>A standard string object, but with lots of functionality.
+<tr><td valign=top><tt><font color="#000088">string_list.??</font></tt>
+    <td valign=top>A specialized class for collections of strings, with added
+  functionality over a normal list.
+<tr><td valign=top><tt><font color="#000088">string_util.??</font></tt>
+    <td valign=top>Contains a bunch of static methods to manipulate and compare
+  strings.
+<tr><td valign=top><tt><font color="#000088">tools.hh</font></tt>
+    <td valign=top>A collection of global objects (for debug, random, and
+  default directory) and a flags class.
+</table>
+
+<p>
+Templates are special classes that interact with another data-type
+that doesn't need to be specified until the programmer instantiates an object
+in the class.  Its a hard concepts to get used, but allows for remarkably
+flexible programming, and makes very reusable code.  The
+main drawback (other than brain-strain) is that
+templates must be entirely defined in header files since separate code is
+generated for each class the template interacts with.
+
+<p>
+<table cellpadding=6>
+<tr><td valign=top><tt><font color="#000088">tArray.hh</font></tt>
+    <td valign=top>A fixed-length array template; array sizes may be adjusted
+  manually when needed.
+<tr><td valign=top><tt><font color="#000088">tBuffer.hh</font></tt>
+    <td valign=top>A container that keeps only the last N entries,
+  indexed with the most recent first.
+<tr><td valign=top><tt><font color="#000088">tDictionary.hh</font></tt>
+    <td valign=top>A container template that allows the user to search for
+  a target object based on a keyword.
+<tr><td valign=top><tt><font color="#000088">tList.hh</font></tt>
+    <td valign=top>A reasonably powerful linked list and iterators.  The list
+  will keep track of the iterators and never allow them to have an illegal
+  value.
+<tr><td valign=top><tt><font color="#000088">tMatrix.hh</font></tt>
+    <td valign=top> A fixed size matrix template with arbitrary indexing.
+<tr><td valign=top><tt><font color="#000088">tMemTrack.hh</font></tt>
+    <td valign=top>This is a template that can be put over any class or data
+  type to keep track of it.  If all creations of objects in the class are
+  done through this template rather than (or in conjunction with) "new",
+  memory leaks should be detectable.
+  This is new, and not yet used in avida.
+<tr><td valign=top><tt><font color="#000088">tVector.hh</font></tt>
+    <td valign=top>A variable-length array object; array sizes will be
+  automatically adjusted to accommodate any positions accessed in it.
+</table>
+
+
+<h3>Directories: <tt><font color="#008844">current/source/viewers/</font></tt>
+ and <tt><font color="#008844">current/source/qt-viewer/</font></tt></h3>
+
+<p>
+These directories contain the source code for the avida viewers, which I'm
+not planning on going into at this point.  The first directory contains
+the files for the text viewers (both the ncurses viewer and the Windows ASCII
+viewer), while the second one contains the files for the Qt graphical viewer
+thats still under development.  If people are interested in this later in the
+course, I will come back to it in more detail.
+
+<h3>Directory: <tt><font color="#008844">current/source/support/</font></tt></h3>
+
+<p>
+This directory contains all of the originals of the files that are
+copied into the <tt><font color="#008844">current/work/</font></tt> directory
+on the installation process for the user to modify.  There is also
+a <tt><font color="#008844">config/</font></tt> sub-directory under here
+with additional, optional configuration files that you may want to look at
+to see other possible pre-configured settings.
+
+<br><hr>
+Project hosted by:<br>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=46761&type=2" width="125" height="37" border="0" alt="SourceForge.net"/></a>
+    

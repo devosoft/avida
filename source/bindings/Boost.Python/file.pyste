@@ -1,0 +1,5 @@
+
+cFile = Class("cFile", "file-fixups.hh")
+exclude(cFile.Open)
+add_method(cFile, "cFileOpenWrapper")
+rename(cFile.cFileOpenWrapper, "Open")

@@ -1,0 +1,8 @@
+
+Include("string.hh")
+Include("reaction.hh")
+
+cReactionLib = Class("cReactionLib", "reaction_lib.hh")
+set_policy(cReactionLib.AddReaction, return_internal_reference())
+set_policy(cReactionLib.GetReaction, return_internal_reference())
+

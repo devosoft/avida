@@ -1,0 +1,11 @@
+declaration_code("""
+#ifndef ENVIRONMENT_HH
+#include "environment.hh"
+#endif
+#ifndef POPULATION_INTERFACE_HH
+#include "population_interface.hh"
+#endif
+""")
+
+Function("SetupAvidaPython", "avida-fixups.hh")
+

@@ -1,0 +1,3 @@
+A = Class("A", "A.hh")
+C = Class("C", "A.hh")
+

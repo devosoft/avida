@@ -1,0 +1,2 @@
+
+cDoubleSum = Class("cDoubleSum", "double_sum.hh")

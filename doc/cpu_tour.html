@@ -1,0 +1,363 @@
+<html>
+<title>A guided tour of the an ancestor and its hardware</title>
+<body
+ bgcolor="#FFFFFF"
+ text="#000000"
+ link="#0000AA"
+ alink="#0000FF"
+ vlink="#000044">
+
+<h2 align=center>A guided tour of an ancestor and its hardware</h2>
+
+<p>
+This document describes the structure of the virtual CPU and an
+example organism running on it.
+
+<h3>The Virtual CPU Structure</h3>
+
+<p>
+The virtual CPU, which is the default "body" or "hardware" of the organisms,
+contains the following set of components, (as further illustrated in the
+figure below).
+
+<menu>
+<li>A <font color="#006666"><b><i>memory</i></b></font> that consists of a sequence
+    of instructions, each associated with a set of flags to denote if the
+    instruction has been executed, copied, mutated, etc.
+<li>An <font color="#880088"><b><i>instruction pointer</i></b></font> (IP) that
+    indicates the next site in the memory to be executed.
+<li>Three <font color="#FF8888"><b><i>registers</i></b></a></font> that can be used
+    by the organism to hold data currently being manipulated.  These are often
+    operated upon by the various instructions, and can contain arbitrary
+    32-bit integers.
+<li>Two <font color="#008800"><b><i>stacks</i></b></font> that are used for storage.
+    The organism can theoretical store an arbitrary amount of data in the
+    stacks, but for practical purposes we currently limit the maximum stack
+    depth to ten.
+<li>An <font color="#CCCC00"><b><i>input buffer</i></b></font> and an
+    <font color="#CCCC00"><b><i>output buffer</i></b> </font>that the organism
+    uses to receive information, and return the processed results.
+<li>A <font color="#8888FF"><b><i>Read-Head</i></b></font>, a
+    <font color="#8888FF"><b><i>Write-Head</i></b></font>, and a
+    <font color="#8888FF"><b><i>Flow-Head</i></b></font> which are used to
+    specify positions in the CPU's memory.  A copy command reads from the
+    Read-Head and writes to the Write-Head.  Jump-type statements move the IP
+    to the Flow-Head.
+</menu>
+
+<p>
+<center>
+<img align=center src="cpu2.gif">
+</center>
+
+<br><br><br><br><br>
+<h3>Instruction set design</h3>
+
+<p>
+The instruction set in Avida is loaded on startup from a configuration file
+specified in the <tt>genesis</tt> file.  This allows selection of different
+instruction sets without recompiling the source code, as well as allowing different sized
+instruction sets to be specified.  It is not possible to alter the behavior
+of individual instructions or add new instructions without recompiling Avida;
+such activities have to be done directly in the source code.
+
+<p>
+The available instructions are listed in the <tt>inst_set.*</tt> files with
+a <tt>1</tt> or a <tt>0</tt> next to an instruction to indicate if it
+should or should not be included.  Changing the instruction set to be used
+simply involves adjusting these flags.
+
+<p>
+The instructions were created with three things in mind:
+
+<menu>
+<li>To be as complete as possible (both in a "Turing complete" sense -- that
+    is, it can compute any computable function -- and, more practically, to
+    ensure that simple operations only require a few instructions).
+
+<li>For each instruction to be as robust and versatile as possible; all
+    instructions should take an "appropriate" action in any situation
+    where they can be executed.
+
+<li>To have as little redundancy as possible between instructions.
+    (Several instructions have been implemented that are redundant, but such
+    combinations will typically not be turned on simultaneously for a run.)
+</menu>
+
+<p>
+One major concept that differentiates this virtual assembly language from its
+real-world counterparts is in the additional uses of <tt>nop</tt> instructions
+(no-operation commands).
+These have no direct effect on the virtual CPU when executed, but often
+modify the effect of any instruction that precedes them.  In a sense, you
+can think of them as purely regulatory genes.  The default instruction set
+has three such <tt>nop</tt> instructions: <tt>nop-A</tt>, <tt>nop-B</tt>,
+and <tt>nop-C</tt>.
+
+<p>
+The remaining instructions can be seperated into three classes.  The first
+class is those few instructions that are unaffected by nops.  Most of these
+are the "biological" instructions involved directly in the replication
+process. The second class of instructions is those for which a <tt>nop</tt>
+changes the head or register affected by the previous command.  For example,
+an <tt>inc</tt> command followed by the instruction <tt>nop-A</tt> would
+cause the contents of the <tt>AX</tt> register to be incremented, while an
+<tt>inc</tt> command followed by a <tt>nop-B</tt> would increment <tt>BX</tt>.
+
+<p>
+The notation we use in instruction definitions to describe that a default
+component (that is, a register or head) can be replaced due to a nop command
+is by surrounding name with <tt>?</tt>'s.  The component list is the
+default one to be used, but if a <tt>nop</tt> follows the command, the
+component it represents in this context will replace this default.
+If the component between the question
+marks is a register than a subsequent <tt>nop-A</tt>
+represents the <tt>AX</tt> register, <tt>nop-B</tt> is <tt>BX</tt>, and
+<tt>nop-C</tt> is <tt>CX</tt>.   If the component listed is a head
+(including the instruction pointer) then a <tt>nop-A</tt> represents the
+Instruction Pointer, <tt>nop-B</tt> represents the Read-Head, and
+<tt>nop-C</tt> is the Write-Head.  Currently
+the Flow-Head has no <tt>nop</tt> associated with it.
+
+<p>
+The third class of instructions are those that use a series of <tt>nop</tt>
+instructions as a template (label) for a command that needs to reference
+another position in the code, such as
+<tt>h-search</tt>.  If <tt>nop-A</tt> follows a search command, it scans for
+the first complementary template (<tt>nop-B</tt>) and moves the Flow-Head
+there.  Templates may be composed of more than a single <tt>nop</tt>
+instruction.  A series of nops is typically abbreviated to the associated
+letter and separated by colons.  This the sequence "<tt>nop-A nop-A nop-C</tt>"
+would be displayed as "<tt>A:A:C</tt>".
+
+<p>
+The label system used in Avida allows for an arbitrary number of nops.  By
+default, we have three: <tt>nop-A</tt>'s complement is <tt>nop-B</tt>,
+<tt>nop-B</tt>'s is <tt>nop-C</tt>, and <tt>nop-C</tt>'s is <tt>nop-A</tt>.
+Likewise, some instructions talk about the complement of a register or head
+-- the same pattern is used in those cases.  So if an instruction tests if
+<tt>?BX?</tt> is equal to its complement, it will test if
+<tt>BX&nbsp;==&nbsp;CX</tt> by default, but if it is followed by a
+<tt>nop-C</tt> it will test if <tt>CX&nbsp;==&nbsp;AX</tt>.
+
+<p>
+I've often considered to moving to four <tt>nop</tt> instructions by default;
+A, C, G, and T with the expected complements.
+
+<h3>Instruction Set Reference</h3>
+
+<p>
+The full instruction set description is included
+<a href="inst_set.html">here</a>.  An abbreviated description of the 26 
+default instructions is below.
+
+<p>
+<table>
+<tr><th valign=top>(a-c) <td><tt>nop-A</tt>, <tt>nop-B</tt>,&nbsp;<br> and <tt>nop-C</tt>
+    <td valign=top>No-operation instructions; these modify other instructions.</tr>
+<tr><th>(d) <td><tt>if-n-equ</tt>
+    <td>Execute next instruction only-if ?BX? does not equal its complement</tr>
+<tr><th>(e) <td><tt>if-less</tt>
+    <td>Execute next instruction only if ?BX? is less than its complement</tr>
+<tr><th>(f) <td><tt>pop</tt>
+    <td>Remove a number from the current stack and place it in ?BX?</tr>
+<tr><th>(g) <td><tt>push</tt>
+    <td>Copy the value of ?BX? onto the top of the current stack</tr>
+<tr><th>(h) <td><tt>swap-stk</tt>
+    <td>Toggle the active stack</tr>
+<tr><th>(i) <td><tt>swap</tt>
+    <td>Swap the contents of ?BX? with its complement.</tr>
+<tr><th>(j) <td><tt>shift-r</tt>
+    <td>Shift all the bits in ?BX? one to the right</tr>
+<tr><th>(k) <td><tt>shift-l</tt>
+    <td>Shift all the bits in ?BX? one to the left</tr>
+<tr><th>(l) <td><tt>inc</tt>
+    <td>Increment ?BX?</tr>
+<tr><th>(m) <td><tt>dec</tt>
+    <td>Decrement ?BX?</tr>
+<tr><th>(n) <td><tt>add</tt>
+    <td>Calculate the sum of BX and CX; put the result in ?BX?</tr>
+<tr><th>(o) <td><tt>sub</tt>
+    <td>Calculate the BX minus CX; put the result in ?BX?</tr>
+<tr><th>(p) <td><tt>nand</tt>
+    <td>Perform a bitwise NAND on BX and CX; put the result in ?BX?</tr>
+<tr><th>(q) <td><tt>IO</tt>
+    <td>Output the value ?BX? and replace it with a new input</tr>
+<tr><th>(r) <td><tt>h-alloc</tt>
+    <td>Allocate memory for an offspring</tr>
+<tr><th>(s) <td><tt>h-divide</tt>
+    <td>Divide off an offspring located between the Read-Head and Write-Head.</tr>
+<tr><th>(t) <td><tt>h-copy</tt>
+    <td>Copy an instruction from the Read-Head to the Write-Head and advance both.</tr>
+<tr><th>(u) <td><tt>h-search</tt>
+    <td>Find a complement template and place the Flow-Head after it.</tr>
+<tr><th>(v) <td><tt>mov-head</tt>
+    <td>Move the ?IP? to the same position as the Flow-Head</tr>
+<tr><th>(w) <td><tt>jmp-head</tt>
+    <td>Move the ?IP? by a fixed amount found in CX</tr>
+<tr><th>(x) <td><tt>get-head</tt>
+    <td>Write the position of the ?IP? into CX</tr>
+<tr><th>(y) <td><tt>if-label</tt>
+    <td>Execute the next instruction only if the given template complement was just copied</tr>
+<tr><th>(z) <td><tt>set-flow</tt>
+    <td>Move the Flow-Head to the memory position specified by ?CX?</tr>
+</table>
+
+<h3>An example Ancestor</h3>
+
+The following organism is stored in the file <tt>organism.heads.15</tt>,
+which you should find in the source/support/config/ directory.  This is a
+simplified version of <tt>organism.default</tt> and
+<tt>organism.heads.100</tt>, of lengths 50 and 100 respectively (each has
+additional instructions placed before the copy loop)
+
+<p>
+<table>
+<tr><td colspan=2><font color="#886600"># ---  Setup  ---</font><br>
+<tr><td><b><tt>h-alloc</tt></b>    <td><font color="#886600"># Allocate extra space at the end of the genome to copy the offspring into.</font><br>
+<tr><td><b><tt>h-search&nbsp;</tt></b>   <td><font color="#886600"># Locate an
+    <tt>A:B</tt> template (at the end of the organism) and
+    place the Flow-Head after it</font><br>
+<tr><td><b><tt>nop-C</tt></b>      <td><font color="#886600">#</font><br>
+<tr><td><b><tt>nop-A</tt></b>      <td><font color="#886600">#</font><br>
+<tr><td><b><tt>mov-head</tt></b>   <td><font color="#886600"># Place the
+    Write-Head at the Flow-Head (which is at beginning of
+    offspring-to-be).</font><br>
+<tr><td><b><tt>nop-C</tt></b>      <td><font color="#886600"># [ Extra
+    <tt>nop-C</tt> commands can be placed here w/o harming the
+    organism! ]</font><br>
+<tr><td>&nbsp;
+<tr><td colspan=2><font color="#886600"># ---  Copy Loop  ---</font><br>
+<tr><td><b><tt>h-search</tt></b>   <td><font color="#886600"># No template,
+    so place the Flow-Head on the next line (to mark the beginning of the copy
+    loop)</font><br>
+<tr><td><b><tt>h-copy</tt></b>     <td><font color="#886600"># Copy a single
+    instruction from the read head to the write head (and advance both
+    heads!)</font><br>
+<tr><td><b><tt>if-label</tt></b>   <td><font color="#886600"># Execute the
+    line following this template <i>only if</i> we have just copied an
+    <tt>A:B</tt> template.</font><br>
+<tr><td><b><tt>nop-C</tt></b>      <td><font color="#886600">#</font><br>
+<tr><td><b><tt>nop-A</tt></b>      <td><font color="#886600">#</font><br>
+<tr><td><b><tt>h-divide</tt></b>   <td><font color="#886600">#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...Divide off offspring! (note if-statement above!)</font><br>
+<tr><td><b><tt>mov-head</tt></b>   <td><font color="#886600"># Otherwise,
+    move the IP back to the Flow-Head at the beginning of the copy
+    loop.</font><br>
+<tr><td><b><tt>nop-A</tt></b>      <td><font color="#886600"># End label.</font><br>
+<tr><td><b><tt>nop-B</tt></b>      <td><font color="#886600"># End label.</font><br>
+</table>
+
+<p>
+This program begins by allocating extra space for its offspring.  The
+exact amount of space does not need to be specified -- it will allocate as
+much as it is allowed to.  The organism will then do a search for the end
+of its genome (where this new space was just placed) so that it will know
+where to start copying.  First the Flow-Head is placed there, and then the
+Write-Head is moved to the same point.
+
+<p>
+It is after this initial setup and before the actual copying process
+commences that extra <tt>nop</tt> instructions can be included.  The only
+caveat is that you need to make sure that you don't duplicate any templates
+that the program will be searching for, or else it will no longer function
+properly.  The easiest thing to do is insert a long sequence of <tt>nop-C</tt>
+instructions.
+
+<p>
+Next we have the beginning of the "copy loop".  This segement of code starts
+off with an <tt>h-search</tt> command with no template following it.  In
+such as case, the Flow-Head is placed on the line immediately following the
+search.  This head will be used to designate the place that the IP keeps
+returning to with each cycle of the loop.
+
+<p>
+The <tt>h-copy</tt> command will copy a single instruction from the Read-Head
+(still at the very start of the genome, where it begins) to the Write-Head
+(which we placed at the beginning of the offspring).  With any copy command
+there is a user-specified chance of a copy mutation.  If one occurs, the
+Write-Head will place a random instruction rather than the one that it
+gathered from the Read-Head.  After the copy occurs (for better or worse),
+both the Read-Head and the Write-Head are advanced to the next instruction
+in the genome.  It is for this reason that a common mutation we see happening
+will place a long string of h-copy instruction one after another.
+
+<p>
+The next command, <tt>if-label</tt> (followed by a <tt>nop-C</tt> and a
+<tt>nop-A</tt>) tests to see if the complement of <tt>C:A</tt> is the most
+thing copied.  That is, if the two most
+recent instructions copied were a <tt>nop-A</tt> followed by a <tt>nop-B</tt>
+as is found at the end of the organism.  If so, we are done!  Execute the
+next instruction which is <tt>h-divide</tt> (when this occurs, the read and
+write heads will surround the portion of memory to be split off as the
+offspring's genome).  If not, then we need to keep
+going.  Skip the next instruction and move on to the <tt>mov-head</tt> which
+will move the head specified by the <tt>nop</tt> that follows (in this case
+<tt>nop-A</tt> which is the Instruction Pointer) to the Flow-Head at the
+beginning of the copy loop.
+
+<p>
+This process will continue until all of the lines of code have been copies,
+and an offspring is born.
+
+<h3>An example logic gene</h3>
+
+<p>
+Here is a short example program to demonstrate one way for an organism to
+perform the "OR" logic operation.  This time I'm only going to show the
+contents of the registers after each command because the functionality of
+the individual instructions should be clear, and the logic itself won't
+be helped much by a line-by-line explanation in English.
+
+<p>
+<center>
+<table width=75%>
+<tr><th bgcolor="#CCCCFF" width=11%>Line #
+    <th bgcolor="#CCCCFF" width=34%>Instruction
+    <td bgcolor="#CCCCFF" width=11%><b>AX</b>
+    <td bgcolor="#CCCCFF" width=11%><b>BX</b>
+    <td bgcolor="#CCCCFF" width=11%><b>CX</b>
+    <td bgcolor="#CCCCFF" width=11%><b>Stack</b>
+    <td bgcolor="#CCCCFF" width=11%><b>Output</b>
+<tr><th bgcolor="#FF88FF"> 1 <th bgcolor="#88FFFF">IO
+    <td bgcolor="#FFBBBB">?  <td bgcolor="#FFBBBB">X  <td bgcolor="#FFBBBB">?  
+    <td bgcolor="#AAFFAA">? <td bgcolor="#FFFF88"> ?
+<tr><th bgcolor="#FF88FF"> 2 <th bgcolor="#88FFFF">push  
+    <td bgcolor="#FFBBBB">?  <td bgcolor="#FFBBBB">X  <td bgcolor="#FFBBBB">?  
+    <td bgcolor="#AAFFAA">X, ?       <td bgcolor="#FFFF88">&nbsp;
+<tr><th bgcolor="#FF88FF"> 3 <th bgcolor="#88FFFF">pop   
+    <td bgcolor="#FFBBBB">?  <td bgcolor="#FFBBBB">X  <td bgcolor="#FFBBBB">X  
+    <td bgcolor="#AAFFAA">? <td bgcolor="#FFFF88">&nbsp;
+<tr><th bgcolor="#FF88FF"> 4<th bgcolor="#88FFFF">nop-C <td colspan=5>&nbsp;
+<tr><th bgcolor="#FF88FF"> 5 <th bgcolor="#88FFFF">nand  
+    <td bgcolor="#FFBBBB">~X <td bgcolor="#FFBBBB">X  <td bgcolor="#FFBBBB">X  
+    <td bgcolor="#AAFFAA">? <td bgcolor="#FFFF88">&nbsp;
+<tr><th bgcolor="#FF88FF"> 6<th bgcolor="#88FFFF">nop-A <td colspan=5>&nbsp;
+<tr><th bgcolor="#FF88FF"> 7 <th bgcolor="#88FFFF">IO    
+    <td bgcolor="#FFBBBB">~X <td bgcolor="#FFBBBB">Y  <td bgcolor="#FFBBBB">X  
+    <td bgcolor="#AAFFAA">? <td bgcolor="#FFFF88"> X
+<tr><th bgcolor="#FF88FF"> 8 <th bgcolor="#88FFFF">push  
+    <td bgcolor="#FFBBBB">~X <td bgcolor="#FFBBBB">Y  <td bgcolor="#FFBBBB">X  
+    <td bgcolor="#AAFFAA">Y, ?       <td bgcolor="#FFFF88">&nbsp;
+<tr><th bgcolor="#FF88FF"> 9 <th bgcolor="#88FFFF">pop   
+    <td bgcolor="#FFBBBB">~X <td bgcolor="#FFBBBB">Y  <td bgcolor="#FFBBBB">Y  
+    <td bgcolor="#AAFFAA">? <td bgcolor="#FFFF88">&nbsp;
+<tr><th bgcolor="#FF88FF">10<th bgcolor="#88FFFF">nop-C <td colspan=5>&nbsp;
+<tr><th bgcolor="#FF88FF">11 <th bgcolor="#88FFFF">nand  
+    <td bgcolor="#FFBBBB">~X <td bgcolor="#FFBBBB">~Y <td bgcolor="#FFBBBB">Y  
+    <td bgcolor="#AAFFAA">? <td bgcolor="#FFFF88">&nbsp;
+<tr><th bgcolor="#FF88FF">12 <th bgcolor="#88FFFF">swap  
+    <td bgcolor="#FFBBBB">Y  <td bgcolor="#FFBBBB">~Y <td bgcolor="#FFBBBB">~X 
+    <td bgcolor="#AAFFAA">? <td bgcolor="#FFFF88">&nbsp;
+<tr><th bgcolor="#FF88FF">13<th bgcolor="#88FFFF">nop-C <td colspan=5>&nbsp;
+<tr><th bgcolor="#FF88FF">14 <th bgcolor="#88FFFF">nand  
+    <td bgcolor="#FFBBBB">Y  <td bgcolor="#FFBBBB">X or Y <td bgcolor="#FFBBBB">~X  
+    <td bgcolor="#AAFFAA">? <td bgcolor="#FFFF88">&nbsp;
+<tr><th bgcolor="#FF88FF">15 <th bgcolor="#88FFFF">IO    
+    <td bgcolor="#FFBBBB">Y  <td bgcolor="#FFBBBB">Z      <td bgcolor="#FFBBBB">~X  
+    <td bgcolor="#AAFFAA">? <td bgcolor="#FFFF88"> X or Y
+</table>
+</center>
+<br><hr>
+Project hosted by:<br>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=46761&type=2" width="125" height="37" border="0" alt="SourceForge.net"/></a>
+    

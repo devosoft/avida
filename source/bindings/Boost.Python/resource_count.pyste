@@ -1,0 +1,16 @@
+
+cResourceCount = Class("cResourceCount", "resource_count.hh")
+set_policy(cResourceCount.GetResources, return_internal_reference())
+set_policy(cResourceCount.GetCellResources, return_internal_reference())
+set_policy(cResourceCount.GetResourcesGeometry, return_internal_reference())
+set_policy(cResourceCount.cResourceCount, return_internal_reference())
+
+exclude(cResourceCount.Setup)
+
+print("""
+FIXME for resource_count.pyste:
+Reenable cResourceCount.Setup(). This will take some work -- the c++
+function seems to take too many arguments for the boost.python binding
+system.
+""")
+

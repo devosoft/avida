@@ -1,0 +1,14 @@
+cTestCase = Class("cTestCase", "cTestCase.hh")
+# cTestCase recursively 'adopts' other cTestCase instances, i.e.,
+# removes responsibility from the user for deleting adopted instances.
+# This doesn't play well with python because python really wants to
+# delete them, in accord with their reference counts. Using
+# shared-pointers removes responsibility for deleting the instances from
+# cTestCase, Python, and users' code. Deleting becomes responsibility of
+# the shared_ptr. shared_ptr saves the day.
+holder(cTestCase, lambda classname: "boost::shared_ptr<%s>" % classname)
+# adoptTestCase takes raw pointers. We don't want to let python use it.
+exclude(cTestCase.adoptTestCase)
+# pyAdoptTestCase takes shared_ptr instances. We want python to use
+# pyAdoptTestCase to make a cTestCase adopt another test case.:
+rename(cTestCase.pyAdoptTestCase, "adoptTestCase")

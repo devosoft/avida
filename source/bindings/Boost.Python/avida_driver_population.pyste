@@ -1,0 +1,8 @@
+Include("environment.hh")
+Include("population.hh")
+
+Import("avida_driver_base.pyste")
+
+cAvidaDriver_Population = Class("cAvidaDriver_Population", "avida_driver_population.hh")
+set_policy(cAvidaDriver_Population.GetPopulation, return_internal_reference())
+

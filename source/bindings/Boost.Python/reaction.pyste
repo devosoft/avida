@@ -1,0 +1,9 @@
+
+Include("task_entry.hh")
+Include("reaction_requisite.hh")
+Include("reaction_process.hh")
+
+cReaction = Class("cReaction", "reaction.hh")
+set_policy(cReaction.GetTask, return_internal_reference())
+set_policy(cReaction.AddProcess, return_internal_reference())
+set_policy(cReaction.AddRequisite, return_internal_reference())

@@ -1,0 +1,6 @@
+Import("init_file.pyste")
+
+cGenesis = Class("cGenesis", "genesis-fixups.hh")
+exclude(cGenesis.Open)
+add_method(cGenesis, "cGenesisOpenWrapper")
+rename(cGenesis.cGenesisOpenWrapper, "Open")

@@ -1,0 +1,28 @@
+
+Include("environment.hh")
+Include("inject_genotype.hh")
+Include("hardware_base.hh")
+Include("code_label.hh")
+Include("org_message.hh")
+Include("genotype.hh")
+Include("lineage.hh")
+
+cOrganism = Class("cOrganism", "organism.hh")
+set_policy(cOrganism.GetHardware, return_internal_reference())
+set_policy(cOrganism.GetNeighbor, return_internal_reference())
+set_policy(cOrganism.GetParasite, return_internal_reference())
+set_policy(cOrganism.ChildGenome, return_internal_reference())
+set_policy(cOrganism.CPUStats, return_internal_reference())
+set_policy(cOrganism.GetLineage, return_internal_reference())
+set_policy(cOrganism.GetGenotype, return_internal_reference())
+set_policy(cOrganism.MutationRates, return_internal_reference())
+set_policy(cOrganism.GetLocalMutations, return_internal_reference())
+set_policy(cOrganism.PopInterface, return_internal_reference())
+set_policy(cOrganism.GetPhenotype, return_internal_reference())
+
+print("""
+FIXME : for organism.pyste : write equivalents to disabled methods
+SaveState and LoadState.
+""")
+exclude(cOrganism.SaveState)
+exclude(cOrganism.LoadState)

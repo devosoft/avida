@@ -1,0 +1,5 @@
+
+Include("help_type.hh")
+
+cHelpEntry = Class("cHelpEntry", "help_entry.hh")
+set_policy(cHelpEntry.GetType, return_internal_reference())

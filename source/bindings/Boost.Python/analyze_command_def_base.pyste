@@ -1,0 +1,4 @@
+Include("analyze.hh")
+Include("analyze_command.hh")
+
+cAnalyzeCommandDefBase = Class("cAnalyzeCommandDefBase", "analyze_command_def_base.hh")

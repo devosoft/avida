@@ -1,0 +1,11 @@
+
+Include("genebank.hh")
+Include("species.hh")
+Include("genotype.hh")
+Include("stats.hh")
+
+cSpeciesControl = Class("cSpeciesControl", "species_control.hh")
+set_policy(cSpeciesControl.Find, return_internal_reference())
+set_policy(cSpeciesControl.GetFirst, return_internal_reference())
+set_policy(cSpeciesControl.GetFirstInactive, return_internal_reference())
+set_policy(cSpeciesControl.GetFirstGarbage, return_internal_reference())

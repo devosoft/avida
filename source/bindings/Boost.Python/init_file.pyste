@@ -1,0 +1,4 @@
+Import("file.pyste")
+
+cInitFile = Class("cInitFile", "init_file.hh")
+set_policy(cInitFile.GetFormat, return_internal_reference())

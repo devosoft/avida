@@ -1,0 +1,3 @@
+Include("merit.hh")
+
+cSchedule = Class("cSchedule", "schedule.hh")

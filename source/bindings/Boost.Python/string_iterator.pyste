@@ -1,0 +1,3 @@
+Include("string_list.hh")
+
+cStringIterator = Class("cStringIterator", "string_iterator.hh")

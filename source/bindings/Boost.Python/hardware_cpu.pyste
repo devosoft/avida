@@ -1,0 +1,36 @@
+Include("mutation.hh")
+Include("inst_lib_cpu.hh")
+Include("inst_set.hh")
+Include("organism.hh")
+
+Import("hardware_base.pyste")
+
+cHardwareCPU = Class("cHardwareCPU", "hardware_cpu-fixups.hh")
+set_policy(cHardwareCPU.GetInstLib, return_value_policy(reference_existing_object))
+set_policy(cHardwareCPU.GetInputBuffer, return_internal_reference())
+set_policy(cHardwareCPU.GetOutputBuffer, return_internal_reference())
+set_policy(cHardwareCPU.Register, return_internal_reference())
+set_policy(cHardwareCPU.GetHead, return_internal_reference())
+set_policy(cHardwareCPU.GetActiveHead, return_internal_reference())
+set_policy(cHardwareCPU.IP, return_internal_reference())
+set_policy(cHardwareCPU.GetLabel, return_internal_reference())
+set_policy(cHardwareCPU.GetReadLabel, return_internal_reference())
+
+### <sigh> Register() is written in two versions, one returning an int,
+### and one returning a reference to an int. Pyste can't cope --
+### probably neither can Boost.Python -- with references to builtin
+### types (I think). Possible solution is creating a
+### cRegister class to wrap the int.
+#set_policy(cHardwareCPU.Register, return_value_policy(reference_existing_object))
+exclude(cHardwareCPU.Register)
+add_method(cHardwareCPU, "cHardwareCPU_GetRegister");
+rename(cHardwareCPU.cHardwareCPU_GetRegister, "GetRegister");
+add_method(cHardwareCPU, "cHardwareCPU_SetRegister");
+rename(cHardwareCPU.cHardwareCPU_SetRegister, "SetRegister");
+class_code(cHardwareCPU, '.add_property("Register", &cHardwareCPU_GetRegister, &cHardwareCPU_SetRegister)');
+
+set_policy(cHardwareCPU.Memory, return_internal_reference())
+set_policy(cHardwareCPU.GetMemory, return_internal_reference())
+
+set_policy(cHardwareCPU.GetOrganism, return_internal_reference())
+exclude(cHardwareCPU.ViewerLock)

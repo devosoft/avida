@@ -1,0 +1,1 @@
+cMutationRates = Class("cMutationRates", "mutation_rates.hh")

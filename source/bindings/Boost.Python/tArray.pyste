@@ -1,0 +1,152 @@
+#  dir(specialized_type._DeclarationInfo__attributes) :
+#  {'__code__': ['.def("__len__", &tArray_int_len)', '.def("__getitem__", &tArray_int_getitem)', '.def("__setitem__", &tArray_int_setitem)'], 'exclude': False, 'include': 'tArray_instantiations.hh', 'name': 'tArray_int'} 
+
+def addClass__len__Wrapper(spec_str, spec_type):
+  len_wrapper_name = "tArray_" + spec_str + "_len"
+  class_code(spec_type, '.def("__len__", &' + len_wrapper_name + ')');
+  return """
+inline int """ + len_wrapper_name + "(tArray<" + spec_str + """> &array) {
+  return tArray_class_T_len<>(array);
+}"""
+
+def addClass__getitem__Wrapper(spec_str, spec_type):
+  getitem_wrapper_name = "tArray_" + spec_str + "_getitem"
+  class_code(spec_type, '.def("__getitem__", &' + getitem_wrapper_name + ', return_internal_reference< 1 >())');
+  return """
+inline """ + spec_str + " &" + getitem_wrapper_name + "(tArray<" + spec_str + """> &array, int i) {
+  return tArray_class_T_getitem<>(array, i);
+}"""
+
+def addClass__setitem__Wrapper(spec_str, spec_type):
+  setitem_wrapper_name = "tArray_" + spec_str + "_setitem"
+  class_code(spec_type, '.def("__setitem__", &' + setitem_wrapper_name + ')');
+  return """
+inline void """ + setitem_wrapper_name + "(tArray<" + spec_str + "> &array, int i, " + spec_str + """ &item) {
+  tArray_class_T_setitem<>(array, i, item);
+}"""
+
+def addFundamental__getitem__Wrapper(spec_str, spec_type):
+  getitem_wrapper_name = "tArray_" + spec_str + "_getitem"
+  class_code(spec_type, '.def("__getitem__", &' + getitem_wrapper_name + ')');
+  return """
+inline """ + spec_str + " " + getitem_wrapper_name + "(tArray<" + spec_str + """> &array, int i) {
+  return tArray_fundamental_T_getitem<>(array, i);
+}"""
+
+def addFundamental__setitem__Wrapper(spec_str, spec_type):
+  setitem_wrapper_name = "tArray_" + spec_str + "_setitem"
+  class_code(spec_type, '.def("__setitem__", &' + setitem_wrapper_name + ')');
+  return """
+inline void """ + setitem_wrapper_name + "(tArray<" + spec_str + "> &array, int i, " + spec_str + """ item) {
+  tArray_class_T_setitem<>(array, i, item);
+}"""
+
+def commonClassWrapperFactors(spec_str, spec_type):
+  exclude(spec_type.ElementAt)
+  decl_code_str = ""
+  decl_code_str += addClass__len__Wrapper(spec_str, spec_type)
+  decl_code_str += addClass__getitem__Wrapper(spec_str, spec_type)
+  decl_code_str += addClass__setitem__Wrapper(spec_str, spec_type)
+  return decl_code_str
+
+def commonFundamentalWrapperFactors(spec_str, spec_type):
+  exclude(spec_type.ElementAt)
+  decl_code_str = ""
+  decl_code_str += addClass__len__Wrapper(spec_str, spec_type)
+  decl_code_str += addFundamental__getitem__Wrapper(spec_str, spec_type)
+  decl_code_str += addFundamental__setitem__Wrapper(spec_str, spec_type)
+  return decl_code_str
+
+
+Import("organism.pyste")
+Import("merit.pyste")
+Import("mutation.pyste")
+Import("int_sum.pyste")
+
+Include("org_message.hh")
+
+tArray = Template("tArray", "tArray_instantiations.hh")
+
+declaration_code_string = ""
+
+pOrganism_str = "pOrganism"
+tArray_pOrganism = tArray(pOrganism_str)
+declaration_code_string += commonClassWrapperFactors(pOrganism_str, tArray_pOrganism)
+
+cMerit_str = "cMerit"
+tArray_cMerit = tArray(cMerit_str)
+declaration_code_string += commonClassWrapperFactors(cMerit_str, tArray_cMerit)
+
+pMutation_str = "pMutation"
+tArray_pMutation = tArray(pMutation_str)
+declaration_code_string += commonClassWrapperFactors(pMutation_str, tArray_pMutation)
+
+cIntSum_str = "cIntSum"
+tArray_cIntSum = tArray(cIntSum_str)
+declaration_code_string += commonClassWrapperFactors(cIntSum_str, tArray_cIntSum)
+
+double_str = "double"
+tArray_double = tArray(double_str)
+declaration_code_string += commonFundamentalWrapperFactors(double_str, tArray_double)
+
+int_str = "int"
+tArray_int = tArray(int_str)
+declaration_code_string += commonFundamentalWrapperFactors(int_str, tArray_int)
+
+
+
+
+#for specialization in class_specializers:
+#  specialized_type = tArray(specialization)
+#  exclude(specialized_type.ResizeClear)
+#  exclude(specialized_type.ElementAt)
+#  #
+#  len_wrapper_name = "tArray_" + specialization + "_len"
+#  getitem_wrapper_name = "tArray_" + specialization + "_getitem"
+#  setitem_wrapper_name = "tArray_" + specialization + "_setitem"
+#  #
+#  declaration_code_string += """
+#inline int """ + len_wrapper_name + "(tArray<" + specialization + """> &array) {
+#  return tArray_class_T_len<>(array);
+#}"""
+#  declaration_code_string += """
+#inline """ + specialization + " &" + getitem_wrapper_name + "(tArray<" + specialization + """> &array, int i) {
+#  return tArray_class_T_getitem<>(array, i);
+#}"""
+#  declaration_code_string += """
+#inline void """ + setitem_wrapper_name + "(tArray<" + specialization + "> &array, int i, " + specialization + """ &item) {
+#  tArray_class_T_setitem<>(array, i, item);
+#}"""
+#  #
+#  class_code(specialized_type, '.def("__len__", &' + len_wrapper_name + ')');
+#  class_code(specialized_type, '.def("__getitem__", &' + getitem_wrapper_name + ', return_internal_reference< 1 >())');
+#  class_code(specialized_type, '.def("__setitem__", &' + setitem_wrapper_name + ')');
+
+
+#for specialization in fundamental_specializers:
+#  specialized_type = tArray(specialization)
+#  exclude(specialized_type.ResizeClear)
+#  exclude(specialized_type.ElementAt)
+#  #
+#  len_wrapper_name = "tArray_" + specialization + "_len"
+#  getitem_wrapper_name = "tArray_" + specialization + "_getitem"
+#  setitem_wrapper_name = "tArray_" + specialization + "_setitem"
+#  #
+#  declaration_code_string += """
+#inline int """ + len_wrapper_name + "(tArray<" + specialization + """> &array) {
+#  return tArray_class_T_len<>(array);
+#}"""
+#  declaration_code_string += """
+#inline """ + specialization + " " + getitem_wrapper_name + "(tArray<" + specialization + """> &array, int i) {
+#  return tArray_fundamental_T_getitem<>(array, i);
+#}"""
+#  declaration_code_string += """
+#inline void """ + setitem_wrapper_name + "(tArray<" + specialization + "> &array, int i, " + specialization + """ item) {
+#  tArray_class_T_setitem<>(array, i, item);
+#}"""
+#  #
+#  class_code(specialized_type, '.def("__len__", &' + len_wrapper_name + ')');
+#  class_code(specialized_type, '.def("__getitem__", &' + getitem_wrapper_name + ')');
+#  class_code(specialized_type, '.def("__setitem__", &' + setitem_wrapper_name + ')');
+
+declaration_code(declaration_code_string)

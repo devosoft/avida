@@ -1,0 +1,4 @@
+Include("organism.hh")
+Include("genebank.hh")
+
+cBirthChamber = Class("cBirthChamber", "birth_chamber.hh")

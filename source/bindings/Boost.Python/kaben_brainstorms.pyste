@@ -1,0 +1,17 @@
+#Function("SetupAvida", "avida.hh")
+#
+#Class("cAvidaDriver_Analyze", "avida_driver_analyze.hh")
+#
+#Class("cAvidaDriver_Base", "avida_driver_base.hh")
+#
+#Class("cAvidaDriver_Population", "avida_driver_population.hh")
+
+#declaration_code("""
+##ifndef ENVIRONMENT_HH
+##include "environment.hh"
+##endif
+##ifndef POPULATION_INTERFACE_HH
+##include "population_interface.hh"
+##endif
+#""")
+#Function("SetupAvida", "avida.hh")

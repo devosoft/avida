@@ -1,0 +1,4 @@
+
+cIntegratedScheduleNode = Class("cIntegratedScheduleNode", "integrated_schedule_node.hh")
+set_policy(cIntegratedScheduleNode.GetNext, return_internal_reference())
+set_policy(cIntegratedScheduleNode.GetPrev, return_internal_reference())

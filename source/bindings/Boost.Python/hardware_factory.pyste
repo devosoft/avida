@@ -1,0 +1,7 @@
+
+Include("hardware_base.hh")
+Include("organism.hh")
+Include("inst_set.hh")
+
+cHardwareFactory = Class("cHardwareFactory", "hardware_factory.hh")
+set_policy(cHardwareFactory.Create, return_internal_reference())

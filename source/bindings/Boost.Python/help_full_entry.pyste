@@ -1,0 +1,7 @@
+
+Import("help_entry.pyste")
+
+Include("help_type.hh")
+
+cHelpFullEntry = Class("cHelpFullEntry", "help_full_entry.hh")
+set_policy(cHelpFullEntry.GetType, return_internal_reference())

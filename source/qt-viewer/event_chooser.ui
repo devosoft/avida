@@ -1,0 +1,364 @@
+<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
+<class>event_chooser</class>
+<widget class="QWidget">
+    <property name="name">
+        <cstring>event_chooser</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>293</width>
+            <height>417</height>
+        </rect>
+    </property>
+    <property name="sizePolicy">
+        <sizepolicy>
+            <hsizetype>0</hsizetype>
+            <vsizetype>3</vsizetype>
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+        </sizepolicy>
+    </property>
+    <property name="caption">
+        <string>Event Chooser</string>
+    </property>
+    <vbox>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <property name="margin">
+            <number>11</number>
+        </property>
+        <property name="spacing">
+            <number>6</number>
+        </property>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>Layout6</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <property name="margin">
+                    <number>0</number>
+                </property>
+                <property name="spacing">
+                    <number>6</number>
+                </property>
+                <widget class="QLabel">
+                    <property name="name">
+                        <cstring>TextLabel2</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Event:</string>
+                    </property>
+                </widget>
+                <widget class="QComboBox">
+                    <property name="name">
+                        <cstring>m_event_cb</cstring>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>3</hsizetype>
+                            <vsizetype>0</vsizetype>
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel3</cstring>
+            </property>
+            <property name="text">
+                <string>Parameters:</string>
+            </property>
+        </widget>
+        <widget class="QLineEdit">
+            <property name="name">
+                <cstring>m_parameters_inp</cstring>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>TextLabel4</cstring>
+            </property>
+            <property name="text">
+                <string>Description:</string>
+            </property>
+        </widget>
+        <widget class="QTextView">
+            <property name="name">
+                <cstring>m_event_descr_tv</cstring>
+            </property>
+        </widget>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>Layout21</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <property name="margin">
+                    <number>0</number>
+                </property>
+                <property name="spacing">
+                    <number>6</number>
+                </property>
+                <widget class="QButtonGroup">
+                    <property name="name">
+                        <cstring>m_trigger_group</cstring>
+                    </property>
+                    <property name="title">
+                        <string>Trigger Type</string>
+                    </property>
+                    <vbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <property name="margin">
+                            <number>11</number>
+                        </property>
+                        <property name="spacing">
+                            <number>6</number>
+                        </property>
+                        <widget class="QRadioButton">
+                            <property name="name">
+                                <cstring>m_imm_rb</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Immediate</string>
+                            </property>
+                        </widget>
+                        <widget class="QRadioButton">
+                            <property name="name">
+                                <cstring>m_upd_rb</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Update</string>
+                            </property>
+                        </widget>
+                        <widget class="QRadioButton">
+                            <property name="name">
+                                <cstring>m_gen_rb</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Generation</string>
+                            </property>
+                        </widget>
+                        <widget class="QRadioButton">
+                            <property name="name">
+                                <cstring>m_realt_rb</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Realtime</string>
+                            </property>
+                        </widget>
+                        <widget class="QRadioButton">
+                            <property name="name">
+                                <cstring>m_exec_rb</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Instr. Executed</string>
+                            </property>
+                        </widget>
+                    </vbox>
+                </widget>
+                <spacer>
+                    <property name="name" stdset="0">
+                        <cstring>Spacer4</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Minimum</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>20</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="QGroupBox">
+                    <property name="name">
+                        <cstring>GroupBox3</cstring>
+                    </property>
+                    <property name="title">
+                        <string>Interval</string>
+                    </property>
+                    <grid>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <property name="margin">
+                            <number>11</number>
+                        </property>
+                        <property name="spacing">
+                            <number>6</number>
+                        </property>
+                        <widget class="QLabel" row="2" column="0">
+                            <property name="name">
+                                <cstring>TextLabel1_2_2</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Stop:</string>
+                            </property>
+                        </widget>
+                        <widget class="QComboBox" row="2" column="1">
+                            <item>
+                                <property name="text">
+                                    <string>100</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>1000</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>5000</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>10000</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>20000</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>50000</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>end</string>
+                                </property>
+                            </item>
+                            <property name="name">
+                                <cstring>m_stop_cb</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>3</hsizetype>
+                                    <vsizetype>0</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="editable">
+                                <bool>true</bool>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="1" column="0">
+                            <property name="name">
+                                <cstring>TextLabel1_2</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Step:</string>
+                            </property>
+                        </widget>
+                        <widget class="QComboBox" row="1" column="1">
+                            <item>
+                                <property name="text">
+                                    <string>1</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>10</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>20</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>50</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>100</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>once</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>all</string>
+                                </property>
+                            </item>
+                            <property name="name">
+                                <cstring>m_step_cb</cstring>
+                            </property>
+                            <property name="editable">
+                                <bool>true</bool>
+                            </property>
+                        </widget>
+                        <widget class="QLabel" row="0" column="0">
+                            <property name="name">
+                                <cstring>TextLabel1</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Start:</string>
+                            </property>
+                        </widget>
+                        <widget class="QComboBox" row="0" column="1">
+                            <item>
+                                <property name="text">
+                                    <string>1</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>10</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>100</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>1000</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>begin</string>
+                                </property>
+                            </item>
+                            <property name="name">
+                                <cstring>m_start_cb</cstring>
+                            </property>
+                            <property name="editable">
+                                <bool>true</bool>
+                            </property>
+                        </widget>
+                    </grid>
+                </widget>
+            </hbox>
+        </widget>
+    </vbox>
+</widget>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

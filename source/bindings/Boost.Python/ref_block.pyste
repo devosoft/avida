@@ -1,0 +1,1 @@
+cRefBlock = Class("cRefBlock", "ref_block.hh")

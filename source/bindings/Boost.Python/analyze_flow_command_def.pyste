@@ -1,0 +1,2 @@
+Import("analyze_command_def_base.pyste")
+cAnalyzeFlowCommandDef = Class("cAnalyzeFlowCommandDef", "analyze_flow_command_def.hh")

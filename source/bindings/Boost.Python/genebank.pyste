@@ -1,0 +1,16 @@
+
+Include("stats.hh")
+Include("species.hh")
+Include("genotype.hh")
+Include("genome.hh")
+
+cGenebank = Class("cGenebank", "genebank.hh")
+set_policy(cGenebank.AddGenotype, return_internal_reference())
+set_policy(cGenebank.InjectGenotype, return_internal_reference())
+set_policy(cGenebank.FindGenotype, return_internal_reference())
+set_policy(cGenebank.GetBestGenotype, return_internal_reference())
+set_policy(cGenebank.GetCoalescentGenotype, return_internal_reference())
+set_policy(cGenebank.GetFirstSpecies, return_internal_reference())
+set_policy(cGenebank.GetGenotype, return_internal_reference())
+set_policy(cGenebank.NextGenotype, return_internal_reference())
+set_policy(cGenebank.ResetThread, return_internal_reference())

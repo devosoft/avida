@@ -1,0 +1,56 @@
+//////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 1993 - 2003 California Institute of Technology             //
+//                                                                          //
+// Read the COPYING and README files, or contact 'avida@alife.org',         //
+// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
+//////////////////////////////////////////////////////////////////////////////
+
+#ifndef RUNNING_AVERAGE_HH
+#define RUNNING_AVERAGE_HH
+
+#include <math.h>
+
+class cRunningAverage {
+private:
+  double *m_values;  // Array of actual values
+  double m_s1;       // average
+  double m_s2;       // sum of squares
+  int m_window_size;        // Size of sliding window
+  int m_pointer;
+  int m_n;
+  
+  
+  cRunningAverage();
+  cRunningAverage( const cRunningAverage & );
+  cRunningAverage & operator=( const cRunningAverage & );
+public:
+  cRunningAverage( int window_size );
+  ~cRunningAverage();
+  
+  
+  //manipulators
+  void Add( double value );
+  void Clear();
+  
+  
+  //accessors
+  double Sum()          const { return m_s1; }
+  double S1()           const { return m_s1; }
+  double SumOfSquares() const { return m_s2; }
+  double S2()           const { return m_s2; }
+  
+  double Average() const { return ( m_n == m_window_size ) ? (m_s1/m_n) : 0; }
+
+  double Variance() const { return ( m_n == m_window_size ) ?
+      (m_s2 - m_s1*m_s1/m_n) / (m_n-1) : 0; }
+    
+  double StdDeviation() const { return sqrt(Variance()); }
+  double StdError()  const { return ( m_n == m_window_size ) ?
+       sqrt(m_s2 - m_s1*m_s1/m_n / (m_n * (m_n-1))) : 0; }
+
+  // Notation Shortcuts
+  double Ave() const { return Average(); }
+  double Var() const { return Variance(); }
+};
+
+#endif

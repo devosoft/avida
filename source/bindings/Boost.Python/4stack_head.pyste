@@ -1,0 +1,14 @@
+
+Import("cpu_head.pyste")
+
+Include("cpu_memory.hh")
+Include("instruction.hh")
+Include("hardware_base.hh")
+
+c4StackHead = Class("c4StackHead", "4stack_head.hh")
+set_policy(c4StackHead.FlagCopied, return_internal_reference())
+set_policy(c4StackHead.FlagMutated, return_internal_reference())
+set_policy(c4StackHead.FlagExecuted, return_internal_reference())
+set_policy(c4StackHead.FlagPointMut, return_internal_reference())
+set_policy(c4StackHead.FlagCopyMut, return_internal_reference())
+set_policy(c4StackHead.FlagBreakpoint, return_internal_reference())

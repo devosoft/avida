@@ -1,0 +1,3 @@
+
+cScaledBlock = Class("cScaledBlock", "scaled_block.hh")
+set_policy(cScaledBlock.GetData, return_internal_reference())

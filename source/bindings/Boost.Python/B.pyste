@@ -1,0 +1,3 @@
+Import("A.pyste")
+B = Class("B", "B.hh")
+

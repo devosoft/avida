@@ -1,0 +1,303 @@
+<html>
+<title>The Environment Code</title>
+<body
+ bgcolor="#FFFFFF"
+ text="#000000"
+ link="#0000AA"
+ alink="#0000FF"
+ vlink="#000044">
+
+<h2 align=center>The Environment Code</h2>
+
+The environment source code consists of several main components: resources,
+reactions, and task triggers, plus the libraries that maintain each of these.
+
+<h3>Task Entries</h3>
+
+A task library is composed of a collection of entries, each of which fully
+describes a single task that can be used to trigger reactions.
+
+<pre>
+  typedef <font color="#880000">double</font> (<font color="#880000">cTaskLib</font>::*<font color="#000088">tTaskTest</font>)() const;
+
+  class <font color="#880000">cTaskEntry</font> {
+  private:
+    <font color="#880000">cString</font> <font color="#000088">name</font>;  <font color="#886600">// Short keyword for task</font>
+    <font color="#880000">cString</font> <font color="#000088">desc</font>;  <font color="#886600">// For more human-understandable output...</font>
+    <font color="#880000">int</font> <font color="#000088">id</font>;
+    <font color="#880000">tTaskTest</font> <font color="#000088">test_fun</font>;
+  public:
+    <font color="#008800">cTaskEntry</font>(const <font color="#880000">cString</font> & <font color="#000088">_name</font>, const <font color="#880000">cString</font> & <font color="#000088">_desc</font>, <font color="#880000">int</font> <font color="#000088">_id</font>,
+               <font color="#880000">tTaskTest</font> <font color="#000088">_test_fun</font>);
+    ~<font color="#008800">cTaskEntry</font>();
+  
+    const <font color="#880000">cString</font> & <font color="#008800">GetName</font>()    const { return <font color="#000088">name</font>; }
+    const <font color="#880000">cString</font> & <font color="#008800">GetDesc</font>()    const { return <font color="#000088">desc</font>; }
+    const <font color="#880000">int</font>       <font color="#008800">GetID</font>()      const { return <font color="#000088">id</font>; }
+    const <font color="#880000">tTaskTest</font> <font color="#008800">GetTestFun</font>() const { return <font color="#000088">test_fun</font>; }
+  };
+</pre>
+
+<p>
+Task entries are very straight-forward.  They consist of a name, a description,
+a unique ID number, and a method from the task library (cTaskLib) that they
+are associated with.  This method looks at the inputs the organism has taken
+in, the values it has output, and returns a number between 0.0 and 1.0
+representing how well the task was performed.  Currently, all task tests will
+return an exact zero or one, but fractions are possible if there
+is a quality component associated with the task.
+
+<h3>Task Libraries</h3>
+
+<p>
+Here is the task library that manages all of the individual entries:
+
+<pre>
+  class <font color="#880000">cTaskLib</font> {
+  private:
+    <font color="#880000">tArray</font><<font color="#880000">cTaskEntry</font> *> <font color="#000088">task_array</font>;
+  
+    <font color="#886600">// Active task information...</font>
+    <font color="#880000">tBuffer</font><<font color="#880000">int</font>> <font color="#000088">input_buffer</font>;
+    <font color="#880000">tBuffer</font><<font color="#880000">int</font>> <font color="#000088">output_buffer</font>;
+    <font color="#880000">int</font> <font color="#000088">logic_id</font>;
+
+    void <font color="#008800">SetupLogicTests</font>(const <font color="#880000">tBuffer</font><<font color="#880000">int</font>> & <font color="#000088">inputs</font>,
+                         const <font color="#880000">tBuffer</font><<font color="#880000">int</font>> & <font color="#000088">outputs</font>) const;
+
+    <font color="#880000">double</font> <font color="#008800">Task_Echo</font>() const;
+    <font color="#880000">double</font> <font color="#008800">Task_Add</font>()  const;
+    <font color="#880000">double</font> <font color="#008800">Task_Sub</font>()  const;
+  
+    <font color="#880000">double</font> <font color="#008800">Task_Not</font>()    const;
+    <font color="#880000">double</font> <font color="#008800">Task_Nand</font>()   const;
+    <font color="#880000">double</font> <font color="#008800">Task_And</font>()    const;
+    <font color="#886600">// ... And a whole bunch more ...</font>
+
+  public:
+    <font color="#008800">cTaskLib</font>();
+    ~<font color="#008800">cTaskLib</font>();
+
+    <font color="#880000">int</font> <font color="#008800">GetSize</font>() const { return <font color="#000088">task_array</font>.<font color="#008800">GetSize</font>(); }
+
+    <font color="#880000">cTaskEntry</font> * <font color="#008800">AddTask</font>(const <font color="#880000">cString</font> & <font color="#000088">name</font>);
+    const <font color="#880000">cTaskEntry</font> & <font color="#008800">GetTask</font>(<font color="#880000">int</font> <font color="#000088">id</font>) const;
+  
+    void <font color="#008800">SetupTests</font>(const <font color="#880000">tBuffer</font><<font color="#880000">int</font>> & <font color="#000088">inputs</font>,
+  		  const <font color="#880000">tBuffer</font><<font color="#880000">int</font>> & <font color="#000088">outputs</font>) const;
+    <font color="#880000">double</font> <font color="#008800">TestOutput</font>(const <font color="#880000">cTaskEntry</font> & <font color="#000088">task</font>) const;
+  };
+</pre>
+
+<p>
+The task library contains an array of task entries that define all of the
+rewarded (or otherwise acted upon) tasks in an environment.  This array is the
+only "long term" variable that is stored here.  Whenever an organism outputs
+a new number that needs to be tested, the
+<font color="#008800">SetupTasks</font>() method is called with the
+appropriate inputs and output for that organism, which are temporarily saved
+in the data variables <font color="#000088">input_buffer</font> and
+<font color="#000088">output_buffer</font>.  Additionally, if there are
+any logic-based tasks rewarded, SetupTasks() will, in turn, call the private
+method <font color="#008800">SetupLogicTasks</font>() to calculate a
+logic_id.  This is a number generated by looking at all bitwise inputs and
+their associated bit output.  It can be later used so that work doesn't need
+to be repeated for each and every logic task tested.
+
+<p>
+The <font color="#008800">TestOutput</font>() method can only be run after
+the setup has finished.  It will test the specific task passed in and return
+the 0.0 - 1.0 quality measure of how well that task was done with the most
+recent output.
+
+<p>
+Below is a sample task-tester implementation:
+
+<pre>
+  <font color="#880000">double</font> <font color="#880000">cTaskLib</font>::<font color="#008800">Task_Add</font>() const
+  {
+    const <font color="#880000">int</font> <font color="#000088">test_output</font> = <font color="#000088">output_buffer</font>[0];
+    for (<font color="#880000">int</font> <font color="#000088">i</font> = 0; <font color="#000088">i</font> < <font color="#000088">input_buffer</font>.<font color="#008800">GetNumStored</font>(); <font color="#000088">i</font>++) {
+      for (<font color="#880000">int</font> <font color="#000088">j</font> = 0; <font color="#000088">j</font> < <font color="#000088">i</font>; <font color="#000088">j</font>++) {
+        if (<font color="#000088">test_output</font> == <font color="#000088">input_buffer</font>[<font color="#000088">i</font>] + <font color="#000088">input_buffer</font>[<font color="#000088">j</font>]) return 1.0;
+      }
+    }
+    return 0.0;
+  }
+</pre>
+
+<p>
+This case tests to see if the organism has performed an addition operation.
+It compares all pairs of inputs summed together against the most recent
+output of the organism.  If there is a match a full reward (1.0) is given.
+If no match is found, no reward is given (0.0).  The logic_id has 256
+possible values, each of which can only be associated with a single logic
+task.  These tests look more like:
+
+<pre>
+  <font color="#880000">double</font> <font color="#880000">cTaskLib</font>::<font color="#008800">Task_AndNot</font>() const
+  {
+    if (<font color="#000088">logic_id</font> == 10 || <font color="#000088">logic_id</font> == 12 || <font color="#000088">logic_id</font> == 34 ||
+        <font color="#000088">logic_id</font> == 48 || <font color="#000088">logic_id</font> == 68 || <font color="#000088">logic_id</font> == 80) return 1.0;
+  
+    return 0.0;
+  }
+</pre>
+
+<p>
+If the logic ID is on the list, the task has been done, otherwise it hasn't.
+In each case, the outside world needs to request a test of which tasks have
+been performed, and the library just replied with a numerical answer.
+
+<h3>Building a Reaction</h3>
+
+<p>
+The reaction class keeps track of all of the information associated with
+a single possible environmental reaction.  The class appears as follows:
+
+<pre>
+  class <font color="#880000">cReaction</font> {
+  private:
+    <font color="#880000">cString</font> <font color="#000088">name</font>;
+    <font color="#880000">int</font> <font color="#000088">id</font>;
+    <font color="#880000">cTaskEntry</font> * <font color="#000088">task</font>;
+    <font color="#880000">tList</font><<font color="#880000">cReactionRequisite</font>> <font color="#000088">requisite_list</font>;
+    <font color="#880000">tList</font><<font color="#880000">cReactionProcess</font>> <font color="#000088">process_list</font>;
+  public:
+    <font color="#008800">cReaction</font>(const <font color="#880000">cString</font> & <font color="#000088">_name</font>, <font color="#880000">int</font> <font color="#000088">_id</font>);
+    ~<font color="#008800">cReaction</font>();
+
+    const <font color="#880000">cString</font> & <font color="#008800">GetName</font>() const { return <font color="#000088">name</font>; }
+    <font color="#880000">int</font> <font color="#008800">GetID</font>() const { return <font color="#000088">id</font>; }
+    <font color="#880000">cTaskEntry</font> * <font color="#008800">GetTask</font>() { return <font color="#000088">task</font>; }
+    const <font color="#880000">tList</font><<font color="#880000">cReactionRequisite</font>> & <font color="#008800">GetRequisites</font>()
+      { return <font color="#000088">requisite_list</font>; }
+    const <font color="#880000">tList</font><<font color="#880000">cReactionProcess</font>> & <font color="#008800">GetProcesses</font>() { return <font color="#000088">process_list</font>; }
+
+    void <font color="#008800">SetTask</font>(<font color="#880000">cTaskEntry</font> * <font color="#000088">_task</font>) { <font color="#000088">task</font> = <font color="#000088">_task</font>; }
+    <font color="#880000">cReactionProcess</font> * <font color="#008800">AddProcess</font>();
+    <font color="#880000">cReactionRequisite</font> * <font color="#008800">AddRequisite</font>();
+  };
+</pre>
+
+<p>
+Each reaction must have a unique name and a unique numerical ID associated
+with them.  In addition to those data, a reaction object also has a task that
+acts as its trigger, a list of other requisites that must be met for the
+trigger to work, and a list of processes that will occur if the reaction goes
+off.  The cReaction object acts a a single place to store all of this
+information.
+
+<h3>Resources</h3>
+
+<p>
+Resources are a little more complicated than task entries to manage
+and understand.  An object
+of type <font color="#880000">cResource</font> contains 18 pieces of
+data, and the associated accessors.  Like all of the other individual 
+units we have discussed, resources have a unique 
+<font color="#000088">name</font> and numerical
+<font color="#000088">id</font>.  For all resource we store the quantities
+associated with their <font color="#000088">inflow</font>,
+<font color="#000088">outflow</font>, and
+<font color="#000088">initial</font> count (each stored as a
+<font color="#880000">double</font>) as well as the 
+<font color="#000088">geometry</font> of that resource.
+
+<p>
+For spatial resources we need to be able to describe how a resource
+exists in space so we store data for:
+<ul>
+  <li>
+    <font color="#000088">inflowX1</font>, <font
+    color="#000088">inflowX2</font>, <font
+    color="#000088">inflowY1</font>, and  <font
+    color="#000088">inflowY2</font> to describe a rectangle where
+    resources flow in
+  </li>
+  <li>
+    <font color="#000088">outflowX1</font>, <font
+    color="#000088">outflowX2</font>, <font
+    color="#000088">outflowY1</font>, and  <font
+    color="#000088">outfowY2</font> for a rectangle where resources flow
+    out of
+  </li>
+  <li>
+    <font color="#000088">xdiffuse</font> and <font
+    color="#000088">ydiffuse</font> describe how fast resources will
+    flow from cells of higher amounts of that resource to cells with
+    lower amounts of that resource
+  </li>
+  <li>
+    <font color="#000088">xgravity</font> and <font
+    color="#000088">ygravity</font> describe the preferential flow of
+    resource in a given direction
+  </li>
+</ul>                                   
+<p>
+This class describes the dynamics of a resource, not its current count 
+(since, for example, we might want local resources where each cell 
+would have its own count).  However, every time a
+resource is needed, any changes in its quantity from the last time it was
+used can be calculated using these numbers.
+
+
+<h3>Tying it all together: The Environment</h3>
+
+<p>
+The cEnvironment class is used to maintain the details of how the environments
+work using the classes described above and a few others.  Below is an
+abbreviated version of this class:
+
+<pre>
+class <font color="#880000">cEnvironment</font> {
+private:
+  <font color="#886600">// Keep libraries of resources, reactions, and tasks.</font>
+  <font color="#880000">cResourceLib</font> <font color="#000088">resource_lib</font>;
+  <font color="#880000">cReactionLib</font> <font color="#000088">reaction_lib</font>;
+  <font color="#880000">cTaskLib</font> <font color="#000088">task_lib</font>;
+  <font color="#880000">cInstLib</font> <font color="#000088">inst_lib</font>;
+  <font color="#880000">cMutationRates</font> <font color="#000088">mut_rates</font>;
+
+public:
+  <font color="#008800">cEnvironment</font>();
+  <font color="#008800">cEnvironment</font>(const <font color="#880000">cString</font> & <font color="#000088">filename</font>);
+  ~<font color="#008800">cEnvironment</font>() { ; }
+
+  <font color="#880000">bool</font> <font color="#008800">Load</font>(const <font color="#880000">cString</font> & <font color="#000088">filename</font>);
+
+  <font color="#886600">// Interaction with the organisms</font>
+  <font color="#880000">bool</font> <font color="#008800">TestOutput</font>(  <font color="#880000">cReactionResult</font> & <font color="#000088">result</font>,
+                    const <font color="#880000">tBuffer</font><<font color="#880000">int</font>> & <font color="#000088">inputs</font>,
+                    const <font color="#880000">tBuffer</font><<font color="#880000">int</font>> & <font color="#000088">outputs</font>,
+                    const <font color="#880000">tArray</font><<font color="#880000">int</font>> & <font color="#000088">task_count</font>,
+                    const <font color="#880000">tArray</font><<font color="#880000">int</font>> & <font color="#000088">reaction_count</font>,
+                    const <font color="#880000">tArray</font><<font color="#880000">double</font>> & <font color="#000088">resource_count</font> ) const;
+};
+</pre>
+
+<p>
+The private data members include all of the libraries needed to specify
+the environment, plus its mutation rates.  The
+<font color="#008800">Load</font>() method takes a filename (environment.cfg
+by default) and will fill out all of the libraries in this environment.  The
+most important feature of this class is the
+<font color="#008800">TestOutput</font>() method, which takes in all sorts
+of information about the current state of the organism that has just done
+an output and fills out an object of type
+<font color="#880000">cReactionResult</font> with information about what
+happened.  It also directly returns a bool that will indicate if there have
+been any changes at all.  The specific information it uses to determine
+the results are the <font color="#000088">inputs</font> the organism has
+taken in and the <font color="#000088">outputs</font> it has produced --
+both needed to determine what tasks have been done, and therefore what
+reactions may have been triggered.  That organism's previous
+<font color="#000088">task_count</font> and
+<font color="#000088">resource_count</font> are also needed to determine
+if the reactions requisites have been met.  And finally the
+<font color="#000088">resource_count</font> available to the organisms is
+needed to determine how much of each resource can be used in the reactions.
+
+<br><hr>
+Project hosted by:<br>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=46761&type=2" width="125" height="37" border="0" alt="SourceForge.net"/></a>

@@ -1,0 +1,66 @@
+# ---  Setup  ---
+h-alloc    #  1: Allocate space for child
+h-search   #  2: Locate the end of the organism
+nop-C      #  3: 
+nop-A      #  4: 
+mov-head   #  5: Place write-head at beginning of offspring.
+nop-C      #  6: 
+h-search   #  7: Find the beginning of the copy loop.
+nop-A      #  8: 
+nop-A      #  9: 
+h-push     # 10: Save the location of the current IP; move it to the flow head.
+
+# --- Post Copy ---
+IO         # 11: Pull an input into BX
+IO         # 12: Pull an input into CX
+nop-C      # 13: 
+
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+nop-C      # FILLER
+
+
+nand       # 14: Nand the two inputs together...
+IO         # 15: ...and output the result.
+h-divide   # 16: Finally divide!
+h-pop      # 17: Jump back to the beginning of genome (pop 0 off stack...)
+
+# ---  Copy Loop  ---
+nop-B      # 18: Mark the beginning of the copy loop.
+nop-B      # 19: 
+h-copy     # 20: Do the copy
+if-label   # 21: If we're done copying....
+nop-C      # 22: 
+nop-A      # 23: 
+h-pop      # 24:  ...jump out of the copy loop.
+mov-head   # 25: Otherwise, loop back to the beginning of the copy loop.
+
+nop-A      # 26: End label.
+nop-B      # 27: End label.

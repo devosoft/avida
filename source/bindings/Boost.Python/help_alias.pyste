@@ -1,0 +1,8 @@
+
+Import("help_entry.pyste")
+
+Include("help_type.hh")
+Include("help_full_entry.hh")
+
+cHelpAlias = Class("cHelpAlias", "help_alias.hh")
+set_policy(cHelpAlias.GetType, return_internal_reference())

@@ -1,0 +1,14 @@
+
+Include("genebank.hh")
+Include("stats.hh")
+Include("string.hh")
+Include("genotype.hh")
+Include("lineage.hh")
+Include("organism.hh")
+
+cLineageControl = Class("cLineageControl", "lineage_control.hh")
+set_policy(cLineageControl.AddCreature, return_internal_reference())
+set_policy(cLineageControl.FindLineage, return_internal_reference())
+set_policy(cLineageControl.GetMaxFitnessLineage, return_internal_reference())
+set_policy(cLineageControl.GetBestLineage, return_internal_reference())
+set_policy(cLineageControl.GetDominantLineage, return_internal_reference())

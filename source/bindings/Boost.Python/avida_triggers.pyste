@@ -1,0 +1,2 @@
+Import("event_triggers.pyste")
+cAvidaTriggers = Class("cAvidaTriggers", "avida_triggers.hh")

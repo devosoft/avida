@@ -1,0 +1,36 @@
+
+Include("mutation.hh")
+Include("inject_genotype.hh")
+Include("inst_set.hh")
+Include("organism.hh")
+
+Import("hardware_base.pyste")
+
+cHardware4Stack = Class("cHardware4Stack", "hardware_4stack.hh")
+set_policy(cHardware4Stack.GetInstLib, return_internal_reference())
+set_policy(cHardware4Stack.Stack, return_internal_reference())
+set_policy(cHardware4Stack.GetInputBuffer, return_internal_reference())
+set_policy(cHardware4Stack.GetOutputBuffer, return_internal_reference())
+set_policy(cHardware4Stack.GetHead, return_internal_reference())
+set_policy(cHardware4Stack.GetActiveHead, return_internal_reference())
+set_policy(cHardware4Stack.IP, return_internal_reference())
+
+### Boost.Python / Pyste don't like references to builtin types (I
+### think) (in this case it's a bool).
+#set_policy(cHardware4Stack.AdvanceIP, return_internal_reference())
+exclude(cHardware4Stack.AdvanceIP)
+
+set_policy(cHardware4Stack.GetLabel, return_internal_reference())
+set_policy(cHardware4Stack.GetReadLabel, return_internal_reference())
+set_policy(cHardware4Stack.GetMemory, return_internal_reference())
+set_policy(cHardware4Stack.GetCurThreadOwner, return_internal_reference())
+set_policy(cHardware4Stack.GetThreadOwner, return_internal_reference())
+
+set_policy(cHardware4Stack.GetOrganism, return_internal_reference())
+exclude(cHardware4Stack.ViewerLock)
+
+print("""
+FIXME : for hardware_4stack.pyste :
+cHardware4Stack.AdvanceIP returns a reference to a bool;
+rewrap by hand.
+""")

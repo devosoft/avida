@@ -1,0 +1,7 @@
+
+Include("string.hh")
+Include("resource.hh")
+
+cResourceLib = Class("cResourceLib", "resource_lib.hh")
+set_policy(cResourceLib.AddResource, return_internal_reference())
+set_policy(cResourceLib.GetResource, return_internal_reference())

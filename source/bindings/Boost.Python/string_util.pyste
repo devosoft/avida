@@ -1,0 +1,2 @@
+
+cStringUtil = Class("cStringUtil", "string_util.hh")

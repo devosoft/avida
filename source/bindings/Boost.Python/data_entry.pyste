@@ -1,0 +1,3 @@
+
+cDataEntry = Class("cDataEntry", "data_entry.hh")
+exclude(cDataEntry.operator['<<'])

@@ -1,0 +1,5 @@
+__path__.append('${LIBRARY_OUTPUT_PATH}')
+__path__.append('${PyAvida_PackageSrcBase}')
+
+from Gui import *
+del(Gui)

@@ -1,0 +1,241 @@
+<html>
+<title>The Instruction Set File</title>
+<body
+ bgcolor="#FFFFFF"
+ text="#000000"
+ link="#0000AA"
+ alink="#0000FF"
+ vlink="#000044">
+
+<h2 align=center>The Instruction Set File</h2>
+
+<p>
+An instruction set file consists of a list of instructions that belong to
+that instruction set, each of which is followed by a series of numbers that
+define how that instruction should be used.  These numbers in order are:
+
+<p>
+<table>
+<tr><td valign=top><b>[redundancy]</b>
+    <td>The frequency of the instruction in the set.  One instruction with
+        twice the redundancy of another with also have twice the probability
+        of being mutated to.  A redundancy of zero is allowed, and indicates
+        that injected organisms are allowed to have this instruction, but
+        it can never be mutated to.
+<tr><td valign=top><b>[cost]</b>
+    <td>The number of CPU cycles required to execute this instruction.  One
+        is the default if this value is not specified.
+<tr><td valign=top><b>[ft_cost]</b>
+    <td>The additional cost to be paid the first time this instruction is
+        executed.  This is used to lower the diversity of instructions 
+        inside an organism.  The default value here is 0.
+<tr><td valign=top><b>[prob_fail]</b>
+    <td>The probability of this instruction not working properly.  If an
+        instruction fails it will simply do nothing, but still cost the
+        CPU cycles to execute.  The defailt probability of failure is zero.
+</table>
+
+<p>
+Normally only the first column of numbers is used in the file.
+
+<h3>Description of Default Instruction Set</h3>
+
+<p>
+Below are the descriptions of the instructions turned on in the file
+"inst_set.default".  The one-letter codes are assigned automatically to each
+instruction in the set, so if additional instructions are turned on, the
+letters given below may no longer correspond to the instructions they are
+presented with.  If more than 26 instructions are in a set, both lowercase
+and capital letters will be used, and then numbers.  Currently, no more that
+62 distinct instructions will be represented by unique symbols.
+<p>
+Most terminology below that may not be familiar to you has been given a
+link to a file containing its definition.
+<p>
+<b>(a - c) Nop Instructions</b><br>
+
+The instructions <b><tt>nop-A</tt></b> (<b>a</b>), <b><tt>nop-B</tt></b>
+(<b>b</b>), and <b><tt>nop-C</tt></b> (<b>c</b>) are no-operation
+instructions, and will not do
+anything when executed. They will, however, modifiy the behavior of the
+instruction preceeding it (by changing the <a href="glossary/help.CPU.html">CPU</a>
+component that it affects; see also
+<a href="glossary/help.Nop-Register-Notation.html">nop-register</a>  notation and
+<a href="glossary/help.Nop-Head-Notation.html">nop-head</a>  notation) or act as part
+of a <a href="glossary/help.Template.html">template</a>  to denote positions in the
+<a href="glossary/help.Genome.html">genome</a>.
+
+
+<p>
+<b>(d) <tt>if-n-equ</tt></b><br>
+
+This instruction compares the
+<a href="glossary/help.Nop-Register-Notation.html">?BX?</a>  register to its
+<a href="glossary/help.Complement-Template.html">complement</a>. If they are not
+equal, the next instruction (after a modifying
+<a href="glossary/help.nop-instructions.html">no-operation</a>  instruction, if one is
+present) is executed. If they are equal, that next instruction is skipped.
+
+
+<p>
+<b>(e) <tt>if-less</tt></b><br>
+
+This instruction compares the <a href="glossary/help.Nop-Register-Notation.html">?BX?</a>  register to its <a href="glossary/help.Complement-Template.html">complement</a>. If ?BX? is the lesser of the pair, the next instruction (after a modifying <a href="glossary/help.nop-instructions.html">no-operation</a>  instruction, if one is present) is executed. If it is greater or equal, then that next instruction is skipped.
+
+
+<p>
+<b>(f) <tt>pop</tt></b><br>
+
+This instruction removes the top element from the active <a href="glossary/help.Stack.html">stack</a>, and places it into the <a href="glossary/help.Nop-Register-Notation.html">?BX?</a>  register.
+
+
+<p>
+<b>(g) <tt>push</tt></b><br>
+
+This instruction reads in the contents of the <a href="glossary/help.Nop-Register-Notation.html">?BX?</a>  register, and places it as a new entry at the top of the active <a href="glossary/help.Stack.html">stack</a>. The ?BX? register itself remains unchanged.
+
+
+<p>
+<b>(h) <tt>swap-stk</tt></b><br>
+
+This instruction toggles the active <a href="glossary/help.Stack.html">stack</a>  in
+the <a href="glossary/help.CPU.html">CPU</a>. All other instructions that use a stack
+will always use the active one.
+
+
+<p>
+<b>(i) <tt>swap</tt></b><br>
+
+This instruction swaps the contents of the
+<a href="glossary/help.Nop-Register-Notation.html">?BX?</a>  register with its
+<a href="glossary/help.Complement-Template.html">complement</a>.
+
+
+<p>
+<b>(j) <tt>shift-r</tt></b><br>
+
+This instruction reads in the contents of the <a href="glossary/help.Nop-Register-Notation.html">?BX?</a>  register, and shifts all of the bits in that register to the right by one. In effect, it divides the value stored in the register by two, rounding down.
+
+
+<p>
+<b>(k) <tt>shift-l</tt></b><br>
+
+This instruction reads in the contents of the <a href="glossary/help.Nop-Register-Notation.html">?BX?</a>  register, and shifts all of the bits in that register to the left by one, placing a zero as the new rightmost bit, and trunkating any bits beyond the 32 maximum. For values that require fewer than 32 bits, it effectively multiplies that value by two.
+
+
+<p>
+<b>(l) <tt>inc</tt> and (m) <tt>dec</tt></b><br>
+
+These instructions read in the contents of the <a href="glossary/help.Nop-Register-Notation.html">?BX?</a>  <a href="glossary/help.Registers.html">register</a> and increment or decrement it by one.
+
+<p>
+<b>(n) <tt>add</tt> and (o) <tt>sub</tt></b><br>
+
+These instructions read in the contents of the BX and CX <a href="glossary/help.Registers.html">registers</a> and either sums them together or subtracts CX from BX (respectively). The result of this operation is then placed in the <a href="glossary/help.Nop-Register-Notation.html">?BX?</a>  register.
+
+<p>
+<b>(p) <tt>nand</tt></b><br>
+
+This instruction reads in the contents of the BX and CX <a href="glossary/help.Registers.html">registers</a>  (each of which are 32-bit numbers) and performs a <a href="glossary/help.Bitwise.html">bitwise</a>  nand operation on them. The result of this operation is placed in the <a href="glossary/help.Nop-Register-Notation.html">?BX?</a>  register. Note that this is the only <a href="glossary/help.Logic.html">logic</a>  operation provided in the basic avida instruction set.
+
+
+<p>
+<b>(q) <tt>IO</tt></b><br>
+
+This is the input/output instruction. It takes the contents of the <a href="glossary/help.Nop-Register-Notation.html">?BX?</a>  <a href="glossary/help.Registers.html">register</a>  and outputs it, checking it for any <a href="glossary/help.Tasks.html">tasks</a>  that may have been performed. It will then place a new <a href="glossary/help.Input-Output.html">input</a>  into ?BX?.
+
+
+<p>
+<b>(r) <tt>h-alloc</tt></b><br>
+
+This instruction allocates additional <a href="glossary/help.Memory.html">memory</a>  for the organism up to the maximum it is allowed to use for its offspring.
+
+
+<p>
+<b>(s) <tt>h-divide</tt></b><br>
+
+This instruction is used for an organism to divide off an finnished offspring. The original organism keeps the state of its <a href="glossary/help.Memory.html">memory</a>  up until the <a href="glossary/help.Heads.html">read-head</a>. The offspring's memory is initialized to everything between the read-head and the <a href="glossary/help.Heads.html">write-head</a>. All memory past the write-head is removed entirely.
+
+
+<p>
+<b>(t) <tt>h-copy</tt></b><br>
+
+This instruction reads the contents of the organism's <a href="glossary/help.Memory.html">memory</a>  at the position of the <a href="glossary/help.Heads.html">read-head</a>, and copy that to the position of the <a href="glossary/help.Heads.html">write-head</a>. If a non-zero copy mutation rate is set, a test will be made based on this probability to determine if a <a href="glossary/help.Mutation.html">mutation</a>  occurs. If so, a random instruction (chosen from the full set with equal probability) will be placed at the write-head instead.
+
+
+<p>
+<b>(u) <tt>h-search</tt></b><br>
+
+This instruction will read in the <a href="glossary/help.Template.html">template</a>  the follows it, and find the location of a <a href="glossary/help.Complement-Template.html">complement</a>  template in the code. The BX <a href="glossary/help.Registers.html">register</a>  will be set to the distance to the complement from the current position of the <a href="glossary/help.Heads.html">instruction-pointer</a>, and the CX register will be set to the size of the template. The <a href="glossary/help.Heads.html">flow-head</a>  will also be placed at the beginning of the complement template. If no template follows, both BX and CX will be set to zero, and the flow-head will be placed on the instruction immediatly following the h-search.
+
+
+<p>
+<b>(v) <tt>mov-head</tt></b><br>
+
+This instruction will cause the <a href="glossary/help.Nop-Head-Notation.html">?IP?</a>  to jump to the position in <a href="glossary/help.Memory.html">memory</a>  of the <a href="glossary/help.Heads.html">flow-head</a>.
+
+
+<p>
+<b>(w) <tt>jmp-head</tt></b><br>
+
+This instruction will read in the value of the CX
+<a href="glossary/help.Registers.html">register</a>, and the move the
+<a href="glossary/help.Nop-Head-Notation.html">?IP?</a>
+by that fixed amount through
+the organism's <a href="glossary/help.Memory.html">memory</a>.
+
+
+<p>
+<b>(x) <tt>get-head</tt></b><br>
+
+This instruction will copy the position of the
+<a href="glossary/help.Nop-Head-Notation.html">?IP?</a> into the CX
+<a href="glossary/help.Registers.html">register</a>.
+
+
+<p>
+<b>(y) <tt>if-label</tt></b><br>
+
+This instruction reads in the <a href="glossary/help.Template.html">template</a>  that follows it, and tests if its <a href="glossary/help.Complement-Template.html">complement</a>  template was the most recent series of instructions copied. If so, it executed the next instruction, otherwise it skips it. This instruction is commonly used for an organism to determine when it has finished producing its offspring.
+
+
+<p>
+<b>(z) <tt>set-flow</tt></b><br>
+
+This instruction moves the <a href="glossary/help.Heads.html">flow-head</a>  to the <a href="glossary/help.Memory.html">memory</a>  position denoted in the <a href="glossary/help.Nop-Register-Notation.html">?CX?</a>  register.
+
+<p>
+<h3>Other available instructions</h3>
+
+<p>
+<b><tt>h-push</tt> and <tt>h-pop</tt></b><br>
+
+These instructions act siminar to <tt>push</tt> and <tt>pop</tt> above,
+but instead of working with registers, the place the position of the 
+?IP? on the stack, or put the ?IP? at the position taken from the stack
+(respectively).
+
+<p>
+<b><tt>inject</tt></b><br>
+
+This instruction acts similar to <tt>divide</tt>, but instead of splitting
+off an offspring, it will remove the section of code between the read and
+write heads, and attempt to inject it into the neighbor that the organism
+is facing.  The template following this instruction will be used; if an
+<i>exact</i> match is found (with no extre nops in it) in the target organism,
+the injected code will be placed immediately after that template.  Otherwise
+the command fails, and the code intended for injection is instead discarded.
+
+<p>
+<b><tt>rotate-l</tt> and <tt>rotate-r</tt></b><br>
+
+These instructions rotate the facing of an organism.  If no teplate follows,
+the organism will turn one cell in the appropriate direction (left or right).
+If a template is present, it will keep turning in that direction until either
+it has made a full 360 degree turn, or else it finds an organism that
+possesses the complement template.
+
+<br><hr>
+Project hosted by:<br>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=46761&type=2" width="125" height="37" border="0" alt="SourceForge.net"/></a>
+    

@@ -1,0 +1,3 @@
+
+cInstSet = Class("cInstSet", "inst_set.hh")
+set_policy(cInstSet.GetInstLib, return_value_policy(reference_existing_object))

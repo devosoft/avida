@@ -1,0 +1,6 @@
+
+cMerit = Class("cMerit", "merit.hh")
+# BinaryPrint is meant for use with ostreams; ditch it.
+exclude(cMerit.BinaryPrint)
+# operator is for ostreams; ditch it.
+exclude(cMerit.operator['<<'])

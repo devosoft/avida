@@ -1,0 +1,7 @@
+
+Include("organism.hh")
+
+cPopulationCell = Class("cPopulationCell", "population_cell.hh")
+set_policy(cPopulationCell.GetOrganism, return_internal_reference())
+set_policy(cPopulationCell.ConnectionList, return_internal_reference())
+set_policy(cPopulationCell.MutationRates, return_internal_reference())

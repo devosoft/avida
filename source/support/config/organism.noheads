@@ -1,0 +1,20 @@
+search-f # calc Size
+nop-A
+nop-A
+add 
+inc 
+allocate 
+push # Move size into CX and clear BX
+nop-B
+pop
+nop-C
+sub
+nop-B # Copy Loop
+copy
+inc
+if-n-equ
+jump-b
+nop-A
+divide # And divide...
+nop-B
+nop-B

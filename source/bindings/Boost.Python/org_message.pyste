@@ -1,0 +1,1 @@
+cOrgMessage = Class("cOrgMessage", "org_message.hh")

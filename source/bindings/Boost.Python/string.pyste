@@ -1,0 +1,21 @@
+
+cString = Class("cString", "string.hh")
+# Set(...) doesn't work with Pyste because Pyste doesn't grok varargs.
+exclude(cString.Set)
+# Pyste doesn't grok cpp strings.
+exclude(cString.operator['<<'])
+exclude(cString.operator['>>'])
+# None the operators below work with pyste (which wants to convert const char * to const char &), but python provides their
+# equivalents.
+exclude(cString.operator['=='])
+exclude(cString.operator['!='])
+exclude(cString.operator['<'])
+exclude(cString.operator['>'])
+exclude(cString.operator['<='])
+exclude(cString.operator['>='])
+set_policy(cString.Insert, return_self())
+set_policy(cString.Clip, return_self())
+set_policy(cString.ClipFront, return_self())
+set_policy(cString.ClipEnd, return_self())
+set_policy(cString.ToLower, return_self())
+set_policy(cString.ToUpper, return_self())

@@ -1,0 +1,1 @@
+cSpatialResCount = Class("cSpatialResCount", "spatial_res_count.hh")

@@ -1,0 +1,95 @@
+Pure headers:
+  defs.hh
+  cpu_defs.hh
+
+A '*' indicates dependency is in the header, otherwise body is assumed.
+
+--Component--	--Dependencies--
+LEVEL 0
+config		[none]
+cpu_stats	[none]
+cpu_stack	[none]
+inst		[none]
+label		[none]
+mutations	[none]
+pop_interface	[none]
+reaction	[none]
+reaction_result [none]
+resource	[none]
+resource_count  [none]
+tasks		[none]
+
+LEVEL 1
+genome		*inst
+inst_lib	*inst
+stats		config
+
+LEVEL 2
+environment	*reaction  *resource  *tasks  *inst_lib  *mutations
+		*reaction_result
+cpu_memory	*genome
+genome_util	genome
+hardware_base	*inst  inst_lib
+inst_util	inst_lib  genome
+
+LEVEL 3
+phenotype	*environment  config
+head		*inst  inst_lib  hardware_base  cpu_memory  label
+
+LEVEL 4
+organism	*mutations  *pop_interface  *cpu_stats  *phenotype
+		config  inst_lib  inst_util  genome  genome_util  hardware_base
+
+LEVEL 5
+population_cell *mutations  organism
+test_cpu	config  hardware_base  inst_lib  inst_util  organism
+		phenotype  pop_interface  resource_count  tasks
+
+LEVEL 6
+fitness_matrix	*stats  *organism  test_cpu  config  inst_lib
+genotype	*genome  config  genome_util  organism  phenotype  stats
+		test_cpu
+hardware_cpu	*cpu_memory  *cpu_stack  *label  *head
+		config  inst_lib  genome_util  organism  phenotype  test_cpu
+
+LEVEL 7
+hardware_factory  hardware_base  hardware_cpu
+hardware_util	inst_lib  inst_util  hardware_base  hardware_cpu config
+lineage		genotype  stats
+species		*genome  stats  genotype  genome_util  test_cpu
+test_util	genome  genotype  inst_util  organism  phenotype  stats
+		hardware_base  test_cpu
+
+LEVEL 8
+genebank	species  genotype  config  stats  test_util
+landscape	*genome  *test_cpu  cpu_memory  stats  inst_lib  organism
+		phenotype  test_util
+
+LEVEL 9
+analyze		*genome  config  species  fitness_matrix  inst_lib  inst_util
+		landscape  phenotype  genome_util  test_cpu  hardware_util
+		test_util  environment
+birth_chamber	label  genome  organism  genotype  genebank
+lineage_control	stats  config  lineage  genome  genome_util  genebank
+                genotype  organism
+
+LEVEL 10
+population	*resource_count  *inst_lib  *pop_interface  *mutations  config 
+		genebank  genome_util  genotype  hardware_base
+		hardware_factory  hardware_util  inst_util  lineage
+		lineage_control  organism  phenotype  population_cell
+		species  stats  tasks  birth_chamber
+
+
+LEVEL 11
+analyze_util	config  genebank  genome  genome_util  genotype  inst_lib
+		inst_util  landscape  organism  phenotype  population
+		population_cell  species  stats  test_cpu  test_util
+callback_util   avida  config  genotype  organism  population  population_cell
+		pop_interface  hardware_base  hardware_factory  test_cpu
+                birth_chamber
+
+LEVEL 12
+avida		*stats  environment genotype  genebank  analyze  config
+		species  genome_util  test_cpu  callback_util  population
+		{events}  {viewers}

@@ -1,0 +1,170 @@
+# a hairy pattern to recognize text
+set text "\[- A-Za-z0-9\.\;\"\_\:\'\`\(\)\!\#\=\+\?\&\*]"
+
+# Execute the executable file, and analyse the output for the 
+# test state keywords.
+#    Returns:
+#       A "" (empty) string if everything worked, or an error message
+#       if there was a problem.
+proc executable_test {tool args} {
+    global text
+
+    set timeoutmsg "Timed out: Never got started, "
+    set timeout 100
+    set file all
+    set timetol 0
+    set arguments ""
+    
+    expect_before buffer_full { perror "Buffer full" }
+    
+    if { [llength $args] == 0} {
+        set executable $args
+    } else {
+        set executable [string trimleft [lindex [split $args " "] 0] "\{"]
+        set the_command [string trimleft $args "\{"]
+        set the_command [string trimright $the_command "\}"]
+    }
+
+    verbose "The executable is $executable" 2
+    if ![file exists ${executable}] {
+        perror "The executable \"$executable\" is missing" 0
+        return "No source file found"
+    }
+
+    # spawn the executable and look for the DejaGnu output messages from the
+    # test case.
+    # spawn -noecho -open [open "|./${executable}" "r"]
+    eval "spawn -noecho $the_command"
+    expect {
+        -re "\[0-9\]\[0-9\]:..:..:${text}\r\n" {
+            regsub "\[\n\r\t\]*NOTE: $text\r\n" $expect_out(0,string) "" output
+            verbose "$output" 3
+            set timetol 0
+            exp_continue
+        }
+        -re "NOTE:${text}*" {
+            regsub "\[\n\r\t\]*NOTE: $text\r\n" $expect_out(0,string) "" output
+            set output [string range $output 6 end]
+            verbose "$output" 2
+            set timetol 0
+            exp_continue
+        }
+        -re "PASSED:${text}*" {
+            regsub "\[\n\r\t\]*PASSED: $text\r\n" $expect_out(0,string) "" output
+            set output [string range $output 8 end]
+            pass "$output"
+            set timetol 0
+            exp_continue
+        }
+        -re "FAILED:${text}*" {
+            regsub "\[\n\r\t\]*FAILED: $text\r\n" $expect_out(0,string) "" output
+            set output [string range $output 8 end]
+            fail "$output (See $tool.log for details.)"
+            set timetol 0
+            exp_continue
+        }
+        -re "UNTESTED:${text}*" {
+            regsub "\[\n\r\t\]*UNTESTED: $text\r\n" $expect_out(0,string) "" output
+            set output [string range $output 10 end]
+            untested "$output"
+            set timetol 0
+            exp_continue
+        }
+        -re "UNRESOLVED:${text}*" {
+            regsub "\[\n\r\t\]*UNRESOLVED: $text\r\n" $expect_out(0,string) "" output
+            set output [string range $output 12 end]
+            unresolved "$output"
+            set timetol 0
+            exp_continue
+        }
+        -re "Totals" {
+            verbose "All done" 2
+        }
+        eof {
+#           unresolved "${executable} died prematurely"
+#           catch close
+#           return "${executable} died prematurely"
+        }
+        timeout {
+            warning "Timed out executing test case"
+            if { $timetol <= 2 } {
+                incr timetol
+                exp_continue
+            } else {
+-               catch close
+                return "Timed out executing test case"
+            }
+        }
+    }
+
+    # force a close of the executable to be safe.
+    catch close
+    return ""
+}
+
+# Execute the executable file, and analyse the output for the 
+# expected last line.  
+#    Returns:
+#       A "" (empty) string if everything worked, or an error message
+#       if there was a problem.
+proc scripted_test {tool test args expected_output} {
+    global text
+
+    set timeoutmsg "Timed out: Never got started, "
+    set timeout 100
+    set file all
+    set timetol 0
+    set arguments ""
+     
+    expect_before buffer_full { perror "Buffer full" }
+
+    if { [llength $args] == 0} {
+        set executable $args
+    } else {
+        set executable [string trimleft [lindex [split $args " "] 0] "\{"]
+        set the_command [string trimleft $args "\{"]
+        set the_command [string trimright $the_command "\}"]
+    }
+
+    verbose "The executable is $executable" 2
+    if ![file exists ${executable}] {
+        perror "The executable \"$executable\" is missing" 0
+        return "No source file found"
+    }
+
+    # spawn the executable and look for the DejaGnu output messages from the
+    # test case.
+    # spawn -noecho -open [open "|./${executable}" "r"]
+    eval "spawn -noecho $the_command"
+    expect {
+        -re $expected_output {
+            # Tells dejagnu that the test has passed.
+            pass "$test"
+        }
+        default {
+            # Displays the output from the shell script.
+            puts "*** last lines of test output:"
+            puts $expect_out(buffer)
+            # Display expected output.
+            puts "*** expected $expected_output"
+            # Displays 'failed' message to user, and tells dejagnu that the
+            # test has failed.
+            fail "See $tool.log for details.";
+        }
+        timeout {
+            warning "Timed out executing test case"
+            if { $timetol <= 2 } {
+                incr timetol
+                exp_continue
+            } else {
+-               catch close
+                return "Timed out executing test case"
+            }
+        }
+    }
+
+    # force a close of the executable to be safe.
+    catch close
+    return ""
+}
+

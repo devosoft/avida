@@ -1,0 +1,1 @@
+cHistogram = Class("cHistogram", "histogram.hh")

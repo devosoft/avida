@@ -1,0 +1,4 @@
+
+cGenotypeBatch = Class("cGenotypeBatch", "genotype_batch.hh")
+set_policy(cGenotypeBatch.List, return_internal_reference())
+set_policy(cGenotypeBatch.Name, return_internal_reference())

@@ -1,0 +1,14 @@
+
+Include("inject_genebank.hh")
+Include("inject_genotype.hh")
+Include("genome.hh")
+
+cInjectGenotypeControl = Class("cInjectGenotypeControl", "inject_genotype_control.hh")
+set_policy(cInjectGenotypeControl.GetBest, return_internal_reference())
+set_policy(cInjectGenotypeControl.GetCoalescent, return_internal_reference())
+set_policy(cInjectGenotypeControl.Find, return_internal_reference())
+set_policy(cInjectGenotypeControl.Get, return_internal_reference())
+set_policy(cInjectGenotypeControl.Reset, return_internal_reference())
+set_policy(cInjectGenotypeControl.ResetHistoric, return_internal_reference())
+set_policy(cInjectGenotypeControl.Next, return_internal_reference())
+set_policy(cInjectGenotypeControl.Prev, return_internal_reference())

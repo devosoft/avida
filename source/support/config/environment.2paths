@@ -1,0 +1,38 @@
+##############################################################################
+#
+# This is the setup file for the task/resource system.  From here, you can
+# setup the available resources (including their inflow and outflow rates) as
+# well as the reactions that the organisms can trigger by performing tasks.
+#
+# this environmental setup uses all 9 basic tasks, dividing them up into
+# two groups, with EQU available to both.  Each organism can only derive
+# benefit from doing tasks in a single group, and hence the population as
+# a while will choose one pathway or the other.
+#
+# For information on how to use this file, see:  doc/environment.html
+# For other sample environments, see:  source/support/config/ 
+#
+##############################################################################
+
+REACTION NOT
+REACTION NAND
+REACTION AND
+REACTION ORN
+REACTION OR
+REACTION ANDN
+REACTION NOR
+REACTION XOR
+REACTION EQU
+
+
+REACTION  NOT  not   process:value=1.0  requisite:noreaction=NAND:noreaction=ORN:noreaction=OR:noreaction=XOR
+REACTION  AND  and   process:value=2.0  requisite:noreaction=NAND:noreaction=ORN:noreaction=OR:noreaction=XOR
+REACTION  ANDN andn  process:value=4.0  requisite:noreaction=NAND:noreaction=ORN:noreaction=OR:noreaction=XOR
+REACTION  NOR  nor   process:value=8.0  requisite:noreaction=NAND:noreaction=ORN:noreaction=OR:noreaction=XOR
+
+REACTION  NAND nand  process:value=1.0  requisite:noreaction=NOT:noreaction=AND:noreaction=ANDN:noreaction=NOR
+REACTION  ORN  orn   process:value=2.0  requisite:noreaction=NOT:noreaction=AND:noreaction=ANDN:noreaction=NOR
+REACTION  OR   or    process:value=4.0  requisite:noreaction=NOT:noreaction=AND:noreaction=ANDN:noreaction=NOR
+REACTION  XOR  xor   process:value=8.0  requisite:noreaction=NOT:noreaction=AND:noreaction=ANDN:noreaction=NOR
+
+REACTION  EQU  equ   process:value=16.0

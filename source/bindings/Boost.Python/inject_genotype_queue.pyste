@@ -1,0 +1,6 @@
+
+Include("genome.hh")
+Include("inject_genotype.hh")
+
+cInjectGenotypeQueue = Class("cInjectGenotypeQueue", "inject_genotype_queue.hh")
+set_policy(cInjectGenotypeQueue.Find, return_internal_reference())

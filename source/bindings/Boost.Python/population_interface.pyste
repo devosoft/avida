@@ -1,0 +1,66 @@
+
+Include("genome.hh")
+Include("hardware_base.hh")
+Include("organism.hh")
+Include("org_message.hh")
+Include("population.hh")
+Include("tArray.hh")
+
+cPopulationInterface = Class("cPopulationInterface", "population_interface-fixups.hh")
+
+set_policy(cPopulationInterface.GetPopulation, return_internal_reference())
+set_policy(cPopulationInterface.NewHardware, return_value_policy(reference_existing_object))
+
+# excluded for now -- it's a memory-trashing waiting to happen.
+exclude(cPopulationInterface.GetNeighbor)
+print("""
+FIXME for population_interface.pyste:
+I've disabled cPopulationInterface.GetNeighbor() because I am not
+entirely sure of the lifetime of the organism object it returns.
+I think that organism objects use a recycling scheme to dispose of
+themselves, and this just doesn't seem compatible with Python.
+
+This could become a problem in other parts of the python interface when
+I wrap the cOrganism class. I'll need access to organisms, and without
+refactoring the code to provide better lifetime guarantees, I suppose
+that the best policy is to delete python references to organism objects
+as soon as possible -- in particular, to never keep a python reference
+to an organism while the avida core is processing organisms.
+
+In the new version of Avida we'll have to wrangle these lifetime issues,
+and adapt our use of factory objects accordingly.
+
+FIXME for population_interface.pyste:
+I think that I can find a way to transparently substitute a wrapper
+object for function and method pointers in the python interface. I hope
+to retain the speed of function and method pointers in our c++ code, but
+retain sufficient type information in my wrapper objects to translate to
+and from the python side of our code.
+""")
+
+# as far as I can tell, this function is never used, and so it returns uninitialized data (bogus).
+exclude(cPopulationInterface.GetBirthChamber)
+
+# function pointers don't play well with python...
+exclude(cPopulationInterface.SetFun_NewHardware)
+exclude(cPopulationInterface.SetFun_Recycle)
+exclude(cPopulationInterface.SetFun_Divide)
+exclude(cPopulationInterface.SetFun_TestOnDivide)
+exclude(cPopulationInterface.SetFun_GetNeighbor)
+exclude(cPopulationInterface.SetFun_BirthChamber)
+exclude(cPopulationInterface.SetFun_NumNeighbors)
+exclude(cPopulationInterface.SetFun_Rotate)
+exclude(cPopulationInterface.SetFun_Breakpoint)
+exclude(cPopulationInterface.SetFun_TestFitness)
+exclude(cPopulationInterface.SetFun_GetInput)
+exclude(cPopulationInterface.SetFun_GetInputAt)
+exclude(cPopulationInterface.SetFun_Debug)
+exclude(cPopulationInterface.SetFun_GetResources)
+exclude(cPopulationInterface.SetFun_UpdateResources)
+exclude(cPopulationInterface.SetFun_KillCell)
+exclude(cPopulationInterface.SetFun_KillSurroundCell)
+exclude(cPopulationInterface.SetFun_SendMessage)
+exclude(cPopulationInterface.SetFun_InjectParasite)
+exclude(cPopulationInterface.SetFun_UpdateMerit)
+
+Function("BuildTestPopInterface", "population_interface-fixups.hh")

@@ -1,0 +1,1 @@
+cFixedBlock = Class("cFixedBlock", "fixed_block.hh")

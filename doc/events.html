@@ -1,0 +1,891 @@
+<html>
+<title>The Events File</title>
+<body
+ bgcolor="#FFFFFF"
+ text="#000000"
+ link="#0000AA"
+ alink="#0000FF"
+ vlink="#000044">
+
+<h2 align=center>The Events File</h2>
+
+<p>
+The events file controls events that need to occur throughout the course of
+a run.  This includes the output of data files as well as active events that
+effect the population (such as extinction events or changes to the mutation
+rate).  This is not a complete list, but should include all of the most
+used and useful events.
+
+<p>
+<h3>File Formats</h3>
+
+<p>
+This file consists of a list of events that will be triggered either singly
+or periodically.  The format for each line is:
+
+<p>
+&nbsp;&nbsp;&nbsp;type&nbsp;&nbsp;timing&nbsp;&nbsp;event&nbsp;&nbsp;arguments
+
+<p>
+The <b>type</b> determines what kind of timings the event will be based off
+of.  This can be immediate [<b>i</b>], based on update [<b>u</b>], or based
+on generation [<b>g</b>].
+
+<p>
+The <b>timing</b> should only be included for non-immediate events.  If a
+single number is given for timing, the event occurs at that update/generation.
+A second number can be included (seperated by a colon ':') to indicate how
+often the event should be repeated.  And if a third number is listed (again,
+colon seperated) this will be the last time the event can occur on.  For
+example, the type and timing "u 100:100:5000" would indicate that the
+event that follows first occurs at update 100, and repeats every 100 updates
+thereafter until update 5000.  A type timing of "g 10:10" would cause the
+event to be triggered every 10 generations for the entire run.
+
+<p>
+The <b>event</b> is simply the name of the event that we want to trigger,
+and the <b>arguments</b> detail exactly how it should work when it is
+triggered.  Each event has its own arguments.
+
+<p>
+Some examples:
+
+<p>
+<table cellpadding=5>
+<tr><td><font color="#0000AA"><b><tt>i pause</tt></b></font><br>
+Pause avida as soon as the run first starts.
+
+<p>
+<tr><td><font color="#0000AA"><b><tt>u 100:100 print_average_data</tt></b></font><br>
+Print out all average measurements collected every one hundred updates,
+starting at update 100.
+
+<p>
+<tr><td><font color="#0000AA"><b><tt>g 10000:10:20000 print_data dom_info.dat
+        update,dom_fitness,dom_depth,dom_sequence</tt></b></font><br>
+Between generations 10,000 and 20,000, append the specified information to
+the file "dom_info.dat" every ten generations.  Specifically, the first
+column in the file would be update number, second is the fitness of
+the dominant genotype, followed by the depth in the phylogentic
+tree of the dominant genotype, and finally its genome sequence.
+</table>
+
+<p>
+<h3>Types of events:</h3>
+<p>
+<table>
+  <tr>
+    <td><A HREF="#output">Output</A></td>
+    <td>Output events are the primary way of saving data from an avida 
+    experiments.</td>
+  </tr><tr>
+    <td><A HREF="#Analysis">Analysis</A></td>
+    <td>Analysis events use data from the current state of avida, process it 
+    and then output the results.</td>
+  </tr><tr>
+    <td><A HREF="#Population">Population</A></td>
+    <td>Population events modify the state of the population, and will 
+    actually change the course of the run.</td>
+  </tr><tr>
+    <td><A HREF="#Resource">Resource</A></td>
+    <td>Events that allow user to change amounts of resources in the 
+    system.</td> 
+  </tr><tr>
+    <td><A HREF="#Miscellaneous">Miscellaneous</A></td>
+    <td></td> 
+  </tr><tr>
+    <td><A HREF="#Exit">Exit</A></td>
+    <td>Events that allow user to end the program.</td> 
+  </tr>
+</table>
+
+<p>
+<h3>The available events are:</h3>
+<p>
+<table>
+  <tr>
+    <td>
+      <A HREF="#analyze_landscape">analyze_landscape</A><br>
+      <A HREF="#analyze_population">analyze_population</A><br>
+      <A HREF="#apocalypse">apocalypse</A><br>
+      <A HREF="#calc_consensus">calc_consensus</A><br>
+      <A HREF="#calc_landscape">calc_landscape</A><br>
+      <A HREF="#connect_cells">connect_cells</A><br>
+      <A HREF="#detail_parasite_pop">detail_parasite_pop</A>
+      <A HREF="#detail_pop">detail_pop</A> (<i>deprecated</i>)<br>
+      <A HREF="#disconnect_cells">disconnect_cells</A><br>
+      <A HREF="#dump_fitness_grid">dump_fitness_grid</A><br>
+      <A HREF="#dump_genotype_grid">dump_genotype_grid</A><br>
+      <A HREF="#dump_donor_grid">dump_donore_grid</A><br>
+      <A HREF="#dump_receiver_grid">dump_receiver_grid</A><br>
+      <A HREF="#dump_historic_pop">dump_historic_pop</A> (<i>deprecated</i>)<br>
+      <A HREF="#dump_memory">dump_memory</A><br>
+      <A HREF="#dump_pop">dump_pop</A><br>
+      <A HREF="#echo">echo</A><br>
+      <A HREF="#exit">exit</A><br>
+      <A HREF="#exit_if_ave_lineage_label_larger">exit_if_ave_lineage_label_larger</A><br>
+      <A HREF="#exit_if_ave_lineage_label_smaller">exit_if_ave_lineage_label_smaller</A><br>
+      <A HREF="#exit_if_generation_greater_than">exit_if_generation_greater_than</A><br>
+      <A HREF="#exit_if_update_greater_than">exit_if_update_greater_than</A><br>
+      <A HREF="#genetic_distance_pop_dump">genetic_distance_pop_dump</A><br>
+      <A HREF="#hillclimb">hillclimb</A><br>
+      <A HREF="#hillclimb_neut">hillclimb_neut</A><br>
+      <A HREF="#hillclimb_rand">hillclimb_rand</A><br>
+      <A HREF="#inject">inject</A><br>
+      <A HREF="#inject_all">inject_all</A><br>
+      <A HREF="#inject_random">inject_random</A><br>
+      <A HREF="#inject_range">inject_range</A><br>
+      <A HREF="#inject_range_pair">inject_range_pair</A><br>
+      <A HREF="#inject_range_parasite">inject_range_parasite</A><br>
+      <A HREF="#inject_resource">inject_resource</A><br>
+    </td><td>
+      <A HREF="#inject_sequence">inject_sequence</A><br>
+      <A HREF="#kill_rectangle">kill_rectangle</A><br>
+      <A HREF="#load_clone">load_clone</A><br>
+      <A HREF="#load_dump_file">load_dump_file</A><br>
+      <A HREF="#load_population">load_population</A><br>
+      <A HREF="#mod_copy_mut">mod_copy_mut</A><br>
+      <A HREF="#mod_div_mut">mod_div_mut</A><br>
+      <A HREF="#mod_point_mut">mod_point_mut</A><br>
+      <A HREF="#pairtest_landscape">pairtest_landscape</A><br>
+      <A HREF="#parasite_debug">parasite_debug</A><br>
+      <A HREF="#predict_nu_landscape">predict_nu_landscape</A><br>
+      <A HREF="#predict_w_landscape">predict_w_landscape</A><br>
+      <A HREF="#print_average_data">print_average_data</A><br>
+      <A HREF="#print_count_data">print_count_data</A><br>
+      <A HREF="#print_data">print_data</A><br>
+      <A HREF="#print_depth_histogram">print_depth_histogram</A><br>
+      <A HREF="#print_detailed_fitness_data">print_detailed_fitness_data</A><br>
+      <A HREF="#print_divide_mut_data">print_divide_mut_data</A><br>
+      <A HREF="#print_dom">print_dom</A><br>
+      <A HREF="#print_dom_parasite">print_dom_parasite</A><br>
+      <A HREF="#print_dom_parasite_data">print_dom_parasite_data</A><br>
+      <A HREF="#print_dominant_data">print_dominant_data</A><br>
+      <A HREF="#print_error_data">print_error_data</A><br>
+      <A HREF="#print_genetic_distance_data">print_genetic_distance_data</A><br>
+      <A HREF="#print_genotype_abundance_histogram">print_genotype_abundance_histogram</A><br>
+      <A HREF="#print_genotype_map">print_genotype_map</A><br>
+      <A HREF="#print_genotypes">print_genotypes</A><br>
+      <A HREF="#print_instruction_abundance_histogram">print_instruction_abundance_histogram</A><br>
+      <A HREF="#print_instruction_data">print_instruction_data</A><br>
+      <A HREF="#print_lineage_counts">print_lineage_counts</A><br>
+    </td><td>
+      <A HREF="#print_lineage_totals">print_lineage_totals</A><br>
+      <A HREF="#print_mutation_data">print_mutation_data</A><br>
+      <A HREF="#print_mutation_rate_data">print_mutation_rate_data</A><br>
+      <A HREF="#print_number_phenotypes">print_number_phenotypes</A><br>
+      <A HREF="#print_resource_data">print_resource_data</A><br>
+      <A HREF="#print_species_abundance_histogram">print_species_abundance_histogram</A><br>
+      <A HREF="#print_stats_data">print_stats_data</A><br>
+      <A HREF="#print_tasks_data">print_tasks_data</A><br>
+      <A HREF="#print_tasks_exe_data">print_tasks_exe_data</A><br>
+      <A HREF="#print_threads">print_threads</A><br>
+      <A HREF="#print_time_data">print_time_data</A><br>
+      <A HREF="#print_totals_data">print_totals_data</A><br>
+      <A HREF="#print_tree_depths">print_tree_depths</A><br>
+      <A HREF="#print_variance_data">print_variance_data</A><br>
+      <A HREF="#print_viable_tasks_data">print_viable_tasks_data</A><br>
+      <A HREF="#random_landscape">random_landscape</A><br>
+      <A HREF="#rate_kill">rate_kill</A><br>
+      <A HREF="#sample_landscape">sample_landscape</A><br>
+      <A HREF="#save_clone">save_clone</A><br>
+      <A HREF="#save_population">save_population</A><br>
+      <A HREF="#serial_transfer">serial_transfer</A><br>
+      <A HREF="#set_copy_mut">set_copy_mut</A><br>
+      <A HREF="#set_point_mut">set_point_mut</A><br>
+      <A HREF="#set_resource">set_resource</A><br>
+      <A HREF="#set_reaction_value">set_reaction_value</A><br>
+      <A HREF="#sever_grid_col">sever_grid_col</A><br>
+      <A HREF="#task_snapshot">task_snapshot</A><br>
+      <A HREF="#test_dom">test_dom</A><br>
+      <A HREF="#test_size_change_robustness">test_size_change_robustness</A><br>
+      <A HREF="#test_threads">test_threads</A><br>
+      <A HREF="#zero_muts">zero_muts</A><br>
+    </td>
+  </tr>
+</table>
+<p>
+<h3><A NAME="Output">Output Events</A></h3>
+
+Output events are the primary way of saving data from an avida experiments.
+The main two types are <i>continuous output</i>, which append to a single file 
+every time the event is trigged, and <i>singular output</i>, which produce
+a single, complete file for each trigger.
+
+<p>
+<menu>
+
+<li><b><A NAME="print_genotypes">print_genotypes</A></b>
+    [<font color="#008800">data_fields("all")</font>]
+    [<font color="#008800">print_historic(0)</font>]
+    [<font color="#008800">filename("genotypes-&lt;update&gt;.dat")</font>]<br>
+    This command is used to print out information about all of the genotypes
+    in the population.  It replaces both "detail_pop" and "historic_dump" as
+    well as most of their variations.  The file output from here can be read
+    back into the analyze mode of Avida with the "LOAD" command.<br><br>
+
+    The <font color="#008800">data_fields</font> parameter indicates what
+    columns should be included in the file, which must be comma seperated.
+    Options are:
+    <i>all, id, parent_id, parent2_id (for sex), parent_dist, num_cpus,
+    total_cpus, length, merit, gest_time, fitness, update_born, update_dead,
+    depth, lineage, sequence.</i>
+    Use "all" (the default) if you want all of the other fields
+    included.<br><br>
+
+    The <font color="#008800">print_historic</font> parameter indicates how
+    many updates back in time should be included in this output.  For example,
+    "200" would indicate that any ancestor of the current population that died
+    out in the last 200 updates should also be printed. A "-1" in this field
+    indicates that all ancestors should be printed.<br><br>
+
+    The <font color="#008800">filename</font> parameter simply indicates what
+    you want to call the file.<br><br>
+
+    <i>Example</i>:<br>
+    &nbsp;&nbsp;<tt>u 1000:1000 print_genotypes id,parent_id,fitness 1000</tt><br>
+    This will print out the full population every 1000 updates, including all
+    genotypes that have died out since the last time it was printed.<br><br>
+
+    </li>
+
+
+  
+<li><b><A NAME="detail_pop">detail_pop</A></b> [<font color="#008800">filename</font>]<br>
+    <font color="#880000">NOTE</font>: This event is deprecated.
+    See <a href="#print_genotypes">print_genotypes</a> instead.<br>
+    Save the genotypes and lots of statistics about the population to the
+    file specified; if not filename is given, use the name
+    detail_pop.update#.  As with clones, the update number allows a single
+    event to produce many detail files.  The details are used to collect
+    crossection data about the population.  Ideally we will have a flexible
+    version of this soon where the user will be able to specify the
+    information that they are interested in saving.</li>
+<br>
+<li><b><A NAME="dump_historic_pop">dump_historic_pop</A></b> [<font color="#008800">filename</font>]<br>
+    <font color="#880000">NOTE</font>: This event is deprecated.
+    See <a href="#print_genotypes">print_genotypes</a> instead.<br>
+    This event is used to output all of the ancestors of the currently
+    living population to the file specified, of "historic_dump.update#".
+    It uses the same format as the "detail_pop" event.</li>
+<br>
+
+<li><b><A NAME="dump_genotype_grid">dump_genotype_pop</A></b> <br> 
+    Print out the grid of genotype IDs into idgrid.*.out", where '*' is replaced by the
+    number of the current update.
+<br>
+<li><b><A NAME="dump_donor_grid">dump_donor_pop</A></b> <br> 
+    Print out the grid of organisms who donated their merit into the  
+    "donor_grid.*.out", where '*' is replaced by the
+    number of the current update.
+<br>
+<li><b><A NAME="dump_receiver_grid">dump_donor_pop</A></b> <br> 
+    Print out the grid of organisms who received merit into the  
+    "receiver_grid.*.out", where '*' is replaced by the
+    number of the current update.
+<br>
+
+<li><b><A Name="detail_parasite_pop">detail_parasite_pop</A></b> [<font color="#008800">fname</font>]<br>
+Like dump_pop, but more detailed data is written out.
+<br><br>Parameters:<br><br>
+filename (string) default: "detail_pop.&lt;update&gt;"
+  The name of the file into which the population dump should be written.
+</li></ul>
+<br>
+
+<li><b><A Name="genetic_distance_pop_dump">genetic_distance_pop_dump</A></b> [<font color="#008800">creature_name</font>] [<font color="#008800">filename</font>] [<font color="#008800">save_genotype(0)</font>]<br>
+
+</li>
+<br>
+<li><b><A Name="load_clone">load_clone</A></b> [<font color="#008800">fname</font>]<br>
+
+</li>
+<br>
+<li><b><A Name="load_dump_file">load_dump_file</A></b> [<font color="#008800">fname</font>] [<font color="#008800">update(-1)</font>]<br>
+Sets up a population based on a dump file such as written out by
+detail_pop. It is also possible to append a history file to the dump
+file, in order to preserve the history of a previous run.
+</li>
+<br>
+<li><b><A Name="load_population">load_population</A></b> [<font color="#008800">fname</font>]<br>
+Loads the full state of the population.
+
+<br><br>Parameters:<br><br>
+filename (string)
+  The name of the file to open.
+</li>
+<br>
+<li><b><A NAME="print_average_data">print_average_data</A></b> [<font color="#008800">filename("average.dat")</font>]<br>
+    A print_data shortcut that will print all of the population averages to
+    the file "average.dat".</li>
+<br>
+<li><b><A NAME="print_count_data">print_count_data</A></b> [<font color="#008800">filename("count.dat")</font>]<br>
+    A print_data shortcut that will print all of the statistics the keep
+    track of counts (such as the number of organisms in the population or
+    the number of instructions executed) to the file "count.dat".</li>
+<br>
+<li><b><A NAME="print_data">print_data</A></b> [<font color="#008800">filename</font>] [<font color="#008800">column list</font>]<br>
+    Append to the file specified (continuous output), the data given in the
+    column list.  The column list needs to be a comma-seperated list of
+    keywords representing the data types.  Many possible data types can be
+    output; click <a href="print_data.html">here</a> for the complete list.
+    See the last example above to see how this event can be put into use.
+    Note that this event will even create a detailed column legend at the top
+    of your file so you don't need to seperately keep track of what the
+    columns mean.</li>
+<br>
+<li><b><A Name="print_depth_histogram">print_depth_histogram</A></b> [<font color="#008800">filename("depth_histogram.dat")</font>]<br>
+
+</li>
+<br>
+<li><b><A Name="print_detailed_fitness_data">print_detailed_fitness_data</A></b> [<font color="#008800">save_max_f_genotype(0)</font>] [<font color="#008800">print_fitness_histo(0)</font>] [<font color="#008800">hist_fmax(1)</font>] [<font color="#008800">hist_fstep(0.1)</font>] [<font color="#008800">filename("fitness.dat")</font>] [<font color="#008800">filename2("fitness_histos.dat")</font>] [<font color="#008800">filename3("fitness_histos_testCPU.dat")</font>]<br>
+
+</li>
+<br>
+<li><b><A NAME="print_divide_mut_data">print_divide_mut_data</A></b> [<font color="#008800">filename</font>]<br>
+    Output (regular and log) statistics about individual, per site,
+    rates divide mutation rates (aver, stdev, skew, cur) to divide_mut.dat.<br>
+    Use with multiple divide instuction set.</li>
+<br>
+<li><b><A NAME="print_dominant_data">print_dominant_data</A></b> [<font color="#008800">filename("dominant.dat")</font>]<br>
+    A print_data shortcut that will print all of the statistics relating
+    to the dominant genotype to the file "dominant.dat".</li>
+<br>
+<li><b><A NAME="print_dom">print_dom</A></b> [<font color="#008800">filename</font>]<br>
+    Print the dominant organism's genome (and lots of information about it)
+    into the file specified.  If no filename is given, just use the genotypes
+    assigned name.</li>
+<br>
+<li><b><A Name="print_dom_parasite">print_dom_parasite</A></b> [<font color="#008800">in_filename</font>]<br>
+Write the currently dominant injected genotype to disk.
+
+<br><br>Parameters:<br><br>
+filename (string)
+  The name under which the genotype should be saved. If no
+  filename is given, the genotype is saved into the directory
+  genebank, under the name that the genebank has associated with
+  this genotype.
+</li>
+<br>
+<li><b><A NAME="print_dom_parasite_data">print_dom_parasite_data</A></b> [<font color="#008800">filename</font>]<br>
+    Print various quantites related to the dominant parasite to file
+    "parasite.dat"
+    </li>
+<br>
+<li><b><A NAME="print_error_data">print_error_data</A></b> [<font color="#008800">filename</font>]<br>
+    A print_data shortcut that will print all of the standard errors of the
+    population statistics to the file "error.dat".</li>
+<br>
+<li><b><A Name="print_genetic_distance_data">print_genetic_distance_data</A></b> [<font color="#008800">creature_name</font>] [<font color="#008800">filename("genetic_distance.dat")</font>]<br>
+
+</li>
+<br>
+<li><b><A Name="print_genotype_abundance_histogram">print_genotype_abundance_histogram</A></b> [<font color="#008800">filename("genotype_abundance_histogram.dat")</font>]<br>
+Writes out a genotype abundance histogram.
+
+<br><br>Parameters:<br><br>
+filename (string) default: genotype_abundance_histogram.dat
+  The name of the file into which the histogram is written.
+</li>
+<br>
+<li><b><A NAME="print_genotype_map">print_genotype_map</A></b> [<font color="#008800">filename("genotype_map.m")</font>]<br>
+    This event is used to ouput a map of the gentype IDs for the
+    population grid to a file that is suitable to be read into Matlab.
+    Default file name: genotype_map.m </li> 
+<br>
+<li><b><A Name="print_instruction_abundance_histogram">print_instruction_abundance_histogram</A></b> [<font color="#008800">filename("instruction_histogram.dat")</font>]<br>
+Appends a line containing the bulk count (abundance) of
+each instruction in the population onto a file.
+
+<br><br>Parameters:<br><br>
+filename (string) default: "instruction_histogram.dat"
+
+</li>
+<br>
+<li><b><A Name="print_instruction_data">print_instruction_data</A></b> [<font color="#008800">fname("instruction.dat")</font>]<br>
+of the by-organisms counts of what instructions they _successfully_
+beteween birth and divide. Prior to their first divide, organisms
+values for their parents.
+</li>
+<br>
+<li><b><A Name="print_lineage_counts">print_lineage_counts</A></b> [<font color="#008800">fname("lineage_counts.dat")</font>] [<font color="#008800">verbose(0)</font>]<br>
+
+</li>
+<br>
+<li><b><A Name="print_lineage_totals">print_lineage_totals</A></b> [<font color="#008800">fname("lineage_totals.dat")</font>] [<font color="#008800">verbose(1)</font>]<br>
+
+</li>
+<br>
+<li><b><A NAME="print_mutation_data">print_mutation_data</A></b> [<font color="#008800">filename("mutation.dat")</font>]<br>
+    Prints mutation information to file "mutation.dat"</li>
+<br>
+<li><b><A NAME="print_mutation_rate_data">print_mutation_rate_data</A></b> [<font color="#008800">filename("mutation_rates.dat")</font>]<br>
+    Output (regular and log) statistics about individual copy
+    mutation rates (aver, stdev, skew, cur) to "mutation_rates.dat".<br>
+    Useful only when mutation rate is set per organism.</li>
+<br>
+<li><b><A Name="print_number_phenotypes">print_number_phenotypes</A></b> [<font color="#008800">fname("phenotype_count.dat")</font>]<br>
+file with number of phenotypes based on tasks executed
+this update.  Executing a task any numbers of times is considered
+same as executing it once. 
+</li>
+<br>
+<li><b><A NAME="print_resource_data">print_resource_data</A></b> [<font color="#008800">filename("resource.dat")</font>]<br>
+    Print the current counts of each resource available to the population
+    to the file "resource.dat".  This uses the environment configuration to
+    determine what resources are in use.  Also creates seperate files
+    "resource_<i>resource_name</i>.m" (in a format that is designed to
+    be read into Matlab) for each spatial resource.</li>
+<br>
+<li><b><A Name="print_species_abundance_histogram">print_species_abundance_histogram</A></b> [<font color="#008800">filename("species_abundance_histogram.dat")</font>]<br>
+Writes out a species abundance histogram.
+
+<br><br>Parameters:<br><br>
+filename (string) default: species_abundance_histogram.dat
+  The name of the file into which the histogram is written.
+</li>
+<br>
+<li><b><A NAME="print_stats_data">print_stats_data</A></b> [<font color="#008800">filename</font>]<br>
+    A print_data shortcut that will print all of the miscellanous population
+    statistics to the file "stats.dat".</li>
+<br>
+<li><b><A NAME="print_tasks_data">print_tasks_data</A></b> [<font color="#008800">filename("tasks.dat")</font>]<br>
+    Print the number of organisms that are able to perform each task to the
+    file "tasks.dat".  This uses the environment configuration to determine
+    what tasks are in use.</li>
+<br>
+<li><b><A NAME="print_tasks_exe_data">print_tasks_exe_data</A></b> [<font color="#008800">filename("tasks_exe.dat")</font>]<br>
+    Print number of times the particular task has been executed this update 
+    to file "tasks_exe.dat"</li>
+<br>
+<li><b><A Name="print_threads">print_threads</A></b><br>
+
+</li>
+<br>
+<li><b><A NAME="print_time_data">print_time_data</A></b> [<font color="#008800">filename("time.dat")</font>]<br>
+    A print_data shortcut that will print all of the timing related
+    statistics to the file "time.dat".</li>
+<br>
+<li><b><A NAME="print_totals_data">print_totals_data</A></b> [<font color="#008800">filename("totals.dat")</font>]<br>
+    A print_data shortcut that will print the same information as the
+    previous event, but the counts will be the totals for the entire
+    length of the run (for example, the total number of organisms ever) to
+    the file "totals.dat".</li>
+<br>
+<li><b><A Name="print_tree_depths">print_tree_depths</A></b> [<font color="#008800">filename</font>]<br>
+Reconstruction of phylogenetic trees.
+</li>
+<br>
+<li><b><A NAME="print_variance_data">print_variance_data</A></b> [<font color="#008800">filename("variance.dat")</font>]<br>
+    A print_data shortcut that will print all of the veriances of the
+    population statistics to the file "variance.dat".</li>
+<br>
+<li><b><A Name="print_viable_tasks_data">print_viable_tasks_data</A></b> [<font color="#008800">filename("viable_tasks.dat")</font>]<br>
+
+</li>
+<br>
+<li><b><A NAME="save_clone">save_clone</A></b> [<font color="#008800">filename</font>]<br>
+    Save a clone of this organism to the file specified; if no filename is
+    given, use the name clone.update#.  The update number allows regular
+    clones with distinct filenames to be saved with the same periodic event.
+    Running "avida -l filename" will start an avida population with the
+    saved clone.  Note that a clone only consists of the genomes in
+    the population, and their current state is lost, so the run may not
+    proceed identically as to if it had continued as it was going.</li>
+<br>
+<li><b><A Name="save_population">save_population</A></b> [<font color="#008800">fname</font>]<br>
+Saves the full state of the population.
+
+<br><br>Parameters:<br><br>
+filename (string) default: save_pop.&lt;update&gt;
+  The name of the file into which the population should
+  be saved.
+</li>
+</menu>
+
+<p>
+<h3><A NAME="Analysis">Analysis Events</A></h3>
+
+<p>
+Analysis events use data from the current state of avida, process it
+(sometimes quite heavily) and then output the results.  These are slowly
+migrating over to the analysis mode of avida (see the analysis documentation
+for more information).
+
+<p>
+<menu>
+<li><b><A Name="analyze_landscape">analyze_landscape</A></b> [<font color="#008800">sample_size(1000)</font>] [<font color="#008800">min_found(0)</font>] [<font color="#008800">max_sample_size(0)</font>]<br>
+
+</li>
+<br>
+<li><b><A Name="analyze_population">analyze_population</A></b> [<font color="#008800">sample_prob(1)</font>] [<font color="#008800">landscape(0)</font>] [<font color="#008800">save_genotype(0)</font>] [<font color="#008800">filename</font>]<br>
+
+</li>
+<br>
+<li><b><A Name="calc_consensus">calc_consensus</A></b> [<font color="#008800">lines_saved(0)</font>]<br>
+Calculates the consensus sequence.
+
+<br><br>Parameters:<br><br>
+lines saved (integer) default: 0
+</li>
+<br>
+<li><b><A NAME="calc_landscape">calc_landscape</A></b> [<font color="#008800">distance(1)</font>]<br>
+    Do a landscape analysis of the dominant genotype in the population and
+    write the results to "landscape.dat".  This is a collection of 
+    statistics obtained from examining all possible mutations at the distance
+    specified.  The default distance is one.</li>
+<br>
+<li><b><A Name="hillclimb">hillclimb</A></b><br>
+Does a hill climb with the dominant genotype.
+</li>
+<br>
+<li><b><A Name="hillclimb_neut">hillclimb_neut</A></b><br>
+
+</li>
+<br>
+<li><b><A Name="hillclimb_rand">hillclimb_rand</A></b><br>
+
+</li>
+<br>
+<li><b><A Name="mod_copy_mut">mod_copy_mut</A></b> [<font color="#008800">cmut_inc</font>] [<font color="#008800">cell(-1)</font>]<br>
+
+</li>
+<br>
+<li><b><A Name="mod_div_mut">mod_div_mut</A></b> [<font color="#008800">dmut_inc</font>] [<font color="#008800">cell(-1)</font>]<br>
+
+</li>
+<br>
+<li><b><A Name="mod_point_mut">mod_point_mut</A></b> [<font color="#008800">pmut_inc</font>] [<font color="#008800">cell(-1)</font>]<br>
+
+</li>
+<br>
+<li><b><A Name="pairtest_landscape">pairtest_landscape</A></b> [<font color="#008800">sample_size(0)</font>]<br>
+If sample_size = 0, pairtest the full landscape.
+</li>
+<br>
+<li><b><A Name="parasite_debug">parasite_debug</A></b> [<font color="#008800">in_filename</font>]<br>
+
+</li>
+<br>
+<li><b><A Name="predict_nu_landscape">predict_nu_landscape</A></b> [<font color="#008800">datafile("land-predict.dat")</font>]<br>
+
+</li>
+<br>
+<li><b><A Name="predict_w_landscape">predict_w_landscape</A></b> [<font color="#008800">datafile("land-predict.dat")</font>]<br>
+
+</li>
+<br>
+<li><b><A Name="random_landscape">random_landscape</A></b> [<font color="#008800">landscape_dist(1)</font>] [<font color="#008800">sample_size(0)</font>] [<font color="#008800">min_found(0)</font>] [<font color="#008800">max_sample_size(0)</font>] [<font color="#008800">print_if_found(false)</font>]<br>
+
+</li>
+<br>
+<li><b><A Name="sample_landscape">sample_landscape</A></b> [<font color="#008800">sample_size(0)</font>]<br>
+
+</li>
+<br>
+<li><b><A NAME="task_snapshot">task_snapshot</A></b> [<font color="#008800">filename</font>]<br>
+    Run all organisms in the population through test cpus and print out the
+    number of tasks each can perform.  The default filename is
+    "tasks_update#.dat".</li>
+</menu>
+
+<p>
+<h3><A NAME="Population">Population Events</A></h3>
+
+<p>
+Population events modify the state of the population, and will actually
+change the course of the run.  There are a wide variety of these.
+
+<p>
+<menu>
+<li><b><A NAME="apocalypse">apocalypse</A></b> [<font color="#008800">kill_prob(0.9)</font>]<br>
+    Using the specified probability, test each organism to see if it is killed
+    off.</li>
+<br>
+<li><b><A NAME="inject">inject</A></b> [<font color="#008800">fname("START_CREATURE")</font>] [<font color="#008800">cell_id(0)</font>] [<font color="#008800">merit(-1)</font>] [<font color="#008800">lineage_label(0)</font>] [<font color="#008800">neutral_metric(0)</font>]<br>
+    Inject a single organisms into the population.  Arguments must be
+    included from left to right; if all arguments are left out, the default
+    creature is the ancestral organism, and it will be injected into cell 0,
+    have an uninitialized merit, and be marked as liniage id 0.</li>
+<br>
+<li><b><A NAME="inject_all">inject_all</A></b> [<font color="#008800">fname("START_CREATURE")</font>] [<font color="#008800">merit(-1)</font>] [<font color="#008800">lineage_label(0)</font>] [<font color="#008800">neutral_metric(0)</font>]<br>
+    Same as inject, but no cell_id is specified and the organism is placed
+    into <i>all</i> cells in the population.</li>
+<br>
+<li><b><A Name="inject_random">inject_random</A></b> [<font color="#008800">length</font>] [<font color="#008800">cell_id(-1)</font>] [<font color="#008800">merit(-1)</font>] [<font color="#008800">lineage_label(0)</font>] [<font color="#008800">neutral_metric(0)</font>]<br>
+Injects a randomly generated genome into the population.
+
+<br><br>Parameters:<br><br>
+length (integer) [required]
+  Number of instructions in the randomly generated genome.
+<br><br>
+cell ID (integer) default: -1
+  The grid-point into which the genome should be placed.  Default is random.
+<br><br>
+merit (double) default: -1
+  The initial merit of the organism. If set to -1, this is ignored.
+<br><br>
+lineage label (integer) default: 0
+  An integer that marks all descendants of this organism.
+<br><br>
+neutral metric (double) default: 0
+  A double value that randomly drifts over time.
+</li>
+<br>
+<li><b><A Name="inject_range">inject_range</A></b> [<font color="#008800">fname("START_CREATURE")</font>] [<font color="#008800">start_cell(0)</font>] [<font color="#008800">end_cell(-1)</font>] [<font color="#008800">merit(-1)</font>] [<font color="#008800">lineage_label(0)</font>] [<font color="#008800">neutral_metric(0)</font>]<br>
+Injects identical organisms into a range of cells of the population.
+
+<br><br>Parameters:<br><br>
+filename (string)
+  The filename of the genotype to load. If this is left empty, or the keyword
+  "START_CREATURE" is given, than the genotype specified in the genesis
+  file under "START_CREATURE" is used.
+<br><br>
+start_cell (int)
+  First cell to inject into.
+<br><br>
+stop_cell (int)
+  First cell *not* to inject into.
+<br><br>
+merit (double) default: -1
+  The initial merit of the organism. If set to -1, this is ignored.
+<br><br>
+lineage label (integer) default: 0
+  An integer that marks all descendants of this organism.
+<br><br>
+neutral metric (double) default: 0
+  A double value that randomly drifts over time.
+
+<br><br>Example:<br><br>
+  inject_range creature.gen 0 10
+
+Will inject 10 organisms into cells 0 through 9.
+</li>
+<br>
+<li><b><A Name="inject_range_pair">inject_range_pair</A></b> [<font color="#008800">fname("START_CREATURE")</font>] [<font color="#008800">fname_parasite("organism.parasite")</font>] [<font color="#008800">start_cell(0)</font>] [<font color="#008800">end_cell(-1)</font>] [<font color="#008800">merit(-1)</font>] [<font color="#008800">lineage_label(0)</font>] [<font color="#008800">neutral_metric(0)</font>] [<font color="#008800">mem_space(2)</font>]<br>
+Injects identical organisms into a range of cells of the population.
+
+<br><br>Parameters:<br><br>
+filename (string)
+  The filename of the genotype to load. If this is left empty, or the keyword
+  "START_CREATURE" is given, than the genotype specified in the genesis
+  file under "START_CREATURE" is used.
+<br><br>
+start_cell (int)
+  First cell to inject into.
+<br><br>
+stop_cell (int)
+  First cell *not* to inject into.
+<br><br>
+merit (double) default: -1
+  The initial merit of the organism. If set to -1, this is ignored.
+<br><br>
+lineage label (integer) default: 0
+  An integer that marks all descendants of this organism.
+<br><br>
+neutral metric (double) default: 0
+  A double value that randomly drifts over time.
+
+<br><br>Example:<br><br>
+  inject_range creature.gen 0 10
+
+Will inject 10 organisms into cells 0 through 9.
+</li>
+<br>
+<li><b><A Name="inject_range_parasite">inject_range_parasite</A></b> [<font color="#008800">fname_parasite("organism.parasite")</font>] [<font color="#008800">start_cell(0)</font>] [<font color="#008800">end_cell(-1)</font>] [<font color="#008800">merit(-1)</font>] [<font color="#008800">lineage_label(0)</font>] [<font color="#008800">neutral_metric(0)</font>] [<font color="#008800">mem_space(2)</font>]<br>
+Injects identical organisms into a range of cells of the population.
+
+<br><br>Parameters:<br><br>
+filename (string)
+  The filename of the genotype to load. If this is left empty, or the keyword
+  "START_CREATURE" is given, than the genotype specified in the genesis
+  file under "START_CREATURE" is used.
+<br><br>
+start_cell (int)
+  First cell to inject into.
+<br><br>
+stop_cell (int)
+  First cell *not* to inject into.
+<br><br>
+merit (double) default: -1
+  The initial merit of the organism. If set to -1, this is ignored.
+<br><br>
+lineage label (integer) default: 0
+  An integer that marks all descendants of this organism.
+<br><br>
+neutral metric (double) default: 0
+  A double value that randomly drifts over time.
+
+<br><br>Example:<br><br>
+  inject_range creature.gen 0 10
+
+Will inject 10 organisms into cells 0 through 9.
+</li>
+<br>
+<li><b><A Name="inject_sequence">inject_sequence</A></b> [<font color="#008800">seq</font>] [<font color="#008800">start_cell(0)</font>] [<font color="#008800">end_cell(-1)</font>] [<font color="#008800">merit(-1)</font>] [<font color="#008800">lineage_label(0)</font>] [<font color="#008800">neutral_metric(0)</font>]<br>
+Injects identical organisms into a range of cells of the population.
+
+<br><br>Parameters:<br><br>
+sequence (string)
+  The genome sequence for this organism.  This is a mandatory argument.
+<br><br>
+start_cell (int)
+  First cell to inject into.
+<br><br>
+stop_cell (int)
+  First cell *not* to inject into.
+<br><br>
+merit (double) default: -1
+  The initial merit of the organism. If set to -1, this is ignored.
+<br><br>
+lineage label (integer) default: 0
+  An integer that marks all descendants of this organism.
+<br><br>
+neutral metric (double) default: 0
+  A double value that randomly drifts over time.
+
+<br><br>Example:<br><br>
+  inject_range ckdfhgklsahnfsaggdsgajfg 0 10 100
+
+Will inject 10 organisms into cells 0 through 9 with a merit of 100.
+</li>
+<br>
+<li><b><A NAME="kill_rectangle">kill_rectangle</A></b> [<font color="#008800">cell_X1(0)</font>] [<font color="#008800">cell_Y1(0)</font>] [<font color="#008800">cell_X2(0)</font>] [<font color="#008800">cell_Y2(0)</font>]<br>
+    Kill off all organisms in a rectangle defined by the points (X1, Y1) and 
+    (X2, Y2).</li>
+<br>
+<li><b><A Name="rate_kill">rate_kill</A></b> [<font color="#008800">kill_rate</font>]<br>
+Randomly removes a certain proportion of the population.
+In principle, this event does the same thing as the apocalypse event.
+However, instead of a probability, here one has to specify a rate. The
+rate has the same unit as fitness. So if the average fitness is 20000,
+than you remove 50% of the population on every update with a removal rate
+of 10000.
+
+<br><br>Parameters:<br><br>
+removal rate (double)
+  The rate at which organisms are removed.
+</li>
+<br>
+<li><b><A NAME="serieal_transfer">serieal_transfer</A></b> [<font color="#008800">transfer_size(1)</font>] [<font color="#008800">ignore_deads(1)</font>]<br>
+    Similar to apocalypse, but we specify the exact number of organisms to
+    keep alive after the event.
+    
+<br><br>Parameters:<br><br>
+transfer size (int) default: 1
+  The number of organisms to retain. If there are fewer living
+  organisms than the specified transfer size, then all living
+  organisms are retained.
+<br><br>
+ignore deads (int) default: 1
+  When set to 1, only living organisms are retained. Otherwise,
+  every type of organism can be retained.
+
+    </li>
+<br>
+<li><b><A Name="set_copy_mut">set_copy_mut</A></b> [<font color="#008800">cmut</font>] [<font color="#008800">start_cell(-1)</font>] [<font color="#008800">end_cell(-1)</font>]<br>
+
+</li>
+<br>
+<li><b><A Name="set_point_mut">set_point_mut</A></b> [<font color="#008800">pmut</font>] [<font color="#008800">cell(-1)</font>]<br>
+
+</li>
+<br>
+<li><b><A Name="zero_muts">zero_muts</A></b><br>
+This event will set all mutation rates to zero...
+</li>
+</menu>
+
+<p>
+<h3><A NAME="Resource">Resource Events</A></h3>
+
+Events that allow user to change resources  and reaction parameters.
+
+<menu>
+<li><b><A NAME="inject_resource">inject_resource</A></b> [<font color="#008800">res_name</font>] 
+[<font color="#008800">res_count</font>] <br> 
+    Inject (add) a specified amount of a specified resource.  <b>res_name</b> must 
+    already exist as a resource in environment file.</li>
+<br>
+<li><b><A NAME="set_resource">set_resource</A></b> [<font color="#008800">res_name</font>] 
+[<font color="#008800">res_count</font>] <br> 
+    Set the resource amount to a specific level.  <b>res_name</b> must 
+    already exist as a resource in environment file.</li>
+<br>
+<li><b><A NAME="set_reaction_value">set_reaction_value</A></b> [<font color="#008800">reaction_name</font>] 
+[<font color="#008800">reaction_value</font>] <br> 
+    Set the reaction value ("bonus") to a specific level. <b>reaction_name</b> must already 
+    exist in the environment file. <b>reaction_value</b> can be negative. 
+</menu>
+
+<p>
+<h3><A NAME="Miscellaneous">Misc. Events</A></h3>
+
+These are other events that didn't seem to fit better anywhere else...
+
+<p>
+<menu>
+<li><b><A Name="connect_cells">connect_cells</A></b> [<font color="#008800">cellA_x</font>] [<font color="#008800">cellA_y</font>] [<font color="#008800">cellB_x</font>] [<font color="#008800">cellB_y</font>]<br>
+Connects a pair of specified cells.
+Arguments:
+ cellA_x, cellA_y, cellB_x, cellB_y
+</li>
+<br>
+<li><b><A NAME="echo">echo</A></b> [<font color="#008800">message</font>]<br>
+    Print the message included when the event is triggered.  This is mostly
+    used for debugging.</li>
+<br>
+<li><b><A Name="sever_grid_col">sever_grid_col</A></b> [<font color="#008800">col_id(-1)</font>] [<font color="#008800">min_row(0)</font>] [<font color="#008800">max_row(-1)</font>]<br>
+Remove the connections between cells along a column in an avida grid.
+Arguments:
+ col_id:  indicats the number of columns to the left of the cut.
+          default (or -1) = cut population in half
+ min_row: First row to start cutting from
+          default = 0
+ max_row: Last row to cut to
+          default (or -1) = last row in population.
+</li>
+<br>
+<li><b><A Name="test_dom">test_dom</A></b><br>
+
+</li>
+<br>
+<li><b><A Name="test_size_change_robustness">test_size_change_robustness</A></b> [<font color="#008800">num_trials(100)</font>] [<font color="#008800">filename("size_change.dat")</font>]<br>
+
+</li>
+<br>
+<li><b><A Name="test_threads">test_threads</A></b><br>
+
+</li>
+</menu>
+
+<p>
+<h3><A NAME="Exit">Exit Events</A></h3>
+
+These are events that cause the program to end.
+
+<menu>
+<br>
+<li><b><A NAME="exit">exit</A></b><br>
+    Quit the current run at given timing event.</li>
+<br>
+ <li><b><A NAME="exit_if_ave_lineage_label_larger">exit_if_ave_lineage_label_larger</A></b> [<font color="#008800">lineage_label_crit_value</font>]<br>
+     Halts the avida run if the current average lineage label is larger
+     than <b>lineage_label_crit_value</b>.</li>
+<br>
+ <li><b><A NAME="exit_if_ave_lineage_label_smaller">exit_if_ave_lineage_label_smaller</A></b> [<font color="#008800">lineage_label_crit_value</font>]<br>
+     Halts the avida run if the current average lineage label is smaller
+     than <b>lineage_label_crit_value</b>.</li>
+<br>
+<li><b><A NAME="exit_if_generation_greater_than">exit_if_generation_greater_than</A></b> [<font color="#008800">max_generation</font>]<br>
+    Ends the Avida run when the current generation exceeds <b>max_generation</b>.</li>
+<br>
+<li><b><A NAME="exit_if_update_greater_than">exit_if_update_greater_than</A></b> [<font color="#008800">max_update</font>]<br>
+    Ends the Avida run when the current generation exceeds <b>max_update</b>.</li>
+</menu>
+
+
+<br><hr>
+Project hosted by:<br>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=46761&type=2" width="125" height="37" border="0" alt="SourceForge.net"/></a>
+    

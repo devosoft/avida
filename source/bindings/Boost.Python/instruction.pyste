@@ -1,0 +1,1 @@
+cInstruction = Class("cInstruction", "instruction.hh")

@@ -1,0 +1,300 @@
+<html>
+<title>Instruction Implementation Checklist</title>
+<body
+ bgcolor="#FFFFFF"
+ text="#000000"
+ link="#0000AA"
+ alink="#0000FF"
+ vlink="#000044">
+
+<h2 align=center>Instruction Implementation Checklist</h2>
+
+<p>
+This document discusses how to implement your own instructions.
+
+<h3>1. Build the method to be attached to the new instruction</h3>
+
+<p>
+For this first step, you will be editing the virtual CPU definition in 
+<tt>hardware_cpu.hh</tt> and <tt>hardware_cpu.cc</tt>, both of which are
+found in the directory <tt>current/source/cpu/</tt>.  Start by going to the
+final section of the class definition in the header file (*.hh) and writing
+the declaration for the new method that will be called whenever the
+instruction is executed.
+For example, if you were going to add the instruction "<tt>minus-17</tt>"
+(which performs the oh-so-useful behavior of subtracting 17 from the
+?BX? register), you would add the line:<br>
+
+<pre>
+   <font color="#880000">bool</font> <font color="#008800">Inst_Minus17</font>();
+</pre>
+
+<p>
+If possible, place it near other instructions of the same type.  Only
+a few samples were given in your handout, but there are about a hundred
+methods in the actual file.  This instruction would likely fit best with
+the group of instruction described as "Single-Argument Math".  That is,
+all those instructions that perform mathematical operation that only affect a
+single register.
+
+<p>
+All methods associated with instructions return a
+<font color="#880000">bool</font> value that determines if it were
+successfully executed, and take in no arguments.  Most instructions will
+always return true since they have now way to fail.  The convention
+that we use to designate a method explicitly associated with an instruction
+is placing a prefix of <tt>Inst_</tt> in front of it.
+
+<p>
+Next, you have to write the function body in the code file
+(<tt>hardware_cpu.cc</tt>).  The method bodies will be listed at the end
+of this file in the same order that they were declared in the header.
+You would find the proper position, and write something to the effect of:
+
+<pre>
+  void <font color="#880000">cHardwareCPU</font>::<font color="#008800">Inst_Minus17</font>()
+  {
+    const <font color="#880000">int</font> <font color="#000088">reg_used</font> = <font color="#008800">FindModifiedRegister</font>(REG_BX);
+    <font color="#008800">Register</font>(<font color="#000088">reg_used</font>) -= 17;   <font color="#886600">
+    // Same as:  Register(reg_used) = Register(reg_used) - 17;</font>
+    return true;
+  }
+</pre>
+
+<p>
+The first line of this method uses a helper function called
+<font color="#008800">FindModifiedRegister</font>() to identify the register
+that should be affected (it scans the next instruction to test if it is a
+<tt>nop</tt>), with a default value of <tt>REG_BX</tt> passed in.
+The second line then subtracts 17 from the value in that register.  The
+constant values and available helper functions will be described in more
+detail below, as will a guide to accessing the components in the virtual
+CPU.  For the moment, you have finished implementing the method!
+
+<p>
+Note that this would be a good time to recompile if you want to test how
+well your implementation is going so far.
+
+<h3>2. Link the instruction name to its method</h3>
+
+For this step, you will need to edit the file "<tt>hardware_util.cc</tt>"
+in the <tt>current/source/cpu/</tt> directory.  You would go into the method
+<font color="#880000">cHardwareUtil</font>::<font color="#008800">LoadInstLibCPU</font>()
+and add in the line
+
+<pre>
+  <font color="#000088">inst_dict</font>.<font color="#008800">Add</font>("minus-17", (<font color="#880000">tHardwareMethod</font>) &<font color="#880000">cHardwareCPU</font>::<font color="#008800">Inst_Minus17</font>);
+</pre>
+
+<p>
+in the same order that it was defined in the class definition.
+
+<p>
+The instruction dictionary will be passed into the
+<font color="#008800">LoadInstLib</font>() method to determine which
+functions will actually be put in the instruction library.  Here we add a
+single entry to it that correlates the instruction name "<tt>minus-17</tt>"
+with the method that is supposed to be called when that instruction is
+executed.
+
+<p>
+Since we want to use a pointer to the appropriate method, that is what we
+must pass into the dictionary.  To obtain said pointer, we must list the class
+the function is part of (<font color="#880000">cHardwareCPU</font>) follow it
+by a double colon (::) and then give the method name
+(<font color="#008800">Inst_Minus17</font>) <i>without</i> the normal
+parentheses following it.  The parenthesis indicate that we should execute
+the method.  Without it, it is just the data that represents the method,
+and by preceding this whole mess with an ampersand ('&') we get the pointer
+to the location in memory that the method resides.  And before all of this
+we indicate that what is coming is a Hardware method to prep it for being
+entered into the dictionary.
+
+<p>
+A type name in parenthesis means that the variable that follows should be
+converted to this type.  In the case of this section of code, there can be
+many different types of function pointers, so we want to make sure that we
+keep them uniform for the moment.  In truth, since we only have one type of
+virtual CPU, this conversion isn't really needed yet, but will be useful in
+the future when other types of hardware are possible.
+
+<p>
+Compile again, and you should have your instruction ready for use.
+
+<h3>3. Add the entry to your instruction set and test it!</h3>
+
+<p>
+This last part should be the easiest.  If you want the new instruction you
+just created to be loaded on startup, you must add a line in the instruction
+set you are using (specified in the genesis file) to indicate its inclusion:
+
+<pre>
+  minus-17 1
+</pre>
+
+<p>
+And there you have it!  Now the real trick is to test if its working 
+properly.  I'd recommend using as a framework the creature
+"<tt>organism.heads.100</tt>" and modifying some of the long series of
+"<tt>nop-C</tt>" instructions inside of it to perform some math using the
+new instruction (only the very first <tt>nop-C</tt> cannot be changed).  You
+can then either go into zoom mode in the viewer and step through the
+creature, or else use analyze mode trace its execution.  If you are going
+to use zoom mode, setup your modified creature as the START_CREATURE in
+genesis.  If you want to use analyze mode, put the following lines into the
+<tt>analyze.cfg</tt> file in your work/ directory:
+
+<pre>
+  LOAD_ORGANISM organism.inst_test
+  TRACE
+</pre>
+
+<p>
+Where you have to replace <tt>organism.inst_test</tt> with the name of the
+organism you want to trace.  The new file will appear in the <tt>genebank/</tt>
+directory, with the same name as the one you loaded in, but a "<tt>.trace</tt>"
+appended to the end.
+
+<h3>CPU Components</h3>
+
+<p>
+The various CPU components are often manipulated by instructions, and we
+need a standard way of doing this.  We have settled on each component being
+associated with a method to access it, to provide a single location that can
+control that access.  This has already been useful -- in a multi-threaded 
+CPU (i.e., a CPU that has multiple positions in its genome being executed at
+the same time) each thread has its own registers and heads, so we need to
+always be sure we are manipulating the component of the active thread.  If
+you simply use the following methods, they will always find the correct
+component for you.
+
+<table cellpadding=5>
+<tr><td><tt>void <font color="#008800">StackPush</font>(<font color="#880000">int</font> <font color="#000088">value</font>);<br>
+<font color="#880000">int</font> <font color="#008800">StackPop</font>();<br>
+void <font color="#008800">SwitchStack</font>();</tt><br>
+There are two stacks in a normal CPU, and more in a multi-threaded version
+(one global stack, and one local to each thread).  The first stack method will
+place a new value on the top of the currently active stack, the second will
+remove the top value, and the last will toggle the currently active stack.
+
+<tr><td><font color="#880000">cCPUHead</font> & <font color="#008800">GetHead</font>(<font color="#880000">int</font> <font color="#000088">head_id</font>);<br>
+        <font color="#880000">cCPUHead</font> & <font color="#008800">IP</font>();<br>
+Each thread in a CPU has four heads associated with it, designated by the
+constants <tt>HEAD_IP</tt>, <tt>HEAD_READ</tt>, <tt>HEAD_WRITE</tt>, and 
+<tt>HEAD_FLOW</tt>.  These heads each point to a position in memory, and all
+have their own purpose.  I will discuss exactly how to use heads at a latter
+point, but for the moment just know that a head can be accessed by passing
+the appropriate constant into the GetHead() method.  The extra method IP()
+was added to more easily obtain just the instruction pointer.  The IP is a
+very special head since it designates what instruction is going to be
+executed next, and often it will make code clearer if you obtain it by calling
+IP().  (It will show that you need to make sure of the special qualities of
+the instruction pointer.)
+
+<tr><td><font color="#880000">int</font> & <font color="#008800">Register</font>(<font color="#880000">int</font> <font color="#000088">reg_id</font>);<br>
+There are three registers available, associated with the constants
+<tt>REG_AX</tt>, <tt>REG_BX</tt>, and <tt>REG_CX</tt>.  If the Register()
+method is called, an integer reference will be returned associated with that
+register.  Any change to this integer will make a corresponding change to
+the register in question.
+
+<tr><td><font color="#880000">cCPUMemory</font> & <font color="#008800">Memory</font>();<br>
+This method allows the programmer to access the full memory of the CPU.  As
+you know, the class cCPUMemory is built on top of cGenome, so you can
+manipulate it in all of the same ways.
+
+</table>
+
+These are only a sampling of the available methods of interacting with the
+components of the CPU, but they give you a good cross-section without
+overwhelming you with all of the possibilities.  You should look through the
+source files if you want to see the other options that are available to you.
+
+<h3>Helper Methods</h3>
+
+<p>
+There are several very common tasks that are performed during the execution
+of many of the instructions.  For each of these tasks we have created a
+helper function to ease the creation of new instructions.
+
+<table cellpadding=5>
+<tr><td>void <font color="#008800">ReadLabel</font>();<br>
+        <font color="#880000">cCodeLabel</font> & <font color="#008800">GetLabel</font>();<br>
+        <font color="#880000">cCPUHead</font> <font color="#008800">FindLabel</font>(<font color="#880000">int</font> <font color="#000088">direction</font>);<br>
+ReadLabel() will read in the label (series of nop instructions) that
+immediately follows the instruction being executed.  The label that was read
+can then be accessed (and even modified)  using GetLabel().  Finally, the
+Findlabel() method takes single int argument that determines the direction
+(from the instruction pointer) in which the label should be search for.  If
+this argument is a 1 it will search forward, and if its a -1, it will search
+backwards.  A zero indicates that the search should start from the beginning
+of the genome, and proceed to the end.  Once it finds the matching label, it
+will return a head at the position in which the label was found.  These
+helper methods are particularly useful in any instruction that has to affect
+other portions of the source code.  See the method Inst_HeadSearch for an
+example of how these are used.
+
+<tr><td><font color="#880000">int</font> <font color="#008800">FindModifiedRegister</font>(<font color="#880000">int</font> <font color="#000088">default_register</font>);<br>
+        <font color="#880000">int</font> <font color="#008800">FindModifiedHead</font>(<font color="#880000">int</font> <font color="#000088">default_head</font>);<br>
+These two methods will look ahead and determine if a nop instruction is
+immediately following the instruction being executed.  If so, it will return
+the register or head ID associated with that nop (for use in the rest of the
+method), and if no nop is found, it will automatically return the
+default value passed in.  We used FindModifiedRegister in the example new
+instruction above.
+
+<tr><td><font color="#880000">int</font> <font color="#008800">FindComplementRegister</font>(<font color="#880000">int</font> <font color="#000088">base_reg</font>);<br>
+Several instructions are defined as affecting a certain, modifiable register
+and its complement.  In order to have a standard way of determining the
+complement of a register (which, by default, cycle in the same order as
+complement labels), we use this function whenever we need to determine one.
+See, for example, see the definition of Inst_IfNEqu() in the handout for the
+file <tt>hardware_cpu.cc</tt>.
+
+<tr><td>void <font color="#008800">Fault</font>(<font color="#880000">int</font> <font color="#000088">fault_loc</font>, <font color="#880000">int</font> <font color="#000088">fault_type</font>, <font color="#880000">cString</font> <font color="#000088">fault_desc</font>="");<br>
+This helper function should be called whenever an instruction cannot perform
+its operation successfully.  Ideally, most instructions should do something
+meaningful in any situation so that faults are unnecessary, but sometimes
+this doesn't work out well.  The input argument "<tt>fault_loc</tt>" should
+tell where the fault is stemming from to help the user trace it back.  The
+range of possible fault locations can be found in the file
+<tt>cpu_defs.hh</tt>, but you can use <tt>FAULT_LOC_DEFAULT</tt> in most
+cases.  The next input in the fault type, which is either FAULT_TYPE_ERROR
+in the case that the creature actively made a mistake (such as trying to
+divide before copying an offspring, or trying to take the square root of a
+negative number), or else FAULT_TYPE_WARNING if its not directly the
+creature's fault, such as if it is trying to interact with another creature
+that has just died (it couldn't help the fact that the other creature died).
+Finally, a string should be given that describes the reason for the fault
+(this will be readable by humans that are stepping through the organism.)
+The main reason for faults at the moment is to help us debug an organism.
+Faults can also be made lethal to the organisms if we want them to develop
+more "correct" code.
+</table>
+
+<h3>Problem</h3>
+
+<p>
+To test your understanding of adding instruction into avida, try writing two
+new instructions.  The
+first one is the mathematical instruction "<b><tt>cube</tt></b>" which will
+take the ?BX? register, and put its value to the third power.  If you look
+in the actual source files, you will see that there is already a
+"<tt>square</tt>" instruction that you can model this on.
+
+<p>
+Next, you will implement the instruction "<b><tt>if-twice</tt></b>" which
+will execute the next instruction if-and-only-if the value in the ?BX?
+register is twice that of the value in its complement.  In other words by
+default, if would test of BX was twice CX, but if it is followed by a
+<tt>nop-C</tt> it will test if CX is twice AX.
+
+<p>
+For both of these instruction make sure to craft an organism to test that
+they are working properly!  Turn in this organism (or organisms) to me along
+with the source code when you finish the assignment.
+
+<br><hr>
+Project hosted by:<br>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=46761&type=2" width="125" height="37" border="0" alt="SourceForge.net"/></a>
+    

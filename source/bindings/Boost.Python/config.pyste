@@ -1,0 +1,12 @@
+
+cConfig = Class("cConfig", "config.hh")
+
+set_policy(cConfig.GetDefaultDir, return_value_policy(reference_existing_object))
+set_policy(cConfig.GetGenesisFilename, return_value_policy(reference_existing_object))
+set_policy(cConfig.GetInstFilename, return_value_policy(reference_existing_object))
+set_policy(cConfig.GetEventFilename, return_value_policy(reference_existing_object))
+set_policy(cConfig.GetAnalyzeFilename, return_value_policy(reference_existing_object))
+set_policy(cConfig.GetEnvironmentFilename, return_value_policy(reference_existing_object))
+set_policy(cConfig.GetStartCreature, return_value_policy(reference_existing_object))
+set_policy(cConfig.GetCloneFilename, return_value_policy(reference_existing_object))
+set_policy(cConfig.GetLoadPopFilename, return_value_policy(reference_existing_object))

@@ -1,0 +1,342 @@
+<html>
+<title>Avida Events Implementation</title>
+<body
+ bgcolor="#FFFFFF"
+ text="#000000"
+ link="#0000AA"
+ alink="#0000FF"
+ vlink="#000044">
+
+<h2 align=center>Avida Events Implementation</h2>
+
+<p>
+Events is one of the most complex sub-systems within
+avida, but because of this we have automated the process of implementing
+new events.  Normally, when you want to add to a
+component of avida, you need to make changes in at least three places: the
+header file to declare new classes or methods, the code file to write
+the full definition of those methods, and a third location to
+activate whatever you just wrote.  A conscientious programmer will also
+make a fourth change to document this new feature.
+
+<p>
+Events used to be the worst case of this.  Not only were more than
+these four procedures required, but they had to be done in a specific
+format that even I would need to look up.
+
+<p>
+A few years ago Travis Collier wrote a program (in the language Perl) that
+would parse a single, specially-formatted file and write out the corresponding
+C++ code, including documentation.  This program is
+"<tt><font color="#008844">current/source/event/</font><font color="#000088">make_events.pl</font></tt>",
+in case you are interested in it (fortunately, you don't need to understand
+it to add events because Perl code can be a bit dense).
+The file that the program reads in is
+"<tt><font color="#008844">current/source/event/</font><font color="#000088">cPopulation.events</font></tt>", which is what you will actually be editing.
+
+<p>
+When you type "<tt>make</tt>" to compile Avida, it will automatically look
+to see if any modifications have been made to <tt>cPopulation.events</tt>,
+and if so it will run <tt>make_events.pl</tt> in order to update all of
+the event-related C++ files.
+
+<h3>The <tt><font color="#000088">cPopulation.events</font></tt> file</h3>
+
+<p>
+This file defines all events currently in avida, most of which affect the
+main object from class cPopulation, hence the origin of the filename.
+There were once other event-definition files named for non-population objects
+that could be affected, but we collapsed it all down to this single file to
+avoid confusion.  Ideally we'll change this file's name soon for further
+clarity.
+
+<p>
+The text in this file is broken up into blocks, separated by blank lines.
+Each block represents the full definition of a single event.
+Do <b>not</b> skip any lines when you are defining an event, or else the
+Perl script will think you have begun the definition of a new event.
+Below is the basic format for a single event.  Anything in
+<font color="#886600">brown</font> should be changed to be event specific,
+while portions in black are the same for all events:
+
+<p>
+<pre>
+   <font color="#886600">event_name</font>
+   :descr:
+   /**
+   * <font color="#886600">This is the documentation for this event.  Notice that it can be</font>
+   * <font color="#886600">multiple lines, but each line must begin with a single asterisk.</font>
+   **/
+   :args:
+   <font color="#886600">variable_type  variable_name  default_value</font>
+   <font color="#886600">var2_type      var2_name      var2_default</font>
+   <font color="#886600">...            ...            ...</font>
+   <font color="#886600">varN_type      varN_name      varN_default</font>
+   :body:
+   <font color="#886600">FirstThingToDo();</font>
+   <font color="#886600">ThenDoThis();</font>
+   <font color="#886600">AndAnyOtherFunctionsToBeRun();</font>
+</pre>
+
+<p>
+For any event whose only function is to execute a method of the population
+object there really isn't much to write.  All events have access
+to <tt>population</tt>, which is a pointer to the primary population
+(of class cPopulation) in the Avida run.  Additionally the events have access
+to several static classes such as <tt>cAvidaDriver_Base</tt>, but since this
+isn't something you've learned about yet, you shouldn't worry about it here.
+
+<p>
+Let's step through the sections of the event definition.  First we have the
+<b><tt><font color="#886600">event_name</font></tt></b>, which can be any
+alpha-numeric sequence plus the underscore.  This name is the name that is
+used from the <tt>events.cfg</tt> configuration file to specify that this is
+the event to be triggered.
+
+<p>
+The <b><tt>:descr:</tt></b> section is dropped as-is into the avida source
+code as the comments for this event.  In C++, two methods for including
+comments are possible.  The first, is a pair of slashes
+('<b><tt>//</tt></b>') that make the remainder of the line a comment.
+The second is a slash-star ('<b><tt>/*</tt></b>') to begin a comment, and
+then a star-slash ('<b><tt>*/</tt></b>') to denote its end.  This latter
+approach allows a command to go for multiple lines.  To make it clear to
+a reader that this is all part of a single comment, good programming
+practice dictates that we should begin each line with a single star
+('<b><tt>*</tt></b>').
+In addition to being placed in the source code, this documentation is
+output when you run avida with the "<tt>-events</tt>" flag from the command
+line.  In the future, it will also be available from the graphical interface.
+
+<p>
+Next, we have the <b><tt>:args</tt></b> section of the event description.
+Here we list the variables that we want the user to set when they include
+this event in their configuration.  For example, if we create an event that
+forces a single organism to write a term paper, we need to specify the
+organism that will be subject to this unfortunate task.  We might include a
+line in this section like "<tt>int cell_id</tt>".  This would mean that when
+the user sets up this event, they <i>must</i> specify which cell they are
+targeting.  We could then include a second argument "<tt>int num_pages 5</tt>"
+so that the user can also specify how long the term paper should be.  But
+notice that I included a "5" in this latter example.  This means that the
+user can include the second argument to specify the number of pages, but if
+they don't, 5 will be the default.  Thus the event
+"<tt>write_term_paper 100 3</tt>" would make the organism in cell 100 
+write a three page term paper, while "<tt>write_term_paper 42</tt>" would
+make the organism in cell 42 write a five page paper.  Since we did not
+include a default argument for cell_id, that variable must always be
+specified.  Now, all you need to do is figure out how to best write this
+event, and you'll never have to write a paper again!  Unfortunately, knowing
+them, they would probably make huge margins and pad the paper with a bunch
+of <tt>nop-X</tt> commands, hoping we won't notice.
+
+<p>
+Finally, we come to the <b><tt>:body:</tt></b> section, which contains the
+commands to be executed when this event is run.  Since so much functionality
+is already implemented in the cPopulation class, quite often all that we
+need to do here is run a method of the population object.  Below is such an
+example, using the <tt>inject</tt> command.
+
+<h3>Example: The <tt>inject</tt> event</h3>
+
+<p>
+The section headings are all <b>bold</b>; the remaining code uses
+a color scheme similar to the one I used previously:
+
+<center>
+<table width=90%>
+<tr>
+<td width=50%><font color="#886600"><b>Comments</b> are BROWN</font><br>
+    <font color="#008800">Names of <b>Methods</b> are GREEN</font>
+<td width=50%><font color="#880000">Names of <b>types</b> (including
+      <b>classes</b>) are RED</font><br>
+    <font color="#000088"><b>Variable</b> names are BLUE</font>
+</table>
+</center>
+
+<pre>
+  <b>inject</b>
+  <b>:descr:</b>
+  <font color="#886600">/**
+  * Injects a single organism into the population.
+  *
+  * Parameters:
+  * filename (string)
+  *   The filename of the genotype to load. If this is left empty, or the keyword
+  *   "START_CREATURE" is given, than the genotype specified in the genesis
+  *   file under "START_CREATURE" is used.
+  * cell ID (integer) default: 0
+  *   The grid-point into which the organism should be placed.
+  * merit (double) default: -1
+  *   The initial merit of the organism. If set to -1, this is ignored.
+  * lineage label (integer) default: 0
+  *   An integer that marks all descendants of this organism.
+  * neutral metric (double) default: 0
+  *   A double value that randomly drifts over time.
+  **/</font>
+  <b>:args:</b>
+  <font color="#880000">cString</font> <font color="#000088">fname</font>          "START_CREATURE"
+  <font color="#880000">int</font>     <font color="#000088">cell_id</font>        0
+  <font color="#880000">double</font>  <font color="#000088">merit</font>          -1
+  <font color="#880000">int</font>     <font color="#000088">lineage_label</font>  0
+  <font color="#880000">double</font>  <font color="#000088">neutral_metric</font> 0
+  <b>:body:</b>
+  if (<font color="#000088">fname</font> == "START_CREATURE") <font color="#000088">fname</font> = <font color="#880000">cConfig</font>::<font color="#008800">GetStartCreature()</font>;
+  <font color="#880000">cGenome</font> <font color="#000088">genome</font> =
+     <font color="#880000">cInstUtil</font>::<font color="#008800">LoadGenome</font>(<font color="#000088">fname</font>, <font color="#000088">population</font>-><font color="#008800">GetEnvironment()</font>.<font color="#008800">GetInstLib()</font>);
+  <font color="#000088">population</font>-><font color="#008800">Inject</font>(<font color="#000088">genome</font>, <font color="#000088">cell_id</font>, <font color="#000088">merit</font>, <font color="#000088">lineage_label</font>, <font color="#000088">neutral_metric</font>);
+
+</pre>
+
+<p>
+As indicated by its description, the "<tt>inject</tt>" command will inject a
+single organism into the population.  The user can specify a filename that
+contains the organism's genome (or START_CREATURE to use this value from the
+genesis file), the cell in which the organism should be
+placed, the merit to start the organism with (or -1 to auto-calculate it on
+loading), a lineage label to tag all of this organism's offspring,
+and a neutral value that will drift over each generation.  Each of
+these configuration values is supplied with a default so that the user
+is not required to enter any additional information.
+
+<p>
+But what actually happens when this event is run?
+
+<p>
+First, the <tt>if</tt>-statement checks if the user has entered
+(or left as default) the value <tt>"START_CREATURE"</tt> as the filename.
+If so, it looks up the proper filename (from the cConfig class that holds
+the current state of all the genesis variables -- we'll talk more about it
+soon) and sets this variable such that it is now indicating a real file.
+
+<p>
+The next line builds an object of class <font color="#880000">cGenome</font>
+using a function called <font color="#008800">LoadGenome</font>
+in the utility class <font color="#880000">cInstUtil</font>.  This function
+needs the filename to load from, and an instruction set to convert the
+contents of that file into a genome.  The instruction set is stored within
+the population's environment, and therefore requires a series of Methods to
+be called to retrieve it.
+
+<p>
+Finally, this event takes that newly created genome, and runs the method
+<font color="#008800">Inject</font> on the population object.  This method
+takes in all of the information about the organism to be injected and then
+actually builds the cOrganism object and places into the population.
+
+
+<h3>Example: The <tt>inject_all</tt> event</h3>
+
+<p>
+Below is a slight variation on the <tt>inject</tt> command.  Rather than
+injecting a single organism into a specific cell, it will inject identical
+organisms into every cell in the population.
+
+<p>
+
+<pre>
+  <b>inject_all</b>
+  <b>:descr:</b>
+  <font color="#886600">/**
+  * Injects identical organisms into all cells of the population.
+  *
+  * Parameters:
+  * filename (string)
+  *   The filename of the genotype to load. If this is left empty, or the keyword
+  *   "START_CREATURE" is given, than the genotype specified in the genesis
+  *   file under "START_CREATURE" is used.
+  * merit (double) default: -1
+  *   The initial merit of the organism. If set to -1, this is ignored.
+  * lineage label (integer) default: 0
+  *   An integer that marks all descendants of this organism.
+  * neutral metric (double) default: 0
+  *   A double value that randomly drifts over time.
+  **/</font>
+  <b>:args:</b>
+  <font color="#880000">cString</font> <font color="#000088">fname</font>          "START_CREATURE"
+  <font color="#880000">double</font>  <font color="#000088">merit</font>          -1
+  <font color="#880000">int</font>     <font color="#000088">lineage_label</font>  0
+  <font color="#880000">double</font>  <font color="#000088">neutral_metric</font> 0
+  <b>:body:</b>
+  if (<font color="#000088">fname</font> == "START_CREATURE") <font color="#000088">fname</font> = <font color="#880000">cConfig</font>::<font color="#008800">GetStartCreature()</font>;
+  <font color="#880000">cGenome</font> <font color="#000088">genome</font> =
+     <font color="#880000">cInstUtil</font>::<font color="#008800">LoadGenome</font>(<font color="#000088">fname</font>, <font color="#000088">population</font>-><font color="#008800">GetEnvironment()</font>.<font color="#008800">GetInstLib()</font>);
+  for (<font color="#880000">int</font> <font color="#000088">i</font> = 0; <font color="#000088">i</font> < <font color="#000088">population</font>-><font color="#008800">GetSize()</font>; <font color="#000088">i</font>++) {
+    <font color="#000088">population</font>-><font color="#008800">Inject</font>(<font color="#000088">genome</font>, <font color="#000088">i</font>, <font color="#000088">merit</font>, <font color="#000088">lineage_label</font>, <font color="#000088">neutral_metric</font>);
+  }
+  <font color="#000088">population</font>-><font color="#008800">SetSyncEvents</font>(true);
+
+</pre>
+
+<p>
+The first difference that you should notice is the lack of the
+<font color="#000088"><tt>cell_id</tt></font> variable.  Since we are no
+longer injecting into just a single cell, no cell ID needs to be
+included.  The remaining differences are all in the body of the event.
+
+<p>
+The first two commands in the body remain the same; that is, the filename
+is finalized, and the genome used to create the organisms is itself
+constructed.  The next thing we need to do is actually inject the organisms
+into each cell of the population.  To run the Inject command once for each
+position we employ a <tt>for</tt> command.  This command has a strange
+syntax:
+
+<pre>
+  for ( <font color="#886600">setup</font> ; <font color="#886600">continue_test</font> ; <font color="#886600">step_method</font> ) {
+    <font color="#886600">loop body</font>
+  }
+
+</pre>
+
+<p>
+In our case, we want to set a variable to every number that represents
+a cell in the population.  These numbers go from zero to the population size
+minus one.  To build this loop, we <font color="#886600">setup</font> by
+creating a variable called <font color="#000088">i</font> and initialize it
+to 0 -- the ID of the first cell we plan to inject into.  We want to
+keep injecting into all cells with ID less than the full population size, so
+our <font color="#886600">continue_test</font> tells us to keep going as
+long as i is less than that number.  Finally our
+<font color="#886600">step_method</font> tells the program that after
+each execution of the contents of the loop, it should increment the value of
+i by one.  The Inject method itself works the same as in the
+previous event.
+
+<p>
+Finally, we run the method <font color="#008800">SetSyncEvents</font>(true)
+on the population object.  This is not necessary, but it helps keep the 
+event triggers in proper sync.  Since we just injected organisms into every
+site in the population, we have effectively reset the generation of the
+population to zero.  This could screw up some events that are triggered based
+on generation if we're not careful, so we warn the population that such
+trouble may occur, and it should re-sync the events at its earliest
+convenience.
+
+<p>
+So that isn't so hard is it?  Good!  Now we get to some...
+
+<h3>Try it Out...</h3>
+
+<p>
+Here are a couple of example events that you can try implementing.  The
+first one of them is the "<b><tt>inject_range</tt></b>" event.  This event
+will be used when you want to inject organisms into more than one cell in the
+population, but not all of them.  Where the normal <tt>inject</tt> event
+took a single cell_id value, this new event should take two of them -- a
+starting cell and a stopping cell.  You should then use a <tt>for</tt> loop
+(similar to the one in "<tt>inject_all</tt>") to inject the genome into
+all cells in range.  Extra credit if you test the order of the two numbers
+and swap them if the start_cell is larger than the end_cell.
+
+<p>
+The second event you are going to implement is "<b><tt>kill_cell</tt></b>"
+This is again somewhat similar to <tt>inject</tt> in code structure, but
+you're goal is to kill the organism (if one exists) in the specified cell.
+For help with how to do this, take a look at the <tt>apocalypse</tt> event,
+which causes a larger scale extinction.
+
+<br><hr>
+Project hosted by:<br>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=46761&type=2" width="125" height="37" border="0" alt="SourceForge.net"/></a>
+    

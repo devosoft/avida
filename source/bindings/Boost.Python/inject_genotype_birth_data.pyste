@@ -1,0 +1,3 @@
+Include("inject_genotype.hh")
+
+cInjectGenotype_BirthData = Class("cInjectGenotype_BirthData", "inject_genotype_birth_data.hh")

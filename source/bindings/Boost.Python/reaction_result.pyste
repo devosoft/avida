@@ -1,0 +1,1 @@
+cReactionResult = Class("cReactionResult", "reaction_result.hh")

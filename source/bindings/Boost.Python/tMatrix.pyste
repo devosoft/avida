@@ -1,0 +1,14 @@
+
+
+tMatrix = Template("tMatrix", "tMatrix_instantiations.hh")
+
+template_specializers = ["double",]
+
+for specialization in template_specializers:
+  specialized_type = tMatrix(specialization)
+  #set_policy(specialized_type.ElementAt, return_value_policy(reference_existing_object))
+  #set_policy(specialized_type.operator['()'], return_value_policy(reference_existing_object))
+  #set_policy(specialized_type.operator['[]'], return_value_policy(reference_existing_object))
+  set_policy(specialized_type.ElementAt, return_internal_reference())
+  set_policy(specialized_type.operator['()'], return_internal_reference())
+  set_policy(specialized_type.operator['[]'], return_internal_reference())

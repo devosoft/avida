@@ -1,0 +1,14 @@
+
+Include("genebank.hh")
+Include("genotype.hh")
+Include("genome.hh")
+
+cGenotypeControl = Class("cGenotypeControl", "genotype_control.hh")
+set_policy(cGenotypeControl.GetBest, return_internal_reference())
+set_policy(cGenotypeControl.GetCoalescent, return_internal_reference())
+set_policy(cGenotypeControl.Find, return_internal_reference())
+set_policy(cGenotypeControl.Get, return_internal_reference())
+set_policy(cGenotypeControl.Reset, return_internal_reference())
+set_policy(cGenotypeControl.ResetHistoric, return_internal_reference())
+set_policy(cGenotypeControl.Next, return_internal_reference())
+set_policy(cGenotypeControl.Prev, return_internal_reference())

@@ -1,0 +1,5 @@
+
+Include("help_entry.hh")
+
+cHelpManager = Class("cHelpManager", "help_manager.hh")
+set_policy(cHelpManager.FindEntry, return_internal_reference())

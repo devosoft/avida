@@ -1,0 +1,4 @@
+
+Include("string.hh")
+
+cTools = Class("cTools", "tools.hh")

@@ -1,0 +1,10 @@
+#! /usr/bin/python
+
+import os
+import site
+site.addsitedir('${PY_BOOST_PYSTE_MODULE}')
+site.addsitedir('${PY_BOOST_ELEMENTTREE_MODULE}')
+
+from Pyste import pyste
+pyste.main()
+

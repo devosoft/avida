@@ -1,0 +1,10 @@
+Import("genome.pyste")
+
+cCPUMemory = Class("cCPUMemory", "cpu_memory.hh")
+set_policy(cCPUMemory.FlagCopied, return_internal_reference())
+set_policy(cCPUMemory.FlagMutated, return_internal_reference())
+set_policy(cCPUMemory.FlagExecuted, return_internal_reference())
+set_policy(cCPUMemory.FlagPointMut, return_internal_reference())
+set_policy(cCPUMemory.FlagCopyMut, return_internal_reference())
+set_policy(cCPUMemory.FlagInjected, return_internal_reference())
+set_policy(cCPUMemory.FlagBreakpoint, return_internal_reference())

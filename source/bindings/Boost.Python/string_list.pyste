@@ -1,0 +1,14 @@
+
+cStringList = Class("cStringList", "string_list.hh")
+# disabled because it returns a tList, and I'm not wrapping tList yet
+# (it introduces memory management problems that I have't yet
+# approached).
+#exclude(cStringList.GetList)
+
+print("""
+FIXME for string_list.pyste:
+  - Reenable cStringList.GetList (disabled because it returns a tList,
+    and I'm wrapping tList yet (it introduces memory management problems
+    that I have't yet approached).
+  - What to do about tList and memory-management issues?
+""")

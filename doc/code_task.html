@@ -1,0 +1,111 @@
+<html>
+<title>Environmant Task Implementation Checklist</title>
+<body
+ bgcolor="#FFFFFF"
+ text="#000000"
+ link="#0000AA"
+ alink="#0000FF"
+ vlink="#000044">
+
+<h2 align=center>Environment Task Implementation Checklist</h2>
+
+<p>
+This document discusses how to implement your own tasks to use as triggers
+for reactions in the environment.
+
+<h3>1. Build the prototype of the method that will be used to test the new task</h3>
+
+<p>
+    For this step, you will be editing the task library found in the files
+    tasks.cc and tasks.hh in the directory source/main/.  Start by adding
+    the prototype of your new test function to the cTaskLib class in the
+    header (tasks.hh) file.  The data that will be tested is all stored within
+    the library, so this function takes no inputs and outputs a double that
+    represents the "quality" with which the task is performed.  This is a
+    number between 0 and 1 that determines the fraction of the bonus that
+    should be received.  For tasks that are either successful or not, this
+    will only return 0.0 or 1.0.
+
+<p>
+    For example, if we were going to create a task that tests if the
+    organisms could double one of their inputs, we might call that task
+    "times2".  We would then add the line to this file:
+
+<pre>
+   void <font color="#008800">Task_Times2</font>();
+</pre>
+
+<p>
+    If possible, place it near other tasks of the same type.  In this case,
+    I choose to place it directly after Task_Echo(), since this is also an
+    easy task for the organisms to perform.
+
+<h3>2. Build the body of the method that will be used to test the new task</h3>
+
+<p>
+    We next go into the code (tasks.cc) file, and add the body of our new
+    method.  We search for cTaskLib::Task_Echo(), since our new prototype
+    followed this method in the header file, and place the body of our
+    function immediately after it.
+
+<pre>
+   <font color="#880000">double</font> <font color="#880000">cTaskLib</font>::<font color="#008800">Task_Times2</font>() const
+   {
+     const <font color="#880000">int</font> <font color="#000088">test_output</font> = <font color="#000088">output_buffer</font>[0];
+     for (<font color="#880000">int</font> <font color="#000088">i</font> = 0; <font color="#000088">i</font> < <font color="#000088">input_buffer</font>.<font color="#008800">GetNumStored</font>(); <font color="#000088">i</font>++) {
+       if (2 * <font color="#000088">input_buffer</font>[i] == <font color="#000088">test_output</font>) {
+         return 1.0;
+       }
+     }
+     return 0.0;
+   }
+</pre>
+    
+
+<p>
+    The most recent output is always placed at the beginning of the output
+    buffer, so we store it in the variable
+    <font color="#000088">test_output</font> to compare it against all of the
+    different inputs.  We then have a for-loop that goes from 1 to the number
+    of inputs stored in the input buffer.  Inside the body of the loop, we
+    test for each input if twice that input is equal to the output.  If so,
+    then the task was successful and we return a 1.0.  If all of the tests
+    fail and we exit the loop, then we return a 0.0.
+
+<p>
+    These test methods should be carefully written so that they run as fast
+    as possible.  In particular, if a task requires that an output be
+    compared to multiple inputs at a time (i.e., the tasks Add or Subtract),
+    then this can become combinartoically explosive.  For the moment, we
+    keep control on this problem by only allowing three different inputs
+    in the input buffer, but in the future this number may need to become
+    higher.
+
+<h3>3. Attach our new method to the name of its trigger</h3>
+
+    This next step is also done in the code file, inside the
+    <font color="#880000">cTaskLib</font>::<font color="#008800">AddTask</font>()
+    method.  Again, we want this to be in the same place, so we locate the
+    task "echo" that its supposed to follow, and add in the new line.
+
+<pre>
+   else if (<font color="#000088">name</font> == "times2") <font color="#008800">NewTask</font>(<font color="#000088">name</font>, "Times2", &<font color="#880000">cTaskLib</font>::<font color="#008800">Task_Times2</font>);
+</pre>    
+
+<p>
+    This line will attach the name to the description "Times2" (which could
+    have been a little more detailed, but should be 40 characters or less)
+    as well as to the function that should be called when that name is
+    listed as a trigger to a reaction.
+
+<p>
+    You are now ready to use your task!
+
+<h3>4. Some advanced features...</h3>
+
+    [ This section to be written soon! ]
+    
+<br><hr>
+Project hosted by:<br>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=46761&type=2" width="125" height="37" border="0" alt="SourceForge.net"/></a>
+    

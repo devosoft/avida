@@ -1,0 +1,8 @@
+
+
+tBuffer = Template("tBuffer", "tBuffer_instantiations.hh")
+
+template_specializers = ["int",]
+
+for specialization in template_specializers:
+  specialized_type = tBuffer(specialization)

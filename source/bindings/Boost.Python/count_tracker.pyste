@@ -1,0 +1,2 @@
+
+cCountTracker = Class("cCountTracker", "count_tracker.hh")

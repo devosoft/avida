@@ -1,0 +1,333 @@
+<html>
+<title>The cFile, cInitFile, and cGenesis classes</title>
+<body
+ bgcolor="#FFFFFF"
+ text="#000000"
+ link="#0000AA"
+ alink="#0000FF"
+ vlink="#000044">
+
+<h2 align=center>The cFile, cInitFile, and cGenesis classes</h2>
+
+<p>
+All configuration methods in Avida involve reading information from a
+file.  When we examined events, we didn't have to worry about dealing with
+the file because all of that source code was automatically generated
+for us.  It is not critical to fully understand the file system if you are
+not going to directly use it, but it will aid you in putting other objects
+into perspective.
+
+<p>
+The <font color="#880000">cFile</font> class is a base class that handles
+opening a file, closing it, and reading from it one line at a time.
+The <font color="#880000">cInitFile</font> class <b>extends</b> cFile (that
+is, it is derived from cFile) adding special functions to load the
+file into memory, remove comments from it, and search through it for
+keywords.  Finally, the <font color="#880000">cGenesis</font> class further
+extends cInitFile, including new functions that assume each line of the file
+has the format "KEYWORD VALUE" to allow the programmer to pass in a keyword
+and get back a value of the appropriate form.
+
+<p>
+All three of these classes are defined in the files "<tt>file.hh</tt>" and
+"<tt>file.cc</tt>", located in the directory
+"<tt>current/source/tools/</tt>".  See also the
+cDataFile class, which is more focused on writing to a file than reading from
+it.  Here, we'll step through each cFile-based class in order.
+
+<p>
+<h3>The <font color="#880000">cFile</font> class</h3>
+
+<p>
+This is the fundamental file loading class.  Here is a mildly edited
+version of its class declaration:
+
+<pre>
+  class <font color="#880000">cFile</font> {
+  protected:
+    <font color="#880000">fstream</font> <font color="#000088">fp</font>;        <font color="#886600">// An input stream associated with this file.</font>
+    <font color="#880000">cString</font> <font color="#000088">filename</font>;  <font color="#886600">// The name of the file we're working with.</font>
+    <font color="#880000">bool</font> <font color="#000088">is_open</font>;      <font color="#886600">// Have we successfully opened this file?</font>
+    <font color="#880000">bool</font> <font color="#000088">verbose</font>;      <font color="#886600">// Should file be verbose about warnings to users?</font>
+  public:
+    <font color="#008800">cFile</font>(<font color="#880000">cString</font> <font color="#000088">_fname</font>) : <font color="#000088">filename</font>(""), <font color="#000088">is_open</font>(false) { <font color="#008800">Open</font>(<font color="#000088">_fname</font>); }
+    <font color="#008800">~cFile</font>() { if (<font color="#000088">is_open</font> == true) <font color="#000088">fp</font>.<font color="#008800">close</font>(); <font color="#000088">filename</font> = ""; }
+  
+    <font color="#886600">// Manipulators</font>
+    <font color="#880000">bool</font> <font color="#008800">Open</font>(<font color="#880000">cString</font> <font color="#000088">_fname</font>, <font color="#880000">int</font> <font color="#000088">mode</font>=(<font color="#008800">ios</font>::<font color="#000088">in</font>|<font color="#008800">ios</font>::<font color="#000088">nocreate</font>));
+    <font color="#880000">bool</font> <font color="#008800">Close</font>();
+  
+    <font color="#880000">bool</font> <font color="#008800">ReadLine</font>(<font color="#880000">cString</font> & <font color="#000088">in_string</font>);
+  
+    <font color="#886600">// Tests</font>
+    <font color="#880000">bool</font> <font color="#008800">IsOpen</font>() const { return <font color="#000088">is_open</font>; }
+    <font color="#880000">bool</font> <font color="#008800">Good</font>() const { return (<font color="#000088">fp</font>.<font color="#008800">good</font>()); }
+    <font color="#880000">bool</font> <font color="#008800">Eof</font>() const { return (<font color="#000088">fp</font>.<font color="#008800">eof</font>()); }
+
+    <font color="#886600">// Accessors</font>
+    void <font color="#008800">SetVerbose</font>(<font color="#880000">bool</font> <font color="#000088">_v</font>=true) { <font color="#000088">verbose</font> = <font color="#000088">_v</font>; }
+    const <font color="#880000">cString</font> & <font color="#008800">GetFilename</font>() const { return <font color="#000088">filename</font>; }
+  };
+</pre>
+
+<p>
+To use this class, you create a cFile object and pass in a filename.  This
+will automatically run <font color="#008800">Open()</font> on the file.  At
+any point thereafter you have the option to <font
+color="#008800">Close()</font> the file and open a new one.  The
+<font color="#008800">IsOpen()</font> method allows you to test if a file is
+currently open, and the <font color="#008800">Good()</font> method tests if
+there are any problems with the file (i.e., it was deleted out from under the
+user.)
+
+<p>
+You can obtain one line at a time from an open file by using the
+<font color="#008800">ReadLine()</font> method.  When you call this method,
+you must give it a string that the method will modify.  The method attempts
+to copy the next line in the file into that string, and then the
+method returns <tt>true</tt> or <tt>false</tt> indicating if the copy was
+successful.  Failure (a return value of <tt>false</tt>) typically indicates
+that the user is at the end of the file, or something about the file has
+failed.
+
+<p>
+As an example of what a method description looks like, here is the
+code body for the Open() method:
+
+<p>
+<pre>
+  <font color="#880000">bool</font> <font color="#880000">cFile</font>::<font color="#008800">Open</font>(<font color="#880000">cString</font> <font color="#000088">_fname</font>, <font color="#880000">int</font> <font color="#000088">flags</font>)
+  {
+    if ( <font color="#008800">IsOpen</font>() ) <font color="#008800">Close</font>();   <font color="#886600">// If a file is already open, close it first.</font>
+    <font color="#000088">fp</font>.<font color="#008800">open</font>(<font color="#000088">_fname</font>(), <font color="#000088">flags</font>);  <font color="#886600">// Open the new file.</font>
+  
+    <font color="#886600">// Test if there was an error, and if so, try again!</font>
+    <font color="#880000">int</font> <font color="#000088">err_id</font> = <font color="#000088">fp</font>.<font color="#008800">fail</font>();
+    if( <font color="#000088">err_id</font> != 0 ){
+      <font color="#000088">fp</font>.<font color="#008800">clear</font>();
+      <font color="#000088">fp</font>.<font color="#008800">open</font>(<font color="#000088">_fname</font>(), <font color="#000088">flags</font>);
+    }
+
+    <font color="#886600">// If there is still an error, determine its type and report it.</font>
+    <font color="#000088">err_id</font> = <font color="#000088">fp</font>.<font color="#008800">fail</font>();
+    if ( <font color="#000088">err_id</font> != 0 ){
+      <font color="#880000">cString</font> <font color="#000088">error_desc</font> = "?? Unknown Error??";
+  
+      <font color="#886600">// See if we can determine a more exact error type.</font>
+      if (<font color="#000088">err_id</font> == EACCES) <font color="#000088">error_desc</font> = "Access denied";
+      else if (<font color="#000088">err_id</font> == EINVAL) <font color="#000088">error_desc</font> = "Invalid open flag or access mode";
+      else if (<font color="#000088">err_id</font> == ENOENT) <font color="#000088">error_desc</font> = "File or path not found";
+
+      <font color="#886600">// Print the error.</font>
+      <font color="#000088">cerr</font> << "Unable to open file '" << <font color="#000088">_fname</font>
+           << "' : " << <font color="#000088">error_desc</font> << endl;
+      return false;
+    }
+
+    <font color="#000088">filename</font> = <font color="#000088">_fname</font>;
+    <font color="#000088">is_open</font> = true;
+
+    <font color="#886600">// Return true only if there were no problems...</font>
+    return( <font color="#000088">fp</font>.<font color="#008800">good</font>() && !<font color="#000088">fp</font>.<font color="#008800">fail</font>() );
+  }
+</pre>
+
+<p>
+To specify a method (when not actively running it on an object of the
+appropriate class, as when we're defining it), the format used is
+"cClassName::MethodName()".  While this method opens the file, it checks each
+step of the way for potential problems.  If there is a problem, it tries to
+fix it and, failing that, simply reports it to the user.  My goal in
+including this method here is merely to give you an idea of what such a
+method looks like.
+
+<h3>The <font color="#880000">cInitFile</font> class</h3>
+
+<p>
+The cFile class alone allows a user to open a file and collect information
+from it one line at a time, but that's it.  There are no helpful
+functions that enable us to accomplish specific goals.  The cInitFile class,
+however, builds on top of cFile, and gives us methods that will be useful
+for a variety of initialization files.
+
+<p>
+Here is an edited version of its declaration:
+
+<p>
+<pre>
+  class <font color="#880000">cInitFile</font> : public <font color="#880000">cFile</font> {
+  private:
+    <font color="#880000">cStringList</font> <font color="#000088">line_list</font>;
+  public:
+    <font color="#008800">cInitFile</font>(<font color="#880000">cString</font> <font color="#000088">in_filename</font>);
+    <font color="#008800">~cInitFile</font>();
+  
+    void <font color="#008800">Load</font>();      <font color="#886600">// Load the file into memory so we can manipulate it.</font>
+    void <font color="#008800">Compress</font>();  <font color="#886600">// Remove all Comments and Whitespace.</font>
+  
+    void <font color="#008800">AddLine</font>(<font color="#880000">cString</font> & <font color="#000088">in_string</font>);  <font color="#886600">// Add a line to beginning of memory.</font>
+    <font color="#880000">cString</font> <font color="#008800">RemoveLine</font>();               <font color="#886600">// Remove first line from memory.</font>
+    <font color="#880000">cString</font> <font color="#008800">GetLine</font>(<font color="#880000">int</font> <font color="#000088">line_num</font>=0);    <font color="#886600">// Get specified line from memory.</font>
+
+    <font color="#880000">int</font> <font color="#008800">GetNumLines</font>() const { return <font color="#000088">line_list</font>.<font color="#008800">GetSize</font>(); }
+
+    <font color="#886600">// Find a keyword in the specified column. Stop at first occurrence and
+    // set in_string to the full line it was found in.</font>
+    <font color="#880000">bool</font> <font color="#008800">Find</font>(<font color="#880000">cString</font> & <font color="#000088">in_string</font>, const <font color="#880000">cString</font> & <font color="#000088">keyword</font>, <font color="#880000">int</font> <font color="#000088">col</font>) const;
+  
+    <font color="#886600">// Find an entry the keyword in first column.  Return the *remainder* of
+    // the line.  If not found, just return the default value given.</font>
+    <font color="#880000">cString</font> <font color="#008800">ReadString</font>(const <font color="#880000">cString</font> & <font color="#000088">keyword</font>, <font color="#880000">cString</font> <font color="#000088">def</font>="") const;
+  };
+</pre>
+
+<p>
+The cInitFile class has a <font color="#880000">cStringList</font> data
+member called <font color="#000088">line_list</font> that can contain a
+collection of "strings", in this case lines loaded from the file in question.
+The <font color="#008800">Load()</font> method is the one that copies all of
+the lines from the file into line_list, and then the
+<font color="#008800">Compress()</font> method will remove all comments
+(in this case, anything after a <tt>#</tt> on a line), compress all
+sequential spaces and tabs down to a single space, and completely remove any
+lines that then have nothing left on them.  The
+<font color="#008800">AddLine()</font> and
+<font color="#008800">RemoveLine()</font> methods allow you to directly
+change the contents of memory, while, <font color="#008800">GetLine()</font>
+allows you to retrieve a line at a specified position.
+The next method in this group is <font color="#008800">GetNumLines()</font>,
+which is exactly what it sounds -- it will return the number of lines
+currently in memory.
+
+
+<p>
+Finally, we have a pair of methods that allow us to search through the memory
+in a more useful manner.  The <font color="#008800">Find()</font> method
+seeks out a keyword in a specific column from the loaded file.  It 
+returns <tt>true</tt> or <tt>false</tt> depending on if that keyword
+was found, and it will fill out the input variable
+<font color="#000088">in_string</font> with the contents of the full line
+that the keyword was found in.  The other method,
+<font color="#008800">ReadString()</font>, is only a slight variation on
+Find().  It takes a keyword, searches for it as the first word on any line
+in the file, and then returns the remainder of the line.  If the keyword was
+nowhere to be found in the file, it will instead return a default value
+specified by the user.  Below is the definition of these two functions,
+as found in <tt>file.cc</tt>.
+
+<p>
+<pre>
+  <font color="#880000">bool</font> <font color="#880000">cInitFile</font>::<font color="#008800">Find</font>(<font color="#880000">cString</font> & <font color="#000088">in_string</font>, const <font color="#880000">cString</font> & <font color="#000088">keyword</font>,
+                       <font color="#880000">int</font> <font color="#000088">col</font>) const
+  {
+    <font color="#886600">// Loop through all of the lines until we find our keyword.</font>
+    <font color="#880000">cStringIterator</font> <font color="#000088">list_it</font>(<font color="#000088">line_list</font>);
+    while ( <font color="#000088">list_it</font>.<font color="#008800">AtEnd</font>() == false ) {
+      <font color="#000088">list_it</font>.<font color="#008800">Next</font>();
+      <font color="#880000">cString</font> <font color="#000088">cur_string</font> = <font color="#000088">list_it</font>.<font color="#008800">Get</font>();
+      if (<font color="#000088">cur_string</font>.<font color="#008800">GetWord</font>(<font color="#000088">col</font>) == <font color="#000088">keyword</font>) {
+        <font color="#000088">in_string</font> = <font color="#000088">cur_string</font>;
+        return true;
+      }
+    }
+
+    return false;    <font color="#886600">// Not Found...</font>
+  }
+
+
+  <font color="#880000">cString</font> <font color="#880000">cInitFile</font>::<font color="#008800">ReadString</font>(const <font color="#880000">cString</font> & <font color="#000088">name</font>, <font color="#880000">cString</font> <font color="#000088">def</font>) const
+  {
+    <font color="#886600">// See if we definitely can't find the keyword.</font>
+    if (<font color="#000088">name</font> == "" || <font color="#008800">IsOpen</font>() == false) return <font color="#000088">def</font>;
+
+    <font color="#886600">// Search for the keyword.</font>
+    <font color="#880000">cString</font> <font color="#000088">cur_line</font>;
+    if ( <font color="#008800">Find</font>(<font color="#000088">cur_line</font>, <font color="#000088">name</font>, 0) == false ) {
+      if (<font color="#000088">verbose</font> == true) {
+        <font color="#000088">cerr</font> &lt;&lt; "Warning: " &lt;&lt; <font color="#000088">name</font> &lt;&lt; " not in \"" &lt;&lt; <font color="#008800">GetFilename</font>()
+             &lt;&lt; "\", defaulting to: " &lt;&lt; <font color="#000088">def</font> &lt;&lt; endl;
+      }
+      return <font color="#000088">def</font>;
+    }
+
+    <font color="#886600">// Pop off the keyword, and return the remainder of the line.</font>
+    <font color="#000088">cur_line</font>.<font color="#008800">PopWord</font>();
+    return <font color="#000088">cur_line</font>;
+  }
+
+</pre>
+
+
+<p>
+This ReadString() method is one of the main ones that we use when
+dealing with the genesis file.  In order to find the value of a specific
+setting in genesis, we can run ReadString() with the name of that setting as
+a keyword, and its value will be returned.  We can specify a default
+for everything in case the user does not fill out genesis fully.  This will
+all be explained in more detail in the next document.
+
+
+<h3>The <font color="#880000">cGenesis</font> class</h3>
+
+<p>
+The cGenesis class extends cInitFile to add additional functionality that is 
+specific to reading in the genesis file.  It does not contain 
+new data, but it does have new methods.  Here is a simplified version of the
+class declaration:
+
+<pre>
+  class <font color="#880000">cGenesis</font> : public <font color="#880000">cInitFile</font> {
+  public:
+    <font color="#008800">cGenesis</font>(const <font color="#880000">cString</font> & <font color="#000088">_fname</font>);
+    <font color="#008800">~cGenesis</font>();
+
+    <font color="#886600">// This Open command will run Open() from cInitFile, but then it will
+    // also automatically Load() and Compress() the contents.</font>
+    <font color="#880000">int</font> <font color="#008800">Open</font>(<font color="#880000">cString</font> <font color="#000088">_fname</font>, <font color="#880000">int</font> <font color="#000088">mode</font>=(<font color="#880000">ios</font>::<font color="#000088">in</font>|<font color="#880000">ios</font>::<font color="#000088">nocreate</font>));
+
+    <font color="#886600">// Functions to add more data to a loaded genesis file (they use AddLine())</font>
+    void <font color="#008800">AddInput</font>(const <font color="#880000">cString</font> & <font color="#000088">in_name</font>, <font color="#880000">int</font> <font color="#000088">in_value</font>);
+    void <font color="#008800">AddInput</font>(const <font color="#880000">cString</font> & <font color="#000088">in_name</font>, const <font color="#880000">cString</font> & <font color="#000088">in_value</font>);
+
+    <font color="#886600">// Functions to read in integer or floating point values set in genesis.</font>
+    <font color="#880000">int</font> <font color="#008800">ReadInt</font>(const <font color="#880000">cString</font> & <font color="#000088">name</font>, <font color="#880000">int</font> <font color="#000088">base</font>=0, <font color="#880000">bool</font> <font color="#000088">warn</font>=true) const;
+    <font color="#880000">double</font> <font color="#008800">ReadFloat</font>(const <font color="#880000">cString</font> & <font color="#000088">name</font>, <font color="#880000">float</font> <font color="#000088">base</font>=0.0, <font color="#880000">bool</font> <font color="#000088">warn</font>=true) const;
+};
+</pre>
+
+<p>
+In this class, the <font color="#008800">Open()</font> method overloads the
+one from cInitFile such that it will automatically also call
+<font color="#880000">cInitFile</font>::<font color="#008800">Load()</font>
+and
+<font color="#880000">cInitFile</font>::<font color="#008800">Compress()</font>
+inside of it.
+
+<p>
+The two <font color="#008800">AddInput</font>() methods are used to add new
+values to the memory image of the genesis file that will take precedence over
+any loaded directly from the file.  This is made use of when the user
+activates Avida with a command line option that has higher priority than a
+genesis setting.  Note
+that even though both of these methods go by the identical name, C++ knows
+which one you are intending to call by the variables passed into
+it.  In this case, either an integer or a string will be used as the
+second argument.
+
+<p>
+Finally, the <font color="#008800">ReadInt</font>() and
+<font color="#008800">ReadFloat</font>() methods are used to obtain settings
+from the genesis file that are in integer or floating point form respectively.
+All these really do are to call
+<font color="#880000">cInitFile</font>::<font color="#008800">ReadString</font>()
+and then convert the resulting string into the desired type.
+
+<p>
+So how do we use this cGenesis class to load in and make use of
+the initialization file by the same name?  For that, you'll need to read
+about the cConfig class in the next document.
+
+<br><hr>
+Project hosted by:<br>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=46761&type=2" width="125" height="37" border="0" alt="SourceForge.net"/></a>
+    

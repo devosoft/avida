@@ -1,0 +1,127 @@
+# ---  Setup  ---
+h-alloc    # Allocate space for child
+h-search   # Locate the end of the organism
+nop-C      #
+nop-A      #
+nop-B      #
+mov-head   # Place write-head at beginning of offspring.
+nop-C      #
+
+# --- Not-so-Quick Tasks ---
+h-search   # Mark beginning of task loop
+push       # Push AX onto the stack to save it.
+nop-A
+swap-stk
+
+IO         # Random stuff that might help in doing tasks...
+pop
+nop-C
+nand
+swap
+push
+IO
+swap
+nop-A
+pop
+nand
+push
+nop-C
+
+swap-stk   # Restore AX and set BX to 0
+pop
+nop-A
+pop
+
+dec        # Decriment BX.  If it becomes zero, stop!
+nop-A
+if-n-equ
+nop-A
+mov-head
+
+# ---  Copy Loop  ---
+h-search   # Mark the beginning of the copy loop
+h-copy     # Do the copy
+
+if-label   # If we're done copying....
+nop-C      #
+nop-A      #
+nop-B      #
+
+h-search   # Set the next move to jump to the divide module...
+nop-C      #
+nop-C      #
+nop-C      #
+
+mov-head   # Jump to our "proper" destination.
+
+# ---  Divide Module ---
+nop-A      # Beginning marker
+nop-A      #
+nop-A      #
+
+#---- Infection --------------------------------------------------------
+
+nop-C           # Extend template so other infections can't get in here
+h-search        # Mark the beginning of the infection
+
+## Save the positions of the read/write heads so divide works later ##
+h-push          # Back up the read head
+nop-B
+h-push          # Back up the write head twice
+nop-C
+h-push          # (second one for putting read head here later...)
+nop-C
+
+## Move the read head to the beginning of the infection... ##
+mov-head        # Move the read head to the h-search above...
+nop-B
+dec             # Decrement BX to -1
+dec             # Decrement BX to -2
+swap            # Put the -2 into CX
+jmp-head        # Move read head back to "correct" begining of infection
+nop-B
+
+## Infection copy loop... ##
+h-search	# Mark the beginning of the copy loop
+h-copy		# Do the copy
+if-label	# If we're done copying....
+nop-C		#
+nop-C		#
+h-search	#     ... reset the jump point to after the loop
+nop-C
+nop-B
+nop-B
+mov-head	# Jump! (either back, or past...)
+nop-A		# Copy loop end label
+nop-C		#
+nop-C		#
+
+## Setup and perform injection ##
+h-pop		# Move read head to beginning of copy...
+nop-B
+rotate-r        # Find a good host
+nop-C
+nop-C
+nop-C
+inject          # Inject!!!
+nop-C
+nop-C
+nop-C
+
+## Restore state for host ##
+h-pop           # Restore the write head...
+nop-C
+h-pop           # Restore the read head...
+nop-B
+IO              # Template divider...
+nop-A		# End template of infection
+nop-A
+#---- End Infection ----------------------------------------------------
+
+
+# --- Real Divide
+h-divide   #    ...divide!
+
+nop-A      # End label.
+nop-B      #
+nop-C      #

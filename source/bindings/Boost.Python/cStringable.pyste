@@ -1,0 +1,2 @@
+
+cStringable = Class("cStringable", "cStringable.hh")

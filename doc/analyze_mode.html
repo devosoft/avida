@@ -1,0 +1,525 @@
+<html>
+<title>The Analyze File</title>
+<body
+ bgcolor="#FFFFFF"
+ text="#000000"
+ link="#0000AA"
+ alink="#0000FF"
+ vlink="#000044">
+
+<h2 align=center>The Analyze File</h2>
+
+<p>
+The file "<tt>analyze.cfg</tt>" is used to setup avida when its in
+analysis-only mode, which can be done by running "avida -a".  It is used to
+perform additional tests on genotypes after a run has completed.
+
+<p>
+This analysis language is basically a simple programming language.  The
+structure of a program involves loading in genotypes in one or more
+"batches", and then either manipulating single batches, or doing comparisons
+between batches.  Currently there can be up to 300 batches of genotypes, but
+we will eventually remove this limit.
+
+<p>
+The rest of this file describes how individual commands work, as well
+as some notes on other languages features, like how to use variables.  As
+a formatting guide, command arguments will be presented between brackets,
+such as [<font color="#0000AA">filename</font>].  If that argument is
+mandatory, it will be in blue.  If it is optional, it will be in green, and
+(if relevant) a default value will be listed, such as
+[<font color="#008800">filename="output.dat"</font>]
+
+<p>
+There are currently six ways to load in genotypes:
+
+<p align=center><b>Table 1: <font color="#008800">Genotype Loading Commands</font></b>
+<table cellpadding=6>
+<tr><td><b>LOAD_ORGANISM [<font color="#0000AA">filename</font>]</b><br>
+    	Load in a normal single-organism file of the type that is output
+        from avida.  These consist of lots of organismal information inside
+        of comments, and then the full genome of the organism with one
+        instruction per line.
+<tr><td><b>LOAD_BASE_DUMP [<font color="#0000AA">filename</font>]</b><br>
+	Load in a basic dump file from avida.  Each line contains a genotype
+        sequence, but little additional information.
+<tr><td><b>LOAD_DETAIL_DUMP [<font color="#0000AA">filename</font>]</b><br>
+	Load in a detail file.  These are similar to the basic dump files,
+        but contain a lot more information on each line.  These files are
+        saved from avida typically beginning with the word "detail" or
+        "historic".
+<tr><td><b>LOAD [<font color="#0000AA">filename</font>]</b><br>
+	Load in a file. This command LOAD_BASE_DUMP and LOAD_DETAIL_DUMP 
+	by automatically recognizing the type of the file being loaded. 
+<tr><td><b>LOAD_SEQUENCE [<font color="#0000AA">sequence</font>]</b><br>
+	Load in a user-provided sequence as the genotype.  Avida has a
+        symbol associated with each instruction; this command is simply
+        followed by a sequence of such symbols that is than translated back
+        into a proper genotype.
+<tr><td><b>LOAD_MULTI_DETAIL [<font color="#0000AA">start-UD</font>] [<font color="#0000AA">step-UD</font>] [<font color="#0000AA">stop-UD</font>] [<font color="#008800">dir='./'</font>] [<font color="#008800">start batch=0</font>]</b><br>
+   Allows the user to load in multiple detail files at once, one per
+   batch.  This is helpful when you're trying to do parallel analysis
+   on many detail files, or else to create a phylogenetic depth map.<br>
+
+   Example: <tt>LOAD_MULTI_DETAIL 100 100 100000 ../my_run/run100/</tt><br>
+
+   This would load in the files detail_pop.100 through detail_pop.100000 
+   in steps of 100, from the directory of my choosing.  Since 1000 files will
+   be loaded and we didn't specify starting batch, they will be put in
+   batches 0 through 999.
+
+
+</table>
+
+<p>
+A future addition to this list is a command that will use the "dominant.dat"
+file to identify all of the dominant genotypes from a run, and then lookup and
+load their individual genomes from the genebank directory.  Also, the
+commands LOAD_BASE_DUMP and LOAD_DETAIL_DUMP currently require fixed-formated
+files.  New output files from avida have tags listed for their column names,
+and as such we already have a working prototype of a generic "LOAD" command
+that will figure out the file format and be able to load in all of the data
+properly.
+
+<p>
+All of the load commands place the new genotypes into the "current" batch,
+which can be set with the "SET_BATCH" command.  Below is the list of control
+functions that allow you to manipulate the batches.
+
+<p align=center><b>Table 2: <font color="#008800">Batch Control Commands</font></b>
+<table cellpadding=6>
+<tr><td><b>SET_BATCH [<font color="#0000AA">id</font>]</b><br>
+    	Set the batch that is currently active; the initial active batch
+        at the start of a program is 0.
+<tr><td><b>NAME_BATCH [<font color="#0000AA">name</font>]</b><br>
+    	Attach a name to the current batch.  Some of the printing methods
+        will print data from multiple batches, and we want the data from each
+        batch to be attached to a meaningful identifier.
+<tr><td><b>PURGE_BATCH [<font color="#008800">id=current</font>]</b><br>
+    	Remove all genotypes in the specified batch (if no argument is given,
+        the current batch is purged.
+<tr><td><b>DUPLICATE [<font color="#0000AA">id1</font>]
+        [<font color="#008800">id2=current</font>]</b><br>
+    	Copy the genotypes from batch id1 into id2.  By default,
+        copy id1 into the current batch.  Note that duplicate is
+        <i>non-destructive</i> so you should purge the target batch first if
+        you don't want to just add more genotypes to the ones already in
+        that batch.
+<tr><td><b>STATUS</b><br>
+    	Print out (to the screen) the genotype count of each non-empty batch
+        and identify the currently active batch.
+</table>
+
+<p>
+There are several other commands that will allow you to interact with the
+analysis mode in some very important ways, but don't actually trigger any
+analysis tests or output.  Below are a list of some of the more important
+control commands.
+        
+<p align=center><b>Table 3: <font color="#008800">More Analysis Control Commands</font></b>
+<table cellpadding=6>
+<tr><td><b>VERBOSE </b><br>
+    	Toggle verbose/minimal messages.  Verbose messages will print all
+        of the details of what is happening to the screen.  Minimal messages
+        will only briefly state the process being run.  Verbose messages are
+        recommended if you're in interactive mode.
+<tr><td><b>SYSTEM [<font color="#0000AA">command</font>]</b><br>
+    	Run the command listed on the command line.  This is particularly
+        useful if you need to unzip files before you can use them, or if
+        you want to delete files no longer in use.
+<tr><td><b>INCLUDE [<font color="#0000AA">filename</font>]</b><br>
+    	Include another file into this one and run its contents immediately.
+        This is useful if you have some pre-written routines that you want
+        to have available in several analysis files.  Watch out because there
+        are currently no protections against circular includes.
+<tr><td><b>INTERACTIVE</b><br>
+    	Place Avida analysis into interactive mode so that you can type
+        commands have have them immediately acted upon.  You can place this
+        anywhere within the analyze file, so that you can have some
+        processing done before interactive mode starts.  You can type "quit"
+        at any point to continue with the normal processing of the file.
+<tr><td><b>DEBUG [<font color="#0000AA">message</font>] </b><br>
+    	This is an "echo" command that will print a message (its arguments)
+        on the screen.  If there are any variables (see below) in the message,
+        they will be translated before printing, so this is a good way of
+        debugging your programs.
+</table>
+
+<p>
+Now that we know how to interact with analysis mode, and load in genotypes,
+its important to be able to manipulate them.  The next batch of commands
+will do basic analysis on genotypes, and allow the user to prune batches
+to only include those genotypes that are needed.
+
+
+<p align=center><b>Table 4: <font color="#008800">Genotype Manipulation Commands</font></b>
+<table cellpadding=6>
+<tr><td><b>RECALCULATE [<font color="#008800">use_resources=0</font>]</b><br>
+    	Run all of the genotypes in the current batch through a test CPU
+	and record the measurements taken (fitness, gestation time, etc.).
+        This overrides any values that may have been loaded in with the
+        genotypes.  The use_resources flags signifies whether or not the
+        test cpu will use resources when it runs.  For more information 
+        on resources, see the <a href="#USING_RESOURCES">summary</a> below.
+<tr><td><b>FIND_GENOTYPE [<font color="#008800">type="num_cpus" ...</font>]</b><br>
+    	Remove all genotypes but the one selected.  Type indicates which
+	genotype to choose.  Options available for type are "num_cpus" (to
+        choose the genotype with the maximum organismal abundance at time of
+        printing), "total_cpus" (number of organisms ever of this genotype),
+        "fitness", or "merit".  If a the type entered is numerical, it is
+        used as an id number to indicate the desired genotype (if no such id
+        exists, a warning will be given).  Multiple arguments can be given to
+        this command, in which case all those genotypes in that list will be
+        preserved and the remainder deleted.
+<tr><td><b>FIND_ORGANISM [<font color="#008800">random</font>]</b><br>
+	Picks out a random organism from the population and removes all 
+	others. It is different from FIND_GENOTYPE because it takes into 
+	account relative number of organisms within each genotype. To pick 
+	more than one organisms, list the word 'random' multiple times. This 
+	is essentially sampling without replacement from the population.
+<tr><td><b>FIND_LINEAGE [<font color="#008800">type="num_cpus"</font>] </b><br>
+    	Delete everything except the lineage from the chosen genotype back
+	to the most distant ancestor available.  This command will only
+        function properly if parental information was loaded in with the
+        genotypes.  Type is the same as the FIND_GENOTYPE command.
+<tr><td><b>FIND_SEX_LINEAGE [<font color="#008800">type="num_cpus"</font>] 
+	[<font color="#008800">parent_method="rec_region_size"</font>] </b><br>
+    	Delete everything except the lineage from the chosen genotype back
+	to the most distant ancestor available. Similar to FIND_LINEAGE but 
+	works in sexual populations. To simplify things, only maternal lineage plus
+	immediate fathers are saved, i.e. info about father's parents is discarded. 
+	The second option, parent_method, determines which parent is considered the 
+	"mother" in each particular recombination. If parent_method is "rec_region_size" :
+        "mother" is the parent contributing more code to the offspring genome 
+	(default); if it's "genome_size", "mother" is the parent with the longer 
+	genome, no matter how much of it was contributed to the offspring. 
+	This command will only function properly if parental information was 
+	loaded in with the genotypes.  Type is the same as the FIND_GENOTYPE command.
+<tr><td><b>ALIGN</b><br>
+    	Create an alignment of all the genome's sequences; It will place '_'s
+        in the sequences to show the alignment.  Note that a "FIND_LINEAGE"
+        must first be run on the batch in order for the alignment to be
+        possible.
+<tr><td><b>SAMPLE_ORGANISMS [<font color="#0000AA">fraction</font>]
+	[<font color="#008800">test_viable=0</font>] </b><br>
+    	Keep only "fraction" of organisms in the current batch.  This
+	is done per organism, <i>not</i> per genotype.  Thus, genotypes of high
+	abundance may only have their abundance lowered, while genotypes
+	of abundance 1 will either stay or be removed entirely. If test_viable is
+	set to 1, sample only from the viable organisms. 
+<tr><td><b>SAMPLE_GENOTYPES [<font color="#0000AA">fraction</font>]
+	[<font color="#008800">test_viable=0</font>] </b><br>
+    	Keep only fraction of genotypes in the current batch. If test_viable is
+        set to 1, sample only from the viable genotypes. 
+<tr><td><b>RENAME [<font color="#008800">start_id=0</font>]</b><br>
+    	Change the id numbers of all the genotypes to start at a given value.
+        Often in long runs we will be dealing with ID's in the millions.  In
+        particular, after reducing a batch to a lineage, we will often want
+        to number the genotypes in order from the ancestor to the final one.
+</table>
+
+<p>
+Next, we are going to look at the standard output commands that will used to
+save information generated in analyze mode.
+
+
+<p align=center><b>Table 5: <font color="#008800">Basic Output Commands</font></b>
+<table cellpadding=6>
+<tr><td><b>PRINT [<font color="#008800">dir="genebank/"</font>] 
+	[<font color="#008800">filename</font>] </b><br>
+    	Print the genotypes from the current batch as individual files (one
+        genotype per file) in the directory given. If no filename is specified,  
+	the files will be named by the genotype name, with a ".gen" appended to 
+	them. Specifying the filename is useful when printing a single genotype. 
+<tr><td><b>TRACE [<font color="#008800">dir="genebank/"</font>] [ <font color="#008800">use_resources=0</font>] </b><br>
+    	Trace all of the genotypes and print a listing of their execution.
+	This will show step-by-step the status of all of the CPU components
+	and the genome during the course of the execution.  The filename used
+	for each trace will be the genotype's name with a ".trace" appended.
+	The use resources flag signifies whether or not the test cpu will use
+        resources when it runs.  For more information on resources, see the 
+        <a href="#USING_RESOURCES">summary</a> below.
+<tr><td><b>PRINT_TASKS [<font color="#008800">file="tasks.dat"</font>] </b><br>
+    	This will print out the tasks doable by each genotype, one per line
+	in the output file specified.  Note that this information must either
+	have been loaded in, or a RECALCULATE must have been run to collect
+	it.
+<tr><td><b>DETAIL [<font color="#008800">file="detail.dat"</font>] [<font color="#008800">format ...</font>]</b><br>
+    	Print out all of the stats for each genotype, one per line.  The
+	format indicates the layout of columns in the file.  If the filename
+	specified ends in ".html", html formatting will be used instead of
+	plain text.  For the format, see the section on "Output Formats"
+	below.
+<tr><td><b>DETAIL_TIMELINE [<font color="#008800">file="detail_timeline.dat"</font>] 
+	[<font color="#008800">time_step=100</font>]
+	[<font color="#008800">max_time=100000</font>]</b><br> 
+	Details a time-sequence of dump files. 
+<tr><td><b>DETAIL_BATCHES [<font color="#008800">file="detail_baches.dat"</font>]
+	[<font color="#008800">format ...</font>]</b><br>
+        Details all batches. 
+<tr><td><b>DETAIL_INDEX [<font color="#0000AA">file</font>]
+	[<font color="#0000AA">min_batch</font>] [<font color="#0000AA">max_batch</font>]
+	[<font color="#008800">format ...</font>]</b><br>
+	Detail all the batches between min_batch and max_batch. 
+<tr><td><b>DETAIL_AVERAGE [<font color="#008800">file="detail.dat"</font>] 
+	[<font color="#008800">format ...</font>]</b><br>
+	Detail the current batch, but print out the average for each argument, as opposed to the 
+	individual values for each genotype, the way DETAIL would. Arguments are the same as for DETAIL. 
+	it takes into account the relative abundance of each genotype in the batch when calculating the 
+	averages. 
+</table>
+
+<p>
+And at last, we have the actual analysis commands that perform tests on
+the data and output the results.
+
+<p align=center><b>Table 6: <font color="#008800">Analysis Commands</font></b>
+<table cellpadding=6>
+<tr><td><b>LANDSCAPE [<font color="#008800">file="landscape.dat"</font>]
+	[<font color="#008800">dist=1</font>]
+	[<font color="#008800">nume_test=(all)</font>]</b><br>
+    	For each genotype in the current batch, test all possible mutations
+	(or combinations of mutations if dist > 1) and summarize the results,
+	one per line in the specified file.
+	If <b>nume_test</b> is specified, randomly pick that many mutants
+	to test, instead of testing all (important for large <b>dist</b>) 
+<tr><td><b>ANALYZE_EPISTASIS [<font color="#008800">file="epistasis.dat"</font>]
+	[<font color="#008800">num_test=(all)</font>]</b><br>
+    	For each genotype in the current batch, test possible 
+	double mutatants, and single mutations composing them; print both of 
+	individual relative fitnesses and the double mutant relative fitness. 
+	By default all double mutants are tested. If in a hurry, specify the 
+	number to be tested (<b>num_test</b>)
+<tr><td><b>MAP_TASKS [<font color="#008800">dir="phenotype/"</font>]
+	[<font color="#008800">flags ...</font>]
+	[<font color="#008800">format ...</font>] </b><br>
+    	Construct a genotype-phenotype array for each genotype in the
+	current batch.  The format is the list of stats that you want
+	to include as columns in the array.  Additionally you can have
+	special format flags; the possible flags are "html" to print output
+	in HTML format, and "link_maps" to create html links between
+	consecutive genotypes in a lineage.
+<tr><td><b>MAP_MUTATIONS [<font color="#008800">dir="mutations/"</font>]
+	[<font color="#008800">flags ...</font>] </b><br>
+    	Construct a genome-mutation array for each genotype in the
+	current batch.  The format has each line in the genome as a row
+        in the chart, and all available instructions representing the columns.
+        The cells in the chart indicate the fitness were a mutation to
+        occur at the position in the matrix, to the listed instruction.
+        If the "html" flag is used, the charts will be output in HTML format.
+<tr><td><b>MAP_DEPTH [<font color="#008800">filename='depth_map.dat'</font>] [<font color="#008800">min_batch=0</font>] [<font color="#008800">max_batch=cur_batch-1</font>]</b><br>
+       This will create a depth map (like those we use for phylogeny
+       visualization) in the filename specified.  You can direct which
+       batches to take this from, but by default it will work perfectly after
+       a LOAD_MULTI_DETAIL.
+
+    
+<tr><td><b>AVERAGE_MODULATITY [<font color="#008800">file="modularity.dat"</font>]
+	[<font color="#008800">task.0 task.1 task.2 task.3 task.4 task.5      
+	task.6 task.7 task.8</font>] </b><br>
+    	Calculate several modularity measuers, such as how many tasks is an 
+	instruction involved in, number of sites required for each task, etc.
+	The measures are averaged over all the organisms in the current batch 
+	that perform any tasks. For the full output list, do 
+	"AVERAGE_MODULATITY legend.dat" At the moment doesn't support html
+	output format and works with only 1 and 2 input tasks. 
+<tr><td><b>HAMMING [<font color="#008800">file="hamming.dat"</font>]
+	[<font color="#008800">b1=current</font>]
+	[<font color="#008800">b2=b1</font>] </b><br>
+    	Calculate the hamming distance between batches b1 and b2.  If only
+	one batch is given, calculations are on all pairs within that batch.
+<tr><td><b>LEVENSTEIN [<font color="#008800">file="lev.dat"</font>]
+	[<font color="#008800">batch1</font>]
+	[<font color="#008800">b2=b1</font>]</b><br>
+    	Calculate the levenstein distance (edit distance) between batches b1
+	and b2.  This metric is similar to hamming distance, but calculates
+	the minimum number of single insertions, deletions, and mutations to
+	move from one sequence to the other.
+<tr><td><b>SPECIES [<font color="#008800">file="species.dat"</font>]
+	[<font color="#0000AA">bach1</font>]
+	[<font color="#0000AA">bach2</font>]
+        [<font color="#0000AA">num_recombinants</font>]</b><br>
+	Calculates the percentage of non-viable recombinants between all 
+	pairs of organisms from batches 1 and 2. Number of random recombination 
+	events for each pair of organisms is specified by num_recombinants.
+	Recombination is done in the same way as in the birth chamber when 
+	divide-sex is executed. <br>
+	Output:  Batch1Name  Batch2Name  AveDistance  Count  FailCount
+<tr><td><b>RECOMBINE 
+	[<font color="#0000AA">bach1</font>]
+	[<font color="#0000AA">bach2</font>]
+	[<font color="#0000AA">bach3</font>]
+	[<font color="#0000AA">num_recombinants</font>]</b><br>
+	Similar to Species command, but instead of calculating things on the spot, 
+	just create all the recombinant genotypes using organisms from baches 1 and 2
+	and put them in the batch3. 
+</table>
+
+<a name="USING_RESOURCES"></a>
+<h3>Using Test CPU Resources Summary</h3>
+<p>
+This summary is given to help explain the use and constraints for using resources.
+
+<p>
+When a command specifies the use of resources for the test cpu, it should not
+affect the state of the test cpu after the command has finished.  However, this 
+means that the test cpu is no longer guaranteed to be reentrant.  Each command 
+will set up the environment and the resource count in the test cpu with it's own 
+environment and resource count.  When the command has finished it will set the the 
+test cpu's environment and resource count back to what they were before the command 
+was executed.
+
+<p>
+Resource usage for the test cpu occurs by setting the environment and then 
+setting up the resource count using the environment.  Once the resource 
+count has been set up, it will not change during the use of the test cpu.  
+When an organism performs and IO, completing a task, the concentrations are 
+not changed.  This was a design decision, but is easily changed.
+
+<p>
+In analyze, a new data structure was included which contains a time ordered 
+list of resource concentrations.  This list can be used to set up resources 
+from different time points.  By using the FillResources function, you can 
+have the resource library updated with resource concentrations from a time 
+point closest to the user specified time point.  If the LOAD_RESOURCES 
+command is not called, the list defaults to a single entry which is the 
+the initial concentrations of the resources specified in the environment 
+configuration file.
+
+<p align=center><b>Table 7: <font color="#008800">Test CPU Resource Related Commands</font></b>
+<table cellpadding=6>
+<tr><td><b>PRINT_TEST_CPU_RESOURCES </b><br>
+    	This command first prints the whether or not the test cpu is using 
+        resources.  Then it will print the concentration for each resource.
+<tr><td><b>LOAD_RESOURCES [<font color="#008800">file_name="resource.dat"</font>] </b><br>
+    	This command loads a time oriented list of resource concentrations.  
+        The command takes a file name containing this type of data, and 
+        defaults to resource.dat.  The format of the file must be the same 
+        as resource.dat, and each line must be in the correct chronological 
+        order with oldest first.  
+</table>
+
+<h3>Output Formats</h3>
+
+<p>
+ Several commands (such as DETAIL and MAP) require format parameters
+ to specify what genotypic features should be output.  Before the
+ such commands are used, other collection functions may need to be
+ run.
+
+<p>
+ Allowable formats after a normal load (assuming these values were available
+ from the input file to be loaded in) are:
+<p>
+<center>
+<table width=95%>
+<tr><td width=33%><b>id</b>           (Genome ID)
+    <td width=33%><b>parent_id</b>    (Parent ID)
+    <td width=33%><b>num_cpus</b>     (Number of CPUs)
+<tr><td><b>total_cpus</b>   (Total CPUs Ever)
+    <td><b>length</b>       (Genome Length)
+    <td><b>update_born</b>  (Update Born)
+<tr><td><b>update_dead</b>  (Update Dead)
+    <td><b>depth</b>        (Tree Depth)
+    <td><b>sequence</b>     (Genome Sequence)
+</table>
+</center>
+
+<p>
+ After a RECALCULATE, the additional formats become available:
+
+<p>
+<center>
+<table width=95%>
+<tr><td width=33%><b>viable</b> (Is Viable [0/1])
+    <td width=33%><b>copy_length</b> (Copied Length)
+    <td width=33%><b>exe_length</b> (Executed Length)
+<tr><td><b>merit</b> (Merit)
+    <td><b>comp_merit</b> (Computational Merit)
+    <td><b>gest_time</b> (Gestation Time)
+<tr><td><b>efficiency</b> (Replication Efficiency)
+    <td><b>fitness</b> (Fitness)
+    <td><b>div_type</b> (Divide type used; 1 is default)
+<tr><td><b>task.n</b> (# of times task number n is done)
+    <td><b>task.n:binary</b> (is task n done, 0/1)
+</table>
+</center>
+
+<p>
+ If a FIND_LINEAGE was done before the RECALCULATE, the parent
+ genotype for each regular genotype will be available, enabling the
+ additional formats:
+
+<p>
+<center>
+<table width=95%>
+<tr><td width=50%><b>parent_dist</b> (Parent Distance)
+    <td width=50%><b>comp_merit_ratio</b>, (Computational Merit Ratio with parent)
+<tr><td><b>efficiency_ratio</b> (Replication Efficiency Ratio with parent)
+    <td><b>fitness_ratio</b> (Fitness Ratio with parent)
+<tr><td><b>parent_muts</b> (Mutations from Parent)
+    <td><b>html.sequence</b> (Genome Sequence in Color; html format)
+</table>
+</center>
+
+<p>
+ Finally, if an ALIGN is run, one additional format is available:
+ <b>alignment</b> (Aligned Sequence)
+
+
+<h3>Variables</h3>
+
+<p>
+ For the moment, all variables can only be a single character (letter or
+ number) and begin with a $ whenever they need to be translated to their
+ value.  Lowercase letters are global variables, capital letters are
+ local to a function (described later), and numbers are arguments to a
+ function.  A $$ will act as a single dollar sign, if needed.
+
+<p align=center><b>Table 8: <font color="#008800">Variable-Related Commands</font></b>
+<table cellpadding=6>
+<tr><td><b>SET [<font color="#0000AA">variable</font>]
+	[<font color="#0000AA">value</font>] </b><br>
+    	Sets the variable to the value...
+<tr><td><b>FOREACH [<font color="#0000AA">variable</font>]
+	[<font color="#0000AA">value</font>]
+	[<font color="#008800">value ...</font>] </b><br>
+    	Set the variable to each of the values listed, and run the code that
+        follows between here and the next END command once for each of
+	those values.
+<tr><td><b>FORRANGE [<font color="#0000AA">variable</font>]
+	[<font color="#0000AA">min_value</font>]
+	[<font color="#0000AA">max_value</font>]
+	[<font color="#008800">step_value=1</font>]</b><br>
+    	Set the variable to each of the values between min and max (at steps
+	given), and run the code that follows between here and the next END
+	command, once for each of those values.
+</table>
+
+<h3>Functions</h3>
+
+<p>
+ These functions are currently very primitive with fixed inputs of
+ $0 through $9.  $0 is always the function name, and then there can be up
+ to 9 other arguments passed through.  Once a function is created, it can
+ be run just like any other command.
+
+<p align=center><b>Table 9: <font color="#008800">Function-Related Commands</font></b>
+<table cellpadding=6>
+<tr><td><b>FUNCTION [<font color="#0000AA">name</font>]</b><br>
+    	This will create a function of the given name, including in it all
+	of the commands up until an END is found.  These commands will be
+	bound to the function, but are not executed until the function is
+	run as a command.  Inside the function, the variables $1 through $9
+	can be used to access arguments passed in.
+</table>
+
+<p>
+Currently there are no conditionals or mathematical commands in this
+scripting language.  These are both planned for the future.
+
+
+<br><hr>
+Project hosted by:<br>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=46761&type=2" width="125" height="37" border="0" alt="SourceForge.net"/></a>
+    

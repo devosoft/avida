@@ -1,0 +1,34 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>pyGraphView</class>
+<widget class="QWidget">
+    <property name="name">
+        <cstring>pyGraphView</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>161</width>
+            <height>51</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>pyGraphView</string>
+    </property>
+    <vbox>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <property name="margin">
+            <number>0</number>
+        </property>
+        <property name="spacing">
+            <number>0</number>
+        </property>
+        <property name="resizeMode">
+            <enum>Minimum</enum>
+        </property>
+    </vbox>
+</widget>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

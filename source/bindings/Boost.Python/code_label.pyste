@@ -1,0 +1,1 @@
+cCodeLabel = Class("cCodeLabel", "code_label.hh")

@@ -1,0 +1,1 @@
+cBlockStruct = Class("cBlockStruct", "block_struct.hh")

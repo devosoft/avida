@@ -1,0 +1,57 @@
+
+Import("analyze_command.pyste")
+Import("analyze_genotype.pyste")
+Import("mutation.pyste")
+Import("reaction_requisite.pyste")
+Import("string.pyste")
+
+tList = Template("tList", "tList_instantiations.hh")
+tListIterator = Template("tListIterator", "tList_instantiations.hh")
+tConstListIterator = Template("tConstListIterator", "tList_instantiations.hh")
+
+template_specializers = [
+  "cAnalyzeCommand",
+  "cAnalyzeGenotype",
+  "cMutation",
+  "cReactionRequisite",
+  "cString",
+]
+
+for typename in template_specializers:
+  list_type = tList(typename)
+  set_policy(list_type.Pop, return_value_policy(reference_existing_object))
+  set_policy(list_type.PopRear, return_value_policy(reference_existing_object))
+  set_policy(list_type.GetFirst, return_value_policy(reference_existing_object))
+  set_policy(list_type.GetLast, return_value_policy(reference_existing_object))
+  set_policy(list_type.GetPos, return_value_policy(reference_existing_object))
+  set_policy(list_type.Remove, return_value_policy(reference_existing_object))
+  set_policy(list_type.Insert, return_value_policy(reference_existing_object))
+  set_policy(list_type.Find, return_value_policy(reference_existing_object))
+  set_policy(list_type.FindPtr, return_value_policy(reference_existing_object))
+  set_policy(list_type.PopPos, return_value_policy(reference_existing_object))
+
+  # These next four methods are disabled because they each take function
+  # pointers as arguments, and function pointers don't play nicely with
+  # Boost.Python.
+  exclude(list_type.FindSummedValue)
+  exclude(list_type.PopIntValue)
+  exclude(list_type.PopIntMax)
+  exclude(list_type.PopDoubleMax)
+  exclude(list_type.Count)
+
+  list_iterator_type = tListIterator(typename)
+  set_policy(list_iterator_type.GetConst , return_value_policy(reference_existing_object))
+  set_policy(list_iterator_type.NextConst , return_value_policy(reference_existing_object))
+  set_policy(list_iterator_type.PrevConst , return_value_policy(reference_existing_object))
+  set_policy(list_iterator_type.Get , return_value_policy(reference_existing_object))
+  set_policy(list_iterator_type.Next , return_value_policy(reference_existing_object))
+  set_policy(list_iterator_type.Prev , return_value_policy(reference_existing_object))
+  set_policy(list_iterator_type.Remove , return_value_policy(reference_existing_object))
+
+  const_list_iterator_type = tConstListIterator(typename)
+  set_policy(const_list_iterator_type.GetConst , return_value_policy(reference_existing_object))
+  set_policy(const_list_iterator_type.NextConst , return_value_policy(reference_existing_object))
+  set_policy(const_list_iterator_type.PrevConst , return_value_policy(reference_existing_object))
+  set_policy(const_list_iterator_type.Get , return_value_policy(reference_existing_object))
+  set_policy(const_list_iterator_type.Next , return_value_policy(reference_existing_object))
+  set_policy(const_list_iterator_type.Prev , return_value_policy(reference_existing_object))

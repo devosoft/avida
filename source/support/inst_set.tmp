@@ -1,0 +1,53 @@
+nop-A      1
+nop-B      1
+nop-C      1
+if-n-equ   1
+if-less    1
+pop        1
+push       1
+swap-stk   1
+swap       1
+shift-r    1
+shift-l    1
+inc        1
+dec        1
+add        1
+sub        1
+nand       1
+h-alloc    1    #   Allocate as much memory as organism can use.
+h-divide   1    #   Cuts off everything between the read and write heads
+IO         1    #   Puts current contents of register and gets new.
+h-copy     1    #   Combine h-read and h-write
+h-search   1    ### Search for matching template, set flow head, & return info.
+		 ## If no template, move flow-head here, set size&offset=0.
+mov-head   1    ### Move ?IP? head to flow control
+jmp-head   1    ### Move ?IP? head by fixed amount in CX.  Set old pos in CX.
+get-head   1    ### Get position of specified head in CX.
+set-flow   1    ### Move flow-head to address in ?CX? 
+
+
+if-label   1
+#adv-head   1
+#jump-f     1
+#jump-b     1
+#call       1
+#return     1
+#if-bit-1   1
+#get        1
+#put        1
+#h-read     1
+#h-write    1
+#set-head   1
+#search-f   1
+#search-b   1
+
+
+# Works on multiple nops:  pop  push  inc  dec  IO  adv-head 
+
+# What if we add a new head.  Search will return the location of something,
+# and put the new head there.  Then set-head will move another head to that
+# point.  In the case of the copy loop, it only needs to be set once and
+# this will speed up the code quite a bit!
+
+# Search with no template returns current position (abs line number) in
+# genome.

@@ -1,0 +1,7 @@
+declaration_code("""
+#ifndef STRING_HH
+#include "string.hh"
+#endif
+""")
+
+cAvidaDriver_Base = Class("cAvidaDriver_Base", "avida_driver_base.hh")

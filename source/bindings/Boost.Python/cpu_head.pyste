@@ -1,0 +1,15 @@
+
+Include("cpu_memory.hh")
+Include("instruction.hh")
+Include("hardware_base.hh")
+Include("code_label.hh")
+
+cCPUHead = Class("cCPUHead", "cpu_head.hh")
+set_policy(cCPUHead.FlagCopied, return_internal_reference())
+set_policy(cCPUHead.FlagMutated, return_internal_reference())
+set_policy(cCPUHead.FlagExecuted, return_internal_reference())
+set_policy(cCPUHead.FlagPointMut, return_internal_reference())
+set_policy(cCPUHead.FlagCopyMut, return_internal_reference())
+set_policy(cCPUHead.GetCurHardware, return_internal_reference())
+set_policy(cCPUHead.GetMainHardware, return_internal_reference())
+set_policy(cCPUHead.FlagBreakpoint, return_internal_reference())

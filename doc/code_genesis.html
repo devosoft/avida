@@ -1,0 +1,184 @@
+<html>
+<title>The cConfig Class</title>
+<body
+ bgcolor="#FFFFFF"
+ text="#000000"
+ link="#0000AA"
+ alink="#0000FF"
+ vlink="#000044">
+
+<h2 align=center>The cConfig Class</h2>
+
+<p>
+The cConfig class stores the values in <tt>genesis</tt> throughout a
+run.  It is defined in the files
+"<tt>config.hh</tt>" and "<tt>config.cc</tt>" in the directory
+"<tt>current/source/main/</tt>".  This is one of the rare classes that
+has a longer class definition in the header file than that of
+its individual methods in the code file.  This is because so many
+methods are accessor functions that are defined as they are declared.
+
+<p>
+Currently, this is a static class.  That means there can never be an object
+of type cConfig; there is only the class itself that exists.  This comes
+from the idea that an avida run can only ever have a single configuration.
+However, ideally we should make it possible for multiple populations to
+co-exist, each  with distinct configurations, so at some point in the
+future (when I get the energy, and don't have more pressing programming
+issues!) I will convert this to a normal class type.
+
+<p>
+Here is a <i>heavily</i> abridged version of the class definition (from
+"<tt><b>config.hh</b></tt>").
+
+<p>
+<pre>
+  class <font color="#880000">cConfig</font> {
+  private:
+    static <font color="#880000">cString</font> <font color="#000088">event_filename</font>;
+    static <font color="#880000">cString</font> <font color="#000088">analyze_filename</font>;
+    static <font color="#880000">int</font> <font color="#000088">rand_seed</font>;
+    static <font color="#880000">double</font> <font color="#000088">copy_mut_prob</font>;
+    <font color="#886600">// [ <i>...about 100 other variables stored...</i> ]</font>
+
+    <font color="#886600">// A method that will process the command line arguments</font>
+    static void <font color="#008800">ProcessConfiguration</font>(<font color="#880000">int</font> <font color="#000088">argc</font>, <font color="#880000">char</font> * <font color="#000088">argv</font>[], <font color="#880000">cGenesis</font> & <font color="#000088">genesis</font>);
+  public:
+    <font color="#886600">// A method that will setup everything in cConfig</font>
+    static void <font color="#008800">Setup</font>(<font color="#880000">int</font> <font color="#000088">argc</font>, <font color="#880000">char</font> * <font color="#000088">argv</font>[]);
+
+    <font color="#886600">// Accessors...</font>
+    static <font color="#880000">cString</font> & <font color="#008800">GetEventFilename</font>()   { return <font color="#000088">event_filename</font>; }
+    static <font color="#880000">cString</font> & <font color="#008800">GetAnalyzeFilename</font>() { return <font color="#000088">analyze_filename</font>; }
+    static <font color="#880000">int</font> <font color="#008800">GetRandSeed</font>()              { return <font color="#000088">rand_seed</font>; }
+    static <font color="#880000">double</font> <font color="#008800">GetCopyMutProb</font>()        { return <font color="#000088">copy_mut_prob</font>; }
+    <font color="#886600">// [ <i>...about 100 other variable accessors...</i> ]</font>
+
+    <font color="#886600">// Set Methods...</font>
+    static void <font color="#008800">SetEventFilename</font>(const <font color="#880000">cString</font> & <font color="#000088">in_name</font>)
+      { <font color="#000088">event_filename</font> = <font color="#000088">in_name</font>; }
+    static void <font color="#008800">SetAnalyzeFilename</font>(const <font color="#880000">cString</font> & <font color="#000088">in_name</font>)
+      { <font color="#000088">analyze_filename</font> = <font color="#000088">in_name</font>; }
+    <font color="#886600">// [ <i>...again, many more set methods...</i> ]</font>
+  };
+</pre>
+
+<p>
+Note that there is no constructor or destructor since objects of cConfig
+are never created or destroyed.  The <font color="#008800">Setup()</font>
+method will, however, setup any values that need to be handled.
+
+<h3>The <tt>config.cc</tt> file</h3>
+
+<p>
+You will need to know about the code file for cConfig in order to make any
+additions to the class.  The code file is broken up into three sections.  The
+first is a list of all of the variables declared inside of the class
+definition.  In order for a variable to be static, it has to be declared in
+both the class definition, and again outside the class in the code file.  The
+entire beginning of the code file is in the form:
+
+<p>
+<pre>
+  <font color="#880000">cString cConfig</font>::<font color="#000088">event_filename</font>;
+  <font color="#880000">cString cConfig</font>::<font color="#000088">analyze_filename</font>;
+  <font color="#880000">int cConfig</font>::<font color="#000088">rand_seed</font>;
+  <font color="#880000">double cConfig</font>::<font color="#000088">copy_mut_prob</font>;
+</pre>
+
+<p>
+Remember that a header file can be included inside of many other files so
+that each of those know how to interact with this class.  Well, the reason
+for this section of the code file is to make it clear to the compiler that
+this will be the main location to store the static variables associated with
+this class.  Normally variables setup when an object is created; since there
+is no object, we must explicitly tell it to setup the variables.
+
+<p>
+After the long list of variable re-declarations, the next portion of the
+file is the <font color="#008800">Setup</font>() method.  Its body defines 
+an object of class <font color="#880000">cGenesis</font>, and then uses it to
+load all of the individual variables that make up cConfig.  Most of this
+method consists of lines in the form:
+
+<p>
+<pre>
+  <font color="#000088">event_filename</font>   = <font color="#000088">genesis</font>.<font color="#008800">ReadString</font>("EVENT_FILE", "events.cfg");
+  <font color="#000088">analyze_filename</font> = <font color="#000088">genesis</font>.<font color="#008800">ReadString</font>("ANALYZE_FILE", "analyze.cfg");
+  <font color="#000088">world_x</font>          = <font color="#000088">genesis</font>.<font color="#008800">ReadInt</font>("WORLD-X");
+  <font color="#000088">world_y</font>          = <font color="#000088">genesis</font>.<font color="#008800">ReadInt</font>("WORLD-Y");
+  <font color="#000088">point_mut_prob</font>   = <font color="#000088">genesis</font>.<font color="#008800">ReadFloat</font>("POINT_MUT_PROB");
+  <font color="#000088">copy_mut_prob</font>    = <font color="#000088">genesis</font>.<font color="#008800">ReadFloat</font>("COPY_MUT_PROB");
+</pre>
+
+<p>
+The final portion of the <tt>config.cc</tt> file consists of the method
+<font color="#008800">ProcessConfiguration</font>(), which handles
+the command line arguments entered by the user.  This will, perhaps, be the
+topic of another lesson.
+
+<h3>How to use the cConfig class</h3>
+
+<p>
+Now that we know how the cConfig class works, we need to be able to use
+it from the rest of avida whenever we need it.  This is very simple; to 
+call a method on a static class from anywhere, all you need to do is
+type the class name, a double colon ('::') and then the method name that
+you wish to call.
+
+For an example that we've already seen, remember that the body of all of the
+inject events contained the line:
+
+<p>
+<pre>
+  if (<font color="#000088">fname</font> == "START_CREATURE") <font color="#000088">fname</font> = <font color="#880000">cConfig</font>::<font color="#008800">GetStartCreature()</font>;
+</pre>
+
+<p>
+This line sets the inject organism filename to the one found in the cConfig
+class if the name was otherwise set to be "START_CREATURE".  To do this,
+we need to ask cConfig what the starting creature filename is.  Fortunately,
+that's an easy thing to do.
+
+<h3>Adding a Genesis Variable: A Checklist</h3>
+
+<p>
+We finally have all of the information of how a variable in the genesis
+file is loaded, stored, and accessed when needed.  However, this can be
+a lot to remember.  Below is a checklist of all of the locations in the
+source code that you would need to make a change when you want to perform
+such a programming feat.
+
+<p>
+<b>1. Add the variable to the private data of cConfig [in <tt>config.hh</tt>]</b> :
+This is the location that the variable is defined and stored over
+the course of an avida run.
+
+<p>
+<b>2. Add and accessor to the new data [<tt>config.hh</tt>]</b> : All variables must have a method that makes them accessible from the rest
+of the source code.
+
+<p>
+<b>3. Add a method to set a new value to the data [<tt>config.hh</tt>]</b> :
+This is optional.  If the new variable can ever change during a run, there
+must be a method in cConfig that causes that change.
+
+<p>
+<b>4. List the variable in the code file. [<tt>config.cc</tt>]</b> :
+All variables must be listed a second time at the top of <tt>config.cc</tt>
+so that the single instance of them is actually created.
+
+<p>
+<b>5. Load the variable in cConfig::Setup() [<tt>config.cc</tt>]</b> :
+This is where the value that is stored in the <tt>genesis</tt> configuration
+file initializes the variable you've just added to cConfig.
+Remember to provide a default value in case the user leaves it out.
+
+<p>
+<b>6. Use the variable wherever you need it!</b> :
+Your new variable is ready for you.  Use it wisely.
+
+<br><hr>
+Project hosted by:<br>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=46761&type=2" width="125" height="37" border="0" alt="SourceForge.net"/></a>
+    

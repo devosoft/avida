@@ -1,0 +1,1 @@
+cEvent = Class("cEvent", "event.hh")

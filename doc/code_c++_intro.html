@@ -1,0 +1,398 @@
+<title>An Introduction to C++</title>
+
+<body text="#000000" bgcolor="#FFFFFF" link="#0000AA" vlink="#000044" alink="#0000FF">
+
+<center>
+<h2>
+A Conceptual Introduction to C++</h2></center>
+This file will cover in more detail some of the concepts needed to understand
+C++. My goal here is <i>not</i> to make you be able to sit down and write
+your own program from scratch.
+<h3>
+Objects and Classes</h3>
+An <b>object</b> in C++ is a single, conceptual unit that contains <b>data</b>
+(information about the state of that object) and <b>methods</b> (functions
+associated with that class of objects) by which the object is modified
+or can interact with other objects. The data in an object can be either
+normal variables (<i>e.g.</i> characters, floating point numbers, or integers)
+or previously-defined objects. A category of objects is a <b>class</b>;
+an object is a single instance of a class.
+<p>For example, in Avida one of the most important classes is called
+<tt>cOrganism</tt>
+-- it is the class that all organism objects belong to. Here is an abbreviated
+version of the cOrganism class declaration (explained further below), color
+coded to aide understanding.
+<center><table CELLPADDING=4 WIDTH="90%" >
+<tr>
+<td WIDTH="50%"><font color="#886600"><b>Comments</b> are in BROWN</font>
+<br><font color="#008800">Names of <b>methods</b> are in GREEN</font></td>
+
+<td WIDTH="50%"><font color="#880000">Names of <b>classes</b> are in RED</font>
+<br><font color="#0000AA">Names of <b>objects</b> are in BLUE</font></td>
+</tr>
+</table></center>
+
+<table CELLPADDING=8 >
+<tr>
+<td>
+<pre>class <font color="#880000">cOrganism</font> {
+private:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font color="#886600">// Data in this class cannot be directly accessed from outside.
+
+</font>&nbsp; const <font color="#880000">cGenome</font><font color="#0000AA"> genome;</font>&nbsp;&nbsp;&nbsp;&nbsp; <font color="#886600">// The initial genome that this organism was born with.
+</font>&nbsp; <font color="#880000">cPhenotype</font><font color="#0000AA"> phenotype;</font>&nbsp;&nbsp;&nbsp;&nbsp; <font color="#886600">// Maintains the status of this organism's phenotypic traits.
+
+</font>&nbsp; <font color="#880000">cPopulationInterface</font><font color="#0000AA"> pop_interface;</font>&nbsp; <font color="#886600">// Interface back to the population.
+
+</font>&nbsp; <font color="#880000">cGenotype </font><font color="#000000">*</font> <font color="#0000AA">genotype;</font>&nbsp;&nbsp;&nbsp;&nbsp; <font color="#886600">// A pointer to the genotype that this organism belongs to.
+</font>&nbsp; <font color="#880000">cHardwareBase </font><font color="#000000">*</font> <font color="#0000AA">hardware;</font> <font color="#886600">// The virtual machinery that this organism's genome is run on.
+
+</font>public:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#886600"> // The methods are accessible to other classes.
+
+</font>&nbsp; <font color="#886600">// This classes' constructor requires an initial genome, an interface to the population,
+&nbsp; // and the environment the organism is in.&nbsp; NOTE: These are defined elsewhere.
+</font>&nbsp; <font color="#008800">cOrganism(</font><font color="#000000">const</font> <font color="#880000">cGenome</font> <font color="#000000">&amp;</font> <font color="#0000AA">in_genome</font><font color="#000000">,
+</font><font color="#008800">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </font><font color="#000000">const</font> <font color="#880000">cPopulationInterface</font> <font color="#000000">&amp;</font> <font color="#0000AA">in_interface</font><font color="#000000">,
+</font><font color="#008800">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </font><font color="#000000">const</font> <font color="#880000">cEnvironment</font> <font color="#000000">&amp;</font> <font color="#0000AA">in_environment</font><font color="#008800">)</font><font color="#000000">;
+</font><font color="#008800">&nbsp; ~cOrganism()</font><font color="#000000">;
+
+</font>&nbsp; <font color="#886600">// This batch of methods involve interaction with the population to resolve.
+</font>&nbsp; <font color="#880000">cOrganism</font> <font color="#000000">*</font><font color="#008800"> GetNeighbor() </font><font color="#000000">{</font> <font color="#000000">return</font> <font color="#0000AA">pop_interface</font><font color="#008800">.GetNeighbor()</font><font color="#000000">; }
+</font><font color="#008800">&nbsp; </font><font color="#000000">int</font><font color="#008800"> GetNeighborhoodSize() </font><font color="#000000">{</font> <font color="#000000">return</font> <font color="#0000AA">pop_interface</font><font color="#008800">.GetNumNeighbors()</font><font color="#000000">; }
+</font><font color="#008800">&nbsp; </font><font color="#000000">void</font><font color="#008800"> Rotate(</font><font color="#000000">int direction</font><font color="#008800">) </font><font color="#000000">{</font> <font color="#0000AA">pop_interface</font><font color="#008800">.Rotate(direction)</font><font color="#000000">; }
+</font><font color="#008800">&nbsp; </font><font color="#000000">int</font><font color="#008800"> GetInput() </font><font color="#000000">{ return</font> <font color="#0000AA">pop_interface</font><font color="#008800">.GetInput()</font><font color="#000000">; }
+</font><font color="#008800">&nbsp; </font><font color="#000000">void</font><font color="#008800"> Die() </font><font color="#000000">{</font> <font color="#0000AA">pop_interface</font><font color="#008800">.Die()</font><font color="#000000">; }
+
+</font>&nbsp; <font color="#886600">// Input &amp; Output Testing -- see if any environment reactions are triggered.
+</font>&nbsp; <font color="#000000">void</font><font color="#008800"> DoInput</font><font color="#000000">(const</font> <font color="#000000">int</font><font color="#008800"> </font><font color="#000099">value</font><font color="#008800">, </font><font color="#880000">tBuffer&lt;</font><font color="#000000">int</font><font color="#880000">></font> <font color="#000000">&amp;</font><font color="#008800"> </font><font color="#000099">input_buf</font><font color="#008800">, </font><font color="#880000">tBuffer&lt;</font><font color="#000000">int</font><font color="#880000">></font> <font color="#000000">&amp;</font><font color="#008800"> </font><font color="#000099">output_buf</font><font color="#000000">);
+</font><font color="#008800">&nbsp; </font><font color="#000000">void</font><font color="#008800"> DoOutput</font><font color="#000000">(const</font> <font color="#000000">int</font><font color="#008800"> </font><font color="#000099">value</font><font color="#008800">, </font><font color="#880000">tBuffer&lt;</font><font color="#000000">int</font><font color="#880000">></font> <font color="#000000">&amp;</font><font color="#008800"> </font><font color="#000099">input_buf</font><font color="#008800">, </font><font color="#880000">tBuffer&lt;</font><font color="#000000">int</font><font color="#880000">></font> <font color="#000000">&amp;</font><font color="#008800"> </font><font color="#000099">output_buf</font><font color="#000000">);
+
+</font>&nbsp; <font color="#886600">// Accessors -- these are used to gain access to private data.
+</font>&nbsp; const <font color="#880000">cGenome</font> &amp; <font color="#008800">GetGenome()</font> const { return <font color="#0000AA">genome</font>; }
+&nbsp; <font color="#880000">cPhenotype</font> &amp; <font color="#008800">GetPhenotype()</font> { return <font color="#0000AA">phenotype</font>; }
+&nbsp; <font color="#880000">cGenotype</font> * <font color="#008800">GetGenotype()</font> { return <font color="#0000AA">genotype</font>; }
+&nbsp; <font color="#880000">cHardwareBase</font> * <font color="#008800">GetHardware()</font> { return <font color="#0000AA">hardware</font>; }
+
+&nbsp; <font color="#886600">// Some special methods used during saving and loading.
+</font>&nbsp; <font color="#000000">void</font><font color="#008800"> SaveState</font><font color="#000000">(</font><font color="#880000">ofstream</font><font color="#008800"> &amp; fp</font><font color="#000000">);
+</font><font color="#008800">&nbsp; </font><font color="#000000">void</font><font color="#008800"> LoadState</font><font color="#000000">(</font><font color="#880000">ifstream</font><font color="#008800"> &amp; fp</font><font color="#000000">);
+
+</font>};</pre>
+</td>
+</tr>
+</table>
+
+<h3>
+Style and Syntax Guide</h3>
+Don't worry too much about how the syntax works. The code presented above
+is a definition of a class in C++. It is broken into two parts; one labeled
+"<tt>private:</tt>" for those portions of the definition that can only
+be interacted with from within the class, and another labeled "<tt>public:</tt>"
+which defines the interface to the outside. In this case, we've made all
+of the variables private and the methods public.
+<p>A variable is defined by a description of the type of variable (such
+a "<tt>cPhenotype</tt>") and then the name of this particular instance
+of the variable. In this case, since organisms only have one phenotype,
+we called it merely "<tt>phenotype</tt>".
+<p>Methods are slightly more complex. The declaration of a method starts
+with the type of data the method returns (such as "<tt>int</tt>" for integer),
+or else lists "<tt>void</tt>" if there is no return value. Then the method
+name is given, followed by a set of parenthesis (which are what indicates
+to C++ that you are declaring a method). Inside of those parentesis, can
+be
+<b>arguments</b>, which are variables that must be given to the method
+in order for it to operate correctly. The declaration can stop at this
+point (ending in a semi-colon) if the method <b>body</b> is defined elsewhere.
+The body of the method is the sourcecode that details how the method operates,
+and can be included immediately after the declaration (within braces) or
+be placed elsewhere in the code. Typically short method bodies are included
+in the class definition, while longer ones are placed outside of it. A
+method is performed on an object, by listing the object name, followed
+by a dot ('.'), and then the name of the method to be called with all necessary
+arguments included. This is explained further below.
+<p>The C++ language will accept variable names, class names, and method
+names of any alpha-numeric sequence as long as all names begin with a letter.&nbsp;
+The only other character allowed in a name is the underscore ('_').&nbsp;
+To make reading code easier, we have adopted certain conventions.
+<br>&nbsp;
+<table CELLSPACING=3 CELLPADDING=3 NOSAVE >
+<tr VALIGN=TOP NOSAVE>
+<td>&nbsp;</td>
+
+<td NOSAVE><font color="#0000AA">an_example_variable</font></td>
+
+<td>Variable names (including object names) are always all in lowercase
+letters, with individual words separated by underscores. Variables are
+either user-defined classes, numbers (integers, boolean values, floating
+point numbers, etc.) or characters (single symbols)</td>
+</tr>
+
+<tr VALIGN=TOP NOSAVE>
+<td>&nbsp;</td>
+
+<td NOSAVE><font color="#008800">ExampleMethod</font></td>
+
+<td>Method names always have the first letter of each word capitalized,
+with the remainder of the word in lowercase. The one exception to this
+is Constructors and Destructors, which must have the same name as the class
+(see below).</td>
+</tr>
+
+<tr VALIGN=TOP NOSAVE>
+<td>&nbsp;</td>
+
+<td NOSAVE><font color="#880000">cExampleClass</font></td>
+
+<td>Classes use a similar format to methods, but always begin with a single,
+lowercase 'c'. Some other specialized types also used this format, but
+with a different initial letter. For example, an initial 't' indicates
+a template, which is a special type of class.</td>
+</tr>
+
+<tr VALIGN=TOP NOSAVE>
+<td>&nbsp;</td>
+
+<td NOSAVE>CONSTANT_VALUE</td>
+
+<td>Any constant values (that is, numerical values that will never change
+during the course of the run) are given in all upper-case letters, with
+individual words separated by underscores.</td>
+</tr>
+</table>
+
+<p>Different software projects will each use their own style conventions;
+these are the ones you'll end up working with in Avida. Some exceptions
+do exist. For example, the C++ language itself does not follow many style
+rules; built-in C++ names are all lowercase letters, regardless of what
+they represent.
+<h3>
+Description of Data Elements</h3>
+The section labeled <tt>private</tt> above lists those data that are unique
+to each organism; these are objects and pointers that exist <i>inside</i>
+of an organism object. First, <font color="#0000AA">genome</font> keeps
+the initial state of the organism. Since we never want this genome to change
+over the organism's life, we place a <tt>const</tt> directive in front
+of it. The <tt>const</tt> command exists so that C++ knows to warn the
+programmer if they accidentally try to change an object (or variable) that
+is not supposed to be altered.
+<p>The internal <font color="#0000AA">phenotype</font> object is used to
+record the behaviors and abilities that the organism demonstrates during
+its life. This class has variables to track everything from the tasks performed
+to the gestation time of the organism and the number of offspring it has
+ever produced. The <font color="#0000AA">pop_interface</font> allows an
+organism to communicate with the population (object of class
+<tt><font color="#880000">cPopulation</font></tt>)
+that it is part of. This is used, for example, when an organism is ready
+to finish replicating and needs its offspring to be placed into the population.
+If an organism is being run on a test CPU rather than in a proper population
+object, then this population interface will cause the statistics about
+offspring to be recorded for later use instead of activating it.
+<p>Next, we have two <b>pointers</b>. A pointer is a value that represents
+("points to") a location in the physical memory of the computer. A pointer
+can be identified by the asterisk ('*') that follows the type name. The
+code "<tt>cGenotype * genotype</tt>" indicates that the variable
+<font color="#0000AA">genotype</font>
+points to a location in memory where an object of class <font color="#880000">cGenotype</font>
+is stored. In this case, all of the organisms that are of a single genotype
+all point to the <i>same</i> cGenotype object so that the genotypic information
+is accessible to all organisms that may need to make use of it.
+<p>The final data element is <font color="#0000AA">hardware</font>, a pointer
+to an object of type <font color="#880000">cHardwareBase</font>. This variable
+is a pointer for a different reason than the genotype. Where a single genotype
+is shared by many different organisms, each organism does possess its own
+hardware. But in implementing Avida, I allowed many different kinds of
+hardware to be available, where any of them can be at the other end of
+that hardware pointer. The cHardwareBase class is used as an interface
+to the actual hardware that is used. This is explained in more detail later
+in the section on "Inherited Classes". For the moment, the key idea is
+that a pointer can sometimes point to a general type of object, not just
+those of a very specific class.
+<h3>
+Description of Methods</h3>
+Class descriptions (with limited exceptions) must contain two specific
+methods called the <b>constructor</b> and the <b>destructor</b>. The constructor
+always has the same name as the class (it's called <font color="#008800">cOrganism(...)</font>
+in this case), and is executed in order to create a new object of that
+class. The arguments for the constructor must include all of the information
+required to build on object of the desired class. For an organism, we need
+the genome of that organism, an interface to the population it will be
+in, and the environment it needs to operate under. The method is not defined
+here, only <b>declared</b>. A declared method must be defined elsewhere
+in the program. All methods must be, at least, declared in the class definition.
+Note that if there are many ways to create an object, multiple constructors
+are allowed as long as they take different inputs.
+<p>Whereas the constructor is called when an object is created, the destructor
+is called when the object is destroyed, whereupon it must do any cleanup,
+such as freeing allocated memory (see the section on memory management
+below). The name of a destructor is always the same as the class name,
+but with a tilde ('~') in front of it. Thus, the cOrganism's destructor
+is called <font color="#008800">~cOrganism()</font>. A destructor can never
+take any arguments, and there must be only one of them in a class definition.
+<p>The next group of five methods are all called when an organism needs
+to perform some behavior, which in all of these cases involves it interacting
+with the population. For example, if you need to know at whom an organism
+is facing, you can call the method
+<font color="#008800">GetNeighbor()</font>
+on it, and a pointer to the neighbor currently faced will be returned.
+Likewise, if you need to kill an organism, you can call the method
+<font color="#008800">Die()</font><font color="#000000">
+on it, and it will be terminated.&nbsp; Since each of these require interaction
+on the population level, the population itself takes care of the bulk of
+the functionality.</font>
+<p>The next pair of methods,<font color="#008800">DoInput(...)</font> and
+<font color="#008800">DoOutput(...)</font>
+are used to monitor when the organism triggers a task. Whenever the organism
+requests a new input number or outputs a processed number, the DoInput
+or DoOutput method is called with the value being sent in/out, the current
+state of the input buffer (that is, all values that have been input thus
+far), and the current state of the output buffer (all of the values that
+the organism has output over its lifetime). The buffers are scanned for
+task completion, and any relevant reactions are triggered.
+<p>The "Accessors" are methods that provide access to otherwise private
+data. For example, the method <font color="#008800">GetGenome()</font>
+will literally pass the genome of the organism to the object that calls
+it.&nbsp; In particular, the hardware object associated with an organism
+will often call <font color="#008800">GetPhenotype()</font> in order&nbsp;
+to get the current state of the organism's phenotype and update it with
+something new the organism has done.&nbsp; Several things to take note
+of here.&nbsp; In the first two accessors, the name of the class being
+returned is followed by an ampersand ('&amp;').&nbsp; This means that the
+actual object is being passed back, and not just a copy of all the values
+contained in it.&nbsp; See the next section on pointers, references, and
+values for more information about this.&nbsp; Also, in the very first accessor,
+the keyword "<tt>const</tt>" is used twice.&nbsp; The first time is to
+say that the object being passed out of the method is constant (that is,
+the programmer should be warned if somewhere else in the code it is being
+changed) and the second time is to say that the actions of this method
+will never change anything about the object they are being run on (that
+is, the object is being left constant even when the method is run.)&nbsp;
+The net effect of this is that an object marked const can only have const
+methods run on it. The compiler will assume that a non-const method being
+run will make a change to the object, and is therefore an error.
+<p>Finally, we have the pair of methods
+<font color="#008800">SaveState(...)</font>
+and <font color="#008800">LoadState(...)</font> that are used when Avida
+runs are being saved to or resumed from file. The input "<tt>ofstream</tt>"
+stands for Output File Stream, and contains information about the file
+that data is being written to.&nbsp; Likewise, an "<tt>ifstream</tt>" object
+is an Input File Stream and used when a C++ program needs to read information
+from a file.
+<p><font color="#000000">This section has contained information about a
+particular C++ class found in Avida.&nbsp; The next sections will more
+generally explain some of the principles of the language.&nbsp; If you
+haven't already, now might be a good time to take a deep breath before
+you dive back in.</font>
+<h3>
+<font color="#000000">Pointers, References, and Values</font></h3>
+<font color="#000000">The three ways of passing information around in a
+C++ program is through sending a pointer to the location of that information,
+sending a reference to it, or actually just sending the value of the information.&nbsp;
+For the moment, lets consider the return value of a method.&nbsp; Consider
+the three methods below:</font>
+<p><tt><font color="#000000">&nbsp;&nbsp; </font><font color="#880000">cGenome
+</font><font color="#008800">GetGenomeValue()</font><font color="#000000">;</font></tt>
+<br><tt><font color="#000000">&nbsp;&nbsp; </font><font color="#880000">cGenome</font><font color="#000000">
+* </font><font color="#008800">GetGenomePointer()</font><font color="#000000">;</font></tt>
+<br><tt><font color="#000000">&nbsp;&nbsp; </font><font color="#880000">cGenome</font><font color="#000000">
+&amp; </font><font color="#008800">GetGenomeReference()</font><font color="#000000">;</font></tt>
+<p>These three cases are all very different. In the first case ("<b>Pass-by-Value</b>"),
+the value of the genome in question is returned. That means that the genome
+being returned is analyzed, and the exact sequence of instruction in it
+are sent to the object calling this method.&nbsp; Once the requesting object
+gets this information, however, any changes made to it do <i>not</i> affect
+the original genome that was copied.&nbsp; The second case ("<b>Pass-by-Pointer</b>"),
+only a few bytes of information are returned that give the location in
+memory of this genome. The requesting object can then go and modify that
+memory if it chooses to, but it must first "resolve" the pointer to do
+so.&nbsp; Finally, the last case ("<b>Pass-by-Reference</b>") actually
+passes the whole object out.&nbsp; It is used in a very similar way to
+pass-by-value, but any changes made to the genome after it is passed out
+will affect the genome in the actual organism itself! Pass-by-reference
+does not add any new functionality over pass-by-pointer, but in practice
+it is often easier to use.
+<h3>
+Memory Management</h3>
+Memory management in C++ can be as simple or complicated as the programmer
+wants it to be. If you never explicitly allocate a chunk of memory, than
+you never need to worry about freeing it up when you're done using it.
+However, there are many occasions where a program can be made faster or
+more flexible by dynamically allocating objects. The command <b><tt>new</tt></b>
+is used to allocate memory; for example if you wanted to allocate memory
+for a new genome containing 100 instructions, you could type:
+<p><tt>&nbsp;&nbsp;&nbsp; <font color="#880000">cGenome</font> * <font color="#0000AA">created_genome</font>
+= new <font color="#008800">cGenome(</font>100<font color="#008800">)</font><font color="#000000">;</font></tt>
+<p><font color="#000000">The variable "created_genome" that is defined
+as a pointer to a memory location containing a genome.&nbsp; This is assigned
+to a newly allocated genome in memory, which is the return value of the
+new command.&nbsp; The cGenome constructor (called with new) takes as an
+argument a single number that is the sequence length of the genome.</font>
+<p><font color="#000000">Unfortunately, C++ won't know when we're done
+using this genome.&nbsp; If we need to create many different genomes and
+we only use each of them once, our memory can rapidly fill up.&nbsp; So,
+we need to tell it.&nbsp; Thus, when we're done using it, we type:</font>
+<p><tt><font color="#000000">&nbsp;&nbsp;&nbsp; free </font><font color="#0000AA">created_genome</font><font color="#000000">;</font></tt>
+<p><font color="#000000">And the memory pointed to by the created_genome
+variable will be freed up.</font>
+<p><font color="#000000">An excellent example of when allocation and freeing
+of memory is employed in avida is with the genotype.&nbsp; Every time a
+new genotype is created during evolution, avida needs to allocate a new
+object of class cGenotype.&nbsp; During the course of a run, millions of
+genotypes may be created, so we need to be sure to free genotypes whenever
+they will no longer be needed in the run.</font>
+<h3>
+<font color="#000000">Inherited Classes</font></h3>
+<font color="#000000">One of the beauties of C++ is that well written code
+is inherently very reusable.&nbsp; As part of that, there is the concept
+of the <b>inhereted class</b> (sometimes called a <b>derived class</b>).&nbsp;
+When a new class is built in C++, it is possible to build it off of an
+existing class, then referred to as its <b>base class</b>.&nbsp; The derived
+class will have access to all of the methods in the base class, and can<b>
+overload</b> them; that is, it can change how any of those methods operate.</font>
+<p><font color="#000000">For example, in the Avida scheduler, we use a
+class called </font><font color="#880000">cSchedule</font><font color="#000000">
+to determine which organism's virtual CPU executes the next instruction.&nbsp;
+Well, this cSchedule object is not all that clever.&nbsp; In fact, all
+that it does is run through the list or organisms that need to go, lets
+them each execute a single instruction, and then does it all over again.&nbsp;
+But sometimes we need to make some organisms execute instructions at a
+faster rate than others.&nbsp; For that reason, I derived several classes
+including </font><font color="#880000">cIntegratedSchedule</font><font color="#000000">,
+which takes in a merit value for each organism, and assigns CPU cycles
+proportional to that merit.&nbsp; Since this new class uses cSchedule as
+its base class, it can be dynamically plugged in during run time, after
+looking at what the user chooses in the genesis file.</font>
+<p><font color="#000000">If a method is not implemented in a base class
+(left to be implemented in the derived classes) it is called an <b>abstract</b>
+method.&nbsp; If a base class does not implement <i>any</i> of its methods
+and is only used in order to specify what methods need to be included in
+the derived classes, it is referred to as an <b>abstract base class</b>
+and is used simply as an interface protocol to the derived classes.&nbsp;
+An example in avida where this is used is the hardware.&nbsp; The class
+</font><font color="#880000">cHardwareBase</font><font color="#000000">
+is an abstract base class; the reason it is abstract is because in principle,
+any kind of underlying virtual hardware should be allowed.&nbsp; Currently,
+only one is implemented called </font><font color="#880000">cHardwareCPU</font><font color="#000000">
+(a virtual CPU), but I have lots of ideas to have, such as a neural network
+running the organisms.</font>
+<h3>
+Links:</h3>
+
+<menu>
+<li>
+<a href="http://www.intap.net/~drw/cpp/">Online C++ Tutorial</a></li>
+
+<li>
+<a href="http://www.cplusplus.com/doc/tutorial/">Another Tutorial</a></li>
+
+<li>
+<a href="http://www.quiver.freeserve.co.uk/OOP1.htm">Object Oriented Concepts
+Tutorial</a></li>
+
+<li>
+<a href="http://www.research.att.com/~bs/glossary.html">A Glossary of C++
+Terms</a></li>
+</menu>
+
+<br><hr>
+Project hosted by:<br>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=46761&type=2" width="125" height="37" border="0" alt="SourceForge.net"/></a>
+    

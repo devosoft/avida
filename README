@@ -1,0 +1,103 @@
+Avida 2.0
+----------------------------------------------------------------------
+Digital Evolution Laboratory at Michigan State University
+
+
+REQUIREMENTS
+----------------------------------------------------------------------
+
+In order to build Avida, you must have CMake 2.x installed.
+CMake 2.x is available from http://www.cmake.org
+
+NCurses, in order to build the console viewer.
+
+OR
+
+In Mac OS X, an Xcode project has been provided for building the
+'primitive' console only version of Avida.
+
+
+GETTING STARTED
+----------------------------------------------------------------------
+
+To compile and install Avida, all you have to do is run:
+$ ./build_avida
+
+By default, you will get an optimized version of the code, as well as
+the NCurses viewer. The installation goes into a directory called
+'work' that is created in a subdirectory named 'build' directory.
+See below how to change that.
+
+OR 
+
+In Mac OS X's Xcode, click the 'Build' button on the project window.
+
+
+CMAKE CONFIGURATION OPTIONS
+----------------------------------------------------------------------
+
+Here are the main options available when configuring and building
+Avida with cmake :
+
+AVD_CONSISTENCY_TEST_PRIMITIVE
+ -  This is a BOOL, either ON or OFF, to enable primitive consistency
+    test suites.
+ OFF by default.
+
+AVD_GUI_NCURSES
+ -  This is a BOOL, either ON or OFF, to enable building Avida console
+    interface.
+ ON by default.
+
+AVD_PRIMITIVE
+This is a BOOL, either ON or OFF, to enable building interfaceless
+Avida (fastest version).
+ON by default.
+
+AVD_UNIT_TESTS
+ -  This is a BOOL, either ON or OFF, to enable building primitive
+    unit test suites.
+ OFF by default.
+
+CMAKE_BUILD_TYPE
+ -  This is a STRING, one of "None", "Debug", "Release",
+    "RelWithDebInfo", "MinSizeRel", to vary optimization levels and
+    debugging information in the build.
+ "Release" by default.
+
+
+
+CONFIGURING THE CMAKE BUILD
+----------------------------------------------------------------------
+
+There are three ways by which you can set the various options.
+
+
+For a simple 'gui' like interface, from the build directory run:
+$ ccmake ../
+
+Pressing 'c' will configure 
+Pressing 'g' will generate the make files and exit
+
+
+If you'd like to be prompted with questions for each option, execute
+the following from the build directory:
+$ cmake -i ../
+
+
+From the command-line option, the cmake option -D allows setting Avida
+configuration options with the following syntax:
+-D<variable name>:<type>=<value>
+
+To completely specify each of the above Avida options, cd into your
+build directory and type something like :
+$ cmake -DAVD_CONSISTENCY_TEST_PRIMITIVE:BOOL=OFF \
+  -DAVD_GUI_NCURSES:BOOL=ON \
+  -DAVD_PRIMITIVE:BOOL=ON \
+  -DAVD_UNIT_TESTS:BOOL=OFF \
+  -DCMAKE_BUILD_TYPE:STRING=Release \
+  path-to-source-directory
+
+
+
+Revised 2004-12-07 DMB

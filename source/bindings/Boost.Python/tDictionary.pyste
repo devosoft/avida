@@ -1,0 +1,8 @@
+
+
+tDictionary = Template("tDictionary", "tDictionary_instantiations.hh")
+
+template_specializers = ["int",]
+
+for specialization in template_specializers:
+  specialized_type = tDictionary(specialization)
