@@ -2,6 +2,7 @@
 import AvidaCore
 import qt
 import iqt
+import sys
 
 def Reload():
   import AvidaGui2.pyTemporaryReloads
@@ -19,6 +20,8 @@ def AvidaEd():
   edu_main_controller.construct()
   edu_main_controller.m_main_mdl.m_main_mdtr.m_main_controller_factory_mdtr.emit(
     qt.PYSIGNAL("newMainControllerSig"), ("pySessionCtrl",))
+  sys.exc_clear()
+  sys.exc_traceback = sys.last_traceback = None
   return edu_main_controller
 
 AvidaCore.cConfig.InitGroupList()
