@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/Users/kaben/Projects/Software/Avida/svn/avida2/trunk/source/bindings/Boost.Python/AvidaGui2/pyOnePop_PetriDishView.ui'
 #
-# Created: Thu Feb 17 15:14:30 2005
+# Created: Mon Feb 28 00:31:03 2005
 #      by: The PyQt User Interface Compiler (pyuic) 3.13
 #
 # WARNING! All changes made in this file will be lost!
