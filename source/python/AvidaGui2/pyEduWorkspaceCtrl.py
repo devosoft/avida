@@ -271,6 +271,8 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
     self.startStatus = False
     
   def startQuitProcessSlot(self):
-    m_quit_avida_ed = pyQuitDialogCtrl
-    self.emit(PYSIGNAL("quitAvidaPhaseIISig"), ())
+    m_quit_avida_ed = pyQuitDialogCtrl()
+    quit_return = m_quit_avida_ed.showDialog()
+    if quit_return == m_quit_avida_ed.QuitFlag:
+      self.emit(PYSIGNAL("quitAvidaPhaseIISig"), ())
 

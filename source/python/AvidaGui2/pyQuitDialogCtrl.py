@@ -12,22 +12,23 @@ class pyQuitDialogCtrl (pyQuitDialogView):
   def __init__(self):
     pyQuitDialogView.__init__(self)
     self.connect(self.QuitPushButton, SIGNAL("clicked()"), self.DownQuitSlot)
+    self.FreezeQuitFlag = 0
+    self.QuitFlag = 1
+    self.CancelFlag = 2
     
   def DownQuitSlot(self):
-    self.QuitPushButton.setDown()
+    self.QuitPushButton.setDown(True)
     
   def showDialog(self):
-    found_valid_name = False
+    self.SaveToFreezerPushButton.setHidden(True)
     dialog_result = 1
-    while (found_valid_name == False and dialog_result > 0):
+    while (dialog_result > 0):
       while (self.exec_loop() and self.result() == 0):
         pass
       dialog_result = self.result()
-      tmp_name = str(self.FileNameLineEdit.text())
-      print "dialog_result = " + str(dialog_result) + " QuitPushButton.isDown() = " + str(QuitPushButton.isDown())
       if dialog_result == 0:
-        return 0
-      elif QuitPushButton.isDown():
-        return 1
+        return self.CancelFlag
+      elif self.QuitPushButton.isDown():
+        return self.QuitFlag
       else:
-        return 2
+        return self.FreezeQuitFlag

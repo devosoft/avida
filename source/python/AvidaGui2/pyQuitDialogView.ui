@@ -8,42 +8,62 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>322</width>
-            <height>54</height>
+            <width>324</width>
+            <height>135</height>
         </rect>
     </property>
     <property name="caption">
         <string>Quit</string>
     </property>
-    <hbox>
+    <vbox>
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
-        <widget class="QPushButton">
+        <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>SaveToFreezerPushButton</cstring>
+                <cstring>layout21</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>SaveToFreezerPushButton</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Freeze and Quit</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>QuitPushButton</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Quit</string>
+                    </property>
+                </widget>
+                <widget class="QPushButton">
+                    <property name="name">
+                        <cstring>CancelPushButton</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Cancel</string>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>WarningLabel</cstring>
             </property>
             <property name="text">
-                <string>Freeze and Quit</string>
+                <string>&lt;b&gt;WARNING!&lt;/b&gt; Quiting will not save current work&lt;br&gt;
+Select Cancel and click on "Freeze Petri Dish" &lt;br&gt;
+button to save current population and/or settings.</string>
             </property>
         </widget>
-        <widget class="QPushButton">
-            <property name="name">
-                <cstring>QuitPushButton</cstring>
-            </property>
-            <property name="text">
-                <string>Quit</string>
-            </property>
-        </widget>
-        <widget class="QPushButton">
-            <property name="name">
-                <cstring>CancelPushButton</cstring>
-            </property>
-            <property name="text">
-                <string>Cancel</string>
-            </property>
-        </widget>
-    </hbox>
+    </vbox>
 </widget>
 <connections>
     <connection>
@@ -62,7 +82,7 @@
         <sender>QuitPushButton</sender>
         <signal>clicked()</signal>
         <receiver>pyQuitDialogView</receiver>
-        <slot>close()</slot>
+        <slot>accept()</slot>
     </connection>
 </connections>
 <layoutdefaults spacing="6" margin="11"/>
