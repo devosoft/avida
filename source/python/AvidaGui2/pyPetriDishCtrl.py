@@ -78,6 +78,7 @@ class pyPetriDishCtrl(QWidget):
     clicked_map_cell_w = round(float(e.x())/2.0)						 
     clicked_map_cell_h = round(float(e.y())/2.0)
 
+
     print "clicked_map_cell_w is %f, clicked_map_cell_h is %f" %(clicked_map_cell_w,clicked_map_cell_h)    
 
 
