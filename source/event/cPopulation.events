@@ -2100,3 +2100,14 @@ cString reaction_name
 double reaction_value
 :body:
 population->GetEnvironment().SetReactionValue(reaction_name, reaction_value);
+
+set_reaction_value_mult
+:descr:
+/**
+* Change the value of the reaction by multiplying it with the imput number
+**/
+:args:
+cString reaction_name
+double value_mult
+:body:
+population->GetEnvironment().SetReactionValueMult(reaction_name, value_mult);

@@ -46,8 +46,12 @@ public:
   cReactionRequisite * AddRequisite();
   void SetActive(bool in_active=true) { active = in_active; }
 
-  // This method will modify the value of the process listed.
+  // These methods will modify the value of the process listed.
   bool ModifyValue(double new_value, int process_num=0);
+  bool MultiplyValue(double value_mult, int process_num=0); 
+
+  double GetValue(int process_num=0);
+
 };
 
 #endif

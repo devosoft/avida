@@ -2172,4 +2172,3 @@ bool cPopulation::UpdateMerit(int cell_id, double new_merit)
  
   return true;
 }
-

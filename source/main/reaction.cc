@@ -50,8 +50,23 @@ cReactionRequisite * cReaction::AddRequisite()
   return new_requisite;
 }
 
-bool cReaction::ModifyValue(double new_value, int process_num) {
+bool cReaction::ModifyValue(double new_value, int process_num) 
+{
   if (process_num >= process_list.GetSize() || process_num < 0) return false;
   process_list.GetPos(process_num)->SetValue(new_value);
   return true;
+}
+
+bool cReaction::MultiplyValue(double value_mult, int process_num) 
+{
+  if (process_num >= process_list.GetSize() || process_num < 0) return false;
+  double new_value = process_list.GetPos(process_num)->GetValue() * value_mult;
+  process_list.GetPos(process_num)->SetValue(new_value);
+  return true;
+}
+
+double cReaction::GetValue(int process_num)
+{ 
+  if (process_num >= process_list.GetSize() || process_num < 0) return false;
+  return  process_list.GetPos(process_num)->GetValue();
 }

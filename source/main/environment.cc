@@ -896,11 +896,26 @@ void cEnvironment::DoProcesses(const tList<cReactionProcess> & process_list,
   }
 }
 
+double cEnvironment::GetReactionValue(int & reaction_id)
+{
+  cReaction * found_reaction = reaction_lib.GetReaction(reaction_id);
+  if (found_reaction == NULL) return false;
+  return found_reaction->GetValue();
+}
+
 bool cEnvironment::SetReactionValue(const cString & name, double value)
 {
-  
   cReaction * found_reaction = reaction_lib.GetReaction(name);
   if (found_reaction == NULL) return false;
   found_reaction->ModifyValue(value);
   return true;
 }
+
+bool cEnvironment::SetReactionValueMult(const cString & name, double value_mult)
+{
+  cReaction * found_reaction = reaction_lib.GetReaction(name);
+  if (found_reaction == NULL) return false;
+  found_reaction->MultiplyValue(value_mult);
+  return true;
+}
+

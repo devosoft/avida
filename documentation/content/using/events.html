@@ -195,6 +195,7 @@ tree of the dominant genotype, and finally its genome sequence.
       <A HREF="#set_point_mut">set_point_mut</A><br>
       <A HREF="#set_resource">set_resource</A><br>
       <A HREF="#set_reaction_value">set_reaction_value</A><br>
+      <A HREF="#set_reaction_value_mult">set_reaction_value_mult</A><br>
       <A HREF="#sever_grid_col">sever_grid_col</A><br>
       <A HREF="#task_snapshot">task_snapshot</A><br>
       <A HREF="#test_dom">test_dom</A><br>
@@ -816,6 +817,10 @@ Events that allow user to change resources  and reaction parameters.
 [<font color="#008800">reaction_value</font>] <br> 
     Set the reaction value ("bonus") to a specific level. <b>reaction_name</b> must already 
     exist in the environment file. <b>reaction_value</b> can be negative. 
+<br>
+<li><b><A NAME="set_reaction_value_mult">set_reaction_value_mult</A></b> [<font color="#008800">reaction_name</font>] [<font color="#008800">value_mult</font>] <br> 
+    Multiply the reaction value ("bonus") by the <b>value_mult</b>. <b>reaction_name</b> must 
+    already exist in the environment file. <b>value_mult</b> can be negative. 
 </menu>
 
 <p>

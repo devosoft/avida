@@ -129,7 +129,9 @@ public:
   cInstSet & GetInstSet() { return inst_set; }
   cMutationRates & GetMutRates() { return mut_rates; }
 
+  double GetReactionValue(int & reaction_id);
   bool SetReactionValue(const cString & name, double value);
+  bool SetReactionValueMult(const cString & name, double value_mult);
 };
 
 #endif
