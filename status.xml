@@ -26,6 +26,29 @@
 
   <changes>
     <!-- Add new releases here -->
+    <release version="2.2.2 (r27) date="24 February 2005">
+      <action dev="KGN" type="add" context="documentation">
+        Added build instructions for third-party development software
+        on OS X.
+      </action>
+      <action dev="KGN" type="update" context="admin">
+      	Clean up pyuic auto-generated files incorrectly being managed
+      	under source control.  Updated Xcode project accordingly.
+      </action>
+      <action dev="CAO" type="update" context="core">
+      	Incorporated speed ups posted by Dave MacLachlan on SourceForge
+      	and the DigitalEvolution mailing list.
+      </action>
+      <action dev="DMB" type="update" context="admin">
+      	Fixed Xcode project so that optimization settings are appropriately
+      	set according to build type.  Added in additional optimizations
+      	suggested by Dave MacLachlan.
+      </action>
+      <action dev="KGN" type="update" context="python code">
+        Fixed various pyste and build system components to handle various
+        recent updates.
+      </action>
+    </release>
     <release version="2.2.1 (r15) date="16 February 2005">
       <action dev="BDB" type="fix" context="platform support">
         Allow code to compile on Linux with GCC version 3.4.
@@ -803,12 +826,6 @@ source/tools/struct.hh
 
   <todo>
     <actions priority="high">
-      <action context="release" dev="KGN">
-        New Windows/OS X executable, and Windows/OS X/Linux source code release. [2.1 (r1)]
-      </action>
-      <action context="avida-ed" dev="KGN">
-        Create forrest documents for library install process.
-      </action>
       <action context="avida-ed" dev="KGN">
         Setup CMake to build application bundle.
       </action>
@@ -820,9 +837,6 @@ source/tools/struct.hh
       </action>
       <action context="admin" dev="DMB">
         Scheduled backups of SVN repositories.
-      </action>
-      <action context="avida-ed" dev="KGN">
-        Explain code structure to Avida-Ed developers.
       </action>
       <action context="admin" dev="KGN">
         Fix Dashboards.
