@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<!--
+  Copyright 2002-2004 The Apache Software Foundation
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<status>
+
+  <developers>
+    <person name="David Bryson" email="brysonda@msu.edu" id="DMB" />
+    <person name="Kaben Nanlohy" email="" id="KGN" />
+    <person name="Charles Ofria" email="ofria@cse.msu.edu" id="CAO" />
+  </developers>
+
+  <changes>
+    <!-- Add new releases here -->
+    <release version="2.1 (r1)" date="unreleased">
+      <!-- Some action types have associated images. By default, images are
+      defined for 'add', 'fix', 'remove', 'update' and 'hack'. If you add
+      src/documentation/resources/images/<foo>.jpg images, these will
+      automatically be used for entries of type <foo>. -->
+
+      <action dev="DMB" type="add" context="admin">
+        Initial Subversion Import
+      </action>
+      <action dev="DMB" type="add" context="admin">
+        Added support for Forrest Documentation
+      </action>
+    </release>
+  </changes>
+
+  <todo>
+    <actions priority="high">
+      <action context="release" dev="KGN">
+        New Windows/OS X executable, and Windows/OS X/Linux source code release. [2.1 (r1)]
+      </action>
+      <action context="avida-ed" dev="KGN">
+        Create forrest documents for library install process.
+      </action>
+      <action context="avida-ed" dev="KGN">
+        Setup CMake to build application bundle.
+      </action>
+      <action context="avida-ed" dev="KGN">
+        Implement Organism view.
+      </action>
+      <action context="avida-ed" dev="KGN">
+        Move python subdir out of Boost.Python subdir.
+      </action>
+      <action context="admin" dev="DMB">
+        Scheduled backups of SVN repositories.
+      </action>
+      <action context="avida-ed" dev="KGN">
+        Explain code structure to Avida-Ed developers.
+      </action>
+      <action context="admin" dev="KGN">
+        Fix Dashboards.
+      </action>
+      <action context="admin" dev="KGN">
+        Add python unit test to dashboards.
+      </action>
+      <action context="admin" dev="KGN">
+        Fix and add consistency tests.
+      </action>
+    </actions>
+    <actions priority="low">
+      
+    </actions>
+    <!-- Add todo items. @context is an arbitrary string. Eg:
+    <actions priority="high">
+      <action context="code" dev="SN">
+      </action>
+    </actions>
+    <actions priority="medium">
+      <action context="docs" dev="open">
+      </action>
+    </actions>
+    -->
+  </todo>
+
+</status>

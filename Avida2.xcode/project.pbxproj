@@ -5,6 +5,24 @@
 	};
 	objectVersion = 39;
 	objects = {
+		703F684207B437B800C1CA76 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.xml;
+			path = status.xml;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+//700
+//701
+//702
+//703
+//704
+//DC0
+//DC1
+//DC2
+//DC3
+//DC4
 		DCBB56590763EA7F00FA9C7E = {
 			buildActionMask = 2147483647;
 			comments = "This is a hackish way to get the system to build the auto-generated code before compiling the rest of the system.";
@@ -27,9 +45,7 @@
 		};
 		DCC30C490762532C008F7A48 = {
 			children = (
-				DCC30C550762539A008F7A48,
-				DCC30C560762539A008F7A48,
-				DCC30C660762539A008F7A48,
+				703F684207B437B800C1CA76,
 				DCC30C670762539A008F7A48,
 				DCC3164E07626CF3008F7A48,
 			);
@@ -67,84 +83,6 @@
 				DCC3164C07626CF3008F7A48,
 			);
 		};
-		DCC30C550762539A008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = CMakeLists.txt;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC30C560762539A008F7A48 = {
-			children = (
-				DCC30C5C0762539A008F7A48,
-				DCC30C5D0762539A008F7A48,
-				DCC30C5E0762539A008F7A48,
-				DCC30C5F0762539A008F7A48,
-			);
-			isa = PBXGroup;
-			path = CMakeModules;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC30C5C0762539A008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = AddPysteModule.cmake;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC30C5D0762539A008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = FindNcurses.cmake;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC30C5E0762539A008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = FixFindQt.cmake;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC30C5F0762539A008F7A48 = {
-			children = (
-				DCC30C640762539A008F7A48,
-				DCC30C650762539A008F7A48,
-			);
-			isa = PBXGroup;
-			path = Templates;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC30C640762539A008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.xml;
-			path = AppleInfo.plist;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC30C650762539A008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = Avida.__init__.py.in;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC30C660762539A008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = DartConfig.cmake;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DCC30C670762539A008F7A48 = {
 			children = (
 				DCC30C710762539A008F7A48,
@@ -155,7 +93,6 @@
 				DCC30FD00762539D008F7A48,
 				DCC310030762539D008F7A48,
 				DCC310040762539D008F7A48,
-				DCC311370762539E008F7A48,
 				DCC311380762539E008F7A48,
 				DCC311390762539E008F7A48,
 				DCC3113A0762539E008F7A48,
@@ -5536,14 +5473,6 @@
 			);
 			isa = PBXGroup;
 			path = demo.hello;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC311370762539E008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text;
-			path = Makefile.am;
 			refType = 4;
 			sourceTree = "<group>";
 		};

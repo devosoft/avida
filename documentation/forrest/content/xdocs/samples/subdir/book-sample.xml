@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright 2002-2004 The Apache Software Foundation
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!DOCTYPE book PUBLIC "-//APACHE//DTD Cocoon Documentation Book V1.0//EN" "http://forrest.apache.org/dtd/book-cocoon-v10.dtd">
+
+<!-- Sample book.xml file.  If this file is renamed to 'book.xml', it will be
+used to define the menu in this subdirectory, instead of that generated from
+the usual site.xml mechanism. The normal relative and absolute hrefs are also
+available. -->
+
+<book software="MyProj"
+  title="MyProj"
+  copyright="@year@ The Apache Software Foundation"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+
+  <menu label="About">
+    <!-- using the normal site.xml linking mechanism -->
+    <menu-item label="Index" href="site:index"/>
+    <!-- using relative URIs with relative path -->
+    <menu-item label="Sample page" href="../sample.html"/>
+    <!-- using relative URIs with absolute path -->
+    <menu-item label="Sample ihtml page" href="/samples/ihtml-sample.html"/>
+    <!-- using the normal site.xml linking mechanism -->
+    <menu-item label="FAQ" href="site:faq"/>
+    <menu-item label="Changes" href="site:changes"/>
+    <menu-item label="Todo" href="site:todo"/>
+  </menu>
+
+  <menu label="Subdir">
+    <menu-item label="index" href="site:subdir/index"/>
+  </menu>
+
+</book>
