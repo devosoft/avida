@@ -146,6 +146,12 @@ Python:from pyPetriConfigureCtrl import pyPetriConfigureCtrl</comment>
             <property name="name">
                 <cstring>m_petri_dish_widget_stack</cstring>
             </property>
+            <property name="frameShape">
+                <enum>Panel</enum>
+            </property>
+            <property name="frameShadow">
+                <enum>Sunken</enum>
+            </property>
             <widget class="QWidget">
                 <property name="name">
                     <cstring>WStackPage</cstring>
@@ -381,6 +387,12 @@ Python:from pyPetriConfigureCtrl import pyPetriConfigureCtrl</comment>
                 <hbox>
                     <property name="name">
                         <cstring>unnamed</cstring>
+                    </property>
+                    <property name="margin">
+                        <number>2</number>
+                    </property>
+                    <property name="spacing">
+                        <number>2</number>
                     </property>
                     <widget class="pyPetriConfigureCtrl">
                         <property name="name">

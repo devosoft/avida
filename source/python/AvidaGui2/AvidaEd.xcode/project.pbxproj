@@ -5,6 +5,72 @@
 	};
 	objectVersion = 39;
 	objects = {
+		99AC419907DF44CF00594A3D = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyWriteGenesis.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		99AC41AA07DF9A2000594A3D = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyPetriConfigureCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		99AC41AB07DF9A2000594A3D = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyPetriConfigureView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		99AC41AE07E0B48800594A3D = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyInstructionSet.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		99AC41DF07E74F6D00594A3D = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyWriteToFreezer.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		99AC41E607E7507D00594A3D = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyReadFreezer.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		99AC41E907E7958100594A3D = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyFreezeDialogCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+//990
+//991
+//992
+//993
+//994
+//DC0
+//DC1
+//DC2
+//DC3
+//DC4
 		DC00C16E07D6FB1700E90B4B = {
 			children = (
 				DC0BFDC407DDB79A00AAE422,
@@ -98,6 +164,8 @@
 				DC0BFE8807DDD7C600AAE422,
 				DC3A641607DD02DE00A043AD,
 				DC0BFE8707DDD7C600AAE422,
+				99AC41AA07DF9A2000594A3D,
+				99AC41AB07DF9A2000594A3D,
 				DC3A640907DD02DE00A043AD,
 				DC3A640807DD02DE00A043AD,
 				DC3A640507DD02DE00A043AD,
@@ -258,6 +326,11 @@
 		};
 		DC0BFDD207DDB8B600AAE422 = {
 			children = (
+				99AC41AE07E0B48800594A3D,
+				99AC41E607E7507D00594A3D,
+				99AC419907DF44CF00594A3D,
+				99AC41DF07E74F6D00594A3D,
+				99AC41E907E7958100594A3D,
 				DC3A63E707DD02DE00A043AD,
 				DC0BFEE007DDDF9200AAE422,
 			);

@@ -146,10 +146,6 @@ Python:from pyTwoPopulationCtrl import pyTwoPopulationCtrl
         <separator/>
         <action name="helpAboutAction"/>
     </item>
-    <item text="new menu" name="new_menu">
-    </item>
-    <item text="new menu" name="new_menu_2">
-    </item>
 </menubar>
 <toolbars>
 </toolbars>

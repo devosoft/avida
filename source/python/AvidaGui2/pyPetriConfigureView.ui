@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>310</width>
-            <height>451</height>
+            <width>398</width>
+            <height>666</height>
         </rect>
     </property>
     <property name="font">
@@ -27,19 +27,25 @@
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
-        <widget class="QLayoutWidget">
+        <property name="margin">
+            <number>2</number>
+        </property>
+        <property name="spacing">
+            <number>2</number>
+        </property>
+        <widget class="QFrame">
             <property name="name">
-                <cstring>layout79</cstring>
+                <cstring>SliderFrame</cstring>
+            </property>
+            <property name="frameShape">
+                <enum>GroupBoxPanel</enum>
+            </property>
+            <property name="frameShadow">
+                <enum>Sunken</enum>
             </property>
             <hbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
-                </property>
-                <property name="margin">
-                    <number>0</number>
-                </property>
-                <property name="spacing">
-                    <number>1</number>
                 </property>
                 <widget class="QLayoutWidget">
                     <property name="name">
@@ -196,9 +202,40 @@
                 </widget>
             </hbox>
         </widget>
-        <widget class="QLayoutWidget">
+        <spacer>
             <property name="name">
-                <cstring>layout95</cstring>
+                <cstring>spacer13_2</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Expanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>20</width>
+                    <height>16</height>
+                </size>
+            </property>
+        </spacer>
+        <widget class="QFrame">
+            <property name="name">
+                <cstring>DeathFrame</cstring>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>5</hsizetype>
+                    <vsizetype>0</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+            <property name="frameShape">
+                <enum>GroupBoxPanel</enum>
+            </property>
+            <property name="frameShadow">
+                <enum>Sunken</enum>
             </property>
             <vbox>
                 <property name="name">
@@ -220,91 +257,87 @@
                         <set>AlignCenter</set>
                     </property>
                 </widget>
-                <widget class="QLayoutWidget">
+                <widget class="QButtonGroup">
                     <property name="name">
-                        <cstring>layout94</cstring>
+                        <cstring>DeathButtonGroup</cstring>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>3</hsizetype>
+                            <vsizetype>3</vsizetype>
+                            <horstretch>1</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
+                    <property name="frameShadow">
+                        <enum>Plain</enum>
+                    </property>
+                    <property name="lineWidth">
+                        <number>0</number>
+                    </property>
+                    <property name="title">
+                        <string></string>
+                    </property>
+                    <property name="flat">
+                        <bool>true</bool>
                     </property>
                     <hbox>
                         <property name="name">
                             <cstring>unnamed</cstring>
                         </property>
-                        <widget class="QButtonGroup">
+                        <spacer>
                             <property name="name">
-                                <cstring>DeathButtonGroup</cstring>
+                                <cstring>spacer11</cstring>
                             </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>3</hsizetype>
-                                    <vsizetype>3</vsizetype>
-                                    <horstretch>1</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
                             </property>
-                            <property name="frameShadow">
-                                <enum>Plain</enum>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
                             </property>
-                            <property name="lineWidth">
-                                <number>0</number>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>21</width>
+                                    <height>20</height>
+                                </size>
                             </property>
-                            <property name="title">
-                                <string></string>
+                        </spacer>
+                        <widget class="QRadioButton">
+                            <property name="name">
+                                <cstring>DieNoButton</cstring>
                             </property>
-                            <property name="flat">
+                            <property name="font">
+                                <font>
+                                </font>
+                            </property>
+                            <property name="text">
+                                <string>No</string>
+                            </property>
+                            <property name="checked">
                                 <bool>true</bool>
                             </property>
-                            <widget class="QRadioButton">
-                                <property name="name">
-                                    <cstring>DieYesButton</cstring>
-                                </property>
-                                <property name="geometry">
-                                    <rect>
-                                        <x>0</x>
-                                        <y>20</y>
-                                        <width>50</width>
-                                        <height>21</height>
-                                    </rect>
-                                </property>
-                                <property name="font">
-                                    <font>
-                                    </font>
-                                </property>
-                                <property name="text">
-                                    <string>Yes</string>
-                                </property>
-                                <property name="toolTip" stdset="0">
-                                    <string>Organism can die without being replaced</string>
-                                </property>
-                            </widget>
-                            <widget class="QRadioButton">
-                                <property name="name">
-                                    <cstring>DieNoButton</cstring>
-                                </property>
-                                <property name="geometry">
-                                    <rect>
-                                        <x>0</x>
-                                        <y>0</y>
-                                        <width>50</width>
-                                        <height>21</height>
-                                    </rect>
-                                </property>
-                                <property name="font">
-                                    <font>
-                                    </font>
-                                </property>
-                                <property name="text">
-                                    <string>No</string>
-                                </property>
-                                <property name="checked">
-                                    <bool>true</bool>
-                                </property>
-                                <property name="toolTip" stdset="0">
-                                    <string>Organisms only die when replaced by new oranisims</string>
-                                </property>
-                            </widget>
+                            <property name="toolTip" stdset="0">
+                                <string>Organisms only die when replaced by new oranisims</string>
+                            </property>
+                        </widget>
+                        <widget class="QRadioButton">
+                            <property name="name">
+                                <cstring>DieYesButton</cstring>
+                            </property>
+                            <property name="font">
+                                <font>
+                                </font>
+                            </property>
+                            <property name="text">
+                                <string>Yes</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>Organism can die without being replaced</string>
+                            </property>
                         </widget>
                         <widget class="QLayoutWidget">
                             <property name="name">
-                                <cstring>layout92</cstring>
+                                <cstring>layout26</cstring>
                             </property>
                             <vbox>
                                 <property name="name">
@@ -317,6 +350,14 @@
                                     <property name="enabled">
                                         <bool>false</bool>
                                     </property>
+                                    <property name="sizePolicy">
+                                        <sizepolicy>
+                                            <hsizetype>1</hsizetype>
+                                            <vsizetype>1</vsizetype>
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
                                     <property name="font">
                                         <font>
                                         </font>
@@ -327,7 +368,7 @@
                                 </widget>
                                 <widget class="QLayoutWidget">
                                     <property name="name">
-                                        <cstring>layout91</cstring>
+                                        <cstring>DeathGenomeLengthLayout</cstring>
                                     </property>
                                     <hbox>
                                         <property name="name">
@@ -339,6 +380,14 @@
                                             </property>
                                             <property name="enabled">
                                                 <bool>false</bool>
+                                            </property>
+                                            <property name="sizePolicy">
+                                                <sizepolicy>
+                                                    <hsizetype>1</hsizetype>
+                                                    <vsizetype>1</vsizetype>
+                                                    <horstretch>0</horstretch>
+                                                    <verstretch>0</verstretch>
+                                                </sizepolicy>
                                             </property>
                                             <property name="maxValue">
                                                 <number>99999</number>
@@ -360,6 +409,14 @@
                                             <property name="enabled">
                                                 <bool>false</bool>
                                             </property>
+                                            <property name="sizePolicy">
+                                                <sizepolicy>
+                                                    <hsizetype>1</hsizetype>
+                                                    <vsizetype>1</vsizetype>
+                                                    <horstretch>0</horstretch>
+                                                    <verstretch>0</verstretch>
+                                                </sizepolicy>
+                                            </property>
                                             <property name="font">
                                                 <font>
                                                 </font>
@@ -372,13 +429,61 @@
                                 </widget>
                             </vbox>
                         </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer12</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>31</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
                     </hbox>
                 </widget>
             </vbox>
         </widget>
-        <widget class="QLayoutWidget">
+        <spacer>
             <property name="name">
-                <cstring>layout86</cstring>
+                <cstring>spacer14_2</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Expanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>20</width>
+                    <height>16</height>
+                </size>
+            </property>
+        </spacer>
+        <widget class="QFrame">
+            <property name="name">
+                <cstring>frame12</cstring>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>5</hsizetype>
+                    <vsizetype>0</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+            <property name="frameShape">
+                <enum>GroupBoxPanel</enum>
+            </property>
+            <property name="frameShadow">
+                <enum>Sunken</enum>
             </property>
             <vbox>
                 <property name="name">
@@ -403,61 +508,94 @@
                         <set>AlignCenter</set>
                     </property>
                 </widget>
-                <widget class="QRadioButton">
+                <widget class="QButtonGroup">
                     <property name="name">
-                        <cstring>RadomGeneratedRadioButton</cstring>
+                        <cstring>RandomButtonGroup</cstring>
                     </property>
-                    <property name="font">
-                        <font>
-                        </font>
+                    <property name="frameShape">
+                        <enum>NoFrame</enum>
                     </property>
-                    <property name="text">
-                        <string>Different each time the program runs</string>
-                    </property>
-                    <property name="checked">
-                        <bool>true</bool>
-                    </property>
-                </widget>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>layout85</cstring>
+                    <property name="title">
+                        <string></string>
                     </property>
                     <hbox>
                         <property name="name">
                             <cstring>unnamed</cstring>
                         </property>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer10</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>51</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
                         <widget class="QRadioButton">
                             <property name="name">
-                                <cstring>RandomFixedRadioButton</cstring>
+                                <cstring>RadomGeneratedRadioButton</cstring>
                             </property>
                             <property name="font">
                                 <font>
                                 </font>
                             </property>
                             <property name="text">
-                                <string>Set at</string>
+                                <string>Based on current time</string>
+                            </property>
+                            <property name="checked">
+                                <bool>true</bool>
                             </property>
                         </widget>
-                        <widget class="QSpinBox">
+                        <widget class="QLayoutWidget">
                             <property name="name">
-                                <cstring>RandomSpinBox</cstring>
+                                <cstring>layout24</cstring>
                             </property>
-                            <property name="enabled">
-                                <bool>false</bool>
-                            </property>
-                            <property name="font">
-                                <font>
-                                </font>
-                            </property>
-                            <property name="maxValue">
-                                <number>32767</number>
-                            </property>
-                            <property name="minValue">
-                                <number>1</number>
-                            </property>
-                            <property name="value">
-                                <number>32767</number>
-                            </property>
+                            <hbox>
+                                <property name="name">
+                                    <cstring>unnamed</cstring>
+                                </property>
+                                <widget class="QRadioButton">
+                                    <property name="name">
+                                        <cstring>RandomFixedRadioButton</cstring>
+                                    </property>
+                                    <property name="font">
+                                        <font>
+                                        </font>
+                                    </property>
+                                    <property name="text">
+                                        <string>Set at</string>
+                                    </property>
+                                </widget>
+                                <widget class="QSpinBox">
+                                    <property name="name">
+                                        <cstring>RandomSpinBox</cstring>
+                                    </property>
+                                    <property name="enabled">
+                                        <bool>false</bool>
+                                    </property>
+                                    <property name="font">
+                                        <font>
+                                        </font>
+                                    </property>
+                                    <property name="maxValue">
+                                        <number>32767</number>
+                                    </property>
+                                    <property name="minValue">
+                                        <number>1</number>
+                                    </property>
+                                    <property name="value">
+                                        <number>32767</number>
+                                    </property>
+                                </widget>
+                            </hbox>
                         </widget>
                         <spacer>
                             <property name="name">
@@ -471,7 +609,7 @@
                             </property>
                             <property name="sizeHint">
                                 <size>
-                                    <width>60</width>
+                                    <width>50</width>
                                     <height>20</height>
                                 </size>
                             </property>
@@ -480,9 +618,40 @@
                 </widget>
             </vbox>
         </widget>
-        <widget class="QLayoutWidget">
+        <spacer>
             <property name="name">
-                <cstring>layout84</cstring>
+                <cstring>spacer15</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Expanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>20</width>
+                    <height>16</height>
+                </size>
+            </property>
+        </spacer>
+        <widget class="QFrame">
+            <property name="name">
+                <cstring>AncestorFrame</cstring>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>5</hsizetype>
+                    <vsizetype>0</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+            <property name="frameShape">
+                <enum>GroupBoxPanel</enum>
+            </property>
+            <property name="frameShadow">
+                <enum>Sunken</enum>
             </property>
             <vbox>
                 <property name="name">
@@ -529,9 +698,40 @@
                 </widget>
             </vbox>
         </widget>
-        <widget class="QLayoutWidget">
+        <spacer>
             <property name="name">
-                <cstring>layout80</cstring>
+                <cstring>spacer16</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Expanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>20</width>
+                    <height>16</height>
+                </size>
+            </property>
+        </spacer>
+        <widget class="QFrame">
+            <property name="name">
+                <cstring>frame27</cstring>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>5</hsizetype>
+                    <vsizetype>0</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+            <property name="frameShape">
+                <enum>GroupBoxPanel</enum>
+            </property>
+            <property name="frameShadow">
+                <enum>Sunken</enum>
             </property>
             <vbox>
                 <property name="name">
@@ -573,6 +773,23 @@
                         <property name="name">
                             <cstring>unnamed</cstring>
                         </property>
+                        <spacer>
+                            <property name="name">
+                                <cstring>BirthLeftSpacer</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>41</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
                         <widget class="QRadioButton">
                             <property name="name">
                                 <cstring>LocalBirthRadioButton</cstring>
@@ -600,13 +817,61 @@
                                 <string>Anywhere, randomly</string>
                             </property>
                         </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>BirthRightSpacer</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>51</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
                     </hbox>
                 </widget>
             </vbox>
         </widget>
-        <widget class="QLayoutWidget">
+        <spacer>
             <property name="name">
-                <cstring>layout83</cstring>
+                <cstring>spacer17</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Expanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>20</width>
+                    <height>16</height>
+                </size>
+            </property>
+        </spacer>
+        <widget class="QFrame">
+            <property name="name">
+                <cstring>StopFrame</cstring>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>5</hsizetype>
+                    <vsizetype>0</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+            <property name="frameShape">
+                <enum>GroupBoxPanel</enum>
+            </property>
+            <property name="frameShadow">
+                <enum>Sunken</enum>
             </property>
             <vbox>
                 <property name="name">
@@ -622,7 +887,7 @@
                         </font>
                     </property>
                     <property name="text">
-                        <string>Stop Run at</string>
+                        <string>Stop Run</string>
                     </property>
                     <property name="alignment">
                         <set>WordBreak|AlignCenter</set>
@@ -648,9 +913,34 @@
                         <property name="name">
                             <cstring>unnamed</cstring>
                         </property>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer13</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>40</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
                         <widget class="QRadioButton">
                             <property name="name">
                                 <cstring>StopManuallyRadioButton</cstring>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy>
+                                    <hsizetype>0</hsizetype>
+                                    <vsizetype>0</vsizetype>
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
                             </property>
                             <property name="font">
                                 <font>
@@ -665,7 +955,7 @@
                         </widget>
                         <widget class="QLayoutWidget">
                             <property name="name">
-                                <cstring>layout81</cstring>
+                                <cstring>StopAtLayout</cstring>
                             </property>
                             <hbox>
                                 <property name="name">
@@ -675,8 +965,16 @@
                                     <property name="name">
                                         <cstring>StopAtRadioButton</cstring>
                                     </property>
+                                    <property name="sizePolicy">
+                                        <sizepolicy>
+                                            <hsizetype>0</hsizetype>
+                                            <vsizetype>0</vsizetype>
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
                                     <property name="text">
-                                        <string></string>
+                                        <string>At</string>
                                     </property>
                                 </widget>
                                 <widget class="QSpinBox">
@@ -708,10 +1006,44 @@
                                 </widget>
                             </hbox>
                         </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer14</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>21</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
                     </hbox>
                 </widget>
             </vbox>
         </widget>
+        <spacer>
+            <property name="name">
+                <cstring>spacer18</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Expanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>20</width>
+                    <height>16</height>
+                </size>
+            </property>
+        </spacer>
         <widget class="QPushButton">
             <property name="name">
                 <cstring>SavePetriPushButton</cstring>
@@ -729,15 +1061,9 @@
 <connections>
     <connection>
         <sender>RadomGeneratedRadioButton</sender>
-        <signal>clicked()</signal>
-        <receiver>RandomFixedRadioButton</receiver>
-        <slot>toggle()</slot>
-    </connection>
-    <connection>
-        <sender>RandomFixedRadioButton</sender>
-        <signal>clicked()</signal>
+        <signal>&lt;No Signal&gt;</signal>
         <receiver>RadomGeneratedRadioButton</receiver>
-        <slot>toggle()</slot>
+        <slot>&lt;No)</slot>
     </connection>
 </connections>
 <layoutdefaults spacing="6" margin="11"/>
