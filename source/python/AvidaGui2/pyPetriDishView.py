@@ -6,6 +6,9 @@
 #      by: The PyQt User Interface Compiler (pyuic) 3.13
 #
 # WARNING! All changes made in this file will be lost!
+#
+# Actually there is no UI file, so I suspect that Kaben modified this .py file
+# and it can no longer be generated from a .ui file
 
 
 from qt import *
