@@ -57,6 +57,7 @@ nontest_module_names = [
   "AvidaGui2.pyInstructionSet",
   "AvidaGui2.pyLiveControlsView",
   "AvidaGui2.pyLiveControlsCtrl",
+  "AvidaGui2.pyMapProfile",
   "AvidaGui2.pyNavBarView",
   "AvidaGui2.pyNavBarCtrl",
   "AvidaGui2.pyOrganismScopeView",
