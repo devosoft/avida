@@ -187,8 +187,6 @@ public:
   double GetResource(int id) const {
     return resource_count.Get(id); }
 
-  void PrintReactionValues(); 
-
   cStats & GetStats() { return stats; }
   cGenebank & GetGenebank() { return *genebank; }
   cInjectGenebank & GetInjectGenebank() { return *inject_genebank; }
