@@ -1,0 +1,585 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 39;
+	objects = {
+		DC00C16E07D6FB1700E90B4B = {
+			children = (
+				DC3A63D707DD02DD00A043AD,
+				DC3A63D807DD02DE00A043AD,
+				DC3A63DA07DD02DE00A043AD,
+				DC3A63DB07DD02DE00A043AD,
+				DC3A63DC07DD02DE00A043AD,
+				DC3A63DD07DD02DE00A043AD,
+				DC3A63DF07DD02DE00A043AD,
+				DC3A63E007DD02DE00A043AD,
+				DC3A63E107DD02DE00A043AD,
+				DC3A63E207DD02DE00A043AD,
+				DC3A63E407DD02DE00A043AD,
+				DC3A63E507DD02DE00A043AD,
+				DC3A63E707DD02DE00A043AD,
+				DC3A63E807DD02DE00A043AD,
+				DC3A63EA07DD02DE00A043AD,
+				DC3A63EB07DD02DE00A043AD,
+				DC3A63EC07DD02DE00A043AD,
+				DC3A63ED07DD02DE00A043AD,
+				DC3A63EE07DD02DE00A043AD,
+				DC3A63EF07DD02DE00A043AD,
+				DC3A63F007DD02DE00A043AD,
+				DC3A63F107DD02DE00A043AD,
+				DC3A63F207DD02DE00A043AD,
+				DC3A63F307DD02DE00A043AD,
+				DC3A63F507DD02DE00A043AD,
+				DC3A63F607DD02DE00A043AD,
+				DC3A63F707DD02DE00A043AD,
+				DC3A63F907DD02DE00A043AD,
+				DC3A63FA07DD02DE00A043AD,
+				DC3A63FB07DD02DE00A043AD,
+				DC3A63FC07DD02DE00A043AD,
+				DC3A63FE07DD02DE00A043AD,
+				DC3A63FF07DD02DE00A043AD,
+				DC3A640207DD02DE00A043AD,
+				DC3A640407DD02DE00A043AD,
+				DC3A640507DD02DE00A043AD,
+				DC3A640607DD02DE00A043AD,
+				DC3A640707DD02DE00A043AD,
+				DC3A640807DD02DE00A043AD,
+				DC3A640907DD02DE00A043AD,
+				DC3A640A07DD02DE00A043AD,
+				DC3A640C07DD02DE00A043AD,
+				DC3A640E07DD02DE00A043AD,
+				DC3A641007DD02DE00A043AD,
+				DC3A641207DD02DE00A043AD,
+				DC3A641407DD02DE00A043AD,
+				DC3A641607DD02DE00A043AD,
+				DC3A641707DD02DE00A043AD,
+				DC3A641807DD02DE00A043AD,
+				DC3A641907DD02DE00A043AD,
+				DC3A641A07DD02DE00A043AD,
+				DC3A641C07DD02DE00A043AD,
+				DC3A641D07DD02DE00A043AD,
+				DC3A641E07DD02DE00A043AD,
+				DC3A642007DD02DE00A043AD,
+				DC3A642207DD02DE00A043AD,
+				DC3A642407DD02DE00A043AD,
+				DC3A642607DD02DE00A043AD,
+				DC3A642907DD02DE00A043AD,
+				DC3A642B07DD02DE00A043AD,
+			);
+			isa = PBXGroup;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC00C17007D6FB1700E90B4B = {
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			isa = PBXBuildStyle;
+			name = Development;
+		};
+		DC00C17107D6FB1700E90B4B = {
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+			};
+			isa = PBXBuildStyle;
+			name = Deployment;
+		};
+		DC00C17207D6FB1700E90B4B = {
+			buildSettings = {
+			};
+			buildStyles = (
+				DC00C17007D6FB1700E90B4B,
+				DC00C17107D6FB1700E90B4B,
+			);
+			hasScannedForEncodings = 0;
+			isa = PBXProject;
+			mainGroup = DC00C16E07D6FB1700E90B4B;
+			projectDirPath = "";
+			targets = (
+			);
+		};
+		DC3A63D707DD02DD00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyAvidaStatsInterface.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63D807DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = UnitTest_py_test_utils.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63DA07DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyOnePop_StatsCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63DB07DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyOnePop_PetriDishView.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63DC07DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyOnePop_PetriDishCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63DD07DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = py_test_utils.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63DF07DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyLiveControlsCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63E007DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = py_recursive_tests_support.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63E107DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyGraphView.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63E207DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyGraphCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63E407DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyGradientScaleCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63E507DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyTwoPop_GraphCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63E707DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyMdtr.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63E807DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyMainControllerFactory.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63EA07DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyAvidaThreadedDriver.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63EB07DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyTestCase.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63EC07DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyTemporaryReloads.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63ED07DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pySessionWorkThreadHdlr.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63EE07DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pySessionDumbView.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63EF07DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = UnitTest_pyUnitTestSuiteRecurser.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63F007DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = UnitTest_pyTestCase.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63F107DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = UnitTest_pyEduMainCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63F207DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyOnePop_TimelineView.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63F307DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyOnePop_TimelineCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63F507DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyFreezerCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63F607DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyOnePop_GraphView.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63F707DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyOneAna_TimelineCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63F907DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyAnalyzeControlsCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63FA07DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = __init__.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63FB07DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyEduMainMenuBarHdlr.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63FC07DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyTimelineCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63FE07DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyEduWorkspaceCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A63FF07DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyEduSessionMenuBarHdlr.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A640207DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyTwoOrganismCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A640407DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyTwoOrg_VivisectionCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A640507DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pySessionDumbCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A640607DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pySessionCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A640707DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pySessionControllerFactory.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A640807DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyPetriDishView.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A640907DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyPetriDishCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A640A07DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyOnePop_GraphCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A640C07DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyOneOrganismCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A640E07DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyOneAnalyzeCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A641007DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyAvidaCoreData.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A641207DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyTwoAnalyzeCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A641407DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyAvida.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A641607DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyNavBarCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A641707DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyOnePopulationCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A641807DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = FunctionalTest_recursive_tests.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A641907DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyOneAna_StatsCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A641A07DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyEduMainCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A641C07DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyVivisectionCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A641D07DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyUnitTestSuiteRecurser.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A641E07DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyUnitTestSuite.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A642007DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyTwoPopulationCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A642207DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyTwoPop_TimelineCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A642407DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyTwoPop_StatsCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A642607DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyTwoPop_PetriDishesCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A642907DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyOneAna_GraphCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DC3A642B07DD02DE00A043AD = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyOneAna_PetriDishCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+	};
+	rootObject = DC00C17207D6FB1700E90B4B;
+}
