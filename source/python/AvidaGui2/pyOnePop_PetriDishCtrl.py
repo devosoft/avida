@@ -13,6 +13,7 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
   def construct(self, session_mdl):
     self.m_session_mdl = session_mdl
     self.m_avida = None
+    self.dishDisabled = False
     self.m_petri_dish_ctrl.construct(self.m_session_mdl)
     self.m_gradient_scale_ctrl.construct(self.m_session_mdl)
     self.m_live_controls_ctrl.construct(self.m_session_mdl)
@@ -29,7 +30,9 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
       PYSIGNAL("doDefrostDishSig"), self.RenameDishSlot)
     self.connect(self.m_session_mdl.m_session_mdtr,
       PYSIGNAL("doDefrostDishSig"), self.MakeConfigVisiableSlot)
-
+    self.connect(self.m_session_mdl.m_session_mdtr,
+      PYSIGNAL("doDisablePetriDishSig"), self.SetDishDisabledSlot)
+      
     self.connect(self.m_zoom_spinbox, SIGNAL("valueChanged(int)"),
       self.m_petri_dish_ctrl.zoomSlot)
     self.connect(self.m_petri_dish_ctrl, PYSIGNAL("zoomSig"),
@@ -73,10 +76,15 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
        self.m_petri_dish_widget_stack.raiseWidget(0)
  
   def MakeConfigVisiableSlot (self):
+    if self.dishDisabled:
+      return
     current_page = self.m_petri_dish_widget_stack.visibleWidget()
     current_page_int = self.m_petri_dish_widget_stack.id(current_page)
     if (current_page_int == 0):
        self.m_petri_dish_widget_stack.raiseWidget(1)
+       
+  def SetDishDisabledSlot(self):
+    self.dishDisabled = True
 
   def modeActivatedSlot(self, index):
     #print "pyOnePop_PetriDishCtrl.modeActivatedSlot index", index
@@ -117,4 +125,6 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     if update: self.m_update_label.setText(QString("%1").arg(update))
     
   def RenameDishSlot(self, dishName):
+    if self.dishDisabled:
+      return
     self.PopulationTextLabel.setText(dishName)

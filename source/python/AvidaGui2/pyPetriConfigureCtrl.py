@@ -18,6 +18,7 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     self.m_session_mdl = session_mdl
     self.m_session_petri_view = pyPetriConfigureView()
     self.full_petri_dict = {}
+    self.DishDisabled = False
     self.connect(self.MutationSlider, SIGNAL("valueChanged(int)"), 
       self.ChangeMutationTextSlot)
     self.connect(self.WorldSizeSlider, SIGNAL("valueChanged(int)"), 
@@ -92,6 +93,11 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
       self.StopAtSpinBox.setEnabled(True)
   
   def FillDishSlot(self, dish_name, petri_dict):
+    
+    # Stop from filling the petri dish if the dish is disabled
+
+    if self.DishDisabled:
+      return
     self.full_petri_dict = petri_dict.dictionary
     settings_dict =  petri_dict.dictionary["SETTINGS"]
     self.AncestorComboBox.removeItem (0)
@@ -141,7 +147,6 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
        
 
   def DisablePetriConfigureSlot(self):
-    print "called DisablePetriConfigureSlot"
     self.run_started = False
     self.AncestorComboBox.setEnabled(False)
     self.StopAtSpinBox.setEnabled(False)
@@ -168,6 +173,9 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     self.StopHeadTextLabel.setEnabled(False)
     self.DeathTextLabel2.setEnabled(False)
     self.DeathTextLabel3.setEnabled(False)
+    self.DishDisabled = True
+    self.m_session_mdl.m_session_mdtr.emit(
+      PYSIGNAL("doDisablePetriDishSig"), ())
 
   def CreateFilesFromPetriSlot(self, out_dir = None):
     self.full_petri_dict["SETTINGS"] = self.Form2Dictionary()
@@ -207,7 +215,8 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
       settings_dict["DEATH_METHOD"] = 2
     return settings_dict
     
-  def FreezePetriSlot(self, freeze_dir = None, population_dict = None):
+  def FreezePetriSlot(self, freeze_dir = None, population_dict = None, 
+      send_reset_signal = False, send_quit_signal = False):
     tmp_dict = {}
     tmp_dict["SETTINGS"] = self.Form2Dictionary()
     m_pop_up_freezer_file_name = pyFreezeDialogCtrl()
