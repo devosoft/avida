@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import os,string
+import string
 
 class pyReadFreezer:
 
   def __init__(self, in_file_name = None):
     self.file_name = in_file_name
     self.dictionary = {}
-    print "reading file " + self.file_name
     freezefile = open(self.file_name)
     lines = freezefile.readlines()
     freezefile.close
@@ -21,11 +20,11 @@ class pyReadFreezer:
       line = line.strip()
       if len(line) > 0:
         if line[0] == "*":
-          section_key = line[1:]
+          section_key = line[1:].upper()
           self.dictionary[section_key] = {}
         else:
           var_name, value = string.split(line)
-          self.dictionary[section_key][var_name] = [value]
-
+          self.dictionary[section_key][var_name.upper()] = value
+	
   def GetDictionary(self):
     return self.dictionary
