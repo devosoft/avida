@@ -1,7 +1,4 @@
-
-import pyMdtr; reload(pyMdtr)
 from pyMdtr import pyMdtr
-
 import qt
 
 class pyMainControllerFactory(qt.QObject):

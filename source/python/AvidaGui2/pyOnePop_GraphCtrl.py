@@ -16,15 +16,16 @@ class pyOnePop_GraphCtrl(pyOnePop_GraphView):
 
   def construct(self, session_mdl):
     self.m_session_mdl = session_mdl
+    self.m_avida = None
+    self.connect(
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"),
+      self.setAvidaSlot)
+
     self.m_graph_ctrl.construct(self.m_session_mdl)
     self.m_combo_box.clear()
     self.m_combo_box.setInsertionPolicy(QComboBox.AtBottom)
     for entry in self.m_avida_stats_interface.m_entries:
       self.m_combo_box.insertItem(entry[0])
-
-    self.connect(self.m_session_mdl.m_session_mdtr.m_avida_threaded_driver_mdtr,
-      PYSIGNAL("AvidaUpdatedSig"), self.avidaUpdatedSlot)
-    self.connect(self.m_combo_box, SIGNAL("activated(int)"), self.modeActivatedSlot)
 
     self.m_x_array = zeros(2, Float)
     self.m_y_array = zeros(2, Float)
@@ -55,6 +56,18 @@ class pyOnePop_GraphCtrl(pyOnePop_GraphView):
       self.m_graph_ctrl.setCurvePen(self.m_graph_ctrl.m_curve, QPen(Qt.red))
       self.m_graph_ctrl.replot()
       
+  def setAvidaSlot(self, avida):
+    old_avida = self.m_avida
+    self.m_avida = avida
+    if(old_avida):
+      self.disconnect(
+        self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
+        self.avidaUpdatedSlot)
+      del old_avida
+    if(self.m_avida):
+      self.connect(
+        self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
+        self.avidaUpdatedSlot)
 
   def avidaUpdatedSlot(self):
     if self.m_combo_box.currentItem():

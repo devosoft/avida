@@ -5,7 +5,7 @@ import atexit, threading
 class pyAvidaThreadedDriver(pyAvidaDriver):
 
   def construct(self):
-    self.doSetProcessBitesize(30)
+    self.doSetProcessBitesize(1)
     self.m_thread.start()
   def __init__(self, environment):
     self.m_environment = environment
@@ -16,6 +16,8 @@ class pyAvidaThreadedDriver(pyAvidaDriver):
     I'm using the wrong locking model in the driver threads...
     I need to lock on access to the Avida core library, rather than on
     per-thread locks (in order to protect static data in the library).
+    ...
+    (so, think of a good way to associate a library mutex with the Avida libraries.)
     """)
     self.m_lock = threading.Lock()
     self.m_do_update_semaphore = threading.Semaphore(0)

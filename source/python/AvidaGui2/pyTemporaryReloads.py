@@ -108,6 +108,12 @@ nontest_module_names = [
 
   "AvidaGui2.pyEduWorkspaceView",
   "AvidaGui2.pyEduWorkspaceCtrl",
+
+  "AvidaGui2.pyEduSessionMenuBarHdlr",
+  "AvidaGui2.pySessionDumbCtrl",
+  
+  "AvidaGui2.pyAvida",
+#  "AvidaGui2.pyAvidaThreadHdlr",
 ]
 
 module_names = nontest_module_names + test_module_names

@@ -1,29 +1,13 @@
 #from pyAvidaCoreData import pyAvidaCoreData
 #from pyAvidaThreadedDriver import pyAvidaThreadedDriver
-
-import pyEduSessionMenuBarHdlr; reload (pyEduSessionMenuBarHdlr)
 from pyEduSessionMenuBarHdlr import *
-
-#import pyEduWorkspaceCtrl; reload (pyEduWorkspaceCtrl)
 from pyEduWorkspaceCtrl import *
-
-import pyAvidaCoreData; reload(pyAvidaCoreData)
 from pyAvidaCoreData import *
-
-import pyMdtr; reload(pyMdtr)
 from pyMdtr import *
-
-import pySessionControllerFactory; reload(pySessionControllerFactory)
 from pySessionControllerFactory import *
-
-import pySessionDumbCtrl; reload(pySessionDumbCtrl)
 from pySessionDumbCtrl import *
-
-import pySessionWorkThreadHdlr; reload(pySessionWorkThreadHdlr)
 from pySessionWorkThreadHdlr import *
-
 from AvidaCore import cString
-
 import qt
 
 class pySessionCtrl(qt.QObject):
@@ -52,22 +36,25 @@ class pySessionCtrl(qt.QObject):
     self.m_session_controller_factory.construct(self.m_session_mdl)
 
     # create an avida processing thread
-    self.m_session_mdl.m_avida_core_data = pyAvidaCoreData()
-    self.m_session_mdl.m_avida_core_data.construct(self.m_session_mdl.m_genesis_filename)
+    ## XXX excising obsolete code. @kgn
+    # self.m_session_mdl.m_avida_core_data = pyAvidaCoreData()
+    # self.m_session_mdl.m_avida_core_data.construct(self.m_session_mdl.m_genesis_filename)
 
     # connect various session controller creators to the controller
     # factory.
     self.m_session_controller_factory.addControllerCreator("pyEduSessionMenuBarHdlr", pyEduSessionMenuBarHdlr)
-    self.m_session_controller_factory.addControllerCreator("pySessionWorkThreadHdlr", pySessionWorkThreadHdlr)
+    ## XXX excising obsolete code. @kgn
+    # self.m_session_controller_factory.addControllerCreator("pySessionWorkThreadHdlr", pySessionWorkThreadHdlr)
     self.m_session_controller_factory.addControllerCreator("pySessionDumbCtrl", pySessionDumbCtrl)
     self.m_session_controller_factory.addControllerCreator("pyEduWorkspaceCtrl", pyEduWorkspaceCtrl)
 
     self.m_session_mdl.m_session_mdtr.m_session_controller_factory_mdtr.emit(
       qt.PYSIGNAL("newSessionControllerSig"), ("pyEduSessionMenuBarHdlr",))
-    ## XXX temporary.
-    self.m_session_mdl.m_session_mdtr.m_session_controller_factory_mdtr.emit(
-      qt.PYSIGNAL("newSessionControllerSig"), ("pySessionWorkThreadHdlr",))
-    ## XXX temporary. cause instantiation of a dumb gui for testing.
+    ## XXX this was temporary code, now kept around for reference. @kgn
+    # self.m_session_mdl.m_session_mdtr.m_session_controller_factory_mdtr.emit(
+    #   qt.PYSIGNAL("newSessionControllerSig"), ("pySessionWorkThreadHdlr",))
+    
+    ## XXX temporary. cause instantiation of a dumb gui for testing. @kgn
     self.m_session_mdl.m_session_mdtr.m_session_controller_factory_mdtr.emit(
       qt.PYSIGNAL("newSessionControllerSig"), ("pySessionDumbCtrl",))
 

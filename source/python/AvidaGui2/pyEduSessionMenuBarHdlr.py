@@ -44,53 +44,6 @@ class pyEduSessionMenuBarHdlr(qt.QObject):
     self.connect(self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
       qt.PYSIGNAL("doSetupMainWindowMenuBarSig"), self.doSetupMainWindowMenuBarSlot)
 
-    self.connect(self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
-      qt.PYSIGNAL("doNewWorkspaceSig"), self.doNewWorkspaceSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
-      qt.PYSIGNAL("doSaveWorkspaceSig"), self.doSaveWorkspaceSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
-      qt.PYSIGNAL("doSaveWorkspaceAsSig"), self.doSaveWorkspaceAsSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
-      qt.PYSIGNAL("doOpenWorkspaceSig"), self.doOpenWorkspaceSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
-      qt.PYSIGNAL("doCloseWorkspaceSig"), self.doCloseWorkspaceSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
-      qt.PYSIGNAL("doImportSig"), self.doImportSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
-      qt.PYSIGNAL("doExportSig"), self.doExportSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
-      qt.PYSIGNAL("doQuitSig"), self.doQuitSlot)
-
-    self.connect(self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
-      qt.PYSIGNAL("doUndoSig"), self.doUndoSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
-      qt.PYSIGNAL("doRedoSig"), self.doRedoSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
-      qt.PYSIGNAL("doCutSig"), self.doCutSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
-      qt.PYSIGNAL("doCopySig"), self.doCopySlot)
-    self.connect(self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
-      qt.PYSIGNAL("doPasteSig"), self.doPasteSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
-      qt.PYSIGNAL("doSelectAllSig"), self.doSelectAllSlot)
-
-    self.connect(self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
-      qt.PYSIGNAL("doStartSig"), self.doStartSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
-      qt.PYSIGNAL("doPauseSig"), self.doPauseSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
-      qt.PYSIGNAL("doNextUpdateSig"), self.doNextUpdateSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
-      qt.PYSIGNAL("doNextStepSig"), self.doNextStepSlot)
-
-    self.connect(self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
-      qt.PYSIGNAL("doWorkspaceWindowTmpSig"), self.doWorkspaceWindowTmpSlot)
-
-    self.connect(self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
-      qt.PYSIGNAL("doZoomWindowSig"), self.doZoomWindowSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
-      qt.PYSIGNAL("doMinimizeWindowSig"), self.doMinimizeWindowSlot)
-
   def doSetupMainWindowMenuBarSlot(self, main_window):
     main_window.m_menu_bar = main_window.menuBar()
     main_window.m_file_menu = qt.QPopupMenu()
@@ -171,62 +124,7 @@ class pyEduSessionMenuBarHdlr(qt.QObject):
       self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr, qt.PYSIGNAL("doMinimizeWindowSig"))
     main_window.m_menu_bar.insertItem("Window", main_window.m_window_menu)
 
-  def doNewWorkspaceSlot(self):
-    print "pyEduSessionMenuBarHdlr.doNewWorkspaceSlot()."
-  def doSaveWorkspaceSlot(self):
-    print "pyEduSessionMenuBarHdlr.doSaveWorkspaceSlot()."
-  def doSaveWorkspaceAsSlot(self):
-    print "pyEduSessionMenuBarHdlr.doSaveWorkspaceAsSlot()."
-  def doOpenWorkspaceSlot(self):
-    print "pyEduSessionMenuBarHdlr.doOpenWorkspaceSlot()."
-  def doCloseWorkspaceSlot(self):
-    print "pyEduSessionMenuBarHdlr.doCloseWorkspaceSlot()."
-    self.m_session_mdl.m_session_mdtr.emit(qt.PYSIGNAL("doOrphanSessionSig"), ())
-  def doImportSlot(self):
-    print "pyEduSessionMenuBarHdlr.doImportSlot()."
-  def doExportSlot(self):
-    print "pyEduSessionMenuBarHdlr.doExportSlot()."
-  def doQuitSlot(self):
-    print "pyEduSessionMenuBarHdlr.doQuitSlot()."
-
-
-  def doUndoSlot(self):
-    print "pyEduSessionMenuBarHdlr.doUndoSlot()."
-  def doRedoSlot(self):
-    print "pyEduSessionMenuBarHdlr.doRedoSlot()."
-  def doCutSlot(self):
-    print "pyEduSessionMenuBarHdlr.doCutSlot()."
-  def doCopySlot(self):
-    print "pyEduSessionMenuBarHdlr.doCopySlot()."
-  def doPasteSlot(self):
-    print "pyEduSessionMenuBarHdlr.doPasteSlot()."
-  def doSelectAllSlot(self):
-    print "pyEduSessionMenuBarHdlr.doSelectAllSlot()."
-
-
-  def doStartSlot(self):
-    print "pyEduSessionMenuBarHdlr.doStartSlot()."
-    self.m_session_mdl.m_session_mdtr.m_avida_threaded_driver_mdtr.emit(qt.PYSIGNAL("doStartSig"), ())
-  def doPauseSlot(self):
-    print "pyEduSessionMenuBarHdlr.doPauseSlot()."
-    self.m_session_mdl.m_session_mdtr.m_avida_threaded_driver_mdtr.emit(qt.PYSIGNAL("doPauseSig"), ())
-  def doNextUpdateSlot(self):
-    print "pyEduSessionMenuBarHdlr.doNextUpdateSlot()."
-  def doNextStepSlot(self):
-    print "pyEduSessionMenuBarHdlr.doNextStepSlot()."
-
-  def doWorkspaceWindowTmpSlot(self):
-    print "pyEduSessionMenuBarHdlr.doWorkspaceWindowTmpSlot()..."
-    self.m_session_mdl.m_session_mdtr.m_session_controller_factory_mdtr.emit(
-      qt.PYSIGNAL("newSessionControllerSig"), ("pyEduWorkspaceCtrl",))
-    print "pyEduSessionMenuBarHdlr.doWorkspaceWindowTmpSlot() done."
-
-
-  def doZoomWindowSlot(self):
-    print "pyEduSessionMenuBarHdlr.doZoomWindowSlot()."
-  def doMinimizeWindowSlot(self):
-    print "pyEduSessionMenuBarHdlr.doMinimizeWindowSlot()."
-
+    main_window.setupCustomMenus(self)
 
 # Unit tests.
 
