@@ -41,6 +41,7 @@ public:
   static void CB_KillCell(cPopulation * pop, int death_id);
   static void CB_KillSurroundCell(cPopulation * pop, int commie_id);
   static bool CB_SendMessage(cPopulation * pop, int cell_id, cOrgMessage & mess);
+  static int CB_ReceiveValue(cPopulation * pop, int cell_id);
   static bool CB_InjectParasite(cPopulation * pop, int cell_id, cOrganism * parent,
 				const cGenome & injected_code);
 

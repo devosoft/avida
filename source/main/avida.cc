@@ -95,6 +95,8 @@ void SetupAvida(
   test_interface.SetFun_GetInputAt(&cCallbackUtil::CB_GetInputAt);
   test_interface.SetFun_GetResources(&cCallbackUtil::CB_GetResources);
   test_interface.SetFun_UpdateResources(&cCallbackUtil::CB_UpdateResources);
+  test_interface.SetFun_ReceiveValue(&cCallbackUtil::CB_ReceiveValue);
+
 
   int rSize = environment.GetResourceLib().GetSize();
 

@@ -68,7 +68,9 @@ cInstSet * cTestCPU::inst_set(NULL);
 cEnvironment * cTestCPU::environment(NULL);
 cPopulationInterface cTestCPU::test_interface;
 tArray<int> cTestCPU::input_array;
+tArray<int> cTestCPU::receive_array;
 int cTestCPU::cur_input;
+int cTestCPU::cur_receive;
 cResourceCount cTestCPU::resource_count;
 
 bool cTestCPU::initialized(false);
@@ -153,6 +155,7 @@ bool cTestCPU::ProcessGestation(cCPUTestInfo & test_info, int cur_depth)
 
   // Prepare the inputs...
   cur_input = 0;
+  cur_receive = 0;
 
   // Determine if we're tracing and what we need to print.
   ostream * trace_fp =
@@ -252,8 +255,14 @@ bool cTestCPU::TestGenome_Body(cCPUTestInfo & test_info,
     input_array[0] = 0x0f13149f;  // 00001111 00010011 00010100 10011111
     input_array[1] = 0x3308e53e;  // 00110011 00001000 11100101 00111110
     input_array[2] = 0x556241eb;  // 01010101 01100010 01000001 11101011
+
+	receive_array.Resize(3);
+    receive_array[0] = 0x0f139f14;  // 00001111 00010011 10011111 00010100
+    receive_array[1] = 0x33083ee5;  // 00110011 00001000 00111110 11100101
+    receive_array[2] = 0x5562eb41;  // 01010101 01100010 11101011 01000001
   } else {
     environment->SetupInputs(input_array);
+    environment->SetupInputs(receive_array);
   }
 
   if (cur_depth > test_info.max_depth) test_info.max_depth = cur_depth;
@@ -411,6 +420,12 @@ int cTestCPU::GetInputAt(int & input_pointer)
 {
   if (input_pointer >= input_array.GetSize()) input_pointer = 0;
   return input_array[input_pointer++];
+}
+
+int cTestCPU::GetReceiveValue()
+{
+  if (cur_receive >= receive_array.GetSize()) cur_receive = 0;
+  return receive_array[cur_receive++];
 }
 
 const tArray<double> & cTestCPU::GetResources()

@@ -94,6 +94,7 @@ cAvidaDriver_Population::cAvidaDriver_Population(cEnvironment & environment)
   default_interface.SetFun_KillCell(&cCallbackUtil::CB_KillCell);
   default_interface.SetFun_KillSurroundCell(&cCallbackUtil::CB_KillSurroundCell);
   default_interface.SetFun_SendMessage(&cCallbackUtil::CB_SendMessage);
+  default_interface.SetFun_ReceiveValue(&cCallbackUtil::CB_ReceiveValue);
   default_interface.SetFun_InjectParasite(&cCallbackUtil::CB_InjectParasite);
   default_interface.SetFun_UpdateMerit(&cCallbackUtil::CB_UpdateMerit);
 

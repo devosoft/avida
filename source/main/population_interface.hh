@@ -39,6 +39,7 @@ typedef void (*tFunUpdateResources)
 typedef void (*tFunKillCell)(cPopulation * pop, int death_id);
 typedef void (*tFunKillSurroundCell)(cPopulation * pop, int commie_id);
 typedef bool (*tFunSendMessage)(cPopulation * pop, int cell_id, cOrgMessage & mess);
+typedef int (*tFunReceiveValue)(cPopulation * pop, int cell_id);
 typedef bool (*tFunInjectParasite)
   (cPopulation * pop, int cell_id, cOrganism * parent, const cGenome & injected_code);
 typedef bool (*tFunUpdateMerit)(cPopulation * pop, int cell_id, double new_merit);
@@ -66,6 +67,7 @@ private:
   tFunKillCell		   fun_kill_cell;
   tFunKillSurroundCell fun_kill_surround_cell;
   tFunSendMessage      fun_send_message;
+  tFunReceiveValue	   fun_receive_value;
   tFunInjectParasite   fun_inject_parasite;
   tFunUpdateMerit      fun_update_merit;
 public:
@@ -97,10 +99,13 @@ public:
   void SetFun_KillCell(tFunKillCell fun) { fun_kill_cell = fun; }
   void SetFun_KillSurroundCell(tFunKillSurroundCell fun) {fun_kill_surround_cell = fun; }
   void SetFun_SendMessage(tFunSendMessage fun) { fun_send_message = fun; }
+  void SetFun_ReceiveValue(tFunReceiveValue fun) { fun_receive_value = fun; }
   void SetFun_InjectParasite(tFunInjectParasite fun) { fun_inject_parasite = fun; }
   void SetFun_UpdateMerit(tFunUpdateMerit fun) { fun_update_merit = fun; }
 
   void CopyCallbacks(cPopulationInterface & in_interface);
+
+  bool InTestPop() { return (cell_id == -1); }
 
   // Activate callbacks...
   cHardwareBase * NewHardware(cOrganism * owner);
@@ -121,6 +126,7 @@ public:
   void Die();
   void Kaboom();
   bool SendMessage(cOrgMessage & mess);
+  int ReceiveValue();
   bool InjectParasite(cOrganism * parent, const cGenome & injected_code);
   bool UpdateMerit(double new_merit);
 };

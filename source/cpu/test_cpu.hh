@@ -36,7 +36,9 @@ private:
   static cEnvironment * environment;
   static cPopulationInterface test_interface;
   static tArray<int> input_array;
+  static tArray<int> receive_array;
   static int cur_input;
+  static int cur_receive;
   static cResourceCount resource_count;
   static bool d_useResources;
   static tArray<double> d_emptyDoubleArray;
@@ -74,6 +76,7 @@ public:
   static void SetEnvironment(cEnvironment *);
   static int GetInput();
   static int GetInputAt(int & input_pointer);
+  static int GetReceiveValue();
   static const tArray<double> & GetResources();
   static void UpdateResources(const tArray<double> & res_change);
   static void UpdateResource(int id, double change);

@@ -36,6 +36,7 @@ cPopulationInterface::cPopulationInterface()
   , fun_kill_cell(NULL)
   , fun_kill_surround_cell(NULL)
   , fun_send_message(NULL)
+  , fun_receive_value(NULL)
   , fun_inject_parasite(NULL)
   , fun_update_merit(NULL)
 {
@@ -65,6 +66,7 @@ void cPopulationInterface::CopyCallbacks(cPopulationInterface & in_interface)
   fun_kill_cell        = in_interface.fun_kill_cell;
   fun_kill_surround_cell = in_interface.fun_kill_surround_cell;
   fun_send_message     = in_interface.fun_send_message;
+  fun_receive_value    = in_interface.fun_receive_value;
   fun_inject_parasite  = in_interface.fun_inject_parasite;
   fun_update_merit     = in_interface.fun_update_merit;
 }
@@ -185,6 +187,12 @@ bool cPopulationInterface::SendMessage(cOrgMessage & mess)
 {
   if (fun_send_message == NULL) return false;
   return (*fun_send_message)(population, cell_id, mess);
+}
+
+int cPopulationInterface::ReceiveValue()
+{
+  assert(fun_receive_value != NULL);
+  return (*fun_receive_value)(population, cell_id);
 }
 
 bool cPopulationInterface::InjectParasite(cOrganism * parent, 

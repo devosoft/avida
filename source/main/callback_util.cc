@@ -234,6 +234,30 @@ bool cCallbackUtil::CB_SendMessage(cPopulation * pop, int cell_id, cOrgMessage &
   return cell.ConnectionList().GetFirst()->GetOrganism()->ReceiveMessage(mess);
 }
 
+int cCallbackUtil::CB_ReceiveValue(cPopulation * pop, int cell_id)
+{
+  if (pop == NULL) return cTestCPU::GetReceiveValue();
+
+  cPopulationCell & cell = pop->GetCell(cell_id);
+  assert(cell.IsOccupied());
+
+  const int num_neighbors = cell.ConnectionList().GetSize();
+  for (int i = 0; i < num_neighbors; i++) {
+	cPopulationCell & cell = pop->GetCell(cell_id);
+	cell.ConnectionList().CircNext();
+
+    cOrganism * cur_neighbor = cell.ConnectionList().GetFirst()->GetOrganism();
+    if (cur_neighbor == NULL || cur_neighbor->GetSentActive() == false) {
+      continue;
+    }
+
+    return cur_neighbor->RetrieveSentValue();
+  }
+
+  return 0;
+
+}
+
 bool cCallbackUtil::CB_InjectParasite(cPopulation * pop, int cell_id, cOrganism * parent,
 				      const cGenome & injected_code)
 {

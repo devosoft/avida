@@ -76,8 +76,9 @@ protected:
   tBuffer<int> output_buf;
 
   // Communication
-  int sent_value;
-  bool sent_active;
+  int sent_value;         // What number is this org sending?
+  bool sent_active;       // Has this org sent a number?
+  int test_receive_pos;   // In a test CPU, what message to receive next?
 
   // Other stats
   cCPUMemory child_genome; // Child genome, while under construction.

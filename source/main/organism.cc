@@ -79,6 +79,7 @@ cOrganism::cOrganism(const cGenome & in_genome,
   , output_buf(OUTPUT_BUF_SIZE)
   , sent_value(0)
   , sent_active(false)
+  , test_receive_pos(0)
   , max_executed(-1)
   , lineage_label(-1)
   , lineage(NULL)
@@ -123,18 +124,7 @@ double cOrganism::GetTestFitness()
   
 int cOrganism::ReceiveValue()
 {
-  const int num_neighbors = pop_interface.GetNumNeighbors();
-  for (int i = 0; i < num_neighbors; i++) {
-    pop_interface.Rotate();
-    cOrganism * cur_neighbor = pop_interface.GetNeighbor();
-    if (cur_neighbor == NULL || cur_neighbor->GetSentActive() == false) {
-      continue;
-    }
-
-    return cur_neighbor->RetrieveSentValue();
-  }
-
-  return 0;
+  return pop_interface.ReceiveValue();
 }
 
 
