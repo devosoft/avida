@@ -17,6 +17,8 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
   def construct(self, session_mdl):
     self.m_session_mdl = session_mdl
     self.m_session_mdl.m_session_mdtr.m_workspace_mdtr = pyMdtr()
+    self.m_avida = None
+    self.startStatus = True
     self.m_nav_bar_ctrl.construct(session_mdl)
     self.m_freezer_ctrl.construct(session_mdl)
     self.m_cli_to_ctrl_dict = {}
@@ -52,7 +54,18 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
 
     self.connect(self.m_nav_bar_ctrl.m_list_view, SIGNAL("clicked(QListViewItem *)"), self.navBarItemClickedSlot)
     self.connect(self.m_widget_stack, SIGNAL("aboutToShow(QWidget *)"), self.ctrlAboutToShowSlot)
-    self.connect(self.fileOpenFreezerAction,SIGNAL("activated()"),self.freezerOpen)
+    self.connect(self.fileOpenFreezerAction,SIGNAL("activated()"),self.freezerOpenSlot)
+    self.connect(self.controlNext_UpdateAction,SIGNAL("activated()"),self.next_UpdateActionSlot)
+    self.connect(self.controlStartAction,SIGNAL("activated()"),self.startActionSlot)
+    self.connect(
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"),
+      self.setAvidaSlot)
+    self.connect(
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("doPauseAvidaSig"),
+      self.doPauseAvidaSlot)
+    self.connect(
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("doStartAvidaSig"),
+      self.doStartAvidaSlot)
 
     self.m_nav_bar_ctrl.m_one_population_cli.setState(QCheckListItem.On)
     self.m_widget_stack.raiseWidget(self.m_one_population_ctrl)
@@ -107,7 +120,7 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
 
   # public slot
 
-  def freezerOpen(self):
+  def freezerOpenSlot(self):
     freezer_dir = QFileDialog.getExistingDirectory(
                     self.m_session_mdl.m_current_freezer,
                     None,
@@ -182,4 +195,47 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
 
   def helpAbout(self):
     print "pyEduWorkspaceCtrl.helpAbout(): Not implemented yet"
+
+  def next_UpdateActionSlot(self):
+    self.m_session_mdl.m_session_mdtr.emit(
+      PYSIGNAL("fromLiveCtrlUpdateAvidaSig"), ())
+
+  def startActionSlot(self):
+    if self.startStatus:
+      self.m_session_mdl.m_session_mdtr.emit(
+        PYSIGNAL("fromLiveCtrlStartAvidaSig"), ())
+      print "send start signal"
+    else:
+      self.m_session_mdl.m_session_mdtr.emit(
+        PYSIGNAL("fromLiveCtrlPauseAvidaSig"), ())
+      print "send pause signal"
+    
+  def setAvidaSlot(self, avida):
+    old_avida = self.m_avida
+    self.m_avida = avida
+    if(old_avida):
+      self.disconnect(
+        self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
+        self.avidaUpdatedSlot)
+      del old_avida
+    if(self.m_avida):
+      self.connect(
+        self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
+        self.avidaUpdatedSlot)
+
+  def avidaUpdatedSlot(self):
+    pass
+    
+  def doPauseAvidaSlot(self):
+    print "called pyEduWorkspaceCtryl.doPauseAvidaSlot"
+    self.controlStartAction.text = "Start"
+    self.controlStartAction.menuText = "Start"
+    self.startStatus = True
+    
+  def doStartAvidaSlot(self):
+    print "called pyEduWorkspaceCtryl.doStartAvidaSlot"
+    self.controlStartAction.text = "Pause"
+    self.controlStartAction.menuText = "Pause"
+    self.startStatus = False
+
 

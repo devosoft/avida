@@ -28,6 +28,10 @@ class pySessionDumbCtrl(pySessionDumbView):
       self.disconnect(
         self, PYSIGNAL("doUpdateAvidaSig"),
         old_avida.m_avida_thread_mdtr, PYSIGNAL("doUpdateAvidaSig"))
+      self.disconnect(
+        self.m_session_mdl.m_session_mdtr, 
+        PYSIGNAL("fromLiveCtrlUpdateAvidaSig"),
+        old_avida.m_avida_thread_mdtr, PYSIGNAL("doUpdateAvidaSig"))
       del old_avida
     if(self.m_avida):
       print "pySessionDumbCtrl.setAvidaSlot(): connecting..."
@@ -42,6 +46,10 @@ class pySessionDumbCtrl(pySessionDumbView):
         self.m_avida.m_avida_thread_mdtr,  PYSIGNAL("doPauseAvidaSig"))
       self.connect(
         self, PYSIGNAL("doUpdateAvidaSig"),
+        self.m_avida.m_avida_thread_mdtr, PYSIGNAL("doUpdateAvidaSig"))
+      self.connect(
+        self.m_session_mdl.m_session_mdtr, 
+        PYSIGNAL("fromLiveCtrlUpdateAvidaSig"),
         self.m_avida.m_avida_thread_mdtr, PYSIGNAL("doUpdateAvidaSig"))
     
 #  def setupCustomMenus(self, edu_session_menu_bar_hdlr):
