@@ -537,6 +537,7 @@ bool cGenebank::PrintGenotypes(ofstream & fp, cString & data_fields,
 
   if (print_id == true) fp << "id ";
   if (print_parent_id == true) fp << "parent_id ";
+  if (print_parent2_id == true) fp << "parent2_id ";
   if (print_parent_dist == true) fp << "parent_dist ";
   if (print_num_cpus == true) fp << "num_cpus ";
   if (print_total_cpus == true) fp << "total_cpus ";
@@ -562,6 +563,7 @@ bool cGenebank::PrintGenotypes(ofstream & fp, cString & data_fields,
   int cur_col = 1;
   if (print_id) fp << "# " << cur_col++ << ": ID" << endl;
   if (print_parent_id) fp << "# " << cur_col++ << ": parent ID" << endl;
+  if (print_parent2_id) fp << "# " << cur_col++ << ": parent2 ID" << endl;
   if (print_parent_dist) fp << "# " << cur_col++ << ": parent distance" << endl;
   if (print_num_cpus) fp << "# " << cur_col++ << ": number of orgranisms currently alive" << endl;
   if (print_total_cpus) fp << "# " << cur_col++ << ": total number of organisms that ever existed" << endl;
@@ -616,7 +618,7 @@ bool cGenebank::PrintGenotypes(ofstream & fp, cString & data_fields,
       genotype_control->Next(0);
       continue;
     }
-    DumpDetailedEntry(genotype, fp);
+
     if (print_id)          fp << genotype->GetID() << " ";
     if (print_parent_id)   fp << genotype->GetParentID() << " ";
     if (print_parent2_id)  fp << genotype->GetAncestorID(1) << " ";
