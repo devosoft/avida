@@ -109,7 +109,7 @@ Python:from pyTwoPopulationCtrl import pyTwoPopulationCtrl
     <item text="&amp;File" name="File">
         <action name="fileNewAction"/>
         <action name="fileOpenAction"/>
-        <action name="fileClose_WorkspaceAction"/>
+        <!-- <action name="fileClose_WorkspaceAction"/> -->
         <action name="fileOpenFreezerAction"/>
         <separator/>
         <action name="fileSaveAction"/>
@@ -558,14 +558,14 @@ Python:from pyTwoPopulationCtrl import pyTwoPopulationCtrl
             <string>Minimize Window</string>
         </property>
     </action>
-    <action>
+    <!-- <action>
         <property name="name">
             <cstring>fileOpenFreezerAction</cstring>
         </property>
         <property name="text">
             <string>Open Freezer</string>
         </property>
-    </action>
+    </action> -->
 </actions>
 <images>
     <image name="image0">

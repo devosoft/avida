@@ -54,7 +54,7 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
 
     self.connect(self.m_nav_bar_ctrl.m_list_view, SIGNAL("clicked(QListViewItem *)"), self.navBarItemClickedSlot)
     self.connect(self.m_widget_stack, SIGNAL("aboutToShow(QWidget *)"), self.ctrlAboutToShowSlot)
-    self.connect(self.fileOpenFreezerAction,SIGNAL("activated()"),self.freezerOpenSlot)
+    # self.connect(self.fileOpenFreezerAction,SIGNAL("activated()"),self.freezerOpenSlot)
     self.connect(self.controlNext_UpdateAction,SIGNAL("activated()"),self.next_UpdateActionSlot)
     self.connect(self.controlStartAction,SIGNAL("activated()"),self.startActionSlot)
     self.connect(
@@ -66,6 +66,19 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
     self.connect(
       self.m_session_mdl.m_session_mdtr, PYSIGNAL("doStartAvidaSig"),
       self.doStartAvidaSlot)
+
+    self.connect(
+      self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
+      PYSIGNAL("doStartSig"),
+      self.doStartAvidaSlot)
+    self.connect(
+      self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
+      PYSIGNAL("doPauseSig"),
+      self.doPauseAvidaSlot)
+    # self.connect(
+    #   self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
+    #   PYSIGNAL("doNextUpdateSig"),
+    #   self.updatePBClickedSlot)
 
     self.m_nav_bar_ctrl.m_one_population_cli.setState(QCheckListItem.On)
     self.m_widget_stack.raiseWidget(self.m_one_population_ctrl)
@@ -116,7 +129,18 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
   # public slot
 
   def fileOpen(self):
-    print "pyEduWorkspaceCtrl.fileOpen(): Not implemented yet"
+    workspace_dir = QFileDialog.getExistingDirectory(
+                    self.m_session_mdl.m_current_workspace,
+                    None,
+                    "get existing directory",
+                    "Choose a directory",
+                    True);
+    workspace_dir = str(workspace_dir)              
+    if workspace_dir.strip() != "":
+      self.m_session_mdl.m_current_workspce = str(workspace_dir) + "/"
+      self.m_session_mdl.m_current_freezer = self.m_session_mdl.m_current_workspce + "freezer/"
+      self.m_session_mdl.m_session_mdtr.emit(
+        PYSIGNAL("doRefreshFreezerInventory"), ())
 
   # public slot
 
@@ -127,9 +151,11 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
                     "get existing directory",
                     "Choose a directory",
                     True);
-    self.m_session_mdl.m_current_freezer = str(freezer_dir) + "/"
-    self.m_session_mdl.m_session_mdtr.emit(
-      PYSIGNAL("doRefreshFreezerInventory"), ())
+    freezer_dir = str(freezer_dir)              
+    if freezer_dir.strip() != "":
+      self.m_session_mdl.m_current_freezer = str(freezer_dir) + "/"
+      self.m_session_mdl.m_session_mdtr.emit(
+        PYSIGNAL("doRefreshFreezerInventory"), ())
 
   # public slot
 

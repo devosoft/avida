@@ -167,6 +167,7 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
   def CreateFilesFromPetriSlot(self, out_dir = None):
     self.full_petri_dict["SETTINGS"] = self.Form2Dictionary()
     write_object = pyWriteGenesis(self.full_petri_dict, 
+      self.m_session_mdl.m_current_workspace,
       self.m_session_mdl.m_current_freezer, self.m_session_mdl.m_tempdir)
     self.m_session_mdl.m_session_mdtr.emit(
       PYSIGNAL("doInitializeAvidaPhaseIISig"), (self.m_session_mdl.m_tempdir + "genesis.avida",))

@@ -40,7 +40,8 @@ class pySessionCtrl(qt.QObject):
     # Create "model" for storing state data.
     class pyMdl: pass
     self.m_session_mdl = pyMdl()
-    self.m_session_mdl.m_current_freezer = "freezer/"
+    self.m_session_mdl.m_current_workspace = "default.workspace/"
+    self.m_session_mdl.m_current_freezer = self.m_session_mdl.m_current_workspace + "freezer/"
 
     # Create a temporary subdirectory for general use in this session.
     self.m_session_mdl.m_tempdir = tempfile.mkdtemp('','AvidaEd-pid%d-'%os.getpid()) + "/"

@@ -4,18 +4,19 @@ import shutil, string, pyInstructionSet
 
 class pyWriteGenesis:
 
-  def __init__(self, in_dict = None, freeze_dir = None, out_dir = None):
+  def __init__(self, in_dict = None, workspace_dir = None, freeze_dir = None,
+    out_dir = None):
   
     settings_dict = in_dict["SETTINGS"]
 	
     # Copies default event and environment files and adds names to the 
     # incoming dictionary
 
-    shutil.copyfile("events.default", out_dir + "events.cfg")
+    shutil.copyfile(workspace_dir + "events.default", out_dir + "events.cfg")
     if in_dict.has_key("CELLS"):
       self.createInjects(in_dict, out_dir + "events.cfg")
-    shutil.copyfile("environment.default", out_dir + "environment.cfg")
-    shutil.copyfile("inst_set.default", out_dir + "inst_set.default")
+    shutil.copyfile(workspace_dir + "environment.default", out_dir + "environment.cfg")
+    shutil.copyfile(workspace_dir + "inst_set.default", out_dir + "inst_set.default")
     shutil.copyfile(freeze_dir + settings_dict["START_CREATURE"],
                     out_dir + settings_dict["START_CREATURE"])
     settings_dict["EVENT_FILE"] = out_dir + "events.cfg"
@@ -26,7 +27,7 @@ class pyWriteGenesis:
     # Read the default genesis file, if there is a equivilent line in the 
     # dictionary replace it the new values, otherwise just copy the line
   
-    orig_genesis_file = open("genesis.default")
+    orig_genesis_file = open(workspace_dir + "genesis.default")
     lines = orig_genesis_file.readlines()
     orig_genesis_file.close()
     out_genesis_file = open(out_dir + "genesis.avida", "w")

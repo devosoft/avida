@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>398</width>
-            <height>666</height>
+            <width>377</width>
+            <height>591</height>
         </rect>
     </property>
     <property name="font">
@@ -33,6 +33,22 @@
         <property name="spacing">
             <number>2</number>
         </property>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>textLabel1</cstring>
+            </property>
+            <property name="font">
+                <font>
+                    <pointsize>11</pointsize>
+                </font>
+            </property>
+            <property name="text">
+                <string>Environmental Settings</string>
+            </property>
+            <property name="alignment">
+                <set>AlignCenter</set>
+            </property>
+        </widget>
         <widget class="QFrame">
             <property name="name">
                 <cstring>SliderFrame</cstring>
@@ -49,7 +65,7 @@
                 </property>
                 <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>layout76</cstring>
+                        <cstring>layout10</cstring>
                     </property>
                     <vbox>
                         <property name="name">
@@ -76,7 +92,7 @@
                         </widget>
                         <widget class="QLayoutWidget">
                             <property name="name">
-                                <cstring>layout75</cstring>
+                                <cstring>layout9</cstring>
                             </property>
                             <hbox>
                                 <property name="name">
@@ -96,8 +112,11 @@
                                     <property name="maxValue">
                                         <number>20</number>
                                     </property>
+                                    <property name="pageStep">
+                                        <number>1</number>
+                                    </property>
                                     <property name="value">
-                                        <number>-20</number>
+                                        <number>3</number>
                                     </property>
                                     <property name="orientation">
                                         <enum>Horizontal</enum>
@@ -110,12 +129,20 @@
                                     <property name="name">
                                         <cstring>MutationPercentTextLabel</cstring>
                                     </property>
+                                    <property name="sizePolicy">
+                                        <sizepolicy>
+                                            <hsizetype>0</hsizetype>
+                                            <vsizetype>5</vsizetype>
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
                                     <property name="font">
                                         <font>
                                         </font>
                                     </property>
                                     <property name="text">
-                                        <string>0.01 %</string>
+                                        <string>3 %</string>
                                     </property>
                                 </widget>
                             </hbox>
@@ -172,10 +199,13 @@
                                         <number>200</number>
                                     </property>
                                     <property name="lineStep">
-                                        <number>10</number>
+                                        <number>1</number>
+                                    </property>
+                                    <property name="pageStep">
+                                        <number>1</number>
                                     </property>
                                     <property name="value">
-                                        <number>60</number>
+                                        <number>30</number>
                                     </property>
                                     <property name="orientation">
                                         <enum>Horizontal</enum>
@@ -193,7 +223,7 @@
                                         </font>
                                     </property>
                                     <property name="text">
-                                        <string>60 x 60 cells</string>
+                                        <string>30 x 30 cells</string>
                                     </property>
                                 </widget>
                             </hbox>
@@ -502,7 +532,7 @@
                         </font>
                     </property>
                     <property name="text">
-                        <string>Random Number Generator</string>
+                        <string>Random Number Generator Seed</string>
                     </property>
                     <property name="alignment">
                         <set>AlignCenter</set>
@@ -571,7 +601,7 @@
                                         </font>
                                     </property>
                                     <property name="text">
-                                        <string>Set at</string>
+                                        <string>Set to</string>
                                     </property>
                                 </widget>
                                 <widget class="QSpinBox">
