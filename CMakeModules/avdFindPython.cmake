@@ -53,30 +53,30 @@ MACRO(AVD_FIND_PYTHON version search_paths)
         "Apple-style Python Framework executable."
         FORCE
       )
-      SET(PYTHON_FRAMEWORK_INCLUDE_PATH
+      SET(PYTHON_INCLUDE_PATH
         "${PYTHON_FRAMEWORK_PATH}/Python.framework/Versions/${version}/include/python${version}"
         CACHE INTERNAL
         "Apple-style Python Framework include directory."
         FORCE
       )
-      SET(PYTHON_FRAMEWORK_LIBRARY
+      SET(PYTHON_LIBRARY
         "-F\"${PYTHON_FRAMEWORK_PATH}\" -framework Python"
         CACHE INTERNAL
         "Apple-style Python Framework linking flags."
         FORCE
       )
-      SET(PYTHON_FRAMEWORK_DEBUG_LIBRARY
+      SET(PYTHON_DEBUG_LIBRARY
         "-F\"${PYTHON_FRAMEWORK_PATH}\" -framework Python"
         CACHE INTERNAL
         "Apple-style Python Framework linking flags."
         FORCE
       )
-      SET(PYTHON_INCLUDE_PATH
-        ${PYTHON_FRAMEWORK_INCLUDE_PATH}
-        CACHE PATH
-        "Apple-style Python Framework Include Path."
-        FORCE
-      )
+      #SET(PYTHON_INCLUDE_PATH
+      #  ${PYTHON_INCLUDE_PATH}
+      #  CACHE PATH
+      #  "Apple-style Python Framework Include Path."
+      #  FORCE
+      #)
     ELSE(EXISTS ${PYTHON_FRAMEWORK_PATH})
       SET(PYTHON_EXE_SEARCH_PATHS
         /usr/bin
