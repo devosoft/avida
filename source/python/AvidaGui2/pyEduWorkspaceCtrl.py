@@ -9,6 +9,7 @@ from pyTwoAnalyzeCtrl import pyTwoAnalyzeCtrl
 from pyTwoOrganismCtrl import pyTwoOrganismCtrl
 from pyTwoPopulationCtrl import pyTwoPopulationCtrl
 from pyPetriConfigureCtrl import pyPetriConfigureCtrl
+from pyQuitDialogCtrl import pyQuitDialogCtrl
 
 from qt import *
 
@@ -53,7 +54,8 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
     self.m_one_population_ctrl.construct(self.m_session_mdl)
     self.m_one_organism_ctrl.construct(self.m_session_mdl)
 
-    self.connect(self, PYSIGNAL("quitAvidaPhaseISig"), qApp, SLOT("quit()"))
+    self.connect(self, PYSIGNAL("quitAvidaPhaseISig"), self.startQuitProcessSlot)
+    self.connect(self, PYSIGNAL("quitAvidaPhaseIISig"), qApp, SLOT("quit()"))
     self.connect(self.m_nav_bar_ctrl.m_list_view, SIGNAL("clicked(QListViewItem *)"), self.navBarItemClickedSlot)
     self.connect(self.m_widget_stack, SIGNAL("aboutToShow(QWidget *)"), self.ctrlAboutToShowSlot)
     # self.connect(self.fileOpenFreezerAction,SIGNAL("activated()"),self.freezerOpenSlot)
@@ -84,6 +86,7 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
 
     self.m_nav_bar_ctrl.m_one_population_cli.setState(QCheckListItem.On)
     self.m_widget_stack.raiseWidget(self.m_one_population_ctrl)
+    self.splitter1.setSizes([100])
 
     self.show()
 
@@ -266,4 +269,8 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
     self.controlStartAction.text = "Pause"
     self.controlStartAction.menuText = "Pause"
     self.startStatus = False
+    
+  def startQuitProcessSlot(self):
+    m_quit_avida_ed = pyQuitDialogCtrl
+    self.emit(PYSIGNAL("quitAvidaPhaseIISig"), ())
 

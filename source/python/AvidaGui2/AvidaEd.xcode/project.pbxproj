@@ -5,6 +5,28 @@
 	};
 	objectVersion = 39;
 	objects = {
+		990666F407FDD01F0095D195 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.script.python;
+			path = pyQuitDialogCtrl.py;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		990666F507FDD01F0095D195 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = pyQuitDialogView.ui;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		990666F807FDD03D0095D195 = {
+			fileRef = 990666F507FDD01F0095D195;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		99AC419907DF44CF00594A3D = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
@@ -152,6 +174,8 @@
 		};
 		DC0BFDB007DDB49200AAE422 = {
 			children = (
+				990666F407FDD01F0095D195,
+				990666F507FDD01F0095D195,
 				DC3A63F907DD02DE00A043AD,
 				DC0BFE7407DDD78500AAE422,
 				DC3A63F507DD02DE00A043AD,
@@ -582,6 +606,7 @@
 		DC0BFF3007DE17DB00AAE422 = {
 			buildActionMask = 2147483647;
 			files = (
+				990666F807FDD03D0095D195,
 				DC0BFF4B07DE1AE800AAE422,
 				DC0BFF4C07DE1AE800AAE422,
 				DC0BFF4D07DE1AE800AAE422,

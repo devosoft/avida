@@ -65,6 +65,8 @@ nontest_module_names = [
   "AvidaGui2.pyPetriConfigureCtrl",
   "AvidaGui2.pyPetriDishView",
   "AvidaGui2.pyPetriDishCtrl",
+  "AvidaGui2.pyQuitDialogView",
+  "AvidaGui2.pyQuitDialogCtrl",
   "AvidaGui2.pyReadFreezer",
   "AvidaGui2.pyTimelineView",
   "AvidaGui2.pyTimelineCtrl",

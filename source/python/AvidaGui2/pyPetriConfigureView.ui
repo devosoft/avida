@@ -81,7 +81,7 @@
                                 </font>
                             </property>
                             <property name="text">
-                                <string>Mutation Rate</string>
+                                <string>Per Site Mutation Rate</string>
                             </property>
                             <property name="alignment">
                                 <set>AlignCenter</set>
