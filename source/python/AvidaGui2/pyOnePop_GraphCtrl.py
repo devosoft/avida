@@ -62,10 +62,13 @@ class pyOnePop_GraphCtrl(pyOnePop_GraphView):
       self.printGraphSlot)
 
   def load(self, filename, colx, coly):
+    print "pyOnePop_GraphCtrl.load"
     if (self.m_avida is None) or (self.m_avida.m_population.GetStats().GetUpdate() == 0):
-      self.m_x_array = zeros(0, Float)
-      self.m_y_array = zeros(0, Float)
+      print " m_avida is None, or update is zero. Not loading from file."
+      self.m_x_array = zeros(1, Float)
+      self.m_y_array = zeros(1, Float)
     else:
+      print " loading from file."
       init_file = cInitFile(cString(filename))
       init_file.Load()
       init_file.Compress()
@@ -90,6 +93,9 @@ class pyOnePop_GraphCtrl(pyOnePop_GraphView):
       self.m_graph_ctrl.m_curve = self.m_graph_ctrl.insertCurve(self.m_avida_stats_interface.m_entries[index][0])
       self.m_graph_ctrl.setCurveData(self.m_graph_ctrl.m_curve, self.m_x_array, self.m_y_array)
       self.m_graph_ctrl.setCurvePen(self.m_graph_ctrl.m_curve, QPen(Qt.red))
+      self.m_graph_ctrl.m_zoomer.setZoomBase(self.m_graph_ctrl.curve(self.m_graph_ctrl.m_curve).boundingRect())
+      self.m_graph_ctrl.setAxisAutoScale(QwtPlot.xBottom)
+      self.m_graph_ctrl.setAxisAutoScale(QwtPlot.yLeft)
     self.m_graph_ctrl.replot()
       
   def setAvidaSlot(self, avida):
@@ -125,11 +131,11 @@ class pyOnePop_GraphCtrl(pyOnePop_GraphView):
         # Quick hack: Cause the zoomer to limit zooming-out to the
         # boundaries of the displayed curve.
         self.m_graph_ctrl.m_zoomer.setZoomBase(self.m_graph_ctrl.curve(self.m_graph_ctrl.m_curve).boundingRect())
-      # Quick hack: If the user has zoomed-in on or -out from the graph,
-      # autoscaling will have been disabled. This reenables it.
-      self.m_graph_ctrl.setAxisAutoScale(QwtPlot.xBottom)
-      self.m_graph_ctrl.setAxisAutoScale(QwtPlot.yLeft)
-      self.m_graph_ctrl.replot()
+        # Quick hack: If the user has zoomed-in on or -out from the graph,
+        # autoscaling will have been disabled. This reenables it.
+        self.m_graph_ctrl.setAxisAutoScale(QwtPlot.xBottom)
+        self.m_graph_ctrl.setAxisAutoScale(QwtPlot.yLeft)
+        self.m_graph_ctrl.replot()
 
   def printGraphSlot(self):
     printer = QPrinter()

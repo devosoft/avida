@@ -1,8 +1,11 @@
 
-from qt import QBrush, QPen
+from qt import QBrush, QColor, QPen, Qt
 from qtcanvas import QCanvasRectangle
 
 class pyPopulationCellItem(QCanvasRectangle):
+
+  s_empty_color = QColor(Qt.black)
+
   def rtti(self):
     return 271828
 
@@ -25,7 +28,7 @@ class pyPopulationCellItem(QCanvasRectangle):
       return True
 
   def updateColorUsingFunctor(self, functor):
-    color = functor(self.m_index)
+    color = (self.m_population_cell.IsOccupied() and functor) and functor(self.m_index) or self.s_empty_color
     self.setBrush(QBrush(color))
     self.setPen(QPen(color))
 

@@ -18,32 +18,22 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     self.m_gradient_scale_ctrl.construct(self.m_session_mdl)
     self.m_live_controls_ctrl.construct(self.m_session_mdl)
     self.m_petri_configure_ctrl.construct(self.m_session_mdl)
-    self.connect(self.m_petri_configure_ctrl, PYSIGNAL("freezeDishPhaseISig"), 
-      self.m_petri_dish_ctrl.extractPopulationSlot)
-    self.connect(self.m_petri_dish_ctrl, PYSIGNAL("freezeDishPhaseIISig"), 
-      self.m_petri_configure_ctrl.FreezePetriSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"),
-      self.setAvidaSlot)
-    self.connect(self.m_petri_dish_toggle, SIGNAL("clicked()"), 
-      self.ToggleDishSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr,
-      PYSIGNAL("doDefrostDishSig"), self.RenameDishSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr,
-      PYSIGNAL("doDefrostDishSig"), self.MakeConfigVisiableSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr,
-      PYSIGNAL("doDisablePetriDishSig"), self.SetDishDisabledSlot)
-      
-    self.connect(self.m_zoom_spinbox, SIGNAL("valueChanged(int)"),
-      self.m_petri_dish_ctrl.zoomSlot)
-    self.connect(self.m_petri_dish_ctrl, PYSIGNAL("zoomSig"),
-      self.m_zoom_spinbox.setValue)
+    self.connect(self.m_petri_configure_ctrl, PYSIGNAL("freezeDishPhaseISig"), self.m_petri_dish_ctrl.extractPopulationSlot)
+    self.connect(self.m_petri_dish_ctrl, PYSIGNAL("freezeDishPhaseIISig"), self.m_petri_configure_ctrl.FreezePetriSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"), self.setAvidaSlot)
+    self.connect(self.m_petri_dish_toggle, SIGNAL("clicked()"), self.ToggleDishSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("doDefrostDishSig"), self.RenameDishSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("doDefrostDishSig"), self.MakeConfigVisiableSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("doDisablePetriDishSig"), self.SetDishDisabledSlot)
+    self.connect(self.m_zoom_spinbox, SIGNAL("valueChanged(int)"), self.m_petri_dish_ctrl.zoomSlot)
+    self.connect(self.m_petri_dish_ctrl, PYSIGNAL("zoomSig"), self.m_zoom_spinbox.setValue)
+    self.connect(self.m_mode_combobox, SIGNAL("activated(int)"), self.modeActivatedSlot)
 
-    self.m_map_profile = pyMapProfile()
     self.m_mode_combobox.clear()
     self.m_mode_combobox.setInsertionPolicy(QComboBox.AtBottom)
+    self.m_map_profile = pyMapProfile()
     for i in range(self.m_map_profile.getSize()):
       self.m_mode_combobox.insertItem(self.m_map_profile.getModeName(i))
-    self.connect(self.m_mode_combobox, SIGNAL("activated(int)"), self.modeActivatedSlot)
     self.m_mode_combobox.setCurrentItem(1)
     self.m_mode_index = self.m_mode_combobox.currentItem()
     self.modeActivatedSlot(self.m_mode_index)
@@ -87,32 +77,26 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     self.dishDisabled = True
 
   def modeActivatedSlot(self, index):
-    #print "pyOnePop_PetriDishCtrl.modeActivatedSlot index", index
-    if self.m_avida:
-      self.m_avida.m_avida_threaded_driver.m_lock.acquire()
+    self.m_avida and self.m_avida.m_avida_threaded_driver.m_lock.acquire()
+
     self.m_mode_index = index
-    updater = self.m_map_profile.getUpdater(self.m_mode_index)
-    updater and updater.reset(True)
-    #(min, max) = updater and updater.resetRange(self.m_avida and self.m_avida.m_population or None) or (0.0, 0.0)
-    #self.m_gradient_scale_ctrl.setRange(min, max)
-    #self.m_gradient_scale_ctrl.activate(True)
-    #self.m_petri_dish_ctrl.setRange(min, max)
     self.m_petri_dish_ctrl.setIndexer(self.m_map_profile.getIndexer(self.m_mode_index))
-    #self.m_petri_dish_ctrl.updateCellItems()
-    #self.avidaUpdatedSlot()
-    if self.m_avida:
-      self.m_avida.m_avida_threaded_driver.m_lock.release()
+    self.m_petri_dish_ctrl.setColorLookupFunctor(self.m_map_profile.getColorLookup(self.m_mode_index))
+    self.m_gradient_scale_ctrl.setColorLookup(self.m_map_profile.getColorLookup(self.m_mode_index))
+    self.m_updater = self.m_map_profile.getUpdater(self.m_mode_index)
+    self.m_updater and self.m_updater.reset(True)
+
+    self.m_avida and self.m_avida.m_avida_threaded_driver.m_lock.release()
 
   def avidaUpdatedSlot (self):
-    updater = self.m_map_profile.getUpdater(self.m_mode_index)
-    if updater:
-      (old_min, old_max) = updater.getRange()
-      (min, max) = self.m_avida and updater.updateRange(self.m_avida.m_population) or (0, 0)
-      if updater.shouldReset() or ((old_min, old_max) != (min, max)):
+    if self.m_updater:
+      (old_min, old_max) = self.m_updater.getRange()
+      (min, max) = self.m_avida and self.m_updater.updateRange(self.m_avida.m_population) or (0, 0)
+      if self.m_updater.shouldReset() or ((old_min, old_max) != (min, max)):
         self.m_gradient_scale_ctrl.setRange(min, max)
         self.m_gradient_scale_ctrl.activate(True)
         self.m_petri_dish_ctrl.setRange(min, max)
-        updater.reset(False)
+        self.m_updater.reset(False)
     else:
       self.m_gradient_scale_ctrl.setRange(0, 0)
       self.m_gradient_scale_ctrl.activate(True)

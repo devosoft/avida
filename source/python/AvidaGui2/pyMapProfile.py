@@ -1,6 +1,10 @@
 
+from qt import QColor
+from math import exp
+
 class pyMapProfile:
   def __init__(self):
+
     def continuousIndexer(idx_functor):
       def continuousIndexingFunction(population_cell_item, min, range):
         population_cell = population_cell_item.m_population_cell
@@ -26,48 +30,6 @@ class pyMapProfile:
     #LineageIdx = lambda c: c.GetOrganism().GetLineageLabel()
 
 
-    # class gradualLinScaleUpdater:
-    #   def __init__(self, rng_functor):
-    #     self.m_rng_functor = rng_functor
-    #     self.m_inf = 0.0
-    #     self.m_sup = 0.0
-    #     self.m_target_inf = 0.0
-    #     self.m_target_sup = 0.0
-    #     self.m_inf_tol_coef = 0.1
-    #     self.m_sup_tol_coef = 0.1
-    #     self.m_inf_rescale_rate = 0.0
-    #     self.m_sup_rescale_rate = 0.0
-    #     self.m_updates_to_rescale = 10
-    #     self.m_should_reset = True
-    #   def reset(self, should_reset):
-    #     self.m_should_reset = should_reset
-    #   def getRange(self):
-    #     return self.m_inf, self.m_sup
-    #   def resetRange(self, population):
-    #     # Abrubtly change range.
-    #     (inf, sup) = population and self.m_rng_functor(population) or (0.0, 0.0)
-    #     (self.m_target_inf, self.m_target_sup) = (self.m_inf, self.m_sup) = (inf, sup)
-    #     self.m_inf_rescale_rate = self.m_sup_rescale_rate = 0
-    #     return self.getRange()
-    #   def updateRange(self, population):
-    #     # If population is None, set range to (0,0).
-    #     (inf, sup) = population and self.m_rng_functor(population) or (0.0, 0.0)
-    #     # If self.m_should_reset flag is True, change range abruptly rather than gradually.
-    #     if self.m_should_reset: return self.resetRange(population)
-    #     # If max value in population is above range, or too low according to tolerance, gradually rescale.
-    #     if (sup < (1 - self.m_sup_tol_coef) * self.m_target_sup) or (self.m_target_sup < sup):
-    #       new_target_sup = sup * (1 + self.m_sup_tol_coef)
-    #       self.m_sup_rescale_rate = float(new_target_sup - self.m_target_sup) / self.m_updates_to_rescale
-    #       self.m_target_sup = new_target_sup
-    #     # Self.m_sup_rescale_rate is nonzero only when we're rescaling...
-    #     if self.m_sup_rescale_rate != 0:
-    #       self.m_sup += self.m_sup_rescale_rate
-    #       # Check to see whether we're done rescaling. If so, return rescaling to zero.
-    #       if abs(self.m_target_sup - self.m_sup) < abs(self.m_sup_rescale_rate):
-    #         self.m_sup = self.m_target_sup
-    #         self.m_sup_rescale_rate = 0
-    #     return self.getRange()
-
     class gradualLinScaleUpdater:
       def __init__(self, rng_functor):
         self.m_rng_functor = rng_functor
@@ -80,65 +42,41 @@ class pyMapProfile:
         self.m_inf_rescale_rate = 0.0
         self.m_sup_rescale_rate = 0.0
         self.m_updates_to_rescale = 10
-
         self.m_should_reset = True
 
       def reset(self, should_reset):
         self.m_should_reset = should_reset
 
       def shouldReset(self):
-        return self.m_should_reset
+        return self.m_should_reset 
 
       def getRange(self):
         return self.m_inf, self.m_sup
 
       def resetRange(self, population):
-        #print "pyMapProfile.resetRange;"
-        #print "  old (self.m_inf, self.m_sup)", (self.m_inf, self.m_sup)
-        #print "  population", population
         (inf, sup) = population and self.m_rng_functor(population) or (0.0, 0.0)
-        #(self.m_inf, self.m_sup) = (inf, (1 + self.m_sup_tol_coef)*sup)
-        #(self.m_target_inf, self.m_target_sup) = (inf, sup)
         (self.m_target_inf, self.m_target_sup) = (self.m_inf, self.m_sup) = (inf, sup)
-        #print "  new (self.m_inf, self.m_sup)", (self.m_inf, self.m_sup)
         self.m_inf_rescale_rate = self.m_sup_rescale_rate = 0
+
         return self.getRange()
 
       def updateRange(self, population):
-        if self.m_should_reset: return self.resetRange(population)
+        if self.m_should_reset:
+          return self.resetRange(population)
 
         (inf, sup) = population and self.m_rng_functor(population) or (0.0, 0.0)
         if (sup < (1 - self.m_sup_tol_coef) * self.m_target_sup) or (self.m_target_sup < sup):
-          #print "pyMapProfile.updateRange changing range;"
-          #if sup < (1 - self.m_sup_tol_coef) * self.m_target_sup:
-            #print " narrowing range;"
-            #print " sup < (1 - self.m_sup_tol_coef) * self.m_target_sup"
-            #print "", sup, "<", (1 - self.m_sup_tol_coef) * self.m_target_sup
-          #elif self.m_target_sup < sup:
-            #print " expanding range;"
-            #print " self.m_target_sup < sup"
-            #print "", self.m_target_sup, "<", sup
           new_target_sup = sup * (1 + self.m_sup_tol_coef)
           self.m_sup_rescale_rate = float(new_target_sup - self.m_sup) / self.m_updates_to_rescale
-          #print "  new m_sup_rescale_rate", self.m_sup_rescale_rate
-          #print "  old m_target_sup", self.m_target_sup
-          #print "  new m_target_sup", new_target_sup
-          #print "  sup", sup
           self.m_target_sup = new_target_sup
 
         if self.m_sup_rescale_rate != 0:
-          #print "rescaling..."
-          #print " sup", sup
-          #print " old m_sup", self.m_sup
           self.m_sup += self.m_sup_rescale_rate
           if abs(self.m_target_sup - self.m_sup) < abs(self.m_sup_rescale_rate):
-            #print " done rescaling."
             self.m_sup = self.m_target_sup
             self.m_sup_rescale_rate = 0
-          #print " new m_sup", self.m_sup
-          
-        return self.getRange()
 
+        return self.getRange()
 
     # Range functors
     NullRng = lambda p: (0, 0)
@@ -146,36 +84,60 @@ class pyMapProfile:
     FitnessRng = lambda p: (0, p.GetStats().GetMaxFitness())
     def GestationTimeRng(p):
       return 0, max(
-        p.GetCell(n).IsOccupied() \
-        and p.GetCell(n).GetOrganism().GetPhenotype().GetGestationTime() \
-        or 0 \
-        for n in range(p.GetSize())
-      )
+        p.GetCell(n).IsOccupied() and p.GetCell(n).GetOrganism().GetPhenotype().GetGestationTime() or 0
+        for n in range(p.GetSize()))
     def SizeRng(p):
       return 0, max(
-        p.GetCell(n).IsOccupied() \
-        and p.GetCell(n).GetOrganism().GetPhenotype().GetGenomeLength() \
-        or 0 \
-        for n in range(p.GetSize())
-      )
-      
+        p.GetCell(n).IsOccupied() and p.GetCell(n).GetOrganism().GetPhenotype().GetGenomeLength() or 0
+        for n in range(p.GetSize()))
+
+
+    def sigmoid(x, midpoint, steepness):
+      val = steepness * (x - midpoint)
+      return  exp(val)/(1 + exp(val))
+    def sigmoidDoubleToColor(x):
+      #x = max(0, min(x, 1)) * (1 - 0.1) + 0.1
+      x = 1 < x and 1 or x
+      x = x < 0 and 0 or x
+      x = 0.1 + 0.9*x
+      h = (x * 360 + 100) % 360
+      v = sigmoid(x, 0.3, 10) * 255
+      s = sigmoid(1 - x, 0.1, 30) * 255
+      return QColor(h, s, v, QColor.Hsv)
 
     self.m_entries = (
-    #  Mode Name,         Indexer
-      ('None',            continuousIndexer(NullIdx),             gradualLinScaleUpdater(NullRng),),
-      ('Merit',           continuousIndexer(MeritIdx),            gradualLinScaleUpdater(MeritRng),),
-      ('Fitness',         continuousIndexer(FitnessIdx),          gradualLinScaleUpdater(FitnessRng),),
-      ('Gestation Time',  continuousIndexer(GestationTimeIdx),    gradualLinScaleUpdater(GestationTimeRng),),
-      ('Size',            continuousIndexer(SizeIdx),             gradualLinScaleUpdater(SizeRng),),
-      #('Genotype',        GenotypeIdx,),
-      #('Lineage',         LineageIdx,),
+    #  Mode Name,        Indexer
+      ('None',
+        continuousIndexer(NullIdx),
+        gradualLinScaleUpdater(NullRng),
+        None
+        ),
+      ('Merit',
+        continuousIndexer(MeritIdx),
+        gradualLinScaleUpdater(MeritRng),
+        sigmoidDoubleToColor
+        ),
+      ('Fitness',
+        continuousIndexer(FitnessIdx),
+        gradualLinScaleUpdater(FitnessRng),
+        sigmoidDoubleToColor
+        ),
+      ('Gestation Time',
+        continuousIndexer(GestationTimeIdx),
+        gradualLinScaleUpdater(GestationTimeRng),
+        sigmoidDoubleToColor
+        ),
+      ('Size',
+        continuousIndexer(SizeIdx),
+        gradualLinScaleUpdater(SizeRng),
+        sigmoidDoubleToColor
+        ),
+      #('Genotype',       GenotypeIdx,),
+      #('Lineage',        LineageIdx,),
     )
 
-  def getSize(self):
-    return len(self.m_entries)
-  def getModeName(self, index):
-    return self.m_entries[index][0]
-  def getIndexer(self, index):
-    return self.m_entries[index][1]
-  def getUpdater(self, index):
-    return self.m_entries[index][2]
+  def getSize(self):                return len(self.m_entries)
+  def getModeName(self, index):     return self.m_entries[index][0]
+  def getIndexer(self, index):      return self.m_entries[index][1]
+  def getUpdater(self, index):      return self.m_entries[index][2]
+  def getColorLookup(self, index):  return self.m_entries[index][3]
