@@ -235,7 +235,7 @@ class pyPetriDishCtrl(QWidget):
             organism = cell.GetOrganism()
             genome = organism.GetGenome()
             population_dict[cell.GetID()] = str(genome.AsString())
-    self.emit(PYSIGNAL("freezeDishPhaseIISig"), ("/freezer", population_dict, ))
+    self.emit(PYSIGNAL("freezeDishPhaseIISig"), (population_dict, ))
 
   def zoomSlot(self, zoom_factor):
     #print "pyPetriDishCtrl.zoomSlot zoom_factor", zoom_factor

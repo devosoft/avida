@@ -276,4 +276,6 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
     quit_return = m_quit_avida_ed.showDialog()
     if quit_return == m_quit_avida_ed.QuitFlag:
       self.emit(PYSIGNAL("quitAvidaPhaseIISig"), ())
+    elif quit_return == m_quit_avida_ed.FreezeQuitFlag:
+      self.emit(PYSIGNAL("FreezeDishPhaseISig"), ())
 

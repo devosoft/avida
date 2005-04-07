@@ -215,7 +215,7 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
       settings_dict["DEATH_METHOD"] = 2
     return settings_dict
     
-  def FreezePetriSlot(self, freeze_dir = None, population_dict = None, 
+  def FreezePetriSlot(self, population_dict = None, 
       send_reset_signal = False, send_quit_signal = False):
     tmp_dict = {}
     tmp_dict["SETTINGS"] = self.Form2Dictionary()
@@ -229,5 +229,10 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     freezer_file = pyWriteToFreezer(tmp_dict, is_empty_dish, file_name)
     self.m_session_mdl.m_session_mdtr.emit(
       PYSIGNAL("doRefreshFreezerInventory"), ())
+    if send_reset_signal:
+      pass
+    if send_quit_signal:
+      pass
+      
 
     
