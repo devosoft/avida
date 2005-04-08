@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/kaben/Projects/Software/Avida/svn/avida2/trunk/source/python/AvidaGui2/pyGradientScaleView.ui'
+# Original form implementation generated from reading ui file 
+# '/Users/kaben/Projects/Software/Avida/svn/avida2/trunk/source/python/AvidaGui2/pyGradientScaleView.ui'
 #
-# Created: Thu Mar 31 16:57:36 2005
-#      by: The PyQt User Interface Compiler (pyuic) 3.13
-#
-# WARNING! All changes made in this file will be lost!
-
+# It has since been modified by hand
 
 from qt import *
 from math import exp
@@ -163,4 +160,12 @@ class pyGradientScaleView(QWidget):
     self.setMinimumHeight(h)
 
   def getLabelString(self, x):
-    return QString("%1").arg(x, 0, 'g', 2)
+
+    # To show numbers < 10,000 without going to sci. notation had to
+    # set precision in the .arg method to 5 this produces a lot of digits
+    # after the decimal point so the follow lines partially correct for this
+
+    if x >= 100:
+      ix = int(x)
+      x = float(ix)
+    return QString("%1").arg(x, 0, 'g', 5)
