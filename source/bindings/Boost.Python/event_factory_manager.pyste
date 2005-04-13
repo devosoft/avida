@@ -4,3 +4,5 @@ Include("event.hh")
 
 cEventFactoryManager = Class("cEventFactoryManager", "event_factory_manager.hh")
 set_policy(cEventFactoryManager.ConstructEvent, return_internal_reference())
+
+# vim: set ft=python:

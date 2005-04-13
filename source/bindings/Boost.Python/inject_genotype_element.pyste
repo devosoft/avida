@@ -5,3 +5,5 @@ cInjectGenotypeElement = Class("cInjectGenotypeElement", "inject_genotype_elemen
 set_policy(cInjectGenotypeElement.GetInjectGenotype, return_internal_reference())
 set_policy(cInjectGenotypeElement.GetNext, return_internal_reference())
 set_policy(cInjectGenotypeElement.GetPrev, return_internal_reference())
+
+# vim: set ft=python:

@@ -5,52 +5,24 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef HARDWARE_CPU_HH
 #include "hardware_cpu.hh"
-#endif
 
-#ifndef CONFIG_HH
 #include "config.hh"
-#endif
-#ifndef CPU_TEST_INFO_HH
 #include "cpu_test_info.hh"
-#endif
-#ifndef FUNCTIONS_HH
 #include "functions.hh"
-#endif
-#ifndef GENOME_UTIL_HH
 #include "genome_util.hh"
-#endif
-#ifndef GENOTYPE_HH
 #include "genotype.hh"
-#endif
-#ifndef INST_LIB_CPU_HH
+#include "hardware_tracer.hh"
+#include "hardware_tracer_cpu.hh"
 #include "inst_lib_cpu.hh"
-#endif
-#ifndef INST_SET_HH
 #include "inst_set.hh"
-#endif
-#ifndef MUTATION_HH
 #include "mutation.hh"
-#endif
-#ifndef MUTATION_LIB_HH
 #include "mutation_lib.hh"
-#endif
-#ifndef MUTATION_MACROS_HH
 #include "mutation_macros.hh"
-#endif
-#ifndef ORGANISM_HH
 #include "organism.hh"
-#endif
-#ifndef PHENOTYPE_HH
 #include "phenotype.hh"
-#endif
-#ifndef STRING_UTIL_HH
 #include "string_util.hh"
-#endif
-#ifndef TEST_CPU_HH
 #include "test_cpu.hh"
-#endif
 
 #include <limits.h>
 #include <fstream>
@@ -410,6 +382,25 @@ cHardwareCPU::cHardwareCPU(cOrganism * in_organism, cInstSet * in_inst_set)
 }
 
 
+cHardwareCPU::cHardwareCPU(const cHardwareCPU &hardware_cpu)
+: cHardwareBase(hardware_cpu.organism, hardware_cpu.inst_set)
+, m_functions(hardware_cpu.m_functions)
+, memory(hardware_cpu.memory)
+, global_stack(hardware_cpu.global_stack)
+, thread_time_used(hardware_cpu.thread_time_used)
+, threads(hardware_cpu.threads)
+, thread_id_chart(hardware_cpu.thread_id_chart)
+, cur_thread(hardware_cpu.cur_thread)
+, mal_active(hardware_cpu.mal_active)
+, advance_ip(hardware_cpu.advance_ip)
+#ifdef INSTRUCTION_COSTS
+, inst_cost(hardware_cpu.inst_cost)
+, inst_ft_cost(hardware_cpu.inst_ft_cost)
+#endif
+{
+}
+
+
 cHardwareCPU::~cHardwareCPU()
 {
 }
@@ -484,9 +475,12 @@ void cHardwareCPU::SingleProcess()
 #endif
     
     // Print the status of this CPU at each step...
-    if (trace_fp != NULL) {
-      const cString & next_name = inst_set->GetName(IP().GetInst())();
-      organism->PrintStatus(*trace_fp, next_name);
+    if (m_tracer != NULL) {
+      if (cHardwareTracer_CPU * tracer
+          = dynamic_cast<cHardwareTracer_CPU *>(m_tracer)
+      ){
+        tracer->TraceHardware_CPU(*this);
+      }
     }
     
     // Find the instruction to be executed
@@ -595,10 +589,12 @@ void cHardwareCPU::ProcessBonusInst(const cInstruction & inst)
 
   // @CAO FIX PRINTING TO INDICATE THIS IS A BONUS
   // Print the status of this CPU at each step...
-  if (trace_fp != NULL) {
-    cString next_name = cStringUtil::Stringf("%s (bonus instruction)",
-					     inst_set->GetName(inst)());
-    organism->PrintStatus(*trace_fp, next_name);
+  if (m_tracer != NULL) {
+    if (cHardwareTracer_CPU * tracer
+        = dynamic_cast<cHardwareTracer_CPU *>(m_tracer)
+    ){
+      tracer->TraceHardware_CPUBonus(*this);
+    }
   }
     
   SingleProcess_ExecuteInst(inst);

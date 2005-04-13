@@ -1,1 +1,4 @@
+
 cTextTestInterpreter = Class("cTextTestInterpreter", "cTextTestInterpreter.hh")
+
+# vim: set ft=python:

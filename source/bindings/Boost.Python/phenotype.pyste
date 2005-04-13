@@ -32,3 +32,5 @@ exclude(cPhenotype.DivideSex)
 exclude(cPhenotype.CrossNum)
 exclude(cPhenotype.ChildFertile)
 exclude(cPhenotype.IsMultiThread)
+
+# vim: set ft=python:

@@ -4,3 +4,5 @@ Include("environment.hh")
 Include("string.hh")
 
 cAvidaDriver_Analyze = Class("cAvidaDriver_Analyze", "avida_driver_analyze.hh")
+
+# vim: set ft=python:

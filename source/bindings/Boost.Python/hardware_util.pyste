@@ -3,3 +3,5 @@ Include("inst_set.hh")
 
 cHardwareUtil = Class("cHardwareUtil", "hardware_util.hh")
 set_policy(cHardwareUtil.DefaultInstSet, return_value_policy(reference_existing_object))
+
+# vim: set ft=python:

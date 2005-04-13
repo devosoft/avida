@@ -2,3 +2,5 @@
 Include("string.hh")
 
 cTools = Class("cTools", "tools.hh")
+
+# vim: set ft=python:

@@ -3,3 +3,5 @@ Include("species.hh")
 
 cSpeciesQueue = Class("cSpeciesQueue", "species_queue.hh")
 set_policy(cSpeciesQueue.GetFirst, return_internal_reference())
+
+# vim: set ft=python:

@@ -1,3 +1,6 @@
+
 Include("genotype.hh")
 
 cLineage = Class("cLineage", "lineage.hh")
+
+# vim: set ft=python:

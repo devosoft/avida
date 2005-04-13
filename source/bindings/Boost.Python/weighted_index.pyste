@@ -1,1 +1,4 @@
+
 cWeightedIndex = Class("cWeightedIndex", "weighted_index.hh")
+
+# vim: set ft=python:

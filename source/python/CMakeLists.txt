@@ -21,21 +21,21 @@ IF(AVD_GUI_PYQT)
 
   IF(UNIX)
     IF(APPLE)
-      CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/AvidaEd-osx.py ${CMAKE_CURRENT_BINARY_DIR}/AvidaEd.py COPYONLY)
+      CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/AvidaEd-osx.py ${CMAKE_CURRENT_BINARY_DIR}/Avida-ED.py COPYONLY)
       CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/setup_osx.py.in ${CMAKE_CURRENT_BINARY_DIR}/setup.py)
 
       # CMake custom targets often produce strange and idiosyncratic
       # output in Makefiles, and this has become a real pain. I would
       # like a different build system again.
       # @kgn
-      ADD_CUSTOM_TARGET(BUILD_AvidaEd ALL DEPENDS ${EXECUTABLE_OUTPUT_PATH}/AvidaEd.app)
+      ADD_CUSTOM_TARGET(BUILD_AvidaEd ALL DEPENDS ${EXECUTABLE_OUTPUT_PATH}/Avida-ED.app)
       #ADD_CUSTOM_TARGET(
       #  ${CMAKE_CURRENT_BINARY_DIR}/build
       #  ALL
       #  DEPENDS ${EXECUTABLE_OUTPUT_PATH}/AvidaEd.app/Contents/MacOS/AvidaEd
       #)
       ADD_CUSTOM_COMMAND(
-        OUTPUT ${EXECUTABLE_OUTPUT_PATH}/AvidaEd.app
+        OUTPUT ${EXECUTABLE_OUTPUT_PATH}/Avida-ED.app
         COMMAND ${PYTHON_EXE}
         DEPENDS ${LIBRARY_OUTPUT_PATH}/libPyAvidaRepairHacks.dylib
         ARGS setup.py py2app

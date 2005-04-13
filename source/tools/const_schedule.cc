@@ -5,13 +5,10 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef CONST_SCHEDULE_HH
 #include "const_schedule.hh"
-#endif
 
-#ifndef MERIT_HH
 #include "merit.hh"
-#endif
+
 
 ////////////////////
 //  cConstSchedule

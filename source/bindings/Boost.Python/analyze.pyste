@@ -3,3 +3,5 @@ Include("environment.hh")
 Include("environment.hh")
 
 cAnalyze = Class("cAnalyze", "analyze.hh")
+
+# vim: set ft=python:

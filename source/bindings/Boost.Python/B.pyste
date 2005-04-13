@@ -1,3 +1,4 @@
 Import("A.pyste")
 B = Class("B", "B.hh")
 
+# vim: set ft=python:

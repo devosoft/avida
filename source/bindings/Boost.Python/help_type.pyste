@@ -8,3 +8,5 @@ cHelpType = Class("cHelpType", "help_type.hh")
 set_policy(cHelpType.AddEntry, return_internal_reference())
 set_policy(cHelpType.AddAlias, return_internal_reference())
 set_policy(cHelpType.FindEntry, return_internal_reference())
+
+# vim: set ft=python:

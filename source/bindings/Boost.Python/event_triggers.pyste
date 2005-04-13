@@ -1,1 +1,4 @@
+
 cEventTriggers = Class("cEventTriggers", "event_triggers.hh")
+
+# vim: set ft=python:

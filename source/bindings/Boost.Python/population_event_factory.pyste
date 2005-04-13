@@ -7,3 +7,5 @@ Include("population.hh")
 
 cPopulationEventFactory = Class("cPopulationEventFactory", "population_event_factory.hh")
 set_policy(cPopulationEventFactory.ConstructEvent, return_internal_reference())
+
+# vim: set ft=python:

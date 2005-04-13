@@ -1,3 +1,5 @@
 Include("data_file.hh")
 
 cDataManager_Base = Class("cDataManager_Base", "data_manager_base.hh")
+
+# vim: set ft=python:

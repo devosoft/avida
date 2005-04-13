@@ -1,5 +1,8 @@
+
 Include("inst_set.hh")
 Include("species.hh")
 Include("genotype.hh")
 
 cGenotype_BirthData = Class("cGenotype_BirthData", "genotype_birth_data.hh")
+
+# vim: set ft=python:

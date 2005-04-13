@@ -1,1 +1,4 @@
+
 cFixedCoords = Class("cFixedCoords", "fixed_coords.hh")
+
+# vim: set ft=python:

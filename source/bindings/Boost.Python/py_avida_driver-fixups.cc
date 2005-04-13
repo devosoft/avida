@@ -1,38 +1,19 @@
 
-#ifndef PY_AVIDA_DRIVER_HH
 #include "py_avida_driver.hh"
-#endif
 
-#ifndef GENEBANK_HH
 #include "main/genebank.hh"
-#endif
-#ifndef GENOTYPE_HH
 #include "main/genotype.hh"
-#endif
-#ifndef POPULATION_CELL_HH
 #include "main/population_cell.hh"
-#endif
-#ifndef HARDWARE_FACTORY_HH
 #include "cpu/hardware_factory.hh"
-#endif
-#ifndef ORGANISM_HH
 #include "main/organism.hh"
-#endif  
-#ifndef HARDWARE_BASE_HH
 #include "cpu/hardware_base.hh"
-#endif
-#ifndef STRING_HH
 #include "tools/string.hh"
-#endif
-#ifndef CONFIG_HH
 #include "main/config.hh"
-#endif
-#ifndef POPULATION_HH
 #include "main/population.hh"
-#endif
 
 
 #include <iostream>
+
 
 bool pyAvidaDriver::preUpdate(const unsigned int){
   GetEvents();

@@ -5,92 +5,35 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef POPULATION_HH
 #include "population.hh"
-#endif
 
-
-#ifndef CONFIG_HH
 #include "config.hh"
-#endif
-#ifndef CONST_SCHEDULE_HH
 #include "const_schedule.hh"
-#endif
-#ifndef DATA_FILE_HH
 #include "data_file.hh"
-#endif
-#ifndef ENVIRONMENT_HH
 #include "environment.hh"
-#endif
-#ifndef FUNCTIONS_HH
 #include "functions.hh"
-#endif
-#ifndef GENEBANK_HH
 #include "genebank.hh"
-#endif
-#ifndef GENOME_UTIL_HH
 #include "genome_util.hh"
-#endif
-#ifndef GENOTYPE_HH
 #include "genotype.hh"
-#endif
-#ifndef HARDWARE_BASE_HH
 #include "hardware_base.hh"
-#endif
-#ifndef HARDWARE_FACTORY_HH
 #include "hardware_factory.hh"
-#endif
-#ifndef HARDWARE_4STACK_HH
 #include "hardware_4stack.hh"
-#endif
-#ifndef HARDWARE_UTIL_HH
 #include "hardware_util.hh"
-#endif
-#ifndef INIT_FILE_HH
 #include "init_file.hh"
-#endif
-#ifndef INJECT_GENEBANK_HH
 #include "inject_genebank.hh"
-#endif
-#ifndef INJECT_GENOTYPE_HH
 #include "inject_genotype.hh"
-#endif
-#ifndef INST_UTIL_HH
 #include "inst_util.hh"
-#endif
-#ifndef INTEGRATED_SCHEDULE_HH
 #include "integrated_schedule.hh"
-#endif
-#ifndef LINEAGE_HH
 #include "lineage.hh"
-#endif
-#ifndef LINEAGE_CONTROL_HH
 #include "lineage_control.hh"
-#endif
-#ifndef ORGANISM_HH
 #include "organism.hh"
-#endif
-#ifndef PHENOTYPE_HH
 #include "phenotype.hh"
-#endif
-#ifndef POPULATION_CELL_HH
 #include "population_cell.hh"
-#endif
-#ifndef PROB_SCHEDULE_HH
 #include "prob_schedule.hh"
-#endif
-#ifndef RESOURCE_HH
 #include "resource.hh"
-#endif
-#ifndef SPECIES_HH
 #include "species.hh"
-#endif
-#ifndef STATS_HH
 #include "stats.hh"
-#endif
-#ifndef TASK_ENTRY_HH
 #include "task_entry.hh"
-#endif
 
 #include <fstream>
 #include <vector>

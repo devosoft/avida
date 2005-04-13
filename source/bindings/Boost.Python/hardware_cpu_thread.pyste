@@ -1,3 +1,6 @@
+
 Include("hardware_base.hh")
 
 cHardwareCPU_Thread = Class("cHardwareCPU_Thread", "hardware_cpu_thread.hh")
+
+# vim: set ft=python:

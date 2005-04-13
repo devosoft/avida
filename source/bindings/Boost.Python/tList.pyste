@@ -55,3 +55,5 @@ for typename in template_specializers:
   set_policy(const_list_iterator_type.Get , return_value_policy(reference_existing_object))
   set_policy(const_list_iterator_type.Next , return_value_policy(reference_existing_object))
   set_policy(const_list_iterator_type.Prev , return_value_policy(reference_existing_object))
+
+# vim: set ft=python:

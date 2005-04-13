@@ -1,3 +1,8 @@
+
 Include("inst_set.hh")
 
+Include("fstream")
+
 cLandscape = Class("cLandscape", "landscape.hh")
+
+# vim: set ft=python:

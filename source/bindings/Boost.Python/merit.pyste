@@ -4,3 +4,5 @@ cMerit = Class("cMerit", "merit.hh")
 exclude(cMerit.BinaryPrint)
 # operator is for ostreams; ditch it.
 exclude(cMerit.operator['<<'])
+
+# vim: set ft=python:

@@ -1,3 +1,5 @@
 Include("inst_set.hh")
 
 cInstUtil = Class("cInstUtil", "inst_util.hh")
+
+# vim: set ft=python:

@@ -26,6 +26,14 @@ Python:from pyAnalyzeControlsCtrl import pyAnalyzeControlsCtrl
             <property name="name">
                 <cstring>m_organism_scope_ctrl</cstring>
             </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>5</hsizetype>
+                    <vsizetype>3</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
         </widget>
         <widget class="QSlider">
             <property name="name">
@@ -104,13 +112,15 @@ Python:from pyAnalyzeControlsCtrl import pyAnalyzeControlsCtrl
         </sizehint>
         <container>0</container>
         <sizepolicy>
-            <hordata>5</hordata>
+            <hordata>0</hordata>
             <verdata>0</verdata>
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
         </sizepolicy>
         <pixmap>image0</pixmap>
         <property type="0">3</property>
+        <property type="1">pyAnalyzeControlsCtrl</property>
+        <property type="3">-1</property>
         <property type="1">pyAnalyzeControlsCtrl</property>
         <property type="3">-1</property>
         <property type="pyAnalyzeControlsCtrl"></property>

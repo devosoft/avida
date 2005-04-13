@@ -12,3 +12,5 @@ FIXME for string_list.pyste:
     that I have't yet approached).
   - What to do about tList and memory-management issues?
 """)
+
+# vim: set ft=python:

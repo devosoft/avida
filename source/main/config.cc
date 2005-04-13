@@ -5,26 +5,14 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef CONFIG_HH
 #include "config.hh"
-#endif
 
-#ifndef DEFS_HH
 #include "defs.hh"
-#endif
-#ifndef GENESIS_HH
 #include "genesis.hh"
-#endif
-#ifndef TOOLS_HH
 #include "tools.hh"
-#endif
 
-#ifndef POPULATION_DESCR_HI
 #include "cPopulation_descr.hi" // declarations and definitions
-#endif
-#ifndef POPULATION_DESCR_CI
 #include "cPopulation_descr.ci" // for event documentation
-#endif
 
 using namespace std;
 

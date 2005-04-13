@@ -5,19 +5,12 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef INTEGRATED_SCHEDULE_HH
 #include "integrated_schedule.hh"
-#endif
 
-#ifndef FUNCTIONS_HH
 #include "functions.hh"
-#endif
-#ifndef INTEGRATED_SCHEDULE_NODE_HH
 #include "integrated_schedule_node.hh"
-#endif
-#ifndef MERIT_HH
 #include "merit.hh"
-#endif
+
 
 /////////////////////////
 //  cIntegratedSchedule

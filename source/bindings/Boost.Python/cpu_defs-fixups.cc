@@ -1,0 +1,52 @@
+
+#include "cpu_defs-fixups.hh"
+
+#include "cpu_defs.hh"
+
+
+const int cCPUDefs::s_TEST_CPU_GENERATIONS(TEST_CPU_GENERATIONS);
+
+const int cCPUDefs::s_MAX_TEST_DEPTH(MAX_TEST_DEPTH);
+
+const double cCPUDefs::s_FITNESS_NEUTRAL_RANGE(FITNESS_NEUTRAL_RANGE);
+const double cCPUDefs::s_FITNESS_NEUTRAL_MIN(FITNESS_NEUTRAL_MIN);
+const double cCPUDefs::s_FITNESS_NEUTRAL_MAX(FITNESS_NEUTRAL_MAX);
+
+const int cCPUDefs::s_NUM_NOPS(NUM_NOPS);
+const int cCPUDefs::s_MAX_NOPS(MAX_NOPS);
+const int cCPUDefs::s_MAX_LABEL_SIZE(MAX_LABEL_SIZE);
+const int cCPUDefs::s_REG_AX(REG_AX);
+const int cCPUDefs::s_REG_BX(REG_BX);
+const int cCPUDefs::s_REG_CX(REG_CX);
+const int cCPUDefs::s_REG_DX(REG_DX);
+const int cCPUDefs::s_NUM_REGISTERS(NUM_REGISTERS);
+const int cCPUDefs::s_NUM_REG_4STACK(NUM_REG_4STACK);
+
+const int cCPUDefs::s_HEAD_IP(HEAD_IP);
+const int cCPUDefs::s_HEAD_READ(HEAD_READ);
+const int cCPUDefs::s_HEAD_WRITE(HEAD_WRITE);
+const int cCPUDefs::s_HEAD_FLOW(HEAD_FLOW);
+const int cCPUDefs::s_NUM_HEADS(NUM_HEADS);
+
+const int cCPUDefs::s_STACK_SIZE(STACK_SIZE);
+const int cCPUDefs::s_IO_SIZE(IO_SIZE);
+
+const int cCPUDefs::s_GEN_RESOURCE(GEN_RESOURCE);
+const int cCPUDefs::s_NUM_RESOURCES(NUM_RESOURCES);
+
+const int cCPUDefs::s_FAULT_TYPE_WARNING(FAULT_TYPE_WARNING);
+const int cCPUDefs::s_FAULT_TYPE_ERROR(FAULT_TYPE_ERROR);
+
+const int cCPUDefs::s_FAULT_TYPE_FORK_TH(FAULT_TYPE_FORK_TH);
+const int cCPUDefs::s_FAULT_TYPE_KILL_TH(FAULT_TYPE_KILL_TH);
+
+const int cCPUDefs::s_FAULT_LOC_DEFAULT(FAULT_LOC_DEFAULT);
+const int cCPUDefs::s_FAULT_LOC_INSTRUCTION(FAULT_LOC_INSTRUCTION);
+const int cCPUDefs::s_FAULT_LOC_JUMP(FAULT_LOC_JUMP);
+const int cCPUDefs::s_FAULT_LOC_MATH(FAULT_LOC_MATH);
+const int cCPUDefs::s_FAULT_LOC_INJECT(FAULT_LOC_INJECT);
+const int cCPUDefs::s_FAULT_LOC_THREAD_FORK(FAULT_LOC_THREAD_FORK);
+const int cCPUDefs::s_FAULT_LOC_THREAD_KILL(FAULT_LOC_THREAD_KILL);
+const int cCPUDefs::s_FAULT_LOC_ALLOC(FAULT_LOC_ALLOC);
+const int cCPUDefs::s_FAULT_LOC_DIVIDE(FAULT_LOC_DIVIDE);
+const int cCPUDefs::s_FAULT_LOC_BCOPY(FAULT_LOC_BCOPY);

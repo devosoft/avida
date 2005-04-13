@@ -1,4 +1,7 @@
+
 Include("hardware_base.hh")
 Include("inject_genotype.hh")
 
 cHardware4Stack_Thread = Class("cHardware4Stack_Thread", "hardware_4stack_thread.hh")
+
+# vim: set ft=python:

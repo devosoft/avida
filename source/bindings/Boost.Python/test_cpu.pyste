@@ -6,26 +6,26 @@ Include("inst_set.hh")
 Include("population_interface.hh")
 Include("resource_count.hh")
 
-cTestCPU = Class("cTestCPU", "test_cpu.hh")
-print("""
-XXX in test_cpu.pyste: cTestCPU.GetInstSet needs autopointer to protect
-ownership.
-""")
+cTestCPU = Class("cTestCPU", "test_cpu-fixups.hh")
 set_policy(cTestCPU.GetInstSet, return_value_policy(reference_existing_object))
-print("""
-XXX in test_cpu.pyste: cTestCPU.GetEnvironment needs autopointer to protect
-ownership.
-""")
 set_policy(cTestCPU.GetEnvironment, return_value_policy(reference_existing_object))
-print("""
-XXX in test_cpu.pyste: cTestCPU.GetResources needs autopointer to protect
-ownership.
-""")
 set_policy(cTestCPU.GetResources, return_value_policy(reference_existing_object))
 set_policy(cTestCPU.GetResourceCount, return_value_policy(reference_existing_object))
-print("""
-XXX in test_cpu.pyste: cTestCPU.UseResources temporarily disabled
-because it returns a reference to built-in type, which makes Pyste kinda
-cranky.
-""")
 exclude(cTestCPU.UseResources)
+
+exclude(cTestCPU.UseResources)
+add_method(cTestCPU, "cTestCPU_GetUseResources");
+add_method(cTestCPU, "cTestCPU_SetUseResources");
+rename(cTestCPU.cTestCPU_GetUseResources, "GetUseResources");
+rename(cTestCPU.cTestCPU_SetUseResources, "SetUseResources");
+class_code(cTestCPU, '.add_property("UseResources", &cTestCPU_GetUseResources, &cTestCPU_SetUseResources)');
+
+print("""
+XXX in test_cpu.pyste:
+- cTestCPU.GetInstSet needs autopointer to protect ownership.
+- cTestCPU.GetEnvironment needs autopointer to protect ownership.
+- cTestCPU.GetResources needs autopointer to protect ownership.
+- cTestCPU.GetResourceCount needs autopointer to protect ownership.
+""")
+
+# vim: set ft=python:

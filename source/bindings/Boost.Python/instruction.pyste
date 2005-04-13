@@ -1,1 +1,4 @@
+
 cInstruction = Class("cInstruction", "instruction.hh")
+
+# vim: set ft=python:

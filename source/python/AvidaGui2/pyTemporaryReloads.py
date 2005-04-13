@@ -54,6 +54,8 @@ nontest_module_names = [
   "AvidaGui2.pyGradientScaleCtrl",
   "AvidaGui2.pyGraphView",
   "AvidaGui2.pyGraphCtrl",
+  "AvidaGui2.pyHardwareCPUTrace",
+  "AvidaGui2.pyHardwareTracer",
   "AvidaGui2.pyInstructionSet",
   "AvidaGui2.pyLiveControlsView",
   "AvidaGui2.pyLiveControlsCtrl",

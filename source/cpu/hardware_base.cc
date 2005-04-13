@@ -5,13 +5,9 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef HARDWARE_BASE_HH
 #include "hardware_base.hh"
-#endif
 
-#ifndef INST_SET_HH
 #include "inst_set.hh"
-#endif
 
 using namespace std;
 
@@ -21,7 +17,7 @@ cHardwareBase::cHardwareBase(cOrganism * in_organism, cInstSet * in_inst_set)
   : organism(in_organism)
   , inst_set(in_inst_set)
   , viewer_lock(-1)
-  , trace_fp(NULL)
+  , m_tracer(NULL)
 {
   assert(inst_set->OK());
   assert(organism != NULL);

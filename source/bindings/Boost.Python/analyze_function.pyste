@@ -1,3 +1,5 @@
 
 cAnalyzeFunction = Class("cAnalyzeFunction", "analyze_function.hh")
 set_policy(cAnalyzeFunction.GetCommandList, return_internal_reference())
+
+# vim: set ft=python:

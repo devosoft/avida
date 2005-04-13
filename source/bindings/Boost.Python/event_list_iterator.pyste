@@ -1,1 +1,4 @@
+
 cEventListIterator = Class("cEventListIterator", "event_list_iterator.hh")
+
+# vim: set ft=python:

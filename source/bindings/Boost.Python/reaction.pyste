@@ -7,3 +7,5 @@ cReaction = Class("cReaction", "reaction.hh")
 set_policy(cReaction.GetTask, return_internal_reference())
 set_policy(cReaction.AddProcess, return_internal_reference())
 set_policy(cReaction.AddRequisite, return_internal_reference())
+
+# vim: set ft=python:

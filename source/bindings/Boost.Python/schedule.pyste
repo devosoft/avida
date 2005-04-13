@@ -1,3 +1,6 @@
+
 Include("merit.hh")
 
 cSchedule = Class("cSchedule", "schedule.hh")
+
+# vim: set ft=python:

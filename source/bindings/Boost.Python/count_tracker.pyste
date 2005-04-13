@@ -1,2 +1,4 @@
 
 cCountTracker = Class("cCountTracker", "count_tracker.hh")
+
+# vim: set ft=python:

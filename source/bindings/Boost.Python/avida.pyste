@@ -9,3 +9,4 @@ declaration_code("""
 
 Function("SetupAvidaPython", "avida-fixups.hh")
 
+# vim: set ft=python:

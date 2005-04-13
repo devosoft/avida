@@ -4,3 +4,5 @@ Include("mutation.hh")
 
 cMutationLib = Class("cMutationLib", "mutation_lib.hh")
 set_policy(cMutationLib.AddMutation, return_internal_reference())
+
+# vim: set ft=python:

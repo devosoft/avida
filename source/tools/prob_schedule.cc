@@ -5,16 +5,11 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef PROB_SCHEDULE_HH
 #include "prob_schedule.hh"
-#endif
 
-#ifndef MERIT_HH
 #include "merit.hh"
-#endif
-#ifndef TOOLS_HH
 #include "tools.hh"
-#endif
+
 
 ///////////////////
 //  cProbSchedule

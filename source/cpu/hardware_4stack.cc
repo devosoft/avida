@@ -7,52 +7,24 @@
 
 
 
-#ifndef HARDWARE_4STACK_HH
 #include "hardware_4stack.hh"
-#endif
 
-#ifndef CONFIG_HH
 #include "config.hh"
-#endif
-#ifndef CPU_TEST_INFO_HH
 #include "cpu_test_info.hh"
-#endif
-#ifndef FUNCTIONS_HH
 #include "functions.hh"
-#endif
-#ifndef GENOME_UTIL_HH
 #include "genome_util.hh"
-#endif
-#ifndef INST_LIB_BASE_HH
 #include "inst_lib_base.hh"
-#endif
-#ifndef INST_SET_HH
 #include "inst_set.hh"
-#endif
-#ifndef MUTATION_HH
+#include "hardware_tracer.hh"
+#include "hardware_tracer_4stack.hh"
 #include "mutation.hh"
-#endif
-#ifndef MUTATION_LIB_HH
 #include "mutation_lib.hh"
-#endif
-#ifndef MUTATION_MACROS_HH
 #include "mutation_macros.hh"
-#endif
-#ifndef ORGANISM_HH
 #include "organism.hh"
-#endif
-#ifndef PHENOTYPE_HH
 #include "phenotype.hh"
-#endif
-#ifndef RANDOM_HH
 #include "random.hh"
-#endif
-#ifndef STRING_UTIL_HH
 #include "string_util.hh"
-#endif
-#ifndef TEST_CPU_HH
 #include "test_cpu.hh"
-#endif
 
 #include <limits.h>
 
@@ -289,6 +261,29 @@ cHardware4Stack::cHardware4Stack(cOrganism * in_organism, cInstSet * in_inst_set
 }
 
 
+cHardware4Stack::cHardware4Stack(const cHardware4Stack &hardware_4stack)
+: cHardwareBase(hardware_4stack.organism, hardware_4stack.inst_set)
+, m_functions(hardware_4stack.m_functions)
+, memory_array(hardware_4stack.memory_array)
+, threads(hardware_4stack.threads)
+, thread_id_chart(hardware_4stack.thread_id_chart)
+, cur_thread(hardware_4stack.cur_thread)
+, mal_active(hardware_4stack.mal_active)
+, inst_cost(hardware_4stack.inst_cost)
+#ifdef INSTRUCTION_COSTS
+, inst_ft_cost(hardware_4stack.inst_ft_cost)
+, inst_remainder(hardware_4stack.inst_remainder)
+#endif
+{
+  for(int i = 0; i < NUM_GLOBAL_STACKS; i++){
+    global_stacks[i] = hardware_4stack.global_stacks[i];
+  }
+  for(int i = 0; i < sizeof(slice_array)/sizeof(float); i++){
+    slice_array[i] = hardware_4stack.slice_array[i];
+  }
+}
+
+
 cHardware4Stack::~cHardware4Stack()
 {
 }
@@ -386,9 +381,12 @@ void cHardware4Stack::SingleProcess()
 #endif
     
     // Print the status of this CPU at each step...
-    if (trace_fp != NULL) {
-      const cString & next_name = inst_set->GetName(IP().GetInst())();
-      organism->PrintStatus(*trace_fp, next_name);
+    if (m_tracer != NULL) {
+      if (cHardwareTracer_4Stack * tracer
+          = dynamic_cast<cHardwareTracer_4Stack *>(m_tracer)
+      ){
+        tracer->TraceHardware_4Stack(*this);
+      }
     }
     
     // Find the instruction to be executed
@@ -496,10 +494,12 @@ void cHardware4Stack::ProcessBonusInst(const cInstruction & inst)
 
   // @CAO FIX PRINTING TO INDICATE THIS IS A BONUS
   // Print the status of this CPU at each step...
-  if (trace_fp != NULL) {
-    cString next_name = cStringUtil::Stringf("%s (bonus instruction)",
-					     inst_set->GetName(inst)());
-    organism->PrintStatus(*trace_fp, next_name);
+  if (m_tracer != NULL) {
+    if (cHardwareTracer_4Stack * tracer
+        = dynamic_cast<cHardwareTracer_4Stack *>(m_tracer)
+    ){
+      tracer->TraceHardware_4StackBonus(*this);
+    }
   }
     
   SingleProcess_ExecuteInst(inst);

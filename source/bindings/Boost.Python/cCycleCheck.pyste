@@ -2,3 +2,4 @@ Include("cID.hh")
 
 cCycleCheck = Class("cCycleCheck", "cCycleCheck.hh")
 
+# vim: set ft=python:

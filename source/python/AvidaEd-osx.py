@@ -39,8 +39,8 @@ if len(sys.argv) > 1 and sys.argv[1] >= 5 and sys.argv[1][:5] == '-psn_':
     edu_main_controller = AvidaGui2.pyEduMainCtrl.pyEduMainCtrl()
     edu_main_controller.construct()
     edu_main_controller.m_main_mdl.m_main_mdtr.m_main_controller_factory_mdtr.emit(
-    sys.exc_clear()
-    sys.exc_traceback = sys.last_traceback = None
+    #sys.exc_clear()
+    #sys.exc_traceback = sys.last_traceback = None
       qt.PYSIGNAL("newMainControllerSig"), ("pySessionCtrl",))
     return edu_main_controller
   

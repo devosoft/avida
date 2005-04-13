@@ -12,3 +12,5 @@ set_policy(cGenotypeControl.Reset, return_internal_reference())
 set_policy(cGenotypeControl.ResetHistoric, return_internal_reference())
 set_policy(cGenotypeControl.Next, return_internal_reference())
 set_policy(cGenotypeControl.Prev, return_internal_reference())
+
+# vim: set ft=python:

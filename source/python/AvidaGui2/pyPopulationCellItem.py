@@ -5,6 +5,7 @@ from qtcanvas import QCanvasRectangle
 class pyPopulationCellItem(QCanvasRectangle):
 
   s_empty_color = QColor(Qt.black)
+  s_null_pen = QPen(Qt.NoPen)
 
   def rtti(self):
     return 271828
@@ -14,6 +15,8 @@ class pyPopulationCellItem(QCanvasRectangle):
     self.m_population_cell = population_cell
     self.m_index = 0
     self.show()
+    self.setZ(1.0 + population_cell.GetID())
+    self.setPen(self.s_null_pen)
 
   def checkNormalizedIndexUsingFunctor(self, functor, min, range):
     index = 1.0
@@ -30,5 +33,4 @@ class pyPopulationCellItem(QCanvasRectangle):
   def updateColorUsingFunctor(self, functor):
     color = (self.m_population_cell.IsOccupied() and functor) and functor(self.m_index) or self.s_empty_color
     self.setBrush(QBrush(color))
-    self.setPen(QPen(color))
 

@@ -3,3 +3,5 @@ cEventListEntry = Class("cEventListEntry", "event_list_entry.hh")
 set_policy(cEventListEntry.GetEvent, return_internal_reference())
 set_policy(cEventListEntry.GetPrev, return_internal_reference())
 set_policy(cEventListEntry.GetNext, return_internal_reference())
+
+# vim: set ft=python:

@@ -5,60 +5,26 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef TEST_CPU_HH
 #include "test_cpu.hh"
-#endif
 
-#ifndef CPU_TEST_INFO_HH
 #include "cpu_test_info.hh"
-#endif
-#ifndef CONFIG_HH
 #include "config.hh"
-#endif
-#ifndef ENVIRONMENT_HH
 #include "environment.hh"
-#endif
-#ifndef FUNCTIONS_HH
 #include "functions.hh"
-#endif
-#ifndef HARDWARE_BASE_HH
 #include "hardware_base.hh"
-#endif
-#ifndef INST_SET_HH
+#include "hardware_status_printer.hh"
 #include "inst_set.hh"
-#endif
-#ifndef INST_UTIL_HH
 #include "inst_util.hh"
-#endif
-#ifndef ORGANISM_HH
 #include "organism.hh"
-#endif
-#ifndef PHENOTYPE_HH
 #include "phenotype.hh"
-#endif
-#ifndef POPULATION_INTERFACE_HH
 #include "population_interface.hh"
-#endif
-#ifndef RESOURCE_COUNT_HH
 #include "resource_count.hh"
-#endif
-#ifndef RESOURCE_LIB_HH
 #include "resource_lib.hh"
-#endif
-#ifndef RESOURCE_HH
 #include "resource.hh"
-#endif
-#ifndef STRING_UTIL_HH
 #include "string_util.hh"
-#endif
-#ifndef TMATRIX_HH
 #include "tMatrix.hh"
-#endif
 
 #include <iomanip>
-
-
-#include "population_interface.hh"
 
 using namespace std;
 
@@ -158,15 +124,15 @@ bool cTestCPU::ProcessGestation(cCPUTestInfo & test_info, int cur_depth)
   cur_receive = 0;
 
   // Determine if we're tracing and what we need to print.
-  ostream * trace_fp =
-    test_info.GetTraceExecution() ? &(test_info.GetTraceFP()) : NULL;
+  cHardwareTracer * tracer =
+    test_info.GetTraceExecution() ? (test_info.GetTracer()) : NULL;
 
   int time_used = 0;
   while (time_used < time_allocated &&
 	 organism.GetHardware().GetMemory().GetSize() &&
 	 organism.GetPhenotype().GetNumDivides() == 0) {
     time_used++;
-    organism.GetHardware().SetTrace(trace_fp);
+    organism.GetHardware().SetTrace(tracer);
     organism.GetHardware().SingleProcess();
     organism.GetHardware().SetTrace(NULL);
     //resource_count.Update(1/cConfig::GetAveTimeslice());
@@ -174,18 +140,17 @@ bool cTestCPU::ProcessGestation(cCPUTestInfo & test_info, int cur_depth)
   }
 
   // Print out some final info in trace...
-  if (trace_fp != NULL) {
-    if (time_used == time_allocated) {
-      *trace_fp << endl << "TIMEOUT: No offspring produced." << endl;
-    }
-    else if (organism.GetHardware().GetMemory().GetSize() == 0) {
-      *trace_fp << endl << "ORGANISM DEATH: No offspring produced." << endl;
-    }
-    else {
-      *trace_fp << endl << "Final Memory: "
-		<< organism.GetHardware().GetMemory().AsString() << endl
-		<< "Child Memory: " << organism.ChildGenome().AsString()
-		<< endl;
+  if (tracer != NULL) {
+    if (cHardwareTracer_TestCPU * tracer_test_cpu
+        = dynamic_cast<cHardwareTracer_TestCPU *>(tracer)
+    ){
+      tracer_test_cpu->TraceHardware_TestCPU(
+        time_used,
+        time_allocated,
+        organism.GetHardware().GetMemory().GetSize(),
+        organism.GetHardware().GetMemory().AsString(),
+        organism.ChildGenome().AsString()
+      );
     }
   }
 

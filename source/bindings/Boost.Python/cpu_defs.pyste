@@ -1,0 +1,6 @@
+
+Include("cpu_defs.hh")
+
+cCPUDefs = Class("cCPUDefs", "cpu_defs-fixups.hh")
+
+# vim: set ft=python:

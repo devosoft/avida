@@ -1,2 +1,4 @@
 Import("analyze_command_def_base.pyste")
 cAnalyzeCommandDef = Class("cAnalyzeCommandDef", "analyze_command_def.hh")
+
+# vim: set ft=python:

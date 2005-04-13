@@ -9,101 +9,40 @@
 #include <sstream>
 #include <string>
 
-#ifndef ANALYZE_HH
 #include "analyze.hh"
-#endif
 
-#ifndef ANALYZE_COMMAND_HH
 #include "analyze_command.hh"
-#endif
-#ifndef ANALYZE_COMMAND_DEF_HH
 #include "analyze_command_def.hh"
-#endif
-#ifndef ANALYZE_COMMAND_DEF_BASE_HH
 #include "analyze_command_def_base.hh"
-#endif
-#ifndef ANALYZE_FLOW_COMMAND_HH
 #include "analyze_flow_command.hh"
-#endif
-#ifndef ANALYZE_FLOW_COMMAND_DEF_HH
 #include "analyze_flow_command_def.hh"
-#endif
-#ifndef ANALYZE_FUNCTION_HH
 #include "analyze_function.hh"
-#endif
-#ifndef ANALYZE_GENOTYPE_HH
 #include "analyze_genotype.hh"
-#endif
-#ifndef CONFIG_HH
 #include "config.hh"
-#endif
-#ifndef DATA_FILE_HH
 #include "data_file.hh"
-#endif
-#ifndef ENVIRONMENT_HH
 #include "environment.hh"
-#endif
-#ifndef FITNESS_MATRIX_HH
 #include "fitness_matrix.hh"
-#endif
-#ifndef GENOME_UTIL_HH
 #include "genome_util.hh"
-#endif
-#ifndef HARDWARE_BASE_HH
 #include "hardware_base.hh"
-#endif
-#ifndef HARDWARE_UTIL_HH
+#include "hardware_status_printer.hh"
 #include "hardware_util.hh"
-#endif
-#ifndef HELP_MANAGER_HH
 #include "help_manager.hh"
-#endif
-#ifndef INIT_FILE_HH
 #include "init_file.hh"
-#endif
-#ifndef INST_SET_HH
 #include "inst_set.hh"
-#endif
-#ifndef INST_UTIL_HH
 #include "inst_util.hh"
-#endif
-#ifndef LANDSCAPE_HH
 #include "landscape.hh"
-#endif
-#ifndef PHENOTYPE_HH
 #include "phenotype.hh"
-#endif
-#ifndef SPECIES_HH
 #include "species.hh"
-#endif
-#ifndef TARGDATAENTRY_HH
 #include "tArgDataEntry.hh"
-#endif
-#ifndef TASK_ENTRY_HH
 #include "task_entry.hh"
-#endif
-#ifndef TDATAENTRY_HH
 #include "tDataEntry.hh"
-#endif
-#ifndef TDATAENTRYCOMMAND_HH
 #include "tDataEntryCommand.hh"
-#endif
-#ifndef TEST_CPU_HH
 #include "test_cpu.hh"
-#endif
-#ifndef CPU_TEST_INFO_HH
 #include "cpu_test_info.hh"
-#endif
-#ifndef TEST_UTIL_HH
 #include "test_util.hh"
-#endif
-#ifndef RESOURCE_HH
 #include "resource.hh"
-#endif
 #ifdef WIN32
-# ifndef WIN32_MKDIR_HACK_HH
 #  include "win32_mkdir_hack.hh"
-# endif
 #endif
 
 extern "C" {
@@ -1215,14 +1154,21 @@ void cAnalyze::CommandTrace(cString cur_string)
       break;
     }
 
+    // Build the hardware status printer for tracing.
+    ofstream trace_fp;
+    trace_fp.open(filename);
+    assert (trace_fp.good() == true); // Unable to open trace file.
+    cHardwareStatusPrinter trace_printer(trace_fp);
+
     // Build the test info for printing.
     cCPUTestInfo test_info;
     test_info.TestThreads();
-    test_info.SetTraceExecution(filename);
+    test_info.SetTraceExecution(&trace_printer);
 
     cTestCPU::TestGenome(test_info, genotype->GetGenome());
 
     if (verbose) cout << "  Tracing: " << filename << endl;
+    trace_fp.close();
   }
 
   if(useResources) {

@@ -12,6 +12,7 @@ SET(libcpu_a_SOURCES
   hardware_cpu_thread.cc
   hardware_factory.cc
   hardware_util.cc
+  hardware_status_printer.cc
   memory_flags.cc
   test_cpu.cc
   test_util.cc

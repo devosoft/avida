@@ -33,3 +33,5 @@ set_policy(cTestResult.errors, return_value_policy(return_by_value))
 set_policy(cTestResult.failures, return_value_policy(return_by_value))
 set_wrapper(cTestResult.errors, errors_wrapper)
 set_wrapper(cTestResult.failures, failures_wrapper)
+
+# vim: set ft=python:

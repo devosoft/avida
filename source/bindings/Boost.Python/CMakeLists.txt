@@ -51,14 +51,12 @@ SET(PyAvida_Pyste_Bases
   # XXX : cScaledBlock is designed for use with raw pointers, and won't play well with Python. Hence, don't wrap it.
   #scaled_block::
 
-  # XXX skip for now. Boost is unhappy with references to bools.
-  #cpu_memory::${CMAKE_CURRENT_SOURCE_DIR}/genome.pyste:
   # XXX I can't figure out how it works.
   tArray::${CMAKE_CURRENT_SOURCE_DIR}/organism.pyste:${CMAKE_CURRENT_SOURCE_DIR}/merit.pyste:${CMAKE_CURRENT_SOURCE_DIR}/mutation.pyste:${CMAKE_CURRENT_SOURCE_DIR}/int_sum.pyste:
   # XXX Boost doesn't like that tMatrix returns refs to doubles.
   #tMatrix::
 
-  ###cpu_head::
+  cpu_head::
   ###4stack_head::${CMAKE_CURRENT_SOURCE_DIR}/cpu_head.pyste:
   ###event::
   ###population_event::${CMAKE_CURRENT_SOURCE_DIR}/event.pyste:
@@ -150,6 +148,8 @@ SET(PyAvida_Pyste_Bases
   fixed_block:: # XXX XXX
   fixed_coords:: # XXX XXX
   genome:: # XXX XXX
+  cpu_memory::${CMAKE_CURRENT_SOURCE_DIR}/genome.pyste:
+
   genome_util:: # XXX XXX
   genotype_test_data:: # XXX XXX
   histogram:: # XXX XXX
@@ -174,6 +174,7 @@ SET(PyAvida_Pyste_Bases
   avida_driver_population::${CMAKE_CURRENT_SOURCE_DIR}/avida_driver_base.pyste # XXX XXX XXX
   config:: # XXX XXX XXX
   count_tracker:: # XXX XXX XXX
+  cpu_defs::
   data_entry:: # XXX XXX XXX
   data_file:: # XXX XXX XXX
   data_file_manager:: # XXX XXX XXX
@@ -182,9 +183,15 @@ SET(PyAvida_Pyste_Bases
   file::${CMAKE_CURRENT_SOURCE_DIR}/file-fixups.hh # XXX XXX XXX
   init_file::${CMAKE_CURRENT_SOURCE_DIR}/file.pyste # XXX XXX XXX
   genesis::${CMAKE_CURRENT_SOURCE_DIR}/init_file.pyste:${CMAKE_CURRENT_SOURCE_DIR}/genesis-fixups.hh # XXX XXX XXX
-  hardware_base::${CPU_SRC_DIR}/hardware_base.hh # XXX XXX XXX
+  #hardware_base::${CPU_SRC_DIR}/hardware_base.hh # XXX XXX XXX
+  hardware_base::
   hardware_4stack::${CMAKE_CURRENT_SOURCE_DIR}/hardware_base.pyste # XXX XXX XXX
   hardware_cpu::${CMAKE_CURRENT_SOURCE_DIR}/hardware_base.pyste:${CMAKE_CURRENT_SOURCE_DIR}/hardware_cpu-fixups.hh # XXX XXX XXX
+  hardware_tracer::
+  hardware_tracer_cpu::
+  hardware_tracer_4stack::
+  hardware_tracer_test_cpu::
+  hardware_status_printer::
   hardware_util:: # XXX XXX XXX
   inst_lib_base:: # XXX XXX XXX
   inst_lib_cpu::${CMAKE_CURRENT_SOURCE_DIR}/inst_lib_base.pyste # XXX XXX XXX
@@ -192,6 +199,7 @@ SET(PyAvida_Pyste_Bases
   population:: # XXX XXX XXX
   population_interface:: # XXX XXX XXX
   py_avida_driver::${CMAKE_CURRENT_SOURCE_DIR}/avida_driver_population.pyste # XXX XXX XXX
+  py_hardware_tracer::
   reaction_lib:: # XXX XXX XXX
   resource_count:: # XXX XXX XXX
   resource_lib:: # XXX XXX XXX
@@ -201,13 +209,20 @@ SET(PyAvida_Pyste_Bases
   task_lib:: # XXX XXX XXX
   test_cpu:: # XXX XXX XXX
   tList::${CMAKE_CURRENT_SOURCE_DIR}/string.pyste # XXX XXX XXX
+  tVector::
 )
 SET(PyAvida_Extra_Cpp_Files
   AB.cc
+  cpu_defs-fixups.cc
+  cpu_head-fixups.cc
+  cpu_memory-fixups.cc
   file-fixups.cc
   genesis-fixups.cc
   hardware_cpu-fixups.cc
   py_avida_driver-fixups.cc
+  py_hardware_tracer-fixups.cc
+  resource_count-fixups.cc
+  test_cpu-fixups.cc
 )
 
 ADD_LIBRARY(PyAvidaRepairHacks SHARED ${PyAvida_Extra_Cpp_Files})

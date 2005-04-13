@@ -12,3 +12,5 @@ for specialization in template_specializers:
   set_policy(specialized_type.ElementAt, return_internal_reference())
   set_policy(specialized_type.operator['()'], return_internal_reference())
   set_policy(specialized_type.operator['[]'], return_internal_reference())
+
+# vim: set ft=python:

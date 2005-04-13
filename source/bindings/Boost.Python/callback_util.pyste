@@ -1,1 +1,4 @@
+
 cCallbackUtil = Class("cCallbackUtil", "callback_util.hh")
+
+# vim: set ft=python:

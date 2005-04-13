@@ -9,3 +9,4 @@ set_policy(cInstLibCPU.GetNopName, return_value_policy(reference_existing_object
 set_policy(cInstLibCPU.GetInstDefault, return_value_policy(reference_existing_object))
 set_policy(cInstLibCPU.GetInstError, return_value_policy(reference_existing_object))
 
+# vim: set ft=python:

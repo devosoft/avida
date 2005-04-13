@@ -1,2 +1,4 @@
+
 cID = Class("cID", "cID.hh")
 
+# vim: set ft=python:

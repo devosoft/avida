@@ -6,3 +6,5 @@ template_specializers = ["int",]
 
 for specialization in template_specializers:
   specialized_type = tBuffer(specialization)
+
+# vim: set ft=python:

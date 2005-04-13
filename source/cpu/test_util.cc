@@ -5,51 +5,27 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef TEST_UTIL_HH
 #include "test_util.hh"
-#endif
 
-#ifndef CPU_TEST_INFO_HH
 #include "cpu_test_info.hh"
-#endif
-#ifndef ENVIRONMENT_HH
 #include "environment.hh"
-#endif
-#ifndef GENOME_HH
 #include "genome.hh"
-#endif
-#ifndef GENOTYPE_HH
 #include "genotype.hh"
-#endif
-#ifndef HARDWARE_BASE_HH
 #include "hardware_base.hh"
-#endif
-#ifndef INJECT_GENOTYPE_HH
 #include "inject_genotype.hh"
-#endif
-#ifndef INST_UTIL_HH
 #include "inst_util.hh"
-#endif
-#ifndef ORGANISM_HH
 #include "organism.hh"
-#endif
-#ifndef PHENOTYPE_HH
 #include "phenotype.hh"
-#endif
-#ifndef STATS_HH
 #include "stats.hh"
-#endif
-#ifndef TASK_ENTRY_HH
 #include "task_entry.hh"
-#endif
-#ifndef TEST_CPU_HH
 #include "test_cpu.hh"
-#endif
 
 #include <fstream>
 #include <iomanip>
 
+
 using namespace std;
+
 
 void cTestUtil::PrintGenome(const cGenome & genome, cString filename,
 			    cGenotype * genotype, int update_out)

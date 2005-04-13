@@ -1,2 +1,4 @@
 
 cStringUtil = Class("cStringUtil", "string_util.hh")
+
+# vim: set ft=python:

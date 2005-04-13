@@ -47,6 +47,7 @@ setup(
       includes = ['iqt', 'qt', 'qwt', 'readline', 'unittest', 'IPython', 'AvidaGui2', 'AvidaCore'],
       packages = ['IPython', 'AvidaGui2'],
       dist_dir = '${EXECUTABLE_OUTPUT_PATH}',
+      strip = False,
     )
   ),
   data_files=[
@@ -70,3 +71,9 @@ setup(
   + svn_metadata_files,
 )
 
+print """
+FIXME:
+Remember to reenable symbol stripping by commenting-out the option "strip = False"
+at line 51 of source/python/setup_osx.py.in.
+@kgn
+"""

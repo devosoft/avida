@@ -12,7 +12,7 @@ Python:from pyTimelineCtrl import pyTimelineCtrl
             <x>0</x>
             <y>0</y>
             <width>613</width>
-            <height>510</height>
+            <height>434</height>
         </rect>
     </property>
     <property name="caption">
@@ -151,53 +151,13 @@ Python:from pyTimelineCtrl import pyTimelineCtrl
                     <hsizetype>5</hsizetype>
                     <vsizetype>3</vsizetype>
                     <horstretch>0</horstretch>
-                    <verstretch>1</verstretch>
-                </sizepolicy>
-            </property>
-        </widget>
-        <widget class="pyTimelineCtrl">
-            <property name="name">
-                <cstring>pyTimelineCtrl3</cstring>
-            </property>
-            <property name="sizePolicy">
-                <sizepolicy>
-                    <hsizetype>3</hsizetype>
-                    <vsizetype>3</vsizetype>
-                    <horstretch>0</horstretch>
-                    <verstretch>1</verstretch>
+                    <verstretch>0</verstretch>
                 </sizepolicy>
             </property>
         </widget>
     </vbox>
 </widget>
 <customwidgets>
-    <customwidget>
-        <class>pyTimelineCtrl</class>
-        <header location="global">1</header>
-        <sizehint>
-            <width>-1</width>
-            <height>0</height>
-        </sizehint>
-        <container>0</container>
-        <sizepolicy>
-            <hordata>0</hordata>
-            <verdata>0</verdata>
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-        </sizepolicy>
-        <pixmap>image2</pixmap>
-        <property type="0">3</property>
-        <property type="1">pyTimelineCtrl</property>
-        <property type="3">-1</property>
-        <property type="1">pyTimelineCtrl</property>
-        <property type="3">-1</property>
-        <property type="1">pyTimelineCtrl</property>
-        <property type="4">-1</property>
-        <property type="1">pyTimelineCtrl</property>
-        <property type="4">-1</property>
-        <property type="pyTimelineCtrl"></property>
-        <property type="-1">1</property>
-    </customwidget>
     <customwidget>
         <class>pyOneOrg_ScopeCtrl</class>
         <header location="local">1</header>
@@ -229,6 +189,5 @@ Python:from pyTimelineCtrl import pyTimelineCtrl
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
     <includehint>pyoneorg_scopectrl.h</includehint>
-    <includehint>pytimelinectrl.h</includehint>
 </includehints>
 </UI>

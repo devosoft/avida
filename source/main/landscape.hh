@@ -8,8 +8,6 @@
 #ifndef LANDSCAPE_HH
 #define LANDSCAPE_HH
 
-#include <iostream>
-
 #ifndef CPU_TEST_INFO_HH
 #include "cpu_test_info.hh"
 #endif

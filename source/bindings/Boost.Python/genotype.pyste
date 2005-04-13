@@ -12,3 +12,5 @@ set_policy(cGenotype.GetSpecies, return_internal_reference())
 set_policy(cGenotype.GetParentSpecies, return_internal_reference())
 set_policy(cGenotype.GetNext, return_internal_reference())
 set_policy(cGenotype.GetPrev, return_internal_reference())
+
+# vim: set ft=python:

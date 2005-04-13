@@ -10,3 +10,5 @@ set_policy(cConfig.GetEnvironmentFilename, return_value_policy(reference_existin
 set_policy(cConfig.GetStartCreature, return_value_policy(reference_existing_object))
 set_policy(cConfig.GetCloneFilename, return_value_policy(reference_existing_object))
 set_policy(cConfig.GetLoadPopFilename, return_value_policy(reference_existing_object))
+
+# vim: set ft=python:

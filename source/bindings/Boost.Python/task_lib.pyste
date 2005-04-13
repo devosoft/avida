@@ -2,3 +2,5 @@ Include("task_entry.hh")
 
 cTaskLib = Class("cTaskLib", "task_lib.hh")
 set_policy(cTaskLib.AddTask, return_internal_reference())
+
+# vim: set ft=python:

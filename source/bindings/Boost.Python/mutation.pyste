@@ -1,1 +1,4 @@
+
 cMutation = Class("cMutation", "mutation.hh")
+
+# vim: set ft=python:

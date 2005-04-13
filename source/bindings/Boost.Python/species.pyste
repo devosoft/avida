@@ -4,3 +4,5 @@ Include("genotype.hh")
 cSpecies = Class("cSpecies", "species.hh")
 set_policy(cSpecies.GetNext, return_internal_reference())
 set_policy(cSpecies.GetPrev, return_internal_reference())
+
+# vim: set ft=python:

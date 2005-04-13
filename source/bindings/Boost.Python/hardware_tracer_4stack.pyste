@@ -1,0 +1,6 @@
+
+Include("hardware_4stack.hh")
+
+cHardwareTracer_4Stack = Class("cHardwareTracer_4Stack", "hardware_tracer_4stack.hh")
+
+# vim: set ft=python:

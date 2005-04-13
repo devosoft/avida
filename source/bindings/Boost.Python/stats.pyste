@@ -31,3 +31,5 @@ set_policy(cStats.SumMemSize, return_internal_reference())
 set_policy(cStats.SumExeInst, return_internal_reference())
 set_policy(cStats.GetDataFileOFStream, return_internal_reference())
 set_policy(cStats.GetDataFile, return_internal_reference())
+
+# vim: set ft=python:

@@ -19,3 +19,5 @@ set_policy(cString.ClipFront, return_self())
 set_policy(cString.ClipEnd, return_self())
 set_policy(cString.ToLower, return_self())
 set_policy(cString.ToUpper, return_self())
+
+# vim: set ft=python:

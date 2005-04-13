@@ -1,0 +1,13 @@
+
+Include("hardware_4stack.hh")
+Include("hardware_cpu.hh")
+Include("string.hh")
+
+Import("hardware_tracer.pyste")
+Import("hardware_tracer_4stack.pyste")
+Import("hardware_tracer_cpu.pyste")
+Import("hardware_tracer_test_cpu.pyste")
+
+pyHardwareTracerBase = Class("pyHardwareTracerBase", "py_hardware_tracer.hh")
+
+# vim: set ft=python:

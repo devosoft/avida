@@ -5,55 +5,23 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef ORGANISM_HH
 #include "organism.hh"
-#endif
 
-#ifndef CONFIG_HH
 #include "config.hh"
-#endif
-#ifndef CPU_DEFS_HH
 #include "cpu_defs.hh"
-#endif
-#ifndef ENVIRONMENT_HH
 #include "environment.hh"
-#endif
-#ifndef FUNCTIONS_HH
 #include "functions.hh"
-#endif
-#ifndef GENOME_HH
 #include "genome.hh"
-#endif
-#ifndef GENOME_UTIL_HH
 #include "genome_util.hh"
-#endif
-#ifndef HARDWARE_BASE_HH
 #include "hardware_base.hh"
-#endif
-#ifndef INJECT_GENOTYPE_HH
 #include "inject_genotype.hh"
-#endif
-#ifndef INST_SET_HH
 #include "inst_set.hh"
-#endif
-#ifndef INST_UTIL_HH
 #include "inst_util.hh"
-#endif
-#ifndef ORG_MESSAGE_HH
 #include "org_message.hh"
-#endif
-#ifndef STRING_UTIL_HH
 #include "string_util.hh"
-#endif
-#ifndef TARRAY_HH
 #include "tArray.hh"
-#endif
-#ifndef TOOLS_HH
 #include "tools.hh"
-#endif
-#ifndef TLIST_HH
 #include "tList.hh"
-#endif
 
 #include <iomanip>
 

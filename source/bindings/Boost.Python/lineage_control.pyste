@@ -12,3 +12,5 @@ set_policy(cLineageControl.FindLineage, return_internal_reference())
 set_policy(cLineageControl.GetMaxFitnessLineage, return_internal_reference())
 set_policy(cLineageControl.GetBestLineage, return_internal_reference())
 set_policy(cLineageControl.GetDominantLineage, return_internal_reference())
+
+# vim: set ft=python:

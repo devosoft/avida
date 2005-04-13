@@ -1,3 +1,5 @@
 
 cDataFile = Class("cDataFile", "data_file.hh")
 set_policy(cDataFile.GetOFStream, return_internal_reference())
+
+# vim: set ft=python:

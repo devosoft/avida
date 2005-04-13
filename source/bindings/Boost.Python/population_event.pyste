@@ -1,2 +1,6 @@
+
 Import("event.pyste")
+
 cPopulationEvent = Class("cPopulationEvent", "population_event.hh")
+
+# vim: set ft=python:

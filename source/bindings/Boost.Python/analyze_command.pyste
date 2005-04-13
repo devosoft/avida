@@ -3,3 +3,5 @@ Include("tList.hh")
 
 cAnalyzeCommand = Class("cAnalyzeCommand", "analyze_command.hh")
 set_policy(cAnalyzeCommand.GetCommandList, return_internal_reference())
+
+# vim: set ft=python:

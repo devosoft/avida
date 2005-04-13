@@ -34,3 +34,5 @@ FIXME : for hardware_4stack.pyste :
 cHardware4Stack.AdvanceIP returns a reference to a bool;
 rewrap by hand.
 """)
+
+# vim: set ft=python:

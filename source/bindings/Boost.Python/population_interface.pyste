@@ -65,3 +65,5 @@ exclude(cPopulationInterface.SetFun_InjectParasite)
 exclude(cPopulationInterface.SetFun_UpdateMerit)
 
 Function("BuildTestPopInterface", "population_interface-fixups.hh")
+
+# vim: set ft=python:

@@ -3,3 +3,4 @@ Import("avida_driver_population.pyste")
 
 pyAvidaDriver = Class("pyAvidaDriver", "py_avida_driver.hh")
 
+# vim: set ft=python:

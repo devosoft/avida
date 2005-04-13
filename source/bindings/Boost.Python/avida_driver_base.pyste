@@ -5,3 +5,5 @@ declaration_code("""
 """)
 
 cAvidaDriver_Base = Class("cAvidaDriver_Base", "avida_driver_base.hh")
+
+# vim: set ft=python:

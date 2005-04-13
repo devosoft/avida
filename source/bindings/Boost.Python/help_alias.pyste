@@ -6,3 +6,5 @@ Include("help_full_entry.hh")
 
 cHelpAlias = Class("cHelpAlias", "help_alias.hh")
 set_policy(cHelpAlias.GetType, return_internal_reference())
+
+# vim: set ft=python:

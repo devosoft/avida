@@ -15,3 +15,5 @@
 ##endif
 #""")
 #Function("SetupAvida", "avida.hh")
+
+# vim: set ft=python:

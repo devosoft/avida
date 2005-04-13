@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 
-from qt import *
-from qtcanvas import *
-
+from qt import PYSIGNAL, QFont, QFontMetrics, QScrollView, QWMatrix
+from qtcanvas import QCanvas, QCanvasView, QCanvasText
+import math
 
 class pyOrganismScopeView(QCanvasView):
   def __init__(self,parent = None,name = None,fl = 0):
@@ -14,9 +14,23 @@ class pyOrganismScopeView(QCanvasView):
     self.setHScrollBarMode(QScrollView.AlwaysOff)
     self.m_canvas = QCanvas()
     self.setCanvas(self.m_canvas)
+
+    font = QFont(self.font())
+    font_metrics = QFontMetrics(font)
+    self.m_font_points_per_pixel = font.pointSizeFloat()/font_metrics.height()
+
+    self.m_organism_circle_margin = 10
+    self.m_font_oversize_factor = 1.2
+
+    self.m_visible_width = 0
+    self.m_visible_height = 0
+
     self.reset()
 
   def reset(self):
+    if hasattr(self, "m_instruction_items") and self.m_instruction_items is not None:
+      for instruction_item in self.m_instruction_items:
+        instruction_item.setCanvas(None)
     self.m_instruction_items = None
     self.m_task_items = None
     self.m_ihead_item = None
@@ -56,24 +70,49 @@ class pyOrganismScopeView(QCanvasView):
       if self.m_frames.m_genome_info is not None:
         self.m_max_genome_size = max([len(genome) for genome in self.m_frames.m_genome_info])
         self.m_instruction_items = [QCanvasText(self.m_canvas) for i in range(self.m_max_genome_size)]
-      self.updateCircle()
       self.emit(PYSIGNAL("gestationTimeChangedSig"),(self.m_frames.m_gestation_time,))
+      self.updateCircle()
       self.showFrame(0)
 
-  def resizeEvent(self, resize_event):
-    new_size = resize_event.size()
-    self.m_canvas.resize(new_size.width(), new_size.height())
-    QCanvasView.resizeEvent(self, resize_event)
+  def viewportResizeEvent(self, resize_event):
+    QCanvasView.viewportResizeEvent(self, resize_event)
+    # XXX Fragility: If the top-level Avida-ED window is allowed to change height, this is going to cause a painful slow-down
+    # whenever the window height changes.  But having chosen a fixed window height, we're okay for now.
+    #
+    # @kgn
+    if self.m_visible_height != resize_event.size().height() or self.m_visible_width != resize_event.size().width():
+      self.m_canvas.resize(resize_event.size().width(), resize_event.size().height())
+      self.m_visible_width = resize_event.size().width()
+      self.m_visible_height = resize_event.size().height()
+      self.updateCircle()
+      self.showFrame(self.m_current_frame_number)
 
   def updateCircle(self):
+    self.m_circle_center_x = self.m_visible_width / 2
+    self.m_circle_center_y = self.m_visible_height / 2
+    self.m_max_circle_radius = (self.m_visible_height / 2) - self.m_organism_circle_margin
     if self.m_instruction_items is not None:
-      x = 0
+      text_height = 2 * 3.14159 * self.m_max_circle_radius / self.m_max_genome_size
+      font = QFont(self.font())
+      font.setPointSizeFloat(self.m_font_oversize_factor * text_height * self.m_font_points_per_pixel)
       for instruction_item in self.m_instruction_items:
-        x += 5
-        instruction_item.setX(x)
-        instruction_item.setY(100)
-        instruction_item.setText('@')
-        instruction_item.hide()
+        instruction_item.setFont(font)
+      self.m_circles = []
+      for frame_no in range(self.m_frames.m_gestation_time):
+        organism_current_size = max(self.m_frames.m_last_copy_info[frame_no] + 1, self.m_frames.m_size)
+        circumference = text_height * organism_current_size
+        radius = circumference / (2 * 3.14159)
+        dt = 2 * 3.14159 / (organism_current_size + 1)
+        angle_offset = 3.14159 / 2
+        circle_pts = []
+        for i in range(organism_current_size):
+          theta = i * dt + angle_offset
+          c = math.cos(theta)
+          s = -math.sin(theta)
+          x = radius * c + self.m_circle_center_x
+          y = radius * s + self.m_circle_center_y
+          circle_pts.append((x,y))
+        self.m_circles.append(circle_pts)
 
   def showFrame(self, frame_number = 0):
     old_frame_number = self.m_current_frame_number
@@ -96,27 +135,39 @@ class pyOrganismScopeView(QCanvasView):
       self.m_current_frame_number = frame_number
       if self.m_frames.m_genome_info is not None:
         self.m_current_genome = self.m_frames.m_genome_info[frame_number]
+        circle_pts = self.m_circles[self.m_current_frame_number]
         if old_genome is None:
+          displayed_genome_size = max(self.m_frames.m_last_copy_info[self.m_current_frame_number], self.m_frames.m_size)
           # Update all instruction_items.
-          for i in range(len(self.m_current_genome)):
-            self.m_instruction_items[i].setText(self.m_current_genome[i])
-            self.m_instruction_items[i].show()
+          for i in range(displayed_genome_size):
+            instruction_item = self.m_instruction_items[i]
+            instruction_item.setX(circle_pts[i][0])
+            instruction_item.setY(circle_pts[i][1])
+            instruction_item.setText(self.m_current_genome[i])
+            instruction_item.show()
         else:
           # Update changed instruction_items.
-          old_length = len(old_genome)
-          new_length = len(self.m_current_genome)
+          old_length = max(self.m_frames.m_last_copy_info[old_frame_number] + 1, self.m_frames.m_size)
+          new_length = max(self.m_frames.m_last_copy_info[self.m_current_frame_number] + 1, self.m_frames.m_size)
           compare_max = min(old_length, new_length)
           range_end = max(old_length, new_length)
           for i in range(compare_max):
+            instruction_item = self.m_instruction_items[i]
+            instruction_item.setX(circle_pts[i][0])
+            instruction_item.setY(circle_pts[i][1])
             if old_genome[i] == self.m_current_genome[i]:
               pass
             else:
-              self.m_instruction_items[i].setText(self.m_current_genome[i])
+              #self.m_instruction_items[i].setText(self.m_current_genome[i])
+              instruction_item.setText(self.m_current_genome[i])
 
           if old_length < new_length:
             for i in range(compare_max, range_end):
-              self.m_instruction_items[i].setText(self.m_current_genome[i])
-              self.m_instruction_items[i].show()
+              instruction_item = self.m_instruction_items[i]
+              instruction_item.setX(circle_pts[i][0])
+              instruction_item.setY(circle_pts[i][1])
+              instruction_item.setText(self.m_current_genome[i])
+              instruction_item.show()
           else:
             for i in range(compare_max, range_end):
               self.m_instruction_items[i].hide()

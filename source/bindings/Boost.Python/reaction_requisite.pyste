@@ -1,3 +1,5 @@
 Include("reaction.hh")
 
 cReactionRequisite = Class("cReactionRequisite", "reaction_requisite.hh")
+
+# vim: set ft=python:

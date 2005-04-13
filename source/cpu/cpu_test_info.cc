@@ -5,16 +5,11 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef CPU_TEST_INFO_HH
 #include "cpu_test_info.hh"
-#endif
 
-#ifndef ORGANISM_HH
+#include "hardware_status_printer.hh"
 #include "organism.hh"
-#endif
-#ifndef PHENOTYPE_HH
 #include "phenotype.hh"
-#endif
 
 #include <assert.h>
 
@@ -30,6 +25,7 @@ cCPUTestInfo::cCPUTestInfo(int max_tests)
   , trace_task_order(false)
   , use_random_inputs(false)
   , org_array(max_tests)
+  , m_tracer(NULL)
 {
   org_array.SetAll(NULL);
   Clear();
@@ -60,11 +56,10 @@ void cCPUTestInfo::Clear()
 }
  
 
-void cCPUTestInfo::SetTraceExecution(const cString & filename)
+void cCPUTestInfo::SetTraceExecution(cHardwareTracer *tracer)
 {
-  trace_execution = true;
-  trace_fp.open(filename);
-  assert (trace_fp.good() == true); // Unable to open trace file.
+  trace_execution = (tracer)?(true):(false);
+  m_tracer = tracer;
 }
 
 

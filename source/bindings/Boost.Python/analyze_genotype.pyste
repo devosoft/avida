@@ -1,3 +1,5 @@
 Include("inst_set.hh")
 
 cAnalyzeGenotype = Class("cAnalyzeGenotype", "analyze_genotype.hh")
+
+# vim: set ft=python:

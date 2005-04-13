@@ -1,3 +1,6 @@
+
 Include("mutation_lib.hh")
 
 cLocalMutations = Class("cLocalMutations", "local_mutations.hh")
+
+# vim: set ft=python:

@@ -1,6 +1,9 @@
+
 Include("data_file.hh")
 Include("string.hh")
 
 cDataFileManager = Class("cDataFileManager", "data_file_manager.hh")
 exclude(cDataFileManager.GetOFStream)
 set_policy(cDataFileManager.Get, return_internal_reference())
+
+# vim: set ft=python:

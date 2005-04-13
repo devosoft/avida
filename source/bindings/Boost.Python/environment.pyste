@@ -9,3 +9,5 @@ set_policy(cEnvironment.GetMutationLib, return_internal_reference())
 set_policy(cEnvironment.GetTaskLib, return_internal_reference())
 set_policy(cEnvironment.GetInstSet, return_internal_reference())
 set_policy(cEnvironment.GetMutRates, return_internal_reference())
+
+# vim: set ft=python:

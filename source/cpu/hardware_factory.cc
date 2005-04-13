@@ -5,25 +5,13 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef HARDWARE_FACTORY_HH
 #include "hardware_factory.hh"
-#endif
 
-#ifndef HARDWARE_BASE_HH
 #include "hardware_base.hh"
-#endif
-#ifndef HARDWARE_CPU_HH
 #include "hardware_cpu.hh"
-#endif
-#ifndef HARDWARE_4STACK_HH
 #include "hardware_4stack.hh"
-#endif
-#ifndef INST_SET_HH
 #include "inst_set.hh"
-#endif
-#ifndef ORGANISM_HH
 #include "organism.hh"
-#endif
 
 using namespace std;
 

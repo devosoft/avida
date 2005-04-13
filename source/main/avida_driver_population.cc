@@ -5,61 +5,25 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef AVIDA_DRIVER_POPULATION_HH
 #include "avida_driver_population.hh"
-#endif
 
-#ifndef AVIDA_TRIGGERS_HH
 #include "avida_triggers.hh"
-#endif
-#ifndef CALLBACK_UTIL_HH
 #include "callback_util.hh"
-#endif
-#ifndef CONFIG_HH
 #include "config.hh"
-#endif
-#ifndef EVENT_FACTORY_MANAGER_HH
 #include "event_factory_manager.hh"
-#endif
-#ifndef EVENT_LIST_HH
 #include "event_list.hh"
-#endif
-#ifndef GENEBANK_HH
 #include "genebank.hh"
-#endif
-#ifndef GENOTYPE_HH
 #include "genotype.hh"
-#endif
-#ifndef HARDWARE_BASE_HH
 #include "hardware_base.hh"
-#endif
-#ifndef HARDWARE_FACTORY_HH
 #include "hardware_factory.hh"
-#endif
-#ifndef INIT_FILE_HH
 #include "init_file.hh"
-#endif
-#ifndef ORGANISM_HH
 #include "organism.hh"
-#endif
-#ifndef POPULATION_HH
 #include "population.hh"
-#endif
-#ifndef POPULATION_CELL_HH
 #include "population_cell.hh"
-#endif
-#ifndef POPULATION_EVENT_FACTORY_HH
 #include "population_event_factory.hh"
-#endif
-#ifndef POPULATION_INTERFACE_HH
 #include "population_interface.hh"
-#endif
-#ifndef STRING_HH
 #include "string.hh"
-#endif
-#ifndef TOOLS_HH
 #include "tools.hh"
-#endif
 
 #include <iostream>
 

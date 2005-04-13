@@ -10,8 +10,8 @@ self.m_avida is not None.
 from AvidaCore import cConfig
 
 from math import exp
-from qt import Qt, QWidget, QSize, QVBoxLayout, QLayout, QColor, QWMatrix, PYSIGNAL
-from qtcanvas import QCanvas
+from qt import PYSIGNAL, QBrush, QColor, QLayout, QPen, QSize, Qt, QVBoxLayout, QWidget, QWMatrix
+from qtcanvas import QCanvas, QCanvasRectangle
 from pyPetriCanvasView import pyPetriCanvasView
 from pyPopulationCellItem import pyPopulationCellItem
 #from pyPetriDishView import pyPetriDishView
@@ -39,6 +39,7 @@ class pyPetriDishCtrl(QWidget):
     self.m_changed_cell_items = []
     self.m_indexer = None
     self.m_color_lookup_functor = None
+    self.m_background_rect = None
 
     self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"), self.setAvidaSlot)
     self.connect( self.m_canvas_view, PYSIGNAL("orgClickedOnSig"), self.m_session_mdl.m_session_mdtr, PYSIGNAL("orgClickedOnSig"))
@@ -62,7 +63,14 @@ class pyPetriDishCtrl(QWidget):
 
     if self.m_canvas: del self.m_canvas
     self.m_canvas = QCanvas(self.m_map_cell_w * world_w, self.m_map_cell_h * world_h)
+    self.m_canvas.setBackgroundColor(Qt.darkGray)
     self.m_canvas_view.setCanvas(self.m_canvas)
+    if self.m_background_rect: del self.m_background_rect
+    self.m_background_rect = QCanvasRectangle(0, 0, self.m_map_cell_w * world_w, self.m_map_cell_h * world_h, self.m_canvas)
+    self.m_background_rect.setBrush(QBrush(Qt.black))
+    self.m_background_rect.setPen(QPen(Qt.black))
+    self.m_background_rect.show()
+    self.m_background_rect.setZ(0.0)
 
     if self.m_cell_info: del self.m_cell_info
     self.m_cell_info = [pyPopulationCellItem(

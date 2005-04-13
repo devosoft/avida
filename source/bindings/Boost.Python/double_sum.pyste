@@ -1,2 +1,4 @@
 
 cDoubleSum = Class("cDoubleSum", "double_sum.hh")
+
+# vim: set ft=python:

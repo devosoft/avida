@@ -9,3 +9,5 @@ set_policy(cSpeciesControl.Find, return_internal_reference())
 set_policy(cSpeciesControl.GetFirst, return_internal_reference())
 set_policy(cSpeciesControl.GetFirstInactive, return_internal_reference())
 set_policy(cSpeciesControl.GetFirstGarbage, return_internal_reference())
+
+# vim: set ft=python:

@@ -2,6 +2,7 @@
 Include("code_label.hh")
 Include("cpu_memory.hh")
 Include("genome.hh")
+Include("hardware_tracer.hh")
 Include("inst_set.hh")
 Include("organism.hh")
 
@@ -9,3 +10,5 @@ cHardwareBase = Class("cHardwareBase", "hardware_base.hh")
 set_policy(cHardwareBase.GetOrganism, return_internal_reference())
 set_policy(cHardwareBase.GetMemory, return_internal_reference())
 exclude(cHardwareBase.ViewerLock)
+
+# vim: set ft=python:

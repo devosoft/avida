@@ -5,31 +5,15 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef ANALYZE_GENOTYPE_HH
 #include "analyze_genotype.hh"
-#endif
 
-#ifndef CONFIG_HH
 #include "config.hh"
-#endif
-#ifndef CPU_TEST_INFO_HH
 #include "cpu_test_info.hh"
-#endif
-#ifndef INST_SET_HH
 #include "inst_set.hh"
-#endif
-#ifndef LANDSCAPE_HH
 #include "landscape.hh"
-#endif
-#ifndef ORGANISM_HH
 #include "organism.hh"
-#endif
-#ifndef PHENOTYPE_HH
 #include "phenotype.hh"
-#endif
-#ifndef TEST_CPU_HH
 #include "test_cpu.hh"
-#endif
 
 using namespace std;
 

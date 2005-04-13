@@ -21,3 +21,5 @@ I'm probably using the wrong call policy on
 cPopulation.GetEnvironment().
 """)
 set_policy(cPopulation.GetEnvironment, return_internal_reference())
+
+# vim: set ft=python:

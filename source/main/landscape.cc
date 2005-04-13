@@ -5,37 +5,17 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef LANDSCAPE_HH
 #include "landscape.hh"
-#endif
 
-#ifndef CPU_MEMORY_HH
 #include "cpu_memory.hh"
-#endif
-#ifndef ENVIRONMENT_HH
 #include "environment.hh"
-#endif
-#ifndef INST_SET_HH
 #include "inst_set.hh"
-#endif
-#ifndef ORGANISM_HH
 #include "organism.hh"
-#endif
-#ifndef PHENOTYPE_HH
 #include "phenotype.hh"
-#endif
-#ifndef STATS_HH
 #include "stats.hh"             // For GetUpdate in outputs...
-#endif
-#ifndef TEST_CPU_HH
 #include "test_cpu.hh"
-#endif
-#ifndef TEST_UTIL_HH
 #include "test_util.hh"
-#endif
-#ifndef TOOLS_HH
 #include "tools.hh"
-#endif
 
 using namespace std;
 

@@ -26,3 +26,5 @@ SaveState and LoadState.
 """)
 exclude(cOrganism.SaveState)
 exclude(cOrganism.LoadState)
+
+# vim: set ft=python:

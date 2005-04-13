@@ -1,4 +1,7 @@
+
 Include("organism.hh")
 Include("genebank.hh")
 
 cBirthChamber = Class("cBirthChamber", "birth_chamber.hh")
+
+# vim: set ft=python:

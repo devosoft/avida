@@ -105,6 +105,7 @@ private:
 
 public:
   cHardwareCPU(cOrganism * in_organism, cInstSet * in_inst_set);
+  explicit cHardwareCPU(const cHardwareCPU &);
   ~cHardwareCPU();
   void Recycle(cOrganism * new_organism, cInstSet * in_inst_set);
   static cInstLibCPU *GetInstLib();

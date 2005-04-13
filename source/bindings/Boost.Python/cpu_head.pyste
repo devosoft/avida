@@ -4,12 +4,45 @@ Include("instruction.hh")
 Include("hardware_base.hh")
 Include("code_label.hh")
 
-cCPUHead = Class("cCPUHead", "cpu_head.hh")
-set_policy(cCPUHead.FlagCopied, return_internal_reference())
-set_policy(cCPUHead.FlagMutated, return_internal_reference())
-set_policy(cCPUHead.FlagExecuted, return_internal_reference())
-set_policy(cCPUHead.FlagPointMut, return_internal_reference())
-set_policy(cCPUHead.FlagCopyMut, return_internal_reference())
+cCPUHead = Class("cCPUHead", "cpu_head-fixups.hh")
 set_policy(cCPUHead.GetCurHardware, return_internal_reference())
 set_policy(cCPUHead.GetMainHardware, return_internal_reference())
-set_policy(cCPUHead.FlagBreakpoint, return_internal_reference())
+
+exclude(cCPUHead.FlagCopied)
+exclude(cCPUHead.FlagMutated)
+exclude(cCPUHead.FlagExecuted)
+exclude(cCPUHead.FlagPointMut)
+exclude(cCPUHead.FlagCopyMut)
+exclude(cCPUHead.FlagBreakpoint)
+
+add_method(cCPUHead, "cCPUHead_GetFlagCopied")
+add_method(cCPUHead, "cCPUHead_GetFlagMutated")
+add_method(cCPUHead, "cCPUHead_GetFlagExecuted")
+add_method(cCPUHead, "cCPUHead_GetFlagPointMut")
+add_method(cCPUHead, "cCPUHead_GetFlagCopyMut")
+add_method(cCPUHead, "cCPUHead_GetFlagBreakpoint")
+
+add_method(cCPUHead, "cCPUHead_SetFlagCopied")
+add_method(cCPUHead, "cCPUHead_SetFlagMutated")
+add_method(cCPUHead, "cCPUHead_SetFlagExecuted")
+add_method(cCPUHead, "cCPUHead_SetFlagPointMut")
+add_method(cCPUHead, "cCPUHead_SetFlagCopyMut")
+add_method(cCPUHead, "cCPUHead_SetFlagBreakpoint")
+
+rename(cCPUHead.cCPUHead_GetFlagCopied, "GetFlagCopied");
+rename(cCPUHead.cCPUHead_GetFlagMutated, "GetFlagMutated");
+rename(cCPUHead.cCPUHead_GetFlagExecuted, "GetFlagExecuted");
+rename(cCPUHead.cCPUHead_GetFlagPointMut, "GetFlagPointMut");
+rename(cCPUHead.cCPUHead_GetFlagCopyMut, "GetFlagCopyMut");
+rename(cCPUHead.cCPUHead_GetFlagBreakpoint, "GetFlagBreakpoint");
+
+rename(cCPUHead.cCPUHead_SetFlagCopied, "SetFlagCopied");
+rename(cCPUHead.cCPUHead_SetFlagMutated, "SetFlagMutated");
+rename(cCPUHead.cCPUHead_SetFlagExecuted, "SetFlagExecuted");
+rename(cCPUHead.cCPUHead_SetFlagPointMut, "SetFlagPointMut");
+rename(cCPUHead.cCPUHead_SetFlagCopyMut, "SetFlagCopyMut");
+rename(cCPUHead.cCPUHead_SetFlagBreakpoint, "SetFlagBreakpoint");
+
+
+# vim: set ft=python:
+# vim: set ft=python:

@@ -8,8 +8,9 @@ class pyPetriCanvasView(QCanvasView):
   def contentsMousePressEvent(self,e): # QMouseEvent e
     if e.button() != Qt.LeftButton: return
     point = self.inverseWorldMatrix().map(e.pos())
-    ilist = self.canvas().collisions(point) #QCanvasItemList ilist
-    for item in ilist:
-      if item.rtti()==271828:
-        self.emit(PYSIGNAL("orgClickedOnSig"), (item.m_population_cell.GetID(),))
+    if self.canvas():
+      ilist = self.canvas().collisions(point) #QCanvasItemList ilist
+      for item in ilist:
+        if item.rtti()==271828:
+          self.emit(PYSIGNAL("orgClickedOnSig"), (item.m_population_cell.GetID(),))
 

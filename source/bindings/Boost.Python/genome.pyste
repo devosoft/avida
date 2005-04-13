@@ -1,1 +1,4 @@
+
 cGenome = Class("cGenome", "genome.hh")
+
+# vim: set ft=python:

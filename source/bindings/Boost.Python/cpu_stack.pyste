@@ -1,1 +1,4 @@
+
 cCPUStack = Class("cCPUStack", "cpu_stack.hh")
+
+# vim: set ft=python:

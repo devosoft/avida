@@ -1,1 +1,4 @@
+
 sCPUStats = Class("sCPUStats", "cpu_stats.hh")
+
+# vim: set ft=python:
