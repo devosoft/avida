@@ -41,8 +41,9 @@ class pyHardwareCPUTrace:
     )
     self.m_last_copy_info.append(self.m_last_copied_instruction)
 
-  def recordGenotypeSummary(self, cpu_test_info, genotype):
-    self.m_is_viable = genotype.GetViable()
-    self.m_gestation_time = genotype.GetGestTime()
-    self.m_fitness = genotype.GetFitness()
-    self.m_size = genotype.GetLength()
+  def recordGenotypeSummary(self, analyze_genotype):
+    self.m_is_viable = analyze_genotype.GetViable()
+    self.m_gestation_time = analyze_genotype.GetGestTime()
+    self.m_fitness = analyze_genotype.GetFitness()
+    self.m_size = analyze_genotype.GetLength()
+
