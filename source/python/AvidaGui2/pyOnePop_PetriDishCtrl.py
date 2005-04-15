@@ -31,7 +31,7 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
 
     self.m_mode_combobox.clear()
     self.m_mode_combobox.setInsertionPolicy(QComboBox.AtBottom)
-    self.m_map_profile = pyMapProfile()
+    self.m_map_profile = pyMapProfile(self.m_session_mdl)
     for i in range(self.m_map_profile.getSize()):
       self.m_mode_combobox.insertItem(self.m_map_profile.getModeName(i))
 

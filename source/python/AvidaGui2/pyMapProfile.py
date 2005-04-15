@@ -1,9 +1,10 @@
 
-from qt import QColor
+from qt import PYSIGNAL, QColor, QObject
 from math import exp
 
 class pyMapProfile:
-  def __init__(self):
+  def __init__(self, session_mdl):
+    self.m_session_mdl = session_mdl
     self.m_color_cache_size = 201
 
     def continuousIndexer(idx_functor):
@@ -32,8 +33,8 @@ class pyMapProfile:
 
 
     class gradualLinScaleUpdater:
-      def __init__(self, rng_functor):
-        self.m_rng_functor = rng_functor
+      def __init__(self, range):
+        self.m_range = range
         self.m_inf = 0.0
         self.m_sup = 0.0
         self.m_target_inf = 0.0
@@ -55,7 +56,7 @@ class pyMapProfile:
         return self.m_inf, self.m_sup
 
       def resetRange(self, population):
-        (inf, sup) = population and self.m_rng_functor(population) or (0.0, 0.0)
+        (inf, sup) = self.m_range.getRange()
         (self.m_target_inf, self.m_target_sup) = (self.m_inf, self.m_sup) = (inf, sup)
         self.m_inf_rescale_rate = self.m_sup_rescale_rate = 0
 
@@ -65,7 +66,7 @@ class pyMapProfile:
         if self.m_should_reset:
           return self.resetRange(population)
 
-        (inf, sup) = population and self.m_rng_functor(population) or (0.0, 0.0)
+        (inf, sup) = self.m_range.getRange()
         if (sup < (1 - self.m_sup_tol_coef) * self.m_target_sup) or (self.m_target_sup < sup):
           new_target_sup = sup * (1 + self.m_sup_tol_coef)
           self.m_sup_rescale_rate = float(new_target_sup - self.m_sup) / self.m_updates_to_rescale
@@ -79,7 +80,31 @@ class pyMapProfile:
 
         return self.getRange()
 
-    # Range functors
+    class RangeReport(QObject):
+      def __init__(self, range_functor, session_mdl):
+        self.m_range_functor = range_functor
+        self.m_session_mdl = session_mdl
+        self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"), self.setAvidaSlot)
+        self.m_avida = None
+        self.m_range = (0, 0)
+      def setAvidaSlot(self, avida):
+        old_avida = self.m_avida
+        self.m_avida = avida
+        if(old_avida):
+          self.disconnect(
+            self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
+            self.avidaUpdatedSlot)
+          del old_avida
+        if(self.m_avida):
+          self.connect(
+            self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
+            self.avidaUpdatedSlot)
+      def avidaUpdatedSlot(self):
+        if self.m_avida and self.m_avida.m_population:
+          self.m_range = self.m_range_functor(self.m_avida.m_population)
+      def getRange(self):
+        return self.m_range
+
     NullRng = lambda p: (0, 0)
     MeritRng = lambda p: (0, p.GetStats().GetMaxMerit())
     FitnessRng = lambda p: (0, p.GetStats().GetMaxFitness())
@@ -112,27 +137,27 @@ class pyMapProfile:
     #  Mode Name,        Indexer
       ('None',
         continuousIndexer(NullIdx),
-        gradualLinScaleUpdater(NullRng),
+        gradualLinScaleUpdater(RangeReport(NullRng, self.m_session_mdl)),
         None
         ),
       ('Merit',
         continuousIndexer(MeritIdx),
-        gradualLinScaleUpdater(MeritRng),
+        gradualLinScaleUpdater(RangeReport(MeritRng, self.m_session_mdl)),
         sigmoidColorLookup
         ),
       ('Fitness',
         continuousIndexer(FitnessIdx),
-        gradualLinScaleUpdater(FitnessRng),
+        gradualLinScaleUpdater(RangeReport(FitnessRng, self.m_session_mdl)),
         sigmoidColorLookup
         ),
       ('Gestation Time',
         continuousIndexer(GestationTimeIdx),
-        gradualLinScaleUpdater(GestationTimeRng),
+        gradualLinScaleUpdater(RangeReport(GestationTimeRng, self.m_session_mdl)),
         sigmoidColorLookup
         ),
       ('Size',
         continuousIndexer(SizeIdx),
-        gradualLinScaleUpdater(SizeRng),
+        gradualLinScaleUpdater(RangeReport(SizeRng, self.m_session_mdl)),
         sigmoidColorLookup
         ),
       #('Genotype',       GenotypeIdx,),

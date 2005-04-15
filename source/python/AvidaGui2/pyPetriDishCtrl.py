@@ -112,22 +112,28 @@ class pyPetriDishCtrl(QWidget):
   def setIndexer(self, indexer):
     self.m_indexer = indexer
 
+  def updateCellItem(self, cell_id):
+    if self.m_cell_info[cell_id] is None:
+      self.m_cell_info[cell_id] = self.createNewCellItem(cell_id)
+    cell_info_item = self.m_cell_info[cell_id]
+    self.m_indexer(cell_info_item, self.m_cs_min_value, self.m_cs_value_range)
+    cell_info_item.updateColorUsingFunctor(self.m_color_lookup_functor)
+
   def updateCellItems(self, should_update_all = False):
-    def updateCellItem(cell_id):
-      if self.m_cell_info[cell_id] is None:
-        self.m_cell_info[cell_id] = self.createNewCellItem(cell_id)
-      cell_info_item = self.m_cell_info[cell_id]
-      self.m_indexer(cell_info_item, self.m_cs_min_value, self.m_cs_value_range)
-      cell_info_item.updateColorUsingFunctor(self.m_color_lookup_functor)
+    if self.m_cell_info:
 
-    if should_update_all and self.m_cell_info:
-      for cell_id in self.m_occupied_cells_ids:
-        updateCellItem(cell_id)
-    elif self.m_change_list and self.m_cell_info:
-      for index in range(self.m_change_list.GetChangeCount()):
-        updateCellItem(self.m_change_list[index])
+      self.m_avida and self.m_avida.m_avida_threaded_driver.m_lock.acquire()
+      if self.m_change_list:
+        for index in range(self.m_change_list.GetChangeCount()):
+          self.updateCellItem(self.m_change_list[index])
+        self.m_change_list.Reset()
+      self.m_avida and self.m_avida.m_avida_threaded_driver.m_lock.release()
 
-    if self.m_canvas: self.m_canvas.update()
+      if should_update_all:
+        for cell_id in self.m_occupied_cells_ids:
+          self.updateCellItem(cell_id)
+
+      if self.m_canvas: self.m_canvas.update()
 
   def extractPopulationSlot(self):
     population_dict = {}
