@@ -1,3 +1,4 @@
+
 cUInt = Class("cUInt", "uint.hh")
 
 # vim: set ft=python:

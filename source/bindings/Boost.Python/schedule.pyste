@@ -1,6 +1,9 @@
 
+Include("change_list.hh")
 Include("merit.hh")
 
 cSchedule = Class("cSchedule", "schedule.hh")
+
+exclude(cSchedule.GetChangeList)
 
 # vim: set ft=python:

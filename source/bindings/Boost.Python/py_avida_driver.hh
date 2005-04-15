@@ -8,6 +8,7 @@
 #include "environment.hh"
 #endif
 
+class cChangeList;
 class pyAvidaDriver : public cAvidaDriver_Population {
 protected:
   bool (pyAvidaDriver::*m_update_mode_function)(const unsigned int bite_size);
@@ -21,6 +22,7 @@ protected:
   // communicating this to the breakpoint-handling function).
   int m_current_cell_id;
   int m_step_cell_id;
+  cChangeList *m_change_list;
 protected:
   bool preUpdate(const unsigned int);
   bool fastUpdate(const unsigned int bite_size);
@@ -35,6 +37,7 @@ public:
   void setDoneFlag(){ done_flag = true; }
 public:
   bool ProcessSome(unsigned int bite_size){ return (this->*(m_update_stage_function))(bite_size); }
+  cChangeList *GetChangeList();
 };
 
 #endif

@@ -1,6 +1,9 @@
 
+Include("change_list.hh")
+
 Import("avida_driver_population.pyste")
 
 pyAvidaDriver = Class("pyAvidaDriver", "py_avida_driver.hh")
+set_policy(pyAvidaDriver.GetChangeList, return_internal_reference())
 
 # vim: set ft=python:

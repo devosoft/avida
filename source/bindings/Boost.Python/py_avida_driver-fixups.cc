@@ -1,21 +1,25 @@
 
 #include "py_avida_driver.hh"
 
+#include "cpu/hardware_base.hh"
+#include "cpu/hardware_factory.hh"
+#include "main/config.hh"
 #include "main/genebank.hh"
 #include "main/genotype.hh"
-#include "main/population_cell.hh"
-#include "cpu/hardware_factory.hh"
 #include "main/organism.hh"
-#include "cpu/hardware_base.hh"
-#include "tools/string.hh"
-#include "main/config.hh"
 #include "main/population.hh"
+#include "main/population_cell.hh"
+#include "tools/change_list.hh"
+#include "tools/string.hh"
 
 
 #include <iostream>
 
 
 bool pyAvidaDriver::preUpdate(const unsigned int){
+  if (cChangeList *change_list = population->GetChangeList()) {
+    change_list->Reset();
+  }
   GetEvents();
   if(true == done_flag){ return false; }
   // Increment the Update.
@@ -119,11 +123,20 @@ bool pyAvidaDriver::postPtMutations(const unsigned int){
   return false;
 }
 
+cChangeList *pyAvidaDriver::GetChangeList(){
+  return population->GetChangeList();
+}
+
 pyAvidaDriver::pyAvidaDriver(cEnvironment & environment)
 : cAvidaDriver_Population(environment)
 , m_update_mode_function(&pyAvidaDriver::fastUpdate)
 , m_update_stage_function(&pyAvidaDriver::preUpdate)
 , m_step_cell_id(-1)
-{}
+, m_change_list(new cChangeList())
+{
+  population->SetChangeList(m_change_list);
+}
 
-pyAvidaDriver::~pyAvidaDriver(){}
+pyAvidaDriver::~pyAvidaDriver(){
+  delete m_change_list;
+}

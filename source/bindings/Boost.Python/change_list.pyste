@@ -1,0 +1,14 @@
+
+cChangeList = Class("cChangeList", "change_list.hh")
+class_code(cChangeList, '.def("__len__", &cChangeList__len__)')
+class_code(cChangeList, '.def("__getitem__", &cChangeList__getitem__)')
+declaration_code("""
+inline unsigned int cChangeList__len__(const cChangeList &change_list) {
+  return change_list.GetChangeCount();
+}
+inline unsigned int cChangeList__getitem__(const cChangeList &change_list, unsigned int i) {
+  return change_list.GetChangeAt(i);
+}
+""")
+
+# vim: set ft=python:

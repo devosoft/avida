@@ -210,6 +210,7 @@ SET(PyAvida_Pyste_Bases
   test_cpu:: # XXX XXX XXX
   tList::${CMAKE_CURRENT_SOURCE_DIR}/string.pyste # XXX XXX XXX
   tVector::
+  change_list::
 )
 SET(PyAvida_Extra_Cpp_Files
   AB.cc

@@ -1,4 +1,5 @@
 
+Include("change_list.hh")
 Include("environment.hh")
 Include("genebank.hh" )
 Include("inject_genebank.hh")
@@ -21,5 +22,7 @@ I'm probably using the wrong call policy on
 cPopulation.GetEnvironment().
 """)
 set_policy(cPopulation.GetEnvironment, return_internal_reference())
+
+exclude(cPopulation.GetChangeList)
 
 # vim: set ft=python:
