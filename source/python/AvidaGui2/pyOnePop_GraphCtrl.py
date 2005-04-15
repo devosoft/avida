@@ -55,6 +55,9 @@ class pyOnePop_GraphCtrl(pyOnePop_GraphView):
 
     self.m_graph_ctrl.setAxisTitle(QwtPlot.xBottom, "Time (updates)")
     self.m_graph_ctrl.setAxisAutoScale(QwtPlot.xBottom)
+
+    # Start with second graph mode -- "Average Fitness".
+    self.m_combo_box.setCurrentItem(2)
     self.modeActivatedSlot(self.m_combo_box.currentItem())
 
     self.connect(

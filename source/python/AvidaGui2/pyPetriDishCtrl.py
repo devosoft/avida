@@ -40,6 +40,12 @@ class pyPetriDishCtrl(QWidget):
     self.m_indexer = None
     self.m_color_lookup_functor = None
     self.m_background_rect = None
+    self.m_change_list = None
+    self.m_occupied_cells_ids = []
+
+    self.m_target_dish_width = 270
+    self.m_target_dish_scaling = 5.
+    self.m_map_cell_width = 5
 
     self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"), self.setAvidaSlot)
     self.connect( self.m_canvas_view, PYSIGNAL("orgClickedOnSig"), self.m_session_mdl.m_session_mdtr, PYSIGNAL("orgClickedOnSig"))
@@ -47,92 +53,88 @@ class pyPetriDishCtrl(QWidget):
   def setColorLookupFunctor(self, color_lookup_functor):
     self.m_color_lookup_functor = color_lookup_functor
 
+  def createNewCellItem(self, n):
+    self.m_occupied_cells_ids.append(n)
+    return pyPopulationCellItem(
+      self.m_avida.m_population.GetCell(n),
+      (n%self.m_world_w) * self.m_map_cell_width,
+      (n/self.m_world_w) * self.m_map_cell_width,
+      self.m_map_cell_width,
+      self.m_map_cell_width,
+      self.m_canvas)
+
   def setAvidaSlot(self, avida):
     old_avida = self.m_avida
     self.m_avida = avida
     if(old_avida):
-      old_avida.removeGuiWorkFunctor(self)
       del old_avida
     if(self.m_avida):
       pass
 
-    self.m_map_cell_w = 5
-    self.m_map_cell_h = 5
-    world_w = cConfig.GetWorldX()
-    world_h = cConfig.GetWorldY()
+    self.m_change_list = self.m_avida.m_avida_threaded_driver.GetChangeList()
+
+    self.m_world_w = cConfig.GetWorldX()
+    self.m_world_h = cConfig.GetWorldY()
+    self.m_initial_target_zoom = int(self.m_target_dish_width / self.m_world_w)
+    print "self.m_map_cell_width", self.m_map_cell_width
+    
+    self.emit(PYSIGNAL("zoomSig"), (self.m_initial_target_zoom,))
 
     if self.m_canvas: del self.m_canvas
-    self.m_canvas = QCanvas(self.m_map_cell_w * world_w, self.m_map_cell_h * world_h)
+    self.m_canvas = QCanvas(self.m_map_cell_width * self.m_world_w, self.m_map_cell_width * self.m_world_h)
     self.m_canvas.setBackgroundColor(Qt.darkGray)
     self.m_canvas_view.setCanvas(self.m_canvas)
     if self.m_background_rect: del self.m_background_rect
-    self.m_background_rect = QCanvasRectangle(0, 0, self.m_map_cell_w * world_w, self.m_map_cell_h * world_h, self.m_canvas)
+    self.m_background_rect = QCanvasRectangle(
+      0, 0,
+      self.m_map_cell_width * self.m_world_w,
+      self.m_map_cell_width * self.m_world_h,
+      self.m_canvas)
     self.m_background_rect.setBrush(QBrush(Qt.black))
     self.m_background_rect.setPen(QPen(Qt.black))
     self.m_background_rect.show()
     self.m_background_rect.setZ(0.0)
 
     if self.m_cell_info: del self.m_cell_info
-    self.m_cell_info = [pyPopulationCellItem(
-      self.m_avida.m_population.GetCell(n),
-      (n%world_w) * self.m_map_cell_w,
-      (n/world_w) * self.m_map_cell_h,
-      self.m_map_cell_w,
-      self.m_map_cell_h,
-      self.m_canvas) for  n in range(world_w * world_h)]
+    self.m_cell_info = [None] * self.m_world_w * self.m_world_h
+    self.m_occupied_cells_ids = []
 
     self.m_thread_work_cell_item_index = 0
     self.m_cs_min_value = 0
     self.m_cs_value_range = 0
     self.m_changed_cell_items = self.m_cell_info[:]
-    while self.doSomeWork(self.m_avida): pass
-    self.updateCellItems()
-    self.m_avida.addGuiWorkFunctor(self)
+    self.updateCellItems(True)
 
   def setRange(self, min, max):
     self.m_cs_min_value = min
     self.m_cs_value_range = max - min
 
   def setIndexer(self, indexer):
-    print "pyPetriDishCtrl.setIndexer"
     self.m_indexer = indexer
 
-    if self.m_cell_info:
-      for cell_info_item in self.m_cell_info:
-        cell_info_item.updateColorUsingFunctor(None)
-      self.m_canvas.update()
-      self.m_changed_cell_items = self.m_cell_info[:]
-
-
-  def doSomeWork(self, avida):
-    if self.m_indexer:
-      for x in range(len(self.m_cell_info)):
-        if len(self.m_cell_info) <= self.m_thread_work_cell_item_index:
-          self.m_thread_work_cell_item_index = 0
-          return False
-        else:
-          cell_info_item = self.m_cell_info[self.m_thread_work_cell_item_index]
-          if self.m_indexer(cell_info_item, self.m_cs_min_value, self.m_cs_value_range):
-            self.m_changed_cell_items.append(cell_info_item)
-          self.m_thread_work_cell_item_index += 1
-      return True
-    else:
-      return False
-
-  def updateCellItems(self):
-    for cell_info_item in self.m_changed_cell_items:
+  def updateCellItems(self, should_update_all = False):
+    def updateCellItem(cell_id):
+      if self.m_cell_info[cell_id] is None:
+        self.m_cell_info[cell_id] = self.createNewCellItem(cell_id)
+      cell_info_item = self.m_cell_info[cell_id]
+      self.m_indexer(cell_info_item, self.m_cs_min_value, self.m_cs_value_range)
       cell_info_item.updateColorUsingFunctor(self.m_color_lookup_functor)
-    self.m_changed_cell_items = []
+
+    if should_update_all and self.m_cell_info:
+      for cell_id in self.m_occupied_cells_ids:
+        updateCellItem(cell_id)
+    elif self.m_change_list and self.m_cell_info:
+      for index in range(self.m_change_list.GetChangeCount()):
+        updateCellItem(self.m_change_list[index])
+
     if self.m_canvas: self.m_canvas.update()
 
   def extractPopulationSlot(self):
     population_dict = {}
-    world_w = cConfig.GetWorldX()
-    world_h = cConfig.GetWorldY()
-    for x in range(world_w):
-      for y in range(world_h):
+    for x in range(self.m_world_w):
+      for y in range(self.m_world_h):
         if self.m_avida != None:
-          cell = self.m_avida.m_population.GetCell(x + world_w*y)
+          cell = self.m_avida.m_population.GetCell(x + self.m_world_w*y)
           if cell.IsOccupied() == True:
             organism = cell.GetOrganism()
             genome = organism.GetGenome()
@@ -142,6 +144,6 @@ class pyPetriDishCtrl(QWidget):
   def zoomSlot(self, zoom_factor):
     if self.m_canvas_view:
       m = QWMatrix()
-      m.scale(zoom_factor/5.0, zoom_factor/5.0)
+      m.scale(zoom_factor/self.m_target_dish_scaling, zoom_factor/self.m_target_dish_scaling)
       self.m_canvas_view.setWorldMatrix(m)
 

@@ -4,6 +4,7 @@ from math import exp
 
 class pyMapProfile:
   def __init__(self):
+    self.m_color_cache_size = 201
 
     def continuousIndexer(idx_functor):
       def continuousIndexingFunction(population_cell_item, min, range):
@@ -41,7 +42,7 @@ class pyMapProfile:
         self.m_sup_tol_coef = 0.1
         self.m_inf_rescale_rate = 0.0
         self.m_sup_rescale_rate = 0.0
-        self.m_updates_to_rescale = 10
+        self.m_updates_to_rescale = 40
         self.m_should_reset = True
 
       def reset(self, should_reset):
@@ -82,14 +83,8 @@ class pyMapProfile:
     NullRng = lambda p: (0, 0)
     MeritRng = lambda p: (0, p.GetStats().GetMaxMerit())
     FitnessRng = lambda p: (0, p.GetStats().GetMaxFitness())
-    def GestationTimeRng(p):
-      return 0, max(
-        p.GetCell(n).IsOccupied() and p.GetCell(n).GetOrganism().GetPhenotype().GetGestationTime() or 0
-        for n in range(p.GetSize()))
-    def SizeRng(p):
-      return 0, max(
-        p.GetCell(n).IsOccupied() and p.GetCell(n).GetOrganism().GetPhenotype().GetGenomeLength() or 0
-        for n in range(p.GetSize()))
+    GestationTimeRng = lambda p: (0, p.GetStats().GetMaxGestationTime())
+    SizeRng = lambda p: (0, p.GetStats().GetMaxGenomeLength())
 
 
     def sigmoid(x, midpoint, steepness):
@@ -105,6 +100,14 @@ class pyMapProfile:
       s = sigmoid(1 - x, 0.1, 30) * 255
       return QColor(h, s, v, QColor.Hsv)
 
+    self.m_color_cache = [sigmoidDoubleToColor(float(n)/(self.m_color_cache_size - 1)) for n in range(self.m_color_cache_size)]
+    def sigmoidColorLookup(x):
+      sup = self.m_color_cache_size - 1
+      x *= sup
+      x = sup < x and sup or x
+      x = x < 0 and 0 or x
+      return self.m_color_cache[int(x)]
+
     self.m_entries = (
     #  Mode Name,        Indexer
       ('None',
@@ -115,22 +118,22 @@ class pyMapProfile:
       ('Merit',
         continuousIndexer(MeritIdx),
         gradualLinScaleUpdater(MeritRng),
-        sigmoidDoubleToColor
+        sigmoidColorLookup
         ),
       ('Fitness',
         continuousIndexer(FitnessIdx),
         gradualLinScaleUpdater(FitnessRng),
-        sigmoidDoubleToColor
+        sigmoidColorLookup
         ),
       ('Gestation Time',
         continuousIndexer(GestationTimeIdx),
         gradualLinScaleUpdater(GestationTimeRng),
-        sigmoidDoubleToColor
+        sigmoidColorLookup
         ),
       ('Size',
         continuousIndexer(SizeIdx),
         gradualLinScaleUpdater(SizeRng),
-        sigmoidDoubleToColor
+        sigmoidColorLookup
         ),
       #('Genotype',       GenotypeIdx,),
       #('Lineage',        LineageIdx,),

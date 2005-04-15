@@ -34,11 +34,12 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     self.m_map_profile = pyMapProfile()
     for i in range(self.m_map_profile.getSize()):
       self.m_mode_combobox.insertItem(self.m_map_profile.getModeName(i))
-    self.m_mode_combobox.setCurrentItem(1)
+
+    # Start with second map mode -- "Fitness".
+    self.m_mode_combobox.setCurrentItem(2)
     self.m_mode_index = self.m_mode_combobox.currentItem()
     self.modeActivatedSlot(self.m_mode_index)
-
-    self.m_petri_dish_ctrl.emit(PYSIGNAL("zoomSig"), (9,))
+    #self.m_petri_dish_ctrl.emit(PYSIGNAL("zoomSig"), (self.m_petri_dish_ctrl.m_initial_target_zoom,))
 
   def setAvidaSlot(self, avida):
     old_avida = self.m_avida
@@ -82,13 +83,15 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     self.m_mode_index = index
     self.m_petri_dish_ctrl.setIndexer(self.m_map_profile.getIndexer(self.m_mode_index))
     self.m_petri_dish_ctrl.setColorLookupFunctor(self.m_map_profile.getColorLookup(self.m_mode_index))
+    self.m_petri_dish_ctrl.m_should_update_all = True
     self.m_gradient_scale_ctrl.setColorLookup(self.m_map_profile.getColorLookup(self.m_mode_index))
     self.m_updater = self.m_map_profile.getUpdater(self.m_mode_index)
     self.m_updater and self.m_updater.reset(True)
 
     self.m_avida and self.m_avida.m_avida_threaded_driver.m_lock.release()
+    self.avidaUpdatedSlot(True)
 
-  def avidaUpdatedSlot (self):
+  def avidaUpdatedSlot(self, should_update_all = False):
     if self.m_updater:
       (old_min, old_max) = self.m_updater.getRange()
       (min, max) = self.m_avida and self.m_updater.updateRange(self.m_avida.m_population) or (0, 0)
@@ -97,11 +100,12 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
         self.m_gradient_scale_ctrl.activate(True)
         self.m_petri_dish_ctrl.setRange(min, max)
         self.m_updater.reset(False)
+        should_update_all = True
     else:
       self.m_gradient_scale_ctrl.setRange(0, 0)
       self.m_gradient_scale_ctrl.activate(True)
       self.m_petri_dish_ctrl.setRange(0, 0)
-    self.m_petri_dish_ctrl.updateCellItems()
+    self.m_petri_dish_ctrl.updateCellItems(should_update_all)
 
     stats = update = None
     if self.m_avida: stats = self.m_avida.m_population.GetStats()
