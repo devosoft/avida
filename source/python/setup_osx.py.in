@@ -55,16 +55,16 @@ setup(
       # script to launch AvidaEd from command-line, then drop into
       # python shell (for convenience of developers)
       [ '${CMAKE_CURRENT_SOURCE_DIR}/AvidaEd-interactive.py' ]
-      +
-      # Avida configuration files
-      # FIXME # these only temporarily live in Resources, until we make
-      # a file-open dialog.
-      # @kgn
-      [
-        '${PROJECT_SOURCE_DIR}/source/support/' + configuration_file
-        for configuration_file in ['genesis', 'environment.cfg',
-        'events.cfg', 'inst_set.default', 'organism.default']
-      ]
+      #+
+      ## Avida configuration files
+      ## FIXME # these only temporarily live in Resources, until we make
+      ## a file-open dialog.
+      ## @kgn
+      #[
+      #  '${PROJECT_SOURCE_DIR}/source/support/' + configuration_file
+      #  for configuration_file in ['genesis', 'environment.cfg',
+      #  'events.cfg', 'inst_set.default', 'organism.default']
+      #]
     ),
   ]
   # subversion metadata files
