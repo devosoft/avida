@@ -18,7 +18,7 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
     self.connect(
       self.m_session_mdl.m_session_mdtr, PYSIGNAL("orgClickedOnSig"),
       self.updateOrgReportSlot)
-    self.clickedCellNumber = -99
+    self.m_clicked_cell_number = -99
 
   def setAvidaSlot(self, avida):
     old_avida = self.m_avida
@@ -137,21 +137,15 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
 #      self.m_num_equals.setText(QString("no"))
     self.m_num_equals.setText(num_equals)
     
-    if self.clickedCellNumber>= 0: 
-      self.updateOrgReportSlot(self.clickedCellNumber)
+    if self.m_clicked_cell_number>= 0: 
+      self.updateOrgReportSlot(self.m_clicked_cell_number)
 
 
 
-  def updateOrgReportSlot(self, clickedCellNum):
-  
-    self.clickedCellNumber = clickedCellNum
-    
-    clickedCell = self.m_avida.m_population.GetCell(int(clickedCellNum))
+  def updateOrgReportSlot(self, clicked_cell_num):
 
-#    print "clickedCell.IsOccupied() returns " 
-#    print clickedCell.IsOccupied()
-
-    if not clickedCell.IsOccupied():
+    self.m_clicked_cell_number = clicked_cell_num
+    if clicked_cell_num is None or not self.m_avida.m_population.GetCell(int(clicked_cell_num)).IsOccupied():
       #PAINT the stats fields empty
       self.m_org_name.setText('empty cell')
       self.m_org_fitness.setText('-')
@@ -160,8 +154,14 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
       self.m_org_gestation_time.setText('-')
       self.m_org_age.setText('-')
       return
+
+    clicked_cell = self.m_avida.m_population.GetCell(int(clicked_cell_num))
+
+#    print "clicked_cell.IsOccupied() returns " 
+#    print clicked_cell.IsOccupied()
+
  
-    organism = clickedCell.GetOrganism()
+    organism = clicked_cell.GetOrganism()
     phenotype = organism.GetPhenotype()
     genotype = organism.GetGenotype()
 
