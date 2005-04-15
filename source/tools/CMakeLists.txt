@@ -1,5 +1,6 @@
 SET(libtools_a_SOURCES
   block_struct.cc
+  change_list.cc
   const_schedule.cc
   count_tracker.cc
   data_entry.cc

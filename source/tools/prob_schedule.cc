@@ -38,8 +38,8 @@ int cProbSchedule::GetNextID()
 
 void cProbSchedule::Adjust(int item_id, const cMerit & item_merit)
 {
-  chart.SetWeight(item_id, item_merit.GetDouble());
   if (cChangeList *change_list = GetChangeList()) {
     change_list->MarkChange(item_id);
   }
+  chart.SetWeight(item_id, item_merit.GetDouble());
 }

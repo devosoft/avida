@@ -19,6 +19,7 @@ class cEnvironment;
 class cEventFactoryManager;
 class cEventList;
 class cString;
+class cChangeList;
 class cPopulation;
 
 class cAvidaDriver_Population : public cAvidaDriver_Base {
@@ -41,7 +42,7 @@ public:
   void ReadEventListFile(const cString & filename="event_list");
   void SyncEventList();
 			
-  cAvidaDriver_Population(cEnvironment & environment);
+  cAvidaDriver_Population(cEnvironment & environment, cChangeList * change_list = 0);
   virtual ~cAvidaDriver_Population();
 
   virtual void Run();

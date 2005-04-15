@@ -85,7 +85,7 @@ private:
   bool sync_events;   // Do we need to sync up the event list with population?
 
   ///////////////// Private Methods ////////////////////
-  void BuildTimeSlicer(); // Build the schedule object
+  void BuildTimeSlicer(cChangeList * change_list); // Build the schedule object
 
   // Methods to place offspring in the population.
   cPopulationCell & PositionChild(cPopulationCell & parent_cell,
@@ -120,7 +120,8 @@ private:
 
 public:
   cPopulation(const cPopulationInterface & in_interface,
-	      cEnvironment & in_environment);
+	      cEnvironment & in_environment,
+	      cChangeList * change_list = 0);
   ~cPopulation();
 
   // Extra Setup...

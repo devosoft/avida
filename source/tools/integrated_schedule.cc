@@ -12,6 +12,9 @@
 #include "integrated_schedule_node.hh"
 #include "merit.hh"
 
+#include <iostream>
+using namespace std;
+
 
 /////////////////////////
 //  cIntegratedSchedule
@@ -60,6 +63,9 @@ bool cIntegratedSchedule::OK()
 
 void cIntegratedSchedule::Adjust(int item_id, const cMerit & new_merit)
 {
+  if (cChangeList *change_list = GetChangeList()) {
+    change_list->MarkChange(item_id);
+  }
   // Grab the old_merit, the new merit, and compare them.
   const cMerit old_merit = merit_chart[item_id];
 
@@ -86,9 +92,6 @@ void cIntegratedSchedule::Adjust(int item_id, const cMerit & new_merit)
       if (i >= node_array.GetSize() || !node_array[i]) InsertNode(i);
       node_array[i]->Insert(item_id);
     }
-  }
-  if (cChangeList *change_list = GetChangeList()) {
-    change_list->MarkChange(item_id);
   }
 }
 

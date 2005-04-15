@@ -5,25 +5,14 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef STATS_HH
 #include "stats.hh"
-#endif
 
-#ifndef CONFIG_HH
 #include "config.hh"
-#endif
-#ifndef DATA_FILE_HH
 #include "data_file.hh"
-#endif
-#ifndef FUNCTIONS_HH
 #include "functions.hh"
-#endif
-#ifndef STRING_UTIL_HH
 #include "string_util.hh"
-#endif
-#ifndef TDATAENTRY_HH
 #include "tDataEntry.hh"
-#endif
+
 
 using namespace std;
 

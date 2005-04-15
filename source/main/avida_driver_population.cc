@@ -34,7 +34,7 @@ using namespace std;
 //  cAvidaDriver_Population
 /////////////////////////////
 
-cAvidaDriver_Population::cAvidaDriver_Population(cEnvironment & environment)
+cAvidaDriver_Population::cAvidaDriver_Population(cEnvironment & environment, cChangeList * change_list)
   : population(NULL)
   , event_manager(NULL)
   , event_list(NULL)
@@ -63,7 +63,7 @@ cAvidaDriver_Population::cAvidaDriver_Population(cEnvironment & environment)
   default_interface.SetFun_InjectParasite(&cCallbackUtil::CB_InjectParasite);
   default_interface.SetFun_UpdateMerit(&cCallbackUtil::CB_UpdateMerit);
 
-  population = new cPopulation(default_interface, environment);
+  population = new cPopulation(default_interface, environment, change_list);
   cout << " ...done" << endl;
 
   //Setup Event List

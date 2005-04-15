@@ -25,32 +25,21 @@ protected:
   0 <= m_change_count <= size of m_change_tracking.
   */
   // Number of changes.
-  unsigned int m_change_count;
+  int m_change_count;
   /*
   List of changed indices. When n changes are listed, the first n
   entries of m_change_list store the indices, and the remaining entries
   are invalid.
   */
-  tArray<unsigned int> m_change_list;
+  tArray<int> m_change_list;
   // m_change_tracking[i] is true iff i is in m_change_list.
   tArray<bool> m_change_tracking;
 
 public:
-  void ResizeClear(unsigned int capacity){
-    m_change_list.ResizeClear(capacity);
-    m_change_tracking.ResizeClear(capacity);
-    m_change_list.SetAll(0);
-    m_change_tracking.SetAll(false);
-    m_change_count = 0;
-  }
+  void ResizeClear(int capacity);
 
-public:
   // Constructor.
-  explicit cChangeList(unsigned int capacity = 0)
-  : m_change_list(0)
-  , m_change_tracking(0)
-  , m_change_count(0)
-  { ResizeClear(capacity); }
+  explicit cChangeList(int capacity = 0);
 
   //// Assignment operator.
   //cChangeList & operator= (const cChangeList & rhs) {
@@ -69,53 +58,27 @@ public:
 
   // Interface Methods ///////////////////////////////////////////////////////
 
-  unsigned int GetSize() const { return m_change_list.GetSize(); }
+  int GetSize() const;
 
-  unsigned int GetChangeCount() const { return m_change_count; }
+  int GetChangeCount() const;
 
   // Note that decreasing size invalidates stored changes.
-  void Resize(unsigned int capacity) {
-    if (capacity < m_change_list.GetSize()){
-      ResizeClear(capacity);
-    } else {
-      m_change_list.Resize(capacity);
-      m_change_tracking.Resize(capacity, false);
-    }
-  }
+  void Resize(int capacity);
   
   // Unsafe version : assumes index is within change count.
-  unsigned int GetChangeAt(unsigned int index) const {
-    return m_change_list[index];
-  }
+  int GetChangeAt(int index) const;
 
   // Safe version : returns -1 if index is outside change count.
-  int CheckChangeAt(unsigned int index) const {
-    return (index < m_change_count) ? ((int) GetChangeAt(index)) : (-1);
-  }
+  int CheckChangeAt(int index) const;
 
   // Unsafe version : assumes changed_index is within capacity.
-  void MarkChange(unsigned int changed_index) {
-    if (!m_change_tracking[changed_index]) {
-      m_change_tracking[changed_index] = true;
-      m_change_list[m_change_count++] = changed_index;
-    }
-  }
+  void MarkChange(int changed_index);
 
   // Safe version : will resize to accommodate changed_index greater
   // than capacity.
-  void PushChange(unsigned int changed_index) {
-    if (m_change_list.GetSize() <= changed_index) {
-      Resize(changed_index + 1);
-    }
-    MarkChange(changed_index);
-  }
+  void PushChange(int changed_index);
 
-  void Reset() {
-    for (unsigned int i = 0; i < m_change_count; i++) {
-      m_change_tracking[m_change_list[i]] = false;
-    }
-    m_change_count = 0;
-  }
+  void Reset();
 };
 
 #endif

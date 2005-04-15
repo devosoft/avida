@@ -45,7 +45,8 @@ using namespace std;
 
 
 cPopulation::cPopulation(const cPopulationInterface & in_interface,
-			 cEnvironment & in_environment)
+			 cEnvironment & in_environment,
+			 cChangeList * change_list)
   : schedule(NULL)
   , resource_count(in_environment.GetResourceLib().GetSize())
   , environment(in_environment)
@@ -161,7 +162,7 @@ cPopulation::cPopulation(const cPopulationInterface & in_interface,
     }
   }
 
-  BuildTimeSlicer();
+  BuildTimeSlicer(change_list);
 
   if (SetupDemes() == false) {
     cerr << "Error -- failed to setup demes.  Exiting." << endl;
@@ -1794,7 +1795,7 @@ void cPopulation::SetResource(int id, double new_level)
   resource_count.Set(id, new_level);
 }
 
-void cPopulation::BuildTimeSlicer()
+void cPopulation::BuildTimeSlicer(cChangeList * change_list)
 {
   switch (cConfig::GetSlicingMethod()) {
   case SLICE_CONSTANT:
@@ -1815,7 +1816,7 @@ void cPopulation::BuildTimeSlicer()
     schedule = new cIntegratedSchedule(cell_array.GetSize());
     break;
   }
-
+  schedule->SetChangeList(change_list);
 }
 
 
