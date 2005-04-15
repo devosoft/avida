@@ -17,9 +17,9 @@
 
 
 bool pyAvidaDriver::preUpdate(const unsigned int){
-  if (cChangeList *change_list = population->GetChangeList()) {
-    change_list->Reset();
-  }
+  //if (cChangeList *change_list = population->GetChangeList()) {
+  //  change_list->Reset();
+  //}
   GetEvents();
   if(true == done_flag){ return false; }
   // Increment the Update.
@@ -128,13 +128,13 @@ cChangeList *pyAvidaDriver::GetChangeList(){
 }
 
 pyAvidaDriver::pyAvidaDriver(cEnvironment & environment)
-: cAvidaDriver_Population(environment)
-, m_update_mode_function(&pyAvidaDriver::fastUpdate)
-, m_update_stage_function(&pyAvidaDriver::preUpdate)
-, m_step_cell_id(-1)
-, m_change_list(new cChangeList())
+: cAvidaDriver_Population(environment, new cChangeList())
+, m_update_mode_function(&pyAvidaDriver::fastUpdate)// ^
+, m_update_stage_function(&pyAvidaDriver::preUpdate)// |
+, m_step_cell_id(-1)                                // |
+, m_change_list(population->GetChangeList())// <--Same as. Yuk. Problem
+                                            //    of order of initialization.
 {
-  population->SetChangeList(m_change_list);
 }
 
 pyAvidaDriver::~pyAvidaDriver(){
