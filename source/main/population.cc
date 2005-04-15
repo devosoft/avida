@@ -7,6 +7,7 @@
 
 #include "population.hh"
 
+#include "change_list.hh"
 #include "config.hh"
 #include "const_schedule.hh"
 #include "data_file.hh"
@@ -1174,6 +1175,8 @@ void cPopulation::UpdateOrganismStats()
   // Maximums...
   cMerit max_merit(0);
   double max_fitness = 0;
+  int max_gestation_time = 0;
+  int max_genome_length = 0;
 
   for (int i = 0; i < cell_array.GetSize(); i++) {
     // Only look at cells with organisms in them.
@@ -1183,6 +1186,8 @@ void cPopulation::UpdateOrganismStats()
     const cPhenotype & phenotype = organism->GetPhenotype();
     const cMerit cur_merit = phenotype.GetMerit();
     const double cur_fitness = phenotype.GetFitness();
+    const int cur_gestation_time = phenotype.GetGestationTime();
+    const int cur_genome_length = phenotype.GetGenomeLength();
 
     stats.SumFitness().Add(cur_fitness);
     stats.SumMerit().Add(cur_merit.GetDouble());
@@ -1208,6 +1213,8 @@ void cPopulation::UpdateOrganismStats()
 
     if (cur_merit > max_merit) max_merit = cur_merit;
     if (cur_fitness > max_fitness) max_fitness = cur_fitness;
+    if (cur_gestation_time > max_gestation_time) max_gestation_time = cur_gestation_time;
+    if (cur_genome_length > max_genome_length) max_genome_length = cur_genome_length;
 
     // Test what tasks this creatures has completed.
     for (int j=0; j < phenotype.GetEnvironment().GetTaskLib().GetSize(); j++) {
@@ -1244,6 +1251,8 @@ void cPopulation::UpdateOrganismStats()
 
   stats.SetMaxMerit(max_merit.GetDouble());
   stats.SetMaxFitness(max_fitness);
+  stats.SetMaxGestationTime(max_gestation_time);
+  stats.SetMaxGenomeLength(max_genome_length);
 
   stats.SetResources(resource_count.GetResources());
   stats.SetSpatialRes(resource_count.GetSpatialRes());
@@ -2114,4 +2123,11 @@ bool cPopulation::UpdateMerit(int cell_id, double new_merit)
   schedule->Adjust(cell_id, phenotype.GetMerit());
  
   return true;
+}
+
+void cPopulation::SetChangeList(cChangeList *change_list){
+  schedule->SetChangeList(change_list);
+}
+cChangeList *cPopulation::GetChangeList(){
+  return schedule->GetChangeList();
 }

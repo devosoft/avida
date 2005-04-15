@@ -9,6 +9,7 @@
 
 #include "avida_triggers.hh"
 #include "callback_util.hh"
+#include "change_list.hh"
 #include "config.hh"
 #include "event_factory_manager.hh"
 #include "event_list.hh"
@@ -103,6 +104,10 @@ void cAvidaDriver_Population::Run()
 
 bool cAvidaDriver_Population::ProcessUpdate()
 {
+  if (cChangeList *change_list = population->GetChangeList()) {
+    change_list->Reset();
+  }
+
   GetEvents();
   if (done_flag == true) return true;
 

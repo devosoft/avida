@@ -35,20 +35,21 @@
 class cSchedule;
 template <class T> class tArray; // aggregate
 
-class cPopulationCell;
-class cResourceCount; // aggregate
 class cBirthChamber; // aggregate
-class cStats; // aggregate
+class cChangeList;
+class cEnvironment;
 class cGenebank;
+class cGenome;
+class cGenotype;
 class cInjectGenebank;
+class cLineage;
 class cLineageControl;
 template <class T> class tList; // aggregate
-class cEnvironment;
-class cPopulationInterface; // aggregate
 class cOrganism;
-class cLineage;
-class cGenotype;
-class cGenome;
+class cPopulationInterface; // aggregate
+class cPopulationCell;
+class cResourceCount; // aggregate
+class cStats; // aggregate
 class cString; // aggregate
 
 class cPopulation {
@@ -201,6 +202,9 @@ public:
   void PrintPhenotypeStatus(const cString & filename);
 
   bool UpdateMerit(int cell_id, double new_merit);
+
+  void SetChangeList(cChangeList *change_list);
+  cChangeList *GetChangeList();
 };
 
 #endif

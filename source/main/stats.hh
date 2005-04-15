@@ -166,6 +166,8 @@ private:
   double dom_exe_size;
   double max_fitness;
   double max_merit;
+  int max_gestation_time;
+  int max_genome_length;
   int dom_genotype_id;
   cString dom_name;
   int dom_births;
@@ -342,6 +344,10 @@ public:
     { max_fitness = in_max_fitness; }
   inline void SetMaxMerit(double in_max_merit)
     { max_merit = in_max_merit; }
+  inline void SetMaxGestationTime(int in_max_gestation_time)
+    { max_gestation_time = in_max_gestation_time; }
+  inline void SetMaxGenomeLength(int in_max_genome_length)
+    { max_genome_length = in_max_genome_length; }
   inline void SetEntropy(double in_entropy)
     { entropy = in_entropy; }
   inline void SetSpeciesEntropy(double in_ent)
@@ -513,6 +519,9 @@ public:
 
   double GetMaxFitness() const { return max_fitness; }
   double GetMaxMerit() const { return max_merit; }
+  int GetMaxGestationTime() const { return max_gestation_time; }
+  int GetMaxGenomeLength() const { return max_genome_length; }
+
 
   // this value gets recorded when a creature with the particular
   // fitness value gets born. It will never change to a smaller value,
