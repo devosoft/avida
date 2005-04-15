@@ -15,10 +15,11 @@
  **/
 
 class cMerit;
-
+class cChangeList;
 class cSchedule {
 protected:
   int item_count;
+  cChangeList *m_change_list;
 public:
   cSchedule(int _item_count);
   virtual ~cSchedule();
@@ -27,8 +28,10 @@ public:
   virtual void Adjust(int item_id, const cMerit & merit) { ; }
   virtual int GetNextID() = 0;
   virtual double GetStatus(int id) { return 0.0; }
+  void SetChangeList(cChangeList *change_list);
+  cChangeList *GetChangeList() { return m_change_list; }
 
-  inline void SetSize(int _item_count)  { item_count = _item_count; }
+  void SetSize(int _item_count);
 };
 
 #endif

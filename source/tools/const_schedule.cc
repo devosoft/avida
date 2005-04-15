@@ -7,6 +7,7 @@
 
 #include "const_schedule.hh"
 
+#include "change_list.hh"
 #include "merit.hh"
 
 
@@ -35,6 +36,9 @@ void cConstSchedule::Adjust(int item_id, const cMerit & merit)
 {
   if (merit == 0.0) is_active[item_id] = false;
   else is_active[item_id] = true;
+  if (cChangeList *change_list = GetChangeList()) {
+    change_list->MarkChange(item_id);
+  }
 }
 
 

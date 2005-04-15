@@ -7,6 +7,7 @@
 
 #include "integrated_schedule.hh"
 
+#include "change_list.hh"
 #include "functions.hh"
 #include "integrated_schedule_node.hh"
 #include "merit.hh"
@@ -85,6 +86,9 @@ void cIntegratedSchedule::Adjust(int item_id, const cMerit & new_merit)
       if (i >= node_array.GetSize() || !node_array[i]) InsertNode(i);
       node_array[i]->Insert(item_id);
     }
+  }
+  if (cChangeList *change_list = GetChangeList()) {
+    change_list->MarkChange(item_id);
   }
 }
 
