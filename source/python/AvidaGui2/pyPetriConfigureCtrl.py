@@ -228,11 +228,10 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     is_empty_dish = m_pop_up_freezer_file_name.EmptyRadioButton.isChecked()
     freezer_file = pyWriteToFreezer(tmp_dict, is_empty_dish, file_name)
     self.m_session_mdl.m_session_mdtr.emit(
-      PYSIGNAL("doRefreshFreezerInventory"), ())
+      PYSIGNAL("doRefreshFreezerInventorySig"), ())
     if send_reset_signal:
-      pass
+      print "sending reset signal from pyPetriConfigureCtrl:FreezePetriSlot" 
     if send_quit_signal:
-      pass
-      
-
-    
+      print "sending quit signal from pyPetriConfigureCtrl:FreezePetriSlot"
+      self.m_session_mdl.m_session_mdtr.emit(
+        PYSIGNAL("quitAvidaPhaseIISig"), ())

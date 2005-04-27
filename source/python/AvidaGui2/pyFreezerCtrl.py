@@ -21,7 +21,7 @@ class pyFreezerCtrl(pyFreezerView):
   def construct(self, session_mdl):
     self.m_session_mdl = session_mdl
     self.connect(self.m_session_mdl.m_session_mdtr,
-      PYSIGNAL("doRefreshFreezerInventory"),
+      PYSIGNAL("doRefreshFreezerInventorySig"),
       self.createFreezerIndexSlot)
     self.createFreezerIndexSlot()
     

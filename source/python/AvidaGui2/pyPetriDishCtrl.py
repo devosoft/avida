@@ -135,7 +135,7 @@ class pyPetriDishCtrl(QWidget):
 
       if self.m_canvas: self.m_canvas.update()
 
-  def extractPopulationSlot(self):
+  def extractPopulationSlot(self, send_reset_signal = False, send_quit_signal = False):
     population_dict = {}
     for x in range(self.m_world_w):
       for y in range(self.m_world_h):
@@ -145,7 +145,7 @@ class pyPetriDishCtrl(QWidget):
             organism = cell.GetOrganism()
             genome = organism.GetGenome()
             population_dict[cell.GetID()] = str(genome.AsString())
-    self.emit(PYSIGNAL("freezeDishPhaseIISig"), (population_dict, ))
+    self.emit(PYSIGNAL("freezeDishPhaseIISig"), (population_dict, send_reset_signal, send_quit_signal, ))
 
   def zoomSlot(self, zoom_factor):
     if self.m_canvas_view:

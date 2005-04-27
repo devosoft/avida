@@ -146,7 +146,7 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
       self.m_session_mdl.m_current_workspce = str(workspace_dir) + "/"
       self.m_session_mdl.m_current_freezer = self.m_session_mdl.m_current_workspce + "freezer/"
       self.m_session_mdl.m_session_mdtr.emit(
-        PYSIGNAL("doRefreshFreezerInventory"), ())
+        PYSIGNAL("doRefreshFreezerInventorySig"), ())
 
   # public slot
 
@@ -161,7 +161,7 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
     if freezer_dir.strip() != "":
       self.m_session_mdl.m_current_freezer = str(freezer_dir) + "/"
       self.m_session_mdl.m_session_mdtr.emit(
-        PYSIGNAL("doRefreshFreezerInventory"), ())
+        PYSIGNAL("doRefreshFreezerInventorySig"), ())
 
   # public slot
 
@@ -277,5 +277,6 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
     if quit_return == m_quit_avida_ed.QuitFlag:
       self.emit(PYSIGNAL("quitAvidaPhaseIISig"), ())
     elif quit_return == m_quit_avida_ed.FreezeQuitFlag:
-      self.emit(PYSIGNAL("FreezeDishPhaseISig"), ())
+      print "at pyEduWorkspaceCtrl:startQuitProcessSlot emited FreezeDishPhaseISig"
+      self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("FreezeDishPhaseISig"), (False, True, ))
 

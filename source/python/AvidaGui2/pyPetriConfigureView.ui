@@ -157,7 +157,7 @@
                 </widget>
                 <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>layout78</cstring>
+                        <cstring>layout10</cstring>
                     </property>
                     <vbox>
                         <property name="name">
@@ -184,7 +184,7 @@
                         </widget>
                         <widget class="QLayoutWidget">
                             <property name="name">
-                                <cstring>layout77</cstring>
+                                <cstring>layout9</cstring>
                             </property>
                             <hbox>
                                 <property name="name">
@@ -202,7 +202,7 @@
                                         <number>1</number>
                                     </property>
                                     <property name="maxValue">
-                                        <number>200</number>
+                                        <number>100</number>
                                     </property>
                                     <property name="lineStep">
                                         <number>1</number>
@@ -224,12 +224,20 @@
                                     <property name="enabled">
                                         <bool>true</bool>
                                     </property>
+                                    <property name="sizePolicy">
+                                        <sizepolicy>
+                                            <hsizetype>0</hsizetype>
+                                            <vsizetype>5</vsizetype>
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
                                     <property name="font">
                                         <font>
                                         </font>
                                     </property>
                                     <property name="text">
-                                        <string>0 x 0 cells</string>
+                                        <string>100 x 100 cells</string>
                                     </property>
                                 </widget>
                             </hbox>

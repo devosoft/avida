@@ -18,6 +18,9 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     self.m_gradient_scale_ctrl.construct(self.m_session_mdl)
     self.m_live_controls_ctrl.construct(self.m_session_mdl)
     self.m_petri_configure_ctrl.construct(self.m_session_mdl)
+    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezeDishPhaseISig"), self.m_petri_dish_ctrl.extractPopulationSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezeDishPhaseISig"), self.freezeDishPhaseISlot)
+
     self.connect(self.m_petri_configure_ctrl, PYSIGNAL("freezeDishPhaseISig"), self.m_petri_dish_ctrl.extractPopulationSlot)
     self.connect(self.m_petri_dish_ctrl, PYSIGNAL("freezeDishPhaseIISig"), self.m_petri_configure_ctrl.FreezePetriSlot)
     self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"), self.setAvidaSlot)
@@ -116,3 +119,11 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     if self.dishDisabled:
       return
     self.PopulationTextLabel.setText(dishName)
+    
+  # Dummy routine
+    
+  def freezeDishPhaseISlot(self, send_reset_signal = False, send_quit_signal = False):
+    print "in pyOnePop_PetriDishCtrl recieved freezeDishPhaseISig"
+    print "send_reset_signal = " + str(send_reset_signal)
+    print "send_quit_signal = " + str(send_quit_signal)
+
