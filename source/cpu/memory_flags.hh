@@ -23,7 +23,16 @@ public:
   cMemoryFlags() { Clear(); }
   ~cMemoryFlags() { ; }
 
-  void Clear();
+	void Clear()
+	{
+		copied = false;
+		mutated = false;
+		executed = false;
+		breakpoint = false;
+		point_mut = false;
+		copy_mut = false;
+		injected = false;
+	}
 };
 
 #endif

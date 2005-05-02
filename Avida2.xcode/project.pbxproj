@@ -13,6 +13,161 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
+		70486B8C08266CA2009328F0 = {
+			buildSettings = {
+				GCC_OPTIMIZATION_LEVEL = 3;
+			};
+			isa = PBXBuildStyle;
+			name = Profile;
+		};
+		70486B9508267145009328F0 = {
+			buildActionMask = 2147483647;
+			dstPath = work;
+			dstSubfolderSpec = 16;
+			files = (
+				70486BB708267635009328F0,
+				70486BA00826722F009328F0,
+				70486BA10826722F009328F0,
+				70486BA20826722F009328F0,
+				70486BA30826722F009328F0,
+				70486BA40826722F009328F0,
+				70486BA50826722F009328F0,
+				70486BA60826722F009328F0,
+				70486BA70826722F009328F0,
+			);
+			isa = PBXCopyFilesBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		70486BA00826722F009328F0 = {
+			fileRef = DCC3114B0762539E008F7A48;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		70486BA10826722F009328F0 = {
+			fileRef = DCC311800762539F008F7A48;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		70486BA20826722F009328F0 = {
+			fileRef = DCC311810762539F008F7A48;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		70486BA30826722F009328F0 = {
+			fileRef = DCC311820762539F008F7A48;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		70486BA40826722F009328F0 = {
+			fileRef = DCC311830762539F008F7A48;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		70486BA50826722F009328F0 = {
+			fileRef = DCC311840762539F008F7A48;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		70486BA60826722F009328F0 = {
+			fileRef = DCC311850762539F008F7A48;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		70486BA70826722F009328F0 = {
+			fileRef = DCC311890762539F008F7A48;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		70486BB708267635009328F0 = {
+			fileRef = DCC3164D07626CF3008F7A48;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		70CBFCE80815E7FE0078D8CC = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			path = hardware_status_printer.cc;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		70CBFCE90815E7FE0078D8CC = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.h;
+			path = hardware_status_printer.hh;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		70CBFCEA0815E7FE0078D8CC = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.h;
+			path = hardware_tracer_4stack.hh;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		70CBFCEB0815E7FE0078D8CC = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.h;
+			path = hardware_tracer_cpu.hh;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		70CBFCEC0815E7FE0078D8CC = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.h;
+			path = hardware_tracer_test_cpu.hh;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		70CBFCED0815E7FE0078D8CC = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.h;
+			path = hardware_tracer.hh;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		70CBFCEE0815E7FE0078D8CC = {
+			fileRef = 70CBFCE80815E7FE0078D8CC;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		70CBFCEF0815E8370078D8CC = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			path = change_list.cc;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		70CBFCF00815E8370078D8CC = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.h;
+			path = change_list.hh;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		70CBFCF10815E8370078D8CC = {
+			fileRef = 70CBFCEF0815E8370078D8CC;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 //700
 //701
 //702
@@ -55,15 +210,6 @@
 		};
 		DCC30C4B0762532C008F7A48 = {
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DEBUGGING_SYMBOLS = full;
-				GCC_DYNAMIC_NO_PIC = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_MODEL_CPU = G4;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				OTHER_CFLAGS = "-ffast-math -mdynamic-no-pic";
-				OTHER_CPLUSPLUSFLAGS = "-ffast-math -mdynamic-no-pic";
-				ZERO_LINK = YES;
 			};
 			isa = PBXBuildStyle;
 			name = Development;
@@ -71,13 +217,10 @@
 		DCC30C4C0762532C008F7A48 = {
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
-				GCC_DYNAMIC_NO_PIC = YES;
+				DEAD_CODE_STRIPPING = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_CPU = G4;
 				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
-				OTHER_CFLAGS = "-ffast-math -mdynamic-no-pic";
-				OTHER_CPLUSPLUSFLAGS = "-ffast-math -mdynamic-no-pic";
+				ZERO_LINK = NO;
 			};
 			isa = PBXBuildStyle;
 			name = Deployment;
@@ -88,6 +231,7 @@
 			buildStyles = (
 				DCC30C4B0762532C008F7A48,
 				DCC30C4C0762532C008F7A48,
+				70486B8C08266CA2009328F0,
 			);
 			hasScannedForEncodings = 0;
 			isa = PBXProject;
@@ -116,7 +260,6 @@
 				DCC314D8076253A2008F7A48,
 				DCC315B6076253A5008F7A48,
 				DCC315D2076253A5008F7A48,
-				DCC31617076253A5008F7A48,
 			);
 			isa = PBXGroup;
 			path = source;
@@ -2058,6 +2201,12 @@
 		};
 		DCC30F7C0762539D008F7A48 = {
 			children = (
+				70CBFCE80815E7FE0078D8CC,
+				70CBFCE90815E7FE0078D8CC,
+				70CBFCEA0815E7FE0078D8CC,
+				70CBFCEB0815E7FE0078D8CC,
+				70CBFCEC0815E7FE0078D8CC,
+				70CBFCED0815E7FE0078D8CC,
 				DCC30FA70762539D008F7A48,
 				DCC30FA80762539D008F7A48,
 				DCC30FA90762539D008F7A48,
@@ -7806,6 +7955,8 @@
 		};
 		DCC314D8076253A2008F7A48 = {
 			children = (
+				70CBFCEF0815E8370078D8CC,
+				70CBFCF00815E8370078D8CC,
 				DCC31545076253A4008F7A48,
 				DCC31546076253A4008F7A48,
 				DCC31547076253A4008F7A48,
@@ -9196,14 +9347,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		DCC31617076253A5008F7A48 = {
-			children = (
-			);
-			isa = PBXGroup;
-			path = vista;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		DCC3164A07626CF3008F7A48 = {
 			buildActionMask = 2147483647;
 			files = (
@@ -9329,6 +9472,8 @@
 				DCC316D90762876C008F7A48,
 				DCC316DA0762876E008F7A48,
 				DCC316DB0762876F008F7A48,
+				70CBFCEE0815E7FE0078D8CC,
+				70CBFCF10815E8370078D8CC,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -9345,29 +9490,26 @@
 				DCBB56590763EA7F00FA9C7E,
 				DCC3164A07626CF3008F7A48,
 				DCC3164B07626CF3008F7A48,
+				70486B9508267145009328F0,
 			);
 			buildRules = (
 			);
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
+				GCC_ALTIVEC_EXTENSIONS = YES;
+				GCC_AUTO_VECTORIZATION = YES;
 				GCC_DEBUGGING_SYMBOLS = full;
-				GCC_DYNAMIC_NO_PIC = YES;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_FAST_MATH = YES;
 				GCC_MODEL_CPU = G4;
-				GCC_NO_COMMON_BLOCKS = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
-				GCC_REUSE_STRINGS = NO;
+				GCC_UNROLL_LOOPS = YES;
 				HEADER_SEARCH_PATHS = source/event/;
-				INSTALL_PATH = /usr/local/bin;
-				OTHER_CFLAGS = "-ffast-math -mdynamic-no-pic";
-				OTHER_CPLUSPLUSFLAGS = "-ffast-math -mdynamic-no-pic";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
+				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)/work";
 				PRODUCT_NAME = primitive;
-				SECTORDER_FLAGS = "";
+				SKIP_INSTALL = YES;
 				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
+				ZERO_LINK = YES;
 			};
 			dependencies = (
 			);
