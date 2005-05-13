@@ -62,25 +62,12 @@ Python:from pyOnePop_StatsCtrl import pyOnePop_StatsCtrl
         </widget>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>layout44</cstring>
+                <cstring>layout9</cstring>
             </property>
             <vbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="pyOnePop_GraphCtrl">
-                    <property name="name">
-                        <cstring>m_one_pop_graph_ctrl</cstring>
-                    </property>
-                    <property name="sizePolicy">
-                        <sizepolicy>
-                            <hsizetype>3</hsizetype>
-                            <vsizetype>3</vsizetype>
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                        </sizepolicy>
-                    </property>
-                </widget>
                 <widget class="pyOnePop_StatsCtrl">
                     <property name="name">
                         <cstring>m_one_pop_stats_ctrl</cstring>
@@ -89,6 +76,19 @@ Python:from pyOnePop_StatsCtrl import pyOnePop_StatsCtrl
                         <sizepolicy>
                             <hsizetype>5</hsizetype>
                             <vsizetype>5</vsizetype>
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
+                </widget>
+                <widget class="pyOnePop_GraphCtrl">
+                    <property name="name">
+                        <cstring>m_one_pop_graph_ctrl</cstring>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>3</hsizetype>
+                            <vsizetype>3</vsizetype>
                             <horstretch>0</horstretch>
                             <verstretch>0</verstretch>
                         </sizepolicy>
@@ -185,7 +185,7 @@ Python:from pyOnePop_StatsCtrl import pyOnePop_StatsCtrl
 <includehints>
     <includehint>pyonepop_petridishctrl.h</includehint>
     <includehint>pyonepop_timelinectrl.h</includehint>
-    <includehint>pyonepop_graphctrl.h</includehint>
     <includehint>pyonepop_statsctrl.h</includehint>
+    <includehint>pyonepop_graphctrl.h</includehint>
 </includehints>
 </UI>

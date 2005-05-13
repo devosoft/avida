@@ -8,7 +8,7 @@ class pyAvidaStatsInterface:
       ('Average Merit',                 'average.dat',   2, lambda s: s.GetAveMerit()),
       ('Average Fitness',               'average.dat',   4, lambda s: s.GetAveFitness()),
       ('Average Gestation Time',        'average.dat',   3, lambda s: s.GetAveGestation()),
-      ('Average Size',                  'average.dat',   6, lambda s: s.GetAveSize()),
+      ('Average Genome Length',                  'average.dat',   6, lambda s: s.GetAveSize()),
 #      ('Average Generation',            'average.dat',  13, lambda s: s.SumGeneration().Average()),
 #      ('Average Neutral Metric',        'average.dat',  14, lambda s: s.GetAveNeutralMetric()),
 #      ('Average Lineage Label',         'average.dat',  15, lambda s: s.GetAveLineageLabel()),

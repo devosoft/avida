@@ -152,41 +152,45 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
       #PAINT the stats fields empty
       self.m_org_name.setText('empty cell')
       self.m_org_fitness.setText('-')
-#      self.m_cur_task_count.setText('-')
-#      self.m_org_genome_length.setText('-')
+      self.m_org_merit.setText('-')
+      self.m_org_genome_length.setText('-')
       self.m_org_gestation_time.setText('-')
       self.m_org_age.setText('-')
+   
+      #the tasks 
+      self.m_num_not_clickedOrg.setText('-')
+      self.m_num_nand_clickedOrg.setText('-')
+      self.m_num_and_clickedOrg.setText('-')
+      self.m_num_ornot_clickedOrg.setText('-')
+      self.m_num_or_clickedOrg.setText('-')
+      self.m_num_andnot_clickedOrg.setText('-')
+      self.m_num_nor_clickedOrg.setText('-')
+      self.m_num_xor_clickedOrg.setText('-')
+      self.m_num_equals_clickedOrg.setText('-')
+
       return
 
     clicked_cell = self.m_avida.m_population.GetCell(int(clicked_cell_num))
 
-#    print "clicked_cell.IsOccupied() returns " 
-#    print clicked_cell.IsOccupied()
-
- 
     organism = clicked_cell.GetOrganism()
     phenotype = organism.GetPhenotype()
     genotype = organism.GetGenotype()
 
-    m_org_fitness = phenotype.GetFitness()
-    self.m_org_fitness.setText(QString("%1").arg(m_org_fitness))    
+    # print info about the org clicked on 
 
     m_org_name = str(genotype.GetName())
     hyphen_position = m_org_name.find('-')
     m_org_name = m_org_name[hyphen_position+1:]   
-
     self.m_org_name.setText(str(m_org_name))
 
-#    self.m_org_name.setText(('-'))
+    m_org_fitness = phenotype.GetFitness()
+    self.m_org_fitness.setText(QString("%1").arg(m_org_fitness))    
 
-#    m_cur_task_count = phenotype.GetCurTaskCount()
-#    print "m_cur_task_count is "
-#    print m_cur_task_count(1)
+    m_org_merit = phenotype.GetMerit().GetDouble()
+    self.m_org_merit.setText(str(m_org_merit))    
 
-#    if we want to display length
-#    m_org_genome_length = phenotype.GetGenomeLength()
-#    print "m_org_genome_length is %f" %(m_org_genome_length)
-#    self.m_org_genome_length.setText(QString("%1").arg(m_org_genome_length))
+    m_org_genome_length = phenotype.GetGenomeLength()
+    self.m_org_genome_length.setText(str(m_org_genome_length))
 
     m_org_gestation_time = phenotype.GetGestationTime()
     self.m_org_gestation_time.setText(QString("%1").arg(m_org_gestation_time))
@@ -194,5 +198,40 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
     m_org_age = phenotype.GetAge()
     self.m_org_age.setText(QString("%1").arg(m_org_age))
     
+
+
+    #   print the tasks the clicked on organism is doing 
+ 
+    # get the Tarray of tasks
+    m_clickedOrg_task_count = phenotype.GetCurTaskCount()
+
+    num_not_clickedOrg = m_clickedOrg_task_count[0]
+    self.m_num_not_clickedOrg.setText(str(num_not_clickedOrg))
+
+    num_nand_clickedOrg = m_clickedOrg_task_count[1]
+    self.m_num_nand_clickedOrg.setText(str(num_nand_clickedOrg))
+
+    num_and_clickedOrg = m_clickedOrg_task_count[2]
+    self.m_num_and_clickedOrg.setText(str(num_and_clickedOrg))
+
+    num_ornot_clickedOrg = m_clickedOrg_task_count[3]
+    self.m_num_ornot_clickedOrg.setText(str(num_ornot_clickedOrg))
+
+    num_or_clickedOrg = m_clickedOrg_task_count[4]
+    self.m_num_or_clickedOrg.setText(str(num_or_clickedOrg))
+
+    num_andnot_clickedOrg = m_clickedOrg_task_count[5]
+    self.m_num_andnot_clickedOrg.setText(str(num_andnot_clickedOrg))
+
+    num_nor_clickedOrg = m_clickedOrg_task_count[6]
+    self.m_num_nor_clickedOrg.setText(str(num_nor_clickedOrg))
+
+    num_xor_clickedOrg = m_clickedOrg_task_count[7]
+    self.m_num_xor_clickedOrg.setText(str(num_xor_clickedOrg))
+
+    num_equals_clickedOrg = m_clickedOrg_task_count[8]
+    self.m_num_equals_clickedOrg.setText(str(num_equals_clickedOrg))
+
+
 
 
