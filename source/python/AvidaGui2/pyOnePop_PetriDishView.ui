@@ -177,217 +177,197 @@ Python:from pyPetriConfigureCtrl import pyPetriConfigureCtrl</comment>
                             <property name="name">
                                 <cstring>unnamed</cstring>
                             </property>
+                            <widget class="pyPetriDishCtrl">
+                                <property name="name">
+                                    <cstring>m_petri_dish_ctrl</cstring>
+                                </property>
+                                <property name="sizePolicy">
+                                    <sizepolicy>
+                                        <hsizetype>5</hsizetype>
+                                        <vsizetype>5</vsizetype>
+                                        <horstretch>5</horstretch>
+                                        <verstretch>0</verstretch>
+                                    </sizepolicy>
+                                </property>
+                            </widget>
+                            <widget class="pyGradientScaleCtrl">
+                                <property name="name">
+                                    <cstring>m_gradient_scale_ctrl</cstring>
+                                </property>
+                                <property name="sizePolicy">
+                                    <sizepolicy>
+                                        <hsizetype>1</hsizetype>
+                                        <vsizetype>0</vsizetype>
+                                        <horstretch>1</horstretch>
+                                        <verstretch>0</verstretch>
+                                    </sizepolicy>
+                                </property>
+                                <property name="minimumSize">
+                                    <size>
+                                        <width>50</width>
+                                        <height>50</height>
+                                    </size>
+                                </property>
+                                <property name="backgroundMode">
+                                    <enum>PaletteDark</enum>
+                                </property>
+                            </widget>
                             <widget class="QLayoutWidget">
                                 <property name="name">
-                                    <cstring>layout10</cstring>
+                                    <cstring>layout1</cstring>
                                 </property>
-                                <vbox>
+                                <hbox>
                                     <property name="name">
                                         <cstring>unnamed</cstring>
                                     </property>
-                                    <widget class="QLayoutWidget">
+                                    <widget class="QLabel">
                                         <property name="name">
-                                            <cstring>layout91</cstring>
+                                            <cstring>textLabel11</cstring>
                                         </property>
-                                        <hbox>
-                                            <property name="name">
-                                                <cstring>unnamed</cstring>
-                                            </property>
-                                            <widget class="pyPetriDishCtrl">
-                                                <property name="name">
-                                                    <cstring>m_petri_dish_ctrl</cstring>
-                                                </property>
-                                                <property name="sizePolicy">
-                                                    <sizepolicy>
-                                                        <hsizetype>3</hsizetype>
-                                                        <vsizetype>3</vsizetype>
-                                                        <horstretch>5</horstretch>
-                                                        <verstretch>0</verstretch>
-                                                    </sizepolicy>
-                                                </property>
-                                            </widget>
-                                            <widget class="pyGradientScaleCtrl">
-                                                <property name="name">
-                                                    <cstring>m_gradient_scale_ctrl</cstring>
-                                                </property>
-                                                <property name="sizePolicy">
-                                                    <sizepolicy>
-                                                        <hsizetype>0</hsizetype>
-                                                        <vsizetype>1</vsizetype>
-                                                        <horstretch>1</horstretch>
-                                                        <verstretch>0</verstretch>
-                                                    </sizepolicy>
-                                                </property>
-                                                <property name="minimumSize">
-                                                    <size>
-                                                        <width>50</width>
-                                                        <height>50</height>
-                                                    </size>
-                                                </property>
-                                                <property name="backgroundMode">
-                                                    <enum>PaletteDark</enum>
-                                                </property>
-                                            </widget>
-                                        </hbox>
+                                        <property name="sizePolicy">
+                                            <sizepolicy>
+                                                <hsizetype>0</hsizetype>
+                                                <vsizetype>1</vsizetype>
+                                                <horstretch>0</horstretch>
+                                                <verstretch>0</verstretch>
+                                            </sizepolicy>
+                                        </property>
+                                        <property name="text">
+                                            <string>&lt;font size="-1"&gt;&lt;p align="right"&gt;Update:&lt;/p&gt;&lt;/font&gt;</string>
+                                        </property>
                                     </widget>
-                                    <widget class="QLayoutWidget">
+                                    <widget class="QLabel">
                                         <property name="name">
-                                            <cstring>layout1</cstring>
+                                            <cstring>m_update_label</cstring>
                                         </property>
-                                        <hbox>
-                                            <property name="name">
-                                                <cstring>unnamed</cstring>
-                                            </property>
-                                            <widget class="QLabel">
-                                                <property name="name">
-                                                    <cstring>textLabel11</cstring>
-                                                </property>
-                                                <property name="sizePolicy">
-                                                    <sizepolicy>
-                                                        <hsizetype>0</hsizetype>
-                                                        <vsizetype>1</vsizetype>
-                                                        <horstretch>0</horstretch>
-                                                        <verstretch>0</verstretch>
-                                                    </sizepolicy>
-                                                </property>
-                                                <property name="text">
-                                                    <string>&lt;font size="-1"&gt;&lt;p align="right"&gt;Update:&lt;/p&gt;&lt;/font&gt;</string>
-                                                </property>
-                                            </widget>
-                                            <widget class="QLabel">
-                                                <property name="name">
-                                                    <cstring>m_update_label</cstring>
-                                                </property>
-                                                <property name="sizePolicy">
-                                                    <sizepolicy>
-                                                        <hsizetype>0</hsizetype>
-                                                        <vsizetype>1</vsizetype>
-                                                        <horstretch>0</horstretch>
-                                                        <verstretch>0</verstretch>
-                                                    </sizepolicy>
-                                                </property>
-                                                <property name="text">
-                                                    <string>&lt;font size="-1"&gt;-&lt;/font&gt;</string>
-                                                </property>
-                                            </widget>
-                                            <widget class="QComboBox">
-                                                <item>
-                                                    <property name="text">
-                                                        <string>Merit</string>
-                                                    </property>
-                                                </item>
-                                                <property name="name">
-                                                    <cstring>m_mode_combobox</cstring>
-                                                </property>
-                                                <property name="sizePolicy">
-                                                    <sizepolicy>
-                                                        <hsizetype>1</hsizetype>
-                                                        <vsizetype>0</vsizetype>
-                                                        <horstretch>0</horstretch>
-                                                        <verstretch>0</verstretch>
-                                                    </sizepolicy>
-                                                </property>
-                                                <property name="font">
-                                                    <font>
-                                                        <pointsize>11</pointsize>
-                                                    </font>
-                                                </property>
-                                            </widget>
-                                            <widget class="QLabel">
-                                                <property name="name">
-                                                    <cstring>textLabel10</cstring>
-                                                </property>
-                                                <property name="sizePolicy">
-                                                    <sizepolicy>
-                                                        <hsizetype>0</hsizetype>
-                                                        <vsizetype>1</vsizetype>
-                                                        <horstretch>0</horstretch>
-                                                        <verstretch>0</verstretch>
-                                                    </sizepolicy>
-                                                </property>
-                                                <property name="text">
-                                                    <string>&lt;font size="-1"&gt;&lt;p align="right"&gt;Zoom:&lt;/p&gt;&lt;/font&gt;</string>
-                                                </property>
-                                            </widget>
-                                            <widget class="QSpinBox">
-                                                <property name="name">
-                                                    <cstring>m_zoom_spinbox</cstring>
-                                                </property>
-                                                <property name="sizePolicy">
-                                                    <sizepolicy>
-                                                        <hsizetype>0</hsizetype>
-                                                        <vsizetype>0</vsizetype>
-                                                        <horstretch>0</horstretch>
-                                                        <verstretch>0</verstretch>
-                                                    </sizepolicy>
-                                                </property>
-                                            </widget>
-                                        </hbox>
+                                        <property name="sizePolicy">
+                                            <sizepolicy>
+                                                <hsizetype>0</hsizetype>
+                                                <vsizetype>1</vsizetype>
+                                                <horstretch>0</horstretch>
+                                                <verstretch>0</verstretch>
+                                            </sizepolicy>
+                                        </property>
+                                        <property name="text">
+                                            <string>&lt;font size="-1"&gt;-&lt;/font&gt;</string>
+                                        </property>
                                     </widget>
-                                    <widget class="QLayoutWidget">
+                                    <widget class="QComboBox">
+                                        <item>
+                                            <property name="text">
+                                                <string>Merit</string>
+                                            </property>
+                                        </item>
                                         <property name="name">
-                                            <cstring>layout229</cstring>
+                                            <cstring>m_mode_combobox</cstring>
                                         </property>
-                                        <hbox>
-                                            <property name="name">
-                                                <cstring>unnamed</cstring>
-                                            </property>
-                                            <spacer>
-                                                <property name="name">
-                                                    <cstring>spacer169_2</cstring>
-                                                </property>
-                                                <property name="orientation">
-                                                    <enum>Horizontal</enum>
-                                                </property>
-                                                <property name="sizeType">
-                                                    <enum>MinimumExpanding</enum>
-                                                </property>
-                                                <property name="sizeHint">
-                                                    <size>
-                                                        <width>10</width>
-                                                        <height>10</height>
-                                                    </size>
-                                                </property>
-                                            </spacer>
-                                            <widget class="pyLiveControlsCtrl">
-                                                <property name="name">
-                                                    <cstring>m_live_controls_ctrl</cstring>
-                                                </property>
-                                                <property name="sizePolicy">
-                                                    <sizepolicy>
-                                                        <hsizetype>0</hsizetype>
-                                                        <vsizetype>0</vsizetype>
-                                                        <horstretch>0</horstretch>
-                                                        <verstretch>0</verstretch>
-                                                    </sizepolicy>
-                                                </property>
-                                                <property name="minimumSize">
-                                                    <size>
-                                                        <width>0</width>
-                                                        <height>50</height>
-                                                    </size>
-                                                </property>
-                                            </widget>
-                                            <spacer>
-                                                <property name="name">
-                                                    <cstring>spacer169</cstring>
-                                                </property>
-                                                <property name="orientation">
-                                                    <enum>Horizontal</enum>
-                                                </property>
-                                                <property name="sizeType">
-                                                    <enum>MinimumExpanding</enum>
-                                                </property>
-                                                <property name="sizeHint">
-                                                    <size>
-                                                        <width>10</width>
-                                                        <height>10</height>
-                                                    </size>
-                                                </property>
-                                            </spacer>
-                                        </hbox>
+                                        <property name="sizePolicy">
+                                            <sizepolicy>
+                                                <hsizetype>1</hsizetype>
+                                                <vsizetype>0</vsizetype>
+                                                <horstretch>0</horstretch>
+                                                <verstretch>0</verstretch>
+                                            </sizepolicy>
+                                        </property>
+                                        <property name="font">
+                                            <font>
+                                                <pointsize>11</pointsize>
+                                            </font>
+                                        </property>
                                     </widget>
-                                </vbox>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>textLabel10</cstring>
+                                        </property>
+                                        <property name="sizePolicy">
+                                            <sizepolicy>
+                                                <hsizetype>0</hsizetype>
+                                                <vsizetype>1</vsizetype>
+                                                <horstretch>0</horstretch>
+                                                <verstretch>0</verstretch>
+                                            </sizepolicy>
+                                        </property>
+                                        <property name="text">
+                                            <string>&lt;font size="-1"&gt;&lt;p align="right"&gt;Zoom:&lt;/p&gt;&lt;/font&gt;</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QSpinBox">
+                                        <property name="name">
+                                            <cstring>m_zoom_spinbox</cstring>
+                                        </property>
+                                        <property name="sizePolicy">
+                                            <sizepolicy>
+                                                <hsizetype>0</hsizetype>
+                                                <vsizetype>0</vsizetype>
+                                                <horstretch>0</horstretch>
+                                                <verstretch>0</verstretch>
+                                            </sizepolicy>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout229</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer169_2</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>MinimumExpanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>10</width>
+                                                <height>10</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                    <widget class="pyLiveControlsCtrl">
+                                        <property name="name">
+                                            <cstring>m_live_controls_ctrl</cstring>
+                                        </property>
+                                        <property name="sizePolicy">
+                                            <sizepolicy>
+                                                <hsizetype>0</hsizetype>
+                                                <vsizetype>0</vsizetype>
+                                                <horstretch>0</horstretch>
+                                                <verstretch>0</verstretch>
+                                            </sizepolicy>
+                                        </property>
+                                        <property name="minimumSize">
+                                            <size>
+                                                <width>0</width>
+                                                <height>50</height>
+                                            </size>
+                                        </property>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer169</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>MinimumExpanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>10</width>
+                                                <height>10</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                </hbox>
                             </widget>
                         </vbox>
                     </widget>
@@ -478,6 +458,12 @@ Python:from pyPetriConfigureCtrl import pyPetriConfigureCtrl</comment>
         <property type="0">-1</property>
         <property type="1">pyPetriDishCtrl</property>
         <property type="0">-1</property>
+        <property type="1">pyPetriDishCtrl</property>
+        <property type="0">-1</property>
+        <property type="1">pyPetriDishCtrl</property>
+        <property type="0">-1</property>
+        <property type="1">pyPetriDishCtrl</property>
+        <property type="0">-1</property>
         <property type="pyPetriDishCtrl"></property>
         <property type="-1">1</property>
     </customwidget>
@@ -505,6 +491,12 @@ Python:from pyPetriConfigureCtrl import pyPetriConfigureCtrl</comment>
         <property type="4">-1</property>
         <property type="1">pyGradientScaleCtrl</property>
         <property type="4">-1</property>
+        <property type="1">pyGradientScaleCtrl</property>
+        <property type="0">-1</property>
+        <property type="1">pyGradientScaleCtrl</property>
+        <property type="0">-1</property>
+        <property type="1">pyGradientScaleCtrl</property>
+        <property type="0">-1</property>
         <property type="1">pyGradientScaleCtrl</property>
         <property type="0">-1</property>
         <property type="1">pyGradientScaleCtrl</property>
@@ -576,6 +568,12 @@ Python:from pyPetriConfigureCtrl import pyPetriConfigureCtrl</comment>
         <property type="0">-1</property>
         <property type="1">pyLiveControlsCtrl</property>
         <property type="0">-1</property>
+        <property type="1">pyLiveControlsCtrl</property>
+        <property type="0">-1</property>
+        <property type="1">pyLiveControlsCtrl</property>
+        <property type="0">-1</property>
+        <property type="1">pyLiveControlsCtrl</property>
+        <property type="0">-1</property>
         <property type="pyLiveControlsCtrl"></property>
         <property type="-1">1</property>
     </customwidget>
@@ -593,7 +591,7 @@ Python:from pyPetriConfigureCtrl import pyPetriConfigureCtrl</comment>
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
         </sizepolicy>
-        <pixmap>image3</pixmap>
+        <pixmap>image2</pixmap>
     </customwidget>
 </customwidgets>
 <images>
@@ -604,9 +602,6 @@ Python:from pyPetriConfigureCtrl import pyPetriConfigureCtrl</comment>
         <data format="PNG" length="528">89504e470d0a1a0a0000000d494844520000000f0000000e0806000000f08a46ef000001d749444154789c8592cd6a53511485bf9b5c098969a3adb645c1e24f1a9d288a139180c1d0a9e044a18238a8934ed4e2d41770208a5121fa04fa06058722c46141090d0435850493e6aff626b9e72c076dd33411ba6071e0ecb3ce62efbd90c4205bad96969f3c55a552d1706d980106d06eb7957991e5883b85319683e04802a0d3e928f332cb4c608edfb53c53735142a1d0bec7b1588c542a45381c76fa62dff7f5e65596e39ca356dee2d8d418963d6721ac0c5e6f8b5223cfdd07b74824128e238977afdf2bd63dc546b983acc0d91581248c8495c5f37da6a7c7215a63e1e16d82972f5e5577fd30ed3f86dd16f63b8295c5588b91a5d6dce4686492466f9dc0cdf91b14367ee0197f48b80dbbf3a19130b20868793dcabfea04a2d1a8b3f4688192f79dae35fb5ca5edd358db77b7b2f47a066fabbb37edc25a4199e79f383d769e4dbfc3df6e1383b0560870022eae13c2c8303931ce89b303ab02c8e5bee9e3872f6c7a75aea5cf100c06fbb566a34deeeb1a13e10bb8ee21aecf4f32929a9595cfba776749d56a752461f97c5e8bf79fe9f1e25b158b45b9c3a949a7534e28e42a12898c242a1e8f3b3327a3aa55eacccece3a2362806432e9fcef1ee0d29504eb3f6b3b533d20fcc35c5d5d55a9549224fe01033d5afa3250e5560000000049454e44ae426082</data>
     </image>
     <image name="image2">
-        <data format="XBM.GZ" length="79">789c534e494dcbcc4b554829cdcdad8c2fcf4c29c95030e0524611cd48cd4ccf28010a1797249664262b2467241641a592324b8aa363156c15aab914146aadb90067111b1f</data>
-    </image>
-    <image name="image3">
         <data format="PNG" length="1002">89504e470d0a1a0a0000000d4948445200000016000000160806000000c4b46c3b000003b149444154789cad945f4c5b551cc73fe7dc4b7b4bcba0762d45c43114323599ee6192609c51d883892ce083f1718b3ebb185f8dc91e972cf39d2d2a2f1af664b6f1e0fe3863a0718969700eb0c52142da0242a1bd6d696f7bcff101585203ceb8fd9ece39f99dcff9fe7edf939f88c562ec465f5f9fe609442c161362173c3e3eae7b7a7ac8e7f36432196cdbfe4f907c3e4f2291201e8fe338cec3737357e9e8e828aded1e229d650e1f2d51754b082110124c13a4dc5ea341eb9dc284c0558a853f3ce8cb0677ef500fde7d39d2596679e326597b8e9abb85d7a770ab16ab6983ec5a05b487a70e36f0f4e10afe408d6a558310980108478dba4a1e8233990c5d474b64ed39aa3a8fe5f3317fbf81dbd70bccfeb205947632fd74f6589c1c6ea2f70d03a58ba0c1f2c9bdc1b66de3b8256a6e11cbe7e3ee1d181b590124fe2693aeee08d223c82c3a2c24b7b874bec8f26288774f7bd054504aef0dde6e99c0eb83f9fb266323cb80a27fb0958141836044605a2ee5523393371cc646fee2da37195aa35d0c0c5b4859ac03d7e91712dcaac5adab3650a3ff9d08ef7dd8404bb48869e5d958b5b87dadc4c9a1464e9f0d0326df7ebd86bd2e310cb1bf62d384d59441f2d70a070e1c60e09489929b988681bdd9cc97170bcc4c65595f71f8e0e3301337fc24a7732467831875a47f289652b0be5e4151e6d07316c1b0c0340d8ab92023e76d66a6b2840e36d2fb7a13fee632475e6edc367ea98a90fb98b7dd6310ca0328a44761582e1bab41befabcc0ec940d28bc5e93b68e064cab84e1d9beaeb48934eac1f53b01c1b000fca496aa54b61a99fcde61662a4b4b4b23d1680be9d426173e4df3602a48ea411989a4fd590f52a8fd156b05ed9d350e3defe3cfdf4b4c7ce770ea7d3fb9f520afbe1620daeee5c26735d20b9b9cfb6811a754a439e4e5c5639a4caa1e5caf586bfc0197b78702005cb9b4cae4cd3267ce8638fe964bd72b393e39d74928d242617303a756a37f284447770dcdbffc6384a05a85de1306e9a52057c7527c7131c3c42d3f475eb2303c82d4fc3276d6811db37efeb148723082d9b08f79f97c1e5729109a9a28307cc622d2d6cdf52b2b24efe548dedb00142009862cfa879ee1a71f6cec928353511472fbf4389148b0b0e0c108081412458dfe21c9f11351e67e7358595468246d1d1e5e38a6e9e851bc39d84ab502a669331dafec0d8ec7e3e8cb06e1a881d727d1ae40180a434a8c9db129a54126ad48a7358c2b4c5352c8c374bcccdab2bb37d8719cba79fab8211f9df218e0582c261e95f8bfc04f1a1e8bc5c4dfe0a19017a725d8c60000000049454e44ae426082</data>
     </image>
 </images>

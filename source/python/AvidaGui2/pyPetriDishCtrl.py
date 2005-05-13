@@ -16,6 +16,11 @@ from pyPetriCanvasView import pyPetriCanvasView
 from pyPopulationCellItem import pyPopulationCellItem
 #from pyPetriDishView import pyPetriDishView
 
+class pySquareVBoxLayout(QVBoxLayout):
+  def __init__(self, *args): apply(QVBoxLayout.__init__, (self,)+args)
+  def hasHeightForWidth(self): return True
+  def heightForWidth(self, w): return w
+
 #class pyPetriDishCtrl(pyPetriDishView):
 class pyPetriDishCtrl(QWidget):
   def __init__(self,parent = None,name = None,fl = 0):
@@ -23,7 +28,7 @@ class pyPetriDishCtrl(QWidget):
     QWidget.__init__(self,parent,name,fl)
     if not name: self.setName("pyPetriDishCtrl")
 
-    self.resize(QSize(202,202).expandedTo(self.minimumSizeHint()))
+    #self.resize(QSize(202,202).expandedTo(self.minimumSizeHint()))
     self.clearWState(Qt.WState_Polished)
 
   def construct(self, session_mdl):
@@ -32,8 +37,10 @@ class pyPetriDishCtrl(QWidget):
 
     self.m_canvas = None
     self.m_cell_info = None
-    self.m_petri_dish_layout = QVBoxLayout(self,0,0,"m_petri_dish_layout")
-    self.m_petri_dish_layout.setResizeMode(QLayout.Minimum)
+    #self.m_petri_dish_layout = QVBoxLayout(self,0,0,"m_petri_dish_layout")
+    self.m_petri_dish_layout = pySquareVBoxLayout(self,0,0,"m_petri_dish_layout")
+    print "pyPetriDishCtrl.construct() self.m_petri_dish_layout.heightForWidth(20) :", self.m_petri_dish_layout.heightForWidth(20)
+    #self.m_petri_dish_layout.setResizeMode(QLayout.Minimum)
     self.m_canvas_view = pyPetriCanvasView(None, self,"m_canvas_view")
     self.m_petri_dish_layout.addWidget(self.m_canvas_view)
     self.m_changed_cell_items = []
@@ -64,9 +71,11 @@ class pyPetriDishCtrl(QWidget):
       self.m_canvas)
 
   def setAvidaSlot(self, avida):
+    print "pyPetriDishCtrl.setAvidaSlot() ..."
     old_avida = self.m_avida
     self.m_avida = avida
     if(old_avida):
+      print "pyPetriDishCtrl.setAvidaSlot() deleting old_avida ..."
       del old_avida
     if(self.m_avida):
       pass

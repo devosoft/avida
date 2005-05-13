@@ -21,14 +21,17 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
     self.m_clicked_cell_number = -99
 
   def setAvidaSlot(self, avida):
+    print "pyOnePop_StatsCtrl.setAvidaSlot() ..."
     old_avida = self.m_avida
     self.m_avida = avida
     if(old_avida):
+      print "pyOnePop_StatsCtrl.setAvidaSlot() disconnecting old_avida ..."
       self.disconnect(
         self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
         self.avidaUpdatedSlot)
       del old_avida
     if(self.m_avida):
+      print "pyOnePop_StatsCtrl.setAvidaSlot() connecting self.m_avida ..."
       self.connect(
         self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
         self.avidaUpdatedSlot)

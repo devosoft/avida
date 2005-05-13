@@ -29,14 +29,17 @@ class pyLiveControlsCtrl(pyLiveControlsView):
       self.clickedPauseAvidaSlot)
 
   def setAvidaSlot(self, avida):
+    print "pyLiveControlsCtrl.setAvidaSlot() ..."
     old_avida = self.m_avida
     self.m_avida = avida
     if(old_avida):
+      print "pyLiveControlsCtrl.setAvidaSlot() disconnecting old_avida ..."
       self.disconnect(
         self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
         self.avidaUpdatedSlot)
       del old_avida
     if(self.m_avida):
+      print "pyLiveControlsCtrl.setAvidaSlot() connecting self.m_avida ..."
       self.connect(
         self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
         self.avidaUpdatedSlot)

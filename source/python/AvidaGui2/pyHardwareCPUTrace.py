@@ -16,6 +16,10 @@ class pyHardwareCPUTrace:
     self.m_register_cx_info = []
     self.m_read_label_info = []
     self.m_last_copy_info = []
+    self.m_ihead_moves = []
+    self.m_ihead_moves_info = []
+    self.m_ihead_moves_counts = {}
+
     self.m_last_copied_instruction = 0
 
     self.m_is_viable = None
@@ -40,6 +44,15 @@ class pyHardwareCPUTrace:
       for i in range(self.m_last_copied_instruction, hardware.GetMemory().GetSize())
     )
     self.m_last_copy_info.append(self.m_last_copied_instruction)
+
+    if 1 < len(self.m_ihead_info):
+      if self.m_ihead_info[-2] != self.m_ihead_info[-1]:
+        move_count = 1
+        if self.m_ihead_moves_counts.has_key((self.m_ihead_info[-2], self.m_ihead_info[-1])):
+          move_count = self.m_ihead_moves_counts[(self.m_ihead_info[-2], self.m_ihead_info[-1])] + 1
+        self.m_ihead_moves_counts[(self.m_ihead_info[-2], self.m_ihead_info[-1])] = move_count
+        self.m_ihead_moves.append((self.m_ihead_info[-2], self.m_ihead_info[-1], move_count))
+    self.m_ihead_moves_info.append(len(self.m_ihead_moves))
 
   def recordGenotypeSummary(self, analyze_genotype):
     self.m_is_viable = analyze_genotype.GetViable()

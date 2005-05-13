@@ -14,9 +14,15 @@ class pyGradientScaleView(QWidget):
   s_bottom_margin = 6
   s_right_margin = 6
   s_spacing = 6
-  s_stripe_width = 20
+  s_stripe_height = 20
   s_stripes = 100
   s_step = 10
+  s_empty_text = "(empty)"
+  s_off_scale_text = "(off scale)"
+  s_empty_text_width = 0
+  s_off_scale_text_width = 0
+  s_label_text_width = 0
+  s_text_height = 0
 
   def __init__(self,parent = None,name = None,fl = 0):
     QWidget.__init__(self,parent,name,fl)
@@ -33,8 +39,13 @@ class pyGradientScaleView(QWidget):
     self.recalcSize()
 
     font = QFont(self.font())
-    font.setPointSize(10)
+    font.setPointSize(9)
     self.setFont(font)
+
+    self.s_empty_text_width = self.fontMetrics().width(self.s_empty_text)
+    self.s_off_scale_text_width = self.fontMetrics().width(self.s_off_scale_text)
+    self.s_label_text_width = self.fontMetrics().width("0.00000")
+    self.s_text_height = self.fontMetrics().height()
 
     if not name:
       setName("pyGradientScaleView")
@@ -74,29 +85,57 @@ class pyGradientScaleView(QWidget):
     h = self.height()
     p = QPainter(self)
   
-    stripe_height = (h-self.s_top_margin-self.s_bottom_margin)/self.s_stripes + 1
-    plot_height = h-self.s_top_margin-self.s_bottom_margin-stripe_height+1
+    stripe_width = (w-self.s_left_margin-self.s_right_margin)/self.s_stripes + 1
+    plot_width = w-self.s_left_margin-self.s_right_margin+1
+    #plot_width = w-self.s_left_margin-self.s_right_margin-stripe_width+1
   
-    text_width = w - self.s_left_margin - self.s_stripe_width - self.s_spacing
+    #text_height = self.fontMetrics().height()
+    #label_width = self.fontMetrics().width("0.00000")
   
     for i in range(self.s_stripes):
       x = float(i) / float(self.s_stripes);
       p.fillRect(
-        self.s_left_margin,
-        (self.s_top_margin + (1-x)*plot_height),
-        self.s_stripe_width,
-        stripe_height,
+        (self.s_left_margin + x*plot_width),
+        #self.s_top_margin + text_height + self.s_spacing,
+        self.s_top_margin + self.s_text_height + self.s_spacing,
+        stripe_width,
+        self.s_stripe_height,
         QBrush(self.doubleToColor(x))
         )
-      if i%self.s_step == 0:
-        p.drawText(
-          self.s_left_margin+self.s_stripe_width + self.s_spacing,
-          (self.s_top_margin + (1-x)*plot_height-(self.s_step-1)*stripe_height/2),
-          text_width,
-          self.s_step*stripe_height,
-          Qt.AlignVCenter | Qt.AlignLeft,
-          self.getLabelString( self.m_min_value+x*(self.m_max_value - self.m_min_value))
-          )
+
+    p.drawText(
+      self.s_left_margin,
+      self.s_top_margin,
+      self.s_label_text_width,
+      self.s_text_height,
+      #label_width,
+      #text_height,
+      Qt.AlignBottom | Qt.AlignLeft,
+      self.getLabelString(self.m_min_value)
+    )
+    p.drawText(
+      #w - self.s_right_margin - label_width,
+      w - self.s_right_margin - self.s_label_text_width,
+      self.s_top_margin,
+      self.s_label_text_width,
+      self.s_text_height,
+      #label_width,
+      #text_height,
+      Qt.AlignBottom | Qt.AlignRight,
+      self.getLabelString(self.m_max_value)
+    )
+
+      #self.s_spacing + 2 * self.fontMetrics().width("0.0e+02")
+
+      #if i%self.s_step == 0:
+      #  p.drawText(
+      #    self.s_left_margin+self.s_stripe_height + self.s_spacing,
+      #    (self.s_top_margin + (1-x)*plot_width-(self.s_step-1)*stripe_width/2),
+      #    text_width,
+      #    self.s_step*stripe_width,
+      #    Qt.AlignVCenter | Qt.AlignLeft,
+      #    self.getLabelString( self.m_min_value+x*(self.m_max_value - self.m_min_value))
+      #    )
 
   #def drawColorList(self):
   #  QValueVector<QString>::const_iterator str_it = m_descr_vector.begin();
@@ -106,10 +145,10 @@ class pyGradientScaleView(QWidget):
   #  h = self.height()
   #  p = QPainter(self)
   #
-  #  stripe_height = (h-self.s_top_margin-self.s_bottom_margin)/len(m_color_vector)
-  #  plot_height = h-self.s_top_margin-self.s_bottom_margin-stripe_height
+  #  stripe_width = (h-self.s_top_margin-self.s_bottom_margin)/len(m_color_vector)
+  #  plot_width = h-self.s_top_margin-self.s_bottom_margin-stripe_width
   #
-  #  text_width = w - self.s_left_margin - self.s_stripe_width - self.s_spacing;
+  #  text_width = w - self.s_left_margin - self.s_stripe_height - self.s_spacing;
   #
   #  int i,j;
   #  i = j = m_color_list_length-1;
@@ -117,9 +156,9 @@ class pyGradientScaleView(QWidget):
   #    if ( !(*str_it).isNull() ){ // draw only if description exists
   #      double x = (double) j / (double)(m_color_list_length-1);
   #      // the colored stripe
-  #      p.fillRect( m_left_margin, (int) (m_top_margin + (1-x)*plot_height + .1*stripe_height), m_stripe_width, (int) (.8*stripe_height), *color_it );
+  #      p.fillRect( m_left_margin, (int) (m_top_margin + (1-x)*plot_width + .1*stripe_width), m_stripe_width, (int) (.8*stripe_width), *color_it );
   #      // the label
-  #      p.drawText( m_left_margin+m_stripe_width + m_spacing, (int) (m_top_margin + (1-x)*plot_height), text_width, stripe_height, Qt::AlignVCenter | Qt::AlignLeft, *str_it );
+  #      p.drawText( m_left_margin+m_stripe_width + m_spacing, (int) (m_top_margin + (1-x)*plot_width), text_width, stripe_width, Qt::AlignVCenter | Qt::AlignLeft, *str_it );
   #      j--;
   #    } 
   #  } 
@@ -130,15 +169,16 @@ class pyGradientScaleView(QWidget):
     h = 1
     if self.m_activated:
       if self.m_continuous:
-        w = (
-          self.s_left_margin +
-          self.s_stripe_width +
+        #w = self.s_left_margin + self.s_right_margin + self.s_spacing + 2 * self.fontMetrics().width("0.0e+02")
+        w = self.s_left_margin + self.s_right_margin + self.s_spacing + 2 * self.s_label_text_width
+        h = (
+          self.s_top_margin +
+          #self.fontMetrics().height() +
+          self.s_label_text_width +
           self.s_spacing +
-          self.s_right_margin +
-          self.fontMetrics().width("0.0e+02")
-          #self.fontMetrics().width(self.getLabelString(self.m_max_value))
-          )
-        h = self.fontMetrics().height() * self.s_stripes / self.s_step
+          self.s_stripe_height +
+          self.s_bottom_margin
+        )
       else:
         min_label_width = 0
         for desc in self.m_descr_vector: 
@@ -147,7 +187,7 @@ class pyGradientScaleView(QWidget):
             min_label_width = x
         w = (
           self.s_left_margin +
-          self.s_stripe_width +
+          self.s_stripe_height +
           self.s_spacing +
           self.s_right_margin +
           min_label_width
@@ -155,9 +195,10 @@ class pyGradientScaleView(QWidget):
         h = self.fontMetrics().height() * len(self.m_color_vector)
 
     self.setMinimumWidth(w)
-    self.setMaximumWidth(w)
+    #self.setMaximumWidth(w)
 
     self.setMinimumHeight(h)
+    self.setMaximumHeight(h)
 
   def getLabelString(self, x):
 

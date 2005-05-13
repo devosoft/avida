@@ -17,14 +17,17 @@ class pyGradientScaleCtrl(pyGradientScaleView):
       self.setAvidaSlot)
 
   def setAvidaSlot(self, avida):
+    print "pyGradientScaleCtrl.setAvidaSlot() ..."
     old_avida = self.m_avida
     self.m_avida = avida
     if(old_avida):
+      print "pyGradientScaleCtrl.setAvidaSlot() disconnecting old_avida ..."
       self.disconnect(
         self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
         self.avidaUpdatedSlot)
       del old_avida
     if(self.m_avida):
+      print "pyGradientScaleCtrl.setAvidaSlot() connecting self.m_avida ..."
       self.connect(
         self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
         self.avidaUpdatedSlot)

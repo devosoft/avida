@@ -168,6 +168,10 @@ private:
   double max_merit;
   int max_gestation_time;
   int max_genome_length;
+  double min_fitness;
+  double min_merit;
+  int min_gestation_time;
+  int min_genome_length;
   int dom_genotype_id;
   cString dom_name;
   int dom_births;
@@ -348,6 +352,16 @@ public:
     { max_gestation_time = in_max_gestation_time; }
   inline void SetMaxGenomeLength(int in_max_genome_length)
     { max_genome_length = in_max_genome_length; }
+
+  inline void SetMinFitness(double in_min_fitness)
+    { min_fitness = in_min_fitness; }
+  inline void SetMinMerit(double in_min_merit)
+    { min_merit = in_min_merit; }
+  inline void SetMinGestationTime(int in_min_gestation_time)
+    { min_gestation_time = in_min_gestation_time; }
+  inline void SetMinGenomeLength(int in_min_genome_length)
+    { min_genome_length = in_min_genome_length; }
+
   inline void SetEntropy(double in_entropy)
     { entropy = in_entropy; }
   inline void SetSpeciesEntropy(double in_ent)
@@ -521,6 +535,11 @@ public:
   double GetMaxMerit() const { return max_merit; }
   int GetMaxGestationTime() const { return max_gestation_time; }
   int GetMaxGenomeLength() const { return max_genome_length; }
+
+  double GetMinFitness() const { return min_fitness; }
+  double GetMinMerit() const { return min_merit; }
+  int GetMinGestationTime() const { return min_gestation_time; }
+  int GetMinGenomeLength() const { return min_genome_length; }
 
 
   // this value gets recorded when a creature with the particular

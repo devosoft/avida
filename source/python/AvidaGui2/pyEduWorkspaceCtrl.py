@@ -17,7 +17,6 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
 
   def construct(self, session_mdl):
     self.m_session_mdl = session_mdl
-    self.m_session_mdl.m_session_mdtr.m_workspace_mdtr = pyMdtr()
     self.m_avida = None
     self.startStatus = True
     self.m_nav_bar_ctrl.construct(session_mdl)
@@ -72,15 +71,15 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
       self.doStartAvidaSlot)
 
     self.connect(
-      self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
+      self.m_session_mdl.m_session_mdtr,
       PYSIGNAL("doStartSig"),
       self.doStartAvidaSlot)
     self.connect(
-      self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
+      self.m_session_mdl.m_session_mdtr,
       PYSIGNAL("doPauseSig"),
       self.doPauseAvidaSlot)
     # self.connect(
-    #   self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
+    #   self.m_session_mdl.m_session_mdtr,
     #   PYSIGNAL("doNextUpdateSig"),
     #   self.updatePBClickedSlot)
 
@@ -176,8 +175,8 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
   # public slot
 
   def filePrint(self):
-    print "pyEduWorkspaceCtrl.filePrint() emitting printGraphSig via self.m_session_mdl.m_session_mdtr.m_workspace_mdtr"
-    self.m_session_mdl.m_session_mdtr.m_workspace_mdtr.emit(PYSIGNAL("printGraphSig"), ())
+    print "pyEduWorkspaceCtrl.filePrint() emitting printGraphSig via self.m_session_mdl.m_session_mdtr"
+    self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("printGraphSig"), ())
 
   # public slot
 
@@ -244,14 +243,17 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
       print "send pause signal"
     
   def setAvidaSlot(self, avida):
+    print "pyEduWorkspaceCtrl.setAvidaSlot() ..."
     old_avida = self.m_avida
     self.m_avida = avida
-    if(old_avida):
+    if old_avida:
+      print "pyEduWorkspaceCtrl.setAvidaSlot() disconnecting old_avida ..."
       self.disconnect(
-        self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
+        old_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
         self.avidaUpdatedSlot)
       del old_avida
-    if(self.m_avida):
+    if self.m_avida:
+      print "pyEduWorkspaceCtrl.setAvidaSlot() connecting self.m_avida ..."
       self.connect(
         self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
         self.avidaUpdatedSlot)

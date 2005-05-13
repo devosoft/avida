@@ -41,6 +41,8 @@
 #include <algorithm>
 #include <set>
 
+#include <math.h>
+
 using namespace std;
 
 
@@ -1179,6 +1181,12 @@ void cPopulation::UpdateOrganismStats()
   int max_gestation_time = 0;
   int max_genome_length = 0;
 
+  // Minimums...
+  cMerit min_merit(HUGE_VAL);
+  double min_fitness = HUGE_VAL;
+  int min_gestation_time = INT_MAX;
+  int min_genome_length = INT_MAX;
+
   for (int i = 0; i < cell_array.GetSize(); i++) {
     // Only look at cells with organisms in them.
     if (cell_array[i].IsOccupied() == false) continue;
@@ -1217,6 +1225,11 @@ void cPopulation::UpdateOrganismStats()
     if (cur_gestation_time > max_gestation_time) max_gestation_time = cur_gestation_time;
     if (cur_genome_length > max_genome_length) max_genome_length = cur_genome_length;
 
+    if (cur_merit < min_merit) min_merit = cur_merit;
+    if (cur_fitness < min_fitness) min_fitness = cur_fitness;
+    if (cur_gestation_time < min_gestation_time) min_gestation_time = cur_gestation_time;
+    if (cur_genome_length < min_genome_length) min_genome_length = cur_genome_length;
+
     // Test what tasks this creatures has completed.
     for (int j=0; j < phenotype.GetEnvironment().GetTaskLib().GetSize(); j++) {
       if (phenotype.GetCurTaskCount()[j] > 0)  stats.AddCurTask(j);
@@ -1254,6 +1267,11 @@ void cPopulation::UpdateOrganismStats()
   stats.SetMaxFitness(max_fitness);
   stats.SetMaxGestationTime(max_gestation_time);
   stats.SetMaxGenomeLength(max_genome_length);
+
+  stats.SetMinMerit(min_merit.GetDouble());
+  stats.SetMinFitness(min_fitness);
+  stats.SetMinGestationTime(min_gestation_time);
+  stats.SetMinGenomeLength(min_genome_length);
 
   stats.SetResources(resource_count.GetResources());
   stats.SetSpatialRes(resource_count.GetSpatialRes());

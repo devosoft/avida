@@ -85,6 +85,7 @@ class pyAvida(qt.QObject):
     self.m_avida_threaded_driver.removeGuiWorkFunctor(thread_work_functor)
 
   def destruct(self):
+    print("pyAvida.destruct() ...")
     self.m_avida_thread_mdtr.emit(qt.PYSIGNAL("doCloseAvidaSig"),())
     if hasattr(self, "m_update_ck_timer"):
       self.m_update_ck_timer.stop()
@@ -92,32 +93,10 @@ class pyAvida(qt.QObject):
     else:
       print("pyAvida.destruct() self.m_update_ck_timer missing.")
 
-    self.disconnect(
-      self.m_avida_thread_mdtr,
-      qt.PYSIGNAL("doPauseAvidaSig"),
-      self.doPauseAvidaSlot)
-    self.disconnect(
-      self.m_avida_thread_mdtr,
-      qt.PYSIGNAL("doStartAvidaSig"),
-      self.doStartAvidaSlot)
-    self.disconnect(
-      self.m_avida_thread_mdtr,
-      qt.PYSIGNAL("doUpdateAvidaSig"),
-      self.doUpdateAvidaSlot)
-    self.disconnect(
-      self.m_avida_thread_mdtr,
-      qt.PYSIGNAL("doCloseAvidaSig"),
-      self.doCloseAvidaSlot)
-
     if hasattr(self, "m_avida_thread_mdtr"):
       del self.m_avida_thread_mdtr
     else:
-      print("pyAvida.destruct() self.m_session_mdl.m_session_mdtr.m_avida_threaded_driver_mdtr missing.")
-
-    if hasattr(self, "updated_semaphore"):
-      del self.m_updated_semaphore
-    else:
-      print("pyAvida.destruct() self.m_updated_semaphore missing.")
+      print("pyAvida.destruct() self.m_avida_thread_mdtr missing.")
 
     if hasattr(self, "m_avida_threaded_driver"):
       self.m_avida_threaded_driver.doExit()

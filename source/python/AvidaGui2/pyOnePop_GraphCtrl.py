@@ -61,7 +61,7 @@ class pyOnePop_GraphCtrl(pyOnePop_GraphView):
     self.modeActivatedSlot(self.m_combo_box.currentItem())
 
     self.connect(
-      self.m_session_mdl.m_session_mdtr.m_workspace_mdtr, PYSIGNAL("printGraphSig"),
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("printGraphSig"),
       self.printGraphSlot)
 
   def load(self, filename, colx, coly):
@@ -102,14 +102,17 @@ class pyOnePop_GraphCtrl(pyOnePop_GraphView):
     self.m_graph_ctrl.replot()
       
   def setAvidaSlot(self, avida):
+    print "pyOnePop_GraphCtrl.setAvidaSlot() ..."
     old_avida = self.m_avida
     self.m_avida = avida
     if(old_avida):
+      print "pyOnePop_GraphCtrl.setAvidaSlot() disconnecting old_avida ..."
       self.disconnect(
         self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
         self.avidaUpdatedSlot)
       del old_avida
     if(self.m_avida):
+      print "pyOnePop_GraphCtrl.setAvidaSlot() connecting self.m_avida ..."
       self.connect(
         self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
         self.avidaUpdatedSlot)

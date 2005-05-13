@@ -1,27 +1,3 @@
-# Modified from IPython sources for use in AvidaEd
-"""IPython -- An enhanced Interactive Python
-
-This is just the startup wrapper script, kept deliberately to a minimum.
-
-The shell's mainloop() takes an optional argument, sys_exit (default=0). If
-set to 1, it calls sys.exit() at exit time. You can use the following code in
-your PYTHONSTARTUP file:
-
-import IPython
-IPython.Shell.IPShell().mainloop(sys_exit=1)
-
-[or simply IPython.Shell.IPShell().mainloop(1) ]
-
-and IPython will be your working environment when you start python. The final
-sys.exit() call will make python exit transparently when IPython finishes, so
-you don't have an extra prompt to get out of.
-
-This is probably useful to developers who manage multiple Python versions and
-don't want to have correspondingly multiple IPython versions. Note that in
-this mode, there is no way to pass IPython any command-line options, as those
-are trapped first by Python itself.
-"""
-
 import sys
 
 # When an OS X application is double-clicked, argv[1] is set to
@@ -30,28 +6,37 @@ import sys
 # so we need to find another way to distinguish between launches by
 # double-clicking vs. launches by command-line.
 # @kgn
+
 if len(sys.argv) > 1 and sys.argv[1] >= 5 and sys.argv[1][:5] == '-psn_':
-  import qt
-  import AvidaCore    
-                          
-  def Run():      
-    import AvidaGui2.pyEduMainCtrl
-    edu_main_controller = AvidaGui2.pyEduMainCtrl.pyEduMainCtrl()
-    edu_main_controller.construct()
-    edu_main_controller.m_main_mdl.m_main_mdtr.m_main_controller_factory_mdtr.emit(
-    #sys.exc_clear()
-    #sys.exc_traceback = sys.last_traceback = None
-      qt.PYSIGNAL("newMainControllerSig"), ("pySessionCtrl",))
-    return edu_main_controller
-  
-  AvidaCore.cConfig.InitGroupList()
-  a = qt.QApplication(sys.argv)
-  ctrl=Run()
-  a.exec_loop()
+
+  # NonInteractive Avida-ED
+
+  from AvidaGui2 import Avida_ED_startup
+  Avida_ED_startup.NonInteractive()
 
 else:
+
+  # Interactive Avida-ED
+
+  # The bundled version of Avida-ED has a stripped-down version of
+  # Python, so here I'm adding back some of the missing stuff for the
+  # convenience of developers using the interactive version of Avida-ED.
+
   import site
+
+  class _Helper(object):
+      """Define the built-in 'help'.
+      This is a wrapper around pydoc.help (with a twist).
   
+      """
+  
+      def __repr__(self):
+          return "Type help() for interactive help, " \
+                 "or help(object) for help about object."
+      def __call__(self, *args, **kwds):
+          import pydoc
+          return pydoc.help(*args, **kwds)
+
   class _Printer(object):
       """interactive prompt objects for printing the license text, a list of
       contributors and the copyright notice."""
@@ -112,6 +97,7 @@ else:
                           key = None
                   if key == 'q':
                       break
+
   __builtins__.credits = _Printer("credits", """
   Thanks to CWI, CNRI, BeOpen.com, Zope Corporation and a cast of thousands
   for supporting Python development.  See www.python.org for more information.""")
@@ -132,15 +118,15 @@ else:
   Copyright (c) 2001-2004 Fernando Perez, Janko Hauser, Nathan Gray.
   All Rights Reserved.""")
   
-  __builtins__.exit = """
-  Use Ctrl-D (i.e. EOF) to exit."""
+  __builtins__.exit = """Use Ctrl-D (i.e. EOF) to exit."""
   
-  __builtins__.quit = """
-  Use Ctrl-D (i.e. EOF) to exit."""
-  
-  
-  import IPython
-  import __builtin__
-  
-  ipython_shell = IPython.Shell.IPShell(argv=['AvidaEd-interactive.py'])
-  ipython_shell.mainloop()
+  __builtins__.quit = """Use Ctrl-D (i.e. EOF) to exit."""
+
+  __builtins__.help = _Helper()
+
+
+  #
+
+  from AvidaGui2 import Avida_ED_startup
+  Avida_ED_startup.Interactive()
+

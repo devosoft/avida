@@ -52,9 +52,7 @@ setup(
   ),
   data_files=[
     ('../Resources',
-      # script to launch AvidaEd from command-line, then drop into
-      # python shell (for convenience of developers)
-      [ '${CMAKE_CURRENT_SOURCE_DIR}/AvidaEd-interactive.py' ]
+      [ '${CMAKE_CURRENT_SOURCE_DIR}/AvidaGui2/avidalogo.png' ]
       #+
       ## Avida configuration files
       ## FIXME # these only temporarily live in Resources, until we make

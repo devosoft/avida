@@ -10,10 +10,9 @@ class pySessionControllerFactory(qt.QObject):
     self.m_session_mdl = m_session_mdl
     self.m_controller_creators_dict = {}
     self.m_session_controllers_list = []
-    self.m_session_mdl.m_session_mdtr.m_session_controller_factory_mdtr = pyMdtr()
-    self.connect(self.m_session_mdl.m_session_mdtr.m_session_controller_factory_mdtr,
+    self.connect(self.m_session_mdl.m_session_mdtr,
       qt.PYSIGNAL("newSessionControllerSig"), self.newSessionControllerSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr.m_session_controller_factory_mdtr,
+    self.connect(self.m_session_mdl.m_session_mdtr,
       qt.PYSIGNAL("deleteControllerSig"), self.deleteControllerSlot)
     return self
   def addControllerCreator(self, creator_key, creator):
@@ -47,17 +46,12 @@ class pyUnitTestSuite_pySessionControllerFactory(pyUnitTestSuite):
       def test(self):
         class pyMdl: pass
         stub_mdl = pyMdl()
-        stub_mdl.m_session_mdtr = pyMdtr()
         session_controller_factory_factory = lambda : pySessionControllerFactory().construct(stub_mdl)
 
         things_that_will_live_on = [
           # I instantiated these above, and (on purpose) they won't be deleted.
           '.m_session_mdl',
           '.m_session_mdl.m_session_mdtr',
-          # pySessionControllerFactory creates
-          # m_session_controller_factory_mdtr, but by design doesn't
-          # delete it.
-          '.m_session_mdl.m_session_mdtr.m_session_controller_factory_mdtr',
         ]
 
         endotests = recursiveDeleteChecks(session_controller_factory_factory, things_that_will_live_on)

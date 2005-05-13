@@ -6,6 +6,9 @@ declaration_code("""
 inline unsigned int cChangeList__len__(const cChangeList &change_list) {
   return change_list.GetChangeCount();
 }
+/*
+Crap. This doesn't work at all. @kgn
+*/
 inline unsigned int cChangeList__getitem__(const cChangeList &change_list, unsigned int i) {
   return change_list.GetChangeAt(i);
 }

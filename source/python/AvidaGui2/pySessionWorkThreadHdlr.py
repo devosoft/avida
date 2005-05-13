@@ -31,21 +31,20 @@ class pySessionWorkThreadHdlr(qt.QObject):
     self.m_session_mdl.m_population = \
       self.m_avida_threaded_driver.GetPopulation()
 
-    self.m_session_mdl.m_session_mdtr.m_avida_threaded_driver_mdtr = pyMdtr()
     self.connect(
-      self.m_session_mdl.m_session_mdtr.m_avida_threaded_driver_mdtr,
+      self.m_session_mdl.m_session_mdtr,
       qt.PYSIGNAL("doPauseAvidaSig"),
       self.doPauseAvidaSlot)
     self.connect(
-      self.m_session_mdl.m_session_mdtr.m_avida_threaded_driver_mdtr,
+      self.m_session_mdl.m_session_mdtr,
       qt.PYSIGNAL("doStartAvidaSig"),
       self.doStartAvidaSlot)
     self.connect(
-      self.m_session_mdl.m_session_mdtr.m_avida_threaded_driver_mdtr,
+      self.m_session_mdl.m_session_mdtr,
       qt.PYSIGNAL("doUpdateAvidaSig"),
       self.doUpdateAvidaSlot)
     self.connect(
-      self.m_session_mdl.m_session_mdtr.m_avida_threaded_driver_mdtr,
+      self.m_session_mdl.m_session_mdtr,
       qt.PYSIGNAL("doCloseAvidaSig"),
       self.doCloseAvidaSlot)
 
@@ -59,7 +58,7 @@ class pySessionWorkThreadHdlr(qt.QObject):
 
   def destruct(self):
     print("pySessionWorkThreadHdlr.destruct()...")
-    self.m_session_mdl.m_session_mdtr.m_avida_threaded_driver_mdtr.emit(
+    self.m_session_mdl.m_session_mdtr.emit(
       qt.PYSIGNAL("doCloseAvidaSig"),())
     if hasattr(self, "m_update_ck_timer"):
       self.m_update_ck_timer.stop()
@@ -68,26 +67,21 @@ class pySessionWorkThreadHdlr(qt.QObject):
       print("pySessionWorkThreadHdlr.destruct() self.m_update_ck_timer missing.")
 
     self.disconnect(
-      self.m_session_mdl.m_session_mdtr.m_avida_threaded_driver_mdtr,
+      self.m_session_mdl.m_session_mdtr,
       qt.PYSIGNAL("doPauseAvidaSig"),
       self.doPauseAvidaSlot)
     self.disconnect(
-      self.m_session_mdl.m_session_mdtr.m_avida_threaded_driver_mdtr,
+      self.m_session_mdl.m_session_mdtr,
       qt.PYSIGNAL("doStartAvidaSig"),
       self.doStartAvidaSlot)
     self.disconnect(
-      self.m_session_mdl.m_session_mdtr.m_avida_threaded_driver_mdtr,
+      self.m_session_mdl.m_session_mdtr,
       qt.PYSIGNAL("doUpdateAvidaSig"),
       self.doUpdateAvidaSlot)
     self.disconnect(
-      self.m_session_mdl.m_session_mdtr.m_avida_threaded_driver_mdtr,
+      self.m_session_mdl.m_session_mdtr,
       qt.PYSIGNAL("doCloseAvidaSig"),
       self.doCloseAvidaSlot)
-
-    if hasattr(self.m_session_mdl.m_session_mdtr, "m_avida_threaded_driver_mdtr"):
-      del self.m_session_mdl.m_session_mdtr.m_avida_threaded_driver_mdtr
-    else:
-      print("pySessionWorkThreadHdlr.destruct() self.m_session_mdl.m_session_mdtr.m_avida_threaded_driver_mdtr missing.")
 
     if hasattr(self, "updated_semaphore"):
       del self.m_updated_semaphore
@@ -105,11 +99,6 @@ class pySessionWorkThreadHdlr(qt.QObject):
       #print("pySessionWorkThreadHdlr.destruct() self.m_session_mdl.m_avida_threaded_driver missing.")
       print("pySessionWorkThreadHdlr.destruct() self.m_avida_threaded_driver missing.")
 
-    if hasattr(self, "m_session_mdl"):
-      del self.m_session_mdl
-    else:
-      print("pySessionWorkThreadHdlr.destruct() self.m_session_mdl missing.")
-
     print("pySessionWorkThreadHdlr.destruct() done.")
 
   def __del__(self):
@@ -119,7 +108,7 @@ class pySessionWorkThreadHdlr(qt.QObject):
 
   def updateCheckSlot(self):
     if self.m_updated_semaphore.acquire(False):
-      self.m_session_mdl.m_session_mdtr.m_avida_threaded_driver_mdtr.emit(
+      self.m_session_mdl.m_session_mdtr.emit(
 	qt.PYSIGNAL("AvidaUpdatedSig"),())
       if True == self.m_should_update:
         self.doUpdateAvidaSlot()

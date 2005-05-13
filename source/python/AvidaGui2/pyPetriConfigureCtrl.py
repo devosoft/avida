@@ -1,22 +1,36 @@
 # -*- coding: utf-8 -*-
 
-from qt import *
-import os
-import math
+from pyAvida import pyAvida
+from pyFreezeDialogCtrl import pyFreezeDialogCtrl
 from pyPetriConfigureView import pyPetriConfigureView
 from pyWriteGenesis import pyWriteGenesis
-from pyFreezeDialogCtrl import pyFreezeDialogCtrl
 from pyWriteToFreezer import pyWriteToFreezer
 
+from AvidaCore import cGenesis, cString
+
+from qt import *
+
+import os
+import math
 
 class pyPetriConfigureCtrl(pyPetriConfigureView):
 
   def __init__(self,parent = None,name = None,fl = 0):
     pyPetriConfigureView.__init__(self,parent,name,fl)
 
+
+  def setAvidaSlot(self, avida):
+    old_avida = self.m_avida
+    self.m_avida = avida
+    if old_avida:
+      del old_avida
+    if self.m_avida:
+      pass
+    
   def construct(self, session_mdl):
     self.m_session_mdl = session_mdl
     self.m_session_petri_view = pyPetriConfigureView()
+    self.m_avida = None
     self.full_petri_dict = {}
     self.DishDisabled = False
     self.connect(self.MutationSlider, SIGNAL("valueChanged(int)"), 
@@ -45,6 +59,9 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
       self.DisablePetriConfigureSlot)
     self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("doInitializeAvidaPhaseISig"),
       self.CreateFilesFromPetriSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"), self.setAvidaSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("doInitializeAvidaPhaseIISig"),
+      self.doLoadPetriDishConfigFileSlot)
     self.ChangeMutationTextSlot()
     self.ChangeWorldSizeTextSlot()
     self.populated = False
@@ -235,3 +252,26 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
       print "sending quit signal from pyPetriConfigureCtrl:FreezePetriSlot"
       self.m_session_mdl.m_session_mdtr.emit(
         PYSIGNAL("quitAvidaPhaseIISig"), ())
+
+  def doLoadPetriDishConfigFileSlot(self, genesisFileName = None):
+    genesis = cGenesis()
+    genesis.Open(cString(genesisFileName))
+    if 0 == genesis.IsOpen():
+      print "Warning: Unable to find file '", genesisFileName
+      return
+    avida = pyAvida()
+    avida.construct(genesis)
+    self.setAvidaSlot(avida)
+
+    # Stops self from hearing own setAvidaSig signal
+
+    self.disconnect(
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"),
+      self.setAvidaSlot)
+    self.m_session_mdl.m_session_mdtr.emit(
+      PYSIGNAL("setAvidaSig"),
+      (self.m_avida,))
+    self.connect(
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"),
+      self.setAvidaSlot)
+      

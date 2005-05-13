@@ -14,13 +14,13 @@ class pySessionDumbCtrl(pySessionDumbView):
   def setAvidaSlot(self, avida):
     old_avida = self.m_avida
     self.m_avida = avida
-    if(old_avida):
-      print "pySessionDumbCtrl.setAvidaSlot(): disconnecting..."
+    if old_avida and hasattr(old_avida, "m_avida_thread_mdtr"):
+      print "pySessionDumbCtrl.setAvidaSlot(): disconnecting old_avida ..."
       self.disconnect(
         old_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
         self.avidaUpdatedSlot)
       self.disconnect(
-       self.m_session_mdl.m_session_mdtr, PYSIGNAL("doStartAvidaSig"),
+        self.m_session_mdl.m_session_mdtr, PYSIGNAL("doStartAvidaSig"),
         old_avida.m_avida_thread_mdtr, PYSIGNAL("doStartAvidaSig"))
       self.disconnect(
         self.m_session_mdl.m_session_mdtr, PYSIGNAL("doPauseAvidaSig"),
@@ -32,9 +32,10 @@ class pySessionDumbCtrl(pySessionDumbView):
         self.m_session_mdl.m_session_mdtr, 
         PYSIGNAL("fromLiveCtrlUpdateAvidaSig"),
         old_avida.m_avida_thread_mdtr, PYSIGNAL("doUpdateAvidaSig"))
+      print "pySessionDumbCtrl.setAvidaSlot(): deleting old_avida ..."
       del old_avida
-    if(self.m_avida):
-      print "pySessionDumbCtrl.setAvidaSlot(): connecting..."
+    if self.m_avida and hasattr(self.m_avida, "m_avida_thread_mdtr"):
+      print "pySessionDumbCtrl.setAvidaSlot(): connecting self.m_avida ..."
       self.connect(
         self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
         self.avidaUpdatedSlot)
@@ -62,35 +63,6 @@ class pySessionDumbCtrl(pySessionDumbView):
     self.connect(
       self, PYSIGNAL("doDebugLoadOrganismSig"),
       self.doDebugLoadOrganismSlot)
-
-  def doLoadPetriDishConfigFileSlot(self, genesisFileName = None):
-#    s = QFileDialog.getOpenFileName(
-#      ".",
-#      "(*.avida)",
-#      None,
-#      "open file dialog",
-#      "Choose a file")
-#    print "s:", s
-    genesis = cGenesis()
-    genesis.Open(cString(genesisFileName))
-    if 0 == genesis.IsOpen():
-      print "Warning: Unable to find file '", genesisFileName
-      return
-    avida = pyAvida()
-    avida.construct(genesis)
-    self.setAvidaSlot(avida)
-
-    # Stops self from hearing own setAvidaSig signal
-
-    self.disconnect(
-      self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"),
-      self.setAvidaSlot)
-    self.m_session_mdl.m_session_mdtr.emit(
-      PYSIGNAL("setAvidaSig"),
-      (self.m_avida,))
-    self.connect(
-      self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"),
-      self.setAvidaSlot)
       
   def doDebugLoadOrganismSlot(self):
     if self.m_avida:
@@ -122,20 +94,20 @@ be opened before an organism file.
       self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"),
       self.setAvidaSlot)
 
-    self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr.emit(
+    self.m_session_mdl.m_session_mdtr.emit(
         PYSIGNAL("doSetupMainWindowMenuBarSig"),
         (self,))
 
     self.connect(
-      self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
+      self.m_session_mdl.m_session_mdtr,
       PYSIGNAL("doStartSig"),
       self.doStart)
     self.connect(
-      self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
+      self.m_session_mdl.m_session_mdtr,
       PYSIGNAL("doPauseSig"),
       self.doPause)
     self.connect(
-      self.m_session_mdl.m_session_mdtr.m_edu_session_menu_bar_hdlr_mdtr,
+      self.m_session_mdl.m_session_mdtr,
       PYSIGNAL("doNextUpdateSig"),
       self.updatePBClickedSlot)
 
@@ -146,10 +118,6 @@ be opened before an organism file.
       self.m_update_avida_pb, SIGNAL("clicked()"),
       self.updatePBClickedSlot)
       
-    self.connect(
-      self.m_session_mdl.m_session_mdtr, 
-      PYSIGNAL("doInitializeAvidaPhaseIISig"),
-      self.doLoadPetriDishConfigFileSlot)
     self.connect(
       self.m_session_mdl.m_session_mdtr, 
       PYSIGNAL("fromLiveCtrlPauseAvidaSig"),
@@ -174,13 +142,16 @@ be opened before an organism file.
     self.show()
 
   def __del__(self):
-    self.setAvidaSlot(None)
+    print "pySessionDumbCtrl.__del__() disconnecting ..."
     self.disconnect(
       self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"),
       self.setAvidaSlot)
+    print "pySessionDumbCtrl.__del__() sending setAvidaSig(None) ..."
     self.m_session_mdl.m_session_mdtr.emit(
       PYSIGNAL("setAvidaSig"),
       (None,))
+    #self.setAvidaSlot(None)
+    print "pySessionDumbCtrl.__del__() done ..."
       
   def doStart(self):
     if self.sessionInitialized == False:

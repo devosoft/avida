@@ -4,7 +4,6 @@ from pyAvidaCoreData import *
 from pyMdtr import *
 from pySessionControllerFactory import *
 from pySessionDumbCtrl import *
-from pySessionWorkThreadHdlr import *
 
 from AvidaCore import cString
 
@@ -59,14 +58,14 @@ class pySessionCtrl(qt.QObject):
     self.m_session_controller_factory.addControllerCreator("pySessionDumbCtrl", pySessionDumbCtrl)
     self.m_session_controller_factory.addControllerCreator("pyEduWorkspaceCtrl", pyEduWorkspaceCtrl)
 
-    self.m_session_mdl.m_session_mdtr.m_session_controller_factory_mdtr.emit(
+    self.m_session_mdl.m_session_mdtr.emit(
       qt.PYSIGNAL("newSessionControllerSig"), ("pyEduSessionMenuBarHdlr",))
     
     ## XXX Temporary. Cause instantiation of a dumb gui for testing. @kgn
-    self.m_session_mdl.m_session_mdtr.m_session_controller_factory_mdtr.emit(
+    self.m_session_mdl.m_session_mdtr.emit(
       qt.PYSIGNAL("newSessionControllerSig"), ("pySessionDumbCtrl",))
 
-    self.m_session_mdl.m_session_mdtr.m_session_controller_factory_mdtr.emit(
+    self.m_session_mdl.m_session_mdtr.emit(
       qt.PYSIGNAL("newSessionControllerSig"), ("pyEduWorkspaceCtrl",))
 
     self.connect(self.m_session_mdl.m_session_mdtr, qt.PYSIGNAL("doOrphanSessionSig"), self.doOrphanSessionSlot)
@@ -107,7 +106,6 @@ class pyUnitTestSuite_pySessionCtrl(pyUnitTestSuite):
     self.adoptUnitTestSuite("pyMdtr")
     self.adoptUnitTestSuite("pySessionControllerFactory")
     self.adoptUnitTestSuite("pySessionDumbCtrl")
-    self.adoptUnitTestSuite("pySessionWorkThreadHdlr")
 
     class deleteChecks(pyTestCase):
       def test(self):

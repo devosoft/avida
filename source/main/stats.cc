@@ -13,6 +13,7 @@
 #include "string_util.hh"
 #include "tDataEntry.hh"
 
+#include <math.h>
 
 using namespace std;
 
@@ -42,6 +43,12 @@ cStats::cStats()
   , dom_exe_size(0)
   , max_fitness(0)
   , max_merit(0)
+  , max_gestation_time(0)
+  , max_genome_length(0)
+  , min_fitness(HUGE_VAL)
+  , min_merit(HUGE_VAL)
+  , min_gestation_time(INT_MAX)
+  , min_genome_length(INT_MAX)
   , dom_genotype_id(-1)
   , dom_name("(none)")
   , dom_births(0)

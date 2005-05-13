@@ -30,9 +30,12 @@ class pyOrganismScopeCtrl(pyOrganismScopeView):
       self.setDebugOrganismFileSlot)
 
   def setAvidaSlot(self, avida):
+    print "pyOrganismScopeCtrl.setAvidaSlot() ..."
     old_avida = self.m_avida
     self.m_avida = avida
-    if(old_avida): del old_avida
+    if(old_avida):
+      print "pyOrganismScopeCtrl.setAvidaSlot() deleting old_avida ..."
+      del old_avida
 
   def setDebugOrganismFileSlot(self, organism_filename):
     print "pyOrganismScopeCtrl.setDebugOrganismFileSlot"
