@@ -26,7 +26,7 @@ Python:from pyOnePop_StatsCtrl import pyOnePop_StatsCtrl
         </property>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>layout16</cstring>
+                <cstring>layout9</cstring>
             </property>
             <vbox>
                 <property name="name">
@@ -39,7 +39,7 @@ Python:from pyOnePop_StatsCtrl import pyOnePop_StatsCtrl
                     <property name="sizePolicy">
                         <sizepolicy>
                             <hsizetype>3</hsizetype>
-                            <vsizetype>7</vsizetype>
+                            <vsizetype>1</vsizetype>
                             <horstretch>0</horstretch>
                             <verstretch>0</verstretch>
                         </sizepolicy>
@@ -58,29 +58,33 @@ Python:from pyOnePop_StatsCtrl import pyOnePop_StatsCtrl
                         </sizepolicy>
                     </property>
                 </widget>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer5</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Vertical</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>20</width>
+                            <height>40</height>
+                        </size>
+                    </property>
+                </spacer>
             </vbox>
         </widget>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>layout9</cstring>
+                <cstring>layout44</cstring>
             </property>
             <vbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="pyOnePop_StatsCtrl">
-                    <property name="name">
-                        <cstring>m_one_pop_stats_ctrl</cstring>
-                    </property>
-                    <property name="sizePolicy">
-                        <sizepolicy>
-                            <hsizetype>5</hsizetype>
-                            <vsizetype>5</vsizetype>
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                        </sizepolicy>
-                    </property>
-                </widget>
                 <widget class="pyOnePop_GraphCtrl">
                     <property name="name">
                         <cstring>m_one_pop_graph_ctrl</cstring>
@@ -89,6 +93,19 @@ Python:from pyOnePop_StatsCtrl import pyOnePop_StatsCtrl
                         <sizepolicy>
                             <hsizetype>3</hsizetype>
                             <vsizetype>3</vsizetype>
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
+                </widget>
+                <widget class="pyOnePop_StatsCtrl">
+                    <property name="name">
+                        <cstring>m_one_pop_stats_ctrl</cstring>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>5</hsizetype>
+                            <vsizetype>5</vsizetype>
                             <horstretch>0</horstretch>
                             <verstretch>0</verstretch>
                         </sizepolicy>
@@ -185,7 +202,7 @@ Python:from pyOnePop_StatsCtrl import pyOnePop_StatsCtrl
 <includehints>
     <includehint>pyonepop_petridishctrl.h</includehint>
     <includehint>pyonepop_timelinectrl.h</includehint>
-    <includehint>pyonepop_statsctrl.h</includehint>
     <includehint>pyonepop_graphctrl.h</includehint>
+    <includehint>pyonepop_statsctrl.h</includehint>
 </includehints>
 </UI>
