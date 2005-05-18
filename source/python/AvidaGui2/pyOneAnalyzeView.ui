@@ -72,7 +72,7 @@ Python:from pyOneAna_TimelineCtrl import pyOneAna_TimelineCtrl
                     </property>
                     <widget class="pyOneAna_GraphCtrl">
                         <property name="name">
-                            <cstring>pyOneAna_GraphCtrl1</cstring>
+                            <cstring>m_one_ana_graph_ctrl</cstring>
                         </property>
                         <property name="sizePolicy">
                             <sizepolicy>
@@ -104,12 +104,14 @@ Python:from pyOneAna_TimelineCtrl import pyOneAna_TimelineCtrl
         <container>0</container>
         <sizepolicy>
             <hordata>5</hordata>
-            <verdata>5</verdata>
+            <verdata>0</verdata>
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
         </sizepolicy>
         <pixmap>image0</pixmap>
         <property type="0">3</property>
+        <property type="1">pyOneAna_GraphCtrl</property>
+        <property type="3">-1</property>
         <property type="pyOneAna_GraphCtrl"></property>
         <property type="-1">1</property>
     </customwidget>
@@ -123,12 +125,14 @@ Python:from pyOneAna_TimelineCtrl import pyOneAna_TimelineCtrl
         <container>0</container>
         <sizepolicy>
             <hordata>5</hordata>
-            <verdata>5</verdata>
+            <verdata>0</verdata>
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
         </sizepolicy>
         <pixmap>image0</pixmap>
         <property type="0">3</property>
+        <property type="1">pyOneAna_PetriDishCtrl</property>
+        <property type="3">-1</property>
         <property type="pyOneAna_PetriDishCtrl"></property>
         <property type="-1">1</property>
     </customwidget>
@@ -142,12 +146,14 @@ Python:from pyOneAna_TimelineCtrl import pyOneAna_TimelineCtrl
         <container>0</container>
         <sizepolicy>
             <hordata>5</hordata>
-            <verdata>5</verdata>
+            <verdata>0</verdata>
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
         </sizepolicy>
         <pixmap>image0</pixmap>
         <property type="0">3</property>
+        <property type="1">pyOneAna_StatsCtrl</property>
+        <property type="3">-1</property>
         <property type="pyOneAna_StatsCtrl"></property>
         <property type="-1">1</property>
     </customwidget>
@@ -161,12 +167,14 @@ Python:from pyOneAna_TimelineCtrl import pyOneAna_TimelineCtrl
         <container>0</container>
         <sizepolicy>
             <hordata>5</hordata>
-            <verdata>5</verdata>
+            <verdata>0</verdata>
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
         </sizepolicy>
         <pixmap>image0</pixmap>
         <property type="0">3</property>
+        <property type="1">pyOneAna_TimelineCtrl</property>
+        <property type="3">-1</property>
         <property type="pyOneAna_TimelineCtrl"></property>
         <property type="-1">1</property>
     </customwidget>

@@ -63,3 +63,10 @@ def AvidaEd():
     
     """
   return edu_main_controller
+
+# Get the edu_workspace_ctrl to browse interactively
+def Edu_WorkSpace_Ctrl(avida_ed):
+  session_ctrl = avida_ed.m_main_controller_factory.m_main_controllers_list[1]
+  edu_workspace_ctrl = session_ctrl.m_session_controller_factory.m_session_controllers_list[2]
+  return edu_workspace_ctrl
+

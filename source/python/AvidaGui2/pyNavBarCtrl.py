@@ -13,7 +13,7 @@ class pyNavBarCtrl(pyNavBarView):
     def generateCLIGroup(list_view, group_name, first_name, second_name):
       group_lvi = QCheckListItem(list_view, group_name, QCheckListItem.RadioButtonController)
       group_lvi.setSelectable(False)
-      group_lvi.setOpen(False)
+      group_lvi.setOpen(True)
       #
       second_cli = QCheckListItem(group_lvi, second_name, QCheckListItem.RadioButton)
       second_cli.setSelectable(False)

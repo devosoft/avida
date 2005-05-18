@@ -52,7 +52,8 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
     #  ctrl.construct(self.m_session_mdl)
     self.m_one_population_ctrl.construct(self.m_session_mdl)
     self.m_one_organism_ctrl.construct(self.m_session_mdl)
-
+    self.m_one_analyze_ctrl.construct(self.m_session_mdl)
+        
     self.connect(self, PYSIGNAL("quitAvidaPhaseISig"), self.startQuitProcessSlot)
     self.connect(self, PYSIGNAL("quitAvidaPhaseIISig"), qApp, SLOT("quit()"))
     self.connect(self.m_nav_bar_ctrl.m_list_view, SIGNAL("clicked(QListViewItem *)"), self.navBarItemClickedSlot)
