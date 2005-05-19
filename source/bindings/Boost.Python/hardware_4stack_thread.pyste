@@ -4,4 +4,7 @@ Include("inject_genotype.hh")
 
 cHardware4Stack_Thread = Class("cHardware4Stack_Thread", "hardware_4stack_thread.hh")
 
+exclude(cHardware4Stack_Thread.heads)
+exclude(cHardware4Stack_Thread.local_stacks)
+
 # vim: set ft=python:

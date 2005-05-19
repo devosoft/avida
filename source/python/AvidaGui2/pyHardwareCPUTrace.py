@@ -40,8 +40,8 @@ class pyHardwareCPUTrace:
     self.m_read_label_info.append(hardware.GetReadLabel().AsString().GetData())
 
     self.m_last_copied_instruction = max(
-      hardware.GetMemory().GetFlagCopied(i) and i or self.m_last_copied_instruction \
-      for i in range(self.m_last_copied_instruction, hardware.GetMemory().GetSize())
+      [hardware.GetMemory().GetFlagCopied(i) and i or self.m_last_copied_instruction \
+      for i in range(self.m_last_copied_instruction, hardware.GetMemory().GetSize())]
     )
     self.m_last_copy_info.append(self.m_last_copied_instruction)
 
