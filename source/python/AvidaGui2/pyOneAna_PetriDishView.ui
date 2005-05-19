@@ -55,7 +55,7 @@ Python:from pyAnalyzeControlsCtrl import pyAnalyzeControlsCtrl
                 </widget>
                 <widget class="QLabel">
                     <property name="name">
-                        <cstring>textLabel9_2</cstring>
+                        <cstring>m_one_ana_pop_name</cstring>
                     </property>
                     <property name="sizePolicy">
                         <sizepolicy>
@@ -67,7 +67,8 @@ Python:from pyAnalyzeControlsCtrl import pyAnalyzeControlsCtrl
                     </property>
                     <property name="font">
                         <font>
-                            <pointsize>11</pointsize>
+                            <pointsize>14</pointsize>
+                            <bold>1</bold>
                         </font>
                     </property>
                     <property name="text">
@@ -347,7 +348,7 @@ Python:from pyAnalyzeControlsCtrl import pyAnalyzeControlsCtrl
         </sizehint>
         <container>0</container>
         <sizepolicy>
-            <hordata>3</hordata>
+            <hordata>0</hordata>
             <verdata>0</verdata>
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
@@ -360,6 +361,18 @@ Python:from pyAnalyzeControlsCtrl import pyAnalyzeControlsCtrl
         <property type="3">-1</property>
         <property type="1">pyPetriDishCtrl</property>
         <property type="4">-1</property>
+        <property type="1">pyPetriDishCtrl</property>
+        <property type="4">-1</property>
+        <property type="1">pyPetriDishCtrl</property>
+        <property type="0">-1</property>
+        <property type="1">pyPetriDishCtrl</property>
+        <property type="0">-1</property>
+        <property type="1">pyPetriDishCtrl</property>
+        <property type="0">-1</property>
+        <property type="1">pyPetriDishCtrl</property>
+        <property type="0">-1</property>
+        <property type="1">pyPetriDishCtrl</property>
+        <property type="0">-1</property>
         <property type="pyPetriDishCtrl"></property>
         <property type="-1">1</property>
     </customwidget>
@@ -372,7 +385,7 @@ Python:from pyAnalyzeControlsCtrl import pyAnalyzeControlsCtrl
         </sizehint>
         <container>0</container>
         <sizepolicy>
-            <hordata>3</hordata>
+            <hordata>0</hordata>
             <verdata>0</verdata>
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
@@ -385,6 +398,18 @@ Python:from pyAnalyzeControlsCtrl import pyAnalyzeControlsCtrl
         <property type="3">-1</property>
         <property type="1">pyGradientScaleCtrl</property>
         <property type="4">-1</property>
+        <property type="1">pyGradientScaleCtrl</property>
+        <property type="4">-1</property>
+        <property type="1">pyGradientScaleCtrl</property>
+        <property type="0">-1</property>
+        <property type="1">pyGradientScaleCtrl</property>
+        <property type="0">-1</property>
+        <property type="1">pyGradientScaleCtrl</property>
+        <property type="0">-1</property>
+        <property type="1">pyGradientScaleCtrl</property>
+        <property type="0">-1</property>
+        <property type="1">pyGradientScaleCtrl</property>
+        <property type="0">-1</property>
         <property type="pyGradientScaleCtrl"></property>
         <property type="-1">1</property>
     </customwidget>
