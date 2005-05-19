@@ -45,15 +45,19 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
     self.m_combo_box_2.clear()
     self.m_combo_box_1.setInsertionPolicy(QComboBox.AtBottom)
     self.m_combo_box_2.setInsertionPolicy(QComboBox.AtBottom)
+
+    # set up the combo boxes with plot options
     for entry in self.m_avida_stats_interface.m_entries:
       self.m_combo_box_1.insertItem(entry[0])
     for entry in self.m_avida_stats_interface.m_entries:
       self.m_combo_box_2.insertItem(entry[0])
-    
-   
 
-    # the first int is the entry from the combo box (which graph the user wants)
-    # the second int tells it which combo box is set to that
+    # set up the plot line color options
+    for entry in self.m_avida_stats_interface.m_entries:
+      self.m_combo_box_1.insertItem(entry[0])
+
+    
+    # connect combo boxes to signal
     self.connect(
       self.m_combo_box_1, SIGNAL("activated(int)"), self.modeActivatedSlot)
     self.connect(

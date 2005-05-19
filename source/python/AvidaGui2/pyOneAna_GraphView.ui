@@ -10,8 +10,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>372</width>
-            <height>367</height>
+            <width>568</width>
+            <height>540</height>
         </rect>
     </property>
     <property name="caption">
@@ -26,23 +26,61 @@
         </property>
         <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>layout6</cstring>
+                <cstring>layout210</cstring>
             </property>
-            <vbox>
+            <hbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer152</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Vertical</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Minimum</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>1</width>
+                            <height>32</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="QLabel">
+                    <property name="name">
+                        <cstring>textLabel9_2</cstring>
+                    </property>
+                    <property name="sizePolicy">
+                        <sizepolicy>
+                            <hsizetype>3</hsizetype>
+                            <vsizetype>5</vsizetype>
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                        </sizepolicy>
+                    </property>
+                    <property name="font">
+                        <font>
+                            <pointsize>11</pointsize>
+                        </font>
+                    </property>
+                    <property name="text">
+                        <string></string>
+                    </property>
+                </widget>
                 <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>layout210</cstring>
+                        <cstring>layout178</cstring>
                     </property>
-                    <hbox>
+                    <vbox>
                         <property name="name">
                             <cstring>unnamed</cstring>
                         </property>
                         <spacer>
                             <property name="name">
-                                <cstring>spacer152</cstring>
+                                <cstring>spacer126</cstring>
                             </property>
                             <property name="orientation">
                                 <enum>Vertical</enum>
@@ -53,204 +91,176 @@
                             <property name="sizeHint">
                                 <size>
                                     <width>1</width>
-                                    <height>32</height>
+                                    <height>1</height>
                                 </size>
                             </property>
                         </spacer>
-                        <widget class="QLabel">
+                        <widget class="QToolButton">
                             <property name="name">
-                                <cstring>textLabel9_2</cstring>
-                            </property>
-                            <property name="sizePolicy">
-                                <sizepolicy>
-                                    <hsizetype>3</hsizetype>
-                                    <vsizetype>5</vsizetype>
-                                    <horstretch>0</horstretch>
-                                    <verstretch>0</verstretch>
-                                </sizepolicy>
+                                <cstring>toolButton31_2</cstring>
                             </property>
                             <property name="font">
                                 <font>
-                                    <pointsize>11</pointsize>
+                                    <pointsize>10</pointsize>
                                 </font>
                             </property>
                             <property name="text">
                                 <string></string>
                             </property>
-                        </widget>
-                        <widget class="QLayoutWidget">
-                            <property name="name">
-                                <cstring>layout178</cstring>
+                            <property name="iconSet">
+                                <iconset>image0</iconset>
                             </property>
-                            <vbox>
-                                <property name="name">
-                                    <cstring>unnamed</cstring>
-                                </property>
-                                <spacer>
-                                    <property name="name">
-                                        <cstring>spacer126</cstring>
-                                    </property>
-                                    <property name="orientation">
-                                        <enum>Vertical</enum>
-                                    </property>
-                                    <property name="sizeType">
-                                        <enum>Minimum</enum>
-                                    </property>
-                                    <property name="sizeHint">
-                                        <size>
-                                            <width>1</width>
-                                            <height>1</height>
-                                        </size>
-                                    </property>
-                                </spacer>
-                                <widget class="QToolButton">
-                                    <property name="name">
-                                        <cstring>toolButton31_2</cstring>
-                                    </property>
-                                    <property name="font">
-                                        <font>
-                                            <pointsize>10</pointsize>
-                                        </font>
-                                    </property>
-                                    <property name="text">
-                                        <string></string>
-                                    </property>
-                                    <property name="iconSet">
-                                        <iconset>image0</iconset>
-                                    </property>
-                                </widget>
-                                <spacer>
-                                    <property name="name">
-                                        <cstring>spacer126_2</cstring>
-                                    </property>
-                                    <property name="orientation">
-                                        <enum>Vertical</enum>
-                                    </property>
-                                    <property name="sizeType">
-                                        <enum>Minimum</enum>
-                                    </property>
-                                    <property name="sizeHint">
-                                        <size>
-                                            <width>1</width>
-                                            <height>1</height>
-                                        </size>
-                                    </property>
-                                </spacer>
-                            </vbox>
                         </widget>
-                    </hbox>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer126_2</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Vertical</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Minimum</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>1</width>
+                                    <height>1</height>
+                                </size>
+                            </property>
+                        </spacer>
+                    </vbox>
                 </widget>
-                <widget class="pyGraphCtrl">
+            </hbox>
+        </widget>
+        <widget class="pyGraphCtrl">
+            <property name="name">
+                <cstring>m_graph_ctrl</cstring>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>3</hsizetype>
+                    <vsizetype>3</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+            <property name="minimumSize">
+                <size>
+                    <width>100</width>
+                    <height>100</height>
+                </size>
+            </property>
+        </widget>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout12</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <spacer>
                     <property name="name">
-                        <cstring>m_graph_ctrl</cstring>
+                        <cstring>spacer200_2</cstring>
                     </property>
-                    <property name="sizePolicy">
-                        <sizepolicy>
-                            <hsizetype>3</hsizetype>
-                            <vsizetype>3</vsizetype>
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                        </sizepolicy>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
                     </property>
-                    <property name="minimumSize">
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
                         <size>
-                            <width>100</width>
-                            <height>100</height>
+                            <width>23</width>
+                            <height>16</height>
                         </size>
                     </property>
-                </widget>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>layout5</cstring>
-                    </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
+                </spacer>
+                <widget class="QComboBox">
+                    <item>
+                        <property name="text">
+                            <string>Merit</string>
                         </property>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer200_2</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>16</width>
-                                    <height>16</height>
-                                </size>
-                            </property>
-                        </spacer>
-                        <widget class="QComboBox">
-                            <item>
-                                <property name="text">
-                                    <string>Merit</string>
-                                </property>
-                            </item>
-                            <property name="name">
-                                <cstring>m_combo_box_1</cstring>
-                            </property>
-                            <property name="font">
-                                <font>
-                                    <pointsize>11</pointsize>
-                                </font>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer200_3</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>16</width>
-                                    <height>16</height>
-                                </size>
-                            </property>
-                        </spacer>
-                        <widget class="QComboBox">
-                            <item>
-                                <property name="text">
-                                    <string>Merit</string>
-                                </property>
-                            </item>
-                            <property name="name">
-                                <cstring>m_combo_box_2</cstring>
-                            </property>
-                            <property name="font">
-                                <font>
-                                    <pointsize>11</pointsize>
-                                </font>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer200</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>16</width>
-                                    <height>16</height>
-                                </size>
-                            </property>
-                        </spacer>
-                    </hbox>
+                    </item>
+                    <property name="name">
+                        <cstring>m_combo_box_1</cstring>
+                    </property>
+                    <property name="font">
+                        <font>
+                            <pointsize>11</pointsize>
+                        </font>
+                    </property>
                 </widget>
-            </vbox>
+                <widget class="QComboBox">
+                    <item>
+                        <property name="text">
+                            <string>-</string>
+                        </property>
+                    </item>
+                    <property name="name">
+                        <cstring>m_combo_box_1_color</cstring>
+                    </property>
+                </widget>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer200_3</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>40</width>
+                            <height>16</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="QComboBox">
+                    <item>
+                        <property name="text">
+                            <string>Merit</string>
+                        </property>
+                    </item>
+                    <property name="name">
+                        <cstring>m_combo_box_2</cstring>
+                    </property>
+                    <property name="font">
+                        <font>
+                            <pointsize>11</pointsize>
+                        </font>
+                    </property>
+                </widget>
+                <widget class="QComboBox">
+                    <item>
+                        <property name="text">
+                            <string>-</string>
+                        </property>
+                    </item>
+                    <property name="name">
+                        <cstring>m_combo_box_2_color</cstring>
+                    </property>
+                </widget>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer200</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>75</width>
+                            <height>16</height>
+                        </size>
+                    </property>
+                </spacer>
+            </hbox>
         </widget>
     </vbox>
 </widget>
@@ -279,6 +289,8 @@
         <property type="4">-1</property>
         <property type="1">pyGraphCtrl</property>
         <property type="4">-1</property>
+        <property type="1">pyGraphCtrl</property>
+        <property type="0">-1</property>
         <property type="1">pyGraphCtrl</property>
         <property type="0">-1</property>
         <property type="1">pyGraphCtrl</property>
