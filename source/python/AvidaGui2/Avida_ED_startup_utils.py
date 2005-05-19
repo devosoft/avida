@@ -50,10 +50,18 @@ def AvidaEd():
     Reload()
     from AvidaGui2.pyEduMainCtrl import pyEduMainCtrl
     s_splash.message("Assembling Avida-ED user-interface ...")
+
     edu_main_controller = pyEduMainCtrl()
     edu_main_controller.construct()
     edu_main_controller.m_main_mdl.m_main_mdtr.m_main_controller_factory_mdtr.emit(
       qt.PYSIGNAL("newMainControllerSig"), ("pySessionCtrl",))
+
+    # Get the edu_workspace_ctrl to browse interactively via
+    # 'avida_ed.m_edu_workspace_ctrl'
+    #
+    session_ctrl = edu_main_controller.m_main_controller_factory.m_main_controllers_list[1]
+    edu_main_controller.m_edu_workspace_ctrl = session_ctrl.m_session_controller_factory.m_session_controllers_list[2]
+
   finally:
     s_splash.clear()
     s_splash.hide()
@@ -63,10 +71,3 @@ def AvidaEd():
     
     """
   return edu_main_controller
-
-# Get the edu_workspace_ctrl to browse interactively
-def Edu_WorkSpace_Ctrl(avida_ed):
-  session_ctrl = avida_ed.m_main_controller_factory.m_main_controllers_list[1]
-  edu_workspace_ctrl = session_ctrl.m_session_controller_factory.m_session_controllers_list[2]
-  return edu_workspace_ctrl
-
