@@ -105,6 +105,7 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
       if self.m_combo_box_1.currentItem():
         index_1 = self.m_combo_box_1.currentItem()
         self.m_graph_ctrl.setAxisTitle(QwtPlot.yLeft, self.m_avida_stats_interface.m_entries[index_1][0])
+        self.m_graph_ctrl.enableYLeftAxis(True)
         self.m_graph_ctrl.setAxisAutoScale(QwtPlot.yLeft)
         self.m_curve_1_arrays = self.load(
             self.m_avida_stats_interface.m_entries[index_1][1],
