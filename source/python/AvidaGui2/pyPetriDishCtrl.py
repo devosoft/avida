@@ -48,6 +48,7 @@ class pyPetriDishCtrl(QWidget):
     self.m_color_lookup_functor = None
     self.m_background_rect = None
     self.m_change_list = None
+    self.m_org_clicked_on_item = None
     self.m_occupied_cells_ids = []
 
     self.m_target_dish_width = 270
@@ -56,6 +57,10 @@ class pyPetriDishCtrl(QWidget):
 
     self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"), self.setAvidaSlot)
     self.connect( self.m_canvas_view, PYSIGNAL("orgClickedOnSig"), self.m_session_mdl.m_session_mdtr, PYSIGNAL("orgClickedOnSig"))
+    self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("orgClickedOnSig"),
+      self.updateOrgClickedOutlineCellNumberSlot)
+
+
 
   def setColorLookupFunctor(self, color_lookup_functor):
     self.m_color_lookup_functor = color_lookup_functor
@@ -121,12 +126,26 @@ class pyPetriDishCtrl(QWidget):
   def setIndexer(self, indexer):
     self.m_indexer = indexer
 
+  def updateOrgClickedOutlineCellNumberSlot(self, org_clicked_on_item):
+    if self.m_org_clicked_on_item:
+      self.m_org_clicked_on_item.setPen(QPen(Qt.NoPen))
+    self.m_org_clicked_on_item = org_clicked_on_item
+    if self.m_org_clicked_on_item:
+      self.updateCellItems(self.m_org_clicked_on_item.m_population_cell.GetID())
+
+
   def updateCellItem(self, cell_id):
     if self.m_cell_info[cell_id] is None:
       self.m_cell_info[cell_id] = self.createNewCellItem(cell_id)
     cell_info_item = self.m_cell_info[cell_id]
     self.m_indexer(cell_info_item, self.m_cs_min_value, self.m_cs_value_range)
     cell_info_item.updateColorUsingFunctor(self.m_color_lookup_functor)
+
+#JMC
+    if self.m_org_clicked_on_item:
+      if cell_info_item.m_population_cell.GetID == self.m_org_clicked_on_item.m_population_cell.GetID:
+        cell_info_item.setPen(QPen(QColor(0,255,0)))      
+#JMC
 
   def updateCellItems(self, should_update_all = False):
     if self.m_cell_info:
@@ -143,6 +162,7 @@ class pyPetriDishCtrl(QWidget):
           self.updateCellItem(cell_id)
 
       if self.m_canvas: self.m_canvas.update()
+#jmc this is where you put the AllCellsPaintedSignal      
 
   def extractPopulationSlot(self, send_reset_signal = False, send_quit_signal = False):
     population_dict = {}

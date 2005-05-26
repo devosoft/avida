@@ -99,6 +99,7 @@ nontest_module_names = [
   "AvidaGui2.pyOnePop_TimelineView",
   "AvidaGui2.pyOnePop_TimelineCtrl",
 
+  "AvidaGui2.pyOrgSquareCtrl",
 
   "AvidaGui2.pyTwoPop_GraphView",
   "AvidaGui2.pyTwoPop_GraphCtrl",

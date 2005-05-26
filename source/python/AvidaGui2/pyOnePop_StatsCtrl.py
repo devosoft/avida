@@ -1,17 +1,20 @@
+
 # -*- coding: utf-8 -*-
 
 from qt import *
 from pyOnePop_StatsView import pyOnePop_StatsView
+from pyOrgSquareCtrl import pyOrgSquareCtrl
 
 
 class pyOnePop_StatsCtrl(pyOnePop_StatsView):
 
   def __init__(self,parent = None,name = None,fl = 0):
     pyOnePop_StatsView.__init__(self,parent,name,fl)
-        
+       
   def construct(self, session_mdl):
     self.m_session_mdl = session_mdl
     self.m_avida = None
+    self.m_org_square_ctrl.construct(self.m_session_mdl)
     self.connect(
       self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"),
       self.setAvidaSlot)
@@ -73,9 +76,9 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
 
 
     #TASK OUTLOOK 
-    
-    #if num_orgs_doing_a_given_task is above this number, we say the pop is doing this task
-    m_org_threshold = 1   
+
+#    #if num_orgs_doing_a_given_task is above this number, we say the pop is doing this task
+#    m_org_threshold = 1   
  
     num_not = str(stats.GetTaskLastCount(0))
 #    if num_not > m_org_threshold:
@@ -141,14 +144,21 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
     self.m_num_equals.setText(num_equals)
     
     if self.m_clicked_cell_number>= 0: 
-      self.updateOrgReportSlot(self.m_clicked_cell_number)
+      self.updateOrgReportSlot(self.m_clicked_cell_item)
 
 
 
-  def updateOrgReportSlot(self, clicked_cell_num):
+  def updateOrgReportSlot(self, clicked_cell_item):
 
-    self.m_clicked_cell_number = clicked_cell_num
-    if clicked_cell_num is None or not self.m_avida.m_population.GetCell(int(clicked_cell_num)).IsOccupied():
+    self.m_clicked_cell_item = clicked_cell_item
+    if clicked_cell_item:
+      clicked_cell_num = clicked_cell_item.m_population_cell.GetID()
+#the_item.brush().color()
+#the_item.m_population_cell.GetID()
+    if clicked_cell_item:
+      self.m_clicked_cell_number = clicked_cell_num
+#    if clicked_cell_num is None or not self.m_avida.m_population.GetCell(int(clicked_cell_num)).IsOccupied():
+    if clicked_cell_item is None or not self.m_avida.m_population.GetCell(int(clicked_cell_num)).IsOccupied():
       #PAINT the stats fields empty
       self.m_org_name.setText('empty cell')
       self.m_org_fitness.setText('-')
@@ -167,8 +177,11 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
       self.m_num_nor_clickedOrg.setText('-')
       self.m_num_xor_clickedOrg.setText('-')
       self.m_num_equals_clickedOrg.setText('-')
+      self.m_org_square_ctrl.paint(Qt.black)
 
       return
+
+    self.m_org_square_ctrl.paint(clicked_cell_item.brush().color())
 
     clicked_cell = self.m_avida.m_population.GetCell(int(clicked_cell_num))
 

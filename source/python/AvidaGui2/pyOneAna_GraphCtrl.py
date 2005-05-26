@@ -56,7 +56,8 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
     self.m_Red = ['red', Qt.red]
     self.m_Blue = ['blue', Qt.blue]
     self.m_Green = ['green', Qt.green]
-    self.m_Colors = [self.m_Red, self.m_Blue, self.m_Green]
+    self.m_ThickBlue = ['thick', Qt.blue]
+    self.m_Colors = [self.m_Red, self.m_Blue, self.m_Green, self.m_ThickBlue]
     self.m_combo_box_1_color.clear()
     self.m_combo_box_2_color.clear()
     for color in self.m_Colors:
@@ -149,7 +150,11 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
         )
         self.m_graph_ctrl.m_curve_2 = self.m_graph_ctrl.insertCurve(self.m_avida_stats_interface.m_entries[index_2][0])
         self.m_graph_ctrl.setCurveData(self.m_graph_ctrl.m_curve_2, self.m_curve_2_arrays[0], self.m_curve_2_arrays[1])
-        self.m_graph_ctrl.setCurvePen(self.m_graph_ctrl.m_curve_2, QPen(self.m_Colors[self.m_combo_box_2_color.currentItem()][1]))
+        if self.m_Colors[self.m_combo_box_2_color.currentItem()][0] is 'thick':
+          print "+++++++++++++++++++++++++++++++++++++++++++++++++++"
+          self.m_graph_ctrl.setCurvePen(self.m_graph_ctrl.m_curve_2, QPen(self.m_Colors[self.m_combo_box_2_color.currentItem()][1],3))
+        else:
+          self.m_graph_ctrl.setCurvePen(self.m_graph_ctrl.m_curve_2, QPen(self.m_Colors[self.m_combo_box_2_color.currentItem()][1]))
         self.m_graph_ctrl.setCurveYAxis(self.m_graph_ctrl.m_curve_2, QwtPlot.yRight)
         if not self.m_combo_box_1.currentItem():
           self.m_graph_ctrl.setTitle(self.m_avida_stats_interface.m_entries[index_2][0])
