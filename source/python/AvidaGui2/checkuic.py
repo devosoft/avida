@@ -42,7 +42,7 @@ for file in dir_listing:
       if time_diff > 0:
         print ui_name + ' ' + time.ctime(ui_stat.st_mtime)
         print py_name + ' ' + time.ctime(py_stat.st_mtime)
-        command =  "./pyuic " + ui_name + " > " + py_name
+        command =  "pyuic " + ui_name + " > " + py_name
         response = raw_input(command + "? (y/n)  ")
         response = response.upper()
         response = response.strip()
@@ -50,7 +50,7 @@ for file in dir_listing:
           os.system(command)
     else:
       print "No file " + py_name + " exists"
-      command =  "./pyuic " + ui_name + " > " + py_name
+      command =  "pyuic " + ui_name + " > " + py_name
       response = raw_input(command + "? (y/n)  ")
       response = response.upper()
       response = response.strip()
