@@ -1,7 +1,4 @@
-<html>
-<title>The Instruction Set File</title>
-<body
- bgcolor="#FFFFFF"
+<html> <title>The Instruction Set File</title> <body bgcolor="#FFFFFF"
  text="#000000"
  link="#0000AA"
  alink="#0000FF"
@@ -234,6 +231,26 @@ the organism will turn one cell in the appropriate direction (left or right).
 If a template is present, it will keep turning in that direction until either
 it has made a full 360 degree turn, or else it finds an organism that
 possesses the complement template.
+
+<p>     
+<b><tt>div-asex</tt></b><br>
+Same as h-divide (added for symetry with the divide-sex). 
+
+<p>     
+<b><tt>div-sex</tt></b><br>
+Divide with recombination. After the offspring genome is created, it is not 
+immediately placed into the population. Instead, it goes into "birth chamber". 
+If there is already another genome there, they recombine. If not, it waits 
+untill the next sexually produced genotype arrives. When another genome arrives
+ two random points are picked in the genome, and the area between them is 
+swapped between the two genomes in the birth chamber. Then, they are both placed
+into the population. 
+
+<p>
+<b><tt>div-asex-w</tt></b><br>
+Control for the effect of sexual genomes waiting in the birth chamber. There is 
+no recombination here, but each genome must wait in the birth chamber until 
+another one arrives before they are both placed into the population. 
 
 <br><hr>
 Project hosted by:<br>

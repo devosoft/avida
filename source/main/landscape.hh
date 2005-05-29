@@ -21,6 +21,8 @@
 #include "tMatrix.hh"
 #endif
 
+#include <fstream>
+
 class cInstSet;
 class cGenome; // aggregate
 class cCPUTestInfo; // aggregate

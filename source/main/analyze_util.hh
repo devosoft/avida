@@ -56,6 +56,7 @@ public:
 		    const char * creature_name, bool save_creatures=false);
 
   static void TaskSnapshot(cPopulation * pop, std::ofstream & fp);
+  static void TaskGrid(cPopulation * pop, std::ofstream & fp);
   static void PrintViableTasksData(cPopulation *pop, std::ofstream &fp);
   static void PrintTreeDepths(cPopulation * pop, std::ofstream & fp);
 

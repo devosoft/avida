@@ -116,7 +116,8 @@ tree of the dominant genotype, and finally its genome sequence.
       <A HREF="#disconnect_cells">disconnect_cells</A><br>
       <A HREF="#dump_fitness_grid">dump_fitness_grid</A><br>
       <A HREF="#dump_genotype_grid">dump_genotype_grid</A><br>
-      <A HREF="#dump_donor_grid">dump_donore_grid</A><br>
+      <A HREF="#dump_donor_grid">dump_task_grid</A><br>
+      <A HREF="#dump_donor_grid">dump_donor_grid</A><br>
       <A HREF="#dump_receiver_grid">dump_receiver_grid</A><br>
       <A HREF="#dump_historic_pop">dump_historic_pop</A> (<i>deprecated</i>)<br>
       <A HREF="#dump_memory">dump_memory</A><br>
@@ -275,6 +276,12 @@ a single, complete file for each trigger.
     Print out the grid of genotype IDs into idgrid.*.out", where '*' is replaced by the
     number of the current update.
 <br>
+<li><b><A NAME="dump_task_grid">dump_task_grid</A></b> <br> 
+   Print out the grid of takss that organisms do. For each organism, tasks are first 
+   encoded as a binary string (e.g. 100000001 means that organism is doing NOT and EQU
+   and then reported as a base-10 number (257 in the example above). 
+<br>
+
 <li><b><A NAME="dump_donor_grid">dump_donor_pop</A></b> <br> 
     Print out the grid of organisms who donated their merit into the  
     "donor_grid.*.out", where '*' is replaced by the

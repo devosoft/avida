@@ -1701,6 +1701,29 @@ for (int i = 0; i < population->GetWorldX(); i++) {
   fp << endl;
 }
 
+dump_task_grid
+:descr:
+/**
+* Writes out a grid of tasks done by each organism
+* Tasks are encoded as a binary string first, and then converted into a
+* base 10 number 
+**/
+:args:
+:body:
+cString filename;
+filename.Set("task_grid_%d.dat",population->GetUpdate());
+ofstream fp(filename());
+cAnalyzeUtil::TaskGrid( population, fp );
+
+/**
+* Writes out tasks done for all current organisms
+* output is the base 10 representation of 0-1 binary strings
+* representing the all tasks done, with NOT = 2^0, EQU = 2^8
+*
+* The output file is called "task_grid.*.out", where '*' is replaced by the
+* number of the current update.
+**/
+
 dump_donor_grid
 :descr:
 /**
