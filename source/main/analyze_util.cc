@@ -783,7 +783,7 @@ void cAnalyzeUtil::TaskGrid(cPopulation * pop, ofstream & fp)
     for (int j = 0; j < pop->GetWorldY(); j++) {
       int task_sum = 0; 
       if (pop->GetCell(i).IsOccupied() == true) { 
-        cOrganism * organism = pop->GetCell(i).GetOrganism();
+        cOrganism * organism = pop->GetCell(j*pop->GetWorldX()+i).GetOrganism();
         cCPUTestInfo test_info;
         cTestCPU::TestGenome( test_info, organism->GetGenome() );
         cPhenotype & test_phenotype = test_info.GetTestOrganism()->GetPhenotype();
