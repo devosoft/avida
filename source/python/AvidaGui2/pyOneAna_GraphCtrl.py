@@ -6,7 +6,7 @@ from pyAvidaStatsInterface import pyAvidaStatsInterface
 from pyOneAna_GraphView import pyOneAna_GraphView
 from qt import *
 from qwt import *
-
+import os
 
 class PrintFilter(QwtPlotPrintFilter):
   def __init__(self):
@@ -45,6 +45,9 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
     self.m_combo_box_2.clear()
     self.m_combo_box_1.setInsertionPolicy(QComboBox.AtBottom)
     self.m_combo_box_2.setInsertionPolicy(QComboBox.AtBottom)
+#jmc this should be made so it starts with no graph
+    self.m_petri_dish_dir_path = ' '
+    self.m_petri_dish_dir_exists_flag = False
 
     # set up the combo boxes with plot options
     for entry in self.m_avida_stats_interface.m_entries:
@@ -74,11 +77,8 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
       self.m_combo_box_1_color, SIGNAL("activated(int)"), self.modeActivatedSlot)
     self.connect(
       self.m_combo_box_2_color, SIGNAL("activated(int)"), self.modeActivatedSlot)
-  
-
-    self.m_x_array = zeros(2, Float)
-    self.m_y_array = zeros(2, Float)
-
+    self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("petriDishDroppedSig"),
+      self.petriDropped)  
     self.m_graph_ctrl.setAxisTitle(QwtPlot.xBottom, "Time (updates)")
     self.m_graph_ctrl.setAxisAutoScale(QwtPlot.xBottom)
 
@@ -92,19 +92,28 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
     self.m_combo_box_1_color.setCurrentItem(0)
     self.m_combo_box_2_color.setCurrentItem(2)
 
-    self.modeActivatedSlot(self.m_combo_box_1.currentItem()) 
+    self.modeActivatedSlot() 
 
     self.connect(
       self.m_session_mdl.m_session_mdtr, PYSIGNAL("printGraphSig"),
       self.printGraphSlot)
 
   def load(self, filename, colx, coly):
-    init_file = cInitFile(cString('default.workspace/freezer/2k.full/' + filename))
+    init_file = cInitFile(cString('default.workspace/freezer/' + str(self.m_petri_dish_dir_path) + '.full/' + filename))
+
+    print "loading"
+    if not init_file.IsOpen():
+      print "the file you are looking for does not exist"
+      return
+
     init_file.Load()
     init_file.Compress()
 
+
     x_array = zeros(init_file.GetNumLines(), Float)
     y_array = zeros(init_file.GetNumLines(), Float)
+    print "init_file.GetNumLines() is "
+    print init_file.GetNumLines()
 
     for line_id in range(init_file.GetNumLines()):
       line = init_file.GetLine(line_id)
@@ -112,8 +121,12 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
       y_array[line_id] = line.GetWord(coly - 1).AsDouble()
     return x_array, y_array
   
-  def modeActivatedSlot(self, index):
+  def modeActivatedSlot(self, index = None): #note: index is not used
     self.m_graph_ctrl.clear()
+
+    #check to see if we have a valid directory path to analyze
+    if self.m_petri_dish_dir_exists_flag == False:
+      return
 
     if self.m_combo_box_1.currentItem() or self.m_combo_box_2.currentItem():
 
@@ -151,7 +164,6 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
         self.m_graph_ctrl.m_curve_2 = self.m_graph_ctrl.insertCurve(self.m_avida_stats_interface.m_entries[index_2][0])
         self.m_graph_ctrl.setCurveData(self.m_graph_ctrl.m_curve_2, self.m_curve_2_arrays[0], self.m_curve_2_arrays[1])
         if self.m_Colors[self.m_combo_box_2_color.currentItem()][0] is 'thick':
-          print "+++++++++++++++++++++++++++++++++++++++++++++++++++"
           self.m_graph_ctrl.setCurvePen(self.m_graph_ctrl.m_curve_2, QPen(self.m_Colors[self.m_combo_box_2_color.currentItem()][1],3))
         else:
           self.m_graph_ctrl.setCurvePen(self.m_graph_ctrl.m_curve_2, QPen(self.m_Colors[self.m_combo_box_2_color.currentItem()][1]))
@@ -188,6 +200,54 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
       if (QPrinter.GrayScale == printer.colorMode()):
         filter.setOptions(QwtPlotPrintFilter.PrintAll & ~QwtPlotPrintFilter.PrintCanvasBackground)
       self.m_graph_ctrl.printPlot(printer, filter)
+
+
+  def gotIt( self, e):
+    print "got it"
+
+  def petriDropped(self, e): 
+      # a check in pyOneAnalyzeCtrl.py makes sure this is a valid path
+      self.m_petri_dish_dir_exists_flag = True
+      # Try to decode to the data you understand...
+      str = QString()
+      if ( QTextDrag.decode( e, str ) ) :
+        self.m_petri_dish_dir_path = str
+        self.modeActivatedSlot()
+        return
+
+      pm = QPixmap()
+      if ( QImageDrag.decode( e, pm ) ) :
+        print "it was a pixmap"
+        return
+
+      # QStrList strings
+      #strings = QStrList()
+      strings = []
+      if ( QUriDrag.decode( e, strings ) ) :
+        print "it was a uri"
+        m = QString("Full URLs:\n")
+        for u in strings:
+            m = m + "   " + u + '\n'
+        # QStringList files
+        files = []
+        if ( QUriDrag.decodeLocalFiles( e, files ) ) :
+            print "it was a file"
+            m += "Files:\n"
+            # for (QStringList.Iterator i=files.begin() i!=files.end() ++i)
+            for i in files:
+                m = m + "   " + i + '\n'
+#jmc delete
+#        self.setText( m )
+#        self.setMinimumSize(self.minimumSize().expandedTo(self.sizeHint()))
+        return
+
+      str = decode( e ) 
+      if str:
+        print " in if str"
+#jmc delete
+#        self.setText( str )
+#        self.setMinimumSize(self.minimumSize().expandedTo(self.sizeHint()))
+        return
 
 
 

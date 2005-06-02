@@ -46,6 +46,7 @@ nontest_module_names = [
   "AvidaGui2.pyAnalyzeControlsView",
   "AvidaGui2.pyAnalyzeControlsCtrl",
   "AvidaGui2.pyAvidaStatsInterface",
+  "AvidaGui2.pyDragSpaceCtrl",
   "AvidaGui2.pyFreezeDialogView",
   "AvidaGui2.pyFreezeDialogCtrl",
   "AvidaGui2.pyFreezerView",

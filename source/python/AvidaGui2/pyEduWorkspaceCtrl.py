@@ -10,6 +10,9 @@ from pyTwoOrganismCtrl import pyTwoOrganismCtrl
 from pyTwoPopulationCtrl import pyTwoPopulationCtrl
 from pyPetriConfigureCtrl import pyPetriConfigureCtrl
 from pyQuitDialogCtrl import pyQuitDialogCtrl
+#JMC
+from pyDragSpaceCtrl import pyDragSpaceCtrl
+#JMC
 
 from qt import *
 
@@ -23,7 +26,9 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
     self.m_freezer_ctrl.construct(session_mdl)
     self.m_cli_to_ctrl_dict = {}
     self.m_ctrl_to_cli_dict = {}
-
+#    self.m_drag_space_ctrl.construct(self.m_session_mdl)
+    self.m_drag_space_ctrl = pyDragSpaceCtrl(self, 'dropsite')
+   
     while self.m_widget_stack.visibleWidget():
       self.m_widget_stack.removeWidget(self.m_widget_stack.visibleWidget())
 
@@ -142,6 +147,7 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
                     "Choose a directory",
                     True);
     workspace_dir = str(workspace_dir)              
+
     if workspace_dir.strip() != "":
       self.m_session_mdl.m_current_workspce = str(workspace_dir) + "/"
       self.m_session_mdl.m_current_freezer = self.m_session_mdl.m_current_workspce + "freezer/"
@@ -157,7 +163,7 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
                     "get existing directory",
                     "Choose a directory",
                     True);
-    freezer_dir = str(freezer_dir)              
+    freezer_dir = str(freezer_dir)
     if freezer_dir.strip() != "":
       self.m_session_mdl.m_current_freezer = str(freezer_dir) + "/"
       self.m_session_mdl.m_session_mdtr.emit(

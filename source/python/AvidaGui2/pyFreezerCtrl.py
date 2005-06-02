@@ -4,7 +4,7 @@ import os
 from qt import *
 from pyFreezerView import pyFreezerView
 from pyReadFreezer import pyReadFreezer
-
+from pyDragListItem import pyDragListItem
 
 class pyFreezerCtrl(pyFreezerView):
 
@@ -17,6 +17,9 @@ class pyFreezerCtrl(pyFreezerView):
     self.connect(self.m_list_view, 
       SIGNAL("clicked(QListViewItem*, const QPoint &, int )"),
       self.clicked_itemSlot)
+    self.connect(self.m_list_view, 
+      SIGNAL("pressed(QListViewItem*, const QPoint &, int )"),
+      self.pressed_itemSlot)
 
   def construct(self, session_mdl):
     self.m_session_mdl = session_mdl
@@ -24,7 +27,7 @@ class pyFreezerCtrl(pyFreezerView):
       PYSIGNAL("doRefreshFreezerInventorySig"),
       self.createFreezerIndexSlot)
     self.createFreezerIndexSlot()
-    
+
   def createFreezerIndexSlot(self):
     empty_item = self.m_list_view.firstChild()
     while empty_item.firstChild():
@@ -58,12 +61,26 @@ class pyFreezerCtrl(pyFreezerView):
         tmp_item = QListViewItem(organism_item)
         tmp_item.setText(0,organism_name)
 
+# if mouse is pressed on list item prepare its info to be dragged        
+  def pressed_itemSlot(self, item):
+
+    if item != None and item.depth() > 0:
+      print "mouse pressed"
+      print item.text(0)
+
+      dragHolder = self.itemDrag( item.text(0), self )
+#     maybe play with iconView
+#      dragHolder.dragEnabled()
+      dragHolder.dragCopy()
+
+
+
   # if freezer item is clicked read file/directory assocatied with item
 
   def clicked_itemSlot(self, item):
    
     # check that the item is not at the top level 
-
+    
     if item != None and item.depth() > 0:
       top_level = item
       while top_level.parent():
@@ -81,3 +98,14 @@ class pyFreezerCtrl(pyFreezerView):
       thawed_item = pyReadFreezer(file_name)
       self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("doDefrostDishSig"),
         (item.text(0), thawed_item,))
+
+
+  class itemDrag(QTextDrag):
+    def __init__(self, item_name, parent=None, name=None):
+        QStoredDrag.__init__(self, 'item name (QString)', parent, name)
+        self.setText(item_name)
+
+
+
+
+

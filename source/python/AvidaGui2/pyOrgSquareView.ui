@@ -1,0 +1,62 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>pyOrgSquareView</class>
+<widget class="QWidget">
+    <property name="name">
+        <cstring>pyOrgSquareView</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>202</width>
+            <height>202</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>pyPetriDishView</string>
+    </property>
+    <vbox>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <property name="margin">
+            <number>0</number>
+        </property>
+        <property name="spacing">
+            <number>0</number>
+        </property>
+        <property name="resizeMode">
+            <enum>Minimum</enum>
+        </property>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>textLabel4</cstring>
+            </property>
+            <property name="minimumSize">
+                <size>
+                    <width>200</width>
+                    <height>200</height>
+                </size>
+            </property>
+            <property name="backgroundMode">
+                <enum>PaletteShadow</enum>
+            </property>
+            <property name="font">
+                <font>
+                    <pointsize>24</pointsize>
+                </font>
+            </property>
+            <property name="text">
+                <string>mock org square</string>
+            </property>
+            <property name="scaledContents">
+                <bool>false</bool>
+            </property>
+            <property name="alignment">
+                <set>AlignCenter</set>
+            </property>
+        </widget>
+    </vbox>
+</widget>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>
