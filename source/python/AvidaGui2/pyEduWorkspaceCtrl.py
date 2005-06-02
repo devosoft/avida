@@ -10,9 +10,7 @@ from pyTwoOrganismCtrl import pyTwoOrganismCtrl
 from pyTwoPopulationCtrl import pyTwoPopulationCtrl
 from pyPetriConfigureCtrl import pyPetriConfigureCtrl
 from pyQuitDialogCtrl import pyQuitDialogCtrl
-#JMC
-from pyDragSpaceCtrl import pyDragSpaceCtrl
-#JMC
+
 
 from qt import *
 
@@ -26,8 +24,6 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
     self.m_freezer_ctrl.construct(session_mdl)
     self.m_cli_to_ctrl_dict = {}
     self.m_ctrl_to_cli_dict = {}
-#    self.m_drag_space_ctrl.construct(self.m_session_mdl)
-    self.m_drag_space_ctrl = pyDragSpaceCtrl(self, 'dropsite')
    
     while self.m_widget_stack.visibleWidget():
       self.m_widget_stack.removeWidget(self.m_widget_stack.visibleWidget())

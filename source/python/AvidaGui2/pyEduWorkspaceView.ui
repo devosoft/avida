@@ -8,7 +8,6 @@ Python:from pyOnePopulationCtrl import pyOnePopulationCtrl
 Python:from pyTwoAnalyzeCtrl import pyTwoAnalyzeCtrl
 Python:from pyTwoOrganismCtrl import pyTwoOrganismCtrl
 Python:from pyTwoPopulationCtrl import pyTwoPopulationCtrl
-Python:from pyDragSpaceCtrl import pyDragSpaceCtrl
 
 </comment>
 <widget class="QMainWindow">
@@ -34,7 +33,7 @@ Python:from pyDragSpaceCtrl import pyDragSpaceCtrl
     <property name="minimumSize">
         <size>
             <width>195</width>
-            <height>582</height>
+            <height>575</height>
         </size>
     </property>
     <property name="maximumSize">
@@ -100,11 +99,6 @@ Python:from pyDragSpaceCtrl import pyDragSpaceCtrl
                             <width>145</width>
                             <height>200</height>
                         </size>
-                    </property>
-                </widget>
-                <widget class="pyDragSpaceCtrl">
-                    <property name="name">
-                        <cstring>m_drag_space_ctrl</cstring>
                     </property>
                 </widget>
             </widget>
@@ -209,6 +203,8 @@ Python:from pyDragSpaceCtrl import pyDragSpaceCtrl
         <property type="0">-1</property>
         <property type="1">pyFreezerView</property>
         <property type="0">-1</property>
+        <property type="1">pyFreezerView</property>
+        <property type="0">-1</property>
         <property type="pyFreezerView"></property>
         <property type="-1">1</property>
     </customwidget>
@@ -244,24 +240,10 @@ Python:from pyDragSpaceCtrl import pyDragSpaceCtrl
         <property type="0">-1</property>
         <property type="1">pyNavBarView</property>
         <property type="0">-1</property>
+        <property type="1">pyNavBarView</property>
+        <property type="0">-1</property>
         <property type="pyNavBarView"></property>
         <property type="-1">1</property>
-    </customwidget>
-    <customwidget>
-        <class>pyDragSpaceCtrl</class>
-        <header location="global">1</header>
-        <sizehint>
-            <width>-1</width>
-            <height>0</height>
-        </sizehint>
-        <container>0</container>
-        <sizepolicy>
-            <hordata>5</hordata>
-            <verdata>5</verdata>
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-        </sizepolicy>
-        <pixmap>image1</pixmap>
     </customwidget>
 </customwidgets>
 <actions>
@@ -270,7 +252,7 @@ Python:from pyDragSpaceCtrl import pyDragSpaceCtrl
             <cstring>fileNewAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>image2</iconset>
+            <iconset>image1</iconset>
         </property>
         <property name="text">
             <string>New Workspace</string>
@@ -287,7 +269,7 @@ Python:from pyDragSpaceCtrl import pyDragSpaceCtrl
             <cstring>fileOpenAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>image3</iconset>
+            <iconset>image2</iconset>
         </property>
         <property name="text">
             <string>Open Workspace...</string>
@@ -304,7 +286,7 @@ Python:from pyDragSpaceCtrl import pyDragSpaceCtrl
             <cstring>fileSaveAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>image4</iconset>
+            <iconset>image3</iconset>
         </property>
         <property name="text">
             <string>&amp;Save Workspace</string>
@@ -335,7 +317,7 @@ Python:from pyDragSpaceCtrl import pyDragSpaceCtrl
             <cstring>m_graph_print_action</cstring>
         </property>
         <property name="iconSet">
-            <iconset>image5</iconset>
+            <iconset>image4</iconset>
         </property>
         <property name="text">
             <string>&amp;Print Graph...</string>
@@ -366,7 +348,7 @@ Python:from pyDragSpaceCtrl import pyDragSpaceCtrl
             <cstring>editUndoAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>image6</iconset>
+            <iconset>image5</iconset>
         </property>
         <property name="text">
             <string>Undo</string>
@@ -383,7 +365,7 @@ Python:from pyDragSpaceCtrl import pyDragSpaceCtrl
             <cstring>editRedoAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>image7</iconset>
+            <iconset>image6</iconset>
         </property>
         <property name="text">
             <string>Redo</string>
@@ -400,7 +382,7 @@ Python:from pyDragSpaceCtrl import pyDragSpaceCtrl
             <cstring>editCutAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>image8</iconset>
+            <iconset>image7</iconset>
         </property>
         <property name="text">
             <string>Cut</string>
@@ -417,7 +399,7 @@ Python:from pyDragSpaceCtrl import pyDragSpaceCtrl
             <cstring>editCopyAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>image9</iconset>
+            <iconset>image8</iconset>
         </property>
         <property name="text">
             <string>Copy</string>
@@ -434,7 +416,7 @@ Python:from pyDragSpaceCtrl import pyDragSpaceCtrl
             <cstring>editPasteAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>image10</iconset>
+            <iconset>image9</iconset>
         </property>
         <property name="text">
             <string>Paste</string>
@@ -451,7 +433,7 @@ Python:from pyDragSpaceCtrl import pyDragSpaceCtrl
             <cstring>editFindAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>image11</iconset>
+            <iconset>image10</iconset>
         </property>
         <property name="text">
             <string>Find</string>
@@ -627,36 +609,33 @@ Python:from pyDragSpaceCtrl import pyDragSpaceCtrl
         <data format="PNG" length="1002">89504e470d0a1a0a0000000d4948445200000016000000160806000000c4b46c3b000003b149444154789cad945f4c5b551cc73fe7dc4b7b4bcba0762d45c43114323599ee6192609c51d883892ce083f1718b3ebb185f8dc91e972cf39d2d2a2f1af664b6f1e0fe3863a0718969700eb0c52142da0242a1bd6d696f7bcff101585203ceb8fd9ece39f99dcff9fe7edf939f88c562ec465f5f9fe609442c161362173c3e3eae7b7a7ac8e7f36432196cdbfe4f907c3e4f2291201e8fe338cec3737357e9e8e828aded1e229d650e1f2d51754b082110124c13a4dc5ea341eb9dc284c0558a853f3ce8cb0677ef500fde7d39d2596679e326597b8e9abb85d7a770ab16ab6983ec5a05b487a70e36f0f4e10afe408d6a558310980108478dba4a1e8233990c5d474b64ed39aa3a8fe5f3317fbf81dbd70bccfeb205947632fd74f6589c1c6ea2f70d03a58ba0c1f2c9bdc1b66de3b8256a6e11cbe7e3ee1d181b590124fe2693aeee08d223c82c3a2c24b7b874bec8f26288774f7bd054504aef0dde6e99c0eb83f9fb266323cb80a27fb0958141836044605a2ee5523393371cc646fee2da37195aa35d0c0c5b4859ac03d7e91712dcaac5adab3650a3ff9d08ef7dd8404bb48869e5d958b5b87dadc4c9a1464e9f0d0326df7ebd86bd2e310cb1bf62d384d59441f2d70a070e1c60e09489929b988681bdd9cc97170bcc4c65595f71f8e0e3301337fc24a7732467831875a47f289652b0be5e4151e6d07316c1b0c0340d8ab92023e76d66a6b2840e36d2fb7a13fee632475e6edc367ea98a90fb98b7dd6310ca0328a44761582e1bab41befabcc0ec940d28bc5e93b68e064cab84e1d9beaeb48934eac1f53b01c1b000fca496aa54b61a99fcde61662a4b4b4b23d1680be9d426173e4df3602a48ea411989a4fd590f52a8fd156b05ed9d350e3defe3cfdf4b4c7ce770ea7d3fb9f520afbe1620daeee5c26735d20b9b9cfb6811a754a439e4e5c5639a4caa1e5caf586bfc0197b78702005cb9b4cae4cd3267ce8638fe964bd72b393e39d74928d242617303a756a37f284447770dcdbffc6384a05a85de1306e9a52057c7527c7131c3c42d3f475eb2303c82d4fc3276d6811db37efeb148723082d9b08f79f97c1e5729109a9a28307cc622d2d6cdf52b2b24efe548dedb00142009862cfa879ee1a71f6cec928353511472fbf4389148b0b0e0c108081412458dfe21c9f11351e67e7358595468246d1d1e5e38a6e9e851bc39d84ab502a669331dafec0d8ec7e3e8cb06e1a881d727d1ae40180a434a8c9db129a54126ad48a7358c2b4c5352c8c374bcccdab2bb37d8719cba79fab8211f9df218e0582c261e95f8bfc04f1a1e8bc5c4dfe0a19017a725d8c60000000049454e44ae426082</data>
     </image>
     <image name="image1">
-        <data format="PNG" length="1125">89504e470d0a1a0a0000000d4948445200000016000000160806000000c4b46c3b0000042c49444154789cb5954f6c14551cc73fefcd7476b65bdaae4bb78bb5502a14d404e4801c88182d1c4c2c693da847400f9c24c68b878684238660e2b1e01f12c19493012ef2478c814412d354a46017a8a564bb6da5bbedccee767776e63d0ffb073751d483bfe49799974c3eeffb7ebf37df9fd05a530b2184040cc0042420aaf9a4d0d554800f045a6b256ae0e1e1e1d6bebebe838ee31c48a7d39b5cd7fd075e251cc7617272f2ded8d8d819cff33e0316819259537aead4a9839d5dd6d1784f91f55b0a94830242088404d304292bef68a89f520802a598fecddaa04f1a876f5c250c7c0a64cdeac686e33807e23d45e6b297c8b877f1831542614550b6599835c83c2a81b6786a75134faf2f1169f12997350881d9021d0903e06de0745d3160a6d3e94dbd5b0a64dcbb94b5831d0e3375ab892b1772dcf9790528543f8dd0d367b36768153b5e31503a0f1aecb004580b44ffac58baae8b1714f0833c7638cc8dab303a320f4822ab4c7a37c69196203de3319d5ce1c4d13c733331dedc67a129a154fd128401ab0616d55a130ac3d42d93d1913940d13fd0c9ee0183685c60da01c5421bd72f7a8c8efccef9afd374267ad93d642365be0636a0d28ec7600941d9e6f23917f0e97f23ce5bef35d19ec863da0ed9059b2be70bec196c66dfa10ec0e49b338f7017258651bf95021035c595429bb0903248fe52a2b5b595dd7b4d945cc2340cdca536be389ee3f67886c5798f773fe8e0dac508c989659277a2180da4ca4ff07821058b8b251445d63d6b13ed1098a6417e39cac85197dbe31962ab9bd9f1f22a226d45366f6d0620fdb08c900d281af6110284b20085b414861d905d88f2e52739ee8cbb8022143259d3dd84691730aa2d52da441a8de0c6958068870022a41e9629ad3473fd3b8fdbe319dadb9b4924da994d2d716c7896fbe35152f78b48245d6b2da4507faf582be8eaf159b721cc837b05ae7debb1f79d08cb8b515edad942a22bc4b1c33eb3d34b1c797f06af90a72d16e2f96d9a74aa11dca8586b222d01af0fb60070f6c402d72f15d97f28c6f6d7027a5f5ce6c3233dc4e2ede496b278be4fff608cee8d3e1add806aeca51094cbb06397c1ecc328e746537c7e3ccdb5cb1136bf60635882d4d41c6ec6836ab37efa214f72208ed9f4d7cdd38ee310280542e38b1c43fb6de26b3672e1ec3cc99bcb246f66a938a3241ab3e91f7c861fbf77710b1e5e49915bae974203ba0e9e9c9cbc373d6d6d305a040a89c2a77f50b27d5782bbbf7acccf28349235dd16cf6dd374f7295e1de8a45c02d37499182b01cc0201a085d61a2144d8b2ac8fb6ed340e77240c4261890e04c250185262546d534a032154b59e0ad394e41c98182bf268ce6721ed9f064e0253356f6da2e24c1f030f783c15fe6da680af8021602bd051532ca9b8521488559f61aa86c29343578fbf0264a94c906c7d3409214c20043457a116ff6de6795578012889ff6b98fe016ea0ce1c203e47720000000049454e44ae426082</data>
-    </image>
-    <image name="image2">
         <data format="PNG" length="173">89504e470d0a1a0a0000000d4948445200000016000000160806000000c4b46c3b0000007449444154789cedd5c109c0200c05d06fe936812c10b2ffdd85d25385b6a991480f053f081af0291210f828c5a9d9c4de96cd2b9ad9eb0000660e2fe0c2519839c4f70c4c446d5e6b3538cf928245e4b2f6f014acaa8fda1d4fc1a5741b22079f9d111d96ea8a912c78c10bee64e60719f57e9203ad452a040318f5f70000000049454e44ae426082</data>
     </image>
-    <image name="image3">
+    <image name="image2">
         <data format="PNG" length="210">89504e470d0a1a0a0000000d4948445200000016000000160806000000c4b46c3b0000009949444154789ced94410e85200c445f89c7367f61bc775d2848a42860ffced9548bbe8e13043e1d928177f481a123dc2b34f6f47a3de2b865a8843f4001982a0b3d5f62c58300aa1ad70550449ab9d507a773a8a4ba4f92a2df333c64c63bebbd82e5b8addecbcc7820eb4266c639745dfa80f36faf66c66fa19c3f882fb470ec05cdc0bed07893f68e171492635f686c3eeff6ba3c8fdd366dc4c0452cf153a9590000000049454e44ae426082</data>
     </image>
-    <image name="image4">
+    <image name="image3">
         <data format="PNG" length="217">89504e470d0a1a0a0000000d4948445200000016000000160806000000c4b46c3b000000a049444154789cd5954d0a802010859fd14668e18de662d222bc98376a21b4ac451992c66469e0b7f187f1f11c47052a218e762daddbfb9e99f6568f80b5364b8588ce35440400e80a398ce8f99034d2292cc37c8ebd530feb583a05e954341f8a027b2a7d3a1f09bf854dc5d5d953aa396e4f38cab199e2d2e108abe156f82e30977fcb4d8ff942d75dbebed2e143953a93f6caad3d6111f44b7d4f820ff9c0069bb51ecd122066740000000049454e44ae426082</data>
     </image>
-    <image name="image5">
+    <image name="image4">
         <data format="PNG" length="725">89504e470d0a1a0a0000000d4948445200000016000000160806000000c4b46c3b0000029c49444154789c8d95ad76db4010853ff718cc3289d950d06136344c98c362964087256f503f426161021be6b2842550612e8be14299496c866dc14ab2fc77da2192665777eedc3b5af53813afafaf414448d3742f6f6600a82a005555912409575757bdeebefe396011613299b440876b4d946589f7fe68cf596080cd6673047658485571cefd3ff02900333b2a70aa23806fa792799e07336b9938e770ceede9dde82f2247fa9e65acaa244942599688486b54374eb5ff4fc6105b3c9c882e6853ec9c142719376c4e31ede655756f42ba71a40dc06ab50a5996311c0ecf8237467e7e7e022092309f5fb7787b8cdfdfdf83f79efc2347668288b40087d786695994e479ceb6daf2f0f01066b319d7d7d7bd5e1774b3f154c5163580d34c019ca408020e7ce159afffb0dd16a81a1717198bc5224ad130bd9c5ee2d2145503538e6c3103849c4f3e78656a53d2af94e79767fc57fcfad4946c7411419f9e7e85b228c3ffc457f80aa3300a12248cc228acd7ebf0e3fbcf301e8fc360908524494236c842bfda56dcdddd9c75f73052522e999223cc98311e8f4964486905cfbf5ea8aa8a7490d237c0fb22cea31988106b48ed36385c54dc14c4f160dfb9c133b4217fd88019e97018d76b77fa6551e045a29e66b4be39882ed69d38031520e604f0b6c5886788df6c5a4f1cf5b835096b00b17628148b35746f673b39d278da0945e9236065e705adc976371a200a76b8e2302ba9fb6c7a633299f20debb06cc96a7cb4faba07ea9a6d35680d58cb39180c582cee2263ef7d631588412540159d338b30d2b0b21d183bcd31430496cb25f3f9bcd7cfb28c8fb70f7ebfbda16ac4f347d81b3ee93ccb0eb2edb39ea6e572c9e3e3630f3a87d06ab50aabd51bdbfaffa5686dcace99dd5f0354cb785f1993e984dbdb5beeefef5bbcbfd1f69e0c0f8448030000000049454e44ae426082</data>
     </image>
-    <image name="image6">
+    <image name="image5">
         <data format="PNG" length="172">89504e470d0a1a0a0000000d4948445200000016000000160806000000c4b46c3b0000007349444154789ced92c10e80200840b1ef661d1cff4d876aa888a17669f9360f283ed80060f159425f3a71f53602e08e992b098801d02854176ae47f21ce1fb5b05d38eddc9060d0f11379635b3bc92bd518e239a943ec1d5ab7785cee107be4b215af4091f894de47181ecea59ede9ec59f380062ac28b10fe74fef0000000049454e44ae426082</data>
     </image>
-    <image name="image7">
+    <image name="image6">
         <data format="PNG" length="173">89504e470d0a1a0a0000000d4948445200000016000000160806000000c4b46c3b0000007449444154789ced92c10ac02008406ddf2d3b84ffed0ea3586a26d165e0830ea53e8504487e4b910f5489f19ea5a3ca0f8a896365b306c42dd613c649bdc2598316136219f0f936c0a2ef00d75a62614d3ab22996f2a362ffa337c5ebede962aad1a2e84aaaa2f750dd12748c0fd0ab9324677800596e28b1bb69e3510000000049454e44ae426082</data>
     </image>
-    <image name="image8">
+    <image name="image7">
         <data format="PNG" length="187">89504e470d0a1a0a0000000d4948445200000016000000160806000000c4b46c3b0000008249444154789ccdd341128020080550e8e02ebc38ad3273503e48537fe3e48c4f2425fa28e29c6f39920bf9276cb60185358877611388c2576418cda015f520b4e6b55be109dc0622b8e22acf31056e18dfdff80606aa551cc63564c4dcf80cd0201d577a5c85a8845fdc025ea5307afccd07e23a1df283ec2b37d9ad5fb4dfefd49cfbf72facb651b89d0000000049454e44ae426082</data>
     </image>
-    <image name="image9">
+    <image name="image8">
         <data format="PNG" length="248">89504e470d0a1a0a0000000d4948445200000016000000160806000000c4b46c3b000000bf49444154789cd593410a83301045df488ee51dbc8c3ba98bf46a9eabd385350d266362444a3f0c4266fcf3f824f06f12402b66da8c55f3de2212cf9d92cb98c0ba2d7c4544cf9a07638bbad53c4491235ecf7cc1623697a92540c11ff4fda75275015d24a9389e7d6f53df4fe4ccab323eea0f03c0c4b2a0712ce6add89b59b7661c3be095985f261679ee4ebcc22c9788551fe6a2cbc4969a894bcb6f23ee361aab62e252c57294dfbfb610bbf2c897b8a46cc6677eaa519571fa087ea83762da9aba45b637520000000049454e44ae426082</data>
     </image>
-    <image name="image10">
+    <image name="image9">
         <data format="PNG" length="270">89504e470d0a1a0a0000000d4948445200000016000000160806000000c4b46c3b000000d549444154789cc5955d0a84300c8427e2a90a9e6c8b0f4b3dd982d7ca3e58d7fe4cd0ba5d7640024df265da0a057e2439c9eb8d9eaa8841a0c9aad8c82ab32f9c425be1e30e0dcf00c00308f0b3a7a07410a9d7142e00b42c5a5fab696b979b1c837fc0c316b6e4165b64f78d716359919bdc4570de47c04732dd5e5bcc35f0c97762ae787936dccf7513577e79f48c4b27aa0f1327b240f5117fcbe348aa33b6e0224b054d0746b8025e2e3b3e73cde0dd1c97f02e8ed9d0af1db381224bdf33eee698a934a0f617b45540d00bcf4ca08fc0dff406e325c198b16b67fb0000000049454e44ae426082</data>
     </image>
-    <image name="image11">
+    <image name="image10">
         <data format="PNG" length="662">89504e470d0a1a0a0000000d4948445200000016000000160806000000c4b46c3b0000025d49444154789cd593a172db4010863f670a56ecc42278d0653693a0c21c68d6c2e60df21a818111349499c254a8329b55f0e089ddb15ba602b79d6692d699b6d399fee86e67e7db7f77efe07fd3e2c74bd775b3730eef3d5115002382b5166b2d5757578b1729bf02b76d3b0f8703b92d58aed7600400ef1ce3c70306a8aa8aebebeb57c117dfa06ddb525dd754efb600a82a49138a123532ec3ac42b9bcde655ce2ffabe9f87c340fde13dcb4d8daaa24e48ee12c6823808c107969b1a8a9ce3f1f8aa515c38e7c8ada5aa6b00c45f129c67d223938c88e6c860d118b1d592d139baae9bcf83a78965b5465134801b1d2e1f4945c0e350096408ea154490c2e0bd3fef5853c2e486a0019f4d84f58418418362b0408e8b23c924501093314dd359f01b809814112025144015f1964c0bbc1b484b07e4688880c029ebd78e4141f5b434fd76864c053f1e084b0f8580265440634044ce838bbcc03987a61350a3a2285e1d5a4414d0708aa598082162ad3d0fb6d6e287cfa498508d274050447370428c91af8d10fd4481608c390b5e00dcddddcd8e80a9de420248e804840856f03e02907d729465c9ba5ae3468731e6a79fe50260b55a6102c4ee40a6894c33f2cb0cb106512814f8f899b22cb9b9b959b8d1f1f8f848d334b46dfbe29bfe5eadeffbf9783c323a871881ecb4200d1151a8eb9aed76bb00188661eeba8efd7e8f3186ed76cb6ab57ae2fe591b5dd7cdde7b628c8808799e63ada5aaaa67b9bbdd6e6e9a06ef3d755d3f29fec7eafb7ebebdbd9dadb5735996f3fdfdfdfca2e3dfd5c3c3c3dc340dd334b1d96cfe1e184e63dceff7a494fe26f61fe90bbc4c5e59b8ac895e0000000049454e44ae426082</data>
     </image>
 </images>
@@ -773,6 +752,5 @@ Python:from pyDragSpaceCtrl import pyDragSpaceCtrl
 <includehints>
     <includehint>pynavbarctrl.h</includehint>
     <includehint>pyfreezerctrl.h</includehint>
-    <includehint>pydragspacectrl.h</includehint>
 </includehints>
 </UI>
