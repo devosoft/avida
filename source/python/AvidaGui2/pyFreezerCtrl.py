@@ -4,7 +4,6 @@ import os
 from qt import *
 from pyFreezerView import pyFreezerView
 from pyReadFreezer import pyReadFreezer
-from pyDragListItem import pyDragListItem
 
 class pyFreezerCtrl(pyFreezerView):
 
