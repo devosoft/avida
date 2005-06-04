@@ -34,6 +34,9 @@
 				70486BA50826722F009328F0,
 				70486BA60826722F009328F0,
 				70486BA70826722F009328F0,
+				706D30CD0852328F00D7DC8F,
+				706D30FD0852363400D7DC8F,
+				706D31010852366400D7DC8F,
 			);
 			isa = PBXCopyFilesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -88,6 +91,76 @@
 		};
 		70486BB708267635009328F0 = {
 			fileRef = DCC3164D07626CF3008F7A48;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		706D30CC0852328F00D7DC8F = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = tInstLib.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		706D30CD0852328F00D7DC8F = {
+			fileRef = 706D30CC0852328F00D7DC8F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		706D30FB0852363400D7DC8F = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = hardware_smt.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		706D30FC0852363400D7DC8F = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			path = hardware_smt.cc;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		706D30FD0852363400D7DC8F = {
+			fileRef = 706D30FB0852363400D7DC8F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		706D30FE0852363400D7DC8F = {
+			fileRef = 706D30FC0852363400D7DC8F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		706D30FF0852366400D7DC8F = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = hardware_smt_thread.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		706D31000852366400D7DC8F = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			path = hardware_smt_thread.cc;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		706D31010852366400D7DC8F = {
+			fileRef = 706D30FF0852366400D7DC8F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		706D31020852366400D7DC8F = {
+			fileRef = 706D31000852366400D7DC8F;
 			isa = PBXBuildFile;
 			settings = {
 			};
@@ -2245,6 +2318,11 @@
 				DCC30FCB0762539D008F7A48,
 				DCC30FCC0762539D008F7A48,
 				DCC30FCD0762539D008F7A48,
+				706D30CC0852328F00D7DC8F,
+				706D30FB0852363400D7DC8F,
+				706D30FC0852363400D7DC8F,
+				706D30FF0852366400D7DC8F,
+				706D31000852366400D7DC8F,
 			);
 			isa = PBXGroup;
 			path = cpu;
@@ -9474,6 +9552,8 @@
 				DCC316DB0762876F008F7A48,
 				70CBFCEE0815E7FE0078D8CC,
 				70CBFCF10815E8370078D8CC,
+				706D30FE0852363400D7DC8F,
+				706D31020852366400D7DC8F,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
