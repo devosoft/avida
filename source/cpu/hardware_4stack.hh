@@ -110,7 +110,7 @@ private:
 public:
   cHardware4Stack(cOrganism * in_organism, cInstSet * in_inst_set);
   explicit cHardware4Stack(const cHardware4Stack &);
-  ~cHardware4Stack();
+  ~cHardware4Stack() { ; }
   void Recycle(cOrganism * new_organism, cInstSet * in_inst_set);
   static cInstLibBase *GetInstLib();
   static cString GetDefaultInstFilename() { return "inst_lib.4stack"; }

@@ -284,11 +284,6 @@ cHardware4Stack::cHardware4Stack(const cHardware4Stack &hardware_4stack)
 }
 
 
-cHardware4Stack::~cHardware4Stack()
-{
-}
-
-
 void cHardware4Stack::Recycle(cOrganism * new_organism, cInstSet * in_inst_set)
 {
   cHardwareBase::Recycle(new_organism, in_inst_set);
