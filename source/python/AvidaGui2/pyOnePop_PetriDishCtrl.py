@@ -3,7 +3,7 @@
 from qt import *
 from pyMapProfile import pyMapProfile
 from pyOnePop_PetriDishView import pyOnePop_PetriDishView
-
+import os
 
 class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
 
@@ -26,11 +26,13 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"), self.setAvidaSlot)
     self.connect(self.m_petri_dish_toggle, SIGNAL("clicked()"), self.ToggleDishSlot)
     self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("doDefrostDishSig"), self.RenameDishSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("doDefrostDishSig"), self.MakeConfigVisiableSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("doefrostDishSig"), self.MakeConfigVisiableSlot)
     self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("doDisablePetriDishSig"), self.SetDishDisabledSlot)
     self.connect(self.m_zoom_spinbox, SIGNAL("valueChanged(int)"), self.m_petri_dish_ctrl.zoomSlot)
     self.connect(self.m_petri_dish_ctrl, PYSIGNAL("zoomSig"), self.m_zoom_spinbox.setValue)
     self.connect(self.m_mode_combobox, SIGNAL("activated(int)"), self.modeActivatedSlot)
+    self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("petriDishDroppedInPopViewSig"),
+      self.petriDropped)  
 
     self.m_mode_combobox.clear()
     self.m_mode_combobox.setInsertionPolicy(QComboBox.AtBottom)
@@ -130,3 +132,14 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     print "send_reset_signal = " + str(send_reset_signal)
     print "send_quit_signal = " + str(send_quit_signal)
 
+  def petriDropped(self, e):
+    print "caught it"
+    # Try to decode to the data you understand...
+    string = QString()
+    if ( QTextDrag.decode( e, string ) ) :
+      dishName = string
+      self.PopulationTextLabel.setText(dishName)
+      current_page = self.m_petri_dish_widget_stack.visibleWidget()
+      current_page_int = self.m_petri_dish_widget_stack.id(current_page)
+      if (current_page_int == 0):
+         self.ToggleDishSlot()

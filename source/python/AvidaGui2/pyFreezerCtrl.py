@@ -64,8 +64,6 @@ class pyFreezerCtrl(pyFreezerView):
   def pressed_itemSlot(self, item):
 
     if item != None and item.depth() > 0:
-      print "mouse pressed"
-      print item.text(0)
 
       dragHolder = self.itemDrag( item.text(0), self )
 #     maybe play with iconView
