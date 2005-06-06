@@ -236,7 +236,7 @@ public:
   cHeadMultiMem FindLabel(const cCodeLabel & in_label, int direction);
   cHeadMultiMem FindFullLabel(const cCodeLabel & in_label);
 	
-  int GetType() const { return HARDWARE_TYPE_CPU_4STACK; }
+  int GetType() const { return HARDWARE_TYPE_CPU_SMT; }
   bool InjectParasite(double mut_multiplier);
   bool InjectHost(const cCodeLabel & in_label, const cGenome & injection);
   int InjectThread(const cCodeLabel &, const cGenome &) { return -1; }

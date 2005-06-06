@@ -34,6 +34,12 @@
 				70486BA60826722F009328F0,
 				70486BA70826722F009328F0,
 				706D3158085243CD00D7DC8F,
+				706D32E90854A39800D7DC8F,
+				706D32EA0854A39900D7DC8F,
+				706D32EB0854A39900D7DC8F,
+				706D330F0854A7B900D7DC8F,
+				706D33110854A7D700D7DC8F,
+				706D33280854A90D00D7DC8F,
 			);
 			isa = PBXCopyFilesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -173,6 +179,66 @@
 			path = hardware_smt_constants.h;
 			refType = 4;
 			sourceTree = "<group>";
+		};
+		706D32E90854A39800D7DC8F = {
+			fileRef = DCC311950762539F008F7A48;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		706D32EA0854A39900D7DC8F = {
+			fileRef = DCC311970762539F008F7A48;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		706D32EB0854A39900D7DC8F = {
+			fileRef = DCC311980762539F008F7A48;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		706D330E0854A7B900D7DC8F = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = organism.smt;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		706D330F0854A7B900D7DC8F = {
+			fileRef = 706D330E0854A7B900D7DC8F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		706D33100854A7D700D7DC8F = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = genesis.smt;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		706D33110854A7D700D7DC8F = {
+			fileRef = 706D33100854A7D700D7DC8F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		706D33270854A90D00D7DC8F = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = inst_set.smt;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		706D33280854A90D00D7DC8F = {
+			fileRef = 706D33270854A90D00D7DC8F;
+			isa = PBXBuildFile;
+			settings = {
+			};
 		};
 		70CBFCE80815E7FE0078D8CC = {
 			fileEncoding = 30;
@@ -4213,13 +4279,16 @@
 				DCC311810762539F008F7A48,
 				DCC311820762539F008F7A48,
 				DCC311830762539F008F7A48,
+				706D33100854A7D700D7DC8F,
 				DCC311840762539F008F7A48,
 				DCC311850762539F008F7A48,
 				DCC311860762539F008F7A48,
+				706D33270854A90D00D7DC8F,
 				DCC311870762539F008F7A48,
 				DCC311890762539F008F7A48,
 				DCC3118A0762539F008F7A48,
 				DCC3118B0762539F008F7A48,
+				706D330E0854A7B900D7DC8F,
 				DCC3118C0762539F008F7A48,
 			);
 			isa = PBXGroup;

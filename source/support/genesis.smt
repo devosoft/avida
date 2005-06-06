@@ -8,23 +8,24 @@ VERSION_ID 2.3.1		# Do not change this value!
 ### Architecture Variables ###
 MAX_UPDATES  -1         # Maximum updates to run simulation (-1 = no limit)
 MAX_GENERATIONS -1      # Maximum generations to run simulation (-1 = no limit)
-END_CONDITION_MODE 0	# End run when ...
-			# 0 = MAX_UPDATES _OR_ MAX_GENERATIONS is reached
-			# 1 = MAX_UPDATES _AND_ MAX_GENERATIONS is reached
-WORLD-X 60		# Width of the world in Avida mode.
-WORLD-Y 60		# Height of the world in Avida mode.
-RANDOM_SEED 0		# Random number seed. (0 for based on time)
-HARDWARE_TYPE 1		# 0 = Original CPUs
-			# 1 = New, Stack-based CPUs
-MAX_CPU_THREADS 1	# Number of Threads CPUs can spawn
+END_CONDITION_MODE 0    # End run when ...
+                        # 0 = MAX_UPDATES _OR_ MAX_GENERATIONS is reached
+                        # 1 = MAX_UPDATES _AND_ MAX_GENERATIONS is reached
+WORLD-X 60              # Width of the world in Avida mode.
+WORLD-Y 60              # Height of the world in Avida mode.
+RANDOM_SEED 0           # Random number seed. (0 for based on time)
+HARDWARE_TYPE 2         # 0 = Original CPUs
+                        # 1 = New, Stack-based CPUs
+                        # 2 = Newer -- Stacks, Memory, Threading
+MAX_CPU_THREADS 1       # Number of Threads CPUs can spawn
 
 ### Configuration Files ###
 DEFAULT_DIR ../work/              # Directory in which config files are found
-INST_SET inst_set.4stack          # File containing instruction set
+INST_SET inst_set.smt             # File containing instruction set
 EVENT_FILE events.cfg             # File containing list of events during run
 ANALYZE_FILE analyze.cfg          # File used for analysis mode
 ENVIRONMENT_FILE environment.cfg  # File that describes the environment
-START_CREATURE organism.4stack    # Organism to seed the soup
+START_CREATURE organism.smt       # Organism to seed the soup
 
 ### Reproduction ###
 BIRTH_METHOD 4   # 0 = Replace random organism in neighborhood

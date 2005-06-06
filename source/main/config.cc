@@ -451,7 +451,7 @@ void cConfig::PrintGenesis(const cString & filename)
      << "# For more information, see doc/genesis.html" << endl
      << "#############################################################################" << endl
      << endl
-     << "VERSION_ID " << AVIDA_VERSION << "   # Do not change this value."
+     << "VERSION_ID " << VERSION << "   # Do not change this value."
      << endl;
 
   // Loop through the groups, and print out all of the variables.
@@ -568,10 +568,10 @@ void cConfig::ProcessConfiguration(int argc, char * argv[], cGenesis & genesis)
   }
 
   cString version_id = genesis.ReadString("VERSION_ID", "Unknown");
-  if (genesis.IsOpen() == true && version_id != AVIDA_VERSION) {
+  if (genesis.IsOpen() == true && version_id != VERSION) {
     cerr << "/  WARNING   WARNING   WARNING   WARNING   WARNING  \\" << endl
 	 << "|   Using incorrect genesis file.                   |" << endl
-	 << "|   Version needed = \"" << AVIDA_VERSION
+	 << "|   Version needed = \"" << VERSION
 	 << "\".  Version used = \"" << version_id() << "\"   |" << endl
 	 << "\\  WARNING   WARNING   WARNING   WARNING   WARNING  /" << endl
 	 << endl;
@@ -649,7 +649,7 @@ void cConfig::ProcessConfiguration(int argc, char * argv[], cGenesis & genesis)
     } else if (cur_arg == "-version" || cur_arg == "-v") {
       cout << " by Charles Ofria" << endl;
       cout << " designed by Charles Ofria, Chris Adami, Travis Collier, C. Titus Brown, and Claus Wilke" << endl;
-      cout << " For more information, see: http://dllab.caltech.edu/avida/" << endl;
+      cout << " For more information, see: http://devolab.cse.msu.edu/software/avida/" << endl;
       exit(0);
     } else if (cur_arg == "-set") {
       if (arg_num + 1 == argc || arg_num + 2 == argc) {

@@ -75,7 +75,7 @@ int main(int argc, char * argv[])
   signal(SIGINT, ExitAvida);
 
   // output copyright message
-  printf( "Avida version %s\nCopyright (C) 1993-2003 California Institute of Technology.\n\n", AVIDA_VERSION );
+  printf( "Avida %s\nCopyright (C) 1993-2003 California Institute of Technology.\n\n", AVIDA_VERSION );
   printf( "Avida comes with ABSOLUTELY NO WARRANTY.\n" );
   printf( "This is free software, and you are welcome to redistribute it\nunder certain conditions. See file COPYING for details.\n\n" );
 
