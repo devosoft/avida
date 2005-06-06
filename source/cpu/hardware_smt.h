@@ -7,8 +7,8 @@
  *
  */
 
-#ifndef HARDWARE_SMT_HH
-#define HARDWARE_SMT_HH
+#ifndef HARDWARE_SMT_H
+#define HARDWARE_SMT_H
 
 #include <iomanip>
 
@@ -21,23 +21,26 @@
 #ifndef DEFS_HH
 #include "defs.hh"
 #endif
-#ifndef FOURSTACK_HEAD_HH
-#include "4stack_head.hh"
+#ifndef HEAD_MULTI_MEM_HH
+#include "head_multi_mem.hh"
 #endif
 #ifndef HARDWARE_BASE_HH
 #include "hardware_base.hh"
 #endif
-#ifndef HARDWARE_4STACK_CONSTANTS_HH
-#include "hardware_4stack_constants.hh"
+#ifndef HARDWARE_SMT_CONSTANTS_H
+#include "hardware_smt_constants.h"
 #endif
-#ifndef HARDWARE_4STACK_THREAD_HH
-#include "hardware_4stack_thread.hh"
+#ifndef HARDWARE_SMT_THREAD_H
+#include "hardware_smt_thread.h"
 #endif
 #ifndef STRING_HH
 #include "string.hh"
 #endif
 #ifndef TARRAY_HH
 #include "tArray.hh"
+#endif
+#ifndef TINSTLIB_H
+#include "tInstLib.h"
 #endif
 
 class cInstSet;
@@ -62,7 +65,7 @@ class cInjectGenotype;
 class cCodeLabel;
 class cCPUMemory;
 class cCPUStack; // aggregate
-class c4StackHead; // access
+class cHeadMultiMem; // access
 class cGenome;
 class cHardwareSMT_Thread; // access
 class cInjectGenotype;
@@ -77,14 +80,12 @@ class cHardwareSMT : public cHardwareBase {
 public:
   typedef bool (cHardwareSMT::*tMethod)();
 private:
-  static cInstLib4Stack *s_inst_slib;
-  static cInstLib4Stack *initInstLib(void);
-  tHardware4StackMethod *m_functions;
+  static tInstLib<cHardwareSMT::tMethod>* s_inst_slib;
+  static tInstLib<cHardwareSMT::tMethod>* initInstLib(void);
+  tMethod* m_functions;
 private:
-		tArray<cCPUMemory> memory_array;          // Memory...
-																							//cCPUStack global_stack;     // A stack that all threads share.
-  cCPUStack global_stacks[NUM_GLOBAL_STACKS];
-  //int thread_time_used;
+    tArray<cCPUMemory> memory_array;          // Memory...
+  cCPUStack global_stacks[nHardwareSMT::NUM_GLOBAL_STACKS];
 	
   tArray<cHardwareSMT_Thread> threads;
   int thread_id_chart;
@@ -151,28 +152,28 @@ public:
 	
   int GetCurHead() const { return threads[cur_thread].cur_head; }
   
-  const c4StackHead & GetHead(int head_id) const
+  const cHeadMultiMem & GetHead(int head_id) const
   { return threads[cur_thread].heads[head_id]; }
-  c4StackHead & GetHead(int head_id) 
+  cHeadMultiMem & GetHead(int head_id) 
   { return threads[cur_thread].heads[head_id];}
   
-  const c4StackHead & GetHead(int head_id, int thread) const
+  const cHeadMultiMem & GetHead(int head_id, int thread) const
   { return threads[thread].heads[head_id]; }
-  c4StackHead & GetHead(int head_id, int thread) 
+  cHeadMultiMem & GetHead(int head_id, int thread) 
   { return threads[thread].heads[head_id];}
 	
-  const c4StackHead & GetActiveHead() const { return GetHead(GetCurHead()); }
-  c4StackHead & GetActiveHead() { return GetHead(GetCurHead()); }
+  const cHeadMultiMem & GetActiveHead() const { return GetHead(GetCurHead()); }
+  cHeadMultiMem & GetActiveHead() { return GetHead(GetCurHead()); }
 	
   void AdjustHeads();
 	
-  inline const c4StackHead & IP() const
+  inline const cHeadMultiMem & IP() const
 	{ return threads[cur_thread].heads[HEAD_IP]; }
-  inline c4StackHead & IP() { return threads[cur_thread].heads[HEAD_IP]; }
+  inline cHeadMultiMem & IP() { return threads[cur_thread].heads[HEAD_IP]; }
 	
-  inline const c4StackHead & IP(int thread) const
+  inline const cHeadMultiMem & IP(int thread) const
   { return threads[thread].heads[HEAD_IP]; }
-  inline c4StackHead & IP(int thread) 
+  inline cHeadMultiMem & IP(int thread) 
   { return threads[thread].heads[HEAD_IP]; }
 	
 	
@@ -227,13 +228,13 @@ public:
   }
 	
   // Complex label manipulation...
-  c4StackHead FindLabel(int direction);
+  cHeadMultiMem FindLabel(int direction);
   int FindLabel_Forward(const cCodeLabel & search_label,
 												const cGenome & search_genome, int pos);
   int FindLabel_Backward(const cCodeLabel & search_label,
 												 const cGenome & search_genome, int pos);
-  c4StackHead FindLabel(const cCodeLabel & in_label, int direction);
-  c4StackHead FindFullLabel(const cCodeLabel & in_label);
+  cHeadMultiMem FindLabel(const cCodeLabel & in_label, int direction);
+  cHeadMultiMem FindFullLabel(const cCodeLabel & in_label);
 	
   int GetType() const { return HARDWARE_TYPE_CPU_4STACK; }
   bool InjectParasite(double mut_multiplier);
@@ -245,15 +246,15 @@ public:
   bool isEmpty(int mem_space_used);
 	
   bool TriggerMutations(int trigger);
-  bool TriggerMutations(int trigger, c4StackHead & cur_head);
+  bool TriggerMutations(int trigger, cHeadMultiMem & cur_head);
   bool TriggerMutations_ScopeGenome(const cMutation * cur_mut,
-																		cCPUMemory & target_memory, c4StackHead & cur_head, const double rate);
+																		cCPUMemory & target_memory, cHeadMultiMem & cur_head, const double rate);
   bool TriggerMutations_ScopeLocal(const cMutation * cur_mut,
-																	 cCPUMemory & target_memory, c4StackHead & cur_head, const double rate);
+																	 cCPUMemory & target_memory, cHeadMultiMem & cur_head, const double rate);
   int TriggerMutations_ScopeGlobal(const cMutation * cur_mut,
-																	 cCPUMemory & target_memory, c4StackHead & cur_head, const double rate);
+																	 cCPUMemory & target_memory, cHeadMultiMem & cur_head, const double rate);
   void TriggerMutations_Body(int type, cCPUMemory & target_memory,
-														 c4StackHead & cur_head);
+														 cHeadMultiMem & cur_head);
 	
   void ReadInst(const int in_inst);
 	
@@ -384,15 +385,15 @@ inline cCPUMemory & cHardwareSMT::GetMemory()
 
 inline const cCPUMemory & cHardwareSMT::GetMemory(int mem_space) const
 {
-  if(mem_space >= NUM_MEMORY_SPACES)
-    mem_space %= NUM_MEMORY_SPACES;
+  if(mem_space >= nHardwareSMT::NUM_MEMORY_SPACES)
+    mem_space %= nHardwareSMT::NUM_MEMORY_SPACES;
   return memory_array[mem_space];
 }
 
 inline cCPUMemory & cHardwareSMT::GetMemory(int mem_space)
 {
-	if(mem_space >= NUM_MEMORY_SPACES)
-    mem_space %= NUM_MEMORY_SPACES;
+	if(mem_space >= nHardwareSMT::NUM_MEMORY_SPACES)
+    mem_space %= nHardwareSMT::NUM_MEMORY_SPACES;
   return memory_array[mem_space];
 }
 
@@ -440,7 +441,7 @@ inline void cHardwareSMT::SetThreadOwner(cInjectGenotype * in_genotype)
 
 inline int cHardwareSMT::GetStack(int depth, int stack_id, int in_thread) const
 {
-  if(stack_id<0 || stack_id>NUM_STACKS) stack_id=0;
+  if(stack_id<0 || stack_id > nHardwareSMT::NUM_STACKS) stack_id=0;
   
   if(in_thread==-1)
     in_thread=cur_thread;
@@ -466,52 +467,52 @@ inline int cHardwareSMT::GetStack(int depth, int stack_id, int in_thread) const
 	
 inline cCPUStack& cHardwareSMT::Stack(int stack_id)
 {
-  if(stack_id >= NUM_STACKS)
+  if(stack_id >= nHardwareSMT::NUM_STACKS)
 	{
 		stack_id=0;
 	}
-  if(stack_id < NUM_LOCAL_STACKS)
+  if(stack_id < nHardwareSMT::NUM_LOCAL_STACKS)
     return threads[cur_thread].local_stacks[stack_id];
   else
-    return global_stacks[stack_id % NUM_LOCAL_STACKS];
+    return global_stacks[stack_id % nHardwareSMT::NUM_LOCAL_STACKS];
 }
 
 inline const cCPUStack& cHardwareSMT::Stack(int stack_id) const 
 {
-  if(stack_id >= NUM_STACKS)
+  if(stack_id >= nHardwareSMT::NUM_STACKS)
 	{
 		stack_id=0;
 	}
-  if(stack_id < NUM_LOCAL_STACKS)
+  if(stack_id < nHardwareSMT::NUM_LOCAL_STACKS)
     return threads[cur_thread].local_stacks[stack_id];
   else
-    return global_stacks[stack_id % NUM_LOCAL_STACKS];
+    return global_stacks[stack_id % nHardwareSMT::NUM_LOCAL_STACKS];
 }
 
 inline cCPUStack& cHardwareSMT::Stack(int stack_id, int in_thread) 
 {
-  if(stack_id >= NUM_STACKS)
+  if(stack_id >= nHardwareSMT::NUM_STACKS)
 		stack_id=0;
   if(in_thread >= threads.GetSize())
 		in_thread=cur_thread;
 	
-  if(stack_id < NUM_LOCAL_STACKS)
+  if(stack_id < nHardwareSMT::NUM_LOCAL_STACKS)
     return threads[in_thread].local_stacks[stack_id];
   else
-    return global_stacks[stack_id % NUM_LOCAL_STACKS];
+    return global_stacks[stack_id % nHardwareSMT::NUM_LOCAL_STACKS];
 }
 
 inline const cCPUStack& cHardwareSMT::Stack(int stack_id, int in_thread) const 
 {
-  if(stack_id >= NUM_STACKS)
+  if(stack_id >= nHardwareSMT::NUM_STACKS)
 		stack_id=0;
   if(in_thread >= threads.GetSize())
 		in_thread=cur_thread;
 	
-  if(stack_id < NUM_LOCAL_STACKS)
+  if(stack_id < nHardwareSMT::NUM_LOCAL_STACKS)
     return threads[in_thread].local_stacks[stack_id];
   else
-    return global_stacks[stack_id % NUM_LOCAL_STACKS];
+    return global_stacks[stack_id % nHardwareSMT::NUM_LOCAL_STACKS];
 }
 
 #endif

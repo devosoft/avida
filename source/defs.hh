@@ -179,29 +179,11 @@ FIXME:  remove asap, switching to file-configureable option
 #define FILE_TYPE_TEXT 0
 #define FILE_TYPE_HTML 1
 
-#define HARDWARE_TYPE_CPU_ORIGINAL 0
-#define HARDWARE_TYPE_CPU_4STACK   1
-
-
-
-#define TASK_GET 0
-#define TASK_PUT 1
-#define TASK_GGP 2
-
-#define TASK_ECHO   0
-#define TASK_NAND   1
-#define TASK_NOT    2
-
-#define TASK_AND    3
-#define TASK_ORN    4
-
-#define TASK_ANDN   5
-#define TASK_OR     6
-
-#define TASK_NOR    7
-#define TASK_XOR    8
-#define TASK_EQU    9
-
-#define NUM_TASKS  10
+enum tHARDWARE_TYPE
+{
+	HARDWARE_TYPE_CPU_ORIGINAL = 0,
+	HARDWARE_TYPE_CPU_4STACK,
+	HARDWARE_TYPE_CPU_SMT
+};
 
 #endif

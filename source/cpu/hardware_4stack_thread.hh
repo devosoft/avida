@@ -16,8 +16,8 @@
 #ifndef CPU_STACK_HH
 #include "cpu_stack.hh"
 #endif
-#ifndef FOURSTACK_HEAD_HH
-#include "4stack_head.hh"
+#ifndef HEAD_MULTI_MEM_HH
+#include "head_multi_mem.hh"
 #endif
 #ifndef HARDWARE_4STACK_CONSTANTS_HH
 #include "hardware_4stack_constants.hh"
@@ -29,10 +29,10 @@
 /**
  * This class is needed to run several threads on a single genome.
  *
- * @see cCPUStack, c4StackHead, cHardware4Stack
+ * @see cCPUStack, cHeadMultiMem, cHardware4Stack
  **/
 
-class c4StackHead; // aggregate
+class cHeadMultiMem; // aggregate
 class cCodeLabel; // aggregate
 class cCPUStack; // aggregate
 class cHardwareBase;
@@ -43,7 +43,7 @@ struct cHardware4Stack_Thread {
 private:
   int id;
 public:
-  c4StackHead heads[NUM_HEADS];
+  cHeadMultiMem heads[NUM_HEADS];
   UCHAR cur_head;
   cCPUStack local_stacks[NUM_LOCAL_STACKS];
 

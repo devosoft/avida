@@ -25,7 +25,6 @@
 			dstPath = work;
 			dstSubfolderSpec = 16;
 			files = (
-				70486BB708267635009328F0,
 				70486BA00826722F009328F0,
 				70486BA10826722F009328F0,
 				70486BA20826722F009328F0,
@@ -34,9 +33,7 @@
 				70486BA50826722F009328F0,
 				70486BA60826722F009328F0,
 				70486BA70826722F009328F0,
-				706D30CD0852328F00D7DC8F,
-				706D30FD0852363400D7DC8F,
-				706D31010852366400D7DC8F,
+				706D3158085243CD00D7DC8F,
 			);
 			isa = PBXCopyFilesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -89,12 +86,6 @@
 			settings = {
 			};
 		};
-		70486BB708267635009328F0 = {
-			fileRef = DCC3164D07626CF3008F7A48;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		706D30CC0852328F00D7DC8F = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
@@ -102,12 +93,6 @@
 			path = tInstLib.h;
 			refType = 4;
 			sourceTree = "<group>";
-		};
-		706D30CD0852328F00D7DC8F = {
-			fileRef = 706D30CC0852328F00D7DC8F;
-			isa = PBXBuildFile;
-			settings = {
-			};
 		};
 		706D30FB0852363400D7DC8F = {
 			fileEncoding = 4;
@@ -125,18 +110,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		706D30FD0852363400D7DC8F = {
-			fileRef = 706D30FB0852363400D7DC8F;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		706D30FE0852363400D7DC8F = {
-			fileRef = 706D30FC0852363400D7DC8F;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		706D30FF0852366400D7DC8F = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
@@ -153,17 +126,53 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		706D31010852366400D7DC8F = {
-			fileRef = 706D30FF0852366400D7DC8F;
+		706D3155085243CD00D7DC8F = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			path = head_cpu.cc;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		706D3156085243CD00D7DC8F = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.h;
+			path = head_cpu.hh;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		706D3157085243CD00D7DC8F = {
+			fileRef = 706D3155085243CD00D7DC8F;
 			isa = PBXBuildFile;
 			settings = {
 			};
 		};
-		706D31020852366400D7DC8F = {
+		706D3158085243CD00D7DC8F = {
+			fileRef = 706D3156085243CD00D7DC8F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		706D31650852475D00D7DC8F = {
 			fileRef = 706D31000852366400D7DC8F;
 			isa = PBXBuildFile;
 			settings = {
 			};
+		};
+		706D31660852475E00D7DC8F = {
+			fileRef = 706D30FC0852363400D7DC8F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		706D3170085248F800D7DC8F = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = hardware_smt_constants.h;
+			refType = 4;
+			sourceTree = "<group>";
 		};
 		70CBFCE80815E7FE0078D8CC = {
 			fileEncoding = 30;
@@ -2274,21 +2283,11 @@
 		};
 		DCC30F7C0762539D008F7A48 = {
 			children = (
-				70CBFCE80815E7FE0078D8CC,
-				70CBFCE90815E7FE0078D8CC,
-				70CBFCEA0815E7FE0078D8CC,
-				70CBFCEB0815E7FE0078D8CC,
-				70CBFCEC0815E7FE0078D8CC,
-				70CBFCED0815E7FE0078D8CC,
-				DCC30FA70762539D008F7A48,
-				DCC30FA80762539D008F7A48,
 				DCC30FA90762539D008F7A48,
 				DCC30FAA0762539D008F7A48,
 				DCC30FAB0762539D008F7A48,
 				DCC30FAC0762539D008F7A48,
 				DCC30FAD0762539D008F7A48,
-				DCC30FAE0762539D008F7A48,
-				DCC30FAF0762539D008F7A48,
 				DCC30FB00762539D008F7A48,
 				DCC30FB10762539D008F7A48,
 				DCC30FB20762539D008F7A48,
@@ -2309,8 +2308,23 @@
 				DCC30FC10762539D008F7A48,
 				DCC30FC20762539D008F7A48,
 				DCC30FC30762539D008F7A48,
+				706D30FB0852363400D7DC8F,
+				706D30FC0852363400D7DC8F,
+				706D3170085248F800D7DC8F,
+				706D30FF0852366400D7DC8F,
+				706D31000852366400D7DC8F,
+				70CBFCE80815E7FE0078D8CC,
+				70CBFCE90815E7FE0078D8CC,
+				70CBFCEA0815E7FE0078D8CC,
+				70CBFCEB0815E7FE0078D8CC,
+				70CBFCEC0815E7FE0078D8CC,
+				70CBFCED0815E7FE0078D8CC,
 				DCC30FC40762539D008F7A48,
 				DCC30FC50762539D008F7A48,
+				706D3155085243CD00D7DC8F,
+				706D3156085243CD00D7DC8F,
+				DCC30FA70762539D008F7A48,
+				DCC30FA80762539D008F7A48,
 				DCC30FC60762539D008F7A48,
 				DCC30FC80762539D008F7A48,
 				DCC30FC90762539D008F7A48,
@@ -2319,10 +2333,6 @@
 				DCC30FCC0762539D008F7A48,
 				DCC30FCD0762539D008F7A48,
 				706D30CC0852328F00D7DC8F,
-				706D30FB0852363400D7DC8F,
-				706D30FC0852363400D7DC8F,
-				706D30FF0852366400D7DC8F,
-				706D31000852366400D7DC8F,
 			);
 			isa = PBXGroup;
 			path = cpu;
@@ -2333,7 +2343,7 @@
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
-			path = 4stack_head.cc;
+			path = head_multi_mem.cc;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -2341,7 +2351,7 @@
 			fileEncoding = 30;
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.h;
-			path = 4stack_head.hh;
+			path = head_multi_mem.hh;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -2382,22 +2392,6 @@
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.h;
 			path = cpu_defs.hh;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC30FAE0762539D008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.cpp.cpp;
-			path = cpu_head.cc;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		DCC30FAF0762539D008F7A48 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.cpp.h;
-			path = cpu_head.hh;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -9497,7 +9491,6 @@
 				DCC316A1076285C8008F7A48,
 				DCC316A2076285D1008F7A48,
 				DCC316A3076285D2008F7A48,
-				DCC316A4076285D3008F7A48,
 				DCC316A5076285D5008F7A48,
 				DCC316A6076285D5008F7A48,
 				DCC316A7076285D6008F7A48,
@@ -9552,8 +9545,9 @@
 				DCC316DB0762876F008F7A48,
 				70CBFCEE0815E7FE0078D8CC,
 				70CBFCF10815E8370078D8CC,
-				706D30FE0852363400D7DC8F,
-				706D31020852366400D7DC8F,
+				706D3157085243CD00D7DC8F,
+				706D31650852475D00D7DC8F,
+				706D31660852475E00D7DC8F,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -10026,12 +10020,6 @@
 		};
 		DCC316A3076285D2008F7A48 = {
 			fileRef = DCC30FAA0762539D008F7A48;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		DCC316A4076285D3008F7A48 = {
-			fileRef = DCC30FAE0762539D008F7A48;
 			isa = PBXBuildFile;
 			settings = {
 			};

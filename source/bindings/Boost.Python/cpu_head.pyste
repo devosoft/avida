@@ -4,44 +4,44 @@ Include("instruction.hh")
 Include("hardware_base.hh")
 Include("code_label.hh")
 
-cCPUHead = Class("cCPUHead", "cpu_head-fixups.hh")
-set_policy(cCPUHead.GetCurHardware, return_internal_reference())
-set_policy(cCPUHead.GetMainHardware, return_internal_reference())
+cHeadCPU = Class("cHeadCPU", "cpu_head-fixups.hh")
+set_policy(cHeadCPU.GetCurHardware, return_internal_reference())
+set_policy(cHeadCPU.GetMainHardware, return_internal_reference())
 
-exclude(cCPUHead.FlagCopied)
-exclude(cCPUHead.FlagMutated)
-exclude(cCPUHead.FlagExecuted)
-exclude(cCPUHead.FlagPointMut)
-exclude(cCPUHead.FlagCopyMut)
-exclude(cCPUHead.FlagBreakpoint)
+exclude(cHeadCPU.FlagCopied)
+exclude(cHeadCPU.FlagMutated)
+exclude(cHeadCPU.FlagExecuted)
+exclude(cHeadCPU.FlagPointMut)
+exclude(cHeadCPU.FlagCopyMut)
+exclude(cHeadCPU.FlagBreakpoint)
 
-add_method(cCPUHead, "cCPUHead_GetFlagCopied")
-add_method(cCPUHead, "cCPUHead_GetFlagMutated")
-add_method(cCPUHead, "cCPUHead_GetFlagExecuted")
-add_method(cCPUHead, "cCPUHead_GetFlagPointMut")
-add_method(cCPUHead, "cCPUHead_GetFlagCopyMut")
-add_method(cCPUHead, "cCPUHead_GetFlagBreakpoint")
+add_method(cHeadCPU, "cHeadCPU_GetFlagCopied")
+add_method(cHeadCPU, "cHeadCPU_GetFlagMutated")
+add_method(cHeadCPU, "cHeadCPU_GetFlagExecuted")
+add_method(cHeadCPU, "cHeadCPU_GetFlagPointMut")
+add_method(cHeadCPU, "cHeadCPU_GetFlagCopyMut")
+add_method(cHeadCPU, "cHeadCPU_GetFlagBreakpoint")
 
-add_method(cCPUHead, "cCPUHead_SetFlagCopied")
-add_method(cCPUHead, "cCPUHead_SetFlagMutated")
-add_method(cCPUHead, "cCPUHead_SetFlagExecuted")
-add_method(cCPUHead, "cCPUHead_SetFlagPointMut")
-add_method(cCPUHead, "cCPUHead_SetFlagCopyMut")
-add_method(cCPUHead, "cCPUHead_SetFlagBreakpoint")
+add_method(cHeadCPU, "cHeadCPU_SetFlagCopied")
+add_method(cHeadCPU, "cHeadCPU_SetFlagMutated")
+add_method(cHeadCPU, "cHeadCPU_SetFlagExecuted")
+add_method(cHeadCPU, "cHeadCPU_SetFlagPointMut")
+add_method(cHeadCPU, "cHeadCPU_SetFlagCopyMut")
+add_method(cHeadCPU, "cHeadCPU_SetFlagBreakpoint")
 
-rename(cCPUHead.cCPUHead_GetFlagCopied, "GetFlagCopied");
-rename(cCPUHead.cCPUHead_GetFlagMutated, "GetFlagMutated");
-rename(cCPUHead.cCPUHead_GetFlagExecuted, "GetFlagExecuted");
-rename(cCPUHead.cCPUHead_GetFlagPointMut, "GetFlagPointMut");
-rename(cCPUHead.cCPUHead_GetFlagCopyMut, "GetFlagCopyMut");
-rename(cCPUHead.cCPUHead_GetFlagBreakpoint, "GetFlagBreakpoint");
+rename(cHeadCPU.cHeadCPU_GetFlagCopied, "GetFlagCopied");
+rename(cHeadCPU.cHeadCPU_GetFlagMutated, "GetFlagMutated");
+rename(cHeadCPU.cHeadCPU_GetFlagExecuted, "GetFlagExecuted");
+rename(cHeadCPU.cHeadCPU_GetFlagPointMut, "GetFlagPointMut");
+rename(cHeadCPU.cHeadCPU_GetFlagCopyMut, "GetFlagCopyMut");
+rename(cHeadCPU.cHeadCPU_GetFlagBreakpoint, "GetFlagBreakpoint");
 
-rename(cCPUHead.cCPUHead_SetFlagCopied, "SetFlagCopied");
-rename(cCPUHead.cCPUHead_SetFlagMutated, "SetFlagMutated");
-rename(cCPUHead.cCPUHead_SetFlagExecuted, "SetFlagExecuted");
-rename(cCPUHead.cCPUHead_SetFlagPointMut, "SetFlagPointMut");
-rename(cCPUHead.cCPUHead_SetFlagCopyMut, "SetFlagCopyMut");
-rename(cCPUHead.cCPUHead_SetFlagBreakpoint, "SetFlagBreakpoint");
+rename(cHeadCPU.cHeadCPU_SetFlagCopied, "SetFlagCopied");
+rename(cHeadCPU.cHeadCPU_SetFlagMutated, "SetFlagMutated");
+rename(cHeadCPU.cHeadCPU_SetFlagExecuted, "SetFlagExecuted");
+rename(cHeadCPU.cHeadCPU_SetFlagPointMut, "SetFlagPointMut");
+rename(cHeadCPU.cHeadCPU_SetFlagCopyMut, "SetFlagCopyMut");
+rename(cHeadCPU.cHeadCPU_SetFlagBreakpoint, "SetFlagBreakpoint");
 
 
 # vim: set ft=python:

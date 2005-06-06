@@ -1,7 +1,7 @@
 #include <iostream>
 
-#ifndef FOURSTACK_HEAD_HH
-#include "4stack_head.hh"
+#ifndef HEAD_MULTI_MEM_HH
+#include "head_multi_mem.hh"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

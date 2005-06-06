@@ -16,7 +16,7 @@
 #include "inst_lib_base.hh"
 #include "inst_set.hh"
 #include "hardware_tracer.hh"
-#include "hardware_tracer_4stack.hh"
+//#include "hardware_tracer_4stack.hh"
 #include "mutation.hh"
 #include "mutation_lib.hh"
 #include "mutation_macros.hh"
@@ -36,8 +36,6 @@ using namespace std;
 //  cHardwareSMT
 ///////////////
 
-const cInstruction tInstLib<cHardwareSMT::tMethod>::inst_error(255);
-const cInstruction tInstLib<cHardwareSMT::tMethod>::inst_default(0);
 cInstLibBase* cHardwareSMT::GetInstLib(){ return s_inst_slib; }
 
 tInstLib<cHardwareSMT::tMethod> *cHardwareSMT::s_inst_slib = cHardwareSMT::initInstLib();
@@ -48,18 +46,18 @@ tInstLib<cHardwareSMT::tMethod> *cHardwareSMT::initInstLib(void){
     int nop_mod;
   };
   static const cNOPEntry4Stack s_n_array[] = {
-    cNOPEntry4Stack("Nop-A", STACK_AX),
-    cNOPEntry4Stack("Nop-B", STACK_BX),
-    cNOPEntry4Stack("Nop-C", STACK_CX),
-    cNOPEntry4Stack("Nop-D", STACK_DX),
-    cNOPEntry4Stack("Nop-E", STACK_EX),
-    cNOPEntry4Stack("Nop-F", STACK_FX)
+    cNOPEntry4Stack("Nop-A", nHardwareSMT::STACK_AX),
+    cNOPEntry4Stack("Nop-B", nHardwareSMT::STACK_BX),
+    cNOPEntry4Stack("Nop-C", nHardwareSMT::STACK_CX),
+    cNOPEntry4Stack("Nop-D", nHardwareSMT::STACK_DX),
+    cNOPEntry4Stack("Nop-E", nHardwareSMT::STACK_EX),
+    cNOPEntry4Stack("Nop-F", nHardwareSMT::STACK_FX)
   };
 	
   struct cInstEntry4Stack {
-    cInstEntry4Stack(const cString &name, tHardware4StackMethod function):name(name), function(function){}
+    cInstEntry4Stack(const cString &name, tMethod function):name(name), function(function){}
     cString name;
-    tHardware4StackMethod function;
+    tMethod function;
   };
   static const cInstEntry4Stack s_f_array[] = {
     //1 
@@ -146,8 +144,6 @@ tInstLib<cHardwareSMT::tMethod> *cHardwareSMT::initInstLib(void){
 	
   const int n_size = sizeof(s_n_array)/sizeof(cNOPEntry4Stack);
 	
-  cout << "Instruction Library has " << n_size << " instructions." << endl;
-	
   static cString n_names[n_size];
   static int nop_mods[n_size];
   for (int i = 0; i < n_size; i++){
@@ -157,20 +153,25 @@ tInstLib<cHardwareSMT::tMethod> *cHardwareSMT::initInstLib(void){
 	
   const int f_size = sizeof(s_f_array)/sizeof(cInstEntry4Stack);
   static cString f_names[f_size];
-  static tHardware4StackMethod functions[f_size];
+  static tMethod functions[f_size];
   for (int i = 0; i < f_size; i++){
     f_names[i] = s_f_array[i].name;
     functions[i] = s_f_array[i].function;
   }
 	
+	const cInstruction error(255);
+	const cInstruction def(0);
+	
   tInstLib<cHardwareSMT::tMethod> *inst_lib = new tInstLib<cHardwareSMT::tMethod>(
-																								n_size,
-																								f_size,
-																								n_names,
-																								f_names,
-																								nop_mods,
-																								functions
-																								);
+                                                                                  n_size,
+                                                                                  f_size,
+                                                                                  n_names,
+                                                                                  f_names,
+                                                                                  nop_mods,
+                                                                                  functions,
+                                                                                  error,
+                                                                                  def
+                                                                                  );
 	
   cout <<
 		"<cHardwareSMT::initInstLib> debug: important post-init values:" <<endl<<
@@ -185,7 +186,7 @@ tInstLib<cHardwareSMT::tMethod> *cHardwareSMT::initInstLib(void){
 
 cHardwareSMT::cHardwareSMT(cOrganism * in_organism, cInstSet * in_inst_set)
 : cHardwareBase(in_organism, in_inst_set)
-, memory_array(NUM_MEMORY_SPACES)
+, memory_array(nHardwareSMT::NUM_MEMORY_SPACES)
 {
   /* FIXME:  reorganize storage of m_functions.  -- kgn */
   m_functions = s_inst_slib->GetFunctions();
@@ -218,7 +219,7 @@ cHardwareSMT::cHardwareSMT(const cHardwareSMT &hardware_4stack)
 , inst_remainder(hardware_4stack.inst_remainder)
 #endif
 {
-  for(int i = 0; i < NUM_GLOBAL_STACKS; i++){
+  for(int i = 0; i < nHardwareSMT::NUM_GLOBAL_STACKS; i++){
     global_stacks[i] = hardware_4stack.global_stacks[i];
   }
   for(int i = 0; i < sizeof(slice_array)/sizeof(float); i++){
@@ -243,7 +244,7 @@ void cHardwareSMT::Reset()
   //thread_time_used = 0;
 	
   // Setup the memory...
-  for (int i = 1; i < NUM_MEMORY_SPACES; i++) {
+  for (int i = 1; i < nHardwareSMT::NUM_MEMORY_SPACES; i++) {
 		memory_array[i].Resize(1);
 		//GetMemory(i).Replace(0, 1, cGenome(ConvertToInstruction(i)));
 		GetMemory(i)=cGenome(ConvertToInstruction(i)); 
@@ -260,7 +261,7 @@ void cHardwareSMT::Reset()
   mal_active = false;
 	
   // Reset all stacks (local and global)
-  for(int i=0; i<NUM_STACKS; i++)
+  for(int i = 0; i < nHardwareSMT::NUM_STACKS; i++)
 	{
 		Stack(i).Clear();
 	}
@@ -318,14 +319,15 @@ void cHardwareSMT::SingleProcess()
     }
 #endif
     
+		// XXX - Tracer
     // Print the status of this CPU at each step...
-    if (m_tracer != NULL) {
-      if (cHardwareTracer_4Stack * tracer
-          = dynamic_cast<cHardwareTracer_4Stack *>(m_tracer)
-					){
-        tracer->TraceHardware_4Stack(*this);
-      }
-    }
+    //if (m_tracer != NULL) {
+    //  if (cHardwareTracer_4Stack * tracer
+    //      = dynamic_cast<cHardwareTracer_4Stack *>(m_tracer)
+		//			){
+    //    tracer->TraceHardware_4Stack(*this);
+    //  }
+    //}
     
     // Find the instruction to be executed
     const cInstruction & cur_inst = IP().GetInst();
@@ -343,15 +345,15 @@ void cHardwareSMT::SingleProcess()
     } // if exec
     
   } // Previous was executed once for each thread...
-	
-  // Kill creatures who have reached their max num of instructions executed
-  const int max_executed = organism->GetMaxExecuted();
-  if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed)
-      || phenotype.GetToDie()) {
-    organism->Die();
-  }
-	
-  organism->SetRunning(false);
+
+// Kill creatures who have reached their max num of instructions executed
+const int max_executed = organism->GetMaxExecuted();
+if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed)
+    || phenotype.GetToDie()) {
+  organism->Die();
+}
+
+organism->SetRunning(false);
 }
 
 // This method will test to see if all costs have been paid associated
@@ -432,17 +434,18 @@ void cHardwareSMT::ProcessBonusInst(const cInstruction & inst)
 	
   // @CAO FIX PRINTING TO INDICATE THIS IS A BONUS
   // Print the status of this CPU at each step...
-  if (m_tracer != NULL) {
-    if (cHardwareTracer_4Stack * tracer
-        = dynamic_cast<cHardwareTracer_4Stack *>(m_tracer)
-				){
-      tracer->TraceHardware_4StackBonus(*this);
-    }
-  }
+	// XXX - tracer
+  //if (m_tracer != NULL) {
+  //  if (cHardwareTracer_4Stack * tracer
+  //      = dynamic_cast<cHardwareTracer_4Stack *>(m_tracer)
+	//			){
+  //    tracer->TraceHardware_4StackBonus(*this);
+  //  }
+  //}
 	
-  SingleProcess_ExecuteInst(inst);
-	
-  organism->SetRunning(prev_run_state);
+SingleProcess_ExecuteInst(inst);
+
+organism->SetRunning(prev_run_state);
 }
 
 
@@ -456,12 +459,12 @@ bool cHardwareSMT::OK()
 {
   bool result = true;
 	
-  for(int i = 0 ; i < NUM_MEMORY_SPACES; i++) {
+  for(int i = 0 ; i < nHardwareSMT::NUM_MEMORY_SPACES; i++) {
     if (!memory_array[i].OK()) result = false;
   }
 	
   for (int i = 0; i < GetNumThreads(); i++) {
-    for(int j=0; j<NUM_LOCAL_STACKS; j++)
+    for(int j=0; j < nHardwareSMT::NUM_LOCAL_STACKS; j++)
 			if (threads[i].local_stacks[j].OK() == false) result = false;
     if (threads[i].next_label.OK() == false) result = false;
   }
@@ -474,17 +477,17 @@ void cHardwareSMT::PrintStatus(ostream & fp)
   fp << organism->GetPhenotype().GetTimeUsed() << " "
 	<< "IP:(" << IP().GetMemSpace() << ", " << IP().GetPosition() << ")    "
 	
-	<< "AX:" << Stack(STACK_AX).Top() << " "
-	<< setbase(16) << "[0x" << Stack(STACK_AX).Top() << "]  " << setbase(10)
+	<< "AX:" << Stack(nHardwareSMT::STACK_AX).Top() << " "
+	<< setbase(16) << "[0x" << Stack(nHardwareSMT::STACK_AX).Top() << "]  " << setbase(10)
 	
-	<< "BX:" << Stack(STACK_BX).Top() << " "
-	<< setbase(16) << "[0x" << Stack(STACK_BX).Top() << "]  " << setbase(10)
+	<< "BX:" << Stack(nHardwareSMT::STACK_BX).Top() << " "
+	<< setbase(16) << "[0x" << Stack(nHardwareSMT::STACK_BX).Top() << "]  " << setbase(10)
 	
-	<< "CX:" << Stack(STACK_CX).Top() << " "
-	<< setbase(16) << "[0x" << Stack(STACK_CX).Top() << "]  " << setbase(10)
+	<< "CX:" << Stack(nHardwareSMT::STACK_CX).Top() << " "
+	<< setbase(16) << "[0x" << Stack(nHardwareSMT::STACK_CX).Top() << "]  " << setbase(10)
 	
-	<< "DX:" << Stack(STACK_DX).Top() << " "
-	<< setbase(16) << "[0x" << Stack(STACK_DX).Top() << "]  " << setbase(10)
+	<< "DX:" << Stack(nHardwareSMT::STACK_DX).Top() << " "
+	<< setbase(16) << "[0x" << Stack(nHardwareSMT::STACK_DX).Top() << "]  " << setbase(10)
 	
 	<< endl;
 	
@@ -526,12 +529,12 @@ void cHardwareSMT::PrintStatus(ostream & fp)
 //
 /////////////////////////////////////////////////////////////////////////
 
-c4StackHead cHardwareSMT::FindLabel(int direction)
+cHeadMultiMem cHardwareSMT::FindLabel(int direction)
 {
-  c4StackHead & inst_ptr = IP();
+  cHeadMultiMem & inst_ptr = IP();
 	
   // Start up a search head at the position of the instruction pointer.
-  c4StackHead search_head(inst_ptr);
+  cHeadMultiMem search_head(inst_ptr);
   cCodeLabel & search_label = GetLabel();
 	
   // Make sure the label is of size  > 0.
@@ -572,7 +575,7 @@ c4StackHead cHardwareSMT::FindLabel(int direction)
 // to find search label's match inside another label.
 
 int cHardwareSMT::FindLabel_Forward(const cCodeLabel & search_label,
-																			 const cGenome & search_genome, int pos)
+                                    const cGenome & search_genome, int pos)
 {
   assert (pos < search_genome.GetSize() && pos >= 0);
 	
@@ -654,7 +657,7 @@ int cHardwareSMT::FindLabel_Forward(const cCodeLabel & search_label,
 // to find search label's match inside another label.
 
 int cHardwareSMT::FindLabel_Backward(const cCodeLabel & search_label,
-																				const cGenome & search_genome, int pos)
+                                     const cGenome & search_genome, int pos)
 {
   assert (pos < search_genome.GetSize());
 	
@@ -728,7 +731,7 @@ int cHardwareSMT::FindLabel_Backward(const cCodeLabel & search_label,
 }
 
 // Search for 'in_label' anywhere in the hardware.
-c4StackHead cHardwareSMT::FindLabel(const cCodeLabel & in_label, int direction)
+cHeadMultiMem cHardwareSMT::FindLabel(const cCodeLabel & in_label, int direction)
 {
   assert (in_label.GetSize() > 0);
 	
@@ -739,7 +742,7 @@ c4StackHead cHardwareSMT::FindLabel(const cCodeLabel & in_label, int direction)
   // FOR NOW:
   // Get something which works, no matter how inefficient!!!
 	
-  c4StackHead temp_head(this);
+  cHeadMultiMem temp_head(this);
 	
   while (temp_head.InMemory()) {
     // IDEALY: Analyze the label we are in; see if the one we are looking
@@ -766,14 +769,14 @@ c4StackHead cHardwareSMT::FindLabel(const cCodeLabel & in_label, int direction)
 
 // @CAO: direction is not currently used; should be used to indicate the
 // direction which the heads[HEAD_IP] should progress through a creature.
-c4StackHead cHardwareSMT::FindFullLabel(const cCodeLabel & in_label)
+cHeadMultiMem cHardwareSMT::FindFullLabel(const cCodeLabel & in_label)
 {
   // cout << "Running FindFullLabel with " << in_label.AsString() <<
   // endl;
 	
   assert(in_label.GetSize() > 0); // Trying to find label of 0 size!
 	
-  c4StackHead temp_head(this);
+  cHeadMultiMem temp_head(this);
 	
   while (temp_head.InMemory()) {
     // If we are not in a label, jump to the next checkpoint...
@@ -887,7 +890,7 @@ bool cHardwareSMT::InjectParasite(double mut_multiplier)
 		GetHead(x).Reset(IP().GetMemSpace(), this);
 	}
 	
-  for(int x=0; x<NUM_LOCAL_STACKS; x++)
+  for(int x=0; x < nHardwareSMT::NUM_LOCAL_STACKS; x++)
 	{
 		Stack(x).Clear();
 	}
@@ -906,7 +909,7 @@ bool cHardwareSMT::InjectHost(const cCodeLabel & in_label, const cGenome & injec
   
 	// FIND THE FIRST EMPTY MEMORY SPACE
   int target_mem_space;
-  for (target_mem_space = 0; target_mem_space < NUM_MEMORY_SPACES; target_mem_space++)
+  for (target_mem_space = 0; target_mem_space < nHardwareSMT::NUM_MEMORY_SPACES; target_mem_space++)
 	{
 		if(isEmpty(target_mem_space))
 		{
@@ -914,12 +917,12 @@ bool cHardwareSMT::InjectHost(const cCodeLabel & in_label, const cGenome & injec
 		}
 	}
   
-  if (target_mem_space == NUM_MEMORY_SPACES)
+  if (target_mem_space == nHardwareSMT::NUM_MEMORY_SPACES)
 	{
 		return false;
 	}
 	
-  assert(target_mem_space >=0 && target_mem_space < NUM_MEMORY_SPACES);
+  assert(target_mem_space >=0 && target_mem_space < nHardwareSMT::NUM_MEMORY_SPACES);
   
   if(ForkThread()) {
     // Inject the new code
@@ -943,7 +946,7 @@ bool cHardwareSMT::InjectHost(const cCodeLabel & in_label, const cGenome & injec
     cur_thread=GetNumThreads()-1;
     
     for(int i=0; i<cur_thread; i++) {
-      for(int j=0; j<NUM_HEADS; j++) {
+      for(int j=0; j < NUM_HEADS; j++) {
 				if(threads[i].heads[j].GetMemSpace()==target_mem_space)
 					threads[i].heads[j].Jump(inject_code.GetSize());
       }
@@ -952,7 +955,7 @@ bool cHardwareSMT::InjectHost(const cCodeLabel & in_label, const cGenome & injec
     for (int i=0; i < NUM_HEADS; i++) {    
       GetHead(i).Reset(target_mem_space, this);
     }
-    for (int i=0; i < NUM_LOCAL_STACKS; i++) {
+    for (int i=0; i < nHardwareSMT::NUM_LOCAL_STACKS; i++) {
       Stack(i).Clear();
     }
   }
@@ -1000,7 +1003,7 @@ bool cHardwareSMT::TriggerMutations(int trigger)
   return TriggerMutations(trigger, IP());
 }
 
-bool cHardwareSMT::TriggerMutations(int trigger, c4StackHead & cur_head)
+bool cHardwareSMT::TriggerMutations(int trigger, cHeadMultiMem & cur_head)
 {
   // Collect information about mutations from the organism.
   cLocalMutations & mut_info = organism->GetLocalMutations();
@@ -1053,7 +1056,7 @@ bool cHardwareSMT::TriggerMutations(int trigger, c4StackHead & cur_head)
 }
 
 bool cHardwareSMT::TriggerMutations_ScopeGenome(const cMutation * cur_mut,
-																									 cCPUMemory & target_memory, c4StackHead & cur_head, const double rate)
+                                                cCPUMemory & target_memory, cHeadMultiMem & cur_head, const double rate)
 {
   // The rate we have stored indicates the probability that a single
   // mutation will occur anywhere in the genome.
@@ -1061,7 +1064,7 @@ bool cHardwareSMT::TriggerMutations_ScopeGenome(const cMutation * cur_mut,
   if (g_random.P(rate) == true) {
     // We must create a temporary head and use it to randomly determine the
     // position in the genome to be mutated.
-    c4StackHead tmp_head(cur_head);
+    cHeadMultiMem tmp_head(cur_head);
     tmp_head.AbsSet(g_random.GetUInt(target_memory.GetSize()));
     TriggerMutations_Body(cur_mut->GetType(), target_memory, tmp_head);
     return true;
@@ -1070,7 +1073,7 @@ bool cHardwareSMT::TriggerMutations_ScopeGenome(const cMutation * cur_mut,
 }
 
 bool cHardwareSMT::TriggerMutations_ScopeLocal(const cMutation * cur_mut,
-																									cCPUMemory & target_memory, c4StackHead & cur_head, const double rate)
+                                               cCPUMemory & target_memory, cHeadMultiMem & cur_head, const double rate)
 {
   // The rate we have stored is the probability for a mutation at this single
   // position in the genome.
@@ -1083,7 +1086,7 @@ bool cHardwareSMT::TriggerMutations_ScopeLocal(const cMutation * cur_mut,
 }
 
 int cHardwareSMT::TriggerMutations_ScopeGlobal(const cMutation * cur_mut,
-																									cCPUMemory & target_memory, c4StackHead & cur_head, const double rate)
+                                               cCPUMemory & target_memory, cHeadMultiMem & cur_head, const double rate)
 {
   // The probability we have stored is per-site, so we can pull a random
   // number from a binomial distribution to determine the number of mutations
@@ -1094,7 +1097,7 @@ int cHardwareSMT::TriggerMutations_ScopeGlobal(const cMutation * cur_mut,
 	
   if (num_mut > 0) {
     for (int i = 0; i < num_mut; i++) {
-      c4StackHead tmp_head(cur_head);
+      cHeadMultiMem tmp_head(cur_head);
       tmp_head.AbsSet(g_random.GetUInt(target_memory.GetSize()));
       TriggerMutations_Body(cur_mut->GetType(), target_memory, tmp_head);
     }
@@ -1104,7 +1107,7 @@ int cHardwareSMT::TriggerMutations_ScopeGlobal(const cMutation * cur_mut,
 }
 
 void cHardwareSMT::TriggerMutations_Body(int type, cCPUMemory & target_memory,
-																						c4StackHead & cur_head)
+                                         cHeadMultiMem & cur_head)
 {
   const int pos = cur_head.GetPosition();
 	
@@ -1153,7 +1156,7 @@ void cHardwareSMT::AdjustHeads()
 void cHardwareSMT::ReadLabel(int max_size)
 {
   int count = 0;
-  c4StackHead * inst_ptr = &( IP() );
+  cHeadMultiMem * inst_ptr = &( IP() );
 	
   GetLabel().Clear();
 	
@@ -1236,7 +1239,7 @@ void cHardwareSMT::SaveState(ostream & fp)
   fp<<"cHardwareSMT"<<endl;
 	
   // global_stack (in inverse order so load can just push)
-  for(int i=NUM_LOCAL_STACKS; i<NUM_STACKS; i++)
+  for(int i = nHardwareSMT::NUM_LOCAL_STACKS; i < nHardwareSMT::NUM_STACKS; i++)
     Stack(i).SaveState(fp);
 	
   //fp << thread_time_used  << endl;
@@ -1260,7 +1263,7 @@ void cHardwareSMT::LoadState(istream & fp)
   assert( foo == "cHardwareSMT" );
 	
   // global_stack
-  for(int i=NUM_LOCAL_STACKS; i<NUM_STACKS; i++)
+  for(int i = nHardwareSMT::NUM_LOCAL_STACKS; i < nHardwareSMT::NUM_STACKS; i++)
     Stack(i).LoadState(fp);
 	
   int num_threads;
@@ -1281,7 +1284,7 @@ void cHardwareSMT::LoadState(istream & fp)
 
 inline int cHardwareSMT::FindModifiedStack(int default_stack)
 {
-  assert(default_stack < NUM_STACKS);  // Stack ID too high.
+  assert(default_stack < nHardwareSMT::NUM_STACKS);  // Stack ID too high.
 	
   if (GetInstSet().IsNop(IP().GetNextInst())) {
     IP().Advance();
@@ -1307,7 +1310,7 @@ inline int cHardwareSMT::FindModifiedHead(int default_head)
 inline int cHardwareSMT::FindComplementStack(int base_stack)
 {
   const int comp_stack = base_stack + 2;
-  return comp_stack%NUM_STACKS;
+  return comp_stack % nHardwareSMT::NUM_STACKS;
 }
 
 inline void cHardwareSMT::Fault(int fault_loc, int fault_type, cString fault_desc)
@@ -1316,7 +1319,7 @@ inline void cHardwareSMT::Fault(int fault_loc, int fault_type, cString fault_des
 }
 
 bool cHardwareSMT::Divide_CheckViable(const int parent_size,
-																				 const int child_size, const int mem_space)
+                                      const int child_size, const int mem_space)
 {
   // Make sure the organism is okay with dividing now...
   if (organism->Divide_CheckViable() == false) return false; // (divide fails)
@@ -1727,11 +1730,11 @@ bool cHardwareSMT::Divide_Main(int mem_space_used, double mut_multiplier)
 			//not touch any other threads or memory spaces (ie: parasites)
 			else
 	    {
-	      for(int x=0; x<NUM_HEADS; x++)
+	      for(int x = 0; x < NUM_HEADS; x++)
 				{
 					GetHead(x).Reset(0, this);
 				}
-	      for(int x=0; x<NUM_LOCAL_STACKS; x++)
+	      for(int x = 0; x < nHardwareSMT::NUM_LOCAL_STACKS; x++)
 				{
 					Stack(x).Clear();
 				}	  
@@ -1753,13 +1756,13 @@ cString cHardwareSMT::ConvertToInstruction(int mem_space_used)
 
 cString cHardwareSMT::GetActiveStackID(int stackID) const
 {
-  if(stackID==STACK_AX)
+  if(stackID == nHardwareSMT::STACK_AX)
     return "AX";
-  else if(stackID==STACK_BX)
+  else if(stackID == nHardwareSMT::STACK_BX)
     return "BX";
-  else if(stackID==STACK_CX)
+  else if(stackID == nHardwareSMT::STACK_CX)
     return "CX";
-  else if(stackID==STACK_DX)
+  else if(stackID == nHardwareSMT::STACK_DX)
     return "DX";
   else
     return "";
@@ -1773,7 +1776,7 @@ cString cHardwareSMT::GetActiveStackID(int stackID) const
 //6
 bool cHardwareSMT::Inst_ShiftR()
 {
-  const int stack_used = FindModifiedStack(STACK_BX);
+  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
   int value = Stack(stack_used).Pop();
   value >>= 1;
   Stack(stack_used).Push(value);
@@ -1783,7 +1786,7 @@ bool cHardwareSMT::Inst_ShiftR()
 //7
 bool cHardwareSMT::Inst_ShiftL()
 {
-  const int stack_used = FindModifiedStack(STACK_BX);
+  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
   int value = Stack(stack_used).Pop();
   value <<= 1;
   Stack(stack_used).Push(value);
@@ -1793,44 +1796,44 @@ bool cHardwareSMT::Inst_ShiftL()
 //8
 bool cHardwareSMT::Inst_Val_Nand()
 {
-  const int stack_used = FindModifiedStack(STACK_BX);
-  Stack(stack_used).Push(~(Stack(STACK_BX).Top() & Stack(STACK_CX).Top()));
+  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
+  Stack(stack_used).Push(~(Stack(nHardwareSMT::STACK_BX).Top() & Stack(nHardwareSMT::STACK_CX).Top()));
   return true;
 }
 
 //9
 bool cHardwareSMT::Inst_Val_Add()
 {
-  const int stack_used = FindModifiedStack(STACK_BX);
-  Stack(stack_used).Push(Stack(STACK_BX).Top() + Stack(STACK_CX).Top());
+  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
+  Stack(stack_used).Push(Stack(nHardwareSMT::STACK_BX).Top() + Stack(nHardwareSMT::STACK_CX).Top());
   return true;
 }
 
 //10
 bool cHardwareSMT::Inst_Val_Sub()
 {
-  const int stack_used = FindModifiedStack(STACK_BX);
-  Stack(stack_used).Push(Stack(STACK_BX).Top() - Stack(STACK_CX).Top());
+  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
+  Stack(stack_used).Push(Stack(nHardwareSMT::STACK_BX).Top() - Stack(nHardwareSMT::STACK_CX).Top());
   return true;
 }
 
 //11
 bool cHardwareSMT::Inst_Val_Mult()
 {
-  const int stack_used = FindModifiedStack(STACK_BX);
-  Stack(stack_used).Push(Stack(STACK_BX).Top() * Stack(STACK_CX).Top());
+  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
+  Stack(stack_used).Push(Stack(nHardwareSMT::STACK_BX).Top() * Stack(nHardwareSMT::STACK_CX).Top());
   return true;
 }
 
 //12
 bool cHardwareSMT::Inst_Val_Div()
 {
-  const int stack_used = FindModifiedStack(STACK_BX);
-  if (Stack(STACK_CX).Top() != 0) {
-    if (0-INT_MAX > Stack(STACK_BX).Top() && Stack(STACK_CX).Top() == -1)
+  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
+  if (Stack(nHardwareSMT::STACK_CX).Top() != 0) {
+    if (0-INT_MAX > Stack(nHardwareSMT::STACK_BX).Top() && Stack(nHardwareSMT::STACK_CX).Top() == -1)
       Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: Float exception");
     else
-      Stack(stack_used).Push(Stack(STACK_BX).Top() / Stack(STACK_CX).Top());
+      Stack(stack_used).Push(Stack(nHardwareSMT::STACK_BX).Top() / Stack(nHardwareSMT::STACK_CX).Top());
   } else {
     Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: dividing by 0");
     return false;
@@ -1900,7 +1903,7 @@ bool cHardwareSMT::Inst_HeadRead()
   } else {
     read_inst = GetHead(head_id).GetInst().GetOp();
   }
-  Stack(STACK_AX).Push(read_inst);
+  Stack(nHardwareSMT::STACK_AX).Push(read_inst);
   ReadInst(read_inst);
 	
   cpu_stats.mut_stats.copies_exec++;  // @CAO, this too..
@@ -1912,7 +1915,7 @@ bool cHardwareSMT::Inst_HeadRead()
 bool cHardwareSMT::Inst_HeadWrite()
 {
   const int head_id = FindModifiedHead(HEAD_WRITE);
-  c4StackHead & active_head = GetHead(head_id);
+  cHeadMultiMem & active_head = GetHead(head_id);
   int mem_space_used = active_head.GetMemSpace();
   
   //commented out for right now...
@@ -1924,7 +1927,7 @@ bool cHardwareSMT::Inst_HeadWrite()
 	
   active_head.Adjust();
 	
-  int value = Stack(STACK_AX).Pop();
+  int value = Stack(nHardwareSMT::STACK_AX).Pop();
   if (value < 0 || value >= GetNumInst()) value = 0;
 	
   active_head.SetInst(cInstruction(value));
@@ -1939,8 +1942,8 @@ bool cHardwareSMT::Inst_HeadWrite()
 bool cHardwareSMT::Inst_HeadCopy()
 {
   // For the moment, this cannot be nop-modified.
-  c4StackHead & read_head = GetHead(HEAD_READ);
-  c4StackHead & write_head = GetHead(HEAD_WRITE);
+  cHeadMultiMem & read_head = GetHead(HEAD_READ);
+  cHeadMultiMem & write_head = GetHead(HEAD_WRITE);
   sCPUStats & cpu_stats = organism->CPUStats();
 	
   read_head.Adjust();
@@ -1974,8 +1977,8 @@ bool cHardwareSMT::Inst_HeadCopy()
 //17
 bool cHardwareSMT::Inst_IfEqual()      // Execute next if bx == ?cx?
 {
-  const int stack_used = FindModifiedStack(STACK_AX);
-  const int stack_used2 = (stack_used+1)%NUM_STACKS;
+  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_AX);
+  const int stack_used2 = (stack_used+1) % nHardwareSMT::NUM_STACKS;
   if (Stack(stack_used).Top() != Stack(stack_used2).Top())  IP().Advance();
   return true;
 }
@@ -1983,8 +1986,8 @@ bool cHardwareSMT::Inst_IfEqual()      // Execute next if bx == ?cx?
 //18
 bool cHardwareSMT::Inst_IfNotEqual()     // Execute next if bx != ?cx?
 {
-  const int stack_used = FindModifiedStack(STACK_AX);
-  const int stack_used2 = (stack_used+1)%NUM_STACKS;
+  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_AX);
+  const int stack_used2 = (stack_used+1) % nHardwareSMT::NUM_STACKS;
   if (Stack(stack_used).Top() == Stack(stack_used2).Top())  IP().Advance();
   return true;
 }
@@ -1992,8 +1995,8 @@ bool cHardwareSMT::Inst_IfNotEqual()     // Execute next if bx != ?cx?
 //19
 bool cHardwareSMT::Inst_IfLess()       // Execute next if ?bx? < ?cx?
 {
-  const int stack_used = FindModifiedStack(STACK_AX);
-  const int stack_used2 = (stack_used+1)%NUM_STACKS;
+  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_AX);
+  const int stack_used2 = (stack_used+1) % nHardwareSMT::NUM_STACKS;
   if (Stack(stack_used).Top() >=  Stack(stack_used2).Top())  IP().Advance();
   return true;
 }
@@ -2001,8 +2004,8 @@ bool cHardwareSMT::Inst_IfLess()       // Execute next if ?bx? < ?cx?
 //20
 bool cHardwareSMT::Inst_IfGreater()       // Execute next if bx > ?cx?
 {
-  const int stack_used = FindModifiedStack(STACK_AX);
-  const int stack_used2 = (stack_used+1)%NUM_STACKS;
+  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_AX);
+  const int stack_used2 = (stack_used+1) % nHardwareSMT::NUM_STACKS;
   if (Stack(stack_used).Top() <= Stack(stack_used2).Top())  IP().Advance();
   return true;
 }
@@ -2011,7 +2014,7 @@ bool cHardwareSMT::Inst_IfGreater()       // Execute next if bx > ?cx?
 bool cHardwareSMT::Inst_HeadPush()
 {
   const int head_used = FindModifiedHead(HEAD_IP);
-  Stack(STACK_BX).Push(GetHead(head_used).GetPosition());
+  Stack(nHardwareSMT::STACK_BX).Push(GetHead(head_used).GetPosition());
   //if (head_used == HEAD_IP) {
   //  GetHead(head_used).Set(GetHead(HEAD_FLOW));
   //  AdvanceIP() = false;
@@ -2023,7 +2026,7 @@ bool cHardwareSMT::Inst_HeadPush()
 bool cHardwareSMT::Inst_HeadPop()
 {
   const int head_used = FindModifiedHead(HEAD_IP);
-  GetHead(head_used).Set(Stack(STACK_BX).Pop(), 
+  GetHead(head_used).Set(Stack(nHardwareSMT::STACK_BX).Pop(), 
 												 GetHead(head_used).GetMemSpace(), this);
   return true;
 }
@@ -2048,21 +2051,21 @@ bool cHardwareSMT::Inst_HeadMove()
 bool cHardwareSMT::Inst_Search()
 {
   ReadLabel();
-  GetLabel().Rotate(2, NUM_NOPS_4STACK);
-  c4StackHead found_pos = FindLabel(0);
+  GetLabel().Rotate(2, nHardwareSMT::NUM_NOPS);
+  cHeadMultiMem found_pos = FindLabel(0);
   if(found_pos.GetPosition()-IP().GetPosition()==0)
 	{
 		GetHead(HEAD_FLOW).Set(IP().GetPosition()+1, IP().GetMemSpace(), this);
 		// pushing zero into STACK_AX on a missed search makes it difficult to create
 		// a self-replicating organism.  -law
 		//Stack(STACK_AX).Push(0);
-		Stack(STACK_BX).Push(0);
+		Stack(nHardwareSMT::STACK_BX).Push(0);
 	}
   else
 	{
 		int search_size = found_pos.GetPosition() - IP().GetPosition() + GetLabel().GetSize() + 1;
-		Stack(STACK_BX).Push(search_size);
-		Stack(STACK_AX).Push(GetLabel().GetSize());
+		Stack(nHardwareSMT::STACK_BX).Push(search_size);
+		Stack(nHardwareSMT::STACK_AX).Push(GetLabel().GetSize());
 		GetHead(HEAD_FLOW).Set(found_pos);
 	}  
   
@@ -2072,8 +2075,8 @@ bool cHardwareSMT::Inst_Search()
 //25
 bool cHardwareSMT::Inst_PushNext() 
 {
-  int stack_used = FindModifiedStack(STACK_AX);
-  int successor = (stack_used+1)%NUM_STACKS;
+  int stack_used = FindModifiedStack(nHardwareSMT::STACK_AX);
+  int successor = (stack_used+1) % nHardwareSMT::NUM_STACKS;
   Stack(successor).Push(Stack(stack_used).Pop());
   return true;
 }
@@ -2081,8 +2084,8 @@ bool cHardwareSMT::Inst_PushNext()
 //26
 bool cHardwareSMT::Inst_PushPrevious() 
 {
-  int stack_used = FindModifiedStack(STACK_BX);
-  int predecessor = (stack_used+NUM_STACKS-1)%NUM_STACKS;
+  int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
+  int predecessor = (stack_used + nHardwareSMT::NUM_STACKS - 1) % nHardwareSMT::NUM_STACKS;
   Stack(predecessor).Push(Stack(stack_used).Pop());
   return true;
 }
@@ -2090,7 +2093,7 @@ bool cHardwareSMT::Inst_PushPrevious()
 //27
 bool cHardwareSMT::Inst_PushComplement() 
 {
-  int stack_used = FindModifiedStack(STACK_BX);
+  int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
   int complement = FindComplementStack(stack_used);
   Stack(complement).Push(Stack(stack_used).Pop());
   return true;
@@ -2099,7 +2102,7 @@ bool cHardwareSMT::Inst_PushComplement()
 //28
 bool cHardwareSMT::Inst_ValDelete()
 {
-  int stack_used = FindModifiedStack(STACK_BX);
+  int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
   Stack(stack_used).Pop();
   return true;
 }
@@ -2107,7 +2110,7 @@ bool cHardwareSMT::Inst_ValDelete()
 //29
 bool cHardwareSMT::Inst_ValCopy()
 {
-  const int stack_used = FindModifiedStack(STACK_BX);
+  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
   Stack(stack_used).Push(Stack(stack_used).Top());
   return true;
 }
@@ -2126,7 +2129,7 @@ bool cHardwareSMT::Inst_ForkThread()
 bool cHardwareSMT::Inst_IfLabel()
 {
   ReadLabel();
-  GetLabel().Rotate(2, NUM_NOPS_4STACK);
+  GetLabel().Rotate(2, nHardwareSMT::NUM_NOPS);
   if (GetLabel() != GetReadLabel())  IP().Advance();
   return true;
 }
@@ -2134,7 +2137,7 @@ bool cHardwareSMT::Inst_IfLabel()
 //32
 bool cHardwareSMT::Inst_Increment()
 {
-  const int stack_used = FindModifiedStack(STACK_BX);
+  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
   int value = Stack(stack_used).Pop();
   Stack(stack_used).Push(++value);
   return true;
@@ -2143,7 +2146,7 @@ bool cHardwareSMT::Inst_Increment()
 //33
 bool cHardwareSMT::Inst_Decrement()
 {
-  const int stack_used = FindModifiedStack(STACK_BX);
+  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
   int value = Stack(stack_used).Pop();
   Stack(stack_used).Push(--value);
   return true;
@@ -2152,12 +2155,12 @@ bool cHardwareSMT::Inst_Decrement()
 //34
 bool cHardwareSMT::Inst_Mod()
 {
-  const int stack_used = FindModifiedStack(STACK_BX);
-  if (Stack(STACK_CX).Top() != 0) {
-    if(Stack(STACK_CX).Top() == -1)
+  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
+  if (Stack(nHardwareSMT::STACK_CX).Top() != 0) {
+    if(Stack(nHardwareSMT::STACK_CX).Top() == -1)
       Stack(stack_used).Push(0);
     else
-      Stack(stack_used).Push(Stack(STACK_BX).Top() % Stack(STACK_CX).Top());
+      Stack(stack_used).Push(Stack(nHardwareSMT::STACK_BX).Top() % Stack(nHardwareSMT::STACK_CX).Top());
   } else {
     Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "mod: modding by 0");
 		return false;
@@ -2176,7 +2179,7 @@ bool cHardwareSMT::Inst_KillThread()
 //36
 bool cHardwareSMT::Inst_IO()
 {
-  const int stack_used = FindModifiedStack(STACK_BX);
+  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
 	
   // Do the "put" component
   const int value_out = Stack(stack_used).Top();
@@ -2194,15 +2197,15 @@ int cHardwareSMT::FindFirstEmpty()
   bool OK=true;
   const int current_mem_space = IP().GetMemSpace();
 	
-  for(int x=1; x<NUM_MEMORY_SPACES; x++)
+  for(int x = 1; x < nHardwareSMT::NUM_MEMORY_SPACES; x++)
 	{
 		OK=true;
 		
-		int index = (current_mem_space+x) % NUM_MEMORY_SPACES;
+		int index = (current_mem_space+x) % nHardwareSMT::NUM_MEMORY_SPACES;
 		
 		for(int y=0; y<GetMemory(index).GetSize() && OK; y++)
 		{
-			if(GetMemory(index)[y].GetOp() >= NUM_NOPS_4STACK)
+			if(GetMemory(index)[y].GetOp() >= nHardwareSMT::NUM_NOPS)
 				OK=false; 
 		}
 		for(int y=0; y<GetNumThreads() && OK; y++)
@@ -2223,7 +2226,7 @@ bool cHardwareSMT::isEmpty(int mem_space_used)
 {
   for(int x=0; x<GetMemory(mem_space_used).GetSize(); x++)
 	{
-		if(GetMemory(mem_space_used)[x].GetOp() >= NUM_NOPS_4STACK)
+		if(GetMemory(mem_space_used)[x].GetOp() >= nHardwareSMT::NUM_NOPS)
 			return false;
 	}
   return true;

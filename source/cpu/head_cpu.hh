@@ -5,8 +5,8 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef CPU_HEAD_HH
-#define CPU_HEAD_HH
+#ifndef HEAD_CPU_HH
+#define HEAD_CPU_HH
 
 #ifndef DEFS_HH
 #include "defs.hh"
@@ -18,7 +18,7 @@ class cGenome;
 class cCPUMemory;
 
 /**
- * The cCPUHead class contains a pointer to locations in memory for a CPU.
+ * The cHeadCPU class contains a pointer to locations in memory for a CPU.
  **/
 
 class cHardwareBase;
@@ -26,7 +26,7 @@ class cCodeLabel;
 class cGenome;
 class cInstruction;
 
-class cCPUHead {
+class cHeadCPU {
 protected:
   cHardwareBase * main_hardware;
   cHardwareBase * cur_hardware;
@@ -37,10 +37,10 @@ protected:
   int FindLabel_Backward(const cCodeLabel & search_label,
 			 const cGenome & search_mem, int pos);
 public:
-  cCPUHead();
-  cCPUHead(cHardwareBase * in_hardware, int in_pos = 0);
-  cCPUHead(const cCPUHead & in_cpu_head);
-  virtual ~cCPUHead() { ; }
+  cHeadCPU();
+  cHeadCPU(cHardwareBase * in_hardware, int in_pos = 0);
+  cHeadCPU(const cHeadCPU & in_cpu_head);
+  virtual ~cHeadCPU() { ; }
   
   /**
    * This function keeps the position within the range of the current memory.
@@ -57,7 +57,7 @@ public:
   
   void AbsSet(int new_pos) { position = new_pos; }
   
-  virtual void Set(const cCPUHead & in_head) {
+  virtual void Set(const cHeadCPU & in_head) {
     position = in_head.position;
     cur_hardware  = in_head.cur_hardware;
   }
@@ -73,7 +73,7 @@ public:
   // Other manipulation functions.
   void Advance();
   void Retreat();
-  cCPUHead FindLabel(const cCodeLabel & label, int direction=1);
+  cHeadCPU FindLabel(const cCodeLabel & label, int direction=1);
 
   // Accessors.
   int GetPosition() const { return position; }
@@ -97,17 +97,17 @@ public:
   virtual bool & FlagCopyMut();
 
   // Operator Overloading...
-  virtual cCPUHead & operator=(const cCPUHead & in_cpu_head);
-  cCPUHead & operator++();
-  cCPUHead & operator--();
-  cCPUHead & operator++(int);
-  cCPUHead & operator--(int);
+  virtual cHeadCPU & operator=(const cHeadCPU & in_cpu_head);
+  cHeadCPU & operator++();
+  cHeadCPU & operator--();
+  cHeadCPU & operator++(int);
+  cHeadCPU & operator--(int);
 
-  inline int operator-(const cCPUHead & in_cpu_head) {
+  inline int operator-(const cHeadCPU & in_cpu_head) {
     if (cur_hardware != in_cpu_head.cur_hardware) return 0;
     else return position - in_cpu_head.position;
   }
-  virtual bool operator==(const cCPUHead & in_cpu_head) const;
+  virtual bool operator==(const cHeadCPU & in_cpu_head) const;
 
   // Bool Tests...
   inline bool AtFront() const { return (position == 0); }

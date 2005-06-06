@@ -7,8 +7,8 @@
  *
  */
 
-#ifndef HARDWARE_SMT_THREAD_HH
-#define HARDWARE_SMT_THREAD_HH
+#ifndef HARDWARE_SMT_THREAD_H
+#define HARDWARE_SMT_THREAD_H
 
 #include <iostream>
 
@@ -18,11 +18,11 @@
 #ifndef CPU_STACK_HH
 #include "cpu_stack.hh"
 #endif
-#ifndef FOURSTACK_HEAD_HH
-#include "4stack_head.hh"
+#ifndef HEAD_MULTI_MEM_HH
+#include "head_multi_mem.hh"
 #endif
-#ifndef HARDWARE_4STACK_CONSTANTS_HH
-#include "hardware_4stack_constants.hh"
+#ifndef HARDWARE_SMT_CONSTANTS_H
+#include "hardware_smt_constants.h"
 #endif
 #ifndef TBUFFER_HH
 #include "tBuffer.hh"
@@ -31,10 +31,10 @@
 /**
 * This class is needed to run several threads on a single genome.
  *
- * @see cCPUStack, c4StackHead, cHardwareSMT
+ * @see cCPUStack, cHeadMultiMem, cHardwareSMT
  **/
 
-class c4StackHead; // aggregate
+class cHeadMultiMem; // aggregate
 class cCodeLabel; // aggregate
 class cCPUStack; // aggregate
 class cHardwareBase;
@@ -45,9 +45,9 @@ struct cHardwareSMT_Thread {
 private:
   int id;
 public:
-  c4StackHead heads[NUM_HEADS];
+  cHeadMultiMem heads[NUM_HEADS];
   UCHAR cur_head;
-  cCPUStack local_stacks[NUM_LOCAL_STACKS];
+  cCPUStack local_stacks[nHardwareSMT::NUM_LOCAL_STACKS];
 	
   bool advance_ip;         // Should the IP advance after this instruction?
   cCodeLabel read_label;
@@ -56,13 +56,13 @@ public:
   // of the parasite running the thread.  Otherwise, it will be NULL.
   cInjectGenotype* owner;
 public:
-		cHardwareSMT_Thread(cHardwareBase * in_hardware=NULL, int _id=-1);
-  cHardwareSMT_Thread(const cHardwareSMT_Thread & in_thread, int _id=-1);
+		cHardwareSMT_Thread(cHardwareBase* in_hardware = NULL, int _id = -1);
+  cHardwareSMT_Thread(const cHardwareSMT_Thread& in_thread, int _id = -1);
   ~cHardwareSMT_Thread();
 	
-  void operator=(const cHardwareSMT_Thread & in_thread);
+  void operator=(const cHardwareSMT_Thread& in_thread);
 	
-  void Reset(cHardwareBase * in_hardware, int _id);
+  void Reset(cHardwareBase* in_hardware, int _id);
   int GetID() const { return id; }
   void SetID(int _id) { id = _id; }
 	

@@ -5,7 +5,7 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "cpu_head.hh"
+#include "head_cpu.hh"
 #include "hardware_4stack.hh"
 #include "hardware_base.hh"
 #include "hardware_cpu.hh"

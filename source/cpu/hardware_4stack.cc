@@ -203,8 +203,6 @@ cInstLib4Stack *cHardware4Stack::initInstLib(void){
 
   const int n_size = sizeof(s_n_array)/sizeof(cNOPEntry4Stack);
 
-  cout << "Instruction Library has " << n_size << " instructions." << endl;
-
   static cString n_names[n_size];
   static int nop_mods[n_size];
   for (int i = 0; i < n_size; i++){
@@ -583,12 +581,12 @@ void cHardware4Stack::PrintStatus(ostream & fp)
 //
 /////////////////////////////////////////////////////////////////////////
 
-c4StackHead cHardware4Stack::FindLabel(int direction)
+cHeadMultiMem cHardware4Stack::FindLabel(int direction)
 {
-  c4StackHead & inst_ptr = IP();
+  cHeadMultiMem & inst_ptr = IP();
 
   // Start up a search head at the position of the instruction pointer.
-  c4StackHead search_head(inst_ptr);
+  cHeadMultiMem search_head(inst_ptr);
   cCodeLabel & search_label = GetLabel();
 
   // Make sure the label is of size  > 0.
@@ -785,7 +783,7 @@ int cHardware4Stack::FindLabel_Backward(const cCodeLabel & search_label,
 }
 
 // Search for 'in_label' anywhere in the hardware.
-c4StackHead cHardware4Stack::FindLabel(const cCodeLabel & in_label, int direction)
+cHeadMultiMem cHardware4Stack::FindLabel(const cCodeLabel & in_label, int direction)
 {
   assert (in_label.GetSize() > 0);
 
@@ -796,7 +794,7 @@ c4StackHead cHardware4Stack::FindLabel(const cCodeLabel & in_label, int directio
   // FOR NOW:
   // Get something which works, no matter how inefficient!!!
 
-  c4StackHead temp_head(this);
+  cHeadMultiMem temp_head(this);
 
   while (temp_head.InMemory()) {
     // IDEALY: Analyze the label we are in; see if the one we are looking
@@ -823,14 +821,14 @@ c4StackHead cHardware4Stack::FindLabel(const cCodeLabel & in_label, int directio
 
 // @CAO: direction is not currently used; should be used to indicate the
 // direction which the heads[HEAD_IP] should progress through a creature.
-c4StackHead cHardware4Stack::FindFullLabel(const cCodeLabel & in_label)
+cHeadMultiMem cHardware4Stack::FindFullLabel(const cCodeLabel & in_label)
 {
   // cout << "Running FindFullLabel with " << in_label.AsString() <<
   // endl;
 
   assert(in_label.GetSize() > 0); // Trying to find label of 0 size!
 
-  c4StackHead temp_head(this);
+  cHeadMultiMem temp_head(this);
 
   while (temp_head.InMemory()) {
     // If we are not in a label, jump to the next checkpoint...
@@ -1057,7 +1055,7 @@ bool cHardware4Stack::TriggerMutations(int trigger)
   return TriggerMutations(trigger, IP());
 }
 
-bool cHardware4Stack::TriggerMutations(int trigger, c4StackHead & cur_head)
+bool cHardware4Stack::TriggerMutations(int trigger, cHeadMultiMem & cur_head)
 {
   // Collect information about mutations from the organism.
   cLocalMutations & mut_info = organism->GetLocalMutations();
@@ -1110,7 +1108,7 @@ bool cHardware4Stack::TriggerMutations(int trigger, c4StackHead & cur_head)
 }
 
 bool cHardware4Stack::TriggerMutations_ScopeGenome(const cMutation * cur_mut,
-          cCPUMemory & target_memory, c4StackHead & cur_head, const double rate)
+          cCPUMemory & target_memory, cHeadMultiMem & cur_head, const double rate)
 {
   // The rate we have stored indicates the probability that a single
   // mutation will occur anywhere in the genome.
@@ -1118,7 +1116,7 @@ bool cHardware4Stack::TriggerMutations_ScopeGenome(const cMutation * cur_mut,
   if (g_random.P(rate) == true) {
     // We must create a temporary head and use it to randomly determine the
     // position in the genome to be mutated.
-    c4StackHead tmp_head(cur_head);
+    cHeadMultiMem tmp_head(cur_head);
     tmp_head.AbsSet(g_random.GetUInt(target_memory.GetSize()));
     TriggerMutations_Body(cur_mut->GetType(), target_memory, tmp_head);
     return true;
@@ -1127,7 +1125,7 @@ bool cHardware4Stack::TriggerMutations_ScopeGenome(const cMutation * cur_mut,
 }
 
 bool cHardware4Stack::TriggerMutations_ScopeLocal(const cMutation * cur_mut,
-          cCPUMemory & target_memory, c4StackHead & cur_head, const double rate)
+          cCPUMemory & target_memory, cHeadMultiMem & cur_head, const double rate)
 {
   // The rate we have stored is the probability for a mutation at this single
   // position in the genome.
@@ -1140,7 +1138,7 @@ bool cHardware4Stack::TriggerMutations_ScopeLocal(const cMutation * cur_mut,
 }
 
 int cHardware4Stack::TriggerMutations_ScopeGlobal(const cMutation * cur_mut,
-          cCPUMemory & target_memory, c4StackHead & cur_head, const double rate)
+          cCPUMemory & target_memory, cHeadMultiMem & cur_head, const double rate)
 {
   // The probability we have stored is per-site, so we can pull a random
   // number from a binomial distribution to determine the number of mutations
@@ -1151,7 +1149,7 @@ int cHardware4Stack::TriggerMutations_ScopeGlobal(const cMutation * cur_mut,
 
   if (num_mut > 0) {
     for (int i = 0; i < num_mut; i++) {
-      c4StackHead tmp_head(cur_head);
+      cHeadMultiMem tmp_head(cur_head);
       tmp_head.AbsSet(g_random.GetUInt(target_memory.GetSize()));
       TriggerMutations_Body(cur_mut->GetType(), target_memory, tmp_head);
     }
@@ -1161,7 +1159,7 @@ int cHardware4Stack::TriggerMutations_ScopeGlobal(const cMutation * cur_mut,
 }
 
 void cHardware4Stack::TriggerMutations_Body(int type, cCPUMemory & target_memory,
-					 c4StackHead & cur_head)
+					 cHeadMultiMem & cur_head)
 {
   const int pos = cur_head.GetPosition();
 
@@ -1210,7 +1208,7 @@ void cHardware4Stack::AdjustHeads()
 void cHardware4Stack::ReadLabel(int max_size)
 {
   int count = 0;
-  c4StackHead * inst_ptr = &( IP() );
+  cHeadMultiMem * inst_ptr = &( IP() );
 
   GetLabel().Clear();
 
@@ -1969,7 +1967,7 @@ bool cHardware4Stack::Inst_HeadRead()
 bool cHardware4Stack::Inst_HeadWrite()
 {
   const int head_id = FindModifiedHead(HEAD_WRITE);
-  c4StackHead & active_head = GetHead(head_id);
+  cHeadMultiMem & active_head = GetHead(head_id);
   int mem_space_used = active_head.GetMemSpace();
   
   //commented out for right now...
@@ -1996,8 +1994,8 @@ bool cHardware4Stack::Inst_HeadWrite()
 bool cHardware4Stack::Inst_HeadCopy()
 {
   // For the moment, this cannot be nop-modified.
-  c4StackHead & read_head = GetHead(HEAD_READ);
-  c4StackHead & write_head = GetHead(HEAD_WRITE);
+  cHeadMultiMem & read_head = GetHead(HEAD_READ);
+  cHeadMultiMem & write_head = GetHead(HEAD_WRITE);
   sCPUStats & cpu_stats = organism->CPUStats();
 
   read_head.Adjust();
@@ -2106,7 +2104,7 @@ bool cHardware4Stack::Inst_Search()
 {
   ReadLabel();
   GetLabel().Rotate(2, NUM_NOPS_4STACK);
-  c4StackHead found_pos = FindLabel(0);
+  cHeadMultiMem found_pos = FindLabel(0);
   if(found_pos.GetPosition()-IP().GetPosition()==0)
     {
       GetHead(HEAD_FLOW).Set(IP().GetPosition()+1, IP().GetMemSpace(), this);

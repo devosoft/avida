@@ -5,8 +5,8 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef FOURSTACK_HEAD_HH
-#include "4stack_head.hh"
+#ifndef HEAD_MULTI_MEM_HH
+#include "head_multi_mem.hh"
 #endif
 
 #ifndef CPU_MEMORY_HH
@@ -24,17 +24,17 @@
 
 #include <assert.h>
 
-c4StackHead::c4StackHead() : cCPUHead() { mem_space=0; }
+cHeadMultiMem::cHeadMultiMem() : cHeadCPU() { mem_space=0; }
 
-c4StackHead::c4StackHead(cHardwareBase * in_hardware, int in_pos, int in_mem_space) 
-  : cCPUHead(in_hardware, in_pos) { mem_space = in_mem_space; }
+cHeadMultiMem::cHeadMultiMem(cHardwareBase * in_hardware, int in_pos, int in_mem_space) 
+  : cHeadCPU(in_hardware, in_pos) { mem_space = in_mem_space; }
 
-c4StackHead::c4StackHead(const c4StackHead & in_head) : cCPUHead(in_head) 
+cHeadMultiMem::cHeadMultiMem(const cHeadMultiMem & in_head) : cHeadCPU(in_head) 
 { 
   mem_space = in_head.mem_space; 
 }
 
-void c4StackHead::Adjust()
+void cHeadMultiMem::Adjust()
 {
   assert(cur_hardware != NULL);
   assert(main_hardware != NULL);
@@ -61,7 +61,7 @@ void c4StackHead::Adjust()
   }
 }
 
-void c4StackHead::Reset(int in_mem_space, cHardwareBase * new_hardware)
+void cHeadMultiMem::Reset(int in_mem_space, cHardwareBase * new_hardware)
 {
   if (new_hardware) main_hardware = new_hardware;
   cur_hardware  = new_hardware;
@@ -69,7 +69,7 @@ void c4StackHead::Reset(int in_mem_space, cHardwareBase * new_hardware)
   mem_space = in_mem_space;
 }
 
-void c4StackHead::Set(int new_pos, int in_mem_space, cHardwareBase * in_hardware)
+void cHeadMultiMem::Set(int new_pos, int in_mem_space, cHardwareBase * in_hardware)
 {
   position = new_pos;
   if (in_hardware) cur_hardware = in_hardware;
@@ -77,7 +77,7 @@ void c4StackHead::Set(int new_pos, int in_mem_space, cHardwareBase * in_hardware
   Adjust();
 }
 
-void c4StackHead::Set(const c4StackHead & in_head)
+void cHeadMultiMem::Set(const cHeadMultiMem & in_head)
 {
   position = in_head.position;
   cur_hardware = in_head.cur_hardware;
@@ -85,7 +85,7 @@ void c4StackHead::Set(const c4StackHead & in_head)
   Adjust();
 }
 
-void c4StackHead::LoopJump(int jump)
+void cHeadMultiMem::LoopJump(int jump)
 {
   position += jump;
 
@@ -96,33 +96,33 @@ void c4StackHead::LoopJump(int jump)
   }
 }
 
-const cCPUMemory & c4StackHead::GetMemory() const
+const cCPUMemory & cHeadMultiMem::GetMemory() const
 {
   assert(cur_hardware != NULL);
   return cur_hardware->GetMemory(mem_space);
 }
 
-cCPUMemory & c4StackHead::GetMemory()
+cCPUMemory & cHeadMultiMem::GetMemory()
 {
   assert(cur_hardware != NULL);
   return cur_hardware->GetMemory(mem_space);
 }
 
-const cInstruction & c4StackHead::GetInst() const
+const cInstruction & cHeadMultiMem::GetInst() const
 {
   assert(position >= 0);
   assert(position < GetMemory().GetSize());
   return GetMemory()[position];
 }
 
-const cInstruction & c4StackHead::GetInst(int offset) const 
+const cInstruction & cHeadMultiMem::GetInst(int offset) const 
 {
   int new_pos = position + offset;
   return GetMemory()[new_pos];
 }
 
 
-void c4StackHead::SetInst(const cInstruction & value)
+void cHeadMultiMem::SetInst(const cInstruction & value)
 {
   assert(cur_hardware != NULL);
 #ifdef WRITE_PROTECTION
@@ -133,7 +133,7 @@ void c4StackHead::SetInst(const cInstruction & value)
 #endif
 }
 
-void c4StackHead::InsertInst(const cInstruction & value)
+void cHeadMultiMem::InsertInst(const cInstruction & value)
 {
   assert(cur_hardware != NULL);
 #ifdef WRITE_PROTECTION
@@ -144,7 +144,7 @@ void c4StackHead::InsertInst(const cInstruction & value)
 #endif
 }
 
-void c4StackHead::RemoveInst()
+void cHeadMultiMem::RemoveInst()
 {
   assert(cur_hardware != NULL);
 #ifdef WRITE_PROTECTION
@@ -155,48 +155,48 @@ void c4StackHead::RemoveInst()
 #endif
 }
 
-const cInstruction & c4StackHead::GetNextInst()
+const cInstruction & cHeadMultiMem::GetNextInst()
 {
   return (AtEnd()) ? cInstSet::GetInstError() : GetMemory()[position+1];
 }
 
-bool & c4StackHead::FlagCopied()
+bool & cHeadMultiMem::FlagCopied()
 {
   assert(cur_hardware != NULL);
   return GetMemory().FlagCopied(position);     
 }
 
-bool & c4StackHead::FlagMutated()
+bool & cHeadMultiMem::FlagMutated()
 {
   assert(cur_hardware != NULL);
   return GetMemory().FlagMutated(position);    
 }
 
-bool & c4StackHead::FlagExecuted()
+bool & cHeadMultiMem::FlagExecuted()
 {
   assert(cur_hardware != NULL);
   return GetMemory().FlagExecuted(position);   
 }
 
-bool & c4StackHead::FlagBreakpoint()
+bool & cHeadMultiMem::FlagBreakpoint()
 {
   assert(cur_hardware != NULL);
   return GetMemory().FlagBreakpoint(position); 
 }
 
-bool & c4StackHead::FlagPointMut()
+bool & cHeadMultiMem::FlagPointMut()
 {
   assert(cur_hardware != NULL);
   return GetMemory().FlagPointMut(position);   
 }
 
-bool & c4StackHead::FlagCopyMut()
+bool & cHeadMultiMem::FlagCopyMut()
 {
   assert(cur_hardware != NULL);
   return GetMemory().FlagCopyMut(position);    
 }
 
-c4StackHead & c4StackHead::operator=(const c4StackHead & in_cpu_head)
+cHeadMultiMem & cHeadMultiMem::operator=(const cHeadMultiMem & in_cpu_head)
 {
   main_hardware = in_cpu_head.main_hardware;
   cur_hardware  = in_cpu_head.cur_hardware;
@@ -205,19 +205,19 @@ c4StackHead & c4StackHead::operator=(const c4StackHead & in_cpu_head)
   return *this;
 }
 
-bool c4StackHead::operator==(const c4StackHead & in_cpu_head) const 
+bool cHeadMultiMem::operator==(const cHeadMultiMem & in_cpu_head) const 
 {
   return (cur_hardware == in_cpu_head.cur_hardware) && 
     (position == in_cpu_head.position) &&
     (mem_space == in_cpu_head.mem_space);
 }
   
-bool c4StackHead::AtEnd() const
+bool cHeadMultiMem::AtEnd() const
 {
   return (position + 1 == GetMemory().GetSize());
 }
 
-bool c4StackHead::InMemory() const
+bool cHeadMultiMem::InMemory() const
 {
   return (position >= 0 && position < GetMemory().GetSize());
 }

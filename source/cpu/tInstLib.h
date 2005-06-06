@@ -7,6 +7,9 @@
  *
  */
 
+#ifndef TINSTLIB_H
+#define TINSTLIB_H
+
 #ifndef STRING_HH
 #include "string.hh"
 #endif
@@ -23,22 +26,26 @@ template <class MethodType> class tInstLib : public cInstLibBase {
   cString *m_function_names;
   const int *m_nopmods;
   MethodType *m_functions;
-  static const cInstruction inst_error;
-  static const cInstruction inst_default;
+  const cInstruction inst_error;
+  const cInstruction inst_default;
 public:
 		tInstLib(
-									 size_t nopmod_array_size,
-									 size_t function_array_size,
-									 cString *nopmod_names,
-									 cString *function_names,
-									 const int *nopmods,
-									 MethodType *functions
-									 ):m_nopmods_array_size(nopmod_array_size),
+						 size_t nopmod_array_size,
+						 size_t function_array_size,
+						 cString *nopmod_names,
+						 cString *function_names,
+						 const int *nopmods,
+						 MethodType *functions,
+						 const cInstruction& error,
+						 const cInstruction& def
+						 ):m_nopmods_array_size(nopmod_array_size),
     m_function_array_size(function_array_size),
     m_nopmod_names(nopmod_names),
     m_function_names(function_names),
     m_nopmods(nopmods),
-    m_functions(functions)
+    m_functions(functions),
+		inst_error(error),
+		inst_default(def)
   {}
   MethodType *GetFunctions(void){ return m_functions; } 
   const cString &GetName(const unsigned int id) {
@@ -68,3 +75,4 @@ public:
   const cInstruction & GetInstError(){ return inst_error; }
 };
 
+#endif

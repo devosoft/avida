@@ -5,8 +5,8 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef CPU_HEAD_HH
-#include "cpu_head.hh"
+#ifndef HEAD_CPU_HH
+#include "head_cpu.hh"
 #endif
 
 #ifndef CPU_MEMORY_HH
@@ -35,13 +35,13 @@ class cCPUMemory; // access
 class cCodeLabel; // access
 class cInstSet; // access
 
-cCPUHead::cCPUHead() {
+cHeadCPU::cHeadCPU() {
   main_hardware = NULL;
   cur_hardware = NULL;
   position = 0;
 }
 
-cCPUHead::cCPUHead(cHardwareBase * in_hardware, int in_pos) {
+cHeadCPU::cHeadCPU(cHardwareBase * in_hardware, int in_pos) {
   main_hardware = in_hardware;
   cur_hardware  = in_hardware;
 
@@ -49,7 +49,7 @@ cCPUHead::cCPUHead(cHardwareBase * in_hardware, int in_pos) {
   if (in_pos) Adjust();
 }
 
-cCPUHead::cCPUHead(const cCPUHead & in_cpu_head) {
+cHeadCPU::cHeadCPU(const cHeadCPU & in_cpu_head) {
   main_hardware = in_cpu_head.main_hardware;
   cur_hardware  = in_cpu_head.cur_hardware;
   position = in_cpu_head.position;
@@ -57,7 +57,7 @@ cCPUHead::cCPUHead(const cCPUHead & in_cpu_head) {
 
 
 
-void cCPUHead::Adjust()
+void cHeadCPU::Adjust()
 {
   assert(cur_hardware != NULL);
   assert(main_hardware != NULL);
@@ -88,14 +88,14 @@ void cCPUHead::Adjust()
 
 
 /////////////////////////////////////////////////////////////////////////
-// Method: cCPUHead::FindLabel(direction)
+// Method: cHeadCPU::FindLabel(direction)
 //
 // Search in 'direction' (+ or - 1) from this head for the compliment of
 //  the label in 'next_label' and return a head to the resulting pos.
 //
 /////////////////////////////////////////////////////////////////////////
 
-cCPUHead cCPUHead::FindLabel(const cCodeLabel & label, int direction)
+cHeadCPU cHeadCPU::FindLabel(const cCodeLabel & label, int direction)
 {
   // Make sure the label is of size > 0.
   if (label.GetSize() == 0) {
@@ -117,7 +117,7 @@ cCPUHead cCPUHead::FindLabel(const cCodeLabel & label, int direction)
 
   if (found_pos >= 0) {
     // Return the last line of the found label, or the starting point.
-    cCPUHead search_head(*this);
+    cHeadCPU search_head(*this);
     search_head.Set(found_pos - 1);
     return search_head;
   }
@@ -126,13 +126,13 @@ cCPUHead cCPUHead::FindLabel(const cCodeLabel & label, int direction)
   return *this;
 }
 
-void cCPUHead::Reset(cHardwareBase * new_hardware) {
+void cHeadCPU::Reset(cHardwareBase * new_hardware) {
   if (new_hardware) main_hardware = new_hardware;
   cur_hardware  = new_hardware;
   position = 0;
 }
 
-void cCPUHead::Set(int new_pos, cHardwareBase * in_hardware)
+void cHeadCPU::Set(int new_pos, cHardwareBase * in_hardware)
 {
   position = new_pos;
   if (in_hardware) cur_hardware = in_hardware;
@@ -140,13 +140,13 @@ void cCPUHead::Set(int new_pos, cHardwareBase * in_hardware)
 }
 
 
-void cCPUHead::Jump(int jump)
+void cHeadCPU::Jump(int jump)
 {
   position += jump;
   Adjust();
 }
 
-void cCPUHead::LoopJump(int jump)
+void cHeadCPU::LoopJump(int jump)
 {
   position += jump;
 
@@ -157,46 +157,46 @@ void cCPUHead::LoopJump(int jump)
   }
 }
 
-void cCPUHead::AbsJump(int jump)
+void cHeadCPU::AbsJump(int jump)
 {
   position += jump;
 }
 
-void cCPUHead::Advance()
+void cHeadCPU::Advance()
 {
   position++;
   Adjust();
 }
 
-void cCPUHead::Retreat()
+void cHeadCPU::Retreat()
 {
   position--;
   Adjust();
 }
 
 
-const cCPUMemory & cCPUHead::GetMemory() const
+const cCPUMemory & cHeadCPU::GetMemory() const
 {
   assert(cur_hardware != NULL);
   return cur_hardware->GetMemory();
 }
 
 
-const cInstruction & cCPUHead::GetInst() const
+const cInstruction & cHeadCPU::GetInst() const
 {
   assert(position >= 0);
   assert(position < GetMemory().GetSize());
   return GetMemory()[position];
 }
 
-const cInstruction & cCPUHead::GetInst(int offset) const {
+const cInstruction & cHeadCPU::GetInst(int offset) const {
   int new_pos = position + offset;
 
   return GetMemory()[new_pos];
 }
 
 
-void cCPUHead::SetInst(const cInstruction & value)
+void cHeadCPU::SetInst(const cInstruction & value)
 {
   assert(cur_hardware != NULL);
 #ifdef WRITE_PROTECTION
@@ -208,7 +208,7 @@ void cCPUHead::SetInst(const cInstruction & value)
 }
 
 
-void cCPUHead::InsertInst(const cInstruction & value)
+void cHeadCPU::InsertInst(const cInstruction & value)
 {
   assert(cur_hardware != NULL);
 #ifdef WRITE_PROTECTION
@@ -219,7 +219,7 @@ void cCPUHead::InsertInst(const cInstruction & value)
 #endif
 }
 
-void cCPUHead::RemoveInst()
+void cHeadCPU::RemoveInst()
 {
   assert(cur_hardware != NULL);
 #ifdef WRITE_PROTECTION
@@ -230,50 +230,50 @@ void cCPUHead::RemoveInst()
 #endif
 }
 
-const cInstruction & cCPUHead::GetNextInst()
+const cInstruction & cHeadCPU::GetNextInst()
 {
   return (AtEnd()) ? cInstSet::GetInstError() : GetMemory()[position+1];
 }
 
 
 
-bool & cCPUHead::FlagCopied()
+bool & cHeadCPU::FlagCopied()
 {
   assert(cur_hardware != NULL);
   return cur_hardware->GetMemory().FlagCopied(position);     
 }
 
-bool & cCPUHead::FlagMutated()
+bool & cHeadCPU::FlagMutated()
 {
   assert(cur_hardware != NULL);
   return cur_hardware->GetMemory().FlagMutated(position);    
 }
 
-bool & cCPUHead::FlagExecuted()
+bool & cHeadCPU::FlagExecuted()
 {
   assert(cur_hardware != NULL);
   return cur_hardware->GetMemory().FlagExecuted(position);   
 }
 
-bool & cCPUHead::FlagBreakpoint()
+bool & cHeadCPU::FlagBreakpoint()
 {
   assert(cur_hardware != NULL);
   return cur_hardware->GetMemory().FlagBreakpoint(position); 
 }
 
-bool & cCPUHead::FlagPointMut()
+bool & cHeadCPU::FlagPointMut()
 {
   assert(cur_hardware != NULL);
   return cur_hardware->GetMemory().FlagPointMut(position);   
 }
 
-bool & cCPUHead::FlagCopyMut()
+bool & cHeadCPU::FlagCopyMut()
 {
   assert(cur_hardware != NULL);
   return cur_hardware->GetMemory().FlagCopyMut(position);    
 }
 
-cCPUHead & cCPUHead::operator=(const cCPUHead & in_cpu_head)
+cHeadCPU & cHeadCPU::operator=(const cHeadCPU & in_cpu_head)
 {
   main_hardware = in_cpu_head.main_hardware;
   cur_hardware  = in_cpu_head.cur_hardware;
@@ -282,26 +282,26 @@ cCPUHead & cCPUHead::operator=(const cCPUHead & in_cpu_head)
 }
 
 
-cCPUHead & cCPUHead::operator++()
+cHeadCPU & cHeadCPU::operator++()
 {
   position++;
   Adjust();
   return *this;
 }
 
-cCPUHead & cCPUHead::operator--()
+cHeadCPU & cHeadCPU::operator--()
 {
   position--;
   Adjust();
   return *this;
 }
 
-cCPUHead & cCPUHead::operator++(int)
+cHeadCPU & cHeadCPU::operator++(int)
 {
   return operator++();
 }
 
-cCPUHead & cCPUHead::operator--(int)
+cHeadCPU & cHeadCPU::operator--(int)
 {
   return operator--();
 }
@@ -311,7 +311,7 @@ cCPUHead & cCPUHead::operator--(int)
 // memory.  Return the first line _after_ the the found label.  It is okay
 // to find search label's match inside another label.
 
-int cCPUHead::FindLabel_Forward(const cCodeLabel & search_label,
+int cHeadCPU::FindLabel_Forward(const cCodeLabel & search_label,
 				   const cGenome & search_mem, int pos)
 { 
   assert (pos < search_mem.GetSize() && pos >= 0);
@@ -392,7 +392,7 @@ int cCPUHead::FindLabel_Forward(const cCodeLabel & search_label,
 // memory.  Return the first line _after_ the the found label.  It is okay
 // to find search label's match inside another label.
 
-int cCPUHead::FindLabel_Backward(const cCodeLabel & search_label,
+int cHeadCPU::FindLabel_Backward(const cCodeLabel & search_label,
 				   const cGenome & search_mem, int pos)
 { 
   assert (pos < search_mem.GetSize());
@@ -467,22 +467,22 @@ int cCPUHead::FindLabel_Backward(const cCodeLabel & search_label,
   return pos;
 }
 
-bool cCPUHead::operator==(const cCPUHead & in_cpu_head) const {
+bool cHeadCPU::operator==(const cHeadCPU & in_cpu_head) const {
   return (cur_hardware == in_cpu_head.cur_hardware) &&
     (position == in_cpu_head.position);
 }
 
-bool cCPUHead::AtEnd() const
+bool cHeadCPU::AtEnd() const
 {
   return (position + 1 == GetMemory().GetSize());
 }
 
-bool cCPUHead::InMemory() const
+bool cHeadCPU::InMemory() const
 {
   return (position >= 0 && position < GetMemory().GetSize());
 }
 
-int cCPUHead::TestParasite() const
+int cHeadCPU::TestParasite() const
 {
   // If CPU has a head in another creature, mark it as a parasite.
   return (cur_hardware != main_hardware);

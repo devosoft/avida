@@ -5,11 +5,11 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef FOURSTACK_HEAD_HH
-#define FOURSTACK_HEAD_HH
+#ifndef HEAD_MULTI_MEM_HH
+#define HEAD_MULTI_MEM_HH
 
-#ifndef CPU_HEAD_HH
-#include "cpu_head.hh"
+#ifndef HEAD_CPU_HH
+#include "head_cpu.hh"
 #endif
 #ifndef DEFS_HH
 #include "defs.hh"
@@ -21,20 +21,20 @@ class cGenome;
 class cHardwareBase;
 class cInstruction;
 
-class c4StackHead : public cCPUHead {
+class cHeadMultiMem : public cHeadCPU {
 private:
   int mem_space;
 
 public:
 
-  c4StackHead();
-  c4StackHead(cHardwareBase * in_hardware, int in_pos = 0, int mem_space = 0);
-  c4StackHead(const c4StackHead & in_cpu_head);
+  cHeadMultiMem();
+  cHeadMultiMem(cHardwareBase * in_hardware, int in_pos = 0, int mem_space = 0);
+  cHeadMultiMem(const cHeadMultiMem & in_cpu_head);
 
   void Adjust();
   void Reset(int in_mem_space=0, cHardwareBase * new_hardware = NULL);
   void Set(int new_pos, int in_mem_space = 0, cHardwareBase * in_hardware = NULL);
-  void Set(const c4StackHead & in_head);
+  void Set(const cHeadMultiMem & in_head);
   void LoopJump(int jump);
   const cCPUMemory & GetMemory() const;
   cCPUMemory & GetMemory();
@@ -56,8 +56,8 @@ public:
   bool & FlagCopyMut();
 
   // Operator Overloading...
-  c4StackHead & operator=(const c4StackHead & in_cpu_head);
-  bool operator==(const c4StackHead & in_cpu_head) const; 
+  cHeadMultiMem & operator=(const cHeadMultiMem & in_cpu_head);
+  bool operator==(const cHeadMultiMem & in_cpu_head) const; 
   bool AtEnd() const;
   bool InMemory() const;
 };

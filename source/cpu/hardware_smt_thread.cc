@@ -24,7 +24,7 @@ cHardwareSMT_Thread::cHardwareSMT_Thread(const cHardwareSMT_Thread & in_thread, 
 {
 	id = _id;
 	if (id == -1) id = in_thread.id;
-	for (int i = 0; i < NUM_LOCAL_STACKS; i++) {
+	for (int i = 0; i < nHardwareSMT::NUM_LOCAL_STACKS; i++) {
 		local_stacks[i] = in_thread.local_stacks[i];
 	}
 	for (int i = 0; i < NUM_HEADS; i++) {
@@ -38,7 +38,7 @@ cHardwareSMT_Thread::~cHardwareSMT_Thread() {}
 void cHardwareSMT_Thread::operator=(const cHardwareSMT_Thread & in_thread)
 {
   id = in_thread.id;
-  for (int i = 0; i < NUM_LOCAL_STACKS; i++) {
+  for (int i = 0; i < nHardwareSMT::NUM_LOCAL_STACKS; i++) {
     local_stacks[i] = in_thread.local_stacks[i];
   }
   for (int i = 0; i < NUM_HEADS; i++) {
@@ -51,7 +51,7 @@ void cHardwareSMT_Thread::Reset(cHardwareBase * in_hardware, int _id)
 {
   id = _id;
 	
-  for (int i = 0; i < NUM_LOCAL_STACKS; i++) local_stacks[i].Clear();
+  for (int i = 0; i < nHardwareSMT::NUM_LOCAL_STACKS; i++) local_stacks[i].Clear();
   for (int i = 0; i < NUM_HEADS; i++) heads[i].Reset(0, in_hardware);
 	
   cur_head = HEAD_IP;
@@ -65,12 +65,12 @@ void cHardwareSMT_Thread::SaveState(ostream & fp){
   fp << "cHardwareSMT_Thread" << endl;
 	
   // stacks (NOT WORKING! -law)
-  for( int i=0; i<NUM_STACKS; ++i ){
+  for( int i = 0; i < nHardwareSMT::NUM_STACKS; ++i ){
     local_stacks[i].SaveState(fp);
   }
 	
   // heads (@TCC does not handle parasites!!!)
-  for( int i=0; i<NUM_HEADS; ++i ){
+  for( int i = 0; i < NUM_HEADS; ++i ){
     fp<<heads[i].GetPosition()<<endl;
   }
 	
@@ -90,18 +90,18 @@ void cHardwareSMT_Thread::LoadState(istream & fp){
   assert( foo == "cHardwareSMT_Thread");
 	
   // stacks (NOT WORKING!  -law)
-  for( int i=0; i<NUM_STACKS; ++i ){
+  for( int i=0; i < nHardwareSMT::NUM_STACKS; ++i ){
     local_stacks[i].LoadState(fp);
   }
 	
   // heads (@TCC does not handle parasites!!!)
-  for( int i=0; i<NUM_HEADS; ++i ){
+  for( int i = 0; i < NUM_HEADS; ++i ){
     int pos;
     fp>>pos;
     heads[i].AbsSet(pos);
   }
 	
-  char marker; fp>>marker; assert( marker == '|' );
+  char marker; fp >> marker; assert( marker == '|' );
   /* YIKES!  data loss below: */ 
   char the_cur_head = cur_head;
 	
