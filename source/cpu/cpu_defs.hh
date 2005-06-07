@@ -23,7 +23,7 @@
 // (especially the number of registers) could have effects in other parts
 // of the code!
 
-#define NUM_NOPS 3
+static const int NUM_NOPS = 3;
 #define MAX_NOPS 6
 #define MAX_LABEL_SIZE 10 
 #define REG_AX 0
