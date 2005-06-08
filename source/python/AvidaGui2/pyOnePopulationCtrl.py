@@ -19,11 +19,11 @@ class pyOnePopulationCtrl(pyOnePopulationView):
     self.connect( self, PYSIGNAL("petriDishDroppedInPopViewSig"), self.m_session_mdl.m_session_mdtr, PYSIGNAL("petriDishDroppedInPopViewSig"))
 
   def dropEvent( self, e ):
-    string = QString()
+    freezer_item_name = QString()
     print "dropEvent"
-    if ( QTextDrag.decode( e, string ) ) :
-      if os.path.exists(str('default.workspace/freezer/' + str(string) + '.full/')) == False:
-        print "that was not a valid path" 
+    if ( QTextDrag.decode( e, freezer_item_name ) ) : #freezer_item_name is a string...the file name 
+      if os.path.exists(str(freezer_item_name)) == False:
+        print "that was not a valid path (1)" 
       else: 
         self.emit(PYSIGNAL("petriDishDroppedInPopViewSig"), (e,))
         print "emitted"

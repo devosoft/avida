@@ -10,9 +10,23 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>147</width>
-            <height>202</height>
+            <width>574</width>
+            <height>743</height>
         </rect>
+    </property>
+    <property name="sizePolicy">
+        <sizepolicy>
+            <hsizetype>5</hsizetype>
+            <vsizetype>3</vsizetype>
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+        </sizepolicy>
+    </property>
+    <property name="minimumSize">
+        <size>
+            <width>0</width>
+            <height>200</height>
+        </size>
     </property>
     <property name="caption">
         <string>pyOnePop_GraphView</string>
@@ -238,7 +252,7 @@
         </sizehint>
         <container>0</container>
         <sizepolicy>
-            <hordata>3</hordata>
+            <hordata>0</hordata>
             <verdata>0</verdata>
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
@@ -251,6 +265,16 @@
         <property type="3">-1</property>
         <property type="1">pyGraphCtrl</property>
         <property type="4">-1</property>
+        <property type="1">pyGraphCtrl</property>
+        <property type="4">-1</property>
+        <property type="1">pyGraphCtrl</property>
+        <property type="0">-1</property>
+        <property type="1">pyGraphCtrl</property>
+        <property type="0">-1</property>
+        <property type="1">pyGraphCtrl</property>
+        <property type="0">-1</property>
+        <property type="1">pyGraphCtrl</property>
+        <property type="0">-1</property>
         <property type="pyGraphCtrl"></property>
         <property type="-1">1</property>
     </customwidget>

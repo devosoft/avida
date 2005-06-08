@@ -278,11 +278,14 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
       self.setAvidaSlot)
       
   def dropEvent( self, e ):
-    string = QString()
+    freezer_item_name = QString()
     print "dropEvent"
-    if ( QTextDrag.decode( e, string ) ) :
-      if os.path.exists(str('default.workspace/freezer/' + str(string) + '.full/')) == False:
-        print "that was not a valid path" 
+    if ( QTextDrag.decode( e, freezer_item_name ) ) :
+      print "in here"
+      print freezer_item_name
+#      if os.path.exists(str('default.workspace/freezer/' + str(string) + '.full/')) == False:
+      if os.path.exists(str(freezer_item_name)) == False:
+        print "that was not a valid path (2)" 
       else: 
         self.emit(PYSIGNAL("petriDishDroppedInPopViewSig"), (e,))
-        print "emitted"
+        print "emitted(1)"

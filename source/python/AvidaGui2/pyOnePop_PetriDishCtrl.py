@@ -4,6 +4,7 @@ from qt import *
 from pyMapProfile import pyMapProfile
 from pyOnePop_PetriDishView import pyOnePop_PetriDishView
 import os
+from pyReadFreezer import pyReadFreezer
 
 class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
 
@@ -133,12 +134,17 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     print "send_quit_signal = " + str(send_quit_signal)
 
   def petriDropped(self, e):
-    print "caught it"
     # Try to decode to the data you understand...
-    string = QString()
-    if ( QTextDrag.decode( e, string ) ) :
-      dishName = string
-      self.PopulationTextLabel.setText(dishName)
+    freezer_item_name = QString()
+    if ( QTextDrag.decode( e, freezer_item_name ) ) :
+      if freezer_item_name[-4:] == 'full':
+        freezer_item_name_temp = str(freezer_item_name) + '/petri_dish'
+      else:
+        freezer_item_name_temp = str(freezer_item_name)
+      thawed_item = pyReadFreezer(freezer_item_name_temp)
+      self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("doDefrostDishSig"),  
+        (os.path.splitext((os.path.split(str(freezer_item_name))[1]))[0], thawed_item,))
+
       current_page = self.m_petri_dish_widget_stack.visibleWidget()
       current_page_int = self.m_petri_dish_widget_stack.id(current_page)
       if (current_page_int == 0):

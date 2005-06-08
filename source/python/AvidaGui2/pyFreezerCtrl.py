@@ -64,8 +64,24 @@ class pyFreezerCtrl(pyFreezerView):
   def pressed_itemSlot(self, item):
 
     if item != None and item.depth() > 0:
+      top_level = item
+      while top_level.parent():
+        top_level = top_level.parent()
 
-      dragHolder = self.itemDrag( item.text(0), self )
+      # Rebuild the file name
+
+      if str(top_level.text(0)).startswith(" Empty Petri"):
+        file_name = str(item.text(0)) + ".empty"
+      elif str(top_level.text(0)).startswith(" Full Petri"):
+        file_name = str(item.text(0)) + ".full"
+      elif str(top_level.text(0)).startswith(" Organism"):
+        file_name = str(item.text(0)) + ".organism"
+      file_name = self.m_session_mdl.m_current_freezer + file_name
+#      thawed_item = pyReadFreezer(file_name)
+#      self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("doDefrostDishSig"),
+#        (item.text(0), thawed_item,))
+
+      dragHolder = self.itemDrag( file_name, self )
 #     maybe play with iconView
 #      dragHolder.dragEnabled()
       dragHolder.dragCopy()

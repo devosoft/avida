@@ -56,13 +56,13 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
       avg_fitness = "%.2g" %(stats.GetAveFitness())
       self.m_avg_fitness.setText(avg_fitness)
 
-
-    dom_fitness = str(stats.GetDomFitness())
+    # i got rid of dominant stats, jmc
+#    dom_fitness = str(stats.GetDomFitness())
 #    string_length = len(dom_fitness)
 #    while string_length < string_output_length:
 #      dom_fitness = dom_fitness + '0'
 #      string_length = string_length+1
-    self.m_dom_fitness.setText(dom_fitness[0:string_output_length])
+#    self.m_dom_fitness.setText(dom_fitness[0:string_output_length])
 
     num_orgs = stats.GetNumCreatures()
     self.m_num_orgs.setText(QString("%1").arg(num_orgs))
@@ -73,6 +73,15 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
 #      avg_gest = avg_gest + '0'
 #      string_length = string_length+1
     self.m_avg_gest.setText(QString("%1").arg(avg_gest))
+ 
+    avg_merit = "%d" %(stats.GetAveMerit())
+    self.m_avg_merit.setText(QString("%1").arg(avg_merit))
+
+    avg_age = "%d" %(stats.GetAveCreatureAge())
+    self.m_avg_age.setText(QString("%1").arg(avg_age))
+
+    avg_genome_length = "%d" %(stats.GetAveSize())
+    self.m_avg_genome_length.setText(QString("%1").arg(avg_genome_length))
 
 
     #TASK OUTLOOK 
