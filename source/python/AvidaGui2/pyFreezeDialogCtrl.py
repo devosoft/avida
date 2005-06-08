@@ -28,7 +28,7 @@ class pyFreezeDialogCtrl (pyFreezeDialogView):
         if self.EmptyRadioButton.isChecked():
           if (tmp_name.endswith(".empty") == False):
             tmp_name = tmp_name + ".empty"
-          tmp_name = freezer_dir + tmp_name
+          tmp_name = os.path.join(freezer_dir, tmp_name)
           if os.path.exists(tmp_name):
             found_valid_name = False
             self.MainMessageTextLabel.setText("Petri Dish Exists, Please Enter a Different Name")
@@ -38,7 +38,7 @@ class pyFreezeDialogCtrl (pyFreezeDialogView):
         else:
           if (tmp_name.endswith(".full") == False):
             tmp_name = tmp_name + ".full"
-          tmp_name = freezer_dir + tmp_name
+          tmp_name = os.path.join(freezer_dir, tmp_name)
           if os.path.exists(tmp_name):
             found_valid_name = False
             self.MainMessageTextLabel.setText("Petri Dish Exists, Please Enter a Different Name")

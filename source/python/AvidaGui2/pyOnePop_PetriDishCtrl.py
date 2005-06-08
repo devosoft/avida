@@ -80,7 +80,7 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
       return
     current_page = self.m_petri_dish_widget_stack.visibleWidget()
     current_page_int = self.m_petri_dish_widget_stack.id(current_page)
-    if (current_page_int == 0):
+    if (current_page_int != 0):
        self.m_petri_dish_widget_stack.raiseWidget(1)
        
   def SetDishDisabledSlot(self):

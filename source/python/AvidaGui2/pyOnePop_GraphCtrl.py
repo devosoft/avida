@@ -6,6 +6,7 @@ from pyAvidaStatsInterface import pyAvidaStatsInterface
 from pyOnePop_GraphView import pyOnePop_GraphView
 from qt import *
 from qwt import *
+import os.path
 
 class PrintFilter(QwtPlotPrintFilter):
   def __init__(self):
@@ -65,7 +66,7 @@ class pyOnePop_GraphCtrl(pyOnePop_GraphView):
       self.printGraphSlot)
 
   def load(self, filename, colx, coly):
-    print "pyOnePop_GraphCtrl.load"
+    print "pyOnePop_GraphCtrl.load file name = " + filename
     if (self.m_avida is None) or (self.m_avida.m_population.GetStats().GetUpdate() == 0):
       print " m_avida is None, or update is zero. Not loading from file."
       self.m_x_array = zeros(1, Float)
@@ -89,7 +90,7 @@ class pyOnePop_GraphCtrl(pyOnePop_GraphView):
     self.m_graph_ctrl.clear()
     if index:
       self.load(
-        self.m_avida_stats_interface.m_entries[index][1],
+        os.path.join(self.m_session_mdl.m_tempdir_out, self.m_avida_stats_interface.m_entries[index][1]),
         1,
         self.m_avida_stats_interface.m_entries[index][2]
       )

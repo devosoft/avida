@@ -2,7 +2,7 @@
 
 from qt import *
 from pyOnePopulationView import pyOnePopulationView
-import os
+import os.path
 
 class pyOnePopulationCtrl(pyOnePopulationView):
 

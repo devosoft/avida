@@ -3,14 +3,14 @@
 from pyAvida import pyAvida
 from pyFreezeDialogCtrl import pyFreezeDialogCtrl
 from pyPetriConfigureView import pyPetriConfigureView
-from pyWriteGenesis import pyWriteGenesis
+from pyWriteGenesisEvent import pyWriteGenesisEvent
 from pyWriteToFreezer import pyWriteToFreezer
 
 from AvidaCore import cGenesis, cString
 
 from qt import *
 
-import os
+import os, os.path, shutil
 import math
 
 class pyPetriConfigureCtrl(pyPetriConfigureView):
@@ -197,12 +197,18 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
       PYSIGNAL("doDisablePetriDishSig"), ())
 
   def CreateFilesFromPetriSlot(self, out_dir = None):
+
+    # The input files will be placed in a python generated temporary directory
+    # ouput files will be stored in tmp_dir/output until the data is frozen
+    # (ie saved)
+
     self.full_petri_dict["SETTINGS"] = self.Form2Dictionary()
-    write_object = pyWriteGenesis(self.full_petri_dict, 
+    write_object = pyWriteGenesisEvent(self.full_petri_dict, 
       self.m_session_mdl.m_current_workspace,
-      self.m_session_mdl.m_current_freezer, self.m_session_mdl.m_tempdir)
+      self.m_session_mdl.m_current_freezer, self.m_session_mdl.m_tempdir,
+      self.m_session_mdl.m_tempdir_out)
     self.m_session_mdl.m_session_mdtr.emit(
-      PYSIGNAL("doInitializeAvidaPhaseIISig"), (self.m_session_mdl.m_tempdir + "genesis.avida",))
+      PYSIGNAL("doInitializeAvidaPhaseIISig"), (os.path.join(self.m_session_mdl.m_tempdir, "genesis.avida"),))
       
   def Form2Dictionary(self):
     settings_dict = {}
@@ -240,12 +246,23 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     tmp_dict["SETTINGS"] = self.Form2Dictionary()
     m_pop_up_freezer_file_name = pyFreezeDialogCtrl()
     file_name = m_pop_up_freezer_file_name.showDialog(self.m_session_mdl.m_current_freezer)
+
+    # If the user is saving a full population expand the name and insert
+    # the population dictionary into the temporary dictionary
+
     if (m_pop_up_freezer_file_name.isEmpty() == False):
       os.mkdir(file_name)
-      file_name = file_name + "/petri_dish"
+
+      # Copy the average and count files from the teporary output directory
+      # to the Freezer directory
+        
+      shutil.copyfile(os.path.join(self.m_session_mdl.m_tempdir_out, "average.dat"), os.path.join(file_name, "average.dat"))
+      shutil.copyfile(os.path.join(self.m_session_mdl.m_tempdir_out, "count.dat"), os.path.join(file_name, "count.dat"))
+      file_name = os.path.join(file_name, "petri_dish")
       tmp_dict["POPULATION"] = population_dict
     is_empty_dish = m_pop_up_freezer_file_name.EmptyRadioButton.isChecked()
     freezer_file = pyWriteToFreezer(tmp_dict, is_empty_dish, file_name)
+    
     self.m_session_mdl.m_session_mdtr.emit(
       PYSIGNAL("doRefreshFreezerInventorySig"), ())
     if send_reset_signal:

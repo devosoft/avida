@@ -6,7 +6,7 @@ from pyAvidaStatsInterface import pyAvidaStatsInterface
 from pyOneAna_GraphView import pyOneAna_GraphView
 from qt import *
 from qwt import *
-import os
+import os.path
 import os.path
 
 
@@ -100,6 +100,16 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
       self.printGraphSlot)
 
   def load(self, filename, colx, coly):
+    
+    # Brian's old code, delete 
+    # init_file_name_str = os.path.join(self.m_session_mdl.m_current_freezer, str(self.m_petri_dish_dir_path) + '.full', filename)
+    # init_file = cInitFile(cString(init_file_name_str))
+    #
+    # print "loading"
+    # if not init_file.IsOpen():
+    #   print "the file you are looking for does not exist"
+    #   return
+
     init_file = cInitFile(cString(os.path.join(str(self.m_petri_dish_dir_path), filename)))
     init_file.Load()
     init_file.Compress()
@@ -141,7 +151,7 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
         print "index_1[2] is"
         print self.m_avida_stats_interface.m_entries[index_1][2]
         self.m_curve_1_arrays = self.load(
-            self.m_avida_stats_interface.m_entries[index_1][1],
+            os.path.join(self.m_session_mdl.m_tempdir_out, self.m_avida_stats_interface.m_entries[index_1][1]),
             1,
             self.m_avida_stats_interface.m_entries[index_1][2]
         )
@@ -163,7 +173,7 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
         self.m_graph_ctrl.enableYRightAxis(True)      
         self.m_graph_ctrl.setAxisAutoScale(QwtPlot.yRight)
         self.m_curve_2_arrays = self.load(
-            self.m_avida_stats_interface.m_entries[index_2][1],
+            os.path.join(self.m_session_mdl.m_tempdir_out, self.m_avida_stats_interface.m_entries[index_2][1]),
             1,
             self.m_avida_stats_interface.m_entries[index_2][2]
         )

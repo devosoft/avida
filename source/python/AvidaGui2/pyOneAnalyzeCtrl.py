@@ -2,7 +2,7 @@
 
 from qt import *
 from pyOneAnalyzeView import pyOneAnalyzeView
-import os
+import os.path
 
 class pyOneAnalyzeCtrl(pyOneAnalyzeView):
 
@@ -20,7 +20,7 @@ class pyOneAnalyzeCtrl(pyOneAnalyzeView):
 
   def dropEvent( self, e ):
     freezer_item_name = QString()
-
+    print "something was dropped"
     if ( QTextDrag.decode( e, freezer_item_name ) ) :
       if os.path.exists( str(freezer_item_name)) == False:
         print "that was not a valid path(3)" 
