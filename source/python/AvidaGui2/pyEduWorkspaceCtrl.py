@@ -10,6 +10,7 @@ from pyTwoOrganismCtrl import pyTwoOrganismCtrl
 from pyTwoPopulationCtrl import pyTwoPopulationCtrl
 from pyPetriConfigureCtrl import pyPetriConfigureCtrl
 from pyQuitDialogCtrl import pyQuitDialogCtrl
+import os.path
 
 
 from qt import *
@@ -145,8 +146,8 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
     workspace_dir = str(workspace_dir)              
 
     if workspace_dir.strip() != "":
-      self.m_session_mdl.m_current_workspce = str(workspace_dir) + "/"
-      self.m_session_mdl.m_current_freezer = self.m_session_mdl.m_current_workspce + "freezer/"
+      self.m_session_mdl.m_current_workspce = str(workspace_dir)
+      self.m_session_mdl.m_current_freezer = os.path.join(self.m_session_mdl.m_current_workspce, "freezer")
       self.m_session_mdl.m_session_mdtr.emit(
         PYSIGNAL("doRefreshFreezerInventorySig"), ())
 
@@ -161,7 +162,7 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
                     True);
     freezer_dir = str(freezer_dir)
     if freezer_dir.strip() != "":
-      self.m_session_mdl.m_current_freezer = str(freezer_dir) + "/"
+      self.m_session_mdl.m_current_freezer = str(freezer_dir)
       self.m_session_mdl.m_session_mdtr.emit(
         PYSIGNAL("doRefreshFreezerInventorySig"), ())
 
