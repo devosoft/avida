@@ -52,7 +52,7 @@
 #include <qstatusbar.h>
 
 //event descriptions
-#include "cPopulation_descr.hi"
+#include "cPopulation_descr.h"
 
 #ifndef STRING_HH
 #include "string.hh"

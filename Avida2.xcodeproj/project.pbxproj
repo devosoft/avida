@@ -6,6 +6,130 @@
 	objectVersion = 42;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		70A6DADD08561A8C0017C729 /* code_label.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D530085613970017C729 /* code_label.cc */; };
+		70A6DADE08561A8D0017C729 /* cpu_memory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D534085613970017C729 /* cpu_memory.cc */; };
+		70A6DADF08561A8F0017C729 /* cpu_stack.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D536085613970017C729 /* cpu_stack.cc */; };
+		70A6DAE008561A900017C729 /* cpu_test_info.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D539085613970017C729 /* cpu_test_info.cc */; };
+		70A6DAE108561A920017C729 /* hardware_4stack.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D53B085613970017C729 /* hardware_4stack.cc */; };
+		70A6DAE208561A930017C729 /* hardware_4stack_thread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D53E085613970017C729 /* hardware_4stack_thread.cc */; };
+		70A6DAE308561A940017C729 /* hardware_base.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D540085613970017C729 /* hardware_base.cc */; };
+		70A6DAE408561A950017C729 /* hardware_cpu.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D542085613970017C729 /* hardware_cpu.cc */; };
+		70A6DAE508561A970017C729 /* hardware_cpu_thread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D544085613970017C729 /* hardware_cpu_thread.cc */; };
+		70A6DAE608561A980017C729 /* hardware_factory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D546085613970017C729 /* hardware_factory.cc */; };
+		70A6DAE708561A990017C729 /* hardware_smt.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D548085613970017C729 /* hardware_smt.cc */; };
+		70A6DAE808561A9A0017C729 /* hardware_smt_thread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D54B085613970017C729 /* hardware_smt_thread.cc */; };
+		70A6DAE908561A9C0017C729 /* hardware_status_printer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D54D085613970017C729 /* hardware_status_printer.cc */; };
+		70A6DAEA08561AA10017C729 /* hardware_util.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D553085613970017C729 /* hardware_util.cc */; };
+		70A6DAEB08561AA20017C729 /* head_cpu.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D555085613970017C729 /* head_cpu.cc */; };
+		70A6DAEC08561AA30017C729 /* head_multi_mem.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D557085613970017C729 /* head_multi_mem.cc */; };
+		70A6DAED08561AA40017C729 /* memory_flags.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D55A085613970017C729 /* memory_flags.cc */; };
+		70A6DAEE08561AA50017C729 /* test_cpu.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D55C085613970017C729 /* test_cpu.cc */; };
+		70A6DAEF08561AA60017C729 /* test_util.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D55E085613970017C729 /* test_util.cc */; };
+		70A6DAF008561AAC0017C729 /* event.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D567085613970017C729 /* event.cc */; };
+		70A6DAF108561AAD0017C729 /* event_factory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D56A085613970017C729 /* event_factory.cc */; };
+		70A6DAF208561AAD0017C729 /* event_factory_manager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D56C085613970017C729 /* event_factory_manager.cc */; };
+		70A6DAF308561AAE0017C729 /* event_list.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D56E085613970017C729 /* event_list.cc */; };
+		70A6DAF408561AAF0017C729 /* event_list_entry.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D570085613970017C729 /* event_list_entry.cc */; };
+		70A6DAF508561AB10017C729 /* event_list_iterator.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D572085613970017C729 /* event_list_iterator.cc */; };
+		70A6DAF608561AB10017C729 /* event_triggers.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D574085613970017C729 /* event_triggers.cc */; };
+		70A6DAF708561AB20017C729 /* population_event.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D577085613970017C729 /* population_event.cc */; };
+		70A6DAF808561AB30017C729 /* population_event_factory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D579085613970017C729 /* population_event_factory.cc */; };
+		70A6DAF908561ABB0017C729 /* analyze_genotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D585085613970017C729 /* analyze_genotype.cc */; };
+		70A6DAFA08561ABD0017C729 /* analyze_util.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D587085613970017C729 /* analyze_util.cc */; };
+		70A6DAFB08561ABE0017C729 /* avida.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D589085613970017C729 /* avida.cc */; };
+		70A6DAFC08561ABF0017C729 /* avida_driver_analyze.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D58B085613970017C729 /* avida_driver_analyze.cc */; };
+		70A6DAFD08561AC00017C729 /* avida_driver_base.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D58D085613970017C729 /* avida_driver_base.cc */; };
+		70A6DAFE08561AC10017C729 /* avida_driver_population.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D58F085613970017C729 /* avida_driver_population.cc */; };
+		70A6DAFF08561AC20017C729 /* birth_chamber.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D592085613970017C729 /* birth_chamber.cc */; };
+		70A6DB0008561AC40017C729 /* callback_util.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D594085613970017C729 /* callback_util.cc */; };
+		70A6DB0108561AC50017C729 /* config.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D597085613970017C729 /* config.cc */; };
+		70A6DB0208561AC60017C729 /* environment.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D599085613970017C729 /* environment.cc */; };
+		70A6DB0308561AC80017C729 /* fitness_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D59B085613970017C729 /* fitness_matrix.cc */; };
+		70A6DB0408561AC90017C729 /* genebank.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5A4085613970017C729 /* genebank.cc */; };
+		70A6DB0508561ACD0017C729 /* genome.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5A6085613970017C729 /* genome.cc */; };
+		70A6DB0608561ACE0017C729 /* genome_util.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5A8085613970017C729 /* genome_util.cc */; };
+		70A6DB0708561ACF0017C729 /* genotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5AA085613970017C729 /* genotype.cc */; };
+		70A6DB0808561AD00017C729 /* genotype_birth_data.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5AD085613970017C729 /* genotype_birth_data.cc */; };
+		70A6DB0908561AD10017C729 /* genotype_control.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5AF085613970017C729 /* genotype_control.cc */; };
+		70A6DB0A08561AD20017C729 /* genotype_test_data.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5B2085613970017C729 /* genotype_test_data.cc */; };
+		70A6DB0B08561AD30017C729 /* inject_genebank.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5B4085613970017C729 /* inject_genebank.cc */; };
+		70A6DB0C08561AD50017C729 /* inject_genotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5B7085613970017C729 /* inject_genotype.cc */; };
+		70A6DB0D08561AD70017C729 /* inject_genotype_birth_data.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5B9085613970017C729 /* inject_genotype_birth_data.cc */; };
+		70A6DB0E08561AD80017C729 /* inject_genotype_control.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5BB085613970017C729 /* inject_genotype_control.cc */; };
+		70A6DB0F08561AD90017C729 /* inject_genotype_queue.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5BE085613970017C729 /* inject_genotype_queue.cc */; };
+		70A6DB1008561ADA0017C729 /* inst_set.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5C1085613970017C729 /* inst_set.cc */; };
+		70A6DB1108561ADC0017C729 /* inst_util.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5C3085613970017C729 /* inst_util.cc */; };
+		70A6DB1208561ADD0017C729 /* instruction.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5C5085613970017C729 /* instruction.cc */; };
+		70A6DB1308561ADE0017C729 /* landscape.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5C7085613970017C729 /* landscape.cc */; };
+		70A6DB1408561ADF0017C729 /* lineage.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5C9085613970017C729 /* lineage.cc */; };
+		70A6DB1508561AE00017C729 /* lineage_control.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5CB085613970017C729 /* lineage_control.cc */; };
+		70A6DB1608561AE00017C729 /* local_mutations.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5CD085613970017C729 /* local_mutations.cc */; };
+		70A6DB1708561AE50017C729 /* mutation.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5D1085613970017C729 /* mutation.cc */; };
+		70A6DB1808561AE60017C729 /* mutation_lib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5D3085613970017C729 /* mutation_lib.cc */; };
+		70A6DB1908561AE70017C729 /* mutation_rates.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5D6085613970017C729 /* mutation_rates.cc */; };
+		70A6DB1A08561AE80017C729 /* mx_code_array.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5D8085613970017C729 /* mx_code_array.cc */; };
+		70A6DB1B08561AE90017C729 /* org_message.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5DB085613970017C729 /* org_message.cc */; };
+		70A6DB1C08561AEB0017C729 /* organism.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5DD085613970017C729 /* organism.cc */; };
+		70A6DB1D08561AEC0017C729 /* phenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5DF085613970017C729 /* phenotype.cc */; };
+		70A6DB1E08561AED0017C729 /* population.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5E1085613970017C729 /* population.cc */; };
+		70A6DB1F08561AED0017C729 /* population_cell.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5E3085613970017C729 /* population_cell.cc */; };
+		70A6DB2008561AEE0017C729 /* population_interface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5E5085613970017C729 /* population_interface.cc */; };
+		70A6DB2108561AF20017C729 /* primitive.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5E7085613970017C729 /* primitive.cc */; };
+		70A6DB2208561AF20017C729 /* reaction.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5E9085613970017C729 /* reaction.cc */; };
+		70A6DB2308561AF30017C729 /* reaction_lib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5EB085613970017C729 /* reaction_lib.cc */; };
+		70A6DB2408561AF40017C729 /* reaction_process.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5EE085613970017C729 /* reaction_process.cc */; };
+		70A6DB2508561AF50017C729 /* reaction_requisite.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5F0085613970017C729 /* reaction_requisite.cc */; };
+		70A6DB2608561AF60017C729 /* reaction_result.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5F2085613970017C729 /* reaction_result.cc */; };
+		70A6DB2708561AF70017C729 /* resource.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5F4085613970017C729 /* resource.cc */; };
+		70A6DB2808561AF80017C729 /* resource_count.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5F6085613970017C729 /* resource_count.cc */; };
+		70A6DB2908561AFA0017C729 /* resource_lib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5F9085613970017C729 /* resource_lib.cc */; };
+		70A6DB2A08561AFB0017C729 /* spatial_count_elem.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5FC085613970017C729 /* spatial_count_elem.cc */; };
+		70A6DB2B08561AFF0017C729 /* spatial_res_count.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D5FE085613970017C729 /* spatial_res_count.cc */; };
+		70A6DB2C08561AFF0017C729 /* species.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D600085613970017C729 /* species.cc */; };
+		70A6DB2D08561B000017C729 /* species_control.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D602085613970017C729 /* species_control.cc */; };
+		70A6DB2E08561B010017C729 /* species_queue.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D604085613970017C729 /* species_queue.cc */; };
+		70A6DB2F08561B020017C729 /* stats.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D606085613970017C729 /* stats.cc */; };
+		70A6DB3008561B030017C729 /* task_entry.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D608085613970017C729 /* task_entry.cc */; };
+		70A6DB3108561B040017C729 /* task_lib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6D60A085613970017C729 /* task_lib.cc */; };
+		70A6DB3208561B1B0017C729 /* block_struct.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA200856139A0017C729 /* block_struct.cc */; };
+		70A6DB3308561B1D0017C729 /* change_list.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA240856139A0017C729 /* change_list.cc */; };
+		70A6DB3408561B1E0017C729 /* const_schedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA280856139A0017C729 /* const_schedule.cc */; };
+		70A6DB3508561B1F0017C729 /* count_tracker.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA2A0856139A0017C729 /* count_tracker.cc */; };
+		70A6DB3608561B200017C729 /* data_entry.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA2D0856139A0017C729 /* data_entry.cc */; };
+		70A6DB3708561B210017C729 /* data_file.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA2F0856139A0017C729 /* data_file.cc */; };
+		70A6DB3808561B220017C729 /* data_file_manager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA310856139A0017C729 /* data_file_manager.cc */; };
+		70A6DB3908561B230017C729 /* data_manager_base.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA330856139A0017C729 /* data_manager_base.cc */; };
+		70A6DB3A08561B240017C729 /* default_message_display.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA350856139A0017C729 /* default_message_display.cc */; };
+		70A6DB3B08561B240017C729 /* double_sum.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA370856139A0017C729 /* double_sum.cc */; };
+		70A6DB3C08561B250017C729 /* file.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA390856139A0017C729 /* file.cc */; };
+		70A6DB3D08561B260017C729 /* fixed_block.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA3B0856139A0017C729 /* fixed_block.cc */; };
+		70A6DB3E08561B290017C729 /* genesis.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA3F0856139A0017C729 /* genesis.cc */; };
+		70A6DB3F08561B2A0017C729 /* help_alias.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA410856139A0017C729 /* help_alias.cc */; };
+		70A6DB4008561B2B0017C729 /* help_manager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA450856139A0017C729 /* help_manager.cc */; };
+		70A6DB4108561B2C0017C729 /* help_type.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA470856139A0017C729 /* help_type.cc */; };
+		70A6DB4208561B2D0017C729 /* histogram.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA490856139A0017C729 /* histogram.cc */; };
+		70A6DB4308561B2D0017C729 /* indexed_block_struct.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA4B0856139A0017C729 /* indexed_block_struct.cc */; };
+		70A6DB4408561B2E0017C729 /* init_file.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA4D0856139A0017C729 /* init_file.cc */; };
+		70A6DB4508561B2F0017C729 /* int_sum.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA4F0856139A0017C729 /* int_sum.cc */; };
+		70A6DB4608561B300017C729 /* integrated_schedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA510856139A0017C729 /* integrated_schedule.cc */; };
+		70A6DB4708561B310017C729 /* integrated_schedule_node.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA530856139A0017C729 /* integrated_schedule_node.cc */; };
+		70A6DB4808561B320017C729 /* merit.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA550856139A0017C729 /* merit.cc */; };
+		70A6DB4908561B370017C729 /* message_display.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA590856139A0017C729 /* message_display.cc */; };
+		70A6DB4A08561B380017C729 /* prob_schedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA5D0856139A0017C729 /* prob_schedule.cc */; };
+		70A6DB4B08561B3A0017C729 /* random.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA5F0856139A0017C729 /* random.cc */; };
+		70A6DB4C08561B3D0017C729 /* ref_block.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA640856139A0017C729 /* ref_block.cc */; };
+		70A6DB4D08561B3E0017C729 /* running_average.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA660856139A0017C729 /* running_average.cc */; };
+		70A6DB4E08561B3F0017C729 /* scaled_block.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA680856139A0017C729 /* scaled_block.cc */; };
+		70A6DB4F08561B400017C729 /* schedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA6A0856139A0017C729 /* schedule.cc */; };
+		70A6DB5008561B400017C729 /* string.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA6C0856139A0017C729 /* string.cc */; };
+		70A6DB5108561B410017C729 /* string_iterator.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA6E0856139A0017C729 /* string_iterator.cc */; };
+		70A6DB5208561B420017C729 /* string_list.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA700856139A0017C729 /* string_list.cc */; };
+		70A6DB5308561B430017C729 /* string_util.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA720856139A0017C729 /* string_util.cc */; };
+		70A6DB5408561B480017C729 /* tools.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA820856139A0017C729 /* tools.cc */; };
+		70A6DB5608561B4B0017C729 /* weighted_index.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A6DA8B0856139A0017C729 /* weighted_index.cc */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		70A6DAC00856139B0017C729 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1568,6 +1692,7 @@
 		70A6DABA0856139B0017C729 /* zoom_screen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = zoom_screen.cc; sourceTree = "<group>"; };
 		70A6DABB0856139B0017C729 /* zoom_screen.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = zoom_screen.hh; sourceTree = "<group>"; };
 		70A6DAC5085613CA0017C729 /* avida2 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = avida2; sourceTree = BUILT_PRODUCTS_DIR; };
+		70A6DB83085693D20017C729 /* cPopulation_descr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cPopulation_descr.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1931,6 +2056,7 @@
 			isa = PBXGroup;
 			children = (
 				70A6D564085613970017C729 /* CMakeLists.txt */,
+				70A6DB83085693D20017C729 /* cPopulation_descr.h */,
 				70A6D565085613970017C729 /* cPopulation.events */,
 				70A6D566085613970017C729 /* cPopulation_event_list */,
 				70A6D567085613970017C729 /* event.cc */,
@@ -4093,6 +4219,127 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				70A6DADD08561A8C0017C729 /* code_label.cc in Sources */,
+				70A6DADE08561A8D0017C729 /* cpu_memory.cc in Sources */,
+				70A6DADF08561A8F0017C729 /* cpu_stack.cc in Sources */,
+				70A6DAE008561A900017C729 /* cpu_test_info.cc in Sources */,
+				70A6DAE108561A920017C729 /* hardware_4stack.cc in Sources */,
+				70A6DAE208561A930017C729 /* hardware_4stack_thread.cc in Sources */,
+				70A6DAE308561A940017C729 /* hardware_base.cc in Sources */,
+				70A6DAE408561A950017C729 /* hardware_cpu.cc in Sources */,
+				70A6DAE508561A970017C729 /* hardware_cpu_thread.cc in Sources */,
+				70A6DAE608561A980017C729 /* hardware_factory.cc in Sources */,
+				70A6DAE708561A990017C729 /* hardware_smt.cc in Sources */,
+				70A6DAE808561A9A0017C729 /* hardware_smt_thread.cc in Sources */,
+				70A6DAE908561A9C0017C729 /* hardware_status_printer.cc in Sources */,
+				70A6DAEA08561AA10017C729 /* hardware_util.cc in Sources */,
+				70A6DAEB08561AA20017C729 /* head_cpu.cc in Sources */,
+				70A6DAEC08561AA30017C729 /* head_multi_mem.cc in Sources */,
+				70A6DAED08561AA40017C729 /* memory_flags.cc in Sources */,
+				70A6DAEE08561AA50017C729 /* test_cpu.cc in Sources */,
+				70A6DAEF08561AA60017C729 /* test_util.cc in Sources */,
+				70A6DAF008561AAC0017C729 /* event.cc in Sources */,
+				70A6DAF108561AAD0017C729 /* event_factory.cc in Sources */,
+				70A6DAF208561AAD0017C729 /* event_factory_manager.cc in Sources */,
+				70A6DAF308561AAE0017C729 /* event_list.cc in Sources */,
+				70A6DAF408561AAF0017C729 /* event_list_entry.cc in Sources */,
+				70A6DAF508561AB10017C729 /* event_list_iterator.cc in Sources */,
+				70A6DAF608561AB10017C729 /* event_triggers.cc in Sources */,
+				70A6DAF708561AB20017C729 /* population_event.cc in Sources */,
+				70A6DAF808561AB30017C729 /* population_event_factory.cc in Sources */,
+				70A6DAF908561ABB0017C729 /* analyze_genotype.cc in Sources */,
+				70A6DAFA08561ABD0017C729 /* analyze_util.cc in Sources */,
+				70A6DAFB08561ABE0017C729 /* avida.cc in Sources */,
+				70A6DAFC08561ABF0017C729 /* avida_driver_analyze.cc in Sources */,
+				70A6DAFD08561AC00017C729 /* avida_driver_base.cc in Sources */,
+				70A6DAFE08561AC10017C729 /* avida_driver_population.cc in Sources */,
+				70A6DAFF08561AC20017C729 /* birth_chamber.cc in Sources */,
+				70A6DB0008561AC40017C729 /* callback_util.cc in Sources */,
+				70A6DB0108561AC50017C729 /* config.cc in Sources */,
+				70A6DB0208561AC60017C729 /* environment.cc in Sources */,
+				70A6DB0308561AC80017C729 /* fitness_matrix.cc in Sources */,
+				70A6DB0408561AC90017C729 /* genebank.cc in Sources */,
+				70A6DB0508561ACD0017C729 /* genome.cc in Sources */,
+				70A6DB0608561ACE0017C729 /* genome_util.cc in Sources */,
+				70A6DB0708561ACF0017C729 /* genotype.cc in Sources */,
+				70A6DB0808561AD00017C729 /* genotype_birth_data.cc in Sources */,
+				70A6DB0908561AD10017C729 /* genotype_control.cc in Sources */,
+				70A6DB0A08561AD20017C729 /* genotype_test_data.cc in Sources */,
+				70A6DB0B08561AD30017C729 /* inject_genebank.cc in Sources */,
+				70A6DB0C08561AD50017C729 /* inject_genotype.cc in Sources */,
+				70A6DB0D08561AD70017C729 /* inject_genotype_birth_data.cc in Sources */,
+				70A6DB0E08561AD80017C729 /* inject_genotype_control.cc in Sources */,
+				70A6DB0F08561AD90017C729 /* inject_genotype_queue.cc in Sources */,
+				70A6DB1008561ADA0017C729 /* inst_set.cc in Sources */,
+				70A6DB1108561ADC0017C729 /* inst_util.cc in Sources */,
+				70A6DB1208561ADD0017C729 /* instruction.cc in Sources */,
+				70A6DB1308561ADE0017C729 /* landscape.cc in Sources */,
+				70A6DB1408561ADF0017C729 /* lineage.cc in Sources */,
+				70A6DB1508561AE00017C729 /* lineage_control.cc in Sources */,
+				70A6DB1608561AE00017C729 /* local_mutations.cc in Sources */,
+				70A6DB1708561AE50017C729 /* mutation.cc in Sources */,
+				70A6DB1808561AE60017C729 /* mutation_lib.cc in Sources */,
+				70A6DB1908561AE70017C729 /* mutation_rates.cc in Sources */,
+				70A6DB1A08561AE80017C729 /* mx_code_array.cc in Sources */,
+				70A6DB1B08561AE90017C729 /* org_message.cc in Sources */,
+				70A6DB1C08561AEB0017C729 /* organism.cc in Sources */,
+				70A6DB1D08561AEC0017C729 /* phenotype.cc in Sources */,
+				70A6DB1E08561AED0017C729 /* population.cc in Sources */,
+				70A6DB1F08561AED0017C729 /* population_cell.cc in Sources */,
+				70A6DB2008561AEE0017C729 /* population_interface.cc in Sources */,
+				70A6DB2108561AF20017C729 /* primitive.cc in Sources */,
+				70A6DB2208561AF20017C729 /* reaction.cc in Sources */,
+				70A6DB2308561AF30017C729 /* reaction_lib.cc in Sources */,
+				70A6DB2408561AF40017C729 /* reaction_process.cc in Sources */,
+				70A6DB2508561AF50017C729 /* reaction_requisite.cc in Sources */,
+				70A6DB2608561AF60017C729 /* reaction_result.cc in Sources */,
+				70A6DB2708561AF70017C729 /* resource.cc in Sources */,
+				70A6DB2808561AF80017C729 /* resource_count.cc in Sources */,
+				70A6DB2908561AFA0017C729 /* resource_lib.cc in Sources */,
+				70A6DB2A08561AFB0017C729 /* spatial_count_elem.cc in Sources */,
+				70A6DB2B08561AFF0017C729 /* spatial_res_count.cc in Sources */,
+				70A6DB2C08561AFF0017C729 /* species.cc in Sources */,
+				70A6DB2D08561B000017C729 /* species_control.cc in Sources */,
+				70A6DB2E08561B010017C729 /* species_queue.cc in Sources */,
+				70A6DB2F08561B020017C729 /* stats.cc in Sources */,
+				70A6DB3008561B030017C729 /* task_entry.cc in Sources */,
+				70A6DB3108561B040017C729 /* task_lib.cc in Sources */,
+				70A6DB3208561B1B0017C729 /* block_struct.cc in Sources */,
+				70A6DB3308561B1D0017C729 /* change_list.cc in Sources */,
+				70A6DB3408561B1E0017C729 /* const_schedule.cc in Sources */,
+				70A6DB3508561B1F0017C729 /* count_tracker.cc in Sources */,
+				70A6DB3608561B200017C729 /* data_entry.cc in Sources */,
+				70A6DB3708561B210017C729 /* data_file.cc in Sources */,
+				70A6DB3808561B220017C729 /* data_file_manager.cc in Sources */,
+				70A6DB3908561B230017C729 /* data_manager_base.cc in Sources */,
+				70A6DB3A08561B240017C729 /* default_message_display.cc in Sources */,
+				70A6DB3B08561B240017C729 /* double_sum.cc in Sources */,
+				70A6DB3C08561B250017C729 /* file.cc in Sources */,
+				70A6DB3D08561B260017C729 /* fixed_block.cc in Sources */,
+				70A6DB3E08561B290017C729 /* genesis.cc in Sources */,
+				70A6DB3F08561B2A0017C729 /* help_alias.cc in Sources */,
+				70A6DB4008561B2B0017C729 /* help_manager.cc in Sources */,
+				70A6DB4108561B2C0017C729 /* help_type.cc in Sources */,
+				70A6DB4208561B2D0017C729 /* histogram.cc in Sources */,
+				70A6DB4308561B2D0017C729 /* indexed_block_struct.cc in Sources */,
+				70A6DB4408561B2E0017C729 /* init_file.cc in Sources */,
+				70A6DB4508561B2F0017C729 /* int_sum.cc in Sources */,
+				70A6DB4608561B300017C729 /* integrated_schedule.cc in Sources */,
+				70A6DB4708561B310017C729 /* integrated_schedule_node.cc in Sources */,
+				70A6DB4808561B320017C729 /* merit.cc in Sources */,
+				70A6DB4908561B370017C729 /* message_display.cc in Sources */,
+				70A6DB4A08561B380017C729 /* prob_schedule.cc in Sources */,
+				70A6DB4B08561B3A0017C729 /* random.cc in Sources */,
+				70A6DB4C08561B3D0017C729 /* ref_block.cc in Sources */,
+				70A6DB4D08561B3E0017C729 /* running_average.cc in Sources */,
+				70A6DB4E08561B3F0017C729 /* scaled_block.cc in Sources */,
+				70A6DB4F08561B400017C729 /* schedule.cc in Sources */,
+				70A6DB5008561B400017C729 /* string.cc in Sources */,
+				70A6DB5108561B410017C729 /* string_iterator.cc in Sources */,
+				70A6DB5208561B420017C729 /* string_list.cc in Sources */,
+				70A6DB5308561B430017C729 /* string_util.cc in Sources */,
+				70A6DB5408561B480017C729 /* tools.cc in Sources */,
+				70A6DB5608561B4B0017C729 /* weighted_index.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
