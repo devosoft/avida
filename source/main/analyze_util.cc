@@ -777,27 +777,27 @@ void cAnalyzeUtil::TaskSnapshot(cPopulation * pop, ofstream & fp)
 }
 
 void cAnalyzeUtil::TaskGrid(cPopulation * pop, ofstream & fp)
-{
-
+{ 
   for (int i = 0; i < pop->GetWorldX(); i++) {
     for (int j = 0; j < pop->GetWorldY(); j++) {
-      int task_sum = 0; 
-      if (pop->GetCell(i).IsOccupied() == true) { 
-        cOrganism * organism = pop->GetCell(j*pop->GetWorldX()+i).GetOrganism();
+      int task_sum = 0;
+      int cell_num = i*pop->GetWorldX()+j;
+      if (pop->GetCell(cell_num).IsOccupied() == true) {
+        cOrganism * organism = pop->GetCell(cell_num).GetOrganism();
         cCPUTestInfo test_info;
         cTestCPU::TestGenome( test_info, organism->GetGenome() );
         cPhenotype & test_phenotype = test_info.GetTestOrganism()->GetPhenotype();
-        int num_tasks = test_phenotype.GetEnvironment().GetTaskLib().GetSize();
+        int num_tasks = test_phenotype.GetEnvironment().GetTaskLib().GetSize();   
         for (int k = 0; k < num_tasks; k++) {
           if (test_phenotype.GetLastTaskCount()[k]>0) {
-	    task_sum = task_sum + (int)pow(2,k); 
-          } 
-        }
-      }
+            task_sum = task_sum + (int)pow(2,k);
+          }
+        }  
+      }  
       fp << task_sum << " ";
     }
     fp << endl;
-  } 
+  }
 }
 
 /**
