@@ -27,7 +27,7 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"), self.setAvidaSlot)
     self.connect(self.m_petri_dish_toggle, SIGNAL("clicked()"), self.ToggleDishSlot)
     self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("doDefrostDishSig"), self.RenameDishSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("doefrostDishSig"), self.MakeConfigVisiableSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("doDefrostDishSig"), self.MakeConfigVisiableSlot)
     self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("doDisablePetriDishSig"), self.SetDishDisabledSlot)
     self.connect(self.m_zoom_spinbox, SIGNAL("valueChanged(int)"), self.m_petri_dish_ctrl.zoomSlot)
     self.connect(self.m_petri_dish_ctrl, PYSIGNAL("zoomSig"), self.m_zoom_spinbox.setValue)
@@ -80,7 +80,7 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
       return
     current_page = self.m_petri_dish_widget_stack.visibleWidget()
     current_page_int = self.m_petri_dish_widget_stack.id(current_page)
-    if (current_page_int != 0):
+    if (current_page_int != 1):
        self.m_petri_dish_widget_stack.raiseWidget(1)
        
   def SetDishDisabledSlot(self):
@@ -135,10 +135,11 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
 
   def petriDropped(self, e):
     # Try to decode to the data you understand...
+    print "*** Entered petriDropped"
     freezer_item_name = QString()
     if ( QTextDrag.decode( e, freezer_item_name ) ) :
       if freezer_item_name[-4:] == 'full':
-        freezer_item_name_temp = str(freezer_item_name) + '/petri_dish'
+        freezer_item_name_temp = os.path.join(str(freezer_item_name), 'petri_dish')
       else:
         freezer_item_name_temp = str(freezer_item_name)
       thawed_item = pyReadFreezer(freezer_item_name_temp)
@@ -147,5 +148,4 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
 
       current_page = self.m_petri_dish_widget_stack.visibleWidget()
       current_page_int = self.m_petri_dish_widget_stack.id(current_page)
-      if (current_page_int == 0):
-         self.ToggleDishSlot()
+      self.MakeConfigVisiableSlot()
