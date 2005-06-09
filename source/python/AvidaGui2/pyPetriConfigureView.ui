@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>377</width>
-            <height>591</height>
+            <height>626</height>
         </rect>
     </property>
     <property name="font">
@@ -245,6 +245,86 @@
                     </vbox>
                 </widget>
             </hbox>
+        </widget>
+        <spacer>
+            <property name="name">
+                <cstring>spacer15</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Expanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>20</width>
+                    <height>16</height>
+                </size>
+            </property>
+        </spacer>
+        <widget class="QFrame">
+            <property name="name">
+                <cstring>AncestorFrame</cstring>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy>
+                    <hsizetype>5</hsizetype>
+                    <vsizetype>0</vsizetype>
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                </sizepolicy>
+            </property>
+            <property name="frameShape">
+                <enum>GroupBoxPanel</enum>
+            </property>
+            <property name="frameShadow">
+                <enum>Sunken</enum>
+            </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel">
+                    <property name="name">
+                        <cstring>AncestorHeadTextLabel</cstring>
+                    </property>
+                    <property name="font">
+                        <font>
+                            <bold>1</bold>
+                        </font>
+                    </property>
+                    <property name="text">
+                        <string>Ancestral Organism(s)</string>
+                    </property>
+                    <property name="alignment">
+                        <set>WordBreak|AlignCenter</set>
+                    </property>
+                </widget>
+                <widget class="QComboBox">
+                    <item>
+                        <property name="text">
+                            <string>default.organism</string>
+                        </property>
+                    </item>
+                    <property name="name">
+                        <cstring>AncestorComboBox</cstring>
+                    </property>
+                    <property name="font">
+                        <font>
+                        </font>
+                    </property>
+                    <property name="acceptDrops">
+                        <bool>true</bool>
+                    </property>
+                    <property name="editable">
+                        <bool>true</bool>
+                    </property>
+                    <property name="currentItem">
+                        <number>0</number>
+                    </property>
+                </widget>
+            </vbox>
         </widget>
         <spacer>
             <property name="name">
@@ -519,7 +599,7 @@
         </spacer>
         <widget class="QFrame">
             <property name="name">
-                <cstring>frame12</cstring>
+                <cstring>RandomNumFrame</cstring>
             </property>
             <property name="sizePolicy">
                 <sizepolicy>
@@ -631,6 +711,26 @@
                                     <property name="enabled">
                                         <bool>false</bool>
                                     </property>
+                                    <property name="sizePolicy">
+                                        <sizepolicy>
+                                            <hsizetype>4</hsizetype>
+                                            <vsizetype>0</vsizetype>
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
+                                    <property name="minimumSize">
+                                        <size>
+                                            <width>70</width>
+                                            <height>0</height>
+                                        </size>
+                                    </property>
+                                    <property name="maximumSize">
+                                        <size>
+                                            <width>90</width>
+                                            <height>32767</height>
+                                        </size>
+                                    </property>
                                     <property name="font">
                                         <font>
                                         </font>
@@ -670,86 +770,6 @@
         </widget>
         <spacer>
             <property name="name">
-                <cstring>spacer15</cstring>
-            </property>
-            <property name="orientation">
-                <enum>Vertical</enum>
-            </property>
-            <property name="sizeType">
-                <enum>Expanding</enum>
-            </property>
-            <property name="sizeHint">
-                <size>
-                    <width>20</width>
-                    <height>16</height>
-                </size>
-            </property>
-        </spacer>
-        <widget class="QFrame">
-            <property name="name">
-                <cstring>AncestorFrame</cstring>
-            </property>
-            <property name="sizePolicy">
-                <sizepolicy>
-                    <hsizetype>5</hsizetype>
-                    <vsizetype>0</vsizetype>
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                </sizepolicy>
-            </property>
-            <property name="frameShape">
-                <enum>GroupBoxPanel</enum>
-            </property>
-            <property name="frameShadow">
-                <enum>Sunken</enum>
-            </property>
-            <vbox>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <widget class="QLabel">
-                    <property name="name">
-                        <cstring>AncestorHeadTextLabel</cstring>
-                    </property>
-                    <property name="font">
-                        <font>
-                            <bold>1</bold>
-                        </font>
-                    </property>
-                    <property name="text">
-                        <string>Ancestral Organism(s)</string>
-                    </property>
-                    <property name="alignment">
-                        <set>WordBreak|AlignCenter</set>
-                    </property>
-                </widget>
-                <widget class="QComboBox">
-                    <item>
-                        <property name="text">
-                            <string>default.organism</string>
-                        </property>
-                    </item>
-                    <property name="name">
-                        <cstring>AncestorComboBox</cstring>
-                    </property>
-                    <property name="font">
-                        <font>
-                        </font>
-                    </property>
-                    <property name="acceptDrops">
-                        <bool>true</bool>
-                    </property>
-                    <property name="editable">
-                        <bool>true</bool>
-                    </property>
-                    <property name="currentItem">
-                        <number>0</number>
-                    </property>
-                </widget>
-            </vbox>
-        </widget>
-        <spacer>
-            <property name="name">
                 <cstring>spacer16</cstring>
             </property>
             <property name="orientation">
@@ -767,7 +787,7 @@
         </spacer>
         <widget class="QFrame">
             <property name="name">
-                <cstring>frame27</cstring>
+                <cstring>BirthPlaceFrame</cstring>
             </property>
             <property name="sizePolicy">
                 <sizepolicy>
@@ -797,7 +817,7 @@
                         </font>
                     </property>
                     <property name="text">
-                        <string>Where should new organism be placed?</string>
+                        <string>Where should new offspring be placed?</string>
                     </property>
                     <property name="alignment">
                         <set>WordBreak|AlignCenter</set>
