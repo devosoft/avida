@@ -322,6 +322,7 @@ cInstLibCPU *cHardwareCPU::initInstLib(void){
 
     // Suicide
     cInstEntryCPU("kazi",	&cHardwareCPU::Inst_Kazi),
+    cInstEntryCPU("die",	&cHardwareCPU::Inst_Die),
 
 
 
@@ -2645,6 +2646,13 @@ bool cHardwareCPU::Inst_Kazi()
 		organism->Kaboom();
 		return true;
 	}
+}
+
+bool cHardwareCPU::Inst_Die()
+{
+   const double die_prob = cConfig::GetDieProb();
+   if(g_random.GetDouble() < die_prob) { organism->Die(); }
+   return true; 
 }
 
 // The inject instruction can be used instead of a divide command, paired

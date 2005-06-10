@@ -6,7 +6,9 @@ from pyAvidaStatsInterface import pyAvidaStatsInterface
 from pyOneAna_GraphView import pyOneAna_GraphView
 from qt import *
 from qwt import *
-import os
+import os.path
+import os.path
+
 
 class PrintFilter(QwtPlotPrintFilter):
   def __init__(self):
@@ -45,7 +47,6 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
     self.m_combo_box_2.clear()
     self.m_combo_box_1.setInsertionPolicy(QComboBox.AtBottom)
     self.m_combo_box_2.setInsertionPolicy(QComboBox.AtBottom)
-#jmc this should be made so it starts with no graph
     self.m_petri_dish_dir_path = ' '
     self.m_petri_dish_dir_exists_flag = False
 
@@ -77,7 +78,7 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
       self.m_combo_box_1_color, SIGNAL("activated(int)"), self.modeActivatedSlot)
     self.connect(
       self.m_combo_box_2_color, SIGNAL("activated(int)"), self.modeActivatedSlot)
-    self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("petriDishDroppedSig"),
+    self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezerItemDroppedInOneAnalyzeSig"),
       self.petriDropped)  
     self.m_graph_ctrl.setAxisTitle(QwtPlot.xBottom, "Time (updates)")
     self.m_graph_ctrl.setAxisAutoScale(QwtPlot.xBottom)
@@ -99,21 +100,23 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
       self.printGraphSlot)
 
   def load(self, filename, colx, coly):
-    init_file = cInitFile(cString('default.workspace/freezer/' + str(self.m_petri_dish_dir_path) + '.full/' + filename))
+    
+    # Brian's old code, delete 
+    # init_file_name_str = os.path.join(self.m_session_mdl.m_current_freezer, str(self.m_petri_dish_dir_path) + '.full', filename)
+    # init_file = cInitFile(cString(init_file_name_str))
+    #
+    # print "loading"
+    # if not init_file.IsOpen():
+    #   print "the file you are looking for does not exist"
+    #   return
 
-    print "loading"
-    if not init_file.IsOpen():
-      print "the file you are looking for does not exist"
-      return
-
+    init_file = cInitFile(cString(os.path.join(str(self.m_petri_dish_dir_path), filename)))
     init_file.Load()
     init_file.Compress()
 
 
     x_array = zeros(init_file.GetNumLines(), Float)
     y_array = zeros(init_file.GetNumLines(), Float)
-    print "init_file.GetNumLines() is "
-    print init_file.GetNumLines()
 
     for line_id in range(init_file.GetNumLines()):
       line = init_file.GetLine(line_id)
@@ -123,7 +126,7 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
   
   def modeActivatedSlot(self, index = None): #note: index is not used
     self.m_graph_ctrl.clear()
-
+   
     #check to see if we have a valid directory path to analyze
     if self.m_petri_dish_dir_exists_flag == False:
       return
@@ -132,14 +135,27 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
 
       if self.m_combo_box_1.currentItem():
         index_1 = self.m_combo_box_1.currentItem()
+
+        #check to see if the file exists
+        if os.path.isfile(os.path.join(str(self.m_petri_dish_dir_path), self.m_avida_stats_interface.m_entries[index_1][1])):
+          pass
+        else:
+          print "error: there is no data file in the directory to load from"
+          self.m_graph_ctrl.setTitle(self.m_avida_stats_interface.m_entries[0][0])
+          self.m_graph_ctrl.setAxisTitle(QwtPlot.yLeft, self.m_avida_stats_interface.m_entries[0][0])
+          self.m_graph_ctrl.replot()
+          return
         self.m_graph_ctrl.setAxisTitle(QwtPlot.yLeft, self.m_avida_stats_interface.m_entries[index_1][0])
         self.m_graph_ctrl.enableYLeftAxis(True)
         self.m_graph_ctrl.setAxisAutoScale(QwtPlot.yLeft)
+        print "index_1[2] is"
+        print self.m_avida_stats_interface.m_entries[index_1][2]
         self.m_curve_1_arrays = self.load(
-            self.m_avida_stats_interface.m_entries[index_1][1],
+            os.path.join(self.m_session_mdl.m_tempdir_out, self.m_avida_stats_interface.m_entries[index_1][1]),
             1,
             self.m_avida_stats_interface.m_entries[index_1][2]
         )
+
         self.m_graph_ctrl.m_curve_1 = self.m_graph_ctrl.insertCurve(self.m_avida_stats_interface.m_entries[index_1][0])
         self.m_graph_ctrl.setCurveData(self.m_graph_ctrl.m_curve_1, self.m_curve_1_arrays[0], self.m_curve_1_arrays[1])
         self.m_graph_ctrl.setCurvePen(self.m_graph_ctrl.m_curve_1, QPen(self.m_Colors[self.m_combo_box_1_color.currentItem()][1]))  
@@ -157,10 +173,11 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
         self.m_graph_ctrl.enableYRightAxis(True)      
         self.m_graph_ctrl.setAxisAutoScale(QwtPlot.yRight)
         self.m_curve_2_arrays = self.load(
-            self.m_avida_stats_interface.m_entries[index_2][1],
+            os.path.join(self.m_session_mdl.m_tempdir_out, self.m_avida_stats_interface.m_entries[index_2][1]),
             1,
             self.m_avida_stats_interface.m_entries[index_2][2]
         )
+
         self.m_graph_ctrl.m_curve_2 = self.m_graph_ctrl.insertCurve(self.m_avida_stats_interface.m_entries[index_2][0])
         self.m_graph_ctrl.setCurveData(self.m_graph_ctrl.m_curve_2, self.m_curve_2_arrays[0], self.m_curve_2_arrays[1])
         if self.m_Colors[self.m_combo_box_2_color.currentItem()][0] is 'thick':
@@ -202,16 +219,16 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
       self.m_graph_ctrl.printPlot(printer, filter)
 
 
-  def gotIt( self, e):
-    print "got it"
+#  def gotIt( self, e):
+#    print "got it"
 
   def petriDropped(self, e): 
       # a check in pyOneAnalyzeCtrl.py makes sure this is a valid path
       self.m_petri_dish_dir_exists_flag = True
       # Try to decode to the data you understand...
-      str = QString()
-      if ( QTextDrag.decode( e, str ) ) :
-        self.m_petri_dish_dir_path = str
+      freezer_item_name = QString()
+      if ( QTextDrag.decode( e, freezer_item_name ) ) :
+        self.m_petri_dish_dir_path = freezer_item_name
         self.modeActivatedSlot()
         return
 
@@ -236,9 +253,6 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
             # for (QStringList.Iterator i=files.begin() i!=files.end() ++i)
             for i in files:
                 m = m + "   " + i + '\n'
-#jmc delete
-#        self.setText( m )
-#        self.setMinimumSize(self.minimumSize().expandedTo(self.sizeHint()))
         return
 
       str = decode( e ) 

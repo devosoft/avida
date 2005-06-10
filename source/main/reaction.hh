@@ -50,6 +50,9 @@ public:
   bool ModifyValue(double new_value, int process_num=0);
   bool MultiplyValue(double value_mult, int process_num=0); 
 
+  // This method will modify the instruction triggered by this process
+  bool ModifyInst(int inst_id, int process_num=0); 
+
   double GetValue(int process_num=0);
 
 };

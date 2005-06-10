@@ -10,6 +10,7 @@ from pyTwoOrganismCtrl import pyTwoOrganismCtrl
 from pyTwoPopulationCtrl import pyTwoPopulationCtrl
 from pyPetriConfigureCtrl import pyPetriConfigureCtrl
 from pyQuitDialogCtrl import pyQuitDialogCtrl
+import os.path
 
 
 from qt import *
@@ -37,11 +38,11 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
 
     for (cli, ctrl) in (
       (self.m_nav_bar_ctrl.m_one_population_cli, self.m_one_population_ctrl),
-      (self.m_nav_bar_ctrl.m_two_population_cli, self.m_two_population_ctrl),
+#      (self.m_nav_bar_ctrl.m_two_population_cli, self.m_two_population_ctrl),
       (self.m_nav_bar_ctrl.m_one_organism_cli,   self.m_one_organism_ctrl),
-      (self.m_nav_bar_ctrl.m_two_organism_cli,   self.m_two_organism_ctrl),
+#      (self.m_nav_bar_ctrl.m_two_organism_cli,   self.m_two_organism_ctrl),
       (self.m_nav_bar_ctrl.m_one_analyze_cli,    self.m_one_analyze_ctrl),
-      (self.m_nav_bar_ctrl.m_two_analyze_cli,    self.m_two_analyze_ctrl),
+#      (self.m_nav_bar_ctrl.m_two_analyze_cli,    self.m_two_analyze_ctrl),
     ):
       self.m_cli_to_ctrl_dict[cli] = ctrl
       self.m_ctrl_to_cli_dict[ctrl] = cli
@@ -145,8 +146,8 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
     workspace_dir = str(workspace_dir)              
 
     if workspace_dir.strip() != "":
-      self.m_session_mdl.m_current_workspce = str(workspace_dir) + "/"
-      self.m_session_mdl.m_current_freezer = self.m_session_mdl.m_current_workspce + "freezer/"
+      self.m_session_mdl.m_current_workspce = str(workspace_dir)
+      self.m_session_mdl.m_current_freezer = os.path.join(self.m_session_mdl.m_current_workspce, "freezer")
       self.m_session_mdl.m_session_mdtr.emit(
         PYSIGNAL("doRefreshFreezerInventorySig"), ())
 
@@ -161,7 +162,7 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
                     True);
     freezer_dir = str(freezer_dir)
     if freezer_dir.strip() != "":
-      self.m_session_mdl.m_current_freezer = str(freezer_dir) + "/"
+      self.m_session_mdl.m_current_freezer = str(freezer_dir)
       self.m_session_mdl.m_session_mdtr.emit(
         PYSIGNAL("doRefreshFreezerInventorySig"), ())
 

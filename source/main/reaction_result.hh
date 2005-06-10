@@ -20,6 +20,8 @@ private:
   tArray<double> resources_produced;
   tArray<double> resources_detected;  //Initialize to -1.0
   tArray<bool> tasks_done;
+  tArray<bool> receive_tasks_done;
+  tArray<bool> send_tasks_done;
   tArray<bool> reactions_triggered;
   double bonus_add;
   double bonus_mult;
@@ -40,6 +42,8 @@ public:
   void Detect(int id, double num);
   void Lethal(bool flag);
   void MarkTask(int id);
+  void MarkReceiveTask(int id);
+  void MarkSendTask(int id);
   void MarkReaction(int id);
   void AddBonus(double value);
   void MultBonus(double value);

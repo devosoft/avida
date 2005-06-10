@@ -3,7 +3,8 @@
 from qt import *
 from pyMapProfile import pyMapProfile
 from pyOnePop_PetriDishView import pyOnePop_PetriDishView
-
+import os
+from pyReadFreezer import pyReadFreezer
 
 class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
 
@@ -31,6 +32,8 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     self.connect(self.m_zoom_spinbox, SIGNAL("valueChanged(int)"), self.m_petri_dish_ctrl.zoomSlot)
     self.connect(self.m_petri_dish_ctrl, PYSIGNAL("zoomSig"), self.m_zoom_spinbox.setValue)
     self.connect(self.m_mode_combobox, SIGNAL("activated(int)"), self.modeActivatedSlot)
+    self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("petriDishDroppedInPopViewSig"),
+      self.petriDropped)  
 
     self.m_mode_combobox.clear()
     self.m_mode_combobox.setInsertionPolicy(QComboBox.AtBottom)
@@ -77,7 +80,7 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
       return
     current_page = self.m_petri_dish_widget_stack.visibleWidget()
     current_page_int = self.m_petri_dish_widget_stack.id(current_page)
-    if (current_page_int == 0):
+    if (current_page_int != 1):
        self.m_petri_dish_widget_stack.raiseWidget(1)
        
   def SetDishDisabledSlot(self):
@@ -130,3 +133,19 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     print "send_reset_signal = " + str(send_reset_signal)
     print "send_quit_signal = " + str(send_quit_signal)
 
+  def petriDropped(self, e):
+    # Try to decode to the data you understand...
+    print "*** Entered petriDropped"
+    freezer_item_name = QString()
+    if ( QTextDrag.decode( e, freezer_item_name ) ) :
+      if freezer_item_name[-4:] == 'full':
+        freezer_item_name_temp = os.path.join(str(freezer_item_name), 'petri_dish')
+      else:
+        freezer_item_name_temp = str(freezer_item_name)
+      thawed_item = pyReadFreezer(freezer_item_name_temp)
+      self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("doDefrostDishSig"),  
+        (os.path.splitext((os.path.split(str(freezer_item_name))[1]))[0], thawed_item,))
+
+      current_page = self.m_petri_dish_widget_stack.visibleWidget()
+      current_page_int = self.m_petri_dish_widget_stack.id(current_page)
+      self.MakeConfigVisiableSlot()

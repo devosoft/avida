@@ -369,6 +369,7 @@ public:
   bool Inst_InjectThread();
   bool Inst_Repro();
   bool Inst_Kazi();
+  bool Inst_Die();
 
   // I/O and Sensory
   bool Inst_TaskGet();

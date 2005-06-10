@@ -2,7 +2,7 @@
 
 from qt import *
 from pyOneAna_PetriDishView import pyOneAna_PetriDishView
-
+import os
 
 class pyOneAna_PetriDishCtrl(pyOneAna_PetriDishView):
 
@@ -12,13 +12,13 @@ class pyOneAna_PetriDishCtrl(pyOneAna_PetriDishView):
 
   def construct(self, session_mdl):
     self.m_session_mdl = session_mdl     
-    self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("petriDishDroppedSig"),
-      self.petriDropped)  
+    self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezerItemDroppedInOneAnalyzeSig"),
+      self.freezerItemDropped)  
 
 
-  def petriDropped(self, e):
+  def freezerItemDropped(self, e):
 
     # Try to decode to the data you understand...
-    string = QString()
-    if ( QTextDrag.decode( e, string ) ) :
-      self.m_one_ana_pop_name.setText(string)
+    freezer_item_name = QString()
+    if ( QTextDrag.decode( e, freezer_item_name ) ) :
+      self.m_one_ana_pop_name.setText(os.path.splitext((os.path.split(str(freezer_item_name))[1]))[0])

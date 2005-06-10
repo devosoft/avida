@@ -9,7 +9,7 @@ from AvidaCore import cString
 
 import qt
 
-import os
+import os, os.path
 import tempfile
 
 class pySessionCtrl(qt.QObject):
@@ -39,11 +39,13 @@ class pySessionCtrl(qt.QObject):
     # Create "model" for storing state data.
     class pyMdl: pass
     self.m_session_mdl = pyMdl()
-    self.m_session_mdl.m_current_workspace = "default.workspace/"
-    self.m_session_mdl.m_current_freezer = self.m_session_mdl.m_current_workspace + "freezer/"
+    self.m_session_mdl.m_current_workspace = "default.workspace"
+    self.m_session_mdl.m_current_freezer = os.path.join(self.m_session_mdl.m_current_workspace, "freezer")
 
     # Create a temporary subdirectory for general use in this session.
-    self.m_session_mdl.m_tempdir = tempfile.mkdtemp('','AvidaEd-pid%d-'%os.getpid()) + "/"
+    self.m_session_mdl.m_tempdir = tempfile.mkdtemp('','AvidaEd-pid%d-'%os.getpid())
+    self.m_session_mdl.m_tempdir_out = os.path.join(self.m_session_mdl.m_tempdir, "output")
+    os.mkdir(self.m_session_mdl.m_tempdir_out)
 
     # Create session mediator.
     self.m_session_mdl.m_session_mdtr = pyMdtr()

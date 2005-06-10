@@ -2,7 +2,7 @@
 
 from qt import *
 from pyOneAnalyzeView import pyOneAnalyzeView
-import os
+import os.path
 
 class pyOneAnalyzeCtrl(pyOneAnalyzeView):
 
@@ -14,24 +14,24 @@ class pyOneAnalyzeCtrl(pyOneAnalyzeView):
     self.m_session_mdl = session_mdl
     self.m_one_ana_graph_ctrl.construct(self.m_session_mdl)
     self.m_one_ana_petri_ctrl.construct(self.m_session_mdl) 
-    self.connect( self, PYSIGNAL("petriDishDroppedSig"), self.m_session_mdl.m_session_mdtr, PYSIGNAL("petriDishDroppedSig"))
+    self.connect( self, PYSIGNAL("freezerItemDroppedInOneAnalyzeSig"), self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezerItemDroppedInOneAnalyzeSig"))
     print "self" 
     print self
 
   def dropEvent( self, e ):
-    string = QString()
-
-    if ( QTextDrag.decode( e, string ) ) :
-      if os.path.exists(str('default.workspace/freezer/' + str(string) + '.full/')) == False:
-        print "that was not a valid path" 
+    freezer_item_name = QString()
+    print "something was dropped"
+    if ( QTextDrag.decode( e, freezer_item_name ) ) :
+      if os.path.exists( str(freezer_item_name)) == False:
+        print "that was not a valid path(3)" 
       else: 
-        self.emit(PYSIGNAL("petriDishDroppedSig"), (e,))
+        self.emit(PYSIGNAL("freezerItemDroppedInOneAnalyzeSig"), (e,))
 
 
-  def dragEnterEvent( self, e ):
+#  def dragEnterEvent( self, e ):
 #      # Check if you want the drag...
 #        if (secret.canDecode( e ) or
 #            QTextDrag.canDecode( e ) or
 #            QImageDrag.canDecode( e ) or
 #            QUriDrag.canDecode( e )):
-    e.accept()
+#    e.accept()

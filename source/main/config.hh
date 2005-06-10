@@ -293,6 +293,9 @@ protected:
   // Viewer
   static int view_mode;
 
+  // Death
+  static double die_prob; 
+
   // Other functions...
   static void ProcessConfiguration(int argc, char* argv[], cGenesis & genesis);
 public:
@@ -427,6 +430,8 @@ public:
   static int GetDebugLevel() { return debug_level; }
 
   static int GetViewMode() { return view_mode; }
+
+  static double GetDieProb() { return die_prob; }
 
 
   // ``Set''

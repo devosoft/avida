@@ -704,8 +704,10 @@ bool cEnvironment::TestInput( cReactionResult & result,
 
 
 bool cEnvironment::TestOutput( cReactionResult & result,
-			       const tBuffer<int> & inputs,
-			       const tBuffer<int> & outputs,
+			       const tBuffer<int> & input_buf,
+			       const tBuffer<int> & output_buf,
+			       const tBuffer<int> & send_buf,
+			       const tBuffer<int> & receive_buf,
 			       const tArray<int> & task_count,
 			       const tArray<int> & reaction_count,
 			       const tArray<double> & resource_count,
@@ -713,7 +715,7 @@ bool cEnvironment::TestOutput( cReactionResult & result,
 			       const tList< tBuffer<int> > & output_buffers) const
 {
   // Do setup for reaction tests...
-  task_lib.SetupTests(inputs, outputs, input_buffers, output_buffers);
+  task_lib.SetupTests(input_buf, output_buf, input_buffers, output_buffers);
 
   // Loop through all reactions to see if any have been triggered...
   const int num_reactions = reaction_lib.GetSize();
@@ -748,6 +750,34 @@ bool cEnvironment::TestOutput( cReactionResult & result,
 
     // Mark this reaction as occuring...
     result.MarkReaction(cur_reaction->GetID());
+  }
+
+  // Loop again to check receive tasks...
+  // if (receive_buf.GetSize() != 0)
+  {
+    // Do setup for reaction tests...
+    task_lib.
+      SetupTests(receive_buf, output_buf, input_buffers, output_buffers);
+
+    for (int i = 0; i < num_reactions; i++) {
+      cReaction * cur_reaction = reaction_lib.GetReaction(i);
+      assert(cur_reaction != NULL);
+      
+      // Only use active reactions...
+      if (cur_reaction->GetActive() == false) continue;
+      
+      // Examine the task trigger associated with this reaction
+      cTaskEntry * cur_task = cur_reaction->GetTask();
+      assert(cur_task != NULL);
+      const double task_quality = task_lib.TestOutput(*cur_task);
+      const int task_id = cur_task->GetID();
+      
+      // If this task wasn't performed, move on to the next one.
+      if (task_quality == 0.0) continue;
+      
+      // Mark this task as performed...
+      result.MarkReceiveTask(task_id);
+    }
   }
 
   return result.GetActive();
@@ -916,6 +946,14 @@ bool cEnvironment::SetReactionValueMult(const cString & name, double value_mult)
   cReaction * found_reaction = reaction_lib.GetReaction(name);
   if (found_reaction == NULL) return false;
   found_reaction->MultiplyValue(value_mult);
+  return true;
+}
+
+bool cEnvironment::SetReactionInst(const cString & name, cString inst_name)
+{
+  cReaction * found_reaction = reaction_lib.GetReaction(name);
+  if (found_reaction == NULL) return false;
+  found_reaction->ModifyInst( inst_set.GetInst(inst_name).GetOp() );
   return true;
 }
 

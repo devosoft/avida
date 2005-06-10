@@ -2134,3 +2134,14 @@ cString reaction_name
 double value_mult
 :body:
 population->GetEnvironment().SetReactionValueMult(reaction_name, value_mult);
+
+set_reaction_inst
+:descr:
+/**
+* Change the instruction triggered by the task **/
+:args:
+cString reaction_name
+cString inst_name
+:body:
+population->GetEnvironment().SetReactionInst(reaction_name, inst_name);
+

@@ -221,7 +221,7 @@ bool cTestCPU::TestGenome_Body(cCPUTestInfo & test_info,
     input_array[1] = 0x3308e53e;  // 00110011 00001000 11100101 00111110
     input_array[2] = 0x556241eb;  // 01010101 01100010 01000001 11101011
 
-	receive_array.Resize(3);
+    receive_array.Resize(3);
     receive_array[0] = 0x0f139f14;  // 00001111 00010011 10011111 00010100
     receive_array[1] = 0x33083ee5;  // 00110011 00001000 00111110 11100101
     receive_array[2] = 0x5562eb41;  // 01010101 01100010 11101011 01000001
