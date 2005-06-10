@@ -74,6 +74,8 @@ protected:
   int input_pointer;
   tBuffer<int> input_buf;
   tBuffer<int> output_buf;
+  tBuffer<int> send_buf;
+  tBuffer<int> receive_buf;
 
   // Communication
   int sent_value;         // What number is this org sending?

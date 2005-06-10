@@ -108,8 +108,10 @@ public:
 		   const tArray<double> & resource_count ) const;
 
   bool TestOutput(  cReactionResult & result,
-		    const tBuffer<int> & inputs,
-		    const tBuffer<int> & outputs,
+		    const tBuffer<int> & input_buf,
+		    const tBuffer<int> & output_buf,
+		    const tBuffer<int> & send_buf,
+		    const tBuffer<int> & receive_buf,
 		    const tArray<int> & task_count,
 		    const tArray<int> & reaction_count,
 		    const tArray<double> & resource_count,

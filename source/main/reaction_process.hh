@@ -8,6 +8,10 @@
 #ifndef REACTION_PROCESS_HH
 #define REACTION_PROCESS_HH
 
+#include <iostream>
+
+using namespace std;
+
 class cResource;
 class cReactionProcess {
 private:
@@ -38,7 +42,7 @@ public:
   double GetMaxFraction() const { return max_fraction; }
   cResource * GetProduct() const { return product; }
   double GetConversion() const { return conversion; }
-  bool GetInstID() const { return inst_id; }
+  int GetInstID() const { return inst_id; }
   bool GetLethal() const { return lethal; }
   cResource * GetDetect() const { return detect; }
   double GetDetectionThreshold() const { return detection_threshold; }

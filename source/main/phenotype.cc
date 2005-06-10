@@ -493,7 +493,8 @@ bool cPhenotype::TestInput(tBuffer<int> & inputs, tBuffer<int> & outputs)
   return false; // Nothing happened...
 }
 
-bool cPhenotype::TestOutput(tBuffer<int> & inputs, tBuffer<int> & outputs,
+bool cPhenotype::TestOutput(tBuffer<int> & input_buf, tBuffer<int> &output_buf,
+			    tBuffer<int> & send_buf, tBuffer<int> &receive_buf,
 			    const tArray<double> & res_in,
 			    tArray<double> & res_change,
 			    tArray<int> & insts_triggered,
@@ -509,8 +510,9 @@ bool cPhenotype::TestOutput(tBuffer<int> & inputs, tBuffer<int> & outputs,
   cReactionResult result(num_resources, num_tasks, num_reactions);
 			
   // Run everything through the environment.
-  bool found = environment.TestOutput(result, inputs, outputs, cur_task_count,
-		      cur_reaction_count, res_in, other_inputs, other_outputs);
+  bool found = environment.TestOutput(result, input_buf, output_buf, send_buf,
+			      receive_buf, cur_task_count, cur_reaction_count,
+			      res_in, other_inputs, other_outputs);
 
   // If nothing was found, stop here.
   if (found == false) {

@@ -45,6 +45,8 @@ cOrganism::cOrganism(const cGenome & in_genome,
   , input_pointer(0)
   , input_buf(INPUT_BUF_SIZE)
   , output_buf(OUTPUT_BUF_SIZE)
+  , send_buf(SEND_BUF_SIZE)
+  , receive_buf(RECEIVE_BUF_SIZE)
   , sent_value(0)
   , sent_active(false)
   , test_receive_pos(0)
@@ -92,7 +94,9 @@ double cOrganism::GetTestFitness()
   
 int cOrganism::ReceiveValue()
 {
-  return pop_interface.ReceiveValue();
+  const int out_value = pop_interface.ReceiveValue();
+  receive_buf.Add(out_value);
+  return out_value;
 }
 
 
@@ -137,8 +141,9 @@ void cOrganism::DoOutput(const int value)
   output_buf.Add(value);
   tArray<double> res_change(resource_count.GetSize());
   tArray<int> insts_triggered;
-  phenotype.TestOutput(input_buf, output_buf, resource_count, res_change,
-		       insts_triggered, other_input_list, other_output_list);
+  phenotype.TestOutput(input_buf, output_buf, send_buf, receive_buf,
+		       resource_count, res_change, insts_triggered,
+		       other_input_list, other_output_list);
   pop_interface.UpdateResources(res_change);
 
   for (int i = 0; i < insts_triggered.GetSize(); i++) {

@@ -790,10 +790,10 @@ void cAnalyzeUtil::TaskGrid(cPopulation * pop, ofstream & fp)
         int num_tasks = test_phenotype.GetEnvironment().GetTaskLib().GetSize();   
         for (int k = 0; k < num_tasks; k++) {
           if (test_phenotype.GetLastTaskCount()[k]>0) {
-            task_sum = task_sum + (int)pow(2,k);
-          }
-        }  
-      }  
+	    task_sum = task_sum + (int) pow(2.0,k); 
+          } 
+        }
+      }
       fp << task_sum << " ";
     }
     fp << endl;

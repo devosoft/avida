@@ -15,6 +15,8 @@ cReactionResult::cReactionResult(const int num_resources,
   , resources_produced(num_resources)
   , resources_detected(num_resources)
   , tasks_done(num_tasks)
+  , receive_tasks_done(num_tasks)
+  , send_tasks_done(num_tasks)
   , reactions_triggered(num_reactions)
   , bonus_add(0.0)
   , bonus_mult(1.0)
@@ -23,17 +25,6 @@ cReactionResult::cReactionResult(const int num_resources,
   , active_reaction(false)
 {
 }
-
-//  cReactionResult::cReactionResult(const cReactionResult & _in)
-//    : resources_consumed(_in.resources_consumed)
-//    , resources_produced(_in.resources_produced)
-//    , tasks_done(_in.tasks_done)
-//    , reactions_triggered(_in.reactions_triggered)
-//    , bonus_add(_in.bonus_add)
-//    , bonus_mult(_in.bonus_mult)
-//    , active_reaction(_in.active_reaction)
-//  {
-//  }
 
 cReactionResult::~cReactionResult()
 {
@@ -50,6 +41,8 @@ void cReactionResult::ActivateReaction()
   resources_produced.SetAll(0.0);
   resources_detected.SetAll(-1.0);
   tasks_done.SetAll(false);
+  receive_tasks_done.SetAll(false);
+  send_tasks_done.SetAll(false);
   reactions_triggered.SetAll(false);
 
   // And finally note that this is indeed already active.
@@ -87,6 +80,20 @@ void cReactionResult::MarkTask(int id)
 {
   ActivateReaction();
   tasks_done[id] = true;
+}
+
+
+void cReactionResult::MarkReceiveTask(int id)
+{
+  ActivateReaction();
+  receive_tasks_done[id] = true;
+}
+
+
+void cReactionResult::MarkSendTask(int id)
+{
+  ActivateReaction();
+  send_tasks_done[id] = true;
 }
 
 
