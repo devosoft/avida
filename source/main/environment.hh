@@ -134,6 +134,7 @@ public:
   double GetReactionValue(int & reaction_id);
   bool SetReactionValue(const cString & name, double value);
   bool SetReactionValueMult(const cString & name, double value_mult);
+  bool SetReactionInst(const cString & name, cString inst_name);
 };
 
 #endif

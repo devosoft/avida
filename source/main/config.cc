@@ -116,6 +116,7 @@ bool cConfig::log_landscape;
 bool cConfig::log_lineages;
 int cConfig::debug_level;
 int cConfig::view_mode;
+double cConfig::die_prob;
 
 void cConfig::InitGroupList(){
   // Start with the Architecture variables...
@@ -208,6 +209,9 @@ void cConfig::InitGroupList(){
 		 "Task ID required for successful divide.");
   div_group->Add(required_reaction, "-1", "REQUIRED_REACTION",
 		 "Reaction ID required for successful divide.");
+  div_group->Add(die_prob, "0", "DIE_PROB",
+		 "probability of death when 'die' instruction is executed"); 
+
 
 
   // Mutations Group
@@ -258,8 +262,7 @@ void cConfig::InitGroupList(){
   rev_group->Add(sterilize_pos, "0.0", "STERILIZE_BENEFICIAL",
 		 "");
   rev_group->Add(fail_implicit, "0", "FAIL_IMPLICIT",
-		 "Should copies that failed *not* due to mutations\nbe eliminated?");
-
+               "Should copies that failed *not* due to mutations\nbe eliminated?");
 
   // Time slicing group
   cConfigGroup * time_group = new cConfigGroup("Time Slicing");

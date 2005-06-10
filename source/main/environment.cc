@@ -949,3 +949,11 @@ bool cEnvironment::SetReactionValueMult(const cString & name, double value_mult)
   return true;
 }
 
+bool cEnvironment::SetReactionInst(const cString & name, cString inst_name)
+{
+  cReaction * found_reaction = reaction_lib.GetReaction(name);
+  if (found_reaction == NULL) return false;
+  found_reaction->ModifyInst( inst_set.GetInst(inst_name).GetOp() );
+  return true;
+}
+
