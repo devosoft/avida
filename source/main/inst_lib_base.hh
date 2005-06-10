@@ -15,6 +15,7 @@
 class cString;
 class cInstLibBase {
 public:
+  virtual ~cInstLibBase() { ; }
   virtual const cString &GetName(const unsigned int id) = 0;
   virtual const cString &GetNopName(const unsigned int id) = 0;
   virtual int GetNopMod(const unsigned int id) = 0;

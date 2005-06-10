@@ -26,14 +26,11 @@ private:
   cEventFactory& operator=( const cEventFactory& );
 
 public:
-  cEventFactory();
-  virtual ~cEventFactory();
+  cEventFactory() : m_factory_id(0) { ; }
+  virtual ~cEventFactory() { ; }
 
-  void SetFactoryId( int id ){
-    m_factory_id = id; }
-
-  int GetFactoryId(){
-    return m_factory_id; }
+  void SetFactoryId(int id) { m_factory_id = id; }
+  int GetFactoryId() { return m_factory_id; }
 
   /**
    * Returns an id for an event name. The id holds only for this factory,

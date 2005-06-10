@@ -19,17 +19,16 @@ class cPopulationEvent : public cEvent {
 private:
   // not implemented. prevents inadvertend wrong instantiation.
   cPopulationEvent();
-  cPopulationEvent( const cPopulationEvent & );
-  const cPopulationEvent& operator=( cPopulationEvent & );
+  cPopulationEvent(const cPopulationEvent&);
+  const cPopulationEvent& operator=(cPopulationEvent&);
 
-  
 protected:
   cPopulation *population;
   
 public:
-  cPopulationEvent(const cString & name, const cString & args);
+  cPopulationEvent(const cString& name, const cString& args) : cEvent(name, args) { ; }
 
-  void SetPopulation( cPopulation *pop ){ population = pop; }
+  void SetPopulation(cPopulation* pop) { population = pop; }
 };
 
 #endif

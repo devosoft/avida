@@ -13,16 +13,4 @@ using namespace std;
 
 //////// cEventFactory ////////////
 
-cEventFactory::cEventFactory() : m_factory_id( 0 )
-{
-}
-
-
-cEventFactory::~cEventFactory()
-{
-}
-
-
-
-
 

@@ -10,6 +10,10 @@
 
 #include <vector>
 
+#ifndef TOBJECTFACTORY_H
+#include "tObjectFactory.h"
+#endif
+
 #ifndef STRING_HH
 #include "string.hh"
 #endif
@@ -27,8 +31,7 @@ class cString; // aggregate
 
 class cEventFactoryManager {
 private:
-  std::vector<cEventFactory*> m_factory_list;
-
+  std::vector<tObjectFactory<cEvent, const cString&>*> m_factory_list;
 
   // not implemented, prevents inadvertent wrong instantiation
   cEventFactoryManager( const cEventFactoryManager & );
@@ -37,7 +40,7 @@ public:
   cEventFactoryManager();
   ~cEventFactoryManager();
 
-  int AddFactory(cEventFactory* factory);
+  int AddFactory(tObjectFactory<cEvent, const cString&>* factory);
 
   /**
    * This function is used to construct an event. It sends the event's name
