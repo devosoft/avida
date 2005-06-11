@@ -37,10 +37,9 @@ private:
 
 public:
   // constructors
-  cEvent( const cString & name = "Undefined",
-	  const cString & args = "",
-	  int handler_id = -1 );
-  virtual ~cEvent();
+  cEvent( const cString & name = "Undefined", const cString & args = "", int factory_id = -1 )
+    : m_name( name ), m_args( args ), m_factory_id( factory_id ) { ; }
+  virtual ~cEvent() { ; }
 
 
   // manipulators

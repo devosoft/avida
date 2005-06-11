@@ -9,11 +9,6 @@
 #include "event.hh"
 #endif
 
-#ifndef EVENT_FACTORY_HH
-#include "event_factory.hh"
-#endif
-
-
 using namespace std;
 
 
@@ -26,7 +21,7 @@ cEventFactoryManager::cEventFactoryManager()
 }
 
 cEventFactoryManager::~cEventFactoryManager(){
-  vector<tObjectFactory<cEvent, const cString&>*>::iterator it = m_factory_list.begin();
+  vector<tObjectFactory<cEvent (const cString&)>*>::iterator it = m_factory_list.begin();
   
   for( ; it != m_factory_list.end(); it++ )
     delete *it;
@@ -41,7 +36,7 @@ cEventFactoryManager::ConstructEvent(const cString name,
   
   // factory_id < 0 => send to all factories
   if( factory_id < 0 ){
-    vector<tObjectFactory<cEvent, const cString&>*>::iterator it;
+    vector<tObjectFactory<cEvent (const cString&)>*>::iterator it;
     for( it = m_factory_list.begin(); it != m_factory_list.end(); it++ ){
       if( *it != NULL )
         event = (*it)->Create(name,args);
@@ -62,7 +57,7 @@ cEventFactoryManager::ConstructEvent(const cString name,
 
 
 int
-cEventFactoryManager::AddFactory(tObjectFactory<cEvent, const cString&>* factory)
+cEventFactoryManager::AddFactory(tObjectFactory<cEvent (const cString&)>* factory)
 {
   assert( factory != NULL );
   m_factory_list.push_back(factory);

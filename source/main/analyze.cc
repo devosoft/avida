@@ -1941,10 +1941,9 @@ void cAnalyze::CommandLandscape(cString cur_string)
   cAnalyzeGenotype * genotype = NULL;
   while ((genotype = batch_it.Next()) != NULL) {
     cLandscape landscape(genotype->GetGenome(), inst_set);
-    if (num_test == 0)	landscape.Process(dist);
-    else 		int num_found = 
-	landscape.RandomProcess(num_test,dist,num_test,num_test*2);
-//    fp << genotype->GetName() << " ";
+    if (num_test == 0) landscape.Process(dist);
+    else landscape.RandomProcess(num_test,dist,num_test,num_test*2);
+
     landscape.PrintStats(fp);
   }
 }
@@ -4392,7 +4391,6 @@ void cAnalyze::AnalyzePopComplexity(cString cur_string)
     for (int inst_num = 0; inst_num < num_insts; inst_num ++) 
       inst_stat(line_num, inst_num) = 0;
 
-  int organism_index = 0;
   int num_cpus = 0;
   int actural_samples = 0;
   while (genotype != NULL) {

@@ -10,6 +10,7 @@
 
 class cHardware4Stack;
 struct cHardwareTracer_4Stack {
+  virtual ~cHardwareTracer_4Stack() { ; }
   virtual void TraceHardware_4Stack(cHardware4Stack &) = 0;
   virtual void TraceHardware_4StackBonus(cHardware4Stack &) = 0;
 };

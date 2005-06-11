@@ -28,7 +28,8 @@ private:
   cEventTriggers( const cEventTriggers& );
   cEventTriggers& operator=( const cEventTriggers& );
 public:
-  cEventTriggers() {}
+  cEventTriggers() { ; }
+  virtual ~cEventTriggers() { ; }
   
   virtual double GetUpdate() const = 0;
   virtual double GetGeneration() const = 0;

@@ -19,7 +19,7 @@
 class cPopulation;
 class cString;
 
-class cPopulationEventFactory : public tObjectFactory<cEvent, const cString&> {
+class cPopulationEventFactory : public tObjectFactory<cEvent (const cString&)> {
 private:
   cPopulation *m_population;
 public:  
@@ -28,7 +28,7 @@ public:
 
   cEvent* Create(const cString& key, const cString& arg)
   {
-    cPopulationEvent* event = static_cast<cPopulationEvent*>(this->tObjectFactory<cEvent, const cString&>::Create(key, arg));
+    cPopulationEvent* event = static_cast<cPopulationEvent*>(this->tObjectFactory<cEvent (const cString&)>::Create(key, arg));
     if( event != NULL ){
       event->SetFactoryId( GetFactoryId() );
       

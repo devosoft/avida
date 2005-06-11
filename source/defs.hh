@@ -152,6 +152,7 @@ FIXME:  remove asap, switching to file-configureable option
 
 #ifndef _WINDEF_               // Defined by WINDOWS.H
  #define UCHAR unsigned char
+ #undef UINT
  #define UINT  unsigned int
 #endif
 

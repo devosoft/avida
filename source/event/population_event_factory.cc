@@ -101,13 +101,17 @@ using namespace std;
 * Ends the Avida run immediately.
  **/
 
-
-class cPopulationEventexit : public cPopulationEvent {
+namespace nPopulation {
+  
+class cEvent_exit : public cPopulationEvent {
 private:
 public:
-  cPopulationEventexit(const cString& in_key, const cString& in_args):
-  cPopulationEvent("exit", in_args) {
-    (void)in_args; }
+  cEvent_exit(const cString& in_args)
+    :cPopulationEvent("exit", in_args)
+  {
+    (void)in_args;
+  }
+  
   ///// exit /////
   void Process(){
     cAvidaDriver_Base::main_driver->SetDone();
@@ -126,11 +130,11 @@ public:
  **/
 
 
-class cPopulationEventexit_if_generation_greater_than : public cPopulationEvent {
+class cEvent_exit_if_generation_greater_than : public cPopulationEvent {
 private:
   int max_generation;
 public:
-  cPopulationEventexit_if_generation_greater_than(const cString& in_key, const cString& in_args):
+  cEvent_exit_if_generation_greater_than(const cString& in_args):
   cPopulationEvent("exit_if_generation_greater_than", in_args) {
     
     cString args(in_args);
@@ -156,11 +160,11 @@ public:
  **/
 
 
-class cPopulationEventexit_if_update_greater_than : public cPopulationEvent {
+class cEvent_exit_if_update_greater_than : public cPopulationEvent {
 private:
   int max_update;
 public:
-  cPopulationEventexit_if_update_greater_than(const cString& in_key, const cString& in_args):
+  cEvent_exit_if_update_greater_than(const cString& in_args):
   cPopulationEvent("exit_if_update_greater_than", in_args) {
     
     cString args(in_args);
@@ -186,11 +190,11 @@ public:
  **/
 
 
-class cPopulationEventexit_if_ave_lineage_label_smaller : public cPopulationEvent {
+class cEvent_exit_if_ave_lineage_label_smaller : public cPopulationEvent {
 private:
   double lineage_label_crit_value;
 public:
-  cPopulationEventexit_if_ave_lineage_label_smaller(const cString& in_key, const cString& in_args):
+  cEvent_exit_if_ave_lineage_label_smaller(const cString& in_args):
   cPopulationEvent("exit_if_ave_lineage_label_smaller", in_args) {
     
     cString args(in_args);
@@ -216,11 +220,11 @@ public:
  **/
 
 
-class cPopulationEventexit_if_ave_lineage_label_larger : public cPopulationEvent {
+class cEvent_exit_if_ave_lineage_label_larger : public cPopulationEvent {
 private:
   double lineage_label_crit_value;
 public:
-  cPopulationEventexit_if_ave_lineage_label_larger(const cString& in_key, const cString& in_args):
+  cEvent_exit_if_ave_lineage_label_larger(const cString& in_args):
   cPopulationEvent("exit_if_ave_lineage_label_larger", in_args) {
     
     cString args(in_args);
@@ -245,11 +249,11 @@ public:
  **/
 
 
-class cPopulationEventecho : public cPopulationEvent {
+class cEvent_echo : public cPopulationEvent {
 private:
   cString mesg;
 public:
-  cPopulationEventecho(const cString& in_key, const cString& in_args):
+  cEvent_echo(const cString& in_args):
   cPopulationEvent("echo", in_args) {
     
     cString args(in_args);
@@ -278,12 +282,12 @@ public:
  **/
 
 
-class cPopulationEventprint_data : public cPopulationEvent {
+class cEvent_print_data : public cPopulationEvent {
 private:
   cString filename;
   cString format;
 public:
-    cPopulationEventprint_data(const cString& in_key, const cString& in_args):
+    cEvent_print_data(const cString& in_args):
     cPopulationEvent("print_data", in_args) {
       
       cString args(in_args);
@@ -307,11 +311,11 @@ public:
    **/
 
 
-class cPopulationEventprint_average_data : public cPopulationEvent {
+class cEvent_print_average_data : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventprint_average_data(const cString& in_key, const cString& in_args):
+  cEvent_print_average_data(const cString& in_args):
   cPopulationEvent("print_average_data", in_args) {
     
     cString args(in_args);
@@ -334,11 +338,11 @@ public:
    **/
 
 
-class cPopulationEventprint_error_data : public cPopulationEvent {
+class cEvent_print_error_data : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventprint_error_data(const cString& in_key, const cString& in_args):
+  cEvent_print_error_data(const cString& in_args):
   cPopulationEvent("print_error_data", in_args) {
     
     cString args(in_args);
@@ -361,11 +365,11 @@ public:
    **/
 
 
-class cPopulationEventprint_variance_data : public cPopulationEvent {
+class cEvent_print_variance_data : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventprint_variance_data(const cString& in_key, const cString& in_args):
+  cEvent_print_variance_data(const cString& in_args):
   cPopulationEvent("print_variance_data", in_args) {
     
     cString args(in_args);
@@ -388,11 +392,11 @@ public:
    **/
 
 
-class cPopulationEventprint_dominant_data : public cPopulationEvent {
+class cEvent_print_dominant_data : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventprint_dominant_data(const cString& in_key, const cString& in_args):
+  cEvent_print_dominant_data(const cString& in_args):
   cPopulationEvent("print_dominant_data", in_args) {
     
     cString args(in_args);
@@ -415,11 +419,11 @@ public:
    **/
 
 
-class cPopulationEventprint_stats_data : public cPopulationEvent {
+class cEvent_print_stats_data : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventprint_stats_data(const cString& in_key, const cString& in_args):
+  cEvent_print_stats_data(const cString& in_args):
   cPopulationEvent("print_stats_data", in_args) {
     
     cString args(in_args);
@@ -442,11 +446,11 @@ public:
    **/
 
 
-class cPopulationEventprint_count_data : public cPopulationEvent {
+class cEvent_print_count_data : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventprint_count_data(const cString& in_key, const cString& in_args):
+  cEvent_print_count_data(const cString& in_args):
   cPopulationEvent("print_count_data", in_args) {
     
     cString args(in_args);
@@ -469,11 +473,11 @@ public:
    **/
 
 
-class cPopulationEventprint_totals_data : public cPopulationEvent {
+class cEvent_print_totals_data : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventprint_totals_data(const cString& in_key, const cString& in_args):
+  cEvent_print_totals_data(const cString& in_args):
   cPopulationEvent("print_totals_data", in_args) {
     
     cString args(in_args);
@@ -497,11 +501,11 @@ public:
    **/
 
 
-class cPopulationEventprint_tasks_data : public cPopulationEvent {
+class cEvent_print_tasks_data : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventprint_tasks_data(const cString& in_key, const cString& in_args):
+  cEvent_print_tasks_data(const cString& in_args):
   cPopulationEvent("print_tasks_data", in_args) {
     
     cString args(in_args);
@@ -519,11 +523,11 @@ public:
 **/
 
 
-class cPopulationEventprint_tasks_exe_data : public cPopulationEvent {
+class cEvent_print_tasks_exe_data : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventprint_tasks_exe_data(const cString& in_key, const cString& in_args):
+  cEvent_print_tasks_exe_data(const cString& in_args):
   cPopulationEvent("print_tasks_exe_data", in_args) {
     
     cString args(in_args);
@@ -541,11 +545,11 @@ public:
 **/
 
 
-class cPopulationEventprint_resource_data : public cPopulationEvent {
+class cEvent_print_resource_data : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventprint_resource_data(const cString& in_key, const cString& in_args):
+  cEvent_print_resource_data(const cString& in_args):
   cPopulationEvent("print_resource_data", in_args) {
     
     cString args(in_args);
@@ -568,11 +572,11 @@ public:
    **/
 
 
-class cPopulationEventprint_time_data : public cPopulationEvent {
+class cEvent_print_time_data : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventprint_time_data(const cString& in_key, const cString& in_args):
+  cEvent_print_time_data(const cString& in_args):
   cPopulationEvent("print_time_data", in_args) {
     
     cString args(in_args);
@@ -590,11 +594,11 @@ public:
 **/
 
 
-class cPopulationEventprint_mutation_data : public cPopulationEvent {
+class cEvent_print_mutation_data : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventprint_mutation_data(const cString& in_key, const cString& in_args):
+  cEvent_print_mutation_data(const cString& in_args):
   cPopulationEvent("print_mutation_data", in_args) {
     
     cString args(in_args);
@@ -615,11 +619,11 @@ Output (regular and log) statistics about individual copy
  **/
 
 
-class cPopulationEventprint_mutation_rate_data : public cPopulationEvent {
+class cEvent_print_mutation_rate_data : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventprint_mutation_rate_data(const cString& in_key, const cString& in_args):
+  cEvent_print_mutation_rate_data(const cString& in_args):
   cPopulationEvent("print_mutation_rate_data", in_args) {
     
     cString args(in_args);
@@ -640,11 +644,11 @@ Output (regular and log) statistics about individual, per site,
  **/
 
 
-class cPopulationEventprint_divide_mut_data : public cPopulationEvent {
+class cEvent_print_divide_mut_data : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventprint_divide_mut_data(const cString& in_key, const cString& in_args):
+  cEvent_print_divide_mut_data(const cString& in_args):
   cPopulationEvent("print_divide_mut_data", in_args) {
     
     cString args(in_args);
@@ -667,11 +671,11 @@ public:
    **/
 
 
-class cPopulationEventprint_dom_parasite_data : public cPopulationEvent {
+class cEvent_print_dom_parasite_data : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventprint_dom_parasite_data(const cString& in_key, const cString& in_args):
+  cEvent_print_dom_parasite_data(const cString& in_args):
   cPopulationEvent("print_dom_parasite_data", in_args) {
     
     cString args(in_args);
@@ -692,11 +696,11 @@ Sum of the by-organisms counts of what instructions they _successfully_
  **/
 
 
-class cPopulationEventprint_instruction_data : public cPopulationEvent {
+class cEvent_print_instruction_data : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventprint_instruction_data(const cString& in_key, const cString& in_args):
+  cEvent_print_instruction_data(const cString& in_args):
   cPopulationEvent("print_instruction_data", in_args) {
     
     cString args(in_args);
@@ -721,11 +725,11 @@ public:
    **/
 
 
-class cPopulationEventprint_instruction_abundance_histogram : public cPopulationEvent {
+class cEvent_print_instruction_abundance_histogram : public cPopulationEvent {
 private:
   cString filename;
 public:
-  cPopulationEventprint_instruction_abundance_histogram(const cString& in_key, const cString& in_args):
+  cEvent_print_instruction_abundance_histogram(const cString& in_args):
   cPopulationEvent("print_instruction_abundance_histogram", in_args) {
     
     cString args(in_args);
@@ -744,11 +748,11 @@ public:
 **/
 
 
-class cPopulationEventprint_depth_histogram : public cPopulationEvent {
+class cEvent_print_depth_histogram : public cPopulationEvent {
 private:
   cString filename;
 public:
-  cPopulationEventprint_depth_histogram(const cString& in_key, const cString& in_args):
+  cEvent_print_depth_histogram(const cString& in_args):
   cPopulationEvent("print_depth_histogram", in_args) {
     
     cString args(in_args);
@@ -772,11 +776,11 @@ public:
    **/
 
 
-class cPopulationEventprint_genotype_abundance_histogram : public cPopulationEvent {
+class cEvent_print_genotype_abundance_histogram : public cPopulationEvent {
 private:
   cString filename;
 public:
-  cPopulationEventprint_genotype_abundance_histogram(const cString& in_key, const cString& in_args):
+  cEvent_print_genotype_abundance_histogram(const cString& in_args):
   cPopulationEvent("print_genotype_abundance_histogram", in_args) {
     
     cString args(in_args);
@@ -800,11 +804,11 @@ public:
    **/
 
 
-class cPopulationEventprint_species_abundance_histogram : public cPopulationEvent {
+class cEvent_print_species_abundance_histogram : public cPopulationEvent {
 private:
   cString filename;
 public:
-  cPopulationEventprint_species_abundance_histogram(const cString& in_key, const cString& in_args):
+  cEvent_print_species_abundance_histogram(const cString& in_args):
   cPopulationEvent("print_species_abundance_histogram", in_args) {
     
     cString args(in_args);
@@ -823,12 +827,12 @@ public:
 **/
 
 
-class cPopulationEventprint_lineage_totals : public cPopulationEvent {
+class cEvent_print_lineage_totals : public cPopulationEvent {
 private:
   cString fname;
   int verbose;
 public:
-    cPopulationEventprint_lineage_totals(const cString& in_key, const cString& in_args):
+    cEvent_print_lineage_totals(const cString& in_args):
     cPopulationEvent("print_lineage_totals", in_args) {
       
       cString args(in_args);
@@ -856,12 +860,12 @@ public:
 **/
 
 
-class cPopulationEventprint_lineage_counts : public cPopulationEvent {
+class cEvent_print_lineage_counts : public cPopulationEvent {
 private:
   cString fname;
   int verbose;
 public:
-    cPopulationEventprint_lineage_counts(const cString& in_key, const cString& in_args):
+    cEvent_print_lineage_counts(const cString& in_args):
     cPopulationEvent("print_lineage_counts", in_args) {
       
       cString args(in_args);
@@ -901,11 +905,11 @@ public:
  **/
 
 
-class cPopulationEventprint_dom : public cPopulationEvent {
+class cEvent_print_dom : public cPopulationEvent {
 private:
   cString in_filename;
 public:
-  cPopulationEventprint_dom(const cString& in_key, const cString& in_args):
+  cEvent_print_dom(const cString& in_args):
   cPopulationEvent("print_dom", in_args) {
     
     cString args(in_args);
@@ -925,11 +929,11 @@ public:
 //midget
 
 
-class cPopulationEventparasite_debug : public cPopulationEvent {
+class cEvent_parasite_debug : public cPopulationEvent {
 private:
   cString in_filename;
 public:
-  cPopulationEventparasite_debug(const cString& in_key, const cString& in_args):
+  cEvent_parasite_debug(const cString& in_args):
   cPopulationEvent("parasite_debug", in_args) {
     
     cString args(in_args);
@@ -955,11 +959,11 @@ public:
  **/
 
 
-class cPopulationEventprint_dom_parasite : public cPopulationEvent {
+class cEvent_print_dom_parasite : public cPopulationEvent {
 private:
   cString in_filename;
 public:
-  cPopulationEventprint_dom_parasite(const cString& in_key, const cString& in_args):
+  cEvent_print_dom_parasite(const cString& in_args):
   cPopulationEvent("print_dom_parasite", in_args) {
     
     cString args(in_args);
@@ -982,11 +986,11 @@ public:
  **/
 
 
-class cPopulationEventprint_genotype_map : public cPopulationEvent {
+class cEvent_print_genotype_map : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventprint_genotype_map(const cString& in_key, const cString& in_args):
+  cEvent_print_genotype_map(const cString& in_args):
   cPopulationEvent("print_genotype_map", in_args) {
     
     cString args(in_args);
@@ -1007,11 +1011,11 @@ Output file with number of phenotypes based on tasks executed
  **/
 
 
-class cPopulationEventprint_number_phenotypes : public cPopulationEvent {
+class cEvent_print_number_phenotypes : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventprint_number_phenotypes(const cString& in_key, const cString& in_args):
+  cEvent_print_number_phenotypes(const cString& in_args):
   cPopulationEvent("print_number_phenotypes", in_args) {
     
     cString args(in_args);
@@ -1031,11 +1035,11 @@ Prints merit status for all the organisms in the population.
  **/
 
 
-class cPopulationEventprint_phenotype_status : public cPopulationEvent {
+class cEvent_print_phenotype_status : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventprint_phenotype_status(const cString& in_key, const cString& in_args):
+  cEvent_print_phenotype_status(const cString& in_args):
   cPopulationEvent("print_phenotype_status", in_args) {
     
     cString args(in_args);
@@ -1060,11 +1064,11 @@ public:
    **/
 
 
-class cPopulationEventsave_population : public cPopulationEvent {
+class cEvent_save_population : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventsave_population(const cString& in_key, const cString& in_args):
+  cEvent_save_population(const cString& in_args):
   cPopulationEvent("save_population", in_args) {
     
     cString args(in_args);
@@ -1092,11 +1096,11 @@ public:
  **/
 
 
-class cPopulationEventload_population : public cPopulationEvent {
+class cEvent_load_population : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventload_population(const cString& in_key, const cString& in_args):
+  cEvent_load_population(const cString& in_args):
   cPopulationEvent("load_population", in_args) {
     
     cString args(in_args);
@@ -1115,11 +1119,11 @@ public:
 **/
 
 
-class cPopulationEventsave_clone : public cPopulationEvent {
+class cEvent_save_clone : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventsave_clone(const cString& in_key, const cString& in_args):
+  cEvent_save_clone(const cString& in_args):
   cPopulationEvent("save_clone", in_args) {
     
     cString args(in_args);
@@ -1142,11 +1146,11 @@ public:
 **/
 
 
-class cPopulationEventload_clone : public cPopulationEvent {
+class cEvent_load_clone : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventload_clone(const cString& in_key, const cString& in_args):
+  cEvent_load_clone(const cString& in_args):
   cPopulationEvent("load_clone", in_args) {
     
     cString args(in_args);
@@ -1168,12 +1172,12 @@ public:
  **/
 
 
-class cPopulationEventload_dump_file : public cPopulationEvent {
+class cEvent_load_dump_file : public cPopulationEvent {
 private:
   cString fname;
   int update;
 public:
-    cPopulationEventload_dump_file(const cString& in_key, const cString& in_args):
+    cEvent_load_dump_file(const cString& in_args):
     cPopulationEvent("load_dump_file", in_args) {
       
       cString args(in_args);
@@ -1199,11 +1203,11 @@ public:
    **/
 
 
-class cPopulationEventdump_pop : public cPopulationEvent {
+class cEvent_dump_pop : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventdump_pop(const cString& in_key, const cString& in_args):
+  cEvent_dump_pop(const cString& in_args):
   cPopulationEvent("dump_pop", in_args) {
     
     cString args(in_args);
@@ -1240,13 +1244,13 @@ public:
      **/
 
 
-class cPopulationEventprint_genotypes : public cPopulationEvent {
+class cEvent_print_genotypes : public cPopulationEvent {
 private:
   cString data_fields;
   int historic;
   cString fname;
 public:
-    cPopulationEventprint_genotypes(const cString& in_key, const cString& in_args):
+    cEvent_print_genotypes(const cString& in_args):
     cPopulationEvent("print_genotypes", in_args) {
       
       cString args(in_args);
@@ -1276,11 +1280,11 @@ public:
    **/
 
 
-class cPopulationEventdetail_pop : public cPopulationEvent {
+class cEvent_detail_pop : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventdetail_pop(const cString& in_key, const cString& in_args):
+  cEvent_detail_pop(const cString& in_args):
   cPopulationEvent("detail_pop", in_args) {
     
     cString args(in_args);
@@ -1309,11 +1313,11 @@ public:
    **/
 
 
-class cPopulationEventdetail_sex_pop : public cPopulationEvent {
+class cEvent_detail_sex_pop : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventdetail_sex_pop(const cString& in_key, const cString& in_args):
+  cEvent_detail_sex_pop(const cString& in_args):
   cPopulationEvent("detail_sex_pop", in_args) {
     
     cString args(in_args);
@@ -1341,11 +1345,11 @@ public:
    **/
 
 
-class cPopulationEventdetail_parasite_pop : public cPopulationEvent {
+class cEvent_detail_parasite_pop : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventdetail_parasite_pop(const cString& in_key, const cString& in_args):
+  cEvent_detail_parasite_pop(const cString& in_args):
   cPopulationEvent("detail_parasite_pop", in_args) {
     
     cString args(in_args);
@@ -1379,12 +1383,12 @@ public:
        **/
 
 
-class cPopulationEventdump_historic_pop : public cPopulationEvent {
+class cEvent_dump_historic_pop : public cPopulationEvent {
 private:
   int back_dist;
   cString fname;
 public:
-    cPopulationEventdump_historic_pop(const cString& in_key, const cString& in_args):
+    cEvent_dump_historic_pop(const cString& in_args):
     cPopulationEvent("dump_historic_pop", in_args) {
       
       cString args(in_args);
@@ -1414,11 +1418,11 @@ public:
    **/
 
 
-class cPopulationEventdump_historic_sex_pop : public cPopulationEvent {
+class cEvent_dump_historic_sex_pop : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventdump_historic_sex_pop(const cString& in_key, const cString& in_args):
+  cEvent_dump_historic_sex_pop(const cString& in_args):
   cPopulationEvent("dump_historic_sex_pop", in_args) {
     
     cString args(in_args);
@@ -1442,11 +1446,11 @@ public:
  **/
 
 
-class cPopulationEventdump_memory : public cPopulationEvent {
+class cEvent_dump_memory : public cPopulationEvent {
 private:
   cString fname;
 public:
-  cPopulationEventdump_memory(const cString& in_key, const cString& in_args):
+  cEvent_dump_memory(const cString& in_args):
   cPopulationEvent("dump_memory", in_args) {
     
     cString args(in_args);
@@ -1484,7 +1488,7 @@ public:
          **/
 
 
-class cPopulationEventinject : public cPopulationEvent {
+class cEvent_inject : public cPopulationEvent {
 private:
   cString fname;
   int cell_id;
@@ -1492,7 +1496,7 @@ private:
   int lineage_label;
   double neutral_metric;
 public:
-    cPopulationEventinject(const cString& in_key, const cString& in_args):
+    cEvent_inject(const cString& in_args):
     cPopulationEvent("inject", in_args) {
       
       cString args(in_args);
@@ -1530,14 +1534,14 @@ public:
        **/
 
 
-class cPopulationEventinject_all : public cPopulationEvent {
+class cEvent_inject_all : public cPopulationEvent {
 private:
   cString fname;
   double merit;
   int lineage_label;
   double neutral_metric;
 public:
-    cPopulationEventinject_all(const cString& in_key, const cString& in_args):
+    cEvent_inject_all(const cString& in_args):
     cPopulationEvent("inject_all", in_args) {
       
       cString args(in_args);
@@ -1586,7 +1590,7 @@ public:
        **/
 
 
-class cPopulationEventinject_range : public cPopulationEvent {
+class cEvent_inject_range : public cPopulationEvent {
 private:
   cString fname;
   int start_cell;
@@ -1595,7 +1599,7 @@ private:
   int lineage_label;
   double neutral_metric;
 public:
-    cPopulationEventinject_range(const cString& in_key, const cString& in_args):
+    cEvent_inject_range(const cString& in_args):
     cPopulationEvent("inject_range", in_args) {
       
       cString args(in_args);
@@ -1652,7 +1656,7 @@ public:
        **/
 
 
-class cPopulationEventinject_sequence : public cPopulationEvent {
+class cEvent_inject_sequence : public cPopulationEvent {
 private:
   cString seq;
   int start_cell;
@@ -1661,7 +1665,7 @@ private:
   int lineage_label;
   double neutral_metric;
 public:
-    cPopulationEventinject_sequence(const cString& in_key, const cString& in_args):
+    cEvent_inject_sequence(const cString& in_args):
     cPopulationEvent("inject_sequence", in_args) {
       
       cString args(in_args);
@@ -1711,7 +1715,7 @@ public:
          **/
 
 
-class cPopulationEventinject_random : public cPopulationEvent {
+class cEvent_inject_random : public cPopulationEvent {
 private:
   int length;
   int cell_id;
@@ -1719,7 +1723,7 @@ private:
   int lineage_label;
   double neutral_metric;
 public:
-    cPopulationEventinject_random(const cString& in_key, const cString& in_args):
+    cEvent_inject_random(const cString& in_args):
     cPopulationEvent("inject_random", in_args) {
       
       cString args(in_args);
@@ -1766,7 +1770,7 @@ public:
        **/
 
 
-class cPopulationEventinject_range_parasite : public cPopulationEvent {
+class cEvent_inject_range_parasite : public cPopulationEvent {
 private:
   cString fname_parasite;
   int start_cell;
@@ -1776,7 +1780,7 @@ private:
   double neutral_metric;
   int mem_space;
 public:
-    cPopulationEventinject_range_parasite(const cString& in_key, const cString& in_args):
+    cEvent_inject_range_parasite(const cString& in_args):
     cPopulationEvent("inject_range_parasite", in_args) {
       
       cString args(in_args);
@@ -1836,7 +1840,7 @@ public:
        **/
 
 
-class cPopulationEventinject_range_pair : public cPopulationEvent {
+class cEvent_inject_range_pair : public cPopulationEvent {
 private:
   cString fname;
   cString fname_parasite;
@@ -1847,7 +1851,7 @@ private:
   double neutral_metric;
   int mem_space;
 public:
-    cPopulationEventinject_range_pair(const cString& in_key, const cString& in_args):
+    cEvent_inject_range_pair(const cString& in_args):
     cPopulationEvent("inject_range_pair", in_args) {
       
       cString args(in_args);
@@ -1890,10 +1894,10 @@ public:
  **/
 
 
-class cPopulationEventzero_muts : public cPopulationEvent {
+class cEvent_zero_muts : public cPopulationEvent {
 private:
 public:
-  cPopulationEventzero_muts(const cString& in_key, const cString& in_args):
+  cEvent_zero_muts(const cString& in_args):
   cPopulationEvent("zero_muts", in_args) {
     (void)in_args; }
   ///// zero_muts /////
@@ -1910,12 +1914,12 @@ public:
 **/
 
 
-class cPopulationEventmod_copy_mut : public cPopulationEvent {
+class cEvent_mod_copy_mut : public cPopulationEvent {
 private:
   double cmut_inc;
   int cell;
 public:
-    cPopulationEventmod_copy_mut(const cString& in_key, const cString& in_args):
+    cEvent_mod_copy_mut(const cString& in_args):
     cPopulationEvent("mod_copy_mut", in_args) {
       
       cString args(in_args);
@@ -1942,12 +1946,12 @@ public:
 **/
 
 
-class cPopulationEventmod_div_mut : public cPopulationEvent {
+class cEvent_mod_div_mut : public cPopulationEvent {
 private:
   double dmut_inc;
   int cell;
 public:
-    cPopulationEventmod_div_mut(const cString& in_key, const cString& in_args):
+    cEvent_mod_div_mut(const cString& in_args):
     cPopulationEvent("mod_div_mut", in_args) {
       
       cString args(in_args);
@@ -1974,13 +1978,13 @@ public:
 **/
 
 
-class cPopulationEventset_copy_mut : public cPopulationEvent {
+class cEvent_set_copy_mut : public cPopulationEvent {
 private:
   double cmut;
   int start_cell;
   int end_cell;
 public:
-    cPopulationEventset_copy_mut(const cString& in_key, const cString& in_args):
+    cEvent_set_copy_mut(const cString& in_args):
     cPopulationEvent("set_copy_mut", in_args) {
       
       cString args(in_args);
@@ -2012,12 +2016,12 @@ public:
 **/
 
 
-class cPopulationEventmod_point_mut : public cPopulationEvent {
+class cEvent_mod_point_mut : public cPopulationEvent {
 private:
   double pmut_inc;
   int cell;
 public:
-    cPopulationEventmod_point_mut(const cString& in_key, const cString& in_args):
+    cEvent_mod_point_mut(const cString& in_args):
     cPopulationEvent("mod_point_mut", in_args) {
       
       cString args(in_args);
@@ -2044,12 +2048,12 @@ public:
 **/
 
 
-class cPopulationEventset_point_mut : public cPopulationEvent {
+class cEvent_set_point_mut : public cPopulationEvent {
 private:
   double pmut;
   int cell;
 public:
-    cPopulationEventset_point_mut(const cString& in_key, const cString& in_args):
+    cEvent_set_point_mut(const cString& in_args):
     cPopulationEvent("set_point_mut", in_args) {
       
       cString args(in_args);
@@ -2075,11 +2079,11 @@ public:
 **/
 
 
-class cPopulationEventcalc_landscape : public cPopulationEvent {
+class cEvent_calc_landscape : public cPopulationEvent {
 private:
   int landscape_dist;
 public:
-  cPopulationEventcalc_landscape(const cString& in_key, const cString& in_args):
+  cEvent_calc_landscape(const cString& in_args):
   cPopulationEvent("calc_landscape", in_args) {
     
     cString args(in_args);
@@ -2099,11 +2103,11 @@ public:
 **/
 
 
-class cPopulationEventpredict_w_landscape : public cPopulationEvent {
+class cEvent_predict_w_landscape : public cPopulationEvent {
 private:
   cString datafile;
 public:
-  cPopulationEventpredict_w_landscape(const cString& in_key, const cString& in_args):
+  cEvent_predict_w_landscape(const cString& in_args):
   cPopulationEvent("predict_w_landscape", in_args) {
     
     cString args(in_args);
@@ -2124,11 +2128,11 @@ public:
 **/
 
 
-class cPopulationEventpredict_nu_landscape : public cPopulationEvent {
+class cEvent_predict_nu_landscape : public cPopulationEvent {
 private:
   cString datafile;
 public:
-  cPopulationEventpredict_nu_landscape(const cString& in_key, const cString& in_args):
+  cEvent_predict_nu_landscape(const cString& in_args):
   cPopulationEvent("predict_nu_landscape", in_args) {
     
     cString args(in_args);
@@ -2149,11 +2153,11 @@ public:
 **/
 
 
-class cPopulationEventsample_landscape : public cPopulationEvent {
+class cEvent_sample_landscape : public cPopulationEvent {
 private:
   int sample_size;
 public:
-  cPopulationEventsample_landscape(const cString& in_key, const cString& in_args):
+  cEvent_sample_landscape(const cString& in_args):
   cPopulationEvent("sample_landscape", in_args) {
     
     cString args(in_args);
@@ -2176,7 +2180,7 @@ public:
 **/
 
 
-class cPopulationEventrandom_landscape : public cPopulationEvent {
+class cEvent_random_landscape : public cPopulationEvent {
 private:
   int landscape_dist;
   int sample_size;
@@ -2184,7 +2188,7 @@ private:
   int max_sample_size;
   bool print_if_found;
 public:
-    cPopulationEventrandom_landscape(const cString& in_key, const cString& in_args):
+    cEvent_random_landscape(const cString& in_args):
     cPopulationEvent("random_landscape", in_args) {
       
       cString args(in_args);
@@ -2211,13 +2215,13 @@ public:
 **/
 
 
-class cPopulationEventanalyze_landscape : public cPopulationEvent {
+class cEvent_analyze_landscape : public cPopulationEvent {
 private:
   int sample_size;
   int min_found;
   int max_sample_size;
 public:
-    cPopulationEventanalyze_landscape(const cString& in_key, const cString& in_args):
+    cEvent_analyze_landscape(const cString& in_args):
     cPopulationEvent("analyze_landscape", in_args) {
       
       cString args(in_args);
@@ -2242,11 +2246,11 @@ public:
  **/
 
 
-class cPopulationEventpairtest_landscape : public cPopulationEvent {
+class cEvent_pairtest_landscape : public cPopulationEvent {
 private:
   int sample_size;
 public:
-  cPopulationEventpairtest_landscape(const cString& in_key, const cString& in_args):
+  cEvent_pairtest_landscape(const cString& in_args):
   cPopulationEvent("pairtest_landscape", in_args) {
     
     cString args(in_args);
@@ -2265,10 +2269,10 @@ public:
 **/
 
 
-class cPopulationEventtest_dom : public cPopulationEvent {
+class cEvent_test_dom : public cPopulationEvent {
 private:
 public:
-  cPopulationEventtest_dom(const cString& in_key, const cString& in_args):
+  cEvent_test_dom(const cString& in_args):
   cPopulationEvent("test_dom", in_args) {
     (void)in_args; }
   ///// test_dom /////
@@ -2285,14 +2289,14 @@ public:
 **/
 
 
-class cPopulationEventanalyze_population : public cPopulationEvent {
+class cEvent_analyze_population : public cPopulationEvent {
 private:
   double sample_prob;
   int landscape;
   int save_genotype;
   cString filename;
 public:
-    cPopulationEventanalyze_population(const cString& in_key, const cString& in_args):
+    cEvent_analyze_population(const cString& in_args):
     cPopulationEvent("analyze_population", in_args) {
       
       cString args(in_args);
@@ -2320,7 +2324,7 @@ public:
 **/
 
 
-class cPopulationEventprint_detailed_fitness_data : public cPopulationEvent {
+class cEvent_print_detailed_fitness_data : public cPopulationEvent {
 private:
   int save_max_f_genotype;
   int print_fitness_histo;
@@ -2330,7 +2334,7 @@ private:
   cString filename2;
   cString filename3;
 public:
-    cPopulationEventprint_detailed_fitness_data(const cString& in_key, const cString& in_args):
+    cEvent_print_detailed_fitness_data(const cString& in_args):
     cPopulationEvent("print_detailed_fitness_data", in_args) {
       
       cString args(in_args);
@@ -2361,12 +2365,12 @@ public:
 **/
 
 
-class cPopulationEventprint_genetic_distance_data : public cPopulationEvent {
+class cEvent_print_genetic_distance_data : public cPopulationEvent {
 private:
   cString creature_name;
   cString filename;
 public:
-    cPopulationEventprint_genetic_distance_data(const cString& in_key, const cString& in_args):
+    cEvent_print_genetic_distance_data(const cString& in_args):
     cPopulationEvent("print_genetic_distance_data", in_args) {
       
       cString args(in_args);
@@ -2388,13 +2392,13 @@ public:
 **/
 
 
-class cPopulationEventgenetic_distance_pop_dump : public cPopulationEvent {
+class cEvent_genetic_distance_pop_dump : public cPopulationEvent {
 private:
   cString creature_name;
   cString filename;
   int save_genotype;
 public:
-    cPopulationEventgenetic_distance_pop_dump(const cString& in_key, const cString& in_args):
+    cEvent_genetic_distance_pop_dump(const cString& in_args):
     cPopulationEvent("genetic_distance_pop_dump", in_args) {
       
       cString args(in_args);
@@ -2422,11 +2426,11 @@ public:
 **/
 
 
-class cPopulationEventtask_snapshot : public cPopulationEvent {
+class cEvent_task_snapshot : public cPopulationEvent {
 private:
   cString filename;
 public:
-  cPopulationEventtask_snapshot(const cString& in_key, const cString& in_args):
+  cEvent_task_snapshot(const cString& in_args):
   cPopulationEvent("task_snapshot", in_args) {
     
     cString args(in_args);
@@ -2450,11 +2454,11 @@ public:
 **/
 
 
-class cPopulationEventprint_viable_tasks_data : public cPopulationEvent {
+class cEvent_print_viable_tasks_data : public cPopulationEvent {
 private:
   cString filename;
 public:
-  cPopulationEventprint_viable_tasks_data(const cString& in_key, const cString& in_args):
+  cEvent_print_viable_tasks_data(const cString& in_args):
   cPopulationEvent("print_viable_tasks_data", in_args) {
     
     cString args(in_args);
@@ -2478,11 +2482,11 @@ public:
    **/
 
 
-class cPopulationEventapocalypse : public cPopulationEvent {
+class cEvent_apocalypse : public cPopulationEvent {
 private:
   double kill_prob;
 public:
-  cPopulationEventapocalypse(const cString& in_key, const cString& in_args):
+  cEvent_apocalypse(const cString& in_args):
   cPopulationEvent("apocalypse", in_args) {
     
     cString args(in_args);
@@ -2510,14 +2514,14 @@ public:
    **/
 
 
-class cPopulationEventkill_rectangle : public cPopulationEvent {
+class cEvent_kill_rectangle : public cPopulationEvent {
 private:
   int cell_X1;
   int cell_Y1;
   int cell_X2;
   int cell_Y2;
 public:
-    cPopulationEventkill_rectangle(const cString& in_key, const cString& in_args):
+    cEvent_kill_rectangle(const cString& in_args):
     cPopulationEvent("kill_rectangle", in_args) {
       
       cString args(in_args);
@@ -2587,11 +2591,11 @@ public:
  **/
 
 
-class cPopulationEventrate_kill : public cPopulationEvent {
+class cEvent_rate_kill : public cPopulationEvent {
 private:
   double kill_rate;
 public:
-  cPopulationEventrate_kill(const cString& in_key, const cString& in_args):
+  cEvent_rate_kill(const cString& in_args):
   cPopulationEvent("rate_kill", in_args) {
     
     cString args(in_args);
@@ -2631,12 +2635,12 @@ public:
      **/
 
 
-class cPopulationEventserial_transfer : public cPopulationEvent {
+class cEvent_serial_transfer : public cPopulationEvent {
 private:
   int transfer_size;
   int ignore_deads;
 public:
-    cPopulationEventserial_transfer(const cString& in_key, const cString& in_args):
+    cEvent_serial_transfer(const cString& in_args):
     cPopulationEvent("serial_transfer", in_args) {
       
       cString args(in_args);
@@ -2656,10 +2660,10 @@ public:
  **/
 
 
-class cPopulationEventhillclimb : public cPopulationEvent {
+class cEvent_hillclimb : public cPopulationEvent {
 private:
 public:
-  cPopulationEventhillclimb(const cString& in_key, const cString& in_args):
+  cEvent_hillclimb(const cString& in_args):
   cPopulationEvent("hillclimb", in_args) {
     (void)in_args; }
   ///// hillclimb /////
@@ -2677,10 +2681,10 @@ public:
 **/
 
 
-class cPopulationEventhillclimb_neut : public cPopulationEvent {
+class cEvent_hillclimb_neut : public cPopulationEvent {
 private:
 public:
-  cPopulationEventhillclimb_neut(const cString& in_key, const cString& in_args):
+  cEvent_hillclimb_neut(const cString& in_args):
   cPopulationEvent("hillclimb_neut", in_args) {
     (void)in_args; }
   ///// hillclimb_neut /////
@@ -2698,10 +2702,10 @@ public:
 **/
 
 
-class cPopulationEventhillclimb_rand : public cPopulationEvent {
+class cEvent_hillclimb_rand : public cPopulationEvent {
 private:
 public:
-  cPopulationEventhillclimb_rand(const cString& in_key, const cString& in_args):
+  cEvent_hillclimb_rand(const cString& in_args):
   cPopulationEvent("hillclimb_rand", in_args) {
     (void)in_args; }
   ///// hillclimb_rand /////
@@ -2726,11 +2730,11 @@ public:
  **/
 
 
-class cPopulationEventcompete_demes : public cPopulationEvent {
+class cEvent_compete_demes : public cPopulationEvent {
 private:
   int competition_type;
 public:
-  cPopulationEventcompete_demes(const cString& in_key, const cString& in_args):
+  cEvent_compete_demes(const cString& in_args):
   cPopulationEvent("compete_demes", in_args) {
     
     cString args(in_args);
@@ -2750,10 +2754,10 @@ public:
  **/
 
 
-class cPopulationEventreset_demes : public cPopulationEvent {
+class cEvent_reset_demes : public cPopulationEvent {
 private:
 public:
-  cPopulationEventreset_demes(const cString& in_key, const cString& in_args):
+  cEvent_reset_demes(const cString& in_args):
   cPopulationEvent("reset_demes", in_args) {
     (void)in_args; }
   ///// reset_demes /////
@@ -2769,10 +2773,10 @@ public:
  **/
 
 
-class cPopulationEventprint_deme_stats : public cPopulationEvent {
+class cEvent_print_deme_stats : public cPopulationEvent {
 private:
 public:
-  cPopulationEventprint_deme_stats(const cString& in_key, const cString& in_args):
+  cEvent_print_deme_stats(const cString& in_args):
   cPopulationEvent("print_deme_stats", in_args) {
     (void)in_args; }
   ///// print_deme_stats /////
@@ -2789,12 +2793,12 @@ public:
  **/
 
 
-class cPopulationEventcopy_deme : public cPopulationEvent {
+class cEvent_copy_deme : public cPopulationEvent {
 private:
   int deme1_id;
   int deme2_id;
 public:
-    cPopulationEventcopy_deme(const cString& in_key, const cString& in_args):
+    cEvent_copy_deme(const cString& in_args):
     cPopulationEvent("copy_deme", in_args) {
       
       cString args(in_args);
@@ -2818,11 +2822,11 @@ public:
    **/
 
 
-class cPopulationEventcalc_consensus : public cPopulationEvent {
+class cEvent_calc_consensus : public cPopulationEvent {
 private:
   int lines_saved;
 public:
-  cPopulationEventcalc_consensus(const cString& in_key, const cString& in_args):
+  cEvent_calc_consensus(const cString& in_args):
   cPopulationEvent("calc_consensus", in_args) {
     
     cString args(in_args);
@@ -2840,12 +2844,12 @@ public:
 **/
 
 
-class cPopulationEventtest_size_change_robustness : public cPopulationEvent {
+class cEvent_test_size_change_robustness : public cPopulationEvent {
 private:
   int num_trials;
   cString filename;
 public:
-    cPopulationEventtest_size_change_robustness(const cString& in_key, const cString& in_args):
+    cEvent_test_size_change_robustness(const cString& in_args):
     cPopulationEvent("test_size_change_robustness", in_args) {
       
       cString args(in_args);
@@ -2868,10 +2872,10 @@ public:
 **/
 
 
-class cPopulationEventtest_threads : public cPopulationEvent {
+class cEvent_test_threads : public cPopulationEvent {
 private:
 public:
-  cPopulationEventtest_threads(const cString& in_key, const cString& in_args):
+  cEvent_test_threads(const cString& in_args):
   cPopulationEvent("test_threads", in_args) {
     (void)in_args; }
   ///// test_threads /////
@@ -2886,10 +2890,10 @@ public:
 **/
 
 
-class cPopulationEventprint_threads : public cPopulationEvent {
+class cEvent_print_threads : public cPopulationEvent {
 private:
 public:
-  cPopulationEventprint_threads(const cString& in_key, const cString& in_args):
+  cEvent_print_threads(const cString& in_args):
   cPopulationEvent("print_threads", in_args) {
     (void)in_args; }
   ///// print_threads /////
@@ -2909,10 +2913,10 @@ public:
  **/
 
 
-class cPopulationEventdump_fitness_grid : public cPopulationEvent {
+class cEvent_dump_fitness_grid : public cPopulationEvent {
 private:
 public:
-  cPopulationEventdump_fitness_grid(const cString& in_key, const cString& in_args):
+  cEvent_dump_fitness_grid(const cString& in_args):
   cPopulationEvent("dump_fitness_grid", in_args) {
     (void)in_args; }
   ///// dump_fitness_grid /////
@@ -2943,10 +2947,10 @@ public:
  **/
 
 
-class cPopulationEventdump_genotype_grid : public cPopulationEvent {
+class cEvent_dump_genotype_grid : public cPopulationEvent {
 private:
 public:
-  cPopulationEventdump_genotype_grid(const cString& in_key, const cString& in_args):
+  cEvent_dump_genotype_grid(const cString& in_args):
   cPopulationEvent("dump_genotype_grid", in_args) {
     (void)in_args; }
   ///// dump_genotype_grid /////
@@ -2975,10 +2979,10 @@ public:
  **/
 
 
-class cPopulationEventdump_task_grid : public cPopulationEvent {
+class cEvent_dump_task_grid : public cPopulationEvent {
 private:
 public:
-  cPopulationEventdump_task_grid(const cString& in_key, const cString& in_args):
+  cEvent_dump_task_grid(const cString& in_args):
   cPopulationEvent("dump_task_grid", in_args) {
     (void)in_args; }
   ///// dump_task_grid /////
@@ -3000,10 +3004,10 @@ public:
  **/   
 
 
-class cPopulationEventdump_donor_grid : public cPopulationEvent {
+class cEvent_dump_donor_grid : public cPopulationEvent {
 private:
 public:
-  cPopulationEventdump_donor_grid(const cString& in_key, const cString& in_args):
+  cEvent_dump_donor_grid(const cString& in_args):
   cPopulationEvent("dump_donor_grid", in_args) {
     (void)in_args; }
   ///// dump_donor_grid /////
@@ -3033,10 +3037,10 @@ public:
  **/
 
 
-class cPopulationEventdump_receiver_grid : public cPopulationEvent {
+class cEvent_dump_receiver_grid : public cPopulationEvent {
 private:
 public:
-  cPopulationEventdump_receiver_grid(const cString& in_key, const cString& in_args):
+  cEvent_dump_receiver_grid(const cString& in_args):
   cPopulationEvent("dump_receiver_grid", in_args) {
     (void)in_args; }
   ///// dump_receiver_grid /////
@@ -3063,11 +3067,11 @@ public:
  **/
 
 
-class cPopulationEventprint_tree_depths : public cPopulationEvent {
+class cEvent_print_tree_depths : public cPopulationEvent {
 private:
   cString filename;
 public:
-  cPopulationEventprint_tree_depths(const cString& in_key, const cString& in_args):
+  cEvent_print_tree_depths(const cString& in_args):
   cPopulationEvent("print_tree_depths", in_args) {
     
     cString args(in_args);
@@ -3095,13 +3099,13 @@ public:
  **/
 
 
-class cPopulationEventsever_grid_col : public cPopulationEvent {
+class cEvent_sever_grid_col : public cPopulationEvent {
 private:
   int col_id;
   int min_row;
   int max_row;
 public:
-    cPopulationEventsever_grid_col(const cString& in_key, const cString& in_args):
+    cEvent_sever_grid_col(const cString& in_args):
     cPopulationEvent("sever_grid_col", in_args) {
       
       cString args(in_args);
@@ -3156,13 +3160,13 @@ public:
  **/
 
 
-class cPopulationEventsever_grid_row : public cPopulationEvent {
+class cEvent_sever_grid_row : public cPopulationEvent {
 private:
   int row_id;
   int min_col;
   int max_col;
 public:
-    cPopulationEventsever_grid_row(const cString& in_key, const cString& in_args):
+    cEvent_sever_grid_row(const cString& in_args):
     cPopulationEvent("sever_grid_row", in_args) {
       
       cString args(in_args);
@@ -3217,13 +3221,13 @@ public:
  **/
 
 
-class cPopulationEventjoin_grid_col : public cPopulationEvent {
+class cEvent_join_grid_col : public cPopulationEvent {
 private:
   int col_id;
   int min_row;
   int max_row;
 public:
-    cPopulationEventjoin_grid_col(const cString& in_key, const cString& in_args):
+    cEvent_join_grid_col(const cString& in_args):
     cPopulationEvent("join_grid_col", in_args) {
       
       cString args(in_args);
@@ -3282,13 +3286,13 @@ public:
  **/
 
 
-class cPopulationEventjoin_grid_row : public cPopulationEvent {
+class cEvent_join_grid_row : public cPopulationEvent {
 private:
   int row_id;
   int min_col;
   int max_col;
 public:
-    cPopulationEventjoin_grid_row(const cString& in_key, const cString& in_args):
+    cEvent_join_grid_row(const cString& in_args):
     cPopulationEvent("join_grid_row", in_args) {
       
       cString args(in_args);
@@ -3342,14 +3346,14 @@ public:
  **/
 
 
-class cPopulationEventconnect_cells : public cPopulationEvent {
+class cEvent_connect_cells : public cPopulationEvent {
 private:
   int cellA_x;
   int cellA_y;
   int cellB_x;
   int cellB_y;
 public:
-    cPopulationEventconnect_cells(const cString& in_key, const cString& in_args):
+    cEvent_connect_cells(const cString& in_args):
     cPopulationEvent("connect_cells", in_args) {
       
       cString args(in_args);
@@ -3389,14 +3393,14 @@ public:
  **/
 
 
-class cPopulationEventdisconnect_cells : public cPopulationEvent {
+class cEvent_disconnect_cells : public cPopulationEvent {
 private:
   int cellA_x;
   int cellA_y;
   int cellB_x;
   int cellB_y;
 public:
-    cPopulationEventdisconnect_cells(const cString& in_key, const cString& in_args):
+    cEvent_disconnect_cells(const cString& in_args):
     cPopulationEvent("disconnect_cells", in_args) {
       
       cString args(in_args);
@@ -3434,12 +3438,12 @@ public:
  **/
 
 
-class cPopulationEventinject_resource : public cPopulationEvent {
+class cEvent_inject_resource : public cPopulationEvent {
 private:
   cString res_name;
   double res_count;
 public:
-    cPopulationEventinject_resource(const cString& in_key, const cString& in_args):
+    cEvent_inject_resource(const cString& in_args):
     cPopulationEvent("inject_resource", in_args) {
       
       cString args(in_args);
@@ -3461,12 +3465,12 @@ public:
  **/
 
 
-class cPopulationEventset_resource : public cPopulationEvent {
+class cEvent_set_resource : public cPopulationEvent {
 private:
   cString res_name;
   double res_count;
 public:
-    cPopulationEventset_resource(const cString& in_key, const cString& in_args):
+    cEvent_set_resource(const cString& in_args):
     cPopulationEvent("set_resource", in_args) {
       
       cString args(in_args);
@@ -3491,12 +3495,12 @@ public:
  **/
 
 
-class cPopulationEventinject_scaled_resource : public cPopulationEvent {
+class cEvent_inject_scaled_resource : public cPopulationEvent {
 private:
   cString res_name;
   double res_count;
 public:
-    cPopulationEventinject_scaled_resource(const cString& in_key, const cString& in_args):
+    cEvent_inject_scaled_resource(const cString& in_args):
     cPopulationEvent("inject_scaled_resource", in_args) {
       
       cString args(in_args);
@@ -3523,12 +3527,12 @@ public:
  **/
 
 
-class cPopulationEventoutflow_scaled_resource : public cPopulationEvent {
+class cEvent_outflow_scaled_resource : public cPopulationEvent {
 private:
   cString res_name;
   double res_perc;
 public:
-    cPopulationEventoutflow_scaled_resource(const cString& in_key, const cString& in_args):
+    cEvent_outflow_scaled_resource(const cString& in_args):
     cPopulationEvent("outflow_scaled_resource", in_args) {
       
       cString args(in_args);
@@ -3560,12 +3564,12 @@ public:
  **/
 
 
-class cPopulationEventset_reaction_value : public cPopulationEvent {
+class cEvent_set_reaction_value : public cPopulationEvent {
 private:
   cString reaction_name;
   double reaction_value;
 public:
-    cPopulationEventset_reaction_value(const cString& in_key, const cString& in_args):
+    cEvent_set_reaction_value(const cString& in_args):
     cPopulationEvent("set_reaction_value", in_args) {
       
       cString args(in_args);
@@ -3585,12 +3589,12 @@ public:
  **/
 
 
-class cPopulationEventset_reaction_value_mult : public cPopulationEvent {
+class cEvent_set_reaction_value_mult : public cPopulationEvent {
 private:
   cString reaction_name;
   double value_mult;
 public:
-    cPopulationEventset_reaction_value_mult(const cString& in_key, const cString& in_args):
+    cEvent_set_reaction_value_mult(const cString& in_args):
     cPopulationEvent("set_reaction_value_mult", in_args) {
       
       cString args(in_args);
@@ -3603,121 +3607,121 @@ public:
   }
 };
 
+}
 
 /////////////////
-// cPopulationEventFactory
+// cEvent_Factory
 /////////////////
 
 cPopulationEventFactory::cPopulationEventFactory(cPopulation* pop) : m_population( pop )
 {
-  //"" :: cPopulationEventFactory::EVENT_NO_EVENT;
-  Register<cPopulationEventexit>("exit");
-  Register<cPopulationEventexit_if_generation_greater_than>("exit_if_generation_greater_than");
-  Register<cPopulationEventexit_if_update_greater_than>("exit_if_update_greater_than");
-  Register<cPopulationEventexit_if_ave_lineage_label_smaller>("exit_if_ave_lineage_label_smaller");
-  Register<cPopulationEventexit_if_ave_lineage_label_larger>("exit_if_ave_lineage_label_larger");
-  Register<cPopulationEventecho>("echo");
-  Register<cPopulationEventprint_data>("print_data");
-  Register<cPopulationEventprint_average_data>("print_average_data");
-  Register<cPopulationEventprint_error_data>("print_error_data");
-  Register<cPopulationEventprint_variance_data>("print_variance_data");
-  Register<cPopulationEventprint_dominant_data>("print_dominant_data");
-  Register<cPopulationEventprint_stats_data>("print_stats_data");
-  Register<cPopulationEventprint_count_data>("print_count_data");
-  Register<cPopulationEventprint_totals_data>("print_totals_data");
-  Register<cPopulationEventprint_tasks_data>("print_tasks_data");
-  Register<cPopulationEventprint_tasks_exe_data>("print_tasks_exe_data");
-  Register<cPopulationEventprint_resource_data>("print_resource_data");
-  Register<cPopulationEventprint_time_data>("print_time_data");
-  Register<cPopulationEventprint_mutation_data>("print_mutation_data");
-  Register<cPopulationEventprint_mutation_rate_data>("print_mutation_rate_data");
-  Register<cPopulationEventprint_divide_mut_data>("print_divide_mut_data");
-  Register<cPopulationEventprint_dom_parasite_data>("print_dom_parasite_data");
-  Register<cPopulationEventprint_instruction_data>("print_instruction_data");
-  Register<cPopulationEventprint_instruction_abundance_histogram>("print_instruction_abundance_histogram");
-  Register<cPopulationEventprint_depth_histogram>("print_depth_histogram");
-  Register<cPopulationEventprint_genotype_abundance_histogram>("print_genotype_abundance_histogram");
-  Register<cPopulationEventprint_species_abundance_histogram>("print_species_abundance_histogram");
-  Register<cPopulationEventprint_lineage_totals>("print_lineage_totals");
-  Register<cPopulationEventprint_lineage_counts>("print_lineage_counts");
-  Register<cPopulationEventprint_dom>("print_dom");
-  Register<cPopulationEventparasite_debug>("parasite_debug");
-  Register<cPopulationEventprint_dom_parasite>("print_dom_parasite");
-  Register<cPopulationEventprint_genotype_map>("print_genotype_map");
-  Register<cPopulationEventprint_number_phenotypes>("print_number_phenotypes");
-  Register<cPopulationEventprint_phenotype_status>("print_phenotype_status");
-  Register<cPopulationEventsave_population>("save_population");
-  Register<cPopulationEventload_population>("load_population");
-  Register<cPopulationEventsave_clone>("save_clone");
-  Register<cPopulationEventload_clone>("load_clone");
-  Register<cPopulationEventload_dump_file>("load_dump_file");
-  Register<cPopulationEventdump_pop>("dump_pop");
-  Register<cPopulationEventprint_genotypes>("print_genotypes");
-  Register<cPopulationEventdetail_pop>("detail_pop");
-  Register<cPopulationEventdetail_sex_pop>("detail_sex_pop");
-  Register<cPopulationEventdetail_parasite_pop>("detail_parasite_pop");
-  Register<cPopulationEventdump_historic_pop>("dump_historic_pop");
-  Register<cPopulationEventdump_historic_sex_pop>("dump_historic_sex_pop");
-  Register<cPopulationEventdump_memory>("dump_memory");
-  Register<cPopulationEventinject>("inject");
-  Register<cPopulationEventinject_all>("inject_all");
-  Register<cPopulationEventinject_range>("inject_range");
-  Register<cPopulationEventinject_sequence>("inject_sequence");
-  Register<cPopulationEventinject_random>("inject_random");
-  Register<cPopulationEventinject_range_parasite>("inject_range_parasite");
-  Register<cPopulationEventinject_range_pair>("inject_range_pair");
-  Register<cPopulationEventzero_muts>("zero_muts");
-  Register<cPopulationEventmod_copy_mut>("mod_copy_mut");
-  Register<cPopulationEventmod_div_mut>("mod_div_mut");
-  Register<cPopulationEventset_copy_mut>("set_copy_mut");
-  Register<cPopulationEventmod_point_mut>("mod_point_mut");
-  Register<cPopulationEventset_point_mut>("set_point_mut");
-  Register<cPopulationEventcalc_landscape>("calc_landscape");
-  Register<cPopulationEventpredict_w_landscape>("predict_w_landscape");
-  Register<cPopulationEventpredict_nu_landscape>("predict_nu_landscape");
-  Register<cPopulationEventsample_landscape>("sample_landscape");
-  Register<cPopulationEventrandom_landscape>("random_landscape");
-  Register<cPopulationEventanalyze_landscape>("analyze_landscape");
-  Register<cPopulationEventpairtest_landscape>("pairtest_landscape");
-  Register<cPopulationEventtest_dom>("test_dom");
-  Register<cPopulationEventanalyze_population>("analyze_population");
-  Register<cPopulationEventprint_detailed_fitness_data>("print_detailed_fitness_data");
-  Register<cPopulationEventprint_genetic_distance_data>("print_genetic_distance_data");
-  Register<cPopulationEventgenetic_distance_pop_dump>("genetic_distance_pop_dump");
-  Register<cPopulationEventtask_snapshot>("task_snapshot");
-  Register<cPopulationEventprint_viable_tasks_data>("print_viable_tasks_data");
-  Register<cPopulationEventapocalypse>("apocalypse");
-  Register<cPopulationEventkill_rectangle>("kill_rectangle");
-  Register<cPopulationEventrate_kill>("rate_kill");
-  Register<cPopulationEventserial_transfer>("serial_transfer");
-  Register<cPopulationEventhillclimb>("hillclimb");
-  Register<cPopulationEventhillclimb_neut>("hillclimb_neut");
-  Register<cPopulationEventhillclimb_rand>("hillclimb_rand");
-  Register<cPopulationEventcompete_demes>("compete_demes");
-  Register<cPopulationEventreset_demes>("reset_demes");
-  Register<cPopulationEventprint_deme_stats>("print_deme_stats");
-  Register<cPopulationEventcopy_deme>("copy_deme");
-  Register<cPopulationEventcalc_consensus>("calc_consensus");
-  Register<cPopulationEventtest_size_change_robustness>("test_size_change_robustness");
-  Register<cPopulationEventtest_threads>("test_threads");
-  Register<cPopulationEventprint_threads>("print_threads");
-  Register<cPopulationEventdump_fitness_grid>("dump_fitness_grid");
-  Register<cPopulationEventdump_genotype_grid>("dump_genotype_grid");
-  Register<cPopulationEventdump_task_grid>("dump_task_grid");
-  Register<cPopulationEventdump_donor_grid>("dump_donor_grid");
-  Register<cPopulationEventdump_receiver_grid>("dump_receiver_grid");
-  Register<cPopulationEventprint_tree_depths>("print_tree_depths");
-  Register<cPopulationEventsever_grid_col>("sever_grid_col");
-  Register<cPopulationEventsever_grid_row>("sever_grid_row");
-  Register<cPopulationEventjoin_grid_col>("join_grid_col");
-  Register<cPopulationEventjoin_grid_row>("join_grid_row");
-  Register<cPopulationEventconnect_cells>("connect_cells");
-  Register<cPopulationEventdisconnect_cells>("disconnect_cells");
-  Register<cPopulationEventinject_resource>("inject_resource");
-  Register<cPopulationEventset_resource>("set_resource");
-  Register<cPopulationEventinject_scaled_resource>("inject_scaled_resource");
-  Register<cPopulationEventoutflow_scaled_resource>("outflow_scaled_resource");
-  Register<cPopulationEventset_reaction_value>("set_reaction_value");
-  Register<cPopulationEventset_reaction_value_mult>("set_reaction_value_mult");
-  //return cPopulationEventFactory::EVENT_undefined;
+  using namespace nPopulation;
+  Register<cEvent_exit>("exit");
+  Register<cEvent_exit_if_generation_greater_than>("exit_if_generation_greater_than");
+  Register<cEvent_exit_if_update_greater_than>("exit_if_update_greater_than");
+  Register<cEvent_exit_if_ave_lineage_label_smaller>("exit_if_ave_lineage_label_smaller");
+  Register<cEvent_exit_if_ave_lineage_label_larger>("exit_if_ave_lineage_label_larger");
+  Register<cEvent_echo>("echo");
+  Register<cEvent_print_data>("print_data");
+  Register<cEvent_print_average_data>("print_average_data");
+  Register<cEvent_print_error_data>("print_error_data");
+  Register<cEvent_print_variance_data>("print_variance_data");
+  Register<cEvent_print_dominant_data>("print_dominant_data");
+  Register<cEvent_print_stats_data>("print_stats_data");
+  Register<cEvent_print_count_data>("print_count_data");
+  Register<cEvent_print_totals_data>("print_totals_data");
+  Register<cEvent_print_tasks_data>("print_tasks_data");
+  Register<cEvent_print_tasks_exe_data>("print_tasks_exe_data");
+  Register<cEvent_print_resource_data>("print_resource_data");
+  Register<cEvent_print_time_data>("print_time_data");
+  Register<cEvent_print_mutation_data>("print_mutation_data");
+  Register<cEvent_print_mutation_rate_data>("print_mutation_rate_data");
+  Register<cEvent_print_divide_mut_data>("print_divide_mut_data");
+  Register<cEvent_print_dom_parasite_data>("print_dom_parasite_data");
+  Register<cEvent_print_instruction_data>("print_instruction_data");
+  Register<cEvent_print_instruction_abundance_histogram>("print_instruction_abundance_histogram");
+  Register<cEvent_print_depth_histogram>("print_depth_histogram");
+  Register<cEvent_print_genotype_abundance_histogram>("print_genotype_abundance_histogram");
+  Register<cEvent_print_species_abundance_histogram>("print_species_abundance_histogram");
+  Register<cEvent_print_lineage_totals>("print_lineage_totals");
+  Register<cEvent_print_lineage_counts>("print_lineage_counts");
+  Register<cEvent_print_dom>("print_dom");
+  Register<cEvent_parasite_debug>("parasite_debug");
+  Register<cEvent_print_dom_parasite>("print_dom_parasite");
+  Register<cEvent_print_genotype_map>("print_genotype_map");
+  Register<cEvent_print_number_phenotypes>("print_number_phenotypes");
+  Register<cEvent_print_phenotype_status>("print_phenotype_status");
+  Register<cEvent_save_population>("save_population");
+  Register<cEvent_load_population>("load_population");
+  Register<cEvent_save_clone>("save_clone");
+  Register<cEvent_load_clone>("load_clone");
+  Register<cEvent_load_dump_file>("load_dump_file");
+  Register<cEvent_dump_pop>("dump_pop");
+  Register<cEvent_print_genotypes>("print_genotypes");
+  Register<cEvent_detail_pop>("detail_pop");
+  Register<cEvent_detail_sex_pop>("detail_sex_pop");
+  Register<cEvent_detail_parasite_pop>("detail_parasite_pop");
+  Register<cEvent_dump_historic_pop>("dump_historic_pop");
+  Register<cEvent_dump_historic_sex_pop>("dump_historic_sex_pop");
+  Register<cEvent_dump_memory>("dump_memory");
+  Register<cEvent_inject>("inject");
+  Register<cEvent_inject_all>("inject_all");
+  Register<cEvent_inject_range>("inject_range");
+  Register<cEvent_inject_sequence>("inject_sequence");
+  Register<cEvent_inject_random>("inject_random");
+  Register<cEvent_inject_range_parasite>("inject_range_parasite");
+  Register<cEvent_inject_range_pair>("inject_range_pair");
+  Register<cEvent_zero_muts>("zero_muts");
+  Register<cEvent_mod_copy_mut>("mod_copy_mut");
+  Register<cEvent_mod_div_mut>("mod_div_mut");
+  Register<cEvent_set_copy_mut>("set_copy_mut");
+  Register<cEvent_mod_point_mut>("mod_point_mut");
+  Register<cEvent_set_point_mut>("set_point_mut");
+  Register<cEvent_calc_landscape>("calc_landscape");
+  Register<cEvent_predict_w_landscape>("predict_w_landscape");
+  Register<cEvent_predict_nu_landscape>("predict_nu_landscape");
+  Register<cEvent_sample_landscape>("sample_landscape");
+  Register<cEvent_random_landscape>("random_landscape");
+  Register<cEvent_analyze_landscape>("analyze_landscape");
+  Register<cEvent_pairtest_landscape>("pairtest_landscape");
+  Register<cEvent_test_dom>("test_dom");
+  Register<cEvent_analyze_population>("analyze_population");
+  Register<cEvent_print_detailed_fitness_data>("print_detailed_fitness_data");
+  Register<cEvent_print_genetic_distance_data>("print_genetic_distance_data");
+  Register<cEvent_genetic_distance_pop_dump>("genetic_distance_pop_dump");
+  Register<cEvent_task_snapshot>("task_snapshot");
+  Register<cEvent_print_viable_tasks_data>("print_viable_tasks_data");
+  Register<cEvent_apocalypse>("apocalypse");
+  Register<cEvent_kill_rectangle>("kill_rectangle");
+  Register<cEvent_rate_kill>("rate_kill");
+  Register<cEvent_serial_transfer>("serial_transfer");
+  Register<cEvent_hillclimb>("hillclimb");
+  Register<cEvent_hillclimb_neut>("hillclimb_neut");
+  Register<cEvent_hillclimb_rand>("hillclimb_rand");
+  Register<cEvent_compete_demes>("compete_demes");
+  Register<cEvent_reset_demes>("reset_demes");
+  Register<cEvent_print_deme_stats>("print_deme_stats");
+  Register<cEvent_copy_deme>("copy_deme");
+  Register<cEvent_calc_consensus>("calc_consensus");
+  Register<cEvent_test_size_change_robustness>("test_size_change_robustness");
+  Register<cEvent_test_threads>("test_threads");
+  Register<cEvent_print_threads>("print_threads");
+  Register<cEvent_dump_fitness_grid>("dump_fitness_grid");
+  Register<cEvent_dump_genotype_grid>("dump_genotype_grid");
+  Register<cEvent_dump_task_grid>("dump_task_grid");
+  Register<cEvent_dump_donor_grid>("dump_donor_grid");
+  Register<cEvent_dump_receiver_grid>("dump_receiver_grid");
+  Register<cEvent_print_tree_depths>("print_tree_depths");
+  Register<cEvent_sever_grid_col>("sever_grid_col");
+  Register<cEvent_sever_grid_row>("sever_grid_row");
+  Register<cEvent_join_grid_col>("join_grid_col");
+  Register<cEvent_join_grid_row>("join_grid_row");
+  Register<cEvent_connect_cells>("connect_cells");
+  Register<cEvent_disconnect_cells>("disconnect_cells");
+  Register<cEvent_inject_resource>("inject_resource");
+  Register<cEvent_set_resource>("set_resource");
+  Register<cEvent_inject_scaled_resource>("inject_scaled_resource");
+  Register<cEvent_outflow_scaled_resource>("outflow_scaled_resource");
+  Register<cEvent_set_reaction_value>("set_reaction_value");
+  Register<cEvent_set_reaction_value_mult>("set_reaction_value_mult");
 }

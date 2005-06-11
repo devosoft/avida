@@ -10,6 +10,7 @@
 
 class cString;
 struct cHardwareTracer_TestCPU {
+  virtual ~cHardwareTracer_TestCPU() { ; }
   virtual void TraceHardware_TestCPU(
     int time_used,
     int time_allocated,

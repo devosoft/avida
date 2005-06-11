@@ -45,16 +45,25 @@ private:
   cEventListEntry& operator=( const cEventListEntry& );
 public:
   // creators
-  cEventListEntry( cEvent *event = NULL,
-		   cEventTriggers::eTriggerVariable trigger
-		                   = cEventTriggers::UPDATE,
-		   double start = cEventTriggers::TRIGGER_BEGIN,
-		   double interval = cEventTriggers::TRIGGER_ONCE,
-		   double stop = cEventTriggers::TRIGGER_END,
-		   cEventListEntry *prev = NULL,
-		   cEventListEntry *next = NULL );
+  cEventListEntry(cEvent *event = NULL,
+                  cEventTriggers::eTriggerVariable trigger = cEventTriggers::UPDATE,
+                  double start = cEventTriggers::TRIGGER_BEGIN,
+                  double interval = cEventTriggers::TRIGGER_ONCE,
+                  double stop = cEventTriggers::TRIGGER_END,
+                  cEventListEntry *prev = NULL,
+                  cEventListEntry *next = NULL ) :
+    m_event( event ),
+    m_trigger( trigger ),
+    m_start( start ),
+    m_interval( interval ),
+    m_stop( stop ),
+    m_original_start( start ),
+    m_prev( prev ),
+    m_next( next )
+  {
+  }
 
-  virtual ~cEventListEntry();
+  virtual ~cEventListEntry() { delete m_event; }
 
 
   // manipulators

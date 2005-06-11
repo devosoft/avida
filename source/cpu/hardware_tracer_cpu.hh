@@ -10,6 +10,7 @@
 
 class cHardwareCPU;
 struct cHardwareTracer_CPU {
+  virtual ~cHardwareTracer_CPU() { ; }
   virtual void TraceHardware_CPU(cHardwareCPU &) = 0;
   virtual void TraceHardware_CPUBonus(cHardwareCPU &) = 0;
 };
