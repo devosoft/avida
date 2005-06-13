@@ -661,7 +661,6 @@
 		DCC310000762539D008F7A48 /* population_event.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = population_event.hh; sourceTree = "<group>"; };
 		DCC310010762539D008F7A48 /* population_event_factory.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = population_event_factory.cc; sourceTree = "<group>"; };
 		DCC310020762539D008F7A48 /* population_event_factory.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = population_event_factory.hh; sourceTree = "<group>"; };
-		DCC310030762539D008F7A48 /* LEVELS */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = LEVELS; sourceTree = "<group>"; };
 		DCC310900762539E008F7A48 /* analyze.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = analyze.cc; sourceTree = "<group>"; };
 		DCC310910762539E008F7A48 /* analyze.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = analyze.hh; sourceTree = "<group>"; };
 		DCC310920762539E008F7A48 /* analyze_command.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = analyze_command.hh; sourceTree = "<group>"; };
@@ -798,7 +797,6 @@
 		DCC3112B0762539E008F7A48 /* task_entry.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = task_entry.hh; sourceTree = "<group>"; };
 		DCC3112C0762539E008F7A48 /* task_lib.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = task_lib.cc; sourceTree = "<group>"; };
 		DCC3112D0762539E008F7A48 /* task_lib.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = task_lib.hh; sourceTree = "<group>"; };
-		DCC311380762539E008F7A48 /* MAP.renamed_to_avoid_naming_conflict_with_stl */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = MAP.renamed_to_avoid_naming_conflict_with_stl; sourceTree = "<group>"; };
 		DCC311390762539E008F7A48 /* modules.pri */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = modules.pri; sourceTree = "<group>"; };
 		DCC3114B0762539E008F7A48 /* analyze.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = analyze.cfg; sourceTree = "<group>"; };
 		DCC3114C0762539E008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
@@ -1270,21 +1268,19 @@
 			isa = PBXGroup;
 			children = (
 				DCC30C710762539A008F7A48 /* bindings */,
-				DCC30F7B0762539D008F7A48 /* CMakeLists.txt */,
 				DCC30F7C0762539D008F7A48 /* cpu */,
-				DCC30FCE0762539D008F7A48 /* defs.hh */,
-				DCC30FCF0762539D008F7A48 /* Doxyfile */,
 				DCC30FD00762539D008F7A48 /* event */,
-				DCC310030762539D008F7A48 /* LEVELS */,
 				DCC310040762539D008F7A48 /* main */,
-				DCC311380762539E008F7A48 /* MAP.renamed_to_avoid_naming_conflict_with_stl */,
-				DCC311390762539E008F7A48 /* modules.pri */,
 				DCC3113A0762539E008F7A48 /* support */,
 				DCC311990762539F008F7A48 /* testsuites */,
 				DCC31340076253A0008F7A48 /* third-party */,
 				DCC314D8076253A2008F7A48 /* tools */,
 				DCC315B6076253A5008F7A48 /* utils */,
 				DCC315D2076253A5008F7A48 /* viewers */,
+				DCC30F7B0762539D008F7A48 /* CMakeLists.txt */,
+				DCC30FCE0762539D008F7A48 /* defs.hh */,
+				DCC30FCF0762539D008F7A48 /* Doxyfile */,
+				DCC311390762539E008F7A48 /* modules.pri */,
 			);
 			name = Source;
 			path = source;
