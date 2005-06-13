@@ -3519,28 +3519,27 @@ public:
   }
 };
 
+
 ///// outflow_scaled_resource /////
 
 /**
-* Removes a specified percentage of a specified resource, scaled by
+ * Removes a specified percentage of a specified resource, scaled by
  * the current average merit divided by the average time slice.
  **/
-
-
 class cEvent_outflow_scaled_resource : public cPopulationEvent {
 private:
   cString res_name;
   double res_perc;
 public:
-    cEvent_outflow_scaled_resource(const cString& in_args):
-    cPopulationEvent("outflow_scaled_resource", in_args) {
-      
-      cString args(in_args);
-      res_name = args.PopWord();
-      res_perc = args.PopWord().AsDouble();
-    }
-  ///// outflow_scaled_resource /////
-  void Process(){
+  cEvent_outflow_scaled_resource(const cString& in_args):
+  cPopulationEvent("outflow_scaled_resource", in_args)
+  {
+    cString args(in_args);
+    res_name = args.PopWord();
+    res_perc = args.PopWord().AsDouble();
+  }
+  void Process()
+  {
     double ave_merit = population->GetStats().SumMerit().Average();
     if ( ave_merit <= 0 )
       ave_merit = 1; // make sure that we don't get NAN's or negative numbers
@@ -3557,53 +3556,75 @@ public:
   }
 };
 
+
 ///// set_reaction_value /////
 
 /**
-* Set the value associated with a reaction to a specific level
+ * Set the value associated with a reaction to a specific level
  **/
-
-
 class cEvent_set_reaction_value : public cPopulationEvent {
 private:
   cString reaction_name;
   double reaction_value;
 public:
-    cEvent_set_reaction_value(const cString& in_args):
-    cPopulationEvent("set_reaction_value", in_args) {
-      
-      cString args(in_args);
-      reaction_name = args.PopWord();
-      reaction_value = args.PopWord().AsDouble();
-    }
-  ///// set_reaction_value /////
-  void Process(){
+  cEvent_set_reaction_value(const cString& in_args):
+  cPopulationEvent("set_reaction_value", in_args)
+  {
+    cString args(in_args);
+    reaction_name = args.PopWord();
+    reaction_value = args.PopWord().AsDouble();
+  }
+  void Process()
+  {
     population->GetEnvironment().SetReactionValue(reaction_name, reaction_value);
   }
 };
 
+
 ///// set_reaction_value_mult /////
 
 /**
-* Change the value of the reaction by multiplying it with the imput number
+ * Change the value of the reaction by multiplying it with the imput number
  **/
-
-
 class cEvent_set_reaction_value_mult : public cPopulationEvent {
 private:
   cString reaction_name;
   double value_mult;
 public:
-    cEvent_set_reaction_value_mult(const cString& in_args):
-    cPopulationEvent("set_reaction_value_mult", in_args) {
-      
-      cString args(in_args);
-      reaction_name = args.PopWord();
-      value_mult = args.PopWord().AsDouble();
-    }
-  ///// set_reaction_value_mult /////
-  void Process(){
+  cEvent_set_reaction_value_mult(const cString& in_args):
+  cPopulationEvent("set_reaction_value_mult", in_args)
+  {
+    cString args(in_args);
+    reaction_name = args.PopWord();
+    value_mult = args.PopWord().AsDouble();
+  }
+  void Process()
+  {
     population->GetEnvironment().SetReactionValueMult(reaction_name, value_mult);
+  }
+};
+
+
+///// set_reaction_inst /////
+
+/**
+ * Change the instruction triggered by the task
+ **/
+class cEvent_set_reaction_inst : public cPopulationEvent {
+private:
+  cString reaction_name;
+  cString inst_name;
+public:
+  cEvent_set_reaction_inst(const cString& in_args):
+  cPopulationEvent("set_reaction_inst", in_args)
+  {
+    cString args(in_args);
+    reaction_name = args.PopWord();
+    inst_name = args.PopWord();
+  }
+  void Process()
+  {
+    population->GetEnvironment().SetReactionInst(reaction_name, inst_name);
   }
 };
 
@@ -3613,7 +3634,7 @@ public:
 // cEvent_Factory
 /////////////////
 
-cPopulationEventFactory::cPopulationEventFactory(cPopulation* pop) : m_population( pop )
+cPopulationEventFactory::cPopulationEventFactory(cPopulation* pop) : m_population(pop)
 {
   using namespace nPopulation;
   Register<cEvent_exit>("exit");
@@ -3724,4 +3745,5 @@ cPopulationEventFactory::cPopulationEventFactory(cPopulation* pop) : m_populatio
   Register<cEvent_outflow_scaled_resource>("outflow_scaled_resource");
   Register<cEvent_set_reaction_value>("set_reaction_value");
   Register<cEvent_set_reaction_value_mult>("set_reaction_value_mult");
+  Register<cEvent_set_reaction_inst>("set_reaction_inst");
 }
