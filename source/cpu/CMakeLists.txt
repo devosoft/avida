@@ -1,7 +1,5 @@
 SET(libcpu_a_SOURCES
-  4stack_head.cc
   code_label.cc
-  cpu_head.cc
   cpu_memory.cc
   cpu_stack.cc
   cpu_test_info.cc
@@ -11,8 +9,12 @@ SET(libcpu_a_SOURCES
   hardware_cpu.cc
   hardware_cpu_thread.cc
   hardware_factory.cc
-  hardware_util.cc
+  hardware_smt.cc
+  hardware_smt_thread.cc
   hardware_status_printer.cc
+  hardware_util.cc
+  head_cpu.cc
+  head_multi_mem.cc
   memory_flags.cc
   test_cpu.cc
   test_util.cc

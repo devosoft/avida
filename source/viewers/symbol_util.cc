@@ -17,6 +17,7 @@
 #include "hardware_base.hh"
 #include "hardware_4stack.hh"
 #include "hardware_cpu.hh"
+#include "hardware_smt.h"
 
 using namespace std;
 
