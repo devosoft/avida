@@ -3,7 +3,7 @@ from qt import Qt, PYSIGNAL
 from qtcanvas import QCanvasView
 
 class pyPetriCanvasView(QCanvasView):
-  def __init__(self,parent,name,f):
+  def __init__(self,parent,name,f =2):
     QCanvasView.__init__(self,parent,name,f)
   def contentsMousePressEvent(self,e): # QMouseEvent e
     if e.button() != Qt.LeftButton: return
@@ -20,5 +20,3 @@ class pyPetriCanvasView(QCanvasView):
       self.emit(PYSIGNAL("orgClickedOnSig"), (org_clicked_on_item,))
       if org_clicked_on_item:
         self.emit(PYSIGNAL("orgClickedOnSig"), (org_clicked_on_item,))
-#the_item.brush().color()
-#the_item.m_population_cell.GetID()

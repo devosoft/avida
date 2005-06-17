@@ -20,13 +20,17 @@ class pyFreezerCtrl(pyFreezerView):
     self.connect(self.m_list_view, 
       SIGNAL("pressed(QListViewItem*, const QPoint &, int )"),
       self.pressed_itemSlot)
+    self.setAcceptDrops(1)
 
   def construct(self, session_mdl):
     self.m_session_mdl = session_mdl
     self.connect(self.m_session_mdl.m_session_mdtr,
       PYSIGNAL("doRefreshFreezerInventorySig"),
       self.createFreezerIndexSlot)
+    self.connect(self, PYSIGNAL("freezerItemDoubleClicked"),
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezerItemDoubleClicked"))
     self.createFreezerIndexSlot()
+
 
   def createFreezerIndexSlot(self):
     empty_item = self.m_list_view.firstChild()
@@ -110,6 +114,8 @@ class pyFreezerCtrl(pyFreezerView):
       thawed_item = pyReadFreezer(file_name)
       self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("doDefrostDishSig"),
         (item.text(0), thawed_item,))
+      self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("freezerItemDoubleClicked"),
+        (file_name,))
 
 
   class itemDrag(QTextDrag):
@@ -117,7 +123,13 @@ class pyFreezerCtrl(pyFreezerView):
         QStoredDrag.__init__(self, 'item name (QString)', parent, name)
         self.setText(item_name)
 
-
-
+  def dropEvent( self, e ):
+    freezer_item_name = QString()
+    print "dropEvent in freezer"
+    if ( QTextDrag.decode( e, freezer_item_name ) ) : #freezer_item_name is a string...the file name 
+      if os.path.exists(str(freezer_item_name)) == False:
+        print "that was not a valid path (1)" 
+      else: 
+        self.emit(PYSIGNAL("petriDishDroppedInPopViewSig"), (e,))
 
 

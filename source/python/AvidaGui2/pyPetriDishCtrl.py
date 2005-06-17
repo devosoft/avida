@@ -51,7 +51,8 @@ class pyPetriDishCtrl(QWidget):
     self.m_org_clicked_on_item = None
     self.m_occupied_cells_ids = []
 
-    self.m_target_dish_width = 270
+#    self.m_target_dish_width = 270
+    self.m_target_dish_width = 350
     self.m_target_dish_scaling = 5.
     self.m_map_cell_width = 5
 
@@ -98,6 +99,7 @@ class pyPetriDishCtrl(QWidget):
     self.m_canvas = QCanvas(self.m_map_cell_width * self.m_world_w, self.m_map_cell_width * self.m_world_h)
     self.m_canvas.setBackgroundColor(Qt.darkGray)
     self.m_canvas_view.setCanvas(self.m_canvas)
+
     if self.m_background_rect: del self.m_background_rect
     self.m_background_rect = QCanvasRectangle(
       0, 0,
@@ -180,5 +182,12 @@ class pyPetriDishCtrl(QWidget):
     if self.m_canvas_view:
       m = QWMatrix()
       m.scale(zoom_factor/self.m_target_dish_scaling, zoom_factor/self.m_target_dish_scaling)
-      self.m_canvas_view.setWorldMatrix(m)
+      trans_h = (self.m_canvas_view.size().height() - (self.m_map_cell_width * self.m_world_h)*
+        (zoom_factor/self.m_target_dish_scaling))/2
 
+      if zoom_factor == 0:
+        m.translate(trans_h/(1/self.m_target_dish_scaling),trans_h/(1/self.m_target_dish_scaling))
+      else:
+        m.translate(trans_h/(zoom_factor/self.m_target_dish_scaling),trans_h/(zoom_factor/self.m_target_dish_scaling))    
+      self.m_canvas_view.setWorldMatrix(m)
+ 

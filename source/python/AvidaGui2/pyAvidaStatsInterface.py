@@ -5,7 +5,7 @@ class pyAvidaStatsInterface:
   def __init__(self):
     self.m_entries = (
       ('None',                          None,            0, None),
-      ('Average Merit',                 'average.dat',   2, lambda s: s.GetAveMerit()),
+      ('Average Metabolic Rate',                 'average.dat',   2, lambda s: s.GetAveMerit()),
       ('Average Fitness',               'average.dat',   4, lambda s: s.GetAveFitness()),
       ('Average Gestation Time',        'average.dat',   3, lambda s: s.GetAveGestation()),
       ('Average Genome Length',                  'average.dat',   6, lambda s: s.GetAveSize()),

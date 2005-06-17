@@ -50,6 +50,10 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
     self.m_petri_dish_dir_path = ' '
     self.m_petri_dish_dir_exists_flag = False
 
+    self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezerItemDoubleClickedOnInOneAnaSig"),
+      self.freezerItemDoubleClickedOn)  
+
+
     # set up the combo boxes with plot options
     for entry in self.m_avida_stats_interface.m_entries:
       self.m_combo_box_1.insertItem(entry[0])
@@ -199,6 +203,7 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
        self.m_graph_ctrl.setTitle(self.m_avida_stats_interface.m_entries[0][0])
        self.m_graph_ctrl.setAxisTitle(QwtPlot.yLeft, self.m_avida_stats_interface.m_entries[0][0])
 
+
     self.m_graph_ctrl.replot()
       
   def printGraphSlot(self):
@@ -208,10 +213,6 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
       if (QPrinter.GrayScale == printer.colorMode()):
         filter.setOptions(QwtPlotPrintFilter.PrintAll & ~QwtPlotPrintFilter.PrintCanvasBackground)
       self.m_graph_ctrl.printPlot(printer, filter)
-
-
-#  def gotIt( self, e):
-#    print "got it"
 
   def petriDropped(self, e): 
       # a check in pyOneAnalyzeCtrl.py makes sure this is a valid path
@@ -249,10 +250,11 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
       str = decode( e ) 
       if str:
         print " in if str"
-#jmc delete
-#        self.setText( str )
-#        self.setMinimumSize(self.minimumSize().expandedTo(self.sizeHint()))
-        return
 
-
+  def freezerItemDoubleClickedOn(self, freezer_item_name): 
+    # a check in pyOneAnalyzeCtrl.py makes sure this is a valid path
+    self.m_petri_dish_dir_exists_flag = True
+    self.m_petri_dish_dir_path = os.path.split(freezer_item_name)[0]
+    self.modeActivatedSlot()
+     
 
