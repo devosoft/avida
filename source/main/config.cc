@@ -78,6 +78,7 @@ int cConfig::death_method;
 int cConfig::alloc_method;
 int cConfig::divide_method;
 int cConfig::required_task;
+int cConfig::immunity_task;
 int cConfig::required_reaction;
 int cConfig::lineage_creation_method;
 int cConfig::generation_inc_method;
@@ -207,6 +208,8 @@ void cConfig::InitGroupList(){
 		 "Is a an allocate required before a divide? (0/1)");
   div_group->Add(required_task, "-1", "REQUIRED_TASK",
 		 "Task ID required for successful divide.");
+  div_group->Add(immunity_task, "-1", "REQUIRED_TASK",
+		 "Task providing immunity from the required task.");
   div_group->Add(required_reaction, "-1", "REQUIRED_REACTION",
 		 "Reaction ID required for successful divide.");
   div_group->Add(die_prob, "0", "DIE_PROB",

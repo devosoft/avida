@@ -243,12 +243,16 @@ bool cOrganism::Divide_CheckViable()
 {
   // Make sure required task (if any) has been performed...
   const int required_task = cConfig::GetRequiredTask();
+  const int immunity_task = cConfig::GetImmunityTask();
   if (required_task != -1 &&
-      phenotype.GetCurTaskCount()[required_task] == 0) {
-    Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
-	  cStringUtil::Stringf("Lacks required task (%d)",
-			       cConfig::GetRequiredTask()));
-    return false; //  (divide fails)
+      phenotype.GetCurTaskCount()[required_task] == 0) { 
+    if (immunity_task==-1 || 
+	phenotype.GetCurTaskCount()[immunity_task] == 0) {
+      Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
+	    cStringUtil::Stringf("Lacks required task (%d)",
+			         cConfig::GetRequiredTask()));
+      return false; //  (divide fails)
+    } 
   }
 
   const int required_reaction = cConfig::GetRequiredReaction();

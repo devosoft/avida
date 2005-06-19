@@ -242,6 +242,7 @@ protected:
   static int two_fold_cost_sex;
   static int same_length_sex;
   static int required_task;
+  static int immunity_task;
   static int required_reaction;
   static int lineage_creation_method;
   static int generation_inc_method;
@@ -384,6 +385,7 @@ public:
   static int GetTwoFoldCostSex() { return two_fold_cost_sex; }
   static int GetSameLengthSex() { return same_length_sex; }
   static int GetRequiredTask() { return required_task; }
+  static int GetImmunityTask() { return immunity_task; }
   static int GetRequiredReaction() { return required_reaction; }
   static int GetLineageCreationMethod() { return lineage_creation_method; }
   static int GetGenerationIncMethod() { return generation_inc_method; }
