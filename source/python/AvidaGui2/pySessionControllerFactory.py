@@ -6,6 +6,7 @@ import qt
 class pySessionControllerFactory(qt.QObject):
   def __init__(self):
     qt.QObject.__init__(self, None, self.__class__.__name__)
+
   def construct(self, m_session_mdl):
     self.m_session_mdl = m_session_mdl
     self.m_controller_creators_dict = {}
@@ -15,12 +16,15 @@ class pySessionControllerFactory(qt.QObject):
     self.connect(self.m_session_mdl.m_session_mdtr,
       qt.PYSIGNAL("deleteControllerSig"), self.deleteControllerSlot)
     return self
+
   def addControllerCreator(self, creator_key, creator):
     self.m_controller_creators_dict[creator_key] = creator
+
   def newSessionControllerSlot(self, creator_key, *args):
     new_controller = self.m_controller_creators_dict[creator_key]()
     new_controller.construct(self.m_session_mdl, *args)
     self.m_session_controllers_list.append(new_controller)
+
   def deleteControllerSlot(self, controller):
     self.m_session_controllers_list.remove(controller)
 

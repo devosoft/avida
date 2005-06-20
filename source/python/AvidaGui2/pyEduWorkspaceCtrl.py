@@ -115,8 +115,6 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
         self.m_ctrl_to_cli_dict[ctrl].setState(QCheckListItem.On)
 
   def close(self, also_delete = False):
-    # XXX trying to temporarily prevent closing this window.
-    # print "pyEduWorkspaceCtrl.close(): Cowardly refusing to close."
     self.emit(PYSIGNAL("quitAvidaPhaseISig"), ())
     return False
 
@@ -266,13 +264,11 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
     pass
     
   def doPauseAvidaSlot(self):
-    print "called pyEduWorkspaceCtryl.doPauseAvidaSlot"
     self.controlStartAction.text = "Start"
     self.controlStartAction.menuText = "Start"
     self.startStatus = True
     
   def doStartAvidaSlot(self):
-    print "called pyEduWorkspaceCtryl.doStartAvidaSlot"
     self.controlStartAction.text = "Pause"
     self.controlStartAction.menuText = "Pause"
     self.startStatus = False

@@ -51,7 +51,7 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     self.connect(self.StopAtRadioButton, SIGNAL("clicked()"), 
       self.ChangeStopSpinBoxSlot)
     self.connect(self.SavePetriPushButton, SIGNAL("clicked()"), 
-      PYSIGNAL("freezeDishPhaseISig"))
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezeDishPhaseISig"))
     self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezeDishPhaseIISig"), 
       self.FreezePetriSlot)
     self.connect(self.m_session_mdl.m_session_mdtr,

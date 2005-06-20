@@ -2,8 +2,10 @@ from pyMdtr import pyMdtr
 import qt
 
 class pyMainControllerFactory(qt.QObject):
+
   def __init__(self):
     qt.QObject.__init__(self, None, self.__class__.__name__)
+
   def construct(self, main_mdl):
     self.m_main_mdl = main_mdl
     self.m_controller_creators_dict = {}
@@ -14,12 +16,15 @@ class pyMainControllerFactory(qt.QObject):
     self.connect(self.m_main_mdl.m_main_mdtr.m_main_controller_factory_mdtr,
       qt.PYSIGNAL("deleteControllerSig"), self.deleteControllerSlot)
     return self
+
   def addControllerCreator(self, creator_key, creator):
     self.m_controller_creators_dict[creator_key] = creator
+
   def newMainControllerSlot(self, creator_key, *args):
     new_controller = self.m_controller_creators_dict[creator_key]()
     new_controller.construct(self.m_main_mdl, *args)
     self.m_main_controllers_list.append(new_controller)
+
   def deleteControllerSlot(self, controller):
     self.m_main_controllers_list.remove(controller)
 
