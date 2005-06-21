@@ -50,8 +50,6 @@ tInstLib<cHardwareSMT::tMethod> *cHardwareSMT::initInstLib(void){
     cNOPEntry4Stack("Nop-B", nHardwareSMT::STACK_BX),
     cNOPEntry4Stack("Nop-C", nHardwareSMT::STACK_CX),
     cNOPEntry4Stack("Nop-D", nHardwareSMT::STACK_DX),
-    cNOPEntry4Stack("Nop-E", nHardwareSMT::STACK_EX),
-    cNOPEntry4Stack("Nop-F", nHardwareSMT::STACK_FX)
   };
 	
   struct cInstEntry4Stack {

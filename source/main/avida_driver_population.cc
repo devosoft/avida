@@ -27,6 +27,7 @@
 #include "tools.hh"
 
 #include <iostream>
+#include <iomanip>
 
 using namespace std;
 
@@ -94,8 +95,6 @@ cAvidaDriver_Population::~cAvidaDriver_Population()
 
 void cAvidaDriver_Population::Run()
 {
-  // cout << "DEBUG: Turning control over to driver..." << endl;
-
   assert( population != NULL );
 
   // Process until done...
@@ -179,8 +178,6 @@ void cAvidaDriver_Population::GetEvents()
 
 void cAvidaDriver_Population::ProcessOrganisms()
 {
-  //  cout << "DEBUG: Running viewer-less update..." << endl;
-
   // Process the update.
   const int UD_size =
     cConfig::GetAveTimeslice() * population->GetNumOrganisms();
@@ -199,9 +196,11 @@ void cAvidaDriver_Population::ProcessOrganisms()
 
   // No viewer; print out status for this update....
   cStats & stats = population->GetStats();
-  cout << "UD: "  << stats.GetUpdate() << "\t"
-       << "Gen: " << stats.SumGeneration().Average() << "\t"
-       << "Fit: " << stats.GetAveFitness() << "\t"
+  cout.setf(ios::left);
+  cout.setf(ios::showpoint);
+  cout << "UD: " << setw(6) << stats.GetUpdate() << "  "
+       << "Gen: " << setw(9) << setprecision(7) << stats.SumGeneration().Average() << "  "
+       << "Fit: " << setw(9) << setprecision(7) << stats.GetAveFitness() << "  "
        << "Size: " << population->GetNumOrganisms()
        << endl;
 }
