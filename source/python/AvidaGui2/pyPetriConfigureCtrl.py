@@ -51,7 +51,7 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     self.connect(self.StopAtRadioButton, SIGNAL("clicked()"), 
       self.ChangeStopSpinBoxSlot)
     self.connect(self.SavePetriPushButton, SIGNAL("clicked()"), 
-      PYSIGNAL("freezeDishPhaseISig"))
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezeDishPhaseISig"))
     self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezeDishPhaseIISig"), 
       self.FreezePetriSlot)
     self.connect(self.m_session_mdl.m_session_mdtr,
@@ -298,9 +298,6 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     freezer_item_name = QString()
     print "dropEvent"
     if ( QTextDrag.decode( e, freezer_item_name ) ) :
-      print "in here"
-      print freezer_item_name
-#      if os.path.exists(str('default.workspace/freezer/' + str(string) + '.full/')) == False:
       if os.path.exists(str(freezer_item_name)) == False:
         print "that was not a valid path (2)" 
       else: 

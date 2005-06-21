@@ -11,8 +11,8 @@ MAX_GENERATIONS -1      # Maximum generations to run simulation (-1 = no limit)
 END_CONDITION_MODE 0    # End run when ...
                         # 0 = MAX_UPDATES _OR_ MAX_GENERATIONS is reached
                         # 1 = MAX_UPDATES _AND_ MAX_GENERATIONS is reached
-WORLD-X 60              # Width of the world in Avida mode.
-WORLD-Y 60              # Height of the world in Avida mode.
+WORLD-X 30              # Width of the world in Avida mode.
+WORLD-Y 30              # Height of the world in Avida mode.
 RANDOM_SEED 0           # Random number seed. (0 for based on time)
 HARDWARE_TYPE 2         # 0 = Original CPUs
                         # 1 = New, Stack-based CPUs

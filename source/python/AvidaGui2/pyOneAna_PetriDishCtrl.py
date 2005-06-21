@@ -14,6 +14,8 @@ class pyOneAna_PetriDishCtrl(pyOneAna_PetriDishView):
     self.m_session_mdl = session_mdl     
     self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezerItemDroppedInOneAnalyzeSig"),
       self.freezerItemDropped)  
+    self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezerItemDoubleClickedOnInOneAnaSig"),
+      self.freezerItemDoubleClickedOn)  
 
 
   def freezerItemDropped(self, e):
@@ -22,3 +24,8 @@ class pyOneAna_PetriDishCtrl(pyOneAna_PetriDishView):
     freezer_item_name = QString()
     if ( QTextDrag.decode( e, freezer_item_name ) ) :
       self.m_one_ana_pop_name.setText(os.path.splitext((os.path.split(str(freezer_item_name))[1]))[0])
+
+  def freezerItemDoubleClickedOn(self, freezer_item_name):
+    print freezer_item_name
+    self.m_one_ana_pop_name.setText(os.path.split(os.path.splitext(os.path.split(freezer_item_name)[0])[0])[1])
+

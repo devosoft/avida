@@ -14,24 +14,27 @@ class pyOneAnalyzeCtrl(pyOneAnalyzeView):
     self.m_session_mdl = session_mdl
     self.m_one_ana_graph_ctrl.construct(self.m_session_mdl)
     self.m_one_ana_petri_ctrl.construct(self.m_session_mdl) 
-    self.connect( self, PYSIGNAL("freezerItemDroppedInOneAnalyzeSig"), self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezerItemDroppedInOneAnalyzeSig"))
-    print "self" 
-    print self
+    self.connect( self, PYSIGNAL("freezerItemDroppedInOneAnalyzeSig"),
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezerItemDroppedInOneAnalyzeSig"))
+    self.connect( self, PYSIGNAL("freezerItemDoubleClickedOnInOneAnaSig"),
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezerItemDoubleClickedOnInOneAnaSig"))
+    self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezerItemDoubleClicked"),
+      self.freezerItemDoubleClicked)
 
   def dropEvent( self, e ):
     freezer_item_name = QString()
-    print "something was dropped"
     if ( QTextDrag.decode( e, freezer_item_name ) ) :
       if os.path.exists( str(freezer_item_name)) == False:
         print "that was not a valid path(3)" 
       else: 
         self.emit(PYSIGNAL("freezerItemDroppedInOneAnalyzeSig"), (e,))
 
+  def freezerItemDoubleClicked(self, freezer_item_name):
+    if os.path.exists( str(freezer_item_name)) == False:
+      print "that was not a valid path(3)"
+    else:
+      if self.isVisible():
+         self.emit(PYSIGNAL("freezerItemDoubleClickedOnInOneAnaSig"), (freezer_item_name,))
+      
 
-#  def dragEnterEvent( self, e ):
-#      # Check if you want the drag...
-#        if (secret.canDecode( e ) or
-#            QTextDrag.canDecode( e ) or
-#            QImageDrag.canDecode( e ) or
-#            QUriDrag.canDecode( e )):
-#    e.accept()
+

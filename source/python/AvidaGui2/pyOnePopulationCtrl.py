@@ -16,7 +16,12 @@ class pyOnePopulationCtrl(pyOnePopulationView):
     self.m_one_pop_graph_ctrl.construct(self.m_session_mdl)
     self.m_one_pop_stats_ctrl.construct(self.m_session_mdl)
     self.m_one_pop_timeline_ctrl.hide()
-    self.connect( self, PYSIGNAL("petriDishDroppedInPopViewSig"), self.m_session_mdl.m_session_mdtr, PYSIGNAL("petriDishDroppedInPopViewSig"))
+    self.connect( self, PYSIGNAL("petriDishDroppedInPopViewSig"),
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("petriDishDroppedInPopViewSig"))   
+    self.connect( self, PYSIGNAL("freezerItemDoubleClickedOnInOnePopSig"), 
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezerItemDoubleClickedOnInOnePopSig"))
+    self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezerItemDoubleClicked"),
+      self.freezerItemDoubleClicked)
 
   def dropEvent( self, e ):
     freezer_item_name = QString()
@@ -26,4 +31,9 @@ class pyOnePopulationCtrl(pyOnePopulationView):
         print "that was not a valid path (1)" 
       else: 
         self.emit(PYSIGNAL("petriDishDroppedInPopViewSig"), (e,))
-        print "emitted"
+
+  def freezerItemDoubleClicked(self, freezer_item_name):
+   if  self.isVisible():
+       self.emit(PYSIGNAL("freezerItemDoubleClickedOnInOnePopSig"), (freezer_item_name,))
+
+ 

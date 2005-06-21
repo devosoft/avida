@@ -172,7 +172,7 @@ class pyMapProfile:
         gradualLinScaleUpdater(RangeReport(NullRng, self.m_session_mdl)),
         None
         ),
-      ('Merit',
+      ('Metabolic Rate',
         continuousIndexer(MeritIdx),
         gradualLinScaleUpdater(RangeReport(MeritRng, self.m_session_mdl)),
         sigmoidColorLookup

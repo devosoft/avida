@@ -1,10 +1,11 @@
 
 # -*- coding: utf-8 -*-
 
+from AvidaCore import cInitFile, cString
 from qt import *
 from pyOnePop_StatsView import pyOnePop_StatsView
 from pyOrgSquareCtrl import pyOrgSquareCtrl
-
+import os
 
 class pyOnePop_StatsCtrl(pyOnePop_StatsView):
 
@@ -21,6 +22,10 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
     self.connect(
       self.m_session_mdl.m_session_mdtr, PYSIGNAL("orgClickedOnSig"),
       self.updateOrgReportSlot)
+    self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("petriDishDroppedInPopViewSig"),
+      self.petriDropped)  
+    self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezerItemDoubleClickedOnInOnePopSig"),
+      self.freezerItemDoubleClickedOn)  
     self.m_clicked_cell_number = -99
 
   def setAvidaSlot(self, avida):
@@ -255,5 +260,89 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
     self.m_num_equals_clickedOrg.setText(str(num_equals_clickedOrg))
 
 
+  def petriDropped(self, e):
+    # Try to decode to the data you understand...
+    freezer_item_name = QString()
+    if ( QTextDrag.decode( e, freezer_item_name ) ) :
+      if freezer_item_name[-4:] == 'full':
+        full_petri_dir = str(freezer_item_name)
+        self.loadStats(full_petri_dir)
+      else:
+        return
+#        (os.path.splitext((os.path.split(str(freezer_item_name))[1]))[0], thawed_item,))
+
+  def loadStats(self, full_petri_dir):
+    full_petri_average_file_name = os.path.join(str(full_petri_dir), 'average.dat')
+    full_petri_count_file_name = os.path.join(str(full_petri_dir), 'count.dat')
+    full_petri_task_file_name = os.path.join(str(full_petri_dir), 'tasks.dat')
+ 
+    #check to see if the average.dat file exists, if so, read it  
+    if os.path.isfile(full_petri_average_file_name):
+      pass
+    else:
+      print "error: there is no average.dat file in the directory to load from"
+      return
+    petri_average_file_raw = open(full_petri_average_file_name,'r')
+    petri_average_file = petri_average_file_raw.readlines()
+    length = (len(petri_average_file))
+    average_last_line =  petri_average_file[length-1]
+    average_last_line_array = average_last_line.split()
+
+    #check to see if the count.dat file exists, if so, read it  
+    if os.path.isfile(full_petri_count_file_name):
+      pass
+    else:
+      print "error: there is no count.dat file in the directory to load from"
+      return
+    petri_count_file_raw = open(full_petri_count_file_name,'r')
+    petri_count_file = petri_count_file_raw.readlines()
+    length = (len(petri_count_file))
+    count_last_line =  petri_count_file[length-1]
+    count_last_line_array = count_last_line.split()
+
+    #check to see if the task.dat file exists, if so, read it  
+    if os.path.isfile(full_petri_task_file_name):
+      pass
+    else:
+      print "error: there is no task.dat file in the directory to load from"
+      return
+    petri_task_file_raw = open(full_petri_task_file_name,'r')
+    petri_task_file = petri_task_file_raw.readlines()
+    length = (len(petri_task_file))
+    task_last_line =  petri_task_file[length-1]
+    task_last_line_array = task_last_line.split()
+
+    #report the stats on the defrosted petri dish    
+    self.m_avg_fitness.setText(average_last_line_array[3])
+    self.m_num_orgs.setText(QString("%1").arg(count_last_line_array[2]))
+    self.m_avg_gest.setText(QString("%1").arg(average_last_line_array[2]))
+    self.m_avg_merit.setText(QString("%1").arg(average_last_line_array[1]))
+#    self.m_avg_age.setText(QString("%1").arg(avg_age))
+#   not setting age here because they will all come out of the freezer at age 0
+    self.m_avg_genome_length.setText(QString("%1").arg(average_last_line_array[5]))
+ 
+    #report the task counts for the defrosted dish
+    self.m_num_not.setText(task_last_line_array[1])
+    self.m_num_nand.setText(task_last_line_array[2])
+    self.m_num_and.setText(task_last_line_array[3])
+    self.m_num_ornot.setText(task_last_line_array[4])
+    self.m_num_or.setText(task_last_line_array[5])
+    self.m_num_andnot.setText(task_last_line_array[6])
+    self.m_num_nor.setText(task_last_line_array[7])
+    self.m_num_xor.setText(task_last_line_array[8])
+    self.m_num_equals.setText(task_last_line_array[9])
 
 
+#    petri_average_file.Load()    
+#    update_number = petri_average_file.GetNumLines()
+#    print "this pop at update number"
+#    print update_number
+
+#    y_array = zeros(init_file.GetNumLines(), Float)
+
+  def freezerItemDoubleClickedOn(self, freezer_item_name):
+    freezer_item_dir = os.path.split(str(freezer_item_name))[0]
+    if freezer_item_dir[-4:] == 'full':
+      self.loadStats(freezer_item_dir)
+    else:
+      return

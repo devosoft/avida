@@ -3,7 +3,7 @@ from pyEduWorkspaceCtrl import *
 from pyAvidaCoreData import *
 from pyMdtr import *
 from pySessionControllerFactory import *
-from pySessionDumbCtrl import *
+# from pySessionDumbCtrl import *
 
 from AvidaCore import cString
 
@@ -25,6 +25,21 @@ class pySessionCtrl(qt.QObject):
       for name in dirs:
         os.rmdir(os.path.join(root, name))
     os.removedirs(self.m_session_mdl.m_tempdir)
+    self.disconnect(
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"),
+      self.setAvidaSlot)
+    print "pySessionCtrl.__del__() sending setAvidaSig(None) ..."
+#    
+#    Why does the following command give error:
+#
+#   "'NoneType' object has no attribute 'm_avida_thread_mdtr'" in <bound 
+#   method pySessionCtrl.__del__ of <AvidaGui2.pySessionCtrl.pySessionCtrl 
+#   object at 0xd734d20>> ignored
+#
+#    self.m_session_mdl.m_session_mdtr.emit(
+#      PYSIGNAL("setAvidaSig"),
+#      (None,))
+
     print 'pySessionCtrl.__del__() done.'
 
   def construct(self, main_mdl):
@@ -36,13 +51,21 @@ class pySessionCtrl(qt.QObject):
     ...But I'd say it's okay for the moment, since we can't run more than one instance of Avida concurrently (yet)...
     """)
 
+    # Variables tracking the state of the session
+
+    self.sessionInitialized = False
+    self.m_should_update = False
+
     # Create "model" for storing state data.
     class pyMdl: pass
     self.m_session_mdl = pyMdl()
     self.m_session_mdl.m_current_workspace = "default.workspace"
     self.m_session_mdl.m_current_freezer = os.path.join(self.m_session_mdl.m_current_workspace, "freezer")
 
-    # Create a temporary subdirectory for general use in this session.
+    # Create a temporary subdirectory for general use in this session. Add a 
+    # subdirectory to that for output files -- these files will only get 
+    # put into named directories when frozen
+
     self.m_session_mdl.m_tempdir = tempfile.mkdtemp('','AvidaEd-pid%d-'%os.getpid())
     self.m_session_mdl.m_tempdir_out = os.path.join(self.m_session_mdl.m_tempdir, "output")
     os.mkdir(self.m_session_mdl.m_tempdir_out)
@@ -57,21 +80,96 @@ class pySessionCtrl(qt.QObject):
     # Connect various session controller creators to the controller
     # factory.
     self.m_session_controller_factory.addControllerCreator("pyEduSessionMenuBarHdlr", pyEduSessionMenuBarHdlr)
-    self.m_session_controller_factory.addControllerCreator("pySessionDumbCtrl", pySessionDumbCtrl)
+    # self.m_session_controller_factory.addControllerCreator("pySessionDumbCtrl", pySessionDumbCtrl)
     self.m_session_controller_factory.addControllerCreator("pyEduWorkspaceCtrl", pyEduWorkspaceCtrl)
 
     self.m_session_mdl.m_session_mdtr.emit(
       qt.PYSIGNAL("newSessionControllerSig"), ("pyEduSessionMenuBarHdlr",))
     
     ## XXX Temporary. Cause instantiation of a dumb gui for testing. @kgn
-    self.m_session_mdl.m_session_mdtr.emit(
-      qt.PYSIGNAL("newSessionControllerSig"), ("pySessionDumbCtrl",))
+    # self.m_session_mdl.m_session_mdtr.emit(
+    #   qt.PYSIGNAL("newSessionControllerSig"), ("pySessionDumbCtrl",))
 
     self.m_session_mdl.m_session_mdtr.emit(
       qt.PYSIGNAL("newSessionControllerSig"), ("pyEduWorkspaceCtrl",))
 
     self.connect(self.m_session_mdl.m_session_mdtr, qt.PYSIGNAL("doOrphanSessionSig"), self.doOrphanSessionSlot)
+
+    self.m_avida = None
+    self.connect(
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"),
+      self.setAvidaSlot)
+
+    self.connect(
+      self.m_session_mdl.m_session_mdtr,
+      PYSIGNAL("doStartSig"),
+      self.doStart)
+
+    self.connect(
+      self.m_session_mdl.m_session_mdtr,
+      PYSIGNAL("doPauseSig"),
+      self.doPause)
+
+    self.connect(
+      self.m_session_mdl.m_session_mdtr,
+      PYSIGNAL("fromLiveCtrlStartAvidaSig"),
+      self.doStart)
+
+    self.connect(
+      self.m_session_mdl.m_session_mdtr,
+      PYSIGNAL("fromLiveCtrlPauseAvidaSig"),
+      self.doPause)
+
+    self.doPause()
+
     return self
+
+  def setAvidaSlot(self, avida):
+    "print *** pySessionCtrl setAvidaSlot ***"
+    if (avida == None):
+      print "*** Avida = None"
+    old_avida = self.m_avida
+    self.m_avida = avida
+    if old_avida and hasattr(old_avida, "m_avida_thread_mdtr"):
+      print "pySessionCtrl.setAvidaSlot(): disconnecting old_avida ..."
+      self.disconnect(
+        old_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
+        self.avidaUpdatedSlot)
+      self.disconnect(
+        self.m_session_mdl.m_session_mdtr, PYSIGNAL("doStartAvidaSig"),
+        old_avida.m_avida_thread_mdtr, PYSIGNAL("doStartAvidaSig"))
+      self.disconnect(
+        self.m_session_mdl.m_session_mdtr, PYSIGNAL("doPauseAvidaSig"),
+        old_avida.m_avida_thread_mdtr, PYSIGNAL("doPauseAvidaSig"))
+      self.disconnect(
+        self, PYSIGNAL("doUpdateAvidaSig"),
+        old_avida.m_avida_thread_mdtr, PYSIGNAL("doUpdateAvidaSig"))
+      self.disconnect(
+        self.m_session_mdl.m_session_mdtr,
+        PYSIGNAL("fromLiveCtrlUpdateAvidaSig"),
+        old_avida.m_avida_thread_mdtr, PYSIGNAL("doUpdateAvidaSig"))
+      print "pySessionCtrl.setAvidaSlot(): deleting old_avida ..."
+      del old_avida
+    if self.m_avida and hasattr(self.m_avida, "m_avida_thread_mdtr"):
+      print "pySessionCtrl.setAvidaSlot(): connecting self.m_avida ..."
+#      self.connect(
+#        self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
+#        self.avidaUpdatedSlot)
+      self.connect(
+        self.m_session_mdl.m_session_mdtr, PYSIGNAL("doStartAvidaSig"),
+        self.m_avida.m_avida_thread_mdtr, PYSIGNAL("doStartAvidaSig"))
+      self.connect(
+        self.m_session_mdl.m_session_mdtr, PYSIGNAL("doPauseAvidaSig"),
+        self.m_avida.m_avida_thread_mdtr,  PYSIGNAL("doPauseAvidaSig"))
+      self.connect(
+        self, PYSIGNAL("doUpdateAvidaSig"),
+        self.m_avida.m_avida_thread_mdtr, PYSIGNAL("doUpdateAvidaSig"))
+      self.connect(
+        self.m_session_mdl.m_session_mdtr,
+        PYSIGNAL("fromLiveCtrlUpdateAvidaSig"),
+        self.m_avida.m_avida_thread_mdtr, PYSIGNAL("doUpdateAvidaSig"))
+
+
   def doOrphanSessionSlot(self):
     print """
     FIXME : pySessionCtrl
@@ -84,6 +182,21 @@ class pySessionCtrl(qt.QObject):
     """
     self.m_session_mdl.m_main_mdl.m_main_mdtr.m_main_controller_factory_mdtr.emit(
       qt.PYSIGNAL("deleteControllerSig"), (self,))
+
+  def doStart(self):
+    if self.sessionInitialized == False:
+      self.m_session_mdl.m_session_mdtr.emit(
+        PYSIGNAL("doInitializeAvidaPhaseISig"),
+        (self.m_session_mdl.m_tempdir,))
+      self.sessionInitialized = True
+    self.m_should_update = True
+    self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("doStartAvidaSig"), ())
+
+  def doPause(self):
+    self.m_should_update = False
+    self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("doPauseAvidaSig"), ())
+
+
   def unitTest(self, recurse = False):
     return pyUnitTestSuiteRecurser("pySessionCtrl", globals(), recurse).construct().runTest().lastResult()
 
@@ -107,7 +220,7 @@ class pyUnitTestSuite_pySessionCtrl(pyUnitTestSuite):
     self.adoptUnitTestSuite("pyEduSessionMenuBarHdlr")
     self.adoptUnitTestSuite("pyMdtr")
     self.adoptUnitTestSuite("pySessionControllerFactory")
-    self.adoptUnitTestSuite("pySessionDumbCtrl")
+    # self.adoptUnitTestSuite("pySessionDumbCtrl")
 
     class deleteChecks(pyTestCase):
       def test(self):

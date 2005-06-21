@@ -86,7 +86,8 @@ class pyOnePop_GraphCtrl(pyOnePop_GraphView):
         self.m_y_array[line_id] = line.GetWord(coly - 1).AsDouble()
 
   def modeActivatedSlot(self, index):
-    self.m_graph_ctrl.setTitle(self.m_avida_stats_interface.m_entries[index][0])
+#    self.m_graph_ctrl.setTitle(self.m_avida_stats_interface.m_entries[index][0])
+    self.m_graph_title.setText(self.m_avida_stats_interface.m_entries[index][0])
     self.m_graph_ctrl.clear()
     if index:
       self.load(

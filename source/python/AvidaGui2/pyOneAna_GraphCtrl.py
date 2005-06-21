@@ -50,6 +50,10 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
     self.m_petri_dish_dir_path = ' '
     self.m_petri_dish_dir_exists_flag = False
 
+    self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezerItemDoubleClickedOnInOneAnaSig"),
+      self.freezerItemDoubleClickedOn)  
+
+
     # set up the combo boxes with plot options
     for entry in self.m_avida_stats_interface.m_entries:
       self.m_combo_box_1.insertItem(entry[0])
@@ -101,15 +105,6 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
 
   def load(self, filename, colx, coly):
     
-    # Brian's old code, delete 
-    # init_file_name_str = os.path.join(self.m_session_mdl.m_current_freezer, str(self.m_petri_dish_dir_path) + '.full', filename)
-    # init_file = cInitFile(cString(init_file_name_str))
-    #
-    # print "loading"
-    # if not init_file.IsOpen():
-    #   print "the file you are looking for does not exist"
-    #   return
-
     init_file = cInitFile(cString(os.path.join(str(self.m_petri_dish_dir_path), filename)))
     init_file.Load()
     init_file.Compress()
@@ -151,7 +146,7 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
         print "index_1[2] is"
         print self.m_avida_stats_interface.m_entries[index_1][2]
         self.m_curve_1_arrays = self.load(
-            os.path.join(self.m_session_mdl.m_tempdir_out, self.m_avida_stats_interface.m_entries[index_1][1]),
+            self.m_avida_stats_interface.m_entries[index_1][1],
             1,
             self.m_avida_stats_interface.m_entries[index_1][2]
         )
@@ -173,7 +168,7 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
         self.m_graph_ctrl.enableYRightAxis(True)      
         self.m_graph_ctrl.setAxisAutoScale(QwtPlot.yRight)
         self.m_curve_2_arrays = self.load(
-            os.path.join(self.m_session_mdl.m_tempdir_out, self.m_avida_stats_interface.m_entries[index_2][1]),
+            self.m_avida_stats_interface.m_entries[index_2][1],
             1,
             self.m_avida_stats_interface.m_entries[index_2][2]
         )
@@ -208,6 +203,7 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
        self.m_graph_ctrl.setTitle(self.m_avida_stats_interface.m_entries[0][0])
        self.m_graph_ctrl.setAxisTitle(QwtPlot.yLeft, self.m_avida_stats_interface.m_entries[0][0])
 
+
     self.m_graph_ctrl.replot()
       
   def printGraphSlot(self):
@@ -217,10 +213,6 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
       if (QPrinter.GrayScale == printer.colorMode()):
         filter.setOptions(QwtPlotPrintFilter.PrintAll & ~QwtPlotPrintFilter.PrintCanvasBackground)
       self.m_graph_ctrl.printPlot(printer, filter)
-
-
-#  def gotIt( self, e):
-#    print "got it"
 
   def petriDropped(self, e): 
       # a check in pyOneAnalyzeCtrl.py makes sure this is a valid path
@@ -258,10 +250,11 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
       str = decode( e ) 
       if str:
         print " in if str"
-#jmc delete
-#        self.setText( str )
-#        self.setMinimumSize(self.minimumSize().expandedTo(self.sizeHint()))
-        return
 
-
+  def freezerItemDoubleClickedOn(self, freezer_item_name): 
+    # a check in pyOneAnalyzeCtrl.py makes sure this is a valid path
+    self.m_petri_dish_dir_exists_flag = True
+    self.m_petri_dish_dir_path = os.path.split(freezer_item_name)[0]
+    self.modeActivatedSlot()
+     
 

@@ -26,8 +26,9 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     self.connect(self.m_petri_dish_ctrl, PYSIGNAL("freezeDishPhaseIISig"), self.m_petri_configure_ctrl.FreezePetriSlot)
     self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"), self.setAvidaSlot)
     self.connect(self.m_petri_dish_toggle, SIGNAL("clicked()"), self.ToggleDishSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("doDefrostDishSig"), self.RenameDishSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("doDefrostDishSig"), self.MakeConfigVisiableSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("doDefrostDishSig"), self.shouldIDefrost)
+#    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("doDefrostDishSig"), self.RenameDishSlot)
+#    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("doDefrostDishSig"), self.MakeConfigVisiableSlot)
     self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("doDisablePetriDishSig"), self.SetDishDisabledSlot)
     self.connect(self.m_zoom_spinbox, SIGNAL("valueChanged(int)"), self.m_petri_dish_ctrl.zoomSlot)
     self.connect(self.m_petri_dish_ctrl, PYSIGNAL("zoomSig"), self.m_zoom_spinbox.setValue)
@@ -138,7 +139,10 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     print "*** Entered petriDropped"
     freezer_item_name = QString()
     if ( QTextDrag.decode( e, freezer_item_name ) ) :
-      if freezer_item_name[-4:] == 'full':
+      if freezer_item_name[-8:] == 'organism':
+        print "we can't yet deal with organims in the population view"
+        return
+      elif freezer_item_name[-4:] == 'full':
         freezer_item_name_temp = os.path.join(str(freezer_item_name), 'petri_dish')
       else:
         freezer_item_name_temp = str(freezer_item_name)
@@ -148,4 +152,9 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
 
       current_page = self.m_petri_dish_widget_stack.visibleWidget()
       current_page_int = self.m_petri_dish_widget_stack.id(current_page)
+      self.MakeConfigVisiableSlot()
+
+  def shouldIDefrost(self, dishName):
+    if self.isVisible():
+      self.RenameDishSlot(dishName)
       self.MakeConfigVisiableSlot()

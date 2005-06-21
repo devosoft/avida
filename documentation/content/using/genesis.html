@@ -161,6 +161,11 @@ command to produce an offspring.
         At -1, no tasks are required.  Ideally, this should be incorporated
         into the environment configuration file.  NOTE: A task can fire without
 	triggering a reaction. To add a required reaction see below.
+<tr><td valign=top><b><tt>IMMUNITY_TASK</tt></b>
+    <td>Allows user to set the ID number for a task which, if it occures, 
+	provides immunity from the required task (above) -- divide will 
+	proceede even if the required task is not done if immunity task is done. 
+	Defaults to -1, no immunity task present. 
 <tr><td valign=top><b><tt>REQUIRED_REACTION</tt></b>
     <td>Allows the user to set the ID number for a reaction that <i>must</i> 
         occur for a divide to be successful.  At -1, no reactions are required.

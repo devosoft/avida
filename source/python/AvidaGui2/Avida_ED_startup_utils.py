@@ -60,7 +60,7 @@ def AvidaEd():
     # 'avida_ed.m_edu_workspace_ctrl'
     #
     session_ctrl = edu_main_controller.m_main_controller_factory.m_main_controllers_list[1]
-    edu_main_controller.m_edu_workspace_ctrl = session_ctrl.m_session_controller_factory.m_session_controllers_list[2]
+    edu_main_controller.m_edu_workspace_ctrl = session_ctrl.m_session_controller_factory.m_session_controllers_list[1]
 
   finally:
     s_splash.clear()
