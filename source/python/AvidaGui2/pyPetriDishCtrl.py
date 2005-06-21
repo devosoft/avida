@@ -168,9 +168,9 @@ class pyPetriDishCtrl(QWidget):
 
   def extractPopulationSlot(self, send_reset_signal = False, send_quit_signal = False):
     population_dict = {}
-    for x in range(self.m_world_w):
-      for y in range(self.m_world_h):
-        if self.m_avida != None:
+    if self.m_avida != None:
+      for x in range(self.m_world_w):
+        for y in range(self.m_world_h):
           cell = self.m_avida.m_population.GetCell(x + self.m_world_w*y)
           if cell.IsOccupied() == True:
             organism = cell.GetOrganism()

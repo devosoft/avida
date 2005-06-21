@@ -116,7 +116,8 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     # Stop from filling the petri dish if the dish is disabled
 
     if self.DishDisabled:
-      return
+      self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("freezeDishPhaseISig"),())
+      # return
     self.full_petri_dict = petri_dict.dictionary
     settings_dict =  petri_dict.dictionary["SETTINGS"]
     self.AncestorComboBox.removeItem (0)
@@ -250,7 +251,7 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     # If the user is saving a full population expand the name and insert
     # the population dictionary into the temporary dictionary
 
-    if (m_pop_up_freezer_file_name.isEmpty() == False):
+    if (not m_pop_up_freezer_file_name.isEmpty()):
       os.mkdir(file_name)
 
       # Copy the average and count files from the teporary output directory
@@ -260,8 +261,8 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
       shutil.copyfile(os.path.join(self.m_session_mdl.m_tempdir_out, "count.dat"), os.path.join(file_name, "count.dat"))
       file_name = os.path.join(file_name, "petri_dish")
       tmp_dict["POPULATION"] = population_dict
-    is_empty_dish = m_pop_up_freezer_file_name.EmptyRadioButton.isChecked()
-    freezer_file = pyWriteToFreezer(tmp_dict, is_empty_dish, file_name)
+      is_empty_dish = m_pop_up_freezer_file_name.EmptyRadioButton.isChecked()
+      freezer_file = pyWriteToFreezer(tmp_dict, is_empty_dish, file_name)
     
     self.m_session_mdl.m_session_mdtr.emit(
       PYSIGNAL("doRefreshFreezerInventorySig"), ())

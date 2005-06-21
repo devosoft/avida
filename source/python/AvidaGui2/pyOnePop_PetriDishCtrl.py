@@ -22,7 +22,6 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezeDishPhaseISig"), self.m_petri_dish_ctrl.extractPopulationSlot)
     self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezeDishPhaseISig"), self.freezeDishPhaseISlot)
 
-    self.connect(self.m_petri_configure_ctrl, PYSIGNAL("freezeDishPhaseISig"), self.m_petri_dish_ctrl.extractPopulationSlot)
     self.connect(self.m_petri_dish_ctrl, PYSIGNAL("freezeDishPhaseIISig"), self.m_petri_configure_ctrl.FreezePetriSlot)
     self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"), self.setAvidaSlot)
     self.connect(self.m_petri_dish_toggle, SIGNAL("clicked()"), self.ToggleDishSlot)
