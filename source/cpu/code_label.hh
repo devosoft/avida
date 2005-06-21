@@ -35,9 +35,9 @@ private:
   int size;
   //const int base;
 public:
-  cCodeLabel();//int in_base=MAX_NOPS);
-  cCodeLabel(const cCodeLabel &in_label);
-  ~cCodeLabel();
+  cCodeLabel() : size(0) { ; }
+  cCodeLabel(const cCodeLabel& in_label) : nop_sequence(in_label.nop_sequence), size(in_label.size) { ; }  
+  ~cCodeLabel() { ; }
 
   bool OK();
   bool operator==(const cCodeLabel & other_label) const;

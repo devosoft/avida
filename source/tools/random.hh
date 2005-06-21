@@ -108,7 +108,7 @@ public:
    * @param max The upper bound for the random numbers (will never be returned).
      **/
   inline unsigned int GetUInt(const unsigned int min, const unsigned int max){
-    return GetUInt(max-min+1)+min; }
+    return GetUInt(max - min) + min; }
   
   /**
    * Generate an int out of an interval.
@@ -120,7 +120,7 @@ public:
   inline int GetInt(const int max){
     return (int)GetUInt(max); }
   inline int GetInt(const int min, const int max){
-    return ((int)GetUInt(max-min+1))+min; }
+    return ((int)GetUInt(max - min)) + min; }
   
   
   // Random Event Generation //////////////////////////////////////////////////

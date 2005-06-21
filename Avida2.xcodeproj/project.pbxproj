@@ -178,6 +178,9 @@
 		706D33280854A90D00D7DC8F /* inst_set.smt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 706D33270854A90D00D7DC8F /* inst_set.smt */; };
 		70CBFCEE0815E7FE0078D8CC /* hardware_status_printer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CBFCE80815E7FE0078D8CC /* hardware_status_printer.cc */; };
 		70CBFCF10815E8370078D8CC /* change_list.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CBFCEF0815E8370078D8CC /* change_list.cc */; };
+		70D46934085F61DA004C8409 /* trio.c in Sources */ = {isa = PBXBuildFile; fileRef = DCC3146D076253A1008F7A48 /* trio.c */; };
+		70D46935085F61DD004C8409 /* trionan.c in Sources */ = {isa = PBXBuildFile; fileRef = DCC31471076253A1008F7A48 /* trionan.c */; };
+		70D46936085F61DF004C8409 /* triostr.c in Sources */ = {isa = PBXBuildFile; fileRef = DCC31474076253A1008F7A48 /* triostr.c */; };
 		DCC3165F0762852D008F7A48 /* analyze_genotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310980762539E008F7A48 /* analyze_genotype.cc */; };
 		DCC316600762852F008F7A48 /* analyze_util.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3109A0762539E008F7A48 /* analyze_util.cc */; };
 		DCC3166107628531008F7A48 /* avida.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3109C0762539E008F7A48 /* avida.cc */; };
@@ -2870,6 +2873,9 @@
 				706D31650852475D00D7DC8F /* hardware_smt_thread.cc in Sources */,
 				706D31660852475E00D7DC8F /* hardware_smt.cc in Sources */,
 				70658C44085DE5FF00486BED /* primitive.cc in Sources */,
+				70D46934085F61DA004C8409 /* trio.c in Sources */,
+				70D46935085F61DD004C8409 /* trionan.c in Sources */,
+				70D46936085F61DF004C8409 /* triostr.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3089,12 +3095,19 @@
 		702442D80859E0B00059BD9B /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_OPTIMIZATION_LEVEL = 0;
 			};
 			name = Development;
 		};
 		702442D90859E0B00059BD9B /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_ALTIVEC_EXTENSIONS = YES;
+				GCC_AUTO_VECTORIZATION = YES;
+				GCC_DYNAMIC_NO_PIC = YES;
+				GCC_FAST_MATH = YES;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_UNROLL_LOOPS = YES;
 			};
 			name = Deployment;
 		};
