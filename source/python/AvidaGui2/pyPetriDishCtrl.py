@@ -167,6 +167,11 @@ class pyPetriDishCtrl(QWidget):
 #jmc this is where you put the AllCellsPaintedSignal      
 
   def extractPopulationSlot(self, send_reset_signal = False, send_quit_signal = False):
+
+    # If there is an active Avida object find all the cells that are occupied
+    # and place them in a dictionary.  Fire off the signal for the next freezer
+    # phase with that signal.
+
     population_dict = {}
     if self.m_avida != None:
       for x in range(self.m_world_w):
