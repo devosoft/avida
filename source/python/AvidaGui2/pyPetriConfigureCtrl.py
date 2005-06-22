@@ -247,11 +247,12 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     tmp_dict["SETTINGS"] = self.Form2Dictionary()
     m_pop_up_freezer_file_name = pyFreezeDialogCtrl()
     file_name = m_pop_up_freezer_file_name.showDialog(self.m_session_mdl.m_current_freezer)
+    file_name_len = len(file_name.rstrip())
 
     # If the user is saving a full population expand the name and insert
     # the population dictionary into the temporary dictionary
 
-    if (not m_pop_up_freezer_file_name.isEmpty()):
+    if (file_name_len > 0):
       os.mkdir(file_name)
 
       # Copy the average and count files from the teporary output directory
@@ -261,7 +262,7 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
       shutil.copyfile(os.path.join(self.m_session_mdl.m_tempdir_out, "count.dat"), os.path.join(file_name, "count.dat"))
       file_name = os.path.join(file_name, "petri_dish")
       tmp_dict["POPULATION"] = population_dict
-      is_empty_dish = m_pop_up_freezer_file_name.EmptyRadioButton.isChecked()
+      is_empty_dish = m_pop_up_freezer_file_name.isEmpty()
       freezer_file = pyWriteToFreezer(tmp_dict, is_empty_dish, file_name)
     
     self.m_session_mdl.m_session_mdtr.emit(
