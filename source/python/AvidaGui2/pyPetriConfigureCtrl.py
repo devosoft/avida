@@ -164,6 +164,7 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
        self.DeathTextLabel2.setEnabled(True)
        self.DeathTextLabel3.setEnabled(True)
        self.LifeSpanSpinBox.setEnabled(True)
+    self.m_session_mdl.saved_empty_dish = True
        
   def DisablePetriConfigureSlot(self):
 
@@ -313,10 +314,14 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
       PYSIGNAL("doRefreshFreezerInventorySig"), ())
     if send_reset_signal:
       print "sending reset signal from pyPetriConfigureCtrl:FreezePetriSlot" 
+
+    # If the send_quit_signal flag was sent to this routine kill the application
+    # (Instead of killing the application directly a signal should be sent
+    # upto the workspace moderator)
+
     if send_quit_signal:
-      print "sending quit signal from pyPetriConfigureCtrl:FreezePetriSlot"
-      self.m_session_mdl.m_session_mdtr.emit(
-        PYSIGNAL("quitAvidaPhaseIISig"), ())
+      qApp.quit()
+
 
   def doLoadPetriDishConfigFileSlot(self, genesisFileName = None):
     genesis = cGenesis()

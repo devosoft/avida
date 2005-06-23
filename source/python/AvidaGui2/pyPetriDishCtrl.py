@@ -181,7 +181,8 @@ class pyPetriDishCtrl(QWidget):
             organism = cell.GetOrganism()
             genome = organism.GetGenome()
             population_dict[cell.GetID()] = str(genome.AsString())
-    self.emit(PYSIGNAL("freezeDishPhaseIISig"), (population_dict, send_reset_signal, send_quit_signal, ))
+    self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("freezeDishPhaseIISig"), 
+      (population_dict, send_reset_signal, send_quit_signal, ))
 
   def zoomSlot(self, zoom_factor):
     if self.m_canvas_view:

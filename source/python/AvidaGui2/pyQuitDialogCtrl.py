@@ -20,7 +20,6 @@ class pyQuitDialogCtrl (pyQuitDialogView):
     self.QuitPushButton.setDown(True)
     
   def showDialog(self):
-    self.SaveToFreezerPushButton.setHidden(True)
     dialog_result = 1
     while (dialog_result > 0):
       while (self.exec_loop() and self.result() == 0):
