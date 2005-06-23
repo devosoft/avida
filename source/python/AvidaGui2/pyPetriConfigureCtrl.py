@@ -67,7 +67,6 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     self.ChangeMutationTextSlot()
     self.ChangeWorldSizeTextSlot()
     self.populated = False
-    self.run_started = False    
 
   def ChangeMutationTextSlot(self):
     slide_value = float(self.MutationSlider.value())/100.0
@@ -113,11 +112,12 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
   
   def FillDishSlot(self, dish_name, petri_dict):
     
-    # Stop from filling the petri dish if the dish is disabled
+    # If the petri dish is already filled prompt the user if they want to freeze
+    # the existing dish
 
     if self.DishDisabled:
       self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("freezeDishPhaseISig"),())
-      # return
+      return
     self.full_petri_dict = petri_dict.dictionary
     settings_dict =  petri_dict.dictionary["SETTINGS"]
     self.AncestorComboBox.removeItem (0)
@@ -165,9 +165,10 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
        self.DeathTextLabel3.setEnabled(True)
        self.LifeSpanSpinBox.setEnabled(True)
        
-
   def DisablePetriConfigureSlot(self):
-    self.run_started = False
+
+    # Turn off the controls 
+
     self.AncestorComboBox.setEnabled(False)
     self.StopAtSpinBox.setEnabled(False)
     self.StopManuallyRadioButton.setEnabled(False)
@@ -196,6 +197,40 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     self.DishDisabled = True
     self.m_session_mdl.m_session_mdtr.emit(
       PYSIGNAL("doDisablePetriDishSig"), ())
+
+  def EnablePetriConfigureSlot(self):
+
+    # Turn on the controls 
+
+    self.AncestorComboBox.setEnabled(True)
+    self.StopAtSpinBox.setEnabled(True)
+    self.StopManuallyRadioButton.setEnabled(True)
+    self.StopAtRadioButton.setEnabled(True)
+    self.WorldSizeSlider.setEnabled(True)
+    self.RandomSpinBox.setEnabled(True)
+    self.RadomGeneratedRadioButton.setEnabled(True)
+    self.RandomFixedRadioButton.setEnabled(True)
+    self.MutationSlider.setEnabled(True)
+    self.LocalBirthRadioButton.setEnabled(True)
+    self.MassActionRadioButton.setEnabled(True)
+    self.LifeSpanSpinBox.setEnabled(True)
+    self.DieNoButton.setEnabled(True)
+    self.DieYesButton.setEnabled(True)
+    self.MutationPercentTextLabel.setEnabled(True)
+    self.WorldSizeTextLabel.setEnabled(True)
+    self.MutationRateHeadTextLabel.setEnabled(True)
+    self.WorldSizeHeadTextLable.setEnabled(True)
+    self.DeathLabel.setEnabled(True)
+    self.RandomHeadTextLabel.setEnabled(True)
+    self.AncestorHeadTextLabel.setEnabled(True)
+    self.BirthHeadTextLabel.setEnabled(True)
+    self.StopHeadTextLabel.setEnabled(True)
+    self.DeathTextLabel2.setEnabled(True)
+    self.DeathTextLabel3.setEnabled(True)
+    self.DishDisabled = False
+    self.m_session_mdl.m_session_mdtr.emit(
+      PYSIGNAL("doEnablePetriDishSig"), ())
+
 
   def CreateFilesFromPetriSlot(self, out_dir = None):
 
@@ -253,17 +288,26 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     # the population dictionary into the temporary dictionary
 
     if (file_name_len > 0):
-      os.mkdir(file_name)
-
-      # Copy the average and count files from the teporary output directory
-      # to the Freezer directory
-        
-      shutil.copyfile(os.path.join(self.m_session_mdl.m_tempdir_out, "average.dat"), os.path.join(file_name, "average.dat"))
-      shutil.copyfile(os.path.join(self.m_session_mdl.m_tempdir_out, "count.dat"), os.path.join(file_name, "count.dat"))
-      file_name = os.path.join(file_name, "petri_dish")
-      tmp_dict["POPULATION"] = population_dict
       is_empty_dish = m_pop_up_freezer_file_name.isEmpty()
+      if (not is_empty_dish):
+        os.mkdir(file_name)
+
+        # Copy the average and count files from the teporary output directory
+        # to the Freezer directory
+        
+        tmp_ave_file = os.path.join(self.m_session_mdl.m_tempdir_out, "average.dat")
+        if (os.path.exists(tmp_ave_file)):
+          shutil.copyfile(tmp_ave_file, os.path.join(file_name, "average.dat"))
+        tmp_count_file = os.path.join(self.m_session_mdl.m_tempdir_out, "count.dat")
+        if (os.path.exists(tmp_count_file)):
+          shutil.copyfile(tmp_count_file, os.path.join(file_name, "count.dat"))
+        file_name = os.path.join(file_name, "petri_dish")
+        tmp_dict["POPULATION"] = population_dict
       freezer_file = pyWriteToFreezer(tmp_dict, is_empty_dish, file_name)
+      if (is_empty_dish):
+        self.m_session_mdl.saved_empty_dish = True
+      else:
+        self.m_session_mdl.saved_full_dish = True
     
     self.m_session_mdl.m_session_mdtr.emit(
       PYSIGNAL("doRefreshFreezerInventorySig"), ())

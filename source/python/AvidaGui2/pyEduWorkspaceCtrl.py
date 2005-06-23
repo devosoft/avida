@@ -274,6 +274,7 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
     self.startStatus = False
     
   def startQuitProcessSlot(self):
+    print "*** full_saved = " + str(self.m_one_population_ctrl.m_session_mdl.saved_full_dish)
     m_quit_avida_ed = pyQuitDialogCtrl()
     quit_return = m_quit_avida_ed.showDialog()
     if quit_return == m_quit_avida_ed.QuitFlag:
