@@ -15,27 +15,45 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     self.m_session_mdl = session_mdl
     self.m_avida = None
     self.dishDisabled = False
+    print "*** pyOnePop_PetriDishCtrl.py:consruct about to call m_petri_dish_ctrl.construct ***"
     self.m_petri_dish_ctrl.construct(self.m_session_mdl)
+    print "*** pyOnePop_PetriDishCtrl.py:consruct about to call m_gradient_scale_ctrl.construct ***"
     self.m_gradient_scale_ctrl.construct(self.m_session_mdl)
+    print "*** pyOnePop_PetriDishCtrl.py:consruct about to call m_live_controls_ctrl.construct ***"
     self.m_live_controls_ctrl.construct(self.m_session_mdl)
+    print "*** pyOnePop_PetriDishCtrl.py:consruct about to call m_petri_configure_ctrl.construct ***"
     self.m_petri_configure_ctrl.construct(self.m_session_mdl)
-    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezeDishPhaseISig"), self.m_petri_dish_ctrl.extractPopulationSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezeDishPhaseISig"), self.freezeDishPhaseISlot)
+    self.connect(self.m_session_mdl.m_session_mdtr,
+      PYSIGNAL("freezeDishPhaseISig"),
+      self.m_petri_dish_ctrl.extractPopulationSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("freezeDishPhaseISig"), self.freezeDishPhaseISlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("setAvidaSig"), self.setAvidaSlot)
+    self.connect(self.m_petri_dish_toggle, SIGNAL("clicked()"), 
+      self.ToggleDishSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("doDefrostDishSig"), self.shouldIDefrost)
+#    self.connect(self.m_session_mdl.m_session_mdtr, 
+#       PYSIGNAL("doDefrostDishSig"), self.RenameDishSlot)
+#    self.connect(self.m_session_mdl.m_session_mdtr, 
+#       PYSIGNAL("doDefrostDishSig"), self.MakeConfigVisiableSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, 
+       PYSIGNAL("doDisablePetriDishSig"), self.SetDishDisabledSlot)
+    self.connect(self.m_zoom_spinbox, SIGNAL("valueChanged(int)"), 
+       self.m_petri_dish_ctrl.zoomSlot)
+    self.connect(self.m_petri_dish_ctrl, PYSIGNAL("zoomSig"), 
+       self.m_zoom_spinbox.setValue)
+    self.connect(self.m_mode_combobox, SIGNAL("activated(int)"), 
+       self.modeActivatedSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("petriDishDroppedInPopViewSig"), self.petriDropped)  
 
-    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"), self.setAvidaSlot)
-    self.connect(self.m_petri_dish_toggle, SIGNAL("clicked()"), self.ToggleDishSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("doDefrostDishSig"), self.shouldIDefrost)
-#    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("doDefrostDishSig"), self.RenameDishSlot)
-#    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("doDefrostDishSig"), self.MakeConfigVisiableSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("doDisablePetriDishSig"), self.SetDishDisabledSlot)
-    self.connect(self.m_zoom_spinbox, SIGNAL("valueChanged(int)"), self.m_petri_dish_ctrl.zoomSlot)
-    self.connect(self.m_petri_dish_ctrl, PYSIGNAL("zoomSig"), self.m_zoom_spinbox.setValue)
-    self.connect(self.m_mode_combobox, SIGNAL("activated(int)"), self.modeActivatedSlot)
-    self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("petriDishDroppedInPopViewSig"),
-      self.petriDropped)  
-
+    print "*** pyOnePop_PetriDishCtrl.py:consruct about to call m_mode_combobox.clear ***"
     self.m_mode_combobox.clear()
+    print "*** pyOnePop_PetriDishCtrl.py:consruct about to call m_mode_combobox.setInsertionPolicy ***"
     self.m_mode_combobox.setInsertionPolicy(QComboBox.AtBottom)
+    print "*** pyOnePop_PetriDishCtrl.py:consruct about to call pyMapProfile ***"
     self.m_map_profile = pyMapProfile(self.m_session_mdl)
     for i in range(self.m_map_profile.getSize()):
       self.m_mode_combobox.insertItem(self.m_map_profile.getModeName(i))
@@ -44,7 +62,8 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     self.m_mode_combobox.setCurrentItem(2)
     self.m_mode_index = self.m_mode_combobox.currentItem()
     self.modeActivatedSlot(self.m_mode_index)
-    #self.m_petri_dish_ctrl.emit(PYSIGNAL("zoomSig"), (self.m_petri_dish_ctrl.m_initial_target_zoom,))
+    # self.m_petri_dish_ctrl.emit(PYSIGNAL("zoomSig"), 
+    #   (self.m_petri_dish_ctrl.m_initial_target_zoom,))
 
   def setAvidaSlot(self, avida):
     print "pyOnePop_PetriDishCtrl.setAvidaSlot() ..."
@@ -158,3 +177,39 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     if self.isVisible():
       self.RenameDishSlot(dishName)
       self.MakeConfigVisiableSlot()
+
+  def restart(self, session_mdl):
+    print "pyOnePop_PetriDishCtrl.py:restart called"
+    self.dishDisabled = False
+
+    self.m_avida.destruct()
+    self.m_petri_dish_ctrl.destruct()
+    self.m_gradient_scale_ctrl.destruct()
+    self.m_live_controls_ctrl.destruct()
+    self.m_petri_configure_ctrl.destruct()
+    self.disconnect(self.m_session_mdl.m_session_mdtr,
+      PYSIGNAL("freezeDishPhaseISig"),
+      self.m_petri_dish_ctrl.extractPopulationSlot)
+    self.disconnect(self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("freezeDishPhaseISig"), self.freezeDishPhaseISlot)
+    self.disconnect(self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("setAvidaSig"), self.setAvidaSlot)
+    self.disconnect(self.m_petri_dish_toggle, SIGNAL("clicked()"), 
+      self.ToggleDishSlot)
+    self.disconnect(self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("doDefrostDishSig"), self.shouldIDefrost)
+    self.disconnect(self.m_session_mdl.m_session_mdtr, 
+       PYSIGNAL("doDisablePetriDishSig"), self.SetDishDisabledSlot)
+    self.disconnect(self.m_zoom_spinbox, SIGNAL("valueChanged(int)"), 
+       self.m_petri_dish_ctrl.zoomSlot)
+    self.disconnect(self.m_petri_dish_ctrl, PYSIGNAL("zoomSig"), 
+       self.m_zoom_spinbox.setValue)
+    self.disconnect(self.m_mode_combobox, SIGNAL("activated(int)"), 
+       self.modeActivatedSlot)
+    self.disconnect(self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("petriDishDroppedInPopViewSig"), self.petriDropped)  
+    self.m_mode_index = None
+    self.m_session_mdl = None
+    self.m_avida = None
+    print "*** pyOnePop_PetriDishCtrl.py:restartPopulationSlot about to call se.f.construct ***"
+    self.construct(session_mdl)

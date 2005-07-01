@@ -60,3 +60,24 @@ class pyLiveControlsCtrl(pyLiveControlsView):
   def clickedStartAvidaSlot(self):
     self.m_session_mdl.m_session_mdtr.emit(
       PYSIGNAL("fromLiveCtrlStartAvidaSig"), ())
+
+  def destruct(self):
+    print "*** called pyLiveControlsCtrl.py:destruct ***"
+    self.m_avida = None
+    self.disconnect(
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"),
+      self.setAvidaSlot)
+    self.disconnect(
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("doPauseAvidaSig"),
+      self.doPauseAvidaSlot)
+    self.disconnect(
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("doStartAvidaSig"),
+      self.doStartAvidaSlot)
+    self.disconnect(
+      self.m_play_button, SIGNAL("clicked()"),
+      self.clickedStartAvidaSlot)
+    self.disconnect(
+      self.m_pause_button, SIGNAL("clicked()"),
+      self.clickedPauseAvidaSlot)
+    self.m_session_mdl = None
+

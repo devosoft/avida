@@ -52,22 +52,69 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
       self.ChangeStopSpinBoxSlot)
     self.connect(self.SavePetriPushButton, SIGNAL("clicked()"), 
       self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezeDishPhaseISig"))
-    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezeDishPhaseIISig"), 
-      self.FreezePetriSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("freezeDishPhaseIISig"), self.FreezePetriSlot)
     self.connect(self.m_session_mdl.m_session_mdtr,
       PYSIGNAL("doDefrostDishSig"), self.FillDishSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("doInitializeAvidaPhaseISig"),
-      self.DisablePetriConfigureSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("doInitializeAvidaPhaseISig"),
-      self.CreateFilesFromPetriSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"), self.setAvidaSlot)
-    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("doInitializeAvidaPhaseIISig"),
+    self.connect(self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("doInitializeAvidaPhaseISig"), self.DisablePetriConfigureSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("doInitializeAvidaPhaseISig"), self.CreateFilesFromPetriSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"), 
+      self.setAvidaSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("doInitializeAvidaPhaseIISig"),
       self.doLoadPetriDishConfigFileSlot)
-    self.connect( self, PYSIGNAL("petriDishDroppedInPopViewSig"), self.m_session_mdl.m_session_mdtr, PYSIGNAL("petriDishDroppedInPopViewSig"))
+    self.connect( self, PYSIGNAL("petriDishDroppedInPopViewSig"), 
+      self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("petriDishDroppedInPopViewSig"))
     self.ChangeMutationTextSlot()
     self.ChangeWorldSizeTextSlot()
     self.populated = False
+    
+  def destruct(self):
+    self.m_session_petri_view = None
+    self.m_avida = None
+    self.full_petri_dict = {}
+    self.DishDisabled = False
+    self.disconnect(self.MutationSlider, SIGNAL("valueChanged(int)"), 
+      self.ChangeMutationTextSlot)
+    self.disconnect(self.WorldSizeSlider, SIGNAL("valueChanged(int)"), 
+      self.ChangeWorldSizeTextSlot)
+    self.disconnect(self.DieYesButton, SIGNAL("clicked()"), 
+      self.ChangeDeathTextSlot)
+    self.disconnect(self.DieNoButton, SIGNAL("clicked()"), 
+      self.ChangeDeathTextSlot)
+    self.disconnect(self.RadomGeneratedRadioButton, SIGNAL("clicked()"), 
+      self.ChangeRandomSpinBoxSlot)
+    self.disconnect(self.RandomFixedRadioButton, SIGNAL("clicked()"), 
+      self.ChangeRandomSpinBoxSlot)
+    self.disconnect(self.StopManuallyRadioButton, SIGNAL("clicked()"), 
+      self.ChangeStopSpinBoxSlot)
+    self.disconnect(self.StopAtRadioButton, SIGNAL("clicked()"), 
+      self.ChangeStopSpinBoxSlot)
+    self.disconnect(self.SavePetriPushButton, SIGNAL("clicked()"), 
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezeDishPhaseISig"))
+    self.disconnect(self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("freezeDishPhaseIISig"), self.FreezePetriSlot)
+    self.disconnect(self.m_session_mdl.m_session_mdtr,
+      PYSIGNAL("doDefrostDishSig"), self.FillDishSlot)
+    self.disconnect(self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("doInitializeAvidaPhaseISig"), self.DisablePetriConfigureSlot)
+    self.disconnect(self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("doInitializeAvidaPhaseISig"), self.CreateFilesFromPetriSlot)
+    self.disconnect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"), 
+      self.setAvidaSlot)
+    self.disconnect(self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("doInitializeAvidaPhaseIISig"),
+      self.doLoadPetriDishConfigFileSlot)
+    self.disconnect( self, PYSIGNAL("petriDishDroppedInPopViewSig"), 
+      self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("petriDishDroppedInPopViewSig"))
+    self.populated = False
+    self.m_session_mdl = None
 
+  
   def ChangeMutationTextSlot(self):
     slide_value = float(self.MutationSlider.value())/100.0
     slide_value = pow(10,slide_value)
@@ -116,7 +163,8 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     # the existing dish
 
     if self.DishDisabled:
-      self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("freezeDishPhaseISig"),())
+      self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("freezeDishPhaseISig"),
+        (True, False, ))
       return
     self.full_petri_dict = petri_dict.dictionary
     settings_dict =  petri_dict.dictionary["SETTINGS"]
@@ -304,7 +352,7 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
           shutil.copyfile(tmp_count_file, os.path.join(file_name, "count.dat"))
         file_name = os.path.join(file_name, "petri_dish")
         tmp_dict["POPULATION"] = population_dict
-      freezer_file = pyWriteToFreezer(tmp_dict, is_empty_dish, file_name)
+      freezer_file = pyWriteToFreezer(tmp_dict, file_name)
       if (is_empty_dish):
         self.m_session_mdl.saved_empty_dish = True
       else:
@@ -314,6 +362,8 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
       PYSIGNAL("doRefreshFreezerInventorySig"), ())
     if send_reset_signal:
       print "sending reset signal from pyPetriConfigureCtrl:FreezePetriSlot" 
+      self.m_session_mdl.m_session_mdtr.emit(
+        PYSIGNAL("restartPopulationSig"), (self.m_session_mdl, ))
 
     # If the send_quit_signal flag was sent to this routine kill the application
     # (Instead of killing the application directly a signal should be sent

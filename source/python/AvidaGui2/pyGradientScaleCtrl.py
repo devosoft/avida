@@ -34,3 +34,13 @@ class pyGradientScaleCtrl(pyGradientScaleView):
 
   def avidaUpdatedSlot(self):
     pass
+
+  def destruct(self):
+    print "*** called pyGradientScaleCtrl.py:destruct ***"
+    self.m_avida = None
+    self.disconnect(
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"),
+      self.setAvidaSlot)
+    self.m_session_mdl = None
+  
+

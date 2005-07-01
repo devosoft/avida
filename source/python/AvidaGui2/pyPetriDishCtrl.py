@@ -63,6 +63,26 @@ class pyPetriDishCtrl(QWidget):
     self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("orgClickedOnSig"),
       self.setDragSlot)
 
+  def destruct(self):
+    self.m_avida = None
+    self.m_canvas = None
+    self.m_cell_info = None
+    self.m_changed_cell_items = []
+    self.m_indexer = None
+    self.m_color_lookup_functor = None
+    self.m_background_rect = None
+    self.m_change_list = None
+    self.m_org_clicked_on_item = None
+    self.m_occupied_cells_ids = []
+    self.m_petri_dish_layout = None
+    self.disconnect(self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("setAvidaSig"), self.setAvidaSlot)
+    self.disconnect(self.m_canvas_view, PYSIGNAL("orgClickedOnSig"), 
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("orgClickedOnSig"))
+    self.disconnect(self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("orgClickedOnSig"), self.updateOrgClickedOutlineCellNumberSlot)
+    self.m_canvas_view = None
+    self.m_session_mdl = None
 
   def setColorLookupFunctor(self, color_lookup_functor):
     self.m_color_lookup_functor = color_lookup_functor
@@ -143,7 +163,7 @@ class pyPetriDishCtrl(QWidget):
   def setIndexer(self, indexer):
     self.m_indexer = indexer
 
-  def updateOrgClickedOutlineCellNumberSlot(self, org_clicked_on_item):
+  def updateOrgClickedOutlineCellNumberSlot(self, org_clicked_on_item = None):
     if self.m_org_clicked_on_item:
       self.m_org_clicked_on_item.setPen(QPen(Qt.NoPen))
     self.m_org_clicked_on_item = org_clicked_on_item

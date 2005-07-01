@@ -147,31 +147,10 @@ class pyFreezerCtrl(pyFreezerView):
 #    tmp_dict["SETTINGS"] = self.Form2Dictio`nary()
     m_pop_up_organism_file_name = pyFreezeOrganismCtrl()
     file_name = m_pop_up_organism_file_name.showDialog(self.m_session_mdl.m_current_freezer)
-    print "printing file name"
-    print file_name
-    # If the user is saving a full population expand the name and insert
-    # the population dictionary into the temporary dictionary
 
-#    if (m_pop_up_freezer_file_name.isEmpty() == False):
-#      os.mkdir(file_name)
-
-      # Copy the average and count files from the teporary output directory
-      # to the Freezer directory
-        
-#      shutil.copyfile(os.path.join(self.m_session_mdl.m_tempdir_out, "average.dat"), os.path.join(file_name, "average.dat"))
-#      shutil.copyfile(os.path.join(self.m_session_mdl.m_tempdir_out, "count.dat"), os.path.join(file_name, "count.dat"))
-#      file_name = os.path.join(file_name, "petri_dish")
-#      tmp_dict["POPULATION"] = population_dict
-
-    freezer_file = pyWriteToFreezer(tmp_dict, file_name)
+    file_name_len = len(file_name.rstrip())
+    if (file_name_len > 0):
+      freezer_file = pyWriteToFreezer(tmp_dict, file_name)
     
     self.m_session_mdl.m_session_mdtr.emit(
       PYSIGNAL("doRefreshFreezerInventorySig"), ())
-#    if send_reset_signal:
-#      print "sending reset signal from pyPetriConfigureCtrl:FreezePetriSlot" 
-#    if send_quit_signal:
-#      print "sending quit signal from pyPetriConfigureCtrl:FreezePetriSlot"
-#      self.m_session_mdl.m_session_mdtr.emit(
-#        PYSIGNAL("quitAvidaPhaseIISig"), ())
-
-
