@@ -25,7 +25,7 @@ class pyOnePopulationCtrl(pyOnePopulationView):
 
   def dropEvent( self, e ):
     freezer_item_name = QString()
-    print "dropEvent"
+    print "dropEvent in one population"
     if ( QTextDrag.decode( e, freezer_item_name ) ) : #freezer_item_name is a string...the file name 
       if os.path.exists(str(freezer_item_name)) == False:
         print "that was not a valid path (1)" 

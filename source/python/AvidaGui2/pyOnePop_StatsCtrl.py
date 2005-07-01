@@ -167,11 +167,8 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
     self.m_clicked_cell_item = clicked_cell_item
     if clicked_cell_item:
       clicked_cell_num = clicked_cell_item.m_population_cell.GetID()
-#the_item.brush().color()
-#the_item.m_population_cell.GetID()
     if clicked_cell_item:
       self.m_clicked_cell_number = clicked_cell_num
-#    if clicked_cell_num is None or not self.m_avida.m_population.GetCell(int(clicked_cell_num)).IsOccupied():
     if clicked_cell_item is None or not self.m_avida.m_population.GetCell(int(clicked_cell_num)).IsOccupied():
       #PAINT the stats fields empty
       self.m_org_name.setText('empty cell')
@@ -202,6 +199,11 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
     organism = clicked_cell.GetOrganism()
     phenotype = organism.GetPhenotype()
     genotype = organism.GetGenotype()
+ 
+    # tee up drag information
+#    dragHolder = self.itemDrag( file_name, self )
+#    dragHolder = self.itemDrag( str(genotype.GetName()), self )
+#    dragHolder.dragCopy()
 
     # print info about the org clicked on 
 
@@ -346,3 +348,7 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
       self.loadStats(freezer_item_dir)
     else:
       return
+
+
+
+

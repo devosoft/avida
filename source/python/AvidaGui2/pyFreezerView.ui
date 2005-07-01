@@ -83,7 +83,7 @@
                 </font>
             </property>
             <property name="acceptDrops">
-                <bool>true</bool>
+                <bool>false</bool>
             </property>
             <property name="frameShape">
                 <enum>StyledPanel</enum>

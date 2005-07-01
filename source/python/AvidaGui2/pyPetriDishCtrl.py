@@ -8,9 +8,10 @@ self.m_avida is not None.
 """
 
 from AvidaCore import cConfig
+from AvidaCore import cInitFile, cString
 
 from math import exp
-from qt import PYSIGNAL, QBrush, QColor, QLayout, QPen, QSize, Qt, QVBoxLayout, QWidget, QWMatrix
+from qt import PYSIGNAL, QBrush, QColor, QLayout, QPen, QSize, Qt, QVBoxLayout, QWidget, QWMatrix, QTextDrag, QStoredDrag
 from qtcanvas import QCanvas, QCanvasRectangle
 from pyPetriCanvasView import pyPetriCanvasView
 from pyPopulationCellItem import pyPopulationCellItem
@@ -51,7 +52,6 @@ class pyPetriDishCtrl(QWidget):
     self.m_org_clicked_on_item = None
     self.m_occupied_cells_ids = []
 
-#    self.m_target_dish_width = 270
     self.m_target_dish_width = 350
     self.m_target_dish_scaling = 5.
     self.m_map_cell_width = 5
@@ -60,7 +60,8 @@ class pyPetriDishCtrl(QWidget):
     self.connect( self.m_canvas_view, PYSIGNAL("orgClickedOnSig"), self.m_session_mdl.m_session_mdtr, PYSIGNAL("orgClickedOnSig"))
     self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("orgClickedOnSig"),
       self.updateOrgClickedOutlineCellNumberSlot)
-
+    self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("orgClickedOnSig"),
+      self.setDragSlot)
 
 
   def setColorLookupFunctor(self, color_lookup_functor):
@@ -121,6 +122,20 @@ class pyPetriDishCtrl(QWidget):
     self.m_changed_cell_items = self.m_cell_info[:]
     self.updateCellItems(True)
 
+  def setDragSlot(self, org_clicked_on_item):
+    print "here"
+    if org_clicked_on_item:
+      clicked_cell_num = org_clicked_on_item.m_population_cell.GetID()
+      clicked_cell = self.m_avida.m_population.GetCell(int(clicked_cell_num))
+      organism = clicked_cell.GetOrganism()
+
+      # tee up drag information
+      dragHolder = self.itemDrag( ('organism.' + str(organism.GetGenome().AsString())), self )
+      dragHolder.dragCopy()
+
+
+
+
   def setRange(self, min, max):
     self.m_cs_min_value = min
     self.m_cs_value_range = max - min
@@ -143,11 +158,9 @@ class pyPetriDishCtrl(QWidget):
     self.m_indexer(cell_info_item, self.m_cs_min_value, self.m_cs_value_range)
     cell_info_item.updateColorUsingFunctor(self.m_color_lookup_functor)
 
-#JMC
     if self.m_org_clicked_on_item:
       if cell_info_item.m_population_cell.GetID == self.m_org_clicked_on_item.m_population_cell.GetID:
         cell_info_item.setPen(QPen(QColor(0,255,0)))      
-#JMC
 
   def updateCellItems(self, should_update_all = False):
     if self.m_cell_info:
@@ -197,3 +210,7 @@ class pyPetriDishCtrl(QWidget):
         m.translate(trans_h/(zoom_factor/self.m_target_dish_scaling),trans_h/(zoom_factor/self.m_target_dish_scaling))    
       self.m_canvas_view.setWorldMatrix(m)
  
+  class itemDrag(QTextDrag):
+    def __init__(self, item_name, parent=None, name=None):
+        QStoredDrag.__init__(self, 'item name (QString)', parent, name)
+        self.setText(item_name)

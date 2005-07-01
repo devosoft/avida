@@ -4,6 +4,8 @@ import os
 from qt import *
 from pyFreezerView import pyFreezerView
 from pyReadFreezer import pyReadFreezer
+from pyWriteToFreezer import pyWriteToFreezer
+from pyFreezeOrganismCtrl import pyFreezeOrganismCtrl
 import os.path
 
 class pyFreezerCtrl(pyFreezerView):
@@ -20,7 +22,6 @@ class pyFreezerCtrl(pyFreezerView):
     self.connect(self.m_list_view, 
       SIGNAL("pressed(QListViewItem*, const QPoint &, int )"),
       self.pressed_itemSlot)
-    self.setAcceptDrops(1)
 
   def construct(self, session_mdl):
     self.m_session_mdl = session_mdl
@@ -121,15 +122,56 @@ class pyFreezerCtrl(pyFreezerView):
   class itemDrag(QTextDrag):
     def __init__(self, item_name, parent=None, name=None):
         QStoredDrag.__init__(self, 'item name (QString)', parent, name)
+        print "setting up itemDrag, my parent is"
+        print parent
         self.setText(item_name)
 
-  def dropEvent( self, e ):
+  def dropEvent( self, e):
     freezer_item_name = QString()
     print "dropEvent in freezer"
+    if e.source() is self:
+      return
     if ( QTextDrag.decode( e, freezer_item_name ) ) : #freezer_item_name is a string...the file name 
-      if os.path.exists(str(freezer_item_name)) == False:
-        print "that was not a valid path (1)" 
-      else: 
-        self.emit(PYSIGNAL("petriDishDroppedInPopViewSig"), (e,))
+      print freezer_item_name
+      if freezer_item_name[:9] == 'organism.':
+        freezer_item_name = freezer_item_name[9:] 
+        self.FreezeOrganismSlot(freezer_item_name)
+      else:
+        print "that was not an organism"      
+    
+  def FreezeOrganismSlot(self, freezer_item_name, 
+      send_reset_signal = False, send_quit_signal = False):
+    print "freezer_item_name"
+    print freezer_item_name
+    tmp_dict = {1:freezer_item_name}
+#    tmp_dict["SETTINGS"] = self.Form2Dictio`nary()
+    m_pop_up_organism_file_name = pyFreezeOrganismCtrl()
+    file_name = m_pop_up_organism_file_name.showDialog(self.m_session_mdl.m_current_freezer)
+    print "printing file name"
+    print file_name
+    # If the user is saving a full population expand the name and insert
+    # the population dictionary into the temporary dictionary
+
+#    if (m_pop_up_freezer_file_name.isEmpty() == False):
+#      os.mkdir(file_name)
+
+      # Copy the average and count files from the teporary output directory
+      # to the Freezer directory
+        
+#      shutil.copyfile(os.path.join(self.m_session_mdl.m_tempdir_out, "average.dat"), os.path.join(file_name, "average.dat"))
+#      shutil.copyfile(os.path.join(self.m_session_mdl.m_tempdir_out, "count.dat"), os.path.join(file_name, "count.dat"))
+#      file_name = os.path.join(file_name, "petri_dish")
+#      tmp_dict["POPULATION"] = population_dict
+
+    freezer_file = pyWriteToFreezer(tmp_dict, file_name)
+    
+    self.m_session_mdl.m_session_mdtr.emit(
+      PYSIGNAL("doRefreshFreezerInventorySig"), ())
+#    if send_reset_signal:
+#      print "sending reset signal from pyPetriConfigureCtrl:FreezePetriSlot" 
+#    if send_quit_signal:
+#      print "sending quit signal from pyPetriConfigureCtrl:FreezePetriSlot"
+#      self.m_session_mdl.m_session_mdtr.emit(
+#        PYSIGNAL("quitAvidaPhaseIISig"), ())
 
 

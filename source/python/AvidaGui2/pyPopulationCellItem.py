@@ -11,8 +11,6 @@ class pyPopulationCellItem(QCanvasRectangle):
     return 271828
 
   def __init__(self, population_cell, x, y, w, h, canvas):
- #   x = x + 5
- #   y = y + 5
     QCanvasRectangle.__init__(self, x, y, w, h, canvas)
     self.m_population_cell = population_cell
     self.m_index = 0
