@@ -61,7 +61,7 @@ class pyLiveControlsCtrl(pyLiveControlsView):
     self.m_session_mdl.m_session_mdtr.emit(
       PYSIGNAL("fromLiveCtrlStartAvidaSig"), ())
 
-  def destruct(self):
+  def restart(self):
     print "*** called pyLiveControlsCtrl.py:destruct ***"
     self.m_avida = None
     self.disconnect(
@@ -81,3 +81,4 @@ class pyLiveControlsCtrl(pyLiveControlsView):
       self.clickedPauseAvidaSlot)
     self.m_session_mdl = None
 
+    

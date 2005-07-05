@@ -185,7 +185,7 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     self.m_avida.destruct()
     self.m_petri_dish_ctrl.destruct()
     self.m_gradient_scale_ctrl.destruct()
-    self.m_live_controls_ctrl.destruct()
+    self.m_live_controls_ctrl.restart()
     self.m_petri_configure_ctrl.destruct()
     self.disconnect(self.m_session_mdl.m_session_mdtr,
       PYSIGNAL("freezeDishPhaseISig"),
@@ -211,5 +211,6 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     self.m_mode_index = None
     self.m_session_mdl = None
     self.m_avida = None
+    self.m_update_label.setText(" ")
     print "*** pyOnePop_PetriDishCtrl.py:restartPopulationSlot about to call se.f.construct ***"
     self.construct(session_mdl)

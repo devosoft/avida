@@ -56,12 +56,14 @@ class pyPetriDishCtrl(QWidget):
     self.m_target_dish_scaling = 5.
     self.m_map_cell_width = 5
 
-    self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"), self.setAvidaSlot)
-    self.connect( self.m_canvas_view, PYSIGNAL("orgClickedOnSig"), self.m_session_mdl.m_session_mdtr, PYSIGNAL("orgClickedOnSig"))
-    self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("orgClickedOnSig"),
-      self.updateOrgClickedOutlineCellNumberSlot)
-    self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("orgClickedOnSig"),
-      self.setDragSlot)
+    self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"), 
+      self.setAvidaSlot)
+    self.connect( self.m_canvas_view, PYSIGNAL("orgClickedOnSig"), 
+      self.m_session_mdl.m_session_mdtr, PYSIGNAL("orgClickedOnSig"))
+    self.connect( self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("orgClickedOnSig"), self.updateOrgClickedOutlineCellNumberSlot)
+    self.connect( self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("orgClickedOnSig"), self.setDragSlot)
 
   def destruct(self):
     self.m_avida = None
@@ -117,7 +119,8 @@ class pyPetriDishCtrl(QWidget):
     self.emit(PYSIGNAL("zoomSig"), (self.m_initial_target_zoom,))
 
     if self.m_canvas: del self.m_canvas
-    self.m_canvas = QCanvas(self.m_map_cell_width * self.m_world_w, self.m_map_cell_width * self.m_world_h)
+    self.m_canvas = QCanvas(self.m_map_cell_width * self.m_world_w, 
+      self.m_map_cell_width * self.m_world_h)
     self.m_canvas.setBackgroundColor(Qt.darkGray)
     self.m_canvas_view.setCanvas(self.m_canvas)
 
@@ -142,8 +145,7 @@ class pyPetriDishCtrl(QWidget):
     self.m_changed_cell_items = self.m_cell_info[:]
     self.updateCellItems(True)
 
-  def setDragSlot(self, org_clicked_on_item):
-    print "here"
+  def setDragSlot(self, org_clicked_on_item = None):
     if org_clicked_on_item:
       clicked_cell_num = org_clicked_on_item.m_population_cell.GetID()
       clicked_cell = self.m_avida.m_population.GetCell(int(clicked_cell_num))
@@ -152,9 +154,6 @@ class pyPetriDishCtrl(QWidget):
       # tee up drag information
       dragHolder = self.itemDrag( ('organism.' + str(organism.GetGenome().AsString())), self )
       dragHolder.dragCopy()
-
-
-
 
   def setRange(self, min, max):
     self.m_cs_min_value = min
