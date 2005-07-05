@@ -186,7 +186,7 @@ class pyPetriDishCtrl(QWidget):
 
       self.m_avida and self.m_avida.m_avida_threaded_driver.m_lock.acquire()
       if self.m_change_list:
-        for index in range(self.m_change_list.GetChangeCount()):
+        for index in xrange(self.m_change_list.GetChangeCount()):
           self.updateCellItem(self.m_change_list[index])
         self.m_change_list.Reset()
       self.m_avida and self.m_avida.m_avida_threaded_driver.m_lock.release()

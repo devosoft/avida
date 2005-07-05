@@ -44,7 +44,7 @@
         </spacer>
         <widget class="QToolButton">
             <property name="name">
-                <cstring>toolButton23</cstring>
+                <cstring>m_rewind_btn</cstring>
             </property>
             <property name="text">
                 <string></string>
@@ -55,11 +55,11 @@
         </widget>
         <widget class="QWidgetStack">
             <property name="name">
-                <cstring>widgetStack3</cstring>
+                <cstring>m_widget_stack</cstring>
             </property>
             <widget class="QWidget">
                 <property name="name">
-                    <cstring>WStackPage</cstring>
+                    <cstring>m_play_page</cstring>
                 </property>
                 <attribute name="id">
                     <number>0</number>
@@ -76,7 +76,7 @@
                     </property>
                     <widget class="QToolButton">
                         <property name="name">
-                            <cstring>toolButton19</cstring>
+                            <cstring>m_play_btn</cstring>
                         </property>
                         <property name="text">
                             <string></string>
@@ -92,7 +92,7 @@
             </widget>
             <widget class="QWidget">
                 <property name="name">
-                    <cstring>WStackPage</cstring>
+                    <cstring>m_pause_page</cstring>
                 </property>
                 <attribute name="id">
                     <number>1</number>
@@ -109,7 +109,7 @@
                     </property>
                     <widget class="QToolButton">
                         <property name="name">
-                            <cstring>toolButton20</cstring>
+                            <cstring>m_pause_btn</cstring>
                         </property>
                         <property name="text">
                             <string></string>
@@ -126,7 +126,7 @@
         </widget>
         <widget class="QToolButton">
             <property name="name">
-                <cstring>toolButton24</cstring>
+                <cstring>m_cue_btn</cstring>
             </property>
             <property name="text">
                 <string></string>

@@ -92,7 +92,7 @@ class pyGradientScaleView(QWidget):
     #text_height = self.fontMetrics().height()
     #label_width = self.fontMetrics().width("0.00000")
   
-    for i in range(self.s_stripes):
+    for i in xrange(self.s_stripes):
       x = float(i) / float(self.s_stripes);
       p.fillRect(
         (self.s_left_margin + x*plot_width),

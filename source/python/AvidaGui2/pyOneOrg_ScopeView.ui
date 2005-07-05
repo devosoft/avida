@@ -70,7 +70,7 @@ Python:from pyAnalyzeControlsCtrl import pyAnalyzeControlsCtrl
                 </spacer>
                 <widget class="pyAnalyzeControlsCtrl">
                     <property name="name">
-                        <cstring>pyAnalyzeControlsCtrl1</cstring>
+                        <cstring>m_analyze_controls_ctrl</cstring>
                     </property>
                     <property name="sizePolicy">
                         <sizepolicy>
@@ -123,6 +123,8 @@ Python:from pyAnalyzeControlsCtrl import pyAnalyzeControlsCtrl
         <property type="3">-1</property>
         <property type="1">pyAnalyzeControlsCtrl</property>
         <property type="3">-1</property>
+        <property type="1">pyAnalyzeControlsCtrl</property>
+        <property type="0">-1</property>
         <property type="pyAnalyzeControlsCtrl"></property>
         <property type="-1">1</property>
     </customwidget>

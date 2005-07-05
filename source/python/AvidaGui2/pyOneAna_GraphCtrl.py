@@ -113,7 +113,7 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
     x_array = zeros(init_file.GetNumLines(), Float)
     y_array = zeros(init_file.GetNumLines(), Float)
 
-    for line_id in range(init_file.GetNumLines()):
+    for line_id in xrange(init_file.GetNumLines()):
       line = init_file.GetLine(line_id)
       x_array[line_id] = line.GetWord(colx - 1).AsDouble()
       y_array[line_id] = line.GetWord(coly - 1).AsDouble()

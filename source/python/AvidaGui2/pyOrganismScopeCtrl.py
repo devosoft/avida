@@ -20,14 +20,51 @@ class pyOrganismScopeCtrl(pyOrganismScopeView):
     if not name: self.setName("pyOrganismScopeCtrl")
 
   def construct(self, session_mdl):
+    print "pyOrganismScopeCtrl.construct()."
     self.m_session_mdl = session_mdl
     self.m_avida = None
+    self.setAcceptDrops(1)
     self.connect(
       self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"),
       self.setAvidaSlot)
     self.connect(
       self.m_session_mdl.m_session_mdtr, PYSIGNAL("setDebugOrganismFileSig"),
       self.setDebugOrganismFileSlot)
+
+  def dragEnterEvent( self, e ):
+    e.acceptAction(True)
+    if e.isAccepted():
+      print "pyOrganismScopeCtrl.dragEnterEvent(e): isAccepted."
+    else:
+      print "pyOrganismScopeCtrl.dragEnterEvent(e): not isAccepted."
+
+    freezer_item_name = QString()
+    if ( QTextDrag.decode( e, freezer_item_name ) ) :
+      if os.path.exists( str(freezer_item_name)) == False:
+        print "pyOrganismScopeCtrl.dragEnterEvent(e): that was not a valid path."
+      else:
+        print "pyOrganismScopeCtrl.dragEnterEvent(e): that was a valid path."
+        print "pyOrganismScopeCtrl.dragEnterEvent(e): freezer_item_name", freezer_item_name
+        if str(freezer_item_name).endswith('.organism'):
+          print "pyOrganismScopeCtrl.dragEnterEvent(e): freezer_item_name ends with .organism."
+          e.accept()
+        else:
+          print "pyOrganismScopeCtrl.dragEnterEvent(e): freezer_item_name doesn't end with .organism."
+
+  def dropEvent( self, e ):
+    freezer_item_name = QString()
+    if ( QTextDrag.decode( e, freezer_item_name ) ) :
+      if os.path.exists( str(freezer_item_name)) == False:
+        print "pyOrganismScopeCtrl.dropEvent(e): that was not a valid path."
+      else:
+        print "pyOrganismScopeCtrl.dropEvent(e): that was a valid path."
+        if str(freezer_item_name).endswith('.organism'):
+          print "pyOrganismScopeCtrl.dropEvent(e): freezer_item_name ends with .organism."
+          e.accept()
+          self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("setDebugOrganismFileSig"), (freezer_item_name,))
+        else:
+          print "pyOrganismScopeCtrl.dropEvent(e): freezer_item_name doesn't end with .organism."
+
 
   def setAvidaSlot(self, avida):
     print "pyOrganismScopeCtrl.setAvidaSlot() ..."
@@ -48,11 +85,14 @@ class pyOrganismScopeCtrl(pyOrganismScopeView):
 
       # Translate from string genome representation to actual command names.
       inst_names = {}
+      ops = {}
       inst_set = self.m_avida.m_environment.GetInstSet()
       instruction = cInstruction()
-      for id in range(inst_set.GetSize()):
+      for id in xrange(inst_set.GetSize()):
         instruction.SetOp(id)
         inst_names[instruction.GetSymbol()] = str(inst_set.GetName(instruction))
+        ops[instruction.GetSymbol()] = id
 
       self.setInstNames(inst_names)
+      self.setOps(ops)
       self.setFrames(hardware_tracer.m_hardware_trace)
