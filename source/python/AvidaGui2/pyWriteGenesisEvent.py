@@ -28,13 +28,21 @@ class pyWriteGenesisEvent:
       if settings_dict.has_key("START_CREATURE"):
         world_x = settings_dict["WORLD-X"]
         world_y = settings_dict["WORLD-Y"]
-        self.start_cell_location = int(((world_y/2) * world_x) +(world_x/2))
+        self.start_cell_location = int(((world_y/2) * world_x) + (world_x/2))
         cells_dict[str(self.start_cell_location)] = str(1)
-        tmp_inst_set = pyInstructionSet.pyInstructionSet(os.path.join(workspace_dir, "inst_set.default"))
-        org_string = tmp_inst_set.OrgFile2LetterString(os.path.join(freeze_dir, settings_dict["START_CREATURE"]))
+
+        # Read the genome from the organism file 
+
+        org_file = open(os.path.join(freeze_dir, settings_dict["START_CREATURE"]))
+        org_string = org_file.readline()
+        org_string = org_string.rstrip()
+        org_string = org_string.lstrip()
+        org_file.close
         organisms_dict[str(1)] = org_string
-    self.modifyEventFile(cells_dict, organisms_dict, os.path.join(tmp_in_dir, "events.cfg"), tmp_out_dir)
+    self.modifyEventFile(cells_dict, organisms_dict, 
+      os.path.join(tmp_in_dir, "events.cfg"), tmp_out_dir)
     
+    shutil.copyfile(os.path.join(workspace_dir, "organism.default"), os.path.join(tmp_in_dir, "organism.default"))
     shutil.copyfile(os.path.join(workspace_dir, "environment.default"), os.path.join(tmp_in_dir, "environment.cfg"))
     shutil.copyfile(os.path.join(workspace_dir, "inst_set.default"), os.path.join(tmp_in_dir, "inst_set.default"))
 

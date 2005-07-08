@@ -78,7 +78,12 @@ class pyOrganismScopeCtrl(pyOrganismScopeView):
     print "pyOrganismScopeCtrl.setDebugOrganismFileSlot"
     if self.m_avida:
       inst_set = self.m_avida.m_environment.GetInstSet()
-      genome = cGenome(cInstUtil.LoadGenome(cString(organism_filename.ascii()), inst_set) )
+      org_file = open(organism_filename.ascii())
+      org_string = org_file.readline()
+      org_string = org_string.rstrip()
+      org_string = org_string.lstrip()
+      org_file.close
+      genome = cGenome(cString(org_string))
       analyze_genotype = cAnalyzeGenotype(genome, inst_set)
       hardware_tracer = pyHardwareTracer()
       hardware_tracer.traceAnalyzeGenotype(analyze_genotype, self.m_avida.m_environment, should_use_resources = False)

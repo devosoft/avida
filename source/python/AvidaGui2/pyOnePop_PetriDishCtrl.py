@@ -48,7 +48,6 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
        self.modeActivatedSlot)
     self.connect(self.m_session_mdl.m_session_mdtr, 
       PYSIGNAL("petriDishDroppedInPopViewSig"), self.petriDropped)  
-
     print "*** pyOnePop_PetriDishCtrl.py:consruct about to call m_mode_combobox.clear ***"
     self.m_mode_combobox.clear()
     print "*** pyOnePop_PetriDishCtrl.py:consruct about to call m_mode_combobox.setInsertionPolicy ***"
