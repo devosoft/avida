@@ -59,6 +59,9 @@ class pyOrganismScopeView(QCanvasView):
     if hasattr(self, "m_instruction_items") and self.m_instruction_items is not None:
       for item in self.m_instruction_items:
         item.setCanvas(None)
+    if hasattr(self, "m_instruction_bg_items") and self.m_instruction_bg_items is not None:
+      for item in self.m_instruction_bg_items:
+        item.setCanvas(None)
     if hasattr(self, "m_ihead_move_items") and self.m_ihead_move_items is not None:
       for item in self.m_ihead_move_items:
         item.setCanvas(None)
