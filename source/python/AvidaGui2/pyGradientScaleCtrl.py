@@ -12,9 +12,13 @@ class pyGradientScaleCtrl(pyGradientScaleView):
   def construct(self, session_mdl):
     self.m_session_mdl = session_mdl
     self.m_avida = None
+    self.m_current_map_mode_name = None
     self.connect(
       self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"),
       self.setAvidaSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr,
+       PYSIGNAL("mapModeChangedSig"), self.setMapModeSlot)
+
 
   def setAvidaSlot(self, avida):
     print "pyGradientScaleCtrl.setAvidaSlot() ..."
@@ -31,6 +35,9 @@ class pyGradientScaleCtrl(pyGradientScaleView):
       self.connect(
         self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
         self.avidaUpdatedSlot)
+
+  def setMapModeSlot(self,index):
+    self.m_current_map_mode_name = index
 
   def avidaUpdatedSlot(self):
     pass

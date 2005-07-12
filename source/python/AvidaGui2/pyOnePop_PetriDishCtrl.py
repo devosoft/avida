@@ -6,6 +6,7 @@ from pyOnePop_PetriDishView import pyOnePop_PetriDishView
 import os
 from pyReadFreezer import pyReadFreezer
 
+
 class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
 
   def __init__(self,parent = None,name = None,fl = 0):
@@ -15,10 +16,19 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     self.m_session_mdl = session_mdl
     self.m_avida = None
     self.dishDisabled = False
+
     print "*** pyOnePop_PetriDishCtrl.py:consruct about to call m_petri_dish_ctrl.construct ***"
     self.m_petri_dish_ctrl.construct(self.m_session_mdl)
+
+#    self.m_petri_dish_ctrl_h_scrollBar = QScrollBar(1,300,1,20,300,Qt.Horizontal,self.m_petri_dish_ctrl)
+#    self.m_petri_dish_ctrl_v_scrollBar = QScrollBar(1,300,1,20,300,Qt.Vertical,self.m_petri_dish_ctrl)
+#    self.m_petri_dish_ctrl_h_scrollBar.setGeometry(0,371, 371,15)
+#    self.m_petri_dish_ctrl_v_scrollBar.setGeometry(371,0,15,371)
     print "*** pyOnePop_PetriDishCtrl.py:consruct about to call m_gradient_scale_ctrl.construct ***"
     self.m_gradient_scale_ctrl.construct(self.m_session_mdl)
+    print "*** pyOnePop_PetriDishView.py:consruct about to call m_gradient_scale_view.construct ***"
+    self.m_gradient_scale_view.construct(self.m_session_mdl)
+
     print "*** pyOnePop_PetriDishCtrl.py:consruct about to call m_live_controls_ctrl.construct ***"
     self.m_live_controls_ctrl.construct(self.m_session_mdl)
     print "*** pyOnePop_PetriDishCtrl.py:consruct about to call m_petri_configure_ctrl.construct ***"
@@ -56,7 +66,7 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     self.m_map_profile = pyMapProfile(self.m_session_mdl)
     for i in range(self.m_map_profile.getSize()):
       self.m_mode_combobox.insertItem(self.m_map_profile.getModeName(i))
-
+ 
     # Start with second map mode -- "Fitness".
     self.m_mode_combobox.setCurrentItem(2)
     self.m_mode_index = self.m_mode_combobox.currentItem()
@@ -105,7 +115,7 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
 
   def modeActivatedSlot(self, index):
     self.m_avida and self.m_avida.m_avida_threaded_driver.m_lock.acquire()
-
+    self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("mapModeChangedSig"), (self.m_map_profile.getModeName(index),))
     self.m_mode_index = index
     self.m_petri_dish_ctrl.setIndexer(self.m_map_profile.getIndexer(self.m_mode_index))
     self.m_petri_dish_ctrl.setColorLookupFunctor(self.m_map_profile.getColorLookup(self.m_mode_index))

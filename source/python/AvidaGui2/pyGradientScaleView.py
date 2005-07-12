@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+ # -*- coding: utf-8 -*-
 
 # Original form implementation generated from reading ui file 
 # '/Users/kaben/Projects/Software/Avida/svn/avida2/trunk/source/python/AvidaGui2/pyGradientScaleView.ui'
@@ -22,6 +22,7 @@ class pyGradientScaleView(QWidget):
   s_empty_text_width = 0
   s_off_scale_text_width = 0
   s_label_text_width = 0
+  s_map_mode_name_label_width = 100
   s_text_height = 0
 
   def __init__(self,parent = None,name = None,fl = 0):
@@ -49,6 +50,13 @@ class pyGradientScaleView(QWidget):
 
     if not name:
       setName("pyGradientScaleView")
+  
+  def construct(self, session_mdl):
+    self.m_session_mdl = session_mdl
+    self.m_avida = None
+
+
+
 
   def doubleToColor(self, x): return self.m_color_lookup and self.m_color_lookup(x) or QColor(Qt.black)
 
@@ -125,6 +133,34 @@ class pyGradientScaleView(QWidget):
       self.getLabelString(self.m_max_value)
     )
 
+# draw the number label for the midpoint
+    p.drawText(
+      #w - self.s_right_margin - label_width,
+#      w/2 - self.s_right_margin - self.s_label_text_width,
+      w/2 - self.s_label_text_width/2,
+      self.s_top_margin,
+      self.s_label_text_width,
+      self.s_text_height,
+      #label_width,
+      #text_height,
+      Qt.AlignBottom | Qt.AlignCenter,
+      self.getLabelString((self.m_max_value-self.m_min_value)/2.0)
+    )
+
+
+#  make a word label for the scale 
+    p.drawText(
+      w/2 - self.s_map_mode_name_label_width/2,
+      h - self.s_top_margin*4,            #the multiple is a hack
+      self.s_map_mode_name_label_width,
+      self.s_text_height,
+      #label_width,
+      #text_height,
+      Qt.AlignBottom | Qt.AlignCenter,
+      self.m_current_map_mode_name
+    )
+
+
       #self.s_spacing + 2 * self.fontMetrics().width("0.0e+02")
 
       #if i%self.s_step == 0:
@@ -200,6 +236,7 @@ class pyGradientScaleView(QWidget):
     self.setMinimumHeight(h)
     self.setMaximumHeight(h)
 
+
   def getLabelString(self, x):
 
     # To show numbers < 10,000 without going to sci. notation had to
@@ -209,4 +246,5 @@ class pyGradientScaleView(QWidget):
     if x >= 100:
       ix = int(x)
       x = float(ix)
-    return QString("%1").arg(x, 0, 'g', 5)
+    return QString("%1").arg(x, 0, 'g', 2)
+
