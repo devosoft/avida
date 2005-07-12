@@ -281,8 +281,16 @@ class pyOrganismScopeView(QCanvasView):
             control_radii_ratio = 0.4 + 0.5 * pow(2., -float(self.m_frames.m_ihead_moves[i][2])/25)
             #control_radii_ratio = 0.4 + 0.5 * pow(2., -float((1 + self.m_frames.m_ihead_moves[i][2]))/8)
             point_array = QPointArray(3)
-            from_circle_pt = circle_pts[self.m_frames.m_ihead_moves[ihead_move_item][0]]
-            to_circle_pt = circle_pts[self.m_frames.m_ihead_moves[ihead_move_item][1]]
+            #from_circle_pt = circle_pts[self.m_frames.m_ihead_moves[i][0]]
+            #to_circle_pt = circle_pts[self.m_frames.m_ihead_moves[i][1]]
+            if len(circle_pts) > self.m_frames.m_ihead_moves[i][0]:
+              from_circle_pt = circle_pts[self.m_frames.m_ihead_moves[i][0]]
+            else:
+              from_circle_pt = circle_pts[-1]
+            if len(circle_pts) > self.m_frames.m_ihead_moves[i][1]:
+              to_circle_pt = circle_pts[self.m_frames.m_ihead_moves[i][1]]
+            else:
+              to_circle_pt = circle_pts[-1]
             point_array[0] = QPoint(
               self.m_circle_center_x + anchor_radii_ratio * (from_circle_pt[0] - self.m_circle_center_x),
               self.m_circle_center_y + anchor_radii_ratio * (from_circle_pt[1] - self.m_circle_center_y)
@@ -310,8 +318,16 @@ class pyOrganismScopeView(QCanvasView):
             control_radii_ratio = 0.4 + 0.5 * pow(2., -float(self.m_frames.m_ihead_moves[i][2])/25)
             #control_radii_ratio = 0.4 + 0.5 * pow(2., -float((1 + self.m_frames.m_ihead_moves[i][2]))/8)
             point_array = QPointArray(3)
-            from_circle_pt = circle_pts[self.m_frames.m_ihead_moves[i][0]]
-            to_circle_pt = circle_pts[self.m_frames.m_ihead_moves[i][1]]
+            #from_circle_pt = circle_pts[self.m_frames.m_ihead_moves[i][0]]
+            #to_circle_pt = circle_pts[self.m_frames.m_ihead_moves[i][1]]
+            if len(circle_pts) > self.m_frames.m_ihead_moves[i][0]:
+              from_circle_pt = circle_pts[self.m_frames.m_ihead_moves[i][0]]
+            else:
+              from_circle_pt = circle_pts[-1]
+            if len(circle_pts) > self.m_frames.m_ihead_moves[i][1]:
+              to_circle_pt = circle_pts[self.m_frames.m_ihead_moves[i][1]]
+            else:
+              to_circle_pt = circle_pts[-1]
             point_array.setPoint(0, QPoint(
               self.m_circle_center_x + anchor_radii_ratio * (from_circle_pt[0] - self.m_circle_center_x),
               self.m_circle_center_y + anchor_radii_ratio * (from_circle_pt[1] - self.m_circle_center_y)
