@@ -5,7 +5,7 @@ from pyMapProfile import pyMapProfile
 from pyOnePop_PetriDishView import pyOnePop_PetriDishView
 import os
 from pyReadFreezer import pyReadFreezer
-#from pyGradientScaleView import pyGradientScaleView
+from pyGradientScaleView import pyGradientScaleView
 
 
 class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
