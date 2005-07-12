@@ -10,6 +10,11 @@ class pyReadFreezer:
     freezefile = open(self.file_name)
     lines = freezefile.readlines()
     freezefile.close
+    
+    # treat organism file differently (just one bare line)
+
+    if (in_file_name.endswith(".organism")):
+      pass
     for line in lines:
       comment_start = line.find("#")
       if comment_start > -1:

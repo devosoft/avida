@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from pyAvida import pyAvida
 from qt import *
 from pyOnePopulationView import pyOnePopulationView
 import os.path
@@ -47,7 +48,9 @@ class pyOnePopulationCtrl(pyOnePopulationView):
     self.m_one_pop_petri_dish_ctrl.restart(self.m_session_mdl)
     self.m_one_pop_graph_ctrl.restart()
     self.m_one_pop_stats_ctrl.restart()
-    session_mdl.m_session_mdtr.emit(PYSIGNAL("doStartAvidaSig"), ())
+    self.m_session_mdl.m_session_mdtr.emit(
+      PYSIGNAL("doInitializeAvidaPhaseIISig"), (os.path.join(self.m_session_mdl.m_tempdir, "genesis.avida"),))
+    # session_mdl.m_session_mdtr.emit(PYSIGNAL("doStartAvidaSig"), ())
 
 
 

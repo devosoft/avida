@@ -42,7 +42,6 @@ class pyWriteGenesisEvent:
     self.modifyEventFile(cells_dict, organisms_dict, 
       os.path.join(tmp_in_dir, "events.cfg"), tmp_out_dir)
     
-    shutil.copyfile(os.path.join(workspace_dir, "organism.default"), os.path.join(tmp_in_dir, "organism.default"))
     shutil.copyfile(os.path.join(workspace_dir, "environment.default"), os.path.join(tmp_in_dir, "environment.cfg"))
     shutil.copyfile(os.path.join(workspace_dir, "inst_set.default"), os.path.join(tmp_in_dir, "inst_set.default"))
 
