@@ -77,6 +77,8 @@ class pyOrganismScopeCtrl(pyOrganismScopeView):
   def setDebugOrganismFileSlot(self, organism_filename):
     print "pyOrganismScopeCtrl.setDebugOrganismFileSlot"
     if self.m_avida:
+      self.reset()
+
       inst_set = self.m_avida.m_environment.GetInstSet()
       org_file = open(organism_filename.ascii())
       org_string = org_file.readline()

@@ -117,7 +117,10 @@ class pyOrganismScopeView(QCanvasView):
       if self.m_frames.m_ihead_moves is not None:
         #self.m_ihead_move_items = [QCanvasSpline(self.m_canvas) for i in xrange(len(self.m_frames.m_ihead_moves))]
         self.m_ihead_move_items = [pyHeadPath(self.m_canvas) for i in xrange(len(self.m_frames.m_ihead_moves))]
-      self.emit(PYSIGNAL("gestationTimeChangedSig"),(self.m_frames.m_gestation_time,))
+      if self.m_frames.m_is_viable:
+        self.emit(PYSIGNAL("gestationTimeChangedSig"),(self.m_frames.m_gestation_time,))
+      else:
+        self.emit(PYSIGNAL("gestationTimeChangedSig"),(len(self.m_frames.m_genome_info),))
       self.updateCircle()
       self.showFrame(0)
 
@@ -188,6 +191,10 @@ class pyOrganismScopeView(QCanvasView):
     self.m_current_ihead_move = None
 
     circle_pts = None
+
+    if frame_number < 0:
+      print "pyOrganismScopeView.showFrame() : bad frame_number", frame_number, "reset to zero."
+      frame_number = 0
 
     if self.m_frames is not None and frame_number < self.m_frames.m_gestation_time:
       self.m_current_frame_number = frame_number
@@ -266,6 +273,8 @@ class pyOrganismScopeView(QCanvasView):
         if old_ihead_move is None:
           # Update all ihead_move_items.
           for i in xrange(self.m_current_ihead_move):
+            if len(self.m_ihead_move_items) < i:
+              print "pyOrganismScopeView.showFrame(): i", i, ", len(self.m_ihead_move_items)", len(self.m_ihead_move_items)
             ihead_move_item = self.m_ihead_move_items[self.m_current_ihead_move]
             anchor_radius = float(m_current_radius - 10)
             anchor_radii_ratio = anchor_radius / self.m_current_radius

@@ -60,6 +60,7 @@ class pyOneOrg_ScopeCtrl(pyOneOrg_ScopeView):
     self.m_execution_step_slider.emit(qt.SIGNAL("valueChanged(int)"),(execution_step,))
 
   def sliderValueChangedSlot(self, frame_number):
+    print "pyOneOrg_ScopeCtrl.sliderValueChangedSlot(", frame_number, ")."
     self.m_organism_scope_ctrl.showFrame(frame_number)
 
   def sliderMovedSlot(self, frame_number):
