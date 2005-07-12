@@ -82,9 +82,9 @@ class pyPetriDishCtrl(QWidget):
       PYSIGNAL("orgClickedOnSig"), self.updateOrgClickedOutlineCellNumberSlot)
     self.connect( self.m_session_mdl.m_session_mdtr, 
       PYSIGNAL("orgClickedOnSig"), self.setDragSlot)
-#    self.connect(self.m_petri_dish_ctrl_h_scrollBar, SIGNAL("valueChanged(int)"), self.moveCanvasHorizontallySlot)    
-#    self.connect(self.m_petri_dish_ctrl_h_scrollBar, SIGNAL("nextLine()"), self.hbarScrollNextLineSlot)    
-#    self.connect(self.m_petri_dish_ctrl_h_scrollBar, SIGNAL("prevLine()"), self.hbarScrollPrevLineSlot)    
+    self.connect(self.m_petri_dish_ctrl_h_scrollBar, SIGNAL("valueChanged(int)"), self.moveCanvasHorizontallySlot)    
+    self.connect(self.m_petri_dish_ctrl_h_scrollBar, SIGNAL("nextLine()"), self.hbarScrollNextLineSlot)    
+    self.connect(self.m_petri_dish_ctrl_h_scrollBar, SIGNAL("prevLine()"), self.hbarScrollPrevLineSlot)    
     self.connect(self.m_petri_dish_ctrl_v_scrollBar, SIGNAL("valueChanged(int)"), self.moveCanvasVerticallySlot)    
     self.connect(self.m_petri_dish_ctrl_v_scrollBar, SIGNAL("nextLine()"), self.vbarScrollNextLineSlot)    
     self.connect(self.m_petri_dish_ctrl_v_scrollBar, SIGNAL("prevLine()"), self.vbarScrollPrevLineSlot)    
