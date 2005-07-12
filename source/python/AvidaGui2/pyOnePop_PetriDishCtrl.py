@@ -5,12 +5,14 @@ from pyMapProfile import pyMapProfile
 from pyOnePop_PetriDishView import pyOnePop_PetriDishView
 import os
 from pyReadFreezer import pyReadFreezer
+#from pyGradientScaleView import pyGradientScaleView
 
 
 class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
 
   def __init__(self,parent = None,name = None,fl = 0):
     pyOnePop_PetriDishView.__init__(self,parent,name,fl)
+    self.m_gradient_scale_view = pyGradientScaleView(self,"m_gradient_scale_ctrl")
 
   def construct(self, session_mdl):
     self.m_session_mdl = session_mdl
@@ -20,10 +22,6 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     print "*** pyOnePop_PetriDishCtrl.py:consruct about to call m_petri_dish_ctrl.construct ***"
     self.m_petri_dish_ctrl.construct(self.m_session_mdl)
 
-#    self.m_petri_dish_ctrl_h_scrollBar = QScrollBar(1,300,1,20,300,Qt.Horizontal,self.m_petri_dish_ctrl)
-#    self.m_petri_dish_ctrl_v_scrollBar = QScrollBar(1,300,1,20,300,Qt.Vertical,self.m_petri_dish_ctrl)
-#    self.m_petri_dish_ctrl_h_scrollBar.setGeometry(0,371, 371,15)
-#    self.m_petri_dish_ctrl_v_scrollBar.setGeometry(371,0,15,371)
     print "*** pyOnePop_PetriDishCtrl.py:consruct about to call m_gradient_scale_ctrl.construct ***"
     self.m_gradient_scale_ctrl.construct(self.m_session_mdl)
     print "*** pyOnePop_PetriDishView.py:consruct about to call m_gradient_scale_view.construct ***"
