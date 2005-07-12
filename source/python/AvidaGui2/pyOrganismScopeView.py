@@ -65,13 +65,23 @@ class pyOrganismScopeView(QCanvasView):
     if hasattr(self, "m_ihead_move_items") and self.m_ihead_move_items is not None:
       for item in self.m_ihead_move_items:
         item.setCanvas(None)
+    if hasattr(self, "m_ihead_item") and self.m_ihead_item is not None:
+      m_ihead_item.setCanvas(None)
+    if hasattr(self, "m_rhead_item") and self.m_rhead_item is not None:
+      m_rhead_item.setCanvas(None)
+    if hasattr(self, "m_whead_item") and self.m_whead_item is not None:
+      m_whead_item.setCanvas(None)
+    if hasattr(self, "m_fhead_item") and self.m_fhead_item is not None:
+      m_fhead_item.setCanvas(None)
+
     self.m_instruction_items = None
-    self.m_task_items = None
+    self.m_instruction_bg_items = None
+    self.m_ihead_move_items = None
     self.m_ihead_item = None
     self.m_rhead_item = None
     self.m_whead_item = None
     self.m_fhead_item = None
-    self.m_ihead_move_items = None
+    self.m_task_items = None
 
     self.m_task_names = None
     self.m_inst_names = None
@@ -114,9 +124,38 @@ class pyOrganismScopeView(QCanvasView):
           item.setZ(1.)
         for item in self.m_instruction_bg_items:
           item.setZ(0.)
+      text_height = 2 * 3.14159 * self.m_max_circle_radius / self.m_max_genome_size
+      font = QFont(self.font())
+      point_size_float = self.m_font_oversize_factor * text_height * self.m_font_points_per_pixel
+      font.setPointSizeFloat(point_size_float)
+      if self.m_frames.m_ihead_info is not None:
+        self.m_ihead_item = QCanvasText(self.m_canvas)
+        self.m_ihead_item.setTextFlags(Qt.AlignCenter)
+        self.m_ihead_item.setZ(1.)
+        self.m_ihead_item.setFont(font)
+        self.m_ihead_item.setText('i')
+      if self.m_frames.m_rhead_info is not None:
+        self.m_rhead_item = QCanvasText(self.m_canvas)
+        self.m_rhead_item.setTextFlags(Qt.AlignCenter)
+        self.m_rhead_item.setZ(1.)
+        self.m_rhead_item.setFont(font)
+        self.m_rhead_item.setText('r')
+      if self.m_frames.m_whead_info is not None:
+        self.m_whead_item = QCanvasText(self.m_canvas)
+        self.m_whead_item.setTextFlags(Qt.AlignCenter)
+        self.m_whead_item.setZ(1.)
+        self.m_whead_item.setFont(font)
+        self.m_whead_item.setText('w')
+      if self.m_frames.m_fhead_info is not None:
+        self.m_fhead_item = QCanvasText(self.m_canvas)
+        self.m_fhead_item.setTextFlags(Qt.AlignCenter)
+        self.m_fhead_item.setZ(1.)
+        self.m_fhead_item.setFont(font)
+        self.m_fhead_item.setText('f')
       if self.m_frames.m_ihead_moves is not None:
         #self.m_ihead_move_items = [QCanvasSpline(self.m_canvas) for i in xrange(len(self.m_frames.m_ihead_moves))]
         self.m_ihead_move_items = [pyHeadPath(self.m_canvas) for i in xrange(len(self.m_frames.m_ihead_moves))]
+
       if self.m_frames.m_is_viable:
         self.emit(PYSIGNAL("gestationTimeChangedSig"),(self.m_frames.m_gestation_time,))
       else:
@@ -151,6 +190,7 @@ class pyOrganismScopeView(QCanvasView):
       for item in self.m_instruction_bg_items:
         item.setSize(point_size_float, point_size_float)
       self.m_circles = []
+      self.m_head_circles = []
       self.m_circle_radii = []
       for frame_no in xrange(self.m_frames.m_gestation_time):
         organism_current_size = max(self.m_frames.m_last_copy_info[frame_no] + 1, self.m_frames.m_size)
@@ -159,14 +199,19 @@ class pyOrganismScopeView(QCanvasView):
         dt = 2 * 3.14159 / (organism_current_size + 1)
         angle_offset = 3.14159 / 2
         circle_pts = []
+        head_circle_pts = []
         for i in xrange(organism_current_size):
           theta = i * dt + angle_offset
           c = math.cos(theta)
           s = -math.sin(theta)
           x = radius * c + self.m_circle_center_x
           y = radius * s + self.m_circle_center_y
+          h_x = (radius + 10) * c + self.m_circle_center_x
+          h_y = (radius + 10) * s + self.m_circle_center_y
           circle_pts.append((x,y))
+          head_circle_pts.append((h_x,h_y))
         self.m_circles.append(circle_pts)
+        self.m_head_circles.append(head_circle_pts)
         self.m_circle_radii.append(radius)
 
   def showFrame(self, frame_number = 0):
@@ -200,6 +245,7 @@ class pyOrganismScopeView(QCanvasView):
       self.m_current_frame_number = frame_number
       self.m_current_radius = self.m_circle_radii[frame_number]
       circle_pts = self.m_circles[frame_number]
+      head_circle_pts = self.m_head_circles[frame_number]
       if self.m_frames.m_genome_info is not None:
         self.m_current_genome = self.m_frames.m_genome_info[frame_number]
         if old_genome is None:
@@ -357,18 +403,37 @@ class pyOrganismScopeView(QCanvasView):
 
       if self.m_frames.m_ihead_info is not None:
         self.m_current_ihead = self.m_frames.m_ihead_info[frame_number]
-        # Update changed ihead_item.
+        if len(head_circle_pts) < self.m_current_ihead:
+          self.m_current_ihead = -1
+        self.m_ihead_item.setX(head_circle_pts[self.m_current_ihead][0])
+        self.m_ihead_item.setY(head_circle_pts[self.m_current_ihead][1])
+        self.m_ihead_item.show()
 
       if self.m_frames.m_rhead_info is not None:
         self.m_current_rhead = self.m_frames.m_rhead_info[frame_number]
+        if len(head_circle_pts) <= self.m_current_rhead:
+          self.m_current_rhead = -1
+        self.m_rhead_item.setX(head_circle_pts[self.m_current_rhead][0])
+        self.m_rhead_item.setY(head_circle_pts[self.m_current_rhead][1])
+        self.m_rhead_item.show()
         # Update changed rhead_item.
 
       if self.m_frames.m_whead_info is not None:
         self.m_current_whead = self.m_frames.m_whead_info[frame_number]
+        if len(head_circle_pts) <= self.m_current_whead:
+          self.m_current_whead = -1
+        self.m_whead_item.setX(head_circle_pts[self.m_current_whead][0])
+        self.m_whead_item.setY(head_circle_pts[self.m_current_whead][1])
+        self.m_whead_item.show()
         # Update changed whead_item.
 
       if self.m_frames.m_fhead_info is not None:
         self.m_current_fhead = self.m_frames.m_fhead_info[frame_number]
+        if len(head_circle_pts) <= self.m_current_fhead:
+          self.m_current_fhead = -1
+        self.m_fhead_item.setX(head_circle_pts[self.m_current_fhead][0])
+        self.m_fhead_item.setY(head_circle_pts[self.m_current_fhead][1])
+        self.m_fhead_item.show()
         # Update changed fhead_item.
 
     self.m_canvas.update()
