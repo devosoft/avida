@@ -200,7 +200,7 @@ class pyOrganismScopeView(QCanvasView):
         angle_offset = 3.14159 / 2
         circle_pts = []
         head_circle_pts = []
-        for i in xrange(organism_current_size):
+        for i in xrange(organism_current_size + 1):
           theta = i * dt + angle_offset
           c = math.cos(theta)
           s = -math.sin(theta)
