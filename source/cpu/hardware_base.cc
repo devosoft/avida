@@ -17,7 +17,7 @@ cHardwareBase::cHardwareBase(cOrganism * in_organism, cInstSet * in_inst_set)
   : organism(in_organism)
   , inst_set(in_inst_set)
   , viewer_lock(-1)
-  , m_tracer(NULL)
+  , trace_fp(NULL)
 {
   assert(inst_set->OK());
   assert(organism != NULL);

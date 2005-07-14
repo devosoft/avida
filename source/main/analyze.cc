@@ -52,9 +52,6 @@ extern "C" {
 
 using namespace std;
 
-
-
-
 //////////////
 //  cAnalyze
 //////////////
@@ -87,6 +84,7 @@ cAnalyze::cAnalyze(cString filename, cEnvironment *environment)
     }
     resources.push_back(make_pair(0, r));
   }
+  FillResources(0);
 
   cInitFile analyze_file(filename);
   analyze_file.Load();
@@ -95,6 +93,8 @@ cAnalyze::cAnalyze(cString filename, cEnvironment *environment)
 
   LoadCommandList(analyze_file, command_list);
   ProcessCommands(command_list);
+
+  return;
 }
 
 cAnalyze::~cAnalyze()
@@ -386,14 +386,14 @@ void cAnalyze::LoadResources(cString cur_string)
 
   cString filename = "resource.dat";
   if(words >= 1) {
-    cString filename = cur_string.PopWord();
+    filename = cur_string.PopWord();
   }
 
   cout << "Loading Resources from: " << filename << endl;
 
   // Process the resource.dat, currently assuming this is the only possible
   // input file
-  ifstream resourceFile("resource.dat", ios::in);
+  ifstream resourceFile(filename, ios::in);
   assert(resourceFile);
 
   // Read in each line of the resource file and process it
@@ -420,8 +420,9 @@ void cAnalyze::LoadResources(cString cur_string)
     // assuming a non-numeric is a comment denoting the rest of the line as
     // not informational.
     while(true) {
-      ss >> ws; ss >> x; if(!ss.good()) { ss.clear(); break; }
+      ss >> ws; ss >> x;
       tempValues.push_back(x);
+      if(!ss.good()) { ss.clear(); break; }
     }
     // Can't have no resources, so assert
     if(tempValues.empty()) { assert(0); }
@@ -437,10 +438,11 @@ void cAnalyze::LoadResources(cString cur_string)
 
 // Looks up the resource concentrations that are the closest to the
 // given update and then fill in those concentrations into the environment.
-void cAnalyze::FillResources(int update, cEnvironment &environment)
+void cAnalyze::FillResources(int update)
 {
   // There must be some resources for at least one update
-  assert(!resources.empty());
+  //assert(!resources.empty());
+  if(resources.empty()) { return; }
 
   int which = -1;
   // Assuming resource vector is sorted by update, front to back
@@ -463,17 +465,23 @@ void cAnalyze::FillResources(int update, cEnvironment &environment)
   }
   if(which < 0) { assert(0); }
 
-  cResourceLib &resLib = environment.GetResourceLib();
+  //cResourceLib &resLib = environment.GetResourceLib();
   // The resources from the file and the original resources from
   // environment.cfg must be the same size.
-  assert((unsigned int)resLib.GetSize() == resources[which].second.size());
+  //assert((unsigned int)resLib.GetSize() == resources[which].second.size());
   // Set the resource concentrations to the values for the appropriate
   // update
+  //for(unsigned int i=0; i<resources[which].second.size(); i++) {
+  //  cResource *res = resLib.GetResource(i);
+  //  assert(res);
+  //  res->SetInitial(resources[which].second[i]);
+  //}
+
+  tArray<double> temp(resources[which].second.size());
   for(unsigned int i=0; i<resources[which].second.size(); i++) {
-    cResource *res = resLib.GetResource(i);
-    assert(res);
-    res->SetInitial(resources[which].second[i]);
+    temp[i] = resources[which].second[i];
   }
+  cTestCPU::SetupResourceArray(temp);
 
   return;
 }
@@ -1126,20 +1134,15 @@ void cAnalyze::CommandTrace(cString cur_string)
       useResources = 0;
     }
   }
-  if(useResources) {
-    assert(d_environment);
-  }
 
   bool backupUsage;
-  cResourceCount originalResourceCount;
-  cEnvironment *backupEnvironment;
-  if(useResources) {
-    backupUsage = cTestCPU::UseResources();
-    originalResourceCount = cTestCPU::GetResourceCount();
-    backupEnvironment = cTestCPU::GetEnvironment();
+  tArray<double> backupResources;
 
-    cTestCPU::SetEnvironment(d_environment);
-    cTestCPU::SetupResources();
+  if(useResources) {
+    // Backup test cpu data
+    backupUsage = cTestCPU::UseResources();
+    backupResources = cTestCPU::GetResources();
+
     cTestCPU::UseResources() = true;
   }
 
@@ -1154,28 +1157,21 @@ void cAnalyze::CommandTrace(cString cur_string)
       break;
     }
 
-    // Build the hardware status printer for tracing.
-    ofstream trace_fp;
-    trace_fp.open(filename);
-    assert (trace_fp.good() == true); // Unable to open trace file.
-    cHardwareStatusPrinter trace_printer(trace_fp);
-
     // Build the test info for printing.
     cCPUTestInfo test_info;
     test_info.TestThreads();
-    test_info.SetTraceExecution(&trace_printer);
+    test_info.SetTraceExecution(filename);
 
     cTestCPU::TestGenome(test_info, genotype->GetGenome());
 
     if (verbose) cout << "  Tracing: " << filename << endl;
-    trace_fp.close();
   }
 
   if(useResources) {
-    cTestCPU::SetEnvironment(backupEnvironment);
-    cTestCPU::GetResourceCount() = originalResourceCount;
+    // Set the test cpu back to the state it was in before we messed with it
     cTestCPU::UseResources() = backupUsage;
-  }
+    cTestCPU::SetupResourceArray(backupResources);
+   }
 
   return;
 }
@@ -3281,7 +3277,7 @@ void cAnalyze::CommandRecombine(cString cur_string)
 
       assert(num_compare!=0);
       // And do the tests...
-      for (int iter=0; iter < num_compare; iter++) {
+      for (int iter=1; iter < num_compare; iter++) {
         cCPUMemory test_genome0 = genotype1->GetGenome(); 
 	cCPUMemory test_genome1 = genotype2->GetGenome(); 
 
@@ -4134,10 +4130,6 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
       useResources = 0;
     }
   }
-  // It is an error to use resources, but have no environment
-  if(useResources) {
-    assert(d_environment);
-  }
 
   // Batch frequency begins with the first organism, but then skips that 
   // amount ahead in the batch.  It defaults to 1, so that default analyzes
@@ -4153,18 +4145,13 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
   // These are used to backup the state of the environment and resource_count
   // for the test cpu, and will be reset to their original values at the end
   bool backupUsage;
-  cEnvironment *originalEnvironment;
-  cResourceCount originalResourceCount;
+  tArray<double> backupResources;
 
   if(useResources) {
     // Backup test cpu data
     backupUsage = cTestCPU::UseResources();
-    originalEnvironment = cTestCPU::GetEnvironment();
-    originalResourceCount = cTestCPU::GetResourceCount();
+    backupResources = cTestCPU::GetResources();
 
-    // Set the test cpu up with our environment and tell it to use resources
-    cTestCPU::SetEnvironment(d_environment);
-    cTestCPU::SetupResources();
     cTestCPU::UseResources() = true;
   }
 
@@ -4174,6 +4161,7 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype * genotype = NULL;
 
+  
   bool islineage = false;
   cString lineage_filename;
   ofstream lineage_fp;
@@ -4204,19 +4192,16 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
       non_lineage_fp << genotype->GetID() << " ";
     }
 
+    int updateBorn = -1;
     if(useResources) {
-      int updateBorn = genotype->GetUpdateBorn();
-
-      cEnvironment *env = cTestCPU::GetEnvironment();
-      assert(env);
-      FillResources(updateBorn, *env);
-      cTestCPU::SetupResources();
+      updateBorn = genotype->GetUpdateBorn();
+      FillResources(updateBorn);
     }
 
     // Calculate the stats for the genotype we're working with ...
     genotype->Recalculate();
+    cout << genotype->GetFitness() << endl;
     const int num_insts = inst_set.GetSize();
-
     const int max_line = genotype->GetLength();
     const cGenome & base_genome = genotype->GetGenome();
     cGenome mod_genome(base_genome);
@@ -4328,9 +4313,8 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
   if(useResources) {
     // Set the test cpu back to the state it was in before we messed with it
     cTestCPU::UseResources() = backupUsage;
-    cTestCPU::SetEnvironment(originalEnvironment);
-    cTestCPU::GetResourceCount() = originalResourceCount;
-  }
+    cTestCPU::SetupResourceArray(backupResources);
+   }
 
   return;
 }
@@ -4588,20 +4572,15 @@ void cAnalyze::BatchRecalculate(cString cur_string)
       useResources = 0;
     }
   }
-  if(useResources) {
-    assert(d_environment);
-  }
 
   bool backupUsage;
-  cResourceCount originalResourceCount;
-  cEnvironment *backupEnvironment;
-  if(useResources) {
-    backupUsage = cTestCPU::UseResources();
-    originalResourceCount = cTestCPU::GetResourceCount();
-    backupEnvironment = cTestCPU::GetEnvironment();
+  tArray<double> backupResources;
 
-    cTestCPU::SetEnvironment(d_environment);
-    cTestCPU::SetupResources();
+  if(useResources) {
+    // Backup test cpu data
+    backupUsage = cTestCPU::UseResources();
+    backupResources = cTestCPU::GetResources();
+
     cTestCPU::UseResources() = true;
   }
 
@@ -4618,8 +4597,19 @@ void cAnalyze::BatchRecalculate(cString cur_string)
   cAnalyzeGenotype * genotype = NULL;
   cAnalyzeGenotype * last_genotype = NULL;
   while ((genotype = batch_it.Next()) != NULL) {
+
+    // If use resources, load proper resource according to update_born
+    int updateBorn = -1;
+    if(useResources) {
+      updateBorn = genotype->GetUpdateBorn();
+      FillResources(updateBorn);
+    }
+
     // If the previous genotype was the parent of this one, pass in a pointer
     // to it for improved recalculate (such as distance to parent, etc.)
+    if (verbose == true) {
+      PrintTestCPUResources("");
+    }
     if (last_genotype != NULL &&
 	genotype->GetParentID() == last_genotype->GetID()) {
       genotype->Recalculate(last_genotype);
@@ -4629,10 +4619,10 @@ void cAnalyze::BatchRecalculate(cString cur_string)
   }
 
   if(useResources) {
-    cTestCPU::SetEnvironment(backupEnvironment);
-    cTestCPU::GetResourceCount() = originalResourceCount;
+    // Set the test cpu back to the state it was in before we messed with it
     cTestCPU::UseResources() = backupUsage;
-  }
+    cTestCPU::SetupResourceArray(backupResources);
+   }
 
   return;
 }
@@ -4729,8 +4719,7 @@ void cAnalyze::PrintTestCPUResources(cString cur_string)
   cout << "TestCPU is using resources: ";
   cout << cTestCPU::UseResources() << endl;
   cout << "Resources currently in TestCPU: ";
-  const cResourceCount &resources = cTestCPU::GetResourceCount();
-  const tArray<double> &quantity = resources.ReadResources();
+  const tArray<double> &quantity = cTestCPU::GetResources();
   for(int i=0; i<quantity.GetSize(); i++) {
     cout << quantity.ElementAt(i) << " ";
   }

@@ -211,7 +211,7 @@ private:
   void FunctionCreate(cString cur_string, tList<cAnalyzeCommand> & clist);
   // Looks up the resource concentrations that are the closest to the
   // given update and then fill in those concentrations into the environment.
-  void FillResources(int update, cEnvironment &environment);
+  void FillResources(int update);
 
   // Flow Control...
   void CommandForeach(cString cur_string, tList<cAnalyzeCommand> & clist);
