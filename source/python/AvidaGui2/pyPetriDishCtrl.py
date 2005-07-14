@@ -60,9 +60,7 @@ class pyPetriDishCtrl(QWidget):
     # the following settings get overridden once the scroll bars are necessary, so they are junk
     self.m_petri_dish_ctrl_h_scrollBar = QScrollBar(0,371,0,20,185,Qt.Horizontal,self.m_canvas_view)
     self.m_petri_dish_ctrl_v_scrollBar = QScrollBar(0,371,0,20,185,Qt.Vertical,self.m_canvas_view)
-    print "setting up scroll bar"
     self.m_petri_dish_ctrl_h_scrollBar.setGeometry(0,371, 371,self.m_scroll_bar_width)
-    print "done setting geo"
     self.m_petri_dish_ctrl_v_scrollBar.setGeometry(371,0,self.m_scroll_bar_width,371)
 
     self.m_petri_dish_layout.addWidget(self.m_canvas_view)
@@ -127,8 +125,7 @@ class pyPetriDishCtrl(QWidget):
     self.m_world_w = cConfig.GetWorldX()
     self.m_world_h = cConfig.GetWorldY()
     self.m_initial_target_zoom = int(self.m_target_dish_width / self.m_world_w)
-    print "self.m_map_cell_width", self.m_map_cell_width
-    
+
     self.emit(PYSIGNAL("zoomSig"), (self.m_initial_target_zoom,))
 
     if self.m_canvas: del self.m_canvas
@@ -237,11 +234,13 @@ class pyPetriDishCtrl(QWidget):
     self.m_world_matrix = QWMatrix()
     if self.m_canvas_view:
       self.m_world_matrix.scale(self.m_zoom_factor/self.m_target_dish_scaling, self.m_zoom_factor/self.m_target_dish_scaling)
-      trans_h = ((self.m_canvas_view.size().height()-self.m_scroll_bar_width) - (self.m_map_cell_width * self.m_world_h)*
+      trans_h_preadjust = ((self.m_canvas_view.size().height()-self.m_scroll_bar_width) - (self.m_map_cell_width * self.m_world_h)*
+        (self.m_zoom_factor/self.m_target_dish_scaling))/2
+      trans_w_preadjust = ((self.m_canvas_view.size().width()-self.m_scroll_bar_width) - (self.m_map_cell_width * self.m_world_w)*
         (self.m_zoom_factor/self.m_target_dish_scaling))/2
 
-      trans_h = trans_h + self.m_v_scrollbar_offset*(self.m_zoom_factor/self.m_target_dish_scaling)
-      trans_w = trans_h + self.m_h_scrollbar_offset*(self.m_zoom_factor/self.m_target_dish_scaling)
+      trans_h = trans_h_preadjust + self.m_v_scrollbar_offset*(self.m_zoom_factor/self.m_target_dish_scaling)
+      trans_w = trans_w_preadjust + self.m_h_scrollbar_offset*(self.m_zoom_factor/self.m_target_dish_scaling)
 
 
       if self.m_zoom_factor == 0:
@@ -286,12 +285,10 @@ class pyPetriDishCtrl(QWidget):
       self.m_canvas_view.setWorldMatrix(self.m_world_matrix)
 
   def moveCanvasVerticallySlot(self,vertical_value):
-    print "############################################################"
     if vertical_value < 0:
       return
   
     if self.m_setting_scrollbar_values == 1:
-      print "returning"
       return
 
     v_scroll_adjustment_needed = (vertical_value- (self.m_petri_dish_ctrl_v_scrollBar.maxValue()/2)+ self.m_v_scrollbar_offset)*-1
