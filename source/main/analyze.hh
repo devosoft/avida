@@ -167,6 +167,7 @@ private:
 
   // Lineage Analysis Commands...
   void CommandAlign(cString cur_string);
+  void AnalyzeNewInfo(cString cur_string);   
 
   // Build Input Files for Avida
   void WriteClone(cString cur_string);
@@ -182,6 +183,9 @@ private:
   void AnalyzeComplexity(cString cur_string);
   void AnalyzePopComplexity(cString cur_string);
   void AnalyzeEpistasis(cString cur_string);
+  double AnalyzeEntropy(cAnalyzeGenotype * genotype, double mut_rate);
+  double AnalyzeEntropyGivenParent(cAnalyzeGenotype * genotype, 
+				   cAnalyzeGenotype * parent, double mut_rate);
 
   // Environment Manipulation
   void EnvironmentSetup(cString cur_string);
