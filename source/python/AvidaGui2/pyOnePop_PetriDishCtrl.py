@@ -72,6 +72,7 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     # self.m_petri_dish_ctrl.emit(PYSIGNAL("zoomSig"), 
     #   (self.m_petri_dish_ctrl.m_initial_target_zoom,))
 
+
   def setAvidaSlot(self, avida):
     print "pyOnePop_PetriDishCtrl.setAvidaSlot() ..."
     old_avida = self.m_avida

@@ -1,4 +1,5 @@
 
+
 print """
 XXX fixme: in pyPetriDishCtrl.py,
 pyPetriDishCtrl.setAvidaSlot(),
@@ -56,10 +57,11 @@ class pyPetriDishCtrl(QWidget):
     self.m_canvas_view.setHScrollBarMode(QScrollView.AlwaysOff)
 
     #adding manual ones
-    self.m_scroll_bar_width = 15  # also the height if vertical
+    self.m_scroll_bar_width = 15
     # the following settings get overridden once the scroll bars are necessary, so they are junk
     self.m_petri_dish_ctrl_h_scrollBar = QScrollBar(0,371,0,20,185,Qt.Horizontal,self.m_canvas_view)
     self.m_petri_dish_ctrl_v_scrollBar = QScrollBar(0,371,0,20,185,Qt.Vertical,self.m_canvas_view)
+    # end junk settings
     self.m_petri_dish_ctrl_h_scrollBar.setGeometry(0,371, 371,self.m_scroll_bar_width)
     self.m_petri_dish_ctrl_v_scrollBar.setGeometry(371,0,self.m_scroll_bar_width,371)
 
@@ -178,7 +180,11 @@ class pyPetriDishCtrl(QWidget):
     self.m_org_clicked_on_item = org_clicked_on_item
     if self.m_org_clicked_on_item:
       self.updateCellItems(self.m_org_clicked_on_item.m_population_cell.GetID())
-
+      self.m_last_m_org_clicked_on_item = self.m_org_clicked_on_item
+    else:
+        if hasattr(self,"m_last_cell_outlined"):
+          self.m_last_cell_outlined.setPen(QPen(Qt.NoPen))
+          self.updateCellItems(self.m_last_m_org_clicked_on_item.m_population_cell.GetID())
 
   def updateCellItem(self, cell_id):
     if self.m_cell_info[cell_id] is None:
@@ -189,7 +195,8 @@ class pyPetriDishCtrl(QWidget):
 
     if self.m_org_clicked_on_item:
       if cell_info_item.m_population_cell.GetID == self.m_org_clicked_on_item.m_population_cell.GetID:
-        cell_info_item.setPen(QPen(QColor(0,255,0)))      
+        cell_info_item.setPen(QPen(QColor(0,255,0)))
+        self.m_last_cell_outlined = cell_info_item      
 
   def updateCellItems(self, should_update_all = False):
     if self.m_cell_info:
@@ -206,7 +213,6 @@ class pyPetriDishCtrl(QWidget):
           self.updateCellItem(cell_id)
 
       if self.m_canvas: self.m_canvas.update()
-#jmc this is where you put the AllCellsPaintedSignal      
 
   def extractPopulationSlot(self, send_reset_signal = False, send_quit_signal = False):
 
@@ -234,9 +240,9 @@ class pyPetriDishCtrl(QWidget):
     self.m_world_matrix = QWMatrix()
     if self.m_canvas_view:
       self.m_world_matrix.scale(self.m_zoom_factor/self.m_target_dish_scaling, self.m_zoom_factor/self.m_target_dish_scaling)
-      trans_h_preadjust = ((self.m_canvas_view.size().height()-self.m_scroll_bar_width) - (self.m_map_cell_width * self.m_world_h)*
+      trans_h_preadjust = ((self.m_canvas_view.size().height()) - (self.m_map_cell_width * self.m_world_h)*
         (self.m_zoom_factor/self.m_target_dish_scaling))/2
-      trans_w_preadjust = ((self.m_canvas_view.size().width()-self.m_scroll_bar_width) - (self.m_map_cell_width * self.m_world_w)*
+      trans_w_preadjust = ((self.m_canvas_view.size().width()) - (self.m_map_cell_width * self.m_world_w)*
         (self.m_zoom_factor/self.m_target_dish_scaling))/2
 
       trans_h = trans_h_preadjust + self.m_v_scrollbar_offset*(self.m_zoom_factor/self.m_target_dish_scaling)
