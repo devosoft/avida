@@ -84,6 +84,9 @@ private:
 		   const tArray<double> & resource_count,
 		   const double task_quality,
 		   cReactionResult & result) const;
+private:
+  // disabled copy constructor.
+  cEnvironment(const cEnvironment &);
 public:
   cEnvironment();
   // cEnvironment(const cString & filename);

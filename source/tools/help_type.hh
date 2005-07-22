@@ -28,6 +28,9 @@ private:
   tList<cHelpEntry> entry_list;
   cHelpManager * manager;
   int num_entries;
+private:
+  // disabled copy constructor.
+  cHelpType(const cHelpType &);
 public:
   cHelpType(const cString & _name, cHelpManager * _manager)
     : name(_name), manager(_manager), num_entries(0) { ; }

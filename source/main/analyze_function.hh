@@ -28,6 +28,9 @@ class cAnalyzeFunction {
 private:
   cString name;
   tList<cAnalyzeCommand> command_list;
+private:
+  // disabled copy constructor.
+  cAnalyzeFunction(const cAnalyzeFunction &);
 public:
   cAnalyzeFunction(const cString & _name) : name(_name) { ; }
   ~cAnalyzeFunction() { 

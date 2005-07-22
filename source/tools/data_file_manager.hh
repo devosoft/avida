@@ -38,6 +38,9 @@ private:
 
   cDataFile * InternalFind(const cString & name);
 
+private:
+  // disabled copy constructor.
+  cDataFileManager(const cDataFileManager &);
 public:
   cDataFileManager() { ; }
   ~cDataFileManager();

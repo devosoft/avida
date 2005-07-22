@@ -221,6 +221,9 @@ private:
   void CommandForeach(cString cur_string, tList<cAnalyzeCommand> & clist);
   void CommandForRange(cString cur_string, tList<cAnalyzeCommand> & clist);
 
+private:
+  // disabled copy constructor.
+  cAnalyze(const cAnalyze &);
 public:
   cAnalyze(cString filename, cEnvironment* = NULL);
   ~cAnalyze();

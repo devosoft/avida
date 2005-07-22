@@ -44,6 +44,9 @@ private:
 
   tArray<cOrganism *> org_array;
 
+private:
+  // disabled copy constructor.
+  cCPUTestInfo(const cCPUTestInfo &);
 public:
   cCPUTestInfo(int max_tests=TEST_CPU_GENERATIONS);
   ~cCPUTestInfo();
