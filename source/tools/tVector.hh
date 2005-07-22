@@ -138,8 +138,8 @@ public:
 
 public:
   T& operator[](int idx) {
-    assert_error( idx >= 0, "Lower Bounds Error" );
-    assert_error( idx < Size(), "Upper Bounds Error" );
+    assert( idx >= 0);
+    assert( idx < Size());
     if(idx >= 0 && idx < Size()) { // it is in range
       return _data[idx];
     }
@@ -150,8 +150,8 @@ public:
   }
 
   T operator[](int idx) const {
-    assert_error( idx >= 0, "Lower Bounds Error" );
-    assert_error( idx < Size(), "Upper Bounds Error" );
+    assert( idx >= 0);
+    assert( idx < Size());
     if(idx >= 0 && idx < Size()) {
       return _data[idx];
     }
