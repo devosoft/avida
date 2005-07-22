@@ -57,4 +57,4 @@ IF(AVD_GUI_PYQT)
   # @kgn
 ENDIF(AVD_GUI_PYQT)
 
-
+# vim: set ft=conf:

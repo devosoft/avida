@@ -246,3 +246,5 @@ ADD_PYSTE_PACKAGE("AvidaCore"
   PyAvida_Extra_Cpp_Files
   PyAvida_LinkLibraries
   /lib)
+
+# vim: set ft=conf:
