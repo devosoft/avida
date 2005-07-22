@@ -5,7 +5,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 #LINK_DIRECTORIES(${PY_BOOST_LIBRARIES})
 
 IF(APPLE)
-  SET(BOOST_PYTHON_COMPILE_FLAGS "-no-cpp-precomp -ftemplate-depth-120 -fcoalesce-templates -fno-inline -fPIC -Wno-long-double -Wno-long-long -DBOOST_PYTHON_DYNAMIC_LIB")
+  SET(BOOST_PYTHON_COMPILE_FLAGS "-no-cpp-precomp -ftemplate-depth-120 -fno-inline -fPIC -Wno-long-double -Wno-long-long -DBOOST_PYTHON_DYNAMIC_LIB")
 ELSE(APPLE)
   SET(BOOST_PYTHON_COMPILE_FLAGS "-Wall -ftemplate-depth-100  -DBOOST_PYTHON_DYNAMIC_LIB  -fno-inline -fPIC")
 ENDIF(APPLE)
@@ -200,7 +200,7 @@ MACRO(ADD_PYSTE_PACKAGE
       SET(DepList)
     ENDIF(Args)
 
-    SET_SOURCE_FILES_PROPERTIES(${CMAKE_CURRENT_BINARY_DIR}/${ModuleName}/_${PysteBase}.cpp
+    SET_SOURCE_FILES_PROPERTIES(${CMAKE_CURRENT_BINARY_DIR}/${PysteBase}.cpp
       PROPERTIES
         GENERATED TRUE
         COMPILE_FLAGS ${BOOST_PYTHON_COMPILE_FLAGS})
@@ -253,7 +253,7 @@ MACRO(ADD_PYSTE_PACKAGE
     ADD_LIBRARY(${ModuleName}/${PysteBase} MODULE ${CMAKE_CURRENT_BINARY_DIR}/${PysteBase}.cpp)
     SET_TARGET_PROPERTIES(${ModuleName}/${PysteBase} PROPERTIES PREFIX "")
     TARGET_LINK_LIBRARIES(${ModuleName}/${PysteBase} ${${LinkLibraries}})
-    INSTALL_TARGETS(${PackageLocation}/${ModuleName} $${ModuleName}/{PysteBase})
+    INSTALL_TARGETS(${PackageLocation}/${ModuleName} $${ModuleName}/${PysteBase})
     FILE(APPEND ${LIBRARY_OUTPUT_PATH}/${ModuleName}/__init__.py "from ${PysteBase} import *\n")
   ENDFOREACH(Entry ${${PysteBases}})
   #FOREACH(Entry ${${PysteBases}})
