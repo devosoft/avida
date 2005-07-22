@@ -41,6 +41,8 @@ test_module_names = [
 ]
 
 nontest_module_names = [
+  "AvidaGui2.pyQuitDialogView",
+  "AvidaGui2.pyQuitDialogCtrl",
   "AvidaGui2.pyAnalyzeControlsView",
   "AvidaGui2.pyAnalyzeControlsCtrl",
   "AvidaGui2.pyAvidaStatsInterface",
@@ -70,8 +72,6 @@ nontest_module_names = [
   "AvidaGui2.pyPetriDishView",
   "AvidaGui2.pyPetriDishCtrl",
   "AvidaGui2.pyPopulationCellItem",
-  "AvidaGui2.pyQuitDialogView",
-  "AvidaGui2.pyQuitDialogCtrl",
   "AvidaGui2.pyReadFreezer",
   "AvidaGui2.pyTimelineView",
   "AvidaGui2.pyTimelineCtrl",

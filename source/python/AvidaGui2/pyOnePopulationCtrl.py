@@ -44,13 +44,11 @@ class pyOnePopulationCtrl(pyOnePopulationView):
        (freezer_item_name,))
 
   def restartPopulationSlot(self, session_mdl):
-    print "pyOnePopulationCtrl.py:restartPopulationSlot called"
     self.m_one_pop_petri_dish_ctrl.restart(self.m_session_mdl)
     self.m_one_pop_graph_ctrl.restart()
     self.m_one_pop_stats_ctrl.restart()
-    self.m_session_mdl.m_session_mdtr.emit(
-      PYSIGNAL("doInitializeAvidaPhaseIISig"), (os.path.join(self.m_session_mdl.m_tempdir, "genesis.avida"),))
-    # session_mdl.m_session_mdtr.emit(PYSIGNAL("doStartAvidaSig"), ())
+    # self.m_session_mdl.m_session_mdtr.emit(
+    #   PYSIGNAL("doInitializeAvidaPhaseISig"), (self.m_session_mdl.m_tempdir,))
 
 
 

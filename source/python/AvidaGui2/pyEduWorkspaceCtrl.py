@@ -271,13 +271,22 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
     
   def startQuitProcessSlot(self):
 
+    # Be sure that the session is paused before quitting (to reduce confusion
+    # if the user decides to save before quiting)
+
+    self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("doPauseAvidaSig"), ())
+
+
     # Check if there unsaved petri dishes if there are ask the user if they 
     # want to save them, just quit the program or cancel the quit.  If there
     # are no unsaved populations just quit.
     # (actually only works with one population will need to expand to
     # two populations in the future)
 
-    if (not self.m_one_population_ctrl.m_session_mdl.saved_full_dish):
+    print "BDB: self.m_one_population_ctrl.m_session_mdl.saved_full_dish = " + str(self.m_one_population_ctrl.m_session_mdl.saved_full_dish)
+    print "BDB: self.m_one_population_ctrl.m_session_mdl.new_full_dish = " + str(self.m_one_population_ctrl.m_session_mdl.new_full_dish)
+    if (not self.m_one_population_ctrl.m_session_mdl.saved_full_dish and
+        not self.m_one_population_ctrl.m_session_mdl.new_full_dish):
       m_quit_avida_ed = pyQuitDialogCtrl()
       quit_return = m_quit_avida_ed.showDialog()
       if quit_return == m_quit_avida_ed.QuitFlag:

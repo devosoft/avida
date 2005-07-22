@@ -12,9 +12,11 @@ class pyOneAna_PetriDishCtrl(pyOneAna_PetriDishView):
 
   def construct(self, session_mdl):
     self.m_session_mdl = session_mdl     
-    self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezerItemDroppedInOneAnalyzeSig"),
+    self.connect( self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("freezerItemDroppedInOneAnalyzeSig"),
       self.freezerItemDropped)  
-    self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezerItemDoubleClickedOnInOneAnaSig"),
+    self.connect( self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("freezerItemDoubleClickedOnInOneAnaSig"),
       self.freezerItemDoubleClickedOn)  
 
 
@@ -26,6 +28,5 @@ class pyOneAna_PetriDishCtrl(pyOneAna_PetriDishView):
       self.m_one_ana_pop_name.setText(os.path.splitext((os.path.split(str(freezer_item_name))[1]))[0])
 
   def freezerItemDoubleClickedOn(self, freezer_item_name):
-    print freezer_item_name
     self.m_one_ana_pop_name.setText(os.path.split(os.path.splitext(os.path.split(freezer_item_name)[0])[0])[1])
 

@@ -9,12 +9,16 @@ import shutil, os, os.path
 # return the name of a file to save information to be frozen
 
 class pyQuitDialogCtrl (pyQuitDialogView):
-  def __init__(self):
+  def __init__(self, textChange = None):
     pyQuitDialogView.__init__(self)
     self.connect(self.QuitPushButton, SIGNAL("clicked()"), self.DownQuitSlot)
     self.FreezeQuitFlag = 0
     self.QuitFlag = 1
     self.CancelFlag = 2
+    if (textChange):
+      self.setCaption(textChange)
+      self.SaveToFreezerPushButton.setText("Freeze and " + textChange)
+      self.QuitPushButton.setText(textChange)
     
   def DownQuitSlot(self):
     self.QuitPushButton.setDown(True)

@@ -16,9 +16,6 @@ class pyFreezerCtrl(pyFreezerView):
     self.connect(self.m_list_view, 
       SIGNAL("doubleClicked(QListViewItem*, const QPoint &, int)"),
       self.clicked_itemSlot)
-    # self.connect(self.m_list_view, 
-    #   SIGNAL("clicked(QListViewItem*, const QPoint &, int )"),
-    #   self.clicked_itemSlot)
     self.connect(self.m_list_view, 
       SIGNAL("pressed(QListViewItem*, const QPoint &, int )"),
       self.pressed_itemSlot)
@@ -28,8 +25,6 @@ class pyFreezerCtrl(pyFreezerView):
     self.connect(self.m_session_mdl.m_session_mdtr,
       PYSIGNAL("doRefreshFreezerInventorySig"),
       self.createFreezerIndexSlot)
-    self.connect(self, PYSIGNAL("freezerItemDoubleClicked"),
-      self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezerItemDoubleClicked"))
     self.createFreezerIndexSlot()
 
 
@@ -66,7 +61,8 @@ class pyFreezerCtrl(pyFreezerView):
         tmp_item = QListViewItem(organism_item)
         tmp_item.setText(0,organism_name)
 
-# if mouse is pressed on list item prepare its info to be dragged        
+  # if mouse is pressed on list item prepare its info to be dragged        
+
   def pressed_itemSlot(self, item):
 
     if item != None and item.depth() > 0:

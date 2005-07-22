@@ -50,7 +50,8 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
     self.m_petri_dish_dir_path = ' '
     self.m_petri_dish_dir_exists_flag = False
 
-    self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezerItemDoubleClickedOnInOneAnaSig"),
+    self.connect( self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("freezerItemDoubleClickedOnInOneAnaSig"),
       self.freezerItemDoubleClickedOn)  
 
 

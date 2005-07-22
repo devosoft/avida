@@ -55,9 +55,11 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     self.connect(self.m_session_mdl.m_session_mdtr, 
       PYSIGNAL("freezeDishPhaseIISig"), self.FreezePetriSlot)
     self.connect(self.m_session_mdl.m_session_mdtr,
-      PYSIGNAL("doDefrostDishSig"), self.FillDishSlot)
+      PYSIGNAL("FillDishSig"), self.FillDishSlot)
     self.connect(self.m_session_mdl.m_session_mdtr, 
       PYSIGNAL("doInitializeAvidaPhaseISig"), self.DisablePetriConfigureSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("doEnablePetriDishSig"), self.EnablePetriConfigureSlot)
     self.connect(self.m_session_mdl.m_session_mdtr, 
       PYSIGNAL("doInitializeAvidaPhaseISig"), self.CreateFilesFromPetriSlot)
     self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"), 
@@ -98,9 +100,11 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     self.disconnect(self.m_session_mdl.m_session_mdtr, 
       PYSIGNAL("freezeDishPhaseIISig"), self.FreezePetriSlot)
     self.disconnect(self.m_session_mdl.m_session_mdtr,
-      PYSIGNAL("doDefrostDishSig"), self.FillDishSlot)
+      PYSIGNAL("FillDishSig"), self.FillDishSlot)
     self.disconnect(self.m_session_mdl.m_session_mdtr, 
       PYSIGNAL("doInitializeAvidaPhaseISig"), self.DisablePetriConfigureSlot)
+    self.disconnect(self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("doEnablePetriDishSig"), self.EnablePetriConfigureSlot)
     self.disconnect(self.m_session_mdl.m_session_mdtr, 
       PYSIGNAL("doInitializeAvidaPhaseISig"), self.CreateFilesFromPetriSlot)
     self.disconnect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"), 
@@ -159,13 +163,6 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
   
   def FillDishSlot(self, dish_name, petri_dict):
     
-    # If the petri dish is already filled prompt the user if they want to freeze
-    # the existing dish
-
-    if self.DishDisabled:
-      self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("freezeDishPhaseISig"),
-        (True, False, ))
-      return
     self.full_petri_dict = petri_dict.dictionary
     settings_dict =  petri_dict.dictionary["SETTINGS"]
     self.AncestorComboBox.removeItem (0)
@@ -212,12 +209,16 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
        self.DeathTextLabel2.setEnabled(True)
        self.DeathTextLabel3.setEnabled(True)
        self.LifeSpanSpinBox.setEnabled(True)
-    self.m_session_mdl.saved_empty_dish = True
+    self.m_session_mdl.new_empty_dish = True
+    self.m_session_mdl.m_session_mdtr.emit(
+      PYSIGNAL("finishedPetriDishSig"), ())
+
        
   def DisablePetriConfigureSlot(self):
 
     # Turn off the controls 
 
+    print "BDB: running DisablePetriConfigureSlot"
     self.AncestorComboBox.setEnabled(False)
     self.StopAtSpinBox.setEnabled(False)
     self.StopManuallyRadioButton.setEnabled(False)
@@ -250,7 +251,8 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
   def EnablePetriConfigureSlot(self):
 
     # Turn on the controls 
-
+    
+    print "BDB: running EnablePetriConfigureSlot"
     self.AncestorComboBox.setEnabled(True)
     self.StopAtSpinBox.setEnabled(True)
     self.StopManuallyRadioButton.setEnabled(True)
@@ -277,8 +279,6 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     self.DeathTextLabel2.setEnabled(True)
     self.DeathTextLabel3.setEnabled(True)
     self.DishDisabled = False
-    self.m_session_mdl.m_session_mdtr.emit(
-      PYSIGNAL("doEnablePetriDishSig"), ())
 
 
   def CreateFilesFromPetriSlot(self, out_dir = None):
