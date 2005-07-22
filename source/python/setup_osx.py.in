@@ -6,72 +6,43 @@ Usage:
 """
 
 from distutils.core import setup
-from glob import glob
-import os
 import py2app
 import site
 
-#avida_ed_python_basedir = '../../source/bindings/Boost.Python'
+# Hack :
+#
+# py2app usually ignores cvs and svn metadata directories, but we want
+# to keep svn metadata (so that our programmers can hack on Avida-ED.app
+# python code without rebuilding from the source tree, but can still
+# commit their changes). The variable to change is py2app.util.SCMDIRS,
+# which usually reads ['CVS', '.svn'].
+# 
+py2app.util.SCMDIRS=['CVS']
+
+# Tell Python where to find Avida and Avida-ED python modules and packages.
 avida_ed_python_basedir = '${CMAKE_CURRENT_SOURCE_DIR}'
 site.addsitedir(avida_ed_python_basedir)
 site.addsitedir('${LIBRARY_OUTPUT_PATH}')
 
-# make a list of subversion metadata files in AvidaGui2/.svn
-svn_source_dir = avida_ed_python_basedir + '/AvidaGui2/.svn'
-svn_target_dir = '../Resources/Python/site-packages/AvidaGui2/.svn'
-svn_metadata_subdirs = [
-  'prop-base',
-  'props',
-  'text-base',
-  'wcprops',
-  'tmp/prop-base',
-  'tmp/props',
-  'tmp/text-base',
-  'tmp/wcprops',
-]
-
-for svn_subdir in svn_metadata_subdirs:
-  f = open(svn_source_dir + '/' + svn_subdir + '/empty-file', 'w')
-  f.close()
-
-svn_metadata_files = [
-  ( svn_target_dir + '/' + svn_subdir, glob(svn_source_dir + '/' + svn_subdir + '/*')) for svn_subdir in svn_metadata_subdirs
-] + [
-  (svn_target_dir, [ svn_source_dir + '/' + svn_file for svn_file in ['empty-file', 'entries', 'format', 'README.txt']]),
-]
-
 setup(  
+  # Python startup script
   app=['Avida-ED.py'],
+  # Options for distutils
   options = dict(
+    # Options for py2app
     py2app = dict(
+      # Python modules to copy :
       includes = ['iqt', 'qt', 'qwt', 'readline', 'unittest', 'IPython', 'AvidaGui2', 'AvidaCore'],
+      # Python packages to copy :
       packages = ['IPython', 'AvidaGui2'],
+      # Subdirectory in which Avi :da-ED.app should be assembled
       dist_dir = '${EXECUTABLE_OUTPUT_PATH}',
+      # Extra files and folders to  :copy into Resources subdirectory
+      resources = ['${CMAKE_CURRENT_SOURCE_DIR}/AvidaGui2/avidalogo.png', '${CMAKE_CURRENT_SOURCE_DIR}/default.workspace'],
+      # Strip symbols from libraries.
       strip = True,
+      # Generate a file named Avida-ED.dot containing dependency graphs.
+      graph = True,
     )
   ),
-  data_files=[
-    ('../Resources',
-      [ '${CMAKE_CURRENT_SOURCE_DIR}/AvidaGui2/avidalogo.png' ]
-      #+
-      ## Avida configuration files
-      ## FIXME # these only temporarily live in Resources, until we make
-      ## a file-open dialog.
-      ## @kgn
-      #[
-      #  '${PROJECT_SOURCE_DIR}/source/support/' + configuration_file
-      #  for configuration_file in ['genesis', 'environment.cfg',
-      #  'events.cfg', 'inst_set.default', 'organism.default']
-      #]
-    ),
-  ]
-  # subversion metadata files
-  + svn_metadata_files,
 )
-
-#print """
-#FIXME:
-#Remember to reenable symbol stripping by commenting-out the option "strip = False"
-#at line 51 of source/python/setup_osx.py.in.
-#@kgn
-#"""
