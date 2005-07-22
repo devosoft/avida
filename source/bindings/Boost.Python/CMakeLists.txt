@@ -30,11 +30,11 @@ ENDFOREACH(PY_TEST_SUITE)
 #
 # kaben-brainstorms.
 #
-SET(libkaben_brainstorms_SOURCES kaben_brainstorms.cc)
-SET_SOURCE_FILES_PROPERTIES(${libkaben_brainstorms_SOURCES} PROPERTIES COMPILE_FLAGS ${BOOST_PYTHON_COMPILE_FLAGS})
-ADD_LIBRARY(kaben_brainstorms MODULE ${libkaben_brainstorms_SOURCES})
-SET_TARGET_PROPERTIES(kaben_brainstorms PROPERTIES PREFIX "")
-TARGET_LINK_LIBRARIES(kaben_brainstorms main cpu event main tools ${BOOST_LIBRARY} ${PYTHON_LIBRARY})
+#SET(libkaben_brainstorms_SOURCES kaben_brainstorms.cc)
+#SET_SOURCE_FILES_PROPERTIES(${libkaben_brainstorms_SOURCES} PROPERTIES COMPILE_FLAGS ${BOOST_PYTHON_COMPILE_FLAGS})
+#ADD_LIBRARY(kaben_brainstorms MODULE ${libkaben_brainstorms_SOURCES})
+#SET_TARGET_PROPERTIES(kaben_brainstorms PROPERTIES PREFIX "")
+#TARGET_LINK_LIBRARIES(kaben_brainstorms main cpu event main tools ${BOOST_LIBRARY} ${PYTHON_LIBRARY})
 
 
 #
