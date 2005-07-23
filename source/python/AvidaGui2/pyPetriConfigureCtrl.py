@@ -218,7 +218,6 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
 
     # Turn off the controls 
 
-    print "BDB: running DisablePetriConfigureSlot"
     self.AncestorComboBox.setEnabled(False)
     self.StopAtSpinBox.setEnabled(False)
     self.StopManuallyRadioButton.setEnabled(False)
@@ -252,7 +251,6 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
 
     # Turn on the controls 
     
-    print "BDB: running EnablePetriConfigureSlot"
     self.AncestorComboBox.setEnabled(True)
     self.StopAtSpinBox.setEnabled(True)
     self.StopManuallyRadioButton.setEnabled(True)
