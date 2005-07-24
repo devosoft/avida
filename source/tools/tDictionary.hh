@@ -5,6 +5,29 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
+/*
+ * This template is used to look up objects of the desired type by name.
+ * I is implemented through use of a linked list and a hash table.  The linked
+ * list contains all of the individual entries stored in the dictionary (in an
+ * arbitrary order).  The hash table points to the first entry in the list
+ * that fits in its cell.  If there are no entries that fit in the cell, the
+ * has table contains a NULL pointer at that location.
+ *
+ * On INSERT: If a cell already has at least one entry in it, the new entry
+ * gets inserted into the linked list before the existing entry.  If the cell
+ * is currently empty, the new entry gets placed at the end of the linked
+ * list.  In either case, the cell is updated to point at the new entry.
+ *
+ * On DELETE: Start looking at the position in the list where the cell is
+ * pointing and continue until the entry-to-be-deleted is found.  If the
+ * entry to be deleted is the one being pointed at, be sure to update the
+ * cell.
+ *
+ * On LOOKUP: If the cell has a NULL pointer, lookup fails.  Otherwise search
+ * through list until either correct entry is found (lookup succeeds) or else
+ * the lookup finds an entry not in the current cell (lookup fails).
+ */
+
 #ifndef TDICTIONARY_HH
 #define TDICTIONARY_HH
 
@@ -13,6 +36,9 @@
 #endif
 #ifndef STRING_UTIL_HH
 #include "string_util.hh"
+#endif
+#ifndef TARRAY_HH
+#include "tArray.hh"
 #endif
 #ifndef TLIST_HH
 #include "tList.hh"
@@ -29,49 +55,125 @@ template <class T> class tListIterator; // aggregate
 
 template <class T> class tDictionary {
 
+  // We create a structure with full information about each entry stored in
+  // this dictionary.
   template <class U> struct tDictEntry {
     cString name;
+    int id;
     U data;
   };
 
 private:
-  int size;
-  int hash_size;
-  tList< tDictEntry<T> > * hash_table;
+  int dict_size;  // How many entries are we storing?
+  int hash_size;  // What size hash table are we using?
+
+  tList< tDictEntry<T> > entry_list;      // A linked list of ALL entries
+  tArray< tListNode< tDictEntry<T> > * > cell_array;       // Pointers to the entry list.
+  tListIterator< tDictEntry<T> > list_it; // Iterator for entry_list
   
+  // Currently, we hash a string simply by adding up the individual character
+  // values in that string and modding by the hash size.  For most applications
+  // this will work fine (and it is fast!) but some patters will cause all
+  // strings to go into the same cell.  For example, "ABC"=="CBA"=="BBB".
   int HashString(const cString & key) const {
     unsigned int out_hash = 0;
     for (int i = 0; i < key.GetSize(); i++)
       out_hash += (unsigned int) key[i];
     return out_hash % hash_size;
   }
+
+  // Function to find the appropriate tDictEntry for a string that is passed
+  // in and return it.
   tDictEntry<T> * FindEntry(const cString & name) {
     const int bin = HashString(name);
-    tListIterator< tDictEntry<T> > list_it(hash_table[bin]);
-    while (list_it.Next() != NULL) {
+    if (cell_array[bin] == NULL) return NULL;
+
+    // Set the list iterator to the first entry of this bin.
+    list_it.Set(cell_array[bin]);
+
+    // Loop through all entries in this bin to see if any are a perfect match.
+    while (list_it.Get() != NULL && list_it.Get()->id == bin) {
       if (list_it.Get()->name == name) return list_it.Get();
+      list_it.Next();
     }
+
+    // No matches found.
     return NULL;
   }
 public:
-  tDictionary() : size(0), hash_size(DICTIONARY_HASH_DEFAULT) {
-    hash_table = new tList< tDictEntry<T> >[hash_size];
-  }
-  ~tDictionary() {
-    for (int i = 0; i < hash_size; i++)
-      while (hash_table[i].GetSize()) delete hash_table[i].Pop();
-    delete [] hash_table;
+  tDictionary(int in_hash_size=DICTIONARY_HASH_DEFAULT)
+    : dict_size(0)
+    , hash_size(in_hash_size)
+    , cell_array(in_hash_size)
+    , list_it(entry_list)
+  {
+    cell_array.SetAll(NULL);
   }
 
-  int GetSize() { return size; }
+  ~tDictionary() {
+    while (entry_list.GetSize()) delete entry_list.Pop();
+  }
+
+
+  bool OK() {
+    cout << "DICT_SIZE = " << dict_size << endl;
+    cout << "HASH_SIZE = " << hash_size << endl;
+    int count = 0;
+    cout << "LIST ELEMENTS:" << endl;
+    list_it.Reset();
+    while (list_it.Next() != NULL) {
+      tDictEntry<T> * cur_entry = list_it.Get();
+      cout << "  " << count << " : "
+	   << cur_entry->id << " "
+	   << cur_entry->name << " "
+	   << cur_entry->data << " "
+	   << endl;
+    }
+    cout << endl;
+    cout << "ARRAY CELLS: "
+	 << cell_array.GetSize()
+	 << endl;
+    for (int i = 0; i < hash_size; i++) {
+      tListNode< tDictEntry<T> > * cur_list_node = cell_array[i];
+      if (cur_list_node == NULL) {
+	cout << "  NULL" << endl;
+      } else {
+	cout << "  " << cur_list_node->data->id
+	     << " " << cur_list_node->data->name
+	     << endl;
+      }
+    }
+
+    return true;
+  }
+
+  int GetSize() { return dict_size; }
   
   void Add(const cString & name, T data) {
+    // Build the new entry...
     tDictEntry<T> * new_entry = new tDictEntry<T>;
     new_entry->name = name;
     new_entry->data = data;
     const int bin = HashString(name);
-    hash_table[bin].Push(new_entry);
-    size++;
+    new_entry->id = bin;
+
+
+    // Determine where this new entry should go; either at the beginning of
+    // the list (if there are no others in the bin) or following another
+    // entry in the bin.
+    if (cell_array[bin] == NULL) { 
+      list_it.Reset();                       // Reset to list start
+      entry_list.Insert(list_it, new_entry); // Place new entry in the list
+      list_it.Next();                        // Advance to new entry
+      cell_array[bin] = list_it.GetPos();    // Record position
+    } else {
+      list_it.Set(cell_array[bin]);          // Setup insert point
+      entry_list.Insert(list_it, new_entry); // Place new entry in the list
+      list_it.Next();                        // Advance to new entry
+    }
+
+    // Update our entry count...
+    dict_size++;
   }
   
   bool HasEntry(const cString & name) {
@@ -88,56 +190,86 @@ public:
   }
 
   T Remove(const cString & name) {
+    // Determine the bin that we are going to be using.
     const int bin = HashString(name);
+
     T out_data = NULL;
-    tListIterator< tDictEntry<T> > list_it(hash_table[bin]);
-    while (list_it.Next() != NULL) {
-      if (list_it.Get()->name == name) {
-	out_data = list_it.Get()->data;
-	list_it.Remove();
-	size--;
-	break;
+    assert(cell_array[bin] != NULL);
+    list_it.Set(cell_array[bin]);
+
+    // If we are deleting the first entry in this bin we must clean up...
+    if (list_it.Get()->name == name) {
+      out_data = list_it.Get()->data;
+      list_it.Remove();
+      list_it.Next();
+      dict_size--;
+      // See if the next entry is still part of this cell.
+      if (list_it.AtRoot() == false && list_it.Get()->id == bin) {
+	cell_array[bin] = list_it.GetPos();
+      } else {
+	cell_array[bin] = NULL;
       }
     }
+
+    // If it was not the first entry in this cell, keep looking!
+    else {
+      while (list_it.Next() != NULL && list_it.Get()->id == bin) {
+	if (list_it.Get()->name == name) {
+	  out_data = list_it.Get()->data;
+	  list_it.Remove();
+	  dict_size--;
+	  break;
+	}
+      }
+    }
+
     return out_data;
   }
 
   cString NearMatch(const cString name) {
     cString best_match("");
     int best_dist = name.GetSize();
-    for (int i = 0; i < hash_size; i++) {
-      tListIterator< tDictEntry<T> > list_it(hash_table[i]);
-      while (list_it.Next() != NULL) {
-	int dist = cStringUtil::EditDistance(name, list_it.Get()->name);
-	if (dist < best_dist) {
-	  best_dist = dist;
-	  best_match = list_it.Get()->name;
-	}
+    list_it.Reset();
+    while (list_it.Next() != NULL) {
+      int dist = cStringUtil::EditDistance(name, list_it.Get()->name);
+      if (dist < best_dist) {
+	best_dist = dist;
+	best_match = list_it.Get()->name;
       }
     }
     return best_match;
   }
 
   void SetHash(int _hash) {
-    const int old_hash_size = hash_size;
-
     // Create the new table...
     hash_size = _hash;
-    tList< tDictEntry<T> > * new_hash_table =
-      new tList< tDictEntry<T> >[hash_size];
+    cell_array.ResizeClear(hash_size);
+    cell_array.SetAll(NULL);
 
-    // Move everything over...
-    for (int i = 0; i < old_hash_size; i++) {
-      while (hash_table[i].GetSize() > 0) {
-	tDictEntry<T> * cur_entry = hash_table[i].Pop();
-	const int bin = HashString(cur_entry->name);
-	new_hash_table[bin].Push(cur_entry);
+    // Backup all of the entries in the list and re-insert them one-by-one.
+    tList< tDictEntry<T> > backup_list;
+    backup_list.Transfer(entry_list);
+
+    while (backup_list.GetSize() > 0) {
+      tDictEntry<T> * cur_entry = backup_list.Pop();
+
+      // determine the new bin for this entry.
+      int bin = HashString(cur_entry->name);
+      cur_entry->id = bin;
+
+      if (cell_array[bin] == NULL) { 
+	list_it.Reset();                       // Reset to list start
+	entry_list.Insert(list_it, cur_entry); // Place new entry in the list
+	list_it.Next();                        // Advance to new entry
+	cell_array[bin] = list_it.GetPos();    // Record position
+      } else {
+	list_it.Set(cell_array[bin]);          // Setup insert point
+	entry_list.Insert(list_it, cur_entry); // Place new entry in the list
+	list_it.Next();                        // Advance to new entry
       }
+
     }
 
-    // Cleanup...
-    delete [] hash_table;
-    hash_table = new_hash_table;
   }
 };
 
