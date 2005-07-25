@@ -1188,8 +1188,16 @@ void cPopulation::UpdateOrganismStats()
   int min_genome_length = INT_MAX;
 
   for (int i = 0; i < cell_array.GetSize(); i++) {
+
     // Only look at cells with organisms in them.
-    if (cell_array[i].IsOccupied() == false) continue;
+
+    if (cell_array[i].IsOccupied() == false) {
+
+      // Genotype map needs zero for all non-occupied cells
+
+      stats.SetGenoMapElement(i, 0);
+      continue;
+    }
 
     cOrganism * organism = cell_array[i].GetOrganism();
     const cPhenotype & phenotype = organism->GetPhenotype();
