@@ -235,11 +235,11 @@ public:
     tListNode<T> * new_node = new tListNode<T>;
     new_node->data = in_data;
 
-    // Insert the new node after the iterator...
-    new_node->next = cur_node->next;
-    new_node->prev = cur_node;
-    cur_node->next->prev = new_node;
-    cur_node->next = new_node;
+    // Insert the new node before the iterator...
+    new_node->next = cur_node;
+    new_node->prev = cur_node->prev;
+    cur_node->prev->next = new_node;
+    cur_node->prev = new_node;
     size++;
 
     return in_data;
