@@ -1686,7 +1686,6 @@ double cTaskLib::Task_CommEcho() const
 double cTaskLib::Task_CommNot() const
 {
   const int test_output = output_buffer[0];
-  const int num_buffs = other_input_buffers.GetSize();
 
   tListIterator<tBuffer<int> > buff_it(other_input_buffers);  
 

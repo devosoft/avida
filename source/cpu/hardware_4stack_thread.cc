@@ -101,9 +101,8 @@ void cHardware4Stack_Thread::LoadState(istream & fp){
     heads[i].AbsSet(pos);
   }
 
-  char marker; fp>>marker; assert( marker == '|' );
+  char marker; fp >> marker; assert( marker == '|' );
   /* YIKES!  data loss below: */ 
-  char the_cur_head = cur_head;
 
   // Code labels
   read_label.LoadState(fp);

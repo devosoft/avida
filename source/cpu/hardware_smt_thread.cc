@@ -103,7 +103,6 @@ void cHardwareSMT_Thread::LoadState(istream & fp){
 	
   char marker; fp >> marker; assert( marker == '|' );
   /* YIKES!  data loss below: */ 
-  char the_cur_head = cur_head;
 	
   // Code labels
   read_label.LoadState(fp);

@@ -2057,7 +2057,6 @@ double cAnalyze::AnalyzeEntropyGivenParent(cAnalyzeGenotype * genotype,
   const int num_lines = genotype->GetLength();
   const cGenome & base_genome = genotype->GetGenome();
   cGenome mod_genome(base_genome);
-  double base_fitness = genotype->GetFitness();
   
   // Loop through all the lines of code, testing all mutations ...
   tArray<double> test_fitness(num_insts);
