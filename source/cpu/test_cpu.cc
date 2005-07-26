@@ -162,15 +162,15 @@ bool cTestCPU::ProcessGestation(cCPUTestInfo & test_info, int cur_depth)
   // Print out some final info in trace...
   if (trace_fp != NULL) {
     if (time_used == time_allocated) {
-      *trace_fp << endl << "TIMEOUT: No offspring produced." << endl;
+      *trace_fp << endl << "# TIMEOUT: No offspring produced." << endl;
     }
     else if (organism.GetHardware().GetMemory().GetSize() == 0) {
-      *trace_fp << endl << "ORGANISM DEATH: No offspring produced." << endl;
+      *trace_fp << endl << "# ORGANISM DEATH: No offspring produced." << endl;
     }
     else {
-      *trace_fp << endl << "Final Memory: "
+      *trace_fp << endl << "# Final Memory: "
 		<< organism.GetHardware().GetMemory().AsString() << endl
-		<< "Child Memory: " << organism.ChildGenome().AsString()
+		<< "# Child Memory: " << organism.ChildGenome().AsString()
 		<< endl;
     }
   }
