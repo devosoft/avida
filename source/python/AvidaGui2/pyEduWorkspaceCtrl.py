@@ -238,24 +238,20 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
     if self.startStatus:
       self.m_session_mdl.m_session_mdtr.emit(
         PYSIGNAL("fromLiveCtrlStartAvidaSig"), ())
-      print "send start signal"
     else:
       self.m_session_mdl.m_session_mdtr.emit(
         PYSIGNAL("fromLiveCtrlPauseAvidaSig"), ())
-      print "send pause signal"
     
   def setAvidaSlot(self, avida):
     print "pyEduWorkspaceCtrl.setAvidaSlot() ..."
     old_avida = self.m_avida
     self.m_avida = avida
     if old_avida:
-      print "pyEduWorkspaceCtrl.setAvidaSlot() disconnecting old_avida ..."
       self.disconnect(
         old_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
         self.avidaUpdatedSlot)
       del old_avida
     if self.m_avida:
-      print "pyEduWorkspaceCtrl.setAvidaSlot() connecting self.m_avida ..."
       self.connect(
         self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
         self.avidaUpdatedSlot)
@@ -274,11 +270,28 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
     self.startStatus = False
     
   def startQuitProcessSlot(self):
-    m_quit_avida_ed = pyQuitDialogCtrl()
-    quit_return = m_quit_avida_ed.showDialog()
-    if quit_return == m_quit_avida_ed.QuitFlag:
-      self.emit(PYSIGNAL("quitAvidaPhaseIISig"), ())
-    elif quit_return == m_quit_avida_ed.FreezeQuitFlag:
-      print "at pyEduWorkspaceCtrl:startQuitProcessSlot emited FreezeDishPhaseISig"
-      self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("FreezeDishPhaseISig"), (False, True, ))
 
+    # Be sure that the session is paused before quitting (to reduce confusion
+    # if the user decides to save before quiting)
+
+    self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("doPauseAvidaSig"), ())
+
+
+    # Check if there unsaved petri dishes if there are ask the user if they 
+    # want to save them, just quit the program or cancel the quit.  If there
+    # are no unsaved populations just quit.
+    # (actually only works with one population will need to expand to
+    # two populations in the future)
+
+    print "BDB: self.m_one_population_ctrl.m_session_mdl.saved_full_dish = " + str(self.m_one_population_ctrl.m_session_mdl.saved_full_dish)
+    print "BDB: self.m_one_population_ctrl.m_session_mdl.new_full_dish = " + str(self.m_one_population_ctrl.m_session_mdl.new_full_dish)
+    if (not self.m_one_population_ctrl.m_session_mdl.saved_full_dish and
+        not self.m_one_population_ctrl.m_session_mdl.new_full_dish):
+      m_quit_avida_ed = pyQuitDialogCtrl()
+      quit_return = m_quit_avida_ed.showDialog()
+      if quit_return == m_quit_avida_ed.QuitFlag:
+        self.emit(PYSIGNAL("quitAvidaPhaseIISig"), ())
+      elif quit_return == m_quit_avida_ed.FreezeQuitFlag:
+        self.m_one_population_ctrl.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("freezeDishPhaseISig"), (False, True, ))
+    else:
+      self.emit(PYSIGNAL("quitAvidaPhaseIISig"), ())

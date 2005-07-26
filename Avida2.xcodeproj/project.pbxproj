@@ -1321,7 +1321,6 @@
 				DCC30D410762539B008F7A48 /* avida_driver_population.pyste */,
 				DCC30D420762539B008F7A48 /* avida_triggers.pyste */,
 				DCC30D430762539B008F7A48 /* AvidaGui */,
-				DCC30D850762539B008F7A48 /* AvidaGui2 */,
 				DCC30ED70762539D008F7A48 /* B.hh */,
 				DCC30ED80762539D008F7A48 /* B.pyste */,
 				DCC30ED90762539D008F7A48 /* birth_chamber.pyste */,
@@ -1528,13 +1527,6 @@
 			children = (
 			);
 			path = 0;
-			sourceTree = "<group>";
-		};
-		DCC30D850762539B008F7A48 /* AvidaGui2 */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = AvidaGui2;
 			sourceTree = "<group>";
 		};
 		DCC30F7C0762539D008F7A48 /* cpu */ = {

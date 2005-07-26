@@ -244,6 +244,8 @@ bool cOrganism::Divide_CheckViable()
   // Make sure required task (if any) has been performed...
   const int required_task = cConfig::GetRequiredTask();
   const int immunity_task = cConfig::GetImmunityTask();
+//cout << "req=" << required_task << "," <<phenotype.GetCurTaskCount()[required_task]<< " "; 
+//cout << "im=" << immunity_task << "," <<phenotype.GetCurTaskCount()[immunity_task]<< endl; 
   if (required_task != -1 &&
       phenotype.GetCurTaskCount()[required_task] == 0) { 
     if (immunity_task==-1 || 

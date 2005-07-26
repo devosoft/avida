@@ -19,6 +19,9 @@ private:
   tList<cReaction> prior_noreaction_list;
   int min_task_count;
   int max_task_count;
+private:
+  // disabled copy constructor.
+  cReactionRequisite(const cReactionRequisite &);
 public:
   cReactionRequisite();
   ~cReactionRequisite();

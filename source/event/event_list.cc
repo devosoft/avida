@@ -48,19 +48,11 @@ m_num_events(0)
 {
 }
 
-cEventList::~cEventList() {
-  /*
-   XXX:  modified by kaben.  DeleteAll is equivalent.
-   */
-  //while( m_head != NULL ){
-  //  m_current = m_head;
-  //  m_head = m_head->GetNext();
-  //  delete m_head;
-  //}
+cEventList::~cEventList()
+{
   DeleteAll();
-
-delete m_factory_manager;
-delete m_triggers;
+  delete m_factory_manager;
+  delete m_triggers;
 }
 
 bool
@@ -126,7 +118,6 @@ void cEventList::Delete(cEventListEntry *entry){
 
 /*
  public manipulator used while rebuilding event list.
- XXX:  added by kaben.
  */
 void cEventList::DeleteAll(void){
   while( m_head != NULL ){
@@ -261,9 +252,6 @@ void cEventList::PrintEventList( ostream & os ){
   }
 }
 
-/*
- XXX:  modified by kaben to stream-dump in parseable format.
- */
 void cEventList::PrintEvent(cEventListEntry * entry, ostream & os){
   assert( entry != NULL );
   switch ( entry->GetTrigger() ){

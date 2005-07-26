@@ -153,3 +153,22 @@ class pyOnePop_GraphCtrl(pyOnePop_GraphView):
         filter.setOptions(QwtPlotPrintFilter.PrintAll & ~QwtPlotPrintFilter.PrintCanvasBackground)
       self.m_graph_ctrl.printPlot(printer, filter)
 
+  def restart(self):
+    self.m_avida = None
+    self.m_combo_box.clear()
+    self.m_combo_box.setInsertionPolicy(QComboBox.AtBottom)
+    for entry in self.m_avida_stats_interface.m_entries:
+      self.m_combo_box.insertItem(entry[0])
+    self.connect(
+      self.m_combo_box, SIGNAL("activated(int)"), self.modeActivatedSlot)
+
+    self.m_x_array = zeros(2, Float)
+    self.m_y_array = zeros(2, Float)
+
+    self.m_graph_ctrl.setAxisTitle(QwtPlot.xBottom, "Time (updates)")
+    self.m_graph_ctrl.setAxisAutoScale(QwtPlot.xBottom)
+
+    # Start with second graph mode -- "Average Fitness".
+    self.m_combo_box.setCurrentItem(2)
+    self.modeActivatedSlot(self.m_combo_box.currentItem())
+

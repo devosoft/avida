@@ -32,6 +32,9 @@ private:
 
   // Private methods...
   cHelpType * GetType(const cString type_name);
+private:
+  // disabled copy constructor.
+  cHelpManager(const cHelpManager &);
 public:
   cHelpManager() : last_entry(NULL), verbose (false) { ; }
   ~cHelpManager() { while (type_list.GetSize() > 0) delete type_list.Pop(); }

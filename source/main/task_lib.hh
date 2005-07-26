@@ -43,6 +43,9 @@ private:
 		  REQ_NEIGHBOR_OUTPUT=2, 
 		  UNUSED_REQ_C=4,
 		  UNUSED_REQ_D=8 };
+private:
+  // disabled copy constructor.
+  cTaskLib(const cTaskLib &);
 public:
   cTaskLib();
   ~cTaskLib();

@@ -245,8 +245,6 @@ void cPhenotype::DivideReset(int _length)
   assert(time_used > 0);
   assert(initialized == true);
 
-  double pre_reset_merit = merit.GetDouble(); 
-  
   // Update these values as needed...
   int cur_merit_base = CalcSizeMerit(genome_length,copied_size,executed_size);
   merit = cur_merit_base * cur_bonus;
@@ -329,8 +327,6 @@ void cPhenotype::TestDivideReset(int _length)
 {
   assert(time_used > 0);
   assert(initialized == true);
-
-  double pre_reset_merit = merit.GetDouble(); 
 
   // Update these values as needed...
   int cur_merit_base = CalcSizeMerit(genome_length,copied_size,executed_size);

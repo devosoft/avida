@@ -22,20 +22,20 @@ class cInstruction;
 template <class MethodType> class tInstLib : public cInstLibBase {
   const size_t m_nopmods_array_size;
   const size_t m_function_array_size;
-  cString *m_nopmod_names;
-  cString *m_function_names;
-  const int *m_nopmods;
-  MethodType *m_functions;
+  cString* m_nopmod_names;
+  cString* m_function_names;
+  const int* m_nopmods;
+  MethodType* m_functions;
   const cInstruction inst_error;
   const cInstruction inst_default;
 public:
 		tInstLib(
 						 size_t nopmod_array_size,
 						 size_t function_array_size,
-						 cString *nopmod_names,
-						 cString *function_names,
-						 const int *nopmods,
-						 MethodType *functions,
+						 cString* nopmod_names,
+						 cString* function_names,
+						 const int* nopmods,
+						 MethodType* functions,
 						 const cInstruction& error,
 						 const cInstruction& def
 						 ):m_nopmods_array_size(nopmod_array_size),
@@ -47,7 +47,7 @@ public:
 		inst_error(error),
 		inst_default(def)
   {}
-  MethodType *GetFunctions(void){ return m_functions; } 
+  MethodType* GetFunctions(void){ return m_functions; } 
   const cString &GetName(const unsigned int id) {
     assert(id < m_function_array_size);
     return m_function_names[id];

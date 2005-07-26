@@ -93,7 +93,7 @@ def recursiveDeleteChecks(owner_factory, exclusion_accessors, recycler = None):
       # will have the index embedded in it. similarly, embedded keys for
       # undeleted objects in dictionaries.
       if type(o) == types.ListType:
-        for i in range(len(o)):
+        for i in xrange(len(o)):
           attr = o[i]
           if not id_dict.has_key(id(attr)):
             enqueueAndMark(attr, id_dict[id(o)] + '[%d]'%i + str(attr), id_dict, object_queue)

@@ -4,7 +4,7 @@ Include("organism.hh")
 
 cCPUTestInfo = Class("cCPUTestInfo", "cpu_test_info.hh")
 # returns std::ofstream &, i.e., not the Python Way.
-#exclude(cCPUTestInfo.GetTraceFP)
+exclude(cCPUTestInfo.GetTraceFP)
 set_policy(cCPUTestInfo.GetTestOrganism, return_internal_reference())
 set_policy(cCPUTestInfo.GetColonyOrganism, return_internal_reference())
 set_policy(cCPUTestInfo.GetColonyOrganism, return_internal_reference())

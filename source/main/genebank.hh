@@ -45,6 +45,9 @@ private:
 private:
   cString GetLabel(int in_size, int in_num);
 
+private:
+  // disabled copy constructor.
+  cGenebank(const cGenebank &);
 public:
   cGenebank(cStats & _stats);
   ~cGenebank();

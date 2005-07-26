@@ -22,6 +22,9 @@
 class cAvidaTriggers : public cEventTriggers {
 private:
   cStats & stats;
+private:
+  // disabled copy constructor.
+  cAvidaTriggers(const cAvidaTriggers &);
 public:
   cAvidaTriggers(cStats & _stats) : stats(_stats) { ; }
   double GetUpdate() const { return (double) stats.GetUpdate(); }

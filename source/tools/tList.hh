@@ -32,6 +32,9 @@ public:
   tBaseIterator() { ; }
   virtual ~tBaseIterator() { ; }
 
+  virtual void Set(tListNode<T> * in_node) = 0;
+  virtual void Reset() = 0;
+
   virtual const T * GetConst() = 0;
   virtual const T * NextConst() = 0;
   virtual const T * PrevConst() = 0;
@@ -50,9 +53,12 @@ private:
   const tListNode<T> * GetConstNode() { return node; }
 public:
   explicit tListIterator(tList<T> & _list);
+  explicit tListIterator(tList<T> & _list, tListNode<T> * start_node);
   ~tListIterator();
 
+  void Set(tListNode<T> * in_node) { node = in_node; }
   void Reset();
+  tListNode<T> * GetPos() { return node; }
 
   T * Get();
   T * Next();
@@ -80,8 +86,11 @@ private:
   const tListNode<T> * GetConstNode() { return node; }
 public:
   explicit tConstListIterator(const tList<T> & _list);
+  explicit tConstListIterator(const tList<T> & _list,
+			      const tListNode<T> * start_node);
   ~tConstListIterator();
 
+  void Set(tListNode<T> * in_node) { node = in_node; }
   void Reset();
 
   const T * Get();
@@ -215,19 +224,24 @@ public:
   void CircPrev() { if (size > 0) Push(PopRear()); }
 
   T * Remove(tListIterator<T> & other) {
-    if (&(other.list) != this) return NULL;
+    if (&(other.list) != this) return NULL; // @CAO make this an assert?
     return RemoveNode(other.node);
   }
 
   T * Insert(tListIterator<T> & list_it, T * in_data) {
+    tListNode<T> * cur_node = list_it.node;
+
+    // Build the new node for the list...
     tListNode<T> * new_node = new tListNode<T>;
     new_node->data = in_data;
-    new_node->next = list_it.node->next;
-    new_node->prev = list_it.node;
 
-    list_it.node->next->prev = new_node;
-    list_it.node->next = new_node;
+    // Insert the new node before the iterator...
+    new_node->next = cur_node;
+    new_node->prev = cur_node->prev;
+    cur_node->prev->next = new_node;
+    cur_node->prev = new_node;
     size++;
+
     return in_data;
   }
 
@@ -249,9 +263,37 @@ public:
 
   int GetSize() const { return size; }
 
+  // Copy another list onto the end of this one.
   void Append(tList<T> & other_list) {
     tListIterator<T> other_it(other_list);
     while (other_it.Next() != NULL) PushRear(other_it.Get());
+  }
+
+  // Empty out another list, transferring its contents to the end of this one.
+  void Transfer(tList<T> & other_list) {
+    // If the other list is empty, stop here.
+    if (other_list.GetSize() == 0) return;
+
+    // Hook this list into the other one.
+    other_list.root.next->prev = root.prev;
+    other_list.root.prev->next = &root;
+    root.prev->next = other_list.root.next;
+    root.prev       = other_list.root.prev;
+
+    // Clean up the other list so it has no entries.
+    other_list.root.next = &(other_list.root);
+    other_list.root.prev = &(other_list.root);
+
+    // Update the size
+    size += other_list.size;
+    other_list.size = 0;
+
+    // Update all iterators in the other list to point at the root.
+    tListNode< tBaseIterator<T> > * test_it = other_list.it_root.next;
+    while (test_it != &other_list.it_root) {
+      test_it->data->Reset();
+      test_it = test_it->next;
+    }
   }
 
   // Find by value
@@ -384,6 +426,13 @@ template <class T> tListIterator<T>::tListIterator(tList<T> & _list)
   list.AddIterator(this);
 }
 
+template <class T> tListIterator<T>::tListIterator(tList<T> & _list,
+						   tListNode<T> * start_node)
+  : list(_list), node(start_node)
+{
+  list.AddIterator(this);
+}
+
 template <class T> tListIterator<T>::~tListIterator()
 {
   list.RemoveIterator(this);
@@ -441,6 +490,12 @@ template <class T> T* tListIterator<T>::Remove()
 
 template <class T> tConstListIterator<T>::tConstListIterator(const tList<T> & _list)
   : list(_list), node(&(_list.root))
+{
+  list.AddIterator(this);
+}
+
+template <class T> tConstListIterator<T>::tConstListIterator(const tList<T> & _list, const tListNode<T> * start_node)
+  : list(_list), node(start_node)
 {
   list.AddIterator(this);
 }

@@ -21,6 +21,9 @@ class cAnalyzeCommand {
 protected:
   cString command;
   cString args;
+private:
+  // disabled copy constructor.
+  cAnalyzeCommand(const cAnalyzeCommand &);
 public:
   cAnalyzeCommand(const cString & _command, const cString & _args)
     : command(_command), args(_args) { command.ToUpper(); }

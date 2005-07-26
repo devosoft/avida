@@ -93,6 +93,9 @@ private:
 
   double TestMutPair(cGenome & mod_genome, int line1, int line2,
     const cInstruction & mut1, const cInstruction & mut2, std::ostream & fp);
+private:
+  // disabled copy constructor.
+  cLandscape(const cLandscape &);
 public:
   cLandscape(const cGenome & in_genome, const cInstSet & in_inst_set);
   ~cLandscape();

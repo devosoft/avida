@@ -1,0 +1,131 @@
+# Filename........: /Users/jclune/Desktop/ajeff/avida/code-apps/Avida-Ed 2b6DMG/avida-work/organism.notter
+# Update Output...: N/A
+# Is Viable.......: 1
+# Repro Cycle Size: 0
+# Depth to Viable.: 0
+
+# Generation: 0
+# Merit...........:           200
+# Gestation Time..:           380
+# Fitness.........:     0.244898
+# Errors..........:            0
+# Genome Size.....:           100
+# Copied Size.....:           100
+# Executed Size...:           97
+# Offspring.......:         SELF
+
+# not	0
+# nand	0
+# and	0
+# orn	0
+# or	0
+# andn	0
+# nor	0
+# xor	0
+# equ	0
+
+h-alloc
+h-search
+nop-C
+nop-A
+mov-head
+nop-C
+
+
+IO
+push
+pop
+nop-C
+IO
+nop-A
+nand
+IO
+
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+
+
+h-search
+h-copy
+if-label
+nop-C
+nop-A
+h-divide
+mov-head
+nop-A
+nop-B

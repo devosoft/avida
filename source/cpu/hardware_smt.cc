@@ -125,18 +125,16 @@ tInstLib<cHardwareSMT::tMethod> *cHardwareSMT::initInstLib(void){
     //30
     cInstEntry4Stack("ThreadFork",   &cHardwareSMT::Inst_ForkThread),
     //31
-    //cInstEntry4Stack("if-label",  &cHardwareSMT::Inst_IfLabel),
-    //32
     cInstEntry4Stack("Val-Inc",       &cHardwareSMT::Inst_Increment),
-    //33
+    //32
     cInstEntry4Stack("Val-Dec",       &cHardwareSMT::Inst_Decrement),
-    //34
+    //33
     cInstEntry4Stack("Val-Mod",       &cHardwareSMT::Inst_Mod),
-    //35
+    //34
     cInstEntry4Stack("ThreadKill",   &cHardwareSMT::Inst_KillThread),
-    //36
+    //35
     cInstEntry4Stack("IO", &cHardwareSMT::Inst_IO),
-    //37
+    //36
     cInstEntry4Stack("Inject", &cHardwareSMT::Inst_Inject)
   };
 	
@@ -160,16 +158,8 @@ tInstLib<cHardwareSMT::tMethod> *cHardwareSMT::initInstLib(void){
 	const cInstruction error(255);
 	const cInstruction def(0);
 	
-  tInstLib<cHardwareSMT::tMethod> *inst_lib = new tInstLib<cHardwareSMT::tMethod>(
-                                                                                  n_size,
-                                                                                  f_size,
-                                                                                  n_names,
-                                                                                  f_names,
-                                                                                  nop_mods,
-                                                                                  functions,
-                                                                                  error,
-                                                                                  def
-                                                                                  );
+  tInstLib<cHardwareSMT::tMethod> *inst_lib =
+    new tInstLib<cHardwareSMT::tMethod>(n_size, f_size, n_names, f_names, nop_mods, functions, error, def);
 	
   cout <<
 		"<cHardwareSMT::initInstLib> debug: important post-init values:" <<endl<<
@@ -182,46 +172,32 @@ tInstLib<cHardwareSMT::tMethod> *cHardwareSMT::initInstLib(void){
   return inst_lib;
 }
 
-cHardwareSMT::cHardwareSMT(cOrganism * in_organism, cInstSet * in_inst_set)
-: cHardwareBase(in_organism, in_inst_set)
-, memory_array(nHardwareSMT::NUM_MEMORY_SPACES)
+cHardwareSMT::cHardwareSMT(cOrganism* in_organism, cInstSet* in_inst_set)
+  : cHardwareBase(in_organism, in_inst_set), m_mem_array(nHardwareSMT::NUM_MEMORY_SPACES)
 {
-  /* FIXME:  reorganize storage of m_functions.  -- kgn */
   m_functions = s_inst_slib->GetFunctions();
-  /**/
-  inst_remainder = 0;
 	
-  for(int x=1; x<=cConfig::GetMaxCPUThreads(); x++)
-	{
-		slice_array[x] = (x-1)*cConfig::GetThreadSlicingMethod()+1;
-	}
-	
-  memory_array[0] = in_organism->GetGenome();  // Initialize memory...
-  memory_array[0].Resize(GetMemory(0).GetSize()+1);
-  memory_array[0][memory_array[0].GetSize()-1] = cInstruction();
+  m_mem_array[0] = in_organism->GetGenome();  // Initialize memory...
+  m_mem_array[0].Resize(GetMemory(0).GetSize() + 1);
+  m_mem_array[0][m_mem_array[0].GetSize() - 1] = cInstruction();
   Reset();                            // Setup the rest of the hardware...
 }
 
 
-cHardwareSMT::cHardwareSMT(const cHardwareSMT &hardware_4stack)
-: cHardwareBase(hardware_4stack.organism, hardware_4stack.inst_set)
-, m_functions(hardware_4stack.m_functions)
-, memory_array(hardware_4stack.memory_array)
-, threads(hardware_4stack.threads)
-, thread_id_chart(hardware_4stack.thread_id_chart)
-, cur_thread(hardware_4stack.cur_thread)
-, mal_active(hardware_4stack.mal_active)
-, inst_cost(hardware_4stack.inst_cost)
+cHardwareSMT::cHardwareSMT(const cHardwareSMT& hardware)
+: cHardwareBase(hardware.organism, hardware.inst_set)
+, m_functions(hardware.m_functions)
+, m_mem_array(hardware.m_mem_array)
+, m_threads(hardware.m_threads)
+, thread_id_chart(hardware.thread_id_chart)
+, m_cur_thread(hardware.m_cur_thread)
+, inst_cost(hardware.inst_cost)
 #ifdef INSTRUCTION_COSTS
-, inst_ft_cost(hardware_4stack.inst_ft_cost)
-, inst_remainder(hardware_4stack.inst_remainder)
+, inst_ft_cost(hardware.inst_ft_cost)
 #endif
 {
-  for(int i = 0; i < nHardwareSMT::NUM_GLOBAL_STACKS; i++){
-    global_stacks[i] = hardware_4stack.global_stacks[i];
-  }
-  for(int i = 0; i < sizeof(slice_array)/sizeof(float); i++){
-    slice_array[i] = hardware_4stack.slice_array[i];
+  for(int i = 0; i < nHardwareSMT::NUM_GLOBAL_STACKS; i++) {
+    m_global_stacks[i] = hardware.m_global_stacks[i];
   }
 }
 
@@ -229,38 +205,31 @@ cHardwareSMT::cHardwareSMT(const cHardwareSMT &hardware_4stack)
 void cHardwareSMT::Recycle(cOrganism * new_organism, cInstSet * in_inst_set)
 {
   cHardwareBase::Recycle(new_organism, in_inst_set);
-  memory_array[0] = new_organism->GetGenome();
-  memory_array[0].Resize(GetMemory(0).GetSize()+1);
-  memory_array[0][memory_array[0].GetSize()-1] = cInstruction();
+  m_mem_array[0] = new_organism->GetGenome();
+  m_mem_array[0].Resize(GetMemory(0).GetSize() + 1);
+  m_mem_array[0][m_mem_array[0].GetSize()-1] = cInstruction();
   Reset();
 }
 
 
 void cHardwareSMT::Reset()
 {
-  //global_stack.Clear();
-  //thread_time_used = 0;
-	
   // Setup the memory...
   for (int i = 1; i < nHardwareSMT::NUM_MEMORY_SPACES; i++) {
-		memory_array[i].Resize(1);
-		//GetMemory(i).Replace(0, 1, cGenome(ConvertToInstruction(i)));
-		GetMemory(i)=cGenome(ConvertToInstruction(i)); 
+		m_mem_array[i].Resize(1);
+		GetMemory(i) = cGenome(ConvertToInstruction(i)); 
   }
 	
   // We want to reset to have a single thread.
-  threads.Resize(1);
+  m_threads.Resize(1);
 	
   // Reset that single thread.
-  threads[0].Reset(this, 0);
+  m_threads[0].Reset(this, 0);
   thread_id_chart = 1; // Mark only the first thread as taken...
-  cur_thread = 0;
-	
-  mal_active = false;
-	
+  m_cur_thread = 0;
+		
   // Reset all stacks (local and global)
-  for(int i = 0; i < nHardwareSMT::NUM_STACKS; i++)
-	{
+  for(int i = 0; i < nHardwareSMT::NUM_STACKS; i++) {
 		Stack(i).Clear();
 	}
 	
@@ -274,8 +243,7 @@ void cHardwareSMT::Reset()
     inst_cost[i] = GetInstSet().GetCost(cInstruction(i));
     inst_ft_cost[i] = GetInstSet().GetFTCost(cInstruction(i));
   }
-#endif
-	
+#endif	
 }
 
 // This function processes the very next command in the genome, and is made
@@ -288,23 +256,9 @@ void cHardwareSMT::SingleProcess()
 	
   cPhenotype & phenotype = organism->GetPhenotype();
   phenotype.IncTimeUsed();
-  //if(organism->GetCellID()==46 && IP().GetMemSpace()==2)
-  // int x=0;
 	
-  //if (GetNumThreads() > 1) thread_time_used++;
-  //assert((GetHead(HEAD_WRITE).GetPosition() == Stack(STACK_BX).Top() ||
-  // Stack(STACK_BX).Top()==GetMemory(IP().GetMemSpace()).GetSize()-1 || 
-  // GetHead(HEAD_WRITE).GetPosition() == Stack(STACK_BX).Top()+1) &&
-  // (GetHead(HEAD_WRITE).GetMemSpace() == IP().GetMemSpace() ||
-  //  GetHead(HEAD_WRITE).GetMemSpace() == IP().GetMemSpace()+1));
-  // If we have threads turned on and we executed each thread in a single
-  // timestep, adjust the number of instructions executed accordingly.
-  //const int num_inst_exec = (cConfig::GetThreadSlicingMethod() == 1) ?
-  //  GetNumThreads() : 1;
-	
-  const int num_inst_exec = int(slice_array[GetNumThreads()]+ inst_remainder);
-  inst_remainder = slice_array[GetNumThreads()] + inst_remainder - num_inst_exec;
-  
+  const int num_inst_exec = (cConfig::GetThreadSlicingMethod() == 1) ? GetNumThreads() : 1;
+
   for (int i = 0; i < num_inst_exec; i++) {
     // Setup the hardware for the next instruction to be executed.
     NextThread();
@@ -341,17 +295,16 @@ void cHardwareSMT::SingleProcess()
       // we now want to move to the next instruction in the memory.
       if (AdvanceIP() == true) IP().Advance();
     } // if exec
-    
   } // Previous was executed once for each thread...
 
-// Kill creatures who have reached their max num of instructions executed
-const int max_executed = organism->GetMaxExecuted();
-if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed)
-    || phenotype.GetToDie()) {
-  organism->Die();
-}
+  // Kill creatures who have reached their max num of instructions executed
+  const int max_executed = organism->GetMaxExecuted();
+  if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed)
+      || phenotype.GetToDie()) {
+    organism->Die();
+  }
 
-organism->SetRunning(false);
+  organism->SetRunning(false);
 }
 
 // This method will test to see if all costs have been paid associated
@@ -441,30 +394,23 @@ void cHardwareSMT::ProcessBonusInst(const cInstruction & inst)
   //  }
   //}
 	
-SingleProcess_ExecuteInst(inst);
+  SingleProcess_ExecuteInst(inst);
 
-organism->SetRunning(prev_run_state);
+  organism->SetRunning(prev_run_state);
 }
-
-
-void cHardwareSMT::LoadGenome(const cGenome & new_genome)
-{
-  GetMemory(0) = new_genome;
-}
-
 
 bool cHardwareSMT::OK()
 {
   bool result = true;
 	
   for(int i = 0 ; i < nHardwareSMT::NUM_MEMORY_SPACES; i++) {
-    if (!memory_array[i].OK()) result = false;
+    if (!m_mem_array[i].OK()) result = false;
   }
 	
   for (int i = 0; i < GetNumThreads(); i++) {
     for(int j=0; j < nHardwareSMT::NUM_LOCAL_STACKS; j++)
-			if (threads[i].local_stacks[j].OK() == false) result = false;
-    if (threads[i].next_label.OK() == false) result = false;
+			if (m_threads[i].local_stacks[j].OK() == false) result = false;
+    if (m_threads[i].next_label.OK() == false) result = false;
   }
 	
   return result;
@@ -561,7 +507,6 @@ cHeadMultiMem cHardwareSMT::FindLabel(int direction)
   
   // Return the last line of the found label, if it was found.
   if (found_pos > 0) search_head.Set(found_pos - 1, IP().GetMemSpace());
-  //*** I THINK THIS MIGHT HAVE BEEN WRONG...CHANGED >= to >.  -law ***//
   
   // Return the found position (still at start point if not found).
   return search_head;
@@ -883,13 +828,11 @@ bool cHardwareSMT::InjectParasite(double mut_multiplier)
   //reset the memory space which was injected
   GetMemory(mem_space_used)=cGenome(ConvertToInstruction(mem_space_used)); 
 	
-  for(int x=0; x<NUM_HEADS; x++)
-	{
+  for(int x=0; x<NUM_HEADS; x++) {
 		GetHead(x).Reset(IP().GetMemSpace(), this);
 	}
 	
-  for(int x=0; x < nHardwareSMT::NUM_LOCAL_STACKS; x++)
-	{
+  for(int x=0; x < nHardwareSMT::NUM_LOCAL_STACKS; x++) {
 		Stack(x).Clear();
 	}
   
@@ -935,18 +878,18 @@ bool cHardwareSMT::InjectHost(const cCodeLabel & in_label, const cGenome & injec
 		
     // Set instruction flags on the injected code
     for (int i = 0; i < inject_code.GetSize(); i++) {
-      memory_array[target_mem_space].FlagInjected(i) = true;
+      m_mem_array[target_mem_space].FlagInjected(i) = true;
     }
     organism->GetPhenotype().IsModified() = true;
     
     // Adjust all of the heads to take into account the new mem size.
     
-    cur_thread=GetNumThreads()-1;
+    m_cur_thread=GetNumThreads()-1;
     
-    for(int i=0; i<cur_thread; i++) {
+    for(int i=0; i<m_cur_thread; i++) {
       for(int j=0; j < NUM_HEADS; j++) {
-				if(threads[i].heads[j].GetMemSpace()==target_mem_space)
-					threads[i].heads[j].Jump(inject_code.GetSize());
+				if(m_threads[i].heads[j].GetMemSpace()==target_mem_space)
+					m_threads[i].heads[j].Jump(inject_code.GetSize());
       }
     }
     
@@ -1140,7 +1083,7 @@ void cHardwareSMT::AdjustHeads()
 {
   for (int i = 0; i < GetNumThreads(); i++) {
     for (int j = 0; j < NUM_HEADS; j++) {
-      threads[i].heads[j].Adjust();
+      m_threads[i].heads[j].Adjust();
     }
   }
 }
@@ -1178,18 +1121,18 @@ bool cHardwareSMT::ForkThread()
   if (num_threads == cConfig::GetMaxCPUThreads()) return false;
 	
   // Make room for the new thread.
-  threads.Resize(num_threads + 1);
+  m_threads.Resize(num_threads + 1);
 	
   //IP().Advance();
 	
   // Initialize the new thread to the same values as the current one.
-  threads[num_threads] = threads[cur_thread]; 
+  m_threads[num_threads] = m_threads[m_cur_thread]; 
 	
   // Find the first free bit in thread_id_chart to determine the new
   // thread id.
   int new_id = 0;
   while ( (thread_id_chart >> new_id) & 1 == 1) new_id++;
-  threads[num_threads].SetID(new_id);
+  m_threads[num_threads].SetID(new_id);
   thread_id_chart |= (1 << new_id);
 	
   return true;
@@ -1208,22 +1151,22 @@ bool cHardwareSMT::KillThread()
   if (GetNumThreads() == 1) return false;
 	
   // Note the current thread and set the current back one.
-  const int kill_thread = cur_thread;
+  const int kill_thread = m_cur_thread;
   PrevThread();
   
   // Turn off this bit in the thread_id_chart...
-  thread_id_chart ^= 1 << threads[kill_thread].GetID();
+  thread_id_chart ^= 1 << m_threads[kill_thread].GetID();
 	
   // Copy the last thread into the kill position
   const int last_thread = GetNumThreads() - 1;
   if (last_thread != kill_thread) {
-    threads[kill_thread] = threads[last_thread];
+    m_threads[kill_thread] = m_threads[last_thread];
   }
 	
   // Kill the thread!
-  threads.Resize(GetNumThreads() - 1);
+  m_threads.Resize(GetNumThreads() - 1);
 	
-  if (cur_thread > kill_thread) cur_thread--;
+  if (m_cur_thread > kill_thread) m_cur_thread--;
 	
   return true;
 }
@@ -1242,11 +1185,11 @@ void cHardwareSMT::SaveState(ostream & fp)
 	
   //fp << thread_time_used  << endl;
   fp << GetNumThreads()   << endl;
-  fp << cur_thread        << endl;
+  fp << m_cur_thread        << endl;
 	
   // Threads
   for( int i = 0; i < GetNumThreads(); i++ ) {
-    threads[i].SaveState(fp);
+    m_threads[i].SaveState(fp);
   }
 }
 
@@ -1267,11 +1210,11 @@ void cHardwareSMT::LoadState(istream & fp)
   int num_threads;
   //fp >> thread_time_used;
   fp >> num_threads;
-  fp >> cur_thread;
+  fp >> m_cur_thread;
 	
   // Threads
   for( int i = 0; i < num_threads; i++ ){
-    threads[i].LoadState(fp);
+    m_threads[i].LoadState(fp);
   }
 }
 
@@ -1725,7 +1668,7 @@ bool cHardwareSMT::Divide_Main(int mem_space_used, double mut_multiplier)
 	    }
 			
 			//this will reset the current thread's heads and stacks.  It will 
-			//not touch any other threads or memory spaces (ie: parasites)
+			//not touch any other m_threads or memory spaces (ie: parasites)
 			else
 	    {
 	      for(int x = 0; x < NUM_HEADS; x++)
@@ -2040,7 +1983,7 @@ bool cHardwareSMT::Inst_HeadMove()
 	}
   else
 	{
-		threads[cur_thread].heads[HEAD_FLOW]++;
+		m_threads[m_cur_thread].heads[HEAD_FLOW]++;
 	}
   return true;
 }
@@ -2210,7 +2153,7 @@ int cHardwareSMT::FindFirstEmpty()
 		{
 			for(int z=0; z<NUM_HEADS; z++)
 	    {
-	      if(threads[y].heads[z].GetMemSpace() == index)
+	      if(m_threads[y].heads[z].GetMemSpace() == index)
 					OK=false;
 	    }
 		}

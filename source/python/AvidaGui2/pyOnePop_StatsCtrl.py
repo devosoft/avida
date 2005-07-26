@@ -11,7 +11,7 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
 
   def __init__(self,parent = None,name = None,fl = 0):
     pyOnePop_StatsView.__init__(self,parent,name,fl)
-       
+
   def construct(self, session_mdl):
     self.m_session_mdl = session_mdl
     self.m_avida = None
@@ -22,9 +22,11 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
     self.connect(
       self.m_session_mdl.m_session_mdtr, PYSIGNAL("orgClickedOnSig"),
       self.updateOrgReportSlot)
-    self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("petriDishDroppedInPopViewSig"),
+    self.connect( self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("petriDishDroppedInPopViewSig"),
       self.petriDropped)  
-    self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezerItemDoubleClickedOnInOnePopSig"),
+    self.connect( self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("freezerItemDoubleClickedOnInOnePopSig"),
       self.freezerItemDoubleClickedOn)  
     self.m_clicked_cell_number = -99
 
@@ -162,18 +164,16 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
 
 
 
-  def updateOrgReportSlot(self, clicked_cell_item):
+  def updateOrgReportSlot(self, clicked_cell_item = None):
 
     self.m_clicked_cell_item = clicked_cell_item
     if clicked_cell_item:
       clicked_cell_num = clicked_cell_item.m_population_cell.GetID()
-#the_item.brush().color()
-#the_item.m_population_cell.GetID()
-    if clicked_cell_item:
       self.m_clicked_cell_number = clicked_cell_num
-#    if clicked_cell_num is None or not self.m_avida.m_population.GetCell(int(clicked_cell_num)).IsOccupied():
     if clicked_cell_item is None or not self.m_avida.m_population.GetCell(int(clicked_cell_num)).IsOccupied():
-      #PAINT the stats fields empty
+
+      # PAINT the stats fields empty
+
       self.m_org_name.setText('empty cell')
       self.m_org_fitness.setText('-')
       self.m_org_merit.setText('-')
@@ -202,6 +202,11 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
     organism = clicked_cell.GetOrganism()
     phenotype = organism.GetPhenotype()
     genotype = organism.GetGenotype()
+ 
+    # tee up drag information
+#    dragHolder = self.itemDrag( file_name, self )
+#    dragHolder = self.itemDrag( str(genotype.GetName()), self )
+#    dragHolder.dragCopy()
 
     # print info about the org clicked on 
 
@@ -346,3 +351,23 @@ class pyOnePop_StatsCtrl(pyOnePop_StatsView):
       self.loadStats(freezer_item_dir)
     else:
       return
+
+  def restart(self):
+    self.m_avida = None
+    self.m_clicked_cell_number = -99
+    self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("orgClickedOnSig"),())
+    self.m_avg_fitness.setText("-")
+    self.m_num_orgs.setText("-")
+    self.m_avg_gest.setText("-")
+    self.m_avg_merit.setText("-")
+    self.m_avg_age.setText("-")
+    self.m_avg_genome_length.setText("-")
+    self.m_num_not.setText("-")
+    self.m_num_nand.setText("-")
+    self.m_num_and.setText("-")
+    self.m_num_ornot.setText("-")
+    self.m_num_or.setText("-")
+    self.m_num_andnot.setText("-")
+    self.m_num_nor.setText("-")
+    self.m_num_xor.setText("-")
+    self.m_num_equals.setText("-")

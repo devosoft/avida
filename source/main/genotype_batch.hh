@@ -27,6 +27,9 @@ private:
   cString name;
   bool is_lineage;
   bool is_aligned;
+private:
+  // disabled copy constructor.
+  cGenotypeBatch(const cGenotypeBatch &);
 public:
   cGenotypeBatch() : name(""), is_lineage(false), is_aligned(false) { ; }
   ~cGenotypeBatch() { ; }

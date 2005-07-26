@@ -59,6 +59,10 @@ class pySessionCtrl(qt.QObject):
     # Create "model" for storing state data.
     class pyMdl: pass
     self.m_session_mdl = pyMdl()
+    self.m_session_mdl.saved_empty_dish = False
+    self.m_session_mdl.saved_full_dish = False
+    self.m_session_mdl.new_empty_dish = True
+    self.m_session_mdl.new_full_dish = True
     self.m_session_mdl.m_current_workspace = "default.workspace"
     self.m_session_mdl.m_current_freezer = os.path.join(self.m_session_mdl.m_current_workspace, "freezer")
 
@@ -120,9 +124,19 @@ class pySessionCtrl(qt.QObject):
       PYSIGNAL("fromLiveCtrlPauseAvidaSig"),
       self.doPause)
 
+    self.connect(
+      self.m_session_mdl.m_session_mdtr,
+      PYSIGNAL("restartPopulationSig"),
+      self.restartPopulationSlot)
+
     self.doPause()
 
     return self
+
+  def restartPopulationSlot(self): 
+    print "BDB restartPopulationSlot Called"
+    self.sessionInitialized = False
+    self.m_should_update = False
 
   def setAvidaSlot(self, avida):
     "print *** pySessionCtrl setAvidaSlot ***"
@@ -152,9 +166,9 @@ class pySessionCtrl(qt.QObject):
       del old_avida
     if self.m_avida and hasattr(self.m_avida, "m_avida_thread_mdtr"):
       print "pySessionCtrl.setAvidaSlot(): connecting self.m_avida ..."
-#      self.connect(
-#        self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
-#        self.avidaUpdatedSlot)
+      self.connect(
+        self.m_avida.m_avida_thread_mdtr, PYSIGNAL("AvidaUpdatedSig"),
+        self.avidaUpdatedSlot)
       self.connect(
         self.m_session_mdl.m_session_mdtr, PYSIGNAL("doStartAvidaSig"),
         self.m_avida.m_avida_thread_mdtr, PYSIGNAL("doStartAvidaSig"))
@@ -196,6 +210,13 @@ class pySessionCtrl(qt.QObject):
     self.m_should_update = False
     self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("doPauseAvidaSig"), ())
 
+  def avidaUpdatedSlot(self):
+
+    # When there is a new update assume that the session has an unsaved 
+    # state and the dish is no longer new
+
+    self.m_session_mdl.saved_full_dish = False
+    self.m_session_mdl.new_full_dish = False
 
   def unitTest(self, recurse = False):
     return pyUnitTestSuiteRecurser("pySessionCtrl", globals(), recurse).construct().runTest().lastResult()

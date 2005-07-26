@@ -42,6 +42,7 @@ private:
   static cResourceCount resource_count;
   static bool d_useResources;
   static tArray<double> d_emptyDoubleArray;
+  static tArray<double> d_resources;
   
   static bool initialized;
 
@@ -84,6 +85,7 @@ public:
 				  const int cell_id);
   static void SetResource(int id, double new_level);
   static void SetupResources(void);
+  static void SetupResourceArray(const tArray<double> &resources);
   static bool &UseResources(void) { return d_useResources; }
   static cResourceCount &GetResourceCount(void) {return resource_count;}
 };

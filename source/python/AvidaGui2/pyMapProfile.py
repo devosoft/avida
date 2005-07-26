@@ -155,7 +155,7 @@ class pyMapProfile:
       s = sigmoid(1 - x, 0.1, 30) * 255
       return QColor(h, s, v, QColor.Hsv)
 
-    self.m_color_cache = [sigmoidDoubleToColor(float(n)/(self.m_color_cache_size - 1)) for n in range(self.m_color_cache_size)]
+    self.m_color_cache = [sigmoidDoubleToColor(float(n)/(self.m_color_cache_size - 1)) for n in xrange(self.m_color_cache_size)]
     self.m_empty_color = QColor(Qt.black)
     self.m_off_scale_color = QColor(Qt.white)
     def sigmoidColorLookup(x):

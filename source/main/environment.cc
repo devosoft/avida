@@ -643,6 +643,7 @@ bool cEnvironment::LoadLine(cString line)
 
 bool cEnvironment::Load(const cString & filename)
 {
+  cerr << "--- ENVIRONMENT SETUP ---" << endl;
   cerr << "ENV: Loading file '" << filename << "'." << endl;
 
   cInitFile infile(filename);
@@ -672,6 +673,8 @@ bool cEnvironment::Load(const cString & filename)
       return false;
     }
   }
+
+  cerr << "--- FINISHED ENVIRONMENT SETUP---" << endl;
 
   return true;
 }

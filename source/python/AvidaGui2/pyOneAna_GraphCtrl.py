@@ -50,7 +50,8 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
     self.m_petri_dish_dir_path = ' '
     self.m_petri_dish_dir_exists_flag = False
 
-    self.connect( self.m_session_mdl.m_session_mdtr, PYSIGNAL("freezerItemDoubleClickedOnInOneAnaSig"),
+    self.connect( self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("freezerItemDoubleClickedOnInOneAnaSig"),
       self.freezerItemDoubleClickedOn)  
 
 
@@ -113,7 +114,7 @@ class pyOneAna_GraphCtrl(pyOneAna_GraphView):
     x_array = zeros(init_file.GetNumLines(), Float)
     y_array = zeros(init_file.GetNumLines(), Float)
 
-    for line_id in range(init_file.GetNumLines()):
+    for line_id in xrange(init_file.GetNumLines()):
       line = init_file.GetLine(line_id)
       x_array[line_id] = line.GetWord(colx - 1).AsDouble()
       y_array[line_id] = line.GetWord(coly - 1).AsDouble()

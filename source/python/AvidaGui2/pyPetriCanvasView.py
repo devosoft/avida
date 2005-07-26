@@ -1,4 +1,4 @@
-
+from qt import QTextDrag
 from qt import Qt, PYSIGNAL
 from qtcanvas import QCanvasView
 
@@ -18,5 +18,5 @@ class pyPetriCanvasView(QCanvasView):
           org_clicked_on__color = item.brush().color()
           org_clicked_on_item = item
       self.emit(PYSIGNAL("orgClickedOnSig"), (org_clicked_on_item,))
-      if org_clicked_on_item:
-        self.emit(PYSIGNAL("orgClickedOnSig"), (org_clicked_on_item,))
+
+   

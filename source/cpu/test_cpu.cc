@@ -42,7 +42,7 @@ cResourceCount cTestCPU::resource_count;
 bool cTestCPU::initialized(false);
 bool cTestCPU::d_useResources(false);
 tArray<double> cTestCPU::d_emptyDoubleArray;
-
+tArray<double> cTestCPU::d_resources;
 
 
 //////////////////////////////
@@ -57,14 +57,17 @@ void cTestCPU::Setup(cInstSet * in_inst_set,
   inst_set = in_inst_set;
   environment = in_env;
   resource_count.SetSize(in_env->GetResourceLib().GetSize());
-  d_emptyDoubleArray.ResizeClear(in_env->GetResourceLib().GetSize());
+  //d_emptyDoubleArray.ResizeClear(in_env->GetResourceLib().GetSize());
+  //d_resources.ResizeClear(in_env->GetResourceLib().GetSize());
   SetupResources();
   test_interface = in_interface;
   initialized = true;
+
 }
 
 void cTestCPU::SetupResources(void) {
-  // Setup the resources...
+
+    // Setup the resources...
   assert(environment);
 
   const cResourceLib & resource_lib = environment->GetResourceLib();
@@ -72,6 +75,11 @@ void cTestCPU::SetupResources(void) {
 
   resource_count.SetSize(resource_lib.GetSize());
   d_emptyDoubleArray.ResizeClear(resource_lib.GetSize());
+  d_resources.ResizeClear(resource_lib.GetSize());
+  for(int i=0; i<resource_lib.GetSize(); i++) {
+    d_emptyDoubleArray[i] = 0.0;
+    d_resources[i] = 0.0;
+  }
   //resource_count.ResizeSpatialGrids(cConfig::GetWorldX(),
   //				    cConfig::GetWorldY());
   resource_count.ResizeSpatialGrids(1, 1);
@@ -88,6 +96,19 @@ void cTestCPU::SetupResources(void) {
                            res->GetInflowY2(), res->GetOutflowX1(), 
                            res->GetOutflowX2(), res->GetOutflowY1(), 
                            res->GetOutflowY2() );
+  }
+
+  return;
+
+}
+
+void cTestCPU::SetupResourceArray(const tArray<double> &resources) {
+  for(int i=0; i<d_resources.GetSize(); i++) {
+    if(i >= resources.GetSize()) {
+      d_resources[i] = 0.0;
+    } else {
+      d_resources[i] = resources[i];
+    }
   }
 
   return;
@@ -121,18 +142,17 @@ bool cTestCPU::ProcessGestation(cCPUTestInfo & test_info, int cur_depth)
 
   // Prepare the inputs...
   cur_input = 0;
-  cur_receive = 0;
 
   // Determine if we're tracing and what we need to print.
-  cHardwareTracer * tracer =
-    test_info.GetTraceExecution() ? (test_info.GetTracer()) : NULL;
+  ostream * trace_fp =
+    test_info.GetTraceExecution() ? &(test_info.GetTraceFP()) : NULL;
 
   int time_used = 0;
   while (time_used < time_allocated &&
 	 organism.GetHardware().GetMemory().GetSize() &&
 	 organism.GetPhenotype().GetNumDivides() == 0) {
     time_used++;
-    organism.GetHardware().SetTrace(tracer);
+    organism.GetHardware().SetTrace(trace_fp);
     organism.GetHardware().SingleProcess();
     organism.GetHardware().SetTrace(NULL);
     //resource_count.Update(1/cConfig::GetAveTimeslice());
@@ -140,22 +160,24 @@ bool cTestCPU::ProcessGestation(cCPUTestInfo & test_info, int cur_depth)
   }
 
   // Print out some final info in trace...
-  if (tracer != NULL) {
-    if (cHardwareTracer_TestCPU * tracer_test_cpu
-        = dynamic_cast<cHardwareTracer_TestCPU *>(tracer)
-    ){
-      tracer_test_cpu->TraceHardware_TestCPU(
-        time_used,
-        time_allocated,
-        organism.GetHardware().GetMemory().GetSize(),
-        organism.GetHardware().GetMemory().AsString(),
-        organism.ChildGenome().AsString()
-      );
+  if (trace_fp != NULL) {
+    if (time_used == time_allocated) {
+      *trace_fp << endl << "TIMEOUT: No offspring produced." << endl;
+    }
+    else if (organism.GetHardware().GetMemory().GetSize() == 0) {
+      *trace_fp << endl << "ORGANISM DEATH: No offspring produced." << endl;
+    }
+    else {
+      *trace_fp << endl << "Final Memory: "
+		<< organism.GetHardware().GetMemory().AsString() << endl
+		<< "Child Memory: " << organism.ChildGenome().AsString()
+		<< endl;
     }
   }
 
   // For now, always return true.
   return true;
+
 }
 
 
@@ -396,10 +418,15 @@ int cTestCPU::GetReceiveValue()
 const tArray<double> & cTestCPU::GetResources()
 {
   if(d_useResources) {
-    return resource_count.GetResources();
+    //return resource_count.GetResources();  // Changed to use my own vector
+    return d_resources;
   }
+
   return d_emptyDoubleArray;
+  //assert(resource_count != NULL);       // Original line
+  //return resource_count.GetResources();   // Original line
 }
+
 
 void cTestCPU::UpdateResources(const tArray<double> & res_change)
 {

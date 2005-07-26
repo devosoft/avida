@@ -132,9 +132,10 @@ class pyAvida(qt.QObject):
       pass
 
   def doStepAvidaSlot(self, cell_id):
-    print("doStepAvidaSlot")
+    print("pyAvida.doStepAvidaSlot() ...")
 
   def doCloseAvidaSlot(self):
+    print("pyAvida.doCloseAvidaSlot() ...")
     self.m_avida_threaded_driver.doExit()
     if self.m_avida_threaded_driver.m_thread.isAlive():
       self.m_avida_threaded_driver.m_thread.join()

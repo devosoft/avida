@@ -41,7 +41,7 @@ class pyHardwareCPUTrace:
 
     self.m_last_copied_instruction = max(
       [hardware.GetMemory().GetFlagCopied(i) and i or self.m_last_copied_instruction \
-      for i in range(self.m_last_copied_instruction, hardware.GetMemory().GetSize())]
+      for i in xrange(self.m_last_copied_instruction, hardware.GetMemory().GetSize())]
     )
     self.m_last_copy_info.append(self.m_last_copied_instruction)
 
@@ -55,8 +55,15 @@ class pyHardwareCPUTrace:
     self.m_ihead_moves_info.append(len(self.m_ihead_moves))
 
   def recordGenotypeSummary(self, analyze_genotype):
+    print "pyHardwareCPUTrace.recordGenotypeSummary() ..."
     self.m_is_viable = analyze_genotype.GetViable()
     self.m_gestation_time = analyze_genotype.GetGestTime()
     self.m_fitness = analyze_genotype.GetFitness()
     self.m_size = analyze_genotype.GetLength()
+    if not self.m_is_viable:
+      self.m_gestation_time = len(self.m_genome_info)
+    print "  self.m_is_viable", self.m_is_viable
+    print "  self.m_gestation_time", self.m_gestation_time
+    print "  self.m_fitness", self.m_fitness
+    print "  self.m_size", self.m_size
 

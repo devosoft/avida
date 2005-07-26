@@ -29,6 +29,9 @@ private:
   tList<cReactionProcess> process_list;
   tList<cReactionRequisite> requisite_list;
   bool active;
+private:
+  // disabled copy constructor.
+  cReaction(const cReaction &);
 public:
   cReaction(const cString & _name, int _id);
   ~cReaction();

@@ -1,21 +1,21 @@
 #include "cpu_head-fixups.hh"
 
-bool cCPUHead_GetFlagCopied(const cCPUHead &cpu_head){
+bool cCPUHead_GetFlagCopied(cCPUHead &cpu_head){
   return cpu_head.FlagCopied();
 }
-bool cCPUHead_GetFlagMutated(const cCPUHead &cpu_head){
+bool cCPUHead_GetFlagMutated(cCPUHead &cpu_head){
   return cpu_head.FlagMutated();
 }
-bool cCPUHead_GetFlagExecuted(const cCPUHead &cpu_head){
+bool cCPUHead_GetFlagExecuted(cCPUHead &cpu_head){
   return cpu_head.FlagExecuted();
 }
-bool cCPUHead_GetFlagBreakpoint(const cCPUHead &cpu_head){
+bool cCPUHead_GetFlagBreakpoint(cCPUHead &cpu_head){
   return cpu_head.FlagBreakpoint();
 }
-bool cCPUHead_GetFlagPointMut(const cCPUHead &cpu_head){
+bool cCPUHead_GetFlagPointMut(cCPUHead &cpu_head){
   return cpu_head.FlagPointMut();
 }
-bool cCPUHead_GetFlagCopyMut(const cCPUHead &cpu_head){
+bool cCPUHead_GetFlagCopyMut(cCPUHead &cpu_head){
   return cpu_head.FlagCopyMut();
 }
 

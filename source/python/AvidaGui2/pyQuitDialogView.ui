@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>324</width>
-            <height>135</height>
+            <height>113</height>
         </rect>
     </property>
     <property name="caption">
@@ -19,6 +19,14 @@
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>WarningLabel</cstring>
+            </property>
+            <property name="text">
+                <string>The current petri dish has not been saved in the freezer.</string>
+            </property>
+        </widget>
         <widget class="QLayoutWidget">
             <property name="name">
                 <cstring>layout21</cstring>
@@ -52,16 +60,6 @@
                     </property>
                 </widget>
             </hbox>
-        </widget>
-        <widget class="QLabel">
-            <property name="name">
-                <cstring>WarningLabel</cstring>
-            </property>
-            <property name="text">
-                <string>&lt;b&gt;WARNING!&lt;/b&gt; Quiting will not save current work&lt;br&gt;
-Select Cancel and click on "Freeze Petri Dish" &lt;br&gt;
-button to save current population and/or settings.</string>
-            </property>
         </widget>
     </vbox>
 </widget>

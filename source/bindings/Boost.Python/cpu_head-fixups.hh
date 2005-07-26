@@ -5,12 +5,12 @@
 #include "cpu_head.hh"
 #endif
 
-bool cCPUHead_GetFlagCopied(const cCPUHead &);
-bool cCPUHead_GetFlagMutated(const cCPUHead &);
-bool cCPUHead_GetFlagExecuted(const cCPUHead &);
-bool cCPUHead_GetFlagBreakpoint(const cCPUHead &);
-bool cCPUHead_GetFlagPointMut(const cCPUHead &);
-bool cCPUHead_GetFlagCopyMut(const cCPUHead &);
+bool cCPUHead_GetFlagCopied(cCPUHead &);
+bool cCPUHead_GetFlagMutated(cCPUHead &);
+bool cCPUHead_GetFlagExecuted(cCPUHead &);
+bool cCPUHead_GetFlagBreakpoint(cCPUHead &);
+bool cCPUHead_GetFlagPointMut(cCPUHead &);
+bool cCPUHead_GetFlagCopyMut(cCPUHead &);
 
 void cCPUHead_SetFlagCopied(cCPUHead &, bool);
 void cCPUHead_SetFlagMutated(cCPUHead &, bool);

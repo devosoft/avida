@@ -167,6 +167,7 @@ private:
 
   // Lineage Analysis Commands...
   void CommandAlign(cString cur_string);
+  void AnalyzeNewInfo(cString cur_string);   
 
   // Build Input Files for Avida
   void WriteClone(cString cur_string);
@@ -182,6 +183,9 @@ private:
   void AnalyzeComplexity(cString cur_string);
   void AnalyzePopComplexity(cString cur_string);
   void AnalyzeEpistasis(cString cur_string);
+  double AnalyzeEntropy(cAnalyzeGenotype * genotype, double mut_rate);
+  double AnalyzeEntropyGivenParent(cAnalyzeGenotype * genotype, 
+				   cAnalyzeGenotype * parent, double mut_rate);
 
   // Environment Manipulation
   void EnvironmentSetup(cString cur_string);
@@ -211,12 +215,15 @@ private:
   void FunctionCreate(cString cur_string, tList<cAnalyzeCommand> & clist);
   // Looks up the resource concentrations that are the closest to the
   // given update and then fill in those concentrations into the environment.
-  void FillResources(int update, cEnvironment &environment);
+  void FillResources(int update);
 
   // Flow Control...
   void CommandForeach(cString cur_string, tList<cAnalyzeCommand> & clist);
   void CommandForRange(cString cur_string, tList<cAnalyzeCommand> & clist);
 
+private:
+  // disabled copy constructor.
+  cAnalyze(const cAnalyze &);
 public:
   cAnalyze(cString filename, cEnvironment* = NULL);
   ~cAnalyze();
