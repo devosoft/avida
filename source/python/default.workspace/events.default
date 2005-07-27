@@ -16,14 +16,14 @@
 ##############################################################################
 
 # Print all of the standard data files...
-u 0:100 print_dom                 # Save the most abundant genotypes
-u 0:1:end print_average_data    # Save info about they average genotypes
-u 0:100:end print_dominant_data   # Save info about most abundant genotypes
-u 0:100:end print_stats_data      # Collect satistics about entire pop.
-u 0:1:end print_count_data      # Count organisms, genotypes, species, etc.
-u 0:100:end print_tasks_data      # Save organisms counts for each task.
-u 0:100:end print_time_data       # Track time conversion (generations, etc.)
-u 0:100:end print_resource_data   # Track resource abundance.
+# u 0:100 print_dom                 # Save the most abundant genotypes
+# u 0:1:end print_average_data    # Save info about they average genotypes
+# u 0:100:end print_dominant_data   # Save info about most abundant genotypes
+# u 0:100:end print_stats_data      # Collect satistics about entire pop.
+# u 0:1:end print_count_data      # Count organisms, genotypes, species, etc.
+# u 0:100:end print_tasks_data      # Save organisms counts for each task.
+# u 0:100:end print_time_data       # Track time conversion (generations, etc.)
+# u 0:100:end print_resource_data   # Track resource abundance.
 
 # A few data files not printed by default
 # u 100:100:end print_error_data      # Std. Error on averages.
