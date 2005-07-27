@@ -249,7 +249,7 @@ int cIndexedBlockStruct::Compress()
   scaled_used = write_loc;
 
   if (scaled_used != num_data)
-    printf("WARNING: after Compress() scaled_used = %d, while num_data = %d\n",
+    printf("Warning: after Compress() scaled_used = %d, while num_data = %d\n",
 	   scaled_used, num_data);
 
   return scaled_used;

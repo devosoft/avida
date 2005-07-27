@@ -36,12 +36,11 @@ using namespace std;
 /////////////////////////////
 
 cAvidaDriver_Population::cAvidaDriver_Population(cEnvironment & environment, cChangeList * change_list)
-  : population(NULL)
-  , event_manager(NULL)
-  , event_list(NULL)
+  : population(NULL), event_manager(NULL), event_list(NULL)
 {
   // Setup Population
-  cout << "Initializing Population..." << flush;
+  cout << endl << "Initializing Population..." << endl;
+    
   cPopulationInterface default_interface;
   default_interface.SetFun_NewHardware(&cCallbackUtil::CB_NewHardware);
   default_interface.SetFun_Recycle(&cCallbackUtil::CB_RecycleHardware);
@@ -65,25 +64,26 @@ cAvidaDriver_Population::cAvidaDriver_Population(cEnvironment & environment, cCh
   default_interface.SetFun_UpdateMerit(&cCallbackUtil::CB_UpdateMerit);
 
   population = new cPopulation(default_interface, environment, change_list);
-  cout << " ...done" << endl;
+  cout << "-- Population Loaded --" << endl << endl;
 
   //Setup Event List
-  cout<<"Initializing Event Factory Manager..."<<flush;
+  cout << "Initializing Event Factory Manager..." << endl;
   event_manager = new cEventFactoryManager;
   cStats & stats = population->GetStats();
   event_list = new cEventList( event_manager, new cAvidaTriggers(stats) );
-  cout<<"...Factories..."<<flush;
-
+  
+  cout << "- Loading Factories" << endl;
   // in principle, one could add more than one event factory here.
   // however, this is not a good idea, because the automatic documentation
   // system cannot cope with this at this point. Claus
   event_manager->AddFactory(new cPopulationEventFactory(population));
-  cout<<" ...done"<<endl;
+  cout << "-- Event Factory Manager Loaded --" << endl << endl;
 
-  cout<<"Reading Event List File..."<<flush;
+  cout << "Reading Event List File..." << endl;
   ReadEventListFile(cConfig::GetEventFilename());
-  cout<<" ...done"<<endl;
-
+  event_list->PrintEventList();
+  cout << "-- End of Event List --" << endl << endl;
+  
   // Make sure the directory 'genebank' exits!
   cTools::MkDir("genebank", true);
 }

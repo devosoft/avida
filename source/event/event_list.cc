@@ -26,6 +26,7 @@
 #endif
 
 #include <float.h>           // for DBL_MIN
+#include <iostream>
 
 using namespace std;
 
@@ -145,20 +146,18 @@ void cEventList::Process(){
     // Check trigger condition
     
     // IMMEDIATE Events always happen and are always deleted
-    if( entry->GetTrigger() == cEventTriggers::IMMEDIATE  ){
-      //cerr<<"IMMEDIATE EVENT "<<event->GetName()<<endl;
+    if( entry->GetTrigger() == cEventTriggers::IMMEDIATE  ) {
       entry->GetEvent()->Process();
       Delete(entry);
-    }else{
-      
+    } else {
       // Get the value of the appropriate trigger variable
       t_val = m_triggers->GetTriggerValue(entry->GetTrigger());
       
       if( t_val != DBL_MAX &&
-          ( t_val >= entry->GetStart() ||
-            entry->GetStart() == cEventTriggers::TRIGGER_BEGIN ) &&
-          ( t_val <= entry->GetStop() ||
-            entry->GetStop() == cEventTriggers::TRIGGER_END ) ){
+          (t_val >= entry->GetStart() ||
+            entry->GetStart() == cEventTriggers::TRIGGER_BEGIN) &&
+          (t_val <= entry->GetStop() ||
+            entry->GetStop() == cEventTriggers::TRIGGER_END) ) {
         
         entry->GetEvent()->Process();
         
@@ -171,7 +170,7 @@ void cEventList::Process(){
             // If it is a onetime thing, remove it...
             Delete(entry);
           }else{
-            // There is an interal.. so add it
+            // There is an interval.. so add it
             entry->NextInterval();
           }
           
@@ -256,51 +255,45 @@ void cEventList::PrintEvent(cEventListEntry * entry, ostream & os){
   assert( entry != NULL );
   switch ( entry->GetTrigger() ){
     case cEventTriggers::UPDATE:
-      //os<<"UPDATE ";
-      os<<"update ";
+      os << "update ";
       break;
     case cEventTriggers::GENERATION:
-      //os<<"GENERATION ";
-      os<<"generation ";
+      os << "generation ";
       break;
     case cEventTriggers::IMMEDIATE:
-      //os<<"IMMEDIATE ";
-      os<<"immediate ";
+      os << "immediate ";
       break;
     default:
-      //os<<"UNDEFINED ";
-      os<<"undefined ";
+      os << "undefined ";
   }
-  //os<<"[";
-  if (entry->GetTrigger() != cEventTriggers::IMMEDIATE ){
-    if( entry->GetStart() == cEventTriggers::TRIGGER_BEGIN ){
-      os<<"begin";
-    }else{
-      os<<entry->GetStart();
+  if (entry->GetTrigger() != cEventTriggers::IMMEDIATE ) {
+    if( entry->GetStart() == cEventTriggers::TRIGGER_BEGIN ) {
+      os << "begin";
+    } else {
+      os << entry->GetStart();
     }
     os<<":";
-    if( entry->GetInterval() == cEventTriggers::TRIGGER_ONCE ){
-      os<<"once";
-    }else if( entry->GetInterval() == cEventTriggers::TRIGGER_ALL ){
-      os<<"all";
-    }else{
-      os<<entry->GetInterval();
+    if( entry->GetInterval() == cEventTriggers::TRIGGER_ONCE ) {
+      os << "once";
+    } else if (entry->GetInterval() == cEventTriggers::TRIGGER_ALL) {
+      os << "all";
+    } else {
+      os << entry->GetInterval();
     }
-    os<<":";
+    os << ":";
     if( entry->GetStop() == cEventTriggers::TRIGGER_END ){
-      os<<"end";
+      os << "end";
     }else{
-      os<<entry->GetStop();
+      os << entry->GetStop();
     }
-    os<<" ";
+    os << " ";
   }
-  //os<<"] "<<entry->GetName()<<" "<<entry->GetArgs()<<endl;
-  os<<entry->GetName()<<" "<<entry->GetArgs()<<endl;
+  os << entry->GetName() << " " << entry->GetArgs() << endl;
 }
 
-
 //// Parsing Event List File Format ////
-bool cEventList::AddEventFileFormat(const cString & in_line){
+bool cEventList::AddEventFileFormat(const cString & in_line)
+{
   cString cur_line = in_line;
   
   // Timing

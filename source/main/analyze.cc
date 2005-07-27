@@ -180,9 +180,7 @@ void cAnalyze::LoadBasicDump(cString cur_string)
 
 void cAnalyze::LoadDetailDump(cString cur_string)
 {
-  cout << "WARNING: This function is DEPRICATED!" << endl
-  << "It is no longer being supported; use \"LOAD\" instead." << endl;
-  
+  cout << "Warning: Use of LoadDetailDump() is deprecated.  Use \"LOAD\" instead." << endl;  
   // LOAD_DETAIL_DUMP
   
   cString filename = cur_string.PopWord();

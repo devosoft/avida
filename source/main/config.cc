@@ -435,10 +435,10 @@ void cConfig::SetupMS()
     // In fact, these APIs fail on Win95 w/ rc = 120 (API only works in NT
     //  mode).
     if (!SetConsoleCP (GetOEMCP()))        // and for Console input
-      cerr << "WARNING: Unable to set input character set, rc="
+      cerr << "Warning: Unable to set input character set, rc="
         << GetLastError() << endl;
     if (!SetConsoleOutputCP (GetOEMCP()))  // and for Console output
-      cerr << "WARNING: Unable to set output character set, rc="
+      cerr << "Warning: Unable to set output character set, rc="
         << GetLastError() << endl;
   }
 #endif
