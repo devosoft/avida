@@ -1,22 +1,22 @@
 #ifndef CPU_HEAD_FIXUPS_HH
 #define CPU_HEAD_FIXUPS_HH
 
-#ifndef CPU_HEAD_HH
-#include "cpu_head.hh"
+#ifndef HEAD_CPU_HH
+#include "head_cpu.hh"
 #endif
 
-bool cCPUHead_GetFlagCopied(cCPUHead &);
-bool cCPUHead_GetFlagMutated(cCPUHead &);
-bool cCPUHead_GetFlagExecuted(cCPUHead &);
-bool cCPUHead_GetFlagBreakpoint(cCPUHead &);
-bool cCPUHead_GetFlagPointMut(cCPUHead &);
-bool cCPUHead_GetFlagCopyMut(cCPUHead &);
+bool cHeadCPU_GetFlagCopied(cHeadCPU &);
+bool cHeadCPU_GetFlagMutated(cHeadCPU &);
+bool cHeadCPU_GetFlagExecuted(cHeadCPU &);
+bool cHeadCPU_GetFlagBreakpoint(cHeadCPU &);
+bool cHeadCPU_GetFlagPointMut(cHeadCPU &);
+bool cHeadCPU_GetFlagCopyMut(cHeadCPU &);
 
-void cCPUHead_SetFlagCopied(cCPUHead &, bool);
-void cCPUHead_SetFlagMutated(cCPUHead &, bool);
-void cCPUHead_SetFlagExecuted(cCPUHead &, bool);
-void cCPUHead_SetFlagBreakpoint(cCPUHead &, bool);
-void cCPUHead_SetFlagPointMut(cCPUHead &, bool);
-void cCPUHead_SetFlagCopyMut(cCPUHead &, bool);
+void cHeadCPU_SetFlagCopied(cHeadCPU &, bool);
+void cHeadCPU_SetFlagMutated(cHeadCPU &, bool);
+void cHeadCPU_SetFlagExecuted(cHeadCPU &, bool);
+void cHeadCPU_SetFlagBreakpoint(cHeadCPU &, bool);
+void cHeadCPU_SetFlagPointMut(cHeadCPU &, bool);
+void cHeadCPU_SetFlagCopyMut(cHeadCPU &, bool);
 
 #endif

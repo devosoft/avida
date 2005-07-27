@@ -44,6 +44,7 @@ for typename in template_specializers:
   set_policy(list_iterator_type.NextConst , return_value_policy(reference_existing_object))
   set_policy(list_iterator_type.PrevConst , return_value_policy(reference_existing_object))
   set_policy(list_iterator_type.Get , return_value_policy(reference_existing_object))
+  set_policy(list_iterator_type.GetPos , return_value_policy(reference_existing_object))
   set_policy(list_iterator_type.Next , return_value_policy(reference_existing_object))
   set_policy(list_iterator_type.Prev , return_value_policy(reference_existing_object))
   set_policy(list_iterator_type.Remove , return_value_policy(reference_existing_object))

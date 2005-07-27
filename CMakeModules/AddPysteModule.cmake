@@ -2,7 +2,6 @@
 INCLUDE_DIRECTORIES(${BOOST_INCLUDE_PATH} ${PYTHON_INCLUDE_PATH})
 INCLUDE_DIRECTORIES(${ALL_INC_DIRS} ${PROJECT_SOURCE_DIR}/source/third-party/yaktest)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
-#LINK_DIRECTORIES(${PY_BOOST_LIBRARIES})
 
 IF(APPLE)
   SET(BOOST_PYTHON_COMPILE_FLAGS "-no-cpp-precomp -ftemplate-depth-120 -fno-inline -fPIC -Wno-long-double -Wno-long-long -DBOOST_PYTHON_DYNAMIC_LIB")
@@ -31,10 +30,7 @@ MACRO(ADD_PYSTE_MODULE
   #XXX
   FOREACH(Entry ${${PysteBases}})
     STRING(REGEX REPLACE "(.*)::(.*)" "\\1" PysteBase ${Entry})
-    #STRING(REGEX REPLACE "(.*)::(.*)" "\\2" DepList ${Entry})
     SET(${ModuleName}_CppFiles ${${ModuleName}_CppFiles} ${CMAKE_CURRENT_BINARY_DIR}/${ModuleName}/_${PysteBase}.cpp)
-    #FILE(GLOB tmpfile "${PROJECT_SOURCE_DIR}/source/*/${PysteBase}.hh")
-    #MESSAGE("found \"${PysteBase}.hh\" at \"${tmpfile}\".")
   ENDFOREACH(Entry ${${PysteBases}})
   SET(${ModuleName}_CppFiles ${${ModuleName}_CppFiles} ${CMAKE_CURRENT_BINARY_DIR}/${ModuleName}/_main.cpp)
 
@@ -57,20 +53,6 @@ MACRO(ADD_PYSTE_MODULE
   ENDIF(${ExtraDepends})
 
   #
-  # A list of dummy cpp source files used as dependencies for
-  # corresponding pyste files. Each of the dummy cpp files includes the
-  # headers required by the corresponding pyste files.
-  #
-  # I couldn't think of any easier ways to trigger dependency tracking
-  # for the pyste files.
-  #
-  #SET(Dummy_${ModuleName}_CppFiles)
-  #FOREACH(PysteBase ${${PysteBases}})
-  #  SET(Dummy_${ModuleName}_CppFiles ${Dummy_${ModuleName}_CppFiles} ${CMAKE_CURRENT_SOURCE_DIR}/dummy_${PysteBase}.cc)
-  #ENDFOREACH(PysteBase ${${PysteBases}})
-  #ADD_LIBRARY(Dummy_${ModuleName} MODULE ${Dummy_${ModuleName}_CppFiles})
-
-  #
   # Make a list of pyste source files to parse, and for each such file, add the parsing command that produces the
   # corresponding cpp source file.
   #
@@ -78,8 +60,6 @@ MACRO(ADD_PYSTE_MODULE
   SET(${ModuleName}_PysteCacheFiles)
   #XXX
   FOREACH(Entry ${${PysteBases}})
-    #STRING(REGEX REPLACE "(.*)::" "\\1" PysteBase ${Entry})
-    #STRING(REGEX REPLACE "::(.*)" "\\1" Args ${Entry})
     STRING(REGEX REPLACE "(.*)::(.*)" "\\1" PysteBase ${Entry})
     STRING(REGEX REPLACE "(.*)::(.*)" "\\2" Args ${Entry})
     IF(Args)
@@ -94,12 +74,7 @@ MACRO(ADD_PYSTE_MODULE
       ${CMAKE_CURRENT_BINARY_DIR}/${ModuleName}/${PysteBase}.pystec)
     FILE(GLOB HeaderFile "${PROJECT_SOURCE_DIR}/source/*/${PysteBase}.hh")
     FILE(GLOB ThirdPartyHeaderFile "${PROJECT_SOURCE_DIR}/source/*/*/${PysteBase}.hh")
-    #MESSAGE("\"${PysteBase}.hh\" dependencies :")
-    #MESSAGE("...\"${HeaderFile}\"")
     SET(DepList ${HeaderFile} ${ThirdPartyHeaderFile} ${DepList})
-    #FOREACH(Dep ${DepList})
-    #  MESSAGE("   \"${Dep}\"")
-    #ENDFOREACH(Dep ${DepList})
 
     ADD_CUSTOM_COMMAND(COMMENT "${PysteBase} pyste cache file..."
       OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${ModuleName}/${PysteBase}.pystec
@@ -207,12 +182,7 @@ MACRO(ADD_PYSTE_PACKAGE
 
     FILE(GLOB HeaderFile "${PROJECT_SOURCE_DIR}/source/*/${PysteBase}.hh")
     FILE(GLOB ThirdPartyHeaderFile "${PROJECT_SOURCE_DIR}/source/*/*/${PysteBase}.hh")
-    #MESSAGE("\"${PysteBase}.hh\" dependencies :")
-    #MESSAGE("...\"${HeaderFile}\"")
     SET(DepList ${HeaderFile} ${ThirdPartyHeaderFile} ${DepList})
-    #FOREACH(Dep ${DepList})
-    #  MESSAGE("   \"${Dep}\"")
-    #ENDFOREACH(Dep ${DepList})
 
     ADD_CUSTOM_COMMAND(COMMENT "${PysteBase} pyste cache file..."
       OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PysteBase}.pystec
@@ -256,8 +226,4 @@ MACRO(ADD_PYSTE_PACKAGE
     INSTALL_TARGETS(${PackageLocation}/${ModuleName} $${ModuleName}/${PysteBase})
     FILE(APPEND ${LIBRARY_OUTPUT_PATH}/${ModuleName}/__init__.py "from ${PysteBase} import *\n")
   ENDFOREACH(Entry ${${PysteBases}})
-  #FOREACH(Entry ${${PysteBases}})
-  #  STRING(REGEX REPLACE "(.*)::(.*)" "\\1" PysteBase ${Entry})
-  #  FILE(APPEND ${LIBRARY_OUTPUT_PATH}/${ModuleName}/__init__.py "del(${PysteBase})\n")
-  #ENDFOREACH(Entry ${${PysteBases}})
 ENDMACRO(ADD_PYSTE_PACKAGE)

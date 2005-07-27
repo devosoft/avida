@@ -598,6 +598,7 @@
 		70CD47EE089692AE0070D2DF /* test_cpu-fixups.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = "test_cpu-fixups.hh"; sourceTree = "<group>"; };
 		70CD47EF089692AE0070D2DF /* tVector_instantiations.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = tVector_instantiations.hh; sourceTree = "<group>"; };
 		70CD47F0089692AE0070D2DF /* tVector.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = tVector.pyste; sourceTree = "<group>"; };
+		70CD482C089702880070D2DF /* Avida-ED-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Avida-ED-Info.plist"; sourceTree = "<group>"; };
 		DCC30D300762539B008F7A48 /* 4stack_head.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = 4stack_head.pyste; sourceTree = "<group>"; };
 		DCC30D310762539B008F7A48 /* A.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = A.hh; sourceTree = "<group>"; };
 		DCC30D320762539B008F7A48 /* A.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = A.pyste; sourceTree = "<group>"; };
@@ -677,7 +678,6 @@
 		DCC30EF50762539D008F7A48 /* double_sum.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = double_sum.pyste; sourceTree = "<group>"; };
 		DCC30EF60762539D008F7A48 /* environment.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.pyste; sourceTree = "<group>"; };
 		DCC30EF70762539D008F7A48 /* event.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = event.pyste; sourceTree = "<group>"; };
-		DCC30EF80762539D008F7A48 /* event_factory.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = event_factory.pyste; sourceTree = "<group>"; };
 		DCC30EF90762539D008F7A48 /* event_factory_manager.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = event_factory_manager.pyste; sourceTree = "<group>"; };
 		DCC30EFA0762539D008F7A48 /* event_list.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = event_list.pyste; sourceTree = "<group>"; };
 		DCC30EFB0762539D008F7A48 /* event_list_entry.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = event_list_entry.pyste; sourceTree = "<group>"; };
@@ -1673,6 +1673,7 @@
 				DCC3164E07626CF3008F7A48 /* Products */,
 				70658C59085DF67D00486BED /* libncurses.5.4.dylib */,
 				703F684207B437B800C1CA76 /* status.xml */,
+				70CD482C089702880070D2DF /* Avida-ED-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1784,7 +1785,6 @@
 				DCC30EF50762539D008F7A48 /* double_sum.pyste */,
 				DCC30EF60762539D008F7A48 /* environment.pyste */,
 				DCC30EF70762539D008F7A48 /* event.pyste */,
-				DCC30EF80762539D008F7A48 /* event_factory.pyste */,
 				DCC30EF90762539D008F7A48 /* event_factory_manager.pyste */,
 				DCC30EFA0762539D008F7A48 /* event_list.pyste */,
 				DCC30EFB0762539D008F7A48 /* event_list_entry.pyste */,
@@ -2936,6 +2936,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 700E2B7E085DE50C00CF158A /* Build configuration list for PBXNativeTarget "viewer" */;
 			buildPhases = (
+				70CD485A08971DE50070D2DF /* ShellScript */,
 				700E2AF4085DE50C00CF158A /* Sources */,
 				700E2B6C085DE50C00CF158A /* Frameworks */,
 				700E2B6D085DE50C00CF158A /* CopyFiles */,
@@ -3031,6 +3032,22 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		70CD485A08971DE50070D2DF /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "printenv\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		700E2AF4085DE50C00CF158A /* Sources */ = {

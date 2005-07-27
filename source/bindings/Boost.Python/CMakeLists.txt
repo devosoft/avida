@@ -27,45 +27,16 @@ FOREACH(PY_TEST_SUITE ${PY_UNITTEST_SUITES})
   )   
 ENDFOREACH(PY_TEST_SUITE)
 
-#
-# kaben-brainstorms.
-#
-#SET(libkaben_brainstorms_SOURCES kaben_brainstorms.cc)
-#SET_SOURCE_FILES_PROPERTIES(${libkaben_brainstorms_SOURCES} PROPERTIES COMPILE_FLAGS ${BOOST_PYTHON_COMPILE_FLAGS})
-#ADD_LIBRARY(kaben_brainstorms MODULE ${libkaben_brainstorms_SOURCES})
-#SET_TARGET_PROPERTIES(kaben_brainstorms PROPERTIES PREFIX "")
-#TARGET_LINK_LIBRARIES(kaben_brainstorms main cpu event main tools ${BOOST_LIBRARY} ${PYTHON_LIBRARY})
-
 
 #
 # A test of python packaging.
 #
 SET(PyAvida_Pyste_Bases
-  #A::${CMAKE_CURRENT_SOURCE_DIR}/A.hh:
-  #B::${CMAKE_CURRENT_SOURCE_DIR}/B.hh:
-
-  # XXX : cCallbackUtil is used by taking pointers to its member functions. Doesn't play well with Python; don't wrap it.
-  #callback_util::
-  # XXX : cBlockStruct is designed for use with raw pointers, and won't play well with Python. Hence, don't wrap it.
-  #block_struct::
-  # XXX : cScaledBlock is designed for use with raw pointers, and won't play well with Python. Hence, don't wrap it.
-  #scaled_block::
 
   # XXX I can't figure out how it works.
   tArray::${CMAKE_CURRENT_SOURCE_DIR}/organism.pyste:${CMAKE_CURRENT_SOURCE_DIR}/merit.pyste:${CMAKE_CURRENT_SOURCE_DIR}/mutation.pyste:${CMAKE_CURRENT_SOURCE_DIR}/int_sum.pyste:
-  # XXX Boost doesn't like that tMatrix returns refs to doubles.
-  #tMatrix::
 
   cpu_head::
-  ###4stack_head::${CMAKE_CURRENT_SOURCE_DIR}/cpu_head.pyste:
-  ###event::
-  ###population_event::${CMAKE_CURRENT_SOURCE_DIR}/event.pyste:
-  ###analyze_command_def::${CMAKE_CURRENT_SOURCE_DIR}/analyze_command_def_base.pyste:
-  ###analyze_flow_command_def::${CMAKE_CURRENT_SOURCE_DIR}/analyze_command_def_base.pyste:
-  ###random::
-  ###tools::
-  ###event_list_entry::
-  ###analyze_command::
   phenotype::
   population_cell::
   merit::
@@ -99,12 +70,9 @@ SET(PyAvida_Pyste_Bases
   lineage_control::
   mutation_lib::
   organism::
-  ###event_factory::
-  ###population_event_factory::${CMAKE_CURRENT_SOURCE_DIR}/event_factory.pyste:
   cpu_test_info::
   hardware_factory::
   event_factory_manager::
-  #analyze_flow_command::${CMAKE_CURRENT_SOURCE_DIR}/analyze_command.pyste:
   analyze_function::
   genotype_batch::
   inject_genotype::
@@ -183,7 +151,6 @@ SET(PyAvida_Pyste_Bases
   file::${CMAKE_CURRENT_SOURCE_DIR}/file-fixups.hh # XXX XXX XXX
   init_file::${CMAKE_CURRENT_SOURCE_DIR}/file.pyste # XXX XXX XXX
   genesis::${CMAKE_CURRENT_SOURCE_DIR}/init_file.pyste:${CMAKE_CURRENT_SOURCE_DIR}/genesis-fixups.hh # XXX XXX XXX
-  #hardware_base::${CPU_SRC_DIR}/hardware_base.hh # XXX XXX XXX
   hardware_base::
   hardware_4stack::${CMAKE_CURRENT_SOURCE_DIR}/hardware_base.pyste # XXX XXX XXX
   hardware_cpu::${CMAKE_CURRENT_SOURCE_DIR}/hardware_base.pyste:${CMAKE_CURRENT_SOURCE_DIR}/hardware_cpu-fixups.hh # XXX XXX XXX

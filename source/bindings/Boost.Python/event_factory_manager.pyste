@@ -1,5 +1,4 @@
 
-Include("event_factory.hh")
 Include("event.hh")
 
 cEventFactoryManager = Class("cEventFactoryManager", "event_factory_manager.hh")
