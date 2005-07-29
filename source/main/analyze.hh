@@ -150,6 +150,7 @@ private:
   // Population Analysis Commands...
   void CommandPrintPhenotypes(cString cur_string);
   void CommandPrintDiversity(cString cur_string);
+  void CommunityComplexity(cString cur_string);
 
   // Individual Organism Analysis...
   void CommandLandscape(cString cur_string);
@@ -183,9 +184,7 @@ private:
   void AnalyzeComplexity(cString cur_string);
   void AnalyzePopComplexity(cString cur_string);
   void AnalyzeEpistasis(cString cur_string);
-  double AnalyzeEntropy(cAnalyzeGenotype * genotype, double mut_rate);
-  double AnalyzeEntropyGivenParent(cAnalyzeGenotype * genotype, 
-				   cAnalyzeGenotype * parent, double mut_rate);
+  
 
   // Environment Manipulation
   void EnvironmentSetup(cString cur_string);
@@ -216,7 +215,19 @@ private:
   // Looks up the resource concentrations that are the closest to the
   // given update and then fill in those concentrations into the environment.
   void FillResources(int update);
-
+  // Analyze the entropy of genotype under default environment
+  double AnalyzeEntropy(cAnalyzeGenotype * genotype, double mut_rate);
+  // Analyze the entropy of child given parent and default environment
+  double AnalyzeEntropyGivenParent(cAnalyzeGenotype * genotype, 
+				   cAnalyzeGenotype * parent, 
+				   double mut_rate);
+  // Calculate the increased information in genotype1 comparing to genotype2 
+  // line by line. If information in genotype1 is less than that in genotype2 
+  // in a line, increasing is 0. Usually this is used for child-parent comparison.
+  double IncreasedInfo(cAnalyzeGenotype * genotype1, 
+		       cAnalyzeGenotype * genotype2, 
+		       double mut_rate);
+  
   // Flow Control...
   void CommandForeach(cString cur_string, tList<cAnalyzeCommand> & clist);
   void CommandForRange(cString cur_string, tList<cAnalyzeCommand> & clist);

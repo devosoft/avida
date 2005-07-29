@@ -8,6 +8,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <queue>
 
 #include "analyze.hh"
 
@@ -484,6 +485,328 @@ for(unsigned int i=0; i<resources[which].second.size(); i++) {
 cTestCPU::SetupResourceArray(temp);
 
 return;
+}
+
+double cAnalyze::AnalyzeEntropy(cAnalyzeGenotype * genotype, double mu) 
+{
+  double entropy = 0.0;
+
+  // Calculate the stats for the genotype we're working with ...
+  genotype->Recalculate();
+  if (genotype->GetFitness() == 0) {
+    return genotype->GetLength();
+  }
+  const int num_insts = inst_set.GetSize();
+  const int num_lines = genotype->GetLength();
+  const cGenome & base_genome = genotype->GetGenome();
+  cGenome mod_genome(base_genome);
+  double base_fitness = genotype->GetFitness();
+  
+  // Loop through all the lines of code, testing all mutations...
+  tArray<double> test_fitness(num_insts);
+  tArray<double> prob(num_insts);
+  for (int line_no = 0; line_no < num_lines; line_no ++) {
+    int cur_inst = base_genome[line_no].GetOp();
+    
+    // Test fitness of each mutant.
+    for (int mod_inst = 0; mod_inst < num_insts; mod_inst++) {
+      mod_genome[line_no].SetOp(mod_inst);
+      cAnalyzeGenotype test_genotype(mod_genome, inst_set);
+      test_genotype.Recalculate();
+      // Ajust fitness ...
+      if (test_genotype.GetFitness() <= base_fitness) {
+	test_fitness[mod_inst] = test_genotype.GetFitness();
+      } else {
+	test_fitness[mod_inst] = base_fitness;
+      }
+    }
+    
+    // Calculate probabilities at mut-sel balance
+    double w_bar = 1;
+    
+    // Normalize fitness values, assert if they are all zero
+    double maxFitness = 0.0;
+    for(int i=0; i<num_insts; i++) {
+      if(test_fitness[i] > maxFitness) {
+	maxFitness = test_fitness[i];
+      }
+    }
+    
+   
+    for(int i=0; i<num_insts; i++) {
+      test_fitness[i] /= maxFitness;
+    }
+       
+    while(1) {
+      double sum = 0.0;
+      for (int mod_inst = 0; mod_inst < num_insts; mod_inst ++) {
+	prob[mod_inst] = (mu * w_bar) / 
+	  ((double)num_insts * 
+	   (w_bar + test_fitness[mod_inst] * mu - test_fitness[mod_inst]));
+	sum = sum + prob[mod_inst];
+      }
+      if ((sum-1.0)*(sum-1.0) <= 0.0001) 
+	break;
+      else
+	w_bar = w_bar - 0.000001;
+    }
+    
+    // Calculate entropy ...
+    double this_entropy = 0.0;
+    for (int i = 0; i < num_insts; i ++) {
+      this_entropy += prob[i] * log((double) 1.0/prob[i]) / log ((double) num_insts);
+    }
+    entropy += this_entropy;
+    
+    // Reset the mod_genome back to the original sequence.
+    mod_genome[line_no].SetOp(cur_inst);
+  }
+  return entropy;
+}
+
+double cAnalyze::AnalyzeEntropyGivenParent(cAnalyzeGenotype * genotype,
+					   cAnalyzeGenotype * parent, double mut_rate)
+{
+  double entropy = 0.0;
+
+  // Calculate the stats for the genotype we're working with ...
+  genotype->Recalculate();
+  const int num_insts = inst_set.GetSize();
+  const int num_lines = genotype->GetLength();
+  const cGenome & base_genome = genotype->GetGenome();
+  const cGenome & parent_genome = parent->GetGenome();
+  cGenome mod_genome(base_genome);
+  double base_fitness = genotype->GetFitness();
+
+  // Loop through all the lines of code, testing all mutations ...
+  tArray<double> test_fitness(num_insts);
+  tArray<double> prob(num_insts);
+  for (int line_no = 0; line_no < num_lines; line_no ++) {
+    int cur_inst = base_genome[line_no].GetOp();
+    int parent_inst = parent_genome[line_no].GetOp();
+
+    // Test fitness of each mutant.
+    for (int mod_inst = 0; mod_inst < num_insts; mod_inst++) {
+      mod_genome[line_no].SetOp(mod_inst);
+      cAnalyzeGenotype test_genotype(mod_genome, inst_set);
+      test_genotype.Recalculate();
+      test_fitness[mod_inst] = test_genotype.GetFitness();
+    }
+
+
+    // Calculate probabilities at mut-sel balance
+    double w_bar = 1;
+    
+    // Normalize fitness values, assert if they are all zero
+    double maxFitness = 0.0;
+    for(int i=0; i<num_insts; i++) {
+      if ( i == parent_inst) { continue; }
+      if (test_fitness[i] > maxFitness) {
+	maxFitness = test_fitness[i];
+      }
+    }
+    
+    if(maxFitness > 0) {
+      for(int i = 0; i < num_insts; i ++) {
+	if (i == parent_inst) { continue; }
+	test_fitness[i] /= maxFitness;
+      }
+    } else {
+      // every other inst is equally likely to be mutated to
+      for (int i = 0; i < num_insts; i ++) {
+	if (i == parent_inst) { continue; }
+	test_fitness[i] = 1;
+      }
+    }
+    
+    double double_num_insts = num_insts * 1.0;
+    while(1) {
+      double sum = 0.0;
+      for (int mod_inst = 0; mod_inst < num_insts; mod_inst ++) {
+	if (mod_inst == parent_inst) { continue; }
+	prob[mod_inst] = (mut_rate * w_bar) / 
+	  (double_num_insts-2) / 
+	   (w_bar + test_fitness[mod_inst] * mut_rate * (double_num_insts-1) / (double_num_insts - 2) 
+	    - test_fitness[mod_inst]);
+	sum = sum + prob[mod_inst];
+      }
+      if ((sum-1.0)*(sum-1.0) <= 0.0001) 
+	break;
+      else
+	w_bar = w_bar - 0.000001;
+    }
+    
+    // Calculate entropy ...
+    double this_entropy = 0.0;
+    this_entropy -= (1-mut_rate)*log(1-mut_rate)/log(num_insts);
+    for (int i = 0; i < num_insts; i ++) {
+      if (i == parent_inst) { continue; }
+      prob[i] = prob[i] * mut_rate;
+      this_entropy += prob[i] * log((double) 1.0/prob[i]) / log ((double) num_insts);
+    }
+    entropy += this_entropy;
+
+    // Reset the mod_genome back to the base_genome.
+    mod_genome[line_no].SetOp(cur_inst);
+  }
+  return entropy;
+}
+
+double cAnalyze::IncreasedInfo(cAnalyzeGenotype * genotype1,
+			       cAnalyzeGenotype * genotype2,
+			       double mu) 
+{
+  double increased_info = 0.0;
+
+  // Calculate the stats for the genotypes we're working with ...
+  assert( genotype1->GetLength() == genotype2->GetLength() );
+
+  genotype1->Recalculate();
+  if (genotype1->GetFitness() == 0) {
+    return 0.0;
+  }
+
+  const int num_insts = inst_set.GetSize();
+  const int num_lines = genotype1->GetLength();
+  const cGenome & genotype1_base_genome = genotype1->GetGenome();
+  cGenome genotype1_mod_genome(genotype1_base_genome);
+  double genotype1_base_fitness = genotype1->GetFitness();
+  vector<double> genotype1_info(num_lines, 0.0);
+  
+  // Loop through all the lines of code, calculate genotype1 information
+  tArray<double> test_fitness(num_insts);
+  tArray<double> prob(num_insts);
+  for (int line_no = 0; line_no < num_lines; line_no ++) {
+    int cur_inst = genotype1_base_genome[line_no].GetOp();
+    
+    // Test fitness of each mutant.
+    for (int mod_inst = 0; mod_inst < num_insts; mod_inst++) {
+      genotype1_mod_genome[line_no].SetOp(mod_inst);
+      cAnalyzeGenotype test_genotype(genotype1_mod_genome, inst_set);
+      test_genotype.Recalculate();
+      // Ajust fitness ...
+      if (test_genotype.GetFitness() <= genotype1_base_fitness) {
+	test_fitness[mod_inst] = test_genotype.GetFitness();
+      } else {
+	test_fitness[mod_inst] = genotype1_base_fitness;
+      }
+    }
+    
+    // Calculate probabilities at mut-sel balance
+    double w_bar = 1;
+    
+    // Normalize fitness values, assert if they are all zero
+    double maxFitness = 0.0;
+    for(int i=0; i<num_insts; i++) {
+      if(test_fitness[i] > maxFitness) {
+	maxFitness = test_fitness[i];
+      }
+    }
+    
+    for(int i=0; i<num_insts; i++) {
+      test_fitness[i] /= maxFitness;
+    }
+    
+    while(1) {
+      double sum = 0.0;
+      for (int mod_inst = 0; mod_inst < num_insts; mod_inst ++) {
+	prob[mod_inst] = (mu * w_bar) / 
+	  ((double)num_insts * 
+	   (w_bar + test_fitness[mod_inst] * mu - test_fitness[mod_inst]));
+	sum = sum + prob[mod_inst];
+      }
+      if ((sum-1.0)*(sum-1.0) <= 0.0001) 
+	break;
+      else
+	w_bar = w_bar - 0.000001;
+    }
+    
+    // Calculate entropy ...
+    double this_entropy = 0.0;
+    for (int i = 0; i < num_insts; i ++) {
+      this_entropy += prob[i] * log((double) 1.0/prob[i]) / log ((double) num_insts);
+    }
+    genotype1_info[line_no] = 1 - this_entropy;
+    
+    // Reset the mod_genome back to the original sequence.
+    genotype1_mod_genome[line_no].SetOp(cur_inst);
+  }
+
+  genotype2->Recalculate();
+  if (genotype2->GetFitness() == 0) {
+    for (int line_no = 0; line_no < num_lines; ++ line_no) {
+      increased_info += genotype1_info[line_no];
+    }
+    return increased_info;
+  }
+    
+  const cGenome & genotype2_base_genome = genotype2->GetGenome();
+  cGenome genotype2_mod_genome(genotype2_base_genome);
+  double genotype2_base_fitness = genotype2->GetFitness();
+
+  // Loop through all the lines of code, calculate increased information
+  for (int line_no = 0; line_no < num_lines; line_no ++) {
+    int cur_inst = genotype2_base_genome[line_no].GetOp();
+    
+    // Test fitness of each mutant.
+    for (int mod_inst = 0; mod_inst < num_insts; mod_inst++) {
+      genotype2_mod_genome[line_no].SetOp(mod_inst);
+      cAnalyzeGenotype test_genotype(genotype2_mod_genome, inst_set);
+      test_genotype.Recalculate();
+      // Ajust fitness ...
+      if (test_genotype.GetFitness() <= genotype2_base_fitness) {
+	test_fitness[mod_inst] = test_genotype.GetFitness();
+      } else {
+	test_fitness[mod_inst] = genotype2_base_fitness;
+      }
+    }
+    
+    // Calculate probabilities at mut-sel balance
+    double w_bar = 1;
+    
+    // Normalize fitness values, assert if they are all zero
+    double maxFitness = 0.0;
+    for(int i=0; i<num_insts; i++) {
+      if(test_fitness[i] > maxFitness) {
+	maxFitness = test_fitness[i];
+      }
+    }
+    
+    for(int i=0; i<num_insts; i++) {
+      test_fitness[i] /= maxFitness;
+    }
+    
+    while(1) {
+      double sum = 0.0;
+      for (int mod_inst = 0; mod_inst < num_insts; mod_inst ++) {
+	prob[mod_inst] = (mu * w_bar) / 
+	  ((double)num_insts * 
+	   (w_bar + test_fitness[mod_inst] * mu - test_fitness[mod_inst]));
+	sum = sum + prob[mod_inst];
+      }
+      if ((sum-1.0)*(sum-1.0) <= 0.0001) 
+	break;
+      else
+	w_bar = w_bar - 0.000001;
+    }
+    
+    // Calculate entropy ...
+    double this_entropy = 0.0;
+    for (int i = 0; i < num_insts; i ++) {
+      this_entropy += prob[i] * log((double) 1.0/prob[i]) / log ((double) num_insts);
+    }
+    
+    // Compare information 
+    if (genotype1_info[line_no] > 1 - this_entropy) {
+      increased_info += genotype1_info[line_no] - (1 - this_entropy);
+    } // else increasing is 0, do nothing
+    
+    // Reset the mod_genome back to the original sequence.
+    genotype2_mod_genome[line_no].SetOp(cur_inst);
+  }
+
+
+  return increased_info;
 }
 
 void cAnalyze::LoadFile(cString cur_string)
@@ -1915,6 +2238,116 @@ void cAnalyze::CommandPrintDiversity(cString cur_string)
   }
 }
 
+void cAnalyze::CommunityComplexity(cString cur_string)
+{
+  cout << "Analyze community complexity for current population ...\n";
+
+  // Get mutation rate
+  double mut_rate = cur_string.PopWord().AsDouble();
+
+
+  // Create the directory using the string given as the second argument
+  cString dir = cur_string.PopWord();
+  cString defaultDir = "community_cpx/";
+  cString directory = PopDirectory(dir, defaultDir);
+
+  // Create the file that saves the result 
+  cString filename = cur_string.PopWord();
+  if (filename.IsEmpty()) {
+    filename = "community.complexity.dat";
+  }
+
+  filename.Set("%s%s", directory(), filename.GetData());
+  ofstream cpx_fp(filename());
+
+  cpx_fp << "# Legend:" << endl;
+  cpx_fp << "# 1: Genotype ID" << endl;
+  cpx_fp << "# 2: New Information" << endl;
+  cpx_fp << "# 3: Total Complexity" << endl;
+  cpx_fp << "# 4: Net New Information" << endl;
+  cpx_fp << "# 5: Net Total Complexity" << endl << endl;
+
+
+  ////////////////////////////////////////////////////////////////////////////////
+  // Loop through all of the genotypes in this batch and build parent-genotype map
+  
+  typedef multimap< int, cAnalyzeGenotype *, less<int> > tMultimap;
+  tMultimap children;       
+  tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+  cAnalyzeGenotype * genotype = NULL;
+  
+  while ((genotype = batch_it.Next()) != NULL) {
+    children.insert(make_pair(genotype->GetParentID(), genotype));
+  }
+
+  // Put the first genotype (root of the phylogenetic tree) in the queue.
+  // Breadth-first traversal of the phylogeny_tree. Accumulate new information
+  // in the child compared to its parent.
+  typedef pair<cAnalyzeGenotype *, cAnalyzeGenotype *> tGenotypePair; // genotype and its parent
+  queue<tGenotypePair> genotype_queue;
+
+  // Look for the root that has multiple chilrent.
+  int genotype_id = children.begin()->second->GetID(); 
+  while (children.count(genotype_id) == 1 && children.size() > 1) {
+    children.erase(children.begin());
+    genotype_id = children.begin()->second->GetID();
+  }
+
+  if (children.begin() != children.end()) {
+    genotype_queue.push( tGenotypePair(children.begin()->second, NULL) );
+  }
+
+  double community_cpx = 0.0;
+  double community_cpx_m2 = 0.0;       // Add net new information in the phylogeny.
+  while (genotype_queue.size() > 0) {
+
+    cAnalyzeGenotype * cur_genotype = genotype_queue.front().first;
+    cAnalyzeGenotype * parent_genotype = genotype_queue.front().second;
+    genotype_queue.pop();
+
+    if (parent_genotype == NULL) {
+      double entropy = AnalyzeEntropy(cur_genotype, mut_rate);
+      community_cpx = cur_genotype->GetLength() - entropy;
+      community_cpx_m2 = community_cpx;
+      cpx_fp << cur_genotype->GetID() << " 0 " << community_cpx 
+	     << " 0 " << community_cpx_m2 << endl;
+    } else {
+
+      // Compare with its parent to measure new information 
+      double newinfo = IncreasedInfo(cur_genotype, parent_genotype, mut_rate);
+      community_cpx += newinfo;
+      cpx_fp << cur_genotype->GetID() << " " << newinfo << " " << community_cpx;
+
+      // Compare with its parent to measure net new information
+      double lostinfo = IncreasedInfo(parent_genotype, cur_genotype, mut_rate);
+      community_cpx_m2 += newinfo - lostinfo;
+      cpx_fp << " " << newinfo - lostinfo << " " << community_cpx_m2 << endl;
+    }
+    
+    // Assert the fitness of current is greater than 0 before adding its children to queue
+    // If TEST_CPU_TIME_MOD is too small, some genotype will get recalculated fitness 0 
+    // even it is viable and that will give us bad result. To prevent that ...
+    cur_genotype->Recalculate();
+    assert(cur_genotype->GetFitness() > 0);
+
+    // Add the children of current genotype to the queue
+    typedef pair<tMultimap::iterator, tMultimap::iterator> pairii;
+    pairii child_range = children.equal_range(cur_genotype->GetID());
+    tMultimap::iterator child_pos = child_range.first;
+    for (; child_pos != child_range.second ; ++ child_pos) {
+      cAnalyzeGenotype * cur_child = child_pos->second;
+      genotype_queue.push( tGenotypePair(cur_child, cur_genotype) );
+    }
+
+    // Delete the children of current genotype from map
+    children.erase(child_range.first, child_range.second);
+    
+  }
+
+  cpx_fp.close();
+  return;
+  
+}
 
 void cAnalyze::CommandLandscape(cString cur_string)
 {
@@ -1970,160 +2403,7 @@ void cAnalyze::AnalyzeEpistasis(cString cur_string)
   }
 }
 
-double cAnalyze::AnalyzeEntropy(cAnalyzeGenotype * genotype, double mu) 
-{
-  double entropy = 0.0;
   
-  // Calculate the stats for the genotype we're working with ...
-  genotype->Recalculate();
-  const int num_insts = inst_set.GetSize();
-  const int num_lines = genotype->GetLength();
-  const cGenome & base_genome = genotype->GetGenome();
-  cGenome mod_genome(base_genome);
-  double base_fitness = genotype->GetFitness();
-  
-  // Loop through all the lines of code, testing all mutations...
-  tArray<double> test_fitness(num_insts);
-  tArray<double> prob(num_insts);
-  for (int line_no = 0; line_no < num_lines; line_no ++) {
-    int cur_inst = base_genome[line_no].GetOp();
-    
-    // Test fitness of each mutant.
-    for (int mod_inst = 0; mod_inst < num_insts; mod_inst++) {
-      mod_genome[line_no].SetOp(mod_inst);
-      cAnalyzeGenotype test_genotype(mod_genome, inst_set);
-      test_genotype.Recalculate();
-      // Ajust fitness ...
-      if (test_genotype.GetFitness() <= base_fitness) {
-        test_fitness[mod_inst] = test_genotype.GetFitness();
-      } else {
-        test_fitness[mod_inst] = base_fitness;
-      }
-    }
-    
-    // Calculate probabilities at mut-sel balance
-    double w_bar = 1;
-    
-    // Normalize fitness values, assert if they are all zero
-    double maxFitness = 0.0;
-    for(int i=0; i<num_insts; i++) {
-      if(test_fitness[i] > maxFitness) {
-        maxFitness = test_fitness[i];
-      }
-    }
-    
-    if(maxFitness > 0) {
-      for(int i=0; i<num_insts; i++) {
-        test_fitness[i] /= maxFitness;
-      }
-    } else {
-      cout << "All zero fitness, ERROR." << endl;
-      return -1.0;
-    }
-    
-    while(1) {
-      double sum = 0.0;
-      for (int mod_inst = 0; mod_inst < num_insts; mod_inst ++) {
-        prob[mod_inst] = (mu * w_bar) / 
-        ((double)num_insts * 
-         (w_bar + test_fitness[mod_inst] * mu - test_fitness[mod_inst]));
-        sum = sum + prob[mod_inst];
-      }
-      if ((sum-1.0)*(sum-1.0) <= 0.0001) 
-        break;
-      else
-        w_bar = w_bar - 0.000001;
-    }
-    
-    // Calculate entropy ...
-    double this_entropy = 0.0;
-    for (int i = 0; i < num_insts; i ++) {
-      this_entropy += prob[i] * log((double) 1.0/prob[i]) / log ((double) num_insts);
-    }
-    entropy += this_entropy;
-    
-    // Reset the mod_genome back to the original sequence.
-    mod_genome[line_no].SetOp(cur_inst);
-  }
-  return entropy;
-}
-
-double cAnalyze::AnalyzeEntropyGivenParent(cAnalyzeGenotype * genotype,
-                                           cAnalyzeGenotype * parent, double mut_rate)
-{
-  double entropy = 0.0;
-  
-  // Calculate the stats for the genotype we're working with ...
-  genotype->Recalculate();
-  const int num_insts = inst_set.GetSize();
-  const int num_lines = genotype->GetLength();
-  const cGenome & base_genome = genotype->GetGenome();
-  cGenome mod_genome(base_genome);
-  double base_fitness = genotype->GetFitness();
-  
-  // Loop through all the lines of code, testing all mutations ...
-  tArray<double> test_fitness(num_insts);
-  tArray<double> prob(num_insts);
-  for (int line_no = 0; line_no < num_lines; line_no ++) {
-    int cur_inst = base_genome[line_no].GetOp();
-    
-    // Test fitness of each mutant.
-    for (int mod_inst = 0; mod_inst < num_insts; mod_inst++) {
-      mod_genome[line_no].SetOp(mod_inst);
-      cAnalyzeGenotype test_genotype(mod_genome, inst_set);
-      test_genotype.Recalculate();
-      test_fitness[mod_inst] = test_genotype.GetFitness();
-    }
-    
-    // Calculate probabilities at mut-sel balance
-    double w_bar = 1;
-    
-    // Normalize fitness values, assert if they are all zero
-    double maxFitness = 0.0;
-    for(int i=0; i<num_insts; i++) {
-      if(test_fitness[i] > maxFitness) {
-        maxFitness = test_fitness[i];
-      }
-    }
-    
-    if(maxFitness > 0) {
-      for(int i=0; i<num_insts; i++) {
-        test_fitness[i] /= maxFitness;
-      }
-    } else {
-      cout << "All zero fitness, ERROR." << endl;
-      return -1.0;
-    }
-    
-    while(1) {
-      double sum = 0.0;
-      for (int mod_inst = 0; mod_inst < num_insts; mod_inst ++) {
-        prob[mod_inst] = (mut_rate * w_bar) / 
-        ((double)num_insts * 
-         (w_bar + test_fitness[mod_inst] * mut_rate - test_fitness[mod_inst]));
-        sum = sum + prob[mod_inst];
-      }
-      if ((sum-1.0)*(sum-1.0) <= 0.0001) 
-        break;
-      else
-        w_bar = w_bar - 0.000001;
-    }
-    
-    // Calculate entropy ...
-    double this_entropy = 0.0;
-    this_entropy -= (1-mut_rate)*log(1-mut_rate)/log(static_cast<double>(num_insts));
-    for (int i = 0; i < num_insts; i ++) {
-      prob[i] = prob[i] * mut_rate;
-      this_entropy += prob[i] * log(static_cast<double>(1.0/prob[i])) / log (static_cast<double>(num_insts));
-    }
-    entropy += this_entropy;
-    
-    // Reset the mod_genome back to the base_genome.
-    mod_genome[line_no].SetOp(cur_inst);
-  }
-  return entropy;
-}
-
 void cAnalyze::CommandFitnessMatrix(cString cur_string)
 {
   if (verbose == true) cout << "Calculating fitness matrix for batch " << cur_batch << endl;
@@ -2987,7 +3267,7 @@ void cAnalyze::CommandMapMutations(cString cur_string)
           row_fitness += test_fitness;
           total_fitness += test_fitness;
           col_fitness[mod_inst] += test_fitness;
-          
+
           // Categorize this mutation...
           if (test_fitness == 1.0) {           // Neutral Mutation...
             row_neut++;
@@ -3604,7 +3884,13 @@ void cAnalyze::AnalyzeNewInfo(cString cur_string)
   newinfo_fp << "# Legend:" << endl;
   newinfo_fp << "# 1:Child Genotype ID" << endl;
   newinfo_fp << "# 2:Parent Genotype ID" << endl;
-  newinfo_fp << "# 3:New Information about Environment given Parent" << endl; 
+  newinfo_fp << "# 3:Information of Child about Environment I(C:E)" << endl;
+  newinfo_fp << "# 4:Information of Parent about Environment I(P:E)" << endl;
+  newinfo_fp << "# 5:I(C:E)-I(P:E)" << endl;
+  newinfo_fp << "# 6:Information Gained in Child" << endl;
+  newinfo_fp << "# 7:Information Decreased in Child" << endl;
+  newinfo_fp << "# 8:Net Increasing of Information in Child" << endl;
+  newinfo_fp << endl; 
   
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype * parent_genotype = batch_it.Next();
@@ -3613,89 +3899,48 @@ void cAnalyze::AnalyzeNewInfo(cString cur_string)
     return;
   }
   cAnalyzeGenotype * child_genotype = NULL;
-  
+  const int num_insts = inst_set.GetSize();
+  double I_P_E; // Information of parent about environment
+  double H_P_E = AnalyzeEntropy(parent_genotype, mu);
+  I_P_E = parent_genotype->GetLength() - H_P_E;
+
   while ((child_genotype = batch_it.Next()) != NULL) {
-    assert( parent_genotype->GetLength() == child_genotype->GetLength() );
     
     if (verbose == true) {
-      cout << endl << "Analyze new information for " << child_genotype->GetName() << endl;
+      cout << "Analyze new information for " << child_genotype->GetName() << endl;
     }
     
-    // 1.
-    // Analyze the information between parent and child ...
-    // H(C) = all insts are equally probably = 1
-    // H(C|P) = -(1-u)log(1-u)-26*(u/26)*log(u/26)
-    // I(C:P) = H(C)-H(C|P)
-    const int num_insts = inst_set.GetSize();
-    const int num_lines = child_genotype->GetLength();
-    double H_C = 1;
-    double H_C_P = -(1-mu)*log(1-mu)/log(static_cast<double>(num_insts))
-      -(num_insts)*(mu/(num_insts))*log(mu/(num_insts))/log(static_cast<double>(num_insts));
-    double I_CP = (H_C - H_C_P) * num_lines;
-    if (verbose) {
-      cout << "I(C:P) =  H(C) - H(C|P) = (" << H_C << " - " <<  H_C_P << ") * 100 = " 
-      << I_CP << endl;
-    }
-    
-    // 2.
-    // Analyze the information between parent and child given the environment.
-    // H(C|E)
-    // H(C|PE) = -(1-u)log(1-u)
-    //           -u distributed among 26 insts according to mut/sel balance 
-    // I(C:P|E) = H(C|E)-H(C|PE)
     double H_C_E = AnalyzeEntropy(child_genotype, mu);
-    if (H_C_E < 0) {
-      cout << "Cannot calculate the entropy of genotype " << child_genotype->GetID();
-      cout << " given environment. Error." << endl;
-      return;
-    }
-    double H_C_PE = AnalyzeEntropyGivenParent(child_genotype, parent_genotype, mu);
-    if (H_C_PE < 0) {
-      cout << "Cannot calculate the entropy of genotype " << child_genotype->GetID();
-      cout << " given parent and environment. Error." << endl;
-    }
+    double I_C_E = child_genotype->GetLength() - H_C_E;
+    double net_gain = I_C_E - I_P_E;
     
-    double I_CP_E = H_C_E - H_C_PE;
-    if (verbose) {
-      cout << "I(C:P|E) = H(C|E) - H(C|PE) = " << H_C_E << " - " << H_C_PE << 
-      " = " << I_CP_E << endl;
-    }
+    // Increased information in child compared to parent
+    double child_increased_info = IncreasedInfo(child_genotype, parent_genotype, mu);
+    assert (child_increased_info >= 0);
     
-    // 3.
-    // Information among parent, child and environment.
-    // I(C:P:E) = I(C:P)-I(C:P|E)
-    double I_CPE = I_CP -I_CP_E;
-    if (verbose) {
-      cout << "I(C:P:E) = I(C:P) - I(C:P|E) = " << I_CP << " - " << I_CP_E << 
-      " = " << I_CPE << endl;
-    }
-    
-    // 4.
-    // New information child about environment given parent.
-    // I(C:E|P) = I(C:E)-I(C:P:E)
-    double I_CE = (double)child_genotype->GetLength() - H_C_E;
-    double I_CE_P = I_CE - I_CPE;
-    if (verbose) {
-      cout << "I(C:E|P) = I(C:E) - I(C:P:E) = " << I_CE << " - " << I_CPE << 
-      " = " << I_CE_P << endl;
-    }
-    
+    // Lost information in child compared to parent
+    double child_lost_info = IncreasedInfo(parent_genotype, child_genotype, mu);
+    assert (child_lost_info >= 0);
+
     // Write information to file ...
     newinfo_fp << child_genotype->GetID() << " ";
     newinfo_fp << parent_genotype->GetID() << " ";
-    newinfo_fp << I_CE_P << endl;
+    newinfo_fp << I_C_E << " ";
+    newinfo_fp << I_P_E << " ";
+    newinfo_fp << net_gain << " ";
+    newinfo_fp << child_increased_info << " ";
+    newinfo_fp << child_lost_info << " ";
+    newinfo_fp << child_increased_info - child_lost_info << endl;
     
-    if (verbose) {
-      cout << child_genotype->GetID() << " ";
-      cout << parent_genotype->GetID() << " ";
-      cout << I_CE_P << endl;
-    }
     parent_genotype = child_genotype;
+    I_P_E = I_C_E;
   }
   
   newinfo_fp.close();
   return;
 }
+
+
 
 void cAnalyze::WriteClone(cString cur_string)
 {
@@ -5672,7 +5917,8 @@ void cAnalyze::SetupCommandDefLibrary()
   // Population analysis commands...
   AddLibraryDef("PRINT_PHENOTYPES", &cAnalyze::CommandPrintPhenotypes);
   AddLibraryDef("PRINT_DIVERSITY", &cAnalyze::CommandPrintDiversity);
-  
+  AddLibraryDef("COMMUNITY_COMPLEXITY", &cAnalyze::CommunityComplexity);
+
   // Individual organism analysis...
   AddLibraryDef("LANDSCAPE", &cAnalyze::CommandLandscape);
   AddLibraryDef("FITNESS_MATRIX", &cAnalyze::CommandFitnessMatrix);
