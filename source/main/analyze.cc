@@ -1480,14 +1480,21 @@ void cAnalyze::CommandTrace(cString cur_string)
       break;
     }
     
+    // Build the hardware status printer for tracing.
+    ofstream trace_fp;
+    trace_fp.open(filename);
+    assert (trace_fp.good() == true); // Unable to open trace file.
+    cHardwareStatusPrinter trace_printer(trace_fp);
+
     // Build the test info for printing.
     cCPUTestInfo test_info;
     test_info.TestThreads();
-    test_info.SetTraceExecution(filename);
+    test_info.SetTraceExecution(&trace_printer);
     
     cTestCPU::TestGenome(test_info, genotype->GetGenome());
     
     if (verbose) cout << "  Tracing: " << filename << endl;
+    trace_fp.close();
   }
   
   if(useResources) {
