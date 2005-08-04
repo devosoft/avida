@@ -25,6 +25,7 @@ cCPUTestInfo::cCPUTestInfo(int max_tests)
   , trace_task_order(false)
   , use_random_inputs(false)
   , org_array(max_tests)
+  , m_tracer(NULL)
 {
   org_array.SetAll(NULL);
   Clear();
@@ -55,13 +56,11 @@ void cCPUTestInfo::Clear()
 }
  
 
-void cCPUTestInfo::SetTraceExecution(const cString & filename)
+void cCPUTestInfo::SetTraceExecution(cHardwareTracer *tracer)
 {
-  trace_execution = true;
-  trace_fp.open(filename);
-  assert (trace_fp.good() == true); // Unable to open trace file.
+  trace_execution = (tracer)?(true):(false);
+  m_tracer = tracer;
 }
-
 
 
 double cCPUTestInfo::GetGenotypeFitness()

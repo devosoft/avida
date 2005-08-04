@@ -65,14 +65,14 @@ void cHardwareStatusPrinter::TraceHardware_TestCPU(
   const cString &child_memory
 ){
   if (time_used == time_allocated) {
-    m_trace_fp << endl << "TIMEOUT: No offspring produced." << endl;
+    m_trace_fp << endl << "# TIMEOUT: No offspring produced." << endl;
   }
   else if (size == 0) {
-    m_trace_fp << endl << "ORGANISM DEATH: No offspring produced." << endl;
+    m_trace_fp << endl << "# ORGANISM DEATH: No offspring produced." << endl;
   }
   else {
     m_trace_fp
-    << endl << "Final Memory: " << final_memory
-    << endl << "Child Memory: " << child_memory << endl;
+    << endl << "# Final Memory: " << final_memory
+    << endl << "# Child Memory: " << child_memory << endl;
   }
 }

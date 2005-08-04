@@ -8,8 +8,6 @@
 #ifndef CPU_TEST_INFO_HH
 #define CPU_TEST_INFO_HH
 
-#include <fstream>
-
 #ifndef CPU_DEFS_HH
 #include "cpu_defs.hh"
 #endif
@@ -20,6 +18,7 @@
 #include "tArray.hh"
 #endif
 
+class cHardwareTracer;
 class cOrganism;
 class cString;
 
@@ -33,7 +32,7 @@ private:
   bool trace_execution;       // Should we trace this CPU?
   bool trace_task_order;      // Should we keep track of ordering of tasks?
   bool use_random_inputs;     // Should we give the organism random inputs?
-  std::ofstream trace_fp;
+  cHardwareTracer *m_tracer;
 
   // Outputs...
   bool is_viable;         // Is this organism colony forming?
@@ -58,7 +57,7 @@ public:
   void PrintThreads(bool _print=true) { print_threads = _print; }
   void TraceTaskOrder(bool _trace=true) { trace_task_order = _trace; }
   void UseRandomInputs(bool _rand=true) { use_random_inputs = _rand; }
-  void SetTraceExecution(const cString & filename="trace.dat");
+  void SetTraceExecution(cHardwareTracer *tracer = NULL);
 
   // Input Accessors
   int GetGenerationTests() const { return generation_tests; }
@@ -67,7 +66,7 @@ public:
   bool GetTraceTaskOrder() const { return trace_task_order; }
   bool GetUseRandomInputs() const { return use_random_inputs; }
   bool GetTraceExecution() const { return trace_execution; }
-  std::ofstream & GetTraceFP() { return trace_fp; }
+  cHardwareTracer *GetTracer() { return m_tracer; }
 
 
   // Output Accessors
