@@ -114,6 +114,9 @@ private:
     // No matches found.
     return NULL;
   }
+private:
+  // disabled copy constructor.
+  tDictionary(const tDictionary &);
 public:
   tDictionary(int in_hash_size=DICTIONARY_HASH_DEFAULT)
     : dict_size(0)
@@ -130,31 +133,31 @@ public:
 
 
   bool OK() {
-    cout << "DICT_SIZE = " << dict_size << endl;
-    cout << "HASH_SIZE = " << hash_size << endl;
+    std::cout << "DICT_SIZE = " << dict_size << std::endl;
+    std::cout << "HASH_SIZE = " << hash_size << std::endl;
     int count = 0;
-    cout << "LIST ELEMENTS:" << endl;
+    std::cout << "LIST ELEMENTS:" << std::endl;
     list_it.Reset();
     while (list_it.Next() != NULL) {
       tDictEntry<T> * cur_entry = list_it.Get();
-      cout << "  " << count << " : "
+      std::cout << "  " << count << " : "
 	   << cur_entry->id << " "
 	   << cur_entry->name << " "
 	   << cur_entry->data << " "
-	   << endl;
+	   << std::endl;
     }
-    cout << endl;
-    cout << "ARRAY CELLS: "
+    std::cout << std::endl;
+    std::cout << "ARRAY CELLS: "
 	 << cell_array.GetSize()
-	 << endl;
+	 << std::endl;
     for (int i = 0; i < hash_size; i++) {
       tListNode< tDictEntry<T> > * cur_list_node = cell_array[i];
       if (cur_list_node == NULL) {
-	cout << "  NULL" << endl;
+	std::cout << "  NULL" << std::endl;
       } else {
-	cout << "  " << cur_list_node->data->id
+	std::cout << "  " << cur_list_node->data->id
 	     << " " << cur_list_node->data->name
-	     << endl;
+	     << std::endl;
       }
     }
 
@@ -203,7 +206,7 @@ public:
     // Determine the bin that we are going to be using.
     const int bin = HashString(name);
 
-    T out_data = NULL;
+    T out_data;
     assert(cell_array[bin] != NULL);
     list_it.Set(cell_array[bin]);
 
