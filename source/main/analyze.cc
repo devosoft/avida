@@ -491,11 +491,13 @@ double cAnalyze::AnalyzeEntropy(cAnalyzeGenotype * genotype, double mu)
 {
   double entropy = 0.0;
 
-  // Calculate the stats for the genotype we're working with ...
+  // If the fitness is 0, the entropy is the length of genotype ...
   genotype->Recalculate();
   if (genotype->GetFitness() == 0) {
     return genotype->GetLength();
   }
+
+  // Calculate the stats for the genotype we're working with ...
   const int num_insts = inst_set.GetSize();
   const int num_lines = genotype->GetLength();
   const cGenome & base_genome = genotype->GetGenome();
@@ -524,7 +526,7 @@ double cAnalyze::AnalyzeEntropy(cAnalyzeGenotype * genotype, double mu)
     // Calculate probabilities at mut-sel balance
     double w_bar = 1;
     
-    // Normalize fitness values, assert if they are all zero
+    // Normalize fitness values
     double maxFitness = 0.0;
     for(int i=0; i<num_insts; i++) {
       if(test_fitness[i] > maxFitness) {
@@ -659,7 +661,10 @@ double cAnalyze::IncreasedInfo(cAnalyzeGenotype * genotype1,
   double increased_info = 0.0;
 
   // Calculate the stats for the genotypes we're working with ...
-  assert( genotype1->GetLength() == genotype2->GetLength() );
+  if ( genotype1->GetLength() != genotype2->GetLength() ) {
+    cerr << "Error: Two genotypes don't have same length.(cAnalyze::IncreasedInfo)" << endl;
+    exit(1);
+  }
 
   genotype1->Recalculate();
   if (genotype1->GetFitness() == 0) {
@@ -695,7 +700,7 @@ double cAnalyze::IncreasedInfo(cAnalyzeGenotype * genotype1,
     // Calculate probabilities at mut-sel balance
     double w_bar = 1;
     
-    // Normalize fitness values, assert if they are all zero
+    // Normalize fitness values
     double maxFitness = 0.0;
     for(int i=0; i<num_insts; i++) {
       if(test_fitness[i] > maxFitness) {
@@ -2269,10 +2274,12 @@ void cAnalyze::CommunityComplexity(cString cur_string)
 
   cpx_fp << "# Legend:" << endl;
   cpx_fp << "# 1: Genotype ID" << endl;
-  cpx_fp << "# 2: New Information" << endl;
-  cpx_fp << "# 3: Total Complexity" << endl;
-  cpx_fp << "# 4: Net New Information" << endl;
-  cpx_fp << "# 5: Net Total Complexity" << endl << endl;
+  cpx_fp << "# 2: Parent ID" << endl;
+  cpx_fp << "# 3: Fitness" << endl;
+  cpx_fp << "# 4: New Information" << endl;
+  cpx_fp << "# 5: Total Complexity" << endl;
+  cpx_fp << "# 6: New Information - Lost Informtion" << endl;
+  cpx_fp << "# 7: Net Total Complexity" << endl << endl;
 
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -2293,7 +2300,7 @@ void cAnalyze::CommunityComplexity(cString cur_string)
   typedef pair<cAnalyzeGenotype *, cAnalyzeGenotype *> tGenotypePair; // genotype and its parent
   queue<tGenotypePair> genotype_queue;
 
-  // Look for the root that has multiple chilrent.
+  // Look for the root that has multiple childrent.
   int genotype_id = children.begin()->second->GetID(); 
   while (children.count(genotype_id) == 1 && children.size() > 1) {
     children.erase(children.begin());
@@ -2311,37 +2318,49 @@ void cAnalyze::CommunityComplexity(cString cur_string)
     cAnalyzeGenotype * cur_genotype = genotype_queue.front().first;
     cAnalyzeGenotype * parent_genotype = genotype_queue.front().second;
     genotype_queue.pop();
+    cur_genotype->Recalculate();
+    cout << cur_genotype->GetID() << endl;
 
-    if (parent_genotype == NULL) {
+    
+    if (parent_genotype == NULL) {     // The root of phylogenetic tree
       double entropy = AnalyzeEntropy(cur_genotype, mut_rate);
       community_cpx = cur_genotype->GetLength() - entropy;
       community_cpx_m2 = community_cpx;
-      cpx_fp << cur_genotype->GetID() << " 0 " << community_cpx 
-	     << " 0 " << community_cpx_m2 << endl;
+      cpx_fp << cur_genotype->GetID() << " -1 " << cur_genotype->GetFitness() << " 0 " 
+	     << community_cpx << " 0 " << community_cpx_m2 << endl;
     } else {
 
       // Compare with its parent to measure new information 
       double newinfo = IncreasedInfo(cur_genotype, parent_genotype, mut_rate);
       community_cpx += newinfo;
-      cpx_fp << cur_genotype->GetID() << " " << newinfo << " " << community_cpx;
+      cpx_fp << cur_genotype->GetID() << " " << parent_genotype->GetID() << " " 
+	     << cur_genotype->GetFitness() << " " << newinfo << " " << community_cpx;
 
-      // Compare with its parent to measure net new information
-      double lostinfo = IncreasedInfo(parent_genotype, cur_genotype, mut_rate);
-      community_cpx_m2 += newinfo - lostinfo;
-      cpx_fp << " " << newinfo - lostinfo << " " << community_cpx_m2 << endl;
+      // Only if current genotype is viable, compare it with its parent for net new info
+      if (cur_genotype->GetFitness() > 0) {
+	
+	// Compare with its parent to measure net new information
+	double lostinfo = IncreasedInfo(parent_genotype, cur_genotype, mut_rate);
+	community_cpx_m2 += newinfo - lostinfo;
+	cpx_fp << " " << newinfo - lostinfo << " " << community_cpx_m2 << endl;
+      
+      } else {
+	cpx_fp << " " << 0 << " " << community_cpx_m2 << endl;
+
+	// This genotype should not have children
+	if (children.count(cur_genotype->GetID()) != 0) {
+	  cpx_fp << "Error: This genotype has children but it shouldn't." << endl;
+	  cpx_fp.close();
+	  return;
+	}
+      }
     }
-    
-    // Assert the fitness of current is greater than 0 before adding its children to queue
-    // If TEST_CPU_TIME_MOD is too small, some genotype will get recalculated fitness 0 
-    // even it is viable and that will give us bad result. To prevent that ...
-    cur_genotype->Recalculate();
-    assert(cur_genotype->GetFitness() > 0);
 
     // Add the children of current genotype to the queue
     typedef pair<tMultimap::iterator, tMultimap::iterator> pairii;
     pairii child_range = children.equal_range(cur_genotype->GetID());
     tMultimap::iterator child_pos = child_range.first;
-    for (; child_pos != child_range.second ; ++ child_pos) {
+    for (; child_pos != child_range.second; ++ child_pos) {
       cAnalyzeGenotype * cur_child = child_pos->second;
       genotype_queue.push( tGenotypePair(cur_child, cur_genotype) );
     }
@@ -3917,17 +3936,22 @@ void cAnalyze::AnalyzeNewInfo(cString cur_string)
       cout << "Analyze new information for " << child_genotype->GetName() << endl;
     }
     
+    // Information of parent about its environment should not be zero.
+    if (I_P_E == 0) {
+      cerr << "Error: Information between parent and its enviroment is zero."
+	   << "(cAnalyze::AnalyzeNewInfo)" << endl;
+      exit(1);
+    }
+
     double H_C_E = AnalyzeEntropy(child_genotype, mu);
     double I_C_E = child_genotype->GetLength() - H_C_E;
     double net_gain = I_C_E - I_P_E;
     
     // Increased information in child compared to parent
     double child_increased_info = IncreasedInfo(child_genotype, parent_genotype, mu);
-    assert (child_increased_info >= 0);
     
     // Lost information in child compared to parent
     double child_lost_info = IncreasedInfo(parent_genotype, child_genotype, mu);
-    assert (child_lost_info >= 0);
 
     // Write information to file ...
     newinfo_fp << child_genotype->GetID() << " ";
