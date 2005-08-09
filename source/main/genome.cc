@@ -85,6 +85,8 @@ bool cGenome::OK() const
 }
  
 
+// Return the genome as an alphabetic string
+
 cString cGenome::AsString() const
 {
   cString out_string(active_size);
