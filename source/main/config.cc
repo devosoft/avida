@@ -107,7 +107,7 @@ int cConfig::test_cpu_time_mod;
 int cConfig::track_main_lineage;
 bool cConfig::log_threshold_only;
 bool cConfig::log_creatures;
-bool cConfig::log_genotypes;
+int cConfig::log_genotypes;
 bool cConfig::log_threshold;
 bool cConfig::log_species;
 bool cConfig::log_landscape;
