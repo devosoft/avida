@@ -25,36 +25,38 @@ public:
   enum eTriggerVariable { UPDATE, GENERATION, IMMEDIATE, UNDEFINED };
 
 private:
-  cString m_name;
-  cString m_args;
-
   int m_factory_id;
 
   // not implemented, prevents inadvertent wrong instantiation
-  cEvent();
-  cEvent( const cEvent & );
-  cEvent& operator=( const cEvent& );
+  cEvent(const cEvent&);
+  cEvent& operator=(const cEvent&);
+
+protected:
+  cString m_args;
 
 public:
   // constructors
-  cEvent( const cString & name = "Undefined", const cString & args = "", int factory_id = -1 )
-    : m_name( name ), m_args( args ), m_factory_id( factory_id ) { ; }
+  cEvent(int factory_id = -1 ) : m_factory_id(factory_id), m_args("") { ; }
   virtual ~cEvent() { ; }
 
-
-  // manipulators
-  void SetFactoryId(int factory_id){ m_factory_id = factory_id; }
+  int GetFactoryId() const { return m_factory_id; }
+  void SetFactoryId(int factory_id) { m_factory_id = factory_id; }
+  
+  const cString& GetArgs() const { return m_args; }
 
   /**
-   * This is a pure virtual function that has to be overloaded by derived
-   * classes. It does the actual 'thing' the event is supposed to do.
+   * The following functions are pure virtual and must be supplied by implementations
    **/
+  
+  // Configures the event for use.
+  virtual void Configure(const cString& args = "") = 0;
+
+  // Does the actual 'thing' the event is supposed to do.
   virtual void Process() = 0;
 
-  // accessors
-  const cString &  GetName()       const { return m_name; }
-  const cString &  GetArgs()       const { return m_args; }
-  int              GetFactoryId()  const { return m_factory_id; }
+  // Name and description of the event
+  virtual const cString GetName() const = 0;
+  virtual const cString GetDescription() const = 0;
 };
 
 #endif

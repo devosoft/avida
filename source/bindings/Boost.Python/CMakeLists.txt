@@ -78,7 +78,7 @@ SET(PyAvida_Pyste_Bases
   inject_genotype::
   integrated_schedule_node::
   tBuffer::
-  tDictionary::
+  #tDictionary::
 
   ##### Each of these wrappers satisfies Pyste, compiles, and loads, but are untested.
   analyze_command_def_base:: # XXX XXX

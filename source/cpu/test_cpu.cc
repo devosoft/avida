@@ -142,17 +142,18 @@ bool cTestCPU::ProcessGestation(cCPUTestInfo & test_info, int cur_depth)
 
   // Prepare the inputs...
   cur_input = 0;
+  cur_receive = 0;
 
   // Determine if we're tracing and what we need to print.
-  ostream * trace_fp =
-    test_info.GetTraceExecution() ? &(test_info.GetTraceFP()) : NULL;
+  cHardwareTracer * tracer =
+    test_info.GetTraceExecution() ? (test_info.GetTracer()) : NULL;
 
   int time_used = 0;
   while (time_used < time_allocated &&
 	 organism.GetHardware().GetMemory().GetSize() &&
 	 organism.GetPhenotype().GetNumDivides() == 0) {
     time_used++;
-    organism.GetHardware().SetTrace(trace_fp);
+    organism.GetHardware().SetTrace(tracer);
     organism.GetHardware().SingleProcess();
     organism.GetHardware().SetTrace(NULL);
     //resource_count.Update(1/cConfig::GetAveTimeslice());
@@ -160,24 +161,22 @@ bool cTestCPU::ProcessGestation(cCPUTestInfo & test_info, int cur_depth)
   }
 
   // Print out some final info in trace...
-  if (trace_fp != NULL) {
-    if (time_used == time_allocated) {
-      *trace_fp << endl << "# TIMEOUT: No offspring produced." << endl;
-    }
-    else if (organism.GetHardware().GetMemory().GetSize() == 0) {
-      *trace_fp << endl << "# ORGANISM DEATH: No offspring produced." << endl;
-    }
-    else {
-      *trace_fp << endl << "# Final Memory: "
-		<< organism.GetHardware().GetMemory().AsString() << endl
-		<< "# Child Memory: " << organism.ChildGenome().AsString()
-		<< endl;
+  if (tracer != NULL) {
+    if (cHardwareTracer_TestCPU * tracer_test_cpu
+        = dynamic_cast<cHardwareTracer_TestCPU *>(tracer)
+    ){
+      tracer_test_cpu->TraceHardware_TestCPU(
+        time_used,
+        time_allocated,
+        organism.GetHardware().GetMemory().GetSize(),
+        organism.GetHardware().GetMemory().AsString(),
+        organism.ChildGenome().AsString()
+      );
     }
   }
 
   // For now, always return true.
   return true;
-
 }
 
 

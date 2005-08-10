@@ -91,7 +91,7 @@ public:
   cEvent* GetEvent() const {
     assert(m_event!=NULL); return m_event; }
 
-  const cString& GetName() const {
+  const cString GetName() const {
     assert(m_event!=NULL); return m_event->GetName(); }
   const cString& GetArgs() const {
     assert(m_event!=NULL); return m_event->GetArgs(); }

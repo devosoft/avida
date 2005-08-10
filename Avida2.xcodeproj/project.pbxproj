@@ -844,7 +844,6 @@
 		DCC30FCE0762539D008F7A48 /* defs.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = defs.hh; sourceTree = "<group>"; };
 		DCC30FCF0762539D008F7A48 /* Doxyfile */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = Doxyfile; sourceTree = "<group>"; };
 		DCC30FEB0762539D008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		DCC30FED0762539D008F7A48 /* cPopulation_event_list */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = cPopulation_event_list; sourceTree = "<group>"; };
 		DCC30FEF0762539D008F7A48 /* event.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = event.hh; sourceTree = "<group>"; };
 		DCC30FF00762539D008F7A48 /* event.pri */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = event.pri; sourceTree = "<group>"; };
 		DCC30FF30762539D008F7A48 /* event_factory_manager.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = event_factory_manager.cc; sourceTree = "<group>"; };
@@ -2020,7 +2019,6 @@
 			isa = PBXGroup;
 			children = (
 				DCC30FEB0762539D008F7A48 /* CMakeLists.txt */,
-				DCC30FED0762539D008F7A48 /* cPopulation_event_list */,
 				DCC30FEF0762539D008F7A48 /* event.hh */,
 				DCC30FF00762539D008F7A48 /* event.pri */,
 				DCC30FF30762539D008F7A48 /* event_factory_manager.cc */,

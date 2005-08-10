@@ -271,10 +271,13 @@ void cHardwareSMT::SingleProcess()
     }
 #endif
     
-    // Print the status of this CPU at each step...
-    const cString& next_name = inst_set->GetName(IP().GetInst())();
-    if (trace_fp != NULL) organism->PrintStatus(*trace_fp, next_name);
-        
+    // DDD - there is no cHardwareTracer_SMT -- Print the status of this CPU at each step...
+    //if (m_tracer != NULL) {
+    //  if (cHardwareTracer_SMT* tracer = dynamic_cast<cHardwareTracer_SMT *>(m_tracer)) {
+    //    tracer->TraceHardware_SMT(*this);
+    //  }
+    //}
+
     // Find the instruction to be executed
     const cInstruction & cur_inst = IP().GetInst();
 		
@@ -377,9 +380,12 @@ void cHardwareSMT::ProcessBonusInst(const cInstruction & inst)
   bool prev_run_state = organism->GetIsRunning();
   organism->SetRunning(true);
 	
-  // Print the status of this CPU at each step...
-  cString next_name = cStringUtil::Stringf("%s (bonus instruction)", inst_set->GetName(inst)());
-  if (trace_fp != NULL) organism->PrintStatus(*trace_fp, next_name);
+  // DDD - there is no cHardwareTracer_SMT -- Print the status of this CPU at each step...
+  //if (m_tracer != NULL) {
+  //  if (cHardwareTracer_SMT* tracer = dynamic_cast<cHardwareTracer_SMT *>(m_tracer)) {
+  //    tracer->TraceHardware_SMTBonus(*this);
+  //  }
+  //}
 
   SingleProcess_ExecuteInst(inst);
 

@@ -31,7 +31,7 @@ protected:
   int viewer_lock;            // Used if the viewer should only lock onto
                               //  one aspect of the hardware.
 
-  ostream * trace_fp;         // Set this if you want execution traced.
+  cHardwareTracer * m_tracer;         // Set this if you want execution traced.
 
   static int instance_count;
 public:
@@ -73,7 +73,7 @@ public:
   virtual void SaveState(std::ostream & fp) = 0;
   virtual void LoadState(std::istream & fp) = 0;
 
-  void SetTrace(ostream * in_fp) { trace_fp = in_fp; }
+  void SetTrace(cHardwareTracer * tracer) { m_tracer = tracer; }
 
 
   // --------  Mutations (Must be Virtual)  --------

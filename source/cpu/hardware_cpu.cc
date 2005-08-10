@@ -472,9 +472,13 @@ void cHardwareCPU::SingleProcess()
 #endif
     
     // Print the status of this CPU at each step...
-    const cString & next_name = inst_set->GetName(IP().GetInst())();
-    if (trace_fp != NULL) organism->PrintStatus(*trace_fp, next_name);
-
+    if (m_tracer != NULL) {
+      if (cHardwareTracer_CPU * tracer
+          = dynamic_cast<cHardwareTracer_CPU *>(m_tracer)
+      ){
+        tracer->TraceHardware_CPU(*this);
+      }
+    }
     
     // Find the instruction to be executed
     const cInstruction & cur_inst = IP().GetInst();
@@ -582,9 +586,13 @@ void cHardwareCPU::ProcessBonusInst(const cInstruction & inst)
 
   // @CAO FIX PRINTING TO INDICATE THIS IS A BONUS
   // Print the status of this CPU at each step...
-  cString next_name = cStringUtil::Stringf("%s (bonus instruction)",
-					   inst_set->GetName(inst)());
-  if (trace_fp != NULL) organism->PrintStatus(*trace_fp, next_name);
+  if (m_tracer != NULL) {
+    if (cHardwareTracer_CPU * tracer
+        = dynamic_cast<cHardwareTracer_CPU *>(m_tracer)
+    ){
+      tracer->TraceHardware_CPUBonus(*this);
+    }
+  }
     
   SingleProcess_ExecuteInst(inst);
 
