@@ -9,6 +9,7 @@
 #include <sstream>
 #include <string>
 #include <queue>
+#include <stack>
 
 #include "analyze.hh"
 
@@ -2250,20 +2251,28 @@ void cAnalyze::CommandPrintDiversity(cString cur_string)
   }
 }
 
+
 void cAnalyze::CommunityComplexity(cString cur_string)
 {
-  cout << "Analyze community complexity for current population ...\n";
 
-  // Get mutation rate
-  double mut_rate = cur_string.PopWord().AsDouble();
+  /////////////////////////////////////////////////////////////////////////
+  // Calculate the mutual information between all genotypes and environment
+  /////////////////////////////////////////////////////////////////////////
 
+  cout << "Analyze biocomplexity of current population about environment ...\n";
 
-  // Create the directory using the string given as the second argument
+  // Get the number of genotypes that are gonna be analyzed.
+  int max_genotypes = cur_string.PopWord().AsInt();
+
+  // Get update
+  int update = cur_string.PopWord().AsInt();
+
+  // Get the directory  
   cString dir = cur_string.PopWord();
   cString defaultDir = "community_cpx/";
   cString directory = PopDirectory(dir, defaultDir);
 
-  // Create the file that saves the result 
+  // Get the file name that saves the result 
   cString filename = cur_string.PopWord();
   if (filename.IsEmpty()) {
     filename = "community.complexity.dat";
@@ -2274,105 +2283,354 @@ void cAnalyze::CommunityComplexity(cString cur_string)
 
   cpx_fp << "# Legend:" << endl;
   cpx_fp << "# 1: Genotype ID" << endl;
-  cpx_fp << "# 2: Parent ID" << endl;
-  cpx_fp << "# 3: Fitness" << endl;
-  cpx_fp << "# 4: New Information" << endl;
+  cpx_fp << "# 2: Entropy given Known Genotypes" << endl;
+  cpx_fp << "# 3: Entropy given Both Known Genotypes and Env" << endl;
+  cpx_fp << "# 4: New Information about Environment" << endl;
   cpx_fp << "# 5: Total Complexity" << endl;
-  cpx_fp << "# 6: New Information - Lost Informtion" << endl;
-  cpx_fp << "# 7: Net Total Complexity" << endl << endl;
+  cpx_fp << endl;
 
 
-  ////////////////////////////////////////////////////////////////////////////////
-  // Loop through all of the genotypes in this batch and build parent-genotype map
-  
-  typedef multimap< int, cAnalyzeGenotype *, less<int> > tMultimap;
-  tMultimap children;       
-  tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+  /////////////////////////////////////////////////////////////////////////////////
+  // Loop through all of the genotypes in all batches and build id vs. genotype map
+
+  map<int, cAnalyzeGenotype *> genotype_database;
+  for (int i = 0; i < MAX_BATCHES; ++ i) {
+    tListIterator<cAnalyzeGenotype> batch_it(batch[i].List());
+    cAnalyzeGenotype * genotype = NULL;
+    while ((genotype = batch_it.Next()) != NULL) {
+      genotype_database.insert(make_pair(genotype->GetID(), genotype));
+    }
+  }
+
+  ////////////////////////////////////////////////
+  // Check if all the genotypes having same length
+
+  int length_genome;
+  if (genotype_database.size() > 0) {
+    length_genome = genotype_database.begin()->second->GetLength();
+  }
+  map<int, cAnalyzeGenotype *>::iterator gen_iterator = genotype_database.begin();
+  for (; gen_iterator != genotype_database.end(); ++ gen_iterator) {
+    if (gen_iterator->second->GetLength() != length_genome) {
+      cerr << "Genotype " << gen_iterator->first << " has different genome length." << endl;
+      exit(1);
+    }
+  }
+
+  ///////////////////////
+  // Backup test CPU data
+  bool backupUsage = cTestCPU::UseResources();
+  tArray<double> backupResources(cTestCPU::GetResources());
+  FillResources(update);
+
+  ///////////////////////////////////////////////////////////////////////
+  // Choose the first n most abundant genotypes and put them in community
+
+  vector<cAnalyzeGenotype *> community;
   cAnalyzeGenotype * genotype = NULL;
-  
-  while ((genotype = batch_it.Next()) != NULL) {
-    children.insert(make_pair(genotype->GetParentID(), genotype));
+  tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+
+  while (((genotype = batch_it.Next()) != NULL) && (community.size() < max_genotypes)) {
+    community.push_back(genotype);
   }
-
-  // Put the first genotype (root of the phylogenetic tree) in the queue.
-  // Breadth-first traversal of the phylogeny_tree. Accumulate new information
-  // in the child compared to its parent.
-  typedef pair<cAnalyzeGenotype *, cAnalyzeGenotype *> tGenotypePair; // genotype and its parent
-  queue<tGenotypePair> genotype_queue;
-
-  // Look for the root that has multiple childrent.
-  int genotype_id = children.begin()->second->GetID(); 
-  while (children.count(genotype_id) == 1 && children.size() > 1) {
-    children.erase(children.begin());
-    genotype_id = children.begin()->second->GetID();
-  }
-
-  if (children.begin() != children.end()) {
-    genotype_queue.push( tGenotypePair(children.begin()->second, NULL) );
-  }
-
-  double community_cpx = 0.0;
-  double community_cpx_m2 = 0.0;       // Add net new information in the phylogeny.
-  while (genotype_queue.size() > 0) {
-
-    cAnalyzeGenotype * cur_genotype = genotype_queue.front().first;
-    cAnalyzeGenotype * parent_genotype = genotype_queue.front().second;
-    genotype_queue.pop();
-    cur_genotype->Recalculate();
-    cout << cur_genotype->GetID() << endl;
-
     
-    if (parent_genotype == NULL) {     // The root of phylogenetic tree
-      double entropy = AnalyzeEntropy(cur_genotype, mut_rate);
-      community_cpx = cur_genotype->GetLength() - entropy;
-      community_cpx_m2 = community_cpx;
-      cpx_fp << cur_genotype->GetID() << " -1 " << cur_genotype->GetFitness() << " 0 " 
-	     << community_cpx << " 0 " << community_cpx_m2 << endl;
-    } else {
+  ///////////////////////////
+  // Measure hamming distance
 
-      // Compare with its parent to measure new information 
-      double newinfo = IncreasedInfo(cur_genotype, parent_genotype, mut_rate);
-      community_cpx += newinfo;
-      cpx_fp << cur_genotype->GetID() << " " << parent_genotype->GetID() << " " 
-	     << cur_genotype->GetFitness() << " " << newinfo << " " << community_cpx;
+  int size_community = community.size();
+  if (size_community == 0) {
+    cerr << "There is no genotype in this community." << endl;
+    cpx_fp.close();
+    exit(1);
+  }
+  typedef pair<int,int> gen_pair;
+  map<gen_pair, int> hamming_dist;
+  
+  for (int i = 0; i< size_community; ++ i) {
+    for (int j = i+1; j < size_community; ++ j) {
+      int dist = cGenomeUtil::FindHammingDistance(community[i]->GetGenome(),
+						  community[j]->GetGenome());
+      int id1 = community[i]->GetID();
+      int id2 = community[j]->GetID();
 
-      // Only if current genotype is viable, compare it with its parent for net new info
-      if (cur_genotype->GetFitness() > 0) {
-	
-	// Compare with its parent to measure net new information
-	double lostinfo = IncreasedInfo(parent_genotype, cur_genotype, mut_rate);
-	community_cpx_m2 += newinfo - lostinfo;
-	cpx_fp << " " << newinfo - lostinfo << " " << community_cpx_m2 << endl;
+      hamming_dist.insert(make_pair(gen_pair(id1, id2), dist));
+      hamming_dist.insert(make_pair(gen_pair(id2, id1), dist));
+    }
+  }
+
+  //////////////////////////////////
+  // Get Most Recent Common Ancestor
+
+  map<gen_pair, cAnalyzeGenotype *> mrca;
+  for (int i = 0; i< size_community; ++ i) {
+    for (int j = i+1; j < size_community; ++ j) {
+				    
+      cAnalyzeGenotype * lineage1_genotype = community[i];
+      cAnalyzeGenotype * lineage2_genotype = community[j];
+
+      while (lineage1_genotype->GetID() != lineage2_genotype->GetID()) {
+	if (lineage1_genotype->GetID() > lineage2_genotype->GetID()) {
+	  int parent_id = lineage1_genotype->GetParentID();
+	  lineage1_genotype = genotype_database.find(parent_id)->second;
+	} else {
+	  int parent_id = lineage2_genotype->GetParentID();
+	  lineage2_genotype = genotype_database.find(parent_id)->second;
+	}
+      }
+
+      int id1 = community[i]->GetID();
+      int id2 = community[j]->GetID();
+      mrca.insert(make_pair(gen_pair(id1, id2), lineage1_genotype));
+      mrca.insert(make_pair(gen_pair(id2, id1), lineage1_genotype));
+    }
+  }
+
+  /*
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  // Sort the genotype that is next genotype is the most closest one to all previous genotypes
+
+  vector<cAnalyzeGenotype *> sorted_community;
+  vector<cAnalyzeGenotype *> left_genotypes = community;
+
+  // Put the first genotype in left to sorted.
+  sorted_community.push_back(*left_genotypes.begin());
+  left_genotypes.erase(left_genotypes.begin());
+
+  while (left_genotypes.size() > 0) {
+    int min_total_hamming = size_community * length_genome;
+    int index_next;
+
+    for (int next = 0; next < left_genotypes.size(); ++ next) {
+      int total_hamming = 0;
+      int id1 = left_genotypes[next]->GetID();
       
-      } else {
-	cpx_fp << " " << 0 << " " << community_cpx_m2 << endl;
+      for (int given = 0; given < sorted_community.size(); ++ given) {
+	int id2 = sorted_community[given]->GetID();
+	total_hamming += hamming_dist.find(gen_pair(id1, id2))->second;
+      }
 
-	// This genotype should not have children
-	if (children.count(cur_genotype->GetID()) != 0) {
-	  cpx_fp << "Error: This genotype has children but it shouldn't." << endl;
-	  cpx_fp.close();
-	  return;
+      if (total_hamming < min_total_hamming) {
+	min_total_hamming = total_hamming;
+	index_next = next;
+      }
+    }
+
+    sorted_community.push_back(left_genotypes[index_next]);
+    left_genotypes.erase(left_genotypes.begin() + index_next);
+  }
+
+  */
+  vector<cAnalyzeGenotype *> sorted_community = community;
+  /////////////////////////////////////////////
+  // Loop through genotypes in sorted community
+
+  double complexity = 0.0;
+  vector<cAnalyzeGenotype *> given_genotypes;
+  int num_insts = inst_set.GetSize();
+
+  for (int i = 0; i < size_community; ++ i) {
+    genotype = sorted_community[i];
+
+    // Skip the dead organisms
+    genotype->Recalculate();
+    if (genotype->GetFitness() == 0) {
+      continue;
+    }
+
+    vector<double> one_line_prob(num_insts, 0.0);
+    vector< vector<double> > prob(length_genome, one_line_prob);
+
+    cout << endl << genotype->GetID() << endl;
+
+    if (given_genotypes.size() >= 2) {
+
+      ///////////////////////////////////////////////////////////////////
+      // Look for two given genotypes that has minimun depth dist with it
+
+      cAnalyzeGenotype * min_depth_gen = given_genotypes[0];
+      cAnalyzeGenotype * tmrca = mrca.find(gen_pair(genotype->GetID(), 
+						    given_genotypes[0]->GetID()))->second;
+      int min_depth_dist = genotype->GetDepth() + given_genotypes[0]->GetDepth() - 2 * tmrca->GetDepth();
+      
+      cAnalyzeGenotype * second_min_gen = given_genotypes[1];
+      tmrca = mrca.find(gen_pair(genotype->GetID(), given_genotypes[1]->GetID()))->second;
+      int second_min_depth = genotype->GetDepth() + given_genotypes[1]->GetDepth() - 2 * tmrca->GetDepth();
+
+      for (int i = 2; i < given_genotypes.size(); ++ i) {
+	cAnalyzeGenotype * given_genotype = given_genotypes[i];
+	cAnalyzeGenotype * tmrca = mrca.find(gen_pair(genotype->GetID(),
+						      given_genotype->GetID()))->second;
+	int dist = genotype->GetDepth() + given_genotype->GetDepth() - 2 * tmrca->GetDepth();
+
+	if (dist < min_depth_dist) {
+	  second_min_depth = min_depth_dist;
+	  second_min_gen = min_depth_gen;
+	  min_depth_dist = dist;
+	  min_depth_gen = given_genotype;
+	} else if (dist >= min_depth_dist && dist < second_min_depth) {
+	  second_min_depth = dist;
+	  second_min_gen = given_genotype;
+	}
+      }
+
+      const cGenome & given_genome1 = min_depth_gen->GetGenome();
+      const cGenome & given_genome2 = second_min_gen->GetGenome();
+      for (int line = 0; line < length_genome; ++ line) {
+	int given_inst = given_genome1[line].GetOp();
+	prob[line][given_inst] += pow(1 - 1.0/length_genome, min_depth_dist);
+	given_inst = given_genome2[line].GetOp();
+	prob[line][given_inst] += pow(1 - 1.0/length_genome, min_depth_dist);
+      }
+      
+	
+    } else if (given_genotypes.size() == 1) {
+      //////////////////////////////////////////////////////
+      // Calculate the probability of each inst at each line
+      cAnalyzeGenotype * tmrca = mrca.find(gen_pair(genotype->GetID(), 
+						    given_genotypes[0]->GetID()))->second;
+      int dist = genotype->GetDepth() + given_genotypes[0]->GetDepth() - 2 * tmrca->GetDepth();
+      const cGenome & given_genome = given_genotypes[0]->GetGenome();
+
+      for (int line = 0; line < length_genome; ++ line) {
+	int given_inst = given_genome[line].GetOp();
+	prob[line][given_inst] += pow(1 - 1.0/length_genome, dist);
+      }
+      
+    } 
+      
+    /////////////////////////////////////////
+    // Normalize the probability at each line
+
+    for (int line = 0; line < length_genome; ++ line) {
+      double cur_total_prob = 0.0;
+      for (int inst = 0; inst < num_insts; ++ inst) {
+	cur_total_prob += prob[line][inst];
+      }
+      if (cur_total_prob > 1) {
+	for (int inst = 0; inst < num_insts; ++ inst) {
+	  prob[line][inst] = prob[line][inst] / cur_total_prob;
+	}
+	cur_total_prob = 1.0;
+      }
+      double left_prob = 1 - cur_total_prob;
+      for (int inst = 0; inst < num_insts; ++ inst) {
+	prob[line][inst] += left_prob / num_insts;
+      }
+
+    }
+
+    /////////////////////////////////
+    // Calculate entropy of each line  
+    vector<double> entropy(length_genome, 0.0);
+    for (int line = 0; line < length_genome; ++ line) {
+      for (int inst = 0; inst < num_insts; ++ inst) {
+	if (prob[line][inst] > 0) {
+	  entropy[line] -= prob[line][inst] * log(prob[line][inst]) / log(num_insts*1.0);
 	}
       }
     }
 
-    // Add the children of current genotype to the queue
-    typedef pair<tMultimap::iterator, tMultimap::iterator> pairii;
-    pairii child_range = children.equal_range(cur_genotype->GetID());
-    tMultimap::iterator child_pos = child_range.first;
-    for (; child_pos != child_range.second; ++ child_pos) {
-      cAnalyzeGenotype * cur_child = child_pos->second;
-      genotype_queue.push( tGenotypePair(cur_child, cur_genotype) );
+
+    ///////////////////////////////////////////////////////////////////
+    // Point mutation at all lines of code to look for neutral mutation
+    cout << "Test point mutation." << endl;
+    vector<bool> one_line_neutral(num_insts, false);
+    vector< vector<bool> > neutral_mut(length_genome, one_line_neutral);
+   
+    genotype->Recalculate();
+    double base_fitness = genotype->GetFitness();
+    
+    const cGenome & base_genome = genotype->GetGenome();
+    cGenome mod_genome(base_genome);
+      
+    for (int line = 0; line < length_genome; ++ line) {
+      int cur_inst = base_genome[line].GetOp();
+      
+      for (int mod_inst = 0; mod_inst < num_insts; ++ mod_inst) {
+	mod_genome[line].SetOp(mod_inst);
+	cAnalyzeGenotype test_genotype(mod_genome, inst_set);
+	test_genotype.Recalculate();
+	if (test_genotype.GetFitness() >= base_fitness) {
+	  neutral_mut[line][mod_inst] = true;
+	}
+      }
+      
+      mod_genome[line].SetOp(cur_inst);
     }
 
-    // Delete the children of current genotype from map
-    children.erase(child_range.first, child_range.second);
-    
-  }
 
+    /////////////////////////////////////////////////////
+    // Redistribute the probability of insts at each line
+
+    for (int line = 0; line < length_genome; ++ line) {
+      double total_prob = 0.0;
+      for (int inst = 0; inst < num_insts; ++ inst) {
+	if (neutral_mut[line][inst] == true) {
+	  total_prob += prob[line][inst];
+	}
+      }
+
+     
+
+      for (int inst = 0; inst < num_insts; ++ inst) {
+	if (neutral_mut[line][inst] == true) {
+	  prob[line][inst] = prob[line][inst] / total_prob;
+	} else {
+	  prob[line][inst] = 0.0;
+	}
+      }
+      
+    }
+
+    ////////////////////////////////////////////////
+    // Calculate the entropy given environment
+    
+    vector<double> entropy_given_env(length_genome, 0.0);
+    for (int line = 0; line < length_genome; ++ line) {
+      for (int inst = 0; inst < num_insts; ++ inst) {
+	if (prob[line][inst] > 0) {
+	  entropy_given_env[line] -= prob[line][inst] * log(prob[line][inst]) / log(num_insts*1.0);
+	}
+      }
+    }
+
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Calculate the information between genotype and env given other genotypes
+    double information = 0.0;
+    double entropy_before = 0.0;
+    double entropy_after = 0.0;
+    for (int line = 0; line < length_genome; ++ line) {
+      entropy_before += entropy[line];
+      entropy_after += entropy_given_env[line];
+
+      if (entropy[line] >= entropy_given_env[line]) {
+	information += entropy[line] - entropy_given_env[line];	
+      } else {
+	information += 0;    // Env did not give more information about this site.
+      }
+
+    }
+    complexity += information;
+
+    cpx_fp << genotype->GetID() << " " << entropy_before << " " << entropy_after << " "
+	   << information << " " << complexity << endl;
+
+    /////////////////////////////////////////////////////////////
+    // This genotype becomes the given condition of next genotype
+
+    given_genotypes.push_back(genotype);
+
+  }
+	 
+	 
+  // Set the test CPU back to the state it was 
+  cTestCPU::UseResources() = backupUsage;
+  cTestCPU::SetupResourceArray(backupResources);
+    
   cpx_fp.close();
   return;
-  
+	 
 }
 
 void cAnalyze::CommandLandscape(cString cur_string)
