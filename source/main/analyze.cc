@@ -641,7 +641,7 @@ double cAnalyze::AnalyzeEntropyGivenParent(cAnalyzeGenotype * genotype,
     
     // Calculate entropy ...
     double this_entropy = 0.0;
-    this_entropy -= (1-mut_rate)*log(1-mut_rate)/log(num_insts);
+    this_entropy -= (1.0-mut_rate)*log(1.0-mut_rate)/log((double) num_insts);
     for (int i = 0; i < num_insts; i ++) {
       if (i == parent_inst) { continue; }
       prob[i] = prob[i] * mut_rate;

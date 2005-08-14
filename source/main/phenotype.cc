@@ -150,6 +150,7 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
   // Setup child info...
   copy_true          = false;
   divide_sex         = false;
+  mate_select_id     = -1;
   cross_num          = 0;
   last_child_fertile = is_fertile;
   child_fertile      = true;
@@ -227,7 +228,8 @@ void cPhenotype::SetupInject(int _length)
   // Setup child info...
   copy_true         = false;
   divide_sex        = false;
-  cross_num        = 0;
+  mate_select_id    = 0;
+  cross_num         = 0;
   child_fertile     = true;
   last_child_fertile = true;
   child_copied_size = 0;
@@ -302,6 +304,7 @@ void cPhenotype::DivideReset(int _length)
   // Reset child info...
   (void) copy_true;
   (void) divide_sex;
+  (void) mate_select_id;
   (void) cross_num;
   last_child_fertile = child_fertile;
   child_fertile     = true;
@@ -389,6 +392,7 @@ void cPhenotype::TestDivideReset(int _length)
   // Reset child info...
   (void) copy_true;
   (void) divide_sex;
+  (void) mate_select_id;
   (void) cross_num;
   (void) child_fertile;
   (void) last_child_fertile;
@@ -475,6 +479,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   // Setup child info...
   copy_true          = false;
   divide_sex         = false;
+  mate_select_id     = 0;
   cross_num          = 0;
   last_child_fertile = is_fertile;
   child_fertile      = true;
@@ -623,7 +628,8 @@ bool cPhenotype::SaveState(ofstream & fp)
 
   fp << copy_true           << " ";
   fp << divide_sex          << " ";
-  fp << cross_num          << " ";
+  fp << mate_select_id      << " ";
+  fp << cross_num           << " ";
   fp << child_fertile       << " ";
   fp << last_child_fertile  << " ";
 
@@ -697,6 +703,7 @@ bool cPhenotype::LoadState(ifstream & fp)
 
   fp >> copy_true;
   fp >> divide_sex;
+  fp >> mate_select_id;
   fp >> cross_num;
   fp >> child_fertile;
   fp >> last_child_fertile;

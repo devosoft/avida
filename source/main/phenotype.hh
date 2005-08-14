@@ -118,7 +118,8 @@ private:
   // 6. Child information...
   bool copy_true;        // Can this genome produce an exact copy of itself?
   bool divide_sex;       // Was this child created with a sexual divide?
-  int  cross_num  ;      // How many crossovers should this child do?
+  int mate_select_id;    // If divide sex, who to mate with?
+  int  cross_num  ;      // ...how many crossovers should this child do?
   bool child_fertile;    // Will this organism's next child be fertile?
   bool last_child_fertile;  // Was the child being born to be fertile?
   int child_copied_size; // Instruction copied into child.
@@ -256,6 +257,7 @@ public:
 
   bool CopyTrue() const   { assert(initialized == true); return copy_true; }
   bool DivideSex() const  { assert(initialized == true); return divide_sex; }
+  int MateSelectID() const { assert(initialized == true); return mate_select_id; }
   int  CrossNum() const  { assert(initialized == true); return cross_num; }
   bool  ChildFertile() const
     { assert(initialized == true); return child_fertile;}
@@ -273,6 +275,7 @@ public:
   void SetLinesCopied(int _copied_size) { child_copied_size = _copied_size; }
   void SetDivType(double _div_type) { div_type = _div_type; }  
   void SetDivideSex(bool _divide_sex) { divide_sex = _divide_sex; }  
+  void SetMateSelectID(int _select_id) { mate_select_id = _select_id; }
   void SetCrossNum(int _cross_num) { cross_num = _cross_num; }
   void SetToDie() { to_die = true; }
   void SetToDelete() { to_delete = true; }
@@ -299,6 +302,7 @@ public:
   int & ParentCrossNum()  { assert(initialized == true); return parent_cross_num; }
   bool & CopyTrue()   { assert(initialized == true); return copy_true; }
   bool & DivideSex()  { assert(initialized == true); return divide_sex; }
+  int & MateSelectID() { assert(initialized == true); return mate_select_id; }
   int & CrossNum()     { assert(initialized == true); return cross_num; }
   bool & ChildFertile() { assert(initialized == true); return child_fertile; }
   bool & IsMultiThread() { assert(initialized == true); return is_multi_thread; }

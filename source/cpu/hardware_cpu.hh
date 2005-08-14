@@ -432,6 +432,7 @@ public:
   bool Inst_HeadDivideSex();
   bool Inst_HeadDivideAsex();
   bool Inst_HeadDivideAsexWait();
+  bool Inst_HeadDivideMateSelect();
 
   bool Inst_HeadDivide1();
   bool Inst_HeadDivide2();

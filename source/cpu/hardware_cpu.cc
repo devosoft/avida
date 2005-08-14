@@ -265,6 +265,7 @@ cInstLibCPU *cHardwareCPU::initInstLib(void){
     cInstEntryCPU("div-sex",    &cHardwareCPU::Inst_HeadDivideSex),
     cInstEntryCPU("div-asex",   &cHardwareCPU::Inst_HeadDivideAsex),
     cInstEntryCPU("div-asex-w",   &cHardwareCPU::Inst_HeadDivideAsexWait),
+    cInstEntryCPU("div-sex-MS",   &cHardwareCPU::Inst_HeadDivideMateSelect),
 
     cInstEntryCPU("h-divide1",      &cHardwareCPU::Inst_HeadDivide1),
     cInstEntryCPU("h-divide2",      &cHardwareCPU::Inst_HeadDivide2),
@@ -3242,6 +3243,23 @@ bool cHardwareCPU::Inst_HeadDivideAsexWait()
 { 
   organism->GetPhenotype().SetDivideSex(true);
   organism->GetPhenotype().SetCrossNum(0);
+  return Inst_HeadDivide(); 
+}
+
+bool cHardwareCPU::Inst_HeadDivideMateSelect()  
+{ 
+  // Take the label that follows this divide and use it as the ID for which
+  // other organisms this one is willing to mate with.
+  ReadLabel();
+  organism->GetPhenotype().SetMateSelectID( GetLabel().AsInt(NUM_NOPS) );
+
+//   int mate_id = GetLabel().AsInt(NUM_NOPS);
+//   if (mate_id > 0) cout << mate_id << " "
+// 			<< GetLabel().AsString() << endl;
+
+  // Proceed as normal with the rest of mate selection.
+  organism->GetPhenotype().SetDivideSex(true);
+  organism->GetPhenotype().SetCrossNum(1);
   return Inst_HeadDivide(); 
 }
 
