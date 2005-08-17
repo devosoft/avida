@@ -246,6 +246,8 @@ cInstLibCPU *cHardwareCPU::initInstLib(void){
 		  "Copy the position of the ?IP? head into CX"),
     cInstEntryCPU("if-label",  &cHardwareCPU::Inst_IfLabel, true,
 		  "Execute next if we copied complement of attached label"),
+    cInstEntryCPU("if-label2",  &cHardwareCPU::Inst_IfLabel2, true,
+		  "If copied label compl., exec next inst; else SKIP W/NOPS"),
     cInstEntryCPU("set-flow",  &cHardwareCPU::Inst_SetFlow, true,
 		  "Set flow-head to position in ?CX?"),
 
@@ -3204,6 +3206,19 @@ bool cHardwareCPU::Inst_IfLabel()
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
   if (GetLabel() != GetReadLabel())  IP().Advance();
+  return true;
+}
+
+// This is a variation on IfLabel that will skip the next command if the "if"
+// is false, but it will also skip all nops following that command.
+bool cHardwareCPU::Inst_IfLabel2()
+{
+  ReadLabel();
+  GetLabel().Rotate(1, NUM_NOPS);
+  if (GetLabel() != GetReadLabel()) {
+    IP().Advance();
+    if (inst_set->IsNop( IP().GetNextInst() ))  IP().Advance();
+  }
   return true;
 }
 
