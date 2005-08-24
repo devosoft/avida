@@ -1725,7 +1725,7 @@ void cAnalyze::CommandDetail_Body(ostream & fp, int format_type,
     fp << "</table>" << endl
     << "</center>" << endl;
   }
-  }
+}
 
 void cAnalyze::CommandDetailAverage_Body(ostream & fp, int num_outputs,
                                          tListIterator< tDataEntryCommand<cAnalyzeGenotype> > & output_it)
@@ -2067,7 +2067,178 @@ void cAnalyze::CommandDetailIndex(cString cur_string)
     fp << "</table>" << endl
     << "</center>" << endl;
   }
+}
+
+void cAnalyze::CommandHistogram(cString cur_string)
+{
+  if (verbose == true) cout << "Histogram batch " << cur_batch << endl;
+  else cout << "Histograming..." << endl;
+  
+  // Load in the variables...
+  cString filename("histogram.dat");
+  if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
+  
+  // Construct a linked list of details needed...
+  tList< tDataEntryCommand<cAnalyzeGenotype> > output_list;
+  tListIterator< tDataEntryCommand<cAnalyzeGenotype> > output_it(output_list);
+  LoadGenotypeDataList(cur_string, output_list);
+  
+  // Determine the file type...
+  int file_type = FILE_TYPE_TEXT;
+  cString file_extension(filename);
+  while (file_extension.Find('.') != -1) file_extension.Pop('.');
+  if (file_extension == "html") file_type = FILE_TYPE_HTML;
+  
+  // Setup the file...
+  if (filename == "cout") {
+    CommandHistogram_Header(cout, file_type, output_it);
+    CommandHistogram_Body(cout, file_type, output_it);
+  } else {
+    ofstream & fp = data_file_manager.GetOFStream(filename);
+    CommandHistogram_Header(fp, file_type, output_it);
+    CommandHistogram_Body(fp, file_type, output_it);
   }
+  
+  // And clean up...
+  while (output_list.GetSize() != 0) delete output_list.Pop();
+}
+
+void cAnalyze::CommandHistogram_Header(ostream & fp, int format_type,
+       tListIterator< tDataEntryCommand<cAnalyzeGenotype> > & output_it)
+{
+  // Write out the header on the file
+  if (format_type == FILE_TYPE_TEXT) {
+    fp << "#filetype histogram_data" << endl;
+    fp << "#format ";
+    while (output_it.Next() != NULL) {
+      const cString & entry_name = output_it.Get()->GetName();
+      fp << entry_name << " ";
+    }
+    fp << endl << endl;
+    
+    // Give the more human-readable legend.
+    fp << "# Histograms:" << endl;
+    int count = 0;
+    while (output_it.Next() != NULL) {
+      const cString & entry_desc = output_it.Get()->GetDesc();
+      fp << "# " << ++count << ": " << entry_desc << endl;
+    }
+    fp << endl;
+  } else { // if (format_type == FILE_TYPE_HTML) {
+    fp << "<html>" << endl
+       << "<body bgcolor=\"#FFFFFF\"" << endl
+       << " text=\"#000000\"" << endl
+       << " link=\"#0000AA\"" << endl
+       << " alink=\"#0000FF\"" << endl
+       << " vlink=\"#000044\">" << endl
+       << endl
+       << "<h1 align=center>Histograms for " << batch[cur_batch].Name()
+       << "</h1>" << endl
+       << endl
+       << "<center>" << endl
+       << "<table border=1 cellpadding=2><tr>" << endl;
+    
+    while (output_it.Next() != NULL) {
+      const cString & entry_desc = output_it.Get()->GetDesc();
+      const cString & entry_name = output_it.Get()->GetName();
+      fp << "<tr><th bgcolor=\"#AAAAFF\"><a href=\"#"
+	 << entry_name << "\">"
+	 << entry_desc << "</a></tr>";
+    }
+    fp << "</tr></table>" << endl;    
+  }
+}
+
+
+void cAnalyze::CommandHistogram_Body(ostream & fp, int format_type,
+	     tListIterator< tDataEntryCommand<cAnalyzeGenotype> > & output_it)
+{
+  output_it.Reset();
+  tDataEntryCommand<cAnalyzeGenotype> * data_command = NULL;
+    
+  while ((data_command = output_it.Next()) != NULL) {
+    if (format_type == FILE_TYPE_TEXT) {
+      fp << "# --- " << data_command->GetDesc() << " ---" << endl;
+    } else {
+      fp << "<table cellpadding=3>" << endl
+	 << "<tr><th colspan=3><a name=\"" << data_command->GetName() << "\">"
+	 << data_command->GetDesc() << "</th></tr>" << endl;
+    }
+
+    tDictionary<int> count_dict;
+
+    // Loop through all genotypes in this batch to collect the info we need.
+    tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+    cAnalyzeGenotype * cur_genotype;
+    while ((cur_genotype = batch_it.Next()) != NULL) {
+      data_command->SetTarget(cur_genotype);
+      const cString cur_name(data_command->GetEntry().AsString());
+      int count = 0;
+      count_dict.Find(cur_name, count);
+      count += cur_genotype->GetNumCPUs();
+      count_dict.SetValue(cur_name, count);
+    }
+
+    tList<cString> name_list;
+    tList<int> count_list;
+    count_dict.AsLists(name_list, count_list);
+
+    // Figure out the maximum count and the maximum widths...
+    int max_count = 0;
+    int max_name_width = 0;
+    int max_count_width = 0;
+    tListIterator<int> count_it(count_list);
+    tListIterator<cString> name_it(name_list);
+    while (count_it.Next() != NULL) {
+      const cString cur_name( *(name_it.Next()) );
+      const int cur_count = *(count_it.Get());
+      const int name_width = cur_name.GetSize();
+      const int count_width = cStringUtil::Stringf("%d", cur_count).GetSize();
+      if (cur_count > max_count) max_count = cur_count;
+      if (name_width > max_name_width) max_name_width = name_width;
+      if (count_width > max_count_width) max_count_width = count_width;
+    }
+
+    // Do some final calculations now that we know the maximums...
+    const int max_stars = 75 - max_name_width - max_count_width;
+
+    // Now print everything out...
+    count_it.Reset();
+    name_it.Reset();
+    while (count_it.Next() != NULL) {
+      const cString cur_name( *(name_it.Next()) );
+      const int cur_count = *(count_it.Get());
+      if (cur_count == 0) continue;
+      int num_stars = (cur_count * max_stars) / max_count;
+
+      if (format_type == FILE_TYPE_TEXT) {
+	fp << setw(max_name_width) << cur_name << "  " 
+	   << setw(max_count_width) << cur_count << "  ";
+	for (int i = 0; i < num_stars; i++) { fp << '#'; }
+	fp << endl;
+      } else { // FILE_TYPE_HTML
+	fp << "<tr><td>" << cur_name
+	   << "<td>" << cur_count
+	   << "<td>";
+	for (int i = 0; i < num_stars; i++) { fp << '#'; }
+	fp << "</tr>" << endl;
+      }
+    }
+
+    if (format_type == FILE_TYPE_TEXT) {
+      // Skip a line between histograms...
+      fp << endl;
+    } else {
+      fp << "</table><br><br>" << endl << endl;;
+    }
+  }
+  
+  // If in HTML mode, we need to end the file...
+  if (format_type == FILE_TYPE_HTML) {
+    fp << "</table>" << endl
+    << "</center>" << endl;
+  }
+}
 
 
 ///// Population Analysis Commands ////
@@ -2794,6 +2965,133 @@ void cAnalyze::AnalyzeEpistasis(cString cur_string)
     else 		landscape.TestPairs(test_num,fp); 
     landscape.PrintStats(fp);
   }
+}
+
+
+// This command will take the current batch and analyze how well organisms
+// cross-over with each other, both across the population and between mates.
+
+void cAnalyze::AnalyzeMateSelection(cString cur_string)
+{
+  int sample_size = 10000;
+  if (cur_string.GetSize() != 0) sample_size = cur_string.PopWord().AsInt();
+  cString filename("none");
+  if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
+  
+  cout << "Mate Selection... " << endl;
+  
+  // Next, we create an array that contains pointers to all of the organisms
+  // in this batch.  Note that we want to select genotypes based on their
+  // abundance, so they will have one entry in the array per organism.  Note
+  // that we only consider viable genotypes.
+
+  // Start by counting the total number of organisms.
+  int org_count = 0;
+  cAnalyzeGenotype * genotype = NULL;
+  tListIterator<cAnalyzeGenotype> list_it(batch[cur_batch].List());
+  while ((genotype = list_it.Next()) != NULL) {
+    if (genotype->GetViable() == false) continue;
+    org_count += genotype->GetNumCPUs();
+  }
+
+  // Create an array of the correct size.
+  tArray<cAnalyzeGenotype *> genotype_array(org_count);
+
+  // And insert all of the organisms into the array.
+  int cur_pos = 0;
+  while ((genotype = list_it.Next()) != NULL) {
+    if (genotype->GetViable() == false) continue;
+    int cur_count = genotype->GetNumCPUs();
+    for (int i = 0; i < cur_count; i++) {
+      genotype_array[cur_pos++] = genotype;
+    }
+  }
+  
+
+  // Setup some variables;
+  cAnalyzeGenotype * genotype2 = NULL;
+  int total_matches_tested = 0;
+  int fail_count = 0;
+  int match_fail_count = 0;
+
+  // Loop through all of the tests, picking random organisms each time and
+  // performing a random cross test.
+  for (int test_id = 0; test_id < sample_size; test_id++) {
+    genotype = genotype_array[ g_random.GetUInt(org_count) ];
+    genotype2 = genotype_array[ g_random.GetUInt(org_count) ];
+
+    // Stop immediately if we're comparing a genotype to itself.
+    if (genotype == genotype2) {
+      total_matches_tested++;
+      continue;
+    }
+
+    // Setup the random parameters for this test.
+    cCPUMemory test_genome0 = genotype->GetGenome(); 
+    cCPUMemory test_genome1 = genotype2->GetGenome(); 
+          
+    double start_frac = g_random.GetDouble();
+    double end_frac = g_random.GetDouble();
+    if (start_frac > end_frac) nFunctions::Swap(start_frac, end_frac);
+          
+    int start0 = (int) (start_frac * (double) test_genome0.GetSize());
+    int end0   = (int) (end_frac * (double) test_genome0.GetSize());
+    int size0 = end0 - start0;
+
+    int start1 = (int) (start_frac * (double) test_genome1.GetSize());
+    int end1   = (int) (end_frac * (double) test_genome1.GetSize());
+    int size1 = end1 - start1;
+
+    int new_size0 = test_genome0.GetSize() - size0 + size1;   
+    int new_size1 = test_genome1.GetSize() - size1 + size0;
+
+    // Setup some statistics for this particular test.
+    bool cross_viable = true;
+    bool same_mate_id = ( genotype->GetMateID() == genotype2->GetMateID() );
+    if (same_mate_id == true) total_matches_tested++;
+
+    // Don't Crossover if offspring will be illegal!!!
+    if (new_size0 < MIN_CREATURE_SIZE || new_size0 > MAX_CREATURE_SIZE || 
+	new_size1 < MIN_CREATURE_SIZE || new_size1 > MAX_CREATURE_SIZE) { 
+      fail_count++; 
+      if (same_mate_id == true) match_fail_count++;
+      continue; 
+    } 
+
+    // Do the replacement...  We're only going to test genome0, so we only
+    // need to modify that one.
+    cGenome cross1 = cGenomeUtil::Crop(test_genome1, start1, end1);
+    test_genome0.Replace(start0, size0, cross1);
+
+    // Do the test.
+    cCPUTestInfo test_info;
+          
+    // Run each side, and determine viability...
+    cTestCPU::TestGenome(test_info, test_genome0);
+    if( test_info.IsViable() == false ) {
+      fail_count++;
+      if (same_mate_id == true) match_fail_count++;
+    }
+  }
+
+  // Calculate the final answer
+  double fail_frac = (double) fail_count / (double) sample_size;
+  double match_fail_frac =
+    (double) match_fail_count / (double) total_matches_tested;
+  cout << "  ave fraction failed = " << fail_frac << endl
+       << "  ave matches failed = " << match_fail_frac << endl
+       << "  total mate matches = " <<  total_matches_tested
+       << " / " << sample_size<< endl;
+
+  if (filename == "none") return;
+  
+  cDataFile & df = data_file_manager.Get(filename);
+  df.WriteComment( "Mate selection information" );
+  df.WriteTimeStamp();  
+  
+  df.Write(fail_frac,       "Average fraction failed");
+  df.Write(match_fail_frac, "Average fraction of mate matches failed");
+  df.Endl();
 }
 
   
@@ -4020,24 +4318,14 @@ void cAnalyze::CommandSpecies(cString cur_string)
             break; 
           } 
           
-          if (size0 > 0 && size1 > 0) {
-            cGenome cross0 = cGenomeUtil::Crop(test_genome0, start0, end0);
-            cGenome cross1 = cGenomeUtil::Crop(test_genome1, start1, end1);
-            test_genome0.Replace(start0, size0, cross1);
-            test_genome1.Replace(start1, size1, cross0);
-          }
-          else if (size0 > 0) {
-            cGenome cross0 = cGenomeUtil::Crop(test_genome0, start0, end0);
-            test_genome1.Replace(start1, size1, cross0);
-          }
-          else if (size1 > 0) {
-            cGenome cross1 = cGenomeUtil::Crop(test_genome1, start1, end1);
-            test_genome0.Replace(start0, size0, cross1);
-          }
+	  // Swap the components
+	  cGenome cross0 = cGenomeUtil::Crop(test_genome0, start0, end0);
+	  cGenome cross1 = cGenomeUtil::Crop(test_genome1, start1, end1);
+	  test_genome0.Replace(start0, size0, cross1);
+	  test_genome1.Replace(start1, size1, cross0);
           
+	  // Run each side, and determine viability...
           cCPUTestInfo test_info;
-          
-          // Run each side, and determine viability...
           cTestCPU::TestGenome(test_info, test_genome0);
           cross1_viable = test_info.IsViable();
           
@@ -6103,8 +6391,11 @@ void cAnalyze::SetupGenotypeDataList()
                               ("fitness",     "Fitness",         &cAnalyzeGenotype::GetFitness,
                                &cAnalyzeGenotype::SetFitness, &cAnalyzeGenotype::CompareFitness));
   genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, double>
-                              ("div_type",     "Divide Type",         &cAnalyzeGenotype::GetDivType,
+                              ("div_type",     "Divide Type",    &cAnalyzeGenotype::GetDivType,
                                &cAnalyzeGenotype::SetDivType));
+  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, int>
+                              ("mate_id",     "Mate Selection ID Number",  &cAnalyzeGenotype::GetMateID,
+                               &cAnalyzeGenotype::SetMateID));
   genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, double>
                               ("fitness_ratio", "Fitness Ratio", &cAnalyzeGenotype::GetFitnessRatio,
                                (void (cAnalyzeGenotype::*)(double)) NULL,
@@ -6311,6 +6602,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("DETAIL_BATCHES", &cAnalyze::CommandDetailBatches);
   AddLibraryDef("DETAIL_AVERAGE", &cAnalyze::CommandDetailAverage);
   AddLibraryDef("DETAIL_INDEX", &cAnalyze::CommandDetailIndex);
+  AddLibraryDef("HISTOGRAM", &cAnalyze::CommandHistogram);
   
   // Population analysis commands...
   AddLibraryDef("PRINT_PHENOTYPES", &cAnalyze::CommandPrintPhenotypes);
@@ -6351,6 +6643,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("ANALYZE_MUTATION_TRACEBACK",
                 &cAnalyze::AnalyzeMutationTraceback);
   AddLibraryDef("ANALYZE_EPISTASIS", &cAnalyze::AnalyzeEpistasis);
+  AddLibraryDef("ANALYZE_MATE_SELECTION", &cAnalyze::AnalyzeMateSelection);
   
   // Environment manipulation
   AddLibraryDef("ENVIRONMENT", &cAnalyze::EnvironmentSetup);
@@ -6369,6 +6662,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("RENAME", &cAnalyze::BatchRename);
   AddLibraryDef("STATUS", &cAnalyze::PrintStatus);
   AddLibraryDef("DEBUG", &cAnalyze::PrintDebug);
+  AddLibraryDef("ECHO", &cAnalyze::PrintDebug);
   AddLibraryDef("VERBOSE", &cAnalyze::ToggleVerbose);
   AddLibraryDef("INCLUDE", &cAnalyze::IncludeFile);
   AddLibraryDef("SYSTEM", &cAnalyze::CommandSystem);

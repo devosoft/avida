@@ -112,6 +112,10 @@ private:
             int time_step=-1, int max_time=1);
   void CommandDetailAverage_Body(std::ostream & fp, int num_arguments,
             tListIterator< tDataEntryCommand<cAnalyzeGenotype> > & output_it);
+  void CommandHistogram_Header(std::ostream & fp, int format_type,
+            tListIterator< tDataEntryCommand<cAnalyzeGenotype> > & output_it);
+  void CommandHistogram_Body(std::ostream & fp, int format_type,
+            tListIterator< tDataEntryCommand<cAnalyzeGenotype> > & output_it);
 
 private:
   // Loading methods...
@@ -146,6 +150,7 @@ private:
   void CommandDetailBatches(cString cur_string);
   void CommandDetailAverage(cString cur_string);
   void CommandDetailIndex(cString cur_string);
+  void CommandHistogram(cString cur_string);
 
   // Population Analysis Commands...
   void CommandPrintPhenotypes(cString cur_string);
@@ -184,7 +189,7 @@ private:
   void AnalyzeComplexity(cString cur_string);
   void AnalyzePopComplexity(cString cur_string);
   void AnalyzeEpistasis(cString cur_string);
-  
+  void AnalyzeMateSelection(cString cur_string);
 
   // Environment Manipulation
   void EnvironmentSetup(cString cur_string);
