@@ -212,7 +212,7 @@ cPopulation::cPopulation(const cPopulationInterface & in_interface,
   // Load a saved population if one is provided.
   cString fname(cConfig::GetLoadPopFilename());
   if (fname != "") {
-    fprintf(stderr,"Loding Population from %s\n", fname());
+    cout << "Loading Population from " <<  fname() << endl;
     
     // If last three chars of filename are ".gz" , gunzip it first
     if (fname.Find(".gz") == fname.GetSize() - 3) {
@@ -223,7 +223,7 @@ cPopulation::cPopulation(const cPopulationInterface & in_interface,
       
       ifstream fp(fname);
       if( !fp.good() ){
-        fprintf(stderr, "Error: Failed to load population file %s. Exiting...\n",fname());
+        cerr << "Error: Failed to load population file " << fname() << ". Exiting...\n" << endl;
         exit(2);
       }
       LoadPopulation(fp);

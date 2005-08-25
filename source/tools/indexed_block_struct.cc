@@ -9,6 +9,10 @@
 #include "indexed_block_struct.hh"
 #endif
 
+#include <iostream>
+
+using namespace std;
+
 //////////////////////////
 //  cIndexedBlockStruct
 //////////////////////////
@@ -249,8 +253,7 @@ int cIndexedBlockStruct::Compress()
   scaled_used = write_loc;
 
   if (scaled_used != num_data)
-    printf("Warning: after Compress() scaled_used = %d, while num_data = %d\n",
-	   scaled_used, num_data);
+    cout << "Warning: after Compress() scaled_used = " << scaled_used << ", while num_data = " << num_data << endl;
 
   return scaled_used;
 }

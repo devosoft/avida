@@ -65,13 +65,6 @@
 
 using namespace std;
 
-//void ExitAvidaPrimitive(int exit_code)
-//{
-//  signal(SIGINT, SIG_IGN);          // Ignore all future interupts.
-//  delete cAvidaDriver_Base::main_driver;
-//  exit(exit_code);
-//}
-
 int main(int argc, char * argv[])
 {
   // Catch Interrupt making sure to close appropriately

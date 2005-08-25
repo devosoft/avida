@@ -17,6 +17,10 @@ extern "C" {
 #include <stdio.h>
 }
 
+#include <iostream>
+
+using namespace std;
+
 // cHistogram /////////////////////////////////////////////////////////////////
 
 cHistogram::cHistogram(int in_max, int in_min) {
@@ -34,8 +38,7 @@ void cHistogram::Resize(int new_max, int new_min)
 {
 #ifdef DEBUG
   if (new_max < new_min) {
-    fprintf(stderr, "ERROR: Trying to resize histogram to [%d,%d]\n",
-	    new_min, new_max);
+    cerr << "Error: Trying to resize histogram to [" << new_min << "," << new_max << "]" << endl;
     return;
   }
 #endif
