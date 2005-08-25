@@ -78,29 +78,14 @@ int main(int argc, char * argv[])
   signal(SIGINT, ExitAvida);
 
   // output copyright message
-  printf( "Avida %s\nCopyright (C) 1993-2003 California Institute of Technology.\n\n", AVIDA_VERSION );
-  printf( "Avida comes with ABSOLUTELY NO WARRANTY.\n" );
-  printf( "This is free software, and you are welcome to redistribute it\nunder certain conditions. See file COPYING for details.\n\n" );
+  cout << "Avida " << AVIDA_VERSION << endl;
+  cout << "----------------------------------------------------------------------" << endl;
+  cout << "Copyright (C) 1993-2003 California Institute of Technology." << endl;
+  cout << "Copyright (C) 1999-2005 Michigan State University." << endl << endl;
   
-  
-  cout << "cHardwareCPU InstLib -"
-    << " size: " << cHardwareCPU::GetInstLib()->GetSize()
-    << " num nops: " << cHardwareCPU::GetInstLib()->GetNumNops() 
-    << " last inst name: " << cHardwareCPU::GetInstLib()->GetName(cHardwareCPU::GetInstLib()->GetSize() - 1)
-    << endl;
-	  
-  cout << "cHardware4Stack InstLib -"
-    << " size: " << cHardware4Stack::GetInstLib()->GetSize()
-    << " num nops: " << cHardware4Stack::GetInstLib()->GetNumNops() 
-    << " last inst name: " << cHardware4Stack::GetInstLib()->GetName(cHardware4Stack::GetInstLib()->GetSize() - 1)
-    << endl;
-  
-  cout << "cHardwareSMT InstLib -"
-    << " size: " << cHardwareSMT::GetInstLib()->GetSize()
-    << " num nops: " << cHardwareSMT::GetInstLib()->GetNumNops() 
-    << " last name: " << cHardwareSMT::GetInstLib()->GetName(cHardwareSMT::GetInstLib()->GetSize() - 1)
-    << endl << endl;
-  
+  cout << "Avida comes with ABSOLUTELY NO WARRANTY." << endl;
+  cout << "This is free software, and you are welcome to redistribute it" << endl;
+  cout << "under certain conditions. See file COPYING for details." << endl << endl;
   
   // Initialize the configuration data...
   cConfig::InitGroupList();
@@ -120,6 +105,8 @@ int main(int argc, char * argv[])
     cAvidaDriver_Base::main_driver = new cAvidaDriver_Population(environment);
   }
 
+  cout << endl;
+  
   cAvidaDriver_Base::main_driver->Run();
 
   // Exit Nicely

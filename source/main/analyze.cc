@@ -4821,7 +4821,7 @@ void cAnalyze::AnalyzeMuts(cString cur_string)
   
   // Make sure we have everything we need.
   if (batch[cur_batch].IsAligned() == false) {
-    cout << "  ERROR: sequences not aligned." << endl;
+    cout << "  Error: sequences not aligned." << endl;
     return;
   }
   

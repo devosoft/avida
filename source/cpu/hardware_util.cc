@@ -94,7 +94,7 @@ void cHardwareUtil::LoadInstSet(cString filename, cInstSet & inst_set)
     else
 		{
       cerr << "Error: Could not open instruction set '" << filename
-           << "'.  Halting." << endl;
+           << "'.  Exiting..." << endl;
       exit(1);
     }
   }
@@ -110,9 +110,6 @@ void cHardwareUtil::LoadInstSet(cString filename, cInstSet & inst_set)
   for(int i = 0; i < inst_set.GetInstLib()->GetSize(); i++)
     inst_dict.Add(inst_set.GetInstLib()->GetName(i), i);
   
-  cout << "Instruction Library has " << inst_dict.GetSize()
-       << " instructions and " << nop_dict.GetSize() <<  " nops." << endl;
-  
   for (int line_id = 0; line_id < file.GetNumLines(); line_id++) {
     cString cur_line = file.GetLine(line_id);
     cString inst_name = cur_line.PopWord();
@@ -124,7 +121,7 @@ void cHardwareUtil::LoadInstSet(cString filename, cInstSet & inst_set)
     // If this instruction has 0 redundancy, we don't want it!
     if (redundancy < 0) continue;
     if (redundancy > 256) {
-      cerr << "Error: Max redundancy is 256.  Resetting redundancy of \""
+      cerr << "Warning: Max redundancy is 256.  Resetting redundancy of \""
       << inst_name << "\" from " << redundancy << " to 256." << endl;
       redundancy = 256;
     }
@@ -148,12 +145,9 @@ void cHardwareUtil::LoadInstSet(cString filename, cInstSet & inst_set)
     cerr << endl
       << "Error: Could not find instruction '" << inst_name << "'" << endl
       << "       (Best match = '"
-      << inst_dict.NearMatch(inst_name) << "')" << endl;
+      << inst_dict.NearMatch(inst_name) << "').  Exiting..." << endl;
     exit(1);
   }
-  
-  cerr << "Loaded Instruction Set \"" << filename
-    << "\" with " << inst_set.GetSize() << " instructions." << endl;
 }
 
 cInstSet & cHardwareUtil::DefaultInstSet(const cString & inst_filename)

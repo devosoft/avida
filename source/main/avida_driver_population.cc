@@ -38,9 +38,7 @@ using namespace std;
 cAvidaDriver_Population::cAvidaDriver_Population(cEnvironment & environment, cChangeList * change_list)
   : population(NULL), event_manager(NULL), event_list(NULL)
 {
-  // Setup Population
-  cout << endl << "Initializing Population..." << endl;
-    
+  // Setup Population    
   cPopulationInterface default_interface;
   default_interface.SetFun_NewHardware(&cCallbackUtil::CB_NewHardware);
   default_interface.SetFun_Recycle(&cCallbackUtil::CB_RecycleHardware);
@@ -64,25 +62,18 @@ cAvidaDriver_Population::cAvidaDriver_Population(cEnvironment & environment, cCh
   default_interface.SetFun_UpdateMerit(&cCallbackUtil::CB_UpdateMerit);
 
   population = new cPopulation(default_interface, environment, change_list);
-  cout << "-- Population Loaded --" << endl << endl;
 
   //Setup Event List
-  cout << "Initializing Event Factory Manager..." << endl;
   event_manager = new cEventFactoryManager;
   cStats & stats = population->GetStats();
   event_list = new cEventList( event_manager, new cAvidaTriggers(stats) );
   
-  cout << "- Loading Factories" << endl;
   // in principle, one could add more than one event factory here.
   // however, this is not a good idea, because the automatic documentation
   // system cannot cope with this at this point. Claus
   event_manager->AddFactory(new cPopulationEventFactory(population));
-  cout << "-- Event Factory Manager Loaded --" << endl << endl;
 
-  cout << "Reading Event List File..." << endl;
   ReadEventListFile(cConfig::GetEventFilename());
-  event_list->PrintEventList();
-  cout << "-- End of Event List --" << endl << endl;
   
   // Make sure the directory 'genebank' exits!
   cTools::MkDir("genebank", true);

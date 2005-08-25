@@ -30,26 +30,26 @@ using namespace std;
 
 bool cTools::MkDir(const cString & dirname, bool verbose)
 {
-  if (verbose) cout << "Checking for directory '" << dirname << "'..." << endl;
+  if (verbose) cout << "Checking for directory '" << dirname << "'..." << flush;
 
   FILE * fp = fopen ( dirname(), "r" );
   if (fp == 0) {
     if (errno == ENOENT) {
-      if (verbose) cout << "  ...not found.  Has to be created..." << endl;
+      if (verbose) cout << "  not found, creating..." << flush;
       if (mkdir( dirname(), (S_IRWXU|S_IRWXG|S_IRWXO) )) {
-	if (verbose) cerr << "  ...ERROR!  Failed to create directory '"
-			  << dirname << "'.  This may cause problems..."
-			  << endl;
-	return false;
+        if (verbose)
+          cerr << endl << "Warning: Failed to create directory '" << dirname << "'." << endl;
+        return false;
       }
 
-      if (verbose) cout << "  ...done!" << endl;
+      if (verbose) cout << " done." << endl;
       return true;
     }
 
-    if (verbose) cout << "  ...ERROR! -- Failed to open directory!  This may cause problems." << endl;
+    if (verbose) cout << "Warning: Failed to open '" << dirname << "'." << endl;
     return false;
   }
 
+  if (verbose) cout << " found." << endl;
   return true;
 }

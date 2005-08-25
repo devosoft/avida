@@ -56,8 +56,6 @@ cPopulation::cPopulation(const cPopulationInterface & in_interface,
 , num_organisms(0)
 , sync_events(false)
 {
-  cout << "<cPopulation>" << endl;
-  
   // Setup the genebank.
   genebank = new cGenebank(stats);
   inject_genebank = new cInjectGenebank(stats);
@@ -98,6 +96,7 @@ cPopulation::cPopulation(const cPopulationInterface & in_interface,
   } else {
     cout << "Geometry: Unknown" << endl;
   }
+  cout << endl;
   
   cell_array.Resize(num_cells);
   resource_count.ResizeSpatialGrids(world_x, world_y);
@@ -167,7 +166,7 @@ cPopulation::cPopulation(const cPopulationInterface & in_interface,
   BuildTimeSlicer(change_list);
   
   if (SetupDemes() == false) {
-    cerr << "Error -- failed to setup demes.  Exiting." << endl;
+    cerr << "Error: Failed to setup demes.  Exiting..." << endl;
     exit(1);
   }
   
@@ -224,7 +223,7 @@ cPopulation::cPopulation(const cPopulationInterface & in_interface,
       
       ifstream fp(fname);
       if( !fp.good() ){
-        fprintf(stderr, "ERROR: Failed to load population file %s\n",fname());
+        fprintf(stderr, "Error: Failed to load population file %s. Exiting...\n",fname());
         exit(2);
       }
       LoadPopulation(fp);
@@ -1826,20 +1825,16 @@ void cPopulation::BuildTimeSlicer(cChangeList * change_list)
 {
   switch (cConfig::GetSlicingMethod()) {
     case SLICE_CONSTANT:
-      cout << "...Building Constant Time Slicer..." << endl;
       schedule = new cConstSchedule(cell_array.GetSize());
       break;
     case SLICE_PROB_MERIT:
-      cout << "...Building Probablistic Time Slicer..." << endl;
       schedule = new cProbSchedule(cell_array.GetSize());
       break;
     case SLICE_INTEGRATED_MERIT:
-      cout << "...Building Integrated Time Slicer..." << endl;
       schedule = new cIntegratedSchedule(cell_array.GetSize());
       break;
     default:
-      cout << "...Requested Time Slicer not found, defaulting to Integrated..."
-      << endl;
+      cout << "Warning: Requested Time Slicer not found, defaulting to Integrated." << endl;
       schedule = new cIntegratedSchedule(cell_array.GetSize());
       break;
   }
