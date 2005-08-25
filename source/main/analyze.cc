@@ -43,6 +43,7 @@
 #include "cpu_test_info.hh"
 #include "test_util.hh"
 #include "resource.hh"
+#include "tHashTable.hh"
 #ifdef WIN32
 #  include "win32_mkdir_hack.hh"
 #endif
@@ -2985,13 +2986,25 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
   // abundance, so they will have one entry in the array per organism.  Note
   // that we only consider viable genotypes.
 
-  // Start by counting the total number of organisms.
+  // Start by counting the total number of organisms (and do other such
+  // data collection...  @CAO CONTINUE
+  tHashTable<int, int> mate_id_counts;
+
   int org_count = 0;
+  int gen_count = 0;
   cAnalyzeGenotype * genotype = NULL;
   tListIterator<cAnalyzeGenotype> list_it(batch[cur_batch].List());
   while ((genotype = list_it.Next()) != NULL) {
     if (genotype->GetViable() == false) continue;
+    gen_count++;
     org_count += genotype->GetNumCPUs();
+
+    // Keep track of how many organisms have each mate id...
+    int mate_id = genotype->GetMateID();
+    int count = 0;
+    mate_id_counts.Find(mate_id, count);
+    count += genotype->GetNumCPUs();
+    mate_id_counts.SetValue(mate_id, count);
   }
 
   // Create an array of the correct size.
@@ -3074,6 +3087,24 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
     }
   }
 
+  // Do some calculations on the sizes of the mate groups...
+  const int num_mate_groups = mate_id_counts.GetSize();
+
+  // Collect lists on all of the mate groups for the calculations...
+  tList<int> key_list;
+  tList<int> count_list;
+  mate_id_counts.AsLists(key_list, count_list);
+  tListIterator<int> count_it(count_list);
+
+  int max_group_size = 0;
+  double mate_id_entropy = 0.0;
+  while (count_it.Next() != NULL) {
+    int cur_count = *(count_it.Get());
+    double cur_frac = ((double) cur_count) / ((double) org_count);
+    if (cur_count > max_group_size) max_group_size = cur_count;
+    mate_id_entropy -= cur_frac * log(cur_frac);
+  }
+  
   // Calculate the final answer
   double fail_frac = (double) fail_count / (double) sample_size;
   double match_fail_frac =
@@ -3091,6 +3122,13 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
   
   df.Write(fail_frac,       "Average fraction failed");
   df.Write(match_fail_frac, "Average fraction of mate matches failed");
+  df.Write(sample_size, "Total number of crossovers tested");
+  df.Write(total_matches_tested, "Number of crossovers with matching mate IDs");
+  df.Write(gen_count, "Number of genotypes in test batch");
+  df.Write(org_count, "Number of organisms in test batch");
+  df.Write(num_mate_groups, "Number of distinct mate IDs");
+  df.Write(max_group_size, "Size of the largest distinct mate ID group");
+  df.Write(mate_id_entropy, "Diversity of mate IDs (entropy)");
   df.Endl();
 }
 
