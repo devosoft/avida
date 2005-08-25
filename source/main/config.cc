@@ -8,7 +8,9 @@
 #include "config.hh"
 
 #include "defs.hh"
+#include "event_factory_manager.hh"
 #include "genesis.hh"
+#include "population_event_factory.hh"
 #include "tools.hh"
 
 using namespace std;
@@ -583,13 +585,15 @@ void cConfig::ProcessConfiguration(int argc, char * argv[], cGenesis & genesis)
   // Then scan through and process the rest of the args.
   
   while (arg_num < argc || genesis.IsOpen() == false) {
-    cString cur_arg = genesis.IsOpen() ? static_cast<cString>( args[arg_num] )
-    : static_cast<cString>( "--help" );
+    cString cur_arg = genesis.IsOpen() ? static_cast<cString>( args[arg_num] ) : static_cast<cString>( "--help" );
     
     // Test against the possible inputs.
     if (cur_arg == "-events" || cur_arg == "-e") {
       cout << "Known events:" << endl;
-      // DDD - Should print out events here
+      // @DMB - A cleaner way of constructing the cEventFactoryManager should be created
+      cEventFactoryManager event_manager;
+      event_manager.AddFactory(new cPopulationEventFactory(NULL));
+      event_manager.PrintAllEventDescriptions();
       exit(0);
     }
     else if (cur_arg == "--help" || cur_arg == "-help" ||

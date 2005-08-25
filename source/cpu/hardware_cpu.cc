@@ -246,6 +246,8 @@ cInstLibCPU *cHardwareCPU::initInstLib(void){
 		  "Copy the position of the ?IP? head into CX"),
     cInstEntryCPU("if-label",  &cHardwareCPU::Inst_IfLabel, true,
 		  "Execute next if we copied complement of attached label"),
+    cInstEntryCPU("if-label2",  &cHardwareCPU::Inst_IfLabel2, true,
+		  "If copied label compl., exec next inst; else SKIP W/NOPS"),
     cInstEntryCPU("set-flow",  &cHardwareCPU::Inst_SetFlow, true,
 		  "Set flow-head to position in ?CX?"),
 
@@ -265,6 +267,7 @@ cInstLibCPU *cHardwareCPU::initInstLib(void){
     cInstEntryCPU("div-sex",    &cHardwareCPU::Inst_HeadDivideSex),
     cInstEntryCPU("div-asex",   &cHardwareCPU::Inst_HeadDivideAsex),
     cInstEntryCPU("div-asex-w",   &cHardwareCPU::Inst_HeadDivideAsexWait),
+    cInstEntryCPU("div-sex-MS",   &cHardwareCPU::Inst_HeadDivideMateSelect),
 
     cInstEntryCPU("h-divide1",      &cHardwareCPU::Inst_HeadDivide1),
     cInstEntryCPU("h-divide2",      &cHardwareCPU::Inst_HeadDivide2),
@@ -356,14 +359,6 @@ cInstLibCPU *cHardwareCPU::initInstLib(void){
     nop_mods,
     functions
   );
-
-  cout <<
-  "<cHardwareCPU::initInstLib> debug: important post-init values:" <<endl<<
-  " --- GetSize(): " << inst_lib->GetSize() <<endl<<
-  " --- GetNumNops(): " << inst_lib->GetNumNops() <<endl<<
-  " --- GetName(last): " <<
-  inst_lib->GetName(inst_lib->GetSize() - 1) <<endl<<
-  endl;
 
   return inst_lib;
 }
@@ -3202,6 +3197,19 @@ bool cHardwareCPU::Inst_IfLabel()
   return true;
 }
 
+// This is a variation on IfLabel that will skip the next command if the "if"
+// is false, but it will also skip all nops following that command.
+bool cHardwareCPU::Inst_IfLabel2()
+{
+  ReadLabel();
+  GetLabel().Rotate(1, NUM_NOPS);
+  if (GetLabel() != GetReadLabel()) {
+    IP().Advance();
+    if (inst_set->IsNop( IP().GetNextInst() ))  IP().Advance();
+  }
+  return true;
+}
+
 bool cHardwareCPU::Inst_HeadDivideMut(double mut_multiplier)
 {
   AdjustHeads();
@@ -3238,6 +3246,23 @@ bool cHardwareCPU::Inst_HeadDivideAsexWait()
 { 
   organism->GetPhenotype().SetDivideSex(true);
   organism->GetPhenotype().SetCrossNum(0);
+  return Inst_HeadDivide(); 
+}
+
+bool cHardwareCPU::Inst_HeadDivideMateSelect()  
+{ 
+  // Take the label that follows this divide and use it as the ID for which
+  // other organisms this one is willing to mate with.
+  ReadLabel();
+  organism->GetPhenotype().SetMateSelectID( GetLabel().AsInt(NUM_NOPS) );
+
+//   int mate_id = GetLabel().AsInt(NUM_NOPS);
+//   if (mate_id > 0) cout << mate_id << " "
+// 			<< GetLabel().AsString() << endl;
+
+  // Proceed as normal with the rest of mate selection.
+  organism->GetPhenotype().SetDivideSex(true);
+  organism->GetPhenotype().SetCrossNum(1);
   return Inst_HeadDivide(); 
 }
 

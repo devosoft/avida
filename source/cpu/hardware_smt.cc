@@ -161,19 +161,11 @@ tInstLib<cHardwareSMT::tMethod> *cHardwareSMT::initInstLib(void){
   tInstLib<cHardwareSMT::tMethod> *inst_lib =
     new tInstLib<cHardwareSMT::tMethod>(n_size, f_size, n_names, f_names, nop_mods, functions, error, def);
 	
-  cout <<
-		"<cHardwareSMT::initInstLib> debug: important post-init values:" <<endl<<
-		" --- GetSize(): " << inst_lib->GetSize() <<endl<<
-		" --- GetNumNops(): " << inst_lib->GetNumNops() <<endl<<
-		" --- GetName(last): " <<
-		inst_lib->GetName(inst_lib->GetSize() - 1) <<endl<<
-		endl;
-	
   return inst_lib;
 }
 
 cHardwareSMT::cHardwareSMT(cOrganism* in_organism, cInstSet* in_inst_set)
-  : cHardwareBase(in_organism, in_inst_set), m_mem_array(nHardwareSMT::NUM_MEMORY_SPACES)
+  : cHardwareBase(in_organism, in_inst_set), m_mem_array(1)
 {
   m_functions = s_inst_slib->GetFunctions();
 	
@@ -215,11 +207,8 @@ void cHardwareSMT::Recycle(cOrganism * new_organism, cInstSet * in_inst_set)
 void cHardwareSMT::Reset()
 {
   // Setup the memory...
-  for (int i = 1; i < nHardwareSMT::NUM_MEMORY_SPACES; i++) {
-		m_mem_array[i].Resize(1);
-		GetMemory(i) = cGenome(ConvertToInstruction(i)); 
-  }
-	
+  m_mem_array.Resize(1);
+  
   // We want to reset to have a single thread.
   m_threads.Resize(1);
 	
@@ -396,7 +385,7 @@ bool cHardwareSMT::OK()
 {
   bool result = true;
 	
-  for(int i = 0 ; i < nHardwareSMT::NUM_MEMORY_SPACES; i++) {
+  for(int i = 0 ; i < m_mem_array.GetSize(); i++) {
     if (!m_mem_array[i].OK()) result = false;
   }
 	
@@ -843,7 +832,7 @@ bool cHardwareSMT::InjectHost(const cCodeLabel & in_label, const cGenome & injec
   
 	// FIND THE FIRST EMPTY MEMORY SPACE
   int target_mem_space;
-  for (target_mem_space = 0; target_mem_space < nHardwareSMT::NUM_MEMORY_SPACES; target_mem_space++)
+  for (target_mem_space = 0; target_mem_space < m_mem_array.GetSize(); target_mem_space++)
 	{
 		if(isEmpty(target_mem_space))
 		{
@@ -851,12 +840,12 @@ bool cHardwareSMT::InjectHost(const cCodeLabel & in_label, const cGenome & injec
 		}
 	}
   
-  if (target_mem_space == nHardwareSMT::NUM_MEMORY_SPACES)
+  if (target_mem_space == m_mem_array.GetSize())
 	{
 		return false;
 	}
 	
-  assert(target_mem_space >=0 && target_mem_space < nHardwareSMT::NUM_MEMORY_SPACES);
+  assert(target_mem_space >=0 && target_mem_space < m_mem_array.GetSize());
   
   if(ForkThread()) {
     // Inject the new code
@@ -1090,7 +1079,7 @@ void cHardwareSMT::AdjustHeads()
 void cHardwareSMT::ReadLabel(int max_size)
 {
   int count = 0;
-  cHeadMultiMem * inst_ptr = &( IP() );
+  cHeadMultiMem* inst_ptr = &( IP() );
 	
   GetLabel().Clear();
 	
@@ -1778,24 +1767,27 @@ bool cHardwareSMT::Inst_Val_Div()
 //13 
 bool cHardwareSMT::Inst_SetMemory()   // Allocate maximal more
 {
+  ReadLabel();
   int mem_space_used = FindModifiedStack(-1);
   
-  if(mem_space_used==-1) {
+  if (GetLabel().GetSize() == 0) {
+    GetHead(HEAD_FLOW).Set(0, 0);
+  } else {
+    int mem_space_used = FindMemorySpaceLabel(-1);
+    
+    if (mem_space_used != -1) {
+      
+    } else {
+      
+    }
+    
     mem_space_used = FindFirstEmpty();
     if(mem_space_used==-1)
       return false;
+    GetHead(HEAD_FLOW).Set(0, mem_space_used);
   }
   
-  GetHead(HEAD_FLOW).Set(0, mem_space_used);
   return true;
-  
-  //const int cur_size = GetMemory(0).GetSize();
-  //const int alloc_size = Min((int) (cConfig::GetChildSizeRange() * cur_size),
-  //			     MAX_CREATURE_SIZE - cur_size);
-  //if( Allocate_Main(alloc_size) ) {
-  //  Stack(STACK_AX).Push(cur_size);
-  //  return true;
-  //} else return false;
 }
 
 //14
@@ -2131,11 +2123,11 @@ int cHardwareSMT::FindFirstEmpty()
   bool OK=true;
   const int current_mem_space = IP().GetMemSpace();
 	
-  for(int x = 1; x < nHardwareSMT::NUM_MEMORY_SPACES; x++)
+  for(int x = 1; x < m_mem_array.GetSize(); x++)
 	{
 		OK=true;
 		
-		int index = (current_mem_space+x) % nHardwareSMT::NUM_MEMORY_SPACES;
+		int index = (current_mem_space + x) % m_mem_array.GetSize();
 		
 		for(int y=0; y<GetMemory(index).GetSize() && OK; y++)
 		{

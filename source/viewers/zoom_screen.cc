@@ -435,6 +435,9 @@ void cZoomScreen::DrawGenotype()
 
 void cZoomScreen::Update()
 {
+  if (info.GetActiveCell() == NULL ||
+      info.GetActiveCell()->IsOccupied() == false) return;
+
   cHardwareBase & hardware = info.GetActiveCell()->GetOrganism()->GetHardware();
   if(mode == ZOOM_MODE_CPU) UpdateCPU(hardware);
   else if (mode == ZOOM_MODE_STATS) UpdateStats(hardware);

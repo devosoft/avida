@@ -184,6 +184,7 @@ void cAnalyzeGenotype::Recalculate(cAnalyzeGenotype * parent_genotype)
   fitness = test_phenotype.GetFitness();
   errors = test_phenotype.GetLastNumErrors();
   div_type = test_phenotype.GetDivType();
+  mate_id = test_phenotype.MateSelectID();
   task_counts = test_phenotype.GetLastTaskCount();
 
   // Setup a new parent stats if we have a parent to work with.

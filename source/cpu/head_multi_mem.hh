@@ -46,7 +46,7 @@ public:
   void SetInst(const cInstruction & value);
   void InsertInst(const cInstruction & in_char);
   void RemoveInst();
-  const cInstruction & GetNextInst();
+  const cInstruction& GetNextInst();
 
   bool & FlagCopied();
   bool & FlagMutated();

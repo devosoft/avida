@@ -8,7 +8,9 @@
 #ifndef EVENT_FACTORY_MANAGER_HH
 #define EVENT_FACTORY_MANAGER_HH
 
-#include <vector>
+#ifndef TLIST_HH
+#include "tList.hh"
+#endif
 
 #ifndef TOBJECTFACTORY_H
 #include "tObjectFactory.h"
@@ -31,7 +33,7 @@ class cString; // aggregate
 
 class cEventFactoryManager {
 private:
-  std::vector<tObjectFactory<cEvent ()>*> m_factory_list;
+  tList< tObjectFactory<cEvent ()> > m_factory_list;
 
   // not implemented, prevents inadvertent wrong instantiation
   cEventFactoryManager( const cEventFactoryManager & );
@@ -48,6 +50,8 @@ public:
    * sends it to the particular factory requested.
    **/
   cEvent* ConstructEvent(const cString name, const cString & args, int factory_id = -1);
+  
+  void PrintAllEventDescriptions();
 };
 
 #endif

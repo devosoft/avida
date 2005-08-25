@@ -101,8 +101,8 @@ public:
   cHardwareSMT(cOrganism * in_organism, cInstSet * in_inst_set);
   explicit cHardwareSMT(const cHardwareSMT &);
   ~cHardwareSMT() { ; }
-  void Recycle(cOrganism * new_organism, cInstSet * in_inst_set);
-  static cInstLibBase *GetInstLib();
+  void Recycle(cOrganism* new_organism, cInstSet * in_inst_set);
+  static cInstLibBase* GetInstLib();
   static cString GetDefaultInstFilename() { return "inst_lib.4stack"; }
   static void WriteDefaultInstSet() { ; }
 	
@@ -171,14 +171,14 @@ public:
   const cCPUMemory & GetMemory() const { return m_mem_array[0]; }
   cCPUMemory & cHardwareSMT::GetMemory(int mem_space)
   {
-    if(mem_space >= nHardwareSMT::NUM_MEMORY_SPACES)
-      mem_space %= nHardwareSMT::NUM_MEMORY_SPACES;
+    if(mem_space >= m_mem_array.GetSize())
+      mem_space %= m_mem_array.GetSize();
     return m_mem_array[mem_space];
   }
   const cCPUMemory & cHardwareSMT::GetMemory(int mem_space) const
   {
-    if(mem_space >= nHardwareSMT::NUM_MEMORY_SPACES)
-      mem_space %= nHardwareSMT::NUM_MEMORY_SPACES;
+    if(mem_space >= m_mem_array.GetSize())
+      mem_space %= m_mem_array.GetSize();
     return m_mem_array[mem_space];
   }
   
@@ -249,6 +249,7 @@ private:
   int FindModifiedStack(int default_stack);
   int FindModifiedHead(int default_head);
   int FindComplementStack(int base_stack);
+  int FindMemorySpaceLabel(int default_mem);
 	
   void Fault(int fault_loc, int fault_type, cString fault_desc=""); 
   bool Allocate_Necro(const int new_size);

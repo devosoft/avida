@@ -166,6 +166,7 @@ public:
 
   int GetSize() { return dict_size; }
   
+  // This function is used to add a new entry...
   void Add(const cString & name, T data) {
     // Build the new entry...
     tDictEntry<T> * new_entry = new tDictEntry<T>;
@@ -189,6 +190,19 @@ public:
     dict_size++;
   }
   
+
+  // This function will change the value of an entry that exists, or add it
+  // if it doesn't exist.
+  void SetValue(const cString & name, T data) {
+    tDictEntry<T> * cur_entry = FindEntry(name);
+    if (cur_entry == NULL) {
+      Add(name, data);
+      return;
+    }
+    cur_entry->data = data;
+  }
+
+
   bool HasEntry(const cString & name) {
     return FindEntry(name) != NULL;
   }

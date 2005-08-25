@@ -227,14 +227,6 @@ cInstLib4Stack *cHardware4Stack::initInstLib(void){
     functions
   );
 
-  cout <<
-  "<cHardware4Stack::initInstLib> debug: important post-init values:" <<endl<<
-  " --- GetSize(): " << inst_lib->GetSize() <<endl<<
-  " --- GetNumNops(): " << inst_lib->GetNumNops() <<endl<<
-  " --- GetName(last): " <<
-  inst_lib->GetName(inst_lib->GetSize() - 1) <<endl<<
-  endl;
-
   return inst_lib;
 }
 

@@ -3,7 +3,7 @@
 # For more information, see doc/genesis.html
 #############################################################################
 
-VERSION_ID 2.3.0		# Do not change this value!
+VERSION_ID 2.3.1		# Do not change this value!
 
 ### Architecture Variables ###
 MAX_UPDATES  -1         # Maximum updates to run simulation (-1 = no limit)
@@ -36,10 +36,10 @@ BIRTH_METHOD 4    # 0 = Replace random organism in neighborhood
 		  # 4 = Replace random from entire population (Mass Action)
 		  # 5 = Replace oldest in entire population (like Tierra)
 PREFER_EMPTY 1    # Are empty cells given preference in offspring placement?
-DEATH_METHOD 0    # 0 = Never die of old age.
+DEATH_METHOD 2    # 0 = Never die of old age.
 		  # 1 = Die when inst executed = AGE_LIMIT (with deviation)
 		  # 2 = Die when inst executed = length * AGE_LIMIT (+ dev.)
-AGE_LIMIT 5000    # Modifies DEATH_METHOD
+AGE_LIMIT 20      # Modifies DEATH_METHOD
 AGE_DEVIATION 0   # Modified DEATH_METHOD
 ALLOC_METHOD 0    # 0 = Allocated space is set to default instruction.
                   # 1 = Set to section of dead genome (Necrophilia)

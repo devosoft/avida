@@ -412,6 +412,7 @@ public:
   bool Inst_JumpHead();
   bool Inst_GetHead();
   bool Inst_IfLabel();
+  bool Inst_IfLabel2();
   bool Inst_HeadDivide();
   bool Inst_HeadRead();
   bool Inst_HeadWrite();
@@ -432,6 +433,7 @@ public:
   bool Inst_HeadDivideSex();
   bool Inst_HeadDivideAsex();
   bool Inst_HeadDivideAsexWait();
+  bool Inst_HeadDivideMateSelect();
 
   bool Inst_HeadDivide1();
   bool Inst_HeadDivide2();

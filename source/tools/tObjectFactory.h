@@ -14,6 +14,10 @@
 #include "tDictionary.hh"
 #endif
 
+#ifndef TLIST_HH
+#include "tList.hh"
+#endif
+
 class cString;
 
 template<typename CtorSignature> class tObjectFactory;
@@ -82,6 +86,17 @@ public:
       return func();
     
     return NULL;
+  }
+  
+  virtual void CreateAll(tList<BaseType>& objects)
+  {
+    tList<cString> names;
+    tList<CreateObjectFunction> funcs;
+    
+    m_create_funcs.AsLists(names, funcs);
+    
+    tListIterator<cString> names_it(names);
+    while (names_it.Next() != NULL) objects.Push(Create(*names_it.Get()));
   }
 };
 

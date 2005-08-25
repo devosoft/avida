@@ -67,6 +67,7 @@ private:
   double fitness;
   int errors;
   double div_type;
+  int mate_id;
 
   tArray<int> task_counts;
 
@@ -144,6 +145,7 @@ public:
   void SetGestTime(int _gest) { gest_time = _gest; }
   void SetFitness(double _fitness) { fitness = _fitness; }
   void SetDivType(double _div_type) { div_type = _div_type; }
+  void SetMateID(int _mate_id) { mate_id = _mate_id; }
   void SetParentDist(int _dist) { parent_dist = _dist; }
   void SetAncestorDist(int _dist) { ancestor_dist = _dist; }
   void SetLineageLabel(int _label) { lineage_label = _label; }
@@ -183,6 +185,7 @@ public:
     { return ((double) GetMinLength()) / (double) gest_time; }
   double GetFitness() const { return fitness; }
   double GetDivType() const { return div_type; }
+  int GetMateID() const { return mate_id; }
   int GetUpdateBorn() const { return update_born; }
   int GetUpdateDead() const { return update_dead; }
   int GetDepth() const { return depth; }

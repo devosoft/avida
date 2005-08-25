@@ -177,9 +177,9 @@ bool cGenotypeControl::CheckPos(cGenotype & in_genotype)
     prev_OK =true;
   }
 
-  if ((&in_genotype == best && next_OK) ||
-      (next_OK && prev_OK) ||
-      (&in_genotype == best->GetPrev() && prev_OK)) {
+  if ( (next_OK && prev_OK) ||
+       (&in_genotype == best && next_OK) ||
+       (&in_genotype == best->GetPrev() && prev_OK)) {
     return true;
   }
 
@@ -203,29 +203,28 @@ void cGenotypeControl::Insert(cGenotype & new_genotype)
 
 bool cGenotypeControl::Adjust(cGenotype & in_genotype)
 {
-  if (in_genotype.GetDeferAdjust() == true) return true;
-
   cGenotype * cur_genotype = in_genotype.GetPrev();
 
   // Check to see if this genotype should be removed completely.
 
-  if (in_genotype.GetNumOrganisms() == 0) {
+  if (in_genotype.GetNumOrganisms() == 0 &&
+      in_genotype.GetDeferAdjust() == false) {
     genebank.RemoveGenotype(in_genotype);
     return false;
   }
 
-  // Do not adjust if this was and still is the best genotype, or is
-  // otherwise in the proper spot...
+  // Do not adjust the position of this genotype if it was and still is the
+  // best genotype, or if it is otherwise in the proper spot...
 
   if (CheckPos(in_genotype)) {
     return true;
   }
 
-  // Otherwise, remove it from the queue for just the moment.
+  // Otherwise, remove it from the queue (for just the moment).
 
   Remove(in_genotype);
 
-  // Also, if this genotype is the best, put it there.
+  // If this genotype is the best, put it there.
 
   if (in_genotype.GetNumOrganisms() > best->GetNumOrganisms()) {
     Insert(in_genotype, best->GetPrev());

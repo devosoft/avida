@@ -48,6 +48,7 @@ private:
   tArray<cBirthEntry> local_wait_entry;
   tArray<cBirthEntry> deme_wait_entry;
   tArray<cBirthEntry> size_wait_entry;
+  tArray<cBirthEntry> mate_select_wait_entry;
 
   // mark whether that instruction has already been swapped 
   // between two genomes; used in modular recombination
@@ -72,13 +73,15 @@ private:
 		       cOrganism & parent,
 		       tArray<cOrganism *> & child_array,
 		       tArray<cMerit> & merit_array);
-  cBirthEntry * FindSexSizeWaiting(const cGenome & child_genome,
-				    cOrganism & parent);
   cBirthEntry * FindSexLocalWaiting(const cGenome & child_genome,
 				    cOrganism & parent);
-  cBirthEntry * FindSexGlobalWaiting(const cGenome & child_genome,
-				     cOrganism & parent);
   cBirthEntry * FindSexDemeWaiting(const cGenome & child_genome,
+				   cOrganism & parent);
+  cBirthEntry * FindSexSizeWaiting(const cGenome & child_genome,
+				   cOrganism & parent);
+  cBirthEntry * FindSexMateSelectWaiting(const cGenome & child_genome,
+					 cOrganism & parent);
+  cBirthEntry * FindSexGlobalWaiting(const cGenome & child_genome,
 				     cOrganism & parent);
 
   void DoBasicRecombination(cCPUMemory & genome0, cCPUMemory & genome1, 

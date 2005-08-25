@@ -31,8 +31,6 @@ public:
     cPopulationEvent* event = static_cast<cPopulationEvent*>(this->tObjectFactory<cEvent ()>::Create(key));
     if( event != NULL ){
       event->SetFactoryId( GetFactoryId() );
-      
-      assert( m_population != NULL );
       event->SetPopulation( m_population );
     }
     return event;

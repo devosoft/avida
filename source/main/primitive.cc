@@ -42,6 +42,9 @@
 #ifndef HARDWARE_CPU_HH
 #include "hardware_cpu.hh"
 #endif
+#ifndef HARDWARE_SMT_H
+#include "hardware_smt.h"
+#endif
 #ifndef INST_LIB_CPU_HH
 #include "inst_lib_cpu.hh"
 #endif
@@ -78,7 +81,27 @@ int main(int argc, char * argv[])
   printf( "Avida %s\nCopyright (C) 1993-2003 California Institute of Technology.\n\n", AVIDA_VERSION );
   printf( "Avida comes with ABSOLUTELY NO WARRANTY.\n" );
   printf( "This is free software, and you are welcome to redistribute it\nunder certain conditions. See file COPYING for details.\n\n" );
-
+  
+  
+  cout << "cHardwareCPU InstLib -"
+    << " size: " << cHardwareCPU::GetInstLib()->GetSize()
+    << " num nops: " << cHardwareCPU::GetInstLib()->GetNumNops() 
+    << " last inst name: " << cHardwareCPU::GetInstLib()->GetName(cHardwareCPU::GetInstLib()->GetSize() - 1)
+    << endl;
+	  
+  cout << "cHardware4Stack InstLib -"
+    << " size: " << cHardware4Stack::GetInstLib()->GetSize()
+    << " num nops: " << cHardware4Stack::GetInstLib()->GetNumNops() 
+    << " last inst name: " << cHardware4Stack::GetInstLib()->GetName(cHardware4Stack::GetInstLib()->GetSize() - 1)
+    << endl;
+  
+  cout << "cHardwareSMT InstLib -"
+    << " size: " << cHardwareSMT::GetInstLib()->GetSize()
+    << " num nops: " << cHardwareSMT::GetInstLib()->GetNumNops() 
+    << " last name: " << cHardwareSMT::GetInstLib()->GetName(cHardwareSMT::GetInstLib()->GetSize() - 1)
+    << endl << endl;
+  
+  
   // Initialize the configuration data...
   cConfig::InitGroupList();
   cConfig::Setup(argc, argv);

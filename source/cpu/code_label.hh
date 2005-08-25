@@ -77,14 +77,8 @@ void cCodeLabel::AddNop(int nop_num) {
 
 void cCodeLabel::Rotate(const int rot, const int base)
 {
-  //for (int i = 0; i < size; i++) {
-  //  nop_sequence[i] += rot;
-  //  if (nop_sequence[i] == 3) nop_sequence[i]++; //IGNORING NOP-D FOR NOW!
-  //  if (nop_sequence[i] >= base) nop_sequence[i] -= base;
-  //}
   for (int i = 0; i < size; i++) {
     nop_sequence[i] += rot;
-    //if (nop_sequence[i] == 3) nop_sequence[i]++; //IGNORING NOP-D FOR NOW!
     if (nop_sequence[i] >= base) nop_sequence[i] -= base;
   }
 }

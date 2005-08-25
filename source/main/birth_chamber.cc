@@ -245,6 +245,36 @@ cBirthChamber::cBirthEntry *
 }
 
 cBirthChamber::cBirthEntry *
+  cBirthChamber::FindSexMateSelectWaiting(const cGenome & child_genome,
+					  cOrganism & parent)
+{
+  const int mate_id = parent.GetPhenotype().MateSelectID();
+
+  // If this is a new largest ID, increase the array size.
+  if (mate_select_wait_entry.GetSize() <= mate_id) {
+    int old_wait_size = mate_select_wait_entry.GetSize();
+    mate_select_wait_entry.Resize(mate_id + 1);
+    for (int i = old_wait_size; i <= mate_id; i++) {
+      mate_select_wait_entry[i].is_waiting = false;
+    }
+  }
+
+  // Determine if we have an offspring of this length waiting already...
+  if (mate_select_wait_entry[mate_id].is_waiting == false) {
+    cGenotype * parent_genotype = parent.GetGenotype();
+    parent_genotype->IncDeferAdjust();
+    mate_select_wait_entry[mate_id].genome = child_genome;
+    mate_select_wait_entry[mate_id].merit = parent.GetPhenotype().GetMerit();
+    mate_select_wait_entry[mate_id].parent_genotype = parent_genotype;
+    mate_select_wait_entry[mate_id].is_waiting = true;
+    return NULL;
+  }
+
+  // There is already a child waiting -- do crossover between the two.
+  return &( mate_select_wait_entry[mate_id] ); 
+}
+
+cBirthChamber::cBirthEntry *
   cBirthChamber::FindSexLocalWaiting(const cGenome & child_genome,
 				   cOrganism & parent)
 {
@@ -512,19 +542,26 @@ bool cBirthChamber::SubmitOffspring(const cGenome & child_genome,
   // First check if the birth method is one of the local ones... 
   if (cConfig::GetBirthMethod() < NUM_LOCAL_POSITION_CHILD) { 
     old_entry = FindSexLocalWaiting(child_genome, parent);
-  } else {
-    // ... then check if population is split into demes
-    if (cConfig::GetBirthMethod() == POSITION_CHILD_DEME_RANDOM) {
-      old_entry = FindSexDemeWaiting(child_genome, parent);
-    } else { 
-      // ... it must be global, but now check if recombination must be 
-      // only with organisms of the same length
-      if (cConfig::GetSameLengthSex() == 0) {
-        old_entry = FindSexGlobalWaiting(child_genome, parent);
-      } else {
-        old_entry = FindSexSizeWaiting(child_genome, parent);
-      }
-    }
+  }
+  // ... then check if population is split into demes
+  else if (cConfig::GetBirthMethod() == POSITION_CHILD_DEME_RANDOM) {
+    old_entry = FindSexDemeWaiting(child_genome, parent);
+  }
+
+  // If none of the previous conditions were met, it must be global.
+  // ...check if recombination must be with organisms of the same length
+  else if (cConfig::GetSameLengthSex() != 0) {
+    old_entry = FindSexSizeWaiting(child_genome, parent);
+  }
+
+  // ...check if we have mate selection
+  else if (parent_phenotype.MateSelectID() >= 0) {
+    old_entry = FindSexMateSelectWaiting(child_genome, parent);
+  }
+
+  // If everything failed until this point, use default global.
+  else {
+    old_entry = FindSexGlobalWaiting(child_genome, parent);
   }
 
   // If we couldn't find a waiting entry, this one was saved -- stop here!
@@ -542,7 +579,7 @@ bool cBirthChamber::SubmitOffspring(const cGenome & child_genome,
 			   child_array, merit_array);
   }
 
-  // RECOMBINATION will happen!
+  // If we made it this far, RECOMBINATION will happen!
   cCPUMemory genome0 = old_entry->genome;
   cCPUMemory genome1 = child_genome;
   double merit0 = old_entry->merit.GetDouble();
