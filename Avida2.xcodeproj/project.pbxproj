@@ -181,6 +181,8 @@
 		70D46934085F61DA004C8409 /* trio.c in Sources */ = {isa = PBXBuildFile; fileRef = DCC3146D076253A1008F7A48 /* trio.c */; };
 		70D46935085F61DD004C8409 /* trionan.c in Sources */ = {isa = PBXBuildFile; fileRef = DCC31471076253A1008F7A48 /* trionan.c */; };
 		70D46936085F61DF004C8409 /* triostr.c in Sources */ = {isa = PBXBuildFile; fileRef = DCC31474076253A1008F7A48 /* triostr.c */; };
+		70FB868708BFA02D00BDF589 /* tHashTable.hh in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70FB868608BFA02D00BDF589 /* tHashTable.hh */; };
+		70FB868808BFA02D00BDF589 /* tHashTable.hh in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70FB868608BFA02D00BDF589 /* tHashTable.hh */; };
 		DCC3165F0762852D008F7A48 /* analyze_genotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310980762539E008F7A48 /* analyze_genotype.cc */; };
 		DCC316600762852F008F7A48 /* analyze_util.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3109A0762539E008F7A48 /* analyze_util.cc */; };
 		DCC3166107628531008F7A48 /* avida.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3109C0762539E008F7A48 /* avida.cc */; };
@@ -346,6 +348,7 @@
 				700E2B7B085DE50C00CF158A /* organism.smt in CopyFiles */,
 				700E2B7C085DE50C00CF158A /* genesis.smt in CopyFiles */,
 				700E2B7D085DE50C00CF158A /* inst_set.smt in CopyFiles */,
+				70FB868808BFA02D00BDF589 /* tHashTable.hh in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -371,6 +374,7 @@
 				706D330F0854A7B900D7DC8F /* organism.smt in CopyFiles */,
 				706D33110854A7D700D7DC8F /* genesis.smt in CopyFiles */,
 				706D33280854A90D00D7DC8F /* inst_set.smt in CopyFiles */,
+				70FB868708BFA02D00BDF589 /* tHashTable.hh in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -599,6 +603,7 @@
 		70CD47EF089692AE0070D2DF /* tVector_instantiations.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = tVector_instantiations.hh; sourceTree = "<group>"; };
 		70CD47F0089692AE0070D2DF /* tVector.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = tVector.pyste; sourceTree = "<group>"; };
 		70CD482C089702880070D2DF /* Avida-ED-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Avida-ED-Info.plist"; sourceTree = "<group>"; };
+		70FB868608BFA02D00BDF589 /* tHashTable.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = tHashTable.hh; sourceTree = "<group>"; };
 		DCC30D300762539B008F7A48 /* 4stack_head.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = 4stack_head.pyste; sourceTree = "<group>"; };
 		DCC30D310762539B008F7A48 /* A.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = A.hh; sourceTree = "<group>"; };
 		DCC30D320762539B008F7A48 /* A.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = A.pyste; sourceTree = "<group>"; };
@@ -2724,6 +2729,7 @@
 		DCC314D8076253A2008F7A48 /* tools */ = {
 			isa = PBXGroup;
 			children = (
+				70FB868608BFA02D00BDF589 /* tHashTable.hh */,
 				70CBFCEF0815E8370078D8CC /* change_list.cc */,
 				70CBFCF00815E8370078D8CC /* change_list.hh */,
 				DCC31545076253A4008F7A48 /* block_struct.cc */,
