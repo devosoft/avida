@@ -604,6 +604,7 @@
 		70CD47F0089692AE0070D2DF /* tVector.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = tVector.pyste; sourceTree = "<group>"; };
 		70CD482C089702880070D2DF /* Avida-ED-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Avida-ED-Info.plist"; sourceTree = "<group>"; };
 		70FB868608BFA02D00BDF589 /* tHashTable.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = tHashTable.hh; sourceTree = "<group>"; };
+		70FB86A908BFAFEC00BDF589 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		DCC30D300762539B008F7A48 /* 4stack_head.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = 4stack_head.pyste; sourceTree = "<group>"; };
 		DCC30D310762539B008F7A48 /* A.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = A.hh; sourceTree = "<group>"; };
 		DCC30D320762539B008F7A48 /* A.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = A.pyste; sourceTree = "<group>"; };
@@ -1674,6 +1675,7 @@
 			isa = PBXGroup;
 			children = (
 				DCC30C670762539A008F7A48 /* Source */,
+				70FB86A908BFAFEC00BDF589 /* CMakeLists.txt */,
 				DCC3164E07626CF3008F7A48 /* Products */,
 				70658C59085DF67D00486BED /* libncurses.5.4.dylib */,
 				703F684207B437B800C1CA76 /* status.xml */,

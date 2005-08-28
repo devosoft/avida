@@ -444,6 +444,11 @@ void cHardwareSMT::PrintStatus(ostream & fp)
 }
 
 
+// DDD
+int cHardwareSMT::FindMemorySpaceLabel(int default_mem)
+{
+  return default_mem;
+}
 
 
 /////////////////////////////////////////////////////////////////////////

@@ -53,7 +53,7 @@ namespace nFunctions {
     in2 = tmp;
   }
   
-};
+}
 
 inline bool ToggleBool(bool & in_bool)
 {

@@ -168,14 +168,14 @@ public:
 	
   // --------  Memory Manipulation  --------}
   cCPUMemory& GetMemory() { return m_mem_array[0]; }
-  const cCPUMemory & GetMemory() const { return m_mem_array[0]; }
-  cCPUMemory & cHardwareSMT::GetMemory(int mem_space)
+  const cCPUMemory& GetMemory() const { return m_mem_array[0]; }
+  cCPUMemory& GetMemory(int mem_space)
   {
     if(mem_space >= m_mem_array.GetSize())
       mem_space %= m_mem_array.GetSize();
     return m_mem_array[mem_space];
   }
-  const cCPUMemory & cHardwareSMT::GetMemory(int mem_space) const
+  const cCPUMemory& GetMemory(int mem_space) const
   {
     if(mem_space >= m_mem_array.GetSize())
       mem_space %= m_mem_array.GetSize();
