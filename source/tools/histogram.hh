@@ -84,7 +84,7 @@ inline void cHistogram::Remove(int value)
     return;
   }
   if (bins[value] <= 1) {
-    std::cerr << "WARNING: Trying to remove " << value << " from bin with "
+    std::cerr << "Warning: Trying to remove " << value << " from bin with "
 	 << bins[value] << " entries" << std::endl;
     return;
   }
@@ -99,7 +99,7 @@ inline void cHistogram::RemoveBin(int value)
 {
 #ifdef DEBUG
   if (value > max_bin || value < min_bin) {
-    std::cerr << "WARNING: Trying to remove " << value
+    std::cerr << "Warning: Trying to remove " << value
 	 << " in histogram of range [" << min_bin << "," <<  max_bin
 	 << "]" << std::endl;
     return;

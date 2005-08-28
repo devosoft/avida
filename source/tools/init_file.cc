@@ -259,15 +259,14 @@ bool cInitFile::WarnUnused() const
   for (int i = 0; i < line_array.GetSize(); i++) {
     if (line_array[i].used == false) {
       if (found == false) {
-	found = true;
-	cerr << "Warning unknown lines in input file '" << filename
-	     << "':" << endl;
+        found = true;
+        cerr << "Warning: unknown lines in input file '" << filename << "':" << endl;
       }
-      cerr << " " << line_array[i].line_num + 1
-	   << ": " << line_array[i].line
-	   << endl;
+      cerr << " " << line_array[i].line_num + 1 << ": " << line_array[i].line << endl;
     }
   }
+  
+  if (found == true) cerr << endl;
 
   return found;
 }

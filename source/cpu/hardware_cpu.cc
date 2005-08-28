@@ -336,10 +336,6 @@ cInstLibCPU *cHardwareCPU::initInstLib(void){
 
   const int n_size = sizeof(s_n_array)/sizeof(cNOPEntryCPU);
 
-  cout << "<cHardwareCPU::initInstLib> Instruction Library has "
-  << n_size << " instructions." << endl;
-
-
   static cString n_names[n_size];
   static int nop_mods[n_size];
   for (int i = 0; i < n_size; i++){
@@ -363,14 +359,6 @@ cInstLibCPU *cHardwareCPU::initInstLib(void){
     nop_mods,
     functions
   );
-
-  cout <<
-  "<cHardwareCPU::initInstLib> debug: important post-init values:" <<endl<<
-  " --- GetSize(): " << inst_lib->GetSize() <<endl<<
-  " --- GetNumNops(): " << inst_lib->GetNumNops() <<endl<<
-  " --- GetName(last): " <<
-  inst_lib->GetName(inst_lib->GetSize() - 1) <<endl<<
-  endl;
 
   return inst_lib;
 }
@@ -668,12 +656,12 @@ void cHardwareCPU::PrintStatus(ostream & fp)
 //
 /////////////////////////////////////////////////////////////////////////
 
-cCPUHead cHardwareCPU::FindLabel(int direction)
+cHeadCPU cHardwareCPU::FindLabel(int direction)
 {
-  cCPUHead & inst_ptr = IP();
+  cHeadCPU & inst_ptr = IP();
 
   // Start up a search head at the position of the instruction pointer.
-  cCPUHead search_head(inst_ptr);
+  cHeadCPU search_head(inst_ptr);
   cCodeLabel & search_label = GetLabel();
 
   // Make sure the label is of size > 0.
@@ -869,7 +857,7 @@ int cHardwareCPU::FindLabel_Backward(const cCodeLabel & search_label,
 }
 
 // Search for 'in_label' anywhere in the hardware.
-cCPUHead cHardwareCPU::FindLabel(const cCodeLabel & in_label, int direction)
+cHeadCPU cHardwareCPU::FindLabel(const cCodeLabel & in_label, int direction)
 {
   assert (in_label.GetSize() > 0);
 
@@ -880,7 +868,7 @@ cCPUHead cHardwareCPU::FindLabel(const cCodeLabel & in_label, int direction)
   // FOR NOW:
   // Get something which works, no matter how inefficient!!!
 
-  cCPUHead temp_head(this);
+  cHeadCPU temp_head(this);
 
   while (temp_head.InMemory()) {
     // IDEALY: Analyze the label we are in; see if the one we are looking
@@ -907,14 +895,14 @@ cCPUHead cHardwareCPU::FindLabel(const cCodeLabel & in_label, int direction)
 
 // @CAO: direction is not currently used; should be used to indicate the
 // direction which the heads[HEAD_IP] should progress through a creature.
-cCPUHead cHardwareCPU::FindFullLabel(const cCodeLabel & in_label)
+cHeadCPU cHardwareCPU::FindFullLabel(const cCodeLabel & in_label)
 {
   // cout << "Running FindFullLabel with " << in_label.AsString() <<
   // endl;
 
   assert(in_label.GetSize() > 0); // Trying to find label of 0 size!
 
-  cCPUHead temp_head(this);
+  cHeadCPU temp_head(this);
 
   while (temp_head.InMemory()) {
     // If we are not in a label, jump to the next checkpoint...
@@ -1117,7 +1105,7 @@ bool cHardwareCPU::TriggerMutations(int trigger)
   return TriggerMutations(trigger, IP());
 }
 
-bool cHardwareCPU::TriggerMutations(int trigger, cCPUHead & cur_head)
+bool cHardwareCPU::TriggerMutations(int trigger, cHeadCPU & cur_head)
 {
   // Collect information about mutations from the organism.
   cLocalMutations & mut_info = organism->GetLocalMutations();
@@ -1170,7 +1158,7 @@ bool cHardwareCPU::TriggerMutations(int trigger, cCPUHead & cur_head)
 }
 
 bool cHardwareCPU::TriggerMutations_ScopeGenome(const cMutation * cur_mut,
-          cCPUMemory & target_memory, cCPUHead & cur_head, const double rate)
+          cCPUMemory & target_memory, cHeadCPU & cur_head, const double rate)
 {
   // The rate we have stored indicates the probability that a single
   // mutation will occur anywhere in the genome.
@@ -1178,7 +1166,7 @@ bool cHardwareCPU::TriggerMutations_ScopeGenome(const cMutation * cur_mut,
   if (g_random.P(rate) == true) {
     // We must create a temporary head and use it to randomly determine the
     // position in the genome to be mutated.
-    cCPUHead tmp_head(cur_head);
+    cHeadCPU tmp_head(cur_head);
     tmp_head.AbsSet(g_random.GetUInt(target_memory.GetSize()));
     TriggerMutations_Body(cur_mut->GetType(), target_memory, tmp_head);
     return true;
@@ -1187,7 +1175,7 @@ bool cHardwareCPU::TriggerMutations_ScopeGenome(const cMutation * cur_mut,
 }
 
 bool cHardwareCPU::TriggerMutations_ScopeLocal(const cMutation * cur_mut,
-          cCPUMemory & target_memory, cCPUHead & cur_head, const double rate)
+          cCPUMemory & target_memory, cHeadCPU & cur_head, const double rate)
 {
   // The rate we have stored is the probability for a mutation at this single
   // position in the genome.
@@ -1200,7 +1188,7 @@ bool cHardwareCPU::TriggerMutations_ScopeLocal(const cMutation * cur_mut,
 }
 
 int cHardwareCPU::TriggerMutations_ScopeGlobal(const cMutation * cur_mut,
-          cCPUMemory & target_memory, cCPUHead & cur_head, const double rate)
+          cCPUMemory & target_memory, cHeadCPU & cur_head, const double rate)
 {
   // The probability we have stored is per-site, so we can pull a random
   // number from a binomial distribution to determine the number of mutations
@@ -1211,7 +1199,7 @@ int cHardwareCPU::TriggerMutations_ScopeGlobal(const cMutation * cur_mut,
 
   if (num_mut > 0) {
     for (int i = 0; i < num_mut; i++) {
-      cCPUHead tmp_head(cur_head);
+      cHeadCPU tmp_head(cur_head);
       tmp_head.AbsSet(g_random.GetUInt(target_memory.GetSize()));
       TriggerMutations_Body(cur_mut->GetType(), target_memory, tmp_head);
     }
@@ -1221,7 +1209,7 @@ int cHardwareCPU::TriggerMutations_ScopeGlobal(const cMutation * cur_mut,
 }
 
 void cHardwareCPU::TriggerMutations_Body(int type, cCPUMemory & target_memory,
-					 cCPUHead & cur_head)
+					 cHeadCPU & cur_head)
 {
   const int pos = cur_head.GetPosition();
 
@@ -1270,7 +1258,7 @@ void cHardwareCPU::AdjustHeads()
 void cHardwareCPU::ReadLabel(int max_size)
 {
   int count = 0;
-  cCPUHead * inst_ptr = &( IP() );
+  cHeadCPU * inst_ptr = &( IP() );
 
   GetLabel().Clear();
 
@@ -1975,7 +1963,7 @@ bool cHardwareCPU::Inst_JumpF()
   }
 
   // Otherwise, try to jump to the complement label.
-  const cCPUHead jump_location(FindLabel(1));
+  const cHeadCPU jump_location(FindLabel(1));
   if ( jump_location.GetPosition() != -1 ) {
     GetActiveHead().Set(jump_location);
     return true;
@@ -2000,7 +1988,7 @@ bool cHardwareCPU::Inst_JumpB()
   }
 
   // otherwise jump to the complement label.
-  const cCPUHead jump_location(FindLabel(-1));
+  const cHeadCPU jump_location(FindLabel(-1));
   if ( jump_location.GetPosition() != -1 ) {
     GetActiveHead().Set(jump_location);
     return true;
@@ -2042,7 +2030,7 @@ bool cHardwareCPU::Inst_JumpP()
   }
 
   // otherwise jump to the complement label.
-  const cCPUHead jump_location(other_hardware.FindFullLabel(GetLabel()));
+  const cHeadCPU jump_location(other_hardware.FindFullLabel(GetLabel()));
   if (jump_location.GetPosition() != -1) {
     IP().Set(jump_location);
     organism->GetPhenotype().IsParasite() = true;
@@ -2069,7 +2057,7 @@ bool cHardwareCPU::Inst_JumpSelf()
   }
 
   // otherwise jump to the complement label.
-  const cCPUHead jump_location( FindFullLabel(GetLabel()) );
+  const cHeadCPU jump_location( FindFullLabel(GetLabel()) );
   if ( jump_location.GetPosition() != -1 ) {
     IP().Set(jump_location);
     return true;
@@ -2096,7 +2084,7 @@ bool cHardwareCPU::Inst_Call()
     return true;
   }
 
-  const cCPUHead jump_location(FindLabel(1));
+  const cHeadCPU jump_location(FindLabel(1));
   if (jump_location.GetPosition() != -1) {
     IP().Set(jump_location);
     return true;
@@ -2436,8 +2424,8 @@ bool cHardwareCPU::Inst_Xor()
 
 bool cHardwareCPU::Inst_Copy()
 {
-  const cCPUHead from(this, Register(REG_BX));
-  cCPUHead to(this, Register(REG_AX) + Register(REG_BX));
+  const cHeadCPU from(this, Register(REG_BX));
+  cHeadCPU to(this, Register(REG_AX) + Register(REG_BX));
   sCPUStats & cpu_stats = organism->CPUStats();
 
   if (organism->TestCopyMut()) {
@@ -2460,7 +2448,7 @@ bool cHardwareCPU::Inst_Copy()
 bool cHardwareCPU::Inst_ReadInst()
 {
   const int reg_used = FindModifiedRegister(REG_CX);
-  const cCPUHead from(this, Register(REG_BX));
+  const cHeadCPU from(this, Register(REG_BX));
 
   // Dis-allowing mutations on read, for the moment (write only...)
   // @CAO This allows perfect error-correction...
@@ -2470,7 +2458,7 @@ bool cHardwareCPU::Inst_ReadInst()
 
 bool cHardwareCPU::Inst_WriteInst()
 {
-  cCPUHead to(this, Register(REG_AX) + Register(REG_BX));
+  cHeadCPU to(this, Register(REG_AX) + Register(REG_BX));
   const int reg_used = FindModifiedRegister(REG_CX);
   const int value = Mod(Register(reg_used), GetNumInst());
   sCPUStats & cpu_stats = organism->CPUStats();
@@ -2496,7 +2484,7 @@ bool cHardwareCPU::Inst_WriteInst()
 bool cHardwareCPU::Inst_StackReadInst()
 {
   const int reg_used = FindModifiedRegister(REG_CX);
-  cCPUHead from(this, Register(reg_used));
+  cHeadCPU from(this, Register(reg_used));
   StackPush(from.GetInst().GetOp());
   return true;
 }
@@ -2504,7 +2492,7 @@ bool cHardwareCPU::Inst_StackReadInst()
 bool cHardwareCPU::Inst_StackWriteInst()
 {
   const int reg_used = FindModifiedRegister(REG_BX);
-  cCPUHead to(this, Register(REG_AX) + Register(reg_used));
+  cHeadCPU to(this, Register(REG_AX) + Register(reg_used));
   const int value = Mod(StackPop(), GetNumInst());
   sCPUStats & cpu_stats = organism->CPUStats();
 
@@ -2529,8 +2517,8 @@ bool cHardwareCPU::Inst_StackWriteInst()
 bool cHardwareCPU::Inst_Compare()
 {
   const int reg_used = FindModifiedRegister(REG_CX);
-  cCPUHead from(this, Register(REG_BX));
-  cCPUHead to(this, Register(REG_AX) + Register(REG_BX));
+  cHeadCPU from(this, Register(REG_BX));
+  cHeadCPU to(this, Register(REG_AX) + Register(REG_BX));
 
   // Compare is dangerous -- it can cause mutations!
   if (organism->TestCopyMut()) {
@@ -2547,8 +2535,8 @@ bool cHardwareCPU::Inst_Compare()
 
 bool cHardwareCPU::Inst_IfNCpy()
 {
-  const cCPUHead from(this, Register(REG_BX));
-  const cCPUHead to(this, Register(REG_AX) + Register(REG_BX));
+  const cHeadCPU from(this, Register(REG_BX));
+  const cHeadCPU to(this, Register(REG_AX) + Register(REG_BX));
 
   // Allow for errors in this test...
   if (organism->TestCopyMut()) {
@@ -3328,7 +3316,7 @@ bool cHardwareCPU::Inst_HeadRead()
 bool cHardwareCPU::Inst_HeadWrite()
 {
   const int head_id = FindModifiedHead(HEAD_WRITE);
-  cCPUHead & active_head = GetHead(head_id);
+  cHeadCPU & active_head = GetHead(head_id);
 
   active_head.Adjust();
 
@@ -3346,8 +3334,8 @@ bool cHardwareCPU::Inst_HeadWrite()
 bool cHardwareCPU::Inst_HeadCopy()
 {
   // For the moment, this cannot be nop-modified.
-  cCPUHead & read_head = GetHead(HEAD_READ);
-  cCPUHead & write_head = GetHead(HEAD_WRITE);
+  cHeadCPU & read_head = GetHead(HEAD_READ);
+  cHeadCPU & write_head = GetHead(HEAD_WRITE);
   sCPUStats & cpu_stats = organism->CPUStats();
 
   read_head.Adjust();
@@ -3381,8 +3369,8 @@ bool cHardwareCPU::Inst_HeadCopy()
 bool cHardwareCPU::HeadCopy_ErrorCorrect(double reduction)
 {
   // For the moment, this cannot be nop-modified.
-  cCPUHead & read_head = GetHead(HEAD_READ);
-  cCPUHead & write_head = GetHead(HEAD_WRITE);
+  cHeadCPU & read_head = GetHead(HEAD_READ);
+  cHeadCPU & write_head = GetHead(HEAD_WRITE);
   sCPUStats & cpu_stats = organism->CPUStats();
 
   read_head.Adjust();
@@ -3423,7 +3411,7 @@ bool cHardwareCPU::Inst_HeadSearch()
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
-  cCPUHead found_pos = FindLabel(0);
+  cHeadCPU found_pos = FindLabel(0);
   const int search_size = found_pos.GetPosition() - IP().GetPosition();
   Register(REG_BX) = search_size;
   Register(REG_CX) = GetLabel().GetSize();
@@ -3452,7 +3440,7 @@ bool cHardwareCPU::Inst_DMJumpF()
   }
 
   // Otherwise, jump to the label.
-  cCPUHead jump_location(FindLabel(1));
+  cHeadCPU jump_location(FindLabel(1));
   if (jump_location.GetPosition() != -1) {
     IP().Set(jump_location);
     return true;

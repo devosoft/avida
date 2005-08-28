@@ -3,7 +3,7 @@
 # For more information, see doc/genesis.html
 #############################################################################
 
-VERSION_ID 2.3.0		# Do not change this value!
+VERSION_ID 2.3.1		# Do not change this value!
 
 ### Architecture Variables ###
 MAX_UPDATES  -1         # Maximum updates to run simulation (-1 = no limit)
@@ -24,7 +24,7 @@ INST_SET inst_set.4stack          # File containing instruction set
 EVENT_FILE events.cfg             # File containing list of events during run
 ANALYZE_FILE analyze.cfg          # File used for analysis mode
 ENVIRONMENT_FILE environment.cfg  # File that describes the environment
-START_CREATURE preset_organisms/organism.4stack    # Organism to seed the soup
+START_CREATURE organism.4stack    # Organism to seed the soup
 
 ### Reproduction ###
 BIRTH_METHOD 4   # 0 = Replace random organism in neighborhood

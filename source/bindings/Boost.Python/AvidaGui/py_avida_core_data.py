@@ -21,7 +21,7 @@ class pyAvidaCoreData:
       import sys
       sys.exit()
     self.environment.GetInstSet().SetInstLib(cHardwareCPU.GetInstLib())
-    cHardwareUtil.LoadInstSet_CPUOriginal(cConfig.GetInstFilename(), self.environment.GetInstSet())
+    cHardwareUtil.LoadInstSet(cConfig.GetInstFilename(), self.environment.GetInstSet())
     cConfig.SetNumInstructions(self.environment.GetInstSet().GetSize())
     cConfig.SetNumTasks(self.environment.GetTaskLib().GetSize())
     cConfig.SetNumReactions(self.environment.GetReactionLib().GetSize())

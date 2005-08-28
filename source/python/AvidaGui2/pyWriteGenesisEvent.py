@@ -86,7 +86,7 @@ class pyWriteGenesisEvent:
 
     event_out_file = open(event_file_name, 'a')
     for cell in cells_dict.keys():
-      part1 = "u 0 inject_sequence " +  organisms_dict[cells_dict[cell]] + " " 
+      part1 = "u begin inject_sequence " +  organisms_dict[cells_dict[cell]] + " " 
       part2 = cell + " " + str(int(cell)+1) + " -1 "
       part3 = cells_dict[cell] + "\n"
       event_out_file.write(part1 +  part2 + part3)
@@ -98,5 +98,4 @@ class pyWriteGenesisEvent:
     event_out_file.write("u 0:1:end print_count_data " + 
                          os.path.join(tmp_out_dir, "count.dat") +"\n")
     event_out_file.close()
-    
     

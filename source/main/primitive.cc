@@ -42,6 +42,9 @@
 #ifndef HARDWARE_CPU_HH
 #include "hardware_cpu.hh"
 #endif
+#ifndef HARDWARE_SMT_H
+#include "hardware_smt.h"
+#endif
 #ifndef INST_LIB_CPU_HH
 #include "inst_lib_cpu.hh"
 #endif
@@ -62,23 +65,21 @@
 
 using namespace std;
 
-//void ExitAvidaPrimitive(int exit_code)
-//{
-//  signal(SIGINT, SIG_IGN);          // Ignore all future interupts.
-//  delete cAvidaDriver_Base::main_driver;
-//  exit(exit_code);
-//}
-
 int main(int argc, char * argv[])
 {
   // Catch Interrupt making sure to close appropriately
   signal(SIGINT, ExitAvida);
 
   // output copyright message
-  printf( "Avida version %s\nCopyright (C) 1993-2003 California Institute of Technology.\n\n", AVIDA_VERSION );
-  printf( "Avida comes with ABSOLUTELY NO WARRANTY.\n" );
-  printf( "This is free software, and you are welcome to redistribute it\nunder certain conditions. See file COPYING for details.\n\n" );
-
+  cout << "Avida " << AVIDA_VERSION << endl;
+  cout << "----------------------------------------------------------------------" << endl;
+  cout << "Copyright (C) 1993-2003 California Institute of Technology." << endl;
+  cout << "Copyright (C) 1999-2005 Michigan State University." << endl << endl;
+  
+  cout << "Avida comes with ABSOLUTELY NO WARRANTY." << endl;
+  cout << "This is free software, and you are welcome to redistribute it" << endl;
+  cout << "under certain conditions. See file COPYING for details." << endl << endl;
+  
   // Initialize the configuration data...
   cConfig::InitGroupList();
   cConfig::Setup(argc, argv);
@@ -97,6 +98,8 @@ int main(int argc, char * argv[])
     cAvidaDriver_Base::main_driver = new cAvidaDriver_Population(environment);
   }
 
+  cout << endl;
+  
   cAvidaDriver_Base::main_driver->Run();
 
   // Exit Nicely

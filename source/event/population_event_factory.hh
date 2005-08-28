@@ -8,26 +8,33 @@
 #ifndef POPULATION_EVENT_FACTORY_HH
 #define POPULATION_EVENT_FACTORY_HH
 
-#ifndef EVENT_FACTORY_HH
-#include "event_factory.hh"
+#ifndef TOBJECTFACTORY_H
+#include "tObjectFactory.h"
 #endif
 
-class cEvent;
+#ifndef POPULATION_EVENT_HH
+#include "population_event.hh"
+#endif
+
 class cPopulation;
 class cString;
 
-class cPopulationEventFactory : public cEventFactory {
+class cPopulationEventFactory : public tObjectFactory<cEvent ()> {
 private:
   cPopulation *m_population;
-public:
-  // event enums
-#include "cPopulation_enums_auto.ci"
+public:  
+  cPopulationEventFactory(cPopulation* pop);
+  ~cPopulationEventFactory() { ; }
 
-  cPopulationEventFactory( cPopulation *pop );
-  ~cPopulationEventFactory();
-
-  int EventNameToEnum(const cString & name) const;
-  cEvent * ConstructEvent(int event_enum, const cString & args );
+  cEvent* Create(const cString& key)
+  {
+    cPopulationEvent* event = static_cast<cPopulationEvent*>(this->tObjectFactory<cEvent ()>::Create(key));
+    if( event != NULL ){
+      event->SetFactoryId( GetFactoryId() );
+      event->SetPopulation( m_population );
+    }
+    return event;
+  }
 };
 
 #endif

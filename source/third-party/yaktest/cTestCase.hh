@@ -154,7 +154,7 @@ class cTestCase
 #endif // WIN32
           return false;
         }
-    };
+    }
   //! check the last result for final test results
   const cTestResult& lastResult( void ) const;
 

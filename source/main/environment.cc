@@ -151,8 +151,6 @@ bool cEnvironment::AssertInputValid(void * input,
 
 bool cEnvironment::LoadReactionProcess(cReaction * reaction, cString desc)
 {
-  //  cerr << "ENV: Loading reaction process '" << desc << "'." << endl;
-
   cReactionProcess * new_process = reaction->AddProcess();
 
   // Loop through all entries in description.
@@ -251,8 +249,6 @@ bool cEnvironment::LoadReactionProcess(cReaction * reaction, cString desc)
 
 bool cEnvironment::LoadReactionRequisite(cReaction * reaction, cString desc)
 {
-  // cerr << "ENV: Loading reaction requisite '" << desc << "'." << endl;
-
   cReactionRequisite * new_requisite = reaction->AddRequisite();
 
   // Loop through all entries in description.
@@ -303,8 +299,6 @@ bool cEnvironment::LoadReactionRequisite(cReaction * reaction, cString desc)
 
 bool cEnvironment::LoadResource(cString desc)
 {
-  cerr << "ENV: Loading resource '" << desc << "'." << endl;
-
   if (desc.GetSize() == 0) {
     cerr << "Warning: Resource line with no resources listed." << endl;
     return false;
@@ -435,7 +429,6 @@ bool cEnvironment::LoadReaction(cString desc)
 
   // If only a name was present, assume this reaction is a pre-declaration.
   if (desc.GetSize() == 0) {
-    // cerr << "ENV: Pre-declaring reaction '" << name << "'." << endl;
     return true;
   }
 
@@ -448,8 +441,6 @@ bool cEnvironment::LoadReaction(cString desc)
 
   // Finish loading in this reaction.
   const cString trigger = desc.PopWord();
-  cerr << "ENV: Loading reaction '" << name << "' with trigger '"
-       << trigger << "'." << endl;
 
   // Load the task trigger
   cTaskEntry * cur_task = task_lib.AddTask(trigger);
@@ -490,8 +481,6 @@ bool cEnvironment::LoadReaction(cString desc)
 
 bool cEnvironment::LoadMutation(cString desc)
 {
-  cerr << "ENV: Loading mutation '" << desc << "'." << endl;
-
   // Make sure this mutation has a description...
   if (desc.CountNumWords() < 5) {
     cerr << "Error: Each mutation must include a name, trigger, scope, type, and rate." << endl;
@@ -643,9 +632,6 @@ bool cEnvironment::LoadLine(cString line)
 
 bool cEnvironment::Load(const cString & filename)
 {
-  cerr << "--- ENVIRONMENT SETUP ---" << endl;
-  cerr << "ENV: Loading file '" << filename << "'." << endl;
-
   cInitFile infile(filename);
   if (infile.Good() == false) {
     cerr << "Error: Failed to load environment '" << filename << "'." << endl;
@@ -655,8 +641,6 @@ bool cEnvironment::Load(const cString & filename)
   infile.Load();
   infile.Close();
   infile.Compress();
-
-  // cerr << "ENV: found " << infile.GetNumLines() << " commands." << endl;
 
   for (int line_id = 0; line_id < infile.GetNumLines(); line_id++) {
     // Load the next line from the file.

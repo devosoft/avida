@@ -17,7 +17,7 @@
 /**
  * A CPU stack, used by various hardware components.
  *
- * @see cCPUThread, cCPUHead, cHardware
+ * @see cCPUThread, cHeadCPU, cHardware
  **/
 
 class cCPUStack {

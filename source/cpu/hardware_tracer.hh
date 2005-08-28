@@ -8,8 +8,9 @@
 #ifndef HARDWARE_TRACER_HH
 #define HARDWARE_TRACER_HH
 
-struct cHardwareTracer {
-  virtual ~cHardwareTracer(){}
+struct cHardwareTracer
+{
+  virtual ~cHardwareTracer() { ; }
 };
 
 #endif

@@ -24,21 +24,6 @@ using namespace std;
 // cCodeLabel stuff...
 ////////////////////////////////
 
-cCodeLabel::cCodeLabel()
-  : size(0)
-{
-}
-
-cCodeLabel::cCodeLabel(const cCodeLabel &in_label)
-  : nop_sequence(in_label.nop_sequence)
-  , size(in_label.size)
-{
-}
-
-cCodeLabel::~cCodeLabel()
-{
-}
-
 bool cCodeLabel::OK()
 {
   bool result = true;

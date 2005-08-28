@@ -182,7 +182,7 @@ inline cInstruction cInstSet::GetInst(const cString & in_name) const
   }
 
   // @CAO Hacking this to make sure we don't have defaults...
-  cerr << "ERROR: Unknown instruction '" << in_name << "'.  Halting." << endl;
+  cerr << "Error: Unknown instruction '" << in_name << "'.  Exiting..." << endl;
   exit(1);
 
 

@@ -10,6 +10,7 @@
 #include "hardware_base.hh"
 #include "hardware_cpu.hh"
 #include "hardware_4stack.hh"
+#include "hardware_smt.h"
 #include "inst_set.hh"
 #include "organism.hh"
 
@@ -29,13 +30,19 @@ cHardwareBase * cHardwareFactory::Create(cOrganism * in_org,
   cHardwareBase * new_hardware = NULL;
 
   // If there is nothing to recycle, just create a new one.
-  if (hardware_cpu_list.GetSize() == 0) {
+  if (hardware_cpu_list.GetSize() == 0)
+  {
     new_count++;
-    if (type == HARDWARE_TYPE_CPU_ORIGINAL) {
-      new_hardware = new cHardwareCPU(in_org, inst_set);
-    }
-    else if (type == HARDWARE_TYPE_CPU_4STACK) {
-      new_hardware = new cHardware4Stack(in_org, inst_set);
+    switch (type)
+    {
+      case HARDWARE_TYPE_CPU_ORIGINAL:
+        new_hardware = new cHardwareCPU(in_org, inst_set);
+        break;
+      case HARDWARE_TYPE_CPU_4STACK:
+        new_hardware = new cHardware4Stack(in_org, inst_set);
+        break;
+      case HARDWARE_TYPE_CPU_SMT:
+        new_hardware = new cHardwareSMT(in_org, inst_set);
     }
   }
 

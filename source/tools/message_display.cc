@@ -207,7 +207,7 @@ cMessageClosure::cMessageClosure(
 
 cMessageClosure::~cMessageClosure(void){
   if(!(*_type.m_message_class.m_msg_display)){
-    cerr << "<~cMessageClosure> WARNING:" << endl;
+    cerr << "<~cMessageClosure> Warning:" << endl;
     cerr << "<~cMessageClosure> message display classes not fully initialized;" << endl;
     cerr << "<~cMessageClosure> directing messages of class \""
       << cString(_type.m_type_name)

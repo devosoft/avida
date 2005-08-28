@@ -4,10 +4,10 @@ import os
 classes_table = [
   #["cCLASSNAMEBLAHBLAHBLAHBLAHBLAH", "defs", [],],
 # cpu/
-  ["c4StackHead", "4stack_head", ["cpu_head"],],
+  ["cHeadMultiMem", "4stack_head", ["cpu_head"],],
   ["cCodeLabel", "code_label", [],],
   #["cCLASSNAMEBLAHBLAHBLAHBLAHBLAH", "cpu_defs", [],],
-  ["cCPUHead", "cpu_head", [],],
+  ["cHeadCPU", "cpu_head", [],],
   ["cCPUMemory", "cpu_memory", ["genome"],],
   ["cCPUStack", "cpu_stack", [],],
   ["sCPUStats", "cpu_stats", [],],

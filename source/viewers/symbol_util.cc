@@ -17,6 +17,7 @@
 #include "hardware_base.hh"
 #include "hardware_4stack.hh"
 #include "hardware_cpu.hh"
+#include "hardware_smt.h"
 
 using namespace std;
 
@@ -117,21 +118,18 @@ char cSymbolUtil::GetThreadSymbol(const cPopulationCell & cell)
 //    if (thread_count < 200) return 'C';
   //const cHardwareBase * hardware; 
   int num_threads;
-  if(cConfig::GetHardwareType() == HARDWARE_TYPE_CPU_ORIGINAL)
-    {
-      //const cHardwareCPU & hard_cpu= (cHardwareCPU &) cell.GetOrganism()->GetHardware();
-      //num_threads = hard_cpu.GetNumThreads();
+  switch (cConfig::GetHardwareType())
+  {
+    case HARDWARE_TYPE_CPU_ORIGINAL:
       num_threads = ((cHardwareCPU &) cell.GetOrganism()->GetHardware()).GetNumThreads();
       return (char) ('0' + num_threads);
-    }
-  else
-    {
-      //const cHardware4Stack & hard_4stack= (cHardware4Stack &) cell.GetOrganism()->GetHardware();
-      //num_threads = hard_4stack.GetNumThreads();
+    case HARDWARE_TYPE_CPU_4STACK:
       num_threads = ((cHardware4Stack &) cell.GetOrganism()->GetHardware()).GetNumThreads();
       return (char) ('0' + num_threads);
-    }
-  //return '+';
+    case HARDWARE_TYPE_CPU_SMT:
+      num_threads = static_cast<cHardwareSMT&>(cell.GetOrganism()->GetHardware()).GetNumThreads();
+      return (char) ('0' + num_threads);
+  }
 }
 
 char cSymbolUtil::GetLineageSymbol(const cPopulationCell & cell)

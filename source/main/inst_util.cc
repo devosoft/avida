@@ -27,7 +27,7 @@ cGenome cInstUtil::LoadGenome(const cString & filename,
     cInitFile input_file(filename);
   if (!input_file.IsOpen()) {
     cerr << "Cannot open file: " << filename << endl;
-    return cGenome(1);
+    return cGenome(0);
   }
   input_file.Load();
   input_file.Compress();
@@ -51,7 +51,7 @@ cGenome cInstUtil::LoadGenome(const cString & filename,
   }
 
   if(new_genome.GetSize()==0)
-    cerr << "WARNING: Genome size is 0!" << endl;
+    cerr << "Warning: Genome size is 0!" << endl;
 
   return new_genome;
 }

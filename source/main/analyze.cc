@@ -183,9 +183,7 @@ void cAnalyze::LoadBasicDump(cString cur_string)
 
 void cAnalyze::LoadDetailDump(cString cur_string)
 {
-  cout << "WARNING: This function is DEPRICATED!" << endl
-  << "It is no longer being supported; use \"LOAD\" instead." << endl;
-  
+  cout << "Warning: Use of LoadDetailDump() is deprecated.  Use \"LOAD\" instead." << endl;  
   // LOAD_DETAIL_DUMP
   
   cString filename = cur_string.PopWord();
@@ -580,7 +578,6 @@ double cAnalyze::AnalyzeEntropyGivenParent(cAnalyzeGenotype * genotype,
   const cGenome & base_genome = genotype->GetGenome();
   const cGenome & parent_genome = parent->GetGenome();
   cGenome mod_genome(base_genome);
-  double base_fitness = genotype->GetFitness();
 
   // Loop through all the lines of code, testing all mutations ...
   tArray<double> test_fitness(num_insts);
@@ -642,11 +639,11 @@ double cAnalyze::AnalyzeEntropyGivenParent(cAnalyzeGenotype * genotype,
     
     // Calculate entropy ...
     double this_entropy = 0.0;
-    this_entropy -= (1.0-mut_rate)*log(1.0-mut_rate)/log((double) num_insts);
+    this_entropy -= (1.0 - mut_rate) * log(1.0 - mut_rate) / log(static_cast<double>(num_insts));
     for (int i = 0; i < num_insts; i ++) {
       if (i == parent_inst) { continue; }
       prob[i] = prob[i] * mut_rate;
-      this_entropy += prob[i] * log((double) 1.0/prob[i]) / log ((double) num_insts);
+      this_entropy += prob[i] * log(static_cast<double>(1.0/prob[i])) / log (static_cast<double>(num_insts));
     }
     entropy += this_entropy;
 
@@ -2935,10 +2932,8 @@ void cAnalyze::CommandLandscape(cString cur_string)
   cAnalyzeGenotype * genotype = NULL;
   while ((genotype = batch_it.Next()) != NULL) {
     cLandscape landscape(genotype->GetGenome(), inst_set);
-    if (num_test == 0)	landscape.Process(dist);
-    else 		int num_found = 
-      landscape.RandomProcess(num_test,dist,num_test,num_test*2);
-    //    fp << genotype->GetName() << " ";
+    if (num_test == 0) landscape.Process(dist);
+    else landscape.RandomProcess(num_test,dist,num_test,num_test*2);
     landscape.PrintStats(fp);
   }
 }
@@ -4618,7 +4613,6 @@ void cAnalyze::AnalyzeNewInfo(cString cur_string)
     return;
   }
   cAnalyzeGenotype * child_genotype = NULL;
-  const int num_insts = inst_set.GetSize();
   double I_P_E; // Information of parent about environment
   double H_P_E = AnalyzeEntropy(parent_genotype, mu);
   I_P_E = parent_genotype->GetLength() - H_P_E;
@@ -4865,7 +4859,7 @@ void cAnalyze::AnalyzeMuts(cString cur_string)
   
   // Make sure we have everything we need.
   if (batch[cur_batch].IsAligned() == false) {
-    cout << "  ERROR: sequences not aligned." << endl;
+    cout << "  Error: sequences not aligned." << endl;
     return;
   }
   
@@ -5626,8 +5620,7 @@ for (int i=0; i<sample_size; i++) {
   for (int line_num = 0; line_num < seq_length; line_num ++) 
     for (int inst_num = 0; inst_num < num_insts; inst_num ++) 
       inst_stat(line_num, inst_num) = 0;
-  
-  int organism_index = 0;
+
   int num_cpus = 0;
   int actural_samples = 0;
   while (genotype != NULL) {

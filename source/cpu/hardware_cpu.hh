@@ -20,8 +20,8 @@
 #ifndef CPU_DEFS_HH
 #include "cpu_defs.hh"
 #endif
-#ifndef CPU_HEAD_HH
-#include "cpu_head.hh"
+#ifndef HEAD_CPU_HH
+#include "head_cpu.hh"
 #endif
 #ifndef CPU_MEMORY_HH
 #include "cpu_memory.hh"
@@ -62,7 +62,7 @@ class cHardwareCPU_Thread;
  **/
 
 class cCodeLabel; // access
-class cCPUHead; // access
+class cHeadCPU; // access
 class cCPUMemory; // aggregate
 class cCPUStack; // aggregate
 class cGenome;
@@ -142,18 +142,18 @@ public:
   { threads[cur_thread].cur_head = (UCHAR) new_head; }
 
   int GetCurHead() const { return threads[cur_thread].cur_head; }
-  const cCPUHead & GetHead(int head_id) const
+  const cHeadCPU & GetHead(int head_id) const
     { return threads[cur_thread].heads[head_id]; }
-  cCPUHead & GetHead(int head_id) { return threads[cur_thread].heads[head_id];}
+  cHeadCPU & GetHead(int head_id) { return threads[cur_thread].heads[head_id];}
 
-  const cCPUHead & GetActiveHead() const { return GetHead(GetCurHead()); }
-  cCPUHead & GetActiveHead() { return GetHead(GetCurHead()); }
+  const cHeadCPU & GetActiveHead() const { return GetHead(GetCurHead()); }
+  cHeadCPU & GetActiveHead() { return GetHead(GetCurHead()); }
 
   void AdjustHeads();
 
-  inline const cCPUHead & IP() const
+  inline const cHeadCPU & IP() const
     { return threads[cur_thread].heads[HEAD_IP]; }
-  inline cCPUHead & IP() { return threads[cur_thread].heads[HEAD_IP]; }
+  inline cHeadCPU & IP() { return threads[cur_thread].heads[HEAD_IP]; }
 
 
   // --------  Label Manipulation  -------
@@ -203,13 +203,13 @@ public:
   }
 
   // Complex label manipulation...
-  cCPUHead FindLabel(int direction);
+  cHeadCPU FindLabel(int direction);
   int FindLabel_Forward(const cCodeLabel & search_label,
 			  const cGenome & search_genome, int pos);
   int FindLabel_Backward(const cCodeLabel & search_label,
 			  const cGenome & search_genome, int pos);
-  cCPUHead FindLabel(const cCodeLabel & in_label, int direction);
-  cCPUHead FindFullLabel(const cCodeLabel & in_label);
+  cHeadCPU FindLabel(const cCodeLabel & in_label, int direction);
+  cHeadCPU FindFullLabel(const cCodeLabel & in_label);
 
   int GetType() const { return HARDWARE_TYPE_CPU_ORIGINAL; }
   bool InjectHost(const cCodeLabel & in_label, const cGenome & injection);
@@ -220,15 +220,15 @@ public:
   int PointMutate(const double mut_rate);
 
   bool TriggerMutations(int trigger);
-  bool TriggerMutations(int trigger, cCPUHead & cur_head);
+  bool TriggerMutations(int trigger, cHeadCPU & cur_head);
   bool TriggerMutations_ScopeGenome(const cMutation * cur_mut,
-        cCPUMemory & target_memory, cCPUHead & cur_head, const double rate);
+        cCPUMemory & target_memory, cHeadCPU & cur_head, const double rate);
   bool TriggerMutations_ScopeLocal(const cMutation * cur_mut,
-        cCPUMemory & target_memory, cCPUHead & cur_head, const double rate);
+        cCPUMemory & target_memory, cHeadCPU & cur_head, const double rate);
   int TriggerMutations_ScopeGlobal(const cMutation * cur_mut,
-        cCPUMemory & target_memory, cCPUHead & cur_head, const double rate);
+        cCPUMemory & target_memory, cHeadCPU & cur_head, const double rate);
   void TriggerMutations_Body(int type, cCPUMemory & target_memory,
-			     cCPUHead & cur_head);
+			     cHeadCPU & cur_head);
 
   void ReadInst(const int in_inst);
 

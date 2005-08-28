@@ -27,6 +27,7 @@
 #include "tools.hh"
 
 #include <iostream>
+#include <iomanip>
 
 using namespace std;
 
@@ -35,12 +36,9 @@ using namespace std;
 /////////////////////////////
 
 cAvidaDriver_Population::cAvidaDriver_Population(cEnvironment & environment, cChangeList * change_list)
-  : population(NULL)
-  , event_manager(NULL)
-  , event_list(NULL)
+  : population(NULL), event_manager(NULL), event_list(NULL)
 {
-  // Setup Population
-  cout << "Initializing Population..." << flush;
+  // Setup Population    
   cPopulationInterface default_interface;
   default_interface.SetFun_NewHardware(&cCallbackUtil::CB_NewHardware);
   default_interface.SetFun_Recycle(&cCallbackUtil::CB_RecycleHardware);
@@ -64,25 +62,19 @@ cAvidaDriver_Population::cAvidaDriver_Population(cEnvironment & environment, cCh
   default_interface.SetFun_UpdateMerit(&cCallbackUtil::CB_UpdateMerit);
 
   population = new cPopulation(default_interface, environment, change_list);
-  cout << " ...done" << endl;
 
   //Setup Event List
-  cout<<"Initializing Event Factory Manager..."<<flush;
   event_manager = new cEventFactoryManager;
   cStats & stats = population->GetStats();
   event_list = new cEventList( event_manager, new cAvidaTriggers(stats) );
-  cout<<"...Factories..."<<flush;
-
+  
   // in principle, one could add more than one event factory here.
   // however, this is not a good idea, because the automatic documentation
   // system cannot cope with this at this point. Claus
   event_manager->AddFactory(new cPopulationEventFactory(population));
-  cout<<" ...done"<<endl;
 
-  cout<<"Reading Event List File..."<<flush;
   ReadEventListFile(cConfig::GetEventFilename());
-  cout<<" ...done"<<endl;
-
+  
   // Make sure the directory 'genebank' exits!
   cTools::MkDir("genebank", true);
 }
@@ -94,8 +86,6 @@ cAvidaDriver_Population::~cAvidaDriver_Population()
 
 void cAvidaDriver_Population::Run()
 {
-  // cout << "DEBUG: Turning control over to driver..." << endl;
-
   assert( population != NULL );
 
   // Process until done...
@@ -179,8 +169,6 @@ void cAvidaDriver_Population::GetEvents()
 
 void cAvidaDriver_Population::ProcessOrganisms()
 {
-  //  cout << "DEBUG: Running viewer-less update..." << endl;
-
   // Process the update.
   const int UD_size =
     cConfig::GetAveTimeslice() * population->GetNumOrganisms();
@@ -199,9 +187,11 @@ void cAvidaDriver_Population::ProcessOrganisms()
 
   // No viewer; print out status for this update....
   cStats & stats = population->GetStats();
-  cout << "UD: "  << stats.GetUpdate() << "\t"
-       << "Gen: " << stats.SumGeneration().Average() << "\t"
-       << "Fit: " << stats.GetAveFitness() << "\t"
+  cout.setf(ios::left);
+  cout.setf(ios::showpoint);
+  cout << "UD: " << setw(6) << stats.GetUpdate() << "  "
+       << "Gen: " << setw(9) << setprecision(7) << stats.SumGeneration().Average() << "  "
+       << "Fit: " << setw(9) << setprecision(7) << stats.GetAveFitness() << "  "
        << "Size: " << population->GetNumOrganisms()
        << endl;
 }

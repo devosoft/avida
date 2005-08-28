@@ -25,6 +25,8 @@ class cString;
 
 class cMessageDisplay{
 public:
+  virtual ~cMessageDisplay() { ; }
+  
   virtual void out(cString &final_msg){}
   virtual void abort(){ abort(); }
 };

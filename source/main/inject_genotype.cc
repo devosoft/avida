@@ -105,7 +105,7 @@ bool cInjectGenotype::OK()
   assert( birth_data.update_born >= -1);
 
   return ret_value;
-};
+}
 
 void cInjectGenotype::SetParent(cInjectGenotype * parent)
 {

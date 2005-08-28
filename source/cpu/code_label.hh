@@ -35,9 +35,9 @@ private:
   int size;
   //const int base;
 public:
-  cCodeLabel();//int in_base=MAX_NOPS);
-  cCodeLabel(const cCodeLabel &in_label);
-  ~cCodeLabel();
+  cCodeLabel() : size(0) { ; }
+  cCodeLabel(const cCodeLabel& in_label) : nop_sequence(in_label.nop_sequence), size(in_label.size) { ; }  
+  ~cCodeLabel() { ; }
 
   bool OK();
   bool operator==(const cCodeLabel & other_label) const;
@@ -77,14 +77,8 @@ void cCodeLabel::AddNop(int nop_num) {
 
 void cCodeLabel::Rotate(const int rot, const int base)
 {
-  //for (int i = 0; i < size; i++) {
-  //  nop_sequence[i] += rot;
-  //  if (nop_sequence[i] == 3) nop_sequence[i]++; //IGNORING NOP-D FOR NOW!
-  //  if (nop_sequence[i] >= base) nop_sequence[i] -= base;
-  //}
   for (int i = 0; i < size; i++) {
     nop_sequence[i] += rot;
-    //if (nop_sequence[i] == 3) nop_sequence[i]++; //IGNORING NOP-D FOR NOW!
     if (nop_sequence[i] >= base) nop_sequence[i] -= base;
   }
 }

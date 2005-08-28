@@ -65,16 +65,7 @@ void SetupAvida(
 		cPopulationInterface &test_interface )
 {
   // Build the instruction set.
-  if (cConfig::GetHardwareType() == HARDWARE_TYPE_CPU_ORIGINAL) {
-    environment.GetInstSet().SetInstLib(cHardwareCPU::GetInstLib());
-    cHardwareUtil::LoadInstSet_CPUOriginal(cConfig::GetInstFilename(),
-					   environment.GetInstSet());
-  }
-  else if (cConfig::GetHardwareType() == HARDWARE_TYPE_CPU_4STACK) {
-    environment.GetInstSet().SetInstLib(cHardware4Stack::GetInstLib());
-    cHardwareUtil::LoadInstSet_CPU4Stack(cConfig::GetInstFilename(),
-					   environment.GetInstSet());
-  }
+  cHardwareUtil::LoadInstSet(cConfig::GetInstFilename(), environment.GetInstSet());
 
   // Initialize the default environment...
   if (environment.Load(cConfig::GetEnvironmentFilename()) == false) {

@@ -19,8 +19,7 @@
 #include "tools.hh"
 #endif
 
-#include "cPopulation_descr.hi" // declarations and definitions
-//#include "cPopulation_descr.ci" // for event documentation
+#include "cPopulation_descr.h" // declarations and definitions
 
 
 using namespace std;

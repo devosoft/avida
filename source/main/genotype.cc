@@ -113,7 +113,7 @@ bool cGenotype::OK()
   assert( tmp_sum_merit.Sum() >= 0 && tmp_sum_fitness.Sum() >= 0 );
 
   return ret_value;
-};
+}
 
 void cGenotype::SetParent(cGenotype * parent, cGenotype * parent2)
 {

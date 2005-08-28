@@ -9,6 +9,10 @@
 #include "block_struct.hh"
 #endif
 
+#include <iostream>
+
+using namespace std;
+
 ////////////////////
 //  cBlockStruct
 ////////////////////
@@ -59,7 +63,7 @@ void cBlockStruct::Clear()
 int cBlockStruct::Process()
 {
   if (!fixed_size) {
-    printf("Error! No fixed size!\n");
+    cerr << "Error: No fixed size!" << endl;
     return -1;
   }
 
@@ -118,7 +122,7 @@ int cBlockStruct::Process()
     size_left -= fixed_size;
   }
 
-  printf("END Process() : Ran out of fixed_blocks...\n");
+  cout << "END Process() : Ran out of fixed_blocks..." << endl;
   
   return -1;
 }
@@ -188,7 +192,7 @@ int cBlockStruct::Update()
     size_left -= fixed_size;
   }
 
-  printf("END Update() : Ran out of fixed_blocks...\n");
+  cout << "END Update() : Ran out of fixed_blocks..." << endl;
   
   return -1;
 }

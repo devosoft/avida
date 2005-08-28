@@ -29,9 +29,7 @@ class pyAvida(qt.QObject):
       return None
 
     self.m_environment.GetInstSet().SetInstLib(cHardwareCPU.GetInstLib())
-    cHardwareUtil.LoadInstSet_CPUOriginal(
-      cConfig.GetInstFilename(),
-      self.m_environment.GetInstSet())
+    cHardwareUtil.LoadInstSet(cConfig.GetInstFilename(), self.m_environment.GetInstSet())
     cConfig.SetNumInstructions(self.m_environment.GetInstSet().GetSize())
     cConfig.SetNumTasks(self.m_environment.GetTaskLib().GetSize())
     cConfig.SetNumReactions(self.m_environment.GetReactionLib().GetSize())

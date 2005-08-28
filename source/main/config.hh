@@ -281,7 +281,7 @@ protected:
   static bool log_threshold_only;
 
   static bool log_creatures;
-  static bool log_genotypes;
+  static int log_genotypes;
   static bool log_threshold;
   static bool log_species;
   static bool log_landscape;
@@ -423,7 +423,7 @@ public:
   static bool GetLogThresholdOnly()  { return log_threshold_only; }
 
   static bool GetLogCreatures() { return log_creatures; }
-  static bool GetLogGenotypes() { return log_genotypes; }
+  static int GetLogGenotypes() { return log_genotypes; }
   static bool GetLogThreshold() { return log_threshold; }
   static bool GetLogSpecies()   { return log_species; }
   static bool GetLogLandscape() { return log_landscape; }

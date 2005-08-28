@@ -15,7 +15,7 @@ IF(UNIX)
   # - release (Release)
   # - release with debug info (RelWithDebInfo)
   SET(CMAKE_CXX_FLAGS_DEBUG
-    "-g ${COMPILER_WARNING_FLAGS} -pedantic -DDEBUG"
+    "-g ${COMPILER_WARNING_FLAGS} -DDEBUG"
     CACHE STRING "Flags used by the compiler during debug builds.")
   SET(CMAKE_CXX_FLAGS_MINSIZEREL
     "-Os -DNDEBUG"
@@ -24,7 +24,7 @@ IF(UNIX)
     "-O3 -ffast-math -DNDEBUG"
     CACHE STRING "Flags used by the compiler during release builds.")
   SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO
-    "-O2 -ffast-math -g ${COMPILER_WARNING_FLAGS} -pedantic -DDEBUG"
+    "-O2 -ffast-math -g ${COMPILER_WARNING_FLAGS} -DDEBUG"
     CACHE STRING "Flags used by the compiler during release builds.")
 
   # Four types of c compilations:
@@ -33,7 +33,7 @@ IF(UNIX)
   # - release (Release)
   # - release with debug info (RelWithDebInfo)
   SET(CMAKE_C_FLAGS_DEBUG
-    "-g ${COMPILER_WARNING_FLAGS} -pedantic -DDEBUG"
+    "-g ${COMPILER_WARNING_FLAGS} -DDEBUG"
     CACHE STRING "Flags used by the compiler during debug builds.")
   SET(CMAKE_C_FLAGS_MINSIZEREL
     "-Os -DNDEBUG"
@@ -42,7 +42,7 @@ IF(UNIX)
     "-O3 -ffast-math -DNDEBUG"
     CACHE STRING "Flags used by the compiler during release builds.")
   SET(CMAKE_C_FLAGS_RELWITHDEBINFO
-    "-O2 -ffast-math -g ${COMPILER_WARNING_FLAGS} -pedantic -DDEBUG"
+    "-O2 -ffast-math -g ${COMPILER_WARNING_FLAGS} -DDEBUG"
     CACHE STRING "Flags used by the compiler during release builds.")
 
   # By default, show all build commands.

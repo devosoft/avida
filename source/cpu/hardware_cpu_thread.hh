@@ -16,8 +16,8 @@
 #ifndef CPU_DEFS_HH
 #include "cpu_defs.hh"
 #endif
-#ifndef CPU_HEAD_HH
-#include "cpu_head.hh"
+#ifndef HEAD_CPU_HH
+#include "head_cpu.hh"
 #endif
 #ifndef CPU_STACK_HH
 #include "cpu_stack.hh"
@@ -29,11 +29,11 @@
 /**
  * This class is needed to run several threads on a single genome.
  *
- * @see cCPUStack, cCPUHead, cHardwareCPU
+ * @see cCPUStack, cHeadCPU, cHardwareCPU
  **/
 
 class cCodeLabel; // aggregate;
-class cCPUHead; // aggregate
+class cHeadCPU; // aggregate
 class cCPUStack; // aggregate
 class cHardwareBase;
 template <class T> class tBuffer; // aggregate
@@ -43,7 +43,7 @@ private:
   int id;
 public:
   int reg[NUM_REGISTERS];
-  cCPUHead heads[NUM_HEADS];
+  cHeadCPU heads[NUM_HEADS];
   cCPUStack stack;
   UCHAR cur_stack;              // 0 = local stack, 1 = global stack.
   UCHAR cur_head;

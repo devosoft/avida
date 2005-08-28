@@ -787,7 +787,6 @@ void cGenebank::DumpDetailedSexEntry(cGenotype * genotype, ofstream & fp)
 bool cGenebank::OK()
 {
   bool ret_value = true;
-  int i;
 
   // Check components...
 
@@ -833,7 +832,7 @@ bool cGenebank::OK()
   // Check the species for each genotype and place results in the species.
 
   cGenotype * cur_gen = genotype_control->GetBest();
-  for (i = 0; i < genotype_control->GetSize(); i++) {
+  for (int i = 0; i < genotype_control->GetSize(); i++) {
     if (cur_gen->GetSpecies()) {
       cur_gen->GetSpecies()->debug_num_genotypes++;
       if (cur_gen->GetThreshold()) {
