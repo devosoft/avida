@@ -1,8 +1,8 @@
 SET(libcpu_a_SOURCES
-  code_label.cc
-  cpu_memory.cc
-  cpu_stack.cc
-  cpu_test_info.cc
+  cCodeLabel.cc
+  cCPUMemory.cc
+  cCPUStack.cc
+  cCPUTestInfo.cc
   hardware_4stack.cc
   hardware_4stack_thread.cc
   hardware_base.cc

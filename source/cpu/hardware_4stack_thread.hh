@@ -11,10 +11,10 @@
 #include <iostream>
 
 #ifndef CODE_LABEL_HH
-#include "code_label.hh"
+#include "cCodeLabel.h"
 #endif
 #ifndef CPU_STACK_HH
-#include "cpu_stack.hh"
+#include "cCPUStack.h"
 #endif
 #ifndef HEAD_MULTI_MEM_HH
 #include "head_multi_mem.hh"

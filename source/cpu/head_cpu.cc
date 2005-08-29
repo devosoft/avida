@@ -10,10 +10,10 @@
 #endif
 
 #ifndef CPU_MEMORY_HH
-#include "cpu_memory.hh"
+#include "cCPUMemory.h"
 #endif
 #ifndef CODE_LABEL_HH
-#include "code_label.hh"
+#include "cCodeLabel.h"
 #endif
 #ifndef GENOME_HH
 #include "genome.hh"

@@ -7,7 +7,7 @@
 
 #include "test_util.hh"
 
-#include "cpu_test_info.hh"
+#include "cCPUTestInfo.h"
 #include "environment.hh"
 #include "genome.hh"
 #include "genotype.hh"

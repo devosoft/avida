@@ -5,7 +5,7 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "cpu_stack.hh"
+#include "cCPUStack.h"
 
 #include <assert.h>
 #include "string.hh"

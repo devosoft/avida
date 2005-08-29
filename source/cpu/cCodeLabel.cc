@@ -5,7 +5,7 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "code_label.hh"
+#include "cCodeLabel.h"
 
 #include "tools.hh" // for g_memory & g_debug
 

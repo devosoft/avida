@@ -5,7 +5,7 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "cpu_test_info.hh"
+#include "cCPUTestInfo.h"
 
 #include "hardware_status_printer.hh"
 #include "organism.hh"

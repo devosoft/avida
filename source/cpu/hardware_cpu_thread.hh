@@ -11,7 +11,7 @@
 #include <iostream>
 
 #ifndef CODE_LABEL_HH
-#include "code_label.hh"
+#include "cCodeLabel.h"
 #endif
 #ifndef CPU_DEFS_HH
 #include "cpu_defs.hh"
@@ -20,7 +20,7 @@
 #include "head_cpu.hh"
 #endif
 #ifndef CPU_STACK_HH
-#include "cpu_stack.hh"
+#include "cCPUStack.h"
 #endif
 #ifndef TBUFFER_HH
 #include "tBuffer.hh"

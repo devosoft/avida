@@ -10,7 +10,7 @@
 #include "hardware_4stack.hh"
 
 #include "config.hh"
-#include "cpu_test_info.hh"
+#include "cCPUTestInfo.h"
 #include "functions.hh"
 #include "genome_util.hh"
 #include "inst_lib_base.hh"

@@ -1,11 +1,11 @@
 
 cpu {
   HEADERS += \
-             $$CPU_HH/code_label.hh \
+             $$CPU_HH/cCodeLabel.h \
              $$CPU_HH/cpu_defs.hh \
-             $$CPU_HH/cpu_memory.hh \
-             $$CPU_HH/cpu_stack.hh \
-             $$CPU_HH/cpu_stats.hh \
+             $$CPU_HH/cCPUMemory.h \
+             $$CPU_HH/cCPUStack.h \
+             $$CPU_HH/sCPUStats.h \
              $$CPU_HH/hardware_4stack.hh \
              $$CPU_HH/hardware_base.hh \
              $$CPU_HH/hardware_cpu.hh \
@@ -16,11 +16,11 @@ cpu {
 
   SOURCES += \
              $$CPU_CC/4stack_head.cc \
-             $$CPU_CC/code_label.cc \
+             $$CPU_CC/cCodeLabel.cc \
              $$CPU_CC/cpu_head.cc \
-             $$CPU_CC/cpu_memory.cc \
-             $$CPU_CC/cpu_stack.cc \
-             $$CPU_CC/cpu_test_info.cc \
+             $$CPU_CC/cCPUMemory.cc \
+             $$CPU_CC/cCPUStack.cc \
+             $$CPU_CC/cCPUTestInfo.cc \
              $$CPU_CC/hardware_4stack.cc \
              $$CPU_CC/hardware_4stack_thread.cc \
              $$CPU_CC/hardware_base.cc \

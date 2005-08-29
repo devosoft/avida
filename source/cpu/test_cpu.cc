@@ -7,7 +7,7 @@
 
 #include "test_cpu.hh"
 
-#include "cpu_test_info.hh"
+#include "cCPUTestInfo.h"
 #include "config.hh"
 #include "environment.hh"
 #include "functions.hh"

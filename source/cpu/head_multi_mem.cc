@@ -10,7 +10,7 @@
 #endif
 
 #ifndef CPU_MEMORY_HH
-#include "cpu_memory.hh"
+#include "cCPUMemory.h"
 #endif
 #ifndef HARDWARE_BASE_HH
 #include "hardware_base.hh"

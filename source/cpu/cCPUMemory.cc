@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef CPU_MEMORY_HH
-#include "cpu_memory.hh"
+#include "cCPUMemory.h"
 #endif
 
 using namespace std;

@@ -8,7 +8,7 @@
 #include "hardware_cpu.hh"
 
 #include "config.hh"
-#include "cpu_test_info.hh"
+#include "cCPUTestInfo.h"
 #include "functions.hh"
 #include "genome_util.hh"
 #include "genotype.hh"

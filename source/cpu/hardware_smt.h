@@ -13,10 +13,10 @@
 #include <iomanip>
 
 #ifndef CPU_MEMORY_HH
-#include "cpu_memory.hh"
+#include "cCPUMemory.h"
 #endif
 #ifndef CPU_STACK_HH
-#include "cpu_stack.hh"
+#include "cCPUStack.h"
 #endif
 #ifndef DEFS_HH
 #include "defs.hh"
