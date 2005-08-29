@@ -7,7 +7,7 @@
 #endif
 
 #ifndef HARDWARE_CPU_HH
-#include "hardware_cpu.hh"
+#include "cHardwareCPU.h"
 #endif
 #ifndef INSTRUCTION_HH
 #include "instruction.hh"

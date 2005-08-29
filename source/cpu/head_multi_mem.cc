@@ -13,7 +13,7 @@
 #include "cCPUMemory.h"
 #endif
 #ifndef HARDWARE_BASE_HH
-#include "hardware_base.hh"
+#include "cHardwareBase.h"
 #endif
 #ifndef INST_SET_HH
 #include "inst_set.hh"

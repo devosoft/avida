@@ -6,9 +6,9 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "head_cpu.hh"
-#include "hardware_4stack.hh"
-#include "hardware_base.hh"
-#include "hardware_cpu.hh"
+#include "cHardware4Stack.h"
+#include "cHardwareBase.h"
+#include "cHardwareCPU.h"
 #include "hardware_status_printer.hh"
 #include "inst_set.hh"
 #include "organism.hh"

@@ -25,7 +25,7 @@
 #include "head_multi_mem.hh"
 #endif
 #ifndef HARDWARE_BASE_HH
-#include "hardware_base.hh"
+#include "cHardwareBase.h"
 #endif
 #ifndef HARDWARE_SMT_CONSTANTS_H
 #include "hardware_smt_constants.h"

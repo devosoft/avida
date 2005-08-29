@@ -7,7 +7,7 @@
 
 
 
-#include "hardware_4stack.hh"
+#include "cHardware4Stack.h"
 
 #include "config.hh"
 #include "cCPUTestInfo.h"

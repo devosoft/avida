@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef HARDWARE_CPU_THREAD_HH
-#include "hardware_cpu_thread.hh"
+#include "cHardwareCPU_Thread.h"
 #endif
 
 using namespace std;

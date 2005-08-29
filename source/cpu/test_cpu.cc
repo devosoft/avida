@@ -11,7 +11,7 @@
 #include "config.hh"
 #include "environment.hh"
 #include "functions.hh"
-#include "hardware_base.hh"
+#include "cHardwareBase.h"
 #include "hardware_status_printer.hh"
 #include "inst_set.hh"
 #include "inst_util.hh"

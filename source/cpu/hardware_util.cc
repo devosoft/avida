@@ -13,13 +13,13 @@
 #include "config.hh"
 #endif
 #ifndef HARDWARE_UTIL_HH
-#include "hardware_base.hh"
+#include "cHardwareBase.h"
 #endif
 #ifndef HARDWARE_CPU_HH
-#include "hardware_cpu.hh"
+#include "cHardwareCPU.h"
 #endif
 #ifndef HARDWARE_4STACK_HH
-#include "hardware_4stack.hh"
+#include "cHardware4Stack.h"
 #endif
 #ifndef HARDWARE_SMT_H
 #include "hardware_smt.h"

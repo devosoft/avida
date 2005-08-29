@@ -23,13 +23,13 @@
 #include "head_multi_mem.hh"
 #endif
 #ifndef HARDWARE_BASE_HH
-#include "hardware_base.hh"
+#include "cHardwareBase.h"
 #endif
 #ifndef HARDWARE_4STACK_CONSTANTS_HH
 #include "hardware_4stack_constants.hh"
 #endif
 #ifndef HARDWARE_4STACK_THREAD_HH
-#include "hardware_4stack_thread.hh"
+#include "cHardware4Stack_Thread.h"
 #endif
 #ifndef STRING_HH
 #include "string.hh"

@@ -11,7 +11,7 @@
 #include "environment.hh"
 #include "genome.hh"
 #include "genotype.hh"
-#include "hardware_base.hh"
+#include "cHardwareBase.h"
 #include "inject_genotype.hh"
 #include "inst_util.hh"
 #include "organism.hh"

@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef HARDWARE_4STACK_THREAD_HH
-#include "hardware_4stack_thread.hh"
+#include "cHardware4Stack_Thread.h"
 #endif
 
 using namespace std;

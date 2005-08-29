@@ -5,7 +5,7 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "hardware_base.hh"
+#include "cHardwareBase.h"
 
 #include "inst_set.hh"
 

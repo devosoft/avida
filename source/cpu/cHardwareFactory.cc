@@ -5,11 +5,11 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "hardware_factory.hh"
+#include "cHardwareFactory.h"
 
-#include "hardware_base.hh"
-#include "hardware_cpu.hh"
-#include "hardware_4stack.hh"
+#include "cHardwareBase.h"
+#include "cHardwareCPU.h"
+#include "cHardware4Stack.h"
 #include "hardware_smt.h"
 #include "inst_set.hh"
 #include "organism.hh"

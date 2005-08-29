@@ -30,10 +30,10 @@
 #include "cCPUStack.h"
 #endif
 #ifndef HARDWARE_BASE_HH
-#include "hardware_base.hh"
+#include "cHardwareBase.h"
 #endif
 #ifndef HARDWARE_CPU_THREAD_HH
-#include "hardware_cpu_thread.hh"
+#include "cHardwareCPU_Thread.h"
 #endif
 #ifndef STRING_HH
 #include "string.hh"

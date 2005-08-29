@@ -5,7 +5,7 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "hardware_cpu.hh"
+#include "cHardwareCPU.h"
 
 #include "config.hh"
 #include "cCPUTestInfo.h"
