@@ -1,5 +1,5 @@
 
-#include "nHardwareCPU-fixups.hh"
+#include "nHardwareCPU-fixups.h"
 
 #include "nHardwareCPU.h"
 
