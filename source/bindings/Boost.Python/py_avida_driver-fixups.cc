@@ -1,8 +1,8 @@
 
 #include "py_avida_driver.hh"
 
-#include "cpu/hardware_base.hh"
-#include "cpu/hardware_factory.hh"
+#include "cpu/cHardwareBase.h"
+#include "cpu/cHardwareFactory.h"
 #include "main/config.hh"
 #include "main/genebank.hh"
 #include "main/genotype.hh"

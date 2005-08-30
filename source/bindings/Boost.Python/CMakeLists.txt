@@ -141,7 +141,8 @@ SET(PyAvida_Pyste_Bases
   avida_driver_population::${CMAKE_CURRENT_SOURCE_DIR}/avida_driver_base.pyste # XXX XXX XXX
   config:: # XXX XXX XXX
   count_tracker:: # XXX XXX XXX
-  cpu_defs::
+  nHardware::
+  nHardwareCPU::
   data_entry:: # XXX XXX XXX
   data_file:: # XXX XXX XXX
   data_file_manager:: # XXX XXX XXX
@@ -180,7 +181,8 @@ SET(PyAvida_Pyste_Bases
 )
 SET(PyAvida_Extra_Cpp_Files
   AB.cc
-  cpu_defs-fixups.cc
+  nHardware-fixups.cc
+  nHardwareCPU-fixups.cc
   cpu_head-fixups.cc
   cpu_memory-fixups.cc
   file-fixups.cc

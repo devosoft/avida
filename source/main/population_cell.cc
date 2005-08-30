@@ -12,8 +12,8 @@
 #ifndef CONFIG_HH
 #include "config.hh"
 #endif
-#ifndef CPU_DEFS_HH
-#include "cpu_defs.hh"
+#ifndef nHardware_h
+#include "nHardware.h"
 #endif
 #ifndef ORGANISM_HH
 #include "organism.hh"
@@ -37,7 +37,7 @@ cPopulationCell::cPopulationCell(const cPopulationCell & in_cell)
   , cell_id(in_cell.cell_id)
   , organism_count(in_cell.organism_count)
 {
-  for (int i = 0; i < IO_SIZE; i++) input_array[i] = in_cell.input_array[i];
+  for (int i = 0; i < nHardware::IO_SIZE; i++) input_array[i] = in_cell.input_array[i];
   mutation_rates.Copy(in_cell.mutation_rates);
   tConstListIterator<cPopulationCell> conn_it(in_cell.connection_list);
   cPopulationCell * test_cell;
@@ -49,7 +49,7 @@ cPopulationCell::cPopulationCell(const cPopulationCell & in_cell)
 void cPopulationCell::operator=(const cPopulationCell & in_cell)
 {
   organism = in_cell.organism;
-  for (int i = 0; i < IO_SIZE; i++) input_array[i] = in_cell.input_array[i];
+  for (int i = 0; i < nHardware::IO_SIZE; i++) input_array[i] = in_cell.input_array[i];
   cur_input = in_cell.cur_input;
   cell_id = in_cell.cell_id;
   organism_count = in_cell.organism_count;
@@ -85,19 +85,19 @@ void cPopulationCell::Rotate(cPopulationCell & new_facing)
 
 int cPopulationCell::GetInput()
 {
-  if (cur_input >= IO_SIZE) cur_input = 0;
+  if (cur_input >= nHardware::IO_SIZE) cur_input = 0;
   return input_array[cur_input++];
 }
 
 int cPopulationCell::GetInputAt(int & input_pointer)
 {
-  if (input_pointer >= IO_SIZE) input_pointer = 0;
+  if (input_pointer >= nHardware::IO_SIZE) input_pointer = 0;
   return input_array[input_pointer++];
 }
 
 int cPopulationCell::GetInput(int id)
 {
-  assert(id >= 0 && id < IO_SIZE);
+  assert(id >= 0 && id < nHardware::IO_SIZE);
   return input_array[id];
 }
 

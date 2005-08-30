@@ -13,11 +13,14 @@
 #ifndef CODE_LABEL_HH
 #include "cCodeLabel.h"
 #endif
-#ifndef CPU_DEFS_HH
-#include "cpu_defs.hh"
+#ifndef nHardware_h
+#include "nHardware.h"
+#endif
+#ifndef nHardwareCPU_h
+#include "nHardwareCPU.h"
 #endif
 #ifndef HEAD_CPU_HH
-#include "head_cpu.hh"
+#include "cHeadCPU.h"
 #endif
 #ifndef CPU_STACK_HH
 #include "cCPUStack.h"
@@ -42,8 +45,8 @@ struct cHardwareCPU_Thread {
 private:
   int id;
 public:
-  int reg[NUM_REGISTERS];
-  cHeadCPU heads[NUM_HEADS];
+  int reg[nHardwareCPU::NUM_REGISTERS];
+  cHeadCPU heads[nHardware::NUM_HEADS];
   cCPUStack stack;
   UCHAR cur_stack;              // 0 = local stack, 1 = global stack.
   UCHAR cur_head;

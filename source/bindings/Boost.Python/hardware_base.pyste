@@ -1,12 +1,12 @@
 
-Include("code_label.hh")
-Include("cpu_memory.hh")
+Include("cCodeLabel.h")
+Include("cCPUMemory.h")
 Include("genome.hh")
-Include("hardware_tracer.hh")
+Include("cHardwareTracer.h")
 Include("inst_set.hh")
 Include("organism.hh")
 
-cHardwareBase = Class("cHardwareBase", "hardware_base.hh")
+cHardwareBase = Class("cHardwareBase", "cHardwareBase.h")
 set_policy(cHardwareBase.GetOrganism, return_internal_reference())
 set_policy(cHardwareBase.GetMemory, return_internal_reference())
 exclude(cHardwareBase.ViewerLock)

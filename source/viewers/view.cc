@@ -17,8 +17,8 @@
 #include "population_cell.hh"
 #include "stats.hh"
 
-#include "test_util.hh"
-#include "hardware_base.hh"
+#include "cTestUtil.h"
+#include "cHardwareBase.h"
 
 #include "view.hh"
 #include "menu.hh"

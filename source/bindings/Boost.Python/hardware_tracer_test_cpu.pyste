@@ -1,6 +1,6 @@
 
 Include("string.hh")
 
-cHardwareTracer_TestCPU = Class("cHardwareTracer_TestCPU", "hardware_tracer_test_cpu.hh")
+cHardwareTracer_TestCPU = Class("cHardwareTracer_TestCPU", "cHardwareTracer_TestCPU.h")
 
 # vim: set ft=python:

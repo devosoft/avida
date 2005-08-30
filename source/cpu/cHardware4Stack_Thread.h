@@ -17,10 +17,10 @@
 #include "cCPUStack.h"
 #endif
 #ifndef HEAD_MULTI_MEM_HH
-#include "head_multi_mem.hh"
+#include "cHeadMultiMem.h"
 #endif
 #ifndef HARDWARE_4STACK_CONSTANTS_HH
-#include "hardware_4stack_constants.hh"
+#include "nHardware4Stack.h"
 #endif
 #ifndef TBUFFER_HH
 #include "tBuffer.hh"
@@ -43,9 +43,9 @@ struct cHardware4Stack_Thread {
 private:
   int id;
 public:
-  cHeadMultiMem heads[NUM_HEADS];
+  cHeadMultiMem heads[nHardware::NUM_HEADS];
   UCHAR cur_head;
-  cCPUStack local_stacks[NUM_LOCAL_STACKS];
+  cCPUStack local_stacks[nHardware4Stack::NUM_LOCAL_STACKS];
 
   bool advance_ip;         // Should the IP advance after this instruction?
   cCodeLabel read_label;

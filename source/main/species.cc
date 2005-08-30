@@ -10,7 +10,7 @@
 #endif
 
 #ifndef CPU_TEST_INFO_HH
-#include "cpu_test_info.hh"
+#include "cCPUTestInfo.h"
 #endif
 #ifndef FUNCTIONS_HH
 #include "functions.hh"
@@ -22,7 +22,7 @@
 #include "genome_util.hh"
 #endif
 #ifndef TEST_CPU_HH
-#include "test_cpu.hh"
+#include "cTestCPU.h"
 #endif
 
 using namespace std;

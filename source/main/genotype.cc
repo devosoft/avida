@@ -8,12 +8,12 @@
 #include "genotype.hh"
 
 #include "config.hh"
-#include "cpu_test_info.hh"
+#include "cCPUTestInfo.h"
 #include "genome_util.hh"
 #include "merit.hh"
 #include "organism.hh"
 #include "phenotype.hh"
-#include "test_cpu.hh"
+#include "cTestCPU.h"
 #include "tools.hh"
 
 using namespace std;

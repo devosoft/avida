@@ -1,5 +1,5 @@
 /*
- *  hardware_smt.h
+ *  cHardwareSMT.h
  *  Avida2
  *
  *  Created by David on 6/4/05.
@@ -22,16 +22,16 @@
 #include "defs.hh"
 #endif
 #ifndef HEAD_MULTI_MEM_HH
-#include "head_multi_mem.hh"
+#include "cHeadMultiMem.h"
 #endif
 #ifndef HARDWARE_BASE_HH
 #include "cHardwareBase.h"
 #endif
 #ifndef HARDWARE_SMT_CONSTANTS_H
-#include "hardware_smt_constants.h"
+#include "nHardwareSMT.h"
 #endif
 #ifndef HARDWARE_SMT_THREAD_H
-#include "hardware_smt_thread.h"
+#include "cHardwareSMT_Thread.h"
 #endif
 #ifndef STRING_HH
 #include "string.hh"
@@ -149,18 +149,18 @@ public:
 	
   void AdjustHeads();
 	
-  const cHeadMultiMem & IP() const { return m_threads[m_cur_thread].heads[HEAD_IP]; }
-  cHeadMultiMem & IP() { return m_threads[m_cur_thread].heads[HEAD_IP]; }
+  const cHeadMultiMem & IP() const { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
+  cHeadMultiMem & IP() { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
 	
-  const cHeadMultiMem & IP(int thread) const { return m_threads[thread].heads[HEAD_IP]; }
-  cHeadMultiMem & IP(int thread) { return m_threads[thread].heads[HEAD_IP]; }
+  const cHeadMultiMem & IP(int thread) const { return m_threads[thread].heads[nHardware::HEAD_IP]; }
+  cHeadMultiMem & IP(int thread) { return m_threads[thread].heads[nHardware::HEAD_IP]; }
 	
 	
   const bool & AdvanceIP() const { return m_threads[m_cur_thread].advance_ip; }
   bool & AdvanceIP() { return m_threads[m_cur_thread].advance_ip; }
 	
   // --------  Label Manipulation  -------
-  void ReadLabel(int max_size=MAX_LABEL_SIZE);
+  void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
   const cCodeLabel & GetLabel() const { return m_threads[m_cur_thread].next_label; }
   cCodeLabel & GetLabel() { return m_threads[m_cur_thread].next_label; }
   const cCodeLabel & GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
@@ -203,7 +203,7 @@ public:
 	
   int GetThreadDist() const {
     if (GetNumThreads() == 1) return 0;
-    return m_threads[0].heads[HEAD_IP].GetPosition() - m_threads[1].heads[HEAD_IP].GetPosition();
+    return m_threads[0].heads[nHardware::HEAD_IP].GetPosition() - m_threads[1].heads[nHardware::HEAD_IP].GetPosition();
   }
 	
   // Complex label manipulation...

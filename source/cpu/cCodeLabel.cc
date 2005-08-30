@@ -9,6 +9,7 @@
 
 #include "tools.hh" // for g_memory & g_debug
 
+#include "nHardwareCPU.h"
 
 
 #include <cmath>
@@ -28,10 +29,10 @@ bool cCodeLabel::OK()
 {
   bool result = true;
 
-  assert (size <= MAX_LABEL_SIZE);
+  assert (size <= nHardware::MAX_LABEL_SIZE);
   assert (size <= nop_sequence.GetSize());
   for (int i = 0; i < size; i++) {
-    assert (nop_sequence[i] < MAX_NOPS);
+    assert (nop_sequence[i] < nHardware::MAX_NOPS);
   }
 
   return result;
@@ -101,7 +102,7 @@ void cCodeLabel::LoadState(istream & fp)
 
 //   fp.get(size);
 //   fp.get(base);
-//   for( int i=0; i<MAX_LABEL_SIZE; ++i ){
+//   for( int i=0; i<nHardware::MAX_LABEL_SIZE; ++i ){
 //     fp.get(nop_sequence[i]);
 //   }
 }
@@ -129,7 +130,8 @@ int cCodeLabel::AsIntGreyCode(const int base) const
     if(oddCount % 2 == 0) {
       value += nop_sequence[i];
     } else {
-      value += (NUM_NOPS - 1) - nop_sequence[i];
+      // DDD - this should not be relying on hardware specific NUM_NOPS
+      value += (nHardwareCPU::NUM_NOPS - 1) - nop_sequence[i];
     }
 
     if(nop_sequence[i] % 2 == 1) {

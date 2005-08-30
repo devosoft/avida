@@ -70,21 +70,6 @@
 		700E2B31085DE50C00CF158A /* event_list_iterator.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FF90762539D008F7A48 /* event_list_iterator.cc */; };
 		700E2B32085DE50C00CF158A /* event_triggers.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FFB0762539D008F7A48 /* event_triggers.cc */; };
 		700E2B33085DE50C00CF158A /* population_event_factory.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310010762539D008F7A48 /* population_event_factory.cc */; };
-		700E2B34085DE50C00CF158A /* head_multi_mem.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FA70762539D008F7A48 /* head_multi_mem.cc */; };
-		700E2B35085DE50C00CF158A /* code_label.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FAA0762539D008F7A48 /* code_label.cc */; };
-		700E2B36085DE50C00CF158A /* cpu_memory.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FB00762539D008F7A48 /* cpu_memory.cc */; };
-		700E2B37085DE50C00CF158A /* cpu_stack.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FB20762539D008F7A48 /* cpu_stack.cc */; };
-		700E2B38085DE50C00CF158A /* cpu_test_info.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FB50762539D008F7A48 /* cpu_test_info.cc */; };
-		700E2B39085DE50C00CF158A /* hardware_4stack.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FB70762539D008F7A48 /* hardware_4stack.cc */; };
-		700E2B3A085DE50C00CF158A /* hardware_4stack_thread.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FBA0762539D008F7A48 /* hardware_4stack_thread.cc */; };
-		700E2B3B085DE50C00CF158A /* hardware_base.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FBC0762539D008F7A48 /* hardware_base.cc */; };
-		700E2B3C085DE50C00CF158A /* hardware_cpu.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FBE0762539D008F7A48 /* hardware_cpu.cc */; };
-		700E2B3D085DE50C00CF158A /* hardware_cpu_thread.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FC00762539D008F7A48 /* hardware_cpu_thread.cc */; };
-		700E2B3E085DE50C00CF158A /* hardware_factory.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FC20762539D008F7A48 /* hardware_factory.cc */; };
-		700E2B3F085DE50C00CF158A /* hardware_util.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FC40762539D008F7A48 /* hardware_util.cc */; };
-		700E2B40085DE50C00CF158A /* memory_flags.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FC80762539D008F7A48 /* memory_flags.cc */; };
-		700E2B41085DE50C00CF158A /* test_cpu.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FCA0762539D008F7A48 /* test_cpu.cc */; };
-		700E2B42085DE50C00CF158A /* test_util.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FCC0762539D008F7A48 /* test_util.cc */; };
 		700E2B43085DE50C00CF158A /* weighted_index.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC315B3076253A5008F7A48 /* weighted_index.cc */; };
 		700E2B44085DE50C00CF158A /* tools.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC315AA076253A4008F7A48 /* tools.cc */; };
 		700E2B45085DE50C00CF158A /* block_struct.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC31545076253A4008F7A48 /* block_struct.cc */; };
@@ -121,11 +106,7 @@
 		700E2B64085DE50C00CF158A /* string_iterator.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC31592076253A4008F7A48 /* string_iterator.cc */; };
 		700E2B65085DE50C00CF158A /* string_list.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC31594076253A4008F7A48 /* string_list.cc */; };
 		700E2B66085DE50C00CF158A /* string_util.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC31596076253A4008F7A48 /* string_util.cc */; };
-		700E2B67085DE50C00CF158A /* hardware_status_printer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CBFCE80815E7FE0078D8CC /* hardware_status_printer.cc */; };
 		700E2B68085DE50C00CF158A /* change_list.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CBFCEF0815E8370078D8CC /* change_list.cc */; };
-		700E2B69085DE50C00CF158A /* head_cpu.cc in Sources */ = {isa = PBXBuildFile; fileRef = 706D3155085243CD00D7DC8F /* head_cpu.cc */; };
-		700E2B6A085DE50C00CF158A /* hardware_smt_thread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 706D31000852366400D7DC8F /* hardware_smt_thread.cc */; };
-		700E2B6B085DE50C00CF158A /* hardware_smt.cc in Sources */ = {isa = PBXBuildFile; fileRef = 706D30FC0852363400D7DC8F /* hardware_smt.cc */; };
 		700E2B6F085DE50C00CF158A /* analyze.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3114B0762539E008F7A48 /* analyze.cfg */; };
 		700E2B70085DE50C00CF158A /* environment.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311800762539F008F7A48 /* environment.cfg */; };
 		700E2B71085DE50C00CF158A /* events.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311810762539F008F7A48 /* events.cfg */; };
@@ -134,7 +115,6 @@
 		700E2B74085DE50C00CF158A /* inst_set.4stack in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311840762539F008F7A48 /* inst_set.4stack */; };
 		700E2B75085DE50C00CF158A /* inst_set.default in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311850762539F008F7A48 /* inst_set.default */; };
 		700E2B76085DE50C00CF158A /* organism.default in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311890762539F008F7A48 /* organism.default */; };
-		700E2B77085DE50C00CF158A /* head_cpu.hh in CopyFiles */ = {isa = PBXBuildFile; fileRef = 706D3156085243CD00D7DC8F /* head_cpu.hh */; };
 		700E2B78085DE50C00CF158A /* dummy in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311950762539F008F7A48 /* dummy */; };
 		700E2B79085DE50C00CF158A /* organism.4stack in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311970762539F008F7A48 /* organism.4stack */; };
 		700E2B7A085DE50C00CF158A /* organism.parasite in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311980762539F008F7A48 /* organism.parasite */; };
@@ -166,17 +146,49 @@
 		70658C43085DE5ED00486BED /* zoom_screen.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC31615076253A5008F7A48 /* zoom_screen.cc */; };
 		70658C44085DE5FF00486BED /* primitive.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC311090762539E008F7A48 /* primitive.cc */; };
 		70658C5A085DF67D00486BED /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
-		706D3157085243CD00D7DC8F /* head_cpu.cc in Sources */ = {isa = PBXBuildFile; fileRef = 706D3155085243CD00D7DC8F /* head_cpu.cc */; };
-		706D3158085243CD00D7DC8F /* head_cpu.hh in CopyFiles */ = {isa = PBXBuildFile; fileRef = 706D3156085243CD00D7DC8F /* head_cpu.hh */; };
-		706D31650852475D00D7DC8F /* hardware_smt_thread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 706D31000852366400D7DC8F /* hardware_smt_thread.cc */; };
-		706D31660852475E00D7DC8F /* hardware_smt.cc in Sources */ = {isa = PBXBuildFile; fileRef = 706D30FC0852363400D7DC8F /* hardware_smt.cc */; };
 		706D32E90854A39800D7DC8F /* dummy in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311950762539F008F7A48 /* dummy */; };
 		706D32EA0854A39900D7DC8F /* organism.4stack in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311970762539F008F7A48 /* organism.4stack */; };
 		706D32EB0854A39900D7DC8F /* organism.parasite in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311980762539F008F7A48 /* organism.parasite */; };
 		706D330F0854A7B900D7DC8F /* organism.smt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 706D330E0854A7B900D7DC8F /* organism.smt */; };
 		706D33110854A7D700D7DC8F /* genesis.smt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 706D33100854A7D700D7DC8F /* genesis.smt */; };
 		706D33280854A90D00D7DC8F /* inst_set.smt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 706D33270854A90D00D7DC8F /* inst_set.smt */; };
-		70CBFCEE0815E7FE0078D8CC /* hardware_status_printer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CBFCE80815E7FE0078D8CC /* hardware_status_printer.cc */; };
+		70C1EF4808C393BA00F50912 /* cCodeLabel.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF4608C393BA00F50912 /* cCodeLabel.cc */; };
+		70C1EF4A08C393BA00F50912 /* cCodeLabel.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF4608C393BA00F50912 /* cCodeLabel.cc */; };
+		70C1EF5908C3948C00F50912 /* cCPUMemory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF5808C3948C00F50912 /* cCPUMemory.cc */; };
+		70C1EF5A08C3948C00F50912 /* cCPUMemory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF5808C3948C00F50912 /* cCPUMemory.cc */; };
+		70C1EF6208C3954700F50912 /* cCPUStack.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF6108C3954700F50912 /* cCPUStack.cc */; };
+		70C1EF6308C3954700F50912 /* cCPUStack.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF6108C3954700F50912 /* cCPUStack.cc */; };
+		70C1EF7208C3968700F50912 /* cCPUTestInfo.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF7108C3968700F50912 /* cCPUTestInfo.cc */; };
+		70C1EF7308C3968700F50912 /* cCPUTestInfo.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF7108C3968700F50912 /* cCPUTestInfo.cc */; };
+		70C1EF8C08C39BC500F50912 /* cHardware4Stack.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF8B08C39BC500F50912 /* cHardware4Stack.cc */; };
+		70C1EF8D08C39BC500F50912 /* cHardware4Stack.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF8B08C39BC500F50912 /* cHardware4Stack.cc */; };
+		70C1EFA708C39F2100F50912 /* cHardware4Stack_Thread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EFA208C39F2100F50912 /* cHardware4Stack_Thread.cc */; };
+		70C1EFA808C39F2100F50912 /* cHardwareBase.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EFA308C39F2100F50912 /* cHardwareBase.cc */; };
+		70C1EFA908C39F2100F50912 /* cHardwareCPU_Thread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EFA408C39F2100F50912 /* cHardwareCPU_Thread.cc */; };
+		70C1EFAA08C39F2100F50912 /* cHardwareCPU.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EFA508C39F2100F50912 /* cHardwareCPU.cc */; };
+		70C1EFAB08C39F2100F50912 /* cHardwareFactory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EFA608C39F2100F50912 /* cHardwareFactory.cc */; };
+		70C1EFAC08C39F2100F50912 /* cHardware4Stack_Thread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EFA208C39F2100F50912 /* cHardware4Stack_Thread.cc */; };
+		70C1EFAD08C39F2100F50912 /* cHardwareBase.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EFA308C39F2100F50912 /* cHardwareBase.cc */; };
+		70C1EFAE08C39F2100F50912 /* cHardwareCPU_Thread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EFA408C39F2100F50912 /* cHardwareCPU_Thread.cc */; };
+		70C1EFAF08C39F2100F50912 /* cHardwareCPU.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EFA508C39F2100F50912 /* cHardwareCPU.cc */; };
+		70C1EFB008C39F2100F50912 /* cHardwareFactory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EFA608C39F2100F50912 /* cHardwareFactory.cc */; };
+		70C1F02A08C3C71300F50912 /* cHardwareSMT_Thread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02208C3C71300F50912 /* cHardwareSMT_Thread.cc */; };
+		70C1F02B08C3C71300F50912 /* cHardwareSMT.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02308C3C71300F50912 /* cHardwareSMT.cc */; };
+		70C1F02C08C3C71300F50912 /* cHardwareStatusPrinter.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02408C3C71300F50912 /* cHardwareStatusPrinter.cc */; };
+		70C1F02D08C3C71300F50912 /* cHardwareUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02508C3C71300F50912 /* cHardwareUtil.cc */; };
+		70C1F02E08C3C71300F50912 /* cHeadCPU.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02608C3C71300F50912 /* cHeadCPU.cc */; };
+		70C1F02F08C3C71300F50912 /* cHeadMultiMem.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02708C3C71300F50912 /* cHeadMultiMem.cc */; };
+		70C1F03008C3C71300F50912 /* cTestCPU.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02808C3C71300F50912 /* cTestCPU.cc */; };
+		70C1F03108C3C71300F50912 /* cTestUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02908C3C71300F50912 /* cTestUtil.cc */; };
+		70C1F03208C3C71300F50912 /* cHardwareSMT_Thread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02208C3C71300F50912 /* cHardwareSMT_Thread.cc */; };
+		70C1F03308C3C71300F50912 /* cHardwareSMT.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02308C3C71300F50912 /* cHardwareSMT.cc */; };
+		70C1F03408C3C71300F50912 /* cHardwareStatusPrinter.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02408C3C71300F50912 /* cHardwareStatusPrinter.cc */; };
+		70C1F03508C3C71300F50912 /* cHardwareUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02508C3C71300F50912 /* cHardwareUtil.cc */; };
+		70C1F03608C3C71300F50912 /* cHeadCPU.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02608C3C71300F50912 /* cHeadCPU.cc */; };
+		70C1F03708C3C71300F50912 /* cHeadMultiMem.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02708C3C71300F50912 /* cHeadMultiMem.cc */; };
+		70C1F03808C3C71300F50912 /* cTestCPU.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02808C3C71300F50912 /* cTestCPU.cc */; };
+		70C1F03908C3C71300F50912 /* cTestUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02908C3C71300F50912 /* cTestUtil.cc */; };
+		70C1F10108C40BEF00F50912 /* nHardware.pyste in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70C1F10008C40BEF00F50912 /* nHardware.pyste */; };
 		70CBFCF10815E8370078D8CC /* change_list.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CBFCEF0815E8370078D8CC /* change_list.cc */; };
 		70D46934085F61DA004C8409 /* trio.c in Sources */ = {isa = PBXBuildFile; fileRef = DCC3146D076253A1008F7A48 /* trio.c */; };
 		70D46935085F61DD004C8409 /* trionan.c in Sources */ = {isa = PBXBuildFile; fileRef = DCC31471076253A1008F7A48 /* trionan.c */; };
@@ -245,21 +257,6 @@
 		DCC3169E076285C5008F7A48 /* event_list_iterator.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FF90762539D008F7A48 /* event_list_iterator.cc */; };
 		DCC3169F076285C6008F7A48 /* event_triggers.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FFB0762539D008F7A48 /* event_triggers.cc */; };
 		DCC316A1076285C8008F7A48 /* population_event_factory.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310010762539D008F7A48 /* population_event_factory.cc */; };
-		DCC316A2076285D1008F7A48 /* head_multi_mem.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FA70762539D008F7A48 /* head_multi_mem.cc */; };
-		DCC316A3076285D2008F7A48 /* code_label.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FAA0762539D008F7A48 /* code_label.cc */; };
-		DCC316A5076285D5008F7A48 /* cpu_memory.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FB00762539D008F7A48 /* cpu_memory.cc */; };
-		DCC316A6076285D5008F7A48 /* cpu_stack.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FB20762539D008F7A48 /* cpu_stack.cc */; };
-		DCC316A7076285D6008F7A48 /* cpu_test_info.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FB50762539D008F7A48 /* cpu_test_info.cc */; };
-		DCC316A8076285D7008F7A48 /* hardware_4stack.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FB70762539D008F7A48 /* hardware_4stack.cc */; };
-		DCC316A9076285D8008F7A48 /* hardware_4stack_thread.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FBA0762539D008F7A48 /* hardware_4stack_thread.cc */; };
-		DCC316AA076285D9008F7A48 /* hardware_base.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FBC0762539D008F7A48 /* hardware_base.cc */; };
-		DCC316AB076285DA008F7A48 /* hardware_cpu.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FBE0762539D008F7A48 /* hardware_cpu.cc */; };
-		DCC316AC076285DB008F7A48 /* hardware_cpu_thread.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FC00762539D008F7A48 /* hardware_cpu_thread.cc */; };
-		DCC316AD076285DC008F7A48 /* hardware_factory.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FC20762539D008F7A48 /* hardware_factory.cc */; };
-		DCC316AE076285DD008F7A48 /* hardware_util.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FC40762539D008F7A48 /* hardware_util.cc */; };
-		DCC316AF076285DF008F7A48 /* memory_flags.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FC80762539D008F7A48 /* memory_flags.cc */; };
-		DCC316B0076285DF008F7A48 /* test_cpu.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FCA0762539D008F7A48 /* test_cpu.cc */; };
-		DCC316B1076285E0008F7A48 /* test_util.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC30FCC0762539D008F7A48 /* test_util.cc */; };
 		DCC316B807628742008F7A48 /* weighted_index.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC315B3076253A5008F7A48 /* weighted_index.cc */; };
 		DCC316B907628744008F7A48 /* tools.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC315AA076253A4008F7A48 /* tools.cc */; };
 		DCC316BA07628749008F7A48 /* block_struct.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC31545076253A4008F7A48 /* block_struct.cc */; };
@@ -341,7 +338,6 @@
 				700E2B74085DE50C00CF158A /* inst_set.4stack in CopyFiles */,
 				700E2B75085DE50C00CF158A /* inst_set.default in CopyFiles */,
 				700E2B76085DE50C00CF158A /* organism.default in CopyFiles */,
-				700E2B77085DE50C00CF158A /* head_cpu.hh in CopyFiles */,
 				700E2B78085DE50C00CF158A /* dummy in CopyFiles */,
 				700E2B79085DE50C00CF158A /* organism.4stack in CopyFiles */,
 				700E2B7A085DE50C00CF158A /* organism.parasite in CopyFiles */,
@@ -349,6 +345,7 @@
 				700E2B7C085DE50C00CF158A /* genesis.smt in CopyFiles */,
 				700E2B7D085DE50C00CF158A /* inst_set.smt in CopyFiles */,
 				70FB868808BFA02D00BDF589 /* tHashTable.hh in CopyFiles */,
+				70C1F10108C40BEF00F50912 /* nHardware.pyste in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -367,7 +364,6 @@
 				70486BA50826722F009328F0 /* inst_set.4stack in CopyFiles */,
 				70486BA60826722F009328F0 /* inst_set.default in CopyFiles */,
 				70486BA70826722F009328F0 /* organism.default in CopyFiles */,
-				706D3158085243CD00D7DC8F /* head_cpu.hh in CopyFiles */,
 				706D32E90854A39800D7DC8F /* dummy in CopyFiles */,
 				706D32EA0854A39900D7DC8F /* organism.4stack in CopyFiles */,
 				706D32EB0854A39900D7DC8F /* organism.parasite in CopyFiles */,
@@ -386,22 +382,62 @@
 		703F684207B437B800C1CA76 /* status.xml */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = status.xml; sourceTree = "<group>"; };
 		70658C59085DF67D00486BED /* libncurses.5.4.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libncurses.5.4.dylib; path = /usr/lib/libncurses.5.4.dylib; sourceTree = "<absolute>"; };
 		706D30CC0852328F00D7DC8F /* tInstLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tInstLib.h; sourceTree = "<group>"; };
-		706D30FB0852363400D7DC8F /* hardware_smt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hardware_smt.h; sourceTree = "<group>"; };
-		706D30FC0852363400D7DC8F /* hardware_smt.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = hardware_smt.cc; sourceTree = "<group>"; };
-		706D30FF0852366400D7DC8F /* hardware_smt_thread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hardware_smt_thread.h; sourceTree = "<group>"; };
-		706D31000852366400D7DC8F /* hardware_smt_thread.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = hardware_smt_thread.cc; sourceTree = "<group>"; };
-		706D3155085243CD00D7DC8F /* head_cpu.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = head_cpu.cc; sourceTree = "<group>"; };
-		706D3156085243CD00D7DC8F /* head_cpu.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = head_cpu.hh; sourceTree = "<group>"; };
-		706D3170085248F800D7DC8F /* hardware_smt_constants.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = hardware_smt_constants.h; sourceTree = "<group>"; };
 		706D330E0854A7B900D7DC8F /* organism.smt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = organism.smt; sourceTree = "<group>"; };
 		706D33100854A7D700D7DC8F /* genesis.smt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = genesis.smt; sourceTree = "<group>"; };
 		706D33270854A90D00D7DC8F /* inst_set.smt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = inst_set.smt; sourceTree = "<group>"; };
-		70CBFCE80815E7FE0078D8CC /* hardware_status_printer.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = hardware_status_printer.cc; sourceTree = "<group>"; };
-		70CBFCE90815E7FE0078D8CC /* hardware_status_printer.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = hardware_status_printer.hh; sourceTree = "<group>"; };
-		70CBFCEA0815E7FE0078D8CC /* hardware_tracer_4stack.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = hardware_tracer_4stack.hh; sourceTree = "<group>"; };
-		70CBFCEB0815E7FE0078D8CC /* hardware_tracer_cpu.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = hardware_tracer_cpu.hh; sourceTree = "<group>"; };
-		70CBFCEC0815E7FE0078D8CC /* hardware_tracer_test_cpu.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = hardware_tracer_test_cpu.hh; sourceTree = "<group>"; };
-		70CBFCED0815E7FE0078D8CC /* hardware_tracer.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = hardware_tracer.hh; sourceTree = "<group>"; };
+		70C1EF4608C393BA00F50912 /* cCodeLabel.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCodeLabel.cc; sourceTree = "<group>"; };
+		70C1EF4708C393BA00F50912 /* cCodeLabel.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCodeLabel.h; sourceTree = "<group>"; };
+		70C1EF5808C3948C00F50912 /* cCPUMemory.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCPUMemory.cc; sourceTree = "<group>"; };
+		70C1EF5B08C3949A00F50912 /* cCPUMemory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCPUMemory.h; sourceTree = "<group>"; };
+		70C1EF6008C3953A00F50912 /* cCPUStack.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCPUStack.h; sourceTree = "<group>"; };
+		70C1EF6108C3954700F50912 /* cCPUStack.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCPUStack.cc; sourceTree = "<group>"; };
+		70C1EF6708C395D300F50912 /* sCPUStats.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = sCPUStats.h; sourceTree = "<group>"; };
+		70C1EF6E08C3967700F50912 /* cCPUTestInfo.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCPUTestInfo.h; sourceTree = "<group>"; };
+		70C1EF7108C3968700F50912 /* cCPUTestInfo.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCPUTestInfo.cc; sourceTree = "<group>"; };
+		70C1EF8A08C39BB700F50912 /* cHardware4Stack.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardware4Stack.h; sourceTree = "<group>"; };
+		70C1EF8B08C39BC500F50912 /* cHardware4Stack.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardware4Stack.cc; sourceTree = "<group>"; };
+		70C1EF9D08C39F0E00F50912 /* cHardware4Stack_Thread.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardware4Stack_Thread.h; sourceTree = "<group>"; };
+		70C1EF9E08C39F0E00F50912 /* cHardwareBase.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareBase.h; sourceTree = "<group>"; };
+		70C1EF9F08C39F0E00F50912 /* cHardwareCPU_Thread.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareCPU_Thread.h; sourceTree = "<group>"; };
+		70C1EFA008C39F0E00F50912 /* cHardwareCPU.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareCPU.h; sourceTree = "<group>"; };
+		70C1EFA108C39F0E00F50912 /* cHardwareFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareFactory.h; sourceTree = "<group>"; };
+		70C1EFA208C39F2100F50912 /* cHardware4Stack_Thread.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardware4Stack_Thread.cc; sourceTree = "<group>"; };
+		70C1EFA308C39F2100F50912 /* cHardwareBase.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareBase.cc; sourceTree = "<group>"; };
+		70C1EFA408C39F2100F50912 /* cHardwareCPU_Thread.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareCPU_Thread.cc; sourceTree = "<group>"; };
+		70C1EFA508C39F2100F50912 /* cHardwareCPU.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareCPU.cc; sourceTree = "<group>"; };
+		70C1EFA608C39F2100F50912 /* cHardwareFactory.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareFactory.cc; sourceTree = "<group>"; };
+		70C1F01308C3C6FC00F50912 /* cHardwareSMT_Thread.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareSMT_Thread.h; sourceTree = "<group>"; };
+		70C1F01408C3C6FC00F50912 /* cHardwareSMT.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareSMT.h; sourceTree = "<group>"; };
+		70C1F01508C3C6FC00F50912 /* cHardwareStatusPrinter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareStatusPrinter.h; sourceTree = "<group>"; };
+		70C1F01608C3C6FC00F50912 /* cHardwareTracer_4Stack.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareTracer_4Stack.h; sourceTree = "<group>"; };
+		70C1F01708C3C6FC00F50912 /* cHardwareTracer_CPU.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareTracer_CPU.h; sourceTree = "<group>"; };
+		70C1F01808C3C6FC00F50912 /* cHardwareTracer_TestCPU.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareTracer_TestCPU.h; sourceTree = "<group>"; };
+		70C1F01908C3C6FC00F50912 /* cHardwareTracer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareTracer.h; sourceTree = "<group>"; };
+		70C1F01A08C3C6FC00F50912 /* cHardwareUtil.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareUtil.h; sourceTree = "<group>"; };
+		70C1F01B08C3C6FC00F50912 /* cHeadCPU.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHeadCPU.h; sourceTree = "<group>"; };
+		70C1F01C08C3C6FC00F50912 /* cHeadMultiMem.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHeadMultiMem.h; sourceTree = "<group>"; };
+		70C1F01D08C3C6FC00F50912 /* cInstLibCPU.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInstLibCPU.h; sourceTree = "<group>"; };
+		70C1F01E08C3C6FC00F50912 /* cMemoryFlags.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMemoryFlags.h; sourceTree = "<group>"; };
+		70C1F01F08C3C6FC00F50912 /* cTestCPU.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTestCPU.h; sourceTree = "<group>"; };
+		70C1F02008C3C6FC00F50912 /* cTestUtil.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTestUtil.h; sourceTree = "<group>"; };
+		70C1F02108C3C6FC00F50912 /* nHardwareSMT.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = nHardwareSMT.h; sourceTree = "<group>"; };
+		70C1F02208C3C71300F50912 /* cHardwareSMT_Thread.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareSMT_Thread.cc; sourceTree = "<group>"; };
+		70C1F02308C3C71300F50912 /* cHardwareSMT.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareSMT.cc; sourceTree = "<group>"; };
+		70C1F02408C3C71300F50912 /* cHardwareStatusPrinter.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareStatusPrinter.cc; sourceTree = "<group>"; };
+		70C1F02508C3C71300F50912 /* cHardwareUtil.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareUtil.cc; sourceTree = "<group>"; };
+		70C1F02608C3C71300F50912 /* cHeadCPU.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHeadCPU.cc; sourceTree = "<group>"; };
+		70C1F02708C3C71300F50912 /* cHeadMultiMem.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHeadMultiMem.cc; sourceTree = "<group>"; };
+		70C1F02808C3C71300F50912 /* cTestCPU.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTestCPU.cc; sourceTree = "<group>"; };
+		70C1F02908C3C71300F50912 /* cTestUtil.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTestUtil.cc; sourceTree = "<group>"; };
+		70C1F06108C3CDEA00F50912 /* nHardware4Stack.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = nHardware4Stack.h; sourceTree = "<group>"; };
+		70C1F0A808C3FF1800F50912 /* nHardware.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nHardware.h; sourceTree = "<group>"; };
+		70C1F0C608C4012700F50912 /* nHardware-fixups.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "nHardware-fixups.h"; sourceTree = "<group>"; };
+		70C1F0C708C4012700F50912 /* nHardware-fixups.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "nHardware-fixups.cc"; sourceTree = "<group>"; };
+		70C1F0FC08C40B1B00F50912 /* nHardwareCPU.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = nHardwareCPU.h; sourceTree = "<group>"; };
+		70C1F10008C40BEF00F50912 /* nHardware.pyste */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = nHardware.pyste; sourceTree = "<group>"; };
+		70C1F10F08C40D2D00F50912 /* nHardwareCPU-fixups.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = "nHardwareCPU-fixups.cc"; sourceTree = "<group>"; };
+		70C1F11008C40D2D00F50912 /* nHardwareCPU-fixups.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = "nHardwareCPU-fixups.h"; sourceTree = "<group>"; };
+		70C1F11108C40D6100F50912 /* nHardwareCPU.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = nHardwareCPU.pyste; sourceTree = "<group>"; };
 		70CBFCEF0815E8370078D8CC /* change_list.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = change_list.cc; sourceTree = "<group>"; };
 		70CBFCF00815E8370078D8CC /* change_list.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = change_list.hh; sourceTree = "<group>"; };
 		70CD471B089692200070D2DF /* AvidaEd-osx.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = "AvidaEd-osx.py"; sourceTree = "<group>"; };
@@ -581,9 +617,6 @@
 		70CD47D0089692210070D2DF /* setup_osx.py.in */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = setup_osx.py.in; sourceTree = "<group>"; };
 		70CD47DA089692AE0070D2DF /* AvidaPyste.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = AvidaPyste.py; sourceTree = "<group>"; };
 		70CD47DB089692AE0070D2DF /* change_list.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = change_list.pyste; sourceTree = "<group>"; };
-		70CD47DC089692AE0070D2DF /* cpu_defs-fixups.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = "cpu_defs-fixups.cc"; sourceTree = "<group>"; };
-		70CD47DD089692AE0070D2DF /* cpu_defs-fixups.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = "cpu_defs-fixups.hh"; sourceTree = "<group>"; };
-		70CD47DE089692AE0070D2DF /* cpu_defs.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = cpu_defs.pyste; sourceTree = "<group>"; };
 		70CD47DF089692AE0070D2DF /* cpu_head-fixups.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = "cpu_head-fixups.cc"; sourceTree = "<group>"; };
 		70CD47E0089692AE0070D2DF /* cpu_head-fixups.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = "cpu_head-fixups.hh"; sourceTree = "<group>"; };
 		70CD47E1089692AE0070D2DF /* cpu_memory-fixups.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = "cpu_memory-fixups.cc"; sourceTree = "<group>"; };
@@ -602,7 +635,6 @@
 		70CD47EE089692AE0070D2DF /* test_cpu-fixups.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = "test_cpu-fixups.hh"; sourceTree = "<group>"; };
 		70CD47EF089692AE0070D2DF /* tVector_instantiations.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = tVector_instantiations.hh; sourceTree = "<group>"; };
 		70CD47F0089692AE0070D2DF /* tVector.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = tVector.pyste; sourceTree = "<group>"; };
-		70CD482C089702880070D2DF /* Avida-ED-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Avida-ED-Info.plist"; sourceTree = "<group>"; };
 		70FB868608BFA02D00BDF589 /* tHashTable.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = tHashTable.hh; sourceTree = "<group>"; };
 		70FB86A908BFAFEC00BDF589 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		DCC30D300762539B008F7A48 /* 4stack_head.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = 4stack_head.pyste; sourceTree = "<group>"; };
@@ -811,42 +843,8 @@
 		DCC30F790762539D008F7A48 /* weighted_index.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = weighted_index.pyste; sourceTree = "<group>"; };
 		DCC30F7A0762539D008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		DCC30F7B0762539D008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		DCC30FA70762539D008F7A48 /* head_multi_mem.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = head_multi_mem.cc; sourceTree = "<group>"; };
-		DCC30FA80762539D008F7A48 /* head_multi_mem.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = head_multi_mem.hh; sourceTree = "<group>"; };
 		DCC30FA90762539D008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		DCC30FAA0762539D008F7A48 /* code_label.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = code_label.cc; sourceTree = "<group>"; };
-		DCC30FAB0762539D008F7A48 /* code_label.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = code_label.hh; sourceTree = "<group>"; };
 		DCC30FAC0762539D008F7A48 /* cpu.pri */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = cpu.pri; sourceTree = "<group>"; };
-		DCC30FAD0762539D008F7A48 /* cpu_defs.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = cpu_defs.hh; sourceTree = "<group>"; };
-		DCC30FB00762539D008F7A48 /* cpu_memory.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cpu_memory.cc; sourceTree = "<group>"; };
-		DCC30FB10762539D008F7A48 /* cpu_memory.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = cpu_memory.hh; sourceTree = "<group>"; };
-		DCC30FB20762539D008F7A48 /* cpu_stack.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cpu_stack.cc; sourceTree = "<group>"; };
-		DCC30FB30762539D008F7A48 /* cpu_stack.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = cpu_stack.hh; sourceTree = "<group>"; };
-		DCC30FB40762539D008F7A48 /* cpu_stats.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = cpu_stats.hh; sourceTree = "<group>"; };
-		DCC30FB50762539D008F7A48 /* cpu_test_info.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cpu_test_info.cc; sourceTree = "<group>"; };
-		DCC30FB60762539D008F7A48 /* cpu_test_info.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = cpu_test_info.hh; sourceTree = "<group>"; };
-		DCC30FB70762539D008F7A48 /* hardware_4stack.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = hardware_4stack.cc; sourceTree = "<group>"; };
-		DCC30FB80762539D008F7A48 /* hardware_4stack.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = hardware_4stack.hh; sourceTree = "<group>"; };
-		DCC30FB90762539D008F7A48 /* hardware_4stack_constants.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = hardware_4stack_constants.hh; sourceTree = "<group>"; };
-		DCC30FBA0762539D008F7A48 /* hardware_4stack_thread.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = hardware_4stack_thread.cc; sourceTree = "<group>"; };
-		DCC30FBB0762539D008F7A48 /* hardware_4stack_thread.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = hardware_4stack_thread.hh; sourceTree = "<group>"; };
-		DCC30FBC0762539D008F7A48 /* hardware_base.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = hardware_base.cc; sourceTree = "<group>"; };
-		DCC30FBD0762539D008F7A48 /* hardware_base.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = hardware_base.hh; sourceTree = "<group>"; };
-		DCC30FBE0762539D008F7A48 /* hardware_cpu.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = hardware_cpu.cc; sourceTree = "<group>"; };
-		DCC30FBF0762539D008F7A48 /* hardware_cpu.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = hardware_cpu.hh; sourceTree = "<group>"; };
-		DCC30FC00762539D008F7A48 /* hardware_cpu_thread.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = hardware_cpu_thread.cc; sourceTree = "<group>"; };
-		DCC30FC10762539D008F7A48 /* hardware_cpu_thread.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = hardware_cpu_thread.hh; sourceTree = "<group>"; };
-		DCC30FC20762539D008F7A48 /* hardware_factory.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = hardware_factory.cc; sourceTree = "<group>"; };
-		DCC30FC30762539D008F7A48 /* hardware_factory.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = hardware_factory.hh; sourceTree = "<group>"; };
-		DCC30FC40762539D008F7A48 /* hardware_util.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = hardware_util.cc; sourceTree = "<group>"; };
-		DCC30FC50762539D008F7A48 /* hardware_util.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = hardware_util.hh; sourceTree = "<group>"; };
-		DCC30FC60762539D008F7A48 /* inst_lib_cpu.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = inst_lib_cpu.hh; sourceTree = "<group>"; };
-		DCC30FC80762539D008F7A48 /* memory_flags.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = memory_flags.cc; sourceTree = "<group>"; };
-		DCC30FC90762539D008F7A48 /* memory_flags.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = memory_flags.hh; sourceTree = "<group>"; };
-		DCC30FCA0762539D008F7A48 /* test_cpu.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = test_cpu.cc; sourceTree = "<group>"; };
-		DCC30FCB0762539D008F7A48 /* test_cpu.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = test_cpu.hh; sourceTree = "<group>"; };
-		DCC30FCC0762539D008F7A48 /* test_util.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = test_util.cc; sourceTree = "<group>"; };
-		DCC30FCD0762539D008F7A48 /* test_util.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = test_util.hh; sourceTree = "<group>"; };
 		DCC30FCE0762539D008F7A48 /* defs.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = defs.hh; sourceTree = "<group>"; };
 		DCC30FCF0762539D008F7A48 /* Doxyfile */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = Doxyfile; sourceTree = "<group>"; };
 		DCC30FEB0762539D008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
@@ -1679,7 +1677,6 @@
 				DCC3164E07626CF3008F7A48 /* Products */,
 				70658C59085DF67D00486BED /* libncurses.5.4.dylib */,
 				703F684207B437B800C1CA76 /* status.xml */,
-				70CD482C089702880070D2DF /* Avida-ED-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1718,11 +1715,11 @@
 		DCC30C750762539A008F7A48 /* Boost.Python */ = {
 			isa = PBXGroup;
 			children = (
+				70C1F11108C40D6100F50912 /* nHardwareCPU.pyste */,
+				70C1F10F08C40D2D00F50912 /* nHardwareCPU-fixups.cc */,
+				70C1F11008C40D2D00F50912 /* nHardwareCPU-fixups.h */,
 				70CD47DA089692AE0070D2DF /* AvidaPyste.py */,
 				70CD47DB089692AE0070D2DF /* change_list.pyste */,
-				70CD47DC089692AE0070D2DF /* cpu_defs-fixups.cc */,
-				70CD47DD089692AE0070D2DF /* cpu_defs-fixups.hh */,
-				70CD47DE089692AE0070D2DF /* cpu_defs.pyste */,
 				70CD47DF089692AE0070D2DF /* cpu_head-fixups.cc */,
 				70CD47E0089692AE0070D2DF /* cpu_head-fixups.hh */,
 				70CD47E1089692AE0070D2DF /* cpu_memory-fixups.cc */,
@@ -1916,6 +1913,9 @@
 				DCC30F770762539D008F7A48 /* tools.pyste */,
 				DCC30F780762539D008F7A48 /* uint.pyste */,
 				DCC30F790762539D008F7A48 /* weighted_index.pyste */,
+				70C1F0C608C4012700F50912 /* nHardware-fixups.h */,
+				70C1F0C708C4012700F50912 /* nHardware-fixups.cc */,
+				70C1F10008C40BEF00F50912 /* nHardware.pyste */,
 			);
 			path = Boost.Python;
 			sourceTree = "<group>";
@@ -1968,55 +1968,55 @@
 		DCC30F7C0762539D008F7A48 /* cpu */ = {
 			isa = PBXGroup;
 			children = (
+				70C1F0FC08C40B1B00F50912 /* nHardwareCPU.h */,
+				70C1F0A808C3FF1800F50912 /* nHardware.h */,
+				70C1F06108C3CDEA00F50912 /* nHardware4Stack.h */,
+				70C1F02208C3C71300F50912 /* cHardwareSMT_Thread.cc */,
+				70C1F02308C3C71300F50912 /* cHardwareSMT.cc */,
+				70C1F02408C3C71300F50912 /* cHardwareStatusPrinter.cc */,
+				70C1F02508C3C71300F50912 /* cHardwareUtil.cc */,
+				70C1F02608C3C71300F50912 /* cHeadCPU.cc */,
+				70C1F02708C3C71300F50912 /* cHeadMultiMem.cc */,
+				70C1F02808C3C71300F50912 /* cTestCPU.cc */,
+				70C1F02908C3C71300F50912 /* cTestUtil.cc */,
+				70C1F01308C3C6FC00F50912 /* cHardwareSMT_Thread.h */,
+				70C1F01408C3C6FC00F50912 /* cHardwareSMT.h */,
+				70C1F01508C3C6FC00F50912 /* cHardwareStatusPrinter.h */,
+				70C1F01608C3C6FC00F50912 /* cHardwareTracer_4Stack.h */,
+				70C1F01708C3C6FC00F50912 /* cHardwareTracer_CPU.h */,
+				70C1F01808C3C6FC00F50912 /* cHardwareTracer_TestCPU.h */,
+				70C1F01908C3C6FC00F50912 /* cHardwareTracer.h */,
+				70C1F01A08C3C6FC00F50912 /* cHardwareUtil.h */,
+				70C1F01B08C3C6FC00F50912 /* cHeadCPU.h */,
+				70C1F01C08C3C6FC00F50912 /* cHeadMultiMem.h */,
+				70C1F01D08C3C6FC00F50912 /* cInstLibCPU.h */,
+				70C1F01E08C3C6FC00F50912 /* cMemoryFlags.h */,
+				70C1F01F08C3C6FC00F50912 /* cTestCPU.h */,
+				70C1F02008C3C6FC00F50912 /* cTestUtil.h */,
+				70C1F02108C3C6FC00F50912 /* nHardwareSMT.h */,
+				70C1EFA208C39F2100F50912 /* cHardware4Stack_Thread.cc */,
+				70C1EFA308C39F2100F50912 /* cHardwareBase.cc */,
+				70C1EFA408C39F2100F50912 /* cHardwareCPU_Thread.cc */,
+				70C1EFA508C39F2100F50912 /* cHardwareCPU.cc */,
+				70C1EFA608C39F2100F50912 /* cHardwareFactory.cc */,
+				70C1EF9D08C39F0E00F50912 /* cHardware4Stack_Thread.h */,
+				70C1EF9E08C39F0E00F50912 /* cHardwareBase.h */,
+				70C1EF9F08C39F0E00F50912 /* cHardwareCPU_Thread.h */,
+				70C1EFA008C39F0E00F50912 /* cHardwareCPU.h */,
+				70C1EFA108C39F0E00F50912 /* cHardwareFactory.h */,
+				70C1EF8B08C39BC500F50912 /* cHardware4Stack.cc */,
+				70C1EF8A08C39BB700F50912 /* cHardware4Stack.h */,
+				70C1EF7108C3968700F50912 /* cCPUTestInfo.cc */,
+				70C1EF6E08C3967700F50912 /* cCPUTestInfo.h */,
+				70C1EF6708C395D300F50912 /* sCPUStats.h */,
+				70C1EF6108C3954700F50912 /* cCPUStack.cc */,
+				70C1EF6008C3953A00F50912 /* cCPUStack.h */,
+				70C1EF5B08C3949A00F50912 /* cCPUMemory.h */,
+				70C1EF5808C3948C00F50912 /* cCPUMemory.cc */,
+				70C1EF4608C393BA00F50912 /* cCodeLabel.cc */,
+				70C1EF4708C393BA00F50912 /* cCodeLabel.h */,
 				DCC30FA90762539D008F7A48 /* CMakeLists.txt */,
-				DCC30FAA0762539D008F7A48 /* code_label.cc */,
-				DCC30FAB0762539D008F7A48 /* code_label.hh */,
 				DCC30FAC0762539D008F7A48 /* cpu.pri */,
-				DCC30FAD0762539D008F7A48 /* cpu_defs.hh */,
-				DCC30FB00762539D008F7A48 /* cpu_memory.cc */,
-				DCC30FB10762539D008F7A48 /* cpu_memory.hh */,
-				DCC30FB20762539D008F7A48 /* cpu_stack.cc */,
-				DCC30FB30762539D008F7A48 /* cpu_stack.hh */,
-				DCC30FB40762539D008F7A48 /* cpu_stats.hh */,
-				DCC30FB50762539D008F7A48 /* cpu_test_info.cc */,
-				DCC30FB60762539D008F7A48 /* cpu_test_info.hh */,
-				DCC30FB70762539D008F7A48 /* hardware_4stack.cc */,
-				DCC30FB80762539D008F7A48 /* hardware_4stack.hh */,
-				DCC30FB90762539D008F7A48 /* hardware_4stack_constants.hh */,
-				DCC30FBA0762539D008F7A48 /* hardware_4stack_thread.cc */,
-				DCC30FBB0762539D008F7A48 /* hardware_4stack_thread.hh */,
-				DCC30FBC0762539D008F7A48 /* hardware_base.cc */,
-				DCC30FBD0762539D008F7A48 /* hardware_base.hh */,
-				DCC30FBE0762539D008F7A48 /* hardware_cpu.cc */,
-				DCC30FBF0762539D008F7A48 /* hardware_cpu.hh */,
-				DCC30FC00762539D008F7A48 /* hardware_cpu_thread.cc */,
-				DCC30FC10762539D008F7A48 /* hardware_cpu_thread.hh */,
-				DCC30FC20762539D008F7A48 /* hardware_factory.cc */,
-				DCC30FC30762539D008F7A48 /* hardware_factory.hh */,
-				706D30FB0852363400D7DC8F /* hardware_smt.h */,
-				706D30FC0852363400D7DC8F /* hardware_smt.cc */,
-				706D3170085248F800D7DC8F /* hardware_smt_constants.h */,
-				706D30FF0852366400D7DC8F /* hardware_smt_thread.h */,
-				706D31000852366400D7DC8F /* hardware_smt_thread.cc */,
-				70CBFCE80815E7FE0078D8CC /* hardware_status_printer.cc */,
-				70CBFCE90815E7FE0078D8CC /* hardware_status_printer.hh */,
-				70CBFCEA0815E7FE0078D8CC /* hardware_tracer_4stack.hh */,
-				70CBFCEB0815E7FE0078D8CC /* hardware_tracer_cpu.hh */,
-				70CBFCEC0815E7FE0078D8CC /* hardware_tracer_test_cpu.hh */,
-				70CBFCED0815E7FE0078D8CC /* hardware_tracer.hh */,
-				DCC30FC40762539D008F7A48 /* hardware_util.cc */,
-				DCC30FC50762539D008F7A48 /* hardware_util.hh */,
-				706D3155085243CD00D7DC8F /* head_cpu.cc */,
-				706D3156085243CD00D7DC8F /* head_cpu.hh */,
-				DCC30FA70762539D008F7A48 /* head_multi_mem.cc */,
-				DCC30FA80762539D008F7A48 /* head_multi_mem.hh */,
-				DCC30FC60762539D008F7A48 /* inst_lib_cpu.hh */,
-				DCC30FC80762539D008F7A48 /* memory_flags.cc */,
-				DCC30FC90762539D008F7A48 /* memory_flags.hh */,
-				DCC30FCA0762539D008F7A48 /* test_cpu.cc */,
-				DCC30FCB0762539D008F7A48 /* test_cpu.hh */,
-				DCC30FCC0762539D008F7A48 /* test_util.cc */,
-				DCC30FCD0762539D008F7A48 /* test_util.hh */,
 				706D30CC0852328F00D7DC8F /* tInstLib.h */,
 			);
 			path = cpu;
@@ -2942,7 +2942,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 700E2B7E085DE50C00CF158A /* Build configuration list for PBXNativeTarget "viewer" */;
 			buildPhases = (
-				70CD485A08971DE50070D2DF /* ShellScript */,
 				700E2AF4085DE50C00CF158A /* Sources */,
 				700E2B6C085DE50C00CF158A /* Frameworks */,
 				700E2B6D085DE50C00CF158A /* CopyFiles */,
@@ -3039,22 +3038,6 @@
 		};
 /* End PBXProject section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		70CD485A08971DE50070D2DF /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "printenv\n";
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
 		700E2AF4085DE50C00CF158A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -3122,21 +3105,6 @@
 				700E2B31085DE50C00CF158A /* event_list_iterator.cc in Sources */,
 				700E2B32085DE50C00CF158A /* event_triggers.cc in Sources */,
 				700E2B33085DE50C00CF158A /* population_event_factory.cc in Sources */,
-				700E2B34085DE50C00CF158A /* head_multi_mem.cc in Sources */,
-				700E2B35085DE50C00CF158A /* code_label.cc in Sources */,
-				700E2B36085DE50C00CF158A /* cpu_memory.cc in Sources */,
-				700E2B37085DE50C00CF158A /* cpu_stack.cc in Sources */,
-				700E2B38085DE50C00CF158A /* cpu_test_info.cc in Sources */,
-				700E2B39085DE50C00CF158A /* hardware_4stack.cc in Sources */,
-				700E2B3A085DE50C00CF158A /* hardware_4stack_thread.cc in Sources */,
-				700E2B3B085DE50C00CF158A /* hardware_base.cc in Sources */,
-				700E2B3C085DE50C00CF158A /* hardware_cpu.cc in Sources */,
-				700E2B3D085DE50C00CF158A /* hardware_cpu_thread.cc in Sources */,
-				700E2B3E085DE50C00CF158A /* hardware_factory.cc in Sources */,
-				700E2B3F085DE50C00CF158A /* hardware_util.cc in Sources */,
-				700E2B40085DE50C00CF158A /* memory_flags.cc in Sources */,
-				700E2B41085DE50C00CF158A /* test_cpu.cc in Sources */,
-				700E2B42085DE50C00CF158A /* test_util.cc in Sources */,
 				700E2B43085DE50C00CF158A /* weighted_index.cc in Sources */,
 				700E2B44085DE50C00CF158A /* tools.cc in Sources */,
 				700E2B45085DE50C00CF158A /* block_struct.cc in Sources */,
@@ -3173,11 +3141,7 @@
 				700E2B64085DE50C00CF158A /* string_iterator.cc in Sources */,
 				700E2B65085DE50C00CF158A /* string_list.cc in Sources */,
 				700E2B66085DE50C00CF158A /* string_util.cc in Sources */,
-				700E2B67085DE50C00CF158A /* hardware_status_printer.cc in Sources */,
 				700E2B68085DE50C00CF158A /* change_list.cc in Sources */,
-				700E2B69085DE50C00CF158A /* head_cpu.cc in Sources */,
-				700E2B6A085DE50C00CF158A /* hardware_smt_thread.cc in Sources */,
-				700E2B6B085DE50C00CF158A /* hardware_smt.cc in Sources */,
 				70658C35085DE5D800486BED /* ansi.cc in Sources */,
 				70658C36085DE5D900486BED /* bar_screen.cc in Sources */,
 				70658C38085DE5DC00486BED /* environment_screen.cc in Sources */,
@@ -3192,6 +3156,24 @@
 				70658C41085DE5E900486BED /* view.cc in Sources */,
 				70658C42085DE5EA00486BED /* viewer.cc in Sources */,
 				70658C43085DE5ED00486BED /* zoom_screen.cc in Sources */,
+				70C1EF4A08C393BA00F50912 /* cCodeLabel.cc in Sources */,
+				70C1EF5A08C3948C00F50912 /* cCPUMemory.cc in Sources */,
+				70C1EF6308C3954700F50912 /* cCPUStack.cc in Sources */,
+				70C1EF7308C3968700F50912 /* cCPUTestInfo.cc in Sources */,
+				70C1EF8D08C39BC500F50912 /* cHardware4Stack.cc in Sources */,
+				70C1EFAC08C39F2100F50912 /* cHardware4Stack_Thread.cc in Sources */,
+				70C1EFAD08C39F2100F50912 /* cHardwareBase.cc in Sources */,
+				70C1EFAE08C39F2100F50912 /* cHardwareCPU_Thread.cc in Sources */,
+				70C1EFAF08C39F2100F50912 /* cHardwareCPU.cc in Sources */,
+				70C1EFB008C39F2100F50912 /* cHardwareFactory.cc in Sources */,
+				70C1F03208C3C71300F50912 /* cHardwareSMT_Thread.cc in Sources */,
+				70C1F03308C3C71300F50912 /* cHardwareSMT.cc in Sources */,
+				70C1F03408C3C71300F50912 /* cHardwareStatusPrinter.cc in Sources */,
+				70C1F03508C3C71300F50912 /* cHardwareUtil.cc in Sources */,
+				70C1F03608C3C71300F50912 /* cHeadCPU.cc in Sources */,
+				70C1F03708C3C71300F50912 /* cHeadMultiMem.cc in Sources */,
+				70C1F03808C3C71300F50912 /* cTestCPU.cc in Sources */,
+				70C1F03908C3C71300F50912 /* cTestUtil.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3261,21 +3243,6 @@
 				DCC3169E076285C5008F7A48 /* event_list_iterator.cc in Sources */,
 				DCC3169F076285C6008F7A48 /* event_triggers.cc in Sources */,
 				DCC316A1076285C8008F7A48 /* population_event_factory.cc in Sources */,
-				DCC316A2076285D1008F7A48 /* head_multi_mem.cc in Sources */,
-				DCC316A3076285D2008F7A48 /* code_label.cc in Sources */,
-				DCC316A5076285D5008F7A48 /* cpu_memory.cc in Sources */,
-				DCC316A6076285D5008F7A48 /* cpu_stack.cc in Sources */,
-				DCC316A7076285D6008F7A48 /* cpu_test_info.cc in Sources */,
-				DCC316A8076285D7008F7A48 /* hardware_4stack.cc in Sources */,
-				DCC316A9076285D8008F7A48 /* hardware_4stack_thread.cc in Sources */,
-				DCC316AA076285D9008F7A48 /* hardware_base.cc in Sources */,
-				DCC316AB076285DA008F7A48 /* hardware_cpu.cc in Sources */,
-				DCC316AC076285DB008F7A48 /* hardware_cpu_thread.cc in Sources */,
-				DCC316AD076285DC008F7A48 /* hardware_factory.cc in Sources */,
-				DCC316AE076285DD008F7A48 /* hardware_util.cc in Sources */,
-				DCC316AF076285DF008F7A48 /* memory_flags.cc in Sources */,
-				DCC316B0076285DF008F7A48 /* test_cpu.cc in Sources */,
-				DCC316B1076285E0008F7A48 /* test_util.cc in Sources */,
 				DCC316B807628742008F7A48 /* weighted_index.cc in Sources */,
 				DCC316B907628744008F7A48 /* tools.cc in Sources */,
 				DCC316BA07628749008F7A48 /* block_struct.cc in Sources */,
@@ -3312,15 +3279,29 @@
 				DCC316D90762876C008F7A48 /* string_iterator.cc in Sources */,
 				DCC316DA0762876E008F7A48 /* string_list.cc in Sources */,
 				DCC316DB0762876F008F7A48 /* string_util.cc in Sources */,
-				70CBFCEE0815E7FE0078D8CC /* hardware_status_printer.cc in Sources */,
 				70CBFCF10815E8370078D8CC /* change_list.cc in Sources */,
-				706D3157085243CD00D7DC8F /* head_cpu.cc in Sources */,
-				706D31650852475D00D7DC8F /* hardware_smt_thread.cc in Sources */,
-				706D31660852475E00D7DC8F /* hardware_smt.cc in Sources */,
 				70658C44085DE5FF00486BED /* primitive.cc in Sources */,
 				70D46934085F61DA004C8409 /* trio.c in Sources */,
 				70D46935085F61DD004C8409 /* trionan.c in Sources */,
 				70D46936085F61DF004C8409 /* triostr.c in Sources */,
+				70C1EF4808C393BA00F50912 /* cCodeLabel.cc in Sources */,
+				70C1EF5908C3948C00F50912 /* cCPUMemory.cc in Sources */,
+				70C1EF6208C3954700F50912 /* cCPUStack.cc in Sources */,
+				70C1EF7208C3968700F50912 /* cCPUTestInfo.cc in Sources */,
+				70C1EF8C08C39BC500F50912 /* cHardware4Stack.cc in Sources */,
+				70C1EFA708C39F2100F50912 /* cHardware4Stack_Thread.cc in Sources */,
+				70C1EFA808C39F2100F50912 /* cHardwareBase.cc in Sources */,
+				70C1EFA908C39F2100F50912 /* cHardwareCPU_Thread.cc in Sources */,
+				70C1EFAA08C39F2100F50912 /* cHardwareCPU.cc in Sources */,
+				70C1EFAB08C39F2100F50912 /* cHardwareFactory.cc in Sources */,
+				70C1F02A08C3C71300F50912 /* cHardwareSMT_Thread.cc in Sources */,
+				70C1F02B08C3C71300F50912 /* cHardwareSMT.cc in Sources */,
+				70C1F02C08C3C71300F50912 /* cHardwareStatusPrinter.cc in Sources */,
+				70C1F02D08C3C71300F50912 /* cHardwareUtil.cc in Sources */,
+				70C1F02E08C3C71300F50912 /* cHeadCPU.cc in Sources */,
+				70C1F02F08C3C71300F50912 /* cHeadMultiMem.cc in Sources */,
+				70C1F03008C3C71300F50912 /* cTestCPU.cc in Sources */,
+				70C1F03108C3C71300F50912 /* cTestUtil.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

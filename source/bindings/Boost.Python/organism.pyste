@@ -1,8 +1,8 @@
 
 Include("environment.hh")
 Include("inject_genotype.hh")
-Include("hardware_base.hh")
-Include("code_label.hh")
+Include("cHardwareBase.h")
+Include("cCodeLabel.h")
 Include("org_message.hh")
 Include("genotype.hh")
 Include("lineage.hh")

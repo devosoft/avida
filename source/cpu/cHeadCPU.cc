@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef HEAD_CPU_HH
-#include "head_cpu.hh"
+#include "cHeadCPU.h"
 #endif
 
 #ifndef CPU_MEMORY_HH

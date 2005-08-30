@@ -1,4 +1,5 @@
-from AvidaCore import cCPUDefs
+from AvidaCore import cHardwareDefs
+from AvidaCore import cHardwareCPUDefs
 
 class pyHardwareCPUTrace:
   def __init__(self):
@@ -29,14 +30,14 @@ class pyHardwareCPUTrace:
 
   def recordFrame(self, hardware):
     self.m_genome_info.append(hardware.GetMemory().AsString().GetData())
-    self.m_ihead_info.append(hardware.GetHead(cCPUDefs.s_HEAD_IP).GetPosition())
-    self.m_rhead_info.append(hardware.GetHead(cCPUDefs.s_HEAD_READ).GetPosition())
-    self.m_whead_info.append(hardware.GetHead(cCPUDefs.s_HEAD_WRITE).GetPosition())
-    self.m_fhead_info.append(hardware.GetHead(cCPUDefs.s_HEAD_FLOW).GetPosition())
+    self.m_ihead_info.append(hardware.GetHead(cHardwareDefs.s_HEAD_IP).GetPosition())
+    self.m_rhead_info.append(hardware.GetHead(cHardwareDefs.s_HEAD_READ).GetPosition())
+    self.m_whead_info.append(hardware.GetHead(cHardwareDefs.s_HEAD_WRITE).GetPosition())
+    self.m_fhead_info.append(hardware.GetHead(cHardwareDefs.s_HEAD_FLOW).GetPosition())
     self.m_tasks_info.append(hardware.GetOrganism().GetPhenotype().GetCurTaskCount())
-    self.m_register_ax_info.append(hardware.GetRegister(cCPUDefs.s_REG_AX))
-    self.m_register_bx_info.append(hardware.GetRegister(cCPUDefs.s_REG_BX))
-    self.m_register_cx_info.append(hardware.GetRegister(cCPUDefs.s_REG_CX))
+    self.m_register_ax_info.append(hardware.GetRegister(cHardwareCPUDefs.s_REG_AX))
+    self.m_register_bx_info.append(hardware.GetRegister(cHardwareCPUDefs.s_REG_BX))
+    self.m_register_cx_info.append(hardware.GetRegister(cHardwareCPUDefs.s_REG_CX))
     self.m_read_label_info.append(hardware.GetReadLabel().AsString().GetData())
 
     self.m_last_copied_instruction = max(

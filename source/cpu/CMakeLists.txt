@@ -9,15 +9,14 @@ SET(libcpu_a_SOURCES
   cHardwareCPU.cc
   cHardwareCPU_Thread.cc
   cHardwareFactory.cc
-  hardware_smt.cc
-  hardware_smt_thread.cc
-  hardware_status_printer.cc
-  hardware_util.cc
-  head_cpu.cc
-  head_multi_mem.cc
-  memory_flags.cc
-  test_cpu.cc
-  test_util.cc
+  cHardwareSMT.cc
+  cHardwareSMT_Thread.cc
+  cHardwareStatusPrinter.cc
+  cHardwareUtil.cc
+  cHeadCPU.cc
+  cHeadMultiMem.cc
+  cTestCPU.cc
+  cTestUtil.cc
 )
 
 INCLUDE_DIRECTORIES(${ALL_INC_DIRS})

@@ -1,5 +1,5 @@
 /*
- *  hardware_smt_thread.cc
+ *  cHardwareSMT_Thread.cc
  *  Avida2
  *
  *  Created by David on 6/4/05.
@@ -7,7 +7,7 @@
  *
  */
 
-#include "hardware_smt_thread.h"
+#include "cHardwareSMT_Thread.h"
 
 using namespace std;
 
@@ -27,7 +27,7 @@ cHardwareSMT_Thread::cHardwareSMT_Thread(const cHardwareSMT_Thread & in_thread, 
 	for (int i = 0; i < nHardwareSMT::NUM_LOCAL_STACKS; i++) {
 		local_stacks[i] = in_thread.local_stacks[i];
 	}
-	for (int i = 0; i < NUM_HEADS; i++) {
+	for (int i = 0; i < nHardware::NUM_HEADS; i++) {
 		heads[i] = in_thread.heads[i];
 	}
 	owner = in_thread.owner;
@@ -41,7 +41,7 @@ void cHardwareSMT_Thread::operator=(const cHardwareSMT_Thread & in_thread)
   for (int i = 0; i < nHardwareSMT::NUM_LOCAL_STACKS; i++) {
     local_stacks[i] = in_thread.local_stacks[i];
   }
-  for (int i = 0; i < NUM_HEADS; i++) {
+  for (int i = 0; i < nHardware::NUM_HEADS; i++) {
     heads[i] = in_thread.heads[i];
   }
   owner = in_thread.owner;
@@ -52,9 +52,9 @@ void cHardwareSMT_Thread::Reset(cHardwareBase * in_hardware, int _id)
   id = _id;
 	
   for (int i = 0; i < nHardwareSMT::NUM_LOCAL_STACKS; i++) local_stacks[i].Clear();
-  for (int i = 0; i < NUM_HEADS; i++) heads[i].Reset(0, in_hardware);
+  for (int i = 0; i < nHardware::NUM_HEADS; i++) heads[i].Reset(0, in_hardware);
 	
-  cur_head = HEAD_IP;
+  cur_head = nHardware::HEAD_IP;
   read_label.Clear();
   next_label.Clear();
   owner = NULL;
@@ -70,7 +70,7 @@ void cHardwareSMT_Thread::SaveState(ostream & fp){
   }
 	
   // heads (@TCC does not handle parasites!!!)
-  for( int i = 0; i < NUM_HEADS; ++i ){
+  for( int i = 0; i < nHardware::NUM_HEADS; ++i ){
     fp<<heads[i].GetPosition()<<endl;
   }
 	
@@ -95,7 +95,7 @@ void cHardwareSMT_Thread::LoadState(istream & fp){
   }
 	
   // heads (@TCC does not handle parasites!!!)
-  for( int i = 0; i < NUM_HEADS; ++i ){
+  for( int i = 0; i < nHardware::NUM_HEADS; ++i ){
     int pos;
     fp>>pos;
     heads[i].AbsSet(pos);

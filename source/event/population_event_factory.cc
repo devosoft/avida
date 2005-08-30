@@ -73,10 +73,10 @@
 #include "string_util.hh"
 #endif
 #ifndef TEST_CPU_HH
-#include "test_cpu.hh"
+#include "cTestCPU.h"
 #endif
 #ifndef TEST_UTIL_HH
-#include "test_util.hh"
+#include "cTestUtil.h"
 #endif
 #ifndef TOOLS_HH
 #include "tools.hh"

@@ -28,10 +28,10 @@
 #include "genotype.hh"
 #endif
 #ifndef HARDWARE_BASE_HH
-#include "hardware_base.hh"
+#include "cHardwareBase.h"
 #endif
 #ifndef HARDWARE_FACTORY_HH
-#include "hardware_factory.hh"
+#include "cHardwareFactory.h"
 #endif
 #ifndef ORG_MESSAGE_HH
 #include "org_message.hh"
@@ -49,7 +49,7 @@
 #include "population_interface.hh"
 #endif
 #ifndef TEST_CPU_HH
-#include "test_cpu.hh"
+#include "cTestCPU.h"
 #endif
 
 

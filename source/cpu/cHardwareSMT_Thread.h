@@ -1,5 +1,5 @@
 /*
- *  hardware_smt_thread.h
+ *  cHardwareSMT_Thread.h
  *  Avida2
  *
  *  Created by David on 6/4/05.
@@ -19,10 +19,10 @@
 #include "cCPUStack.h"
 #endif
 #ifndef HEAD_MULTI_MEM_HH
-#include "head_multi_mem.hh"
+#include "cHeadMultiMem.h"
 #endif
 #ifndef HARDWARE_SMT_CONSTANTS_H
-#include "hardware_smt_constants.h"
+#include "nHardwareSMT.h"
 #endif
 #ifndef TBUFFER_HH
 #include "tBuffer.hh"
@@ -45,7 +45,7 @@ struct cHardwareSMT_Thread {
 private:
   int id;
 public:
-  cHeadMultiMem heads[NUM_HEADS];
+  cHeadMultiMem heads[nHardware::NUM_HEADS];
   UCHAR cur_head;
   cCPUStack local_stacks[nHardwareSMT::NUM_LOCAL_STACKS];
 	

@@ -1,6 +1,6 @@
 
 Include("mutation.hh")
-Include("inst_lib_cpu.hh")
+Include("cInstLibCPU.h")
 Include("inst_set.hh")
 Include("organism.hh")
 

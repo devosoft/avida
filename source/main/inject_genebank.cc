@@ -25,7 +25,7 @@
 #include "stats.hh"
 #endif
 #ifndef TEST_UTIL_HH
-#include "test_util.hh"
+#include "cTestUtil.h"
 #endif
 
 using namespace std;

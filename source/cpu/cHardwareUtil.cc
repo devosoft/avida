@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef HARDWARE_UTIL_HH
-#include "hardware_util.hh"
+#include "cHardwareUtil.h"
 #endif
 
 #ifndef CONFIG_HH
@@ -22,13 +22,13 @@
 #include "cHardware4Stack.h"
 #endif
 #ifndef HARDWARE_SMT_H
-#include "hardware_smt.h"
+#include "cHardwareSMT.h"
 #endif
 #ifndef INIT_FILE_HH
 #include "init_file.hh"
 #endif
 #ifndef INST_LIB_CPU_HH
-#include "inst_lib_cpu.hh"
+#include "cInstLibCPU.h"
 #endif
 #ifndef INST_SET_HH
 #include "inst_set.hh"

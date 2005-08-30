@@ -1,5 +1,5 @@
 /*
- *  hardware_smt.cc
+ *  cHardwareSMT.cc
  *  Avida2
  *
  *  Created by David on 6/4/05.
@@ -7,7 +7,7 @@
  *
  */
 
-#include "hardware_smt.h"
+#include "cHardwareSMT.h"
 
 #include "config.hh"
 #include "cCPUTestInfo.h"
@@ -15,8 +15,8 @@
 #include "genome_util.hh"
 #include "inst_lib_base.hh"
 #include "inst_set.hh"
-#include "hardware_tracer.hh"
-//#include "hardware_tracer_4stack.hh"
+#include "cHardwareTracer.h"
+//#include "cHardwareTracer_4Stack.h"
 #include "mutation.hh"
 #include "mutation_lib.hh"
 #include "mutation_macros.hh"
@@ -24,7 +24,7 @@
 #include "phenotype.hh"
 #include "random.hh"
 #include "string_util.hh"
-#include "test_cpu.hh"
+#include "cTestCPU.h"
 
 #include <limits.h>
 
@@ -417,12 +417,12 @@ void cHardwareSMT::PrintStatus(ostream & fp)
 	
 	<< endl;
 	
-  fp << "  R-Head:(" << GetHead(HEAD_READ).GetMemSpace() << ", " 
-		<< GetHead(HEAD_READ).GetPosition() << ")  " 
-		<< "W-Head:(" << GetHead(HEAD_WRITE).GetMemSpace()  << ", "
-		<< GetHead(HEAD_WRITE).GetPosition() << ")  "
-		<< "F-Head:(" << GetHead(HEAD_FLOW).GetMemSpace()   << ",  "
-		<< GetHead(HEAD_FLOW).GetPosition() << ")  "
+  fp << "  R-Head:(" << GetHead(nHardware::HEAD_READ).GetMemSpace() << ", " 
+		<< GetHead(nHardware::HEAD_READ).GetPosition() << ")  " 
+		<< "W-Head:(" << GetHead(nHardware::HEAD_WRITE).GetMemSpace()  << ", "
+		<< GetHead(nHardware::HEAD_WRITE).GetPosition() << ")  "
+		<< "F-Head:(" << GetHead(nHardware::HEAD_FLOW).GetMemSpace()   << ",  "
+		<< GetHead(nHardware::HEAD_FLOW).GetPosition() << ")  "
 		<< "RL:" << GetReadLabel().AsString() << "   "
 		<< endl;
 	
@@ -698,7 +698,7 @@ cHeadMultiMem cHardwareSMT::FindLabel(const cCodeLabel & in_label, int direction
 }
 
 // @CAO: direction is not currently used; should be used to indicate the
-// direction which the heads[HEAD_IP] should progress through a creature.
+// direction which the heads[nHardware::HEAD_IP] should progress through a creature.
 cHeadMultiMem cHardwareSMT::FindFullLabel(const cCodeLabel & in_label)
 {
   // cout << "Running FindFullLabel with " << in_label.AsString() <<
@@ -768,8 +768,8 @@ cHeadMultiMem cHardwareSMT::FindFullLabel(const cCodeLabel & in_label)
 // This is the code run by the INFECTED organism.  Its function is to SPREAD infection.
 bool cHardwareSMT::InjectParasite(double mut_multiplier)
 {
-  const int end_pos = GetHead(HEAD_WRITE).GetPosition();
-  const int mem_space_used = GetHead(HEAD_WRITE).GetMemSpace();
+  const int end_pos = GetHead(nHardware::HEAD_WRITE).GetPosition();
+  const int mem_space_used = GetHead(nHardware::HEAD_WRITE).GetMemSpace();
   
   // Make sure the creature will still be above the minimum size,
   // TEMPORARY!  INJECTED CODE CAN 
@@ -815,7 +815,7 @@ bool cHardwareSMT::InjectParasite(double mut_multiplier)
   //reset the memory space which was injected
   GetMemory(mem_space_used)=cGenome(ConvertToInstruction(mem_space_used)); 
 	
-  for(int x=0; x<NUM_HEADS; x++) {
+  for(int x=0; x<nHardware::NUM_HEADS; x++) {
 		GetHead(x).Reset(IP().GetMemSpace(), this);
 	}
 	
@@ -874,13 +874,13 @@ bool cHardwareSMT::InjectHost(const cCodeLabel & in_label, const cGenome & injec
     m_cur_thread=GetNumThreads()-1;
     
     for(int i=0; i<m_cur_thread; i++) {
-      for(int j=0; j < NUM_HEADS; j++) {
+      for(int j=0; j < nHardware::NUM_HEADS; j++) {
 				if(m_threads[i].heads[j].GetMemSpace()==target_mem_space)
 					m_threads[i].heads[j].Jump(inject_code.GetSize());
       }
     }
     
-    for (int i=0; i < NUM_HEADS; i++) {    
+    for (int i=0; i < nHardware::NUM_HEADS; i++) {    
       GetHead(i).Reset(target_mem_space, this);
     }
     for (int i=0; i < nHardwareSMT::NUM_LOCAL_STACKS; i++) {
@@ -1069,7 +1069,7 @@ void cHardwareSMT::ReadInst(const int in_inst)
 void cHardwareSMT::AdjustHeads()
 {
   for (int i = 0; i < GetNumThreads(); i++) {
-    for (int j = 0; j < NUM_HEADS; j++) {
+    for (int j = 0; j < nHardware::NUM_HEADS; j++) {
       m_threads[i].heads[j].Adjust();
     }
   }
@@ -1224,12 +1224,12 @@ inline int cHardwareSMT::FindModifiedStack(int default_stack)
 
 inline int cHardwareSMT::FindModifiedHead(int default_head)
 {
-  assert(default_head < NUM_HEADS); // Head ID too high.
+  assert(default_head < nHardware::NUM_HEADS); // Head ID too high.
 	
   if (GetInstSet().IsNop(IP().GetNextInst())) {
     IP().Advance();    
     int nop_head = GetInstSet().GetNopMod(IP().GetInst());
-    if (nop_head < NUM_HEADS) default_head = nop_head;
+    if (nop_head < nHardware::NUM_HEADS) default_head = nop_head;
     IP().FlagExecuted() = true;
   }
   return default_head;
@@ -1546,8 +1546,8 @@ void cHardwareSMT::Divide_TestFitnessMeasures()
   if (phenotype.CopyTrue() == true) return;
 	
   const double parent_fitness = organism->GetTestFitness();
-  const double neut_min = parent_fitness * FITNESS_NEUTRAL_MIN;
-  const double neut_max = parent_fitness * FITNESS_NEUTRAL_MAX;
+  const double neut_min = parent_fitness * nHardware::FITNESS_NEUTRAL_MIN;
+  const double neut_max = parent_fitness * nHardware::FITNESS_NEUTRAL_MAX;
   
   cCPUTestInfo test_info;
   test_info.UseRandomInputs();
@@ -1591,7 +1591,7 @@ void cHardwareSMT::Divide_TestFitnessMeasures()
 
 bool cHardwareSMT::Divide_Main(int mem_space_used, double mut_multiplier)
 {
-  int write_head_pos = GetHead(HEAD_WRITE).GetPosition();
+  int write_head_pos = GetHead(nHardware::HEAD_WRITE).GetPosition();
   
   // We're going to disallow division calls from memory spaces other than zero 
   // for right now -law
@@ -1658,7 +1658,7 @@ bool cHardwareSMT::Divide_Main(int mem_space_used, double mut_multiplier)
 			//not touch any other m_threads or memory spaces (ie: parasites)
 			else
 	    {
-	      for(int x = 0; x < NUM_HEADS; x++)
+	      for(int x = 0; x < nHardware::NUM_HEADS; x++)
 				{
 					GetHead(x).Reset(0, this);
 				}
@@ -1776,7 +1776,7 @@ bool cHardwareSMT::Inst_SetMemory()   // Allocate maximal more
   int mem_space_used = FindModifiedStack(-1);
   
   if (GetLabel().GetSize() == 0) {
-    GetHead(HEAD_FLOW).Set(0, 0);
+    GetHead(nHardware::HEAD_FLOW).Set(0, 0);
   } else {
     int mem_space_used = FindMemorySpaceLabel(-1);
     
@@ -1789,7 +1789,7 @@ bool cHardwareSMT::Inst_SetMemory()   // Allocate maximal more
     mem_space_used = FindFirstEmpty();
     if(mem_space_used==-1)
       return false;
-    GetHead(HEAD_FLOW).Set(0, mem_space_used);
+    GetHead(nHardware::HEAD_FLOW).Set(0, mem_space_used);
   }
   
   return true;
@@ -1798,7 +1798,7 @@ bool cHardwareSMT::Inst_SetMemory()   // Allocate maximal more
 //14
 bool cHardwareSMT::Inst_Divide()
 {
-  int mem_space_used = GetHead(HEAD_WRITE).GetMemSpace();
+  int mem_space_used = GetHead(nHardware::HEAD_WRITE).GetMemSpace();
   int mut_multiplier = 1;
 	
   return Divide_Main(mem_space_used, mut_multiplier);
@@ -1809,8 +1809,8 @@ bool cHardwareSMT::Inst_HeadDivideMut(double mut_multiplier)
   // Unused for the moment...
   return true;
   //AdjustHeads();
-  //const int divide_pos = GetHead(HEAD_READ).GetPosition();
-  //int child_end =  GetHead(HEAD_WRITE).GetPosition();
+  //const int divide_pos = GetHead(nHardware::HEAD_READ).GetPosition();
+  //int child_end =  GetHead(nHardware::HEAD_WRITE).GetPosition();
   //if (child_end == 0) child_end = GetMemory(0).GetSize();
   //const int extra_lines = GetMemory(0).GetSize() - child_end;
   //bool ret_val = Divide_Main(divide_pos, extra_lines, mut_multiplier);
@@ -1822,7 +1822,7 @@ bool cHardwareSMT::Inst_HeadDivideMut(double mut_multiplier)
 //15
 bool cHardwareSMT::Inst_HeadRead()
 {
-  const int head_id = FindModifiedHead(HEAD_READ);
+  const int head_id = FindModifiedHead(nHardware::HEAD_READ);
   GetHead(head_id).Adjust();
   sCPUStats & cpu_stats = organism->CPUStats();
 	
@@ -1845,7 +1845,7 @@ bool cHardwareSMT::Inst_HeadRead()
 //16
 bool cHardwareSMT::Inst_HeadWrite()
 {
-  const int head_id = FindModifiedHead(HEAD_WRITE);
+  const int head_id = FindModifiedHead(nHardware::HEAD_WRITE);
   cHeadMultiMem & active_head = GetHead(head_id);
   int mem_space_used = active_head.GetMemSpace();
   
@@ -1873,8 +1873,8 @@ bool cHardwareSMT::Inst_HeadWrite()
 bool cHardwareSMT::Inst_HeadCopy()
 {
   // For the moment, this cannot be nop-modified.
-  cHeadMultiMem & read_head = GetHead(HEAD_READ);
-  cHeadMultiMem & write_head = GetHead(HEAD_WRITE);
+  cHeadMultiMem & read_head = GetHead(nHardware::HEAD_READ);
+  cHeadMultiMem & write_head = GetHead(nHardware::HEAD_WRITE);
   sCPUStats & cpu_stats = organism->CPUStats();
 	
   read_head.Adjust();
@@ -1944,10 +1944,10 @@ bool cHardwareSMT::Inst_IfGreater()       // Execute next if bx > ?cx?
 //21
 bool cHardwareSMT::Inst_HeadPush()
 {
-  const int head_used = FindModifiedHead(HEAD_IP);
+  const int head_used = FindModifiedHead(nHardware::HEAD_IP);
   Stack(nHardwareSMT::STACK_BX).Push(GetHead(head_used).GetPosition());
-  //if (head_used == HEAD_IP) {
-  //  GetHead(head_used).Set(GetHead(HEAD_FLOW));
+  //if (head_used == nHardware::HEAD_IP) {
+  //  GetHead(head_used).Set(GetHead(nHardware::HEAD_FLOW));
   //  AdvanceIP() = false;
   //}
   return true;
@@ -1956,7 +1956,7 @@ bool cHardwareSMT::Inst_HeadPush()
 //22
 bool cHardwareSMT::Inst_HeadPop()
 {
-  const int head_used = FindModifiedHead(HEAD_IP);
+  const int head_used = FindModifiedHead(nHardware::HEAD_IP);
   GetHead(head_used).Set(Stack(nHardwareSMT::STACK_BX).Pop(), 
 												 GetHead(head_used).GetMemSpace(), this);
   return true;
@@ -1965,15 +1965,15 @@ bool cHardwareSMT::Inst_HeadPop()
 //23 
 bool cHardwareSMT::Inst_HeadMove()
 {
-  const int head_used = FindModifiedHead(HEAD_IP);
-  if(head_used != HEAD_FLOW)
+  const int head_used = FindModifiedHead(nHardware::HEAD_IP);
+  if(head_used != nHardware::HEAD_FLOW)
 	{
-		GetHead(head_used).Set(GetHead(HEAD_FLOW));
-		if (head_used == HEAD_IP) AdvanceIP() = false;
+		GetHead(head_used).Set(GetHead(nHardware::HEAD_FLOW));
+		if (head_used == nHardware::HEAD_IP) AdvanceIP() = false;
 	}
   else
 	{
-		m_threads[m_cur_thread].heads[HEAD_FLOW]++;
+		m_threads[m_cur_thread].heads[nHardware::HEAD_FLOW]++;
 	}
   return true;
 }
@@ -1986,7 +1986,7 @@ bool cHardwareSMT::Inst_Search()
   cHeadMultiMem found_pos = FindLabel(0);
   if(found_pos.GetPosition()-IP().GetPosition()==0)
 	{
-		GetHead(HEAD_FLOW).Set(IP().GetPosition()+1, IP().GetMemSpace(), this);
+		GetHead(nHardware::HEAD_FLOW).Set(IP().GetPosition()+1, IP().GetMemSpace(), this);
 		// pushing zero into STACK_AX on a missed search makes it difficult to create
 		// a self-replicating organism.  -law
 		//Stack(STACK_AX).Push(0);
@@ -1997,7 +1997,7 @@ bool cHardwareSMT::Inst_Search()
 		int search_size = found_pos.GetPosition() - IP().GetPosition() + GetLabel().GetSize() + 1;
 		Stack(nHardwareSMT::STACK_BX).Push(search_size);
 		Stack(nHardwareSMT::STACK_AX).Push(GetLabel().GetSize());
-		GetHead(HEAD_FLOW).Set(found_pos);
+		GetHead(nHardware::HEAD_FLOW).Set(found_pos);
 	}  
   
   return true; 
@@ -2141,7 +2141,7 @@ int cHardwareSMT::FindFirstEmpty()
 		}
 		for(int y=0; y<GetNumThreads() && OK; y++)
 		{
-			for(int z=0; z<NUM_HEADS; z++)
+			for(int z=0; z<nHardware::NUM_HEADS; z++)
 	    {
 	      if(m_threads[y].heads[z].GetMemSpace() == index)
 					OK=false;

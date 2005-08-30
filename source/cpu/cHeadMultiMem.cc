@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef HEAD_MULTI_MEM_HH
-#include "head_multi_mem.hh"
+#include "cHeadMultiMem.h"
 #endif
 
 #ifndef CPU_MEMORY_HH

@@ -8,8 +8,8 @@
 #ifndef CODE_LABEL_HH
 #define CODE_LABEL_HH
 
-#ifndef CPU_DEFS_HH
-#include "cpu_defs.hh"        // #defines only
+#ifndef nHardware_h
+#include "nHardware.h"        // #defines only
 #endif
 #ifndef DEFS_HH
 #include "defs.hh"
@@ -65,9 +65,9 @@ public:
 };
 
 void cCodeLabel::AddNop(int nop_num) {
-  assert (nop_num < MAX_NOPS);
+  assert (nop_num < nHardware::MAX_NOPS);
 
-  if (size < MAX_LABEL_SIZE) {
+  if (size < nHardware::MAX_LABEL_SIZE) {
     if (size == nop_sequence.GetSize()) {
       nop_sequence.Resize(size+1);
     }

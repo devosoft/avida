@@ -3,7 +3,7 @@ Include("string.hh")
 
 Import("inst_lib_base.pyste")
 
-cInstLibCPU = Class("cInstLibCPU", "inst_lib_cpu.hh")
+cInstLibCPU = Class("cInstLibCPU", "cInstLibCPU.h")
 set_policy(cInstLibCPU.GetName, return_value_policy(reference_existing_object))
 set_policy(cInstLibCPU.GetNopName, return_value_policy(reference_existing_object))
 set_policy(cInstLibCPU.GetInstDefault, return_value_policy(reference_existing_object))

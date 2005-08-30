@@ -1,5 +1,5 @@
 #ifndef CPU_STATS_HH
-#include "cpu_stats.hh"
+#include "sCPUStats.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

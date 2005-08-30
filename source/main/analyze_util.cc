@@ -31,7 +31,7 @@
 #include "genotype.hh"
 #endif
 #ifndef HARDWARE_BASE_HH
-#include "hardware_base.hh"
+#include "cHardwareBase.h"
 #endif
 #ifndef HISTOGRAM_HH
 #include "histogram.hh"
@@ -64,10 +64,10 @@
 #include "stats.hh"
 #endif
 #ifndef TEST_CPU_HH
-#include "test_cpu.hh"
+#include "cTestCPU.h"
 #endif
 #ifndef TEST_UTIL_HH
-#include "test_util.hh"
+#include "cTestUtil.h"
 #endif
 #ifndef TOOLS_HH
 #include "tools.hh"

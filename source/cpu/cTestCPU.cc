@@ -5,14 +5,14 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "test_cpu.hh"
+#include "cTestCPU.h"
 
 #include "cCPUTestInfo.h"
 #include "config.hh"
 #include "environment.hh"
 #include "functions.hh"
 #include "cHardwareBase.h"
-#include "hardware_status_printer.hh"
+#include "cHardwareStatusPrinter.h"
 #include "inst_set.hh"
 #include "inst_util.hh"
 #include "organism.hh"

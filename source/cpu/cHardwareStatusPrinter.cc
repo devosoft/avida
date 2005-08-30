@@ -5,11 +5,11 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "head_cpu.hh"
+#include "cHeadCPU.h"
 #include "cHardware4Stack.h"
 #include "cHardwareBase.h"
 #include "cHardwareCPU.h"
-#include "hardware_status_printer.hh"
+#include "cHardwareStatusPrinter.h"
 #include "inst_set.hh"
 #include "organism.hh"
 #include "string.hh"

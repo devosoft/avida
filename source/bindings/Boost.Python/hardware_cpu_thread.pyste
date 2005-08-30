@@ -1,7 +1,7 @@
 
-Include("hardware_base.hh")
+Include("cHardwareBase.h")
 
-cHardwareCPU_Thread = Class("cHardwareCPU_Thread", "hardware_cpu_thread.hh")
+cHardwareCPU_Thread = Class("cHardwareCPU_Thread", "cHardwareCPU_Thread.h")
 
 exclude(cHardwareCPU_Thread.reg)
 exclude(cHardwareCPU_Thread.heads)

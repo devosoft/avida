@@ -24,10 +24,10 @@ cHardwareCPU_Thread::cHardwareCPU_Thread(const cHardwareCPU_Thread & in_thread, 
 {
    id = _id;
    if (id == -1) id = in_thread.id;
-   for (int i = 0; i < NUM_REGISTERS; i++) {
+   for (int i = 0; i < nHardwareCPU::NUM_REGISTERS; i++) {
      reg[i] = in_thread.reg[i];
    }
-   for (int i = 0; i < NUM_HEADS; i++) {
+   for (int i = 0; i < nHardware::NUM_HEADS; i++) {
      heads[i] = in_thread.heads[i];
    }
    stack = in_thread.stack;
@@ -38,10 +38,10 @@ cHardwareCPU_Thread::~cHardwareCPU_Thread() {}
 void cHardwareCPU_Thread::operator=(const cHardwareCPU_Thread & in_thread)
 {
   id = in_thread.id;
-  for (int i = 0; i < NUM_REGISTERS; i++) {
+  for (int i = 0; i < nHardwareCPU::NUM_REGISTERS; i++) {
     reg[i] = in_thread.reg[i];
   }
-  for (int i = 0; i < NUM_HEADS; i++) {
+  for (int i = 0; i < nHardware::NUM_HEADS; i++) {
     heads[i] = in_thread.heads[i];
   }
   stack = in_thread.stack;
@@ -51,12 +51,12 @@ void cHardwareCPU_Thread::Reset(cHardwareBase * in_hardware, int _id)
 {
   id = _id;
 
-  for (int i = 0; i < NUM_REGISTERS; i++) reg[i] = 0;
-  for (int i = 0; i < NUM_HEADS; i++) heads[i].Reset(in_hardware);
+  for (int i = 0; i < nHardwareCPU::NUM_REGISTERS; i++) reg[i] = 0;
+  for (int i = 0; i < nHardware::NUM_HEADS; i++) heads[i].Reset(in_hardware);
 
   stack.Clear();
   cur_stack = 0;
-  cur_head = HEAD_IP;
+  cur_head = nHardware::HEAD_IP;
   read_label.Clear();
   next_label.Clear();
 }
@@ -69,12 +69,12 @@ void cHardwareCPU_Thread::SaveState(ostream & fp){
   fp << "cHardwareCPU_Thread" << endl;
 
   // registers
-  for( int i=0; i<NUM_REGISTERS; ++i ){
+  for( int i=0; i<nHardwareCPU::NUM_REGISTERS; ++i ){
     fp<<reg[i]<<endl;
   }
 
   // heads (@TCC does not handle parasites!!!)
-  for( int i=0; i<NUM_HEADS; ++i ){
+  for( int i=0; i<nHardware::NUM_HEADS; ++i ){
     fp<<heads[i].GetPosition()<<endl;
   }
 
@@ -99,12 +99,12 @@ void cHardwareCPU_Thread::LoadState(istream & fp){
   assert( foo == "cHardwareCPU_Thread");
 
   // registers
-  for( int i=0; i<NUM_REGISTERS; ++i ){
+  for( int i=0; i<nHardwareCPU::NUM_REGISTERS; ++i ){
     fp>>reg[i];
   }
 
   // heads (@TCC does not handle parasites!!!)
-  for( int i=0; i<NUM_HEADS; ++i ){
+  for( int i=0; i<nHardware::NUM_HEADS; ++i ){
     int pos;
     fp>>pos;
     heads[i].AbsSet(pos);

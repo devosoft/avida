@@ -9,16 +9,16 @@
 #define PY_HARDWARE_TRACER_HH
 
 #ifndef HARDWARE_TRACER_HH
-#include "hardware_tracer.hh"
+#include "cHardwareTracer.h"
 #endif
 #ifndef HARDWARE_TRACER_4STACK_HH
-#include "hardware_tracer_4stack.hh"
+#include "cHardwareTracer_4Stack.h"
 #endif
 #ifndef HARDWARE_TRACER_CPU_HH
-#include "hardware_tracer_cpu.hh"
+#include "cHardwareTracer_CPU.h"
 #endif
 #ifndef HARDWARE_TRACER_TEST_CPU_HH
-#include "hardware_tracer_test_cpu.hh"
+#include "cHardwareTracer_TestCPU.h"
 #endif
 
 class cString;

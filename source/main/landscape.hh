@@ -9,7 +9,7 @@
 #define LANDSCAPE_HH
 
 #ifndef CPU_TEST_INFO_HH
-#include "cpu_test_info.hh"
+#include "cCPUTestInfo.h"
 #endif
 #ifndef GENOME_HH
 #include "genome.hh"

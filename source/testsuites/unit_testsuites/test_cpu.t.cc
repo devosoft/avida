@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef TEST_CPU_HH
-#include "test_cpu.hh"
+#include "cTestCPU.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

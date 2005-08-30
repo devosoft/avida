@@ -1,5 +1,5 @@
 /*
- *  hardware_smt_constants.h
+ *  nHardwareSMT.h
  *  Avida2
  *
  *  Created by David on 6/4/05.

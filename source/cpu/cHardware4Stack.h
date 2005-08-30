@@ -20,13 +20,13 @@
 #include "defs.hh"
 #endif
 #ifndef HEAD_MULTI_MEM_HH
-#include "head_multi_mem.hh"
+#include "cHeadMultiMem.h"
 #endif
 #ifndef HARDWARE_BASE_HH
 #include "cHardwareBase.h"
 #endif
 #ifndef HARDWARE_4STACK_CONSTANTS_HH
-#include "hardware_4stack_constants.hh"
+#include "nHardware4Stack.h"
 #endif
 #ifndef HARDWARE_4STACK_THREAD_HH
 #include "cHardware4Stack_Thread.h"
@@ -75,13 +75,13 @@ class cHardware4Stack : public cHardwareBase {
 public:
   typedef bool (cHardware4Stack::*tHardware4StackMethod)();
 private:
-  static cInstLib4Stack *s_inst_slib;
-  static cInstLib4Stack *initInstLib(void);
-  tHardware4StackMethod *m_functions;
+  static cInstLib4Stack* s_inst_slib;
+  static cInstLib4Stack* initInstLib(void);
+  tHardware4StackMethod* m_functions;
 private:
   tArray<cCPUMemory> memory_array;          // Memory...
   //cCPUStack global_stack;     // A stack that all threads share.
-  cCPUStack global_stacks[NUM_GLOBAL_STACKS];
+  cCPUStack global_stacks[nHardware4Stack::NUM_GLOBAL_STACKS];
   //int thread_time_used;
 
   tArray<cHardware4Stack_Thread> threads;
@@ -165,13 +165,13 @@ public:
   void AdjustHeads();
 
   inline const cHeadMultiMem & IP() const
-    { return threads[cur_thread].heads[HEAD_IP]; }
-  inline cHeadMultiMem & IP() { return threads[cur_thread].heads[HEAD_IP]; }
+    { return threads[cur_thread].heads[nHardware::HEAD_IP]; }
+  inline cHeadMultiMem & IP() { return threads[cur_thread].heads[nHardware::HEAD_IP]; }
 
   inline const cHeadMultiMem & IP(int thread) const
-  { return threads[thread].heads[HEAD_IP]; }
+  { return threads[thread].heads[nHardware::HEAD_IP]; }
   inline cHeadMultiMem & IP(int thread) 
-  { return threads[thread].heads[HEAD_IP]; }
+  { return threads[thread].heads[nHardware::HEAD_IP]; }
 
 
   inline const bool & AdvanceIP() const
@@ -179,7 +179,7 @@ public:
   inline bool & AdvanceIP() { return threads[cur_thread].advance_ip; }
 
   // --------  Label Manipulation  -------
-  void ReadLabel(int max_size=MAX_LABEL_SIZE);
+  void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
   const cCodeLabel & GetLabel() const 
     { return threads[cur_thread].next_label; }
   cCodeLabel & GetLabel() { return threads[cur_thread].next_label; }
@@ -220,8 +220,8 @@ public:
 
   int GetThreadDist() const {
     if (GetNumThreads() == 1) return 0;
-    return threads[0].heads[HEAD_IP].GetPosition() -
-      threads[1].heads[HEAD_IP].GetPosition();
+    return threads[0].heads[nHardware::HEAD_IP].GetPosition() -
+      threads[1].heads[nHardware::HEAD_IP].GetPosition();
   }
 
   // Complex label manipulation...
@@ -382,15 +382,15 @@ inline cCPUMemory & cHardware4Stack::GetMemory()
 
 inline const cCPUMemory & cHardware4Stack::GetMemory(int mem_space) const
 {
-  if(mem_space >= NUM_MEMORY_SPACES)
-    mem_space %= NUM_MEMORY_SPACES;
+  if(mem_space >= nHardware4Stack::NUM_MEMORY_SPACES)
+    mem_space %= nHardware4Stack::NUM_MEMORY_SPACES;
   return memory_array[mem_space];
 }
 
 inline cCPUMemory & cHardware4Stack::GetMemory(int mem_space)
 {
- if(mem_space >= NUM_MEMORY_SPACES)
-    mem_space %= NUM_MEMORY_SPACES;
+ if(mem_space >= nHardware4Stack::NUM_MEMORY_SPACES)
+    mem_space %= nHardware4Stack::NUM_MEMORY_SPACES;
   return memory_array[mem_space];
 }
 
@@ -438,7 +438,7 @@ inline void cHardware4Stack::SetThreadOwner(cInjectGenotype * in_genotype)
 
 inline int cHardware4Stack::GetStack(int depth, int stack_id, int in_thread) const
 {
-  if(stack_id<0 || stack_id>NUM_STACKS) stack_id=0;
+  if(stack_id<0 || stack_id>nHardware4Stack::NUM_STACKS) stack_id=0;
   
   if(in_thread==-1)
     in_thread=cur_thread;
@@ -464,52 +464,52 @@ inline int cHardware4Stack::GetStack(int depth, int stack_id, int in_thread) con
 
 inline cCPUStack& cHardware4Stack::Stack(int stack_id)
 {
-  if(stack_id >= NUM_STACKS)
+  if(stack_id >= nHardware4Stack::NUM_STACKS)
     {
       stack_id=0;
     }
-  if(stack_id < NUM_LOCAL_STACKS)
+  if(stack_id < nHardware4Stack::NUM_LOCAL_STACKS)
     return threads[cur_thread].local_stacks[stack_id];
   else
-    return global_stacks[stack_id % NUM_LOCAL_STACKS];
+    return global_stacks[stack_id % nHardware4Stack::NUM_LOCAL_STACKS];
 }
 
 inline const cCPUStack& cHardware4Stack::Stack(int stack_id) const 
 {
-  if(stack_id >= NUM_STACKS)
+  if(stack_id >= nHardware4Stack::NUM_STACKS)
     {
       stack_id=0;
     }
-  if(stack_id < NUM_LOCAL_STACKS)
+  if(stack_id < nHardware4Stack::NUM_LOCAL_STACKS)
     return threads[cur_thread].local_stacks[stack_id];
   else
-    return global_stacks[stack_id % NUM_LOCAL_STACKS];
+    return global_stacks[stack_id % nHardware4Stack::NUM_LOCAL_STACKS];
 }
 
 inline cCPUStack& cHardware4Stack::Stack(int stack_id, int in_thread) 
 {
-  if(stack_id >= NUM_STACKS)
+  if(stack_id >= nHardware4Stack::NUM_STACKS)
       stack_id=0;
   if(in_thread >= threads.GetSize())
       in_thread=cur_thread;
 
-  if(stack_id < NUM_LOCAL_STACKS)
+  if(stack_id < nHardware4Stack::NUM_LOCAL_STACKS)
     return threads[in_thread].local_stacks[stack_id];
   else
-    return global_stacks[stack_id % NUM_LOCAL_STACKS];
+    return global_stacks[stack_id % nHardware4Stack::NUM_LOCAL_STACKS];
 }
 
 inline const cCPUStack& cHardware4Stack::Stack(int stack_id, int in_thread) const 
 {
-  if(stack_id >= NUM_STACKS)
+  if(stack_id >= nHardware4Stack::NUM_STACKS)
       stack_id=0;
   if(in_thread >= threads.GetSize())
       in_thread=cur_thread;
 
-  if(stack_id < NUM_LOCAL_STACKS)
+  if(stack_id < nHardware4Stack::NUM_LOCAL_STACKS)
     return threads[in_thread].local_stacks[stack_id];
   else
-    return global_stacks[stack_id % NUM_LOCAL_STACKS];
+    return global_stacks[stack_id % nHardware4Stack::NUM_LOCAL_STACKS];
 }
 
 #endif

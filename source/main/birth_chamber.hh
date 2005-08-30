@@ -9,7 +9,7 @@
 #define BIRTH_CHAMBER_HH
 
 #ifndef CPU_MEMORY_HH
-#include "cpu_memory.hh"
+#include "cCPUMemory.h"
 #endif
 #ifndef MERIT_HH
 #include "merit.hh"

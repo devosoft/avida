@@ -2,7 +2,7 @@
 #define CPU_MEMORY_FIXUPS_HH
 
 #ifndef CPU_MEMORY_HH
-#include "cpu_memory.hh"
+#include "cCPUMemory.h"
 #endif
 
 bool cCPUMemory_GetFlagCopied(const cCPUMemory &, int pos);

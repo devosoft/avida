@@ -25,16 +25,16 @@
 #include "environment.hh"
 #endif
 #ifndef HARDWARE_4STACK_HH
-#include "hardware_4stack.hh"
+#include "cHardware4Stack.h"
 #endif
 #ifndef HARDWARE_UTIL_HH
-#include "hardware_util.hh"
+#include "cHardwareUtil.h"
 #endif
 #ifndef HARDWARE_CPU_HH
-#include "hardware_cpu.hh"
+#include "cHardwareCPU.h"
 #endif
 #ifndef INST_LIB_CPU_HH
-#include "inst_lib_cpu.hh"
+#include "cInstLibCPU.h"
 #endif
 #ifndef POPULATION_INTERFACE_HH
 #include "population_interface.hh"
@@ -43,7 +43,7 @@
 #include "resource_count.hh"
 #endif
 #ifndef TEST_CPU_HH
-#include "test_cpu.hh"
+#include "cTestCPU.h"
 #endif
 
 #include <signal.h>

@@ -7,14 +7,14 @@
 
 #include "landscape.hh"
 
-#include "cpu_memory.hh"
+#include "cCPUMemory.h"
 #include "environment.hh"
 #include "inst_set.hh"
 #include "organism.hh"
 #include "phenotype.hh"
 #include "stats.hh"             // For GetUpdate in outputs...
-#include "test_cpu.hh"
-#include "test_util.hh"
+#include "cTestCPU.h"
+#include "cTestUtil.h"
 #include "tools.hh"
 
 using namespace std;
@@ -120,8 +120,8 @@ void cLandscape::ProcessBase()
   peak_fitness = base_fitness;
   peak_genome = base_genome;
   
-  neut_min = base_fitness * FITNESS_NEUTRAL_MIN;
-  neut_max = base_fitness * FITNESS_NEUTRAL_MAX;
+  neut_min = base_fitness * nHardware::FITNESS_NEUTRAL_MIN;
+  neut_max = base_fitness * nHardware::FITNESS_NEUTRAL_MAX;
   
 }
 
@@ -810,8 +810,8 @@ void cLandscape::PrintStats(ofstream & fp, int update)
      << distance               << " "   // 9
 //     << neut_min           << "   "   // 10
 //     << neut_max           << "   "   // 10
-//     << FITNESS_NEUTRAL_MIN           << "   "   // 10
-//     << FITNESS_NEUTRAL_MAX           << "   "   // 10
+//     << nHardware::FITNESS_NEUTRAL_MIN           << "   "   // 10
+//     << nHardware::FITNESS_NEUTRAL_MAX           << "   "   // 10
      << base_fitness           << " "   // 10
      << base_merit             << " "   // 11
      << base_gestation         << " "   // 12

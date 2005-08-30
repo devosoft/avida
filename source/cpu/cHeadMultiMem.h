@@ -9,7 +9,7 @@
 #define HEAD_MULTI_MEM_HH
 
 #ifndef HEAD_CPU_HH
-#include "head_cpu.hh"
+#include "cHeadCPU.h"
 #endif
 #ifndef DEFS_HH
 #include "defs.hh"

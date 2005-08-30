@@ -8,8 +8,8 @@
 #ifndef CPU_TEST_INFO_HH
 #define CPU_TEST_INFO_HH
 
-#ifndef CPU_DEFS_HH
-#include "cpu_defs.hh"
+#ifndef nHardware_h
+#include "nHardware.h"
 #endif
 #ifndef STRING_HH
 #include "string.hh"
@@ -47,7 +47,7 @@ private:
   // disabled copy constructor.
   cCPUTestInfo(const cCPUTestInfo &);
 public:
-  cCPUTestInfo(int max_tests=TEST_CPU_GENERATIONS);
+  cCPUTestInfo(int max_tests=nHardware::TEST_CPU_GENERATIONS);
   ~cCPUTestInfo();
 
   void Clear();

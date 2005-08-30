@@ -5,7 +5,7 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "test_util.hh"
+#include "cTestUtil.h"
 
 #include "cCPUTestInfo.h"
 #include "environment.hh"
@@ -18,7 +18,7 @@
 #include "phenotype.hh"
 #include "stats.hh"
 #include "task_entry.hh"
-#include "test_cpu.hh"
+#include "cTestCPU.h"
 
 #include <fstream>
 #include <iomanip>

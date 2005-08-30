@@ -24,8 +24,8 @@
 #include "task_entry.hh"
 #endif
 
-#include "hardware_cpu.hh"
-#include "hardware_4stack.hh"
+#include "cHardwareCPU.h"
+#include "cHardware4Stack.h"
 
 #include "zoom_screen.hh"
 
@@ -680,7 +680,7 @@ void cZoomScreen::UpdateCPU(cHardwareBase & hardware)
   Print(INPUT_Y+3, INPUT_X+2, "%12d", info.GetActiveCell()->GetInput(0));
 
   SetColor(COLOR_CYAN);
-  for (int i = 1; i < IO_SIZE; i++) {
+  for (int i = 1; i < nHardware::IO_SIZE; i++) {
     Print(INPUT_Y+3+i, INPUT_X+2, "%12d", info.GetActiveCell()->GetInput(i));
   }
 
@@ -711,7 +711,7 @@ void cZoomScreen::UpdateCPU_Original(cHardwareBase & hardware)
 
   // Place the registers onto the screen.
   SetBoldColor(COLOR_CYAN);
-  for (int i = 0; i < NUM_REGISTERS; i++) {
+  for (int i = 0; i < nHardwareCPU::NUM_REGISTERS; i++) {
     Print(REG_Y+3 + i, REG_X+6, "%11d", hardwareCPU.Register(i));
   }
 
@@ -736,7 +736,7 @@ void cZoomScreen::UpdateCPU_Original(cHardwareBase & hardware)
   Print(INPUT_Y+3, INPUT_X+2, "%12d", info.GetActiveCell()->GetInput(0));
 
   SetColor(COLOR_CYAN);
-  for (int i = 1; i < IO_SIZE; i++) {
+  for (int i = 1; i < nHardware::IO_SIZE; i++) {
     Print(INPUT_Y+3+i, INPUT_X+2, "%12d", info.GetActiveCell()->GetInput(i));
   }
 
@@ -825,13 +825,13 @@ void cZoomScreen::UpdateCPU_Original(cHardwareBase & hardware)
 	Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 27, "Bp");
       }
 
-      if (adj_inst_ptr == hardwareCPU.GetHead(HEAD_READ).GetPosition()) {
+      if (adj_inst_ptr == hardwareCPU.GetHead(nHardware::HEAD_READ).GetPosition()) {
 	Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 30, "R");
       }
-      if (adj_inst_ptr == hardwareCPU.GetHead(HEAD_WRITE).GetPosition()) {
+      if (adj_inst_ptr == hardwareCPU.GetHead(nHardware::HEAD_WRITE).GetPosition()) {
 	Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 31, "W");
       }
-      if (adj_inst_ptr == hardwareCPU.GetHead(HEAD_FLOW).GetPosition()) {
+      if (adj_inst_ptr == hardwareCPU.GetHead(nHardware::HEAD_FLOW).GetPosition()) {
 	  Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 32, "F");
       }
     }
@@ -965,16 +965,16 @@ void cZoomScreen::UpdateCPU_4Stack(cHardwareBase & hardware)
 	Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 28, "Bp");
       }
 
-      if (adj_inst_ptr == hardware4Stack.GetHead(HEAD_READ, cur_view_thread).GetPosition() &&
-	  cur_mem_space == hardware4Stack.GetHead(HEAD_READ, cur_view_thread).GetMemSpace()) {
+      if (adj_inst_ptr == hardware4Stack.GetHead(nHardware::HEAD_READ, cur_view_thread).GetPosition() &&
+	  cur_mem_space == hardware4Stack.GetHead(nHardware::HEAD_READ, cur_view_thread).GetMemSpace()) {
 	Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 31, "R");
       }
-      if (adj_inst_ptr == hardware4Stack.GetHead(HEAD_WRITE, cur_view_thread).GetPosition() &&
-	  cur_mem_space == hardware4Stack.GetHead(HEAD_WRITE, cur_view_thread).GetMemSpace()) {
+      if (adj_inst_ptr == hardware4Stack.GetHead(nHardware::HEAD_WRITE, cur_view_thread).GetPosition() &&
+	  cur_mem_space == hardware4Stack.GetHead(nHardware::HEAD_WRITE, cur_view_thread).GetMemSpace()) {
 	Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 32, "W");
       }
-      if (adj_inst_ptr == hardware4Stack.GetHead(HEAD_FLOW, cur_view_thread).GetPosition() &&
-	  cur_mem_space == hardware4Stack.GetHead(HEAD_FLOW, cur_view_thread).GetMemSpace()) {
+      if (adj_inst_ptr == hardware4Stack.GetHead(nHardware::HEAD_FLOW, cur_view_thread).GetPosition() &&
+	  cur_mem_space == hardware4Stack.GetHead(nHardware::HEAD_FLOW, cur_view_thread).GetMemSpace()) {
 	  Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 33, "F");
       }
     }
@@ -1684,7 +1684,7 @@ bool cZoomScreen::DoInputCPU(int in_char)
       if(cConfig::GetHardwareType() == HARDWARE_TYPE_CPU_4STACK)
 	{
 	  cur_mem_space++;
-	  cur_mem_space %= NUM_MEMORY_SPACES;
+	  cur_mem_space %= nHardware4Stack::NUM_MEMORY_SPACES;
 	}
     }
     Update(); 
@@ -1702,7 +1702,7 @@ bool cZoomScreen::DoInputCPU(int in_char)
     else if (active_section == ZOOM_SECTION_MEMORY) {
       if(cConfig::GetHardwareType()==HARDWARE_TYPE_CPU_4STACK) {
 	cur_mem_space--;
-	if (cur_mem_space < 0) cur_mem_space = NUM_MEMORY_SPACES - 1;
+	if (cur_mem_space < 0) cur_mem_space = nHardware4Stack::NUM_MEMORY_SPACES - 1;
       }
     }
     Update();

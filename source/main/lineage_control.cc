@@ -16,7 +16,7 @@
 #include "genotype.hh"
 #include "organism.hh"
 
-#include "cpu_defs.hh"   // for macro FITNESS_NEUTRAL_MAX
+#include "nHardware.h"   // for macro nHardware::FITNESS_NEUTRAL_MAX
 
 
 using namespace std;

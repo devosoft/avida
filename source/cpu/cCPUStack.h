@@ -10,8 +10,8 @@
 
 #include <iostream>
 
-#ifndef CPU_DEFS_HH
-#include "cpu_defs.hh"
+#ifndef nHardware_h
+#include "nHardware.h"
 #endif
 
 /**
@@ -22,7 +22,7 @@
 
 class cCPUStack {
 private:
-  int stack[STACK_SIZE];
+  int stack[nHardware::STACK_SIZE];
   unsigned char stack_pointer;
 public:
   cCPUStack();
@@ -47,7 +47,7 @@ public:
 
 inline void cCPUStack::Push(int value)
 {
-  if (stack_pointer == 0) stack_pointer = STACK_SIZE - 1;
+  if (stack_pointer == 0) stack_pointer = nHardware::STACK_SIZE - 1;
   else stack_pointer--;
   stack[stack_pointer] = value;
 }
@@ -57,20 +57,20 @@ inline int cCPUStack::Pop()
   int value = stack[stack_pointer];
   stack[stack_pointer] = 0;
   stack_pointer++;
-  if (stack_pointer == STACK_SIZE) stack_pointer = 0;
+  if (stack_pointer == nHardware::STACK_SIZE) stack_pointer = 0;
   return value;
 }
 
 inline int cCPUStack::Get(int depth) const
 {
   int array_pos = depth + stack_pointer;
-  if (array_pos >= STACK_SIZE) array_pos -= STACK_SIZE;
+  if (array_pos >= nHardware::STACK_SIZE) array_pos -= nHardware::STACK_SIZE;
   return stack[array_pos];
 }
 
 inline void cCPUStack::Clear()
 {
-  for (int i =0; i < STACK_SIZE; i++) { stack[i] = 0; }
+  for (int i =0; i < nHardware::STACK_SIZE; i++) { stack[i] = 0; }
   stack_pointer = 0;
 }
 

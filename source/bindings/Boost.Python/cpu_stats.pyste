@@ -1,4 +1,4 @@
 
-sCPUStats = Class("sCPUStats", "cpu_stats.hh")
+sCPUStats = Class("sCPUStats", "sCPUStats.h")
 
 # vim: set ft=python:

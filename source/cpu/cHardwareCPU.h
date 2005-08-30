@@ -17,11 +17,14 @@
 #ifndef CODE_LABEL_HH
 #include "cCodeLabel.h"
 #endif
-#ifndef CPU_DEFS_HH
-#include "cpu_defs.hh"
+#ifndef nHardware_h
+#include "nHardware.h"
+#endif
+#ifndef nHardwareCPU_h
+#include "nHardwareCPU.h"
 #endif
 #ifndef HEAD_CPU_HH
-#include "head_cpu.hh"
+#include "cHeadCPU.h"
 #endif
 #ifndef CPU_MEMORY_HH
 #include "cCPUMemory.h"
@@ -152,12 +155,12 @@ public:
   void AdjustHeads();
 
   inline const cHeadCPU & IP() const
-    { return threads[cur_thread].heads[HEAD_IP]; }
-  inline cHeadCPU & IP() { return threads[cur_thread].heads[HEAD_IP]; }
+    { return threads[cur_thread].heads[nHardware::HEAD_IP]; }
+  inline cHeadCPU & IP() { return threads[cur_thread].heads[nHardware::HEAD_IP]; }
 
 
   // --------  Label Manipulation  -------
-  void ReadLabel(int max_size=MAX_LABEL_SIZE);
+  void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
   const cCodeLabel & GetLabel() const 
     { return threads[cur_thread].next_label; }
   cCodeLabel & GetLabel() { return threads[cur_thread].next_label; }
@@ -198,8 +201,8 @@ public:
 
   int GetThreadDist() const {
     if (GetNumThreads() == 1) return 0;
-    return threads[0].heads[HEAD_IP].GetPosition() -
-      threads[1].heads[HEAD_IP].GetPosition();
+    return threads[0].heads[nHardware::HEAD_IP].GetPosition() -
+      threads[1].heads[nHardware::HEAD_IP].GetPosition();
   }
 
   // Complex label manipulation...

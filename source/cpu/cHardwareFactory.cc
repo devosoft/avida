@@ -10,7 +10,7 @@
 #include "cHardwareBase.h"
 #include "cHardwareCPU.h"
 #include "cHardware4Stack.h"
-#include "hardware_smt.h"
+#include "cHardwareSMT.h"
 #include "inst_set.hh"
 #include "organism.hh"
 

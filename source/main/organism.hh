@@ -12,10 +12,10 @@
 #include <deque>
 
 #ifndef CPU_MEMORY_HH
-#include "cpu_memory.hh"
+#include "cCPUMemory.h"
 #endif
 #ifndef CPU_STATS_HH
-#include "cpu_stats.hh"
+#include "sCPUStats.h"
 #endif
 #ifndef GENOME_HH
 #include "genome.hh"

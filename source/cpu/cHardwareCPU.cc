@@ -12,9 +12,9 @@
 #include "functions.hh"
 #include "genome_util.hh"
 #include "genotype.hh"
-#include "hardware_tracer.hh"
-#include "hardware_tracer_cpu.hh"
-#include "inst_lib_cpu.hh"
+#include "cHardwareTracer.h"
+#include "cHardwareTracer_CPU.h"
+#include "cInstLibCPU.h"
 #include "inst_set.hh"
 #include "mutation.hh"
 #include "mutation_lib.hh"
@@ -22,7 +22,7 @@
 #include "organism.hh"
 #include "phenotype.hh"
 #include "string_util.hh"
-#include "test_cpu.hh"
+#include "cTestCPU.h"
 
 #include <limits.h>
 #include <fstream>
@@ -47,10 +47,10 @@ cInstLibCPU *cHardwareCPU::initInstLib(void){
       : name(name), nop_mod(nop_mod) {}
   };
   static const cNOPEntryCPU s_n_array[] = {
-    cNOPEntryCPU("nop-A", REG_AX),
-    cNOPEntryCPU("nop-B", REG_BX),
-    cNOPEntryCPU("nop-C", REG_CX),
-    cNOPEntryCPU("nop-D", REG_DX)
+    cNOPEntryCPU("nop-A", nHardwareCPU::REG_AX),
+    cNOPEntryCPU("nop-B", nHardwareCPU::REG_BX),
+    cNOPEntryCPU("nop-C", nHardwareCPU::REG_CX),
+    cNOPEntryCPU("nop-D", nHardwareCPU::REG_DX)
   };
 
   struct cInstEntryCPU { 
@@ -620,20 +620,20 @@ void cHardwareCPU::PrintStatus(ostream & fp)
   fp << organism->GetPhenotype().GetTimeUsed() << " "
      << "IP:" << IP().GetPosition() << "    "
 
-     << "AX:" << Register(REG_AX) << " "
-     << setbase(16) << "[0x" << Register(REG_AX) << "]  " << setbase(10)
+     << "AX:" << Register(nHardwareCPU::REG_AX) << " "
+     << setbase(16) << "[0x" << Register(nHardwareCPU::REG_AX) << "]  " << setbase(10)
 
-     << "BX:" << Register(REG_BX) << " "
-     << setbase(16) << "[0x" << Register(REG_BX) << "]  " << setbase(10)
+     << "BX:" << Register(nHardwareCPU::REG_BX) << " "
+     << setbase(16) << "[0x" << Register(nHardwareCPU::REG_BX) << "]  " << setbase(10)
 
-     << "CX:" << Register(REG_CX) << " "
-     << setbase(16) << "[0x" << Register(REG_CX) << "]" << setbase(10)
+     << "CX:" << Register(nHardwareCPU::REG_CX) << " "
+     << setbase(16) << "[0x" << Register(nHardwareCPU::REG_CX) << "]" << setbase(10)
 
      << endl;
 
-  fp << "  R-Head:" << GetHead(HEAD_READ).GetPosition() << " "
-     << "W-Head:" << GetHead(HEAD_WRITE).GetPosition()  << " "
-     << "F-Head:" << GetHead(HEAD_FLOW).GetPosition()   << "  "
+  fp << "  R-Head:" << GetHead(nHardware::HEAD_READ).GetPosition() << " "
+     << "W-Head:" << GetHead(nHardware::HEAD_WRITE).GetPosition()  << " "
+     << "F-Head:" << GetHead(nHardware::HEAD_FLOW).GetPosition()   << "  "
      << "RL:" << GetReadLabel().AsString() << "   "
      << endl;
 
@@ -894,7 +894,7 @@ cHeadCPU cHardwareCPU::FindLabel(const cCodeLabel & in_label, int direction)
 }
 
 // @CAO: direction is not currently used; should be used to indicate the
-// direction which the heads[HEAD_IP] should progress through a creature.
+// direction which the heads[nHardware::HEAD_IP] should progress through a creature.
 cHeadCPU cHardwareCPU::FindFullLabel(const cCodeLabel & in_label)
 {
   // cout << "Running FindFullLabel with " << in_label.AsString() <<
@@ -1016,7 +1016,7 @@ void cHardwareCPU::InjectCode(const cGenome & inject_code, const int line_num)
 
   // Adjust all of the heads to take into account the new mem size.
 
-  for (int i=0; i < NUM_HEADS; i++) {    
+  for (int i=0; i < nHardware::NUM_HEADS; i++) {    
     if (!GetHead(i).TestParasite() &&
 	GetHead(i).GetPosition() > line_num)
       GetHead(i).Jump(inject_size);
@@ -1048,7 +1048,7 @@ void cHardwareCPU::InjectCodeThread(const cGenome & inject_code, const int line_
       SetThread(0);
       for (int i=0; i<GetNumThreads()-2; i++)
 	{
-	  for (int j=0; j < NUM_HEADS; j++) 
+	  for (int j=0; j < nHardware::NUM_HEADS; j++) 
 	    {    
 	      if (!GetHead(i).TestParasite() && GetHead(i).GetPosition() > line_num)
 		GetHead(i).Jump(inject_size);
@@ -1243,7 +1243,7 @@ void cHardwareCPU::ReadInst(const int in_inst)
 void cHardwareCPU::AdjustHeads()
 {
   for (int i = 0; i < GetNumThreads(); i++) {
-    for (int j = 0; j < NUM_HEADS; j++) {
+    for (int j = 0; j < nHardware::NUM_HEADS; j++) {
       threads[i].heads[j].Adjust();
     }
   }
@@ -1382,7 +1382,7 @@ void cHardwareCPU::LoadState(istream & fp)
 
 inline int cHardwareCPU::FindModifiedRegister(int default_register)
 {
-  assert(default_register < NUM_REGISTERS);  // Reg ID too high.
+  assert(default_register < nHardwareCPU::NUM_REGISTERS);  // Reg ID too high.
 
   if (GetInstSet().IsNop(IP().GetNextInst())) {
     IP().Advance();
@@ -1395,7 +1395,7 @@ inline int cHardwareCPU::FindModifiedRegister(int default_register)
 
 inline int cHardwareCPU::FindModifiedHead(int default_head)
 {
-  assert(default_head < NUM_HEADS); // Head ID too high.
+  assert(default_head < nHardware::NUM_HEADS); // Head ID too high.
 
   if (GetInstSet().IsNop(IP().GetNextInst())) {
     IP().Advance();
@@ -1409,7 +1409,7 @@ inline int cHardwareCPU::FindModifiedHead(int default_head)
 inline int cHardwareCPU::FindComplementRegister(int base_reg)
 {
   const int comp_reg = base_reg + 1;
-  return (comp_reg  == NUM_REGISTERS) ? 0 : comp_reg;
+  return (comp_reg  == nHardwareCPU::NUM_REGISTERS) ? 0 : comp_reg;
 }
 
 
@@ -1580,14 +1580,14 @@ bool cHardwareCPU::Divide_CheckViable(const int child_size,
     const double fitness_ratio = cur_fitness / phenotype.GetLastFitness();
 
 
-    //  const double neut_min = parent_fitness * FITNESS_NEUTRAL_MIN;
-    //  const double neut_max = parent_fitness * FITNESS_NEUTRAL_MAX;
+    //  const double neut_min = parent_fitness * nHardware::FITNESS_NEUTRAL_MIN;
+    //  const double neut_max = parent_fitness * nHardware::FITNESS_NEUTRAL_MAX;
   
     bool sterilize = false;
   
-    if (fitness_ratio < FITNESS_NEUTRAL_MIN) {
+    if (fitness_ratio < nHardware::FITNESS_NEUTRAL_MIN) {
       if (g_random.P(organism->GetSterilizeNeg())) sterilize = true;
-    } else if (fitness_ratio <= FITNESS_NEUTRAL_MAX) {
+    } else if (fitness_ratio <= nHardware::FITNESS_NEUTRAL_MAX) {
       if (g_random.P(organism->GetSterilizeNeut())) sterilize = true;
     } else {
       if (g_random.P(organism->GetSterilizePos())) sterilize = true;
@@ -1742,8 +1742,8 @@ void cHardwareCPU::Divide_TestFitnessMeasures()
   if (phenotype.CopyTrue() == true) return;
 
   const double parent_fitness = organism->GetTestFitness();
-  const double neut_min = parent_fitness * FITNESS_NEUTRAL_MIN;
-  const double neut_max = parent_fitness * FITNESS_NEUTRAL_MAX;
+  const double neut_min = parent_fitness * nHardware::FITNESS_NEUTRAL_MIN;
+  const double neut_max = parent_fitness * nHardware::FITNESS_NEUTRAL_MAX;
   
   cCPUTestInfo test_info;
   test_info.UseRandomInputs();
@@ -1838,21 +1838,21 @@ bool cHardwareCPU::Divide_Main(const int div_point, const int extra_lines, doubl
 
 bool cHardwareCPU::Inst_If0()          // Execute next if ?bx? ==0.
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   if (Register(reg_used) != 0)  IP().Advance();
   return true; 
 }
 
 bool cHardwareCPU::Inst_IfNot0()       // Execute next if ?bx? != 0.
 { 
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   if (Register(reg_used) == 0)  IP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfEqu()      // Execute next if bx == ?cx?
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   const int reg_used2 = FindComplementRegister(reg_used);
   if (Register(reg_used) != Register(reg_used2))  IP().Advance();
   return true;
@@ -1860,7 +1860,7 @@ bool cHardwareCPU::Inst_IfEqu()      // Execute next if bx == ?cx?
 
 bool cHardwareCPU::Inst_IfNEqu()     // Execute next if bx != ?cx?
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   const int reg_used2 = FindComplementRegister(reg_used);
   if (Register(reg_used) == Register(reg_used2))  IP().Advance();
   return true;
@@ -1868,14 +1868,14 @@ bool cHardwareCPU::Inst_IfNEqu()     // Execute next if bx != ?cx?
 
 bool cHardwareCPU::Inst_IfGr0()       // Execute next if ?bx? ! < 0.
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   if (Register(reg_used) <= 0)  IP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfGr()       // Execute next if bx > ?cx?
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   const int reg_used2 = FindComplementRegister(reg_used);
   if (Register(reg_used) <= Register(reg_used2))  IP().Advance();
   return true;
@@ -1883,14 +1883,14 @@ bool cHardwareCPU::Inst_IfGr()       // Execute next if bx > ?cx?
 
 bool cHardwareCPU::Inst_IfGrEqu0()       // Execute next if ?bx? != 0.
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   if (Register(reg_used) < 0)  IP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfGrEqu()       // Execute next if bx > ?cx?
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   const int reg_used2 = FindComplementRegister(reg_used);
   if (Register(reg_used) < Register(reg_used2)) IP().Advance();
   return true;
@@ -1898,14 +1898,14 @@ bool cHardwareCPU::Inst_IfGrEqu()       // Execute next if bx > ?cx?
 
 bool cHardwareCPU::Inst_IfLess0()       // Execute next if ?bx? != 0.
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   if (Register(reg_used) >= 0)  IP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfLess()       // Execute next if ?bx? < ?cx?
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   const int reg_used2 = FindComplementRegister(reg_used);
   if (Register(reg_used) >=  Register(reg_used2))  IP().Advance();
   return true;
@@ -1913,14 +1913,14 @@ bool cHardwareCPU::Inst_IfLess()       // Execute next if ?bx? < ?cx?
 
 bool cHardwareCPU::Inst_IfLsEqu0()       // Execute next if ?bx? != 0.
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   if (Register(reg_used) > 0) IP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfLsEqu()       // Execute next if bx > ?cx?
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   const int reg_used2 = FindComplementRegister(reg_used);
   if (Register(reg_used) >  Register(reg_used2))  IP().Advance();
   return true;
@@ -1928,37 +1928,37 @@ bool cHardwareCPU::Inst_IfLsEqu()       // Execute next if bx > ?cx?
 
 bool cHardwareCPU::Inst_IfBit1()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   if ((Register(reg_used) & 1) == 0)  IP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfANotEqB()     // Execute next if AX != BX
 {
-  if (Register(REG_AX) == Register(REG_BX) )  IP().Advance();
+  if (Register(nHardwareCPU::REG_AX) == Register(nHardwareCPU::REG_BX) )  IP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfBNotEqC()     // Execute next if BX != CX
 {
-  if (Register(REG_BX) == Register(REG_CX) )  IP().Advance();
+  if (Register(nHardwareCPU::REG_BX) == Register(nHardwareCPU::REG_CX) )  IP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfANotEqC()     // Execute next if AX != BX
 {
-  if (Register(REG_AX) == Register(REG_CX) )  IP().Advance();
+  if (Register(nHardwareCPU::REG_AX) == Register(nHardwareCPU::REG_CX) )  IP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_JumpF()
 {
   ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
+  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
 
   // If there is no label, jump BX steps.
   if (GetLabel().GetSize() == 0) {
-    GetActiveHead().Jump(Register(REG_BX));
+    GetActiveHead().Jump(Register(nHardwareCPU::REG_BX));
     return true;
   }
 
@@ -1979,11 +1979,11 @@ bool cHardwareCPU::Inst_JumpF()
 bool cHardwareCPU::Inst_JumpB()
 {
   ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
+  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
 
   // If there is no label, jump BX steps.
   if (GetLabel().GetSize() == 0) {
-    GetActiveHead().Jump(-Register(REG_BX));
+    GetActiveHead().Jump(-Register(nHardwareCPU::REG_BX));
     return true;
   }
 
@@ -2019,11 +2019,11 @@ bool cHardwareCPU::Inst_JumpP()
   cHardwareCPU & other_hardware = (cHardwareCPU &) other_organism->GetHardware();
 
   ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
+  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
 
   // If there is no label, jump to line BX in creature.
   if (GetLabel().GetSize() == 0) {
-    const int new_pos = Register(REG_BX);
+    const int new_pos = Register(nHardwareCPU::REG_BX);
     IP().Set(new_pos, &other_hardware);
     organism->GetPhenotype().IsParasite() = true;
     return true;
@@ -2048,11 +2048,11 @@ bool cHardwareCPU::Inst_JumpP()
 bool cHardwareCPU::Inst_JumpSelf()
 {
   ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
+  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
 
   // If there is no label, jump to line BX in creature.
   if (GetLabel().GetSize() == 0) {
-    IP().Set(Register(REG_BX), this);
+    IP().Set(Register(nHardwareCPU::REG_BX), this);
     return true;
   }
 
@@ -2077,10 +2077,10 @@ bool cHardwareCPU::Inst_Call()
 
   // Jump to the compliment label (or by the ammount in the bx register)
   ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
+  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
 
   if (GetLabel().GetSize() == 0) {
-    IP().Jump(Register(REG_BX));
+    IP().Jump(Register(nHardwareCPU::REG_BX));
     return true;
   }
 
@@ -2104,51 +2104,51 @@ bool cHardwareCPU::Inst_Return()
 
 bool cHardwareCPU::Inst_Pop()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   Register(reg_used) = StackPop();
   return true;
 }
 
 bool cHardwareCPU::Inst_Push()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   StackPush(Register(reg_used));
   return true;
 }
 
 bool cHardwareCPU::Inst_HeadPop()
 {
-  const int head_used = FindModifiedHead(HEAD_IP);
+  const int head_used = FindModifiedHead(nHardware::HEAD_IP);
   GetHead(head_used).Set(StackPop(), this);
   return true;
 }
 
 bool cHardwareCPU::Inst_HeadPush()
 {
-  const int head_used = FindModifiedHead(HEAD_IP);
+  const int head_used = FindModifiedHead(nHardware::HEAD_IP);
   StackPush(GetHead(head_used).GetPosition());
-  if (head_used == HEAD_IP) {
-    GetHead(head_used).Set(GetHead(HEAD_FLOW));
+  if (head_used == nHardware::HEAD_IP) {
+    GetHead(head_used).Set(GetHead(nHardware::HEAD_FLOW));
     advance_ip = false;
   }
   return true;
 }
 
 
-bool cHardwareCPU::Inst_PopA() { Register(REG_AX) = StackPop(); return true;}
-bool cHardwareCPU::Inst_PopB() { Register(REG_BX) = StackPop(); return true;}
-bool cHardwareCPU::Inst_PopC() { Register(REG_CX) = StackPop(); return true;}
+bool cHardwareCPU::Inst_PopA() { Register(nHardwareCPU::REG_AX) = StackPop(); return true;}
+bool cHardwareCPU::Inst_PopB() { Register(nHardwareCPU::REG_BX) = StackPop(); return true;}
+bool cHardwareCPU::Inst_PopC() { Register(nHardwareCPU::REG_CX) = StackPop(); return true;}
 
-bool cHardwareCPU::Inst_PushA() { StackPush(Register(REG_AX)); return true;}
-bool cHardwareCPU::Inst_PushB() { StackPush(Register(REG_BX)); return true;}
-bool cHardwareCPU::Inst_PushC() { StackPush(Register(REG_CX)); return true;}
+bool cHardwareCPU::Inst_PushA() { StackPush(Register(nHardwareCPU::REG_AX)); return true;}
+bool cHardwareCPU::Inst_PushB() { StackPush(Register(nHardwareCPU::REG_BX)); return true;}
+bool cHardwareCPU::Inst_PushC() { StackPush(Register(nHardwareCPU::REG_CX)); return true;}
 
 bool cHardwareCPU::Inst_SwitchStack() { SwitchStack(); return true;}
 bool cHardwareCPU::Inst_FlipStack()   { StackFlip(); return true;}
 
 bool cHardwareCPU::Inst_Swap()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   const int other_reg = FindComplementRegister(reg_used);
 //  cout << endl; 
 //  cout << "Regs 1, 2, 3 are: " << Register(1) << " " << Register(2) << " " << Register(3) << endl; 
@@ -2160,57 +2160,57 @@ bool cHardwareCPU::Inst_Swap()
   return true;
 }
 
-bool cHardwareCPU::Inst_SwapAB() { nFunctions::Swap(Register(REG_AX), Register(REG_BX)); return true; }
-bool cHardwareCPU::Inst_SwapBC() { nFunctions::Swap(Register(REG_BX), Register(REG_CX)); return true; }
-bool cHardwareCPU::Inst_SwapAC() { nFunctions::Swap(Register(REG_AX), Register(REG_CX)); return true; }
+bool cHardwareCPU::Inst_SwapAB() { nFunctions::Swap(Register(nHardwareCPU::REG_AX), Register(nHardwareCPU::REG_BX)); return true; }
+bool cHardwareCPU::Inst_SwapBC() { nFunctions::Swap(Register(nHardwareCPU::REG_BX), Register(nHardwareCPU::REG_CX)); return true; }
+bool cHardwareCPU::Inst_SwapAC() { nFunctions::Swap(Register(nHardwareCPU::REG_AX), Register(nHardwareCPU::REG_CX)); return true; }
 
 bool cHardwareCPU::Inst_CopyReg()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   const int other_reg = FindComplementRegister(reg_used);
   Register(other_reg) = Register(reg_used);
   return true;
 }
 
-bool cHardwareCPU::Inst_CopyRegAB() { Register(REG_AX) = Register(REG_BX);   return true;
+bool cHardwareCPU::Inst_CopyRegAB() { Register(nHardwareCPU::REG_AX) = Register(nHardwareCPU::REG_BX);   return true;
 }
-bool cHardwareCPU::Inst_CopyRegAC() { Register(REG_AX) = Register(REG_CX);   return true;
+bool cHardwareCPU::Inst_CopyRegAC() { Register(nHardwareCPU::REG_AX) = Register(nHardwareCPU::REG_CX);   return true;
 }
-bool cHardwareCPU::Inst_CopyRegBA() { Register(REG_BX) = Register(REG_AX);   return true;
+bool cHardwareCPU::Inst_CopyRegBA() { Register(nHardwareCPU::REG_BX) = Register(nHardwareCPU::REG_AX);   return true;
 }
-bool cHardwareCPU::Inst_CopyRegBC() { Register(REG_BX) = Register(REG_CX);   return true;
+bool cHardwareCPU::Inst_CopyRegBC() { Register(nHardwareCPU::REG_BX) = Register(nHardwareCPU::REG_CX);   return true;
 }
-bool cHardwareCPU::Inst_CopyRegCA() { Register(REG_CX) = Register(REG_AX);   return true;
+bool cHardwareCPU::Inst_CopyRegCA() { Register(nHardwareCPU::REG_CX) = Register(nHardwareCPU::REG_AX);   return true;
 }
-bool cHardwareCPU::Inst_CopyRegCB() { Register(REG_CX) = Register(REG_BX);   return true;
+bool cHardwareCPU::Inst_CopyRegCB() { Register(nHardwareCPU::REG_CX) = Register(nHardwareCPU::REG_BX);   return true;
 }
 
 bool cHardwareCPU::Inst_Reset()
 {
-  Register(REG_AX) = 0;
-  Register(REG_BX) = 0;
-  Register(REG_CX) = 0;
+  Register(nHardwareCPU::REG_AX) = 0;
+  Register(nHardwareCPU::REG_BX) = 0;
+  Register(nHardwareCPU::REG_CX) = 0;
   StackClear();
   return true;
 }
 
 bool cHardwareCPU::Inst_ShiftR()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   Register(reg_used) >>= 1;
   return true;
 }
 
 bool cHardwareCPU::Inst_ShiftL()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   Register(reg_used) <<= 1;
   return true;
 }
 
 bool cHardwareCPU::Inst_Bit1()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   Register(reg_used) |=  1;
   return true;
 }
@@ -2218,78 +2218,78 @@ bool cHardwareCPU::Inst_Bit1()
 bool cHardwareCPU::Inst_SetNum()
 {
   ReadLabel();
-  Register(REG_BX) = GetLabel().AsInt(NUM_NOPS);
+  Register(nHardwareCPU::REG_BX) = GetLabel().AsInt(nHardwareCPU::NUM_NOPS);
   return true;
 }
 
 bool cHardwareCPU::Inst_ValGrey(void) {
   ReadLabel();
-  Register(REG_BX) = GetLabel().AsIntGreyCode(NUM_NOPS);
+  Register(nHardwareCPU::REG_BX) = GetLabel().AsIntGreyCode(nHardwareCPU::NUM_NOPS);
   return true;
 }
 
 bool cHardwareCPU::Inst_ValDir(void) {
   ReadLabel();
-  Register(REG_BX) = GetLabel().AsIntDirect(NUM_NOPS);
+  Register(nHardwareCPU::REG_BX) = GetLabel().AsIntDirect(nHardwareCPU::NUM_NOPS);
   return true;
 }
 
 bool cHardwareCPU::Inst_ValAddP(void) {
   ReadLabel();
-  Register(REG_BX) = GetLabel().AsIntAdditivePolynomial(NUM_NOPS);
+  Register(nHardwareCPU::REG_BX) = GetLabel().AsIntAdditivePolynomial(nHardwareCPU::NUM_NOPS);
   return true;
 }
 
 bool cHardwareCPU::Inst_ValFib(void) {
   ReadLabel();
-  Register(REG_BX) = GetLabel().AsIntFib(NUM_NOPS);
+  Register(nHardwareCPU::REG_BX) = GetLabel().AsIntFib(nHardwareCPU::NUM_NOPS);
   return true;
 }
 
 bool cHardwareCPU::Inst_ValPolyC(void) {
   ReadLabel();
-  Register(REG_BX) = GetLabel().AsIntPolynomialCoefficent(NUM_NOPS);
+  Register(nHardwareCPU::REG_BX) = GetLabel().AsIntPolynomialCoefficent(nHardwareCPU::NUM_NOPS);
   return true;
 }
 
 bool cHardwareCPU::Inst_Inc()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   Register(reg_used) += 1;
   return true;
 }
 
 bool cHardwareCPU::Inst_Dec()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   Register(reg_used) -= 1;
   return true;
 }
 
 bool cHardwareCPU::Inst_Zero()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   Register(reg_used) = 0;
   return true;
 }
 
 bool cHardwareCPU::Inst_Neg()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   Register(reg_used) = 0-Register(reg_used);
   return true;
 }
 
 bool cHardwareCPU::Inst_Square()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   Register(reg_used) = Register(reg_used) * Register(reg_used);
   return true;
 }
 
 bool cHardwareCPU::Inst_Sqrt()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   const int value = Register(reg_used);
   if (value > 1) Register(reg_used) = (int) sqrt((double) value);
   else if (value < 0) {
@@ -2301,7 +2301,7 @@ bool cHardwareCPU::Inst_Sqrt()
 
 bool cHardwareCPU::Inst_Log()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   const int value = Register(reg_used);
   if (value >= 1) Register(reg_used) = (int) log((double) value);
   else if (value < 0) {
@@ -2313,7 +2313,7 @@ bool cHardwareCPU::Inst_Log()
 
 bool cHardwareCPU::Inst_Log10()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   const int value = Register(reg_used);
   if (value >= 1) Register(reg_used) = (int) log10((double) value);
   else if (value < 0) {
@@ -2325,40 +2325,40 @@ bool cHardwareCPU::Inst_Log10()
 
 bool cHardwareCPU::Inst_Minus17()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   Register(reg_used) -= 17;
   return true;
 }
 
 bool cHardwareCPU::Inst_Add()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
-  Register(reg_used) = Register(REG_BX) + Register(REG_CX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  Register(reg_used) = Register(nHardwareCPU::REG_BX) + Register(nHardwareCPU::REG_CX);
   return true;
 }
 
 bool cHardwareCPU::Inst_Sub()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
-  Register(reg_used) = Register(REG_BX) - Register(REG_CX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  Register(reg_used) = Register(nHardwareCPU::REG_BX) - Register(nHardwareCPU::REG_CX);
   return true;
 }
 
 bool cHardwareCPU::Inst_Mult()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
-  Register(reg_used) = Register(REG_BX) * Register(REG_CX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  Register(reg_used) = Register(nHardwareCPU::REG_BX) * Register(nHardwareCPU::REG_CX);
   return true;
 }
 
 bool cHardwareCPU::Inst_Div()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
-  if (Register(REG_CX) != 0) {
-    if (0-INT_MAX > Register(REG_BX) && Register(REG_CX) == -1)
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  if (Register(nHardwareCPU::REG_CX) != 0) {
+    if (0-INT_MAX > Register(nHardwareCPU::REG_BX) && Register(nHardwareCPU::REG_CX) == -1)
       Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: Float exception");
     else
-      Register(reg_used) = Register(REG_BX) / Register(REG_CX);
+      Register(reg_used) = Register(nHardwareCPU::REG_BX) / Register(nHardwareCPU::REG_CX);
   } else {
     Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: dividing by 0");
     return false;
@@ -2368,9 +2368,9 @@ bool cHardwareCPU::Inst_Div()
 
 bool cHardwareCPU::Inst_Mod()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
-  if (Register(REG_CX) != 0) {
-    Register(reg_used) = Register(REG_BX) % Register(REG_CX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  if (Register(nHardwareCPU::REG_CX) != 0) {
+    Register(reg_used) = Register(nHardwareCPU::REG_BX) % Register(nHardwareCPU::REG_CX);
   } else {
     Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "mod: modding by 0");
   return false;
@@ -2381,51 +2381,51 @@ bool cHardwareCPU::Inst_Mod()
 
 bool cHardwareCPU::Inst_Nand()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
-  Register(reg_used) = ~(Register(REG_BX) & Register(REG_CX));
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  Register(reg_used) = ~(Register(nHardwareCPU::REG_BX) & Register(nHardwareCPU::REG_CX));
   return true;
 }
 
 bool cHardwareCPU::Inst_Nor()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
-  Register(reg_used) = ~(Register(REG_BX) | Register(REG_CX));
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  Register(reg_used) = ~(Register(nHardwareCPU::REG_BX) | Register(nHardwareCPU::REG_CX));
   return true;
 }
 
 bool cHardwareCPU::Inst_And()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
-  Register(reg_used) = (Register(REG_BX) & Register(REG_CX));
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  Register(reg_used) = (Register(nHardwareCPU::REG_BX) & Register(nHardwareCPU::REG_CX));
   return true;
 }
 
 bool cHardwareCPU::Inst_Not()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   Register(reg_used) = ~(Register(reg_used));
   return true;
 }
 
 bool cHardwareCPU::Inst_Order()
 {
-  if (Register(REG_BX) > Register(REG_CX)) {
-    nFunctions::Swap(Register(REG_BX), Register(REG_CX));
+  if (Register(nHardwareCPU::REG_BX) > Register(nHardwareCPU::REG_CX)) {
+    nFunctions::Swap(Register(nHardwareCPU::REG_BX), Register(nHardwareCPU::REG_CX));
   }
   return true;
 }
 
 bool cHardwareCPU::Inst_Xor()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
-  Register(reg_used) = Register(REG_BX) ^ Register(REG_CX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  Register(reg_used) = Register(nHardwareCPU::REG_BX) ^ Register(nHardwareCPU::REG_CX);
   return true;
 }
 
 bool cHardwareCPU::Inst_Copy()
 {
-  const cHeadCPU from(this, Register(REG_BX));
-  cHeadCPU to(this, Register(REG_AX) + Register(REG_BX));
+  const cHeadCPU from(this, Register(nHardwareCPU::REG_BX));
+  cHeadCPU to(this, Register(nHardwareCPU::REG_AX) + Register(nHardwareCPU::REG_BX));
   sCPUStats & cpu_stats = organism->CPUStats();
 
   if (organism->TestCopyMut()) {
@@ -2447,8 +2447,8 @@ bool cHardwareCPU::Inst_Copy()
 
 bool cHardwareCPU::Inst_ReadInst()
 {
-  const int reg_used = FindModifiedRegister(REG_CX);
-  const cHeadCPU from(this, Register(REG_BX));
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_CX);
+  const cHeadCPU from(this, Register(nHardwareCPU::REG_BX));
 
   // Dis-allowing mutations on read, for the moment (write only...)
   // @CAO This allows perfect error-correction...
@@ -2458,8 +2458,8 @@ bool cHardwareCPU::Inst_ReadInst()
 
 bool cHardwareCPU::Inst_WriteInst()
 {
-  cHeadCPU to(this, Register(REG_AX) + Register(REG_BX));
-  const int reg_used = FindModifiedRegister(REG_CX);
+  cHeadCPU to(this, Register(nHardwareCPU::REG_AX) + Register(nHardwareCPU::REG_BX));
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_CX);
   const int value = Mod(Register(reg_used), GetNumInst());
   sCPUStats & cpu_stats = organism->CPUStats();
 
@@ -2483,7 +2483,7 @@ bool cHardwareCPU::Inst_WriteInst()
 
 bool cHardwareCPU::Inst_StackReadInst()
 {
-  const int reg_used = FindModifiedRegister(REG_CX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_CX);
   cHeadCPU from(this, Register(reg_used));
   StackPush(from.GetInst().GetOp());
   return true;
@@ -2491,8 +2491,8 @@ bool cHardwareCPU::Inst_StackReadInst()
 
 bool cHardwareCPU::Inst_StackWriteInst()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
-  cHeadCPU to(this, Register(REG_AX) + Register(reg_used));
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  cHeadCPU to(this, Register(nHardwareCPU::REG_AX) + Register(reg_used));
   const int value = Mod(StackPop(), GetNumInst());
   sCPUStats & cpu_stats = organism->CPUStats();
 
@@ -2516,9 +2516,9 @@ bool cHardwareCPU::Inst_StackWriteInst()
 
 bool cHardwareCPU::Inst_Compare()
 {
-  const int reg_used = FindModifiedRegister(REG_CX);
-  cHeadCPU from(this, Register(REG_BX));
-  cHeadCPU to(this, Register(REG_AX) + Register(REG_BX));
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_CX);
+  cHeadCPU from(this, Register(nHardwareCPU::REG_BX));
+  cHeadCPU to(this, Register(nHardwareCPU::REG_AX) + Register(nHardwareCPU::REG_BX));
 
   // Compare is dangerous -- it can cause mutations!
   if (organism->TestCopyMut()) {
@@ -2535,8 +2535,8 @@ bool cHardwareCPU::Inst_Compare()
 
 bool cHardwareCPU::Inst_IfNCpy()
 {
-  const cHeadCPU from(this, Register(REG_BX));
-  const cHeadCPU to(this, Register(REG_AX) + Register(REG_BX));
+  const cHeadCPU from(this, Register(nHardwareCPU::REG_BX));
+  const cHeadCPU to(this, Register(nHardwareCPU::REG_AX) + Register(nHardwareCPU::REG_BX));
 
   // Allow for errors in this test...
   if (organism->TestCopyMut()) {
@@ -2550,15 +2550,15 @@ bool cHardwareCPU::Inst_IfNCpy()
 bool cHardwareCPU::Inst_Allocate()   // Allocate bx more space...
 {
   const int size = GetMemory().GetSize();
-  if( Allocate_Main(Register(REG_BX)) ) {
-    Register(REG_AX) = size;
+  if( Allocate_Main(Register(nHardwareCPU::REG_BX)) ) {
+    Register(nHardwareCPU::REG_AX) = size;
     return true;
   } else return false;
 }
 
 bool cHardwareCPU::Inst_Divide()  
 { 
-  return Divide_Main(Register(REG_AX));    
+  return Divide_Main(Register(nHardwareCPU::REG_AX));    
 }
 
 bool cHardwareCPU::Inst_CDivide() 
@@ -2577,7 +2577,7 @@ bool cHardwareCPU::Inst_MaxAlloc()   // Allocate maximal more
   const int alloc_size = Min((int) (cConfig::GetChildSizeRange() * cur_size),
 			     MAX_CREATURE_SIZE - cur_size);
   if( Allocate_Main(alloc_size) ) {
-    Register(REG_AX) = cur_size;
+    Register(nHardwareCPU::REG_AX) = cur_size;
     return true;
   } else return false;
 }
@@ -2629,7 +2629,7 @@ bool cHardwareCPU::Inst_Repro()
 
 bool cHardwareCPU::Inst_Kazi()
 {
-	const int reg_used = FindModifiedRegister(REG_AX);
+	const int reg_used = FindModifiedRegister(nHardwareCPU::REG_AX);
 	int percentProb = Register(reg_used) % 100;
 	int random = abs(rand()) % 100;
 	if (random >= percentProb)
@@ -2661,8 +2661,8 @@ bool cHardwareCPU::Inst_Die()
 bool cHardwareCPU::Inst_Inject()
 {
   AdjustHeads();
-  const int start_pos = GetHead(HEAD_READ).GetPosition();
-  const int end_pos = GetHead(HEAD_WRITE).GetPosition();
+  const int start_pos = GetHead(nHardware::HEAD_READ).GetPosition();
+  const int end_pos = GetHead(nHardware::HEAD_WRITE).GetPosition();
   const int inject_size = end_pos - start_pos;
 
   // Make sure the creature will still be above the minimum size,
@@ -2693,7 +2693,7 @@ bool cHardwareCPU::Inst_Inject()
   }
 
   // Search for the label in the host...
-  GetLabel().Rotate(1, NUM_NOPS);
+  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
 
   const bool inject_signal = host_organism->GetHardware().InjectHost(GetLabel(), inject_code);
   if (inject_signal) {
@@ -2728,8 +2728,8 @@ bool cHardwareCPU::Inst_InjectRand()
 bool cHardwareCPU::Inst_InjectThread()
 {
   AdjustHeads();
-  const int start_pos = GetHead(HEAD_READ).GetPosition();
-  const int end_pos = GetHead(HEAD_WRITE).GetPosition();
+  const int start_pos = GetHead(nHardware::HEAD_READ).GetPosition();
+  const int end_pos = GetHead(nHardware::HEAD_WRITE).GetPosition();
   const int inject_size = end_pos - start_pos;
 
   // Make sure the creature will still be above the minimum size,
@@ -2760,7 +2760,7 @@ bool cHardwareCPU::Inst_InjectThread()
   }
 
   // Search for the label in the host...
-  GetLabel().Rotate(1, NUM_NOPS);
+  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
 
   const int inject_signal =
     host_organism->GetHardware().InjectThread(GetLabel(), inject_code);
@@ -2781,7 +2781,7 @@ bool cHardwareCPU::Inst_InjectThread()
 
 bool cHardwareCPU::Inst_TaskGet()
 {
-  const int reg_used = FindModifiedRegister(REG_CX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_CX);
   const int value = organism->GetNextInput();
   Register(reg_used) = value;
   organism->DoInput(value);
@@ -2798,14 +2798,14 @@ bool cHardwareCPU::Inst_TaskStackGet()
 
 bool cHardwareCPU::Inst_TaskStackLoad()
 {
-  for (int i = 0; i < IO_SIZE; i++) 
+  for (int i = 0; i < nHardware::IO_SIZE; i++) 
     StackPush( organism->GetNextInput() );
   return true;
 }
 
 bool cHardwareCPU::Inst_TaskPut()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   const int value = Register(reg_used);
   Register(reg_used) = 0;
   organism->DoOutput(value);
@@ -2814,7 +2814,7 @@ bool cHardwareCPU::Inst_TaskPut()
 
 bool cHardwareCPU::Inst_TaskIO()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
 
   // Do the "put" component
   const int value_out = Register(reg_used);
@@ -2829,7 +2829,7 @@ bool cHardwareCPU::Inst_TaskIO()
 
 bool cHardwareCPU::Inst_Send()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   organism->SendValue(Register(reg_used));
   Register(reg_used) = 0;
   return true;
@@ -2837,7 +2837,7 @@ bool cHardwareCPU::Inst_Send()
 
 bool cHardwareCPU::Inst_Receive()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   Register(reg_used) = organism->ReceiveValue();
   return true;
 }
@@ -2845,7 +2845,7 @@ bool cHardwareCPU::Inst_Receive()
 bool cHardwareCPU::Inst_Sense()
 {
   const tArray<double> & res_count = organism->PopInterface().GetResources();
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
 
   // If there are no resources to measure, this instruction fails.
   if (res_count.GetSize() == 0) return false;
@@ -3013,26 +3013,26 @@ bool cHardwareCPU::Inst_DonateNULL()
 bool cHardwareCPU::Inst_SearchF()
 {
   ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
+  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
   const int search_size = FindLabel(1).GetPosition() - IP().GetPosition();
-  Register(REG_BX) = search_size;
-  Register(REG_CX) = GetLabel().GetSize();
+  Register(nHardwareCPU::REG_BX) = search_size;
+  Register(nHardwareCPU::REG_CX) = GetLabel().GetSize();
   return true;
 }
 
 bool cHardwareCPU::Inst_SearchB()
 {
   ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
+  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
   const int search_size = IP().GetPosition() - FindLabel(-1).GetPosition();
-  Register(REG_BX) = search_size;
-  Register(REG_CX) = GetLabel().GetSize();
+  Register(nHardwareCPU::REG_BX) = search_size;
+  Register(nHardwareCPU::REG_CX) = GetLabel().GetSize();
   return true;
 }
 
 bool cHardwareCPU::Inst_MemSize()
 {
-  Register(FindModifiedRegister(REG_BX)) = GetMemory().GetSize();
+  Register(FindModifiedRegister(nHardwareCPU::REG_BX)) = GetMemory().GetSize();
   return true;
 }
 
@@ -3053,7 +3053,7 @@ bool cHardwareCPU::Inst_RotateL()
   if (!GetLabel().GetSize()) return true;
 
   // Rotate until a complement label is found (or all have been checked).
-  GetLabel().Rotate(1, NUM_NOPS);
+  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
   for (int i = 1; i < num_neighbors; i++) {
     cOrganism * neighbor = organism->GetNeighbor();
 
@@ -3089,7 +3089,7 @@ bool cHardwareCPU::Inst_RotateR()
   if (!GetLabel().GetSize()) return true;
 
   // Rotate until a complement label is found (or all have been checked).
-  GetLabel().Rotate(1, NUM_NOPS);
+  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
   for (int i = 1; i < num_neighbors; i++) {
     cOrganism * neighbor = organism->GetNeighbor();
 
@@ -3111,7 +3111,7 @@ bool cHardwareCPU::Inst_RotateR()
 
 bool cHardwareCPU::Inst_SetCopyMut()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   const int new_mut_rate = Max( Register(reg_used), 1 );
   organism->SetCopyMutProb(((double) new_mut_rate) / 10000.0);
   return true;
@@ -3119,7 +3119,7 @@ bool cHardwareCPU::Inst_SetCopyMut()
 
 bool cHardwareCPU::Inst_ModCopyMut()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   const double new_mut_rate = organism->GetCopyMutProb() +
     ((double) Register(reg_used)) / 10000.0;
   if (new_mut_rate > 0.0) organism->SetCopyMutProb(new_mut_rate);
@@ -3145,7 +3145,7 @@ bool cHardwareCPU::Inst_KillThread()
 
 bool cHardwareCPU::Inst_ThreadID()
 {
-  const int reg_used = FindModifiedRegister(REG_BX);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   Register(reg_used) = GetCurThreadID();
   return true;
 }
@@ -3155,44 +3155,44 @@ bool cHardwareCPU::Inst_ThreadID()
 
 bool cHardwareCPU::Inst_SetHead()
 {
-  const int head_used = FindModifiedHead(HEAD_IP);
+  const int head_used = FindModifiedHead(nHardware::HEAD_IP);
   SetActiveHead(head_used);
   return true;
 }
 
 bool cHardwareCPU::Inst_AdvanceHead()
 {
-  const int head_used = FindModifiedHead(HEAD_WRITE);
+  const int head_used = FindModifiedHead(nHardware::HEAD_WRITE);
   GetHead(head_used).Advance();
   return true;
 }
  
 bool cHardwareCPU::Inst_MoveHead()
 {
-  const int head_used = FindModifiedHead(HEAD_IP);
-  GetHead(head_used).Set(GetHead(HEAD_FLOW));
-  if (head_used == HEAD_IP) advance_ip = false;
+  const int head_used = FindModifiedHead(nHardware::HEAD_IP);
+  GetHead(head_used).Set(GetHead(nHardware::HEAD_FLOW));
+  if (head_used == nHardware::HEAD_IP) advance_ip = false;
   return true;
 }
 
 bool cHardwareCPU::Inst_JumpHead()
 {
-  const int head_used = FindModifiedHead(HEAD_IP);
-  GetHead(head_used).Jump( Register(REG_CX) );
+  const int head_used = FindModifiedHead(nHardware::HEAD_IP);
+  GetHead(head_used).Jump( Register(nHardwareCPU::REG_CX) );
   return true;
 }
 
 bool cHardwareCPU::Inst_GetHead()
 {
-  const int head_used = FindModifiedHead(HEAD_IP);
-  Register(REG_CX) = GetHead(head_used).GetPosition();
+  const int head_used = FindModifiedHead(nHardware::HEAD_IP);
+  Register(nHardwareCPU::REG_CX) = GetHead(head_used).GetPosition();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfLabel()
 {
   ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
+  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
   if (GetLabel() != GetReadLabel())  IP().Advance();
   return true;
 }
@@ -3202,7 +3202,7 @@ bool cHardwareCPU::Inst_IfLabel()
 bool cHardwareCPU::Inst_IfLabel2()
 {
   ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
+  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
   if (GetLabel() != GetReadLabel()) {
     IP().Advance();
     if (inst_set->IsNop( IP().GetNextInst() ))  IP().Advance();
@@ -3213,8 +3213,8 @@ bool cHardwareCPU::Inst_IfLabel2()
 bool cHardwareCPU::Inst_HeadDivideMut(double mut_multiplier)
 {
   AdjustHeads();
-  const int divide_pos = GetHead(HEAD_READ).GetPosition();
-  int child_end =  GetHead(HEAD_WRITE).GetPosition();
+  const int divide_pos = GetHead(nHardware::HEAD_READ).GetPosition();
+  int child_end =  GetHead(nHardware::HEAD_WRITE).GetPosition();
   if (child_end == 0) child_end = GetMemory().GetSize();
   const int extra_lines = GetMemory().GetSize() - child_end;
   bool ret_val = Divide_Main(divide_pos, extra_lines, mut_multiplier);
@@ -3254,9 +3254,9 @@ bool cHardwareCPU::Inst_HeadDivideMateSelect()
   // Take the label that follows this divide and use it as the ID for which
   // other organisms this one is willing to mate with.
   ReadLabel();
-  organism->GetPhenotype().SetMateSelectID( GetLabel().AsInt(NUM_NOPS) );
+  organism->GetPhenotype().SetMateSelectID( GetLabel().AsInt(nHardwareCPU::NUM_NOPS) );
 
-//   int mate_id = GetLabel().AsInt(NUM_NOPS);
+//   int mate_id = GetLabel().AsInt(nHardwareCPU::NUM_NOPS);
 //   if (mate_id > 0) cout << mate_id << " "
 // 			<< GetLabel().AsString() << endl;
 
@@ -3293,7 +3293,7 @@ bool cHardwareCPU::Inst_HeadDivide0_001()  { return Inst_HeadDivideMut(0.001); }
 
 bool cHardwareCPU::Inst_HeadRead()
 {
-  const int head_id = FindModifiedHead(HEAD_READ);
+  const int head_id = FindModifiedHead(nHardware::HEAD_READ);
   GetHead(head_id).Adjust();
   sCPUStats & cpu_stats = organism->CPUStats();
 
@@ -3305,7 +3305,7 @@ bool cHardwareCPU::Inst_HeadRead()
   } else {
     read_inst = GetHead(head_id).GetInst().GetOp();
   }
-  Register(REG_BX) = read_inst;
+  Register(nHardwareCPU::REG_BX) = read_inst;
   ReadInst(read_inst);
 
   cpu_stats.mut_stats.copies_exec++;  // @CAO, this too..
@@ -3315,12 +3315,12 @@ bool cHardwareCPU::Inst_HeadRead()
 
 bool cHardwareCPU::Inst_HeadWrite()
 {
-  const int head_id = FindModifiedHead(HEAD_WRITE);
+  const int head_id = FindModifiedHead(nHardware::HEAD_WRITE);
   cHeadCPU & active_head = GetHead(head_id);
 
   active_head.Adjust();
 
-  int value = Register(REG_BX);
+  int value = Register(nHardwareCPU::REG_BX);
   if (value < 0 || value >= GetNumInst()) value = 0;
 
   active_head.SetInst(cInstruction(value));
@@ -3334,8 +3334,8 @@ bool cHardwareCPU::Inst_HeadWrite()
 bool cHardwareCPU::Inst_HeadCopy()
 {
   // For the moment, this cannot be nop-modified.
-  cHeadCPU & read_head = GetHead(HEAD_READ);
-  cHeadCPU & write_head = GetHead(HEAD_WRITE);
+  cHeadCPU & read_head = GetHead(nHardware::HEAD_READ);
+  cHeadCPU & write_head = GetHead(nHardware::HEAD_WRITE);
   sCPUStats & cpu_stats = organism->CPUStats();
 
   read_head.Adjust();
@@ -3369,8 +3369,8 @@ bool cHardwareCPU::Inst_HeadCopy()
 bool cHardwareCPU::HeadCopy_ErrorCorrect(double reduction)
 {
   // For the moment, this cannot be nop-modified.
-  cHeadCPU & read_head = GetHead(HEAD_READ);
-  cHeadCPU & write_head = GetHead(HEAD_WRITE);
+  cHeadCPU & read_head = GetHead(nHardware::HEAD_READ);
+  cHeadCPU & write_head = GetHead(nHardware::HEAD_WRITE);
   sCPUStats & cpu_stats = organism->CPUStats();
 
   read_head.Adjust();
@@ -3410,20 +3410,20 @@ bool cHardwareCPU::Inst_HeadCopy10() { return HeadCopy_ErrorCorrect(10); }
 bool cHardwareCPU::Inst_HeadSearch()
 {
   ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
+  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
   cHeadCPU found_pos = FindLabel(0);
   const int search_size = found_pos.GetPosition() - IP().GetPosition();
-  Register(REG_BX) = search_size;
-  Register(REG_CX) = GetLabel().GetSize();
-  GetHead(HEAD_FLOW).Set(found_pos);
-  GetHead(HEAD_FLOW).Advance();
+  Register(nHardwareCPU::REG_BX) = search_size;
+  Register(nHardwareCPU::REG_CX) = GetLabel().GetSize();
+  GetHead(nHardware::HEAD_FLOW).Set(found_pos);
+  GetHead(nHardware::HEAD_FLOW).Advance();
   return true; 
 }
 
 bool cHardwareCPU::Inst_SetFlow()
 {
-  const int reg_used = FindModifiedRegister(REG_CX);
-  GetHead(HEAD_FLOW).Set(Register(reg_used), this);
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_CX);
+  GetHead(nHardware::HEAD_FLOW).Set(Register(reg_used), this);
   return true; 
 }
 
@@ -3435,7 +3435,7 @@ bool cHardwareCPU::Inst_DMJumpF()
 
   // If there is no label, jump BX steps.
   if (GetLabel().GetSize() == 0) {
-    IP().Jump(Register(REG_BX));
+    IP().Jump(Register(nHardwareCPU::REG_BX));
     return true;
   }
 

@@ -1,8 +1,8 @@
 
-Include("cpu_memory.hh")
+Include("cCPUMemory.h")
 Include("instruction.hh")
-Include("hardware_base.hh")
-Include("code_label.hh")
+Include("cHardwareBase.h")
+Include("cCodeLabel.h")
 
 cHeadCPU = Class("cHeadCPU", "cpu_head-fixups.hh")
 set_policy(cHeadCPU.GetCurHardware, return_internal_reference())

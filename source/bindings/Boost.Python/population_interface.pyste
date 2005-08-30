@@ -1,6 +1,6 @@
 
 Include("genome.hh")
-Include("hardware_base.hh")
+Include("cHardwareBase.h")
 Include("organism.hh")
 Include("org_message.hh")
 Include("population.hh")

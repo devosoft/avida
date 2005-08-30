@@ -15,7 +15,7 @@
 #include "tArray.hh"
 #endif
 #ifndef MEMORY_FLAGS_HH
-#include "memory_flags.hh"
+#include "cMemoryFlags.h"
 #endif
 
 class cGenome;

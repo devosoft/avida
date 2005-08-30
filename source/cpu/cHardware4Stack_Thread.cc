@@ -24,10 +24,10 @@ cHardware4Stack_Thread::cHardware4Stack_Thread(const cHardware4Stack_Thread & in
 {
    id = _id;
    if (id == -1) id = in_thread.id;
-   for (int i = 0; i < NUM_LOCAL_STACKS; i++) {
+   for (int i = 0; i < nHardware4Stack::NUM_LOCAL_STACKS; i++) {
      local_stacks[i] = in_thread.local_stacks[i];
    }
-   for (int i = 0; i < NUM_HEADS; i++) {
+   for (int i = 0; i < nHardware::NUM_HEADS; i++) {
      heads[i] = in_thread.heads[i];
    }
    owner = in_thread.owner;
@@ -38,10 +38,10 @@ cHardware4Stack_Thread::~cHardware4Stack_Thread() {}
 void cHardware4Stack_Thread::operator=(const cHardware4Stack_Thread & in_thread)
 {
   id = in_thread.id;
-  for (int i = 0; i < NUM_LOCAL_STACKS; i++) {
+  for (int i = 0; i < nHardware4Stack::NUM_LOCAL_STACKS; i++) {
     local_stacks[i] = in_thread.local_stacks[i];
   }
-  for (int i = 0; i < NUM_HEADS; i++) {
+  for (int i = 0; i < nHardware::NUM_HEADS; i++) {
     heads[i] = in_thread.heads[i];
   }
   owner = in_thread.owner;
@@ -51,10 +51,10 @@ void cHardware4Stack_Thread::Reset(cHardwareBase * in_hardware, int _id)
 {
   id = _id;
 
-  for (int i = 0; i < NUM_LOCAL_STACKS; i++) local_stacks[i].Clear();
-  for (int i = 0; i < NUM_HEADS; i++) heads[i].Reset(0, in_hardware);
+  for (int i = 0; i < nHardware4Stack::NUM_LOCAL_STACKS; i++) local_stacks[i].Clear();
+  for (int i = 0; i < nHardware::NUM_HEADS; i++) heads[i].Reset(0, in_hardware);
 
-  cur_head = HEAD_IP;
+  cur_head = nHardware::HEAD_IP;
   read_label.Clear();
   next_label.Clear();
   owner = NULL;
@@ -65,12 +65,12 @@ void cHardware4Stack_Thread::SaveState(ostream & fp){
   fp << "cHardware4Stack_Thread" << endl;
 
   // stacks (NOT WORKING! -law)
-  for( int i=0; i<NUM_STACKS; ++i ){
+  for( int i=0; i<nHardware4Stack::NUM_STACKS; ++i ){
     local_stacks[i].SaveState(fp);
   }
 
   // heads (@TCC does not handle parasites!!!)
-  for( int i=0; i<NUM_HEADS; ++i ){
+  for( int i=0; i<nHardware::NUM_HEADS; ++i ){
     fp<<heads[i].GetPosition()<<endl;
   }
 
@@ -90,12 +90,12 @@ void cHardware4Stack_Thread::LoadState(istream & fp){
   assert( foo == "cHardware4Stack_Thread");
 
   // stacks (NOT WORKING!  -law)
-  for( int i=0; i<NUM_STACKS; ++i ){
+  for( int i=0; i<nHardware4Stack::NUM_STACKS; ++i ){
     local_stacks[i].LoadState(fp);
   }
 
   // heads (@TCC does not handle parasites!!!)
-  for( int i=0; i<NUM_HEADS; ++i ){
+  for( int i=0; i<nHardware::NUM_HEADS; ++i ){
     int pos;
     fp>>pos;
     heads[i].AbsSet(pos);

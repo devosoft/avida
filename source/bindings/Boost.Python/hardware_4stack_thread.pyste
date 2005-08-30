@@ -1,8 +1,8 @@
 
-Include("hardware_base.hh")
+Include("cHardwareBase.h")
 Include("inject_genotype.hh")
 
-cHardware4Stack_Thread = Class("cHardware4Stack_Thread", "hardware_4stack_thread.hh")
+cHardware4Stack_Thread = Class("cHardware4Stack_Thread", "cHardware4Stack_Thread.h")
 
 exclude(cHardware4Stack_Thread.heads)
 exclude(cHardware4Stack_Thread.local_stacks)

@@ -7,7 +7,7 @@
 
 #include "cCPUTestInfo.h"
 
-#include "hardware_status_printer.hh"
+#include "cHardwareStatusPrinter.h"
 #include "organism.hh"
 #include "phenotype.hh"
 
