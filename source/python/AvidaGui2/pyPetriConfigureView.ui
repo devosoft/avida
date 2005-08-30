@@ -304,7 +304,7 @@
                 <widget class="QComboBox">
                     <item>
                         <property name="text">
-                            <string>default.organism</string>
+                            <string>default</string>
                         </property>
                     </item>
                     <property name="name">
@@ -315,7 +315,7 @@
                         </font>
                     </property>
                     <property name="acceptDrops">
-                        <bool>true</bool>
+                        <bool>false</bool>
                     </property>
                     <property name="editable">
                         <bool>true</bool>

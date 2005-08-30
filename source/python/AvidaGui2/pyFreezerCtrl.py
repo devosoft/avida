@@ -118,17 +118,13 @@ class pyFreezerCtrl(pyFreezerView):
   class itemDrag(QTextDrag):
     def __init__(self, item_name, parent=None, name=None):
         QStoredDrag.__init__(self, 'item name (QString)', parent, name)
-        print "setting up itemDrag, my parent is"
-        print parent
         self.setText(item_name)
 
   def dropEvent( self, e):
     freezer_item_name = QString()
-    print "dropEvent in freezer"
     if e.source() is self:
       return
     if ( QTextDrag.decode( e, freezer_item_name ) ) : #freezer_item_name is a string...the file name 
-      print freezer_item_name
       if freezer_item_name[:9] == 'organism.':
         freezer_item_name = freezer_item_name[9:] 
         self.FreezeOrganismSlot(freezer_item_name)
@@ -137,10 +133,7 @@ class pyFreezerCtrl(pyFreezerView):
     
   def FreezeOrganismSlot(self, freezer_item_name, 
       send_reset_signal = False, send_quit_signal = False):
-    print "freezer_item_name"
-    print freezer_item_name
     tmp_dict = {1:freezer_item_name}
-#    tmp_dict["SETTINGS"] = self.Form2Dictio`nary()
     m_pop_up_organism_file_name = pyFreezeOrganismCtrl()
     file_name = m_pop_up_organism_file_name.showDialog(self.m_session_mdl.m_current_freezer)
 

@@ -160,11 +160,10 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
 
   def petriDropped(self, e):
     # Try to decode to the data you understand...
-    print "*** Entered petriDropped"
     freezer_item_name = QString()
     if ( QTextDrag.decode( e, freezer_item_name ) ) :
       if freezer_item_name[-8:] == 'organism':
-        print "we can't yet deal with organims in the population view"
+        # We can't yet deal with organims in the population view
         return
       elif freezer_item_name[-4:] == 'full':
         freezer_item_name_temp = os.path.join(str(freezer_item_name), 'petri_dish')
@@ -195,7 +194,7 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
         # widget) the dish
 
         if (not self.m_session_mdl.saved_full_dish):
-          m_check_to_freeze = pyQuitDialogCtrl("Restart")
+          m_check_to_freeze = pyQuitDialogCtrl("Repopulate")
           quit_return = m_check_to_freeze.showDialog()
           if quit_return == m_check_to_freeze.QuitFlag:
             Restart_Only_Flag = True
@@ -208,7 +207,6 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
           # if the user clicked the cancel button
   
           else:
-            print "BDB: hit cancel button"
             return
 
       self.RenameDishSlot(dish_name)
@@ -223,7 +221,6 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
         pass
 
       if (Restart_Only_Flag):
-        print "BDB: sending reset signal from pyPetriConfigureCtrl:FillDishSlot"
         self.m_session_mdl.m_session_mdtr.emit(
           PYSIGNAL("restartPopulationSig"), (self.m_session_mdl, ))
 
@@ -234,34 +231,3 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     print "pyOnePop_PetriDishCtrl.py:restart called"
     self.dishDisabled = False
 
-    # self.m_petri_dish_ctrl.restart()
-    # self.m_gradient_scale_ctrl.destruct()
-    # self.m_live_controls_ctrl.restart()
-    # self.m_petri_configure_ctrl.destruct()
-    # self.disconnect(self.m_session_mdl.m_session_mdtr,
-    #   PYSIGNAL("freezeDishPhaseISig"),
-    #   self.m_petri_dish_ctrl.extractPopulationSlot)
-    # self.disconnect(self.m_session_mdl.m_session_mdtr, 
-    #   PYSIGNAL("freezeDishPhaseISig"), self.freezeDishPhaseISlot)
-    # self.disconnect(self.m_session_mdl.m_session_mdtr, 
-    #   PYSIGNAL("setAvidaSig"), self.setAvidaSlot)
-    # self.disconnect(self.m_petri_dish_toggle, SIGNAL("clicked()"), 
-    #   self.ToggleDishSlot)
-    # self.disconnect(self.m_session_mdl.m_session_mdtr, 
-    #   PYSIGNAL("doDefrostDishSig"), self.DefrostSlot)
-    # self.disconnect(self.m_session_mdl.m_session_mdtr, 
-    #    PYSIGNAL("doDisablePetriDishSig"), self.SetDishDisabledSlot)
-    # self.disconnect(self.m_zoom_spinbox, SIGNAL("valueChanged(int)"), 
-    #    self.m_petri_dish_ctrl.zoomSlot)
-    # self.disconnect(self.m_petri_dish_ctrl, PYSIGNAL("zoomSig"), 
-    #    self.m_zoom_spinbox.setValue)
-    # self.disconnect(self.m_mode_combobox, SIGNAL("activated(int)"), 
-    #    self.modeActivatedSlot)
-    # self.disconnect(self.m_session_mdl.m_session_mdtr, 
-    #   PYSIGNAL("petriDishDroppedInPopViewSig"), self.petriDropped)  
-    # self.m_mode_index = None
-    # self.m_session_mdl = None
-    # self.m_avida = None
-    self.m_update_label.setText("-")
-    # print "*** pyOnePop_PetriDishCtrl.py:restartPopulationSlot about to call se.f.construct ***"
-    # self.construct(session_mdl)

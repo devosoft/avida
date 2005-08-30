@@ -27,7 +27,7 @@ class pyMapProfile:
     GestationTimeIdx = lambda c: c.GetOrganism().GetPhenotype().GetGestationTime()
     SizeIdx = lambda c: c.GetOrganism().GetPhenotype().GetGenomeLength()
     #GenotypeIdx = lambda c: c.GetOrganism().GetGenotype()
-    #LineageIdx = lambda c: c.GetOrganism().GetLineageLabel()
+    LineageIdx = lambda c: c.GetOrganism().GetLineageLabel()
 
 
     class gradualLinScaleUpdater:
@@ -140,6 +140,7 @@ class pyMapProfile:
     FitnessRng = lambda p: (p.GetStats().GetMinFitness(), p.GetStats().GetMaxFitness())
     GestationTimeRng = lambda p: (p.GetStats().GetMinGestationTime(), p.GetStats().GetMaxGestationTime())
     SizeRng = lambda p: (p.GetStats().GetMinGenomeLength(), p.GetStats().GetMaxGenomeLength())
+    LineageRng = lambda p: (0, p.GetStats().GetNumLineages())
 
 
     def sigmoid(x, midpoint, steepness):
@@ -190,6 +191,11 @@ class pyMapProfile:
       ('Size',
         continuousIndexer(SizeIdx),
         gradualLinScaleUpdater(RangeReport(SizeRng, self.m_session_mdl)),
+        sigmoidColorLookup
+        ),
+      ('Ancestor Organism',
+        continuousIndexer(LineageIdx),
+        gradualLinScaleUpdater(RangeReport(LineageRng, self.m_session_mdl)),
         sigmoidColorLookup
         ),
       #('Genotype',       GenotypeIdx,),

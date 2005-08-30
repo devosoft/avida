@@ -25,20 +25,34 @@ class pyWriteGenesisEvent:
     else:
       cells_dict = {}
       organisms_dict = {}
-      if settings_dict.has_key("START_CREATURE"):
+      if settings_dict.has_key("START_CREATURE0"):
         world_x = settings_dict["WORLD-X"]
         world_y = settings_dict["WORLD-Y"]
-        self.start_cell_location = int(((world_y/2) * world_x) + (world_x/2))
-        cells_dict[str(self.start_cell_location)] = str(1)
 
-        # Read the genome from the organism file 
+        # Count all ancestors with the name of the form START_CREATUREx
 
-        org_file = open(os.path.join(freeze_dir, settings_dict["START_CREATURE"]))
-        org_string = org_file.readline()
-        org_string = org_string.rstrip()
-        org_string = org_string.lstrip()
-        org_file.close
-        organisms_dict[str(1)] = org_string
+        num_ancestors = 0
+        while(settings_dict.has_key("START_CREATURE" + str(num_ancestors))):
+          num_ancestors = num_ancestors + 1
+
+        # Process all the ancestors
+
+        for i in range(num_ancestors):
+          start_creature = settings_dict["START_CREATURE" + str(i)]
+
+          self.start_cell_location = self.find_location(world_x, world_y, 
+             num_ancestors, i)
+          cells_dict[str(self.start_cell_location)] = str(i)
+
+          # Read the genome from the organism file 
+
+          org_file = open(os.path.join(freeze_dir, start_creature+".organism"))
+          org_string = org_file.readline()
+          org_string = org_string.rstrip()
+          org_string = org_string.lstrip()
+          org_file.close
+          organisms_dict[str(i)] = org_string
+
     self.modifyEventFile(cells_dict, organisms_dict, 
       os.path.join(tmp_in_dir, "events.cfg"), tmp_out_dir)
     
@@ -81,13 +95,13 @@ class pyWriteGenesisEvent:
   def modifyEventFile(self, cells_dict, organisms_dict, event_file_name, 
     tmp_out_dir = None):
 
-    # Routine to add to the event.cfg file by inject creatures into the population
-    # and adding print statements into the correct directory
+    # Routine to add to the event.cfg file by inject creatures into the
+    # population and adding print statements into the correct directory
 
     event_out_file = open(event_file_name, 'a')
     for cell in cells_dict.keys():
-      part1 = "u begin inject_sequence " +  organisms_dict[cells_dict[cell]] + " " 
-      part2 = cell + " " + str(int(cell)+1) + " -1 "
+      part1 = "u begin inject_sequence " +  organisms_dict[cells_dict[cell]]
+      part2 = " " + cell + " " + str(int(cell)+1) + " -1 "
       part3 = cells_dict[cell] + "\n"
       event_out_file.write(part1 +  part2 + part3)
     
@@ -99,3 +113,45 @@ class pyWriteGenesisEvent:
                          os.path.join(tmp_out_dir, "count.dat") +"\n")
     event_out_file.close()
     
+  def find_location(self, world_x, world_y, num_ancestors=1, org_num=0):
+
+    # Routine to evenly place a given ancestor into the petri dish
+
+    # If there are more than 9 creatures place them evenly in the population
+    # array (ignoring the edges)
+
+    if (num_ancestors > 9):
+      return int(float(world_x * world_y) * (float(org_num + 1)/float(num_ancestors + 1))) 
+
+    spots = {};
+    if (num_ancestors == 1):
+      spots = [0.5,0.5]
+    elif (num_ancestors == 2):
+      spots = [0.5,0.33, 0.5,0.67]
+    elif (num_ancestors == 3):
+      spots = [0.25,0.25, 0.5,0.5, 0.75,0.75]
+    elif (num_ancestors == 4):
+      spots = [0.33,0.33, 0.33,0.67, 0.67,0.33, 0.67,0.67]
+    elif (num_ancestors == 5):
+      spots = [0.25,0.25, 0.75,0.25, 0.50,0.50, 0.25,0.75, 0.75,0.75]
+    elif (num_ancestors == 6):
+      spots = [0.25,0.25, 0.75,0.25, 
+               0.25,0.50, 0.75,0.50,
+               0.25,0.75, 0.75,0.75]
+    elif (num_ancestors == 7):
+      spots = [0.25,0.25, 0.75,0.25, 
+               0.25,0.50, 0.50,0.50, 0.75,0.50,
+               0.25,0.75, 0.75,0.75]
+    elif (num_ancestors == 8):
+      spots = [0.25,0.25, 0.50,0.375, 0.75,0.25, 
+               0.25,0.50, 0.75,0.50,
+               0.25,0.75, 0.50,0.625, 0.75,0.75]
+    elif (num_ancestors == 9):
+      spots = [0.25,0.25, 0.50,0.25, 0.75,0.25, 
+               0.25,0.50, 0.50,0.50, 0.75,0.50,
+               0.25,0.75, 0.50,0.75, 0.75,0.75]
+
+    x = spots[org_num * 2]
+    y = spots[(org_num * 2) + 1]
+    
+    return int((round(world_y * y) * world_x) + round(world_x * x))

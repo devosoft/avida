@@ -19,7 +19,6 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     pyPetriConfigureView.__init__(self,parent,name,fl)
     self.setAcceptDrops(1)
 
-
   def setAvidaSlot(self, avida):
     old_avida = self.m_avida
     self.m_avida = avida
@@ -70,6 +69,8 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     self.connect( self, PYSIGNAL("petriDishDroppedInPopViewSig"), 
       self.m_session_mdl.m_session_mdtr, 
       PYSIGNAL("petriDishDroppedInPopViewSig"))
+    self.connect( self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("petriDishDroppedInPopViewSig"), self.petriDropped)
     self.ChangeMutationTextSlot()
     self.ChangeWorldSizeTextSlot()
     self.populated = False
@@ -165,9 +166,19 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     
     self.full_petri_dict = petri_dict.dictionary
     settings_dict =  petri_dict.dictionary["SETTINGS"]
-    self.AncestorComboBox.removeItem (0)
-    start_creature = settings_dict["START_CREATURE"]
-    self.AncestorComboBox.insertItem(start_creature)
+
+    # Erase all items for the ancestor list (largest to smallest index)
+
+    for i in range((self.AncestorComboBox.count() - 1), -1, -1):
+      self.AncestorComboBox.removeItem (i)
+
+    # Find all ancestors with the name of the form START_CREATUREx
+
+    i = 0
+    while(settings_dict.has_key("START_CREATURE" + str(i))):
+      start_creature = settings_dict["START_CREATURE" + str(i)]
+      self.AncestorComboBox.insertItem(start_creature)
+      i = i + 1
     max_updates = int(settings_dict["MAX_UPDATES"])
     self.StopAtSpinBox.setValue(max_updates)
     if max_updates < 0:
@@ -296,7 +307,10 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
   def Form2Dictionary(self):
     settings_dict = {}
     
-    settings_dict["START_CREATURE"] = str(self.AncestorComboBox.text(0))
+    # Write START_CREATUREx for all the organisms in the Ancestor Combo Box
+
+    for i in range(self.AncestorComboBox.count()):
+      settings_dict["START_CREATURE" + str(i)] = str(self.AncestorComboBox.text(i))
     if (self.StopAtRadioButton.isChecked() == True):
       settings_dict["MAX_UPDATES"] = self.StopAtSpinBox.value()
     else:
@@ -359,7 +373,6 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     self.m_session_mdl.m_session_mdtr.emit(
       PYSIGNAL("doRefreshFreezerInventorySig"), ())
     if send_reset_signal:
-      print "sending reset signal from pyPetriConfigureCtrl:FreezePetriSlot" 
       self.m_session_mdl.m_session_mdtr.emit(
         PYSIGNAL("restartPopulationSig"), (self.m_session_mdl, ))
 
@@ -395,10 +408,18 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
       
   def dropEvent( self, e ):
     freezer_item_name = QString()
-    print "dropEvent"
     if ( QTextDrag.decode( e, freezer_item_name ) ) :
       if os.path.exists(str(freezer_item_name)) == False:
         print "that was not a valid path (2)" 
       else: 
         self.emit(PYSIGNAL("petriDishDroppedInPopViewSig"), (e,))
-        print "emitted(1)"
+
+  def petriDropped(self, e):
+    # Try to decode to the data you understand...
+    freezer_item_name = QString()
+    if ( QTextDrag.decode( e, freezer_item_name ) and not self.DishDisabled) :
+      if freezer_item_name[-8:] == 'organism':
+        core_name = freezer_item_name[:-9]
+        core_name = os.path.basename(str(freezer_item_name[:-9]))
+        self.AncestorComboBox.insertItem(core_name)
+        return
