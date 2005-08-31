@@ -156,6 +156,7 @@ private:
   void CommandPrintPhenotypes(cString cur_string);
   void CommandPrintDiversity(cString cur_string);
   void CommunityComplexity(cString cur_string);
+  void CharlesCommunityComplexity(cString cur_string);
 
   // Individual Organism Analysis...
   void CommandLandscape(cString cur_string);

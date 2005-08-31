@@ -39,6 +39,7 @@
 #include "task_entry.hh"
 #include "tDataEntry.hh"
 #include "tDataEntryCommand.hh"
+#include "tMatrix.hh"
 #include "cTestCPU.h"
 #include "cCPUTestInfo.h"
 #include "cTestUtil.h"
@@ -436,6 +437,7 @@ void cAnalyze::LoadResources(cString cur_string)
   
   return;
 }
+
 
 // Looks up the resource concentrations that are the closest to the
 // given update and then fill in those concentrations into the environment.
@@ -2733,67 +2735,17 @@ void cAnalyze::CommunityComplexity(cString cur_string)
       cpx_fp << genotype->GetID() << " ";
     }
 
-    /////////////////////////////////////////
-    // Normalize the probability at each line
-
-    for (int line = 0; line < length_genome; ++ line) {
-      double cur_total_prob = 0.0;
-      for (int inst = 0; inst < num_insts; ++ inst) {
-	cur_total_prob += prob[line][inst];
-      }
-      if (cur_total_prob > 1) {
-	for (int inst = 0; inst < num_insts; ++ inst) {
-	  prob[line][inst] = prob[line][inst] / cur_total_prob;
-	}
-	cur_total_prob = 1.0;
-      }
-      double left_prob = 1 - cur_total_prob;
-
-      // Check the number of insts that could make genotype alive ...
-      int num_alive = 0;
-      const cGenome & base_genome = genotype->GetGenome();
-      cGenome mod_genome(base_genome);
-      for (int inst = 0; inst < num_insts; ++ inst) {
-	mod_genome[line].SetOp(inst);
-	cAnalyzeGenotype test_genotype(mod_genome, inst_set);
-	test_genotype.Recalculate();
-
-	// Only when given inst make the genotype alive
-	if (test_genotype.GetFitness() > 0) {
-	  num_alive ++;
-	} else {
-	  prob[line][inst] = -1;
-	}
-      }
-	  
-      for (int inst = 0; inst < num_insts; ++ inst) {
-	if (prob[line][inst] == -1) {
-	  prob[line][inst] = 0;
-	} else {
-	  prob[line][inst] += left_prob / num_alive;
-	}	
-      }
-
-    }
-
-    /////////////////////////////////
-    // Calculate entropy of each line  
-    vector<double> entropy(length_genome, 0.0);
-    for (int line = 0; line < length_genome; ++ line) {
-      for (int inst = 0; inst < num_insts; ++ inst) {
-	if (prob[line][inst] > 0) {
-	  entropy[line] -= prob[line][inst] * log(prob[line][inst]) / log(num_insts*1.0);
-	}
-      }
-    }
-
-
     ///////////////////////////////////////////////////////////////////
     // Point mutation at all lines of code to look for neutral mutation
+    // and the mutations that can make organism alive
     cout << "Test point mutation." << endl;
     vector<bool> one_line_neutral(num_insts, false);
     vector< vector<bool> > neutral_mut(length_genome, one_line_neutral);
-   
+    vector< vector<bool> > alive_mut(length_genome, one_line_neutral);
+    if (verbose == true) {
+      PrintTestCPUResources("");
+    }
+
     genotype->Recalculate();
     double base_fitness = genotype->GetFitness();
     cout << base_fitness << endl;
@@ -2809,10 +2761,59 @@ void cAnalyze::CommunityComplexity(cString cur_string)
 	test_genotype.Recalculate();
 	if (test_genotype.GetFitness() >= base_fitness) {
 	  neutral_mut[line][mod_inst] = true;
+	} 
+	if (test_genotype.GetFitness() > 0) {
+	  alive_mut[line][mod_inst] = true;
 	}
       }
       
       mod_genome[line].SetOp(cur_inst);
+    }
+
+    /////////////////////////////////////////
+    // Normalize the probability at each line
+    vector< vector<double> > prob_before_env(length_genome, one_line_prob);
+
+    for (int line = 0; line < length_genome; ++ line) {
+      double cur_total_prob = 0.0;
+      int num_alive = 0;
+      for (int inst = 0; inst < num_insts; ++ inst) {
+	if (alive_mut[line][inst] == true) {
+	  cur_total_prob += prob[line][inst];
+	  num_alive ++;
+	}
+      }
+      if (cur_total_prob > 1) {
+	cout << "Total probability at " << line << " is greater than 0." << endl;
+	exit(1);
+      }
+      double left_prob = 1 - cur_total_prob;
+
+      for (int inst = 0; inst < num_insts; ++ inst) {
+	if (alive_mut[line][inst] == true) {
+	  prob_before_env[line][inst] = prob[line][inst] + left_prob / num_alive;
+	} else {
+	  prob_before_env[line][inst] = 0;
+	}	
+      }
+      
+    }
+
+    /////////////////////////////////
+    // Calculate entropy of each line  
+    vector<double> entropy(length_genome, 0.0);
+    for (int line = 0; line < length_genome; ++ line) {
+      double sum = 0;
+      for (int inst = 0; inst < num_insts; ++ inst) {
+	sum += prob_before_env[line][inst];
+	if (prob_before_env[line][inst] > 0) {
+	  entropy[line] -= prob_before_env[line][inst] * log(prob_before_env[line][inst]) / log(num_insts*1.0);
+	}
+      }
+      if (sum > 1.001 || sum < 0.999) {
+	cout << "Sum of probability is not 1 at line " << line << endl;
+	exit(1);
+      }
     }
 
 
@@ -2822,20 +2823,19 @@ void cAnalyze::CommunityComplexity(cString cur_string)
     
     for (int line = 0; line < length_genome; ++ line) {
       double total_prob = 0.0;
+      int num_neutral = 0;
       for (int inst = 0; inst < num_insts; ++ inst) {
 	if (neutral_mut[line][inst] == true) {
+	  num_neutral ++;
 	  total_prob += prob[line][inst];
 	}
       }
 
-      if (total_prob == 0) {
-	cout << "total prob is zero." ;
-	exit(1);
-      }
+      double left = 1 - total_prob;
 
       for (int inst = 0; inst < num_insts; ++ inst) {
 	if (neutral_mut[line][inst] == true) {
-	  prob_given_env[line][inst] = prob[line][inst] / total_prob;
+	  prob_given_env[line][inst] = prob[line][inst] + left / num_neutral;
 	} else {
 	  prob_given_env[line][inst] = 0.0;
 	}
@@ -2848,11 +2848,17 @@ void cAnalyze::CommunityComplexity(cString cur_string)
 
     vector<double> entropy_given_env(length_genome, 0.0);
     for (int line = 0; line < length_genome; ++ line) {
+      double sum = 0;
       for (int inst = 0; inst < num_insts; ++ inst) {
+	sum += prob_given_env[line][inst];
 	if (prob_given_env[line][inst] > 0) {
 	  entropy_given_env[line] -= prob_given_env[line][inst] * log(prob_given_env[line][inst]) / 
 	                             log(num_insts*1.0);
 	}
+      }
+      if (sum > 1.001 || sum < 0.999) {
+	cout << "Sum of probability is not 1 at line " << line << " " << sum << endl;
+	exit(1);
       }
     }
 
@@ -2868,12 +2874,12 @@ void cAnalyze::CommunityComplexity(cString cur_string)
 
       if (entropy[line] >= entropy_given_env[line]) {
 	information += entropy[line] - entropy_given_env[line];	
-      } else {    // Negative information is deemed as new information ...
+      } else {    // Negative information is because given condition is not related with this genotype  ...
 	
 	// Count the number of insts that can make genotype alive
 	int num_inst_alive = 0;
 	for (int inst = 0; inst < num_insts; ++ inst) {
-	  if (prob[line][inst] > 0) {
+	  if (alive_mut[line][inst] == true) {
 	    num_inst_alive ++;
 	  }
 	}
@@ -2885,7 +2891,7 @@ void cAnalyze::CommunityComplexity(cString cur_string)
 	  exit(1);
 	}
       }
-
+      
     }
     complexity += information;
 
@@ -2899,7 +2905,7 @@ void cAnalyze::CommunityComplexity(cString cur_string)
     // This genotype becomes the given condition of next genotype
 
     given_genotypes.push_back(genotype);
-
+    
   }
 
   // Set the test CPU back to the state it was 
@@ -2909,6 +2915,332 @@ void cAnalyze::CommunityComplexity(cString cur_string)
   cpx_fp.close();
   return;
 	 
+}
+
+void cAnalyze::CharlesCommunityComplexity(cString cur_string)
+{
+  /////////////////////////////////////////////////////////////////////
+  // Calculate the mutual information between community and environment
+  /////////////////////////////////////////////////////////////////////
+
+  cout << "Analyze community complexity of current population about environment with Charles method ...\n";
+
+  // Get the number of genotypes that are gonna be analyzed.
+  int max_genotypes = cur_string.PopWord().AsInt();
+
+  // Get update
+  int update = cur_string.PopWord().AsInt();
+
+  // Get the directory  
+  cString dir = cur_string.PopWord();
+  cString defaultDir = "community_cpx/";
+  cString directory = PopDirectory(dir, defaultDir);
+
+  // Get the file name that saves the result 
+  cString filename = cur_string.PopWord();
+  if (filename.IsEmpty()) {
+    filename = "community.complexity.dat";
+  }
+
+  filename.Set("%s%s", directory(), filename.GetData());
+  ofstream cpx_fp(filename());
+
+  cpx_fp << "# Legend:" << endl;
+  cpx_fp << "# 1: Genotype ID" << endl;
+  cpx_fp << "# 2: Entropy given Known Genotypes" << endl;
+  cpx_fp << "# 3: Entropy given Both Known Genotypes and Env" << endl;
+  cpx_fp << "# 4: New Information about Environment" << endl;
+  cpx_fp << "# 5: Total Complexity" << endl;
+  cpx_fp << endl;
+
+  ///////////////////////
+  // Backup test CPU data
+  bool backupUsage = cTestCPU::UseResources();
+  tArray<double> backupResources(cTestCPU::GetResources());
+  cTestCPU::UseResources() = true;
+  FillResources(update);
+
+  ///////////////////////////////////////////////////////////////////////
+  // Choose the first n most abundant genotypes and put them in community
+
+  vector<cAnalyzeGenotype *> community;
+  cAnalyzeGenotype * genotype = NULL;
+  tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+
+  while (((genotype = batch_it.Next()) != NULL) && (community.size() < max_genotypes)) {
+    community.push_back(genotype);
+  }
+
+  //////////////////////////////////////////////////////
+  // Test point mutation of each genotype in environment
+
+  int num_insts = inst_set.GetSize();
+  map<int, tMatrix<double> > point_mut; 
+  int size_community = community.size();
+  int length_genome;
+  if (size_community > 1) {
+    length_genome = community[0]->GetLength();
+  }
+
+  for (int i = 0; i < size_community; ++ i) {
+    genotype = community[i];
+    
+    ///////////////////////////////////////////////////////////////////
+    // Point mutation at all lines of code to look for neutral mutation
+    cout << "Test point mutation for genotype " << genotype->GetID() << endl;
+    tMatrix<double> prob(length_genome, num_insts);
+    if (verbose == true) {
+      PrintTestCPUResources("");
+    }
+
+    genotype->Recalculate();
+    double base_fitness = genotype->GetFitness();
+    const cGenome & base_genome = genotype->GetGenome();
+    cGenome mod_genome(base_genome);
+      
+    for (int line = 0; line < length_genome; ++ line) {
+      int cur_inst = base_genome[line].GetOp();
+      int num_neutral = 0;
+
+      for (int mod_inst = 0; mod_inst < num_insts; ++ mod_inst) {
+	mod_genome[line].SetOp(mod_inst);
+	cAnalyzeGenotype test_genotype(mod_genome, inst_set);
+	test_genotype.Recalculate();
+	if (test_genotype.GetFitness() >= base_fitness) {
+	  prob[line][mod_inst] = 1.0;
+	  num_neutral ++;
+	} else {
+	  prob[line][mod_inst] = 0.0;
+	}
+      }
+
+      for (int mod_inst = 0; mod_inst < num_insts; ++ mod_inst) {
+	prob[line][mod_inst] /= num_neutral;
+      }
+   
+      
+      mod_genome[line].SetOp(cur_inst);
+    }
+
+    point_mut.insert(make_pair(genotype->GetID(), prob));
+  }
+
+  //////////////////////////////////////
+  // Loop through genotypes in community
+
+  double complexity = 0.0;
+  double complexity2 = 0.0;
+  vector<cAnalyzeGenotype *> given_genotypes;
+
+  // Deal with first gentoype
+  genotype = community[0];
+  double oo_first_entropy = length_genome;
+  double oo_conditional_entropy = 0.0;
+  tMatrix<double> this_prob = point_mut.find(genotype->GetID())->second;
+
+  for (int line = 0; line < length_genome; ++ line) {
+    double oneline_entropy = 0.0;
+    for (int inst = 0; inst < num_insts; ++ inst) {
+      if (this_prob[line][inst] > 0) {
+	oneline_entropy -= this_prob[line][inst] * (log(this_prob[line][inst]) /
+						    log(1.0*num_insts));
+      }
+    }
+    oo_conditional_entropy += oneline_entropy;
+  }
+  double new_info = oo_first_entropy - oo_conditional_entropy;
+  complexity += new_info;
+  complexity2 += new_info;
+  given_genotypes.push_back(genotype);
+  cpx_fp << genotype->GetID() << " " << oo_first_entropy << " " << oo_conditional_entropy << " "
+	 << new_info << " " << complexity << "   ";
+  genotype->Recalculate();
+  genotype->PrintTasks(cpx_fp, 0, -1);
+  cpx_fp << endl;
+
+  // Other genotypes in community ...
+  for (int i = 1; i < size_community; ++ i) {
+    genotype = community[i];
+    if (genotype->GetLength() != length_genome) {
+      cerr << "Genotypes in the community do not same genome length.\n";
+      cpx_fp.close();
+      exit(1);
+    }
+
+    // Skip the dead organisms
+    genotype->Recalculate();
+    cout << genotype->GetID() << " " << genotype->GetFitness() << endl;
+    if (genotype->GetFitness() == 0) {
+      continue;
+    }
+
+    double min_new_info = length_genome; 
+    double oo_first_entropy, oo_conditional_entropy;
+    tMatrix<double> this_prob = point_mut.find(genotype->GetID())->second;
+
+    // For any given genotype, calculate the new information in genotype
+    for (int j = 0; j < given_genotypes.size(); ++ j) {
+
+      tMatrix<double> given_prob = point_mut.find(given_genotypes[j]->GetID())->second;
+      double new_info = 0.0;
+      double total_first_entropy = 0.0;
+      double total_conditional_entropy = 0.0;
+
+      for (int line = 0; line < length_genome; ++ line) {
+
+	// H(genotype|known_genotype)    
+	double prob_overlap = 0;
+	tArray<double> normalized_overlap(num_insts);
+	for (int inst = 0; inst < num_insts; ++ inst) {
+	  if (this_prob[line][inst] < given_prob[line][inst]) {
+	    prob_overlap += this_prob[line][inst];
+	    normalized_overlap[inst] = this_prob[line][inst];
+	  } else {
+	    prob_overlap += given_prob[line][inst];
+	    normalized_overlap[inst] = given_prob[line][inst];
+	  }
+	}
+
+	double overlap_entropy = 0.0;
+	for (int inst = 0; inst < num_insts; ++ inst) {
+	  normalized_overlap[inst] /= prob_overlap;
+	  if (normalized_overlap[inst] > 0) {
+	    overlap_entropy -= normalized_overlap[inst] * (log(normalized_overlap[inst]) / 
+							   log(1.0*num_insts));
+	  }
+	}
+
+	double entropy_overlap = 0.0;
+	if (prob_overlap > 0 &&  (1 - prob_overlap > 0)) {
+	  entropy_overlap = (- prob_overlap * log(prob_overlap) - (1-prob_overlap) * log(1 - prob_overlap)) / log(1.0*num_insts);
+	} else {
+	  entropy_overlap = 0; 
+	}
+
+	double first_entropy = prob_overlap * overlap_entropy + (1 - prob_overlap) * 1 + entropy_overlap;
+	total_first_entropy += first_entropy;
+
+	// H(genotype|E, known_genotype) = H(genotype|Env)
+	double conditional_entropy = 0.0;
+	for (int inst = 0; inst < num_insts; ++ inst) {
+	  if (this_prob[line][inst] > 0) {
+	    conditional_entropy -= this_prob[line][inst] * (log(this_prob[line][inst]) / 
+							    log(1.0*num_insts));
+	  }
+	}
+	total_conditional_entropy += conditional_entropy;
+
+	if (conditional_entropy > first_entropy + 0.001) {
+	  cerr << "Negative Information.\n";
+	  cout << line << endl;
+	  exit(1);
+	}
+
+	new_info += first_entropy - conditional_entropy;
+      }
+     
+      if (new_info < min_new_info) {
+	min_new_info = new_info;
+	oo_first_entropy = total_first_entropy;
+	oo_conditional_entropy = total_conditional_entropy;
+      }
+
+    }
+    complexity += min_new_info;
+    cpx_fp << genotype->GetID() << " " << oo_first_entropy << " " << oo_conditional_entropy << " "
+	   << min_new_info << " " << complexity << "   ";
+
+    // Second method of Charles
+    /*min_new_info = length_genome; 
+    
+    for (int j = 0; j < given_genotypes.size(); ++ j) {
+
+      tMatrix<double> given_prob = point_mut.find(given_genotypes[j]->GetID())->second;
+      double new_info = 0.0;
+      double total_first_entropy = 0.0;
+      double total_conditional_entropy = 0.0;
+
+      for (int line = 0; line < length_genome; ++ line) {
+
+	// H(genotype|known_genotype)    
+	double prob_overlap = 0;
+	tArray<double> normalized_overlap(num_insts);
+	for (int inst = 0; inst < num_insts; ++ inst) {
+	  if (this_prob[line][inst] < given_prob[line][inst]) {
+	    prob_overlap += this_prob[line][inst];
+	    normalized_overlap[inst] = this_prob[line][inst];
+	  } else {
+	    prob_overlap += given_prob[line][inst];
+	    normalized_overlap[inst] = given_prob[line][inst];
+	  }
+	}
+
+	double first_entropy = 0.0;
+	for (int inst = 0; inst < num_insts; ++ inst) {
+	  normalized_overlap[inst] += (1-prob_overlap) / num_insts;
+	  if (normalized_overlap[inst] > 0) {
+	    first_entropy -= normalized_overlap[inst] * (log(normalized_overlap[inst]) / 
+							 log(1.0*num_insts));
+	  }
+	}
+	total_first_entropy += first_entropy;
+
+	// H(genotype|E, known_genotype) = H(genotype|Env)
+	double conditional_entropy = 0.0;
+	for (int inst = 0; inst < num_insts; ++ inst) {
+	  if (this_prob[line][inst] > 0) {
+	    conditional_entropy -= this_prob[line][inst] * (log(this_prob[line][inst]) / 
+							    log(1.0*num_insts));
+	  }
+	}
+	total_conditional_entropy += conditional_entropy;
+
+	if (conditional_entropy > first_entropy + 0.001) {
+	  cout << "This probability is:\n";
+	  for (int inst = 0; inst < num_insts; inst ++) {
+	    cout << this_prob[line][inst] << " ";
+	  }
+	  cout << endl;
+	  cout << "Given probability is:\n";
+	  for (int inst = 0; inst < num_insts; inst ++) {
+	    cout << given_prob[line][inst] << " ";  
+	  }
+	  cout << endl;
+	  cerr << "Negative Information of second method at line " << line << endl;;
+	  cerr << "Given genotype is " << given_genotypes[j]->GetID() << endl; 
+	  exit(1);
+	}
+
+	new_info += first_entropy - conditional_entropy;
+      }
+     
+      if (new_info < min_new_info) {
+	min_new_info = new_info;
+	oo_first_entropy = total_first_entropy;
+	oo_conditional_entropy = total_conditional_entropy;
+      }
+      
+    }
+    complexity2 += min_new_info;
+    cpx_fp << oo_first_entropy << " " << oo_conditional_entropy << " "
+    << min_new_info << " " << complexity2 << "   ";*/
+
+    
+    genotype->PrintTasks(cpx_fp, 0, -1);
+    cpx_fp << endl;
+    given_genotypes.push_back(genotype);
+  }
+
+
+  // Set the test CPU back to the state it was 
+  cTestCPU::UseResources() = backupUsage;
+  cTestCPU::SetupResourceArray(backupResources);
+    
+  cpx_fp.close();
+  return;
+
+    
+  
 }
 
 void cAnalyze::CommandLandscape(cString cur_string)
@@ -5809,12 +6141,16 @@ void cAnalyze::BatchRecalculate(cString cur_string)
 {
   int words = cur_string.CountNumWords();
   int useResources = 0;
+  int update = -1;
   if(words >= 1) {
     useResources = cur_string.PopWord().AsInt();
     // All non-zero values are considered false
     if(useResources != 0 && useResources != 1) {
       useResources = 0;
     }
+  }
+  if (words >= 2) {
+    update = cur_string.PopWord().AsInt();
   }
   
   bool backupUsage;
@@ -5837,14 +6173,18 @@ void cAnalyze::BatchRecalculate(cString cur_string)
     << "parent and ancestor distances may not be correct" << endl;
   }
   
+  if (useResources && update > -1) {
+    FillResources(update);
+  }
+
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype * genotype = NULL;
   cAnalyzeGenotype * last_genotype = NULL;
   while ((genotype = batch_it.Next()) != NULL) {
     
     // If use resources, load proper resource according to update_born
-    int updateBorn = -1;
-    if(useResources) {
+    if(useResources && update == -1) {
+      int updateBorn = -1;
       updateBorn = genotype->GetUpdateBorn();
       FillResources(updateBorn);
     }
@@ -6639,6 +6979,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("PRINT_PHENOTYPES", &cAnalyze::CommandPrintPhenotypes);
   AddLibraryDef("PRINT_DIVERSITY", &cAnalyze::CommandPrintDiversity);
   AddLibraryDef("COMMUNITY_COMPLEXITY", &cAnalyze::CommunityComplexity);
+  AddLibraryDef("CHARLES_COMMUNITY_COMPLEXITY", &cAnalyze::CharlesCommunityComplexity); 
 
   // Individual organism analysis...
   AddLibraryDef("LANDSCAPE", &cAnalyze::CommandLandscape);
