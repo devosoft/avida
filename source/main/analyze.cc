@@ -3305,8 +3305,16 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
   if (cur_string.GetSize() != 0) sample_size = cur_string.PopWord().AsInt();
   cString filename("none");
   if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
-  
-  cout << "Mate Selection... " << endl;
+  double min_swap_frac = 0.0;
+  if (cur_string.GetSize() != 0) min_swap_frac=cur_string.PopWord().AsDouble();
+  double max_swap_frac = 1.0 - min_swap_frac;
+
+  cout << "Analyzing Mate Selection... " << endl;
+
+  // Do some quick tests before moving on...
+  if (min_swap_frac < 0.0 || min_swap_frac >= 0.5) {
+    cerr << "ERROR: Minimum swap fraction out of range [0.0, 0.5)." << endl;
+  }
   
   // Next, we create an array that contains pointers to all of the organisms
   // in this batch.  Note that we want to select genotypes based on their
@@ -3314,7 +3322,7 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
   // that we only consider viable genotypes.
 
   // Start by counting the total number of organisms (and do other such
-  // data collection...  @CAO CONTINUE
+  // data collection...
   tHashTable<int, int> mate_id_counts;
 
   int org_count = 0;
@@ -3322,7 +3330,9 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
   cAnalyzeGenotype * genotype = NULL;
   tListIterator<cAnalyzeGenotype> list_it(batch[cur_batch].List());
   while ((genotype = list_it.Next()) != NULL) {
-    if (genotype->GetViable() == false) continue;
+    if (genotype->GetViable() == false || genotype->GetNumCPUs() == 0) {
+      continue;
+    }
     gen_count++;
     org_count += genotype->GetNumCPUs();
 
@@ -3348,14 +3358,14 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
   }
   
 
-  // Setup some variables;
-  cAnalyzeGenotype * genotype2 = NULL;
+  // Setup some variables to collect statistics.
   int total_matches_tested = 0;
   int fail_count = 0;
   int match_fail_count = 0;
 
   // Loop through all of the tests, picking random organisms each time and
   // performing a random cross test.
+  cAnalyzeGenotype * genotype2 = NULL;
   for (int test_id = 0; test_id < sample_size; test_id++) {
     genotype = genotype_array[ g_random.GetUInt(org_count) ];
     genotype2 = genotype_array[ g_random.GetUInt(org_count) ];
@@ -3369,10 +3379,16 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
     // Setup the random parameters for this test.
     cCPUMemory test_genome0 = genotype->GetGenome(); 
     cCPUMemory test_genome1 = genotype2->GetGenome(); 
-          
-    double start_frac = g_random.GetDouble();
-    double end_frac = g_random.GetDouble();
-    if (start_frac > end_frac) nFunctions::Swap(start_frac, end_frac);
+
+    double start_frac = -1.0;
+    double end_frac = -1.0;
+    double swap_frac = -1.0;
+    while (swap_frac < min_swap_frac || swap_frac > max_swap_frac) {
+      start_frac = g_random.GetDouble();
+      end_frac = g_random.GetDouble();
+      if (start_frac > end_frac) nFunctions::Swap(start_frac, end_frac);
+      swap_frac = end_frac - start_frac;
+    }
           
     int start0 = (int) (start_frac * (double) test_genome0.GetSize());
     int end0   = (int) (end_frac * (double) test_genome0.GetSize());

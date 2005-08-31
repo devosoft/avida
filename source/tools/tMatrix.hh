@@ -115,7 +115,7 @@ public:
   }
 
   // Assingment Operator
-  tMatrix & operator= (const tMatrix & rhs){
+  tMatrix & operator= (const tMatrix<T> & rhs){
     if( GetNumRows() != rhs.GetNumRows() || GetNumCols() != rhs.GetNumCols()) {
       ResizeClear(rhs.GetNumRows(), rhs.GetNumCols());
     }
@@ -128,7 +128,8 @@ public:
   }
 
   // Copy constructor
-  explicit tMatrix(const tMatrix & rhs) : data(NULL), num_rows(0) {
+  //  explicit tMatrix(const tMatrix<T> & rhs) : data(NULL), num_rows(0) {
+  tMatrix(const tMatrix<T> & rhs) : data(NULL), num_rows(0) {
     this->operator=(rhs);
   }
 
