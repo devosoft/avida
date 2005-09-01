@@ -1,6 +1,6 @@
 
 Import("event.pyste")
 
-cPopulationEvent = Class("cPopulationEvent", "population_event.hh")
+cPopulationEvent = Class("cPopulationEvent", "cPopulationEvent.h")
 
 # vim: set ft=python:

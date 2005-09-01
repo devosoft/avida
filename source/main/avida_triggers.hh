@@ -9,7 +9,7 @@
 #define AVIDA_TRIGGERS_HH
 
 #ifndef EVENT_TRIGGERS_HH
-#include "event_triggers.hh"
+#include "cEventTriggers.h"
 #endif
 #ifndef STATS_HH
 #include "stats.hh"

@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef POPULATION_EVENT_HH
-#include "population_event.hh"
+#include "cPopulationEvent.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

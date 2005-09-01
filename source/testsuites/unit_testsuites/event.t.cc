@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef EVENT_HH
-#include "event.hh"
+#include "cEvent.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

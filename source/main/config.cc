@@ -8,9 +8,9 @@
 #include "config.hh"
 
 #include "defs.hh"
-#include "event_factory_manager.hh"
+#include "cEventFactoryManager.h"
 #include "genesis.hh"
-#include "population_event_factory.hh"
+#include "cPopulationEventFactory.h"
 #include "tools.hh"
 
 using namespace std;
