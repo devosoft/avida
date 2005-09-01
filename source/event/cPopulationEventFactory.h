@@ -13,7 +13,7 @@
 #endif
 
 #ifndef POPULATION_EVENT_HH
-#include "population_event.hh"
+#include "cPopulationEvent.h"
 #endif
 
 class cPopulation;

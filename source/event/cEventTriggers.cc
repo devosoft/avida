@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef EVENT_TRIGGERS_HH
-#include "event_triggers.hh"
+#include "cEventTriggers.h"
 #endif
 
 #include <float.h>           // for DBL_MIN

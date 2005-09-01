@@ -11,10 +11,10 @@
 #include <assert.h>
 
 #ifndef EVENT_HH
-#include "event.hh"
+#include "cEvent.h"
 #endif
 #ifndef EVENT_TRIGGERS_HH
-#include "event_triggers.hh"
+#include "cEventTriggers.h"
 #endif
 
 /**

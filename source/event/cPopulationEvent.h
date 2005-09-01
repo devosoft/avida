@@ -9,7 +9,7 @@
 #define POPULATION_EVENT_HH
 
 #ifndef EVENT_HH
-#include "event.hh"
+#include "cEvent.h"
 #endif
 
 class cString;

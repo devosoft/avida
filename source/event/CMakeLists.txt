@@ -1,9 +1,9 @@
 SET(libevent_a_SOURCES
-  event_factory_manager.cc
-  event_list.cc
-  event_list_iterator.cc
-  event_triggers.cc
-  population_event_factory.cc
+  cEventFactoryManager.cc
+  cEventList.cc
+  cEventListIterator.cc
+  cEventTriggers.cc
+  cPopulationEventFactory.cc
 )
 
 INCLUDE_DIRECTORIES(${ALL_INC_DIRS})

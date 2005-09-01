@@ -1,12 +1,12 @@
 
-#include "event_factory_manager.hh"
+#include "cEventFactoryManager.h"
 
 #ifndef STRING_HH
 #include "string.hh"
 #endif
 
 #ifndef EVENT_HH
-#include "event.hh"
+#include "cEvent.h"
 #endif
 
 #include <iostream>

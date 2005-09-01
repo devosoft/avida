@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef POPULATION_EVENT_FACTORY_HH
-#include "population_event_factory.hh"
+#include "cPopulationEventFactory.h"
 #endif
 
 #ifndef ANALYZE_UTIL_HH
@@ -25,7 +25,7 @@
 #include "environment.hh"
 #endif
 #ifndef EVENT_HH
-#include "event.hh"
+#include "cEvent.h"
 #endif
 #ifndef GENEBANK_HH
 #include "genebank.hh"
@@ -61,7 +61,7 @@
 #include "population_cell.hh"
 #endif
 #ifndef POPULATION_EVENT_HH
-#include "population_event.hh"
+#include "cPopulationEvent.h"
 #endif
 #ifndef RESOURCE_HH
 #include "resource.hh"

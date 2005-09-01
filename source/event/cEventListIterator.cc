@@ -6,11 +6,11 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef EVENT_LIST_ITERATOR_HH
-#include "event_list_iterator.hh"
+#include "cEventListIterator.h"
 #endif
 
 #ifndef EVENT_LIST_HH
-#include "event_list.hh"
+#include "cEventList.h"
 #endif
 
 using namespace std;

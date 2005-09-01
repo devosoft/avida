@@ -6,20 +6,20 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef EVENT_LIST_HH
-#include "event_list.hh"
+#include "cEventList.h"
 #endif
 
 #ifndef DEFS_HH
 #include "defs.hh"
 #endif
 #ifndef EVENT_FACTORY_MANAGER_HH
-#include "event_factory_manager.hh"
+#include "cEventFactoryManager.h"
 #endif
 #ifndef EVENT_LIST_ENTRY_HH
-#include "event_list_entry.hh"
+#include "cEventListEntry.h"
 #endif
 #ifndef EVENT_TRIGGERS_HH
-#include "event_triggers.hh"
+#include "cEventTriggers.h"
 #endif
 #ifndef STRING_HH
 #include "string.hh"

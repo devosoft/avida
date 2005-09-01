@@ -5,7 +5,7 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-/* event_list.hh *************************************************************
+/* cEventList.h *************************************************************
  Builds a queue for holding and processing events
 
  charles@krl.caltech.edu & travc@ugcs.caltech.edu
@@ -16,13 +16,13 @@
 #define EVENT_LIST_HH
 
 #ifndef EVENT_LIST_ENTRY_HH
-#include "event_list_entry.hh"
+#include "cEventListEntry.h"
 #endif
 #ifndef EVENT_LIST_ITERATOR_HH
-#include "event_list_iterator.hh"
+#include "cEventListIterator.h"
 #endif
 #ifndef EVENT_TRIGGERS_HH
-#include "event_triggers.hh"
+#include "cEventTriggers.h"
 #endif
 
 /**
