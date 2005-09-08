@@ -167,9 +167,9 @@ void cConfig::InitGroupList(){
                    "0 = Replace random organism in neighborhood\n1 = Replace oldest organism in neighborhood\n2 = Replace largest Age/Merit in neighborhood\n3 = Place only in empty cells in neighborhood\n4 = Replace random from population (Mass Action)\n5 = Replace oldest in entire population (like Tierra)\n6 = Replace random within deme");
   repro_group->Add(prefer_empty, "1", "PREFER_EMPTY",
                    "Are empty cells given preference in offsping placement?");
-  repro_group->Add(death_method, "0", "DEATH_METHOD",
+  repro_group->Add(death_method, "1", "DEATH_METHOD",
                    "0 = Never die of old age.\n1 = Die when inst executed = AGE_LIMIT (+deviation)\n2 = Die when inst executed = length*AGE_LIMIT (+dev)");
-  repro_group->Add(age_limit, "5000", "AGE_LIMIT",
+  repro_group->Add(age_limit, "20", "AGE_LIMIT",
                    "Modifies DEATH_METHOD");
   repro_group->Add(age_deviation, "0", "AGE_DEVIATION",
                    "Creates a distribution around AGE_LIMIT");
@@ -308,7 +308,7 @@ void cConfig::InitGroupList(){
   cConfigGroup * gen_group = new cConfigGroup("Geneology");
   group_list.PushRear(gen_group);
   
-  gen_group->Add(track_main_lineage, "0", "TRACK_MAIN_LINEAGE",
+  gen_group->Add(track_main_lineage, "1", "TRACK_MAIN_LINEAGE",
                  "Keep all ancestors of the active population?\n0=no, 1=yes, 2=yes,w/sexual population");
   gen_group->Add(threshold, "3", "THRESHOLD",
                  "Number of organisms in a genotype needed for it\n  to be considered viable.");
