@@ -75,9 +75,14 @@ public:
   }
 
   // Copy constructor
-  explicit tArray(const tArray & rhs) : data(NULL), size(0) {
+  //explicit tArray(const tArray & rhs) : data(NULL), size(0) {
+  //  this->operator=(rhs);
+  //}
+
+  tArray(const tArray & rhs) : data(NULL), size(0) {
     this->operator=(rhs);
   }
+
 
   // Destructor
   virtual ~tArray() {

@@ -128,8 +128,11 @@ public:
   }
 
   // Copy constructor
-  //  explicit tMatrix(const tMatrix<T> & rhs) : data(NULL), num_rows(0) {
-  tMatrix(const tMatrix<T> & rhs) : data(NULL), num_rows(0) {
+  //explicit tMatrix(const tMatrix & rhs) : data(NULL), num_rows(0) {
+  //  this->operator=(rhs);
+  //}
+
+  tMatrix(const tMatrix & rhs) : data(NULL), num_rows(0) {
     this->operator=(rhs);
   }
 
