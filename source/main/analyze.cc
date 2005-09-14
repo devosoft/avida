@@ -2423,7 +2423,7 @@ void cAnalyze::CommandPrintDiversity(cString cur_string)
 }
 
 
-void cAnalyze::CommunityComplexity(cString cur_string)
+void cAnalyze::PhyloCommunityComplexity(cString cur_string)
 {
 
   /////////////////////////////////////////////////////////////////////////
@@ -2917,7 +2917,7 @@ void cAnalyze::CommunityComplexity(cString cur_string)
 	 
 }
 
-void cAnalyze::CharlesCommunityComplexity(cString cur_string)
+void cAnalyze::CommunityComplexity(cString cur_string)
 {
   /////////////////////////////////////////////////////////////////////
   // Calculate the mutual information between community and environment
@@ -2951,6 +2951,8 @@ void cAnalyze::CharlesCommunityComplexity(cString cur_string)
   cpx_fp << "# 3: Entropy given Both Known Genotypes and Env" << endl;
   cpx_fp << "# 4: New Information about Environment" << endl;
   cpx_fp << "# 5: Total Complexity" << endl;
+  cpx_fp << "# 6: Hamming Distance to Closest Given Genotype" << endl;
+  cpx_fp << "# 7 - : Tasks Implemented" << endl;
   cpx_fp << endl;
 
   ///////////////////////
@@ -3032,9 +3034,9 @@ void cAnalyze::CharlesCommunityComplexity(cString cur_string)
   double complexity2 = 0.0;
   vector<cAnalyzeGenotype *> given_genotypes;
 
-  // Deal with first gentoype
+  // Calculate the complexity of the first gentoype
   genotype = community[0];
-  double oo_first_entropy = length_genome;
+  double oo_initial_entropy = length_genome;
   double oo_conditional_entropy = 0.0;
   tMatrix<double> this_prob = point_mut.find(genotype->GetID())->second;
 
@@ -3048,17 +3050,21 @@ void cAnalyze::CharlesCommunityComplexity(cString cur_string)
     }
     oo_conditional_entropy += oneline_entropy;
   }
-  double new_info = oo_first_entropy - oo_conditional_entropy;
+  double new_info = oo_initial_entropy - oo_conditional_entropy;
   complexity += new_info;
   complexity2 += new_info;
   given_genotypes.push_back(genotype);
-  cpx_fp << genotype->GetID() << " " << oo_first_entropy << " " << oo_conditional_entropy << " "
-	 << new_info << " " << complexity << "   ";
+  cpx_fp << genotype->GetID() << " " 
+	 << oo_initial_entropy << " " 
+	 << oo_conditional_entropy << " "
+	 << new_info << " " 
+	 << complexity << "   "
+	 << 0 << "   ";
   genotype->Recalculate();
   genotype->PrintTasks(cpx_fp, 0, -1);
   cpx_fp << endl;
 
-  // Other genotypes in community ...
+  // New information in other genotypes in community ...
   for (int i = 1; i < size_community; ++ i) {
     genotype = community[i];
     if (genotype->GetLength() != length_genome) {
@@ -3075,7 +3081,8 @@ void cAnalyze::CharlesCommunityComplexity(cString cur_string)
     }
 
     double min_new_info = length_genome; 
-    double oo_first_entropy, oo_conditional_entropy;
+    double oo_initial_entropy, oo_conditional_entropy;
+    cAnalyzeGenotype * used_genotype;
     tMatrix<double> this_prob = point_mut.find(genotype->GetID())->second;
 
     // For any given genotype, calculate the new information in genotype
@@ -3083,42 +3090,41 @@ void cAnalyze::CharlesCommunityComplexity(cString cur_string)
 
       tMatrix<double> given_prob = point_mut.find(given_genotypes[j]->GetID())->second;
       double new_info = 0.0;
-      double total_first_entropy = 0.0;
+      double total_initial_entropy = 0.0;
       double total_conditional_entropy = 0.0;
 
       for (int line = 0; line < length_genome; ++ line) {
 
 	// H(genotype|known_genotype)    
 	double prob_overlap = 0;
-	tArray<double> normalized_overlap(num_insts);
 	for (int inst = 0; inst < num_insts; ++ inst) {
 	  if (this_prob[line][inst] < given_prob[line][inst]) {
 	    prob_overlap += this_prob[line][inst];
-	    normalized_overlap[inst] = this_prob[line][inst];
 	  } else {
 	    prob_overlap += given_prob[line][inst];
-	    normalized_overlap[inst] = given_prob[line][inst];
 	  }
 	}
 
-	double overlap_entropy = 0.0;
+	double given_site_entropy = 0.0;
 	for (int inst = 0; inst < num_insts; ++ inst) {
-	  normalized_overlap[inst] /= prob_overlap;
-	  if (normalized_overlap[inst] > 0) {
-	    overlap_entropy -= normalized_overlap[inst] * (log(normalized_overlap[inst]) / 
-							   log(1.0*num_insts));
+	  if (given_prob[line][inst] > 0) {
+	    given_site_entropy -= given_prob[line][inst] * (log(given_prob[line][inst]) /
+							 log(1.0*num_insts));
 	  }
 	}
+	
 
 	double entropy_overlap = 0.0;
 	if (prob_overlap > 0 &&  (1 - prob_overlap > 0)) {
-	  entropy_overlap = (- prob_overlap * log(prob_overlap) - (1-prob_overlap) * log(1 - prob_overlap)) / log(1.0*num_insts);
+	  entropy_overlap = (- prob_overlap * log(prob_overlap) 
+			     - (1-prob_overlap) * log(1 - prob_overlap)) / log(1.0*num_insts);
 	} else {
 	  entropy_overlap = 0; 
 	}
 
-	double first_entropy = prob_overlap * overlap_entropy + (1 - prob_overlap) * 1 + entropy_overlap;
-	total_first_entropy += first_entropy;
+	double initial_entropy = prob_overlap * given_site_entropy 
+                             + (1 - prob_overlap) * 1 + entropy_overlap;
+	total_initial_entropy += initial_entropy;
 
 	// H(genotype|E, known_genotype) = H(genotype|Env)
 	double conditional_entropy = 0.0;
@@ -3130,108 +3136,48 @@ void cAnalyze::CharlesCommunityComplexity(cString cur_string)
 	}
 	total_conditional_entropy += conditional_entropy;
 
-	if (conditional_entropy > first_entropy + 0.001) {
+	if (conditional_entropy > initial_entropy + 0.00001) {
 	  cerr << "Negative Information.\n";
 	  cout << line << endl;
+	  for (int inst = 0; inst < num_insts; ++ inst) {
+	    cout << this_prob[line][inst] << " ";
+	  }
+	  cout << endl;
+	  for (int inst = 0; inst < num_insts; ++ inst) {
+	    cout << given_prob[line][inst] << " ";
+	  }
+	  cout << endl;
+
 	  exit(1);
 	}
 
-	new_info += first_entropy - conditional_entropy;
+	new_info += initial_entropy - conditional_entropy;
       }
      
       if (new_info < min_new_info) {
 	min_new_info = new_info;
-	oo_first_entropy = total_first_entropy;
+	oo_initial_entropy = total_initial_entropy;
 	oo_conditional_entropy = total_conditional_entropy;
+	used_genotype = given_genotypes[j];
       }
 
     }
     complexity += min_new_info;
-    cpx_fp << genotype->GetID() << " " << oo_first_entropy << " " << oo_conditional_entropy << " "
+    cpx_fp << genotype->GetID() << " " 
+	   << oo_initial_entropy << " "
+	   << oo_conditional_entropy << " "
 	   << min_new_info << " " << complexity << "   ";
 
-    // Second method of Charles
-    /*min_new_info = length_genome; 
+    cpx_fp << cGenomeUtil::FindHammingDistance(genotype->GetGenome(),
+					       used_genotype->GetGenome()) << "   ";
     
-    for (int j = 0; j < given_genotypes.size(); ++ j) {
-
-      tMatrix<double> given_prob = point_mut.find(given_genotypes[j]->GetID())->second;
-      double new_info = 0.0;
-      double total_first_entropy = 0.0;
-      double total_conditional_entropy = 0.0;
-
-      for (int line = 0; line < length_genome; ++ line) {
-
-	// H(genotype|known_genotype)    
-	double prob_overlap = 0;
-	tArray<double> normalized_overlap(num_insts);
-	for (int inst = 0; inst < num_insts; ++ inst) {
-	  if (this_prob[line][inst] < given_prob[line][inst]) {
-	    prob_overlap += this_prob[line][inst];
-	    normalized_overlap[inst] = this_prob[line][inst];
-	  } else {
-	    prob_overlap += given_prob[line][inst];
-	    normalized_overlap[inst] = given_prob[line][inst];
-	  }
-	}
-
-	double first_entropy = 0.0;
-	for (int inst = 0; inst < num_insts; ++ inst) {
-	  normalized_overlap[inst] += (1-prob_overlap) / num_insts;
-	  if (normalized_overlap[inst] > 0) {
-	    first_entropy -= normalized_overlap[inst] * (log(normalized_overlap[inst]) / 
-							 log(1.0*num_insts));
-	  }
-	}
-	total_first_entropy += first_entropy;
-
-	// H(genotype|E, known_genotype) = H(genotype|Env)
-	double conditional_entropy = 0.0;
-	for (int inst = 0; inst < num_insts; ++ inst) {
-	  if (this_prob[line][inst] > 0) {
-	    conditional_entropy -= this_prob[line][inst] * (log(this_prob[line][inst]) / 
-							    log(1.0*num_insts));
-	  }
-	}
-	total_conditional_entropy += conditional_entropy;
-
-	if (conditional_entropy > first_entropy + 0.001) {
-	  cout << "This probability is:\n";
-	  for (int inst = 0; inst < num_insts; inst ++) {
-	    cout << this_prob[line][inst] << " ";
-	  }
-	  cout << endl;
-	  cout << "Given probability is:\n";
-	  for (int inst = 0; inst < num_insts; inst ++) {
-	    cout << given_prob[line][inst] << " ";  
-	  }
-	  cout << endl;
-	  cerr << "Negative Information of second method at line " << line << endl;;
-	  cerr << "Given genotype is " << given_genotypes[j]->GetID() << endl; 
-	  exit(1);
-	}
-
-	new_info += first_entropy - conditional_entropy;
-      }
-     
-      if (new_info < min_new_info) {
-	min_new_info = new_info;
-	oo_first_entropy = total_first_entropy;
-	oo_conditional_entropy = total_conditional_entropy;
-      }
-      
-    }
-    complexity2 += min_new_info;
-    cpx_fp << oo_first_entropy << " " << oo_conditional_entropy << " "
-    << min_new_info << " " << complexity2 << "   ";*/
-
     
     genotype->PrintTasks(cpx_fp, 0, -1);
     cpx_fp << endl;
     given_genotypes.push_back(genotype);
   }
-
-
+  
+  
   // Set the test CPU back to the state it was 
   cTestCPU::UseResources() = backupUsage;
   cTestCPU::SetupResourceArray(backupResources);
@@ -6995,7 +6941,6 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("PRINT_PHENOTYPES", &cAnalyze::CommandPrintPhenotypes);
   AddLibraryDef("PRINT_DIVERSITY", &cAnalyze::CommandPrintDiversity);
   AddLibraryDef("COMMUNITY_COMPLEXITY", &cAnalyze::CommunityComplexity);
-  AddLibraryDef("CHARLES_COMMUNITY_COMPLEXITY", &cAnalyze::CharlesCommunityComplexity); 
 
   // Individual organism analysis...
   AddLibraryDef("LANDSCAPE", &cAnalyze::CommandLandscape);
