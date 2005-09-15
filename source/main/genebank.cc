@@ -532,7 +532,7 @@ bool cGenebank::PrintGenotypes(ofstream & fp, cString & data_fields,
   }
   
   // Print all of the header information...
-  fp << "#filetype population_data" << endl
+  fp << "#filetype genotype_data" << endl
      << "#format ";
 
   if (print_id == true) fp << "id ";
@@ -707,7 +707,7 @@ bool cGenebank::DumpHistoricSexSummary(ofstream & fp)
 
 void cGenebank::DumpDetailHeading (ofstream & fp)
 {
-  fp << "#filetype population_data" << endl
+  fp << "#filetype genotype_data" << endl
      << "#format id parent_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence" << endl
      << endl
      << "#  1: ID" << endl
@@ -727,7 +727,7 @@ void cGenebank::DumpDetailHeading (ofstream & fp)
 
 void cGenebank::DumpDetailSexHeading (ofstream & fp)
 {
-  fp << "#filetype population_data" << endl
+  fp << "#filetype genotype_data" << endl
      << "#format id parent_id parent2_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence" << endl
      << endl
      << "#  1: ID" << endl

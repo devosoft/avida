@@ -834,7 +834,8 @@ void cAnalyze::LoadFile(cString cur_string)
   input_file.Close();
   
   const cString filetype = input_file.GetFiletype();
-  if (filetype != "population_data") {
+  if (filetype != "population_data" &&  // Depricated
+      filetype != "genotype_data") {
     cerr << "Error: Cannot load files of type \"" << filetype << "\"." << endl;
     exit(1);
   }
@@ -2742,9 +2743,9 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
     vector<bool> one_line_neutral(num_insts, false);
     vector< vector<bool> > neutral_mut(length_genome, one_line_neutral);
     vector< vector<bool> > alive_mut(length_genome, one_line_neutral);
-    if (verbose == true) {
-      PrintTestCPUResources("");
-    }
+//     if (verbose == true) {
+//       PrintTestCPUResources("");
+//     }
 
     genotype->Recalculate();
     double base_fitness = genotype->GetFitness();
@@ -2991,9 +2992,9 @@ void cAnalyze::CommunityComplexity(cString cur_string)
     // Point mutation at all lines of code to look for neutral mutation
     cout << "Test point mutation for genotype " << genotype->GetID() << endl;
     tMatrix<double> prob(length_genome, num_insts);
-    if (verbose == true) {
-      PrintTestCPUResources("");
-    }
+//     if (verbose == true) {
+//       PrintTestCPUResources("");
+//     }
 
     genotype->Recalculate();
     double base_fitness = genotype->GetFitness();
@@ -6153,9 +6154,9 @@ void cAnalyze::BatchRecalculate(cString cur_string)
     
     // If the previous genotype was the parent of this one, pass in a pointer
     // to it for improved recalculate (such as distance to parent, etc.)
-    if (verbose == true) {
-      PrintTestCPUResources("");
-    }
+//     if (verbose == true) {
+//       PrintTestCPUResources("");
+//     }
     if (last_genotype != NULL &&
         genotype->GetParentID() == last_genotype->GetID()) {
       genotype->Recalculate(last_genotype);
