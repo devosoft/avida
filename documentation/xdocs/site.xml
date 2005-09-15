@@ -41,6 +41,8 @@ See http://forrest.apache.org/docs/linking.html for more info
     <index label ="Index" href="index.html" description="Information for Avida Developers"/>
     <third-party-osx label="Mac OS X Third Party Software" href="third-party-osx.html"
       description="Directions for installing required third party software"/>
+    <third-party-win32 label="Windows Third Party Software" href="third-party-win32.html"
+      description="Directions for installing required third party software for Windows"/>
   </admin>
 
   <using label="Using Avida" href="using/" tab="using">
