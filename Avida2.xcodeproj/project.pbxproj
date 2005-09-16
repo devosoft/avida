@@ -9,22 +9,6 @@
 /* Begin PBXBuildFile section */
 		700E2996085A1F6000CF158A /* primitive in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3164D07626CF3008F7A48 /* primitive */; };
 		700E2AF8085DE50C00CF158A /* avida.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3109C0762539E008F7A48 /* avida.cc */; };
-		700E2B00085DE50C00CF158A /* fitness_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310AE0762539E008F7A48 /* fitness_matrix.cc */; };
-		700E2B01085DE50C00CF158A /* genebank.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310C50762539E008F7A48 /* genebank.cc */; };
-		700E2B02085DE50C00CF158A /* genome.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310C70762539E008F7A48 /* genome.cc */; };
-		700E2B03085DE50C00CF158A /* genome_util.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310C90762539E008F7A48 /* genome_util.cc */; };
-		700E2B04085DE50C00CF158A /* genotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310CB0762539E008F7A48 /* genotype.cc */; };
-		700E2B05085DE50C00CF158A /* genotype_birth_data.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310CE0762539E008F7A48 /* genotype_birth_data.cc */; };
-		700E2B07085DE50C00CF158A /* genotype_control.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310D00762539E008F7A48 /* genotype_control.cc */; };
-		700E2B08085DE50C00CF158A /* genotype_test_data.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310D30762539E008F7A48 /* genotype_test_data.cc */; };
-		700E2B09085DE50C00CF158A /* inject_genebank.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310D50762539E008F7A48 /* inject_genebank.cc */; };
-		700E2B0A085DE50C00CF158A /* inject_genotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310D80762539E008F7A48 /* inject_genotype.cc */; };
-		700E2B0B085DE50C00CF158A /* inject_genotype_birth_data.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310DA0762539E008F7A48 /* inject_genotype_birth_data.cc */; };
-		700E2B0C085DE50C00CF158A /* inject_genotype_control.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310DC0762539E008F7A48 /* inject_genotype_control.cc */; };
-		700E2B0D085DE50C00CF158A /* inject_genotype_queue.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310DF0762539E008F7A48 /* inject_genotype_queue.cc */; };
-		700E2B0E085DE50C00CF158A /* inst_set.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310E20762539E008F7A48 /* inst_set.cc */; };
-		700E2B0F085DE50C00CF158A /* inst_util.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310E40762539E008F7A48 /* inst_util.cc */; };
-		700E2B10085DE50C00CF158A /* instruction.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310E60762539E008F7A48 /* instruction.cc */; };
 		700E2B11085DE50C00CF158A /* landscape.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310E80762539E008F7A48 /* landscape.cc */; };
 		700E2B12085DE50C00CF158A /* lineage.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310EA0762539E008F7A48 /* lineage.cc */; };
 		700E2B13085DE50C00CF158A /* lineage_control.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310EC0762539E008F7A48 /* lineage_control.cc */; };
@@ -205,6 +189,38 @@
 		70C1F19A08C6A11100F50912 /* cEventListIterator.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F19008C6A11100F50912 /* cEventListIterator.cc */; };
 		70C1F19B08C6A11100F50912 /* cEventTriggers.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F19108C6A11100F50912 /* cEventTriggers.cc */; };
 		70C1F19C08C6A11100F50912 /* cPopulationEventFactory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F19208C6A11100F50912 /* cPopulationEventFactory.cc */; };
+		70CA6EC208DB7F8200068AC2 /* cFitnessMatrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB208DB7F8200068AC2 /* cFitnessMatrix.cc */; };
+		70CA6EC308DB7F8200068AC2 /* cGenebank.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB308DB7F8200068AC2 /* cGenebank.cc */; };
+		70CA6EC408DB7F8200068AC2 /* cGenome.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB408DB7F8200068AC2 /* cGenome.cc */; };
+		70CA6EC508DB7F8200068AC2 /* cGenomeUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB508DB7F8200068AC2 /* cGenomeUtil.cc */; };
+		70CA6EC608DB7F8200068AC2 /* cGenotype_BirthData.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB608DB7F8200068AC2 /* cGenotype_BirthData.cc */; };
+		70CA6EC708DB7F8200068AC2 /* cGenotype_TestData.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB708DB7F8200068AC2 /* cGenotype_TestData.cc */; };
+		70CA6EC808DB7F8200068AC2 /* cGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB808DB7F8200068AC2 /* cGenotype.cc */; };
+		70CA6EC908DB7F8200068AC2 /* cGenotypeControl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB908DB7F8200068AC2 /* cGenotypeControl.cc */; };
+		70CA6ECA08DB7F8200068AC2 /* cInjectGenebank.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EBA08DB7F8200068AC2 /* cInjectGenebank.cc */; };
+		70CA6ECB08DB7F8200068AC2 /* cInjectGenotype_BirthData.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EBB08DB7F8200068AC2 /* cInjectGenotype_BirthData.cc */; };
+		70CA6ECC08DB7F8200068AC2 /* cInjectGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EBC08DB7F8200068AC2 /* cInjectGenotype.cc */; };
+		70CA6ECD08DB7F8200068AC2 /* cInjectGenotypeControl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EBD08DB7F8200068AC2 /* cInjectGenotypeControl.cc */; };
+		70CA6ECE08DB7F8200068AC2 /* cInjectGenotypeQueue.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EBE08DB7F8200068AC2 /* cInjectGenotypeQueue.cc */; };
+		70CA6ECF08DB7F8200068AC2 /* cInstruction.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EBF08DB7F8200068AC2 /* cInstruction.cc */; };
+		70CA6ED008DB7F8200068AC2 /* cInstSet.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EC008DB7F8200068AC2 /* cInstSet.cc */; };
+		70CA6ED108DB7F8200068AC2 /* cInstUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EC108DB7F8200068AC2 /* cInstUtil.cc */; };
+		70CA6ED208DB7F8200068AC2 /* cFitnessMatrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB208DB7F8200068AC2 /* cFitnessMatrix.cc */; };
+		70CA6ED308DB7F8200068AC2 /* cGenebank.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB308DB7F8200068AC2 /* cGenebank.cc */; };
+		70CA6ED408DB7F8200068AC2 /* cGenome.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB408DB7F8200068AC2 /* cGenome.cc */; };
+		70CA6ED508DB7F8200068AC2 /* cGenomeUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB508DB7F8200068AC2 /* cGenomeUtil.cc */; };
+		70CA6ED608DB7F8200068AC2 /* cGenotype_BirthData.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB608DB7F8200068AC2 /* cGenotype_BirthData.cc */; };
+		70CA6ED708DB7F8200068AC2 /* cGenotype_TestData.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB708DB7F8200068AC2 /* cGenotype_TestData.cc */; };
+		70CA6ED808DB7F8200068AC2 /* cGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB808DB7F8200068AC2 /* cGenotype.cc */; };
+		70CA6ED908DB7F8200068AC2 /* cGenotypeControl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB908DB7F8200068AC2 /* cGenotypeControl.cc */; };
+		70CA6EDA08DB7F8200068AC2 /* cInjectGenebank.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EBA08DB7F8200068AC2 /* cInjectGenebank.cc */; };
+		70CA6EDB08DB7F8200068AC2 /* cInjectGenotype_BirthData.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EBB08DB7F8200068AC2 /* cInjectGenotype_BirthData.cc */; };
+		70CA6EDC08DB7F8200068AC2 /* cInjectGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EBC08DB7F8200068AC2 /* cInjectGenotype.cc */; };
+		70CA6EDD08DB7F8200068AC2 /* cInjectGenotypeControl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EBD08DB7F8200068AC2 /* cInjectGenotypeControl.cc */; };
+		70CA6EDE08DB7F8200068AC2 /* cInjectGenotypeQueue.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EBE08DB7F8200068AC2 /* cInjectGenotypeQueue.cc */; };
+		70CA6EDF08DB7F8200068AC2 /* cInstruction.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EBF08DB7F8200068AC2 /* cInstruction.cc */; };
+		70CA6EE008DB7F8200068AC2 /* cInstSet.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EC008DB7F8200068AC2 /* cInstSet.cc */; };
+		70CA6EE108DB7F8200068AC2 /* cInstUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EC108DB7F8200068AC2 /* cInstUtil.cc */; };
 		70CBFCF10815E8370078D8CC /* change_list.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CBFCEF0815E8370078D8CC /* change_list.cc */; };
 		70D46934085F61DA004C8409 /* trio.c in Sources */ = {isa = PBXBuildFile; fileRef = DCC3146D076253A1008F7A48 /* trio.c */; };
 		70D46935085F61DD004C8409 /* trionan.c in Sources */ = {isa = PBXBuildFile; fileRef = DCC31471076253A1008F7A48 /* trionan.c */; };
@@ -212,22 +228,6 @@
 		70FB868708BFA02D00BDF589 /* tHashTable.hh in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70FB868608BFA02D00BDF589 /* tHashTable.hh */; };
 		70FB868808BFA02D00BDF589 /* tHashTable.hh in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70FB868608BFA02D00BDF589 /* tHashTable.hh */; };
 		DCC3166107628531008F7A48 /* avida.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3109C0762539E008F7A48 /* avida.cc */; };
-		DCC3166907628539008F7A48 /* fitness_matrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310AE0762539E008F7A48 /* fitness_matrix.cc */; };
-		DCC3166A0762853A008F7A48 /* genebank.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310C50762539E008F7A48 /* genebank.cc */; };
-		DCC3166B0762853B008F7A48 /* genome.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310C70762539E008F7A48 /* genome.cc */; };
-		DCC3166C0762853D008F7A48 /* genome_util.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310C90762539E008F7A48 /* genome_util.cc */; };
-		DCC3166D0762853E008F7A48 /* genotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310CB0762539E008F7A48 /* genotype.cc */; };
-		DCC3166E0762853F008F7A48 /* genotype_birth_data.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310CE0762539E008F7A48 /* genotype_birth_data.cc */; };
-		DCC316700762855C008F7A48 /* genotype_control.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310D00762539E008F7A48 /* genotype_control.cc */; };
-		DCC316710762855D008F7A48 /* genotype_test_data.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310D30762539E008F7A48 /* genotype_test_data.cc */; };
-		DCC316720762855E008F7A48 /* inject_genebank.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310D50762539E008F7A48 /* inject_genebank.cc */; };
-		DCC316730762855F008F7A48 /* inject_genotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310D80762539E008F7A48 /* inject_genotype.cc */; };
-		DCC316740762855F008F7A48 /* inject_genotype_birth_data.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310DA0762539E008F7A48 /* inject_genotype_birth_data.cc */; };
-		DCC3167507628560008F7A48 /* inject_genotype_control.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310DC0762539E008F7A48 /* inject_genotype_control.cc */; };
-		DCC3167607628563008F7A48 /* inject_genotype_queue.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310DF0762539E008F7A48 /* inject_genotype_queue.cc */; };
-		DCC3167707628565008F7A48 /* inst_set.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310E20762539E008F7A48 /* inst_set.cc */; };
-		DCC3167807628566008F7A48 /* inst_util.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310E40762539E008F7A48 /* inst_util.cc */; };
-		DCC3167907628567008F7A48 /* instruction.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310E60762539E008F7A48 /* instruction.cc */; };
 		DCC3167A07628567008F7A48 /* landscape.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310E80762539E008F7A48 /* landscape.cc */; };
 		DCC3167B07628568008F7A48 /* lineage.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310EA0762539E008F7A48 /* lineage.cc */; };
 		DCC3167C07628569008F7A48 /* lineage_control.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310EC0762539E008F7A48 /* lineage_control.cc */; };
@@ -480,6 +480,41 @@
 		70C1F19008C6A11100F50912 /* cEventListIterator.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cEventListIterator.cc; sourceTree = "<group>"; };
 		70C1F19108C6A11100F50912 /* cEventTriggers.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cEventTriggers.cc; sourceTree = "<group>"; };
 		70C1F19208C6A11100F50912 /* cPopulationEventFactory.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cPopulationEventFactory.cc; sourceTree = "<group>"; };
+		70CA6EB208DB7F8200068AC2 /* cFitnessMatrix.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cFitnessMatrix.cc; sourceTree = "<group>"; };
+		70CA6EB308DB7F8200068AC2 /* cGenebank.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cGenebank.cc; sourceTree = "<group>"; };
+		70CA6EB408DB7F8200068AC2 /* cGenome.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cGenome.cc; sourceTree = "<group>"; };
+		70CA6EB508DB7F8200068AC2 /* cGenomeUtil.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cGenomeUtil.cc; sourceTree = "<group>"; };
+		70CA6EB608DB7F8200068AC2 /* cGenotype_BirthData.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cGenotype_BirthData.cc; sourceTree = "<group>"; };
+		70CA6EB708DB7F8200068AC2 /* cGenotype_TestData.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cGenotype_TestData.cc; sourceTree = "<group>"; };
+		70CA6EB808DB7F8200068AC2 /* cGenotype.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cGenotype.cc; sourceTree = "<group>"; };
+		70CA6EB908DB7F8200068AC2 /* cGenotypeControl.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cGenotypeControl.cc; sourceTree = "<group>"; };
+		70CA6EBA08DB7F8200068AC2 /* cInjectGenebank.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cInjectGenebank.cc; sourceTree = "<group>"; };
+		70CA6EBB08DB7F8200068AC2 /* cInjectGenotype_BirthData.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cInjectGenotype_BirthData.cc; sourceTree = "<group>"; };
+		70CA6EBC08DB7F8200068AC2 /* cInjectGenotype.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cInjectGenotype.cc; sourceTree = "<group>"; };
+		70CA6EBD08DB7F8200068AC2 /* cInjectGenotypeControl.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cInjectGenotypeControl.cc; sourceTree = "<group>"; };
+		70CA6EBE08DB7F8200068AC2 /* cInjectGenotypeQueue.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cInjectGenotypeQueue.cc; sourceTree = "<group>"; };
+		70CA6EBF08DB7F8200068AC2 /* cInstruction.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cInstruction.cc; sourceTree = "<group>"; };
+		70CA6EC008DB7F8200068AC2 /* cInstSet.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cInstSet.cc; sourceTree = "<group>"; };
+		70CA6EC108DB7F8200068AC2 /* cInstUtil.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cInstUtil.cc; sourceTree = "<group>"; };
+		70CA6EE208DB7F9E00068AC2 /* cFitnessMatrix.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cFitnessMatrix.h; sourceTree = "<group>"; };
+		70CA6EE308DB7F9E00068AC2 /* cGenebank.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenebank.h; sourceTree = "<group>"; };
+		70CA6EE408DB7F9E00068AC2 /* cGenome.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenome.h; sourceTree = "<group>"; };
+		70CA6EE608DB7F9E00068AC2 /* cGenomeUtil.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenomeUtil.h; sourceTree = "<group>"; };
+		70CA6EE708DB7F9E00068AC2 /* cGenotype_BirthData.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenotype_BirthData.h; sourceTree = "<group>"; };
+		70CA6EE808DB7F9E00068AC2 /* cGenotype_TestData.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenotype_TestData.h; sourceTree = "<group>"; };
+		70CA6EE908DB7F9E00068AC2 /* cGenotype.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenotype.h; sourceTree = "<group>"; };
+		70CA6EEA08DB7F9E00068AC2 /* cGenotypeControl.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenotypeControl.h; sourceTree = "<group>"; };
+		70CA6EEB08DB7F9E00068AC2 /* cInjectGenebank.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInjectGenebank.h; sourceTree = "<group>"; };
+		70CA6EEC08DB7F9E00068AC2 /* cInjectGenotype_BirthData.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInjectGenotype_BirthData.h; sourceTree = "<group>"; };
+		70CA6EED08DB7F9E00068AC2 /* cInjectGenotype.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInjectGenotype.h; sourceTree = "<group>"; };
+		70CA6EEE08DB7F9E00068AC2 /* cInjectGenotypeControl.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInjectGenotypeControl.h; sourceTree = "<group>"; };
+		70CA6EEF08DB7F9E00068AC2 /* cInjectGenotypeElement.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInjectGenotypeElement.h; sourceTree = "<group>"; };
+		70CA6EF008DB7F9E00068AC2 /* cInjectGenotypeQueue.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInjectGenotypeQueue.h; sourceTree = "<group>"; };
+		70CA6EF108DB7F9E00068AC2 /* cInstLibBase.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInstLibBase.h; sourceTree = "<group>"; };
+		70CA6EF208DB7F9E00068AC2 /* cInstruction.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInstruction.h; sourceTree = "<group>"; };
+		70CA6EF308DB7F9E00068AC2 /* cInstSet.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInstSet.h; sourceTree = "<group>"; };
+		70CA6EF408DB7F9E00068AC2 /* cInstUtil.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInstUtil.h; sourceTree = "<group>"; };
+		70CA6EF508DB806200068AC2 /* cGenotypeBatch.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenotypeBatch.h; sourceTree = "<group>"; };
 		70CBFCEF0815E8370078D8CC /* change_list.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = change_list.cc; sourceTree = "<group>"; };
 		70CBFCF00815E8370078D8CC /* change_list.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = change_list.hh; sourceTree = "<group>"; };
 		70CD471B089692200070D2DF /* AvidaEd-osx.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = "AvidaEd-osx.py"; sourceTree = "<group>"; };
@@ -894,43 +929,8 @@
 		DCC3109C0762539E008F7A48 /* avida.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = avida.cc; sourceTree = "<group>"; };
 		DCC3109D0762539E008F7A48 /* avida.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = avida.hh; sourceTree = "<group>"; };
 		DCC310A90762539E008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		DCC310AE0762539E008F7A48 /* fitness_matrix.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = fitness_matrix.cc; sourceTree = "<group>"; };
-		DCC310AF0762539E008F7A48 /* fitness_matrix.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = fitness_matrix.hh; sourceTree = "<group>"; };
-		DCC310C50762539E008F7A48 /* genebank.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = genebank.cc; sourceTree = "<group>"; };
-		DCC310C60762539E008F7A48 /* genebank.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = genebank.hh; sourceTree = "<group>"; };
-		DCC310C70762539E008F7A48 /* genome.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = genome.cc; sourceTree = "<group>"; };
-		DCC310C80762539E008F7A48 /* genome.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = genome.hh; sourceTree = "<group>"; };
-		DCC310C90762539E008F7A48 /* genome_util.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = genome_util.cc; sourceTree = "<group>"; };
-		DCC310CA0762539E008F7A48 /* genome_util.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = genome_util.hh; sourceTree = "<group>"; };
-		DCC310CB0762539E008F7A48 /* genotype.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = genotype.cc; sourceTree = "<group>"; };
-		DCC310CC0762539E008F7A48 /* genotype.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = genotype.hh; sourceTree = "<group>"; };
-		DCC310CD0762539E008F7A48 /* genotype_batch.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = genotype_batch.hh; sourceTree = "<group>"; };
-		DCC310CE0762539E008F7A48 /* genotype_birth_data.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = genotype_birth_data.cc; sourceTree = "<group>"; };
-		DCC310CF0762539E008F7A48 /* genotype_birth_data.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = genotype_birth_data.hh; sourceTree = "<group>"; };
-		DCC310D00762539E008F7A48 /* genotype_control.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = genotype_control.cc; sourceTree = "<group>"; };
-		DCC310D10762539E008F7A48 /* genotype_control.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = genotype_control.hh; sourceTree = "<group>"; };
 		DCC310D20762539E008F7A48 /* genotype_macros.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = genotype_macros.hh; sourceTree = "<group>"; };
-		DCC310D30762539E008F7A48 /* genotype_test_data.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = genotype_test_data.cc; sourceTree = "<group>"; };
-		DCC310D40762539E008F7A48 /* genotype_test_data.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = genotype_test_data.hh; sourceTree = "<group>"; };
-		DCC310D50762539E008F7A48 /* inject_genebank.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = inject_genebank.cc; sourceTree = "<group>"; };
-		DCC310D60762539E008F7A48 /* inject_genebank.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = inject_genebank.hh; sourceTree = "<group>"; };
 		DCC310D70762539E008F7A48 /* inject_genebank_macros.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = inject_genebank_macros.hh; sourceTree = "<group>"; };
-		DCC310D80762539E008F7A48 /* inject_genotype.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = inject_genotype.cc; sourceTree = "<group>"; };
-		DCC310D90762539E008F7A48 /* inject_genotype.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = inject_genotype.hh; sourceTree = "<group>"; };
-		DCC310DA0762539E008F7A48 /* inject_genotype_birth_data.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = inject_genotype_birth_data.cc; sourceTree = "<group>"; };
-		DCC310DB0762539E008F7A48 /* inject_genotype_birth_data.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = inject_genotype_birth_data.hh; sourceTree = "<group>"; };
-		DCC310DC0762539E008F7A48 /* inject_genotype_control.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = inject_genotype_control.cc; sourceTree = "<group>"; };
-		DCC310DD0762539E008F7A48 /* inject_genotype_control.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = inject_genotype_control.hh; sourceTree = "<group>"; };
-		DCC310DE0762539E008F7A48 /* inject_genotype_element.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = inject_genotype_element.hh; sourceTree = "<group>"; };
-		DCC310DF0762539E008F7A48 /* inject_genotype_queue.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = inject_genotype_queue.cc; sourceTree = "<group>"; };
-		DCC310E00762539E008F7A48 /* inject_genotype_queue.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = inject_genotype_queue.hh; sourceTree = "<group>"; };
-		DCC310E10762539E008F7A48 /* inst_lib_base.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = inst_lib_base.hh; sourceTree = "<group>"; };
-		DCC310E20762539E008F7A48 /* inst_set.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = inst_set.cc; sourceTree = "<group>"; };
-		DCC310E30762539E008F7A48 /* inst_set.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = inst_set.hh; sourceTree = "<group>"; };
-		DCC310E40762539E008F7A48 /* inst_util.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = inst_util.cc; sourceTree = "<group>"; };
-		DCC310E50762539E008F7A48 /* inst_util.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = inst_util.hh; sourceTree = "<group>"; };
-		DCC310E60762539E008F7A48 /* instruction.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = instruction.cc; sourceTree = "<group>"; };
-		DCC310E70762539E008F7A48 /* instruction.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = instruction.hh; sourceTree = "<group>"; };
 		DCC310E80762539E008F7A48 /* landscape.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = landscape.cc; sourceTree = "<group>"; };
 		DCC310E90762539E008F7A48 /* landscape.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = landscape.hh; sourceTree = "<group>"; };
 		DCC310EA0762539E008F7A48 /* lineage.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = lineage.cc; sourceTree = "<group>"; };
@@ -2047,6 +2047,41 @@
 		DCC310040762539D008F7A48 /* main */ = {
 			isa = PBXGroup;
 			children = (
+				70CA6EF508DB806200068AC2 /* cGenotypeBatch.h */,
+				70CA6EE208DB7F9E00068AC2 /* cFitnessMatrix.h */,
+				70CA6EE308DB7F9E00068AC2 /* cGenebank.h */,
+				70CA6EE408DB7F9E00068AC2 /* cGenome.h */,
+				70CA6EE608DB7F9E00068AC2 /* cGenomeUtil.h */,
+				70CA6EE708DB7F9E00068AC2 /* cGenotype_BirthData.h */,
+				70CA6EE808DB7F9E00068AC2 /* cGenotype_TestData.h */,
+				70CA6EE908DB7F9E00068AC2 /* cGenotype.h */,
+				70CA6EEA08DB7F9E00068AC2 /* cGenotypeControl.h */,
+				70CA6EEB08DB7F9E00068AC2 /* cInjectGenebank.h */,
+				70CA6EEC08DB7F9E00068AC2 /* cInjectGenotype_BirthData.h */,
+				70CA6EED08DB7F9E00068AC2 /* cInjectGenotype.h */,
+				70CA6EEE08DB7F9E00068AC2 /* cInjectGenotypeControl.h */,
+				70CA6EEF08DB7F9E00068AC2 /* cInjectGenotypeElement.h */,
+				70CA6EF008DB7F9E00068AC2 /* cInjectGenotypeQueue.h */,
+				70CA6EF108DB7F9E00068AC2 /* cInstLibBase.h */,
+				70CA6EF208DB7F9E00068AC2 /* cInstruction.h */,
+				70CA6EF308DB7F9E00068AC2 /* cInstSet.h */,
+				70CA6EF408DB7F9E00068AC2 /* cInstUtil.h */,
+				70CA6EB208DB7F8200068AC2 /* cFitnessMatrix.cc */,
+				70CA6EB308DB7F8200068AC2 /* cGenebank.cc */,
+				70CA6EB408DB7F8200068AC2 /* cGenome.cc */,
+				70CA6EB508DB7F8200068AC2 /* cGenomeUtil.cc */,
+				70CA6EB608DB7F8200068AC2 /* cGenotype_BirthData.cc */,
+				70CA6EB708DB7F8200068AC2 /* cGenotype_TestData.cc */,
+				70CA6EB808DB7F8200068AC2 /* cGenotype.cc */,
+				70CA6EB908DB7F8200068AC2 /* cGenotypeControl.cc */,
+				70CA6EBA08DB7F8200068AC2 /* cInjectGenebank.cc */,
+				70CA6EBB08DB7F8200068AC2 /* cInjectGenotype_BirthData.cc */,
+				70CA6EBC08DB7F8200068AC2 /* cInjectGenotype.cc */,
+				70CA6EBD08DB7F8200068AC2 /* cInjectGenotypeControl.cc */,
+				70CA6EBE08DB7F8200068AC2 /* cInjectGenotypeQueue.cc */,
+				70CA6EBF08DB7F8200068AC2 /* cInstruction.cc */,
+				70CA6EC008DB7F8200068AC2 /* cInstSet.cc */,
+				70CA6EC108DB7F8200068AC2 /* cInstUtil.cc */,
 				702D4F3C08DA61FE007BA469 /* cAnalyze.cc */,
 				702D4F3D08DA61FE007BA469 /* cAnalyzeGenotype.cc */,
 				702D4F3E08DA61FE007BA469 /* cAnalyzeUtil.cc */,
@@ -2079,44 +2114,9 @@
 				DCC3109C0762539E008F7A48 /* avida.cc */,
 				DCC3109D0762539E008F7A48 /* avida.hh */,
 				DCC310A90762539E008F7A48 /* CMakeLists.txt */,
-				DCC310AE0762539E008F7A48 /* fitness_matrix.cc */,
-				DCC310AF0762539E008F7A48 /* fitness_matrix.hh */,
 				DCC310B00762539E008F7A48 /* functional_testsuites */,
-				DCC310C50762539E008F7A48 /* genebank.cc */,
-				DCC310C60762539E008F7A48 /* genebank.hh */,
-				DCC310C70762539E008F7A48 /* genome.cc */,
-				DCC310C80762539E008F7A48 /* genome.hh */,
-				DCC310C90762539E008F7A48 /* genome_util.cc */,
-				DCC310CA0762539E008F7A48 /* genome_util.hh */,
-				DCC310CB0762539E008F7A48 /* genotype.cc */,
-				DCC310CC0762539E008F7A48 /* genotype.hh */,
-				DCC310CD0762539E008F7A48 /* genotype_batch.hh */,
-				DCC310CE0762539E008F7A48 /* genotype_birth_data.cc */,
-				DCC310CF0762539E008F7A48 /* genotype_birth_data.hh */,
-				DCC310D00762539E008F7A48 /* genotype_control.cc */,
-				DCC310D10762539E008F7A48 /* genotype_control.hh */,
 				DCC310D20762539E008F7A48 /* genotype_macros.hh */,
-				DCC310D30762539E008F7A48 /* genotype_test_data.cc */,
-				DCC310D40762539E008F7A48 /* genotype_test_data.hh */,
-				DCC310D50762539E008F7A48 /* inject_genebank.cc */,
-				DCC310D60762539E008F7A48 /* inject_genebank.hh */,
 				DCC310D70762539E008F7A48 /* inject_genebank_macros.hh */,
-				DCC310D80762539E008F7A48 /* inject_genotype.cc */,
-				DCC310D90762539E008F7A48 /* inject_genotype.hh */,
-				DCC310DA0762539E008F7A48 /* inject_genotype_birth_data.cc */,
-				DCC310DB0762539E008F7A48 /* inject_genotype_birth_data.hh */,
-				DCC310DC0762539E008F7A48 /* inject_genotype_control.cc */,
-				DCC310DD0762539E008F7A48 /* inject_genotype_control.hh */,
-				DCC310DE0762539E008F7A48 /* inject_genotype_element.hh */,
-				DCC310DF0762539E008F7A48 /* inject_genotype_queue.cc */,
-				DCC310E00762539E008F7A48 /* inject_genotype_queue.hh */,
-				DCC310E10762539E008F7A48 /* inst_lib_base.hh */,
-				DCC310E20762539E008F7A48 /* inst_set.cc */,
-				DCC310E30762539E008F7A48 /* inst_set.hh */,
-				DCC310E40762539E008F7A48 /* inst_util.cc */,
-				DCC310E50762539E008F7A48 /* inst_util.hh */,
-				DCC310E60762539E008F7A48 /* instruction.cc */,
-				DCC310E70762539E008F7A48 /* instruction.hh */,
 				DCC310E80762539E008F7A48 /* landscape.cc */,
 				DCC310E90762539E008F7A48 /* landscape.hh */,
 				DCC310EA0762539E008F7A48 /* lineage.cc */,
@@ -3044,22 +3044,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				700E2AF8085DE50C00CF158A /* avida.cc in Sources */,
-				700E2B00085DE50C00CF158A /* fitness_matrix.cc in Sources */,
-				700E2B01085DE50C00CF158A /* genebank.cc in Sources */,
-				700E2B02085DE50C00CF158A /* genome.cc in Sources */,
-				700E2B03085DE50C00CF158A /* genome_util.cc in Sources */,
-				700E2B04085DE50C00CF158A /* genotype.cc in Sources */,
-				700E2B05085DE50C00CF158A /* genotype_birth_data.cc in Sources */,
-				700E2B07085DE50C00CF158A /* genotype_control.cc in Sources */,
-				700E2B08085DE50C00CF158A /* genotype_test_data.cc in Sources */,
-				700E2B09085DE50C00CF158A /* inject_genebank.cc in Sources */,
-				700E2B0A085DE50C00CF158A /* inject_genotype.cc in Sources */,
-				700E2B0B085DE50C00CF158A /* inject_genotype_birth_data.cc in Sources */,
-				700E2B0C085DE50C00CF158A /* inject_genotype_control.cc in Sources */,
-				700E2B0D085DE50C00CF158A /* inject_genotype_queue.cc in Sources */,
-				700E2B0E085DE50C00CF158A /* inst_set.cc in Sources */,
-				700E2B0F085DE50C00CF158A /* inst_util.cc in Sources */,
-				700E2B10085DE50C00CF158A /* instruction.cc in Sources */,
 				700E2B11085DE50C00CF158A /* landscape.cc in Sources */,
 				700E2B12085DE50C00CF158A /* lineage.cc in Sources */,
 				700E2B13085DE50C00CF158A /* lineage_control.cc in Sources */,
@@ -3174,6 +3158,22 @@
 				702D4F4B08DA61FE007BA469 /* cBirthChamber.cc in Sources */,
 				702D4F4C08DA61FE007BA469 /* cCallbackUtil.cc in Sources */,
 				702D4F4D08DA61FE007BA469 /* cConfig.cc in Sources */,
+				70CA6ED208DB7F8200068AC2 /* cFitnessMatrix.cc in Sources */,
+				70CA6ED308DB7F8200068AC2 /* cGenebank.cc in Sources */,
+				70CA6ED408DB7F8200068AC2 /* cGenome.cc in Sources */,
+				70CA6ED508DB7F8200068AC2 /* cGenomeUtil.cc in Sources */,
+				70CA6ED608DB7F8200068AC2 /* cGenotype_BirthData.cc in Sources */,
+				70CA6ED708DB7F8200068AC2 /* cGenotype_TestData.cc in Sources */,
+				70CA6ED808DB7F8200068AC2 /* cGenotype.cc in Sources */,
+				70CA6ED908DB7F8200068AC2 /* cGenotypeControl.cc in Sources */,
+				70CA6EDA08DB7F8200068AC2 /* cInjectGenebank.cc in Sources */,
+				70CA6EDB08DB7F8200068AC2 /* cInjectGenotype_BirthData.cc in Sources */,
+				70CA6EDC08DB7F8200068AC2 /* cInjectGenotype.cc in Sources */,
+				70CA6EDD08DB7F8200068AC2 /* cInjectGenotypeControl.cc in Sources */,
+				70CA6EDE08DB7F8200068AC2 /* cInjectGenotypeQueue.cc in Sources */,
+				70CA6EDF08DB7F8200068AC2 /* cInstruction.cc in Sources */,
+				70CA6EE008DB7F8200068AC2 /* cInstSet.cc in Sources */,
+				70CA6EE108DB7F8200068AC2 /* cInstUtil.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3182,22 +3182,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				DCC3166107628531008F7A48 /* avida.cc in Sources */,
-				DCC3166907628539008F7A48 /* fitness_matrix.cc in Sources */,
-				DCC3166A0762853A008F7A48 /* genebank.cc in Sources */,
-				DCC3166B0762853B008F7A48 /* genome.cc in Sources */,
-				DCC3166C0762853D008F7A48 /* genome_util.cc in Sources */,
-				DCC3166D0762853E008F7A48 /* genotype.cc in Sources */,
-				DCC3166E0762853F008F7A48 /* genotype_birth_data.cc in Sources */,
-				DCC316700762855C008F7A48 /* genotype_control.cc in Sources */,
-				DCC316710762855D008F7A48 /* genotype_test_data.cc in Sources */,
-				DCC316720762855E008F7A48 /* inject_genebank.cc in Sources */,
-				DCC316730762855F008F7A48 /* inject_genotype.cc in Sources */,
-				DCC316740762855F008F7A48 /* inject_genotype_birth_data.cc in Sources */,
-				DCC3167507628560008F7A48 /* inject_genotype_control.cc in Sources */,
-				DCC3167607628563008F7A48 /* inject_genotype_queue.cc in Sources */,
-				DCC3167707628565008F7A48 /* inst_set.cc in Sources */,
-				DCC3167807628566008F7A48 /* inst_util.cc in Sources */,
-				DCC3167907628567008F7A48 /* instruction.cc in Sources */,
 				DCC3167A07628567008F7A48 /* landscape.cc in Sources */,
 				DCC3167B07628568008F7A48 /* lineage.cc in Sources */,
 				DCC3167C07628569008F7A48 /* lineage_control.cc in Sources */,
@@ -3302,6 +3286,22 @@
 				702D4F4508DA61FE007BA469 /* cBirthChamber.cc in Sources */,
 				702D4F4608DA61FE007BA469 /* cCallbackUtil.cc in Sources */,
 				702D4F4708DA61FE007BA469 /* cConfig.cc in Sources */,
+				70CA6EC208DB7F8200068AC2 /* cFitnessMatrix.cc in Sources */,
+				70CA6EC308DB7F8200068AC2 /* cGenebank.cc in Sources */,
+				70CA6EC408DB7F8200068AC2 /* cGenome.cc in Sources */,
+				70CA6EC508DB7F8200068AC2 /* cGenomeUtil.cc in Sources */,
+				70CA6EC608DB7F8200068AC2 /* cGenotype_BirthData.cc in Sources */,
+				70CA6EC708DB7F8200068AC2 /* cGenotype_TestData.cc in Sources */,
+				70CA6EC808DB7F8200068AC2 /* cGenotype.cc in Sources */,
+				70CA6EC908DB7F8200068AC2 /* cGenotypeControl.cc in Sources */,
+				70CA6ECA08DB7F8200068AC2 /* cInjectGenebank.cc in Sources */,
+				70CA6ECB08DB7F8200068AC2 /* cInjectGenotype_BirthData.cc in Sources */,
+				70CA6ECC08DB7F8200068AC2 /* cInjectGenotype.cc in Sources */,
+				70CA6ECD08DB7F8200068AC2 /* cInjectGenotypeControl.cc in Sources */,
+				70CA6ECE08DB7F8200068AC2 /* cInjectGenotypeQueue.cc in Sources */,
+				70CA6ECF08DB7F8200068AC2 /* cInstruction.cc in Sources */,
+				70CA6ED008DB7F8200068AC2 /* cInstSet.cc in Sources */,
+				70CA6ED108DB7F8200068AC2 /* cInstUtil.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
