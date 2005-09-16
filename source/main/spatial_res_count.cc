@@ -10,7 +10,7 @@
 #endif
 
 #ifndef CONFIG_HH
-#include "config.hh"
+#include "cConfig.h"
 #endif
 #ifndef FUNCTIONS_HH
 #include "functions.hh"

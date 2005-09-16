@@ -1,11 +1,11 @@
 
 Include("change_list.hh")
-Include("environment.hh")
+Include("cEnvironment.h")
 Include("population.hh")
 
 Import("avida_driver_base.pyste")
 
-cAvidaDriver_Population = Class("cAvidaDriver_Population", "avida_driver_population.hh")
+cAvidaDriver_Population = Class("cAvidaDriver_Population", "cAvidaDriver_Population.h")
 set_policy(cAvidaDriver_Population.GetPopulation, return_internal_reference())
 
 exclude(cAvidaDriver_Population.GetChangeList)

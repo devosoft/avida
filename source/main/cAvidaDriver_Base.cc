@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef AVIDA_DRIVER_BASE_HH
-#include "avida_driver_base.hh"
+#include "cAvidaDriver_Base.h"
 #endif
 
 #ifndef STRING_HH

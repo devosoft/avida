@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef ANALYZE_COMMAND_DEF_BASE_HH
-#include "analyze_command_def_base.hh"
+#include "cAnalyzeCommandDefBase.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

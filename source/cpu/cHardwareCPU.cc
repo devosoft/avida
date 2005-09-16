@@ -7,7 +7,7 @@
 
 #include "cHardwareCPU.h"
 
-#include "config.hh"
+#include "cConfig.h"
 #include "cCPUTestInfo.h"
 #include "functions.hh"
 #include "genome_util.hh"

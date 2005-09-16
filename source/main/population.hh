@@ -11,10 +11,10 @@
 #include <fstream>
 
 #ifndef BIRTH_CHAMBER_HH
-#include "birth_chamber.hh"
+#include "cBirthChamber.h"
 #endif
 #ifndef POPULATION_INTERFACE_HH
-#include "population_interface.hh"
+#include "cPopulationInterface.h"
 #endif
 #ifndef RESOURCE_COUNT_HH
 #include "resource_count.hh"

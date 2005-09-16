@@ -6,18 +6,18 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef AVIDA_DRIVER_ANALYZE_HH
-#include "avida_driver_analyze.hh"
+#include "cAvidaDriver_Analyze.h"
 #endif
 
 #ifndef ANALYZE_HH
-#include "analyze.hh"
+#include "cAnalyze.h"
 #endif
 #ifndef CONFIG_HH
-#include "config.hh"
+#include "cConfig.h"
 #endif
 
 #ifndef ENVIRONMENT_HH
-#include "environment.hh"
+#include "cEnvironment.h"
 #endif
 
 #include <iostream>

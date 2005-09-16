@@ -9,7 +9,7 @@
 #define ANALYZE_FLOW_COMMAND_HH
 
 #ifndef ANALYZE_COMMAND_HH
-#include "analyze_command.hh"
+#include "cAnalyzeCommand.h"
 #endif
 #ifndef TLIST_HH
 #include "tList.hh"

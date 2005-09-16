@@ -7,9 +7,9 @@
 
 #include "organism.hh"
 
-#include "config.hh"
+#include "cConfig.h"
 #include "nHardware.h"
-#include "environment.hh"
+#include "cEnvironment.h"
 #include "functions.hh"
 #include "genome.hh"
 #include "genome_util.hh"

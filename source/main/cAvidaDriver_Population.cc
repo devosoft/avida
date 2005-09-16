@@ -5,12 +5,12 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "avida_driver_population.hh"
+#include "cAvidaDriver_Population.h"
 
-#include "avida_triggers.hh"
-#include "callback_util.hh"
+#include "cAvidaTriggers.h"
+#include "cCallbackUtil.h"
 #include "change_list.hh"
-#include "config.hh"
+#include "cConfig.h"
 #include "cEventFactoryManager.h"
 #include "cEventList.h"
 #include "genebank.hh"
@@ -22,7 +22,7 @@
 #include "population.hh"
 #include "population_cell.hh"
 #include "cPopulationEventFactory.h"
-#include "population_interface.hh"
+#include "cPopulationInterface.h"
 #include "string.hh"
 #include "tools.hh"
 

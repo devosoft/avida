@@ -9,7 +9,7 @@
 #define AVIDA_DRIVER_POPULATION_HH
 
 #ifndef AVIDA_DRIVER_BASE_HH
-#include "avida_driver_base.hh"
+#include "cAvidaDriver_Base.h"
 #endif
 #ifndef STRING_HH
 #include "string.hh"

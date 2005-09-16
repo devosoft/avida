@@ -1,5 +1,5 @@
 
-cConfig = Class("cConfig", "config.hh")
+cConfig = Class("cConfig", "cConfig.h")
 
 set_policy(cConfig.GetDefaultDir, return_value_policy(reference_existing_object))
 set_policy(cConfig.GetGenesisFilename, return_value_policy(reference_existing_object))

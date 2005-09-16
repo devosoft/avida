@@ -13,7 +13,7 @@
 #include "organism.hh"
 #include "population_cell.hh"
 #include "species.hh"
-#include "config.hh"
+#include "cConfig.h"
 #include "cHardwareBase.h"
 #include "cHardware4Stack.h"
 #include "cHardwareCPU.h"

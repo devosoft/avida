@@ -7,7 +7,7 @@
 
 #include "population.hh"
 #include "stats.hh"
-#include "environment.hh"
+#include "cEnvironment.h"
 
 #include "bar_screen.hh"
 

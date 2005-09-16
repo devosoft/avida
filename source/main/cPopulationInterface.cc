@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef POPULATION_INTERFACE_HH
-#include "population_interface.hh"
+#include "cPopulationInterface.h"
 #endif
 
 #include <assert.h>

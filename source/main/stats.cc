@@ -7,7 +7,7 @@
 
 #include "stats.hh"
 
-#include "config.hh"
+#include "cConfig.h"
 #include "data_file.hh"
 #include "functions.hh"
 #include "string_util.hh"

@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef AVIDA_DRIVER_POPULATION_HH
-#include "avida_driver_population.hh"
+#include "cAvidaDriver_Population.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

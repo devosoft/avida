@@ -6,23 +6,23 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef CALLBACK_UTIL_HH
-#include "callback_util.hh"
+#include "cCallbackUtil.h"
 #endif
 
 #ifndef AVIDA_HH
 #include "avida.hh"
 #endif
 #ifndef AVIDA_DRIVER_BASE_HH
-#include "avida_driver_base.hh"
+#include "cAvidaDriver_Base.h"
 #endif
 #ifndef BIRTH_CHAMBER_HH
-#include "birth_chamber.hh"
+#include "cBirthChamber.h"
 #endif
 #ifndef CONFIG_HH
-#include "config.hh"
+#include "cConfig.h"
 #endif
 #ifndef ENVIRONMENT_HH
-#include "environment.hh"
+#include "cEnvironment.h"
 #endif
 #ifndef GENOTYPE_HH
 #include "genotype.hh"
@@ -46,7 +46,7 @@
 #include "population_cell.hh"
 #endif
 #ifndef POPULATION_INTERFACE_HH
-#include "population_interface.hh"
+#include "cPopulationInterface.h"
 #endif
 #ifndef TEST_CPU_HH
 #include "cTestCPU.h"

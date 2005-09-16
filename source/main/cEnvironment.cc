@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef ENVIRONMENT_HH
-#include "environment.hh"
+#include "cEnvironment.h"
 #endif
 
 #ifndef INIT_FILE_HH

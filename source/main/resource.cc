@@ -10,7 +10,7 @@
 #endif
 
 #ifndef CONFIG_HH
-#include "config.hh"
+#include "cConfig.h"
 #endif
 
 using namespace std;

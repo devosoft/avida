@@ -8,7 +8,7 @@
 #include "landscape.hh"
 
 #include "cCPUMemory.h"
-#include "environment.hh"
+#include "cEnvironment.h"
 #include "inst_set.hh"
 #include "organism.hh"
 #include "phenotype.hh"

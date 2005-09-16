@@ -10,7 +10,7 @@
 #endif
 
 #ifndef CONFIG_HH
-#include "config.hh"
+#include "cConfig.h"
 #endif
 #ifndef CPU_TEST_INFO_HH
 #include "cCPUTestInfo.h"

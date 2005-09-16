@@ -9,7 +9,7 @@
 #define ANALYZE_COMMAND_DEF_HH
 
 #ifndef ANALYZE_COMMAND_DEF_BASE_HH
-#include "analyze_command_def_base.hh"
+#include "cAnalyzeCommandDefBase.h"
 #endif
 #ifndef STRING_HH
 #include "string.hh"

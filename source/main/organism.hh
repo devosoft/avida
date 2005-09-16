@@ -30,7 +30,7 @@
 #include "phenotype.hh"
 #endif
 #ifndef POPULATION_INTERFACE_HH
-#include "population_interface.hh"
+#include "cPopulationInterface.h"
 #endif
 #ifndef TBUFFER_HH
 #include "tBuffer.hh"

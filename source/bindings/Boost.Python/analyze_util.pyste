@@ -2,6 +2,6 @@ Include("population.hh")
 Include("genome.hh")
 Include("inst_set.hh")
 
-cAnalyzeUtil = Class("cAnalyzeUtil", "analyze_util.hh")
+cAnalyzeUtil = Class("cAnalyzeUtil", "cAnalyzeUtil.h")
 
 # vim: set ft=python:

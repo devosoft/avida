@@ -9,7 +9,7 @@
 #define ANALYZE_FUNCTION_HH
 
 #ifndef ANALYZE_COMMAND_HH
-#include "analyze_command.hh"
+#include "cAnalyzeCommand.h"
 #endif
 #ifndef STRING_HH
 #include "string.hh"

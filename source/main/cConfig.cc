@@ -5,7 +5,7 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "config.hh"
+#include "cConfig.h"
 
 #include "defs.hh"
 #include "cEventFactoryManager.h"

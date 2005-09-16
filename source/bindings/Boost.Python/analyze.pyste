@@ -1,7 +1,7 @@
-Include("environment.hh")
+Include("cEnvironment.h")
 
-Include("environment.hh")
+Include("cEnvironment.h")
 
-cAnalyze = Class("cAnalyze", "analyze.hh")
+cAnalyze = Class("cAnalyze", "cAnalyze.h")
 
 # vim: set ft=python:

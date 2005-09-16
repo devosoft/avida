@@ -1,7 +1,7 @@
 
 Include("reaction_result.hh")
 
-cEnvironment = Class("cEnvironment", "environment.hh")
+cEnvironment = Class("cEnvironment", "cEnvironment.h")
 
 set_policy(cEnvironment.GetResourceLib, return_internal_reference())
 set_policy(cEnvironment.GetReactionLib, return_internal_reference())

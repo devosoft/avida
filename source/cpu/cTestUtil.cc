@@ -8,7 +8,7 @@
 #include "cTestUtil.h"
 
 #include "cCPUTestInfo.h"
-#include "environment.hh"
+#include "cEnvironment.h"
 #include "genome.hh"
 #include "genotype.hh"
 #include "cHardwareBase.h"

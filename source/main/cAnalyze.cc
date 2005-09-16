@@ -11,18 +11,18 @@
 #include <queue>
 #include <stack>
 
-#include "analyze.hh"
+#include "cAnalyze.h"
 
-#include "analyze_command.hh"
-#include "analyze_command_def.hh"
-#include "analyze_command_def_base.hh"
-#include "analyze_flow_command.hh"
-#include "analyze_flow_command_def.hh"
-#include "analyze_function.hh"
-#include "analyze_genotype.hh"
-#include "config.hh"
+#include "cAnalyzeCommand.h"
+#include "cAnalyzeCommandDef.h"
+#include "cAnalyzeCommandDefBase.h"
+#include "cAnalyzeFlowCommand.h"
+#include "cAnalyzeFlowCommandDef.h"
+#include "cAnalyzeFunction.h"
+#include "cAnalyzeGenotype.h"
+#include "cConfig.h"
 #include "data_file.hh"
-#include "environment.hh"
+#include "cEnvironment.h"
 #include "fitness_matrix.hh"
 #include "genome_util.hh"
 #include "cHardwareBase.h"

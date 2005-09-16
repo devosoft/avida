@@ -1,8 +1,8 @@
 Import("avida_driver_base.pyste")
 
-Include("environment.hh")
+Include("cEnvironment.h")
 Include("string.hh")
 
-cAvidaDriver_Analyze = Class("cAvidaDriver_Analyze", "avida_driver_analyze.hh")
+cAvidaDriver_Analyze = Class("cAvidaDriver_Analyze", "cAvidaDriver_Analyze.h")
 
 # vim: set ft=python:

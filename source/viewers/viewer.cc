@@ -10,10 +10,10 @@
 #endif
 
 #ifndef CONFIG_HH
-#include "config.hh"
+#include "cConfig.h"
 #endif
 #ifndef ENVIRONMENT_HH
-#include "environment.hh"
+#include "cEnvironment.h"
 #endif
 #ifndef POPULATION_HH
 #include "population.hh"

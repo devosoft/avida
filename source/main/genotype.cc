@@ -7,7 +7,7 @@
 
 #include "genotype.hh"
 
-#include "config.hh"
+#include "cConfig.h"
 #include "cCPUTestInfo.h"
 #include "genome_util.hh"
 #include "merit.hh"

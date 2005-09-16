@@ -5,9 +5,9 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "analyze_genotype.hh"
+#include "cAnalyzeGenotype.h"
 
-#include "config.hh"
+#include "cConfig.h"
 #include "cCPUTestInfo.h"
 #include "inst_set.hh"
 #include "landscape.hh"

@@ -1,13 +1,13 @@
 
 main {
   HEADERS += \
-             $$MAIN_HH/analyze.hh \
-             $$MAIN_HH/analyze_util.hh \
+             $$MAIN_HH/cAnalyze.h \
+             $$MAIN_HH/cAnalyzeUtil.h \
              $$MAIN_HH/avida.hh \
-             $$MAIN_HH/birth_chamber.hh \
-             $$MAIN_HH/callback_util.hh \
-             $$MAIN_HH/config.hh \
-             $$MAIN_HH/environment.hh \
+             $$MAIN_HH/cBirthChamber.h \
+             $$MAIN_HH/cCallbackUtil.h \
+             $$MAIN_HH/cConfig.h \
+             $$MAIN_HH/cEnvironment.h \
              $$MAIN_HH/fitness_matrix.hh \
              $$MAIN_HH/genebank.hh \
              $$MAIN_HH/genome.hh \
@@ -24,7 +24,7 @@ main {
              $$MAIN_HH/lineage_control.hh \
              $$MAIN_HH/organism.hh \
              $$MAIN_HH/phenotype.hh \
-             $$MAIN_HH/population_interface.hh \
+             $$MAIN_HH/cPopulationInterface.h \
              $$MAIN_HH/population.hh \
              $$MAIN_HH/population_cell.hh \
              $$MAIN_HH/reaction.hh \
@@ -36,17 +36,17 @@ main {
              $$MAIN_HH/stats.hh
 
   SOURCES += \
-             $$MAIN_CC/analyze.cc \
-             $$MAIN_CC/analyze_util.cc \
-             $$MAIN_CC/analyze_genotype.cc \
+             $$MAIN_CC/cAnalyze.cc \
+             $$MAIN_CC/cAnalyzeUtil.cc \
+             $$MAIN_CC/cAnalyzeGenotype.cc \
              $$MAIN_CC/avida.cc \
-             $$MAIN_CC/avida_driver_analyze.cc \
-             $$MAIN_CC/avida_driver_base.cc \
-             $$MAIN_CC/avida_driver_population.cc \
-             $$MAIN_CC/birth_chamber.cc \
-             $$MAIN_CC/callback_util.cc \
-             $$MAIN_CC/config.cc \
-             $$MAIN_CC/environment.cc \
+             $$MAIN_CC/cAvidaDriver_Analyze.cc \
+             $$MAIN_CC/cAvidaDriver_Base.cc \
+             $$MAIN_CC/cAvidaDriver_Population.cc \
+             $$MAIN_CC/cBirthChamber.cc \
+             $$MAIN_CC/cCallbackUtil.cc \
+             $$MAIN_CC/cConfig.cc \
+             $$MAIN_CC/cEnvironment.cc \
              $$MAIN_CC/fitness_matrix.cc \
              $$MAIN_CC/genebank.cc \
              $$MAIN_CC/genome.cc \
@@ -73,7 +73,7 @@ main {
              $$MAIN_CC/mx_code_array.cc \
              $$MAIN_CC/organism.cc \
              $$MAIN_CC/phenotype.cc \
-             $$MAIN_CC/population_interface.cc \
+             $$MAIN_CC/cPopulationInterface.cc \
              $$MAIN_CC/population.cc \
              $$MAIN_CC/population_cell.cc \
              $$MAIN_CC/reaction.cc \

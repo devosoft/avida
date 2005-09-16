@@ -6,11 +6,11 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef ENVIRONMENT_HH
-#include "environment.hh"
+#include "cEnvironment.h"
 #endif
 #include "functions.hh"
 
-#include "config.hh"
+#include "cConfig.h"
 #include "genebank.hh"
 #include "genotype.hh"
 #include "organism.hh"

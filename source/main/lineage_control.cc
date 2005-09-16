@@ -11,7 +11,7 @@
 
 #include "lineage.hh"
 #include "stats.hh"
-#include "config.hh"
+#include "cConfig.h"
 #include "genebank.hh"
 #include "genotype.hh"
 #include "organism.hh"

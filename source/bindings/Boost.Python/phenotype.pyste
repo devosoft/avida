@@ -1,5 +1,5 @@
 
-Include("environment.hh")
+Include("cEnvironment.h")
 Include("tBuffer.hh")
 
 cPhenotype = Class("cPhenotype", "phenotype.hh")

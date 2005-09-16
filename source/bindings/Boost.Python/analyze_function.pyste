@@ -1,5 +1,5 @@
 
-cAnalyzeFunction = Class("cAnalyzeFunction", "analyze_function.hh")
+cAnalyzeFunction = Class("cAnalyzeFunction", "cAnalyzeFunction.h")
 set_policy(cAnalyzeFunction.GetCommandList, return_internal_reference())
 
 # vim: set ft=python:

@@ -8,7 +8,7 @@
 #include <fstream>
 
 #ifndef ENVIRONMENT_HH
-#include "environment.hh"
+#include "cEnvironment.h"
 #endif
 #include "genotype.hh"
 #include "organism.hh"

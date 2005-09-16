@@ -6,14 +6,14 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef BIRTH_CHAMBER_HH
-#include "birth_chamber.hh"
+#include "cBirthChamber.h"
 #endif
 
 #ifndef TARRAY_HH
 #include "tArray.hh"
 #endif
 #ifndef CONFIG_HH
-#include "config.hh"
+#include "cConfig.h"
 #endif
 #ifndef FUNCTIONS_HH
 #include "functions.hh"

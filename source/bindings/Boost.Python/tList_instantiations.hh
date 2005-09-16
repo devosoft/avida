@@ -1,5 +1,5 @@
-#include "analyze_command.hh"
-#include "analyze_genotype.hh"
+#include "cAnalyzeCommand.h"
+#include "cAnalyzeGenotype.h"
 #include "mutation.hh"
 #include "population_cell.hh"
 #include "reaction_process.hh"

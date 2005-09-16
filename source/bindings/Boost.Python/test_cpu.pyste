@@ -1,9 +1,9 @@
 
 Include("cCPUTestInfo.h")
-Include("environment.hh")
+Include("cEnvironment.h")
 Include("genome.hh")
 Include("inst_set.hh")
-Include("population_interface.hh")
+Include("cPopulationInterface.h")
 Include("resource_count.hh")
 
 cTestCPU = Class("cTestCPU", "test_cpu-fixups.hh")

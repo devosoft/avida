@@ -8,10 +8,10 @@
 #include "population.hh"
 
 #include "change_list.hh"
-#include "config.hh"
+#include "cConfig.h"
 #include "const_schedule.hh"
 #include "data_file.hh"
-#include "environment.hh"
+#include "cEnvironment.h"
 #include "functions.hh"
 #include "genebank.hh"
 #include "genome_util.hh"

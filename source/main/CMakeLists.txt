@@ -1,17 +1,17 @@
 INCLUDE_DIRECTORIES(${ALL_INC_DIRS})
 
 SET(libmain_a_SOURCES
-  analyze.cc
-  analyze_genotype.cc
-  analyze_util.cc
+  cAnalyze.cc
+  cAnalyzeGenotype.cc
+  cAnalyzeUtil.cc
   avida.cc
-  avida_driver_analyze.cc
-  avida_driver_base.cc
-  avida_driver_population.cc
-  birth_chamber.cc
-  callback_util.cc
-  config.cc
-  environment.cc
+  cAvidaDriver_Analyze.cc
+  cAvidaDriver_Base.cc
+  cAvidaDriver_Population.cc
+  cBirthChamber.cc
+  cCallbackUtil.cc
+  cConfig.cc
+  cEnvironment.cc
   fitness_matrix.cc
   genebank.cc
   genome.cc
@@ -41,7 +41,7 @@ SET(libmain_a_SOURCES
   phenotype.cc
   population.cc
   population_cell.cc
-  population_interface.cc
+  cPopulationInterface.cc
   reaction.cc
   reaction_lib.cc
   reaction_process.cc

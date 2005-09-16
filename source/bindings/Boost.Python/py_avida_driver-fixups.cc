@@ -3,7 +3,7 @@
 
 #include "cpu/cHardwareBase.h"
 #include "cpu/cHardwareFactory.h"
-#include "main/config.hh"
+#include "main/cConfig.h"
 #include "main/genebank.hh"
 #include "main/genotype.hh"
 #include "main/organism.hh"

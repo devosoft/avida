@@ -1,6 +1,6 @@
-Include("analyze.hh")
-Include("analyze_command.hh")
+Include("cAnalyze.h")
+Include("cAnalyzeCommand.h")
 
-cAnalyzeCommandDefBase = Class("cAnalyzeCommandDefBase", "analyze_command_def_base.hh")
+cAnalyzeCommandDefBase = Class("cAnalyzeCommandDefBase", "cAnalyzeCommandDefBase.h")
 
 # vim: set ft=python:

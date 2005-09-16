@@ -5,8 +5,8 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "config.hh"
-#include "environment.hh"
+#include "cConfig.h"
+#include "cEnvironment.h"
 #include "genebank.hh"
 #include "genotype.hh"
 #include "population.hh"

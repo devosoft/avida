@@ -10,19 +10,19 @@
 #endif
 
 #ifndef ANALYZE_UTIL_HH
-#include "analyze_util.hh"
+#include "cAnalyzeUtil.h"
 #endif
 #ifndef AVIDA_HH
 #include "avida.hh"
 #endif
 #ifndef AVIDA_DRIVER_BASE_HH
-#include "avida_driver_base.hh"
+#include "cAvidaDriver_Base.h"
 #endif
 #ifndef CONFIG_HH
-#include "config.hh"
+#include "cConfig.h"
 #endif
 #ifndef ENVIRONMENT_HH
-#include "environment.hh"
+#include "cEnvironment.h"
 #endif
 #ifndef EVENT_HH
 #include "cEvent.h"

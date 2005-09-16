@@ -6,17 +6,17 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef ANALYZE_UTIL_HH
-#include "analyze_util.hh"
+#include "cAnalyzeUtil.h"
 #endif
 
 #ifndef CONFIG_HH
-#include "config.hh"
+#include "cConfig.h"
 #endif
 #ifndef DEFS_HH
 #include "defs.hh"
 #endif
 #ifndef ENVIRONMENT_HH
-#include "environment.hh"
+#include "cEnvironment.h"
 #endif
 #ifndef GENEBANK_HH
 #include "genebank.hh"
