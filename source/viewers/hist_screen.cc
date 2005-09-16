@@ -7,8 +7,8 @@
 
 #include <fstream>
 
-#include "genebank.hh"
-#include "genotype.hh"
+#include "cGenebank.h"
+#include "cGenotype.h"
 #include "species.hh"
 
 #include "hist_screen.hh"

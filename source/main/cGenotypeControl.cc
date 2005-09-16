@@ -6,17 +6,17 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef GENOTYPE_CONTROL_HH
-#include "genotype_control.hh"
+#include "cGenotypeControl.h"
 #endif
 
 #ifndef DEFS_HH
 #include "defs.hh"
 #endif
 #ifndef GENEBANK_HH
-#include "genebank.hh"
+#include "cGenebank.h"
 #endif
 #ifndef GENOTYPE_HH
-#include "genotype.hh"
+#include "cGenotype.h"
 #endif
 
 ///////////////////////

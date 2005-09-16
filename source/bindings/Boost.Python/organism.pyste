@@ -1,10 +1,10 @@
 
 Include("cEnvironment.h")
-Include("inject_genotype.hh")
+Include("cInjectGenotype.h")
 Include("cHardwareBase.h")
 Include("cCodeLabel.h")
 Include("org_message.hh")
-Include("genotype.hh")
+Include("cGenotype.h")
 Include("lineage.hh")
 
 cOrganism = Class("cOrganism", "organism.hh")

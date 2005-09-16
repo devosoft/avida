@@ -7,8 +7,8 @@
 
 #include "cConfig.h"
 #include "cEnvironment.h"
-#include "genebank.hh"
-#include "genotype.hh"
+#include "cGenebank.h"
+#include "cGenotype.h"
 #include "population.hh"
 #include "species.hh"
 #include "stats.hh"

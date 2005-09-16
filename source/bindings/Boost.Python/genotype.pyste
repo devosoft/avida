@@ -1,9 +1,9 @@
 
 Include("merit.hh")
 Include("species.hh")
-Include("genebank.hh")
+Include("cGenebank.h")
 
-cGenotype = Class("cGenotype", "genotype.hh")
+cGenotype = Class("cGenotype", "cGenotype.h")
 set_policy(cGenotype.GetGenome, return_internal_reference())
 set_policy(cGenotype.GetParentGenotype, return_internal_reference())
 set_policy(cGenotype.GetParent2Genotype, return_internal_reference())

@@ -1,6 +1,6 @@
 
 Include("cCPUMemory.h")
-Include("instruction.hh")
+Include("cInstruction.h")
 Include("cHardwareBase.h")
 Include("cCodeLabel.h")
 

@@ -6,14 +6,14 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef GENEBANK_HH
-#include "genebank.hh"
+#include "cGenebank.h"
 #endif
 
 #ifndef CONFIG_HH
 #include "cConfig.h"
 #endif
 #ifndef GENOTYPE_HH
-#include "genotype.hh"
+#include "cGenotype.h"
 #endif
 #ifndef SPECIES_HH
 #include "species.hh"

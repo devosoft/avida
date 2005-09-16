@@ -9,7 +9,7 @@
 #define CPU_MEMORY_HH
 
 #ifndef GENOME_HH
-#include "genome.hh"
+#include "cGenome.h"
 #endif
 #ifndef TARRAY_HH
 #include "tArray.hh"

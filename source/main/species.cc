@@ -16,10 +16,10 @@
 #include "functions.hh"
 #endif
 #ifndef GENOTYPE_HH
-#include "genotype.hh"
+#include "cGenotype.h"
 #endif
 #ifndef GENOME_UTIL_HH
-#include "genome_util.hh"
+#include "cGenomeUtil.h"
 #endif
 #ifndef TEST_CPU_HH
 #include "cTestCPU.h"

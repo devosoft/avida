@@ -5,11 +5,11 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "genotype.hh"
+#include "cGenotype.h"
 
 #include "cConfig.h"
 #include "cCPUTestInfo.h"
-#include "genome_util.hh"
+#include "cGenomeUtil.h"
 #include "merit.hh"
 #include "organism.hh"
 #include "phenotype.hh"

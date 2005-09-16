@@ -8,10 +8,10 @@
 #include <fstream>
 
 #include "species.hh"
-#include "genotype.hh"
-#include "genebank.hh"
-#include "inject_genotype.hh"
-#include "inject_genebank.hh"
+#include "cGenotype.h"
+#include "cGenebank.h"
+#include "cInjectGenotype.h"
+#include "cInjectGenebank.h"
 #include "population.hh"
 #include "population_cell.hh"
 #include "organism.hh"

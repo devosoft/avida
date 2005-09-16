@@ -16,7 +16,7 @@
 #include "defs.hh"
 #endif
 #ifndef GENOTYPE_HH
-#include "genotype.hh"
+#include "cGenotype.h"
 #endif
 #ifndef GENOTYPE_MACROS_HH
 #include "genotype_macros.hh"

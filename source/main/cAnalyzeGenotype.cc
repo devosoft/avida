@@ -9,7 +9,7 @@
 
 #include "cConfig.h"
 #include "cCPUTestInfo.h"
-#include "inst_set.hh"
+#include "cInstSet.h"
 #include "landscape.hh"
 #include "organism.hh"
 #include "phenotype.hh"

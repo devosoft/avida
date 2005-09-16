@@ -1,5 +1,5 @@
 
-Include("genotype.hh")
+Include("cGenotype.h")
 
 cSpecies = Class("cSpecies", "species.hh")
 set_policy(cSpecies.GetNext, return_internal_reference())

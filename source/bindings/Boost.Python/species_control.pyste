@@ -1,7 +1,7 @@
 
-Include("genebank.hh")
+Include("cGenebank.h")
 Include("species.hh")
-Include("genotype.hh")
+Include("cGenotype.h")
 Include("stats.hh")
 
 cSpeciesControl = Class("cSpeciesControl", "species_control.hh")

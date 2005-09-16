@@ -1,8 +1,8 @@
 
-Include("inst_set.hh")
+Include("cInstSet.h")
 Include("species.hh")
-Include("genotype.hh")
+Include("cGenotype.h")
 
-cGenotype_BirthData = Class("cGenotype_BirthData", "genotype_birth_data.hh")
+cGenotype_BirthData = Class("cGenotype_BirthData", "cGenotype_BirthData.h")
 
 # vim: set ft=python:

@@ -1,6 +1,6 @@
 
 Include("cHardwareBase.h")
-Include("inject_genotype.hh")
+Include("cInjectGenotype.h")
 
 cHardware4Stack_Thread = Class("cHardware4Stack_Thread", "cHardware4Stack_Thread.h")
 

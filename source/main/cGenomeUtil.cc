@@ -5,10 +5,10 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "genome_util.hh"
+#include "cGenomeUtil.h"
 
 #include "functions.hh"
-#include "genome.hh"
+#include "cGenome.h"
 
 
 using namespace std;

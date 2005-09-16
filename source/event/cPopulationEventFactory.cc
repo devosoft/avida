@@ -28,19 +28,19 @@
 #include "cEvent.h"
 #endif
 #ifndef GENEBANK_HH
-#include "genebank.hh"
+#include "cGenebank.h"
 #endif
 #ifndef GENOTYPE_HH
-#include "genotype.hh"
+#include "cGenotype.h"
 #endif
 #ifndef INJECT_GENEBANK_HH
-#include "inject_genebank.hh"
+#include "cInjectGenebank.h"
 #endif
 #ifndef INJECT_GENOTYPE_HH
-#include "inject_genotype.hh"
+#include "cInjectGenotype.h"
 #endif
 #ifndef INST_UTIL_HH
-#include "inst_util.hh"
+#include "cInstUtil.h"
 #endif
 #ifndef LANDSCAPE_HH
 #include "landscape.hh"

@@ -9,7 +9,7 @@
 #define ENVIRONMENT_HH
 
 #ifndef INST_SET_HH
-#include "inst_set.hh"
+#include "cInstSet.h"
 #endif
 #ifndef MUTATION_LIB_HH
 #include "mutation_lib.hh"

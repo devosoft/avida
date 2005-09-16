@@ -6,17 +6,17 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef INJECT_GENOTYPE_CONTROL_HH
-#include "inject_genotype_control.hh"
+#include "cInjectGenotypeControl.h"
 #endif
 
 #ifndef DEFS_HH
 #include "defs.hh"
 #endif
 #ifndef INJECT_GENEBANK_HH
-#include "inject_genebank.hh"
+#include "cInjectGenebank.h"
 #endif
 #ifndef INJECT_GENOTYPE_HH
-#include "inject_genotype.hh"
+#include "cInjectGenotype.h"
 #endif
 
 ////////////////////////////

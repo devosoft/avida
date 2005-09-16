@@ -18,7 +18,7 @@
 #include "sCPUStats.h"
 #endif
 #ifndef GENOME_HH
-#include "genome.hh"
+#include "cGenome.h"
 #endif
 #ifndef LOCAL_MUTATIONS_HH
 #include "local_mutations.hh"

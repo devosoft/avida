@@ -5,8 +5,8 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef GENOTYPE_BIRTH_DATA_HH
-#include "genotype_birth_data.hh"
+#ifndef INJECT_GENOTYPE_BIRTH_DATA_HH
+#include "cInjectGenotype_BirthData.h"
 #endif
 
 #ifndef DEFS_HH
@@ -14,24 +14,19 @@
 #endif
 
 /////////////////////////
-//  cGenotype_BirthData
+//  cInjectGenotype_BirthData
 /////////////////////////
 
-cGenotype_BirthData::cGenotype_BirthData(int in_update_born)
+cInjectGenotype_BirthData::cInjectGenotype_BirthData(int in_update_born)
   : update_born(in_update_born)
-  , parent_distance(-1)
+  , parent_id(-1)
   , gene_depth(0)
   , update_deactivated(-1)
   , parent_genotype(NULL)
-  , parent_species(NULL)
   , num_offspring_genotypes(0)
 {
-  // @CAO: we should do a test to see if we have a sexual population.  For now
-  // we will assume we do.
-  ancestor_ids.Resize(6);
-  ancestor_ids.SetAll(-1);
 }
 
-cGenotype_BirthData::~cGenotype_BirthData()
+cInjectGenotype_BirthData::~cInjectGenotype_BirthData()
 {
 }

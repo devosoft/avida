@@ -12,7 +12,7 @@
 #include "cCPUTestInfo.h"
 #endif
 #ifndef GENOME_HH
-#include "genome.hh"
+#include "cGenome.h"
 #endif
 #ifndef STRING_HH
 #include "string.hh"

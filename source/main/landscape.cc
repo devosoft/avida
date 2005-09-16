@@ -9,7 +9,7 @@
 
 #include "cCPUMemory.h"
 #include "cEnvironment.h"
-#include "inst_set.hh"
+#include "cInstSet.h"
 #include "organism.hh"
 #include "phenotype.hh"
 #include "stats.hh"             // For GetUpdate in outputs...

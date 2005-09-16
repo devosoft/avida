@@ -1,5 +1,5 @@
 #ifndef GENOTYPE_TEST_DATA_HH
-#include "genotype_test_data.hh"
+#include "cGenotype_TestData.h"
 #endif
 
 #ifndef TEST_CASE_H

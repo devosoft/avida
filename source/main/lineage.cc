@@ -9,7 +9,7 @@
 #include "lineage.hh"
 #endif
 #ifndef GENOTYPE_HH
-#include "genotype.hh"
+#include "cGenotype.h"
 #endif
 
 using namespace std;

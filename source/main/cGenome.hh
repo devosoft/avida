@@ -11,7 +11,7 @@
 #include <assert.h>
 
 #ifndef INSTRUCTION_HH
-#include "instruction.hh"
+#include "cInstruction.h"
 #endif
 #ifndef STRING_HH
 #include "string.hh"

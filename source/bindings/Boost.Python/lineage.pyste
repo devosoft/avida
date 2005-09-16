@@ -1,5 +1,5 @@
 
-Include("genotype.hh")
+Include("cGenotype.h")
 
 cLineage = Class("cLineage", "lineage.hh")
 

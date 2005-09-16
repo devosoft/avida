@@ -1,5 +1,5 @@
 
-Include("genome.hh")
+Include("cGenome.h")
 Include("cHardwareBase.h")
 Include("organism.hh")
 Include("org_message.hh")

@@ -7,7 +7,7 @@
 
 #include "cHardwareBase.h"
 
-#include "inst_set.hh"
+#include "cInstSet.h"
 
 using namespace std;
 

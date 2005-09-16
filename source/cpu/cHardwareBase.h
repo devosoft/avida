@@ -11,7 +11,7 @@
 #include <iostream>
 
 #ifndef INSTRUCTION_HH
-#include "instruction.hh"
+#include "cInstruction.h"
 #endif
 
 using namespace std;

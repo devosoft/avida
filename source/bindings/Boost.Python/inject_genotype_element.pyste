@@ -1,7 +1,7 @@
 
-Include("inject_genotype.hh")
+Include("cInjectGenotype.h")
 
-cInjectGenotypeElement = Class("cInjectGenotypeElement", "inject_genotype_element.hh")
+cInjectGenotypeElement = Class("cInjectGenotypeElement", "cInjectGenotypeElement.h")
 set_policy(cInjectGenotypeElement.GetInjectGenotype, return_internal_reference())
 set_policy(cInjectGenotypeElement.GetNext, return_internal_reference())
 set_policy(cInjectGenotypeElement.GetPrev, return_internal_reference())

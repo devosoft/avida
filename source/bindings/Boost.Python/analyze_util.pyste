@@ -1,6 +1,6 @@
 Include("population.hh")
-Include("genome.hh")
-Include("inst_set.hh")
+Include("cGenome.h")
+Include("cInstSet.h")
 
 cAnalyzeUtil = Class("cAnalyzeUtil", "cAnalyzeUtil.h")
 

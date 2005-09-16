@@ -14,13 +14,13 @@
 #include "double_sum.hh"
 #endif
 #ifndef GENOME_HH
-#include "genome.hh"
+#include "cGenome.h"
 #endif
 #ifndef GENOTYPE_BIRTH_DATA_HH
-#include "genotype_birth_data.hh"
+#include "cGenotype_BirthData.h"
 #endif
 #ifndef GENOTYPE_TEST_DATA_HH
-#include "genotype_test_data.hh"
+#include "cGenotype_TestData.h"
 #endif
 #ifndef STRING_HH
 #include "string.hh"

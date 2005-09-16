@@ -1,6 +1,6 @@
 
 Include("my_code_array_less_than.hh")
-Include("genome.hh")
+Include("cGenome.h")
 
 cMxCodeArray = Class("cMxCodeArray", "mx_code_array.hh")
 

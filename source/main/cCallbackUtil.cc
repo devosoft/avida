@@ -25,7 +25,7 @@
 #include "cEnvironment.h"
 #endif
 #ifndef GENOTYPE_HH
-#include "genotype.hh"
+#include "cGenotype.h"
 #endif
 #ifndef HARDWARE_BASE_HH
 #include "cHardwareBase.h"

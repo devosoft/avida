@@ -17,10 +17,10 @@
 #include "tArray.hh"
 #endif
 #ifndef INSTRUCTION_HH
-#include "instruction.hh"
+#include "cInstruction.h"
 #endif
 #ifndef INST_LIB_BASE_HH
-#include "inst_lib_base.hh"
+#include "cInstLibBase.h"
 #endif
 
 using namespace std;

@@ -9,7 +9,7 @@
 #define INST_LIB_BASE_HH
 
 #ifndef INSTRUCTION_HH
-#include "instruction.hh"
+#include "cInstruction.h"
 #endif
 
 class cString;

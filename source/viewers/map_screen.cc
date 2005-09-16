@@ -7,7 +7,7 @@
 
 #include <fstream>
 
-#include "genotype.hh"
+#include "cGenotype.h"
 #include "population.hh"
 #include "population_cell.hh"
 

@@ -16,10 +16,10 @@
 #include "cCPUTestInfo.h"
 #endif
 #ifndef GENOME_HH
-#include "genome.hh"
+#include "cGenome.h"
 #endif
 #ifndef INST_SET_HH
-#include "inst_set.hh"
+#include "cInstSet.h"
 #endif
 #ifndef MY_CODE_ARRAY_LESS_THAN_HH
 #include "my_code_array_less_than.hh"

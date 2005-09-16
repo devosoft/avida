@@ -1,5 +1,5 @@
 #ifndef INJECT_GENOTYPE_BIRTH_DATA_HH
-#include "inject_genotype_birth_data.hh"
+#include "cInjectGenotype_BirthData.h"
 #endif
 
 #ifndef TEST_CASE_H

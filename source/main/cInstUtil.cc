@@ -5,7 +5,7 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "inst_util.hh"
+#include "cInstUtil.h"
 
 #include "string.hh"
 #include "file.hh"
@@ -14,8 +14,8 @@
 #include "init_file.hh"
 #endif
 
-#include "inst_set.hh"
-#include "genome.hh"
+#include "cInstSet.h"
+#include "cGenome.h"
 
 
 using namespace std;

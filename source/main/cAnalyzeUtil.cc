@@ -19,16 +19,16 @@
 #include "cEnvironment.h"
 #endif
 #ifndef GENEBANK_HH
-#include "genebank.hh"
+#include "cGenebank.h"
 #endif
 #ifndef GENOME_HH
-#include "genome.hh"
+#include "cGenome.h"
 #endif
 #ifndef GENOME_UTIL_HH
-#include "genome_util.hh"
+#include "cGenomeUtil.h"
 #endif
 #ifndef GENOTYPE_HH
-#include "genotype.hh"
+#include "cGenotype.h"
 #endif
 #ifndef HARDWARE_BASE_HH
 #include "cHardwareBase.h"
@@ -37,10 +37,10 @@
 #include "histogram.hh"
 #endif
 #ifndef INST_SET_HH
-#include "inst_set.hh"
+#include "cInstSet.h"
 #endif
 #ifndef INST_UTIL_HH
-#include "inst_util.hh"
+#include "cInstUtil.h"
 #endif
 #ifndef LANDSCAPE_HH
 #include "landscape.hh"

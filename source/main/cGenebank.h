@@ -14,7 +14,7 @@
 #include "defs.hh"
 #endif
 #ifndef GENOTYPE_CONTROL_HH
-#include "genotype_control.hh"
+#include "cGenotypeControl.h"
 #endif
 #ifndef SPECIES_CONTROL_HH
 #include "species_control.hh"

@@ -1,4 +1,4 @@
-Include("inst_set.hh")
+Include("cInstSet.h")
 
 cAnalyzeGenotype = Class("cAnalyzeGenotype", "cAnalyzeGenotype.h")
 

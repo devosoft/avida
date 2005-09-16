@@ -11,7 +11,7 @@
 #include <fstream>
 
 #ifndef GENOME_HH
-#include "genome.hh"
+#include "cGenome.h"
 #endif
 
 #define SPECIES_QUEUE_NONE     0

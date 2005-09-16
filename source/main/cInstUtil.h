@@ -11,7 +11,7 @@
 #include <iostream>
 
 #ifndef GENOME_HH
-#include "genome.hh"
+#include "cGenome.h"
 #endif
 
 class cInitFile;

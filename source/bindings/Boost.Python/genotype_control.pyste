@@ -1,9 +1,9 @@
 
-Include("genebank.hh")
-Include("genotype.hh")
-Include("genome.hh")
+Include("cGenebank.h")
+Include("cGenotype.h")
+Include("cGenome.h")
 
-cGenotypeControl = Class("cGenotypeControl", "genotype_control.hh")
+cGenotypeControl = Class("cGenotypeControl", "cGenotypeControl.h")
 set_policy(cGenotypeControl.GetBest, return_internal_reference())
 set_policy(cGenotypeControl.GetCoalescent, return_internal_reference())
 set_policy(cGenotypeControl.Find, return_internal_reference())

@@ -6,11 +6,11 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef FITNESS_MATRIX_HH
-#include "fitness_matrix.hh"
+#include "cFitnessMatrix.h"
 #endif
 
 #ifndef INST_SET_HH
-#include "inst_set.hh"
+#include "cInstSet.h"
 #endif
 
 using namespace std;

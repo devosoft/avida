@@ -12,22 +12,22 @@ SET(libmain_a_SOURCES
   cCallbackUtil.cc
   cConfig.cc
   cEnvironment.cc
-  fitness_matrix.cc
-  genebank.cc
-  genome.cc
-  genome_util.cc
-  genotype.cc
-  genotype_birth_data.cc
-  genotype_control.cc
-  genotype_test_data.cc
-  inject_genebank.cc
-  inject_genotype.cc
-  inject_genotype_birth_data.cc
-  inject_genotype_control.cc
-  inject_genotype_queue.cc
-  instruction.cc
-  inst_set.cc
-  inst_util.cc
+  cFitnessMatrix.cc
+  cGenebank.cc
+  cGenome.cc
+  cGenomeUtil.cc
+  cGenotype.cc
+  cGenotype_BirthData.cc
+  cGenotypeControl.cc
+  cGenotype_TestData.cc
+  cInjectGenebank.cc
+  cInjectGenotype.cc
+  cInjectGenotype_BirthData.cc
+  cInjectGenotypeControl.cc
+  cInjectGenotypeQueue.cc
+  cInstruction.cc
+  cInstSet.cc
+  cInstUtil.cc
   landscape.cc
   lineage.cc
   lineage_control.cc

@@ -8,17 +8,17 @@ main {
              $$MAIN_HH/cCallbackUtil.h \
              $$MAIN_HH/cConfig.h \
              $$MAIN_HH/cEnvironment.h \
-             $$MAIN_HH/fitness_matrix.hh \
-             $$MAIN_HH/genebank.hh \
-             $$MAIN_HH/genome.hh \
-             $$MAIN_HH/genome_util.hh \
-             $$MAIN_HH/genotype.hh \
-             $$MAIN_HH/inject_genotype.hh \
-             $$MAIN_HH/inject_genebank.hh \
-             $$MAIN_HH/instruction.hh \
-             $$MAIN_HH/inst_lib_base.hh \
-             $$MAIN_HH/inst_set.hh \
-             $$MAIN_HH/inst_util.hh \
+             $$MAIN_HH/cFitnessMatrix.h \
+             $$MAIN_HH/cGenebank.h \
+             $$MAIN_HH/cGenome.h \
+             $$MAIN_HH/cGenomeUtil.h \
+             $$MAIN_HH/cGenotype.h \
+             $$MAIN_HH/cInjectGenotype.h \
+             $$MAIN_HH/cInjectGenebank.h \
+             $$MAIN_HH/cInstruction.h \
+             $$MAIN_HH/cInstLibBase.h \
+             $$MAIN_HH/cInstSet.h \
+             $$MAIN_HH/cInstUtil.h \
              $$MAIN_HH/landscape.hh \
              $$MAIN_HH/lineage.hh \
              $$MAIN_HH/lineage_control.hh \
@@ -47,22 +47,22 @@ main {
              $$MAIN_CC/cCallbackUtil.cc \
              $$MAIN_CC/cConfig.cc \
              $$MAIN_CC/cEnvironment.cc \
-             $$MAIN_CC/fitness_matrix.cc \
-             $$MAIN_CC/genebank.cc \
-             $$MAIN_CC/genome.cc \
-             $$MAIN_CC/genome_util.cc \
-             $$MAIN_CC/genotype.cc \
-             $$MAIN_CC/genotype_birth_data.cc \
-             $$MAIN_CC/genotype_control.cc \
-             $$MAIN_CC/genotype_test_data.cc \
-             $$MAIN_CC/instruction.cc \
-             $$MAIN_CC/inst_set.cc \
-             $$MAIN_CC/inst_util.cc \
-             $$MAIN_CC/inject_genebank.cc \
-             $$MAIN_CC/inject_genotype.cc \
-             $$MAIN_CC/inject_genotype_birth_data.cc \
-             $$MAIN_CC/inject_genotype_control.cc \
-             $$MAIN_CC/inject_genotype_queue.cc \
+             $$MAIN_CC/cFitnessMatrix.cc \
+             $$MAIN_CC/cGenebank.cc \
+             $$MAIN_CC/cGenome.cc \
+             $$MAIN_CC/cGenomeUtil.cc \
+             $$MAIN_CC/cGenotype.cc \
+             $$MAIN_CC/cGenotype_BirthData.cc \
+             $$MAIN_CC/cGenotypeControl.cc \
+             $$MAIN_CC/cGenotype_TestData.cc \
+             $$MAIN_CC/cInstruction.cc \
+             $$MAIN_CC/cInstSet.cc \
+             $$MAIN_CC/cInstUtil.cc \
+             $$MAIN_CC/cInjectGenebank.cc \
+             $$MAIN_CC/cInjectGenotype.cc \
+             $$MAIN_CC/cInjectGenotype_BirthData.cc \
+             $$MAIN_CC/cInjectGenotypeControl.cc \
+             $$MAIN_CC/cInjectGenotypeQueue.cc \
              $$MAIN_CC/landscape.cc \
              $$MAIN_CC/lineage.cc \
              $$MAIN_CC/lineage_control.cc \

@@ -11,10 +11,10 @@
 #include <fstream>
 
 #ifndef GENOME_HH
-#include "genome.hh"
+#include "cGenome.h"
 #endif
 #ifndef INJECT_GENOTYPE_BIRTH_DATA_HH
-#include "inject_genotype_birth_data.hh"
+#include "cInjectGenotype_BirthData.h"
 #endif
 #ifndef STRING_HH
 #include "string.hh"

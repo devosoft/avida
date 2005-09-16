@@ -9,7 +9,7 @@
 #define INJECT_GENOTYPE_QUEUE_HH
 
 #ifndef INJECT_GENOTYPE_ELEMENT_HH
-#include "inject_genotype_element.hh"
+#include "cInjectGenotypeElement.h"
 #endif
 
 class cInjectGenotype;

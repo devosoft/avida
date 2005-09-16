@@ -1,9 +1,9 @@
 
 Include("cCodeLabel.h")
 Include("cCPUMemory.h")
-Include("genome.hh")
+Include("cGenome.h")
 Include("cHardwareTracer.h")
-Include("inst_set.hh")
+Include("cInstSet.h")
 Include("organism.hh")
 
 cHardwareBase = Class("cHardwareBase", "cHardwareBase.h")

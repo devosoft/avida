@@ -1,7 +1,7 @@
 
 Include("mutation.hh")
-Include("inject_genotype.hh")
-Include("inst_set.hh")
+Include("cInjectGenotype.h")
+Include("cInstSet.h")
 Include("organism.hh")
 
 Import("hardware_base.pyste")

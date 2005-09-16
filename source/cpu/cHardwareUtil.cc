@@ -31,7 +31,7 @@
 #include "cInstLibCPU.h"
 #endif
 #ifndef INST_SET_HH
-#include "inst_set.hh"
+#include "cInstSet.h"
 #endif
 #ifndef TDICTIONARY_HH
 #include "tDictionary.hh"

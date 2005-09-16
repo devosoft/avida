@@ -17,10 +17,10 @@
 #include "inject_genebank_macros.hh"
 #endif
 #ifndef INJECT_GENOTYPE_CONTROL_HH
-#include "inject_genotype_control.hh"
+#include "cInjectGenotypeControl.h"
 #endif
 #ifndef INJECT_GENOTYPE_QUEUE_HH
-#include "inject_genotype_queue.hh"
+#include "cInjectGenotypeQueue.h"
 #endif
 #ifndef STRING_HH
 #include "string.hh"

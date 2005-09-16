@@ -11,7 +11,7 @@
 #include "cHardwareCPU.h"
 #include "cHardware4Stack.h"
 #include "cHardwareSMT.h"
-#include "inst_set.hh"
+#include "cInstSet.h"
 #include "organism.hh"
 
 using namespace std;

@@ -10,7 +10,7 @@
 #ifndef ENVIRONMENT_HH
 #include "cEnvironment.h"
 #endif
-#include "genotype.hh"
+#include "cGenotype.h"
 #include "organism.hh"
 #include "phenotype.hh"
 #include "population.hh"

@@ -10,7 +10,7 @@
 
 
 #include "merit.hh"
-#include "inst_set.hh"
+#include "cInstSet.h"
 #include "defs.hh"
 
 #include "ncurses.hh"

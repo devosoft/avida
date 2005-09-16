@@ -10,7 +10,7 @@
 #include "cHardwareBase.h"
 #include "cHardwareCPU.h"
 #include "cHardwareStatusPrinter.h"
-#include "inst_set.hh"
+#include "cInstSet.h"
 #include "organism.hh"
 #include "string.hh"
 #include "string_util.hh"

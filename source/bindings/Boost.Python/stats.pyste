@@ -1,7 +1,7 @@
 
 Include("data_file.hh")
-Include("genotype.hh")
-Include("inject_genotype.hh")
+Include("cGenotype.h")
+Include("cInjectGenotype.h")
 
 cStats = Class("cStats", "stats.hh")
 set_policy(cStats.GetDomGenotype, return_value_policy(reference_existing_object))

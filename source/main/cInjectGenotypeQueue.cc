@@ -6,11 +6,11 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef INJECT_GENOTYPE_QUEUE_HH
-#include "inject_genotype_queue.hh"
+#include "cInjectGenotypeQueue.h"
 #endif
 
 #ifndef INJECT_GENOTYPE_HH
-#include "inject_genotype.hh"
+#include "cInjectGenotype.h"
 #endif
 
 #include <assert.h>

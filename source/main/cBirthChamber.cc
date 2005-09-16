@@ -19,16 +19,16 @@
 #include "functions.hh"
 #endif
 #ifndef  GENEBANK_HH
-#include "genebank.hh"
+#include "cGenebank.h"
 #endif
 #ifndef GENOME_HH
-#include "genome.hh"
+#include "cGenome.h"
 #endif
 #ifndef GENOME_UTIL_HH
-#include "genome_util.hh"
+#include "cGenomeUtil.h"
 #endif
 #ifndef  GENOTYPE_HH
-#include "genotype.hh"
+#include "cGenotype.h"
 #endif
 #ifndef ORGANISM_HH
 #include "organism.hh"

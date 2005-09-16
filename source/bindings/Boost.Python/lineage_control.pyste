@@ -1,8 +1,8 @@
 
-Include("genebank.hh")
+Include("cGenebank.h")
 Include("stats.hh")
 Include("string.hh")
-Include("genotype.hh")
+Include("cGenotype.h")
 Include("lineage.hh")
 Include("organism.hh")
 

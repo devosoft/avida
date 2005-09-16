@@ -9,7 +9,7 @@
 #define GENOME_UTIL_HH
 
 #ifndef GENOME_HH
-#include "genome.hh"
+#include "cGenome.h"
 #endif
 
 class cInstruction;

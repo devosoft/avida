@@ -1,5 +1,5 @@
 #ifndef GENOME_HH
-#include "genome.hh"
+#include "cGenome.h"
 #endif
 
 #ifndef TEST_CASE_H

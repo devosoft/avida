@@ -1,8 +1,8 @@
 
 Include("cCPUTestInfo.h")
 Include("cEnvironment.h")
-Include("genome.hh")
-Include("inst_set.hh")
+Include("cGenome.h")
+Include("cInstSet.h")
 Include("cPopulationInterface.h")
 Include("resource_count.hh")
 

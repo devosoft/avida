@@ -2,7 +2,7 @@
 Import("cpu_head.pyste")
 
 Include("cCPUMemory.h")
-Include("instruction.hh")
+Include("cInstruction.h")
 Include("cHardwareBase.h")
 
 cHeadMultiMem = Class("cHeadMultiMem", "cHeadMultiMem.h")

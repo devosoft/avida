@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef INJECT_GENEBANK_HH
-#include "inject_genebank.hh"
+#include "cInjectGenebank.h"
 #endif
 
 #ifndef CONFIG_HH
@@ -16,10 +16,10 @@
 #include "data_file.hh"
 #endif
 #ifndef GENOME_HH
-#include "genome.hh"
+#include "cGenome.h"
 #endif
 #ifndef INJECT_GENOTYPE_HH
-#include "inject_genotype.hh"
+#include "cInjectGenotype.h"
 #endif
 #ifndef STATS_HH
 #include "stats.hh"

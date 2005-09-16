@@ -12,8 +12,8 @@
 #include "lineage.hh"
 #include "stats.hh"
 #include "cConfig.h"
-#include "genebank.hh"
-#include "genotype.hh"
+#include "cGenebank.h"
+#include "cGenotype.h"
 #include "organism.hh"
 
 #include "nHardware.h"   // for macro nHardware::FITNESS_NEUTRAL_MAX

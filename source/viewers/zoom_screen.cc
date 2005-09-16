@@ -11,8 +11,8 @@
 #include "functions.hh"
 
 #include "cConfig.h"
-#include "genebank.hh"
-#include "genotype.hh"
+#include "cGenebank.h"
+#include "cGenotype.h"
 #include "organism.hh"
 #include "phenotype.hh"
 #include "population.hh"

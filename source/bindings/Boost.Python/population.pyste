@@ -1,8 +1,8 @@
 
 Include("change_list.hh")
 Include("cEnvironment.h")
-Include("genebank.hh" )
-Include("inject_genebank.hh")
+Include("cGenebank.h" )
+Include("cInjectGenebank.h")
 Include("lineage_control.hh")
 Include("organism.hh")
 Include("population_cell.hh")

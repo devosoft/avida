@@ -14,7 +14,7 @@
 #include "data_file_manager.hh"
 #endif
 #ifndef GENOTYPE_BATCH_HH
-#include "genotype_batch.hh"
+#include "cGenotypeBatch.h"
 #endif
 #ifndef RANDOM_HH
 #include "random.hh"
