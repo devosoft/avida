@@ -2927,7 +2927,8 @@ void cAnalyze::CommunityComplexity(cString cur_string)
   cout << "Analyze community complexity of current population about environment with Charles method ...\n";
 
   // Get the number of genotypes that are gonna be analyzed.
-  int max_genotypes = cur_string.PopWord().AsInt();
+  int max_genotypes = cur_string.PopWord().AsInt(); // If it is 0, we sample 
+                                                    //two genotypes for each task.
 
   // Get update
   int update = cur_string.PopWord().AsInt();
@@ -2953,7 +2954,10 @@ void cAnalyze::CommunityComplexity(cString cur_string)
   cpx_fp << "# 4: New Information about Environment" << endl;
   cpx_fp << "# 5: Total Complexity" << endl;
   cpx_fp << "# 6: Hamming Distance to Closest Given Genotype" << endl;
-  cpx_fp << "# 7 - : Tasks Implemented" << endl;
+  cpx_fp << "# 7: Total Hamming Distance to Closest Neighbor" << endl;
+  cpx_fp << "# 8: Number of Organisms" << endl;
+  cpx_fp << "# 9: Total Number of Organisms" << endl;
+  cpx_fp << "# 10 - : Tasks Implemented" << endl;
   cpx_fp << endl;
 
   ///////////////////////
@@ -2963,19 +2967,71 @@ void cAnalyze::CommunityComplexity(cString cur_string)
   cTestCPU::UseResources() = true;
   FillResources(update);
 
-  ///////////////////////////////////////////////////////////////////////
-  // Choose the first n most abundant genotypes and put them in community
-
+  
   vector<cAnalyzeGenotype *> community;
   cAnalyzeGenotype * genotype = NULL;
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
 
-  while (((genotype = batch_it.Next()) != NULL) && (community.size() < max_genotypes)) {
-    community.push_back(genotype);
+
+  if (max_genotypes > 0) {
+    
+    ///////////////////////////////////////////////////////////////////////
+    // Choose the first n most abundant genotypes and put them in community
+    
+    while (((genotype = batch_it.Next()) != NULL) && (community.size() < max_genotypes)) {
+      community.push_back(genotype);
+    }
+  } else if (max_genotype == 0) {
+
+    /////////////////////////////////////
+    // Choose two genotypes for each task
+    
+    genotype = batch_it.Next();
+    if (genotype == NULL) {
+      cpx_fp.close();
+      return;
+    }
+    genotype->Recalculate();
+    int num_tasks = genotype->GetNumTasks();
+    vector< vector<cAnalyzeGenotype *> > genotype_class(num_tasks);
+    do {
+      for (int task_id = 0; task_id < num_tasks; ++ task_id) {
+	int count = genotype.GetTaskCount(task_id);
+	if (count > 0) {
+	  genotype_class[task_id].push_back(genotype);
+	}
+      }
+    } while (genotype = batch_it.Next() != NULL);
+    
+    cRandom random;
+    for (int task_id = 0; task_id < num_tasks; ++ task_id) {
+      int num_genotype = genotype_class[task_id].size();
+      if (num_genotype > 0) {
+	int index = random.GetUInt(num_genotype);
+	community.push_back(genotype_class[task_id][index]);
+	index = random.GetUInt(num_genotype);
+	community.push_back(genotype_class[task_id][index]);
+      } else {
+	// Pick up a class that is not empty
+	int class_id = random.GetUInt(num_tasks);
+	while (genotype_class[class_id].size() == 0) {
+	  class_id ++;
+	  if (class_id >= num_tasks) {
+	    class_id = 0;
+	  }
+	}
+	int num_genotype = genotype_class[class_id].size();
+	int index = random.GetUInt(num_genotype);
+	community.push_back(genotype_class[task_id][index]);
+	index = random.GetUInt(num_genotype);
+	community.push_back(genotype_class[task_id][index]);
+      }
+    }
+     
   }
 
-  //////////////////////////////////////////////////////
-  // Test point mutation of each genotype in environment
+  ////////////////////////////////////////////////////
+  // Test point mutation of each genotype in community
 
   int num_insts = inst_set.GetSize();
   map<int, tMatrix<double> > point_mut; 
@@ -3032,10 +3088,12 @@ void cAnalyze::CommunityComplexity(cString cur_string)
   // Loop through genotypes in community
 
   double complexity = 0.0;
-  double complexity2 = 0.0;
+  int total_dist = 0;
+  int total_cpus = 0;
   vector<cAnalyzeGenotype *> given_genotypes;
 
-  // Calculate the complexity of the first gentoype
+  ////////////////////////////////////////
+  // New information in the first gentoype
   genotype = community[0];
   double oo_initial_entropy = length_genome;
   double oo_conditional_entropy = 0.0;
@@ -3051,20 +3109,26 @@ void cAnalyze::CommunityComplexity(cString cur_string)
     }
     oo_conditional_entropy += oneline_entropy;
   }
+
   double new_info = oo_initial_entropy - oo_conditional_entropy;
   complexity += new_info;
-  complexity2 += new_info;
   given_genotypes.push_back(genotype);
+
   cpx_fp << genotype->GetID() << " " 
 	 << oo_initial_entropy << " " 
 	 << oo_conditional_entropy << " "
 	 << new_info << " " 
 	 << complexity << "   "
-	 << 0 << "   ";
+	 << "0 0" << "   ";
+  int num_cpus = genotype->GetNumCPUs();
+  total_cpus += num_cpus;
+  cpx_fp << num_cpus << " " << total_cpus << "   ";
   genotype->Recalculate();
   genotype->PrintTasks(cpx_fp, 0, -1);
   cpx_fp << endl;
 
+
+  //////////////////////////////////////////////////////
   // New information in other genotypes in community ...
   for (int i = 1; i < size_community; ++ i) {
     genotype = community[i];
@@ -3160,6 +3224,8 @@ void cAnalyze::CommunityComplexity(cString cur_string)
 	oo_initial_entropy = total_initial_entropy;
 	oo_conditional_entropy = total_conditional_entropy;
 	used_genotype = given_genotypes[j];
+	cout << "        " << "New closest genotype " << used_genotype->GetID() 
+	     << " " << new_info << endl;;
       }
 
     }
@@ -3169,9 +3235,15 @@ void cAnalyze::CommunityComplexity(cString cur_string)
 	   << oo_conditional_entropy << " "
 	   << min_new_info << " " << complexity << "   ";
 
-    cpx_fp << cGenomeUtil::FindHammingDistance(genotype->GetGenome(),
-					       used_genotype->GetGenome()) << "   ";
+    int hamm_dist = cGenomeUtil::FindHammingDistance(genotype->GetGenome(),
+						     used_genotype->GetGenome());
+    total_dist += hamm_dist;
+    cpx_fp << hamm_dist << " " << total_dist << "   ";
     
+     int num_cpus = genotype->GetNumCPUs();
+     total_cpus += num_cpus;
+     cpx_fp << num_cpus << " " << total_cpus << "   ";
+ 
     
     genotype->PrintTasks(cpx_fp, 0, -1);
     cpx_fp << endl;
