@@ -20,6 +20,10 @@ namespace nHardwareSMT
   enum tStacks { STACK_AX = 0, STACK_BX, STACK_CX, STACK_DX };
   
   static const int NUM_NOPS = 4;
+  static const int MAX_MEMSPACE_LABEL = 3;
+  
+  // Performance Constants
+  static const int MEM_LBLS_HASH_FACTOR = 4; // Sets hast table size to (NUM_NOPS^MAX_MEMSPACE_LABEL) / FACTOR
 }
 
 #endif

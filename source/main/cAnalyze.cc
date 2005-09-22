@@ -2971,8 +2971,8 @@ void cAnalyze::CommunityComplexity(cString cur_string)
   vector<cAnalyzeGenotype *> community;
   cAnalyzeGenotype * genotype = NULL;
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
-
-
+  
+  
   if (max_genotypes > 0) {
     
     ///////////////////////////////////////////////////////////////////////
@@ -2981,8 +2981,8 @@ void cAnalyze::CommunityComplexity(cString cur_string)
     while (((genotype = batch_it.Next()) != NULL) && (community.size() < max_genotypes)) {
       community.push_back(genotype);
     }
-  } else if (max_genotype == 0) {
-
+  } else if (max_genotypes == 0) {
+    
     /////////////////////////////////////
     // Choose two genotypes for each task
     
@@ -2996,40 +2996,40 @@ void cAnalyze::CommunityComplexity(cString cur_string)
     vector< vector<cAnalyzeGenotype *> > genotype_class(num_tasks);
     do {
       for (int task_id = 0; task_id < num_tasks; ++ task_id) {
-	int count = genotype.GetTaskCount(task_id);
-	if (count > 0) {
-	  genotype_class[task_id].push_back(genotype);
-	}
+        int count = genotype->GetTaskCount(task_id);
+        if (count > 0) {
+          genotype_class[task_id].push_back(genotype);
+        }
       }
-    } while (genotype = batch_it.Next() != NULL);
+    } while ((genotype = batch_it.Next()) != NULL);
     
     cRandom random;
     for (int task_id = 0; task_id < num_tasks; ++ task_id) {
       int num_genotype = genotype_class[task_id].size();
       if (num_genotype > 0) {
-	int index = random.GetUInt(num_genotype);
-	community.push_back(genotype_class[task_id][index]);
-	index = random.GetUInt(num_genotype);
-	community.push_back(genotype_class[task_id][index]);
+        int index = random.GetUInt(num_genotype);
+        community.push_back(genotype_class[task_id][index]);
+        index = random.GetUInt(num_genotype);
+        community.push_back(genotype_class[task_id][index]);
       } else {
-	// Pick up a class that is not empty
-	int class_id = random.GetUInt(num_tasks);
-	while (genotype_class[class_id].size() == 0) {
-	  class_id ++;
-	  if (class_id >= num_tasks) {
-	    class_id = 0;
-	  }
-	}
-	int num_genotype = genotype_class[class_id].size();
-	int index = random.GetUInt(num_genotype);
-	community.push_back(genotype_class[task_id][index]);
-	index = random.GetUInt(num_genotype);
-	community.push_back(genotype_class[task_id][index]);
+        // Pick up a class that is not empty
+        int class_id = random.GetUInt(num_tasks);
+        while (genotype_class[class_id].size() == 0) {
+          class_id ++;
+          if (class_id >= num_tasks) {
+            class_id = 0;
+          }
+        }
+        int num_genotype = genotype_class[class_id].size();
+        int index = random.GetUInt(num_genotype);
+        community.push_back(genotype_class[task_id][index]);
+        index = random.GetUInt(num_genotype);
+        community.push_back(genotype_class[task_id][index]);
       }
     }
-     
+    
   }
-
+  
   ////////////////////////////////////////////////////
   // Test point mutation of each genotype in community
 

@@ -42,17 +42,8 @@
 #ifndef TINSTLIB_H
 #include "tInstLib.h"
 #endif
-
-class cInstSet;
-class cInstLibBase;
-class cOrganism;
-class cMutation;
-class cInjectGenotype;
-
-#ifdef SINGLE_IO_BUFFER   // For Single IOBuffer vs IOBuffer for each Thread
-# define IO_THREAD 0
-#else
-# define IO_THREAD m_cur_thread
+#ifndef THASH_TABLE_HH
+#include "tHashTable.hh"
 #endif
 
 /**
@@ -62,19 +53,18 @@ class cInjectGenotype;
  * @see cHardwareSMT_Thread, cCPUStack, cCPUMemory, cInstSet
  **/
 
-class cCodeLabel;
-class cCPUMemory;
-class cCPUStack; // aggregate
-class cHeadMultiMem; // access
-class cGenome;
-class cHardwareSMT_Thread; // access
+class cInstSet;
+class cInstLibBase;
+class cOrganism;
+class cMutation;
 class cInjectGenotype;
-class cInstLib4Stack; // access
+
+class cCodeLabel;
+class cGenome;
+class cInjectGenotype;
 class cInstruction;
 class cInstSet;
 class cOrganism;
-class cString; // aggregate
-template <class T> class tArray; // aggregate
 
 class cHardwareSMT : public cHardwareBase {
 public:
@@ -84,9 +74,14 @@ private:
   static tInstLib<cHardwareSMT::tMethod>* initInstLib(void);
   tMethod* m_functions;
 private:
-  tArray<cCPUMemory> m_mem_array;          // Memory...
+  // Stacks
   cCPUStack m_global_stacks[nHardwareSMT::NUM_GLOBAL_STACKS];
 	
+  // Memory
+  tArray<cCPUMemory> m_mem_array;
+  tHashTable<int, int> m_mem_lbls;
+
+  // Threads
   tArray<cHardwareSMT_Thread> m_threads;
   int thread_id_chart;
   int m_cur_thread;
@@ -122,7 +117,7 @@ public:
   inline int GetStack(int depth=0, int stack_id=-1, int in_thread=-1) const;
   cString GetActiveStackID(int stackID) const;
   
-  //retrieves appropriate stack
+  // retrieves appropriate stack
   inline cCPUStack & Stack(int stack_id); 
   inline const cCPUStack & Stack(int stack_id) const;
   inline cCPUStack & Stack(int stack_id, int in_thread);
@@ -249,7 +244,7 @@ private:
   int FindModifiedStack(int default_stack);
   int FindModifiedHead(int default_head);
   int FindComplementStack(int base_stack);
-  int FindMemorySpaceLabel(int default_mem);
+  int FindMemorySpaceLabel(int mem_space);
 	
   void Fault(int fault_loc, int fault_type, cString fault_desc=""); 
   bool Allocate_Necro(const int new_size);
@@ -264,7 +259,6 @@ private:
   void Divide_TestFitnessMeasures();
 	
   bool HeadCopy_ErrorCorrect(double reduction);
-  bool Inst_HeadDivideMut(double mut_multiplier=1);
 	
 public:
   /////////---------- Instruction Library ------------//////////

@@ -30,7 +30,21 @@
 
 using namespace std;
 
-
+// Positive integer exponentiation
+// O(log2(p))
+static int pow(int b, int p)
+{
+  if (p == 0) return 1;
+  if (p == 1) return b;
+  if (p < 0) return 0;
+  
+  int r = 1;
+  while (1) {
+    if (p & 1) r *= b;
+    if (!(p >>= 1)) return r;
+    b *= b;
+  }
+}
 
 ///////////////
 //  cHardwareSMT
@@ -40,105 +54,63 @@ cInstLibBase* cHardwareSMT::GetInstLib(){ return s_inst_slib; }
 
 tInstLib<cHardwareSMT::tMethod> *cHardwareSMT::s_inst_slib = cHardwareSMT::initInstLib();
 tInstLib<cHardwareSMT::tMethod> *cHardwareSMT::initInstLib(void){
-  struct cNOPEntry4Stack {
-    cNOPEntry4Stack(const cString &name, int nop_mod):name(name), nop_mod(nop_mod){}
+  struct cNOPEntry {
+    cNOPEntry(const cString &name, int nop_mod):name(name), nop_mod(nop_mod){}
     cString name;
     int nop_mod;
   };
-  static const cNOPEntry4Stack s_n_array[] = {
-    cNOPEntry4Stack("Nop-A", nHardwareSMT::STACK_AX),
-    cNOPEntry4Stack("Nop-B", nHardwareSMT::STACK_BX),
-    cNOPEntry4Stack("Nop-C", nHardwareSMT::STACK_CX),
-    cNOPEntry4Stack("Nop-D", nHardwareSMT::STACK_DX),
+  static const cNOPEntry s_n_array[] = {
+    cNOPEntry("Nop-A", nHardwareSMT::STACK_AX),
+    cNOPEntry("Nop-B", nHardwareSMT::STACK_BX),
+    cNOPEntry("Nop-C", nHardwareSMT::STACK_CX),
+    cNOPEntry("Nop-D", nHardwareSMT::STACK_DX),
   };
 	
-  struct cInstEntry4Stack {
-    cInstEntry4Stack(const cString &name, tMethod function):name(name), function(function){}
+  struct cInstEntry {
+    cInstEntry(const cString &name, tMethod function):name(name), function(function){}
     cString name;
     tMethod function;
   };
-  static const cInstEntry4Stack s_f_array[] = {
-    //1 
-    cInstEntry4Stack("Nop-A",     &cHardwareSMT::Inst_Nop), 
-    //2
-    cInstEntry4Stack("Nop-B",     &cHardwareSMT::Inst_Nop), 
-    //3
-    cInstEntry4Stack("Nop-C",     &cHardwareSMT::Inst_Nop),   
-    //4 
-    cInstEntry4Stack("Nop-D",     &cHardwareSMT::Inst_Nop), 
-    //38
-    cInstEntry4Stack("Nop-E",     &cHardwareSMT::Inst_Nop),
-    //39
-    cInstEntry4Stack("Nop-F",     &cHardwareSMT::Inst_Nop),
-    //5
-    cInstEntry4Stack("Nop-X",     &cHardwareSMT::Inst_Nop),
-    //6 
-    cInstEntry4Stack("Val-Shift-R",   &cHardwareSMT::Inst_ShiftR),
-    //7
-    cInstEntry4Stack("Val-Shift-L",   &cHardwareSMT::Inst_ShiftL),
-    //8
-    cInstEntry4Stack("Val-Nand",      &cHardwareSMT::Inst_Val_Nand),
-    //9
-    cInstEntry4Stack("Val-Add",       &cHardwareSMT::Inst_Val_Add),
-    //10
-    cInstEntry4Stack("Val-Sub",       &cHardwareSMT::Inst_Val_Sub),
-    //11
-    cInstEntry4Stack("Val-Mult",      &cHardwareSMT::Inst_Val_Mult),
-    //12
-    cInstEntry4Stack("Val-Div",       &cHardwareSMT::Inst_Val_Div),
-    //13
-    cInstEntry4Stack("SetMemory",   &cHardwareSMT::Inst_SetMemory),
-    //14
-    cInstEntry4Stack("Divide",  &cHardwareSMT::Inst_Divide),
-    //15
-    cInstEntry4Stack("Inst-Read",    &cHardwareSMT::Inst_HeadRead),
-    //16
-    cInstEntry4Stack("Inst-Write",   &cHardwareSMT::Inst_HeadWrite),
-    //keeping this one for the transition period
-    //cInstEntry4Stack("Inst-Copy",    &cHardwareSMT::Inst_HeadCopy),
-    //17
-    cInstEntry4Stack("If-Equal",    &cHardwareSMT::Inst_IfEqual),
-    //18
-    cInstEntry4Stack("If-Not-Equal",  &cHardwareSMT::Inst_IfNotEqual),
-    //19
-    cInstEntry4Stack("If-Less",   &cHardwareSMT::Inst_IfLess),
-    //20
-    cInstEntry4Stack("If-Greater",    &cHardwareSMT::Inst_IfGreater),
-    //21
-    cInstEntry4Stack("Head-Push",    &cHardwareSMT::Inst_HeadPush),
-    //22
-    cInstEntry4Stack("Head-Pop",     &cHardwareSMT::Inst_HeadPop),
-    //23
-    cInstEntry4Stack("Head-Move",  &cHardwareSMT::Inst_HeadMove),
-    //24
-    cInstEntry4Stack("Search",  &cHardwareSMT::Inst_Search),
-    //25
-    cInstEntry4Stack("Push-Next",    &cHardwareSMT::Inst_PushNext),
-    //26
-    cInstEntry4Stack("Push-Prev",    &cHardwareSMT::Inst_PushPrevious),
-    //27
-    cInstEntry4Stack("Push-Comp",    &cHardwareSMT::Inst_PushComplement),
-    //28
-    cInstEntry4Stack("Val-Delete", &cHardwareSMT::Inst_ValDelete),
-    //29
-    cInstEntry4Stack("Val-Copy",  &cHardwareSMT::Inst_ValCopy),
-    //30
-    cInstEntry4Stack("ThreadFork",   &cHardwareSMT::Inst_ForkThread),
-    //31
-    cInstEntry4Stack("Val-Inc",       &cHardwareSMT::Inst_Increment),
-    //32
-    cInstEntry4Stack("Val-Dec",       &cHardwareSMT::Inst_Decrement),
-    //33
-    cInstEntry4Stack("Val-Mod",       &cHardwareSMT::Inst_Mod),
-    //34
-    cInstEntry4Stack("ThreadKill",   &cHardwareSMT::Inst_KillThread),
-    //35
-    cInstEntry4Stack("IO", &cHardwareSMT::Inst_IO),
-    //36
-    cInstEntry4Stack("Inject", &cHardwareSMT::Inst_Inject)
+  static const cInstEntry s_f_array[] = {
+    cInstEntry("Nop-A", &cHardwareSMT::Inst_Nop), // 1
+    cInstEntry("Nop-B", &cHardwareSMT::Inst_Nop), // 2
+    cInstEntry("Nop-C", &cHardwareSMT::Inst_Nop), // 3
+    cInstEntry("Nop-D", &cHardwareSMT::Inst_Nop), // 4
+    cInstEntry("Nop-X", &cHardwareSMT::Inst_Nop), // 5
+    cInstEntry("Val-Shift-R", &cHardwareSMT::Inst_ShiftR), // 6
+    cInstEntry("Val-Shift-L", &cHardwareSMT::Inst_ShiftL), // 7
+    cInstEntry("Val-Nand", &cHardwareSMT::Inst_Val_Nand), // 8
+    cInstEntry("Val-Add", &cHardwareSMT::Inst_Val_Add), // 9
+    cInstEntry("Val-Sub", &cHardwareSMT::Inst_Val_Sub), // 10
+    cInstEntry("Val-Mult", &cHardwareSMT::Inst_Val_Mult), // 11
+    cInstEntry("Val-Div", &cHardwareSMT::Inst_Val_Div), // 12
+    cInstEntry("SetMemory", &cHardwareSMT::Inst_SetMemory), // 13
+    cInstEntry("Divide", &cHardwareSMT::Inst_Divide), // 14
+    cInstEntry("Inst-Read", &cHardwareSMT::Inst_HeadRead), // 15
+    cInstEntry("Inst-Write", &cHardwareSMT::Inst_HeadWrite), // 16
+    cInstEntry("If-Equal", &cHardwareSMT::Inst_IfEqual), // 17
+    cInstEntry("If-Not-Equal", &cHardwareSMT::Inst_IfNotEqual), // 18
+    cInstEntry("If-Less", &cHardwareSMT::Inst_IfLess), // 19
+    cInstEntry("If-Greater", &cHardwareSMT::Inst_IfGreater), // 20
+    cInstEntry("Head-Push", &cHardwareSMT::Inst_HeadPush), // 21
+    cInstEntry("Head-Pop", &cHardwareSMT::Inst_HeadPop), // 22
+    cInstEntry("Head-Move", &cHardwareSMT::Inst_HeadMove), // 23
+    cInstEntry("Search", &cHardwareSMT::Inst_Search), // 24
+    cInstEntry("Push-Next", &cHardwareSMT::Inst_PushNext), // 25
+    cInstEntry("Push-Prev", &cHardwareSMT::Inst_PushPrevious), // 26
+    cInstEntry("Push-Comp", &cHardwareSMT::Inst_PushComplement), // 27
+    cInstEntry("Val-Delete", &cHardwareSMT::Inst_ValDelete), // 28
+    cInstEntry("Val-Copy", &cHardwareSMT::Inst_ValCopy), // 29
+    cInstEntry("ThreadFork", &cHardwareSMT::Inst_ForkThread), // 30
+    cInstEntry("Val-Inc", &cHardwareSMT::Inst_Increment), // 31
+    cInstEntry("Val-Dec", &cHardwareSMT::Inst_Decrement), // 32
+    cInstEntry("Val-Mod", &cHardwareSMT::Inst_Mod), // 33
+    cInstEntry("ThreadKill", &cHardwareSMT::Inst_KillThread), // 34
+    cInstEntry("IO", &cHardwareSMT::Inst_IO), // 35
+    cInstEntry("Inject", &cHardwareSMT::Inst_Inject) // 36
   };
 	
-  const int n_size = sizeof(s_n_array)/sizeof(cNOPEntry4Stack);
+  const int n_size = sizeof(s_n_array)/sizeof(cNOPEntry);
 	
   static cString n_names[n_size];
   static int nop_mods[n_size];
@@ -147,7 +119,7 @@ tInstLib<cHardwareSMT::tMethod> *cHardwareSMT::initInstLib(void){
     nop_mods[i] = s_n_array[i].nop_mod;
   }
 	
-  const int f_size = sizeof(s_f_array)/sizeof(cInstEntry4Stack);
+  const int f_size = sizeof(s_f_array)/sizeof(cInstEntry);
   static cString f_names[f_size];
   static tMethod functions[f_size];
   for (int i = 0; i < f_size; i++){
@@ -165,7 +137,8 @@ tInstLib<cHardwareSMT::tMethod> *cHardwareSMT::initInstLib(void){
 }
 
 cHardwareSMT::cHardwareSMT(cOrganism* in_organism, cInstSet* in_inst_set)
-  : cHardwareBase(in_organism, in_inst_set), m_mem_array(1)
+  : cHardwareBase(in_organism, in_inst_set), m_mem_array(1),
+    m_mem_lbls(pow(nHardwareSMT::NUM_NOPS, nHardwareSMT::MAX_MEMSPACE_LABEL) / nHardwareSMT::MEM_LBLS_HASH_FACTOR)
 {
   m_functions = s_inst_slib->GetFunctions();
 	
@@ -325,7 +298,7 @@ bool cHardwareSMT::SingleProcess_PayCosts(const cInstruction & cur_inst)
   return true;
 }
 
-// This method will handle the actuall execution of an instruction
+// This method will handle the actual execution of an instruction
 // within single process, once that function has been finalized.
 bool cHardwareSMT::SingleProcess_ExecuteInst(const cInstruction & cur_inst) 
 {
@@ -444,10 +417,19 @@ void cHardwareSMT::PrintStatus(ostream & fp)
 }
 
 
-// DDD
-int cHardwareSMT::FindMemorySpaceLabel(int default_mem)
+int cHardwareSMT::FindMemorySpaceLabel(int mem_space)
 {
-  return default_mem;
+  cCodeLabel& label = GetLabel();
+	if (label.GetSize() == 0) return 0;
+
+  int hash_key = label.AsInt(nHardwareSMT::NUM_NOPS);
+  if (!m_mem_lbls.Find(hash_key, mem_space)) {
+    mem_space = m_mem_array.GetSize();
+    m_mem_array.Resize(mem_space + 1);
+    m_mem_lbls.Add(hash_key, mem_space);
+  }
+  
+  return mem_space;
 }
 
 
@@ -462,11 +444,11 @@ int cHardwareSMT::FindMemorySpaceLabel(int default_mem)
 
 cHeadMultiMem cHardwareSMT::FindLabel(int direction)
 {
-  cHeadMultiMem & inst_ptr = IP();
+  cHeadMultiMem& inst_ptr = IP();
 	
   // Start up a search head at the position of the instruction pointer.
   cHeadMultiMem search_head(inst_ptr);
-  cCodeLabel & search_label = GetLabel();
+  cCodeLabel& search_label = GetLabel();
 	
   // Make sure the label is of size  > 0.
 	
@@ -1770,25 +1752,15 @@ bool cHardwareSMT::Inst_Val_Div()
 }
 
 //13 
-bool cHardwareSMT::Inst_SetMemory()   // Allocate maximal more
+bool cHardwareSMT::Inst_SetMemory() 
 {
-  ReadLabel();
-  int mem_space_used = FindModifiedStack(-1);
+  ReadLabel(nHardwareSMT::MAX_MEMSPACE_LABEL);
   
   if (GetLabel().GetSize() == 0) {
     GetHead(nHardware::HEAD_FLOW).Set(0, 0);
   } else {
     int mem_space_used = FindMemorySpaceLabel(-1);
-    
-    if (mem_space_used != -1) {
-      
-    } else {
-      
-    }
-    
-    mem_space_used = FindFirstEmpty();
-    if(mem_space_used==-1)
-      return false;
+    if (mem_space_used == -1) return false;
     GetHead(nHardware::HEAD_FLOW).Set(0, mem_space_used);
   }
   
@@ -1802,21 +1774,6 @@ bool cHardwareSMT::Inst_Divide()
   int mut_multiplier = 1;
 	
   return Divide_Main(mem_space_used, mut_multiplier);
-}
-
-bool cHardwareSMT::Inst_HeadDivideMut(double mut_multiplier)
-{
-  // Unused for the moment...
-  return true;
-  //AdjustHeads();
-  //const int divide_pos = GetHead(nHardware::HEAD_READ).GetPosition();
-  //int child_end =  GetHead(nHardware::HEAD_WRITE).GetPosition();
-  //if (child_end == 0) child_end = GetMemory(0).GetSize();
-  //const int extra_lines = GetMemory(0).GetSize() - child_end;
-  //bool ret_val = Divide_Main(divide_pos, extra_lines, mut_multiplier);
-  //// Re-adjust heads.
-  //AdjustHeads();
-  //return ret_val; 
 }
 
 //15
@@ -1849,7 +1806,6 @@ bool cHardwareSMT::Inst_HeadWrite()
   cHeadMultiMem & active_head = GetHead(head_id);
   int mem_space_used = active_head.GetMemSpace();
   
-  //commented out for right now...
   if(active_head.GetPosition()>=GetMemory(mem_space_used).GetSize()-1)
 	{
 		GetMemory(mem_space_used).Resize(GetMemory(mem_space_used).GetSize()+1);

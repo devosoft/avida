@@ -133,7 +133,7 @@ private:
   // disabled copy constructor.
   tHashTable(const tHashTable &);
 public:
-  tHashTable(int in_table_size=DICTIONARY_HASH_DEFAULT)
+  tHashTable(int in_table_size=HASH_TABLE_SIZE_DEFAULT)
     : entry_count(0)
     , table_size(in_table_size)
     , cell_array(in_table_size)
