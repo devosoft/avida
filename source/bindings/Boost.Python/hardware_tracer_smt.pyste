@@ -1,0 +1,6 @@
+
+Include("cHardwareSMT.h")
+
+cHardwareTracer_SMT = Class("cHardwareTracer_SMT", "cHardwareTracer_SMT.h")
+
+# vim: set ft=python:

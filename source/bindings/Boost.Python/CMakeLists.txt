@@ -156,6 +156,7 @@ SET(PyAvida_Pyste_Bases
   hardware_cpu::${CMAKE_CURRENT_SOURCE_DIR}/hardware_base.pyste:${CMAKE_CURRENT_SOURCE_DIR}/hardware_cpu-fixups.hh # XXX XXX XXX
   hardware_tracer::
   hardware_tracer_cpu::
+  hardware_tracer_smt::
   hardware_tracer_4stack::
   hardware_tracer_test_cpu::
   hardware_status_printer::

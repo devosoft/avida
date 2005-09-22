@@ -16,7 +16,7 @@
 #include "cInstLibBase.h"
 #include "cInstSet.h"
 #include "cHardwareTracer.h"
-//#include "cHardwareTracer_4Stack.h"
+#include "cHardwareTracer_SMT.h"
 #include "mutation.hh"
 #include "mutation_lib.hh"
 #include "mutation_macros.hh"
@@ -137,8 +137,8 @@ tInstLib<cHardwareSMT::tMethod> *cHardwareSMT::initInstLib(void){
 }
 
 cHardwareSMT::cHardwareSMT(cOrganism* in_organism, cInstSet* in_inst_set)
-  : cHardwareBase(in_organism, in_inst_set), m_mem_array(1),
-    m_mem_lbls(pow(nHardwareSMT::NUM_NOPS, nHardwareSMT::MAX_MEMSPACE_LABEL) / nHardwareSMT::MEM_LBLS_HASH_FACTOR)
+: cHardwareBase(in_organism, in_inst_set), m_mem_array(1),
+m_mem_lbls(pow(nHardwareSMT::NUM_NOPS, nHardwareSMT::MAX_MEMSPACE_LABEL) / nHardwareSMT::MEM_LBLS_HASH_FACTOR)
 {
   m_functions = s_inst_slib->GetFunctions();
 	
@@ -220,7 +220,7 @@ void cHardwareSMT::SingleProcess()
   phenotype.IncTimeUsed();
 	
   const int num_inst_exec = (cConfig::GetThreadSlicingMethod() == 1) ? GetNumThreads() : 1;
-
+  
   for (int i = 0; i < num_inst_exec; i++) {
     // Setup the hardware for the next instruction to be executed.
     NextThread();
@@ -233,13 +233,13 @@ void cHardwareSMT::SingleProcess()
     }
 #endif
     
-    // DDD - there is no cHardwareTracer_SMT -- Print the status of this CPU at each step...
-    //if (m_tracer != NULL) {
-    //  if (cHardwareTracer_SMT* tracer = dynamic_cast<cHardwareTracer_SMT *>(m_tracer)) {
-    //    tracer->TraceHardware_SMT(*this);
-    //  }
-    //}
-
+    // Print the status of this CPU at each step...
+    if (m_tracer != NULL) {
+      if (cHardwareTracer_SMT* tracer = dynamic_cast<cHardwareTracer_SMT *>(m_tracer)) {
+        tracer->TraceHardware_SMT(*this);
+      }
+    }
+    
     // Find the instruction to be executed
     const cInstruction & cur_inst = IP().GetInst();
 		
@@ -255,14 +255,14 @@ void cHardwareSMT::SingleProcess()
       if (AdvanceIP() == true) IP().Advance();
     } // if exec
   } // Previous was executed once for each thread...
-
+  
   // Kill creatures who have reached their max num of instructions executed
   const int max_executed = organism->GetMaxExecuted();
   if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed)
       || phenotype.GetToDie()) {
     organism->Die();
   }
-
+  
   organism->SetRunning(false);
 }
 
@@ -342,15 +342,15 @@ void cHardwareSMT::ProcessBonusInst(const cInstruction & inst)
   bool prev_run_state = organism->GetIsRunning();
   organism->SetRunning(true);
 	
-  // DDD - there is no cHardwareTracer_SMT -- Print the status of this CPU at each step...
-  //if (m_tracer != NULL) {
-  //  if (cHardwareTracer_SMT* tracer = dynamic_cast<cHardwareTracer_SMT *>(m_tracer)) {
-  //    tracer->TraceHardware_SMTBonus(*this);
-  //  }
-  //}
-
+  // Print the status of this CPU at each step...
+  if (m_tracer != NULL) {
+    if (cHardwareTracer_SMT* tracer = dynamic_cast<cHardwareTracer_SMT *>(m_tracer)) {
+      tracer->TraceHardware_SMTBonus(*this);
+    }
+  }
+  
   SingleProcess_ExecuteInst(inst);
-
+  
   organism->SetRunning(prev_run_state);
 }
 
@@ -397,21 +397,12 @@ void cHardwareSMT::PrintStatus(ostream & fp)
 		<< "F-Head:(" << GetHead(nHardware::HEAD_FLOW).GetMemSpace()   << ",  "
 		<< GetHead(nHardware::HEAD_FLOW).GetPosition() << ")  "
 		<< "RL:" << GetReadLabel().AsString() << "   "
-		<< endl;
+    << endl;
 	
-  fp << "  Mem (" << GetMemory(0).GetSize() << "):"
-		  << "  " << GetMemory(0).AsString()
-		  << endl;
-  fp << "       " << GetMemory(1).GetSize() << "):"
-		  << "  " << GetMemory(1).AsString()
-		  << endl;
-  fp << "       " << GetMemory(2).GetSize() << "):"
-		  << "  " << GetMemory(2).AsString()
-		  << endl;
-  fp << "       " << GetMemory(3).GetSize() << "):"
-		  << "  " << GetMemory(3).AsString()
-		  << endl;
-  
+  for (int i = 0; i < m_mem_array.GetSize(); i++) {
+    const cCPUMemory& mem = GetMemory(i);
+    fp << "  Mem " << i << " (" << mem.GetSize() << "): " << mem.AsString() << endl;
+  }
   
   fp.flush();
 }
@@ -421,7 +412,7 @@ int cHardwareSMT::FindMemorySpaceLabel(int mem_space)
 {
   cCodeLabel& label = GetLabel();
 	if (label.GetSize() == 0) return 0;
-
+  
   int hash_key = label.AsInt(nHardwareSMT::NUM_NOPS);
   if (!m_mem_lbls.Find(hash_key, mem_space)) {
     mem_space = m_mem_array.GetSize();

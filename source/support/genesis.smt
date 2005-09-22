@@ -34,7 +34,7 @@ BIRTH_METHOD 4   # 0 = Replace random organism in neighborhood
 		  # 3 = Place only in empty cells in neighborhood
 		  # 4 = Replace random from entire population (Mass Action)
 		  # 5 = Replace oldest in entire population (like Tierra)
-DEATH_METHOD 0    # 0 = Never die of old age.
+DEATH_METHOD 2    # 0 = Never die of old age.
 		  # 1 = Die when inst executed = AGE_LIMIT (with deviation)
 		  # 2 = Die when inst executed = length * AGE_LIMIT (+ dev.)
 AGE_LIMIT 5000    # Modifies DEATH_METHOD
@@ -64,7 +64,7 @@ REQUIRED_TASK -1  # Number of task required for successful divide.
 
 # mutations that occur during execution..
 POINT_MUT_PROB  0.0     # Mutation rate (per-location per update)
-COPY_MUT_PROB   0.01  # Mutation rate (per copy).
+COPY_MUT_PROB   0.0075  # Mutation rate (per copy).
 
 # mutations that occur on divide...
 INS_MUT_PROB    0.0     # Insertion rate (per site, applied on divide).

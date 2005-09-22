@@ -414,6 +414,8 @@
 		706D330E0854A7B900D7DC8F /* organism.smt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = organism.smt; sourceTree = "<group>"; };
 		706D33100854A7D700D7DC8F /* genesis.smt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = genesis.smt; sourceTree = "<group>"; };
 		706D33270854A90D00D7DC8F /* inst_set.smt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = inst_set.smt; sourceTree = "<group>"; };
+		707A687408E3750300576968 /* cHardwareTracer_SMT.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareTracer_SMT.h; sourceTree = "<group>"; };
+		707A68B808E37D5900576968 /* hardware_tracer_smt.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = hardware_tracer_smt.pyste; sourceTree = "<group>"; };
 		70C1EF4608C393BA00F50912 /* cCodeLabel.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCodeLabel.cc; sourceTree = "<group>"; };
 		70C1EF4708C393BA00F50912 /* cCodeLabel.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCodeLabel.h; sourceTree = "<group>"; };
 		70C1EF5808C3948C00F50912 /* cCPUMemory.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCPUMemory.cc; sourceTree = "<group>"; };
@@ -1715,6 +1717,7 @@
 		DCC30C750762539A008F7A48 /* Boost.Python */ = {
 			isa = PBXGroup;
 			children = (
+				707A68B808E37D5900576968 /* hardware_tracer_smt.pyste */,
 				70C1F11108C40D6100F50912 /* nHardwareCPU.pyste */,
 				70C1F10F08C40D2D00F50912 /* nHardwareCPU-fixups.cc */,
 				70C1F11008C40D2D00F50912 /* nHardwareCPU-fixups.h */,
@@ -1968,6 +1971,7 @@
 		DCC30F7C0762539D008F7A48 /* cpu */ = {
 			isa = PBXGroup;
 			children = (
+				707A687408E3750300576968 /* cHardwareTracer_SMT.h */,
 				70C1F0FC08C40B1B00F50912 /* nHardwareCPU.h */,
 				70C1F0A808C3FF1800F50912 /* nHardware.h */,
 				70C1F06108C3CDEA00F50912 /* nHardware4Stack.h */,

@@ -6,11 +6,7 @@ Nop-D
 Push-Prev    #  5:  Move end position to Stack-A
 SetMemory    #  6:  Place FLOW-head in memory space for offspring
 Nop-A        #      - Memory space labeled Nop-A Nop-A Nop-A
-Nop-A
-Nop-A
 Head-Move    #  7:  Move Write head to flow head position
-Nop-C        #  8:
-Nop-C        #  8:
 Nop-C        #  8:
 Nop-C        #  8:
 Nop-C        #  8:
