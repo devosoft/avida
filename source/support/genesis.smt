@@ -42,13 +42,13 @@ AGE_DEVIATION 0   # Modified DEATH_METHOD
 ALLOC_METHOD 0    # 0 = Allocated space is set to default instruction.
                   # 1 = Set to section of dead genome (Necrophilia)
                   # 2 = Allocated space is set to random instruction.
-DIVIDE_METHOD 2   # 0 = Divide leaves state of mother untouched.
+DIVIDE_METHOD 1   # 0 = Divide leaves state of mother untouched.
                   # 1 = Divide resets state of mother
                   #     (after the divide, we have 2 children)
 		  # 2 = Divide resets only the current thread of the mother
 		  #     (useful in 4-stack CPU w/ parasites)
 
-GENERATION_INC_METHOD 0 # 0 = Only the generation of the child is
+GENERATION_INC_METHOD 1 # 0 = Only the generation of the child is
                         #     increased on divide.
 			# 1 = Both the generation of the mother and child are
 			#     increased on divide (good with DIVIDE_METHOD 1).
@@ -64,7 +64,7 @@ REQUIRED_TASK -1  # Number of task required for successful divide.
 
 # mutations that occur during execution..
 POINT_MUT_PROB  0.0     # Mutation rate (per-location per update)
-COPY_MUT_PROB   0.0075  # Mutation rate (per copy).
+COPY_MUT_PROB   0.01  # Mutation rate (per copy).
 
 # mutations that occur on divide...
 INS_MUT_PROB    0.0     # Insertion rate (per site, applied on divide).
