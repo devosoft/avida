@@ -24,7 +24,7 @@ namespace nHardware {
   
   static const int STACK_SIZE = 10;
   static const int IO_SIZE = 3;
-};
+}
 
 enum tFaultTypes {
   FAULT_TYPE_WARNING = 0,

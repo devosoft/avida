@@ -14,7 +14,7 @@
 #include "organism.hh"
 #include "phenotype.hh"
 #include "cTestCPU.h"
-
+#include "cEnvironment.h"
 using namespace std;
 
 //////////////////////
@@ -165,11 +165,17 @@ void cAnalyzeGenotype::Recalculate(cAnalyzeGenotype * parent_genotype)
   test_info.TestThreads();
   // test_info.TraceTaskOrder();
 
-  // Use the inst lib for this genotype...
-  cInstSet * inst_set_backup = cTestCPU::GetInstSet();
+  // Use the inst lib for this genotype... and syncrhonize environment
+  cInstSet * inst_set_backup   = cTestCPU::GetInstSet();
   cTestCPU::SetInstSet(&inst_set);
+  cInstSet env_inst_set_backup = cTestCPU::GetEnvironment()->GetInstSet();
+  cTestCPU::GetEnvironment()->GetInstSet() = inst_set;
+
   cTestCPU::TestGenome(test_info, genome);
+  
+  // Restore test CPU and environment instruction set
   cTestCPU::SetInstSet(inst_set_backup);
+  cTestCPU::GetEnvironment()->GetInstSet() = env_inst_set_backup;
 
   viable = test_info.IsViable();
 
