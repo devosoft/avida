@@ -234,11 +234,7 @@ public:
 	
   void SaveState(std::ostream & fp);
   void LoadState(std::istream & fp);
-	
-  //void InitInstSet(const cString & filename, cInstSet & inst_set);
-  cString ConvertToInstruction(int mem_space_used);
-	
-	
+		
 private:
   /////////---------- Instruction Helpers ------------//////////
   int FindModifiedStack(int default_stack);

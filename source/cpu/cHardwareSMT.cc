@@ -752,7 +752,7 @@ bool cHardwareSMT::InjectParasite(double mut_multiplier)
   }
   
   if (end_pos < MIN_INJECT_SIZE) {
-    GetMemory(mem_space_used)=cGenome(ConvertToInstruction(mem_space_used)); 
+    GetMemory(mem_space_used) = cGenome(0); 
     Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: new size too small");
     return false; // (inject fails)
   }
@@ -786,7 +786,7 @@ bool cHardwareSMT::InjectParasite(double mut_multiplier)
   //************** CALL ENDS HERE ******************//
 	
   //reset the memory space which was injected
-  GetMemory(mem_space_used)=cGenome(ConvertToInstruction(mem_space_used)); 
+  GetMemory(mem_space_used) = cGenome(0); 
 	
   for(int x=0; x<nHardware::NUM_HEADS; x++) {
 		GetHead(x).Reset(IP().GetMemSpace(), this);
@@ -1600,7 +1600,7 @@ bool cHardwareSMT::Divide_Main(int mem_space_used, double mut_multiplier)
   bool parent_alive = organism->ActivateDivide();
 	
   //reset the memory of the memory space that has been divided off
-  GetMemory(mem_space_used)=cGenome(ConvertToInstruction(mem_space_used)); 
+  GetMemory(mem_space_used) = cGenome(0); 
 	
   // 3 Division Methods:
   // 1) DIVIDE_METHOD_OFFSPRING - Create a child, leave parent state untouched.
@@ -1645,14 +1645,6 @@ bool cHardwareSMT::Divide_Main(int mem_space_used, double mut_multiplier)
 	}
 	
   return true;
-}
-
-cString cHardwareSMT::ConvertToInstruction(int mem_space_used)
-{
-  char c = mem_space_used + 97;  // 97 - ASCII for 'a'
-  cString ret;
-  ret += c;
-  return ret;
 }
 
 cString cHardwareSMT::GetActiveStackID(int stackID) const
