@@ -752,7 +752,7 @@ bool cHardwareSMT::InjectParasite(double mut_multiplier)
   }
   
   if (end_pos < MIN_INJECT_SIZE) {
-    GetMemory(mem_space_used) = cGenome(0); 
+    GetMemory(mem_space_used) = cGenome('a'); 
     Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: new size too small");
     return false; // (inject fails)
   }
@@ -786,7 +786,7 @@ bool cHardwareSMT::InjectParasite(double mut_multiplier)
   //************** CALL ENDS HERE ******************//
 	
   //reset the memory space which was injected
-  GetMemory(mem_space_used) = cGenome(0); 
+  GetMemory(mem_space_used) = cGenome('a'); 
 	
   for(int x=0; x<nHardware::NUM_HEADS; x++) {
 		GetHead(x).Reset(IP().GetMemSpace(), this);
@@ -1566,14 +1566,13 @@ bool cHardwareSMT::Divide_Main(int mem_space_used, double mut_multiplier)
 {
   int write_head_pos = GetHead(nHardware::HEAD_WRITE).GetPosition();
   
+  // DDD - change to allow ???
   // We're going to disallow division calls from memory spaces other than zero 
   // for right now -law
-  if(IP().GetMemSpace()!=0)
-    return false;
+  if(IP().GetMemSpace() != 0) return false;
 	
   // Make sure this divide will produce a viable offspring.
-  if(!Divide_CheckViable(GetMemory(IP().GetMemSpace()).GetSize(), 
-												 write_head_pos, mem_space_used)) 
+  if(!Divide_CheckViable(GetMemory(IP().GetMemSpace()).GetSize(), write_head_pos, mem_space_used)) 
     return false;
   
   // Since the divide will now succeed, set up the information to be sent
@@ -1600,7 +1599,7 @@ bool cHardwareSMT::Divide_Main(int mem_space_used, double mut_multiplier)
   bool parent_alive = organism->ActivateDivide();
 	
   //reset the memory of the memory space that has been divided off
-  GetMemory(mem_space_used) = cGenome(0); 
+  GetMemory(mem_space_used) = cGenome('a'); 
 	
   // 3 Division Methods:
   // 1) DIVIDE_METHOD_OFFSPRING - Create a child, leave parent state untouched.
