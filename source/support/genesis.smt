@@ -37,7 +37,7 @@ BIRTH_METHOD 4   # 0 = Replace random organism in neighborhood
 DEATH_METHOD 2    # 0 = Never die of old age.
 		  # 1 = Die when inst executed = AGE_LIMIT (with deviation)
 		  # 2 = Die when inst executed = length * AGE_LIMIT (+ dev.)
-AGE_LIMIT 5000    # Modifies DEATH_METHOD
+AGE_LIMIT 20    # Modifies DEATH_METHOD
 AGE_DEVIATION 0   # Modified DEATH_METHOD
 ALLOC_METHOD 0    # 0 = Allocated space is set to default instruction.
                   # 1 = Set to section of dead genome (Necrophilia)

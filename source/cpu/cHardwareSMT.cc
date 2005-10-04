@@ -143,36 +143,17 @@ m_mem_lbls(pow(nHardwareSMT::NUM_NOPS, nHardwareSMT::MAX_MEMSPACE_LABEL) / nHard
   m_functions = s_inst_slib->GetFunctions();
 	
   m_mem_array[0] = in_organism->GetGenome();  // Initialize memory...
-  m_mem_array[0].Resize(GetMemory(0).GetSize() + 1);
+  m_mem_array[0].Resize(m_mem_array[0].GetSize() + 1);
   m_mem_array[0][m_mem_array[0].GetSize() - 1] = cInstruction();
   Reset();                            // Setup the rest of the hardware...
 }
-
-
-cHardwareSMT::cHardwareSMT(const cHardwareSMT& hardware)
-: cHardwareBase(hardware.organism, hardware.inst_set)
-, m_functions(hardware.m_functions)
-, m_mem_array(hardware.m_mem_array)
-, m_threads(hardware.m_threads)
-, thread_id_chart(hardware.thread_id_chart)
-, m_cur_thread(hardware.m_cur_thread)
-, inst_cost(hardware.inst_cost)
-#ifdef INSTRUCTION_COSTS
-, inst_ft_cost(hardware.inst_ft_cost)
-#endif
-{
-  for(int i = 0; i < nHardwareSMT::NUM_GLOBAL_STACKS; i++) {
-    m_global_stacks[i] = hardware.m_global_stacks[i];
-  }
-}
-
 
 void cHardwareSMT::Recycle(cOrganism * new_organism, cInstSet * in_inst_set)
 {
   cHardwareBase::Recycle(new_organism, in_inst_set);
   m_mem_array[0] = new_organism->GetGenome();
-  m_mem_array[0].Resize(GetMemory(0).GetSize() + 1);
-  m_mem_array[0][m_mem_array[0].GetSize()-1] = cInstruction();
+  m_mem_array[0].Resize(m_mem_array[0].GetSize() + 1);
+  m_mem_array[0][m_mem_array[0].GetSize() - 1] = cInstruction();
   Reset();
 }
 
@@ -181,6 +162,7 @@ void cHardwareSMT::Reset()
 {
   // Setup the memory...
   m_mem_array.Resize(1);
+  m_mem_lbls.ClearAll();
   
   // We want to reset to have a single thread.
   m_threads.Resize(1);
@@ -356,19 +338,17 @@ void cHardwareSMT::ProcessBonusInst(const cInstruction & inst)
 
 bool cHardwareSMT::OK()
 {
-  bool result = true;
-	
   for(int i = 0 ; i < m_mem_array.GetSize(); i++) {
-    if (!m_mem_array[i].OK()) result = false;
+    if (!m_mem_array[i].OK()) return false;
   }
 	
   for (int i = 0; i < GetNumThreads(); i++) {
     for(int j=0; j < nHardwareSMT::NUM_LOCAL_STACKS; j++)
-			if (m_threads[i].local_stacks[j].OK() == false) result = false;
-    if (m_threads[i].next_label.OK() == false) result = false;
+			if (m_threads[i].local_stacks[j].OK() == false) return false;
+    if (m_threads[i].next_label.OK() == false) return false;
   }
 	
-  return result;
+  return true;
 }
 
 void cHardwareSMT::PrintStatus(ostream & fp)
@@ -400,7 +380,7 @@ void cHardwareSMT::PrintStatus(ostream & fp)
     << endl;
 	
   for (int i = 0; i < m_mem_array.GetSize(); i++) {
-    const cCPUMemory& mem = GetMemory(i);
+    const cCPUMemory& mem = m_mem_array[i];
     fp << "  Mem " << i << " (" << mem.GetSize() << "): " << mem.AsString() << endl;
   }
   
@@ -432,7 +412,6 @@ int cHardwareSMT::FindMemorySpaceLabel(int mem_space)
 // results.  If direction is 0, search from the beginning of the genome.
 //
 /////////////////////////////////////////////////////////////////////////
-
 cHeadMultiMem cHardwareSMT::FindLabel(int direction)
 {
   cHeadMultiMem& inst_ptr = IP();
@@ -476,9 +455,8 @@ cHeadMultiMem cHardwareSMT::FindLabel(int direction)
 // Search forwards for search_label from _after_ position pos in the
 // memory.  Return the first line _after_ the the found label.  It is okay
 // to find search label's match inside another label.
-
-int cHardwareSMT::FindLabel_Forward(const cCodeLabel & search_label,
-                                    const cGenome & search_genome, int pos)
+int cHardwareSMT::FindLabel_Forward(const cCodeLabel& search_label,
+                                    const cGenome& search_genome, int pos)
 {
   assert (pos < search_genome.GetSize() && pos >= 0);
 	
@@ -558,7 +536,6 @@ int cHardwareSMT::FindLabel_Forward(const cCodeLabel & search_label,
 // Search backwards for search_label from _before_ position pos in the
 // memory.  Return the first line _after_ the the found label.  It is okay
 // to find search label's match inside another label.
-
 int cHardwareSMT::FindLabel_Backward(const cCodeLabel & search_label,
                                      const cGenome & search_genome, int pos)
 {
@@ -634,7 +611,7 @@ int cHardwareSMT::FindLabel_Backward(const cCodeLabel & search_label,
 }
 
 // Search for 'in_label' anywhere in the hardware.
-cHeadMultiMem cHardwareSMT::FindLabel(const cCodeLabel & in_label, int direction)
+cHeadMultiMem cHardwareSMT::FindLabel(const cCodeLabel& in_label, int direction)
 {
   assert (in_label.GetSize() > 0);
 	
@@ -674,9 +651,6 @@ cHeadMultiMem cHardwareSMT::FindLabel(const cCodeLabel & in_label, int direction
 // direction which the heads[nHardware::HEAD_IP] should progress through a creature.
 cHeadMultiMem cHardwareSMT::FindFullLabel(const cCodeLabel & in_label)
 {
-  // cout << "Running FindFullLabel with " << in_label.AsString() <<
-  // endl;
-	
   assert(in_label.GetSize() > 0); // Trying to find label of 0 size!
 	
   cHeadMultiMem temp_head(this);
@@ -689,13 +663,11 @@ cHeadMultiMem cHardwareSMT::FindFullLabel(const cCodeLabel & in_label)
     }
 		
     // Otherwise, rewind to the begining of this label...
-		
     while (!(temp_head.AtFront()) && inst_set->IsNop(temp_head.GetInst(-1)))
       temp_head.AbsJump(-1);
 		
     // Calculate the size of the label being checked, and make sure they
-    // are equal.
-		
+    // are equal.		
     int checked_size = 0;
     while (inst_set->IsNop(temp_head.GetInst(checked_size))) {
       checked_size++;
@@ -704,12 +676,8 @@ cHeadMultiMem cHardwareSMT::FindFullLabel(const cCodeLabel & in_label)
       temp_head.AbsJump(checked_size + 1);
       continue;
     }
-		
-    // cout << "Testing label at line " << temp_head.GetPosition() <<
-    // endl;
-		
+
     // ...and do the comparison...
-		
     int j;
     bool label_match = true;
     for (j = 0; j < in_label.GetSize(); j++) {
@@ -752,20 +720,20 @@ bool cHardwareSMT::InjectParasite(double mut_multiplier)
   }
   
   if (end_pos < MIN_INJECT_SIZE) {
-    GetMemory(mem_space_used) = cGenome('a'); 
+    m_mem_array[mem_space_used] = cGenome("a"); 
     Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: new size too small");
     return false; // (inject fails)
   }
 	
-  GetMemory(mem_space_used).Resize(end_pos);
+  m_mem_array[mem_space_used].Resize(end_pos);
 	
-  cCPUMemory injected_code = GetMemory(mem_space_used);
+  cCPUMemory injected_code = m_mem_array[mem_space_used];
 	
   Inject_DoMutations(mut_multiplier, injected_code);
 	
   int inject_signal = false;
 	
-  if(injected_code.GetSize()>0)
+  if(injected_code.GetSize() > 0)
     inject_signal = organism->InjectParasite(injected_code);
   
   //************* CALL GOES HERE ******************//
@@ -786,7 +754,7 @@ bool cHardwareSMT::InjectParasite(double mut_multiplier)
   //************** CALL ENDS HERE ******************//
 	
   //reset the memory space which was injected
-  GetMemory(mem_space_used) = cGenome('a'); 
+  m_mem_array[mem_space_used] = cGenome("a"); 
 	
   for(int x=0; x<nHardware::NUM_HEADS; x++) {
 		GetHead(x).Reset(IP().GetMemSpace(), this);
@@ -804,13 +772,14 @@ bool cHardwareSMT::InjectParasite(double mut_multiplier)
 //This is the code run by the TARGET of an injection.  This RECIEVES the infection.
 bool cHardwareSMT::InjectHost(const cCodeLabel & in_label, const cGenome & inject_code)
 {
-  // Make sure the genome will be below max size after injection.
-	
-  // xxxTEMPORARYxxx - we should have this match injection templates.  For now it simply 
+  // DDD - Need to discuss how InjectHost should work with extensible memory spaces...
+  return false;
   
+  // Make sure the genome will be below max size after injection.	
+  // xxxTEMPORARYxxx - we should have this match injection templates.  For now it simply 
 	// FIND THE FIRST EMPTY MEMORY SPACE
-  int target_mem_space;
-  for (target_mem_space = 0; target_mem_space < m_mem_array.GetSize(); target_mem_space++)
+  int target_mem_space = 0;
+  for (; target_mem_space < m_mem_array.GetSize(); target_mem_space++)
 	{
 		if(isEmpty(target_mem_space))
 		{
@@ -827,14 +796,14 @@ bool cHardwareSMT::InjectHost(const cCodeLabel & in_label, const cGenome & injec
   
   if(ForkThread()) {
     // Inject the new code
-    cCPUMemory oldcode = GetMemory(target_mem_space);
-    GetMemory(target_mem_space) = inject_code;
-    GetMemory(target_mem_space).Resize(inject_code.GetSize() + oldcode.GetSize());
+    cCPUMemory oldcode = m_mem_array[target_mem_space];
+    m_mem_array[target_mem_space] = inject_code;
+    m_mem_array[target_mem_space].Resize(inject_code.GetSize() + oldcode.GetSize());
 		
     // Copies previous instructions to the end of the injected code.
     // Is there a faster way to do this?? -law
     for(int x=0; x<oldcode.GetSize(); x++)
-      GetMemory(target_mem_space)[inject_code.GetSize()+x] = oldcode[x];
+      m_mem_array[target_mem_space][inject_code.GetSize()+x] = oldcode[x];
 		
     // Set instruction flags on the injected code
     for (int i = 0; i < inject_code.GetSize(); i++) {
@@ -867,22 +836,20 @@ bool cHardwareSMT::InjectHost(const cCodeLabel & in_label, const cGenome & injec
 void cHardwareSMT::Mutate(int mut_point)
 {
   // Test if trying to mutate outside of genome...
-  assert(mut_point >= 0 && mut_point < GetMemory(0).GetSize());
+  assert(mut_point >= 0 && mut_point < m_mem_array[0].GetSize());
 	
-  GetMemory(0)[mut_point] = GetRandomInst();
-  GetMemory(0).FlagMutated(mut_point) = true;
-  GetMemory(0).FlagPointMut(mut_point) = true;
-  //organism->GetPhenotype().IsMutated() = true;
+  m_mem_array[0][mut_point] = GetRandomInst();
+  m_mem_array[0].FlagMutated(mut_point) = true;
+  m_mem_array[0].FlagPointMut(mut_point) = true;
   organism->CPUStats().mut_stats.point_mut_count++;
 }
 
 int cHardwareSMT::PointMutate(const double mut_rate)
 {
-  const int num_muts =
-	g_random.GetRandBinomial(GetMemory(0).GetSize(), mut_rate);
+  const int num_muts = g_random.GetRandBinomial(m_mem_array[0].GetSize(), mut_rate);
 	
   for (int i = 0; i < num_muts; i++) {
-    const int pos = g_random.GetUInt(GetMemory(0).GetSize());
+    const int pos = g_random.GetUInt(m_mem_array[0].GetSize());
     Mutate(pos);
   }
 	
@@ -904,10 +871,10 @@ bool cHardwareSMT::TriggerMutations(int trigger)
   return TriggerMutations(trigger, IP());
 }
 
-bool cHardwareSMT::TriggerMutations(int trigger, cHeadMultiMem & cur_head)
+bool cHardwareSMT::TriggerMutations(int trigger, cHeadMultiMem& cur_head)
 {
   // Collect information about mutations from the organism.
-  cLocalMutations & mut_info = organism->GetLocalMutations();
+  cLocalMutations& mut_info = organism->GetLocalMutations();
   const tList<cMutation> & mut_list =
     mut_info.GetMutationLib().GetMutationList(trigger);
 	
@@ -917,7 +884,7 @@ bool cHardwareSMT::TriggerMutations(int trigger, cHeadMultiMem & cur_head)
 	
   // Determine what memory this mutation will be affecting.
   cCPUMemory & target_mem = (trigger == MUTATION_TRIGGER_DIVIDE) 
-    ? organism->ChildGenome() : GetMemory(0);
+    ? organism->ChildGenome() : m_mem_array[0];
 	
   // Loop through all mutations associated with this trigger and test them.
   tConstListIterator<cMutation> mut_it(mut_list);
@@ -1224,7 +1191,7 @@ bool cHardwareSMT::Divide_CheckViable(const int parent_size,
 {
   // Make sure the organism is okay with dividing now...
   if (organism->Divide_CheckViable() == false) return false; // (divide fails)
-	
+
   // Make sure that neither parent nor child will be below the minimum size.
 	
   const int genome_size = organism->GetGenome().GetSize();
@@ -1243,7 +1210,7 @@ bool cHardwareSMT::Divide_CheckViable(const int parent_size,
 	
   int executed_size = 0;
   for (int i = 0; i < parent_size; i++) {
-    if (GetMemory(0).FlagExecuted(i)) executed_size++;
+    if (m_mem_array[0].FlagExecuted(i)) executed_size++;
   }
 	
   const int min_exe_lines = (int) (parent_size * cConfig::GetMinExeLines());
@@ -1258,11 +1225,11 @@ bool cHardwareSMT::Divide_CheckViable(const int parent_size,
   // sure the specified fraction has been reached.
 	
   int copied_size = 0;
-  for (int i = 0; i < GetMemory(mem_space).GetSize(); i++) {
-    if (GetMemory(mem_space).FlagCopied(i)) copied_size++;
+  for (int i = 0; i < m_mem_array[mem_space].GetSize(); i++) {
+    if (m_mem_array[mem_space].FlagCopied(i)) copied_size++;
 	}
 	
-  const int min_copied =  (int) (child_size * cConfig::GetMinCopiedLines());
+  const int min_copied = static_cast<int>(child_size * cConfig::GetMinCopiedLines());
   if (copied_size < min_copied) {
     Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
 					cStringUtil::Stringf("Too few copied commands (%d < %d)",
@@ -1279,8 +1246,8 @@ bool cHardwareSMT::Divide_CheckViable(const int parent_size,
 
 void cHardwareSMT::Divide_DoMutations(double mut_multiplier)
 {
-  sCPUStats & cpu_stats = organism->CPUStats();
-  cCPUMemory & child_genome = organism->ChildGenome();
+  sCPUStats& cpu_stats = organism->CPUStats();
+  cCPUMemory& child_genome = organism->ChildGenome();
   
   organism->GetPhenotype().SetDivType(mut_multiplier);
 	
@@ -1367,9 +1334,9 @@ void cHardwareSMT::Divide_DoMutations(double mut_multiplier)
 	
   // Mutations in the parent's genome
   if (organism->GetParentMutProb() > 0) {
-    for (int i = 0; i < GetMemory(0).GetSize(); i++) {
+    for (int i = 0; i < m_mem_array[0].GetSize(); i++) {
       if (organism->TestParentMut()) {
-				GetMemory(0)[i] = GetRandomInst();
+				m_mem_array[0][i] = GetRandomInst();
 				cpu_stats.mut_stats.parent_mut_line_count++;
       }
     }
@@ -1377,8 +1344,8 @@ void cHardwareSMT::Divide_DoMutations(double mut_multiplier)
 	
 	
   // Count up mutated lines
-  for(int i = 0; i < GetMemory(0).GetSize(); i++){
-    if (GetMemory(0).FlagPointMut(i) == true) {
+  for(int i = 0; i < m_mem_array[0].GetSize(); i++){
+    if (m_mem_array[0].FlagPointMut(i) == true) {
       cpu_stats.mut_stats.point_mut_line_count++;
     }
   }
@@ -1391,31 +1358,24 @@ void cHardwareSMT::Divide_DoMutations(double mut_multiplier)
 
 void cHardwareSMT::Inject_DoMutations(double mut_multiplier, cCPUMemory & injected_code)
 {
-  //sCPUStats & cpu_stats = organism->CPUStats();
-  //cCPUMemory & child_genome = organism->ChildGenome();
-  
   organism->GetPhenotype().SetDivType(mut_multiplier);
 	
   // Divide Mutations
   if (organism->TestDivideMut()) {
     const UINT mut_line = g_random.GetUInt(injected_code.GetSize());
     injected_code[mut_line] = GetRandomInst();
-    //cpu_stats.mut_stats.divide_mut_count++;
   }
 	
   // Divide Insertions
   if (organism->TestDivideIns() && injected_code.GetSize() < MAX_CREATURE_SIZE){
     const UINT mut_line = g_random.GetUInt(injected_code.GetSize() + 1);
     injected_code.Insert(mut_line, GetRandomInst());
-    //cpu_stats.mut_stats.divide_insert_mut_count++;
   }
 	
   // Divide Deletions
   if (organism->TestDivideDel() && injected_code.GetSize() > MIN_CREATURE_SIZE){
     const UINT mut_line = g_random.GetUInt(injected_code.GetSize());
-    // if( injected_code.FlagCopied(mut_line) == true) copied_size_change--;
     injected_code.Remove(mut_line);
-    //cpu_stats.mut_stats.divide_delete_mut_count++;
   }
 	
   // Divide Mutations (per site)
@@ -1427,7 +1387,6 @@ void cHardwareSMT::Inject_DoMutations(double mut_multiplier, cCPUMemory & inject
       for (int i = 0; i < num_mut; i++) {
 				int site = g_random.GetUInt(injected_code.GetSize());
 				injected_code[site]=GetRandomInst();
-				//cpu_stats.mut_stats.div_mut_count++;
       }
     }
   }
@@ -1453,7 +1412,6 @@ void cHardwareSMT::Inject_DoMutations(double mut_multiplier, cCPUMemory & inject
       // Actually do the mutations (in reverse sort order)
       for(int i = num_mut-1; i >= 0; i--) {
 				injected_code.Insert(mut_sites[i], GetRandomInst());
-				//cpu_stats.mut_stats.insert_mut_count++;
       }
     }
   }
@@ -1471,34 +1429,19 @@ void cHardwareSMT::Inject_DoMutations(double mut_multiplier, cCPUMemory & inject
     // If we have lines to delete...
     for (int i = 0; i < num_mut; i++) {
       int site = g_random.GetUInt(injected_code.GetSize());
-      // if (injected_code.FlagCopied(site) == true) copied_size_change--;
       injected_code.Remove(site);
-      //cpu_stats.mut_stats.delete_mut_count++;
     }
   }
 	
   // Mutations in the parent's genome
   if (organism->GetParentMutProb() > 0) {
-    for (int i = 0; i < GetMemory(0).GetSize(); i++) {
+    for (int i = 0; i < m_mem_array[0].GetSize(); i++) {
       if (organism->TestParentMut()) {
-				GetMemory(0)[i] = GetRandomInst();
-				//cpu_stats.mut_stats.parent_mut_line_count++;
+				m_mem_array[0][i] = GetRandomInst();
       }
     }
   }
 	
-  /*
-	 // Count up mutated lines
-	 for(int i = 0; i < GetMemory(0).GetSize(); i++){
-		 if (GetMemory(0).FlagPointMut(i) == true) {
-			 cpu_stats.mut_stats.point_mut_line_count++;
-		 }
-	 }
-	 for(int i = 0; i < injected_code.GetSize(); i++){
-		 if( injected_code.FlagCopyMut(i) == true) {
-			 cpu_stats.mut_stats.copy_mut_line_count++;
-		 }
-	 }*/
 }
 
 
@@ -1567,19 +1510,19 @@ bool cHardwareSMT::Divide_Main(int mem_space_used, double mut_multiplier)
   int write_head_pos = GetHead(nHardware::HEAD_WRITE).GetPosition();
   
   // DDD - change to allow ???
-  // We're going to disallow division calls from memory spaces other than zero 
-  // for right now -law
+  // We're going to disallow division calls from memory spaces other than zero for right now @law
   if(IP().GetMemSpace() != 0) return false;
+
+  // Make sure the memory space we're using exists
+  if (m_mem_array.GetSize() <= mem_space_used) return false;
 	
   // Make sure this divide will produce a viable offspring.
-  if(!Divide_CheckViable(GetMemory(IP().GetMemSpace()).GetSize(), write_head_pos, mem_space_used)) 
+  if(!Divide_CheckViable(m_mem_array[IP().GetMemSpace()].GetSize(), write_head_pos, mem_space_used)) 
     return false;
   
-  // Since the divide will now succeed, set up the information to be sent
-  // to the new organism
-  cGenome & child_genome = organism->ChildGenome();
-  GetMemory(mem_space_used).Resize(write_head_pos);
-  child_genome = GetMemory(mem_space_used);
+  // Since the divide will now succeed, set up the information to be sent to the new organism
+  m_mem_array[mem_space_used].Resize(write_head_pos);
+  organism->ChildGenome() = m_mem_array[mem_space_used];
 	
   // Handle Divide Mutations...
   Divide_DoMutations(mut_multiplier);
@@ -1599,7 +1542,7 @@ bool cHardwareSMT::Divide_Main(int mem_space_used, double mut_multiplier)
   bool parent_alive = organism->ActivateDivide();
 	
   //reset the memory of the memory space that has been divided off
-  GetMemory(mem_space_used) = cGenome('a'); 
+  m_mem_array[mem_space_used] = cGenome("a"); 
 	
   // 3 Division Methods:
   // 1) DIVIDE_METHOD_OFFSPRING - Create a child, leave parent state untouched.
@@ -1616,31 +1559,23 @@ bool cHardwareSMT::Divide_Main(int mem_space_used, double mut_multiplier)
 		}
 		else if(cConfig::GetDivideMethod() == DIVIDE_METHOD_BIRTH)
 		{
-			//if this isn't the only thread, get rid of it!
-			// ***this can cause a concurrency problem if we have 
-			// multiprocessor support for single organisms...don't 
-			// think that's happening anytime soon though -law ***
-			if(!organism->GetPhenotype().IsModified() && GetNumThreads()>1 || 
-				 GetNumThreads()>2)
-	    {
+			if(!organism->GetPhenotype().IsModified() && GetNumThreads() > 1 || GetNumThreads() > 2) {
+        //if this isn't the only thread, get rid of it!
+        // *** this can cause a concurrency problem if we have multiprocessor support for single
+        // *** organisms...don't think that's happening anytime soon though @law
 	      KillThread();
-	    }
-			
-			//this will reset the current thread's heads and stacks.  It will 
-			//not touch any other m_threads or memory spaces (ie: parasites)
-			else
-	    {
-	      for(int x = 0; x < nHardware::NUM_HEADS; x++)
-				{
+	    } else {
+        //this will reset the current thread's heads and stacks.  It will 
+        //not touch any other m_threads or memory spaces (ie: parasites)
+	      for(int x = 0; x < nHardware::NUM_HEADS; x++) {
 					GetHead(x).Reset(0, this);
 				}
-	      for(int x = 0; x < nHardwareSMT::NUM_LOCAL_STACKS; x++)
-				{
+	      for(int x = 0; x < nHardwareSMT::NUM_LOCAL_STACKS; x++) {
 					Stack(x).Clear();
 				}	  
 	    }
 		}
-		AdvanceIP()=false;
+		AdvanceIP() = false;
 	}
 	
   return true;
@@ -1788,10 +1723,10 @@ bool cHardwareSMT::Inst_HeadWrite()
   cHeadMultiMem & active_head = GetHead(head_id);
   int mem_space_used = active_head.GetMemSpace();
   
-  if(active_head.GetPosition()>=GetMemory(mem_space_used).GetSize()-1)
+  if(active_head.GetPosition() >= m_mem_array[mem_space_used].GetSize() - 1)
 	{
-		GetMemory(mem_space_used).Resize(GetMemory(mem_space_used).GetSize()+1);
-		GetMemory(mem_space_used).Copy(GetMemory(mem_space_used).GetSize()-1, GetMemory(mem_space_used).GetSize()-2);
+		m_mem_array[mem_space_used].Resize(m_mem_array[mem_space_used].GetSize() + 1);
+		m_mem_array[mem_space_used].Copy(m_mem_array[mem_space_used].GetSize() - 1, m_mem_array[mem_space_used].GetSize() - 2);
 	}
 	
   active_head.Adjust();
@@ -1884,10 +1819,6 @@ bool cHardwareSMT::Inst_HeadPush()
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
   Stack(nHardwareSMT::STACK_BX).Push(GetHead(head_used).GetPosition());
-  //if (head_used == nHardware::HEAD_IP) {
-  //  GetHead(head_used).Set(GetHead(nHardware::HEAD_FLOW));
-  //  AdvanceIP() = false;
-  //}
   return true;
 }
 
@@ -1922,12 +1853,11 @@ bool cHardwareSMT::Inst_Search()
   ReadLabel();
   GetLabel().Rotate(2, nHardwareSMT::NUM_NOPS);
   cHeadMultiMem found_pos = FindLabel(0);
-  if(found_pos.GetPosition()-IP().GetPosition()==0)
+  if(found_pos.GetPosition() - IP().GetPosition() == 0)
 	{
-		GetHead(nHardware::HEAD_FLOW).Set(IP().GetPosition()+1, IP().GetMemSpace(), this);
+		GetHead(nHardware::HEAD_FLOW).Set(IP().GetPosition() + 1, IP().GetMemSpace(), this);
 		// pushing zero into STACK_AX on a missed search makes it difficult to create
-		// a self-replicating organism.  -law
-		//Stack(STACK_AX).Push(0);
+		// a self-replicating organism.  @law
 		Stack(nHardwareSMT::STACK_BX).Push(0);
 	}
   else
@@ -1945,7 +1875,7 @@ bool cHardwareSMT::Inst_Search()
 bool cHardwareSMT::Inst_PushNext() 
 {
   int stack_used = FindModifiedStack(nHardwareSMT::STACK_AX);
-  int successor = (stack_used+1) % nHardwareSMT::NUM_STACKS;
+  int successor = (stack_used + 1) % nHardwareSMT::NUM_STACKS;
   Stack(successor).Push(Stack(stack_used).Pop());
   return true;
 }
@@ -2063,39 +1993,43 @@ bool cHardwareSMT::Inst_IO()
 
 int cHardwareSMT::FindFirstEmpty()
 {
-  bool OK=true;
+  bool OK = true;
   const int current_mem_space = IP().GetMemSpace();
 	
   for(int x = 1; x < m_mem_array.GetSize(); x++)
 	{
-		OK=true;
+		OK = true;
 		
 		int index = (current_mem_space + x) % m_mem_array.GetSize();
 		
-		for(int y=0; y<GetMemory(index).GetSize() && OK; y++)
-		{
-			if(GetMemory(index)[y].GetOp() >= nHardwareSMT::NUM_NOPS)
-				OK=false; 
+		for(int y = 0; y < m_mem_array[index].GetSize(); y++) {
+			if(m_mem_array[index][y].GetOp() >= nHardwareSMT::NUM_NOPS) {
+        OK = false;
+        break;
+      }
 		}
-		for(int y=0; y<GetNumThreads() && OK; y++)
-		{
-			for(int z=0; z<nHardware::NUM_HEADS; z++)
-	    {
-	      if(m_threads[y].heads[z].GetMemSpace() == index)
-					OK=false;
+    if (!OK) break;
+    
+		for(int y = 0; y < GetNumThreads(); y++) {
+			for(int z=0; z<nHardware::NUM_HEADS; z++) {
+	      if(m_threads[y].heads[z].GetMemSpace() == index) {
+					OK = false;
+          break;
+        }
 	    }
 		}
-		if(OK)
-			return index;
+
+		if(OK) return index;
 	}
+  
   return -1;
 }
 
 bool cHardwareSMT::isEmpty(int mem_space_used)
 {
-  for(int x=0; x<GetMemory(mem_space_used).GetSize(); x++)
-	{
-		if(GetMemory(mem_space_used)[x].GetOp() >= nHardwareSMT::NUM_NOPS)
+  // DDD - shouldn't this just be return false if GetSize() != 1
+  for(int x = 0; x < m_mem_array[mem_space_used].GetSize(); x++) {
+		if(m_mem_array[mem_space_used][x].GetOp() >= nHardwareSMT::NUM_NOPS)
 			return false;
 	}
   return true;
@@ -2115,17 +2049,3 @@ bool cHardwareSMT::Inst_Inject()
 	
   return InjectParasite(mut_multiplier);
 }
-
-
-
-/*
- bool cHardwareSMT::Inst_InjectRand()
- {
-	 // Rotate to a random facing and then run the normal inject instruction
-	 const int num_neighbors = organism->GetNeighborhoodSize();
-	 organism->Rotate(g_random.GetUInt(num_neighbors));
-	 Inst_Inject();
-	 return true;
- }
- 
- */

@@ -9,7 +9,7 @@
  * This template is used to look up objects of the desired type by name.
  * I is implemented through use of a linked list and a hash table.  The linked
  * list contains all of the individual entries stored in the dictionary (in an
- * arbitrary order).  The hash table points to the first entry in the list
+                                                                         * arbitrary order).  The hash table points to the first entry in the list
  * that fits in its cell.  If there are no entries that fit in the cell, the
  * has table contains a NULL pointer at that location.
  *
@@ -68,7 +68,7 @@ template <class T> class tList; // access
 template <class T> class tListIterator; // aggregate
 
 template <class T> class tDictionary {
-
+  
   // We create a structure with full information about each entry stored in
   // this dictionary.
   template <class U> struct tDictEntry {
@@ -76,11 +76,11 @@ template <class T> class tDictionary {
     int id;
     U data;
   };
-
+  
 private:
   int dict_size;  // How many entries are we storing?
   int hash_size;  // What size hash table are we using?
-
+  
   tList< tDictEntry<T> > entry_list;      // A linked list of ALL entries
   tArray< tListNode< tDictEntry<T> > * > cell_array;       // Pointers to the entry list.
   tListIterator< tDictEntry<T> > list_it; // Iterator for entry_list
@@ -95,43 +95,43 @@ private:
       out_hash += (unsigned int) key[i];
     return out_hash % hash_size;
   }
-
+  
   // Function to find the appropriate tDictEntry for a string that is passed
   // in and return it.
   tDictEntry<T> * FindEntry(const cString & name) {
     const int bin = HashString(name);
     if (cell_array[bin] == NULL) return NULL;
-
+    
     // Set the list iterator to the first entry of this bin.
     list_it.Set(cell_array[bin]);
-
+    
     // Loop through all entries in this bin to see if any are a perfect match.
     while (list_it.Get() != NULL && list_it.Get()->id == bin) {
       if (list_it.Get()->name == name) return list_it.Get();
       list_it.Next();
     }
-
+    
     // No matches found.
     return NULL;
   }
 private:
-  // disabled copy constructor.
-  tDictionary(const tDictionary &);
+    // disabled copy constructor.
+    tDictionary(const tDictionary &);
 public:
-  tDictionary(int in_hash_size=DICTIONARY_HASH_DEFAULT)
+    tDictionary(int in_hash_size=DICTIONARY_HASH_DEFAULT)
     : dict_size(0)
     , hash_size(in_hash_size)
     , cell_array(in_hash_size)
     , list_it(entry_list)
   {
-    cell_array.SetAll(NULL);
+      cell_array.SetAll(NULL);
   }
-
+  
   ~tDictionary() {
     while (entry_list.GetSize()) delete entry_list.Pop();
   }
-
-
+  
+  
   bool OK() {
     std::cout << "DICT_SIZE = " << dict_size << std::endl;
     std::cout << "HASH_SIZE = " << hash_size << std::endl;
@@ -141,29 +141,29 @@ public:
     while (list_it.Next() != NULL) {
       tDictEntry<T> * cur_entry = list_it.Get();
       std::cout << "  " << count << " : "
-	   << cur_entry->id << " "
-	   << cur_entry->name << " "
-	   << cur_entry->data << " "
-	   << std::endl;
+      << cur_entry->id << " "
+      << cur_entry->name << " "
+      << cur_entry->data << " "
+      << std::endl;
     }
     std::cout << std::endl;
     std::cout << "ARRAY CELLS: "
-	 << cell_array.GetSize()
-	 << std::endl;
+      << cell_array.GetSize()
+      << std::endl;
     for (int i = 0; i < hash_size; i++) {
       tListNode< tDictEntry<T> > * cur_list_node = cell_array[i];
       if (cur_list_node == NULL) {
-	std::cout << "  NULL" << std::endl;
+        std::cout << "  NULL" << std::endl;
       } else {
-	std::cout << "  " << cur_list_node->data->id
-	     << " " << cur_list_node->data->name
-	     << std::endl;
+        std::cout << "  " << cur_list_node->data->id
+        << " " << cur_list_node->data->name
+        << std::endl;
       }
     }
-
+    
     return true;
   }
-
+  
   int GetSize() { return dict_size; }
   
   // This function is used to add a new entry...
@@ -174,23 +174,23 @@ public:
     new_entry->data = data;
     const int bin = HashString(name);
     new_entry->id = bin;
-
-
+    
+    
     // Determine where this new entry should go; either at the end of
     // the list (if there are no others in the bin) or following another
     // entry in the bin.
     if (cell_array[bin] == NULL) { list_it.Reset(); } // Reset to list start
     else { list_it.Set(cell_array[bin]); }            // Else find insert point
-
+    
     entry_list.Insert(list_it, new_entry); // Place new entry in the list
     list_it.Prev();                        // Back up to new entry
     cell_array[bin] = list_it.GetPos();    // Record position
-
+    
     // Update our entry count...
     dict_size++;
   }
   
-
+  
   // This function will change the value of an entry that exists, or add it
   // if it doesn't exist.
   void SetValue(const cString & name, T data) {
@@ -201,12 +201,12 @@ public:
     }
     cur_entry->data = data;
   }
-
-
+  
+  
   bool HasEntry(const cString & name) {
     return FindEntry(name) != NULL;
   }
-
+  
   bool Find(const cString & name, T & out_data) {
     tDictEntry<T> * found_entry = FindEntry(name);
     if (found_entry != NULL) {
@@ -215,44 +215,44 @@ public:
     }
     return false;
   }
-
+  
   T Remove(const cString & name) {
     // Determine the bin that we are going to be using.
     const int bin = HashString(name);
-
+    
     T out_data;
     assert(cell_array[bin] != NULL);
     list_it.Set(cell_array[bin]);
-
+    
     // If we are deleting the first entry in this bin we must clean up...
     if (list_it.Get()->name == name) {
       out_data = list_it.Get()->data;
-      list_it.Remove();
+      delete list_it.Remove();
       list_it.Next();
       dict_size--;
       // See if the next entry is still part of this cell.
       if (list_it.AtRoot() == false && list_it.Get()->id == bin) {
-	cell_array[bin] = list_it.GetPos();
+        cell_array[bin] = list_it.GetPos();
       } else {
-	cell_array[bin] = NULL;
+        cell_array[bin] = NULL;
       }
     }
-
+    
     // If it was not the first entry in this cell, keep looking!
     else {
       while (list_it.Next() != NULL && list_it.Get()->id == bin) {
-	if (list_it.Get()->name == name) {
-	  out_data = list_it.Get()->data;
-	  list_it.Remove();
-	  dict_size--;
-	  break;
-	}
+        if (list_it.Get()->name == name) {
+          out_data = list_it.Get()->data;
+          delete list_it.Remove();
+          dict_size--;
+          break;
+        }
       }
     }
-
+    
     return out_data;
   }
-
+  
   cString NearMatch(const cString name) {
     cString best_match("");
     int best_dist = name.GetSize();
@@ -260,30 +260,30 @@ public:
     while (list_it.Next() != NULL) {
       int dist = cStringUtil::EditDistance(name, list_it.Get()->name);
       if (dist < best_dist) {
-	best_dist = dist;
-	best_match = list_it.Get()->name;
+        best_dist = dist;
+        best_match = list_it.Get()->name;
       }
     }
     return best_match;
   }
-
+  
   void SetHash(int _hash) {
     // Create the new table...
     hash_size = _hash;
     cell_array.ResizeClear(hash_size);
     cell_array.SetAll(NULL);
-
+    
     // Backup all of the entries in the list and re-insert them one-by-one.
     tList< tDictEntry<T> > backup_list;
     backup_list.Transfer(entry_list);
-
+    
     while (backup_list.GetSize() > 0) {
       tDictEntry<T> * cur_entry = backup_list.Pop();
-
+      
       // determine the new bin for this entry.
       int bin = HashString(cur_entry->name);
       cur_entry->id = bin;
-
+      
       if (cell_array[bin] == NULL) { list_it.Reset(); } // Reset to list start
       else { list_it.Set(cell_array[bin]); }            // Else find insert point
       
@@ -292,7 +292,7 @@ public:
       cell_array[bin] = list_it.GetPos();    // Record position
     }
   }
-    
+  
   // The following method allows the user to convert the dictionary contents
   // into lists.  Empty lists show be passed in as arguments and the method
   // will fill in their contents.
@@ -302,7 +302,7 @@ public:
     assert(value_list.GetSize() == 0);
     tListIterator<cString> name_it(name_list);
     tListIterator<T> value_it(value_list);
-
+    
     // Loop through the current entries and included them into the output
     // list one at a time.
     list_it.Reset();
@@ -316,7 +316,7 @@ public:
       value_it.Reset();
       value_it.Next();
       while (name_it.Next() != NULL && cur_name > *(name_it.Get())) {
-	value_it.Next();
+        value_it.Next();
       }
       name_list.Insert(name_it, &cur_name);
       value_list.Insert(value_it, &cur_value);

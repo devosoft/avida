@@ -91,10 +91,11 @@ private:
   tArray<int> inst_cost;
   tArray<int> inst_ft_cost;
 #endif
-	
+
+  cHardwareSMT(const cHardwareSMT &); // disabled...  can't (easily) copy m_mem_lbls @dmb
+
 public:
   cHardwareSMT(cOrganism * in_organism, cInstSet * in_inst_set);
-  explicit cHardwareSMT(const cHardwareSMT &);
   ~cHardwareSMT() { ; }
   void Recycle(cOrganism* new_organism, cInstSet * in_inst_set);
   static cInstLibBase* GetInstLib();
@@ -106,7 +107,7 @@ public:
   bool SingleProcess_PayCosts(const cInstruction & cur_inst);
   bool SingleProcess_ExecuteInst(const cInstruction & cur_inst);
   void ProcessBonusInst(const cInstruction & inst);
-  void LoadGenome(const cGenome& new_genome) { GetMemory(0) = new_genome; }
+  void LoadGenome(const cGenome& new_genome) { m_mem_array[0] = new_genome; }
 	
   // --------  Helper methods  --------
   bool OK();

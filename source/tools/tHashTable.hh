@@ -68,7 +68,7 @@ template <class DATA_TYPE> class tList; // access
 template <class DATA_TYPE> class tListIterator; // aggregate
 
 template <class HASH_TYPE, class DATA_TYPE> class tHashTable {
-
+  
   // We create a structure with full information about each entry stored in
   // this dictionary.
   template <class E_HASH_TYPE, class E_DATA_TYPE> struct tHashEntry {
@@ -76,29 +76,29 @@ template <class HASH_TYPE, class DATA_TYPE> class tHashTable {
     int id;
     E_DATA_TYPE data;
   };
-
+  
 private:
   int entry_count;  // How many entries are we storing?
   int table_size;  // What size hash table are we using?
-
+  
   // Create a linked list of all hash entries in the table, as well as a
   // companion array with pointers into the list that will give the start of
   // each hash entry.
   tList< tHashEntry<HASH_TYPE, DATA_TYPE> > entry_list;
   tArray< tListNode< tHashEntry<HASH_TYPE, DATA_TYPE> > * > cell_array;
-
+  
   // Create an iterator for entry_list
   tListIterator< tHashEntry<HASH_TYPE, DATA_TYPE> > list_it;
   
   // Create a set of HashKey methods for each of the basic data types that
   // we allow:
-
+  
   // HASH_TYPE = int
   // Simply mod the into by the size of the hash table and hope for the best
   int HashKey(const int & key) const {
     return key % table_size;
   }
-
+  
   // HASH_TYPE = cString
   // We hash a string simply by adding up the individual character values in
   // that string and modding by the hash size.  For most applications this
@@ -110,43 +110,52 @@ private:
       out_hash += (unsigned int) key[i];
     return out_hash % table_size;
   }
-
+  
   // Function to find the appropriate tHashEntry for a key that is passed
   // in and return it.
   tHashEntry<HASH_TYPE, DATA_TYPE> * FindEntry(const HASH_TYPE & key) {
     const int bin = HashKey(key);
     if (cell_array[bin] == NULL) return NULL;
-
+    
     // Set the list iterator to the first entry of this bin.
     list_it.Set(cell_array[bin]);
-
+    
     // Loop through all entries in this bin to see if any are a perfect match.
     while (list_it.Get() != NULL && list_it.Get()->id == bin) {
       if (list_it.Get()->key == key) return list_it.Get();
       list_it.Next();
     }
-
+    
     // No matches found.
     return NULL;
   }
 private:
-  // disabled copy constructor.
-  tHashTable(const tHashTable &);
+    // disabled copy constructor.
+    tHashTable(const tHashTable &);
 public:
-  tHashTable(int in_table_size=HASH_TABLE_SIZE_DEFAULT)
+    tHashTable(int in_table_size=HASH_TABLE_SIZE_DEFAULT)
     : entry_count(0)
     , table_size(in_table_size)
     , cell_array(in_table_size)
     , list_it(entry_list)
   {
-    cell_array.SetAll(NULL);
+      cell_array.SetAll(NULL);
   }
-
+  
   ~tHashTable() {
     while (entry_list.GetSize()) delete entry_list.Pop();
   }
-
-
+  
+  void ClearAll() {
+    list_it.Reset();
+    while (list_it.Next() != NULL) {
+      delete list_it.Remove();
+    }
+    entry_count = 0;
+    cell_array.SetAll(NULL);
+  }
+  
+  
   bool OK() {
     std::cout << "ENTRY_COUNT = " << entry_count << std::endl;
     std::cout << "TABLE_SIZE = " << table_size << std::endl;
@@ -156,58 +165,54 @@ public:
     while (list_it.Next() != NULL) {
       tHashEntry<HASH_TYPE, DATA_TYPE> * cur_entry = list_it.Get();
       std::cout << "  " << count << " : "
-	   << cur_entry->id << " "
-	   << cur_entry->key << " "
-	   << cur_entry->data << " "
-	   << std::endl;
+      << cur_entry->id << " "
+      << cur_entry->key << " "
+      << cur_entry->data << " "
+      << std::endl;
     }
     std::cout << std::endl;
     std::cout << "ARRAY CELLS: "
-	 << cell_array.GetSize()
-	 << std::endl;
+      << cell_array.GetSize()
+      << std::endl;
     for (int i = 0; i < table_size; i++) {
-      tListNode< tHashEntry<HASH_TYPE, DATA_TYPE> > * cur_list_node = 
-	cell_array[i];
+      tListNode< tHashEntry<HASH_TYPE, DATA_TYPE> > * cur_list_node = cell_array[i];
       if (cur_list_node == NULL) {
-	std::cout << "  NULL" << std::endl;
+        std::cout << "  NULL" << std::endl;
       } else {
-	std::cout << "  " << cur_list_node->data->id
-	     << " " << cur_list_node->data->key
-	     << std::endl;
+        std::cout << "  " << cur_list_node->data->id << " " << cur_list_node->data->key << std::endl;
       }
     }
-
+    
     return true;
   }
-
+  
   int GetSize() { return entry_count; }
   
   // This function is used to add a new entry...
   void Add(const HASH_TYPE & key, DATA_TYPE data) {
     // Build the new entry...
-    tHashEntry<HASH_TYPE, DATA_TYPE> * new_entry =
-      new tHashEntry<HASH_TYPE, DATA_TYPE>;
+    tHashEntry<HASH_TYPE, DATA_TYPE> * new_entry = new tHashEntry<HASH_TYPE, DATA_TYPE>;
     new_entry->key = key;
     new_entry->data = data;
     const int bin = HashKey(key);
     new_entry->id = bin;
-
-
+    
+    
     // Determine where this new entry should go; either at the end of
     // the list (if there are no others in the bin) or following another
     // entry in the bin.
     if (cell_array[bin] == NULL) { list_it.Reset(); } // Reset to list start
     else { list_it.Set(cell_array[bin]); }            // Else find insert point
-
+    
     entry_list.Insert(list_it, new_entry); // Place new entry in the list
     list_it.Prev();                        // Back up to new entry
     cell_array[bin] = list_it.GetPos();    // Record position
-
+    
     // Update our entry count...
     entry_count++;
   }
   
-
+  
   // This function will change the value of an entry that exists, or add it
   // if it doesn't exist.
   void SetValue(const HASH_TYPE & key, DATA_TYPE data) {
@@ -218,12 +223,12 @@ public:
     }
     cur_entry->data = data;
   }
-
-
+  
+  
   bool HasEntry(const HASH_TYPE & key) {
     return FindEntry(key) != NULL;
   }
-
+  
   bool Find(const HASH_TYPE & key, DATA_TYPE & out_data) {
     tHashEntry<HASH_TYPE, DATA_TYPE> * found_entry = FindEntry(key);
     if (found_entry != NULL) {
@@ -232,61 +237,61 @@ public:
     }
     return false;
   }
-
+  
   DATA_TYPE Remove(const HASH_TYPE & key) {
     // Determine the bin that we are going to be using.
     const int bin = HashKey(key);
-
+    
     DATA_TYPE out_data;
     assert(cell_array[bin] != NULL);
     list_it.Set(cell_array[bin]);
-
+    
     // If we are deleting the first entry in this bin we must clean up...
     if (list_it.Get()->key == key) {
       out_data = list_it.Get()->data;
-      list_it.Remove();
+      delete list_it.Remove();
       list_it.Next();
       entry_count--;
       // See if the next entry is still part of this cell.
       if (list_it.AtRoot() == false && list_it.Get()->id == bin) {
-	cell_array[bin] = list_it.GetPos();
+        cell_array[bin] = list_it.GetPos();
       } else {
-	cell_array[bin] = NULL;
+        cell_array[bin] = NULL;
       }
     }
-
+    
     // If it was not the first entry in this cell, keep looking!
     else {
       while (list_it.Next() != NULL && list_it.Get()->id == bin) {
-	if (list_it.Get()->key == key) {
-	  out_data = list_it.Get()->data;
-	  list_it.Remove();
-	  entry_count--;
-	  break;
-	}
+        if (list_it.Get()->key == key) {
+          out_data = list_it.Get()->data;
+          delete list_it.Remove();
+          entry_count--;
+          break;
+        }
       }
     }
-
+    
     return out_data;
   }
-
+  
   void SetTableSize(int _hash) {
     // Create the new table...
     table_size = _hash;
     cell_array.ResizeClear(table_size);
     cell_array.SetAll(NULL);
-
+    
     // Backup all of the entries in the list and re-insert them one-by-one.
     tList< tHashEntry<HASH_TYPE, DATA_TYPE> > backup_list;
     backup_list.Transfer(entry_list);
-
+    
     while (backup_list.GetSize() > 0) {
       tHashEntry<HASH_TYPE, DATA_TYPE> * cur_entry = backup_list.Pop();
-
+      
       // determine the new bin for this entry.
       int bin = HashKey(cur_entry->key);
       cur_entry->id = bin;
-
+      
       if (cell_array[bin] == NULL) { list_it.Reset(); } // Reset to list start
       else { list_it.Set(cell_array[bin]); }            // Else find insert point
       
@@ -295,7 +300,7 @@ public:
       cell_array[bin] = list_it.GetPos();    // Record position
     }
   }
-    
+  
   // The following method allows the user to convert the dictionary contents
   // into lists.  Empty lists show be passed in as arguments and the method
   // will fill in their contents.
@@ -305,7 +310,7 @@ public:
     assert(value_list.GetSize() == 0);
     tListIterator<HASH_TYPE> key_it(key_list);
     tListIterator<DATA_TYPE> value_it(value_list);
-
+    
     // Loop through the current entries and included them into the output
     // list one at a time.
     list_it.Reset();
@@ -319,7 +324,7 @@ public:
       value_it.Reset();
       value_it.Next();
       while (key_it.Next() != NULL && cur_key > *(key_it.Get())) {
-	value_it.Next();
+        value_it.Next();
       }
       key_list.Insert(key_it, &cur_key);
       value_list.Insert(value_it, &cur_value);
