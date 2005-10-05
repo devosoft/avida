@@ -3,7 +3,7 @@ Import("event_factory.pyste")
 
 Include("cEvent.h")
 Include("string.hh")
-Include("population.hh")
+Include("cPopulation.h")
 
 cPopulationEventFactory = Class("cPopulationEventFactory", "cPopulationEventFactory.h")
 set_policy(cPopulationEventFactory.ConstructEvent, return_internal_reference())

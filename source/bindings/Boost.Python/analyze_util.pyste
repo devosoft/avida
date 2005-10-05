@@ -1,4 +1,4 @@
-Include("population.hh")
+Include("cPopulation.h")
 Include("cGenome.h")
 Include("cInstSet.h")
 

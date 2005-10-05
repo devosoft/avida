@@ -34,16 +34,16 @@
 #include "cHardwareFactory.h"
 #endif
 #ifndef ORG_MESSAGE_HH
-#include "org_message.hh"
+#include "cOrgMessage.h"
 #endif
 #ifndef ORGANISM_HH
-#include "organism.hh"
+#include "cOrganism.h"
 #endif
 #ifndef POPULATION_HH
-#include "population.hh"
+#include "cPopulation.h"
 #endif
 #ifndef POPULATION_CELL_HH
-#include "population_cell.hh"
+#include "cPopulationCell.h"
 #endif
 #ifndef POPULATION_INTERFACE_HH
 #include "cPopulationInterface.h"

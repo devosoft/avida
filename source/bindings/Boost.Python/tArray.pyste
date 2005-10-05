@@ -76,7 +76,7 @@ Import("merit.pyste")
 Import("mutation.pyste")
 Import("int_sum.pyste")
 
-Include("org_message.hh")
+Include("cOrgMessage.h")
 
 tArray = Template("tArray", "tArray_instantiations.hh")
 

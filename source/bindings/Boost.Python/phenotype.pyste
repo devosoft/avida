@@ -2,7 +2,7 @@
 Include("cEnvironment.h")
 Include("tBuffer.hh")
 
-cPhenotype = Class("cPhenotype", "phenotype.hh")
+cPhenotype = Class("cPhenotype", "cPhenotype.h")
 set_policy(cPhenotype.GetMerit, return_internal_reference())
 #set_policy(cPhenotype.IsInjected, return_internal_reference())
 #set_policy(cPhenotype.IsParasite, return_internal_reference())

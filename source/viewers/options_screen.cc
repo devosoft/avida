@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "cConfig.h"
-#include "population.hh"
+#include "cPopulation.h"
 
 #include "options_screen.hh"
 

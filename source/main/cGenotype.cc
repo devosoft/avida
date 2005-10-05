@@ -11,8 +11,8 @@
 #include "cCPUTestInfo.h"
 #include "cGenomeUtil.h"
 #include "merit.hh"
-#include "organism.hh"
-#include "phenotype.hh"
+#include "cOrganism.h"
+#include "cPhenotype.h"
 #include "cTestCPU.h"
 #include "tools.hh"
 

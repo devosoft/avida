@@ -8,8 +8,8 @@
 #include "cCPUTestInfo.h"
 
 #include "cHardwareStatusPrinter.h"
-#include "organism.hh"
-#include "phenotype.hh"
+#include "cOrganism.h"
+#include "cPhenotype.h"
 
 #include <assert.h>
 

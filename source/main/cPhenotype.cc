@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef PHENOTYPE_HH
-#include "phenotype.hh"
+#include "cPhenotype.h"
 #endif
 
 #ifndef CONFIG_HH

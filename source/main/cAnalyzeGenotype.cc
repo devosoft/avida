@@ -11,8 +11,8 @@
 #include "cCPUTestInfo.h"
 #include "cInstSet.h"
 #include "cLandscape.h"
-#include "organism.hh"
-#include "phenotype.hh"
+#include "cOrganism.h"
+#include "cPhenotype.h"
 #include "cTestCPU.h"
 #include "cEnvironment.h"
 using namespace std;

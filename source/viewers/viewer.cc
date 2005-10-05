@@ -16,7 +16,7 @@
 #include "cEnvironment.h"
 #endif
 #ifndef POPULATION_HH
-#include "population.hh"
+#include "cPopulation.h"
 #endif
 #ifndef VIEW_HH
 #include "../viewers/view.hh"          // class cView

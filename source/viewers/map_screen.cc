@@ -8,8 +8,8 @@
 #include <fstream>
 
 #include "cGenotype.h"
-#include "population.hh"
-#include "population_cell.hh"
+#include "cPopulation.h"
+#include "cPopulationCell.h"
 
 #include "map_screen.hh"
 

@@ -5,7 +5,7 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "organism.hh"
+#include "cOrganism.h"
 
 #include "cConfig.h"
 #include "nHardware.h"
@@ -17,7 +17,7 @@
 #include "cInjectGenotype.h"
 #include "cInstSet.h"
 #include "cInstUtil.h"
-#include "org_message.hh"
+#include "cOrgMessage.h"
 #include "string_util.hh"
 #include "tArray.hh"
 #include "tools.hh"

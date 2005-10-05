@@ -5,7 +5,7 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "population.hh"
+#include "cPopulation.h"
 
 #include "change_list.hh"
 #include "cConfig.h"
@@ -27,9 +27,9 @@
 #include "integrated_schedule.hh"
 #include "cLineage.h"
 #include "cLineageControl.h"
-#include "organism.hh"
-#include "phenotype.hh"
-#include "population_cell.hh"
+#include "cOrganism.h"
+#include "cPhenotype.h"
+#include "cPopulationCell.h"
 #include "prob_schedule.hh"
 #include "resource.hh"
 #include "species.hh"

@@ -10,8 +10,8 @@
 #include "symbol_util.hh"
 
 #include "cGenotype.h"
-#include "organism.hh"
-#include "population_cell.hh"
+#include "cOrganism.h"
+#include "cPopulationCell.h"
 #include "species.hh"
 #include "cConfig.h"
 #include "cHardwareBase.h"

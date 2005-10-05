@@ -31,7 +31,7 @@
 #include "cGenotype.h"
 #endif
 #ifndef ORGANISM_HH
-#include "organism.hh"
+#include "cOrganism.h"
 #endif
 #ifndef TOOLS_HH
 #include "tools.hh"

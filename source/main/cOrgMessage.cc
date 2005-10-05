@@ -1,4 +1,4 @@
-#include "org_message.hh"
+#include "cOrgMessage.h"
 #include <string>
 #include <sstream>
 

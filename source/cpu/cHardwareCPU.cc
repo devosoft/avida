@@ -19,8 +19,8 @@
 #include "cMutation.h"
 #include "cMutationLib.h"
 #include "nMutation.h"
-#include "organism.hh"
-#include "phenotype.hh"
+#include "cOrganism.h"
+#include "cPhenotype.h"
 #include "string_util.hh"
 #include "cTestCPU.h"
 

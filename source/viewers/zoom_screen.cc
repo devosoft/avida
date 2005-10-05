@@ -13,10 +13,10 @@
 #include "cConfig.h"
 #include "cGenebank.h"
 #include "cGenotype.h"
-#include "organism.hh"
-#include "phenotype.hh"
-#include "population.hh"
-#include "population_cell.hh"
+#include "cOrganism.h"
+#include "cPhenotype.h"
+#include "cPopulation.h"
+#include "cPopulationCell.h"
 #ifndef STRING_UTIL_HH
 #include "string_util.hh"
 #endif

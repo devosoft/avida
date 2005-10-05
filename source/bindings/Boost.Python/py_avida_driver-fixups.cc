@@ -6,9 +6,9 @@
 #include "main/cConfig.h"
 #include "main/cGenebank.h"
 #include "main/cGenotype.h"
-#include "main/organism.hh"
-#include "main/population.hh"
-#include "main/population_cell.hh"
+#include "main/cOrganism.h"
+#include "main/cPopulation.h"
+#include "main/cPopulationCell.h"
 #include "tools/change_list.hh"
 #include "tools/string.hh"
 

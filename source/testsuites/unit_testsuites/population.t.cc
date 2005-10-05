@@ -1,5 +1,5 @@
 #ifndef POPULATION_HH
-#include "population.hh"
+#include "cPopulation.h"
 #endif
 
 #ifndef TEST_CASE_H

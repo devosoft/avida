@@ -1,6 +1,6 @@
 
 Include("cHardwareBase.h")
-Include("organism.hh")
+Include("cOrganism.h")
 Include("cInstSet.h")
 
 cHardwareFactory = Class("cHardwareFactory", "cHardwareFactory.h")

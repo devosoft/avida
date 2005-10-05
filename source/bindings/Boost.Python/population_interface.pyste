@@ -1,9 +1,9 @@
 
 Include("cGenome.h")
 Include("cHardwareBase.h")
-Include("organism.hh")
-Include("org_message.hh")
-Include("population.hh")
+Include("cOrganism.h")
+Include("cOrgMessage.h")
+Include("cPopulation.h")
 Include("tArray.hh")
 
 cPopulationInterface = Class("cPopulationInterface", "population_interface-fixups.hh")

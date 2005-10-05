@@ -12,9 +12,9 @@
 #include "cGenebank.h"
 #include "cInjectGenotype.h"
 #include "cInjectGenebank.h"
-#include "population.hh"
-#include "population_cell.hh"
-#include "organism.hh"
+#include "cPopulation.h"
+#include "cPopulationCell.h"
+#include "cOrganism.h"
 
 #include "symbol_util.hh"
 #include "text_screen.hh"

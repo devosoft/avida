@@ -36,11 +36,11 @@ SET(libmain_a_SOURCES
   cMutationRates.cc
   cMutation.cc
   cMxCodeArray.cc
-  org_message.cc
-  organism.cc
-  phenotype.cc
-  population.cc
-  population_cell.cc
+  cOrgMessage.cc
+  cOrganism.cc
+  cPhenotype.cc
+  cPopulation.cc
+  cPopulationCell.cc
   cPopulationInterface.cc
   reaction.cc
   reaction_lib.cc

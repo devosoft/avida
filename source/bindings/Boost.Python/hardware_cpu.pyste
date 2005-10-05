@@ -2,7 +2,7 @@
 Include("cMutation.h")
 Include("cInstLibCPU.h")
 Include("cInstSet.h")
-Include("organism.hh")
+Include("cOrganism.h")
 
 Import("hardware_base.pyste")
 

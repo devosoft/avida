@@ -4,10 +4,10 @@ Include("cEnvironment.h")
 Include("cGenebank.h" )
 Include("cInjectGenebank.h")
 Include("cLineageControl.h")
-Include("organism.hh")
-Include("population_cell.hh")
+Include("cOrganism.h")
+Include("cPopulationCell.h")
 
-cPopulation = Class("cPopulation", "population.hh")
+cPopulation = Class("cPopulation", "cPopulation.h")
 
 set_policy(cPopulation.GetCell, return_internal_reference())
 set_policy(cPopulation.GetBirthChamber, return_internal_reference())

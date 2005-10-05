@@ -14,7 +14,7 @@
 #include "cConfig.h"
 #include "cGenebank.h"
 #include "cGenotype.h"
-#include "organism.hh"
+#include "cOrganism.h"
 
 #include "nHardware.h"   // for macro nHardware::FITNESS_NEUTRAL_MAX
 

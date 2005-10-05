@@ -1,6 +1,6 @@
 
 Include("cHardwareTracer.h")
-Include("organism.hh")
+Include("cOrganism.h")
 
 cCPUTestInfo = Class("cCPUTestInfo", "cCPUTestInfo.h")
 # returns std::ofstream &, i.e., not the Python Way.

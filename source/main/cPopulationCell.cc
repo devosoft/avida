@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef POPULATION_CELL_HH
-#include "population_cell.hh"
+#include "cPopulationCell.h"
 #endif
 
 #ifndef CONFIG_HH
@@ -16,7 +16,7 @@
 #include "nHardware.h"
 #endif
 #ifndef ORGANISM_HH
-#include "organism.hh"
+#include "cOrganism.h"
 #endif
 #ifndef TOOLS_HH
 #include "tools.hh"

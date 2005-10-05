@@ -49,7 +49,7 @@
 #include "cInstLibCPU.h"
 #endif
 #ifndef POPULATION_HH
-#include "population.hh"
+#include "cPopulation.h"
 #endif
 #ifndef POPULATION_INTERFACE_HH
 #include "cPopulationInterface.h"

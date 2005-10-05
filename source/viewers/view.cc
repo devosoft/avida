@@ -11,10 +11,10 @@
 #include "cEnvironment.h"
 #endif
 #include "cGenotype.h"
-#include "organism.hh"
-#include "phenotype.hh"
-#include "population.hh"
-#include "population_cell.hh"
+#include "cOrganism.h"
+#include "cPhenotype.h"
+#include "cPopulation.h"
+#include "cPopulationCell.h"
 #include "stats.hh"
 
 #include "cTestUtil.h"

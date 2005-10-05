@@ -9,7 +9,7 @@
 #include "cEnvironment.h"
 #include "cGenebank.h"
 #include "cGenotype.h"
-#include "population.hh"
+#include "cPopulation.h"
 #ifndef REACTION_HH
 #include "reaction.hh"
 #endif
@@ -21,8 +21,8 @@
 #endif
 #include "species.hh"
 #include "stats.hh"
-#include "population_cell.hh"
-#include "organism.hh"
+#include "cPopulationCell.h"
+#include "cOrganism.h"
 
 #include "environment_screen.hh"
 

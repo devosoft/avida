@@ -46,16 +46,16 @@
 #include "cLandscape.h"
 #endif
 #ifndef ORGANISM_HH
-#include "organism.hh"
+#include "cOrganism.h"
 #endif
 #ifndef PHENOTYPE_HH
-#include "phenotype.hh"
+#include "cPhenotype.h"
 #endif
 #ifndef POPULATION_HH
-#include "population.hh"
+#include "cPopulation.h"
 #endif
 #ifndef POPULATION_CELL_HH
-#include "population_cell.hh"
+#include "cPopulationCell.h"
 #endif
 #ifndef SPECIES_HH
 #include "species.hh"

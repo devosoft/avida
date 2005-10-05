@@ -33,7 +33,7 @@
 #include "cInstSet.h"
 #include "cInstUtil.h"
 #include "cLandscape.h"
-#include "phenotype.hh"
+#include "cPhenotype.h"
 #include "species.hh"
 #include "tArgDataEntry.hh"
 #include "task_entry.hh"

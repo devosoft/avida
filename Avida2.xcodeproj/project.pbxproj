@@ -9,11 +9,6 @@
 /* Begin PBXBuildFile section */
 		700E2996085A1F6000CF158A /* primitive in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3164D07626CF3008F7A48 /* primitive */; };
 		700E2AF8085DE50C00CF158A /* avida.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3109C0762539E008F7A48 /* avida.cc */; };
-		700E2B19085DE50C00CF158A /* org_message.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310FD0762539E008F7A48 /* org_message.cc */; };
-		700E2B1A085DE50C00CF158A /* organism.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310FF0762539E008F7A48 /* organism.cc */; };
-		700E2B1B085DE50C00CF158A /* phenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC311010762539E008F7A48 /* phenotype.cc */; };
-		700E2B1C085DE50C00CF158A /* population.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC311030762539E008F7A48 /* population.cc */; };
-		700E2B1E085DE50C00CF158A /* population_cell.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC311050762539E008F7A48 /* population_cell.cc */; };
 		700E2B1F085DE50C00CF158A /* reaction.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3110B0762539E008F7A48 /* reaction.cc */; };
 		700E2B20085DE50C00CF158A /* reaction_lib.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3110D0762539E008F7A48 /* reaction_lib.cc */; };
 		700E2B21085DE50C00CF158A /* reaction_process.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC311100762539E008F7A48 /* reaction_process.cc */; };
@@ -150,6 +145,16 @@
 		70B0866608F4974300FC65FE /* cMutationLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865608F4974300FC65FE /* cMutationLib.cc */; };
 		70B0866708F4974300FC65FE /* cMutationRates.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865708F4974300FC65FE /* cMutationRates.cc */; };
 		70B0866808F4974300FC65FE /* cMxCodeArray.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865808F4974300FC65FE /* cMxCodeArray.cc */; };
+		70B0868B08F49EA800FC65FE /* cOrganism.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0868708F49EA800FC65FE /* cOrganism.cc */; };
+		70B0868C08F49EA800FC65FE /* cOrgMessage.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0868808F49EA800FC65FE /* cOrgMessage.cc */; };
+		70B0868D08F49EA800FC65FE /* cPopulation.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0868908F49EA800FC65FE /* cPopulation.cc */; };
+		70B0868E08F49EA800FC65FE /* cPopulationCell.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0868A08F49EA800FC65FE /* cPopulationCell.cc */; };
+		70B0868F08F49EA800FC65FE /* cOrganism.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0868708F49EA800FC65FE /* cOrganism.cc */; };
+		70B0869008F49EA800FC65FE /* cOrgMessage.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0868808F49EA800FC65FE /* cOrgMessage.cc */; };
+		70B0869108F49EA800FC65FE /* cPopulation.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0868908F49EA800FC65FE /* cPopulation.cc */; };
+		70B0869208F49EA800FC65FE /* cPopulationCell.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0868A08F49EA800FC65FE /* cPopulationCell.cc */; };
+		70B0869D08F49F4800FC65FE /* cPhenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0869C08F49F4800FC65FE /* cPhenotype.cc */; };
+		70B0869E08F49F4800FC65FE /* cPhenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0869C08F49F4800FC65FE /* cPhenotype.cc */; };
 		70C1EF4808C393BA00F50912 /* cCodeLabel.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF4608C393BA00F50912 /* cCodeLabel.cc */; };
 		70C1EF4A08C393BA00F50912 /* cCodeLabel.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF4608C393BA00F50912 /* cCodeLabel.cc */; };
 		70C1EF5908C3948C00F50912 /* cCPUMemory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF5808C3948C00F50912 /* cCPUMemory.cc */; };
@@ -233,11 +238,6 @@
 		70D46935085F61DD004C8409 /* trionan.c in Sources */ = {isa = PBXBuildFile; fileRef = DCC31471076253A1008F7A48 /* trionan.c */; };
 		70D46936085F61DF004C8409 /* triostr.c in Sources */ = {isa = PBXBuildFile; fileRef = DCC31474076253A1008F7A48 /* triostr.c */; };
 		DCC3166107628531008F7A48 /* avida.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3109C0762539E008F7A48 /* avida.cc */; };
-		DCC316820762856F008F7A48 /* org_message.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310FD0762539E008F7A48 /* org_message.cc */; };
-		DCC3168307628570008F7A48 /* organism.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310FF0762539E008F7A48 /* organism.cc */; };
-		DCC3168407628571008F7A48 /* phenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC311010762539E008F7A48 /* phenotype.cc */; };
-		DCC3168507628572008F7A48 /* population.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC311030762539E008F7A48 /* population.cc */; };
-		DCC3168707628574008F7A48 /* population_cell.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC311050762539E008F7A48 /* population_cell.cc */; };
 		DCC3168807628577008F7A48 /* reaction.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3110B0762539E008F7A48 /* reaction.cc */; };
 		DCC3168907628578008F7A48 /* reaction_lib.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3110D0762539E008F7A48 /* reaction_lib.cc */; };
 		DCC3168A0762857A008F7A48 /* reaction_process.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC311100762539E008F7A48 /* reaction_process.cc */; };
@@ -431,6 +431,16 @@
 		70B0865708F4974300FC65FE /* cMutationRates.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cMutationRates.cc; sourceTree = "<group>"; };
 		70B0865808F4974300FC65FE /* cMxCodeArray.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cMxCodeArray.cc; sourceTree = "<group>"; };
 		70B0867208F499C100FC65FE /* nMutation.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = nMutation.h; sourceTree = "<group>"; };
+		70B0868308F49E9700FC65FE /* cOrganism.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cOrganism.h; sourceTree = "<group>"; };
+		70B0868408F49E9700FC65FE /* cOrgMessage.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cOrgMessage.h; sourceTree = "<group>"; };
+		70B0868508F49E9700FC65FE /* cPopulation.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cPopulation.h; sourceTree = "<group>"; };
+		70B0868608F49E9700FC65FE /* cPopulationCell.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cPopulationCell.h; sourceTree = "<group>"; };
+		70B0868708F49EA800FC65FE /* cOrganism.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cOrganism.cc; sourceTree = "<group>"; };
+		70B0868808F49EA800FC65FE /* cOrgMessage.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cOrgMessage.cc; sourceTree = "<group>"; };
+		70B0868908F49EA800FC65FE /* cPopulation.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cPopulation.cc; sourceTree = "<group>"; };
+		70B0868A08F49EA800FC65FE /* cPopulationCell.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cPopulationCell.cc; sourceTree = "<group>"; };
+		70B0869B08F49F3900FC65FE /* cPhenotype.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cPhenotype.h; sourceTree = "<group>"; };
+		70B0869C08F49F4800FC65FE /* cPhenotype.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cPhenotype.cc; sourceTree = "<group>"; };
 		70C1EF4608C393BA00F50912 /* cCodeLabel.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCodeLabel.cc; sourceTree = "<group>"; };
 		70C1EF4708C393BA00F50912 /* cCodeLabel.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCodeLabel.h; sourceTree = "<group>"; };
 		70C1EF5808C3948C00F50912 /* cCPUMemory.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCPUMemory.cc; sourceTree = "<group>"; };
@@ -944,16 +954,6 @@
 		DCC310A90762539E008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		DCC310F00762539E008F7A48 /* main.pro */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = main.pro; sourceTree = "<group>"; };
 		DCC310F10762539E008F7A48 /* main_sub.pri */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = main_sub.pri; sourceTree = "<group>"; };
-		DCC310FD0762539E008F7A48 /* org_message.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = org_message.cc; sourceTree = "<group>"; };
-		DCC310FE0762539E008F7A48 /* org_message.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = org_message.hh; sourceTree = "<group>"; };
-		DCC310FF0762539E008F7A48 /* organism.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = organism.cc; sourceTree = "<group>"; };
-		DCC311000762539E008F7A48 /* organism.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = organism.hh; sourceTree = "<group>"; };
-		DCC311010762539E008F7A48 /* phenotype.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = phenotype.cc; sourceTree = "<group>"; };
-		DCC311020762539E008F7A48 /* phenotype.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = phenotype.hh; sourceTree = "<group>"; };
-		DCC311030762539E008F7A48 /* population.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = population.cc; sourceTree = "<group>"; };
-		DCC311040762539E008F7A48 /* population.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = population.hh; sourceTree = "<group>"; };
-		DCC311050762539E008F7A48 /* population_cell.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = population_cell.cc; sourceTree = "<group>"; };
-		DCC311060762539E008F7A48 /* population_cell.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = population_cell.hh; sourceTree = "<group>"; };
 		DCC311090762539E008F7A48 /* primitive.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = primitive.cc; sourceTree = "<group>"; };
 		DCC3110A0762539E008F7A48 /* primitive.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = primitive.hh; sourceTree = "<group>"; };
 		DCC3110B0762539E008F7A48 /* reaction.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = reaction.cc; sourceTree = "<group>"; };
@@ -2038,6 +2038,16 @@
 		DCC310040762539D008F7A48 /* main */ = {
 			isa = PBXGroup;
 			children = (
+				70B0869C08F49F4800FC65FE /* cPhenotype.cc */,
+				70B0869B08F49F3900FC65FE /* cPhenotype.h */,
+				70B0868708F49EA800FC65FE /* cOrganism.cc */,
+				70B0868808F49EA800FC65FE /* cOrgMessage.cc */,
+				70B0868908F49EA800FC65FE /* cPopulation.cc */,
+				70B0868A08F49EA800FC65FE /* cPopulationCell.cc */,
+				70B0868308F49E9700FC65FE /* cOrganism.h */,
+				70B0868408F49E9700FC65FE /* cOrgMessage.h */,
+				70B0868508F49E9700FC65FE /* cPopulation.h */,
+				70B0868608F49E9700FC65FE /* cPopulationCell.h */,
 				70B0867208F499C100FC65FE /* nMutation.h */,
 				70B0865108F4974300FC65FE /* cLandscape.cc */,
 				70B0865208F4974300FC65FE /* cLineage.cc */,
@@ -2128,16 +2138,6 @@
 				DCC310B00762539E008F7A48 /* functional_testsuites */,
 				DCC310F00762539E008F7A48 /* main.pro */,
 				DCC310F10762539E008F7A48 /* main_sub.pri */,
-				DCC310FD0762539E008F7A48 /* org_message.cc */,
-				DCC310FE0762539E008F7A48 /* org_message.hh */,
-				DCC310FF0762539E008F7A48 /* organism.cc */,
-				DCC311000762539E008F7A48 /* organism.hh */,
-				DCC311010762539E008F7A48 /* phenotype.cc */,
-				DCC311020762539E008F7A48 /* phenotype.hh */,
-				DCC311030762539E008F7A48 /* population.cc */,
-				DCC311040762539E008F7A48 /* population.hh */,
-				DCC311050762539E008F7A48 /* population_cell.cc */,
-				DCC311060762539E008F7A48 /* population_cell.hh */,
 				DCC311090762539E008F7A48 /* primitive.cc */,
 				DCC3110A0762539E008F7A48 /* primitive.hh */,
 				DCC3110B0762539E008F7A48 /* reaction.cc */,
@@ -3036,11 +3036,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				700E2AF8085DE50C00CF158A /* avida.cc in Sources */,
-				700E2B19085DE50C00CF158A /* org_message.cc in Sources */,
-				700E2B1A085DE50C00CF158A /* organism.cc in Sources */,
-				700E2B1B085DE50C00CF158A /* phenotype.cc in Sources */,
-				700E2B1C085DE50C00CF158A /* population.cc in Sources */,
-				700E2B1E085DE50C00CF158A /* population_cell.cc in Sources */,
 				700E2B1F085DE50C00CF158A /* reaction.cc in Sources */,
 				700E2B20085DE50C00CF158A /* reaction_lib.cc in Sources */,
 				700E2B21085DE50C00CF158A /* reaction_process.cc in Sources */,
@@ -3166,6 +3161,11 @@
 				70B0866608F4974300FC65FE /* cMutationLib.cc in Sources */,
 				70B0866708F4974300FC65FE /* cMutationRates.cc in Sources */,
 				70B0866808F4974300FC65FE /* cMxCodeArray.cc in Sources */,
+				70B0868F08F49EA800FC65FE /* cOrganism.cc in Sources */,
+				70B0869008F49EA800FC65FE /* cOrgMessage.cc in Sources */,
+				70B0869108F49EA800FC65FE /* cPopulation.cc in Sources */,
+				70B0869208F49EA800FC65FE /* cPopulationCell.cc in Sources */,
+				70B0869E08F49F4800FC65FE /* cPhenotype.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3174,11 +3174,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				DCC3166107628531008F7A48 /* avida.cc in Sources */,
-				DCC316820762856F008F7A48 /* org_message.cc in Sources */,
-				DCC3168307628570008F7A48 /* organism.cc in Sources */,
-				DCC3168407628571008F7A48 /* phenotype.cc in Sources */,
-				DCC3168507628572008F7A48 /* population.cc in Sources */,
-				DCC3168707628574008F7A48 /* population_cell.cc in Sources */,
 				DCC3168807628577008F7A48 /* reaction.cc in Sources */,
 				DCC3168907628578008F7A48 /* reaction_lib.cc in Sources */,
 				DCC3168A0762857A008F7A48 /* reaction_process.cc in Sources */,
@@ -3294,6 +3289,11 @@
 				70B0865E08F4974300FC65FE /* cMutationLib.cc in Sources */,
 				70B0865F08F4974300FC65FE /* cMutationRates.cc in Sources */,
 				70B0866008F4974300FC65FE /* cMxCodeArray.cc in Sources */,
+				70B0868B08F49EA800FC65FE /* cOrganism.cc in Sources */,
+				70B0868C08F49EA800FC65FE /* cOrgMessage.cc in Sources */,
+				70B0868D08F49EA800FC65FE /* cPopulation.cc in Sources */,
+				70B0868E08F49EA800FC65FE /* cPopulationCell.cc in Sources */,
+				70B0869D08F49F4800FC65FE /* cPhenotype.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

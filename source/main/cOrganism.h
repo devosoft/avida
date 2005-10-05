@@ -27,7 +27,7 @@
 #include "cMutationRates.h"
 #endif
 #ifndef PHENOTYPE_HH
-#include "phenotype.hh"
+#include "cPhenotype.h"
 #endif
 #ifndef POPULATION_INTERFACE_HH
 #include "cPopulationInterface.h"

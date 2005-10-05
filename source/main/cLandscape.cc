@@ -10,8 +10,8 @@
 #include "cCPUMemory.h"
 #include "cEnvironment.h"
 #include "cInstSet.h"
-#include "organism.hh"
-#include "phenotype.hh"
+#include "cOrganism.h"
+#include "cPhenotype.h"
 #include "stats.hh"             // For GetUpdate in outputs...
 #include "cTestCPU.h"
 #include "cTestUtil.h"

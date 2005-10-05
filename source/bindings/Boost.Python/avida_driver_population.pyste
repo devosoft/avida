@@ -1,7 +1,7 @@
 
 Include("change_list.hh")
 Include("cEnvironment.h")
-Include("population.hh")
+Include("cPopulation.h")
 
 Import("avida_driver_base.pyste")
 

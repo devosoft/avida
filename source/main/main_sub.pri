@@ -22,11 +22,11 @@ main {
              $$MAIN_HH/cLandscape.h \
              $$MAIN_HH/cLineage.h \
              $$MAIN_HH/cLineageControl.h \
-             $$MAIN_HH/organism.hh \
-             $$MAIN_HH/phenotype.hh \
+             $$MAIN_HH/cOrganism.h \
+             $$MAIN_HH/cPhenotype.h \
              $$MAIN_HH/cPopulationInterface.h \
-             $$MAIN_HH/population.hh \
-             $$MAIN_HH/population_cell.hh \
+             $$MAIN_HH/cPopulation.h \
+             $$MAIN_HH/cPopulationCell.h \
              $$MAIN_HH/reaction.hh \
              $$MAIN_HH/reaction_result.hh \
              $$MAIN_HH/resource.hh \
@@ -71,11 +71,11 @@ main {
              $$MAIN_CC/cMutationRates.cc \
              $$MAIN_CC/cMutation.cc \
              $$MAIN_CC/cMxCodeArray.cc \
-             $$MAIN_CC/organism.cc \
-             $$MAIN_CC/phenotype.cc \
+             $$MAIN_CC/cOrganism.cc \
+             $$MAIN_CC/cPhenotype.cc \
              $$MAIN_CC/cPopulationInterface.cc \
-             $$MAIN_CC/population.cc \
-             $$MAIN_CC/population_cell.cc \
+             $$MAIN_CC/cPopulation.cc \
+             $$MAIN_CC/cPopulationCell.cc \
              $$MAIN_CC/reaction.cc \
              $$MAIN_CC/reaction_lib.cc \
              $$MAIN_CC/reaction_process.cc \

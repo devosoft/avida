@@ -9,7 +9,7 @@
 #include "cEnvironment.h"
 #include "cGenebank.h"
 #include "cGenotype.h"
-#include "population.hh"
+#include "cPopulation.h"
 #include "species.hh"
 #include "stats.hh"
 

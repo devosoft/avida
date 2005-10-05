@@ -12,7 +12,7 @@
 #include "cHardware4Stack.h"
 #include "cHardwareSMT.h"
 #include "cInstSet.h"
-#include "organism.hh"
+#include "cOrganism.h"
 
 using namespace std;
 

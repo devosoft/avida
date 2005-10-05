@@ -5,7 +5,7 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "population.hh"
+#include "cPopulation.h"
 #include "stats.hh"
 #include "cEnvironment.h"
 

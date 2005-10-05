@@ -4,7 +4,7 @@ Include("cCPUMemory.h")
 Include("cGenome.h")
 Include("cHardwareTracer.h")
 Include("cInstSet.h")
-Include("organism.hh")
+Include("cOrganism.h")
 
 cHardwareBase = Class("cHardwareBase", "cHardwareBase.h")
 set_policy(cHardwareBase.GetOrganism, return_internal_reference())

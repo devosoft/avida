@@ -1,4 +1,4 @@
-#include "organism.hh"
+#include "cOrganism.h"
 #include "merit.hh"
 #include "cMutation.h"
 #include "int_sum.hh"

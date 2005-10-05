@@ -1,5 +1,5 @@
 
-Include("organism.hh")
+Include("cOrganism.h")
 Include("cGenebank.h")
 
 cBirthChamber = Class("cBirthChamber", "cBirthChamber.h")

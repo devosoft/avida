@@ -12,7 +12,7 @@
 #include "cHardwareSMT.h"
 #include "cHardwareStatusPrinter.h"
 #include "cInstSet.h"
-#include "organism.hh"
+#include "cOrganism.h"
 #include "string.hh"
 #include "string_util.hh"
 

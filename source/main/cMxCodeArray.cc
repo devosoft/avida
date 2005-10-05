@@ -25,7 +25,7 @@
 #include "MyCodeArrayLessThan.h"
 #endif
 #ifndef ORGANISM_HH
-#include "organism.hh"
+#include "cOrganism.h"
 #endif
 #ifndef TEST_CPU_HH
 #include "cTestCPU.h"
