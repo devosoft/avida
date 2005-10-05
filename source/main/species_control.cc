@@ -18,8 +18,8 @@
 #ifndef GENOTYPE_HH
 #include "cGenotype.h"
 #endif
-#ifndef GENOTYPE_MACROS_HH
-#include "genotype_macros.hh"
+#ifndef nSpecies_h
+#include "nSpecies.h"
 #endif
 #ifndef SPECIES_HH
 #include "species.hh"
@@ -125,7 +125,7 @@ cSpecies * cSpeciesControl::Find(cGenotype & in_genotype, int record_level)
   int cur_count, best_count = MAX_CREATURE_SIZE;
   cSpecies * cur_species;
 
-  if (record_level == SPECIES_RECORD_FULL) {
+  if (record_level == nSpecies::RECORD_FULL) {
     cur_species = active_queue.GetFirst();
     int size = active_queue.GetSize();
     for (int i = 0; i < size; i++) {
@@ -140,7 +140,7 @@ cSpecies * cSpeciesControl::Find(cGenotype & in_genotype, int record_level)
     }
   }
 
-  if (record_level == SPECIES_RECORD_LIMITED) {
+  if (record_level == nSpecies::RECORD_LIMITED) {
     cur_species = in_genotype.GetSpecies();
 
     if (cur_species) {

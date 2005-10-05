@@ -37,7 +37,7 @@ class cString; // aggregate
 class cGenebank {
 private:
   unsigned int genotype_count[MAX_CREATURE_SIZE];
-  tList<cGenotype> active_genotypes[GENOTYPE_HASH_SIZE];
+  tList<cGenotype> active_genotypes[nGenotype::HASH_SIZE];
   cGenotypeControl * genotype_control;
   cSpeciesControl * species_control;
   cStats & stats;

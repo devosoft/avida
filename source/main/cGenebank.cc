@@ -77,7 +77,7 @@ void cGenebank::UpdateReset()
 //   hist_array.SetAll(0);
 //   int total_gens = 0;
   
-//   for (int i = 0; i < GENOTYPE_HASH_SIZE; i++) {
+//   for (int i = 0; i < nGenotype::HASH_SIZE; i++) {
 //     int cur_val = active_genotypes[i].GetSize();
 //     total_gens += cur_val;
 //     if (cur_val < 15) hist_array[cur_val]++;
@@ -901,7 +901,7 @@ unsigned int cGenebank::FindCRC(const cGenome & in_genome) const
     total += (in_genome[i].GetOp() + 3) * i;
   }
 
-  return total % GENOTYPE_HASH_SIZE;
+  return total % nGenotype::HASH_SIZE;
 }
 
 void cGenebank::SpeciesTest(char * message, cGenotype & genotype)

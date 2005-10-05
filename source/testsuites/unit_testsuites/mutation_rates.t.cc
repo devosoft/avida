@@ -1,5 +1,5 @@
 #ifndef MUTATION_RATES_HH
-#include "mutation_rates.hh"
+#include "cMutationRates.h"
 #endif
 
 #ifndef TEST_CASE_H

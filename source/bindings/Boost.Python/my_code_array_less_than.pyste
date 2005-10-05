@@ -1,4 +1,4 @@
 
-MyCodeArrayLessThan = Class("MyCodeArrayLessThan", "my_code_array_less_than.hh")
+MyCodeArrayLessThan = Class("MyCodeArrayLessThan", "MyCodeArrayLessThan.h")
 
 # vim: set ft=python:

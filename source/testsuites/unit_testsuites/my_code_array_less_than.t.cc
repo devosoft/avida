@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef MY_CODE_ARRAY_LESS_THAN_HH
-#include "my_code_array_less_than.hh"
+#include "MyCodeArrayLessThan.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

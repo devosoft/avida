@@ -13,7 +13,7 @@
 #include "init_file.hh"
 #endif
 #ifndef MUTATION_MACROS_HH
-#include "mutation_macros.hh"
+#include "nMutation.h"
 #endif
 #ifndef RANDOM_HH
 #include "random.hh"
@@ -498,72 +498,72 @@ bool cEnvironment::LoadMutation(cString desc)
   int scope_id = -1;
   int type_id = -1;
 
-  if (trigger == "none") trig_id = MUTATION_TRIGGER_NONE;
-  else if (trigger == "update") trig_id = MUTATION_TRIGGER_UPDATE;
-  else if (trigger == "divide") trig_id = MUTATION_TRIGGER_DIVIDE;
-  else if (trigger == "parent") trig_id = MUTATION_TRIGGER_PARENT;
-  else if (trigger == "write") trig_id = MUTATION_TRIGGER_WRITE;
-  else if (trigger == "read") trig_id = MUTATION_TRIGGER_READ;
-  else if (trigger == "exec") trig_id = MUTATION_TRIGGER_EXEC;
+  if (trigger == "none") trig_id = nMutation::TRIGGER_NONE;
+  else if (trigger == "update") trig_id = nMutation::TRIGGER_UPDATE;
+  else if (trigger == "divide") trig_id = nMutation::TRIGGER_DIVIDE;
+  else if (trigger == "parent") trig_id = nMutation::TRIGGER_PARENT;
+  else if (trigger == "write") trig_id = nMutation::TRIGGER_WRITE;
+  else if (trigger == "read") trig_id = nMutation::TRIGGER_READ;
+  else if (trigger == "exec") trig_id = nMutation::TRIGGER_EXEC;
   else {
     cerr << "Error: Unknown mutation trigger '" << trigger << "'." << endl;
     return false;
   }
 
-  if (scope == "genome") scope_id = MUTATION_SCOPE_GENOME;
-  else if (scope == "local") scope_id = MUTATION_SCOPE_LOCAL;
-  else if (scope == "prop") scope_id = MUTATION_SCOPE_PROP;
-  else if (scope == "global") scope_id = MUTATION_SCOPE_GLOBAL;
-  else if (scope == "spread") scope_id = MUTATION_SCOPE_SPREAD;
+  if (scope == "genome") scope_id = nMutation::SCOPE_GENOME;
+  else if (scope == "local") scope_id = nMutation::SCOPE_LOCAL;
+  else if (scope == "prop") scope_id = nMutation::SCOPE_PROP;
+  else if (scope == "global") scope_id = nMutation::SCOPE_GLOBAL;
+  else if (scope == "spread") scope_id = nMutation::SCOPE_SPREAD;
   else {
     cerr << "Error: Unknown mutation scope '" << scope << "'." << endl;
     return false;
   }
 
-  if (type == "point") type_id = MUTATION_TYPE_POINT;
-  else if (type == "insert") type_id = MUTATION_TYPE_INSERT;
-  else if (type == "delete") type_id = MUTATION_TYPE_DELETE;
-  else if (type == "head_inc") type_id = MUTATION_TYPE_HEAD_INC;
-  else if (type == "head_dec") type_id = MUTATION_TYPE_HEAD_DEC;
-  else if (type == "temp") type_id = MUTATION_TYPE_TEMP;
-  else if (type == "kill") type_id = MUTATION_TYPE_KILL;
+  if (type == "point") type_id = nMutation::TYPE_POINT;
+  else if (type == "insert") type_id = nMutation::TYPE_INSERT;
+  else if (type == "delete") type_id = nMutation::TYPE_DELETE;
+  else if (type == "head_inc") type_id = nMutation::TYPE_HEAD_INC;
+  else if (type == "head_dec") type_id = nMutation::TYPE_HEAD_DEC;
+  else if (type == "temp") type_id = nMutation::TYPE_TEMP;
+  else if (type == "kill") type_id = nMutation::TYPE_KILL;
   else {
     cerr << "Error: Unknown mutation type '" << type << "'." << endl;
     return false;
   }
 
   // Lets do a few checks for legal combinations...
-  if (trig_id == MUTATION_TRIGGER_NONE) {
+  if (trig_id == nMutation::TRIGGER_NONE) {
     cerr << "Warning: Mutations with trigger 'none' will never occur." << endl;
   }
 
-  if (scope_id == MUTATION_SCOPE_LOCAL || scope_id == MUTATION_SCOPE_PROP) {
-    if (trig_id == MUTATION_TRIGGER_DIVIDE) {
+  if (scope_id == nMutation::SCOPE_LOCAL || scope_id == nMutation::SCOPE_PROP) {
+    if (trig_id == nMutation::TRIGGER_DIVIDE) {
       cerr << "Error: Offspring after divide have no " << scope
 	   << " for mutations." << endl;
       return false;
     }
-    if (trig_id == MUTATION_TRIGGER_UPDATE ||
-	trig_id == MUTATION_TRIGGER_PARENT) {
+    if (trig_id == nMutation::TRIGGER_UPDATE ||
+	trig_id == nMutation::TRIGGER_PARENT) {
       cerr << "Warning: Mutation trigger " << trigger
 	   << "has no natural positions; IP used." << endl;
     }
   }
   else {  // Genome-wide scope
-    if (type_id == MUTATION_TYPE_HEAD_INC ||
-	type_id == MUTATION_TYPE_HEAD_DEC ||
-	type_id == MUTATION_TYPE_TEMP) {
+    if (type_id == nMutation::TYPE_HEAD_INC ||
+	type_id == nMutation::TYPE_HEAD_DEC ||
+	type_id == nMutation::TYPE_TEMP) {
       cerr << "Error: " << scope << " scope not compatible with type "
 	   << type << "." << endl;
       return false;
     }
   }
 
-  if (type_id == MUTATION_TYPE_TEMP) {
-    if (trig_id == MUTATION_TRIGGER_UPDATE ||
-	trig_id == MUTATION_TRIGGER_DIVIDE ||
-	trig_id == MUTATION_TRIGGER_PARENT ||
-	trig_id == MUTATION_TRIGGER_WRITE) {
+  if (type_id == nMutation::TYPE_TEMP) {
+    if (trig_id == nMutation::TRIGGER_UPDATE ||
+	trig_id == nMutation::TRIGGER_DIVIDE ||
+	trig_id == nMutation::TRIGGER_PARENT ||
+	trig_id == nMutation::TRIGGER_WRITE) {
       cerr << "Error: " << trigger << " trigger not meaningful with type "
 	   << type << "." << endl;
       return false;

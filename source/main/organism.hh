@@ -21,10 +21,10 @@
 #include "cGenome.h"
 #endif
 #ifndef LOCAL_MUTATIONS_HH
-#include "local_mutations.hh"
+#include "cLocalMutations.h"
 #endif
 #ifndef MUTATION_RATES_HH
-#include "mutation_rates.hh"
+#include "cMutationRates.h"
 #endif
 #ifndef PHENOTYPE_HH
 #include "phenotype.hh"

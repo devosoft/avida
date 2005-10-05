@@ -28,14 +28,14 @@ SET(libmain_a_SOURCES
   cInstruction.cc
   cInstSet.cc
   cInstUtil.cc
-  landscape.cc
-  lineage.cc
-  lineage_control.cc
-  local_mutations.cc
-  mutation_lib.cc
-  mutation_rates.cc
-  mutation.cc
-  mx_code_array.cc
+  cLandscape.cc
+  cLineage.cc
+  cLineageControl.cc
+  cLocalMutations.cc
+  cMutationLib.cc
+  cMutationRates.cc
+  cMutation.cc
+  cMxCodeArray.cc
   org_message.cc
   organism.cc
   phenotype.cc

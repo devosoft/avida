@@ -1,5 +1,5 @@
 
-Include("mutation.hh")
+Include("cMutation.h")
 Include("cInjectGenotype.h")
 Include("cInstSet.h")
 Include("organism.hh")

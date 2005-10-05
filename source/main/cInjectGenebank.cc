@@ -94,7 +94,7 @@ void cInjectGenebank::AddInjectGenotype(cInjectGenotype * in_inject_genotype, in
   assert( in_inject_genotype != 0 );
   
   if ( in_list_num < 0 )
-    in_list_num = FindCRC(in_inject_genotype->GetGenome()) % INJECTGENOTYPE_HASH_SIZE;
+    in_list_num = FindCRC(in_inject_genotype->GetGenome()) % nInjectGenotype::HASH_SIZE;
   
   active_inject_genotypes[in_list_num].Insert(*in_inject_genotype);
   inject_genotype_control->Insert(*in_inject_genotype);
@@ -105,7 +105,7 @@ void cInjectGenebank::AddInjectGenotype(cInjectGenotype * in_inject_genotype, in
 cInjectGenotype * cInjectGenebank::AddInjectGenotype(const cGenome & in_genome,
 				   cInjectGenotype * parent_genotype)
 {
-  int list_num = FindCRC(in_genome) % INJECTGENOTYPE_HASH_SIZE;
+  int list_num = FindCRC(in_genome) % nInjectGenotype::HASH_SIZE;
   cInjectGenotype * found_genotype;
 
   found_genotype = active_inject_genotypes[list_num].Find(in_genome);
@@ -125,7 +125,7 @@ cInjectGenotype * cInjectGenebank::AddInjectGenotype(const cGenome & in_genome,
 
 cInjectGenotype * cInjectGenebank::FindInjectGenotype(const cGenome & in_genome) const
 {
-  int list_num = FindCRC(in_genome) % INJECTGENOTYPE_HASH_SIZE;
+  int list_num = FindCRC(in_genome) % nInjectGenotype::HASH_SIZE;
   return active_inject_genotypes[list_num].Find(in_genome);
 }
 
@@ -136,7 +136,7 @@ void cInjectGenebank::RemoveInjectGenotype(cInjectGenotype & in_inject_genotype)
   // assigned to it.
 
   if (in_inject_genotype.GetActive() == true) {
-    int list_num = FindCRC(in_inject_genotype.GetGenome()) % INJECTGENOTYPE_HASH_SIZE;
+    int list_num = FindCRC(in_inject_genotype.GetGenome()) % nInjectGenotype::HASH_SIZE;
     active_inject_genotypes[list_num].Remove(in_inject_genotype);
     inject_genotype_control->Remove(in_inject_genotype);
     //in_inject_genotype.Deactivate(stats.GetUpdate());
@@ -316,7 +316,7 @@ bool cInjectGenebank::OK()
 
   // Loop through all of the reference lists for matching genotypes...
 
-  for (i = 0; i < INJECTGENOTYPE_HASH_SIZE; i++) {
+  for (i = 0; i < nInjectGenotype::HASH_SIZE; i++) {
     assert (active_inject_genotypes[i].OK());
   }
 

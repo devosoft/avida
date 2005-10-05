@@ -32,7 +32,7 @@
 #include "init_file.hh"
 #include "cInstSet.h"
 #include "cInstUtil.h"
-#include "landscape.hh"
+#include "cLandscape.h"
 #include "phenotype.hh"
 #include "species.hh"
 #include "tArgDataEntry.hh"

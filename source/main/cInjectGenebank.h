@@ -13,8 +13,8 @@
 #ifndef DEFS_HH
 #include "defs.hh"
 #endif
-#ifndef INJECT_GENEBANK_MACROS_HH
-#include "inject_genebank_macros.hh"
+#ifndef nInjectGenotype_h
+#include "nInjectGenotype.h"
 #endif
 #ifndef INJECT_GENOTYPE_CONTROL_HH
 #include "cInjectGenotypeControl.h"
@@ -39,7 +39,7 @@ class cGenome;
 class cInjectGenebank {
 private:
   unsigned int inject_genotype_count[MAX_CREATURE_SIZE];
-  cInjectGenotypeQueue active_inject_genotypes[INJECTGENOTYPE_HASH_SIZE];
+  cInjectGenotypeQueue active_inject_genotypes[nInjectGenotype::HASH_SIZE];
   cInjectGenotypeControl * inject_genotype_control;
   cStats & stats;
 

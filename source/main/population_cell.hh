@@ -11,7 +11,7 @@
 #include <fstream>
 
 #ifndef MUTATION_RATES_HH
-#include "mutation_rates.hh"
+#include "cMutationRates.h"
 #endif
 #ifndef TARRAY_HH
 #include "tArray.hh"

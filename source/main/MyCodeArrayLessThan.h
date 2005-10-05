@@ -9,10 +9,10 @@
 #define MY_CODE_ARRAY_LESS_THAN_HH
 
 #ifndef MX_CODE_ARRAY_HH
-#include "mx_code_array.hh"
+#include "cMxCodeArray.h"
 #endif
 
-class MyCodeArrayLessThan{
+class MyCodeArrayLessThan {
 public:
   bool operator()(const cMxCodeArray &x, const cMxCodeArray &y) const
   {

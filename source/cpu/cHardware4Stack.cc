@@ -17,9 +17,9 @@
 #include "cInstSet.h"
 #include "cHardwareTracer.h"
 #include "cHardwareTracer_4Stack.h"
-#include "mutation.hh"
-#include "mutation_lib.hh"
-#include "mutation_macros.hh"
+#include "cMutation.h"
+#include "cMutationLib.h"
+#include "nMutation.h"
 #include "organism.hh"
 #include "phenotype.hh"
 #include "random.hh"
@@ -1039,7 +1039,7 @@ int cHardware4Stack::PointMutate(const double mut_rate)
 bool cHardware4Stack::TriggerMutations(int trigger)
 {
   // Only update triggers should happen from the outside!
-  assert(trigger == MUTATION_TRIGGER_UPDATE);
+  assert(trigger == nMutation::TRIGGER_UPDATE);
 
   // Assume instruction pointer is the intended target (if one is even
   // needed!
@@ -1059,7 +1059,7 @@ bool cHardware4Stack::TriggerMutations(int trigger, cHeadMultiMem & cur_head)
   bool has_mutation = false;
 
   // Determine what memory this mutation will be affecting.
-  cCPUMemory & target_mem = (trigger == MUTATION_TRIGGER_DIVIDE) 
+  cCPUMemory & target_mem = (trigger == nMutation::TRIGGER_DIVIDE) 
     ? organism->ChildGenome() : GetMemory(0);
 
   // Loop through all mutations associated with this trigger and test them.
@@ -1071,21 +1071,21 @@ bool cHardware4Stack::TriggerMutations(int trigger, cHeadMultiMem & cur_head)
     const int scope = cur_mut->GetScope();
     const double rate = mut_info.GetRate(mut_id);
     switch (scope) {
-    case MUTATION_SCOPE_GENOME:
+    case nMutation::SCOPE_GENOME:
       if (TriggerMutations_ScopeGenome(cur_mut, target_mem, cur_head, rate)) {
 	has_mutation = true;
 	mut_info.IncCount(mut_id);
       }
       break;
-    case MUTATION_SCOPE_LOCAL:
-    case MUTATION_SCOPE_PROP:
+    case nMutation::SCOPE_LOCAL:
+    case nMutation::SCOPE_PROP:
       if (TriggerMutations_ScopeLocal(cur_mut, target_mem, cur_head, rate)) {
 	has_mutation = true;
 	mut_info.IncCount(mut_id);
       }
       break;
-    case MUTATION_SCOPE_GLOBAL:
-    case MUTATION_SCOPE_SPREAD:
+    case nMutation::SCOPE_GLOBAL:
+    case nMutation::SCOPE_SPREAD:
       int num_muts =
 	TriggerMutations_ScopeGlobal(cur_mut, target_mem, cur_head, rate);
       if (num_muts > 0) {
@@ -1156,16 +1156,16 @@ void cHardware4Stack::TriggerMutations_Body(int type, cCPUMemory & target_memory
   const int pos = cur_head.GetPosition();
 
   switch (type) {
-  case MUTATION_TYPE_POINT:
+  case nMutation::TYPE_POINT:
     target_memory[pos] = GetRandomInst();
     target_memory.FlagMutated(pos) = true;
     break;
-  case MUTATION_TYPE_INSERT:
-  case MUTATION_TYPE_DELETE:
-  case MUTATION_TYPE_HEAD_INC:
-  case MUTATION_TYPE_HEAD_DEC:
-  case MUTATION_TYPE_TEMP:
-  case MUTATION_TYPE_KILL:
+  case nMutation::TYPE_INSERT:
+  case nMutation::TYPE_DELETE:
+  case nMutation::TYPE_HEAD_INC:
+  case nMutation::TYPE_HEAD_DEC:
+  case nMutation::TYPE_TEMP:
+  case nMutation::TYPE_KILL:
   default:
     cout << "Error: Mutation type not implemented!" << endl;
     break;
@@ -1993,7 +1993,7 @@ bool cHardware4Stack::Inst_HeadCopy()
   read_head.Adjust();
   write_head.Adjust();
 
-  // TriggerMutations(MUTATION_TRIGGER_READ, read_head);
+  // TriggerMutations(nMutation::TRIGGER_READ, read_head);
   
   // Do mutations.
   cInstruction read_inst = read_head.GetInst();
@@ -2011,7 +2011,7 @@ bool cHardware4Stack::Inst_HeadCopy()
   write_head.SetInst(read_inst);
   write_head.FlagCopied() = true;  // Set the copied flag...
 
-  // TriggerMutations(MUTATION_TRIGGER_WRITE, write_head);
+  // TriggerMutations(nMutation::TRIGGER_WRITE, write_head);
 
   read_head.Advance();
   write_head.Advance();

@@ -19,9 +19,9 @@ main {
              $$MAIN_HH/cInstLibBase.h \
              $$MAIN_HH/cInstSet.h \
              $$MAIN_HH/cInstUtil.h \
-             $$MAIN_HH/landscape.hh \
-             $$MAIN_HH/lineage.hh \
-             $$MAIN_HH/lineage_control.hh \
+             $$MAIN_HH/cLandscape.h \
+             $$MAIN_HH/cLineage.h \
+             $$MAIN_HH/cLineageControl.h \
              $$MAIN_HH/organism.hh \
              $$MAIN_HH/phenotype.hh \
              $$MAIN_HH/cPopulationInterface.h \
@@ -63,14 +63,14 @@ main {
              $$MAIN_CC/cInjectGenotype_BirthData.cc \
              $$MAIN_CC/cInjectGenotypeControl.cc \
              $$MAIN_CC/cInjectGenotypeQueue.cc \
-             $$MAIN_CC/landscape.cc \
-             $$MAIN_CC/lineage.cc \
-             $$MAIN_CC/lineage_control.cc \
-             $$MAIN_CC/local_mutations.cc \
-             $$MAIN_CC/mutation_lib.cc \
-             $$MAIN_CC/mutation_rates.cc \
-             $$MAIN_CC/mutation.cc \
-             $$MAIN_CC/mx_code_array.cc \
+             $$MAIN_CC/cLandscape.cc \
+             $$MAIN_CC/cLineage.cc \
+             $$MAIN_CC/cLineageControl.cc \
+             $$MAIN_CC/cLocalMutations.cc \
+             $$MAIN_CC/cMutationLib.cc \
+             $$MAIN_CC/cMutationRates.cc \
+             $$MAIN_CC/cMutation.cc \
+             $$MAIN_CC/cMxCodeArray.cc \
              $$MAIN_CC/organism.cc \
              $$MAIN_CC/phenotype.cc \
              $$MAIN_CC/cPopulationInterface.cc \

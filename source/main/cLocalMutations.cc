@@ -6,17 +6,17 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef LOCAL_MUTATIONS_HH
-#include "local_mutations.hh"
+#include "cLocalMutations.h"
 #endif
 
 #ifndef MUTATION_HH
-#include "mutation.hh"
+#include "cMutation.h"
 #endif
 #ifndef MUTATION_LIB_HH
-#include "mutation_lib.hh"
+#include "cMutationLib.h"
 #endif
 #ifndef MUTATION_MACROS_HH
-#include "mutation_macros.hh"
+#include "nMutation.h"
 #endif
 
 /////////////////////
@@ -30,8 +30,8 @@ cLocalMutations::cLocalMutations(const cMutationLib & _lib, int genome_length)
   // Setup the rates for this specifc organism.
   const tArray<cMutation *> & mut_array = mut_lib.GetMutationArray();
   for (int i = 0; i < rates.GetSize(); i++) {
-    if (mut_array[i]->GetScope() == MUTATION_SCOPE_PROP ||
-	mut_array[i]->GetScope() == MUTATION_SCOPE_SPREAD) {
+    if (mut_array[i]->GetScope() == nMutation::SCOPE_PROP ||
+	mut_array[i]->GetScope() == nMutation::SCOPE_SPREAD) {
       rates[i] = mut_array[i]->GetRate() / (double) genome_length;
     }
     else {

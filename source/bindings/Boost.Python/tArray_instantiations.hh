@@ -1,6 +1,6 @@
 #include "organism.hh"
 #include "merit.hh"
-#include "mutation.hh"
+#include "cMutation.h"
 #include "int_sum.hh"
 
 #include "tArray.hh"

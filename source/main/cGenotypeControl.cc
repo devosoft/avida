@@ -28,7 +28,7 @@ cGenotypeControl::cGenotypeControl(cGenebank & in_gb) : genebank(in_gb)
   size = 0;
   best = NULL;
   coalescent = NULL;
-  for (int i = 0; i < GENOTYPE_THREADS; i++) threads[i] = NULL;
+  for (int i = 0; i < nGenotype::THREADS; i++) threads[i] = NULL;
 
   historic_list = NULL;
   historic_count = 0;

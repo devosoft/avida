@@ -1,7 +1,7 @@
 
-Include("my_code_array_less_than.hh")
+Include("MyCodeArrayLessThan.h")
 Include("cGenome.h")
 
-cMxCodeArray = Class("cMxCodeArray", "mx_code_array.hh")
+cMxCodeArray = Class("cMxCodeArray", "cMxCodeArray.h")
 
 # vim: set ft=python:

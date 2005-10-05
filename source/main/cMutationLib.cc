@@ -6,14 +6,14 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef MUTATION_LIB_HH
-#include "mutation_lib.hh"
+#include "cMutationLib.h"
 #endif
 
 #ifndef MUTATION_HH
-#include "mutation.hh"
+#include "cMutation.h"
 #endif
 #ifndef MUTATION_MACROS_HH
-#include "mutation_macros.hh"
+#include "nMutation.h"
 #endif
 
 //////////////////
@@ -21,7 +21,7 @@
 //////////////////
 
 cMutationLib::cMutationLib()
-  : trigger_list_array(NUM_MUTATION_TRIGGERS)
+  : trigger_list_array(nMutation::NUM_TRIGGERS)
 {
 }
 

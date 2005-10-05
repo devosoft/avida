@@ -28,7 +28,7 @@ cInjectGenotypeControl::cInjectGenotypeControl(cInjectGenebank & in_gb) : geneba
   size = 0;
   best = NULL;
   coalescent = NULL;
-  for (int i = 0; i < INJECTGENOTYPE_THREADS; i++) threads[i] = NULL;
+  for (int i = 0; i < nInjectGenotype::THREADS; i++) threads[i] = NULL;
 
   historic_list = NULL;
   historic_count = 0;

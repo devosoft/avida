@@ -5,7 +5,7 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "landscape.hh"
+#include "cLandscape.h"
 
 #include "cCPUMemory.h"
 #include "cEnvironment.h"

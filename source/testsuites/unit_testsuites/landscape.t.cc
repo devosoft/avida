@@ -1,5 +1,5 @@
 #ifndef LANDSCAPE_HH
-#include "landscape.hh"
+#include "cLandscape.h"
 #endif
 
 #ifndef TEST_CASE_H

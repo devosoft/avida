@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef LINEAGE_HH
-#include "lineage.hh"
+#include "cLineage.h"
 #endif
 #ifndef GENOTYPE_HH
 #include "cGenotype.h"

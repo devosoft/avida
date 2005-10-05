@@ -21,10 +21,10 @@
 #include "defs.hh"
 #endif
 #ifndef MX_CODE_ARRAY_HH
-#include "mx_code_array.hh"
+#include "cMxCodeArray.h"
 #endif
 #ifndef MY_CODE_ARRAY_LESS_THAN_HH
-#include "my_code_array_less_than.hh"
+#include "MyCodeArrayLessThan.h"
 #endif
 #ifndef ORGANISM_HH
 #include "organism.hh"

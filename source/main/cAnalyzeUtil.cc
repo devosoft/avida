@@ -43,7 +43,7 @@
 #include "cInstUtil.h"
 #endif
 #ifndef LANDSCAPE_HH
-#include "landscape.hh"
+#include "cLandscape.h"
 #endif
 #ifndef ORGANISM_HH
 #include "organism.hh"

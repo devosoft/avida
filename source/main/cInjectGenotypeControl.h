@@ -8,8 +8,8 @@
 #ifndef INJECT_GENOTYPE_CONTROL_HH
 #define INJECT_GENOTYPE_CONTROL_HH
 
-#ifndef INJECT_GENEBANK_MACROS_HH
-#include "inject_genebank_macros.hh"
+#ifndef nInjectGenotype_h
+#include "nInjectGenotype.h"
 #endif
 
 class cGenome;
@@ -20,7 +20,7 @@ private:
   int size;
   cInjectGenotype * best;
   cInjectGenotype * coalescent;
-  cInjectGenotype * threads[INJECTGENOTYPE_THREADS];
+  cInjectGenotype * threads[nInjectGenotype::THREADS];
   cInjectGenebank & genebank;
 
   cInjectGenotype * historic_list;

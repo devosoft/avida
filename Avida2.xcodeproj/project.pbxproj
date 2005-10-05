@@ -9,14 +9,6 @@
 /* Begin PBXBuildFile section */
 		700E2996085A1F6000CF158A /* primitive in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3164D07626CF3008F7A48 /* primitive */; };
 		700E2AF8085DE50C00CF158A /* avida.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3109C0762539E008F7A48 /* avida.cc */; };
-		700E2B11085DE50C00CF158A /* landscape.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310E80762539E008F7A48 /* landscape.cc */; };
-		700E2B12085DE50C00CF158A /* lineage.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310EA0762539E008F7A48 /* lineage.cc */; };
-		700E2B13085DE50C00CF158A /* lineage_control.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310EC0762539E008F7A48 /* lineage_control.cc */; };
-		700E2B14085DE50C00CF158A /* local_mutations.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310EE0762539E008F7A48 /* local_mutations.cc */; };
-		700E2B15085DE50C00CF158A /* mutation.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310F30762539E008F7A48 /* mutation.cc */; };
-		700E2B16085DE50C00CF158A /* mutation_lib.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310F50762539E008F7A48 /* mutation_lib.cc */; };
-		700E2B17085DE50C00CF158A /* mutation_rates.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310F80762539E008F7A48 /* mutation_rates.cc */; };
-		700E2B18085DE50C00CF158A /* mx_code_array.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310FA0762539E008F7A48 /* mx_code_array.cc */; };
 		700E2B19085DE50C00CF158A /* org_message.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310FD0762539E008F7A48 /* org_message.cc */; };
 		700E2B1A085DE50C00CF158A /* organism.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310FF0762539E008F7A48 /* organism.cc */; };
 		700E2B1B085DE50C00CF158A /* phenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC311010762539E008F7A48 /* phenotype.cc */; };
@@ -142,6 +134,22 @@
 		706D330F0854A7B900D7DC8F /* organism.smt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 706D330E0854A7B900D7DC8F /* organism.smt */; };
 		706D33110854A7D700D7DC8F /* genesis.smt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 706D33100854A7D700D7DC8F /* genesis.smt */; };
 		706D33280854A90D00D7DC8F /* inst_set.smt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 706D33270854A90D00D7DC8F /* inst_set.smt */; };
+		70B0865908F4974300FC65FE /* cLandscape.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865108F4974300FC65FE /* cLandscape.cc */; };
+		70B0865A08F4974300FC65FE /* cLineage.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865208F4974300FC65FE /* cLineage.cc */; };
+		70B0865B08F4974300FC65FE /* cLineageControl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865308F4974300FC65FE /* cLineageControl.cc */; };
+		70B0865C08F4974300FC65FE /* cLocalMutations.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865408F4974300FC65FE /* cLocalMutations.cc */; };
+		70B0865D08F4974300FC65FE /* cMutation.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865508F4974300FC65FE /* cMutation.cc */; };
+		70B0865E08F4974300FC65FE /* cMutationLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865608F4974300FC65FE /* cMutationLib.cc */; };
+		70B0865F08F4974300FC65FE /* cMutationRates.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865708F4974300FC65FE /* cMutationRates.cc */; };
+		70B0866008F4974300FC65FE /* cMxCodeArray.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865808F4974300FC65FE /* cMxCodeArray.cc */; };
+		70B0866108F4974300FC65FE /* cLandscape.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865108F4974300FC65FE /* cLandscape.cc */; };
+		70B0866208F4974300FC65FE /* cLineage.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865208F4974300FC65FE /* cLineage.cc */; };
+		70B0866308F4974300FC65FE /* cLineageControl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865308F4974300FC65FE /* cLineageControl.cc */; };
+		70B0866408F4974300FC65FE /* cLocalMutations.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865408F4974300FC65FE /* cLocalMutations.cc */; };
+		70B0866508F4974300FC65FE /* cMutation.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865508F4974300FC65FE /* cMutation.cc */; };
+		70B0866608F4974300FC65FE /* cMutationLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865608F4974300FC65FE /* cMutationLib.cc */; };
+		70B0866708F4974300FC65FE /* cMutationRates.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865708F4974300FC65FE /* cMutationRates.cc */; };
+		70B0866808F4974300FC65FE /* cMxCodeArray.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865808F4974300FC65FE /* cMxCodeArray.cc */; };
 		70C1EF4808C393BA00F50912 /* cCodeLabel.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF4608C393BA00F50912 /* cCodeLabel.cc */; };
 		70C1EF4A08C393BA00F50912 /* cCodeLabel.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF4608C393BA00F50912 /* cCodeLabel.cc */; };
 		70C1EF5908C3948C00F50912 /* cCPUMemory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF5808C3948C00F50912 /* cCPUMemory.cc */; };
@@ -225,14 +233,6 @@
 		70D46935085F61DD004C8409 /* trionan.c in Sources */ = {isa = PBXBuildFile; fileRef = DCC31471076253A1008F7A48 /* trionan.c */; };
 		70D46936085F61DF004C8409 /* triostr.c in Sources */ = {isa = PBXBuildFile; fileRef = DCC31474076253A1008F7A48 /* triostr.c */; };
 		DCC3166107628531008F7A48 /* avida.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3109C0762539E008F7A48 /* avida.cc */; };
-		DCC3167A07628567008F7A48 /* landscape.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310E80762539E008F7A48 /* landscape.cc */; };
-		DCC3167B07628568008F7A48 /* lineage.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310EA0762539E008F7A48 /* lineage.cc */; };
-		DCC3167C07628569008F7A48 /* lineage_control.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310EC0762539E008F7A48 /* lineage_control.cc */; };
-		DCC3167D07628569008F7A48 /* local_mutations.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310EE0762539E008F7A48 /* local_mutations.cc */; };
-		DCC3167E0762856C008F7A48 /* mutation.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310F30762539E008F7A48 /* mutation.cc */; };
-		DCC3167F0762856C008F7A48 /* mutation_lib.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310F50762539E008F7A48 /* mutation_lib.cc */; };
-		DCC316800762856D008F7A48 /* mutation_rates.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310F80762539E008F7A48 /* mutation_rates.cc */; };
-		DCC316810762856E008F7A48 /* mx_code_array.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310FA0762539E008F7A48 /* mx_code_array.cc */; };
 		DCC316820762856F008F7A48 /* org_message.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310FD0762539E008F7A48 /* org_message.cc */; };
 		DCC3168307628570008F7A48 /* organism.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC310FF0762539E008F7A48 /* organism.cc */; };
 		DCC3168407628571008F7A48 /* phenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC311010762539E008F7A48 /* phenotype.cc */; };
@@ -410,6 +410,27 @@
 		706D33270854A90D00D7DC8F /* inst_set.smt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = inst_set.smt; sourceTree = "<group>"; };
 		707A687408E3750300576968 /* cHardwareTracer_SMT.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareTracer_SMT.h; sourceTree = "<group>"; };
 		707A68B808E37D5900576968 /* hardware_tracer_smt.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = hardware_tracer_smt.pyste; sourceTree = "<group>"; };
+		70B085D108F48C9400FC65FE /* nSpecies.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nSpecies.h; sourceTree = "<group>"; };
+		70B0861508F48E8900FC65FE /* nGenotype.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = nGenotype.h; sourceTree = "<group>"; };
+		70B0861608F48E8900FC65FE /* nInjectGenotype.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = nInjectGenotype.h; sourceTree = "<group>"; };
+		70B0864808F4972600FC65FE /* cLandscape.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cLandscape.h; sourceTree = "<group>"; };
+		70B0864908F4972600FC65FE /* cLineage.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cLineage.h; sourceTree = "<group>"; };
+		70B0864A08F4972600FC65FE /* cLineageControl.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cLineageControl.h; sourceTree = "<group>"; };
+		70B0864B08F4972600FC65FE /* cLocalMutations.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cLocalMutations.h; sourceTree = "<group>"; };
+		70B0864C08F4972600FC65FE /* cMutation.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMutation.h; sourceTree = "<group>"; };
+		70B0864D08F4972600FC65FE /* cMutationLib.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMutationLib.h; sourceTree = "<group>"; };
+		70B0864E08F4972600FC65FE /* cMutationRates.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMutationRates.h; sourceTree = "<group>"; };
+		70B0864F08F4972600FC65FE /* cMxCodeArray.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMxCodeArray.h; sourceTree = "<group>"; };
+		70B0865008F4972600FC65FE /* MyCodeArrayLessThan.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MyCodeArrayLessThan.h; sourceTree = "<group>"; };
+		70B0865108F4974300FC65FE /* cLandscape.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cLandscape.cc; sourceTree = "<group>"; };
+		70B0865208F4974300FC65FE /* cLineage.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cLineage.cc; sourceTree = "<group>"; };
+		70B0865308F4974300FC65FE /* cLineageControl.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cLineageControl.cc; sourceTree = "<group>"; };
+		70B0865408F4974300FC65FE /* cLocalMutations.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cLocalMutations.cc; sourceTree = "<group>"; };
+		70B0865508F4974300FC65FE /* cMutation.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cMutation.cc; sourceTree = "<group>"; };
+		70B0865608F4974300FC65FE /* cMutationLib.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cMutationLib.cc; sourceTree = "<group>"; };
+		70B0865708F4974300FC65FE /* cMutationRates.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cMutationRates.cc; sourceTree = "<group>"; };
+		70B0865808F4974300FC65FE /* cMxCodeArray.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cMxCodeArray.cc; sourceTree = "<group>"; };
+		70B0867208F499C100FC65FE /* nMutation.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = nMutation.h; sourceTree = "<group>"; };
 		70C1EF4608C393BA00F50912 /* cCodeLabel.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCodeLabel.cc; sourceTree = "<group>"; };
 		70C1EF4708C393BA00F50912 /* cCodeLabel.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCodeLabel.h; sourceTree = "<group>"; };
 		70C1EF5808C3948C00F50912 /* cCPUMemory.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCPUMemory.cc; sourceTree = "<group>"; };
@@ -921,28 +942,8 @@
 		DCC3109C0762539E008F7A48 /* avida.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = avida.cc; sourceTree = "<group>"; };
 		DCC3109D0762539E008F7A48 /* avida.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = avida.hh; sourceTree = "<group>"; };
 		DCC310A90762539E008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		DCC310D20762539E008F7A48 /* genotype_macros.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = genotype_macros.hh; sourceTree = "<group>"; };
-		DCC310D70762539E008F7A48 /* inject_genebank_macros.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = inject_genebank_macros.hh; sourceTree = "<group>"; };
-		DCC310E80762539E008F7A48 /* landscape.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = landscape.cc; sourceTree = "<group>"; };
-		DCC310E90762539E008F7A48 /* landscape.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = landscape.hh; sourceTree = "<group>"; };
-		DCC310EA0762539E008F7A48 /* lineage.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = lineage.cc; sourceTree = "<group>"; };
-		DCC310EB0762539E008F7A48 /* lineage.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = lineage.hh; sourceTree = "<group>"; };
-		DCC310EC0762539E008F7A48 /* lineage_control.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = lineage_control.cc; sourceTree = "<group>"; };
-		DCC310ED0762539E008F7A48 /* lineage_control.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = lineage_control.hh; sourceTree = "<group>"; };
-		DCC310EE0762539E008F7A48 /* local_mutations.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = local_mutations.cc; sourceTree = "<group>"; };
-		DCC310EF0762539E008F7A48 /* local_mutations.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = local_mutations.hh; sourceTree = "<group>"; };
 		DCC310F00762539E008F7A48 /* main.pro */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = main.pro; sourceTree = "<group>"; };
 		DCC310F10762539E008F7A48 /* main_sub.pri */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = main_sub.pri; sourceTree = "<group>"; };
-		DCC310F30762539E008F7A48 /* mutation.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = mutation.cc; sourceTree = "<group>"; };
-		DCC310F40762539E008F7A48 /* mutation.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = mutation.hh; sourceTree = "<group>"; };
-		DCC310F50762539E008F7A48 /* mutation_lib.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = mutation_lib.cc; sourceTree = "<group>"; };
-		DCC310F60762539E008F7A48 /* mutation_lib.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = mutation_lib.hh; sourceTree = "<group>"; };
-		DCC310F70762539E008F7A48 /* mutation_macros.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = mutation_macros.hh; sourceTree = "<group>"; };
-		DCC310F80762539E008F7A48 /* mutation_rates.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = mutation_rates.cc; sourceTree = "<group>"; };
-		DCC310F90762539E008F7A48 /* mutation_rates.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = mutation_rates.hh; sourceTree = "<group>"; };
-		DCC310FA0762539E008F7A48 /* mx_code_array.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = mx_code_array.cc; sourceTree = "<group>"; };
-		DCC310FB0762539E008F7A48 /* mx_code_array.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = mx_code_array.hh; sourceTree = "<group>"; };
-		DCC310FC0762539E008F7A48 /* my_code_array_less_than.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = my_code_array_less_than.hh; sourceTree = "<group>"; };
 		DCC310FD0762539E008F7A48 /* org_message.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = org_message.cc; sourceTree = "<group>"; };
 		DCC310FE0762539E008F7A48 /* org_message.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = org_message.hh; sourceTree = "<group>"; };
 		DCC310FF0762539E008F7A48 /* organism.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = organism.cc; sourceTree = "<group>"; };
@@ -2037,6 +2038,26 @@
 		DCC310040762539D008F7A48 /* main */ = {
 			isa = PBXGroup;
 			children = (
+				70B0867208F499C100FC65FE /* nMutation.h */,
+				70B0865108F4974300FC65FE /* cLandscape.cc */,
+				70B0865208F4974300FC65FE /* cLineage.cc */,
+				70B0865308F4974300FC65FE /* cLineageControl.cc */,
+				70B0865408F4974300FC65FE /* cLocalMutations.cc */,
+				70B0865508F4974300FC65FE /* cMutation.cc */,
+				70B0865608F4974300FC65FE /* cMutationLib.cc */,
+				70B0865708F4974300FC65FE /* cMutationRates.cc */,
+				70B0865808F4974300FC65FE /* cMxCodeArray.cc */,
+				70B0864808F4972600FC65FE /* cLandscape.h */,
+				70B0864908F4972600FC65FE /* cLineage.h */,
+				70B0864A08F4972600FC65FE /* cLineageControl.h */,
+				70B0864B08F4972600FC65FE /* cLocalMutations.h */,
+				70B0864C08F4972600FC65FE /* cMutation.h */,
+				70B0864D08F4972600FC65FE /* cMutationLib.h */,
+				70B0864E08F4972600FC65FE /* cMutationRates.h */,
+				70B0864F08F4972600FC65FE /* cMxCodeArray.h */,
+				70B0865008F4972600FC65FE /* MyCodeArrayLessThan.h */,
+				70B0861508F48E8900FC65FE /* nGenotype.h */,
+				70B0861608F48E8900FC65FE /* nInjectGenotype.h */,
 				70CA6EF508DB806200068AC2 /* cGenotypeBatch.h */,
 				70CA6EE208DB7F9E00068AC2 /* cFitnessMatrix.h */,
 				70CA6EE308DB7F9E00068AC2 /* cGenebank.h */,
@@ -2105,28 +2126,8 @@
 				DCC3109D0762539E008F7A48 /* avida.hh */,
 				DCC310A90762539E008F7A48 /* CMakeLists.txt */,
 				DCC310B00762539E008F7A48 /* functional_testsuites */,
-				DCC310D20762539E008F7A48 /* genotype_macros.hh */,
-				DCC310D70762539E008F7A48 /* inject_genebank_macros.hh */,
-				DCC310E80762539E008F7A48 /* landscape.cc */,
-				DCC310E90762539E008F7A48 /* landscape.hh */,
-				DCC310EA0762539E008F7A48 /* lineage.cc */,
-				DCC310EB0762539E008F7A48 /* lineage.hh */,
-				DCC310EC0762539E008F7A48 /* lineage_control.cc */,
-				DCC310ED0762539E008F7A48 /* lineage_control.hh */,
-				DCC310EE0762539E008F7A48 /* local_mutations.cc */,
-				DCC310EF0762539E008F7A48 /* local_mutations.hh */,
 				DCC310F00762539E008F7A48 /* main.pro */,
 				DCC310F10762539E008F7A48 /* main_sub.pri */,
-				DCC310F30762539E008F7A48 /* mutation.cc */,
-				DCC310F40762539E008F7A48 /* mutation.hh */,
-				DCC310F50762539E008F7A48 /* mutation_lib.cc */,
-				DCC310F60762539E008F7A48 /* mutation_lib.hh */,
-				DCC310F70762539E008F7A48 /* mutation_macros.hh */,
-				DCC310F80762539E008F7A48 /* mutation_rates.cc */,
-				DCC310F90762539E008F7A48 /* mutation_rates.hh */,
-				DCC310FA0762539E008F7A48 /* mx_code_array.cc */,
-				DCC310FB0762539E008F7A48 /* mx_code_array.hh */,
-				DCC310FC0762539E008F7A48 /* my_code_array_less_than.hh */,
 				DCC310FD0762539E008F7A48 /* org_message.cc */,
 				DCC310FE0762539E008F7A48 /* org_message.hh */,
 				DCC310FF0762539E008F7A48 /* organism.cc */,
@@ -2175,6 +2176,7 @@
 				DCC3112C0762539E008F7A48 /* task_lib.cc */,
 				DCC3112D0762539E008F7A48 /* task_lib.hh */,
 				DCC3112E0762539E008F7A48 /* unit_testsuites */,
+				70B085D108F48C9400FC65FE /* nSpecies.h */,
 			);
 			path = main;
 			sourceTree = "<group>";
@@ -3034,14 +3036,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				700E2AF8085DE50C00CF158A /* avida.cc in Sources */,
-				700E2B11085DE50C00CF158A /* landscape.cc in Sources */,
-				700E2B12085DE50C00CF158A /* lineage.cc in Sources */,
-				700E2B13085DE50C00CF158A /* lineage_control.cc in Sources */,
-				700E2B14085DE50C00CF158A /* local_mutations.cc in Sources */,
-				700E2B15085DE50C00CF158A /* mutation.cc in Sources */,
-				700E2B16085DE50C00CF158A /* mutation_lib.cc in Sources */,
-				700E2B17085DE50C00CF158A /* mutation_rates.cc in Sources */,
-				700E2B18085DE50C00CF158A /* mx_code_array.cc in Sources */,
 				700E2B19085DE50C00CF158A /* org_message.cc in Sources */,
 				700E2B1A085DE50C00CF158A /* organism.cc in Sources */,
 				700E2B1B085DE50C00CF158A /* phenotype.cc in Sources */,
@@ -3164,6 +3158,14 @@
 				70CA6EDF08DB7F8200068AC2 /* cInstruction.cc in Sources */,
 				70CA6EE008DB7F8200068AC2 /* cInstSet.cc in Sources */,
 				70CA6EE108DB7F8200068AC2 /* cInstUtil.cc in Sources */,
+				70B0866108F4974300FC65FE /* cLandscape.cc in Sources */,
+				70B0866208F4974300FC65FE /* cLineage.cc in Sources */,
+				70B0866308F4974300FC65FE /* cLineageControl.cc in Sources */,
+				70B0866408F4974300FC65FE /* cLocalMutations.cc in Sources */,
+				70B0866508F4974300FC65FE /* cMutation.cc in Sources */,
+				70B0866608F4974300FC65FE /* cMutationLib.cc in Sources */,
+				70B0866708F4974300FC65FE /* cMutationRates.cc in Sources */,
+				70B0866808F4974300FC65FE /* cMxCodeArray.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3172,14 +3174,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				DCC3166107628531008F7A48 /* avida.cc in Sources */,
-				DCC3167A07628567008F7A48 /* landscape.cc in Sources */,
-				DCC3167B07628568008F7A48 /* lineage.cc in Sources */,
-				DCC3167C07628569008F7A48 /* lineage_control.cc in Sources */,
-				DCC3167D07628569008F7A48 /* local_mutations.cc in Sources */,
-				DCC3167E0762856C008F7A48 /* mutation.cc in Sources */,
-				DCC3167F0762856C008F7A48 /* mutation_lib.cc in Sources */,
-				DCC316800762856D008F7A48 /* mutation_rates.cc in Sources */,
-				DCC316810762856E008F7A48 /* mx_code_array.cc in Sources */,
 				DCC316820762856F008F7A48 /* org_message.cc in Sources */,
 				DCC3168307628570008F7A48 /* organism.cc in Sources */,
 				DCC3168407628571008F7A48 /* phenotype.cc in Sources */,
@@ -3292,6 +3286,14 @@
 				70CA6ECF08DB7F8200068AC2 /* cInstruction.cc in Sources */,
 				70CA6ED008DB7F8200068AC2 /* cInstSet.cc in Sources */,
 				70CA6ED108DB7F8200068AC2 /* cInstUtil.cc in Sources */,
+				70B0865908F4974300FC65FE /* cLandscape.cc in Sources */,
+				70B0865A08F4974300FC65FE /* cLineage.cc in Sources */,
+				70B0865B08F4974300FC65FE /* cLineageControl.cc in Sources */,
+				70B0865C08F4974300FC65FE /* cLocalMutations.cc in Sources */,
+				70B0865D08F4974300FC65FE /* cMutation.cc in Sources */,
+				70B0865E08F4974300FC65FE /* cMutationLib.cc in Sources */,
+				70B0865F08F4974300FC65FE /* cMutationRates.cc in Sources */,
+				70B0866008F4974300FC65FE /* cMxCodeArray.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

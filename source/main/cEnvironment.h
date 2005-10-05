@@ -12,10 +12,10 @@
 #include "cInstSet.h"
 #endif
 #ifndef MUTATION_LIB_HH
-#include "mutation_lib.hh"
+#include "cMutationLib.h"
 #endif
 #ifndef MUTATION_RATES_HH
-#include "mutation_rates.hh"
+#include "cMutationRates.h"
 #endif
 #ifndef REACTION_LIB_HH
 #include "reaction_lib.hh"

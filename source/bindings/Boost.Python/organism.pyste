@@ -5,7 +5,7 @@ Include("cHardwareBase.h")
 Include("cCodeLabel.h")
 Include("org_message.hh")
 Include("cGenotype.h")
-Include("lineage.hh")
+Include("cLineage.h")
 
 cOrganism = Class("cOrganism", "organism.hh")
 set_policy(cOrganism.GetHardware, return_internal_reference())

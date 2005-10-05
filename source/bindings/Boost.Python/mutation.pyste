@@ -1,4 +1,4 @@
 
-cMutation = Class("cMutation", "mutation.hh")
+cMutation = Class("cMutation", "cMutation.h")
 
 # vim: set ft=python:

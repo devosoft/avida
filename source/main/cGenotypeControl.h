@@ -8,8 +8,8 @@
 #ifndef GENOTYPE_CONTROL_HH
 #define GENOTYPE_CONTROL_HH
 
-#ifndef GENOTYPE_MACROS_HH
-#include "genotype_macros.hh"
+#ifndef nGenotype_h
+#include "nGenotype.h"
 #endif
 
 class cGenebank;
@@ -20,7 +20,7 @@ private:
   int size;
   cGenotype * best;
   cGenotype * coalescent;
-  cGenotype * threads[GENOTYPE_THREADS];
+  cGenotype * threads[nGenotype::THREADS];
   cGenebank & genebank;
 
   cGenotype * historic_list;

@@ -10,7 +10,7 @@
 #include "cConfig.h"
 #include "cCPUTestInfo.h"
 #include "cInstSet.h"
-#include "landscape.hh"
+#include "cLandscape.h"
 #include "organism.hh"
 #include "phenotype.hh"
 #include "cTestCPU.h"

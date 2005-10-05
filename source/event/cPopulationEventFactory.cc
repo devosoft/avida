@@ -43,10 +43,10 @@
 #include "cInstUtil.h"
 #endif
 #ifndef LANDSCAPE_HH
-#include "landscape.hh"
+#include "cLandscape.h"
 #endif
 #ifndef LINEAGE_CONTROL_HH
-#include "lineage_control.hh"
+#include "cLineageControl.h"
 #endif
 #ifndef ORGANISM_HH
 #include "organism.hh"

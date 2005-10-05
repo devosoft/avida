@@ -5,11 +5,11 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "lineage_control.hh"
+#include "cLineageControl.h"
 
 #include "string.hh"
 
-#include "lineage.hh"
+#include "cLineage.h"
 #include "stats.hh"
 #include "cConfig.h"
 #include "cGenebank.h"

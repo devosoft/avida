@@ -1,6 +1,6 @@
 #include "cAnalyzeCommand.h"
 #include "cAnalyzeGenotype.h"
-#include "mutation.hh"
+#include "cMutation.h"
 #include "population_cell.hh"
 #include "reaction_process.hh"
 #include "reaction_requisite.hh"

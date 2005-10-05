@@ -3,6 +3,6 @@ Include("cInstSet.h")
 
 Include("fstream")
 
-cLandscape = Class("cLandscape", "landscape.hh")
+cLandscape = Class("cLandscape", "cLandscape.h")
 
 # vim: set ft=python:
