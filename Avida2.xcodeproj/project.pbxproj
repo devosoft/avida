@@ -474,6 +474,8 @@
 		70B0872B08F5E82D00FC65FE /* cStats.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cStats.cc; sourceTree = "<group>"; };
 		70B0872C08F5E82D00FC65FE /* cTaskEntry.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTaskEntry.cc; sourceTree = "<group>"; };
 		70B0872D08F5E82D00FC65FE /* cTaskLib.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTaskLib.cc; sourceTree = "<group>"; };
+		70B0875A08F5EC8900FC65FE /* nGeometry.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = nGeometry.h; sourceTree = "<group>"; };
+		70B0875C08F5ECBC00FC65FE /* nReaction.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = nReaction.h; sourceTree = "<group>"; };
 		70C1EF4608C393BA00F50912 /* cCodeLabel.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCodeLabel.cc; sourceTree = "<group>"; };
 		70C1EF4708C393BA00F50912 /* cCodeLabel.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCodeLabel.h; sourceTree = "<group>"; };
 		70C1EF5808C3948C00F50912 /* cCPUMemory.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCPUMemory.cc; sourceTree = "<group>"; };
@@ -988,9 +990,6 @@
 		DCC310F10762539E008F7A48 /* main_sub.pri */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = main_sub.pri; sourceTree = "<group>"; };
 		DCC311090762539E008F7A48 /* primitive.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = primitive.cc; sourceTree = "<group>"; };
 		DCC3110A0762539E008F7A48 /* primitive.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = primitive.hh; sourceTree = "<group>"; };
-		DCC3110F0762539E008F7A48 /* reaction_macros.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = reaction_macros.hh; sourceTree = "<group>"; };
-		DCC3111A0762539E008F7A48 /* resource_count_macros.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = resource_count_macros.hh; sourceTree = "<group>"; };
-		DCC3111D0762539E008F7A48 /* resource_macros.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = resource_macros.hh; sourceTree = "<group>"; };
 		DCC311390762539E008F7A48 /* modules.pri */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = modules.pri; sourceTree = "<group>"; };
 		DCC3114B0762539E008F7A48 /* analyze.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = analyze.cfg; sourceTree = "<group>"; };
 		DCC3114C0762539E008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
@@ -2038,6 +2037,8 @@
 		DCC310040762539D008F7A48 /* main */ = {
 			isa = PBXGroup;
 			children = (
+				70B0875C08F5ECBC00FC65FE /* nReaction.h */,
+				70B0875A08F5EC8900FC65FE /* nGeometry.h */,
 				70B0871E08F5E82D00FC65FE /* cReaction.cc */,
 				70B0871F08F5E82D00FC65FE /* cReactionLib.cc */,
 				70B0872008F5E82D00FC65FE /* cReactionProcess.cc */,
@@ -2172,9 +2173,6 @@
 				DCC310F10762539E008F7A48 /* main_sub.pri */,
 				DCC311090762539E008F7A48 /* primitive.cc */,
 				DCC3110A0762539E008F7A48 /* primitive.hh */,
-				DCC3110F0762539E008F7A48 /* reaction_macros.hh */,
-				DCC3111A0762539E008F7A48 /* resource_count_macros.hh */,
-				DCC3111D0762539E008F7A48 /* resource_macros.hh */,
 				DCC3112E0762539E008F7A48 /* unit_testsuites */,
 				70B085D108F48C9400FC65FE /* nSpecies.h */,
 			);

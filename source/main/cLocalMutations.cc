@@ -15,7 +15,7 @@
 #ifndef MUTATION_LIB_HH
 #include "cMutationLib.h"
 #endif
-#ifndef MUTATION_MACROS_HH
+#ifndef nMutation_h
 #include "nMutation.h"
 #endif
 

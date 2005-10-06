@@ -1,12 +1,14 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  nGeometry.h
+ *  Avida2
+ *
+ *  Created by David on 10/5/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *
+ */
 
-#ifndef MUTATION_MACROS_HH
-#define MUTATION_MACROS_HH
+#ifndef nMutation_h
+#define nMutation_h
 
 namespace nMutation {
   enum {

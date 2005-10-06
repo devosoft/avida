@@ -12,8 +12,8 @@
 #ifndef DEFS_HH
 #include "defs.hh"
 #endif
-#ifndef REACTION_MACROS_HH
-#include "reaction_macros.hh"
+#ifndef nReaction_h
+#include "nReaction.h"
 #endif
 
 //////////////////////
@@ -23,7 +23,7 @@
 cReactionProcess::cReactionProcess()
   : resource(NULL)
   , value(1.0)
-  , type(REACTION_PROCTYPE_ADD)
+  , type(nReaction::PROCTYPE_ADD)
   , max_number(1.0)
   , min_number(0.0)
   , max_fraction(1.0)

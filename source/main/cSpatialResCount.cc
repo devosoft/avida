@@ -64,7 +64,7 @@ cSpatialResCount::cSpatialResCount() {
   ydiffuse = 1.0;
   xgravity = 0.0;
   ygravity = 0.0;
-  geometry = GEOMETRY_GLOBAL;
+  geometry = nGeometry::GLOBAL;
 }
 
 void cSpatialResCount::ResizeClear(int inworld_x, int inworld_y, 
@@ -106,7 +106,7 @@ void cSpatialResCount::SetPointers() {
  
   /* Fix links for top, bottom and sides for non-torus */
   
-  if (geometry == GEOMETRY_GRID) {
+  if (geometry == nGeometry::GRID) {
     /* Top and bottom */
 
     for (i = 0; i < world_x; i++) {

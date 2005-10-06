@@ -12,7 +12,7 @@
 #ifndef INIT_FILE_HH
 #include "init_file.hh"
 #endif
-#ifndef MUTATION_MACROS_HH
+#ifndef nMutation_h
 #include "nMutation.h"
 #endif
 #ifndef RANDOM_HH
@@ -21,8 +21,8 @@
 #ifndef REACTION_HH
 #include "cReaction.h"
 #endif
-#ifndef REACTION_MACROS_HH
-#include "reaction_macros.hh"
+#ifndef nReaction_h
+#include "nReaction.h"
 #endif
 #ifndef REACTION_PROCESS_HH
 #include "cReactionProcess.h"
@@ -178,9 +178,9 @@ bool cEnvironment::LoadReactionProcess(cReaction * reaction, cString desc)
       new_process->SetValue(var_value.AsDouble());
     }
     else if (var_name == "type") {
-      if (var_value=="add") new_process->SetType(REACTION_PROCTYPE_ADD);
-      else if (var_value=="mult") new_process->SetType(REACTION_PROCTYPE_MULT);
-      else if (var_value=="pow") new_process->SetType(REACTION_PROCTYPE_POW);
+      if (var_value=="add") new_process->SetType(nReaction::PROCTYPE_ADD);
+      else if (var_value=="mult") new_process->SetType(nReaction::PROCTYPE_MULT);
+      else if (var_value=="pow") new_process->SetType(nReaction::PROCTYPE_POW);
       else {
 	cerr << "Unknown reaction process type '" << var_value
 	     << "' found in '" << reaction->GetName() << "'." << endl;
@@ -867,13 +867,13 @@ void cEnvironment::DoProcesses(const tList<cReactionProcess> & process_list,
     double bonus = consumed * cur_process->GetValue() * task_quality;
 
     switch (cur_process->GetType()) {
-    case REACTION_PROCTYPE_ADD:
+    case nReaction::PROCTYPE_ADD:
       result.AddBonus(bonus);
       break;
-    case REACTION_PROCTYPE_MULT:
+    case nReaction::PROCTYPE_MULT:
       result.MultBonus(bonus);
       break;
-    case REACTION_PROCTYPE_POW:
+    case nReaction::PROCTYPE_POW:
       result.MultBonus( pow(2.0, bonus) );
       break;
     default:

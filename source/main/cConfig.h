@@ -17,6 +17,7 @@
 #ifndef TLIST_HH
 #include "tList.hh"
 #endif
+#include "nGeometry.h"
 
 #define SLICE_CONSTANT         0
 #define SLICE_PROB_MERIT       1
@@ -57,10 +58,6 @@
 #define SIZE_MERIT_FULL        3
 #define SIZE_MERIT_LEAST       4
 #define SIZE_MERIT_SQRT_LEAST  5
-
-#define GEOMETRY_GLOBAL 0
-#define GEOMETRY_GRID   1
-#define GEOMETRY_TORUS  2
 
 class cString; // aggregate
 class cStringList; // aggregate

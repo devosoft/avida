@@ -9,9 +9,7 @@
 #include "cSpatialCountElem.h"
 #endif
 
-#ifndef RESOURCE_COUNT_MACROS_HH
-#include "resource_count_macros.hh"
-#endif
+const int MAXFLOWPTS = 8;
 
 cSpatialCountElem::cSpatialCountElem (double initamount) {
     amount = initamount;

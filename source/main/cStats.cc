@@ -710,7 +710,7 @@ void cStats::PrintResourceData(const cString & filename)
   df.Write( GetUpdate(),   "Update");
   for (int i = 0; i < resource_count.GetSize(); i++) {
     df.Write( resource_count[i], resource_names[i] );
-    if (resource_geometry[i] != GEOMETRY_GLOBAL) {
+    if (resource_geometry[i] != nGeometry::GLOBAL) {
       PrintSpatialResData(filename, i);
     }
   }

@@ -89,9 +89,9 @@ cPopulation::cPopulation(const cPopulationInterface & in_interface,
   const int num_cells = world_x * world_y;
   cout << "Building world " << world_x << "x" << world_y
     << " = " << num_cells << " organisms." << endl;
-  if (geometry == GEOMETRY_GRID) {
+  if (geometry == nGeometry::GRID) {
     cout << "Geometry: Bounded grid" << endl;
-  } else if (geometry == GEOMETRY_TORUS) {
+  } else if (geometry == nGeometry::TORUS) {
     cout << "Geometry: Torus" << endl;
   } else {
     cout << "Geometry: Unknown" << endl;
@@ -108,22 +108,22 @@ cPopulation::cPopulation(const cPopulationInterface & in_interface,
     cell_array[cell_id].Setup(cell_id, default_mut_rates);
     
     
-    if ((y == 0) && (geometry == GEOMETRY_GRID)) {
+    if ((y == 0) && (geometry == nGeometry::GRID)) {
       bottom_flag = false;
     } else {
       bottom_flag = true;
     }
-    if ((y == world_y-1) && (geometry == GEOMETRY_GRID)) {
+    if ((y == world_y-1) && (geometry == nGeometry::GRID)) {
       top_flag = false;
     } else {
       top_flag = true;
     }
-    if ((x == 0) && (geometry == GEOMETRY_GRID)) {
+    if ((x == 0) && (geometry == nGeometry::GRID)) {
       left_flag = false;
     } else {
       left_flag = true;
     }
-    if ((x == world_x-1) && (geometry == GEOMETRY_GRID)) {
+    if ((x == world_x-1) && (geometry == nGeometry::GRID)) {
       right_flag = false;
     } else {
       right_flag = true;

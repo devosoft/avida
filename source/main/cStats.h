@@ -36,10 +36,7 @@
 #ifndef TDATAMANAGER_HH
 #include "tDataManager.hh"
 #endif
-
-#define GEOMETRY_GLOBAL 0
-#define GEOMETRY_GRID   1
-#define GEOMETRY_TORUS  2
+#include "nGeometry.h"
 
 template <class T> class tDataManager; // aggregate
 class cDataFileManager; // aggregate

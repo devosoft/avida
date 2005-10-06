@@ -134,7 +134,7 @@ void cResourceCount::SetSize(int num_resources)
   inflow_rate.SetAll(0.0);
   decay_precalc.SetAll(0.0);
   inflow_precalc.SetAll(0.0);
-  geometry.SetAll(GEOMETRY_GLOBAL);
+  geometry.SetAll(nGeometry::GLOBAL);
   curr_grid_res_cnt.SetAll(0.0);
 }
 
@@ -158,11 +158,11 @@ void cResourceCount::Setup(int id, cString name, double initial, double inflow,
   assert(spatial_resource_count[id].GetSize() > 0);
 
   cString geo_name;
-  if (in_geometry == GEOMETRY_GLOBAL) {
+  if (in_geometry == nGeometry::GLOBAL) {
     geo_name = "GLOBAL";
-  } else if (in_geometry == GEOMETRY_GRID) {
+  } else if (in_geometry == nGeometry::GRID) {
     geo_name = "GRID";
-  } else if (in_geometry == GEOMETRY_TORUS) {
+  } else if (in_geometry == nGeometry::TORUS) {
     geo_name = "TORUS";
   }
 #if 0
@@ -172,7 +172,7 @@ void cResourceCount::Setup(int id, cString name, double initial, double inflow,
        << ", decay=" << decay
        << ", inflow=" << inflow
        << endl;
-  if ((in_geometry == GEOMETRY_GRID) || (in_geometry == GEOMETRY_TORUS)) {
+  if ((in_geometry == nGeometry::GRID) || (in_geometry == nGeometry::TORUS)) {
     cerr << "  Inflow rectangle (" << in_inflowX1 
          << "," << in_inflowY1 
          << ") to (" << in_inflowX2 
@@ -247,7 +247,7 @@ const tArray<double> & cResourceCount::GetCellResources(int cell_id) const
   DoUpdates();
 
   for (int i = 0; i < num_resources; i++) {
-    if (geometry[i] == GEOMETRY_GLOBAL) {
+    if (geometry[i] == nGeometry::GLOBAL) {
       curr_grid_res_cnt[i] = resource_count[i];
     } else {
       curr_grid_res_cnt[i] = spatial_resource_count[i].GetAmount(cell_id);
@@ -302,7 +302,7 @@ void cResourceCount::ModifyCell(const tArray<double> & res_change, int cell_id)
   assert(resource_count.GetSize() == res_change.GetSize());
 
   for (int i = 0; i < resource_count.GetSize(); i++) {
-    if (geometry[i] == GEOMETRY_GLOBAL) {
+    if (geometry[i] == nGeometry::GLOBAL) {
       resource_count[i] += res_change[i];
       assert(resource_count[i] >= 0.0);
     } else {
@@ -339,7 +339,7 @@ void cResourceCount::DoUpdates() const
 
   while (num_steps > PRECALC_DISTANCE) {
     for (int i = 0; i < resource_count.GetSize(); i++) {
-      if (geometry[i] == GEOMETRY_GLOBAL) {
+      if (geometry[i] == nGeometry::GLOBAL) {
         resource_count[i] *= decay_precalc(i, PRECALC_DISTANCE);
         resource_count[i] += inflow_precalc(i, PRECALC_DISTANCE);
       }
@@ -348,7 +348,7 @@ void cResourceCount::DoUpdates() const
   }
 
   for (int i = 0; i < resource_count.GetSize(); i++) {
-    if (geometry[i] == GEOMETRY_GLOBAL) {
+    if (geometry[i] == nGeometry::GLOBAL) {
       resource_count[i] *= decay_precalc(i, num_steps);
       resource_count[i] += inflow_precalc(i, num_steps);
     }
@@ -359,7 +359,7 @@ void cResourceCount::DoUpdates() const
   while (spatial_update_time >= 1.0) { 
     spatial_update_time -= 1.0;
     for (int i = 0; i < resource_count.GetSize(); i++) {
-      if (geometry[i] != GEOMETRY_GLOBAL) {
+      if (geometry[i] != nGeometry::GLOBAL) {
         spatial_resource_count[i].Source(inflow_rate[i]);
         spatial_resource_count[i].Sink(decay_rate[i]);
         spatial_resource_count[i].FlowAll();

@@ -21,7 +21,7 @@ cResource::cResource(const cString & _name, int _id)
   , initial(0.0)
   , inflow(0.0)
   , outflow(0.0)
-  , geometry(GEOMETRY_GLOBAL)
+  , geometry(nGeometry::GLOBAL)
   , inflowX1(-99)
   , inflowX2(-99)
   , inflowY1(-99)
@@ -41,13 +41,13 @@ bool cResource::SetGeometry(cString _geometry)
 {
      _geometry.ToLower();
      if (_geometry == "global") {
-          geometry = GEOMETRY_GLOBAL;
+          geometry = nGeometry::GLOBAL;
           return true;
      } else if (_geometry == "grid") {
-          geometry = GEOMETRY_GRID;
+          geometry = nGeometry::GRID;
           return true;
      } else if (_geometry == "torus") {
-          geometry = GEOMETRY_TORUS;
+          geometry = nGeometry::TORUS;
           return true;
      } else {
           return false;

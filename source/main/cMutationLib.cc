@@ -12,7 +12,7 @@
 #ifndef MUTATION_HH
 #include "cMutation.h"
 #endif
-#ifndef MUTATION_MACROS_HH
+#ifndef nMutation_h
 #include "nMutation.h"
 #endif
 
