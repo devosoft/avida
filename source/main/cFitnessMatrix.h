@@ -30,7 +30,7 @@
 #include "cOrganism.h"
 #endif
 #ifndef STATS_HH
-#include "stats.hh"
+#include "cStats.h"
 #endif
 #ifndef STRING_UTIL_HH
 #include "string_util.hh"

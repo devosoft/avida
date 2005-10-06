@@ -2,7 +2,7 @@
 #define AVIDA_FIXUPS_HH
 
 #ifndef AVIDA_HH
-#include "avida.hh"
+#include "avida.h"
 #endif
 
 //inline void SetupAvidaPython(cEnvironment &environment, cPopulationInterface &test_interface){

@@ -6,11 +6,11 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef RESOURCE_LIB_HH
-#include "resource_lib.hh"
+#include "cResourceLib.h"
 #endif
 
 #ifndef RESOURCE_HH
-#include "resource.hh"
+#include "cResource.h"
 #endif
 
 using namespace std;

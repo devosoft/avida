@@ -1,6 +1,6 @@
-Include("task_entry.hh")
+Include("cTaskEntry.h")
 
-cTaskLib = Class("cTaskLib", "task_lib.hh")
+cTaskLib = Class("cTaskLib", "cTaskLib.h")
 set_policy(cTaskLib.AddTask, return_internal_reference())
 
 # vim: set ft=python:

@@ -6,11 +6,11 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef REACTION_LIB_HH
-#include "reaction_lib.hh"
+#include "cReactionLib.h"
 #endif
 
 #ifndef REACTION_HH
-#include "reaction.hh"
+#include "cReaction.h"
 #endif
 
 //////////////////

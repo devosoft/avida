@@ -5,7 +5,7 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "stats.hh"
+#include "cStats.h"
 
 #include "cConfig.h"
 #include "data_file.hh"

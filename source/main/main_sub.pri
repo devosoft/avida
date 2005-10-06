@@ -3,7 +3,7 @@ main {
   HEADERS += \
              $$MAIN_HH/cAnalyze.h \
              $$MAIN_HH/cAnalyzeUtil.h \
-             $$MAIN_HH/avida.hh \
+             $$MAIN_HH/avida.h \
              $$MAIN_HH/cBirthChamber.h \
              $$MAIN_HH/cCallbackUtil.h \
              $$MAIN_HH/cConfig.h \
@@ -27,13 +27,13 @@ main {
              $$MAIN_HH/cPopulationInterface.h \
              $$MAIN_HH/cPopulation.h \
              $$MAIN_HH/cPopulationCell.h \
-             $$MAIN_HH/reaction.hh \
-             $$MAIN_HH/reaction_result.hh \
-             $$MAIN_HH/resource.hh \
-             $$MAIN_HH/resource_count.hh \
-             $$MAIN_HH/resource_lib.hh \
-             $$MAIN_HH/species.hh \
-             $$MAIN_HH/stats.hh
+             $$MAIN_HH/cReaction.h \
+             $$MAIN_HH/cReactionResult.h \
+             $$MAIN_HH/cResource.h \
+             $$MAIN_HH/cResourceCount.h \
+             $$MAIN_HH/cResourceLib.h \
+             $$MAIN_HH/cSpecies.h \
+             $$MAIN_HH/cStats.h
 
   SOURCES += \
              $$MAIN_CC/cAnalyze.cc \
@@ -76,20 +76,20 @@ main {
              $$MAIN_CC/cPopulationInterface.cc \
              $$MAIN_CC/cPopulation.cc \
              $$MAIN_CC/cPopulationCell.cc \
-             $$MAIN_CC/reaction.cc \
-             $$MAIN_CC/reaction_lib.cc \
-             $$MAIN_CC/reaction_process.cc \
-             $$MAIN_CC/reaction_requisite.cc \
-             $$MAIN_CC/reaction_result.cc \
-             $$MAIN_CC/resource.cc \
-             $$MAIN_CC/resource_count.cc \
-             $$MAIN_CC/resource_lib.cc \
-             $$MAIN_CC/spatial_count_elem.cc \
-             $$MAIN_CC/spatial_res_count.cc \
-             $$MAIN_CC/species.cc \
-             $$MAIN_CC/species_control.cc \
-             $$MAIN_CC/species_queue.cc \
-             $$MAIN_CC/stats.cc \
-             $$MAIN_CC/task_entry.cc \
-             $$MAIN_CC/task_lib.cc
+             $$MAIN_CC/cReaction.cc \
+             $$MAIN_CC/cReactionLib.cc \
+             $$MAIN_CC/cReactionProcess.cc \
+             $$MAIN_CC/cReactionRequisite.cc \
+             $$MAIN_CC/cReactionResult.cc \
+             $$MAIN_CC/cResource.cc \
+             $$MAIN_CC/cResourceCount.cc \
+             $$MAIN_CC/cResourceLib.cc \
+             $$MAIN_CC/cSpatialCountElem.cc \
+             $$MAIN_CC/cSpatialResCount.cc \
+             $$MAIN_CC/cSpecies.cc \
+             $$MAIN_CC/cSpeciesControl.cc \
+             $$MAIN_CC/cSpeciesQueue.cc \
+             $$MAIN_CC/cStats.cc \
+             $$MAIN_CC/cTaskEntry.cc \
+             $$MAIN_CC/cTaskLib.cc
 }

@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef REACTION_PROCESS_HH
-#include "reaction_process.hh"
+#include "cReactionProcess.h"
 #endif
 
 #ifndef DEFS_HH

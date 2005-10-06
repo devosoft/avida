@@ -2,9 +2,9 @@
 #include "cAnalyzeGenotype.h"
 #include "cMutation.h"
 #include "cPopulationCell.h"
-#include "reaction_process.hh"
-#include "reaction_requisite.hh"
-#include "reaction.hh"
+#include "cReactionProcess.h"
+#include "cReactionRequisite.h"
+#include "cReaction.h"
 #include "string.hh"
 
 #include "tList.hh"

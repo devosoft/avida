@@ -1,5 +1,5 @@
 
-Include("stats.hh")
+Include("cStats.h")
 Include("cInjectGenotype.h")
 Include("cGenome.h")
 

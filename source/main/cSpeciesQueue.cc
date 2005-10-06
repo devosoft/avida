@@ -6,14 +6,14 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef SPECIES_QUEUE_HH
-#include "species_queue.hh"
+#include "cSpeciesQueue.h"
 #endif
 
 #ifndef DEFS_HH
 #include "defs.hh"
 #endif
 #ifndef SPECIES_HH
-#include "species.hh"
+#include "cSpecies.h"
 #endif
 
 ///////////////////

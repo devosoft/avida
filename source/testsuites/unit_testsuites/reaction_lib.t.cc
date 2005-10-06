@@ -1,5 +1,5 @@
 #ifndef REACTION_LIB_HH
-#include "reaction_lib.hh"
+#include "cReactionLib.h"
 #endif
 
 #ifndef TEST_CASE_H

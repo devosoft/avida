@@ -17,10 +17,10 @@
 #include "cPopulationInterface.h"
 #endif
 #ifndef RESOURCE_COUNT_HH
-#include "resource_count.hh"
+#include "cResourceCount.h"
 #endif
 #ifndef STATS_HH
-#include "stats.hh"
+#include "cStats.h"
 #endif
 #ifndef STRING_HH
 #include "string.hh"

@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef AVIDA_HH
-#include "avida.hh"
+#include "avida.h"
 #endif
 
 #ifndef AVIDA_DRIVER_BASE_HH
@@ -40,7 +40,7 @@
 #include "cPopulationInterface.h"
 #endif
 #ifndef RESOURCE_COUNT_HH
-#include "resource_count.hh"
+#include "cResourceCount.h"
 #endif
 #ifndef TEST_CPU_HH
 #include "cTestCPU.h"

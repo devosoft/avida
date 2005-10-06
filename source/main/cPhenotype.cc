@@ -16,7 +16,7 @@
 #include "cEnvironment.h"
 #endif
 #ifndef REACTION_RESULT_HH
-#include "reaction_result.hh"
+#include "cReactionResult.h"
 #endif
 #ifndef TOOLS_HH
 #include "tools.hh"

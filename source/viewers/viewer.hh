@@ -9,7 +9,7 @@
 #define VIEWERS_HH
 
 #ifndef AVIDA_HH
-#include "avida.hh"
+#include "avida.h"
 #endif
 
 #ifndef AVIDA_DRIVER_ANALYZE_HH

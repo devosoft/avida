@@ -1,6 +1,6 @@
 
 Include("cInstSet.h")
-Include("species.hh")
+Include("cSpecies.h")
 Include("cGenotype.h")
 
 cGenotype_BirthData = Class("cGenotype_BirthData", "cGenotype_BirthData.h")

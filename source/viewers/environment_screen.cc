@@ -11,16 +11,16 @@
 #include "cGenotype.h"
 #include "cPopulation.h"
 #ifndef REACTION_HH
-#include "reaction.hh"
+#include "cReaction.h"
 #endif
 #ifndef REACTION_PROCESS_HH
-#include "reaction_process.hh"
+#include "cReactionProcess.h"
 #endif
 #ifndef RESOURCE_HH
-#include "resource.hh"
+#include "cResource.h"
 #endif
-#include "species.hh"
-#include "stats.hh"
+#include "cSpecies.h"
+#include "cStats.h"
 #include "cPopulationCell.h"
 #include "cOrganism.h"
 

@@ -1,9 +1,9 @@
 
-Include("task_entry.hh")
-Include("reaction_requisite.hh")
-Include("reaction_process.hh")
+Include("cTaskEntry.h")
+Include("cReactionRequisite.h")
+Include("cReactionProcess.h")
 
-cReaction = Class("cReaction", "reaction.hh")
+cReaction = Class("cReaction", "cReaction.h")
 set_policy(cReaction.GetTask, return_internal_reference())
 set_policy(cReaction.AddProcess, return_internal_reference())
 set_policy(cReaction.AddRequisite, return_internal_reference())

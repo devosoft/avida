@@ -42,22 +42,22 @@ SET(libmain_a_SOURCES
   cPopulation.cc
   cPopulationCell.cc
   cPopulationInterface.cc
-  reaction.cc
-  reaction_lib.cc
-  reaction_process.cc
-  reaction_requisite.cc
-  reaction_result.cc
-  resource.cc
-  resource_count.cc
-  resource_lib.cc
-  spatial_count_elem.cc
-  spatial_res_count.cc
-  species.cc
-  species_control.cc
-  species_queue.cc
-  stats.cc
-  task_entry.cc
-  task_lib.cc
+  cReaction.cc
+  cReactionLib.cc
+  cReactionProcess.cc
+  cReactionRequisite.cc
+  cReactionResult.cc
+  cResource.cc
+  cResourceCount.cc
+  cResourceLib.cc
+  cSpatialCountElem.cc
+  cSpatialResCount.cc
+  cSpecies.cc
+  cSpeciesControl.cc
+  cSpeciesQueue.cc
+  cStats.cc
+  cTaskEntry.cc
+  cTaskLib.cc
 )
 
 ADD_LIBRARY(main ${libmain_a_SOURCES})

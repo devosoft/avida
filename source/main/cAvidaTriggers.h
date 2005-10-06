@@ -12,7 +12,7 @@
 #include "cEventTriggers.h"
 #endif
 #ifndef STATS_HH
-#include "stats.hh"
+#include "cStats.h"
 #endif
 
 /**

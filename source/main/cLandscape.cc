@@ -12,7 +12,7 @@
 #include "cInstSet.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
-#include "stats.hh"             // For GetUpdate in outputs...
+#include "cStats.h"             // For GetUpdate in outputs...
 #include "cTestCPU.h"
 #include "cTestUtil.h"
 #include "tools.hh"

@@ -31,10 +31,10 @@
 #include "cPhenotype.h"
 #include "cPopulationCell.h"
 #include "prob_schedule.hh"
-#include "resource.hh"
-#include "species.hh"
-#include "stats.hh"
-#include "task_entry.hh"
+#include "cResource.h"
+#include "cSpecies.h"
+#include "cStats.h"
+#include "cTaskEntry.h"
 
 #include <fstream>
 #include <vector>

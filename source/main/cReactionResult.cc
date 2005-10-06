@@ -5,7 +5,7 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "reaction_result.hh"
+#include "cReactionResult.h"
 
 
 cReactionResult::cReactionResult(const int num_resources,

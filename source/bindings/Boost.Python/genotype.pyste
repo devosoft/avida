@@ -1,6 +1,6 @@
 
 Include("merit.hh")
-Include("species.hh")
+Include("cSpecies.h")
 Include("cGenebank.h")
 
 cGenotype = Class("cGenotype", "cGenotype.h")

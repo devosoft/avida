@@ -9,7 +9,7 @@
 #define SPECIES_CONTROL_HH
 
 #ifndef SPECIES_QUEUE_HH
-#include "species_queue.hh"
+#include "cSpeciesQueue.h"
 #endif
 
 class cGenebank;

@@ -6,11 +6,11 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef TASK_LIB_HH
-#include "task_lib.hh"
+#include "cTaskLib.h"
 #endif
 
 #ifndef TASK_ENTRY_HH
-#include "task_entry.hh"
+#include "cTaskEntry.h"
 #endif
 
 extern "C" {

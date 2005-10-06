@@ -13,7 +13,7 @@
 #include "cAnalyzeUtil.h"
 #endif
 #ifndef AVIDA_HH
-#include "avida.hh"
+#include "avida.h"
 #endif
 #ifndef AVIDA_DRIVER_BASE_HH
 #include "cAvidaDriver_Base.h"
@@ -64,10 +64,10 @@
 #include "cPopulationEvent.h"
 #endif
 #ifndef RESOURCE_HH
-#include "resource.hh"
+#include "cResource.h"
 #endif
 #ifndef STATS_HH
-#include "stats.hh"
+#include "cStats.h"
 #endif
 #ifndef STRING_UTIL_HH
 #include "string_util.hh"

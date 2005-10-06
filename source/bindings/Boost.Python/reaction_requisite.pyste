@@ -1,5 +1,5 @@
-Include("reaction.hh")
+Include("cReaction.h")
 
-cReactionRequisite = Class("cReactionRequisite", "reaction_requisite.hh")
+cReactionRequisite = Class("cReactionRequisite", "cReactionRequisite.h")
 
 # vim: set ft=python:

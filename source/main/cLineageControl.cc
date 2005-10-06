@@ -10,7 +10,7 @@
 #include "string.hh"
 
 #include "cLineage.h"
-#include "stats.hh"
+#include "cStats.h"
 #include "cConfig.h"
 #include "cGenebank.h"
 #include "cGenotype.h"

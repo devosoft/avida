@@ -12,7 +12,7 @@
 #include "string.hh"
 #endif
 #ifndef TASK_LIB_HH
-#include "task_lib.hh"
+#include "cTaskLib.h"
 #endif
 
 class cTaskEntry {

@@ -16,8 +16,8 @@
 #include "cInstUtil.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
-#include "stats.hh"
-#include "task_entry.hh"
+#include "cStats.h"
+#include "cTaskEntry.h"
 #include "cTestCPU.h"
 
 #include <fstream>

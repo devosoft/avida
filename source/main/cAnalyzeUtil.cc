@@ -58,10 +58,10 @@
 #include "cPopulationCell.h"
 #endif
 #ifndef SPECIES_HH
-#include "species.hh"
+#include "cSpecies.h"
 #endif
 #ifndef STATS_HH
-#include "stats.hh"
+#include "cStats.h"
 #endif
 #ifndef TEST_CPU_HH
 #include "cTestCPU.h"

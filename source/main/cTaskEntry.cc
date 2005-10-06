@@ -1,26 +1,27 @@
 //////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2001 California Institute of Technology             //
+// Copyright (C) 1993 - 2003 California Institute of Technology             //
 //                                                                          //
 // Read the COPYING and README files, or contact 'avida@alife.org',         //
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef REACTION_REQUISITE_HH
-#include "reaction_requisite.hh"
+#ifndef TASK_ENTRY_HH
+#include "cTaskEntry.h"
 #endif
 
-#include <limits.h>
+////////////////
+//  cTaskEntry
+////////////////
 
-////////////////////////
-//  cReactionRequisite
-////////////////////////
-
-cReactionRequisite::cReactionRequisite()
-  : min_task_count(0)
-  , max_task_count(INT_MAX)
+cTaskEntry::cTaskEntry(const cString & _name, const cString & _desc,
+		       int _id, tTaskTest _test_fun)
+  : name(_name)
+  , desc(_desc)
+  , id(_id)
+  , test_fun(_test_fun)
 {
 }
 
-cReactionRequisite::~cReactionRequisite()
+cTaskEntry::~cTaskEntry()
 {
 }

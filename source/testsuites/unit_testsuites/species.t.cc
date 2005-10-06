@@ -1,5 +1,5 @@
 #ifndef SPECIES_HH
-#include "species.hh"
+#include "cSpecies.h"
 #endif
 
 #ifndef TEST_CASE_H

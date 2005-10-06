@@ -7,7 +7,7 @@
 
 #include <fstream>
 
-#include "species.hh"
+#include "cSpecies.h"
 #include "cGenotype.h"
 #include "cGenebank.h"
 #include "cInjectGenotype.h"

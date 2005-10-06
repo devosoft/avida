@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef SPECIES_HH
-#include "species.hh"
+#include "cSpecies.h"
 #endif
 
 #ifndef CPU_TEST_INFO_HH

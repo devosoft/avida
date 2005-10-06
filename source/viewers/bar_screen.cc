@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "cPopulation.h"
-#include "stats.hh"
+#include "cStats.h"
 #include "cEnvironment.h"
 
 #include "bar_screen.hh"

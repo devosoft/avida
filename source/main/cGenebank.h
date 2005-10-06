@@ -17,7 +17,7 @@
 #include "cGenotypeControl.h"
 #endif
 #ifndef SPECIES_CONTROL_HH
-#include "species_control.hh"
+#include "cSpeciesControl.h"
 #endif
 #ifndef STRING_HH
 #include "string.hh"

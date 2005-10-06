@@ -16,10 +16,10 @@
 #include "cGenotype.h"
 #endif
 #ifndef SPECIES_HH
-#include "species.hh"
+#include "cSpecies.h"
 #endif
 #ifndef STATS_HH
-#include "stats.hh"
+#include "cStats.h"
 #endif
 #ifndef TEST_UTIL_HH
 #include "cTestUtil.h"

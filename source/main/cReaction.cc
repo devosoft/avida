@@ -6,14 +6,14 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef REACTION_HH
-#include "reaction.hh"
+#include "cReaction.h"
 #endif
 
 #ifndef REACTION_PROCESS_HH
-#include "reaction_process.hh"
+#include "cReactionProcess.h"
 #endif
 #ifndef REACTION_REQUISITE_HH
-#include "reaction_requisite.hh"
+#include "cReactionRequisite.h"
 #endif
 
 using namespace std;

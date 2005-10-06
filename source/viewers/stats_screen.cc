@@ -10,11 +10,11 @@
 #include "cGenebank.h"
 #include "cGenotype.h"
 #include "cPopulation.h"
-#include "species.hh"
-#include "stats.hh"
+#include "cSpecies.h"
+#include "cStats.h"
 
 #ifndef TASK_ENTRY_HH
-#include "task_entry.hh"
+#include "cTaskEntry.h"
 #endif
 
 #include "stats_screen.hh"

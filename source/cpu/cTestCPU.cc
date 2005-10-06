@@ -18,9 +18,9 @@
 #include "cOrganism.h"
 #include "cPhenotype.h"
 #include "cPopulationInterface.h"
-#include "resource_count.hh"
-#include "resource_lib.hh"
-#include "resource.hh"
+#include "cResourceCount.h"
+#include "cResourceLib.h"
+#include "cResource.h"
 #include "string_util.hh"
 #include "tMatrix.hh"
 

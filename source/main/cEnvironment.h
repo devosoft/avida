@@ -18,16 +18,16 @@
 #include "cMutationRates.h"
 #endif
 #ifndef REACTION_LIB_HH
-#include "reaction_lib.hh"
+#include "cReactionLib.h"
 #endif
 #ifndef RESOURCE_LIB_HH
-#include "resource_lib.hh"
+#include "cResourceLib.h"
 #endif
 #ifndef STRING_HH
 #include "string.hh"
 #endif
 #ifndef TASK_LIB_HH
-#include "task_lib.hh"
+#include "cTaskLib.h"
 #endif
 #ifndef TLIST_HH
 #include "tList.hh"

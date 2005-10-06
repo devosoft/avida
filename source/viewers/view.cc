@@ -15,7 +15,7 @@
 #include "cPhenotype.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
-#include "stats.hh"
+#include "cStats.h"
 
 #include "cTestUtil.h"
 #include "cHardwareBase.h"

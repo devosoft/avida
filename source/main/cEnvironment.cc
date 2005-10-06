@@ -19,28 +19,28 @@
 #include "random.hh"
 #endif
 #ifndef REACTION_HH
-#include "reaction.hh"
+#include "cReaction.h"
 #endif
 #ifndef REACTION_MACROS_HH
 #include "reaction_macros.hh"
 #endif
 #ifndef REACTION_PROCESS_HH
-#include "reaction_process.hh"
+#include "cReactionProcess.h"
 #endif
 #ifndef REACTION_REQUISITE_HH
-#include "reaction_requisite.hh"
+#include "cReactionRequisite.h"
 #endif
 #ifndef REACTION_RESULT_HH
-#include "reaction_result.hh"
+#include "cReactionResult.h"
 #endif
 #ifndef RESOURCE_HH
-#include "resource.hh"
+#include "cResource.h"
 #endif
 #ifndef STRING_UTIL_HH
 #include "string_util.hh"
 #endif
 #ifndef TASK_ENTRY_HH
-#include "task_entry.hh"
+#include "cTaskEntry.h"
 #endif
 #ifndef TOOLS_HH
 #include "tools.hh"

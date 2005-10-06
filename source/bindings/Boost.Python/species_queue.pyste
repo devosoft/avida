@@ -1,7 +1,7 @@
 
-Include("species.hh")
+Include("cSpecies.h")
 
-cSpeciesQueue = Class("cSpeciesQueue", "species_queue.hh")
+cSpeciesQueue = Class("cSpeciesQueue", "cSpeciesQueue.h")
 set_policy(cSpeciesQueue.GetFirst, return_internal_reference())
 
 # vim: set ft=python:

@@ -1,6 +1,6 @@
 
-Include("stats.hh")
-Include("species.hh")
+Include("cStats.h")
+Include("cSpecies.h")
 Include("cGenotype.h")
 Include("cGenome.h")
 

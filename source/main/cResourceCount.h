@@ -9,7 +9,7 @@
 #define RESOURCE_COUNT_HH
 
 #ifndef SPATIAL_RES_COUNT_HH
-#include "spatial_res_count.hh"
+#include "cSpatialResCount.h"
 #endif
 #ifndef STRING_HH
 #include "string.hh"

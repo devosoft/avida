@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef RESOURCE_COUNT_HH
-#include "resource_count.hh"
+#include "cResourceCount.h"
 #endif
 
 #ifndef CONFIG_HH

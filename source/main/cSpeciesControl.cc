@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef SPECIES_CONTROL_HH
-#include "species_control.hh"
+#include "cSpeciesControl.h"
 #endif
 
 #ifndef CONFIG_HH
@@ -22,10 +22,10 @@
 #include "nSpecies.h"
 #endif
 #ifndef SPECIES_HH
-#include "species.hh"
+#include "cSpecies.h"
 #endif
 #ifndef STATS_HH
-#include "stats.hh"
+#include "cStats.h"
 #endif
 
 #include <assert.h>

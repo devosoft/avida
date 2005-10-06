@@ -21,7 +21,7 @@
 #include "string_util.hh"
 #endif
 #ifndef TASK_ENTRY_HH
-#include "task_entry.hh"
+#include "cTaskEntry.h"
 #endif
 
 #include "cHardwareCPU.h"

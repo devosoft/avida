@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef RESOURCE_HH
-#include "resource.hh"
+#include "cResource.h"
 #endif
 
 #ifndef CONFIG_HH

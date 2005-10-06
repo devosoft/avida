@@ -10,7 +10,7 @@
 #endif
 
 #ifndef AVIDA_HH
-#include "avida.hh"
+#include "avida.h"
 #endif
 #ifndef AVIDA_DRIVER_BASE_HH
 #include "cAvidaDriver_Base.h"

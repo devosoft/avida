@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef SPATIAL_RES_COUNT_HH
-#include "spatial_res_count.hh"
+#include "cSpatialResCount.h"
 #endif
 
 #ifndef CONFIG_HH

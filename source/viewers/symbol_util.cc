@@ -12,7 +12,7 @@
 #include "cGenotype.h"
 #include "cOrganism.h"
 #include "cPopulationCell.h"
-#include "species.hh"
+#include "cSpecies.h"
 #include "cConfig.h"
 #include "cHardwareBase.h"
 #include "cHardware4Stack.h"

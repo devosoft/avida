@@ -9,7 +9,7 @@
 
 #include "cGenebank.h"
 #include "cGenotype.h"
-#include "species.hh"
+#include "cSpecies.h"
 
 #include "hist_screen.hh"
 
