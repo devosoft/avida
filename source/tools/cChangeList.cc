@@ -5,7 +5,7 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "change_list.hh"
+#include "cChangeList.h"
 
 
 void cChangeList::ResizeClear(int capacity){

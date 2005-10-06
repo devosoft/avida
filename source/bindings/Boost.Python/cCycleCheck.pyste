@@ -1,5 +1,5 @@
-Include("cID.hh")
+Include("cID.h")
 
-cCycleCheck = Class("cCycleCheck", "cCycleCheck.hh")
+cCycleCheck = Class("cCycleCheck", "cCycleCheck.h")
 
 # vim: set ft=python:

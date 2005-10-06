@@ -8,7 +8,7 @@
 #ifndef VIEWERS_HH
 #define VIEWERS_HH
 
-#ifndef AVIDA_HH
+#ifndef avida_h
 #include "avida.h"
 #endif
 

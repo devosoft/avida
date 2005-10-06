@@ -7,7 +7,7 @@
 
 #include "prob_schedule.hh"
 
-#include "change_list.hh"
+#include "cChangeList.h"
 #include "merit.hh"
 #include "tools.hh"
 

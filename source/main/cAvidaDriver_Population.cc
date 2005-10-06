@@ -9,7 +9,7 @@
 
 #include "cAvidaTriggers.h"
 #include "cCallbackUtil.h"
-#include "change_list.hh"
+#include "cChangeList.h"
 #include "cConfig.h"
 #include "cEventFactoryManager.h"
 #include "cEventList.h"

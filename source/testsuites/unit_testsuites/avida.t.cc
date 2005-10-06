@@ -1,4 +1,4 @@
-#ifndef AVIDA_HH
+#ifndef avida_h
 #include "avida.h"
 #endif
 #ifndef TEST_CASE_H

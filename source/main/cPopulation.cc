@@ -7,9 +7,9 @@
 
 #include "cPopulation.h"
 
-#include "change_list.hh"
+#include "cChangeList.h"
 #include "cConfig.h"
-#include "const_schedule.hh"
+#include "cConstSchedule.h"
 #include "data_file.hh"
 #include "cEnvironment.h"
 #include "functions.hh"

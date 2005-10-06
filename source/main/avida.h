@@ -5,8 +5,8 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef AVIDA_HH
-#define AVIDA_HH
+#ifndef avida_h
+#define avida_h
 
 class cEnvironment;
 class cPopulationInterface;

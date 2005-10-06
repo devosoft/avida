@@ -9,7 +9,7 @@ before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.
 #define VERIFIER_SUITE_RECURSER_HH
 
 #ifndef CYCLE_CHECK_HH
-#include "cCycleCheck.hh"
+#include "cCycleCheck.h"
 #endif
 
 #ifndef TEST_CASE_H

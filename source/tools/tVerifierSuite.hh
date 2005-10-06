@@ -10,7 +10,7 @@ before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.
 #endif
 
 #ifndef VERIFIER_SUITE_RECURSER_HH
-#include "cVerifierSuiteRecurser.hh"
+#include "cVerifierSuiteRecurser.h"
 #endif
 
 /*!

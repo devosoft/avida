@@ -5,9 +5,9 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "const_schedule.hh"
+#include "cConstSchedule.h"
 
-#include "change_list.hh"
+#include "cChangeList.h"
 #include "merit.hh"
 
 

@@ -1,7 +1,7 @@
 #ifndef AVIDA_FIXUPS_HH
 #define AVIDA_FIXUPS_HH
 
-#ifndef AVIDA_HH
+#ifndef avida_h
 #include "avida.h"
 #endif
 

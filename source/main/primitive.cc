@@ -1,15 +1,13 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2001 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  nGeometry.h
+ *  Avida2
+ *
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993 - 2001 California Institute of Technology.
+ *
+ */
 
-#ifndef PRIMITIVE_HH
-#include "primitive.hh"
-#endif
-
-#ifndef AVIDA_HH
+#ifndef avida_h
 #include "avida.h"
 #endif
 #ifndef AVIDA_DRIVER_ANALYZE_HH

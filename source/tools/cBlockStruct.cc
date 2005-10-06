@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef BLOCK_STRUCT_HH
-#include "block_struct.hh"
+#include "cBlockStruct.h"
 #endif
 
 #include <iostream>

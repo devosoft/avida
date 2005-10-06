@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef CONST_SCHEDULE_HH
-#include "const_schedule.hh"
+#include "cConstSchedule.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

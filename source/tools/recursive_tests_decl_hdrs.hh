@@ -50,7 +50,7 @@ with details, to standard-out.
 
 #ifndef NDEBUG
   #ifndef ID_HH
-  #include "cID.hh"
+  #include "cID.h"
   #endif
   #ifndef RECURSIVE_TESTS_MACROS_HH
   #include "recursive_tests_macros.hh"

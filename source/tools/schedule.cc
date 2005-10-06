@@ -7,7 +7,7 @@
 
 #include "schedule.hh"
 
-#include "change_list.hh"
+#include "cChangeList.h"
 
 ////////////////
 //  cSchedule

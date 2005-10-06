@@ -9,7 +9,7 @@
 #define GENOTYPE_BIRTH_DATA_HH
 
 #ifndef COUNT_TRACKER_HH
-#include "count_tracker.hh"
+#include "cCountTracker.h"
 #endif
 
 #ifndef TARRAY_HH

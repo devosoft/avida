@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef BLOCK_STRUCT_HH
-#include "block_struct.hh"
+#include "cBlockStruct.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

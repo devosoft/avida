@@ -1,4 +1,4 @@
 
-cBlockStruct = Class("cBlockStruct", "block_struct.hh")
+cBlockStruct = Class("cBlockStruct", "cBlockStruct.h")
 
 # vim: set ft=python:

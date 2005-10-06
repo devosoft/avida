@@ -1,7 +1,7 @@
 
 tools {
   HEADERS += $$TOOLS_HH/indexed_block_struct.hh \
-             $$TOOLS_HH/block_struct.hh \
+             $$TOOLS_HH/cBlockStruct.h \
              $$TOOLS_HH/data_entry.hh \
              $$TOOLS_HH/data_manager_base.hh \
              $$TOOLS_HH/data_file.hh \
@@ -27,9 +27,9 @@ tools {
              $$TOOLS_HH/weighted_index.hh \
              $$TOOLS_HH/win32_mkdir_hack.hh
   
-  SOURCES += $$TOOLS_CC/block_struct.cc \
-             $$TOOLS_CC/const_schedule.cc \
-             $$TOOLS_CC/count_tracker.cc \
+  SOURCES += $$TOOLS_CC/cBlockStruct.cc \
+             $$TOOLS_CC/cConstSchedule.cc \
+             $$TOOLS_CC/cCountTracker.cc \
              $$TOOLS_CC/data_entry.cc \
              $$TOOLS_CC/data_file.cc \
              $$TOOLS_CC/data_file_manager.cc \

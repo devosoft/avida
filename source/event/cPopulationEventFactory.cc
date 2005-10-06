@@ -12,7 +12,7 @@
 #ifndef ANALYZE_UTIL_HH
 #include "cAnalyzeUtil.h"
 #endif
-#ifndef AVIDA_HH
+#ifndef avida_h
 #include "avida.h"
 #endif
 #ifndef AVIDA_DRIVER_BASE_HH

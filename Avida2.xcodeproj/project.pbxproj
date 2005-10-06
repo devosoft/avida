@@ -11,10 +11,6 @@
 		700E2AF8085DE50C00CF158A /* avida.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3109C0762539E008F7A48 /* avida.cc */; };
 		700E2B43085DE50C00CF158A /* weighted_index.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC315B3076253A5008F7A48 /* weighted_index.cc */; };
 		700E2B44085DE50C00CF158A /* tools.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC315AA076253A4008F7A48 /* tools.cc */; };
-		700E2B45085DE50C00CF158A /* block_struct.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC31545076253A4008F7A48 /* block_struct.cc */; };
-		700E2B46085DE50C00CF158A /* cCycleCheck.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC31547076253A4008F7A48 /* cCycleCheck.cc */; };
-		700E2B47085DE50C00CF158A /* const_schedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3154B076253A4008F7A48 /* const_schedule.cc */; };
-		700E2B48085DE50C00CF158A /* count_tracker.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3154D076253A4008F7A48 /* count_tracker.cc */; };
 		700E2B49085DE50C00CF158A /* data_entry.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC31550076253A4008F7A48 /* data_entry.cc */; };
 		700E2B4A085DE50C00CF158A /* data_file.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC31552076253A4008F7A48 /* data_file.cc */; };
 		700E2B4B085DE50C00CF158A /* data_file_manager.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC31554076253A4008F7A48 /* data_file_manager.cc */; };
@@ -45,7 +41,6 @@
 		700E2B64085DE50C00CF158A /* string_iterator.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC31592076253A4008F7A48 /* string_iterator.cc */; };
 		700E2B65085DE50C00CF158A /* string_list.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC31594076253A4008F7A48 /* string_list.cc */; };
 		700E2B66085DE50C00CF158A /* string_util.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC31596076253A4008F7A48 /* string_util.cc */; };
-		700E2B68085DE50C00CF158A /* change_list.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CBFCEF0815E8370078D8CC /* change_list.cc */; };
 		700E2B6F085DE50C00CF158A /* analyze.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3114B0762539E008F7A48 /* analyze.cfg */; };
 		700E2B70085DE50C00CF158A /* environment.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311800762539F008F7A48 /* environment.cfg */; };
 		700E2B71085DE50C00CF158A /* events.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311810762539F008F7A48 /* events.cfg */; };
@@ -171,6 +166,12 @@
 		70B0874B08F5E82D00FC65FE /* cStats.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872B08F5E82D00FC65FE /* cStats.cc */; };
 		70B0874C08F5E82D00FC65FE /* cTaskEntry.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872C08F5E82D00FC65FE /* cTaskEntry.cc */; };
 		70B0874D08F5E82D00FC65FE /* cTaskLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872D08F5E82D00FC65FE /* cTaskLib.cc */; };
+		70B087E208F5F4BA00FC65FE /* cChangeList.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B087DF08F5F4BA00FC65FE /* cChangeList.cc */; };
+		70B087E308F5F4BA00FC65FE /* cConstSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B087E008F5F4BA00FC65FE /* cConstSchedule.cc */; };
+		70B087E408F5F4BA00FC65FE /* cCountTracker.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B087E108F5F4BA00FC65FE /* cCountTracker.cc */; };
+		70B087E508F5F4BA00FC65FE /* cChangeList.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B087DF08F5F4BA00FC65FE /* cChangeList.cc */; };
+		70B087E608F5F4BA00FC65FE /* cConstSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B087E008F5F4BA00FC65FE /* cConstSchedule.cc */; };
+		70B087E708F5F4BA00FC65FE /* cCountTracker.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B087E108F5F4BA00FC65FE /* cCountTracker.cc */; };
 		70C1EF4808C393BA00F50912 /* cCodeLabel.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF4608C393BA00F50912 /* cCodeLabel.cc */; };
 		70C1EF4A08C393BA00F50912 /* cCodeLabel.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF4608C393BA00F50912 /* cCodeLabel.cc */; };
 		70C1EF5908C3948C00F50912 /* cCPUMemory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF5808C3948C00F50912 /* cCPUMemory.cc */; };
@@ -249,17 +250,12 @@
 		70CA6EDF08DB7F8200068AC2 /* cInstruction.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EBF08DB7F8200068AC2 /* cInstruction.cc */; };
 		70CA6EE008DB7F8200068AC2 /* cInstSet.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EC008DB7F8200068AC2 /* cInstSet.cc */; };
 		70CA6EE108DB7F8200068AC2 /* cInstUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EC108DB7F8200068AC2 /* cInstUtil.cc */; };
-		70CBFCF10815E8370078D8CC /* change_list.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CBFCEF0815E8370078D8CC /* change_list.cc */; };
 		70D46934085F61DA004C8409 /* trio.c in Sources */ = {isa = PBXBuildFile; fileRef = DCC3146D076253A1008F7A48 /* trio.c */; };
 		70D46935085F61DD004C8409 /* trionan.c in Sources */ = {isa = PBXBuildFile; fileRef = DCC31471076253A1008F7A48 /* trionan.c */; };
 		70D46936085F61DF004C8409 /* triostr.c in Sources */ = {isa = PBXBuildFile; fileRef = DCC31474076253A1008F7A48 /* triostr.c */; };
 		DCC3166107628531008F7A48 /* avida.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3109C0762539E008F7A48 /* avida.cc */; };
 		DCC316B807628742008F7A48 /* weighted_index.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC315B3076253A5008F7A48 /* weighted_index.cc */; };
 		DCC316B907628744008F7A48 /* tools.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC315AA076253A4008F7A48 /* tools.cc */; };
-		DCC316BA07628749008F7A48 /* block_struct.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC31545076253A4008F7A48 /* block_struct.cc */; };
-		DCC316BB0762874A008F7A48 /* cCycleCheck.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC31547076253A4008F7A48 /* cCycleCheck.cc */; };
-		DCC316BC0762874B008F7A48 /* const_schedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3154B076253A4008F7A48 /* const_schedule.cc */; };
-		DCC316BD0762874C008F7A48 /* count_tracker.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3154D076253A4008F7A48 /* count_tracker.cc */; };
 		DCC316BE0762874D008F7A48 /* data_entry.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC31550076253A4008F7A48 /* data_entry.cc */; };
 		DCC316BF0762874E008F7A48 /* data_file.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC31552076253A4008F7A48 /* data_file.cc */; };
 		DCC316C00762874F008F7A48 /* data_file_manager.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC31554076253A4008F7A48 /* data_file_manager.cc */; };
@@ -476,6 +472,17 @@
 		70B0872D08F5E82D00FC65FE /* cTaskLib.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTaskLib.cc; sourceTree = "<group>"; };
 		70B0875A08F5EC8900FC65FE /* nGeometry.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = nGeometry.h; sourceTree = "<group>"; };
 		70B0875C08F5ECBC00FC65FE /* nReaction.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = nReaction.h; sourceTree = "<group>"; };
+		70B087D708F5F4A900FC65FE /* cBlockStruct.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cBlockStruct.cc; sourceTree = "<group>"; };
+		70B087D808F5F4A900FC65FE /* cBlockStruct.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cBlockStruct.h; sourceTree = "<group>"; };
+		70B087D908F5F4A900FC65FE /* cChangeList.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cChangeList.h; sourceTree = "<group>"; };
+		70B087DA08F5F4A900FC65FE /* cConstSchedule.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cConstSchedule.h; sourceTree = "<group>"; };
+		70B087DB08F5F4A900FC65FE /* cCountTracker.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCountTracker.h; sourceTree = "<group>"; };
+		70B087DC08F5F4A900FC65FE /* cCycleCheck.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCycleCheck.h; sourceTree = "<group>"; };
+		70B087DD08F5F4A900FC65FE /* cID.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cID.h; sourceTree = "<group>"; };
+		70B087DE08F5F4A900FC65FE /* cVerifierSuiteRecurser.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cVerifierSuiteRecurser.h; sourceTree = "<group>"; };
+		70B087DF08F5F4BA00FC65FE /* cChangeList.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cChangeList.cc; sourceTree = "<group>"; };
+		70B087E008F5F4BA00FC65FE /* cConstSchedule.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cConstSchedule.cc; sourceTree = "<group>"; };
+		70B087E108F5F4BA00FC65FE /* cCountTracker.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCountTracker.cc; sourceTree = "<group>"; };
 		70C1EF4608C393BA00F50912 /* cCodeLabel.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCodeLabel.cc; sourceTree = "<group>"; };
 		70C1EF4708C393BA00F50912 /* cCodeLabel.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCodeLabel.h; sourceTree = "<group>"; };
 		70C1EF5808C3948C00F50912 /* cCPUMemory.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCPUMemory.cc; sourceTree = "<group>"; };
@@ -577,8 +584,6 @@
 		70CA6EF308DB7F9E00068AC2 /* cInstSet.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInstSet.h; sourceTree = "<group>"; };
 		70CA6EF408DB7F9E00068AC2 /* cInstUtil.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInstUtil.h; sourceTree = "<group>"; };
 		70CA6EF508DB806200068AC2 /* cGenotypeBatch.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenotypeBatch.h; sourceTree = "<group>"; };
-		70CBFCEF0815E8370078D8CC /* change_list.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = change_list.cc; sourceTree = "<group>"; };
-		70CBFCF00815E8370078D8CC /* change_list.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = change_list.hh; sourceTree = "<group>"; };
 		70CD471B089692200070D2DF /* AvidaEd-osx.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = "AvidaEd-osx.py"; sourceTree = "<group>"; };
 		70CD471D089692200070D2DF /* __init__.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = __init__.py; sourceTree = "<group>"; };
 		70CD471E089692200070D2DF /* _Custom_Widgets.cw */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = _Custom_Widgets.cw; sourceTree = "<group>"; };
@@ -989,7 +994,6 @@
 		DCC310F00762539E008F7A48 /* main.pro */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = main.pro; sourceTree = "<group>"; };
 		DCC310F10762539E008F7A48 /* main_sub.pri */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = main_sub.pri; sourceTree = "<group>"; };
 		DCC311090762539E008F7A48 /* primitive.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = primitive.cc; sourceTree = "<group>"; };
-		DCC3110A0762539E008F7A48 /* primitive.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = primitive.hh; sourceTree = "<group>"; };
 		DCC311390762539E008F7A48 /* modules.pri */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = modules.pri; sourceTree = "<group>"; };
 		DCC3114B0762539E008F7A48 /* analyze.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = analyze.cfg; sourceTree = "<group>"; };
 		DCC3114C0762539E008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
@@ -1276,17 +1280,8 @@
 		DCC314D5076253A2008F7A48 /* test_result.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = test_result.h; sourceTree = "<group>"; };
 		DCC314D6076253A2008F7A48 /* text_test_interpreter.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = text_test_interpreter.cpp; sourceTree = "<group>"; };
 		DCC314D7076253A2008F7A48 /* text_test_interpreter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = text_test_interpreter.h; sourceTree = "<group>"; };
-		DCC31545076253A4008F7A48 /* block_struct.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = block_struct.cc; sourceTree = "<group>"; };
-		DCC31546076253A4008F7A48 /* block_struct.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = block_struct.hh; sourceTree = "<group>"; };
 		DCC31547076253A4008F7A48 /* cCycleCheck.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCycleCheck.cc; sourceTree = "<group>"; };
-		DCC31548076253A4008F7A48 /* cCycleCheck.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = cCycleCheck.hh; sourceTree = "<group>"; };
-		DCC31549076253A4008F7A48 /* cID.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = cID.hh; sourceTree = "<group>"; };
 		DCC3154A076253A4008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		DCC3154B076253A4008F7A48 /* const_schedule.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = const_schedule.cc; sourceTree = "<group>"; };
-		DCC3154C076253A4008F7A48 /* const_schedule.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = const_schedule.hh; sourceTree = "<group>"; };
-		DCC3154D076253A4008F7A48 /* count_tracker.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = count_tracker.cc; sourceTree = "<group>"; };
-		DCC3154E076253A4008F7A48 /* count_tracker.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = count_tracker.hh; sourceTree = "<group>"; };
-		DCC3154F076253A4008F7A48 /* cVerifierSuiteRecurser.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = cVerifierSuiteRecurser.hh; sourceTree = "<group>"; };
 		DCC31550076253A4008F7A48 /* data_entry.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = data_entry.cc; sourceTree = "<group>"; };
 		DCC31551076253A4008F7A48 /* data_entry.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = data_entry.hh; sourceTree = "<group>"; };
 		DCC31552076253A4008F7A48 /* data_file.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = data_file.cc; sourceTree = "<group>"; };
@@ -2172,7 +2167,6 @@
 				DCC310F00762539E008F7A48 /* main.pro */,
 				DCC310F10762539E008F7A48 /* main_sub.pri */,
 				DCC311090762539E008F7A48 /* primitive.cc */,
-				DCC3110A0762539E008F7A48 /* primitive.hh */,
 				DCC3112E0762539E008F7A48 /* unit_testsuites */,
 				70B085D108F48C9400FC65FE /* nSpecies.h */,
 			);
@@ -2721,20 +2715,20 @@
 		DCC314D8076253A2008F7A48 /* tools */ = {
 			isa = PBXGroup;
 			children = (
+				70B087DF08F5F4BA00FC65FE /* cChangeList.cc */,
+				70B087E008F5F4BA00FC65FE /* cConstSchedule.cc */,
+				70B087E108F5F4BA00FC65FE /* cCountTracker.cc */,
+				70B087D708F5F4A900FC65FE /* cBlockStruct.cc */,
+				70B087D808F5F4A900FC65FE /* cBlockStruct.h */,
+				70B087D908F5F4A900FC65FE /* cChangeList.h */,
+				70B087DA08F5F4A900FC65FE /* cConstSchedule.h */,
+				70B087DB08F5F4A900FC65FE /* cCountTracker.h */,
+				70B087DC08F5F4A900FC65FE /* cCycleCheck.h */,
+				70B087DD08F5F4A900FC65FE /* cID.h */,
+				70B087DE08F5F4A900FC65FE /* cVerifierSuiteRecurser.h */,
 				70FB868608BFA02D00BDF589 /* tHashTable.hh */,
-				70CBFCEF0815E8370078D8CC /* change_list.cc */,
-				70CBFCF00815E8370078D8CC /* change_list.hh */,
-				DCC31545076253A4008F7A48 /* block_struct.cc */,
-				DCC31546076253A4008F7A48 /* block_struct.hh */,
 				DCC31547076253A4008F7A48 /* cCycleCheck.cc */,
-				DCC31548076253A4008F7A48 /* cCycleCheck.hh */,
-				DCC31549076253A4008F7A48 /* cID.hh */,
 				DCC3154A076253A4008F7A48 /* CMakeLists.txt */,
-				DCC3154B076253A4008F7A48 /* const_schedule.cc */,
-				DCC3154C076253A4008F7A48 /* const_schedule.hh */,
-				DCC3154D076253A4008F7A48 /* count_tracker.cc */,
-				DCC3154E076253A4008F7A48 /* count_tracker.hh */,
-				DCC3154F076253A4008F7A48 /* cVerifierSuiteRecurser.hh */,
 				DCC31550076253A4008F7A48 /* data_entry.cc */,
 				DCC31551076253A4008F7A48 /* data_entry.hh */,
 				DCC31552076253A4008F7A48 /* data_file.cc */,
@@ -3036,10 +3030,6 @@
 				700E2AF8085DE50C00CF158A /* avida.cc in Sources */,
 				700E2B43085DE50C00CF158A /* weighted_index.cc in Sources */,
 				700E2B44085DE50C00CF158A /* tools.cc in Sources */,
-				700E2B45085DE50C00CF158A /* block_struct.cc in Sources */,
-				700E2B46085DE50C00CF158A /* cCycleCheck.cc in Sources */,
-				700E2B47085DE50C00CF158A /* const_schedule.cc in Sources */,
-				700E2B48085DE50C00CF158A /* count_tracker.cc in Sources */,
 				700E2B49085DE50C00CF158A /* data_entry.cc in Sources */,
 				700E2B4A085DE50C00CF158A /* data_file.cc in Sources */,
 				700E2B4B085DE50C00CF158A /* data_file_manager.cc in Sources */,
@@ -3070,7 +3060,6 @@
 				700E2B64085DE50C00CF158A /* string_iterator.cc in Sources */,
 				700E2B65085DE50C00CF158A /* string_list.cc in Sources */,
 				700E2B66085DE50C00CF158A /* string_util.cc in Sources */,
-				700E2B68085DE50C00CF158A /* change_list.cc in Sources */,
 				70658C35085DE5D800486BED /* ansi.cc in Sources */,
 				70658C36085DE5D900486BED /* bar_screen.cc in Sources */,
 				70658C38085DE5DC00486BED /* environment_screen.cc in Sources */,
@@ -3164,6 +3153,9 @@
 				70B0874B08F5E82D00FC65FE /* cStats.cc in Sources */,
 				70B0874C08F5E82D00FC65FE /* cTaskEntry.cc in Sources */,
 				70B0874D08F5E82D00FC65FE /* cTaskLib.cc in Sources */,
+				70B087E508F5F4BA00FC65FE /* cChangeList.cc in Sources */,
+				70B087E608F5F4BA00FC65FE /* cConstSchedule.cc in Sources */,
+				70B087E708F5F4BA00FC65FE /* cCountTracker.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3174,10 +3166,6 @@
 				DCC3166107628531008F7A48 /* avida.cc in Sources */,
 				DCC316B807628742008F7A48 /* weighted_index.cc in Sources */,
 				DCC316B907628744008F7A48 /* tools.cc in Sources */,
-				DCC316BA07628749008F7A48 /* block_struct.cc in Sources */,
-				DCC316BB0762874A008F7A48 /* cCycleCheck.cc in Sources */,
-				DCC316BC0762874B008F7A48 /* const_schedule.cc in Sources */,
-				DCC316BD0762874C008F7A48 /* count_tracker.cc in Sources */,
 				DCC316BE0762874D008F7A48 /* data_entry.cc in Sources */,
 				DCC316BF0762874E008F7A48 /* data_file.cc in Sources */,
 				DCC316C00762874F008F7A48 /* data_file_manager.cc in Sources */,
@@ -3208,7 +3196,6 @@
 				DCC316D90762876C008F7A48 /* string_iterator.cc in Sources */,
 				DCC316DA0762876E008F7A48 /* string_list.cc in Sources */,
 				DCC316DB0762876F008F7A48 /* string_util.cc in Sources */,
-				70CBFCF10815E8370078D8CC /* change_list.cc in Sources */,
 				70658C44085DE5FF00486BED /* primitive.cc in Sources */,
 				70D46934085F61DA004C8409 /* trio.c in Sources */,
 				70D46935085F61DD004C8409 /* trionan.c in Sources */,
@@ -3292,6 +3279,9 @@
 				70B0873B08F5E82D00FC65FE /* cStats.cc in Sources */,
 				70B0873C08F5E82D00FC65FE /* cTaskEntry.cc in Sources */,
 				70B0873D08F5E82D00FC65FE /* cTaskLib.cc in Sources */,
+				70B087E208F5F4BA00FC65FE /* cChangeList.cc in Sources */,
+				70B087E308F5F4BA00FC65FE /* cConstSchedule.cc in Sources */,
+				70B087E408F5F4BA00FC65FE /* cCountTracker.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
