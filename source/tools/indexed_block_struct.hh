@@ -19,10 +19,10 @@
 #define INDEXED_BLOCK_STRUCT_HH
 
 #ifndef FIXED_BLOCK_HH
-#include "fixed_block.hh"
+#include "cFixedBlock.h"
 #endif
 #ifndef FIXED_COORDS_HH
-#include "fixed_coords.hh"
+#include "cFixedCoords.h"
 #endif
 #ifndef REF_BLOCK_HH
 #include "ref_block.hh"

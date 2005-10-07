@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef FUNCTIONS_HH
-#include "functions.hh"
+#include "functions.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

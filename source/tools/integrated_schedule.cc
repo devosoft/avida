@@ -8,7 +8,7 @@
 #include "integrated_schedule.hh"
 
 #include "cChangeList.h"
-#include "functions.hh"
+#include "functions.h"
 #include "integrated_schedule_node.hh"
 #include "merit.hh"
 

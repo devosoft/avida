@@ -10,7 +10,7 @@
 #include "cCPUTestInfo.h"
 #include "cConfig.h"
 #include "cEnvironment.h"
-#include "functions.hh"
+#include "functions.h"
 #include "cHardwareBase.h"
 #include "cHardwareStatusPrinter.h"
 #include "cInstSet.h"

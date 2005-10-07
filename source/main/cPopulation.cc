@@ -12,7 +12,7 @@
 #include "cConstSchedule.h"
 #include "cDataFile.h"
 #include "cEnvironment.h"
-#include "functions.hh"
+#include "functions.h"
 #include "cGenebank.h"
 #include "cGenomeUtil.h"
 #include "cGenotype.h"

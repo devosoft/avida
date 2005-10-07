@@ -11,7 +11,7 @@
 #include <iostream>
 
 #ifndef FILE_HH
-#include "file.hh"
+#include "cFile.h"
 #endif
 #ifndef STRING_HH
 #include "string.hh"

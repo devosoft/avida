@@ -9,10 +9,10 @@
 #define BLOCK_STRUCT_HH
 
 #ifndef FIXEDBLOCK_HH
-#include "fixed_block.hh"
+#include "cFixedBlock.h"
 #endif
 #ifndef FIXEDCOORDS_HH
-#include "fixed_coords.hh"
+#include "cFixedCoords.h"
 #endif
 #ifndef SCALED_BLOCK_HH
 #include "scaled_block.hh"

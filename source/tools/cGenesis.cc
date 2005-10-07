@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef GENESIS_HH
-#include "genesis.hh"
+#include "cGenesis.h"
 #endif
 
 using namespace std;

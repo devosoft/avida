@@ -7,7 +7,7 @@
 
 #include "cGenomeUtil.h"
 
-#include "functions.hh"
+#include "functions.h"
 #include "cGenome.h"
 
 

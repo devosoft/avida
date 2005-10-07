@@ -9,7 +9,7 @@
 #define CONFIG_HH
 
 #ifndef GENESIS_HH
-#include "genesis.hh"
+#include "cGenesis.h"
 #endif
 #ifndef STRING_LIST_HH
 #include "string_list.hh"

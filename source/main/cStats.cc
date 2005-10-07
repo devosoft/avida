@@ -9,7 +9,7 @@
 
 #include "cConfig.h"
 #include "cDataFile.h"
-#include "functions.hh"
+#include "functions.h"
 #include "string_util.hh"
 #include "tDataEntry.hh"
 

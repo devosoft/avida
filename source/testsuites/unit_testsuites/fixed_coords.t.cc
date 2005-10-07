@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef FIXED_COORDS_HH
-#include "fixed_coords.hh"
+#include "cFixedCoords.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

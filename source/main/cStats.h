@@ -22,7 +22,7 @@
 #include "cDoubleSum.h"
 #endif
 #ifndef FUNCTIONS_HH
-#include "functions.hh"
+#include "functions.h"
 #endif
 #ifndef INT_SUM_HH
 #include "int_sum.hh"

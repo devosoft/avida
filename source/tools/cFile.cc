@@ -6,14 +6,14 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef FILE_HH
-#include "file.hh"
+#include "cFile.h"
 #endif
 
 #ifndef INIT_FILE_HH
 #include "init_file.hh"
 #endif
 #ifndef GENESIS_HH
-#include "genesis.hh"
+#include "cGenesis.h"
 #endif
 #ifndef STRING_ITERATOR_HH
 #include "string_iterator.hh"

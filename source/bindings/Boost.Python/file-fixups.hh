@@ -2,7 +2,7 @@
 #define FILE_FIXUPS_HH
 
 #ifndef FILE_HH
-#include "file.hh"
+#include "cFile.h"
 #endif
 #ifndef STRING_HH
 #include "string.hh"

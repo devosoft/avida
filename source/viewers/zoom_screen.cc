@@ -8,7 +8,7 @@
 #ifndef ENVIRONMENT_HH
 #include "cEnvironment.h"
 #endif
-#include "functions.hh"
+#include "functions.h"
 
 #include "cConfig.h"
 #include "cGenebank.h"

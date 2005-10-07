@@ -9,7 +9,7 @@
 #define SCALED_BLOCK_HH
 
 #ifndef FIXED_COORDS_HH
-#include "fixed_coords.hh"
+#include "cFixedCoords.h"
 #endif
 
 /**

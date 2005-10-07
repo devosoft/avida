@@ -2,7 +2,7 @@
 #define GENESIS_FIXUPS_HH
 
 #ifndef GENESIS_HH
-#include "genesis.hh"
+#include "cGenesis.h"
 #endif
 #ifndef STRING_HH
 #include "string.hh"

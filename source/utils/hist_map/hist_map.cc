@@ -7,7 +7,7 @@
 #include "../../tools/tMatrix.hh"
 
 #include "../../tools/string.hh"
-#include "../../tools/file.hh"
+#include "../../tools/cFile.h"
 
 
 using namespace std;

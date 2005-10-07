@@ -9,7 +9,7 @@
 
 #include "defs.hh"
 #include "cEventFactoryManager.h"
-#include "genesis.hh"
+#include "cGenesis.h"
 #include "cPopulationEventFactory.h"
 #include "tools.hh"
 

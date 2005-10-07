@@ -13,7 +13,7 @@
 #include "cConfig.h"
 #endif
 #ifndef FUNCTIONS_HH
-#include "functions.hh"
+#include "functions.h"
 #endif
 
 cSpatialResCount::cSpatialResCount(int inworld_x, int inworld_y, 

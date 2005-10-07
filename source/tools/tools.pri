@@ -5,9 +5,9 @@ tools {
              $$TOOLS_HH/cDataEntry.h \
              $$TOOLS_HH/cDataManager_Base.h \
              $$TOOLS_HH/cDataFile.h \
-             $$TOOLS_HH/file.hh \
-             $$TOOLS_HH/fixed_block.hh \
-             $$TOOLS_HH/functions.hh \
+             $$TOOLS_HH/cFile.h \
+             $$TOOLS_HH/cFixedBlock.h \
+             $$TOOLS_HH/functions.h \
              $$TOOLS_HH/merit.hh \
              $$TOOLS_HH/message_display.hh \
              $$TOOLS_HH/message_display_hdrs.hh \
@@ -36,9 +36,9 @@ tools {
              $$TOOLS_CC/cDataManager_Base.cc \
              $$TOOLS_CC/cDefaultMessageDisplay.cc \
              $$TOOLS_CC/cDoubleSum.cc \
-             $$TOOLS_CC/file.cc \
-             $$TOOLS_CC/fixed_block.cc \
-             $$TOOLS_CC/genesis.cc \
+             $$TOOLS_CC/cFile.cc \
+             $$TOOLS_CC/cFixedBlock.cc \
+             $$TOOLS_CC/cGenesis.cc \
              $$TOOLS_CC/help_alias.cc \
              $$TOOLS_CC/help_manager.cc \
              $$TOOLS_CC/help_type.cc \

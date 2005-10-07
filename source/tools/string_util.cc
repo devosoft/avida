@@ -10,7 +10,7 @@
 #endif
 
 
-#include "functions.hh"
+#include "functions.h"
 #include "tMatrix.hh"
 
 extern "C"{

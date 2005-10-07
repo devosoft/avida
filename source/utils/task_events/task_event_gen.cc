@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "../../tools/tArray.hh"
-#include "../../tools/file.hh"
+#include "../../tools/cFile.h"
 #include "../../tools/random.hh"
 #include "../../tools/string.hh"
 #include "../../tools/init_file.hh"

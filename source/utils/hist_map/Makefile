@@ -27,7 +27,7 @@ TARGET		= hist_map2
 default:  $(TARGET)
 
 ### List Source Files in the Project #########################################
-SRC		= hist_map2.cc			../../tools/file.cc  \
+SRC		= hist_map2.cc			../../tools/cFile.cc  \
 		../../tools/init_file.cc	../../tools/string.cc  \
 		../../tools/string_list.cc  ../../tools/string_iterator.cc  \
 
@@ -72,13 +72,13 @@ local_depend: $(SRC)
 # DO NOT DELETE
 
 hist_map2.o: ../../tools/tMatrix.hh ../../tools/tArray.hh
-hist_map2.o: ../../tools/string.hh ../../tools/file.hh
+hist_map2.o: ../../tools/string.hh ../../tools/cFile.h
 hist_map2.o: ../../tools/init_file.hh ../../tools/string_list.hh
 hist_map2.o: ../../tools/tList.hh
-../../tools/file.o: ../../tools/file.hh ../../tools/string.hh
+../../tools/file.o: ../../tools/cFile.h ../../tools/string.hh
 ../../tools/file.o: ../../tools/init_file.hh ../../tools/string_list.hh
 ../../tools/file.o: ../../tools/tList.hh ../../tools/tArray.hh
-../../tools/file.o: ../../tools/genesis.hh ../../tools/string_iterator.hh
+../../tools/file.o: ../../tools/cGenesis.h ../../tools/string_iterator.hh
 ../../tools/file.o: ../../tools/tools.hh ../../tools/random.hh
 ../../tools/init_file.o: ../../tools/init_file.hh ../../tools/string_list.hh
 ../../tools/init_file.o: ../../tools/tList.hh ../../tools/tArray.hh

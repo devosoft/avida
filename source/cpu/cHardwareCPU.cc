@@ -9,7 +9,7 @@
 
 #include "cConfig.h"
 #include "cCPUTestInfo.h"
-#include "functions.hh"
+#include "functions.h"
 #include "cGenomeUtil.h"
 #include "cGenotype.h"
 #include "cHardwareTracer.h"

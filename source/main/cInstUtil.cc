@@ -8,7 +8,7 @@
 #include "cInstUtil.h"
 
 #include "string.hh"
-#include "file.hh"
+#include "cFile.h"
 
 #ifndef INIT_FILE_HH
 #include "init_file.hh"

@@ -5,7 +5,7 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "functions.hh"
+#include "functions.h"
 #ifndef STRING_ITERATOR_HH
 #include "string_iterator.hh"
 #endif

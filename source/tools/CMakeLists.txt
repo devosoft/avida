@@ -9,9 +9,9 @@ SET(libtools_a_SOURCES
   cDataManager_Base.cc
   cDefaultMessageDisplay.cc
   cDoubleSum.cc
-  file.cc
-  fixed_block.cc
-	genesis.cc
+  cFile.cc
+  cFixedBlock.cc
+	cGenesis.cc
   help_alias.cc
   help_manager.cc
   help_type.cc

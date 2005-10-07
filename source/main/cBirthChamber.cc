@@ -16,7 +16,7 @@
 #include "cConfig.h"
 #endif
 #ifndef FUNCTIONS_HH
-#include "functions.hh"
+#include "functions.h"
 #endif
 #ifndef  GENEBANK_HH
 #include "cGenebank.h"

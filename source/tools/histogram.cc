@@ -10,7 +10,7 @@
 #endif
 
 #ifndef FUNCTIONS_HH
-#include "functions.hh"
+#include "functions.h"
 #endif
 
 extern "C" {

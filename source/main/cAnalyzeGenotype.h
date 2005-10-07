@@ -11,7 +11,7 @@
 #include <fstream>
 
 #ifndef FUNCTIONS_HH
-#include "functions.hh"
+#include "functions.h"
 #endif
 #ifndef GENOME_HH
 #include "cGenome.h"

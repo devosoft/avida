@@ -13,7 +13,7 @@
 #include "cCPUTestInfo.h"
 #endif
 #ifndef FUNCTIONS_HH
-#include "functions.hh"
+#include "functions.h"
 #endif
 #ifndef GENOTYPE_HH
 #include "cGenotype.h"
