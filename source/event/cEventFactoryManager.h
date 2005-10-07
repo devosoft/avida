@@ -33,7 +33,7 @@ class cString; // aggregate
 
 class cEventFactoryManager {
 private:
-  tList< tObjectFactory<cEvent ()> > m_factory_list;
+  tList< tObjectFactory<cEvent* ()> > m_factory_list;
 
   // not implemented, prevents inadvertent wrong instantiation
   cEventFactoryManager( const cEventFactoryManager & );
@@ -42,7 +42,7 @@ public:
   cEventFactoryManager();
   ~cEventFactoryManager();
 
-  int AddFactory(tObjectFactory<cEvent ()>* factory);
+  int AddFactory(tObjectFactory<cEvent* ()>* factory);
 
   /**
    * This function is used to construct an event. It sends the event's name

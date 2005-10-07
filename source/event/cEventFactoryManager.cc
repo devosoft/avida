@@ -23,7 +23,7 @@ cEventFactoryManager::cEventFactoryManager()
 }
 
 cEventFactoryManager::~cEventFactoryManager(){
-  tListIterator<tObjectFactory<cEvent ()> > it(m_factory_list);  
+  tListIterator<tObjectFactory<cEvent* ()> > it(m_factory_list);  
   while (it.Next() != NULL) delete it.Get();
 }
 
@@ -36,7 +36,7 @@ cEventFactoryManager::ConstructEvent(const cString name,
   
   // factory_id < 0 => send to all factories
   if( factory_id < 0 ) {
-    tListIterator<tObjectFactory<cEvent ()> > it(m_factory_list);
+    tListIterator<tObjectFactory<cEvent* ()> > it(m_factory_list);
     while (it.Next() != NULL) {
       event = (it.Get())->Create(name);
       
@@ -56,7 +56,7 @@ cEventFactoryManager::ConstructEvent(const cString name,
 }
 
 
-int cEventFactoryManager::AddFactory(tObjectFactory<cEvent ()>* factory)
+int cEventFactoryManager::AddFactory(tObjectFactory<cEvent* ()>* factory)
 {
   assert( factory != NULL );
   m_factory_list.Push(factory);
@@ -69,15 +69,14 @@ int cEventFactoryManager::AddFactory(tObjectFactory<cEvent ()>* factory)
 
 void cEventFactoryManager::PrintAllEventDescriptions()
 {
-  tListIterator<tObjectFactory<cEvent ()> > it(m_factory_list);
+  tListIterator<tObjectFactory<cEvent* ()> > it(m_factory_list);
   while (it.Next() != NULL) {
-    tList<cEvent> events;
+    tArray<cEvent*> events;
     it.Get()->CreateAll(events);
     
-    tListIterator<cEvent> events_it(events);
-    while (events_it.Next() != NULL) {
-      cout << events_it.Get()->GetDescription() << endl;
-      delete events_it.Get();
+    for (int i = 0; i < events.GetSize(); i++) {
+      cout << events[i]->GetDescription() << endl;
+      delete events[i];
     }
   }
 }
