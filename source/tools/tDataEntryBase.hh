@@ -12,7 +12,7 @@
 #include <sstream>
 
 #ifndef DATA_ENTRY_HH
-#include "data_entry.hh"
+#include "cDataEntry.h"
 #endif
 
 using namespace std;

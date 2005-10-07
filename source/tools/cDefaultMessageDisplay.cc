@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef DEFAULT_MESSAGE_DISPLAY_HH
-#include "default_message_display.hh"
+#include "cDefaultMessageDisplay.h"
 #endif
 
 #ifndef STRING_HH

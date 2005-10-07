@@ -13,7 +13,7 @@
 #include "cConfig.h"
 #endif
 #ifndef DATA_FILE_HH
-#include "data_file.hh"
+#include "cDataFile.h"
 #endif
 #ifndef GENOME_HH
 #include "cGenome.h"

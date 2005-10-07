@@ -3,12 +3,12 @@ SET(libtools_a_SOURCES
   cChangeList.cc
   cConstSchedule.cc
   cCountTracker.cc
-  data_entry.cc
-  data_file.cc
-  data_file_manager.cc
-  data_manager_base.cc
-  default_message_display.cc
-  double_sum.cc
+  cDataEntry.cc
+  cDataFile.cc
+  cDataFileManager.cc
+  cDataManager_Base.cc
+  cDefaultMessageDisplay.cc
+  cDoubleSum.cc
   file.cc
   fixed_block.cc
 	genesis.cc

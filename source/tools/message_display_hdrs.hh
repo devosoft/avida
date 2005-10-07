@@ -5,7 +5,7 @@
 #include <iostream>
 #endif
 #ifndef DEFAULT_MESSAGE_DISPLAY_HH
-#include "default_message_display.hh"
+#include "cDefaultMessageDisplay.h"
 #endif
 #ifndef MESSAGE_CLASS_HH
 #include "message_class.hh"

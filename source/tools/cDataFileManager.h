@@ -5,7 +5,7 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-/* data_file_manager.hh ********************************************************
+/* cDataFileManager.h ********************************************************
  cDataFileManager
 
  charles@krl.caltech.edu & travc@ugcs.caltech.edu

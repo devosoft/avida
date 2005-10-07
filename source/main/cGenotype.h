@@ -11,7 +11,7 @@
 #include <fstream>
 
 #ifndef DOUBLE_SUM_HH
-#include "double_sum.hh"
+#include "cDoubleSum.h"
 #endif
 #ifndef GENOME_HH
 #include "cGenome.h"

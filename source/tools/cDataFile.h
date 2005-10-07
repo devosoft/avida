@@ -5,7 +5,7 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-/* data_file.hh ****************************************************************
+/* cDataFile.h ****************************************************************
  cDataFile
 
  charles@krl.caltech.edu & travc@ugcs.caltech.edu

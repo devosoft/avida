@@ -8,7 +8,7 @@
 #include "cStats.h"
 
 #include "cConfig.h"
-#include "data_file.hh"
+#include "cDataFile.h"
 #include "functions.hh"
 #include "string_util.hh"
 #include "tDataEntry.hh"

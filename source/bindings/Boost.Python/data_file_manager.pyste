@@ -1,8 +1,8 @@
 
-Include("data_file.hh")
+Include("cDataFile.h")
 Include("string.hh")
 
-cDataFileManager = Class("cDataFileManager", "data_file_manager.hh")
+cDataFileManager = Class("cDataFileManager", "cDataFileManager.h")
 exclude(cDataFileManager.GetOFStream)
 set_policy(cDataFileManager.Get, return_internal_reference())
 

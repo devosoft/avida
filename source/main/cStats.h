@@ -16,10 +16,10 @@
 #include "defs.hh"
 #endif
 #ifndef DATA_FILE_MANAGER_HH
-#include "data_file_manager.hh"
+#include "cDataFileManager.h"
 #endif
 #ifndef DOUBLE_SUM_HH
-#include "double_sum.hh"
+#include "cDoubleSum.h"
 #endif
 #ifndef FUNCTIONS_HH
 #include "functions.hh"

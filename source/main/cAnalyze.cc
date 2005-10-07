@@ -21,7 +21,7 @@
 #include "cAnalyzeFunction.h"
 #include "cAnalyzeGenotype.h"
 #include "cConfig.h"
-#include "data_file.hh"
+#include "cDataFile.h"
 #include "cEnvironment.h"
 #include "cFitnessMatrix.h"
 #include "cGenomeUtil.h"

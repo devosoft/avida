@@ -11,7 +11,7 @@
 #include <vector>
 
 #ifndef DATA_FILE_MANAGER_HH
-#include "data_file_manager.hh"
+#include "cDataFileManager.h"
 #endif
 #ifndef GENOTYPE_BATCH_HH
 #include "cGenotypeBatch.h"

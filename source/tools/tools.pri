@@ -2,9 +2,9 @@
 tools {
   HEADERS += $$TOOLS_HH/indexed_block_struct.hh \
              $$TOOLS_HH/cBlockStruct.h \
-             $$TOOLS_HH/data_entry.hh \
-             $$TOOLS_HH/data_manager_base.hh \
-             $$TOOLS_HH/data_file.hh \
+             $$TOOLS_HH/cDataEntry.h \
+             $$TOOLS_HH/cDataManager_Base.h \
+             $$TOOLS_HH/cDataFile.h \
              $$TOOLS_HH/file.hh \
              $$TOOLS_HH/fixed_block.hh \
              $$TOOLS_HH/functions.hh \
@@ -30,12 +30,12 @@ tools {
   SOURCES += $$TOOLS_CC/cBlockStruct.cc \
              $$TOOLS_CC/cConstSchedule.cc \
              $$TOOLS_CC/cCountTracker.cc \
-             $$TOOLS_CC/data_entry.cc \
-             $$TOOLS_CC/data_file.cc \
-             $$TOOLS_CC/data_file_manager.cc \
-             $$TOOLS_CC/data_manager_base.cc \
-             $$TOOLS_CC/default_message_display.cc \
-             $$TOOLS_CC/double_sum.cc \
+             $$TOOLS_CC/cDataEntry.cc \
+             $$TOOLS_CC/cDataFile.cc \
+             $$TOOLS_CC/cDataFileManager.cc \
+             $$TOOLS_CC/cDataManager_Base.cc \
+             $$TOOLS_CC/cDefaultMessageDisplay.cc \
+             $$TOOLS_CC/cDoubleSum.cc \
              $$TOOLS_CC/file.cc \
              $$TOOLS_CC/fixed_block.cc \
              $$TOOLS_CC/genesis.cc \

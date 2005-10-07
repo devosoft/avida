@@ -6,11 +6,11 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef DATA_FILE_MANAGER_HH
-#include "data_file_manager.hh"
+#include "cDataFileManager.h"
 #endif
 
 #ifndef DATA_FILE_HH
-#include "data_file.hh"
+#include "cDataFile.h"
 #endif
 
 using namespace std;

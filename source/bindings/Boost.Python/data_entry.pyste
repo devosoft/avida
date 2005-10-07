@@ -1,5 +1,5 @@
 
-cDataEntry = Class("cDataEntry", "data_entry.hh")
+cDataEntry = Class("cDataEntry", "cDataEntry.h")
 exclude(cDataEntry.operator['<<'])
 
 # vim: set ft=python:

@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef DATA_MANAGER_BASE_HH
-#include "data_manager_base.hh"
+#include "cDataManager_Base.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

@@ -5,13 +5,10 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef DATA_ENTRY_HH
-#include "data_entry.hh"
+#ifndef DOUBLE_SUM_HH
+#include "cDoubleSum.h"
 #endif
 
+// cDoubleSum ////////////////////////////////////////////////////////////////
 
-std::ostream & operator << (std::ostream & out, cDataEntry & entry)
-{
-  entry.Print(out);
-  return out;
-}
+const double cDoubleSum::INF_ERR = 0;
