@@ -17,13 +17,13 @@
 #include "cGenotype.h"
 #include "cHardwareBase.h"
 #include "cHardwareFactory.h"
-#include "init_file.hh"
+#include "cInitFile.h"
 #include "cOrganism.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cPopulationEventFactory.h"
 #include "cPopulationInterface.h"
-#include "string.hh"
+#include "cString.h"
 #include "tools.hh"
 
 #include <iostream>

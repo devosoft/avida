@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef HELP_ENTRY_HH
-#include "tools/help_entry.hh"
+#include "tools/cHelpEntry.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

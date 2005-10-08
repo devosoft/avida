@@ -15,7 +15,7 @@
 #include "cFixedCoords.h"
 #endif
 #ifndef SCALED_BLOCK_HH
-#include "scaled_block.hh"
+#include "cScaledBlock.h"
 #endif
 #ifndef UINT_HH
 #include "uint.hh"

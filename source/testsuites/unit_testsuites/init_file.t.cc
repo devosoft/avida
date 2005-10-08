@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef INIT_FILE_HH
-#include "init_file.hh"
+#include "cInitFile.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

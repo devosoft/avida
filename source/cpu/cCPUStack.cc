@@ -8,7 +8,7 @@
 #include "cCPUStack.h"
 
 #include <assert.h>
-#include "string.hh"
+#include "cString.h"
 
 using namespace std;
 

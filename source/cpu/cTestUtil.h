@@ -9,7 +9,7 @@
 #define TEST_UTIL_HH
 
 #ifndef STRING_HH
-#include "string.hh"
+#include "cString.h"
 #endif
 
 // ------------------------------------------------------------------------

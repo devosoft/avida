@@ -6,7 +6,7 @@
 
 #include "../../tools/tMatrix.hh"
 
-#include "../../tools/string.hh"
+#include "../../tools/cString.h"
 #include "../../tools/cFile.h"
 
 

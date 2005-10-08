@@ -11,7 +11,7 @@
 #define TOOLS_HH
 
 #ifndef RANDOM_HH
-#include "random.hh"
+#include "cRandom.h"
 #endif
 
 extern cRandom g_random;

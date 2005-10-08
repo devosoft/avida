@@ -34,7 +34,7 @@
 #include "cHardwareBase.h"
 #endif
 #ifndef HISTOGRAM_HH
-#include "histogram.hh"
+#include "cHistogram.h"
 #endif
 #ifndef INST_SET_HH
 #include "cInstSet.h"

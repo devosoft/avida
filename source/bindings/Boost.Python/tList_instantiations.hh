@@ -5,6 +5,6 @@
 #include "cReactionProcess.h"
 #include "cReactionRequisite.h"
 #include "cReaction.h"
-#include "string.hh"
+#include "cString.h"
 
 #include "tList.hh"

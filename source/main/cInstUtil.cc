@@ -7,11 +7,11 @@
 
 #include "cInstUtil.h"
 
-#include "string.hh"
+#include "cString.h"
 #include "cFile.h"
 
 #ifndef INIT_FILE_HH
-#include "init_file.hh"
+#include "cInitFile.h"
 #endif
 
 #include "cInstSet.h"

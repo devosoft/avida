@@ -17,13 +17,13 @@
 #include "cGenotypeBatch.h"
 #endif
 #ifndef RANDOM_HH
-#include "random.hh"
+#include "cRandom.h"
 #endif
 #ifndef STRING_HH
-#include "string.hh"
+#include "cString.h"
 #endif
 #ifndef STRING_LIST_HH
-#include "string_list.hh"
+#include "cStringList.h"
 #endif
 #ifndef TLIST_HH
 #include "tList.hh"

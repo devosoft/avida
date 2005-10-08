@@ -22,7 +22,7 @@
 #include "cEventTriggers.h"
 #endif
 #ifndef STRING_HH
-#include "string.hh"
+#include "cString.h"
 #endif
 
 #include <float.h>           // for DBL_MIN

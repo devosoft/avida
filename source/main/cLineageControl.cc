@@ -7,7 +7,7 @@
 
 #include "cLineageControl.h"
 
-#include "string.hh"
+#include "cString.h"
 
 #include "cLineage.h"
 #include "cStats.h"

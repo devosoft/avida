@@ -11,7 +11,7 @@
 #include <iostream>
 
 #ifndef STRING_LIST_HH
-#include "string_list.hh"
+#include "cStringList.h"
 #endif
 #ifndef TDATAENTRYBASE_HH
 #include "tDataEntryBase.hh"

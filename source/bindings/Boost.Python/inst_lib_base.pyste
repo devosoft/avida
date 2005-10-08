@@ -1,5 +1,5 @@
 
-Include("string.hh")
+Include("cString.h")
 
 cInstLibBase = Class("cInstLibBase", "cInstLibBase.h")
 set_policy(cInstLibBase.GetName, return_value_policy(reference_existing_object))

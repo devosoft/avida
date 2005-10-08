@@ -25,7 +25,7 @@
 #include "cHardwareSMT.h"
 #endif
 #ifndef INIT_FILE_HH
-#include "init_file.hh"
+#include "cInitFile.h"
 #endif
 #ifndef INST_LIB_CPU_HH
 #include "cInstLibCPU.h"

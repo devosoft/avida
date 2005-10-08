@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef HELP_MANAGER_HH
-#include "tools/help_manager.hh"
+#include "tools/cHelpManager.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

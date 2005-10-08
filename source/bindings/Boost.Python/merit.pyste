@@ -1,5 +1,5 @@
 
-cMerit = Class("cMerit", "merit.hh")
+cMerit = Class("cMerit", "cMerit.h")
 # BinaryPrint is meant for use with ostreams; ditch it.
 exclude(cMerit.BinaryPrint)
 # operator is for ostreams; ditch it.

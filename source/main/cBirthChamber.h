@@ -12,7 +12,7 @@
 #include "cCPUMemory.h"
 #endif
 #ifndef MERIT_HH
-#include "merit.hh"
+#include "cMerit.h"
 #endif
 
 /**

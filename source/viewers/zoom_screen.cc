@@ -18,7 +18,7 @@
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #ifndef STRING_UTIL_HH
-#include "string_util.hh"
+#include "cStringUtil.h"
 #endif
 #ifndef TASK_ENTRY_HH
 #include "cTaskEntry.h"

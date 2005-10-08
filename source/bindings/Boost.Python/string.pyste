@@ -1,5 +1,5 @@
 
-cString = Class("cString", "string.hh")
+cString = Class("cString", "cString.h")
 # Set(...) doesn't work with Pyste because Pyste doesn't grok varargs.
 exclude(cString.Set)
 # Pyste doesn't grok cpp strings.

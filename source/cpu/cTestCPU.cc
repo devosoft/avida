@@ -21,7 +21,7 @@
 #include "cResourceCount.h"
 #include "cResourceLib.h"
 #include "cResource.h"
-#include "string_util.hh"
+#include "cStringUtil.h"
 #include "tMatrix.hh"
 
 #include <iomanip>

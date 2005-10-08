@@ -1,5 +1,5 @@
 
-Include("merit.hh")
+Include("cMerit.h")
 Include("cSpecies.h")
 Include("cGenebank.h")
 

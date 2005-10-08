@@ -12,7 +12,7 @@
 #include "cGenesis.h"
 #endif
 #ifndef STRING_LIST_HH
-#include "string_list.hh"
+#include "cStringList.h"
 #endif
 #ifndef TLIST_HH
 #include "tList.hh"

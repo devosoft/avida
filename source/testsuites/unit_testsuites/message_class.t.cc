@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef MESSAGE_CLASS_HH
-#include "message_class.hh"
+#include "cMessageClass.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

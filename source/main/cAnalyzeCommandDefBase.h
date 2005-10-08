@@ -9,7 +9,7 @@
 #define ANALYZE_COMMAND_DEF_BASE_HH
 
 #ifndef STRING_HH
-#include "string.hh"
+#include "cString.h"
 #endif
 
 class cString; // aggregate

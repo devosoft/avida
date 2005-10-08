@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef RANDOM_HH
-#include "random.hh"
+#include "cRandom.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

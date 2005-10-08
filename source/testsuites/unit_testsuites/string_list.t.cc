@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef STRING_LIST_HH
-#include "string_list.hh"
+#include "cStringList.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

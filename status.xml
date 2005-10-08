@@ -703,7 +703,7 @@ source/tools/struct.hh
         the more acurate STERILIZE_*
       </action>
       <action dev="CAO" type="fix" context="bug">
-        Added #include &lt;string.h&gt; in string.hh and debug.hh -- it was crashing on
+        Added #include &lt;string.h&gt; in cString.h and debug.hh -- it was crashing on
         calls to strlen() on some newer compilers.
       </action>
       <action dev="CAO" type="fix" context="bug">

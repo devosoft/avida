@@ -2,10 +2,10 @@
 
 #include "../../tools/tArray.hh"
 #include "../../tools/cFile.h"
-#include "../../tools/random.hh"
-#include "../../tools/string.hh"
-#include "../../tools/init_file.hh"
-#include "../../tools/string_list.hh"
+#include "../../tools/cRandom.h"
+#include "../../tools/cString.h"
+#include "../../tools/cInitFile.h"
+#include "../../tools/cStringList.h"
 
 using namespace std;
 

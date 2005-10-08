@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef STRING_ITERATOR_HH
-#include "string_iterator.hh"
+#include "cStringIterator.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

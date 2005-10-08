@@ -5,7 +5,7 @@
 #include "cGenesis.h"
 #endif
 #ifndef STRING_HH
-#include "string.hh"
+#include "cString.h"
 #endif
 
 int cGenesisOpenWrapper(cGenesis &file, cString _filename);

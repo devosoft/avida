@@ -1,5 +1,5 @@
 
-Include("string.hh")
+Include("cString.h")
 Include("cReaction.h")
 
 cReactionLib = Class("cReactionLib", "cReactionLib.h")

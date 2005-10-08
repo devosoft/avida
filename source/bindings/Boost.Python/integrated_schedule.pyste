@@ -1,8 +1,8 @@
 
 Import("schedule.pyste")
 
-Include("merit.hh")
+Include("cMerit.h")
 
-cIntegratedSchedule = Class("cIntegratedSchedule", "integrated_schedule.hh")
+cIntegratedSchedule = Class("cIntegratedSchedule", "cIntegratedSchedule.h")
 
 # vim: set ft=python:

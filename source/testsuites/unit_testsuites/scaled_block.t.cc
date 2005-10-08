@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef SCALED_BLOCK_HH
-#include "scaled_block.hh"
+#include "cScaledBlock.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

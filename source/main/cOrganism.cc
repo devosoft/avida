@@ -18,7 +18,7 @@
 #include "cInstSet.h"
 #include "cInstUtil.h"
 #include "cOrgMessage.h"
-#include "string_util.hh"
+#include "cStringUtil.h"
 #include "tArray.hh"
 #include "tools.hh"
 #include "tList.hh"

@@ -13,8 +13,8 @@
 #include "cHardwareStatusPrinter.h"
 #include "cInstSet.h"
 #include "cOrganism.h"
-#include "string.hh"
-#include "string_util.hh"
+#include "cString.h"
+#include "cStringUtil.h"
 
 #include <fstream>
 

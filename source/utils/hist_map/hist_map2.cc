@@ -6,9 +6,9 @@
 
 #include "../../tools/tMatrix.hh"
 
-#include "../../tools/string.hh"
+#include "../../tools/cString.h"
 #include "../../tools/cFile.h"
-#include "../../tools/init_file.hh"
+#include "../../tools/cInitFile.h"
 
 
 using namespace std;

@@ -2,7 +2,7 @@
 #include "cEventFactoryManager.h"
 
 #ifndef STRING_HH
-#include "string.hh"
+#include "cString.h"
 #endif
 
 #ifndef EVENT_HH

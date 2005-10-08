@@ -10,7 +10,7 @@
 #include "cConfig.h"
 #include "cDataFile.h"
 #include "functions.h"
-#include "string_util.hh"
+#include "cStringUtil.h"
 #include "tDataEntry.hh"
 
 #include <math.h>

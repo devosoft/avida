@@ -14,7 +14,7 @@
 #include "tArray.hh"
 #endif
 #ifndef STRING_HH
-#include "string.hh"
+#include "cString.h"
 #endif
 
 #ifndef RESOURCE_COUNT_HH

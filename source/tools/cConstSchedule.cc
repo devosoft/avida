@@ -8,7 +8,7 @@
 #include "cConstSchedule.h"
 
 #include "cChangeList.h"
-#include "merit.hh"
+#include "cMerit.h"
 
 
 ////////////////////

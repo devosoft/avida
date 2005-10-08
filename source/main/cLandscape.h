@@ -15,7 +15,7 @@
 #include "cGenome.h"
 #endif
 #ifndef STRING_HH
-#include "string.hh"
+#include "cString.h"
 #endif
 #ifndef TMATRIX_HH
 #include "tMatrix.hh"

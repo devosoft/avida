@@ -2,7 +2,7 @@
 Import("event_factory.pyste")
 
 Include("cEvent.h")
-Include("string.hh")
+Include("cString.h")
 Include("cPopulation.h")
 
 cPopulationEventFactory = Class("cPopulationEventFactory", "cPopulationEventFactory.h")

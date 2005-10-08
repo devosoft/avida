@@ -9,10 +9,10 @@
 #define GENESIS_HH
 
 #ifndef INIT_FILE_HH
-#include "init_file.hh"
+#include "cInitFile.h"
 #endif
 #ifndef STRING_HH
-#include "string.hh"
+#include "cString.h"
 #endif
 
 /**

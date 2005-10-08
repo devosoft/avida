@@ -10,13 +10,13 @@
 #endif
 
 #ifndef INIT_FILE_HH
-#include "init_file.hh"
+#include "cInitFile.h"
 #endif
 #ifndef GENESIS_HH
 #include "cGenesis.h"
 #endif
 #ifndef STRING_ITERATOR_HH
-#include "string_iterator.hh"
+#include "cStringIterator.h"
 #endif
 
 #ifndef TOOLS_HH

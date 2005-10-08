@@ -25,10 +25,10 @@
 #include "functions.h"
 #endif
 #ifndef INT_SUM_HH
-#include "int_sum.hh"
+#include "cIntSum.h"
 #endif
 #ifndef RUNNING_AVERAGE_HH
-#include "running_average.hh"
+#include "cRunningAverage.h"
 #endif
 #ifndef TARRAY_HH
 #include "tArray.hh"

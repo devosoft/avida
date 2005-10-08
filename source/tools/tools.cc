@@ -15,7 +15,7 @@
 #include <stdio.h>
 
 #ifndef STRING_HH
-#include "string.hh"
+#include "cString.h"
 #endif
 
 #ifdef WIN32

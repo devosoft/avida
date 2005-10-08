@@ -21,7 +21,7 @@
 #include "nMutation.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
-#include "string_util.hh"
+#include "cStringUtil.h"
 #include "cTestCPU.h"
 
 #include <limits.h>

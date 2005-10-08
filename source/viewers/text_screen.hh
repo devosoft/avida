@@ -9,7 +9,7 @@
 #define VIEW_TEXT_SCREEN_HH
 
 
-#include "merit.hh"
+#include "cMerit.h"
 #include "cInstSet.h"
 #include "defs.hh"
 

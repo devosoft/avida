@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef INTEGRATED_SCHEDULE_NODE_HH
-#include "integrated_schedule_node.hh"
+#include "cIntegratedScheduleNode.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

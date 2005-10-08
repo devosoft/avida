@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef HISTOGRAM_HH
-#include "histogram.hh"
+#include "cHistogram.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

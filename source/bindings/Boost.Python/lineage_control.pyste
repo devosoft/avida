@@ -1,7 +1,7 @@
 
 Include("cGenebank.h")
 Include("cStats.h")
-Include("string.hh")
+Include("cString.h")
 Include("cGenotype.h")
 Include("cLineage.h")
 Include("cOrganism.h")

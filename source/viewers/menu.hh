@@ -8,7 +8,7 @@
 #ifndef VIEW_MENU_HH
 #define VIEW_MENU_HH
 
-#include "string.hh"
+#include "cString.h"
 
 #include "ncurses.hh"
 #include "ansi.hh"

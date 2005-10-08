@@ -1,7 +1,7 @@
 
 Import("schedule.pyste")
 
-Include("merit.hh")
+Include("cMerit.h")
 
 cConstSchedule = Class("cConstSchedule", "cConstSchedule.h")
 

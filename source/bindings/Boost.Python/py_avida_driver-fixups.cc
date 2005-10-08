@@ -10,7 +10,7 @@
 #include "main/cPopulation.h"
 #include "main/cPopulationCell.h"
 #include "tools/cChangeList.h"
-#include "tools/string.hh"
+#include "tools/cString.h"
 
 
 #include <iostream>

@@ -9,7 +9,7 @@
 #define CONST_SCHEDULE_HH
 
 #ifndef SCHEDULE_HH
-#include "schedule.hh"
+#include "cSchedule.h"
 #endif
 #ifndef TARRAY_HH
 #include "tArray.hh"

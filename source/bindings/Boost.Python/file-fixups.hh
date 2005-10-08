@@ -5,7 +5,7 @@
 #include "cFile.h"
 #endif
 #ifndef STRING_HH
-#include "string.hh"
+#include "cString.h"
 #endif
 
 int cFileOpenWrapper(cFile &file, cString _filename);

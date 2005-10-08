@@ -10,7 +10,7 @@
 #include "cConfig.h"
 #include "cCPUTestInfo.h"
 #include "cGenomeUtil.h"
-#include "merit.hh"
+#include "cMerit.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
 #include "cTestCPU.h"

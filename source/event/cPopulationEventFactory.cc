@@ -70,7 +70,7 @@
 #include "cStats.h"
 #endif
 #ifndef STRING_UTIL_HH
-#include "string_util.hh"
+#include "cStringUtil.h"
 #endif
 #ifndef TEST_CPU_HH
 #include "cTestCPU.h"

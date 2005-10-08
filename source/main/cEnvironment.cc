@@ -10,13 +10,13 @@
 #endif
 
 #ifndef INIT_FILE_HH
-#include "init_file.hh"
+#include "cInitFile.h"
 #endif
 #ifndef nMutation_h
 #include "nMutation.h"
 #endif
 #ifndef RANDOM_HH
-#include "random.hh"
+#include "cRandom.h"
 #endif
 #ifndef REACTION_HH
 #include "cReaction.h"
@@ -37,7 +37,7 @@
 #include "cResource.h"
 #endif
 #ifndef STRING_UTIL_HH
-#include "string_util.hh"
+#include "cStringUtil.h"
 #endif
 #ifndef TASK_ENTRY_HH
 #include "cTaskEntry.h"

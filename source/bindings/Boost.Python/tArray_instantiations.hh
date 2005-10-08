@@ -1,7 +1,7 @@
 #include "cOrganism.h"
-#include "merit.hh"
+#include "cMerit.h"
 #include "cMutation.h"
-#include "int_sum.hh"
+#include "cIntSum.h"
 
 #include "tArray.hh"
 

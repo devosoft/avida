@@ -1,5 +1,5 @@
 
-Include("string.hh")
+Include("cString.h")
 Include("cMutation.h")
 
 cMutationLib = Class("cMutationLib", "cMutationLib.h")

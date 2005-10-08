@@ -10,7 +10,7 @@
 #endif
 
 #ifndef STRING_UTIL_HH
-#include "string_util.hh"
+#include "cStringUtil.h"
 #endif
 
 extern "C" {

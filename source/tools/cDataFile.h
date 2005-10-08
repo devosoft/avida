@@ -20,7 +20,7 @@
 #include <fstream>
 
 #ifndef STRING_HH
-#include "string.hh"
+#include "cString.h"
 #endif
 
 /**
