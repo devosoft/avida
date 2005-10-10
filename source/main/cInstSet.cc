@@ -13,7 +13,7 @@
 #include "cStringUtil.h"
 #endif
 #ifndef TOOLS_HH
-#include "tools.hh"
+#include "cTools.h"
 #endif
 
 using namespace std;

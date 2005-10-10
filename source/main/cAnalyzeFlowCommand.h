@@ -12,7 +12,7 @@
 #include "cAnalyzeCommand.h"
 #endif
 #ifndef TLIST_HH
-#include "tList.hh"
+#include "tList.h"
 #endif
 
 // cAnalyzeFlowCommand : A cAnalyzeCommand containing other commands

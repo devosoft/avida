@@ -20,7 +20,7 @@
 #endif
 
 #ifndef TOOLS_HH
-#include "tools.hh"  // for g_debug global
+#include "cTools.h"  // for g_debug global
 #endif
 
 #include <iostream>

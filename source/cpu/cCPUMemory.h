@@ -12,7 +12,7 @@
 #include "cGenome.h"
 #endif
 #ifndef TARRAY_HH
-#include "tArray.hh"
+#include "tArray.h"
 #endif
 #ifndef MEMORY_FLAGS_HH
 #include "cMemoryFlags.h"

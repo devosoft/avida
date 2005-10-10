@@ -17,7 +17,7 @@
 #include "cStringUtil.h"
 #endif
 #ifndef TDATAENTRYBASE_HH
-#include "tDataEntryBase.hh"
+#include "tDataEntryBase.h"
 #endif
 
 class cString;

@@ -23,7 +23,7 @@
 #include "nHardware4Stack.h"
 #endif
 #ifndef TBUFFER_HH
-#include "tBuffer.hh"
+#include "tBuffer.h"
 #endif
 
 /**

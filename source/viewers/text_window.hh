@@ -9,7 +9,7 @@
 #define VIEW_TEXT_WINDOW_HH
 
 #include <assert.h>
-#include "tools.hh"
+#include "cTools.h"
 
 // class cTextWindow;
 

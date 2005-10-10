@@ -11,7 +11,7 @@
 #include "cDataFile.h"
 #include "functions.h"
 #include "cStringUtil.h"
-#include "tDataEntry.hh"
+#include "tDataEntry.h"
 
 #include <math.h>
 

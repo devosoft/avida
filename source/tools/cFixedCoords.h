@@ -9,7 +9,7 @@
 #define FIXED_COORDS_HH
 
 #ifndef UINT_HH
-#include "uint.hh"
+#include "cUInt.h"
 #endif
 
 /**

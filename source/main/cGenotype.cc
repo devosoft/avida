@@ -14,7 +14,7 @@
 #include "cOrganism.h"
 #include "cPhenotype.h"
 #include "cTestCPU.h"
-#include "tools.hh"
+#include "cTools.h"
 
 using namespace std;
 

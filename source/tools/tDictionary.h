@@ -52,10 +52,10 @@
 #include "cStringUtil.h"
 #endif
 #ifndef TARRAY_HH
-#include "tArray.hh"
+#include "tArray.h"
 #endif
 #ifndef TLIST_HH
-#include "tList.hh"
+#include "tList.h"
 #endif
 
 #define DICTIONARY_HASH_DEFAULT 23

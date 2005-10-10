@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef UINT_HH
-#include "uint.hh"
+#include "cUInt.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

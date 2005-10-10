@@ -79,7 +79,7 @@
 #include "cTestUtil.h"
 #endif
 #ifndef TOOLS_HH
-#include "tools.hh"
+#include "cTools.h"
 #endif
 
 #include <ctype.h>           // for isdigit

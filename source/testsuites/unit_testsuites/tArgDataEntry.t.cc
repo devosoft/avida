@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef TARGDATAENTRY_HH
-#include "tArgDataEntry.hh"
+#include "tArgDataEntry.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

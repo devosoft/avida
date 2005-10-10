@@ -9,7 +9,7 @@
 #define CHANGE_LIST_HH
 
 #ifndef TARRAY_HH
-#include "tArray.hh"
+#include "tArray.h"
 #endif
 
 /**

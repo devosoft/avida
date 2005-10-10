@@ -15,10 +15,10 @@
 #include "cString.h"
 #endif
 #ifndef TARRAY_HH
-#include "tArray.hh"
+#include "tArray.h"
 #endif
 #ifndef TMATRIX_HH
-#include "tMatrix.hh"
+#include "tMatrix.h"
 #endif
 
 template <class T> class tArray; // aggregate

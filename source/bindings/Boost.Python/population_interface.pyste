@@ -4,7 +4,7 @@ Include("cHardwareBase.h")
 Include("cOrganism.h")
 Include("cOrgMessage.h")
 Include("cPopulation.h")
-Include("tArray.hh")
+Include("tArray.h")
 
 cPopulationInterface = Class("cPopulationInterface", "population_interface-fixups.hh")
 

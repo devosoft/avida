@@ -1,6 +1,6 @@
 #include <iostream.h>
 
-#include "../../tools/tArray.hh"
+#include "../../tools/tArray.h"
 #include "../../tools/cFile.h"
 #include "../../tools/cRandom.h"
 #include "../../tools/cString.h"

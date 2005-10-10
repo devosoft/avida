@@ -1,6 +1,6 @@
 
 Include("cEnvironment.h")
-Include("tBuffer.hh")
+Include("tBuffer.h")
 
 cPhenotype = Class("cPhenotype", "cPhenotype.h")
 set_policy(cPhenotype.GetMerit, return_internal_reference())

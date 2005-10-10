@@ -10,7 +10,7 @@
 #endif
 
 #ifndef TARRAY_HH
-#include "tArray.hh"
+#include "tArray.h"
 #endif
 #ifndef CONFIG_HH
 #include "cConfig.h"
@@ -34,7 +34,7 @@
 #include "cOrganism.h"
 #endif
 #ifndef TOOLS_HH
-#include "tools.hh"
+#include "cTools.h"
 #endif
 
 cBirthChamber::cBirthChamber()

@@ -9,7 +9,7 @@
 #define INTEGRATED_SCHEDULE_NODE_HH
 
 #ifndef TARRAY_HH
-#include "tArray.hh"
+#include "tArray.h"
 #endif
 
 /**

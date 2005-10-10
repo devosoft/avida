@@ -17,7 +17,7 @@
 #include "cString.h"
 #endif
 #ifndef TARRAY_HH
-#include "tArray.hh"
+#include "tArray.h"
 #endif
 
 /**

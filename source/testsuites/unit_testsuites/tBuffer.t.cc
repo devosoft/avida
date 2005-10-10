@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef TBUFFER_HH
-#include "tBuffer.hh"
+#include "tBuffer.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

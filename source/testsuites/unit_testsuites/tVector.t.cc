@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef TVECTOR_HH
-#include "tVector.hh"
+#include "tVector.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

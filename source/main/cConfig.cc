@@ -11,7 +11,7 @@
 #include "cEventFactoryManager.h"
 #include "cGenesis.h"
 #include "cPopulationEventFactory.h"
-#include "tools.hh"
+#include "cTools.h"
 
 using namespace std;
 

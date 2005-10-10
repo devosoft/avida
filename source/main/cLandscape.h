@@ -18,7 +18,7 @@
 #include "cString.h"
 #endif
 #ifndef TMATRIX_HH
-#include "tMatrix.hh"
+#include "tMatrix.h"
 #endif
 
 #include <fstream>

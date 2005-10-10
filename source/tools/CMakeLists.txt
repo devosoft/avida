@@ -33,8 +33,8 @@ SET(libtools_a_SOURCES
   cStringIterator.cc
   cStringList.cc
   cStringUtil.cc
-  tools.cc
-  weighted_index.cc
+  cTools.cc
+  cWeightedIndex.cc
 
   cCycleCheck.cc
 )

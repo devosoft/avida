@@ -1,5 +1,5 @@
 
-Include("tList.hh")
+Include("tList.h")
 
 cRandom = Class("cRandom", "cRandom.h")
 

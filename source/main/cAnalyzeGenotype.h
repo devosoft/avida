@@ -26,7 +26,7 @@
 #include "cStringUtil.h"
 #endif
 #ifndef TARRAY_HH
-#include "tArray.hh"
+#include "tArray.h"
 #endif
 
 // cAnalyzeGenotype    : Collection of information about loaded genotypes

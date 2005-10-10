@@ -9,7 +9,7 @@
 
 #include "cChangeList.h"
 #include "cMerit.h"
-#include "tools.hh"
+#include "cTools.h"
 
 
 ///////////////////

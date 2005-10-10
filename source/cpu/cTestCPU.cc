@@ -22,7 +22,7 @@
 #include "cResourceLib.h"
 #include "cResource.h"
 #include "cStringUtil.h"
-#include "tMatrix.hh"
+#include "tMatrix.h"
 
 #include <iomanip>
 

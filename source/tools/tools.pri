@@ -15,16 +15,16 @@ tools {
              $$TOOLS_HH/cString.h \
              $$TOOLS_HH/cStringList.h \
              $$TOOLS_HH/cStringUtil.h \
-             $$TOOLS_HH/tArray.hh \
-             $$TOOLS_HH/tBuffer.hh \
-             $$TOOLS_HH/tDictionary.hh \
-             $$TOOLS_HH/tList.hh \
-             $$TOOLS_HH/tMatrix.hh \
-#            $$TOOLS_HH/tMemTrack.hh \
-             $$TOOLS_HH/tools.hh \
-             $$TOOLS_HH/tVector.hh \
-             $$TOOLS_HH/uint.hh \
-             $$TOOLS_HH/weighted_index.hh \
+             $$TOOLS_HH/tArray.h \
+             $$TOOLS_HH/tBuffer.h \
+             $$TOOLS_HH/tDictionary.h \
+             $$TOOLS_HH/tList.h \
+             $$TOOLS_HH/tMatrix.h \
+#            $$TOOLS_HH/tMemTrack.h \
+             $$TOOLS_HH/cTools.h \
+             $$TOOLS_HH/tVector.h \
+             $$TOOLS_HH/cUInt.h \
+             $$TOOLS_HH/cWeightedIndex.h \
              $$TOOLS_HH/win32_mkdir_hack.hh
   
   SOURCES += $$TOOLS_CC/cBlockStruct.cc \
@@ -60,6 +60,6 @@ tools {
              $$TOOLS_CC/cStringIterator.cc \
              $$TOOLS_CC/cStringList.cc \
              $$TOOLS_CC/cStringUtil.cc \
-             $$TOOLS_CC/tools.cc \
-             $$TOOLS_CC/weighted_index.cc
+             $$TOOLS_CC/cTools.cc \
+             $$TOOLS_CC/cWeightedIndex.cc
 }

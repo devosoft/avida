@@ -26,10 +26,10 @@
 #include "cString.h"
 #endif
 #ifndef TARRAY_HH
-#include "tArray.hh"
+#include "tArray.h"
 #endif
 #ifndef TLIST_HH
-#include "tList.hh"
+#include "tList.h"
 #endif
 
 class cSchedule;

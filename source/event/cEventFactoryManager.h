@@ -9,7 +9,7 @@
 #define EVENT_FACTORY_MANAGER_HH
 
 #ifndef TLIST_HH
-#include "tList.hh"
+#include "tList.h"
 #endif
 
 #ifndef TOBJECTFACTORY_H

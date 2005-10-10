@@ -28,7 +28,7 @@
 #include "cRefBlock.h"
 #endif
 #ifndef UINT_HH
-#include "uint.hh"
+#include "cUInt.h"
 #endif
 
 class cFixedBlock; // accessed

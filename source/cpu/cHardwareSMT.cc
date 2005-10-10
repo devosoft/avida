@@ -30,22 +30,6 @@
 
 using namespace std;
 
-// Positive integer exponentiation
-// O(log2(p))
-static int pow(int b, int p)
-{
-  if (p == 0) return 1;
-  if (p == 1) return b;
-  if (p < 0) return 0;
-  
-  int r = 1;
-  while (1) {
-    if (p & 1) r *= b;
-    if (!(p >>= 1)) return r;
-    b *= b;
-  }
-}
-
 ///////////////
 //  cHardwareSMT
 ///////////////
@@ -138,7 +122,7 @@ tInstLib<cHardwareSMT::tMethod> *cHardwareSMT::initInstLib(void){
 
 cHardwareSMT::cHardwareSMT(cOrganism* in_organism, cInstSet* in_inst_set)
 : cHardwareBase(in_organism, in_inst_set), m_mem_array(1),
-m_mem_lbls(pow(nHardwareSMT::NUM_NOPS, nHardwareSMT::MAX_MEMSPACE_LABEL) / nHardwareSMT::MEM_LBLS_HASH_FACTOR)
+m_mem_lbls(Pow(nHardwareSMT::NUM_NOPS, nHardwareSMT::MAX_MEMSPACE_LABEL) / nHardwareSMT::MEM_LBLS_HASH_FACTOR)
 {
   m_functions = s_inst_slib->GetFunctions();
 	

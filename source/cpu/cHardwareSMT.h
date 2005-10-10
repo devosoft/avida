@@ -37,13 +37,13 @@
 #include "cString.h"
 #endif
 #ifndef TARRAY_HH
-#include "tArray.hh"
+#include "tArray.h"
 #endif
 #ifndef TINSTLIB_H
 #include "tInstLib.h"
 #endif
 #ifndef THASH_TABLE_HH
-#include "tHashTable.hh"
+#include "tHashTable.h"
 #endif
 
 /**

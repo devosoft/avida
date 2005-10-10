@@ -9,7 +9,7 @@
 #define REACTION_REQUISITE_HH
 
 #ifndef TLIST_HH
-#include "tList.hh"
+#include "tList.h"
 #endif
 
 class cReaction;

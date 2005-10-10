@@ -14,7 +14,7 @@
 #include "cString.h"
 #endif
 #ifndef TARRAY_HH
-#include "tArray.hh"
+#include "tArray.h"
 #endif
 #ifndef INSTRUCTION_HH
 #include "cInstruction.h"

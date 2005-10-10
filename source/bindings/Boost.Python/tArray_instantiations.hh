@@ -3,7 +3,7 @@
 #include "cMutation.h"
 #include "cIntSum.h"
 
-#include "tArray.hh"
+#include "tArray.h"
 
 #include <exception>
 

@@ -24,7 +24,7 @@
 #include "cPopulationEventFactory.h"
 #include "cPopulationInterface.h"
 #include "cString.h"
-#include "tools.hh"
+#include "cTools.h"
 
 #include <iostream>
 #include <iomanip>

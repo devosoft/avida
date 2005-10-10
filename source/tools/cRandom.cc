@@ -10,7 +10,7 @@
 #endif
 
 #ifndef TARRAY_HH
-#include "tArray.hh"
+#include "tArray.h"
 #endif
 
 /* FIXME this is not defined in Visual Studio.net. -- kgn */

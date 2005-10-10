@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 /*
-   tMatrix.hh
+   tMatrix.h
    Matrix Templates
 
    Constructor:
@@ -39,7 +39,7 @@
 #include <assert.h>
 
 #ifndef TARRAY_HH
-#include "tArray.hh"
+#include "tArray.h"
 #endif
 
 /**

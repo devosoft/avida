@@ -19,9 +19,9 @@
 #include "cInstUtil.h"
 #include "cOrgMessage.h"
 #include "cStringUtil.h"
-#include "tArray.hh"
-#include "tools.hh"
-#include "tList.hh"
+#include "tArray.h"
+#include "cTools.h"
+#include "tList.h"
 
 #include <iomanip>
 

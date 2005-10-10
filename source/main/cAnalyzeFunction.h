@@ -15,7 +15,7 @@
 #include "cString.h"
 #endif
 #ifndef TLIST_HH
-#include "tList.hh"
+#include "tList.h"
 #endif
 
 // cAnalyzeFunction    : User-defined function

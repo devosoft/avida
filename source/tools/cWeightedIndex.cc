@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef WEIGHTED_INDEX_HH
-#include "weighted_index.hh"
+#include "cWeightedIndex.h"
 #endif
 #include <iostream>
 

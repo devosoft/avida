@@ -30,7 +30,7 @@
 #include "cTaskLib.h"
 #endif
 #ifndef TLIST_HH
-#include "tList.hh"
+#include "tList.h"
 #endif
 
 class cResourceLib; // aggregate

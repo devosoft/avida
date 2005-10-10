@@ -11,7 +11,7 @@
 #include <fstream>
 
 #ifndef TARRAY_HH
-#include "tArray.hh"
+#include "tArray.h"
 #endif
 #ifndef STRING_HH
 #include "cString.h"

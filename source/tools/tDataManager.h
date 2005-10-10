@@ -14,10 +14,10 @@
 #include "cDataManager_Base.h"
 #endif
 #ifndef TDATAENTRYBASE_HH
-#include "tDataEntryBase.hh"
+#include "tDataEntryBase.h"
 #endif
 #ifndef TDICTIONARY_HH
-#include "tDictionary.hh"
+#include "tDictionary.h"
 #endif
 
 // This template manages a collection of keywords and associates each with

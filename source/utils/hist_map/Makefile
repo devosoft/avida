@@ -71,16 +71,16 @@ local_depend: $(SRC)
 ### Release Packageing ########################################################
 # DO NOT DELETE
 
-hist_map2.o: ../../tools/tMatrix.hh ../../tools/tArray.hh
+hist_map2.o: ../../tools/tMatrix.h ../../tools/tArray.h
 hist_map2.o: ../../tools/cString.h ../../tools/cFile.h
 hist_map2.o: ../../tools/cInitFile.h ../../tools/cStringList.h
-hist_map2.o: ../../tools/tList.hh
+hist_map2.o: ../../tools/tList.h
 ../../tools/file.o: ../../tools/cFile.h ../../tools/cString.h
 ../../tools/file.o: ../../tools/cInitFile.h ../../tools/cStringList.h
-../../tools/file.o: ../../tools/tList.hh ../../tools/tArray.hh
+../../tools/file.o: ../../tools/tList.h ../../tools/tArray.h
 ../../tools/file.o: ../../tools/cGenesis.h ../../tools/cStringIterator.h
-../../tools/file.o: ../../tools/tools.hh ../../tools/cRandom.h
+../../tools/file.o: ../../tools/cTools.h ../../tools/cRandom.h
 ../../tools/init_file.o: ../../tools/cInitFile.h ../../tools/cStringList.h
-../../tools/init_file.o: ../../tools/tList.hh ../../tools/tArray.hh
+../../tools/init_file.o: ../../tools/tList.h ../../tools/tArray.h
 ../../tools/init_file.o: ../../tools/cStringIterator.h
 ../../tools/string.o: ../../tools/cString.h

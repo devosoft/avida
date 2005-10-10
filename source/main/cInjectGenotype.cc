@@ -13,7 +13,7 @@
 #include "cConfig.h"
 #endif
 #ifndef TOOLS_HH
-#include "tools.hh"
+#include "cTools.h"
 #endif
 
 using namespace std;

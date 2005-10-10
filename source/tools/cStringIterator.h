@@ -12,7 +12,7 @@
 #include "cString.h"
 #endif
 #ifndef TLIST_HH
-#include "tList.hh"
+#include "tList.h"
 #endif
 
 class cString; // aggregate

@@ -7,7 +7,7 @@
 
 #include "cCodeLabel.h"
 
-#include "tools.hh" // for g_memory & g_debug
+#include "cTools.h" // for g_memory & g_debug
 
 #include "nHardwareCPU.h"
 

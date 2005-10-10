@@ -19,7 +19,7 @@
 #include "cReactionResult.h"
 #endif
 #ifndef TOOLS_HH
-#include "tools.hh"
+#include "cTools.h"
 #endif
 
 #include <fstream>

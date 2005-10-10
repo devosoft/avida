@@ -11,7 +11,7 @@
 
 
 #include "functions.h"
-#include "tMatrix.hh"
+#include "tMatrix.h"
 
 extern "C"{
 #include <stdio.h>

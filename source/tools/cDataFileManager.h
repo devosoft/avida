@@ -20,7 +20,7 @@
 #include <fstream>
 
 #ifndef TLIST_HH
-#include "tList.hh"
+#include "tList.h"
 #endif
 
 /**

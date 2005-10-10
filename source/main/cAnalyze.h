@@ -26,7 +26,7 @@
 #include "cStringList.h"
 #endif
 #ifndef TLIST_HH
-#include "tList.hh"
+#include "tList.h"
 #endif
 
 #define MAX_BATCHES 2000

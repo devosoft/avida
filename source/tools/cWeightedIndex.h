@@ -9,7 +9,7 @@
 #define WEIGHTED_INDEX_HH
 
 #ifndef TARRAY_HH
-#include "tArray.hh"
+#include "tArray.h"
 #endif
 
 #ifndef NULL

@@ -1,2 +1,2 @@
-#include "tDictionary.hh"
+#include "tDictionary.h"
 

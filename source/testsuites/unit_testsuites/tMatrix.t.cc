@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef TMATRIX_HH
-#include "tMatrix.hh"
+#include "tMatrix.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

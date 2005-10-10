@@ -9,7 +9,7 @@
 #define REACTION_RESULT_HH
 
 #ifndef TARRAY_HH
-#include "tArray.hh"
+#include "tArray.h"
 #endif
 
 template <class T> class tArray; // aggregate

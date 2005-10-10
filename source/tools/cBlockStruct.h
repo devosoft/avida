@@ -18,7 +18,7 @@
 #include "cScaledBlock.h"
 #endif
 #ifndef UINT_HH
-#include "uint.hh"
+#include "cUInt.h"
 #endif
 
 #define BLOCK_FLAG_FILL_IN       0

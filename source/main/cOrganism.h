@@ -33,7 +33,7 @@
 #include "cPopulationInterface.h"
 #endif
 #ifndef TBUFFER_HH
-#include "tBuffer.hh"
+#include "tBuffer.h"
 #endif
 
 /**

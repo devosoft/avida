@@ -34,7 +34,7 @@
 #include "cInstSet.h"
 #endif
 #ifndef TDICTIONARY_HH
-#include "tDictionary.hh"
+#include "tDictionary.h"
 #endif
 
 using namespace std;

@@ -14,7 +14,7 @@
 #include <assert.h>
 
 #ifndef TARRAY_HH
-#include "tArray.hh"
+#include "tArray.h"
 #endif
 
 template <class T> class tArray; // accessed
@@ -90,11 +90,20 @@ inline int Mod(int value, int base)
   return value;
 }
 
-inline int Pow(int base, int expon)
+// Positive integer exponentiation
+// O(log2(p))
+inline int Pow(int base, int p)
 {
-  int value = 1;
-  for (int i = 0; i < expon; i++) value *= base;
-  return value;
+  if (p == 0) return 1;
+  if (p == 1) return base;
+  if (p < 0) return 0;
+  
+  int r = 1;
+  while (1) {
+    if (p & 1) r *= base;
+    if (!(p >>= 1)) return r;
+    base *= base;
+  }
 }
 
 inline double Log(double value)

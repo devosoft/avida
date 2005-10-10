@@ -9,7 +9,7 @@
 #define REACTION_LIB_HH
 
 #ifndef TARRAY_HH
-#include "tArray.hh"
+#include "tArray.h"
 #endif
 
 class cReaction;

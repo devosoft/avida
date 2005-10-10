@@ -12,7 +12,7 @@
 #include <iostream>
 
 #ifndef TDATAENTRYBASE_HH
-#include "tDataEntryBase.hh"
+#include "tDataEntryBase.h"
 #endif
 
 class cString;

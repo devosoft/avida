@@ -31,10 +31,10 @@
 #include "cRunningAverage.h"
 #endif
 #ifndef TARRAY_HH
-#include "tArray.hh"
+#include "tArray.h"
 #endif
 #ifndef TDATAMANAGER_HH
-#include "tDataManager.hh"
+#include "tDataManager.h"
 #endif
 #include "nGeometry.h"
 

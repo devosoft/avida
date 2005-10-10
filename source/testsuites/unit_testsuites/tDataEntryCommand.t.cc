@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef TDATAENTRYCOMMAND_HH
-#include "tDataEntryCommand.hh"
+#include "tDataEntryCommand.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

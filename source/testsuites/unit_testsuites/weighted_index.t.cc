@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef WEIGHTED_INDEX_HH
-#include "weighted_index.hh"
+#include "cWeightedIndex.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

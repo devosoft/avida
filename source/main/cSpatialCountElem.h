@@ -9,7 +9,7 @@
 #define SPATIAL_COUNT_ELEM_HH
 
 #ifndef TARRAY_HH
-#include "tArray.hh"
+#include "tArray.h"
 #endif
 
 class cSpatialCountElem {

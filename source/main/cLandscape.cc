@@ -15,7 +15,7 @@
 #include "cStats.h"             // For GetUpdate in outputs...
 #include "cTestCPU.h"
 #include "cTestUtil.h"
-#include "tools.hh"
+#include "cTools.h"
 
 using namespace std;
 

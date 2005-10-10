@@ -9,13 +9,13 @@
 #define TASK_LIB_HH
 
 #ifndef TARRAY_HH
-#include "tArray.hh"
+#include "tArray.h"
 #endif
 #ifndef TBUFFER_HH
-#include "tBuffer.hh"
+#include "tBuffer.h"
 #endif
 #ifndef TLIST_HH
-#include "tList.hh"
+#include "tList.h"
 #endif
 
 class cTaskLib;
