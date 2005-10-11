@@ -16,7 +16,7 @@
  * The inputs are HASH_TYPE and DATA_TYPE
  *
  * INTERFACE:
- *    tHashTable(int in_hash_size=DICTIONARY_HASH_DEFAULT)  // Constructor
+ *    tHashTable(int in_hash_size=HASH_TABLE_SIZE_DEFAULT)  // Constructor
  *    ~tHashTable()                                   // Destructor
  *    int GetSize()                                   // Get num entries
  *    void Add(const HASH_TYPE & key, DATA_TYPE data) // Add new entry
@@ -49,9 +49,6 @@
 
 #ifndef STRING_HH
 #include "cString.h"
-#endif
-#ifndef STRING_UTIL_HH
-#include "cStringUtil.h"
 #endif
 #ifndef TARRAY_HH
 #include "tArray.h"
