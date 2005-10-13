@@ -298,9 +298,7 @@ public:
 
   // Individal Char Access
   inline char operator[] (int index) const {
-    return (char)((*value)[index]);
-    // Below should work, but fails in HP CC -- TCC
-    //    return const_cast(const cStringData&, *value)[index];
+    return static_cast<char>((*value)[index]);
   }
   cCharProxy operator[] (int index) { return cCharProxy(*this,index); }
 
@@ -619,9 +617,7 @@ char cString::cCharProxy::operator-- (int dummy){  // lvalue (postfix)
 }
 
 cString::cCharProxy::operator char () const {  // rvalue
-  return (char)((*(string.value))[index]);
-  // Below should work, but fails in HP CC -- TCC
-  //   return const_cast(const cStringData&, *(string.value))[index];
+  return static_cast<char>((*(string.value))[index]);
 }
 
 #endif

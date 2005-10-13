@@ -10,6 +10,9 @@
 
 class cEnvironment;
 class cPopulationInterface;
+class cString;
+
+cString AvidaVersion();
 
 /**
  * This function properly shuts down the Avida program.

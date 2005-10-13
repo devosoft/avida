@@ -68,27 +68,27 @@ tInstLib<cHardwareSMT::tMethod> *cHardwareSMT::initInstLib(void){
     cInstEntry("Val-Sub", &cHardwareSMT::Inst_Val_Sub), // 10
     cInstEntry("Val-Mult", &cHardwareSMT::Inst_Val_Mult), // 11
     cInstEntry("Val-Div", &cHardwareSMT::Inst_Val_Div), // 12
-    cInstEntry("SetMemory", &cHardwareSMT::Inst_SetMemory), // 13
-    cInstEntry("Divide", &cHardwareSMT::Inst_Divide), // 14
-    cInstEntry("Inst-Read", &cHardwareSMT::Inst_HeadRead), // 15
-    cInstEntry("Inst-Write", &cHardwareSMT::Inst_HeadWrite), // 16
-    cInstEntry("If-Equal", &cHardwareSMT::Inst_IfEqual), // 17
-    cInstEntry("If-Not-Equal", &cHardwareSMT::Inst_IfNotEqual), // 18
-    cInstEntry("If-Less", &cHardwareSMT::Inst_IfLess), // 19
-    cInstEntry("If-Greater", &cHardwareSMT::Inst_IfGreater), // 20
-    cInstEntry("Head-Push", &cHardwareSMT::Inst_HeadPush), // 21
-    cInstEntry("Head-Pop", &cHardwareSMT::Inst_HeadPop), // 22
-    cInstEntry("Head-Move", &cHardwareSMT::Inst_HeadMove), // 23
-    cInstEntry("Search", &cHardwareSMT::Inst_Search), // 24
-    cInstEntry("Push-Next", &cHardwareSMT::Inst_PushNext), // 25
-    cInstEntry("Push-Prev", &cHardwareSMT::Inst_PushPrevious), // 26
-    cInstEntry("Push-Comp", &cHardwareSMT::Inst_PushComplement), // 27
-    cInstEntry("Val-Delete", &cHardwareSMT::Inst_ValDelete), // 28
-    cInstEntry("Val-Copy", &cHardwareSMT::Inst_ValCopy), // 29
-    cInstEntry("ThreadFork", &cHardwareSMT::Inst_ForkThread), // 30
-    cInstEntry("Val-Inc", &cHardwareSMT::Inst_Increment), // 31
-    cInstEntry("Val-Dec", &cHardwareSMT::Inst_Decrement), // 32
-    cInstEntry("Val-Mod", &cHardwareSMT::Inst_Mod), // 33
+    cInstEntry("Val-Mod", &cHardwareSMT::Inst_Val_Mod), // 13
+    cInstEntry("Val-Inc", &cHardwareSMT::Inst_Val_Inc), // 14
+    cInstEntry("Val-Dec", &cHardwareSMT::Inst_Val_Dec), // 15
+    cInstEntry("SetMemory", &cHardwareSMT::Inst_SetMemory), // 16
+    cInstEntry("Divide", &cHardwareSMT::Inst_Divide), // 17
+    cInstEntry("Inst-Read", &cHardwareSMT::Inst_HeadRead), // 18
+    cInstEntry("Inst-Write", &cHardwareSMT::Inst_HeadWrite), // 19
+    cInstEntry("If-Equal", &cHardwareSMT::Inst_IfEqual), // 20
+    cInstEntry("If-Not-Equal", &cHardwareSMT::Inst_IfNotEqual), // 21
+    cInstEntry("If-Less", &cHardwareSMT::Inst_IfLess), // 22
+    cInstEntry("If-Greater", &cHardwareSMT::Inst_IfGreater), // 23
+    cInstEntry("Head-Push", &cHardwareSMT::Inst_HeadPush), // 24
+    cInstEntry("Head-Pop", &cHardwareSMT::Inst_HeadPop), // 25
+    cInstEntry("Head-Move", &cHardwareSMT::Inst_HeadMove), // 26
+    cInstEntry("Search", &cHardwareSMT::Inst_Search), // 27
+    cInstEntry("Push-Next", &cHardwareSMT::Inst_PushNext), // 28
+    cInstEntry("Push-Prev", &cHardwareSMT::Inst_PushPrevious), // 29
+    cInstEntry("Push-Comp", &cHardwareSMT::Inst_PushComplement), // 30
+    cInstEntry("Val-Delete", &cHardwareSMT::Inst_ValDelete), // 31
+    cInstEntry("Val-Copy", &cHardwareSMT::Inst_ValCopy), // 32
+    cInstEntry("ThreadFork", &cHardwareSMT::Inst_ForkThread), // 33
     cInstEntry("ThreadKill", &cHardwareSMT::Inst_KillThread), // 34
     cInstEntry("IO", &cHardwareSMT::Inst_IO), // 35
     cInstEntry("Inject", &cHardwareSMT::Inst_Inject) // 36
@@ -1146,6 +1146,48 @@ inline int cHardwareSMT::FindModifiedStack(int default_stack)
   return default_stack;
 }
 
+inline int cHardwareSMT::FindModifiedNextStack(int default_stack)
+{
+  assert(default_stack < nHardwareSMT::NUM_STACKS);  // Stack ID too high.
+	
+  if (GetInstSet().IsNop(IP().GetNextInst())) {
+    IP().Advance();
+    default_stack = GetInstSet().GetNopMod(IP().GetInst());
+    IP().FlagExecuted() = true;
+  } else {
+    default_stack = FindNextStack(default_stack);
+  }
+  return default_stack;
+}
+
+inline int cHardwareSMT::FindModifiedPreviousStack(int default_stack)
+{
+  assert(default_stack < nHardwareSMT::NUM_STACKS);  // Stack ID too high.
+	
+  if (GetInstSet().IsNop(IP().GetNextInst())) {
+    IP().Advance();
+    default_stack = GetInstSet().GetNopMod(IP().GetInst());
+    IP().FlagExecuted() = true;
+  } else {
+    default_stack = FindPreviousStack(default_stack);
+  }
+  return default_stack;
+}
+
+inline int cHardwareSMT::FindModifiedComplementStack(int default_stack)
+{
+  assert(default_stack < nHardwareSMT::NUM_STACKS);  // Stack ID too high.
+	
+  if (GetInstSet().IsNop(IP().GetNextInst())) {
+    IP().Advance();
+    default_stack = GetInstSet().GetNopMod(IP().GetInst());
+    IP().FlagExecuted() = true;
+  } else {
+    default_stack = FindPreviousStack(default_stack);
+  }
+  return default_stack;
+}
+
 inline int cHardwareSMT::FindModifiedHead(int default_head)
 {
   assert(default_head < nHardware::NUM_HEADS); // Head ID too high.
@@ -1159,10 +1201,19 @@ inline int cHardwareSMT::FindModifiedHead(int default_head)
   return default_head;
 }
 
+inline int cHardwareSMT::FindNextStack(int default_stack)
+{
+  return (default_stack + 1) % nHardwareSMT::NUM_STACKS;
+}
+
+inline int cHardwareSMT::FindPreviousStack(int default_stack)
+{
+  return (default_stack + nHardwareSMT::NUM_STACKS - 1) % nHardwareSMT::NUM_STACKS;
+}
+
 inline int cHardwareSMT::FindComplementStack(int base_stack)
 {
-  const int comp_stack = base_stack + 2;
-  return comp_stack % nHardwareSMT::NUM_STACKS;
+  return (base_stack + 2) % nHardwareSMT::NUM_STACKS;
 }
 
 inline void cHardwareSMT::Fault(int fault_loc, int fault_type, cString fault_desc)
@@ -1587,67 +1638,163 @@ cString cHardwareSMT::GetActiveStackID(int stackID) const
 //6
 bool cHardwareSMT::Inst_ShiftR()
 {
-  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
-  int value = Stack(stack_used).Pop();
+  const int dst = FindModifiedStack(nHardwareSMT::STACK_BX);
+#ifdef SMT_FULLY_ASSOCIATIVE
+  const int src = FindModifiedStack(dst);
+#else
+  const int src = dst;
+#endif
+  int value = Stack(src).Pop();
   value >>= 1;
-  Stack(stack_used).Push(value);
+  Stack(dst).Push(value);
   return true;
 }
 
 //7
 bool cHardwareSMT::Inst_ShiftL()
 {
-  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
-  int value = Stack(stack_used).Pop();
+  const int dst = FindModifiedStack(nHardwareSMT::STACK_BX);
+#ifdef SMT_FULLY_ASSOCIATIVE
+  const int src = FindModifiedStack(dst);
+#else
+  const int src = dst;
+#endif
+  int value = Stack(src).Pop();
   value <<= 1;
-  Stack(stack_used).Push(value);
+  Stack(dst).Push(value);
   return true;
 }
 
 //8
 bool cHardwareSMT::Inst_Val_Nand()
 {
-  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
-  Stack(stack_used).Push(~(Stack(nHardwareSMT::STACK_BX).Top() & Stack(nHardwareSMT::STACK_CX).Top()));
+  const int dst = FindModifiedStack(nHardwareSMT::STACK_BX);
+#ifdef SMT_FULLY_ASSOCIATIVE
+  const int op1 = FindModifiedStack(nHardwareSMT::STACK_BX);
+  const int op2 = FindModifiedNextStack(op1);
+#else
+  const int op1 = nHardwareSMT::STACK_BX;
+  const int op2 = nHardwareSMT::STACK_CX;
+#endif
+  Stack(dst).Push(~(Stack(op1).Top() & Stack(op2).Top()));
   return true;
 }
 
 //9
 bool cHardwareSMT::Inst_Val_Add()
 {
-  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
-  Stack(stack_used).Push(Stack(nHardwareSMT::STACK_BX).Top() + Stack(nHardwareSMT::STACK_CX).Top());
+  const int dst = FindModifiedStack(nHardwareSMT::STACK_BX);
+#ifdef SMT_FULLY_ASSOCIATIVE
+  const int op1 = FindModifiedStack(nHardwareSMT::STACK_BX);
+  const int op2 = FindModifiedNextStack(op1);
+#else
+  const int op1 = nHardwareSMT::STACK_BX;
+  const int op2 = nHardwareSMT::STACK_CX;
+#endif
+  Stack(dst).Push(Stack(op1).Top() + Stack(op2).Top());
   return true;
 }
 
 //10
 bool cHardwareSMT::Inst_Val_Sub()
 {
-  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
-  Stack(stack_used).Push(Stack(nHardwareSMT::STACK_BX).Top() - Stack(nHardwareSMT::STACK_CX).Top());
+  const int dst = FindModifiedStack(nHardwareSMT::STACK_BX);
+#ifdef SMT_FULLY_ASSOCIATIVE
+  const int op1 = FindModifiedStack(nHardwareSMT::STACK_BX);
+  const int op2 = FindModifiedNextStack(op1);
+#else
+  const int op1 = nHardwareSMT::STACK_BX;
+  const int op2 = nHardwareSMT::STACK_CX;
+#endif
+  Stack(dst).Push(Stack(op1).Top() - Stack(op2).Top());
   return true;
 }
 
 //11
 bool cHardwareSMT::Inst_Val_Mult()
 {
-  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
-  Stack(stack_used).Push(Stack(nHardwareSMT::STACK_BX).Top() * Stack(nHardwareSMT::STACK_CX).Top());
+  const int dst = FindModifiedStack(nHardwareSMT::STACK_BX);
+#ifdef SMT_FULLY_ASSOCIATIVE
+  const int op1 = FindModifiedStack(nHardwareSMT::STACK_BX);
+  const int op2 = FindModifiedNextStack(op1);
+#else
+  const int op1 = nHardwareSMT::STACK_BX;
+  const int op2 = nHardwareSMT::STACK_CX;
+#endif
+  Stack(dst).Push(Stack(op1).Top() * Stack(op2).Top());
   return true;
 }
 
 //12
 bool cHardwareSMT::Inst_Val_Div()
 {
-  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
-  if (Stack(nHardwareSMT::STACK_CX).Top() != 0) {
-    if (0-INT_MAX > Stack(nHardwareSMT::STACK_BX).Top() && Stack(nHardwareSMT::STACK_CX).Top() == -1)
+  const int dst = FindModifiedStack(nHardwareSMT::STACK_BX);
+#ifdef SMT_FULLY_ASSOCIATIVE
+  const int op1 = FindModifiedStack(nHardwareSMT::STACK_BX);
+  const int op2 = FindModifiedNextStack(op1);
+#else
+  const int op1 = nHardwareSMT::STACK_BX;
+  const int op2 = nHardwareSMT::STACK_CX;
+#endif
+  if (Stack(op2).Top() != 0) {
+    if (0-INT_MAX > Stack(op1).Top() && Stack(op2).Top() == -1)
       Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: Float exception");
     else
-      Stack(stack_used).Push(Stack(nHardwareSMT::STACK_BX).Top() / Stack(nHardwareSMT::STACK_CX).Top());
+      Stack(dst).Push(Stack(op1).Top() / Stack(op2).Top());
   } else {
     Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: dividing by 0");
     return false;
+  }
+  return true;
+}
+
+//32
+bool cHardwareSMT::Inst_Val_Inc()
+{
+  const int dst = FindModifiedStack(nHardwareSMT::STACK_BX);
+#ifdef SMT_FULLY_ASSOCIATIVE
+  const int src = FindModifiedStack(dst);
+#else
+  const int src = dst;
+#endif
+  int value = Stack(src).Pop();
+  Stack(dst).Push(++value);
+  return true;
+}
+
+//33
+bool cHardwareSMT::Inst_Val_Dec()
+{
+  const int dst = FindModifiedStack(nHardwareSMT::STACK_BX);
+#ifdef SMT_FULLY_ASSOCIATIVE
+  const int src = FindModifiedStack(dst);
+#else
+  const int src = dst;
+#endif
+  int value = Stack(src).Pop();
+  Stack(dst).Push(--value);
+  return true;
+}
+
+//34
+bool cHardwareSMT::Inst_Val_Mod()
+{
+  const int dst = FindModifiedStack(nHardwareSMT::STACK_BX);
+#ifdef SMT_FULLY_ASSOCIATIVE
+  const int op1 = FindModifiedStack(nHardwareSMT::STACK_BX);
+  const int op2 = FindModifiedNextStack(op1);
+#else
+  const int op1 = nHardwareSMT::STACK_BX;
+  const int op2 = nHardwareSMT::STACK_CX;
+#endif
+  if (Stack(op2).Top() != 0) {
+    if(Stack(op2).Top() == -1)
+      Stack(dst).Push(0);
+    else
+      Stack(dst).Push(Stack(op1).Top() % Stack(op2).Top());
+  } else {
+    Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "mod: modding by 0");
+		return false;
   }
   return true;
 }
@@ -1681,6 +1828,12 @@ bool cHardwareSMT::Inst_Divide()
 bool cHardwareSMT::Inst_HeadRead()
 {
   const int head_id = FindModifiedHead(nHardware::HEAD_READ);
+#ifdef SMT_FULLY_ASSOCIATIVE
+  const int dst = FindModifiedStack(nHardwareSMT::STACK_AX);
+#else
+  const int dst = nHardwareSMT::STACK_AX;
+#endif
+  
   GetHead(head_id).Adjust();
   sCPUStats & cpu_stats = organism->CPUStats();
 	
@@ -1692,7 +1845,7 @@ bool cHardwareSMT::Inst_HeadRead()
   } else {
     read_inst = GetHead(head_id).GetInst().GetOp();
   }
-  Stack(nHardwareSMT::STACK_AX).Push(read_inst);
+  Stack(dst).Push(read_inst);
   ReadInst(read_inst);
 	
   cpu_stats.mut_stats.copies_exec++;  // @CAO, this too..
@@ -1704,6 +1857,12 @@ bool cHardwareSMT::Inst_HeadRead()
 bool cHardwareSMT::Inst_HeadWrite()
 {
   const int head_id = FindModifiedHead(nHardware::HEAD_WRITE);
+#ifdef SMT_FULLY_ASSOCIATIVE
+  const int src = FindModifiedStack(nHardwareSMT::STACK_AX);
+#else
+  const int src = nHardwareSMT::STACK_AX;
+#endif
+
   cHeadMultiMem & active_head = GetHead(head_id);
   int mem_space_used = active_head.GetMemSpace();
   
@@ -1715,8 +1874,8 @@ bool cHardwareSMT::Inst_HeadWrite()
 	
   active_head.Adjust();
 	
-  int value = Stack(nHardwareSMT::STACK_AX).Pop();
-  if (value < 0 || value >= GetNumInst()) value = 0;
+  int value = Stack(src).Pop();
+  if (value < 0 || value >= GetNumInst()) value = nHardwareSMT::NOPX;
 	
   active_head.SetInst(cInstruction(value));
   active_head.FlagCopied() = true;
@@ -1765,36 +1924,52 @@ bool cHardwareSMT::Inst_HeadCopy()
 //17
 bool cHardwareSMT::Inst_IfEqual()      // Execute next if bx == ?cx?
 {
-  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_AX);
-  const int stack_used2 = (stack_used+1) % nHardwareSMT::NUM_STACKS;
-  if (Stack(stack_used).Top() != Stack(stack_used2).Top())  IP().Advance();
+  const int op1 = FindModifiedStack(nHardwareSMT::STACK_AX);
+#ifdef SMT_FULLY_ASSOCIATIVE
+  const int op2 = FindModifiedNextStack(op1);
+#else
+  const int op2 = FindNextStack(op1);
+#endif
+  if (Stack(op1).Top() != Stack(op2).Top())  IP().Advance();
   return true;
 }
 
 //18
 bool cHardwareSMT::Inst_IfNotEqual()     // Execute next if bx != ?cx?
 {
-  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_AX);
-  const int stack_used2 = (stack_used+1) % nHardwareSMT::NUM_STACKS;
-  if (Stack(stack_used).Top() == Stack(stack_used2).Top())  IP().Advance();
+  const int op1 = FindModifiedStack(nHardwareSMT::STACK_AX);
+#ifdef SMT_FULLY_ASSOCIATIVE
+  const int op2 = FindModifiedNextStack(op1);
+#else
+  const int op2 = FindNextStack(op1);
+#endif
+  if (Stack(op1).Top() == Stack(op2).Top())  IP().Advance();
   return true;
 }
 
 //19
 bool cHardwareSMT::Inst_IfLess()       // Execute next if ?bx? < ?cx?
 {
-  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_AX);
-  const int stack_used2 = (stack_used+1) % nHardwareSMT::NUM_STACKS;
-  if (Stack(stack_used).Top() >=  Stack(stack_used2).Top())  IP().Advance();
+  const int op1 = FindModifiedStack(nHardwareSMT::STACK_AX);
+#ifdef SMT_FULLY_ASSOCIATIVE
+  const int op2 = FindModifiedNextStack(op1);
+#else
+  const int op2 = FindNextStack(op1);
+#endif
+  if (Stack(op1).Top() >=  Stack(op2).Top())  IP().Advance();
   return true;
 }
 
 //20
 bool cHardwareSMT::Inst_IfGreater()       // Execute next if bx > ?cx?
 {
-  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_AX);
-  const int stack_used2 = (stack_used+1) % nHardwareSMT::NUM_STACKS;
-  if (Stack(stack_used).Top() <= Stack(stack_used2).Top())  IP().Advance();
+  const int op1 = FindModifiedStack(nHardwareSMT::STACK_AX);
+#ifdef SMT_FULLY_ASSOCIATIVE
+  const int op2 = FindModifiedNextStack(op1);
+#else
+  const int op2 = FindNextStack(op1);
+#endif
+  if (Stack(op1).Top() <= Stack(op2).Top())  IP().Advance();
   return true;
 }
 
@@ -1802,7 +1977,12 @@ bool cHardwareSMT::Inst_IfGreater()       // Execute next if bx > ?cx?
 bool cHardwareSMT::Inst_HeadPush()
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
-  Stack(nHardwareSMT::STACK_BX).Push(GetHead(head_used).GetPosition());
+#ifdef SMT_FULLY_ASSOCIATIVE
+  const int dst = FindModifiedStack(nHardwareSMT::STACK_BX);
+#else
+  const int dst = nHardwareSMT::STACK_BX;
+#endif
+  Stack(dst).Push(GetHead(head_used).GetPosition());
   return true;
 }
 
@@ -1810,8 +1990,12 @@ bool cHardwareSMT::Inst_HeadPush()
 bool cHardwareSMT::Inst_HeadPop()
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
-  GetHead(head_used).Set(Stack(nHardwareSMT::STACK_BX).Pop(), 
-												 GetHead(head_used).GetMemSpace(), this);
+#ifdef SMT_FULLY_ASSOCIATIVE
+  const int src = FindModifiedStack(nHardwareSMT::STACK_BX);
+#else
+  const int src = nHardwareSMT::STACK_BX;
+#endif
+  GetHead(head_used).Set(Stack(src).Pop(), GetHead(head_used).GetMemSpace(), this);
   return true;
 }
 
@@ -1858,27 +2042,42 @@ bool cHardwareSMT::Inst_Search()
 //25
 bool cHardwareSMT::Inst_PushNext() 
 {
-  int stack_used = FindModifiedStack(nHardwareSMT::STACK_AX);
-  int successor = (stack_used + 1) % nHardwareSMT::NUM_STACKS;
-  Stack(successor).Push(Stack(stack_used).Pop());
+  // DDD - Should this allow modified next, or be eliminated in favor of just 'Push'
+  const int src = FindModifiedStack(nHardwareSMT::STACK_AX);
+#ifdef SMT_FULLY_ASSOCIATIVE
+  const int dst = FindModifiedNextStack(src);
+#else
+  const int dst = FindNextStack(src);
+#endif
+  Stack(dst).Push(Stack(src).Pop());
   return true;
 }
 
 //26
 bool cHardwareSMT::Inst_PushPrevious() 
 {
-  int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
-  int predecessor = (stack_used + nHardwareSMT::NUM_STACKS - 1) % nHardwareSMT::NUM_STACKS;
-  Stack(predecessor).Push(Stack(stack_used).Pop());
+  // DDD - Should this allow modified previous, or be eliminated in favor of just 'Push'
+  const int src = FindModifiedStack(nHardwareSMT::STACK_BX);
+#ifdef SMT_FULLY_ASSOCIATIVE
+  const int dst = FindModifiedPreviousStack(src);
+#else
+  const int dst = FindPreviousStack(src);
+#endif
+  Stack(dst).Push(Stack(src).Pop());
   return true;
 }
 
 //27
 bool cHardwareSMT::Inst_PushComplement() 
 {
-  int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
-  int complement = FindComplementStack(stack_used);
-  Stack(complement).Push(Stack(stack_used).Pop());
+  // DDD - Should this allow modified complement, or be eliminated in favor of just 'Push'
+  int src = FindModifiedStack(nHardwareSMT::STACK_BX);
+#ifdef SMT_FULLY_ASSOCIATIVE
+  const int dst = FindModifiedComplementStack(src);
+#else
+  const int dst = FindComplementStack(src);
+#endif
+  Stack(dst).Push(Stack(src).Pop());
   return true;
 }
 
@@ -1893,8 +2092,13 @@ bool cHardwareSMT::Inst_ValDelete()
 //29
 bool cHardwareSMT::Inst_ValCopy()
 {
-  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
-  Stack(stack_used).Push(Stack(stack_used).Top());
+  const int dst = FindModifiedStack(nHardwareSMT::STACK_BX);
+#ifdef SMT_FULLY_ASSOCIATIVE
+  const int src = FindModifiedStack(dst);
+#else
+  const int src = dst;
+#endif
+  Stack(dst).Push(Stack(src).Top());
   return true;
 }
 
@@ -1917,40 +2121,6 @@ bool cHardwareSMT::Inst_IfLabel()
   return true;
 }
 
-//32
-bool cHardwareSMT::Inst_Increment()
-{
-  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
-  int value = Stack(stack_used).Pop();
-  Stack(stack_used).Push(++value);
-  return true;
-}
-
-//33
-bool cHardwareSMT::Inst_Decrement()
-{
-  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
-  int value = Stack(stack_used).Pop();
-  Stack(stack_used).Push(--value);
-  return true;
-}
-
-//34
-bool cHardwareSMT::Inst_Mod()
-{
-  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
-  if (Stack(nHardwareSMT::STACK_CX).Top() != 0) {
-    if(Stack(nHardwareSMT::STACK_CX).Top() == -1)
-      Stack(stack_used).Push(0);
-    else
-      Stack(stack_used).Push(Stack(nHardwareSMT::STACK_BX).Top() % Stack(nHardwareSMT::STACK_CX).Top());
-  } else {
-    Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "mod: modding by 0");
-		return false;
-  }
-  return true;
-}
-
 //35
 bool cHardwareSMT::Inst_KillThread()
 {
@@ -1962,15 +2132,20 @@ bool cHardwareSMT::Inst_KillThread()
 //36
 bool cHardwareSMT::Inst_IO()
 {
-  const int stack_used = FindModifiedStack(nHardwareSMT::STACK_BX);
+  const int dst = FindModifiedStack(nHardwareSMT::STACK_BX);
+#ifdef SMT_FULLY_ASSOCIATIVE
+  const int src = FindModifiedStack(dst);
+#else
+  const int src = dst;
+#endif
 	
   // Do the "put" component
-  const int value_out = Stack(stack_used).Top();
+  const int value_out = Stack(src).Top();
   organism->DoOutput(value_out);  // Check for tasks compleated.
 	
   // Do the "get" component
   const int value_in = organism->GetNextInput();
-  Stack(stack_used).Push(value_in);
+  Stack(dst).Push(value_in);
   organism->DoInput(value_in);
   return true;
 }

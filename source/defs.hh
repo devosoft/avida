@@ -8,6 +8,12 @@
 #ifndef DEFS_HH
 #define DEFS_HH
 
+#ifndef VERSION
+#define VERSION "2.3.1"
+#endif
+#define VERSION_TAG "Padawan"
+
+
 #define DEFAULT_DIR "../work/"
 
 /*
@@ -59,26 +65,13 @@ FIXME:  remove asap, switching to file-configureable option
 
 // old compiler //
 //#define explicit
-//#define static_cast(type,expr)      (type)(expr)
-//#define const_cast(type,expr)       (type)(expr)
-//#define reinterpret_cast(type,expr) (type)(expr)
 //#define LONGINT int
 
 // snazzy compiler //
-#define static_cast(type,expr)      static_cast<type>(expr)
-#define const_cast(type,expr)       const_cast<type>(expr)
-#define reinterpret_cast(type,expr) reinterpret_cast<type>(expr)
 #define LONGINT long int
 
 
 ////// Don't change anything below this line. /////
-// the macro VERSION is defined by automake (in the file 'configure.in' in
-// the top-level directory).
-#ifndef VERSION
- #define VERSION "2.3.1"
-#endif
-#define AVIDA_VERSION "2.3.1 (Padawan)"
-
 #ifdef QUICK_BASE_TEST_CPU
 #define QUICK_TEST_CPU
 #endif

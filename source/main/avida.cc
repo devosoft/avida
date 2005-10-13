@@ -21,6 +21,7 @@
 #ifndef DEFS_HH
 #include "defs.hh"
 #endif
+#include "cString.h"
 #ifndef ENVIRONMENT_HH
 #include "cEnvironment.h"
 #endif
@@ -51,6 +52,35 @@
 
 using namespace std;
 
+cString AvidaVersion()
+{
+  cString version("Avida ");
+  version += VERSION;
+  version += " (";
+  version += VERSION_TAG;
+  version += ")";
+
+#ifdef DEBUG
+  version += " debug";
+#endif
+#ifdef BREAKPOINTS
+  version += " breakp";
+#endif
+#ifdef EXECUTION_ERRORS
+  version += " exec_err";
+#endif
+#ifdef INSTRUCTION_COSTS
+  version += " inst_cost";
+#endif
+#ifdef INSTRUCTION_COUNT
+  version += " inst_cnt";
+#endif
+#ifdef SMT_FULLY_ASSOCIATIVE
+  version += " smt_fa";
+#endif
+  
+  return version;
+}
 
 void ExitAvida(int exit_code)
 {

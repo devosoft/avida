@@ -20,6 +20,7 @@ namespace nHardwareSMT
   enum tStacks { STACK_AX = 0, STACK_BX, STACK_CX, STACK_DX };
   
   static const int NUM_NOPS = 4;
+  static const int NOPX = 4;
   static const int MAX_MEMSPACE_LABEL = 3;
   
   // Performance Constants

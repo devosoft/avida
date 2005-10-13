@@ -239,7 +239,12 @@ public:
 private:
   /////////---------- Instruction Helpers ------------//////////
   int FindModifiedStack(int default_stack);
+  int FindModifiedNextStack(int default_stack);
+  int FindModifiedPreviousStack(int default_stack);
+  int FindModifiedComplementStack(int default_stack);
   int FindModifiedHead(int default_head);
+  int FindNextStack(int default_stack);
+  int FindPreviousStack(int default_stack);
   int FindComplementStack(int base_stack);
   int FindMemorySpaceLabel(int mem_space);
 	
@@ -266,6 +271,9 @@ public:
   bool Inst_Val_Sub();
   bool Inst_Val_Mult();
   bool Inst_Val_Div();
+  bool Inst_Val_Mod();
+  bool Inst_Val_Inc();
+  bool Inst_Val_Dec();
   bool Inst_SetMemory();
   bool Inst_Divide();
   bool Inst_HeadRead();
@@ -286,9 +294,6 @@ public:
   bool Inst_ValCopy();
   bool Inst_ForkThread();
   bool Inst_IfLabel();
-  bool Inst_Increment();
-  bool Inst_Decrement();
-  bool Inst_Mod();
   bool Inst_KillThread();
   bool Inst_IO();
   bool Inst_Inject();
