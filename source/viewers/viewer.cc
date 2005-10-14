@@ -34,8 +34,8 @@ int main(int argc, char * argv[])
   // output copyright message
   cout << AvidaVersion() << endl;
   cout << "----------------------------------------------------------------------" << endl;
-  cout << "Copyright (C) 1999-2005 Michigan State University." << endl << endl;
-  cout << "Copyright (C) 1993-2003 California Institute of Technology." << endl;
+  cout << "Copyright (C) 1999-2005 Michigan State University." << endl;
+  cout << "Copyright (C) 1993-2003 California Institute of Technology." << endl << endl;
   
   cout << "Avida comes with ABSOLUTELY NO WARRANTY." << endl;
   cout << "This is free software, and you are welcome to redistribute it" << endl;

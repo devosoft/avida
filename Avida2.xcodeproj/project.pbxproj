@@ -2916,6 +2916,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 700E2B7E085DE50C00CF158A /* Build configuration list for PBXNativeTarget "viewer" */;
 			buildPhases = (
+				704EAD9808FF3C1F005D5C24 /* ShellScript */,
 				700E2AF4085DE50C00CF158A /* Sources */,
 				700E2B6C085DE50C00CF158A /* Frameworks */,
 				700E2B6D085DE50C00CF158A /* CopyFiles */,
@@ -2954,6 +2955,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 702442D20859E0B00059BD9B /* Build configuration list for PBXNativeTarget "primitive" */;
 			buildPhases = (
+				704EAD8208FF2C0B005D5C24 /* ShellScript */,
 				DCC3164A07626CF3008F7A48 /* Sources */,
 				DCC3164B07626CF3008F7A48 /* Frameworks */,
 				70486B9508267145009328F0 /* CopyFiles */,
@@ -3011,6 +3013,35 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		704EAD8208FF2C0B005D5C24 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "mkdir -p $DERIVED_FILES_DIR\necho \"#ifndef revision_h\" > $DERIVED_FILES_DIR/revision.h\necho \"#define revision_h\" >> $DERIVED_FILES_DIR/revision.h\nif (test -x /usr/bin/svn)\nthen /usr/bin/svn status -qu | sed '$!d' | sed 's/Status against revision: *\\([0-9]*\\)/#define REVISION \"\\1\"/' >> $DERIVED_FILES_DIR/revision.h\nelif (test -x /usr/local/bin/svn)\nthen /usr/local/bin/svn status -qu | sed '$!d' | sed 's/Status against revision: *\\([0-9]*\\)/#define REVISION \"\\1\"/' >> $DERIVED_FILES_DIR/revision.h\nelif (test -x /usr/local/svn/bin/svn);\nthen /usr/local/svn/bin/svn status -qu | sed '$!d' | sed 's/Status against revision: *\\([0-9]*\\)/#define REVISION \"\\1\"/' >> $DERIVED_FILES_DIR/revision.h\nelse echo '#define REVISION \"???\"' >> $DERIVED_FILES_DIR/revision.h\nfi;\n\necho \"#endif\" >> $DERIVED_FILES_DIR/revision.h\n";
+		};
+		704EAD9808FF3C1F005D5C24 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "mkdir -p $DERIVED_FILES_DIR\necho \"#ifndef revision_h\" > $DERIVED_FILES_DIR/revision.h\necho \"#define revision_h\" >> $DERIVED_FILES_DIR/revision.h\nif (test -x /usr/bin/svn)\nthen /usr/bin/svn status -qu | sed '$!d' | sed 's/Status against revision: *\\([0-9]*\\)/#define REVISION \"\\1\"/' >> $DERIVED_FILES_DIR/revision.h\nelif (test -x /usr/local/bin/svn)\nthen /usr/local/bin/svn status -qu | sed '$!d' | sed 's/Status against revision: *\\([0-9]*\\)/#define REVISION \"\\1\"/' >> $DERIVED_FILES_DIR/revision.h\nelif (test -x /usr/local/svn/bin/svn);\nthen /usr/local/svn/bin/svn status -qu | sed '$!d' | sed 's/Status against revision: *\\([0-9]*\\)/#define REVISION \"\\1\"/' >> $DERIVED_FILES_DIR/revision.h\nelse echo '#define REVISION \"???\"' >> $DERIVED_FILES_DIR/revision.h\nfi;\n\necho \"#endif\" >> $DERIVED_FILES_DIR/revision.h\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		700E2AF4085DE50C00CF158A /* Sources */ = {
@@ -3278,7 +3309,10 @@
 				GCC_FAST_MATH = YES;
 				GCC_MODEL_CPU = G4;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					DEBUG,
+					REVISION_SUPPORT,
+				);
 				GCC_UNROLL_LOOPS = YES;
 				HEADER_SEARCH_PATHS = source/event/;
 				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)/work";
@@ -3307,7 +3341,7 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_CPU = G4;
 				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_PREPROCESSOR_DEFINITIONS = REVISION_SUPPORT;
 				GCC_UNROLL_LOOPS = YES;
 				HEADER_SEARCH_PATHS = source/event/;
 				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)/work";
@@ -3333,7 +3367,7 @@
 				GCC_FAST_MATH = YES;
 				GCC_MODEL_CPU = G4;
 				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_PREPROCESSOR_DEFINITIONS = REVISION_SUPPORT;
 				GCC_UNROLL_LOOPS = YES;
 				HEADER_SEARCH_PATHS = source/event/;
 				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)/work";
@@ -3359,7 +3393,7 @@
 				GCC_FAST_MATH = YES;
 				GCC_MODEL_CPU = G4;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_PREPROCESSOR_DEFINITIONS = REVISION_SUPPORT;
 				GCC_UNROLL_LOOPS = YES;
 				HEADER_SEARCH_PATHS = source/event/;
 				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)/work";
@@ -3385,7 +3419,10 @@
 				GCC_FAST_MATH = YES;
 				GCC_MODEL_CPU = G4;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					DEBUG,
+					REVISION_SUPPORT,
+				);
 				GCC_UNROLL_LOOPS = YES;
 				HEADER_SEARCH_PATHS = source/event/;
 				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)/work";
@@ -3413,7 +3450,7 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_CPU = G4;
 				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_PREPROCESSOR_DEFINITIONS = REVISION_SUPPORT;
 				GCC_UNROLL_LOOPS = YES;
 				HEADER_SEARCH_PATHS = source/event/;
 				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)/work";
@@ -3438,7 +3475,7 @@
 				GCC_FAST_MATH = YES;
 				GCC_MODEL_CPU = G4;
 				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_PREPROCESSOR_DEFINITIONS = REVISION_SUPPORT;
 				GCC_UNROLL_LOOPS = YES;
 				HEADER_SEARCH_PATHS = source/event/;
 				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)/work";
@@ -3463,7 +3500,7 @@
 				GCC_FAST_MATH = YES;
 				GCC_MODEL_CPU = G4;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_PREPROCESSOR_DEFINITIONS = REVISION_SUPPORT;
 				GCC_UNROLL_LOOPS = YES;
 				HEADER_SEARCH_PATHS = source/event/;
 				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)/work";

@@ -47,6 +47,10 @@
 #include "cTestCPU.h"
 #endif
 
+#ifdef REVISION_SUPPORT
+#include "revision.h"
+#endif
+
 #include <signal.h>
 #include <stdio.h>
 
@@ -56,6 +60,10 @@ cString AvidaVersion()
 {
   cString version("Avida ");
   version += VERSION;
+#ifdef REVISION_SUPPORT
+  version += " r";
+  version += REVISION;
+#endif
   version += " (";
   version += VERSION_TAG;
   version += ")";
