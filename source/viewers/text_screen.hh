@@ -11,7 +11,7 @@
 
 #include "cMerit.h"
 #include "cInstSet.h"
-#include "defs.hh"
+#include "defs.h"
 
 #include "ncurses.hh"
 #include "ansi.hh"

@@ -10,7 +10,7 @@
 #endif
 
 #ifndef DEFS_HH
-#include "defs.hh"
+#include "defs.h"
 #endif
 #ifndef EVENT_FACTORY_MANAGER_HH
 #include "cEventFactoryManager.h"

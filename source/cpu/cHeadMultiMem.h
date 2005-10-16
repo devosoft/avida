@@ -12,7 +12,7 @@
 #include "cHeadCPU.h"
 #endif
 #ifndef DEFS_HH
-#include "defs.hh"
+#include "defs.h"
 #endif
 
 class cCodeLabel;

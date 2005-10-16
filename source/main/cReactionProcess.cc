@@ -10,7 +10,7 @@
 #endif
 
 #ifndef DEFS_HH
-#include "defs.hh"
+#include "defs.h"
 #endif
 #ifndef nReaction_h
 #include "nReaction.h"

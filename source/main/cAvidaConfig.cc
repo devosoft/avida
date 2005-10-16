@@ -10,7 +10,7 @@
 #include "cAvidaConfig.h"
 
 #include <fstream>
-#include "defs.hh"
+#include "defs.h"
 #include "cInitFile.h"
 
 tList<cAvidaConfig::cBaseConfigGroup> cAvidaConfig::global_group_list;

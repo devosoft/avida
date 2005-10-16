@@ -513,12 +513,12 @@
         depth of the most recent coalescent genotype.
       </action>
       <action dev="CAO" type="update" context="internal">
-        Removed "defs.hh" dependency from assert; stay out of debug move by
+        Removed "" dependency from assert; stay out of debug move by
         default -- only enter it when DEBUG is defined.
       </action>
       <action dev="CAO" type="update" context="internal">
         Rebuilt data_file.??, simplifying the internal structure and using a
-        proper linked list.  Also removed dependency on defs.hh.
+        proper linked list.  Also removed dependency on .
       </action>
       <action dev="CAO" type="update" context="internal">
         Removed dependencies in string.?? ; fixed some bugs in Compare()

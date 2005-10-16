@@ -11,7 +11,7 @@
 #include <assert.h>
 
 #ifndef DEFS_HH
-#include "defs.hh"
+#include "defs.h"
 #endif
 
 class cInstruction {

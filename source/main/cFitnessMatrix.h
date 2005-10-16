@@ -18,7 +18,7 @@
 #include <sys/timeb.h>
 
 #ifndef DEFS_HH
-#include "defs.hh"
+#include "defs.h"
 #endif
 #ifndef MX_CODE_ARRAY_HH
 #include "cMxCodeArray.h"

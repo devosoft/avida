@@ -26,7 +26,7 @@
 #include "cConfig.h"
 #endif
 #ifndef DEFS_HH
-#include "defs.hh"
+#include "defs.h"
 #endif
 #ifndef ENVIRONMENT_HH
 #include "cEnvironment.h"

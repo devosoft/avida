@@ -12,7 +12,7 @@
 #include <vector>
 
 #ifndef DEFS_HH
-#include "defs.hh"
+#include "defs.h"
 #endif
 #ifndef CODE_LABEL_HH
 #include "cCodeLabel.h"

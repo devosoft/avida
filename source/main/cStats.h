@@ -13,7 +13,7 @@
 #include <iostream>
 
 #ifndef DEFS_HH
-#include "defs.hh"
+#include "defs.h"
 #endif
 #ifndef DATA_FILE_MANAGER_HH
 #include "cDataFileManager.h"

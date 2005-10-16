@@ -9,7 +9,7 @@
 #define HEAD_CPU_HH
 
 #ifndef DEFS_HH
-#include "defs.hh"
+#include "defs.h"
 #endif
 
 class cHardwareBase;

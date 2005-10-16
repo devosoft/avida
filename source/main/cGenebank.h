@@ -11,7 +11,7 @@
 #include <fstream>
 
 #ifndef DEFS_HH
-#include "defs.hh"
+#include "defs.h"
 #endif
 #ifndef GENOTYPE_CONTROL_HH
 #include "cGenotypeControl.h"

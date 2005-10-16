@@ -9,7 +9,7 @@
 #define INJECT_GENOTYPE_ELEMENT_HH
 
 #ifndef DEFS_HH
-#include "defs.hh"
+#include "defs.h"
 #endif
 
 class cInjectGenotype;

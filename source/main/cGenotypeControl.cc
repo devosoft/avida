@@ -10,7 +10,7 @@
 #endif
 
 #ifndef DEFS_HH
-#include "defs.hh"
+#include "defs.h"
 #endif
 #ifndef GENEBANK_HH
 #include "cGenebank.h"

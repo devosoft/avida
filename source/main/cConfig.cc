@@ -7,7 +7,7 @@
 
 #include "cConfig.h"
 
-#include "defs.hh"
+#include "defs.h"
 #include "cEventFactoryManager.h"
 #include "cGenesis.h"
 #include "cPopulationEventFactory.h"

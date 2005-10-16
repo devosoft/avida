@@ -17,7 +17,7 @@
 #include "cCPUStack.h"
 #endif
 #ifndef DEFS_HH
-#include "defs.hh"
+#include "defs.h"
 #endif
 #ifndef HEAD_MULTI_MEM_HH
 #include "cHeadMultiMem.h"
