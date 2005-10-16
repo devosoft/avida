@@ -26,6 +26,10 @@
 		700E2B87085DE54400CF158A /* viewer in CopyFiles */ = {isa = PBXBuildFile; fileRef = 700E2B83085DE50C00CF158A /* viewer */; };
 		701384340900A45B0087ED2E /* organism.smtx in CopyFiles */ = {isa = PBXBuildFile; fileRef = 701384330900A45B0087ED2E /* organism.smtx */; };
 		701384350900A45B0087ED2E /* organism.smtx in CopyFiles */ = {isa = PBXBuildFile; fileRef = 701384330900A45B0087ED2E /* organism.smtx */; };
+		7013846109028B3E0087ED2E /* cAvidaConfig.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7013845F09028B3E0087ED2E /* cAvidaConfig.h */; };
+		7013846209028B3E0087ED2E /* cAvidaConfig.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7013846009028B3E0087ED2E /* cAvidaConfig.cc */; };
+		7013846309028B3E0087ED2E /* cAvidaConfig.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7013845F09028B3E0087ED2E /* cAvidaConfig.h */; };
+		7013846409028B3E0087ED2E /* cAvidaConfig.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7013846009028B3E0087ED2E /* cAvidaConfig.cc */; };
 		702D4EFE08DA5341007BA469 /* cAvidaDriver_Analyze.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EF908DA5341007BA469 /* cAvidaDriver_Analyze.cc */; };
 		702D4EFF08DA5341007BA469 /* cAvidaDriver_Base.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EFA08DA5341007BA469 /* cAvidaDriver_Base.cc */; };
 		702D4F0008DA5341007BA469 /* cAvidaDriver_Population.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EFB08DA5341007BA469 /* cAvidaDriver_Population.cc */; };
@@ -330,6 +334,7 @@
 				700E2B7C085DE50C00CF158A /* genesis.smt in CopyFiles */,
 				700E2B7D085DE50C00CF158A /* inst_set.smt in CopyFiles */,
 				701384340900A45B0087ED2E /* organism.smtx in CopyFiles */,
+				7013846109028B3E0087ED2E /* cAvidaConfig.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -355,6 +360,7 @@
 				706D33110854A7D700D7DC8F /* genesis.smt in CopyFiles */,
 				706D33280854A90D00D7DC8F /* inst_set.smt in CopyFiles */,
 				701384350900A45B0087ED2E /* organism.smtx in CopyFiles */,
+				7013846309028B3E0087ED2E /* cAvidaConfig.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -364,6 +370,8 @@
 		700E28CF0859FFD700CF158A /* tObjectFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tObjectFactory.h; sourceTree = "<group>"; };
 		700E2B83085DE50C00CF158A /* viewer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = viewer; sourceTree = BUILT_PRODUCTS_DIR; };
 		701384330900A45B0087ED2E /* organism.smtx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.smtx; sourceTree = "<group>"; };
+		7013845F09028B3E0087ED2E /* cAvidaConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaConfig.h; sourceTree = "<group>"; };
+		7013846009028B3E0087ED2E /* cAvidaConfig.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cAvidaConfig.cc; sourceTree = "<group>"; };
 		702D4EF208DA5328007BA469 /* cAvidaDriver_Analyze.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAvidaDriver_Analyze.h; sourceTree = "<group>"; };
 		702D4EF308DA5328007BA469 /* cAvidaDriver_Base.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAvidaDriver_Base.h; sourceTree = "<group>"; };
 		702D4EF408DA5328007BA469 /* cAvidaDriver_Population.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAvidaDriver_Population.h; sourceTree = "<group>"; };
@@ -2164,6 +2172,8 @@
 				DCC311090762539E008F7A48 /* primitive.cc */,
 				DCC3112E0762539E008F7A48 /* unit_testsuites */,
 				70B085D108F48C9400FC65FE /* nSpecies.h */,
+				7013845F09028B3E0087ED2E /* cAvidaConfig.h */,
+				7013846009028B3E0087ED2E /* cAvidaConfig.cc */,
 			);
 			path = main;
 			sourceTree = "<group>";
@@ -3178,6 +3188,7 @@
 				70B0894808F7630100FC65FE /* cStringUtil.cc in Sources */,
 				70B08B9208FB2E6B00FC65FE /* cTools.cc in Sources */,
 				70B08B9308FB2E6B00FC65FE /* cWeightedIndex.cc in Sources */,
+				7013846209028B3E0087ED2E /* cAvidaConfig.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3299,6 +3310,7 @@
 				70B0893708F7630100FC65FE /* cStringUtil.cc in Sources */,
 				70B08B9408FB2E6B00FC65FE /* cTools.cc in Sources */,
 				70B08B9508FB2E6B00FC65FE /* cWeightedIndex.cc in Sources */,
+				7013846409028B3E0087ED2E /* cAvidaConfig.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

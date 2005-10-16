@@ -52,6 +52,10 @@ struct cStringUtil {
   static bool   Convert(const cString & in_string, bool   type_bool);
   static int    Convert(const cString & in_string, int    type_int);
   static double Convert(const cString & in_string, double type_double);
+  static cString Convert(const cString & in_string);
+  static cString Convert(bool in_bool);
+  static cString Convert(int in_int);
+  static cString Convert(double in_double);
 };
 
 #endif

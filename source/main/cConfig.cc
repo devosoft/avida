@@ -209,8 +209,6 @@ void cConfig::InitGroupList(){
                  "Task ID required for successful divide.");
   div_group->Add(immunity_task, "-1", "IMMUNITY_TASK",
                  "Task providing immunity from the required task.");
-  div_group->Add(immunity_task, "-1", "IMMUNITY_TASK",
-		 "Task providing immunity from the required task.");
   div_group->Add(required_reaction, "-1", "REQUIRED_REACTION",
                  "Reaction ID required for successful divide.");
   div_group->Add(die_prob, "0", "DIE_PROB",

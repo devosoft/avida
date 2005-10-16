@@ -288,3 +288,24 @@ double cStringUtil::Convert(const cString & in_string, double type_double)
 {
   return in_string.AsDouble();
 }
+
+cString cStringUtil::Convert(const cString & in_string)
+{
+  return in_string;
+}
+
+cString cStringUtil::Convert(bool in_bool)
+{
+  if (in_bool == false) return "0";
+  return "1";
+}
+
+cString cStringUtil::Convert(int in_int)
+{
+  return Stringf("%d", in_int);
+}
+
+cString cStringUtil::Convert(double in_double)
+{
+  return Stringf("%f", in_double);
+}
