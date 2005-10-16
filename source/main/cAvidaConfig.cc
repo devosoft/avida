@@ -11,7 +11,10 @@
 
 #include <fstream>
 #include "defs.h"
+#include "cEventFactoryManager.h"
 #include "cInitFile.h"
+#include "cPopulationEventFactory.h"
+#include "tDictionary.h"
 
 tList<cAvidaConfig::cBaseConfigGroup> cAvidaConfig::global_group_list;
 
@@ -26,30 +29,34 @@ cAvidaConfig::cBaseConfigEntry::cBaseConfigEntry(const cString & _name,
   // If the default value was originally a string, it will begin and end with
   // quotes.  We should make sure to remove those.
   if (default_value[0] == '"') {
-    cout << "Removing quotes from " << default_value << endl;
     default_value = default_value.Substring(1, default_value.GetSize() - 2);
-    cout << "...now "  << default_value << endl;
   }
-}
-
-
-cAvidaConfig::cAvidaConfig()
-{
-  group_list.Transfer(global_group_list);
-}
-
-cAvidaConfig::~cAvidaConfig()
-{
 }
 
 void cAvidaConfig::Load(const cString & filename)
 {
   // Load the contents from the file.
   cInitFile init_file(filename);
+  
+  if (!init_file.IsOpen()) {
+    // If we failed to open the config file, try creating it.
+    cerr << "Error: Unable to find file '" << filename << "'.  Creating default." << endl;
+    Print(filename);
+    exit(0);
+  }
+  
   init_file.Load();
   init_file.Compress();
   init_file.Close();
+
+  cString version_id = init_file.ReadString("VERSION_ID", "Unknown");
+  if (version_id != VERSION) {
+    cerr << "Warning: Configuration file version number mismatch." << endl;
+    cerr << "         Avida Version: \"" << VERSION << "\".  Config Version: \"" << version_id << "\"" << endl;
+  }
   
+  init_file.SetVerbose();  
+
   // Loop through all groups, then all entrys, and try to load each one.
   tListIterator<cBaseConfigGroup> group_it(group_list);
   cBaseConfigGroup * cur_group;
@@ -64,6 +71,8 @@ void cAvidaConfig::Load(const cString & filename)
       cur_entry->LoadString( init_file.ReadString(keyword, default_val) );
     }
   }
+  
+  init_file.WarnUnused();
 }
 
 void cAvidaConfig::Print(const cString & filename)
@@ -130,7 +139,6 @@ void cAvidaConfig::Print(const cString & filename)
           fp << "  # " << cur_desc.Pop() << endl;
         }
       }
-      
     }
   }
 }
@@ -255,3 +263,147 @@ void cAvidaConfig::GenerateOverides()
     fp << endl;
   }  
 }
+
+cAvidaConfig* cAvidaConfig::LoadWithCmdLineArgs(int argc, char * argv[])
+{
+  cString config_filename = "avida.cfg";
+  tDictionary<cString> sets;
+  
+  int arg_num = 1;              // Argument number being looked at.
+  
+  // Load all of the args into string objects for ease of access.
+  cString* args = new cString[argc];
+  for (int i = 0; i < argc; i++) args[i] = argv[i];
+  
+  // -config option
+  if (argc > 1 && (args[1] == "-c" || args[1] == "-config")) {
+    if (argc < 3) {
+      cerr << "Error: Filename for configuration must be specified." << endl;
+      exit(0);
+    }
+    config_filename = args[2];
+    arg_num += 2;
+  } else if (argc > 1 && (args[1] == "-g" || args[1] == "-genesis")) {
+    cerr << "Warning: Use of -g[enesis] deprecated in favor of -c[onfig]." << endl;
+    if (argc < 3) {
+      cerr << "Error: Filename for configuration must be specified." << endl;
+      exit(0);
+    }
+    config_filename = args[2];
+    arg_num += 2;
+  }
+  
+  // Create Config object, load with values from configuration file
+  cAvidaConfig* cfg = new cAvidaConfig();
+  cfg->Load(config_filename);
+  
+  // Then scan through and process the rest of the args.
+  while (arg_num < argc) {
+    cString cur_arg = args[arg_num];
+    
+    // Test against the possible inputs.
+    if (cur_arg == "-events" || cur_arg == "-e") {
+      cout << "Known events:" << endl;
+      // @DMB - A cleaner way of constructing the cEventFactoryManager should be created
+      cEventFactoryManager event_manager;
+      event_manager.AddFactory(new cPopulationEventFactory(NULL));
+      event_manager.PrintAllEventDescriptions();
+      exit(0);
+    }
+    else if (cur_arg == "--help" || cur_arg == "-help" || cur_arg == "-h") {
+      cout << "Options:"<<endl
+      << "  -c[onfig] <filename>  Set config file to be <filename>"<<endl
+      << "  -h[elp]               Help on options (this listing)"<<endl
+      << "  -e[vents]             Print a list of all known events"<< endl
+      << "  -s[eed] <value>       Set random seed to <value>"<<endl
+      << "  -v[ersion]            Prints the version number"<<endl
+      << "  -set <name> <value>   Overide the genesis file"<<endl
+      << "  -l[oad] <filename>    Load a clone file"<<endl
+      << "  -loadpop <filename>   Load a saved population file (precedence over load)"<<endl
+      << "  -a[nalyze]            Process analyze.cfg instead of normal run."<<endl
+      << "  -i[nteractive]        Run analyze mode interactively."
+      << endl;
+      
+      exit(0);
+    }
+    else if (cur_arg == "-seed" || cur_arg == "-s") {
+      int in_seed = 0;
+      if (arg_num + 1 == argc || args[arg_num + 1][0] == '-') {
+        cerr << "Error: Must include a number as the random seed!" << endl;
+        exit(0);
+      } else {
+        arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
+        in_seed = cur_arg.AsInt();
+      }
+      cfg->RANDOM_SEED.Set(in_seed);
+    } else if (cur_arg == "-analyze" || cur_arg == "-a") {
+      if (cfg->ANALYZE_MODE.Get() < 1) {
+        cfg->ANALYZE_MODE.Set(1);
+      }
+    } else if (cur_arg == "-interactive" || cur_arg == "-i") {
+      if (cfg->ANALYZE_MODE.Get() < 2) {
+        cfg->ANALYZE_MODE.Set(2);
+      }
+    } else if (cur_arg == "-load" || cur_arg == "-l") {
+      if (arg_num + 1 == argc || args[arg_num + 1][0] == '-') {
+        cerr << "Error: Must include a filename to load from." << endl;
+        exit(0);
+      } else {
+        arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
+        cfg->CLONE_FILE.Set(cur_arg);
+      }
+    } else if (cur_arg == "-loadpop" || cur_arg == "-lp") {
+      if (arg_num + 1 == argc || args[arg_num + 1][0] == '-') {
+        cerr << "Error: Must include a filename to load from." << endl;
+        exit(0);
+      } else {
+        arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
+        cfg->POPULATION_FILE.Set(cur_arg);
+      }
+    } else if (cur_arg == "-version" || cur_arg == "-v") {
+      cout << " For more information, see: http://devolab.cse.msu.edu/software/avida/" << endl;
+      exit(0);
+    } else if (cur_arg == "-set") {
+      if (arg_num + 1 == argc || arg_num + 2 == argc) {
+        cerr << "'-set' option must be followed by name and value" << endl;
+        exit(0);
+      }
+      arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
+      cString name(cur_arg);
+      arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
+      cString value(cur_arg);
+      sets.Add(name, value);
+    } else if (cur_arg == "-c" || cur_arg == "-config") {
+      cerr << "Error: -c[onfig] option must be listed first." << endl;
+      exit(0);
+    } else if (cur_arg == "-g" || cur_arg == "-genesis") {
+      cerr << "Warning: Use of '-g[enesis]' deprecated in favor or -c[onfig]." << endl;
+      cerr << "Error: -c[onfig] option must be listed first." << endl;
+      exit(0);
+    } else {
+      cerr << "Error: Unknown Option '" << argv[arg_num] << "'" << endl
+      << "Type: \"" << argv[0] << " -h\" for a full option list." << endl;
+      exit(0);
+    }
+    
+    arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
+  }
+  
+  // Loop through all groups, then all entrys, and try to load each one.
+  tListIterator<cBaseConfigGroup> group_it(cfg->group_list);
+  cBaseConfigGroup * cur_group;
+  cString val;
+  while ((cur_group = group_it.Next()) != NULL) {
+    // Loop through entries for this group...
+    tListIterator<cBaseConfigEntry> entry_it(cur_group->GetEntryList());
+    cBaseConfigEntry * cur_entry;
+    while ((cur_entry = entry_it.Next()) != NULL) {
+      if (sets.Find(cur_entry->GetName(), val)) cur_entry->LoadString(val);
+    }
+  }
+  
+  delete [] args;
+  
+  return cfg;
+}
+

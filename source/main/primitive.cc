@@ -10,6 +10,9 @@
 #ifndef avida_h
 #include "avida.h"
 #endif
+#ifndef cAvidaConfig_h
+#include "cAvidaConfig.h"
+#endif
 #ifndef AVIDA_DRIVER_ANALYZE_HH
 #include "cAvidaDriver_Analyze.h"
 #endif
@@ -79,6 +82,7 @@ int main(int argc, char * argv[])
   cout << "under certain conditions. See file COPYING for details." << endl << endl;
   
   // Initialize the configuration data...
+  //cAvidaConfig* cfg = cAvidaConfig::LoadWithCmdLineArgs(argc, argv);
   cConfig::InitGroupList();
   cConfig::Setup(argc, argv);
   cConfig::SetupMS();
