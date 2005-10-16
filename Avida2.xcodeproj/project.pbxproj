@@ -24,6 +24,8 @@
 		700E2B7C085DE50C00CF158A /* genesis.smt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 706D33100854A7D700D7DC8F /* genesis.smt */; };
 		700E2B7D085DE50C00CF158A /* inst_set.smt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 706D33270854A90D00D7DC8F /* inst_set.smt */; };
 		700E2B87085DE54400CF158A /* viewer in CopyFiles */ = {isa = PBXBuildFile; fileRef = 700E2B83085DE50C00CF158A /* viewer */; };
+		701384340900A45B0087ED2E /* organism.smtx in CopyFiles */ = {isa = PBXBuildFile; fileRef = 701384330900A45B0087ED2E /* organism.smtx */; };
+		701384350900A45B0087ED2E /* organism.smtx in CopyFiles */ = {isa = PBXBuildFile; fileRef = 701384330900A45B0087ED2E /* organism.smtx */; };
 		702D4EFE08DA5341007BA469 /* cAvidaDriver_Analyze.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EF908DA5341007BA469 /* cAvidaDriver_Analyze.cc */; };
 		702D4EFF08DA5341007BA469 /* cAvidaDriver_Base.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EFA08DA5341007BA469 /* cAvidaDriver_Base.cc */; };
 		702D4F0008DA5341007BA469 /* cAvidaDriver_Population.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EFB08DA5341007BA469 /* cAvidaDriver_Population.cc */; };
@@ -327,6 +329,7 @@
 				700E2B7B085DE50C00CF158A /* organism.smt in CopyFiles */,
 				700E2B7C085DE50C00CF158A /* genesis.smt in CopyFiles */,
 				700E2B7D085DE50C00CF158A /* inst_set.smt in CopyFiles */,
+				701384340900A45B0087ED2E /* organism.smtx in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -351,6 +354,7 @@
 				706D330F0854A7B900D7DC8F /* organism.smt in CopyFiles */,
 				706D33110854A7D700D7DC8F /* genesis.smt in CopyFiles */,
 				706D33280854A90D00D7DC8F /* inst_set.smt in CopyFiles */,
+				701384350900A45B0087ED2E /* organism.smtx in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -359,6 +363,7 @@
 /* Begin PBXFileReference section */
 		700E28CF0859FFD700CF158A /* tObjectFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tObjectFactory.h; sourceTree = "<group>"; };
 		700E2B83085DE50C00CF158A /* viewer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = viewer; sourceTree = BUILT_PRODUCTS_DIR; };
+		701384330900A45B0087ED2E /* organism.smtx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.smtx; sourceTree = "<group>"; };
 		702D4EF208DA5328007BA469 /* cAvidaDriver_Analyze.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAvidaDriver_Analyze.h; sourceTree = "<group>"; };
 		702D4EF308DA5328007BA469 /* cAvidaDriver_Base.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAvidaDriver_Base.h; sourceTree = "<group>"; };
 		702D4EF408DA5328007BA469 /* cAvidaDriver_Population.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAvidaDriver_Population.h; sourceTree = "<group>"; };
@@ -2244,6 +2249,7 @@
 		DCC3113A0762539E008F7A48 /* support */ = {
 			isa = PBXGroup;
 			children = (
+				701384330900A45B0087ED2E /* organism.smtx */,
 				DCC3114B0762539E008F7A48 /* analyze.cfg */,
 				DCC3114C0762539E008F7A48 /* CMakeLists.txt */,
 				DCC3114D0762539E008F7A48 /* config */,
