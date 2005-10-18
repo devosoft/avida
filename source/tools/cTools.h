@@ -10,7 +10,7 @@
 #ifndef TOOLS_HH
 #define TOOLS_HH
 
-#ifndef RANDOM_HH
+#ifndef cRandom_h
 #include "cRandom.h"
 #endif
 

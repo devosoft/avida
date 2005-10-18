@@ -40,9 +40,8 @@ void cAvidaConfig::Load(const cString & filename)
   
   if (!init_file.IsOpen()) {
     // If we failed to open the config file, try creating it.
-    cerr << "Error: Unable to find file '" << filename << "'.  Creating default." << endl;
+    cerr << "Warning: Unable to find file '" << filename << "'.  Creating default." << endl;
     Print(filename);
-    exit(0);
   }
   
   init_file.Load();

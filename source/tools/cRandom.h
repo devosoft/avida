@@ -14,8 +14,8 @@ Random variables from various statistical distributions
 
 ******************************************************************************/
 
-#ifndef RANDOM_HH
-#define RANDOM_HH
+#ifndef cRandom_h
+#define cRandom_h
 
 #include <time.h>
 #include <limits.h>

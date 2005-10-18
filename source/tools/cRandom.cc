@@ -5,7 +5,7 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef RANDOM_HH
+#ifndef cRandom_h
 #include "cRandom.h"
 #endif
 

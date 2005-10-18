@@ -248,6 +248,10 @@
 		70C1F19A08C6A11100F50912 /* cEventListIterator.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F19008C6A11100F50912 /* cEventListIterator.cc */; };
 		70C1F19B08C6A11100F50912 /* cEventTriggers.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F19108C6A11100F50912 /* cEventTriggers.cc */; };
 		70C1F19C08C6A11100F50912 /* cPopulationEventFactory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F19208C6A11100F50912 /* cPopulationEventFactory.cc */; };
+		70C5BC6409059A970028A785 /* cWorld.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70C5BC6209059A970028A785 /* cWorld.h */; };
+		70C5BC6509059A970028A785 /* cWorld.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C5BC6309059A970028A785 /* cWorld.cc */; };
+		70C5BC6609059A970028A785 /* cWorld.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70C5BC6209059A970028A785 /* cWorld.h */; };
+		70C5BC6709059A970028A785 /* cWorld.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C5BC6309059A970028A785 /* cWorld.cc */; };
 		70CA6EC208DB7F8200068AC2 /* cFitnessMatrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB208DB7F8200068AC2 /* cFitnessMatrix.cc */; };
 		70CA6EC308DB7F8200068AC2 /* cGenebank.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB308DB7F8200068AC2 /* cGenebank.cc */; };
 		70CA6EC408DB7F8200068AC2 /* cGenome.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB408DB7F8200068AC2 /* cGenome.cc */; };
@@ -338,6 +342,7 @@
 				701384340900A45B0087ED2E /* organism.smtx in CopyFiles */,
 				7013846109028B3E0087ED2E /* cAvidaConfig.h in CopyFiles */,
 				7013852E0902E36B0087ED2E /* avida.cfg in CopyFiles */,
+				70C5BC6609059A970028A785 /* cWorld.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -365,6 +370,7 @@
 				701384350900A45B0087ED2E /* organism.smtx in CopyFiles */,
 				7013846309028B3E0087ED2E /* cAvidaConfig.h in CopyFiles */,
 				7013852D0902E36B0087ED2E /* avida.cfg in CopyFiles */,
+				70C5BC6409059A970028A785 /* cWorld.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -644,6 +650,8 @@
 		70C1F19008C6A11100F50912 /* cEventListIterator.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cEventListIterator.cc; sourceTree = "<group>"; };
 		70C1F19108C6A11100F50912 /* cEventTriggers.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cEventTriggers.cc; sourceTree = "<group>"; };
 		70C1F19208C6A11100F50912 /* cPopulationEventFactory.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cPopulationEventFactory.cc; sourceTree = "<group>"; };
+		70C5BC6209059A970028A785 /* cWorld.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cWorld.h; sourceTree = "<group>"; };
+		70C5BC6309059A970028A785 /* cWorld.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cWorld.cc; sourceTree = "<group>"; };
 		70CA6EB208DB7F8200068AC2 /* cFitnessMatrix.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cFitnessMatrix.cc; sourceTree = "<group>"; };
 		70CA6EB308DB7F8200068AC2 /* cGenebank.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cGenebank.cc; sourceTree = "<group>"; };
 		70CA6EB408DB7F8200068AC2 /* cGenome.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cGenome.cc; sourceTree = "<group>"; };
@@ -2179,6 +2187,8 @@
 				70B085D108F48C9400FC65FE /* nSpecies.h */,
 				7013845F09028B3E0087ED2E /* cAvidaConfig.h */,
 				7013846009028B3E0087ED2E /* cAvidaConfig.cc */,
+				70C5BC6209059A970028A785 /* cWorld.h */,
+				70C5BC6309059A970028A785 /* cWorld.cc */,
 			);
 			path = main;
 			sourceTree = "<group>";
@@ -3195,6 +3205,7 @@
 				70B08B9208FB2E6B00FC65FE /* cTools.cc in Sources */,
 				70B08B9308FB2E6B00FC65FE /* cWeightedIndex.cc in Sources */,
 				7013846209028B3E0087ED2E /* cAvidaConfig.cc in Sources */,
+				70C5BC6709059A970028A785 /* cWorld.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3317,6 +3328,7 @@
 				70B08B9408FB2E6B00FC65FE /* cTools.cc in Sources */,
 				70B08B9508FB2E6B00FC65FE /* cWeightedIndex.cc in Sources */,
 				7013846409028B3E0087ED2E /* cAvidaConfig.cc in Sources */,
+				70C5BC6509059A970028A785 /* cWorld.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

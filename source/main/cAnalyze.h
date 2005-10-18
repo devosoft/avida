@@ -16,7 +16,7 @@
 #ifndef GENOTYPE_BATCH_HH
 #include "cGenotypeBatch.h"
 #endif
-#ifndef RANDOM_HH
+#ifndef cRandom_h
 #include "cRandom.h"
 #endif
 #ifndef STRING_HH

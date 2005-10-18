@@ -1,6 +1,6 @@
 #include <iostream>
 
-#ifndef RANDOM_HH
+#ifndef cRandom_h
 #include "cRandom.h"
 #endif
 #ifndef TEST_CASE_H

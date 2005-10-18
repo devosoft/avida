@@ -15,7 +15,7 @@
 #ifndef nMutation_h
 #include "nMutation.h"
 #endif
-#ifndef RANDOM_HH
+#ifndef cRandom_h
 #include "cRandom.h"
 #endif
 #ifndef REACTION_HH

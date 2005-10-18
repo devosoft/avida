@@ -7,62 +7,27 @@
  *
  */
 
-#ifndef avida_h
-#include "avida.h"
-#endif
-#ifndef cAvidaConfig_h
-#include "cAvidaConfig.h"
-#endif
-#ifndef AVIDA_DRIVER_ANALYZE_HH
-#include "cAvidaDriver_Analyze.h"
-#endif
-#ifndef AVIDA_DRIVER_BASE_HH
-#include "cAvidaDriver_Base.h"
-#endif
-#ifndef AVIDA_DRIVER_POPULATION_HH
-#include "cAvidaDriver_Population.h"
-#endif
-#ifndef CALLBACK_UTIL_HH
-#include "cCallbackUtil.h"
-#endif
-#ifndef CONFIG_HH
-#include "cConfig.h"
-#endif
-#ifndef DEFS_HH
-#include "defs.h"
-#endif
-#ifndef ENVIRONMENT_HH
-#include "cEnvironment.h"
-#endif
-#ifndef HARDWARE_4STACK_HH
-#include "cHardware4Stack.h"
-#endif
-#ifndef HARDWARE_UTIL_HH
-#include "cHardwareUtil.h"
-#endif
-#ifndef HARDWARE_CPU_HH
-#include "cHardwareCPU.h"
-#endif
-#ifndef HARDWARE_SMT_H
-#include "cHardwareSMT.h"
-#endif
-#ifndef INST_LIB_CPU_HH
-#include "cInstLibCPU.h"
-#endif
-#ifndef POPULATION_HH
-#include "cPopulation.h"
-#endif
-#ifndef POPULATION_INTERFACE_HH
-#include "cPopulationInterface.h"
-#endif
-#ifndef RESOURCE_COUNT_HH
-#include "cResourceCount.h"
-#endif
-#ifndef TEST_CPU_HH
-#include "cTestCPU.h"
-#endif
-
 #include <signal.h>
+
+#include "avida.h"
+#include "cAvidaConfig.h"
+#include "cAvidaDriver_Analyze.h"
+#include "cAvidaDriver_Base.h"
+#include "cAvidaDriver_Population.h"
+#include "cCallbackUtil.h"
+#include "cConfig.h"
+#include "cEnvironment.h"
+#include "cHardware4Stack.h"
+#include "cHardwareUtil.h"
+#include "cHardwareCPU.h"
+#include "cHardwareSMT.h"
+#include "cInstLibCPU.h"
+#include "cPopulation.h"
+#include "cPopulationInterface.h"
+#include "cResourceCount.h"
+#include "cTestCPU.h"
+#include "cWorld.h"
+#include "defs.h"
 
 using namespace std;
 
@@ -82,7 +47,10 @@ int main(int argc, char * argv[])
   cout << "under certain conditions. See file COPYING for details." << endl << endl;
   
   // Initialize the configuration data...
-  //cAvidaConfig* cfg = cAvidaConfig::LoadWithCmdLineArgs(argc, argv);
+  //cerr << "<newconfig>" << endl;
+  //cWorld* world = new cWorld(cAvidaConfig::LoadWithCmdLineArgs(argc, argv));
+  //cerr << "</newconfig>" << endl << endl;
+  
   cConfig::InitGroupList();
   cConfig::Setup(argc, argv);
   cConfig::SetupMS();
