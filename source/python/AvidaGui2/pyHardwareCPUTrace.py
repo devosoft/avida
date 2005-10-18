@@ -1,11 +1,25 @@
 from AvidaCore import cHardwareDefs
 from AvidaCore import cHardwareCPUDefs
+from AvidaCore import cHardwareCPU
+
+#class pyHardwareCPUFrame:
+#  def __init__(self):
+#    pass
+#    # cCPUMemory memory : cCPUMemory & GetMemory()
+#    # cCPUStack global_stack : cCPUStack pyGetGlobalStack()
+#    # int thread_time_used : int pyGetThreadTimeUsed()
+#    ### assume a single thread
+#    # cHardwareCPU_Thread thread : tArray<cHardwareCPU_Thread> pyGetThreads()
+#    # bool mal_active : bool GetMalActive()
+#    # bool advance_ip : bool pyGetAdvanceIP()
 
 class pyHardwareCPUTrace:
   def __init__(self):
     self.clearFrames()
 
   def clearFrames(self):
+    self.m_hardware_snapshots = []
+
     self.m_genome_info = []
     self.m_ihead_info = []
     self.m_rhead_info = []
@@ -28,7 +42,18 @@ class pyHardwareCPUTrace:
     self.m_fitness = None
     self.m_size = None
 
+  def getSnapshotCount(self):
+    return len(self.m_hardware_snapshots)
+  def getHardwareSnapshotAt(self, frame_number):
+    return self.m_hardware_snapshots[frame_number]
+  def getMemorySnapshotAt(self, frame_number):
+    return self.getHardwareSnapshotAt(frame_number).GetMemory()
+  def getThreadsSnapshotAt(self, frame_number):
+    return self.getHardwareSnapshotAt(frame_number).pyGetThreads()
+
   def recordFrame(self, hardware):
+    self.m_hardware_snapshots.append(cHardwareCPU(hardware))
+
     self.m_genome_info.append(hardware.GetMemory().AsString().GetData())
     self.m_ihead_info.append(hardware.GetHead(cHardwareDefs.s_HEAD_IP).GetPosition())
     self.m_rhead_info.append(hardware.GetHead(cHardwareDefs.s_HEAD_READ).GetPosition())

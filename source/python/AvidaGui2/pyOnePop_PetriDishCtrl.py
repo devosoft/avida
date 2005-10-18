@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from descr import descr
+
 from qt import *
 from pyMapProfile import pyMapProfile
 from pyOnePop_PetriDishView import pyOnePop_PetriDishView
@@ -88,6 +90,7 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
 
     if self.m_avida:
       self.m_map_profile.getUpdater(self.m_mode_combobox.currentItem()).resetRange(self.m_avida.m_population)
+      self.modeActivatedSlot(self.m_mode_combobox.currentItem())
 
 
   def ToggleDishSlot (self):
@@ -130,11 +133,14 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     if self.m_updater:
       (old_min, old_max) = self.m_updater.getRange()
       (min, max) = self.m_avida and self.m_updater.updateRange(self.m_avida.m_population) or (0, 0)
+      #descr(self.m_avida)
       if self.m_updater.shouldReset() or ((old_min, old_max) != (min, max)):
         self.m_gradient_scale_ctrl.setRange(min, max)
         self.m_gradient_scale_ctrl.activate(True)
         self.m_petri_dish_ctrl.setRange(min, max)
-        self.m_updater.reset(False)
+        # Force subsequent resets until valid range is obtained.
+        if ((min, max) != (0, 0)):
+          self.m_updater.reset(False)
         should_update_all = True
     else:
       self.m_gradient_scale_ctrl.setRange(0, 0)
@@ -148,17 +154,20 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
     if update: self.m_update_label.setText(QString("%1").arg(update))
     
   def RenameDishSlot(self, dishName):
+    descr()
     if (not self.dishDisabled):
       self.PopulationTextLabel.setText(dishName)
     
   # Dummy routine
     
   def freezeDishPhaseISlot(self, send_reset_signal = False, send_quit_signal = False):
+    descr()
     print "in pyOnePop_PetriDishCtrl recieved freezeDishPhaseISig"
     print "send_reset_signal = " + str(send_reset_signal)
     print "send_quit_signal = " + str(send_quit_signal)
 
   def petriDropped(self, e):
+    descr()
     # Try to decode to the data you understand...
     freezer_item_name = QString()
     if ( QTextDrag.decode( e, freezer_item_name ) ) :
@@ -180,6 +189,7 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
       self.MakeConfigVisiableSlot()
 
   def DefrostSlot(self, dish_name, petri_dict):
+    descr()
     if self.isVisible():
 
       Restart_Only_Flag = False
@@ -225,9 +235,11 @@ class pyOnePop_PetriDishCtrl(pyOnePop_PetriDishView):
           PYSIGNAL("restartPopulationSig"), (self.m_session_mdl, ))
 
   def finishedPetriDishSlot(self):
+    descr()
     self.finishedPetriDish = True
 
   def restart(self, session_mdl):
-    print "pyOnePop_PetriDishCtrl.py:restart called"
+    descr()
+    descr(session_mdl)
     self.dishDisabled = False
 

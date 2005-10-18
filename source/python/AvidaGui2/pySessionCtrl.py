@@ -106,6 +106,11 @@ class pySessionCtrl(qt.QObject):
 
     self.connect(
       self.m_session_mdl.m_session_mdtr,
+      PYSIGNAL("doSyncSig"),
+      self.doSync)
+
+    self.connect(
+      self.m_session_mdl.m_session_mdtr,
       PYSIGNAL("doStartSig"),
       self.doStart)
 
@@ -196,6 +201,12 @@ class pySessionCtrl(qt.QObject):
     """
     self.m_session_mdl.m_main_mdl.m_main_mdtr.m_main_controller_factory_mdtr.emit(
       qt.PYSIGNAL("deleteControllerSig"), (self,))
+
+  def doSync(self):
+    self.m_session_mdl.m_session_mdtr.emit(
+      PYSIGNAL("doInitializeAvidaPhaseSyncSig"),
+      (self.m_session_mdl.m_tempdir,))
+    self.m_avida.m_avida_thread_mdtr.emit(PYSIGNAL("AvidaUpdatedSig"), ())
 
   def doStart(self):
     if self.sessionInitialized == False:

@@ -98,6 +98,11 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
     self.connect(self.controlRepopulateAction,SIGNAL("activated()"),
       self.RepopulateActionSlot)
 
+    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("addStatusBarWidgetSig"), self.addStatusBarWidgetSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("removeStatusBarWidgetSig"), self.removeStatusBarWidgetSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("statusBarMessageSig"), self.statusBarMessageSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("statusBarClearSig"), self.statusBarClearSlot)
+
     self.m_nav_bar_ctrl.m_one_population_cli.setState(QCheckListItem.On)
     self.m_widget_stack.raiseWidget(self.m_one_population_ctrl)
     self.splitter1.setSizes([100])
@@ -130,7 +135,6 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
     self.emit(PYSIGNAL("quitAvidaPhaseISig"), ())
     return False
 
-######### pyuic-one-time-generated-code lives below this line.
 
   def __del__(self):
     print "pyEduWorkspaceCtrl.__del__(): Not implemented yet"
@@ -317,3 +321,14 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
       PYSIGNAL("freezerItemDoubleClicked"), (file_name, ))
 
 
+  def addStatusBarWidgetSlot(self, *args):
+    widget = args[0]
+    pt = QPoint()
+    widget.reparent(self, pt)
+    apply(QStatusBar.addWidget,(self.statusBar(),) + args)
+  def removeStatusBarWidgetSlot(self, *args):
+    apply(QStatusBar.removeWidget,(self.statusBar(),) + args)
+  def statusBarMessageSlot(self, *args):
+    apply(QStatusBar.message,(self.statusBar(),) + args)
+  def statusBarClearSlot(self):
+    self.statusBar().clear()

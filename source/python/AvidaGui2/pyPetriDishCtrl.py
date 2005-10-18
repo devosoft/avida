@@ -8,6 +8,8 @@ self.m_avida is not None.
 @kgn
 """
 
+from descr import *
+
 from AvidaCore import cConfig
 from AvidaCore import cInitFile, cString
 
@@ -158,6 +160,7 @@ class pyPetriDishCtrl(QWidget):
     self.updateCellItems(True)
 
   def setDragSlot(self, org_clicked_on_item = None):
+    descr(org_clicked_on_item)
     if org_clicked_on_item:
       clicked_cell_num = org_clicked_on_item.m_population_cell.GetID()
       clicked_cell = self.m_avida.m_population.GetCell(int(clicked_cell_num))
@@ -325,4 +328,5 @@ class pyPetriDishCtrl(QWidget):
     def __init__(self, item_name, parent=None, name=None):
         QStoredDrag.__init__(self, 'item name (QString)', parent, name)
         self.setText(item_name)
+        descr(item_name)
 
