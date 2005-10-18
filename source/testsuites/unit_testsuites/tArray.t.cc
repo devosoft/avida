@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef TARRAY_HH
-#include "tArray.hh"
+#include "tArray.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

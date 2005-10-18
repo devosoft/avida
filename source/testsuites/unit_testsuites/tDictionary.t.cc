@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef TDICTIONARY_HH
-#include "tDictionary.hh"
+#include "tDictionary.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

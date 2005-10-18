@@ -1,9 +1,10 @@
-#include "organism.hh"
-#include "merit.hh"
-#include "mutation.hh"
-#include "int_sum.hh"
+#include "cOrganism.h"
+#include "cMerit.h"
+#include "cMutation.h"
+#include "cIntSum.h"
+#include "cHardwareCPU_Thread.h"
 
-#include "tArray.hh"
+#include "tArray.h"
 
 #include <exception>
 

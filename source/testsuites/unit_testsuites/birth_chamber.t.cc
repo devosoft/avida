@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef BIRTH_CHAMBER_HH
-#include "birth_chamber.hh"
+#include "cBirthChamber.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

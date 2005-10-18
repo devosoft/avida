@@ -1,5 +1,5 @@
 
-cChangeList = Class("cChangeList", "change_list.hh")
+cChangeList = Class("cChangeList", "cChangeList.h")
 class_code(cChangeList, '.def("__len__", &cChangeList__len__)')
 class_code(cChangeList, '.def("__getitem__", &cChangeList__getitem__)')
 declaration_code("""

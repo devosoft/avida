@@ -7,9 +7,9 @@
 
 #include <fstream>
 
-#include "genotype.hh"
-#include "population.hh"
-#include "population_cell.hh"
+#include "cGenotype.h"
+#include "cPopulation.h"
+#include "cPopulationCell.h"
 
 #include "map_screen.hh"
 

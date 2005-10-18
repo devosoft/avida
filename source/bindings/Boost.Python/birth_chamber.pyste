@@ -1,7 +1,7 @@
 
-Include("organism.hh")
-Include("genebank.hh")
+Include("cOrganism.h")
+Include("cGenebank.h")
 
-cBirthChamber = Class("cBirthChamber", "birth_chamber.hh")
+cBirthChamber = Class("cBirthChamber", "cBirthChamber.h")
 
 # vim: set ft=python:

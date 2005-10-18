@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef CALLBACK_UTIL_HH
-#include "callback_util.hh"
+#include "cCallbackUtil.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

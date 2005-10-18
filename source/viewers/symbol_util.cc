@@ -9,15 +9,15 @@
 
 #include "symbol_util.hh"
 
-#include "genotype.hh"
-#include "organism.hh"
-#include "population_cell.hh"
-#include "species.hh"
-#include "config.hh"
-#include "hardware_base.hh"
-#include "hardware_4stack.hh"
-#include "hardware_cpu.hh"
-#include "hardware_smt.h"
+#include "cGenotype.h"
+#include "cOrganism.h"
+#include "cPopulationCell.h"
+#include "cSpecies.h"
+#include "cConfig.h"
+#include "cHardwareBase.h"
+#include "cHardware4Stack.h"
+#include "cHardwareCPU.h"
+#include "cHardwareSMT.h"
 
 using namespace std;
 

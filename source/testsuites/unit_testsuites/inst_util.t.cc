@@ -1,5 +1,5 @@
 #ifndef INST_UTIL_HH
-#include "inst_util.hh"
+#include "cInstUtil.h"
 #endif
 
 #ifndef TEST_CASE_H

@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef MX_CODE_ARRAY_HH
-#include "mx_code_array.hh"
+#include "cMxCodeArray.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

@@ -35,14 +35,16 @@ setup(
       includes = ['iqt', 'qt', 'qwt', 'readline', 'unittest', 'IPython', 'AvidaGui2', 'AvidaCore'],
       # Python packages to copy :
       packages = ['IPython', 'AvidaGui2'],
+      # Additional frameworks and dylibs to include
+      #frameworks = ['libqt-mt.3.dylib'],
       # Subdirectory in which Avi :da-ED.app should be assembled
       dist_dir = '${EXECUTABLE_OUTPUT_PATH}',
       # Extra files and folders to  :copy into Resources subdirectory
       resources = ['${CMAKE_CURRENT_SOURCE_DIR}/AvidaGui2/avidalogo.png', '${CMAKE_CURRENT_SOURCE_DIR}/default.workspace'],
       # Strip symbols from libraries.
-      strip = True,
+      #strip = True,
       # Generate a file named Avida-ED.dot containing dependency graphs.
-      graph = True,
+      #graph = True,
     )
   ),
 )

@@ -1,5 +1,5 @@
 #ifndef ORG_MESSAGE_HH
-#include "org_message.hh"
+#include "cOrgMessage.h"
 #endif
 
 #ifndef TEST_CASE_H

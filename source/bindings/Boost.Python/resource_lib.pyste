@@ -1,8 +1,8 @@
 
-Include("string.hh")
-Include("resource.hh")
+Include("cString.h")
+Include("cResource.h")
 
-cResourceLib = Class("cResourceLib", "resource_lib.hh")
+cResourceLib = Class("cResourceLib", "cResourceLib.h")
 set_policy(cResourceLib.AddResource, return_internal_reference())
 set_policy(cResourceLib.GetResource, return_internal_reference())
 

@@ -8,18 +8,18 @@
 #ifndef VIEWERS_HH
 #define VIEWERS_HH
 
-#ifndef AVIDA_HH
-#include "avida.hh"
+#ifndef avida_h
+#include "avida.h"
 #endif
 
 #ifndef AVIDA_DRIVER_ANALYZE_HH
-#include "avida_driver_analyze.hh"
+#include "cAvidaDriver_Analyze.h"
 #endif
 #ifndef AVIDA_DRIVER_BASE_HH
-#include "avida_driver_base.hh"
+#include "cAvidaDriver_Base.h"
 #endif
 #ifndef AVIDA_DRIVER_POPULATION_HH
-#include "avida_driver_population.hh"
+#include "cAvidaDriver_Population.h"
 #endif
 
 class cView;

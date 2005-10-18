@@ -1,5 +1,5 @@
 #ifndef DOUBLE_SUM_HH
-#include "double_sum.hh"
+#include "cDoubleSum.h"
 #endif
 
 #ifndef TEST_CASE_H

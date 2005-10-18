@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef PROB_SCHEDULE_HH
-#include "prob_schedule.hh"
+#include "cProbSchedule.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

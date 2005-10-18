@@ -1,5 +1,5 @@
 #ifndef LINEAGE_CONTROL_HH
-#include "lineage_control.hh"
+#include "cLineageControl.h"
 #endif
 
 #ifndef TEST_CASE_H

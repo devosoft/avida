@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef MESSAGE_CLOSURE_HH
-#include "message_closure.hh"
+#include "cMessageClosure.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

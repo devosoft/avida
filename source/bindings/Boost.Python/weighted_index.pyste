@@ -1,4 +1,4 @@
 
-cWeightedIndex = Class("cWeightedIndex", "weighted_index.hh")
+cWeightedIndex = Class("cWeightedIndex", "cWeightedIndex.h")
 
 # vim: set ft=python:

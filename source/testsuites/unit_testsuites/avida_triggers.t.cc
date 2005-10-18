@@ -1,5 +1,5 @@
 #ifndef AVIDA_TRIGGERS_HH
-#include "avida_triggers.hh"
+#include "cAvidaTriggers.h"
 #endif
 
 #ifndef TEST_CASE_H

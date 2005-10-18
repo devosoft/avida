@@ -1,4 +1,4 @@
 
-cMemoryFlags = Class("cMemoryFlags", "memory_flags.hh")
+cMemoryFlags = Class("cMemoryFlags", "cMemoryFlags.h")
 
 # vim: set ft=python:

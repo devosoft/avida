@@ -1,11 +1,11 @@
 
 Import("cpu_head.pyste")
 
-Include("cpu_memory.hh")
-Include("instruction.hh")
-Include("hardware_base.hh")
+Include("cCPUMemory.h")
+Include("cInstruction.h")
+Include("cHardwareBase.h")
 
-cHeadMultiMem = Class("cHeadMultiMem", "head_multi_mem.hh")
+cHeadMultiMem = Class("cHeadMultiMem", "cHeadMultiMem.h")
 set_policy(cHeadMultiMem.FlagCopied, return_internal_reference())
 set_policy(cHeadMultiMem.FlagMutated, return_internal_reference())
 set_policy(cHeadMultiMem.FlagExecuted, return_internal_reference())

@@ -2,10 +2,10 @@
 #define PY_AVIDA_DRIVER_HH
 
 #ifndef AVIDA_DRIVER_POPULATION_HH
-#include "avida_driver_population.hh"
+#include "cAvidaDriver_Population.h"
 #endif
 #ifndef ENVIRONMENT_HH
-#include "environment.hh"
+#include "cEnvironment.h"
 #endif
 
 class cChangeList;

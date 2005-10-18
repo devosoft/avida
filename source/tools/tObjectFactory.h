@@ -11,11 +11,13 @@
 #define TOBJECTFACTORY_H
 
 #ifndef TDICTIONARY_HH
-#include "tDictionary.hh"
+#include "tDictionary.h"
 #endif
-
+#ifndef TARRAY_HH
+#include "tArray.h"
+#endif
 #ifndef TLIST_HH
-#include "tList.hh"
+#include "tList.h"
 #endif
 
 class cString;
@@ -25,25 +27,25 @@ template<typename CtorSignature> class tObjectFactory;
 namespace nObjectFactory
 {
   template<typename BaseType, typename ClassType>
-  BaseType* createObject()
+  BaseType createObject()
   {
     return new ClassType();
   }
 
   template<typename BaseType, typename ClassType, typename Arg1Type>
-  BaseType* createObject(Arg1Type arg1)
+  BaseType createObject(Arg1Type arg1)
   {
     return new ClassType(arg1);
   }
   
   template<typename BaseType, typename ClassType, typename Arg1Type, typename Arg2Type>
-  BaseType* createObject(Arg1Type arg1, Arg2Type arg2)
+  BaseType createObject(Arg1Type arg1, Arg2Type arg2)
   {
     return new ClassType(arg1, arg2);
   }
   
   template<typename BaseType, typename ClassType, typename Arg1Type, typename Arg2Type, typename Arg3Type>
-  BaseType* createObject(Arg1Type arg1, Arg2Type arg2, Arg3Type arg3)
+  BaseType createObject(Arg1Type arg1, Arg2Type arg2, Arg3Type arg3)
   {
     return new ClassType(arg1, arg2, arg3);
   }
@@ -53,7 +55,7 @@ template<typename BaseType>
 class tObjectFactory<BaseType ()>
 {
 protected:
-  typedef BaseType* (*CreateObjectFunction)();
+  typedef BaseType (*CreateObjectFunction)();
   
   tDictionary<CreateObjectFunction> m_create_funcs;
   int m_factory_id;
@@ -79,7 +81,7 @@ public:
     return (m_create_funcs.Remove(key) != NULL);
   }
   
-  virtual BaseType* Create(const cString& key)
+  virtual BaseType Create(const cString& key)
   {
     CreateObjectFunction func;
     if (m_create_funcs.Find(key, func))
@@ -88,15 +90,17 @@ public:
     return NULL;
   }
   
-  virtual void CreateAll(tList<BaseType>& objects)
+  virtual void CreateAll(tArray<BaseType>& objects)
   {
     tList<cString> names;
     tList<CreateObjectFunction> funcs;
     
-    m_create_funcs.AsLists(names, funcs);
+    m_create_funcs.AsLists(names, funcs);    
+    objects.Resize(names.GetSize());
     
     tListIterator<cString> names_it(names);
-    while (names_it.Next() != NULL) objects.Push(Create(*names_it.Get()));
+    for (int i = 0; names_it.Next() != NULL; i++)
+      objects[i] = Create(*names_it.Get());
   }
 };
 
@@ -104,7 +108,7 @@ template<typename BaseType, typename Arg1Type>
 class tObjectFactory<BaseType (Arg1Type)>
 {
 protected:
-  typedef BaseType* (*CreateObjectFunction)(Arg1Type);
+  typedef BaseType (*CreateObjectFunction)(Arg1Type);
   
   tDictionary<CreateObjectFunction> m_create_funcs;
   int m_factory_id;
@@ -130,7 +134,7 @@ public:
     return (m_create_funcs.Remove(key) != NULL);
   }
   
-  virtual BaseType* Create(const cString& key, Arg1Type arg1)
+  virtual BaseType Create(const cString& key, Arg1Type arg1)
   {
     CreateObjectFunction func;
     if (m_create_funcs.Find(key, func))

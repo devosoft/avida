@@ -1,5 +1,5 @@
 #ifndef TASK_ENTRY_HH
-#include "task_entry.hh"
+#include "cTaskEntry.h"
 #endif
 
 #ifndef TEST_CASE_H

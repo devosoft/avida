@@ -1,10 +1,10 @@
 
 Import("help_entry.pyste")
 
-Include("help_type.hh")
-Include("help_full_entry.hh")
+Include("cHelpType.h")
+Include("cHelpFullEntry.h")
 
-cHelpAlias = Class("cHelpAlias", "help_alias.hh")
+cHelpAlias = Class("cHelpAlias", "cHelpAlias.h")
 set_policy(cHelpAlias.GetType, return_internal_reference())
 
 # vim: set ft=python:

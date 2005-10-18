@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef CODE_LABEL_HH
-#include "cpu/code_label.hh"
+#include "cpu/cCodeLabel.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

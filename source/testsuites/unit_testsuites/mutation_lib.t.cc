@@ -1,5 +1,5 @@
 #ifndef MUTATION_LIB_HH
-#include "mutation_lib.hh"
+#include "cMutationLib.h"
 #endif
 
 #ifndef TEST_CASE_H

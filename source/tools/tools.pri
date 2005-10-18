@@ -1,65 +1,65 @@
 
 tools {
-  HEADERS += $$TOOLS_HH/indexed_block_struct.hh \
-             $$TOOLS_HH/block_struct.hh \
-             $$TOOLS_HH/data_entry.hh \
-             $$TOOLS_HH/data_manager_base.hh \
-             $$TOOLS_HH/data_file.hh \
-             $$TOOLS_HH/file.hh \
-             $$TOOLS_HH/fixed_block.hh \
-             $$TOOLS_HH/functions.hh \
-             $$TOOLS_HH/merit.hh \
-             $$TOOLS_HH/message_display.hh \
-             $$TOOLS_HH/message_display_hdrs.hh \
-             $$TOOLS_HH/random.hh \
-             $$TOOLS_HH/string.hh \
-             $$TOOLS_HH/string_list.hh \
-             $$TOOLS_HH/string_util.hh \
-             $$TOOLS_HH/tArray.hh \
-             $$TOOLS_HH/tBuffer.hh \
-             $$TOOLS_HH/tDictionary.hh \
-             $$TOOLS_HH/tList.hh \
-             $$TOOLS_HH/tMatrix.hh \
-#            $$TOOLS_HH/tMemTrack.hh \
-             $$TOOLS_HH/tools.hh \
-             $$TOOLS_HH/tVector.hh \
-             $$TOOLS_HH/uint.hh \
-             $$TOOLS_HH/weighted_index.hh \
+  HEADERS += $$TOOLS_HH/cIndexedBlockStruct.h \
+             $$TOOLS_HH/cBlockStruct.h \
+             $$TOOLS_HH/cDataEntry.h \
+             $$TOOLS_HH/cDataManager_Base.h \
+             $$TOOLS_HH/cDataFile.h \
+             $$TOOLS_HH/cFile.h \
+             $$TOOLS_HH/cFixedBlock.h \
+             $$TOOLS_HH/functions.h \
+             $$TOOLS_HH/cMerit.h \
+             $$TOOLS_HH/cMessageDisplay.h \
+             $$TOOLS_HH/cMessageDisplay_headers.h \
+             $$TOOLS_HH/cRandom.h \
+             $$TOOLS_HH/cString.h \
+             $$TOOLS_HH/cStringList.h \
+             $$TOOLS_HH/cStringUtil.h \
+             $$TOOLS_HH/tArray.h \
+             $$TOOLS_HH/tBuffer.h \
+             $$TOOLS_HH/tDictionary.h \
+             $$TOOLS_HH/tList.h \
+             $$TOOLS_HH/tMatrix.h \
+#            $$TOOLS_HH/tMemTrack.h \
+             $$TOOLS_HH/cTools.h \
+             $$TOOLS_HH/tVector.h \
+             $$TOOLS_HH/cUInt.h \
+             $$TOOLS_HH/cWeightedIndex.h \
              $$TOOLS_HH/win32_mkdir_hack.hh
   
-  SOURCES += $$TOOLS_CC/block_struct.cc \
-             $$TOOLS_CC/const_schedule.cc \
-             $$TOOLS_CC/count_tracker.cc \
-             $$TOOLS_CC/data_entry.cc \
-             $$TOOLS_CC/data_file.cc \
-             $$TOOLS_CC/data_file_manager.cc \
-             $$TOOLS_CC/data_manager_base.cc \
-             $$TOOLS_CC/default_message_display.cc \
-             $$TOOLS_CC/double_sum.cc \
-             $$TOOLS_CC/file.cc \
-             $$TOOLS_CC/fixed_block.cc \
-             $$TOOLS_CC/genesis.cc \
-             $$TOOLS_CC/help_alias.cc \
-             $$TOOLS_CC/help_manager.cc \
-             $$TOOLS_CC/help_type.cc \
-             $$TOOLS_CC/histogram.cc \
-             $$TOOLS_CC/indexed_block_struct.cc \
-             $$TOOLS_CC/init_file.cc \
-             $$TOOLS_CC/int_sum.cc \
-             $$TOOLS_CC/integrated_schedule.cc \
-             $$TOOLS_CC/integrated_schedule_node.cc \
-             $$TOOLS_CC/merit.cc \
-             $$TOOLS_CC/message_display.cc \
-             $$TOOLS_CC/prob_schedule.cc \
-             $$TOOLS_CC/random.cc \
-             $$TOOLS_CC/ref_block.cc \
-             $$TOOLS_CC/running_average.cc \
-             $$TOOLS_CC/scaled_block.cc \
-             $$TOOLS_CC/schedule.cc \
-             $$TOOLS_CC/string.cc \
-             $$TOOLS_CC/string_iterator.cc \
-             $$TOOLS_CC/string_list.cc \
-             $$TOOLS_CC/string_util.cc \
-             $$TOOLS_CC/tools.cc \
-             $$TOOLS_CC/weighted_index.cc
+  SOURCES += $$TOOLS_CC/cBlockStruct.cc \
+             $$TOOLS_CC/cConstSchedule.cc \
+             $$TOOLS_CC/cCountTracker.cc \
+             $$TOOLS_CC/cDataEntry.cc \
+             $$TOOLS_CC/cDataFile.cc \
+             $$TOOLS_CC/cDataFileManager.cc \
+             $$TOOLS_CC/cDataManager_Base.cc \
+             $$TOOLS_CC/cDefaultMessageDisplay.cc \
+             $$TOOLS_CC/cDoubleSum.cc \
+             $$TOOLS_CC/cFile.cc \
+             $$TOOLS_CC/cFixedBlock.cc \
+             $$TOOLS_CC/cGenesis.cc \
+             $$TOOLS_CC/cHelpAlias.cc \
+             $$TOOLS_CC/cHelpManager.cc \
+             $$TOOLS_CC/cHelpType.cc \
+             $$TOOLS_CC/cHistogram.cc \
+             $$TOOLS_CC/cIndexedBlockStruct.cc \
+             $$TOOLS_CC/cInitFile.cc \
+             $$TOOLS_CC/cIntSum.cc \
+             $$TOOLS_CC/cIntegratedSchedule.cc \
+             $$TOOLS_CC/cIntegratedScheduleNode.cc \
+             $$TOOLS_CC/cMerit.cc \
+             $$TOOLS_CC/cMessageDisplay.cc \
+             $$TOOLS_CC/cProbSchedule.cc \
+             $$TOOLS_CC/cRandom.cc \
+             $$TOOLS_CC/cRefBlock.cc \
+             $$TOOLS_CC/cRunningAverage.cc \
+             $$TOOLS_CC/cScaledBlock.cc \
+             $$TOOLS_CC/cSchedule.cc \
+             $$TOOLS_CC/cString.cc \
+             $$TOOLS_CC/cStringIterator.cc \
+             $$TOOLS_CC/cStringList.cc \
+             $$TOOLS_CC/cStringUtil.cc \
+             $$TOOLS_CC/cTools.cc \
+             $$TOOLS_CC/cWeightedIndex.cc
 }

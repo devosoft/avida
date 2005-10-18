@@ -5,9 +5,9 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "population.hh"
-#include "stats.hh"
-#include "environment.hh"
+#include "cPopulation.h"
+#include "cStats.h"
+#include "cEnvironment.h"
 
 #include "bar_screen.hh"
 

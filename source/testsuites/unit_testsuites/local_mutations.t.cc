@@ -1,5 +1,5 @@
 #ifndef LOCAL_MUTATIONS_HH
-#include "local_mutations.hh"
+#include "cLocalMutations.h"
 #endif
 
 #ifndef TEST_CASE_H

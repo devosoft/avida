@@ -1,7 +1,7 @@
 
-Include("tList.hh")
+Include("tList.h")
 
-cAnalyzeCommand = Class("cAnalyzeCommand", "analyze_command.hh")
+cAnalyzeCommand = Class("cAnalyzeCommand", "cAnalyzeCommand.h")
 set_policy(cAnalyzeCommand.GetCommandList, return_internal_reference())
 
 # vim: set ft=python:

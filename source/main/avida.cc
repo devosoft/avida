@@ -5,45 +5,50 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef AVIDA_HH
-#include "avida.hh"
+#ifndef avida_h
+#include "avida.h"
 #endif
 
 #ifndef AVIDA_DRIVER_BASE_HH
-#include "avida_driver_base.hh"
+#include "cAvidaDriver_Base.h"
 #endif
 #ifndef CALLBACK_UTIL_HH
-#include "callback_util.hh"
+#include "cCallbackUtil.h"
 #endif
 #ifndef CONFIG_HH
-#include "config.hh"
+#include "cConfig.h"
 #endif
 #ifndef DEFS_HH
-#include "defs.hh"
+#include "defs.h"
 #endif
+#include "cString.h"
 #ifndef ENVIRONMENT_HH
-#include "environment.hh"
+#include "cEnvironment.h"
 #endif
 #ifndef HARDWARE_4STACK_HH
-#include "hardware_4stack.hh"
+#include "cHardware4Stack.h"
 #endif
 #ifndef HARDWARE_UTIL_HH
-#include "hardware_util.hh"
+#include "cHardwareUtil.h"
 #endif
 #ifndef HARDWARE_CPU_HH
-#include "hardware_cpu.hh"
+#include "cHardwareCPU.h"
 #endif
 #ifndef INST_LIB_CPU_HH
-#include "inst_lib_cpu.hh"
+#include "cInstLibCPU.h"
 #endif
 #ifndef POPULATION_INTERFACE_HH
-#include "population_interface.hh"
+#include "cPopulationInterface.h"
 #endif
 #ifndef RESOURCE_COUNT_HH
-#include "resource_count.hh"
+#include "cResourceCount.h"
 #endif
 #ifndef TEST_CPU_HH
-#include "test_cpu.hh"
+#include "cTestCPU.h"
+#endif
+
+#ifdef REVISION_SUPPORT
+#include "revision.h"
 #endif
 
 #include <signal.h>
@@ -51,6 +56,39 @@
 
 using namespace std;
 
+cString AvidaVersion()
+{
+  cString version("Avida ");
+  version += VERSION;
+#ifdef REVISION_SUPPORT
+  version += " r";
+  version += REVISION;
+#endif
+  version += " (";
+  version += VERSION_TAG;
+  version += ")";
+
+#ifdef DEBUG
+  version += " debug";
+#endif
+#ifdef BREAKPOINTS
+  version += " breakp";
+#endif
+#ifdef EXECUTION_ERRORS
+  version += " exec_err";
+#endif
+#ifdef INSTRUCTION_COSTS
+  version += " inst_cost";
+#endif
+#ifdef INSTRUCTION_COUNT
+  version += " inst_cnt";
+#endif
+#ifdef SMT_FULLY_ASSOCIATIVE
+  version += " smt_fa";
+#endif
+  
+  return version;
+}
 
 void ExitAvida(int exit_code)
 {

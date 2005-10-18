@@ -1,4 +1,6 @@
 
+from descr import *
+
 from qt import PYSIGNAL, QColor, QObject, Qt
 from math import exp
 
@@ -27,7 +29,7 @@ class pyMapProfile:
     GestationTimeIdx = lambda c: c.GetOrganism().GetPhenotype().GetGestationTime()
     SizeIdx = lambda c: c.GetOrganism().GetPhenotype().GetGenomeLength()
     #GenotypeIdx = lambda c: c.GetOrganism().GetGenotype()
-    #LineageIdx = lambda c: c.GetOrganism().GetLineageLabel()
+    LineageIdx = lambda c: c.GetOrganism().GetLineageLabel()
 
 
     class gradualLinScaleUpdater:
@@ -46,16 +48,21 @@ class pyMapProfile:
         self.m_should_reset = True
 
       def reset(self, should_reset):
+        #descr(should_reset)
         self.m_should_reset = should_reset
 
       def shouldReset(self):
+        #descr()
         return self.m_should_reset 
 
       def getRange(self):
+        #descr()
         return self.m_inf, self.m_sup
 
       def resetRange(self, population):
+        #descr(population)
         (inf, sup) = self.m_range.getRange()
+        #descr("(inf, sup)", (inf, sup))
         #(self.m_target_inf, self.m_target_sup) = (self.m_inf, self.m_sup) = (inf, sup)
         (self.m_target_inf, self.m_target_sup) = (self.m_inf, self.m_sup) = (0, sup)
         self.m_inf_rescale_rate = self.m_sup_rescale_rate = 0
@@ -63,6 +70,7 @@ class pyMapProfile:
         return self.getRange()
 
       def updateRange(self, population):
+        #descr(population)
         if self.m_should_reset:
           return self.resetRange(population)
 
@@ -140,6 +148,7 @@ class pyMapProfile:
     FitnessRng = lambda p: (p.GetStats().GetMinFitness(), p.GetStats().GetMaxFitness())
     GestationTimeRng = lambda p: (p.GetStats().GetMinGestationTime(), p.GetStats().GetMaxGestationTime())
     SizeRng = lambda p: (p.GetStats().GetMinGenomeLength(), p.GetStats().GetMaxGenomeLength())
+    LineageRng = lambda p: (0, p.GetStats().GetNumLineages())
 
 
     def sigmoid(x, midpoint, steepness):
@@ -190,6 +199,11 @@ class pyMapProfile:
       ('Size',
         continuousIndexer(SizeIdx),
         gradualLinScaleUpdater(RangeReport(SizeRng, self.m_session_mdl)),
+        sigmoidColorLookup
+        ),
+      ('Ancestor Organism',
+        continuousIndexer(LineageIdx),
+        gradualLinScaleUpdater(RangeReport(LineageRng, self.m_session_mdl)),
         sigmoidColorLookup
         ),
       #('Genotype',       GenotypeIdx,),

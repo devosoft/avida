@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef INSTRUCTION_HH
-#include "main/instruction.hh"
+#include "main/cInstruction.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

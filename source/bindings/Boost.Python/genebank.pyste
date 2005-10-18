@@ -1,10 +1,10 @@
 
-Include("stats.hh")
-Include("species.hh")
-Include("genotype.hh")
-Include("genome.hh")
+Include("cStats.h")
+Include("cSpecies.h")
+Include("cGenotype.h")
+Include("cGenome.h")
 
-cGenebank = Class("cGenebank", "genebank.hh")
+cGenebank = Class("cGenebank", "cGenebank.h")
 set_policy(cGenebank.AddGenotype, return_internal_reference())
 set_policy(cGenebank.InjectGenotype, return_internal_reference())
 set_policy(cGenebank.FindGenotype, return_internal_reference())

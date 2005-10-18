@@ -1,5 +1,5 @@
 #ifndef INST_LIB_BASE_HH
-#include "inst_lib_base.hh"
+#include "cInstLibBase.h"
 #endif
 
 #ifndef TEST_CASE_H

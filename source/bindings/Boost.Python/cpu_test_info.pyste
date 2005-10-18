@@ -1,8 +1,8 @@
 
-Include("hardware_tracer.hh")
-Include("organism.hh")
+Include("cHardwareTracer.h")
+Include("cOrganism.h")
 
-cCPUTestInfo = Class("cCPUTestInfo", "cpu_test_info.hh")
+cCPUTestInfo = Class("cCPUTestInfo", "cCPUTestInfo.h")
 # returns std::ofstream &, i.e., not the Python Way.
 exclude(cCPUTestInfo.GetTraceFP)
 set_policy(cCPUTestInfo.GetTestOrganism, return_internal_reference())

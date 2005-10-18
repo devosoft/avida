@@ -160,6 +160,7 @@ Python:from pyTwoPopulationCtrl import pyTwoPopulationCtrl
     <item text="&amp;Control" name="Control">
         <action name="controlStartAction"/>
         <action name="controlNext_UpdateAction"/>
+        <action name="controlRepopulateAction"/>
     </item>
     <item text="&amp;View" name="View">
     </item>
@@ -615,6 +616,17 @@ Python:from pyTwoPopulationCtrl import pyTwoPopulationCtrl
         </property>
         <property name="menuText">
             <string>Minimize Window</string>
+        </property>
+    </action>
+    <action>
+        <property name="name">
+            <cstring>controlRepopulateAction</cstring>
+        </property>
+        <property name="text">
+            <string>Repopulate Dish</string>
+        </property>
+        <property name="menuText">
+            <string>Repopulate dish</string>
         </property>
     </action>
 </actions>

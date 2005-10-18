@@ -1,13 +1,14 @@
 
-Include("hardware_cpu.hh")
-Include("hardware_4stack.hh")
-Include("organism.hh")
+Include("cHardware4Stack.h")
+Include("cHardwareCPU.h")
+Include("cHardwareSMT.h")
+Include("cOrganism.h")
 
 Import("hardware_tracer.pyste")
 Import("hardware_tracer_cpu.pyste")
 Import("hardware_tracer_4stack.pyste")
 Import("hardware_tracer_test_cpu.pyste")
 
-cHardwareStatusPrinter = Class("cHardwareStatusPrinter", "hardware_status_printer.hh")
+cHardwareStatusPrinter = Class("cHardwareStatusPrinter", "cHardwareStatusPrinter.h")
 
 # vim: set ft=python:

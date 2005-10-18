@@ -7,14 +7,14 @@
 
 #include <fstream>
 
-#include "species.hh"
-#include "genotype.hh"
-#include "genebank.hh"
-#include "inject_genotype.hh"
-#include "inject_genebank.hh"
-#include "population.hh"
-#include "population_cell.hh"
-#include "organism.hh"
+#include "cSpecies.h"
+#include "cGenotype.h"
+#include "cGenebank.h"
+#include "cInjectGenotype.h"
+#include "cInjectGenebank.h"
+#include "cPopulation.h"
+#include "cPopulationCell.h"
+#include "cOrganism.h"
 
 #include "symbol_util.hh"
 #include "text_screen.hh"

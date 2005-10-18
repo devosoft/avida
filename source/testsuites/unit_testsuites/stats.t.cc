@@ -1,5 +1,5 @@
 #ifndef STATS_HH
-#include "stats.hh"
+#include "cStats.h"
 #endif
 
 #ifndef TEST_CASE_H

@@ -1,4 +1,4 @@
-cReactionResult = Class("cReactionResult", "reaction_result.hh")
+cReactionResult = Class("cReactionResult", "cReactionResult.h")
 
 set_policy(cReactionResult.GetInstArray, return_internal_reference())
 

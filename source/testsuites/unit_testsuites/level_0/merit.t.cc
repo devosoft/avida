@@ -1,5 +1,5 @@
 #ifndef MERIT_HH
-#include "merit.hh"
+#include "cMerit.h"
 #endif
 
 #ifndef TEST_CASE_H

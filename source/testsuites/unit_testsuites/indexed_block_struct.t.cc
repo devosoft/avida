@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef INDEXED_BLOCK_STRUCT_HH
-#include "indexed_block_struct.hh"
+#include "cIndexedBlockStruct.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

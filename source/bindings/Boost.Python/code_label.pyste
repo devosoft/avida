@@ -1,4 +1,4 @@
 
-cCodeLabel = Class("cCodeLabel", "code_label.hh")
+cCodeLabel = Class("cCodeLabel", "cCodeLabel.h")
 
 # vim: set ft=python:

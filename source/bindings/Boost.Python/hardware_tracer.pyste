@@ -1,4 +1,4 @@
 
-cHardwareTracer = Class("cHardwareTracer", "hardware_tracer.hh")
+cHardwareTracer = Class("cHardwareTracer", "cHardwareTracer.h")
 
 # vim: set ft=python:

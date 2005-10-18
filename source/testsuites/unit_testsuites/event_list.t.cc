@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef EVENT_LIST_HH
-#include "event_list.hh"
+#include "cEventList.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

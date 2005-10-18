@@ -1,5 +1,5 @@
 #ifndef MEMORY_FLAGS_HH
-#include "memory_flags.hh"
+#include "cMemoryFlags.h"
 #endif
 
 #ifndef TEST_CASE_H

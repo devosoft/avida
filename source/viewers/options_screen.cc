@@ -5,8 +5,8 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "config.hh"
-#include "population.hh"
+#include "cConfig.h"
+#include "cPopulation.h"
 
 #include "options_screen.hh"
 

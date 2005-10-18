@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef HARDWARE_4STACK_HH
-#include "hardware_4stack.hh"
+#include "cHardware4Stack.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

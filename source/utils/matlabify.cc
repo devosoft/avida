@@ -9,7 +9,7 @@
 #include <iostream>
 using namespace std;
 
-#include "../tools/init_file.hh"
+#include "../tools/cInitFile.h"
 
 int main(int argc, char * argv[])
 {

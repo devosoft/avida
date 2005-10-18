@@ -513,12 +513,12 @@
         depth of the most recent coalescent genotype.
       </action>
       <action dev="CAO" type="update" context="internal">
-        Removed "defs.hh" dependency from assert; stay out of debug move by
+        Removed "" dependency from assert; stay out of debug move by
         default -- only enter it when DEBUG is defined.
       </action>
       <action dev="CAO" type="update" context="internal">
         Rebuilt data_file.??, simplifying the internal structure and using a
-        proper linked list.  Also removed dependency on defs.hh.
+        proper linked list.  Also removed dependency on .
       </action>
       <action dev="CAO" type="update" context="internal">
         Removed dependencies in string.?? ; fixed some bugs in Compare()
@@ -549,7 +549,7 @@
         the moment this was much easier.
       </action>
       <action dev="CAO" type="update" context="internal">
-        Cut down on the number of includes from tools.hh; most of them are
+        Cut down on the number of includes from cTools.h; most of them are
         not required.
       </action>
       <action dev="CAO" type="update" context="internal">
@@ -703,7 +703,7 @@ source/tools/struct.hh
         the more acurate STERILIZE_*
       </action>
       <action dev="CAO" type="fix" context="bug">
-        Added #include &lt;string.h&gt; in string.hh and debug.hh -- it was crashing on
+        Added #include &lt;string.h&gt; in cString.h and debug.hh -- it was crashing on
         calls to strlen() on some newer compilers.
       </action>
       <action dev="CAO" type="fix" context="bug">
@@ -863,7 +863,7 @@ source/tools/struct.hh
         measurements.
       </action>
       <action dev="CAO" type="update" context="internal">
-        Moved task_buffer.?? to the more generic template tBuffer.hh and placed
+        Moved task_buffer.?? to the more generic template tBuffer.h and placed
         it in tools.
       </action>
       <action dev="CAO" type="add" context="feature">

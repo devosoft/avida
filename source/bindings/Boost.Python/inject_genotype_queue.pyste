@@ -1,8 +1,8 @@
 
-Include("genome.hh")
-Include("inject_genotype.hh")
+Include("cGenome.h")
+Include("cInjectGenotype.h")
 
-cInjectGenotypeQueue = Class("cInjectGenotypeQueue", "inject_genotype_queue.hh")
+cInjectGenotypeQueue = Class("cInjectGenotypeQueue", "cInjectGenotypeQueue.h")
 set_policy(cInjectGenotypeQueue.Find, return_internal_reference())
 
 # vim: set ft=python:

@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef DEFAULT_MESSAGE_DISPLAY_HH
-#include "default_message_display.hh"
+#include "cDefaultMessageDisplay.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

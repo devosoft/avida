@@ -1,5 +1,5 @@
 #ifndef INST_SET_HH
-#include "inst_set.hh"
+#include "cInstSet.h"
 #endif
 
 #ifndef TEST_CASE_H

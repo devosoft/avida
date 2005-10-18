@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef SPECIES_QUEUE_HH
-#include "species_queue.hh"
+#include "cSpeciesQueue.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

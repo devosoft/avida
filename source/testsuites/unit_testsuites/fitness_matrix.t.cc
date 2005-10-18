@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef FITNESS_MATRIX_HH
-#include "fitness_matrix.hh"
+#include "cFitnessMatrix.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

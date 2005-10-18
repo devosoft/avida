@@ -1,5 +1,5 @@
 #ifndef INT_SUM_HH
-#include "int_sum.hh"
+#include "cIntSum.h"
 #endif
 
 #ifndef TEST_CASE_H

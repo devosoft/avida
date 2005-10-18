@@ -1,5 +1,5 @@
 #ifndef INJECT_GENOTYPE_CONTROL_HH
-#include "inject_genotype_control.hh"
+#include "cInjectGenotypeControl.h"
 #endif
 
 #ifndef TEST_CASE_H

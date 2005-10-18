@@ -1,7 +1,7 @@
 
-Include("resource.hh")
+Include("cResource.h")
 
-cReactionProcess = Class("cReactionProcess", "reaction_process.hh")
+cReactionProcess = Class("cReactionProcess", "cReactionProcess.h")
 set_policy(cReactionProcess.GetResource, return_internal_reference())
 set_policy(cReactionProcess.GetProduct, return_internal_reference())
 set_policy(cReactionProcess.GetDetect, return_internal_reference())

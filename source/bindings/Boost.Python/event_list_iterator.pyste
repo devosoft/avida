@@ -1,4 +1,4 @@
 
-cEventListIterator = Class("cEventListIterator", "event_list_iterator.hh")
+cEventListIterator = Class("cEventListIterator", "cEventListIterator.h")
 
 # vim: set ft=python:

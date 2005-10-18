@@ -1,6 +1,6 @@
 
-Include("inject_genotype.hh")
+Include("cInjectGenotype.h")
 
-cInjectGenotype_BirthData = Class("cInjectGenotype_BirthData", "inject_genotype_birth_data.hh")
+cInjectGenotype_BirthData = Class("cInjectGenotype_BirthData", "cInjectGenotype_BirthData.h")
 
 # vim: set ft=python:

@@ -1,6 +1,6 @@
 
-Include("string_list.hh")
+Include("cStringList.h")
 
-cStringIterator = Class("cStringIterator", "string_iterator.hh")
+cStringIterator = Class("cStringIterator", "cStringIterator.h")
 
 # vim: set ft=python:

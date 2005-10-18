@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef HARDWARE_BASE_HH
-#include "hardware_base.hh"
+#include "cHardwareBase.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

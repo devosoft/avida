@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from descr import descr
+
 from pyAvida import pyAvida
 from pyFreezeDialogCtrl import pyFreezeDialogCtrl
 from pyPetriConfigureView import pyPetriConfigureView
@@ -19,7 +21,6 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     pyPetriConfigureView.__init__(self,parent,name,fl)
     self.setAcceptDrops(1)
 
-
   def setAvidaSlot(self, avida):
     old_avida = self.m_avida
     self.m_avida = avida
@@ -29,6 +30,7 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
       pass
     
   def construct(self, session_mdl):
+    descr()
     self.m_session_mdl = session_mdl
     self.m_session_petri_view = pyPetriConfigureView()
     self.m_avida = None
@@ -61,6 +63,8 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     self.connect(self.m_session_mdl.m_session_mdtr, 
       PYSIGNAL("doEnablePetriDishSig"), self.EnablePetriConfigureSlot)
     self.connect(self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("doInitializeAvidaPhaseSyncSig"), self.CreateFilesFromPetriSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, 
       PYSIGNAL("doInitializeAvidaPhaseISig"), self.CreateFilesFromPetriSlot)
     self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"), 
       self.setAvidaSlot)
@@ -70,11 +74,14 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     self.connect( self, PYSIGNAL("petriDishDroppedInPopViewSig"), 
       self.m_session_mdl.m_session_mdtr, 
       PYSIGNAL("petriDishDroppedInPopViewSig"))
+    self.connect( self.m_session_mdl.m_session_mdtr, 
+      PYSIGNAL("petriDishDroppedInPopViewSig"), self.petriDropped)
     self.ChangeMutationTextSlot()
     self.ChangeWorldSizeTextSlot()
     self.populated = False
     
   def destruct(self):
+    descr()
     self.m_session_petri_view = None
     self.m_avida = None
     self.full_petri_dict = {}
@@ -162,12 +169,23 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
       self.StopAtSpinBox.setEnabled(True)
   
   def FillDishSlot(self, dish_name, petri_dict):
+    descr()
     
     self.full_petri_dict = petri_dict.dictionary
     settings_dict =  petri_dict.dictionary["SETTINGS"]
-    self.AncestorComboBox.removeItem (0)
-    start_creature = settings_dict["START_CREATURE"]
-    self.AncestorComboBox.insertItem(start_creature)
+
+    # Erase all items for the ancestor list (largest to smallest index)
+
+    for i in range((self.AncestorComboBox.count() - 1), -1, -1):
+      self.AncestorComboBox.removeItem (i)
+
+    # Find all ancestors with the name of the form START_CREATUREx
+
+    i = 0
+    while(settings_dict.has_key("START_CREATURE" + str(i))):
+      start_creature = settings_dict["START_CREATURE" + str(i)]
+      self.AncestorComboBox.insertItem(start_creature)
+      i = i + 1
     max_updates = int(settings_dict["MAX_UPDATES"])
     self.StopAtSpinBox.setValue(max_updates)
     if max_updates < 0:
@@ -215,6 +233,7 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
 
        
   def DisablePetriConfigureSlot(self):
+    descr()
 
     # Turn off the controls 
 
@@ -248,6 +267,7 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
       PYSIGNAL("doDisablePetriDishSig"), ())
 
   def EnablePetriConfigureSlot(self):
+    descr()
 
     # Turn on the controls 
     
@@ -280,6 +300,7 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
 
 
   def CreateFilesFromPetriSlot(self, out_dir = None):
+    descr()
 
     # The input files will be placed in a python generated temporary directory
     # ouput files will be stored in tmp_dir/output until the data is frozen
@@ -294,9 +315,13 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
       PYSIGNAL("doInitializeAvidaPhaseIISig"), (os.path.join(self.m_session_mdl.m_tempdir, "genesis.avida"),))
       
   def Form2Dictionary(self):
+    descr()
     settings_dict = {}
     
-    settings_dict["START_CREATURE"] = str(self.AncestorComboBox.text(0))
+    # Write START_CREATUREx for all the organisms in the Ancestor Combo Box
+
+    for i in range(self.AncestorComboBox.count()):
+      settings_dict["START_CREATURE" + str(i)] = str(self.AncestorComboBox.text(i))
     if (self.StopAtRadioButton.isChecked() == True):
       settings_dict["MAX_UPDATES"] = self.StopAtSpinBox.value()
     else:
@@ -323,8 +348,8 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
       settings_dict["DEATH_METHOD"] = 2
     return settings_dict
     
-  def FreezePetriSlot(self, population_dict = None, 
-      send_reset_signal = False, send_quit_signal = False):
+  def FreezePetriSlot(self, population_dict = None, send_reset_signal = False, send_quit_signal = False):
+    descr()
     tmp_dict = {}
     tmp_dict["SETTINGS"] = self.Form2Dictionary()
     m_pop_up_freezer_file_name = pyFreezeDialogCtrl()
@@ -359,7 +384,6 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
     self.m_session_mdl.m_session_mdtr.emit(
       PYSIGNAL("doRefreshFreezerInventorySig"), ())
     if send_reset_signal:
-      print "sending reset signal from pyPetriConfigureCtrl:FreezePetriSlot" 
       self.m_session_mdl.m_session_mdtr.emit(
         PYSIGNAL("restartPopulationSig"), (self.m_session_mdl, ))
 
@@ -372,6 +396,7 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
 
 
   def doLoadPetriDishConfigFileSlot(self, genesisFileName = None):
+    descr()
     genesis = cGenesis()
     genesis.Open(cString(genesisFileName))
     if 0 == genesis.IsOpen():
@@ -394,11 +419,21 @@ class pyPetriConfigureCtrl(pyPetriConfigureView):
       self.setAvidaSlot)
       
   def dropEvent( self, e ):
+    descr()
     freezer_item_name = QString()
-    print "dropEvent"
     if ( QTextDrag.decode( e, freezer_item_name ) ) :
       if os.path.exists(str(freezer_item_name)) == False:
         print "that was not a valid path (2)" 
       else: 
         self.emit(PYSIGNAL("petriDishDroppedInPopViewSig"), (e,))
-        print "emitted(1)"
+
+  def petriDropped(self, e):
+    descr()
+    # Try to decode to the data you understand...
+    freezer_item_name = QString()
+    if ( QTextDrag.decode( e, freezer_item_name ) and not self.DishDisabled) :
+      if freezer_item_name[-8:] == 'organism':
+        core_name = freezer_item_name[:-9]
+        core_name = os.path.basename(str(freezer_item_name[:-9]))
+        self.AncestorComboBox.insertItem(core_name)
+        return

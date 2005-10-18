@@ -1,11 +1,11 @@
 #include "py_hardware_tracer.hh"
 
-#include "hardware_4stack.hh"
-#include "hardware_cpu.hh"
-#include "hardware_tracer.hh"
-#include "hardware_tracer_4stack.hh"
-#include "hardware_tracer_cpu.hh"
-#include "hardware_tracer_test_cpu.hh"
+#include "cHardware4Stack.h"
+#include "cHardwareCPU.h"
+#include "cHardwareTracer.h"
+#include "cHardwareTracer_4Stack.h"
+#include "cHardwareTracer_CPU.h"
+#include "cHardwareTracer_TestCPU.h"
 
 #include <iostream>
 

@@ -9,7 +9,7 @@ before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.
 #define T_UNIT_TEST_SUITE_RECURSER_HH
 
 #ifndef CYCLE_CHECK_HH
-#include "cCycleCheck.hh"
+#include "cCycleCheck.h"
 #endif
 #ifndef T_UNIT_TEST_SUITE_HH
 #include "tUnitTestSuite.hh"

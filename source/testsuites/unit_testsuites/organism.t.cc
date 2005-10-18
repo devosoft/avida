@@ -1,5 +1,5 @@
 #ifndef ORGANISM_HH
-#include "organism.hh"
+#include "cOrganism.h"
 #endif
 
 #ifndef TEST_CASE_H

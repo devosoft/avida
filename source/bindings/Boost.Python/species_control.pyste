@@ -1,10 +1,10 @@
 
-Include("genebank.hh")
-Include("species.hh")
-Include("genotype.hh")
-Include("stats.hh")
+Include("cGenebank.h")
+Include("cSpecies.h")
+Include("cGenotype.h")
+Include("cStats.h")
 
-cSpeciesControl = Class("cSpeciesControl", "species_control.hh")
+cSpeciesControl = Class("cSpeciesControl", "cSpeciesControl.h")
 set_policy(cSpeciesControl.Find, return_internal_reference())
 set_policy(cSpeciesControl.GetFirst, return_internal_reference())
 set_policy(cSpeciesControl.GetFirstInactive, return_internal_reference())

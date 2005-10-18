@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef HELP_ALIAS_HH
-#include "tools/help_alias.hh"
+#include "tools/cHelpAlias.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

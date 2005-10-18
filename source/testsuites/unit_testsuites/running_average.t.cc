@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef RUNNING_AVERAGE_HH
-#include "running_average.hh"
+#include "cRunningAverage.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

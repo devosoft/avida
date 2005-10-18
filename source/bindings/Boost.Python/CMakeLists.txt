@@ -27,7 +27,6 @@ FOREACH(PY_TEST_SUITE ${PY_UNITTEST_SUITES})
   )   
 ENDFOREACH(PY_TEST_SUITE)
 
-
 #
 # A test of python packaging.
 #
@@ -92,7 +91,7 @@ SET(PyAvida_Pyste_Bases
   fitness_matrix:: # XXX XXX
   genotype_birth_data:: # XXX XXX
   hardware_4stack_thread:: # XXX XXX
-  hardware_cpu_thread:: # XXX XXX
+  hardware_cpu_thread::${CMAKE_CURRENT_SOURCE_DIR}/hardware_cpu_thread-fixups.hh # XXX XXX
   inject_genotype_birth_data:: # XXX XXX
   inst_util:: # XXX XXX
   integrated_schedule::${CMAKE_CURRENT_SOURCE_DIR}/schedule.pyste: # XXX XXX
@@ -142,7 +141,8 @@ SET(PyAvida_Pyste_Bases
   avida_driver_population::${CMAKE_CURRENT_SOURCE_DIR}/avida_driver_base.pyste # XXX XXX XXX
   config:: # XXX XXX XXX
   count_tracker:: # XXX XXX XXX
-  cpu_defs::
+  nHardware::${CMAKE_CURRENT_SOURCE_DIR}/nHardware-fixups.h
+  nHardwareCPU::${CMAKE_CURRENT_SOURCE_DIR}/nHardwareCPU-fixups.h
   data_entry:: # XXX XXX XXX
   data_file:: # XXX XXX XXX
   data_file_manager:: # XXX XXX XXX
@@ -156,6 +156,7 @@ SET(PyAvida_Pyste_Bases
   hardware_cpu::${CMAKE_CURRENT_SOURCE_DIR}/hardware_base.pyste:${CMAKE_CURRENT_SOURCE_DIR}/hardware_cpu-fixups.hh # XXX XXX XXX
   hardware_tracer::
   hardware_tracer_cpu::
+  hardware_tracer_smt::
   hardware_tracer_4stack::
   hardware_tracer_test_cpu::
   hardware_status_printer::
@@ -181,12 +182,14 @@ SET(PyAvida_Pyste_Bases
 )
 SET(PyAvida_Extra_Cpp_Files
   AB.cc
-  cpu_defs-fixups.cc
+  nHardware-fixups.cc
+  nHardwareCPU-fixups.cc
   cpu_head-fixups.cc
   cpu_memory-fixups.cc
   file-fixups.cc
   genesis-fixups.cc
   hardware_cpu-fixups.cc
+  hardware_cpu_thread-fixups.cc
   py_avida_driver-fixups.cc
   py_hardware_tracer-fixups.cc
   resource_count-fixups.cc

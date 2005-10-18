@@ -9,7 +9,7 @@
 #ifndef VIEW_ANSI_HH
 #define VIEW_ANSI_HH
 
-#include "defs.hh"
+#include "defs.h"
 
 #ifdef VIEW_ANSI
 

@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef GENOTYPE_BATCH_HH
-#include "genotype_batch.hh"
+#include "cGenotypeBatch.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

@@ -1,5 +1,5 @@
 #ifndef EVENT_TRIGGERS_HH
-#include "event_triggers.hh"
+#include "cEventTriggers.h"
 #endif
 
 #ifndef TEST_CASE_H

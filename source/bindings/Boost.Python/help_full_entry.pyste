@@ -1,9 +1,9 @@
 
 Import("help_entry.pyste")
 
-Include("help_type.hh")
+Include("cHelpType.h")
 
-cHelpFullEntry = Class("cHelpFullEntry", "help_full_entry.hh")
+cHelpFullEntry = Class("cHelpFullEntry", "cHelpFullEntry.h")
 set_policy(cHelpFullEntry.GetType, return_internal_reference())
 
 # vim: set ft=python:

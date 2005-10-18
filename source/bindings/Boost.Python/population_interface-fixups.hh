@@ -2,10 +2,10 @@
 #define POPULATION_INTERFACE_FIXUPS_HH
 
 #ifndef POPULATION_INTERFACE_HH
-#include "population_interface.hh"
+#include "cPopulationInterface.h"
 #endif
 #ifndef CALLBACK_UTIL_HH
-#include "callback_util.hh"
+#include "cCallbackUtil.h"
 #endif
 
 inline void BuildTestPopInterface(cPopulationInterface &test_interface){

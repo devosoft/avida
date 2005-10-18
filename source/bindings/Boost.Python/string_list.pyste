@@ -1,5 +1,5 @@
 
-cStringList = Class("cStringList", "string_list.hh")
+cStringList = Class("cStringList", "cStringList.h")
 # disabled because it returns a tList, and I'm not wrapping tList yet
 # (it introduces memory management problems that I have't yet
 # approached).

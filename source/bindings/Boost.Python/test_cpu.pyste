@@ -1,10 +1,10 @@
 
-Include("cpu_test_info.hh")
-Include("environment.hh")
-Include("genome.hh")
-Include("inst_set.hh")
-Include("population_interface.hh")
-Include("resource_count.hh")
+Include("cCPUTestInfo.h")
+Include("cEnvironment.h")
+Include("cGenome.h")
+Include("cInstSet.h")
+Include("cPopulationInterface.h")
+Include("cResourceCount.h")
 
 cTestCPU = Class("cTestCPU", "test_cpu-fixups.hh")
 set_policy(cTestCPU.GetInstSet, return_value_policy(reference_existing_object))

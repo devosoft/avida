@@ -1,5 +1,5 @@
 #ifndef FIXED_BLOCK_HH
-#include "fixed_block.hh"
+#include "cFixedBlock.h"
 #endif
 
 #ifndef TEST_CASE_H

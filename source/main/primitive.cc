@@ -1,67 +1,33 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2001 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
-
-#ifndef PRIMITIVE_HH
-#include "primitive.hh"
-#endif
-
-#ifndef AVIDA_HH
-#include "avida.hh"
-#endif
-#ifndef AVIDA_DRIVER_ANALYZE_HH
-#include "avida_driver_analyze.hh"
-#endif
-#ifndef AVIDA_DRIVER_BASE_HH
-#include "avida_driver_base.hh"
-#endif
-#ifndef AVIDA_DRIVER_POPULATION_HH
-#include "avida_driver_population.hh"
-#endif
-#ifndef CALLBACK_UTIL_HH
-#include "callback_util.hh"
-#endif
-#ifndef CONFIG_HH
-#include "config.hh"
-#endif
-#ifndef DEFS_HH
-#include "defs.hh"
-#endif
-#ifndef ENVIRONMENT_HH
-#include "environment.hh"
-#endif
-#ifndef HARDWARE_4STACK_HH
-#include "hardware_4stack.hh"
-#endif
-#ifndef HARDWARE_UTIL_HH
-#include "hardware_util.hh"
-#endif
-#ifndef HARDWARE_CPU_HH
-#include "hardware_cpu.hh"
-#endif
-#ifndef HARDWARE_SMT_H
-#include "hardware_smt.h"
-#endif
-#ifndef INST_LIB_CPU_HH
-#include "inst_lib_cpu.hh"
-#endif
-#ifndef POPULATION_HH
-#include "population.hh"
-#endif
-#ifndef POPULATION_INTERFACE_HH
-#include "population_interface.hh"
-#endif
-#ifndef RESOURCE_COUNT_HH
-#include "resource_count.hh"
-#endif
-#ifndef TEST_CPU_HH
-#include "test_cpu.hh"
-#endif
+/*
+ *  nGeometry.h
+ *  Avida2
+ *
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993 - 2001 California Institute of Technology.
+ *
+ */
 
 #include <signal.h>
+
+#include "avida.h"
+#include "cAvidaConfig.h"
+#include "cAvidaDriver_Analyze.h"
+#include "cAvidaDriver_Base.h"
+#include "cAvidaDriver_Population.h"
+#include "cCallbackUtil.h"
+#include "cConfig.h"
+#include "cEnvironment.h"
+#include "cHardware4Stack.h"
+#include "cHardwareUtil.h"
+#include "cHardwareCPU.h"
+#include "cHardwareSMT.h"
+#include "cInstLibCPU.h"
+#include "cPopulation.h"
+#include "cPopulationInterface.h"
+#include "cResourceCount.h"
+#include "cTestCPU.h"
+#include "cWorld.h"
+#include "defs.h"
 
 using namespace std;
 
@@ -71,16 +37,20 @@ int main(int argc, char * argv[])
   signal(SIGINT, ExitAvida);
 
   // output copyright message
-  cout << "Avida " << AVIDA_VERSION << endl;
+  cout << AvidaVersion() << endl;
   cout << "----------------------------------------------------------------------" << endl;
-  cout << "Copyright (C) 1993-2003 California Institute of Technology." << endl;
-  cout << "Copyright (C) 1999-2005 Michigan State University." << endl << endl;
+  cout << "Copyright (C) 1999-2005 Michigan State University." << endl;
+  cout << "Copyright (C) 1993-2003 California Institute of Technology." << endl << endl;
   
   cout << "Avida comes with ABSOLUTELY NO WARRANTY." << endl;
   cout << "This is free software, and you are welcome to redistribute it" << endl;
   cout << "under certain conditions. See file COPYING for details." << endl << endl;
   
   // Initialize the configuration data...
+  //cerr << "<newconfig>" << endl;
+  //cWorld* world = new cWorld(cAvidaConfig::LoadWithCmdLineArgs(argc, argv));
+  //cerr << "</newconfig>" << endl << endl;
+  
   cConfig::InitGroupList();
   cConfig::Setup(argc, argv);
   cConfig::SetupMS();

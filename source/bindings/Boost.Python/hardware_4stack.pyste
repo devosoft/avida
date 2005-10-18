@@ -1,12 +1,12 @@
 
-Include("mutation.hh")
-Include("inject_genotype.hh")
-Include("inst_set.hh")
-Include("organism.hh")
+Include("cMutation.h")
+Include("cInjectGenotype.h")
+Include("cInstSet.h")
+Include("cOrganism.h")
 
 Import("hardware_base.pyste")
 
-cHardware4Stack = Class("cHardware4Stack", "hardware_4stack.hh")
+cHardware4Stack = Class("cHardware4Stack", "cHardware4Stack.h")
 set_policy(cHardware4Stack.GetInstLib, return_internal_reference())
 set_policy(cHardware4Stack.Stack, return_internal_reference())
 set_policy(cHardware4Stack.GetInputBuffer, return_internal_reference())

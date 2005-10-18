@@ -4,10 +4,10 @@
 
 #include <iostream.h>
 
-#include "../../tools/tMatrix.hh"
+#include "../../tools/tMatrix.h"
 
-#include "../../tools/string.hh"
-#include "../../tools/file.hh"
+#include "../../tools/cString.h"
+#include "../../tools/cFile.h"
 
 
 using namespace std;

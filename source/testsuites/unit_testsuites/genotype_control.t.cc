@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef GENOTYPE_CONTROL_HH
-#include "genotype_control.hh"
+#include "cGenotypeControl.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

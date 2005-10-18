@@ -1,16 +1,16 @@
 
 #include "py_avida_driver.hh"
 
-#include "cpu/hardware_base.hh"
-#include "cpu/hardware_factory.hh"
-#include "main/config.hh"
-#include "main/genebank.hh"
-#include "main/genotype.hh"
-#include "main/organism.hh"
-#include "main/population.hh"
-#include "main/population_cell.hh"
-#include "tools/change_list.hh"
-#include "tools/string.hh"
+#include "cpu/cHardwareBase.h"
+#include "cpu/cHardwareFactory.h"
+#include "main/cConfig.h"
+#include "main/cGenebank.h"
+#include "main/cGenotype.h"
+#include "main/cOrganism.h"
+#include "main/cPopulation.h"
+#include "main/cPopulationCell.h"
+#include "tools/cChangeList.h"
+#include "tools/cString.h"
 
 
 #include <iostream>

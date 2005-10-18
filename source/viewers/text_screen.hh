@@ -9,9 +9,9 @@
 #define VIEW_TEXT_SCREEN_HH
 
 
-#include "merit.hh"
-#include "inst_set.hh"
-#include "defs.hh"
+#include "cMerit.h"
+#include "cInstSet.h"
+#include "defs.h"
 
 #include "ncurses.hh"
 #include "ansi.hh"

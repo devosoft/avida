@@ -1,5 +1,5 @@
 #ifndef SPATIAL_COUNT_ELEM_HH
-#include "spatial_count_elem.hh"
+#include "cSpatialCountElem.h"
 #endif
 
 #ifndef TEST_CASE_H

@@ -1,5 +1,5 @@
 #ifndef COUNT_TRACKER_HH
-#include "count_tracker.hh"
+#include "cCountTracker.h"
 #endif
 
 #ifndef TEST_CASE_H

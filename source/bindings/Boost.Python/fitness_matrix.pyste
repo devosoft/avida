@@ -1,5 +1,5 @@
-Include("inst_set.hh")
+Include("cInstSet.h")
 
-cFitnessMatrix = Class("cFitnessMatrix", "fitness_matrix.hh")
+cFitnessMatrix = Class("cFitnessMatrix", "cFitnessMatrix.h")
 
 # vim: set ft=python:

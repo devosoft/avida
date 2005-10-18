@@ -9,10 +9,10 @@ before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.
 #define RECURSIVE_TESTS_DEFN_HDRS_HH
 
 #ifndef CYCLE_CHECK_HH
-#include "cCycleCheck.hh"
+#include "cCycleCheck.h"
 #endif
 #ifndef ID_HH
-#include "cID.hh"
+#include "cID.h"
 #endif
 #ifndef RECURSIVE_TESTS_MACROS_HH
 #include "recursive_tests_macros.hh"
@@ -30,7 +30,7 @@ before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.
 #include "tVerifierSuiteRecurser.hh"
 #endif
 #ifndef VERIFIER_SUITE_RECURSER_HH
-#include "cVerifierSuiteRecurser.hh"
+#include "cVerifierSuiteRecurser.h"
 #endif
 
 #ifndef TEST_CASE_H

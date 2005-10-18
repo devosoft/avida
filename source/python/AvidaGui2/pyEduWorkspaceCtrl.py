@@ -56,13 +56,22 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
     self.m_one_organism_ctrl.construct(self.m_session_mdl)
     self.m_one_analyze_ctrl.construct(self.m_session_mdl)
         
-    self.connect(self, PYSIGNAL("quitAvidaPhaseISig"), self.startQuitProcessSlot)
+    self.connect(
+      self, PYSIGNAL("quitAvidaPhaseISig"), self.startQuitProcessSlot)
     self.connect(self, PYSIGNAL("quitAvidaPhaseIISig"), qApp, SLOT("quit()"))
-    self.connect(self.m_nav_bar_ctrl.m_list_view, SIGNAL("clicked(QListViewItem *)"), self.navBarItemClickedSlot)
-    self.connect(self.m_widget_stack, SIGNAL("aboutToShow(QWidget *)"), self.ctrlAboutToShowSlot)
-    # self.connect(self.fileOpenFreezerAction,SIGNAL("activated()"),self.freezerOpenSlot)
-    self.connect(self.controlNext_UpdateAction,SIGNAL("activated()"),self.next_UpdateActionSlot)
-    self.connect(self.controlStartAction,SIGNAL("activated()"),self.startActionSlot)
+    self.connect(
+      self.m_nav_bar_ctrl.m_list_view, SIGNAL("clicked(QListViewItem *)"), 
+      self.navBarItemClickedSlot)
+    self.connect(
+      self.m_widget_stack, SIGNAL("aboutToShow(QWidget *)"), 
+      self.ctrlAboutToShowSlot)
+    # self.connect(
+    #   self.fileOpenFreezerAction,SIGNAL("activated()"),self.freezerOpenSlot)
+    self.connect(
+      self.controlNext_UpdateAction,SIGNAL("activated()"),
+      self.next_UpdateActionSlot)
+    self.connect(
+      self.controlStartAction,SIGNAL("activated()"),self.startActionSlot)
     self.connect(
       self.m_session_mdl.m_session_mdtr, PYSIGNAL("setAvidaSig"),
       self.setAvidaSlot)
@@ -85,6 +94,14 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
     #   self.m_session_mdl.m_session_mdtr,
     #   PYSIGNAL("doNextUpdateSig"),
     #   self.updatePBClickedSlot)
+
+    self.connect(self.controlRepopulateAction,SIGNAL("activated()"),
+      self.RepopulateActionSlot)
+
+    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("addStatusBarWidgetSig"), self.addStatusBarWidgetSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("removeStatusBarWidgetSig"), self.removeStatusBarWidgetSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("statusBarMessageSig"), self.statusBarMessageSlot)
+    self.connect(self.m_session_mdl.m_session_mdtr, PYSIGNAL("statusBarClearSig"), self.statusBarClearSlot)
 
     self.m_nav_bar_ctrl.m_one_population_cli.setState(QCheckListItem.On)
     self.m_widget_stack.raiseWidget(self.m_one_population_ctrl)
@@ -118,7 +135,6 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
     self.emit(PYSIGNAL("quitAvidaPhaseISig"), ())
     return False
 
-######### pyuic-one-time-generated-code lives below this line.
 
   def __del__(self):
     print "pyEduWorkspaceCtrl.__del__(): Not implemented yet"
@@ -283,8 +299,6 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
     # (actually only works with one population will need to expand to
     # two populations in the future)
 
-    print "BDB: self.m_one_population_ctrl.m_session_mdl.saved_full_dish = " + str(self.m_one_population_ctrl.m_session_mdl.saved_full_dish)
-    print "BDB: self.m_one_population_ctrl.m_session_mdl.new_full_dish = " + str(self.m_one_population_ctrl.m_session_mdl.new_full_dish)
     if (not self.m_one_population_ctrl.m_session_mdl.saved_full_dish and
         not self.m_one_population_ctrl.m_session_mdl.new_full_dish):
       m_quit_avida_ed = pyQuitDialogCtrl()
@@ -295,3 +309,26 @@ class pyEduWorkspaceCtrl(pyEduWorkspaceView):
         self.m_one_population_ctrl.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("freezeDishPhaseISig"), (False, True, ))
     else:
       self.emit(PYSIGNAL("quitAvidaPhaseIISig"), ())
+
+  def RepopulateActionSlot(self):
+
+    # If the user clicks the repopulate button pretend that they double
+    # the default empty petri dish from the freezer
+
+    file_name = os.path.join(self.m_session_mdl.m_current_freezer, 
+      "default.empty")
+    self.m_session_mdl.m_session_mdtr.emit(
+      PYSIGNAL("freezerItemDoubleClicked"), (file_name, ))
+
+
+  def addStatusBarWidgetSlot(self, *args):
+    widget = args[0]
+    pt = QPoint()
+    widget.reparent(self, pt)
+    apply(QStatusBar.addWidget,(self.statusBar(),) + args)
+  def removeStatusBarWidgetSlot(self, *args):
+    apply(QStatusBar.removeWidget,(self.statusBar(),) + args)
+  def statusBarMessageSlot(self, *args):
+    apply(QStatusBar.message,(self.statusBar(),) + args)
+  def statusBarClearSlot(self):
+    self.statusBar().clear()

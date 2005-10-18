@@ -1,4 +1,4 @@
-Avida 2.2
+Avida 2.3.x
 ----------------------------------------------------------------------
 Digital Evolution Laboratory at Michigan State University
 
@@ -14,7 +14,8 @@ NCurses, in order to build the console viewer.
 OR
 
 In Mac OS X, an Xcode project has been provided for building the
-'primitive' console only version of Avida.
+'primitive' console only version of Avida, as well as the NCurses
+viewer.  Xcode 2.1 or greater is required.
 
 
 GETTING STARTED
@@ -100,4 +101,4 @@ $ cmake -DAVD_CONSISTENCY_TEST_PRIMITIVE:BOOL=OFF \
 
 
 
-Revised 2005-14-02 DMB
+Revised 2005-16-10 DMB

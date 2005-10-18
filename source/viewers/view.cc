@@ -8,17 +8,17 @@
 #include <fstream>
 
 #ifndef ENVIRONMENT_HH
-#include "environment.hh"
+#include "cEnvironment.h"
 #endif
-#include "genotype.hh"
-#include "organism.hh"
-#include "phenotype.hh"
-#include "population.hh"
-#include "population_cell.hh"
-#include "stats.hh"
+#include "cGenotype.h"
+#include "cOrganism.h"
+#include "cPhenotype.h"
+#include "cPopulation.h"
+#include "cPopulationCell.h"
+#include "cStats.h"
 
-#include "test_util.hh"
-#include "hardware_base.hh"
+#include "cTestUtil.h"
+#include "cHardwareBase.h"
 
 #include "view.hh"
 #include "menu.hh"

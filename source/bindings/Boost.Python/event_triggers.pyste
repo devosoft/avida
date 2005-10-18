@@ -1,4 +1,4 @@
 
-cEventTriggers = Class("cEventTriggers", "event_triggers.hh")
+cEventTriggers = Class("cEventTriggers", "cEventTriggers.h")
 
 # vim: set ft=python:

@@ -11,8 +11,8 @@ MAX_GENERATIONS -1      # Maximum generations to run simulation (-1 = no limit)
 END_CONDITION_MODE 0    # End run when ...
                         # 0 = MAX_UPDATES _OR_ MAX_GENERATIONS is reached
                         # 1 = MAX_UPDATES _AND_ MAX_GENERATIONS is reached
-WORLD-X 30              # Width of the world in Avida mode.
-WORLD-Y 30              # Height of the world in Avida mode.
+WORLD-X 60              # Width of the world in Avida mode.
+WORLD-Y 60              # Height of the world in Avida mode.
 RANDOM_SEED 0           # Random number seed. (0 for based on time)
 HARDWARE_TYPE 2         # 0 = Original CPUs
                         # 1 = New, Stack-based CPUs
@@ -34,21 +34,21 @@ BIRTH_METHOD 4   # 0 = Replace random organism in neighborhood
 		  # 3 = Place only in empty cells in neighborhood
 		  # 4 = Replace random from entire population (Mass Action)
 		  # 5 = Replace oldest in entire population (like Tierra)
-DEATH_METHOD 0    # 0 = Never die of old age.
+DEATH_METHOD 2    # 0 = Never die of old age.
 		  # 1 = Die when inst executed = AGE_LIMIT (with deviation)
 		  # 2 = Die when inst executed = length * AGE_LIMIT (+ dev.)
-AGE_LIMIT 5000    # Modifies DEATH_METHOD
+AGE_LIMIT 20    # Modifies DEATH_METHOD
 AGE_DEVIATION 0   # Modified DEATH_METHOD
 ALLOC_METHOD 0    # 0 = Allocated space is set to default instruction.
                   # 1 = Set to section of dead genome (Necrophilia)
                   # 2 = Allocated space is set to random instruction.
-DIVIDE_METHOD 2   # 0 = Divide leaves state of mother untouched.
+DIVIDE_METHOD 1   # 0 = Divide leaves state of mother untouched.
                   # 1 = Divide resets state of mother
                   #     (after the divide, we have 2 children)
 		  # 2 = Divide resets only the current thread of the mother
 		  #     (useful in 4-stack CPU w/ parasites)
 
-GENERATION_INC_METHOD 0 # 0 = Only the generation of the child is
+GENERATION_INC_METHOD 1 # 0 = Only the generation of the child is
                         #     increased on divide.
 			# 1 = Both the generation of the mother and child are
 			#     increased on divide (good with DIVIDE_METHOD 1).

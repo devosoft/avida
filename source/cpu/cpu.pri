@@ -1,34 +1,33 @@
 
 cpu {
   HEADERS += \
-             $$CPU_HH/code_label.hh \
-             $$CPU_HH/cpu_defs.hh \
-             $$CPU_HH/cpu_memory.hh \
-             $$CPU_HH/cpu_stack.hh \
-             $$CPU_HH/cpu_stats.hh \
-             $$CPU_HH/hardware_4stack.hh \
-             $$CPU_HH/hardware_base.hh \
-             $$CPU_HH/hardware_cpu.hh \
-             $$CPU_HH/hardware_factory.hh \
-             $$CPU_HH/hardware_util.hh \
-             $$CPU_HH/test_cpu.hh \
-             $$CPU_HH/test_util.hh
+             $$CPU_HH/cCodeLabel.h \
+             $$CPU_HH/nHardware.h \
+             $$CPU_HH/cCPUMemory.h \
+             $$CPU_HH/cCPUStack.h \
+             $$CPU_HH/sCPUStats.h \
+             $$CPU_HH/cHardware4Stack.h \
+             $$CPU_HH/cHardwareBase.h \
+             $$CPU_HH/cHardwareCPU.h \
+             $$CPU_HH/cHardwareFactory.h \
+             $$CPU_HH/cHardwareUtil.h \
+             $$CPU_HH/cTestCPU.h \
+             $$CPU_HH/cTestUtil.h
 
   SOURCES += \
              $$CPU_CC/4stack_head.cc \
-             $$CPU_CC/code_label.cc \
+             $$CPU_CC/cCodeLabel.cc \
              $$CPU_CC/cpu_head.cc \
-             $$CPU_CC/cpu_memory.cc \
-             $$CPU_CC/cpu_stack.cc \
-             $$CPU_CC/cpu_test_info.cc \
-             $$CPU_CC/hardware_4stack.cc \
-             $$CPU_CC/hardware_4stack_thread.cc \
-             $$CPU_CC/hardware_base.cc \
-             $$CPU_CC/hardware_cpu.cc \
-             $$CPU_CC/hardware_cpu_thread.cc \
-             $$CPU_CC/hardware_factory.cc \
-             $$CPU_CC/hardware_util.cc \
-             $$CPU_CC/memory_flags.cc \
-             $$CPU_CC/test_cpu.cc \
-             $$CPU_CC/test_util.cc
+             $$CPU_CC/cCPUMemory.cc \
+             $$CPU_CC/cCPUStack.cc \
+             $$CPU_CC/cCPUTestInfo.cc \
+             $$CPU_CC/cHardware4Stack.cc \
+             $$CPU_CC/cHardware4Stack_Thread.cc \
+             $$CPU_CC/cHardwareBase.cc \
+             $$CPU_CC/cHardwareCPU.cc \
+             $$CPU_CC/cHardwareCPU_Thread.cc \
+             $$CPU_CC/cHardwareFactory.cc \
+             $$CPU_CC/cHardwareUtil.cc \
+             $$CPU_CC/cTestCPU.cc \
+             $$CPU_CC/cTestUtil.cc
 }

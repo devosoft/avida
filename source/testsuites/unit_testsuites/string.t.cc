@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef STRING_HH
-#include "string.hh"
+#include "cString.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

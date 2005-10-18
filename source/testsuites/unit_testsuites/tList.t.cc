@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef TLIST_HH
-#include "tList.hh"
+#include "tList.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

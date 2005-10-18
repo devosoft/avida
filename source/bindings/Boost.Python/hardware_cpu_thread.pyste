@@ -1,9 +1,16 @@
 
-Include("hardware_base.hh")
+Include("cHardwareBase.h")
+Include("cHeadCPU.h")
 
-cHardwareCPU_Thread = Class("cHardwareCPU_Thread", "hardware_cpu_thread.hh")
+cHardwareCPU_Thread = Class("cHardwareCPU_Thread", "hardware_cpu_thread-fixups.hh")
 
 exclude(cHardwareCPU_Thread.reg)
 exclude(cHardwareCPU_Thread.heads)
+
+add_method(cHardwareCPU_Thread, "cHardwareCPU_Thread_GetRegister")
+add_method(cHardwareCPU_Thread, "cHardwareCPU_Thread_GetHead")
+
+rename(cHardwareCPU_Thread.cHardwareCPU_Thread_GetRegister, "GetRegister")
+rename(cHardwareCPU_Thread.cHardwareCPU_Thread_GetHead, "GetHead")
 
 # vim: set ft=python:

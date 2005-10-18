@@ -1,5 +1,5 @@
 #ifndef RESOURCE_LIB_HH
-#include "resource_lib.hh"
+#include "cResourceLib.h"
 #endif
 
 #ifndef TEST_CASE_H

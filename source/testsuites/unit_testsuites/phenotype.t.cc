@@ -1,5 +1,5 @@
 #ifndef PHENOTYPE_HH
-#include "phenotype.hh"
+#include "cPhenotype.h"
 #endif
 
 #ifndef TEST_CASE_H

@@ -1,4 +1,4 @@
 
-cRunningAverage = Class("cRunningAverage", "running_average.hh")
+cRunningAverage = Class("cRunningAverage", "cRunningAverage.h")
 
 # vim: set ft=python:

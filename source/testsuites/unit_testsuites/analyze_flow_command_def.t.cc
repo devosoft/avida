@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef ANALYZE_FLOW_COMMAND_DEF_HH
-#include "analyze_flow_command_def.hh"
+#include "cAnalyzeFlowCommandDef.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

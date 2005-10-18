@@ -1,9 +1,9 @@
 
-Include("stats.hh")
-Include("inject_genotype.hh")
-Include("genome.hh")
+Include("cStats.h")
+Include("cInjectGenotype.h")
+Include("cGenome.h")
 
-cInjectGenebank = Class("cInjectGenebank", "inject_genebank.hh")
+cInjectGenebank = Class("cInjectGenebank", "cInjectGenebank.h")
 set_policy(cInjectGenebank.AddInjectGenotype, return_internal_reference())
 set_policy(cInjectGenebank.FindInjectGenotype, return_internal_reference())
 set_policy(cInjectGenebank.GetBestInjectGenotype, return_internal_reference())

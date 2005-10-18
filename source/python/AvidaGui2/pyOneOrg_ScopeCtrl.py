@@ -48,6 +48,12 @@ class pyOneOrg_ScopeCtrl(pyOneOrg_ScopeView):
 
     self.connect(self.m_timer, qt.SIGNAL("timeout()"), self.advanceSlot)
 
+
+  def sliderValueChangedSlot(self, frame_number):
+    print "pyOneOrg_ScopeCtrl.sliderValueChangedSlot(", frame_number, ")."
+    self.m_organism_scope_ctrl.showFrame(frame_number)
+
+
   def gestationTimeChangedSlot(self, gestation_time):
     print "pyOneOrg_ScopeCtrl.gestationTimeChangedSlot called, gestation_time ", gestation_time
     self.m_execution_step_slider.setMaxValue(gestation_time - 1)
@@ -58,10 +64,6 @@ class pyOneOrg_ScopeCtrl(pyOneOrg_ScopeView):
     self.m_execution_step_slider.setValue(execution_step)
     # This may be redundant (I'm not sure). @kgn
     self.m_execution_step_slider.emit(qt.SIGNAL("valueChanged(int)"),(execution_step,))
-
-  def sliderValueChangedSlot(self, frame_number):
-    print "pyOneOrg_ScopeCtrl.sliderValueChangedSlot(", frame_number, ")."
-    self.m_organism_scope_ctrl.showFrame(frame_number)
 
   def sliderMovedSlot(self, frame_number):
     print "pyOneOrg_ScopeCtrl.sliderMovedSlot()."

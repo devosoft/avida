@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from descr import descr
+
 from pyAvida import pyAvida
 from qt import *
 from pyOnePopulationView import pyOnePopulationView
@@ -28,10 +30,18 @@ class pyOnePopulationCtrl(pyOnePopulationView):
     self.connect(self.m_session_mdl.m_session_mdtr,
       PYSIGNAL("restartPopulationSig"), self.restartPopulationSlot)
 
+  def dragEnterEvent( self, e ):
+    descr(e)
+    e.acceptAction(True)
+    if e.isAccepted():
+      descr("isAccepted.")
+    else:
+      descr("not isAccepted.")
+
 
   def dropEvent( self, e ):
+    descr(e)
     freezer_item_name = QString()
-    print "dropEvent in one population"
     if ( QTextDrag.decode( e, freezer_item_name ) ) : #freezer_item_name is a string...the file name 
       if os.path.exists(str(freezer_item_name)) == False:
         print "that was not a valid path (1)" 
@@ -44,9 +54,11 @@ class pyOnePopulationCtrl(pyOnePopulationView):
        (freezer_item_name,))
 
   def restartPopulationSlot(self, session_mdl):
+    descr()
     self.m_one_pop_petri_dish_ctrl.restart(self.m_session_mdl)
     self.m_one_pop_graph_ctrl.restart()
     self.m_one_pop_stats_ctrl.restart()
+    self.m_session_mdl.m_session_mdtr.emit(PYSIGNAL("doSyncSig"), ())
     # self.m_session_mdl.m_session_mdtr.emit(
     #   PYSIGNAL("doInitializeAvidaPhaseISig"), (self.m_session_mdl.m_tempdir,))
 

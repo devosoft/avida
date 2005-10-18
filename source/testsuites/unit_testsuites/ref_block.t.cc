@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef REF_BLOCK_HH
-#include "ref_block.hh"
+#include "cRefBlock.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

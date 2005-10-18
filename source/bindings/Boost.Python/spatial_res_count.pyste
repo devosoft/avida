@@ -1,4 +1,4 @@
 
-cSpatialResCount = Class("cSpatialResCount", "spatial_res_count.hh")
+cSpatialResCount = Class("cSpatialResCount", "cSpatialResCount.h")
 
 # vim: set ft=python:

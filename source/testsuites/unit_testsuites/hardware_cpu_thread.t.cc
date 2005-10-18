@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef HARDWARE_CPU_THREAD_HH
-#include "hardware_cpu_thread.hh"
+#include "cHardwareCPU_Thread.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

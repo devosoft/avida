@@ -8,6 +8,8 @@ self.m_avida is not None.
 @kgn
 """
 
+from descr import *
+
 from AvidaCore import cConfig
 from AvidaCore import cInitFile, cString
 
@@ -158,6 +160,7 @@ class pyPetriDishCtrl(QWidget):
     self.updateCellItems(True)
 
   def setDragSlot(self, org_clicked_on_item = None):
+    descr(org_clicked_on_item)
     if org_clicked_on_item:
       clicked_cell_num = org_clicked_on_item.m_population_cell.GetID()
       clicked_cell = self.m_avida.m_population.GetCell(int(clicked_cell_num))
@@ -240,9 +243,9 @@ class pyPetriDishCtrl(QWidget):
     self.m_world_matrix = QWMatrix()
     if self.m_canvas_view:
       self.m_world_matrix.scale(self.m_zoom_factor/self.m_target_dish_scaling, self.m_zoom_factor/self.m_target_dish_scaling)
-      trans_h_preadjust = ((self.m_canvas_view.size().height()) - (self.m_map_cell_width * self.m_world_h)*
+      trans_h_preadjust = ((self.m_canvas_view.size().height()-self.m_scroll_bar_width) - (self.m_map_cell_width * self.m_world_h)*
         (self.m_zoom_factor/self.m_target_dish_scaling))/2
-      trans_w_preadjust = ((self.m_canvas_view.size().width()) - (self.m_map_cell_width * self.m_world_w)*
+      trans_w_preadjust = ((self.m_canvas_view.size().width()-self.m_scroll_bar_width) - (self.m_map_cell_width * self.m_world_w)*
         (self.m_zoom_factor/self.m_target_dish_scaling))/2
 
       trans_h = trans_h_preadjust + self.m_v_scrollbar_offset*(self.m_zoom_factor/self.m_target_dish_scaling)
@@ -325,4 +328,5 @@ class pyPetriDishCtrl(QWidget):
     def __init__(self, item_name, parent=None, name=None):
         QStoredDrag.__init__(self, 'item name (QString)', parent, name)
         self.setText(item_name)
+        descr(item_name)
 

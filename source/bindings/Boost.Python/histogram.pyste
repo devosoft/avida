@@ -1,4 +1,4 @@
 
-cHistogram = Class("cHistogram", "histogram.hh")
+cHistogram = Class("cHistogram", "cHistogram.h")
 
 # vim: set ft=python:

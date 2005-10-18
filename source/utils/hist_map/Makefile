@@ -27,9 +27,9 @@ TARGET		= hist_map2
 default:  $(TARGET)
 
 ### List Source Files in the Project #########################################
-SRC		= hist_map2.cc			../../tools/file.cc  \
-		../../tools/init_file.cc	../../tools/string.cc  \
-		../../tools/string_list.cc  ../../tools/string_iterator.cc  \
+SRC		= hist_map2.cc			../../tools/cFile.cc  \
+		../../tools/cInitFile.cc	../../tools/cString.cc  \
+		../../tools/cStringList.cc  ../../tools/cStringIterator.cc  \
 
 ### List Object Files (for each source file there is a object file) ###########
 OBJ	 	= $(SRC:.cc=.o)
@@ -71,16 +71,16 @@ local_depend: $(SRC)
 ### Release Packageing ########################################################
 # DO NOT DELETE
 
-hist_map2.o: ../../tools/tMatrix.hh ../../tools/tArray.hh
-hist_map2.o: ../../tools/string.hh ../../tools/file.hh
-hist_map2.o: ../../tools/init_file.hh ../../tools/string_list.hh
-hist_map2.o: ../../tools/tList.hh
-../../tools/file.o: ../../tools/file.hh ../../tools/string.hh
-../../tools/file.o: ../../tools/init_file.hh ../../tools/string_list.hh
-../../tools/file.o: ../../tools/tList.hh ../../tools/tArray.hh
-../../tools/file.o: ../../tools/genesis.hh ../../tools/string_iterator.hh
-../../tools/file.o: ../../tools/tools.hh ../../tools/random.hh
-../../tools/init_file.o: ../../tools/init_file.hh ../../tools/string_list.hh
-../../tools/init_file.o: ../../tools/tList.hh ../../tools/tArray.hh
-../../tools/init_file.o: ../../tools/string_iterator.hh
-../../tools/string.o: ../../tools/string.hh
+hist_map2.o: ../../tools/tMatrix.h ../../tools/tArray.h
+hist_map2.o: ../../tools/cString.h ../../tools/cFile.h
+hist_map2.o: ../../tools/cInitFile.h ../../tools/cStringList.h
+hist_map2.o: ../../tools/tList.h
+../../tools/file.o: ../../tools/cFile.h ../../tools/cString.h
+../../tools/file.o: ../../tools/cInitFile.h ../../tools/cStringList.h
+../../tools/file.o: ../../tools/tList.h ../../tools/tArray.h
+../../tools/file.o: ../../tools/cGenesis.h ../../tools/cStringIterator.h
+../../tools/file.o: ../../tools/cTools.h ../../tools/cRandom.h
+../../tools/init_file.o: ../../tools/cInitFile.h ../../tools/cStringList.h
+../../tools/init_file.o: ../../tools/tList.h ../../tools/tArray.h
+../../tools/init_file.o: ../../tools/cStringIterator.h
+../../tools/string.o: ../../tools/cString.h

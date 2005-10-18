@@ -5,16 +5,16 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "config.hh"
-#include "environment.hh"
-#include "genebank.hh"
-#include "genotype.hh"
-#include "population.hh"
-#include "species.hh"
-#include "stats.hh"
+#include "cConfig.h"
+#include "cEnvironment.h"
+#include "cGenebank.h"
+#include "cGenotype.h"
+#include "cPopulation.h"
+#include "cSpecies.h"
+#include "cStats.h"
 
 #ifndef TASK_ENTRY_HH
-#include "task_entry.hh"
+#include "cTaskEntry.h"
 #endif
 
 #include "stats_screen.hh"

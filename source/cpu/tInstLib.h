@@ -11,10 +11,10 @@
 #define TINSTLIB_H
 
 #ifndef STRING_HH
-#include "string.hh"
+#include "cString.h"
 #endif
 #ifndef INST_LIB_BASE_HH
-#include "inst_lib_base.hh"
+#include "cInstLibBase.h"
 #endif
 
 class cInstruction;

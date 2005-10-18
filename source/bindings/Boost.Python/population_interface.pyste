@@ -1,10 +1,10 @@
 
-Include("genome.hh")
-Include("hardware_base.hh")
-Include("organism.hh")
-Include("org_message.hh")
-Include("population.hh")
-Include("tArray.hh")
+Include("cGenome.h")
+Include("cHardwareBase.h")
+Include("cOrganism.h")
+Include("cOrgMessage.h")
+Include("cPopulation.h")
+Include("tArray.h")
 
 cPopulationInterface = Class("cPopulationInterface", "population_interface-fixups.hh")
 

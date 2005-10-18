@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef SPECIES_CONTROL_HH
-#include "species_control.hh"
+#include "cSpeciesControl.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

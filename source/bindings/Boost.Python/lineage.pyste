@@ -1,6 +1,6 @@
 
-Include("genotype.hh")
+Include("cGenotype.h")
 
-cLineage = Class("cLineage", "lineage.hh")
+cLineage = Class("cLineage", "cLineage.h")
 
 # vim: set ft=python:

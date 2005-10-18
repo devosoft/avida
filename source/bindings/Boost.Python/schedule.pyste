@@ -1,8 +1,8 @@
 
-Include("change_list.hh")
-Include("merit.hh")
+Include("cChangeList.h")
+Include("cMerit.h")
 
-cSchedule = Class("cSchedule", "schedule.hh")
+cSchedule = Class("cSchedule", "cSchedule.h")
 
 exclude(cSchedule.GetChangeList)
 

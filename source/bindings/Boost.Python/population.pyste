@@ -1,13 +1,13 @@
 
-Include("change_list.hh")
-Include("environment.hh")
-Include("genebank.hh" )
-Include("inject_genebank.hh")
-Include("lineage_control.hh")
-Include("organism.hh")
-Include("population_cell.hh")
+Include("cChangeList.h")
+Include("cEnvironment.h")
+Include("cGenebank.h" )
+Include("cInjectGenebank.h")
+Include("cLineageControl.h")
+Include("cOrganism.h")
+Include("cPopulationCell.h")
 
-cPopulation = Class("cPopulation", "population.hh")
+cPopulation = Class("cPopulation", "cPopulation.h")
 
 set_policy(cPopulation.GetCell, return_internal_reference())
 set_policy(cPopulation.GetBirthChamber, return_internal_reference())

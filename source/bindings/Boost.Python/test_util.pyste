@@ -1,8 +1,8 @@
 
-Include("genome.hh")
-Include("inject_genotype.hh")
-Include("genotype.hh")
+Include("cGenome.h")
+Include("cInjectGenotype.h")
+Include("cGenotype.h")
 
-cTestUtil = Class("cTestUtil", "test_util.hh")
+cTestUtil = Class("cTestUtil", "cTestUtil.h")
 
 # vim: set ft=python:

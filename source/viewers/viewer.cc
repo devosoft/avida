@@ -10,13 +10,13 @@
 #endif
 
 #ifndef CONFIG_HH
-#include "config.hh"
+#include "cConfig.h"
 #endif
 #ifndef ENVIRONMENT_HH
-#include "environment.hh"
+#include "cEnvironment.h"
 #endif
 #ifndef POPULATION_HH
-#include "population.hh"
+#include "cPopulation.h"
 #endif
 #ifndef VIEW_HH
 #include "../viewers/view.hh"          // class cView
@@ -32,10 +32,10 @@ int main(int argc, char * argv[])
   signal(SIGINT, ExitAvida);
 
   // output copyright message
-  cout << "Avida " << AVIDA_VERSION << endl;
+  cout << AvidaVersion() << endl;
   cout << "----------------------------------------------------------------------" << endl;
-  cout << "Copyright (C) 1993-2003 California Institute of Technology." << endl;
-  cout << "Copyright (C) 1999-2005 Michigan State University." << endl << endl;
+  cout << "Copyright (C) 1999-2005 Michigan State University." << endl;
+  cout << "Copyright (C) 1993-2003 California Institute of Technology." << endl << endl;
   
   cout << "Avida comes with ABSOLUTELY NO WARRANTY." << endl;
   cout << "This is free software, and you are welcome to redistribute it" << endl;

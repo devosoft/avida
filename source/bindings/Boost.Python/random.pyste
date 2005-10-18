@@ -1,6 +1,6 @@
 
-Include("tList.hh")
+Include("tList.h")
 
-cRandom = Class("cRandom", "random.hh")
+cRandom = Class("cRandom", "cRandom.h")
 
 # vim: set ft=python:

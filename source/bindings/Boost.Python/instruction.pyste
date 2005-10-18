@@ -1,4 +1,4 @@
 
-cInstruction = Class("cInstruction", "instruction.hh")
+cInstruction = Class("cInstruction", "cInstruction.h")
 
 # vim: set ft=python:

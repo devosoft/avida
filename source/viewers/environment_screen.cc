@@ -5,24 +5,24 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "config.hh"
-#include "environment.hh"
-#include "genebank.hh"
-#include "genotype.hh"
-#include "population.hh"
+#include "cConfig.h"
+#include "cEnvironment.h"
+#include "cGenebank.h"
+#include "cGenotype.h"
+#include "cPopulation.h"
 #ifndef REACTION_HH
-#include "reaction.hh"
+#include "cReaction.h"
 #endif
 #ifndef REACTION_PROCESS_HH
-#include "reaction_process.hh"
+#include "cReactionProcess.h"
 #endif
 #ifndef RESOURCE_HH
-#include "resource.hh"
+#include "cResource.h"
 #endif
-#include "species.hh"
-#include "stats.hh"
-#include "population_cell.hh"
-#include "organism.hh"
+#include "cSpecies.h"
+#include "cStats.h"
+#include "cPopulationCell.h"
+#include "cOrganism.h"
 
 #include "environment_screen.hh"
 

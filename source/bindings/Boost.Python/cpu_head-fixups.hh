@@ -2,7 +2,7 @@
 #define CPU_HEAD_FIXUPS_HH
 
 #ifndef HEAD_CPU_HH
-#include "head_cpu.hh"
+#include "cHeadCPU.h"
 #endif
 
 bool cHeadCPU_GetFlagCopied(cHeadCPU &);

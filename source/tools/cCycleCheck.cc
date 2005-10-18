@@ -5,8 +5,8 @@ Read the COPYING and README files, or contact 'avida@alife.org',
 before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.
 */
 
-#include "cCycleCheck.hh"
-#include "cID.hh"
+#include "cCycleCheck.h"
+#include "cID.h"
 
 #include <set>
 

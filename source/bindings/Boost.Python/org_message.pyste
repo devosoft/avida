@@ -1,4 +1,4 @@
 
-cOrgMessage = Class("cOrgMessage", "org_message.hh")
+cOrgMessage = Class("cOrgMessage", "cOrgMessage.h")
 
 # vim: set ft=python:
