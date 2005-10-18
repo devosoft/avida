@@ -1,6 +1,7 @@
 
-Include("cHardwareCPU.h")
 Include("cHardware4Stack.h")
+Include("cHardwareCPU.h")
+Include("cHardwareSMT.h")
 Include("cOrganism.h")
 
 Import("hardware_tracer.pyste")

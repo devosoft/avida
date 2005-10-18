@@ -16,3 +16,5 @@ const int cHardwareDefs::s_HEAD_READ(nHardware::HEAD_READ);
 const int cHardwareDefs::s_HEAD_WRITE(nHardware::HEAD_WRITE);
 const int cHardwareDefs::s_HEAD_FLOW(nHardware::HEAD_FLOW);
 const int cHardwareDefs::s_NUM_HEADS(nHardware::NUM_HEADS);
+const int cHardwareDefs::s_STACK_SIZE(nHardware::STACK_SIZE);
+const int cHardwareDefs::s_IO_SIZE(nHardware::IO_SIZE);

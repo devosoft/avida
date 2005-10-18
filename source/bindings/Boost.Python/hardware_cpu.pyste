@@ -16,6 +16,7 @@ set_policy(cHardwareCPU.GetActiveHead, return_internal_reference())
 set_policy(cHardwareCPU.IP, return_internal_reference())
 set_policy(cHardwareCPU.GetLabel, return_internal_reference())
 set_policy(cHardwareCPU.GetReadLabel, return_internal_reference())
+set_policy(cHardwareCPU.pyGetThreads, return_internal_reference())
 
 ### <sigh> Register() is written in two versions, one returning an int,
 ### and one returning a reference to an int. Pyste can't cope --

@@ -16,6 +16,8 @@ struct cHardwareDefs {
   static const int s_HEAD_WRITE;
   static const int s_HEAD_FLOW;
   static const int s_NUM_HEADS;
+  static const int s_STACK_SIZE;
+  static const int s_IO_SIZE;
 };
 
 #endif

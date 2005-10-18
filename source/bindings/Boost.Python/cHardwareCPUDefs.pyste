@@ -1,0 +1,6 @@
+
+#Include("nHardwareCPU.h")
+
+cHardwareCPUDefs = Class("cHardwareCPUDefs", "cHardwareCPUDefs-fixups.h")
+
+# vim: set ft=python:

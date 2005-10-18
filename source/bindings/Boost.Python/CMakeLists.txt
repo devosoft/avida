@@ -91,7 +91,7 @@ SET(PyAvida_Pyste_Bases
   fitness_matrix:: # XXX XXX
   genotype_birth_data:: # XXX XXX
   hardware_4stack_thread:: # XXX XXX
-  hardware_cpu_thread:: # XXX XXX
+  hardware_cpu_thread::${CMAKE_CURRENT_SOURCE_DIR}/hardware_cpu_thread-fixups.hh # XXX XXX
   inject_genotype_birth_data:: # XXX XXX
   inst_util:: # XXX XXX
   integrated_schedule::${CMAKE_CURRENT_SOURCE_DIR}/schedule.pyste: # XXX XXX
@@ -141,8 +141,8 @@ SET(PyAvida_Pyste_Bases
   avida_driver_population::${CMAKE_CURRENT_SOURCE_DIR}/avida_driver_base.pyste # XXX XXX XXX
   config:: # XXX XXX XXX
   count_tracker:: # XXX XXX XXX
-  nHardware::
-  nHardwareCPU::
+  nHardware::${CMAKE_CURRENT_SOURCE_DIR}/nHardware-fixups.h
+  nHardwareCPU::${CMAKE_CURRENT_SOURCE_DIR}/nHardwareCPU-fixups.h
   data_entry:: # XXX XXX XXX
   data_file:: # XXX XXX XXX
   data_file_manager:: # XXX XXX XXX
@@ -189,6 +189,7 @@ SET(PyAvida_Extra_Cpp_Files
   file-fixups.cc
   genesis-fixups.cc
   hardware_cpu-fixups.cc
+  hardware_cpu_thread-fixups.cc
   py_avida_driver-fixups.cc
   py_hardware_tracer-fixups.cc
   resource_count-fixups.cc

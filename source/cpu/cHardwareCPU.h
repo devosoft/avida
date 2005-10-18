@@ -240,6 +240,19 @@ public:
 
   //void InitInstSet(const cString & filename, cInstSet & inst_set);
 
+  /*
+  FIXME: Breakage of interface. These functions return data that is
+  supposed to be private.
+
+  I need to make complete snapshots of hardware state from Python.
+  If I have the time, I'll come back and fix the breakage.
+
+  @kgn
+  */
+  cCPUStack pyGetGlobalStack(){ return global_stack; }
+  int pyGetThreadTimeUsed(){ return thread_time_used; }
+  const tArray<cHardwareCPU_Thread> &pyGetThreads();
+  bool pyGetAdvanceIP(){ return advance_ip; }
 
 private:
  

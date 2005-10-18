@@ -2,6 +2,7 @@
 #include "cMerit.h"
 #include "cMutation.h"
 #include "cIntSum.h"
+#include "cHardwareCPU_Thread.h"
 
 #include "tArray.h"
 

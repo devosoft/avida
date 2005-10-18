@@ -3461,3 +3461,15 @@ bool cHardwareCPU::Inst_Skip()
 }
 
 
+  /*
+  FIXME: Breakage of interface. This function returns data that is
+  supposed to be private.
+
+  I need to make complete snapshots of hardware state from Python.  If I
+  have the time, I'll come back and fix the breakage.
+
+  @kgn
+  */
+const tArray<cHardwareCPU_Thread> &cHardwareCPU::pyGetThreads(){
+  return threads;
+}

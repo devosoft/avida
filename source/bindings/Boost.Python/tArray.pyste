@@ -75,6 +75,7 @@ Import("organism.pyste")
 Import("merit.pyste")
 Import("mutation.pyste")
 Import("int_sum.pyste")
+Import("hardware_cpu_thread.pyste")
 
 Include("cOrgMessage.h")
 
@@ -100,6 +101,10 @@ declaration_code_string += commonClassWrapperFactors(pMutation_str, tArray_pMuta
 cIntSum_str = "cIntSum"
 tArray_cIntSum = tArray(cIntSum_str)
 declaration_code_string += commonClassWrapperFactors(cIntSum_str, tArray_cIntSum)
+
+cHardwareCPU_Thread_str = "cHardwareCPU_Thread"
+tArray_cHardwareCPU_Thread = tArray(cHardwareCPU_Thread_str)
+declaration_code_string += commonClassWrapperFactors(cHardwareCPU_Thread_str, tArray_cHardwareCPU_Thread) 
 
 double_str = "double"
 tArray_double = tArray(double_str)
