@@ -1,6 +1,6 @@
 #include <iostream>
 
-#ifndef HARDWARE_4STACK_HH
+#ifndef cHardware4Stack_h
 #include "cHardware4Stack.h"
 #endif
 #ifndef TEST_CASE_H

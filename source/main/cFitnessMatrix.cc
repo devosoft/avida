@@ -9,7 +9,7 @@
 #include "cFitnessMatrix.h"
 #endif
 
-#ifndef INST_SET_HH
+#ifndef cInstSet_h
 #include "cInstSet.h"
 #endif
 

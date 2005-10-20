@@ -95,9 +95,8 @@ private:
   cHardwareSMT(const cHardwareSMT &); // disabled...  can't (easily) copy m_mem_lbls @dmb
 
 public:
-  cHardwareSMT(cOrganism * in_organism, cInstSet * in_inst_set);
+  cHardwareSMT(cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
   ~cHardwareSMT() { ; }
-  void Recycle(cOrganism* new_organism, cInstSet * in_inst_set);
   static cInstLibBase* GetInstLib();
   static cString GetDefaultInstFilename() { return "inst_lib.4stack"; }
   static void WriteDefaultInstSet() { ; }

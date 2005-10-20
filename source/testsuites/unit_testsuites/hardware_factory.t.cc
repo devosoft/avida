@@ -1,7 +1,7 @@
 #include <iostream>
 
-#ifndef HARDWARE_FACTORY_HH
-#include "cHardwareFactory.h"
+#ifndef cHardwareManager_h
+#include "cHardwareManager.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

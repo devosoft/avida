@@ -7,7 +7,6 @@
 
 #include "cGenotype.h"
 
-#include "cConfig.h"
 #include "cCPUTestInfo.h"
 #include "cGenomeUtil.h"
 #include "cMerit.h"
@@ -15,6 +14,7 @@
 #include "cPhenotype.h"
 #include "cTestCPU.h"
 #include "cTools.h"
+#include "cWorld.h"
 
 using namespace std;
 
@@ -24,8 +24,9 @@ class cSpecies;
 //  cGenotype
 ///////////////////////////
 
-cGenotype::cGenotype(int in_update_born, int in_id)
-  : genome(1)
+cGenotype::cGenotype(cWorld* world, int in_update_born, int in_id)
+  : m_world(world)
+  , genome(1)
   , name("001-no_name")
   , flag_threshold(false)
   , is_active(true)
@@ -137,7 +138,7 @@ void cGenotype::SetParent(cGenotype * parent, cGenotype * parent2)
   birth_data.gene_depth = parent->GetDepth() + 1;
   birth_data.lineage_label = parent->GetLineageLabel();
   parent->AddOffspringGenotype();
-  if (parent2 != NULL && cConfig::GetTrackMainLineage() == 2) {
+  if (parent2 != NULL && m_world->GetConfig().TRACK_MAIN_LINEAGE.Get() == 2) {
     parent2->AddOffspringGenotype();
   }
 
@@ -156,7 +157,7 @@ void cGenotype::Mutate()  // Check each location to be mutated.
 
   for (i = 0; i < genome.GetSize(); i++) {
     if (true) { // g_random.GetUInt()) {     //@CAO always true!
-      genome[i].SetOp(g_random.GetUInt(cConfig::GetNumInstructions()));
+      genome[i].SetOp(g_random.GetUInt(m_world->GetNumInstructions()));
       // Flag command as having been mutated? @CAO
     }
   }

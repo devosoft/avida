@@ -5,43 +5,27 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef GENEBANK_HH
 #include "cGenebank.h"
-#endif
 
-#ifndef CONFIG_HH
-#include "cConfig.h"
-#endif
-#ifndef GENOTYPE_HH
 #include "cGenotype.h"
-#endif
-#ifndef SPECIES_HH
 #include "cSpecies.h"
-#endif
-#ifndef STATS_HH
 #include "cStats.h"
-#endif
-#ifndef TEST_UTIL_HH
+#include "cStringList.h"
 #include "cTestUtil.h"
-#endif
-
+#include "cWorld.h"
 
 using namespace std;
 
 
-///////////////
-//  cGenebank
-///////////////
-
-cGenebank::cGenebank(cStats & _stats)
-  : stats(_stats)
+cGenebank::cGenebank(cWorld* world, cStats & _stats)
+  : m_world(world), stats(_stats)
 {
   for (int i = 0; i < MAX_CREATURE_SIZE; i++) {
     genotype_count[i] = 0;
   }
 
-  genotype_control = new cGenotypeControl(*this);
-  species_control  = new cSpeciesControl(*this);
+  genotype_control = new cGenotypeControl(world, *this);
+  species_control  = new cSpeciesControl(world, *this);
 
 }
 
@@ -65,7 +49,7 @@ void cGenebank::UpdateReset()
   }
   else {
     genotype_dom_time++;
-    if (genotype_dom_time == cConfig::GetGenotypePrintDom()) {
+    if (genotype_dom_time == m_world->GetConfig().GENOTYPE_PRINT_DOM.Get()) {
       cString filename;
       filename.Set("genebank/%s", best_genotype->GetName()());
       cTestUtil::PrintGenome(best_genotype->GetGenome(), 
@@ -147,7 +131,7 @@ cGenotype * cGenebank::AddGenotype(const cGenome & in_genome,
 			       parent_genotype->GetLineageLabel(), list_num);
 
   if (!found_genotype) {
-    found_genotype = new cGenotype(stats.GetUpdate());
+    found_genotype = new cGenotype(m_world, stats.GetUpdate());
     found_genotype->SetGenome(in_genome);
     found_genotype->SetParent(parent_genotype, parent2_genotype);    
     AddGenotype(found_genotype, list_num);
@@ -168,7 +152,7 @@ cGenotype * cGenebank::InjectGenotype(const cGenome & in_genome,
     FindGenotype(in_genome, lineage_label, list_num);
 
   if (!found_genotype) {
-    found_genotype = new cGenotype(stats.GetUpdate());
+    found_genotype = new cGenotype(m_world, stats.GetUpdate());
     found_genotype->SetGenome(in_genome);
     found_genotype->SetParent(NULL, NULL);
     found_genotype->SetLineageLabel(lineage_label);
@@ -240,7 +224,7 @@ void cGenebank::RemoveGenotype(cGenotype & in_genotype)
     active_genotypes[list_num].Remove(&in_genotype);
     genotype_control->Remove(in_genotype);
     in_genotype.Deactivate(stats.GetUpdate());
-    if (cConfig::GetTrackMainLineage()) {
+    if (m_world->GetConfig().TRACK_MAIN_LINEAGE.Get()) {
       genotype_control->InsertHistoric(in_genotype);
     }
   }
@@ -248,7 +232,7 @@ void cGenebank::RemoveGenotype(cGenotype & in_genotype)
   // If we are tracking the main lineage, we only want to delete a
   // genotype when all of its decendents have also died out.
 
-  const int lineage_type = cConfig::GetTrackMainLineage();
+  const int lineage_type = m_world->GetConfig().TRACK_MAIN_LINEAGE.Get();
   if (lineage_type > 0) {
     // If  there are more offspring genotypes, hold off on deletion...
     if (in_genotype.GetNumOffspringGenotypes() != 0) return;
@@ -351,7 +335,7 @@ void cGenebank::ThresholdGenotype(cGenotype & in_genotype)
   // If speciation is on, assign a species to the genotype now that it is
   // threshold.
 
-  if (cConfig::GetSpeciesRecording()) {
+  if (m_world->GetConfig().SPECIES_RECORDING.Get()) {
     // Record the old species to know if it changes.
 
     cSpecies * old_species = in_genotype.GetSpecies();
@@ -359,7 +343,7 @@ void cGenebank::ThresholdGenotype(cGenotype & in_genotype)
     // Determine the "proper" species.
 
     found_species = species_control->Find(in_genotype,
-					  cConfig::GetSpeciesRecording());
+					  m_world->GetConfig().SPECIES_RECORDING.Get());
 
     // If no species was found, create a new one.
 
@@ -372,7 +356,7 @@ void cGenebank::ThresholdGenotype(cGenotype & in_genotype)
 
       // Since this is a new species, see if we should be printing it.
 
-      if (cConfig::GetSpeciesPrint()) {
+      if (m_world->GetConfig().SPECIES_PRINT.Get()) {
 	cString filename;
 	filename.Set("genebank/spec-%04d", found_species->GetID());
 	cTestUtil::PrintGenome(in_genotype.GetGenome(), filename,
@@ -415,7 +399,7 @@ void cGenebank::ThresholdGenotype(cGenotype & in_genotype)
 
   // Do the relevent statistics...
 
-  if (cConfig::GetSpeciesRecording()) {
+  if (m_world->GetConfig().SPECIES_RECORDING.Get()) {
     stats.AddThreshold(in_genotype.GetID(), in_genotype.GetName()(),
 			 found_species->GetID());
   } else {
@@ -424,7 +408,7 @@ void cGenebank::ThresholdGenotype(cGenotype & in_genotype)
 
   // Print the genotype?
 
-  if (cConfig::GetGenotypePrint()) {
+  if (m_world->GetConfig().GENOTYPE_PRINT.Get()) {
     cString filename;
     filename.Set("genebank/%s", in_genotype.GetName()());
     cTestUtil::PrintGenome(in_genotype.GetGenome(), filename,
@@ -436,7 +420,7 @@ bool cGenebank::AdjustGenotype(cGenotype & in_genotype)
 {
   if (!genotype_control->Adjust(in_genotype)) return false;
 
-  if ((in_genotype.GetNumOrganisms() >= cConfig::GetThreshold() ||
+  if ((in_genotype.GetNumOrganisms() >= m_world->GetConfig().THRESHOLD.Get() ||
        &in_genotype == genotype_control->GetBest()) &&
       !(in_genotype.GetThreshold())) {
     ThresholdGenotype(in_genotype);

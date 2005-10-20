@@ -5,41 +5,25 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef EVENT_LIST_HH
 #include "cEventList.h"
-#endif
 
-#ifndef DEFS_HH
 #include "defs.h"
-#endif
-#ifndef EVENT_FACTORY_MANAGER_HH
-#include "cEventFactoryManager.h"
-#endif
-#ifndef EVENT_LIST_ENTRY_HH
+#include "cEventManager.h"
 #include "cEventListEntry.h"
-#endif
-#ifndef EVENT_TRIGGERS_HH
 #include "cEventTriggers.h"
-#endif
-#ifndef STRING_HH
 #include "cString.h"
-#endif
 
 #include <float.h>           // for DBL_MIN
 #include <iostream>
 
 using namespace std;
 
-class cEventFactoryManager; // access
-class cEventTriggers; // access
-class cEventListEntry; // access
-class cString; // aggregate
 class cEvent;
 
 /////////////////
 //  cEventList
 /////////////////
-cEventList::cEventList( cEventFactoryManager* factory_manager,  cEventTriggers *triggers ) :
+cEventList::cEventList( cEventManager* factory_manager,  cEventTriggers *triggers ) :
 m_factory_manager( factory_manager ),
 m_triggers( triggers ),
 m_head(NULL),

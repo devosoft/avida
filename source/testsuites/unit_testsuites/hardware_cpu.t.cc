@@ -1,6 +1,6 @@
 #include <iostream>
 
-#ifndef HARDWARE_CPU_HH
+#ifndef cHardwareCPU_h
 #include "cHardwareCPU.h"
 #endif
 #ifndef TEST_CASE_H

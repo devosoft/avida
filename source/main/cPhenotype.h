@@ -53,9 +53,11 @@ template <class T> class tArray; // aggregate
 class cString;                   // aggregate
 template <class T> class tBuffer;
 template <class T> class tList;
+class cWorld;
 
 class cPhenotype {
 private:
+  cWorld* m_world;
   const cEnvironment & environment;
   bool initialized;
 
@@ -125,7 +127,7 @@ private:
   int child_copied_size; // Instruction copied into child.
 
 public:
-  cPhenotype(const cEnvironment & environment);
+  cPhenotype(cWorld* world, const cEnvironment & environment);
   ~cPhenotype();
 
   bool OK();
@@ -161,10 +163,9 @@ public:
   void PrintStatus(std::ostream & fp);
 
   // Some useful methods...
-  static int CalcSizeMerit(int full_size, int copied_size, int exe_size);
+  int CalcSizeMerit() const;
   double CalcFitnessRatio() {
-    const int merit_base =
-      CalcSizeMerit(genome_length,copied_size,executed_size);
+    const int merit_base = CalcSizeMerit();
     const double cur_fitness = merit_base * cur_bonus / time_used;
     return cur_fitness / last_fitness;
   }
@@ -192,7 +193,7 @@ public:
   double GetCurBonus() const
     { assert(initialized == true); return cur_bonus; }
   double GetCurMeritBase() const
-    { assert(initialized == true); return CalcSizeMerit(genome_length,copied_size,executed_size); }
+    { assert(initialized == true); return CalcSizeMerit(); }
   bool GetToDie() const
     { assert(initialized == true); return to_die; }
   bool GetToDelete() const

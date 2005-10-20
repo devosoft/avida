@@ -8,7 +8,7 @@
 #ifndef ENVIRONMENT_HH
 #define ENVIRONMENT_HH
 
-#ifndef INST_SET_HH
+#ifndef cInstSet_h
 #include "cInstSet.h"
 #endif
 #ifndef MUTATION_LIB_HH
@@ -47,9 +47,12 @@ template <class T> class tArray;
 class cReactionProcess;
 class cReactionResult;
 template <class T> class tBuffer;
+class cWorld;
 
 class cEnvironment {
 private:
+  cWorld* m_world;
+  
   // Keep libraries of resources, reactions, and tasks.
   cResourceLib resource_lib;
   cReactionLib reaction_lib;
@@ -88,8 +91,7 @@ private:
   // disabled copy constructor.
   cEnvironment(const cEnvironment &);
 public:
-  cEnvironment();
-  // cEnvironment(const cString & filename);
+  cEnvironment(cWorld* world) : m_world(world) { ; }
   ~cEnvironment() { ; }
 
   /**
@@ -126,12 +128,10 @@ public:
   const cReactionLib & GetReactionLib() const { return reaction_lib; }
   const cMutationLib & GetMutationLib() const { return mutation_lib; }
   const cTaskLib & GetTaskLib() const { return task_lib; }
-  const cInstSet & GetInstSet() const { return inst_set; }
   const cMutationRates & GetMutRates() const { return mut_rates; }
 
   cResourceLib & GetResourceLib() { return resource_lib; }
   cReactionLib & GetReactionLib() { return reaction_lib; }
-  cInstSet & GetInstSet() { return inst_set; }
   cMutationRates & GetMutRates() { return mut_rates; }
 
   double GetReactionValue(int & reaction_id);

@@ -43,7 +43,6 @@ exclude(cPopulationInterface.GetBirthChamber)
 
 # function pointers don't play well with python...
 exclude(cPopulationInterface.SetFun_NewHardware)
-exclude(cPopulationInterface.SetFun_Recycle)
 exclude(cPopulationInterface.SetFun_Divide)
 exclude(cPopulationInterface.SetFun_TestOnDivide)
 exclude(cPopulationInterface.SetFun_GetNeighbor)

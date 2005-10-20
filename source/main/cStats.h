@@ -48,11 +48,14 @@ class cGenotype;
 class cString; // aggregate
 class cInjectGenotype;
 class cDataFile;
+class cWorld;
 
 class cStats {
 private:
   cStats(const cStats &); // not implemented.
 private:
+  cWorld* m_world;
+  
   // Time scales...
   int current_update;
   int sub_update;
@@ -234,7 +237,7 @@ private:
   tArray<cString> resource_names;
 
 public:
-  cStats();
+  cStats(cWorld* world);
   ~cStats();
 
   void SetupPrintDatabase();

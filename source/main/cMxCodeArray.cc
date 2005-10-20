@@ -18,7 +18,7 @@
 #ifndef GENOME_HH
 #include "cGenome.h"
 #endif
-#ifndef INST_SET_HH
+#ifndef cInstSet_h
 #include "cInstSet.h"
 #endif
 #ifndef MY_CODE_ARRAY_LESS_THAN_HH

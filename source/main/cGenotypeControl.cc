@@ -5,25 +5,14 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef GENOTYPE_CONTROL_HH
 #include "cGenotypeControl.h"
-#endif
 
-#ifndef DEFS_HH
 #include "defs.h"
-#endif
-#ifndef GENEBANK_HH
 #include "cGenebank.h"
-#endif
-#ifndef GENOTYPE_HH
 #include "cGenotype.h"
-#endif
+#include "cWorld.h"
 
-///////////////////////
-//  cGenotypeControl
-///////////////////////
-
-cGenotypeControl::cGenotypeControl(cGenebank & in_gb) : genebank(in_gb)
+cGenotypeControl::cGenotypeControl(cWorld* world, cGenebank & in_gb) : m_world(world), genebank(in_gb)
 {
   size = 0;
   best = NULL;

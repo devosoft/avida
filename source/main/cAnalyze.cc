@@ -27,7 +27,6 @@
 #include "cGenomeUtil.h"
 #include "cHardwareBase.h"
 #include "cHardwareStatusPrinter.h"
-#include "cHardwareUtil.h"
 #include "cHelpManager.h"
 #include "cInitFile.h"
 #include "cInstSet.h"
@@ -65,7 +64,7 @@ cAnalyze::cAnalyze(cString filename, cEnvironment *environment)
 , d_environment(environment)
 , verbose(false)
 , interactive_depth(0)
-, inst_set(cHardwareUtil::DefaultInstSet(cConfig::GetInstFilename()))
+// DDD - , inst_set(cHardwareUtil::DefaultInstSet(cConfig::GetInstFilename()))
 {
   random.ResetSeed(cConfig::GetRandSeed());
   

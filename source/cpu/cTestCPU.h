@@ -29,12 +29,14 @@ class cResourceCount;
 class cCPUTestInfo;
 class cGenome;
 class cString; // aggregate
+class cWorld;
 
 class cTestCPU {
 private:
+  static cWorld* m_world;
   static cInstSet * inst_set;
   static cEnvironment * environment;
-  static cPopulationInterface test_interface;
+  static cPopulationInterface* test_interface;
   static tArray<int> input_array;
   static tArray<int> receive_array;
   static int cur_input;
@@ -45,6 +47,7 @@ private:
   static tArray<double> d_resources;
   
   static bool initialized;
+  static int time_mod;
 
   static bool ProcessGestation(cCPUTestInfo & test_info, int cur_depth);
 
@@ -52,11 +55,7 @@ private:
 			      int cur_depth);
 
 public:
-  static void Setup(cInstSet * in_inst_set,
-  		    cEnvironment * in_env,
-		    int resourceSize,
-		    const cPopulationInterface & in_interface
-		    );
+  static void Setup(cWorld* world, int resourceSize);
   static void SetInstSet(cInstSet * in_inst_set);
 
   static bool TestGenome(cCPUTestInfo & test_info, const cGenome & genome);

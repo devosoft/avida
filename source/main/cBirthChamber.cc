@@ -5,43 +5,23 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef BIRTH_CHAMBER_HH
 #include "cBirthChamber.h"
-#endif
 
-#ifndef TARRAY_HH
 #include "tArray.h"
-#endif
-#ifndef CONFIG_HH
-#include "cConfig.h"
-#endif
-#ifndef FUNCTIONS_HH
 #include "functions.h"
-#endif
-#ifndef  GENEBANK_HH
 #include "cGenebank.h"
-#endif
-#ifndef GENOME_HH
 #include "cGenome.h"
-#endif
-#ifndef GENOME_UTIL_HH
 #include "cGenomeUtil.h"
-#endif
-#ifndef  GENOTYPE_HH
 #include "cGenotype.h"
-#endif
-#ifndef ORGANISM_HH
 #include "cOrganism.h"
-#endif
-#ifndef TOOLS_HH
 #include "cTools.h"
-#endif
+#include "cWorld.h"
 
-cBirthChamber::cBirthChamber()
-  : genebank(NULL)
+cBirthChamber::cBirthChamber(cWorld* world)
+  : m_world(world), genebank(NULL)
 {
-  const int num_orgs = cConfig::GetWorldX()*cConfig::GetWorldY();
-  const int num_demes = cConfig::GetNumDemes(); 
+  const int num_orgs = m_world->GetConfig().WORLD_X.Get() * m_world->GetConfig().WORLD_Y.Get();
+  const int num_demes = m_world->GetConfig().NUM_DEMES.Get(); 
   local_wait_entry.Resize(num_orgs);
   deme_wait_entry.Resize(num_demes);
   for (int i = 0; i < num_orgs; i++) {
@@ -155,13 +135,10 @@ bool cBirthChamber::DoAsexBirth(const cGenome & child_genome,
 				tArray<cOrganism *> & child_array,
 				tArray<cMerit> & merit_array)
 {
-  const cPopulationInterface & pop_interface = parent.PopInterface();
-  const cEnvironment & environment = parent.GetPhenotype().GetEnvironment();
-
   // This is asexual who doesn't need to wait in the birth chamber
   // just build the child and return.
   child_array.Resize(1);
-  child_array[0] = new cOrganism(child_genome, pop_interface, environment);
+  child_array[0] = new cOrganism(m_world, child_genome);
   merit_array.Resize(1);
   merit_array[0] = parent.GetPhenotype().GetMerit();
 
@@ -188,13 +165,10 @@ bool cBirthChamber::DoPairAsexBirth(const cBirthEntry & old_entry,
 				    tArray<cOrganism *> & child_array,
 				    tArray<cMerit> & merit_array)
 {
-  const cPopulationInterface & pop_interface = parent.PopInterface();
-  const cEnvironment & environment = parent.GetPhenotype().GetEnvironment();
-
   // Build both child organisms...
   child_array.Resize(2);
-  child_array[0] = new cOrganism(old_entry.genome, pop_interface, environment);
-  child_array[1] = new cOrganism(new_genome, pop_interface, environment);
+  child_array[0] = new cOrganism(m_world, old_entry.genome);
+  child_array[1] = new cOrganism(m_world, new_genome);
 
   // Setup the merits for both children...
   merit_array.Resize(2);
@@ -279,8 +253,8 @@ cBirthChamber::cBirthEntry *
 				   cOrganism & parent)
 {
   // Collect some info for building the child.
-  const int world_x = cConfig::GetWorldX();
-  const int world_y = cConfig::GetWorldY();
+  const int world_x = m_world->GetConfig().WORLD_X.Get();
+  const int world_y = m_world->GetConfig().WORLD_Y.Get();
   const int parent_id = parent.PopInterface().GetCellID();
   
   // If nothing is waiting, store child locally.
@@ -304,9 +278,9 @@ cBirthChamber::cBirthEntry *
 				   cOrganism & parent)
 {
   // Collect some info for building the child.
-  const int world_x = cConfig::GetWorldX();
-  const int world_y = cConfig::GetWorldY();
-  const int num_demes = cConfig::GetNumDemes();
+  const int world_x = m_world->GetConfig().WORLD_X.Get();
+  const int world_y = m_world->GetConfig().WORLD_Y.Get();
+  const int num_demes = m_world->GetConfig().NUM_DEMES.Get();
   const int parent_id = parent.PopInterface().GetCellID();
   
   const int parent_deme = (int) parent_id/(world_y*world_x/num_demes);
@@ -381,7 +355,7 @@ void cBirthChamber::DoModularContRecombination(cCPUMemory & genome0,
 					       double & merit0,
 					       double & merit1)
 {
-  const int num_modules = cConfig::GetNumModules();
+  const int num_modules = m_world->GetConfig().MODULE_NUM.Get();
 
   int start_module = (int) (g_random.GetDouble() * num_modules);
   int end_module = (int) (g_random.GetDouble() * num_modules);
@@ -418,7 +392,7 @@ void cBirthChamber::DoModularNonContRecombination(cCPUMemory & genome0,
 						  double & merit0,
 						  double & merit1)
 {
-  const int num_modules = cConfig::GetNumModules();
+  const int num_modules = m_world->GetConfig().MODULE_NUM.Get();
 
   int swap_count = 0;
   for (int i = 0; i < num_modules; i++) {
@@ -454,7 +428,7 @@ void cBirthChamber::DoModularShuffleRecombination(cCPUMemory & genome0,
 						  double & merit0,
 						  double & merit1)
 {
-  const int num_modules = cConfig::GetNumModules();
+  const int num_modules = m_world->GetConfig().MODULE_NUM.Get();
   tArray<bool> swapped_region(num_modules);
   swapped_region.SetAll(false);
 
@@ -537,20 +511,22 @@ bool cBirthChamber::SubmitOffspring(const cGenome & child_genome,
   // If we make it this far, this must be a sexual or a "waiting" asexual
   // organism (which is the same as sexual with 0 recombination points)
 
+  const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
+  
   // Find a waiting entry (locally or globally)
   cBirthEntry * old_entry = NULL;
   // First check if the birth method is one of the local ones... 
-  if (cConfig::GetBirthMethod() < NUM_LOCAL_POSITION_CHILD) { 
+  if (birth_method < NUM_LOCAL_POSITION_CHILD) { 
     old_entry = FindSexLocalWaiting(child_genome, parent);
   }
   // ... then check if population is split into demes
-  else if (cConfig::GetBirthMethod() == POSITION_CHILD_DEME_RANDOM) {
+  else if (birth_method == POSITION_CHILD_DEME_RANDOM) {
     old_entry = FindSexDemeWaiting(child_genome, parent);
   }
 
   // If none of the previous conditions were met, it must be global.
   // ...check if recombination must be with organisms of the same length
-  else if (cConfig::GetSameLengthSex() != 0) {
+  else if (m_world->GetConfig().SAME_LENGTH_SEX.Get() != 0) {
     old_entry = FindSexSizeWaiting(child_genome, parent);
   }
 
@@ -574,7 +550,7 @@ bool cBirthChamber::SubmitOffspring(const cGenome & child_genome,
 
   // If we are NOT recombining, handle that here.
   if (parent_phenotype.CrossNum() == 0 || 
-      g_random.GetDouble() > cConfig::GetRecombProb()) {
+      g_random.GetDouble() > m_world->GetConfig().RECOMBINATION_PROB.Get()) {
     return DoPairAsexBirth(*old_entry, child_genome, parent, 
 			   child_array, merit_array);
   }
@@ -591,9 +567,9 @@ bool cBirthChamber::SubmitOffspring(const cGenome & child_genome,
   //  2: Are the recombination regions continuous? (only used if modular)
   //  3: Can modules be shuffled during recombination? (only if non-continuous)
 
-  const int num_modules = cConfig::GetNumModules();
-  const int continuous_regions = cConfig::GetContRecRegs();
-  const int shuffle_regions = !cConfig::GetCorespondRecRegs();
+  const int num_modules = m_world->GetConfig().MODULE_NUM.Get();
+  const int continuous_regions = m_world->GetConfig().CONT_REC_REGS.Get();
+  const int shuffle_regions = !m_world->GetConfig().CORESPOND_REC_REGS.Get();
 
   // If we are NOT modular...
   if (num_modules == 0) {
@@ -617,17 +593,15 @@ bool cBirthChamber::SubmitOffspring(const cGenome & child_genome,
 
   // Should there be a 2-fold cost to sex?
 
-  const int two_fold_cost = cConfig::GetTwoFoldCostSex();
-  const cPopulationInterface & pop_interface = parent.PopInterface();
-  const cEnvironment & environment = parent_phenotype.GetEnvironment();
+  const int two_fold_cost = m_world->GetConfig().TWO_FOLD_COST_SEX.Get();
 
   cGenotype * parent0_genotype = old_entry->parent_genotype;
   cGenotype * parent1_genotype = parent.GetGenotype();
 
   if (two_fold_cost == 0) {	// Build the two organisms.
     child_array.Resize(2);
-    child_array[0] = new cOrganism(genome0, pop_interface, environment);
-    child_array[1] = new cOrganism(genome1, pop_interface, environment);
+    child_array[0] = new cOrganism(m_world, genome0);
+    child_array[1] = new cOrganism(m_world, genome1);
     
     merit_array.Resize(2);
     merit_array[0] = merit0;
@@ -643,14 +617,14 @@ bool cBirthChamber::SubmitOffspring(const cGenome & child_genome,
     merit_array.Resize(1);
 
     if (g_random.GetDouble() < 0.5) {
-      child_array[0] = new cOrganism(genome0, pop_interface, environment);
+      child_array[0] = new cOrganism(m_world, genome0);
       merit_array[0] = merit0;
 
       // Setup the genotype for the child...
       SetupGenotypeInfo(child_array[0], parent0_genotype, parent1_genotype);
     } 
     else {
-      child_array[0] = new cOrganism(genome1, pop_interface, environment);
+      child_array[0] = new cOrganism(m_world, genome1);
       merit_array[0] = merit1;
 
       // Setup the genotype for the child...

@@ -5,28 +5,14 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef INJECT_GENEBANK_HH
 #include "cInjectGenebank.h"
-#endif
 
-#ifndef CONFIG_HH
-#include "cConfig.h"
-#endif
-#ifndef DATA_FILE_HH
 #include "cDataFile.h"
-#endif
-#ifndef GENOME_HH
 #include "cGenome.h"
-#endif
-#ifndef INJECT_GENOTYPE_HH
 #include "cInjectGenotype.h"
-#endif
-#ifndef STATS_HH
 #include "cStats.h"
-#endif
-#ifndef TEST_UTIL_HH
 #include "cTestUtil.h"
-#endif
+#include "cWorld.h"
 
 using namespace std;
 
@@ -34,8 +20,8 @@ using namespace std;
 //  cInjectGenebank
 ////////////////////
 
-cInjectGenebank::cInjectGenebank(cStats & in_stats)
-  : stats(in_stats)
+cInjectGenebank::cInjectGenebank(cWorld* world, cStats & in_stats)
+  : m_world(world), stats(in_stats)
 {
   for (int i = 0; i < MAX_CREATURE_SIZE; i++) {
     inject_genotype_count[i] = 0;
@@ -63,7 +49,7 @@ void cInjectGenebank::UpdateReset()
   }
   else {
     genotype_dom_time++;
-    if (genotype_dom_time == cConfig::GetGenotypePrintDom()) {
+    if (genotype_dom_time == m_world->GetConfig().GENOTYPE_PRINT_DOM.Get()) {
       cString filename;
       filename.Set("genebank/%s", best_inject_genotype->GetName()());
       cTestUtil::PrintGenome(best_inject_genotype, best_inject_genotype->GetGenome(), 
@@ -111,7 +97,7 @@ cInjectGenotype * cInjectGenebank::AddInjectGenotype(const cGenome & in_genome,
   found_genotype = active_inject_genotypes[list_num].Find(in_genome);
 
   if (!found_genotype) {
-    found_genotype = new cInjectGenotype(stats.GetUpdate());
+    found_genotype = new cInjectGenotype(m_world, stats.GetUpdate());
     found_genotype->SetGenome(in_genome);
     found_genotype->SetParent(parent_genotype);
     if(parent_genotype!=NULL)
@@ -140,7 +126,7 @@ void cInjectGenebank::RemoveInjectGenotype(cInjectGenotype & in_inject_genotype)
     active_inject_genotypes[list_num].Remove(in_inject_genotype);
     inject_genotype_control->Remove(in_inject_genotype);
     //in_inject_genotype.Deactivate(stats.GetUpdate());
-    if (cConfig::GetTrackMainLineage()) {
+    if (m_world->GetConfig().TRACK_MAIN_LINEAGE.Get()) {
       inject_genotype_control->InsertHistoric(in_inject_genotype);
     }
   }
@@ -148,7 +134,7 @@ void cInjectGenebank::RemoveInjectGenotype(cInjectGenotype & in_inject_genotype)
   // If we are tracking the main lineage, we only want to delete a
   // genotype when all of its decendents have also died out.
 
-  /*if (cConfig::GetTrackMainLineage()) {
+  /*if (m_world->GetConfig().TRACK_MAIN_LINEAGE.Get()) {
     // If  there are more offspring genotypes, hold off on deletion...
     if (in_inject_genotype.GetNumOffspringGenotypes() != 0) return;
 
@@ -195,7 +181,7 @@ void cInjectGenebank::ThresholdInjectGenotype(cInjectGenotype & in_inject_genoty
   
   // Print the genotype?
 
-  if (cConfig::GetGenotypePrint()) {
+  if (m_world->GetConfig().GENOTYPE_PRINT.Get()) {
     cString filename;
     filename.Set("genebank/%s", in_inject_genotype.GetName()());
     //cTestUtil::PrintGenome(in_inject_genotype.GetGenome(), filename,
@@ -207,7 +193,7 @@ bool cInjectGenebank::AdjustInjectGenotype(cInjectGenotype & in_inject_genotype)
 {
   if (!inject_genotype_control->Adjust(in_inject_genotype)) return false;
 
-  if ((in_inject_genotype.GetNumInjected() >= cConfig::GetThreshold() ||
+  if ((in_inject_genotype.GetNumInjected() >= m_world->GetConfig().THRESHOLD.Get() ||
        &in_inject_genotype == inject_genotype_control->GetBest()) &&
       !(in_inject_genotype.GetThreshold())) {
     ThresholdInjectGenotype(in_inject_genotype);

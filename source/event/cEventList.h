@@ -32,7 +32,7 @@
  **/
 
 class cEvent;
-class cEventFactoryManager;
+class cEventManager;
 class cEventListEntry; // access
 class cEventListIterator; // access
 class cEventTriggers; // access
@@ -44,7 +44,7 @@ public:
   cEventListIterator begin() { return cEventListIterator(m_head); }
   const cEventListIterator end() const { return cEventListIterator(0); }
 protected:
-  cEventFactoryManager *m_factory_manager;
+  cEventManager *m_factory_manager;
   cEventTriggers *m_triggers;
 
   cEventListEntry *m_head;
@@ -78,7 +78,7 @@ public:
    * @param triggers A trigger object. The event list needs a trigger object
    * to determine what events to call when.
    **/
-  cEventList( cEventFactoryManager *factory_manager, cEventTriggers *triggers );
+  cEventList( cEventManager *factory_manager, cEventTriggers *triggers );
   ~cEventList();
 
   // manipulators

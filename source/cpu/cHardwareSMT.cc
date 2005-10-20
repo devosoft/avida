@@ -9,7 +9,6 @@
 
 #include "cHardwareSMT.h"
 
-#include "cConfig.h"
 #include "cCPUTestInfo.h"
 #include "functions.h"
 #include "cGenomeUtil.h"
@@ -120,8 +119,8 @@ tInstLib<cHardwareSMT::tMethod> *cHardwareSMT::initInstLib(void){
   return inst_lib;
 }
 
-cHardwareSMT::cHardwareSMT(cOrganism* in_organism, cInstSet* in_inst_set)
-: cHardwareBase(in_organism, in_inst_set), m_mem_array(1),
+cHardwareSMT::cHardwareSMT(cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set)
+: cHardwareBase(world, in_organism, in_inst_set), m_mem_array(1),
 m_mem_lbls(Pow(nHardwareSMT::NUM_NOPS, nHardwareSMT::MAX_MEMSPACE_LABEL) / nHardwareSMT::MEM_LBLS_HASH_FACTOR)
 {
   m_functions = s_inst_slib->GetFunctions();
@@ -131,16 +130,6 @@ m_mem_lbls(Pow(nHardwareSMT::NUM_NOPS, nHardwareSMT::MAX_MEMSPACE_LABEL) / nHard
   m_mem_array[0][m_mem_array[0].GetSize() - 1] = cInstruction();
   Reset();                            // Setup the rest of the hardware...
 }
-
-void cHardwareSMT::Recycle(cOrganism * new_organism, cInstSet * in_inst_set)
-{
-  cHardwareBase::Recycle(new_organism, in_inst_set);
-  m_mem_array[0] = new_organism->GetGenome();
-  m_mem_array[0].Resize(m_mem_array[0].GetSize() + 1);
-  m_mem_array[0][m_mem_array[0].GetSize() - 1] = cInstruction();
-  Reset();
-}
-
 
 void cHardwareSMT::Reset()
 {
@@ -185,7 +174,7 @@ void cHardwareSMT::SingleProcess()
   cPhenotype & phenotype = organism->GetPhenotype();
   phenotype.IncTimeUsed();
 	
-  const int num_inst_exec = (cConfig::GetThreadSlicingMethod() == 1) ? GetNumThreads() : 1;
+  const int num_inst_exec = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1) ? GetNumThreads() : 1;
   
   for (int i = 0; i < num_inst_exec; i++) {
     // Setup the hardware for the next instruction to be executed.
@@ -1019,7 +1008,7 @@ void cHardwareSMT::ReadLabel(int max_size)
     GetLabel().AddNop(inst_set->GetNopMod(inst_ptr->GetInst()));
 		
     // If this is the first line of the template, mark it executed.
-    if (GetLabel().GetSize() <=	cConfig::GetMaxLabelExeSize()) {
+    if (GetLabel().GetSize() <=	m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get()) {
       inst_ptr->FlagExecuted() = true;
     }
   }
@@ -1029,7 +1018,7 @@ void cHardwareSMT::ReadLabel(int max_size)
 bool cHardwareSMT::ForkThread()
 {
   const int num_threads = GetNumThreads();
-  if (num_threads == cConfig::GetMaxCPUThreads()) return false;
+  if (num_threads == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
 	
   // Make room for the new thread.
   m_threads.Resize(num_threads + 1);
@@ -1230,7 +1219,7 @@ bool cHardwareSMT::Divide_CheckViable(const int parent_size,
   // Make sure that neither parent nor child will be below the minimum size.
 	
   const int genome_size = organism->GetGenome().GetSize();
-  const double size_range = cConfig::GetChildSizeRange();
+  const double size_range = m_world->GetConfig().CHILD_SIZE_RANGE.Get();
   const int min_size = Max(MIN_CREATURE_SIZE, (int) (genome_size/size_range));
   const int max_size = Min(MAX_CREATURE_SIZE, (int) (genome_size*size_range));
   
@@ -1248,7 +1237,7 @@ bool cHardwareSMT::Divide_CheckViable(const int parent_size,
     if (m_mem_array[0].FlagExecuted(i)) executed_size++;
   }
 	
-  const int min_exe_lines = (int) (parent_size * cConfig::GetMinExeLines());
+  const int min_exe_lines = (int) (parent_size * m_world->GetConfig().MIN_EXE_LINES.Get());
   if (executed_size < min_exe_lines) {
     Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
 					cStringUtil::Stringf("Too few executed lines (%d < %d)",
@@ -1264,7 +1253,7 @@ bool cHardwareSMT::Divide_CheckViable(const int parent_size,
     if (m_mem_array[mem_space].FlagCopied(i)) copied_size++;
 	}
 	
-  const int min_copied = static_cast<int>(child_size * cConfig::GetMinCopiedLines());
+  const int min_copied = static_cast<int>(child_size * m_world->GetConfig().MIN_COPIED_LINES.Get());
   if (copied_size < min_copied) {
     Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
 					cStringUtil::Stringf("Too few copied commands (%d < %d)",
@@ -1583,16 +1572,17 @@ bool cHardwareSMT::Divide_Main(int mem_space_used, double mut_multiplier)
   // 1) DIVIDE_METHOD_OFFSPRING - Create a child, leave parent state untouched.
   // 2) DIVIDE_METHOD_SPLIT - Create a child, completely reset state of parent.
   // 3) DIVIDE_METHOD_BIRTH - Create a child, reset state of parent's current thread.
-  if(parent_alive && !(cConfig::GetDivideMethod() == DIVIDE_METHOD_OFFSPRING))
+  const int div_method = m_world->GetConfig().DIVIDE_METHOD.Get();
+  if (parent_alive && !(div_method == DIVIDE_METHOD_OFFSPRING))
 	{
 		
-		if(cConfig::GetDivideMethod() == DIVIDE_METHOD_SPLIT)
+		if (div_method == DIVIDE_METHOD_SPLIT)
 		{
 			//this will wipe out all parasites on a divide.
 			Reset();
 			
 		}
-		else if(cConfig::GetDivideMethod() == DIVIDE_METHOD_BIRTH)
+		else if (div_method == DIVIDE_METHOD_BIRTH)
 		{
 			if(!organism->GetPhenotype().IsModified() && GetNumThreads() > 1 || GetNumThreads() > 2) {
         //if this isn't the only thread, get rid of it!

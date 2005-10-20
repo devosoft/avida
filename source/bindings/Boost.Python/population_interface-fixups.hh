@@ -10,7 +10,6 @@
 
 inline void BuildTestPopInterface(cPopulationInterface &test_interface){
   test_interface.SetFun_NewHardware(&cCallbackUtil::CB_NewHardware);
-  test_interface.SetFun_Recycle(&cCallbackUtil::CB_RecycleHardware);
   test_interface.SetFun_Divide(&cCallbackUtil::CB_TestDivide);
   test_interface.SetFun_GetInput(&cCallbackUtil::CB_GetInput);
   test_interface.SetFun_GetInputAt(&cCallbackUtil::CB_GetInputAt);

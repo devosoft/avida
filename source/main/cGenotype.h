@@ -28,9 +28,11 @@
 
 class cSpecies;
 class cMerit;
+class cWorld;
 
 class cGenotype {
 private:
+  cWorld* m_world;
   cGenome genome;
   cString name;
   bool flag_threshold;
@@ -90,7 +92,7 @@ public:
    * that in this case, cGenotype does not check if the id has already been 
    * used before.
    **/
-  cGenotype(int in_update_born = 0, int in_id = -1);
+  cGenotype(cWorld* world, int in_update_born = 0, int in_id = -1);
   ~cGenotype();
 
   bool SaveClone(std::ofstream & fp);

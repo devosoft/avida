@@ -5,8 +5,8 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef HARDWARE_4STACK_HH
-#define HARDWARE_4STACK_HH
+#ifndef cHardware4Stack_h
+#define cHardware4Stack_h
 
 #include <iomanip>
 
@@ -102,16 +102,14 @@ private:
 
     // Keeps track of the base thread slicing number for each possible number of threads
   float slice_array[10]; //***HACK!  How do I do this right? -law
-                         //this wouldn't compile -> [cConfig::GetMaxCPUThreads()+1]***; 
 
   // Keeps track of fractional instructions that carry over into next update
   float inst_remainder; 
 
 public:
-  cHardware4Stack(cOrganism * in_organism, cInstSet * in_inst_set);
+  cHardware4Stack(cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
   explicit cHardware4Stack(const cHardware4Stack &);
   ~cHardware4Stack() { ; }
-  void Recycle(cOrganism * new_organism, cInstSet * in_inst_set);
   static cInstLibBase *GetInstLib();
   static cString GetDefaultInstFilename() { return "inst_lib.4stack"; }
   static void WriteDefaultInstSet() { ; }

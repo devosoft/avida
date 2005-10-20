@@ -5,73 +5,30 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef ANALYZE_UTIL_HH
 #include "cAnalyzeUtil.h"
-#endif
 
-#ifndef CONFIG_HH
-#include "cConfig.h"
-#endif
-#ifndef DEFS_HH
 #include "defs.h"
-#endif
-#ifndef ENVIRONMENT_HH
 #include "cEnvironment.h"
-#endif
-#ifndef GENEBANK_HH
 #include "cGenebank.h"
-#endif
-#ifndef GENOME_HH
 #include "cGenome.h"
-#endif
-#ifndef GENOME_UTIL_HH
 #include "cGenomeUtil.h"
-#endif
-#ifndef GENOTYPE_HH
 #include "cGenotype.h"
-#endif
-#ifndef HARDWARE_BASE_HH
 #include "cHardwareBase.h"
-#endif
-#ifndef HISTOGRAM_HH
+#include "cHardwareManager.h"
 #include "cHistogram.h"
-#endif
-#ifndef INST_SET_HH
 #include "cInstSet.h"
-#endif
-#ifndef INST_UTIL_HH
 #include "cInstUtil.h"
-#endif
-#ifndef LANDSCAPE_HH
 #include "cLandscape.h"
-#endif
-#ifndef ORGANISM_HH
 #include "cOrganism.h"
-#endif
-#ifndef PHENOTYPE_HH
 #include "cPhenotype.h"
-#endif
-#ifndef POPULATION_HH
 #include "cPopulation.h"
-#endif
-#ifndef POPULATION_CELL_HH
 #include "cPopulationCell.h"
-#endif
-#ifndef SPECIES_HH
 #include "cSpecies.h"
-#endif
-#ifndef STATS_HH
 #include "cStats.h"
-#endif
-#ifndef TEST_CPU_HH
 #include "cTestCPU.h"
-#endif
-#ifndef TEST_UTIL_HH
 #include "cTestUtil.h"
-#endif
-#ifndef TOOLS_HH
 #include "cTools.h"
-#endif
+#include "cWorld.h"
 
 #include <vector>
 
@@ -237,9 +194,10 @@ void cAnalyzeUtil::PairTestLandscape(const cGenome &genome, cInstSet &inst_set,
 }
 
 
-void cAnalyzeUtil::CalcConsensus(cPopulation * population, int lines_saved)
+void cAnalyzeUtil::CalcConsensus(cWorld* world, int lines_saved)
 {
-  const int num_inst = population->GetEnvironment().GetInstSet().GetSize();
+  cPopulation* population = &world->GetPopulation();
+  const int num_inst = world->GetHardwareManager().GetInstSet().GetSize();
   const int update = population->GetStats().GetUpdate();
   cGenebank & genebank = population->GetGenebank();
 
@@ -418,9 +376,10 @@ void cAnalyzeUtil::CalcConsensus(cPopulation * population, int lines_saved)
  * be saved or not.
  **/
 
-void cAnalyzeUtil::AnalyzePopulation(cPopulation * pop, ofstream & fp,
+void cAnalyzeUtil::AnalyzePopulation(cWorld* world, ofstream & fp,
 	    double sample_prob, bool landscape, bool save_genotype)
 {
+  cPopulation* pop = &world->GetPopulation();
   fp << "# (1) cell number (2) genotype name (3) length (4) fitness [test-cpu] (5) fitness (actual) (6) merit (7) no of breed trues occurred (8) lineage label (9) neutral metric (10) -... landscape data" << endl;
 
   const double skip_prob = 1.0 - sample_prob;
@@ -449,7 +408,7 @@ void cAnalyzeUtil::AnalyzePopulation(cPopulation * pop, ofstream & fp,
 
     // create landscape object for this creature
     if (landscape &&  genotype->GetTestFitness() > 0) {
-      cLandscape landscape( genome, pop->GetEnvironment().GetInstSet());
+      cLandscape landscape( genome, world->GetHardwareManager().GetInstSet());
       landscape.Process(1);
       landscape.PrintStats(fp);
     }
@@ -611,17 +570,17 @@ void cAnalyzeUtil::PrintDetailedFitnessData(cPopulation *pop, ofstream &datafp,
  * saved into the genebank or not.
  **/
 
-void cAnalyzeUtil::PrintGeneticDistanceData(cPopulation * pop, ofstream & fp,
+void cAnalyzeUtil::PrintGeneticDistanceData(cWorld* world, ofstream & fp,
 					    const char * creature_name)
 {
+  cPopulation* pop = &world->GetPopulation();
   double hamming_m1 = 0;
   double hamming_m2 = 0;
   int count = 0;
   int dom_dist = 0;
 
   // load the reference genome
-  cGenome reference_genome(cInstUtil::LoadGenome(creature_name,
-					 pop->GetEnvironment().GetInstSet()));
+  cGenome reference_genome(cInstUtil::LoadGenome(creature_name, world->GetHardwareManager().GetInstSet()));
 
   // get the info for the dominant genotype
   cGenotype * cur_genotype = pop->GetGenebank().GetBestGenotype();
@@ -666,15 +625,15 @@ void cAnalyzeUtil::PrintGeneticDistanceData(cPopulation * pop, ofstream & fp,
  * saved into the genebank or not.
  **/
 
-void cAnalyzeUtil::GeneticDistancePopDump(cPopulation * pop, ofstream & fp,
+void cAnalyzeUtil::GeneticDistancePopDump(cWorld* world, ofstream & fp,
 			 const char * creature_name, bool save_creatures)
 {
+  cPopulation* pop = &world->GetPopulation();
   double sum_fitness = 0;
   int sum_num_organisms = 0;
 
   // load the reference genome
-  cGenome reference_genome( cInstUtil::LoadGenome(creature_name,
-				  pop->GetEnvironment().GetInstSet()) );
+  cGenome reference_genome( cInstUtil::LoadGenome(creature_name, world->GetHardwareManager().GetInstSet()) );
 
   // first, print out some documentation...
   fp << "# (1) genotype name (2) fitness [test-cpu] (3) abundance (4) Hamming distance to reference (5) Levenstein distance to reference" << endl;
@@ -805,9 +764,10 @@ void cAnalyzeUtil::TaskGrid(cPopulation * pop, ofstream & fp)
  * so far (compare with the event 'print_task_data', which prints all tasks.
  **/
 
-void cAnalyzeUtil::PrintViableTasksData(cPopulation * pop, ofstream & fp)
+void cAnalyzeUtil::PrintViableTasksData(cWorld* world, ofstream & fp)
 {
-  const int num_tasks = cConfig::GetNumTasks();
+  const int num_tasks = world->GetNumTasks();
+  cPopulation* pop = &world->GetPopulation();
 
   static vector<int> tasks(num_tasks);
   vector<int>::iterator it;
@@ -954,9 +914,10 @@ void cAnalyzeUtil::PrintSpeciesAbundanceHistogram(ofstream & fp,
  * Count the number of each instruction present in the population.  Output
  * this info to a log file
  **/
-void cAnalyzeUtil::PrintInstructionAbundanceHistogram(ofstream & fp,
-                  cPopulation * pop)
-{ int i,x,y;
+void cAnalyzeUtil::PrintInstructionAbundanceHistogram(cWorld* world, ofstream & fp)
+{
+  cPopulation* pop = &world->GetPopulation();
+  int i,x,y;
   int num_inst=0;
   int mem_size=0;
   int * inst_counts;
@@ -964,7 +925,7 @@ void cAnalyzeUtil::PrintInstructionAbundanceHistogram(ofstream & fp,
   assert(fp.good());
 
   // ----- number of instructions available?
-  num_inst=pop->GetEnvironment().GetInstSet().GetSize();
+  num_inst = world->GetNumInstructions();
   inst_counts= new int[num_inst];
 
   // ----- create and initialize counting array

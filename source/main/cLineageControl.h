@@ -16,9 +16,11 @@ class cStats;
 class cGenotype;
 class cOrganism;
 class cString;
+class cWorld;
 
 class cLineageControl {
 private:
+  cWorld* m_world;
   std::list<cLineage *> m_lineage_list;
   cLineage * m_best_lineage;  // the lineage with the highest average fitness
   cLineage * m_max_fitness_lineage; // lineage with the single highest fitness
@@ -50,7 +52,7 @@ private:
   cLineageControl( const cLineageControl & );
   cLineageControl & operator=( const cLineageControl & );
 public:
-  cLineageControl( cGenebank & genebank, cStats & stats );
+  cLineageControl(cWorld* world, cGenebank& genebank, cStats& stats);
   ~cLineageControl();
 
 

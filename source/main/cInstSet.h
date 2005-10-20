@@ -5,8 +5,8 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef INST_SET_HH
-#define INST_SET_HH
+#ifndef cInstSet_h
+#define cInstSet_h
 
 #include <iostream>
 

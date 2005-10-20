@@ -60,6 +60,7 @@ class cCodeLabel;
 
 class cOrganism {
 protected:
+  cWorld* m_world;
   cHardwareBase * hardware;  // The actual machinary running this organism.
   cGenotype * genotype;      // Information about organisms with this genome.
   cPhenotype phenotype;      // Descriptive attributes of organism.
@@ -111,9 +112,7 @@ public:
   void Fault(int fault_loc, int fault_type, cString fault_desc="");
 
 public:
-  cOrganism(const cGenome & in_genome,
-	    const cPopulationInterface & in_interface,
-	    const cEnvironment & in_environment);
+  cOrganism(cWorld* world, const cGenome & in_genome, cEnvironment* in_env = NULL);
   ~cOrganism();
 
   cHardwareBase & GetHardware() { return *hardware; }
@@ -206,8 +205,8 @@ public:
   cMutationRates & MutationRates() { return mut_rates; }
   const cLocalMutations & GetLocalMutations() const { return mut_info; }
   cLocalMutations & GetLocalMutations() { return mut_info; }
-  const cPopulationInterface & PopInterface() const { return pop_interface; }
-  cPopulationInterface & PopInterface() { return pop_interface; }
+  const cPopulationInterface& PopInterface() const { return pop_interface; }
+  cPopulationInterface& PopInterface() { return pop_interface; }
   
   const cGenome & GetGenome() const { return initial_genome; }
   

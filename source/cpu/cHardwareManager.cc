@@ -1,61 +1,44 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cHardwareManager.cc
+ *  Avida2
+ *
+ *  Created by David on 10/18/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *
+ */
 
-#ifndef HARDWARE_UTIL_HH
-#include "cHardwareUtil.h"
-#endif
+#include "cHardwareManager.h"
 
-#ifndef CONFIG_HH
-#include "cConfig.h"
-#endif
-#ifndef HARDWARE_UTIL_HH
-#include "cHardwareBase.h"
-#endif
-#ifndef HARDWARE_CPU_HH
 #include "cHardwareCPU.h"
-#endif
-#ifndef HARDWARE_4STACK_HH
 #include "cHardware4Stack.h"
-#endif
-#ifndef HARDWARE_SMT_H
 #include "cHardwareSMT.h"
-#endif
-#ifndef INIT_FILE_HH
 #include "cInitFile.h"
-#endif
-#ifndef INST_LIB_CPU_HH
 #include "cInstLibCPU.h"
-#endif
-#ifndef INST_SET_HH
 #include "cInstSet.h"
-#endif
-#ifndef TDICTIONARY_HH
+#include "cWorld.h"
 #include "tDictionary.h"
-#endif
 
-using namespace std;
+cHardwareManager::cHardwareManager(cWorld* world) : m_world(world), m_type(world->GetConfig().HARDWARE_TYPE.Get())
+{
+  LoadInstSet(world->GetConfig().INST_SET.Get());
+}
 
-
-void cHardwareUtil::LoadInstSet(cString filename, cInstSet & inst_set)
+void cHardwareManager::LoadInstSet(cString filename)
 {
   // Setup the instruction library and collect the default filename
   cString default_filename;
-	switch (cConfig::GetHardwareType())
+	switch (m_type)
 	{
 		case HARDWARE_TYPE_CPU_ORIGINAL:
-      inst_set.SetInstLib(cHardwareCPU::GetInstLib());
+      m_inst_set.SetInstLib(cHardwareCPU::GetInstLib());
 			default_filename = cHardwareCPU::GetDefaultInstFilename();
 			break;
 		case HARDWARE_TYPE_CPU_4STACK:
-      inst_set.SetInstLib(cHardware4Stack::GetInstLib());
+      m_inst_set.SetInstLib(cHardware4Stack::GetInstLib());
 			default_filename = cHardware4Stack::GetDefaultInstFilename();
 			break;
 		case HARDWARE_TYPE_CPU_SMT:
-      inst_set.SetInstLib(cHardwareSMT::GetInstLib());
+      m_inst_set.SetInstLib(cHardwareSMT::GetInstLib());
 			default_filename = cHardwareSMT::GetDefaultInstFilename();
 			break;		
 		default:
@@ -66,7 +49,7 @@ void cHardwareUtil::LoadInstSet(cString filename, cInstSet & inst_set)
 	{
     filename = default_filename;
     cerr << "Warning: No instruction set specified; using default '"
-         << filename << "'." << endl;
+    << filename << "'." << endl;
   }
   
   cInitFile file(filename);
@@ -78,7 +61,7 @@ void cHardwareUtil::LoadInstSet(cString filename, cInstSet & inst_set)
     // If this is the default filename, write the file and try again.
     if (filename == default_filename)
 		{
-			switch (cConfig::GetHardwareType())
+			switch (m_type)
 			{
 				case HARDWARE_TYPE_CPU_ORIGINAL:
 					cHardwareCPU::WriteDefaultInstSet();
@@ -94,7 +77,7 @@ void cHardwareUtil::LoadInstSet(cString filename, cInstSet & inst_set)
     else
 		{
       cerr << "Error: Could not open instruction set '" << filename
-           << "'.  Exiting..." << endl;
+      << "'.  Exiting..." << endl;
       exit(1);
     }
   }
@@ -103,12 +86,12 @@ void cHardwareUtil::LoadInstSet(cString filename, cInstSet & inst_set)
   file.Compress();
   
   tDictionary<int> nop_dict;
-  for(int i = 0; i < inst_set.GetInstLib()->GetNumNops(); i++)
-    nop_dict.Add(inst_set.GetInstLib()->GetNopName(i), i);
+  for(int i = 0; i < m_inst_set.GetInstLib()->GetNumNops(); i++)
+    nop_dict.Add(m_inst_set.GetInstLib()->GetNopName(i), i);
   
   tDictionary<int> inst_dict;
-  for(int i = 0; i < inst_set.GetInstLib()->GetSize(); i++)
-    inst_dict.Add(inst_set.GetInstLib()->GetName(i), i);
+  for(int i = 0; i < m_inst_set.GetInstLib()->GetSize(); i++)
+    inst_dict.Add(m_inst_set.GetInstLib()->GetName(i), i);
   
   for (int line_id = 0; line_id < file.GetNumLines(); line_id++) {
     cString cur_line = file.GetLine(line_id);
@@ -130,14 +113,14 @@ void cHardwareUtil::LoadInstSet(cString filename, cInstSet & inst_set)
     // First, determine if it is a nop...
     int nop_mod = -1;
     if(nop_dict.Find(inst_name, nop_mod) == true) {
-      inst_set.AddNop2(nop_mod, redundancy, ft_cost, cost, prob_fail);
+      m_inst_set.AddNop2(nop_mod, redundancy, ft_cost, cost, prob_fail);
       continue;
     }
     
     // Otherwise, it had better be in the main dictionary...
     int fun_id = -1;
     if(inst_dict.Find(inst_name, fun_id) == true){
-      inst_set.Add2(fun_id, redundancy, ft_cost, cost, prob_fail);
+      m_inst_set.Add2(fun_id, redundancy, ft_cost, cost, prob_fail);
       continue;
     }
     
@@ -150,13 +133,19 @@ void cHardwareUtil::LoadInstSet(cString filename, cInstSet & inst_set)
   }
 }
 
-cInstSet & cHardwareUtil::DefaultInstSet(const cString & inst_filename)
+cHardwareBase* cHardwareManager::Create(cOrganism* in_org)
 {
-  static cInstSet inst_set;
+  assert(in_org != NULL);
   
-  // If we don't have an instruction set yet, set it up.
-  if (inst_set.GetSize() == 0) LoadInstSet(inst_filename, inst_set);
-
-  return inst_set;
+  switch (m_type)
+  {
+    case HARDWARE_TYPE_CPU_ORIGINAL:
+      return new cHardwareCPU(m_world, in_org, &m_inst_set);
+    case HARDWARE_TYPE_CPU_4STACK:
+      return new cHardware4Stack(m_world, in_org, &m_inst_set);
+    case HARDWARE_TYPE_CPU_SMT:
+      return new cHardwareSMT(m_world, in_org, &m_inst_set);
+    default:
+      return NULL;
+  }
 }
-

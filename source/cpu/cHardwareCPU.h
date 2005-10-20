@@ -5,8 +5,8 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef HARDWARE_CPU_HH
-#define HARDWARE_CPU_HH
+#ifndef cHardwareCPU_h
+#define cHardwareCPU_h
 
 #include <iomanip>
 #include <vector>
@@ -107,10 +107,9 @@ private:
 #endif
 
 public:
-  cHardwareCPU(cOrganism * in_organism, cInstSet * in_inst_set);
+  cHardwareCPU(cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
   explicit cHardwareCPU(const cHardwareCPU &);
   ~cHardwareCPU();
-  void Recycle(cOrganism * new_organism, cInstSet * in_inst_set);
   static cInstLibCPU *GetInstLib();
   static cString GetDefaultInstFilename() { return "inst_lib.default"; }
   static void WriteDefaultInstSet() { ; }

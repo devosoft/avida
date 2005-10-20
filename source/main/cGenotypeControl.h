@@ -15,13 +15,16 @@
 class cGenebank;
 class cGenome;
 class cGenotype;
+class cWorld;
+
 class cGenotypeControl {
 private:
+  cWorld* m_world;
   int size;
-  cGenotype * best;
-  cGenotype * coalescent;
-  cGenotype * threads[nGenotype::THREADS];
-  cGenebank & genebank;
+  cGenotype* best;
+  cGenotype* coalescent;
+  cGenotype* threads[nGenotype::THREADS];
+  cGenebank& genebank;
 
   cGenotype * historic_list;
   int historic_count;
@@ -29,7 +32,7 @@ private:
   void Insert(cGenotype & in_genotype, cGenotype * prev_genotype);
   bool CheckPos(cGenotype & in_genotype);
 public:
-  cGenotypeControl(cGenebank & in_gb);
+  cGenotypeControl(cWorld* world, cGenebank& in_gb);
   ~cGenotypeControl();
 
   bool OK();

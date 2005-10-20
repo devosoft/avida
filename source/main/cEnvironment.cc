@@ -5,60 +5,24 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef ENVIRONMENT_HH
 #include "cEnvironment.h"
-#endif
 
-#ifndef INIT_FILE_HH
+#include "cHardwareManager.h"
 #include "cInitFile.h"
-#endif
-#ifndef nMutation_h
 #include "nMutation.h"
-#endif
-#ifndef cRandom_h
 #include "cRandom.h"
-#endif
-#ifndef REACTION_HH
 #include "cReaction.h"
-#endif
-#ifndef nReaction_h
 #include "nReaction.h"
-#endif
-#ifndef REACTION_PROCESS_HH
 #include "cReactionProcess.h"
-#endif
-#ifndef REACTION_REQUISITE_HH
 #include "cReactionRequisite.h"
-#endif
-#ifndef REACTION_RESULT_HH
 #include "cReactionResult.h"
-#endif
-#ifndef RESOURCE_HH
 #include "cResource.h"
-#endif
-#ifndef STRING_UTIL_HH
 #include "cStringUtil.h"
-#endif
-#ifndef TASK_ENTRY_HH
 #include "cTaskEntry.h"
-#endif
-#ifndef TOOLS_HH
 #include "cTools.h"
-#endif
+#include "cWorld.h"
 
 using namespace std;
-
-cEnvironment::cEnvironment()
-{
-}
-
-// cEnvironment::cEnvironment(const cString & filename)
-// {
-//   if (Load(filename) == false) {
-//     cerr << "Unable to load environment... aborting!" << endl;
-//     abort();
-//   }
-// }
 
 bool cEnvironment::ParseSetting(cString entry, cString & var_name,
 				cString & var_value, const cString & var_type)
@@ -213,7 +177,7 @@ bool cEnvironment::LoadReactionProcess(cReaction * reaction, cString desc)
       new_process->SetConversion(var_value.AsDouble());
     }
     else if (var_name == "inst") {
-      new_process->SetInstID( inst_set.GetInst(var_value).GetOp() );
+      new_process->SetInstID( m_world->GetHardwareManager().GetInstSet().GetInst(var_value).GetOp() );
     }
     else if (var_name == "lethal") {
       if (!AssertInputBool(var_value, "lethal", var_type)) 
@@ -940,7 +904,7 @@ bool cEnvironment::SetReactionInst(const cString & name, cString inst_name)
 {
   cReaction * found_reaction = reaction_lib.GetReaction(name);
   if (found_reaction == NULL) return false;
-  found_reaction->ModifyInst( inst_set.GetInst(inst_name).GetOp() );
+  found_reaction->ModifyInst( m_world->GetHardwareManager().GetInstSet().GetInst(inst_name).GetOp() );
   return true;
 }
 

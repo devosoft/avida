@@ -1,7 +1,7 @@
 #include <iostream>
 
 #ifndef EVENT_FACTORY_MANAGER_HH
-#include "cEventFactoryManager.h"
+#include "cEventManager.h"
 #endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"

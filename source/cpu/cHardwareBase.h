@@ -23,11 +23,13 @@ class cHardwareTracer;
 class cInstruction; // aggregate
 class cInstSet;
 class cOrganism;
+class cWorld;
 
 class cHardwareBase {
 protected:
-  cOrganism * organism;       // Organism using this hardware.
-  cInstSet * inst_set;        // Instruction set being used.
+  cWorld* m_world;
+  cOrganism* organism;       // Organism using this hardware.
+  cInstSet* inst_set;        // Instruction set being used.
   int viewer_lock;            // Used if the viewer should only lock onto
                               //  one aspect of the hardware.
 
@@ -35,9 +37,8 @@ protected:
 
   static int instance_count;
 public:
-  cHardwareBase(cOrganism * in_organism, cInstSet * in_inst_set);
+  cHardwareBase(cWorld* world, cOrganism * in_organism, cInstSet * in_inst_set);
   virtual ~cHardwareBase();
-  virtual void Recycle(cOrganism * new_organism, cInstSet * in_inst_set);
 
   // --------  Organism ---------
   cOrganism * GetOrganism() { return organism; }

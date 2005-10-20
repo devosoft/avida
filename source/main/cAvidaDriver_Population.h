@@ -14,24 +14,19 @@
 #ifndef STRING_HH
 #include "cString.h"
 #endif
+#ifndef cWorld_h
+#include "cWorld.h"
+#endif
 
-class cEnvironment;
-class cEventFactoryManager;
-class cEventList;
-class cString;
 class cChangeList;
-class cPopulation;
 
 class cAvidaDriver_Population : public cAvidaDriver_Base {
 protected:
-  cPopulation * population;
-  cEventFactoryManager * event_manager;
-  cEventList * event_list;
+  cWorld* m_world;
 
 public:
-  cPopulation &GetPopulation(){ return *population; }
+  cWorld& GetWorld() { return *m_world; }
 
-  void GetEvents();
   /**
    * Processes one complete update.
    *
@@ -39,12 +34,10 @@ public:
    **/
   virtual bool ProcessUpdate();
   virtual void ProcessOrganisms();
-  void ReadEventListFile(const cString & filename="event_list");
-  void SyncEventList();
 			
-  cAvidaDriver_Population(cEnvironment & environment, cChangeList * change_list = 0);
-  virtual ~cAvidaDriver_Population();
-
+  cAvidaDriver_Population(cWorld* world, cChangeList* change_list = 0) : m_world(world) { ; }
+  virtual ~cAvidaDriver_Population() { delete m_world; }
+  
   virtual void Run();
   virtual void NotifyUpdate();
 };

@@ -5,22 +5,11 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef POPULATION_CELL_HH
 #include "cPopulationCell.h"
-#endif
 
-#ifndef CONFIG_HH
-#include "cConfig.h"
-#endif
-#ifndef nHardware_h
 #include "nHardware.h"
-#endif
-#ifndef ORGANISM_HH
 #include "cOrganism.h"
-#endif
-#ifndef TOOLS_HH
 #include "cTools.h"
-#endif
 
 using namespace std;
 

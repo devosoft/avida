@@ -7,11 +7,11 @@
 
 #include "cStats.h"
 
-#include "cConfig.h"
 #include "cDataFile.h"
 #include "functions.h"
 #include "cStringUtil.h"
 #include "tDataEntry.h"
+#include "cWorld.h"
 
 #include <math.h>
 
@@ -21,8 +21,9 @@ using namespace std;
 //  cStats
 ////////////
 
-cStats::cStats()
-  : current_update(-1)
+cStats::cStats(cWorld* world)
+  : m_world(world)
+  , current_update(-1)
   , sub_update(0)
   , avida_time(0)
   , data_manager(this, "population_data")
@@ -84,47 +85,47 @@ cStats::cStats()
 {
   // Open log files.
 
-  if (cConfig::GetLogCreatures()) fp_creature_log.open("creature.log");
+  if (m_world->GetConfig().LOG_CREATURES.Get()) fp_creature_log.open("creature.log");
   else fp_creature_log.close();
 
-  if (cConfig::GetLogGenotypes()) fp_genotype_log.open("genotype.log");
+  if (m_world->GetConfig().LOG_GENOTYPES.Get()) fp_genotype_log.open("genotype.log");
   else fp_genotype_log.close();
 
-  if (cConfig::GetLogThreshold()) fp_threshold_log.open("threshold.log");
+  if (m_world->GetConfig().LOG_THRESHOLD.Get()) fp_threshold_log.open("threshold.log");
   else fp_threshold_log.close();
 
-  if (cConfig::GetLogSpecies())   fp_species_log.open("species.log");
+  if (m_world->GetConfig().LOG_SPECIES.Get())   fp_species_log.open("species.log");
   else fp_species_log.close();
 
-  if (cConfig::GetLogLineages())  fp_lineage_log.open("lineage.log");
+  if (m_world->GetConfig().LOG_LINEAGES.Get())  fp_lineage_log.open("lineage.log");
   else fp_lineage_log.close();
 
-  task_cur_count.Resize( cConfig::GetNumTasks() );
-  task_last_count.Resize( cConfig::GetNumTasks() );
-  task_exe_count.Resize( cConfig::GetNumTasks() );
+  task_cur_count.Resize( m_world->GetNumTasks() );
+  task_last_count.Resize( m_world->GetNumTasks() );
+  task_exe_count.Resize( m_world->GetNumTasks() );
   task_cur_count.SetAll(0);
   task_last_count.SetAll(0);
   task_exe_count.SetAll(0);
 
 #ifdef INSTRUCTION_COUNT
-  sum_exe_inst_array.Resize( cConfig::GetNumInstructions() );
+  sum_exe_inst_array.Resize( m_world->GetNumInstructions() );
   ZeroInst();
 #endif
-  inst_names.Resize( cConfig::GetNumInstructions() );
+  inst_names.Resize( m_world->GetNumInstructions() );
 
 
 
-  reaction_count.Resize( cConfig::GetNumReactions() );
+  reaction_count.Resize( m_world->GetNumReactions() );
   reaction_count.SetAll(0);
 
-  resource_count.Resize( cConfig::GetNumResources() );
+  resource_count.Resize( m_world->GetNumResources() );
   resource_count.SetAll(0);
 
-  task_names.Resize( cConfig::GetNumTasks() );
-  reaction_names.Resize( cConfig::GetNumReactions() );
-  resource_names.Resize( cConfig::GetNumResources() );
+  task_names.Resize( m_world->GetNumTasks() );
+  reaction_names.Resize( m_world->GetNumReactions() );
+  resource_names.Resize( m_world->GetNumResources() );
 
-  genotype_map.Resize( cConfig::GetWorldX() * cConfig::GetWorldY() );
+  genotype_map.Resize( m_world->GetConfig().WORLD_X.Get() * m_world->GetConfig().WORLD_Y.Get() );
   SetupPrintDatabase();
 }
 
@@ -266,13 +267,13 @@ void cStats::CalcFidelity()
   // after a mutation occurs, that it will be the original instruction again;
   // This needs to be adjusted for!
 
-  double adj = ((double) (cConfig::GetNumInstructions() - 1)) /
-    (double) cConfig::GetNumInstructions();
+  double adj = ((double) (m_world->GetNumInstructions() - 1)) /
+    (double) m_world->GetNumInstructions();
 
-  double base_fidelity = (1.0 - adj * cConfig::GetDivideMutProb()) *
-    (1.0 - cConfig::GetDivideInsProb()) * (1.0 - cConfig::GetDivideDelProb());
+  double base_fidelity = (1.0 - adj * m_world->GetConfig().DIVIDE_MUT_PROB.Get()) *
+    (1.0 - m_world->GetConfig().DIVIDE_INS_PROB.Get()) * (1.0 - m_world->GetConfig().DIVIDE_DEL_PROB.Get());
 
-  double true_cm_rate = adj * cConfig::GetCopyMutProb();
+  double true_cm_rate = adj * m_world->GetConfig().COPY_MUT_PROB.Get();
   ave_fidelity = base_fidelity * pow(1.0 - true_cm_rate, sum_size.Average());
   dom_fidelity = base_fidelity * pow(1.0 - true_cm_rate, dom_size);
 }
@@ -308,7 +309,7 @@ void cStats::RemoveGenotype(int id_num, int parent_id,
    int age, int length)
 {
   if (fp_genotype_log.good() &&
-      (!cConfig::GetLogThresholdOnly() || max_abundance > 2)) {
+      (!m_world->GetConfig().LOG_THRESHOLD.Get() || max_abundance > 2)) {
     const int update_born = cStats::GetUpdate() - age + 1;
     fp_genotype_log << id_num             << " "    //  1
 		    << update_born        << " "    //  2
@@ -377,7 +378,7 @@ void cStats::ProcessUpdate()
 
     // calculate the true replication rate in this update
     rave_true_replication_rate.Add( num_births/
-	  (delta * cConfig::GetAveTimeslice() * num_creatures) );
+	  (delta * m_world->GetConfig().AVE_TIME_SLICE.Get() * num_creatures) );
   }
   last_update = current_update;
 
@@ -731,7 +732,7 @@ void cStats::PrintSpatialResData(const cString & filename, int i)
   df.WriteRaw(UpdateStr);
 
   int gridsize = spatial_res_count[i].GetSize();
-  int xsize = cConfig::GetWorldX();
+  int xsize = m_world->GetConfig().WORLD_X.Get();
 
   // write grid to file
 
@@ -877,7 +878,7 @@ void cStats::PrintGenotypeMap(const cString & filename)
   df.WriteRaw(UpdateStr);
 
   int gridsize = genotype_map.GetSize();
-  int xsize = cConfig::GetWorldX();
+  int xsize = m_world->GetConfig().WORLD_X.Get();
 
   // write grid to file                                        
 

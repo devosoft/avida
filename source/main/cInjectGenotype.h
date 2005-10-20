@@ -39,9 +39,11 @@ public:
 class cGenome; // aggregate
 class cString; // aggregate
 class cInjectGenotype_BirthData; // aggregate
+class cWorld;
 
 class cInjectGenotype {
 private:
+  cWorld* m_world;
   cGenome genome;
   cString name;
   bool flag_threshold;
@@ -102,7 +104,7 @@ public:
    * that in this case, cGenotype does not check if the id has already been 
    * used before.
    **/
-  cInjectGenotype(int in_update_born = 0, int in_id = -1);
+  cInjectGenotype(cWorld* world, int in_update_born = 0, int in_id = -1);
   ~cInjectGenotype();
 
   bool SaveClone(std::ofstream & fp);

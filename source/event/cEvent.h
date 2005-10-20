@@ -14,34 +14,29 @@
 
 /**
  * This is a virtual base class for an event in Avida.
- * It holds the name of the event, a string of arguments, and the id of
- * the factory (@ref cEventFactory) it is created from.
+ * It holds the name of the event, a string of arguments
  **/
 
-class cString; // aggregate
+class cWorld;
 
 class cEvent {
 public:
   enum eTriggerVariable { UPDATE, GENERATION, IMMEDIATE, UNDEFINED };
 
 private:
-  int m_factory_id;
 
   // not implemented, prevents inadvertent wrong instantiation
   cEvent(const cEvent&);
   cEvent& operator=(const cEvent&);
 
 protected:
+  cWorld* m_world;
   cString m_args;
 
 public:
-  // constructors
-  cEvent(int factory_id = -1 ) : m_factory_id(factory_id), m_args("") { ; }
+  cEvent() : m_world(NULL), m_args("") { ; }
   virtual ~cEvent() { ; }
 
-  int GetFactoryId() const { return m_factory_id; }
-  void SetFactoryId(int factory_id) { m_factory_id = factory_id; }
-  
   const cString& GetArgs() const { return m_args; }
 
   /**
@@ -49,7 +44,7 @@ public:
    **/
   
   // Configures the event for use.
-  virtual void Configure(const cString& args = "") = 0;
+  virtual void Configure(cWorld* world, const cString& args = "") = 0;
 
   // Does the actual 'thing' the event is supposed to do.
   virtual void Process() = 0;

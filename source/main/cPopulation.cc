@@ -8,7 +8,6 @@
 #include "cPopulation.h"
 
 #include "cChangeList.h"
-#include "cConfig.h"
 #include "cConstSchedule.h"
 #include "cDataFile.h"
 #include "cEnvironment.h"
@@ -17,9 +16,8 @@
 #include "cGenomeUtil.h"
 #include "cGenotype.h"
 #include "cHardwareBase.h"
-#include "cHardwareFactory.h"
+#include "cHardwareManager.h"
 #include "cHardware4Stack.h"
-#include "cHardwareUtil.h"
 #include "cInitFile.h"
 #include "cInjectGenebank.h"
 #include "cInjectGenotype.h"
@@ -35,6 +33,7 @@
 #include "cSpecies.h"
 #include "cStats.h"
 #include "cTaskEntry.h"
+#include "cWorld.h"
 
 #include <fstream>
 #include <vector>
@@ -46,46 +45,43 @@
 using namespace std;
 
 
-cPopulation::cPopulation(const cPopulationInterface & in_interface,
-                         cEnvironment & in_environment,
-                         cChangeList * change_list)
-: schedule(NULL)
-, resource_count(in_environment.GetResourceLib().GetSize())
-, environment(in_environment)
-, default_interface(in_interface)
+cPopulation::cPopulation(cWorld* world)
+: m_world(world)
+, schedule(NULL)
+, resource_count(world->GetEnvironment().GetResourceLib().GetSize())
+, birth_chamber(world)
+, stats(world)
+, environment(world->GetEnvironment())
 , num_organisms(0)
 , sync_events(false)
 {
   // Setup the genebank.
-  genebank = new cGenebank(stats);
-  inject_genebank = new cInjectGenebank(stats);
+  genebank = new cGenebank(world, stats);
+  inject_genebank = new cInjectGenebank(world, stats);
   birth_chamber.SetGenebank(genebank);
   
   // are we logging lineages?
-  if (cConfig::GetLogLineages()) {
-    lineage_control = new cLineageControl( *genebank, stats );
+  if (world->GetConfig().LOG_LINEAGES.Get()) {
+    lineage_control = new cLineageControl(world, *genebank, stats );
   }
   else lineage_control = NULL;    // no lineage logging
   
   // Setup the default mutation rates...
-  cMutationRates & default_mut_rates = environment.GetMutRates();
-  default_mut_rates.SetCopyMutProb  ( cConfig::GetCopyMutProb()   );
-  default_mut_rates.SetInsMutProb   ( cConfig::GetInsMutProb()    );
-  default_mut_rates.SetDelMutProb   ( cConfig::GetDelMutProb()    );
-  default_mut_rates.SetDivMutProb   ( cConfig::GetDivMutProb()    );
-  default_mut_rates.SetPointMutProb ( cConfig::GetPointMutProb()  );
-  default_mut_rates.SetDivideMutProb( cConfig::GetDivideMutProb() );
-  default_mut_rates.SetDivideInsProb( cConfig::GetDivideInsProb() );
-  default_mut_rates.SetDivideDelProb( cConfig::GetDivideDelProb() );
-  default_mut_rates.SetParentMutProb( cConfig::GetParentMutProb() );
-  
-  // Setup the default population interface...
-  default_interface.SetPopulation(this);
-  
+  cMutationRates& default_mut_rates = environment.GetMutRates();
+  default_mut_rates.SetCopyMutProb  ( world->GetConfig().COPY_MUT_PROB.Get() );
+  default_mut_rates.SetInsMutProb   ( world->GetConfig().INS_MUT_PROB.Get() );
+  default_mut_rates.SetDelMutProb   ( world->GetConfig().DEL_MUT_PROB.Get() );
+  default_mut_rates.SetDivMutProb   ( world->GetConfig().DIV_MUT_PROB.Get() );
+  default_mut_rates.SetPointMutProb ( world->GetConfig().POINT_MUT_PROB.Get() );
+  default_mut_rates.SetDivideMutProb( world->GetConfig().DIVIDE_MUT_PROB.Get() );
+  default_mut_rates.SetDivideInsProb( world->GetConfig().DIVIDE_INS_PROB.Get() );
+  default_mut_rates.SetDivideDelProb( world->GetConfig().DIVIDE_DEL_PROB.Get() );
+  default_mut_rates.SetParentMutProb( world->GetConfig().PARENT_MUT_PROB.Get() );
+    
   // Avida specific information.
-  world_x = cConfig::GetWorldX();
-  world_y = cConfig::GetWorldY();
-  int geometry = cConfig::GetWorldGeometry();
+  world_x = world->GetConfig().WORLD_X.Get();
+  world_y = world->GetConfig().WORLD_Y.Get();
+  int geometry = world->GetConfig().WORLD_GEOMETRY.Get();
   const int num_cells = world_x * world_y;
   cout << "Building world " << world_x << "x" << world_y
     << " = " << num_cells << " organisms." << endl;
@@ -158,12 +154,12 @@ cPopulation::cPopulation(const cPopulationInterface & in_interface,
     }
     
     // Setup the reaper queue...
-    if (cConfig::GetBirthMethod() == POSITION_CHILD_FULL_SOUP_ELDEST) {
+    if (world->GetConfig().BIRTH_METHOD.Get() == POSITION_CHILD_FULL_SOUP_ELDEST) {
       reaper_queue.Push(&(cell_array[cell_id]));
     }
   }
   
-  BuildTimeSlicer(change_list);
+  BuildTimeSlicer(0);
   
   if (SetupDemes() == false) {
     cerr << "Error: Failed to setup demes.  Exiting..." << endl;
@@ -194,24 +190,24 @@ cPopulation::cPopulation(const cPopulationInterface & in_interface,
     stats.SetTaskName(i, cur_task.GetDesc());
   }
   
-  const cInstSet & inst_set = environment.GetInstSet();
+  const cInstSet & inst_set = world->GetHardwareManager().GetInstSet();
   for (int i = 0; i < inst_set.GetSize(); i++) {
     stats.SetInstName(i, inst_set.GetName(i));
   }
   
   // Load a clone if one is provided, otherwise setup start organism.
-  if (cConfig::GetCloneFilename() == "") {
-    cGenome start_org = cInstUtil::LoadGenome(cConfig::GetStartCreature(), environment.GetInstSet());
+  if (m_world->GetConfig().CLONE_FILE.Get() == "-" || m_world->GetConfig().CLONE_FILE.Get() == "") {
+    cGenome start_org = cInstUtil::LoadGenome(m_world->GetConfig().START_CREATURE.Get(), world->GetHardwareManager().GetInstSet());
     if (start_org.GetSize() != 0) Inject(start_org);
     else cerr << "Warning: Zero length start organism, not injecting into initial population." << endl;
   } else {
-    ifstream fp(cConfig::GetCloneFilename()());
+    ifstream fp(m_world->GetConfig().CLONE_FILE.Get());
     LoadClone(fp);
   }
   
   // Load a saved population if one is provided.
-  cString fname(cConfig::GetLoadPopFilename());
-  if (fname != "") {
+  cString fname(m_world->GetConfig().POPULATION_FILE.Get());
+  if (fname != "-" || fname != "") {
     cout << "Loading Population from " <<  fname() << endl;
     
     // If last three chars of filename are ".gz" , gunzip it first
@@ -256,11 +252,12 @@ cPopulation::~cPopulation()
 // organisms evolved together and used in group selection experiments.
 bool cPopulation::SetupDemes()
 {
-  num_demes = cConfig::GetNumDemes();
+  num_demes = m_world->GetConfig().NUM_DEMES.Get();
+  const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
   
   // If we are not using demes, stop here.
   if (num_demes == 0) {
-    if (cConfig::GetBirthMethod() == POSITION_CHILD_DEME_RANDOM) {
+    if (birth_method == POSITION_CHILD_DEME_RANDOM) {
       cerr << "Using position method that requires demes, but demes are off."
       << endl;
       return false;
@@ -277,10 +274,9 @@ bool cPopulation::SetupDemes()
   }
   
   // ...make sure we are using a legal birth method.
-  if (cConfig::GetBirthMethod() == POSITION_CHILD_FULL_SOUP_ELDEST ||
-      cConfig::GetBirthMethod() == POSITION_CHILD_FULL_SOUP_RANDOM) {
-    cerr << "Illegal birth method " << cConfig::GetBirthMethod()
-    << " for use with demes." << endl;
+  if (birth_method == POSITION_CHILD_FULL_SOUP_ELDEST ||
+      birth_method == POSITION_CHILD_FULL_SOUP_RANDOM) {
+    cerr << "Illegal birth method " << birth_method << " for use with demes." << endl;
     return false;
   }
   
@@ -379,7 +375,7 @@ bool cPopulation::ActivateOffspring(cGenome & child_genome,
     schedule->Adjust(parent_cell.GetID(), parent_phenotype.GetMerit());
     
     // In a local run, face the child toward the parent. 
-    if (cConfig::GetBirthMethod() < NUM_LOCAL_POSITION_CHILD) {
+    if (m_world->GetConfig().BIRTH_METHOD.Get() < NUM_LOCAL_POSITION_CHILD) {
       for (int i = 0; i < child_array.GetSize(); i++) {
         GetCell(target_cells[i]).Rotate(parent_cell);
       }
@@ -427,7 +423,7 @@ bool cPopulation::ActivateInject(cOrganism & parent, const cGenome & injected_co
   
   cHardware4Stack & child_cpu = (cHardware4Stack &) target_organism->GetHardware();
   
-  if(child_cpu.GetNumThreads()==cConfig::GetMaxCPUThreads())
+  if(child_cpu.GetNumThreads() == m_world->GetConfig().MAX_CPU_THREADS.Get())
     return false;
   
   cInjectGenotype * child_genotype = parent_genotype;
@@ -547,7 +543,7 @@ void cPopulation::ActivateOrganism(cOrganism * in_organism,
   schedule->Adjust(target_cell.GetID(),in_organism->GetPhenotype().GetMerit());
   
   // Special handling for certain birth methods.
-  if (cConfig::GetBirthMethod() == POSITION_CHILD_FULL_SOUP_ELDEST) {
+  if (m_world->GetConfig().BIRTH_METHOD.Get() == POSITION_CHILD_FULL_SOUP_ELDEST) {
     reaper_queue.Push(&target_cell);
   }
   
@@ -912,7 +908,7 @@ void cPopulation::PrintDemeStats()
   df_donor.Write(GetUpdate(), "update");
   df_receiver.Write(GetUpdate(), "update");
   
-  const int num_inst = cConfig::GetNumInstructions();
+  const int num_inst = m_world->GetNumInstructions();
   const int num_task = environment.GetTaskLib().GetSize();
   
   for (int cur_deme = 0; cur_deme < num_demes; cur_deme++) {
@@ -1022,7 +1018,7 @@ cPopulationCell & cPopulation::PositionChild(cPopulationCell & parent_cell,
 {
   assert(parent_cell.IsOccupied());
   
-  const int birth_method = cConfig::GetBirthMethod();
+  const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
   
   // Try out global/full-deme birth methods first...
   
@@ -1058,7 +1054,7 @@ cPopulationCell & cPopulation::PositionChild(cPopulationCell & parent_cell,
   // First, check if there is an empty organism to work with (always preferred)
   tList<cPopulationCell> & conn_list = parent_cell.ConnectionList();
   
-  if (cConfig::GetPreferEmpty() == false &&
+  if (m_world->GetConfig().PREFER_EMPTY.Get() == false &&
       birth_method == POSITION_CHILD_RANDOM) {
     found_list.Append(conn_list);
     if (parent_ok == true) found_list.Push(&parent_cell);
@@ -1221,7 +1217,7 @@ void cPopulation::UpdateOrganismStats()
     
 #ifdef INSTRUCTION_COUNT
     //    for (int j=0; j < environment.GetInstSet().GetSize(); j++) {
-    for (int j=0; j < cConfig::GetNumInstructions(); j++) {
+    for (int j=0; j < m_world->GetNumInstructions(); j++) {
       stats.SumExeInst()[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
     }
 #endif
@@ -1502,8 +1498,11 @@ bool cPopulation::LoadClone(ifstream & fp)
   int num_genotypes = 0;
   fp >> num_genotypes;
   
-  cGenotype * genotype_array = new cGenotype[num_genotypes];
-  for (int i = 0; i < num_genotypes; i++) genotype_array[i].LoadClone(fp);
+  cGenotype** genotype_array = new cGenotype*[num_genotypes];
+  for (int i = 0; i < num_genotypes; i++) {
+    genotype_array[i] = new cGenotype(m_world);
+    genotype_array[i]->LoadClone(fp);
+  }
   
   // Now load them into the organims.  @CAO make sure cell_array.GetSize() is right!
   int in_num_cells;
@@ -1516,14 +1515,14 @@ bool cPopulation::LoadClone(ifstream & fp)
     if (genotype_id == -1) continue;
     int genotype_index = -1;
     for (int j = 0; j < num_genotypes; j++) {
-      if (genotype_array[j].GetID() == genotype_id) {
+      if (genotype_array[j]->GetID() == genotype_id) {
         genotype_index = j;
         break;
       }
     }
     
     assert(genotype_index != -1);
-    InjectGenome(i, genotype_array[genotype_index].GetGenome(), 0);
+    InjectGenome(i, genotype_array[genotype_index]->GetGenome(), 0);
   }
   
   sync_events = true;
@@ -1600,7 +1599,7 @@ bool cPopulation::LoadDumpFile(cString filename, int update)
       tmp.update_dead = stats.GetUpdate();
     
     tmp.genotype =
-      new cGenotype(tmp.update_born, tmp.id_num);
+      new cGenotype(m_world, tmp.update_born, tmp.id_num);
     tmp.genotype->SetGenome( genome );
     tmp.genotype->SetName( name );
     
@@ -1767,7 +1766,7 @@ void cPopulation::Inject(const cGenome & genome, int cell_id, double merit,
 {
   // If an invalid cell was given, choose a new ID for it.
   if (cell_id < 0) {
-    switch (cConfig::GetBirthMethod()) {
+    switch (m_world->GetConfig().BIRTH_METHOD.Get()) {
       case POSITION_CHILD_FULL_SOUP_ELDEST:
         cell_id = reaper_queue.PopRear()->GetID();
       default:
@@ -1821,7 +1820,7 @@ void cPopulation::SetResource(int id, double new_level)
 
 void cPopulation::BuildTimeSlicer(cChangeList * change_list)
 {
-  switch (cConfig::GetSlicingMethod()) {
+  switch (m_world->GetConfig().SLICING_METHOD.Get()) {
     case SLICE_CONSTANT:
       schedule = new cConstSchedule(cell_array.GetSize());
       break;
@@ -1915,9 +1914,7 @@ void cPopulation::InjectGenotype(int cell_id, cGenotype *new_genotype)
 {
   assert(cell_id >= 0 && cell_id < cell_array.GetSize());
   
-  cOrganism * new_organism = new cOrganism(new_genotype->GetGenome(),
-                                           default_interface,
-                                           environment);
+  cOrganism * new_organism = new cOrganism(m_world, new_genotype->GetGenome());
   
   // Set the genotype...
   new_organism->SetGenotype(new_genotype);
@@ -1933,7 +1930,7 @@ void cPopulation::InjectGenotype(int cell_id, cGenotype *new_genotype)
   phenotype.SetGestationTime( new_genotype->GetTestGestationTime() );
   
   // Prep the cell..
-  if (cConfig::GetBirthMethod() == POSITION_CHILD_FULL_SOUP_ELDEST &&
+  if (m_world->GetConfig().BIRTH_METHOD.Get() == POSITION_CHILD_FULL_SOUP_ELDEST &&
       cell_array[cell_id].IsOccupied() == true) {
     // Have to manually take this cell out of the reaper Queue.
     reaper_queue.Remove( &(cell_array[cell_id]) );
@@ -1956,8 +1953,7 @@ void cPopulation::InjectClone(int cell_id, cOrganism & orig_org)
 {
   assert(cell_id >= 0 && cell_id < cell_array.GetSize());
   
-  cOrganism * new_organism = new cOrganism(orig_org.GetGenome(),
-                                           default_interface, environment);
+  cOrganism * new_organism = new cOrganism(m_world, orig_org.GetGenome());
   
   // Set the genotype...
   new_organism->SetGenotype(orig_org.GetGenotype());
@@ -1966,7 +1962,7 @@ void cPopulation::InjectClone(int cell_id, cOrganism & orig_org)
   new_organism->GetPhenotype().SetupClone(orig_org.GetPhenotype());
   
   // Prep the cell..
-  if (cConfig::GetBirthMethod() == POSITION_CHILD_FULL_SOUP_ELDEST &&
+  if (m_world->GetConfig().BIRTH_METHOD.Get() == POSITION_CHILD_FULL_SOUP_ELDEST &&
       cell_array[cell_id].IsOccupied() == true) {
     // Have to manually take this cell out of the reaper Queue.
     reaper_queue.Remove( &(cell_array[cell_id]) );

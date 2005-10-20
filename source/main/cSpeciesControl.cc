@@ -5,36 +5,18 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef SPECIES_CONTROL_HH
 #include "cSpeciesControl.h"
-#endif
 
-#ifndef CONFIG_HH
-#include "cConfig.h"
-#endif
-#ifndef DEFS_HH
 #include "defs.h"
-#endif
-#ifndef GENOTYPE_HH
 #include "cGenotype.h"
-#endif
-#ifndef nSpecies_h
 #include "nSpecies.h"
-#endif
-#ifndef SPECIES_HH
 #include "cSpecies.h"
-#endif
-#ifndef STATS_HH
 #include "cStats.h"
-#endif
+#include "cWorld.h"
 
 #include <assert.h>
 
-/////////////////////
-//  cSpeciesControl
-/////////////////////
-
-cSpeciesControl::cSpeciesControl(cGenebank & in_gb) : genebank(in_gb)
+cSpeciesControl::cSpeciesControl(cWorld* world, cGenebank & in_gb) : m_world(world), genebank(in_gb)
 {
 }
 
@@ -124,17 +106,16 @@ cSpecies * cSpeciesControl::Find(cGenotype & in_genotype, int record_level)
   cSpecies * found_species = NULL;
   int cur_count, best_count = MAX_CREATURE_SIZE;
   cSpecies * cur_species;
+  const int species_threshold = m_world->GetConfig().SPECIES_THRESHOLD.Get();
 
   if (record_level == nSpecies::RECORD_FULL) {
     cur_species = active_queue.GetFirst();
     int size = active_queue.GetSize();
     for (int i = 0; i < size; i++) {
-      cur_count = cur_species->Compare(in_genotype.GetGenome(),
-				       cConfig::GetSpeciesThreshold());
-      if (cur_count != -1 && cur_count <= cConfig::GetSpeciesThreshold() &&
-	  cur_count < best_count) {
-	found_species = cur_species;
-	best_count = cur_count;
+      cur_count = cur_species->Compare(in_genotype.GetGenome(), species_threshold);
+      if (cur_count != -1 && cur_count <= species_threshold && cur_count < best_count) {
+        found_species = cur_species;
+        best_count = cur_count;
       }
       cur_species = cur_species->GetNext();
     }
@@ -144,10 +125,9 @@ cSpecies * cSpeciesControl::Find(cGenotype & in_genotype, int record_level)
     cur_species = in_genotype.GetSpecies();
 
     if (cur_species) {
-      int num_diff = cur_species->Compare(in_genotype.GetGenome(),
-					  cConfig::GetSpeciesThreshold());
-      if (num_diff != -1 && num_diff <= cConfig::GetSpeciesThreshold()) {
-	found_species = cur_species;
+      int num_diff = cur_species->Compare(in_genotype.GetGenome(), species_threshold);
+      if (num_diff != -1 && num_diff <= species_threshold) {
+        found_species = cur_species;
       }
     }
   }

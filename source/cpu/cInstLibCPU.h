@@ -6,7 +6,7 @@
 #include "cInstLibBase.h"
 #endif
 
-#ifndef HARDWARE_CPU_HH
+#ifndef cHardwareCPU_h
 #include "cHardwareCPU.h"
 #endif
 #ifndef INSTRUCTION_HH

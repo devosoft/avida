@@ -35,9 +35,11 @@ class cStats;
 class cString; // aggregate
 class cInjectGenotype;
 class cGenome;
+class cWorld;
 
 class cInjectGenebank {
 private:
+  cWorld* m_world;
   unsigned int inject_genotype_count[MAX_CREATURE_SIZE];
   cInjectGenotypeQueue active_inject_genotypes[nInjectGenotype::HASH_SIZE];
   cInjectGenotypeControl * inject_genotype_control;
@@ -47,7 +49,7 @@ private:
   cString GetLabel(int in_size, int in_num);
 
 public:
-  cInjectGenebank(cStats & stats);
+  cInjectGenebank(cWorld* world, cStats & stats);
   ~cInjectGenebank();
 
   void UpdateReset();

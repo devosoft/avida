@@ -10,7 +10,6 @@ SET(libmain_a_SOURCES
   cAvidaDriver_Population.cc
   cBirthChamber.cc
   cCallbackUtil.cc
-  cConfig.cc
   cEnvironment.cc
   cFitnessMatrix.cc
   cGenebank.cc

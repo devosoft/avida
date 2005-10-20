@@ -13,6 +13,7 @@
 class cGenome;
 class cInstSet;
 class cPopulation;
+class cWorld;
 
 // This is a static class used to do various forms of complex analysis
 // on genomes.
@@ -40,9 +41,9 @@ public:
 
 
   // Population-wide analysis
-  static void CalcConsensus(cPopulation * population, int lines_saved);
+  static void CalcConsensus(cWorld* world, int lines_saved);
 
-  static void AnalyzePopulation(cPopulation * pop, std::ofstream & fp,
+  static void AnalyzePopulation(cWorld* world, std::ofstream & fp,
 				double sample_prob=1, bool landscape=false,
 				bool save_genotype=false);
 
@@ -50,14 +51,14 @@ public:
     std::ofstream & histofp, std::ofstream & histo_testCPU_fp, bool save_max_f_genotype,
     bool print_fitness_histo, double hist_fmax, double hist_fstep);
 
-  static void PrintGeneticDistanceData(cPopulation * pop, std::ofstream & fp,
+  static void PrintGeneticDistanceData(cWorld* world, std::ofstream & fp,
 				const char *creature_name );
-  static void GeneticDistancePopDump(cPopulation * pop, std::ofstream & fp,
+  static void GeneticDistancePopDump(cWorld* world, std::ofstream & fp,
 		    const char * creature_name, bool save_creatures=false);
 
   static void TaskSnapshot(cPopulation * pop, std::ofstream & fp);
   static void TaskGrid(cPopulation * pop, std::ofstream & fp);
-  static void PrintViableTasksData(cPopulation *pop, std::ofstream &fp);
+  static void PrintViableTasksData(cWorld* world, std::ofstream &fp);
   static void PrintTreeDepths(cPopulation * pop, std::ofstream & fp);
 
   static void PrintDepthHistogram(std::ofstream &fp, cPopulation * pop);
@@ -65,7 +66,7 @@ public:
   static void PrintSpeciesAbundanceHistogram(std::ofstream &fp, cPopulation * pop);
 
   // this adds support for evan dorn's InstructionHistogramEvent.  -- kgn
-  static void PrintInstructionAbundanceHistogram(std::ofstream &fp, cPopulation * pop);
+  static void PrintInstructionAbundanceHistogram(cWorld* world, std::ofstream &fp);
   // -- kgn
 };
 #endif

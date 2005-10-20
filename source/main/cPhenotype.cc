@@ -5,38 +5,30 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef PHENOTYPE_HH
 #include "cPhenotype.h"
-#endif
 
-#ifndef CONFIG_HH
-#include "cConfig.h"
-#endif
-#ifndef ENVIRONMENT_HH
 #include "cEnvironment.h"
-#endif
-#ifndef REACTION_RESULT_HH
+#include "cHardwareManager.h"
 #include "cReactionResult.h"
-#endif
-#ifndef TOOLS_HH
 #include "cTools.h"
-#endif
+#include "cWorld.h"
 
 #include <fstream>
 
 using namespace std;
 
 
-cPhenotype::cPhenotype(const cEnvironment & _environment)
-  : environment(_environment)
+cPhenotype::cPhenotype(cWorld* world, const cEnvironment & _environment)
+  : m_world(world)
+  , environment(_environment)
   , initialized(false)
   , cur_task_count(environment.GetTaskLib().GetSize())
   , cur_reaction_count(environment.GetReactionLib().GetSize())
-  , cur_inst_count(environment.GetInstSet().GetSize())
+  , cur_inst_count(world->GetHardwareManager().GetInstSet().GetSize())
   , sensed_resources(environment.GetResourceLib().GetSize())
   , last_task_count(environment.GetTaskLib().GetSize())
   , last_reaction_count(environment.GetReactionLib().GetSize())
-  , last_inst_count(environment.GetInstSet().GetSize())
+  , last_inst_count(world->GetHardwareManager().GetInstSet().GetSize())
 {
 }
 
@@ -100,7 +92,7 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
   assert(div_type > 0);
 
   // Initialize current values, as neeeded.
-  cur_bonus       = cConfig::GetDefaultBonus();
+  cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
   cur_num_errors  = 0;
   cur_num_donates  = 0;
   cur_task_count.SetAll(0);
@@ -123,7 +115,7 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
   // Setup other miscellaneous values...
   num_divides     = 0;
   generation      = parent_phenotype.generation;
-  if (cConfig::GetGenerationIncMethod() != GENERATION_INC_BOTH) generation++;
+  if (m_world->GetConfig().GENERATION_INC_METHOD.Get() != GENERATION_INC_BOTH) generation++;
   time_used       = 0;
   age             = 0;
   fault_desc      = "";
@@ -182,7 +174,7 @@ void cPhenotype::SetupInject(int _length)
   div_type	  = 1;
 
   // Initialize current values, as neeeded.
-  cur_bonus       = cConfig::GetDefaultBonus();
+  cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
   cur_num_errors  = 0;
   cur_num_donates  = 0;
   cur_task_count.SetAll(0);
@@ -248,7 +240,7 @@ void cPhenotype::DivideReset(int _length)
   assert(initialized == true);
 
   // Update these values as needed...
-  int cur_merit_base = CalcSizeMerit(genome_length,copied_size,executed_size);
+  int cur_merit_base = CalcSizeMerit();
   merit = cur_merit_base * cur_bonus;
 
   genome_length   = _length;
@@ -268,7 +260,7 @@ void cPhenotype::DivideReset(int _length)
   last_inst_count     = cur_inst_count;
 
   // Reset cur values.
-  cur_bonus       = cConfig::GetDefaultBonus();
+  cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
   cur_num_errors  = 0;
   cur_num_donates  = 0;
   cur_task_count.SetAll(0);
@@ -310,13 +302,13 @@ void cPhenotype::DivideReset(int _length)
 
   // A few final changes if the parent was supposed to be be considered
   // a second child on the divide.
-  if (cConfig::GetDivideMethod() == DIVIDE_METHOD_SPLIT) {
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
     gestation_start = 0;
     time_used = 0;
     neutral_metric += g_random.GetRandNormal();
   }
 
-  if (cConfig::GetGenerationIncMethod() == GENERATION_INC_BOTH) generation++;
+  if (m_world->GetConfig().GENERATION_INC_METHOD.Get() == GENERATION_INC_BOTH) generation++;
 }
 
 
@@ -332,7 +324,7 @@ void cPhenotype::TestDivideReset(int _length)
   assert(initialized == true);
 
   // Update these values as needed...
-  int cur_merit_base = CalcSizeMerit(genome_length,copied_size,executed_size);
+  int cur_merit_base = CalcSizeMerit();
   merit           = cur_merit_base * cur_bonus;
 
   genome_length   = _length;
@@ -353,7 +345,7 @@ void cPhenotype::TestDivideReset(int _length)
   last_inst_count     = cur_inst_count;
 
   // Reset cur values.
-  cur_bonus       = cConfig::GetDefaultBonus();
+  cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
   cur_num_errors  = 0;
   cur_num_donates  = 0;
   cur_task_count.SetAll(0);
@@ -425,7 +417,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   assert(div_type > 0);
 
   // Initialize current values, as neeeded.
-  cur_bonus       = cConfig::GetDefaultBonus();
+  cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
   cur_num_errors  = 0;
   cur_num_donates  = 0;
   cur_task_count.SetAll(0);
@@ -448,7 +440,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   // Setup other miscellaneous values...
   num_divides     = 0;
   generation      = clone_phenotype.generation;
-  if (cConfig::GetGenerationIncMethod() != GENERATION_INC_BOTH) generation++;
+  if (m_world->GetConfig().GENERATION_INC_METHOD.Get() != GENERATION_INC_BOTH) generation++;
   time_used       = 0;
   age             = 0;
   fault_desc      = "";
@@ -710,7 +702,7 @@ bool cPhenotype::LoadState(ifstream & fp)
 void cPhenotype::PrintStatus(ostream & fp)
 {
   fp << "  MeritBase:"
-     << CalcSizeMerit(genome_length,copied_size,executed_size)
+     << CalcSizeMerit()
      << " Bonus: " << cur_bonus
      << " Errors:" << cur_num_errors
      << " Donates:" << cur_num_donates
@@ -723,38 +715,38 @@ void cPhenotype::PrintStatus(ostream & fp)
   fp << endl;
 }
 
-int cPhenotype::CalcSizeMerit(int full_size, int copied_size, int exe_size)
+int cPhenotype::CalcSizeMerit() const
 {
-  assert(full_size > 0);
-  assert(exe_size > 0);
+  assert(genome_length > 0);
+  assert(executed_size > 0);
   assert(copied_size > 0);
 
   int out_size;
 
-  switch (cConfig::GetSizeMeritMethod()) {
+  switch (m_world->GetConfig().SIZE_MERIT_METHOD.Get()) {
   case SIZE_MERIT_COPIED:
     out_size = copied_size;
     break;
   case SIZE_MERIT_EXECUTED:
-    out_size = exe_size;
+    out_size = executed_size;
     break;
   case SIZE_MERIT_FULL:
-    out_size = full_size;
+    out_size = genome_length;
     break;
   case SIZE_MERIT_LEAST:
-    out_size = full_size;
+    out_size = genome_length;
     if (out_size > copied_size) out_size = copied_size;
-    if (out_size > exe_size)    out_size = exe_size;
+    if (out_size > executed_size)    out_size = executed_size;
     break;
   case SIZE_MERIT_SQRT_LEAST:
-    out_size = full_size;
+    out_size = genome_length;
     if (out_size > copied_size) out_size = copied_size;
-    if (out_size > exe_size)    out_size = exe_size;
+    if (out_size > executed_size)    out_size = executed_size;
     out_size = (int) sqrt((double) out_size);
     break;
   case SIZE_MERIT_OFF:
   default:
-    out_size = cConfig::GetBaseSizeMerit();
+    out_size = m_world->GetConfig().BASE_SIZE_MERIT.Get();
     break;
   }
 

@@ -5,27 +5,16 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef INJECT_GENOTYPE_HH
 #include "cInjectGenotype.h"
-#endif
 
-#ifndef CONFIG_HH
-#include "cConfig.h"
-#endif
-#ifndef TOOLS_HH
 #include "cTools.h"
-#endif
+#include "cWorld.h"
 
 using namespace std;
 
-
-
-///////////////////////////
-//  cInjectGenotype
-///////////////////////////
-
-cInjectGenotype::cInjectGenotype(int in_update_born, int in_id)
-  : genome(1)
+cInjectGenotype::cInjectGenotype(cWorld* world, int in_update_born, int in_id)
+  : m_world(world)
+  , genome(1)
   , name("p001-no_name")
   , flag_threshold(false)
   , is_active(true)
@@ -123,7 +112,7 @@ void cInjectGenotype::Mutate()  // Check each location to be mutated.
   int i;
 
   for (i = 0; i < genome.GetSize(); i++) {
-      genome[i].SetOp(g_random.GetUInt(cConfig::GetNumInstructions()));
+      genome[i].SetOp(g_random.GetUInt(m_world->GetNumInstructions()));
     }
   
 }

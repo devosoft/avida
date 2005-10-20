@@ -2,7 +2,7 @@
 #include "py_avida_driver.hh"
 
 #include "cpu/cHardwareBase.h"
-#include "cpu/cHardwareFactory.h"
+#include "cpu/cHardwareManager.h"
 #include "main/cConfig.h"
 #include "main/cGenebank.h"
 #include "main/cGenotype.h"
@@ -118,9 +118,6 @@ bool pyAvidaDriver::ptMutations(const unsigned int)
 }
 
 bool pyAvidaDriver::postPtMutations(const unsigned int) {
-  // Do any cleanup in the hardware factory...
-  cHardwareFactory::Update();
-
   // Exit conditions...
   if(0 == population->GetNumOrganisms()) {
     done_flag = true;

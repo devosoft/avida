@@ -9,7 +9,6 @@
 
 #include "cHardware4Stack.h"
 
-#include "cConfig.h"
 #include "cCPUTestInfo.h"
 #include "functions.h"
 #include "cGenomeUtil.h"
@@ -230,8 +229,8 @@ cInstLib4Stack *cHardware4Stack::initInstLib(void){
   return inst_lib;
 }
 
-cHardware4Stack::cHardware4Stack(cOrganism * in_organism, cInstSet * in_inst_set)
-  : cHardwareBase(in_organism, in_inst_set)
+cHardware4Stack::cHardware4Stack(cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set)
+  : cHardwareBase(world, in_organism, in_inst_set)
   , memory_array(nHardware4Stack::NUM_MEMORY_SPACES)
 {
   /* FIXME:  reorganize storage of m_functions.  -- kgn */
@@ -239,9 +238,9 @@ cHardware4Stack::cHardware4Stack(cOrganism * in_organism, cInstSet * in_inst_set
   /**/
   inst_remainder = 0;
  
-  for(int x=1; x<=cConfig::GetMaxCPUThreads(); x++)
+  for(int x=1; x <= m_world->GetConfig().MAX_CPU_THREADS.Get(); x++)
     {
-      slice_array[x] = (x-1)*cConfig::GetThreadSlicingMethod()+1;
+      slice_array[x] = (x-1) * m_world->GetConfig().THREAD_SLICING_METHOD.Get() + 1;
     }
 
   memory_array[0] = in_organism->GetGenome();  // Initialize memory...
@@ -252,7 +251,7 @@ cHardware4Stack::cHardware4Stack(cOrganism * in_organism, cInstSet * in_inst_set
 
 
 cHardware4Stack::cHardware4Stack(const cHardware4Stack &hardware_4stack)
-: cHardwareBase(hardware_4stack.organism, hardware_4stack.inst_set)
+: cHardwareBase(hardware_4stack.m_world, hardware_4stack.organism, hardware_4stack.inst_set)
 , m_functions(hardware_4stack.m_functions)
 , memory_array(hardware_4stack.memory_array)
 , threads(hardware_4stack.threads)
@@ -271,16 +270,6 @@ cHardware4Stack::cHardware4Stack(const cHardware4Stack &hardware_4stack)
   for(int i = 0; i < sizeof(slice_array)/sizeof(float); i++){
     slice_array[i] = hardware_4stack.slice_array[i];
   }
-}
-
-
-void cHardware4Stack::Recycle(cOrganism * new_organism, cInstSet * in_inst_set)
-{
-  cHardwareBase::Recycle(new_organism, in_inst_set);
-  memory_array[0] = new_organism->GetGenome();
-  memory_array[0].Resize(GetMemory(0).GetSize()+1);
-  memory_array[0][memory_array[0].GetSize()-1] = cInstruction();
-  Reset();
 }
 
 
@@ -336,19 +325,6 @@ void cHardware4Stack::SingleProcess()
 
   cPhenotype & phenotype = organism->GetPhenotype();
   phenotype.IncTimeUsed();
-  //if(organism->GetCellID()==46 && IP().GetMemSpace()==2)
-  // int x=0;
-
-  //if (GetNumThreads() > 1) thread_time_used++;
-  //assert((GetHead(nHardware::HEAD_WRITE).GetPosition() == Stack(nHardware4Stack::STACK_BX).Top() ||
-  // Stack(nHardware4Stack::STACK_BX).Top()==GetMemory(IP().GetMemSpace()).GetSize()-1 || 
-  // GetHead(nHardware::HEAD_WRITE).GetPosition() == Stack(nHardware4Stack::STACK_BX).Top()+1) &&
-  // (GetHead(nHardware::HEAD_WRITE).GetMemSpace() == IP().GetMemSpace() ||
-  //  GetHead(nHardware::HEAD_WRITE).GetMemSpace() == IP().GetMemSpace()+1));
-  // If we have threads turned on and we executed each thread in a single
-  // timestep, adjust the number of instructions executed accordingly.
-  //const int num_inst_exec = (cConfig::GetThreadSlicingMethod() == 1) ?
-  //  GetNumThreads() : 1;
 
   const int num_inst_exec = int(slice_array[GetNumThreads()]+ inst_remainder);
   inst_remainder = slice_array[GetNumThreads()] + inst_remainder - num_inst_exec;
@@ -1211,7 +1187,7 @@ void cHardware4Stack::ReadLabel(int max_size)
     GetLabel().AddNop(inst_set->GetNopMod(inst_ptr->GetInst()));
 
     // If this is the first line of the template, mark it executed.
-    if (GetLabel().GetSize() <=	cConfig::GetMaxLabelExeSize()) {
+    if (GetLabel().GetSize() <=	m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get()) {
       inst_ptr->FlagExecuted() = true;
     }
   }
@@ -1221,7 +1197,7 @@ void cHardware4Stack::ReadLabel(int max_size)
 bool cHardware4Stack::ForkThread()
 {
   const int num_threads = GetNumThreads();
-  if (num_threads == cConfig::GetMaxCPUThreads()) return false;
+  if (num_threads == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
 
   // Make room for the new thread.
   threads.Resize(num_threads + 1);
@@ -1371,7 +1347,7 @@ bool cHardware4Stack::Divide_CheckViable(const int parent_size,
   // Make sure that neither parent nor child will be below the minimum size.
 
   const int genome_size = organism->GetGenome().GetSize();
-  const double size_range = cConfig::GetChildSizeRange();
+  const double size_range = m_world->GetConfig().CHILD_SIZE_RANGE.Get();
   const int min_size = Max(MIN_CREATURE_SIZE, (int) (genome_size/size_range));
   const int max_size = Min(MAX_CREATURE_SIZE, (int) (genome_size*size_range));
   
@@ -1389,7 +1365,7 @@ bool cHardware4Stack::Divide_CheckViable(const int parent_size,
     if (GetMemory(0).FlagExecuted(i)) executed_size++;
   }
 
-  const int min_exe_lines = (int) (parent_size * cConfig::GetMinExeLines());
+  const int min_exe_lines = (int) (parent_size * m_world->GetConfig().MIN_EXE_LINES.Get());
   if (executed_size < min_exe_lines) {
     Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
 	  cStringUtil::Stringf("Too few executed lines (%d < %d)",
@@ -1405,7 +1381,7 @@ bool cHardware4Stack::Divide_CheckViable(const int parent_size,
     if (GetMemory(mem_space).FlagCopied(i)) copied_size++;
    }
 
-  const int min_copied =  (int) (child_size * cConfig::GetMinCopiedLines());
+  const int min_copied =  (int) (child_size * m_world->GetConfig().MIN_COPIED_LINES.Get());
   if (copied_size < min_copied) {
     Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
 	  cStringUtil::Stringf("Too few copied commands (%d < %d)",
@@ -1749,16 +1725,16 @@ bool cHardware4Stack::Divide_Main(int mem_space_used, double mut_multiplier)
   // 1) DIVIDE_METHOD_OFFSPRING - Create a child, leave parent state untouched.
   // 2) DIVIDE_METHOD_SPLIT - Create a child, completely reset state of parent.
   // 3) DIVIDE_METHOD_BIRTH - Create a child, reset state of parent's current thread.
-  if(parent_alive && !(cConfig::GetDivideMethod() == DIVIDE_METHOD_OFFSPRING))
+  if(parent_alive && !(m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_OFFSPRING))
     {
       
-      if(cConfig::GetDivideMethod() == DIVIDE_METHOD_SPLIT)
+      if(m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT)
 	{
 	  //this will wipe out all parasites on a divide.
 	  Reset();
 	  
 	}
-      else if(cConfig::GetDivideMethod() == DIVIDE_METHOD_BIRTH)
+      else if(m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_BIRTH)
 	{
 	  //if this isn't the only thread, get rid of it!
 	  // ***this can cause a concurrency problem if we have 
@@ -1898,14 +1874,6 @@ bool cHardware4Stack::Inst_SetMemory()   // Allocate maximal more
   
   GetHead(nHardware::HEAD_FLOW).Set(0, mem_space_used);
   return true;
-  
-  //const int cur_size = GetMemory(0).GetSize();
-  //const int alloc_size = Min((int) (cConfig::GetChildSizeRange() * cur_size),
-  //			     MAX_CREATURE_SIZE - cur_size);
-  //if( Allocate_Main(alloc_size) ) {
-  //  Stack(nHardware4Stack::STACK_AX).Push(cur_size);
-  //  return true;
-  //} else return false;
 }
 
 //14

@@ -12,9 +12,6 @@
 #ifndef ANALYZE_HH
 #include "cAnalyze.h"
 #endif
-#ifndef CONFIG_HH
-#include "cConfig.h"
-#endif
 
 #ifndef ENVIRONMENT_HH
 #include "cEnvironment.h"
@@ -40,7 +37,8 @@ cAvidaDriver_Analyze::~cAvidaDriver_Analyze()
 void cAvidaDriver_Analyze::Run()
 {
   cout << "In analyze mode!!" << endl;
-  cAnalyze analyze(cConfig::GetAnalyzeFilename(), d_environment);
+  // DDD - get analyze config file from cAvidaConfig
+  cAnalyze analyze("analyze.cfg", d_environment);
   if (interactive == true) {
     analyze.RunInteractive();
   }

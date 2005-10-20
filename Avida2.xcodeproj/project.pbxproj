@@ -32,7 +32,6 @@
 		7013846409028B3E0087ED2E /* cAvidaConfig.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7013846009028B3E0087ED2E /* cAvidaConfig.cc */; };
 		7013852D0902E36B0087ED2E /* avida.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7013852C0902E36B0087ED2E /* avida.cfg */; };
 		7013852E0902E36B0087ED2E /* avida.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7013852C0902E36B0087ED2E /* avida.cfg */; };
-		702D4EFE08DA5341007BA469 /* cAvidaDriver_Analyze.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EF908DA5341007BA469 /* cAvidaDriver_Analyze.cc */; };
 		702D4EFF08DA5341007BA469 /* cAvidaDriver_Base.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EFA08DA5341007BA469 /* cAvidaDriver_Base.cc */; };
 		702D4F0008DA5341007BA469 /* cAvidaDriver_Population.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EFB08DA5341007BA469 /* cAvidaDriver_Population.cc */; };
 		702D4F0108DA5341007BA469 /* cEnvironment.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EFC08DA5341007BA469 /* cEnvironment.cc */; };
@@ -42,18 +41,15 @@
 		702D4F0508DA5341007BA469 /* cAvidaDriver_Population.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EFB08DA5341007BA469 /* cAvidaDriver_Population.cc */; };
 		702D4F0608DA5341007BA469 /* cEnvironment.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EFC08DA5341007BA469 /* cEnvironment.cc */; };
 		702D4F0708DA5341007BA469 /* cPopulationInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EFD08DA5341007BA469 /* cPopulationInterface.cc */; };
-		702D4F4208DA61FE007BA469 /* cAnalyze.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4F3C08DA61FE007BA469 /* cAnalyze.cc */; };
-		702D4F4308DA61FE007BA469 /* cAnalyzeGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4F3D08DA61FE007BA469 /* cAnalyzeGenotype.cc */; };
-		702D4F4408DA61FE007BA469 /* cAnalyzeUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4F3E08DA61FE007BA469 /* cAnalyzeUtil.cc */; };
 		702D4F4508DA61FE007BA469 /* cBirthChamber.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4F3F08DA61FE007BA469 /* cBirthChamber.cc */; };
-		702D4F4608DA61FE007BA469 /* cCallbackUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4F4008DA61FE007BA469 /* cCallbackUtil.cc */; };
-		702D4F4708DA61FE007BA469 /* cConfig.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4F4108DA61FE007BA469 /* cConfig.cc */; };
 		702D4F4808DA61FE007BA469 /* cAnalyze.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4F3C08DA61FE007BA469 /* cAnalyze.cc */; };
 		702D4F4908DA61FE007BA469 /* cAnalyzeGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4F3D08DA61FE007BA469 /* cAnalyzeGenotype.cc */; };
 		702D4F4A08DA61FE007BA469 /* cAnalyzeUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4F3E08DA61FE007BA469 /* cAnalyzeUtil.cc */; };
 		702D4F4B08DA61FE007BA469 /* cBirthChamber.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4F3F08DA61FE007BA469 /* cBirthChamber.cc */; };
-		702D4F4C08DA61FE007BA469 /* cCallbackUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4F4008DA61FE007BA469 /* cCallbackUtil.cc */; };
-		702D4F4D08DA61FE007BA469 /* cConfig.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4F4108DA61FE007BA469 /* cConfig.cc */; };
+		7040CF1C0906A52E00AA820F /* cEventManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7040CF1A0906A52E00AA820F /* cEventManager.cc */; };
+		7040CF1E0906A52E00AA820F /* cEventManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7040CF1A0906A52E00AA820F /* cEventManager.cc */; };
+		7040CF1F0906A52E00AA820F /* cEventManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7040CF1B0906A52E00AA820F /* cEventManager.h */; };
+		7040D22509071EE000AA820F /* cAnalyzeUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4F3E08DA61FE007BA469 /* cAnalyzeUtil.cc */; };
 		70486BA00826722F009328F0 /* analyze.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3114B0762539E008F7A48 /* analyze.cfg */; };
 		70486BA10826722F009328F0 /* environment.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311800762539F008F7A48 /* environment.cfg */; };
 		70486BA20826722F009328F0 /* events.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311810762539F008F7A48 /* events.cfg */; };
@@ -62,20 +58,6 @@
 		70486BA50826722F009328F0 /* inst_set.4stack in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311840762539F008F7A48 /* inst_set.4stack */; };
 		70486BA60826722F009328F0 /* inst_set.default in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311850762539F008F7A48 /* inst_set.default */; };
 		70486BA70826722F009328F0 /* organism.default in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311890762539F008F7A48 /* organism.default */; };
-		70658C35085DE5D800486BED /* ansi.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC315F6076253A5008F7A48 /* ansi.cc */; };
-		70658C36085DE5D900486BED /* bar_screen.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC315F8076253A5008F7A48 /* bar_screen.cc */; };
-		70658C38085DE5DC00486BED /* environment_screen.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC315FB076253A5008F7A48 /* environment_screen.cc */; };
-		70658C39085DE5DD00486BED /* hist_screen.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC315FD076253A5008F7A48 /* hist_screen.cc */; };
-		70658C3A085DE5DF00486BED /* map_screen.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC31601076253A5008F7A48 /* map_screen.cc */; };
-		70658C3B085DE5E000486BED /* menu.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC31603076253A5008F7A48 /* menu.cc */; };
-		70658C3C085DE5E100486BED /* ncurses.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC31605076253A5008F7A48 /* ncurses.cc */; };
-		70658C3D085DE5E200486BED /* options_screen.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC31607076253A5008F7A48 /* options_screen.cc */; };
-		70658C3E085DE5E400486BED /* stats_screen.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC31609076253A5008F7A48 /* stats_screen.cc */; };
-		70658C3F085DE5E500486BED /* symbol_util.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3160B076253A5008F7A48 /* symbol_util.cc */; };
-		70658C40085DE5E700486BED /* text_screen.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3160D076253A5008F7A48 /* text_screen.cc */; };
-		70658C41085DE5E900486BED /* view.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC31610076253A5008F7A48 /* view.cc */; };
-		70658C42085DE5EA00486BED /* viewer.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC31612076253A5008F7A48 /* viewer.cc */; };
-		70658C43085DE5ED00486BED /* zoom_screen.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC31615076253A5008F7A48 /* zoom_screen.cc */; };
 		70658C44085DE5FF00486BED /* primitive.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC311090762539E008F7A48 /* primitive.cc */; };
 		70658C5A085DF67D00486BED /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
 		706D32E90854A39800D7DC8F /* dummy in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311950762539F008F7A48 /* dummy */; };
@@ -91,7 +73,6 @@
 		70B0865D08F4974300FC65FE /* cMutation.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865508F4974300FC65FE /* cMutation.cc */; };
 		70B0865E08F4974300FC65FE /* cMutationLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865608F4974300FC65FE /* cMutationLib.cc */; };
 		70B0865F08F4974300FC65FE /* cMutationRates.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865708F4974300FC65FE /* cMutationRates.cc */; };
-		70B0866008F4974300FC65FE /* cMxCodeArray.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865808F4974300FC65FE /* cMxCodeArray.cc */; };
 		70B0866108F4974300FC65FE /* cLandscape.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865108F4974300FC65FE /* cLandscape.cc */; };
 		70B0866208F4974300FC65FE /* cLineage.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865208F4974300FC65FE /* cLineage.cc */; };
 		70B0866308F4974300FC65FE /* cLineageControl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865308F4974300FC65FE /* cLineageControl.cc */; };
@@ -216,16 +197,13 @@
 		70C1EFA808C39F2100F50912 /* cHardwareBase.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EFA308C39F2100F50912 /* cHardwareBase.cc */; };
 		70C1EFA908C39F2100F50912 /* cHardwareCPU_Thread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EFA408C39F2100F50912 /* cHardwareCPU_Thread.cc */; };
 		70C1EFAA08C39F2100F50912 /* cHardwareCPU.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EFA508C39F2100F50912 /* cHardwareCPU.cc */; };
-		70C1EFAB08C39F2100F50912 /* cHardwareFactory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EFA608C39F2100F50912 /* cHardwareFactory.cc */; };
 		70C1EFAC08C39F2100F50912 /* cHardware4Stack_Thread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EFA208C39F2100F50912 /* cHardware4Stack_Thread.cc */; };
 		70C1EFAD08C39F2100F50912 /* cHardwareBase.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EFA308C39F2100F50912 /* cHardwareBase.cc */; };
 		70C1EFAE08C39F2100F50912 /* cHardwareCPU_Thread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EFA408C39F2100F50912 /* cHardwareCPU_Thread.cc */; };
 		70C1EFAF08C39F2100F50912 /* cHardwareCPU.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EFA508C39F2100F50912 /* cHardwareCPU.cc */; };
-		70C1EFB008C39F2100F50912 /* cHardwareFactory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EFA608C39F2100F50912 /* cHardwareFactory.cc */; };
 		70C1F02A08C3C71300F50912 /* cHardwareSMT_Thread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02208C3C71300F50912 /* cHardwareSMT_Thread.cc */; };
 		70C1F02B08C3C71300F50912 /* cHardwareSMT.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02308C3C71300F50912 /* cHardwareSMT.cc */; };
 		70C1F02C08C3C71300F50912 /* cHardwareStatusPrinter.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02408C3C71300F50912 /* cHardwareStatusPrinter.cc */; };
-		70C1F02D08C3C71300F50912 /* cHardwareUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02508C3C71300F50912 /* cHardwareUtil.cc */; };
 		70C1F02E08C3C71300F50912 /* cHeadCPU.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02608C3C71300F50912 /* cHeadCPU.cc */; };
 		70C1F02F08C3C71300F50912 /* cHeadMultiMem.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02708C3C71300F50912 /* cHeadMultiMem.cc */; };
 		70C1F03008C3C71300F50912 /* cTestCPU.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02808C3C71300F50912 /* cTestCPU.cc */; };
@@ -233,26 +211,23 @@
 		70C1F03208C3C71300F50912 /* cHardwareSMT_Thread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02208C3C71300F50912 /* cHardwareSMT_Thread.cc */; };
 		70C1F03308C3C71300F50912 /* cHardwareSMT.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02308C3C71300F50912 /* cHardwareSMT.cc */; };
 		70C1F03408C3C71300F50912 /* cHardwareStatusPrinter.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02408C3C71300F50912 /* cHardwareStatusPrinter.cc */; };
-		70C1F03508C3C71300F50912 /* cHardwareUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02508C3C71300F50912 /* cHardwareUtil.cc */; };
 		70C1F03608C3C71300F50912 /* cHeadCPU.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02608C3C71300F50912 /* cHeadCPU.cc */; };
 		70C1F03708C3C71300F50912 /* cHeadMultiMem.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02708C3C71300F50912 /* cHeadMultiMem.cc */; };
 		70C1F03808C3C71300F50912 /* cTestCPU.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02808C3C71300F50912 /* cTestCPU.cc */; };
 		70C1F03908C3C71300F50912 /* cTestUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02908C3C71300F50912 /* cTestUtil.cc */; };
-		70C1F19308C6A11100F50912 /* cEventFactoryManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F18E08C6A11100F50912 /* cEventFactoryManager.cc */; };
 		70C1F19408C6A11100F50912 /* cEventList.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F18F08C6A11100F50912 /* cEventList.cc */; };
 		70C1F19508C6A11100F50912 /* cEventListIterator.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F19008C6A11100F50912 /* cEventListIterator.cc */; };
 		70C1F19608C6A11100F50912 /* cEventTriggers.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F19108C6A11100F50912 /* cEventTriggers.cc */; };
-		70C1F19708C6A11100F50912 /* cPopulationEventFactory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F19208C6A11100F50912 /* cPopulationEventFactory.cc */; };
-		70C1F19808C6A11100F50912 /* cEventFactoryManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F18E08C6A11100F50912 /* cEventFactoryManager.cc */; };
 		70C1F19908C6A11100F50912 /* cEventList.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F18F08C6A11100F50912 /* cEventList.cc */; };
 		70C1F19A08C6A11100F50912 /* cEventListIterator.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F19008C6A11100F50912 /* cEventListIterator.cc */; };
 		70C1F19B08C6A11100F50912 /* cEventTriggers.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F19108C6A11100F50912 /* cEventTriggers.cc */; };
-		70C1F19C08C6A11100F50912 /* cPopulationEventFactory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F19208C6A11100F50912 /* cPopulationEventFactory.cc */; };
-		70C5BC6409059A970028A785 /* cWorld.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70C5BC6209059A970028A785 /* cWorld.h */; };
 		70C5BC6509059A970028A785 /* cWorld.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C5BC6309059A970028A785 /* cWorld.cc */; };
 		70C5BC6609059A970028A785 /* cWorld.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70C5BC6209059A970028A785 /* cWorld.h */; };
 		70C5BC6709059A970028A785 /* cWorld.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C5BC6309059A970028A785 /* cWorld.cc */; };
-		70CA6EC208DB7F8200068AC2 /* cFitnessMatrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB208DB7F8200068AC2 /* cFitnessMatrix.cc */; };
+		70C5BD6B0905CE5F0028A785 /* cHardwareManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C5BD690905CE5F0028A785 /* cHardwareManager.cc */; };
+		70C5BD6C0905CE5F0028A785 /* cHardwareManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70C5BD6A0905CE5F0028A785 /* cHardwareManager.h */; };
+		70C5BD6D0905CE5F0028A785 /* cHardwareManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C5BD690905CE5F0028A785 /* cHardwareManager.cc */; };
+		70C5BD6E0905CE5F0028A785 /* cHardwareManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70C5BD6A0905CE5F0028A785 /* cHardwareManager.h */; };
 		70CA6EC308DB7F8200068AC2 /* cGenebank.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB308DB7F8200068AC2 /* cGenebank.cc */; };
 		70CA6EC408DB7F8200068AC2 /* cGenome.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB408DB7F8200068AC2 /* cGenome.cc */; };
 		70CA6EC508DB7F8200068AC2 /* cGenomeUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB508DB7F8200068AC2 /* cGenomeUtil.cc */; };
@@ -343,6 +318,8 @@
 				7013846109028B3E0087ED2E /* cAvidaConfig.h in CopyFiles */,
 				7013852E0902E36B0087ED2E /* avida.cfg in CopyFiles */,
 				70C5BC6609059A970028A785 /* cWorld.h in CopyFiles */,
+				70C5BD6E0905CE5F0028A785 /* cHardwareManager.h in CopyFiles */,
+				7040CF1F0906A52E00AA820F /* cEventManager.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -370,7 +347,7 @@
 				701384350900A45B0087ED2E /* organism.smtx in CopyFiles */,
 				7013846309028B3E0087ED2E /* cAvidaConfig.h in CopyFiles */,
 				7013852D0902E36B0087ED2E /* avida.cfg in CopyFiles */,
-				70C5BC6409059A970028A785 /* cWorld.h in CopyFiles */,
+				70C5BD6C0905CE5F0028A785 /* cHardwareManager.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -405,22 +382,19 @@
 		702D4F3708DA61E2007BA469 /* cAnalyzeUtil.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAnalyzeUtil.h; sourceTree = "<group>"; };
 		702D4F3808DA61E2007BA469 /* cAvidaTriggers.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAvidaTriggers.h; sourceTree = "<group>"; };
 		702D4F3908DA61E2007BA469 /* cBirthChamber.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cBirthChamber.h; sourceTree = "<group>"; };
-		702D4F3A08DA61E2007BA469 /* cCallbackUtil.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCallbackUtil.h; sourceTree = "<group>"; };
-		702D4F3B08DA61E2007BA469 /* cConfig.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cConfig.h; sourceTree = "<group>"; };
 		702D4F3C08DA61FE007BA469 /* cAnalyze.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyze.cc; sourceTree = "<group>"; };
 		702D4F3D08DA61FE007BA469 /* cAnalyzeGenotype.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeGenotype.cc; sourceTree = "<group>"; };
 		702D4F3E08DA61FE007BA469 /* cAnalyzeUtil.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeUtil.cc; sourceTree = "<group>"; };
 		702D4F3F08DA61FE007BA469 /* cBirthChamber.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cBirthChamber.cc; sourceTree = "<group>"; };
-		702D4F4008DA61FE007BA469 /* cCallbackUtil.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCallbackUtil.cc; sourceTree = "<group>"; };
-		702D4F4108DA61FE007BA469 /* cConfig.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cConfig.cc; sourceTree = "<group>"; };
 		703F684207B437B800C1CA76 /* status.xml */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = status.xml; sourceTree = "<group>"; };
+		7040CF1A0906A52E00AA820F /* cEventManager.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cEventManager.cc; sourceTree = "<group>"; };
+		7040CF1B0906A52E00AA820F /* cEventManager.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cEventManager.h; sourceTree = "<group>"; };
 		70658C59085DF67D00486BED /* libncurses.5.4.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libncurses.5.4.dylib; path = /usr/lib/libncurses.5.4.dylib; sourceTree = "<absolute>"; };
 		706D30CC0852328F00D7DC8F /* tInstLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tInstLib.h; sourceTree = "<group>"; };
 		706D330E0854A7B900D7DC8F /* organism.smt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = organism.smt; sourceTree = "<group>"; };
 		706D33100854A7D700D7DC8F /* genesis.smt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = genesis.smt; sourceTree = "<group>"; };
 		706D33270854A90D00D7DC8F /* inst_set.smt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = inst_set.smt; sourceTree = "<group>"; };
 		707A687408E3750300576968 /* cHardwareTracer_SMT.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareTracer_SMT.h; sourceTree = "<group>"; };
-		707A68B808E37D5900576968 /* hardware_tracer_smt.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = hardware_tracer_smt.pyste; sourceTree = "<group>"; };
 		70B085D108F48C9400FC65FE /* nSpecies.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nSpecies.h; sourceTree = "<group>"; };
 		70B0861508F48E8900FC65FE /* nGenotype.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = nGenotype.h; sourceTree = "<group>"; };
 		70B0861608F48E8900FC65FE /* nInjectGenotype.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = nInjectGenotype.h; sourceTree = "<group>"; };
@@ -599,12 +573,10 @@
 		70C1EF9E08C39F0E00F50912 /* cHardwareBase.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareBase.h; sourceTree = "<group>"; };
 		70C1EF9F08C39F0E00F50912 /* cHardwareCPU_Thread.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareCPU_Thread.h; sourceTree = "<group>"; };
 		70C1EFA008C39F0E00F50912 /* cHardwareCPU.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareCPU.h; sourceTree = "<group>"; };
-		70C1EFA108C39F0E00F50912 /* cHardwareFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareFactory.h; sourceTree = "<group>"; };
 		70C1EFA208C39F2100F50912 /* cHardware4Stack_Thread.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardware4Stack_Thread.cc; sourceTree = "<group>"; };
 		70C1EFA308C39F2100F50912 /* cHardwareBase.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareBase.cc; sourceTree = "<group>"; };
 		70C1EFA408C39F2100F50912 /* cHardwareCPU_Thread.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareCPU_Thread.cc; sourceTree = "<group>"; };
 		70C1EFA508C39F2100F50912 /* cHardwareCPU.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareCPU.cc; sourceTree = "<group>"; };
-		70C1EFA608C39F2100F50912 /* cHardwareFactory.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareFactory.cc; sourceTree = "<group>"; };
 		70C1F01308C3C6FC00F50912 /* cHardwareSMT_Thread.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareSMT_Thread.h; sourceTree = "<group>"; };
 		70C1F01408C3C6FC00F50912 /* cHardwareSMT.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareSMT.h; sourceTree = "<group>"; };
 		70C1F01508C3C6FC00F50912 /* cHardwareStatusPrinter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareStatusPrinter.h; sourceTree = "<group>"; };
@@ -612,7 +584,6 @@
 		70C1F01708C3C6FC00F50912 /* cHardwareTracer_CPU.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareTracer_CPU.h; sourceTree = "<group>"; };
 		70C1F01808C3C6FC00F50912 /* cHardwareTracer_TestCPU.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareTracer_TestCPU.h; sourceTree = "<group>"; };
 		70C1F01908C3C6FC00F50912 /* cHardwareTracer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareTracer.h; sourceTree = "<group>"; };
-		70C1F01A08C3C6FC00F50912 /* cHardwareUtil.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareUtil.h; sourceTree = "<group>"; };
 		70C1F01B08C3C6FC00F50912 /* cHeadCPU.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHeadCPU.h; sourceTree = "<group>"; };
 		70C1F01C08C3C6FC00F50912 /* cHeadMultiMem.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHeadMultiMem.h; sourceTree = "<group>"; };
 		70C1F01D08C3C6FC00F50912 /* cInstLibCPU.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInstLibCPU.h; sourceTree = "<group>"; };
@@ -623,35 +594,25 @@
 		70C1F02208C3C71300F50912 /* cHardwareSMT_Thread.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareSMT_Thread.cc; sourceTree = "<group>"; };
 		70C1F02308C3C71300F50912 /* cHardwareSMT.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareSMT.cc; sourceTree = "<group>"; };
 		70C1F02408C3C71300F50912 /* cHardwareStatusPrinter.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareStatusPrinter.cc; sourceTree = "<group>"; };
-		70C1F02508C3C71300F50912 /* cHardwareUtil.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareUtil.cc; sourceTree = "<group>"; };
 		70C1F02608C3C71300F50912 /* cHeadCPU.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHeadCPU.cc; sourceTree = "<group>"; };
 		70C1F02708C3C71300F50912 /* cHeadMultiMem.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHeadMultiMem.cc; sourceTree = "<group>"; };
 		70C1F02808C3C71300F50912 /* cTestCPU.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTestCPU.cc; sourceTree = "<group>"; };
 		70C1F02908C3C71300F50912 /* cTestUtil.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTestUtil.cc; sourceTree = "<group>"; };
 		70C1F06108C3CDEA00F50912 /* nHardware4Stack.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = nHardware4Stack.h; sourceTree = "<group>"; };
 		70C1F0A808C3FF1800F50912 /* nHardware.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nHardware.h; sourceTree = "<group>"; };
-		70C1F0C608C4012700F50912 /* nHardware-fixups.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "nHardware-fixups.h"; sourceTree = "<group>"; };
-		70C1F0C708C4012700F50912 /* nHardware-fixups.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "nHardware-fixups.cc"; sourceTree = "<group>"; };
 		70C1F0FC08C40B1B00F50912 /* nHardwareCPU.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = nHardwareCPU.h; sourceTree = "<group>"; };
-		70C1F10008C40BEF00F50912 /* nHardware.pyste */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = nHardware.pyste; sourceTree = "<group>"; };
-		70C1F10F08C40D2D00F50912 /* nHardwareCPU-fixups.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = "nHardwareCPU-fixups.cc"; sourceTree = "<group>"; };
-		70C1F11008C40D2D00F50912 /* nHardwareCPU-fixups.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = "nHardwareCPU-fixups.h"; sourceTree = "<group>"; };
-		70C1F11108C40D6100F50912 /* nHardwareCPU.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = nHardwareCPU.pyste; sourceTree = "<group>"; };
 		70C1F18608C6A0FA00F50912 /* cEvent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cEvent.h; sourceTree = "<group>"; };
-		70C1F18708C6A0FA00F50912 /* cEventFactoryManager.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cEventFactoryManager.h; sourceTree = "<group>"; };
 		70C1F18808C6A0FA00F50912 /* cEventList.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cEventList.h; sourceTree = "<group>"; };
 		70C1F18908C6A0FA00F50912 /* cEventListEntry.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cEventListEntry.h; sourceTree = "<group>"; };
 		70C1F18A08C6A0FA00F50912 /* cEventListIterator.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cEventListIterator.h; sourceTree = "<group>"; };
 		70C1F18B08C6A0FA00F50912 /* cEventTriggers.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cEventTriggers.h; sourceTree = "<group>"; };
-		70C1F18C08C6A0FA00F50912 /* cPopulationEvent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cPopulationEvent.h; sourceTree = "<group>"; };
-		70C1F18D08C6A0FA00F50912 /* cPopulationEventFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cPopulationEventFactory.h; sourceTree = "<group>"; };
-		70C1F18E08C6A11100F50912 /* cEventFactoryManager.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cEventFactoryManager.cc; sourceTree = "<group>"; };
 		70C1F18F08C6A11100F50912 /* cEventList.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cEventList.cc; sourceTree = "<group>"; };
 		70C1F19008C6A11100F50912 /* cEventListIterator.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cEventListIterator.cc; sourceTree = "<group>"; };
 		70C1F19108C6A11100F50912 /* cEventTriggers.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cEventTriggers.cc; sourceTree = "<group>"; };
-		70C1F19208C6A11100F50912 /* cPopulationEventFactory.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cPopulationEventFactory.cc; sourceTree = "<group>"; };
 		70C5BC6209059A970028A785 /* cWorld.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cWorld.h; sourceTree = "<group>"; };
 		70C5BC6309059A970028A785 /* cWorld.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cWorld.cc; sourceTree = "<group>"; };
+		70C5BD690905CE5F0028A785 /* cHardwareManager.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareManager.cc; sourceTree = "<group>"; };
+		70C5BD6A0905CE5F0028A785 /* cHardwareManager.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareManager.h; sourceTree = "<group>"; };
 		70CA6EB208DB7F8200068AC2 /* cFitnessMatrix.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cFitnessMatrix.cc; sourceTree = "<group>"; };
 		70CA6EB308DB7F8200068AC2 /* cGenebank.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cGenebank.cc; sourceTree = "<group>"; };
 		70CA6EB408DB7F8200068AC2 /* cGenome.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cGenome.cc; sourceTree = "<group>"; };
@@ -687,413 +648,13 @@
 		70CA6EF308DB7F9E00068AC2 /* cInstSet.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInstSet.h; sourceTree = "<group>"; };
 		70CA6EF408DB7F9E00068AC2 /* cInstUtil.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInstUtil.h; sourceTree = "<group>"; };
 		70CA6EF508DB806200068AC2 /* cGenotypeBatch.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenotypeBatch.h; sourceTree = "<group>"; };
-		70CD471B089692200070D2DF /* AvidaEd-osx.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = "AvidaEd-osx.py"; sourceTree = "<group>"; };
-		70CD471D089692200070D2DF /* __init__.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = __init__.py; sourceTree = "<group>"; };
-		70CD471E089692200070D2DF /* _Custom_Widgets.cw */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = _Custom_Widgets.cw; sourceTree = "<group>"; };
-		70CD471F089692200070D2DF /* Analyze.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Analyze.png; sourceTree = "<group>"; };
-		70CD4720089692200070D2DF /* Analyze16.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Analyze16.png; sourceTree = "<group>"; };
-		70CD4721089692200070D2DF /* Analyze24.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Analyze24.png; sourceTree = "<group>"; };
-		70CD4722089692200070D2DF /* Analyze32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Analyze32.png; sourceTree = "<group>"; };
-		70CD4723089692200070D2DF /* Analyze48.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Analyze48.png; sourceTree = "<group>"; };
-		70CD4724089692200070D2DF /* Analyze64.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Analyze64.png; sourceTree = "<group>"; };
-		70CD4725089692200070D2DF /* Avida_ED_startup.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = Avida_ED_startup.py; sourceTree = "<group>"; };
-		70CD4726089692200070D2DF /* Avida_ED_startup_utils.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = Avida_ED_startup_utils.py; sourceTree = "<group>"; };
-		70CD472A089692200070D2DF /* avidalogo.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = avidalogo.jpg; sourceTree = "<group>"; };
-		70CD472B089692200070D2DF /* avidalogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = avidalogo.png; sourceTree = "<group>"; };
-		70CD472C089692200070D2DF /* checkuic.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = checkuic.py; sourceTree = "<group>"; };
-		70CD472D089692200070D2DF /* EmptyPetri128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = EmptyPetri128.png; sourceTree = "<group>"; };
-		70CD472E089692200070D2DF /* EmptyPetri16.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = EmptyPetri16.png; sourceTree = "<group>"; };
-		70CD472F089692200070D2DF /* EmptyPetri24.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = EmptyPetri24.png; sourceTree = "<group>"; };
-		70CD4730089692200070D2DF /* EmptyPetri32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = EmptyPetri32.png; sourceTree = "<group>"; };
-		70CD4731089692200070D2DF /* EmptyPetri48.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = EmptyPetri48.png; sourceTree = "<group>"; };
-		70CD4732089692200070D2DF /* EmptyPetri64.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = EmptyPetri64.png; sourceTree = "<group>"; };
-		70CD4733089692200070D2DF /* EmptyPetriDish.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = EmptyPetriDish.gif; sourceTree = "<group>"; };
-		70CD4734089692200070D2DF /* Flip15.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Flip15.png; sourceTree = "<group>"; };
-		70CD4735089692200070D2DF /* Flip28.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Flip28.png; sourceTree = "<group>"; };
-		70CD4736089692200070D2DF /* Flip30.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Flip30.png; sourceTree = "<group>"; };
-		70CD4737089692200070D2DF /* Flip40.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Flip40.png; sourceTree = "<group>"; };
-		70CD4738089692200070D2DF /* FullPetriDish.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = FullPetriDish.gif; sourceTree = "<group>"; };
-		70CD4739089692200070D2DF /* FunctionalTest_recursive_tests.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = FunctionalTest_recursive_tests.py; sourceTree = "<group>"; };
-		70CD473A089692200070D2DF /* next_active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = next_active.png; sourceTree = "<group>"; };
-		70CD473B089692200070D2DF /* next_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = next_blue.png; sourceTree = "<group>"; };
-		70CD473C089692200070D2DF /* Organism.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Organism.png; sourceTree = "<group>"; };
-		70CD473D089692200070D2DF /* Organism32.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Organism32.1.png; sourceTree = "<group>"; };
-		70CD473E089692200070D2DF /* Organism32.2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Organism32.2.png; sourceTree = "<group>"; };
-		70CD473F089692200070D2DF /* Organism32.3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Organism32.3.png; sourceTree = "<group>"; };
-		70CD4740089692200070D2DF /* Organism32.4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Organism32.4.png; sourceTree = "<group>"; };
-		70CD4741089692200070D2DF /* Organism32.5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Organism32.5.png; sourceTree = "<group>"; };
-		70CD4742089692200070D2DF /* Organism32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Organism32.png; sourceTree = "<group>"; };
-		70CD4743089692200070D2DF /* Organism65.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Organism65.png; sourceTree = "<group>"; };
-		70CD4744089692200070D2DF /* pause.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pause.png; sourceTree = "<group>"; };
-		70CD4745089692200070D2DF /* pause_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pause_blue.png; sourceTree = "<group>"; };
-		70CD4746089692200070D2DF /* Petri128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Petri128.png; sourceTree = "<group>"; };
-		70CD4747089692200070D2DF /* Petri16.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Petri16.png; sourceTree = "<group>"; };
-		70CD4748089692200070D2DF /* Petri24.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Petri24.png; sourceTree = "<group>"; };
-		70CD4749089692200070D2DF /* Petri32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Petri32.png; sourceTree = "<group>"; };
-		70CD474A089692200070D2DF /* Petri48.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Petri48.png; sourceTree = "<group>"; };
-		70CD474B089692200070D2DF /* Petri64.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Petri64.png; sourceTree = "<group>"; };
-		70CD474C089692200070D2DF /* play.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = play.png; sourceTree = "<group>"; };
-		70CD474D089692200070D2DF /* play_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = play_blue.png; sourceTree = "<group>"; };
-		70CD474E089692200070D2DF /* previous_active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = previous_active.png; sourceTree = "<group>"; };
-		70CD474F089692200070D2DF /* previous_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = previous_blue.png; sourceTree = "<group>"; };
-		70CD4750089692200070D2DF /* py_recursive_tests_support.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = py_recursive_tests_support.py; sourceTree = "<group>"; };
-		70CD4751089692200070D2DF /* py_test_utils.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = py_test_utils.py; sourceTree = "<group>"; };
-		70CD4752089692200070D2DF /* pyAnalyzeControlsCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyAnalyzeControlsCtrl.py; sourceTree = "<group>"; };
-		70CD4753089692200070D2DF /* pyAnalyzeControlsView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyAnalyzeControlsView.ui; sourceTree = "<group>"; };
-		70CD4754089692200070D2DF /* pyAvida.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyAvida.py; sourceTree = "<group>"; };
-		70CD4755089692200070D2DF /* pyAvidaCoreData.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyAvidaCoreData.py; sourceTree = "<group>"; };
-		70CD4756089692200070D2DF /* pyAvidaStatsInterface.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyAvidaStatsInterface.py; sourceTree = "<group>"; };
-		70CD4757089692200070D2DF /* pyAvidaThreadedDriver.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyAvidaThreadedDriver.py; sourceTree = "<group>"; };
-		70CD4758089692200070D2DF /* pyEduMainCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyEduMainCtrl.py; sourceTree = "<group>"; };
-		70CD4759089692200070D2DF /* pyEduMainMenuBarHdlr.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyEduMainMenuBarHdlr.py; sourceTree = "<group>"; };
-		70CD475A089692200070D2DF /* pyEduSessionMenuBarHdlr.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyEduSessionMenuBarHdlr.py; sourceTree = "<group>"; };
-		70CD475B089692200070D2DF /* pyEduWorkspaceCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyEduWorkspaceCtrl.py; sourceTree = "<group>"; };
-		70CD475C089692210070D2DF /* pyEduWorkspaceView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyEduWorkspaceView.ui; sourceTree = "<group>"; };
-		70CD475D089692210070D2DF /* pyFreezeDialogCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyFreezeDialogCtrl.py; sourceTree = "<group>"; };
-		70CD475E089692210070D2DF /* pyFreezeDialogView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyFreezeDialogView.ui; sourceTree = "<group>"; };
-		70CD475F089692210070D2DF /* pyFreezeOrganismCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyFreezeOrganismCtrl.py; sourceTree = "<group>"; };
-		70CD4760089692210070D2DF /* pyFreezeOrganismView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyFreezeOrganismView.ui; sourceTree = "<group>"; };
-		70CD4761089692210070D2DF /* pyFreezerCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyFreezerCtrl.py; sourceTree = "<group>"; };
-		70CD4762089692210070D2DF /* pyFreezerView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyFreezerView.ui; sourceTree = "<group>"; };
-		70CD4763089692210070D2DF /* pyGradientScaleCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyGradientScaleCtrl.py; sourceTree = "<group>"; };
-		70CD4764089692210070D2DF /* pyGradientScaleView.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyGradientScaleView.py; sourceTree = "<group>"; };
-		70CD4765089692210070D2DF /* pyGraphCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyGraphCtrl.py; sourceTree = "<group>"; };
-		70CD4766089692210070D2DF /* pyGraphView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyGraphView.ui; sourceTree = "<group>"; };
-		70CD4767089692210070D2DF /* pyHardwareCPUTrace.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyHardwareCPUTrace.py; sourceTree = "<group>"; };
-		70CD4768089692210070D2DF /* pyHardwareTracer.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyHardwareTracer.py; sourceTree = "<group>"; };
-		70CD4769089692210070D2DF /* pyInstructionSet.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyInstructionSet.py; sourceTree = "<group>"; };
-		70CD476A089692210070D2DF /* pyLiveControlsCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyLiveControlsCtrl.py; sourceTree = "<group>"; };
-		70CD476B089692210070D2DF /* pyLiveControlsView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyLiveControlsView.ui; sourceTree = "<group>"; };
-		70CD476C089692210070D2DF /* pyMainControllerFactory.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyMainControllerFactory.py; sourceTree = "<group>"; };
-		70CD476D089692210070D2DF /* pyMapProfile.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyMapProfile.py; sourceTree = "<group>"; };
-		70CD476E089692210070D2DF /* pyMdtr.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyMdtr.py; sourceTree = "<group>"; };
-		70CD476F089692210070D2DF /* pyNavBarCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyNavBarCtrl.py; sourceTree = "<group>"; };
-		70CD4770089692210070D2DF /* pyNavBarView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyNavBarView.ui; sourceTree = "<group>"; };
-		70CD4771089692210070D2DF /* pyOneAna_GraphCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyOneAna_GraphCtrl.py; sourceTree = "<group>"; };
-		70CD4772089692210070D2DF /* pyOneAna_GraphView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyOneAna_GraphView.ui; sourceTree = "<group>"; };
-		70CD4773089692210070D2DF /* pyOneAna_PetriDishCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyOneAna_PetriDishCtrl.py; sourceTree = "<group>"; };
-		70CD4774089692210070D2DF /* pyOneAna_PetriDishView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyOneAna_PetriDishView.ui; sourceTree = "<group>"; };
-		70CD4775089692210070D2DF /* pyOneAna_StatsCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyOneAna_StatsCtrl.py; sourceTree = "<group>"; };
-		70CD4776089692210070D2DF /* pyOneAna_StatsView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyOneAna_StatsView.ui; sourceTree = "<group>"; };
-		70CD4777089692210070D2DF /* pyOneAna_TimelineCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyOneAna_TimelineCtrl.py; sourceTree = "<group>"; };
-		70CD4778089692210070D2DF /* pyOneAna_TimelineView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyOneAna_TimelineView.ui; sourceTree = "<group>"; };
-		70CD4779089692210070D2DF /* pyOneAnalyzeCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyOneAnalyzeCtrl.py; sourceTree = "<group>"; };
-		70CD477A089692210070D2DF /* pyOneAnalyzeView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyOneAnalyzeView.ui; sourceTree = "<group>"; };
-		70CD477B089692210070D2DF /* pyOneOrg_ScopeCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyOneOrg_ScopeCtrl.py; sourceTree = "<group>"; };
-		70CD477C089692210070D2DF /* pyOneOrg_ScopeView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyOneOrg_ScopeView.ui; sourceTree = "<group>"; };
-		70CD477D089692210070D2DF /* pyOneOrganismCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyOneOrganismCtrl.py; sourceTree = "<group>"; };
-		70CD477E089692210070D2DF /* pyOneOrganismView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyOneOrganismView.ui; sourceTree = "<group>"; };
-		70CD477F089692210070D2DF /* pyOnePop_GraphCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyOnePop_GraphCtrl.py; sourceTree = "<group>"; };
-		70CD4780089692210070D2DF /* pyOnePop_GraphView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyOnePop_GraphView.ui; sourceTree = "<group>"; };
-		70CD4781089692210070D2DF /* pyOnePop_PetriDishCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyOnePop_PetriDishCtrl.py; sourceTree = "<group>"; };
-		70CD4782089692210070D2DF /* pyOnePop_PetriDishView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyOnePop_PetriDishView.ui; sourceTree = "<group>"; };
-		70CD4783089692210070D2DF /* pyOnePop_StatsCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyOnePop_StatsCtrl.py; sourceTree = "<group>"; };
-		70CD4784089692210070D2DF /* pyOnePop_StatsView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyOnePop_StatsView.ui; sourceTree = "<group>"; };
-		70CD4785089692210070D2DF /* pyOnePop_TimelineCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyOnePop_TimelineCtrl.py; sourceTree = "<group>"; };
-		70CD4786089692210070D2DF /* pyOnePop_TimelineView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyOnePop_TimelineView.ui; sourceTree = "<group>"; };
-		70CD4787089692210070D2DF /* pyOnePopulationCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyOnePopulationCtrl.py; sourceTree = "<group>"; };
-		70CD4788089692210070D2DF /* pyOnePopulationView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyOnePopulationView.ui; sourceTree = "<group>"; };
-		70CD4789089692210070D2DF /* pyOrganismScopeCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyOrganismScopeCtrl.py; sourceTree = "<group>"; };
-		70CD478A089692210070D2DF /* pyOrganismScopeView.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyOrganismScopeView.py; sourceTree = "<group>"; };
-		70CD478B089692210070D2DF /* pyOrgSquareCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyOrgSquareCtrl.py; sourceTree = "<group>"; };
-		70CD478C089692210070D2DF /* pyOrgSquareView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyOrgSquareView.ui; sourceTree = "<group>"; };
-		70CD478D089692210070D2DF /* pyPetriCanvasView.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyPetriCanvasView.py; sourceTree = "<group>"; };
-		70CD478E089692210070D2DF /* pyPetriConfigureCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyPetriConfigureCtrl.py; sourceTree = "<group>"; };
-		70CD478F089692210070D2DF /* pyPetriConfigureView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyPetriConfigureView.ui; sourceTree = "<group>"; };
-		70CD4790089692210070D2DF /* pyPetriDishCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyPetriDishCtrl.py; sourceTree = "<group>"; };
-		70CD4791089692210070D2DF /* pyPetriDishView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyPetriDishView.ui; sourceTree = "<group>"; };
-		70CD4792089692210070D2DF /* pyPopulationCellItem.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyPopulationCellItem.py; sourceTree = "<group>"; };
-		70CD4793089692210070D2DF /* pyQuitDialogCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyQuitDialogCtrl.py; sourceTree = "<group>"; };
-		70CD4794089692210070D2DF /* pyQuitDialogView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyQuitDialogView.ui; sourceTree = "<group>"; };
-		70CD4795089692210070D2DF /* pyReadFreezer.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyReadFreezer.py; sourceTree = "<group>"; };
-		70CD4796089692210070D2DF /* pySessionControllerFactory.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pySessionControllerFactory.py; sourceTree = "<group>"; };
-		70CD4797089692210070D2DF /* pySessionCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pySessionCtrl.py; sourceTree = "<group>"; };
-		70CD4798089692210070D2DF /* pySessionWorkThreadHdlr.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pySessionWorkThreadHdlr.py; sourceTree = "<group>"; };
-		70CD4799089692210070D2DF /* pyTemporaryReloads.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyTemporaryReloads.py; sourceTree = "<group>"; };
-		70CD479A089692210070D2DF /* pyTest.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyTest.ui; sourceTree = "<group>"; };
-		70CD479B089692210070D2DF /* pyTestCase.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyTestCase.py; sourceTree = "<group>"; };
-		70CD479C089692210070D2DF /* pyTimelineCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyTimelineCtrl.py; sourceTree = "<group>"; };
-		70CD479D089692210070D2DF /* pyTimelineView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyTimelineView.ui; sourceTree = "<group>"; };
-		70CD479E089692210070D2DF /* pyTwoAnalyzeCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyTwoAnalyzeCtrl.py; sourceTree = "<group>"; };
-		70CD479F089692210070D2DF /* pyTwoAnalyzeView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyTwoAnalyzeView.ui; sourceTree = "<group>"; };
-		70CD47A0089692210070D2DF /* pyTwoOrg_VivisectionCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyTwoOrg_VivisectionCtrl.py; sourceTree = "<group>"; };
-		70CD47A1089692210070D2DF /* pyTwoOrg_VivisectionView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyTwoOrg_VivisectionView.ui; sourceTree = "<group>"; };
-		70CD47A2089692210070D2DF /* pyTwoOrganismCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyTwoOrganismCtrl.py; sourceTree = "<group>"; };
-		70CD47A3089692210070D2DF /* pyTwoOrganismView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyTwoOrganismView.ui; sourceTree = "<group>"; };
-		70CD47A4089692210070D2DF /* pyTwoPop_GraphCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyTwoPop_GraphCtrl.py; sourceTree = "<group>"; };
-		70CD47A5089692210070D2DF /* pyTwoPop_GraphView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyTwoPop_GraphView.ui; sourceTree = "<group>"; };
-		70CD47A6089692210070D2DF /* pyTwoPop_PetriDishesCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyTwoPop_PetriDishesCtrl.py; sourceTree = "<group>"; };
-		70CD47A7089692210070D2DF /* pyTwoPop_PetriDishesView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyTwoPop_PetriDishesView.ui; sourceTree = "<group>"; };
-		70CD47A8089692210070D2DF /* pyTwoPop_StatsCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyTwoPop_StatsCtrl.py; sourceTree = "<group>"; };
-		70CD47A9089692210070D2DF /* pyTwoPop_StatsView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyTwoPop_StatsView.ui; sourceTree = "<group>"; };
-		70CD47AA089692210070D2DF /* pyTwoPop_TimelineCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyTwoPop_TimelineCtrl.py; sourceTree = "<group>"; };
-		70CD47AB089692210070D2DF /* pyTwoPop_TimelineView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyTwoPop_TimelineView.ui; sourceTree = "<group>"; };
-		70CD47AC089692210070D2DF /* pyTwoPopulationCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyTwoPopulationCtrl.py; sourceTree = "<group>"; };
-		70CD47AD089692210070D2DF /* pyTwoPopulationView.ui */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pyTwoPopulationView.ui; sourceTree = "<group>"; };
-		70CD47AE089692210070D2DF /* pyUnitTestSuite.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyUnitTestSuite.py; sourceTree = "<group>"; };
-		70CD47AF089692210070D2DF /* pyUnitTestSuiteRecurser.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyUnitTestSuiteRecurser.py; sourceTree = "<group>"; };
-		70CD47B0089692210070D2DF /* pyWriteGenesisEvent.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyWriteGenesisEvent.py; sourceTree = "<group>"; };
-		70CD47B1089692210070D2DF /* pyWriteToFreezer.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyWriteToFreezer.py; sourceTree = "<group>"; };
-		70CD47B2089692210070D2DF /* skip_forward_active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = skip_forward_active.png; sourceTree = "<group>"; };
-		70CD47B3089692210070D2DF /* skip_forward_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = skip_forward_blue.png; sourceTree = "<group>"; };
-		70CD47B4089692210070D2DF /* skip_previous_active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = skip_previous_active.png; sourceTree = "<group>"; };
-		70CD47B5089692210070D2DF /* skip_previous_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = skip_previous_blue.png; sourceTree = "<group>"; };
-		70CD47B6089692210070D2DF /* smlEmptyPetriDish.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = smlEmptyPetriDish.gif; sourceTree = "<group>"; };
-		70CD47B7089692210070D2DF /* smlEmptyPetriDish.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = smlEmptyPetriDish.png; sourceTree = "<group>"; };
-		70CD47B8089692210070D2DF /* smlFullPetriDish.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = smlFullPetriDish.gif; sourceTree = "<group>"; };
-		70CD47B9089692210070D2DF /* smlFullPetriDish.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = smlFullPetriDish.png; sourceTree = "<group>"; };
-		70CD47BA089692210070D2DF /* topicbiotech.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = topicbiotech.gif; sourceTree = "<group>"; };
-		70CD47BB089692210070D2DF /* trnsEmptyPetriDish.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = trnsEmptyPetriDish.gif; sourceTree = "<group>"; };
-		70CD47BC089692210070D2DF /* UnitTest_py_test_utils.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = UnitTest_py_test_utils.py; sourceTree = "<group>"; };
-		70CD47BD089692210070D2DF /* UnitTest_pyEduMainCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = UnitTest_pyEduMainCtrl.py; sourceTree = "<group>"; };
-		70CD47BE089692210070D2DF /* UnitTest_pyTestCase.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = UnitTest_pyTestCase.py; sourceTree = "<group>"; };
-		70CD47BF089692210070D2DF /* UnitTest_pyUnitTestSuiteRecurser.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = UnitTest_pyUnitTestSuiteRecurser.py; sourceTree = "<group>"; };
-		70CD47C1089692210070D2DF /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		70CD47C5089692210070D2DF /* environment.default */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.default; sourceTree = "<group>"; };
-		70CD47C6089692210070D2DF /* events.default */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = events.default; sourceTree = "<group>"; };
-		70CD47C8089692210070D2DF /* default.empty */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = default.empty; sourceTree = "<group>"; };
-		70CD47C9089692210070D2DF /* default.organism */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = default.organism; sourceTree = "<group>"; };
-		70CD47CA089692210070D2DF /* no_mutations.empty */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = no_mutations.empty; sourceTree = "<group>"; };
-		70CD47CD089692210070D2DF /* genesis.default */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = genesis.default; sourceTree = "<group>"; };
-		70CD47CE089692210070D2DF /* inst_set.default */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.default; sourceTree = "<group>"; };
-		70CD47CF089692210070D2DF /* pmock.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pmock.py; sourceTree = "<group>"; };
-		70CD47D0089692210070D2DF /* setup_osx.py.in */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = setup_osx.py.in; sourceTree = "<group>"; };
-		70CD47DA089692AE0070D2DF /* AvidaPyste.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = AvidaPyste.py; sourceTree = "<group>"; };
-		70CD47DB089692AE0070D2DF /* change_list.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = change_list.pyste; sourceTree = "<group>"; };
-		70CD47DF089692AE0070D2DF /* cpu_head-fixups.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = "cpu_head-fixups.cc"; sourceTree = "<group>"; };
-		70CD47E0089692AE0070D2DF /* cpu_head-fixups.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = "cpu_head-fixups.hh"; sourceTree = "<group>"; };
-		70CD47E1089692AE0070D2DF /* cpu_memory-fixups.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = "cpu_memory-fixups.cc"; sourceTree = "<group>"; };
-		70CD47E2089692AE0070D2DF /* cpu_memory-fixups.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = "cpu_memory-fixups.hh"; sourceTree = "<group>"; };
-		70CD47E3089692AE0070D2DF /* hardware_status_printer.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = hardware_status_printer.pyste; sourceTree = "<group>"; };
-		70CD47E4089692AE0070D2DF /* hardware_tracer_4stack.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = hardware_tracer_4stack.pyste; sourceTree = "<group>"; };
-		70CD47E5089692AE0070D2DF /* hardware_tracer_cpu.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = hardware_tracer_cpu.pyste; sourceTree = "<group>"; };
-		70CD47E6089692AE0070D2DF /* hardware_tracer_test_cpu.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = hardware_tracer_test_cpu.pyste; sourceTree = "<group>"; };
-		70CD47E7089692AE0070D2DF /* hardware_tracer.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = hardware_tracer.pyste; sourceTree = "<group>"; };
-		70CD47E8089692AE0070D2DF /* py_hardware_tracer-fixups.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = "py_hardware_tracer-fixups.cc"; sourceTree = "<group>"; };
-		70CD47E9089692AE0070D2DF /* py_hardware_tracer.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = py_hardware_tracer.hh; sourceTree = "<group>"; };
-		70CD47EA089692AE0070D2DF /* py_hardware_tracer.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = py_hardware_tracer.pyste; sourceTree = "<group>"; };
-		70CD47EB089692AE0070D2DF /* resource_count-fixups.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = "resource_count-fixups.cc"; sourceTree = "<group>"; };
-		70CD47EC089692AE0070D2DF /* resource_count-fixups.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = "resource_count-fixups.hh"; sourceTree = "<group>"; };
-		70CD47ED089692AE0070D2DF /* test_cpu-fixups.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = "test_cpu-fixups.cc"; sourceTree = "<group>"; };
-		70CD47EE089692AE0070D2DF /* test_cpu-fixups.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = "test_cpu-fixups.hh"; sourceTree = "<group>"; };
-		70CD47EF089692AE0070D2DF /* tVector_instantiations.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = tVector_instantiations.hh; sourceTree = "<group>"; };
-		70CD47F0089692AE0070D2DF /* tVector.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = tVector.pyste; sourceTree = "<group>"; };
 		70FB86A908BFAFEC00BDF589 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		DCC30D300762539B008F7A48 /* 4stack_head.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = 4stack_head.pyste; sourceTree = "<group>"; };
-		DCC30D310762539B008F7A48 /* A.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = A.hh; sourceTree = "<group>"; };
-		DCC30D320762539B008F7A48 /* A.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = A.pyste; sourceTree = "<group>"; };
-		DCC30D330762539B008F7A48 /* AB.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = AB.cc; sourceTree = "<group>"; };
-		DCC30D340762539B008F7A48 /* analyze.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = analyze.pyste; sourceTree = "<group>"; };
-		DCC30D350762539B008F7A48 /* analyze_command.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = analyze_command.pyste; sourceTree = "<group>"; };
-		DCC30D360762539B008F7A48 /* analyze_command_def.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = analyze_command_def.pyste; sourceTree = "<group>"; };
-		DCC30D370762539B008F7A48 /* analyze_command_def_base.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = analyze_command_def_base.pyste; sourceTree = "<group>"; };
-		DCC30D380762539B008F7A48 /* analyze_flow_command.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = analyze_flow_command.pyste; sourceTree = "<group>"; };
-		DCC30D390762539B008F7A48 /* analyze_flow_command_def.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = analyze_flow_command_def.pyste; sourceTree = "<group>"; };
-		DCC30D3A0762539B008F7A48 /* analyze_function.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = analyze_function.pyste; sourceTree = "<group>"; };
-		DCC30D3B0762539B008F7A48 /* analyze_genotype.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = analyze_genotype.pyste; sourceTree = "<group>"; };
-		DCC30D3C0762539B008F7A48 /* analyze_util.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = analyze_util.pyste; sourceTree = "<group>"; };
-		DCC30D3D0762539B008F7A48 /* avida-fixups.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = "avida-fixups.hh"; sourceTree = "<group>"; };
-		DCC30D3E0762539B008F7A48 /* avida.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = avida.pyste; sourceTree = "<group>"; };
-		DCC30D3F0762539B008F7A48 /* avida_driver_analyze.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = avida_driver_analyze.pyste; sourceTree = "<group>"; };
-		DCC30D400762539B008F7A48 /* avida_driver_base.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = avida_driver_base.pyste; sourceTree = "<group>"; };
-		DCC30D410762539B008F7A48 /* avida_driver_population.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = avida_driver_population.pyste; sourceTree = "<group>"; };
-		DCC30D420762539B008F7A48 /* avida_triggers.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = avida_triggers.pyste; sourceTree = "<group>"; };
-		DCC30D670762539B008F7A48 /* __init__.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = __init__.py; sourceTree = "<group>"; };
-		DCC30D680762539B008F7A48 /* buildapp.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = buildapp.py; sourceTree = "<group>"; };
-		DCC30D690762539B008F7A48 /* FunctionalTest_recursive_tests.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = FunctionalTest_recursive_tests.py; sourceTree = "<group>"; };
-		DCC30D6A0762539B008F7A48 /* py_avida_core_data.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = py_avida_core_data.py; sourceTree = "<group>"; };
-		DCC30D6B0762539B008F7A48 /* py_avida_driver_controller.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = py_avida_driver_controller.py; sourceTree = "<group>"; };
-		DCC30D6C0762539B008F7A48 /* py_avida_state_mediator.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = py_avida_state_mediator.py; sourceTree = "<group>"; };
-		DCC30D6D0762539B008F7A48 /* py_avida_threaded_driver.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = py_avida_threaded_driver.py; sourceTree = "<group>"; };
-		DCC30D6E0762539B008F7A48 /* py_brainstorms.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = py_brainstorms.py; sourceTree = "<group>"; };
-		DCC30D6F0762539B008F7A48 /* py_main_controller_data.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = py_main_controller_data.py; sourceTree = "<group>"; };
-		DCC30D700762539B008F7A48 /* pyEduMainCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyEduMainCtrl.py; sourceTree = "<group>"; };
-		DCC30D710762539B008F7A48 /* pyMdl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyMdl.py; sourceTree = "<group>"; };
-		DCC30D720762539B008F7A48 /* pySessionCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pySessionCtrl.py; sourceTree = "<group>"; };
-		DCC30D730762539B008F7A48 /* pySessionCtrl.py.1 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.man; path = pySessionCtrl.py.1; sourceTree = "<group>"; };
-		DCC30D740762539B008F7A48 /* pySessionDumbCtrl.py.1 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.man; path = pySessionDumbCtrl.py.1; sourceTree = "<group>"; };
-		DCC30D750762539B008F7A48 /* pySessionWorkThreadHdlr.py.0 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = pySessionWorkThreadHdlr.py.0; sourceTree = "<group>"; };
-		DCC30D760762539B008F7A48 /* pySessionWorkThreadHdlr.py.1 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.man; path = pySessionWorkThreadHdlr.py.1; sourceTree = "<group>"; };
-		DCC30D770762539B008F7A48 /* pyTemporaryReloads.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = pyTemporaryReloads.py; sourceTree = "<group>"; };
-		DCC30D780762539B008F7A48 /* UnitTest_pyAvidaCoreData.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = UnitTest_pyAvidaCoreData.py; sourceTree = "<group>"; };
-		DCC30D790762539B008F7A48 /* UnitTest_pyAvidaThreadedDriver.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = UnitTest_pyAvidaThreadedDriver.py; sourceTree = "<group>"; };
-		DCC30D7A0762539B008F7A48 /* UnitTest_pyEduMainCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = UnitTest_pyEduMainCtrl.py; sourceTree = "<group>"; };
-		DCC30D7B0762539B008F7A48 /* UnitTest_pyEduMainMenuBarHdlr.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = UnitTest_pyEduMainMenuBarHdlr.py; sourceTree = "<group>"; };
-		DCC30D7C0762539B008F7A48 /* UnitTest_pyEduSessionMenuBarHdlr.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = UnitTest_pyEduSessionMenuBarHdlr.py; sourceTree = "<group>"; };
-		DCC30D7D0762539B008F7A48 /* UnitTest_pyMainControllerFactory.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = UnitTest_pyMainControllerFactory.py; sourceTree = "<group>"; };
-		DCC30D7E0762539B008F7A48 /* UnitTest_pyMdl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = UnitTest_pyMdl.py; sourceTree = "<group>"; };
-		DCC30D7F0762539B008F7A48 /* UnitTest_pyMdtr.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = UnitTest_pyMdtr.py; sourceTree = "<group>"; };
-		DCC30D800762539B008F7A48 /* UnitTest_pySessionControllerFactory.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = UnitTest_pySessionControllerFactory.py; sourceTree = "<group>"; };
-		DCC30D810762539B008F7A48 /* UnitTest_pySessionCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = UnitTest_pySessionCtrl.py; sourceTree = "<group>"; };
-		DCC30D820762539B008F7A48 /* UnitTest_pySessionDumbCtrl.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = UnitTest_pySessionDumbCtrl.py; sourceTree = "<group>"; };
-		DCC30D830762539B008F7A48 /* UnitTest_pySessionDumbView.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = UnitTest_pySessionDumbView.py; sourceTree = "<group>"; };
-		DCC30D840762539B008F7A48 /* UnitTest_pySessionWorkThreadHdlr.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = UnitTest_pySessionWorkThreadHdlr.py; sourceTree = "<group>"; };
-		DCC30ED70762539D008F7A48 /* B.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = B.hh; sourceTree = "<group>"; };
-		DCC30ED80762539D008F7A48 /* B.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = B.pyste; sourceTree = "<group>"; };
-		DCC30ED90762539D008F7A48 /* birth_chamber.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = birth_chamber.pyste; sourceTree = "<group>"; };
-		DCC30EDA0762539D008F7A48 /* block_struct.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = block_struct.pyste; sourceTree = "<group>"; };
-		DCC30EDE0762539D008F7A48 /* callback_util.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = callback_util.pyste; sourceTree = "<group>"; };
-		DCC30EDF0762539D008F7A48 /* cCycleCheck.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = cCycleCheck.pyste; sourceTree = "<group>"; };
-		DCC30EE00762539D008F7A48 /* cID.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = cID.pyste; sourceTree = "<group>"; };
-		DCC30EE10762539D008F7A48 /* cmake_entries */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = cmake_entries; sourceTree = "<group>"; };
-		DCC30EE20762539D008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		DCC30EE30762539D008F7A48 /* code_label.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = code_label.pyste; sourceTree = "<group>"; };
-		DCC30EE40762539D008F7A48 /* config.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = config.pyste; sourceTree = "<group>"; };
-		DCC30EE50762539D008F7A48 /* const_schedule.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = const_schedule.pyste; sourceTree = "<group>"; };
-		DCC30EE60762539D008F7A48 /* count_tracker.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = count_tracker.pyste; sourceTree = "<group>"; };
-		DCC30EE70762539D008F7A48 /* cpu_head.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = cpu_head.pyste; sourceTree = "<group>"; };
-		DCC30EE80762539D008F7A48 /* cpu_memory.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = cpu_memory.pyste; sourceTree = "<group>"; };
-		DCC30EE90762539D008F7A48 /* cpu_stack.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = cpu_stack.pyste; sourceTree = "<group>"; };
-		DCC30EEA0762539D008F7A48 /* cpu_stats.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = cpu_stats.pyste; sourceTree = "<group>"; };
-		DCC30EEB0762539D008F7A48 /* cpu_test_info.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = cpu_test_info.pyste; sourceTree = "<group>"; };
-		DCC30EEC0762539D008F7A48 /* cStringable.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = cStringable.pyste; sourceTree = "<group>"; };
-		DCC30EED0762539D008F7A48 /* cTestCase.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = cTestCase.pyste; sourceTree = "<group>"; };
-		DCC30EEE0762539D008F7A48 /* cTestProblem.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = cTestProblem.pyste; sourceTree = "<group>"; };
-		DCC30EEF0762539D008F7A48 /* cTestResult.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = cTestResult.pyste; sourceTree = "<group>"; };
-		DCC30EF00762539D008F7A48 /* cTextTestInterpreter.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = cTextTestInterpreter.pyste; sourceTree = "<group>"; };
-		DCC30EF10762539D008F7A48 /* data_entry.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = data_entry.pyste; sourceTree = "<group>"; };
-		DCC30EF20762539D008F7A48 /* data_file.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = data_file.pyste; sourceTree = "<group>"; };
-		DCC30EF30762539D008F7A48 /* data_file_manager.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = data_file_manager.pyste; sourceTree = "<group>"; };
-		DCC30EF40762539D008F7A48 /* data_manager_base.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = data_manager_base.pyste; sourceTree = "<group>"; };
-		DCC30EF50762539D008F7A48 /* double_sum.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = double_sum.pyste; sourceTree = "<group>"; };
-		DCC30EF60762539D008F7A48 /* environment.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.pyste; sourceTree = "<group>"; };
-		DCC30EF70762539D008F7A48 /* event.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = event.pyste; sourceTree = "<group>"; };
-		DCC30EF90762539D008F7A48 /* event_factory_manager.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = event_factory_manager.pyste; sourceTree = "<group>"; };
-		DCC30EFA0762539D008F7A48 /* event_list.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = event_list.pyste; sourceTree = "<group>"; };
-		DCC30EFB0762539D008F7A48 /* event_list_entry.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = event_list_entry.pyste; sourceTree = "<group>"; };
-		DCC30EFC0762539D008F7A48 /* event_list_iterator.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = event_list_iterator.pyste; sourceTree = "<group>"; };
-		DCC30EFD0762539D008F7A48 /* event_triggers.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = event_triggers.pyste; sourceTree = "<group>"; };
-		DCC30EFE0762539D008F7A48 /* file-fixups.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = "file-fixups.cc"; sourceTree = "<group>"; };
-		DCC30EFF0762539D008F7A48 /* file-fixups.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = "file-fixups.hh"; sourceTree = "<group>"; };
-		DCC30F000762539D008F7A48 /* file.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = file.pyste; sourceTree = "<group>"; };
-		DCC30F010762539D008F7A48 /* fitness_matrix.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = fitness_matrix.pyste; sourceTree = "<group>"; };
-		DCC30F020762539D008F7A48 /* fixed_block.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = fixed_block.pyste; sourceTree = "<group>"; };
-		DCC30F030762539D008F7A48 /* fixed_coords.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = fixed_coords.pyste; sourceTree = "<group>"; };
-		DCC30F040762539D008F7A48 /* genebank.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = genebank.pyste; sourceTree = "<group>"; };
-		DCC30F050762539D008F7A48 /* generatePysteFiles.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = generatePysteFiles.py; sourceTree = "<group>"; };
-		DCC30F060762539D008F7A48 /* genesis-fixups.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = "genesis-fixups.cc"; sourceTree = "<group>"; };
-		DCC30F070762539D008F7A48 /* genesis-fixups.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = "genesis-fixups.hh"; sourceTree = "<group>"; };
-		DCC30F080762539D008F7A48 /* genesis.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = genesis.pyste; sourceTree = "<group>"; };
-		DCC30F090762539D008F7A48 /* genome.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = genome.pyste; sourceTree = "<group>"; };
-		DCC30F0A0762539D008F7A48 /* genome_util.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = genome_util.pyste; sourceTree = "<group>"; };
-		DCC30F0B0762539D008F7A48 /* genotype.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = genotype.pyste; sourceTree = "<group>"; };
-		DCC30F0C0762539D008F7A48 /* genotype_batch.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = genotype_batch.pyste; sourceTree = "<group>"; };
-		DCC30F0D0762539D008F7A48 /* genotype_birth_data.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = genotype_birth_data.pyste; sourceTree = "<group>"; };
-		DCC30F0E0762539D008F7A48 /* genotype_control.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = genotype_control.pyste; sourceTree = "<group>"; };
-		DCC30F0F0762539D008F7A48 /* genotype_test_data.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = genotype_test_data.pyste; sourceTree = "<group>"; };
-		DCC30F100762539D008F7A48 /* getting_started1.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = getting_started1.cpp; sourceTree = "<group>"; };
-		DCC30F110762539D008F7A48 /* getting_started2.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = getting_started2.cpp; sourceTree = "<group>"; };
-		DCC30F120762539D008F7A48 /* hardware_4stack.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = hardware_4stack.pyste; sourceTree = "<group>"; };
-		DCC30F130762539D008F7A48 /* hardware_4stack_thread.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = hardware_4stack_thread.pyste; sourceTree = "<group>"; };
-		DCC30F140762539D008F7A48 /* hardware_base.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = hardware_base.pyste; sourceTree = "<group>"; };
-		DCC30F150762539D008F7A48 /* hardware_cpu-fixups.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = "hardware_cpu-fixups.cc"; sourceTree = "<group>"; };
-		DCC30F160762539D008F7A48 /* hardware_cpu-fixups.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = "hardware_cpu-fixups.hh"; sourceTree = "<group>"; };
-		DCC30F170762539D008F7A48 /* hardware_cpu.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = hardware_cpu.pyste; sourceTree = "<group>"; };
-		DCC30F180762539D008F7A48 /* hardware_cpu_thread.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = hardware_cpu_thread.pyste; sourceTree = "<group>"; };
-		DCC30F190762539D008F7A48 /* hardware_factory.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = hardware_factory.pyste; sourceTree = "<group>"; };
-		DCC30F1A0762539D008F7A48 /* hardware_util.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = hardware_util.pyste; sourceTree = "<group>"; };
-		DCC30F1B0762539D008F7A48 /* help_alias.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = help_alias.pyste; sourceTree = "<group>"; };
-		DCC30F1C0762539D008F7A48 /* help_entry.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = help_entry.pyste; sourceTree = "<group>"; };
-		DCC30F1D0762539D008F7A48 /* help_full_entry.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = help_full_entry.pyste; sourceTree = "<group>"; };
-		DCC30F1E0762539D008F7A48 /* help_manager.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = help_manager.pyste; sourceTree = "<group>"; };
-		DCC30F1F0762539D008F7A48 /* help_type.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = help_type.pyste; sourceTree = "<group>"; };
-		DCC30F200762539D008F7A48 /* histogram.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = histogram.pyste; sourceTree = "<group>"; };
-		DCC30F210762539D008F7A48 /* indexed_block_struct.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = indexed_block_struct.pyste; sourceTree = "<group>"; };
-		DCC30F220762539D008F7A48 /* init_file.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = init_file.pyste; sourceTree = "<group>"; };
-		DCC30F230762539D008F7A48 /* inject_genebank.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inject_genebank.pyste; sourceTree = "<group>"; };
-		DCC30F240762539D008F7A48 /* inject_genotype.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inject_genotype.pyste; sourceTree = "<group>"; };
-		DCC30F250762539D008F7A48 /* inject_genotype_birth_data.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inject_genotype_birth_data.pyste; sourceTree = "<group>"; };
-		DCC30F260762539D008F7A48 /* inject_genotype_control.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inject_genotype_control.pyste; sourceTree = "<group>"; };
-		DCC30F270762539D008F7A48 /* inject_genotype_element.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inject_genotype_element.pyste; sourceTree = "<group>"; };
-		DCC30F280762539D008F7A48 /* inject_genotype_queue.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inject_genotype_queue.pyste; sourceTree = "<group>"; };
-		DCC30F290762539D008F7A48 /* inst_lib_base.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_lib_base.pyste; sourceTree = "<group>"; };
-		DCC30F2A0762539D008F7A48 /* inst_lib_cpu.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_lib_cpu.pyste; sourceTree = "<group>"; };
-		DCC30F2B0762539D008F7A48 /* inst_set.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.pyste; sourceTree = "<group>"; };
-		DCC30F2C0762539D008F7A48 /* inst_util.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_util.pyste; sourceTree = "<group>"; };
-		DCC30F2D0762539D008F7A48 /* instruction.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = instruction.pyste; sourceTree = "<group>"; };
-		DCC30F2E0762539D008F7A48 /* int_sum.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = int_sum.pyste; sourceTree = "<group>"; };
-		DCC30F2F0762539D008F7A48 /* integrated_schedule.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = integrated_schedule.pyste; sourceTree = "<group>"; };
-		DCC30F300762539D008F7A48 /* integrated_schedule_node.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = integrated_schedule_node.pyste; sourceTree = "<group>"; };
-		DCC30F340762539D008F7A48 /* landscape.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = landscape.pyste; sourceTree = "<group>"; };
-		DCC30F350762539D008F7A48 /* lineage.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = lineage.pyste; sourceTree = "<group>"; };
-		DCC30F360762539D008F7A48 /* lineage_control.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = lineage_control.pyste; sourceTree = "<group>"; };
-		DCC30F370762539D008F7A48 /* local_mutations.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = local_mutations.pyste; sourceTree = "<group>"; };
-		DCC30F380762539D008F7A48 /* memory_flags.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = memory_flags.pyste; sourceTree = "<group>"; };
-		DCC30F390762539D008F7A48 /* merit.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = merit.pyste; sourceTree = "<group>"; };
-		DCC30F3A0762539D008F7A48 /* mutation.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = mutation.pyste; sourceTree = "<group>"; };
-		DCC30F3B0762539D008F7A48 /* mutation_lib.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = mutation_lib.pyste; sourceTree = "<group>"; };
-		DCC30F3C0762539D008F7A48 /* mutation_rates.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = mutation_rates.pyste; sourceTree = "<group>"; };
-		DCC30F3D0762539D008F7A48 /* mx_code_array.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = mx_code_array.pyste; sourceTree = "<group>"; };
-		DCC30F3E0762539D008F7A48 /* my_code_array_less_than.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = my_code_array_less_than.pyste; sourceTree = "<group>"; };
-		DCC30F3F0762539D008F7A48 /* org_message.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = org_message.pyste; sourceTree = "<group>"; };
-		DCC30F400762539D008F7A48 /* organism.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.pyste; sourceTree = "<group>"; };
-		DCC30F410762539D008F7A48 /* phenotype.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = phenotype.pyste; sourceTree = "<group>"; };
-		DCC30F430762539D008F7A48 /* population.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = population.pyste; sourceTree = "<group>"; };
-		DCC30F440762539D008F7A48 /* population_cell.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = population_cell.pyste; sourceTree = "<group>"; };
-		DCC30F450762539D008F7A48 /* population_event.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = population_event.pyste; sourceTree = "<group>"; };
-		DCC30F460762539D008F7A48 /* population_event_factory.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = population_event_factory.pyste; sourceTree = "<group>"; };
-		DCC30F470762539D008F7A48 /* population_interface-fixups.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = "population_interface-fixups.hh"; sourceTree = "<group>"; };
-		DCC30F480762539D008F7A48 /* population_interface.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = population_interface.pyste; sourceTree = "<group>"; };
-		DCC30F490762539D008F7A48 /* prob_schedule.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = prob_schedule.pyste; sourceTree = "<group>"; };
-		DCC30F4A0762539D008F7A48 /* py_avida_driver-fixups.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = "py_avida_driver-fixups.cc"; sourceTree = "<group>"; };
-		DCC30F4B0762539D008F7A48 /* py_avida_driver.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = py_avida_driver.hh; sourceTree = "<group>"; };
-		DCC30F4C0762539D008F7A48 /* py_avida_driver.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = py_avida_driver.pyste; sourceTree = "<group>"; };
-		DCC30F4D0762539D008F7A48 /* py_doctest_driver.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = py_doctest_driver.py; sourceTree = "<group>"; };
-		DCC30F4E0762539D008F7A48 /* py_kaben_brainstorms_t.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = py_kaben_brainstorms_t.py; sourceTree = "<group>"; };
-		DCC30F4F0762539D008F7A48 /* py_unittest_driver.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = py_unittest_driver.py; sourceTree = "<group>"; };
-		DCC30F500762539D008F7A48 /* random.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = random.pyste; sourceTree = "<group>"; };
-		DCC30F510762539D008F7A48 /* reaction.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = reaction.pyste; sourceTree = "<group>"; };
-		DCC30F520762539D008F7A48 /* reaction_lib.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = reaction_lib.pyste; sourceTree = "<group>"; };
-		DCC30F530762539D008F7A48 /* reaction_process.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = reaction_process.pyste; sourceTree = "<group>"; };
-		DCC30F540762539D008F7A48 /* reaction_requisite.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = reaction_requisite.pyste; sourceTree = "<group>"; };
-		DCC30F550762539D008F7A48 /* reaction_result.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = reaction_result.pyste; sourceTree = "<group>"; };
-		DCC30F560762539D008F7A48 /* ref_block.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = ref_block.pyste; sourceTree = "<group>"; };
-		DCC30F570762539D008F7A48 /* resource.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = resource.pyste; sourceTree = "<group>"; };
-		DCC30F580762539D008F7A48 /* resource_count.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = resource_count.pyste; sourceTree = "<group>"; };
-		DCC30F590762539D008F7A48 /* resource_lib.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = resource_lib.pyste; sourceTree = "<group>"; };
-		DCC30F5A0762539D008F7A48 /* running_average.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = running_average.pyste; sourceTree = "<group>"; };
-		DCC30F5B0762539D008F7A48 /* scaled_block.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = scaled_block.pyste; sourceTree = "<group>"; };
-		DCC30F5C0762539D008F7A48 /* schedule.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = schedule.pyste; sourceTree = "<group>"; };
-		DCC30F5D0762539D008F7A48 /* spatial_count_elem.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = spatial_count_elem.pyste; sourceTree = "<group>"; };
-		DCC30F5E0762539D008F7A48 /* spatial_res_count.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = spatial_res_count.pyste; sourceTree = "<group>"; };
-		DCC30F5F0762539D008F7A48 /* species.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = species.pyste; sourceTree = "<group>"; };
-		DCC30F600762539D008F7A48 /* species_control.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = species_control.pyste; sourceTree = "<group>"; };
-		DCC30F610762539D008F7A48 /* species_queue.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = species_queue.pyste; sourceTree = "<group>"; };
-		DCC30F620762539D008F7A48 /* stats.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = stats.pyste; sourceTree = "<group>"; };
-		DCC30F630762539D008F7A48 /* string.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = string.pyste; sourceTree = "<group>"; };
-		DCC30F640762539D008F7A48 /* string_iterator.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = string_iterator.pyste; sourceTree = "<group>"; };
-		DCC30F650762539D008F7A48 /* string_list.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = string_list.pyste; sourceTree = "<group>"; };
-		DCC30F660762539D008F7A48 /* string_util.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = string_util.pyste; sourceTree = "<group>"; };
-		DCC30F670762539D008F7A48 /* tArray.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = tArray.pyste; sourceTree = "<group>"; };
-		DCC30F680762539D008F7A48 /* tArray_instantiations.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = tArray_instantiations.hh; sourceTree = "<group>"; };
-		DCC30F690762539D008F7A48 /* task_entry.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = task_entry.pyste; sourceTree = "<group>"; };
-		DCC30F6A0762539D008F7A48 /* task_lib.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = task_lib.pyste; sourceTree = "<group>"; };
-		DCC30F6B0762539D008F7A48 /* tBuffer.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = tBuffer.pyste; sourceTree = "<group>"; };
-		DCC30F6C0762539D008F7A48 /* tBuffer_instantiations.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = tBuffer_instantiations.hh; sourceTree = "<group>"; };
-		DCC30F6D0762539D008F7A48 /* tDictionary.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = tDictionary.pyste; sourceTree = "<group>"; };
-		DCC30F6E0762539D008F7A48 /* tDictionary_instantiations.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = tDictionary_instantiations.hh; sourceTree = "<group>"; };
-		DCC30F6F0762539D008F7A48 /* test_cpu.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = test_cpu.pyste; sourceTree = "<group>"; };
-		DCC30F700762539D008F7A48 /* test_getting_started1.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = test_getting_started1.py; sourceTree = "<group>"; };
-		DCC30F710762539D008F7A48 /* test_getting_started2.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = test_getting_started2.py; sourceTree = "<group>"; };
-		DCC30F720762539D008F7A48 /* test_util.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = test_util.pyste; sourceTree = "<group>"; };
-		DCC30F730762539D008F7A48 /* tList.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = tList.pyste; sourceTree = "<group>"; };
-		DCC30F740762539D008F7A48 /* tList_instantiations.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = tList_instantiations.hh; sourceTree = "<group>"; };
-		DCC30F750762539D008F7A48 /* tMatrix.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = tMatrix.pyste; sourceTree = "<group>"; };
-		DCC30F760762539D008F7A48 /* tMatrix_instantiations.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = tMatrix_instantiations.hh; sourceTree = "<group>"; };
-		DCC30F770762539D008F7A48 /* tools.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = tools.pyste; sourceTree = "<group>"; };
-		DCC30F780762539D008F7A48 /* uint.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = uint.pyste; sourceTree = "<group>"; };
-		DCC30F790762539D008F7A48 /* weighted_index.pyste */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = weighted_index.pyste; sourceTree = "<group>"; };
-		DCC30F7A0762539D008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		DCC30F7B0762539D008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		DCC30FA90762539D008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		DCC30FAC0762539D008F7A48 /* cpu.pri */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = cpu.pri; sourceTree = "<group>"; };
 		DCC30FCF0762539D008F7A48 /* Doxyfile */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = Doxyfile; sourceTree = "<group>"; };
 		DCC30FEB0762539D008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		DCC30FF00762539D008F7A48 /* event.pri */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = event.pri; sourceTree = "<group>"; };
 		DCC3109C0762539E008F7A48 /* avida.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = avida.cc; sourceTree = "<group>"; };
 		DCC310A90762539E008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		DCC310F00762539E008F7A48 /* main.pro */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = main.pro; sourceTree = "<group>"; };
-		DCC310F10762539E008F7A48 /* main_sub.pri */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = main_sub.pri; sourceTree = "<group>"; };
 		DCC311090762539E008F7A48 /* primitive.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = primitive.cc; sourceTree = "<group>"; };
 		DCC311390762539E008F7A48 /* modules.pri */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = modules.pri; sourceTree = "<group>"; };
 		DCC3114B0762539E008F7A48 /* analyze.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = analyze.cfg; sourceTree = "<group>"; };
@@ -1191,7 +752,6 @@
 		DCC3129C076253A0008F7A48 /* block_struct.t.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = block_struct.t.cc; sourceTree = "<group>"; };
 		DCC3129D076253A0008F7A48 /* callback_util.t.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = callback_util.t.cc; sourceTree = "<group>"; };
 		DCC3129E076253A0008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		DCC3129F076253A0008F7A48 /* config.t.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = config.t.cc; sourceTree = "<group>"; };
 		DCC312A0076253A0008F7A48 /* const_schedule.t.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = const_schedule.t.cc; sourceTree = "<group>"; };
 		DCC312A1076253A0008F7A48 /* cpu_head.t.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cpu_head.t.cc; sourceTree = "<group>"; };
 		DCC312A2076253A0008F7A48 /* cpu_memory.t.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cpu_memory.t.cc; sourceTree = "<group>"; };
@@ -1279,8 +839,6 @@
 		DCC31310076253A0008F7A48 /* phenotype.t.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = phenotype.t.cc; sourceTree = "<group>"; };
 		DCC31311076253A0008F7A48 /* population.t.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = population.t.cc; sourceTree = "<group>"; };
 		DCC31312076253A0008F7A48 /* population_cell.t.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = population_cell.t.cc; sourceTree = "<group>"; };
-		DCC31313076253A0008F7A48 /* population_event.t.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = population_event.t.cc; sourceTree = "<group>"; };
-		DCC31314076253A0008F7A48 /* population_event_factory.t.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = population_event_factory.t.cc; sourceTree = "<group>"; };
 		DCC31315076253A0008F7A48 /* population_interface.t.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = population_interface.t.cc; sourceTree = "<group>"; };
 		DCC31316076253A0008F7A48 /* prob_schedule.t.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = prob_schedule.t.cc; sourceTree = "<group>"; };
 		DCC31317076253A0008F7A48 /* random.t.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = random.t.cc; sourceTree = "<group>"; };
@@ -1404,38 +962,6 @@
 		DCC315CF076253A5008F7A48 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		DCC315D0076253A5008F7A48 /* task_event_gen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = task_event_gen.cc; sourceTree = "<group>"; };
 		DCC315D1076253A5008F7A48 /* task_event_gen.old.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = task_event_gen.old.cc; sourceTree = "<group>"; };
-		DCC315F6076253A5008F7A48 /* ansi.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ansi.cc; sourceTree = "<group>"; };
-		DCC315F7076253A5008F7A48 /* ansi.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = ansi.hh; sourceTree = "<group>"; };
-		DCC315F8076253A5008F7A48 /* bar_screen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = bar_screen.cc; sourceTree = "<group>"; };
-		DCC315F9076253A5008F7A48 /* bar_screen.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = bar_screen.hh; sourceTree = "<group>"; };
-		DCC315FA076253A5008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		DCC315FB076253A5008F7A48 /* environment_screen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = environment_screen.cc; sourceTree = "<group>"; };
-		DCC315FC076253A5008F7A48 /* environment_screen.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = environment_screen.hh; sourceTree = "<group>"; };
-		DCC315FD076253A5008F7A48 /* hist_screen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = hist_screen.cc; sourceTree = "<group>"; };
-		DCC315FE076253A5008F7A48 /* hist_screen.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = hist_screen.hh; sourceTree = "<group>"; };
-		DCC315FF076253A5008F7A48 /* key_chart */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = key_chart; sourceTree = "<group>"; };
-		DCC31601076253A5008F7A48 /* map_screen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = map_screen.cc; sourceTree = "<group>"; };
-		DCC31602076253A5008F7A48 /* map_screen.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = map_screen.hh; sourceTree = "<group>"; };
-		DCC31603076253A5008F7A48 /* menu.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = menu.cc; sourceTree = "<group>"; };
-		DCC31604076253A5008F7A48 /* menu.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = menu.hh; sourceTree = "<group>"; };
-		DCC31605076253A5008F7A48 /* ncurses.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ncurses.cc; sourceTree = "<group>"; };
-		DCC31606076253A5008F7A48 /* ncurses.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = ncurses.hh; sourceTree = "<group>"; };
-		DCC31607076253A5008F7A48 /* options_screen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = options_screen.cc; sourceTree = "<group>"; };
-		DCC31608076253A5008F7A48 /* options_screen.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = options_screen.hh; sourceTree = "<group>"; };
-		DCC31609076253A5008F7A48 /* stats_screen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = stats_screen.cc; sourceTree = "<group>"; };
-		DCC3160A076253A5008F7A48 /* stats_screen.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = stats_screen.hh; sourceTree = "<group>"; };
-		DCC3160B076253A5008F7A48 /* symbol_util.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = symbol_util.cc; sourceTree = "<group>"; };
-		DCC3160C076253A5008F7A48 /* symbol_util.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = symbol_util.hh; sourceTree = "<group>"; };
-		DCC3160D076253A5008F7A48 /* text_screen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = text_screen.cc; sourceTree = "<group>"; };
-		DCC3160E076253A5008F7A48 /* text_screen.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = text_screen.hh; sourceTree = "<group>"; };
-		DCC3160F076253A5008F7A48 /* text_window.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = text_window.hh; sourceTree = "<group>"; };
-		DCC31610076253A5008F7A48 /* view.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = view.cc; sourceTree = "<group>"; };
-		DCC31611076253A5008F7A48 /* view.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = view.hh; sourceTree = "<group>"; };
-		DCC31612076253A5008F7A48 /* viewer.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = viewer.cc; sourceTree = "<group>"; };
-		DCC31613076253A5008F7A48 /* viewer.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = viewer.hh; sourceTree = "<group>"; };
-		DCC31614076253A5008F7A48 /* viewers.pro */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = viewers.pro; sourceTree = "<group>"; };
-		DCC31615076253A5008F7A48 /* zoom_screen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = zoom_screen.cc; sourceTree = "<group>"; };
-		DCC31616076253A5008F7A48 /* zoom_screen.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = zoom_screen.hh; sourceTree = "<group>"; };
 		DCC3164D07626CF3008F7A48 /* primitive */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = primitive; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -1458,216 +984,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		70CD471A089692200070D2DF /* python */ = {
-			isa = PBXGroup;
-			children = (
-				70CD471B089692200070D2DF /* AvidaEd-osx.py */,
-				70CD471C089692200070D2DF /* AvidaGui2 */,
-				70CD47C1089692210070D2DF /* CMakeLists.txt */,
-				70CD47C2089692210070D2DF /* default.workspace */,
-				70CD47CF089692210070D2DF /* pmock.py */,
-				70CD47D0089692210070D2DF /* setup_osx.py.in */,
-			);
-			path = python;
-			sourceTree = "<group>";
-		};
-		70CD471C089692200070D2DF /* AvidaGui2 */ = {
-			isa = PBXGroup;
-			children = (
-				70CD471D089692200070D2DF /* __init__.py */,
-				70CD471E089692200070D2DF /* _Custom_Widgets.cw */,
-				70CD471F089692200070D2DF /* Analyze.png */,
-				70CD4720089692200070D2DF /* Analyze16.png */,
-				70CD4721089692200070D2DF /* Analyze24.png */,
-				70CD4722089692200070D2DF /* Analyze32.png */,
-				70CD4723089692200070D2DF /* Analyze48.png */,
-				70CD4724089692200070D2DF /* Analyze64.png */,
-				70CD4725089692200070D2DF /* Avida_ED_startup.py */,
-				70CD4726089692200070D2DF /* Avida_ED_startup_utils.py */,
-				70CD472A089692200070D2DF /* avidalogo.jpg */,
-				70CD472B089692200070D2DF /* avidalogo.png */,
-				70CD472C089692200070D2DF /* checkuic.py */,
-				70CD472D089692200070D2DF /* EmptyPetri128.png */,
-				70CD472E089692200070D2DF /* EmptyPetri16.png */,
-				70CD472F089692200070D2DF /* EmptyPetri24.png */,
-				70CD4730089692200070D2DF /* EmptyPetri32.png */,
-				70CD4731089692200070D2DF /* EmptyPetri48.png */,
-				70CD4732089692200070D2DF /* EmptyPetri64.png */,
-				70CD4733089692200070D2DF /* EmptyPetriDish.gif */,
-				70CD4734089692200070D2DF /* Flip15.png */,
-				70CD4735089692200070D2DF /* Flip28.png */,
-				70CD4736089692200070D2DF /* Flip30.png */,
-				70CD4737089692200070D2DF /* Flip40.png */,
-				70CD4738089692200070D2DF /* FullPetriDish.gif */,
-				70CD4739089692200070D2DF /* FunctionalTest_recursive_tests.py */,
-				70CD473A089692200070D2DF /* next_active.png */,
-				70CD473B089692200070D2DF /* next_blue.png */,
-				70CD473C089692200070D2DF /* Organism.png */,
-				70CD473D089692200070D2DF /* Organism32.1.png */,
-				70CD473E089692200070D2DF /* Organism32.2.png */,
-				70CD473F089692200070D2DF /* Organism32.3.png */,
-				70CD4740089692200070D2DF /* Organism32.4.png */,
-				70CD4741089692200070D2DF /* Organism32.5.png */,
-				70CD4742089692200070D2DF /* Organism32.png */,
-				70CD4743089692200070D2DF /* Organism65.png */,
-				70CD4744089692200070D2DF /* pause.png */,
-				70CD4745089692200070D2DF /* pause_blue.png */,
-				70CD4746089692200070D2DF /* Petri128.png */,
-				70CD4747089692200070D2DF /* Petri16.png */,
-				70CD4748089692200070D2DF /* Petri24.png */,
-				70CD4749089692200070D2DF /* Petri32.png */,
-				70CD474A089692200070D2DF /* Petri48.png */,
-				70CD474B089692200070D2DF /* Petri64.png */,
-				70CD474C089692200070D2DF /* play.png */,
-				70CD474D089692200070D2DF /* play_blue.png */,
-				70CD474E089692200070D2DF /* previous_active.png */,
-				70CD474F089692200070D2DF /* previous_blue.png */,
-				70CD4750089692200070D2DF /* py_recursive_tests_support.py */,
-				70CD4751089692200070D2DF /* py_test_utils.py */,
-				70CD4752089692200070D2DF /* pyAnalyzeControlsCtrl.py */,
-				70CD4753089692200070D2DF /* pyAnalyzeControlsView.ui */,
-				70CD4754089692200070D2DF /* pyAvida.py */,
-				70CD4755089692200070D2DF /* pyAvidaCoreData.py */,
-				70CD4756089692200070D2DF /* pyAvidaStatsInterface.py */,
-				70CD4757089692200070D2DF /* pyAvidaThreadedDriver.py */,
-				70CD4758089692200070D2DF /* pyEduMainCtrl.py */,
-				70CD4759089692200070D2DF /* pyEduMainMenuBarHdlr.py */,
-				70CD475A089692200070D2DF /* pyEduSessionMenuBarHdlr.py */,
-				70CD475B089692200070D2DF /* pyEduWorkspaceCtrl.py */,
-				70CD475C089692210070D2DF /* pyEduWorkspaceView.ui */,
-				70CD475D089692210070D2DF /* pyFreezeDialogCtrl.py */,
-				70CD475E089692210070D2DF /* pyFreezeDialogView.ui */,
-				70CD475F089692210070D2DF /* pyFreezeOrganismCtrl.py */,
-				70CD4760089692210070D2DF /* pyFreezeOrganismView.ui */,
-				70CD4761089692210070D2DF /* pyFreezerCtrl.py */,
-				70CD4762089692210070D2DF /* pyFreezerView.ui */,
-				70CD4763089692210070D2DF /* pyGradientScaleCtrl.py */,
-				70CD4764089692210070D2DF /* pyGradientScaleView.py */,
-				70CD4765089692210070D2DF /* pyGraphCtrl.py */,
-				70CD4766089692210070D2DF /* pyGraphView.ui */,
-				70CD4767089692210070D2DF /* pyHardwareCPUTrace.py */,
-				70CD4768089692210070D2DF /* pyHardwareTracer.py */,
-				70CD4769089692210070D2DF /* pyInstructionSet.py */,
-				70CD476A089692210070D2DF /* pyLiveControlsCtrl.py */,
-				70CD476B089692210070D2DF /* pyLiveControlsView.ui */,
-				70CD476C089692210070D2DF /* pyMainControllerFactory.py */,
-				70CD476D089692210070D2DF /* pyMapProfile.py */,
-				70CD476E089692210070D2DF /* pyMdtr.py */,
-				70CD476F089692210070D2DF /* pyNavBarCtrl.py */,
-				70CD4770089692210070D2DF /* pyNavBarView.ui */,
-				70CD4771089692210070D2DF /* pyOneAna_GraphCtrl.py */,
-				70CD4772089692210070D2DF /* pyOneAna_GraphView.ui */,
-				70CD4773089692210070D2DF /* pyOneAna_PetriDishCtrl.py */,
-				70CD4774089692210070D2DF /* pyOneAna_PetriDishView.ui */,
-				70CD4775089692210070D2DF /* pyOneAna_StatsCtrl.py */,
-				70CD4776089692210070D2DF /* pyOneAna_StatsView.ui */,
-				70CD4777089692210070D2DF /* pyOneAna_TimelineCtrl.py */,
-				70CD4778089692210070D2DF /* pyOneAna_TimelineView.ui */,
-				70CD4779089692210070D2DF /* pyOneAnalyzeCtrl.py */,
-				70CD477A089692210070D2DF /* pyOneAnalyzeView.ui */,
-				70CD477B089692210070D2DF /* pyOneOrg_ScopeCtrl.py */,
-				70CD477C089692210070D2DF /* pyOneOrg_ScopeView.ui */,
-				70CD477D089692210070D2DF /* pyOneOrganismCtrl.py */,
-				70CD477E089692210070D2DF /* pyOneOrganismView.ui */,
-				70CD477F089692210070D2DF /* pyOnePop_GraphCtrl.py */,
-				70CD4780089692210070D2DF /* pyOnePop_GraphView.ui */,
-				70CD4781089692210070D2DF /* pyOnePop_PetriDishCtrl.py */,
-				70CD4782089692210070D2DF /* pyOnePop_PetriDishView.ui */,
-				70CD4783089692210070D2DF /* pyOnePop_StatsCtrl.py */,
-				70CD4784089692210070D2DF /* pyOnePop_StatsView.ui */,
-				70CD4785089692210070D2DF /* pyOnePop_TimelineCtrl.py */,
-				70CD4786089692210070D2DF /* pyOnePop_TimelineView.ui */,
-				70CD4787089692210070D2DF /* pyOnePopulationCtrl.py */,
-				70CD4788089692210070D2DF /* pyOnePopulationView.ui */,
-				70CD4789089692210070D2DF /* pyOrganismScopeCtrl.py */,
-				70CD478A089692210070D2DF /* pyOrganismScopeView.py */,
-				70CD478B089692210070D2DF /* pyOrgSquareCtrl.py */,
-				70CD478C089692210070D2DF /* pyOrgSquareView.ui */,
-				70CD478D089692210070D2DF /* pyPetriCanvasView.py */,
-				70CD478E089692210070D2DF /* pyPetriConfigureCtrl.py */,
-				70CD478F089692210070D2DF /* pyPetriConfigureView.ui */,
-				70CD4790089692210070D2DF /* pyPetriDishCtrl.py */,
-				70CD4791089692210070D2DF /* pyPetriDishView.ui */,
-				70CD4792089692210070D2DF /* pyPopulationCellItem.py */,
-				70CD4793089692210070D2DF /* pyQuitDialogCtrl.py */,
-				70CD4794089692210070D2DF /* pyQuitDialogView.ui */,
-				70CD4795089692210070D2DF /* pyReadFreezer.py */,
-				70CD4796089692210070D2DF /* pySessionControllerFactory.py */,
-				70CD4797089692210070D2DF /* pySessionCtrl.py */,
-				70CD4798089692210070D2DF /* pySessionWorkThreadHdlr.py */,
-				70CD4799089692210070D2DF /* pyTemporaryReloads.py */,
-				70CD479A089692210070D2DF /* pyTest.ui */,
-				70CD479B089692210070D2DF /* pyTestCase.py */,
-				70CD479C089692210070D2DF /* pyTimelineCtrl.py */,
-				70CD479D089692210070D2DF /* pyTimelineView.ui */,
-				70CD479E089692210070D2DF /* pyTwoAnalyzeCtrl.py */,
-				70CD479F089692210070D2DF /* pyTwoAnalyzeView.ui */,
-				70CD47A0089692210070D2DF /* pyTwoOrg_VivisectionCtrl.py */,
-				70CD47A1089692210070D2DF /* pyTwoOrg_VivisectionView.ui */,
-				70CD47A2089692210070D2DF /* pyTwoOrganismCtrl.py */,
-				70CD47A3089692210070D2DF /* pyTwoOrganismView.ui */,
-				70CD47A4089692210070D2DF /* pyTwoPop_GraphCtrl.py */,
-				70CD47A5089692210070D2DF /* pyTwoPop_GraphView.ui */,
-				70CD47A6089692210070D2DF /* pyTwoPop_PetriDishesCtrl.py */,
-				70CD47A7089692210070D2DF /* pyTwoPop_PetriDishesView.ui */,
-				70CD47A8089692210070D2DF /* pyTwoPop_StatsCtrl.py */,
-				70CD47A9089692210070D2DF /* pyTwoPop_StatsView.ui */,
-				70CD47AA089692210070D2DF /* pyTwoPop_TimelineCtrl.py */,
-				70CD47AB089692210070D2DF /* pyTwoPop_TimelineView.ui */,
-				70CD47AC089692210070D2DF /* pyTwoPopulationCtrl.py */,
-				70CD47AD089692210070D2DF /* pyTwoPopulationView.ui */,
-				70CD47AE089692210070D2DF /* pyUnitTestSuite.py */,
-				70CD47AF089692210070D2DF /* pyUnitTestSuiteRecurser.py */,
-				70CD47B0089692210070D2DF /* pyWriteGenesisEvent.py */,
-				70CD47B1089692210070D2DF /* pyWriteToFreezer.py */,
-				70CD47B2089692210070D2DF /* skip_forward_active.png */,
-				70CD47B3089692210070D2DF /* skip_forward_blue.png */,
-				70CD47B4089692210070D2DF /* skip_previous_active.png */,
-				70CD47B5089692210070D2DF /* skip_previous_blue.png */,
-				70CD47B6089692210070D2DF /* smlEmptyPetriDish.gif */,
-				70CD47B7089692210070D2DF /* smlEmptyPetriDish.png */,
-				70CD47B8089692210070D2DF /* smlFullPetriDish.gif */,
-				70CD47B9089692210070D2DF /* smlFullPetriDish.png */,
-				70CD47BA089692210070D2DF /* topicbiotech.gif */,
-				70CD47BB089692210070D2DF /* trnsEmptyPetriDish.gif */,
-				70CD47BC089692210070D2DF /* UnitTest_py_test_utils.py */,
-				70CD47BD089692210070D2DF /* UnitTest_pyEduMainCtrl.py */,
-				70CD47BE089692210070D2DF /* UnitTest_pyTestCase.py */,
-				70CD47BF089692210070D2DF /* UnitTest_pyUnitTestSuiteRecurser.py */,
-			);
-			path = AvidaGui2;
-			sourceTree = "<group>";
-		};
-		70CD47C2089692210070D2DF /* default.workspace */ = {
-			isa = PBXGroup;
-			children = (
-				70CD47C5089692210070D2DF /* environment.default */,
-				70CD47C6089692210070D2DF /* events.default */,
-				70CD47C7089692210070D2DF /* freezer */,
-				70CD47CD089692210070D2DF /* genesis.default */,
-				70CD47CE089692210070D2DF /* inst_set.default */,
-			);
-			path = default.workspace;
-			sourceTree = "<group>";
-		};
-		70CD47C7089692210070D2DF /* freezer */ = {
-			isa = PBXGroup;
-			children = (
-				70CD47C8089692210070D2DF /* default.empty */,
-				70CD47C9089692210070D2DF /* default.organism */,
-				70CD47CA089692210070D2DF /* no_mutations.empty */,
-				70CD47CB089692210070D2DF /* Update200.full */,
-			);
-			path = freezer;
-			sourceTree = "<group>";
-		};
-		70CD47CB089692210070D2DF /* Update200.full */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Update200.full;
-			sourceTree = "<group>";
-		};
 		DCC30C490762532C008F7A48 = {
 			isa = PBXGroup;
 			children = (
@@ -1682,17 +998,14 @@
 		DCC30C670762539A008F7A48 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				DCC30C710762539A008F7A48 /* bindings */,
 				DCC30F7C0762539D008F7A48 /* cpu */,
 				DCC30FD00762539D008F7A48 /* event */,
 				DCC310040762539D008F7A48 /* main */,
-				70CD471A089692200070D2DF /* python */,
 				DCC3113A0762539E008F7A48 /* support */,
 				DCC311990762539F008F7A48 /* testsuites */,
 				DCC31340076253A0008F7A48 /* third-party */,
 				DCC314D8076253A2008F7A48 /* tools */,
 				DCC315B6076253A5008F7A48 /* utils */,
-				DCC315D2076253A5008F7A48 /* viewers */,
 				DCC30F7B0762539D008F7A48 /* CMakeLists.txt */,
 				701384A10902A16F0087ED2E /* defs.h */,
 				DCC30FCF0762539D008F7A48 /* Doxyfile */,
@@ -1702,272 +1015,11 @@
 			path = source;
 			sourceTree = "<group>";
 		};
-		DCC30C710762539A008F7A48 /* bindings */ = {
-			isa = PBXGroup;
-			children = (
-				DCC30C750762539A008F7A48 /* Boost.Python */,
-				DCC30F7A0762539D008F7A48 /* CMakeLists.txt */,
-			);
-			path = bindings;
-			sourceTree = "<group>";
-		};
-		DCC30C750762539A008F7A48 /* Boost.Python */ = {
-			isa = PBXGroup;
-			children = (
-				707A68B808E37D5900576968 /* hardware_tracer_smt.pyste */,
-				70C1F11108C40D6100F50912 /* nHardwareCPU.pyste */,
-				70C1F10F08C40D2D00F50912 /* nHardwareCPU-fixups.cc */,
-				70C1F11008C40D2D00F50912 /* nHardwareCPU-fixups.h */,
-				70CD47DA089692AE0070D2DF /* AvidaPyste.py */,
-				70CD47DB089692AE0070D2DF /* change_list.pyste */,
-				70CD47DF089692AE0070D2DF /* cpu_head-fixups.cc */,
-				70CD47E0089692AE0070D2DF /* cpu_head-fixups.hh */,
-				70CD47E1089692AE0070D2DF /* cpu_memory-fixups.cc */,
-				70CD47E2089692AE0070D2DF /* cpu_memory-fixups.hh */,
-				70CD47E3089692AE0070D2DF /* hardware_status_printer.pyste */,
-				70CD47E4089692AE0070D2DF /* hardware_tracer_4stack.pyste */,
-				70CD47E5089692AE0070D2DF /* hardware_tracer_cpu.pyste */,
-				70CD47E6089692AE0070D2DF /* hardware_tracer_test_cpu.pyste */,
-				70CD47E7089692AE0070D2DF /* hardware_tracer.pyste */,
-				70CD47E8089692AE0070D2DF /* py_hardware_tracer-fixups.cc */,
-				70CD47E9089692AE0070D2DF /* py_hardware_tracer.hh */,
-				70CD47EA089692AE0070D2DF /* py_hardware_tracer.pyste */,
-				70CD47EB089692AE0070D2DF /* resource_count-fixups.cc */,
-				70CD47EC089692AE0070D2DF /* resource_count-fixups.hh */,
-				70CD47ED089692AE0070D2DF /* test_cpu-fixups.cc */,
-				70CD47EE089692AE0070D2DF /* test_cpu-fixups.hh */,
-				70CD47EF089692AE0070D2DF /* tVector_instantiations.hh */,
-				70CD47F0089692AE0070D2DF /* tVector.pyste */,
-				DCC30D300762539B008F7A48 /* 4stack_head.pyste */,
-				DCC30D310762539B008F7A48 /* A.hh */,
-				DCC30D320762539B008F7A48 /* A.pyste */,
-				DCC30D330762539B008F7A48 /* AB.cc */,
-				DCC30D340762539B008F7A48 /* analyze.pyste */,
-				DCC30D350762539B008F7A48 /* analyze_command.pyste */,
-				DCC30D360762539B008F7A48 /* analyze_command_def.pyste */,
-				DCC30D370762539B008F7A48 /* analyze_command_def_base.pyste */,
-				DCC30D380762539B008F7A48 /* analyze_flow_command.pyste */,
-				DCC30D390762539B008F7A48 /* analyze_flow_command_def.pyste */,
-				DCC30D3A0762539B008F7A48 /* analyze_function.pyste */,
-				DCC30D3B0762539B008F7A48 /* analyze_genotype.pyste */,
-				DCC30D3C0762539B008F7A48 /* analyze_util.pyste */,
-				DCC30D3D0762539B008F7A48 /* avida-fixups.hh */,
-				DCC30D3E0762539B008F7A48 /* avida.pyste */,
-				DCC30D3F0762539B008F7A48 /* avida_driver_analyze.pyste */,
-				DCC30D400762539B008F7A48 /* avida_driver_base.pyste */,
-				DCC30D410762539B008F7A48 /* avida_driver_population.pyste */,
-				DCC30D420762539B008F7A48 /* avida_triggers.pyste */,
-				DCC30D430762539B008F7A48 /* AvidaGui */,
-				DCC30ED70762539D008F7A48 /* B.hh */,
-				DCC30ED80762539D008F7A48 /* B.pyste */,
-				DCC30ED90762539D008F7A48 /* birth_chamber.pyste */,
-				DCC30EDA0762539D008F7A48 /* block_struct.pyste */,
-				DCC30EDE0762539D008F7A48 /* callback_util.pyste */,
-				DCC30EDF0762539D008F7A48 /* cCycleCheck.pyste */,
-				DCC30EE00762539D008F7A48 /* cID.pyste */,
-				DCC30EE10762539D008F7A48 /* cmake_entries */,
-				DCC30EE20762539D008F7A48 /* CMakeLists.txt */,
-				DCC30EE30762539D008F7A48 /* code_label.pyste */,
-				DCC30EE40762539D008F7A48 /* config.pyste */,
-				DCC30EE50762539D008F7A48 /* const_schedule.pyste */,
-				DCC30EE60762539D008F7A48 /* count_tracker.pyste */,
-				DCC30EE70762539D008F7A48 /* cpu_head.pyste */,
-				DCC30EE80762539D008F7A48 /* cpu_memory.pyste */,
-				DCC30EE90762539D008F7A48 /* cpu_stack.pyste */,
-				DCC30EEA0762539D008F7A48 /* cpu_stats.pyste */,
-				DCC30EEB0762539D008F7A48 /* cpu_test_info.pyste */,
-				DCC30EEC0762539D008F7A48 /* cStringable.pyste */,
-				DCC30EED0762539D008F7A48 /* cTestCase.pyste */,
-				DCC30EEE0762539D008F7A48 /* cTestProblem.pyste */,
-				DCC30EEF0762539D008F7A48 /* cTestResult.pyste */,
-				DCC30EF00762539D008F7A48 /* cTextTestInterpreter.pyste */,
-				DCC30EF10762539D008F7A48 /* data_entry.pyste */,
-				DCC30EF20762539D008F7A48 /* data_file.pyste */,
-				DCC30EF30762539D008F7A48 /* data_file_manager.pyste */,
-				DCC30EF40762539D008F7A48 /* data_manager_base.pyste */,
-				DCC30EF50762539D008F7A48 /* double_sum.pyste */,
-				DCC30EF60762539D008F7A48 /* environment.pyste */,
-				DCC30EF70762539D008F7A48 /* event.pyste */,
-				DCC30EF90762539D008F7A48 /* event_factory_manager.pyste */,
-				DCC30EFA0762539D008F7A48 /* event_list.pyste */,
-				DCC30EFB0762539D008F7A48 /* event_list_entry.pyste */,
-				DCC30EFC0762539D008F7A48 /* event_list_iterator.pyste */,
-				DCC30EFD0762539D008F7A48 /* event_triggers.pyste */,
-				DCC30EFE0762539D008F7A48 /* file-fixups.cc */,
-				DCC30EFF0762539D008F7A48 /* file-fixups.hh */,
-				DCC30F000762539D008F7A48 /* file.pyste */,
-				DCC30F010762539D008F7A48 /* fitness_matrix.pyste */,
-				DCC30F020762539D008F7A48 /* fixed_block.pyste */,
-				DCC30F030762539D008F7A48 /* fixed_coords.pyste */,
-				DCC30F040762539D008F7A48 /* genebank.pyste */,
-				DCC30F050762539D008F7A48 /* generatePysteFiles.py */,
-				DCC30F060762539D008F7A48 /* genesis-fixups.cc */,
-				DCC30F070762539D008F7A48 /* genesis-fixups.hh */,
-				DCC30F080762539D008F7A48 /* genesis.pyste */,
-				DCC30F090762539D008F7A48 /* genome.pyste */,
-				DCC30F0A0762539D008F7A48 /* genome_util.pyste */,
-				DCC30F0B0762539D008F7A48 /* genotype.pyste */,
-				DCC30F0C0762539D008F7A48 /* genotype_batch.pyste */,
-				DCC30F0D0762539D008F7A48 /* genotype_birth_data.pyste */,
-				DCC30F0E0762539D008F7A48 /* genotype_control.pyste */,
-				DCC30F0F0762539D008F7A48 /* genotype_test_data.pyste */,
-				DCC30F100762539D008F7A48 /* getting_started1.cpp */,
-				DCC30F110762539D008F7A48 /* getting_started2.cpp */,
-				DCC30F120762539D008F7A48 /* hardware_4stack.pyste */,
-				DCC30F130762539D008F7A48 /* hardware_4stack_thread.pyste */,
-				DCC30F140762539D008F7A48 /* hardware_base.pyste */,
-				DCC30F150762539D008F7A48 /* hardware_cpu-fixups.cc */,
-				DCC30F160762539D008F7A48 /* hardware_cpu-fixups.hh */,
-				DCC30F170762539D008F7A48 /* hardware_cpu.pyste */,
-				DCC30F180762539D008F7A48 /* hardware_cpu_thread.pyste */,
-				DCC30F190762539D008F7A48 /* hardware_factory.pyste */,
-				DCC30F1A0762539D008F7A48 /* hardware_util.pyste */,
-				DCC30F1B0762539D008F7A48 /* help_alias.pyste */,
-				DCC30F1C0762539D008F7A48 /* help_entry.pyste */,
-				DCC30F1D0762539D008F7A48 /* help_full_entry.pyste */,
-				DCC30F1E0762539D008F7A48 /* help_manager.pyste */,
-				DCC30F1F0762539D008F7A48 /* help_type.pyste */,
-				DCC30F200762539D008F7A48 /* histogram.pyste */,
-				DCC30F210762539D008F7A48 /* indexed_block_struct.pyste */,
-				DCC30F220762539D008F7A48 /* init_file.pyste */,
-				DCC30F230762539D008F7A48 /* inject_genebank.pyste */,
-				DCC30F240762539D008F7A48 /* inject_genotype.pyste */,
-				DCC30F250762539D008F7A48 /* inject_genotype_birth_data.pyste */,
-				DCC30F260762539D008F7A48 /* inject_genotype_control.pyste */,
-				DCC30F270762539D008F7A48 /* inject_genotype_element.pyste */,
-				DCC30F280762539D008F7A48 /* inject_genotype_queue.pyste */,
-				DCC30F290762539D008F7A48 /* inst_lib_base.pyste */,
-				DCC30F2A0762539D008F7A48 /* inst_lib_cpu.pyste */,
-				DCC30F2B0762539D008F7A48 /* inst_set.pyste */,
-				DCC30F2C0762539D008F7A48 /* inst_util.pyste */,
-				DCC30F2D0762539D008F7A48 /* instruction.pyste */,
-				DCC30F2E0762539D008F7A48 /* int_sum.pyste */,
-				DCC30F2F0762539D008F7A48 /* integrated_schedule.pyste */,
-				DCC30F300762539D008F7A48 /* integrated_schedule_node.pyste */,
-				DCC30F340762539D008F7A48 /* landscape.pyste */,
-				DCC30F350762539D008F7A48 /* lineage.pyste */,
-				DCC30F360762539D008F7A48 /* lineage_control.pyste */,
-				DCC30F370762539D008F7A48 /* local_mutations.pyste */,
-				DCC30F380762539D008F7A48 /* memory_flags.pyste */,
-				DCC30F390762539D008F7A48 /* merit.pyste */,
-				DCC30F3A0762539D008F7A48 /* mutation.pyste */,
-				DCC30F3B0762539D008F7A48 /* mutation_lib.pyste */,
-				DCC30F3C0762539D008F7A48 /* mutation_rates.pyste */,
-				DCC30F3D0762539D008F7A48 /* mx_code_array.pyste */,
-				DCC30F3E0762539D008F7A48 /* my_code_array_less_than.pyste */,
-				DCC30F3F0762539D008F7A48 /* org_message.pyste */,
-				DCC30F400762539D008F7A48 /* organism.pyste */,
-				DCC30F410762539D008F7A48 /* phenotype.pyste */,
-				DCC30F430762539D008F7A48 /* population.pyste */,
-				DCC30F440762539D008F7A48 /* population_cell.pyste */,
-				DCC30F450762539D008F7A48 /* population_event.pyste */,
-				DCC30F460762539D008F7A48 /* population_event_factory.pyste */,
-				DCC30F470762539D008F7A48 /* population_interface-fixups.hh */,
-				DCC30F480762539D008F7A48 /* population_interface.pyste */,
-				DCC30F490762539D008F7A48 /* prob_schedule.pyste */,
-				DCC30F4A0762539D008F7A48 /* py_avida_driver-fixups.cc */,
-				DCC30F4B0762539D008F7A48 /* py_avida_driver.hh */,
-				DCC30F4C0762539D008F7A48 /* py_avida_driver.pyste */,
-				DCC30F4D0762539D008F7A48 /* py_doctest_driver.py */,
-				DCC30F4E0762539D008F7A48 /* py_kaben_brainstorms_t.py */,
-				DCC30F4F0762539D008F7A48 /* py_unittest_driver.py */,
-				DCC30F500762539D008F7A48 /* random.pyste */,
-				DCC30F510762539D008F7A48 /* reaction.pyste */,
-				DCC30F520762539D008F7A48 /* reaction_lib.pyste */,
-				DCC30F530762539D008F7A48 /* reaction_process.pyste */,
-				DCC30F540762539D008F7A48 /* reaction_requisite.pyste */,
-				DCC30F550762539D008F7A48 /* reaction_result.pyste */,
-				DCC30F560762539D008F7A48 /* ref_block.pyste */,
-				DCC30F570762539D008F7A48 /* resource.pyste */,
-				DCC30F580762539D008F7A48 /* resource_count.pyste */,
-				DCC30F590762539D008F7A48 /* resource_lib.pyste */,
-				DCC30F5A0762539D008F7A48 /* running_average.pyste */,
-				DCC30F5B0762539D008F7A48 /* scaled_block.pyste */,
-				DCC30F5C0762539D008F7A48 /* schedule.pyste */,
-				DCC30F5D0762539D008F7A48 /* spatial_count_elem.pyste */,
-				DCC30F5E0762539D008F7A48 /* spatial_res_count.pyste */,
-				DCC30F5F0762539D008F7A48 /* species.pyste */,
-				DCC30F600762539D008F7A48 /* species_control.pyste */,
-				DCC30F610762539D008F7A48 /* species_queue.pyste */,
-				DCC30F620762539D008F7A48 /* stats.pyste */,
-				DCC30F630762539D008F7A48 /* string.pyste */,
-				DCC30F640762539D008F7A48 /* string_iterator.pyste */,
-				DCC30F650762539D008F7A48 /* string_list.pyste */,
-				DCC30F660762539D008F7A48 /* string_util.pyste */,
-				DCC30F670762539D008F7A48 /* tArray.pyste */,
-				DCC30F680762539D008F7A48 /* tArray_instantiations.hh */,
-				DCC30F690762539D008F7A48 /* task_entry.pyste */,
-				DCC30F6A0762539D008F7A48 /* task_lib.pyste */,
-				DCC30F6B0762539D008F7A48 /* tBuffer.pyste */,
-				DCC30F6C0762539D008F7A48 /* tBuffer_instantiations.hh */,
-				DCC30F6D0762539D008F7A48 /* tDictionary.pyste */,
-				DCC30F6E0762539D008F7A48 /* tDictionary_instantiations.hh */,
-				DCC30F6F0762539D008F7A48 /* test_cpu.pyste */,
-				DCC30F700762539D008F7A48 /* test_getting_started1.py */,
-				DCC30F710762539D008F7A48 /* test_getting_started2.py */,
-				DCC30F720762539D008F7A48 /* test_util.pyste */,
-				DCC30F730762539D008F7A48 /* tList.pyste */,
-				DCC30F740762539D008F7A48 /* tList_instantiations.hh */,
-				DCC30F750762539D008F7A48 /* tMatrix.pyste */,
-				DCC30F760762539D008F7A48 /* tMatrix_instantiations.hh */,
-				DCC30F770762539D008F7A48 /* tools.pyste */,
-				DCC30F780762539D008F7A48 /* uint.pyste */,
-				DCC30F790762539D008F7A48 /* weighted_index.pyste */,
-				70C1F0C608C4012700F50912 /* nHardware-fixups.h */,
-				70C1F0C708C4012700F50912 /* nHardware-fixups.cc */,
-				70C1F10008C40BEF00F50912 /* nHardware.pyste */,
-			);
-			path = Boost.Python;
-			sourceTree = "<group>";
-		};
-		DCC30D430762539B008F7A48 /* AvidaGui */ = {
-			isa = PBXGroup;
-			children = (
-				DCC30D640762539B008F7A48 /* 0 */,
-				DCC30D670762539B008F7A48 /* __init__.py */,
-				DCC30D680762539B008F7A48 /* buildapp.py */,
-				DCC30D690762539B008F7A48 /* FunctionalTest_recursive_tests.py */,
-				DCC30D6A0762539B008F7A48 /* py_avida_core_data.py */,
-				DCC30D6B0762539B008F7A48 /* py_avida_driver_controller.py */,
-				DCC30D6C0762539B008F7A48 /* py_avida_state_mediator.py */,
-				DCC30D6D0762539B008F7A48 /* py_avida_threaded_driver.py */,
-				DCC30D6E0762539B008F7A48 /* py_brainstorms.py */,
-				DCC30D6F0762539B008F7A48 /* py_main_controller_data.py */,
-				DCC30D700762539B008F7A48 /* pyEduMainCtrl.py */,
-				DCC30D710762539B008F7A48 /* pyMdl.py */,
-				DCC30D720762539B008F7A48 /* pySessionCtrl.py */,
-				DCC30D730762539B008F7A48 /* pySessionCtrl.py.1 */,
-				DCC30D740762539B008F7A48 /* pySessionDumbCtrl.py.1 */,
-				DCC30D750762539B008F7A48 /* pySessionWorkThreadHdlr.py.0 */,
-				DCC30D760762539B008F7A48 /* pySessionWorkThreadHdlr.py.1 */,
-				DCC30D770762539B008F7A48 /* pyTemporaryReloads.py */,
-				DCC30D780762539B008F7A48 /* UnitTest_pyAvidaCoreData.py */,
-				DCC30D790762539B008F7A48 /* UnitTest_pyAvidaThreadedDriver.py */,
-				DCC30D7A0762539B008F7A48 /* UnitTest_pyEduMainCtrl.py */,
-				DCC30D7B0762539B008F7A48 /* UnitTest_pyEduMainMenuBarHdlr.py */,
-				DCC30D7C0762539B008F7A48 /* UnitTest_pyEduSessionMenuBarHdlr.py */,
-				DCC30D7D0762539B008F7A48 /* UnitTest_pyMainControllerFactory.py */,
-				DCC30D7E0762539B008F7A48 /* UnitTest_pyMdl.py */,
-				DCC30D7F0762539B008F7A48 /* UnitTest_pyMdtr.py */,
-				DCC30D800762539B008F7A48 /* UnitTest_pySessionControllerFactory.py */,
-				DCC30D810762539B008F7A48 /* UnitTest_pySessionCtrl.py */,
-				DCC30D820762539B008F7A48 /* UnitTest_pySessionDumbCtrl.py */,
-				DCC30D830762539B008F7A48 /* UnitTest_pySessionDumbView.py */,
-				DCC30D840762539B008F7A48 /* UnitTest_pySessionWorkThreadHdlr.py */,
-			);
-			path = AvidaGui;
-			sourceTree = "<group>";
-		};
-		DCC30D640762539B008F7A48 /* 0 */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = 0;
-			sourceTree = "<group>";
-		};
 		DCC30F7C0762539D008F7A48 /* cpu */ = {
 			isa = PBXGroup;
 			children = (
+				70C5BD690905CE5F0028A785 /* cHardwareManager.cc */,
+				70C5BD6A0905CE5F0028A785 /* cHardwareManager.h */,
 				707A687408E3750300576968 /* cHardwareTracer_SMT.h */,
 				70C1F0FC08C40B1B00F50912 /* nHardwareCPU.h */,
 				70C1F0A808C3FF1800F50912 /* nHardware.h */,
@@ -1975,7 +1027,6 @@
 				70C1F02208C3C71300F50912 /* cHardwareSMT_Thread.cc */,
 				70C1F02308C3C71300F50912 /* cHardwareSMT.cc */,
 				70C1F02408C3C71300F50912 /* cHardwareStatusPrinter.cc */,
-				70C1F02508C3C71300F50912 /* cHardwareUtil.cc */,
 				70C1F02608C3C71300F50912 /* cHeadCPU.cc */,
 				70C1F02708C3C71300F50912 /* cHeadMultiMem.cc */,
 				70C1F02808C3C71300F50912 /* cTestCPU.cc */,
@@ -1987,7 +1038,6 @@
 				70C1F01708C3C6FC00F50912 /* cHardwareTracer_CPU.h */,
 				70C1F01808C3C6FC00F50912 /* cHardwareTracer_TestCPU.h */,
 				70C1F01908C3C6FC00F50912 /* cHardwareTracer.h */,
-				70C1F01A08C3C6FC00F50912 /* cHardwareUtil.h */,
 				70C1F01B08C3C6FC00F50912 /* cHeadCPU.h */,
 				70C1F01C08C3C6FC00F50912 /* cHeadMultiMem.h */,
 				70C1F01D08C3C6FC00F50912 /* cInstLibCPU.h */,
@@ -1999,12 +1049,10 @@
 				70C1EFA308C39F2100F50912 /* cHardwareBase.cc */,
 				70C1EFA408C39F2100F50912 /* cHardwareCPU_Thread.cc */,
 				70C1EFA508C39F2100F50912 /* cHardwareCPU.cc */,
-				70C1EFA608C39F2100F50912 /* cHardwareFactory.cc */,
 				70C1EF9D08C39F0E00F50912 /* cHardware4Stack_Thread.h */,
 				70C1EF9E08C39F0E00F50912 /* cHardwareBase.h */,
 				70C1EF9F08C39F0E00F50912 /* cHardwareCPU_Thread.h */,
 				70C1EFA008C39F0E00F50912 /* cHardwareCPU.h */,
-				70C1EFA108C39F0E00F50912 /* cHardwareFactory.h */,
 				70C1EF8B08C39BC500F50912 /* cHardware4Stack.cc */,
 				70C1EF8A08C39BB700F50912 /* cHardware4Stack.h */,
 				70C1EF7108C3968700F50912 /* cCPUTestInfo.cc */,
@@ -2017,7 +1065,6 @@
 				70C1EF4608C393BA00F50912 /* cCodeLabel.cc */,
 				70C1EF4708C393BA00F50912 /* cCodeLabel.h */,
 				DCC30FA90762539D008F7A48 /* CMakeLists.txt */,
-				DCC30FAC0762539D008F7A48 /* cpu.pri */,
 				706D30CC0852328F00D7DC8F /* tInstLib.h */,
 			);
 			path = cpu;
@@ -2026,21 +1073,17 @@
 		DCC30FD00762539D008F7A48 /* event */ = {
 			isa = PBXGroup;
 			children = (
-				70C1F18E08C6A11100F50912 /* cEventFactoryManager.cc */,
+				7040CF1A0906A52E00AA820F /* cEventManager.cc */,
+				7040CF1B0906A52E00AA820F /* cEventManager.h */,
 				70C1F18F08C6A11100F50912 /* cEventList.cc */,
 				70C1F19008C6A11100F50912 /* cEventListIterator.cc */,
 				70C1F19108C6A11100F50912 /* cEventTriggers.cc */,
-				70C1F19208C6A11100F50912 /* cPopulationEventFactory.cc */,
 				70C1F18608C6A0FA00F50912 /* cEvent.h */,
-				70C1F18708C6A0FA00F50912 /* cEventFactoryManager.h */,
 				70C1F18808C6A0FA00F50912 /* cEventList.h */,
 				70C1F18908C6A0FA00F50912 /* cEventListEntry.h */,
 				70C1F18A08C6A0FA00F50912 /* cEventListIterator.h */,
 				70C1F18B08C6A0FA00F50912 /* cEventTriggers.h */,
-				70C1F18C08C6A0FA00F50912 /* cPopulationEvent.h */,
-				70C1F18D08C6A0FA00F50912 /* cPopulationEventFactory.h */,
 				DCC30FEB0762539D008F7A48 /* CMakeLists.txt */,
-				DCC30FF00762539D008F7A48 /* event.pri */,
 			);
 			path = event;
 			sourceTree = "<group>";
@@ -2152,8 +1195,6 @@
 				702D4F3D08DA61FE007BA469 /* cAnalyzeGenotype.cc */,
 				702D4F3E08DA61FE007BA469 /* cAnalyzeUtil.cc */,
 				702D4F3F08DA61FE007BA469 /* cBirthChamber.cc */,
-				702D4F4008DA61FE007BA469 /* cCallbackUtil.cc */,
-				702D4F4108DA61FE007BA469 /* cConfig.cc */,
 				702D4F2F08DA61E2007BA469 /* cAnalyze.h */,
 				702D4F3008DA61E2007BA469 /* cAnalyzeCommand.h */,
 				702D4F3108DA61E2007BA469 /* cAnalyzeCommandDef.h */,
@@ -2165,8 +1206,6 @@
 				702D4F3708DA61E2007BA469 /* cAnalyzeUtil.h */,
 				702D4F3808DA61E2007BA469 /* cAvidaTriggers.h */,
 				702D4F3908DA61E2007BA469 /* cBirthChamber.h */,
-				702D4F3A08DA61E2007BA469 /* cCallbackUtil.h */,
-				702D4F3B08DA61E2007BA469 /* cConfig.h */,
 				702D4EF908DA5341007BA469 /* cAvidaDriver_Analyze.cc */,
 				702D4EFA08DA5341007BA469 /* cAvidaDriver_Base.cc */,
 				702D4EFB08DA5341007BA469 /* cAvidaDriver_Population.cc */,
@@ -2180,8 +1219,6 @@
 				DCC3109C0762539E008F7A48 /* avida.cc */,
 				DCC310A90762539E008F7A48 /* CMakeLists.txt */,
 				DCC310B00762539E008F7A48 /* functional_testsuites */,
-				DCC310F00762539E008F7A48 /* main.pro */,
-				DCC310F10762539E008F7A48 /* main_sub.pri */,
 				DCC311090762539E008F7A48 /* primitive.cc */,
 				DCC3112E0762539E008F7A48 /* unit_testsuites */,
 				70B085D108F48C9400FC65FE /* nSpecies.h */,
@@ -2469,7 +1506,6 @@
 				DCC3129C076253A0008F7A48 /* block_struct.t.cc */,
 				DCC3129D076253A0008F7A48 /* callback_util.t.cc */,
 				DCC3129E076253A0008F7A48 /* CMakeLists.txt */,
-				DCC3129F076253A0008F7A48 /* config.t.cc */,
 				DCC312A0076253A0008F7A48 /* const_schedule.t.cc */,
 				DCC312A1076253A0008F7A48 /* cpu_head.t.cc */,
 				DCC312A2076253A0008F7A48 /* cpu_memory.t.cc */,
@@ -2546,8 +1582,6 @@
 				DCC31310076253A0008F7A48 /* phenotype.t.cc */,
 				DCC31311076253A0008F7A48 /* population.t.cc */,
 				DCC31312076253A0008F7A48 /* population_cell.t.cc */,
-				DCC31313076253A0008F7A48 /* population_event.t.cc */,
-				DCC31314076253A0008F7A48 /* population_event_factory.t.cc */,
 				DCC31315076253A0008F7A48 /* population_interface.t.cc */,
 				DCC31316076253A0008F7A48 /* prob_schedule.t.cc */,
 				DCC31317076253A0008F7A48 /* random.t.cc */,
@@ -2893,45 +1927,6 @@
 			path = task_events;
 			sourceTree = "<group>";
 		};
-		DCC315D2076253A5008F7A48 /* viewers */ = {
-			isa = PBXGroup;
-			children = (
-				DCC315F6076253A5008F7A48 /* ansi.cc */,
-				DCC315F7076253A5008F7A48 /* ansi.hh */,
-				DCC315F8076253A5008F7A48 /* bar_screen.cc */,
-				DCC315F9076253A5008F7A48 /* bar_screen.hh */,
-				DCC315FA076253A5008F7A48 /* CMakeLists.txt */,
-				DCC315FB076253A5008F7A48 /* environment_screen.cc */,
-				DCC315FC076253A5008F7A48 /* environment_screen.hh */,
-				DCC315FD076253A5008F7A48 /* hist_screen.cc */,
-				DCC315FE076253A5008F7A48 /* hist_screen.hh */,
-				DCC315FF076253A5008F7A48 /* key_chart */,
-				DCC31601076253A5008F7A48 /* map_screen.cc */,
-				DCC31602076253A5008F7A48 /* map_screen.hh */,
-				DCC31603076253A5008F7A48 /* menu.cc */,
-				DCC31604076253A5008F7A48 /* menu.hh */,
-				DCC31605076253A5008F7A48 /* ncurses.cc */,
-				DCC31606076253A5008F7A48 /* ncurses.hh */,
-				DCC31607076253A5008F7A48 /* options_screen.cc */,
-				DCC31608076253A5008F7A48 /* options_screen.hh */,
-				DCC31609076253A5008F7A48 /* stats_screen.cc */,
-				DCC3160A076253A5008F7A48 /* stats_screen.hh */,
-				DCC3160B076253A5008F7A48 /* symbol_util.cc */,
-				DCC3160C076253A5008F7A48 /* symbol_util.hh */,
-				DCC3160D076253A5008F7A48 /* text_screen.cc */,
-				DCC3160E076253A5008F7A48 /* text_screen.hh */,
-				DCC3160F076253A5008F7A48 /* text_window.hh */,
-				DCC31610076253A5008F7A48 /* view.cc */,
-				DCC31611076253A5008F7A48 /* view.hh */,
-				DCC31612076253A5008F7A48 /* viewer.cc */,
-				DCC31613076253A5008F7A48 /* viewer.hh */,
-				DCC31614076253A5008F7A48 /* viewers.pro */,
-				DCC31615076253A5008F7A48 /* zoom_screen.cc */,
-				DCC31616076253A5008F7A48 /* zoom_screen.hh */,
-			);
-			path = viewers;
-			sourceTree = "<group>";
-		};
 		DCC3164E07626CF3008F7A48 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -3081,20 +2076,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				700E2AF8085DE50C00CF158A /* avida.cc in Sources */,
-				70658C35085DE5D800486BED /* ansi.cc in Sources */,
-				70658C36085DE5D900486BED /* bar_screen.cc in Sources */,
-				70658C38085DE5DC00486BED /* environment_screen.cc in Sources */,
-				70658C39085DE5DD00486BED /* hist_screen.cc in Sources */,
-				70658C3A085DE5DF00486BED /* map_screen.cc in Sources */,
-				70658C3B085DE5E000486BED /* menu.cc in Sources */,
-				70658C3C085DE5E100486BED /* ncurses.cc in Sources */,
-				70658C3D085DE5E200486BED /* options_screen.cc in Sources */,
-				70658C3E085DE5E400486BED /* stats_screen.cc in Sources */,
-				70658C3F085DE5E500486BED /* symbol_util.cc in Sources */,
-				70658C40085DE5E700486BED /* text_screen.cc in Sources */,
-				70658C41085DE5E900486BED /* view.cc in Sources */,
-				70658C42085DE5EA00486BED /* viewer.cc in Sources */,
-				70658C43085DE5ED00486BED /* zoom_screen.cc in Sources */,
 				70C1EF4A08C393BA00F50912 /* cCodeLabel.cc in Sources */,
 				70C1EF5A08C3948C00F50912 /* cCPUMemory.cc in Sources */,
 				70C1EF6308C3954700F50912 /* cCPUStack.cc in Sources */,
@@ -3104,20 +2085,16 @@
 				70C1EFAD08C39F2100F50912 /* cHardwareBase.cc in Sources */,
 				70C1EFAE08C39F2100F50912 /* cHardwareCPU_Thread.cc in Sources */,
 				70C1EFAF08C39F2100F50912 /* cHardwareCPU.cc in Sources */,
-				70C1EFB008C39F2100F50912 /* cHardwareFactory.cc in Sources */,
 				70C1F03208C3C71300F50912 /* cHardwareSMT_Thread.cc in Sources */,
 				70C1F03308C3C71300F50912 /* cHardwareSMT.cc in Sources */,
 				70C1F03408C3C71300F50912 /* cHardwareStatusPrinter.cc in Sources */,
-				70C1F03508C3C71300F50912 /* cHardwareUtil.cc in Sources */,
 				70C1F03608C3C71300F50912 /* cHeadCPU.cc in Sources */,
 				70C1F03708C3C71300F50912 /* cHeadMultiMem.cc in Sources */,
 				70C1F03808C3C71300F50912 /* cTestCPU.cc in Sources */,
 				70C1F03908C3C71300F50912 /* cTestUtil.cc in Sources */,
-				70C1F19808C6A11100F50912 /* cEventFactoryManager.cc in Sources */,
 				70C1F19908C6A11100F50912 /* cEventList.cc in Sources */,
 				70C1F19A08C6A11100F50912 /* cEventListIterator.cc in Sources */,
 				70C1F19B08C6A11100F50912 /* cEventTriggers.cc in Sources */,
-				70C1F19C08C6A11100F50912 /* cPopulationEventFactory.cc in Sources */,
 				702D4F0308DA5341007BA469 /* cAvidaDriver_Analyze.cc in Sources */,
 				702D4F0408DA5341007BA469 /* cAvidaDriver_Base.cc in Sources */,
 				702D4F0508DA5341007BA469 /* cAvidaDriver_Population.cc in Sources */,
@@ -3127,8 +2104,6 @@
 				702D4F4908DA61FE007BA469 /* cAnalyzeGenotype.cc in Sources */,
 				702D4F4A08DA61FE007BA469 /* cAnalyzeUtil.cc in Sources */,
 				702D4F4B08DA61FE007BA469 /* cBirthChamber.cc in Sources */,
-				702D4F4C08DA61FE007BA469 /* cCallbackUtil.cc in Sources */,
-				702D4F4D08DA61FE007BA469 /* cConfig.cc in Sources */,
 				70CA6ED208DB7F8200068AC2 /* cFitnessMatrix.cc in Sources */,
 				70CA6ED308DB7F8200068AC2 /* cGenebank.cc in Sources */,
 				70CA6ED408DB7F8200068AC2 /* cGenome.cc in Sources */,
@@ -3206,6 +2181,8 @@
 				70B08B9308FB2E6B00FC65FE /* cWeightedIndex.cc in Sources */,
 				7013846209028B3E0087ED2E /* cAvidaConfig.cc in Sources */,
 				70C5BC6709059A970028A785 /* cWorld.cc in Sources */,
+				70C5BD6D0905CE5F0028A785 /* cHardwareManager.cc in Sources */,
+				7040CF1E0906A52E00AA820F /* cEventManager.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3227,32 +2204,21 @@
 				70C1EFA808C39F2100F50912 /* cHardwareBase.cc in Sources */,
 				70C1EFA908C39F2100F50912 /* cHardwareCPU_Thread.cc in Sources */,
 				70C1EFAA08C39F2100F50912 /* cHardwareCPU.cc in Sources */,
-				70C1EFAB08C39F2100F50912 /* cHardwareFactory.cc in Sources */,
 				70C1F02A08C3C71300F50912 /* cHardwareSMT_Thread.cc in Sources */,
 				70C1F02B08C3C71300F50912 /* cHardwareSMT.cc in Sources */,
 				70C1F02C08C3C71300F50912 /* cHardwareStatusPrinter.cc in Sources */,
-				70C1F02D08C3C71300F50912 /* cHardwareUtil.cc in Sources */,
 				70C1F02E08C3C71300F50912 /* cHeadCPU.cc in Sources */,
 				70C1F02F08C3C71300F50912 /* cHeadMultiMem.cc in Sources */,
 				70C1F03008C3C71300F50912 /* cTestCPU.cc in Sources */,
 				70C1F03108C3C71300F50912 /* cTestUtil.cc in Sources */,
-				70C1F19308C6A11100F50912 /* cEventFactoryManager.cc in Sources */,
 				70C1F19408C6A11100F50912 /* cEventList.cc in Sources */,
 				70C1F19508C6A11100F50912 /* cEventListIterator.cc in Sources */,
 				70C1F19608C6A11100F50912 /* cEventTriggers.cc in Sources */,
-				70C1F19708C6A11100F50912 /* cPopulationEventFactory.cc in Sources */,
-				702D4EFE08DA5341007BA469 /* cAvidaDriver_Analyze.cc in Sources */,
 				702D4EFF08DA5341007BA469 /* cAvidaDriver_Base.cc in Sources */,
 				702D4F0008DA5341007BA469 /* cAvidaDriver_Population.cc in Sources */,
 				702D4F0108DA5341007BA469 /* cEnvironment.cc in Sources */,
 				702D4F0208DA5341007BA469 /* cPopulationInterface.cc in Sources */,
-				702D4F4208DA61FE007BA469 /* cAnalyze.cc in Sources */,
-				702D4F4308DA61FE007BA469 /* cAnalyzeGenotype.cc in Sources */,
-				702D4F4408DA61FE007BA469 /* cAnalyzeUtil.cc in Sources */,
 				702D4F4508DA61FE007BA469 /* cBirthChamber.cc in Sources */,
-				702D4F4608DA61FE007BA469 /* cCallbackUtil.cc in Sources */,
-				702D4F4708DA61FE007BA469 /* cConfig.cc in Sources */,
-				70CA6EC208DB7F8200068AC2 /* cFitnessMatrix.cc in Sources */,
 				70CA6EC308DB7F8200068AC2 /* cGenebank.cc in Sources */,
 				70CA6EC408DB7F8200068AC2 /* cGenome.cc in Sources */,
 				70CA6EC508DB7F8200068AC2 /* cGenomeUtil.cc in Sources */,
@@ -3275,7 +2241,6 @@
 				70B0865D08F4974300FC65FE /* cMutation.cc in Sources */,
 				70B0865E08F4974300FC65FE /* cMutationLib.cc in Sources */,
 				70B0865F08F4974300FC65FE /* cMutationRates.cc in Sources */,
-				70B0866008F4974300FC65FE /* cMxCodeArray.cc in Sources */,
 				70B0868B08F49EA800FC65FE /* cOrganism.cc in Sources */,
 				70B0868C08F49EA800FC65FE /* cOrgMessage.cc in Sources */,
 				70B0868D08F49EA800FC65FE /* cPopulation.cc in Sources */,
@@ -3329,6 +2294,9 @@
 				70B08B9508FB2E6B00FC65FE /* cWeightedIndex.cc in Sources */,
 				7013846409028B3E0087ED2E /* cAvidaConfig.cc in Sources */,
 				70C5BC6509059A970028A785 /* cWorld.cc in Sources */,
+				70C5BD6B0905CE5F0028A785 /* cHardwareManager.cc in Sources */,
+				7040CF1C0906A52E00AA820F /* cEventManager.cc in Sources */,
+				7040D22509071EE000AA820F /* cAnalyzeUtil.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3419,32 +2387,6 @@
 			};
 			name = Profile;
 		};
-		700E2B82085DE50C00CF158A /* Default */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_AUTO_VECTORIZATION = YES;
-				GCC_DEBUGGING_SYMBOLS = full;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_FAST_MATH = YES;
-				GCC_MODEL_CPU = G4;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = REVISION_SUPPORT;
-				GCC_UNROLL_LOOPS = YES;
-				HEADER_SEARCH_PATHS = source/event/;
-				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)/work";
-				LIBRARY_SEARCH_PATHS = "";
-				PRODUCT_NAME = viewer;
-				SKIP_INSTALL = YES;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				ZERO_LINK = YES;
-			};
-			name = Default;
-		};
 		702442D30859E0B00059BD9B /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -3486,7 +2428,10 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_CPU = G4;
 				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_PREPROCESSOR_DEFINITIONS = REVISION_SUPPORT;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					NDEBUG,
+					REVISION_SUPPORT,
+				);
 				GCC_UNROLL_LOOPS = YES;
 				HEADER_SEARCH_PATHS = source/event/;
 				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)/work";
@@ -3511,7 +2456,10 @@
 				GCC_FAST_MATH = YES;
 				GCC_MODEL_CPU = G4;
 				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_PREPROCESSOR_DEFINITIONS = REVISION_SUPPORT;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					NDEBUG,
+					REVISION_SUPPORT,
+				);
 				GCC_UNROLL_LOOPS = YES;
 				HEADER_SEARCH_PATHS = source/event/;
 				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)/work";
@@ -3522,34 +2470,9 @@
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
 				);
-				ZERO_LINK = YES;
+				ZERO_LINK = NO;
 			};
 			name = Profile;
-		};
-		702442D60859E0B00059BD9B /* Default */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_AUTO_VECTORIZATION = YES;
-				GCC_DEBUGGING_SYMBOLS = full;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_FAST_MATH = YES;
-				GCC_MODEL_CPU = G4;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = REVISION_SUPPORT;
-				GCC_UNROLL_LOOPS = YES;
-				HEADER_SEARCH_PATHS = source/event/;
-				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)/work";
-				PRODUCT_NAME = primitive;
-				SKIP_INSTALL = YES;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				ZERO_LINK = YES;
-			};
-			name = Default;
 		};
 		702442D80859E0B00059BD9B /* Development */ = {
 			isa = XCBuildConfiguration;
@@ -3561,10 +2484,12 @@
 		702442D90859E0B00059BD9B /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEAD_CODE_STRIPPING = NO;
 				GCC_ALTIVEC_EXTENSIONS = YES;
 				GCC_AUTO_VECTORIZATION = YES;
 				GCC_DYNAMIC_NO_PIC = YES;
 				GCC_FAST_MATH = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_UNROLL_LOOPS = YES;
 			};
@@ -3573,14 +2498,15 @@
 		702442DA0859E0B00059BD9B /* Profile */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_ALTIVEC_EXTENSIONS = YES;
+				GCC_AUTO_VECTORIZATION = YES;
+				GCC_FAST_MATH = YES;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_UNROLL_LOOPS = YES;
+				GENERATE_PROFILING_CODE = YES;
+				ZERO_LINK = NO;
 			};
 			name = Profile;
-		};
-		702442DB0859E0B00059BD9B /* Default */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-			};
-			name = Default;
 		};
 /* End XCBuildConfiguration section */
 
@@ -3591,10 +2517,9 @@
 				700E2B7F085DE50C00CF158A /* Development */,
 				700E2B80085DE50C00CF158A /* Deployment */,
 				700E2B81085DE50C00CF158A /* Profile */,
-				700E2B82085DE50C00CF158A /* Default */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Default;
+			defaultConfigurationName = Deployment;
 		};
 		702442D20859E0B00059BD9B /* Build configuration list for PBXNativeTarget "primitive" */ = {
 			isa = XCConfigurationList;
@@ -3602,10 +2527,9 @@
 				702442D30859E0B00059BD9B /* Development */,
 				702442D40859E0B00059BD9B /* Deployment */,
 				702442D50859E0B00059BD9B /* Profile */,
-				702442D60859E0B00059BD9B /* Default */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Default;
+			defaultConfigurationName = Deployment;
 		};
 		702442D70859E0B00059BD9B /* Build configuration list for PBXProject "Avida2" */ = {
 			isa = XCConfigurationList;
@@ -3613,10 +2537,9 @@
 				702442D80859E0B00059BD9B /* Development */,
 				702442D90859E0B00059BD9B /* Deployment */,
 				702442DA0859E0B00059BD9B /* Profile */,
-				702442DB0859E0B00059BD9B /* Default */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Default;
+			defaultConfigurationName = Deployment;
 		};
 /* End XCConfigurationList section */
 	};

@@ -33,9 +33,11 @@ class cGenotypeControl; // access
 class cSpeciesControl; // access
 class cStats;
 class cString; // aggregate
+class cWorld;
 
 class cGenebank {
 private:
+  cWorld* m_world;
   unsigned int genotype_count[MAX_CREATURE_SIZE];
   tList<cGenotype> active_genotypes[nGenotype::HASH_SIZE];
   cGenotypeControl * genotype_control;
@@ -49,7 +51,7 @@ private:
   // disabled copy constructor.
   cGenebank(const cGenebank &);
 public:
-  cGenebank(cStats & _stats);
+  cGenebank(cWorld* world, cStats & _stats);
   ~cGenebank();
 
   void UpdateReset();

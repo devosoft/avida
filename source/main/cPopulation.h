@@ -25,6 +25,9 @@
 #ifndef STRING_HH
 #include "cString.h"
 #endif
+#ifndef cWorld_h
+#include "cWorld.h"
+#endif
 #ifndef TARRAY_HH
 #include "tArray.h"
 #endif
@@ -57,6 +60,7 @@ private:
   cPopulation(const cPopulation &); // not implemented
 private:
   // Components...
+  cWorld* m_world;
   cSchedule * schedule;                // Handles allocation of CPU cycles
   tArray<cPopulationCell> cell_array;  // Local cells composing the population
   cResourceCount resource_count;       // Global resources available
@@ -71,7 +75,6 @@ private:
 
   // Default organism setups...
   cEnvironment & environment;          // Physics & Chemestry description
-  cPopulationInterface default_interface;  // Organism interface to population
 
   // Other data...
   int world_x;                         // Structured population width.
@@ -119,9 +122,7 @@ private:
   void ActivateOrganism(cOrganism * in_organism, cPopulationCell &target_cell);
 
 public:
-  cPopulation(const cPopulationInterface & in_interface,
-	      cEnvironment & in_environment,
-	      cChangeList * change_list = 0);
+  cPopulation(cWorld* world);
   ~cPopulation();
 
   // Extra Setup...

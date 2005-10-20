@@ -5,13 +5,9 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef RESOURCE_COUNT_HH
 #include "cResourceCount.h"
-#endif
 
-#ifndef CONFIG_HH
-#include "cConfig.h"
-#endif
+#include "nGeometry.h"
 
 extern "C" {
 #include <math.h>

@@ -11,9 +11,6 @@
 #define VERSION "2.3.1"
 #define VERSION_TAG "Padawan"
 
-
-#define DEFAULT_DIR "../work/"
-
 /*
 FIXME:  remove asap, switching to file-configureable option
 */
@@ -179,5 +176,46 @@ enum tHARDWARE_TYPE
 	HARDWARE_TYPE_CPU_4STACK,
 	HARDWARE_TYPE_CPU_SMT
 };
+
+#define SLICE_CONSTANT         0
+#define SLICE_PROB_MERIT       1
+#define SLICE_INTEGRATED_MERIT 2
+
+#define POSITION_CHILD_RANDOM           0
+#define POSITION_CHILD_AGE              1
+#define POSITION_CHILD_MERIT            2
+#define POSITION_CHILD_EMPTY            3
+#define NUM_LOCAL_POSITION_CHILD        4
+
+#define POSITION_CHILD_FULL_SOUP_RANDOM 4
+#define POSITION_CHILD_FULL_SOUP_ELDEST 5
+#define POSITION_CHILD_DEME_RANDOM      6
+
+#define DEATH_METHOD_OFF       0
+#define DEATH_METHOD_CONST     1
+#define DEATH_METHOD_MULTIPLE  2
+
+#define ALLOC_METHOD_DEFAULT   0
+#define ALLOC_METHOD_NECRO     1
+#define ALLOC_METHOD_RANDOM    2
+
+#define DIVIDE_METHOD_OFFSPRING 0
+#define DIVIDE_METHOD_SPLIT     1
+#define DIVIDE_METHOD_BIRTH     2
+
+#define GENERATION_INC_OFFSPRING 0
+#define GENERATION_INC_BOTH      1
+
+#define TASK_MERIT_OFF         0
+#define TASK_MERIT_EXPONENTIAL 1
+#define TASK_MERIT_LINEAR      2
+
+#define SIZE_MERIT_OFF         0
+#define SIZE_MERIT_COPIED      1
+#define SIZE_MERIT_EXECUTED    2
+#define SIZE_MERIT_FULL        3
+#define SIZE_MERIT_LEAST       4
+#define SIZE_MERIT_SQRT_LEAST  5
+
 
 #endif

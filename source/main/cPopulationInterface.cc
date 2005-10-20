@@ -5,9 +5,15 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef POPULATION_INTERFACE_HH
 #include "cPopulationInterface.h"
-#endif
+
+#include "cGenotype.h"
+#include "cHardwareManager.h"
+#include "cOrganism.h"
+#include "cOrgMessage.h"
+#include "cPopulation.h"
+#include "cPopulationCell.h"
+#include "cTestCPU.h"
 
 #include <assert.h>
 
@@ -15,195 +21,169 @@
 #define NULL 0
 #endif
 
-cPopulationInterface::cPopulationInterface()
-  : population(NULL)
-  , cell_id(-1)
-  , fun_new_hardware(NULL)
-  , fun_recycle(NULL)
-  , fun_divide(NULL)
-  , fun_test_on_divide(NULL)
-  , fun_get_neighbor(NULL)
-  , fun_birth_chamber(NULL)
-  , fun_num_neighbors(NULL)
-  , fun_rotate(NULL)
-  , fun_breakpoint(NULL)
-  , fun_test_fitness(NULL)
-  , fun_get_input(NULL)
-  , fun_get_input_at(NULL)
-  , fun_debug(NULL)
-  , fun_get_resources(NULL)
-  , fun_update_resources(NULL)
-  , fun_kill_cell(NULL)
-  , fun_kill_surround_cell(NULL)
-  , fun_send_message(NULL)
-  , fun_receive_value(NULL)
-  , fun_inject_parasite(NULL)
-  , fun_update_merit(NULL)
+cHardwareBase* cPopulationInterface::NewHardware(cOrganism * owner)
 {
+  return m_world->GetHardwareManager().Create(owner);
 }
-
-
-cPopulationInterface::~cPopulationInterface()
-{
-}
-
-void cPopulationInterface::CopyCallbacks(cPopulationInterface & in_interface)
-{
-  fun_new_hardware     = in_interface.fun_new_hardware;
-  fun_recycle          = in_interface.fun_recycle;
-  fun_divide           = in_interface.fun_divide;
-  fun_test_on_divide   = in_interface.fun_test_on_divide;
-  fun_get_neighbor     = in_interface.fun_get_neighbor;
-  fun_birth_chamber    = in_interface.fun_birth_chamber;
-  fun_num_neighbors    = in_interface.fun_num_neighbors;
-  fun_rotate           = in_interface.fun_rotate;
-  fun_breakpoint       = in_interface.fun_breakpoint;
-  fun_test_fitness     = in_interface.fun_test_fitness;
-  fun_get_input        = in_interface.fun_get_input;
-  fun_debug            = in_interface.fun_debug;
-  fun_get_resources    = in_interface.fun_get_resources;
-  fun_update_resources = in_interface.fun_update_resources;
-  fun_kill_cell        = in_interface.fun_kill_cell;
-  fun_kill_surround_cell = in_interface.fun_kill_surround_cell;
-  fun_send_message     = in_interface.fun_send_message;
-  fun_receive_value    = in_interface.fun_receive_value;
-  fun_inject_parasite  = in_interface.fun_inject_parasite;
-  fun_update_merit     = in_interface.fun_update_merit;
-}
-
-cHardwareBase * cPopulationInterface::NewHardware(cOrganism * owner)
-{
-  assert(fun_new_hardware != NULL);  // All interfaces must have a NewHardware!
-  return (*fun_new_hardware)(population, owner);
-}
-
-
-void cPopulationInterface::RecycleHardware(cHardwareBase * out_hardware)
-{
-  assert(fun_recycle != NULL);  // All interfaces must have a RecycleHArdware!
-  (*fun_recycle)(out_hardware);
-}
-
 
 bool cPopulationInterface::Divide(cOrganism * parent, cGenome & child_genome)
 {
-  assert (fun_divide != NULL);       // All interfaces must have a Divide!
-  return (*fun_divide)(population, cell_id, parent, child_genome);  
-}
-
-bool cPopulationInterface::TestOnDivide() const
-{
-  if (population == NULL) return false;
-  assert(fun_test_on_divide != NULL);
-  return (*fun_test_on_divide)(population, cell_id);
+  if (InTestPop()) {
+    parent->GetPhenotype().TestDivideReset(parent->GetGenome().GetSize());
+    // @CAO in the future, we probably want to pass this child the test_cpu!
+    return true;
+  } else {
+    assert(parent != NULL);
+    assert(m_world->GetPopulation().GetCell(cell_id).GetOrganism() == parent);
+    return m_world->GetPopulation().ActivateOffspring(child_genome, *parent);
+  }
 }
 
 cOrganism * cPopulationInterface::GetNeighbor()
 {
-  if (fun_get_neighbor == NULL) return NULL;
+  if (InTestPop()) return NULL;
 
-  assert(cell_id >= 0);
-  return (*fun_get_neighbor)(population, cell_id);
-}
-
-cBirthChamber & cPopulationInterface::GetBirthChamber()
-{
-  assert(fun_birth_chamber != NULL);
+  cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
+  assert(cell.IsOccupied());
   
-  return (*fun_birth_chamber)(population, cell_id);
+  return cell.ConnectionList().GetFirst()->GetOrganism();
 }
 
 int cPopulationInterface::GetNumNeighbors()
 {
-  if (fun_num_neighbors == NULL) return 0;
-
-  assert(cell_id >= 0);
-  return (*fun_num_neighbors)(population, cell_id);
+  if (InTestPop()) return 0;
+  cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
+  assert(cell.IsOccupied());
+  
+  return cell.ConnectionList().GetSize();
 }
 
 void cPopulationInterface::Rotate(int direction)
 {
-  if (fun_rotate == NULL) return;
+  if (InTestPop()) return;
 
-  assert(cell_id >= 0);
-  (*fun_rotate)(population, cell_id, direction);
-}
+  cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
+  assert(cell.IsOccupied());
 
-void cPopulationInterface::Breakpoint()
-{
-  if (fun_breakpoint == NULL) return;
-  (*fun_breakpoint)();
+  if (direction >= 0) cell.ConnectionList().CircNext();
+  else cell.ConnectionList().CircPrev();
 }
 
 double cPopulationInterface::TestFitness()
 {
-  if (fun_test_fitness == NULL) return -1.0;
-  return (*fun_test_fitness)(population, cell_id);
+  if (InTestPop()) return -1.0;
+  
+  cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
+  assert(cell.IsOccupied());
+  
+  return cell.GetOrganism()->GetGenotype()->GetTestFitness();
 }
 
 int cPopulationInterface::GetInput()
 {
-  assert(fun_get_input != NULL);
-  return (*fun_get_input)(population, cell_id);
+  if (InTestPop()) return cTestCPU::GetInput();
+  
+  cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
+  assert(cell.IsOccupied());
+  return cell.GetInput();
 }
 
-int cPopulationInterface::GetInputAt(int & input_pointer)
+int cPopulationInterface::GetInputAt(int& input_pointer)
 {
-  assert(fun_get_input_at != NULL);
-  return (*fun_get_input_at)(population, cell_id, input_pointer);
+  if (InTestPop()) return cTestCPU::GetInputAt(input_pointer);
+  
+  cPopulationCell& cell = m_world->GetPopulation().GetCell(cell_id);
+  assert(cell.IsOccupied());
+  return cell.GetInputAt(input_pointer);
 }
 
 int cPopulationInterface::Debug()
 {
-  assert(fun_debug != NULL);
-  return (*fun_debug)(population, cell_id);
+  if (InTestPop()) return -1;
+  
+  cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
+  assert(cell.IsOccupied());
+  return cell.GetOrganism()->GetGenotype()->GetID();
 }
 
 const tArray<double> & cPopulationInterface::GetResources()
 {
-  assert(fun_get_resources != NULL);
-  return (*fun_get_resources)(population, cell_id);
+  if (InTestPop()) return cTestCPU::GetResources();  
+  return m_world->GetPopulation().GetCellResources(cell_id);
 }
 
 void cPopulationInterface::UpdateResources(const tArray<double> & res_change)
 {
-  assert(fun_update_resources != NULL);
-  (*fun_update_resources)(population, cell_id, res_change);
+  if (InTestPop()) return cTestCPU::UpdateResources(res_change);
+  return m_world->GetPopulation().UpdateCellResources(res_change, cell_id);
 }
 
 void cPopulationInterface::Die()
 {
-  if (fun_kill_cell == NULL) return;
-  (*fun_kill_cell)(population, cell_id);
+  if (InTestPop()) return;
+  
+  cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
+  m_world->GetPopulation().KillOrganism(cell);
 }
 
 void cPopulationInterface::Kaboom()
 {
-	if (fun_kill_surround_cell == NULL) return;
-	(*fun_kill_surround_cell)(population, cell_id);
+  if (InTestPop()) return;
+  
+  cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
+	m_world->GetPopulation().Kaboom(cell);
 }
 
 bool cPopulationInterface::SendMessage(cOrgMessage & mess)
 {
-  if (fun_send_message == NULL) return false;
-  return (*fun_send_message)(population, cell_id, mess);
+  if (InTestPop()) return false;
+  
+  mess.SetSenderID(cell_id);
+  mess.SetTime(m_world->GetPopulation().GetUpdate());
+  cPopulationCell& cell = m_world->GetPopulation().GetCell(cell_id);
+  if(cell.ConnectionList().GetFirst() == NULL)
+    return false;
+  mess.SetRecipientID(cell.ConnectionList().GetFirst()->GetID());
+  return cell.ConnectionList().GetFirst()->GetOrganism()->ReceiveMessage(mess);
 }
 
 int cPopulationInterface::ReceiveValue()
 {
-  assert(fun_receive_value != NULL);
-  return (*fun_receive_value)(population, cell_id);
+  if (InTestPop()) return cTestCPU::GetReceiveValue();
+  
+  cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
+  assert(cell.IsOccupied());
+  
+  const int num_neighbors = cell.ConnectionList().GetSize();
+  for (int i = 0; i < num_neighbors; i++) {
+    cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
+    cell.ConnectionList().CircNext();
+    
+    cOrganism * cur_neighbor = cell.ConnectionList().GetFirst()->GetOrganism();
+    if (cur_neighbor == NULL || cur_neighbor->GetSentActive() == false) {
+      continue;
+    }
+    
+    return cur_neighbor->RetrieveSentValue();
+  }
+  
+  return 0;
 }
 
 bool cPopulationInterface::InjectParasite(cOrganism * parent, 
 					  const cGenome & injected_code)
 {
-  if (fun_inject_parasite == NULL) return false;
-  return (*fun_inject_parasite)(population, cell_id, parent, injected_code);
+  if (InTestPop()) return false;
+  
+  assert(parent != NULL);
+  assert(m_world->GetPopulation().GetCell(cell_id).GetOrganism() == parent);
+  
+  return m_world->GetPopulation().ActivateInject(*parent, injected_code);
 }
 
 bool cPopulationInterface::UpdateMerit(double new_merit)
 {
-  if (fun_update_merit == NULL) return false;
-  return (*fun_update_merit)(population, cell_id, new_merit);
+  if (InTestPop()) return false;
+  return m_world->GetPopulation().UpdateMerit(cell_id, new_merit);
 }
+

@@ -7,7 +7,6 @@
 
 #include "cHardwareCPU.h"
 
-#include "cConfig.h"
 #include "cCPUTestInfo.h"
 #include "functions.h"
 #include "cGenomeUtil.h"
@@ -363,8 +362,8 @@ cInstLibCPU *cHardwareCPU::initInstLib(void){
   return inst_lib;
 }
 
-cHardwareCPU::cHardwareCPU(cOrganism * in_organism, cInstSet * in_inst_set)
-  : cHardwareBase(in_organism, in_inst_set)
+cHardwareCPU::cHardwareCPU(cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set)
+  : cHardwareBase(world, in_organism, in_inst_set)
 {
   /* FIXME:  reorganize storage of m_functions.  -- kgn */
   m_functions = s_inst_slib->GetFunctions();
@@ -375,7 +374,7 @@ cHardwareCPU::cHardwareCPU(cOrganism * in_organism, cInstSet * in_inst_set)
 
 
 cHardwareCPU::cHardwareCPU(const cHardwareCPU &hardware_cpu)
-: cHardwareBase(hardware_cpu.organism, hardware_cpu.inst_set)
+: cHardwareBase(hardware_cpu.m_world, hardware_cpu.organism, hardware_cpu.inst_set)
 , m_functions(hardware_cpu.m_functions)
 , memory(hardware_cpu.memory)
 , global_stack(hardware_cpu.global_stack)
@@ -396,15 +395,6 @@ cHardwareCPU::cHardwareCPU(const cHardwareCPU &hardware_cpu)
 cHardwareCPU::~cHardwareCPU()
 {
 }
-
-
-void cHardwareCPU::Recycle(cOrganism * new_organism, cInstSet * in_inst_set)
-{
-  cHardwareBase::Recycle(new_organism, in_inst_set);
-  memory = new_organism->GetGenome();
-  Reset();
-}
-
 
 void cHardwareCPU::Reset()
 {
@@ -451,7 +441,7 @@ void cHardwareCPU::SingleProcess()
 
   // If we have threads turned on and we executed each thread in a single
   // timestep, adjust the number of instructions executed accordingly.
-  const int num_inst_exec = (cConfig::GetThreadSlicingMethod() == 1) ?
+  const int num_inst_exec = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1) ?
     num_threads : 1;
   
   for (int i = 0; i < num_inst_exec; i++) {
@@ -1269,7 +1259,7 @@ void cHardwareCPU::ReadLabel(int max_size)
     GetLabel().AddNop(inst_set->GetNopMod(inst_ptr->GetInst()));
 
     // If this is the first line of the template, mark it executed.
-    if (GetLabel().GetSize() <=	cConfig::GetMaxLabelExeSize()) {
+    if (GetLabel().GetSize() <=	m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get()) {
       inst_ptr->FlagExecuted() = true;
     }
   }
@@ -1279,7 +1269,7 @@ void cHardwareCPU::ReadLabel(int max_size)
 bool cHardwareCPU::ForkThread()
 {
   const int num_threads = GetNumThreads();
-  if (num_threads == cConfig::GetMaxCPUThreads()) return false;
+  if (num_threads == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
 
   // Make room for the new thread.
   threads.Resize(num_threads + 1);
@@ -1447,7 +1437,7 @@ bool cHardwareCPU::Allocate_Default(const int new_size)
 bool cHardwareCPU::Allocate_Main(const int allocated_size)
 {
   // must do divide before second allocate & must allocate positive amount...
-  if (cConfig::GetRequireAllocate() && mal_active == true) {
+  if (m_world->GetConfig().REQUIRE_ALLOCATE.Get() && mal_active == true) {
     Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR, "Allocate already active");
     return false;
   }
@@ -1468,7 +1458,7 @@ bool cHardwareCPU::Allocate_Main(const int allocated_size)
     return false;
   }
 
-  const int max_alloc_size = (int) (old_size * cConfig::GetChildSizeRange());
+  const int max_alloc_size = (int) (old_size * m_world->GetConfig().CHILD_SIZE_RANGE.Get());
   if (allocated_size > max_alloc_size) {
     Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
 	  cStringUtil::Stringf("Allocate too large (%d > %d)",
@@ -1477,7 +1467,7 @@ bool cHardwareCPU::Allocate_Main(const int allocated_size)
   }
 
   const int max_old_size =
-    (int) (allocated_size * cConfig::GetChildSizeRange());
+    (int) (allocated_size * m_world->GetConfig().CHILD_SIZE_RANGE.Get());
   if (old_size > max_old_size) {
     Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
 	  cStringUtil::Stringf("Allocate too small (%d > %d)",
@@ -1485,7 +1475,7 @@ bool cHardwareCPU::Allocate_Main(const int allocated_size)
     return false;
   }
 
-  switch (cConfig::GetAllocMethod()) {
+  switch (m_world->GetConfig().ALLOC_METHOD.Get()) {
   case ALLOC_METHOD_NECRO:
     // Only break if this succeeds -- otherwise just do random.
     if (Allocate_Necro(new_size) == true) break;
@@ -1510,7 +1500,7 @@ bool cHardwareCPU::Divide_CheckViable(const int child_size,
   if (organism->Divide_CheckViable() == false) return false; // (divide fails)
 
   // If required, make sure an allocate has occured.
-  if (cConfig::GetRequireAllocate() && mal_active == false) {
+  if (m_world->GetConfig().REQUIRE_ALLOCATE.Get() && mal_active == false) {
     Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR, "Must allocate before divide");
     return false; //  (divide fails)
   }
@@ -1518,7 +1508,7 @@ bool cHardwareCPU::Divide_CheckViable(const int child_size,
   // Make sure that neither parent nor child will be below the minimum size.
 
   const int genome_size = organism->GetGenome().GetSize();
-  const double size_range = cConfig::GetChildSizeRange();
+  const double size_range = m_world->GetConfig().CHILD_SIZE_RANGE.Get();
   const int min_size = Max(MIN_CREATURE_SIZE, (int) (genome_size/size_range));
   const int max_size = Min(MAX_CREATURE_SIZE, (int) (genome_size*size_range));
   
@@ -1541,7 +1531,7 @@ bool cHardwareCPU::Divide_CheckViable(const int child_size,
     if (GetMemory().FlagExecuted(i)) executed_size++;
   }
 
-  const int min_exe_lines = (int) (parent_size * cConfig::GetMinExeLines());
+  const int min_exe_lines = (int) (parent_size * m_world->GetConfig().MIN_EXE_LINES.Get());
   if (executed_size < min_exe_lines) {
     Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
 	  cStringUtil::Stringf("Too few executed lines (%d < %d)",
@@ -1557,7 +1547,7 @@ bool cHardwareCPU::Divide_CheckViable(const int child_size,
     if (GetMemory().FlagCopied(i)) copied_size++;
   }
 
-  const int min_copied =  (int) (child_size * cConfig::GetMinCopiedLines());
+  const int min_copied =  (int) (child_size * m_world->GetConfig().MIN_COPIED_LINES.Get());
   if (copied_size < min_copied) {
     Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
 	  cStringUtil::Stringf("Too few copied commands (%d < %d)",
@@ -1571,10 +1561,9 @@ bool cHardwareCPU::Divide_CheckViable(const int child_size,
   phenotype.SetLinesCopied(copied_size);
 
   // Determine the fitness of this organism as compared to its parent...
-  if (cConfig::GetTestSterilize() == true &&
+  if (m_world->GetTestSterilize() == true &&
       phenotype.IsInjected() == false) {
-    const int merit_base =
-      cPhenotype::CalcSizeMerit(genome_size, copied_size, executed_size);
+    const int merit_base = phenotype.CalcSizeMerit();
     const double cur_fitness =
       merit_base * phenotype.GetCurBonus() / phenotype.GetTimeUsed();
     const double fitness_ratio = cur_fitness / phenotype.GetLastFitness();
@@ -1817,7 +1806,7 @@ bool cHardwareCPU::Divide_Main(const int div_point, const int extra_lines, doubl
 #endif
 
   mal_active = false;
-  if (cConfig::GetDivideMethod() == DIVIDE_METHOD_SPLIT) {
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
     advance_ip = false;
   }
 
@@ -1825,7 +1814,7 @@ bool cHardwareCPU::Divide_Main(const int div_point, const int extra_lines, doubl
   // birth.
   bool parent_alive = organism->ActivateDivide();
   if (parent_alive) {
-    if (cConfig::GetDivideMethod() == DIVIDE_METHOD_SPLIT) Reset();
+    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
   }
 
   return true;
@@ -2574,7 +2563,7 @@ bool cHardwareCPU::Inst_CAlloc()
 bool cHardwareCPU::Inst_MaxAlloc()   // Allocate maximal more
 {
   const int cur_size = GetMemory().GetSize();
-  const int alloc_size = Min((int) (cConfig::GetChildSizeRange() * cur_size),
+  const int alloc_size = Min((int) (m_world->GetConfig().CHILD_SIZE_RANGE.Get() * cur_size),
 			     MAX_CREATURE_SIZE - cur_size);
   if( Allocate_Main(alloc_size) ) {
     Register(nHardwareCPU::REG_AX) = cur_size;
@@ -2619,7 +2608,7 @@ bool cHardwareCPU::Inst_Repro()
   }
 #endif
 
-  if (cConfig::GetDivideMethod() == DIVIDE_METHOD_SPLIT) advance_ip = false;
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) advance_ip = false;
 
   organism->ActivateDivide();
 
@@ -2645,7 +2634,7 @@ bool cHardwareCPU::Inst_Kazi()
 
 bool cHardwareCPU::Inst_Die()
 {
-   const double die_prob = cConfig::GetDieProb();
+   const double die_prob = m_world->GetConfig().DIE_PROB.Get();
    if(g_random.GetDouble() < die_prob) { organism->Die(); }
    return true; 
 }
@@ -2864,8 +2853,8 @@ void cHardwareCPU::DoDonate(cOrganism * to_org)
 {
   assert(to_org != NULL);
 
-  const double merit_given = cConfig::GetMeritGiven();
-  const double merit_received = cConfig::GetMeritReceived();
+  const double merit_given = m_world->GetConfig().MERIT_GIVEN.Get();
+  const double merit_received = m_world->GetConfig().MERIT_RECEIVED.Get();
 
   double cur_merit = organism->GetPhenotype().GetMerit().GetDouble();
   cur_merit -= merit_given; 
@@ -2882,7 +2871,7 @@ void cHardwareCPU::DoDonate(cOrganism * to_org)
 bool cHardwareCPU::Inst_DonateRandom()
 {
   organism->GetPhenotype().IncDonates();
-  if (organism->GetPhenotype().GetCurNumDonates() > cConfig::GetMaxDonates()) {
+  if (organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
     return false;
   }
 
@@ -2902,7 +2891,7 @@ bool cHardwareCPU::Inst_DonateRandom()
 bool cHardwareCPU::Inst_DonateKin()
 {
   organism->GetPhenotype().IncDonates();
-  if (organism->GetPhenotype().GetCurNumDonates() > cConfig::GetMaxDonates()) {
+  if (organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
     return false;
   }
 
@@ -2915,7 +2904,7 @@ bool cHardwareCPU::Inst_DonateKin()
   cOrganism * neighbor = organism->GetNeighbor();
 
   // If there is no max distance, just take the random neighbor we're facing.
-  const int max_dist = cConfig::GetMaxDonateKinDistance();
+  const int max_dist = m_world->GetConfig().MAX_DONATE_KIN_DIST.Get();
   if (max_dist != -1) {
     int max_id = neighbor_id + num_neighbors;
     bool found = false;
@@ -2945,7 +2934,7 @@ bool cHardwareCPU::Inst_DonateKin()
 bool cHardwareCPU::Inst_DonateEditDist()
 {
   organism->GetPhenotype().IncDonates();
-  if (organism->GetPhenotype().GetCurNumDonates() > cConfig::GetMaxDonates()) {
+  if (organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
     return false;
   }
 
@@ -2958,7 +2947,7 @@ bool cHardwareCPU::Inst_DonateEditDist()
   cOrganism * neighbor = organism->GetNeighbor();
 
   // If there is no max edit distance, take the random neighbor we're facing.
-  const int max_dist = cConfig::GetMaxDonateEditDistance();
+  const int max_dist = m_world->GetConfig().MAX_DONATE_EDIT_DIST.Get();
   if (max_dist != -1) {
     int max_id = neighbor_id + num_neighbors;
     bool found = false;
@@ -2992,14 +2981,14 @@ bool cHardwareCPU::Inst_DonateEditDist()
 bool cHardwareCPU::Inst_DonateNULL()
 {
   organism->GetPhenotype().IncDonates();
-  if (organism->GetPhenotype().GetCurNumDonates() > cConfig::GetMaxDonates()) {
+  if (organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
     return false;
   }
 
   // This is a fake donate command that causes the organism to lose merit,
   // but no one else to gain any.
 
-  const double merit_given = cConfig::GetMeritGiven();
+  const double merit_given = m_world->GetConfig().MERIT_GIVEN.Get();
   double cur_merit = organism->GetPhenotype().GetMerit().GetDouble();
   cur_merit -= merit_given;
 

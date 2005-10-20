@@ -5,16 +5,10 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef SPATIAL_RES_COUNT_HH
 #include "cSpatialResCount.h"
-#endif
 
-#ifndef CONFIG_HH
-#include "cConfig.h"
-#endif
-#ifndef FUNCTIONS_HH
 #include "functions.h"
-#endif
+#include "nGeometry.h"
 
 cSpatialResCount::cSpatialResCount(int inworld_x, int inworld_y, 
                   int ingeometry, 

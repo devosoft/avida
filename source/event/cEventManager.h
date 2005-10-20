@@ -5,28 +5,33 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef POPULATION_EVENT_HH
-#define POPULATION_EVENT_HH
+#ifndef cEventManager_h
+#define cEventManager_h
 
-#ifndef EVENT_HH
-#include "cEvent.h"
+#ifndef TLIST_HH
+#include "tList.h"
+#endif
+#ifndef TOBJECTFACTORY_H
+#include "tObjectFactory.h"
+#endif
+#ifndef STRING_HH
+#include "cString.h"
 #endif
 
-class cString;
-class cPopulation;
+class cEvent;
+class cWorld;
 
-class cPopulationEvent : public cEvent {
+class cEventManager : private tObjectFactory<cEvent* ()> {
 private:
-  // not implemented. prevents inadvertend wrong instantiation.
-  cPopulationEvent(const cPopulationEvent&);
-  const cPopulationEvent& operator=(cPopulationEvent&);
-
-protected:
-  cPopulation *population;
+  cWorld* m_world;
   
 public:
-  cPopulationEvent() { ; }
-  void SetPopulation(cPopulation* pop) { population = pop; }
+  cEventManager(cWorld* world);
+  ~cEventManager() { ; }
+
+  cEvent* ConstructEvent(const cString name, const cString& args);
+  
+  void PrintAllEventDescriptions();
 };
 
 #endif

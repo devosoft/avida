@@ -16,14 +16,17 @@ class cGenebank;
 class cGenotype;
 class cSpecies;
 class cStats;
+class cWorld;
+
 class cSpeciesControl {
 private:
+  cWorld* m_world;
   cSpeciesQueue active_queue;
   cSpeciesQueue inactive_queue;
   cSpeciesQueue garbage_queue;
   cGenebank & genebank;
 public:
-  cSpeciesControl(cGenebank & in_gb);
+  cSpeciesControl(cWorld* world, cGenebank & in_gb);
   ~cSpeciesControl();
 
   void Remove(cSpecies & in_species);

@@ -5,13 +5,9 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef RESOURCE_HH
 #include "cResource.h"
-#endif
 
-#ifndef CONFIG_HH
-#include "cConfig.h"
-#endif
+#include "nGeometry.h"
 
 using namespace std;
 

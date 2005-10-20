@@ -8,10 +8,10 @@
 #include "cTestCPU.h"
 
 #include "cCPUTestInfo.h"
-#include "cConfig.h"
 #include "cEnvironment.h"
 #include "functions.h"
 #include "cHardwareBase.h"
+#include "cHardwareManager.h"
 #include "cHardwareStatusPrinter.h"
 #include "cInstSet.h"
 #include "cInstUtil.h"
@@ -22,6 +22,7 @@
 #include "cResourceLib.h"
 #include "cResource.h"
 #include "cStringUtil.h"
+#include "cWorld.h"
 #include "tMatrix.h"
 
 #include <iomanip>
@@ -30,9 +31,10 @@ using namespace std;
 
 
 // Static Variables
+cWorld* cTestCPU::m_world(NULL);
 cInstSet * cTestCPU::inst_set(NULL);
 cEnvironment * cTestCPU::environment(NULL);
-cPopulationInterface cTestCPU::test_interface;
+cPopulationInterface* cTestCPU::test_interface;
 tArray<int> cTestCPU::input_array;
 tArray<int> cTestCPU::receive_array;
 int cTestCPU::cur_input;
@@ -40,6 +42,7 @@ int cTestCPU::cur_receive;
 cResourceCount cTestCPU::resource_count;
 
 bool cTestCPU::initialized(false);
+int cTestCPU::time_mod(20);
 bool cTestCPU::d_useResources(false);
 tArray<double> cTestCPU::d_emptyDoubleArray;
 tArray<double> cTestCPU::d_resources;
@@ -49,20 +52,16 @@ tArray<double> cTestCPU::d_resources;
 //  cTestCPU  (Static Class)
 //////////////////////////////
 
-void cTestCPU::Setup(cInstSet * in_inst_set,
-		     cEnvironment * in_env,
-		     int resourceSize,
-		     const cPopulationInterface & in_interface)
+void cTestCPU::Setup(cWorld* world, int resourceSize)
 {
-  inst_set = in_inst_set;
-  environment = in_env;
-  resource_count.SetSize(in_env->GetResourceLib().GetSize());
-  //d_emptyDoubleArray.ResizeClear(in_env->GetResourceLib().GetSize());
-  //d_resources.ResizeClear(in_env->GetResourceLib().GetSize());
+  m_world = world;
+  environment = &world->GetEnvironment();
+  inst_set = &world->GetHardwareManager().GetInstSet();
+  resource_count.SetSize(environment->GetResourceLib().GetSize());
+  test_interface = new cPopulationInterface(world);
   SetupResources();
-  test_interface = in_interface;
+  time_mod = world->GetConfig().TEST_CPU_TIME_MOD.Get();
   initialized = true;
-
 }
 
 void cTestCPU::SetupResources(void) {
@@ -80,8 +79,7 @@ void cTestCPU::SetupResources(void) {
     d_emptyDoubleArray[i] = 0.0;
     d_resources[i] = 0.0;
   }
-  //resource_count.ResizeSpatialGrids(cConfig::GetWorldX(),
-  //				    cConfig::GetWorldY());
+
   resource_count.ResizeSpatialGrids(1, 1);
 
   for (int i = 0; i < resource_lib.GetSize(); i++) {
@@ -134,8 +132,7 @@ bool cTestCPU::ProcessGestation(cCPUTestInfo & test_info, int cur_depth)
   cOrganism & organism = *( test_info.org_array[cur_depth] );
 
   // Determine how long this organism should be tested for...
-  int time_allocated = cConfig::GetTestCPUTimeMod() *
-    organism.GetGenome().GetSize();
+  int time_allocated = time_mod * organism.GetGenome().GetSize();
 
   // Make sure this genome stands a chance...
   if (TestIntegrity(organism.GetGenome()) == false)  time_allocated = 0;
@@ -156,7 +153,6 @@ bool cTestCPU::ProcessGestation(cCPUTestInfo & test_info, int cur_depth)
     organism.GetHardware().SetTrace(tracer);
     organism.GetHardware().SingleProcess();
     organism.GetHardware().SetTrace(NULL);
-    //resource_count.Update(1/cConfig::GetAveTimeslice());
     // @CAO Need to watch out for parasites.
   }
 
@@ -257,8 +253,7 @@ bool cTestCPU::TestGenome_Body(cCPUTestInfo & test_info,
   if (test_info.org_array[cur_depth] != NULL) {
     delete test_info.org_array[cur_depth];
   }
-  test_info.org_array[cur_depth] =
-    new cOrganism(genome, test_interface, *environment);
+  test_info.org_array[cur_depth] = new cOrganism(m_world, genome, environment);
   cOrganism & organism = *( test_info.org_array[cur_depth] );
   organism.GetPhenotype().SetupInject(genome.GetSize());
 

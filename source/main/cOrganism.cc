@@ -7,7 +7,6 @@
 
 #include "cOrganism.h"
 
-#include "cConfig.h"
 #include "nHardware.h"
 #include "cEnvironment.h"
 #include "functions.h"
@@ -34,14 +33,13 @@ using namespace std;
 int cOrganism::instance_count(0);
 
 
-cOrganism::cOrganism(const cGenome & in_genome,
-		     const cPopulationInterface & in_interface,
-		     const cEnvironment & in_environment)
-  : genotype(NULL)
-  , phenotype(in_environment)
+cOrganism::cOrganism(cWorld* world, const cGenome & in_genome, cEnvironment* in_env)
+  : m_world(world)
+  , genotype(NULL)
+  , phenotype(world, in_env ? *in_env : world->GetEnvironment())
   , initial_genome(in_genome)
-  , mut_info(in_environment.GetMutationLib(), in_genome.GetSize())
-  , pop_interface(in_interface)
+  , mut_info(in_env ? in_env->GetMutationLib() : world->GetEnvironment().GetMutationLib(), in_genome.GetSize())
+  , pop_interface(world)
   , input_pointer(0)
   , input_buf(INPUT_BUF_SIZE)
   , output_buf(OUTPUT_BUF_SIZE)
@@ -63,13 +61,12 @@ cOrganism::cOrganism(const cGenome & in_genome,
   instance_count++;
   pop_interface.SetCellID(-1);  // No cell at the moment...
 
-  if (cConfig::GetDeathMethod() > 0) {
-    max_executed = cConfig::GetAgeLimit();
-    if (cConfig::GetAgeDeviation() > 0.0) {
-      max_executed +=
-	(int) (g_random.GetRandNormal() * cConfig::GetAgeDeviation());
+  if (m_world->GetConfig().DEATH_METHOD.Get() > 0) {
+    max_executed = m_world->GetConfig().AGE_LIMIT.Get();
+    if (m_world->GetConfig().AGE_DEVIATION.Get() > 0.0) {
+      max_executed += (int) (g_random.GetRandNormal() * m_world->GetConfig().AGE_DEVIATION.Get());
     }
-    if (cConfig::GetDeathMethod() == DEATH_METHOD_MULTIPLE) {
+    if (m_world->GetConfig().DEATH_METHOD.Get() == DEATH_METHOD_MULTIPLE) {
       max_executed *= initial_genome.GetSize();
     }
 
@@ -82,7 +79,7 @@ cOrganism::cOrganism(const cGenome & in_genome,
 cOrganism::~cOrganism()
 {
   assert(is_running == false);
-  pop_interface.RecycleHardware(hardware);
+  delete hardware;
   instance_count--;
 }
 
@@ -216,17 +213,17 @@ double cOrganism::CalcMeritRatio()
 
 
 bool cOrganism::GetTestOnDivide() const { return pop_interface.TestOnDivide();}
-bool cOrganism::GetFailImplicit() const { return cConfig::GetFailImplicit(); }
+bool cOrganism::GetFailImplicit() const { return m_world->GetConfig().FAIL_IMPLICIT.Get(); }
 
-bool cOrganism::GetRevertFatal() const { return cConfig::GetRevertFatal(); }
-bool cOrganism::GetRevertNeg()   const { return cConfig::GetRevertNeg(); }
-bool cOrganism::GetRevertNeut()  const { return cConfig::GetRevertNeut(); }
-bool cOrganism::GetRevertPos()   const { return cConfig::GetRevertPos(); }
+bool cOrganism::GetRevertFatal() const { return m_world->GetConfig().REVERT_FATAL.Get(); }
+bool cOrganism::GetRevertNeg()   const { return m_world->GetConfig().REVERT_DETRIMENTAL.Get(); }
+bool cOrganism::GetRevertNeut()  const { return m_world->GetConfig().REVERT_NEUTRAL.Get(); }
+bool cOrganism::GetRevertPos()   const { return m_world->GetConfig().REVERT_BENEFICIAL.Get(); }
 
-bool cOrganism::GetSterilizeFatal() const{return cConfig::GetSterilizeFatal();}
-bool cOrganism::GetSterilizeNeg()  const { return cConfig::GetSterilizeNeg(); }
-bool cOrganism::GetSterilizeNeut() const { return cConfig::GetSterilizeNeut();}
-bool cOrganism::GetSterilizePos()  const { return cConfig::GetSterilizePos(); }
+bool cOrganism::GetSterilizeFatal() const{return m_world->GetConfig().STERILIZE_FATAL.Get();}
+bool cOrganism::GetSterilizeNeg()  const { return m_world->GetConfig().STERILIZE_DETRIMENTAL.Get(); }
+bool cOrganism::GetSterilizeNeut() const { return m_world->GetConfig().STERILIZE_NEUTRAL.Get();}
+bool cOrganism::GetSterilizePos()  const { return m_world->GetConfig().STERILIZE_BENEFICIAL.Get(); }
 
 
 void cOrganism::PrintStatus(ostream & fp, const cString & next_name)
@@ -242,27 +239,21 @@ void cOrganism::PrintStatus(ostream & fp, const cString & next_name)
 bool cOrganism::Divide_CheckViable()
 {
   // Make sure required task (if any) has been performed...
-  const int required_task = cConfig::GetRequiredTask();
-  const int immunity_task = cConfig::GetImmunityTask();
-//cout << "req=" << required_task << "," <<phenotype.GetCurTaskCount()[required_task]<< " "; 
-//cout << "im=" << immunity_task << "," <<phenotype.GetCurTaskCount()[immunity_task]<< endl; 
-  if (required_task != -1 &&
-      phenotype.GetCurTaskCount()[required_task] == 0) { 
-    if (immunity_task==-1 || 
-	phenotype.GetCurTaskCount()[immunity_task] == 0) {
+  const int required_task = m_world->GetConfig().REQUIRED_TASK.Get();
+  const int immunity_task = m_world->GetConfig().IMMUNITY_TASK.Get();
+
+  if (required_task != -1 && phenotype.GetCurTaskCount()[required_task] == 0) { 
+    if (immunity_task==-1 || phenotype.GetCurTaskCount()[immunity_task] == 0) {
       Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
-	    cStringUtil::Stringf("Lacks required task (%d)",
-			         cConfig::GetRequiredTask()));
+            cStringUtil::Stringf("Lacks required task (%d)", required_task));
       return false; //  (divide fails)
     } 
   }
 
-  const int required_reaction = cConfig::GetRequiredReaction();
-  if (required_reaction != -1 &&
-      phenotype.GetCurTaskCount()[required_reaction] == 0) {
+  const int required_reaction = m_world->GetConfig().REQUIRED_REACTION.Get();
+  if (required_reaction != -1 && phenotype.GetCurTaskCount()[required_reaction] == 0) {
     Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
-	  cStringUtil::Stringf("Lacks required reaction (%d)",
-			       cConfig::GetRequiredReaction()));
+          cStringUtil::Stringf("Lacks required reaction (%d)", required_reaction));
     return false; //  (divide fails)
   }
 

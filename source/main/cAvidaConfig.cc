@@ -11,9 +11,8 @@
 
 #include <fstream>
 #include "defs.h"
-#include "cEventFactoryManager.h"
+#include "cEventManager.h"
 #include "cInitFile.h"
-#include "cPopulationEventFactory.h"
 #include "tDictionary.h"
 
 tList<cAvidaConfig::cBaseConfigGroup> cAvidaConfig::global_group_list;
@@ -303,9 +302,7 @@ cAvidaConfig* cAvidaConfig::LoadWithCmdLineArgs(int argc, char * argv[])
     // Test against the possible inputs.
     if (cur_arg == "-events" || cur_arg == "-e") {
       cout << "Known events:" << endl;
-      // @DMB - A cleaner way of constructing the cEventFactoryManager should be created
-      cEventFactoryManager event_manager;
-      event_manager.AddFactory(new cPopulationEventFactory(NULL));
+      cEventManager event_manager(NULL);
       event_manager.PrintAllEventDescriptions();
       exit(0);
     }

@@ -1,7 +1,7 @@
 #ifndef HARDWARE_CPU_FIXUPS_HH
 #define HARDWARE_CPU_FIXUPS_HH
 
-#ifndef HARDWARE_CPU_HH
+#ifndef cHardwareCPU_h
 #include "cHardwareCPU.h"
 #endif
 

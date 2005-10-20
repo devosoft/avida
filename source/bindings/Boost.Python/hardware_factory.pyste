@@ -3,7 +3,7 @@ Include("cHardwareBase.h")
 Include("cOrganism.h")
 Include("cInstSet.h")
 
-cHardwareFactory = Class("cHardwareFactory", "cHardwareFactory.h")
+cHardwareFactory = Class("cHardwareFactory", "cHardwareManager.h")
 set_policy(cHardwareFactory.Create, return_internal_reference())
 
 # vim: set ft=python:

@@ -3,7 +3,7 @@
  *  Avida2
  *
  *  Created by David on 10/16/05.
- *  cConfig class created by Charles.
+ *  Designed by Charles.
  *  Copyright 2005 Michigan State University. All rights reserved.
  *
  */

@@ -11,7 +11,6 @@
 
 #include "cLineage.h"
 #include "cStats.h"
-#include "cConfig.h"
 #include "cGenebank.h"
 #include "cGenotype.h"
 #include "cOrganism.h"
@@ -26,12 +25,13 @@ using namespace std;
 //  cLineageControl
 /////////////////////
 
-cLineageControl::cLineageControl( cGenebank & genebank, cStats & stats )
-  : m_best_lineage(NULL)
+cLineageControl::cLineageControl(cWorld* world, cGenebank& genebank, cStats& stats )
+  : m_world(world)
+  , m_best_lineage(NULL)
   , m_max_fitness_lineage(NULL)
   , m_dominant_lineage(NULL)
   , m_genebank( genebank )
-  , m_stats( stats )
+  , m_stats(stats)
 {
 }
 
@@ -183,7 +183,7 @@ cLineageControl::AddCreature( cGenotype * child_genotype, cGenotype *parent_geno
   }
   // otherwise, check for conditions that cause the creation of a new lineage
   else {
-    switch ( cConfig::GetLineageCreationMethod() ) {
+    switch ( m_world->GetConfig().LINEAGE_CREATION_METHOD.Get() ) {
     case 0: // manual creation only
       break;
     case 1: // new lineage whenever a parent has offspring of greater fitness

@@ -30,6 +30,7 @@ class cGenome;
 class cGenotype;
 class cOrganism;
 template <class T> class tArray;
+class cWorld;
 
 class cBirthChamber {
 private:
@@ -41,8 +42,9 @@ private:
     cGenotype * parent_genotype;
     bool is_waiting;
   };
-
-  cGenebank * genebank;
+  
+  cWorld* m_world;
+  cGenebank* genebank;
 
   cBirthEntry global_wait_entry;
   tArray<cBirthEntry> local_wait_entry;
@@ -96,7 +98,7 @@ private:
   void SetupGenotypeInfo(cOrganism * organism, cGenotype * parent0_genotype,
 			 cGenotype * parent1_genotype);
 public:
-  cBirthChamber();
+  cBirthChamber(cWorld* world);
   ~cBirthChamber();
 
   void SetGenebank(cGenebank * in_genebank) { genebank = in_genebank; }

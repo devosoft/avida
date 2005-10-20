@@ -21,7 +21,7 @@
 #ifndef HARDWARE_BASE_HH
 #include "cHardwareBase.h"
 #endif
-#ifndef INST_SET_HH
+#ifndef cInstSet_h
 #include "cInstSet.h"
 #endif
 #ifndef INSTRUCTION_HH
