@@ -25,8 +25,8 @@ using namespace std;
 //  cAvidaDriver_Analyze
 //////////////////////////
 
-cAvidaDriver_Analyze::cAvidaDriver_Analyze(bool _interactive, cEnvironment *e)
-  : interactive(_interactive), d_environment(e)
+cAvidaDriver_Analyze::cAvidaDriver_Analyze(cWorld* world, bool _interactive)
+: interactive(_interactive), m_world(world)
 {
 }
 
@@ -37,8 +37,7 @@ cAvidaDriver_Analyze::~cAvidaDriver_Analyze()
 void cAvidaDriver_Analyze::Run()
 {
   cout << "In analyze mode!!" << endl;
-  // DDD - get analyze config file from cAvidaConfig
-  cAnalyze analyze("analyze.cfg", d_environment);
+  cAnalyze analyze(m_world);
   if (interactive == true) {
     analyze.RunInteractive();
   }

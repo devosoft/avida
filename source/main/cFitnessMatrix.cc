@@ -16,8 +16,8 @@
 using namespace std;
 
 
-cFitnessMatrix::cFitnessMatrix( const cGenome & code,  cInstSet * inst_set)
-  :  m_start_genotype(code), m_inst_set( inst_set ), m_DFS_MaxDepth(0),
+cFitnessMatrix::cFitnessMatrix(cWorld* world, const cGenome& code,  cInstSet* inst_set)
+  :  m_world(world), m_start_genotype(m_world, code), m_inst_set( inst_set ), m_DFS_MaxDepth(0),
      m_DFS_NumRecorded(0)
 {
   m_start_genotype.SetNumInstructions( m_inst_set->GetSize());

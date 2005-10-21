@@ -30,8 +30,11 @@
 
 class cGenome;
 class MyCodeArrayLessThan;
+class cWorld;
+
 class cMxCodeArray {
 private:
+  cWorld* m_world;
   int size;
   int max_size;
   cInstruction * data;
@@ -42,11 +45,13 @@ private:
   mutable std::map<int, double, std::less<int> > m_trans_probs;
 
 
-public:
   cMxCodeArray();
-  explicit cMxCodeArray(int ninst, int in_size=0, int in_max_size=0);
+
+public:
+  cMxCodeArray(cWorld* world);
+  explicit cMxCodeArray(cWorld* world, int ninst, int in_size=0, int in_max_size=0);
   cMxCodeArray(const cMxCodeArray &in_code);
-  cMxCodeArray(const cGenome & in_code, int in_max_size=0);
+  cMxCodeArray(cWorld* world, const cGenome & in_code, int in_max_size=0);
   virtual ~cMxCodeArray();
 
   void operator=(const cMxCodeArray &other_code);

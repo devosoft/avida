@@ -7,7 +7,6 @@
 
 #include "cAnalyzeGenotype.h"
 
-#include "cConfig.h"
 #include "cCPUTestInfo.h"
 #include "cInstSet.h"
 #include "cLandscape.h"
@@ -15,15 +14,18 @@
 #include "cPhenotype.h"
 #include "cTestCPU.h"
 #include "cEnvironment.h"
+#include "cHardwareManager.h"
+#include "cWorld.h"
+
 using namespace std;
 
 //////////////////////
 //  cAnalyzeGenotype
 //////////////////////
 
-cAnalyzeGenotype::cAnalyzeGenotype(cString symbol_string,
-				   cInstSet & in_inst_set)
-  : genome(symbol_string)
+cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, cString symbol_string, cInstSet& in_inst_set)
+  : m_world(world)
+  , genome(symbol_string)
   , inst_set(in_inst_set)
   , name("")
   , aligned_sequence("")
@@ -63,9 +65,9 @@ cAnalyzeGenotype::cAnalyzeGenotype(cString symbol_string,
   }
 }
 
-cAnalyzeGenotype::cAnalyzeGenotype(const cGenome & _genome,
-				   cInstSet & in_inst_set)
-  : genome(_genome)
+cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, const cGenome& _genome, cInstSet& in_inst_set)
+  : m_world(world)
+  , genome(_genome)
   , inst_set(in_inst_set)
   , name("")
   , aligned_sequence("")
@@ -98,7 +100,8 @@ cAnalyzeGenotype::cAnalyzeGenotype(const cGenome & _genome,
 }
 
 cAnalyzeGenotype::cAnalyzeGenotype(const cAnalyzeGenotype & _gen)
-  : genome(_gen.genome)
+  : m_world(_gen.m_world)
+  , genome(_gen.genome)
   , inst_set(_gen.inst_set)
   , name(_gen.name)
   , aligned_sequence(_gen.aligned_sequence)
@@ -142,7 +145,7 @@ cAnalyzeGenotype::~cAnalyzeGenotype()
 
 int cAnalyzeGenotype::CalcMaxGestation() const
 {
-  return cConfig::GetTestCPUTimeMod() * genome.GetSize();
+  return m_world->GetConfig().TEST_CPU_TIME_MOD.Get() * genome.GetSize();
 }
 
 void cAnalyzeGenotype::CalcLandscape() const
@@ -165,17 +168,19 @@ void cAnalyzeGenotype::Recalculate(cAnalyzeGenotype * parent_genotype)
   test_info.TestThreads();
   // test_info.TraceTaskOrder();
 
+  // DDD - This does some 'interesting' things with the instruction set
+  
   // Use the inst lib for this genotype... and syncrhonize environment
-  cInstSet * inst_set_backup   = cTestCPU::GetInstSet();
+  cInstSet* inst_set_backup   = cTestCPU::GetInstSet();
   cTestCPU::SetInstSet(&inst_set);
-  cInstSet env_inst_set_backup = cTestCPU::GetEnvironment()->GetInstSet();
-  cTestCPU::GetEnvironment()->GetInstSet() = inst_set;
+  cInstSet env_inst_set_backup = m_world->GetHardwareManager().GetInstSet();
+  m_world->GetHardwareManager().GetInstSet() = inst_set;
 
   cTestCPU::TestGenome(test_info, genome);
   
   // Restore test CPU and environment instruction set
   cTestCPU::SetInstSet(inst_set_backup);
-  cTestCPU::GetEnvironment()->GetInstSet() = env_inst_set_backup;
+  m_world->GetHardwareManager().GetInstSet() = env_inst_set_backup;
 
   viable = test_info.IsViable();
 

@@ -37,11 +37,13 @@ class cString; // aggregate
 template <class T> class tArray; // aggregate
 class cStringList; // aggregate
 class cStringUtil; // access
+class cWorld;
 
 class cAnalyzeGenotype {
 private:
+  cWorld* m_world;
   cGenome genome;            // Full Genome
-  cInstSet & inst_set;       // Instruction set used in this genome
+  cInstSet& inst_set;       // Instruction set used in this genome
   cString name;              // Name, if one was provided in loading
   cString aligned_sequence;  // Sequence (in ASCII) after alignment
   cString tag;               // All genotypes in a batch can be tagged
@@ -109,8 +111,8 @@ private:
   int CalcMaxGestation() const;
   void CalcLandscape() const;
 public:
-  cAnalyzeGenotype(cString symbol_string, cInstSet & in_inst_set);
-  cAnalyzeGenotype(const cGenome & _genome, cInstSet & in_inst_set);
+  cAnalyzeGenotype(cWorld* world, cString symbol_string, cInstSet & in_inst_set);
+  cAnalyzeGenotype(cWorld* world, const cGenome & _genome, cInstSet & in_inst_set);
   cAnalyzeGenotype(const cAnalyzeGenotype & _gen);
   ~cAnalyzeGenotype();
 

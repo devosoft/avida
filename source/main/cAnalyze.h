@@ -50,6 +50,7 @@ class cStringList; // aggregate
 template <class T> class tDataEntryCommand;
 template <class T> class tListIterator;
 class cEnvironment;
+class cWorld;
 
 class cAnalyze {
 private:
@@ -61,7 +62,9 @@ private:
   cString variables[26];
   cString local_variables[26];
   cString arg_variables[10];
-  cEnvironment *d_environment;
+
+  cWorld* m_world;
+  cInstSet& inst_set;
 
   // This is the storage for the resource information from resource.dat.  It 
   // is a pair of the update and a vector of the resource concentrations
@@ -73,7 +76,6 @@ private:
   cDataFileManager data_file_manager;
   tList< tDataEntryBase<cAnalyzeGenotype> > genotype_data_list;
 
-  cInstSet & inst_set;
   cRandom random;
 
 private:
@@ -242,7 +244,7 @@ private:
   // disabled copy constructor.
   cAnalyze(const cAnalyze &);
 public:
-  cAnalyze(cString filename, cEnvironment* = NULL);
+  cAnalyze(cWorld* world);
   ~cAnalyze();
 
   void RunInteractive();

@@ -14,14 +14,14 @@
 #include "cAvidaDriver_Base.h"
 #endif
 
-class cEnvironment;
+class cWorld;
 
 class cAvidaDriver_Analyze : public cAvidaDriver_Base {
 protected:
   bool interactive;
-  cEnvironment *d_environment;
+  cWorld* m_world;
 public:
-  cAvidaDriver_Analyze(bool _interactive=false, cEnvironment* = NULL);
+  cAvidaDriver_Analyze(cWorld* world, bool _interactive=false);
   virtual ~cAvidaDriver_Analyze();
   virtual void Run();
 };

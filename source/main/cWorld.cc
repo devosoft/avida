@@ -58,8 +58,7 @@ void cWorld::Setup() {
   }
     
   // Setup the test CPUs.
-  int rSize = m_env->GetResourceLib().GetSize();
-  cTestCPU::Setup(this, rSize);
+  cTestCPU::Setup(this, m_env->GetResourceLib().GetSize());
 
   m_pop = new cPopulation(this);
 

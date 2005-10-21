@@ -50,6 +50,10 @@
 		7040CF1E0906A52E00AA820F /* cEventManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7040CF1A0906A52E00AA820F /* cEventManager.cc */; };
 		7040CF1F0906A52E00AA820F /* cEventManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7040CF1B0906A52E00AA820F /* cEventManager.h */; };
 		7040D22509071EE000AA820F /* cAnalyzeUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4F3E08DA61FE007BA469 /* cAnalyzeUtil.cc */; };
+		7040D36C09095E4E00AA820F /* cAnalyze.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4F3C08DA61FE007BA469 /* cAnalyze.cc */; };
+		7040D36D09095E5200AA820F /* cAnalyzeGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4F3D08DA61FE007BA469 /* cAnalyzeGenotype.cc */; };
+		7040D36E09095E5900AA820F /* cAvidaDriver_Analyze.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EF908DA5341007BA469 /* cAvidaDriver_Analyze.cc */; };
+		7040D3A6090964D100AA820F /* cMxCodeArray.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865808F4974300FC65FE /* cMxCodeArray.cc */; };
 		70486BA00826722F009328F0 /* analyze.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3114B0762539E008F7A48 /* analyze.cfg */; };
 		70486BA10826722F009328F0 /* environment.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311800762539F008F7A48 /* environment.cfg */; };
 		70486BA20826722F009328F0 /* events.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311810762539F008F7A48 /* events.cfg */; };
@@ -2297,6 +2301,10 @@
 				70C5BD6B0905CE5F0028A785 /* cHardwareManager.cc in Sources */,
 				7040CF1C0906A52E00AA820F /* cEventManager.cc in Sources */,
 				7040D22509071EE000AA820F /* cAnalyzeUtil.cc in Sources */,
+				7040D36C09095E4E00AA820F /* cAnalyze.cc in Sources */,
+				7040D36D09095E5200AA820F /* cAnalyzeGenotype.cc in Sources */,
+				7040D36E09095E5900AA820F /* cAvidaDriver_Analyze.cc in Sources */,
+				7040D3A6090964D100AA820F /* cMxCodeArray.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

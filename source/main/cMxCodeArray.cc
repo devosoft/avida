@@ -5,49 +5,24 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef MX_CODE_ARRAY_HH
 #include "cMxCodeArray.h"
-#endif
 
-#ifndef CONFIG_HH
-#include "cConfig.h"
-#endif
-#ifndef CPU_TEST_INFO_HH
 #include "cCPUTestInfo.h"
-#endif
-#ifndef GENOME_HH
 #include "cGenome.h"
-#endif
-#ifndef cInstSet_h
 #include "cInstSet.h"
-#endif
-#ifndef MY_CODE_ARRAY_LESS_THAN_HH
 #include "MyCodeArrayLessThan.h"
-#endif
-#ifndef ORGANISM_HH
 #include "cOrganism.h"
-#endif
-#ifndef TEST_CPU_HH
 #include "cTestCPU.h"
-#endif
-#ifndef TOOLS_HH
 #include "cTools.h"
-#endif
 
 #include <iomanip>
 
 using namespace std;
 
-//////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-//  cMxCodeArray
-//////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-
 const int cMxCodeArray::m_max_gestation_time = 1000000000;
 
 
-cMxCodeArray::cMxCodeArray()
+cMxCodeArray::cMxCodeArray(cWorld* world) : m_world(world)
 {
   // Initialize the code array as empty.
   size = 0;
@@ -58,7 +33,8 @@ cMxCodeArray::cMxCodeArray()
   m_num_instructions = 0;
 }
 
-cMxCodeArray::cMxCodeArray(int n_inst, int in_size, int in_max_size) :m_merit(0), m_gestation_time(m_max_gestation_time), m_num_instructions(n_inst)
+cMxCodeArray::cMxCodeArray(cWorld* world, int n_inst, int in_size, int in_max_size)
+: m_world(world), m_merit(0), m_gestation_time(m_max_gestation_time), m_num_instructions(n_inst)
 {  
   assert (in_max_size == 0 || in_max_size >= in_size);
 
@@ -71,14 +47,14 @@ cMxCodeArray::cMxCodeArray(int n_inst, int in_size, int in_max_size) :m_merit(0)
 
   for (int i = 0; i < size; i++)
     {
-      data[i].SetOp(g_random.GetUInt(cConfig::GetNumInstructions()));
+      data[i].SetOp(g_random.GetUInt(m_world->GetNumInstructions()));
     }
 
 }
 
 cMxCodeArray::cMxCodeArray(const cMxCodeArray &in_code)
 {
-
+  m_world = in_code.m_world;
   size = in_code.size;
   max_size = in_code.max_size;
   m_merit = in_code.m_merit;
@@ -96,7 +72,8 @@ cMxCodeArray::cMxCodeArray(const cMxCodeArray &in_code)
 }
 
 
-cMxCodeArray::cMxCodeArray(const cGenome &in_code, int in_max_size) :m_merit(0), m_gestation_time(m_max_gestation_time), m_num_instructions(0)
+cMxCodeArray::cMxCodeArray(cWorld* world, const cGenome &in_code, int in_max_size)
+: m_world(world), m_merit(0), m_gestation_time(m_max_gestation_time), m_num_instructions(0)
 {
   assert (in_max_size == 0 || in_max_size >= in_code.GetSize());
 
@@ -143,7 +120,7 @@ void cMxCodeArray::Resize(int new_size)
 
   // Fill in the un-filled-in bits...
   for (int i = size; i < new_size; i++) {
-    data[i].SetOp(g_random.GetUInt(cConfig::GetNumInstructions()));
+    data[i].SetOp(g_random.GetUInt(m_world->GetNumInstructions()));
   }
 
   size = new_size;
@@ -189,7 +166,7 @@ void cMxCodeArray::ResetSize(int new_size, int new_max)
 void cMxCodeArray::Reset()
 {
   // Initialze the array
-  if( cConfig::GetAllocMethod() == ALLOC_METHOD_RANDOM ){
+  if( m_world->GetConfig().ALLOC_METHOD.Get() == ALLOC_METHOD_RANDOM ){
     // Randomize the initial contents of the new array.
     Randomize();
   }else{
@@ -220,7 +197,7 @@ void cMxCodeArray::Randomize()
   int i;
   for (i = 0; i < size; i++)
     {
-      data[i].SetOp(g_random.GetUInt(cConfig::GetNumInstructions()));
+      data[i].SetOp(g_random.GetUInt(m_world->GetNumInstructions()));
     }
 }
 

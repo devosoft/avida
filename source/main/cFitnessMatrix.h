@@ -42,8 +42,11 @@
 class cGenome;
 class cInstSet;
 class MyCodeArrayLessThan;
+class cWorld;
+
 class cFitnessMatrix {
 private:
+  cWorld* m_world;
 
   /* genome data */
   cMxCodeArray m_start_genotype;
@@ -105,7 +108,7 @@ private:
 
 
 public:
-  cFitnessMatrix(const cGenome &, cInstSet * inst_set);
+  cFitnessMatrix(cWorld* world, const cGenome&, cInstSet* inst_set);
   ~cFitnessMatrix();
 
   /**

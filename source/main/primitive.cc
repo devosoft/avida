@@ -10,7 +10,7 @@
 
 #include "avida.h"
 #include "cAvidaConfig.h"
-//#include "cAvidaDriver_Analyze.h"
+#include "cAvidaDriver_Analyze.h"
 #include "cAvidaDriver_Base.h"
 #include "cAvidaDriver_Population.h"
 #include "cWorld.h"
@@ -37,9 +37,8 @@ int main(int argc, char * argv[])
   cWorld* world = new cWorld(cAvidaConfig::LoadWithCmdLineArgs(argc, argv));
   
   if (world->GetConfig().ANALYZE_MODE.Get() > 0) {
-    //cAvidaDriver_Base::main_driver = new cAvidaDriver_Analyze((world->GetConfig().ANALYZE_MODE.Get() == 2), world);
-  }
-  else {
+    cAvidaDriver_Base::main_driver = new cAvidaDriver_Analyze(world, (world->GetConfig().ANALYZE_MODE.Get() == 2));
+  } else {
     cAvidaDriver_Base::main_driver = new cAvidaDriver_Population(world);
   }
 
