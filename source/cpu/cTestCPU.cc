@@ -29,47 +29,19 @@
 
 using namespace std;
 
-
-// Static Variables
-cWorld* cTestCPU::m_world(NULL);
-cInstSet * cTestCPU::inst_set(NULL);
-cEnvironment * cTestCPU::environment(NULL);
-cPopulationInterface* cTestCPU::test_interface;
-tArray<int> cTestCPU::input_array;
-tArray<int> cTestCPU::receive_array;
-int cTestCPU::cur_input;
-int cTestCPU::cur_receive;
-cResourceCount cTestCPU::resource_count;
-
-bool cTestCPU::initialized(false);
-int cTestCPU::time_mod(20);
-bool cTestCPU::d_useResources(false);
-tArray<double> cTestCPU::d_emptyDoubleArray;
-tArray<double> cTestCPU::d_resources;
-
-
-//////////////////////////////
-//  cTestCPU  (Static Class)
-//////////////////////////////
-
-void cTestCPU::Setup(cWorld* world, int resourceSize)
+cTestCPU::cTestCPU(cWorld* world)
+  : m_world(world)
+  , test_interface(world)
+  , time_mod(world->GetConfig().TEST_CPU_TIME_MOD.Get())
 {
-  m_world = world;
-  environment = &world->GetEnvironment();
-  inst_set = &world->GetHardwareManager().GetInstSet();
-  resource_count.SetSize(environment->GetResourceLib().GetSize());
-  test_interface = new cPopulationInterface(world);
+  resource_count.SetSize(world->GetEnvironment().GetResourceLib().GetSize());
   SetupResources();
-  time_mod = world->GetConfig().TEST_CPU_TIME_MOD.Get();
-  initialized = true;
 }
 
-void cTestCPU::SetupResources(void) {
-
-    // Setup the resources...
-  assert(environment);
-
-  const cResourceLib & resource_lib = environment->GetResourceLib();
+void cTestCPU::SetupResources(void)
+{
+  // Setup the resources...
+  const cResourceLib & resource_lib = m_world->GetEnvironment().GetResourceLib();
   assert(resource_lib.GetSize() >= 0);
 
   resource_count.SetSize(resource_lib.GetSize());
@@ -108,25 +80,11 @@ void cTestCPU::SetupResourceArray(const tArray<double> &resources) {
       d_resources[i] = resources[i];
     }
   }
-
-  return;
-}
-
-void cTestCPU::SetInstSet(cInstSet * in_inst_set)
-{
-  inst_set = in_inst_set;
-}
-
-void cTestCPU::SetEnvironment(cEnvironment *e)
-{
-  environment = e;
-  return;
 }
 
 // NOTE: This method assumes that the organism is a fresh creation.
 bool cTestCPU::ProcessGestation(cCPUTestInfo & test_info, int cur_depth)
 {
-  assert(initialized == true);
   assert(test_info.org_array[cur_depth] != NULL);
 
   cOrganism & organism = *( test_info.org_array[cur_depth] );
@@ -178,8 +136,6 @@ bool cTestCPU::ProcessGestation(cCPUTestInfo & test_info, int cur_depth)
 
 bool cTestCPU::TestGenome(cCPUTestInfo & test_info, const cGenome & genome)
 {
-  assert(initialized == true);
-
   test_info.Clear();
   TestGenome_Body(test_info, genome, 0);
 
@@ -189,8 +145,6 @@ bool cTestCPU::TestGenome(cCPUTestInfo & test_info, const cGenome & genome)
 bool cTestCPU::TestGenome(cCPUTestInfo & test_info, const cGenome & genome,
 		       ofstream & out_fp)
 {
-  assert(initialized == true);
-
   test_info.Clear();
   TestGenome_Body(test_info, genome, 0);
 
@@ -223,7 +177,6 @@ bool cTestCPU::TestGenome(cCPUTestInfo & test_info, const cGenome & genome,
 bool cTestCPU::TestGenome_Body(cCPUTestInfo & test_info,
 			       const cGenome & genome, int cur_depth)
 {
-  assert(initialized == true);
   assert(cur_depth < test_info.generation_tests);
 
   if (test_info.GetUseRandomInputs() == false) {
@@ -243,8 +196,8 @@ bool cTestCPU::TestGenome_Body(cCPUTestInfo & test_info,
     receive_array[1] = 0x33083ee5;  // 00110011 00001000 00111110 11100101
     receive_array[2] = 0x5562eb41;  // 01010101 01100010 11101011 01000001
   } else {
-    environment->SetupInputs(input_array);
-    environment->SetupInputs(receive_array);
+    m_world->GetEnvironment().SetupInputs(input_array);
+    m_world->GetEnvironment().SetupInputs(receive_array);
   }
 
   if (cur_depth > test_info.max_depth) test_info.max_depth = cur_depth;
@@ -253,7 +206,7 @@ bool cTestCPU::TestGenome_Body(cCPUTestInfo & test_info,
   if (test_info.org_array[cur_depth] != NULL) {
     delete test_info.org_array[cur_depth];
   }
-  test_info.org_array[cur_depth] = new cOrganism(m_world, genome, environment);
+  test_info.org_array[cur_depth] = new cOrganism(m_world, genome);
   cOrganism & organism = *( test_info.org_array[cur_depth] );
   organism.GetPhenotype().SetupInject(genome.GetSize());
 
@@ -309,32 +262,11 @@ bool cTestCPU::TestGenome_Body(cCPUTestInfo & test_info,
 
 void cTestCPU::TestThreads(const cGenome & genome)
 {
-  assert(initialized == true);
-
   static ofstream fp("threads.dat");
 
   cCPUTestInfo test_info;
   test_info.TestThreads();
   cTestCPU::TestGenome(test_info, genome);
-
-//  fp << cStats::GetUpdate()             << " "    // 1
-//     << genome.GetSize()                << " ";   // 2
-//       << cStats::GetAveNumThreads()      << " "   // 3
-//       << cStats::GetAveThreadDist()      << " ";  // 4
-
-//    fp << test_info.GetGenotypeMerit()          << " "   // 5
-//       << test_info.GetGenotypeGestation()      << " "   // 6
-//       << test_info.GetGenotypeFitness()        << " "   // 7
-//       << test_info.GetGenotypeThreadFrac()     << " "   // 8
-//       << test_info.GetGenotypeThreadTimeDiff() << " "   // 9
-//       << test_info.GetGenotypeThreadCodeDiff() << " ";  // 10
-
-//    fp << test_info.GetColonyMerit()          << " "   // 11
-//       << test_info.GetColonyGestation()      << " "   // 12
-//       << test_info.GetColonyFitness()        << " "   // 13
-//       << test_info.GetColonyThreadFrac()     << " "   // 14
-//       << test_info.GetColonyThreadTimeDiff() << " "   // 15
-//       << test_info.GetColonyThreadCodeDiff() << " ";  // 16
 
   fp << endl;
 }
@@ -342,8 +274,6 @@ void cTestCPU::TestThreads(const cGenome & genome)
 
 void cTestCPU::PrintThreads(const cGenome & genome)
 {
-  assert(initialized == true);
-
   cCPUTestInfo test_info;
   test_info.TestThreads();
   test_info.PrintThreads();
@@ -389,56 +319,3 @@ bool cTestCPU::TestIntegrity(const cGenome & test_genome)
   return true;
 }
 
-
-
-int cTestCPU::GetInput()
-{
-  if (cur_input >= input_array.GetSize()) cur_input = 0;
-  return input_array[cur_input++];
-}
-
-int cTestCPU::GetInputAt(int & input_pointer)
-{
-  if (input_pointer >= input_array.GetSize()) input_pointer = 0;
-  return input_array[input_pointer++];
-}
-
-int cTestCPU::GetReceiveValue()
-{
-  if (cur_receive >= receive_array.GetSize()) cur_receive = 0;
-  return receive_array[cur_receive++];
-}
-
-const tArray<double> & cTestCPU::GetResources()
-{
-  if(d_useResources) {
-    //return resource_count.GetResources();  // Changed to use my own vector
-    return d_resources;
-  }
-
-  return d_emptyDoubleArray;
-  //assert(resource_count != NULL);       // Original line
-  //return resource_count.GetResources();   // Original line
-}
-
-
-void cTestCPU::UpdateResources(const tArray<double> & res_change)
-{
-  //resource_count.Modify(res_change);
-}
-
-void cTestCPU::UpdateResource(int id, double change)
-{
-  //resource_count.Modify(id, change);
-}
-
-void cTestCPU::UpdateCellResources(const tArray<double> & res_change, 
-                                      const int cell_id)
-{
-  //resource_count.ModifyCell(res_change, cell_id);
-}
-
-void cTestCPU::SetResource(int id, double new_level)
-{
-  resource_count.Set(id, new_level);
-}

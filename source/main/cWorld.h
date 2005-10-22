@@ -16,12 +16,13 @@
 #ifndef cRandom_h
 #include "cRandom.h"
 #endif
-#include "cEventList.h"
 
 class cEnvironment;
 class cEventManager;
+class cEventList;
 class cHardwareManager;
 class cPopulation;
+class cTestCPU;
 
 class cWorld
 {
@@ -32,8 +33,12 @@ protected:
   cEnvironment* m_env;
   cHardwareManager* m_hw_mgr;
   cPopulation* m_pop;
+  cTestCPU* m_test_cpu;
 
   cRandom m_rng;
+  
+  bool m_test_on_div;
+  bool m_test_sterilize;
 
   void Setup();
 
@@ -43,40 +48,28 @@ public:
   ~cWorld();
   
   void SetConfig(cAvidaConfig* cfg) { delete m_conf; m_conf = cfg; }
+  
   cAvidaConfig& GetConfig() { return *m_conf; }
+  cEnvironment& GetEnvironment() { return *m_env; }
   cHardwareManager& GetHardwareManager() { return *m_hw_mgr; }
   cPopulation& GetPopulation() { return *m_pop; }
-  cEnvironment& GetEnvironment() { return *m_env; }
+  cRandom& GetRandom() { return m_rng; }
+  cTestCPU& GetTestCPU() { return *m_test_cpu; }
 
   // Config Dependent Modes
-  bool GetTestOnDivide() const
-  {
-    const bool revert_fatal = m_conf->REVERT_FATAL.Get() > 0.0;
-    const bool revert_neg = m_conf->REVERT_DETRIMENTAL.Get() > 0.0;
-    const bool revert_neut = m_conf->REVERT_NEUTRAL.Get() > 0.0;
-    const bool revert_pos = m_conf->REVERT_BENEFICIAL.Get() > 0.0;
-    const bool fail_implicit = m_conf->FAIL_IMPLICIT.Get() > 0;
-    return (revert_fatal || revert_neg || revert_neut || revert_pos || fail_implicit);
-  }
-  bool GetTestSterilize() const
-  {
-    const bool sterilize_fatal = m_conf->STERILIZE_FATAL.Get() > 0.0;
-    const bool sterilize_neg = m_conf->STERILIZE_DETRIMENTAL.Get() > 0.0;
-    const bool sterilize_neut = m_conf->STERILIZE_NEUTRAL.Get() > 0.0;
-    const bool sterilize_pos = m_conf->STERILIZE_BENEFICIAL.Get() > 0.0;
-    return (sterilize_fatal || sterilize_neg || sterilize_neut || sterilize_pos);
-  }
+  bool GetTestOnDivide() const { return m_test_on_div; }
+  bool GetTestSterilize() const { return m_test_sterilize; }
   
-  cRandom& GetRandom() { return m_rng; }
-
-  void GetEvents();
-  void ReadEventListFile(const cString & filename);
-  void SyncEventList() { m_event_list->Sync(); }
-
+  // Convenience Accessors
   int GetNumInstructions();
   int GetNumTasks();
   int GetNumReactions();
   int GetNumResources();
+
+  // DDD - Inherited from cAvidaDriver heritage
+  void GetEvents();
+  void ReadEventListFile(const cString & filename);
+  void SyncEventList();
 };
 
 #endif

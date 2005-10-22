@@ -52,7 +52,7 @@ void cGenebank::UpdateReset()
     if (genotype_dom_time == m_world->GetConfig().GENOTYPE_PRINT_DOM.Get()) {
       cString filename;
       filename.Set("genebank/%s", best_genotype->GetName()());
-      cTestUtil::PrintGenome(best_genotype->GetGenome(), 
+      cTestUtil::PrintGenome(m_world, best_genotype->GetGenome(), 
 			     filename, best_genotype, stats.GetUpdate());
     }
   }
@@ -348,7 +348,7 @@ void cGenebank::ThresholdGenotype(cGenotype & in_genotype)
     // If no species was found, create a new one.
 
     if (!found_species) {
-      found_species = new cSpecies(in_genotype.GetGenome(), stats.GetUpdate());
+      found_species = new cSpecies(m_world, in_genotype.GetGenome(), stats.GetUpdate());
       if (in_genotype.GetSpecies())
 	found_species->SetParentID(in_genotype.GetSpecies()->GetID());
       species_control->SetActive(*found_species);
@@ -359,7 +359,7 @@ void cGenebank::ThresholdGenotype(cGenotype & in_genotype)
       if (m_world->GetConfig().SPECIES_PRINT.Get()) {
 	cString filename;
 	filename.Set("genebank/spec-%04d", found_species->GetID());
-	cTestUtil::PrintGenome(in_genotype.GetGenome(), filename,
+	cTestUtil::PrintGenome(m_world, in_genotype.GetGenome(), filename,
 			       &in_genotype, stats.GetUpdate());
       }
     }
@@ -411,7 +411,7 @@ void cGenebank::ThresholdGenotype(cGenotype & in_genotype)
   if (m_world->GetConfig().GENOTYPE_PRINT.Get()) {
     cString filename;
     filename.Set("genebank/%s", in_genotype.GetName()());
-    cTestUtil::PrintGenome(in_genotype.GetGenome(), filename,
+    cTestUtil::PrintGenome(m_world, in_genotype.GetGenome(), filename,
 			   &in_genotype, stats.GetUpdate());
   }
 }

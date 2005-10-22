@@ -58,7 +58,6 @@ class cWorld;
 class cPhenotype {
 private:
   cWorld* m_world;
-  const cEnvironment & environment;
   bool initialized;
 
   // 1. These are values calculated at the last divide (of self or offspring)
@@ -127,7 +126,7 @@ private:
   int child_copied_size; // Instruction copied into child.
 
 public:
-  cPhenotype(cWorld* world, const cEnvironment & environment);
+  cPhenotype(cWorld* world);
   ~cPhenotype();
 
   bool OK();
@@ -171,8 +170,6 @@ public:
   }
 
   /////////////////////  Accessors -- Retrieving  ////////////////////
-  const cEnvironment & GetEnvironment() const { return environment; };
-
   const cMerit & GetMerit() const
     { assert(initialized == true); return merit; }
   int GetGenomeLength() const

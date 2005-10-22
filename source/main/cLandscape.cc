@@ -16,6 +16,7 @@
 #include "cTestCPU.h"
 #include "cTestUtil.h"
 #include "cTools.h"
+#include "cWorld.h"
 
 using namespace std;
 
@@ -24,8 +25,8 @@ using namespace std;
 //  cLandscape
 ////////////////
 
-cLandscape::cLandscape(const cGenome & in_genome, const cInstSet & in_inst_set)
-  : inst_set(in_inst_set), base_genome(1), peak_genome(1)
+cLandscape::cLandscape(cWorld* world, const cGenome & in_genome, const cInstSet & in_inst_set)
+  : m_world(world), inst_set(in_inst_set), base_genome(1), peak_genome(1)
 {
   site_count = NULL;
   Reset(in_genome);
@@ -82,7 +83,7 @@ void cLandscape::Reset(const cGenome & in_genome)
 
 void cLandscape::ProcessGenome(cGenome & in_genome)
 {
-  cTestCPU::TestGenome(test_info, in_genome);
+  m_world->GetTestCPU().TestGenome(test_info, in_genome);
 
   test_fitness = test_info.GetColonyFitness();
 
@@ -110,7 +111,7 @@ void cLandscape::ProcessBase()
 {
   // Collect info on base creature.
 
-  cTestCPU::TestGenome(test_info, base_genome);
+  m_world->GetTestCPU().TestGenome(test_info, base_genome);
 
   cPhenotype & phenotype = test_info.GetColonyOrganism()->GetPhenotype();
   base_fitness = phenotype.GetFitness();
@@ -541,17 +542,6 @@ int cLandscape::RandomProcess(int in_trials, int in_distance, int min_found,
 
     ProcessGenome(mod_genome);
 
-    // if (test_info.IsViable()) {
-    //if (test_fitness >= neut_min) {
-      // total_found++;
-      // If we are supposed to print those found, do so!
-      //  if (print_if_found) {
-      //    cString filename;
-      //    filename.Set("creature.land.%d.%d", distance, cur_trial);
-      //    cTestUtil::PrintGenome(mod_genome, filename);
-      //  }
-    //}
-
 
     // And reset the genome.
     for (mut_num = 0; mut_num < distance; mut_num++) {
@@ -737,7 +727,7 @@ void cLandscape::HillClimb_Rand(ofstream & fp)
 void cLandscape::HillClimb_Print(ofstream & fp, const cGenome & _genome, const int gen) const
 {
   cCPUTestInfo test_info;
-  cTestCPU::TestGenome(test_info, _genome);
+  m_world->GetTestCPU().TestGenome(test_info, _genome);
   cPhenotype &colony_phenotype = test_info.GetColonyOrganism()->GetPhenotype();
   fp << gen << " "
      << colony_phenotype.GetMerit().GetDouble() << " "
@@ -756,7 +746,7 @@ double cLandscape::TestMutPair(cGenome & mod_genome, int line1, int line2,
 {
   mod_genome[line1] = mut1;
   mod_genome[line2] = mut2;
-  cTestCPU::TestGenome(test_info, mod_genome);
+  m_world->GetTestCPU().TestGenome(test_info, mod_genome);
   double combo_fitness = test_info.GetColonyFitness() / base_fitness;
 
   mod_genome[line1] = base_genome[line1];
@@ -853,11 +843,11 @@ void cLandscape::PrintSiteCount(ofstream & fp)
 
 void cLandscape::PrintBase(cString filename)
 {
-  cTestUtil::PrintGenome(base_genome, filename);
+  cTestUtil::PrintGenome(m_world, base_genome, filename);
 }
 
 void cLandscape::PrintPeak(cString filename)
 {
-  cTestUtil::PrintGenome(peak_genome, filename);
+  cTestUtil::PrintGenome(m_world, peak_genome, filename);
 }
 

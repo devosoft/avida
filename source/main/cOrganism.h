@@ -112,7 +112,7 @@ public:
   void Fault(int fault_loc, int fault_type, cString fault_desc="");
 
 public:
-  cOrganism(cWorld* world, const cGenome & in_genome, cEnvironment* in_env = NULL);
+  cOrganism(cWorld* world, const cGenome & in_genome);
   ~cOrganism();
 
   cHardwareBase & GetHardware() { return *hardware; }

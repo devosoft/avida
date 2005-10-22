@@ -34,11 +34,11 @@
 
 using namespace std;
 
-void cAnalyzeUtil::TestGenome(const cGenome & genome, cInstSet & inst_set,
+void cAnalyzeUtil::TestGenome(cWorld* world, const cGenome & genome, cInstSet & inst_set,
 			      ofstream & fp, int update)
 {
   cCPUTestInfo test_info;
-  cTestCPU::TestGenome(test_info, genome);
+  world->GetTestCPU().TestGenome(test_info, genome);
 
   cPhenotype &colony_phenotype = test_info.GetColonyOrganism()->GetPhenotype();
   fp << update << " "                                //  1
@@ -53,7 +53,7 @@ void cAnalyzeUtil::TestGenome(const cGenome & genome, cInstSet & inst_set,
 
 
 
-void cAnalyzeUtil::TestInsSizeChangeRobustness(ofstream & fp,
+void cAnalyzeUtil::TestInsSizeChangeRobustness(cWorld* world, ofstream & fp,
 		    const cInstSet & inst_set, const cGenome & in_genome,
 		    int num_trials, int update)
 {
@@ -79,7 +79,7 @@ void cAnalyzeUtil::TestInsSizeChangeRobustness(ofstream & fp,
     for (int j = 0; j < num_nops; j++)  genome.Insert(ins_pos, inst_none);
 
     // Test the genome and output stats
-    if ( cTestCPU::TestGenome(test_info, genome) ){ // Daughter viable...
+    if (world->GetTestCPU().TestGenome(test_info, genome)){ // Daughter viable...
       num_viable++;
       const double child_size =
 	test_info.GetColonyOrganism()->GetGenome().GetSize();
@@ -99,10 +99,10 @@ void cAnalyzeUtil::TestInsSizeChangeRobustness(ofstream & fp,
 
 
 // Returns the genome of maximal fitness.
-cGenome cAnalyzeUtil::CalcLandscape(int dist, const cGenome & genome,
+cGenome cAnalyzeUtil::CalcLandscape(cWorld* world, int dist, const cGenome & genome,
 				    cInstSet & inst_set)
 {
-  cLandscape landscape(genome, inst_set);
+  cLandscape landscape(world, genome, inst_set);
   landscape.Process(dist);
   double peak_fitness = landscape.GetPeakFitness();
   cGenome peak_genome = landscape.GetPeakGenome();
@@ -145,10 +145,10 @@ cGenome cAnalyzeUtil::CalcLandscape(int dist, const cGenome & genome,
 }
 
 
-void cAnalyzeUtil::AnalyzeLandscape(const cGenome & genome, cInstSet &inst_set,
+void cAnalyzeUtil::AnalyzeLandscape(cWorld* world, const cGenome & genome, cInstSet &inst_set,
 	       int sample_size, int min_found, int max_sample_size, int update)
 {
-  cLandscape landscape(genome, inst_set);
+  cLandscape landscape(world, genome, inst_set);
 
   static ofstream fp("land_analyze.dat");
 
@@ -180,10 +180,10 @@ void cAnalyzeUtil::AnalyzeLandscape(const cGenome & genome, cInstSet &inst_set,
 }
 
 
-void cAnalyzeUtil::PairTestLandscape(const cGenome &genome, cInstSet &inst_set,
+void cAnalyzeUtil::PairTestLandscape(cWorld* world, const cGenome &genome, cInstSet &inst_set,
 				     int sample_size, int update)
 {
-  cLandscape landscape(genome, inst_set);
+  cLandscape landscape(world, genome, inst_set);
 
   cString filename;
   filename.Set("pairtest.%d.dat", update);
@@ -297,7 +297,7 @@ void cAnalyzeUtil::CalcConsensus(cWorld* world, int lines_saved)
 
   cString con_name;
   con_name.Set("genebank/%03d-consensus-u%i.gen", con_genome.GetSize(),update);
-  cTestUtil::PrintGenome( con_genome, con_name() );
+  cTestUtil::PrintGenome(world, con_genome, con_name());
 
 
   if (con_genotype) {
@@ -325,7 +325,7 @@ void cAnalyzeUtil::CalcConsensus(cWorld* world, int lines_saved)
   }
   else {
     cCPUTestInfo test_info;
-    cTestCPU::TestGenome(test_info, con_genome);
+    world->GetTestCPU().TestGenome(test_info, con_genome);
     cPhenotype & colony_phenotype =
       test_info.GetColonyOrganism()->GetPhenotype();
     fp << update                                             << " "   //  1
@@ -408,7 +408,7 @@ void cAnalyzeUtil::AnalyzePopulation(cWorld* world, ofstream & fp,
 
     // create landscape object for this creature
     if (landscape &&  genotype->GetTestFitness() > 0) {
-      cLandscape landscape( genome, world->GetHardwareManager().GetInstSet());
+      cLandscape landscape(world, genome, world->GetHardwareManager().GetInstSet());
       landscape.Process(1);
       landscape.PrintStats(fp);
     }
@@ -416,7 +416,7 @@ void cAnalyzeUtil::AnalyzePopulation(cWorld* world, ofstream & fp,
     if ( save_genotype ){
       char filename[40];
       sprintf( filename, "genebank/%s", creature_name() );
-      cTestUtil::PrintGenome( genome, filename );
+      cTestUtil::PrintGenome(world, genome, filename);
     }
   }
 }
@@ -446,10 +446,11 @@ void cAnalyzeUtil::AnalyzePopulation(cWorld* world, ofstream & fp,
  * histograms.
  **/
 
-void cAnalyzeUtil::PrintDetailedFitnessData(cPopulation *pop, ofstream &datafp,
+void cAnalyzeUtil::PrintDetailedFitnessData(cWorld* world, ofstream &datafp,
    ofstream & hist_fp, ofstream & histo_testCPU_fp, bool save_max_f_genotype,
    bool print_fitness_histo, double hist_fmax, double hist_fstep)
 {
+  cPopulation* pop = &world->GetPopulation();
   const int update = pop->GetStats().GetUpdate();
   const double generation = pop->GetStats().SumGeneration().Average();
 
@@ -479,7 +480,7 @@ void cAnalyzeUtil::PrintDetailedFitnessData(cPopulation *pop, ofstream &datafp,
     cGenotype * genotype = organism->GetGenotype();
 
     cCPUTestInfo test_info;
-    cTestCPU::TestGenome( test_info, genotype->GetGenome() );
+    world->GetTestCPU().TestGenome( test_info, genotype->GetGenome() );
     // We calculate the fitness based on the current merit,
     // but with the true gestation time. Also, we set the fitness
     // to zero if the creature is not viable.
@@ -532,7 +533,7 @@ void cAnalyzeUtil::PrintDetailedFitnessData(cPopulation *pop, ofstream &datafp,
   if (save_max_f_genotype) {
     char filename[40];
     sprintf( filename, "genebank/%s", max_f_name() );
-    cTestUtil::PrintGenome( max_f_genotype->GetGenome(), filename );
+    cTestUtil::PrintGenome(world, max_f_genotype->GetGenome(), filename);
   }
 
   if (print_fitness_histo) {
@@ -662,7 +663,7 @@ void cAnalyzeUtil::GeneticDistancePopDump(cWorld* world, ofstream & fp,
     if (save_creatures) {
       char filename[40];
       sprintf( filename, "genebank/%s", cur_genotype->GetName()() );
-      cTestUtil::PrintGenome( genome, filename );
+      cTestUtil::PrintGenome(world, genome, filename);
     }
 
     // ...and advance to the next genotype...
@@ -682,8 +683,9 @@ void cAnalyzeUtil::GeneticDistancePopDump(cWorld* world, ofstream & fp,
  * @param fp The file into which the result should be written.
  **/
 
-void cAnalyzeUtil::TaskSnapshot(cPopulation * pop, ofstream & fp)
+void cAnalyzeUtil::TaskSnapshot(cWorld* world, ofstream & fp)
 {
+  cPopulation* pop = &world->GetPopulation();
   fp << "# (1) cell number\n# (2) number of rewarded tasks done so far\n# (3) total number of tasks done so far\n# (4) same as 2, but right before divide\n# (5) same as 3, but right before divide\n# (6) same as 2, but for parent\n# (7) same as 3, but for parent\n# (8) genotype fitness\n# (9) genotype name" << endl;
 
   for (int i = 0; i < pop->GetSize(); i++) {
@@ -692,11 +694,11 @@ void cAnalyzeUtil::TaskSnapshot(cPopulation * pop, ofstream & fp)
 
     // create a test-cpu for the current creature
     cCPUTestInfo test_info;
-    cTestCPU::TestGenome( test_info, organism->GetGenome() );
+    world->GetTestCPU().TestGenome( test_info, organism->GetGenome() );
     cPhenotype & test_phenotype = test_info.GetTestOrganism()->GetPhenotype();
     cPhenotype & phenotype = organism->GetPhenotype();
 
-    int num_tasks = phenotype.GetEnvironment().GetTaskLib().GetSize();
+    int num_tasks = world->GetEnvironment().GetTaskLib().GetSize();
     int sum_tasks_all = 0;
     int sum_tasks_rewarded = 0;
     int divide_sum_tasks_all = 0;
@@ -735,8 +737,9 @@ void cAnalyzeUtil::TaskSnapshot(cPopulation * pop, ofstream & fp)
   }
 }
 
-void cAnalyzeUtil::TaskGrid(cPopulation * pop, ofstream & fp)
+void cAnalyzeUtil::TaskGrid(cWorld* world, ofstream & fp)
 { 
+  cPopulation* pop = &world->GetPopulation();
   for (int i = 0; i < pop->GetWorldX(); i++) {
     for (int j = 0; j < pop->GetWorldY(); j++) {
       int task_sum = 0;
@@ -744,9 +747,9 @@ void cAnalyzeUtil::TaskGrid(cPopulation * pop, ofstream & fp)
       if (pop->GetCell(cell_num).IsOccupied() == true) {
         cOrganism * organism = pop->GetCell(cell_num).GetOrganism();
         cCPUTestInfo test_info;
-        cTestCPU::TestGenome( test_info, organism->GetGenome() );
+        world->GetTestCPU().TestGenome( test_info, organism->GetGenome() );
         cPhenotype & test_phenotype = test_info.GetTestOrganism()->GetPhenotype();
-        int num_tasks = test_phenotype.GetEnvironment().GetTaskLib().GetSize();   
+        int num_tasks = world->GetEnvironment().GetTaskLib().GetSize();   
         for (int k = 0; k < num_tasks; k++) {
           if (test_phenotype.GetLastTaskCount()[k]>0) {
 	    task_sum = task_sum + (int) pow(2.0,k); 

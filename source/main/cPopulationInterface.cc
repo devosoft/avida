@@ -81,7 +81,7 @@ double cPopulationInterface::TestFitness()
 
 int cPopulationInterface::GetInput()
 {
-  if (InTestPop()) return cTestCPU::GetInput();
+  if (InTestPop()) return m_world->GetTestCPU().GetInput();
   
   cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
   assert(cell.IsOccupied());
@@ -90,7 +90,7 @@ int cPopulationInterface::GetInput()
 
 int cPopulationInterface::GetInputAt(int& input_pointer)
 {
-  if (InTestPop()) return cTestCPU::GetInputAt(input_pointer);
+  if (InTestPop()) return m_world->GetTestCPU().GetInputAt(input_pointer);
   
   cPopulationCell& cell = m_world->GetPopulation().GetCell(cell_id);
   assert(cell.IsOccupied());
@@ -108,13 +108,13 @@ int cPopulationInterface::Debug()
 
 const tArray<double> & cPopulationInterface::GetResources()
 {
-  if (InTestPop()) return cTestCPU::GetResources();  
+  if (InTestPop()) return m_world->GetTestCPU().GetResources();  
   return m_world->GetPopulation().GetCellResources(cell_id);
 }
 
 void cPopulationInterface::UpdateResources(const tArray<double> & res_change)
 {
-  if (InTestPop()) return cTestCPU::UpdateResources(res_change);
+  if (InTestPop()) return;
   return m_world->GetPopulation().UpdateCellResources(res_change, cell_id);
 }
 
@@ -149,7 +149,7 @@ bool cPopulationInterface::SendMessage(cOrgMessage & mess)
 
 int cPopulationInterface::ReceiveValue()
 {
-  if (InTestPop()) return cTestCPU::GetReceiveValue();
+  if (InTestPop()) return m_world->GetTestCPU().GetReceiveValue();
   
   cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
   assert(cell.IsOccupied());

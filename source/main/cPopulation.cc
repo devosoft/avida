@@ -1233,7 +1233,7 @@ void cPopulation::UpdateOrganismStats()
     if (cur_genome_length < min_genome_length) min_genome_length = cur_genome_length;
     
     // Test what tasks this creatures has completed.
-    for (int j=0; j < phenotype.GetEnvironment().GetTaskLib().GetSize(); j++) {
+    for (int j=0; j < m_world->GetEnvironment().GetTaskLib().GetSize(); j++) {
       if (phenotype.GetCurTaskCount()[j] > 0)  stats.AddCurTask(j);
       if (phenotype.GetLastTaskCount()[j] > 0) stats.AddLastTask(j);
       if (phenotype.GetLastTaskCount()[j] > 0) 

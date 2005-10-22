@@ -153,7 +153,7 @@ void cAnalyzeGenotype::CalcLandscape() const
   if (landscape_stats != NULL) return;
 
   landscape_stats = new cAnalyzeLandscape;
-  cLandscape landscape(genome, inst_set);
+  cLandscape landscape(m_world, genome, inst_set);
   landscape.Process(1);
   landscape_stats->frac_dead = landscape.GetProbDead();
   landscape_stats->frac_neg  = landscape.GetProbNeg();
@@ -171,15 +171,14 @@ void cAnalyzeGenotype::Recalculate(cAnalyzeGenotype * parent_genotype)
   // DDD - This does some 'interesting' things with the instruction set
   
   // Use the inst lib for this genotype... and syncrhonize environment
-  cInstSet* inst_set_backup   = cTestCPU::GetInstSet();
-  cTestCPU::SetInstSet(&inst_set);
+  
+  // Backup old instruction set, update with new
   cInstSet env_inst_set_backup = m_world->GetHardwareManager().GetInstSet();
   m_world->GetHardwareManager().GetInstSet() = inst_set;
 
-  cTestCPU::TestGenome(test_info, genome);
+  m_world->GetTestCPU().TestGenome(test_info, genome);
   
-  // Restore test CPU and environment instruction set
-  cTestCPU::SetInstSet(inst_set_backup);
+  // Restore the instruction set
   m_world->GetHardwareManager().GetInstSet() = env_inst_set_backup;
 
   viable = test_info.IsViable();

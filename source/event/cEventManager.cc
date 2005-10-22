@@ -959,7 +959,7 @@ public:
     cGenotype * dom = m_world->GetPopulation().GetGenebank().GetBestGenotype();
     cString filename(in_filename);
     if (filename == "") filename.Set("genebank/%s", dom->GetName()());
-    cTestUtil::PrintGenome(dom->GetGenome(), filename, dom, m_world->GetPopulation().GetUpdate());
+    cTestUtil::PrintGenome(m_world, dom->GetGenome(), filename, dom, m_world->GetPopulation().GetUpdate());
   }
 };
 
@@ -1022,7 +1022,7 @@ public:
     if (dom!=NULL) {
       cString filename(in_filename);
       if (filename == "") filename.Set("genebank/%s", dom->GetName()());
-      cTestUtil::PrintGenome(dom, dom->GetGenome(), filename, m_world->GetPopulation().GetUpdate()); }
+      cTestUtil::PrintGenome(m_world, dom, dom->GetGenome(), filename, m_world->GetPopulation().GetUpdate()); }
   }
 };
 
@@ -2260,7 +2260,7 @@ public:
   ///// calc_landscape /////
   void Process(){
     cGenome & genome = m_world->GetPopulation().GetGenebank().GetBestGenotype()->GetGenome();
-    cAnalyzeUtil::CalcLandscape(landscape_dist, genome,
+    cAnalyzeUtil::CalcLandscape(m_world, landscape_dist, genome,
                                 m_world->GetHardwareManager().GetInstSet());
   }
 };
@@ -2288,7 +2288,7 @@ public:
   ///// predict_w_landscape /////
   void Process(){
     cGenome & genome = m_world->GetPopulation().GetGenebank().GetBestGenotype()->GetGenome();
-    cLandscape landscape(genome, m_world->GetHardwareManager().GetInstSet());
+    cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
     static ofstream fp(datafile);
     landscape.PredictWProcess(fp);
   }
@@ -2317,7 +2317,7 @@ public:
   ///// predict_nu_landscape /////
   void Process(){
     cGenome & genome = m_world->GetPopulation().GetGenebank().GetBestGenotype()->GetGenome();
-    cLandscape landscape(genome, m_world->GetHardwareManager().GetInstSet());
+    cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
     static ofstream fp(datafile);
     landscape.PredictNuProcess(fp);
   }
@@ -2346,7 +2346,7 @@ public:
   ///// sample_landscape /////
   void Process(){
     cGenome & genome = m_world->GetPopulation().GetGenebank().GetBestGenotype()->GetGenome();
-    cLandscape landscape(genome, m_world->GetHardwareManager().GetInstSet());
+    cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
     if (sample_size == 0) sample_size = m_world->GetHardwareManager().GetInstSet().GetSize() - 1;
     landscape.SampleProcess(sample_size);
     static ofstream fp("land-sample.dat");
@@ -2385,7 +2385,7 @@ public:
   ///// random_landscape /////
   void Process(){
     cGenome & genome = m_world->GetPopulation().GetGenebank().GetBestGenotype()->GetGenome();
-    cLandscape landscape(genome, m_world->GetHardwareManager().GetInstSet());
+    cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
     landscape.RandomProcess(sample_size, landscape_dist, min_found,
                             max_sample_size, print_if_found);
     static ofstream fp("land-random.dat");
@@ -2420,8 +2420,7 @@ public:
   ///// analyze_landscape /////
   void Process(){
     cGenome & genome = m_world->GetPopulation().GetGenebank().GetBestGenotype()->GetGenome();
-    cAnalyzeUtil::
-    AnalyzeLandscape(genome, m_world->GetHardwareManager().GetInstSet(),
+    cAnalyzeUtil::AnalyzeLandscape(m_world, genome, m_world->GetHardwareManager().GetInstSet(),
                      sample_size, min_found, max_sample_size,
                      m_world->GetPopulation().GetUpdate());
   }
@@ -2451,7 +2450,7 @@ public:
   ///// pairtest_landscape /////
   void Process(){
     cGenome & genome = m_world->GetPopulation().GetGenebank().GetBestGenotype()->GetGenome();
-    cAnalyzeUtil::PairTestLandscape(genome, m_world->GetHardwareManager().GetInstSet(), sample_size, m_world->GetPopulation().GetUpdate());
+    cAnalyzeUtil::PairTestLandscape(m_world, genome, m_world->GetHardwareManager().GetInstSet(), sample_size, m_world->GetPopulation().GetUpdate());
   }
 };
 
@@ -2475,7 +2474,7 @@ public:
   void Process(){
     cGenome & genome = m_world->GetPopulation().GetGenebank().GetBestGenotype()->GetGenome();
     static ofstream fp("dom-test.dat");
-    cAnalyzeUtil::TestGenome(genome, m_world->GetHardwareManager().GetInstSet(), fp, m_world->GetPopulation().GetUpdate());
+    cAnalyzeUtil::TestGenome(m_world, genome, m_world->GetHardwareManager().GetInstSet(), fp, m_world->GetPopulation().GetUpdate());
   }
 };
 
@@ -2558,7 +2557,7 @@ public:
       histofile.open(filename2());
       histofile_testCPU.open(filename3());
     }
-    cAnalyzeUtil::PrintDetailedFitnessData( &m_world->GetPopulation(), datafile, histofile, histofile_testCPU, save_max_f_genotype, print_fitness_histo, hist_fmax, hist_fstep );
+    cAnalyzeUtil::PrintDetailedFitnessData(m_world, datafile, histofile, histofile_testCPU, save_max_f_genotype, print_fitness_histo, hist_fmax, hist_fstep );
   }
 };
 
@@ -2659,7 +2658,7 @@ public:
     if ( auto_filename )
       filename.Set("tasks_%d.dat",m_world->GetPopulation().GetUpdate());
     ofstream snapshot_file(filename());
-    cAnalyzeUtil::TaskSnapshot( &m_world->GetPopulation(), snapshot_file );
+    cAnalyzeUtil::TaskSnapshot(m_world, snapshot_file);
   }
 };
 
@@ -2909,7 +2908,7 @@ public:
   void Process(){
     cGenome & genome = m_world->GetPopulation().GetGenebank().GetBestGenotype()->GetGenome();
     ofstream fp("hillclimb.dat");
-    cLandscape landscape(genome, m_world->GetHardwareManager().GetInstSet());
+    cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
     landscape.HillClimb(fp);
   }
 };
@@ -2934,7 +2933,7 @@ public:
   void Process(){
     cGenome & genome = m_world->GetPopulation().GetGenebank().GetBestGenotype()->GetGenome();
     ofstream fp("hillclimb.dat");
-    cLandscape landscape(genome, m_world->GetHardwareManager().GetInstSet());
+    cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
     landscape.HillClimb_Neut(fp);
   }
 };
@@ -2959,7 +2958,7 @@ public:
   void Process(){
     cGenome & genome = m_world->GetPopulation().GetGenebank().GetBestGenotype()->GetGenome();
     ofstream fp("hillclimb.dat");
-    cLandscape landscape(genome, m_world->GetHardwareManager().GetInstSet());
+    cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
     landscape.HillClimb_Rand(fp);
   }
 };
@@ -3132,7 +3131,7 @@ public:
   ///// test_size_change_robustness /////
   void Process(){
     ofstream & fp = m_world->GetPopulation().GetStats().GetDataFileOFStream(filename);
-    cAnalyzeUtil::TestInsSizeChangeRobustness(fp,
+    cAnalyzeUtil::TestInsSizeChangeRobustness(m_world, fp,
                                               m_world->GetHardwareManager().GetInstSet(),
                                               m_world->GetPopulation().GetGenebank().GetBestGenotype()->GetGenome(),
                                               num_trials, m_world->GetPopulation().GetUpdate());
@@ -3159,7 +3158,7 @@ public:
   
   ///// test_threads /////
   void Process(){
-    cTestCPU::TestThreads(m_world->GetPopulation().GetGenebank().GetBestGenotype()->GetGenome());
+    m_world->GetTestCPU().TestThreads(m_world->GetPopulation().GetGenebank().GetBestGenotype()->GetGenome());
   }
 };
 
@@ -3182,7 +3181,7 @@ public:
   }
   ///// print_threads /////
   void Process(){
-    cTestCPU::PrintThreads( m_world->GetPopulation().GetGenebank().GetBestGenotype()->GetGenome() );
+    m_world->GetTestCPU().PrintThreads( m_world->GetPopulation().GetGenebank().GetBestGenotype()->GetGenome() );
   }
 };
 
@@ -3289,7 +3288,7 @@ public:
     cString filename;
     filename.Set("task_grid_%d.dat",m_world->GetPopulation().GetUpdate());
     ofstream fp(filename());
-    cAnalyzeUtil::TaskGrid( &m_world->GetPopulation(), fp );
+    cAnalyzeUtil::TaskGrid(m_world, fp );
   }
 };
 

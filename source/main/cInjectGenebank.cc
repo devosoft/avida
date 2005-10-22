@@ -52,7 +52,7 @@ void cInjectGenebank::UpdateReset()
     if (genotype_dom_time == m_world->GetConfig().GENOTYPE_PRINT_DOM.Get()) {
       cString filename;
       filename.Set("genebank/%s", best_inject_genotype->GetName()());
-      cTestUtil::PrintGenome(best_inject_genotype, best_inject_genotype->GetGenome(), 
+      cTestUtil::PrintGenome(m_world, best_inject_genotype, best_inject_genotype->GetGenome(), 
 			     filename, stats.GetUpdate());
     }
   }
@@ -184,7 +184,7 @@ void cInjectGenebank::ThresholdInjectGenotype(cInjectGenotype & in_inject_genoty
   if (m_world->GetConfig().GENOTYPE_PRINT.Get()) {
     cString filename;
     filename.Set("genebank/%s", in_inject_genotype.GetName()());
-    //cTestUtil::PrintGenome(in_inject_genotype.GetGenome(), filename,
+    //cTestUtil::PrintGenome(m_world, in_inject_genotype.GetGenome(), filename,
     //			   &in_inject_genotype, stats.GetUpdate());
   }
 }

@@ -22,21 +22,21 @@ class cAnalyzeUtil {
 private:
 public:
   // Generic test-CPU analysis
-  static void TestGenome(const cGenome & genome, cInstSet & inst_set,
+  static void TestGenome(cWorld* world, const cGenome & genome, cInstSet & inst_set,
 			 std::ofstream & fp, int update);
 
-  static void TestInsSizeChangeRobustness(std::ofstream & fp,
+  static void TestInsSizeChangeRobustness(cWorld* world, std::ofstream & fp,
                  const cInstSet & inst_set, const cGenome & in_genome,
                  int num_trials, int update);
 
 
   // Landscape-based analysis
-  static cGenome CalcLandscape(int dist, const cGenome & genome,
+  static cGenome CalcLandscape(cWorld* world, int dist, const cGenome & genome,
 			       cInstSet & inst_set);
-  static void AnalyzeLandscape(const cGenome & genome, cInstSet & inst_set,
+  static void AnalyzeLandscape(cWorld* world, const cGenome & genome, cInstSet & inst_set,
 			       int sample_size=1000, int min_found=0,
 			       int max_sample_size=0, int update=-1);
-  static void PairTestLandscape(const cGenome & genome, cInstSet & inst_set,
+  static void PairTestLandscape(cWorld* world, const cGenome & genome, cInstSet & inst_set,
 				int sample_size=0, int update=-1);
 
 
@@ -47,7 +47,7 @@ public:
 				double sample_prob=1, bool landscape=false,
 				bool save_genotype=false);
 
-  static void PrintDetailedFitnessData(cPopulation * pop, std::ofstream & datafp,
+  static void PrintDetailedFitnessData(cWorld* world, std::ofstream & datafp,
     std::ofstream & histofp, std::ofstream & histo_testCPU_fp, bool save_max_f_genotype,
     bool print_fitness_histo, double hist_fmax, double hist_fstep);
 
@@ -56,8 +56,8 @@ public:
   static void GeneticDistancePopDump(cWorld* world, std::ofstream & fp,
 		    const char * creature_name, bool save_creatures=false);
 
-  static void TaskSnapshot(cPopulation * pop, std::ofstream & fp);
-  static void TaskGrid(cPopulation * pop, std::ofstream & fp);
+  static void TaskSnapshot(cWorld* world, std::ofstream & fp);
+  static void TaskGrid(cWorld* world, std::ofstream & fp);
   static void PrintViableTasksData(cWorld* world, std::ofstream &fp);
   static void PrintTreeDepths(cPopulation * pop, std::ofstream & fp);
 

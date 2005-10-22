@@ -1491,7 +1491,7 @@ void cHardwareSMT::Divide_TestFitnessMeasures()
   
   cCPUTestInfo test_info;
   test_info.UseRandomInputs();
-  cTestCPU::TestGenome(test_info, organism->ChildGenome());
+  m_world->GetTestCPU().TestGenome(test_info, organism->ChildGenome());
   const double child_fitness = test_info.GetGenotypeFitness();
   
   bool revert = false;

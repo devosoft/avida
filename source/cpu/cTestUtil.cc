@@ -19,6 +19,7 @@
 #include "cStats.h"
 #include "cTaskEntry.h"
 #include "cTestCPU.h"
+#include "cWorld.h"
 
 #include <fstream>
 #include <iomanip>
@@ -27,7 +28,7 @@
 using namespace std;
 
 
-void cTestUtil::PrintGenome(const cGenome & genome, cString filename,
+void cTestUtil::PrintGenome(cWorld* world, const cGenome & genome, cString filename,
 			    cGenotype * genotype, int update_out)
 {
   if (filename == "") filename.Set("%03d-unnamed", genome.GetSize());
@@ -35,7 +36,7 @@ void cTestUtil::PrintGenome(const cGenome & genome, cString filename,
   // Build the test info for printing.
   cCPUTestInfo test_info;
   test_info.TestThreads();
-  cTestCPU::TestGenome(test_info, genome);
+  world->GetTestCPU().TestGenome(test_info, genome);
 
   // Open the file...
 
@@ -116,8 +117,8 @@ void cTestUtil::PrintGenome(const cGenome & genome, cString filename,
   
   // Display the tasks performed...
   cPhenotype & phenotype = test_info.GetTestOrganism()->GetPhenotype();
-  for (int i = 0; i < phenotype.GetEnvironment().GetTaskLib().GetSize(); i++) {
-    fp << "# "<< phenotype.GetEnvironment().GetTaskLib().GetTask(i).GetName()
+  for (int i = 0; i < world->GetEnvironment().GetTaskLib().GetSize(); i++) {
+    fp << "# "<< world->GetEnvironment().GetTaskLib().GetTask(i).GetName()
        << "\t" << phenotype.GetLastTaskCount()[i]
        << endl;
   }
@@ -129,7 +130,7 @@ void cTestUtil::PrintGenome(const cGenome & genome, cString filename,
   cInstUtil::SaveGenome(fp, inst_set, genome);
 }
 
-void cTestUtil::PrintGenome(cInjectGenotype * inject_genotype, 
+void cTestUtil::PrintGenome(cWorld* world, cInjectGenotype * inject_genotype, 
 			    const cGenome & genome, cString filename, int update_out)
 {
   if (filename == "") filename.Set("p%03d-unnamed", genome.GetSize());
@@ -137,7 +138,7 @@ void cTestUtil::PrintGenome(cInjectGenotype * inject_genotype,
   // Build the test info for printing.
   cCPUTestInfo test_info;
   test_info.TestThreads();
-  cTestCPU::TestGenome(test_info, genome);
+  world->GetTestCPU().TestGenome(test_info, genome);
 
   // Open the file...
 

@@ -17,16 +17,16 @@
 //  of hardware in order to produce more useful test info.
 // ------------------------------------------------------------------------
 
-class cString; // aggregate
 class cGenome;
 class cGenotype;
 class cInjectGenotype;
+class cWorld;
 
 class cTestUtil {
 public:
-  static void PrintGenome(const cGenome & genome, cString filename="",
+  static void PrintGenome(cWorld* world, const cGenome & genome, cString filename="",
 			  cGenotype * genotype=NULL, int update_out=-1);
-  static void PrintGenome(cInjectGenotype * genotype, const cGenome & genome, 
+  static void PrintGenome(cWorld* world, cInjectGenotype * genotype, const cGenome & genome, 
 			  cString filename="", int update_out=-1);
 };
 

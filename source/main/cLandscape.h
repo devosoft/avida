@@ -5,19 +5,19 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef LANDSCAPE_HH
-#define LANDSCAPE_HH
+#ifndef cLandscape_h
+#define cLandscape_h
 
-#ifndef CPU_TEST_INFO_HH
+#ifndef cCPUTestInfo_h
 #include "cCPUTestInfo.h"
 #endif
-#ifndef GENOME_HH
+#ifndef cGenome_h
 #include "cGenome.h"
 #endif
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
-#ifndef TMATRIX_HH
+#ifndef tMatrix_h
 #include "tMatrix.h"
 #endif
 
@@ -28,10 +28,11 @@ class cGenome; // aggregate
 class cCPUTestInfo; // aggregate
 template <class T> class tMatrix; // aggregate
 class cInstruction;
-class cString; // aggregate
+class cWorld;
 
 struct cLandscape {
 private:
+  cWorld* m_world;
   const cInstSet & inst_set;
   cGenome base_genome;
   cGenome peak_genome;
@@ -97,7 +98,7 @@ private:
   // disabled copy constructor.
   cLandscape(const cLandscape &);
 public:
-  cLandscape(const cGenome & in_genome, const cInstSet & in_inst_set);
+  cLandscape(cWorld* world, const cGenome & in_genome, const cInstSet & in_inst_set);
   ~cLandscape();
 
   void Reset(const cGenome & in_genome);

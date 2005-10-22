@@ -22,9 +22,11 @@
 #define SPECIES_MAX_DISTANCE 20
 
 class cGenotype;
+class cWorld;
 
 class cSpecies {
 private:
+  cWorld* m_world;
   int id_num;
   int parent_id;
   cGenome genome;
@@ -42,7 +44,7 @@ private:
   cSpecies * next;
   cSpecies * prev;
 public:
-  cSpecies(const cGenome & in_genome, int update);
+  cSpecies(cWorld* world, const cGenome & in_genome, int update);
   ~cSpecies();
 
   int Compare(const cGenome & test_genome, int max_fail_count=-1);

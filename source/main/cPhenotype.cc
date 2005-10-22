@@ -18,16 +18,15 @@
 using namespace std;
 
 
-cPhenotype::cPhenotype(cWorld* world, const cEnvironment & _environment)
+cPhenotype::cPhenotype(cWorld* world)
   : m_world(world)
-  , environment(_environment)
   , initialized(false)
-  , cur_task_count(environment.GetTaskLib().GetSize())
-  , cur_reaction_count(environment.GetReactionLib().GetSize())
+  , cur_task_count(m_world->GetEnvironment().GetTaskLib().GetSize())
+  , cur_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
   , cur_inst_count(world->GetHardwareManager().GetInstSet().GetSize())
-  , sensed_resources(environment.GetResourceLib().GetSize())
-  , last_task_count(environment.GetTaskLib().GetSize())
-  , last_reaction_count(environment.GetReactionLib().GetSize())
+  , sensed_resources(m_world->GetEnvironment().GetResourceLib().GetSize())
+  , last_task_count(m_world->GetEnvironment().GetTaskLib().GetSize())
+  , last_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
   , last_inst_count(world->GetHardwareManager().GetInstSet().GetSize())
 {
 }
@@ -496,14 +495,15 @@ bool cPhenotype::TestOutput(tBuffer<int> & input_buf, tBuffer<int> &output_buf,
 {
   assert(initialized == true);
 
-  const int num_resources = environment.GetResourceLib().GetSize();
-  const int num_tasks = environment.GetTaskLib().GetSize();
-  const int num_reactions = environment.GetReactionLib().GetSize();
+  const cEnvironment& env = m_world->GetEnvironment();
+  const int num_resources = env.GetResourceLib().GetSize();
+  const int num_tasks = env.GetTaskLib().GetSize();
+  const int num_reactions = env.GetReactionLib().GetSize();
 
   cReactionResult result(num_resources, num_tasks, num_reactions);
 			
   // Run everything through the environment.
-  bool found = environment.TestOutput(result, input_buf, output_buf, send_buf,
+  bool found = env.TestOutput(result, input_buf, output_buf, send_buf,
 			      receive_buf, cur_task_count, cur_reaction_count,
 			      res_in, other_inputs, other_outputs);
 

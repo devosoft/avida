@@ -57,9 +57,7 @@ void cWorld::Setup() {
     ExitAvida(-1);
   }
     
-  // Setup the test CPUs.
-  cTestCPU::Setup(this, m_env->GetResourceLib().GetSize());
-
+  m_test_cpu = new cTestCPU(this);
   m_pop = new cPopulation(this);
 
   //Setup Event List
@@ -70,6 +68,19 @@ void cWorld::Setup() {
   
   // Make sure the directory 'genebank' exits!
   cTools::MkDir("genebank", true);
+  
+  const bool revert_fatal = m_conf->REVERT_FATAL.Get() > 0.0;
+  const bool revert_neg = m_conf->REVERT_DETRIMENTAL.Get() > 0.0;
+  const bool revert_neut = m_conf->REVERT_NEUTRAL.Get() > 0.0;
+  const bool revert_pos = m_conf->REVERT_BENEFICIAL.Get() > 0.0;
+  const bool fail_implicit = m_conf->FAIL_IMPLICIT.Get() > 0;
+  m_test_on_div = (revert_fatal || revert_neg || revert_neut || revert_pos || fail_implicit);
+
+  const bool sterilize_fatal = m_conf->STERILIZE_FATAL.Get() > 0.0;
+  const bool sterilize_neg = m_conf->STERILIZE_DETRIMENTAL.Get() > 0.0;
+  const bool sterilize_neut = m_conf->STERILIZE_NEUTRAL.Get() > 0.0;
+  const bool sterilize_pos = m_conf->STERILIZE_BENEFICIAL.Get() > 0.0;
+  m_test_sterilize = (sterilize_fatal || sterilize_neg || sterilize_neut || sterilize_pos);
 }
 
 void cWorld::ReadEventListFile(const cString & filename)
@@ -115,6 +126,8 @@ void cWorld::ReadEventListFile(const cString & filename)
     }
   }
 }
+
+void cWorld::SyncEventList() { m_event_list->Sync(); }
 
 void cWorld::GetEvents()
 {  

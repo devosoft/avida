@@ -5,35 +5,19 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef SPECIES_HH
 #include "cSpecies.h"
-#endif
 
-#ifndef CPU_TEST_INFO_HH
 #include "cCPUTestInfo.h"
-#endif
-#ifndef FUNCTIONS_HH
 #include "functions.h"
-#endif
-#ifndef GENOTYPE_HH
 #include "cGenotype.h"
-#endif
-#ifndef GENOME_UTIL_HH
 #include "cGenomeUtil.h"
-#endif
-#ifndef TEST_CPU_HH
 #include "cTestCPU.h"
-#endif
 
 using namespace std;
 
-
-/////////////////
-//  cSpecies
-/////////////////
-
-cSpecies::cSpecies(const cGenome & in_genome, int update )
-  : genome(in_genome)
+cSpecies::cSpecies(cWorld* world, const cGenome & in_genome, int update )
+  : m_world(world)
+  , genome(in_genome)
   , update_born(update)
 {
   static int species_count = 0;
@@ -94,7 +78,7 @@ int cSpecies::Compare(const cGenome & test_genome, int max_fail_count)
   // First, make some phenotypic comparisons between organisms.
   // For now, just check that they both copy-true.
 
-  cTestCPU::TestGenome(test_info, test_genome);
+  m_world->GetTestCPU().TestGenome(test_info, test_genome);
 
   // If the organisms aren't viable, return a -1...
   if (test_info.IsViable() == false) {
@@ -128,10 +112,10 @@ int cSpecies::Compare(const cGenome & test_genome, int max_fail_count)
       cross_genome2[i] = genome[i];
    
       // Run each side, and determine viability...
-      cTestCPU::TestGenome(test_info, cross_genome1);
+      m_world->GetTestCPU().TestGenome(test_info, cross_genome1);
       cross1_viable = test_info.IsViable();
 
-      cTestCPU::TestGenome(test_info, cross_genome2);
+      m_world->GetTestCPU().TestGenome(test_info, cross_genome2);
       cross2_viable = test_info.IsViable();
     }
 

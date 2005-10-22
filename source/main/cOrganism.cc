@@ -33,12 +33,12 @@ using namespace std;
 int cOrganism::instance_count(0);
 
 
-cOrganism::cOrganism(cWorld* world, const cGenome & in_genome, cEnvironment* in_env)
+cOrganism::cOrganism(cWorld* world, const cGenome & in_genome)
   : m_world(world)
   , genotype(NULL)
-  , phenotype(world, in_env ? *in_env : world->GetEnvironment())
+  , phenotype(world)
   , initial_genome(in_genome)
-  , mut_info(in_env ? in_env->GetMutationLib() : world->GetEnvironment().GetMutationLib(), in_genome.GetSize())
+  , mut_info(world->GetEnvironment().GetMutationLib(), in_genome.GetSize())
   , pop_interface(world)
   , input_pointer(0)
   , input_buf(INPUT_BUF_SIZE)
@@ -111,7 +111,7 @@ void cOrganism::DoOutput(const int value)
   tList<tBuffer<int> > other_output_list;
 
   // If tasks require us to consider neighbor inputs, collect them...
-  if (phenotype.GetEnvironment().GetTaskLib().UseNeighborInput() == true) {
+  if (m_world->GetEnvironment().GetTaskLib().UseNeighborInput() == true) {
     const int num_neighbors = pop_interface.GetNumNeighbors();
     for (int i = 0; i < num_neighbors; i++) {
       pop_interface.Rotate();
@@ -123,7 +123,7 @@ void cOrganism::DoOutput(const int value)
   }
 
   // If tasks require us to consider neighbor outputs, collect them...
-  if (phenotype.GetEnvironment().GetTaskLib().UseNeighborOutput() == true) {
+  if (m_world->GetEnvironment().GetTaskLib().UseNeighborOutput() == true) {
     const int num_neighbors = pop_interface.GetNumNeighbors();
     for (int i = 0; i < num_neighbors; i++) {
       pop_interface.Rotate();

@@ -449,7 +449,7 @@ void cMxCodeArray::CalcFitness()
   cGenome temp(1);
   cCPUTestInfo test_info;
   CopyDataTo(temp); 
-  cTestCPU::TestGenome(test_info, temp);
+  m_world->GetTestCPU().TestGenome(test_info, temp);
   if ( test_info.IsViable() )
     m_gestation_time =
       test_info.GetTestOrganism()->GetPhenotype().GetGestationTime();
