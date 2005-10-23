@@ -5,34 +5,26 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef cInstSet_h
 #include "cInstSet.h"
-#endif
 
-#ifndef STRING_UTIL_HH
 #include "cStringUtil.h"
-#endif
-#ifndef TOOLS_HH
-#include "cTools.h"
-#endif
+#include "cWorld.h"
 
 using namespace std;
 
-//////////////////////
-//  cInstSet
-//////////////////////
 
 // Initialize static variables
 const cInstruction cInstSet::inst_default(   0 );
 cInstruction cInstSet::inst_default2(   0 );
 cInstruction cInstSet::inst_error2  ( 255 );
 
-cInstSet::cInstSet()
+cInstSet::cInstSet(cWorld* world) : m_world(world)
 {
 }
 
 cInstSet::cInstSet(const cInstSet & in_inst_set)
-  : m_inst_lib(in_inst_set.m_inst_lib)
+  : m_world(in_inst_set.m_world)
+  , m_inst_lib(in_inst_set.m_inst_lib)
   , m_lib_name_map(in_inst_set.m_lib_name_map)
   , m_lib_nopmod_map(in_inst_set.m_lib_nopmod_map)
   , mutation_chart2(in_inst_set.mutation_chart2)
@@ -74,7 +66,7 @@ bool cInstSet::OK() const
 
 cInstruction cInstSet::GetRandomInst() const
 {
-  int inst_op = mutation_chart2[g_random.GetUInt(mutation_chart2.GetSize())];
+  int inst_op = mutation_chart2[m_world->GetRandom().GetUInt(mutation_chart2.GetSize())];
   return cInstruction(inst_op);
 }
 

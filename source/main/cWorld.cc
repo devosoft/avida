@@ -30,14 +30,9 @@ cWorld::~cWorld()
 void cWorld::Setup() {
   // Setup Random Number Generator
   const int rand_seed = m_conf->RANDOM_SEED.Get();
-  /* DDD - for right now we need to still use g_random
   cout << "Random Seed: " << rand_seed;
   m_rng.ResetSeed(rand_seed);
   if (rand_seed != m_rng.GetSeed()) cout << " -> " << m_rng.GetSeed();
-  */
-  cout << "Random Seed: " << rand_seed;
-  g_random.ResetSeed(rand_seed);
-  if (rand_seed != g_random.GetSeed()) cout << " -> " << g_random.GetSeed();
   cout << endl;
   
   // The default directory should end in a '/'.

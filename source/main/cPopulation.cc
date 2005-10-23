@@ -101,7 +101,7 @@ cPopulation::cPopulation(cWorld* world)
   for (int cell_id = 0; cell_id < num_cells; cell_id++) {
     int x = cell_id % world_x;
     int y = cell_id / world_x;
-    cell_array[cell_id].Setup(cell_id, default_mut_rates);
+    cell_array[cell_id].Setup(world, cell_id, default_mut_rates);
     
     
     if ((y == 0) && (geometry == nGeometry::GRID)) {
@@ -416,7 +416,7 @@ bool cPopulation::ActivateInject(cOrganism & parent, const cGenome & injected_co
   
   int num_neighbors = parent.GetNeighborhoodSize();
   cOrganism * target_organism = 
-    parent_cell.connection_list.GetPos(g_random.GetUInt(num_neighbors))->GetOrganism();
+    parent_cell.connection_list.GetPos(m_world->GetRandom().GetUInt(num_neighbors))->GetOrganism();
   
   if(target_organism==NULL)
     return false;
@@ -779,7 +779,7 @@ void cPopulation::CompeteDemes(int competition_type)
   // Pick which demes should be in the next generation.
   tArray<int> new_demes(num_demes);
   for (int i = 0; i < num_demes; i++) {
-    double birth_choice = (double) g_random.GetDouble(total_fitness);
+    double birth_choice = (double) m_world->GetRandom().GetDouble(total_fitness);
     double test_total = 0;
     for (int test_deme = 0; test_deme < num_demes; test_deme++) {
       test_total += deme_fitness[test_deme];
@@ -1023,9 +1023,9 @@ cPopulationCell & cPopulation::PositionChild(cPopulationCell & parent_cell,
   // Try out global/full-deme birth methods first...
   
   if (birth_method == POSITION_CHILD_FULL_SOUP_RANDOM) {
-    int out_pos = g_random.GetUInt(cell_array.GetSize());
+    int out_pos = m_world->GetRandom().GetUInt(cell_array.GetSize());
     while (parent_ok == false && out_pos == parent_cell.GetID()) {
-      out_pos = g_random.GetUInt(cell_array.GetSize());
+      out_pos = m_world->GetRandom().GetUInt(cell_array.GetSize());
     }
     return GetCell(out_pos);
   }
@@ -1040,9 +1040,9 @@ cPopulationCell & cPopulation::PositionChild(cPopulationCell & parent_cell,
   else if (birth_method == POSITION_CHILD_DEME_RANDOM) {
     const int parent_id = parent_cell.GetID();
     const int cur_deme = parent_id / deme_size;
-    int out_pos = g_random.GetUInt(deme_size) + deme_size * cur_deme;
+    int out_pos = m_world->GetRandom().GetUInt(deme_size) + deme_size * cur_deme;
     while (parent_ok == false && out_pos == parent_cell.GetID()) {
-      out_pos = g_random.GetUInt(deme_size) + deme_size * cur_deme;
+      out_pos = m_world->GetRandom().GetUInt(deme_size) + deme_size * cur_deme;
     }
     deme_birth_count[cur_deme]++;
     return GetCell(out_pos);    
@@ -1092,7 +1092,7 @@ cPopulationCell & cPopulation::PositionChild(cPopulationCell & parent_cell,
   if (found_list.GetSize() == 0) return parent_cell;
   
   // Choose the organism randomly from those in the list, and return it.
-  int choice = g_random.GetUInt(found_list.GetSize());
+  int choice = m_world->GetRandom().GetUInt(found_list.GetSize());
   return *( found_list.GetPos(choice) );
 }
 
@@ -1117,7 +1117,7 @@ void cPopulation::ProcessStep(double step_size, int cell_id)
   //    debug_fp << stats.GetUpdate() << " "
   //  	   << cell.GetOrganism()->GetCellID() << " "
   //  	   << cell.GetOrganism()->GetGenotype()->GetID() << " "
-  //  	   << g_random.GetDouble() << " "
+  //  	   << m_world->GetRandom().GetDouble() << " "
   //      	   << cell.GetOrganism()->GetHardware().GetMemory().AsString() << " "
   //  	   << endl;
   
@@ -1825,7 +1825,7 @@ void cPopulation::BuildTimeSlicer(cChangeList * change_list)
       schedule = new cConstSchedule(cell_array.GetSize());
       break;
     case SLICE_PROB_MERIT:
-      schedule = new cProbSchedule(cell_array.GetSize());
+      schedule = new cProbSchedule(m_world, cell_array.GetSize());
       break;
     case SLICE_INTEGRATED_MERIT:
       schedule = new cIntegratedSchedule(cell_array.GetSize());
@@ -2014,7 +2014,7 @@ void cPopulation::SerialTransfer(int transfer_size, bool ignore_deads)
   // Remove the proper number of cells.
   const int removal_size = num_organisms - transfer_size;
   for (int i = 0; i < removal_size; i++) {
-    int j = (int) g_random.GetUInt(transfer_pool.size());
+    int j = (int) m_world->GetRandom().GetUInt(transfer_pool.size());
     KillOrganism(cell_array[transfer_pool[j]]);
     transfer_pool[j] = transfer_pool.back();
     transfer_pool.pop_back();

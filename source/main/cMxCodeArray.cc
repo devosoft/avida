@@ -47,7 +47,7 @@ cMxCodeArray::cMxCodeArray(cWorld* world, int n_inst, int in_size, int in_max_si
 
   for (int i = 0; i < size; i++)
     {
-      data[i].SetOp(g_random.GetUInt(m_world->GetNumInstructions()));
+      data[i].SetOp(m_world->GetRandom().GetUInt(m_world->GetNumInstructions()));
     }
 
 }
@@ -120,7 +120,7 @@ void cMxCodeArray::Resize(int new_size)
 
   // Fill in the un-filled-in bits...
   for (int i = size; i < new_size; i++) {
-    data[i].SetOp(g_random.GetUInt(m_world->GetNumInstructions()));
+    data[i].SetOp(m_world->GetRandom().GetUInt(m_world->GetNumInstructions()));
   }
 
   size = new_size;
@@ -197,7 +197,7 @@ void cMxCodeArray::Randomize()
   int i;
   for (i = 0; i < size; i++)
     {
-      data[i].SetOp(g_random.GetUInt(m_world->GetNumInstructions()));
+      data[i].SetOp(m_world->GetRandom().GetUInt(m_world->GetNumInstructions()));
     }
 }
 

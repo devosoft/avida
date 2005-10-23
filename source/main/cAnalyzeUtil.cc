@@ -70,12 +70,12 @@ void cAnalyzeUtil::TestInsSizeChangeRobustness(cWorld* world, ofstream & fp,
     // Should check to only insert infront of an instruction (not a Nop)
     int ins_pos = -1;
     while (ins_pos < 0) {
-      ins_pos = g_random.GetUInt(genome.GetSize());
+      ins_pos = world->GetRandom().GetUInt(genome.GetSize());
       if( inst_set.IsNop(genome[ins_pos]) )  ins_pos = -1;
     }
 
     // Insert some "instruction_none" into the genome
-    const int num_nops = g_random.GetUInt(5) + 5;
+    const int num_nops = world->GetRandom().GetUInt(5) + 5;
     for (int j = 0; j < num_nops; j++)  genome.Insert(ins_pos, inst_none);
 
     // Test the genome and output stats
@@ -385,7 +385,7 @@ void cAnalyzeUtil::AnalyzePopulation(cWorld* world, ofstream & fp,
   const double skip_prob = 1.0 - sample_prob;
   for (int i = 0; i < pop->GetSize(); i++) {
     if (pop->GetCell(i).IsOccupied() == false) continue;  // No organism...
-    if (g_random.P(skip_prob)) continue;               // Not sampled...
+    if (world->GetRandom().P(skip_prob)) continue;               // Not sampled...
 
     cOrganism * organism = pop->GetCell(i).GetOrganism();
     cGenotype * genotype = organism->GetGenotype();

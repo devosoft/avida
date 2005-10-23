@@ -24,8 +24,6 @@
 # endif
 #endif
 
-cRandom g_random;
-
 using namespace std;
 
 bool cTools::MkDir(const cString & dirname, bool verbose)

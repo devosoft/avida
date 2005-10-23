@@ -639,7 +639,7 @@ void cEnvironment::SetupInputs( tArray<int> & input_array ) const
 
   // And randomize the rest...
   for (int i = 0; i < 3; i++) {
-    input_array[i] += g_random.GetUInt(1 << 24);
+    input_array[i] += m_world->GetRandom().GetUInt(1 << 24);
   }
 }
 
@@ -851,7 +851,7 @@ void cEnvironment::DoProcesses(const tList<cReactionProcess> & process_list,
       const int detected_id = detected->GetID();
       const double real_amount = resource_count[detected_id];
       double estimated_amount =
-	   g_random.GetRandNormal(real_amount, cur_process->GetDetectionError()*real_amount);
+	   m_world->GetRandom().GetRandNormal(real_amount, cur_process->GetDetectionError()*real_amount);
       if (estimated_amount < cur_process->GetDetectionThreshold()) {
 	result.Detect(detected_id, 0.0);		
       } else {

@@ -156,8 +156,8 @@ void cGenotype::Mutate()  // Check each location to be mutated.
   int i;
 
   for (i = 0; i < genome.GetSize(); i++) {
-    if (true) { // g_random.GetUInt()) {     //@CAO always true!
-      genome[i].SetOp(g_random.GetUInt(m_world->GetNumInstructions()));
+    if (true) { // m_world->GetRandom().GetUInt()) {     //@CAO always true!
+      genome[i].SetOp(m_world->GetRandom().GetUInt(m_world->GetNumInstructions()));
       // Flag command as having been mutated? @CAO
     }
   }

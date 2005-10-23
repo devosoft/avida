@@ -22,12 +22,14 @@
 
 class cWeightedIndex; // aggregate
 class cMerit;
+class cWorld;
 
 class cProbSchedule : public cSchedule {
 private:
+  cWorld* m_world;
   cWeightedIndex chart;
 public:
-  cProbSchedule(int num_cells);
+  cProbSchedule(cWorld* world, int num_cells);
   ~cProbSchedule();
 
   void Adjust(int item_id, const cMerit & merit);

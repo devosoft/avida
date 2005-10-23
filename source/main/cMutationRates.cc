@@ -5,24 +5,16 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef MUTATION_RATES_HH
 #include "cMutationRates.h"
-#endif
 
-#ifndef TOOLS_HH
-#include "cTools.h"
-#endif
+#include "cWorld.h"
 
-////////////////////
-//  cMutationRates
-////////////////////
-
-cMutationRates::cMutationRates()
+cMutationRates::cMutationRates(cWorld* world) : m_world(world)
 {
   Clear();
 }
 
-cMutationRates::cMutationRates(const cMutationRates & in_muts)
+cMutationRates::cMutationRates(const cMutationRates & in_muts) : m_world(in_muts.m_world)
 {
   Copy(in_muts);
 }
@@ -59,46 +51,44 @@ void cMutationRates::Copy(const cMutationRates & in_muts)
   divide.parent_mut_prob = in_muts.divide.parent_mut_prob;
   divide.crossover_prob = in_muts.divide.crossover_prob;
   divide.aligned_cross_prob = in_muts.divide.aligned_cross_prob;
-
-  //  if (copy.copy_mut_prob != 0) cerr << "Copying non-zero copy mut rate!" << endl;
 }
 
 bool cMutationRates::TestPointMut() const
 {
-  return g_random.P(exec.point_mut_prob);
+  return m_world->GetRandom().P(exec.point_mut_prob);
 }
 
 bool cMutationRates::TestCopyMut() const
 {
-  return g_random.P(copy.copy_mut_prob);
+  return m_world->GetRandom().P(copy.copy_mut_prob);
 }
 
 bool cMutationRates::TestDivideMut() const
 {
-  return g_random.P(divide.divide_mut_prob);
+  return m_world->GetRandom().P(divide.divide_mut_prob);
 }
 
 bool cMutationRates::TestDivideIns() const
 {
-  return g_random.P(divide.divide_ins_prob);
+  return m_world->GetRandom().P(divide.divide_ins_prob);
 }
 
 bool cMutationRates::TestDivideDel() const
 {
-  return g_random.P(divide.divide_del_prob);
+  return m_world->GetRandom().P(divide.divide_del_prob);
 }
 
 bool cMutationRates::TestParentMut() const
 {
-  return g_random.P(divide.parent_mut_prob);
+  return m_world->GetRandom().P(divide.parent_mut_prob);
 }
 
 bool cMutationRates::TestCrossover() const
 {
-  return g_random.P(divide.crossover_prob);
+  return m_world->GetRandom().P(divide.crossover_prob);
 }
 
 bool cMutationRates::TestAlignedCrossover() const
 {
-  return g_random.P(divide.aligned_cross_prob);
+  return m_world->GetRandom().P(divide.aligned_cross_prob);
 }

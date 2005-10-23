@@ -1866,7 +1866,7 @@ public:
   }
   ///// inject_random /////
   void Process(){
-    if (cell_id == -1) cell_id = g_random.GetUInt(m_world->GetPopulation().GetSize());
+    if (cell_id == -1) cell_id = m_world->GetRandom().GetUInt(m_world->GetPopulation().GetSize());
     cGenome genome =
       cInstUtil::RandomGenome(length, m_world->GetHardwareManager().GetInstSet());
     m_world->GetPopulation().Inject(genome, cell_id, merit, lineage_label, neutral_metric);
@@ -2719,7 +2719,7 @@ public:
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
       cPopulationCell & cell = m_world->GetPopulation().GetCell(i);
       if (cell.IsOccupied() == false) continue;
-      if (g_random.P(kill_prob))  m_world->GetPopulation().KillOrganism(cell);
+      if (m_world->GetRandom().P(kill_prob))  m_world->GetPopulation().KillOrganism(cell);
     }
   }
 };
@@ -2841,7 +2841,7 @@ public:
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
       cPopulationCell & cell = m_world->GetPopulation().GetCell(i);
       if (cell.IsOccupied() == false) continue;
-      if (g_random.P(kill_prob))  m_world->GetPopulation().KillOrganism(cell);
+      if (m_world->GetRandom().P(kill_prob))  m_world->GetPopulation().KillOrganism(cell);
     }
   }
 };

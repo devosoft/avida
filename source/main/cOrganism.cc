@@ -38,6 +38,7 @@ cOrganism::cOrganism(cWorld* world, const cGenome & in_genome)
   , genotype(NULL)
   , phenotype(world)
   , initial_genome(in_genome)
+  , mut_rates(world)
   , mut_info(world->GetEnvironment().GetMutationLib(), in_genome.GetSize())
   , pop_interface(world)
   , input_pointer(0)
@@ -64,7 +65,7 @@ cOrganism::cOrganism(cWorld* world, const cGenome & in_genome)
   if (m_world->GetConfig().DEATH_METHOD.Get() > 0) {
     max_executed = m_world->GetConfig().AGE_LIMIT.Get();
     if (m_world->GetConfig().AGE_DEVIATION.Get() > 0.0) {
-      max_executed += (int) (g_random.GetRandNormal() * m_world->GetConfig().AGE_DEVIATION.Get());
+      max_executed += (int) (m_world->GetRandom().GetRandNormal() * m_world->GetConfig().AGE_DEVIATION.Get());
     }
     if (m_world->GetConfig().DEATH_METHOD.Get() == DEATH_METHOD_MULTIPLE) {
       max_executed *= initial_genome.GetSize();

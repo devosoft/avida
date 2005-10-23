@@ -9,7 +9,7 @@
 
 #include "cChangeList.h"
 #include "cMerit.h"
-#include "cTools.h"
+#include "cWorld.h"
 
 
 ///////////////////
@@ -18,8 +18,9 @@
 
 // The larger merits cause problems here; things need to be re-thought out.
 
-cProbSchedule::cProbSchedule(int _item_count)
+cProbSchedule::cProbSchedule(cWorld* world, int _item_count)
   : cSchedule(_item_count)
+  , m_world(world)
   , chart(_item_count)
 {
 }
@@ -32,7 +33,7 @@ cProbSchedule::~cProbSchedule()
 int cProbSchedule::GetNextID()
 {
   assert(chart.GetTotalWeight() > 0);
-  const double position = g_random.GetDouble(chart.GetTotalWeight());
+  const double position = m_world->GetRandom().GetDouble(chart.GetTotalWeight());
   return chart.FindPosition(position);
 }
 

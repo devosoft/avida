@@ -21,9 +21,6 @@ class cWorld;
 class cHardwareManager
 {
 private:
-  cHardwareManager() { ; }
-  
-protected:
   cWorld* m_world;
   cInstSet m_inst_set;
   int m_type;

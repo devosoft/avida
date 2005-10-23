@@ -25,15 +25,6 @@
 
 using namespace std;
 
-// A typdef to simplify having an instruction point to methods in the
-// cHardwareBase object and its dirivitives...
-class cHardwareBase;
-
-// moved to cpu/hardware_method.hh for porting to gcc 3.1 -- k
-//typedef bool (cHardwareBase::*tHardwareMethod)();
-
-class cInstLibBase;
-
 /**
  * This class is used to create a mapping from the command strings in
  * an organism's genome into real methods in one of the hardware objects.  This
@@ -42,13 +33,11 @@ class cInstLibBase;
  * attach different cInstSet objects to different hardware.
  **/
 
-class cInstLibBase; // access
-template <class T> class tArray; // aggregate
-class cInstruction; // access
-class cString; // access
+class cWorld;
 
 class cInstSet {
 public:
+  cWorld* m_world;
   cInstLibBase *m_inst_lib;
   class cInstEntry2 {
   public:
@@ -72,7 +61,7 @@ public:
   static const cInstruction inst_default;
 
 public:
-  cInstSet();
+  cInstSet(cWorld* world);
   cInstSet(const cInstSet & in_inst_set);
   ~cInstSet();
 

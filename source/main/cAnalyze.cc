@@ -3372,8 +3372,8 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
   // performing a random cross test.
   cAnalyzeGenotype * genotype2 = NULL;
   for (int test_id = 0; test_id < sample_size; test_id++) {
-    genotype = genotype_array[ g_random.GetUInt(org_count) ];
-    genotype2 = genotype_array[ g_random.GetUInt(org_count) ];
+    genotype = genotype_array[ m_world->GetRandom().GetUInt(org_count) ];
+    genotype2 = genotype_array[ m_world->GetRandom().GetUInt(org_count) ];
 
     // Stop immediately if we're comparing a genotype to itself.
     if (genotype == genotype2) {
@@ -3389,8 +3389,8 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
     double end_frac = -1.0;
     double swap_frac = -1.0;
     while (swap_frac < min_swap_frac || swap_frac > max_swap_frac) {
-      start_frac = g_random.GetDouble();
-      end_frac = g_random.GetDouble();
+      start_frac = m_world->GetRandom().GetDouble();
+      end_frac = m_world->GetRandom().GetDouble();
       if (start_frac > end_frac) nFunctions::Swap(start_frac, end_frac);
       swap_frac = end_frac - start_frac;
     }
@@ -4677,8 +4677,8 @@ void cAnalyze::CommandSpecies(cString cur_string)
           cCPUMemory test_genome0 = genotype1->GetGenome(); 
           cCPUMemory test_genome1 = genotype2->GetGenome(); 
           
-          double start_frac = g_random.GetDouble();
-          double end_frac = g_random.GetDouble();
+          double start_frac = m_world->GetRandom().GetDouble();
+          double end_frac = m_world->GetRandom().GetDouble();
           if (start_frac > end_frac) nFunctions::Swap(start_frac, end_frac);
           
           int start0 = (int) (start_frac * (double) test_genome0.GetSize());
@@ -4782,8 +4782,8 @@ void cAnalyze::CommandRecombine(cString cur_string)
         cCPUMemory test_genome0 = genotype1->GetGenome(); 
         cCPUMemory test_genome1 = genotype2->GetGenome(); 
         
-        double start_frac = g_random.GetDouble();
-        double end_frac = g_random.GetDouble();
+        double start_frac = m_world->GetRandom().GetDouble();
+        double end_frac = m_world->GetRandom().GetDouble();
         if (start_frac > end_frac) nFunctions::Swap(start_frac, end_frac);
         
         int start0 = (int) (start_frac * (double) test_genome0.GetSize());

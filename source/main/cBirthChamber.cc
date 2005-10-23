@@ -59,7 +59,7 @@ int cBirthChamber::PickRandRecGenome(const int & parent_id,
 {
   bool done = false; 
   while (done ==false) {
-    int test_neighbor = (int) g_random.GetUInt(9); 
+    int test_neighbor = (int) m_world->GetRandom().GetUInt(9); 
     int i = test_neighbor / 3 - 1; 
     int j = test_neighbor % 3 - 1;
     int test_loc = GridNeighbor(parent_id,world_x, world_y, i, j); 		
@@ -324,8 +324,8 @@ void cBirthChamber::DoBasicRecombination(cCPUMemory & genome0,
 					 cCPUMemory & genome1, 
 					 double & merit0, double & merit1)
 {
-  double start_frac = g_random.GetDouble();
-  double end_frac = g_random.GetDouble();
+  double start_frac = m_world->GetRandom().GetDouble();
+  double end_frac = m_world->GetRandom().GetDouble();
   if (start_frac > end_frac) nFunctions::Swap(start_frac, end_frac);
     
   // calculate the proportion of the genome  that will be swapped
@@ -357,8 +357,8 @@ void cBirthChamber::DoModularContRecombination(cCPUMemory & genome0,
 {
   const int num_modules = m_world->GetConfig().MODULE_NUM.Get();
 
-  int start_module = (int) (g_random.GetDouble() * num_modules);
-  int end_module = (int) (g_random.GetDouble() * num_modules);
+  int start_module = (int) (m_world->GetRandom().GetDouble() * num_modules);
+  int end_module = (int) (m_world->GetRandom().GetDouble() * num_modules);
 
   double start_frac = ((double) start_module) / (double) num_modules;
   double end_frac = ((double) end_module) / (double) num_modules;
@@ -396,7 +396,7 @@ void cBirthChamber::DoModularNonContRecombination(cCPUMemory & genome0,
 
   int swap_count = 0;
   for (int i = 0; i < num_modules; i++) {
-    if (g_random.GetDouble() < 0.5) {
+    if (m_world->GetRandom().GetDouble() < 0.5) {
       swap_count++;
       double start_frac = ((double) i) / (double) num_modules;
       double end_frac = ((double) i+1) / (double) num_modules;
@@ -434,7 +434,7 @@ void cBirthChamber::DoModularShuffleRecombination(cCPUMemory & genome0,
 
   int swap_count = 0;
   for (int mod0 = 0; mod0 < num_modules; mod0++) {
-    if (g_random.GetDouble() < 0.5) {
+    if (m_world->GetRandom().GetDouble() < 0.5) {
       swap_count++;
 
       // Collect start and end info for current module
@@ -444,9 +444,9 @@ void cBirthChamber::DoModularShuffleRecombination(cCPUMemory & genome0,
       int end0   = (int) (end0_frac * (double) genome0.GetSize());
 
       // Pick module from other genome...
-      int mod1 = g_random.GetUInt(num_modules);
+      int mod1 = m_world->GetRandom().GetUInt(num_modules);
       while (swapped_region[mod1] == true) {
-	mod1 = g_random.GetUInt(num_modules);
+	mod1 = m_world->GetRandom().GetUInt(num_modules);
       }
       swapped_region[mod1] = true;
 
@@ -550,7 +550,7 @@ bool cBirthChamber::SubmitOffspring(const cGenome & child_genome,
 
   // If we are NOT recombining, handle that here.
   if (parent_phenotype.CrossNum() == 0 || 
-      g_random.GetDouble() > m_world->GetConfig().RECOMBINATION_PROB.Get()) {
+      m_world->GetRandom().GetDouble() > m_world->GetConfig().RECOMBINATION_PROB.Get()) {
     return DoPairAsexBirth(*old_entry, child_genome, parent, 
 			   child_array, merit_array);
   }
@@ -616,7 +616,7 @@ bool cBirthChamber::SubmitOffspring(const cGenome & child_genome,
     child_array.Resize(1);
     merit_array.Resize(1);
 
-    if (g_random.GetDouble() < 0.5) {
+    if (m_world->GetRandom().GetDouble() < 0.5) {
       child_array[0] = new cOrganism(m_world, genome0);
       merit_array[0] = merit0;
 

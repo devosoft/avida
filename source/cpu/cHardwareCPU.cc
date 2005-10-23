@@ -519,7 +519,7 @@ bool cHardwareCPU::SingleProcess_PayCosts(const cInstruction & cur_inst)
     
   // Prob of exec
   if ( GetInstSet().GetProbFail(cur_inst) > 0.0 ){
-    return !( g_random.P(GetInstSet().GetProbFail(cur_inst)) );
+    return !( m_world->GetRandom().P(GetInstSet().GetProbFail(cur_inst)) );
   }
 #endif
   return true;
@@ -1070,10 +1070,10 @@ void cHardwareCPU::Mutate(int mut_point)
 int cHardwareCPU::PointMutate(const double mut_rate)
 {
   const int num_muts =
-    g_random.GetRandBinomial(GetMemory().GetSize(), mut_rate);
+    m_world->GetRandom().GetRandBinomial(GetMemory().GetSize(), mut_rate);
 
   for (int i = 0; i < num_muts; i++) {
-    const int pos = g_random.GetUInt(GetMemory().GetSize());
+    const int pos = m_world->GetRandom().GetUInt(GetMemory().GetSize());
     Mutate(pos);
   }
 
@@ -1153,11 +1153,11 @@ bool cHardwareCPU::TriggerMutations_ScopeGenome(const cMutation * cur_mut,
   // The rate we have stored indicates the probability that a single
   // mutation will occur anywhere in the genome.
   
-  if (g_random.P(rate) == true) {
+  if (m_world->GetRandom().P(rate) == true) {
     // We must create a temporary head and use it to randomly determine the
     // position in the genome to be mutated.
     cHeadCPU tmp_head(cur_head);
-    tmp_head.AbsSet(g_random.GetUInt(target_memory.GetSize()));
+    tmp_head.AbsSet(m_world->GetRandom().GetUInt(target_memory.GetSize()));
     TriggerMutations_Body(cur_mut->GetType(), target_memory, tmp_head);
     return true;
   }
@@ -1170,7 +1170,7 @@ bool cHardwareCPU::TriggerMutations_ScopeLocal(const cMutation * cur_mut,
   // The rate we have stored is the probability for a mutation at this single
   // position in the genome.
 
-  if (g_random.P(rate) == true) {
+  if (m_world->GetRandom().P(rate) == true) {
     TriggerMutations_Body(cur_mut->GetType(), target_memory, cur_head);
     return true;
   }
@@ -1185,12 +1185,12 @@ int cHardwareCPU::TriggerMutations_ScopeGlobal(const cMutation * cur_mut,
   // that should occur.
 
   const int num_mut =
-    g_random.GetRandBinomial(target_memory.GetSize(), rate);
+    m_world->GetRandom().GetRandBinomial(target_memory.GetSize(), rate);
 
   if (num_mut > 0) {
     for (int i = 0; i < num_mut; i++) {
       cHeadCPU tmp_head(cur_head);
-      tmp_head.AbsSet(g_random.GetUInt(target_memory.GetSize()));
+      tmp_head.AbsSet(m_world->GetRandom().GetUInt(target_memory.GetSize()));
       TriggerMutations_Body(cur_mut->GetType(), target_memory, tmp_head);
     }
   }
@@ -1575,11 +1575,11 @@ bool cHardwareCPU::Divide_CheckViable(const int child_size,
     bool sterilize = false;
   
     if (fitness_ratio < nHardware::FITNESS_NEUTRAL_MIN) {
-      if (g_random.P(organism->GetSterilizeNeg())) sterilize = true;
+      if (m_world->GetRandom().P(organism->GetSterilizeNeg())) sterilize = true;
     } else if (fitness_ratio <= nHardware::FITNESS_NEUTRAL_MAX) {
-      if (g_random.P(organism->GetSterilizeNeut())) sterilize = true;
+      if (m_world->GetRandom().P(organism->GetSterilizeNeut())) sterilize = true;
     } else {
-      if (g_random.P(organism->GetSterilizePos())) sterilize = true;
+      if (m_world->GetRandom().P(organism->GetSterilizePos())) sterilize = true;
     }
   
 //     cout << "[ min(" << genome_size
@@ -1610,21 +1610,21 @@ void cHardwareCPU::Divide_DoMutations(double mut_multiplier)
 
   // Divide Mutations
   if (organism->TestDivideMut()) {
-    const UINT mut_line = g_random.GetUInt(child_genome.GetSize());
+    const UINT mut_line = m_world->GetRandom().GetUInt(child_genome.GetSize());
     child_genome[mut_line] = GetRandomInst();
     cpu_stats.mut_stats.divide_mut_count++;
   }
 
   // Divide Insertions
   if (organism->TestDivideIns() && child_genome.GetSize() < MAX_CREATURE_SIZE){
-    const UINT mut_line = g_random.GetUInt(child_genome.GetSize() + 1);
+    const UINT mut_line = m_world->GetRandom().GetUInt(child_genome.GetSize() + 1);
     child_genome.Insert(mut_line, GetRandomInst());
     cpu_stats.mut_stats.divide_insert_mut_count++;
   }
 
   // Divide Deletions
   if (organism->TestDivideDel() && child_genome.GetSize() > MIN_CREATURE_SIZE){
-    const UINT mut_line = g_random.GetUInt(child_genome.GetSize());
+    const UINT mut_line = m_world->GetRandom().GetUInt(child_genome.GetSize());
     // if( child_genome.FlagCopied(mut_line) == true) copied_size_change--;
     child_genome.Remove(mut_line);
     cpu_stats.mut_stats.divide_delete_mut_count++;
@@ -1632,12 +1632,12 @@ void cHardwareCPU::Divide_DoMutations(double mut_multiplier)
 
   // Divide Mutations (per site)
   if(organism->GetDivMutProb() > 0){
-    int num_mut = g_random.GetRandBinomial(child_genome.GetSize(), 
+    int num_mut = m_world->GetRandom().GetRandBinomial(child_genome.GetSize(), 
 				   	   organism->GetDivMutProb() / mut_multiplier);
     // If we have lines to mutate...
     if( num_mut > 0 ){
       for (int i = 0; i < num_mut; i++) {
-	int site = g_random.GetUInt(child_genome.GetSize());
+	int site = m_world->GetRandom().GetUInt(child_genome.GetSize());
 	child_genome[site]=GetRandomInst();
 	cpu_stats.mut_stats.div_mut_count++;
       }
@@ -1647,7 +1647,7 @@ void cHardwareCPU::Divide_DoMutations(double mut_multiplier)
 
   // Insert Mutations (per site)
   if(organism->GetInsMutProb() > 0){
-    int num_mut = g_random.GetRandBinomial(child_genome.GetSize(),
+    int num_mut = m_world->GetRandom().GetRandBinomial(child_genome.GetSize(),
 					   organism->GetInsMutProb());
     // If would make creature to big, insert up to MAX_CREATURE_SIZE
     if( num_mut + child_genome.GetSize() > MAX_CREATURE_SIZE ){
@@ -1658,7 +1658,7 @@ void cHardwareCPU::Divide_DoMutations(double mut_multiplier)
       // Build a list of the sites where mutations occured
       static int mut_sites[MAX_CREATURE_SIZE];
       for (int i = 0; i < num_mut; i++) {
-	mut_sites[i] = g_random.GetUInt(child_genome.GetSize() + 1);
+	mut_sites[i] = m_world->GetRandom().GetUInt(child_genome.GetSize() + 1);
       }
       // Sort the list
       qsort( (void*)mut_sites, num_mut, sizeof(int), &IntCompareFunction );
@@ -1673,7 +1673,7 @@ void cHardwareCPU::Divide_DoMutations(double mut_multiplier)
 
   // Delete Mutations (per site)
   if( organism->GetDelMutProb() > 0 ){
-    int num_mut = g_random.GetRandBinomial(child_genome.GetSize(),
+    int num_mut = m_world->GetRandom().GetRandBinomial(child_genome.GetSize(),
 					   organism->GetDelMutProb());
     // If would make creature too small, delete down to MIN_CREATURE_SIZE
     if (child_genome.GetSize() - num_mut < MIN_CREATURE_SIZE) {
@@ -1682,7 +1682,7 @@ void cHardwareCPU::Divide_DoMutations(double mut_multiplier)
 
     // If we have lines to delete...
     for (int i = 0; i < num_mut; i++) {
-      int site = g_random.GetUInt(child_genome.GetSize());
+      int site = m_world->GetRandom().GetUInt(child_genome.GetSize());
       // if (child_genome.FlagCopied(site) == true) copied_size_change--;
       child_genome.Remove(site);
       cpu_stats.mut_stats.delete_mut_count++;
@@ -1749,17 +1749,17 @@ void cHardwareCPU::Divide_TestFitnessMeasures()
   
   if (child_fitness == 0.0) {
     // Fatal mutation... test for reversion.
-    if (g_random.P(organism->GetRevertFatal())) revert = true;
-    if (g_random.P(organism->GetSterilizeFatal())) sterilize = true;
+    if (m_world->GetRandom().P(organism->GetRevertFatal())) revert = true;
+    if (m_world->GetRandom().P(organism->GetSterilizeFatal())) sterilize = true;
   } else if (child_fitness < neut_min) {
-    if (g_random.P(organism->GetRevertNeg())) revert = true;
-    if (g_random.P(organism->GetSterilizeNeg())) sterilize = true;
+    if (m_world->GetRandom().P(organism->GetRevertNeg())) revert = true;
+    if (m_world->GetRandom().P(organism->GetSterilizeNeg())) sterilize = true;
   } else if (child_fitness <= neut_max) {
-    if (g_random.P(organism->GetRevertNeut())) revert = true;
-    if (g_random.P(organism->GetSterilizeNeut())) sterilize = true;
+    if (m_world->GetRandom().P(organism->GetRevertNeut())) revert = true;
+    if (m_world->GetRandom().P(organism->GetSterilizeNeut())) sterilize = true;
   } else {
-    if (g_random.P(organism->GetRevertPos())) revert = true;
-    if (g_random.P(organism->GetSterilizePos())) sterilize = true;
+    if (m_world->GetRandom().P(organism->GetRevertPos())) revert = true;
+    if (m_world->GetRandom().P(organism->GetSterilizePos())) sterilize = true;
   }
   
   // Ideally, we won't have reversions and sterilizations turned on at the
@@ -2635,7 +2635,7 @@ bool cHardwareCPU::Inst_Kazi()
 bool cHardwareCPU::Inst_Die()
 {
    const double die_prob = m_world->GetConfig().DIE_PROB.Get();
-   if(g_random.GetDouble() < die_prob) { organism->Die(); }
+   if(m_world->GetRandom().GetDouble() < die_prob) { organism->Die(); }
    return true; 
 }
 
@@ -2701,7 +2701,7 @@ bool cHardwareCPU::Inst_InjectRand()
 {
   // Rotate to a random facing and then run the normal inject instruction
   const int num_neighbors = organism->GetNeighborhoodSize();
-  organism->Rotate(g_random.GetUInt(num_neighbors));
+  organism->Rotate(m_world->GetRandom().GetUInt(num_neighbors));
   Inst_Inject();
   return true;
 }
@@ -2876,7 +2876,7 @@ bool cHardwareCPU::Inst_DonateRandom()
   }
 
   // Turn to a random neighbor, get it, and turn back...
-  int neighbor_id = g_random.GetInt(organism->GetNeighborhoodSize());
+  int neighbor_id = m_world->GetRandom().GetInt(organism->GetNeighborhoodSize());
   for (int i = 0; i < neighbor_id; i++) organism->Rotate(1);
   cOrganism * neighbor = organism->GetNeighbor();
   for (int i = 0; i < neighbor_id; i++) organism->Rotate(-1);
@@ -2899,7 +2899,7 @@ bool cHardwareCPU::Inst_DonateKin()
   const int num_neighbors = organism->GetNeighborhoodSize();
 
   // Turn to face a random neighbor
-  int neighbor_id = g_random.GetInt(num_neighbors);
+  int neighbor_id = m_world->GetRandom().GetInt(num_neighbors);
   for (int i = 0; i < neighbor_id; i++) organism->Rotate(1);
   cOrganism * neighbor = organism->GetNeighbor();
 
@@ -2942,7 +2942,7 @@ bool cHardwareCPU::Inst_DonateEditDist()
   const int num_neighbors = organism->GetNeighborhoodSize();
 
   // Turn to face a random neighbor
-  int neighbor_id = g_random.GetInt(num_neighbors);
+  int neighbor_id = m_world->GetRandom().GetInt(num_neighbors);
   for (int i = 0; i < neighbor_id; i++) organism->Rotate(1);
   cOrganism * neighbor = organism->GetNeighbor();
 
@@ -3368,7 +3368,7 @@ bool cHardwareCPU::HeadCopy_ErrorCorrect(double reduction)
   // Do mutations.
   cInstruction read_inst = read_head.GetInst();
   ReadInst(read_inst.GetOp());
-  if ( g_random.P(organism->GetCopyMutProb() / reduction) ) {
+  if ( m_world->GetRandom().P(organism->GetCopyMutProb() / reduction) ) {
     read_inst = GetRandomInst();
     cpu_stats.mut_stats.copy_mut_count++; 
     write_head.FlagMutated() = true;

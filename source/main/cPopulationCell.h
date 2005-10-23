@@ -30,9 +30,10 @@ template <class T> class tArray; // aggregate
 class cPopulationCell {
   friend class cPopulation;
 private:
-  cOrganism * organism;                    // The occupent of this cell.
+  cWorld* m_world;
+  cOrganism* organism;                    // The occupent of this cell.
   tList<cPopulationCell> connection_list;  // A list of neighboring cells.
-  cMutationRates mutation_rates;           // Mutation rates at this cell.
+  cMutationRates* mutation_rates;           // Mutation rates at this cell.
   tArray<int> input_array;                 // Environmental Inputs...
   int cur_input;                           // Next input to give organism.
 
@@ -50,13 +51,13 @@ public:
 
   void operator=(const cPopulationCell & in_cell);
 
-  void Setup(int in_id, const cMutationRates & in_rates);
+  void Setup(cWorld* world, int in_id, const cMutationRates & in_rates);
   void Rotate(cPopulationCell & new_facing);
 
   cOrganism * GetOrganism() const { return organism; }
   tList<cPopulationCell> & ConnectionList() { return connection_list; }
-  const cMutationRates & MutationRates() const { return mutation_rates; }
-  cMutationRates & MutationRates() { return mutation_rates; }
+  const cMutationRates & MutationRates() const { return *mutation_rates; }
+  cMutationRates & MutationRates() { return *mutation_rates; }
   int GetInput();
   int GetInput(int);
   int GetInputAt(int & input_pointer);

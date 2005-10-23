@@ -10,12 +10,6 @@
 #ifndef TOOLS_HH
 #define TOOLS_HH
 
-#ifndef cRandom_h
-#include "cRandom.h"
-#endif
-
-extern cRandom g_random;
-
 /*
  *   Filesystem tools...
  */

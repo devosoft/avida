@@ -8,8 +8,12 @@
 #ifndef MUTATION_RATES_HH
 #define MUTATION_RATES_HH
 
+class cWorld;
+
 class cMutationRates {
 private:
+  cWorld* m_world;
+  
   // Mutations are divided up by when they occur...
 
   // ...anytime during execution...
@@ -41,7 +45,7 @@ private:
   void operator=(const cMutationRates & in_muts)
     { (void) in_muts; } // Disable operator=
 public:
-  cMutationRates();
+  cMutationRates(cWorld* world);
   cMutationRates(const cMutationRates & in_muts);
   ~cMutationRates();
 

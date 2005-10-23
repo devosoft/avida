@@ -91,7 +91,7 @@ private:
   // disabled copy constructor.
   cEnvironment(const cEnvironment &);
 public:
-  cEnvironment(cWorld* world) : m_world(world) { ; }
+  cEnvironment(cWorld* world) : m_world(world), inst_set(world), mut_rates(world) { ; }
   ~cEnvironment() { ; }
 
   /**

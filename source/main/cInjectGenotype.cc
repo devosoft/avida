@@ -112,7 +112,7 @@ void cInjectGenotype::Mutate()  // Check each location to be mutated.
   int i;
 
   for (i = 0; i < genome.GetSize(); i++) {
-      genome[i].SetOp(g_random.GetUInt(m_world->GetNumInstructions()));
+      genome[i].SetOp(m_world->GetRandom().GetUInt(m_world->GetNumInstructions()));
     }
   
 }

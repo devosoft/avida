@@ -118,7 +118,7 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
   time_used       = 0;
   age             = 0;
   fault_desc      = "";
-  neutral_metric  = parent_phenotype.neutral_metric + g_random.GetRandNormal();
+  neutral_metric  = parent_phenotype.neutral_metric + m_world->GetRandom().GetRandNormal();
   life_fitness    = fitness; 
 
   // Setup flags...
@@ -304,7 +304,7 @@ void cPhenotype::DivideReset(int _length)
   if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
     gestation_start = 0;
     time_used = 0;
-    neutral_metric += g_random.GetRandNormal();
+    neutral_metric += m_world->GetRandom().GetRandNormal();
   }
 
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() == GENERATION_INC_BOTH) generation++;
@@ -443,7 +443,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   time_used       = 0;
   age             = 0;
   fault_desc      = "";
-  neutral_metric  = clone_phenotype.neutral_metric + g_random.GetRandNormal();
+  neutral_metric  = clone_phenotype.neutral_metric + m_world->GetRandom().GetRandNormal();
   life_fitness    = fitness; 
 
   // Setup flags...
