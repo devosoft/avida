@@ -3407,7 +3407,6 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
     int new_size1 = test_genome1.GetSize() - size1 + size0;
 
     // Setup some statistics for this particular test.
-    bool cross_viable = true;
     bool same_mate_id = ( genotype->GetMateID() == genotype2->GetMateID() );
     if (same_mate_id == true) total_matches_tested++;
 
