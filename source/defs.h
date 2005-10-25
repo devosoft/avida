@@ -8,8 +8,8 @@
 #ifndef DEFS_HH
 #define DEFS_HH
 
-#define VERSION "2.3.1"
-#define VERSION_TAG "Padawan"
+#define VERSION "2.5.0"
+#define VERSION_TAG "Jedi"
 
 /*
 FIXME:  remove asap, switching to file-configureable option

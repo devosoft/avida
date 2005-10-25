@@ -1109,54 +1109,54 @@
 		DCC30F7C0762539D008F7A48 /* cpu */ = {
 			isa = PBXGroup;
 			children = (
+				70C1EF4608C393BA00F50912 /* cCodeLabel.cc */,
+				70C1EF4708C393BA00F50912 /* cCodeLabel.h */,
+				70C1EF5808C3948C00F50912 /* cCPUMemory.cc */,
+				70C1EF5B08C3949A00F50912 /* cCPUMemory.h */,
+				70C1EF7108C3968700F50912 /* cCPUTestInfo.cc */,
+				70C1EF6E08C3967700F50912 /* cCPUTestInfo.h */,
+				70C1EF8B08C39BC500F50912 /* cHardware4Stack.cc */,
+				70C1EF8A08C39BB700F50912 /* cHardware4Stack.h */,
+				70C1EFA208C39F2100F50912 /* cHardware4Stack_Thread.cc */,
+				70C1EF9D08C39F0E00F50912 /* cHardware4Stack_Thread.h */,
+				70C1EFA308C39F2100F50912 /* cHardwareBase.cc */,
+				70C1EF9E08C39F0E00F50912 /* cHardwareBase.h */,
+				70C1EFA508C39F2100F50912 /* cHardwareCPU.cc */,
+				70C1EFA008C39F0E00F50912 /* cHardwareCPU.h */,
+				70C1EFA408C39F2100F50912 /* cHardwareCPU_Thread.cc */,
+				70C1EF9F08C39F0E00F50912 /* cHardwareCPU_Thread.h */,
 				70C5BD690905CE5F0028A785 /* cHardwareManager.cc */,
 				70C5BD6A0905CE5F0028A785 /* cHardwareManager.h */,
-				707A687408E3750300576968 /* cHardwareTracer_SMT.h */,
-				70C1F0FC08C40B1B00F50912 /* nHardwareCPU.h */,
-				70C1F0A808C3FF1800F50912 /* nHardware.h */,
-				70C1F06108C3CDEA00F50912 /* nHardware4Stack.h */,
 				70C1F02208C3C71300F50912 /* cHardwareSMT_Thread.cc */,
-				70C1F02308C3C71300F50912 /* cHardwareSMT.cc */,
-				70C1F02408C3C71300F50912 /* cHardwareStatusPrinter.cc */,
-				70C1F02608C3C71300F50912 /* cHeadCPU.cc */,
-				70C1F02708C3C71300F50912 /* cHeadMultiMem.cc */,
-				70C1F02808C3C71300F50912 /* cTestCPU.cc */,
-				70C1F02908C3C71300F50912 /* cTestUtil.cc */,
 				70C1F01308C3C6FC00F50912 /* cHardwareSMT_Thread.h */,
+				70C1F02308C3C71300F50912 /* cHardwareSMT.cc */,
 				70C1F01408C3C6FC00F50912 /* cHardwareSMT.h */,
+				70C1F02408C3C71300F50912 /* cHardwareStatusPrinter.cc */,
 				70C1F01508C3C6FC00F50912 /* cHardwareStatusPrinter.h */,
+				70C1F01908C3C6FC00F50912 /* cHardwareTracer.h */,
 				70C1F01608C3C6FC00F50912 /* cHardwareTracer_4Stack.h */,
 				70C1F01708C3C6FC00F50912 /* cHardwareTracer_CPU.h */,
+				707A687408E3750300576968 /* cHardwareTracer_SMT.h */,
 				70C1F01808C3C6FC00F50912 /* cHardwareTracer_TestCPU.h */,
-				70C1F01908C3C6FC00F50912 /* cHardwareTracer.h */,
+				70C1F02608C3C71300F50912 /* cHeadCPU.cc */,
 				70C1F01B08C3C6FC00F50912 /* cHeadCPU.h */,
+				70C1F02708C3C71300F50912 /* cHeadMultiMem.cc */,
 				70C1F01C08C3C6FC00F50912 /* cHeadMultiMem.h */,
 				70C1F01D08C3C6FC00F50912 /* cInstLibCPU.h */,
 				70C1F01E08C3C6FC00F50912 /* cMemoryFlags.h */,
-				70C1F01F08C3C6FC00F50912 /* cTestCPU.h */,
-				70C1F02008C3C6FC00F50912 /* cTestUtil.h */,
-				70C1F02108C3C6FC00F50912 /* nHardwareSMT.h */,
-				70C1EFA208C39F2100F50912 /* cHardware4Stack_Thread.cc */,
-				70C1EFA308C39F2100F50912 /* cHardwareBase.cc */,
-				70C1EFA408C39F2100F50912 /* cHardwareCPU_Thread.cc */,
-				70C1EFA508C39F2100F50912 /* cHardwareCPU.cc */,
-				70C1EF9D08C39F0E00F50912 /* cHardware4Stack_Thread.h */,
-				70C1EF9E08C39F0E00F50912 /* cHardwareBase.h */,
-				70C1EF9F08C39F0E00F50912 /* cHardwareCPU_Thread.h */,
-				70C1EFA008C39F0E00F50912 /* cHardwareCPU.h */,
-				70C1EF8B08C39BC500F50912 /* cHardware4Stack.cc */,
-				70C1EF8A08C39BB700F50912 /* cHardware4Stack.h */,
-				70C1EF7108C3968700F50912 /* cCPUTestInfo.cc */,
-				70C1EF6E08C3967700F50912 /* cCPUTestInfo.h */,
-				70C1EF6708C395D300F50912 /* sCPUStats.h */,
 				70C1EF6108C3954700F50912 /* cCPUStack.cc */,
 				70C1EF6008C3953A00F50912 /* cCPUStack.h */,
-				70C1EF5B08C3949A00F50912 /* cCPUMemory.h */,
-				70C1EF5808C3948C00F50912 /* cCPUMemory.cc */,
-				70C1EF4608C393BA00F50912 /* cCodeLabel.cc */,
-				70C1EF4708C393BA00F50912 /* cCodeLabel.h */,
-				DCC30FA90762539D008F7A48 /* CMakeLists.txt */,
+				70C1F02808C3C71300F50912 /* cTestCPU.cc */,
+				70C1F01F08C3C6FC00F50912 /* cTestCPU.h */,
+				70C1F02908C3C71300F50912 /* cTestUtil.cc */,
+				70C1F02008C3C6FC00F50912 /* cTestUtil.h */,
+				70C1F0A808C3FF1800F50912 /* nHardware.h */,
+				70C1F06108C3CDEA00F50912 /* nHardware4Stack.h */,
+				70C1F0FC08C40B1B00F50912 /* nHardwareCPU.h */,
+				70C1F02108C3C6FC00F50912 /* nHardwareSMT.h */,
+				70C1EF6708C395D300F50912 /* sCPUStats.h */,
 				706D30CC0852328F00D7DC8F /* tInstLib.h */,
+				DCC30FA90762539D008F7A48 /* CMakeLists.txt */,
 			);
 			path = cpu;
 			sourceTree = "<group>";
@@ -1164,15 +1164,15 @@
 		DCC30FD00762539D008F7A48 /* event */ = {
 			isa = PBXGroup;
 			children = (
-				7040CF1A0906A52E00AA820F /* cEventManager.cc */,
-				7040CF1B0906A52E00AA820F /* cEventManager.h */,
-				70C1F18F08C6A11100F50912 /* cEventList.cc */,
-				70C1F19008C6A11100F50912 /* cEventListIterator.cc */,
-				70C1F19108C6A11100F50912 /* cEventTriggers.cc */,
 				70C1F18608C6A0FA00F50912 /* cEvent.h */,
+				70C1F18F08C6A11100F50912 /* cEventList.cc */,
 				70C1F18808C6A0FA00F50912 /* cEventList.h */,
 				70C1F18908C6A0FA00F50912 /* cEventListEntry.h */,
+				70C1F19008C6A11100F50912 /* cEventListIterator.cc */,
 				70C1F18A08C6A0FA00F50912 /* cEventListIterator.h */,
+				7040CF1A0906A52E00AA820F /* cEventManager.cc */,
+				7040CF1B0906A52E00AA820F /* cEventManager.h */,
+				70C1F19108C6A11100F50912 /* cEventTriggers.cc */,
 				70C1F18B08C6A0FA00F50912 /* cEventTriggers.h */,
 				DCC30FEB0762539D008F7A48 /* CMakeLists.txt */,
 			);
@@ -1182,110 +1182,9 @@
 		DCC310040762539D008F7A48 /* main */ = {
 			isa = PBXGroup;
 			children = (
-				70B0875C08F5ECBC00FC65FE /* nReaction.h */,
-				70B0875A08F5EC8900FC65FE /* nGeometry.h */,
-				70B0871E08F5E82D00FC65FE /* cReaction.cc */,
-				70B0871F08F5E82D00FC65FE /* cReactionLib.cc */,
-				70B0872008F5E82D00FC65FE /* cReactionProcess.cc */,
-				70B0872108F5E82D00FC65FE /* cReactionRequisite.cc */,
-				70B0872208F5E82D00FC65FE /* cReactionResult.cc */,
-				70B0872308F5E82D00FC65FE /* cResource.cc */,
-				70B0872408F5E82D00FC65FE /* cResourceCount.cc */,
-				70B0872508F5E82D00FC65FE /* cResourceLib.cc */,
-				70B0872608F5E82D00FC65FE /* cSpatialCountElem.cc */,
-				70B0872708F5E82D00FC65FE /* cSpatialResCount.cc */,
-				70B0872808F5E82D00FC65FE /* cSpecies.cc */,
-				70B0872908F5E82D00FC65FE /* cSpeciesControl.cc */,
-				70B0872A08F5E82D00FC65FE /* cSpeciesQueue.cc */,
-				70B0872B08F5E82D00FC65FE /* cStats.cc */,
-				70B0872C08F5E82D00FC65FE /* cTaskEntry.cc */,
-				70B0872D08F5E82D00FC65FE /* cTaskLib.cc */,
-				70B0870E08F5E81000FC65FE /* cReaction.h */,
-				70B0870F08F5E81000FC65FE /* cReactionLib.h */,
-				70B0871008F5E81000FC65FE /* cReactionProcess.h */,
-				70B0871108F5E81000FC65FE /* cReactionRequisite.h */,
-				70B0871208F5E81000FC65FE /* cReactionResult.h */,
-				70B0871308F5E81000FC65FE /* cResource.h */,
-				70B0871408F5E81000FC65FE /* cResourceCount.h */,
-				70B0871508F5E81000FC65FE /* cResourceLib.h */,
-				70B0871608F5E81000FC65FE /* cSpatialCountElem.h */,
-				70B0871708F5E81000FC65FE /* cSpatialResCount.h */,
-				70B0871808F5E81000FC65FE /* cSpecies.h */,
-				70B0871908F5E81000FC65FE /* cSpeciesControl.h */,
-				70B0871A08F5E81000FC65FE /* cSpeciesQueue.h */,
-				70B0871B08F5E81000FC65FE /* cStats.h */,
-				70B0871C08F5E81000FC65FE /* cTaskEntry.h */,
-				70B0871D08F5E81000FC65FE /* cTaskLib.h */,
+				DCC3109C0762539E008F7A48 /* avida.cc */,
 				70B086BE08F5D86100FC65FE /* avida.h */,
-				70B0869C08F49F4800FC65FE /* cPhenotype.cc */,
-				70B0869B08F49F3900FC65FE /* cPhenotype.h */,
-				70B0868708F49EA800FC65FE /* cOrganism.cc */,
-				70B0868808F49EA800FC65FE /* cOrgMessage.cc */,
-				70B0868908F49EA800FC65FE /* cPopulation.cc */,
-				70B0868A08F49EA800FC65FE /* cPopulationCell.cc */,
-				70B0868308F49E9700FC65FE /* cOrganism.h */,
-				70B0868408F49E9700FC65FE /* cOrgMessage.h */,
-				70B0868508F49E9700FC65FE /* cPopulation.h */,
-				70B0868608F49E9700FC65FE /* cPopulationCell.h */,
-				70B0867208F499C100FC65FE /* nMutation.h */,
-				70B0865108F4974300FC65FE /* cLandscape.cc */,
-				70B0865208F4974300FC65FE /* cLineage.cc */,
-				70B0865308F4974300FC65FE /* cLineageControl.cc */,
-				70B0865408F4974300FC65FE /* cLocalMutations.cc */,
-				70B0865508F4974300FC65FE /* cMutation.cc */,
-				70B0865608F4974300FC65FE /* cMutationLib.cc */,
-				70B0865708F4974300FC65FE /* cMutationRates.cc */,
-				70B0865808F4974300FC65FE /* cMxCodeArray.cc */,
-				70B0864808F4972600FC65FE /* cLandscape.h */,
-				70B0864908F4972600FC65FE /* cLineage.h */,
-				70B0864A08F4972600FC65FE /* cLineageControl.h */,
-				70B0864B08F4972600FC65FE /* cLocalMutations.h */,
-				70B0864C08F4972600FC65FE /* cMutation.h */,
-				70B0864D08F4972600FC65FE /* cMutationLib.h */,
-				70B0864E08F4972600FC65FE /* cMutationRates.h */,
-				70B0864F08F4972600FC65FE /* cMxCodeArray.h */,
-				70B0865008F4972600FC65FE /* MyCodeArrayLessThan.h */,
-				70B0861508F48E8900FC65FE /* nGenotype.h */,
-				70B0861608F48E8900FC65FE /* nInjectGenotype.h */,
-				70CA6EF508DB806200068AC2 /* cGenotypeBatch.h */,
-				70CA6EE208DB7F9E00068AC2 /* cFitnessMatrix.h */,
-				70CA6EE308DB7F9E00068AC2 /* cGenebank.h */,
-				70CA6EE408DB7F9E00068AC2 /* cGenome.h */,
-				70CA6EE608DB7F9E00068AC2 /* cGenomeUtil.h */,
-				70CA6EE708DB7F9E00068AC2 /* cGenotype_BirthData.h */,
-				70CA6EE808DB7F9E00068AC2 /* cGenotype_TestData.h */,
-				70CA6EE908DB7F9E00068AC2 /* cGenotype.h */,
-				70CA6EEA08DB7F9E00068AC2 /* cGenotypeControl.h */,
-				70CA6EEB08DB7F9E00068AC2 /* cInjectGenebank.h */,
-				70CA6EEC08DB7F9E00068AC2 /* cInjectGenotype_BirthData.h */,
-				70CA6EED08DB7F9E00068AC2 /* cInjectGenotype.h */,
-				70CA6EEE08DB7F9E00068AC2 /* cInjectGenotypeControl.h */,
-				70CA6EEF08DB7F9E00068AC2 /* cInjectGenotypeElement.h */,
-				70CA6EF008DB7F9E00068AC2 /* cInjectGenotypeQueue.h */,
-				70CA6EF108DB7F9E00068AC2 /* cInstLibBase.h */,
-				70CA6EF208DB7F9E00068AC2 /* cInstruction.h */,
-				70CA6EF308DB7F9E00068AC2 /* cInstSet.h */,
-				70CA6EF408DB7F9E00068AC2 /* cInstUtil.h */,
-				70CA6EB208DB7F8200068AC2 /* cFitnessMatrix.cc */,
-				70CA6EB308DB7F8200068AC2 /* cGenebank.cc */,
-				70CA6EB408DB7F8200068AC2 /* cGenome.cc */,
-				70CA6EB508DB7F8200068AC2 /* cGenomeUtil.cc */,
-				70CA6EB608DB7F8200068AC2 /* cGenotype_BirthData.cc */,
-				70CA6EB708DB7F8200068AC2 /* cGenotype_TestData.cc */,
-				70CA6EB808DB7F8200068AC2 /* cGenotype.cc */,
-				70CA6EB908DB7F8200068AC2 /* cGenotypeControl.cc */,
-				70CA6EBA08DB7F8200068AC2 /* cInjectGenebank.cc */,
-				70CA6EBB08DB7F8200068AC2 /* cInjectGenotype_BirthData.cc */,
-				70CA6EBC08DB7F8200068AC2 /* cInjectGenotype.cc */,
-				70CA6EBD08DB7F8200068AC2 /* cInjectGenotypeControl.cc */,
-				70CA6EBE08DB7F8200068AC2 /* cInjectGenotypeQueue.cc */,
-				70CA6EBF08DB7F8200068AC2 /* cInstruction.cc */,
-				70CA6EC008DB7F8200068AC2 /* cInstSet.cc */,
-				70CA6EC108DB7F8200068AC2 /* cInstUtil.cc */,
 				702D4F3C08DA61FE007BA469 /* cAnalyze.cc */,
-				702D4F3D08DA61FE007BA469 /* cAnalyzeGenotype.cc */,
-				702D4F3E08DA61FE007BA469 /* cAnalyzeUtil.cc */,
-				702D4F3F08DA61FE007BA469 /* cBirthChamber.cc */,
 				702D4F2F08DA61E2007BA469 /* cAnalyze.h */,
 				702D4F3008DA61E2007BA469 /* cAnalyzeCommand.h */,
 				702D4F3108DA61E2007BA469 /* cAnalyzeCommandDef.h */,
@@ -1293,110 +1192,131 @@
 				702D4F3308DA61E2007BA469 /* cAnalyzeFlowCommand.h */,
 				702D4F3408DA61E2007BA469 /* cAnalyzeFlowCommandDef.h */,
 				702D4F3508DA61E2007BA469 /* cAnalyzeFunction.h */,
+				702D4F3D08DA61FE007BA469 /* cAnalyzeGenotype.cc */,
 				702D4F3608DA61E2007BA469 /* cAnalyzeGenotype.h */,
+				702D4F3E08DA61FE007BA469 /* cAnalyzeUtil.cc */,
 				702D4F3708DA61E2007BA469 /* cAnalyzeUtil.h */,
-				702D4F3808DA61E2007BA469 /* cAvidaTriggers.h */,
-				702D4F3908DA61E2007BA469 /* cBirthChamber.h */,
-				702D4EF908DA5341007BA469 /* cAvidaDriver_Analyze.cc */,
-				702D4EFA08DA5341007BA469 /* cAvidaDriver_Base.cc */,
-				702D4EFB08DA5341007BA469 /* cAvidaDriver_Population.cc */,
-				702D4EFC08DA5341007BA469 /* cEnvironment.cc */,
-				702D4EFD08DA5341007BA469 /* cPopulationInterface.cc */,
-				702D4EF208DA5328007BA469 /* cAvidaDriver_Analyze.h */,
-				702D4EF308DA5328007BA469 /* cAvidaDriver_Base.h */,
-				702D4EF408DA5328007BA469 /* cAvidaDriver_Population.h */,
-				702D4EF508DA5328007BA469 /* cEnvironment.h */,
-				702D4EF608DA5328007BA469 /* cPopulationInterface.h */,
-				DCC3109C0762539E008F7A48 /* avida.cc */,
-				DCC310A90762539E008F7A48 /* CMakeLists.txt */,
-				DCC310B00762539E008F7A48 /* functional_testsuites */,
-				DCC311090762539E008F7A48 /* primitive.cc */,
-				DCC3112E0762539E008F7A48 /* unit_testsuites */,
-				70B085D108F48C9400FC65FE /* nSpecies.h */,
-				7013845F09028B3E0087ED2E /* cAvidaConfig.h */,
 				7013846009028B3E0087ED2E /* cAvidaConfig.cc */,
+				7013845F09028B3E0087ED2E /* cAvidaConfig.h */,
+				702D4EF908DA5341007BA469 /* cAvidaDriver_Analyze.cc */,
+				702D4EF208DA5328007BA469 /* cAvidaDriver_Analyze.h */,
+				702D4EFA08DA5341007BA469 /* cAvidaDriver_Base.cc */,
+				702D4EF308DA5328007BA469 /* cAvidaDriver_Base.h */,
+				702D4EFB08DA5341007BA469 /* cAvidaDriver_Population.cc */,
+				702D4EF408DA5328007BA469 /* cAvidaDriver_Population.h */,
+				702D4F3808DA61E2007BA469 /* cAvidaTriggers.h */,
+				702D4F3F08DA61FE007BA469 /* cBirthChamber.cc */,
+				702D4F3908DA61E2007BA469 /* cBirthChamber.h */,
+				702D4EFC08DA5341007BA469 /* cEnvironment.cc */,
+				702D4EF508DA5328007BA469 /* cEnvironment.h */,
+				70CA6EB208DB7F8200068AC2 /* cFitnessMatrix.cc */,
+				70CA6EE208DB7F9E00068AC2 /* cFitnessMatrix.h */,
+				70CA6EB308DB7F8200068AC2 /* cGenebank.cc */,
+				70CA6EE308DB7F9E00068AC2 /* cGenebank.h */,
+				70CA6EB408DB7F8200068AC2 /* cGenome.cc */,
+				70CA6EE408DB7F9E00068AC2 /* cGenome.h */,
+				70CA6EB508DB7F8200068AC2 /* cGenomeUtil.cc */,
+				70CA6EE608DB7F9E00068AC2 /* cGenomeUtil.h */,
+				70CA6EB608DB7F8200068AC2 /* cGenotype_BirthData.cc */,
+				70CA6EE708DB7F9E00068AC2 /* cGenotype_BirthData.h */,
+				70CA6EB708DB7F8200068AC2 /* cGenotype_TestData.cc */,
+				70CA6EE808DB7F9E00068AC2 /* cGenotype_TestData.h */,
+				70CA6EB808DB7F8200068AC2 /* cGenotype.cc */,
+				70CA6EE908DB7F9E00068AC2 /* cGenotype.h */,
+				70CA6EF508DB806200068AC2 /* cGenotypeBatch.h */,
+				70CA6EB908DB7F8200068AC2 /* cGenotypeControl.cc */,
+				70CA6EEA08DB7F9E00068AC2 /* cGenotypeControl.h */,
+				70CA6EBA08DB7F8200068AC2 /* cInjectGenebank.cc */,
+				70CA6EEB08DB7F9E00068AC2 /* cInjectGenebank.h */,
+				70CA6EBB08DB7F8200068AC2 /* cInjectGenotype_BirthData.cc */,
+				70CA6EEC08DB7F9E00068AC2 /* cInjectGenotype_BirthData.h */,
+				70CA6EBC08DB7F8200068AC2 /* cInjectGenotype.cc */,
+				70CA6EED08DB7F9E00068AC2 /* cInjectGenotype.h */,
+				70CA6EBD08DB7F8200068AC2 /* cInjectGenotypeControl.cc */,
+				70CA6EEE08DB7F9E00068AC2 /* cInjectGenotypeControl.h */,
+				70CA6EEF08DB7F9E00068AC2 /* cInjectGenotypeElement.h */,
+				70CA6EBE08DB7F8200068AC2 /* cInjectGenotypeQueue.cc */,
+				70CA6EF008DB7F9E00068AC2 /* cInjectGenotypeQueue.h */,
+				70CA6EF108DB7F9E00068AC2 /* cInstLibBase.h */,
+				70CA6EBF08DB7F8200068AC2 /* cInstruction.cc */,
+				70CA6EF208DB7F9E00068AC2 /* cInstruction.h */,
+				70CA6EC008DB7F8200068AC2 /* cInstSet.cc */,
+				70CA6EF308DB7F9E00068AC2 /* cInstSet.h */,
+				70CA6EC108DB7F8200068AC2 /* cInstUtil.cc */,
+				70CA6EF408DB7F9E00068AC2 /* cInstUtil.h */,
+				70B0865108F4974300FC65FE /* cLandscape.cc */,
+				70B0864808F4972600FC65FE /* cLandscape.h */,
+				70B0865208F4974300FC65FE /* cLineage.cc */,
+				70B0864908F4972600FC65FE /* cLineage.h */,
+				70B0865308F4974300FC65FE /* cLineageControl.cc */,
+				70B0864A08F4972600FC65FE /* cLineageControl.h */,
+				70B0865408F4974300FC65FE /* cLocalMutations.cc */,
+				70B0864B08F4972600FC65FE /* cLocalMutations.h */,
+				70B0865508F4974300FC65FE /* cMutation.cc */,
+				70B0864C08F4972600FC65FE /* cMutation.h */,
+				70B0865608F4974300FC65FE /* cMutationLib.cc */,
+				70B0864D08F4972600FC65FE /* cMutationLib.h */,
+				70B0865708F4974300FC65FE /* cMutationRates.cc */,
+				70B0864E08F4972600FC65FE /* cMutationRates.h */,
+				70B0865808F4974300FC65FE /* cMxCodeArray.cc */,
+				70B0864F08F4972600FC65FE /* cMxCodeArray.h */,
+				70B0868708F49EA800FC65FE /* cOrganism.cc */,
+				70B0868308F49E9700FC65FE /* cOrganism.h */,
+				70B0868808F49EA800FC65FE /* cOrgMessage.cc */,
+				70B0868408F49E9700FC65FE /* cOrgMessage.h */,
+				70B0869C08F49F4800FC65FE /* cPhenotype.cc */,
+				70B0869B08F49F3900FC65FE /* cPhenotype.h */,
+				70B0868908F49EA800FC65FE /* cPopulation.cc */,
+				70B0868508F49E9700FC65FE /* cPopulation.h */,
+				70B0868A08F49EA800FC65FE /* cPopulationCell.cc */,
+				70B0868608F49E9700FC65FE /* cPopulationCell.h */,
+				702D4EFD08DA5341007BA469 /* cPopulationInterface.cc */,
+				702D4EF608DA5328007BA469 /* cPopulationInterface.h */,
+				70B0871E08F5E82D00FC65FE /* cReaction.cc */,
+				70B0870E08F5E81000FC65FE /* cReaction.h */,
+				70B0871F08F5E82D00FC65FE /* cReactionLib.cc */,
+				70B0870F08F5E81000FC65FE /* cReactionLib.h */,
+				70B0872008F5E82D00FC65FE /* cReactionProcess.cc */,
+				70B0871008F5E81000FC65FE /* cReactionProcess.h */,
+				70B0872108F5E82D00FC65FE /* cReactionRequisite.cc */,
+				70B0871108F5E81000FC65FE /* cReactionRequisite.h */,
+				70B0872208F5E82D00FC65FE /* cReactionResult.cc */,
+				70B0871208F5E81000FC65FE /* cReactionResult.h */,
+				70B0872308F5E82D00FC65FE /* cResource.cc */,
+				70B0871308F5E81000FC65FE /* cResource.h */,
+				70B0872408F5E82D00FC65FE /* cResourceCount.cc */,
+				70B0871408F5E81000FC65FE /* cResourceCount.h */,
+				70B0872508F5E82D00FC65FE /* cResourceLib.cc */,
+				70B0871508F5E81000FC65FE /* cResourceLib.h */,
+				70B0872608F5E82D00FC65FE /* cSpatialCountElem.cc */,
+				70B0871608F5E81000FC65FE /* cSpatialCountElem.h */,
+				70B0872708F5E82D00FC65FE /* cSpatialResCount.cc */,
+				70B0871708F5E81000FC65FE /* cSpatialResCount.h */,
+				70B0872808F5E82D00FC65FE /* cSpecies.cc */,
+				70B0871808F5E81000FC65FE /* cSpecies.h */,
+				70B0872908F5E82D00FC65FE /* cSpeciesControl.cc */,
+				70B0871908F5E81000FC65FE /* cSpeciesControl.h */,
+				70B0872A08F5E82D00FC65FE /* cSpeciesQueue.cc */,
+				70B0871A08F5E81000FC65FE /* cSpeciesQueue.h */,
+				70B0872B08F5E82D00FC65FE /* cStats.cc */,
+				70B0871B08F5E81000FC65FE /* cStats.h */,
+				70B0872C08F5E82D00FC65FE /* cTaskEntry.cc */,
+				70B0871C08F5E81000FC65FE /* cTaskEntry.h */,
+				70B0872D08F5E82D00FC65FE /* cTaskLib.cc */,
+				70B0871D08F5E81000FC65FE /* cTaskLib.h */,
 				70C5BC6209059A970028A785 /* cWorld.h */,
 				70C5BC6309059A970028A785 /* cWorld.cc */,
+				70B0865008F4972600FC65FE /* MyCodeArrayLessThan.h */,
+				70B0861508F48E8900FC65FE /* nGenotype.h */,
+				70B0875A08F5EC8900FC65FE /* nGeometry.h */,
+				70B0861608F48E8900FC65FE /* nInjectGenotype.h */,
+				70B0867208F499C100FC65FE /* nMutation.h */,
+				70B0875C08F5ECBC00FC65FE /* nReaction.h */,
+				70B085D108F48C9400FC65FE /* nSpecies.h */,
+				DCC311090762539E008F7A48 /* primitive.cc */,
+				DCC310A90762539E008F7A48 /* CMakeLists.txt */,
 			);
 			path = main;
-			sourceTree = "<group>";
-		};
-		DCC310B00762539E008F7A48 /* functional_testsuites */ = {
-			isa = PBXGroup;
-			children = (
-				DCC310B30762539E008F7A48 /* config */,
-				DCC310B60762539E008F7A48 /* default.md5sum */,
-				DCC310B90762539E008F7A48 /* default.tail */,
-				DCC310BC0762539E008F7A48 /* demo.md5sum */,
-				DCC310BF0762539E008F7A48 /* demo.tail */,
-				DCC310C20762539E008F7A48 /* tedious.tail */,
-			);
-			path = functional_testsuites;
-			sourceTree = "<group>";
-		};
-		DCC310B30762539E008F7A48 /* config */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = config;
-			sourceTree = "<group>";
-		};
-		DCC310B60762539E008F7A48 /* default.md5sum */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = default.md5sum;
-			sourceTree = "<group>";
-		};
-		DCC310B90762539E008F7A48 /* default.tail */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = default.tail;
-			sourceTree = "<group>";
-		};
-		DCC310BC0762539E008F7A48 /* demo.md5sum */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = demo.md5sum;
-			sourceTree = "<group>";
-		};
-		DCC310BF0762539E008F7A48 /* demo.tail */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = demo.tail;
-			sourceTree = "<group>";
-		};
-		DCC310C20762539E008F7A48 /* tedious.tail */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = tedious.tail;
-			sourceTree = "<group>";
-		};
-		DCC3112E0762539E008F7A48 /* unit_testsuites */ = {
-			isa = PBXGroup;
-			children = (
-				DCC311310762539E008F7A48 /* config */,
-				DCC311340762539E008F7A48 /* demo.hello */,
-			);
-			path = unit_testsuites;
-			sourceTree = "<group>";
-		};
-		DCC311310762539E008F7A48 /* config */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = config;
-			sourceTree = "<group>";
-		};
-		DCC311340762539E008F7A48 /* demo.hello */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = demo.hello;
 			sourceTree = "<group>";
 		};
 		DCC3113A0762539E008F7A48 /* support */ = {

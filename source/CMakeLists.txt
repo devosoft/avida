@@ -1,5 +1,11 @@
 
-SUBDIRS(third-party tools cpu event main viewers testsuites support utils/task_events)
+SUBDIRS(cpu event main third-party tools support utils/task_events)
+IF(AVD_GUI_NCURSES)
+  SUBDIRS(viewer)
+ENDIF(AVD_GUI_NCURSES)
 IF(AVD_PY_BINDINGS)
   SUBDIRS(bindings python)
 ENDIF(AVD_PY_BINDINGS)
+IF(AVD_UNIT_TESTS)
+  SUBDIRS(testsuites)
+ENDIF(AVD_UNIT_TESTS)

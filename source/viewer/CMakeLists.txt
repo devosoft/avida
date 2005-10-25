@@ -22,12 +22,12 @@ IF(AVD_GUI_NCURSES)
     cViewInfo.cc
     cZoomScreen.cc
   )
-  ADD_LIBRARY(viewer ${libviewer_SOURCES})
+  ADD_LIBRARY(cursesviewer ${libviewer_SOURCES})
 
   ADD_EXECUTABLE(viewer viewer.cc)
   IF(WIN32)
     TARGET_LINK_LIBRARIES(viewer
-      viewer
+      cursesviewer
       main
       cpu
       event
@@ -38,7 +38,7 @@ IF(AVD_GUI_NCURSES)
     )
   ELSE(WIN32)
     TARGET_LINK_LIBRARIES(viewer
-      viewer
+      cursesviewer
       main
       cpu
       event
@@ -46,7 +46,6 @@ IF(AVD_GUI_NCURSES)
       tools
       trio
       ${NCURSES_LIBRARY}
-      m
     )
   ENDIF(WIN32)
   LINK_DIRECTORIES(${ALL_LIB_DIRS} ${THIRDPARTY_BLD_DIR}/trio)

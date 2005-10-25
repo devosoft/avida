@@ -1,15 +1,15 @@
 INCLUDE_DIRECTORIES(${ALL_INC_DIRS})
 
 SET(libmain_a_SOURCES
+  avida.cc
   cAnalyze.cc
   cAnalyzeGenotype.cc
   cAnalyzeUtil.cc
-  avida.cc
+  cAvidaConfig.cc
   cAvidaDriver_Analyze.cc
   cAvidaDriver_Base.cc
   cAvidaDriver_Population.cc
   cBirthChamber.cc
-  cCallbackUtil.cc
   cEnvironment.cc
   cFitnessMatrix.cc
   cGenebank.cc
@@ -57,6 +57,7 @@ SET(libmain_a_SOURCES
   cStats.cc
   cTaskEntry.cc
   cTaskLib.cc
+  cWorld.cc
 )
 
 ADD_LIBRARY(main ${libmain_a_SOURCES})

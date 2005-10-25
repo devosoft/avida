@@ -8,11 +8,10 @@ SET(libcpu_a_SOURCES
   cHardwareBase.cc
   cHardwareCPU.cc
   cHardwareCPU_Thread.cc
-  cHardwareFactory.cc
+  cHardwareManager.cc
   cHardwareSMT.cc
   cHardwareSMT_Thread.cc
   cHardwareStatusPrinter.cc
-  cHardwareUtil.cc
   cHeadCPU.cc
   cHeadMultiMem.cc
   cTestCPU.cc
