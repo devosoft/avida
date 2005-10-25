@@ -5,10 +5,12 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef VIEW_MAP_SCREEN_HH
-#define VIEW_MAP_SCREEN_HH
+#ifndef cMapScreen_h
+#define cMapScreen_h
 
-#include "text_screen.hh"
+#ifndef cScreen_h
+#include "cScreen.h"
+#endif
 
 #define	AVIDA_MAP_X_SPACING 2
 

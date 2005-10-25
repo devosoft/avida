@@ -5,19 +5,13 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
+#include "cBarScreen.h"
+
 #include "cPopulation.h"
 #include "cStats.h"
 #include "cEnvironment.h"
 
-#include "bar_screen.hh"
-
-
 using namespace std;
-
-
-///////////////////
-// The Bar Screen
-///////////////////
 
 void cBarScreen::Draw()
 {

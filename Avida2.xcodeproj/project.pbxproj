@@ -55,36 +55,19 @@
 		7040D36E09095E5900AA820F /* cAvidaDriver_Analyze.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EF908DA5341007BA469 /* cAvidaDriver_Analyze.cc */; };
 		7040D3A6090964D100AA820F /* cMxCodeArray.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865808F4974300FC65FE /* cMxCodeArray.cc */; };
 		704866D3090B51310048600A /* cAvidaDriver_TextPopViewer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704866B3090B51310048600A /* cAvidaDriver_TextPopViewer.cc */; };
-		704866D4090B51310048600A /* cAvidaDriver_TextPopViewer.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 704866B4090B51310048600A /* cAvidaDriver_TextPopViewer.h */; };
 		704866D5090B51310048600A /* cBarScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704866B5090B51310048600A /* cBarScreen.cc */; };
-		704866D6090B51310048600A /* cBarScreen.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 704866B6090B51310048600A /* cBarScreen.h */; };
-		704866D7090B51310048600A /* cBaseTextWindow.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 704866B7090B51310048600A /* cBaseTextWindow.h */; };
 		704866D8090B51310048600A /* cEnvironmentScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704866B8090B51310048600A /* cEnvironmentScreen.cc */; };
-		704866D9090B51310048600A /* cEnvironmentScreen.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 704866B9090B51310048600A /* cEnvironmentScreen.h */; };
 		704866DA090B51310048600A /* cHistScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704866BA090B51310048600A /* cHistScreen.cc */; };
-		704866DB090B51310048600A /* cHistScreen.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 704866BB090B51310048600A /* cHistScreen.h */; };
-		704866DC090B51310048600A /* CMakeLists.txt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 704866BC090B51310048600A /* CMakeLists.txt */; };
 		704866DD090B51310048600A /* cMapScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704866BD090B51310048600A /* cMapScreen.cc */; };
-		704866DE090B51310048600A /* cMapScreen.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 704866BE090B51310048600A /* cMapScreen.h */; };
 		704866DF090B51310048600A /* cMenuWindow.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704866BF090B51310048600A /* cMenuWindow.cc */; };
-		704866E0090B51310048600A /* cMenuWindow.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 704866C0090B51310048600A /* cMenuWindow.h */; };
 		704866E1090B51310048600A /* cOptionsScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704866C1090B51310048600A /* cOptionsScreen.cc */; };
-		704866E2090B51310048600A /* cOptionsScreen.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 704866C2090B51310048600A /* cOptionsScreen.h */; };
 		704866E3090B51310048600A /* cScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704866C3090B51310048600A /* cScreen.cc */; };
-		704866E4090B51310048600A /* cScreen.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 704866C4090B51310048600A /* cScreen.h */; };
 		704866E5090B51310048600A /* cStatsScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704866C5090B51310048600A /* cStatsScreen.cc */; };
-		704866E6090B51310048600A /* cStatsScreen.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 704866C6090B51310048600A /* cStatsScreen.h */; };
 		704866E7090B51310048600A /* cSymbolUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704866C7090B51310048600A /* cSymbolUtil.cc */; };
-		704866E8090B51310048600A /* cSymbolUtil.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 704866C8090B51310048600A /* cSymbolUtil.h */; };
 		704866E9090B51310048600A /* cTextWindow.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704866C9090B51310048600A /* cTextWindow.cc */; };
-		704866EA090B51310048600A /* cTextWindow.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 704866CA090B51310048600A /* cTextWindow.h */; };
 		704866EB090B51310048600A /* cView.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704866CB090B51310048600A /* cView.cc */; };
-		704866EC090B51310048600A /* cView.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 704866CC090B51310048600A /* cView.h */; };
 		704866ED090B51310048600A /* cViewInfo.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704866CD090B51310048600A /* cViewInfo.cc */; };
-		704866EE090B51310048600A /* cViewInfo.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 704866CE090B51310048600A /* cViewInfo.h */; };
 		704866EF090B51310048600A /* cZoomScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704866CF090B51310048600A /* cZoomScreen.cc */; };
-		704866F0090B51310048600A /* cZoomScreen.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 704866D0090B51310048600A /* cZoomScreen.h */; };
-		704866F1090B51310048600A /* key_chart in CopyFiles */ = {isa = PBXBuildFile; fileRef = 704866D1090B51310048600A /* key_chart */; };
 		704866F2090B51310048600A /* viewer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704866D2090B51310048600A /* viewer.cc */; };
 		70486BA00826722F009328F0 /* analyze.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3114B0762539E008F7A48 /* analyze.cfg */; };
 		70486BA10826722F009328F0 /* environment.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311800762539F008F7A48 /* environment.cfg */; };
@@ -356,23 +339,6 @@
 				70C5BC6609059A970028A785 /* cWorld.h in CopyFiles */,
 				70C5BD6E0905CE5F0028A785 /* cHardwareManager.h in CopyFiles */,
 				7040CF1F0906A52E00AA820F /* cEventManager.h in CopyFiles */,
-				704866D4090B51310048600A /* cAvidaDriver_TextPopViewer.h in CopyFiles */,
-				704866D6090B51310048600A /* cBarScreen.h in CopyFiles */,
-				704866D7090B51310048600A /* cBaseTextWindow.h in CopyFiles */,
-				704866D9090B51310048600A /* cEnvironmentScreen.h in CopyFiles */,
-				704866DB090B51310048600A /* cHistScreen.h in CopyFiles */,
-				704866DC090B51310048600A /* CMakeLists.txt in CopyFiles */,
-				704866DE090B51310048600A /* cMapScreen.h in CopyFiles */,
-				704866E0090B51310048600A /* cMenuWindow.h in CopyFiles */,
-				704866E2090B51310048600A /* cOptionsScreen.h in CopyFiles */,
-				704866E4090B51310048600A /* cScreen.h in CopyFiles */,
-				704866E6090B51310048600A /* cStatsScreen.h in CopyFiles */,
-				704866E8090B51310048600A /* cSymbolUtil.h in CopyFiles */,
-				704866EA090B51310048600A /* cTextWindow.h in CopyFiles */,
-				704866EC090B51310048600A /* cView.h in CopyFiles */,
-				704866EE090B51310048600A /* cViewInfo.h in CopyFiles */,
-				704866F0090B51310048600A /* cZoomScreen.h in CopyFiles */,
-				704866F1090B51310048600A /* key_chart in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

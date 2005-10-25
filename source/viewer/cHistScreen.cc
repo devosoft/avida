@@ -11,7 +11,7 @@
 #include "cGenotype.h"
 #include "cSpecies.h"
 
-#include "hist_screen.hh"
+#include "cHistScreen.h"
 
 
 using namespace std;

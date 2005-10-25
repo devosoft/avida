@@ -5,60 +5,49 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <fstream>
+#include "cView.h"
 
-#ifndef ENVIRONMENT_HH
 #include "cEnvironment.h"
-#endif
 #include "cGenotype.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cStats.h"
-
 #include "cTestUtil.h"
 #include "cHardwareBase.h"
 
-#include "view.hh"
-#include "menu.hh"
+#include "cMenuWindow.h"
+#include "cTextWindow.h"
+#include "cBarScreen.h"
+#include "cMapScreen.h"
+#include "cStatsScreen.h"
+#include "cHistScreen.h"
+#include "cOptionsScreen.h"
+#include "cZoomScreen.h"
+#include "cEnvironmentScreen.h"
 
-#include "ncurses.hh"
-#include "ansi.hh"
-
-#include "bar_screen.hh"
-#include "map_screen.hh"
-#include "stats_screen.hh"
-#include "hist_screen.hh"
-#include "options_screen.hh"
-#include "zoom_screen.hh"
-#include "environment_screen.hh"
-
+#include <fstream>
 
 using namespace std;
 
-
 cTextWindow * cView::base_window = NULL;
-cScreen * cView::cur_screen = NULL;
-cBarScreen * cView::bar_screen = NULL;
+cScreen* cView::cur_screen = NULL;
+cBarScreen* cView::bar_screen = NULL;
 
-//////////////////
-//  cView
-//////////////////
 
-cView::cView(cPopulation & in_population) :
-  info( in_population )
+cView::cView(cWorld* world) : info(world)
 {
   Setup("Avida");
 
-  map_screen     = new cMapScreen     (0,0,3,0,info, in_population);
-  stats_screen   = new cStatsScreen   (0,0,3,0,info, in_population);
-  hist_screen    = new cHistScreen    (0,0,3,0,info, in_population);
+  map_screen     = new cMapScreen     (0,0,3,0,info, world->GetPopulation());
+  stats_screen   = new cStatsScreen   (0,0,3,0,info, world->GetPopulation());
+  hist_screen    = new cHistScreen    (0,0,3,0,info, world->GetPopulation());
   options_screen = new cOptionsScreen (0,0,3,0,info);
-  zoom_screen    = new cZoomScreen    (0,0,3,0,info, in_population);
-  environment_screen = new cEnvironmentScreen (0,0,3,0,info, in_population);
+  zoom_screen    = new cZoomScreen    (0,0,3,0,info, world->GetPopulation());
+  environment_screen = new cEnvironmentScreen (0,0,3,0,info, world->GetPopulation());
 
-  info.SetActiveCell( &( in_population.GetCell(0) ) );
+  info.SetActiveCell( &( world->GetPopulation().GetCell(0) ) );
 }
 
 cView::~cView()
@@ -334,7 +323,7 @@ void cView::ExtractCreature()
 
   if (cur_screen) cur_screen->Print(20, 0, "Extracting %s...", gen_name());
 
-  cTestUtil::PrintGenome(cur_gen->GetGenome(), gen_name);
+  cTestUtil::PrintGenome(&info.GetWorld(), cur_gen->GetGenome(), gen_name);
 
   if (cur_screen) {
     cur_screen->Print(20, 24, "Done.");

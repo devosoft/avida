@@ -5,20 +5,10 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef VIEWERS_HH
-#define VIEWERS_HH
+#ifndef cAvidaDriver_TextPopViewer_h
+#define cAvidaDriver_TextPopViewer_h
 
-#ifndef avida_h
-#include "avida.h"
-#endif
-
-#ifndef AVIDA_DRIVER_ANALYZE_HH
-#include "cAvidaDriver_Analyze.h"
-#endif
-#ifndef AVIDA_DRIVER_BASE_HH
-#include "cAvidaDriver_Base.h"
-#endif
-#ifndef AVIDA_DRIVER_POPULATION_HH
+#ifndef cAvidaDriver_Population_h
 #include "cAvidaDriver_Population.h"
 #endif
 
@@ -26,9 +16,9 @@ class cView;
 
 class cAvidaDriver_TextPopViewer : public cAvidaDriver_Population {
 protected:
-  cView * viewer;
+  cView* viewer;
 public:
-  cAvidaDriver_TextPopViewer(cEnvironment & environment);
+  cAvidaDriver_TextPopViewer(cWorld* world);
   ~cAvidaDriver_TextPopViewer();
 
   virtual void ProcessOrganisms();

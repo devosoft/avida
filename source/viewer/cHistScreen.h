@@ -5,10 +5,12 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef VIEW_HIST_SCREEN_HH
-#define VIEW_HIST_SCREEN_HH
+#ifndef cHistScreen_h
+#define cHistScreen_h
 
-#include "text_screen.hh"
+#ifndef cScreen_h
+#include "cScreen.h"
+#endif
 
 class cGenotype;
 class cSpecies;

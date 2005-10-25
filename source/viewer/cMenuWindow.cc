@@ -5,8 +5,7 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "menu.hh"
-
+#include "cMenuWindow.h"
 
 using namespace std;
 

@@ -5,8 +5,8 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef SYMBOL_UTIL_HH
-#define SYMBOL_UTIL_HH
+#ifndef cSymbolUtil_h
+#define cSymbolUtil_h
 
 class cPopulationCell;
 
@@ -20,7 +20,7 @@ public:
   static char GetBreedSymbol(    const cPopulationCell & cell );
   static char GetParasiteSymbol( const cPopulationCell & cell );
   static char GetMutSymbol(      const cPopulationCell & cell );
-  static char GetThreadSymbol(   const cPopulationCell & cell );
+  static char GetThreadSymbol(const cPopulationCell & cell);
   static char GetLineageSymbol(  const cPopulationCell & cell );
 };
 

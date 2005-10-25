@@ -5,16 +5,14 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef VIEW_TEXT_SCREEN_HH
-#define VIEW_TEXT_SCREEN_HH
-
+#ifndef cViewInfo_h
+#define cViewInfo_h
 
 #include "cMerit.h"
 #include "cInstSet.h"
 #include "defs.h"
+#include "cTextWindow.h"
 
-#include "ncurses.hh"
-#include "ansi.hh"
 
 class cEnvironment;
 class cSpecies;
@@ -52,10 +50,11 @@ class cInjectGenebank;
 #define MAP_AGE       11
 #define NUM_MAP_MODES 12
 
+#include "cWorld.h"
 
 class cViewInfo {
 private:
-  cPopulation & population;
+  cWorld* m_world;
   cPopulationCell * active_cell;
 
   int pause_level;
@@ -83,7 +82,7 @@ private:
   void AddSpeciesChart(cSpecies * in_species);
   void AddInjectGenChart(cInjectGenotype * in_gen);
 public:
-  cViewInfo(cPopulation & in_population);
+  cViewInfo(cWorld* world);
   ~cViewInfo() { ; }
 
   void UpdateSymbols();
@@ -100,7 +99,10 @@ public:
   void DisEngageStepMode();
 
   cGenebank & GetGenebank();
-  cPopulation & GetPopulation() { return population; }
+  cPopulation & GetPopulation() { return m_world->GetPopulation(); }
+  cAvidaConfig& GetConfig() { return m_world->GetConfig(); }
+  cRandom& GetRandom() { return m_world->GetRandom(); }
+  cWorld& GetWorld() { return *m_world; }
 
   int GetNumSymbols() { return NUM_SYMBOLS; }
   cGenotype * GetGenotype(int index) { return genotype_chart[index]; }

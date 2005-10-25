@@ -5,13 +5,14 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef VIEW_TEXT_WINDOW_HH
-#define VIEW_TEXT_WINDOW_HH
+#ifndef cBaseTextWindow_h
+#define cBaseTextWindow_h
 
 #include <assert.h>
-#include "cTools.h"
 
-// class cTextWindow;
+#ifndef cTools_h
+#include "cTools.h"
+#endif
 
 #define MAX_SUB_WINDOWS 4
 
@@ -128,7 +129,7 @@ public:
   virtual void Print(int in_y, int in_x, chtype ch) = 0;
   virtual void Print(const char * fmt, ...) = 0;
   virtual void Print(int in_y, int in_x, const char * fmt, ...) = 0;
-  inline void PrintBinary(int in_y, int in_x, UINT value) {
+  inline void PrintBinary(int in_y, int in_x, unsigned int value) {
     for (int i = 0; i < 32; i++) {
       if ((value >> i) & 1) Print(in_y, in_x+31-i, '1');
       else Print(in_y, in_x+31-i, '0');

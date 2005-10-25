@@ -5,13 +5,15 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef VIEW_MENU_HH
-#define VIEW_MENU_HH
+#ifndef cMenuWindow_h
+#define cMenuWindow_h
 
+#ifndef cString_h
 #include "cString.h"
-
-#include "ncurses.hh"
-#include "ansi.hh"
+#endif
+#ifndef cTextWindow_h
+#include "cTextWindow.h"
+#endif
 
 class cMenuWindow {
 private:

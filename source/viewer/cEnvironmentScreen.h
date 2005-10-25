@@ -5,10 +5,12 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef VIEW_ENVIRONMENT_SCREEN_HH
-#define VIEW_ENVIRONMENT_SCREEN_HH
+#ifndef cEnvironmentScreen_h
+#define cEnvironmentScreen_h
 
-#include "text_screen.hh"
+#ifndef cScreen_h
+#include "cScreen.h"
+#endif
 
 class cEnvironmentScreen : public cScreen {
 protected:
@@ -16,9 +18,7 @@ protected:
   int mode;
   int res_selection;
   int rxn_selection;
-  //int task_offset;
-  //int task_rows;
-  //int task_cols;
+
   static const int ENVIRONMENT_MODE_RESOURCE = 0;
   static const int ENVIRONMENT_MODE_REACTION = 1;
 

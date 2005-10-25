@@ -5,17 +5,11 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "ncurses.hh"
+#include "cTextWindow.h"
 
 #include <stdlib.h>
 
-
 using namespace std;
-
-
-////////////////////
-//  cTextWindow
-////////////////////
 
 void cTextWindow::NoDelay() {
   nodelay(stdscr, 1);       // Don't wait for input if no key is pressed.

@@ -5,30 +5,21 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "cConfig.h"
+#include "cEnvironmentScreen.h"
+
 #include "cEnvironment.h"
 #include "cGenebank.h"
 #include "cGenotype.h"
 #include "cPopulation.h"
-#ifndef REACTION_HH
 #include "cReaction.h"
-#endif
-#ifndef REACTION_PROCESS_HH
 #include "cReactionProcess.h"
-#endif
-#ifndef RESOURCE_HH
 #include "cResource.h"
-#endif
 #include "cSpecies.h"
 #include "cStats.h"
 #include "cPopulationCell.h"
 #include "cOrganism.h"
 
-#include "environment_screen.hh"
-
-
 using namespace std;
-
 
 void cEnvironmentScreen::Draw()
 {

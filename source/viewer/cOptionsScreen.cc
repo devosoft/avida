@@ -5,18 +5,11 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "cConfig.h"
+#include "cOptionsScreen.h"
+
 #include "cPopulation.h"
 
-#include "options_screen.hh"
-
-
 using namespace std;
-
-
-///////////////////////
-//  The Basic Options
-///////////////////////
 
 void cOptionsScreen::Draw()
 {
@@ -86,17 +79,17 @@ void cOptionsScreen::Draw()
   Box(0, Height() - 5, Width(), 5);
 
   SetBoldColor(COLOR_CYAN);
-  Print(5, 15, "%d", cConfig::GetMaxUpdates());
+  Print(5, 15, "%d", info.GetConfig().MAX_UPDATES.Get());
   Print(6, 15, "%dx%d", info.GetPopulation().GetWorldX(),
 	info.GetPopulation().GetWorldY());
-  Print(7, 15, "%d", g_random.GetSeed());
-  Print(8, 15, "%d", cConfig::GetThreshold());
+  Print(7, 15, "%d", info.GetRandom().GetSeed());
+  Print(8, 15, "%d", info.GetConfig().THRESHOLD.Get());
 
-  Print(11, 15, "%s", cConfig::GetInstFilename()());
-  Print(12, 15, "%s", cConfig::GetEnvironmentFilename()());
-  Print(13, 15, "%s", cConfig::GetEventFilename()());
+  Print(11, 15, "%s", info.GetConfig().INST_SET.Get()());
+  Print(12, 15, "%s", info.GetConfig().ENVIRONMENT_FILE.Get()());
+  Print(13, 15, "%s", info.GetConfig().EVENT_FILE.Get()());
 
-  switch(cConfig::GetSlicingMethod()) {
+  switch(info.GetConfig().SLICING_METHOD.Get()) {
   case SLICE_CONSTANT:
     Print(1, 55, "Constant");
     break;
@@ -108,7 +101,7 @@ void cOptionsScreen::Draw()
     break;
   }
 
-  switch(cConfig::GetTaskMeritMethod()) {
+  switch(info.GetConfig().TASK_MERIT_METHOD.Get()) {
     case TASK_MERIT_NONE:
       Print(2, 55, "No Task Bonuses");
       break;
@@ -117,7 +110,7 @@ void cOptionsScreen::Draw()
       break;
   }
 
-  switch(cConfig::GetSizeMeritMethod()) {
+  switch(info.GetConfig().SIZE_MERIT_METHOD.Get()) {
   case SIZE_MERIT_OFF:
     Print(3, 55, "Off");
     break;
@@ -135,7 +128,7 @@ void cOptionsScreen::Draw()
     break;
   }
 
-  switch(cConfig::GetBirthMethod()) {
+  switch(info.GetConfig().BIRTH_METHOD.Get()) {
   case POSITION_CHILD_AGE:
     Print(4, 55, "Replace max age");
     break;
@@ -150,13 +143,13 @@ void cOptionsScreen::Draw()
     break;
   }
 
-  Print(5, 55, "%d", cConfig::GetAveTimeslice());
+  Print(5, 55, "%d", info.GetConfig().AVE_TIME_SLICE.Get());
 
-  Print(7, 52, "%.3f", cConfig::GetPointMutProb());
-  Print(8, 52, "%.3f", cConfig::GetCopyMutProb());
-  Print(9, 52, "%.3f", cConfig::GetDivideMutProb());
-  Print(9, 62, "%.3f", cConfig::GetDivideInsProb());
-  Print(9, 72, "%.3f", cConfig::GetDivideDelProb());
+  Print(7, 52, "%.3f", info.GetConfig().POINT_MUT_PROB.Get());
+  Print(8, 52, "%.3f", info.GetConfig().COPY_MUT_PROB.Get());
+  Print(9, 52, "%.3f", info.GetConfig().DIVIDE_MUT_PROB.Get());
+  Print(9, 62, "%.3f", info.GetConfig().DIVIDE_INS_PROB.Get());
+  Print(9, 72, "%.3f", info.GetConfig().DIVIDE_DEL_PROB.Get());
 
   SetColor(COLOR_WHITE);
 

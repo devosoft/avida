@@ -5,20 +5,15 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "cConfig.h"
+#include "cStatsScreen.h"
+
 #include "cEnvironment.h"
 #include "cGenebank.h"
 #include "cGenotype.h"
 #include "cPopulation.h"
 #include "cSpecies.h"
 #include "cStats.h"
-
-#ifndef TASK_ENTRY_HH
 #include "cTaskEntry.h"
-#endif
-
-#include "stats_screen.hh"
-
 
 using namespace std;
 
@@ -63,10 +58,10 @@ void cStatsScreen::Draw()
 
   int task_num = task_offset;
   const cTaskLib & task_lib = population.GetEnvironment().GetTaskLib();
-  for (int col_id = 3; task_num < cConfig::GetNumTasks(); col_id += 20) {
+  for (int col_id = 3; task_num < info.GetWorld().GetNumTasks(); col_id += 20) {
     if (col_id + 16 > Width()) break;
     for (int row_id = 15;
-	 row_id < 15 + task_rows && task_num < cConfig::GetNumTasks();
+	 row_id < 15 + task_rows && task_num < info.GetWorld().GetNumTasks();
 	 row_id++) {
       Print(row_id, col_id, ".........:");
       Print(row_id, col_id, "%s", task_lib.GetTask(task_num).GetName()());
@@ -78,7 +73,7 @@ void cStatsScreen::Draw()
 
   Box(0, 14, Width(), task_rows + 2);
 
-  if (task_num < cConfig::GetNumTasks() || task_offset != 0) {
+  if (task_num < info.GetWorld().GetNumTasks() || task_offset != 0) {
     SetBoldColor(COLOR_WHITE);
     Print(15 + task_rows, Width() - 20, " [<-] More [->] ");
     SetBoldColor(COLOR_CYAN);
@@ -144,7 +139,7 @@ void cStatsScreen::Update()
   if (stats.GetAveMerit() == 0) {
     Print(10, 66, "0.0");
   } else {
-    Print(10, 63, "%6.3f", ((double) cConfig::GetAveTimeslice()) * best_gen->GetFitness() / stats.GetAveMerit());
+    Print(10, 63, "%6.3f", ((double) info.GetConfig().AVE_TIME_SLICE.Get()) * best_gen->GetFitness() / stats.GetAveMerit());
   }
   Print(11, 63, "%6d", best_gen->GetDepth());
   // Print(12, 63, "");
@@ -164,7 +159,7 @@ void cStatsScreen::Update()
 		     ((double) stats.GetNumDeaths()) /
 		     ((double) stats.GetNumGenotypes()));
   if (stats.GetAveMerit() != 0) {
-    Print(10, 71, "%7.3f", ((double) cConfig::GetAveTimeslice()) * stats.GetAveFitness() / stats.GetAveMerit());
+    Print(10, 71, "%7.3f", ((double) info.GetConfig().AVE_TIME_SLICE.Get()) * stats.GetAveFitness() / stats.GetAveMerit());
   } else {
     Print(10, 71, "%7.3f", 0.0);
   }
@@ -173,10 +168,10 @@ void cStatsScreen::Update()
 
   // This section needs to be changed to work with new task_lib @TCC
   int task_num = task_offset;
-  for (int col_id = 14; task_num < cConfig::GetNumTasks(); col_id += 20) {
+  for (int col_id = 14; task_num < info.GetWorld().GetNumTasks(); col_id += 20) {
     if (col_id + 5 > Width()) break;
     for (int row_id = 15;
-	 row_id < 15 + task_rows && task_num < cConfig::GetNumTasks();
+	 row_id < 15 + task_rows && task_num < info.GetWorld().GetNumTasks();
 	 row_id++) {
       Print(row_id, col_id, "%4d", stats.GetTaskLastCount(task_num));
       task_num++;
@@ -200,7 +195,7 @@ void cStatsScreen::DoInput(int in_char)
     break;
   case '6':
   case KEY_RIGHT:
-    if (task_rows * task_cols + task_offset < cConfig::GetNumTasks()) {
+    if (task_rows * task_cols + task_offset < info.GetWorld().GetNumTasks()) {
       task_offset += 5;
       Draw();
     }

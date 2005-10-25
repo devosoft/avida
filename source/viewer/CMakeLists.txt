@@ -7,25 +7,26 @@ IF(AVD_GUI_NCURSES)
   )
 
   SET(libviewer_SOURCES
-    ansi.cc
-    bar_screen.cc
-    environment_screen.cc
-    hist_screen.cc
-    map_screen.cc
-    menu.cc
-    ncurses.cc
-    options_screen.cc
-    stats_screen.cc
-    symbol_util.cc
-    text_screen.cc
-    view.cc
-    zoom_screen.cc
+    cAvidaDriver_TextPopViewer.cc
+    cBarScreen.cc
+    cEnvironmentScreen.cc
+    cHistScreen.cc
+    cMapScreen.cc
+    cMenuWindow.cc
+    cOptionsScreen.cc
+    cScreen.cc
+    cStatsScreen.cc
+    cSymbolUtil.cc
+    cTextWindow.cc
+    cView.cc
+    cViewInfo.cc
+    cZoomScreen.cc
   )
   ADD_LIBRARY(viewer ${libviewer_SOURCES})
 
-  ADD_EXECUTABLE(AvidaConsole viewer.cc)
+  ADD_EXECUTABLE(viewer viewer.cc)
   IF(WIN32)
-    TARGET_LINK_LIBRARIES(AvidaConsole
+    TARGET_LINK_LIBRARIES(viewer
       viewer
       main
       cpu
@@ -36,7 +37,7 @@ IF(AVD_GUI_NCURSES)
       ${NCURSES_LIBRARY}
     )
   ELSE(WIN32)
-    TARGET_LINK_LIBRARIES(AvidaConsole
+    TARGET_LINK_LIBRARIES(viewer
       viewer
       main
       cpu
@@ -50,5 +51,5 @@ IF(AVD_GUI_NCURSES)
   ENDIF(WIN32)
   LINK_DIRECTORIES(${ALL_LIB_DIRS} ${THIRDPARTY_BLD_DIR}/trio)
 
-  INSTALL_TARGETS(/work AvidaConsole)
+  INSTALL_TARGETS(/work viewer)
 ENDIF(AVD_GUI_NCURSES)

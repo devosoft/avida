@@ -5,11 +5,11 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef VIEW_ZOOM_SCREEN_HH
-#define VIEW_ZOOM_SCREEN_HH
+#ifndef cZoomScreen_h
+#define cZoomScreen_h
 
-#include "text_screen.hh"
-#include "map_screen.hh"
+#include "cScreen.h"
+#include "cMapScreen.h"
 
 #define ZOOM_MODE_STATS    0
 #define ZOOM_MODE_CPU      1
@@ -58,6 +58,8 @@
 #define THREAD_OPTIONS_LOCK   1
 #define NUM_THREAD_OPTIONS    2
 
+class cHardwareBase;
+
 class cZoomScreen : public cScreen {
 private:
   cPopulation & population;
@@ -80,14 +82,17 @@ private:
 private:
   void DrawCPU_Original();
   void DrawCPU_4Stack();
+  void DrawCPU_SMT();
   void DrawStats();
   void DrawGenotype();
   void UpdateCPU(cHardwareBase & hardware);
   void UpdateCPU_Original(cHardwareBase & hardware);
   void UpdateCPU_4Stack(cHardwareBase & hardware);
+  void UpdateCPU_SMT(cHardwareBase & hardware);
   void UpdateStats(cHardwareBase & hardware);
   void UpdateStats_CPU(cHardwareBase & hardware);
   void UpdateStats_4Stack(cHardwareBase & hardware);
+  void UpdateStats_SMT(cHardwareBase & hardware);
   void UpdateGenotype();
 
   void EditMemory();

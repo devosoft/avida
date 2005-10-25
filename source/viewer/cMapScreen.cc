@@ -5,21 +5,15 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <fstream>
+#include "cMapScreen.h"
 
 #include "cGenotype.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 
-#include "map_screen.hh"
-
+#include <fstream>
 
 using namespace std;
-
-
-///////////////////
-// The Map Screen
-///////////////////
 
 cMapScreen::cMapScreen(int _y_size, int _x_size, int _y_start,
       int _x_start, cViewInfo & in_info, cPopulation & in_pop) :

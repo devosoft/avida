@@ -5,6 +5,8 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
+#include "cViewInfo.h"
+
 #include <fstream>
 
 #include "cSpecies.h"
@@ -16,14 +18,14 @@
 #include "cPopulationCell.h"
 #include "cOrganism.h"
 
-#include "symbol_util.hh"
-#include "text_screen.hh"
+#include "cSymbolUtil.h"
+#include "cScreen.h"
 
 
 using namespace std;
 
 
-cViewInfo::cViewInfo(cPopulation & in_population) : population(in_population)
+cViewInfo::cViewInfo(cWorld* world) : m_world(world), alt_inst_set(world)
 {
   active_cell = NULL;
   pause_level = PAUSE_OFF;
@@ -125,16 +127,16 @@ void cViewInfo::SetupSymbolMaps(int map_mode, bool use_color)
     break;
   }
 
-  const int num_cells = population.GetSize();
+  const int num_cells = m_world->GetPopulation().GetSize();
   map.Resize(num_cells);
   color_map.Resize(num_cells);
 
   for (int i = 0; i < num_cells; i++) {
     if (map_method == 0) map[i] = 0;
-    else map[i] = (*map_method)(population.GetCell(i));
+    else map[i] = (*map_method)(m_world->GetPopulation().GetCell(i));
 
     if (color_method == 0) color_map[i] = 0;
-    else color_map[i] = (*color_method)(population.GetCell(i));
+    else color_map[i] = (*color_method)(m_world->GetPopulation().GetCell(i));
   }
 
 }
@@ -200,7 +202,7 @@ void cViewInfo::DisEngageStepMode()
 
 cGenebank & cViewInfo::GetGenebank()
 {
-  return population.GetGenebank();
+  return m_world->GetPopulation().GetGenebank();
 }
 
 cGenotype * cViewInfo::GetActiveGenotype()

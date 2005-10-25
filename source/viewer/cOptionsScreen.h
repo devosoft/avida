@@ -5,10 +5,12 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef VIEW_OPTIONS_SCREEN_HH
-#define VIEW_OPTIONS_SCREEN_HH
+#ifndef cOptionsScreen_h
+#define cOptionsScreen_h
 
-#include "text_screen.hh"
+#ifndef cScreen_h
+#include "cScreen.h"
+#endif
 
 class cOptionsScreen : public cScreen {
 protected:

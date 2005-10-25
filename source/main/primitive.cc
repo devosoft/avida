@@ -11,10 +11,8 @@
 #include "avida.h"
 #include "cAvidaConfig.h"
 #include "cAvidaDriver_Analyze.h"
-#include "cAvidaDriver_Base.h"
 #include "cAvidaDriver_Population.h"
 #include "cWorld.h"
-#include "defs.h"
 
 using namespace std;
 

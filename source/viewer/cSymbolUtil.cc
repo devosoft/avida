@@ -5,15 +5,14 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <fstream>
+#include "cSymbolUtil.h"
 
-#include "symbol_util.hh"
+#include <fstream>
 
 #include "cGenotype.h"
 #include "cOrganism.h"
 #include "cPopulationCell.h"
 #include "cSpecies.h"
-#include "cConfig.h"
 #include "cHardwareBase.h"
 #include "cHardware4Stack.h"
 #include "cHardwareCPU.h"
@@ -108,17 +107,9 @@ char cSymbolUtil::GetMutSymbol(const cPopulationCell & cell)
 char cSymbolUtil::GetThreadSymbol(const cPopulationCell & cell)
 {
   if (cell.IsOccupied() == false) return ' ';
-//  const cOrganism & organism = *(cell.GetOrganism());
-
-//    int thread_count = organism->GetHardware()->GetNumThreads();
-//    if (thread_count < 0) return '-';
-//    if (thread_count < 10) return (char) ('0' + thread_count);
-//    if (thread_count < 20) return 'X';
-//    if (thread_count < 80) return 'L';
-//    if (thread_count < 200) return 'C';
-  //const cHardwareBase * hardware; 
+  const int hw_type = static_cast<cHardwareBase*>(&cell.GetOrganism()->GetHardware())->GetType();
   int num_threads;
-  switch (cConfig::GetHardwareType())
+  switch (hw_type)
   {
     case HARDWARE_TYPE_CPU_ORIGINAL:
       num_threads = ((cHardwareCPU &) cell.GetOrganism()->GetHardware()).GetNumThreads();
@@ -130,6 +121,7 @@ char cSymbolUtil::GetThreadSymbol(const cPopulationCell & cell)
       num_threads = static_cast<cHardwareSMT&>(cell.GetOrganism()->GetHardware()).GetNumThreads();
       return (char) ('0' + num_threads);
   }
+  return '0';
 }
 
 char cSymbolUtil::GetLineageSymbol(const cPopulationCell & cell)

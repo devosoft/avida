@@ -5,9 +5,12 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef VIEW_HH
-#define VIEW_HH
+#ifndef cView_h
+#define cView_h
 
+#ifndef cViewInfo_h
+#include "cViewInfo.h"
+#endif
 
 #define MODE_BLANK   0
 #define MODE_MAP     1
@@ -17,8 +20,7 @@
 #define MODE_ZOOM    5
 #define MODE_ENVIRONMENT 6
 
-#include "text_screen.hh"
-
+class cScreen;
 class cTextWindow;
 class cBarScreen;
 class cMapScreen;
@@ -27,6 +29,7 @@ class cHistScreen;
 class cOptionsScreen;
 class cZoomScreen;
 class cEnvironmentScreen;
+class cWorld;
 
 class cView {
 private:
@@ -60,7 +63,7 @@ private:
   // Map navigation
   void NavigateMapWindow();
 public:
-  cView(cPopulation & in_population);
+  cView(cWorld* world);
   virtual ~cView();
 
   void Setup(const cString & in_name);

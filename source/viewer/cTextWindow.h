@@ -5,21 +5,23 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef VIEW_NCURSES_HH
-#define VIEW_NCURSES_HH
+#ifndef cTextWindow_h
+#define cTextWindow_h
 
 #ifdef HAVE_NCURSES_H
 #include <ncurses.h>
+#undef OK
 #else
 #include <curses.h>
+#undef OK
+#endif
+
+#ifndef cBaseTextWindow_h
+#include "cBaseTextWindow.h"
 #endif
 
 #include <signal.h>
-
-#include "text_window.hh"
 #include <cstdarg>
-using namespace std;
-
 
 // All colors are defines except black on black:
 #define COLOR_OFF    8

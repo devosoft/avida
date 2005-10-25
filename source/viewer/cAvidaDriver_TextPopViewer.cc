@@ -5,79 +5,25 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef VIEWER_HH
-#include "viewer.hh"
-#endif
+#include "cAvidaDriver_TextPopViewer.h"
 
-#ifndef CONFIG_HH
-#include "cConfig.h"
-#endif
-#ifndef ENVIRONMENT_HH
-#include "cEnvironment.h"
-#endif
-#ifndef POPULATION_HH
 #include "cPopulation.h"
-#endif
-#ifndef VIEW_HH
-#include "../viewers/view.hh"          // class cView
-#endif
+#include "cView.h"
+#include "cWorld.h"
 
+#include <iostream>
 
 using namespace std;
 
-
-int main(int argc, char * argv[])
-{
-  // Catch Interrupt making sure to close appropriately
-  signal(SIGINT, ExitAvida);
-
-  // output copyright message
-  cout << AvidaVersion() << endl;
-  cout << "----------------------------------------------------------------------" << endl;
-  cout << "Copyright (C) 1999-2005 Michigan State University." << endl;
-  cout << "Copyright (C) 1993-2003 California Institute of Technology." << endl << endl;
-  
-  cout << "Avida comes with ABSOLUTELY NO WARRANTY." << endl;
-  cout << "This is free software, and you are welcome to redistribute it" << endl;
-  cout << "under certain conditions. See file COPYING for details." << endl << endl;
-  
-  // Initialize the configuration data...
-  cConfig::InitGroupList();
-  cConfig::Setup(argc, argv);
-  cConfig::SetupMS();
-
-  cEnvironment environment;
-  cPopulationInterface test_interface;
-
-  SetupAvida(environment, test_interface);
-
-  if (cConfig::GetAnalyzeMode() == true) {
-    cAvidaDriver_Base::main_driver = new cAvidaDriver_Analyze();
-  }
-  else {
-    cAvidaDriver_Base::main_driver = new cAvidaDriver_TextPopViewer(environment);
-  }
-
-  cAvidaDriver_Base::main_driver->Run();
-
-  // Exit Nicely
-  ExitAvida(0);
-}
-
-
-////////////////////////////////
-//  cAvidaDriver_TextPopViewer
-////////////////////////////////
-
 cAvidaDriver_TextPopViewer::
-cAvidaDriver_TextPopViewer(cEnvironment & environment)
-  : cAvidaDriver_Population(environment)
+cAvidaDriver_TextPopViewer(cWorld* world)
+  : cAvidaDriver_Population(world)
   , viewer(NULL)
 {
   cout << "Initializing Text Viewer... " << flush;
 
-  viewer = new cView(*population);
-  viewer->SetViewMode(cConfig::GetViewMode());
+  viewer = new cView(world);
+  viewer->SetViewMode(world->GetConfig().VIEW_MODE.Get());
 
   cout << " ...done" << endl;
 }
@@ -89,27 +35,25 @@ cAvidaDriver_TextPopViewer::~cAvidaDriver_TextPopViewer()
 
 void cAvidaDriver_TextPopViewer::ProcessOrganisms()
 {
-  //  cout << "DEBUG: Running Update w/ Viewer" << endl;
-
   // Process the update.
-  const int UD_size = cConfig::GetAveTimeslice()*population->GetNumOrganisms();
+  const int UD_size = m_world->GetConfig().AVE_TIME_SLICE.Get() * m_world->GetPopulation().GetNumOrganisms();
   const double step_size = 1.0 / (double) UD_size;
 
   // Are we stepping through an organism?
   if (viewer->GetStepOrganism() != -1) {  // Yes we are!
     // Keep the viewer informed about the organism we are stepping through...
     for (int i = 0; i < UD_size; i++) {
-      const int next_id = population->ScheduleOrganism();
+      const int next_id = m_world->GetPopulation().ScheduleOrganism();
       if (next_id == viewer->GetStepOrganism()) viewer->NotifyUpdate();
-      population->ProcessStep(step_size, next_id);
+      m_world->GetPopulation().ProcessStep(step_size, next_id);
     }
   }
   else {
-    for (int i = 0; i < UD_size; i++) population->ProcessStep(step_size);
+    for (int i = 0; i < UD_size; i++) m_world->GetPopulation().ProcessStep(step_size);
   }
 
   // end of update stats...
-  population->CalcUpdateStats();
+  m_world->GetPopulation().CalcUpdateStats();
 
   // Setup the viewer for the new update.
   if (viewer->GetStepOrganism() == -1) NotifyUpdate();

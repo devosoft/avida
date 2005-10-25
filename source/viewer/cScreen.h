@@ -5,16 +5,24 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef VIEW_TEXT_SCREEN_HH
-#define VIEW_TEXT_SCREEN_HH
+#ifndef cScreen_h
+#define cScreen_h
 
-
-#include "cMerit.h"
+#ifndef cInstSet_h
 #include "cInstSet.h"
+#endif
+#ifndef cMerit_h
+#include "cMerit.h"
+#endif
+#ifndef cTextWindow_h
+#include "cTextWindow.h"
+#endif
+#ifndef cViewInfo_h
+#include "cViewInfo.h"
+#endif
+#ifndef defs_h
 #include "defs.h"
-
-#include "ncurses.hh"
-#include "ansi.hh"
+#endif
 
 class cEnvironment;
 class cSpecies;
@@ -54,7 +62,7 @@ class cInjectGenebank;
 
 class cScreen : public cTextWindow {
 protected:
-  cViewInfo & info;
+  cViewInfo& info;
 
   inline void SetSymbolColor(char color);
   inline void PrintMerit(int in_y, int in_x, cMerit in_merit);

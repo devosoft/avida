@@ -5,19 +5,24 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef VIEW_BAR_SCREEN_HH
-#define VIEW_BAR_SCREEN_HH
+#ifndef cBarScreen_h
+#define cBarScreen_h
 
-#include "text_screen.hh"
+#ifndef cScreen_h
+#include "cScreen.h"
+#endif
+#ifndef cString_h
+#include "cString.h"
+#endif
 
 class cBarScreen : public cScreen {
 protected:
-  cPopulation & population;
+  cPopulation& population;
   cString prog_name;
 public:
   cBarScreen(int y_size, int x_size, int y_start, int x_start,
 	     cViewInfo & in_info, const cString & in_name,
-	     cPopulation & in_pop) :
+	     cPopulation& in_pop) :
     cScreen(y_size, x_size, y_start, x_start, in_info),
     population(in_pop),
     prog_name(in_name) { ; }
