@@ -2,9 +2,6 @@ INCLUDE_DIRECTORIES(${ALL_INC_DIRS})
 
 SET(libmain_a_SOURCES
   avida.cc
-  cAnalyze.cc
-  cAnalyzeGenotype.cc
-  cAnalyzeUtil.cc
   cAvidaConfig.cc
   cAvidaDriver_Analyze.cc
   cAvidaDriver_Base.cc
@@ -64,7 +61,7 @@ ADD_LIBRARY(main ${libmain_a_SOURCES})
 
 IF(AVD_PRIMITIVE)
   ADD_EXECUTABLE(primitive primitive.cc)
-  TARGET_LINK_LIBRARIES(primitive main cpu event main tools)
+  TARGET_LINK_LIBRARIES(primitive main cpu event analyze cpu main tools)
   LINK_DIRECTORIES(${ALL_LIB_DIRS})
   INSTALL_TARGETS(/work primitive)
 ENDIF(AVD_PRIMITIVE)

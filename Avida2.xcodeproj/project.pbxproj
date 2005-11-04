@@ -408,6 +408,7 @@
 		70422A25091B141000A5E67F /* cAnalyzeGenotype.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAnalyzeGenotype.h; sourceTree = "<group>"; };
 		70422A26091B141000A5E67F /* cAnalyzeUtil.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeUtil.cc; sourceTree = "<group>"; };
 		70422A27091B141000A5E67F /* cAnalyzeUtil.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAnalyzeUtil.h; sourceTree = "<group>"; };
+		70422A44091B1B8500A5E67F /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		704866B3090B51310048600A /* cAvidaDriver_TextPopViewer.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cAvidaDriver_TextPopViewer.cc; sourceTree = "<group>"; };
 		704866B4090B51310048600A /* cAvidaDriver_TextPopViewer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAvidaDriver_TextPopViewer.h; sourceTree = "<group>"; };
 		704866B5090B51310048600A /* cBarScreen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cBarScreen.cc; sourceTree = "<group>"; };
@@ -1038,6 +1039,7 @@
 		70422A1B091B141000A5E67F /* analyze */ = {
 			isa = PBXGroup;
 			children = (
+				70422A44091B1B8500A5E67F /* CMakeLists.txt */,
 				70422A1C091B141000A5E67F /* cAnalyze.cc */,
 				70422A1D091B141000A5E67F /* cAnalyze.h */,
 				70422A1E091B141000A5E67F /* cAnalyzeCommand.h */,
