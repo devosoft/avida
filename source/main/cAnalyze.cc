@@ -1300,43 +1300,71 @@ void cAnalyze::SampleOrganisms(cString cur_string)
   }
   else cout << "Sampling Organisms..." << endl;
   
-  int old_total = 0;
-  int new_total = 0;
-  
   cAnalyzeGenotype * genotype = NULL;
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   
-  // of only interested in viables, remove them first. 
-  if (test_viable==1) {
-    while ((genotype = batch_it.Next()) != NULL) {
-      if ((genotype->GetViable())==0) { 
-        batch_it.Remove();
-        delete genotype;
-      } 
-    } 
+  // Loop through all genotypes to perform a census
+  int org_count = 0;
+  while ((genotype = batch_it.Next()) != NULL) {
+    // If we require viables, reduce all non-viables to zero organisms.
+    if (test_viable == 1  &&  genotype->GetViable() == 0) { 
+      genotype->SetNumCPUs(0);
+    }
+    
+    // Count the number of organisms in this genotype.
+    org_count += genotype->GetNumCPUs();
   } 
   
+  // Create an array to store pointers to the genotypes and fill it in
+  // while temporarily resetting all of the organism counts to zero.
+  tArray<cAnalyzeGenotype *> org_array(org_count);
+  int cur_org = 0;
   batch_it.Reset();
-  
   while ((genotype = batch_it.Next()) != NULL) {
-    const int old_count = genotype->GetNumCPUs();
-    const int new_count = random.GetRandBinomial(old_count, fraction);
-    old_total += old_count;
-    new_total += new_count;
-    
-    if (new_count == 0) {
+    for (int i = 0; i < genotype->GetNumCPUs(); i++) {
+      org_array[cur_org] = genotype;
+      cur_org++;
+    }
+    genotype->SetNumCPUs(0);
+  }
+  
+  assert(cur_org == org_count);
+  
+  // Determine how many organisms we want to keep.
+  int new_org_count = (int) fraction;
+  if (fraction < 1.0) new_org_count = (int) (fraction * (double) org_count);
+  if (new_org_count > org_count) {
+    cerr << "Warning: Trying to sample " << new_org_count
+    << "organisms from a population of " << org_count
+    << endl;
+    new_org_count = org_count;
+  }
+  
+  // Now pick those that we are keeping.
+  tArray<int> keep_ids(new_org_count);
+  random.Choose(org_count, keep_ids);
+  
+  // And increment the org counts for the associated genotypes.
+  for (int i = 0; i < new_org_count; i++) {
+    genotype = org_array[ keep_ids[i] ];
+    genotype->SetNumCPUs(genotype->GetNumCPUs() + 1);
+  }
+  
+  
+  // Delete all genotypes with no remaining organisms...
+  batch_it.Reset();
+  while ((genotype = batch_it.Next()) != NULL) {
+    if (genotype->GetNumCPUs() == 0) {
       batch_it.Remove();
       delete genotype;
-    } else {
-      genotype->SetNumCPUs(new_count);
     }
   }
   
   int num_genotypes = batch[cur_batch].List().GetSize();
   if (verbose) {
-    cout << "  Removed " << old_total - new_total
+    cout << "  Removed " << org_count - new_org_count
     << " organisms (" << init_genotypes - num_genotypes
-    << " genotypes); " << new_total
+    << " genotypes); " << new_org_count
     << " orgs (" << num_genotypes << " gens) remaining."
     << endl;
   }
@@ -2904,7 +2932,7 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
 	 
 }
 
-void cAnalyze::CommunityComplexity(cString cur_string)
+void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
 {
   /////////////////////////////////////////////////////////////////////
   // Calculate the mutual information between community and environment
@@ -3480,6 +3508,226 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
 }
 
   
+void cAnalyze::AnalyzeComplexityDelta(cString cur_string)
+{
+  // This command will examine the current population, and sample mutations
+  // to see what the distribution of complexity changes is.  Only genotypes
+  // with a certain abundance (default=3) will be tested to make sure that
+  // the organism didn't already have hidden complexity due to a downward
+  // step.
+  cout << "Testing complexity delta." << endl;
+  
+  cString filename = "complexity_delta.dat";
+  int num_tests = 10;
+  double copy_mut_prob = m_world->GetConfig().COPY_MUT_PROB.Get();
+  double ins_mut_prob = m_world->GetConfig().DIVIDE_INS_PROB.Get();
+  double del_mut_prob = m_world->GetConfig().DIVIDE_DEL_PROB.Get();
+  int count_threshold = 3;
+  
+  if (cur_string.GetSize() > 0) filename = cur_string.PopWord();
+  if (cur_string.GetSize() > 0) num_tests = cur_string.PopWord().AsInt();
+  if (cur_string.GetSize() > 0) copy_mut_prob = cur_string.PopWord().AsDouble();
+  if (cur_string.GetSize() > 0) ins_mut_prob = cur_string.PopWord().AsDouble();
+  if (cur_string.GetSize() > 0) del_mut_prob = cur_string.PopWord().AsDouble();
+  if (cur_string.GetSize() > 0) count_threshold = cur_string.PopWord().AsInt();
+  
+  if (verbose == true) {
+    cout << "...using:"
+    << " filename='" << filename << "'"
+    << " num_tests=" << num_tests
+    << " copy_mut_prob=" << copy_mut_prob
+    << " ins_mut_prob=" << ins_mut_prob
+    << " del_mut_prob=" << del_mut_prob
+    << " count_threshold=" << count_threshold
+    << endl;
+  }
+  
+  // Create an array of all of the genotypes above threshold.
+  cAnalyzeGenotype * genotype = NULL;
+  tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+  
+  // Loop through all genotypes to perform a census
+  int org_count = 0;
+  while ((genotype = batch_it.Next()) != NULL) {
+    // Only count genotypes above threshold
+    if (genotype->GetNumCPUs() >= count_threshold) { 
+      org_count += genotype->GetNumCPUs();
+    }
+  } 
+  
+  // Create an array to store pointers to the genotypes and fill it in.
+  tArray<cAnalyzeGenotype *> org_array(org_count);
+  int cur_org = 0;
+  batch_it.Reset();
+  while ((genotype = batch_it.Next()) != NULL) {
+    // Ignore genotypes below threshold.
+    if (genotype->GetNumCPUs() < count_threshold) continue;
+    
+    // Insert the remaining genotypes into the array.
+    for (int i = 0; i < genotype->GetNumCPUs(); i++) {
+      org_array[cur_org] = genotype;
+      cur_org++;
+    }
+  }
+  
+  // Open up the file and prepare it for output.
+  cDataFile & df = data_file_manager.Get(filename);
+  df.WriteComment( "An analyze of expected complexity changes between parent and offspring" );
+  df.WriteTimeStamp();  
+  
+  // Next check the appropriate number of organisms, perform mutations, and
+  // store the results.
+  for (int cur_test = 0; cur_test < num_tests; cur_test++) {
+    // Pick the genotype to test.
+    int test_org_id = m_world->GetRandom().GetInt(org_count);
+    genotype = org_array[test_org_id];
+    
+    // Create a copy of the genome.
+    cCPUMemory mod_genome = genotype->GetGenome();
+    
+    if (copy_mut_prob == 0.0 &&
+        ins_mut_prob == 0.0 &&
+        del_mut_prob == 0.0) {
+      cerr << "ERROR: All mutation rates are zero!  No complexity delta analysis possible." << endl;
+      return;
+    }
+    
+    // Perform the per-site mutations -- we are going to keep looping until
+    // we trigger at least one mutation.
+    int num_mutations = 0;
+    while (num_mutations == 0) {
+      if (copy_mut_prob > 0.0) {
+        for (int i = 0; i < mod_genome.GetSize(); i++) {
+          if (m_world->GetRandom().P(copy_mut_prob)) {
+            mod_genome[i] = inst_set.GetRandomInst();
+            num_mutations++;
+          }
+        }
+      }
+      
+      // Perform an Insertion if it has one.
+      if (m_world->GetRandom().P(ins_mut_prob)) {
+        int ins_line = m_world->GetRandom().GetInt(mod_genome.GetSize() + 1);
+        mod_genome.Insert(ins_line, inst_set.GetRandomInst());
+        num_mutations++;
+      }
+      
+      // Perform a Deletion if it has one.
+      if (m_world->GetRandom().P(del_mut_prob)) {
+        int del_line = m_world->GetRandom().GetInt(mod_genome.GetSize());
+        mod_genome.Remove(del_line);
+        num_mutations++;
+      }
+    }
+    
+    // Calculate the complexities....
+    genotype->Recalculate();
+    double start_complexity = genotype->GetComplexity();
+    double start_fitness = genotype->GetFitness();
+    int start_length = genotype->GetLength();
+    int start_gest = genotype->GetGestTime();
+    
+    cAnalyzeGenotype new_genotype(m_world, mod_genome, inst_set);
+    new_genotype.Recalculate();
+    double end_complexity = new_genotype.GetComplexity();
+    double complexity_change = end_complexity - start_complexity;
+    double end_fitness = new_genotype.GetFitness();
+    int end_length = new_genotype.GetLength();
+    int end_gest = new_genotype.GetGestTime();
+    
+    df.Write(num_mutations, "Number of mutational differences between original organism and mutant.");
+    df.Write(complexity_change, "Complexity difference between original organism and mutant.");
+    df.Write(start_complexity, "Complexity of initial organism.");
+    df.Write(end_complexity, "Complexity of mutant.");
+    df.Write(start_fitness, "Fitness of initial organism.");
+    df.Write(end_fitness, "Fitness of mutant.");
+    df.Write(start_length, "Length of initial organism.");
+    df.Write(end_length, "Length of mutant.");
+    df.Write(start_gest, "Gestation Time of initial organism.");
+    df.Write(end_gest, "Gestation Time of mutant.");
+    df.Write(genotype->GetID(), "ID of initial genotype.");
+    df.Endl();
+  }
+}
+
+void cAnalyze::AnalyzeKnockouts(cString cur_string)
+{
+  cout << "Analyzing the effects of knockouts..." << endl;
+  
+  cString filename = "knockouts.dat";
+  if (cur_string.GetSize() > 0) filename = cur_string.PopWord();
+  
+  int max_knockouts = 1;
+  if (cur_string.GetSize() > 0) max_knockouts = cur_string.PopWord().AsInt();
+  
+  // Open up the data file...
+  cDataFile & df = data_file_manager.Get(filename);
+  df.WriteComment( "Analysis of knockouts in genomes" );
+  df.WriteTimeStamp();  
+  
+  
+  // Setup a NULL instruction in a special inst set.
+  cInstSet ko_inst_set(inst_set);
+  // Locate the instruction corresponding to "NULL" in the instruction library.
+  {
+    cInstruction lib_null_inst = ko_inst_set.GetInstLib()->GetInst("NULL");
+    if (lib_null_inst == ko_inst_set.GetInstLib()->GetInstError()) {
+      cout << "<cAnalyze::AnalyzeKnockouts> got error:" << endl
+      << "  instruction 'NULL' not in current hardware type" << endl;
+      exit(1);
+    }
+    // Add mapping to located instruction. 
+    ko_inst_set.Add2(lib_null_inst.GetOp());
+  }
+  const cInstruction null_inst = ko_inst_set.GetInst("NULL");
+  
+  // Loop through all of the genotypes in this batch...
+  tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+  cAnalyzeGenotype * genotype = NULL;
+  while ((genotype = batch_it.Next()) != NULL) {
+    if (verbose == true) cout << "  Knockout: " << genotype->GetName() << endl;
+    
+    // Calculate the stats for the genotype we're working with...
+    genotype->Recalculate();
+    const double base_fitness = genotype->GetFitness();
+    
+    const int max_line = genotype->GetLength();
+    const cGenome & base_genome = genotype->GetGenome();
+    cGenome mod_genome(base_genome);
+    
+    // Loop through all the lines of code, testing the removal of each.
+    int dead_count = 0;
+    int neg_count = 0;
+    int neut_count = 0;
+    int pos_count = 0;
+    for (int line_num = 0; line_num < max_line; line_num++) {
+      // Save a copy of the current instruction and replace it with "NULL"
+      int cur_inst = base_genome[line_num].GetOp();
+      mod_genome[line_num] = null_inst;
+      cAnalyzeGenotype ko_genotype(m_world, mod_genome, ko_inst_set);
+      ko_genotype.Recalculate();
+      
+      double ko_fitness = ko_genotype.GetFitness();
+      if (ko_fitness == 0.0) dead_count++;
+      else if (ko_fitness < base_fitness) neg_count++;
+      else if (ko_fitness == base_fitness) neut_count++;
+      else if (ko_fitness > base_fitness) pos_count++;
+      else cerr << "ERROR: illegal state in AnalyzeKnockouts()" << endl;
+      
+      // Reset the mod_genome back to the original sequence.
+      mod_genome[line_num].SetOp(cur_inst);
+    }
+    
+    df.Write(genotype->GetID(), "Genotype ID");
+    df.Write(dead_count, "Count of lethal knockouts");
+    df.Write(neg_count,  "Count of detrimental knockouts");
+    df.Write(neut_count, "Count of neutral knockouts");
+    df.Write(pos_count,  "Count of beneficial knockouts");
+    df.Endl();
+  }
+}
+
+
 void cAnalyze::CommandFitnessMatrix(cString cur_string)
 {
   if (verbose == true) cout << "Calculating fitness matrix for batch " << cur_batch << endl;
@@ -3728,11 +3976,8 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       const cInstruction inst_lib_null_inst = map_inst_set.GetInstLib()->GetInst("NULL");
       if(inst_lib_null_inst == map_inst_set.GetInstLib()->GetInstError()){
         cout << "<cAnalyze::CommandMapTasks> got error:" << endl;
-        cout << " --- instruction \"NULL\" isn't in the instruction library;" << endl;
-        cout << " --- get somebody to map a function to \"NULL\" in the library." << endl;
-        cout << " --- (probably to class method \"cHardware-of-some-type::initInstLib\"" << endl;
-        cout << " --- in file named \"cpu/hardware-of-some-type.cc\".)" << endl;
-        cout << " --- bailing-out." << endl;
+        cout << " --- instruction \"NULL\" isn't in the instruction library for the" << endl;
+        cout << " --- current hardware type." << endl;
         exit(1);
       }
       // Add mapping to located instruction. 
@@ -3811,8 +4056,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
     
     delete [] col_pass_count;
     delete [] col_fail_count;
-    
-    }
+  }
 }
 
 void cAnalyze::CommandAverageModularity(cString cur_string)
@@ -5705,7 +5949,7 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
   // This command requires at least on arguement
   int words = cur_string.CountNumWords();
   if(words < 1) {
-    cout << "AnalyzeComplexity has no parameters, skipping." << endl;
+    cout << "Error: AnalyzeComplexity has no parameters, skipping." << endl;
     return;
   }
   
@@ -6718,7 +6962,7 @@ void cAnalyze::SetupGenotypeDataList()
                               ("viable",      "Is Viable (0/1)", &cAnalyzeGenotype::GetViable,
                                &cAnalyzeGenotype::SetViable));
   genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, int>
-                              ("id",          "Genome ID",       &cAnalyzeGenotype::GetID,
+                              ("id",          "Genotype ID",       &cAnalyzeGenotype::GetID,
                                &cAnalyzeGenotype::SetID));
   genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, const cString &>
                               ("tag",         "Genotype Tag",    &cAnalyzeGenotype::GetTag,
@@ -6815,6 +7059,10 @@ void cAnalyze::SetupGenotypeDataList()
   genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, double>
                               ("frac_pos",   "Fraction Mutations Beneficial",
                                &cAnalyzeGenotype::GetFracPos,
+                               (void (cAnalyzeGenotype::*)(double)) NULL));
+  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, double>
+                              ("complexity",   "Basic Complexity (all neutral/beneficial muts are equal)",
+                               &cAnalyzeGenotype::GetComplexity,
                                (void (cAnalyzeGenotype::*)(double)) NULL));
   genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, const cString &>
                               ("parent_muts", "Mutations from Parent",
@@ -6998,7 +7246,7 @@ void cAnalyze::SetupCommandDefLibrary()
   // Population analysis commands...
   AddLibraryDef("PRINT_PHENOTYPES", &cAnalyze::CommandPrintPhenotypes);
   AddLibraryDef("PRINT_DIVERSITY", &cAnalyze::CommandPrintDiversity);
-  AddLibraryDef("COMMUNITY_COMPLEXITY", &cAnalyze::CommunityComplexity);
+  AddLibraryDef("COMMUNITY_COMPLEXITY", &cAnalyze::AnalyzeCommunityComplexity);
 
   // Individual organism analysis...
   AddLibraryDef("LANDSCAPE", &cAnalyze::CommandLandscape);
@@ -7008,6 +7256,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("AVERAGE_MODULARITY", &cAnalyze::CommandAverageModularity);
   AddLibraryDef("MAP_MUTATIONS", &cAnalyze::CommandMapMutations);
   AddLibraryDef("ANALYZE_COMPLEXITY", &cAnalyze::AnalyzeComplexity);
+  AddLibraryDef("ANALYZE_KNOCKOUTS", &cAnalyze::AnalyzeKnockouts);
   AddLibraryDef("ANALYZE_POP_COMPLEXITY", &cAnalyze::AnalyzePopComplexity);
   AddLibraryDef("MAP_DEPTH", &cAnalyze::CommandMapDepth);
   
@@ -7035,6 +7284,7 @@ void cAnalyze::SetupCommandDefLibrary()
                 &cAnalyze::AnalyzeMutationTraceback);
   AddLibraryDef("ANALYZE_EPISTASIS", &cAnalyze::AnalyzeEpistasis);
   AddLibraryDef("ANALYZE_MATE_SELECTION", &cAnalyze::AnalyzeMateSelection);
+  AddLibraryDef("ANALYZE_COMPLEXITY_DELTA", &cAnalyze::AnalyzeComplexityDelta);
   
   // Environment manipulation
   AddLibraryDef("ENVIRONMENT", &cAnalyze::EnvironmentSetup);

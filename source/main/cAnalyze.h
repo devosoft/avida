@@ -158,7 +158,7 @@ private:
   void CommandPrintPhenotypes(cString cur_string);
   void CommandPrintDiversity(cString cur_string);
   void PhyloCommunityComplexity(cString cur_string);
-  void CommunityComplexity(cString cur_string);
+  void AnalyzeCommunityComplexity(cString cur_string);
 
   // Individual Organism Analysis...
   void CommandLandscape(cString cur_string);
@@ -190,9 +190,11 @@ private:
   void AnalyzeBranching(cString cur_string);
   void AnalyzeMutationTraceback(cString cur_string);
   void AnalyzeComplexity(cString cur_string);
+  void AnalyzeKnockouts(cString cur_string);
   void AnalyzePopComplexity(cString cur_string);
   void AnalyzeEpistasis(cString cur_string);
   void AnalyzeMateSelection(cString cur_string);
+  void AnalyzeComplexityDelta(cString cur_string);
 
   // Environment Manipulation
   void EnvironmentSetup(cString cur_string);

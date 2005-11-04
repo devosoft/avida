@@ -139,7 +139,10 @@ void cLandscape::Process(int in_distance)
   // Calculate the complexity...
 
   double max_ent = log((double) inst_set.GetSize());
+  total_entropy = 0;
   for (int i = 0; i < base_genome.GetSize(); i++) {
+    // Per-site entropy is the log of the number of legal states for that
+    // site.  Add one to account for the unmutated state.
     total_entropy += (log((double) site_count[i] + 1) / max_ent);
   }
   complexity = base_genome.GetSize() - total_entropy;

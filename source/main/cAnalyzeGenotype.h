@@ -89,8 +89,9 @@ private:
     double frac_neg;
     double frac_neut;
     double frac_pos;
+    double complexity;
     cAnalyzeLandscape() : frac_dead(0.0), frac_neg(0.0),
-			  frac_neut(0.0), frac_pos(0.0) { ; }
+			  frac_neut(0.0), frac_pos(0.0), complexity(0.0) { ; }
   };
   mutable cAnalyzeLandscape * landscape_stats;
 
@@ -194,10 +195,12 @@ public:
 
   const cString & GetParentMuts() const { return parent_muts; }
 
+  // Landscape accessors
   double GetFracDead() const;
   double GetFracNeg() const;
   double GetFracNeut() const;
   double GetFracPos() const;
+  double GetComplexity() const;
 
   double GetFitnessRatio() const { return fitness_ratio; }
   double GetEfficiencyRatio() const { return efficiency_ratio; }
