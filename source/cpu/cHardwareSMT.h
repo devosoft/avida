@@ -296,6 +296,7 @@ public:
   bool Inst_KillThread();
   bool Inst_IO();
   bool Inst_Inject();
+  bool Inst_Apoptosis();
 };
 
 

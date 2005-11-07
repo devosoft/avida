@@ -90,7 +90,8 @@ tInstLib<cHardwareSMT::tMethod> *cHardwareSMT::initInstLib(void){
     cInstEntry("ThreadFork", &cHardwareSMT::Inst_ForkThread), // 33
     cInstEntry("ThreadKill", &cHardwareSMT::Inst_KillThread), // 34
     cInstEntry("IO", &cHardwareSMT::Inst_IO), // 35
-    cInstEntry("Inject", &cHardwareSMT::Inst_Inject) // 36
+    cInstEntry("Inject", &cHardwareSMT::Inst_Inject), // 36
+    cInstEntry("Apoptosis", &cHardwareSMT::Inst_Apoptosis)
   };
 	
   const int n_size = sizeof(s_n_array)/sizeof(cNOPEntry);
@@ -2197,4 +2198,11 @@ bool cHardwareSMT::Inst_Inject()
   double mut_multiplier = 1;
 	
   return InjectParasite(mut_multiplier);
+}
+
+bool cHardwareSMT::Inst_Apoptosis()
+{
+  organism->Die();
+  
+  return true;
 }

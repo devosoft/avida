@@ -2043,7 +2043,7 @@
 /* Begin PBXProject section */
 		DCC30C4D0762532C008F7A48 /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = 702442D70859E0B00059BD9B /* Build configuration list for PBXProject "Avida2" */;
+			buildConfigurationList = 702442D70859E0B00059BD9B /* Build configuration list for PBXProject "Avida" */;
 			buildSettings = {
 			};
 			buildStyles = (
@@ -2571,7 +2571,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
 		};
-		702442D70859E0B00059BD9B /* Build configuration list for PBXProject "Avida2" */ = {
+		702442D70859E0B00059BD9B /* Build configuration list for PBXProject "Avida" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				702442D80859E0B00059BD9B /* Development */,
