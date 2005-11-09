@@ -15,7 +15,7 @@
 #ifndef DEFS_HH
 #include "defs.h"
 #endif
-#ifndef DATA_FILE_MANAGER_HH
+#ifndef cDataFileManager_h
 #include "cDataFileManager.h"
 #endif
 #ifndef DOUBLE_SUM_HH
@@ -39,7 +39,6 @@
 #include "nGeometry.h"
 
 template <class T> class tDataManager; // aggregate
-class cDataFileManager; // aggregate
 class cDoubleSum; // aggregate
 class cRunningAverage; // aggregate
 class cIntSum; // aggregate

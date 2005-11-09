@@ -1,6 +1,6 @@
 /*
  *  nHardware.h
- *  Avida2
+ *  Avida
  *
  *  Created by David on 8/29/05.
  *  Copyright 2005 Michigan State University. All rights reserved.

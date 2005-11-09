@@ -20,7 +20,7 @@ HARDWARE_TYPE 2         # 0 = Original CPUs
 MAX_CPU_THREADS 1       # Number of Threads CPUs can spawn
 
 ### Configuration Files ###
-DEFAULT_DIR ../Avida2.work/              # Directory in which config files are found
+DEFAULT_DIR ../Avida.work/              # Directory in which config files are found
 INST_SET inst_set.smt             # File containing instruction set
 EVENT_FILE events.cfg             # File containing list of events during run
 ANALYZE_FILE analyze.cfg          # File used for analysis mode

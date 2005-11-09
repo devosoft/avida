@@ -1,6 +1,6 @@
 /*
  *  cHardwareSMT_Thread.cc
- *  Avida2
+ *  Avida
  *
  *  Created by David on 6/4/05.
  *  Copyright 2005 Michigan State University. All rights reserved.

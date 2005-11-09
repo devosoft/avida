@@ -1,6 +1,6 @@
 /*
  *  cWorld.cc
- *  Avida2
+ *  Avida
  *
  *  Created by David on 10/18/05.
  *  Copyright 2005 Michigan State University. All rights reserved.
@@ -21,13 +21,21 @@
 #include "cTools.h"
 
 cWorld::~cWorld()
-{ 
+{
+  m_data_mgr->FlushAll();
+
   delete m_conf;
-  delete m_pop;
+  delete m_data_mgr;
+  delete m_env;
+  delete m_event_mgr;
+  delete m_event_list;
   delete m_hw_mgr;
+  delete m_pop;
+  delete m_test_cpu;
 }
 
-void cWorld::Setup() {
+void cWorld::Setup()
+{
   // Setup Random Number Generator
   const int rand_seed = m_conf->RANDOM_SEED.Get();
   cout << "Random Seed: " << rand_seed;
@@ -35,13 +43,14 @@ void cWorld::Setup() {
   if (rand_seed != m_rng.GetSeed()) cout << " -> " << m_rng.GetSeed();
   cout << endl;
   
-  // The default directory should end in a '/'.
-  cString default_dir = m_conf->DEFAULT_DIR.Get();
-  char dir_tail = default_dir[default_dir.GetSize() - 1];
+  // The data directory should end in a '/'
+  cString dir = m_conf->DATA_DIR.Get();
+  char dir_tail = dir[dir.GetSize() - 1];
   if (dir_tail != '\\' && dir_tail != '/') {
-    default_dir += "/";
-    m_conf->DEFAULT_DIR.Set(default_dir);
+    dir += "/";
+    m_conf->DATA_DIR.Set(dir);
   }
+  m_data_mgr = new cDataFileManager(dir);
   
   m_env = new cEnvironment(this);
   m_hw_mgr = new cHardwareManager(this);

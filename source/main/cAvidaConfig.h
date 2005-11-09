@@ -1,6 +1,6 @@
 /*
  *  cAvidaConfig.h
- *  Avida2
+ *  Avida
  *
  *  Created by David on 10/16/05.
  *  Designed by Charles.
@@ -167,7 +167,7 @@ public:
   CONFIG_ADD_VAR(HARDWARE_TYPE, int, 0, "0 = Original CPUs\n1 = New, Stack-based CPUs\n2 = Newer -- Stacks, Memory, Threading");
   
   CONFIG_ADD_GROUP(CONFIG_FILE_GROUP, "Configuration Files");
-  CONFIG_ADD_VAR(DEFAULT_DIR, cString, "../work/", "Directory in which config files are found");
+  CONFIG_ADD_VAR(DATA_DIR, cString, ".", "Directory in which config files are found");
   CONFIG_ADD_VAR(INST_SET, cString, "inst_set.default", "File containing instruction set");
   CONFIG_ADD_VAR(EVENT_FILE, cString, "events.cfg", "File containing list of events during run");
   CONFIG_ADD_VAR(ANALYZE_FILE, cString, "analyze.cfg", "File used for analysis mode");

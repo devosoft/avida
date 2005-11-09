@@ -1,26 +1,23 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cDataFileManager.h
+ *  Avida
+ *
+ *  Created by David on 10/18/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2005 California Institute of Technology
+ *
+ */
 
-/* cDataFileManager.h ********************************************************
- cDataFileManager
-
- charles@krl.caltech.edu & travc@ugcs.caltech.edu
- Time-stamp: <1999-01-07 10:02:09 travc>
-
- cString: basic string class
-******************************************************************************/
-
-#ifndef DATA_FILE_MANAGER_HH
-#define DATA_FILE_MANAGER_HH
+#ifndef cDataFileManager_h
+#define cDataFileManager_h
 
 #include <fstream>
 
-#ifndef TLIST_HH
-#include "tList.h"
+#ifndef cDataFile_h
+#include "cDataFile.h"
+#endif
+#ifndef tDictionary_h
+#include "tDictionary.h"
 #endif
 
 /**
@@ -34,15 +31,16 @@ template <class T> class tList; // aggregate
 
 class cDataFileManager {
 private:
-  tList<cDataFile> data_file_list;
+  cString m_target_dir;
+  tDictionary<cDataFile*> m_datafiles;
 
-  cDataFile * InternalFind(const cString & name);
+  cDataFile* InternalFind(const cString & name);
 
-private:
   // disabled copy constructor.
   cDataFileManager(const cDataFileManager &);
+  
 public:
-  cDataFileManager() { ; }
+  inline cDataFileManager(cString target_dir = "");
   ~cDataFileManager();
 
   /**
@@ -52,21 +50,10 @@ public:
    * @return The @ref cDataFile.
    * @param name The name of the file to look up/create.
    **/
-  cDataFile & Get(const cString & name);
+  cDataFile& Get(const cString & name);
+  std::ofstream& GetOFStream(const cString& name) { return Get(name).GetOFStream(); }
 
-  /**
-   * Looks up the ofstream corresponding to the file of the given name.
-   * If that file hasn't been created previously, it is created now.
-   *
-   * Read the cautionary remarks about the function with the same name in
-   * @ref cDataFile.
-   *
-   * @return The ofstream.
-   * @param name The name of the file to look up/create.
-   **/
-  std::ofstream & GetOFStream(const cString & name);
-
-  bool IsOpen(const cString & name);
+  inline bool IsOpen(const cString& name);
 
   void FlushAll();
 
@@ -74,7 +61,23 @@ public:
    *
    * @return true if file existed, otherwise false.
    **/
-  bool Remove(const cString & name);
+  bool Remove(const cString& name);
 };
+
+inline cDataFileManager::cDataFileManager(cString target_dir) : m_target_dir(target_dir)
+{
+  if (m_target_dir.GetSize() > 0) {
+    char dir_tail = m_target_dir[m_target_dir.GetSize() - 1];
+    if (dir_tail != '\\' && dir_tail != '/') m_target_dir += "/";
+  }
+}
+
+inline bool cDataFileManager::IsOpen(const cString & name)
+{
+  cDataFile* found;
+  if (m_datafiles.Find(name, found)) return false;
+  return true;
+}
+
 
 #endif

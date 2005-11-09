@@ -1,6 +1,6 @@
 /*
  *  tObjectFactory.h
- *  Avida2
+ *  Avida
  *
  *  Created by David on 6/10/05.
  *  Copyright 2005 Michigan State University. All rights reserved.

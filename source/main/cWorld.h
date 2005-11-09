@@ -1,6 +1,6 @@
 /*
  *  cWorld.h
- *  Avida2
+ *  Avida
  *
  *  Created by David on 10/18/05.
  *  Copyright 2005 Michigan State University. All rights reserved.
@@ -12,6 +12,9 @@
 
 #ifndef cAvidaConfig_h
 #include "cAvidaConfig.h"
+#endif
+#ifndef cDataFileManager_h
+#include "cDataFileManager.h"
 #endif
 #ifndef cRandom_h
 #include "cRandom.h"
@@ -28,9 +31,10 @@ class cWorld
 {
 protected:
   cAvidaConfig* m_conf;
+  cDataFileManager* m_data_mgr;
+  cEnvironment* m_env;
   cEventManager* m_event_mgr;
   cEventList* m_event_list;
-  cEnvironment* m_env;
   cHardwareManager* m_hw_mgr;
   cPopulation* m_pop;
   cTestCPU* m_test_cpu;
@@ -49,12 +53,17 @@ public:
   
   void SetConfig(cAvidaConfig* cfg) { delete m_conf; m_conf = cfg; }
   
+  // General Object Accessors
   cAvidaConfig& GetConfig() { return *m_conf; }
   cEnvironment& GetEnvironment() { return *m_env; }
   cHardwareManager& GetHardwareManager() { return *m_hw_mgr; }
   cPopulation& GetPopulation() { return *m_pop; }
   cRandom& GetRandom() { return m_rng; }
   cTestCPU& GetTestCPU() { return *m_test_cpu; }
+  
+  // Access to Data File Manager
+  std::ofstream& GetDataFileOFStream(const cString& fname) { return m_data_mgr->GetOFStream(fname); }
+  cDataFile& GetDataFile(const cString& fname) { return m_data_mgr->Get(fname); }  
 
   // Config Dependent Modes
   bool GetTestOnDivide() const { return m_test_on_div; }

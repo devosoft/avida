@@ -1,6 +1,6 @@
 /*
  *  viewer.cc
- *  Avida2
+ *  Avida
  *
  *  Copyright 2005 Michigan State University. All rights reserved.
  *
