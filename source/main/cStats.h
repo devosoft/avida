@@ -59,13 +59,6 @@ private:
   // The data manager handles printing user-formated output files.
   tDataManager<cStats> data_manager;
 
-  std::ofstream fp_creature_log;
-  std::ofstream fp_genotype_log;
-  std::ofstream fp_threshold_log;
-  std::ofstream fp_species_log;
-  std::ofstream fp_lineage_log;
-
-
   //// By Creature Sums ////  (Cleared and resummed by population each update)
   cDoubleSum sum_merit;
   cDoubleSum sum_mem_size;
@@ -230,15 +223,13 @@ private:
 
 public:
   cStats(cWorld* world);
-  ~cStats();
+  ~cStats() { ; }
 
   void SetupPrintDatabase();
-
   void ProcessUpdate();
 
 
   // GLOBAL STATS
-
   inline void SetCurrentUpdate(int new_update) {
     current_update = new_update;
     sub_update = 0;
@@ -305,23 +296,15 @@ public:
   void SetDomGeneDepth(int in_depth) { dom_gene_depth = in_depth; }
   void SetDomSequence(const cString & in_seq) { dom_sequence = in_seq; }
 
-  void SetDomInjGenotype(cInjectGenotype * in_inj_genotype) 
-  {dom_inj_genotype = in_inj_genotype;}
-  void SetDomInjSize(int in_inj_size)
-  {dom_inj_size = in_inj_size;}
-  void SetDomInjID(int in_inj_ID)
-  {dom_inj_genotype_id = in_inj_ID;}
-  void SetDomInjName(const cString & in_name)
-  {dom_inj_name = in_name;}
-  void SetDomInjBirths(int in_births)
-  {dom_inj_births=in_births;}
-  void SetDomInjAbundance(int in_inj_abundance)
-  {dom_inj_abundance=in_inj_abundance;}
-  void SetDomInjSequence(const cString & in_inj_sequence)
-  {dom_inj_sequence = in_inj_sequence;}
+  void SetDomInjGenotype(cInjectGenotype * in_inj_genotype) { dom_inj_genotype = in_inj_genotype; }
+  void SetDomInjSize(int in_inj_size) { dom_inj_size = in_inj_size; }
+  void SetDomInjID(int in_inj_ID) { dom_inj_genotype_id = in_inj_ID; }
+  void SetDomInjName(const cString & in_name) { dom_inj_name = in_name; }
+  void SetDomInjBirths(int in_births) { dom_inj_births = in_births; }
+  void SetDomInjAbundance(int in_inj_abundance) { dom_inj_abundance = in_inj_abundance; }
+  void SetDomInjSequence(const cString & in_inj_sequence) { dom_inj_sequence = in_inj_sequence; }
 
   void SetGenoMapElement(int i, int in_geno) { genotype_map[i] = in_geno; }
-  // Generic data
   void SetCoalescentGenotypeDepth(int in_depth) {coal_depth = in_depth;}
 
   inline void SetNumGenotypes(int new_genotypes);
@@ -334,28 +317,18 @@ public:
   inline void SetNumMultiThreadCreatures(int in_num_multi_thread_creatures);
   inline void SetNumModified(int in_num_modified);
 
-  inline void SetMaxFitness(double in_max_fitness)
-    { max_fitness = in_max_fitness; }
-  inline void SetMaxMerit(double in_max_merit)
-    { max_merit = in_max_merit; }
-  inline void SetMaxGestationTime(int in_max_gestation_time)
-    { max_gestation_time = in_max_gestation_time; }
-  inline void SetMaxGenomeLength(int in_max_genome_length)
-    { max_genome_length = in_max_genome_length; }
+  void SetMaxFitness(double in_max_fitness) { max_fitness = in_max_fitness; }
+  void SetMaxMerit(double in_max_merit) { max_merit = in_max_merit; }
+  void SetMaxGestationTime(int in_max_gestation_time) { max_gestation_time = in_max_gestation_time; }
+  void SetMaxGenomeLength(int in_max_genome_length) { max_genome_length = in_max_genome_length; }
 
-  inline void SetMinFitness(double in_min_fitness)
-    { min_fitness = in_min_fitness; }
-  inline void SetMinMerit(double in_min_merit)
-    { min_merit = in_min_merit; }
-  inline void SetMinGestationTime(int in_min_gestation_time)
-    { min_gestation_time = in_min_gestation_time; }
-  inline void SetMinGenomeLength(int in_min_genome_length)
-    { min_genome_length = in_min_genome_length; }
+  void SetMinFitness(double in_min_fitness) { min_fitness = in_min_fitness; }
+  void SetMinMerit(double in_min_merit) { min_merit = in_min_merit; }
+  void SetMinGestationTime(int in_min_gestation_time) { min_gestation_time = in_min_gestation_time; }
+  void SetMinGenomeLength(int in_min_genome_length) { min_genome_length = in_min_genome_length; }
 
-  inline void SetEntropy(double in_entropy)
-    { entropy = in_entropy; }
-  inline void SetSpeciesEntropy(double in_ent)
-    { species_entropy = in_ent; }
+  void SetEntropy(double in_entropy) { entropy = in_entropy; }
+  void SetSpeciesEntropy(double in_ent) { species_entropy = in_ent; }
 
   cDoubleSum & SumFitness()       { return sum_fitness; }
   cDoubleSum & SumGestation()     { return sum_gestation; }

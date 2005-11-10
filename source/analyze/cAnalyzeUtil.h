@@ -14,6 +14,7 @@ class cGenome;
 class cInstSet;
 class cPopulation;
 class cWorld;
+class cString;
 
 // This is a static class used to do various forms of complex analysis
 // on genomes.
@@ -47,8 +48,8 @@ public:
 				double sample_prob=1, bool landscape=false,
 				bool save_genotype=false);
 
-  static void PrintDetailedFitnessData(cWorld* world, std::ofstream & datafp,
-    std::ofstream & histofp, std::ofstream & histo_testCPU_fp, bool save_max_f_genotype,
+  static void PrintDetailedFitnessData(cWorld* world, cString& datafn,
+    cString& histofn, cString& histo_testCPU_fn, bool save_max_f_genotype,
     bool print_fitness_histo, double hist_fmax, double hist_fstep);
 
   static void PrintGeneticDistanceData(cWorld* world, std::ofstream & fp,

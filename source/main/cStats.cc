@@ -83,23 +83,6 @@ cStats::cStats(cWorld* world)
   , tot_lineages(0)
   , tot_executed(0)
 {
-  // Open log files.
-
-  if (m_world->GetConfig().LOG_CREATURES.Get()) fp_creature_log.open("creature.log");
-  else fp_creature_log.close();
-
-  if (m_world->GetConfig().LOG_GENOTYPES.Get()) fp_genotype_log.open("genotype.log");
-  else fp_genotype_log.close();
-
-  if (m_world->GetConfig().LOG_THRESHOLD.Get()) fp_threshold_log.open("threshold.log");
-  else fp_threshold_log.close();
-
-  if (m_world->GetConfig().LOG_SPECIES.Get())   fp_species_log.open("species.log");
-  else fp_species_log.close();
-
-  if (m_world->GetConfig().LOG_LINEAGES.Get())  fp_lineage_log.open("lineage.log");
-  else fp_lineage_log.close();
-
   task_cur_count.Resize( m_world->GetNumTasks() );
   task_last_count.Resize( m_world->GetNumTasks() );
   task_exe_count.Resize( m_world->GetNumTasks() );
@@ -216,18 +199,6 @@ void cStats::SetupPrintDatabase()
   data_manager.Add("max_merit",   "Maximum Merit in Population",   &cStats::GetMaxMerit);
 }
 
-cStats::~cStats()
-{
-  cout << "Closing stats object..."<<endl;
-
-  // Close all the statistics files.
-  fp_creature_log.close();
-  fp_genotype_log.close();
-  fp_threshold_log.close();
-  fp_species_log.close();
-  fp_lineage_log.close();
-}
-
 void cStats::ZeroTasks()
 {
   for( int i=0; i < task_cur_count.GetSize(); i++ ){
@@ -279,10 +250,10 @@ void cStats::RecordBirth(int cell_id, int genotype_id, bool breed_true)
 {
   tot_organisms++;
   num_births++;
-  if (fp_creature_log.good() == true) {
-    fp_creature_log << GetUpdate()   << " "
-		    << cell_id       << " "
-		    << genotype_id   << endl;
+
+  if (m_world->GetConfig().LOG_CREATURES.Get()) {
+    m_world->GetDataFileOFStream("creature.log") << GetUpdate() << " "
+      << cell_id << " " << genotype_id   << endl;
   }
 
   if (breed_true == true) num_breed_true++;
@@ -305,17 +276,18 @@ void cStats::RemoveGenotype(int id_num, int parent_id,
    int parent_dist, int depth, int max_abundance, int parasite_abundance,
    int age, int length)
 {
-  if (fp_genotype_log.good() &&
-      (!m_world->GetConfig().LOG_THRESHOLD.Get() || max_abundance > 2)) {
+  if (m_world->GetConfig().LOG_GENOTYPES.Get() &&
+      (m_world->GetConfig().LOG_GENOTYPES.Get() != 2 || max_abundance > 2)) {
     const int update_born = cStats::GetUpdate() - age + 1;
-    fp_genotype_log << id_num             << " "    //  1
-		    << update_born        << " "    //  2
-		    << parent_id          << " "    //  3
-		    << parent_dist        << " "    //  4
-		    << depth              << " "    //  5
-		    << max_abundance      << " "    //  6
-		    << age                << " "    //  7
-		    << length             << endl;  //  8
+    m_world->GetDataFileOFStream("genotype.log")
+      << id_num             << " "    //  1
+      << update_born        << " "    //  2
+      << parent_id          << " "    //  3
+      << parent_dist        << " "    //  4
+      << depth              << " "    //  5
+      << max_abundance      << " "    //  6
+      << age                << " "    //  7
+      << length             << endl;  //  8
   }
 
   (void) parasite_abundance; // Not used now, but maybe in future.
@@ -325,11 +297,12 @@ void cStats::AddThreshold(int id_num, const char * name, int species_num)
 {
   num_threshold++;
   tot_threshold++;
-  if( fp_threshold_log.good() )
-    fp_threshold_log << cStats::GetUpdate() << " "   // 1
-		     << id_num              << " "   // 2
-		     << species_num         << " "   // 3
-		     << name                << endl; // 4
+  if (m_world->GetConfig().LOG_THRESHOLD.Get())
+    m_world->GetDataFileOFStream("threshold.log")
+      << cStats::GetUpdate() << " "   // 1
+      << id_num              << " "   // 2
+      << species_num         << " "   // 3
+      << name                << endl; // 4
 }
 
 void cStats::RemoveThreshold(int id_num)
@@ -349,13 +322,14 @@ void cStats::RemoveSpecies(int id_num, int parent_id,
 			   int max_gen_abundance, int max_abundance, int age)
 {
   num_species--;
-  if( fp_species_log.good() )
-    fp_species_log << cStats::GetUpdate() << " "   // 1
-		   << id_num              << " "   // 2
-		   << parent_id           << " "   // 3
-		   << max_gen_abundance   << " "   // 4
-		   << max_abundance       << " "   // 5
-		   << age                 << endl; // 6
+  if (m_world->GetConfig().LOG_SPECIES.Get())
+    m_world->GetDataFileOFStream("species.log")
+      << cStats::GetUpdate() << " "   // 1
+      << id_num              << " "   // 2
+      << parent_id           << " "   // 3
+      << max_gen_abundance   << " "   // 4
+      << max_abundance       << " "   // 5
+      << age                 << endl; // 6
 }
 
 void cStats::AddLineage()
@@ -403,38 +377,25 @@ void cStats::RemoveLineage(int id_num, int parent_id, int update_born,
 			   int total_CPUs, int total_genotypes, double fitness,
 			   double lineage_stat1, double lineage_stat2 )
 {
-  static bool msg_printed = false;
-
-  if ( !msg_printed ){
-    if( fp_lineage_log.good() )
-      fp_lineage_log << "# (1) lineage id "
-		     << "(2) parent lineage id "
-		     << "(3) initial fitness "
-		     << "(4) total number of creatures "
-		     << "(5) total number of genotypes "
-		     << "(6) update born "
-		     << "(7) update extinct "
-		     << "(8) generation born "
-		     << "(9) generation extinct"
-		     << "(10) lineage stat1"
-		     << "(11) lineage stat2 [10, 11 depend on lineage creation method chosen]"
-		     << endl;
-    msg_printed = true;
-  }
-
   num_lineages--;
-  if( fp_lineage_log.good() ) {
-    fp_lineage_log << id_num              << " "   // 1
-		   << parent_id           << " "   // 2
-		   << fitness             << " "   // 3
-		   << total_CPUs          << " "   // 4
-		   << total_genotypes     << " "   // 5
-		   << update_born         << " "   // 6
-		   << cStats::GetUpdate() << " "   // 7
-		   << generation_born     << " "   // 8
-		   << SumGeneration().Average() << " " // 9
-		   << lineage_stat1 	  << " "   // 10
-		   << lineage_stat2       << " " << endl;
+  if (m_world->GetConfig().LOG_LINEAGES.Get()) {
+    cDataFile& lineage_log = m_world->GetDataFile("lineage.log");
+
+    lineage_log.WriteComment("(1) lineage id (2) parent lineage id (3) initial fitness (4) total number of creatures (5) total number of genotypes (6) update born (7) update extinct (8) generation born (9) generation extinct (10) lineage stat1 (11) lineage stat2 [10, 11 depend on lineage creation method chosen]");
+    lineage_log.Endl();
+    
+    lineage_log.GetOFStream()
+      << id_num              << " "   // 1
+      << parent_id           << " "   // 2
+      << fitness             << " "   // 3
+      << total_CPUs          << " "   // 4
+      << total_genotypes     << " "   // 5
+      << update_born         << " "   // 6
+      << cStats::GetUpdate() << " "   // 7
+      << generation_born     << " "   // 8
+      << SumGeneration().Average() << " " // 9
+      << lineage_stat1 	  << " "   // 10
+      << lineage_stat2       << " " << endl;    
   }
 }
 

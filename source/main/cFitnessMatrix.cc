@@ -617,53 +617,22 @@ void cFitnessMatrix::CalcFitnessMatrix( int depth_limit, double fitness_threshol
 
   m_fitness_threshhold = m_start_genotype.GetFitness() * m_fitness_threshold_ratio;
 
-  /* open files for output */
-
-  ofstream log_file("fitness_matrix.log");
-  ofstream genotype_file("found_genotypes.dat");
-  ofstream fit_vect_file("fitness_vect.dat");
-
-  ofstream ham_vect_file;
-  if (write_ham_vector)
-    ham_vect_file.open("hamming_vect.dat");
-  ofstream full_vect_file;
-  if (write_full_vector)
-    full_vect_file.open("full_vect.dat");
-
-
   /* do the depth first search */
-
-  CollectData(log_file);
-  PrintGenotypes(genotype_file);
-  genotype_file.close();
-
+  CollectData(m_world->GetDataFileOFStream("fitness_matrix.log"));
+  PrintGenotypes(m_world->GetDataFileOFStream("found_genotypes.dat"));
 
   /* diagonalize transition matrices at different copy error rates */
-
   for (double error = m_error_rate_min; error <= m_error_rate_max; error += m_error_rate_step)
-    {
-      vector<double> dataVect;
+  {
+    vector<double> dataVect;
+    double avg_fitness = Diagonalize(dataVect, m_ham_thresh, error, log_file);
 
-      double avg_fitness = Diagonalize(dataVect, m_ham_thresh, error, log_file);
+    PrintFitnessVector(m_world->GetDataFileOFStream("fitness_vect.dat"), dataVect, error, avg_fitness, output_start, output_step);
 
-      PrintFitnessVector(fit_vect_file, dataVect, error, avg_fitness, output_start, output_step);
-
-      if ( write_ham_vector )
-	PrintHammingVector(ham_vect_file, dataVect, error, avg_fitness);
-
-      if ( write_full_vector )
-	PrintFullVector(full_vect_file, dataVect, error, avg_fitness);
-
-    }
-
-
-  /* close remaining files */
-
-  log_file.close();
-  fit_vect_file.close();
-  if ( write_ham_vector )
-    ham_vect_file.close();
-  if ( write_full_vector )
-    full_vect_file.close();
+    if (write_ham_vector)
+      PrintHammingVector(m_world->GetDataFileOFStream("hamming_vect.dat"), dataVect, error, avg_fitness);
+    if (write_full_vector)
+      PrintFullVector(m_world->GetDataFileOFStream("full_vect.dat"), dataVect, error, avg_fitness);
+  }
 }
 

@@ -446,8 +446,8 @@ void cAnalyzeUtil::AnalyzePopulation(cWorld* world, ofstream & fp,
  * histograms.
  **/
 
-void cAnalyzeUtil::PrintDetailedFitnessData(cWorld* world, ofstream &datafp,
-   ofstream & hist_fp, ofstream & histo_testCPU_fp, bool save_max_f_genotype,
+void cAnalyzeUtil::PrintDetailedFitnessData(cWorld* world, cString& datafn,
+   cString& hist_fn, cString& histo_testCPU_fn, bool save_max_f_genotype,
    bool print_fitness_histo, double hist_fmax, double hist_fstep)
 {
   cPopulation* pop = &world->GetPopulation();
@@ -521,14 +521,15 @@ void cAnalyzeUtil::PrintDetailedFitnessData(cWorld* world, ofstream &datafp,
      max_f_name.Set("%03d-no_name-u%i", max_f_genotype->GetLength(),
 		    update );
 
-  datafp << update                    << " "  // 1 update
-	 << generation                << " "  // 2 generation
-	 << fave/ (double) n          << " "  // 3 average fitness
-	 << fave_testCPU/ (double) n  << " "  // 4 average test fitness
-	 << n 	                      << " "  // 5 organism total
-	 << max_fitness               << " "  // 6 maximum fitness
-	 << max_f_name()	      << " "  // 7 maxfit genotype name
-	 << endl;
+  world->GetDataFileOFStream(datafn)
+    << update                    << " "  // 1 update
+    << generation                << " "  // 2 generation
+    << fave/ (double) n          << " "  // 3 average fitness
+    << fave_testCPU/ (double) n  << " "  // 4 average test fitness
+    << n 	                      << " "  // 5 organism total
+    << max_fitness               << " "  // 6 maximum fitness
+    << max_f_name()	      << " "  // 7 maxfit genotype name
+    << endl;
 
   if (save_max_f_genotype) {
     char filename[40];
@@ -537,24 +538,26 @@ void cAnalyzeUtil::PrintDetailedFitnessData(cWorld* world, ofstream &datafp,
   }
 
   if (print_fitness_histo) {
-    hist_fp << update            << " "  // 1 update
+    ofstream& hist_fp = world->GetDataFileOFStream(hist_fn);
+    hist_fp
+      << update            << " "  // 1 update
 	    << generation        << " "  // 2 generation
 	    << fave/ (double) n  << " "; // 3 average fitness
 
     // now output the fitness histo
     vector<int>::const_iterator it = histo.begin();
-    for ( ; it != histo.end(); it++ )
-      hist_fp << (double) (*it) / (double) nhist_tot << " ";
+    for ( ; it != histo.end(); it++ ) hist_fp << (double) (*it) / (double) nhist_tot << " ";
     hist_fp << endl;
 
-    histo_testCPU_fp << update                    << " "  // 1 update
-		     << generation                << " "  // 2 generation
-		     << fave_testCPU/ (double) n  << " "; // 3 average fitness
+    ofstream& histo_testCPU_fp = world->GetDataFileOFStream(histo_testCPU_fn);
+    histo_testCPU_fp
+      << update                    << " "  // 1 update
+      << generation                << " "  // 2 generation
+      << fave_testCPU/ (double) n  << " "; // 3 average fitness
 
     // now output the fitness histo
     it = histo_testCPU.begin();
-    for ( ; it != histo_testCPU.end(); it++ )
-      histo_testCPU_fp << (double) (*it) / (double) nhist_tot_testCPU << " ";
+    for (; it != histo_testCPU.end(); it++) histo_testCPU_fp << (double) (*it) / (double) nhist_tot_testCPU << " ";
     histo_testCPU_fp << endl;
   }
 }

@@ -136,7 +136,6 @@ LOG_CREATURES 0		# 0/1 (off/on) toggle to print file.
 LOG_GENOTYPES 0		# 0 = off, 1 = print ALL, 2 = print threshold ONLY.
 LOG_THRESHOLD 0		# 0/1 (off/on) toggle to print file.
 LOG_SPECIES 0		# 0/1 (off/on) toggle to print file.
-LOG_LANDSCAPE 0		# 0/1 (off/on) toggle to print file.
 
 LOG_LINEAGES 0          # 0/1 (off/on) to log advantageous mutations
 # This one can slow down avida a lot. It is used to get an idea of how

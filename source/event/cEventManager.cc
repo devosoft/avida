@@ -2550,14 +2550,7 @@ public:
   }
   ///// print_detailed_fitness_data /////
   void Process(){
-    static ofstream datafile(filename());
-    static ofstream histofile;
-    static ofstream histofile_testCPU;
-    if (print_fitness_histo && !histofile.is_open()){
-      histofile.open(filename2());
-      histofile_testCPU.open(filename3());
-    }
-    cAnalyzeUtil::PrintDetailedFitnessData(m_world, datafile, histofile, histofile_testCPU, save_max_f_genotype, print_fitness_histo, hist_fmax, hist_fstep );
+    cAnalyzeUtil::PrintDetailedFitnessData(m_world, filename, filename2, filename3, save_max_f_genotype, print_fitness_histo, hist_fmax, hist_fstep );
   }
 };
 
