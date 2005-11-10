@@ -104,7 +104,6 @@ cAnalyze::cAnalyze(cWorld* world)
 
 cAnalyze::~cAnalyze()
 {
-  data_file_manager.FlushAll();
   while (genotype_data_list.GetSize()) delete genotype_data_list.Pop();
   while (command_list.GetSize()) delete command_list.Pop();
   while (function_list.GetSize()) delete function_list.Pop();
@@ -1536,7 +1535,7 @@ void cAnalyze::CommandPrintTasks(cString cur_string)
   cString filename("tasks.dat");
   if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
   
-  ofstream & fp = data_file_manager.GetOFStream(filename);
+  ofstream & fp = m_world->GetDataFileOFStream(filename);
   
   // Loop through all of the genotypes in this batch...
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
@@ -1573,7 +1572,7 @@ void cAnalyze::CommandDetail(cString cur_string)
     CommandDetail_Header(cout, file_type, output_it);
     CommandDetail_Body(cout, file_type, output_it);
   } else {
-    ofstream & fp = data_file_manager.GetOFStream(filename);
+    ofstream & fp = m_world->GetDataFileOFStream(filename);
     CommandDetail_Header(fp, file_type, output_it);
     CommandDetail_Body(fp, file_type, output_it);
   }
@@ -1618,7 +1617,7 @@ void cAnalyze::CommandDetailTimeline(cString cur_string)
     CommandDetail_Header(cout, file_type, output_it, time_step);
     CommandDetail_Body(cout, file_type, output_it, time_step, max_time);
   } else {
-    ofstream & fp = data_file_manager.GetOFStream(filename);
+    ofstream & fp = m_world->GetDataFileOFStream(filename);
     CommandDetail_Header(fp, file_type, output_it, time_step);
     CommandDetail_Body(fp, file_type, output_it, time_step, max_time);
   }
@@ -1793,9 +1792,9 @@ void cAnalyze::CommandDetailAverage(cString cur_string)
   LoadGenotypeDataList(cur_string, output_list);
   
   // check if file is already in use.
-  bool file_active = data_file_manager.IsOpen(filename);
+  bool file_active = m_world->GetDataFileManager().IsOpen(filename);
   
-  ofstream & fp = data_file_manager.GetOFStream(filename);
+  ofstream & fp = m_world->GetDataFileOFStream(filename);
   
   // if it's a new file print out the header
   if (file_active == false) {
@@ -1850,7 +1849,7 @@ void cAnalyze::CommandDetailBatches(cString cur_string)
   while (file_extension.Find('.') != -1) file_extension.Pop('.');
   if (file_extension == "html") file_type = FILE_TYPE_HTML;
   
-  ofstream & fp = data_file_manager.GetOFStream(filename);
+  ofstream & fp = m_world->GetDataFileOFStream(filename);
   
   // Write out the header on the file
   if (file_type == FILE_TYPE_TEXT) {
@@ -2109,7 +2108,7 @@ void cAnalyze::CommandHistogram(cString cur_string)
     CommandHistogram_Header(cout, file_type, output_it);
     CommandHistogram_Body(cout, file_type, output_it);
   } else {
-    ofstream & fp = data_file_manager.GetOFStream(filename);
+    ofstream & fp = m_world->GetDataFileOFStream(filename);
     CommandHistogram_Header(fp, file_type, output_it);
     CommandHistogram_Body(fp, file_type, output_it);
   }
@@ -2301,7 +2300,7 @@ void cAnalyze::CommandPrintPhenotypes(cString cur_string)
   
   // Print out the results...
   
-  ofstream & fp = data_file_manager.GetOFStream(filename);
+  ofstream & fp = m_world->GetDataFileOFStream(filename);
   
   fp << "# 1: Number of organisms of this phenotype" << endl
     << "# 2: Number of genotypes of this phenotye" << endl
@@ -2425,7 +2424,7 @@ void cAnalyze::CommandPrintDiversity(cString cur_string)
   }
   
   // Print out the results...
-  cDataFile & df = data_file_manager.Get(filename);
+  cDataFile & df = m_world->GetDataFile(filename);
   
   for (int i = 0; i < num_tasks; i++) {
     df.Write(i,                    "# 1: Task ID");
@@ -3290,7 +3289,7 @@ void cAnalyze::CommandLandscape(cString cur_string)
   if (cur_string.GetSize() != 0) num_test=cur_string.PopWord().AsInt();
   
   // If we're given a file, write to it.
-  ofstream & fp = data_file_manager.GetOFStream(filename);
+  ofstream & fp = m_world->GetDataFileOFStream(filename);
   
   // Loop through all of the genotypes in this batch...
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
@@ -3315,7 +3314,7 @@ void cAnalyze::AnalyzeEpistasis(cString cur_string)
   if (cur_string.GetSize() != 0) test_num = cur_string.PopWord().AsInt();
   
   // If we're given a file, write to it.
-  ofstream & fp = data_file_manager.GetOFStream(filename);
+  ofstream & fp = m_world->GetDataFileOFStream(filename);
   
   // Loop through all of the genotypes in this batch...
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
@@ -3491,7 +3490,7 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
 
   if (filename == "none") return;
   
-  cDataFile & df = data_file_manager.Get(filename);
+  cDataFile & df = m_world->GetDataFile(filename);
   df.WriteComment( "Mate selection information" );
   df.WriteTimeStamp();  
   
@@ -3571,7 +3570,7 @@ void cAnalyze::AnalyzeComplexityDelta(cString cur_string)
   }
   
   // Open up the file and prepare it for output.
-  cDataFile & df = data_file_manager.Get(filename);
+  cDataFile & df = m_world->GetDataFile(filename);
   df.WriteComment( "An analyze of expected complexity changes between parent and offspring" );
   df.WriteTimeStamp();  
   
@@ -3661,7 +3660,7 @@ void cAnalyze::AnalyzeKnockouts(cString cur_string)
   if (cur_string.GetSize() > 0) max_knockouts = cur_string.PopWord().AsInt();
   
   // Open up the data file...
-  cDataFile & df = data_file_manager.Get(filename);
+  cDataFile & df = m_world->GetDataFile(filename);
   df.WriteComment( "Analysis of knockouts in genomes" );
   df.WriteTimeStamp();  
   
@@ -4103,7 +4102,7 @@ void cAnalyze::CommandAverageModularity(cString cur_string)
     cout << endl;
   }
   
-  ofstream & fp = data_file_manager.GetOFStream(filename);
+  ofstream & fp = m_world->GetDataFileOFStream(filename);
   
   // printing the headers
   // not done by default since many dumps may be analyzed at the same time
@@ -4717,7 +4716,7 @@ void cAnalyze::CommandMapDepth(cString cur_string)
   
   cout << "max_depth = " << max_depth << endl;
   
-  ofstream & fp = data_file_manager.GetOFStream(filename);
+  ofstream & fp = m_world->GetDataFileOFStream(filename);
   
   cout << "Output to " << filename << endl;
   tArray<int> depth_array(max_depth+1);
@@ -4792,7 +4791,7 @@ void cAnalyze::CommandHamming(cString cur_string)
   double ave_dist = (double) total_dist / (double) total_count;
   cout << " ave distance = " << ave_dist << endl;
   
-  cDataFile & df = data_file_manager.Get(filename);
+  cDataFile & df = m_world->GetDataFile(filename);
   
   df.WriteComment( "Hamming distance information" );
   df.WriteTimeStamp();  
@@ -4858,7 +4857,7 @@ void cAnalyze::CommandLevenstein(cString cur_string)
   double ave_dist = (double) total_dist / (double) total_count;
   cout << " ave distance = " << ave_dist << endl;
   
-  cDataFile & df = data_file_manager.Get(filename);
+  cDataFile & df = m_world->GetDataFile(filename);
   
   df.WriteComment( "Levenstein distance information" );
   df.WriteTimeStamp();  
@@ -4976,7 +4975,7 @@ void cAnalyze::CommandSpecies(cString cur_string)
     << " in " << total_count
     << " tests." << endl; 
   
-  cDataFile & df = data_file_manager.Get(filename);
+  cDataFile & df = m_world->GetDataFile(filename);
   
   df.WriteComment( "Species information" );
   df.WriteTimeStamp();  
@@ -5265,7 +5264,7 @@ void cAnalyze::WriteClone(cString cur_string)
   if (cur_string.GetSize() != 0) num_cells = cur_string.PopWord().AsInt();
   
   
-  ofstream & fp = data_file_manager.GetOFStream(filename);
+  ofstream & fp = m_world->GetDataFileOFStream(filename);
   
   // Start up again at update zero...
   fp << "0 ";
@@ -5324,7 +5323,7 @@ void cAnalyze::WriteInjectEvents(cString cur_string)
   if (cur_string.GetSize() != 0) start_cell = cur_string.PopWord().AsInt();
   if (cur_string.GetSize() != 0) lineage = cur_string.PopWord().AsInt();
   
-  ofstream & fp = data_file_manager.GetOFStream(filename);
+  ofstream & fp = m_world->GetDataFileOFStream(filename);
   
   int org_count = 0;
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
@@ -5377,7 +5376,7 @@ void cAnalyze::WriteCompetition(cString cur_string)
     return;
   }
   
-  ofstream & fp = data_file_manager.GetOFStream(filename);
+  ofstream & fp = m_world->GetDataFileOFStream(filename);
   
   // Count the number of organisms in each batch...
   cAnalyzeGenotype * genotype = NULL;
@@ -5497,7 +5496,7 @@ void cAnalyze::AnalyzeMuts(cString cur_string)
   cString & last_seq = sequences[num_sequences - 1];
   
   // Print out the header...
-  ofstream & fp = data_file_manager.GetOFStream(filename);
+  ofstream & fp = m_world->GetDataFileOFStream(filename);
   fp << "# " << sequences[0] << endl;
   fp << "# " << sequences[num_sequences - 1] << endl;
   fp << "# ";

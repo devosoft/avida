@@ -19,10 +19,7 @@
 #ifndef RESOURCE_COUNT_HH
 #include "cResourceCount.h"
 #endif
-#ifndef STATS_HH
-#include "cStats.h"
-#endif
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
 #ifndef cWorld_h
@@ -52,7 +49,6 @@ class cOrganism;
 class cPopulationInterface; // aggregate
 class cPopulationCell;
 class cResourceCount; // aggregate
-class cStats; // aggregate
 class cString; // aggregate
 
 class cPopulation {
@@ -67,7 +63,6 @@ private:
   cBirthChamber birth_chamber;         // Global birth chamber.
 
   // Data Tracking...
-  cStats stats;                      // Main statistics object...
   cGenebank * genebank;                // Tracks genotypes
   cInjectGenebank * inject_genebank;   // Tracks all injected code
   cLineageControl * lineage_control;   // Tracks Linages
@@ -172,8 +167,6 @@ public:
   int GetSize() { return cell_array.GetSize(); }
   int GetWorldX() { return world_x; }
   int GetWorldY() { return world_y; }
-  int GetUpdate() { return stats.GetUpdate(); }
-  double GetGeneration() { return stats.SumGeneration().Average(); }
 
   cPopulationCell & GetCell(int in_num);
   const tArray<double> & GetResources() const
@@ -190,7 +183,6 @@ public:
   double GetResource(int id) const {
     return resource_count.Get(id); }
 
-  cStats & GetStats() { return stats; }
   cGenebank & GetGenebank() { return *genebank; }
   cInjectGenebank & GetInjectGenebank() { return *inject_genebank; }
   cLineageControl * GetLineageControl() { return lineage_control; }

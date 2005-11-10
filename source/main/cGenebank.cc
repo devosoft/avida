@@ -17,8 +17,8 @@
 using namespace std;
 
 
-cGenebank::cGenebank(cWorld* world, cStats & _stats)
-  : m_world(world), stats(_stats)
+cGenebank::cGenebank(cWorld* world)
+  : m_world(world), stats(world->GetStats())
 {
   for (int i = 0; i < MAX_CREATURE_SIZE; i++) {
     genotype_count[i] = 0;

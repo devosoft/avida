@@ -10,9 +10,6 @@
 
 #include <vector>
 
-#ifndef DATA_FILE_MANAGER_HH
-#include "cDataFileManager.h"
-#endif
 #ifndef GENOTYPE_BATCH_HH
 #include "cGenotypeBatch.h"
 #endif
@@ -39,7 +36,6 @@ class cAnalyzeCommand;
 class cAnalyzeFunction;
 class cAnalyzeCommandDefBase;
 class cString; // aggregate
-class cDataFileManager; // aggregate
 template <class T> class tDataEntryBase;
 class cInstSet;
 class cRandom; // aggregate
@@ -73,7 +69,6 @@ private:
   bool verbose;            // Should details be output to command line?
   int interactive_depth;   // How nested are we if in interactive mode?
 
-  cDataFileManager data_file_manager;
   tList< tDataEntryBase<cAnalyzeGenotype> > genotype_data_list;
 
   cRandom random;

@@ -25,13 +25,13 @@ using namespace std;
 //  cLineageControl
 /////////////////////
 
-cLineageControl::cLineageControl(cWorld* world, cGenebank& genebank, cStats& stats )
+cLineageControl::cLineageControl(cWorld* world, cGenebank& genebank)
   : m_world(world)
   , m_best_lineage(NULL)
   , m_max_fitness_lineage(NULL)
   , m_dominant_lineage(NULL)
   , m_genebank( genebank )
-  , m_stats(stats)
+  , m_stats(world->GetStats())
 {
 }
 
@@ -312,7 +312,7 @@ cLineageControl::FindLineage( int lineage_id ) const
 
 void cLineageControl::PrintLineageTotals(const cString &filename, bool verbose)
 {
-  ofstream & fp = m_stats.GetDataFileOFStream(filename);
+  ofstream & fp = m_world->GetDataFileOFStream(filename);
   assert(fp.good());
 
   fp << m_stats.GetUpdate();
@@ -371,7 +371,7 @@ void cLineageControl::PrintLineageTotals(const cString &filename, bool verbose)
 
 void cLineageControl::PrintLineageCurCounts(const cString & filename)
 {
-  ofstream & fp = m_stats.GetDataFileOFStream(filename);
+  ofstream & fp = m_world->GetDataFileOFStream(filename);
   assert(fp.good());
 
   fp << m_stats.GetUpdate() << " ";

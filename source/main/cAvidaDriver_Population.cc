@@ -14,6 +14,7 @@
 #include "cGenotype.h"
 #include "cPopulationCell.h"
 #include "cOrganism.h"
+#include "cStats.h"
 #include "cHardwareBase.h"
 
 #include <iostream>
@@ -43,7 +44,7 @@ bool cAvidaDriver_Population::ProcessUpdate()
   if (done_flag == true) return true;
   
   // Increment the Update.
-  cStats& stats = m_world->GetPopulation().GetStats();
+  cStats& stats = m_world->GetStats();
   stats.IncCurrentUpdate();
   
   cPopulation* population = &m_world->GetPopulation();
@@ -115,7 +116,7 @@ void cAvidaDriver_Population::ProcessOrganisms()
   population->CalcUpdateStats();
   
   // No viewer; print out status for this update....
-  cStats & stats = population->GetStats();
+  cStats & stats = m_world->GetStats();
   cout.setf(ios::left);
   cout.setf(ios::showpoint);
   cout << "UD: " << setw(6) << stats.GetUpdate() << "  "

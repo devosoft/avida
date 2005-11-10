@@ -20,8 +20,8 @@ using namespace std;
 //  cInjectGenebank
 ////////////////////
 
-cInjectGenebank::cInjectGenebank(cWorld* world, cStats & in_stats)
-  : m_world(world), stats(in_stats)
+cInjectGenebank::cInjectGenebank(cWorld* world)
+  : m_world(world), stats(world->GetStats())
 {
   for (int i = 0; i < MAX_CREATURE_SIZE; i++) {
     inject_genotype_count[i] = 0;
@@ -271,7 +271,7 @@ void cInjectGenebank::DumpDetailedEntry(cInjectGenotype * genotype, const cStrin
 {
   //if(genotype->CanReproduce())
   //  {
-      cDataFile & df = stats.GetDataFile(filename);
+      cDataFile & df = m_world->GetDataFile(filename);
       
       df.WriteComment( "Avida parasite dump data" );
       df.WriteTimeStamp();

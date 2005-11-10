@@ -198,7 +198,7 @@ void cAnalyzeUtil::CalcConsensus(cWorld* world, int lines_saved)
 {
   cPopulation* population = &world->GetPopulation();
   const int num_inst = world->GetHardwareManager().GetInstSet().GetSize();
-  const int update = population->GetStats().GetUpdate();
+  const int update = world->GetStats().GetUpdate();
   cGenebank & genebank = population->GetGenebank();
 
   // Setup the histogtams...
@@ -394,7 +394,7 @@ void cAnalyzeUtil::AnalyzePopulation(cWorld* world, ofstream & fp,
     cString creature_name;
     if ( genotype->GetThreshold() ) creature_name = genotype->GetName();
     else creature_name.Set("%03d-no_name-u%i-c%i", genotype->GetLength(),
-			   pop->GetStats().GetUpdate(), i );
+			   world->GetStats().GetUpdate(), i );
 
     fp << i                                     << " "  // 1 cell ID
        << creature_name()                       << " "  // 2 name
@@ -451,8 +451,8 @@ void cAnalyzeUtil::PrintDetailedFitnessData(cWorld* world, ofstream &datafp,
    bool print_fitness_histo, double hist_fmax, double hist_fstep)
 {
   cPopulation* pop = &world->GetPopulation();
-  const int update = pop->GetStats().GetUpdate();
-  const double generation = pop->GetStats().SumGeneration().Average();
+  const int update = world->GetStats().GetUpdate();
+  const double generation = world->GetStats().SumGeneration().Average();
 
   // the histogram variables
   vector<int> histo;
@@ -604,7 +604,7 @@ void cAnalyzeUtil::PrintGeneticDistanceData(cWorld* world, ofstream & fp,
   hamming_m1 /= (double) count;
   hamming_m2 /= (double) count;
 
-  fp << pop->GetStats().GetUpdate()          << " "  // 1 update
+  fp << world->GetStats().GetUpdate()          << " "  // 1 update
      << hamming_m1 			     << " "  // ave. Hamming dist
      << sqrt( ( hamming_m2 - hamming_m1*hamming_m1 ) / (double) count )
                                              << " "  // std. error
@@ -788,7 +788,7 @@ void cAnalyzeUtil::PrintViableTasksData(cWorld* world, ofstream & fp)
     }
   }
 
-  fp << pop->GetStats().GetUpdate();
+  fp << world->GetStats().GetUpdate();
   for (it = tasks.begin(); it != tasks.end(); it++)  fp << " " << (*it);
   fp<<endl;
 }
@@ -811,8 +811,9 @@ void cAnalyzeUtil::PrintTreeDepths(cPopulation * pop, ofstream & fp)
 }
 
 
-void cAnalyzeUtil::PrintDepthHistogram(ofstream & fp, cPopulation * pop)
+void cAnalyzeUtil::PrintDepthHistogram(cWorld* world, ofstream & fp)
 {
+  cPopulation* pop = &world->GetPopulation();
   // Output format:    update  min  max  histogram_values...
   int min = INT_MAX;
   int max = 0;
@@ -842,7 +843,7 @@ void cAnalyzeUtil::PrintDepthHistogram(ofstream & fp, cPopulation * pop)
   }
 
   // Actual output
-  fp << pop->GetStats().GetUpdate() << " "
+  fp << world->GetStats().GetUpdate() << " "
      << min << " "
      << max;
 
@@ -851,9 +852,9 @@ void cAnalyzeUtil::PrintDepthHistogram(ofstream & fp, cPopulation * pop)
 }
 
 
-void cAnalyzeUtil::PrintGenotypeAbundanceHistogram(ofstream & fp,
-						   cPopulation * pop)
+void cAnalyzeUtil::PrintGenotypeAbundanceHistogram(cWorld* world, ofstream& fp)
 {
+  cPopulation* pop = &world->GetPopulation();
   assert(fp.good());
 
   // Allocate array for the histogram & zero it
@@ -870,15 +871,15 @@ void cAnalyzeUtil::PrintGenotypeAbundanceHistogram(ofstream & fp,
   }
 
   // Actual output
-  fp << pop->GetStats().GetUpdate() << " ";
+  fp << world->GetStats().GetUpdate() << " ";
   for (int i = 0; i < hist.GetSize(); i++)  fp<<hist[i]<<" ";
   fp << endl;
 }
 
 
-void cAnalyzeUtil::PrintSpeciesAbundanceHistogram(ofstream & fp,
-						  cPopulation * pop)
+void cAnalyzeUtil::PrintSpeciesAbundanceHistogram(cWorld* world, ofstream &fp)
 {
+  cPopulation* pop = &world->GetPopulation();
   int max = 0;
   assert(fp.good());
 
@@ -906,7 +907,7 @@ void cAnalyzeUtil::PrintSpeciesAbundanceHistogram(ofstream & fp,
   }
 
   // Actual output
-  fp << pop->GetStats().GetUpdate() << " ";
+  fp << world->GetStats().GetUpdate() << " ";
   for (int i = 0; i < hist.GetSize(); i++)  fp<<hist[i]<<" ";
   fp<<endl;
 }

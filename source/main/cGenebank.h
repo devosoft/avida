@@ -51,7 +51,7 @@ private:
   // disabled copy constructor.
   cGenebank(const cGenebank &);
 public:
-  cGenebank(cWorld* world, cStats & _stats);
+  cGenebank(cWorld* world);
   ~cGenebank();
 
   void UpdateReset();

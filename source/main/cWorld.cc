@@ -12,12 +12,13 @@
 #include "avida.h"
 #include "cAvidaTriggers.h"
 #include "cEnvironment.h"
+#include "cEventList.h"
 #include "cEventManager.h"
 #include "cHardwareManager.h"
-#include "cPopulation.h"
-#include "cTestCPU.h"
-#include "cEventList.h"
 #include "cInitFile.h"
+#include "cPopulation.h"
+#include "cStats.h"
+#include "cTestCPU.h"
 #include "cTools.h"
 
 cWorld::~cWorld()
@@ -31,6 +32,7 @@ cWorld::~cWorld()
   delete m_event_list;
   delete m_hw_mgr;
   delete m_pop;
+  delete m_stats;
   delete m_test_cpu;
 }
 
@@ -62,11 +64,12 @@ void cWorld::Setup()
   }
     
   m_test_cpu = new cTestCPU(this);
+  m_stats = new cStats(this);
   m_pop = new cPopulation(this);
 
   //Setup Event List
   m_event_mgr = new cEventManager(this);
-  m_event_list = new cEventList(m_event_mgr, new cAvidaTriggers(m_pop->GetStats()) );
+  m_event_list = new cEventList(m_event_mgr, new cAvidaTriggers(*m_stats) );
   
   ReadEventListFile(m_conf->EVENT_FILE.Get());
   

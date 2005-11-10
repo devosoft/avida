@@ -15,9 +15,6 @@
 #ifndef DEFS_HH
 #include "defs.h"
 #endif
-#ifndef cDataFileManager_h
-#include "cDataFileManager.h"
-#endif
 #ifndef DOUBLE_SUM_HH
 #include "cDoubleSum.h"
 #endif
@@ -46,7 +43,6 @@ template <class T> class tArray; // aggregate
 class cGenotype;
 class cString; // aggregate
 class cInjectGenotype;
-class cDataFile;
 class cWorld;
 
 class cStats {
@@ -62,9 +58,6 @@ private:
 
   // The data manager handles printing user-formated output files.
   tDataManager<cStats> data_manager;
-
-  // Log files are recorded every time a specified event occurs.
-  cDataFileManager data_file_manager;
 
   std::ofstream fp_creature_log;
   std::ofstream fp_genotype_log;
@@ -259,8 +252,6 @@ public:
   void IncSubUpdate() { sub_update++; }
 
   bool OK() { return true; }  // @CAO FIX!!!!
-
-  void FlushFP(); // Flush all the files
 
   // Accessors...
   int GetUpdate() const { return current_update; }
@@ -546,13 +537,6 @@ public:
   // i.e., when the maximum fitness in the population drops, this value will
   // still stay up.
   double GetMaxViableFitness() const { return max_viable_fitness; }
-
-  // Access to data_file_manager (so cPopulation can output files)
-  std::ofstream & GetDataFileOFStream(const cString & fname){
-    return data_file_manager.GetOFStream(fname); }
-  cDataFile & GetDataFile(const cString & fname){
-    return data_file_manager.Get(fname); }
-
 
   // User-defined datafile...
   void PrintDataFile(const cString & filename, const cString & format,

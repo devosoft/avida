@@ -52,7 +52,7 @@ private:
   cLineageControl( const cLineageControl & );
   cLineageControl & operator=( const cLineageControl & );
 public:
-  cLineageControl(cWorld* world, cGenebank& genebank, cStats& stats);
+  cLineageControl(cWorld* world, cGenebank& genebank);
   ~cLineageControl();
 
 

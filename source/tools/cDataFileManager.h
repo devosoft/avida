@@ -13,6 +13,9 @@
 
 #include <fstream>
 
+#ifndef cTools_h
+#include "cTools.h"
+#endif
 #ifndef cDataFile_h
 #include "cDataFile.h"
 #endif
@@ -69,6 +72,7 @@ inline cDataFileManager::cDataFileManager(cString target_dir) : m_target_dir(tar
   if (m_target_dir.GetSize() > 0) {
     char dir_tail = m_target_dir[m_target_dir.GetSize() - 1];
     if (dir_tail != '\\' && dir_tail != '/') m_target_dir += "/";
+    cTools::MkDir(m_target_dir, true);
   }
 }
 

@@ -49,7 +49,7 @@ private:
   cString GetLabel(int in_size, int in_num);
 
 public:
-  cInjectGenebank(cWorld* world, cStats & stats);
+  cInjectGenebank(cWorld* world);
   ~cInjectGenebank();
 
   void UpdateReset();

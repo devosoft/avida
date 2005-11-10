@@ -61,9 +61,9 @@ public:
   static void PrintViableTasksData(cWorld* world, std::ofstream &fp);
   static void PrintTreeDepths(cPopulation * pop, std::ofstream & fp);
 
-  static void PrintDepthHistogram(std::ofstream &fp, cPopulation * pop);
-  static void PrintGenotypeAbundanceHistogram(std::ofstream &fp, cPopulation * pop);
-  static void PrintSpeciesAbundanceHistogram(std::ofstream &fp, cPopulation * pop);
+  static void PrintDepthHistogram(cWorld* world, std::ofstream& fp);
+  static void PrintGenotypeAbundanceHistogram(cWorld* world, std::ofstream& fp);
+  static void PrintSpeciesAbundanceHistogram(cWorld* world, std::ofstream& fp);
 
   // this adds support for evan dorn's InstructionHistogramEvent.  -- kgn
   static void PrintInstructionAbundanceHistogram(cWorld* world, std::ofstream &fp);

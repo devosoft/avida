@@ -221,9 +221,6 @@ cStats::~cStats()
   cout << "Closing stats object..."<<endl;
 
   // Close all the statistics files.
-
-  data_file_manager.FlushAll();
-
   fp_creature_log.close();
   fp_genotype_log.close();
   fp_threshold_log.close();
@@ -401,18 +398,6 @@ void cStats::ProcessUpdate()
   max_fitness = 0.0;
 }
 
-
-void cStats::FlushFP(){
-  data_file_manager.FlushAll();
-
-  fp_creature_log.flush();
-  fp_genotype_log.flush();
-  fp_threshold_log.flush();
-  fp_species_log.flush();
-  fp_lineage_log.flush();
-}
-
-
 void cStats::RemoveLineage(int id_num, int parent_id, int update_born,
 			   double generation_born,
 			   int total_CPUs, int total_genotypes, double fitness,
@@ -457,14 +442,14 @@ void cStats::RemoveLineage(int id_num, int parent_id, int update_born,
 void cStats::PrintDataFile(const cString & filename, const cString & format,
 			   char sep)
 {
-  cDataFile & data_file = GetDataFile(filename);
+  cDataFile & data_file = m_world->GetDataFile(filename);
   data_manager.PrintRow(data_file, format, sep);
 }
 
 
 void cStats::PrintAverageData(const cString & filename)
 {
-  cDataFile & df = GetDataFile(filename);
+  cDataFile & df = m_world->GetDataFile(filename);
 
   df.WriteComment( "Avida average data" );
   df.WriteTimeStamp();
@@ -494,7 +479,7 @@ void cStats::PrintAverageData(const cString & filename)
 
 void cStats::PrintErrorData(const cString & filename)
 {
-  ofstream & fp = GetDataFileOFStream(filename);
+  ofstream & fp = m_world->GetDataFileOFStream(filename);
   assert(fp.good());
   fp<< GetUpdate()                          << " "  // 1
     << sum_merit.StdError()                 << " "  // 2
@@ -516,7 +501,7 @@ void cStats::PrintErrorData(const cString & filename)
 
 void cStats::PrintVarianceData(const cString & filename)
 {
-  ofstream & fp = GetDataFileOFStream(filename);
+  ofstream & fp = m_world->GetDataFileOFStream(filename);
   assert(fp.good());
   fp<<GetUpdate()                           << " "  // 1
     << sum_merit.Variance()                 << " "  // 2
@@ -539,7 +524,7 @@ void cStats::PrintVarianceData(const cString & filename)
 
 void cStats::PrintDominantData(const cString & filename)
 {
-  cDataFile & df = GetDataFile(filename);
+  cDataFile & df = m_world->GetDataFile(filename);
 
   df.WriteComment( "Avida dominant data" );
   df.WriteTimeStamp();
@@ -565,7 +550,7 @@ void cStats::PrintDominantData(const cString & filename)
 
 void cStats::PrintDominantParaData(const cString & filename)
 {
-  cDataFile & df = GetDataFile(filename);
+  cDataFile & df = m_world->GetDataFile(filename);
 
   df.WriteComment( "Avida dominant parasite data" );
   df.WriteTimeStamp();
@@ -584,7 +569,7 @@ void cStats::PrintStatsData(const cString & filename)
   const double log_ave_fid = (ave_fidelity > 0) ? -Log(ave_fidelity) : 0.0;
   const double log_dom_fid = (dom_fidelity > 0) ? -Log(dom_fidelity) : 0.0;
 
-  cDataFile & df = GetDataFile(filename);
+  cDataFile & df = m_world->GetDataFile(filename);
 
   df.WriteComment( "Generic Statistics Data" );
   df.WriteTimeStamp();
@@ -605,7 +590,7 @@ void cStats::PrintStatsData(const cString & filename)
 
 void cStats::PrintCountData(const cString & filename)
 {
-  cDataFile & df = GetDataFile(filename);
+  cDataFile & df = m_world->GetDataFile(filename);
 
   df.WriteComment( "Avida count data" );
   df.WriteTimeStamp();
@@ -633,7 +618,7 @@ void cStats::PrintCountData(const cString & filename)
 
 void cStats::PrintTotalsData(const cString & filename)
 {
-  ofstream & fp = GetDataFileOFStream(filename);
+  ofstream & fp = m_world->GetDataFileOFStream(filename);
   assert(fp.good());
   fp << GetUpdate()                  << " " // 1
      << (tot_executed+num_executed)  << " " // 2
@@ -648,7 +633,7 @@ void cStats::PrintTotalsData(const cString & filename)
 
 void cStats::PrintTasksData(const cString & filename)
 {
-  cDataFile & df = GetDataFile(filename);
+  cDataFile & df = m_world->GetDataFile(filename);
 
   df.WriteComment( "Avida tasks data" );
   df.WriteTimeStamp();
@@ -666,7 +651,7 @@ void cStats::PrintTasksData(const cString & filename)
 
 void cStats::PrintTasksExeData(const cString & filename)
 {
-  cDataFile & df = GetDataFile(filename);
+  cDataFile & df = m_world->GetDataFile(filename);
 
   df.WriteComment( "Avida tasks data" );
   df.WriteTimeStamp();
@@ -684,7 +669,7 @@ void cStats::PrintTasksExeData(const cString & filename)
 
 void cStats::PrintReactionData(const cString & filename)
 {
-  cDataFile & df = GetDataFile(filename);
+  cDataFile & df = m_world->GetDataFile(filename);
 
   df.WriteComment( "Avida tasks data" );
   df.WriteTimeStamp();
@@ -701,7 +686,7 @@ void cStats::PrintReactionData(const cString & filename)
 
 void cStats::PrintResourceData(const cString & filename)
 {
-  cDataFile & df = GetDataFile(filename);
+  cDataFile & df = m_world->GetDataFile(filename);
 
   df.WriteComment( "Avida resource data" );
   df.WriteTimeStamp();
@@ -725,7 +710,7 @@ void cStats::PrintSpatialResData(const cString & filename, int i)
 
   cString tmpfilename = "resource_";
   tmpfilename +=  resource_names[i] + ".m";
-  cDataFile & df = GetDataFile(tmpfilename);
+  cDataFile & df = m_world->GetDataFile(tmpfilename);
   cString UpdateStr = resource_names[i] + 
                       cStringUtil::Stringf( "%07i", GetUpdate() ) + " = [ ...";
 
@@ -745,7 +730,7 @@ void cStats::PrintSpatialResData(const cString & filename, int i)
 
 void cStats::PrintTimeData(const cString & filename)
 {
-  cDataFile & df = GetDataFile(filename);
+  cDataFile & df = m_world->GetDataFile(filename);
 
   df.WriteComment( "Avida time data" );
   df.WriteTimeStamp();
@@ -760,7 +745,7 @@ void cStats::PrintTimeData(const cString & filename)
 
 void cStats::PrintMutationData(const cString & filename)
 {
-  ofstream & fp = GetDataFileOFStream(filename);
+  ofstream & fp = m_world->GetDataFileOFStream(filename);
   assert(fp.good());
   fp << GetUpdate()                              << " "   //  1
      << isum_parent_dist.Ave()                   << " "   //  2
@@ -806,7 +791,7 @@ void cStats::PrintMutationData(const cString & filename)
 
 void cStats::PrintMutationRateData(const cString & filename)
 {
-  cDataFile & df = GetDataFile(filename);
+  cDataFile & df = m_world->GetDataFile(filename);
 
   df.WriteComment( "Avida copy mutation rate data" );
   df.WriteTimeStamp();
@@ -830,7 +815,7 @@ void cStats::PrintMutationRateData(const cString & filename)
 
 void cStats::PrintDivideMutData(const cString & filename)
 {
-  cDataFile & df = GetDataFile(filename);
+  cDataFile & df = m_world->GetDataFile(filename);
 
   df.WriteComment( "Avida divide mutation rate data" );
   df.WriteTimeStamp();
@@ -853,7 +838,7 @@ void cStats::PrintDivideMutData(const cString & filename)
 
 void cStats::PrintInstructionData(const cString & filename)
 {
-  cDataFile & df = GetDataFile(filename);
+  cDataFile & df = m_world->GetDataFile(filename);
 
   df.WriteComment( "Avida instruction execution data" );
   df.WriteTimeStamp();
@@ -872,7 +857,7 @@ void cStats::PrintInstructionData(const cString & filename)
 
 void cStats::PrintGenotypeMap(const cString & filename)
 {
-  cDataFile & df = cStats::GetDataFile(filename);
+  cDataFile& df = m_world->GetDataFile(filename);
   cString UpdateStr =
     cStringUtil::Stringf( "GenoID%07i", GetUpdate() ) + " = [ ...";
   df.WriteRaw(UpdateStr);

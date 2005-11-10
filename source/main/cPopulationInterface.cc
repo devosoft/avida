@@ -13,6 +13,7 @@
 #include "cOrgMessage.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
+#include "cStats.h"
 #include "cTestCPU.h"
 
 #include <assert.h>
@@ -139,7 +140,7 @@ bool cPopulationInterface::SendMessage(cOrgMessage & mess)
   if (InTestPop()) return false;
   
   mess.SetSenderID(cell_id);
-  mess.SetTime(m_world->GetPopulation().GetUpdate());
+  mess.SetTime(m_world->GetStats().GetUpdate());
   cPopulationCell& cell = m_world->GetPopulation().GetCell(cell_id);
   if(cell.ConnectionList().GetFirst() == NULL)
     return false;

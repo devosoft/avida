@@ -22,14 +22,14 @@ private:
   cString filetype;
 public:
   cDataManager_Base(const cString & in_filetype) : filetype(in_filetype) { ; }
-  virtual ~cDataManager_Base();
+  virtual ~cDataManager_Base() { ; }
   
-  const cString & GetFiletype() const { return filetype; }
+  const cString& GetFiletype() const { return filetype; }
 
-  virtual bool Print(const cString & name, std::ostream & fp) = 0;
-  virtual bool GetDesc(const cString & name, cString & out_desc) = 0;
+  virtual bool Print(const cString& name, std::ostream& fp) = 0;
+  virtual bool GetDesc(const cString& name, cString& out_desc) = 0;
 
-  bool PrintRow(cDataFile & data_file, cString row_entries, char sep=' ');
+  bool PrintRow(cDataFile& data_file, cString row_entries, char sep=' ');
 };
 
 #endif

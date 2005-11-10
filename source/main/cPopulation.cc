@@ -50,19 +50,18 @@ cPopulation::cPopulation(cWorld* world)
 , schedule(NULL)
 , resource_count(world->GetEnvironment().GetResourceLib().GetSize())
 , birth_chamber(world)
-, stats(world)
 , environment(world->GetEnvironment())
 , num_organisms(0)
 , sync_events(false)
 {
   // Setup the genebank.
-  genebank = new cGenebank(world, stats);
-  inject_genebank = new cInjectGenebank(world, stats);
+  genebank = new cGenebank(world);
+  inject_genebank = new cInjectGenebank(world);
   birth_chamber.SetGenebank(genebank);
   
   // are we logging lineages?
   if (world->GetConfig().LOG_LINEAGES.Get()) {
-    lineage_control = new cLineageControl(world, *genebank, stats );
+    lineage_control = new cLineageControl(world, *genebank);
   }
   else lineage_control = NULL;    // no lineage logging
   
@@ -180,19 +179,19 @@ cPopulation::cPopulation(cWorld* world)
                          res->GetInflowY2(), res->GetOutflowX1(), 
                          res->GetOutflowX2(), res->GetOutflowY1(), 
                          res->GetOutflowY2() );
-    stats.SetResourceName(i, res->GetName());
+    m_world->GetStats().SetResourceName(i, res->GetName());
   }
   
   // Give stats information about the environment...
   const cTaskLib & task_lib = environment.GetTaskLib();
   for (int i = 0; i < task_lib.GetSize(); i++) {
     const cTaskEntry & cur_task = task_lib.GetTask(i);
-    stats.SetTaskName(i, cur_task.GetDesc());
+    m_world->GetStats().SetTaskName(i, cur_task.GetDesc());
   }
   
   const cInstSet & inst_set = world->GetHardwareManager().GetInstSet();
   for (int i = 0; i < inst_set.GetSize(); i++) {
-    stats.SetInstName(i, inst_set.GetName(i));
+    m_world->GetStats().SetInstName(i, inst_set.GetName(i));
   }
   
   // Load a clone if one is provided, otherwise setup start organism.
@@ -550,7 +549,7 @@ void cPopulation::ActivateOrganism(cOrganism * in_organism,
   num_organisms++;
   
   // Statistics...
-  stats.RecordBirth(target_cell.GetID(), in_genotype->GetID(),
+  m_world->GetStats().RecordBirth(target_cell.GetID(), in_genotype->GetID(),
                     in_organism->GetPhenotype().ParentTrue());
 }
 
@@ -564,7 +563,7 @@ void cPopulation::KillOrganism(cPopulationCell & in_cell)
   // Statistics...
   cOrganism * organism = in_cell.GetOrganism();
   cGenotype * genotype = organism->GetGenotype();
-  stats.RecordDeath(in_cell.GetID(), genotype->GetID(),
+  m_world->GetStats().RecordDeath(in_cell.GetID(), genotype->GetID(),
                     organism->GetPhenotype().GetAge());
   
   
@@ -876,13 +875,15 @@ void cPopulation::CopyDeme(int deme1_id, int deme2_id)
 
 void cPopulation::PrintDemeStats()
 {
-  cDataFile & df_fit = stats.GetDataFile("deme_fitness.dat");
-  cDataFile & df_life_fit = stats.GetDataFile("deme_lifetime_fitness.dat");
-  cDataFile & df_merit = stats.GetDataFile("deme_merit.dat");
-  cDataFile & df_gest = stats.GetDataFile("deme_gest_time.dat");
-  cDataFile & df_task = stats.GetDataFile("deme_task.dat");
-  cDataFile & df_donor = stats.GetDataFile("deme_donor.dat");
-  cDataFile & df_receiver = stats.GetDataFile("deme_receiver.dat");
+  cStats& stats = m_world->GetStats();
+
+  cDataFile & df_fit = m_world->GetDataFile("deme_fitness.dat");
+  cDataFile & df_life_fit = m_world->GetDataFile("deme_lifetime_fitness.dat");
+  cDataFile & df_merit = m_world->GetDataFile("deme_merit.dat");
+  cDataFile & df_gest = m_world->GetDataFile("deme_gest_time.dat");
+  cDataFile & df_task = m_world->GetDataFile("deme_task.dat");
+  cDataFile & df_donor = m_world->GetDataFile("deme_donor.dat");
+  cDataFile & df_receiver = m_world->GetDataFile("deme_receiver.dat");
   
   df_fit.WriteComment("Average fitnesses for each deme in the population");
   df_life_fit.WriteComment("Average life fitnesses for each deme in the population");
@@ -900,13 +901,13 @@ void cPopulation::PrintDemeStats()
   df_donor.WriteTimeStamp();
   df_receiver.WriteTimeStamp();
   
-  df_fit.Write(GetUpdate(), "update");
-  df_life_fit.Write(GetUpdate(), "update");
-  df_merit.Write(GetUpdate(), "update");
-  df_gest.Write(GetUpdate(), "update");
-  df_task.Write(GetUpdate(), "update");
-  df_donor.Write(GetUpdate(), "update");
-  df_receiver.Write(GetUpdate(), "update");
+  df_fit.Write(stats.GetUpdate(), "update");
+  df_life_fit.Write(stats.GetUpdate(), "update");
+  df_merit.Write(stats.GetUpdate(), "update");
+  df_gest.Write(stats.GetUpdate(), "update");
+  df_task.Write(stats.GetUpdate(), "update");
+  df_donor.Write(stats.GetUpdate(), "update");
+  df_receiver.Write(stats.GetUpdate(), "update");
   
   const int num_inst = m_world->GetNumInstructions();
   const int num_task = environment.GetTaskLib().GetSize();
@@ -914,13 +915,13 @@ void cPopulation::PrintDemeStats()
   for (int cur_deme = 0; cur_deme < num_demes; cur_deme++) {
     cString filename;
     filename.Set("deme_instruction-%d.dat", cur_deme);
-    cDataFile & df_inst = stats.GetDataFile(filename); 
+    cDataFile & df_inst = m_world->GetDataFile(filename); 
     cString comment;
     comment.Set("Number of times each instruction is exectued in deme %d",
                 cur_deme);
     df_inst.WriteComment(comment);
     df_inst.WriteTimeStamp();
-    df_inst.Write(GetUpdate(), "update");
+    df_inst.Write(stats.GetUpdate(), "update");
     
     cDoubleSum single_deme_fitness;
     cDoubleSum single_deme_life_fitness;
@@ -1113,20 +1114,12 @@ void cPopulation::ProcessStep(double step_size, int cell_id)
   cPopulationCell & cell = GetCell(cell_id);
   assert(cell.IsOccupied()); // Unoccupied cell getting processor time!
   
-  //    static ofstream debug_fp("debug.trace");
-  //    debug_fp << stats.GetUpdate() << " "
-  //  	   << cell.GetOrganism()->GetCellID() << " "
-  //  	   << cell.GetOrganism()->GetGenotype()->GetID() << " "
-  //  	   << m_world->GetRandom().GetDouble() << " "
-  //      	   << cell.GetOrganism()->GetHardware().GetMemory().AsString() << " "
-  //  	   << endl;
-  
   cOrganism * cur_org = cell.GetOrganism();
   cur_org->GetHardware().SingleProcess();
   if (cur_org->GetPhenotype().GetToDelete() == true) {
     delete cur_org;
   }
-  stats.IncExecuted();
+  m_world->GetStats().IncExecuted();
   resource_count.Update(step_size);
 }
 
@@ -1141,6 +1134,8 @@ void cPopulation::UpdateOrganismStats()
 {
   // Loop through all the cells getting stats and doing calculations
   // which must be done on a creature by creature basis.
+  
+  cStats& stats = m_world->GetStats();
   
   // Clear out organism sums...
   stats.SumFitness().Clear();
@@ -1278,12 +1273,14 @@ void cPopulation::UpdateOrganismStats()
   stats.SetResources(resource_count.GetResources());
   stats.SetSpatialRes(resource_count.GetSpatialRes());
   stats.SetResourcesGeometry(resource_count.GetResourcesGeometry());
-  }
+}
 
 
 void cPopulation::UpdateGenotypeStats()
 {
   // Loop through all genotypes, finding stats and doing calcuations.
+  
+  cStats& stats = m_world->GetStats();
   
   // Clear out genotype sums...
   stats.SumGenotypeAge().Clear();
@@ -1328,6 +1325,7 @@ void cPopulation::UpdateGenotypeStats()
 
 void cPopulation::UpdateSpeciesStats()
 {
+  cStats& stats = m_world->GetStats();
   double species_entropy = 0.0;
   
   stats.SumSpeciesAge().Clear();
@@ -1374,6 +1372,7 @@ void cPopulation::UpdateSpeciesStats()
 
 void cPopulation::UpdateDominantStats()
 {
+  cStats& stats = m_world->GetStats();
   cGenotype * dom_genotype = genebank->GetBestGenotype();
   if (dom_genotype == NULL) return;
   
@@ -1399,6 +1398,7 @@ void cPopulation::UpdateDominantStats()
 
 void cPopulation::UpdateDominantParaStats()
 {
+  cStats& stats = m_world->GetStats();
   cInjectGenotype * dom_inj_genotype = inject_genebank->GetBestInjectGenotype();
   if (dom_inj_genotype == NULL) return;
   
@@ -1424,6 +1424,7 @@ void cPopulation::UpdateDominantParaStats()
 
 void cPopulation::CalcUpdateStats()
 {
+  cStats& stats = m_world->GetStats();
   // Reset the Genebank to prepare it for stat collection.
   genebank->UpdateReset();
   
@@ -1449,7 +1450,7 @@ bool cPopulation::SaveClone(ofstream & fp)
   if (fp.good() == false) return false;
   
   // Save the current update
-  fp << stats.GetUpdate() << " ";
+  fp << m_world->GetStats().GetUpdate() << " ";
   
   // Save the genebank info.
   genebank->SaveClone(fp);
@@ -1486,7 +1487,7 @@ bool cPopulation::LoadClone(ifstream & fp)
   int cur_update;
   fp >> cur_update;
   
-  stats.SetCurrentUpdate(cur_update);
+  m_world->GetStats().SetCurrentUpdate(cur_update);
   
   // Clear out the population
   for (int i = 0; i < cell_array.GetSize(); i++) KillOrganism(cell_array[i]);
@@ -1552,7 +1553,7 @@ bool cPopulation::LoadDumpFile(cString filename, int update)
 {
   // set the update if requested
   if ( update >= 0 )
-    stats.SetCurrentUpdate(update);
+    m_world->GetStats().SetCurrentUpdate(update);
   
   // Clear out the population
   for (int i = 0; i < cell_array.GetSize(); i++) KillOrganism(cell_array[i]);
@@ -1593,10 +1594,10 @@ bool cPopulation::LoadDumpFile(cString filename, int update)
     cGenome genome( cur_line.PopWord() );
     
     // we don't allow birth or death times larger than the current update
-    if ( stats.GetUpdate() > tmp.update_born )
-      tmp.update_born = stats.GetUpdate();
-    if ( stats.GetUpdate() > tmp.update_dead )
-      tmp.update_dead = stats.GetUpdate();
+    if ( m_world->GetStats().GetUpdate() > tmp.update_born )
+      tmp.update_born = m_world->GetStats().GetUpdate();
+    if ( m_world->GetStats().GetUpdate() > tmp.update_dead )
+      tmp.update_dead = m_world->GetStats().GetUpdate();
     
     tmp.genotype =
       new cGenotype(m_world, tmp.update_born, tmp.id_num);
@@ -1627,7 +1628,7 @@ bool cPopulation::LoadDumpFile(cString filename, int update)
     (*it).genotype->SetParent( parent, NULL );
   }
   
-  int cur_update = stats.GetUpdate(); 
+  int cur_update = m_world->GetStats().GetUpdate(); 
   int current_cell = 0;
   bool soup_full = false;
   it = genotype_vect.begin();
@@ -1637,9 +1638,9 @@ bool cPopulation::LoadDumpFile(cString filename, int update)
                                 // remove immediately, so that it gets transferred into the
                                 // historic database. We change the update temporarily to the
                                 // true death time of this organism, so that all stats are correct.
-      stats.SetCurrentUpdate( (*it).update_dead );
+      m_world->GetStats().SetCurrentUpdate( (*it).update_dead );
       genebank->RemoveGenotype( *(*it).genotype );
-      stats.SetCurrentUpdate( cur_update );
+      m_world->GetStats().SetCurrentUpdate( cur_update );
     }
     else{ // otherwise, we insert as many organisms as we need
       for ( int i=0; i<(*it).num_cpus; i++ ){
@@ -1682,7 +1683,7 @@ bool cPopulation::SavePopulation(ofstream & fp)
   if (fp.good() == false) return false;
   
   // Save the update
-  fp << stats.GetUpdate() << endl;
+  fp << m_world->GetStats().GetUpdate() << endl;
   
   // looping through all cells saving state.
   for (int i = 0; i < cell_array.GetSize(); i++)  cell_array[i].SaveState(fp);
@@ -1698,7 +1699,7 @@ bool cPopulation::LoadPopulation(ifstream & fp)
   // Load Update...
   int cur_update;
   fp >> cur_update;
-  stats.SetCurrentUpdate(cur_update);
+  m_world->GetStats().SetCurrentUpdate(cur_update);
   
   // Clear out the current population
   for (int i = 0; i < cell_array.GetSize(); i++) KillOrganism( cell_array[i] );
@@ -2025,7 +2026,7 @@ void cPopulation::ParasiteDebug()
 {
   ofstream outfile;
   outfile.open("debug.out", ofstream::app);
-  outfile << stats.GetUpdate() << endl;
+  outfile << m_world->GetStats().GetUpdate() << endl;
   int total=0;
   cInjectGenotype * temp;
   for(int x=0; x<cell_array.GetSize(); x++)
@@ -2071,17 +2072,17 @@ void cPopulation::PrintPhenotypeData(const cString & filename)
   }
   ofstream outfile;
   outfile.open(filename, ofstream::app);
-  outfile << stats.GetUpdate() << "\t" << ids.size() << endl;
+  outfile << m_world->GetStats().GetUpdate() << "\t" << ids.size() << endl;
   outfile.close();
 }
 
 void cPopulation::PrintPhenotypeStatus(const cString & filename)
 {
-  cDataFile & df_phen = stats.GetDataFile(filename);
+  cDataFile & df_phen = m_world->GetDataFile(filename);
   
   df_phen.WriteComment("Num orgs doing each task for each deme in population");
   df_phen.WriteTimeStamp();
-  df_phen.Write(GetUpdate(), "update");
+  df_phen.Write(m_world->GetStats().GetUpdate(), "update");
   
   cString comment;
   

@@ -25,6 +25,7 @@ class cEventManager;
 class cEventList;
 class cHardwareManager;
 class cPopulation;
+class cStats;
 class cTestCPU;
 
 class cWorld
@@ -37,6 +38,7 @@ protected:
   cEventList* m_event_list;
   cHardwareManager* m_hw_mgr;
   cPopulation* m_pop;
+  cStats* m_stats;
   cTestCPU* m_test_cpu;
 
   cRandom m_rng;
@@ -55,10 +57,12 @@ public:
   
   // General Object Accessors
   cAvidaConfig& GetConfig() { return *m_conf; }
+  cDataFileManager& GetDataFileManager() { return *m_data_mgr; }
   cEnvironment& GetEnvironment() { return *m_env; }
   cHardwareManager& GetHardwareManager() { return *m_hw_mgr; }
   cPopulation& GetPopulation() { return *m_pop; }
   cRandom& GetRandom() { return m_rng; }
+  cStats& GetStats() { return *m_stats; }
   cTestCPU& GetTestCPU() { return *m_test_cpu; }
   
   // Access to Data File Manager
