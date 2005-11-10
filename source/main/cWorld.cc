@@ -53,6 +53,7 @@ void cWorld::Setup()
     m_conf->DATA_DIR.Set(dir);
   }
   m_data_mgr = new cDataFileManager(dir);
+  cTools::MkDir(dir + "genebank", true);
   
   m_env = new cEnvironment(this);
   m_hw_mgr = new cHardwareManager(this);
@@ -72,10 +73,7 @@ void cWorld::Setup()
   m_event_list = new cEventList(m_event_mgr, new cAvidaTriggers(*m_stats) );
   
   ReadEventListFile(m_conf->EVENT_FILE.Get());
-  
-  // Make sure the directory 'genebank' exits!
-  cTools::MkDir("genebank", true);
-  
+    
   const bool revert_fatal = m_conf->REVERT_FATAL.Get() > 0.0;
   const bool revert_neg = m_conf->REVERT_DETRIMENTAL.Get() > 0.0;
   const bool revert_neut = m_conf->REVERT_NEUTRAL.Get() > 0.0;

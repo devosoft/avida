@@ -69,7 +69,6 @@
 		70486BA00826722F009328F0 /* analyze.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3114B0762539E008F7A48 /* analyze.cfg */; };
 		70486BA10826722F009328F0 /* environment.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311800762539F008F7A48 /* environment.cfg */; };
 		70486BA20826722F009328F0 /* events.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311810762539F008F7A48 /* events.cfg */; };
-		70486BA30826722F009328F0 /* genesis in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311820762539F008F7A48 /* genesis */; };
 		70486BA40826722F009328F0 /* genesis.4stack in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311830762539F008F7A48 /* genesis.4stack */; };
 		70486BA50826722F009328F0 /* inst_set.4stack in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311840762539F008F7A48 /* inst_set.4stack */; };
 		70486BA60826722F009328F0 /* inst_set.default in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311850762539F008F7A48 /* inst_set.default */; };
@@ -342,7 +341,6 @@
 				70486BA00826722F009328F0 /* analyze.cfg in CopyFiles */,
 				70486BA10826722F009328F0 /* environment.cfg in CopyFiles */,
 				70486BA20826722F009328F0 /* events.cfg in CopyFiles */,
-				70486BA30826722F009328F0 /* genesis in CopyFiles */,
 				70486BA40826722F009328F0 /* genesis.4stack in CopyFiles */,
 				70486BA50826722F009328F0 /* inst_set.4stack in CopyFiles */,
 				70486BA60826722F009328F0 /* inst_set.default in CopyFiles */,

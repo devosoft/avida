@@ -206,8 +206,8 @@ cPopulation::cPopulation(cWorld* world)
   
   // Load a saved population if one is provided.
   cString fname(m_world->GetConfig().POPULATION_FILE.Get());
-  if (fname != "-" || fname != "") {
-    cout << "Loading Population from " <<  fname() << endl;
+  if (fname != "-" && fname != "") {
+    cout << "Loading Population: " <<  fname << endl;
     
     // If last three chars of filename are ".gz" , gunzip it first
     if (fname.Find(".gz") == fname.GetSize() - 3) {

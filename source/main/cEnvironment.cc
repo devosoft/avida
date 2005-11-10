@@ -563,8 +563,7 @@ bool cEnvironment::LoadSetActive(cString desc)
   } else if (item_type == "") {
     cerr << "Format: SET_ACTIVE <type> <name> <new_status=true>" << endl;
   } else {
-    cerr << "Error: Cannot deactivate items of type "
-	 << item_type << endl;
+    cerr << "Error: Cannot deactivate items of type " << item_type << endl;
     return false;
   }
 
@@ -616,13 +615,10 @@ bool cEnvironment::Load(const cString & filename)
   for (int i = 0; i < reaction_lib.GetSize(); i++) {
     if (reaction_lib.GetReaction(i)->GetTask() == NULL) {
       cerr << "Error: Pre-declared reaction '"
-	   << reaction_lib.GetReaction(i)->GetName()
-	   << "' never defined." << endl;
+        << reaction_lib.GetReaction(i)->GetName() << "' never defined." << endl;
       return false;
     }
   }
-
-  cerr << "--- FINISHED ENVIRONMENT SETUP---" << endl;
 
   return true;
 }

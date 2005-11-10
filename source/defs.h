@@ -30,13 +30,12 @@ FIXME:  remove asap, switching to file-configureable option
 // #define VIEW_ANSI
 
 
-// -= Speedups =-     (define these to allow features to be turned on)
-
 // #define BREAKPOINTS
 // #define QUICK_BASE_TEST_CPU
 // #define QUICK_HEAD_TEST_CPU
 #define INSTRUCTION_COSTS
 #define INSTRUCTION_COUNT
+// #define SMT_FULLY_ASSOCIATIVE
 
 // -= Toggles =-      (define these to actually turn features on)
 
