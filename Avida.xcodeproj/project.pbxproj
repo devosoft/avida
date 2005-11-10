@@ -12,8 +12,7 @@
 		700E2B6F085DE50C00CF158A /* analyze.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3114B0762539E008F7A48 /* analyze.cfg */; };
 		700E2B70085DE50C00CF158A /* environment.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311800762539F008F7A48 /* environment.cfg */; };
 		700E2B71085DE50C00CF158A /* events.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311810762539F008F7A48 /* events.cfg */; };
-		700E2B72085DE50C00CF158A /* genesis in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311820762539F008F7A48 /* genesis */; };
-		700E2B73085DE50C00CF158A /* genesis.4stack in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311830762539F008F7A48 /* genesis.4stack */; };
+		700E2B73085DE50C00CF158A /* avida-4stack.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311830762539F008F7A48 /* avida-4stack.cfg */; };
 		700E2B74085DE50C00CF158A /* inst_set.4stack in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311840762539F008F7A48 /* inst_set.4stack */; };
 		700E2B75085DE50C00CF158A /* inst_set.default in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311850762539F008F7A48 /* inst_set.default */; };
 		700E2B76085DE50C00CF158A /* organism.default in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311890762539F008F7A48 /* organism.default */; };
@@ -69,7 +68,7 @@
 		70486BA00826722F009328F0 /* analyze.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3114B0762539E008F7A48 /* analyze.cfg */; };
 		70486BA10826722F009328F0 /* environment.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311800762539F008F7A48 /* environment.cfg */; };
 		70486BA20826722F009328F0 /* events.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311810762539F008F7A48 /* events.cfg */; };
-		70486BA40826722F009328F0 /* genesis.4stack in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311830762539F008F7A48 /* genesis.4stack */; };
+		70486BA40826722F009328F0 /* avida-4stack.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311830762539F008F7A48 /* avida-4stack.cfg */; };
 		70486BA50826722F009328F0 /* inst_set.4stack in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311840762539F008F7A48 /* inst_set.4stack */; };
 		70486BA60826722F009328F0 /* inst_set.default in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311850762539F008F7A48 /* inst_set.default */; };
 		70486BA70826722F009328F0 /* organism.default in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311890762539F008F7A48 /* organism.default */; };
@@ -315,8 +314,7 @@
 				700E2B6F085DE50C00CF158A /* analyze.cfg in CopyFiles */,
 				700E2B70085DE50C00CF158A /* environment.cfg in CopyFiles */,
 				700E2B71085DE50C00CF158A /* events.cfg in CopyFiles */,
-				700E2B72085DE50C00CF158A /* genesis in CopyFiles */,
-				700E2B73085DE50C00CF158A /* genesis.4stack in CopyFiles */,
+				700E2B73085DE50C00CF158A /* avida-4stack.cfg in CopyFiles */,
 				700E2B74085DE50C00CF158A /* inst_set.4stack in CopyFiles */,
 				700E2B75085DE50C00CF158A /* inst_set.default in CopyFiles */,
 				700E2B76085DE50C00CF158A /* organism.default in CopyFiles */,
@@ -341,7 +339,7 @@
 				70486BA00826722F009328F0 /* analyze.cfg in CopyFiles */,
 				70486BA10826722F009328F0 /* environment.cfg in CopyFiles */,
 				70486BA20826722F009328F0 /* events.cfg in CopyFiles */,
-				70486BA40826722F009328F0 /* genesis.4stack in CopyFiles */,
+				70486BA40826722F009328F0 /* avida-4stack.cfg in CopyFiles */,
 				70486BA50826722F009328F0 /* inst_set.4stack in CopyFiles */,
 				70486BA60826722F009328F0 /* inst_set.default in CopyFiles */,
 				70486BA70826722F009328F0 /* organism.default in CopyFiles */,
@@ -723,8 +721,7 @@
 		DCC3117F0762539F008F7A48 /* organism.noheads */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.noheads; sourceTree = "<group>"; };
 		DCC311800762539F008F7A48 /* environment.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.cfg; sourceTree = "<group>"; };
 		DCC311810762539F008F7A48 /* events.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = events.cfg; sourceTree = "<group>"; };
-		DCC311820762539F008F7A48 /* genesis */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = genesis; sourceTree = "<group>"; };
-		DCC311830762539F008F7A48 /* genesis.4stack */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = genesis.4stack; sourceTree = "<group>"; };
+		DCC311830762539F008F7A48 /* avida-4stack.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = file; path = "avida-4stack.cfg"; sourceTree = "<group>"; };
 		DCC311840762539F008F7A48 /* inst_set.4stack */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.4stack; sourceTree = "<group>"; };
 		DCC311850762539F008F7A48 /* inst_set.default */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.default; sourceTree = "<group>"; };
 		DCC311860762539F008F7A48 /* inst_set.sex */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.sex; sourceTree = "<group>"; };
@@ -1324,8 +1321,7 @@
 				DCC3114D0762539E008F7A48 /* config */,
 				DCC311800762539F008F7A48 /* environment.cfg */,
 				DCC311810762539F008F7A48 /* events.cfg */,
-				DCC311820762539F008F7A48 /* genesis */,
-				DCC311830762539F008F7A48 /* genesis.4stack */,
+				DCC311830762539F008F7A48 /* avida-4stack.cfg */,
 				706D33100854A7D700D7DC8F /* genesis.smt */,
 				DCC311840762539F008F7A48 /* inst_set.4stack */,
 				DCC311850762539F008F7A48 /* inst_set.default */,
