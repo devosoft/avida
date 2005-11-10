@@ -75,7 +75,7 @@ namespace nCodeLabelTest {
   class cTestSaveState : public cTestCase {
   public: virtual void test() {
     cout << __PRETTY_FUNCTION__ << " is not implemented," << endl <<
-    "because void cCodeLabel::SaveState(ostream &) is not implemented."
+    "because void cCodeLabel::SaveState(ostream&) is not implemented."
     << endl;
   } };
   class cTestLoadState : public cTestCase {

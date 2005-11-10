@@ -429,7 +429,7 @@ bool cGenebank::AdjustGenotype(cGenotype & in_genotype)
   return true;
 }
 
-bool cGenebank::SaveClone(ofstream & fp)
+bool cGenebank::SaveClone(ofstream& fp)
 {
   // This method just save the counts at each size-class of genotypes.
   // The rest is reconstructable.
@@ -459,7 +459,7 @@ bool cGenebank::LoadClone(ifstream & fp)
   return true;
 }
 
-bool cGenebank::DumpTextSummary(ofstream & fp)
+bool cGenebank::DumpTextSummary(ofstream& fp)
 {
   genotype_control->Reset(0);
   for (int i = 0; i < genotype_control->GetSize(); i++) {
@@ -473,7 +473,7 @@ bool cGenebank::DumpTextSummary(ofstream & fp)
   return true;
 }
 
-bool cGenebank::PrintGenotypes(ofstream & fp, cString & data_fields,
+bool cGenebank::PrintGenotypes(ofstream& fp, cString & data_fields,
 			       int historic)
 {
   bool print_id = false;
@@ -628,7 +628,7 @@ bool cGenebank::PrintGenotypes(ofstream & fp, cString & data_fields,
   return true;
 }
 
-bool cGenebank::DumpDetailedSummary(ofstream & fp)
+bool cGenebank::DumpDetailedSummary(ofstream& fp)
 {
   genotype_control->Reset(0);
   DumpDetailHeading(fp);
@@ -640,7 +640,7 @@ bool cGenebank::DumpDetailedSummary(ofstream & fp)
   return true;
 }
 
-bool cGenebank::DumpHistoricSummary(ofstream & fp, int back_dist)
+bool cGenebank::DumpHistoricSummary(ofstream& fp, int back_dist)
 {
   // Calculate the update we should start printing from...
   int start_update = 0;
@@ -665,7 +665,7 @@ bool cGenebank::DumpHistoricSummary(ofstream & fp, int back_dist)
   return true;
 }
 
-bool cGenebank::DumpDetailedSexSummary(ofstream & fp)
+bool cGenebank::DumpDetailedSexSummary(ofstream& fp)
 {
   genotype_control->Reset(0);
   DumpDetailSexHeading(fp);
@@ -677,7 +677,7 @@ bool cGenebank::DumpDetailedSexSummary(ofstream & fp)
   return true;
 }
 
-bool cGenebank::DumpHistoricSexSummary(ofstream & fp)
+bool cGenebank::DumpHistoricSexSummary(ofstream& fp)
 {
   genotype_control->ResetHistoric(0);
   DumpDetailSexHeading(fp);
@@ -689,7 +689,7 @@ bool cGenebank::DumpHistoricSexSummary(ofstream & fp)
   return true;
 }
 
-void cGenebank::DumpDetailHeading (ofstream & fp)
+void cGenebank::DumpDetailHeading (ofstream& fp)
 {
   fp << "#filetype genotype_data" << endl
      << "#format id parent_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence" << endl
@@ -709,7 +709,7 @@ void cGenebank::DumpDetailHeading (ofstream & fp)
      << "# 13: genome of organism" << endl << endl;
 }
 
-void cGenebank::DumpDetailSexHeading (ofstream & fp)
+void cGenebank::DumpDetailSexHeading (ofstream& fp)
 {
   fp << "#filetype genotype_data" << endl
      << "#format id parent_id parent2_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence" << endl
@@ -730,7 +730,7 @@ void cGenebank::DumpDetailSexHeading (ofstream & fp)
      << "# 14: genome of organism" << endl << endl;
 }
 
-void cGenebank::DumpDetailedEntry(cGenotype * genotype, ofstream & fp)
+void cGenebank::DumpDetailedEntry(cGenotype * genotype, ofstream& fp)
 {
   fp << genotype->GetID() << " "                //  1
      << genotype->GetParentID() << " "          //  2
@@ -749,7 +749,7 @@ void cGenebank::DumpDetailedEntry(cGenotype * genotype, ofstream & fp)
      << endl;
 }
 
-void cGenebank::DumpDetailedSexEntry(cGenotype * genotype, ofstream & fp)
+void cGenebank::DumpDetailedSexEntry(cGenotype * genotype, ofstream& fp)
 {
   fp << genotype->GetID() << " "                //  1
      << genotype->GetAncestorID(0) << " "       //  2

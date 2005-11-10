@@ -137,11 +137,11 @@ public:
    **/
   void SyncEvent(cEventListEntry *event);
 
-  void PrintEventList(std::ostream & os = std::cout);
+  void PrintEventList(std::ostream& os = std::cout);
 
   // kaben changed this member function to static for easy access by
   // cEventListIterator.
-  static void PrintEvent(cEventListEntry * event, std::ostream & os = std::cout);
+  static void PrintEvent(cEventListEntry * event, std::ostream& os = std::cout);
 };
 
 #endif

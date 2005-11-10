@@ -82,7 +82,7 @@ public:
    *
    * @return The output stream corresponding to the file.
    **/
-  std::ofstream & GetOFStream() { return m_fp; }
+  std::ofstream& GetOFStream() { return m_fp; }
 
   /**
    * Outputs a value into the data file.

@@ -605,7 +605,7 @@ bool cHardwareCPU::OK()
   return result;
 }
 
-void cHardwareCPU::PrintStatus(ostream & fp)
+void cHardwareCPU::PrintStatus(ostream& fp)
 {
   fp << organism->GetPhenotype().GetTimeUsed() << " "
      << "IP:" << IP().GetPosition() << "    "
@@ -1321,7 +1321,7 @@ bool cHardwareCPU::KillThread()
 }
 
 
-void cHardwareCPU::SaveState(ostream & fp)
+void cHardwareCPU::SaveState(ostream& fp)
 {
   // note, memory & child_memory handled by cpu (@CAO Not any more!)
   assert(fp.good());

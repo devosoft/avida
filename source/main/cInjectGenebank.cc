@@ -202,7 +202,7 @@ bool cInjectGenebank::AdjustInjectGenotype(cInjectGenotype & in_inject_genotype)
   return true;
 }
 
-bool cInjectGenebank::SaveClone(ofstream & fp)
+bool cInjectGenebank::SaveClone(ofstream& fp)
 {
   // This method just save the counts at each size-class of genotypes.
   // The rest is reconstructable.
@@ -232,7 +232,7 @@ bool cInjectGenebank::LoadClone(ifstream & fp)
   return true;
 }
 
-bool cInjectGenebank::DumpTextSummary(ofstream & fp)
+bool cInjectGenebank::DumpTextSummary(ofstream& fp)
 {
   inject_genotype_control->Reset(0);
   for (int i = 0; i < inject_genotype_control->GetSize(); i++) {
@@ -256,7 +256,7 @@ bool cInjectGenebank::DumpDetailedSummary(const cString & file, int update)
   return true;
 }
 
-/*bool cInjectGenebank::DumpHistoricSummary(ofstream & fp)
+/*bool cInjectGenebank::DumpHistoricSummary(ofstream& fp)
 {
   inject_genotype_control->ResetHistoric(0);
   for (int i = 0; i < inject_genotype_control->GetHistoricCount(); i++) {

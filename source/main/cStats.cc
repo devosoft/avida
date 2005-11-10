@@ -82,6 +82,7 @@ cStats::cStats(cWorld* world)
   , tot_thresh_species(0)
   , tot_lineages(0)
   , tot_executed(0)
+  , last_update(0)
 {
   task_cur_count.Resize( m_world->GetNumTasks() );
   task_last_count.Resize( m_world->GetNumTasks() );
@@ -340,8 +341,6 @@ void cStats::AddLineage()
 
 void cStats::ProcessUpdate()
 {
-  static int last_update = 0;
-
   // Increment the "avida_time"
   if (sum_merit.Count() > 0 && sum_merit.Average() > 0) {
     double delta = ((double)(current_update-last_update))/sum_merit.Average();
@@ -440,7 +439,7 @@ void cStats::PrintAverageData(const cString & filename)
 
 void cStats::PrintErrorData(const cString & filename)
 {
-  ofstream & fp = m_world->GetDataFileOFStream(filename);
+  ofstream& fp = m_world->GetDataFileOFStream(filename);
   assert(fp.good());
   fp<< GetUpdate()                          << " "  // 1
     << sum_merit.StdError()                 << " "  // 2
@@ -462,7 +461,7 @@ void cStats::PrintErrorData(const cString & filename)
 
 void cStats::PrintVarianceData(const cString & filename)
 {
-  ofstream & fp = m_world->GetDataFileOFStream(filename);
+  ofstream& fp = m_world->GetDataFileOFStream(filename);
   assert(fp.good());
   fp<<GetUpdate()                           << " "  // 1
     << sum_merit.Variance()                 << " "  // 2
@@ -579,7 +578,7 @@ void cStats::PrintCountData(const cString & filename)
 
 void cStats::PrintTotalsData(const cString & filename)
 {
-  ofstream & fp = m_world->GetDataFileOFStream(filename);
+  ofstream& fp = m_world->GetDataFileOFStream(filename);
   assert(fp.good());
   fp << GetUpdate()                  << " " // 1
      << (tot_executed+num_executed)  << " " // 2
@@ -706,7 +705,7 @@ void cStats::PrintTimeData(const cString & filename)
 
 void cStats::PrintMutationData(const cString & filename)
 {
-  ofstream & fp = m_world->GetDataFileOFStream(filename);
+  ofstream& fp = m_world->GetDataFileOFStream(filename);
   assert(fp.good());
   fp << GetUpdate()                              << " "   //  1
      << isum_parent_dist.Ave()                   << " "   //  2

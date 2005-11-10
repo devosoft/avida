@@ -74,7 +74,7 @@ int cCodeLabel::FindSublabel(cCodeLabel & sub_label)
   return -1;
 }
 
-void cCodeLabel::SaveState(ostream & fp)
+void cCodeLabel::SaveState(ostream& fp)
 {
 //   assert(fp.good());
 //   fp<<"cCodeLabel"<<" ";

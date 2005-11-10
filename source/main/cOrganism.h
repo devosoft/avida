@@ -102,7 +102,7 @@ protected:
   static int instance_count;
 
 public:
-  void PrintStatus(std::ostream & fp, const cString & next_name);
+  void PrintStatus(std::ostream& fp, const cString & next_name);
 
   // Divide functions
   bool Divide_CheckViable();
@@ -216,7 +216,7 @@ public:
   const cPhenotype & GetPhenotype() const { return phenotype; }
   cPhenotype & GetPhenotype() { return phenotype; }
 
-  void SaveState(std::ofstream & fp);
+  void SaveState(std::ofstream& fp);
   void LoadState(std::ifstream & fp);
 
   // --------  DEBUG ---------

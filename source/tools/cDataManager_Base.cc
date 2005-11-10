@@ -53,7 +53,7 @@ bool cDataManager_Base::PrintRow(cDataFile& data_file, cString row_entries, char
   }
   
   
-  ofstream & fp = data_file.GetOFStream();
+  ofstream& fp = data_file.GetOFStream();
   while (row_entries.GetSize() > 0) {
     cString cur_entry( row_entries.Pop(sep) );
     if ( Print(cur_entry, fp) == false ) {

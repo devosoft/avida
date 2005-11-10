@@ -40,10 +40,10 @@ public:
     { return data_entry->GetHtmlCellFlags(); }
 
   void SetTarget(T * _target) { data_entry->SetTarget(_target); }
-  bool Print(std::ostream & fp) const { return data_entry->Print(fp); }
+  bool Print(std::ostream& fp) const { return data_entry->Print(fp); }
   int Compare(T * other) const { return data_entry->Compare(other); }
   bool SetValue(const cString & value) { return data_entry->Set(value); }
-  void HTMLPrint(std::ostream & fp, int compare=0, bool print_text=true)
+  void HTMLPrint(std::ostream& fp, int compare=0, bool print_text=true)
     { data_entry->HTMLPrint(fp, compare, print_text); }
 };
 

@@ -157,9 +157,9 @@ public:
 		  tList<tBuffer<int> > & other_outputs);
 
   // State saving and loading, and printing...
-  bool SaveState(std::ofstream & fp);
+  bool SaveState(std::ofstream& fp);
   bool LoadState(std::ifstream & fp);
-  void PrintStatus(std::ostream & fp);
+  void PrintStatus(std::ostream& fp);
 
   // Some useful methods...
   int CalcSizeMerit() const;

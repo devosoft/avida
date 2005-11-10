@@ -51,7 +51,7 @@ public:
   ~cTestCPU() { ; }
   
   bool TestGenome(cCPUTestInfo & test_info, const cGenome & genome);
-  bool TestGenome(cCPUTestInfo & test_info, const cGenome & genome, std::ofstream & out_fp);
+  bool TestGenome(cCPUTestInfo & test_info, const cGenome & genome, std::ofstream& out_fp);
 
   void TestThreads(const cGenome & genome);
   void PrintThreads(const cGenome & genome);

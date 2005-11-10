@@ -102,7 +102,7 @@ void cInitFile::Save(const cString & in_filename)
   cString save_filename(GetFilename());
   if (in_filename != "") save_filename = in_filename;
   
-  ofstream fp_save(save_filename());
+  ofstream fp_save(save_filename);
 
   // Go through the lines saving them...
   for (int i = 0; i < line_array.GetSize(); i++) {

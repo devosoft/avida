@@ -30,11 +30,11 @@ public:
   
   void SetTarget(T * _target) { target = _target; }
 
-  virtual bool Print(std::ostream & fp) const { (void) fp;  return false; }
+  virtual bool Print(std::ostream& fp) const { (void) fp;  return false; }
   virtual int Compare(T * other) const { (void) other; return 0; }
   virtual bool Set(const cString & value) { (void) value; return false; }
 
-  void HTMLPrint(std::ostream & fp, int compare=0, bool print_text=true) {
+  void HTMLPrint(std::ostream& fp, int compare=0, bool print_text=true) {
     fp << "<td " << GetHtmlCellFlags() << " ";
     if (compare == -2) {
       fp << "bgcolor=\"#FF0000\">";

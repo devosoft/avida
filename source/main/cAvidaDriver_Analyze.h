@@ -22,7 +22,8 @@ protected:
   cWorld* m_world;
 public:
   cAvidaDriver_Analyze(cWorld* world, bool _interactive=false);
-  virtual ~cAvidaDriver_Analyze();
+  ~cAvidaDriver_Analyze() { delete m_world; }
+  
   virtual void Run();
 };
 

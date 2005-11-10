@@ -101,17 +101,17 @@ private:
   int BatchUtil_GetMaxLength(int batch_id=-1);
 
   // Comamnd helpers...
-  void CommandDetail_Header(std::ostream & fp, int format_type,
+  void CommandDetail_Header(std::ostream& fp, int format_type,
             tListIterator< tDataEntryCommand<cAnalyzeGenotype> > & output_it,
             int time_step=-1);
-  void CommandDetail_Body(std::ostream & fp, int format_type,
+  void CommandDetail_Body(std::ostream& fp, int format_type,
             tListIterator< tDataEntryCommand<cAnalyzeGenotype> > & output_it,
             int time_step=-1, int max_time=1);
-  void CommandDetailAverage_Body(std::ostream & fp, int num_arguments,
+  void CommandDetailAverage_Body(std::ostream& fp, int num_arguments,
             tListIterator< tDataEntryCommand<cAnalyzeGenotype> > & output_it);
-  void CommandHistogram_Header(std::ostream & fp, int format_type,
+  void CommandHistogram_Header(std::ostream& fp, int format_type,
             tListIterator< tDataEntryCommand<cAnalyzeGenotype> > & output_it);
-  void CommandHistogram_Body(std::ostream & fp, int format_type,
+  void CommandHistogram_Body(std::ostream& fp, int format_type,
             tListIterator< tDataEntryCommand<cAnalyzeGenotype> > & output_it);
 
 private:

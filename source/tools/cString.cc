@@ -633,7 +633,7 @@ istream & operator >> (istream & in, cString & string)
   return in;
 }
 
-ostream & operator << (ostream & out, const cString & string)
+ostream& operator << (ostream& out, const cString & string)
 {
   out << string.GetData();
   return out;

@@ -60,7 +60,7 @@ void cHardwareSMT_Thread::Reset(cHardwareBase * in_hardware, int _id)
   owner = NULL;
 }
 
-void cHardwareSMT_Thread::SaveState(ostream & fp){
+void cHardwareSMT_Thread::SaveState(ostream& fp){
   assert(fp.good());
   fp << "cHardwareSMT_Thread" << endl;
 	

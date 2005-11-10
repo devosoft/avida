@@ -7,9 +7,7 @@
 
 #include "cMerit.h"
 
-
 using namespace std;
-
 
 void cMerit::UpdateValue(double in_value){
   const int max_bits = sizeof(unsigned int)*8;
@@ -28,7 +26,6 @@ void cMerit::UpdateValue(double in_value){
       //cout<<"  mult["<<i<<"] = "<<mult[i]<<endl;
     }
   }
-
 
   value = in_value;
 
@@ -49,7 +46,7 @@ void cMerit::UpdateValue(double in_value){
 }
 
 
-ostream & cMerit::BinaryPrint(ostream & os) const {
+ostream& cMerit::BinaryPrint(ostream& os) const {
   for( int i=GetNumBits()-1; i>=0; --i ){
     os<<GetBit(i);
   }
@@ -82,7 +79,7 @@ bool cMerit::OK() const {
 
 
 
-ostream & operator<<(ostream & os, const cMerit & merit){
+ostream& operator<<(ostream& os, const cMerit & merit){
   os<<merit.GetDouble();
   return os;
 }

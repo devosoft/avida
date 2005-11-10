@@ -52,7 +52,7 @@ public:
     return true;
   }
 
-  bool Print(const cString & name, std::ostream & fp) {
+  bool Print(const cString & name, std::ostream& fp) {
     tDataEntryBase<T> * cur_entry = NULL;
     if (entry_dict.Find(name, cur_entry) == false) return false;
     cur_entry->Print(fp);

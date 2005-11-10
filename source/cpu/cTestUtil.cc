@@ -8,6 +8,7 @@
 #include "cTestUtil.h"
 
 #include "cCPUTestInfo.h"
+#include "cDataFileManager.h"
 #include "cEnvironment.h"
 #include "cGenome.h"
 #include "cGenotype.h"
@@ -39,13 +40,11 @@ void cTestUtil::PrintGenome(cWorld* world, const cGenome & genome, cString filen
   world->GetTestCPU().TestGenome(test_info, genome);
 
   // Open the file...
-
-  ofstream fp(filename());
+  ofstream& fp = world->GetDataFileOFStream(filename);
 
   // @CAO Fix!!!!!!
   if( fp.good() == false ) {
-    cerr << "Unable to open output file '" <<  filename() << "'" <<
-    endl;
+    cerr << "Unable to open output file '" <<  filename() << "'" << endl;
     return;
   }
 
@@ -53,12 +52,10 @@ void cTestUtil::PrintGenome(cWorld* world, const cGenome & genome, cString filen
 
   fp << "# Filename........: " << filename << endl;
 
-  if (update_out >= 0) fp << "# Update Output...: " << update_out <<
-  endl;
+  if (update_out >= 0) fp << "# Update Output...: " << update_out << endl;
   else fp << "# Update Output...: N/A" << endl;
 
-  fp << "# Is Viable.......: " << test_info.IsViable()
-  << endl
+  fp << "# Is Viable.......: " << test_info.IsViable() << endl
      << "# Repro Cycle Size: " << test_info.GetMaxCycle()
      << endl
      << "# Depth to Viable.: " << test_info.GetDepthFound()
@@ -128,6 +125,8 @@ void cTestUtil::PrintGenome(cWorld* world, const cGenome & genome, cString filen
   const cInstSet & inst_set =
     test_info.GetTestOrganism()->GetHardware().GetInstSet();
   cInstUtil::SaveGenome(fp, inst_set, genome);
+  
+  world->GetDataFileManager().Remove(filename);
 }
 
 void cTestUtil::PrintGenome(cWorld* world, cInjectGenotype * inject_genotype, 
@@ -141,8 +140,7 @@ void cTestUtil::PrintGenome(cWorld* world, cInjectGenotype * inject_genotype,
   world->GetTestCPU().TestGenome(test_info, genome);
 
   // Open the file...
-
-  ofstream fp(filename());
+  ofstream& fp = world->GetDataFileOFStream(filename);
 
   // @CAO Fix!!!!!!
   if( fp.good() == false ) {
@@ -230,4 +228,6 @@ void cTestUtil::PrintGenome(cWorld* world, cInjectGenotype * inject_genotype,
   const cInstSet & inst_set =
     test_info.GetTestOrganism()->GetHardware().GetInstSet();
   cInstUtil::SaveGenome(fp, inst_set, genome);
+  
+  world->GetDataFileManager().Remove(filename);
 }

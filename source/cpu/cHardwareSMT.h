@@ -110,7 +110,7 @@ public:
 	
   // --------  Helper methods  --------
   bool OK();
-  void PrintStatus(std::ostream & fp);
+  void PrintStatus(std::ostream& fp);
 	
 	
   // --------  Stack Manipulation...  --------
@@ -232,7 +232,7 @@ public:
 	
   void ReadInst(const int in_inst);
 	
-  void SaveState(std::ostream & fp);
+  void SaveState(std::ostream& fp);
   void LoadState(std::istream & fp);
 		
 private:

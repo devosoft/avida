@@ -10,7 +10,7 @@
 #endif
 
 
-std::ostream & operator << (std::ostream & out, cDataEntry & entry)
+std::ostream& operator << (std::ostream& out, cDataEntry & entry)
 {
   entry.Print(out);
   return out;

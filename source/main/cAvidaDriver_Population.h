@@ -24,7 +24,7 @@ class cAvidaDriver_Population : public cAvidaDriver_Base {
 protected:
   cWorld* m_world;
 
-public:
+public:  
   cWorld& GetWorld() { return *m_world; }
 
   /**

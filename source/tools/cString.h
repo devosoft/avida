@@ -564,7 +564,7 @@ protected:
 
 // iostream input
 std::istream & operator >> (std::istream & in, cString & string);
-std::ostream & operator << (std::ostream & out, const cString & string);
+std::ostream& operator << (std::ostream& out, const cString & string);
 
 // }}}
 

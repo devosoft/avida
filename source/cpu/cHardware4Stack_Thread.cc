@@ -60,7 +60,7 @@ void cHardware4Stack_Thread::Reset(cHardwareBase * in_hardware, int _id)
   owner = NULL;
 }
 
-void cHardware4Stack_Thread::SaveState(ostream & fp){
+void cHardware4Stack_Thread::SaveState(ostream& fp){
   assert(fp.good());
   fp << "cHardware4Stack_Thread" << endl;
 

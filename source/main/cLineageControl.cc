@@ -312,7 +312,7 @@ cLineageControl::FindLineage( int lineage_id ) const
 
 void cLineageControl::PrintLineageTotals(const cString &filename, bool verbose)
 {
-  ofstream & fp = m_world->GetDataFileOFStream(filename);
+  ofstream& fp = m_world->GetDataFileOFStream(filename);
   assert(fp.good());
 
   fp << m_stats.GetUpdate();
@@ -371,7 +371,7 @@ void cLineageControl::PrintLineageTotals(const cString &filename, bool verbose)
 
 void cLineageControl::PrintLineageCurCounts(const cString & filename)
 {
-  ofstream & fp = m_world->GetDataFileOFStream(filename);
+  ofstream& fp = m_world->GetDataFileOFStream(filename);
   assert(fp.good());
 
   fp << m_stats.GetUpdate() << " ";

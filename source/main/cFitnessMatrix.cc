@@ -347,7 +347,7 @@ void cFitnessMatrix::MatrixVectorMultiply(const vector<double> &vect, vector<dou
 
 }
 
-void cFitnessMatrix::PrintGenotypes(ostream &fp)
+void cFitnessMatrix::PrintGenotypes(ostream& fp)
 {
   int totNumDead=0, totNumBelowThresh=0, totNumOK=0;
   int totNumNew=0, totNumVisited=0, totDepth=0;
@@ -465,7 +465,7 @@ void cFitnessMatrix::PrintGenotypes(ostream &fp)
 
  */
 
-void cFitnessMatrix::PrintTransitionMatrix(ostream &fp, int hamDistThresh, double errorRate, double avg_fitness, bool printMatrix)
+void cFitnessMatrix::PrintTransitionMatrix(ostream& fp, int hamDistThresh, double errorRate, double avg_fitness, bool printMatrix)
 {
 
   fp << endl << endl;

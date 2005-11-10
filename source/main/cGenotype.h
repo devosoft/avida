@@ -95,7 +95,7 @@ public:
   cGenotype(cWorld* world, int in_update_born = 0, int in_id = -1);
   ~cGenotype();
 
-  bool SaveClone(std::ofstream & fp);
+  bool SaveClone(std::ofstream& fp);
   bool LoadClone(std::ifstream & fp);
   bool OK();
   void Mutate();

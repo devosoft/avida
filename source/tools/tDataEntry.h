@@ -41,7 +41,7 @@ public:
     : tDataEntryBase<T>(_name, _desc, _null, _html_cell), DataRetrieval(_funR),
       DataSet(_funS), DataCompare(_funC) { ; }
 
-  bool Print(std::ostream & fp) const {
+  bool Print(std::ostream& fp) const {
     if (this->target == NULL) return false;
     fp << (this->target->*DataRetrieval)();
     return true;

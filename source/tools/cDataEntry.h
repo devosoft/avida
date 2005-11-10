@@ -35,9 +35,9 @@ public:
   const cString & GetNull() const { return null_value; }
   const cString & GetHtmlCellFlags() const { return html_table_flags; }
 
-  virtual bool Print(std::ostream & fp) const { (void) fp;  return false; }
+  virtual bool Print(std::ostream& fp) const { (void) fp;  return false; }
 };
 
-std::ostream & operator << (std::ostream & out, cDataEntry & entry);
+std::ostream& operator << (std::ostream& out, cDataEntry & entry);
 
 #endif

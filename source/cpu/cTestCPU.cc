@@ -143,7 +143,7 @@ bool cTestCPU::TestGenome(cCPUTestInfo & test_info, const cGenome & genome)
 }
 
 bool cTestCPU::TestGenome(cCPUTestInfo & test_info, const cGenome & genome,
-		       ofstream & out_fp)
+		       ofstream& out_fp)
 {
   test_info.Clear();
   TestGenome_Body(test_info, genome, 0);
@@ -262,13 +262,9 @@ bool cTestCPU::TestGenome_Body(cCPUTestInfo & test_info,
 
 void cTestCPU::TestThreads(const cGenome & genome)
 {
-  static ofstream fp("threads.dat");
-
   cCPUTestInfo test_info;
   test_info.TestThreads();
   cTestCPU::TestGenome(test_info, genome);
-
-  fp << endl;
 }
 
 

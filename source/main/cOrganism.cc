@@ -227,7 +227,7 @@ bool cOrganism::GetSterilizeNeut() const { return m_world->GetConfig().STERILIZE
 bool cOrganism::GetSterilizePos()  const { return m_world->GetConfig().STERILIZE_BENEFICIAL.Get(); }
 
 
-void cOrganism::PrintStatus(ostream & fp, const cString & next_name)
+void cOrganism::PrintStatus(ostream& fp, const cString & next_name)
 {
   fp << "---------------------------" << endl;
   hardware->PrintStatus(fp);
@@ -305,7 +305,7 @@ void cOrganism::Fault(int fault_loc, int fault_type, cString fault_desc)
 
 
 //// Save and Load ////
-void cOrganism::SaveState(ofstream & fp)
+void cOrganism::SaveState(ofstream& fp)
 {
   assert(fp.good());
 

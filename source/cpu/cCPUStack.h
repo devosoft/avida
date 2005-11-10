@@ -40,7 +40,7 @@ public:
 
   bool OK();
 
-  void SaveState(std::ostream & fp);
+  void SaveState(std::ostream& fp);
   void LoadState(std::istream & fp);
 };
 

@@ -121,7 +121,7 @@ public:
   void SetSpecialArgs(const cStringList & _args) { special_args = _args; }
 
   void Recalculate(cAnalyzeGenotype * parent_genotype=NULL);
-  void PrintTasks(std::ofstream & fp, int min_task=0, int max_task=-1);
+  void PrintTasks(std::ofstream& fp, int min_task=0, int max_task=-1);
 
   // Set...
   void SetSequence(cString _sequence);

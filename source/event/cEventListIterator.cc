@@ -21,7 +21,7 @@ using namespace std;
 /////////////////
 
 void
-cEventListIterator::PrintEvent(ostream & os){
+cEventListIterator::PrintEvent(ostream& os){
   cEventList::PrintEvent(m_node, os);
 }
 

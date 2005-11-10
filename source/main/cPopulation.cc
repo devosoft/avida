@@ -1445,7 +1445,7 @@ void cPopulation::CalcUpdateStats()
 }
 
 
-bool cPopulation::SaveClone(ofstream & fp)
+bool cPopulation::SaveClone(ofstream& fp)
 {
   if (fp.good() == false) return false;
   
@@ -1678,7 +1678,7 @@ bool cPopulation::LoadDumpFile(cString filename, int update)
 }
 
 //// Save And Load Populations ////
-bool cPopulation::SavePopulation(ofstream & fp)
+bool cPopulation::SavePopulation(ofstream& fp)
 {
   if (fp.good() == false) return false;
   
@@ -1713,7 +1713,7 @@ bool cPopulation::LoadPopulation(ifstream & fp)
 }
 
 
-bool cPopulation::DumpMemorySummary(ofstream & fp)
+bool cPopulation::DumpMemorySummary(ofstream& fp)
 {
   if (fp.good() == false) return false;
   
@@ -2024,8 +2024,7 @@ void cPopulation::SerialTransfer(int transfer_size, bool ignore_deads)
 
 void cPopulation::ParasiteDebug()
 {
-  ofstream outfile;
-  outfile.open("debug.out", ofstream::app);
+  ofstream& outfile = m_world->GetDataFileOFStream("debug.out");
   outfile << m_world->GetStats().GetUpdate() << endl;
   int total=0;
   cInjectGenotype * temp;
@@ -2048,7 +2047,6 @@ void cPopulation::ParasiteDebug()
     }
   }
   outfile << total << endl;
-  outfile.close();
 }
 
 void cPopulation::PrintPhenotypeData(const cString & filename)
@@ -2070,10 +2068,8 @@ void cPopulation::PrintPhenotypeData(const cString & filename)
     }
     ids.insert(id);
   }
-  ofstream outfile;
-  outfile.open(filename, ofstream::app);
-  outfile << m_world->GetStats().GetUpdate() << "\t" << ids.size() << endl;
-  outfile.close();
+  m_world->GetDataFileOFStream(filename)
+    << m_world->GetStats().GetUpdate() << "\t" << ids.size() << endl;
 }
 
 void cPopulation::PrintPhenotypeStatus(const cString & filename)

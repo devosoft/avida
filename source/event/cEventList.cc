@@ -225,7 +225,7 @@ void cEventList::SyncEvent(cEventListEntry *entry){
 }
 
 
-void cEventList::PrintEventList( ostream & os ){
+void cEventList::PrintEventList( ostream& os ){
   cEventListEntry * entry = m_head;
   cEventListEntry * next_entry;
   while( entry != NULL ){
@@ -235,7 +235,7 @@ void cEventList::PrintEventList( ostream & os ){
   }
 }
 
-void cEventList::PrintEvent(cEventListEntry * entry, ostream & os){
+void cEventList::PrintEvent(cEventListEntry * entry, ostream& os){
   assert( entry != NULL );
   switch ( entry->GetTrigger() ){
     case cEventTriggers::UPDATE:

@@ -66,7 +66,7 @@ public:
     { return (total <= data.GetSize()) ? total : data.GetSize(); }
   int GetNum() const { return total - last_total; }
 
-  void SaveState(std::ostream & fp) {
+  void SaveState(std::ostream& fp) {
     assert(fp.good());
     fp << "tBuffer" << " ";
     fp << data.GetSize() << " ";

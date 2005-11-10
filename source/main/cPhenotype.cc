@@ -552,7 +552,7 @@ bool cPhenotype::TestOutput(tBuffer<int> & input_buf, tBuffer<int> &output_buf,
 ///// For Loading and Saving State: /////
 
 
-bool cPhenotype::SaveState(ofstream & fp)
+bool cPhenotype::SaveState(ofstream& fp)
 {
   assert(fp.good());
   fp << "cPhenotype" << endl;
@@ -699,7 +699,7 @@ bool cPhenotype::LoadState(ifstream & fp)
   return true;
 }
 
-void cPhenotype::PrintStatus(ostream & fp)
+void cPhenotype::PrintStatus(ostream& fp)
 {
   fp << "  MeritBase:"
      << CalcSizeMerit()

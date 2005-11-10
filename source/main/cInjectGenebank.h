@@ -69,15 +69,15 @@ public:
   void ThresholdInjectGenotype(cInjectGenotype & in_inject_genotype);
   bool AdjustInjectGenotype(cInjectGenotype & in_inject_genotype);
 
-  bool SaveClone(std::ofstream & fp);
+  bool SaveClone(std::ofstream& fp);
   bool LoadClone(std::ifstream & fp);
-  bool DumpTextSummary(std::ofstream & fp);
-  //bool DumpDetailedSummary(std::ofstream & fp);
+  bool DumpTextSummary(std::ofstream& fp);
+  //bool DumpDetailedSummary(std::ofstream& fp);
   bool DumpDetailedSummary(const cString & file, int update);
   /*
-  bool DumpHistoricSummary(std::ofstream & fp);
+  bool DumpHistoricSummary(std::ofstream& fp);
   */
-  //void DumpDetailedEntry(cInjectGenotype * inject_genotype, std::ofstream & fp);
+  //void DumpDetailedEntry(cInjectGenotype * inject_genotype, std::ofstream& fp);
   void DumpDetailedEntry(cInjectGenotype * inject_genotype, const cString & file, int update);
   bool OK();
 

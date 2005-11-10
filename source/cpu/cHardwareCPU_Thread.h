@@ -64,7 +64,7 @@ public:
   int GetID() const { return id; }
   void SetID(int _id) { id = _id; }
 
-  void SaveState(std::ostream & fp);
+  void SaveState(std::ostream& fp);
   void LoadState(std::istream & fp);
 };
 

@@ -107,7 +107,7 @@ public:
   const std::map<int, double, std::less<int> >& GetTransitionList() const;
   int HammingDistance(const cMxCodeArray &other_gene) const;
   double TransitionProbability(const cMxCodeArray &other_gene, double errorRate) const;
-  void PrintTransitionList(std::ostream &fp, int size) const;
+  void PrintTransitionList(std::ostream& fp, int size) const;
 };
 
 cInstruction & cMxCodeArray::operator[](int index)

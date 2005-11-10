@@ -24,9 +24,9 @@ private:
 public:
   // Generic test-CPU analysis
   static void TestGenome(cWorld* world, const cGenome & genome, cInstSet & inst_set,
-			 std::ofstream & fp, int update);
+			 std::ofstream& fp, int update);
 
-  static void TestInsSizeChangeRobustness(cWorld* world, std::ofstream & fp,
+  static void TestInsSizeChangeRobustness(cWorld* world, std::ofstream& fp,
                  const cInstSet & inst_set, const cGenome & in_genome,
                  int num_trials, int update);
 
@@ -44,7 +44,7 @@ public:
   // Population-wide analysis
   static void CalcConsensus(cWorld* world, int lines_saved);
 
-  static void AnalyzePopulation(cWorld* world, std::ofstream & fp,
+  static void AnalyzePopulation(cWorld* world, std::ofstream& fp,
 				double sample_prob=1, bool landscape=false,
 				bool save_genotype=false);
 
@@ -52,22 +52,22 @@ public:
     cString& histofn, cString& histo_testCPU_fn, bool save_max_f_genotype,
     bool print_fitness_histo, double hist_fmax, double hist_fstep);
 
-  static void PrintGeneticDistanceData(cWorld* world, std::ofstream & fp,
+  static void PrintGeneticDistanceData(cWorld* world, std::ofstream& fp,
 				const char *creature_name );
-  static void GeneticDistancePopDump(cWorld* world, std::ofstream & fp,
+  static void GeneticDistancePopDump(cWorld* world, std::ofstream& fp,
 		    const char * creature_name, bool save_creatures=false);
 
-  static void TaskSnapshot(cWorld* world, std::ofstream & fp);
-  static void TaskGrid(cWorld* world, std::ofstream & fp);
-  static void PrintViableTasksData(cWorld* world, std::ofstream &fp);
-  static void PrintTreeDepths(cPopulation * pop, std::ofstream & fp);
+  static void TaskSnapshot(cWorld* world, std::ofstream& fp);
+  static void TaskGrid(cWorld* world, std::ofstream& fp);
+  static void PrintViableTasksData(cWorld* world, std::ofstream& fp);
+  static void PrintTreeDepths(cPopulation * pop, std::ofstream& fp);
 
   static void PrintDepthHistogram(cWorld* world, std::ofstream& fp);
   static void PrintGenotypeAbundanceHistogram(cWorld* world, std::ofstream& fp);
   static void PrintSpeciesAbundanceHistogram(cWorld* world, std::ofstream& fp);
 
   // this adds support for evan dorn's InstructionHistogramEvent.  -- kgn
-  static void PrintInstructionAbundanceHistogram(cWorld* world, std::ofstream &fp);
+  static void PrintInstructionAbundanceHistogram(cWorld* world, std::ofstream& fp);
   // -- kgn
 };
 #endif

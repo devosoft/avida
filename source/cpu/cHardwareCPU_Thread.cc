@@ -64,7 +64,7 @@ void cHardwareCPU_Thread::Reset(cHardwareBase * in_hardware, int _id)
 
 
 
-void cHardwareCPU_Thread::SaveState(ostream & fp){
+void cHardwareCPU_Thread::SaveState(ostream& fp){
   assert(fp.good());
   fp << "cHardwareCPU_Thread" << endl;
 

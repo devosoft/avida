@@ -30,10 +30,6 @@ cAvidaDriver_Analyze::cAvidaDriver_Analyze(cWorld* world, bool _interactive)
 {
 }
 
-cAvidaDriver_Analyze::~cAvidaDriver_Analyze()
-{
-}
-
 void cAvidaDriver_Analyze::Run()
 {
   cout << "In analyze mode!!" << endl;

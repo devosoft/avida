@@ -60,7 +60,7 @@ public:
   int AsIntFib(const int base) const;
   int AsIntPolynomialCoefficent(const int base) const;
 
-  void SaveState(std::ostream & fp);
+  void SaveState(std::ostream& fp);
   void LoadState(std::istream & fp);
 };
 

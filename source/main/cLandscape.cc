@@ -224,7 +224,7 @@ void cLandscape::ProcessInsert()
 }
 
 // Prediction for a landscape where n sites are _randomized_.
-void cLandscape::PredictWProcess(ostream & fp, int update)
+void cLandscape::PredictWProcess(ostream& fp, int update)
 {
   distance = 1;
 
@@ -340,7 +340,7 @@ void cLandscape::PredictWProcess(ostream & fp, int update)
 
 
 // Prediction for a landscape where n sites are _mutated_.
-void cLandscape::PredictNuProcess(ostream & fp, int update)
+void cLandscape::PredictNuProcess(ostream& fp, int update)
 {
   distance = 1;
 
@@ -587,7 +587,7 @@ void cLandscape::BuildFitnessChart()
 
 }
 
-void cLandscape::TestPairs(int in_trials, ostream & fp)
+void cLandscape::TestPairs(int in_trials, ostream& fp)
 {
   trials = in_trials;
 
@@ -627,7 +627,7 @@ void cLandscape::TestPairs(int in_trials, ostream & fp)
 }
 
 
-void cLandscape::TestAllPairs(ostream & fp)
+void cLandscape::TestAllPairs(ostream& fp)
 {
   ProcessBase();
   if (base_fitness == 0.0) return;
@@ -660,14 +660,14 @@ void cLandscape::TestAllPairs(ostream & fp)
 }
 
 
-void cLandscape::HillClimb(ofstream & fp)
+void cLandscape::HillClimb(ofstream& fp)
 {
   cGenome cur_genome(base_genome);
   int gen = 0;
   HillClimb_Body(fp, cur_genome, gen);
 }
 
-void cLandscape::HillClimb_Body(ofstream & fp, cGenome & cur_genome,
+void cLandscape::HillClimb_Body(ofstream& fp, cGenome & cur_genome,
 				int & gen)
 {
   cCPUMemory mod_genome(base_genome);
@@ -719,15 +719,15 @@ void cLandscape::HillClimb_Body(ofstream & fp, cGenome & cur_genome,
   }
 }
 
-void cLandscape::HillClimb_Neut(ofstream & fp)
+void cLandscape::HillClimb_Neut(ofstream& fp)
 {
 }
 
-void cLandscape::HillClimb_Rand(ofstream & fp)
+void cLandscape::HillClimb_Rand(ofstream& fp)
 {
 }
 
-void cLandscape::HillClimb_Print(ofstream & fp, const cGenome & _genome, const int gen) const
+void cLandscape::HillClimb_Print(ofstream& fp, const cGenome & _genome, const int gen) const
 {
   cCPUTestInfo test_info;
   m_world->GetTestCPU().TestGenome(test_info, _genome);
@@ -745,7 +745,7 @@ void cLandscape::HillClimb_Print(ofstream & fp, const cGenome & _genome, const i
 }
 
 double cLandscape::TestMutPair(cGenome & mod_genome, int line1, int line2,
-    const cInstruction & mut1, const cInstruction & mut2, ostream & fp)
+    const cInstruction & mut1, const cInstruction & mut2, ostream& fp)
 {
   mod_genome[line1] = mut1;
   mod_genome[line2] = mut2;
@@ -788,7 +788,7 @@ double cLandscape::TestMutPair(cGenome & mod_genome, int line1, int line2,
 }
 
 
-void cLandscape::PrintStats(ofstream & fp, int update)
+void cLandscape::PrintStats(ofstream& fp, int update)
 {
   fp << update                 << " "   // 1
      << GetProbDead()          << " "   // 2
@@ -824,7 +824,7 @@ void cLandscape::PrintStats(ofstream & fp, int update)
   fp.flush();
 }
 
-void cLandscape::PrintEntropy(ofstream & fp)
+void cLandscape::PrintEntropy(ofstream& fp)
 {
   double max_ent = log((double) inst_set.GetSize());
   for (int j = 0; j < base_genome.GetSize(); j++) {
@@ -834,7 +834,7 @@ void cLandscape::PrintEntropy(ofstream & fp)
   fp.flush();
 }
 
-void cLandscape::PrintSiteCount(ofstream & fp)
+void cLandscape::PrintSiteCount(ofstream& fp)
 {
   for (int j = 0; j < base_genome.GetSize(); j++) {
     fp << site_count[j] << " ";

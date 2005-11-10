@@ -155,12 +155,12 @@ public:
   void SerialTransfer( int transfer_size, bool ignore_deads );
 
   // Saving and loading...
-  bool SaveClone(std::ofstream & fp);
+  bool SaveClone(std::ofstream& fp);
   bool LoadClone(std::ifstream & fp);
   bool LoadDumpFile(cString filename, int update);
-  bool SavePopulation(std::ofstream & fp);
+  bool SavePopulation(std::ofstream& fp);
   bool LoadPopulation(std::ifstream & fp);
-  bool DumpMemorySummary(std::ofstream & fp);
+  bool DumpMemorySummary(std::ofstream& fp);
 
   bool OK();
 

@@ -63,7 +63,7 @@ cGenotype::~cGenotype()
   prev = NULL;
 }
 
-bool cGenotype::SaveClone(ofstream & fp)
+bool cGenotype::SaveClone(ofstream& fp)
 {
   fp << id_num         << " ";
   fp << genome.GetSize() << " ";

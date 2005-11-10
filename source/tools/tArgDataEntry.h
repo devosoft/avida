@@ -33,7 +33,7 @@ public:
     : tDataEntryBase<T>(_name, _desc, _null, _html_cell),
       DataRetrieval(_funR), DataCompare(_funC), arg(_arg) { ; }
 
-  bool Print(std::ostream & fp) const {
+  bool Print(std::ostream& fp) const {
     if (this->target == NULL) return false;
     fp << (this->target->*DataRetrieval)(arg);
     return true;

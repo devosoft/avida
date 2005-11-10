@@ -43,6 +43,7 @@ private:
 
   cSpecies * next;
   cSpecies * prev;
+  
 public:
   cSpecies(cWorld* world, const cGenome & in_genome, int update);
   ~cSpecies();

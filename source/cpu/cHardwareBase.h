@@ -70,8 +70,8 @@ public:
 			   const cGenome & injection) = 0;
 
   // --------  Input and Output --------
-  virtual void PrintStatus(std::ostream & fp) = 0;
-  virtual void SaveState(std::ostream & fp) = 0;
+  virtual void PrintStatus(std::ostream& fp) = 0;
+  virtual void SaveState(std::ostream& fp) = 0;
   virtual void LoadState(std::istream & fp) = 0;
 
   void SetTrace(cHardwareTracer * tracer) { m_tracer = tracer; }

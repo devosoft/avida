@@ -88,12 +88,12 @@ private:
   void ProcessBase();
   void Process_Body(cGenome & cur_genome, int cur_distance, int start_line);
 
-  void HillClimb_Body(std::ofstream & fp, cGenome & cur_genome, int & gen);
-  void HillClimb_Print(std::ofstream & fp, const cGenome & _genome,
+  void HillClimb_Body(std::ofstream& fp, cGenome & cur_genome, int & gen);
+  void HillClimb_Print(std::ofstream& fp, const cGenome & _genome,
 		       const int gen) const;
 
   double TestMutPair(cGenome & mod_genome, int line1, int line2,
-    const cInstruction & mut1, const cInstruction & mut2, std::ostream & fp);
+    const cInstruction & mut1, const cInstruction & mut2, std::ostream& fp);
 private:
   // disabled copy constructor.
   cLandscape(const cLandscape &);
@@ -106,23 +106,23 @@ public:
   void Process(int in_distance=1);
   void ProcessDelete();
   void ProcessInsert();
-  void PredictWProcess(std::ostream & fp, int update=-1);
-  void PredictNuProcess(std::ostream & fp, int update=-1);
+  void PredictWProcess(std::ostream& fp, int update=-1);
+  void PredictNuProcess(std::ostream& fp, int update=-1);
 
   void SampleProcess(int in_trials);
   int RandomProcess(int in_trials, int in_distance=1, int min_found=0,
 		     int max_trials=0, bool print_if_found=false);
 
-  void TestPairs(int in_trials, std::ostream & fp);
-  void TestAllPairs(std::ostream & fp);
+  void TestPairs(int in_trials, std::ostream& fp);
+  void TestAllPairs(std::ostream& fp);
 
-  void HillClimb(std::ofstream & fp);
-  void HillClimb_Neut(std::ofstream & fp);
-  void HillClimb_Rand(std::ofstream & fp);
+  void HillClimb(std::ofstream& fp);
+  void HillClimb_Neut(std::ofstream& fp);
+  void HillClimb_Rand(std::ofstream& fp);
 
-  void PrintStats(std::ofstream & fp, int update=-1);
-  void PrintEntropy(std::ofstream & fp);
-  void PrintSiteCount(std::ofstream & fp);
+  void PrintStats(std::ofstream& fp, int update=-1);
+  void PrintEntropy(std::ofstream& fp);
+  void PrintSiteCount(std::ofstream& fp);
   void PrintBase(cString filename);
   void PrintPeak(cString filename);
 

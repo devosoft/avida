@@ -130,7 +130,7 @@ bool cPopulationCell::OK()
   return true;
 }
 
-bool cPopulationCell::SaveState(ofstream & fp)
+bool cPopulationCell::SaveState(ofstream& fp)
 {
   // Nothing for the moment...
   return false;

@@ -27,9 +27,9 @@ public:
 
   static cGenome LoadGenome(const cString &filename, const cInstSet &inst_set);
   static cGenome LoadInternalGenome(std::istream & fp, const cInstSet &inst_set);
-  static void SaveGenome(std::ostream &fp, const cInstSet & inst_set,
+  static void SaveGenome(std::ostream& fp, const cInstSet & inst_set,
 			 const cGenome &gen);
-  static void SaveInternalGenome(std::ostream &fp, const cInstSet &inst_set,
+  static void SaveInternalGenome(std::ostream& fp, const cInstSet &inst_set,
 				 const cGenome &gen);
 
   // ========= Genome Construction =========

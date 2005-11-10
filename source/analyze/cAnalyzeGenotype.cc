@@ -210,7 +210,7 @@ void cAnalyzeGenotype::Recalculate(cAnalyzeGenotype * parent_genotype)
 }
 
 
-void cAnalyzeGenotype::PrintTasks(ofstream & fp, int min_task, int max_task)
+void cAnalyzeGenotype::PrintTasks(ofstream& fp, int min_task, int max_task)
 {
   if (max_task == -1) max_task = task_counts.GetSize();
 

@@ -69,7 +69,7 @@ public:
 
   bool OK();
 
-  bool SaveState(std::ofstream & fp);
+  bool SaveState(std::ofstream& fp);
   bool LoadState(std::ifstream & fp);
 };
 

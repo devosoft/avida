@@ -49,7 +49,7 @@ cInjectGenotype::~cInjectGenotype()
   prev = NULL;
 }
 
-bool cInjectGenotype::SaveClone(ofstream & fp)
+bool cInjectGenotype::SaveClone(ofstream& fp)
 {
   fp << id_num         << " ";
   fp << genome.GetSize() << " ";

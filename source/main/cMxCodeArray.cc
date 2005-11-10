@@ -416,7 +416,7 @@ double cMxCodeArray::TransitionProbability(const cMxCodeArray &other_gene, doubl
   Used in testing the diagonalization.
 */
 
-void cMxCodeArray::PrintTransitionList(ostream &fp, int size) const
+void cMxCodeArray::PrintTransitionList(ostream& fp, int size) const
 {
 
   fp.setf(ios::fixed);

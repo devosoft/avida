@@ -76,18 +76,18 @@ public:
   void ThresholdGenotype(cGenotype & in_genotype);
   bool AdjustGenotype(cGenotype & in_genotype);
 
-  bool SaveClone(std::ofstream & fp);
+  bool SaveClone(std::ofstream& fp);
   bool LoadClone(std::ifstream & fp);
-  bool DumpTextSummary(std::ofstream & fp);
-  bool PrintGenotypes(std::ofstream & fp, cString & data_fields, int historic);
-  bool DumpDetailedSummary(std::ofstream & fp);
-  bool DumpDetailedSexSummary(std::ofstream & fp);
-  bool DumpHistoricSummary(std::ofstream & fp, int back_dist);
-  bool DumpHistoricSexSummary(std::ofstream & fp);
-  void DumpDetailHeading (std::ofstream & fp);
-  void DumpDetailSexHeading (std::ofstream & fp);
-  void DumpDetailedEntry(cGenotype * genotype, std::ofstream & fp);
-  void DumpDetailedSexEntry(cGenotype * genotype, std::ofstream & fp);
+  bool DumpTextSummary(std::ofstream& fp);
+  bool PrintGenotypes(std::ofstream& fp, cString & data_fields, int historic);
+  bool DumpDetailedSummary(std::ofstream& fp);
+  bool DumpDetailedSexSummary(std::ofstream& fp);
+  bool DumpHistoricSummary(std::ofstream& fp, int back_dist);
+  bool DumpHistoricSexSummary(std::ofstream& fp);
+  void DumpDetailHeading (std::ofstream& fp);
+  void DumpDetailSexHeading (std::ofstream& fp);
+  void DumpDetailedEntry(cGenotype * genotype, std::ofstream& fp);
+  void DumpDetailedSexEntry(cGenotype * genotype, std::ofstream& fp);
   bool OK();
 
   inline int GetSize() const { return genotype_control->GetSize(); }

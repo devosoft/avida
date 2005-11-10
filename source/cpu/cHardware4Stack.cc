@@ -492,7 +492,7 @@ bool cHardware4Stack::OK()
   return result;
 }
 
-void cHardware4Stack::PrintStatus(ostream & fp)
+void cHardware4Stack::PrintStatus(ostream& fp)
 {
   fp << organism->GetPhenotype().GetTimeUsed() << " "
      << "IP:(" << IP().GetMemSpace() << ", " << IP().GetPosition() << ")    "
@@ -1251,7 +1251,7 @@ bool cHardware4Stack::KillThread()
 }
 
 
-void cHardware4Stack::SaveState(ostream & fp)
+void cHardware4Stack::SaveState(ostream& fp)
 {
   // note, memory & child_memory handled by cpu (@CAO Not any more!)
   assert(fp.good());

@@ -82,7 +82,7 @@ cGenome cInstUtil::LoadInternalGenome(istream & fp, const cInstSet &inst_set)
   return new_genome;
 }
 
-void cInstUtil::SaveGenome(ostream & fp, const cInstSet & inst_set,
+void cInstUtil::SaveGenome(ostream& fp, const cInstSet & inst_set,
 			   const cGenome & gen)
 {
   for (int i = 0; i < gen.GetSize(); i++) {
@@ -90,7 +90,7 @@ void cInstUtil::SaveGenome(ostream & fp, const cInstSet & inst_set,
   }
 }
 
-void cInstUtil::SaveInternalGenome(ostream & fp, const cInstSet & inst_set,
+void cInstUtil::SaveInternalGenome(ostream& fp, const cInstSet & inst_set,
 				   const cGenome & gen)
 {
   fp << gen.GetSize() << endl;

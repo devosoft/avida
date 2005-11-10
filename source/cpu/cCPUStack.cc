@@ -52,7 +52,7 @@ bool cCPUStack::OK()
   return true;
 }
 
-void cCPUStack::SaveState(ostream & fp)
+void cCPUStack::SaveState(ostream& fp)
 {
   assert(fp.good());
   fp<<"cCPUStack"<<" ";

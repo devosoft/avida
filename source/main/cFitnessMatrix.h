@@ -100,7 +100,7 @@ private:
 
   /* Data Output */
 
-  void PrintGenotypes(std::ostream &fp);
+  void PrintGenotypes(std::ostream& fp);
   void PrintTransitionMatrix(std::ostream& fp, int hamDistThresh, double errorRate, double avg_fitness, bool printMatrix=false);
   void PrintHammingVector(std::ostream& fp,const std::vector<double>& dataVect, double errProb, double avgFit);
   void PrintFitnessVector(std::ostream& fp,const std::vector<double>& dataVect, double errProb, double avgFit, double maxFit, double step);

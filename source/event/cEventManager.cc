@@ -752,7 +752,7 @@ public:
   }
   ///// print_instruction_abundance_histogram /////
   void Process(){
-    ofstream & fp = m_world->GetDataFileOFStream(filename);
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
     cAnalyzeUtil::PrintInstructionAbundanceHistogram(m_world, fp);
   }
 };
@@ -779,7 +779,7 @@ public:
   }
   ///// print_depth_histogram /////
   void Process(){
-    ofstream & fp = m_world->GetDataFileOFStream(filename);
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
     cAnalyzeUtil::PrintDepthHistogram(m_world, fp);
   }
 };
@@ -811,7 +811,7 @@ public:
   }
   ///// print_genotype_abundance_histogram /////
   void Process(){
-    ofstream & fp = m_world->GetDataFileOFStream(filename);
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
     cAnalyzeUtil::PrintGenotypeAbundanceHistogram(m_world, fp);
   }
 };
@@ -843,7 +843,7 @@ public:
   }
   ///// print_species_abundance_histogram /////
   void Process(){
-    ofstream & fp = m_world->GetDataFileOFStream(filename);
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
     cAnalyzeUtil::PrintSpeciesAbundanceHistogram(m_world, fp);
   }
 };
@@ -872,13 +872,8 @@ public:
   }
   ///// print_lineage_totals /////
   void Process(){
-    static bool msg_printed = false;
     if (m_world->GetPopulation().GetLineageControl() == NULL) {
-      if ( msg_printed == false ){
-        ofstream & fp = m_world->GetDataFileOFStream(fname);
-        fp << "No lineage data available!" << endl;
-        msg_printed = true;
-      }
+      m_world->GetDataFileOFStream(fname) << "No lineage data available!" << endl;
       return;
     }
     m_world->GetPopulation().GetLineageControl()->PrintLineageTotals(fname, verbose);
@@ -909,13 +904,8 @@ public:
   }
   ///// print_lineage_counts /////
   void Process(){
-    static bool msg_printed = false;
     if (m_world->GetPopulation().GetLineageControl() == NULL) {
-      if ( msg_printed == false ){
-        ofstream & fp = m_world->GetDataFileOFStream(fname);
-        fp << "No lineage data available!" << endl;
-        msg_printed = true;
-      }
+      m_world->GetDataFileOFStream(fname) << "No lineage data available!" << endl;
       return;
     }
     if (verbose) {    // verbose mode is the same in both methods
@@ -1143,8 +1133,8 @@ public:
     if( fname == "" ){
       filename.Set("save_pop.%d", m_world->GetStats().GetUpdate());
     }
-    ofstream fp(filename());
-    m_world->GetPopulation().SavePopulation(fp);
+    m_world->GetPopulation().SavePopulation(m_world->GetDataFileOFStream(filename));
+    m_world->GetDataFileManager().Remove(filename);
   }
 };
 
@@ -1206,8 +1196,8 @@ public:
     if( fname == "" ){
       filename.Set("clone.%d", m_world->GetStats().GetUpdate());
     }
-    ofstream fp(filename());
-    m_world->GetPopulation().SaveClone(fp);
+    m_world->GetPopulation().SaveClone(m_world->GetDataFileOFStream(filename));
+    m_world->GetDataFileManager().Remove(filename);
   }
 };
 
@@ -1302,8 +1292,8 @@ public:
     if( fname == "" ){
       filename.Set("dump.%d", m_world->GetStats().GetUpdate());
     }
-    ofstream fp(filename());
-    m_world->GetPopulation().GetGenebank().DumpTextSummary(fp);
+    m_world->GetPopulation().GetGenebank().DumpTextSummary(m_world->GetDataFileOFStream(filename));
+    m_world->GetDataFileManager().Remove(filename);
   }
 };
 
@@ -1351,8 +1341,9 @@ public:
     if (filename == "") {
       filename.Set("genotypes-%d.dat", m_world->GetStats().GetUpdate());
     }
-    ofstream fp(filename());
-    m_world->GetPopulation().GetGenebank().PrintGenotypes(fp, data_fields, historic);
+    m_world->GetPopulation().GetGenebank().PrintGenotypes(m_world->GetDataFileOFStream(filename),
+                                                          data_fields, historic);
+    m_world->GetDataFileManager().Remove(filename);
   }
 };
 
@@ -1387,8 +1378,8 @@ public:
     if( fname == "" ){
       filename.Set("detail_pop.%d", m_world->GetStats().GetUpdate());
     }
-    ofstream fp(filename());
-    m_world->GetPopulation().GetGenebank().DumpDetailedSummary(fp);
+    m_world->GetPopulation().GetGenebank().DumpDetailedSummary(m_world->GetDataFileOFStream(filename));
+    m_world->GetDataFileManager().Remove(filename);
   }
 };
 
@@ -1424,8 +1415,8 @@ public:
     if( fname == "" ){
       filename.Set("detail_pop.%d", m_world->GetStats().GetUpdate());
     }
-    ofstream fp(filename());
-    m_world->GetPopulation().GetGenebank().DumpDetailedSexSummary(fp);
+    m_world->GetPopulation().GetGenebank().DumpDetailedSexSummary(m_world->GetDataFileOFStream(filename));
+    m_world->GetDataFileManager().Remove(filename);
   }
 };
 
@@ -1460,7 +1451,6 @@ public:
     if( fname == "" ){
       filename.Set("detail_parasite_pop.%d", m_world->GetStats().GetUpdate());
     }
-    //ofstream fp(filename());
     m_world->GetPopulation().GetInjectGenebank().DumpDetailedSummary(filename, m_world->GetStats().GetUpdate());
   }
 };
@@ -1504,8 +1494,8 @@ public:
     if( fname == "" ){
       filename.Set("historic_dump.%d", m_world->GetStats().GetUpdate());
     }
-    ofstream fp(filename());
-    m_world->GetPopulation().GetGenebank().DumpHistoricSummary(fp, back_dist);
+    m_world->GetPopulation().GetGenebank().DumpHistoricSummary(m_world->GetDataFileOFStream(filename), back_dist);
+    m_world->GetDataFileManager().Remove(filename);
   }
 };
 
@@ -1541,8 +1531,8 @@ public:
     if( fname == "" ){
       filename.Set("historic_dump.%d", m_world->GetStats().GetUpdate());
     }
-    ofstream fp(filename());
-    m_world->GetPopulation().GetGenebank().DumpHistoricSexSummary(fp);
+    m_world->GetPopulation().GetGenebank().DumpHistoricSexSummary(m_world->GetDataFileOFStream(filename));
+    m_world->GetDataFileManager().Remove(filename);
   }
 };
 
@@ -1573,8 +1563,8 @@ public:
     if (fname == "") {
       filename.Set("memory_dump.%d", m_world->GetStats().GetUpdate());
     }
-    ofstream fp(filename());
-    m_world->GetPopulation().DumpMemorySummary(fp);
+    m_world->GetPopulation().DumpMemorySummary(m_world->GetDataFileOFStream(filename));
+    m_world->GetDataFileManager().Remove(filename);
   }
 };
 
@@ -2289,8 +2279,7 @@ public:
   void Process(){
     cGenome & genome = m_world->GetPopulation().GetGenebank().GetBestGenotype()->GetGenome();
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
-    static ofstream fp(datafile);
-    landscape.PredictWProcess(fp);
+    landscape.PredictWProcess(m_world->GetDataFileOFStream(datafile));
   }
 };
 
@@ -2318,8 +2307,7 @@ public:
   void Process(){
     cGenome & genome = m_world->GetPopulation().GetGenebank().GetBestGenotype()->GetGenome();
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
-    static ofstream fp(datafile);
-    landscape.PredictNuProcess(fp);
+    landscape.PredictNuProcess(m_world->GetDataFileOFStream(datafile));
   }
 };
 
@@ -2349,8 +2337,7 @@ public:
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
     if (sample_size == 0) sample_size = m_world->GetHardwareManager().GetInstSet().GetSize() - 1;
     landscape.SampleProcess(sample_size);
-    static ofstream fp("land-sample.dat");
-    landscape.PrintStats(fp, m_world->GetStats().GetUpdate());
+    landscape.PrintStats(m_world->GetDataFileOFStream("land-sample.dat"), m_world->GetStats().GetUpdate());
   }
 };
 
@@ -2388,8 +2375,7 @@ public:
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
     landscape.RandomProcess(sample_size, landscape_dist, min_found,
                             max_sample_size, print_if_found);
-    static ofstream fp("land-random.dat");
-    landscape.PrintStats(fp, m_world->GetStats().GetUpdate());
+    landscape.PrintStats(m_world->GetDataFileOFStream("land-random.dat"), m_world->GetStats().GetUpdate());
   }
 };
 
@@ -2450,7 +2436,8 @@ public:
   ///// pairtest_landscape /////
   void Process(){
     cGenome & genome = m_world->GetPopulation().GetGenebank().GetBestGenotype()->GetGenome();
-    cAnalyzeUtil::PairTestLandscape(m_world, genome, m_world->GetHardwareManager().GetInstSet(), sample_size, m_world->GetStats().GetUpdate());
+    cAnalyzeUtil::PairTestLandscape(m_world, genome, m_world->GetHardwareManager().GetInstSet(),
+                                    sample_size, m_world->GetStats().GetUpdate());
   }
 };
 
@@ -2473,8 +2460,8 @@ public:
   ///// test_dom /////
   void Process(){
     cGenome & genome = m_world->GetPopulation().GetGenebank().GetBestGenotype()->GetGenome();
-    static ofstream fp("dom-test.dat");
-    cAnalyzeUtil::TestGenome(m_world, genome, m_world->GetHardwareManager().GetInstSet(), fp, m_world->GetStats().GetUpdate());
+    cAnalyzeUtil::TestGenome(m_world, genome, m_world->GetHardwareManager().GetInstSet(),
+                             m_world->GetDataFileOFStream("dom-test.dat"), m_world->GetStats().GetUpdate());
   }
 };
 
@@ -2506,13 +2493,10 @@ public:
   }
   ///// analyze_population /////
   void Process(){
-    static bool auto_filename = false;
-    if( filename == "" )
-      auto_filename = true;
-    if ( auto_filename )
-      filename.Set("population_info_%d.dat",m_world->GetStats().GetUpdate());
-    ofstream population_info(filename());
-    cAnalyzeUtil::AnalyzePopulation(m_world, population_info, sample_prob, landscape, save_genotype);
+    if (filename == "") filename.Set("population_info_%d.dat",m_world->GetStats().GetUpdate());
+    cAnalyzeUtil::AnalyzePopulation(m_world, m_world->GetDataFileOFStream(filename), sample_prob,
+                                    landscape, save_genotype);
+    m_world->GetDataFileManager().Remove(filename);
   }
 };
 
@@ -2578,10 +2562,9 @@ public:
   }
   ///// print_genetic_distance_data /////
   void Process(){
-    static ofstream popdump(filename());
-    if( creature_name == "" || creature_name == "START_CREATURE" ){
-      creature_name = m_world->GetConfig().START_CREATURE.Get(); }
-    cAnalyzeUtil::PrintGeneticDistanceData(m_world, popdump, creature_name() );
+    if( creature_name == "" || creature_name == "START_CREATURE" )
+      creature_name = m_world->GetConfig().START_CREATURE.Get();
+    cAnalyzeUtil::PrintGeneticDistanceData(m_world, m_world->GetDataFileOFStream(filename), creature_name);
   }
 };
 
@@ -2610,16 +2593,14 @@ public:
     if (args == "") save_genotype=0; else save_genotype=args.PopWord().AsInt();
   }
   ///// genetic_distance_pop_dump /////
-  void Process(){
-    static bool auto_filename = false;
-    if( creature_name == "" || creature_name == "START_CREATURE" ){
-      creature_name = m_world->GetConfig().START_CREATURE.Get(); }
-    if( filename == "" || filename == "AUTO" )
-      auto_filename = true;
-    if ( auto_filename )
+  void Process() {
+    if (creature_name == "" || creature_name == "START_CREATURE")
+      creature_name = m_world->GetConfig().START_CREATURE.Get();
+    if (filename == "" || filename == "AUTO")
       filename.Set("pop_dump_%d.dat",m_world->GetStats().GetUpdate());
-    ofstream popdump(filename());
-    cAnalyzeUtil::GeneticDistancePopDump(m_world, popdump, creature_name(), save_genotype );
+    cAnalyzeUtil::GeneticDistancePopDump(m_world, m_world->GetDataFileOFStream(filename),
+                                         creature_name, save_genotype);
+    m_world->GetDataFileManager().Remove(filename);
   }
 };
 
@@ -2641,17 +2622,14 @@ public:
     m_world = world;
     m_args = in_args;
     cString args(in_args);
-    if (args == "") filename=""; else filename=args.PopWord();
+    if (args == "") filename = "";
+    else filename = args.PopWord();
   }
   ///// task_snapshot /////
   void Process(){
-    static bool auto_filename = false;
-    if( filename == "" )
-      auto_filename = true;
-    if ( auto_filename )
-      filename.Set("tasks_%d.dat",m_world->GetStats().GetUpdate());
-    ofstream snapshot_file(filename());
-    cAnalyzeUtil::TaskSnapshot(m_world, snapshot_file);
+    if (filename == "") filename.Set("tasks_%d.dat",m_world->GetStats().GetUpdate());
+    cAnalyzeUtil::TaskSnapshot(m_world, m_world->GetDataFileOFStream(filename));
+    m_world->GetDataFileManager().Remove(filename);
   }
 };
 
@@ -2677,8 +2655,7 @@ public:
   }
   ///// print_viable_tasks_data /////
   void Process(){
-    static ofstream datafile(filename());
-    cAnalyzeUtil::PrintViableTasksData(m_world, datafile);
+    cAnalyzeUtil::PrintViableTasksData(m_world, m_world->GetDataFileOFStream(filename));
   }
 };
 
@@ -2900,9 +2877,9 @@ public:
   ///// hillclimb /////
   void Process(){
     cGenome & genome = m_world->GetPopulation().GetGenebank().GetBestGenotype()->GetGenome();
-    ofstream fp("hillclimb.dat");
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
-    landscape.HillClimb(fp);
+    landscape.HillClimb(m_world->GetDataFileOFStream("hillclimb.dat"));
+    m_world->GetDataFileManager().Remove("hillclimb.dat");
   }
 };
 
@@ -2925,9 +2902,9 @@ public:
   ///// hillclimb_neut /////
   void Process(){
     cGenome & genome = m_world->GetPopulation().GetGenebank().GetBestGenotype()->GetGenome();
-    ofstream fp("hillclimb.dat");
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
-    landscape.HillClimb_Neut(fp);
+    landscape.HillClimb_Neut(m_world->GetDataFileOFStream("hillclimb.dat"));
+    m_world->GetDataFileManager().Remove("hillclimb.dat");
   }
 };
 
@@ -2950,9 +2927,9 @@ public:
   ///// hillclimb_rand /////
   void Process(){
     cGenome & genome = m_world->GetPopulation().GetGenebank().GetBestGenotype()->GetGenome();
-    ofstream fp("hillclimb.dat");
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
-    landscape.HillClimb_Rand(fp);
+    landscape.HillClimb_Rand(m_world->GetDataFileOFStream("hillclimb.dat"));
+    m_world->GetDataFileManager().Remove("hillclimb.dat");
   }
 };
 
@@ -3123,7 +3100,7 @@ public:
   }
   ///// test_size_change_robustness /////
   void Process(){
-    ofstream & fp = m_world->GetDataFileOFStream(filename);
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
     cAnalyzeUtil::TestInsSizeChangeRobustness(m_world, fp,
                                               m_world->GetHardwareManager().GetInstSet(),
                                               m_world->GetPopulation().GetGenebank().GetBestGenotype()->GetGenome(),
@@ -3204,7 +3181,7 @@ public:
   void Process(){
     cString filename;
     filename.Set("fgrid.%05d.out", m_world->GetStats().GetUpdate());
-    ofstream fp(filename());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
     for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
       for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
         cPopulationCell & cell = m_world->GetPopulation().GetCell(j*m_world->GetPopulation().GetWorldX()+i);
@@ -3214,6 +3191,7 @@ public:
       }
       fp << endl;
     }
+    m_world->GetDataFileManager().Remove(filename);
   }
 };
 
@@ -3243,7 +3221,7 @@ public:
   void Process(){
     cString filename;
     filename.Set("idgrid.%05d.out", m_world->GetStats().GetUpdate());
-    ofstream fp(filename());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
     for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
       for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
         cPopulationCell & cell = m_world->GetPopulation().GetCell(j*m_world->GetPopulation().GetWorldX()+i);
@@ -3253,6 +3231,7 @@ public:
       }
       fp << endl;
     }
+    m_world->GetDataFileManager().Remove(filename);
   }
 };
 
@@ -3279,9 +3258,9 @@ public:
   ///// dump_task_grid /////
   void Process(){
     cString filename;
-    filename.Set("task_grid_%d.dat",m_world->GetStats().GetUpdate());
-    ofstream fp(filename());
-    cAnalyzeUtil::TaskGrid(m_world, fp );
+    filename.Set("task_grid_%d.dat", m_world->GetStats().GetUpdate());
+    cAnalyzeUtil::TaskGrid(m_world, m_world->GetDataFileOFStream(filename));
+    m_world->GetDataFileManager().Remove(filename);
   }
 };
 
@@ -3311,7 +3290,7 @@ public:
   void Process(){
     cString filename;
     filename.Set("donor_grid.%05d.out", m_world->GetStats().GetUpdate());
-    ofstream fp(filename());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
     for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {  
       for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
         cPopulationCell & cell = m_world->GetPopulation().GetCell(j*m_world->GetPopulation().GetWorldX()+i);
@@ -3321,6 +3300,7 @@ public:
       }
       fp << endl;
     }
+    m_world->GetDataFileManager().Remove(filename);
   }
 };
 
@@ -3349,7 +3329,7 @@ public:
   void Process(){
     cString filename;
     filename.Set("receiver_grid.%05d.out", m_world->GetStats().GetUpdate());
-    ofstream fp(filename());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
     for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
       for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
         cPopulationCell & cell = m_world->GetPopulation().GetCell(j*m_world->GetPopulation().GetWorldX()+i);
@@ -3359,6 +3339,7 @@ public:
       }
       fp << endl;
     }
+    m_world->GetDataFileManager().Remove(filename);
   }
 };
 
@@ -3386,8 +3367,8 @@ public:
   ///// print_tree_depths /////
   void Process(){
     if (filename == "") filename.Set("tree_depth.%d.dat", m_world->GetStats().GetUpdate());
-    ofstream fp(filename);
-    cAnalyzeUtil::PrintTreeDepths(&m_world->GetPopulation(), fp);
+    cAnalyzeUtil::PrintTreeDepths(&m_world->GetPopulation(), m_world->GetDataFileOFStream(filename));
+    m_world->GetDataFileManager().Remove(filename);
   }
 };
 

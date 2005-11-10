@@ -220,6 +220,9 @@ private:
   tArray<cString> inst_names;
   tArray<cString> reaction_names;
   tArray<cString> resource_names;
+  
+  // State variables
+  int last_update;
 
 public:
   cStats(cWorld* world);

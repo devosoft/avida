@@ -31,7 +31,7 @@ public:
   cEventListIterator(cEventListEntry *node) : m_node(node) {}
   cEventListIterator(const cEventListIterator &it) : m_node(it.m_node) {}
 
-  void PrintEvent(std::ostream & os = std::cout);
+  void PrintEvent(std::ostream& os = std::cout);
 
   bool operator==(const cEventListIterator &it) const {
     return m_node == it.m_node;

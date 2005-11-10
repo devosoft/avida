@@ -43,7 +43,7 @@ class cHardwareStatusPrinter :
   public cHardwareTracer_TestCPU
 {
 protected:
-  ostream &m_trace_fp;
+  ostream& m_trace_fp;
 protected:
   const cString & GetNextInstName(cHardwareCPU& hardware);
   const cString & GetNextInstName(cHardware4Stack& hardware);
