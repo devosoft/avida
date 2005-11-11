@@ -2041,10 +2041,11 @@
 			inputPaths = (
 			);
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/revision.h",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "mkdir -p $DERIVED_FILES_DIR\necho \"#ifndef revision_h\" > $DERIVED_FILES_DIR/revision.h\necho \"#define revision_h\" >> $DERIVED_FILES_DIR/revision.h\nif (test -x /usr/bin/svn)\nthen /usr/bin/svn status -qu | sed '$!d' | sed 's/Status against revision: *\\([0-9]*\\)/#define REVISION \"\\1\"/' >> $DERIVED_FILES_DIR/revision.h\nelif (test -x /usr/local/bin/svn)\nthen /usr/local/bin/svn status -qu | sed '$!d' | sed 's/Status against revision: *\\([0-9]*\\)/#define REVISION \"\\1\"/' >> $DERIVED_FILES_DIR/revision.h\nelif (test -x /usr/local/svn/bin/svn);\nthen /usr/local/svn/bin/svn status -qu | sed '$!d' | sed 's/Status against revision: *\\([0-9]*\\)/#define REVISION \"\\1\"/' >> $DERIVED_FILES_DIR/revision.h\nelse echo '#define REVISION \"???\"' >> $DERIVED_FILES_DIR/revision.h\nfi;\n\necho \"#endif\" >> $DERIVED_FILES_DIR/revision.h\n";
+			shellScript = "mkdir -p $DERIVED_FILE_DIR\nif (test -x /usr/bin/svn)\nthen svncmd=/usr/bin/svn\nelif (test -x /usr/local/bin/svn)\nthen svncmd=/usr/local/bin/svn\nelif (test -x /usr/local/svn/bin/svn)\nthen svncmd=/usr/local/svn/bin/svn\nelse\n  echo \"Warning: 'svn' not found, please install subversion\"\n  if [[ ! -f $DERIVED_FILE_DIR/revision.h ]]\n  then\n    echo \"#ifndef revision_h\" > $DERIVED_FILE_DIR/revision.h\n    echo \"#define revision_h\" >> $DERIVED_FILE_DIR/revision.h\n    echo \"#define REVISION \\\"???\\\"\" >> $DERIVED_FILE_DIR/revision.h\n    echo \"#endif\" >> $DERIVED_FILE_DIR/revision.h\n  fi\nfi\n\necho \"#ifndef revision_h\" > /tmp/newrev.tmp\necho \"#define revision_h\" >> /tmp/newrev.tmp\n$svncmd status -v Avida.xcodeproj/project.pbxproj | sed '1!d' | sed 's/[^ ]* *\\([0-9]*\\).*/#define REVISION \"\\1\"/' >> /tmp/newrev.tmp\necho \"#endif\" >> /tmp/newrev.tmp\n\nif [[ -f $DERIVED_FILE_DIR/revision.h ]]\nthen\n  revdiff=`diff $DERIVED_FILE_DIR/revision.h /tmp/newrev.tmp`\nelse\n  revdiff=\"yes\"\nfi\n\nif [[ -n \"$revdiff\" ]]\nthen\n  echo \"New revision.h Generated\"\n  cp /tmp/newrev.tmp $DERIVED_FILE_DIR/revision.h\n  touch $SRCROOT/source/main/avida.cc\nfi\n\nrm /tmp/newrev.tmp\n";
 		};
 		704EAD9808FF3C1F005D5C24 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2054,10 +2055,11 @@
 			inputPaths = (
 			);
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/revision.h",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "mkdir -p $DERIVED_FILES_DIR\necho \"#ifndef revision_h\" > $DERIVED_FILES_DIR/revision.h\necho \"#define revision_h\" >> $DERIVED_FILES_DIR/revision.h\nif (test -x /usr/bin/svn)\nthen /usr/bin/svn status -qu | sed '$!d' | sed 's/Status against revision: *\\([0-9]*\\)/#define REVISION \"\\1\"/' >> $DERIVED_FILES_DIR/revision.h\nelif (test -x /usr/local/bin/svn)\nthen /usr/local/bin/svn status -qu | sed '$!d' | sed 's/Status against revision: *\\([0-9]*\\)/#define REVISION \"\\1\"/' >> $DERIVED_FILES_DIR/revision.h\nelif (test -x /usr/local/svn/bin/svn);\nthen /usr/local/svn/bin/svn status -qu | sed '$!d' | sed 's/Status against revision: *\\([0-9]*\\)/#define REVISION \"\\1\"/' >> $DERIVED_FILES_DIR/revision.h\nelse echo '#define REVISION \"???\"' >> $DERIVED_FILES_DIR/revision.h\nfi;\n\necho \"#endif\" >> $DERIVED_FILES_DIR/revision.h\n";
+			shellScript = "mkdir -p $DERIVED_FILE_DIR\nif (test -x /usr/bin/svn)\nthen svncmd=/usr/bin/svn\nelif (test -x /usr/local/bin/svn)\nthen svncmd=/usr/local/bin/svn\nelif (test -x /usr/local/svn/bin/svn)\nthen svncmd=/usr/local/svn/bin/svn\nelse\n  echo \"Warning: 'svn' not found, please install subversion\"\n  if [[ ! -f $DERIVED_FILE_DIR/revision.h ]]\n  then\n    echo \"#ifndef revision_h\" > $DERIVED_FILE_DIR/revision.h\n    echo \"#define revision_h\" >> $DERIVED_FILE_DIR/revision.h\n    echo \"#define REVISION \\\"???\\\"\" >> $DERIVED_FILE_DIR/revision.h\n    echo \"#endif\" >> $DERIVED_FILE_DIR/revision.h\n  fi\nfi\n\necho \"#ifndef revision_h\" > /tmp/newrev.tmp\necho \"#define revision_h\" >> /tmp/newrev.tmp\n$svncmd status -v Avida.xcodeproj/project.pbxproj | sed '1!d' | sed 's/[^ ]* *\\([0-9]*\\).*/#define REVISION \"\\1\"/' >> /tmp/newrev.tmp\necho \"#endif\" >> /tmp/newrev.tmp\n\nif [[ -f $DERIVED_FILE_DIR/revision.h ]]\nthen\n  revdiff=`diff $DERIVED_FILE_DIR/revision.h /tmp/newrev.tmp`\nelse\n  revdiff=\"yes\"\nfi\n\nif [[ -n \"$revdiff\" ]]\nthen\n  echo \"New revision.h Generated\"\n  cp /tmp/newrev.tmp $DERIVED_FILE_DIR/revision.h\n  touch $SRCROOT/source/main/avida.cc\nfi\n\nrm /tmp/newrev.tmp\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

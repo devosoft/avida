@@ -5,17 +5,10 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef AVIDA_DRIVER_ANALYZE_HH
 #include "cAvidaDriver_Analyze.h"
-#endif
 
-#ifndef ANALYZE_HH
 #include "cAnalyze.h"
-#endif
-
-#ifndef ENVIRONMENT_HH
-#include "cEnvironment.h"
-#endif
+#include "cWorld.h"
 
 #include <iostream>
 
@@ -29,6 +22,8 @@ cAvidaDriver_Analyze::cAvidaDriver_Analyze(cWorld* world, bool _interactive)
 : interactive(_interactive), m_world(world)
 {
 }
+
+cAvidaDriver_Analyze::~cAvidaDriver_Analyze() { delete m_world; }
 
 void cAvidaDriver_Analyze::Run()
 {

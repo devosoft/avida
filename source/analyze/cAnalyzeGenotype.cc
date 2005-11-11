@@ -174,7 +174,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs) const
   // Calculate the base fitness for the genotype we're working with...
   // (This may not have been run already, and cost negligiably more time
   // considering the number of knockouts we need to do.
-  cAnalyzeGenotype base_genotype(genome, inst_set);
+  cAnalyzeGenotype base_genotype(m_world, genome, inst_set);
   base_genotype.Recalculate();      
   double base_fitness = base_genotype.GetFitness();
   
@@ -208,7 +208,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs) const
     // Save a copy of the current instruction and replace it with "NULL"
     int cur_inst = mod_genome[line_num].GetOp();
     mod_genome[line_num] = null_inst;
-    cAnalyzeGenotype ko_genotype(mod_genome, ko_inst_set);
+    cAnalyzeGenotype ko_genotype(m_world, mod_genome, ko_inst_set);
     ko_genotype.Recalculate();
     
     double ko_fitness = ko_genotype.GetFitness();
@@ -261,7 +261,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs) const
       int cur_inst2 = mod_genome[line2].GetOp();
       mod_genome[line1] = null_inst;
       mod_genome[line2] = null_inst;
-      cAnalyzeGenotype ko_genotype(mod_genome, ko_inst_set);
+      cAnalyzeGenotype ko_genotype(m_world, mod_genome, ko_inst_set);
       ko_genotype.Recalculate();
       
       double ko_fitness = ko_genotype.GetFitness();

@@ -140,6 +140,7 @@ private:
   }
 
   int CalcMaxGestation() const;
+  void CalcKnockouts(bool check_pairs=false) const;
   void CalcLandscape() const;
 public:
   cAnalyzeGenotype(cWorld* world, cString symbol_string, cInstSet & in_inst_set);

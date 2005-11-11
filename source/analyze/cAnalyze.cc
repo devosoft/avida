@@ -3723,7 +3723,7 @@ void cAnalyze::AnalyzeKnockouts(cString cur_string)
           int cur_inst2 = base_genome[line2].GetOp();
           mod_genome[line1] = null_inst;
           mod_genome[line2] = null_inst;
-          cAnalyzeGenotype ko_genotype(mod_genome, ko_inst_set);
+          cAnalyzeGenotype ko_genotype(m_world, mod_genome, ko_inst_set);
           ko_genotype.Recalculate();
           
           double ko_fitness = ko_genotype.GetFitness();
