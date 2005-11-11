@@ -83,6 +83,36 @@ private:
   cString parent_muts;
 
   // Group 4 : Landscape stats (obtained from testing all possible mutations)
+  class cAnalyzeKnockouts {
+  public:
+    int dead_count;
+    int neg_count;
+    int neut_count;
+    int pos_count;
+    
+    bool has_pair_info;
+    int pair_dead_count;
+    int pair_neg_count;
+    int pair_neut_count;
+    int pair_pos_count;
+    
+    void Reset() {
+      dead_count = 0;
+      neg_count = 0;
+      neut_count = 0;
+      pos_count = 0;
+      
+      has_pair_info = false;
+      pair_dead_count = 0;
+      pair_neg_count = 0;
+      pair_neut_count = 0;
+      pair_pos_count = 0;
+    }
+    
+    cAnalyzeKnockouts() { Reset(); }
+  };
+  mutable cAnalyzeKnockouts * knockout_stats;
+
   class cAnalyzeLandscape {
   public:
     double frac_dead;
@@ -195,6 +225,18 @@ public:
 
   const cString & GetParentMuts() const { return parent_muts; }
 
+  // Knockout accessors
+  int GetKO_DeadCount() const;
+  int GetKO_NegCount() const;
+  int GetKO_NeutCount() const;
+  int GetKO_PosCount() const;
+  int GetKO_Complexity() const;
+  int GetKOPair_DeadCount() const;
+  int GetKOPair_NegCount() const;
+  int GetKOPair_NeutCount() const;
+  int GetKOPair_PosCount() const;
+  int GetKOPair_Complexity() const;
+  
   // Landscape accessors
   double GetFracDead() const;
   double GetFracNeg() const;

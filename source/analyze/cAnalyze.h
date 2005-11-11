@@ -28,6 +28,13 @@
 
 #define MAX_BATCHES 2000
 
+namespace nAnalyze {
+  const int VERBOSE_SILENT  = 0;  // No output at all
+  const int VERBOSE_QUIET   = 1;  // Notification at start of commands.
+  const int VERBOSE_ON      = 2;  // Verbose output, detailing progress
+  const int VERBOSE_DETAILS = 3;  // High level of details, as available.
+}
+
 // cAnalyze            : The master analyze object.
 
 class cGenotypeBatch; // array
@@ -66,8 +73,8 @@ private:
   // is a pair of the update and a vector of the resource concentrations
   std::vector<std::pair<int, std::vector<double> > > resources;
 
-  bool verbose;            // Should details be output to command line?
-  int interactive_depth;   // How nested are we if in interactive mode?
+  int verbose;            // How much information to print?
+  int interactive_depth;  // How nested are we if in interactive mode?
 
   tList< tDataEntryBase<cAnalyzeGenotype> > genotype_data_list;
 
@@ -209,7 +216,7 @@ private:
   void BatchRename(cString cur_string);
   void PrintStatus(cString cur_string);
   void PrintDebug(cString cur_string);
-  void ToggleVerbose(cString cur_string);
+  void CommandVerbose(cString cur_string);
   void IncludeFile(cString cur_string);
   void CommandSystem(cString cur_string);
   void CommandInteractive(cString cur_string);

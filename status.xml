@@ -913,26 +913,23 @@ source/tools/struct.hh
 
   <todo>
     <actions priority="high">
-      <action context="avida-ed" dev="KGN">
-        Setup CMake to build application bundle.
-      </action>
-      <action context="avida-ed" dev="KGN">
-        Implement Organism view.
-      </action>
-      <action context="avida-ed" dev="KGN">
-        Move python subdir out of Boost.Python subdir.
-      </action>
       <action context="admin" dev="DMB">
-        Scheduled backups of SVN repositories.
+        Setup consistency tests.
       </action>
-      <action context="admin" dev="KGN">
-        Fix Dashboards.
+      <action context="refactor" dev="DMB">
+        New cHardware base class, separate from Hardware CPU
       </action>
-      <action context="admin" dev="KGN">
-        Add python unit test to dashboards.
+      <action context="refactor" dev="DMB">
+        Unique object ID factory template
       </action>
-      <action context="admin" dev="KGN">
-        Fix and add consistency tests.
+      <action context="refactor" dev="DMB">
+        shift analyze commands into their own objects
+      </action>
+      <action context="refactor" dev="DMB">
+        merge analyze and events
+      </action>
+      <action context="refactor" dev="DMB">
+        instruction set methods with 2's after them?
       </action>
     </actions>
     <actions priority="low">

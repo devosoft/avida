@@ -53,6 +53,7 @@ cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, cString symbol_string, cInstSe
   , parent_dist(0)
   , ancestor_dist(0)
   , parent_muts("")
+  , knockout_stats(NULL)
   , landscape_stats(NULL)
 {
   // Make sure that the sequences jive with the inst_set
@@ -95,6 +96,7 @@ cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, const cGenome& _genome, cInstS
   , parent_dist(0)
   , ancestor_dist(0)
   , parent_muts("")
+  , knockout_stats(NULL)
   , landscape_stats(NULL)
 {
 }
@@ -129,8 +131,13 @@ cAnalyzeGenotype::cAnalyzeGenotype(const cAnalyzeGenotype & _gen)
   , parent_dist(_gen.parent_dist)
   , ancestor_dist(_gen.ancestor_dist)
   , parent_muts(_gen.parent_muts)
+  , knockout_stats(NULL)
   , landscape_stats(NULL)
 {
+  if (_gen.knockout_stats != NULL) {
+    knockout_stats = new cAnalyzeKnockouts;
+    *knockout_stats = *(_gen.knockout_stats);
+  }
   if (_gen.landscape_stats != NULL) {
     landscape_stats = new cAnalyzeLandscape;
     *landscape_stats = *(_gen.landscape_stats);
@@ -139,6 +146,7 @@ cAnalyzeGenotype::cAnalyzeGenotype(const cAnalyzeGenotype & _gen)
 
 cAnalyzeGenotype::~cAnalyzeGenotype()
 {
+  if (knockout_stats != NULL) delete knockout_stats;
   if (landscape_stats != NULL) delete landscape_stats;
 }
 
@@ -146,6 +154,150 @@ cAnalyzeGenotype::~cAnalyzeGenotype()
 int cAnalyzeGenotype::CalcMaxGestation() const
 {
   return m_world->GetConfig().TEST_CPU_TIME_MOD.Get() * genome.GetSize();
+}
+
+void cAnalyzeGenotype::CalcKnockouts(bool check_pairs) const
+{
+  if (knockout_stats == NULL) {
+    // We've never called this before -- setup the stats.
+    knockout_stats = new cAnalyzeKnockouts;
+  }
+  else if (check_pairs == true && knockout_stats->has_pair_info == false) {
+    // We don't have the pair stats we need -- keep going.
+    knockout_stats->Reset();
+  }
+  else {
+    // We already have all the info we need -- just quit.
+    return;
+  }
+  
+  // Calculate the base fitness for the genotype we're working with...
+  // (This may not have been run already, and cost negligiably more time
+  // considering the number of knockouts we need to do.
+  cAnalyzeGenotype base_genotype(genome, inst_set);
+  base_genotype.Recalculate();      
+  double base_fitness = base_genotype.GetFitness();
+  
+  // If the base fitness is 0, the organism is dead and has no complexity.
+  if (base_fitness == 0.0) {
+    knockout_stats->neut_count == length;
+    return;
+  }
+  
+  cGenome mod_genome(genome);
+  
+  // Setup a NULL instruction in a special inst set.
+  cInstSet ko_inst_set(inst_set);
+  // Locate the instruction corresponding to "NULL" in the instruction library.
+  {
+    cInstruction lib_null_inst = ko_inst_set.GetInstLib()->GetInst("NULL");
+    if (lib_null_inst == ko_inst_set.GetInstLib()->GetInstError()) {
+      cout << "<cAnalyze::AnalyzeKnockouts> got error:" << endl
+      << "  instruction 'NULL' not in current hardware type" << endl;
+      exit(1);
+    }
+    // Add mapping to located instruction. 
+    ko_inst_set.Add2(lib_null_inst.GetOp());
+  }
+  const cInstruction null_inst = ko_inst_set.GetInst("NULL");
+  
+  // Loop through all the lines of code, testing the removal of each.
+  // -2=lethal, -1=detrimental, 0=neutral, 1=beneficial
+  tArray<int> ko_effect(length);
+  for (int line_num = 0; line_num < length; line_num++) {
+    // Save a copy of the current instruction and replace it with "NULL"
+    int cur_inst = mod_genome[line_num].GetOp();
+    mod_genome[line_num] = null_inst;
+    cAnalyzeGenotype ko_genotype(mod_genome, ko_inst_set);
+    ko_genotype.Recalculate();
+    
+    double ko_fitness = ko_genotype.GetFitness();
+    if (ko_fitness == 0.0) {
+      knockout_stats->dead_count++;
+      ko_effect[line_num] = -2;
+    } else if (ko_fitness < base_fitness) {
+      knockout_stats->neg_count++;
+      ko_effect[line_num] = -1;
+    } else if (ko_fitness == base_fitness) {
+      knockout_stats->neut_count++;
+      ko_effect[line_num] = 0;
+    } else if (ko_fitness > base_fitness) {
+      knockout_stats->pos_count++;
+      ko_effect[line_num] = 1;
+    } else {
+      cerr << "INTERNAL ERROR: illegal state in CalcKnockouts()" << endl;
+    }
+    
+    // Reset the mod_genome back to the original sequence.
+    mod_genome[line_num].SetOp(cur_inst);
+  }
+  
+  // Only continue from here if we are looking at all pairs of knockouts
+  // as well.
+  if (check_pairs == false) return;
+  
+  tArray<int> ko_pair_effect(ko_effect);
+  for (int line1 = 0; line1 < length; line1++) {
+    // If this line has already been changed, keep going...
+    if (ko_effect[line1] != ko_pair_effect[line1]) continue;
+    
+    // Loop through all possibilities for the next line.
+    for (int line2 = line1+1; line2 < length; line2++) {
+      // If this line has already been changed, keep going...
+      if (ko_effect[line2] != ko_pair_effect[line2]) continue;
+      
+      // If the two lines are of different types (one is information and the
+      // other is not) then we're not interested in testing this combination
+      // since any possible result is reasonable.
+      if ((ko_effect[line1] < 0 && ko_effect[line2] >= 0) ||
+          (ko_effect[line1] >= 0 && ko_effect[line2] < 0)) {
+        continue;
+      }
+      
+      // Calculate the fitness for this pair of knockouts to determine if its
+      // something other than what we expected.
+      
+      int cur_inst1 = mod_genome[line1].GetOp();
+      int cur_inst2 = mod_genome[line2].GetOp();
+      mod_genome[line1] = null_inst;
+      mod_genome[line2] = null_inst;
+      cAnalyzeGenotype ko_genotype(mod_genome, ko_inst_set);
+      ko_genotype.Recalculate();
+      
+      double ko_fitness = ko_genotype.GetFitness();
+      
+      // If the individual knockouts are both harmful, but in combination
+      // they are neutral or even beneficial, they should not count as 
+      // information.
+      if (ko_fitness >= base_fitness &&
+          ko_effect[line1] < 0 && ko_effect[line2] < 0) {
+        ko_pair_effect[line1] = 0;
+        ko_pair_effect[line2] = 0;
+      }
+      
+      // If the individual knockouts are both neutral (or beneficial?),
+      // but in combination they are harmful, they are likely redundant
+      // to each other.  For now, count them both as information.
+      if (ko_fitness < base_fitness &&
+          ko_effect[line1] >= 0 && ko_effect[line2] >= 0) {
+        ko_pair_effect[line1] = -1;
+        ko_pair_effect[line2] = -1;
+      }	
+      
+      // Reset the mod_genome back to the original sequence.
+      mod_genome[line1].SetOp(cur_inst1);
+      mod_genome[line2].SetOp(cur_inst2);
+    }
+  }
+  
+  for (int i = 0; i < length; i++) {
+    if (ko_pair_effect[i] == -2) knockout_stats->pair_dead_count++;
+    else if (ko_pair_effect[i] == -1) knockout_stats->pair_neg_count++;
+    else if (ko_pair_effect[i] == 0) knockout_stats->pair_neut_count++;
+    else if (ko_pair_effect[i] == 1) knockout_stats->pair_pos_count++;
+  }
+  
+  knockout_stats->has_pair_info = true;
 }
 
 void cAnalyzeGenotype::CalcLandscape() const
@@ -223,6 +375,66 @@ void cAnalyzeGenotype::SetSequence(cString _sequence)
 {
   cGenome new_genome(_sequence);
   genome = new_genome;
+}
+
+int cAnalyzeGenotype::GetKO_DeadCount() const
+{
+  CalcKnockouts(false);  // Make sure knockouts are calculated
+  return knockout_stats->dead_count;
+}
+
+int cAnalyzeGenotype::GetKO_NegCount() const
+{
+  CalcKnockouts(false);  // Make sure knockouts are calculated
+  return knockout_stats->neg_count;
+}
+
+int cAnalyzeGenotype::GetKO_NeutCount() const
+{
+  CalcKnockouts(false);  // Make sure knockouts are calculated
+  return knockout_stats->neut_count;
+}
+
+int cAnalyzeGenotype::GetKO_PosCount() const
+{
+  CalcKnockouts(false);  // Make sure knockouts are calculated
+  return knockout_stats->pos_count;
+}
+
+int cAnalyzeGenotype::GetKO_Complexity() const
+{
+  CalcKnockouts(false);  // Make sure knockouts are calculated
+  return knockout_stats->dead_count + knockout_stats->neg_count;
+}
+
+int cAnalyzeGenotype::GetKOPair_DeadCount() const
+{
+  CalcKnockouts(true);  // Make sure knockouts are calculated
+  return knockout_stats->pair_dead_count;
+}
+
+int cAnalyzeGenotype::GetKOPair_NegCount() const
+{
+  CalcKnockouts(true);  // Make sure knockouts are calculated
+  return knockout_stats->pair_neg_count;
+}
+
+int cAnalyzeGenotype::GetKOPair_NeutCount() const
+{
+  CalcKnockouts(true);  // Make sure knockouts are calculated
+  return knockout_stats->pair_neut_count;
+}
+
+int cAnalyzeGenotype::GetKOPair_PosCount() const
+{
+  CalcKnockouts(true);  // Make sure knockouts are calculated
+  return knockout_stats->pair_pos_count;
+}
+
+int cAnalyzeGenotype::GetKOPair_Complexity() const
+{
+  CalcKnockouts(true);  // Make sure knockouts are calculated
+  return knockout_stats->pair_dead_count + knockout_stats->pair_neg_count;
 }
 
 
