@@ -625,7 +625,7 @@ void cFitnessMatrix::CalcFitnessMatrix( int depth_limit, double fitness_threshol
   for (double error = m_error_rate_min; error <= m_error_rate_max; error += m_error_rate_step)
   {
     vector<double> dataVect;
-    double avg_fitness = Diagonalize(dataVect, m_ham_thresh, error, log_file);
+    double avg_fitness = Diagonalize(dataVect, m_ham_thresh, error, m_world->GetDataFileOFStream("fitness_matrix.log"));
 
     PrintFitnessVector(m_world->GetDataFileOFStream("fitness_vect.dat"), dataVect, error, avg_fitness, output_start, output_step);
 

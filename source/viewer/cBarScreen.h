@@ -17,15 +17,11 @@
 
 class cBarScreen : public cScreen {
 protected:
-  cPopulation& population;
+  cWorld* m_world;
   cString prog_name;
 public:
-  cBarScreen(int y_size, int x_size, int y_start, int x_start,
-	     cViewInfo & in_info, const cString & in_name,
-	     cPopulation& in_pop) :
-    cScreen(y_size, x_size, y_start, x_start, in_info),
-    population(in_pop),
-    prog_name(in_name) { ; }
+  cBarScreen(cWorld* world, int y_size, int x_size, int y_start, int x_start, cViewInfo & in_info, const cString & in_name)
+    : cScreen(y_size, x_size, y_start, x_start, in_info), m_world(world), prog_name(in_name) { ; }
   ~cBarScreen() { ; }
 
   // Virtual in base screen...

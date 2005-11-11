@@ -41,11 +41,11 @@ cView::cView(cWorld* world) : info(world)
   Setup("Avida");
 
   map_screen     = new cMapScreen     (0,0,3,0,info, world->GetPopulation());
-  stats_screen   = new cStatsScreen   (0,0,3,0,info, world->GetPopulation());
+  stats_screen   = new cStatsScreen   (world, 0, 0, 3, 0, info);
   hist_screen    = new cHistScreen    (0,0,3,0,info, world->GetPopulation());
   options_screen = new cOptionsScreen (0,0,3,0,info);
   zoom_screen    = new cZoomScreen    (0,0,3,0,info, world->GetPopulation());
-  environment_screen = new cEnvironmentScreen (0,0,3,0,info, world->GetPopulation());
+  environment_screen = new cEnvironmentScreen (world, 0, 0, 3, 0, info);
 
   info.SetActiveCell( &( world->GetPopulation().GetCell(0) ) );
 }
@@ -70,7 +70,7 @@ void cView::Setup(const cString & in_name)
 
   StartProg();
 
-  bar_screen = new cBarScreen(3, 0, 0, 0, info, in_name, info.GetPopulation());
+  bar_screen = new cBarScreen(&info.GetWorld(), 3, 0, 0, 0, info, in_name);
   base_window = new cTextWindow(0,0,3,0);
   bar_screen->Draw();
 }
@@ -305,7 +305,7 @@ void cView::TogglePause()
 void cView::CloneSoup()
 {
   cString filename;
-  filename.Set("clone.%d", info.GetPopulation().GetUpdate());
+  filename.Set("clone.%d", info.GetWorld().GetStats().GetUpdate());
   ofstream fp(filename());
   info.GetPopulation().SaveClone(fp);
   cString message;

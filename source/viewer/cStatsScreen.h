@@ -11,20 +11,20 @@
 #ifndef cScreen_h
 #include "cScreen.h"
 #endif
+class cWorld;
 
 class cStatsScreen : public cScreen {
 protected:
-  cPopulation & population;
+  cWorld* m_world;
   int task_offset;
   int task_rows;
   int task_cols;
 public:
-  cStatsScreen(int y_size, int x_size, int y_start, int x_start,
-	       cViewInfo & in_info, cPopulation & in_pop) :
-    cScreen(y_size, x_size, y_start, x_start, in_info),
-    population(in_pop), task_offset(0) {
-      task_rows = Height() - 16;
-      task_cols = Width() / 20;
+  cStatsScreen(cWorld* world, int y_size, int x_size, int y_start, int x_start, cViewInfo& in_info)
+    : m_world(world), cScreen(y_size, x_size, y_start, x_start, in_info), task_offset(0)
+  {
+    task_rows = Height() - 16;
+    task_cols = Width() / 20;
   }
   virtual ~cStatsScreen() { ; }
 

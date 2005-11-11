@@ -57,7 +57,7 @@ void cStatsScreen::Draw()
 
 
   int task_num = task_offset;
-  const cTaskLib & task_lib = population.GetEnvironment().GetTaskLib();
+  const cTaskLib & task_lib = m_world->GetEnvironment().GetTaskLib();
   for (int col_id = 3; task_num < info.GetWorld().GetNumTasks(); col_id += 20) {
     if (col_id + 16 > Width()) break;
     for (int row_id = 15;
@@ -86,11 +86,11 @@ void cStatsScreen::Draw()
 
 void cStatsScreen::Update()
 {
-  cGenotype * best_gen = population.GetGenebank().GetBestGenotype();
+  cGenotype * best_gen = m_world->GetPopulation().GetGenebank().GetBestGenotype();
 
   SetBoldColor(COLOR_CYAN);
 
-  cStats & stats = population.GetStats();
+  cStats& stats = m_world->GetStats();
 
   Print(1, 13, "%7d",   stats.GetNumBirths());
   Print(2, 13, "%7d",   stats.GetBreedTrue());

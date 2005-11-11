@@ -58,7 +58,7 @@ void cBarScreen::Draw()
 void cBarScreen::Update()
 {
   SetBoldColor(COLOR_WHITE);
-  Print(1, 11, "%d", population.GetUpdate());
+  Print(1, 11, "%d", m_world->GetStats().GetUpdate());
   SetColor(COLOR_WHITE);
 
   Refresh();

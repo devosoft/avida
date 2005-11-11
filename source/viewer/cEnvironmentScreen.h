@@ -12,9 +12,11 @@
 #include "cScreen.h"
 #endif
 
+class cWorld;
+
 class cEnvironmentScreen : public cScreen {
 protected:
-  cPopulation & population;
+  cWorld* m_world;
   int mode;
   int res_selection;
   int rxn_selection;
@@ -23,13 +25,12 @@ protected:
   static const int ENVIRONMENT_MODE_REACTION = 1;
 
 public:
-  cEnvironmentScreen(int y_size, int x_size, int y_start, int x_start,
-	       cViewInfo & in_info, cPopulation & in_pop) :
-    cScreen(y_size, x_size, y_start, x_start, in_info),
-    population(in_pop) { mode=ENVIRONMENT_MODE_RESOURCE; res_selection=rxn_selection=0; }
-    //task_rows = Height() - 16;
-    // task_cols = Width() / 20;
-  //}
+  cEnvironmentScreen(cWorld* world, int y_size, int x_size, int y_start, int x_start, cViewInfo& in_info)
+    : cScreen(y_size, x_size, y_start, x_start, in_info), m_world(world)
+  {
+    mode=ENVIRONMENT_MODE_RESOURCE;
+    res_selection = rxn_selection = 0;
+  }
   virtual ~cEnvironmentScreen() { ; }
 
   // Virtual in base screen...
