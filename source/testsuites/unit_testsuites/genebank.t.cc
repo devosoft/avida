@@ -1,8 +1,5 @@
 #include <iostream>
 
-#ifndef GENEBANK_HH
-#include "cGenebank.h"
-#endif
 #ifndef TEST_CASE_H
 #include "third-party/yaktest/cTestCase.hh"
 #endif

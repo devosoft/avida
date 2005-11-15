@@ -10,7 +10,7 @@
 #include "cChangeList.h"
 #include "cPopulation.h"
 #include "cString.h"
-#include "cGenebank.h"
+#include "cClassificationManager.h"
 #include "cGenotype.h"
 #include "cPopulationCell.h"
 #include "cOrganism.h"
@@ -55,10 +55,10 @@ bool cAvidaDriver_Population::ProcessUpdate()
     stats.ProcessUpdate();
     
     // Update all the genotypes for the end of this update.
-    cGenebank& genebank = population->GetGenebank();
-    for (cGenotype * cur_genotype = genebank.ResetThread(0);
+    cClassificationManager& classmgr = m_world->GetClassificationManager();
+    for (cGenotype * cur_genotype = classmgr.ResetThread(0);
          cur_genotype != NULL && cur_genotype->GetThreshold();
-         cur_genotype = genebank.NextGenotype(0)) {
+         cur_genotype = classmgr.NextGenotype(0)) {
       cur_genotype->UpdateReset();
     }
   }

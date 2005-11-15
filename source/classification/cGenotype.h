@@ -32,12 +32,14 @@ class cWorld;
 
 class cGenotype {
 private:
+  friend class cClassificationManager;
+
   cWorld* m_world;
   cGenome genome;
   cString name;
   bool flag_threshold;
   bool is_active;      // Is this genotype still alive?
-  int defer_adjust;    // Don't adjust in the genebank until all are cleared.
+  int defer_adjust;    // Don't adjust in the archive until all are cleared.
 
   int id_num;
   char symbol;
@@ -83,20 +85,16 @@ private:
   cDoubleSum tmp_sum_fitness;
 
   void CalcTestStats() const;
+  cGenotype(cWorld* world, int in_update_born, int in_id);
+  
+  // Disable No-Argument Constructor
+  cGenotype();
+
 public:
-  /**
-   * Constructs an empty genotype. Normally, in_id should not specified as
-   * parameter, because cGenotype keeps track of the last id given out, and
-   * choses a new one based on that. However, in some cases it is necessary
-   * to specify an id (e.g., when loading a history file from disk). Note 
-   * that in this case, cGenotype does not check if the id has already been 
-   * used before.
-   **/
-  cGenotype(cWorld* world, int in_update_born = 0, int in_id = -1);
   ~cGenotype();
 
   bool SaveClone(std::ofstream& fp);
-  bool LoadClone(std::ifstream & fp);
+  static cGenotype* LoadClone(cWorld* world, std::ifstream& fp);
   bool OK();
   void Mutate();
   void UpdateReset();

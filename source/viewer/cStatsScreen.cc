@@ -7,8 +7,8 @@
 
 #include "cStatsScreen.h"
 
+#include "cClassificationManager.h"
 #include "cEnvironment.h"
-#include "cGenebank.h"
 #include "cGenotype.h"
 #include "cPopulation.h"
 #include "cSpecies.h"
@@ -86,7 +86,7 @@ void cStatsScreen::Draw()
 
 void cStatsScreen::Update()
 {
-  cGenotype * best_gen = m_world->GetPopulation().GetGenebank().GetBestGenotype();
+  cGenotype * best_gen = m_world->GetClassificationManager().GetBestGenotype();
 
   SetBoldColor(COLOR_CYAN);
 

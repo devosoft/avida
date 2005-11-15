@@ -245,8 +245,6 @@ public:
 
   void IncSubUpdate() { sub_update++; }
 
-  bool OK() { return true; }  // @CAO FIX!!!!
-
   // Accessors...
   int GetUpdate() const { return current_update; }
   int GetSubUpdate() const { return sub_update; }
@@ -394,7 +392,7 @@ public:
 
   void RecordBirth(int cell_id, int genotype_id, bool breed_true);
   void RecordDeath(int genotype_id, int num_divides, int age);
-  void AddGenotype(int id_num);
+  void AddGenotype() { tot_genotypes++; }
   void RemoveGenotype(int id_num, int parent_id,
 			     int parent_distance, int depth, int max_abundance,
 			     int parasite_abundance, int age, int length);

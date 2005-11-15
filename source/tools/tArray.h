@@ -63,9 +63,7 @@ public:
 
 public:
   // Constructor
-  explicit tArray(const int _size=0) : data(NULL) {
-    ResizeClear(_size);
-  }
+  explicit tArray(const int _size=0) : data(NULL) { ResizeClear(_size); }
 
   // Assingment Operator
   tArray & operator= (const tArray & rhs) {
@@ -75,29 +73,15 @@ public:
   }
 
   // Copy constructor
-  //explicit tArray(const tArray & rhs) : data(NULL), size(0) {
-  //  this->operator=(rhs);
-  //}
-
-  tArray(const tArray & rhs) : data(NULL), size(0) {
-    this->operator=(rhs);
-  }
-
+  tArray(const tArray& rhs) : data(NULL), size(0) { this->operator=(rhs); }
 
   // Destructor
-  virtual ~tArray() {
-    if (data != NULL) delete [] data;
-  }
+  virtual ~tArray() { if (data != NULL) delete [] data; }
 
+  
   // Interface Methods ///////////////////////////////////////////////////////
-
+  
   bool Good() const { return (data != NULL); }
-
-//    bool OK() const {
-//      assert(size >= 0);
-//      return true;
-//    }
-
   int GetSize() const { return size; }
 
   void Resize(int new_size) {

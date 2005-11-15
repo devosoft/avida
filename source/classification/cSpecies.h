@@ -26,6 +26,8 @@ class cWorld;
 
 class cSpecies {
 private:
+  friend class cClassificationManager;
+  
   cWorld* m_world;
   int id_num;
   int parent_id;
@@ -44,8 +46,10 @@ private:
   cSpecies * next;
   cSpecies * prev;
   
+  cSpecies(cWorld* world, const cGenome& in_genome, int update, int in_id);
+  cSpecies();
+  
 public:
-  cSpecies(cWorld* world, const cGenome & in_genome, int update);
   ~cSpecies();
 
   int Compare(const cGenome & test_genome, int max_fail_count=-1);
@@ -81,7 +85,7 @@ public:
   void SetParentID(int in_id) { parent_id = in_id; }
 
 #ifdef DEBUG
-  // These are used in cGenebank::OK()
+  // These are used in cClassificationManager::OK()
   int debug_num_genotypes;
   int debug_num_threshold;
 #endif

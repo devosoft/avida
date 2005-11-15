@@ -39,7 +39,7 @@ class cInstSet {
 public:
   cWorld* m_world;
   cInstLibBase *m_inst_lib;
-  class cInstEntry2 {
+  class cInstEntry {
   public:
     int lib_fun_id;
     int redundancy;           // Weight in instruction set (not impl.)
@@ -47,9 +47,9 @@ public:
     int ft_cost;              // time spent first time exec (in add to cost)
     double prob_fail;         // probability of failing to execute inst
   };
-  tArray<cInstEntry2> m_lib_name_map;
+  tArray<cInstEntry> m_lib_name_map;
   tArray<int> m_lib_nopmod_map;
-  tArray<int> mutation_chart2;     // ID's represented by redundancy values.
+  tArray<int> m_mutation_chart;     // ID's represented by redundancy values.
   // Static components...
   static cInstruction inst_error2;
   // static const cInstruction inst_none;
@@ -125,14 +125,14 @@ public:
   }
 
   // Insertion of new instructions...
-  int Add2(
+  int AddInst(
     const int lib_fun_id,
     const int redundancy=1,
     const int ft_cost=0,
     const int cost=0,
     const double prob_fail=0.0
   );
-  int AddNop2(
+  int AddNop(
     const int lib_nopmod_id,
     const int redundancy=1,
     const int ft_cost=0,

@@ -28,6 +28,7 @@ IF(AVD_GUI_NCURSES)
   TARGET_LINK_LIBRARIES(viewer
     cursesviewer
     main
+    classification
     cpu
     event
     analyze

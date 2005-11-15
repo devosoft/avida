@@ -267,12 +267,6 @@ void cStats::RecordDeath(int cell_id, int genotype_id, int age)
   num_deaths++;
 }
 
-void cStats::AddGenotype(int id_num)
-{
-  id_num = -1;  // @CAO do we still need id_num here?
-  tot_genotypes++;
-}
-
 void cStats::RemoveGenotype(int id_num, int parent_id,
    int parent_dist, int depth, int max_abundance, int parasite_abundance,
    int age, int length)

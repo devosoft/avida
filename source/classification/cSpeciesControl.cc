@@ -16,7 +16,7 @@
 
 #include <assert.h>
 
-cSpeciesControl::cSpeciesControl(cWorld* world, cGenebank & in_gb) : m_world(world), genebank(in_gb)
+cSpeciesControl::cSpeciesControl(cWorld* world) : m_world(world)
 {
 }
 

@@ -129,16 +129,3 @@ bool cPopulationCell::OK()
   // Nothing for the moment...
   return true;
 }
-
-bool cPopulationCell::SaveState(ofstream& fp)
-{
-  // Nothing for the moment...
-  return false;
-}
-
-
-bool cPopulationCell::LoadState(ifstream & fp)
-{
-  // Nothing for the moment...
-  return false;
-}

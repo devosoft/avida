@@ -20,6 +20,7 @@
 #include "cRandom.h"
 #endif
 
+class cClassificationManager;
 class cEnvironment;
 class cEventManager;
 class cEventList;
@@ -32,6 +33,7 @@ class cWorld
 {
 protected:
   cAvidaConfig* m_conf;
+  cClassificationManager* m_class_mgr;
   cDataFileManager* m_data_mgr;
   cEnvironment* m_env;
   cEventManager* m_event_mgr;
@@ -57,6 +59,7 @@ public:
   
   // General Object Accessors
   cAvidaConfig& GetConfig() { return *m_conf; }
+  cClassificationManager& GetClassificationManager() { return *m_class_mgr; }
   cDataFileManager& GetDataFileManager() { return *m_data_mgr; }
   cEnvironment& GetEnvironment() { return *m_env; }
   cHardwareManager& GetHardwareManager() { return *m_hw_mgr; }
@@ -79,7 +82,7 @@ public:
   int GetNumReactions();
   int GetNumResources();
 
-  // DDD - Inherited from cAvidaDriver heritage
+  // @DMB - Inherited from cAvidaDriver heritage
   void GetEvents();
   void ReadEventListFile(const cString & filename);
   void SyncEventList();

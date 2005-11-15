@@ -1320,52 +1320,6 @@ bool cHardwareCPU::KillThread()
   return true;
 }
 
-
-void cHardwareCPU::SaveState(ostream& fp)
-{
-  // note, memory & child_memory handled by cpu (@CAO Not any more!)
-  assert(fp.good());
-
-  fp<<"cHardwareCPU"<<endl;
-
-  // global_stack (in inverse order so load can just push)
-  global_stack.SaveState(fp);
-
-  fp << thread_time_used  << endl;
-  fp << GetNumThreads()   << endl;
-  fp << cur_thread        << endl;
-
-  // Threads
-  for( int i = 0; i < GetNumThreads(); i++ ) {
-    threads[i].SaveState(fp);
-  }
-}
-
-
-void cHardwareCPU::LoadState(istream & fp)
-{
-  // note, memory & child_memory handled by cpu (@CAO Not any more!)
-  assert(fp.good());
-
-  cString foo;
-  fp>>foo;
-  assert( foo == "cHardwareCPU" );
-
-  // global_stack
-  global_stack.LoadState(fp);
-
-  int num_threads;
-  fp >> thread_time_used;
-  fp >> num_threads;
-  fp >> cur_thread;
-
-  // Threads
-  for( int i = 0; i < num_threads; i++ ){
-    threads[i].LoadState(fp);
-  }
-}
-
-
 ////////////////////////////
 //  Instruction Helpers...
 ////////////////////////////

@@ -9,7 +9,7 @@
 
 #include "tArray.h"
 #include "functions.h"
-#include "cGenebank.h"
+#include "cClassificationManager.h"
 #include "cGenome.h"
 #include "cGenomeUtil.h"
 #include "cGenotype.h"
@@ -17,8 +17,7 @@
 #include "cTools.h"
 #include "cWorld.h"
 
-cBirthChamber::cBirthChamber(cWorld* world)
-  : m_world(world), genebank(NULL)
+cBirthChamber::cBirthChamber(cWorld* world) : m_world(world)
 {
   const int num_orgs = m_world->GetConfig().WORLD_X.Get() * m_world->GetConfig().WORLD_Y.Get();
   const int num_demes = m_world->GetConfig().NUM_DEMES.Get(); 
@@ -147,8 +146,7 @@ bool cBirthChamber::DoAsexBirth(const cGenome & child_genome,
   
   if (parent.GetPhenotype().CopyTrue() == false) {
     // Add this genotype with only one parent since its asexual.
-    child_genotype = genebank->AddGenotype(child_genome,
-					   parent.GetGenotype(), NULL);
+    child_genotype = m_world->GetClassificationManager().GetGenotype(child_genome, parent.GetGenotype(), NULL);
   }
 
   child_array[0]->SetGenotype(child_genotype);
@@ -183,7 +181,7 @@ bool cBirthChamber::DoPairAsexBirth(const cBirthEntry & old_entry,
   // the birth chamber, so we can un-defer that one.
 
   old_entry.parent_genotype->DecDeferAdjust();
-  genebank->AdjustGenotype(*old_entry.parent_genotype);
+  m_world->GetClassificationManager().AdjustGenotype(*old_entry.parent_genotype);
 
   return true;
 }
@@ -476,22 +474,17 @@ void cBirthChamber::DoModularShuffleRecombination(cCPUMemory & genome0,
 }
 
 
-void cBirthChamber::SetupGenotypeInfo(cOrganism * organism,
-				      cGenotype * parent0_genotype,
-				      cGenotype * parent1_genotype)
+void cBirthChamber::SetupGenotypeInfo(cOrganism* organism, cGenotype* parent0, cGenotype* parent1)
 {
   // Setup the genotypes for both children...
-  cGenotype * child_genotype =
-    genebank->AddGenotype(organism->GetGenome(),
-			  parent0_genotype, parent1_genotype);
+  cGenotype* child_genotype =
+    m_world->GetClassificationManager().GetGenotype(organism->GetGenome(), parent0, parent1);
 
   organism->SetGenotype(child_genotype);
-
-  parent0_genotype->SetBreedStats(*child_genotype);
+  parent0->SetBreedStats(*child_genotype);
   
   // Defer the child genotype from being adjusted until after the child
   // has been placed into the population.
-
   child_genotype->IncDeferAdjust();
 }
 
@@ -500,8 +493,6 @@ bool cBirthChamber::SubmitOffspring(const cGenome & child_genome,
 				    tArray<cOrganism *> & child_array,
 				    tArray<cMerit> & merit_array)
 {
-  assert(genebank != NULL);
-
   cPhenotype & parent_phenotype = parent.GetPhenotype();
 
   if (parent_phenotype.DivideSex() == false) {
@@ -635,7 +626,7 @@ bool cBirthChamber::SubmitOffspring(const cGenome & child_genome,
   // We are now also done with the parent genotype that we were saving in
   // the birth chamber, so we can un-defer that one.
   parent0_genotype->DecDeferAdjust();
-  genebank->AdjustGenotype(*parent0_genotype);
+  m_world->GetClassificationManager().AdjustGenotype(*parent0_genotype);
 
   return true;
 }

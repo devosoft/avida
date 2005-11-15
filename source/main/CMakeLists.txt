@@ -9,24 +9,12 @@ SET(libmain_a_SOURCES
   cBirthChamber.cc
   cEnvironment.cc
   cFitnessMatrix.cc
-  cGenebank.cc
   cGenome.cc
   cGenomeUtil.cc
-  cGenotype.cc
-  cGenotype_BirthData.cc
-  cGenotypeControl.cc
-  cGenotype_TestData.cc
-  cInjectGenebank.cc
-  cInjectGenotype.cc
-  cInjectGenotype_BirthData.cc
-  cInjectGenotypeControl.cc
-  cInjectGenotypeQueue.cc
   cInstruction.cc
   cInstSet.cc
   cInstUtil.cc
   cLandscape.cc
-  cLineage.cc
-  cLineageControl.cc
   cLocalMutations.cc
   cMutationLib.cc
   cMutationRates.cc
@@ -48,9 +36,6 @@ SET(libmain_a_SOURCES
   cResourceLib.cc
   cSpatialCountElem.cc
   cSpatialResCount.cc
-  cSpecies.cc
-  cSpeciesControl.cc
-  cSpeciesQueue.cc
   cStats.cc
   cTaskEntry.cc
   cTaskLib.cc
@@ -61,7 +46,7 @@ ADD_LIBRARY(main ${libmain_a_SOURCES})
 
 IF(AVD_PRIMITIVE)
   ADD_EXECUTABLE(primitive primitive.cc)
-  TARGET_LINK_LIBRARIES(primitive main cpu event analyze cpu main tools)
+  TARGET_LINK_LIBRARIES(primitive main classification cpu event analyze cpu main tools)
   LINK_DIRECTORIES(${ALL_LIB_DIRS})
   INSTALL_TARGETS(/work primitive)
 ENDIF(AVD_PRIMITIVE)

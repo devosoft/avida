@@ -59,9 +59,6 @@ public:
   int AsIntAdditivePolynomial(const int base) const;
   int AsIntFib(const int base) const;
   int AsIntPolynomialCoefficent(const int base) const;
-
-  void SaveState(std::ostream& fp);
-  void LoadState(std::istream & fp);
 };
 
 void cCodeLabel::AddNop(int nop_num) {

@@ -1,29 +1,21 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cInjectGenotypeControl.cc
+ *  Avida
+ *
+ *  Created by David on 11/15/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef INJECT_GENOTYPE_CONTROL_HH
 #include "cInjectGenotypeControl.h"
-#endif
 
-#ifndef DEFS_HH
 #include "defs.h"
-#endif
-#ifndef INJECT_GENEBANK_HH
-#include "cInjectGenebank.h"
-#endif
-#ifndef INJECT_GENOTYPE_HH
+#include "cClassificationManager.h"
 #include "cInjectGenotype.h"
-#endif
+#include "cWorld.h"
 
-////////////////////////////
-//  cInjectGenotypeControl
-////////////////////////////
-
-cInjectGenotypeControl::cInjectGenotypeControl(cInjectGenebank & in_gb) : genebank(in_gb)
+cInjectGenotypeControl::cInjectGenotypeControl(cWorld* world) : m_world(world)
 {
   size = 0;
   best = NULL;
@@ -209,7 +201,7 @@ bool cInjectGenotypeControl::Adjust(cInjectGenotype & in_inject_genotype)
   // Check to see if this genotype should be removed completely.
 
   if (in_inject_genotype.GetNumInjected() == 0) {
-    genebank.RemoveInjectGenotype(in_inject_genotype);
+    m_world->GetClassificationManager().RemoveInjectGenotype(in_inject_genotype);
     return false;
   }
 

@@ -113,14 +113,14 @@ void cHardwareManager::LoadInstSet(cString filename)
     // First, determine if it is a nop...
     int nop_mod = -1;
     if(nop_dict.Find(inst_name, nop_mod) == true) {
-      m_inst_set.AddNop2(nop_mod, redundancy, ft_cost, cost, prob_fail);
+      m_inst_set.AddNop(nop_mod, redundancy, ft_cost, cost, prob_fail);
       continue;
     }
     
     // Otherwise, it had better be in the main dictionary...
     int fun_id = -1;
     if(inst_dict.Find(inst_name, fun_id) == true){
-      m_inst_set.Add2(fun_id, redundancy, ft_cost, cost, prob_fail);
+      m_inst_set.AddInst(fun_id, redundancy, ft_cost, cost, prob_fail);
       continue;
     }
     

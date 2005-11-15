@@ -30,9 +30,6 @@ using namespace std;
 //  cOrganism
 ///////////////
 
-int cOrganism::instance_count(0);
-
-
 cOrganism::cOrganism(cWorld* world, const cGenome & in_genome)
   : m_world(world)
   , genotype(NULL)
@@ -59,7 +56,6 @@ cOrganism::cOrganism(cWorld* world, const cGenome & in_genome)
   // Initialization of structures...
   hardware = pop_interface.NewHardware(this);
   cpu_stats.Setup(hardware->GetNumInst());
-  instance_count++;
   pop_interface.SetCellID(-1);  // No cell at the moment...
 
   if (m_world->GetConfig().DEATH_METHOD.Get() > 0) {
@@ -81,7 +77,6 @@ cOrganism::~cOrganism()
 {
   assert(is_running == false);
   delete hardware;
-  instance_count--;
 }
 
 
@@ -301,102 +296,4 @@ void cOrganism::Fault(int fault_loc, int fault_type, cString fault_desc)
 #endif
 
   phenotype.IncErrors();
-}
-
-
-//// Save and Load ////
-void cOrganism::SaveState(ofstream& fp)
-{
-  assert(fp.good());
-
-  fp <<"cOrganism"<<endl;
-
-  //// Save If it is alive ////
-  if( genotype == NULL ){
-    fp <<false<<endl;
-  }
-  else{  // if there is a genotype here (ie. not dead)
-    fp <<true<<endl;
-
-    fp << input_pointer;
-
-    // IO buffers
-    input_buf.SaveState(fp);
-    output_buf.SaveState(fp);
-
-    //// Save Genotype Genome ////
-//    fp << genotype->GetLength() << endl;
-    
-//      cInstUtil::SaveInternalGenome(fp, hardware->GetInstSet(),
-//  				  genotype->GetGenome());
-
-    //// Save Actual Creature Memory & MemFlags ////
-//   fp <<hardware->GetMemory().GetSize()<<endl;
-//   cInstUtil::PrintGenome(hardware->GetInstSet(), hardware->GetMemory(), fp);
-//      fp <<"|"; // marker
-//      for( int i=0; i<hardware->GetMemory().GetSize(); ++i ){
-//        fp << hardware->GetMemory().GetFlags(i);
-//      }
-//      fp <<endl;
-
-    //// Save Hardware (Inst_Pointer, Stacks, and the like)
-    hardware->SaveState(fp);
-
-    //// Save Phenotype  ////
-    phenotype.SaveState(fp);
-
-  }
-}
-
-
-void cOrganism::LoadState(ifstream & fp)
-{
-  hardware->Reset();
-
-  assert(fp.good());
-
-  cString foo;
-  fp >>foo;
-  assert( foo == "cOrganism" );
-
-  //// Is there a creature there ////
-  bool alive_flag = 0;
-  fp >>alive_flag;
-  if( alive_flag ){
-
-    // IO buffers
-    //    fp.get(input_pointer);
-    input_buf.LoadState(fp);
-    output_buf.LoadState(fp);
-
-    //// Load Genotype ////
-    cGenome in_code =
-      cInstUtil::LoadInternalGenome(fp, hardware->GetInstSet());
-//    cGenotype * new_genotype = environment->AddGenotype(in_code);
-//    ChangeGenotype(new_genotype);
-
-    //// Load Actual Creature Memory & MemFlags ////
-//    {	
-//      in_code = cInstUtil::LoadInternalGenome(fp, hardware->GetInstSet());
-//      hardware->GetMemory() = in_code;
-//      CA_FLAG_TYPE flags;
-//      char marker;  fp >>marker;  assert( marker == '|' );
-//      for( int i=0; i<hardware->GetMemory().GetSize(); ++i ){
-//    	  fp.get(flags);
-//  	  hardware->SetMemFlags(i, flags);
-//      }
-//    }
-
-    //// Load Hardware (Inst_Pointer, Stacks, and the like)
-    hardware->LoadState(fp);
-
-    //// Load Phenotype  ////
-    assert(fp.good());
-//      phenotype.Clear(genotype->GetLength());
-    phenotype.LoadState(fp);
-
-    //// Adjust Time Slice ////
-//    environment->AdjustTimeSlice();
-
-  } // end if not a dead creature
 }

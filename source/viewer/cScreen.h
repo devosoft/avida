@@ -30,9 +30,7 @@ class cGenotype;
 class cPopulation;
 class cPopulationCell;
 class cOrganism;
-class cGenebank;
 class cInjectGenotype;
-class cInjectGenebank;
 
 #define NUM_SYMBOLS 12
 #define SYMBOL_THRESHOLD 10

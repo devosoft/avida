@@ -197,7 +197,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs) const
       exit(1);
     }
     // Add mapping to located instruction. 
-    ko_inst_set.Add2(lib_null_inst.GetOp());
+    ko_inst_set.AddInst(lib_null_inst.GetOp());
   }
   const cInstruction null_inst = ko_inst_set.GetInst("NULL");
   
@@ -321,7 +321,7 @@ void cAnalyzeGenotype::Recalculate(cAnalyzeGenotype * parent_genotype)
   test_info.TestThreads();
   // test_info.TraceTaskOrder();
 
-  // DDD - This does some 'interesting' things with the instruction set
+  // @DMB - This does some 'interesting' things with the instruction set
   
   // Use the inst lib for this genotype... and syncrhonize environment
   

@@ -20,11 +20,10 @@ bool gt_gentype::operator()(const cGenotype * g1, const cGenotype * g2) const
   return g1->GetID() > g2->GetID();
 }
 
-int cLineage::m_max_id = 0;
-
 cLineage::cLineage(double start_fitness, int parent_id, int id, int update,
 		   double generation,  double lineage_stat1, double lineage_stat2)
-  : m_parent_id(parent_id)
+  : m_id(id)
+  , m_parent_id(parent_id)
   , m_update_born(update)
   , m_num_CPUs(0)
   , m_total_CPUs(0)
@@ -33,21 +32,10 @@ cLineage::cLineage(double start_fitness, int parent_id, int id, int update,
   , m_lineage_stat1(lineage_stat1)
   , m_lineage_stat2(lineage_stat2)
 {
-  if ( id < 0 )
-    m_id = m_max_id++;
-  else{
-    m_id = id;
-    if ( id >= m_max_id )
-      m_max_id = id + 1;
-  }
   m_start_fitness = m_max_fitness = m_max_fitness_ever = start_fitness;
   m_ave_fitness = 0;
   m_ave_fitness_changed = true;
   m_threshold = false;
-}
-
-cLineage::~cLineage()
-{
 }
 
 void cLineage::AddCreature(cGenotype * genotype)

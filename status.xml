@@ -920,16 +920,13 @@ source/tools/struct.hh
         New cHardware base class, separate from Hardware CPU
       </action>
       <action context="refactor" dev="DMB">
-        Unique object ID factory template
+        [ lineage ]
       </action>
       <action context="refactor" dev="DMB">
         shift analyze commands into their own objects
       </action>
       <action context="refactor" dev="DMB">
-        merge analyze and events
-      </action>
-      <action context="refactor" dev="DMB">
-        instruction set methods with 2's after them?
+        merge analyze and events into 'actions'
       </action>
     </actions>
     <actions priority="low">

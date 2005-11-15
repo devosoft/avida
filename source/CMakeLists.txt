@@ -1,5 +1,5 @@
 
-SUBDIRS(analyze cpu event main third-party tools support utils/task_events)
+SUBDIRS(analyze classification cpu event main third-party tools support utils/task_events)
 IF(AVD_GUI_NCURSES)
   SUBDIRS(viewer)
 ENDIF(AVD_GUI_NCURSES)

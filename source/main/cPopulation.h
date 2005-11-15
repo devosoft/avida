@@ -38,12 +38,9 @@ template <class T> class tArray; // aggregate
 class cBirthChamber; // aggregate
 class cChangeList;
 class cEnvironment;
-class cGenebank;
 class cGenome;
 class cGenotype;
-class cInjectGenebank;
 class cLineage;
-class cLineageControl;
 template <class T> class tList; // aggregate
 class cOrganism;
 class cPopulationInterface; // aggregate
@@ -63,9 +60,6 @@ private:
   cBirthChamber birth_chamber;         // Global birth chamber.
 
   // Data Tracking...
-  cGenebank * genebank;                // Tracks genotypes
-  cInjectGenebank * inject_genebank;   // Tracks all injected code
-  cLineageControl * lineage_control;   // Tracks Linages
   tList<cPopulationCell> reaper_queue; // Death order in some mass-action runs
 
   // Default organism setups...
@@ -103,7 +97,7 @@ private:
   void UpdateDominantParaStats();
 
   /**
-   * Attention: InjectGenotype does *not* add the genotype to the genebank.
+   * Attention: InjectGenotype does *not* add the genotype to the archive.
    * It assumes thats where you got the genotype from.
    **/
   void InjectGenotype(int cell_id, cGenotype * genotype);
@@ -183,9 +177,6 @@ public:
   double GetResource(int id) const {
     return resource_count.Get(id); }
 
-  cGenebank & GetGenebank() { return *genebank; }
-  cInjectGenebank & GetInjectGenebank() { return *inject_genebank; }
-  cLineageControl * GetLineageControl() { return lineage_control; }
   cEnvironment & GetEnvironment() { return environment; }
   int GetNumOrganisms() { return num_organisms; }
 

@@ -9,11 +9,10 @@
 
 #include <fstream>
 
+#include "cClassificationManager.h"
 #include "cSpecies.h"
 #include "cGenotype.h"
-#include "cGenebank.h"
 #include "cInjectGenotype.h"
-#include "cInjectGenebank.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cOrganism.h"
@@ -149,7 +148,7 @@ void cViewInfo::UpdateSymbols()
   int i, pos;
   for (i = 0; i < NUM_SYMBOLS; i++) {
     if (genotype_chart[i]) {
-      pos = GetGenebank().FindPos(*(genotype_chart[i]));
+      pos = m_world->GetClassificationManager().FindPos(*(genotype_chart[i]));
       if (pos < 0) genotype_chart[i] = NULL;
       if (pos >= NUM_SYMBOLS) {
 	if (genotype_chart[i]->GetThreshold())
@@ -159,7 +158,7 @@ void cViewInfo::UpdateSymbols()
       }
     }
     if (species_chart[i]) {
-      pos = GetGenebank().FindPos(*(species_chart[i]));
+      pos = m_world->GetClassificationManager().FindPos(*(species_chart[i]));
       if (pos < 0) species_chart[i] = NULL;
       if (pos >= NUM_SYMBOLS) {
 	species_chart[i]->SetSymbol('+');
@@ -170,8 +169,8 @@ void cViewInfo::UpdateSymbols()
 
   // Now, fill in any missing spaces...
 
-  cGenotype * temp_gen = GetGenebank().GetBestGenotype();
-  cSpecies * temp_species = GetGenebank().GetFirstSpecies();
+  cGenotype * temp_gen = m_world->GetClassificationManager().GetBestGenotype();
+  cSpecies * temp_species = m_world->GetClassificationManager().GetFirstSpecies();
   for (i = 0; i < SYMBOL_THRESHOLD; i++) {
     if (temp_gen) {
       if (!InGenChart(temp_gen)) AddGenChart(temp_gen);
@@ -198,11 +197,6 @@ void cViewInfo::EngageStepMode()
 void cViewInfo::DisEngageStepMode()
 {
   SetStepOrganism(-1);
-}
-
-cGenebank & cViewInfo::GetGenebank()
-{
-  return m_world->GetPopulation().GetGenebank();
 }
 
 cGenotype * cViewInfo::GetActiveGenotype()

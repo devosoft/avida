@@ -41,7 +41,7 @@ namespace nInstructionTest {
       // Values 0-61 map to symbols a-z, A-Z, and 0-9,
       // in that order.
       // All other values should map to symbol '?'.
-      // XXX: why does value 255 map to symbol '_'?
+      // @DMB - why does value 255 map to symbol '_'?
       inst.SetOp(1); test_is_true(inst.GetSymbol() == 'b');
       inst.SetOp(25); test_is_true(inst.GetSymbol() == 'z');
       inst.SetOp(26); test_is_true(inst.GetSymbol() == 'A');

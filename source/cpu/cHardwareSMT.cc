@@ -746,7 +746,7 @@ bool cHardwareSMT::InjectParasite(double mut_multiplier)
 //This is the code run by the TARGET of an injection.  This RECIEVES the infection.
 bool cHardwareSMT::InjectHost(const cCodeLabel & in_label, const cGenome & inject_code)
 {
-  // DDD - Need to discuss how InjectHost should work with extensible memory spaces...
+  // @DMB - Need to discuss how InjectHost should work with extensible memory spaces...
   return false;
   
   // Make sure the genome will be below max size after injection.	
@@ -1070,53 +1070,6 @@ bool cHardwareSMT::KillThread()
   if (m_cur_thread > kill_thread) m_cur_thread--;
 	
   return true;
-}
-
-
-void cHardwareSMT::SaveState(ostream& fp)
-{
-  // note, memory & child_memory handled by cpu (@CAO Not any more!)
-  assert(fp.good());
-	
-  fp<<"cHardwareSMT"<<endl;
-	
-  // global_stack (in inverse order so load can just push)
-  for(int i = nHardwareSMT::NUM_LOCAL_STACKS; i < nHardwareSMT::NUM_STACKS; i++)
-    Stack(i).SaveState(fp);
-	
-  //fp << thread_time_used  << endl;
-  fp << GetNumThreads()   << endl;
-  fp << m_cur_thread        << endl;
-	
-  // Threads
-  for( int i = 0; i < GetNumThreads(); i++ ) {
-    m_threads[i].SaveState(fp);
-  }
-}
-
-
-void cHardwareSMT::LoadState(istream & fp)
-{
-  // note, memory & child_memory handled by cpu (@CAO Not any more!)
-  assert(fp.good());
-	
-  cString foo;
-  fp>>foo;
-  assert( foo == "cHardwareSMT" );
-	
-  // global_stack
-  for(int i = nHardwareSMT::NUM_LOCAL_STACKS; i < nHardwareSMT::NUM_STACKS; i++)
-    Stack(i).LoadState(fp);
-	
-  int num_threads;
-  //fp >> thread_time_used;
-  fp >> num_threads;
-  fp >> m_cur_thread;
-	
-  // Threads
-  for( int i = 0; i < num_threads; i++ ){
-    m_threads[i].LoadState(fp);
-  }
 }
 
 
@@ -1534,7 +1487,7 @@ bool cHardwareSMT::Divide_Main(int mem_space_used, double mut_multiplier)
 {
   int write_head_pos = GetHead(nHardware::HEAD_WRITE).GetPosition();
   
-  // DDD - change to allow ???
+  // @DMB - change to allow ???
   // We're going to disallow division calls from memory spaces other than zero for right now @law
   if(IP().GetMemSpace() != 0) return false;
 
@@ -2033,7 +1986,7 @@ bool cHardwareSMT::Inst_Search()
 //25
 bool cHardwareSMT::Inst_PushNext() 
 {
-  // DDD - Should this allow modified next, or be eliminated in favor of just 'Push'
+  // @DMB - Should this allow modified next, or be eliminated in favor of just 'Push'
   const int src = FindModifiedStack(nHardwareSMT::STACK_AX);
 #ifdef SMT_FULLY_ASSOCIATIVE
   const int dst = FindModifiedNextStack(src);
@@ -2047,7 +2000,7 @@ bool cHardwareSMT::Inst_PushNext()
 //26
 bool cHardwareSMT::Inst_PushPrevious() 
 {
-  // DDD - Should this allow modified previous, or be eliminated in favor of just 'Push'
+  // @DMB - Should this allow modified previous, or be eliminated in favor of just 'Push'
   const int src = FindModifiedStack(nHardwareSMT::STACK_BX);
 #ifdef SMT_FULLY_ASSOCIATIVE
   const int dst = FindModifiedPreviousStack(src);
@@ -2061,7 +2014,7 @@ bool cHardwareSMT::Inst_PushPrevious()
 //27
 bool cHardwareSMT::Inst_PushComplement() 
 {
-  // DDD - Should this allow modified complement, or be eliminated in favor of just 'Push'
+  // @DMB - Should this allow modified complement, or be eliminated in favor of just 'Push'
   int src = FindModifiedStack(nHardwareSMT::STACK_BX);
 #ifdef SMT_FULLY_ASSOCIATIVE
   const int dst = FindModifiedComplementStack(src);
@@ -2177,7 +2130,7 @@ int cHardwareSMT::FindFirstEmpty()
 
 bool cHardwareSMT::isEmpty(int mem_space_used)
 {
-  // DDD - shouldn't this just be return false if GetSize() != 1
+  // @DMB - shouldn't this just be return false if GetSize() != 1
   for(int x = 0; x < m_mem_array[mem_space_used].GetSize(); x++) {
 		if(m_mem_array[mem_space_used][x].GetOp() >= nHardwareSMT::NUM_NOPS)
 			return false;

@@ -31,6 +31,7 @@ cGenotype::cGenotype(cWorld* world, int in_update_born, int in_id)
   , flag_threshold(false)
   , is_active(true)
   , defer_adjust(0)
+  , id_num(in_id)
   , symbol(0)
   , birth_data(in_update_born)
   , num_organisms(0)
@@ -41,19 +42,12 @@ cGenotype::cGenotype(cWorld* world, int in_update_born, int in_id)
   , next(NULL)
   , prev(NULL)
 {
-  static int next_id = 1;
-  
-  if ( in_id >= 0 )
-    next_id = in_id;
-  
-  id_num = next_id++;
 }
 
 cGenotype::~cGenotype()
 {
   // Reset some of the variables to make sure program will crash if a deleted
   // cell is read!
-
   symbol = '!';
 
   num_organisms = -1;
@@ -75,24 +69,26 @@ bool cGenotype::SaveClone(ofstream& fp)
   return true;
 }
 
-bool cGenotype::LoadClone(ifstream & fp)
+cGenotype* cGenotype::LoadClone(cWorld* world, ifstream& fp)
 {
+  int tmp_id = -1;
   int genome_size = 0;
 
-  fp >> id_num;
+  fp >> tmp_id;
   fp >> genome_size;
 
-  genome = cGenome(genome_size);
+  cGenotype* ret = new cGenotype(world, 0, tmp_id);
+  ret->genome = cGenome(genome_size);
   for (int i = 0; i < genome_size; i++) {
     cInstruction temp_inst;
     int inst_op;
     fp >> inst_op;
     temp_inst.SetOp((UCHAR) inst_op);
-    genome[i] = temp_inst;
+    ret->genome[i] = temp_inst;
     // @CAO add something here to load arguments for instructions.
   }
-
-  return true;
+  
+  return ret;
 }
 
 bool cGenotype::OK()

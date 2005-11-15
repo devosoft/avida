@@ -11,6 +11,7 @@
 
 #include "avida.h"
 #include "cAvidaTriggers.h"
+#include "cClassificationManager.h"
 #include "cEnvironment.h"
 #include "cEventList.h"
 #include "cEventManager.h"
@@ -53,8 +54,9 @@ void cWorld::Setup()
     m_conf->DATA_DIR.Set(dir);
   }
   m_data_mgr = new cDataFileManager(dir);
-  cTools::MkDir(dir + "genebank", true);
+  cTools::MkDir(dir + "archive", true);
   
+  m_class_mgr = new cClassificationManager(this);
   m_env = new cEnvironment(this);
   m_hw_mgr = new cHardwareManager(this);
   

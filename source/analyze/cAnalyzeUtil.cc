@@ -9,7 +9,7 @@
 
 #include "defs.h"
 #include "cEnvironment.h"
-#include "cGenebank.h"
+#include "cClassificationManager.h"
 #include "cGenome.h"
 #include "cGenomeUtil.h"
 #include "cGenotype.h"
@@ -187,18 +187,17 @@ void cAnalyzeUtil::PairTestLandscape(cWorld* world, const cGenome &genome, cInst
 
 void cAnalyzeUtil::CalcConsensus(cWorld* world, int lines_saved)
 {
-  cPopulation* population = &world->GetPopulation();
   const int num_inst = world->GetHardwareManager().GetInstSet().GetSize();
   const int update = world->GetStats().GetUpdate();
-  cGenebank & genebank = population->GetGenebank();
+  cClassificationManager& classmgr = world->GetClassificationManager();
   
   // Setup the histogtams...
   cHistogram * inst_hist = new cHistogram[MAX_CREATURE_SIZE];
   for (int i = 0; i < MAX_CREATURE_SIZE; i++) inst_hist[i].Resize(num_inst,-1);
   
   // Loop through all of the genotypes adding them to the histograms.
-  cGenotype * cur_genotype = genebank.GetBestGenotype();
-  for (int i = 0; i < genebank.GetSize(); i++) {
+  cGenotype * cur_genotype = classmgr.GetBestGenotype();
+  for (int i = 0; i < classmgr.GetGenotypeCount(); i++) {
     const int num_organisms = cur_genotype->GetNumOrganisms();
     const int length = cur_genotype->GetLength();
     const cGenome & genome = cur_genotype->GetGenome();
@@ -265,9 +264,9 @@ void cAnalyzeUtil::CalcConsensus(cWorld* world, int lines_saved)
   // --- Study the consensus genome ---
   
   // Loop through genotypes again, and determine the average genetic distance.
-  cur_genotype = genebank.GetBestGenotype();
+  cur_genotype = classmgr.GetBestGenotype();
   cDoubleSum distance_sum;
-  for (int i = 0; i < genebank.GetSize(); i++) {
+  for (int i = 0; i < classmgr.GetGenotypeCount(); i++) {
     const int num_organisms = cur_genotype->GetNumOrganisms();
     const int cur_dist =
       cGenomeUtil::FindEditDistance(con_genome, cur_genotype->GetGenome());
@@ -278,16 +277,16 @@ void cAnalyzeUtil::CalcConsensus(cWorld* world, int lines_saved)
   }
   
   // Finally, gather last bits of data and print the results.
-  cGenotype * con_genotype = genebank.FindGenotype(con_genome, -1);
+  cGenotype * con_genotype = classmgr.FindGenotype(con_genome, -1);
   const int best_dist = cGenomeUtil::FindEditDistance(con_genome,
-                                                      genebank.GetBestGenotype()->GetGenome());
+                                                      classmgr.GetBestGenotype()->GetGenome());
   
   const double ave_dist = distance_sum.Average();
   const double var_dist = distance_sum.Variance();
   const double complexity_base = (double) con_genome.GetSize() - total_entropy;
   
   cString con_name;
-  con_name.Set("genebank/%03d-consensus-u%i.gen", con_genome.GetSize(),update);
+  con_name.Set("classmgr/%03d-consensus-u%i.gen", con_genome.GetSize(),update);
   cTestUtil::PrintGenome(world, con_genome, con_name());
   
   
@@ -406,7 +405,7 @@ void cAnalyzeUtil::AnalyzePopulation(cWorld* world, ofstream& fp,
     else fp << endl;
     if ( save_genotype ){
       char filename[40];
-      sprintf( filename, "genebank/%s", creature_name() );
+      sprintf( filename, "classmgr/%s", creature_name() );
       cTestUtil::PrintGenome(world, genome, filename);
     }
   }
@@ -428,7 +427,7 @@ void cAnalyzeUtil::AnalyzePopulation(cWorld* world, ofstream& fp,
  * @param histo_testCPU_fp A stream into which the fitness histogram as
  * determined exclusively from the test-CPU should be written.
  * @param save_max_f_genotype A bool that determines whether the genotype
- * with the maximum fitness should be saved into the genebank.
+ * with the maximum fitness should be saved into the classmgr.
  * @param print_fitness_histo A bool that determines whether fitness
  * histograms should be written.
  * @param hist_fmax The maximum fitness value to be taken into account
@@ -524,7 +523,7 @@ void cAnalyzeUtil::PrintDetailedFitnessData(cWorld* world, cString& datafn,
   
   if (save_max_f_genotype) {
     char filename[40];
-    sprintf( filename, "genebank/%s", max_f_name() );
+    sprintf( filename, "classmgr/%s", max_f_name() );
     cTestUtil::PrintGenome(world, max_f_genotype->GetGenome(), filename);
   }
   
@@ -562,13 +561,12 @@ void cAnalyzeUtil::PrintDetailedFitnessData(cWorld* world, cString& datafn,
  * @param fp The stream into which the data should be saved.
  * @param reference_genome The reference genome.
  * @param save_creatures A bool that indicates whether creatures should be
- * saved into the genebank or not.
+ * saved into the classmgr or not.
  **/
 
 void cAnalyzeUtil::PrintGeneticDistanceData(cWorld* world, ofstream& fp,
                                             const char * creature_name)
 {
-  cPopulation* pop = &world->GetPopulation();
   double hamming_m1 = 0;
   double hamming_m2 = 0;
   int count = 0;
@@ -578,14 +576,14 @@ void cAnalyzeUtil::PrintGeneticDistanceData(cWorld* world, ofstream& fp,
   cGenome reference_genome(cInstUtil::LoadGenome(creature_name, world->GetHardwareManager().GetInstSet()));
   
   // get the info for the dominant genotype
-  cGenotype * cur_genotype = pop->GetGenebank().GetBestGenotype();
+  cGenotype * cur_genotype = world->GetClassificationManager().GetBestGenotype();
   cGenome genome = cur_genotype->GetGenome();
   dom_dist = cGenomeUtil::FindHammingDistance( reference_genome, genome );
   hamming_m1 += dom_dist;
   hamming_m2 += dom_dist*dom_dist;
   count += cur_genotype->GetNumOrganisms();
   // now cycle over the remaining genotypes
-  for (int i = 1; i < pop->GetGenebank().GetSize(); i++) {
+  for (int i = 1; i < world->GetClassificationManager().GetGenotypeCount(); i++) {
     cur_genotype = cur_genotype->GetNext();
     cGenome genome = cur_genotype->GetGenome();
     
@@ -603,7 +601,7 @@ void cAnalyzeUtil::PrintGeneticDistanceData(cWorld* world, ofstream& fp,
     << sqrt( ( hamming_m2 - hamming_m1*hamming_m1 ) / (double) count )
     << " "  // std. error
     << cGenomeUtil::FindHammingDistance( reference_genome,
-                                         pop->GetGenebank().GetBestGenotype()->GetGenome() ) << " "
+                                         world->GetClassificationManager().GetBestGenotype()->GetGenome() ) << " "
     << endl;
 }
 
@@ -617,13 +615,12 @@ void cAnalyzeUtil::PrintGeneticDistanceData(cWorld* world, ofstream& fp,
  * @param fp The stream into which the data should be saved.
  * @param reference_genome The reference genome.
  * @param save_creatures A bool that indicates whether creatures should be
- * saved into the genebank or not.
+ * saved into the classmgr or not.
  **/
 
 void cAnalyzeUtil::GeneticDistancePopDump(cWorld* world, ofstream& fp,
                                           const char * creature_name, bool save_creatures)
 {
-  cPopulation* pop = &world->GetPopulation();
   double sum_fitness = 0;
   int sum_num_organisms = 0;
   
@@ -635,8 +632,8 @@ void cAnalyzeUtil::GeneticDistancePopDump(cWorld* world, ofstream& fp,
   fp << "# reference genome is the START_CREATURE" << endl;
   
   // cycle over all genotypes
-  cGenotype * cur_genotype = pop->GetGenebank().GetBestGenotype();
-  for (int i = 0; i < pop->GetGenebank().GetSize(); i++) {
+  cGenotype * cur_genotype = world->GetClassificationManager().GetBestGenotype();
+  for (int i = 0; i < world->GetClassificationManager().GetGenotypeCount(); i++) {
     const cGenome & genome = cur_genotype->GetGenome();
     const int num_orgs = cur_genotype->GetNumOrganisms();
     
@@ -653,10 +650,10 @@ void cAnalyzeUtil::GeneticDistancePopDump(cWorld* world, ofstream& fp,
       << genome.AsString()()             << " "  // 6 genome
       << endl;
     
-    // save into genebank
+    // save into classmgr
     if (save_creatures) {
       char filename[40];
-      sprintf( filename, "genebank/%s", cur_genotype->GetName()() );
+      sprintf( filename, "classmgr/%s", cur_genotype->GetName()() );
       cTestUtil::PrintGenome(world, genome, filename);
     }
     
@@ -766,7 +763,7 @@ void cAnalyzeUtil::PrintViableTasksData(cWorld* world, ofstream& fp)
   const int num_tasks = world->GetNumTasks();
   cPopulation* pop = &world->GetPopulation();
   
-  static vector<int> tasks(num_tasks);
+  vector<int> tasks(num_tasks);
   vector<int>::iterator it;
   
   // clear task vector
@@ -788,11 +785,11 @@ void cAnalyzeUtil::PrintViableTasksData(cWorld* world, ofstream& fp)
 }
 
 
-void cAnalyzeUtil::PrintTreeDepths(cPopulation * pop, ofstream& fp)
+void cAnalyzeUtil::PrintTreeDepths(cWorld* world, ofstream& fp)
 {
   // cycle over all genotypes
-  cGenotype * genotype = pop->GetGenebank().GetBestGenotype();
-  for (int i = 0; i < pop->GetGenebank().GetSize(); i++) {
+  cGenotype* genotype = world->GetClassificationManager().GetBestGenotype();
+  for (int i = 0; i < world->GetClassificationManager().GetGenotypeCount(); i++) {
     fp << genotype->GetID() << " "             // 1
     << genotype->GetTestFitness() << " "    // 2
     << genotype->GetNumOrganisms() << " "   // 3
@@ -807,7 +804,6 @@ void cAnalyzeUtil::PrintTreeDepths(cPopulation * pop, ofstream& fp)
 
 void cAnalyzeUtil::PrintDepthHistogram(cWorld* world, ofstream& fp)
 {
-  cPopulation* pop = &world->GetPopulation();
   // Output format:    update  min  max  histogram_values...
   int min = INT_MAX;
   int max = 0;
@@ -816,9 +812,9 @@ void cAnalyzeUtil::PrintDepthHistogram(cWorld* world, ofstream& fp)
   // Two pass method
   
   // Loop through all genotypes getting min and max values
-  cGenebank & genebank = pop->GetGenebank();
-  cGenotype * cur_genotype = genebank.GetBestGenotype();
-  for (int i = 0; i < genebank.GetSize(); i++) {
+  cClassificationManager& classmgr = world->GetClassificationManager();
+  cGenotype * cur_genotype = classmgr.GetBestGenotype();
+  for (int i = 0; i < classmgr.GetGenotypeCount(); i++) {
     if (cur_genotype->GetDepth() < min) min = cur_genotype->GetDepth();
     if (cur_genotype->GetDepth() > max) max = cur_genotype->GetDepth();
     cur_genotype = cur_genotype->GetNext();
@@ -830,8 +826,8 @@ void cAnalyzeUtil::PrintDepthHistogram(cWorld* world, ofstream& fp)
   for (int i = 0; i < max - min + 1; i++) n[i] = 0;
   
   // Loop through all genotypes binning the values
-  cur_genotype = genebank.GetBestGenotype();
-  for (int i = 0; i < genebank.GetSize(); i++) {
+  cur_genotype = classmgr.GetBestGenotype();
+  for (int i = 0; i < classmgr.GetGenotypeCount(); i++) {
     n[cur_genotype->GetDepth() - min] += cur_genotype->GetNumOrganisms();
     cur_genotype = cur_genotype->GetNext();
   }
@@ -848,16 +844,15 @@ void cAnalyzeUtil::PrintDepthHistogram(cWorld* world, ofstream& fp)
 
 void cAnalyzeUtil::PrintGenotypeAbundanceHistogram(cWorld* world, ofstream& fp)
 {
-  cPopulation* pop = &world->GetPopulation();
   assert(fp.good());
   
   // Allocate array for the histogram & zero it
-  tArray <int> hist(pop->GetGenebank().GetBestGenotype()->GetNumOrganisms());
+  tArray <int> hist(world->GetClassificationManager().GetBestGenotype()->GetNumOrganisms());
   for (int i = 0; i < hist.GetSize(); i++) hist[i] = 0;
   
   // Loop through all genotypes binning the values
-  cGenotype * cur_genotype = pop->GetGenebank().GetBestGenotype();
-  for (int i = 0; i < pop->GetGenebank().GetSize(); i++) {
+  cGenotype * cur_genotype = world->GetClassificationManager().GetBestGenotype();
+  for (int i = 0; i < world->GetClassificationManager().GetGenotypeCount(); i++) {
     assert( cur_genotype->GetNumOrganisms() - 1 >= 0 );
     assert( cur_genotype->GetNumOrganisms() - 1 < hist.GetSize() );
     hist[cur_genotype->GetNumOrganisms() - 1]++;
@@ -873,14 +868,13 @@ void cAnalyzeUtil::PrintGenotypeAbundanceHistogram(cWorld* world, ofstream& fp)
 
 void cAnalyzeUtil::PrintSpeciesAbundanceHistogram(cWorld* world, ofstream& fp)
 {
-  cPopulation* pop = &world->GetPopulation();
   int max = 0;
   assert(fp.good());
   
   // Find max species abundance...
-  cGenebank & genebank = pop->GetGenebank();
-  cSpecies * cur_species = genebank.GetFirstSpecies();
-  for (int i = 0; i < genebank.GetNumSpecies(); i++) {
+  cClassificationManager& classmgr = world->GetClassificationManager();
+  cSpecies * cur_species = classmgr.GetFirstSpecies();
+  for (int i = 0; i < classmgr.GetNumSpecies(); i++) {
     if (max < cur_species->GetNumOrganisms()) {
       max = cur_species->GetNumOrganisms();
     }
@@ -892,8 +886,8 @@ void cAnalyzeUtil::PrintSpeciesAbundanceHistogram(cWorld* world, ofstream& fp)
   for (int i = 0; i < hist.GetSize(); i++)  hist[i] = 0;
   
   // Loop through all species binning the values
-  cur_species = genebank.GetFirstSpecies();
-  for (int i = 0; i < genebank.GetNumSpecies(); i++) {
+  cur_species = classmgr.GetFirstSpecies();
+  for (int i = 0; i < classmgr.GetNumSpecies(); i++) {
     assert( cur_species->GetNumOrganisms() - 1 >= 0 );
     assert( cur_species->GetNumOrganisms() - 1 < hist.GetSize() );
     hist[cur_species->GetNumOrganisms() -1]++;

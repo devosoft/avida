@@ -10,7 +10,6 @@
 #include "cEnvironment.h"
 #include "functions.h"
 
-#include "cGenebank.h"
 #include "cGenotype.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
@@ -2002,7 +2001,7 @@ bool cZoomScreen::DoInputCPU(int in_char)
         else if(info.GetConfig().HARDWARE_TYPE.Get() == HARDWARE_TYPE_CPU_SMT)
         {
           cur_mem_space++;
-          // DDD - Should handle the extensibility of SMT Memory Spaces
+          // @DMB - Should handle the extensibility of SMT Memory Spaces
           cur_mem_space %= 1;
         }
       }
@@ -2025,7 +2024,7 @@ bool cZoomScreen::DoInputCPU(int in_char)
         }
         else if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_SMT) {
           cur_mem_space--;
-          // DDD - Should handle the extensibility of SMT Memory Spaces
+          // @DMB - Should handle the extensibility of SMT Memory Spaces
           if (cur_mem_space < 0) cur_mem_space = 0;
         }
       }

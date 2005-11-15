@@ -12,7 +12,6 @@
 #include "cSpeciesQueue.h"
 #endif
 
-class cGenebank;
 class cGenotype;
 class cSpecies;
 class cStats;
@@ -24,9 +23,9 @@ private:
   cSpeciesQueue active_queue;
   cSpeciesQueue inactive_queue;
   cSpeciesQueue garbage_queue;
-  cGenebank & genebank;
+
 public:
-  cSpeciesControl(cWorld* world, cGenebank & in_gb);
+  cSpeciesControl(cWorld* world);
   ~cSpeciesControl();
 
   void Remove(cSpecies & in_species);

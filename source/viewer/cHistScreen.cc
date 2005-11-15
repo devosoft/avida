@@ -5,13 +5,14 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
+#include "cHistScreen.h"
+
 #include <fstream>
 
-#include "cGenebank.h"
 #include "cGenotype.h"
 #include "cSpecies.h"
-
-#include "cHistScreen.h"
+#include "cWorld.h"
+#include "cClassificationManager.h"
 
 
 using namespace std;
@@ -118,7 +119,7 @@ void cHistScreen::Update()
 
   switch(mode) {
   case HIST_GENOTYPE:
-    max_num = info.GetGenebank().GetBestGenotype()->GetNumOrganisms();
+    max_num = info.GetWorld().GetClassificationManager().GetBestGenotype()->GetNumOrganisms();
     SetBoldColor(COLOR_WHITE);
     Print(1,  34, "Genotype Abundance");
     // Print out top NUM_SYMBOL genotypes in fixed order.

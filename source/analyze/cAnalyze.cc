@@ -1438,7 +1438,7 @@ void cAnalyze::CommandPrint(cString cur_string)
   if (verbose >= nAnalyze::VERBOSE_ON) cout << "Printing batch " << cur_batch << endl;
   else cout << "Printing organisms..." << endl;
   
-  cString directory = PopDirectory(cur_string, "genebank/");
+  cString directory = PopDirectory(cur_string, "archive/");
   
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype * genotype = NULL;
@@ -1466,7 +1466,7 @@ void cAnalyze::CommandTrace(cString cur_string)
   int words = cur_string.CountNumWords();
   
   cString dir = cur_string.PopWord();
-  cString defaultDirectory = "genebank/";
+  cString defaultDirectory = "archive/";
   cString directory = PopDirectory(dir, defaultDirectory);
   
   int useResources = 0;
@@ -3662,7 +3662,7 @@ void cAnalyze::AnalyzeKnockouts(cString cur_string)
       exit(1);
     }
     // Add mapping to located instruction. 
-    ko_inst_set.Add2(lib_null_inst.GetOp());
+    ko_inst_set.AddInst(lib_null_inst.GetOp());
   }
   const cInstruction null_inst = ko_inst_set.GetInst("NULL");
   
@@ -4032,7 +4032,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
         exit(1);
       }
       // Add mapping to located instruction. 
-      map_inst_set.Add2(inst_lib_null_inst.GetOp());
+      map_inst_set.AddInst(inst_lib_null_inst.GetOp());
     }
     const cInstruction null_inst = map_inst_set.GetInst("NULL");
     
@@ -4289,7 +4289,7 @@ void cAnalyze::CommandAverageModularity(cString cur_string)
             exit(1);
           }
           // Add mapping to located instruction. 
-          map_inst_set.Add2(inst_lib_null_inst.GetOp());
+          map_inst_set.AddInst(inst_lib_null_inst.GetOp());
         }
         const cInstruction null_inst = map_inst_set.GetInst("NULL");
         
@@ -4600,7 +4600,7 @@ void cAnalyze::CommandMapMutations(cString cur_string)
         exit(1);
       }
       // Add mapping to located instruction. 
-      map_inst_set.Add2(inst_lib_null_inst.GetOp());
+      map_inst_set.AddInst(inst_lib_null_inst.GetOp());
     }
     const cInstruction null_inst = map_inst_set.GetInst("NULL");
     
@@ -5321,7 +5321,7 @@ void cAnalyze::WriteClone(cString cur_string)
   // Start up again at update zero...
   fp << "0 ";
   
-  // Setup the genebank sizes of lists to all be zero.
+  // Setup the archive sizes of lists to all be zero.
   fp << MAX_CREATURE_SIZE << " ";
   for (int i = 0; i < MAX_CREATURE_SIZE; i++) {
     fp << "0 ";

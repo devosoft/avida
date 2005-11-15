@@ -4,9 +4,10 @@ INSTALL_FILES(/work FILES
   analyze.cfg
   environment.cfg
   events.cfg
-  genesis
+  avida.cfg
   inst_set.default
   organism.default
+  organism.smt
   inst_set.4stack
-  genesis.4stack
+  inst_set.smt
 )

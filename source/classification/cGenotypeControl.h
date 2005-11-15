@@ -5,14 +5,13 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef GENOTYPE_CONTROL_HH
-#define GENOTYPE_CONTROL_HH
+#ifndef cGenotypeControl_h
+#define cGenotypeControl_h
 
 #ifndef nGenotype_h
 #include "nGenotype.h"
 #endif
 
-class cGenebank;
 class cGenome;
 class cGenotype;
 class cWorld;
@@ -24,7 +23,6 @@ private:
   cGenotype* best;
   cGenotype* coalescent;
   cGenotype* threads[nGenotype::THREADS];
-  cGenebank& genebank;
 
   cGenotype * historic_list;
   int historic_count;
@@ -32,7 +30,7 @@ private:
   void Insert(cGenotype & in_genotype, cGenotype * prev_genotype);
   bool CheckPos(cGenotype & in_genotype);
 public:
-  cGenotypeControl(cWorld* world, cGenebank& in_gb);
+  cGenotypeControl(cWorld* world);
   ~cGenotypeControl();
 
   bool OK();

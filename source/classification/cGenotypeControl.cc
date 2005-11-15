@@ -8,11 +8,11 @@
 #include "cGenotypeControl.h"
 
 #include "defs.h"
-#include "cGenebank.h"
+#include "cClassificationManager.h"
 #include "cGenotype.h"
 #include "cWorld.h"
 
-cGenotypeControl::cGenotypeControl(cWorld* world, cGenebank & in_gb) : m_world(world), genebank(in_gb)
+cGenotypeControl::cGenotypeControl(cWorld* world) : m_world(world)
 {
   size = 0;
   best = NULL;
@@ -198,7 +198,7 @@ bool cGenotypeControl::Adjust(cGenotype & in_genotype)
 
   if (in_genotype.GetNumOrganisms() == 0 &&
       in_genotype.GetDeferAdjust() == false) {
-    genebank.RemoveGenotype(in_genotype);
+    m_world->GetClassificationManager().RemoveGenotype(in_genotype);
     return false;
   }
 

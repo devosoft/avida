@@ -8,7 +8,6 @@
 #include "cEnvironmentScreen.h"
 
 #include "cEnvironment.h"
-#include "cGenebank.h"
 #include "cGenotype.h"
 #include "cPopulation.h"
 #include "cReaction.h"

@@ -27,7 +27,7 @@ cInstSet::cInstSet(const cInstSet & in_inst_set)
   , m_inst_lib(in_inst_set.m_inst_lib)
   , m_lib_name_map(in_inst_set.m_lib_name_map)
   , m_lib_nopmod_map(in_inst_set.m_lib_nopmod_map)
-  , mutation_chart2(in_inst_set.mutation_chart2)
+  , m_mutation_chart(in_inst_set.m_mutation_chart)
 {
 }
 
@@ -40,7 +40,7 @@ cInstSet & cInstSet::operator=(const cInstSet & _in)
   m_inst_lib = _in.m_inst_lib;
   m_lib_name_map = _in.m_lib_name_map;
   m_lib_nopmod_map = _in.m_lib_nopmod_map;
-  mutation_chart2 = _in.mutation_chart2;
+  m_mutation_chart = _in.m_mutation_chart;
   return *this;
 }
 
@@ -53,8 +53,8 @@ bool cInstSet::OK() const
   // number of times.
   tArray<int> test_redundancy2(m_lib_name_map.GetSize());
   test_redundancy2.SetAll(0);
-  for (int i = 0; i < mutation_chart2.GetSize(); i++) {
-    int test_id = mutation_chart2[i];
+  for (int i = 0; i < m_mutation_chart.GetSize(); i++) {
+    int test_id = m_mutation_chart[i];
     test_redundancy2[test_id]++;
   }
   for (int i = 0; i < m_lib_name_map.GetSize(); i++) {
@@ -66,11 +66,11 @@ bool cInstSet::OK() const
 
 cInstruction cInstSet::GetRandomInst() const
 {
-  int inst_op = mutation_chart2[m_world->GetRandom().GetUInt(mutation_chart2.GetSize())];
+  int inst_op = m_mutation_chart[m_world->GetRandom().GetUInt(m_mutation_chart.GetSize())];
   return cInstruction(inst_op);
 }
 
-int cInstSet::Add2(
+int cInstSet::AddInst(
   const int lib_fun_id,
   const int redundancy,
   const int ft_cost,
@@ -92,16 +92,16 @@ int cInstSet::Add2(
   m_lib_name_map[inst_id].ft_cost = ft_cost;
   m_lib_name_map[inst_id].prob_fail = prob_fail;
 
-  const int total_redundancy = mutation_chart2.GetSize();
-  mutation_chart2.Resize(total_redundancy + redundancy);
+  const int total_redundancy = m_mutation_chart.GetSize();
+  m_mutation_chart.Resize(total_redundancy + redundancy);
   for (int i = 0; i < redundancy; i++) {
-    mutation_chart2[total_redundancy + i] = inst_id;
+    m_mutation_chart[total_redundancy + i] = inst_id;
   }
 
   return inst_id;
 }
 
-int cInstSet::AddNop2(
+int cInstSet::AddNop(
   const int lib_nopmod_id,
   const int redundancy,
   const int ft_cost,
@@ -112,7 +112,7 @@ int cInstSet::AddNop2(
   // Assert nops are at the _beginning_ of an inst_set.
   assert(m_lib_name_map.GetSize() == m_lib_nopmod_map.GetSize());
 
-  const int inst_id = Add2(lib_nopmod_id, redundancy, ft_cost, cost, prob_fail);
+  const int inst_id = AddInst(lib_nopmod_id, redundancy, ft_cost, cost, prob_fail);
 
   m_lib_nopmod_map.Resize(inst_id + 1);
   m_lib_nopmod_map[inst_id] = lib_nopmod_id;

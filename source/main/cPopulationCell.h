@@ -68,9 +68,6 @@ public:
   bool IsOccupied() const { return organism != NULL; }
 
   bool OK();
-
-  bool SaveState(std::ofstream& fp);
-  bool LoadState(std::ifstream & fp);
 };
 
 #endif

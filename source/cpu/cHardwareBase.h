@@ -35,10 +35,9 @@ protected:
 
   cHardwareTracer * m_tracer;         // Set this if you want execution traced.
 
-  static int instance_count;
 public:
   cHardwareBase(cWorld* world, cOrganism * in_organism, cInstSet * in_inst_set);
-  virtual ~cHardwareBase();
+  virtual ~cHardwareBase() { ; }
 
   // --------  Organism ---------
   cOrganism * GetOrganism() { return organism; }
@@ -71,8 +70,6 @@ public:
 
   // --------  Input and Output --------
   virtual void PrintStatus(std::ostream& fp) = 0;
-  virtual void SaveState(std::ostream& fp) = 0;
-  virtual void LoadState(std::istream & fp) = 0;
 
   void SetTrace(cHardwareTracer * tracer) { m_tracer = tracer; }
 
@@ -84,9 +81,6 @@ public:
   // --------  @CAO Should be rethought?  --------
   virtual cCPUMemory & GetMemory() = 0;
   virtual cCPUMemory & GetMemory(int) = 0;
-
-  // --------  DEBUG ---------
-  static int GetInstanceCount() { return instance_count; }
 };
 
 #endif

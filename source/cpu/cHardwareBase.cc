@@ -11,8 +11,6 @@
 
 using namespace std;
 
-int cHardwareBase::instance_count(0);
-
 cHardwareBase::cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set)
   : m_world(world)
   , organism(in_organism)
@@ -22,20 +20,12 @@ cHardwareBase::cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* in
 {
   assert(inst_set->OK());
   assert(organism != NULL);
-
-  instance_count++;
-}
-
-cHardwareBase::~cHardwareBase()
-{
-  instance_count--;
 }
 
 bool cHardwareBase::Inst_Nop()          // Do Nothing.
 {
   return true;
 }
-
 
 int cHardwareBase::GetNumInst()
 {

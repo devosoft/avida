@@ -1,9 +1,12 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cInjectGenotype.cc
+ *  Avida
+ *
+ *  Created by David on 11/15/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
 #include "cInjectGenotype.h"
 
@@ -28,12 +31,6 @@ cInjectGenotype::cInjectGenotype(cWorld* world, int in_update_born, int in_id)
   , next(NULL)
   , prev(NULL)
 {
-  static int next_id = 1;
-  
-  if ( in_id >= 0 )
-    next_id = in_id;
-  
-  id_num = next_id++;
 }
 
 cInjectGenotype::~cInjectGenotype()

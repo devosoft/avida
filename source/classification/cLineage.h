@@ -20,7 +20,8 @@ struct gt_gentype
 
 class cLineage {
 private:
-  static int m_max_id;
+  friend class cClassificationManager;
+  
   int m_id;
   int m_parent_id;
   int m_update_born;
@@ -40,9 +41,9 @@ private:
   double m_lineage_stat2;
 
   void CalcCurrentFitness() const;
-public:
+
   /**
-   * Creates a new lineage with a given start fitness and parent id.
+    * Creates a new lineage with a given start fitness and parent id.
    * The first genotype has to be added with AddGenotype later.
    *
    * @param start_fitness The initial fitness of the lineage.
@@ -53,9 +54,13 @@ public:
    * (the class @ref cLineageControl does that correctly).
    **/
   cLineage(double start_fitness, int parent_id, int id,
-	   int update, double generation,
-	   double lineage_stat1 = 0.0, double lineage_stat2 = 0.0);
-  ~cLineage();
+           int update, double generation,
+           double lineage_stat1 = 0.0, double lineage_stat2 = 0.0);
+  
+  cLineage();
+
+public:
+  ~cLineage() { ; }
 
   /**
    * Adds one instance of the given genotype to the lineage.
@@ -80,11 +85,6 @@ public:
    * @return The id of the parent lineage.
    **/
   int GetParentID() const { return m_parent_id; }
-
-  /**
-   * @return An integer that is one larger than the maximum id used so far.
-   **/
-  int GetMaxID() const { return m_max_id; }
 
   /**
    * @return The update at which the lineage was created.

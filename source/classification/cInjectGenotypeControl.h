@@ -1,12 +1,15 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cInjectGenotypeControl.h
+ *  Avida
+ *
+ *  Created by David on 11/15/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef INJECT_GENOTYPE_CONTROL_HH
-#define INJECT_GENOTYPE_CONTROL_HH
+#ifndef cInjectGenotypeControl_h
+#define cInjectGenotypeControl_h
 
 #ifndef nInjectGenotype_h
 #include "nInjectGenotype.h"
@@ -14,22 +17,24 @@
 
 class cGenome;
 class cInjectGenotype;
-class cInjectGenebank;
+class cWorld;
+
 class cInjectGenotypeControl {
 private:
+  cWorld* m_world;
   int size;
-  cInjectGenotype * best;
-  cInjectGenotype * coalescent;
-  cInjectGenotype * threads[nInjectGenotype::THREADS];
-  cInjectGenebank & genebank;
+  cInjectGenotype* best;
+  cInjectGenotype* coalescent;
+  cInjectGenotype* threads[nInjectGenotype::THREADS];
 
-  cInjectGenotype * historic_list;
+  cInjectGenotype* historic_list;
   int historic_count;
 
-  void Insert(cInjectGenotype & in_inject_genotype, cInjectGenotype * prev_inject_genotype);
-  bool CheckPos(cInjectGenotype & in_inject_genotype);
+  void Insert(cInjectGenotype& in_inject_genotype, cInjectGenotype* prev_inject_genotype);
+  bool CheckPos(cInjectGenotype& in_inject_genotype);
+
 public:
-  cInjectGenotypeControl(cInjectGenebank & in_gb);
+  cInjectGenotypeControl(cWorld* world);
   ~cInjectGenotypeControl();
 
   bool OK();
@@ -40,10 +45,6 @@ public:
   void RemoveHistoric(cInjectGenotype & in_inject_genotype);
   void InsertHistoric(cInjectGenotype & in_inject_genotype);
   int GetHistoricCount() { return historic_count; }
-
-  /*
-  int UpdateCoalescent();
-  */
 
   inline int GetSize() const { return size; }
   inline cInjectGenotype * GetBest() const { return best; }

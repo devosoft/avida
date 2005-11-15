@@ -23,9 +23,6 @@
  * over before they are born.
  **/
 
-class cCPUMemory; // aggregate
-class cMerit; // aggregate
-class cGenebank;
 class cGenome;
 class cGenotype;
 class cOrganism;
@@ -44,7 +41,6 @@ private:
   };
   
   cWorld* m_world;
-  cGenebank* genebank;
 
   cBirthEntry global_wait_entry;
   tArray<cBirthEntry> local_wait_entry;
@@ -100,8 +96,6 @@ private:
 public:
   cBirthChamber(cWorld* world);
   ~cBirthChamber();
-
-  void SetGenebank(cGenebank * in_genebank) { genebank = in_genebank; }
 
   // Handle manipulations & tests of genome.  Return false if divide process
   // should halt.  Place offspring in child_array.

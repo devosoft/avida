@@ -99,7 +99,6 @@ protected:
   bool initialized;      // Has this CPU been initialized yet, w/hardware.
 #endif
   bool is_running;       // Does this organism have the CPU?
-  static int instance_count;
 
 public:
   void PrintStatus(std::ostream& fp, const cString & next_name);
@@ -216,11 +215,7 @@ public:
   const cPhenotype & GetPhenotype() const { return phenotype; }
   cPhenotype & GetPhenotype() { return phenotype; }
 
-  void SaveState(std::ofstream& fp);
-  void LoadState(std::ifstream & fp);
-
   // --------  DEBUG ---------
-  static int GetInstanceCount() { return instance_count; }
   void SetRunning(bool in_running) { is_running = in_running; }
   bool GetIsRunning() { return is_running; }
 };

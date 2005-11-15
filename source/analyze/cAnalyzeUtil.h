@@ -60,7 +60,7 @@ public:
   static void TaskSnapshot(cWorld* world, std::ofstream& fp);
   static void TaskGrid(cWorld* world, std::ofstream& fp);
   static void PrintViableTasksData(cWorld* world, std::ofstream& fp);
-  static void PrintTreeDepths(cPopulation * pop, std::ofstream& fp);
+  static void PrintTreeDepths(cWorld* world, std::ofstream& fp);
 
   static void PrintDepthHistogram(cWorld* world, std::ofstream& fp);
   static void PrintGenotypeAbundanceHistogram(cWorld* world, std::ofstream& fp);

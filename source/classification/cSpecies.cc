@@ -15,13 +15,12 @@
 
 using namespace std;
 
-cSpecies::cSpecies(cWorld* world, const cGenome & in_genome, int update )
+cSpecies::cSpecies(cWorld* world, const cGenome & in_genome, int update, int in_id)
   : m_world(world)
+  , id_num(in_id)
   , genome(in_genome)
   , update_born(update)
 {
-  static int species_count = 0;
-  id_num = species_count++;
   parent_id = -1;
   symbol = '+';
 
@@ -36,7 +35,6 @@ cSpecies::cSpecies(cWorld* world, const cGenome & in_genome, int update )
   prev = NULL;
 
   // Track distance of each genome as it is passed in...
-
   for (int i = 0; i < SPECIES_MAX_DISTANCE; i++) {
     genotype_distance[i] = 0;
   }

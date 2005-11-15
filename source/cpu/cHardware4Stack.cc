@@ -1251,52 +1251,6 @@ bool cHardware4Stack::KillThread()
 }
 
 
-void cHardware4Stack::SaveState(ostream& fp)
-{
-  // note, memory & child_memory handled by cpu (@CAO Not any more!)
-  assert(fp.good());
-
-  fp<<"cHardware4Stack"<<endl;
-
-  // global_stack (in inverse order so load can just push)
-  for(int i=nHardware4Stack::NUM_LOCAL_STACKS; i<nHardware4Stack::NUM_STACKS; i++)
-    Stack(i).SaveState(fp);
-
-  //fp << thread_time_used  << endl;
-  fp << GetNumThreads()   << endl;
-  fp << cur_thread        << endl;
-
-  // Threads
-  for( int i = 0; i < GetNumThreads(); i++ ) {
-    threads[i].SaveState(fp);
-  }
-}
-
-
-void cHardware4Stack::LoadState(istream & fp)
-{
-  // note, memory & child_memory handled by cpu (@CAO Not any more!)
-  assert(fp.good());
-
-  cString foo;
-  fp>>foo;
-  assert( foo == "cHardware4Stack" );
-
-  // global_stack
-  for(int i=nHardware4Stack::NUM_LOCAL_STACKS; i<nHardware4Stack::NUM_STACKS; i++)
-    Stack(i).LoadState(fp);
-
-  int num_threads;
-  //fp >> thread_time_used;
-  fp >> num_threads;
-  fp >> cur_thread;
-
-  // Threads
-  for( int i = 0; i < num_threads; i++ ){
-    threads[i].LoadState(fp);
-  }
-}
-
 
 ////////////////////////////
 //  Instruction Helpers...

@@ -20,9 +20,7 @@ class cGenotype;
 class cPopulation;
 class cPopulationCell;
 class cOrganism;
-class cGenebank;
 class cInjectGenotype;
-class cInjectGenebank;
 
 #define NUM_SYMBOLS 12
 #define SYMBOL_THRESHOLD 10
@@ -98,7 +96,6 @@ public:
   void EngageStepMode();
   void DisEngageStepMode();
 
-  cGenebank & GetGenebank();
   cPopulation & GetPopulation() { return m_world->GetPopulation(); }
   cAvidaConfig& GetConfig() { return m_world->GetConfig(); }
   cRandom& GetRandom() { return m_world->GetRandom(); }

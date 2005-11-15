@@ -74,39 +74,6 @@ int cCodeLabel::FindSublabel(cCodeLabel & sub_label)
   return -1;
 }
 
-void cCodeLabel::SaveState(ostream& fp)
-{
-//   assert(fp.good());
-//   fp<<"cCodeLabel"<<" ";
-
-//   fp<<"|"; // marker
-
-//   fp << size << " " << base << " ";
-//   for( int i=0; i < size; ++i ){
-//     fp<<nop_sequence[i];
-//   }
-//   fp<<endl;
-}
-
-
-void cCodeLabel::LoadState(istream & fp)
-{
-//   assert(fp.good());
-//   cString foo;
-//   fp>>foo;
-//   assert( foo == "cCodeLabel");
-
-//   char marker;
-//   fp>>marker;
-//   assert( marker == '|' );
-
-//   fp.get(size);
-//   fp.get(base);
-//   for( int i=0; i<nHardware::MAX_LABEL_SIZE; ++i ){
-//     fp.get(nop_sequence[i]);
-//   }
-}
-
 int cCodeLabel::AsInt(const int base) const
 {
   int value = 0;
@@ -130,7 +97,7 @@ int cCodeLabel::AsIntGreyCode(const int base) const
     if(oddCount % 2 == 0) {
       value += nop_sequence[i];
     } else {
-      // DDD - this should not be relying on hardware specific NUM_NOPS
+      // @DMB - this should not be relying on hardware specific NUM_NOPS
       value += (nHardwareCPU::NUM_NOPS - 1) - nop_sequence[i];
     }
 

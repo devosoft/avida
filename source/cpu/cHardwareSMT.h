@@ -232,9 +232,6 @@ public:
 	
   void ReadInst(const int in_inst);
 	
-  void SaveState(std::ostream& fp);
-  void LoadState(std::istream & fp);
-		
 private:
   /////////---------- Instruction Helpers ------------//////////
   int FindModifiedStack(int default_stack);

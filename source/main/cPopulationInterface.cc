@@ -171,8 +171,7 @@ int cPopulationInterface::ReceiveValue()
   return 0;
 }
 
-bool cPopulationInterface::InjectParasite(cOrganism * parent, 
-					  const cGenome & injected_code)
+bool cPopulationInterface::InjectParasite(cOrganism * parent, const cGenome & injected_code)
 {
   if (InTestPop()) return false;
   
