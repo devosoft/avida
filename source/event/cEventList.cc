@@ -36,7 +36,6 @@ m_num_events(0)
 cEventList::~cEventList()
 {
   DeleteAll();
-  delete m_factory_manager;
   delete m_triggers;
 }
 
