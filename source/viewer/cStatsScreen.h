@@ -21,7 +21,7 @@ protected:
   int task_cols;
 public:
   cStatsScreen(cWorld* world, int y_size, int x_size, int y_start, int x_start, cViewInfo& in_info)
-    : m_world(world), cScreen(y_size, x_size, y_start, x_start, in_info), task_offset(0)
+    : cScreen(y_size, x_size, y_start, x_start, in_info), m_world(world), task_offset(0)
   {
     task_rows = Height() - 16;
     task_cols = Width() / 20;

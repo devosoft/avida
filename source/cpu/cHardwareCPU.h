@@ -181,7 +181,7 @@ public:
   
   // Non-Standard Methods
   
-  int GetActiveStack(int stack_id) const { return threads[cur_thread].cur_stack; }
+  int GetActiveStack() const { return threads[cur_thread].cur_stack; }
   bool GetMalActive() const   { return mal_active; }
   
   

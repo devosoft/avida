@@ -720,10 +720,10 @@ void cZoomScreen::UpdateStats_4Stack(cHardwareBase & hardware)
   Print(10, 43, "%2d/%2d", hardware4Stack.GetCurThread() + 1,
         hardware4Stack.GetNumThreads());
   
-  Print(12, 34, "%14d", hardware4Stack.Stack(0).Top());
-  Print(13, 34, "%14d", hardware4Stack.Stack(1).Top());
-  Print(14, 34, "%14d", hardware4Stack.Stack(2).Top());
-  Print(15, 34, "%14d", hardware4Stack.Stack(3).Top());
+  Print(12, 34, "%14d", hardware4Stack.GetStack(0, 0));
+  Print(13, 34, "%14d", hardware4Stack.GetStack(0, 1));
+  Print(14, 34, "%14d", hardware4Stack.GetStack(0, 2));
+  Print(15, 34, "%14d", hardware4Stack.GetStack(0, 3));
   
   cHeadMultiMem inst_ptr(hardware4Stack.IP());
   const cInstSet & inst_set = hardware4Stack.GetInstSet();
@@ -756,11 +756,11 @@ void cZoomScreen::UpdateStats_SMT(cHardwareBase & hardware)
   Print(10, 43, "%2d/%2d", hardware4Stack.GetCurThread() + 1,
         hardware4Stack.GetNumThreads());
   
-  Print(12, 34, "%14d", hardware4Stack.Stack(0).Top());
-  Print(13, 34, "%14d", hardware4Stack.Stack(1).Top());
-  Print(14, 34, "%14d", hardware4Stack.Stack(2).Top());
-  Print(15, 34, "%14d", hardware4Stack.Stack(3).Top());
-  
+  Print(12, 34, "%14d", hardware4Stack.GetStack(0, 0));
+  Print(13, 34, "%14d", hardware4Stack.GetStack(0, 1));
+  Print(14, 34, "%14d", hardware4Stack.GetStack(0, 2));
+  Print(15, 34, "%14d", hardware4Stack.GetStack(0, 3));
+    
   cHeadMultiMem inst_ptr(hardware4Stack.IP());
   const cInstSet & inst_set = hardware4Stack.GetInstSet();
   
@@ -995,7 +995,7 @@ void cZoomScreen::UpdateCPU_4Stack(cHardwareBase & hardware)
   // Place the stacks onto the screen.
   SetBoldColor(COLOR_CYAN);
   for (int i = 0; i < 4; i++) {
-    Print(REG_Y+2 + i, REG_X+6, "%11d", hardware4Stack.Stack(i, cur_view_thread).Top());
+    Print(REG_Y+2 + i, REG_X+6, "%11d", hardware4Stack.GetStack(0, i, cur_view_thread));
   }
   
   // Place the active stack onto the screen.
@@ -1138,7 +1138,7 @@ void cZoomScreen::UpdateCPU_SMT(cHardwareBase & hardware)
   // Place the stacks onto the screen.
   SetBoldColor(COLOR_CYAN);
   for (int i = 0; i < 4; i++) {
-    Print(REG_Y+2 + i, REG_X+6, "%11d", hardware4Stack.Stack(i, cur_view_thread).Top());
+    Print(REG_Y+2 + i, REG_X+6, "%11d", hardware4Stack.GetStack(0, i, cur_view_thread));
   }
   
   // Place the active stack onto the screen.
