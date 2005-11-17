@@ -5,8 +5,8 @@
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef CPU_STATS_HH
-#define CPU_STATS_HH
+#ifndef sCPUStats_h
+#define sCPUStats_h
 
 /**
  * Class to facilitate passing information from CPU to Stats.
@@ -49,15 +49,10 @@ public:
     }
   };
 
-
   // Contiually Set
   sMutationStats mut_stats;
 
-
-  void Setup(int num_instructions) {
-    (void) num_instructions;
-    mut_stats.Clear();
-  }
+  void Setup() { mut_stats.Clear(); }
 
   void Clear() {  // Called on any New Creature
     mut_stats.Clear();

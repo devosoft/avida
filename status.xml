@@ -920,9 +920,6 @@ source/tools/struct.hh
         New cHardware base class, separate from Hardware CPU
       </action>
       <action context="refactor" dev="DMB">
-        [ lineage ]
-      </action>
-      <action context="refactor" dev="DMB">
         shift analyze commands into their own objects
       </action>
       <action context="refactor" dev="DMB">

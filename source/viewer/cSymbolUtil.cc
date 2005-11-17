@@ -14,9 +14,6 @@
 #include "cPopulationCell.h"
 #include "cSpecies.h"
 #include "cHardwareBase.h"
-#include "cHardware4Stack.h"
-#include "cHardwareCPU.h"
-#include "cHardwareSMT.h"
 
 using namespace std;
 
@@ -107,21 +104,7 @@ char cSymbolUtil::GetMutSymbol(const cPopulationCell & cell)
 char cSymbolUtil::GetThreadSymbol(const cPopulationCell & cell)
 {
   if (cell.IsOccupied() == false) return ' ';
-  const int hw_type = static_cast<cHardwareBase*>(&cell.GetOrganism()->GetHardware())->GetType();
-  int num_threads;
-  switch (hw_type)
-  {
-    case HARDWARE_TYPE_CPU_ORIGINAL:
-      num_threads = ((cHardwareCPU &) cell.GetOrganism()->GetHardware()).GetNumThreads();
-      return (char) ('0' + num_threads);
-    case HARDWARE_TYPE_CPU_4STACK:
-      num_threads = ((cHardware4Stack &) cell.GetOrganism()->GetHardware()).GetNumThreads();
-      return (char) ('0' + num_threads);
-    case HARDWARE_TYPE_CPU_SMT:
-      num_threads = static_cast<cHardwareSMT&>(cell.GetOrganism()->GetHardware()).GetNumThreads();
-      return (char) ('0' + num_threads);
-  }
-  return '0';
+  return '0' + cell.GetOrganism()->GetHardware().GetNumThreads();
 }
 
 char cSymbolUtil::GetLineageSymbol(const cPopulationCell & cell)

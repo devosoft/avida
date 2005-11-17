@@ -1,12 +1,15 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cCPUStack.h
+ *  Avida
+ *
+ *  Created by David on 11/17/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1999-2001 California Institute of Technology.
+ *
+ */
 
-#ifndef CPU_STACK_HH
-#define CPU_STACK_HH
+#ifndef cCPUStack_h
+#define cCPUStack_h
 
 #include <iostream>
 
@@ -14,25 +17,21 @@
 #include "nHardware.h"
 #endif
 
-/**
- * A CPU stack, used by various hardware components.
- *
- * @see cCPUThread, cHeadCPU, cHardware
- **/
-
 class cCPUStack {
 private:
   int stack[nHardware::STACK_SIZE];
   unsigned char stack_pointer;
 public:
-  cCPUStack();
+  cCPUStack() { Clear(); }
   cCPUStack(const cCPUStack & in_stack);
-  ~cCPUStack();
+  ~cCPUStack() { ; }
 
   void operator=(const cCPUStack & in_stack);
 
   inline void Push(int value);
   inline int Pop();
+  inline int& Peek() { return stack[stack_pointer]; }
+  inline const int Peek() const { return stack[stack_pointer]; }
   inline int Get(int depth=0) const;
   inline void Clear();
   inline int Top();

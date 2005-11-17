@@ -9,6 +9,7 @@
 
 #include "cChangeList.h"
 #include "cClassificationManager.h"
+#include "cCodeLabel.h"
 #include "cConstSchedule.h"
 #include "cDataFile.h"
 #include "cEnvironment.h"
@@ -17,7 +18,6 @@
 #include "cGenotype.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
-#include "cHardware4Stack.h"
 #include "cInitFile.h"
 #include "cInjectGenotype.h"
 #include "cInstUtil.h"
@@ -389,7 +389,7 @@ bool cPopulation::ActivateInject(cOrganism & parent, const cGenome & injected_co
   if(injected_code.GetSize() ==0)
     return false;
   
-  cHardware4Stack & parent_cpu = (cHardware4Stack &) parent.GetHardware();
+  cHardwareBase& parent_cpu = parent.GetHardware();
   cInjectGenotype * parent_genotype = parent_cpu.GetCurThreadOwner();
   
   const int parent_id = parent.PopInterface().GetCellID();
@@ -403,7 +403,7 @@ bool cPopulation::ActivateInject(cOrganism & parent, const cGenome & injected_co
   if(target_organism==NULL)
     return false;
   
-  cHardware4Stack & child_cpu = (cHardware4Stack &) target_organism->GetHardware();
+  cHardwareBase& child_cpu = target_organism->GetHardware();
   
   if(child_cpu.GetNumThreads() == m_world->GetConfig().MAX_CPU_THREADS.Get())
     return false;
@@ -432,7 +432,7 @@ bool cPopulation::ActivateInject(cOrganism & parent, const cGenome & injected_co
 bool cPopulation::ActivateInject(const int cell_id, const cGenome & injected_code)
 {
   cInjectGenotype * child_genotype = m_world->GetClassificationManager().GetInjectGenotype(injected_code);
-  cHardware4Stack & child_cpu = (cHardware4Stack &) cell_array[cell_id].GetOrganism()->GetHardware();
+  cHardwareBase& child_cpu = cell_array[cell_id].GetOrganism()->GetHardware();
   if(cell_array[cell_id].GetOrganism()->InjectHost(cCodeLabel(), injected_code))
   {
     cell_array[cell_id].GetOrganism()->AddParasite(child_genotype);
@@ -1151,7 +1151,6 @@ void cPopulation::UpdateOrganismStats()
     stats.SetGenoMapElement(i, organism->GetGenotype()->GetID());
     
 #ifdef INSTRUCTION_COUNT
-    //    for (int j=0; j < environment.GetInstSet().GetSize(); j++) {
     for (int j=0; j < m_world->GetNumInstructions(); j++) {
       stats.SumExeInst()[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
     }
@@ -1960,7 +1959,7 @@ void cPopulation::ParasiteDebug()
       total+=cell_array[x].GetOrganism()->GetNumParasites();
       if(cell_array[x].GetOrganism()->GetNumParasites())
 	    {
-	      cHardware4Stack & cpu = (cHardware4Stack &) cell_array[x].GetOrganism()->GetHardware();
+	      cHardwareBase& cpu = cell_array[x].GetOrganism()->GetHardware();
 	      outfile << x << " ";
 	      outfile << cell_array[x].GetOrganism()->GetGenotype()->GetID() << " ";
 	      temp = cpu.GetThreadOwner(1);

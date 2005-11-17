@@ -116,14 +116,6 @@ void cView::NewUpdate()
 
 void cView::NotifyUpdate()
 {
-  // If we're locked onto a specific thread, only stop for it.
-  /*if (info.GetPauseLevel() == PAUSE_ADVANCE_STEP &&
-      info.GetThreadLock() != -1  &&
-      info.GetThreadLock() != info.GetActiveCell()->GetOrganism()->GetHardware().ViewerLock()){
-    return;
-    }*/
-
-
   bar_screen->Update();
   info.UpdateSymbols();
 

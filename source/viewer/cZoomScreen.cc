@@ -679,9 +679,9 @@ void cZoomScreen::UpdateStats_CPU(cHardwareBase & hardware)
   Print(10, 43, "%2d/%2d", hardwareCPU.GetCurThread() + 1,
         hardwareCPU.GetNumThreads());
   
-  Print(12, 34, "%14d", hardwareCPU.Register(0));
-  Print(13, 34, "%14d", hardwareCPU.Register(1));
-  Print(14, 34, "%14d", hardwareCPU.Register(2));
+  Print(12, 34, "%14d", hardwareCPU.GetRegister(0));
+  Print(13, 34, "%14d", hardwareCPU.GetRegister(1));
+  Print(14, 34, "%14d", hardwareCPU.GetRegister(2));
   Print(15, 34, "%14d", hardwareCPU.GetStack(0));
   
   cHeadCPU inst_ptr(hardwareCPU.IP());
@@ -739,11 +739,6 @@ void cZoomScreen::UpdateStats_4Stack(cHardwareBase & hardware)
     inst_ptr.Advance();
   }
   
-  // Flags...
-  //if (hardwareCPU.GetMalActive()) SetBoldColor(COLOR_CYAN);
-  //else SetColor(COLOR_CYAN);
-  //Print(CPU_FLAGS_Y + 1, CPU_FLAGS_X + 1, "Mem Allocated");
-  
   // And print the IP.
   const cHeadMultiMem & active_inst_ptr = hardware4Stack.IP();
   // @CAO assume no parasites for now.
@@ -779,11 +774,6 @@ void cZoomScreen::UpdateStats_SMT(cHardwareBase & hardware)
     Print(17+pos, 29, "%s",	inst_set.GetName(inst_ptr.GetInst())());
     inst_ptr.Advance();
   }
-  
-  // Flags...
-  //if (hardwareCPU.GetMalActive()) SetBoldColor(COLOR_CYAN);
-  //else SetColor(COLOR_CYAN);
-  //Print(CPU_FLAGS_Y + 1, CPU_FLAGS_X + 1, "Mem Allocated");
   
   // And print the IP.
   const cHeadMultiMem & active_inst_ptr = hardware4Stack.IP();
@@ -862,7 +852,7 @@ void cZoomScreen::UpdateCPU_Original(cHardwareBase & hardware)
   // Place the registers onto the screen.
   SetBoldColor(COLOR_CYAN);
   for (int i = 0; i < nHardwareCPU::NUM_REGISTERS; i++) {
-    Print(REG_Y+3 + i, REG_X+6, "%11d", hardwareCPU.Register(i));
+    Print(REG_Y+3 + i, REG_X+6, "%11d", hardwareCPU.GetRegister(i));
   }
   
   // Place the active stack onto the screen.
@@ -870,8 +860,7 @@ void cZoomScreen::UpdateCPU_Original(cHardwareBase & hardware)
   // Stack A
   // SetBoldColor(COLOR_CYAN);   // -Redundant
   SetColor(COLOR_WHITE);
-  char stack_letter = 'A' + hardwareCPU.GetActiveStackID();
-  Print(STACK_Y + 1, STACK_X + 2, "Stack %c", stack_letter);
+  Print(STACK_Y + 1, STACK_X + 2, "Stack %s", 'A' + hardwareCPU.GetActiveStack());
   
   SetBoldColor(COLOR_CYAN);
   Print(STACK_Y+3, STACK_X + 2, "%11d", hardwareCPU.GetStack(0));
@@ -1016,7 +1005,7 @@ void cZoomScreen::UpdateCPU_4Stack(cHardwareBase & hardware)
   SetColor(COLOR_WHITE);
   
   Print(STACK_Y, STACK_X + 2, "Stack   :");
-  Print(STACK_Y, STACK_X + 8, "%s" , hardware4Stack.GetActiveStackID(cur_stack)());
+  Print(STACK_Y, STACK_X + 8, "%cX" , 'A' + cur_stack);
   
   //SetBoldColor(COLOR_CYAN);
   //Print(STACK_Y+2, STACK_X + 2, "%11d", hardware4Stack.GetStack(0, cur_stack));
@@ -1159,7 +1148,7 @@ void cZoomScreen::UpdateCPU_SMT(cHardwareBase & hardware)
   SetColor(COLOR_WHITE);
   
   Print(STACK_Y, STACK_X + 2, "Stack   :");
-  Print(STACK_Y, STACK_X + 8, "%s" , hardware4Stack.GetActiveStackID(cur_stack)());
+  Print(STACK_Y, STACK_X + 8, "%cX" , 'A' + cur_stack);
   
   //SetBoldColor(COLOR_CYAN);
   //Print(STACK_Y+2, STACK_X + 2, "%11d", hardware4Stack.GetStack(0, cur_stack));
@@ -1418,9 +1407,7 @@ void cZoomScreen::EditMemory()
 void cZoomScreen::ViewMemory()
 {
   // Collect all of the needed variables.
-  cHardwareCPU & hardware =
-  (cHardwareCPU &) info.GetActiveCell()->GetOrganism()->GetHardware();
-  //  cosnt cInstSet & inst_set = hardware.GetInstSet();
+  cHardwareCPU& hardware = (cHardwareCPU&) info.GetActiveCell()->GetOrganism()->GetHardware();
   cHeadCPU view_head( hardware.IP() );
   if (parasite_zoom == true) {
     view_head.Set(0, &(info.GetActiveCell()->GetOrganism()->GetHardware()) );
@@ -1558,7 +1545,7 @@ void cZoomScreen::ViewRegisters()
   
   for (int i = 0; i < 3; i++) {
     const char reg_letter = 'A' + i;
-    const int reg_value = hardware.Register(i);
+    const int reg_value = hardware.GetRegister(i);
     window->SetBoldColor(COLOR_WHITE);
     window->Print(4+i, 2, "%cX:", reg_letter);
     window->Print(4+i, 17, '[');
@@ -1598,7 +1585,7 @@ void cZoomScreen::ViewStack()
     (cHardwareCPU &) info.GetActiveCell()->GetOrganism()->GetHardware();
   
   bool finished = false;
-  int active_stack = hardware.GetActiveStackID();
+  int active_stack = hardware.GetActiveStack();
   
   
   while (finished == false) {
@@ -1879,21 +1866,7 @@ void cZoomScreen::DoInput(int in_char)
   
   int num_threads = 0;
   if (info.GetActiveCell()->GetOrganism() != NULL) {
-    if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_ORIGINAL)
-    {
-      cHardwareCPU& hw = static_cast<cHardwareCPU&>(info.GetActiveCell()->GetOrganism()->GetHardware());
-      num_threads = hw.GetNumThreads();
-    }
-    else if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_4STACK)
-    {
-      cHardware4Stack& hw = static_cast<cHardware4Stack&>(info.GetActiveCell()->GetOrganism()->GetHardware());
-      num_threads = hw.GetNumThreads();
-    }
-    else if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_SMT)
-    {
-      cHardwareSMT& hw = static_cast<cHardwareSMT&>(info.GetActiveCell()->GetOrganism()->GetHardware());
-      num_threads = hw.GetNumThreads();
-    }
+    num_threads = info.GetActiveCell()->GetOrganism()->GetHardware().GetNumThreads();
   }
   switch(in_char) {
     case 't':

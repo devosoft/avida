@@ -26,20 +26,19 @@ private:
   int mem_space;
 
 public:
-
   cHeadMultiMem();
-  cHeadMultiMem(cHardwareBase * in_hardware, int in_pos = 0, int mem_space = 0);
-  cHeadMultiMem(const cHeadMultiMem & in_cpu_head);
+  cHeadMultiMem(cHardwareBase* in_hardware, int in_pos = 0, int mem_space = 0);
+  cHeadMultiMem(const cHeadMultiMem& in_cpu_head);
 
   void Adjust();
-  void Reset(int in_mem_space=0, cHardwareBase * new_hardware = NULL);
+  void Reset(int in_mem_space = 0, cHardwareBase* new_hardware = NULL);
   void Set(int new_pos, int in_mem_space = 0, cHardwareBase * in_hardware = NULL);
-  void Set(const cHeadMultiMem & in_head);
+  void Set(const cHeadMultiMem& in_head);
   void LoopJump(int jump);
-  const cCPUMemory & GetMemory() const;
-  cCPUMemory & GetMemory();
-  const cInstruction & GetInst() const;
-  const cInstruction & GetInst(int offset) const;
+  const cCPUMemory& GetMemory() const;
+  cCPUMemory& GetMemory();
+  const cInstruction& GetInst() const;
+  const cInstruction& GetInst(int offset) const;
 
   int GetMemSpace() const { return mem_space; }
 
@@ -48,15 +47,15 @@ public:
   void RemoveInst();
   const cInstruction& GetNextInst();
 
-  bool & FlagCopied();
-  bool & FlagMutated();
-  bool & FlagExecuted();
-  bool & FlagBreakpoint();
-  bool & FlagPointMut();
-  bool & FlagCopyMut();
+  bool& FlagCopied();
+  bool& FlagMutated();
+  bool& FlagExecuted();
+  bool& FlagBreakpoint();
+  bool& FlagPointMut();
+  bool& FlagCopyMut();
 
   // Operator Overloading...
-  cHeadMultiMem & operator=(const cHeadMultiMem & in_cpu_head);
+  cHeadMultiMem& operator=(const cHeadMultiMem & in_cpu_head);
   bool operator==(const cHeadMultiMem & in_cpu_head) const; 
   bool AtEnd() const;
   bool InMemory() const;

@@ -17,9 +17,9 @@ void cChangeList::ResizeClear(int capacity){
 }
 
 cChangeList::cChangeList(int capacity)
-: m_change_list(0)
+: m_change_count(0)
+, m_change_list(0)
 , m_change_tracking(0)
-, m_change_count(0)
 { ResizeClear(capacity); }
 
 int cChangeList::GetSize() const { return m_change_list.GetSize(); }

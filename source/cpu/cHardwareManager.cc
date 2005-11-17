@@ -45,41 +45,16 @@ void cHardwareManager::LoadInstSet(cString filename)
 			default_filename = "unknown";
   }
   
-  if (filename == "")
-	{
+  if (filename == "") {
     filename = default_filename;
-    cerr << "Warning: No instruction set specified; using default '"
-    << filename << "'." << endl;
+    cerr << "Warning: No instruction set specified, using default '" << filename << "'." << endl;
   }
   
   cInitFile file(filename);
   
-  // If we could not open the instruction set what to do?
-  if (file.IsOpen() == false)
-	{
-    
-    // If this is the default filename, write the file and try again.
-    if (filename == default_filename)
-		{
-			switch (m_type)
-			{
-				case HARDWARE_TYPE_CPU_ORIGINAL:
-					cHardwareCPU::WriteDefaultInstSet();
-					break;
-				case HARDWARE_TYPE_CPU_4STACK:
-					cHardware4Stack::WriteDefaultInstSet();
-					break;
-				case HARDWARE_TYPE_CPU_SMT:
-					cHardwareSMT::WriteDefaultInstSet();
-			}
-    }
-    // If this is not the default filename, give and error and stop.
-    else
-		{
-      cerr << "Error: Could not open instruction set '" << filename
-      << "'.  Exiting..." << endl;
-      exit(1);
-    }
+  if (file.IsOpen() == false) {
+    cerr << "Error: Could not open instruction set '" << filename << "'.  Exiting..." << endl;
+    exit(1);
   }
   
   file.Load();

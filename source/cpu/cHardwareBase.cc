@@ -7,36 +7,11 @@
 
 #include "cHardwareBase.h"
 
-#include "cInstSet.h"
-
-using namespace std;
-
-cHardwareBase::cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set)
-  : m_world(world)
-  , organism(in_organism)
-  , inst_set(in_inst_set)
-  , viewer_lock(-1)
-  , m_tracer(NULL)
+cHardwareBase::~cHardwareBase()
 {
-  assert(inst_set->OK());
-  assert(organism != NULL);
 }
 
 bool cHardwareBase::Inst_Nop()          // Do Nothing.
 {
   return true;
 }
-
-int cHardwareBase::GetNumInst()
-{
-  assert(inst_set != NULL);
-  return inst_set->GetSize();
-}
-
-
-cInstruction cHardwareBase::GetRandomInst()
-{
-  assert(inst_set != NULL);
-  return inst_set->GetRandomInst();
-}
-

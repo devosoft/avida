@@ -1,11 +1,12 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
-
-
+/*
+ *  cHardware4Stack.cc
+ *  Avida
+ *
+ *  Created by David on 11/17/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1999-2003 California Institute of Technology.
+ *
+ */
 
 #include "cHardware4Stack.h"
 
@@ -30,13 +31,8 @@
 using namespace std;
 
 
-
-
-///////////////
-//  cInstLib4Stack
-///////////////
-
-class cInstLib4Stack : public cInstLibBase {
+class cInstLib4Stack : public cInstLibBase
+{
   const size_t m_nopmods_array_size;
   const size_t m_function_array_size;
   cString *m_nopmod_names;
@@ -46,14 +42,14 @@ class cInstLib4Stack : public cInstLibBase {
   static const cInstruction inst_error;
   static const cInstruction inst_default;
 public:
-  cInstLib4Stack(
-    size_t nopmod_array_size,
-    size_t function_array_size,
-    cString *nopmod_names,
-    cString *function_names,
-    const int *nopmods,
-    cHardware4Stack::tHardware4StackMethod *functions
-  ):m_nopmods_array_size(nopmod_array_size),
+    cInstLib4Stack(
+                   size_t nopmod_array_size,
+                   size_t function_array_size,
+                   cString *nopmod_names,
+                   cString *function_names,
+                   const int *nopmods,
+                   cHardware4Stack::tHardware4StackMethod *functions
+                   ):m_nopmods_array_size(nopmod_array_size),
     m_function_array_size(function_array_size),
     m_nopmod_names(nopmod_names),
     m_function_names(function_names),
@@ -88,16 +84,15 @@ public:
   const cInstruction & GetInstError(){ return inst_error; }
 };
 
-///////////////
-//  cHardware4Stack
-///////////////
-
 const cInstruction cInstLib4Stack::inst_error(255);
 const cInstruction cInstLib4Stack::inst_default(0);
-cInstLibBase *cHardware4Stack::GetInstLib(){ return s_inst_slib; }
 
-cInstLib4Stack *cHardware4Stack::s_inst_slib = cHardware4Stack::initInstLib();
-cInstLib4Stack *cHardware4Stack::initInstLib(void){
+cInstLib4Stack* cHardware4Stack::s_inst_slib = cHardware4Stack::initInstLib();
+
+cInstLibBase* cHardware4Stack::GetInstLib() { return s_inst_slib; }
+
+cInstLib4Stack* cHardware4Stack::initInstLib(void)
+{
   struct cNOPEntry4Stack {
     cNOPEntry4Stack(const cString &name, int nop_mod):name(name), nop_mod(nop_mod){}
     cString name;
@@ -111,7 +106,7 @@ cInstLib4Stack *cHardware4Stack::initInstLib(void){
     cNOPEntry4Stack("Nop-E", nHardware4Stack::STACK_EX),
     cNOPEntry4Stack("Nop-F", nHardware4Stack::STACK_FX)
   };
-
+  
   struct cInstEntry4Stack {
     cInstEntry4Stack(const cString &name, tHardware4StackMethod function):name(name), function(function){}
     cString name;
@@ -199,16 +194,16 @@ cInstLib4Stack *cHardware4Stack::initInstLib(void){
     //37
     cInstEntry4Stack("Inject", &cHardware4Stack::Inst_Inject)
   };
-
+  
   const int n_size = sizeof(s_n_array)/sizeof(cNOPEntry4Stack);
-
+  
   static cString n_names[n_size];
   static int nop_mods[n_size];
   for (int i = 0; i < n_size; i++){
     n_names[i] = s_n_array[i].name;
     nop_mods[i] = s_n_array[i].nop_mod;
   }
-
+  
   const int f_size = sizeof(s_f_array)/sizeof(cInstEntry4Stack);
   static cString f_names[f_size];
   static tHardware4StackMethod functions[f_size];
@@ -216,33 +211,33 @@ cInstLib4Stack *cHardware4Stack::initInstLib(void){
     f_names[i] = s_f_array[i].name;
     functions[i] = s_f_array[i].function;
   }
-
+  
   cInstLib4Stack *inst_lib = new cInstLib4Stack(
-    n_size,
-    f_size,
-    n_names,
-    f_names,
-    nop_mods,
-    functions
-  );
-
+                                                n_size,
+                                                f_size,
+                                                n_names,
+                                                f_names,
+                                                nop_mods,
+                                                functions
+                                                );
+  
   return inst_lib;
 }
 
-cHardware4Stack::cHardware4Stack(cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set)
-  : cHardwareBase(world, in_organism, in_inst_set)
-  , memory_array(nHardware4Stack::NUM_MEMORY_SPACES)
+cHardware4Stack::cHardware4Stack(cWorld* world, cOrganism* in_organism, cInstSet* in_m_inst_set)
+: cHardwareBase(world, in_organism, in_m_inst_set)
+, memory_array(nHardware4Stack::NUM_MEMORY_SPACES)
 {
   /* FIXME:  reorganize storage of m_functions.  -- kgn */
   m_functions = s_inst_slib->GetFunctions();
   /**/
   inst_remainder = 0;
- 
+  
   for(int x=1; x <= m_world->GetConfig().MAX_CPU_THREADS.Get(); x++)
-    {
-      slice_array[x] = (x-1) * m_world->GetConfig().THREAD_SLICING_METHOD.Get() + 1;
-    }
-
+  {
+    slice_array[x] = (x-1) * m_world->GetConfig().THREAD_SLICING_METHOD.Get() + 1;
+  }
+  
   memory_array[0] = in_organism->GetGenome();  // Initialize memory...
   memory_array[0].Resize(GetMemory(0).GetSize()+1);
   memory_array[0][memory_array[0].GetSize()-1] = cInstruction();
@@ -251,13 +246,12 @@ cHardware4Stack::cHardware4Stack(cWorld* world, cOrganism* in_organism, cInstSet
 
 
 cHardware4Stack::cHardware4Stack(const cHardware4Stack &hardware_4stack)
-: cHardwareBase(hardware_4stack.m_world, hardware_4stack.organism, hardware_4stack.inst_set)
+: cHardwareBase(hardware_4stack.m_world, hardware_4stack.organism, hardware_4stack.m_inst_set)
 , m_functions(hardware_4stack.m_functions)
 , memory_array(hardware_4stack.memory_array)
 , threads(hardware_4stack.threads)
 , thread_id_chart(hardware_4stack.thread_id_chart)
 , cur_thread(hardware_4stack.cur_thread)
-, mal_active(hardware_4stack.mal_active)
 , inst_cost(hardware_4stack.inst_cost)
 #ifdef INSTRUCTION_COSTS
 , inst_ft_cost(hardware_4stack.inst_ft_cost)
@@ -267,7 +261,7 @@ cHardware4Stack::cHardware4Stack(const cHardware4Stack &hardware_4stack)
   for(int i = 0; i < nHardware4Stack::NUM_GLOBAL_STACKS; i++){
     global_stacks[i] = hardware_4stack.global_stacks[i];
   }
-  for(int i = 0; i < sizeof(slice_array)/sizeof(float); i++){
+  for(unsigned int i = 0; i < sizeof(slice_array)/sizeof(float); i++){
     slice_array[i] = hardware_4stack.slice_array[i];
   }
 }
@@ -277,42 +271,37 @@ void cHardware4Stack::Reset()
 {
   //global_stack.Clear();
   //thread_time_used = 0;
-
+  
   // Setup the memory...
   for (int i = 1; i < nHardware4Stack::NUM_MEMORY_SPACES; i++) {
-      memory_array[i].Resize(1);
-      //GetMemory(i).Replace(0, 1, cGenome(ConvertToInstruction(i)));
-      GetMemory(i)=cGenome(ConvertToInstruction(i)); 
+    memory_array[i].Resize(1);
+    //GetMemory(i).Replace(0, 1, cGenome(ConvertToInstruction(i)));
+    GetMemory(i)=cGenome(ConvertToInstruction(i)); 
   }
-
+  
   // We want to reset to have a single thread.
   threads.Resize(1);
-
+  
   // Reset that single thread.
   threads[0].Reset(this, 0);
   thread_id_chart = 1; // Mark only the first thread as taken...
   cur_thread = 0;
-
-  mal_active = false;
-
+  
   // Reset all stacks (local and global)
-  for(int i=0; i<nHardware4Stack::NUM_STACKS; i++)
-    {
-      Stack(i).Clear();
-    }
-
+  for(int i = 0; i < nHardware4Stack::NUM_STACKS; i++) Stack(i).Clear();
+  
 #ifdef INSTRUCTION_COSTS
   // instruction cost arrays
-  const int num_inst_cost = GetNumInst();
+  const int num_inst_cost = m_inst_set->GetSize();
   inst_cost.Resize(num_inst_cost);
   inst_ft_cost.Resize(num_inst_cost);
-
+  
   for (int i = 0; i < num_inst_cost; i++) {
-    inst_cost[i] = GetInstSet().GetCost(cInstruction(i));
-    inst_ft_cost[i] = GetInstSet().GetFTCost(cInstruction(i));
+    inst_cost[i] = m_inst_set->GetCost(cInstruction(i));
+    inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
   }
 #endif
-
+  
 }
 
 // This function processes the very next command in the genome, and is made
@@ -322,10 +311,10 @@ void cHardware4Stack::SingleProcess()
 {
   // Mark this organism as running...
   organism->SetRunning(true);
-
+  
   cPhenotype & phenotype = organism->GetPhenotype();
   phenotype.IncTimeUsed();
-
+  
   const int num_inst_exec = int(slice_array[GetNumThreads()]+ inst_remainder);
   inst_remainder = slice_array[GetNumThreads()] + inst_remainder - num_inst_exec;
   
@@ -334,7 +323,7 @@ void cHardware4Stack::SingleProcess()
     NextThread();
     AdvanceIP() = true;
     IP().Adjust();
-
+    
 #ifdef BREAKPOINTS
     if (IP().FlagBreakpoint() == true) {
       organism->DoBreakpoint();
@@ -345,35 +334,35 @@ void cHardware4Stack::SingleProcess()
     if (m_tracer != NULL) {
       if (cHardwareTracer_4Stack * tracer
           = dynamic_cast<cHardwareTracer_4Stack *>(m_tracer)
-      ){
+          ){
         tracer->TraceHardware_4Stack(*this);
       }
     }
     
     // Find the instruction to be executed
     const cInstruction & cur_inst = IP().GetInst();
-
+    
     // Test if costs have been paid and it is okay to execute this now...
     const bool exec = SingleProcess_PayCosts(cur_inst);
-
+    
     // Now execute the instruction...
     if (exec == true) {
       SingleProcess_ExecuteInst(cur_inst);
-
+      
       // Some instruction (such as jump) may turn advance_ip off.  Ususally
       // we now want to move to the next instruction in the memory.
       if (AdvanceIP() == true) IP().Advance();
     } // if exec
     
   } // Previous was executed once for each thread...
-
+  
   // Kill creatures who have reached their max num of instructions executed
   const int max_executed = organism->GetMaxExecuted();
   if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed)
       || phenotype.GetToDie()) {
     organism->Die();
   }
-
+  
   organism->SetRunning(false);
 }
 
@@ -384,26 +373,26 @@ bool cHardware4Stack::SingleProcess_PayCosts(const cInstruction & cur_inst)
 {
 #ifdef INSTRUCTION_COSTS
   assert(cur_inst.GetOp() < inst_cost.GetSize());
-
+  
   // If first time cost hasn't been paid off...
   if ( inst_ft_cost[cur_inst.GetOp()] > 0 ) {
     inst_ft_cost[cur_inst.GetOp()]--;       // dec cost
     return false;
   }
-    
+  
   // Next, look at the per use cost
-  if ( GetInstSet().GetCost(cur_inst) > 0 ) {
+  if ( m_inst_set->GetCost(cur_inst) > 0 ) {
     if ( inst_cost[cur_inst.GetOp()] > 1 ){  // if isn't paid off (>1)
       inst_cost[cur_inst.GetOp()]--;         // dec cost
       return false;
     } else {                                 // else, reset cost array
-      inst_cost[cur_inst.GetOp()] = GetInstSet().GetCost(cur_inst);
+      inst_cost[cur_inst.GetOp()] = m_inst_set->GetCost(cur_inst);
     }
   }
-    
+  
   // Prob of exec
-  if ( GetInstSet().GetProbFail(cur_inst) > 0.0 ){
-    return !( m_world->GetRandom().P(GetInstSet().GetProbFail(cur_inst)) );
+  if ( m_inst_set->GetProbFail(cur_inst) > 0.0 ){
+    return !( m_world->GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
   }
 #endif
   return true;
@@ -418,16 +407,16 @@ bool cHardware4Stack::SingleProcess_ExecuteInst(const cInstruction & cur_inst)
   
 #ifdef EXECUTION_ERRORS
   // If there is an execution error, execute a random instruction.
-  if (organism->TestExeErr()) actual_inst = GetInstSet().GetRandomInst();
+  if (organism->TestExeErr()) actual_inst = m_inst_set->GetRandomInst();
 #endif /* EXECUTION_ERRORS */
-
+  
   // Get a pointer to the corrisponding method...
-  int inst_idx = GetInstSet().GetLibFunctionIndex(actual_inst);
+  int inst_idx = m_inst_set->GetLibFunctionIndex(actual_inst);
   
   // Mark the instruction as executed
   IP().FlagExecuted() = true;
 	
-
+  
 #ifdef INSTRUCTION_COUNT
   // instruction execution count incremeneted
   organism->GetPhenotype().IncCurInstCount(actual_inst.GetOp());
@@ -442,7 +431,7 @@ bool cHardware4Stack::SingleProcess_ExecuteInst(const cInstruction & cur_inst)
     organism->GetPhenotype().DecCurInstCount(actual_inst.GetOp());
   }
 #endif	
-
+  
   return exec_success;
 }
 
@@ -452,74 +441,67 @@ void cHardware4Stack::ProcessBonusInst(const cInstruction & inst)
   // Mark this organism as running...
   bool prev_run_state = organism->GetIsRunning();
   organism->SetRunning(true);
-
+  
   // @CAO FIX PRINTING TO INDICATE THIS IS A BONUS
   // Print the status of this CPU at each step...
   if (m_tracer != NULL) {
     if (cHardwareTracer_4Stack * tracer
         = dynamic_cast<cHardwareTracer_4Stack *>(m_tracer)
-    ){
+        ){
       tracer->TraceHardware_4StackBonus(*this);
     }
   }
-    
+  
   SingleProcess_ExecuteInst(inst);
-
+  
   organism->SetRunning(prev_run_state);
 }
-
-
-void cHardware4Stack::LoadGenome(const cGenome & new_genome)
-{
-  GetMemory(0) = new_genome;
-}
-
 
 bool cHardware4Stack::OK()
 {
   bool result = true;
-
+  
   for(int i = 0 ; i < nHardware4Stack::NUM_MEMORY_SPACES; i++) {
     if (!memory_array[i].OK()) result = false;
   }
-
+  
   for (int i = 0; i < GetNumThreads(); i++) {
     for(int j=0; j<nHardware4Stack::NUM_LOCAL_STACKS; j++)
-    if (threads[i].local_stacks[j].OK() == false) result = false;
+      if (threads[i].local_stacks[j].OK() == false) result = false;
     if (threads[i].next_label.OK() == false) result = false;
   }
-
+  
   return result;
 }
 
 void cHardware4Stack::PrintStatus(ostream& fp)
 {
   fp << organism->GetPhenotype().GetTimeUsed() << " "
-     << "IP:(" << IP().GetMemSpace() << ", " << IP().GetPosition() << ")    "
-
-     << "AX:" << Stack(nHardware4Stack::STACK_AX).Top() << " "
-     << setbase(16) << "[0x" << Stack(nHardware4Stack::STACK_AX).Top() << "]  " << setbase(10)
-
-     << "BX:" << Stack(nHardware4Stack::STACK_BX).Top() << " "
-     << setbase(16) << "[0x" << Stack(nHardware4Stack::STACK_BX).Top() << "]  " << setbase(10)
-
-     << "CX:" << Stack(nHardware4Stack::STACK_CX).Top() << " "
-     << setbase(16) << "[0x" << Stack(nHardware4Stack::STACK_CX).Top() << "]  " << setbase(10)
-
-     << "DX:" << Stack(nHardware4Stack::STACK_DX).Top() << " "
-     << setbase(16) << "[0x" << Stack(nHardware4Stack::STACK_DX).Top() << "]  " << setbase(10)
-
-     << endl;
-
+  << "IP:(" << IP().GetMemSpace() << ", " << IP().GetPosition() << ")    "
+  
+  << "AX:" << Stack(nHardware4Stack::STACK_AX).Top() << " "
+  << setbase(16) << "[0x" << Stack(nHardware4Stack::STACK_AX).Top() << "]  " << setbase(10)
+  
+  << "BX:" << Stack(nHardware4Stack::STACK_BX).Top() << " "
+  << setbase(16) << "[0x" << Stack(nHardware4Stack::STACK_BX).Top() << "]  " << setbase(10)
+  
+  << "CX:" << Stack(nHardware4Stack::STACK_CX).Top() << " "
+  << setbase(16) << "[0x" << Stack(nHardware4Stack::STACK_CX).Top() << "]  " << setbase(10)
+  
+  << "DX:" << Stack(nHardware4Stack::STACK_DX).Top() << " "
+  << setbase(16) << "[0x" << Stack(nHardware4Stack::STACK_DX).Top() << "]  " << setbase(10)
+  
+  << endl;
+  
   fp << "  R-Head:(" << GetHead(nHardware::HEAD_READ).GetMemSpace() << ", " 
-     << GetHead(nHardware::HEAD_READ).GetPosition() << ")  " 
-     << "W-Head:(" << GetHead(nHardware::HEAD_WRITE).GetMemSpace()  << ", "
-     << GetHead(nHardware::HEAD_WRITE).GetPosition() << ")  "
-     << "F-Head:(" << GetHead(nHardware::HEAD_FLOW).GetMemSpace()   << ",  "
-     << GetHead(nHardware::HEAD_FLOW).GetPosition() << ")  "
-     << "RL:" << GetReadLabel().AsString() << "   "
-     << endl;
-
+    << GetHead(nHardware::HEAD_READ).GetPosition() << ")  " 
+    << "W-Head:(" << GetHead(nHardware::HEAD_WRITE).GetMemSpace()  << ", "
+    << GetHead(nHardware::HEAD_WRITE).GetPosition() << ")  "
+    << "F-Head:(" << GetHead(nHardware::HEAD_FLOW).GetMemSpace()   << ",  "
+    << GetHead(nHardware::HEAD_FLOW).GetPosition() << ")  "
+    << "RL:" << GetReadLabel().AsString() << "   "
+    << endl;
+  
   fp << "  Mem (" << GetMemory(0).GetSize() << "):"
 		  << "  " << GetMemory(0).AsString()
 		  << endl;
@@ -552,30 +534,30 @@ void cHardware4Stack::PrintStatus(ostream& fp)
 cHeadMultiMem cHardware4Stack::FindLabel(int direction)
 {
   cHeadMultiMem & inst_ptr = IP();
-
+  
   // Start up a search head at the position of the instruction pointer.
   cHeadMultiMem search_head(inst_ptr);
   cCodeLabel & search_label = GetLabel();
-
+  
   // Make sure the label is of size  > 0.
-
+  
   if (search_label.GetSize() == 0) {
     return inst_ptr;
   }
-
+  
   // Call special functions depending on if jump is forwards or backwards.
   int found_pos = 0;
   if( direction < 0 ) {
     found_pos = FindLabel_Backward(search_label, inst_ptr.GetMemory(),
-			   inst_ptr.GetPosition() - search_label.GetSize());
+                                   inst_ptr.GetPosition() - search_label.GetSize());
   }
-
+  
   // Jump forward.
   else if (direction > 0) {
     found_pos = FindLabel_Forward(search_label, inst_ptr.GetMemory(),
-			   inst_ptr.GetPosition());
+                                  inst_ptr.GetPosition());
   }
-
+  
   // Jump forward from the very beginning.
   else {
     found_pos = FindLabel_Forward(search_label, inst_ptr.GetMemory(), 0);
@@ -595,80 +577,80 @@ cHeadMultiMem cHardware4Stack::FindLabel(int direction)
 // to find search label's match inside another label.
 
 int cHardware4Stack::FindLabel_Forward(const cCodeLabel & search_label,
-				 const cGenome & search_genome, int pos)
+                                       const cGenome & search_genome, int pos)
 {
   assert (pos < search_genome.GetSize() && pos >= 0);
-
+  
   int search_start = pos;
   int label_size = search_label.GetSize();
   bool found_label = false;
-
+  
   // Move off the template we are on.
   pos += label_size;
-
+  
   // Search until we find the complement or exit the memory.
   while (pos < search_genome.GetSize()) {
-
+    
     // If we are within a label, rewind to the beginning of it and see if
     // it has the proper sub-label that we're looking for.
-
-    if (inst_set->IsNop(search_genome[pos])) {
+    
+    if (m_inst_set->IsNop(search_genome[pos])) {
       // Find the start and end of the label we're in the middle of.
-
+      
       int start_pos = pos;
       int end_pos = pos + 1;
       while (start_pos > search_start &&
-	     inst_set->IsNop( search_genome[start_pos - 1] )) {
-	start_pos--;
+             m_inst_set->IsNop( search_genome[start_pos - 1] )) {
+        start_pos--;
       }
       while (end_pos < search_genome.GetSize() &&
-	     inst_set->IsNop( search_genome[end_pos] )) {
-	end_pos++;
+             m_inst_set->IsNop( search_genome[end_pos] )) {
+        end_pos++;
       }
       int test_size = end_pos - start_pos;
-
+      
       // See if this label has the proper sub-label within it.
       int max_offset = test_size - label_size + 1;
       int offset = start_pos;
       for (offset = start_pos; offset < start_pos + max_offset; offset++) {
-
-	// Test the number of matches for this offset.
-	int matches;
-	for (matches = 0; matches < label_size; matches++) {
-	  if (search_label[matches] !=
-	      inst_set->GetNopMod( search_genome[offset + matches] )) {
-	    break;
-	  }
-	}
-
-	// If we have found it, break out of this loop!
-	if (matches == label_size) {
-	  found_label = true;
-	  break;
-	}
+        
+        // Test the number of matches for this offset.
+        int matches;
+        for (matches = 0; matches < label_size; matches++) {
+          if (search_label[matches] !=
+              m_inst_set->GetNopMod( search_genome[offset + matches] )) {
+            break;
+          }
+        }
+        
+        // If we have found it, break out of this loop!
+        if (matches == label_size) {
+          found_label = true;
+          break;
+        }
       }
-
+      
       // If we've found the complement label, set the position to the end of
       // the label we found it in, and break out.
-
+      
       if (found_label == true) {
-	// pos = end_pos;
-	pos = label_size + offset;
-	break;
+        // pos = end_pos;
+        pos = label_size + offset;
+        break;
       }
-
+      
       // We haven't found it; jump pos to just after the current label being
       // checked.
       pos = end_pos;
     }
-
+    
     // Jump up a block to the next possible point to find a label,
     pos += label_size;
   }
-
+  
   // If the label was not found return a -1.
   if (found_label == false) pos = -1;
-
+  
   return pos;
 }
 
@@ -677,76 +659,76 @@ int cHardware4Stack::FindLabel_Forward(const cCodeLabel & search_label,
 // to find search label's match inside another label.
 
 int cHardware4Stack::FindLabel_Backward(const cCodeLabel & search_label,
-				  const cGenome & search_genome, int pos)
+                                        const cGenome & search_genome, int pos)
 {
   assert (pos < search_genome.GetSize());
-
+  
   int search_start = pos;
   int label_size = search_label.GetSize();
   bool found_label = false;
-
+  
   // Move off the template we are on.
   pos -= label_size;
-
+  
   // Search until we find the complement or exit the memory.
   while (pos >= 0) {
     // If we are within a label, rewind to the beginning of it and see if
     // it has the proper sub-label that we're looking for.
-
-    if (inst_set->IsNop( search_genome[pos] )) {
+    
+    if (m_inst_set->IsNop( search_genome[pos] )) {
       // Find the start and end of the label we're in the middle of.
-
+      
       int start_pos = pos;
       int end_pos = pos + 1;
-      while (start_pos > 0 && inst_set->IsNop(search_genome[start_pos - 1])) {
-	start_pos--;
+      while (start_pos > 0 && m_inst_set->IsNop(search_genome[start_pos - 1])) {
+        start_pos--;
       }
       while (end_pos < search_start &&
-	     inst_set->IsNop(search_genome[end_pos])) {
-	end_pos++;
+             m_inst_set->IsNop(search_genome[end_pos])) {
+        end_pos++;
       }
       int test_size = end_pos - start_pos;
-
+      
       // See if this label has the proper sub-label within it.
       int max_offset = test_size - label_size + 1;
       for (int offset = start_pos; offset < start_pos + max_offset; offset++) {
-
-	// Test the number of matches for this offset.
-	int matches;
-	for (matches = 0; matches < label_size; matches++) {
-	  if (search_label[matches] !=
-	      inst_set->GetNopMod(search_genome[offset + matches])) {
-	    break;
-	  }
-	}
-
-	// If we have found it, break out of this loop!
-	if (matches == label_size) {
-	  found_label = true;
-	  break;
-	}
+        
+        // Test the number of matches for this offset.
+        int matches;
+        for (matches = 0; matches < label_size; matches++) {
+          if (search_label[matches] !=
+              m_inst_set->GetNopMod(search_genome[offset + matches])) {
+            break;
+          }
+        }
+        
+        // If we have found it, break out of this loop!
+        if (matches == label_size) {
+          found_label = true;
+          break;
+        }
       }
-
+      
       // If we've found the complement label, set the position to the end of
       // the label we found it in, and break out.
-
+      
       if (found_label == true) {
-	pos = end_pos;
-	break;
+        pos = end_pos;
+        break;
       }
-
+      
       // We haven't found it; jump pos to just before the current label
       // being checked.
       pos = start_pos - 1;
     }
-
+    
     // Jump up a block to the next possible point to find a label,
     pos -= label_size;
   }
-
+  
   // If the label was not found return a -1.
   if (found_label == false) pos = -1;
-
+  
   return pos;
 }
 
@@ -754,35 +736,35 @@ int cHardware4Stack::FindLabel_Backward(const cCodeLabel & search_label,
 cHeadMultiMem cHardware4Stack::FindLabel(const cCodeLabel & in_label, int direction)
 {
   assert (in_label.GetSize() > 0);
-
+  
   // IDEALY:
   // Keep making jumps (in the proper direction) equal to the label
   // length.  If we are inside of a label, check its size, and see if
   // any of the sub-labels match properly.
   // FOR NOW:
   // Get something which works, no matter how inefficient!!!
-
+  
   cHeadMultiMem temp_head(this);
-
+  
   while (temp_head.InMemory()) {
     // IDEALY: Analyze the label we are in; see if the one we are looking
     // for could be a sub-label of it.  Skip past it if not.
-
+    
     int i;
     for (i = 0; i < in_label.GetSize(); i++) {
-      if (!inst_set->IsNop(temp_head.GetInst()) ||
-	  in_label[i] != inst_set->GetNopMod(temp_head.GetInst())) {
-	break;
+      if (!m_inst_set->IsNop(temp_head.GetInst()) ||
+          in_label[i] != m_inst_set->GetNopMod(temp_head.GetInst())) {
+        break;
       }
     }
     if (i == GetLabel().GetSize()) {
       temp_head.AbsJump(i - 1);
       return temp_head;
     }
-
+    
     temp_head.AbsJump(direction);     // IDEALY: MAKE LARGER JUMPS
   }
-
+  
   temp_head.AbsSet(-1);
   return temp_head;
 }
@@ -793,64 +775,64 @@ cHeadMultiMem cHardware4Stack::FindFullLabel(const cCodeLabel & in_label)
 {
   // cout << "Running FindFullLabel with " << in_label.AsString() <<
   // endl;
-
+  
   assert(in_label.GetSize() > 0); // Trying to find label of 0 size!
-
+  
   cHeadMultiMem temp_head(this);
-
+  
   while (temp_head.InMemory()) {
     // If we are not in a label, jump to the next checkpoint...
-    if (inst_set->IsNop(temp_head.GetInst())) {
+    if (m_inst_set->IsNop(temp_head.GetInst())) {
       temp_head.AbsJump(in_label.GetSize());
       continue;
     }
-
+    
     // Otherwise, rewind to the begining of this label...
-
-    while (!(temp_head.AtFront()) && inst_set->IsNop(temp_head.GetInst(-1)))
+    
+    while (!(temp_head.AtFront()) && m_inst_set->IsNop(temp_head.GetInst(-1)))
       temp_head.AbsJump(-1);
-
+    
     // Calculate the size of the label being checked, and make sure they
     // are equal.
-
+    
     int checked_size = 0;
-    while (inst_set->IsNop(temp_head.GetInst(checked_size))) {
+    while (m_inst_set->IsNop(temp_head.GetInst(checked_size))) {
       checked_size++;
     }
     if (checked_size != in_label.GetSize()) {
       temp_head.AbsJump(checked_size + 1);
       continue;
     }
-
+    
     // cout << "Testing label at line " << temp_head.GetPosition() <<
     // endl;
-
+    
     // ...and do the comparison...
-
+    
     int j;
     bool label_match = true;
     for (j = 0; j < in_label.GetSize(); j++) {
-      if (!inst_set->IsNop(temp_head.GetInst(j)) ||
-	  in_label[j] != inst_set->GetNopMod(temp_head.GetInst(j))) {
-	temp_head.AbsJump(in_label.GetSize() + 1);
-	label_match = false;
-	break;
+      if (!m_inst_set->IsNop(temp_head.GetInst(j)) ||
+          in_label[j] != m_inst_set->GetNopMod(temp_head.GetInst(j))) {
+        temp_head.AbsJump(in_label.GetSize() + 1);
+        label_match = false;
+        break;
       }
     }
-
+    
     if (label_match) {
       // If we have found the label, return the position after it.
       temp_head.AbsJump(j - 1);
       return temp_head;
     }
-
+    
     // We have not found the label... increment i.
-
+    
     temp_head.AbsJump(in_label.GetSize() + 1);
   }
-
+  
   // The label does not exist in this creature.
-
+  
   temp_head.AbsSet(-1);
   return temp_head;
 }
@@ -873,15 +855,15 @@ bool cHardware4Stack::InjectParasite(double mut_multiplier)
     Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: new size too small");
     return false; // (inject fails)
   }
-
+  
   GetMemory(mem_space_used).Resize(end_pos);
-
+  
   cCPUMemory injected_code = GetMemory(mem_space_used);
-
+  
   Inject_DoMutations(mut_multiplier, injected_code);
-
+  
   int inject_signal = false;
-
+  
   if(injected_code.GetSize()>0)
     inject_signal = organism->InjectParasite(injected_code);
   
@@ -890,30 +872,30 @@ bool cHardware4Stack::InjectParasite(double mut_multiplier)
   //const int num_neighbors = organism->GetNeighborhoodSize();
   //for(unsigned int i=0; i<m_world->GetRandom().GetUInt(num_neighbors); i++)
   //  organism->Rotate(1);
-
+  
   // If we don't have a host, stop here.
   //cOrganism * host_organism = organism->GetNeighbor();
   
- 
+  
   //if(host_organism!=NULL)
   //  {
   //    
   //  }
- 
+  
   //************** CALL ENDS HERE ******************//
-
+  
   //reset the memory space which was injected
   GetMemory(mem_space_used)=cGenome(ConvertToInstruction(mem_space_used)); 
-
+  
   for(int x=0; x<nHardware::NUM_HEADS; x++)
-    {
-      GetHead(x).Reset(IP().GetMemSpace(), this);
-    }
-
+  {
+    GetHead(x).Reset(IP().GetMemSpace(), this);
+  }
+  
   for(int x=0; x<nHardware4Stack::NUM_LOCAL_STACKS; x++)
-    {
-      Stack(x).Clear();
-    }
+  {
+    Stack(x).Clear();
+  }
   
   AdvanceIP() = false;
   
@@ -924,24 +906,24 @@ bool cHardware4Stack::InjectParasite(double mut_multiplier)
 bool cHardware4Stack::InjectHost(const cCodeLabel & in_label, const cGenome & inject_code)
 {
   // Make sure the genome will be below max size after injection.
-
+  
   // xxxTEMPORARYxxx - we should have this match injection templates.  For now it simply 
   
-// FIND THE FIRST EMPTY MEMORY SPACE
+  // FIND THE FIRST EMPTY MEMORY SPACE
   int target_mem_space;
   for (target_mem_space = 0; target_mem_space < nHardware4Stack::NUM_MEMORY_SPACES; target_mem_space++)
+  {
+    if(isEmpty(target_mem_space))
     {
-      if(isEmpty(target_mem_space))
-	{
-	  break;
-	}
+      break;
     }
+  }
   
   if (target_mem_space == nHardware4Stack::NUM_MEMORY_SPACES)
-    {
-      return false;
-    }
-
+  {
+    return false;
+  }
+  
   assert(target_mem_space >=0 && target_mem_space < nHardware4Stack::NUM_MEMORY_SPACES);
   
   if(ForkThread()) {
@@ -949,12 +931,12 @@ bool cHardware4Stack::InjectHost(const cCodeLabel & in_label, const cGenome & in
     cCPUMemory oldcode = GetMemory(target_mem_space);
     GetMemory(target_mem_space) = inject_code;
     GetMemory(target_mem_space).Resize(inject_code.GetSize() + oldcode.GetSize());
-
+    
     // Copies previous instructions to the end of the injected code.
     // Is there a faster way to do this?? -law
     for(int x=0; x<oldcode.GetSize(); x++)
       GetMemory(target_mem_space)[inject_code.GetSize()+x] = oldcode[x];
-  
+    
     // Set instruction flags on the injected code
     for (int i = 0; i < inject_code.GetSize(); i++) {
       memory_array[target_mem_space].FlagInjected(i) = true;
@@ -967,8 +949,8 @@ bool cHardware4Stack::InjectHost(const cCodeLabel & in_label, const cGenome & in
     
     for(int i=0; i<cur_thread; i++) {
       for(int j=0; j<nHardware::NUM_HEADS; j++) {
-	if(threads[i].heads[j].GetMemSpace()==target_mem_space)
-	  threads[i].heads[j].Jump(inject_code.GetSize());
+        if(threads[i].heads[j].GetMemSpace()==target_mem_space)
+          threads[i].heads[j].Jump(inject_code.GetSize());
       }
     }
     
@@ -979,7 +961,7 @@ bool cHardware4Stack::InjectHost(const cCodeLabel & in_label, const cGenome & in
       Stack(i).Clear();
     }
   }
-
+  
   return true; // (inject succeeds!)
 }
 
@@ -987,8 +969,8 @@ void cHardware4Stack::Mutate(int mut_point)
 {
   // Test if trying to mutate outside of genome...
   assert(mut_point >= 0 && mut_point < GetMemory(0).GetSize());
-
-  GetMemory(0)[mut_point] = GetRandomInst();
+  
+  GetMemory(0)[mut_point] = m_inst_set->GetRandomInst();
   GetMemory(0).FlagMutated(mut_point) = true;
   GetMemory(0).FlagPointMut(mut_point) = true;
   //organism->GetPhenotype().IsMutated() = true;
@@ -998,13 +980,13 @@ void cHardware4Stack::Mutate(int mut_point)
 int cHardware4Stack::PointMutate(const double mut_rate)
 {
   const int num_muts =
-    m_world->GetRandom().GetRandBinomial(GetMemory(0).GetSize(), mut_rate);
-
+  m_world->GetRandom().GetRandBinomial(GetMemory(0).GetSize(), mut_rate);
+  
   for (int i = 0; i < num_muts; i++) {
     const int pos = m_world->GetRandom().GetUInt(GetMemory(0).GetSize());
     Mutate(pos);
   }
-
+  
   return num_muts;
 }
 
@@ -1016,67 +998,67 @@ bool cHardware4Stack::TriggerMutations(int trigger)
 {
   // Only update triggers should happen from the outside!
   assert(trigger == nMutation::TRIGGER_UPDATE);
-
+  
   // Assume instruction pointer is the intended target (if one is even
   // needed!
-
+  
   return TriggerMutations(trigger, IP());
 }
 
-bool cHardware4Stack::TriggerMutations(int trigger, cHeadMultiMem & cur_head)
+bool cHardware4Stack::TriggerMutations(int trigger, cHeadCPU& cur_head)
 {
   // Collect information about mutations from the organism.
   cLocalMutations & mut_info = organism->GetLocalMutations();
   const tList<cMutation> & mut_list =
     mut_info.GetMutationLib().GetMutationList(trigger);
-
+  
   // If we have no mutations for this trigger, stop here.
   if (mut_list.GetSize() == 0) return false;
   bool has_mutation = false;
-
+  
   // Determine what memory this mutation will be affecting.
   cCPUMemory & target_mem = (trigger == nMutation::TRIGGER_DIVIDE) 
     ? organism->ChildGenome() : GetMemory(0);
-
+  
   // Loop through all mutations associated with this trigger and test them.
   tConstListIterator<cMutation> mut_it(mut_list);
-
+  
   while (mut_it.Next() != NULL) {
     const cMutation * cur_mut = mut_it.Get();
     const int mut_id = cur_mut->GetID();
     const int scope = cur_mut->GetScope();
     const double rate = mut_info.GetRate(mut_id);
     switch (scope) {
-    case nMutation::SCOPE_GENOME:
-      if (TriggerMutations_ScopeGenome(cur_mut, target_mem, cur_head, rate)) {
-	has_mutation = true;
-	mut_info.IncCount(mut_id);
-      }
-      break;
-    case nMutation::SCOPE_LOCAL:
-    case nMutation::SCOPE_PROP:
-      if (TriggerMutations_ScopeLocal(cur_mut, target_mem, cur_head, rate)) {
-	has_mutation = true;
-	mut_info.IncCount(mut_id);
-      }
-      break;
-    case nMutation::SCOPE_GLOBAL:
-    case nMutation::SCOPE_SPREAD:
-      int num_muts =
-	TriggerMutations_ScopeGlobal(cur_mut, target_mem, cur_head, rate);
-      if (num_muts > 0) {
-	has_mutation = true;
-	mut_info.IncCount(mut_id, num_muts);
-      }
-      break;
+      case nMutation::SCOPE_GENOME:
+        if (TriggerMutations_ScopeGenome(cur_mut, target_mem, cur_head, rate)) {
+          has_mutation = true;
+          mut_info.IncCount(mut_id);
+        }
+        break;
+      case nMutation::SCOPE_LOCAL:
+      case nMutation::SCOPE_PROP:
+        if (TriggerMutations_ScopeLocal(cur_mut, target_mem, cur_head, rate)) {
+          has_mutation = true;
+          mut_info.IncCount(mut_id);
+        }
+        break;
+      case nMutation::SCOPE_GLOBAL:
+      case nMutation::SCOPE_SPREAD:
+        int num_muts =
+        TriggerMutations_ScopeGlobal(cur_mut, target_mem, cur_head, rate);
+        if (num_muts > 0) {
+          has_mutation = true;
+          mut_info.IncCount(mut_id, num_muts);
+        }
+          break;
     }
   }
-
+  
   return has_mutation;
 }
 
-bool cHardware4Stack::TriggerMutations_ScopeGenome(const cMutation * cur_mut,
-          cCPUMemory & target_memory, cHeadMultiMem & cur_head, const double rate)
+bool cHardware4Stack::TriggerMutations_ScopeGenome(const cMutation* cur_mut,
+                                                   cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate)
 {
   // The rate we have stored indicates the probability that a single
   // mutation will occur anywhere in the genome.
@@ -1084,7 +1066,7 @@ bool cHardware4Stack::TriggerMutations_ScopeGenome(const cMutation * cur_mut,
   if (m_world->GetRandom().P(rate) == true) {
     // We must create a temporary head and use it to randomly determine the
     // position in the genome to be mutated.
-    cHeadMultiMem tmp_head(cur_head);
+    cHeadCPU tmp_head(cur_head);
     tmp_head.AbsSet(m_world->GetRandom().GetUInt(target_memory.GetSize()));
     TriggerMutations_Body(cur_mut->GetType(), target_memory, tmp_head);
     return true;
@@ -1092,12 +1074,12 @@ bool cHardware4Stack::TriggerMutations_ScopeGenome(const cMutation * cur_mut,
   return false;
 }
 
-bool cHardware4Stack::TriggerMutations_ScopeLocal(const cMutation * cur_mut,
-          cCPUMemory & target_memory, cHeadMultiMem & cur_head, const double rate)
+bool cHardware4Stack::TriggerMutations_ScopeLocal(const cMutation* cur_mut,
+                                                  cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate)
 {
   // The rate we have stored is the probability for a mutation at this single
   // position in the genome.
-
+  
   if (m_world->GetRandom().P(rate) == true) {
     TriggerMutations_Body(cur_mut->GetType(), target_memory, cur_head);
     return true;
@@ -1105,69 +1087,56 @@ bool cHardware4Stack::TriggerMutations_ScopeLocal(const cMutation * cur_mut,
   return false;
 }
 
-int cHardware4Stack::TriggerMutations_ScopeGlobal(const cMutation * cur_mut,
-          cCPUMemory & target_memory, cHeadMultiMem & cur_head, const double rate)
+int cHardware4Stack::TriggerMutations_ScopeGlobal(const cMutation* cur_mut,
+                                                  cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate)
 {
   // The probability we have stored is per-site, so we can pull a random
   // number from a binomial distribution to determine the number of mutations
   // that should occur.
-
+  
   const int num_mut =
-    m_world->GetRandom().GetRandBinomial(target_memory.GetSize(), rate);
-
+  m_world->GetRandom().GetRandBinomial(target_memory.GetSize(), rate);
+  
   if (num_mut > 0) {
     for (int i = 0; i < num_mut; i++) {
-      cHeadMultiMem tmp_head(cur_head);
+      cHeadCPU tmp_head(cur_head);
       tmp_head.AbsSet(m_world->GetRandom().GetUInt(target_memory.GetSize()));
       TriggerMutations_Body(cur_mut->GetType(), target_memory, tmp_head);
     }
   }
-
+  
   return num_mut;
 }
 
-void cHardware4Stack::TriggerMutations_Body(int type, cCPUMemory & target_memory,
-					 cHeadMultiMem & cur_head)
+void cHardware4Stack::TriggerMutations_Body(int type, cCPUMemory & target_memory, cHeadCPU& cur_head)
 {
   const int pos = cur_head.GetPosition();
-
+  
   switch (type) {
-  case nMutation::TYPE_POINT:
-    target_memory[pos] = GetRandomInst();
-    target_memory.FlagMutated(pos) = true;
-    break;
-  case nMutation::TYPE_INSERT:
-  case nMutation::TYPE_DELETE:
-  case nMutation::TYPE_HEAD_INC:
-  case nMutation::TYPE_HEAD_DEC:
-  case nMutation::TYPE_TEMP:
-  case nMutation::TYPE_KILL:
-  default:
-    cout << "Error: Mutation type not implemented!" << endl;
-    break;
+    case nMutation::TYPE_POINT:
+      target_memory[pos] = m_inst_set->GetRandomInst();
+      target_memory.FlagMutated(pos) = true;
+      break;
+    case nMutation::TYPE_INSERT:
+    case nMutation::TYPE_DELETE:
+    case nMutation::TYPE_HEAD_INC:
+    case nMutation::TYPE_HEAD_DEC:
+    case nMutation::TYPE_TEMP:
+    case nMutation::TYPE_KILL:
+    default:
+      cout << "Error: Mutation type not implemented!" << endl;
+      break;
   };
 }
 
 void cHardware4Stack::ReadInst(const int in_inst)
 {
-  if (inst_set->IsNop( cInstruction(in_inst) )) {
+  if (m_inst_set->IsNop( cInstruction(in_inst) )) {
     GetReadLabel().AddNop(in_inst);
   } else {
     GetReadLabel().Clear();
   }
 }
-
-
-void cHardware4Stack::AdjustHeads()
-{
-  for (int i = 0; i < GetNumThreads(); i++) {
-    for (int j = 0; j < nHardware::NUM_HEADS; j++) {
-      threads[i].heads[j].Adjust();
-    }
-  }
-}
-
-
 
 // This function looks at the current position in the info of a creature,
 // and sets the next_label to be the sequence of nops which follows.  The
@@ -1177,15 +1146,15 @@ void cHardware4Stack::ReadLabel(int max_size)
 {
   int count = 0;
   cHeadMultiMem * inst_ptr = &( IP() );
-
+  
   GetLabel().Clear();
-
-  while (inst_set->IsNop(inst_ptr->GetNextInst()) &&
-	 (count < max_size)) {
+  
+  while (m_inst_set->IsNop(inst_ptr->GetNextInst()) &&
+         (count < max_size)) {
     count++;
     inst_ptr->Advance();
-    GetLabel().AddNop(inst_set->GetNopMod(inst_ptr->GetInst()));
-
+    GetLabel().AddNop(m_inst_set->GetNopMod(inst_ptr->GetInst()));
+    
     // If this is the first line of the template, mark it executed.
     if (GetLabel().GetSize() <=	m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get()) {
       inst_ptr->FlagExecuted() = true;
@@ -1198,22 +1167,22 @@ bool cHardware4Stack::ForkThread()
 {
   const int num_threads = GetNumThreads();
   if (num_threads == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
-
+  
   // Make room for the new thread.
   threads.Resize(num_threads + 1);
-
+  
   //IP().Advance();
-
+  
   // Initialize the new thread to the same values as the current one.
   threads[num_threads] = threads[cur_thread]; 
-
+  
   // Find the first free bit in thread_id_chart to determine the new
   // thread id.
   int new_id = 0;
   while ( (thread_id_chart >> new_id) & 1 == 1) new_id++;
   threads[num_threads].SetID(new_id);
   thread_id_chart |= (1 << new_id);
-
+  
   return true;
 }
 
@@ -1228,25 +1197,25 @@ bool cHardware4Stack::KillThread()
 {
   // Make sure that there is always at least one thread...
   if (GetNumThreads() == 1) return false;
-
+  
   // Note the current thread and set the current back one.
   const int kill_thread = cur_thread;
   PrevThread();
   
   // Turn off this bit in the thread_id_chart...
   thread_id_chart ^= 1 << threads[kill_thread].GetID();
-
+  
   // Copy the last thread into the kill position
   const int last_thread = GetNumThreads() - 1;
   if (last_thread != kill_thread) {
     threads[kill_thread] = threads[last_thread];
   }
-
+  
   // Kill the thread!
   threads.Resize(GetNumThreads() - 1);
-
+  
   if (cur_thread > kill_thread) cur_thread--;
-
+  
   return true;
 }
 
@@ -1259,10 +1228,10 @@ bool cHardware4Stack::KillThread()
 inline int cHardware4Stack::FindModifiedStack(int default_stack)
 {
   assert(default_stack < nHardware4Stack::NUM_STACKS);  // Stack ID too high.
-
-  if (GetInstSet().IsNop(IP().GetNextInst())) {
+  
+  if (m_inst_set->IsNop(IP().GetNextInst())) {
     IP().Advance();
-    default_stack = GetInstSet().GetNopMod(IP().GetInst());
+    default_stack = m_inst_set->GetNopMod(IP().GetInst());
     IP().FlagExecuted() = true;
   }
   return default_stack;
@@ -1271,10 +1240,10 @@ inline int cHardware4Stack::FindModifiedStack(int default_stack)
 inline int cHardware4Stack::FindModifiedHead(int default_head)
 {
   assert(default_head < nHardware::NUM_HEADS); // Head ID too high.
-
-  if (GetInstSet().IsNop(IP().GetNextInst())) {
+  
+  if (m_inst_set->IsNop(IP().GetNextInst())) {
     IP().Advance();    
-    int nop_head = GetInstSet().GetNopMod(IP().GetInst());
+    int nop_head = m_inst_set->GetNopMod(IP().GetInst());
     if (nop_head < nHardware::NUM_HEADS) default_head = nop_head;
     IP().FlagExecuted() = true;
   }
@@ -1293,13 +1262,13 @@ inline void cHardware4Stack::Fault(int fault_loc, int fault_type, cString fault_
 }
 
 bool cHardware4Stack::Divide_CheckViable(const int parent_size,
-				      const int child_size, const int mem_space)
+                                         const int child_size, const int mem_space)
 {
   // Make sure the organism is okay with dividing now...
   if (organism->Divide_CheckViable() == false) return false; // (divide fails)
-
+  
   // Make sure that neither parent nor child will be below the minimum size.
-
+  
   const int genome_size = organism->GetGenome().GetSize();
   const double size_range = m_world->GetConfig().CHILD_SIZE_RANGE.Get();
   const int min_size = Max(MIN_CREATURE_SIZE, (int) (genome_size/size_range));
@@ -1307,46 +1276,46 @@ bool cHardware4Stack::Divide_CheckViable(const int parent_size,
   
   if (child_size < min_size || child_size > max_size) {
     Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
-	  cStringUtil::Stringf("Invalid offspring length (%d)", child_size));
+          cStringUtil::Stringf("Invalid offspring length (%d)", child_size));
     return false; // (divide fails)
   }
-
+  
   // Count the number of lines executed in the parent, and make sure the
   // specified fraction has been reached.
-
+  
   int executed_size = 0;
   for (int i = 0; i < parent_size; i++) {
     if (GetMemory(0).FlagExecuted(i)) executed_size++;
   }
-
+  
   const int min_exe_lines = (int) (parent_size * m_world->GetConfig().MIN_EXE_LINES.Get());
   if (executed_size < min_exe_lines) {
     Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
-	  cStringUtil::Stringf("Too few executed lines (%d < %d)",
-			       executed_size, min_exe_lines));
+          cStringUtil::Stringf("Too few executed lines (%d < %d)",
+                               executed_size, min_exe_lines));
     return false; // (divide fails)
   }
 	
   // Count the number of lines which were copied into the child, and make
   // sure the specified fraction has been reached.
-
+  
   int copied_size = 0;
   for (int i = 0; i < GetMemory(mem_space).GetSize(); i++) {
     if (GetMemory(mem_space).FlagCopied(i)) copied_size++;
-   }
-
+  }
+  
   const int min_copied =  (int) (child_size * m_world->GetConfig().MIN_COPIED_LINES.Get());
   if (copied_size < min_copied) {
     Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
-	  cStringUtil::Stringf("Too few copied commands (%d < %d)",
-			       copied_size, min_copied));
+          cStringUtil::Stringf("Too few copied commands (%d < %d)",
+                               copied_size, min_copied));
     return false; // (divide fails)
   }
-
+  
   // Save the information we collected here...
   organism->GetPhenotype().SetLinesExecuted(executed_size);
   organism->GetPhenotype().SetLinesCopied(copied_size);
-
+  
   return true; // (divide succeeds!)
 }
 
@@ -1356,21 +1325,21 @@ void cHardware4Stack::Divide_DoMutations(double mut_multiplier)
   cCPUMemory & child_genome = organism->ChildGenome();
   
   organism->GetPhenotype().SetDivType(mut_multiplier);
-
+  
   // Divide Mutations
   if (organism->TestDivideMut()) {
     const UINT mut_line = m_world->GetRandom().GetUInt(child_genome.GetSize());
-    child_genome[mut_line] = GetRandomInst();
+    child_genome[mut_line] = m_inst_set->GetRandomInst();
     cpu_stats.mut_stats.divide_mut_count++;
   }
-
+  
   // Divide Insertions
   if (organism->TestDivideIns() && child_genome.GetSize() < MAX_CREATURE_SIZE){
     const UINT mut_line = m_world->GetRandom().GetUInt(child_genome.GetSize() + 1);
-    child_genome.Insert(mut_line, GetRandomInst());
+    child_genome.Insert(mut_line, m_inst_set->GetRandomInst());
     cpu_stats.mut_stats.divide_insert_mut_count++;
   }
-
+  
   // Divide Deletions
   if (organism->TestDivideDel() && child_genome.GetSize() > MIN_CREATURE_SIZE){
     const UINT mut_line = m_world->GetRandom().GetUInt(child_genome.GetSize());
@@ -1378,26 +1347,26 @@ void cHardware4Stack::Divide_DoMutations(double mut_multiplier)
     child_genome.Remove(mut_line);
     cpu_stats.mut_stats.divide_delete_mut_count++;
   }
-
+  
   // Divide Mutations (per site)
   if(organism->GetDivMutProb() > 0){
     int num_mut = m_world->GetRandom().GetRandBinomial(child_genome.GetSize(), 
-				   	   organism->GetDivMutProb() / mut_multiplier);
+                                                       organism->GetDivMutProb() / mut_multiplier);
     // If we have lines to mutate...
     if( num_mut > 0 ){
       for (int i = 0; i < num_mut; i++) {
-	int site = m_world->GetRandom().GetUInt(child_genome.GetSize());
-	child_genome[site]=GetRandomInst();
-	cpu_stats.mut_stats.div_mut_count++;
+        int site = m_world->GetRandom().GetUInt(child_genome.GetSize());
+        child_genome[site] = m_inst_set->GetRandomInst();
+        cpu_stats.mut_stats.div_mut_count++;
       }
     }
   }
-
-
+  
+  
   // Insert Mutations (per site)
   if(organism->GetInsMutProb() > 0){
     int num_mut = m_world->GetRandom().GetRandBinomial(child_genome.GetSize(),
-					   organism->GetInsMutProb());
+                                                       organism->GetInsMutProb());
     // If would make creature to big, insert up to MAX_CREATURE_SIZE
     if( num_mut + child_genome.GetSize() > MAX_CREATURE_SIZE ){
       num_mut = MAX_CREATURE_SIZE - child_genome.GetSize();
@@ -1407,28 +1376,28 @@ void cHardware4Stack::Divide_DoMutations(double mut_multiplier)
       // Build a list of the sites where mutations occured
       static int mut_sites[MAX_CREATURE_SIZE];
       for (int i = 0; i < num_mut; i++) {
-	mut_sites[i] = m_world->GetRandom().GetUInt(child_genome.GetSize() + 1);
+        mut_sites[i] = m_world->GetRandom().GetUInt(child_genome.GetSize() + 1);
       }
       // Sort the list
       qsort( (void*)mut_sites, num_mut, sizeof(int), &IntCompareFunction );
       // Actually do the mutations (in reverse sort order)
       for(int i = num_mut-1; i >= 0; i--) {
-	child_genome.Insert(mut_sites[i], GetRandomInst());
-	cpu_stats.mut_stats.insert_mut_count++;
+        child_genome.Insert(mut_sites[i], m_inst_set->GetRandomInst());
+        cpu_stats.mut_stats.insert_mut_count++;
       }
     }
   }
-
-
+  
+  
   // Delete Mutations (per site)
   if( organism->GetDelMutProb() > 0 ){
     int num_mut = m_world->GetRandom().GetRandBinomial(child_genome.GetSize(),
-					   organism->GetDelMutProb());
+                                                       organism->GetDelMutProb());
     // If would make creature too small, delete down to MIN_CREATURE_SIZE
     if (child_genome.GetSize() - num_mut < MIN_CREATURE_SIZE) {
       num_mut = child_genome.GetSize() - MIN_CREATURE_SIZE;
     }
-
+    
     // If we have lines to delete...
     for (int i = 0; i < num_mut; i++) {
       int site = m_world->GetRandom().GetUInt(child_genome.GetSize());
@@ -1437,18 +1406,18 @@ void cHardware4Stack::Divide_DoMutations(double mut_multiplier)
       cpu_stats.mut_stats.delete_mut_count++;
     }
   }
-
+  
   // Mutations in the parent's genome
   if (organism->GetParentMutProb() > 0) {
     for (int i = 0; i < GetMemory(0).GetSize(); i++) {
       if (organism->TestParentMut()) {
-	GetMemory(0)[i] = GetRandomInst();
-	cpu_stats.mut_stats.parent_mut_line_count++;
+        GetMemory(0)[i] = m_inst_set->GetRandomInst();
+        cpu_stats.mut_stats.parent_mut_line_count++;
       }
     }
   }
-
-
+  
+  
   // Count up mutated lines
   for(int i = 0; i < GetMemory(0).GetSize(); i++){
     if (GetMemory(0).FlagPointMut(i) == true) {
@@ -1468,21 +1437,21 @@ void cHardware4Stack::Inject_DoMutations(double mut_multiplier, cCPUMemory & inj
   //cCPUMemory & child_genome = organism->ChildGenome();
   
   organism->GetPhenotype().SetDivType(mut_multiplier);
-
+  
   // Divide Mutations
   if (organism->TestDivideMut()) {
     const UINT mut_line = m_world->GetRandom().GetUInt(injected_code.GetSize());
-    injected_code[mut_line] = GetRandomInst();
+    injected_code[mut_line] = m_inst_set->GetRandomInst();
     //cpu_stats.mut_stats.divide_mut_count++;
   }
-
+  
   // Divide Insertions
   if (organism->TestDivideIns() && injected_code.GetSize() < MAX_CREATURE_SIZE){
     const UINT mut_line = m_world->GetRandom().GetUInt(injected_code.GetSize() + 1);
-    injected_code.Insert(mut_line, GetRandomInst());
+    injected_code.Insert(mut_line, m_inst_set->GetRandomInst());
     //cpu_stats.mut_stats.divide_insert_mut_count++;
   }
-
+  
   // Divide Deletions
   if (organism->TestDivideDel() && injected_code.GetSize() > MIN_CREATURE_SIZE){
     const UINT mut_line = m_world->GetRandom().GetUInt(injected_code.GetSize());
@@ -1490,26 +1459,26 @@ void cHardware4Stack::Inject_DoMutations(double mut_multiplier, cCPUMemory & inj
     injected_code.Remove(mut_line);
     //cpu_stats.mut_stats.divide_delete_mut_count++;
   }
-
+  
   // Divide Mutations (per site)
   if(organism->GetDivMutProb() > 0){
     int num_mut = m_world->GetRandom().GetRandBinomial(injected_code.GetSize(), 
-				   	   organism->GetDivMutProb() / mut_multiplier);
+                                                       organism->GetDivMutProb() / mut_multiplier);
     // If we have lines to mutate...
     if( num_mut > 0 ){
       for (int i = 0; i < num_mut; i++) {
-	int site = m_world->GetRandom().GetUInt(injected_code.GetSize());
-	injected_code[site]=GetRandomInst();
-	//cpu_stats.mut_stats.div_mut_count++;
+        int site = m_world->GetRandom().GetUInt(injected_code.GetSize());
+        injected_code[site] = m_inst_set->GetRandomInst();
+        //cpu_stats.mut_stats.div_mut_count++;
       }
     }
   }
-
-
+  
+  
   // Insert Mutations (per site)
   if(organism->GetInsMutProb() > 0){
     int num_mut = m_world->GetRandom().GetRandBinomial(injected_code.GetSize(),
-					   organism->GetInsMutProb());
+                                                       organism->GetInsMutProb());
     // If would make creature to big, insert up to MAX_CREATURE_SIZE
     if( num_mut + injected_code.GetSize() > MAX_CREATURE_SIZE ){
       num_mut = MAX_CREATURE_SIZE - injected_code.GetSize();
@@ -1519,28 +1488,28 @@ void cHardware4Stack::Inject_DoMutations(double mut_multiplier, cCPUMemory & inj
       // Build a list of the sites where mutations occured
       static int mut_sites[MAX_CREATURE_SIZE];
       for (int i = 0; i < num_mut; i++) {
-	mut_sites[i] = m_world->GetRandom().GetUInt(injected_code.GetSize() + 1);
+        mut_sites[i] = m_world->GetRandom().GetUInt(injected_code.GetSize() + 1);
       }
       // Sort the list
       qsort( (void*)mut_sites, num_mut, sizeof(int), &IntCompareFunction );
       // Actually do the mutations (in reverse sort order)
       for(int i = num_mut-1; i >= 0; i--) {
-	injected_code.Insert(mut_sites[i], GetRandomInst());
-	//cpu_stats.mut_stats.insert_mut_count++;
+        injected_code.Insert(mut_sites[i], m_inst_set->GetRandomInst());
+        //cpu_stats.mut_stats.insert_mut_count++;
       }
     }
   }
-
-
+  
+  
   // Delete Mutations (per site)
   if( organism->GetDelMutProb() > 0 ){
     int num_mut = m_world->GetRandom().GetRandBinomial(injected_code.GetSize(),
-					   organism->GetDelMutProb());
+                                                       organism->GetDelMutProb());
     // If would make creature too small, delete down to MIN_CREATURE_SIZE
     if (injected_code.GetSize() - num_mut < MIN_CREATURE_SIZE) {
       num_mut = injected_code.GetSize() - MIN_CREATURE_SIZE;
     }
-
+    
     // If we have lines to delete...
     for (int i = 0; i < num_mut; i++) {
       int site = m_world->GetRandom().GetUInt(injected_code.GetSize());
@@ -1549,29 +1518,29 @@ void cHardware4Stack::Inject_DoMutations(double mut_multiplier, cCPUMemory & inj
       //cpu_stats.mut_stats.delete_mut_count++;
     }
   }
-
+  
   // Mutations in the parent's genome
   if (organism->GetParentMutProb() > 0) {
     for (int i = 0; i < GetMemory(0).GetSize(); i++) {
       if (organism->TestParentMut()) {
-	GetMemory(0)[i] = GetRandomInst();
-	//cpu_stats.mut_stats.parent_mut_line_count++;
+        GetMemory(0)[i] = m_inst_set->GetRandomInst();
+        //cpu_stats.mut_stats.parent_mut_line_count++;
       }
     }
   }
-
+  
   /*
-  // Count up mutated lines
-  for(int i = 0; i < GetMemory(0).GetSize(); i++){
-    if (GetMemory(0).FlagPointMut(i) == true) {
-      cpu_stats.mut_stats.point_mut_line_count++;
-    }
-  }
-  for(int i = 0; i < injected_code.GetSize(); i++){
-    if( injected_code.FlagCopyMut(i) == true) {
-      cpu_stats.mut_stats.copy_mut_line_count++;
-    }
-    }*/
+   // Count up mutated lines
+   for(int i = 0; i < GetMemory(0).GetSize(); i++){
+     if (GetMemory(0).FlagPointMut(i) == true) {
+       cpu_stats.mut_stats.point_mut_line_count++;
+     }
+   }
+   for(int i = 0; i < injected_code.GetSize(); i++){
+     if( injected_code.FlagCopyMut(i) == true) {
+       cpu_stats.mut_stats.copy_mut_line_count++;
+     }
+   }*/
 }
 
 
@@ -1581,16 +1550,16 @@ void cHardware4Stack::Divide_TestFitnessMeasures()
   cPhenotype & phenotype = organism->GetPhenotype();
   phenotype.CopyTrue() = ( organism->ChildGenome() == organism->GetGenome() );
   phenotype.ChildFertile() = true;
-
+  
   // Only continue if we're supposed to do a fitness test on divide...
   if (organism->GetTestOnDivide() == false) return;
-
+  
   // If this was a perfect copy, then we don't need to worry about any other
   // tests...  Theoretically, we need to worry about the parent changing,
   // but as long as the child is always compared to the original genotype,
   // this won't be an issue.
   if (phenotype.CopyTrue() == true) return;
-
+  
   const double parent_fitness = organism->GetTestFitness();
   const double neut_min = parent_fitness * nHardware::FITNESS_NEUTRAL_MIN;
   const double neut_max = parent_fitness * nHardware::FITNESS_NEUTRAL_MAX;
@@ -1628,7 +1597,7 @@ void cHardware4Stack::Divide_TestFitnessMeasures()
   if (revert == true) {
     organism->ChildGenome() = organism->GetGenome();
   }
-
+  
   if (sterilize == true) {
     organism->GetPhenotype().ChildFertile() = false;
   }
@@ -1643,10 +1612,10 @@ bool cHardware4Stack::Divide_Main(int mem_space_used, double mut_multiplier)
   // for right now -law
   if(IP().GetMemSpace()!=0)
     return false;
-
+  
   // Make sure this divide will produce a viable offspring.
   if(!Divide_CheckViable(GetMemory(IP().GetMemSpace()).GetSize(), 
-	 		 write_head_pos, mem_space_used)) 
+                         write_head_pos, mem_space_used)) 
     return false;
   
   // Since the divide will now succeed, set up the information to be sent
@@ -1654,69 +1623,69 @@ bool cHardware4Stack::Divide_Main(int mem_space_used, double mut_multiplier)
   cGenome & child_genome = organism->ChildGenome();
   GetMemory(mem_space_used).Resize(write_head_pos);
   child_genome = GetMemory(mem_space_used);
-
+  
   // Handle Divide Mutations...
   Divide_DoMutations(mut_multiplier);
-
+  
   // Many tests will require us to run the offspring through a test CPU;
   // this is, for example, to see if mutations need to be reverted or if
   // lineages need to be updated.
   Divide_TestFitnessMeasures();
-
+  
 #ifdef INSTRUCTION_COSTS
   // reset first time instruction costs
   for (int i = 0; i < inst_ft_cost.GetSize(); i++) {
-    inst_ft_cost[i] = GetInstSet().GetFTCost(cInstruction(i));
+    inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
   }
 #endif
-
+  
   bool parent_alive = organism->ActivateDivide();
-
+  
   //reset the memory of the memory space that has been divided off
   GetMemory(mem_space_used)=cGenome(ConvertToInstruction(mem_space_used)); 
-
+  
   // 3 Division Methods:
   // 1) DIVIDE_METHOD_OFFSPRING - Create a child, leave parent state untouched.
   // 2) DIVIDE_METHOD_SPLIT - Create a child, completely reset state of parent.
   // 3) DIVIDE_METHOD_BIRTH - Create a child, reset state of parent's current thread.
   if(parent_alive && !(m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_OFFSPRING))
+  {
+    
+    if(m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT)
     {
+      //this will wipe out all parasites on a divide.
+      Reset();
       
-      if(m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT)
-	{
-	  //this will wipe out all parasites on a divide.
-	  Reset();
-	  
-	}
-      else if(m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_BIRTH)
-	{
-	  //if this isn't the only thread, get rid of it!
-	  // ***this can cause a concurrency problem if we have 
-	  // multiprocessor support for single organisms...don't 
-	  // think that's happening anytime soon though -law ***
-	  if(!organism->GetPhenotype().IsModified() && GetNumThreads()>1 || 
-	     GetNumThreads()>2)
+    }
+    else if(m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_BIRTH)
+    {
+      //if this isn't the only thread, get rid of it!
+      // ***this can cause a concurrency problem if we have 
+      // multiprocessor support for single organisms...don't 
+      // think that's happening anytime soon though -law ***
+      if(!organism->GetPhenotype().IsModified() && GetNumThreads()>1 || 
+         GetNumThreads()>2)
 	    {
 	      KillThread();
 	    }
-
-	  //this will reset the current thread's heads and stacks.  It will 
-	  //not touch any other threads or memory spaces (ie: parasites)
-	  else
+      
+      //this will reset the current thread's heads and stacks.  It will 
+      //not touch any other threads or memory spaces (ie: parasites)
+      else
 	    {
 	      for(int x=0; x<nHardware::NUM_HEADS; x++)
-		{
-		  GetHead(x).Reset(0, this);
-		}
+        {
+          GetHead(x).Reset(0, this);
+        }
 	      for(int x=0; x<nHardware4Stack::NUM_LOCAL_STACKS; x++)
-		{
-		  Stack(x).Clear();
-		}	  
+        {
+          Stack(x).Clear();
+        }	  
 	    }
-	}
-      AdvanceIP()=false;
     }
-     
+    AdvanceIP()=false;
+  }
+  
   return true;
 }
 
@@ -1728,24 +1697,6 @@ cString cHardware4Stack::ConvertToInstruction(int mem_space_used)
   return ret;
 }
 
-cString cHardware4Stack::GetActiveStackID(int stackID) const
-{
-  if(stackID==nHardware4Stack::STACK_AX)
-    return "AX";
-  else if(stackID==nHardware4Stack::STACK_BX)
-    return "BX";
-  else if(stackID==nHardware4Stack::STACK_CX)
-    return "CX";
-  else if(stackID==nHardware4Stack::STACK_DX)
-    return "DX";
-  else
-    return "";
-}
-  
-
-//////////////////////////
-// And the instructions...
-//////////////////////////
 
 //6
 bool cHardware4Stack::Inst_ShiftR()
@@ -1835,7 +1786,7 @@ bool cHardware4Stack::Inst_Divide()
 {
   int mem_space_used = GetHead(nHardware::HEAD_WRITE).GetMemSpace();
   int mut_multiplier = 1;
-
+  
   return Divide_Main(mem_space_used, mut_multiplier);
 }
 
@@ -1843,15 +1794,6 @@ bool cHardware4Stack::Inst_HeadDivideMut(double mut_multiplier)
 {
   // Unused for the moment...
   return true;
-  //AdjustHeads();
-  //const int divide_pos = GetHead(nHardware::HEAD_READ).GetPosition();
-  //int child_end =  GetHead(nHardware::HEAD_WRITE).GetPosition();
-  //if (child_end == 0) child_end = GetMemory(0).GetSize();
-  //const int extra_lines = GetMemory(0).GetSize() - child_end;
-  //bool ret_val = Divide_Main(divide_pos, extra_lines, mut_multiplier);
-  //// Re-adjust heads.
-  //AdjustHeads();
-  //return ret_val; 
 }
 
 //15
@@ -1860,18 +1802,18 @@ bool cHardware4Stack::Inst_HeadRead()
   const int head_id = FindModifiedHead(nHardware::HEAD_READ);
   GetHead(head_id).Adjust();
   sCPUStats & cpu_stats = organism->CPUStats();
-
+  
   // Mutations only occur on the read, for the moment.
   int read_inst = 0;
   if (organism->TestCopyMut()) {
-    read_inst = GetRandomInst().GetOp();
+    read_inst = m_inst_set->GetRandomInst().GetOp();
     cpu_stats.mut_stats.copy_mut_count++;  // @CAO, hope this is good!
   } else {
     read_inst = GetHead(head_id).GetInst().GetOp();
   }
   Stack(nHardware4Stack::STACK_AX).Push(read_inst);
   ReadInst(read_inst);
-
+  
   cpu_stats.mut_stats.copies_exec++;  // @CAO, this too..
   GetHead(head_id).Advance();
   return true;
@@ -1886,19 +1828,19 @@ bool cHardware4Stack::Inst_HeadWrite()
   
   //commented out for right now...
   if(active_head.GetPosition()>=GetMemory(mem_space_used).GetSize()-1)
-   {
-     GetMemory(mem_space_used).Resize(GetMemory(mem_space_used).GetSize()+1);
-     GetMemory(mem_space_used).Copy(GetMemory(mem_space_used).GetSize()-1, GetMemory(mem_space_used).GetSize()-2);
-   }
-
+  {
+    GetMemory(mem_space_used).Resize(GetMemory(mem_space_used).GetSize()+1);
+    GetMemory(mem_space_used).Copy(GetMemory(mem_space_used).GetSize()-1, GetMemory(mem_space_used).GetSize()-2);
+  }
+  
   active_head.Adjust();
-
+  
   int value = Stack(nHardware4Stack::STACK_AX).Pop();
-  if (value < 0 || value >= GetNumInst()) value = 0;
-
+  if (value < 0 || value >= m_inst_set->GetSize()) value = 0;
+  
   active_head.SetInst(cInstruction(value));
   active_head.FlagCopied() = true;
-
+  
   // Advance the head after write...
   active_head++;
   return true;
@@ -1911,30 +1853,30 @@ bool cHardware4Stack::Inst_HeadCopy()
   cHeadMultiMem & read_head = GetHead(nHardware::HEAD_READ);
   cHeadMultiMem & write_head = GetHead(nHardware::HEAD_WRITE);
   sCPUStats & cpu_stats = organism->CPUStats();
-
+  
   read_head.Adjust();
   write_head.Adjust();
-
+  
   // TriggerMutations(nMutation::TRIGGER_READ, read_head);
   
   // Do mutations.
   cInstruction read_inst = read_head.GetInst();
   if (organism->TestCopyMut()) {
-    read_inst = GetRandomInst();
+    read_inst = m_inst_set->GetRandomInst();
     cpu_stats.mut_stats.copy_mut_count++; 
     write_head.FlagMutated() = true;
     write_head.FlagCopyMut() = true;
     //organism->GetPhenotype().IsMutated() = true;
   }
   ReadInst(read_inst.GetOp());
-
+  
   cpu_stats.mut_stats.copies_exec++;
-
+  
   write_head.SetInst(read_inst);
   write_head.FlagCopied() = true;  // Set the copied flag...
-
+  
   // TriggerMutations(nMutation::TRIGGER_WRITE, write_head);
-
+  
   read_head.Advance();
   write_head.Advance();
   return true;
@@ -1993,7 +1935,7 @@ bool cHardware4Stack::Inst_HeadPop()
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
   GetHead(head_used).Set(Stack(nHardware4Stack::STACK_BX).Pop(), 
-			 GetHead(head_used).GetMemSpace(), this);
+                         GetHead(head_used).GetMemSpace(), this);
   return true;
 }
 
@@ -2002,14 +1944,14 @@ bool cHardware4Stack::Inst_HeadMove()
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
   if(head_used != nHardware::HEAD_FLOW)
-    {
-      GetHead(head_used).Set(GetHead(nHardware::HEAD_FLOW));
-      if (head_used == nHardware::HEAD_IP) AdvanceIP() = false;
-    }
+  {
+    GetHead(head_used).Set(GetHead(nHardware::HEAD_FLOW));
+    if (head_used == nHardware::HEAD_IP) AdvanceIP() = false;
+  }
   else
-    {
-      threads[cur_thread].heads[nHardware::HEAD_FLOW]++;
-    }
+  {
+    threads[cur_thread].heads[nHardware::HEAD_FLOW]++;
+  }
   return true;
 }
 
@@ -2020,20 +1962,20 @@ bool cHardware4Stack::Inst_Search()
   GetLabel().Rotate(2, nHardware4Stack::NUM_NOPS);
   cHeadMultiMem found_pos = FindLabel(0);
   if(found_pos.GetPosition()-IP().GetPosition()==0)
-    {
-      GetHead(nHardware::HEAD_FLOW).Set(IP().GetPosition()+1, IP().GetMemSpace(), this);
-      // pushing zero into nHardware4Stack::STACK_AX on a missed search makes it difficult to create
-      // a self-replicating organism.  -law
-      //Stack(nHardware4Stack::STACK_AX).Push(0);
-      Stack(nHardware4Stack::STACK_BX).Push(0);
-    }
+  {
+    GetHead(nHardware::HEAD_FLOW).Set(IP().GetPosition()+1, IP().GetMemSpace(), this);
+    // pushing zero into nHardware4Stack::STACK_AX on a missed search makes it difficult to create
+    // a self-replicating organism.  -law
+    //Stack(nHardware4Stack::STACK_AX).Push(0);
+    Stack(nHardware4Stack::STACK_BX).Push(0);
+  }
   else
-    {
-      int search_size = found_pos.GetPosition() - IP().GetPosition() + GetLabel().GetSize() + 1;
-      Stack(nHardware4Stack::STACK_BX).Push(search_size);
-      Stack(nHardware4Stack::STACK_AX).Push(GetLabel().GetSize());
-      GetHead(nHardware::HEAD_FLOW).Set(found_pos);
-    }  
+  {
+    int search_size = found_pos.GetPosition() - IP().GetPosition() + GetLabel().GetSize() + 1;
+    Stack(nHardware4Stack::STACK_BX).Push(search_size);
+    Stack(nHardware4Stack::STACK_AX).Push(GetLabel().GetSize());
+    GetHead(nHardware::HEAD_FLOW).Set(found_pos);
+  }  
   
   return true; 
 }
@@ -2129,7 +2071,7 @@ bool cHardware4Stack::Inst_Mod()
       Stack(stack_used).Push(Stack(nHardware4Stack::STACK_BX).Top() % Stack(nHardware4Stack::STACK_CX).Top());
   } else {
     Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "mod: modding by 0");
-  return false;
+    return false;
   }
   return true;
 }
@@ -2146,11 +2088,11 @@ bool cHardware4Stack::Inst_KillThread()
 bool cHardware4Stack::Inst_IO()
 {
   const int stack_used = FindModifiedStack(nHardware4Stack::STACK_BX);
-
+  
   // Do the "put" component
   const int value_out = Stack(stack_used).Top();
   organism->DoOutput(value_out);  // Check for tasks compleated.
-
+  
   // Do the "get" component
   const int value_in = organism->GetNextInput();
   Stack(stack_used).Push(value_in);
@@ -2162,39 +2104,39 @@ int cHardware4Stack::FindFirstEmpty()
 {
   bool OK=true;
   const int current_mem_space = IP().GetMemSpace();
-
+  
   for(int x=1; x<nHardware4Stack::NUM_MEMORY_SPACES; x++)
+  {
+    OK=true;
+    
+    int index = (current_mem_space+x) % nHardware4Stack::NUM_MEMORY_SPACES;
+    
+    for(int y=0; y<GetMemory(index).GetSize() && OK; y++)
     {
-      OK=true;
-      
-      int index = (current_mem_space+x) % nHardware4Stack::NUM_MEMORY_SPACES;
-
-      for(int y=0; y<GetMemory(index).GetSize() && OK; y++)
-	{
-	  if(GetMemory(index)[y].GetOp() >= nHardware4Stack::NUM_NOPS)
-	    OK=false; 
-	}
-      for(int y=0; y<GetNumThreads() && OK; y++)
-	{
-	  for(int z=0; z<nHardware::NUM_HEADS; z++)
+      if(GetMemory(index)[y].GetOp() >= nHardware4Stack::NUM_NOPS)
+        OK=false; 
+    }
+    for(int y=0; y<GetNumThreads() && OK; y++)
+    {
+      for(int z=0; z<nHardware::NUM_HEADS; z++)
 	    {
 	      if(threads[y].heads[z].GetMemSpace() == index)
-		OK=false;
+          OK=false;
 	    }
-	}
-      if(OK)
-	return index;
     }
+    if(OK)
+      return index;
+  }
   return -1;
 }
 
 bool cHardware4Stack::isEmpty(int mem_space_used)
 {
   for(int x=0; x<GetMemory(mem_space_used).GetSize(); x++)
-    {
-      if(GetMemory(mem_space_used)[x].GetOp() >= nHardware4Stack::NUM_NOPS)
-	return false;
-    }
+  {
+    if(GetMemory(mem_space_used)[x].GetOp() >= nHardware4Stack::NUM_NOPS)
+      return false;
+  }
   return true;
 }
 
@@ -2209,20 +2151,20 @@ bool cHardware4Stack::isEmpty(int mem_space_used)
 bool cHardware4Stack::Inst_Inject()
 {
   double mut_multiplier = 1;
-
+  
   return InjectParasite(mut_multiplier);
 }
 
 
 
 /*
-bool cHardware4Stack::Inst_InjectRand()
-{
-  // Rotate to a random facing and then run the normal inject instruction
-  const int num_neighbors = organism->GetNeighborhoodSize();
-  organism->Rotate(m_world->GetRandom().GetUInt(num_neighbors));
-  Inst_Inject();
-  return true;
-}
-
-*/
+ bool cHardware4Stack::Inst_InjectRand()
+ {
+   // Rotate to a random facing and then run the normal inject instruction
+   const int num_neighbors = organism->GetNeighborhoodSize();
+   organism->Rotate(m_world->GetRandom().GetUInt(num_neighbors));
+   Inst_Inject();
+   return true;
+ }
+ 
+ */

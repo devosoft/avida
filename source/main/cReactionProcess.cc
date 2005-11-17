@@ -29,14 +29,10 @@ cReactionProcess::cReactionProcess()
   , max_fraction(1.0)
   , product(NULL)
   , conversion(1.0)
-  , inst_id(-1)
   , lethal(0)
+  , inst_id(-1)
   , detect(NULL)
   , detection_threshold(0.0)
   , detection_error(0.0)
-{
-}
-
-cReactionProcess::~cReactionProcess()
 {
 }

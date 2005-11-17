@@ -32,7 +32,7 @@ private:
   double detection_error; // Var of Detection Event (as % of resource present)
 public:
   cReactionProcess();
-  ~cReactionProcess();
+  ~cReactionProcess() { ; }
 
   cResource * GetResource() const { return resource; }
   double GetValue() const { return value; }

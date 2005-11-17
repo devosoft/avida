@@ -1,9 +1,12 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2004 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cHardwareCPU.h
+ *  Avida
+ *
+ *  Created by David on 11/17/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1999-2003 California Institute of Technology.
+ *
+ */
 
 #ifndef cHardwareCPU_h
 #define cHardwareCPU_h
@@ -11,10 +14,10 @@
 #include <iomanip>
 #include <vector>
 
-#ifndef DEFS_HH
+#ifndef defs_h
 #include "defs.h"
 #endif
-#ifndef CODE_LABEL_HH
+#ifndef cCodeLabel_h
 #include "cCodeLabel.h"
 #endif
 #ifndef nHardware_h
@@ -23,38 +26,26 @@
 #ifndef nHardwareCPU_h
 #include "nHardwareCPU.h"
 #endif
-#ifndef HEAD_CPU_HH
+#ifndef cHeadCPU_h
 #include "cHeadCPU.h"
 #endif
-#ifndef CPU_MEMORY_HH
+#ifndef cCPUMemory_h
 #include "cCPUMemory.h"
 #endif
-#ifndef CPU_STACK_HH
+#ifndef cCPUStack_h
 #include "cCPUStack.h"
 #endif
-#ifndef HARDWARE_BASE_HH
+#ifndef cHardwareBase_h
 #include "cHardwareBase.h"
 #endif
-#ifndef HARDWARE_CPU_THREAD_HH
+#ifndef cHardwareCPU_Thread_h
 #include "cHardwareCPU_Thread.h"
 #endif
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
-#ifndef TARRAY_HH
+#ifndef tArray_h
 #include "tArray.h"
-#endif
-
-class cInstSet;
-class cInstLibBase;
-class cOrganism;
-class cMutation;
-class cHardwareCPU_Thread;
-
-#ifdef SINGLE_IO_BUFFER   // For Single IOBuffer vs IOBuffer for each Thread
-# define IO_THREAD 0
-#else
-# define IO_THREAD cur_thread
 #endif
 
 /**
@@ -65,29 +56,27 @@ class cHardwareCPU_Thread;
  **/
 
 class cCodeLabel; // access
-class cHeadCPU; // access
-class cCPUMemory; // aggregate
-class cCPUStack; // aggregate
 class cGenome;
-class cHardwareCPU_Thread; // access
+class cInjectGenotype;
 class cInstLibBase;
 class cInstLibCPU;
 class cInstruction;
 class cInstSet;
 class cMutation;
 class cOrganism;
-class cString; // aggregate
 template <class T> class tBuffer;
 template <class T> class tArray; // aggregate
 
 class cHardwareCPU : public cHardwareBase {
 public:
   typedef bool (cHardwareCPU::*tHardwareCPUMethod)();
+
 private:
   static cInstLibCPU *s_inst_slib;
   static cInstLibCPU *initInstLib(void);
+
   tHardwareCPUMethod *m_functions;
-private:
+
   cCPUMemory memory;          // Memory...
   cCPUStack global_stack;     // A stack that all threads share.
   int thread_time_used;
@@ -108,134 +97,94 @@ private:
 
 public:
   cHardwareCPU(cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
-  explicit cHardwareCPU(const cHardwareCPU &);
+  explicit cHardwareCPU(const cHardwareCPU&);
   ~cHardwareCPU();
-  static cInstLibCPU *GetInstLib();
+  static cInstLibCPU* GetInstLib() { return s_inst_slib; }
   static cString GetDefaultInstFilename() { return "inst_lib.default"; }
-  static void WriteDefaultInstSet() { ; }
 
   void Reset();
   void SingleProcess();
-  bool SingleProcess_PayCosts(const cInstruction & cur_inst);
-  bool SingleProcess_ExecuteInst(const cInstruction & cur_inst);
-  void ProcessBonusInst(const cInstruction & inst);
-  void LoadGenome(const cGenome & new_genome);
+  void ProcessBonusInst(const cInstruction& inst);
 
+  
   // --------  Helper methods  --------
+  int GetType() const { return HARDWARE_TYPE_CPU_ORIGINAL; }  
   bool OK();
   void PrintStatus(std::ostream& fp);
 
 
-  // --------  Flag Accessors --------
-  bool GetMalActive() const   { return mal_active; }
-
   // --------  Stack Manipulation...  --------
-  inline void StackPush(int value);
-  inline int StackPop();
-  inline void StackFlip();
-  inline int GetStack(int depth=0, int stack_id=-1) const;
-  inline void StackClear();
-  inline void SwitchStack();
-  int GetActiveStackID() const { return threads[cur_thread].cur_stack; }
+  inline int GetStack(int depth=0, int stack_id=-1, int in_thread=-1) const;
 
 
   // --------  Head Manipulation (including IP)  --------
-  inline void SetActiveHead(const int new_head)
-  { threads[cur_thread].cur_head = (UCHAR) new_head; }
-
-  int GetCurHead() const { return threads[cur_thread].cur_head; }
-  const cHeadCPU & GetHead(int head_id) const
-    { return threads[cur_thread].heads[head_id]; }
-  cHeadCPU & GetHead(int head_id) { return threads[cur_thread].heads[head_id];}
-
-  const cHeadCPU & GetActiveHead() const { return GetHead(GetCurHead()); }
-  cHeadCPU & GetActiveHead() { return GetHead(GetCurHead()); }
-
-  void AdjustHeads();
-
-  inline const cHeadCPU & IP() const
-    { return threads[cur_thread].heads[nHardware::HEAD_IP]; }
-  inline cHeadCPU & IP() { return threads[cur_thread].heads[nHardware::HEAD_IP]; }
-
-
+  const cHeadCPU& GetHead(int head_id) const { return threads[cur_thread].heads[head_id]; }
+  cHeadCPU& GetHead(int head_id) { return threads[cur_thread].heads[head_id];}
+  const cHeadCPU& GetHead(int head_id, int thread) const { return threads[thread].heads[head_id]; }
+  cHeadCPU& GetHead(int head_id, int thread) { return threads[thread].heads[head_id];}
+  
+  const cHeadCPU& IP() const { return threads[cur_thread].heads[nHardware::HEAD_IP]; }
+  cHeadCPU& IP() { return threads[cur_thread].heads[nHardware::HEAD_IP]; }
+  const cHeadCPU& IP(int thread) const { return threads[thread].heads[nHardware::HEAD_IP]; }
+  cHeadCPU& IP(int thread) { return threads[thread].heads[nHardware::HEAD_IP]; }
+  
+  
   // --------  Label Manipulation  -------
-  void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
-  const cCodeLabel & GetLabel() const 
-    { return threads[cur_thread].next_label; }
-  cCodeLabel & GetLabel() { return threads[cur_thread].next_label; }
-  const cCodeLabel & GetReadLabel() const
-    { return threads[cur_thread].read_label; }
-  cCodeLabel & GetReadLabel() { return threads[cur_thread].read_label; }
-
-
-  // --------  Register Manipulation  --------
-  const int & Register(int reg_id) const { return threads[cur_thread].reg[reg_id]; }
-  int & Register(int reg_id) { return threads[cur_thread].reg[reg_id]; }
-
+  const cCodeLabel& GetLabel() const { return threads[cur_thread].next_label; }
+  cCodeLabel& GetLabel() { return threads[cur_thread].next_label; }
+  
+  
   // --------  Memory Manipulation  --------
-  inline const cCPUMemory & Memory() const { return memory; }
-  inline cCPUMemory & Memory() { return memory; }
+  const cCPUMemory& GetMemory() const { return memory; }
+  cCPUMemory& GetMemory() { return memory; }
+  const cCPUMemory& GetMemory(int value) const { return memory;}
+  cCPUMemory& GetMemory(int value) { return memory; }
+  
+  
+  // --------  Register Manipulation  --------
+  const int GetRegister(int reg_id) const { return threads[cur_thread].reg[reg_id]; }
+  int& GetRegister(int reg_id) { return threads[cur_thread].reg[reg_id]; }
 
+  
   // --------  Thread Manipulation  --------
   bool ForkThread(); // Adds a new thread based off of cur_thread.
   bool KillThread(); // Kill the current thread!
   inline void PrevThread(); // Shift the current thread in use.
   inline void NextThread();
   inline void SetThread(int value);
-
-  // --------  Tests  --------
-
+  cInjectGenotype* GetCurThreadOwner() { return NULL; } // @DMB - cHardwareCPU does not really implement cInjectGenotype yet
+  cInjectGenotype* GetThreadOwner(int in_thread) { return NULL; }
+  void SetThreadOwner(cInjectGenotype* in_genotype) { return; }
+  
+  
+  // --------  Parasite Stuff  --------
   int TestParasite() const;
+  bool InjectHost(const cCodeLabel& in_label, const cGenome& injection);
+  int InjectThread(const cCodeLabel& in_label, const cGenome& injection);
 
+  
   // --------  Accessors  --------
-  const cCPUMemory & GetMemory() const { return memory; }
-  cCPUMemory & GetMemory() { return memory; }
-  const cCPUMemory & GetMemory(int value) const { return memory;}
-  cCPUMemory & GetMemory(int value) { return memory; }
-
-  int GetThreadTimeUsed() const { return thread_time_used; }
   int GetNumThreads() const     { return threads.GetSize(); }
   int GetCurThread() const      { return cur_thread; }
   int GetCurThreadID() const    { return threads[cur_thread].GetID(); }
-
   int GetThreadDist() const {
     if (GetNumThreads() == 1) return 0;
-    return threads[0].heads[nHardware::HEAD_IP].GetPosition() -
-      threads[1].heads[nHardware::HEAD_IP].GetPosition();
+    return threads[0].heads[nHardware::HEAD_IP].GetPosition() - threads[1].heads[nHardware::HEAD_IP].GetPosition();
   }
 
-  // Complex label manipulation...
-  cHeadCPU FindLabel(int direction);
-  int FindLabel_Forward(const cCodeLabel & search_label,
-			  const cGenome & search_genome, int pos);
-  int FindLabel_Backward(const cCodeLabel & search_label,
-			  const cGenome & search_genome, int pos);
-  cHeadCPU FindLabel(const cCodeLabel & in_label, int direction);
-  cHeadCPU FindFullLabel(const cCodeLabel & in_label);
 
-  int GetType() const { return HARDWARE_TYPE_CPU_ORIGINAL; }
-  bool InjectHost(const cCodeLabel & in_label, const cGenome & injection);
-  int InjectThread(const cCodeLabel & in_label, const cGenome & injection);
-  void InjectCode(const cGenome & injection, const int line_num);
-  void InjectCodeThread(const cGenome & injection, const int line_num);
-  void Mutate(const int mut_point);
-  int PointMutate(const double mut_rate);
-
+  // --------  Mutation  --------
+  int PointMutate(const double mut_rate);  
   bool TriggerMutations(int trigger);
-  bool TriggerMutations(int trigger, cHeadCPU & cur_head);
-  bool TriggerMutations_ScopeGenome(const cMutation * cur_mut,
-        cCPUMemory & target_memory, cHeadCPU & cur_head, const double rate);
-  bool TriggerMutations_ScopeLocal(const cMutation * cur_mut,
-        cCPUMemory & target_memory, cHeadCPU & cur_head, const double rate);
-  int TriggerMutations_ScopeGlobal(const cMutation * cur_mut,
-        cCPUMemory & target_memory, cHeadCPU & cur_head, const double rate);
-  void TriggerMutations_Body(int type, cCPUMemory & target_memory,
-			     cHeadCPU & cur_head);
-
-  void ReadInst(const int in_inst);
-
-  //void InitInstSet(const cString & filename, cInstSet & inst_set);
-
+  bool TriggerMutations(int trigger, cHeadCPU& cur_head);
+  
+  
+  // Non-Standard Methods
+  
+  int GetActiveStack(int stack_id) const { return threads[cur_thread].cur_stack; }
+  bool GetMalActive() const   { return mal_active; }
+  
+  
   /*
   FIXME: Breakage of interface. These functions return data that is
   supposed to be private.
@@ -245,37 +194,14 @@ public:
 
   @kgn
   */
-  cCPUStack pyGetGlobalStack(){ return global_stack; }
-  int pyGetThreadTimeUsed(){ return thread_time_used; }
-  const tArray<cHardwareCPU_Thread> &pyGetThreads();
-  bool pyGetAdvanceIP(){ return advance_ip; }
+  cCPUStack pyGetGlobalStack() { return global_stack; }
+  int pyGetThreadTimeUsed() { return thread_time_used; }
+  const tArray<cHardwareCPU_Thread>& pyGetThreads();
+  bool pyGetAdvanceIP() { return advance_ip; }
+
 
 private:
- 
- /////////---------- Instruction Helpers ------------//////////
-
-  int FindModifiedRegister(int default_register);
-  int FindModifiedHead(int default_head);
-  int FindComplementRegister(int base_reg);
-
-  void Fault(int fault_loc, int fault_type, cString fault_desc="");
-
-  bool Allocate_Necro(const int new_size);
-  bool Allocate_Random(const int old_size, const int new_size);
-  bool Allocate_Default(const int new_size);
-  bool Allocate_Main(const int allocated_size);
-
-  bool Divide_Main(const int divide_point, const int extra_lines=0, double mut_multiplier=1);
-
-  bool Divide_CheckViable(const int child_size, const int parent_size);
-  void Divide_DoMutations(double mut_multiplier=1);
-  void Divide_TestFitnessMeasures();
-
-  bool HeadCopy_ErrorCorrect(double reduction);
-  bool Inst_HeadDivideMut(double mut_multiplier=1);
-
-public:
-  /////////---------- Instruction Library ------------//////////
+  // ---------- Instruction Library -----------
 
   // Flow Control
   bool Inst_If0();
@@ -472,54 +398,75 @@ public:
   bool Inst_HeadDivide0_01();
   bool Inst_HeadDivide0_001();
 
-
-  // Direct Matching Templates
-
-  bool Inst_DMJumpF();
-  //bool Inst_DMJumpB();
-  //bool Inst_DMCall();
-  //bool Inst_DMSearchF();
-  //bool Inst_DMSearchB();
-
-  // Relative Addressed Jumps
-
-  //bool Inst_REJumpF();
-  //bool Inst_REJumpB();
-
-  // Absoulte Addressed Jumps
-
-  //bool Inst_ABSJump();
-
-  // Biologically inspired reproduction
-  //bool Inst_BCAlloc();
-  //bool Inst_BCopy();
-  //bool Inst_BDivide();
-private:
-  bool Inst_BCopy_Main(double mut_prob); // Internal called by all BCopy's
-public:
-  // Bio Error Correction
-  //bool Inst_BCopyDiv2();
-  //bool Inst_BCopyDiv3();
-  //bool Inst_BCopyDiv4();
-  //bool Inst_BCopyDiv5();
-  //bool Inst_BCopyDiv6();
-  //bool Inst_BCopyDiv7();
-  //bool Inst_BCopyDiv8();
-  //bool Inst_BCopyDiv9();
-  //bool Inst_BCopyDiv10();
-  //bool Inst_BCopyPow2();
-  //bool Inst_BIfNotCopy();
-  //bool Inst_BIfCopy();
-
-
   //// Placebo ////
   bool Inst_Skip();
+
+
+  // Internal Implementation
+
+  bool SingleProcess_PayCosts(const cInstruction & cur_inst);
+  bool SingleProcess_ExecuteInst(const cInstruction & cur_inst);
+  
+  // --------  Stack Manipulation...  --------
+  inline void StackPush(int value);
+  inline int StackPop();
+  inline void StackFlip();
+  inline void StackClear();
+  inline void SwitchStack();
+  
+  
+  // --------  Head Manipulation (including IP)  --------
+  cHeadCPU& GetActiveHead() { return threads[cur_thread].heads[threads[cur_thread].cur_head]; }
+  void AdjustHeads();
+  
+  
+  // --------  Label Manipulation  -------
+  void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
+  cHeadCPU FindLabel(int direction);
+  int FindLabel_Forward(const cCodeLabel & search_label, const cGenome& search_genome, int pos);
+  int FindLabel_Backward(const cCodeLabel & search_label, const cGenome& search_genome, int pos);
+  cHeadCPU FindLabel(const cCodeLabel & in_label, int direction);
+  cHeadCPU FindFullLabel(const cCodeLabel & in_label);
+  const cCodeLabel& GetReadLabel() const { return threads[cur_thread].read_label; }
+  cCodeLabel& GetReadLabel() { return threads[cur_thread].read_label; }
+  
+  
+  bool TriggerMutations_ScopeGenome(const cMutation* cur_mut,
+                                    cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);
+  bool TriggerMutations_ScopeLocal(const cMutation* cur_mut,
+                                   cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);
+  int TriggerMutations_ScopeGlobal(const cMutation* cur_mut, 
+                                   cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);
+  void TriggerMutations_Body(int type, cCPUMemory& target_memory, cHeadCPU& cur_head);
+  
+  
+  // ---------- Instruction Helpers -----------
+  int FindModifiedRegister(int default_register);
+  int FindModifiedHead(int default_head);
+  int FindComplementRegister(int base_reg);
+  
+  void Fault(int fault_loc, int fault_type, cString fault_desc="");
+  
+  bool Allocate_Necro(const int new_size);
+  bool Allocate_Random(const int old_size, const int new_size);
+  bool Allocate_Default(const int new_size);
+  bool Allocate_Main(const int allocated_size);
+  
+  bool Divide_Main(const int divide_point, const int extra_lines=0, double mut_multiplier=1);
+  bool Divide_CheckViable(const int child_size, const int parent_size);
+  void Divide_DoMutations(double mut_multiplier=1);
+  void Divide_TestFitnessMeasures();
+  void Mutate(const int mut_point);
+  
+  void InjectCode(const cGenome& injection, const int line_num);
+  void InjectCodeThread(const cGenome& injection, const int line_num);
+  
+  bool HeadCopy_ErrorCorrect(double reduction);
+  bool Inst_HeadDivideMut(double mut_multiplier=1);
+  
+  void ReadInst(const int in_inst);
 };
 
-
-//////////////////
-//  cHardwareCPU
-//////////////////
 
 inline void cHardwareCPU::NextThread()
 {
@@ -570,8 +517,9 @@ inline void cHardwareCPU::StackFlip()
   }
 }
 
-inline int cHardwareCPU::GetStack(int depth, int stack_id) const
+inline int cHardwareCPU::GetStack(int depth, int stack_id, int in_thread) const
 {
+  // @DMB - warning: cHardwareCPU::GetStack ignores in_thread
   int value = 0;
 
   if (stack_id == -1) stack_id = threads[cur_thread].cur_stack;

@@ -7,51 +7,45 @@
  *
  */
 
-#ifndef HARDWARE_SMT_H
-#define HARDWARE_SMT_H
+#ifndef cHardwareSMT_h
+#define cHardwareSMT_h
 
 #include <iomanip>
 
-#ifndef CPU_MEMORY_HH
+#ifndef cCPUMemory_h
 #include "cCPUMemory.h"
 #endif
-#ifndef CPU_STACK_HH
+#ifndef cCPUStack_h
 #include "cCPUStack.h"
 #endif
-#ifndef DEFS_HH
+#ifndef defs_h
 #include "defs.h"
 #endif
-#ifndef HEAD_MULTI_MEM_HH
+#ifndef cHeadMultiMem_h
 #include "cHeadMultiMem.h"
 #endif
-#ifndef HARDWARE_BASE_HH
+#ifndef cHardwareBase_h
 #include "cHardwareBase.h"
 #endif
-#ifndef HARDWARE_SMT_CONSTANTS_H
+#ifndef nHardwareSMT_h
 #include "nHardwareSMT.h"
 #endif
-#ifndef HARDWARE_SMT_THREAD_H
+#ifndef cHardwareSMT_Thread_h
 #include "cHardwareSMT_Thread.h"
 #endif
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
-#ifndef TARRAY_HH
+#ifndef tArray_h
 #include "tArray.h"
 #endif
-#ifndef TINSTLIB_H
+#ifndef tInstLib_h
 #include "tInstLib.h"
 #endif
-#ifndef THASH_TABLE_HH
+#ifndef tHashTable_h
 #include "tHashTable.h"
 #endif
 
-/**
-* Each organism may have a cHardwareSMT structure which keeps track of the
- * current status of all the components of the simulated hardware.
- *
- * @see cHardwareSMT_Thread, cCPUStack, cCPUMemory, cInstSet
- **/
 
 class cInstSet;
 class cInstLibBase;
@@ -69,11 +63,13 @@ class cOrganism;
 class cHardwareSMT : public cHardwareBase {
 public:
   typedef bool (cHardwareSMT::*tMethod)();
+
 private:
   static tInstLib<cHardwareSMT::tMethod>* s_inst_slib;
   static tInstLib<cHardwareSMT::tMethod>* initInstLib(void);
+
   tMethod* m_functions;
-private:
+
   // Stacks
   cCPUStack m_global_stacks[nHardwareSMT::NUM_GLOBAL_STACKS];
 	
@@ -92,148 +88,46 @@ private:
   tArray<int> inst_ft_cost;
 #endif
 
-  cHardwareSMT(const cHardwareSMT &); // disabled...  can't (easily) copy m_mem_lbls @dmb
+  
+  cHardwareSMT(const cHardwareSMT &); // @DMB - disabled...  can't (easily) copy m_mem_lbls
 
-public:
-  cHardwareSMT(cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
-  ~cHardwareSMT() { ; }
-  static cInstLibBase* GetInstLib();
-  static cString GetDefaultInstFilename() { return "inst_lib.4stack"; }
-  static void WriteDefaultInstSet() { ; }
-	
-  void Reset();
-  void SingleProcess();
   bool SingleProcess_PayCosts(const cInstruction & cur_inst);
   bool SingleProcess_ExecuteInst(const cInstruction & cur_inst);
-  void ProcessBonusInst(const cInstruction & inst);
-  void LoadGenome(const cGenome& new_genome) { m_mem_array[0] = new_genome; }
-	
-  // --------  Helper methods  --------
-  bool OK();
-  void PrintStatus(std::ostream& fp);
-	
-	
+  	
+
   // --------  Stack Manipulation...  --------
-  inline int GetStack(int depth=0, int stack_id=-1, int in_thread=-1) const;
-  cString GetActiveStackID(int stackID) const;
+  inline cCPUStack& Stack(int stack_id); 
+  inline const cCPUStack& Stack(int stack_id) const;
+  inline cCPUStack& Stack(int stack_id, int in_thread);
+  inline const cCPUStack& Stack(int stack_id, int in_thread) const;
+
   
-  // retrieves appropriate stack
-  inline cCPUStack & Stack(int stack_id); 
-  inline const cCPUStack & Stack(int stack_id) const;
-  inline cCPUStack & Stack(int stack_id, int in_thread);
-  inline const cCPUStack & Stack(int stack_id, int in_thread) const;
-	
   // --------  Head Manipulation (including IP)  --------
-  inline void SetActiveHead(const int new_head)
-  { m_threads[m_cur_thread].cur_head = (UCHAR) new_head; }
-	
-  int GetCurHead() const { return m_threads[m_cur_thread].cur_head; }
+  const bool& AdvanceIP() const { return m_threads[m_cur_thread].advance_ip; }
+  bool& AdvanceIP() { return m_threads[m_cur_thread].advance_ip; }
   
-  const cHeadMultiMem & GetHead(int head_id) const
-  { return m_threads[m_cur_thread].heads[head_id]; }
-  cHeadMultiMem & GetHead(int head_id) 
-  { return m_threads[m_cur_thread].heads[head_id];}
   
-  const cHeadMultiMem & GetHead(int head_id, int thread) const
-  { return m_threads[thread].heads[head_id]; }
-  cHeadMultiMem & GetHead(int head_id, int thread) 
-  { return m_threads[thread].heads[head_id];}
-	
-  const cHeadMultiMem & GetActiveHead() const { return GetHead(GetCurHead()); }
-  cHeadMultiMem & GetActiveHead() { return GetHead(GetCurHead()); }
-	
-  void AdjustHeads();
-	
-  const cHeadMultiMem & IP() const { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
-  cHeadMultiMem & IP() { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
-	
-  const cHeadMultiMem & IP(int thread) const { return m_threads[thread].heads[nHardware::HEAD_IP]; }
-  cHeadMultiMem & IP(int thread) { return m_threads[thread].heads[nHardware::HEAD_IP]; }
-	
-	
-  const bool & AdvanceIP() const { return m_threads[m_cur_thread].advance_ip; }
-  bool & AdvanceIP() { return m_threads[m_cur_thread].advance_ip; }
-	
   // --------  Label Manipulation  -------
   void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
-  const cCodeLabel & GetLabel() const { return m_threads[m_cur_thread].next_label; }
-  cCodeLabel & GetLabel() { return m_threads[m_cur_thread].next_label; }
-  const cCodeLabel & GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
-  cCodeLabel & GetReadLabel() { return m_threads[m_cur_thread].read_label; }
-	
-  // --------  Memory Manipulation  --------}
-  cCPUMemory& GetMemory() { return m_mem_array[0]; }
-  const cCPUMemory& GetMemory() const { return m_mem_array[0]; }
-  cCPUMemory& GetMemory(int mem_space)
-  {
-    if(mem_space >= m_mem_array.GetSize())
-      mem_space %= m_mem_array.GetSize();
-    return m_mem_array[mem_space];
-  }
-  const cCPUMemory& GetMemory(int mem_space) const
-  {
-    if(mem_space >= m_mem_array.GetSize())
-      mem_space %= m_mem_array.GetSize();
-    return m_mem_array[mem_space];
-  }
-  
-  // --------  Thread Manipulation  --------
-  bool ForkThread(); // Adds a new thread based off of m_cur_thread.
-  bool KillThread(); // Kill the current thread!
-  inline void PrevThread(); // Shift the current thread in use.
-  inline void NextThread();
-  inline void SetThread(int value);
-  inline cInjectGenotype * GetCurThreadOwner(); 
-  inline cInjectGenotype * GetThreadOwner(int in_thread);
-  inline void SetThreadOwner(cInjectGenotype * in_genotype);
-	
-  // --------  Tests  --------
-	
-  int TestParasite() const;
-	
-  // --------  Accessors  --------
-  int GetNumThreads() const     { return m_threads.GetSize(); }
-  int GetCurThread() const      { return m_cur_thread; }
-  int GetCurThreadID() const    { return m_threads[m_cur_thread].GetID(); }
-	
-  int GetThreadDist() const {
-    if (GetNumThreads() == 1) return 0;
-    return m_threads[0].heads[nHardware::HEAD_IP].GetPosition() - m_threads[1].heads[nHardware::HEAD_IP].GetPosition();
-  }
-	
-  // Complex label manipulation...
   cHeadMultiMem FindLabel(int direction);
-  int FindLabel_Forward(const cCodeLabel & search_label,
-												const cGenome & search_genome, int pos);
-  int FindLabel_Backward(const cCodeLabel & search_label,
-												 const cGenome & search_genome, int pos);
-  cHeadMultiMem FindLabel(const cCodeLabel & in_label, int direction);
-  cHeadMultiMem FindFullLabel(const cCodeLabel & in_label);
-	
-  int GetType() const { return HARDWARE_TYPE_CPU_SMT; }
-  bool InjectParasite(double mut_multiplier);
-  bool InjectHost(const cCodeLabel & in_label, const cGenome & injection);
-  int InjectThread(const cCodeLabel &, const cGenome &) { return -1; }
-  void Mutate(const int mut_point);
-  int PointMutate(const double mut_rate);
-  int FindFirstEmpty();
-  bool isEmpty(int mem_space_used);
-	
-  bool TriggerMutations(int trigger);
-  bool TriggerMutations(int trigger, cHeadMultiMem & cur_head);
+  int FindLabel_Forward(const cCodeLabel& search_label, const cGenome& search_genome, int pos);
+  int FindLabel_Backward(const cCodeLabel& search_label, const cGenome& search_genome, int pos);
+  cHeadMultiMem FindLabel(const cCodeLabel& in_label, int direction);
+  cHeadMultiMem FindFullLabel(const cCodeLabel& in_label);
+  const cCodeLabel& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
+  cCodeLabel& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
+
+  
   bool TriggerMutations_ScopeGenome(const cMutation * cur_mut,
-																		cCPUMemory & target_memory, cHeadMultiMem & cur_head, const double rate);
+																		cCPUMemory & target_memory, cHeadCPU& cur_head, const double rate);
   bool TriggerMutations_ScopeLocal(const cMutation * cur_mut,
-																	 cCPUMemory & target_memory, cHeadMultiMem & cur_head, const double rate);
+																	 cCPUMemory & target_memory, cHeadCPU& cur_head, const double rate);
   int TriggerMutations_ScopeGlobal(const cMutation * cur_mut,
-																	 cCPUMemory & target_memory, cHeadMultiMem & cur_head, const double rate);
+																	 cCPUMemory & target_memory, cHeadCPU& cur_head, const double rate);
   void TriggerMutations_Body(int type, cCPUMemory & target_memory,
-														 cHeadMultiMem & cur_head);
+														 cHeadCPU& cur_head);
 	
-  void ReadInst(const int in_inst);
-	
-private:
-  /////////---------- Instruction Helpers ------------//////////
+  // ---------- Instruction Helpers -----------
   int FindModifiedStack(int default_stack);
   int FindModifiedNextStack(int default_stack);
   int FindModifiedPreviousStack(int default_stack);
@@ -255,11 +149,101 @@ private:
   void Divide_DoMutations(double mut_multiplier=1);
   void Inject_DoMutations(double mut_multiplier, cCPUMemory & injected_code);
   void Divide_TestFitnessMeasures();
-	
+  void Mutate(const int mut_point);
+
+  bool InjectParasite(double mut_multiplier);
+
   bool HeadCopy_ErrorCorrect(double reduction);
+  
+  void ReadInst(const int in_inst);
 	
+  inline int NormalizeMemSpace(int mem_space) const;
+
+  
 public:
-  /////////---------- Instruction Library ------------//////////
+  cHardwareSMT(cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
+  ~cHardwareSMT() { ; }
+  static cInstLibBase* GetInstLib() { return s_inst_slib; }
+  static cString GetDefaultInstFilename() { return "inst_lib.4stack"; }
+	
+  void Reset();
+  void SingleProcess();
+  void ProcessBonusInst(const cInstruction & inst);
+	
+  // --------  Helper methods  --------
+  int GetType() const { return HARDWARE_TYPE_CPU_SMT; }
+  bool OK();
+  void PrintStatus(std::ostream& fp);
+	
+	
+  // --------  Stack Manipulation...  --------
+  inline int GetStack(int depth=0, int stack_id=-1, int in_thread=-1) const;
+	
+
+  // --------  Head Manipulation (including IP)  --------
+  const cHeadMultiMem& GetHead(int head_id) const { return m_threads[m_cur_thread].heads[head_id]; }
+  cHeadMultiMem& GetHead(int head_id) { return m_threads[m_cur_thread].heads[head_id];}
+  const cHeadMultiMem& GetHead(int head_id, int thread) const { return m_threads[thread].heads[head_id]; }
+  cHeadMultiMem& GetHead(int head_id, int thread) { return m_threads[thread].heads[head_id];}
+	
+  const cHeadMultiMem& IP() const { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
+  cHeadMultiMem& IP() { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
+  const cHeadMultiMem& IP(int thread) const { return m_threads[thread].heads[nHardware::HEAD_IP]; }
+  cHeadMultiMem& IP(int thread) { return m_threads[thread].heads[nHardware::HEAD_IP]; }
+	  
+  
+  // --------  Label Manipulation  -------
+  const cCodeLabel& GetLabel() const { return m_threads[m_cur_thread].next_label; }
+  cCodeLabel& GetLabel() { return m_threads[m_cur_thread].next_label; }
+	
+  
+  // --------  Memory Manipulation  --------
+  cCPUMemory& GetMemory() { return m_mem_array[0]; }
+  const cCPUMemory& GetMemory() const { return m_mem_array[0]; }
+  cCPUMemory& GetMemory(int mem_space) { return m_mem_array[NormalizeMemSpace(mem_space)]; }
+  const cCPUMemory& GetMemory(int mem_space) const { return m_mem_array[NormalizeMemSpace(mem_space)]; }
+  
+  
+  // --------  Register Manipulation  --------
+  const int GetRegister(int reg_id) const { return Stack(reg_id).Peek(); }
+  int& GetRegister(int reg_id) { return Stack(reg_id).Peek(); }
+  
+  
+  // --------  Thread Manipulation  --------
+  bool ForkThread(); // Adds a new thread based off of m_cur_thread.
+  bool KillThread(); // Kill the current thread!
+  inline void PrevThread(); // Shift the current thread in use.
+  inline void NextThread();
+  inline void SetThread(int value);
+  cInjectGenotype* GetCurThreadOwner() { return m_threads[m_cur_thread].owner; }
+  cInjectGenotype* GetThreadOwner(int in_thread) { return m_threads[in_thread].owner; }
+  void SetThreadOwner(cInjectGenotype* in_genotype) { m_threads[m_cur_thread].owner = in_genotype; }
+	
+  
+  // --------  Parasite Stuff  --------
+  int TestParasite() const;
+  bool InjectHost(const cCodeLabel& in_label, const cGenome & injection);
+  int InjectThread(const cCodeLabel&, const cGenome&) { return -1; }
+	
+  
+  // --------  Accessors  --------
+  int GetNumThreads() const     { return m_threads.GetSize(); }
+  int GetCurThread() const      { return m_cur_thread; }
+  int GetCurThreadID() const    { return m_threads[m_cur_thread].GetID(); }
+  int GetThreadDist() const {
+    if (GetNumThreads() == 1) return 0;
+    return m_threads[0].heads[nHardware::HEAD_IP].GetPosition() - m_threads[1].heads[nHardware::HEAD_IP].GetPosition();
+  }
+	
+  
+  // --------  Mutation  --------
+  int PointMutate(const double mut_rate);  
+  bool TriggerMutations(int trigger);
+  bool TriggerMutations(int trigger, cHeadCPU& cur_head);
+
+
+private:
+  // ---------- Instruction Library -----------
   bool Inst_ShiftR();
   bool Inst_ShiftL();
   bool Inst_Val_Nand();
@@ -297,10 +281,6 @@ public:
 };
 
 
-//////////////////
-//  cHardwareSMT
-//////////////////
-
 inline void cHardwareSMT::NextThread()
 {
   m_cur_thread++;
@@ -316,21 +296,6 @@ inline void cHardwareSMT::PrevThread()
 inline void cHardwareSMT::SetThread(int value)
 {
   if (value>=0 && value < GetNumThreads()) m_cur_thread = value;
-}
-
-inline cInjectGenotype * cHardwareSMT::GetCurThreadOwner() 
-{ 
-  return m_threads[m_cur_thread].owner; 
-}
-
-inline cInjectGenotype * cHardwareSMT::GetThreadOwner(int thread) 
-{ 
-  return m_threads[thread].owner; 
-}
-
-inline void cHardwareSMT::SetThreadOwner(cInjectGenotype * in_genotype)
-{ 
-  m_threads[m_cur_thread].owner = in_genotype; 
 }
 
 inline int cHardwareSMT::GetStack(int depth, int stack_id, int in_thread) const
@@ -381,6 +346,13 @@ inline const cCPUStack& cHardwareSMT::Stack(int stack_id, int in_thread) const
     return m_threads[in_thread].local_stacks[stack_id];
   else
     return m_global_stacks[stack_id % nHardwareSMT::NUM_LOCAL_STACKS];
+}
+
+inline int cHardwareSMT::NormalizeMemSpace(int mem_space) const
+{
+  if(mem_space >= m_mem_array.GetSize())
+    mem_space %= m_mem_array.GetSize();
+  return mem_space;
 }
 
 #endif

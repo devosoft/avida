@@ -2513,7 +2513,7 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
   cAnalyzeGenotype * genotype = NULL;
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   
-  while (((genotype = batch_it.Next()) != NULL) && (community.size() < max_genotypes)) {
+  while (((genotype = batch_it.Next()) != NULL) && (community.size() < static_cast<unsigned int>(max_genotypes))) {
     community.push_back(genotype);
   }
   
@@ -2711,7 +2711,7 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
                                                     given_genotypes[0]->GetID()))->second;
       int min_depth_dist = genotype->GetDepth() + given_genotypes[0]->GetDepth() - 2 * tmrca->GetDepth();
       
-      for (int i = 1; i < given_genotypes.size() ; ++ i) {
+      for (unsigned int i = 1; i < given_genotypes.size() ; ++ i) {
         cAnalyzeGenotype * given_genotype = given_genotypes[i];
         cAnalyzeGenotype * tmrca = mrca.find(gen_pair(genotype->GetID(),
                                                       given_genotype->GetID()))->second;
@@ -2984,7 +2984,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
     ///////////////////////////////////////////////////////////////////////
     // Choose the first n most abundant genotypes and put them in community
     
-    while (((genotype = batch_it.Next()) != NULL) && (community.size() < max_genotypes)) {
+    while (((genotype = batch_it.Next()) != NULL) && (community.size() < static_cast<unsigned int>(max_genotypes))) {
       community.push_back(genotype);
     }
   } else if (max_genotypes == 0) {
@@ -3153,7 +3153,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
     tMatrix<double> this_prob = point_mut.find(genotype->GetID())->second;
     
     // For any given genotype, calculate the new information in genotype
-    for (int j = 0; j < given_genotypes.size(); ++ j) {
+    for (unsigned int j = 0; j < given_genotypes.size(); ++ j) {
       
       tMatrix<double> given_prob = point_mut.find(given_genotypes[j]->GetID())->second;
       double new_info = 0.0;

@@ -1,9 +1,12 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2001 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cCPUStack.cc
+ *  Avida
+ *
+ *  Created by David on 11/17/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1999-2001 California Institute of Technology.
+ *
+ */
 
 #include "cCPUStack.h"
 
@@ -13,21 +16,12 @@
 using namespace std;
 
 
-cCPUStack::cCPUStack()
-{
-  Clear();
-}
-
 cCPUStack::cCPUStack(const cCPUStack & in_stack)
 {
   for (int i = 0; i < nHardware::STACK_SIZE; i++) {
     stack[i] = in_stack.stack[i];
   }
   stack_pointer = in_stack.stack_pointer;
-}
-
-cCPUStack::~cCPUStack()
-{
 }
 
 void cCPUStack::operator=(const cCPUStack & in_stack)

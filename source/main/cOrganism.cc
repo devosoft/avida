@@ -55,7 +55,7 @@ cOrganism::cOrganism(cWorld* world, const cGenome & in_genome)
 {
   // Initialization of structures...
   hardware = pop_interface.NewHardware(this);
-  cpu_stats.Setup(hardware->GetNumInst());
+  cpu_stats.Setup();
   pop_interface.SetCellID(-1);  // No cell at the moment...
 
   if (m_world->GetConfig().DEATH_METHOD.Get() > 0) {

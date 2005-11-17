@@ -180,7 +180,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs) const
   
   // If the base fitness is 0, the organism is dead and has no complexity.
   if (base_fitness == 0.0) {
-    knockout_stats->neut_count == length;
+    knockout_stats->neut_count = length;
     return;
   }
   
