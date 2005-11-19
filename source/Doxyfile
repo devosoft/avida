@@ -587,7 +587,8 @@ GENERATE_LATEX         = NO
 
 LATEX_OUTPUT           = latex
 
-# The LATEX_CMD_NAME tag can be used to specify the LaTeX command name to be invoked. If left blank `latex' will be used as the default command name.
+# The LATEX_CMD_NAME tag can be used to specify the LaTeX command name to be invoked.
+# If left blank `latex' will be used as the default command name.
 
 LATEX_CMD_NAME         = latex
 

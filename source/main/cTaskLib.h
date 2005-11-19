@@ -70,6 +70,8 @@ private:  // Direct task related methods
   void SetupLogicTests(const tBuffer<int> & inputs,
 		       const tBuffer<int> & outputs) const;
 
+  inline double FractionalReward(unsigned int supplied, unsigned int correct);  
+
   double Task_Echo() const;
   double Task_Add()  const;
   double Task_Sub()  const;

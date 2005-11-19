@@ -39,6 +39,15 @@ cTaskLib::~cTaskLib()
   }
 }
 
+inline double cTaskLib::FractionalReward(unsigned int supplied, unsigned int correct)
+{
+  const unsigned int variance = supplied ^ correct;
+  const unsigned int w = variance - ((variance >> 1) & 0x55555555);
+  const unsigned int x = (w & 0x33333333) + ((w >> 2) & 0x33333333);
+  const unsigned int bit_diff = ((x + (x >> 4) & 0xF0F0F0F) * 0x1010101) >> 24;
+  return static_cast<double>(32 - bit_diff) / 32.0; 
+}
+
 cTaskEntry * cTaskLib::AddTask(const cString & name)
 {
   // Determine if this task is already in the active library.
