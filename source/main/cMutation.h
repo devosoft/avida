@@ -1,14 +1,17 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cMutation.h
+ *  Avida
+ *
+ *  Created by David on 12/5/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef MUTATION_HH
-#define MUTATION_HH
+#ifndef cMutation_h
+#define cMutation_h
 
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
 
@@ -21,9 +24,11 @@ private:
   int type;
   double rate;
 public:
-  cMutation(const cString & _name, int _id, int _trigger, int _scope,
-	    int _type, double _rate);
-  ~cMutation();
+  cMutation(const cString & _name, int _id, int _trigger, int _scope, int _type, double _rate)
+    : name(_name), id(_id), trigger(_trigger), scope(_scope), type(_type), rate(_rate)
+  {
+  }
+  ~cMutation() { ; }
 
   const cString & GetName() const { return name; }
   int GetID() const { return id; }

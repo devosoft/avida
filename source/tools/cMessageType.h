@@ -1,24 +1,27 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cMessageType.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef MESSAGE_TYPE_HH
-#define MESSAGE_TYPE_HH
+#ifndef cMessageType_h
+#define cMessageType_h
 
 class cMessageClass;
 
 class cMessageType{
 public:
   cMessageType(
-    const char *type_name,
-    cMessageClass &message_class
+    const char* type_name,
+    cMessageClass& message_class
   );
 public:
-  const char *m_type_name;
-  const cMessageClass &m_message_class;
+  const char* m_type_name;
+  const cMessageClass& m_message_class;
   bool m_is_active;
 };
 

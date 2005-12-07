@@ -1,9 +1,12 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2001 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cTestUtil.cc
+ *  Avida
+ *
+ *  Created by David on 11/30/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1999-2003 California Institute of Technology.
+ *
+ */
 
 #include "cTestUtil.h"
 
@@ -24,7 +27,6 @@
 
 #include <fstream>
 #include <iomanip>
-
 
 using namespace std;
 

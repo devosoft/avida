@@ -1,17 +1,20 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cIntegratedSchedule.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef INTEGRATED_SCHEDULE_HH
-#define INTEGRATED_SCHEDULE_HH
+#ifndef cIntegratedSchedule_h
+#define cIntegratedSchedule_h
 
-#ifndef SCHEDULE_HH
+#ifndef cSchedule_h
 #include "cSchedule.h"
 #endif
-#ifndef TARRAY_HH
+#ifndef tArray_h
 #include "tArray.h"
 #endif
 
@@ -28,7 +31,6 @@
 
 class cIntegratedScheduleNode;
 class cMerit;
-template <class T> class tArray; // aggregate
 
 class cIntegratedSchedule : public cSchedule {
 private:

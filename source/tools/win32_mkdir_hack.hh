@@ -15,7 +15,7 @@ any prefers where to put this?
 #  define mkdir(path, ignored_mode) _mkdir(path)
 # endif
 # ifndef mode_t
-#  define mode_t UINT
+#  define mode_t unsigned int
 # endif
 #endif
 

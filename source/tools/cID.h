@@ -1,12 +1,15 @@
 /*
-Copyright (C) 1993 - 2004 California Institute of Technology
+ *  cID.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2004 California Institute of Technology
+ *
+ */
 
-Read the COPYING and README files, or contact 'avida@alife.org',
-before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.
-*/
-
-#ifndef ID_HH
-#define ID_HH
+#ifndef cID_h
+#define cID_h
 
 /*!
 \brief Provides a unique identifier for instances of a class.
@@ -31,7 +34,7 @@ public:
   \note XXX : Don't expect any particular order (although there is \e some well-defined order). The ordering might change if
   the current use of pointers to cID objects for their identification turns out to not work.
   */
-  cID(){}
+  cID() { ; }
   bool operator<(const cID &rhs) const { return this < &rhs; }
   bool operator>(const cID &rhs) const { return this > &rhs; }
   bool operator<=(const cID &rhs) const { return this <= &rhs; }

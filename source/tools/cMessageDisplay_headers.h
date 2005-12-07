@@ -1,30 +1,34 @@
-#ifndef MESSAGE_DISPLAY_HDRS_HH
-#define MESSAGE_DISPLAY_HDRS_HH
+/*
+ *  cMessageDisplay_headers.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *
+ */
 
-#ifndef _CPP_IOSTREAM
+#ifndef cMessageDisplay_headers_h
+#define cMessageDisplay_headers_h
+
 #include <iostream>
-#endif
-#ifndef DEFAULT_MESSAGE_DISPLAY_HH
+
+#ifndef cDefaultMessageDisplay_h
 #include "cDefaultMessageDisplay.h"
 #endif
-#ifndef MESSAGE_CLASS_HH
+#ifndef cMessageClass_h
 #include "cMessageClass.h"
 #endif
-#ifndef MESSAGE_CLOSURE_HH
+#ifndef cMessageClosure_h
 #include "cMessageClosure.h"
 #endif
-#ifndef MESSAGE_DISPLAY_HH
+#ifndef cMessageDisplay_h
 #include "cMessageDisplay.h"
 #endif
-#ifndef MESSAGE_TYPE_HH
+#ifndef cMessageType_h
 #include "cMessageType.h"
 #endif
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
-#endif
-
-#ifndef MESSAGE_DISPLAY_HH
-#include "cMessageDisplay.h"
 #endif
 
 extern cMessageType NoPrefix_Msg;

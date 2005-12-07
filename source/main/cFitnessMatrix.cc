@@ -1,17 +1,16 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cFitnessMatrix.cc
+ *  Avida
+ *
+ *  Created by David on 12/2/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef FITNESS_MATRIX_HH
 #include "cFitnessMatrix.h"
-#endif
 
-#ifndef cInstSet_h
 #include "cInstSet.h"
-#endif
 
 using namespace std;
 

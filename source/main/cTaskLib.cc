@@ -1,17 +1,16 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cTaskLib.cc
+ *  Avida
+ *
+ *  Created by David on 12/5/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef TASK_LIB_HH
 #include "cTaskLib.h"
-#endif
 
-#ifndef TASK_ENTRY_HH
 #include "cTaskEntry.h"
-#endif
 
 extern "C" {
 #include <math.h>
@@ -20,9 +19,6 @@ extern "C" {
 
 using namespace std;
 
-////////////////////////
-//  cTaskLib (public)
-////////////////////////
 
 cTaskLib::cTaskLib()
   : use_neighbor_input(false)

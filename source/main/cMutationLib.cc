@@ -1,24 +1,18 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cMutationLib.cc
+ *  Avida
+ *
+ *  Created by David on 12/5/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef MUTATION_LIB_HH
 #include "cMutationLib.h"
-#endif
 
-#ifndef MUTATION_HH
 #include "cMutation.h"
-#endif
-#ifndef nMutation_h
 #include "nMutation.h"
-#endif
 
-//////////////////
-//  cMutationLib
-//////////////////
 
 cMutationLib::cMutationLib()
   : trigger_list_array(nMutation::NUM_TRIGGERS)

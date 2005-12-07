@@ -1,14 +1,17 @@
 /*
-Copyright (C) 1993 - 2004 California Institute of Technology
+ *  cVerifierSuiteRecurser.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2004 California Institute of Technology
+ *
+ */
 
-Read the COPYING and README files, or contact 'avida@alife.org',
-before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.
-*/
+#ifndef cVerifierSuiteRecurser_h
+#define cVerifierSuiteRecurser_h
 
-#ifndef VERIFIER_SUITE_RECURSER_HH
-#define VERIFIER_SUITE_RECURSER_HH
-
-#ifndef CYCLE_CHECK_HH
+#ifndef cCycleCheck_h
 #include "cCycleCheck.h"
 #endif
 

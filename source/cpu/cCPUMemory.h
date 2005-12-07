@@ -1,20 +1,23 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cCPUMemory.h
+ *  Avida
+ *
+ *  Created by David on 11/22/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef CPU_MEMORY_HH
-#define CPU_MEMORY_HH
+#ifndef cCPUMemory_h
+#define cCPUMemory_h
 
-#ifndef GENOME_HH
+#ifndef cGenome_h
 #include "cGenome.h"
 #endif
-#ifndef TARRAY_HH
+#ifndef tArray_h
 #include "tArray.h"
 #endif
-#ifndef MEMORY_FLAGS_HH
+#ifndef cMemoryFlags_h
 #include "cMemoryFlags.h"
 #endif
 

@@ -1,31 +1,31 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cPopulationCell.h
+ *  Avida
+ *
+ *  Created by David on 12/5/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef POPULATION_CELL_HH
-#define POPULATION_CELL_HH
+#ifndef cPopulationCell_h
+#define cPopulationCell_h
 
 #include <fstream>
 
-#ifndef MUTATION_RATES_HH
+#ifndef cMutationRates_h
 #include "cMutationRates.h"
 #endif
-#ifndef TARRAY_HH
+#ifndef tArray_h
 #include "tArray.h"
 #endif
-#ifndef TLIST_HH
+#ifndef tList_h
 #include "tList.h"
 #endif
 
 class cPopulation;
 class cOrganism;
-template <class T> class tList; // aggregate
 class cPopulationCell;
-class cMutationRates; // aggregate
-template <class T> class tArray; // aggregate
 
 class cPopulationCell {
   friend class cPopulation;

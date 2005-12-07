@@ -1,14 +1,17 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cFixedCoords.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef FIXED_COORDS_HH
-#define FIXED_COORDS_HH
+#ifndef cFixedCoords_h
+#define cFixedCoords_h
 
-#ifndef UINT_HH
+#ifndef cUInt_h
 #include "cUInt.h"
 #endif
 
@@ -18,8 +21,6 @@
  * It handles co-ordinates in terms of block number
  * and offset.
  **/
-
-class cUInt; // aggregate
 
 class cFixedCoords {
 private:

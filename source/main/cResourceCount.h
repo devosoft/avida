@@ -1,30 +1,28 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2001 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cResourceCount.h
+ *  Avida
+ *
+ *  Created by David on 12/5/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2001 California Institute of Technology.
+ *
+ */
 
-#ifndef RESOURCE_COUNT_HH
-#define RESOURCE_COUNT_HH
+#ifndef cResourceCount_h
+#define cResourceCount_h
 
-#ifndef SPATIAL_RES_COUNT_HH
+#ifndef cSpatialResCount_h
 #include "cSpatialResCount.h"
 #endif
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
-#ifndef TARRAY_HH
+#ifndef tArray_h
 #include "tArray.h"
 #endif
-#ifndef TMATRIX_HH
+#ifndef tMatrix_h
 #include "tMatrix.h"
 #endif
-
-template <class T> class tArray; // aggregate
-template <class T> class tMatrix; // aggregate
-class cSpatialResCount; // aggregate
-class cString; // aggregate
 
 class cResourceCount {
 private:

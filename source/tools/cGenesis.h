@@ -1,17 +1,20 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cGenesis.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef GENESIS_HH
-#define GENESIS_HH
+#ifndef cGenesis_h
+#define cGenesis_h
 
-#ifndef INIT_FILE_HH
+#ifndef cInitFile_h
 #include "cInitFile.h"
 #endif
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
 
@@ -20,8 +23,6 @@
  * the way Avida should run.
  */
 
-class cString; // aggregate
-
 class cGenesis : public cInitFile {
 private:
     cGenesis(const cGenesis &);
@@ -29,7 +30,7 @@ public:
     /** 
      * The empty constructor creates a clean object.
      **/
-    cGenesis();
+  cGenesis() { ; }
   
     /**
      * This constructor opens the given initialization file, reads it in,
@@ -41,9 +42,6 @@ public:
      * Opens an initialization file, reads it in, removes all comments, and 
      * closes it again.
      **/
-    //int Open(cString _filename, int mode=(ios::in|ios::nocreate));
-    // porting to gcc 3.1
-    // nocreate is no longer in the class ios -- k
     int Open(cString _filename, std::ios::openmode mode=(std::ios::in));
 
     /**

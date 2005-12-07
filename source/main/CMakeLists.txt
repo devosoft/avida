@@ -18,7 +18,6 @@ SET(libmain_a_SOURCES
   cLocalMutations.cc
   cMutationLib.cc
   cMutationRates.cc
-  cMutation.cc
   cMxCodeArray.cc
   cOrgMessage.cc
   cOrganism.cc
@@ -28,8 +27,6 @@ SET(libmain_a_SOURCES
   cPopulationInterface.cc
   cReaction.cc
   cReactionLib.cc
-  cReactionProcess.cc
-  cReactionRequisite.cc
   cReactionResult.cc
   cResource.cc
   cResourceCount.cc
@@ -37,7 +34,6 @@ SET(libmain_a_SOURCES
   cSpatialCountElem.cc
   cSpatialResCount.cc
   cStats.cc
-  cTaskEntry.cc
   cTaskLib.cc
   cWorld.cc
 )

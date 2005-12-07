@@ -1,12 +1,15 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cSchedule.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef SCHEDULE_HH
-#define SCHEDULE_HH
+#ifndef cSchedule_h
+#define cSchedule_h
 
 /**
  * This class is the base object to handle time-slicing. All other schedulers
@@ -16,10 +19,11 @@
 
 class cMerit;
 class cChangeList;
+
 class cSchedule {
 protected:
   int item_count;
-  cChangeList *m_change_list;
+  cChangeList* m_change_list;
 public:
   cSchedule(int _item_count);
   virtual ~cSchedule();

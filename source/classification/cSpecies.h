@@ -1,25 +1,24 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2001 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cSpecies.h
+ *  Avida
+ *
+ *  Created by David on 11/30/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2001 California Institute of Technology.
+ *
+ */
 
-#ifndef SPECIES_HH
-#define SPECIES_HH
+#ifndef cSpecies_h
+#define cSpecies_h
 
 #include <fstream>
 
-#ifndef GENOME_HH
+#ifndef cGenome_h
 #include "cGenome.h"
 #endif
-
-#define SPECIES_QUEUE_NONE     0
-#define SPECIES_QUEUE_ACTIVE   1
-#define SPECIES_QUEUE_INACTIVE 2
-#define SPECIES_QUEUE_GARBAGE  3
-
-#define SPECIES_MAX_DISTANCE 20
+#ifndef nSpecies_h
+#include "nSpecies.h"
+#endif
 
 class cGenotype;
 class cWorld;
@@ -41,7 +40,7 @@ private:
   int num_organisms;
   int queue_type;
   char symbol;
-  int genotype_distance[SPECIES_MAX_DISTANCE];
+  int genotype_distance[nSpecies::MAX_DISTANCE];
 
   cSpecies * next;
   cSpecies * prev;

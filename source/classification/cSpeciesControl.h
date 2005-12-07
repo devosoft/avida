@@ -1,14 +1,17 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cSpeciesControl.h
+ *  Avida
+ *
+ *  Created by David on 11/30/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef SPECIES_CONTROL_HH
-#define SPECIES_CONTROL_HH
+#ifndef cSpeciesControl_h
+#define cSpeciesControl_h
 
-#ifndef SPECIES_QUEUE_HH
+#ifndef cSpeciesQueue_h
 #include "cSpeciesQueue.h"
 #endif
 
@@ -25,8 +28,8 @@ private:
   cSpeciesQueue garbage_queue;
 
 public:
-  cSpeciesControl(cWorld* world);
-  ~cSpeciesControl();
+  cSpeciesControl(cWorld* world) : m_world(world) { ; }
+  ~cSpeciesControl() { ; }
 
   void Remove(cSpecies & in_species);
   void Adjust(cSpecies & in_species);

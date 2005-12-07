@@ -1,22 +1,25 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cPopulation.h
+ *  Avida
+ *
+ *  Created by David on 12/5/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef POPULATION_HH
-#define POPULATION_HH
+#ifndef cPopulation_h
+#define cPopulation_h
 
 #include <fstream>
 
-#ifndef BIRTH_CHAMBER_HH
+#ifndef cBirthChamber_h
 #include "cBirthChamber.h"
 #endif
-#ifndef POPULATION_INTERFACE_HH
+#ifndef cPopulationInterface_h
 #include "cPopulationInterface.h"
 #endif
-#ifndef RESOURCE_COUNT_HH
+#ifndef cResourceCount_h
 #include "cResourceCount.h"
 #endif
 #ifndef cString_h
@@ -25,28 +28,21 @@
 #ifndef cWorld_h
 #include "cWorld.h"
 #endif
-#ifndef TARRAY_HH
+#ifndef tArray_h
 #include "tArray.h"
 #endif
-#ifndef TLIST_HH
+#ifndef tList_h
 #include "tList.h"
 #endif
 
 class cSchedule;
-template <class T> class tArray; // aggregate
-
-class cBirthChamber; // aggregate
 class cChangeList;
 class cEnvironment;
 class cGenome;
 class cGenotype;
 class cLineage;
-template <class T> class tList; // aggregate
 class cOrganism;
-class cPopulationInterface; // aggregate
 class cPopulationCell;
-class cResourceCount; // aggregate
-class cString; // aggregate
 
 class cPopulation {
 private:

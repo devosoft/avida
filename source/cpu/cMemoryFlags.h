@@ -1,12 +1,15 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cMemoryFlags.h
+ *  Avida
+ *
+ *  Created by David on 11/30/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1999-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef MEMORY_FLAGS_HH
-#define MEMORY_FLAGS_HH
+#ifndef cMemoryFlags_h
+#define cMemoryFlags_h
 
 class cMemoryFlags {
   friend class cCPUMemory;

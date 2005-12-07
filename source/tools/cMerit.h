@@ -1,27 +1,26 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cMerit.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef MERIT_HH
-#define MERIT_HH
+#ifndef cMerit_h
+#define cMerit_h
 
 #include <iostream>
 #include <math.h>
 #include <limits.h>
 #include <assert.h>
 
-#ifndef UINT
-#define UINT unsigned int
-#endif
-
 class cMerit {
 protected:
   int bits;
-  UINT base;
-  UINT offset;
+  unsigned int base;
+  unsigned int offset;
   double value;
 
   void UpdateValue(double in_value);
@@ -30,7 +29,7 @@ public:
   cMerit() : bits(0), base(0), offset(0), value(0) {;}
 
   explicit cMerit(const int    in_value){ UpdateValue(in_value); }
-  explicit cMerit(const UINT   in_value){ UpdateValue(in_value); }
+  explicit cMerit(const unsigned int   in_value){ UpdateValue(in_value); }
   explicit cMerit(const double in_value){ UpdateValue(in_value); }
 
   bool OK() const ;
@@ -51,23 +50,23 @@ public:
 
   int  operator==(const cMerit & _m) const { return value == _m.GetDouble(); }
   int  operator==(const double _m) const { return value == _m; }
-  int  operator==(const UINT _m)   const { return (offset==0 && base==_m); }
+  int  operator==(const unsigned int _m)   const { return (offset==0 && base==_m); }
 
   int  operator!=(const cMerit & _m) const { return value != _m.GetDouble(); }
   int  operator!=(const double _m) const { return value != _m; }
-  int  operator!=(const UINT _m)   const { return (offset!=0 || base!=_m); }
+  int  operator!=(const unsigned int _m)   const { return (offset!=0 || base!=_m); }
 
   void Clear() { value = 0; base = 0; offset = 0; bits = 0; }
 
   // @TCC - This function fails for values > UINT_MAX...
-  UINT GetUInt()   const {
+  unsigned int GetUInt()   const {
     assert(value < UINT_MAX);  // Fails for merit values > UINT_MAX.
-    return (UINT) value; }
+    return (unsigned int) value; }
 
   double GetDouble()      const { return value; }
 
-  int GetBit(UINT bit_num)  const {
-    return ( bit_num >= offset && bit_num < (UINT)bits ) ?
+  int GetBit(unsigned int bit_num)  const {
+    return ( bit_num >= offset && bit_num < (unsigned int)bits ) ?
 			( base >> (bit_num-offset) ) & 1 : 0; }
 
   int GetNumBits() const { return bits; }

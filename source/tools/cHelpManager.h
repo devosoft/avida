@@ -1,37 +1,36 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cHelpManager.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef HELP_MANAGER_HH
-#define HELP_MANAGER_HH
+#ifndef cHelpManager_h
+#define cHelpManager_h
 
-#ifndef HELP_TYPE_HH
+#ifndef cHelpType_h
 #include "cHelpType.h"
 #endif
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
-#ifndef TLIST_HH
+#ifndef tList_h
 #include "tList.h"
 #endif
 
 class cHelpFullEntry;
-class cHelpType; // accessed
-class cString; // aggregate
-template <class T> class tList; // aggregate
-template <class T> class tListIterator; // aggregate
 
 class cHelpManager {
 private:
   tList<cHelpType> type_list;
-  cHelpFullEntry * last_entry;
+  cHelpFullEntry* last_entry;
   bool verbose;   // Should we print messages to the screen?
 
   // Private methods...
-  cHelpType * GetType(const cString type_name);
+  cHelpType* GetType(const cString type_name);
 private:
   // disabled copy constructor.
   cHelpManager(const cHelpManager &);
@@ -46,7 +45,7 @@ public:
 
     tListIterator<cHelpType> type_it(type_list);
     while (type_it.Next() != NULL) {
-      cHelpEntry * found_entry = type_it.Get()->FindEntry(entry_name);
+      cHelpEntry* found_entry = type_it.Get()->FindEntry(entry_name);
       if (found_entry != NULL) return found_entry;
     }
     return NULL;

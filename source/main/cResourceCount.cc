@@ -1,9 +1,12 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2001 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cResourceCount.cc
+ *  Avida
+ *
+ *  Created by David on 12/5/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2001 California Institute of Technology.
+ *
+ */
 
 #include "cResourceCount.h"
 
@@ -18,6 +21,7 @@ using namespace std;
 const double cResourceCount::UPDATE_STEP(1.0 / 10000.0);
 const double cResourceCount::EPSILON (1.0e-15);
 const int cResourceCount::PRECALC_DISTANCE(100);
+
 
 void FlowMatter(cSpatialCountElem &elem1, cSpatialCountElem &elem2, double inxdiffuse, 
                 double inydiffuse, double inxgravity, double inygravity,

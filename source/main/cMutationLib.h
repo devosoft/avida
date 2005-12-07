@@ -1,22 +1,26 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cMutationLib.h
+ *  Avida
+ *
+ *  Created by David on 12/5/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef MUTATION_LIB_HH
-#define MUTATION_LIB_HH
+#ifndef cMutationLib_h
+#define cMutationLib_h
 
-#ifndef TARRAY_HH
+#ifndef tArray_h
 #include "tArray.h"
 #endif
-#ifndef TLIST_HH
+#ifndef tList_h
 #include "tList.h"
 #endif
 
 class cMutation;
 class cString;
+
 class cMutationLib {
 private:
   tArray<cMutation *> mutation_array;

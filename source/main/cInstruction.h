@@ -1,22 +1,25 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cInstruction.h
+ *  Avida
+ *
+ *  Created by David on 12/5/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef INSTRUCTION_HH
-#define INSTRUCTION_HH
+#ifndef cInstruction_h
+#define cInstruction_h
 
 #include <assert.h>
 
-#ifndef DEFS_HH
+#ifndef defs_h
 #include "defs.h"
 #endif
 
 class cInstruction {
 private:
-  UCHAR operand;
+  unsigned char operand;
 
 public:
   // Accessors...

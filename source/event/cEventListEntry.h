@@ -1,19 +1,22 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cEventListEntry.h
+ *  Avida
+ *
+ *  Created by David on 12/2/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef EVENT_LIST_ENTRY_HH
-#define EVENT_LIST_ENTRY_HH
+#ifndef cEventListEntry_h
+#define cEventListEntry_h
 
 #include <assert.h>
 
-#ifndef EVENT_HH
+#ifndef cEvent_h
 #include "cEvent.h"
 #endif
-#ifndef EVENT_TRIGGERS_HH
+#ifndef cEventTriggers_h
 #include "cEventTriggers.h"
 #endif
 
@@ -21,9 +24,6 @@
  * This class holds a single event in the event list. It is used by the class
  * @ref cEventList. There is no need to use it in any other context.
  **/
-
-class cEvent; // access
-class cEventTriggers; // access
 
 class cEventListEntry {
 private:

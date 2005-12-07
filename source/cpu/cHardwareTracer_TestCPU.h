@@ -1,15 +1,19 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2004 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cHardwareTracer_TestCPU.h
+ *  Avida
+ *
+ *  Created by David on 11/30/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1999-2004 California Institute of Technology.
+ *
+ */
 
-#ifndef HARDWARE_TRACER_TEST_CPU_HH
-#define HARDWARE_TRACER_TEST_CPU_HH
+#ifndef cHardwareTracer_TestCPU_h
+#define cHardwareTracer_TestCPU_h
 
 class cString;
-struct cHardwareTracer_TestCPU {
+class cHardwareTracer_TestCPU {
+public:
   virtual ~cHardwareTracer_TestCPU() { ; }
   virtual void TraceHardware_TestCPU(
     int time_used,

@@ -1,14 +1,17 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cWeightedIndex.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef WEIGHTED_INDEX_HH
-#define WEIGHTED_INDEX_HH
+#ifndef cWeightedIndex_h
+#define cWeightedIndex_h
 
-#ifndef TARRAY_HH
+#ifndef tArray_h
 #include "tArray.h"
 #endif
 
@@ -20,8 +23,6 @@
  * This class allows indecies to be assigned a "weight" and then indexed by
  * that weight.
  **/
-
-template <class T> class tArray; // aggregate
 
 class cWeightedIndex {
 protected:

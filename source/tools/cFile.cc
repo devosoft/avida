@@ -1,27 +1,14 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cFile.cc
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef FILE_HH
 #include "cFile.h"
-#endif
-
-#ifndef INIT_FILE_HH
-#include "cInitFile.h"
-#endif
-#ifndef GENESIS_HH
-#include "cGenesis.h"
-#endif
-#ifndef STRING_ITERATOR_HH
-#include "cStringIterator.h"
-#endif
-
-#ifndef TOOLS_HH
-#include "cTools.h"  // for g_debug global
-#endif
 
 #include <iostream>
 
@@ -30,18 +17,9 @@ extern "C" {
 #include <errno.h>   // needed for FOPEN error constants (MSVC)
 }
 
-
 using namespace std;
 
 
-////////////
-//  cFile
-////////////
-
-
-
-//bool cFile::Open(cString _fname, int flags)
-// porting to gcc 3.1 -- k
 bool cFile::Open(cString _fname, ios::openmode flags)
 {
   if( IsOpen() ) Close();    // If a file is already open, clost it first.
@@ -65,8 +43,7 @@ bool cFile::Open(cString _fname, ios::openmode flags)
     else if (err_id == ENOENT) error_desc = "File or path not found";
 
     // Print the error.
-    cerr << "Unable to open file '" << _fname
-	 << "' : " << error_desc << endl;
+    cerr << "Unable to open file '" << _fname << "' : " << error_desc << endl;
     return false;
   }
 
@@ -97,20 +74,3 @@ bool cFile::ReadLine(cString & in_string)
   in_string = cur_line;
   return true;
 }
-
-/*
-int cFile::CountLines()
-{
-  char cur_line[MAX_STRING_LENGTH];
-
-  Rewind();
-  int n_lines = -1;
-
-  do{
-    fp.getline(cur_line, MAX_STRING_LENGTH);
-    n_lines++;
-  } while( cur_line[0]!='\0' && !fp.eof() );
-
-  return n_lines;
-}
-*/

@@ -1,22 +1,21 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2001 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cTools.cc
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2001 California Institute of Technology
+ *
+ */
 
-#ifndef TOOLS_HH
 #include "cTools.h"
-#endif
 
 #include <iostream>
 #include <errno.h>
 #include <sys/stat.h>
 #include <stdio.h>
 
-#ifndef STRING_HH
 #include "cString.h"
-#endif
 
 #ifdef WIN32
 # ifndef WIN32_MKDIR_HACK_HH
@@ -25,6 +24,7 @@
 #endif
 
 using namespace std;
+
 
 bool cTools::MkDir(const cString & dirname, bool verbose)
 {

@@ -1,47 +1,42 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cEnvironment.h
+ *  Avida
+ *
+ *  Created by David on 12/2/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef ENVIRONMENT_HH
-#define ENVIRONMENT_HH
+#ifndef cEnvironment_h
+#define cEnvironment_h
 
 #ifndef cInstSet_h
 #include "cInstSet.h"
 #endif
-#ifndef MUTATION_LIB_HH
+#ifndef cMutationLib_h
 #include "cMutationLib.h"
 #endif
-#ifndef MUTATION_RATES_HH
+#ifndef cMutationRates_h
 #include "cMutationRates.h"
 #endif
-#ifndef REACTION_LIB_HH
+#ifndef cReactionLib_h
 #include "cReactionLib.h"
 #endif
-#ifndef RESOURCE_LIB_HH
+#ifndef cResourceLib_h
 #include "cResourceLib.h"
 #endif
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
-#ifndef TASK_LIB_HH
+#ifndef cTaskLib_h
 #include "cTaskLib.h"
 #endif
-#ifndef TLIST_HH
+#ifndef tList_h
 #include "tList.h"
 #endif
 
-class cResourceLib; // aggregate
-class cReactionLib; // aggregate
-class cMutationLib; // aggregate
-class cTaskLib; // aggregate
-class cInstSet; // aggregate
-class cMutationRates; // aggregate
-class cString; // aggregate
 class cReaction;
-template <class T> class tList;
 class cReactionRequisite;
 template <class T> class tArray;
 class cReactionProcess;

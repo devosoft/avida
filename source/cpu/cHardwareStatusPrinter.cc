@@ -1,22 +1,24 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2004 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cHardwareStatusPrinter.cc
+ *  Avida
+ *
+ *  Created by David on 11/30/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1999-2004 California Institute of Technology.
+ *
+ */
+
+#include "cHardwareStatusPrinter.h"
 
 #include "cHeadCPU.h"
 #include "cHardware4Stack.h"
 #include "cHardwareBase.h"
 #include "cHardwareCPU.h"
 #include "cHardwareSMT.h"
-#include "cHardwareStatusPrinter.h"
 #include "cInstSet.h"
 #include "cOrganism.h"
 #include "cString.h"
 #include "cStringUtil.h"
-
-#include <fstream>
 
 cString cHardwareStatusPrinter::Bonus(const cString &next_name)
 {

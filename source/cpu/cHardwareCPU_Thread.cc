@@ -1,19 +1,16 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cHardwareCPU_Thread.cc
+ *  Avida
+ *
+ *  Created by David on 11/30/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1999-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef HARDWARE_CPU_THREAD_HH
 #include "cHardwareCPU_Thread.h"
-#endif
 
 using namespace std;
-
-/////////////////////////
-//  cHardwareCPU_Thread
-/////////////////////////
 
 cHardwareCPU_Thread::cHardwareCPU_Thread(cHardwareBase * in_hardware, int _id)
 {

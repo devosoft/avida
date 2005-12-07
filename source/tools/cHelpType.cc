@@ -1,30 +1,24 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cHelpType.cc
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef HELP_TYPE_HH
 #include "cHelpType.h"
-#endif
 
-#ifndef HELP_ALIAS_HH
 #include "cHelpAlias.h"
-#endif
-#ifndef HELP_ENTRY_HH
 #include "cHelpEntry.h"
-#endif
-#ifndef HELP_FULL_ENTRY_HH
 #include "cHelpFullEntry.h"
-#endif
-#ifndef HELP_MANAGER_HH
 #include "cHelpManager.h"
-#endif
 
 #include <fstream>
 
 using namespace std;
+
 
 cHelpAlias * cHelpType::AddAlias(const cString & alias_name, cHelpFullEntry * entry) {
   cHelpAlias * new_alias = new cHelpAlias(alias_name, entry);

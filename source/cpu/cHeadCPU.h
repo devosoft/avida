@@ -1,21 +1,19 @@
-/////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cHeadCPU.h
+ *  Avida
+ *
+ *  Created by David on 11/30/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1999-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef HEAD_CPU_HH
-#define HEAD_CPU_HH
+#ifndef cHeadCPU_h
+#define cHeadCPU_h
 
-#ifndef DEFS_HH
+#ifndef defs_h
 #include "defs.h"
 #endif
-
-class cHardwareBase;
-class cCodeLabel;
-class cGenome;
-class cCPUMemory;
 
 /**
  * The cHeadCPU class contains a pointer to locations in memory for a CPU.
@@ -23,6 +21,7 @@ class cCPUMemory;
 
 class cHardwareBase;
 class cCodeLabel;
+class cCPUMemory;
 class cGenome;
 class cInstruction;
 

@@ -1,17 +1,20 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cAnalyze.cc
+ *  Avida
+ *
+ *  Created by David on 12/1/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
+
+#include "cAnalyze.h"
 
 #include <fstream>
 #include <sstream>
 #include <string>
 #include <queue>
 #include <stack>
-
-#include "cAnalyze.h"
 
 #include "cAnalyzeCommand.h"
 #include "cAnalyzeCommandDef.h"
@@ -55,10 +58,6 @@ extern "C" {
 }
 
 using namespace std;
-
-//////////////
-//  cAnalyze
-//////////////
 
 cAnalyze::cAnalyze(cWorld* world)
 : cur_batch(0)

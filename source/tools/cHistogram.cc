@@ -1,17 +1,16 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cHistogram.cc
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef HISTOGRAM_HH
 #include "cHistogram.h"
-#endif
 
-#ifndef FUNCTIONS_HH
 #include "functions.h"
-#endif
 
 extern "C" {
 #include <stdio.h>
@@ -21,9 +20,9 @@ extern "C" {
 
 using namespace std;
 
-// cHistogram /////////////////////////////////////////////////////////////////
 
-cHistogram::cHistogram(int in_max, int in_min) {
+cHistogram::cHistogram(int in_max, int in_min)
+{
   max_bin = in_max;
   min_bin = in_min;
   entry_count = 0;

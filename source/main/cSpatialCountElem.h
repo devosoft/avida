@@ -1,14 +1,17 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2001 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cSpatialCountElem.h
+ *  Avida
+ *
+ *  Created by David on 12/5/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2001 California Institute of Technology.
+ *
+ */
 
-#ifndef SPATIAL_COUNT_ELEM_HH
-#define SPATIAL_COUNT_ELEM_HH
+#ifndef cSpatialCountElem_h
+#define cSpatialCountElem_h
 
-#ifndef TARRAY_HH
+#ifndef tArray_h
 #include "tArray.h"
 #endif
 

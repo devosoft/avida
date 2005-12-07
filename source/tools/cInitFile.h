@@ -1,35 +1,34 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cInitFile.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef INIT_FILE_HH
-#define INIT_FILE_HH
+#ifndef cInitFile_h
+#define cInitFile_h
 
 #include <iostream>
 
-#ifndef FILE_HH
+#ifndef cFile_h
 #include "cFile.h"
 #endif
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
-#ifndef STRING_LIST_HH
+#ifndef cStringList_h
 #include "cStringList.h"
 #endif
-#ifndef TARRAY_HH
+#ifndef tArray_h
 #include "tArray.h"
 #endif
 
 /**
  * A class to handle initialization files.
  **/
-
-class cString; // aggregate
-class cStringList; // aggregate
-template <class T> class tArray; // aggregate
 
 class cInitFile : public cFile {
 private:
@@ -52,16 +51,16 @@ public:
    * The empty constructor constructs an object that is in a clean
    * state. You can set the file to open with @ref cFile::Open() later on.
    **/
-  cInitFile();
+  cInitFile() : filetype("unknown"), active_line(0) { ; }
   
   /**
    * Opens the file with the given name.
    * 
    * @param in_filename Name of the initialization file to open.
    **/
-  cInitFile(cString in_filename);
+  cInitFile(cString in_filename) : cFile(in_filename), filetype("unknown"), active_line(0) { ; }
   
-  ~cInitFile();
+  ~cInitFile() { ; }
   
   /**
    * Loads the file into memory.

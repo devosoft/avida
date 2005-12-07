@@ -1,23 +1,19 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cInjectGenotypeQueue.cc
+ *  Avida
+ *
+ *  Created by David on 11/30/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef INJECT_GENOTYPE_QUEUE_HH
 #include "cInjectGenotypeQueue.h"
-#endif
 
-#ifndef INJECT_GENOTYPE_HH
 #include "cInjectGenotype.h"
-#endif
 
 #include <assert.h>
 
-/////////////////////
-//  cInjectGenotypeQueue
-/////////////////////
 
 cInjectGenotypeQueue::cInjectGenotypeQueue()
 {

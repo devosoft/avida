@@ -1,19 +1,23 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cResourceLib.h
+ *  Avida
+ *
+ *  Created by David on 12/5/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef RESOURCE_LIB_HH
-#define RESOURCE_LIB_HH
+#ifndef cResourceLib_h
+#define cResourceLib_h
 
-#ifndef TARRAY_HH
+#ifndef tArray_h
 #include "tArray.h"
 #endif
 
 class cResource;
 class cString;
+
 class cResourceLib {
 private:
   tArray<cResource *> resource_array;

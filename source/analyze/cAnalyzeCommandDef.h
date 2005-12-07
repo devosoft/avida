@@ -1,22 +1,24 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cAnalyzeCommandDef.h
+ *  Avida
+ *
+ *  Created by David on 12/1/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef ANALYZE_COMMAND_DEF_HH
-#define ANALYZE_COMMAND_DEF_HH
+#ifndef cAnalyzeCommandDef_h
+#define cAnalyzeCommandDef_h
 
-#ifndef ANALYZE_COMMAND_DEF_BASE_HH
+#ifndef cAnalyzeCommandDefBase_h
 #include "cAnalyzeCommandDefBase.h"
 #endif
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
 
 class cAnalyze;
-class cString; // aggregate
 class cAnalyzeCommand;
 
 class cAnalyzeCommandDef : public cAnalyzeCommandDefBase {

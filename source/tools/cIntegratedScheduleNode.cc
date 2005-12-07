@@ -1,17 +1,15 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cIntegratedScheduleNode.cc
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef INTEGRATED_SCHEDULE_NODE_HH
 #include "cIntegratedScheduleNode.h"
-#endif
 
-/////////////////////////////
-//  cIntegratedScheduleNode
-/////////////////////////////
 
 cIntegratedScheduleNode::cIntegratedScheduleNode(int _item_count, int in_id)
   : active_array(_item_count)

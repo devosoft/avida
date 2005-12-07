@@ -1,20 +1,21 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cDataEntry.h
+ *  Avida
+ *
+ *  Created by David on 12/2/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef DATA_ENTRY_HH
-#define DATA_ENTRY_HH
+#ifndef cDataEntry_h
+#define cDataEntry_h
 
 #include <iostream>
 
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
-
-class cString; // aggregate
 
 class cDataEntry {
 private:
@@ -38,6 +39,10 @@ public:
   virtual bool Print(std::ostream& fp) const { (void) fp;  return false; }
 };
 
-std::ostream& operator << (std::ostream& out, cDataEntry & entry);
+std::ostream& operator << (std::ostream& out, cDataEntry & entry)
+{
+  entry.Print(out);
+  return out;
+}
 
 #endif

@@ -1,23 +1,25 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cStringIterator.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef STRING_ITERATOR_HH
-#define STRING_ITERATOR_HH
+#ifndef cStringIterator_h
+#define cStringIterator_h
 
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
-#ifndef TLIST_HH
+#ifndef tList_h
 #include "tList.h"
 #endif
 
-class cString; // aggregate
 class cStringList;
-template <class T> class tConstListIterator; // aggregate
+
 
 class cStringIterator {
 private:

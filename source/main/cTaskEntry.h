@@ -1,17 +1,20 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cTaskEntry.h
+ *  Avida
+ *
+ *  Created by David on 12/5/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef TASK_ENTRY_HH
-#define TASK_ENTRY_HH
+#ifndef cTaskEntry_h
+#define cTaskEntry_h
 
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
-#ifndef TASK_LIB_HH
+#ifndef cTaskLib_h
 #include "cTaskLib.h"
 #endif
 
@@ -22,9 +25,11 @@ private:
   int id;
   tTaskTest test_fun;
 public:
-  cTaskEntry(const cString & _name, const cString & _desc, int _id,
-	     tTaskTest _test_fun);
-  ~cTaskEntry();
+  cTaskEntry(const cString & _name, const cString & _desc, int _id, tTaskTest _test_fun)
+    : name(_name), desc(_desc), id(_id), test_fun(_test_fun)
+  {
+  }
+  ~cTaskEntry() { ; }
 
   const cString & GetName()    const { return name; }
   const cString & GetDesc() const { return desc; }

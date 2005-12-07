@@ -1,14 +1,17 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cTestUtil.h
+ *  Avida
+ *
+ *  Created by David on 11/30/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1999-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef TEST_UTIL_HH
-#define TEST_UTIL_HH
+#ifndef cTestUtil_h
+#define cTestUtil_h
 
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
 
@@ -25,9 +28,9 @@ class cWorld;
 class cTestUtil {
 public:
   static void PrintGenome(cWorld* world, const cGenome & genome, cString filename="",
-			  cGenotype * genotype=NULL, int update_out=-1);
+                          cGenotype * genotype=NULL, int update_out=-1);
   static void PrintGenome(cWorld* world, cInjectGenotype * genotype, const cGenome & genome, 
-			  cString filename="", int update_out=-1);
+                          cString filename="", int update_out=-1);
 };
 
 #endif

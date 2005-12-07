@@ -1,27 +1,27 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  tDataEntry.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef TDATAENTRY_HH
-#define TDATAENTRY_HH
+#ifndef tDataEntry_h
+#define tDataEntry_h
 
 #include <iostream>
 
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
-#ifndef STRING_UTIL_HH
+#ifndef cStringUtil_h
 #include "cStringUtil.h"
 #endif
-#ifndef TDATAENTRYBASE_HH
+#ifndef tDataEntryBase_h
 #include "tDataEntryBase.h"
 #endif
-
-class cString;
-struct cStringUtil; // access
 
 template <class T, class OUT> class tDataEntry : public tDataEntryBase<T> {
 protected:

@@ -1,17 +1,20 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cGenotype_TestData.h
+ *  Avida
+ *
+ *  Created by David on 11/30/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1999-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef GENOTYPE_TEST_DATA_HH
-#define GENOTYPE_TEST_DATA_HH
+#ifndef cGenotype_TestData_h
+#define cGenotype_TestData_h
 
 class cGenotype_TestData {
 public:
-  cGenotype_TestData();
-  ~cGenotype_TestData();
+  cGenotype_TestData() : fitness(-1) { ; }
+  ~cGenotype_TestData() { ; }
 
   bool is_viable;
 

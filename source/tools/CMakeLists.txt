@@ -3,14 +3,12 @@ SET(libtools_a_SOURCES
   cChangeList.cc
   cConstSchedule.cc
   cCountTracker.cc
-  cDataEntry.cc
   cDataFile.cc
   cDataFileManager.cc
   cDataManager_Base.cc
   cDefaultMessageDisplay.cc
   cDoubleSum.cc
   cFile.cc
-  cFixedBlock.cc
 	cGenesis.cc
   cHelpAlias.cc
   cHelpManager.cc
@@ -25,9 +23,7 @@ SET(libtools_a_SOURCES
   cMerit.cc
   cProbSchedule.cc
   cRandom.cc
-  cRefBlock.cc
   cRunningAverage.cc
-  cScaledBlock.cc
   cSchedule.cc
   cString.cc
   cStringIterator.cc

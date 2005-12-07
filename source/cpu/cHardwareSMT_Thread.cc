@@ -11,10 +11,6 @@
 
 using namespace std;
 
-/////////////////////////
-//  cHardwareSMT_Thread
-/////////////////////////
-
 cHardwareSMT_Thread::cHardwareSMT_Thread(cHardwareBase * in_hardware, int _id)
 {
   Reset(in_hardware, _id);

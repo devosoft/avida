@@ -1,28 +1,27 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cAnalyzeFunction.h
+ *  Avida
+ *
+ *  Created by David on 12/2/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef ANALYZE_FUNCTION_HH
-#define ANALYZE_FUNCTION_HH
+#ifndef cAnalyzeFunction_h
+#define cAnalyzeFunction_h
 
-#ifndef ANALYZE_COMMAND_HH
+#ifndef cAnalyzeCommand_h
 #include "cAnalyzeCommand.h"
 #endif
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
-#ifndef TLIST_HH
+#ifndef tList_h
 #include "tList.h"
 #endif
 
 // cAnalyzeFunction    : User-defined function
-
-class cString; // aggregate
-template <class T> class tList; // aggregate
-class cAnalyzeCommand;
 
 class cAnalyzeFunction {
 private:

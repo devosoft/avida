@@ -1,7 +1,6 @@
 SET(libevent_a_SOURCES
   cEventManager.cc
   cEventList.cc
-  cEventListIterator.cc
   cEventTriggers.cc
 )
 

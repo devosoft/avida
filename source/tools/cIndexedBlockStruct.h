@@ -1,9 +1,15 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cIndexedBlockStruct.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
+
+#ifndef cIndexedBlockStruct_h
+#define cIndexedBlockStruct_h
 
 // See block_struct_proto.hh for a good description of this structure.
 
@@ -15,26 +21,18 @@
 // initialized with the maximum reference number which will be passed into
 // it (so as to create the third array of that size.
 
-#ifndef INDEXED_BLOCK_STRUCT_HH
-#define INDEXED_BLOCK_STRUCT_HH
-
-#ifndef FIXED_BLOCK_HH
+#ifndef cFixedBlock_h
 #include "cFixedBlock.h"
 #endif
-#ifndef FIXED_COORDS_HH
+#ifndef cFixedCoords_h
 #include "cFixedCoords.h"
 #endif
-#ifndef REF_BLOCK_HH
+#ifndef cRefBlock_h
 #include "cRefBlock.h"
 #endif
-#ifndef UINT_HH
+#ifndef cUInt_h
 #include "cUInt.h"
 #endif
-
-class cFixedBlock; // accessed
-class cRefBlock; // accessed
-class cFixedCoords; // aggregate
-class cUInt; // aggregate
 
 class cIndexedBlockStruct {
 private:

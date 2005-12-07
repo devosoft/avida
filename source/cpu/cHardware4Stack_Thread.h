@@ -1,28 +1,31 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cHardware4Stack_Thread.h
+ *  Avida
+ *
+ *  Created by David on 11/17/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1999-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef HARDWARE_4STACK_THREAD_HH
-#define HARDWARE_4STACK_THREAD_HH
+#ifndef cHardware4Stack_Thread_h
+#define cHardware4Stack_Thread_h
 
 #include <iostream>
 
-#ifndef CODE_LABEL_HH
+#ifndef cCodeLabel_h
 #include "cCodeLabel.h"
 #endif
-#ifndef CPU_STACK_HH
+#ifndef cCPUStack_h
 #include "cCPUStack.h"
 #endif
-#ifndef HEAD_MULTI_MEM_HH
+#ifndef cHeadMulitMem_h
 #include "cHeadMultiMem.h"
 #endif
-#ifndef HARDWARE_4STACK_CONSTANTS_HH
+#ifndef nHardware4Stack_h
 #include "nHardware4Stack.h"
 #endif
-#ifndef TBUFFER_HH
+#ifndef tBuffer_h
 #include "tBuffer.h"
 #endif
 
@@ -44,7 +47,7 @@ private:
   int id;
 public:
   cHeadMultiMem heads[nHardware::NUM_HEADS];
-  UCHAR cur_head;
+  unsigned char cur_head;
   cCPUStack local_stacks[nHardware4Stack::NUM_LOCAL_STACKS];
 
   bool advance_ip;         // Should the IP advance after this instruction?

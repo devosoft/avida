@@ -1,32 +1,26 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cHelpManager.cc
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef HELP_MANAGER_HH
 #include "cHelpManager.h"
-#endif
 
-#ifndef HELP_TYPE_HH
 #include "cHelpType.h"
-#endif
-#ifndef INIT_FILE_HH
 #include "cInitFile.h"
-#endif
-#ifndef STRING_HH
 #include "cString.h"
-#endif
-#ifndef TLIST_HH
 #include "tList.h"
-#endif
 
 #include <iostream>
 
 using namespace std;
 
-cHelpType * cHelpManager::GetType(const cString type_name)
+
+cHelpType* cHelpManager::GetType(const cString type_name)
 {
   // See if we can find this type in the already existant list...
   tListIterator<cHelpType> type_it(type_list);

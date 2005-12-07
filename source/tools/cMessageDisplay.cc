@@ -1,26 +1,19 @@
+/*
+ *  cMessageDisplay.cc
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *
+ */
 
-#ifndef _LIMITS_H___
-#include <limits.h>
-#endif
-#ifndef _STDIO_H_
-#include <stdio.h>
-#endif
-#ifndef _STDARG_H
-#include <stdarg.h>
-#endif
-
-#ifndef TRIO_TRIO_H
-#include "../third-party/trio/trio.h"
-#endif
-
-#ifndef _CPP_IOSTREAM
-#include <iostream>
-#endif
-
-#ifndef MESSAGE_DISPLAY_HDRS_HH
 #include "cMessageDisplay_headers.h"
-#endif
 
+#include <limits.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include "../third-party/trio/trio.h"
+#include <iostream>
 
 using namespace std;
 
@@ -35,11 +28,12 @@ and
 the output and error messages can be redirected from, say, the console
 to a graphical window and back again (if you want).
 */
-static cMessageDisplay *s_info_display;
-static cMessageDisplay *s_debug_display;
-static cMessageDisplay *s_error_display;
-static cMessageDisplay *s_fatal_display;
-static cMessageDisplay *s_noprefix_display;
+
+static cMessageDisplay* s_info_display;
+static cMessageDisplay* s_debug_display;
+static cMessageDisplay* s_error_display;
+static cMessageDisplay* s_fatal_display;
+static cMessageDisplay* s_noprefix_display;
 
 
 

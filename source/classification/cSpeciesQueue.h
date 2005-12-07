@@ -1,21 +1,29 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cSpeciesQueue.h
+ *  Avida
+ *
+ *  Created by David on 11/30/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef SPECIES_QUEUE_HH
-#define SPECIES_QUEUE_HH
+#ifndef cSpeciesQueue_h
+#define cSpeciesQueue_h
+
+#ifndef defs_h
+#include "defs.h"
+#endif
 
 class cSpecies;
+
 class cSpeciesQueue {
 private:
   int size;
-  cSpecies * first;
+  cSpecies* first;
 public:
-  cSpeciesQueue();
-  ~cSpeciesQueue();
+  cSpeciesQueue() : size(0), first(NULL) { ; }
+  ~cSpeciesQueue() { ; }
 
   void InsertRear(cSpecies & new_species);
   void Remove(cSpecies & in_species);

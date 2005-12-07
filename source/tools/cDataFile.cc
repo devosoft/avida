@@ -1,17 +1,16 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cDataFile.cc
+ *  Avida
+ *
+ *  Created by David on 12/2/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef DATA_FILE_HH
 #include "cDataFile.h"
-#endif
 
-#ifndef STRING_UTIL_HH
 #include "cStringUtil.h"
-#endif
 
 extern "C" {
 #include <stdio.h>
@@ -19,6 +18,7 @@ extern "C" {
 }
 
 using namespace std;
+
 
 void cDataFile::Init()
 {

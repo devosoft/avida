@@ -1,35 +1,37 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cMessageClosure.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef MESSAGE_CLOSURE_HH
-#define MESSAGE_CLOSURE_HH
+#ifndef cMessageClosure_h
+#define cMessageClosure_h
 
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
 
 class cMessageType;
-class cString; // aggregate
 class QString;
 
 class cMessageClosure{
 private:
-  cMessageType &_type;
-  const char *_function;
-  const char *_file;
+  cMessageType& _type;
+  const char* _function;
+  const char* _file;
   int _line;
   int _error;
   int _op_count;
   cString _msg;
 public:
   cMessageClosure(
-    cMessageType &type,
-    const char *function_name,
-    const char *file_name,
+    cMessageType& type,
+    const char* function_name,
+    const char* file_name,
     int line_number
   );
   ~cMessageClosure(void);

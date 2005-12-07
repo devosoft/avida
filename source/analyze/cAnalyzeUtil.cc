@@ -1,9 +1,12 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2001 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cAnalyzeUtil.cc
+ *  Avida
+ *
+ *  Created by David on 12/2/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
 #include "cAnalyzeUtil.h"
 
@@ -33,6 +36,7 @@
 #include <vector>
 
 using namespace std;
+
 
 void cAnalyzeUtil::TestGenome(cWorld* world, const cGenome & genome, cInstSet & inst_set,
                               ofstream& fp, int update)

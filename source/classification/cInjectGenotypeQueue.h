@@ -1,25 +1,29 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cInjectGenotypeQueue.h
+ *  Avida
+ *
+ *  Created by David on 11/30/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef INJECT_GENOTYPE_QUEUE_HH
-#define INJECT_GENOTYPE_QUEUE_HH
+#ifndef cInjectGenotypeQueue_h
+#define cInjectGenotypeQueue_h
 
-#ifndef INJECT_GENOTYPE_ELEMENT_HH
+#ifndef cInjectGenotypeElement_h
 #include "cInjectGenotypeElement.h"
 #endif
 
 class cInjectGenotype;
 class cGenome;
+
 class cInjectGenotypeQueue {
 private:
   int size;
   cInjectGenotypeElement root;
 
-  void Remove(cInjectGenotypeElement * in_element);
+  void Remove(cInjectGenotypeElement* in_element);
 public:
   cInjectGenotypeQueue();
   ~cInjectGenotypeQueue();

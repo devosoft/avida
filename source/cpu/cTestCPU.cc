@@ -1,9 +1,12 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cTestCPU.cc
+ *  Avida
+ *
+ *  Created by David on 11/30/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1999-2003 California Institute of Technology.
+ *
+ */
 
 #include "cTestCPU.h"
 
@@ -282,17 +285,17 @@ bool cTestCPU::TestIntegrity(const cGenome & test_genome)
 #ifdef QUICK_BASE_TEST_CPU
   // This checks to make sure a 'copy', 'divide', and 'allocate' are all in
   // the creatures, and if not doesn't even bother to test it.
-  static UCHAR copy_id  = inst_set->GetInstID("copy");
-  static UCHAR div_id   = inst_set->GetInstID("divide");
-  static UCHAR alloc_id = inst_set->GetInstID("allocate");
+  static unsigned char copy_id  = inst_set->GetInstID("copy");
+  static unsigned char div_id   = inst_set->GetInstID("divide");
+  static unsigned char alloc_id = inst_set->GetInstID("allocate");
 #endif
 
 #ifdef QUICK_HEAD_TEST_CPU
   // This checks to make sure a 'copy', 'divide', and 'allocate' are all in
   // the creatures, and if not doesn't even bother to test it.
-  static UCHAR copy_id  = inst_set->GetInstID("h-copy");
-  static UCHAR div_id   = inst_set->GetInstID("h-divide");
-  static UCHAR alloc_id = inst_set->GetInstID("h-alloc");
+  static unsigned char copy_id  = inst_set->GetInstID("h-copy");
+  static unsigned char div_id   = inst_set->GetInstID("h-divide");
+  static unsigned char alloc_id = inst_set->GetInstID("h-alloc");
 #endif
 
 

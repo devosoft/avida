@@ -1,18 +1,12 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
-
-/******************************************************************************
-
-cRandom
-
-Random number generator
-Random variables from various statistical distributions
-
-******************************************************************************/
+/*
+ *  cRandom.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2000 California Institute of Technology
+ *
+ */
 
 #ifndef cRandom_h
 #define cRandom_h
@@ -21,17 +15,13 @@ Random variables from various statistical distributions
 #include <limits.h>
 #include <math.h>
 
-#ifndef UINT
-#define UINT unsigned int
-#endif
-
 /**
  * A versatile and fast pseudo random number generator.
  **/
 
 template <class T> class tArray;
 
-class cRandom{
+class cRandom {
 public:
   /**
    * Set up the random generator object.
@@ -138,10 +128,10 @@ public:
 
 
   // Other neat stuff /////////////////////////////////////////////////////////
-  inline UINT MutateByte(UINT value);
-  inline UINT ClearByte(UINT value);
-  inline UINT MutateBit(UINT value);
-  inline UINT MutateBit(UINT value, int in_byte);
+  inline unsigned int MutateByte(unsigned int value);
+  inline unsigned int ClearByte(unsigned int value);
+  inline unsigned int MutateBit(unsigned int value);
+  inline unsigned int MutateBit(unsigned int value, int in_byte);
 
   bool Choose(int num_in, tArray<int> & out_array);
 
@@ -241,7 +231,7 @@ private:
 
 };
 
-inline UINT cRandom::MutateByte(UINT value) {
+inline unsigned int cRandom::MutateByte(unsigned int value) {
   int byte_pos = 8 * GetUInt(4);
   int new_byte = GetUInt(256);
   value &= ~(255 << byte_pos);
@@ -249,19 +239,19 @@ inline UINT cRandom::MutateByte(UINT value) {
   return value;
 }
 
-inline UINT cRandom::ClearByte(UINT value) {
+inline unsigned int cRandom::ClearByte(unsigned int value) {
   int byte_pos = 8 * GetUInt(4);
   value &= ~(255 << byte_pos);
   return value;
 }
 
-inline UINT cRandom::MutateBit(UINT value) {
+inline unsigned int cRandom::MutateBit(unsigned int value) {
   int bit_pos = GetUInt(32);
   value ^= (1 << bit_pos);
   return value;
 }
 
-inline UINT cRandom::MutateBit(UINT value, int in_byte) {
+inline unsigned int cRandom::MutateBit(unsigned int value, int in_byte) {
   int bit_pos = (in_byte) * 8 + GetUInt(8);
   value ^= (1 << bit_pos);
   return value;

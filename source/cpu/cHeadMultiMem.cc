@@ -1,38 +1,21 @@
-/////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cHeadMultiMem.cc
+ *  Avida
+ *
+ *  Created by David on 11/30/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1999-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef HEAD_MULTI_MEM_HH
 #include "cHeadMultiMem.h"
-#endif
 
-#ifndef CPU_MEMORY_HH
 #include "cCPUMemory.h"
-#endif
-#ifndef HARDWARE_BASE_HH
 #include "cHardwareBase.h"
-#endif
-#ifndef cInstSet_h
 #include "cInstSet.h"
-#endif
-#ifndef INSTRUCTION_HH
 #include "cInstruction.h"
-#endif
 
 #include <assert.h>
-
-cHeadMultiMem::cHeadMultiMem() : cHeadCPU() { mem_space=0; }
-
-cHeadMultiMem::cHeadMultiMem(cHardwareBase * in_hardware, int in_pos, int in_mem_space) 
-  : cHeadCPU(in_hardware, in_pos) { mem_space = in_mem_space; }
-
-cHeadMultiMem::cHeadMultiMem(const cHeadMultiMem & in_head) : cHeadCPU(in_head) 
-{ 
-  mem_space = in_head.mem_space; 
-}
 
 void cHeadMultiMem::Adjust()
 {

@@ -1,26 +1,20 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2001 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cReaction.cc
+ *  Avida
+ *
+ *  Created by David on 12/5/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2001 California Institute of Technology.
+ *
+ */
 
-#ifndef REACTION_HH
 #include "cReaction.h"
-#endif
 
-#ifndef REACTION_PROCESS_HH
 #include "cReactionProcess.h"
-#endif
-#ifndef REACTION_REQUISITE_HH
 #include "cReactionRequisite.h"
-#endif
 
 using namespace std;
 
-///////////////
-//  cReaction
-///////////////
 
 cReaction::cReaction(const cString & _name, int _id)
   : name(_name)

@@ -1,12 +1,15 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cFitnessMatrix.h
+ *  Avida
+ *
+ *  Created by David on 12/2/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef FITNESS_MATRIX_HH
-#define FITNESS_MATRIX_HH
+#ifndef cFitnessMatrix_h
+#define cFitnessMatrix_h
 
 #include <numeric>
 #include <iomanip>
@@ -17,25 +20,25 @@
 #include <list>
 #include <sys/timeb.h>
 
-#ifndef DEFS_HH
+#ifndef defs_h
 #include "defs.h"
 #endif
-#ifndef MX_CODE_ARRAY_HH
+#ifndef cMxCodeArray_h
 #include "cMxCodeArray.h"
 #endif
-#ifndef MY_CODE_ARRAY_LESS_THAN_HH
+#ifndef MyCodeArrayLessThan_h
 #include "MyCodeArrayLessThan.h"
 #endif
-#ifndef ORGANISM_HH
+#ifndef cOrganism_h
 #include "cOrganism.h"
 #endif
-#ifndef STATS_HH
+#ifndef cStats_h
 #include "cStats.h"
 #endif
-#ifndef STRING_UTIL_HH
+#ifndef cStringUtil_h
 #include "cStringUtil.h"
 #endif
-#ifndef TOOLS_HH
+#ifndef cTools_h
 #include "cTools.h"
 #endif
 

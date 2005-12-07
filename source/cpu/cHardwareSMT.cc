@@ -1157,21 +1157,21 @@ void cHardwareSMT::Divide_DoMutations(double mut_multiplier)
 	
   // Divide Mutations
   if (organism->TestDivideMut()) {
-    const UINT mut_line = m_world->GetRandom().GetUInt(child_genome.GetSize());
+    const unsigned int mut_line = m_world->GetRandom().GetUInt(child_genome.GetSize());
     child_genome[mut_line] = m_inst_set->GetRandomInst();
     cpu_stats.mut_stats.divide_mut_count++;
   }
 	
   // Divide Insertions
   if (organism->TestDivideIns() && child_genome.GetSize() < MAX_CREATURE_SIZE){
-    const UINT mut_line = m_world->GetRandom().GetUInt(child_genome.GetSize() + 1);
+    const unsigned int mut_line = m_world->GetRandom().GetUInt(child_genome.GetSize() + 1);
     child_genome.Insert(mut_line, m_inst_set->GetRandomInst());
     cpu_stats.mut_stats.divide_insert_mut_count++;
   }
 	
   // Divide Deletions
   if (organism->TestDivideDel() && child_genome.GetSize() > MIN_CREATURE_SIZE){
-    const UINT mut_line = m_world->GetRandom().GetUInt(child_genome.GetSize());
+    const unsigned int mut_line = m_world->GetRandom().GetUInt(child_genome.GetSize());
     // if( child_genome.FlagCopied(mut_line) == true) copied_size_change--;
     child_genome.Remove(mut_line);
     cpu_stats.mut_stats.divide_delete_mut_count++;
@@ -1266,19 +1266,19 @@ void cHardwareSMT::Inject_DoMutations(double mut_multiplier, cCPUMemory & inject
 	
   // Divide Mutations
   if (organism->TestDivideMut()) {
-    const UINT mut_line = m_world->GetRandom().GetUInt(injected_code.GetSize());
+    const unsigned int mut_line = m_world->GetRandom().GetUInt(injected_code.GetSize());
     injected_code[mut_line] = m_inst_set->GetRandomInst();
   }
 	
   // Divide Insertions
   if (organism->TestDivideIns() && injected_code.GetSize() < MAX_CREATURE_SIZE){
-    const UINT mut_line = m_world->GetRandom().GetUInt(injected_code.GetSize() + 1);
+    const unsigned int mut_line = m_world->GetRandom().GetUInt(injected_code.GetSize() + 1);
     injected_code.Insert(mut_line, m_inst_set->GetRandomInst());
   }
 	
   // Divide Deletions
   if (organism->TestDivideDel() && injected_code.GetSize() > MIN_CREATURE_SIZE){
-    const UINT mut_line = m_world->GetRandom().GetUInt(injected_code.GetSize());
+    const unsigned int mut_line = m_world->GetRandom().GetUInt(injected_code.GetSize());
     injected_code.Remove(mut_line);
   }
 	

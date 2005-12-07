@@ -1,15 +1,19 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2001 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cDataManager_Base.cc
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2001 California Institute of Technology
+ *
+ */
 
 #include "cDataManager_Base.h"
 
 #include "cDataFile.h"
 
 using namespace std;
+
 
 bool cDataManager_Base::PrintRow(cDataFile& data_file, cString row_entries, char sep)
 {

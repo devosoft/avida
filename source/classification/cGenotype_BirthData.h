@@ -1,27 +1,30 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cGenotype_BirthData.h
+ *  Avida
+ *
+ *  Created by David on 11/30/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1999-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef GENOTYPE_BIRTH_DATA_HH
-#define GENOTYPE_BIRTH_DATA_HH
+#ifndef cGenotype_BirthData_h
+#define cGenotype_BirthData_h
 
-#ifndef COUNT_TRACKER_HH
+#ifndef cCountTracker_h
 #include "cCountTracker.h"
 #endif
-
-#ifndef TARRAY_HH
+#ifndef tArray_h
 #include "tArray.h"
 #endif
 
 class cGenotype;
 class cSpecies;
+
 class cGenotype_BirthData {
 public:
   cGenotype_BirthData(int in_update_born);
-  ~cGenotype_BirthData();
+  ~cGenotype_BirthData() { ; }
 
   cCountTracker birth_track;
   cCountTracker death_track;

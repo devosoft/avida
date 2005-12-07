@@ -1,9 +1,12 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cProbSchedule.cc
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
 #include "cProbSchedule.h"
 
@@ -11,10 +14,6 @@
 #include "cMerit.h"
 #include "cWorld.h"
 
-
-///////////////////
-//  cProbSchedule
-///////////////////
 
 // The larger merits cause problems here; things need to be re-thought out.
 

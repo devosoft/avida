@@ -1,28 +1,31 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cGenotype.h
+ *  Avida
+ *
+ *  Created by David on 11/30/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1999-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef GENOTYPE_HH
-#define GENOTYPE_HH
+#ifndef cGenotype_h
+#define cGenotype_h
 
 #include <fstream>
 
-#ifndef DOUBLE_SUM_HH
+#ifndef cDoubleSum_h
 #include "cDoubleSum.h"
 #endif
-#ifndef GENOME_HH
+#ifndef cGenome_h
 #include "cGenome.h"
 #endif
-#ifndef GENOTYPE_BIRTH_DATA_HH
+#ifndef cGenotype_BirthData_h
 #include "cGenotype_BirthData.h"
 #endif
-#ifndef GENOTYPE_TEST_DATA_HH
+#ifndef cGenotype_TestData_h
 #include "cGenotype_TestData.h"
 #endif
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
 
@@ -54,7 +57,7 @@ private:
   int total_organisms;
   int total_parasites;
 
-  cSpecies * species;
+  cSpecies* species;
 
   // Data Structure stuff...
   cGenotype * next;
@@ -100,17 +103,17 @@ public:
   void UpdateReset();
 
   void SetGenome(const cGenome & in_genome);
-  void SetSpecies(cSpecies * in_species);
+  void SetSpecies(cSpecies * in_species) { species = in_species; }
 
   // Test CPU info -- only used with limited options on.
-  bool GetTestViable() const;
-  double GetTestFitness() const;
-  double GetTestMerit() const;
-  int GetTestGestationTime() const;
-  int GetTestExecutedSize() const;
-  int GetTestCopiedSize() const;
-  double GetTestColonyFitness() const;
-  int GetTestGenerations() const;
+  inline bool GetTestViable() const;
+  inline double GetTestFitness() const;
+  inline double GetTestMerit() const;
+  inline int GetTestGestationTime() const;
+  inline int GetTestExecutedSize() const;
+  inline int GetTestCopiedSize() const;
+  inline double GetTestColonyFitness() const;
+  inline int GetTestGenerations() const;
 
   void SetParent(cGenotype * parent, cGenotype * parent2);
   void SetName(cString in_name)     { name = in_name; }
@@ -209,31 +212,32 @@ public:
   // and grand-parents, including sexual tracking.
   int GetPhyloDistance(cGenotype * test_genotype);
 
-  int AddOrganism();
-  int RemoveOrganism();
-  int AddParasite()        { return ++total_parasites; }
-  void SwapOrganism()      { total_organisms++; }
-  int GetNumOrganisms()    { return num_organisms; }
-  int GetTotalOrganisms()  { return total_organisms; }
-  int GetTotalParasites()  { return total_parasites; }
+  inline int AddOrganism();
+  inline int RemoveOrganism();
+  int AddParasite()         { return ++total_parasites; }
+  void SwapOrganism()       { total_organisms++; }
+  int GetNumOrganisms()     { return num_organisms; }
+  int GetTotalOrganisms()   { return total_organisms; }
+  int GetTotalParasites()   { return total_parasites; }
 };
 
-// The genotype pointer template...
+inline int cGenotype::AddOrganism()
+{
+  total_organisms++;
+  return num_organisms++;
+}
 
-
-
-// All the inline stuff...
-
-  ////////////////
- //  cGenotype //
-////////////////
+inline int cGenotype::RemoveOrganism()
+{
+  birth_data.death_track.Inc();
+  return num_organisms--;
+}
 
 inline void cGenotype::SetThreshold()
 {
   flag_threshold = true;
   if (symbol == '.') symbol = '+';
 }
-
 
 inline void cGenotype::SetBreedStats(cGenotype & daughter)
 {
@@ -245,5 +249,59 @@ inline void cGenotype::SetBreedStats(cGenotype & daughter)
     daughter.birth_data.breed_in_track.Inc();
   }
 }
+
+inline bool cGenotype::GetTestViable() const {
+  if (test_data.fitness == -1) CalcTestStats();
+  return test_data.is_viable;
+}
+
+
+inline double cGenotype::GetTestFitness() const {
+  if (test_data.fitness == -1) CalcTestStats();
+  return test_data.fitness;
+}
+
+
+inline double cGenotype::GetTestMerit() const {
+  if (test_data.fitness == -1) CalcTestStats();
+  return test_data.merit;
+}
+
+
+inline int cGenotype::GetTestGestationTime() const {
+  if (test_data.fitness == -1) CalcTestStats();
+  return test_data.gestation_time;
+}
+
+
+inline int cGenotype::GetTestExecutedSize() const {
+  if (test_data.fitness == -1) CalcTestStats();
+  return test_data.executed_size;
+}
+
+
+inline int cGenotype::GetTestCopiedSize() const {
+  if (test_data.fitness == -1) CalcTestStats();
+  return test_data.copied_size;
+}
+
+
+inline double cGenotype::GetTestColonyFitness() const {
+  if (test_data.fitness == -1) CalcTestStats();
+  return test_data.colony_fitness;
+}
+
+
+inline int cGenotype::GetTestGenerations() const {
+  if (test_data.fitness == -1) CalcTestStats();
+  return test_data.generations;
+}
+
+inline void cGenotype::Deactivate(int update)
+{
+  is_active = false;
+  birth_data.update_deactivated = update;
+}
+
 
 #endif

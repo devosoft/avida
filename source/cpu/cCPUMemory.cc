@@ -1,22 +1,19 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cCPUMemory.cc
+ *  Avida
+ *
+ *  Created by David on 11/22/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef CPU_MEMORY_HH
 #include "cCPUMemory.h"
-#endif
 
 using namespace std;
 
 const double MEMORY_INCREASE_FACTOR = 1.5;
 const double MEMORY_SHRINK_TEST_FACTOR = 4.0;
-
-////////////////
-//  cCPUMemory
-////////////////
 
 cCPUMemory::cCPUMemory(int _size) : cGenome(_size), flag_array(_size)
 {

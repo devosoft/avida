@@ -1,38 +1,19 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cInitFile.cc
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef INIT_FILE_HH
 #include "cInitFile.h"
-#endif
 
-#ifndef STRING_ITERATOR_HH
 #include "cStringIterator.h"
-#endif
 
 using namespace std;
 
-////////////////
-//  cInitFile
-////////////////
-
-cInitFile::cInitFile() : filetype("unknown"), active_line(0)
-{
-}
-
-cInitFile::cInitFile(cString in_filename)
-  : cFile(in_filename)
-  , filetype("unknown")
-  , active_line(0)
-{
-}
-
-cInitFile::~cInitFile()
-{
-}
 
 void cInitFile::Load()
 {

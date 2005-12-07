@@ -40,7 +40,7 @@ public:
   {
     assert(organism != NULL);
   }
-  virtual ~cHardwareBase();
+  virtual ~cHardwareBase() { ; }
 
   // --------  Organism ---------
   cOrganism* GetOrganism() { return organism; }

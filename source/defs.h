@@ -1,24 +1,18 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  defs.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef DEFS_HH
-#define DEFS_HH
+#ifndef defs_h
+#define defs_h
 
 #define VERSION "2.5.0"
 #define VERSION_TAG "Jedi"
-
-/*
-FIXME:  remove asap, switching to file-configureable option
-*/
-// path to html doc files
-#ifndef HTMLDIR
-#define HTMLDIR "../work/doc_html/"
-#endif
-
 
 // -= Various view modes =-
 #define VIEW_NEWVIEWER
@@ -108,10 +102,6 @@ FIXME:  remove asap, switching to file-configureable option
  #undef UNIT
  #endif
 
- #ifdef UCHAR
- #undef UCHAR
- #endif
-
  #include <windows.h>	// Defines, prototypes, etc. for
 #endif
 
@@ -135,12 +125,6 @@ FIXME:  remove asap, switching to file-configureable option
 
 #ifndef NULL
  #define NULL 0
-#endif
-
-#ifndef _WINDEF_               // Defined by WINDOWS.H
- #define UCHAR unsigned char
- #undef UINT
- #define UINT  unsigned int
 #endif
 
 #define TOOLS_DIR tools

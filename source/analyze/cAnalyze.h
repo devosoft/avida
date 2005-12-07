@@ -1,32 +1,35 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cAnalyze.h
+ *  Avida
+ *
+ *  Created by David on 12/1/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef ANALYZE_HH
-#define ANALYZE_HH
+#ifndef cAnalyze_h
+#define cAnalyze_h
 
 #include <vector>
 
-#ifndef GENOTYPE_BATCH_HH
+#ifndef cGenotypeBatch_h
 #include "cGenotypeBatch.h"
 #endif
 #ifndef cRandom_h
 #include "cRandom.h"
 #endif
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
-#ifndef STRING_LIST_HH
+#ifndef cStringList_h
 #include "cStringList.h"
 #endif
-#ifndef TLIST_HH
+#ifndef tList_h
 #include "tList.h"
 #endif
 
-#define MAX_BATCHES 2000
+const int MAX_BATCHES = 2000;
 
 namespace nAnalyze {
   const int VERBOSE_SILENT  = 0;  // No output at all

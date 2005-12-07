@@ -1,21 +1,23 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cDataManager_Base.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef DATA_MANAGER_BASE_HH
-#define DATA_MANAGER_BASE_HH
+#ifndef cDataManager_h
+#define cDataManager_h
 
 #include <iostream>
 
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
 
 class cDataFile;
-class cString; // aggregate
 
 class cDataManager_Base {
 private:

@@ -1,17 +1,19 @@
 /*
- *  cHardwareSMT.h
+ *  cHardwareTracer_SMT.h
  *  Avida
  *
- *  Created by David on 9/22/05.
+ *  Created by David on 11/30/05.
  *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1999-2004 California Institute of Technology.
  *
  */
 
-#ifndef HARDWARE_TRACER_SMT_H
-#define HARDWARE_TRACER_SMT_H
+#ifndef cHardwareTracer_SMT_h
+#define cHardwareTracer_SMT_h
 
 class cHardwareSMT;
-struct cHardwareTracer_SMT {
+class cHardwareTracer_SMT {
+public:
   virtual ~cHardwareTracer_SMT() { ; }
   virtual void TraceHardware_SMT(cHardwareSMT &) = 0;
   virtual void TraceHardware_SMTBonus(cHardwareSMT &) = 0;

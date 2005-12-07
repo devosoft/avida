@@ -1,15 +1,20 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2001 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cMerit.cc
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2001 California Institute of Technology
+ *
+ */
 
 #include "cMerit.h"
 
 using namespace std;
 
-void cMerit::UpdateValue(double in_value){
+
+void cMerit::UpdateValue(double in_value)
+{
   const int max_bits = sizeof(unsigned int)*8;
   static double mult[max_bits];
   static bool mult_initilalized = false;

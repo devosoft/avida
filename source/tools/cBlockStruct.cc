@@ -1,21 +1,19 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2000 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cBlockStruct.cc
+ *  Avida
+ *
+ *  Created by David on 12/2/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef BLOCK_STRUCT_HH
 #include "cBlockStruct.h"
-#endif
 
 #include <iostream>
 
 using namespace std;
 
-////////////////////
-//  cBlockStruct
-////////////////////
 
 cBlockStruct::cBlockStruct(int in_num_scaled, int in_num_fixed)
 {

@@ -1,25 +1,19 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cDataFile.h
+ *  Avida
+ *
+ *  Created by David on 12/2/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-/* cDataFile.h ****************************************************************
- cDataFile
-
- charles@krl.caltech.edu & travc@ugcs.caltech.edu
- Time-stamp: <1999-01-07 10:02:09 travc>
-
- cString: basic string class
-******************************************************************************/
-
-#ifndef DATA_FILE_HH
-#define DATA_FILE_HH
+#ifndef cDataFile_h
+#define cDataFile_h
 
 #include <fstream>
 
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
 
@@ -28,8 +22,6 @@
  * The files it creates are write only. Reading of files is handled by
  * @ref cFile.
  */
-
-class cString; // aggregate
 
 class cDataFile {
 

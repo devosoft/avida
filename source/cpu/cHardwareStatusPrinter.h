@@ -1,37 +1,36 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2004 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cHardwareStatusPrinter.h
+ *  Avida
+ *
+ *  Created by David on 11/30/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1999-2004 California Institute of Technology.
+ *
+ */
 
-#ifndef HARDWARE_STATUS_PRINTER_HH
-#define HARDWARE_STATUS_PRINTER_HH
+#ifndef cHardwareStatusPrinter_h
+#define cHardwareStatusPrinter_h
 
 #include <iostream>
 
-#ifndef HARDWARE_TRACER_HH
+#ifndef cHardwareTracer_h
 #include "cHardwareTracer.h"
 #endif
-#ifndef HARDWARE_TRACER_4STACK_HH
+#ifndef cHardwareTracer_4Stack_h
 #include "cHardwareTracer_4Stack.h"
 #endif
-#ifndef HARDWARE_TRACER_SMT_H
+#ifndef cHardwareTracer_SMT_h
 #include "cHardwareTracer_SMT.h"
 #endif
-#ifndef HARDWARE_TRACER_CPU_HH
+#ifndef cHardwareTracer_CPU_h
 #include "cHardwareTracer_CPU.h"
 #endif
-#ifndef HARDWARE_TRACER_TEST_CPU_HH
+#ifndef cHardwareTracer_TestCPU_h
 #include "cHardwareTracer_TestCPU.h"
 #endif
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
-
-
-using namespace std;
-
 
 class cHardwareBase;
 
@@ -43,15 +42,15 @@ class cHardwareStatusPrinter :
   public cHardwareTracer_TestCPU
 {
 protected:
-  ostream& m_trace_fp;
+  std::ostream& m_trace_fp;
 protected:
-  const cString & GetNextInstName(cHardwareCPU& hardware);
-  const cString & GetNextInstName(cHardware4Stack& hardware);
-  const cString & GetNextInstName(cHardwareSMT& hardware);
-  cString Bonus(const cString &next_name);
+  const cString& GetNextInstName(cHardwareCPU& hardware);
+  const cString& GetNextInstName(cHardware4Stack& hardware);
+  const cString& GetNextInstName(cHardwareSMT& hardware);
+  cString Bonus(const cString& next_name);
   void PrintStatus(cHardwareBase& hardware, const cString& next_name);
 public:
-  cHardwareStatusPrinter(ostream& trace_fp) : m_trace_fp(trace_fp) {;}
+  cHardwareStatusPrinter(std::ostream& trace_fp) : m_trace_fp(trace_fp) {;}
 
   virtual void TraceHardware_CPU(cHardwareCPU &hardware);
   virtual void TraceHardware_4Stack(cHardware4Stack &hardware);
@@ -59,13 +58,8 @@ public:
   virtual void TraceHardware_CPUBonus(cHardwareCPU &hardware);
   virtual void TraceHardware_4StackBonus(cHardware4Stack &hardware);
   virtual void TraceHardware_SMTBonus(cHardwareSMT &hardware);
-  virtual void TraceHardware_TestCPU(
-    int time_used,
-    int time_allocated,
-    int size,
-    const cString &final_memory,
-    const cString &child_memory
-  );
+  virtual void TraceHardware_TestCPU(int time_used, int time_allocated, int size,
+                                     const cString& final_memory, const cString& child_memory);
 };
 
 #endif

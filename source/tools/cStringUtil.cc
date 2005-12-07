@@ -1,14 +1,14 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2001 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cStringUtil.cc
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef STRING_UTIL_HH
 #include "cStringUtil.h"
-#endif
-
 
 #include "functions.h"
 #include "tMatrix.h"
@@ -17,7 +17,6 @@ extern "C"{
 #include <stdio.h>
 #include <stdarg.h>
 }
-
 
 using namespace std;
 

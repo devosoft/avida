@@ -1,18 +1,22 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2001 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cReactionRequisite.h
+ *  Avida
+ *
+ *  Created by David on 12/5/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2001 California Institute of Technology.
+ *
+ */
 
-#ifndef REACTION_REQUISITE_HH
-#define REACTION_REQUISITE_HH
+#ifndef cReactionRequisite_h
+#define cReactionRequisite_h
 
-#ifndef TLIST_HH
+#ifndef tList_h
 #include "tList.h"
 #endif
 
 class cReaction;
+
 class cReactionRequisite {
 private:
   tList<cReaction> prior_reaction_list;
@@ -23,8 +27,8 @@ private:
   // disabled copy constructor.
   cReactionRequisite(const cReactionRequisite &);
 public:
-  cReactionRequisite();
-  ~cReactionRequisite();
+  cReactionRequisite() : min_task_count(0) , max_task_count(INT_MAX) { ; }
+  ~cReactionRequisite() { ; }
 
   const tList<cReaction> & GetReactions() const { return prior_reaction_list; }
   const tList<cReaction> & GetNoReactions() const

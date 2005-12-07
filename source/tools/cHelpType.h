@@ -1,17 +1,20 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cHelpType.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef HELP_TYPE_HH
-#define HELP_TYPE_HH
+#ifndef cHelpType_h
+#define cHelpType_h
 
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
-#ifndef TLIST_HH
+#ifndef tList_h
 #include "tList.h"
 #endif
 
@@ -19,14 +22,12 @@ class cHelpAlias;
 class cHelpEntry;
 class cHelpFullEntry;
 class cHelpManager;
-class cString; // aggregate
-template <class T> class tList; // aggregate
 
 class cHelpType {
 private:
   cString name;
   tList<cHelpEntry> entry_list;
-  cHelpManager * manager;
+  cHelpManager* manager;
   int num_entries;
 private:
   // disabled copy constructor.

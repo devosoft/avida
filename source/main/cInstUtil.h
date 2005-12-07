@@ -1,16 +1,19 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cInstUtil.h
+ *  Avida
+ *
+ *  Created by David on 12/5/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef INST_UTIL_HH
-#define INST_UTIL_HH
+#ifndef cInstUtil_h
+#define cInstUtil_h
 
 #include <iostream>
 
-#ifndef GENOME_HH
+#ifndef cGenome_h
 #include "cGenome.h"
 #endif
 

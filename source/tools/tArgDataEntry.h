@@ -1,17 +1,19 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  tArgDataEntry.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-
-#ifndef TARGDATAENTRY_HH
-#define TARGDATAENTRY_HH
+#ifndef tArgDataEntry_h
+#define tArgDataEntry_h
 
 #include <iostream>
 
-#ifndef TDATAENTRYBASE_HH
+#ifndef tDataEntryBase_h
 #include "tDataEntryBase.h"
 #endif
 

@@ -7,10 +7,9 @@
  *
  */
 
-#ifndef HARDWARE_SMT_CONSTANTS_H
-#define HARDWARE_SMT_CONSTANTS_H
+#ifndef nHardwareSMT_h
+#define nHardwareSMT_h
 
-// Constants can be used across different cpu models, wrap in namespace @DMB
 namespace nHardwareSMT
 {
   static const int NUM_LOCAL_STACKS = 3;

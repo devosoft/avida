@@ -1,16 +1,19 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cAvidaDriver_Analyze.h
+ *  Avida
+ *
+ *  Created by David on 12/2/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef AVIDA_DRIVER_ANALYZE_HH
-#define AVIDA_DRIVER_ANALYZE_HH
+#ifndef cAvidaDriver_Analyze_h
+#define cAvidaDriver_Analyze_h
 
 #include <cstdlib>
 
-#ifndef AVIDA_DRIVER_BASE_HH
+#ifndef cAvidaDriver_Base_h
 #include "cAvidaDriver_Base.h"
 #endif
 
@@ -18,11 +21,11 @@ class cWorld;
 
 class cAvidaDriver_Analyze : public cAvidaDriver_Base {
 protected:
-  bool interactive;
+  bool m_interactive;
   cWorld* m_world;
 public:
-  cAvidaDriver_Analyze(cWorld* world, bool _interactive=false);
-  ~cAvidaDriver_Analyze();
+  cAvidaDriver_Analyze(cWorld* world, bool inter = false) : m_interactive(inter), m_world(world) { ; }
+  ~cAvidaDriver_Analyze() { delete m_world; }
   
   virtual void Run();
 };

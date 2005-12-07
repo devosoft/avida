@@ -1559,21 +1559,21 @@ void cHardwareCPU::Divide_DoMutations(double mut_multiplier)
   
   // Divide Mutations
   if (organism->TestDivideMut()) {
-    const UINT mut_line = m_world->GetRandom().GetUInt(child_genome.GetSize());
+    const unsigned int mut_line = m_world->GetRandom().GetUInt(child_genome.GetSize());
     child_genome[mut_line] = m_inst_set->GetRandomInst();
     cpu_stats.mut_stats.divide_mut_count++;
   }
   
   // Divide Insertions
   if (organism->TestDivideIns() && child_genome.GetSize() < MAX_CREATURE_SIZE){
-    const UINT mut_line = m_world->GetRandom().GetUInt(child_genome.GetSize() + 1);
+    const unsigned int mut_line = m_world->GetRandom().GetUInt(child_genome.GetSize() + 1);
     child_genome.Insert(mut_line, m_inst_set->GetRandomInst());
     cpu_stats.mut_stats.divide_insert_mut_count++;
   }
   
   // Divide Deletions
   if (organism->TestDivideDel() && child_genome.GetSize() > MIN_CREATURE_SIZE){
-    const UINT mut_line = m_world->GetRandom().GetUInt(child_genome.GetSize());
+    const unsigned int mut_line = m_world->GetRandom().GetUInt(child_genome.GetSize());
     // if( child_genome.FlagCopied(mut_line) == true) copied_size_change--;
     child_genome.Remove(mut_line);
     cpu_stats.mut_stats.divide_delete_mut_count++;
@@ -3088,7 +3088,7 @@ bool cHardwareCPU::Inst_ThreadID()
 bool cHardwareCPU::Inst_SetHead()
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
-  threads[cur_thread].cur_head = (UCHAR) head_used;
+  threads[cur_thread].cur_head = (unsigned char) head_used;
   return true;
 }
 

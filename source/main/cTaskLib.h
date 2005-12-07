@@ -1,20 +1,23 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cTaskLib.h
+ *  Avida
+ *
+ *  Created by David on 12/5/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef TASK_LIB_HH
-#define TASK_LIB_HH
+#ifndef cTaskLib_h
+#define cTaskLib_h
 
-#ifndef TARRAY_HH
+#ifndef tArray_h
 #include "tArray.h"
 #endif
-#ifndef TBUFFER_HH
+#ifndef tBuffer_h
 #include "tBuffer.h"
 #endif
-#ifndef TLIST_HH
+#ifndef tList_h
 #include "tList.h"
 #endif
 
@@ -23,6 +26,7 @@ typedef double (cTaskLib::*tTaskTest)() const;
 
 class cString;
 class cTaskEntry;
+
 class cTaskLib {
 private:
   tArray<cTaskEntry *> task_array;

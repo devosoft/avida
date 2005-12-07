@@ -1,9 +1,12 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2001 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cSpecies.cc
+ *  Avida
+ *
+ *  Created by David on 11/30/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2001 California Institute of Technology.
+ *
+ */
 
 #include "cSpecies.h"
 
@@ -29,13 +32,13 @@ cSpecies::cSpecies(cWorld* world, const cGenome & in_genome, int update, int in_
   total_organisms = 0;
   total_genotypes = 0;
 
-  queue_type = SPECIES_QUEUE_NONE;
+  queue_type = nSpecies::QUEUE_NONE;
 
   next = NULL;
   prev = NULL;
 
   // Track distance of each genome as it is passed in...
-  for (int i = 0; i < SPECIES_MAX_DISTANCE; i++) {
+  for (int i = 0; i < nSpecies::MAX_DISTANCE; i++) {
     genotype_distance[i] = 0;
   }
 }
@@ -43,7 +46,7 @@ cSpecies::cSpecies(cWorld* world, const cGenome & in_genome, int update, int in_
 cSpecies::~cSpecies()
 {
   int i, total_count = 0;
-  for (i = 0; i < SPECIES_MAX_DISTANCE; i++) {
+  for (i = 0; i < nSpecies::MAX_DISTANCE; i++) {
     total_count += genotype_distance[i];
   }
 
@@ -54,7 +57,7 @@ cSpecies::~cSpecies()
     FILE * fp = stats.GetTestFP();
 
     fprintf(fp, "Species %3d: ", id_num);
-    for (i = 0; i < SPECIES_MAX_DISTANCE; i++) {
+    for (i = 0; i < nSpecies::MAX_DISTANCE; i++) {
       fprintf(fp, "%2d ", genotype_distance[i]);
     }
     fprintf(fp, "\n");
@@ -148,7 +151,7 @@ void cSpecies::AddThreshold(cGenotype & in_genotype)
   const int distance = 
     cGenomeUtil::FindEditDistance(genome, in_genotype.GetGenome());
 
-  if (distance >= 0 && distance < SPECIES_MAX_DISTANCE)
+  if (distance >= 0 && distance < nSpecies::MAX_DISTANCE)
     genotype_distance[distance]++;
 
   num_threshold++;

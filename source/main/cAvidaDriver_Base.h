@@ -1,12 +1,15 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cAvidaDriver_Base.h
+ *  Avida
+ *
+ *  Created by David on 12/2/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef AVIDA_DRIVER_BASE_HH
-#define AVIDA_DRIVER_BASE_HH
+#ifndef cAvidaDriver_Base_h
+#define cAvidaDriver_Base_h
 
 /**
  *  cAvidaDriver_Base
@@ -17,6 +20,7 @@
  **/
 
 class cString;
+
 class cAvidaDriver_Base {
 protected:
   bool done_flag;   // This is set to true when run should finish.

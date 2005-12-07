@@ -1,18 +1,19 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2004 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cReactionResult.h
+ *  Avida
+ *
+ *  Created by David on 12/5/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2004 California Institute of Technology.
+ *
+ */
 
-#ifndef REACTION_RESULT_HH
-#define REACTION_RESULT_HH
+#ifndef cReactionResult_h
+#define cReactionResult_h
 
-#ifndef TARRAY_HH
+#ifndef tArray_h
 #include "tArray.h"
 #endif
-
-template <class T> class tArray; // aggregate
 
 class cReactionResult {
 private:

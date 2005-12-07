@@ -7,16 +7,16 @@
  *
  */
 
-#ifndef TOBJECTFACTORY_H
-#define TOBJECTFACTORY_H
+#ifndef tObjectFactory_h
+#define tObjectFactory_h
 
-#ifndef TDICTIONARY_HH
+#ifndef tDictionary_h
 #include "tDictionary.h"
 #endif
-#ifndef TARRAY_HH
+#ifndef tArray_h
 #include "tArray.h"
 #endif
-#ifndef TLIST_HH
+#ifndef tList_h
 #include "tList.h"
 #endif
 

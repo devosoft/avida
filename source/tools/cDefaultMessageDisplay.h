@@ -1,16 +1,19 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cDefaultMessageDisplay.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef DEFAULT_MESSAGE_DISPLAY_HH
-#define DEFAULT_MESSAGE_DISPLAY_HH
+#ifndef cDefaultMessageDisplay_h
+#define cDefaultMessageDisplay_h
 
 #include <iostream>
 
-#ifndef MESSAGE_DISPLAY_HH
+#ifndef cMessageDisplay_h
 #include "cMessageDisplay.h"
 #endif
 
@@ -31,12 +34,12 @@ with expected results.
 
 class cString;
 
-class cDefaultMessageDisplay : public cMessageDisplay{
+class cDefaultMessageDisplay : public cMessageDisplay {
 private:
-  std::ostream *_out;
+  std::ostream* _out;
 public:
-  cDefaultMessageDisplay(std::ostream *stream):_out(stream){}
-  void out(cString &final_msg);
+  cDefaultMessageDisplay(std::ostream* stream):_out(stream){}
+  void out(cString& final_msg);
 };
 
 extern cDefaultMessageDisplay s_info_msg_cout;

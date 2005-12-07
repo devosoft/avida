@@ -1,24 +1,25 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cGenotypeBatch.h
+ *  Avida
+ *
+ *  Created by David on 12/2/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef GENOTYPE_BATCH_HH
-#define GENOTYPE_BATCH_HH
+#ifndef cGenotypeBatch_h
+#define cGenotypeBatch_h
 
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
-#ifndef TLIST_HH
+#ifndef tList_h
 #include "tList.h"
 #endif
 
 // cGenotypeBatch      : Collection of cAnalyzeGenotypes
 
-template <class T> class tList; // aggregate
-class cString; // aggregate
 class cAnalyzeGenotype;
 
 class cGenotypeBatch {

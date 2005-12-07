@@ -1,16 +1,19 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cHardwareCPU_Thread.h
+ *  Avida
+ *
+ *  Created by David on 11/30/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1999-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef HARDWARE_CPU_THREAD_HH
-#define HARDWARE_CPU_THREAD_HH
+#ifndef cHardwareCPU_Thread_h
+#define cHardwareCPU_Thread_h
 
 #include <iostream>
 
-#ifndef CODE_LABEL_HH
+#ifndef cCodeLabel_h
 #include "cCodeLabel.h"
 #endif
 #ifndef nHardware_h
@@ -19,13 +22,13 @@
 #ifndef nHardwareCPU_h
 #include "nHardwareCPU.h"
 #endif
-#ifndef HEAD_CPU_HH
+#ifndef cHeadCPU_h
 #include "cHeadCPU.h"
 #endif
-#ifndef CPU_STACK_HH
+#ifndef cCPUStack_h
 #include "cCPUStack.h"
 #endif
-#ifndef TBUFFER_HH
+#ifndef tBuffer_h
 #include "tBuffer.h"
 #endif
 
@@ -48,8 +51,8 @@ public:
   int reg[nHardwareCPU::NUM_REGISTERS];
   cHeadCPU heads[nHardware::NUM_HEADS];
   cCPUStack stack;
-  UCHAR cur_stack;              // 0 = local stack, 1 = global stack.
-  UCHAR cur_head;
+  unsigned char cur_stack;              // 0 = local stack, 1 = global stack.
+  unsigned char cur_head;
 
   cCodeLabel read_label;
   cCodeLabel next_label;

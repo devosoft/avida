@@ -1,25 +1,27 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  tDataEntryCommand.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef TDATAENTRYCOMMAND_HH
-#define TDATAENTRYCOMMAND_HH
+#ifndef tDataEntryCommand_h
+#define tDataEntryCommand_h
 
 #include <iostream>
 
-#ifndef STRING_LIST_HH
+#ifndef cStringList_h
 #include "cStringList.h"
 #endif
-#ifndef TDATAENTRYBASE_HH
+#ifndef tDataEntryBase_h
 #include "tDataEntryBase.h"
 #endif
 
 class cString;
-class cStringList; // aggregate
-template <class T> class tDataEntryBase; // access
+
 
 template <class T> class tDataEntryCommand {
 private:

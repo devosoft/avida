@@ -1,23 +1,24 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  functions.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef FUNCTIONS_HH
-#define FUNCTIONS_HH
+#ifndef functions_h
+#define functions_h
 
 #include <iostream>
 #include <math.h>
 #include <stdio.h>
 #include <assert.h>
 
-#ifndef TARRAY_HH
+#ifndef tArray_h
 #include "tArray.h"
 #endif
-
-template <class T> class tArray; // accessed
 
 #ifndef NULL
 #define NULL 0
@@ -30,10 +31,7 @@ inline int Mod(int value, int base);
 inline int Pow(int bas, int expon);
 inline double Log(double value);
 
-//////////////////////
-// Generic (inline) functions...
-//////////////////////
-  
+
 namespace nFunctions {
 
   inline void Swap(int & in1, int & in2)

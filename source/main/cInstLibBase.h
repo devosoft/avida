@@ -1,18 +1,22 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cGenomeUtil.h
+ *  Avida
+ *
+ *  Created by David on 12/5/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef INST_LIB_BASE_HH
-#define INST_LIB_BASE_HH
+#ifndef cInstLibBase_h
+#define cInstLibBase_h
 
-#ifndef INSTRUCTION_HH
+#ifndef cInstruction_h
 #include "cInstruction.h"
 #endif
 
 class cString;
+
 class cInstLibBase {
 public:
   virtual ~cInstLibBase() { ; }

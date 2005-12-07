@@ -1,22 +1,20 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cEventTriggers.cc
+ *  Avida
+ *
+ *  Created by David on 12/2/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef EVENT_TRIGGERS_HH
 #include "cEventTriggers.h"
-#endif
 
 #include <float.h>           // for DBL_MIN
 #include <iostream>
 
 using namespace std;
 
-/////////////////
-//  cEventTriggers
-/////////////////
 
 double const cEventTriggers::TRIGGER_BEGIN = DBL_MIN;
 double const cEventTriggers::TRIGGER_END = DBL_MAX;

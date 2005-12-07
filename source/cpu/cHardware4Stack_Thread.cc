@@ -1,19 +1,16 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cHardware4Stack_Thread.cc
+ *  Avida
+ *
+ *  Created by David on 11/17/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1999-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef HARDWARE_4STACK_THREAD_HH
 #include "cHardware4Stack_Thread.h"
-#endif
 
 using namespace std;
-
-/////////////////////////
-//  cHardware4Stack_Thread
-/////////////////////////
 
 cHardware4Stack_Thread::cHardware4Stack_Thread(cHardwareBase * in_hardware, int _id)
 {

@@ -1,21 +1,22 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  tDataEntryBase.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef TDATAENTRYBASE_HH
-#define TDATAENTRYBASE_HH
+#ifndef tDataEntryBase_h
+#define tDataEntryBase_h
 
 #include <iostream>
 #include <sstream>
 
-#ifndef DATA_ENTRY_HH
+#ifndef cDataEntry_h
 #include "cDataEntry.h"
 #endif
-
-using namespace std;
 
 class cString;
 
@@ -57,7 +58,7 @@ public:
   }
 
   cString AsString() {
-    stringstream tmp_stream;
+    std::stringstream tmp_stream;
     tmp_stream << *this;
     cString out_str;
     tmp_stream >> out_str;

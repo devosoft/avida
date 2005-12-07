@@ -1,12 +1,17 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  tMatrix.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
+
+#ifndef tMatrix_h
+#define tMatrix_h
 
 /*
-   tMatrix.h
    Matrix Templates
 
    Constructor:
@@ -33,20 +38,15 @@
 
 */
 
-#ifndef TMATRIX_HH
-#define TMATRIX_HH
-
 #include <assert.h>
 
-#ifndef TARRAY_HH
+#ifndef tArray_h
 #include "tArray.h"
 #endif
 
 /**
  * This class provides a matrix template.
  **/ 
-
-template <class T> class tArray; // access
 
 template <class T> class tMatrix {
 protected:
@@ -140,4 +140,4 @@ public:
   virtual ~tMatrix(){ if(data!=NULL) delete [] data; }
 };
 
-#endif // TARRAY_HH
+#endif

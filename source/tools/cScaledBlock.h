@@ -1,14 +1,17 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cScaledBlock.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef SCALED_BLOCK_HH
-#define SCALED_BLOCK_HH
+#ifndef cScaledBlock_h
+#define cScaledBlock_h
 
-#ifndef FIXED_COORDS_HH
+#ifndef cFixedCoords_h
 #include "cFixedCoords.h"
 #endif
 
@@ -16,16 +19,14 @@
  * Class used by @ref cBlockStruct.
  **/
 
-class cFixedCoords; // aggregate
-
 class cScaledBlock {
 private:
   void * data;
   int size;
   cFixedCoords start_coords;
 public:
-  cScaledBlock(void * in_data = NULL, int in_size = 0);
-  ~cScaledBlock();
+  cScaledBlock(void * in_data = NULL, int in_size = 0) : data(in_data), size(in_size) { ; }
+  ~cScaledBlock() { ; }
 
   inline void * GetData() const { return data; }
   inline int GetSize() const { return size; }

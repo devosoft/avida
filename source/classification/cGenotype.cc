@@ -1,9 +1,12 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cGenotype.cc
+ *  Avida
+ *
+ *  Created by David on 11/30/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1999-2003 California Institute of Technology.
+ *
+ */
 
 #include "cGenotype.h"
 
@@ -17,12 +20,6 @@
 #include "cWorld.h"
 
 using namespace std;
-
-class cSpecies;
-
-///////////////////////////
-//  cGenotype
-///////////////////////////
 
 cGenotype::cGenotype(cWorld* world, int in_update_born, int in_id)
   : m_world(world)
@@ -83,7 +80,7 @@ cGenotype* cGenotype::LoadClone(cWorld* world, ifstream& fp)
     cInstruction temp_inst;
     int inst_op;
     fp >> inst_op;
-    temp_inst.SetOp((UCHAR) inst_op);
+    temp_inst.SetOp((unsigned char) inst_op);
     ret->genome[i] = temp_inst;
     // @CAO add something here to load arguments for instructions.
   }
@@ -110,6 +107,16 @@ bool cGenotype::OK()
   assert( tmp_sum_merit.Sum() >= 0 && tmp_sum_fitness.Sum() >= 0 );
 
   return ret_value;
+}
+
+void cGenotype::AddMerit(const cMerit & in)
+{
+  sum_merit.Add(in.GetDouble());
+}
+
+void cGenotype::RemoveMerit(const cMerit & in)
+{
+  sum_merit.Subtract(in.GetDouble());
 }
 
 void cGenotype::SetParent(cGenotype * parent, cGenotype * parent2)
@@ -209,74 +216,6 @@ void cGenotype::CalcTestStats() const
 }
 
 
-bool cGenotype::GetTestViable() const {
-  if (test_data.fitness == -1) CalcTestStats();
-  return test_data.is_viable;
-}
-
-
-double cGenotype::GetTestFitness() const {
-  if (test_data.fitness == -1) CalcTestStats();
-  return test_data.fitness;
-}
-
-
-double cGenotype::GetTestMerit() const {
-  if (test_data.fitness == -1) CalcTestStats();
-  return test_data.merit;
-}
-
-
-int cGenotype::GetTestGestationTime() const {
-  if (test_data.fitness == -1) CalcTestStats();
-  return test_data.gestation_time;
-}
-
-
-int cGenotype::GetTestExecutedSize() const {
-  if (test_data.fitness == -1) CalcTestStats();
-  return test_data.executed_size;
-}
-
-
-int cGenotype::GetTestCopiedSize() const {
-  if (test_data.fitness == -1) CalcTestStats();
-  return test_data.copied_size;
-}
-
-
-double cGenotype::GetTestColonyFitness() const {
-  if (test_data.fitness == -1) CalcTestStats();
-  return test_data.colony_fitness;
-}
-
-
-int cGenotype::GetTestGenerations() const {
-  if (test_data.fitness == -1) CalcTestStats();
-  return test_data.generations;
-}
-
-void cGenotype::SetSpecies(cSpecies * in_species)
-{
-  species = in_species;
-}
-
-void cGenotype::AddMerit(const cMerit & in)
-{
-  sum_merit.Add(in.GetDouble());
-}
-
-void cGenotype::RemoveMerit(const cMerit & in)
-{
-  sum_merit.Subtract(in.GetDouble());
-}
-
-void cGenotype::Deactivate(int update)
-{
-  is_active = false;
-  birth_data.update_deactivated = update;
-}
-
 int cGenotype::GetPhyloDistance(cGenotype * test_genotype)
 {
   if (GetID() == test_genotype->GetID()) {
@@ -346,17 +285,3 @@ int cGenotype::GetPhyloDistance(cGenotype * test_genotype)
   
   return 5;
 }
-
-
-int cGenotype::AddOrganism()
-{
-  total_organisms++;
-  return num_organisms++;
-}
-
-int cGenotype::RemoveOrganism()
-{
-  birth_data.death_track.Inc();
-  return num_organisms--;
-}
-

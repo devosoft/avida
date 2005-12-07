@@ -5,7 +5,12 @@
  *  Created by David on 10/11/05.
  *  Copyright 2005 Michigan State University. All rights reserved.
  *
- *
+ */
+
+#ifndef tDictionary_h
+#define tDictionary_h
+
+/*
  * This template is used to look up objects of the desired type by name.
  * It is essentially a wrapper around tHashTable<cString, DATA_TYPE>, with
  * the addition of NearMatch().
@@ -13,16 +18,13 @@
  * For details about the encapsulated methods, see tHashTable.
  */
 
-#ifndef TDICTIONARY_HH
-#define TDICTIONARY_HH
-
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
-#ifndef STRING_UTIL_HH
+#ifndef cStringUtil_h
 #include "cStringUtil.h"
 #endif
-#ifndef THASH_TABLE_HH
+#ifndef tHashTable_h
 #include "tHashTable.h"
 #endif
 

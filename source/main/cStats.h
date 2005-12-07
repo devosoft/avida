@@ -1,47 +1,46 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2002 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cStats.h
+ *  Avida
+ *
+ *  Created by David on 12/5/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2002 California Institute of Technology.
+ *
+ */
 
-#ifndef STATS_HH
-#define STATS_HH
+#ifndef cStats_h
+#define cStats_h
 
 #include <assert.h>
 #include <fstream>
 #include <iostream>
 
-#ifndef DEFS_HH
+#ifndef defs_h
 #include "defs.h"
 #endif
-#ifndef DOUBLE_SUM_HH
+#ifndef cDoubleSum_h
 #include "cDoubleSum.h"
 #endif
-#ifndef FUNCTIONS_HH
+#ifndef functions_h
 #include "functions.h"
 #endif
-#ifndef INT_SUM_HH
+#ifndef cIntSum_h
 #include "cIntSum.h"
 #endif
-#ifndef RUNNING_AVERAGE_HH
+#ifndef cRunningAverage_h
 #include "cRunningAverage.h"
 #endif
-#ifndef TARRAY_HH
+#ifndef tArray_h
 #include "tArray.h"
 #endif
-#ifndef TDATAMANAGER_HH
+#ifndef tDataManager_h
 #include "tDataManager.h"
 #endif
+#ifndef nGeometry_h
 #include "nGeometry.h"
+#endif
 
-template <class T> class tDataManager; // aggregate
-class cDoubleSum; // aggregate
-class cRunningAverage; // aggregate
-class cIntSum; // aggregate
-template <class T> class tArray; // aggregate
 class cGenotype;
-class cString; // aggregate
 class cInjectGenotype;
 class cWorld;
 

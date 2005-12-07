@@ -1,17 +1,16 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cAvidaDriver_Base.cc
+ *  Avida
+ *
+ *  Created by David on 12/2/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef AVIDA_DRIVER_BASE_HH
 #include "cAvidaDriver_Base.h"
-#endif
 
-#ifndef STRING_HH
 #include "cString.h"
-#endif
 
 #include <iostream>
 
@@ -21,12 +20,8 @@ using namespace std;
 // Static variable definitions
 cAvidaDriver_Base * cAvidaDriver_Base::main_driver = NULL;
 
-///////////////////////
-//  cAvidaDriver_Base
-///////////////////////
 
-cAvidaDriver_Base::cAvidaDriver_Base()
-  : done_flag(false)
+cAvidaDriver_Base::cAvidaDriver_Base() : done_flag(false)
 {
 }
 

@@ -1,20 +1,22 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cAnalyzeCommand.h
+ *  Avida
+ *
+ *  Created by David on 12/1/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef ANALYZE_COMMAND_HH
-#define ANALYZE_COMMAND_HH
+#ifndef cAnalyzeCommand_h
+#define cAnalyzeCommand_h
 
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
 
 // cAnalyzeCommand     : A command in a loaded program
 
-class cString; // aggregate
 template <class T> class tList;
 
 class cAnalyzeCommand {

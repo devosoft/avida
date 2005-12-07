@@ -1,16 +1,17 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2002 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cCodeLabel.cc
+ *  Avida
+ *
+ *  Created by David on 11/22/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
 #include "cCodeLabel.h"
 
-#include "cTools.h" // for g_memory & g_debug
-
+#include "cTools.h"
 #include "nHardwareCPU.h"
-
 
 #include <cmath>
 #include <vector>
@@ -18,12 +19,6 @@
 #include <iomanip>
 
 using namespace std;
-
-
-
-////////////////////////////////
-// cCodeLabel stuff...
-////////////////////////////////
 
 bool cCodeLabel::OK()
 {

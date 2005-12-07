@@ -1,14 +1,17 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  MyCodeArrayLessThan.h
+ *  Avida
+ *
+ *  Created by David on 12/5/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef MY_CODE_ARRAY_LESS_THAN_HH
-#define MY_CODE_ARRAY_LESS_THAN_HH
+#ifndef MyCodeArrayLessThan_h
+#define MyCodeArrayLessThan_h
 
-#ifndef MX_CODE_ARRAY_HH
+#ifndef cMxCodeArray_h
 #include "cMxCodeArray.h"
 #endif
 

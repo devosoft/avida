@@ -1,9 +1,12 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cLandscape.h
+ *  Avida
+ *
+ *  Created by David on 12/5/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
 #ifndef cLandscape_h
 #define cLandscape_h
@@ -24,9 +27,6 @@
 #include <fstream>
 
 class cInstSet;
-class cGenome; // aggregate
-class cCPUTestInfo; // aggregate
-template <class T> class tMatrix; // aggregate
 class cInstruction;
 class cWorld;
 

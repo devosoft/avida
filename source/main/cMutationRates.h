@@ -1,12 +1,15 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cMutationRates.h
+ *  Avida
+ *
+ *  Created by David on 12/5/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef MUTATION_RATES_HH
-#define MUTATION_RATES_HH
+#ifndef cMutationRates_h
+#define cMutationRates_h
 
 class cWorld;
 
@@ -45,9 +48,9 @@ private:
   void operator=(const cMutationRates & in_muts)
     { (void) in_muts; } // Disable operator=
 public:
-  cMutationRates(cWorld* world);
-  cMutationRates(const cMutationRates & in_muts);
-  ~cMutationRates();
+  cMutationRates(cWorld* world) : m_world(world) { Clear(); }
+  cMutationRates(const cMutationRates & in_muts) : m_world(in_muts.m_world) { Copy(in_muts); }
+  ~cMutationRates() { ; }
 
   void Clear();
   void Copy(const cMutationRates & in_muts);

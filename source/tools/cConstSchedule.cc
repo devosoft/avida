@@ -1,19 +1,18 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cConstSchedule.cc
+ *  Avida
+ *
+ *  Created by David on 12/2/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
 #include "cConstSchedule.h"
 
 #include "cChangeList.h"
 #include "cMerit.h"
 
-
-////////////////////
-//  cConstSchedule
-////////////////////
 
 cConstSchedule::cConstSchedule(int _item_count)
   : cSchedule(_item_count), is_active(_item_count)

@@ -1,38 +1,41 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cOrganism.h
+ *  Avida
+ *
+ *  Created by David on 12/5/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef ORGANISM_HH
-#define ORGANISM_HH
+#ifndef cOrganism_h
+#define cOrganism_h
 
 #include <fstream>
 #include <deque>
 
-#ifndef CPU_MEMORY_HH
+#ifndef cCPUMemory_h
 #include "cCPUMemory.h"
 #endif
-#ifndef CPU_STATS_HH
+#ifndef sCPUStats_h
 #include "sCPUStats.h"
 #endif
-#ifndef GENOME_HH
+#ifndef cGenome_h
 #include "cGenome.h"
 #endif
-#ifndef LOCAL_MUTATIONS_HH
+#ifndef cLocalMutations_h
 #include "cLocalMutations.h"
 #endif
-#ifndef MUTATION_RATES_HH
+#ifndef cMutationRates_h
 #include "cMutationRates.h"
 #endif
-#ifndef PHENOTYPE_HH
+#ifndef cPhenotype_h
 #include "cPhenotype.h"
 #endif
-#ifndef POPULATION_INTERFACE_HH
+#ifndef cPopulationInterface_h
 #include "cPopulationInterface.h"
 #endif
-#ifndef TBUFFER_HH
+#ifndef tBuffer_h
 #include "tBuffer.h"
 #endif
 
@@ -43,19 +46,10 @@
 
 class cHardwareBase;
 class cGenotype;
-class cPhenotype; // aggregate
-class cGenome; // aggregate
 class cInjectGenotype;
-class cMutationRates; // aggregate
-class cLocalMutations; // aggregate
-class cPopulationInterface; // aggregate
-class cCPUMemory; // aggregate
-class sCPUStats; // aggregate
 class cLineage;
-template <class T> class tBuffer; // aggregate
 class cOrgMessage;
 class cEnvironment;
-class cOrganism;
 class cCodeLabel;
 
 class cOrganism {

@@ -1,23 +1,25 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cAnalyzeFlowCommand.h
+ *  Avida
+ *
+ *  Created by David on 12/2/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef ANALYZE_FLOW_COMMAND_HH
-#define ANALYZE_FLOW_COMMAND_HH
+#ifndef cAnalyzeFlowCommand_h
+#define cAnalyzeFlowCommand_h
 
-#ifndef ANALYZE_COMMAND_HH
+#ifndef cAnalyzeCommand_h
 #include "cAnalyzeCommand.h"
 #endif
-#ifndef TLIST_HH
+#ifndef tList_h
 #include "tList.h"
 #endif
 
 // cAnalyzeFlowCommand : A cAnalyzeCommand containing other commands
 
-template <class T> class tList; // aggregate
 class cString;
 
 class cAnalyzeFlowCommand : public cAnalyzeCommand {

@@ -1,18 +1,19 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cRefBlock.h
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef REF_BLOCK_HH
-#define REF_BLOCK_HH
+#ifndef cRefBlock_h
+#define cRefBlock_h
 
-#ifndef FIXED_COORDS_HH
+#ifndef cFixedCoords_h
 #include "cFixedCoords.h"
 #endif
-
-class cFixedCoords; // aggregate
 
 class cRefBlock {
 private:
@@ -20,8 +21,8 @@ private:
   int size;
   cFixedCoords start_coords;
 public:
-  cRefBlock(int in_ref = 0, int in_size = 0);
-  ~cRefBlock();
+  cRefBlock(int in_ref = 0, int in_size = 0) ref_num(in_ref), size(in_size) { ; }
+  ~cRefBlock() { ; }
 
   inline int GetRef() const { return ref_num; }
   inline int GetSize() const { return size; }

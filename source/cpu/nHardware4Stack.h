@@ -1,16 +1,18 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  nHardware4Stack.h
+ *  Avida
+ *
+ *  Created by David on 11/30/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1999-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef HARDWARE_4STACK_CONSTANTS_HH
-#define HARDWARE_4STACK_CONSTANTS_HH
+#ifndef nHardware4Stack_h
+#define nHardware4Stack_h
 
 namespace nHardware4Stack
 {
-  //new-style constant declarations - law 
   static const int NUM_LOCAL_STACKS = 5;
   static const int NUM_GLOBAL_STACKS = 1;
   static const int NUM_STACKS = NUM_LOCAL_STACKS + NUM_GLOBAL_STACKS;

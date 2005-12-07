@@ -7,24 +7,24 @@
  *
  */
 
-#ifndef HARDWARE_SMT_THREAD_H
-#define HARDWARE_SMT_THREAD_H
+#ifndef cHardwareSMT_Thread_h
+#define cHardwareSMT_Thread_h
 
 #include <iostream>
 
-#ifndef CODE_LABEL_HH
+#ifndef cCodeLabel_h
 #include "cCodeLabel.h"
 #endif
-#ifndef CPU_STACK_HH
+#ifndef cCPUStack_h
 #include "cCPUStack.h"
 #endif
-#ifndef HEAD_MULTI_MEM_HH
+#ifndef cHeadMultiMem_h
 #include "cHeadMultiMem.h"
 #endif
-#ifndef HARDWARE_SMT_CONSTANTS_H
+#ifndef nHardwareSMT_h
 #include "nHardwareSMT.h"
 #endif
-#ifndef TBUFFER_HH
+#ifndef tBuffer_h
 #include "tBuffer.h"
 #endif
 
@@ -34,19 +34,15 @@
  * @see cCPUStack, cHeadMultiMem, cHardwareSMT
  **/
 
-class cHeadMultiMem; // aggregate
-class cCodeLabel; // aggregate
-class cCPUStack; // aggregate
 class cHardwareBase;
 class cInjectGenotype;
-template <class T> class tBuffer; // aggregate
 
 struct cHardwareSMT_Thread {
 private:
   int id;
 public:
   cHeadMultiMem heads[nHardware::NUM_HEADS];
-  UCHAR cur_head;
+  unsigned char cur_head;
   cCPUStack local_stacks[nHardwareSMT::NUM_LOCAL_STACKS];
 	
   bool advance_ip;         // Should the IP advance after this instruction?

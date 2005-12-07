@@ -1,27 +1,17 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cMutationRates.cc
+ *  Avida
+ *
+ *  Created by David on 12/5/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
 #include "cMutationRates.h"
 
 #include "cWorld.h"
 
-cMutationRates::cMutationRates(cWorld* world) : m_world(world)
-{
-  Clear();
-}
-
-cMutationRates::cMutationRates(const cMutationRates & in_muts) : m_world(in_muts.m_world)
-{
-  Copy(in_muts);
-}
-
-cMutationRates::~cMutationRates()
-{
-}
 
 void cMutationRates::Clear()
 {

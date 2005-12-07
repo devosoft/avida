@@ -1,9 +1,12 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cCPUTestInfo.h
+ *  Avida
+ *
+ *  Created by David on 11/29/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1999-2003 California Institute of Technology.
+ *
+ */
 
 #include "cCPUTestInfo.h"
 
@@ -12,10 +15,6 @@
 #include "cPhenotype.h"
 
 #include <assert.h>
-
-/////////////////
-// cCPUTestInfo
-/////////////////
 
 cCPUTestInfo::cCPUTestInfo(int max_tests)
   : generation_tests(max_tests)  // These vars not reset on Clear()

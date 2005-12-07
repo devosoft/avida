@@ -1,16 +1,19 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cEventListIterator.h
+ *  Avida
+ *
+ *  Created by David on 12/2/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef EVENT_LIST_ITERATOR_HH
-#define EVENT_LIST_ITERATOR_HH
+#ifndef cEventListIterator_h
+#define cEventListIterator_h
 
 #include <iostream>
 
-#ifndef EVENT_LIST_ENTRY_HH
+#ifndef cEventListEntry_h
 #include "cEventListEntry.h"
 #endif
 
@@ -21,8 +24,6 @@
  * added by Kaben.
  **/
 
-class cEventListEntry; // access
-
 class cEventListIterator {
 private:
   cEventListEntry *m_node;
@@ -30,8 +31,6 @@ public:
   cEventListIterator() : m_node(0) {}
   cEventListIterator(cEventListEntry *node) : m_node(node) {}
   cEventListIterator(const cEventListIterator &it) : m_node(it.m_node) {}
-
-  void PrintEvent(std::ostream& os = std::cout);
 
   bool operator==(const cEventListIterator &it) const {
     return m_node == it.m_node;

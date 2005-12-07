@@ -1,9 +1,12 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cSpeciesControl.cc
+ *  Avida
+ *
+ *  Created by David on 11/30/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
 #include "cSpeciesControl.h"
 
@@ -16,38 +19,30 @@
 
 #include <assert.h>
 
-cSpeciesControl::cSpeciesControl(cWorld* world) : m_world(world)
-{
-}
-
-cSpeciesControl::~cSpeciesControl()
-{
-}
-
 void cSpeciesControl::Remove(cSpecies & in_species)
 {
   switch (in_species.GetQueueType()) {
-  case SPECIES_QUEUE_ACTIVE:
+  case nSpecies::QUEUE_ACTIVE:
     active_queue.Remove(in_species);
     break;
-  case SPECIES_QUEUE_INACTIVE:
+  case nSpecies::QUEUE_INACTIVE:
     inactive_queue.Remove(in_species);
     break;
-  case SPECIES_QUEUE_GARBAGE:
+  case nSpecies::QUEUE_GARBAGE:
     garbage_queue.Remove(in_species);
     break;
   default:
     break;
   }
 
-  in_species.SetQueueType(SPECIES_QUEUE_NONE);
+  in_species.SetQueueType(nSpecies::QUEUE_NONE);
 }
 
 void cSpeciesControl::Adjust(cSpecies & in_species)
 {
   // Only adjust if this species is in the active queue.
 
-  if (in_species.GetQueueType() == SPECIES_QUEUE_ACTIVE) {
+  if (in_species.GetQueueType() == nSpecies::QUEUE_ACTIVE) {
     active_queue.Adjust(in_species);
   }
 }
@@ -56,21 +51,21 @@ void cSpeciesControl::SetActive(cSpecies & in_species)
 {
   Remove(in_species);
   active_queue.InsertRear(in_species);
-  in_species.SetQueueType(SPECIES_QUEUE_ACTIVE);
+  in_species.SetQueueType(nSpecies::QUEUE_ACTIVE);
 }
 
 void cSpeciesControl::SetInactive(cSpecies & in_species)
 {
   Remove(in_species);
   inactive_queue.InsertRear(in_species);
-  in_species.SetQueueType(SPECIES_QUEUE_INACTIVE);
+  in_species.SetQueueType(nSpecies::QUEUE_INACTIVE);
 }
 
 void cSpeciesControl::SetGarbage(cSpecies & in_species)
 {
   Remove(in_species);
   garbage_queue.InsertRear(in_species);
-  in_species.SetQueueType(SPECIES_QUEUE_GARBAGE);
+  in_species.SetQueueType(nSpecies::QUEUE_GARBAGE);
 }
 
 bool cSpeciesControl::OK()
@@ -79,9 +74,9 @@ bool cSpeciesControl::OK()
 
   // Check the queues.
 
-  assert (active_queue.OK(SPECIES_QUEUE_ACTIVE));
-  assert (inactive_queue.OK(SPECIES_QUEUE_INACTIVE));
-  assert (garbage_queue.OK(SPECIES_QUEUE_GARBAGE));
+  assert (active_queue.OK(nSpecies::QUEUE_ACTIVE));
+  assert (inactive_queue.OK(nSpecies::QUEUE_INACTIVE));
+  assert (garbage_queue.OK(nSpecies::QUEUE_GARBAGE));
 
   return ret_value;
 }

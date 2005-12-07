@@ -1,21 +1,17 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2000 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cRandom.cc
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2000 California Institute of Technology
+ *
+ */
 
-#ifndef cRandom_h
 #include "cRandom.h"
-#endif
 
-#ifndef TARRAY_HH
 #include "tArray.h"
-#endif
 
-/* FIXME this is not defined in Visual Studio.net. -- kgn */
-//#ifdef MSVC_COMPILER
-/* FIXME find out what the VS.n macro might be. for now use WIN32 -- kgn */
 #ifdef WIN32
 #include <process.h>
 #else

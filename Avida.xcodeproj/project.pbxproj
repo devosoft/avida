@@ -72,15 +72,12 @@
 		7053324C0929764C006BD186 /* cSpecies.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705332480929764A006BD186 /* cSpecies.cc */; };
 		7053324D0929764E006BD186 /* cSpeciesQueue.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7053324A0929764A006BD186 /* cSpeciesQueue.cc */; };
 		7053336D092A3DF9006BD186 /* cInjectGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70533364092A3DF4006BD186 /* cInjectGenotype.cc */; };
-		7053336E092A3DFB006BD186 /* cInjectGenotype_BirthData.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70533362092A3DF4006BD186 /* cInjectGenotype_BirthData.cc */; };
 		7053336F092A3DFC006BD186 /* cInjectGenotypeControl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70533366092A3DF4006BD186 /* cInjectGenotypeControl.cc */; };
 		70533371092A3E00006BD186 /* cInjectGenotypeQueue.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70533369092A3DF4006BD186 /* cInjectGenotypeQueue.cc */; };
 		705333E7092A4B7F006BD186 /* cLineage.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705333E5092A4B7C006BD186 /* cLineage.cc */; };
 		70533479092A4F4D006BD186 /* cGenotype_BirthData.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70F7DE700929678E009E311D /* cGenotype_BirthData.cc */; };
-		7053347A092A4F4F006BD186 /* cGenotype_TestData.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70F7DE720929678E009E311D /* cGenotype_TestData.cc */; };
 		7053347B092A4F50006BD186 /* cGenotypeControl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70F7DE6809296613009E311D /* cGenotypeControl.cc */; };
 		7053347C092A4F52006BD186 /* cInjectGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70533364092A3DF4006BD186 /* cInjectGenotype.cc */; };
-		7053347D092A4F53006BD186 /* cInjectGenotype_BirthData.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70533362092A3DF4006BD186 /* cInjectGenotype_BirthData.cc */; };
 		7053347E092A4F55006BD186 /* cInjectGenotypeControl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70533366092A3DF4006BD186 /* cInjectGenotypeControl.cc */; };
 		70533480092A4F59006BD186 /* cInjectGenotypeQueue.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70533369092A3DF4006BD186 /* cInjectGenotypeQueue.cc */; };
 		70533481092A4F5B006BD186 /* cLineage.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705333E5092A4B7C006BD186 /* cLineage.cc */; };
@@ -96,12 +93,10 @@
 		706D33280854A90D00D7DC8F /* inst_set.smt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 706D33270854A90D00D7DC8F /* inst_set.smt */; };
 		70B0865908F4974300FC65FE /* cLandscape.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865108F4974300FC65FE /* cLandscape.cc */; };
 		70B0865C08F4974300FC65FE /* cLocalMutations.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865408F4974300FC65FE /* cLocalMutations.cc */; };
-		70B0865D08F4974300FC65FE /* cMutation.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865508F4974300FC65FE /* cMutation.cc */; };
 		70B0865E08F4974300FC65FE /* cMutationLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865608F4974300FC65FE /* cMutationLib.cc */; };
 		70B0865F08F4974300FC65FE /* cMutationRates.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865708F4974300FC65FE /* cMutationRates.cc */; };
 		70B0866108F4974300FC65FE /* cLandscape.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865108F4974300FC65FE /* cLandscape.cc */; };
 		70B0866408F4974300FC65FE /* cLocalMutations.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865408F4974300FC65FE /* cLocalMutations.cc */; };
-		70B0866508F4974300FC65FE /* cMutation.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865508F4974300FC65FE /* cMutation.cc */; };
 		70B0866608F4974300FC65FE /* cMutationLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865608F4974300FC65FE /* cMutationLib.cc */; };
 		70B0866708F4974300FC65FE /* cMutationRates.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865708F4974300FC65FE /* cMutationRates.cc */; };
 		70B0866808F4974300FC65FE /* cMxCodeArray.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865808F4974300FC65FE /* cMxCodeArray.cc */; };
@@ -117,8 +112,6 @@
 		70B0869E08F49F4800FC65FE /* cPhenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0869C08F49F4800FC65FE /* cPhenotype.cc */; };
 		70B0872E08F5E82D00FC65FE /* cReaction.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0871E08F5E82D00FC65FE /* cReaction.cc */; };
 		70B0872F08F5E82D00FC65FE /* cReactionLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0871F08F5E82D00FC65FE /* cReactionLib.cc */; };
-		70B0873008F5E82D00FC65FE /* cReactionProcess.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872008F5E82D00FC65FE /* cReactionProcess.cc */; };
-		70B0873108F5E82D00FC65FE /* cReactionRequisite.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872108F5E82D00FC65FE /* cReactionRequisite.cc */; };
 		70B0873208F5E82D00FC65FE /* cReactionResult.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872208F5E82D00FC65FE /* cReactionResult.cc */; };
 		70B0873308F5E82D00FC65FE /* cResource.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872308F5E82D00FC65FE /* cResource.cc */; };
 		70B0873408F5E82D00FC65FE /* cResourceCount.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872408F5E82D00FC65FE /* cResourceCount.cc */; };
@@ -126,12 +119,9 @@
 		70B0873608F5E82D00FC65FE /* cSpatialCountElem.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872608F5E82D00FC65FE /* cSpatialCountElem.cc */; };
 		70B0873708F5E82D00FC65FE /* cSpatialResCount.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872708F5E82D00FC65FE /* cSpatialResCount.cc */; };
 		70B0873B08F5E82D00FC65FE /* cStats.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872B08F5E82D00FC65FE /* cStats.cc */; };
-		70B0873C08F5E82D00FC65FE /* cTaskEntry.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872C08F5E82D00FC65FE /* cTaskEntry.cc */; };
 		70B0873D08F5E82D00FC65FE /* cTaskLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872D08F5E82D00FC65FE /* cTaskLib.cc */; };
 		70B0873E08F5E82D00FC65FE /* cReaction.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0871E08F5E82D00FC65FE /* cReaction.cc */; };
 		70B0873F08F5E82D00FC65FE /* cReactionLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0871F08F5E82D00FC65FE /* cReactionLib.cc */; };
-		70B0874008F5E82D00FC65FE /* cReactionProcess.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872008F5E82D00FC65FE /* cReactionProcess.cc */; };
-		70B0874108F5E82D00FC65FE /* cReactionRequisite.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872108F5E82D00FC65FE /* cReactionRequisite.cc */; };
 		70B0874208F5E82D00FC65FE /* cReactionResult.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872208F5E82D00FC65FE /* cReactionResult.cc */; };
 		70B0874308F5E82D00FC65FE /* cResource.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872308F5E82D00FC65FE /* cResource.cc */; };
 		70B0874408F5E82D00FC65FE /* cResourceCount.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872408F5E82D00FC65FE /* cResourceCount.cc */; };
@@ -139,7 +129,6 @@
 		70B0874608F5E82D00FC65FE /* cSpatialCountElem.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872608F5E82D00FC65FE /* cSpatialCountElem.cc */; };
 		70B0874708F5E82D00FC65FE /* cSpatialResCount.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872708F5E82D00FC65FE /* cSpatialResCount.cc */; };
 		70B0874B08F5E82D00FC65FE /* cStats.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872B08F5E82D00FC65FE /* cStats.cc */; };
-		70B0874C08F5E82D00FC65FE /* cTaskEntry.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872C08F5E82D00FC65FE /* cTaskEntry.cc */; };
 		70B0874D08F5E82D00FC65FE /* cTaskLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872D08F5E82D00FC65FE /* cTaskLib.cc */; };
 		70B087E208F5F4BA00FC65FE /* cChangeList.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B087DF08F5F4BA00FC65FE /* cChangeList.cc */; };
 		70B087E308F5F4BA00FC65FE /* cConstSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B087E008F5F4BA00FC65FE /* cConstSchedule.cc */; };
@@ -147,13 +136,11 @@
 		70B087E508F5F4BA00FC65FE /* cChangeList.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B087DF08F5F4BA00FC65FE /* cChangeList.cc */; };
 		70B087E608F5F4BA00FC65FE /* cConstSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B087E008F5F4BA00FC65FE /* cConstSchedule.cc */; };
 		70B087E708F5F4BA00FC65FE /* cCountTracker.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B087E108F5F4BA00FC65FE /* cCountTracker.cc */; };
-		70B0885408F5FE5800FC65FE /* cDataEntry.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0884E08F5FE5800FC65FE /* cDataEntry.cc */; };
 		70B0885508F5FE5800FC65FE /* cDataFile.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0884F08F5FE5800FC65FE /* cDataFile.cc */; };
 		70B0885608F5FE5800FC65FE /* cDataFileManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0885008F5FE5800FC65FE /* cDataFileManager.cc */; };
 		70B0885708F5FE5800FC65FE /* cDataManager_Base.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0885108F5FE5800FC65FE /* cDataManager_Base.cc */; };
 		70B0885808F5FE5800FC65FE /* cDefaultMessageDisplay.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0885208F5FE5800FC65FE /* cDefaultMessageDisplay.cc */; };
 		70B0885908F5FE5800FC65FE /* cDoubleSum.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0885308F5FE5800FC65FE /* cDoubleSum.cc */; };
-		70B0885A08F5FE5800FC65FE /* cDataEntry.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0884E08F5FE5800FC65FE /* cDataEntry.cc */; };
 		70B0885B08F5FE5800FC65FE /* cDataFile.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0884F08F5FE5800FC65FE /* cDataFile.cc */; };
 		70B0885C08F5FE5800FC65FE /* cDataFileManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0885008F5FE5800FC65FE /* cDataFileManager.cc */; };
 		70B0885D08F5FE5800FC65FE /* cDataManager_Base.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0885108F5FE5800FC65FE /* cDataManager_Base.cc */; };
@@ -234,10 +221,8 @@
 		70C1F03808C3C71300F50912 /* cTestCPU.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02808C3C71300F50912 /* cTestCPU.cc */; };
 		70C1F03908C3C71300F50912 /* cTestUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02908C3C71300F50912 /* cTestUtil.cc */; };
 		70C1F19408C6A11100F50912 /* cEventList.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F18F08C6A11100F50912 /* cEventList.cc */; };
-		70C1F19508C6A11100F50912 /* cEventListIterator.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F19008C6A11100F50912 /* cEventListIterator.cc */; };
 		70C1F19608C6A11100F50912 /* cEventTriggers.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F19108C6A11100F50912 /* cEventTriggers.cc */; };
 		70C1F19908C6A11100F50912 /* cEventList.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F18F08C6A11100F50912 /* cEventList.cc */; };
-		70C1F19A08C6A11100F50912 /* cEventListIterator.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F19008C6A11100F50912 /* cEventListIterator.cc */; };
 		70C1F19B08C6A11100F50912 /* cEventTriggers.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F19108C6A11100F50912 /* cEventTriggers.cc */; };
 		70C5BC6509059A970028A785 /* cWorld.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C5BC6309059A970028A785 /* cWorld.cc */; };
 		70C5BC6709059A970028A785 /* cWorld.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C5BC6309059A970028A785 /* cWorld.cc */; };
@@ -265,7 +250,6 @@
 		70F7DE6C09296615009E311D /* cGenotypeControl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70F7DE6809296613009E311D /* cGenotypeControl.cc */; };
 		70F7DE6D09296616009E311D /* cSpeciesControl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70F7DE6A09296613009E311D /* cSpeciesControl.cc */; };
 		70F7DE7409296794009E311D /* cGenotype_BirthData.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70F7DE700929678E009E311D /* cGenotype_BirthData.cc */; };
-		70F7DE7509296795009E311D /* cGenotype_TestData.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70F7DE720929678E009E311D /* cGenotype_TestData.cc */; };
 		DCC3166107628531008F7A48 /* avida.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3109C0762539E008F7A48 /* avida.cc */; };
 /* End PBXBuildFile section */
 
@@ -419,7 +403,6 @@
 		7053324A0929764A006BD186 /* cSpeciesQueue.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cSpeciesQueue.cc; sourceTree = "<group>"; };
 		7053324B0929764A006BD186 /* cSpeciesQueue.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cSpeciesQueue.h; sourceTree = "<group>"; };
 		7053325609297702006BD186 /* nSpecies.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = nSpecies.h; sourceTree = "<group>"; };
-		70533362092A3DF4006BD186 /* cInjectGenotype_BirthData.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cInjectGenotype_BirthData.cc; sourceTree = "<group>"; };
 		70533363092A3DF4006BD186 /* cInjectGenotype_BirthData.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInjectGenotype_BirthData.h; sourceTree = "<group>"; };
 		70533364092A3DF4006BD186 /* cInjectGenotype.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cInjectGenotype.cc; sourceTree = "<group>"; };
 		70533365092A3DF4006BD186 /* cInjectGenotype.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInjectGenotype.h; sourceTree = "<group>"; };
@@ -447,7 +430,6 @@
 		70B0865008F4972600FC65FE /* MyCodeArrayLessThan.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MyCodeArrayLessThan.h; sourceTree = "<group>"; };
 		70B0865108F4974300FC65FE /* cLandscape.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cLandscape.cc; sourceTree = "<group>"; };
 		70B0865408F4974300FC65FE /* cLocalMutations.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cLocalMutations.cc; sourceTree = "<group>"; };
-		70B0865508F4974300FC65FE /* cMutation.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cMutation.cc; sourceTree = "<group>"; };
 		70B0865608F4974300FC65FE /* cMutationLib.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cMutationLib.cc; sourceTree = "<group>"; };
 		70B0865708F4974300FC65FE /* cMutationRates.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cMutationRates.cc; sourceTree = "<group>"; };
 		70B0865808F4974300FC65FE /* cMxCodeArray.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cMxCodeArray.cc; sourceTree = "<group>"; };
@@ -478,8 +460,6 @@
 		70B0871D08F5E81000FC65FE /* cTaskLib.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTaskLib.h; sourceTree = "<group>"; };
 		70B0871E08F5E82D00FC65FE /* cReaction.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cReaction.cc; sourceTree = "<group>"; };
 		70B0871F08F5E82D00FC65FE /* cReactionLib.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cReactionLib.cc; sourceTree = "<group>"; };
-		70B0872008F5E82D00FC65FE /* cReactionProcess.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cReactionProcess.cc; sourceTree = "<group>"; };
-		70B0872108F5E82D00FC65FE /* cReactionRequisite.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cReactionRequisite.cc; sourceTree = "<group>"; };
 		70B0872208F5E82D00FC65FE /* cReactionResult.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cReactionResult.cc; sourceTree = "<group>"; };
 		70B0872308F5E82D00FC65FE /* cResource.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cResource.cc; sourceTree = "<group>"; };
 		70B0872408F5E82D00FC65FE /* cResourceCount.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cResourceCount.cc; sourceTree = "<group>"; };
@@ -487,7 +467,6 @@
 		70B0872608F5E82D00FC65FE /* cSpatialCountElem.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cSpatialCountElem.cc; sourceTree = "<group>"; };
 		70B0872708F5E82D00FC65FE /* cSpatialResCount.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cSpatialResCount.cc; sourceTree = "<group>"; };
 		70B0872B08F5E82D00FC65FE /* cStats.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cStats.cc; sourceTree = "<group>"; };
-		70B0872C08F5E82D00FC65FE /* cTaskEntry.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTaskEntry.cc; sourceTree = "<group>"; };
 		70B0872D08F5E82D00FC65FE /* cTaskLib.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTaskLib.cc; sourceTree = "<group>"; };
 		70B0875A08F5EC8900FC65FE /* nGeometry.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = nGeometry.h; sourceTree = "<group>"; };
 		70B0875C08F5ECBC00FC65FE /* nReaction.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = nReaction.h; sourceTree = "<group>"; };
@@ -508,14 +487,12 @@
 		70B0884B08F5FE4500FC65FE /* cDataManager_Base.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cDataManager_Base.h; sourceTree = "<group>"; };
 		70B0884C08F5FE4500FC65FE /* cDefaultMessageDisplay.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cDefaultMessageDisplay.h; sourceTree = "<group>"; };
 		70B0884D08F5FE4500FC65FE /* cDoubleSum.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cDoubleSum.h; sourceTree = "<group>"; };
-		70B0884E08F5FE5800FC65FE /* cDataEntry.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDataEntry.cc; sourceTree = "<group>"; };
 		70B0884F08F5FE5800FC65FE /* cDataFile.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDataFile.cc; sourceTree = "<group>"; };
 		70B0885008F5FE5800FC65FE /* cDataFileManager.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDataFileManager.cc; sourceTree = "<group>"; };
 		70B0885108F5FE5800FC65FE /* cDataManager_Base.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDataManager_Base.cc; sourceTree = "<group>"; };
 		70B0885208F5FE5800FC65FE /* cDefaultMessageDisplay.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDefaultMessageDisplay.cc; sourceTree = "<group>"; };
 		70B0885308F5FE5800FC65FE /* cDoubleSum.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDoubleSum.cc; sourceTree = "<group>"; };
 		70B0887D08F603C600FC65FE /* cFile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cFile.h; sourceTree = "<group>"; };
-		70B0887E08F603C600FC65FE /* cFixedBlock.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cFixedBlock.cc; sourceTree = "<group>"; };
 		70B0887F08F603C600FC65FE /* cFixedBlock.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cFixedBlock.h; sourceTree = "<group>"; };
 		70B0888008F603C600FC65FE /* cFixedCoords.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cFixedCoords.h; sourceTree = "<group>"; };
 		70B0888108F603C600FC65FE /* cGenesis.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenesis.h; sourceTree = "<group>"; };
@@ -543,10 +520,8 @@
 		70B0890908F762EA00FC65FE /* cMessageType.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMessageType.h; sourceTree = "<group>"; };
 		70B0890A08F762EA00FC65FE /* cProbSchedule.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cProbSchedule.h; sourceTree = "<group>"; };
 		70B0890B08F762EA00FC65FE /* cRandom.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cRandom.h; sourceTree = "<group>"; };
-		70B0890C08F762EA00FC65FE /* cRefBlock.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cRefBlock.cc; sourceTree = "<group>"; };
 		70B0890D08F762EA00FC65FE /* cRefBlock.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cRefBlock.h; sourceTree = "<group>"; };
 		70B0890E08F762EA00FC65FE /* cRunningAverage.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cRunningAverage.h; sourceTree = "<group>"; };
-		70B0890F08F762EA00FC65FE /* cScaledBlock.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cScaledBlock.cc; sourceTree = "<group>"; };
 		70B0891008F762EA00FC65FE /* cScaledBlock.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cScaledBlock.h; sourceTree = "<group>"; };
 		70B0891108F762EA00FC65FE /* cSchedule.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cSchedule.h; sourceTree = "<group>"; };
 		70B0891208F762EA00FC65FE /* cString.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cString.h; sourceTree = "<group>"; };
@@ -637,7 +612,6 @@
 		70C1F18A08C6A0FA00F50912 /* cEventListIterator.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cEventListIterator.h; sourceTree = "<group>"; };
 		70C1F18B08C6A0FA00F50912 /* cEventTriggers.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cEventTriggers.h; sourceTree = "<group>"; };
 		70C1F18F08C6A11100F50912 /* cEventList.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cEventList.cc; sourceTree = "<group>"; };
-		70C1F19008C6A11100F50912 /* cEventListIterator.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cEventListIterator.cc; sourceTree = "<group>"; };
 		70C1F19108C6A11100F50912 /* cEventTriggers.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cEventTriggers.cc; sourceTree = "<group>"; };
 		70C5BC6209059A970028A785 /* cWorld.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cWorld.h; sourceTree = "<group>"; };
 		70C5BC6309059A970028A785 /* cWorld.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cWorld.cc; sourceTree = "<group>"; };
@@ -666,7 +640,6 @@
 		70F7DE6B09296613009E311D /* cSpeciesControl.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cSpeciesControl.h; sourceTree = "<group>"; };
 		70F7DE700929678E009E311D /* cGenotype_BirthData.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cGenotype_BirthData.cc; sourceTree = "<group>"; };
 		70F7DE710929678E009E311D /* cGenotype_BirthData.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenotype_BirthData.h; sourceTree = "<group>"; };
-		70F7DE720929678E009E311D /* cGenotype_TestData.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cGenotype_TestData.cc; sourceTree = "<group>"; };
 		70F7DE730929678E009E311D /* cGenotype_TestData.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenotype_TestData.h; sourceTree = "<group>"; };
 		70F7DE76092967A8009E311D /* cGenotypeBatch.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenotypeBatch.h; sourceTree = "<group>"; };
 		70FB86A908BFAFEC00BDF589 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
@@ -762,7 +735,6 @@
 		DCC315B0076253A5008F7A48 /* tVerifierSuite.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = tVerifierSuite.hh; sourceTree = "<group>"; };
 		DCC315B1076253A5008F7A48 /* tVerifierSuiteRecurser.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = tVerifierSuiteRecurser.hh; sourceTree = "<group>"; };
 		DCC315B5076253A5008F7A48 /* win32_mkdir_hack.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = win32_mkdir_hack.hh; sourceTree = "<group>"; };
-		DCC315BB076253A5008F7A48 /* fixHeaders.py */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.python; path = fixHeaders.py; sourceTree = "<group>"; };
 		DCC315C1076253A5008F7A48 /* hist_map.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = hist_map.cc; sourceTree = "<group>"; };
 		DCC315C2076253A5008F7A48 /* hist_map2.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = hist_map2.cc; sourceTree = "<group>"; };
 		DCC315C3076253A5008F7A48 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
@@ -859,7 +831,6 @@
 			children = (
 				705333E5092A4B7C006BD186 /* cLineage.cc */,
 				705333E6092A4B7C006BD186 /* cLineage.h */,
-				70533362092A3DF4006BD186 /* cInjectGenotype_BirthData.cc */,
 				70533363092A3DF4006BD186 /* cInjectGenotype_BirthData.h */,
 				70533364092A3DF4006BD186 /* cInjectGenotype.cc */,
 				70533365092A3DF4006BD186 /* cInjectGenotype.h */,
@@ -877,7 +848,6 @@
 				7053324B0929764A006BD186 /* cSpeciesQueue.h */,
 				70F7DE700929678E009E311D /* cGenotype_BirthData.cc */,
 				70F7DE710929678E009E311D /* cGenotype_BirthData.h */,
-				70F7DE720929678E009E311D /* cGenotype_TestData.cc */,
 				70F7DE730929678E009E311D /* cGenotype_TestData.h */,
 				70F7DE6809296613009E311D /* cGenotypeControl.cc */,
 				70F7DE6909296613009E311D /* cGenotypeControl.h */,
@@ -895,15 +865,17 @@
 		DCC30C490762532C008F7A48 = {
 			isa = PBXGroup;
 			children = (
-				DCC30C670762539A008F7A48 /* Source */,
-				70FB86A908BFAFEC00BDF589 /* CMakeLists.txt */,
+				DCC30C670762539A008F7A48 /* Main Source */,
+				DCC3113A0762539E008F7A48 /* Support */,
+				DCC315B6076253A5008F7A48 /* Utilities */,
 				DCC3164E07626CF3008F7A48 /* Products */,
+				70FB86A908BFAFEC00BDF589 /* CMakeLists.txt */,
 				70658C59085DF67D00486BED /* libncurses.5.4.dylib */,
 				703F684207B437B800C1CA76 /* status.xml */,
 			);
 			sourceTree = "<group>";
 		};
-		DCC30C670762539A008F7A48 /* Source */ = {
+		DCC30C670762539A008F7A48 /* Main Source */ = {
 			isa = PBXGroup;
 			children = (
 				70422A1B091B141000A5E67F /* analyze */,
@@ -911,16 +883,14 @@
 				DCC30F7C0762539D008F7A48 /* cpu */,
 				DCC30FD00762539D008F7A48 /* event */,
 				DCC310040762539D008F7A48 /* main */,
-				DCC3113A0762539E008F7A48 /* support */,
 				DCC31340076253A0008F7A48 /* third-party */,
 				DCC314D8076253A2008F7A48 /* tools */,
-				DCC315B6076253A5008F7A48 /* utils */,
 				704866B2090B51310048600A /* viewer */,
 				DCC30F7B0762539D008F7A48 /* CMakeLists.txt */,
 				701384A10902A16F0087ED2E /* defs.h */,
 				DCC30FCF0762539D008F7A48 /* Doxyfile */,
 			);
-			name = Source;
+			name = "Main Source";
 			path = source;
 			sourceTree = "<group>";
 		};
@@ -986,7 +956,6 @@
 				70C1F18F08C6A11100F50912 /* cEventList.cc */,
 				70C1F18808C6A0FA00F50912 /* cEventList.h */,
 				70C1F18908C6A0FA00F50912 /* cEventListEntry.h */,
-				70C1F19008C6A11100F50912 /* cEventListIterator.cc */,
 				70C1F18A08C6A0FA00F50912 /* cEventListIterator.h */,
 				7040CF1A0906A52E00AA820F /* cEventManager.cc */,
 				7040CF1B0906A52E00AA820F /* cEventManager.h */,
@@ -1032,7 +1001,6 @@
 				70B0864808F4972600FC65FE /* cLandscape.h */,
 				70B0865408F4974300FC65FE /* cLocalMutations.cc */,
 				70B0864B08F4972600FC65FE /* cLocalMutations.h */,
-				70B0865508F4974300FC65FE /* cMutation.cc */,
 				70B0864C08F4972600FC65FE /* cMutation.h */,
 				70B0865608F4974300FC65FE /* cMutationLib.cc */,
 				70B0864D08F4972600FC65FE /* cMutationLib.h */,
@@ -1056,9 +1024,7 @@
 				70B0870E08F5E81000FC65FE /* cReaction.h */,
 				70B0871F08F5E82D00FC65FE /* cReactionLib.cc */,
 				70B0870F08F5E81000FC65FE /* cReactionLib.h */,
-				70B0872008F5E82D00FC65FE /* cReactionProcess.cc */,
 				70B0871008F5E81000FC65FE /* cReactionProcess.h */,
-				70B0872108F5E82D00FC65FE /* cReactionRequisite.cc */,
 				70B0871108F5E81000FC65FE /* cReactionRequisite.h */,
 				70B0872208F5E82D00FC65FE /* cReactionResult.cc */,
 				70B0871208F5E81000FC65FE /* cReactionResult.h */,
@@ -1074,7 +1040,6 @@
 				70B0871708F5E81000FC65FE /* cSpatialResCount.h */,
 				70B0872B08F5E82D00FC65FE /* cStats.cc */,
 				70B0871B08F5E81000FC65FE /* cStats.h */,
-				70B0872C08F5E82D00FC65FE /* cTaskEntry.cc */,
 				70B0871C08F5E81000FC65FE /* cTaskEntry.h */,
 				70B0872D08F5E82D00FC65FE /* cTaskLib.cc */,
 				70B0871D08F5E81000FC65FE /* cTaskLib.h */,
@@ -1090,7 +1055,7 @@
 			path = main;
 			sourceTree = "<group>";
 		};
-		DCC3113A0762539E008F7A48 /* support */ = {
+		DCC3113A0762539E008F7A48 /* Support */ = {
 			isa = PBXGroup;
 			children = (
 				701384330900A45B0087ED2E /* organism.smtx */,
@@ -1111,7 +1076,8 @@
 				DCC3118C0762539F008F7A48 /* preset_organisms */,
 				7013852C0902E36B0087ED2E /* avida.cfg */,
 			);
-			path = support;
+			name = Support;
+			path = source/support;
 			sourceTree = "<group>";
 		};
 		DCC3114D0762539E008F7A48 /* config */ = {
@@ -1280,10 +1246,8 @@
 				70B0890908F762EA00FC65FE /* cMessageType.h */,
 				70B0890A08F762EA00FC65FE /* cProbSchedule.h */,
 				70B0890B08F762EA00FC65FE /* cRandom.h */,
-				70B0890C08F762EA00FC65FE /* cRefBlock.cc */,
 				70B0890D08F762EA00FC65FE /* cRefBlock.h */,
 				70B0890E08F762EA00FC65FE /* cRunningAverage.h */,
-				70B0890F08F762EA00FC65FE /* cScaledBlock.cc */,
 				70B0891008F762EA00FC65FE /* cScaledBlock.h */,
 				70B0891108F762EA00FC65FE /* cSchedule.h */,
 				70B0891208F762EA00FC65FE /* cString.h */,
@@ -1293,12 +1257,10 @@
 				70B0888308F603D400FC65FE /* cFile.cc */,
 				70B0888408F603D400FC65FE /* cGenesis.cc */,
 				70B0887D08F603C600FC65FE /* cFile.h */,
-				70B0887E08F603C600FC65FE /* cFixedBlock.cc */,
 				70B0887F08F603C600FC65FE /* cFixedBlock.h */,
 				70B0888008F603C600FC65FE /* cFixedCoords.h */,
 				70B0888108F603C600FC65FE /* cGenesis.h */,
 				70B0888208F603C600FC65FE /* functions.h */,
-				70B0884E08F5FE5800FC65FE /* cDataEntry.cc */,
 				70B0884F08F5FE5800FC65FE /* cDataFile.cc */,
 				70B0885008F5FE5800FC65FE /* cDataFileManager.cc */,
 				70B0885108F5FE5800FC65FE /* cDataManager_Base.cc */,
@@ -1346,15 +1308,15 @@
 			path = tests;
 			sourceTree = "<group>";
 		};
-		DCC315B6076253A5008F7A48 /* utils */ = {
+		DCC315B6076253A5008F7A48 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				DCC315BB076253A5008F7A48 /* fixHeaders.py */,
 				DCC315BC076253A5008F7A48 /* hist_map */,
 				DCC315C4076253A5008F7A48 /* matlabify.cc */,
 				DCC315C5076253A5008F7A48 /* task_events */,
 			);
-			path = utils;
+			name = Utilities;
+			path = source/utils;
 			sourceTree = "<group>";
 		};
 		DCC315BC076253A5008F7A48 /* hist_map */ = {
@@ -1545,7 +1507,6 @@
 				70C1F03808C3C71300F50912 /* cTestCPU.cc in Sources */,
 				70C1F03908C3C71300F50912 /* cTestUtil.cc in Sources */,
 				70C1F19908C6A11100F50912 /* cEventList.cc in Sources */,
-				70C1F19A08C6A11100F50912 /* cEventListIterator.cc in Sources */,
 				70C1F19B08C6A11100F50912 /* cEventTriggers.cc in Sources */,
 				702D4F0308DA5341007BA469 /* cAvidaDriver_Analyze.cc in Sources */,
 				702D4F0408DA5341007BA469 /* cAvidaDriver_Base.cc in Sources */,
@@ -1561,7 +1522,6 @@
 				70CA6EE108DB7F8200068AC2 /* cInstUtil.cc in Sources */,
 				70B0866108F4974300FC65FE /* cLandscape.cc in Sources */,
 				70B0866408F4974300FC65FE /* cLocalMutations.cc in Sources */,
-				70B0866508F4974300FC65FE /* cMutation.cc in Sources */,
 				70B0866608F4974300FC65FE /* cMutationLib.cc in Sources */,
 				70B0866708F4974300FC65FE /* cMutationRates.cc in Sources */,
 				70B0866808F4974300FC65FE /* cMxCodeArray.cc in Sources */,
@@ -1572,8 +1532,6 @@
 				70B0869E08F49F4800FC65FE /* cPhenotype.cc in Sources */,
 				70B0873E08F5E82D00FC65FE /* cReaction.cc in Sources */,
 				70B0873F08F5E82D00FC65FE /* cReactionLib.cc in Sources */,
-				70B0874008F5E82D00FC65FE /* cReactionProcess.cc in Sources */,
-				70B0874108F5E82D00FC65FE /* cReactionRequisite.cc in Sources */,
 				70B0874208F5E82D00FC65FE /* cReactionResult.cc in Sources */,
 				70B0874308F5E82D00FC65FE /* cResource.cc in Sources */,
 				70B0874408F5E82D00FC65FE /* cResourceCount.cc in Sources */,
@@ -1581,12 +1539,10 @@
 				70B0874608F5E82D00FC65FE /* cSpatialCountElem.cc in Sources */,
 				70B0874708F5E82D00FC65FE /* cSpatialResCount.cc in Sources */,
 				70B0874B08F5E82D00FC65FE /* cStats.cc in Sources */,
-				70B0874C08F5E82D00FC65FE /* cTaskEntry.cc in Sources */,
 				70B0874D08F5E82D00FC65FE /* cTaskLib.cc in Sources */,
 				70B087E508F5F4BA00FC65FE /* cChangeList.cc in Sources */,
 				70B087E608F5F4BA00FC65FE /* cConstSchedule.cc in Sources */,
 				70B087E708F5F4BA00FC65FE /* cCountTracker.cc in Sources */,
-				70B0885A08F5FE5800FC65FE /* cDataEntry.cc in Sources */,
 				70B0885B08F5FE5800FC65FE /* cDataFile.cc in Sources */,
 				70B0885C08F5FE5800FC65FE /* cDataFileManager.cc in Sources */,
 				70B0885D08F5FE5800FC65FE /* cDataManager_Base.cc in Sources */,
@@ -1638,10 +1594,8 @@
 				70F7DCA009293E76009E311D /* cClassificationManager.cc in Sources */,
 				70F7DCA109293E77009E311D /* cGenotype.cc in Sources */,
 				70533479092A4F4D006BD186 /* cGenotype_BirthData.cc in Sources */,
-				7053347A092A4F4F006BD186 /* cGenotype_TestData.cc in Sources */,
 				7053347B092A4F50006BD186 /* cGenotypeControl.cc in Sources */,
 				7053347C092A4F52006BD186 /* cInjectGenotype.cc in Sources */,
-				7053347D092A4F53006BD186 /* cInjectGenotype_BirthData.cc in Sources */,
 				7053347E092A4F55006BD186 /* cInjectGenotypeControl.cc in Sources */,
 				70533480092A4F59006BD186 /* cInjectGenotypeQueue.cc in Sources */,
 				70533481092A4F5B006BD186 /* cLineage.cc in Sources */,
@@ -1677,7 +1631,6 @@
 				70C1F03008C3C71300F50912 /* cTestCPU.cc in Sources */,
 				70C1F03108C3C71300F50912 /* cTestUtil.cc in Sources */,
 				70C1F19408C6A11100F50912 /* cEventList.cc in Sources */,
-				70C1F19508C6A11100F50912 /* cEventListIterator.cc in Sources */,
 				70C1F19608C6A11100F50912 /* cEventTriggers.cc in Sources */,
 				702D4EFF08DA5341007BA469 /* cAvidaDriver_Base.cc in Sources */,
 				702D4F0008DA5341007BA469 /* cAvidaDriver_Population.cc in Sources */,
@@ -1691,7 +1644,6 @@
 				70CA6ED108DB7F8200068AC2 /* cInstUtil.cc in Sources */,
 				70B0865908F4974300FC65FE /* cLandscape.cc in Sources */,
 				70B0865C08F4974300FC65FE /* cLocalMutations.cc in Sources */,
-				70B0865D08F4974300FC65FE /* cMutation.cc in Sources */,
 				70B0865E08F4974300FC65FE /* cMutationLib.cc in Sources */,
 				70B0865F08F4974300FC65FE /* cMutationRates.cc in Sources */,
 				70B0868B08F49EA800FC65FE /* cOrganism.cc in Sources */,
@@ -1701,8 +1653,6 @@
 				70B0869D08F49F4800FC65FE /* cPhenotype.cc in Sources */,
 				70B0872E08F5E82D00FC65FE /* cReaction.cc in Sources */,
 				70B0872F08F5E82D00FC65FE /* cReactionLib.cc in Sources */,
-				70B0873008F5E82D00FC65FE /* cReactionProcess.cc in Sources */,
-				70B0873108F5E82D00FC65FE /* cReactionRequisite.cc in Sources */,
 				70B0873208F5E82D00FC65FE /* cReactionResult.cc in Sources */,
 				70B0873308F5E82D00FC65FE /* cResource.cc in Sources */,
 				70B0873408F5E82D00FC65FE /* cResourceCount.cc in Sources */,
@@ -1710,12 +1660,10 @@
 				70B0873608F5E82D00FC65FE /* cSpatialCountElem.cc in Sources */,
 				70B0873708F5E82D00FC65FE /* cSpatialResCount.cc in Sources */,
 				70B0873B08F5E82D00FC65FE /* cStats.cc in Sources */,
-				70B0873C08F5E82D00FC65FE /* cTaskEntry.cc in Sources */,
 				70B0873D08F5E82D00FC65FE /* cTaskLib.cc in Sources */,
 				70B087E208F5F4BA00FC65FE /* cChangeList.cc in Sources */,
 				70B087E308F5F4BA00FC65FE /* cConstSchedule.cc in Sources */,
 				70B087E408F5F4BA00FC65FE /* cCountTracker.cc in Sources */,
-				70B0885408F5FE5800FC65FE /* cDataEntry.cc in Sources */,
 				70B0885508F5FE5800FC65FE /* cDataFile.cc in Sources */,
 				70B0885608F5FE5800FC65FE /* cDataFileManager.cc in Sources */,
 				70B0885708F5FE5800FC65FE /* cDataManager_Base.cc in Sources */,
@@ -1757,11 +1705,9 @@
 				70F7DE6C09296615009E311D /* cGenotypeControl.cc in Sources */,
 				70F7DE6D09296616009E311D /* cSpeciesControl.cc in Sources */,
 				70F7DE7409296794009E311D /* cGenotype_BirthData.cc in Sources */,
-				70F7DE7509296795009E311D /* cGenotype_TestData.cc in Sources */,
 				7053324C0929764C006BD186 /* cSpecies.cc in Sources */,
 				7053324D0929764E006BD186 /* cSpeciesQueue.cc in Sources */,
 				7053336D092A3DF9006BD186 /* cInjectGenotype.cc in Sources */,
-				7053336E092A3DFB006BD186 /* cInjectGenotype_BirthData.cc in Sources */,
 				7053336F092A3DFC006BD186 /* cInjectGenotypeControl.cc in Sources */,
 				70533371092A3E00006BD186 /* cInjectGenotypeQueue.cc in Sources */,
 				705333E7092A4B7F006BD186 /* cLineage.cc in Sources */,
@@ -1800,7 +1746,7 @@
 			};
 			name = Development;
 		};
-		700E2B80085DE50C00CF158A /* Deployment */ = {
+		700E2B80085DE50C00CF158A /* Deployment-G4 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
@@ -1827,53 +1773,40 @@
 				);
 				ZERO_LINK = NO;
 			};
-			name = Deployment;
-		};
-		700E2B81085DE50C00CF158A /* Profile */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_AUTO_VECTORIZATION = YES;
-				GCC_DEBUGGING_SYMBOLS = full;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_FAST_MATH = YES;
-				GCC_MODEL_CPU = G4;
-				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_PREPROCESSOR_DEFINITIONS = REVISION_SUPPORT;
-				GCC_UNROLL_LOOPS = YES;
-				HEADER_SEARCH_PATHS = source/event/;
-				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)/work";
-				LIBRARY_SEARCH_PATHS = "";
-				PRODUCT_NAME = viewer;
-				SKIP_INSTALL = YES;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				ZERO_LINK = YES;
-			};
-			name = Profile;
+			name = "Deployment-G4";
 		};
 		702442D30859E0B00059BD9B /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_MODEL_CPU = G4;
+				PRODUCT_NAME = primitive;
+			};
+			name = Development;
+		};
+		702442D40859E0B00059BD9B /* Deployment-G4 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_MODEL_CPU = G4;
+				PRODUCT_NAME = primitive;
+			};
+			name = "Deployment-G4";
+		};
+		702442D80859E0B00059BD9B /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
 				GCC_ALTIVEC_EXTENSIONS = YES;
 				GCC_AUTO_VECTORIZATION = YES;
 				GCC_DEBUGGING_SYMBOLS = full;
+				GCC_DYNAMIC_NO_PIC = YES;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_FAST_MATH = YES;
-				GCC_MODEL_CPU = G4;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					DEBUG,
 					REVISION_SUPPORT,
 				);
 				GCC_UNROLL_LOOPS = YES;
-				HEADER_SEARCH_PATHS = source/event/;
-				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)/work";
-				PRODUCT_NAME = primitive;
-				SKIP_INSTALL = YES;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
@@ -1883,7 +1816,45 @@
 			};
 			name = Development;
 		};
-		702442D40859E0B00059BD9B /* Deployment */ = {
+		702442D90859E0B00059BD9B /* Deployment-G4 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEPLOYMENT_POSTPROCESSING = YES;
+				GCC_ALTIVEC_EXTENSIONS = YES;
+				GCC_AUTO_VECTORIZATION = YES;
+				GCC_DYNAMIC_NO_PIC = YES;
+				GCC_FAST_MATH = YES;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					NDEBUG,
+					REVISION_SUPPORT,
+				);
+				GCC_UNROLL_LOOPS = YES;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = "Deployment-G4";
+		};
+		70B393DC0944CA6F0018F09D /* Deployment-G5 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_MODEL_CPU = G4;
+				PRODUCT_NAME = primitive;
+			};
+			name = "Deployment-G5";
+		};
+		70B393DD0944CA6F0018F09D /* Profile */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_MODEL_CPU = G4;
+				PRODUCT_NAME = primitive;
+			};
+			name = Profile;
+		};
+		70B393DE0944CA6F0018F09D /* Deployment-G5 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
@@ -1896,14 +1867,12 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_CPU = G4;
 				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					NDEBUG,
-					REVISION_SUPPORT,
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = REVISION_SUPPORT;
 				GCC_UNROLL_LOOPS = YES;
 				HEADER_SEARCH_PATHS = source/event/;
 				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)/work";
-				PRODUCT_NAME = primitive;
+				LIBRARY_SEARCH_PATHS = "";
+				PRODUCT_NAME = viewer;
 				SKIP_INSTALL = YES;
 				WARNING_CFLAGS = (
 					"-Wmost",
@@ -1912,26 +1881,27 @@
 				);
 				ZERO_LINK = NO;
 			};
-			name = Deployment;
+			name = "Deployment-G5";
 		};
-		702442D50859E0B00059BD9B /* Profile */ = {
+		70B393DF0944CA6F0018F09D /* Profile */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = YES;
 				GCC_ALTIVEC_EXTENSIONS = YES;
 				GCC_AUTO_VECTORIZATION = YES;
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_FAST_MATH = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_CPU = G4;
 				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					NDEBUG,
-					REVISION_SUPPORT,
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = REVISION_SUPPORT;
 				GCC_UNROLL_LOOPS = YES;
 				HEADER_SEARCH_PATHS = source/event/;
 				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)/work";
-				PRODUCT_NAME = primitive;
+				LIBRARY_SEARCH_PATHS = "";
+				PRODUCT_NAME = viewer;
 				SKIP_INSTALL = YES;
 				WARNING_CFLAGS = (
 					"-Wmost",
@@ -1942,39 +1912,48 @@
 			};
 			name = Profile;
 		};
-		702442D80859E0B00059BD9B /* Development */ = {
+		70B393E00944CA6F0018F09D /* Deployment-G5 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
-				GCC_WARN_PEDANTIC = NO;
-			};
-			name = Development;
-		};
-		702442D90859E0B00059BD9B /* Deployment */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEAD_CODE_STRIPPING = NO;
+				DEPLOYMENT_POSTPROCESSING = YES;
 				GCC_ALTIVEC_EXTENSIONS = YES;
 				GCC_AUTO_VECTORIZATION = YES;
 				GCC_DYNAMIC_NO_PIC = YES;
 				GCC_FAST_MATH = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					NDEBUG,
+					REVISION_SUPPORT,
+				);
 				GCC_UNROLL_LOOPS = YES;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
 			};
-			name = Deployment;
+			name = "Deployment-G5";
 		};
-		702442DA0859E0B00059BD9B /* Profile */ = {
+		70B393E10944CA6F0018F09D /* Profile */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COPY_PHASE_STRIP = NO;
 				GCC_ALTIVEC_EXTENSIONS = YES;
 				GCC_AUTO_VECTORIZATION = YES;
+				GCC_DYNAMIC_NO_PIC = YES;
 				GCC_FAST_MATH = YES;
 				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					NDEBUG,
+					REVISION_SUPPORT,
+				);
 				GCC_UNROLL_LOOPS = YES;
-				GENERATE_PROFILING_CODE = YES;
-				ZERO_LINK = NO;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
 			};
 			name = Profile;
 		};
@@ -1985,31 +1964,34 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				700E2B7F085DE50C00CF158A /* Development */,
-				700E2B80085DE50C00CF158A /* Deployment */,
-				700E2B81085DE50C00CF158A /* Profile */,
+				700E2B80085DE50C00CF158A /* Deployment-G4 */,
+				70B393DE0944CA6F0018F09D /* Deployment-G5 */,
+				70B393DF0944CA6F0018F09D /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = "Deployment-G4";
 		};
 		702442D20859E0B00059BD9B /* Build configuration list for PBXNativeTarget "primitive" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				702442D30859E0B00059BD9B /* Development */,
-				702442D40859E0B00059BD9B /* Deployment */,
-				702442D50859E0B00059BD9B /* Profile */,
+				702442D40859E0B00059BD9B /* Deployment-G4 */,
+				70B393DC0944CA6F0018F09D /* Deployment-G5 */,
+				70B393DD0944CA6F0018F09D /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = "Deployment-G4";
 		};
 		702442D70859E0B00059BD9B /* Build configuration list for PBXProject "Avida" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				702442D80859E0B00059BD9B /* Development */,
-				702442D90859E0B00059BD9B /* Deployment */,
-				702442DA0859E0B00059BD9B /* Profile */,
+				702442D90859E0B00059BD9B /* Deployment-G4 */,
+				70B393E00944CA6F0018F09D /* Deployment-G5 */,
+				70B393E10944CA6F0018F09D /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = "Deployment-G4";
 		};
 /* End XCConfigurationList section */
 	};

@@ -1,21 +1,17 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cGenotype_BirthData.cc
+ *  Avida
+ *
+ *  Created by David on 11/30/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1999-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef GENOTYPE_BIRTH_DATA_HH
 #include "cGenotype_BirthData.h"
-#endif
 
-#ifndef DEFS_HH
 #include "defs.h"
-#endif
 
-/////////////////////////
-//  cGenotype_BirthData
-/////////////////////////
 
 cGenotype_BirthData::cGenotype_BirthData(int in_update_born)
   : update_born(in_update_born)
@@ -30,8 +26,4 @@ cGenotype_BirthData::cGenotype_BirthData(int in_update_born)
   // we will assume we do.
   ancestor_ids.Resize(6);
   ancestor_ids.SetAll(-1);
-}
-
-cGenotype_BirthData::~cGenotype_BirthData()
-{
 }

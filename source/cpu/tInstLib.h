@@ -7,13 +7,13 @@
  *
  */
 
-#ifndef TINSTLIB_H
-#define TINSTLIB_H
+#ifndef tInstLib_h
+#define tInstLib_h
 
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
-#ifndef INST_LIB_BASE_HH
+#ifndef cInstLibBase_h
 #include "cInstLibBase.h"
 #endif
 

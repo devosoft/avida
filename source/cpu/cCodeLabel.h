@@ -1,26 +1,29 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cCodeLabel.h
+ *  Avida
+ *
+ *  Created by David on 11/22/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef CODE_LABEL_HH
-#define CODE_LABEL_HH
+#ifndef cCodeLabel_h
+#define cCodeLabel_h
 
 #ifndef nHardware_h
-#include "nHardware.h"        // #defines only
+#include "nHardware.h"
 #endif
-#ifndef DEFS_HH
+#ifndef defs_h
 #include "defs.h"
 #endif
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
-#ifndef TARRAY_HH
+#ifndef tArray_h
 #include "tArray.h"
 #endif
-#ifndef TOOLS_HH
+#ifndef cTools_h
 #include "cTools.h"
 #endif
 

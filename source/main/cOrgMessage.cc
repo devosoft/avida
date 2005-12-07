@@ -1,5 +1,15 @@
+/*
+ *  cOrgMessage.cc
+ *  Avida
+ *
+ *  Created by David on 12/5/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
+
 #include "cOrgMessage.h"
-#include <string>
+
 #include <sstream>
 
 void cOrgMessage::SetData(int in_data)

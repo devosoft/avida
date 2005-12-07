@@ -1,22 +1,26 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cInjectGenotype_BirthData.h
+ *  Avida
+ *
+ *  Created by David on 11/30/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1999-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef INJECT_GENOTYPE_BIRTH_DATA_HH
-#define INJECT_GENOTYPE_BIRTH_DATA_HH
+#ifndef cInjectGenotype_BirthData_h
+#define cInjectGenotype_BirthData_h
 
-#ifndef COUNT_TRACKER_HH
+#ifndef cCountTracker_h
 #include "cCountTracker.h"
 #endif
 
 class cInjectGenotype;
+
 class cInjectGenotype_BirthData {
 public:
-  cInjectGenotype_BirthData(int in_update_born);
-  ~cInjectGenotype_BirthData();
+  inline cInjectGenotype_BirthData(int in_update_born);
+  ~cInjectGenotype_BirthData() { ; }
 
   cCountTracker birth_track;
   cCountTracker death_track;
@@ -34,5 +38,15 @@ public:
   //cSpecies * parent_species;
   int num_offspring_genotypes; // Num offspring genotypes still in memory.
 };
+
+inline cInjectGenotype_BirthData::cInjectGenotype_BirthData(int in_update_born)
+: update_born(in_update_born)
+, parent_id(-1)
+, gene_depth(0)
+, update_deactivated(-1)
+, parent_genotype(NULL)
+, num_offspring_genotypes(0)
+{
+}
 
 #endif

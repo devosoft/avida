@@ -1,17 +1,20 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cAvidaTriggers.h
+ *  Avida
+ *
+ *  Created by David on 12/2/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef AVIDA_TRIGGERS_HH
-#define AVIDA_TRIGGERS_HH
+#ifndef cAvidaTriggers_h
+#define cAvidaTriggers_h
 
-#ifndef EVENT_TRIGGERS_HH
+#ifndef cEventTriggers_h
 #include "cEventTriggers.h"
 #endif
-#ifndef STATS_HH
+#ifndef cStats_h
 #include "cStats.h"
 #endif
 

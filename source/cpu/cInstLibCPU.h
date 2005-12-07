@@ -1,23 +1,27 @@
-#ifndef INST_LIB_CPU_HH
-#define INST_LIB_CPU_HH
+/*
+ *  cInstLibCPU.h
+ *  Avida
+ *
+ *  Created by David on 11/30/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *
+ */
 
+#ifndef cInstLibCPU_h
+#define cInstLibCPU_h
 
-#ifndef INST_LIB_BASE_HH
+#ifndef cInstLibBase_h
 #include "cInstLibBase.h"
 #endif
-
 #ifndef cHardwareCPU_h
 #include "cHardwareCPU.h"
 #endif
-#ifndef INSTRUCTION_HH
+#ifndef cInstruction_h
 #include "cInstruction.h"
 #endif
 
-///////////////
-//  cInstLibCPU
-///////////////
-
 class cString;
+
 class cInstLibCPU : public cInstLibBase {
   const size_t m_nopmods_array_size;
   const size_t m_function_array_size;

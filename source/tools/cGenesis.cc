@@ -1,23 +1,17 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cGenesis.cc
+ *  Avida
+ *
+ *  Created by David on 12/7/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology
+ *
+ */
 
-#ifndef GENESIS_HH
 #include "cGenesis.h"
-#endif
 
 using namespace std;
 
-/////////////////
-//  cGenesis
-/////////////////
-
-cGenesis::cGenesis()
-{
-}
 
 cGenesis::cGenesis(const cString & in_filename) : cInitFile(in_filename)
 {
@@ -30,8 +24,6 @@ cGenesis::cGenesis(const cString & in_filename) : cInitFile(in_filename)
   Close();
 }
 
-//int cGenesis::Open(cString _filename, int mode)
-// porting to gcc 3.1 -- k
 int cGenesis::Open(cString _filename, ios::openmode mode)
 {
   if( IsOpen() ){

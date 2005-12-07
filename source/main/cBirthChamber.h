@@ -1,17 +1,20 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cBirthChamber.h
+ *  Avida
+ *
+ *  Created by David on 12/2/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef BIRTH_CHAMBER_HH
-#define BIRTH_CHAMBER_HH
+#ifndef cBirthChamber_h
+#define cBirthChamber_h
 
-#ifndef CPU_MEMORY_HH
+#ifndef cCPUMemory_h
 #include "cCPUMemory.h"
 #endif
-#ifndef MERIT_HH
+#ifndef cMerit_h
 #include "cMerit.h"
 #endif
 

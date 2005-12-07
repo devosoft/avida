@@ -1,34 +1,28 @@
-/////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2003 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cHeadMultiMem.h
+ *  Avida
+ *
+ *  Created by David on 11/30/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1999-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef HEAD_MULTI_MEM_HH
-#define HEAD_MULTI_MEM_HH
+#ifndef cHeadMultiMem_h
+#define cHeadMultiMem_h
 
-#ifndef HEAD_CPU_HH
+#ifndef cHeadCPU_h
 #include "cHeadCPU.h"
 #endif
-#ifndef DEFS_HH
-#include "defs.h"
-#endif
-
-class cCodeLabel;
-class cCPUMemory;
-class cGenome;
-class cHardwareBase;
-class cInstruction;
 
 class cHeadMultiMem : public cHeadCPU {
 private:
   int mem_space;
 
 public:
-  cHeadMultiMem();
-  cHeadMultiMem(cHardwareBase* in_hardware, int in_pos = 0, int mem_space = 0);
-  cHeadMultiMem(const cHeadMultiMem& in_cpu_head);
+  cHeadMultiMem() : cHeadCPU() { mem_space = 0; }
+  cHeadMultiMem(cHardwareBase* hw, int pos = 0, int ms = 0) : cHeadCPU(hw, pos) { mem_space = ms; }
+  cHeadMultiMem(const cHeadMultiMem& in_head) : cHeadCPU(in_head) { mem_space = in_head.mem_space; }
 
   void Adjust();
   void Reset(int in_mem_space = 0, cHardwareBase* new_hardware = NULL);

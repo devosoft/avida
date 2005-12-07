@@ -1,22 +1,25 @@
-//////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1993 - 2004 California Institute of Technology             //
-//                                                                          //
-// Read the COPYING and README files, or contact 'avida@alife.org',         //
-// before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //
-//////////////////////////////////////////////////////////////////////////////
+/*
+ *  cPhenotype.h
+ *  Avida
+ *
+ *  Created by David on 12/5/05.
+ *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 1993-2003 California Institute of Technology.
+ *
+ */
 
-#ifndef PHENOTYPE_HH
-#define PHENOTYPE_HH
+#ifndef cPhenotype_h
+#define cPhenotype_h
 
 #include <fstream>
 
-#ifndef MERIT_HH
+#ifndef cMerit_h
 #include "cMerit.h"
 #endif
-#ifndef STRING_HH
+#ifndef cString_h
 #include "cString.h"
 #endif
-#ifndef TARRAY_HH
+#ifndef tArray_h
 #include "tArray.h"
 #endif
 
@@ -48,9 +51,6 @@
  *************************************************************************/
 
 class cEnvironment;
-class cMerit;                    // aggregate
-template <class T> class tArray; // aggregate
-class cString;                   // aggregate
 template <class T> class tBuffer;
 template <class T> class tList;
 class cWorld;
