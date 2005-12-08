@@ -39,7 +39,7 @@ public:
   virtual bool Print(std::ostream& fp) const { (void) fp;  return false; }
 };
 
-std::ostream& operator << (std::ostream& out, cDataEntry & entry)
+inline std::ostream& operator << (std::ostream& out, cDataEntry & entry)
 {
   entry.Print(out);
   return out;

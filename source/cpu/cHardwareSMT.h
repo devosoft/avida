@@ -36,8 +36,8 @@
 #ifndef cString_h
 #include "cString.h"
 #endif
-#ifndef tArray_h
-#include "tArray.h"
+#ifndef tManagedPointerArray_h
+#include "tManagedPointerArray.h"
 #endif
 #ifndef tInstLib_h
 #include "tInstLib.h"
@@ -74,7 +74,7 @@ private:
   cCPUStack m_global_stacks[nHardwareSMT::NUM_GLOBAL_STACKS];
 	
   // Memory
-  tArray<cCPUMemory> m_mem_array;
+  tManagedPointerArray<cCPUMemory> m_mem_array;
   tHashTable<int, int> m_mem_lbls;
 
   // Threads
@@ -89,10 +89,10 @@ private:
 #endif
 
   
-  cHardwareSMT(const cHardwareSMT &); // @DMB - disabled...  can't (easily) copy m_mem_lbls
+  cHardwareSMT(const cHardwareSMT&); // @DMB - disabled...  can't (easily) copy m_mem_lbls
 
-  bool SingleProcess_PayCosts(const cInstruction & cur_inst);
-  bool SingleProcess_ExecuteInst(const cInstruction & cur_inst);
+  bool SingleProcess_PayCosts(const cInstruction& cur_inst);
+  bool SingleProcess_ExecuteInst(const cInstruction& cur_inst);
   	
 
   // --------  Stack Manipulation...  --------
