@@ -12,37 +12,17 @@
 
 using namespace std;
 
+const int MEMORY_INCREASE_MINIMUM = 10;
 const double MEMORY_INCREASE_FACTOR = 1.5;
 const double MEMORY_SHRINK_TEST_FACTOR = 4.0;
 
-cCPUMemory::cCPUMemory(int _size) : cGenome(_size), flag_array(_size)
-{
-}
-
-cCPUMemory::cCPUMemory(const cCPUMemory & in_memory)
+cCPUMemory::cCPUMemory(const cCPUMemory& in_memory)
   : cGenome(in_memory), flag_array(in_memory.GetSize())
 {
   for (int i = 0; i < flag_array.GetSize(); i++) {
     flag_array[i] = in_memory.flag_array[i];
   }
 }
-
-cCPUMemory::cCPUMemory(const cGenome & in_genome)
-  : cGenome(in_genome), flag_array(in_genome.GetSize())
-{
-}
-
-cCPUMemory::cCPUMemory(const cString & in_string)
-  : cGenome(in_string), flag_array(in_string.GetSize())
-{
-}
-
-cCPUMemory::~cCPUMemory()
-{
-}
-
-
-// ---  Private Methods ---
 
 void cCPUMemory::SloppyResize(int new_size)
 {
@@ -54,9 +34,10 @@ void cCPUMemory::SloppyResize(int new_size)
   const int array_size = genome.GetSize();
 
   // Determine if we need to adjust the allocated array sizes...
-  if (new_size > array_size ||
-      new_size * MEMORY_SHRINK_TEST_FACTOR < array_size) {
-    const int new_array_size = (int) (new_size * MEMORY_INCREASE_FACTOR);
+  if (new_size > array_size || new_size * MEMORY_SHRINK_TEST_FACTOR < array_size) {
+    int new_array_size = (int) (new_size * MEMORY_INCREASE_FACTOR);
+    const int new_array_min = new_size + MEMORY_INCREASE_MINIMUM;
+		if (new_array_min > new_array_size) new_array_size = new_array_min;
     genome.Resize(new_array_size);
     flag_array.Resize(new_array_size);
   }

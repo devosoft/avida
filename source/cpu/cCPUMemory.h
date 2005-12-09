@@ -14,8 +14,8 @@
 #ifndef cGenome_h
 #include "cGenome.h"
 #endif
-#ifndef tArray_h
-#include "tArray.h"
+#ifndef tManagedPointerArray_h
+#include "tManagedPointerArray.h"
 #endif
 #ifndef cMemoryFlags_h
 #include "cMemoryFlags.h"
@@ -29,18 +29,18 @@ template <class T> class tArray; // aggregate
 
 class cCPUMemory : public cGenome {
 private:
-  tArray<cMemoryFlags> flag_array;
+  tManagedPointerArray<cMemoryFlags> flag_array;
 
   // A collection of sloppy instructions to perform oft-used functions that
   // will need to be cleaned up after this is run.
   void SloppyResize(int new_size);           // Set size, ignore new contents.
   void SloppyInsert(int pos, int num_lines); // Add lines, ignore new contents.
 public:
-  explicit cCPUMemory(int _size=1);
-  cCPUMemory(const cCPUMemory & in_memory);
-  cCPUMemory(const cGenome & in_genome);
-  cCPUMemory(const cString & in_string);
-  ~cCPUMemory();
+  explicit cCPUMemory(int _size=1)  : cGenome(_size), flag_array(_size) { ; }
+  cCPUMemory(const cCPUMemory& in_memory);
+  cCPUMemory(const cGenome& in_genome) : cGenome(in_genome), flag_array(in_genome.GetSize()) { ; }
+  cCPUMemory(const cString& in_string) : cGenome(in_string), flag_array(in_string.GetSize()) { ; }
+  ~cCPUMemory() { ; }
 
   void operator=(const cCPUMemory & other_memory);
   void operator=(const cGenome & other_genome);
