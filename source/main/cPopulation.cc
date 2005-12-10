@@ -1067,12 +1067,6 @@ void cPopulation::ProcessStep(double step_size, int cell_id)
 }
 
 
-void cPopulation::ProcessStep(double step_size)
-{
-  ProcessStep( step_size, ScheduleOrganism() );
-}
-
-
 void cPopulation::UpdateOrganismStats()
 {
   // Loop through all the cells getting stats and doing calculations

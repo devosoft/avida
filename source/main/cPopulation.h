@@ -135,8 +135,8 @@ public:
 
   // Process a single organism one instruction...
   int ScheduleOrganism();          // Determine next organism to be processed.
-  void ProcessStep(double step_size);
   void ProcessStep(double step_size, int cell_id);
+  void ProcessStep(double step_size) { ProcessStep(step_size, ScheduleOrganism()); }
 
   // Calculate the statistics from the most recent update.
   void CalcUpdateStats();
@@ -170,8 +170,7 @@ public:
   void UpdateCellResources(const tArray<double> & res_change,
                            const int cell_id);
   void SetResource(int id, double new_level);
-  double GetResource(int id) const {
-    return resource_count.Get(id); }
+  double GetResource(int id) const { return resource_count.Get(id); }
 
   cEnvironment & GetEnvironment() { return environment; }
   int GetNumOrganisms() { return num_organisms; }
