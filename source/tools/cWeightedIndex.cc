@@ -67,13 +67,6 @@ void cWeightedIndex::SetWeight(int id, double in_weight)
 
 int cWeightedIndex::FindPosition(double position, int root_id)
 {
-//   cout << "Seeking " << position
-//        << " at root " << root_id 
-//        << " subtree size = " << subtree_weight[root_id]
-//        << " (left=" << subtree_weight[GetLeftChild(root_id)]
-//        << " , right=" << subtree_weight[GetRightChild(root_id)]
-//        << " , this=" << item_weight[root_id] << ")"
-//        << endl;
   assert(position < subtree_weight[root_id]);
 
   // First, see if we should just return this node.

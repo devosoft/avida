@@ -11,8 +11,12 @@
 #ifndef cPopulationInterface_h
 #define cPopulationInterface_h
 
+#ifndef cWorld_h
 #include "cWorld.h"
-#include "cAvidaDriver_Base.h"
+#endif
+#ifndef cWorldDriver_h
+#include "cWorldDriver.h"
+#endif
 
 class cHardwareBase;
 class cPopulation;
@@ -42,7 +46,7 @@ public:
   cOrganism * GetNeighbor();
   int GetNumNeighbors();
   void Rotate(int direction=1);
-  void Breakpoint() { cAvidaDriver_Base::main_driver->SignalBreakpoint(); }
+  void Breakpoint() { m_world->GetDriver().SignalBreakpoint(); }
   double TestFitness();
   int GetInput();
   int GetInputAt(int & input_pointer);

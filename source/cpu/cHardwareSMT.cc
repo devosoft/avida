@@ -24,6 +24,7 @@
 #include "cRandom.h"
 #include "cStringUtil.h"
 #include "cTestCPU.h"
+#include "cWorldDriver.h"
 
 #include <limits.h>
 
@@ -903,7 +904,7 @@ void cHardwareSMT::TriggerMutations_Body(int type, cCPUMemory & target_memory, c
 		case nMutation::TYPE_TEMP:
 		case nMutation::TYPE_KILL:
 		default:
-			cout << "Error: Mutation type not implemented!" << endl;
+      m_world->GetDriver().RaiseException("Mutation type not implemented!");
 			break;
   };
 }
@@ -1748,8 +1749,6 @@ bool cHardwareSMT::Inst_HeadCopy()
   read_head.Adjust();
   write_head.Adjust();
 	
-  // TriggerMutations(nMutation::TRIGGER_READ, read_head);
-  
   // Do mutations.
   cInstruction read_inst = read_head.GetInst();
   if (organism->TestCopyMut()) {
@@ -1765,8 +1764,6 @@ bool cHardwareSMT::Inst_HeadCopy()
 	
   write_head.SetInst(read_inst);
   write_head.FlagCopied() = true;  // Set the copied flag...
-	
-  // TriggerMutations(nMutation::TRIGGER_WRITE, write_head);
 	
   read_head.Advance();
   write_head.Advance();

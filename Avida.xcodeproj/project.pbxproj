@@ -27,20 +27,25 @@
 		7013846409028B3E0087ED2E /* cAvidaConfig.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7013846009028B3E0087ED2E /* cAvidaConfig.cc */; };
 		7013852D0902E36B0087ED2E /* avida.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7013852C0902E36B0087ED2E /* avida.cfg */; };
 		7013852E0902E36B0087ED2E /* avida.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7013852C0902E36B0087ED2E /* avida.cfg */; };
-		702D4EFF08DA5341007BA469 /* cAvidaDriver_Base.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EFA08DA5341007BA469 /* cAvidaDriver_Base.cc */; };
-		702D4F0008DA5341007BA469 /* cAvidaDriver_Population.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EFB08DA5341007BA469 /* cAvidaDriver_Population.cc */; };
+		701D915D094B864A008B845F /* cFallbackWorldDriver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701D915C094B864A008B845F /* cFallbackWorldDriver.cc */; };
+		701D915E094B864A008B845F /* cFallbackWorldDriver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701D915C094B864A008B845F /* cFallbackWorldDriver.cc */; };
+		701D92E4094C9E6F008B845F /* cDriverManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 701D92E0094C9E6F008B845F /* cDriverManager.h */; };
+		701D930E094CAD6B008B845F /* cDefaultRunDriver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701D930C094CAD6B008B845F /* cDefaultRunDriver.cc */; };
+		701D930F094CAD6B008B845F /* cDefaultRunDriver.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 701D930B094CAD6B008B845F /* cDefaultRunDriver.h */; };
+		701D9310094CAD6B008B845F /* cDefaultRunDriver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701D930C094CAD6B008B845F /* cDefaultRunDriver.cc */; };
+		701D9383094CBA69008B845F /* cDriverManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701D9382094CBA69008B845F /* cDriverManager.cc */; };
+		701D9384094CBA69008B845F /* cDriverManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701D9382094CBA69008B845F /* cDriverManager.cc */; };
+		701D93E9094CBF71008B845F /* cDefaultAnalyzeDriver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701D93E7094CBF71008B845F /* cDefaultAnalyzeDriver.cc */; };
+		701D93EA094CBF71008B845F /* cDefaultAnalyzeDriver.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 701D93E6094CBF71008B845F /* cDefaultAnalyzeDriver.h */; };
+		701D93EB094CBF71008B845F /* cDefaultAnalyzeDriver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701D93E7094CBF71008B845F /* cDefaultAnalyzeDriver.cc */; };
 		702D4F0108DA5341007BA469 /* cEnvironment.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EFC08DA5341007BA469 /* cEnvironment.cc */; };
 		702D4F0208DA5341007BA469 /* cPopulationInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EFD08DA5341007BA469 /* cPopulationInterface.cc */; };
-		702D4F0308DA5341007BA469 /* cAvidaDriver_Analyze.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EF908DA5341007BA469 /* cAvidaDriver_Analyze.cc */; };
-		702D4F0408DA5341007BA469 /* cAvidaDriver_Base.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EFA08DA5341007BA469 /* cAvidaDriver_Base.cc */; };
-		702D4F0508DA5341007BA469 /* cAvidaDriver_Population.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EFB08DA5341007BA469 /* cAvidaDriver_Population.cc */; };
 		702D4F0608DA5341007BA469 /* cEnvironment.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EFC08DA5341007BA469 /* cEnvironment.cc */; };
 		702D4F0708DA5341007BA469 /* cPopulationInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EFD08DA5341007BA469 /* cPopulationInterface.cc */; };
 		702D4F4508DA61FE007BA469 /* cBirthChamber.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4F3F08DA61FE007BA469 /* cBirthChamber.cc */; };
 		702D4F4B08DA61FE007BA469 /* cBirthChamber.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4F3F08DA61FE007BA469 /* cBirthChamber.cc */; };
 		7040CF1C0906A52E00AA820F /* cEventManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7040CF1A0906A52E00AA820F /* cEventManager.cc */; };
 		7040CF1E0906A52E00AA820F /* cEventManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7040CF1A0906A52E00AA820F /* cEventManager.cc */; };
-		7040D36E09095E5900AA820F /* cAvidaDriver_Analyze.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EF908DA5341007BA469 /* cAvidaDriver_Analyze.cc */; };
 		7040D3A6090964D100AA820F /* cMxCodeArray.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865808F4974300FC65FE /* cMxCodeArray.cc */; };
 		70422A28091B141000A5E67F /* cAnalyze.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70422A1C091B141000A5E67F /* cAnalyze.cc */; };
 		70422A30091B141000A5E67F /* cAnalyzeGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70422A24091B141000A5E67F /* cAnalyzeGenotype.cc */; };
@@ -301,6 +306,9 @@
 				700E2B7D085DE50C00CF158A /* inst_set.smt in CopyFiles */,
 				701384340900A45B0087ED2E /* organism.smtx in CopyFiles */,
 				7013852E0902E36B0087ED2E /* avida.cfg in CopyFiles */,
+				701D92E4094C9E6F008B845F /* cDriverManager.h in CopyFiles */,
+				701D930F094CAD6B008B845F /* cDefaultRunDriver.h in CopyFiles */,
+				701D93EA094CBF71008B845F /* cDefaultAnalyzeDriver.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -337,14 +345,19 @@
 		7013846009028B3E0087ED2E /* cAvidaConfig.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cAvidaConfig.cc; sourceTree = "<group>"; };
 		701384A10902A16F0087ED2E /* defs.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = defs.h; sourceTree = "<group>"; };
 		7013852C0902E36B0087ED2E /* avida.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = avida.cfg; sourceTree = "<group>"; };
-		702D4EF208DA5328007BA469 /* cAvidaDriver_Analyze.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAvidaDriver_Analyze.h; sourceTree = "<group>"; };
-		702D4EF308DA5328007BA469 /* cAvidaDriver_Base.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAvidaDriver_Base.h; sourceTree = "<group>"; };
-		702D4EF408DA5328007BA469 /* cAvidaDriver_Population.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAvidaDriver_Population.h; sourceTree = "<group>"; };
+		701D9116094B773E008B845F /* cWorldDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cWorldDriver.h; sourceTree = "<group>"; };
+		701D912B094B7AC1008B845F /* cAvidaDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaDriver.h; sourceTree = "<group>"; };
+		701D9151094B8483008B845F /* cFallbackWorldDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cFallbackWorldDriver.h; sourceTree = "<group>"; };
+		701D915C094B864A008B845F /* cFallbackWorldDriver.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cFallbackWorldDriver.cc; sourceTree = "<group>"; };
+		701D92E0094C9E6F008B845F /* cDriverManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDriverManager.h; sourceTree = "<group>"; };
+		701D930B094CAD6B008B845F /* cDefaultRunDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDefaultRunDriver.h; sourceTree = "<group>"; };
+		701D930C094CAD6B008B845F /* cDefaultRunDriver.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDefaultRunDriver.cc; sourceTree = "<group>"; };
+		701D9382094CBA69008B845F /* cDriverManager.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDriverManager.cc; sourceTree = "<group>"; };
+		701D93E6094CBF71008B845F /* cDefaultAnalyzeDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDefaultAnalyzeDriver.h; sourceTree = "<group>"; };
+		701D93E7094CBF71008B845F /* cDefaultAnalyzeDriver.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDefaultAnalyzeDriver.cc; sourceTree = "<group>"; };
+		701D941C094CC5F1008B845F /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		702D4EF508DA5328007BA469 /* cEnvironment.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cEnvironment.h; sourceTree = "<group>"; };
 		702D4EF608DA5328007BA469 /* cPopulationInterface.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cPopulationInterface.h; sourceTree = "<group>"; };
-		702D4EF908DA5341007BA469 /* cAvidaDriver_Analyze.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cAvidaDriver_Analyze.cc; sourceTree = "<group>"; };
-		702D4EFA08DA5341007BA469 /* cAvidaDriver_Base.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cAvidaDriver_Base.cc; sourceTree = "<group>"; };
-		702D4EFB08DA5341007BA469 /* cAvidaDriver_Population.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cAvidaDriver_Population.cc; sourceTree = "<group>"; };
 		702D4EFC08DA5341007BA469 /* cEnvironment.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cEnvironment.cc; sourceTree = "<group>"; };
 		702D4EFD08DA5341007BA469 /* cPopulationInterface.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cPopulationInterface.cc; sourceTree = "<group>"; };
 		702D4F3808DA61E2007BA469 /* cAvidaTriggers.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAvidaTriggers.h; sourceTree = "<group>"; };
@@ -767,6 +780,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		701D9115094B770B008B845F /* drivers */ = {
+			isa = PBXGroup;
+			children = (
+				701D9382094CBA69008B845F /* cDriverManager.cc */,
+				701D9116094B773E008B845F /* cWorldDriver.h */,
+				701D912B094B7AC1008B845F /* cAvidaDriver.h */,
+				701D9151094B8483008B845F /* cFallbackWorldDriver.h */,
+				701D915C094B864A008B845F /* cFallbackWorldDriver.cc */,
+				701D92E0094C9E6F008B845F /* cDriverManager.h */,
+				701D930B094CAD6B008B845F /* cDefaultRunDriver.h */,
+				701D930C094CAD6B008B845F /* cDefaultRunDriver.cc */,
+				701D93E6094CBF71008B845F /* cDefaultAnalyzeDriver.h */,
+				701D93E7094CBF71008B845F /* cDefaultAnalyzeDriver.cc */,
+				701D941C094CC5F1008B845F /* CMakeLists.txt */,
+			);
+			path = drivers;
+			sourceTree = "<group>";
+		};
 		70422A1B091B141000A5E67F /* analyze */ = {
 			isa = PBXGroup;
 			children = (
@@ -882,6 +913,7 @@
 				70422A1B091B141000A5E67F /* analyze */,
 				70F7D8C8092546DC009E311D /* classification */,
 				DCC30F7C0762539D008F7A48 /* cpu */,
+				701D9115094B770B008B845F /* drivers */,
 				DCC30FD00762539D008F7A48 /* event */,
 				DCC310040762539D008F7A48 /* main */,
 				DCC31340076253A0008F7A48 /* third-party */,
@@ -974,12 +1006,6 @@
 				70B086BE08F5D86100FC65FE /* avida.h */,
 				7013846009028B3E0087ED2E /* cAvidaConfig.cc */,
 				7013845F09028B3E0087ED2E /* cAvidaConfig.h */,
-				702D4EF908DA5341007BA469 /* cAvidaDriver_Analyze.cc */,
-				702D4EF208DA5328007BA469 /* cAvidaDriver_Analyze.h */,
-				702D4EFA08DA5341007BA469 /* cAvidaDriver_Base.cc */,
-				702D4EF308DA5328007BA469 /* cAvidaDriver_Base.h */,
-				702D4EFB08DA5341007BA469 /* cAvidaDriver_Population.cc */,
-				702D4EF408DA5328007BA469 /* cAvidaDriver_Population.h */,
 				702D4F3808DA61E2007BA469 /* cAvidaTriggers.h */,
 				702D4F3F08DA61FE007BA469 /* cBirthChamber.cc */,
 				702D4F3908DA61E2007BA469 /* cBirthChamber.h */,
@@ -1510,9 +1536,6 @@
 				70C1F03908C3C71300F50912 /* cTestUtil.cc in Sources */,
 				70C1F19908C6A11100F50912 /* cEventList.cc in Sources */,
 				70C1F19B08C6A11100F50912 /* cEventTriggers.cc in Sources */,
-				702D4F0308DA5341007BA469 /* cAvidaDriver_Analyze.cc in Sources */,
-				702D4F0408DA5341007BA469 /* cAvidaDriver_Base.cc in Sources */,
-				702D4F0508DA5341007BA469 /* cAvidaDriver_Population.cc in Sources */,
 				702D4F0608DA5341007BA469 /* cEnvironment.cc in Sources */,
 				702D4F0708DA5341007BA469 /* cPopulationInterface.cc in Sources */,
 				702D4F4B08DA61FE007BA469 /* cBirthChamber.cc in Sources */,
@@ -1604,6 +1627,10 @@
 				70533482092A4F5D006BD186 /* cSpecies.cc in Sources */,
 				70533483092A4F5F006BD186 /* cSpeciesControl.cc in Sources */,
 				70533484092A4F60006BD186 /* cSpeciesQueue.cc in Sources */,
+				701D915E094B864A008B845F /* cFallbackWorldDriver.cc in Sources */,
+				701D9310094CAD6B008B845F /* cDefaultRunDriver.cc in Sources */,
+				701D9384094CBA69008B845F /* cDriverManager.cc in Sources */,
+				701D93EB094CBF71008B845F /* cDefaultAnalyzeDriver.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1634,8 +1661,6 @@
 				70C1F03108C3C71300F50912 /* cTestUtil.cc in Sources */,
 				70C1F19408C6A11100F50912 /* cEventList.cc in Sources */,
 				70C1F19608C6A11100F50912 /* cEventTriggers.cc in Sources */,
-				702D4EFF08DA5341007BA469 /* cAvidaDriver_Base.cc in Sources */,
-				702D4F0008DA5341007BA469 /* cAvidaDriver_Population.cc in Sources */,
 				702D4F0108DA5341007BA469 /* cEnvironment.cc in Sources */,
 				702D4F0208DA5341007BA469 /* cPopulationInterface.cc in Sources */,
 				702D4F4508DA61FE007BA469 /* cBirthChamber.cc in Sources */,
@@ -1696,7 +1721,6 @@
 				70C5BC6509059A970028A785 /* cWorld.cc in Sources */,
 				70C5BD6B0905CE5F0028A785 /* cHardwareManager.cc in Sources */,
 				7040CF1C0906A52E00AA820F /* cEventManager.cc in Sources */,
-				7040D36E09095E5900AA820F /* cAvidaDriver_Analyze.cc in Sources */,
 				7040D3A6090964D100AA820F /* cMxCodeArray.cc in Sources */,
 				70422A34091B141000A5E67F /* cAnalyze.cc in Sources */,
 				70422A3C091B141000A5E67F /* cAnalyzeGenotype.cc in Sources */,
@@ -1713,6 +1737,10 @@
 				7053336F092A3DFC006BD186 /* cInjectGenotypeControl.cc in Sources */,
 				70533371092A3E00006BD186 /* cInjectGenotypeQueue.cc in Sources */,
 				705333E7092A4B7F006BD186 /* cLineage.cc in Sources */,
+				701D915D094B864A008B845F /* cFallbackWorldDriver.cc in Sources */,
+				701D930E094CAD6B008B845F /* cDefaultRunDriver.cc in Sources */,
+				701D9383094CBA69008B845F /* cDriverManager.cc in Sources */,
+				701D93E9094CBF71008B845F /* cDefaultAnalyzeDriver.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

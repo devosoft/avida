@@ -24,19 +24,15 @@ void cMerit::UpdateValue(double in_value)
 
   // Initilize multipliers only once
   if( mult_initilalized == false ){
-    //cout<<"initializing multipliers"<<endl;
     mult_initilalized = true;
     for( int i=0; i<max_bits; ++i ){
       mult[i] = pow((double)2,i);
-      //cout<<"  mult["<<i<<"] = "<<mult[i]<<endl;
     }
   }
 
   value = in_value;
 
   double mant = frexp (value , &bits);
-
-  //cout<<value<<" = "<<mant<<" * 2 ^ "<<bits<<endl;
 
   if( bits > max_bits ){
     offset = bits - max_bits;
@@ -45,9 +41,6 @@ void cMerit::UpdateValue(double in_value)
   }
 
   base = (unsigned int) (mant * mult[bits-offset-1] * 2 );
-
-  //cout<<value<<" = "<<base<<" ["<<bits<<" bits] "<<" * 2 ^ "<<offset;
-  //cout<<" = "<<(base * pow((double)2,offset))<<endl;
 }
 
 

@@ -21,7 +21,7 @@ private:
   int size;
   cFixedCoords start_coords;
 public:
-  cRefBlock(int in_ref = 0, int in_size = 0) ref_num(in_ref), size(in_size) { ; }
+  cRefBlock(int in_ref = 0, int in_size = 0) : ref_num(in_ref), size(in_size) { ; }
   ~cRefBlock() { ; }
 
   inline int GetRef() const { return ref_num; }

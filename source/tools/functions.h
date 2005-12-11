@@ -36,12 +36,9 @@ namespace nFunctions {
 
   inline void Swap(int & in1, int & in2)
   {
-// cout << "Swapping " << in1 << " with " << in2 << endl;
     const int tmp = in1;
     in1 = in2;
     in2 = tmp;
-// cout << "Outputing " << in1 << "  " << " and " << in2 << endl;
-
   }
   
   inline void Swap(double & in1, double & in2)

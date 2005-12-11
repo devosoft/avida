@@ -26,6 +26,7 @@
 #include "cPhenotype.h"
 #include "cStringUtil.h"
 #include "cTestCPU.h"
+#include "cWorldDriver.h"
 
 #include <limits.h>
 #include <fstream>
@@ -882,9 +883,6 @@ cHeadCPU cHardwareCPU::FindLabel(const cCodeLabel & in_label, int direction)
 // direction which the heads[nHardware::HEAD_IP] should progress through a creature.
 cHeadCPU cHardwareCPU::FindFullLabel(const cCodeLabel & in_label)
 {
-  // cout << "Running FindFullLabel with " << in_label.AsString() <<
-  // endl;
-  
   assert(in_label.GetSize() > 0); // Trying to find label of 0 size!
   
   cHeadCPU temp_head(this);
@@ -912,9 +910,6 @@ cHeadCPU cHardwareCPU::FindFullLabel(const cCodeLabel & in_label)
       temp_head.AbsJump(checked_size + 1);
       continue;
     }
-    
-    // cout << "Testing label at line " << temp_head.GetPosition() <<
-    // endl;
     
     // ...and do the comparison...
     
@@ -1210,7 +1205,7 @@ void cHardwareCPU::TriggerMutations_Body(int type, cCPUMemory & target_memory,
     case nMutation::TYPE_TEMP:
     case nMutation::TYPE_KILL:
     default:
-      cout << "Error: Mutation type not implemented!" << endl;
+      m_world->GetDriver().RaiseException("Mutation type not implemented!");
       break;
   };
 }
@@ -1530,14 +1525,6 @@ bool cHardwareCPU::Divide_CheckViable(const int child_size,
     } else {
       if (m_world->GetRandom().P(organism->GetSterilizePos())) sterilize = true;
     }
-    
-    //     cout << "[ min(" << genome_size
-    // 	 << "," << copied_size
-    // 	 << "," << executed_size
-    // 	 << ") * " << phenotype.GetCurBonus()
-    // 	 << " / " << phenotype.GetTimeUsed()
-    // 	 << "] / " << phenotype.GetLastFitness()
-    // 	 << " == " << fitness_ratio;
     
     if (sterilize == true) {
       //Don't let this organism have this or any more children!
@@ -3187,10 +3174,6 @@ bool cHardwareCPU::Inst_HeadDivideMateSelect()
   // other organisms this one is willing to mate with.
   ReadLabel();
   organism->GetPhenotype().SetMateSelectID( GetLabel().AsInt(nHardwareCPU::NUM_NOPS) );
-  
-  //   int mate_id = GetLabel().AsInt(nHardwareCPU::NUM_NOPS);
-  //   if (mate_id > 0) cout << mate_id << " "
-  // 			<< GetLabel().AsString() << endl;
   
   // Proceed as normal with the rest of mate selection.
   organism->GetPhenotype().SetDivideSex(true);

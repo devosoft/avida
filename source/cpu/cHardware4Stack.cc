@@ -25,6 +25,7 @@
 #include "cRandom.h"
 #include "cStringUtil.h"
 #include "cTestCPU.h"
+#include "cWorldDriver.h"
 
 #include <limits.h>
 
@@ -773,9 +774,6 @@ cHeadMultiMem cHardware4Stack::FindLabel(const cCodeLabel & in_label, int direct
 // direction which the heads[nHardware::HEAD_IP] should progress through a creature.
 cHeadMultiMem cHardware4Stack::FindFullLabel(const cCodeLabel & in_label)
 {
-  // cout << "Running FindFullLabel with " << in_label.AsString() <<
-  // endl;
-  
   assert(in_label.GetSize() > 0); // Trying to find label of 0 size!
   
   cHeadMultiMem temp_head(this);
@@ -803,9 +801,6 @@ cHeadMultiMem cHardware4Stack::FindFullLabel(const cCodeLabel & in_label)
       temp_head.AbsJump(checked_size + 1);
       continue;
     }
-    
-    // cout << "Testing label at line " << temp_head.GetPosition() <<
-    // endl;
     
     // ...and do the comparison...
     
@@ -1124,7 +1119,7 @@ void cHardware4Stack::TriggerMutations_Body(int type, cCPUMemory & target_memory
     case nMutation::TYPE_TEMP:
     case nMutation::TYPE_KILL:
     default:
-      cout << "Error: Mutation type not implemented!" << endl;
+      m_world->GetDriver().RaiseException("Mutation type not implemented!");
       break;
   };
 }

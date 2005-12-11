@@ -21,6 +21,7 @@
 #include "cStringList.h"
 #include "cTestUtil.h"
 #include "cWorld.h"
+#include "cWorldDriver.h"
 
 using namespace std;
 
@@ -254,7 +255,6 @@ void cClassificationManager::RemoveGenotype(cGenotype & in_genotype)
       // Test to see if we need to update the coalescent genotype.
       const int new_coal = m_genotype_ctl->UpdateCoalescent();
       m_world->GetStats().SetCoalescentGenotypeDepth(new_coal);
-      // cout << "Set coalescent to " << found_gen->GetDepth() << endl;
       
       if (parent->GetNumOrganisms() == 0) {
         // Regardless, run RemoveGenotype on the parent.
@@ -268,7 +268,6 @@ void cClassificationManager::RemoveGenotype(cGenotype & in_genotype)
       // Test to see if we need to update the coalescent genotype.
       const int new_coal = m_genotype_ctl->UpdateCoalescent();
       m_world->GetStats().SetCoalescentGenotypeDepth(new_coal);
-      // cout << "Set coalescent to " << found_gen->GetDepth() << endl;
       
       if (parent2->GetNumOrganisms() == 0) {
         // Regardless, run RemoveGenotype on the parent.
@@ -1003,9 +1002,12 @@ cLineage* cClassificationManager::GetLineage(cGenotype* child_genotype, cGenotyp
     // lineage doesn't exist...
     if (child_lineage == NULL) {
       // create it
-      cout << "Creating new lineage 'by hand'!\nRequested lineage label: " << parent_lin_id;
       child_lineage = AddLineage(child_fitness, -1, parent_lin_id, 0, 0);
-      cout << ", actual lineage label: " << child_lineage->GetID() << endl;
+      cString msg("Creating new lineage 'by hand'!\nRequested lineage label: ");
+      msg += parent_lin_id;
+      msg += ", actual lineage label: ";
+      msg += child_lineage->GetID();
+      m_world->GetDriver().NotifyComment(msg);
     }
   }
   // otherwise, check for conditions that cause the creation of a new lineage
@@ -1142,7 +1144,9 @@ cLineage* cClassificationManager::FindLineage(int lineage_id) const
   for (; it != m_lineage_list.end(); it++ ) if ( (*it)->GetID() == lineage_id ) break;
   
   if (it == m_lineage_list.end()) {
-    cout << "Lineage " << lineage_id << " not found." << endl;
+    cString msg("Lineage ");
+    msg += lineage_id; msg += " not found.";
+    m_world->GetDriver().NotifyComment(msg);
     return NULL;
   }
   

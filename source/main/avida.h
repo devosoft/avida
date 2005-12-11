@@ -13,7 +13,8 @@
 
 class cString;
 
-cString AvidaVersion();
+cString getAvidaVersion();
+void printVersionBanner();
 
 /**
  * This function properly shuts down the Avida program.

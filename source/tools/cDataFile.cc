@@ -35,9 +35,9 @@ cDataFile::cDataFile(cString name) : m_name(name)
 {
   Init();
    
-  if( fopen(name,"r") ){
+  //if (fopen(name,"r")) {
     // cout << "File " << name() << " exists and is being overwritten" << endl;
-  }
+  //}
   m_fp.open(name);
   assert(m_fp.good());
   m_descr_written = false;

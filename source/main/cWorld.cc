@@ -21,6 +21,8 @@
 #include "cStats.h"
 #include "cTestCPU.h"
 #include "cTools.h"
+#include "cFallbackWorldDriver.h"
+
 
 cWorld::~cWorld()
 {
@@ -35,10 +37,16 @@ cWorld::~cWorld()
   delete m_pop;
   delete m_stats;
   delete m_test_cpu;
+
+  // cleanup driver object, if needed
+  if (m_own_driver) delete m_driver;
 }
 
 void cWorld::Setup()
 {
+  m_own_driver = true;
+  m_driver = new cFallbackWorldDriver();
+  
   // Setup Random Number Generator
   const int rand_seed = m_conf->RANDOM_SEED.Get();
   cout << "Random Seed: " << rand_seed;
@@ -163,4 +171,14 @@ int cWorld::GetNumReactions()
 int cWorld::GetNumResources()
 {
   return m_env->GetResourceLib().GetSize();
+}
+
+void cWorld::SetDriver(cWorldDriver* driver, bool take_ownership)
+{
+  // cleanup current driver, if needed
+  if (m_own_driver) delete m_driver;
+  
+  // store new driver information
+  m_driver = driver;
+  m_own_driver = take_ownership;
 }

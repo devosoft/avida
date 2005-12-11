@@ -12,7 +12,6 @@
 
 #include "cAnalyzeUtil.h"
 #include "avida.h"
-#include "cAvidaDriver_Base.h"
 #include "cClassificationManager.h"
 #include "cEnvironment.h"
 #include "cEvent.h"
@@ -32,6 +31,7 @@
 #include "cTestUtil.h"
 #include "cTools.h"
 #include "cWorld.h"
+#include "cWorldDriver.h"
 
 #include <ctype.h>           // for isdigit
 #include <iostream>
@@ -46,7 +46,7 @@ public:
   
   void Configure(cWorld* world, const cString& in_args) { ; }
   void Process(){
-    cAvidaDriver_Base::main_driver->SetDone();
+    m_world->GetDriver().SetDone();
   }
 };
 
@@ -77,7 +77,7 @@ public:
   ///// exit_if_generation_greater_than /////
   void Process(){
     if( m_world->GetStats().SumGeneration().Average() > max_generation ){
-      cAvidaDriver_Base::main_driver->SetDone();
+      m_world->GetDriver().SetDone();
     }
   }
 };
@@ -111,7 +111,7 @@ public:
   ///// exit_if_update_greater_than /////
   void Process(){
     if( m_world->GetStats().GetUpdate() > max_update ){
-      cAvidaDriver_Base::main_driver->SetDone();
+      m_world->GetDriver().SetDone();
     }
   }
 };
@@ -145,7 +145,7 @@ public:
   ///// exit_if_ave_lineage_label_smaller /////
   void Process(){
     if( m_world->GetStats().GetAveLineageLabel() < lineage_label_crit_value ){
-      cAvidaDriver_Base::main_driver->SetDone();
+      m_world->GetDriver().SetDone();
     }
   }
 };
@@ -179,7 +179,7 @@ public:
   ///// exit_if_ave_lineage_label_larger /////
   void Process(){
     if( m_world->GetStats().GetAveLineageLabel() > lineage_label_crit_value ){
-      cAvidaDriver_Base::main_driver->SetDone();
+      m_world->GetDriver().SetDone();
     }
   }
 };
@@ -215,7 +215,7 @@ public:
       mesg.Set("Echo : Update = %f\t AveGeneration = %f",
                m_world->GetStats().GetUpdate(), m_world->GetStats().SumGeneration().Average());
     }
-    cAvidaDriver_Base::main_driver->NotifyComment(mesg);
+    m_world->GetDriver().NotifyComment(mesg);
   }
 };
 
@@ -1737,7 +1737,7 @@ public:
     if (start_cell < 0 ||
         end_cell > m_world->GetPopulation().GetSize() ||
         start_cell >= end_cell) {
-      cout << "Warning: inject_range has invalid range!";
+      m_world->GetDriver().NotifyWarning("inject_range has invalid range!");
     }
     else {
       cGenome genome =
@@ -1806,9 +1806,7 @@ public:
     if (start_cell < 0 ||
         end_cell > m_world->GetPopulation().GetSize() ||
         start_cell >= end_cell) {
-      cout << "Warning: inject_sequence has invalid range!" << endl;
-      cout << "start=" << start_cell << "  end=" << end_cell
-        << "genome length=" << seq.GetSize() << endl;
+      m_world->GetDriver().NotifyWarning("inject_sequence has invalid range!");
     }
     else {
       cGenome genome(seq);
@@ -1931,7 +1929,7 @@ public:
     if (start_cell < 0 ||
         end_cell > m_world->GetPopulation().GetSize() ||
         start_cell >= end_cell) {
-      cout << "Warning: inject_range has invalid range!";
+      m_world->GetDriver().NotifyWarning("inject_range has invalid range!");
     }
     else {
       cGenome genome_parasite =
@@ -2007,7 +2005,7 @@ public:
     if (start_cell < 0 ||
         end_cell > m_world->GetPopulation().GetSize() ||
         start_cell >= end_cell) {
-      cout << "Warning: inject_range has invalid range!";
+      m_world->GetDriver().NotifyWarning("inject_range has invalid range!");
     }
     else {
       cGenome genome =

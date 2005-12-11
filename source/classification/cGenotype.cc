@@ -198,8 +198,6 @@ void cGenotype::SetGenome(const cGenome & in_genome)
 
 void cGenotype::CalcTestStats() const
 {
-  //  cerr << ".......Calculating test stats..." << endl;
-
   cCPUTestInfo test_info;
   m_world->GetTestCPU().TestGenome(test_info, genome);
   test_data.is_viable = test_info.IsViable();

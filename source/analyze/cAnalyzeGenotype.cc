@@ -19,6 +19,7 @@
 #include "cEnvironment.h"
 #include "cHardwareManager.h"
 #include "cWorld.h"
+#include "cWorldDriver.h"
 
 using namespace std;
 
@@ -58,9 +59,11 @@ cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, cString symbol_string, cInstSe
   // Make sure that the sequences jive with the inst_set
   for (int i = 0; i < genome.GetSize(); i++) {
     if (genome[i].GetOp() >= inst_set.GetSize()) {
-      cerr << "Error: Trying to load instruction " << genome[i].GetOp()
-	   << ".  Max in set is" << inst_set.GetSize() - 1
-	   << endl;
+      cString msg("Trying to load instruction ");
+      msg += genome[i].GetOp();
+      msg += ".  Max in set is";
+      msg += (inst_set.GetSize() - 1);
+      m_world->GetDriver().RaiseException(msg);
     }
   }
 }
@@ -191,9 +194,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs) const
   {
     cInstruction lib_null_inst = ko_inst_set.GetInstLib()->GetInst("NULL");
     if (lib_null_inst == ko_inst_set.GetInstLib()->GetInstError()) {
-      cout << "<cAnalyze::AnalyzeKnockouts> got error:" << endl
-      << "  instruction 'NULL' not in current hardware type" << endl;
-      exit(1);
+      m_world->GetDriver().RaiseFatalException(1, "instruction 'NULL' not in current hardware type");
     }
     // Add mapping to located instruction. 
     ko_inst_set.AddInst(lib_null_inst.GetOp());
@@ -224,7 +225,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs) const
       knockout_stats->pos_count++;
       ko_effect[line_num] = 1;
     } else {
-      cerr << "INTERNAL ERROR: illegal state in CalcKnockouts()" << endl;
+      m_world->GetDriver().RaiseException("internal: illegal state in CalcKnockouts()");
     }
     
     // Reset the mod_genome back to the original sequence.

@@ -80,9 +80,8 @@ bool cLineage::RemoveCreature(cGenotype * genotype)
   map<const cGenotype *, int, gt_gentype>::iterator cur = m_genotype_map.find( genotype );
 
   // is the genotype part of the map?
-  if ( cur == m_genotype_map.end() ){
-    cerr << "Removing creature from lineage whose genotype is not part of the lineage!" << endl;
-    cerr << "  " << genotype->GetName()() << " " << GetID() << endl;
+  if ( cur == m_genotype_map.end() ) {
+    cerr << "Removing creature from lineage whose genotype is not part of the lineage!\n   " << genotype->GetName()() << " " << GetID() << endl;
     return false;
   }
 

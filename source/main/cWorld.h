@@ -20,6 +20,7 @@
 #include "cRandom.h"
 #endif
 
+class cAvidaDriver;
 class cClassificationManager;
 class cEnvironment;
 class cEventManager;
@@ -28,6 +29,7 @@ class cHardwareManager;
 class cPopulation;
 class cStats;
 class cTestCPU;
+class cWorldDriver;
 
 class cWorld
 {
@@ -42,20 +44,25 @@ protected:
   cPopulation* m_pop;
   cStats* m_stats;
   cTestCPU* m_test_cpu;
+  cWorldDriver* m_driver;
 
   cRandom m_rng;
   
-  bool m_test_on_div;
-  bool m_test_sterilize;
+  bool m_test_on_div;     // flag derived from a collection of configuration settings
+  bool m_test_sterilize;  // flag derived from a collection of configuration settings
+  
+  bool m_own_driver;      // specifies whether this world object should manage its driver object
 
+  // Internal Methods
   void Setup();
-
+  
 public:
   explicit cWorld() : m_conf(new cAvidaConfig()) { Setup(); }
   cWorld(cAvidaConfig* cfg) : m_conf(cfg) { Setup(); }
   ~cWorld();
   
   void SetConfig(cAvidaConfig* cfg) { delete m_conf; m_conf = cfg; }
+  void SetDriver(cWorldDriver* driver, bool take_ownership = false);
   
   // General Object Accessors
   cAvidaConfig& GetConfig() { return *m_conf; }
@@ -67,6 +74,7 @@ public:
   cRandom& GetRandom() { return m_rng; }
   cStats& GetStats() { return *m_stats; }
   cTestCPU& GetTestCPU() { return *m_test_cpu; }
+  cWorldDriver& GetDriver() { return *m_driver; }
   
   // Access to Data File Manager
   std::ofstream& GetDataFileOFStream(const cString& fname) { return m_data_mgr->GetOFStream(fname); }

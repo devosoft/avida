@@ -16,6 +16,7 @@
 #include "cInstLibCPU.h"
 #include "cInstSet.h"
 #include "cWorld.h"
+#include "cWorldDriver.h"
 #include "tDictionary.h"
 
 cHardwareManager::cHardwareManager(cWorld* world) : m_world(world), m_inst_set(world), m_type(world->GetConfig().HARDWARE_TYPE.Get())
@@ -47,14 +48,13 @@ void cHardwareManager::LoadInstSet(cString filename)
   
   if (filename == "") {
     filename = default_filename;
-    cerr << "Warning: No instruction set specified, using default '" << filename << "'." << endl;
+    m_world->GetDriver().NotifyWarning(cString("No instruction set specified, using default '") + filename + "'.");
   }
   
   cInitFile file(filename);
   
   if (file.IsOpen() == false) {
-    cerr << "Error: Could not open instruction set '" << filename << "'.  Exiting..." << endl;
-    exit(1);
+    m_world->GetDriver().RaiseFatalException(1, cString("Could not open instruction set '") + filename + "'.");
   }
   
   file.Load();
@@ -79,8 +79,9 @@ void cHardwareManager::LoadInstSet(cString filename)
     // If this instruction has 0 redundancy, we don't want it!
     if (redundancy < 0) continue;
     if (redundancy > 256) {
-      cerr << "Warning: Max redundancy is 256.  Resetting redundancy of \""
-      << inst_name << "\" from " << redundancy << " to 256." << endl;
+      cString msg("Max redundancy is 256.  Resetting redundancy of \"");
+      msg += inst_name; msg += "\" from "; msg += redundancy; msg += " to 256.";
+      m_world->GetDriver().NotifyWarning(msg);
       redundancy = 256;
     }
     
@@ -100,11 +101,8 @@ void cHardwareManager::LoadInstSet(cString filename)
     }
     
     // Oh oh!  Didn't find an instruction!
-    cerr << endl
-      << "Error: Could not find instruction '" << inst_name << "'" << endl
-      << "       (Best match = '"
-      << inst_dict.NearMatch(inst_name) << "').  Exiting..." << endl;
-    exit(1);
+    m_world->GetDriver().RaiseFatalException(1, cString("Could not find instruction '") + inst_name +
+                                             "'\n       (Best match = '" + inst_dict.NearMatch(inst_name) + "').");
   }
 }
 

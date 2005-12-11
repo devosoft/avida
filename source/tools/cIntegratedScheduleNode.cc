@@ -166,8 +166,5 @@ int cIntegratedScheduleNode::GetNextID()
     if (process_count >= process_size) execute = false;
   }
 
-//  cout << "Running " << active_entry << " from node " << node_id
-//       << " (size = " << size << ", first = " << first_entry << ")" << endl;
-
   return active_entry;
 }
