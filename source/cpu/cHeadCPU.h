@@ -88,13 +88,20 @@ public:
   virtual void RemoveInst();
   virtual const cInstruction & GetNextInst();
 
-  virtual bool & FlagCopied();
-  virtual bool & FlagMutated();
-  virtual bool & FlagExecuted();
-  virtual bool & FlagBreakpoint();
-  virtual bool & FlagPointMut();
-  virtual bool & FlagCopyMut();
-
+  virtual void SetFlagCopied();
+  virtual void SetFlagMutated();
+  virtual void SetFlagExecuted();
+  virtual void SetFlagBreakpoint();
+  virtual void SetFlagPointMut();
+  virtual void SetFlagCopyMut();
+  
+  virtual void ClearFlagCopied();
+  virtual void ClearFlagMutated();
+  virtual void ClearFlagExecuted();
+  virtual void ClearFlagBreakpoint();
+  virtual void ClearFlagPointMut();
+  virtual void ClearFlagCopyMut();
+    
   // Operator Overloading...
   virtual cHeadCPU & operator=(const cHeadCPU & in_cpu_head);
   cHeadCPU & operator++();

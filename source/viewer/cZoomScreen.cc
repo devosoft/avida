@@ -946,21 +946,21 @@ void cZoomScreen::UpdateCPU_Original(cHardwareBase & hardware)
             "                    ");
       
       // Only list the "Cpy" flag or the "Inj" flag...
-      if (memory.FlagCopied(adj_inst_ptr) == true) {
+      if (memory.FlagCopied(adj_inst_ptr)) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 15, "Cpy");
       }
-      if (memory.FlagInjected(adj_inst_ptr) == true) {
+      if (memory.FlagInjected(adj_inst_ptr)) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 15, "Inj");
       }
       
       // Other flags we're interested in...
-      if (memory.FlagMutated(adj_inst_ptr) == true) {
+      if (memory.FlagMutated(adj_inst_ptr)) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 19, "Mut");
       }
-      if (memory.FlagExecuted(adj_inst_ptr) == true) {
+      if (memory.FlagExecuted(adj_inst_ptr)) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 23, "Exe");
       }
-      if (memory.FlagBreakpoint(adj_inst_ptr) == true) {
+      if (memory.FlagBreakpoint(adj_inst_ptr)) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 27, "Bp");
       }
       
@@ -1086,21 +1086,21 @@ void cZoomScreen::UpdateCPU_4Stack(cHardwareBase & hardware)
             "                    ");
       
       // Only list the "Cpy" flag or the "Inj" flag...
-      if (memory.FlagCopied(adj_inst_ptr) == true) {
+      if (memory.FlagCopied(adj_inst_ptr)) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 16, "Cpy");
       }
-      if (memory.FlagInjected(adj_inst_ptr) == true) {
+      if (memory.FlagInjected(adj_inst_ptr)) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 16, "Inj");
       }
       
       // Other flags we're interested in...
-      if (memory.FlagMutated(adj_inst_ptr) == true) {
+      if (memory.FlagMutated(adj_inst_ptr)) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 20, "Mut");
       }
-      if (memory.FlagExecuted(adj_inst_ptr) == true) {
+      if (memory.FlagExecuted(adj_inst_ptr)) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 24, "Exe");
       }
-      if (memory.FlagBreakpoint(adj_inst_ptr) == true) {
+      if (memory.FlagBreakpoint(adj_inst_ptr)) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 28, "Bp");
       }
       
@@ -1229,21 +1229,21 @@ void cZoomScreen::UpdateCPU_SMT(cHardwareBase & hardware)
             "                    ");
       
       // Only list the "Cpy" flag or the "Inj" flag...
-      if (memory.FlagCopied(adj_inst_ptr) == true) {
+      if (memory.FlagCopied(adj_inst_ptr)) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 16, "Cpy");
       }
-      if (memory.FlagInjected(adj_inst_ptr) == true) {
+      if (memory.FlagInjected(adj_inst_ptr)) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 16, "Inj");
       }
       
       // Other flags we're interested in...
-      if (memory.FlagMutated(adj_inst_ptr) == true) {
+      if (memory.FlagMutated(adj_inst_ptr)) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 20, "Mut");
       }
-      if (memory.FlagExecuted(adj_inst_ptr) == true) {
+      if (memory.FlagExecuted(adj_inst_ptr)) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 24, "Exe");
       }
-      if (memory.FlagBreakpoint(adj_inst_ptr) == true) {
+      if (memory.FlagBreakpoint(adj_inst_ptr)) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 28, "Bp");
       }
       
@@ -1381,7 +1381,10 @@ void cZoomScreen::EditMemory()
   // Finally, act on the edit method!
   switch (edit_method) {
     case INST_EDIT_BREAKPOINT:
-      ToggleBool( edit_head.FlagBreakpoint() );
+      if (edit_head.GetMemory().FlagBreakpoint(edit_head.GetPosition()))
+        edit_head.SetFlagBreakpoint();
+      else
+        edit_head.ClearFlagBreakpoint();
       break;
     case INST_EDIT_JUMP_IP:
       hardware.IP() = edit_head;
@@ -1491,19 +1494,19 @@ void cZoomScreen::ViewInstruction()
   window->Print(6, 14, "%3d", inst_set.GetRedundancy(cInstruction(inst_id)) );
   window->Print(7, 14, "%3d", inst_set.GetCost(cInstruction(inst_id)) );
   
-  if (inst_ptr.FlagCopied() == true) window->SetBoldColor(COLOR_CYAN);
+  if (inst_ptr.GetMemory().FlagCopied(inst_ptr.GetPosition())) window->SetBoldColor(COLOR_CYAN);
   else window->SetColor(COLOR_CYAN);
   window->Print(4, 25, "Copied");
   
-  if (inst_ptr.FlagMutated() == true) window->SetBoldColor(COLOR_CYAN);
+  if (inst_ptr.GetMemory().FlagMutated(inst_ptr.GetPosition())) window->SetBoldColor(COLOR_CYAN);
   else window->SetColor(COLOR_CYAN);
   window->Print(5, 25, "Mutated");
   
-  if (inst_ptr.FlagExecuted() == true) window->SetBoldColor(COLOR_CYAN);
+  if (inst_ptr.GetMemory().FlagExecuted(inst_ptr.GetPosition())) window->SetBoldColor(COLOR_CYAN);
   else window->SetColor(COLOR_CYAN);
   window->Print(6, 25, "Executed");
   
-  if (inst_ptr.FlagBreakpoint() == true) window->SetBoldColor(COLOR_CYAN);
+  if (inst_ptr.GetMemory().FlagBreakpoint(inst_ptr.GetPosition())) window->SetBoldColor(COLOR_CYAN);
   else window->SetColor(COLOR_CYAN);
   window->Print(7, 25, "Breakpoint");
   

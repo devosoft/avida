@@ -87,7 +87,7 @@ void cCPUMemory::operator=(const cGenome & other_genome)
   // Fill in the new information...
   for (int i = 0; i < active_size; i++) {
     genome[i] = other_genome[i];
-    flag_array[i].Clear();
+    flag_array[i] = 0;
   }
 }
 
@@ -100,19 +100,6 @@ void cCPUMemory::Copy(int to, int from)
 
   genome[to] = genome[from];
   flag_array[to] = flag_array[from];
-}
-
-void cCPUMemory::Clear()
-{
-  for (int i = 0; i < active_size; i++) {
-    genome[i].SetOp(0);
-    flag_array[i].Clear();
-  }
-}
-
-void cCPUMemory::ClearFlags()
-{
-  for (int i = 0; i < active_size; i++) flag_array[i].Clear();
 }
 
 void cCPUMemory::Reset(int new_size)
@@ -136,7 +123,7 @@ void cCPUMemory::Resize(int new_size)
   // Clean up all of the old memory that might need it...
   for (int i = old_size; i < new_size && i < old_array_size; i++) {
     genome[i].SetOp(0);
-    flag_array[i].Clear();
+    flag_array[i] = 0;
   }
 }
 
@@ -157,7 +144,7 @@ void cCPUMemory::Insert(int pos, const cInstruction & in_inst)
 
   SloppyInsert(pos, 1);
   genome[pos] = in_inst;
-  flag_array[pos].Clear();
+  flag_array[pos] = 0;
 }
 
 void cCPUMemory::Insert(int pos, const cGenome & in_genome)
@@ -168,7 +155,7 @@ void cCPUMemory::Insert(int pos, const cGenome & in_genome)
   SloppyInsert(pos, in_genome.GetSize());
   for (int i = 0; i < in_genome.GetSize(); i++) {
     genome[i+pos] = in_genome[i];
-    flag_array[i+pos].Clear();
+    flag_array[i+pos] = 0;
   }
 }
 

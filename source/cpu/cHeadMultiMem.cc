@@ -143,40 +143,76 @@ const cInstruction & cHeadMultiMem::GetNextInst()
   return (AtEnd()) ? cInstSet::GetInstError() : GetMemory()[position+1];
 }
 
-bool & cHeadMultiMem::FlagCopied()
+void cHeadMultiMem::SetFlagCopied()
 {
   assert(cur_hardware != NULL);
-  return GetMemory().FlagCopied(position);     
+  GetMemory().SetFlagCopied(position);     
 }
 
-bool & cHeadMultiMem::FlagMutated()
+void cHeadMultiMem::SetFlagMutated()
 {
   assert(cur_hardware != NULL);
-  return GetMemory().FlagMutated(position);    
+  GetMemory().SetFlagMutated(position);    
 }
 
-bool & cHeadMultiMem::FlagExecuted()
+void cHeadMultiMem::SetFlagExecuted()
 {
   assert(cur_hardware != NULL);
-  return GetMemory().FlagExecuted(position);   
+  GetMemory().SetFlagExecuted(position);   
 }
 
-bool & cHeadMultiMem::FlagBreakpoint()
+void cHeadMultiMem::SetFlagBreakpoint()
 {
   assert(cur_hardware != NULL);
-  return GetMemory().FlagBreakpoint(position); 
+  GetMemory().SetFlagBreakpoint(position); 
 }
 
-bool & cHeadMultiMem::FlagPointMut()
+void cHeadMultiMem::SetFlagPointMut()
 {
   assert(cur_hardware != NULL);
-  return GetMemory().FlagPointMut(position);   
+  GetMemory().SetFlagPointMut(position);   
 }
 
-bool & cHeadMultiMem::FlagCopyMut()
+void cHeadMultiMem::SetFlagCopyMut()
 {
   assert(cur_hardware != NULL);
-  return GetMemory().FlagCopyMut(position);    
+  GetMemory().SetFlagCopyMut(position);    
+}
+
+void cHeadMultiMem::ClearFlagCopied()
+{
+  assert(cur_hardware != NULL);
+  GetMemory().ClearFlagCopied(position);     
+}
+
+void cHeadMultiMem::ClearFlagMutated()
+{
+  assert(cur_hardware != NULL);
+  GetMemory().ClearFlagMutated(position);    
+}
+
+void cHeadMultiMem::ClearFlagExecuted()
+{
+  assert(cur_hardware != NULL);
+  GetMemory().ClearFlagExecuted(position);   
+}
+
+void cHeadMultiMem::ClearFlagBreakpoint()
+{
+  assert(cur_hardware != NULL);
+  GetMemory().ClearFlagBreakpoint(position); 
+}
+
+void cHeadMultiMem::ClearFlagPointMut()
+{
+  assert(cur_hardware != NULL);
+  GetMemory().ClearFlagPointMut(position);   
+}
+
+void cHeadMultiMem::ClearFlagCopyMut()
+{
+  assert(cur_hardware != NULL);
+  GetMemory().ClearFlagCopyMut(position);    
 }
 
 cHeadMultiMem & cHeadMultiMem::operator=(const cHeadMultiMem & in_cpu_head)

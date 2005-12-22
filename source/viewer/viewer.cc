@@ -10,8 +10,9 @@
 
 #include "avida.h"
 #include "cAvidaConfig.h"
-#include "cAvidaDriver_Analyze.h"
-#include "cAvidaDriver_TextPopViewer.h"
+#include "cDefaultAnalyzeDriver.h"
+#include "cDriverManager.h"
+#include "cTextViewerDriver.h"
 #include "cWorld.h"
 
 using namespace std;
@@ -23,19 +24,22 @@ int main(int argc, char * argv[])
 
   printVersionBanner();
   
+  cDriverManager::Initialize();
+  
   // Initialize the configuration data...
   cWorld* world = new cWorld(cAvidaConfig::LoadWithCmdLineArgs(argc, argv));
+  cAvidaDriver* driver = NULL;
   
   if (world->GetConfig().ANALYZE_MODE.Get() > 0) {
-    cAvidaDriver_Base::main_driver = new cAvidaDriver_Analyze(world, (world->GetConfig().ANALYZE_MODE.Get() == 2));
+    driver = new cDefaultAnalyzeDriver(world, (world->GetConfig().ANALYZE_MODE.Get() == 2));
   } else {
-    cAvidaDriver_Base::main_driver = new cAvidaDriver_TextPopViewer(world);
+    driver = new cTextViewerDriver(world);
   }
   
   cout << endl;
   
-  cAvidaDriver_Base::main_driver->Run();
-
+  driver->Run();
+  
   // Exit Nicely
   ExitAvida(0);
 }

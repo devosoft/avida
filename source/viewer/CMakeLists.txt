@@ -7,7 +7,6 @@ IF(AVD_GUI_NCURSES)
   )
 
   SET(libviewer_SOURCES
-    cAvidaDriver_TextPopViewer.cc
     cBarScreen.cc
     cEnvironmentScreen.cc
     cHistScreen.cc
@@ -17,6 +16,7 @@ IF(AVD_GUI_NCURSES)
     cScreen.cc
     cStatsScreen.cc
     cSymbolUtil.cc
+    cTextViewerDriver.cc
     cTextWindow.cc
     cView.cc
     cViewInfo.cc
@@ -31,6 +31,8 @@ IF(AVD_GUI_NCURSES)
     classification
     cpu
     event
+    analyze
+    drivers
     analyze
     cpu
     main

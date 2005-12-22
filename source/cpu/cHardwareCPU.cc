@@ -453,7 +453,7 @@ num_threads : 1;
     IP().Adjust();
     
 #ifdef BREAKPOINTS
-    if (IP().FlagBreakpoint() == true) {
+    if (IP().FlagBreakpoint()) {
       organism->DoBreakpoint();
     }
 #endif
@@ -543,7 +543,7 @@ bool cHardwareCPU::SingleProcess_ExecuteInst(const cInstruction & cur_inst)
   int inst_idx = m_inst_set->GetLibFunctionIndex(actual_inst);
   
   // Mark the instruction as executed
-  IP().FlagExecuted() = true;
+  IP().SetFlagExecuted();
 	
   
 #ifdef INSTRUCTION_COUNT
@@ -990,7 +990,7 @@ void cHardwareCPU::InjectCode(const cGenome & inject_code, const int line_num)
   
   // Set instruction flags on the injected code
   for (int i = line_num; i < line_num + inject_size; i++) {
-    memory.FlagInjected(i) = true;
+    memory.SetFlagInjected(i);
   }
   organism->GetPhenotype().IsModified() = true;
   
@@ -1017,7 +1017,7 @@ void cHardwareCPU::InjectCodeThread(const cGenome & inject_code, const int line_
     
     // Set instruction flags on the injected code
     for (int i = line_num; i < line_num + inject_size; i++) {
-      memory.FlagInjected(i) = true;
+      memory.SetFlagInjected(i);
     }
     organism->GetPhenotype().IsModified() = true;
     organism->GetPhenotype().IsMultiThread() = true;
@@ -1051,8 +1051,8 @@ void cHardwareCPU::Mutate(int mut_point)
   assert(mut_point >= 0 && mut_point < GetMemory().GetSize());
   
   GetMemory()[mut_point] = m_inst_set->GetRandomInst();
-  GetMemory().FlagMutated(mut_point) = true;
-  GetMemory().FlagPointMut(mut_point) = true;
+  GetMemory().SetFlagMutated(mut_point);
+  GetMemory().SetFlagPointMut(mut_point);
   //organism->GetPhenotype().IsMutated() = true;
   organism->CPUStats().mut_stats.point_mut_count++;
 }
@@ -1196,7 +1196,7 @@ void cHardwareCPU::TriggerMutations_Body(int type, cCPUMemory & target_memory,
   switch (type) {
     case nMutation::TYPE_POINT:
       target_memory[pos] = m_inst_set->GetRandomInst();
-      target_memory.FlagMutated(pos) = true;
+      target_memory.SetFlagMutated(pos);
       break;
     case nMutation::TYPE_INSERT:
     case nMutation::TYPE_DELETE:
@@ -1250,7 +1250,7 @@ void cHardwareCPU::ReadLabel(int max_size)
     
     // If this is the first line of the template, mark it executed.
     if (GetLabel().GetSize() <=	m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get()) {
-      inst_ptr->FlagExecuted() = true;
+      inst_ptr->SetFlagExecuted();
     }
   }
 }
@@ -1321,7 +1321,7 @@ inline int cHardwareCPU::FindModifiedRegister(int default_register)
   if (m_inst_set->IsNop(IP().GetNextInst())) {
     IP().Advance();
     default_register = m_inst_set->GetNopMod(IP().GetInst());
-    IP().FlagExecuted() = true;
+    IP().SetFlagExecuted();
   }
   return default_register;
 }
@@ -1334,7 +1334,7 @@ inline int cHardwareCPU::FindModifiedHead(int default_head)
   if (m_inst_set->IsNop(IP().GetNextInst())) {
     IP().Advance();
     default_head = m_inst_set->GetNopMod(IP().GetInst());
-    IP().FlagExecuted() = true;
+    IP().SetFlagExecuted();
   }
   return default_head;
 }
@@ -1561,7 +1561,6 @@ void cHardwareCPU::Divide_DoMutations(double mut_multiplier)
   // Divide Deletions
   if (organism->TestDivideDel() && child_genome.GetSize() > MIN_CREATURE_SIZE){
     const unsigned int mut_line = m_world->GetRandom().GetUInt(child_genome.GetSize());
-    // if( child_genome.FlagCopied(mut_line) == true) copied_size_change--;
     child_genome.Remove(mut_line);
     cpu_stats.mut_stats.divide_delete_mut_count++;
   }
@@ -1619,7 +1618,6 @@ void cHardwareCPU::Divide_DoMutations(double mut_multiplier)
     // If we have lines to delete...
     for (int i = 0; i < num_mut; i++) {
       int site = m_world->GetRandom().GetUInt(child_genome.GetSize());
-      // if (child_genome.FlagCopied(site) == true) copied_size_change--;
       child_genome.Remove(site);
       cpu_stats.mut_stats.delete_mut_count++;
     }
@@ -1638,12 +1636,12 @@ void cHardwareCPU::Divide_DoMutations(double mut_multiplier)
   
   // Count up mutated lines
   for(int i = 0; i < GetMemory().GetSize(); i++){
-    if (GetMemory().FlagPointMut(i) == true) {
+    if (GetMemory().FlagPointMut(i)) {
       cpu_stats.mut_stats.point_mut_line_count++;
     }
   }
   for(int i = 0; i < child_genome.GetSize(); i++){
-    if( child_genome.FlagCopyMut(i) == true) {
+    if( child_genome.FlagCopyMut(i)) {
       cpu_stats.mut_stats.copy_mut_line_count++;
     }
   }
@@ -2349,17 +2347,17 @@ bool cHardwareCPU::Inst_Copy()
   
   if (organism->TestCopyMut()) {
     to.SetInst(m_inst_set->GetRandomInst());
-    to.FlagMutated() = true;  // Mark this instruction as mutated...
-    to.FlagCopyMut() = true;  // Mark this instruction as copy mut...
+    to.SetFlagMutated();  // Mark this instruction as mutated...
+    to.SetFlagCopyMut();  // Mark this instruction as copy mut...
                               //organism->GetPhenotype().IsMutated() = true;
     cpu_stats.mut_stats.copy_mut_count++;
   } else {
     to.SetInst(from.GetInst());
-    to.FlagMutated() = false;  // UnMark
-    to.FlagCopyMut() = false;  // UnMark
+    to.ClearFlagMutated();  // UnMark
+    to.ClearFlagCopyMut();  // UnMark
   }
   
-  to.FlagCopied() = true;  // Set the copied flag.
+  to.SetFlagCopied();  // Set the copied flag.
   cpu_stats.mut_stats.copies_exec++;
   return true;
 }
@@ -2385,17 +2383,17 @@ sCPUStats & cpu_stats = organism->CPUStats();
 // Change value on a mutation...
 if (organism->TestCopyMut()) {
   to.SetInst(m_inst_set->GetRandomInst());
-  to.FlagMutated() = true;      // Mark this instruction as mutated...
-  to.FlagCopyMut() = true;      // Mark this instruction as copy mut...
+  to.SetFlagMutated();      // Mark this instruction as mutated...
+  to.SetFlagCopyMut();      // Mark this instruction as copy mut...
                                 //organism->GetPhenotype().IsMutated() = true;
   cpu_stats.mut_stats.copy_mut_count++;
 } else {
   to.SetInst(cInstruction(value));
-  to.FlagMutated() = false;     // UnMark
-  to.FlagCopyMut() = false;     // UnMark
+  to.ClearFlagMutated();     // UnMark
+  to.ClearFlagCopyMut();     // UnMark
 }
 
-to.FlagCopied() = true;  // Set the copied flag.
+to.SetFlagCopied();  // Set the copied flag.
 cpu_stats.mut_stats.copies_exec++;
 return true;
 }
@@ -2418,17 +2416,17 @@ bool cHardwareCPU::Inst_StackWriteInst()
   // Change value on a mutation...
   if (organism->TestCopyMut()) {
     to.SetInst(m_inst_set->GetRandomInst());
-    to.FlagMutated() = true;      // Mark this instruction as mutated...
-    to.FlagCopyMut() = true;      // Mark this instruction as copy mut...
+    to.SetFlagMutated();      // Mark this instruction as mutated...
+    to.SetFlagCopyMut();      // Mark this instruction as copy mut...
                                   //organism->GetPhenotype().IsMutated() = true;
     cpu_stats.mut_stats.copy_mut_count++;
   } else {
     to.SetInst(cInstruction(value));
-    to.FlagMutated() = false;     // UnMark
-    to.FlagCopyMut() = false;     // UnMark
+    to.ClearFlagMutated();     // UnMark
+    to.ClearFlagCopyMut();     // UnMark
   }
   
-  to.FlagCopied() = true;  // Set the copied flag.
+  to.SetFlagCopied();  // Set the copied flag.
   cpu_stats.mut_stats.copies_exec++;
   return true;
 }
@@ -2442,8 +2440,8 @@ bool cHardwareCPU::Inst_Compare()
   // Compare is dangerous -- it can cause mutations!
   if (organism->TestCopyMut()) {
     to.SetInst(m_inst_set->GetRandomInst());
-    to.FlagMutated() = true;      // Mark this instruction as mutated...
-    to.FlagCopyMut() = true;      // Mark this instruction as copy mut...
+    to.SetFlagMutated();      // Mark this instruction as mutated...
+    to.SetFlagCopyMut();      // Mark this instruction as copy mut...
                                   //organism->GetPhenotype().IsMutated() = true;
   }
   
@@ -2511,7 +2509,7 @@ bool cHardwareCPU::Inst_Repro()
   
   int lines_executed = 0;
   for ( int i = 0; i < GetMemory().GetSize(); i++ ) {
-    if ( GetMemory().FlagExecuted(i) == true ) lines_executed++;
+    if ( GetMemory().FlagExecuted(i)) lines_executed++;
   }
   organism->GetPhenotype().SetLinesExecuted(lines_executed);
   
@@ -3239,7 +3237,7 @@ bool cHardwareCPU::Inst_HeadWrite()
   if (value < 0 || value >= m_inst_set->GetSize()) value = 0;
   
   active_head.SetInst(cInstruction(value));
-  active_head.FlagCopied() = true;
+  active_head.SetFlagCopied();
   
   // Advance the head after write...
   active_head++;
@@ -3264,15 +3262,15 @@ bool cHardwareCPU::Inst_HeadCopy()
   if (organism->TestCopyMut()) {
     read_inst = m_inst_set->GetRandomInst();
     cpu_stats.mut_stats.copy_mut_count++; 
-    write_head.FlagMutated() = true;
-    write_head.FlagCopyMut() = true;
+    write_head.SetFlagMutated();
+    write_head.SetFlagCopyMut();
     //organism->GetPhenotype().IsMutated() = true;
   }
   
   cpu_stats.mut_stats.copies_exec++;
   
   write_head.SetInst(read_inst);
-  write_head.FlagCopied() = true;  // Set the copied flag...
+  write_head.SetFlagCopied();  // Set the copied flag...
   
   // TriggerMutations(nMutation::TRIGGER_WRITE, write_head);
   
@@ -3297,15 +3295,15 @@ bool cHardwareCPU::HeadCopy_ErrorCorrect(double reduction)
   if ( m_world->GetRandom().P(organism->GetCopyMutProb() / reduction) ) {
     read_inst = m_inst_set->GetRandomInst();
     cpu_stats.mut_stats.copy_mut_count++; 
-    write_head.FlagMutated() = true;
-    write_head.FlagCopyMut() = true;
+    write_head.SetFlagMutated();
+    write_head.SetFlagCopyMut();
     //organism->GetPhenotype().IsMutated() = true;
   }
   
   cpu_stats.mut_stats.copies_exec++;
   
   write_head.SetInst(read_inst);
-  write_head.FlagCopied() = true;  // Set the copied flag...
+  write_head.SetFlagCopied();  // Set the copied flag...
   
   read_head.Advance();
   write_head.Advance();

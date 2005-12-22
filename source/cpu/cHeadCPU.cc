@@ -221,40 +221,76 @@ const cInstruction & cHeadCPU::GetNextInst()
 
 
 
-bool & cHeadCPU::FlagCopied()
+void cHeadCPU::SetFlagCopied()
 {
   assert(cur_hardware != NULL);
-  return cur_hardware->GetMemory().FlagCopied(position);     
+  return cur_hardware->GetMemory().SetFlagCopied(position);     
 }
 
-bool & cHeadCPU::FlagMutated()
+void cHeadCPU::SetFlagMutated()
 {
   assert(cur_hardware != NULL);
-  return cur_hardware->GetMemory().FlagMutated(position);    
+  return cur_hardware->GetMemory().SetFlagMutated(position);    
 }
 
-bool & cHeadCPU::FlagExecuted()
+void cHeadCPU::SetFlagExecuted()
 {
   assert(cur_hardware != NULL);
-  return cur_hardware->GetMemory().FlagExecuted(position);   
+  return cur_hardware->GetMemory().SetFlagExecuted(position);   
 }
 
-bool & cHeadCPU::FlagBreakpoint()
+void cHeadCPU::SetFlagBreakpoint()
 {
   assert(cur_hardware != NULL);
-  return cur_hardware->GetMemory().FlagBreakpoint(position); 
+  return cur_hardware->GetMemory().SetFlagBreakpoint(position); 
 }
 
-bool & cHeadCPU::FlagPointMut()
+void cHeadCPU::SetFlagPointMut()
 {
   assert(cur_hardware != NULL);
-  return cur_hardware->GetMemory().FlagPointMut(position);   
+  return cur_hardware->GetMemory().SetFlagPointMut(position);   
 }
 
-bool & cHeadCPU::FlagCopyMut()
+void cHeadCPU::SetFlagCopyMut()
 {
   assert(cur_hardware != NULL);
-  return cur_hardware->GetMemory().FlagCopyMut(position);    
+  return cur_hardware->GetMemory().SetFlagCopyMut(position);    
+}
+
+void cHeadCPU::ClearFlagCopied()
+{
+  assert(cur_hardware != NULL);
+  return cur_hardware->GetMemory().ClearFlagCopied(position);    
+}
+
+void cHeadCPU::ClearFlagMutated()
+{
+  assert(cur_hardware != NULL);
+  return cur_hardware->GetMemory().ClearFlagMutated(position);    
+}
+
+void cHeadCPU::ClearFlagExecuted()
+{
+  assert(cur_hardware != NULL);
+  return cur_hardware->GetMemory().ClearFlagExecuted(position);    
+}
+
+void cHeadCPU::ClearFlagBreakpoint()
+{
+  assert(cur_hardware != NULL);
+  return cur_hardware->GetMemory().ClearFlagBreakpoint(position);    
+}
+
+void cHeadCPU::ClearFlagPointMut()
+{
+  assert(cur_hardware != NULL);
+  return cur_hardware->GetMemory().ClearFlagPointMut(position);    
+}
+
+void cHeadCPU::ClearFlagCopyMut()
+{
+  assert(cur_hardware != NULL);
+  return cur_hardware->GetMemory().ClearFlagCopyMut(position);    
 }
 
 cHeadCPU & cHeadCPU::operator=(const cHeadCPU & in_cpu_head)

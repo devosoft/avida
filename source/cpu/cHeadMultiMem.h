@@ -41,13 +41,20 @@ public:
   void RemoveInst();
   const cInstruction& GetNextInst();
 
-  bool& FlagCopied();
-  bool& FlagMutated();
-  bool& FlagExecuted();
-  bool& FlagBreakpoint();
-  bool& FlagPointMut();
-  bool& FlagCopyMut();
-
+  void SetFlagCopied();
+  void SetFlagMutated();
+  void SetFlagExecuted();
+  void SetFlagBreakpoint();
+  void SetFlagPointMut();
+  void SetFlagCopyMut();
+  
+  void ClearFlagCopied();
+  void ClearFlagMutated();
+  void ClearFlagExecuted();
+  void ClearFlagBreakpoint();
+  void ClearFlagPointMut();
+  void ClearFlagCopyMut();
+  
   // Operator Overloading...
   cHeadMultiMem& operator=(const cHeadMultiMem & in_cpu_head);
   bool operator==(const cHeadMultiMem & in_cpu_head) const; 
