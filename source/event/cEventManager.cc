@@ -44,7 +44,7 @@ public:
   const cString GetName() const { return "exit"; }
   const cString GetDescription() const { return "exit"; }
   
-  void Configure(cWorld* world, const cString& in_args) { ; }
+  void Configure(cWorld* world, const cString& in_args) { m_world = world; }
   void Process(){
     m_world->GetDriver().SetDone();
   }
