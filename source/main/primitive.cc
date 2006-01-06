@@ -2,7 +2,7 @@
  *  primitive.cc
  *  Avida
  *
- *  Copyright 2005 Michigan State University. All rights reserved.
+ *  Copyright 2005-2006 Michigan State University. All rights reserved.
  *
  */
 
