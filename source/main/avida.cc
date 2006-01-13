@@ -62,8 +62,8 @@ void printVersionBanner()
   // output copyright message
   cout << getAvidaVersion() << endl;
   cout << "----------------------------------------------------------------------" << endl;
-  cout << "Copyright (C) 1999-2005 Michigan State University." << endl;
-  cout << "Copyright (C) 1993-2004 California Institute of Technology." << endl << endl;
+  cout << "Copyright (C) 1999-2006 Michigan State University." << endl;
+  cout << "Copyright (C) 1993-2005 California Institute of Technology." << endl << endl;
   
   cout << "Avida comes with ABSOLUTELY NO WARRANTY." << endl;
   cout << "This is free software, and you are welcome to redistribute it" << endl;
