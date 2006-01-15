@@ -1,8 +1,5 @@
 
-SUBDIRS(analyze classification cpu drivers event main third-party tools support utils/task_events)
-IF(AVD_GUI_NCURSES)
-  SUBDIRS(viewer)
-ENDIF(AVD_GUI_NCURSES)
+SUBDIRS(analyze classification cpu drivers event main targets third-party tools support utils/task_events)
 IF(AVD_PY_BINDINGS)
   SUBDIRS(bindings python)
 ENDIF(AVD_PY_BINDINGS)
