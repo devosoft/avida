@@ -49,6 +49,9 @@ protected:
   const cString& GetNextInstName(cHardwareSMT& hardware);
   cString Bonus(const cString& next_name);
   void PrintStatus(cHardwareBase& hardware, const cString& next_name);
+  
+  cHardwareStatusPrinter(); // @not_implemented
+
 public:
   cHardwareStatusPrinter(std::ostream& trace_fp) : m_trace_fp(trace_fp) {;}
 

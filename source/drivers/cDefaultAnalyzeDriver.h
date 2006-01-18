@@ -23,7 +23,9 @@ class cWorld;
 class cDefaultAnalyzeDriver : public cAvidaDriver, public cWorldDriver
 {
 private:
-  cDefaultAnalyzeDriver();  // not implemented
+  cDefaultAnalyzeDriver(); // @not_implemented
+  cDefaultAnalyzeDriver(const cDefaultAnalyzeDriver&); // @not_implemented
+  cDefaultAnalyzeDriver& operator=(const cDefaultAnalyzeDriver&); // @not_implemented
   
 protected:
   cWorld* m_world;

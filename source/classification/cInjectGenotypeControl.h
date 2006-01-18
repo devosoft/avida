@@ -32,6 +32,10 @@ private:
 
   void Insert(cInjectGenotype& in_inject_genotype, cInjectGenotype* prev_inject_genotype);
   bool CheckPos(cInjectGenotype& in_inject_genotype);
+  
+  cInjectGenotypeControl(); // @not_implemented
+  cInjectGenotypeControl(const cInjectGenotypeControl&); // @not_implemented
+  cInjectGenotypeControl& operator=(const cInjectGenotypeControl&); // @not_implemented
 
 public:
   cInjectGenotypeControl(cWorld* world);

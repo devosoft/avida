@@ -60,7 +60,8 @@ class cInstruction;
 class cInstSet;
 class cOrganism;
 
-class cHardwareSMT : public cHardwareBase {
+class cHardwareSMT : public cHardwareBase
+{
 public:
   typedef bool (cHardwareSMT::*tMethod)();
 
@@ -89,8 +90,6 @@ private:
 #endif
 
   
-  cHardwareSMT(const cHardwareSMT&); // @DMB - disabled...  can't (easily) copy m_mem_lbls
-
   bool SingleProcess_PayCosts(const cInstruction& cur_inst);
   bool SingleProcess_ExecuteInst(const cInstruction& cur_inst);
   	
@@ -159,6 +158,8 @@ private:
 	
   inline int NormalizeMemSpace(int mem_space) const;
 
+  cHardwareSMT(const cHardwareSMT&); // @not_implemented
+  cHardwareSMT& operator=(const cHardwareSMT&); // @not_implemented
   
 public:
   cHardwareSMT(cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);

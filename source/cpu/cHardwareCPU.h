@@ -55,27 +55,24 @@
  * @see cHardwareCPU_Thread, cCPUStack, cCPUMemory, cInstSet
  **/
 
-class cCodeLabel; // access
-class cGenome;
 class cInjectGenotype;
 class cInstLibBase;
 class cInstLibCPU;
-class cInstruction;
 class cInstSet;
 class cMutation;
 class cOrganism;
 template <class T> class tBuffer;
-template <class T> class tArray; // aggregate
 
-class cHardwareCPU : public cHardwareBase {
+class cHardwareCPU : public cHardwareBase
+{
 public:
   typedef bool (cHardwareCPU::*tHardwareCPUMethod)();
 
 private:
-  static cInstLibCPU *s_inst_slib;
-  static cInstLibCPU *initInstLib(void);
+  static cInstLibCPU* s_inst_slib;
+  static cInstLibCPU* initInstLib(void);
 
-  tHardwareCPUMethod *m_functions;
+  tHardwareCPUMethod* m_functions;
 
   cCPUMemory memory;          // Memory...
   cCPUStack global_stack;     // A stack that all threads share.
@@ -94,6 +91,9 @@ private:
   tArray<int> inst_cost;
   tArray<int> inst_ft_cost;
 #endif
+  
+
+  cHardwareCPU& operator=(const cHardwareCPU&); // @not_implemented
 
 public:
   cHardwareCPU(cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);

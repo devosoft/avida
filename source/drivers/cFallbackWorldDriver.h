@@ -19,6 +19,10 @@
 
 class cFallbackWorldDriver : public cWorldDriver
 {
+private:
+  cFallbackWorldDriver(const cFallbackWorldDriver&); // @not_implemented
+  cFallbackWorldDriver& operator=(const cFallbackWorldDriver&); // @not_implemented
+  
 public:
   cFallbackWorldDriver() { cDriverManager::Register(this); }
   ~cFallbackWorldDriver() { cDriverManager::Unregister(this); }

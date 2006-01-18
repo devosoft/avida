@@ -32,7 +32,8 @@ class cCPUTestInfo;
 class cGenome;
 class cWorld;
 
-class cTestCPU {
+class cTestCPU
+{
 private:
   cWorld* m_world;
   cPopulationInterface test_interface;
@@ -46,9 +47,14 @@ private:
   tArray<double> d_resources;
   int time_mod;
 
+  
   bool ProcessGestation(cCPUTestInfo & test_info, int cur_depth);
   bool TestGenome_Body(cCPUTestInfo & test_info, const cGenome & genome, int cur_depth);
 
+  cTestCPU(); // @not_implemented
+  cTestCPU(const cTestCPU&); // @not_implemented
+  cTestCPU& operator=(const cTestCPU&); // @not_implemented
+  
 public:
   cTestCPU(cWorld* world);
   ~cTestCPU() { ; }

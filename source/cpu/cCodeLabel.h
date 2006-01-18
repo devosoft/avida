@@ -32,21 +32,28 @@
  * a creature, and aid in its manipulation.
  **/
 
-class cCodeLabel {
+class cCodeLabel
+{
 private:
   tArray<char> nop_sequence;
   int size;
-  //const int base;
+
 public:
   cCodeLabel() : size(0) { ; }
   cCodeLabel(const cCodeLabel& in_label) : nop_sequence(in_label.nop_sequence), size(in_label.size) { ; }  
   ~cCodeLabel() { ; }
 
   bool OK();
-  bool operator==(const cCodeLabel & other_label) const;
-  bool operator!=(const cCodeLabel & other_label) const
-    { return !(operator==(other_label)); }
+  bool operator==(const cCodeLabel& other_label) const;
+  bool operator!=(const cCodeLabel& other_label) const { return !(operator==(other_label)); }
   char operator[](int position) const { return (int) nop_sequence[position]; }
+  cCodeLabel& operator=(const cCodeLabel& in_lbl)
+  {
+    nop_sequence = in_lbl.nop_sequence;
+    size = in_lbl.size;
+    return *this;
+  }
+  
   int FindSublabel(cCodeLabel & sub_label);
 
   void Clear() { size = 0; }

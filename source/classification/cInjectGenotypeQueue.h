@@ -24,6 +24,10 @@ private:
   cInjectGenotypeElement root;
 
   void Remove(cInjectGenotypeElement* in_element);
+  
+  cInjectGenotypeQueue(const cInjectGenotypeQueue&); // @not_implemented
+  cInjectGenotypeQueue& operator=(const cInjectGenotypeQueue&); // @not_implemented
+  
 public:
   cInjectGenotypeQueue();
   ~cInjectGenotypeQueue();

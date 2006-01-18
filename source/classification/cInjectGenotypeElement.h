@@ -22,6 +22,9 @@ private:
   cInjectGenotype* inject_genotype;
   cInjectGenotypeElement* next;
   cInjectGenotypeElement* prev;
+  
+  cInjectGenotypeElement(const cInjectGenotypeElement&); // @not_implemented
+  cInjectGenotypeElement& operator=(const cInjectGenotypeElement&); // @not_implemented
 public:
   cInjectGenotypeElement(cInjectGenotype* in_gen = NULL)
     : inject_genotype(in_gen), next(NULL), prev(NULL) { ; }

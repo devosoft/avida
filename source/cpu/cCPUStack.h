@@ -17,16 +17,18 @@
 #include "nHardware.h"
 #endif
 
-class cCPUStack {
+class cCPUStack
+{
 private:
   int stack[nHardware::STACK_SIZE];
   unsigned char stack_pointer;
+
 public:
   cCPUStack() { Clear(); }
-  cCPUStack(const cCPUStack & in_stack);
+  cCPUStack(const cCPUStack& in_stack);
   ~cCPUStack() { ; }
 
-  void operator=(const cCPUStack & in_stack);
+  void operator=(const cCPUStack& in_stack);
 
   inline void Push(int value);
   inline int Pop();

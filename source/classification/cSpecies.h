@@ -46,7 +46,10 @@ private:
   cSpecies * prev;
   
   cSpecies(cWorld* world, const cGenome& in_genome, int update, int in_id);
-  cSpecies();
+
+  cSpecies(); // @not_implemented
+  cSpecies(const cSpecies&); // @not_implemented
+  cSpecies& operator=(const cSpecies&); // @not_implemented
   
 public:
   ~cSpecies();

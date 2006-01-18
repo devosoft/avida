@@ -25,7 +25,8 @@ class cHardwareTracer;
 class cOrganism;
 class cString;
 
-class cCPUTestInfo {
+class cCPUTestInfo
+{
   friend class cTestCPU;
 private:
   // Inputs...
@@ -35,7 +36,7 @@ private:
   bool trace_execution;       // Should we trace this CPU?
   bool trace_task_order;      // Should we keep track of ordering of tasks?
   bool use_random_inputs;     // Should we give the organism random inputs?
-  cHardwareTracer *m_tracer;
+  cHardwareTracer* m_tracer;
 
   // Outputs...
   bool is_viable;         // Is this organism colony forming?
@@ -44,11 +45,12 @@ private:
   int max_cycle;          // Longest cycle found.
   int cycle_to;           // Cycle path of the last genotype.
 
-  tArray<cOrganism *> org_array;
+  tArray<cOrganism*> org_array;
 
-private:
-  // disabled copy constructor.
-  cCPUTestInfo(const cCPUTestInfo &);
+
+  cCPUTestInfo(const cCPUTestInfo&); // @not_implemented
+  cCPUTestInfo& operator=(const cCPUTestInfo&); // @not_implemented
+
 public:
   cCPUTestInfo(int max_tests=nHardware::TEST_CPU_GENERATIONS);
   ~cCPUTestInfo();

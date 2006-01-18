@@ -84,10 +84,10 @@ private:
   
   cLineage* AddLineage(double start_fitness, int parent_lin_id, int id = -1, double lineage_stat1 = 0.0, double lineage_stat2 = 0.0);
   void UpdateLineages();
-  
-  
-  // Disable Copy Constructor
-  cClassificationManager(const cClassificationManager&);
+    
+  cClassificationManager(); // @not_implemented
+  cClassificationManager(const cClassificationManager&); // @not_implemented
+  cClassificationManager& operator=(const cClassificationManager&); // @not_implemented
 
 public:
   cClassificationManager(cWorld* world);

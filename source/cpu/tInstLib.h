@@ -19,7 +19,9 @@
 
 class cInstruction;
 
-template <class MethodType> class tInstLib : public cInstLibBase {
+template <class MethodType> class tInstLib : public cInstLibBase
+{
+private:
   const size_t m_nopmods_array_size;
   const size_t m_function_array_size;
   cString* m_nopmod_names;
@@ -28,6 +30,7 @@ template <class MethodType> class tInstLib : public cInstLibBase {
   MethodType* m_functions;
   const cInstruction inst_error;
   const cInstruction inst_default;
+
 public:
 		tInstLib(
 						 size_t nopmod_array_size,

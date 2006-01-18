@@ -21,6 +21,11 @@ class cSpeciesQueue {
 private:
   int size;
   cSpecies* first;
+  
+  
+  cSpeciesQueue(const cSpeciesQueue&); // @not_implemented
+  cSpeciesQueue& operator=(const cSpeciesQueue&); // @not_implemented
+  
 public:
   cSpeciesQueue() : size(0), first(NULL) { ; }
   ~cSpeciesQueue() { ; }

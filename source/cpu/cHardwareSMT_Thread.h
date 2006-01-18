@@ -37,7 +37,8 @@
 class cHardwareBase;
 class cInjectGenotype;
 
-struct cHardwareSMT_Thread {
+struct cHardwareSMT_Thread
+{
 private:
   int id;
 public:
@@ -51,8 +52,9 @@ public:
   // If this thread was spawned by Inject, this will point to the genotype 
   // of the parasite running the thread.  Otherwise, it will be NULL.
   cInjectGenotype* owner;
-public:
-		cHardwareSMT_Thread(cHardwareBase* in_hardware = NULL, int _id = -1);
+
+  
+  cHardwareSMT_Thread(cHardwareBase* in_hardware = NULL, int _id = -1);
   cHardwareSMT_Thread(const cHardwareSMT_Thread& in_thread, int _id = -1);
   ~cHardwareSMT_Thread();
 	

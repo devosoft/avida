@@ -87,11 +87,14 @@ private:
   cDoubleSum tmp_sum_merit;
   cDoubleSum tmp_sum_fitness;
 
+  
   void CalcTestStats() const;
+  
   cGenotype(cWorld* world, int in_update_born, int in_id);
   
-  // Disable No-Argument Constructor
-  cGenotype();
+  cGenotype(); // @not_implemented
+  cGenotype(const cGenotype&); // @not_implemented
+  cGenotype& operator=(const cGenotype&); // @not_implemented
 
 public:
   ~cGenotype();

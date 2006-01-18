@@ -22,7 +22,9 @@
 
 class cString;
 
-class cInstLibCPU : public cInstLibBase {
+class cInstLibCPU : public cInstLibBase
+{
+private:
   const size_t m_nopmods_array_size;
   const size_t m_function_array_size;
   cString *m_nopmod_names;
@@ -31,8 +33,10 @@ class cInstLibCPU : public cInstLibBase {
   cHardwareCPU::tHardwareCPUMethod *m_functions;
   static const cInstruction inst_error;
   static const cInstruction inst_default;
+
 protected:
   friend class cHardwareCPU;
+  
   cInstLibCPU(
     size_t nopmod_array_size,
     size_t function_array_size,
@@ -48,6 +52,7 @@ protected:
     m_functions(functions)
   {}
   cHardwareCPU::tHardwareCPUMethod *GetFunctions(void){ return m_functions; } 
+
 public:
   const cString &GetName(const unsigned int id) {
     assert(id < m_function_array_size);

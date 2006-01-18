@@ -23,7 +23,9 @@ class cWorld;
 class cDefaultRunDriver : public cAvidaDriver, public cWorldDriver
 {
 private:
-  cDefaultRunDriver();  // not implemented
+  cDefaultRunDriver(); // @not_implemented
+  cDefaultRunDriver(const cDefaultRunDriver&); // @not_implemented
+  cDefaultRunDriver& operator=(const cDefaultRunDriver&); // @not_implemented
 
 protected:
   cWorld* m_world;

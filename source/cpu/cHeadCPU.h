@@ -25,20 +25,20 @@ class cCPUMemory;
 class cGenome;
 class cInstruction;
 
-class cHeadCPU {
+class cHeadCPU
+{
 protected:
-  cHardwareBase * main_hardware;
-  cHardwareBase * cur_hardware;
+  cHardwareBase* main_hardware;
+  cHardwareBase* cur_hardware;
   int position;
 
-  int FindLabel_Forward(const cCodeLabel & search_label,
-			const cGenome & search_mem, int pos);
-  int FindLabel_Backward(const cCodeLabel & search_label,
-			 const cGenome & search_mem, int pos);
+  int FindLabel_Forward(const cCodeLabel& search_label, const cGenome& search_mem, int pos);
+  int FindLabel_Backward(const cCodeLabel& search_label, const cGenome& search_mem, int pos);
+
 public:
   cHeadCPU();
-  cHeadCPU(cHardwareBase * in_hardware, int in_pos = 0);
-  cHeadCPU(const cHeadCPU & in_cpu_head);
+  cHeadCPU(cHardwareBase* in_hardware, int in_pos = 0);
+  cHeadCPU(const cHeadCPU& in_cpu_head);
   virtual ~cHeadCPU() { ; }
   
   /**
@@ -103,7 +103,7 @@ public:
   virtual void ClearFlagCopyMut();
     
   // Operator Overloading...
-  virtual cHeadCPU & operator=(const cHeadCPU & in_cpu_head);
+  virtual cHeadCPU& operator=(const cHeadCPU& in_cpu_head);
   cHeadCPU & operator++();
   cHeadCPU & operator--();
   cHeadCPU & operator++(int);

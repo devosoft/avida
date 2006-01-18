@@ -27,12 +27,18 @@ class cOrganism;
 class cString;
 class cWorld;
 
-class cHardwareBase {
+class cHardwareBase
+{
 protected:
   cWorld* m_world;
   cOrganism* organism;       // Organism using this hardware.
   cInstSet* m_inst_set;        // Instruction set being used.
   cHardwareTracer* m_tracer; // Set this if you want execution traced.
+
+
+  cHardwareBase(); // @not_implemented
+  cHardwareBase(const cHardwareBase&); // @not_implemented
+  cHardwareBase& operator=(const cHardwareBase&); // @not_implemented
 
 public:
   cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set)

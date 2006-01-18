@@ -25,6 +25,11 @@ private:
   cInstSet m_inst_set;
   int m_type;
   
+  
+  cHardwareManager(); // @not_implemented
+  cHardwareManager(const cHardwareManager&); // @not_implemented
+  cHardwareManager& operator=(const cHardwareManager&); // @not_implemented
+  
 public:
   cHardwareManager(cWorld* world);
   ~cHardwareManager() { ; }

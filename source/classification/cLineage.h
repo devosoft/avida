@@ -60,7 +60,9 @@ private:
            int update, double generation,
            double lineage_stat1 = 0.0, double lineage_stat2 = 0.0);
   
-  cLineage();
+  cLineage(); // @not_implemented
+  cLineage(const cLineage&); // @not_implemented
+  cLineage& operator=(const cLineage&); // @not_implemented
 
 public:
   ~cLineage() { ; }

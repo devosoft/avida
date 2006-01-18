@@ -18,13 +18,9 @@
 #include "tArray.h"
 #endif
 
-class cGenome;
-class cInstruction;
-class cMemoryFlags; // access
-class cString;
-template <class T> class tArray; // aggregate
 
-class cCPUMemory : public cGenome {
+class cCPUMemory : public cGenome
+{
 private:
 	static const unsigned char MASK_COPIED   = 0x01;
 	static const unsigned char MASK_MUTATED  = 0x02;
@@ -37,10 +33,12 @@ private:
   
   tArray<unsigned char> flag_array;
   
+
   // A collection of sloppy instructions to perform oft-used functions that
   // will need to be cleaned up after this is run.
   void SloppyResize(int new_size);           // Set size, ignore new contents.
   void SloppyInsert(int pos, int num_lines); // Add lines, ignore new contents.
+
 public:
   explicit cCPUMemory(int _size=1)  : cGenome(_size), flag_array(_size) { ; }
   cCPUMemory(const cCPUMemory& in_memory);
@@ -48,8 +46,8 @@ public:
   cCPUMemory(const cString& in_string) : cGenome(in_string), flag_array(in_string.GetSize()) { ; }
   ~cCPUMemory() { ; }
 
-  void operator=(const cCPUMemory & other_memory);
-  void operator=(const cGenome & other_genome);
+  void operator=(const cCPUMemory& other_memory);
+  void operator=(const cGenome& other_genome);
   void Copy(int to, int from);
 
   void Clear()
@@ -88,10 +86,10 @@ public:
 	void ClearFlagCopyMut(int pos)    { flag_array[pos] &= ~MASK_COPYMUT;  }
   void ClearFlagInjected(int pos)   { flag_array[pos] &= ~MASK_INJECTED; }
     
-  void Insert(int pos, const cInstruction & in_inst);
-  void Insert(int pos, const cGenome & in_genome);
+  void Insert(int pos, const cInstruction& in_inst);
+  void Insert(int pos, const cGenome& in_genome);
   void Remove(int pos, int num_insts=1);
-  void Replace(int pos, int num_insts, const cGenome & in_genome);
+  void Replace(int pos, int num_insts, const cGenome& in_genome);
 };
 
 #endif

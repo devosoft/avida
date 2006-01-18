@@ -18,7 +18,8 @@ class cString;
 class cWorldDriver
 {
 private:
-  cWorldDriver(const cWorldDriver&);  // not implemented
+  cWorldDriver(const cWorldDriver&); // @not_implemented
+  cWorldDriver& operator=(const cWorldDriver&); // @not_implemented
 
 public:
   cWorldDriver() { ; }

@@ -25,7 +25,11 @@ class cGenotype;
 class cInjectGenotype;
 class cWorld;
 
-class cTestUtil {
+class cTestUtil
+{
+private:
+  cTestUtil(); // @not_implemented
+  
 public:
   static void PrintGenome(cWorld* world, const cGenome & genome, cString filename="",
                           cGenotype * genotype=NULL, int update_out=-1);

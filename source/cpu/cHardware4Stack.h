@@ -41,8 +41,6 @@
 #include "tArray.h"
 #endif
 
-class cInstSet;
-class cInstLibBase;
 class cOrganism;
 class cMutation;
 class cInjectGenotype;
@@ -56,26 +54,24 @@ class cInjectGenotype;
 
 class cCodeLabel;
 class cCPUMemory;
-class cCPUStack; // aggregate
-class cHeadMultiMem; // access
 class cGenome;
-class cHardware4Stack_Thread; // access
 class cInjectGenotype;
-class cInstLib4Stack; // access
+class cInstLib4Stack;
+class cInstLibBase;
 class cInstruction;
 class cInstSet;
 class cOrganism;
-class cString; // aggregate
-template <class T> class tArray; // aggregate
 
-class cHardware4Stack : public cHardwareBase {
+class cHardware4Stack : public cHardwareBase
+{
 public:
   typedef bool (cHardware4Stack::*tHardware4StackMethod)();
 private:
   static cInstLib4Stack* s_inst_slib;
   static cInstLib4Stack* initInstLib(void);
+  
   tHardware4StackMethod* m_functions;
-private:
+
   tArray<cCPUMemory> memory_array;          // Memory...
   //cCPUStack global_stack;     // A stack that all threads share.
   cCPUStack global_stacks[nHardware4Stack::NUM_GLOBAL_STACKS];
@@ -99,6 +95,7 @@ private:
   // Keeps track of fractional instructions that carry over into next update
   float inst_remainder; 
 
+  
   bool SingleProcess_PayCosts(const cInstruction & cur_inst);
   bool SingleProcess_ExecuteInst(const cInstruction & cur_inst);
   
@@ -126,14 +123,14 @@ private:
   cCodeLabel & GetReadLabel() { return threads[cur_thread].read_label; }
   
 
-  bool TriggerMutations_ScopeGenome(const cMutation * cur_mut,
-                                    cCPUMemory & target_memory, cHeadCPU& cur_head, const double rate);
-  bool TriggerMutations_ScopeLocal(const cMutation * cur_mut,
-                                   cCPUMemory & target_memory, cHeadCPU& cur_head, const double rate);
-  int TriggerMutations_ScopeGlobal(const cMutation * cur_mut,
-                                   cCPUMemory & target_memory, cHeadCPU& cur_head, const double rate);
+  bool TriggerMutations_ScopeGenome(const cMutation* cur_mut, cCPUMemory& target_memory,
+                                    cHeadCPU& cur_head, const double rate);
+  bool TriggerMutations_ScopeLocal(const cMutation* cur_mut, cCPUMemory& target_memory,
+                                   cHeadCPU& cur_head, const double rate);
+  int TriggerMutations_ScopeGlobal(const cMutation* cur_mut, cCPUMemory& target_memory,
+                                   cHeadCPU& cur_head, const double rate);
   void TriggerMutations_Body(int type, cCPUMemory & target_memory, cHeadCPU& cur_head);
-  
+
   // ---------- Instruction Helpers -----------
   int FindModifiedStack(int default_stack);
   int FindModifiedHead(int default_head);
@@ -165,10 +162,11 @@ private:
   bool isEmpty(int mem_space_used);
   inline int NormalizeMemSpace(int mem_space) const;
   
+  cHardware4Stack& operator=(const cHardware4Stack&); // @not_implemented
   
 public:
   cHardware4Stack(cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
-  explicit cHardware4Stack(const cHardware4Stack &);
+  explicit cHardware4Stack(const cHardware4Stack&);
   ~cHardware4Stack() { ; }
   static cInstLibBase* GetInstLib();
   static cString GetDefaultInstFilename() { return "inst_lib.4stack"; }

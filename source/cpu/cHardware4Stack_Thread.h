@@ -35,16 +35,13 @@
  * @see cCPUStack, cHeadMultiMem, cHardware4Stack
  **/
 
-class cHeadMultiMem; // aggregate
-class cCodeLabel; // aggregate
-class cCPUStack; // aggregate
-class cHardwareBase;
 class cInjectGenotype;
-template <class T> class tBuffer; // aggregate
 
-struct cHardware4Stack_Thread {
+struct cHardware4Stack_Thread
+{
 private:
   int id;
+
 public:
   cHeadMultiMem heads[nHardware::NUM_HEADS];
   unsigned char cur_head;
@@ -56,12 +53,13 @@ public:
   // If this thread was spawned by Inject, this will point to the genotype 
   // of the parasite running the thread.  Otherwise, it will be NULL.
   cInjectGenotype* owner;
-public:
-  cHardware4Stack_Thread(cHardwareBase * in_hardware=NULL, int _id=-1);
-  cHardware4Stack_Thread(const cHardware4Stack_Thread & in_thread, int _id=-1);
+
+
+  cHardware4Stack_Thread(cHardwareBase* in_hardware = NULL, int _id = -1);
+  cHardware4Stack_Thread(const cHardware4Stack_Thread& in_thread, int _id = -1);
   ~cHardware4Stack_Thread();
 
-  void operator=(const cHardware4Stack_Thread & in_thread);
+  void operator=(const cHardware4Stack_Thread& in_thread);
 
   void Reset(cHardwareBase * in_hardware, int _id);
   int GetID() const { return id; }

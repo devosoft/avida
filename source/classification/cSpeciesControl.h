@@ -26,6 +26,11 @@ private:
   cSpeciesQueue active_queue;
   cSpeciesQueue inactive_queue;
   cSpeciesQueue garbage_queue;
+  
+
+  cSpeciesControl(); // @not_implemented
+  cSpeciesControl(const cSpeciesControl&); // @not_implemented
+  cSpeciesControl& operator=(const cSpeciesControl&); // @not_implemented
 
 public:
   cSpeciesControl(cWorld* world) : m_world(world) { ; }

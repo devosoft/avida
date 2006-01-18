@@ -38,15 +38,11 @@
  * @see cCPUStack, cHeadCPU, cHardwareCPU
  **/
 
-class cCodeLabel; // aggregate;
-class cHeadCPU; // aggregate
-class cCPUStack; // aggregate
-class cHardwareBase;
-template <class T> class tBuffer; // aggregate
-
-struct cHardwareCPU_Thread {
+struct cHardwareCPU_Thread
+{
 private:
   int id;
+
 public:
   int reg[nHardwareCPU::NUM_REGISTERS];
   cHeadCPU heads[nHardware::NUM_HEADS];
@@ -56,14 +52,15 @@ public:
 
   cCodeLabel read_label;
   cCodeLabel next_label;
-public:
-  cHardwareCPU_Thread(cHardwareBase * in_hardware=NULL, int _id=-1);
-  cHardwareCPU_Thread(const cHardwareCPU_Thread & in_thread, int _id=-1);
+
+  
+  cHardwareCPU_Thread(cHardwareBase* in_hardware = NULL, int _id = -1);
+  cHardwareCPU_Thread(const cHardwareCPU_Thread& in_thread, int _id = -1);
   ~cHardwareCPU_Thread();
 
-  void operator=(const cHardwareCPU_Thread & in_thread);
+  void operator=(const cHardwareCPU_Thread& in_thread);
 
-  void Reset(cHardwareBase * in_hardware, int _id);
+  void Reset(cHardwareBase* in_hardware, int _id);
   int GetID() const { return id; }
   void SetID(int _id) { id = _id; }
 };

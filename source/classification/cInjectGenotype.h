@@ -56,8 +56,9 @@ private:
   // Private Constructor
   cInjectGenotype(cWorld* world, int in_update_born = 0, int in_id = -1);
   
-  // Disable Default Constructor
-  cInjectGenotype();
+  cInjectGenotype(); // @not_implemented
+  cInjectGenotype(const cInjectGenotype&); // @not_implemented
+  cInjectGenotype& operator=(const cInjectGenotype&); // @not_implemented
   
 public:
   ~cInjectGenotype();

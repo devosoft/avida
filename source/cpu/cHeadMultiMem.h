@@ -15,7 +15,8 @@
 #include "cHeadCPU.h"
 #endif
 
-class cHeadMultiMem : public cHeadCPU {
+class cHeadMultiMem : public cHeadCPU
+{
 private:
   int mem_space;
 
@@ -56,8 +57,8 @@ public:
   void ClearFlagCopyMut();
   
   // Operator Overloading...
-  cHeadMultiMem& operator=(const cHeadMultiMem & in_cpu_head);
-  bool operator==(const cHeadMultiMem & in_cpu_head) const; 
+  cHeadMultiMem& operator=(const cHeadMultiMem& in_cpu_head);
+  bool operator==(const cHeadMultiMem& in_cpu_head) const; 
   bool AtEnd() const;
   bool InMemory() const;
 };

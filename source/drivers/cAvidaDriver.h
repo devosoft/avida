@@ -17,7 +17,8 @@
 class cAvidaDriver
 {
 private:
-  cAvidaDriver(const cAvidaDriver&);  // not implemented
+  cAvidaDriver(const cAvidaDriver&); // @not_implemented
+  cAvidaDriver& operator=(const cAvidaDriver&); // @not_implemented
 
 public:
   cAvidaDriver() { ; }

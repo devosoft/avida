@@ -28,8 +28,8 @@ private:
   cDriverManager() { ; }
   ~cDriverManager();
 
-  // not implemented
-  cDriverManager(const cDriverManager&);
+  cDriverManager(const cDriverManager&); // @not_implemented
+  cDriverManager& operator=(const cDriverManager&); // @not_implemented
 
 public:
   static void Initialize(); // initialize static driver manager.  This method is NOT thread-safe.
