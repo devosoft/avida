@@ -18,18 +18,23 @@
 class cResource;
 class cString;
 
-class cResourceLib {
+class cResourceLib
+{
 private:
-  tArray<cResource *> resource_array;
+  tArray<cResource*> resource_array;
+  
+  cResourceLib(const cResourceLib&); // @not_implemented
+  cResourceLib& operator=(const cResourceLib&); // @not_implemented
+  
 public:
   cResourceLib() { ; }
   ~cResourceLib();
 
   int GetSize() const { return resource_array.GetSize(); }
 
-  cResource * AddResource(const cString & res_name);
-  cResource * GetResource(const cString & res_name) const;
-  cResource * GetResource(int id) const;
+  cResource* AddResource(const cString& res_name);
+  cResource* GetResource(const cString& res_name) const;
+  cResource* GetResource(int id) const;
 };
 
 #endif

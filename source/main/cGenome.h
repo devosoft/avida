@@ -29,28 +29,26 @@
  * before creating the genome.  Keeping genome light-weight...
  **/
 
-class cGenome {
+class cGenome
+{
 protected:
   tArray<cInstruction> genome;
   int active_size;
 
 public:
+  cGenome() { ; }
   explicit cGenome(int _size);
-  cGenome(const cGenome & in_genome);
-  cGenome(const cString & in_string);
+  cGenome(const cGenome& in_genome);
+  cGenome(const cString& in_string);
   virtual ~cGenome();
 
   virtual void operator=(const cGenome & other_genome);
   virtual bool operator==(const cGenome & other_genome) const;
-  virtual bool operator!=(const cGenome & other_genome) const
-  { return !(this->operator==(other_genome)); }
-  virtual bool operator<(const cGenome & other_genome) const
-  { return AsString() < other_genome.AsString(); }
+  virtual bool operator!=(const cGenome & other_genome) const { return !(this->operator==(other_genome)); }
+  virtual bool operator<(const cGenome & other_genome) const { return AsString() < other_genome.AsString(); }
 
-  cInstruction & operator[](int index)
-    { assert(index >= 0 && index < active_size);  return genome[index]; }
-  const cInstruction & operator[](int index) const
-    { assert(index >= 0 && index < active_size);  return genome[index]; }
+  cInstruction & operator[](int index) { assert(index >= 0 && index < active_size);  return genome[index]; }
+  const cInstruction & operator[](int index) const { assert(index >= 0 && index < active_size);  return genome[index]; }
 
   virtual void Copy(int to, int from);
 

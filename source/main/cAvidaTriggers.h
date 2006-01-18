@@ -22,16 +22,21 @@
  * A small class that determines the correct triggers for the event list.
  * Needed in order to separate the event business from the rest.
  */
-class cAvidaTriggers : public cEventTriggers {
+class cAvidaTriggers : public cEventTriggers
+{
 private:
-  cStats & stats;
-private:
-  // disabled copy constructor.
-  cAvidaTriggers(const cAvidaTriggers &);
+  cStats& m_stats;
+
+  
+  cAvidaTriggers(); // @not_implemented
+  cAvidaTriggers(const cAvidaTriggers&); // @not_implemented
+  cAvidaTriggers& operator=(const cAvidaTriggers&); // @not_implemented
+
 public:
-  cAvidaTriggers(cStats & _stats) : stats(_stats) { ; }
-  double GetUpdate() const { return (double) stats.GetUpdate(); }
-  double GetGeneration() const { return stats.SumGeneration().Average(); }
+  cAvidaTriggers(cStats& stats) : m_stats(stats) { ; }
+
+  double GetUpdate() const { return (double) m_stats.GetUpdate(); }
+  double GetGeneration() const { return m_stats.SumGeneration().Average(); }
 };
 
 #endif

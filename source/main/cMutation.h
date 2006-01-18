@@ -15,7 +15,8 @@
 #include "cString.h"
 #endif
 
-class cMutation {
+class cMutation
+{
 private:
   cString name;
   int id;
@@ -23,8 +24,12 @@ private:
   int scope;
   int type;
   double rate;
+
+
+  cMutation(); // @not_implemented
+  
 public:
-  cMutation(const cString & _name, int _id, int _trigger, int _scope, int _type, double _rate)
+  cMutation(const cString& _name, int _id, int _trigger, int _scope, int _type, double _rate)
     : name(_name), id(_id), trigger(_trigger), scope(_scope), type(_type), rate(_rate)
   {
   }

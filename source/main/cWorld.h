@@ -56,6 +56,9 @@ protected:
   // Internal Methods
   void Setup();
   
+  cWorld(const cWorld&); // @not_implemented
+  cWorld& operator=(const cWorld&); // @not_implemented
+  
 public:
   explicit cWorld() : m_conf(new cAvidaConfig()) { Setup(); }
   cWorld(cAvidaConfig* cfg) : m_conf(cfg) { Setup(); }

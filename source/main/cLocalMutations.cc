@@ -34,7 +34,3 @@ cLocalMutations::cLocalMutations(const cMutationLib & _lib, int genome_length)
   // Setup the mutation count array.
   counts.Resize(mut_lib.GetSize(), 0);
 }
-
-cLocalMutations::~cLocalMutations()
-{
-}

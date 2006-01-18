@@ -27,9 +27,10 @@ typedef double (cTaskLib::*tTaskTest)() const;
 class cString;
 class cTaskEntry;
 
-class cTaskLib {
+class cTaskLib
+{
 private:
-  tArray<cTaskEntry *> task_array;
+  tArray<cTaskEntry*> task_array;
 
   // What extra information should be sent along when we are evaluating
   // which tasks have been performed?
@@ -43,53 +44,55 @@ private:
   mutable tList<tBuffer<int> > other_output_buffers;
   mutable int logic_id;
 
-  enum req_list { REQ_NEIGHBOR_INPUT=1,
-		  REQ_NEIGHBOR_OUTPUT=2, 
-		  UNUSED_REQ_C=4,
-		  UNUSED_REQ_D=8 };
-private:
-  // disabled copy constructor.
-  cTaskLib(const cTaskLib &);
+  enum req_list
+  {
+    REQ_NEIGHBOR_INPUT=1,
+    REQ_NEIGHBOR_OUTPUT=2, 
+    UNUSED_REQ_C=4,
+    UNUSED_REQ_D=8
+  };
+  
+
+  cTaskLib(const cTaskLib &); // @not_implemented
+  cTaskLib& operator=(const cTaskLib&); // @not_implemented
+
 public:
   cTaskLib();
   ~cTaskLib();
 
   int GetSize() const { return task_array.GetSize(); }
 
-  cTaskEntry * AddTask(const cString & name);
-  const cTaskEntry & GetTask(int id) const;
+  cTaskEntry* AddTask(const cString& name);
+  const cTaskEntry& GetTask(int id) const;
   
-  void SetupTests(const tBuffer<int> & inputs,
-		  const tBuffer<int> & outputs,
-		  const tList<tBuffer<int> > & other_inputs,
-		  const tList<tBuffer<int> > & other_outputs) const;
-  double TestOutput(const cTaskEntry & task) const;
+  void SetupTests(const tBuffer<int>& inputs, const tBuffer<int>& outputs,
+                  const tList<tBuffer<int> >& other_inputs,
+                  const tList<tBuffer<int> >& other_outputs) const;
+  double TestOutput(const cTaskEntry& task) const;
 
   bool UseNeighborInput() const { return use_neighbor_input; }
   bool UseNeighborOutput() const { return use_neighbor_output; }
 
 private:  // Direct task related methods
-  void NewTask(const cString & name, const cString & desc,
-	       tTaskTest task_fun, int reqs=0);
-  void SetupLogicTests(const tBuffer<int> & inputs,
-		       const tBuffer<int> & outputs) const;
+  void NewTask(const cString& name, const cString& desc, tTaskTest task_fun, int reqs = 0);
+  void SetupLogicTests(const tBuffer<int>& inputs, const tBuffer<int>& outputs) const;
 
   inline double FractionalReward(unsigned int supplied, unsigned int correct);  
 
   double Task_Echo() const;
-  double Task_Add()  const;
-  double Task_Sub()  const;
+  double Task_Add() const;
+  double Task_Sub() const;
 
   // 1- and 2-Input Logic Tasks
-  double Task_Not()    const;
-  double Task_Nand()   const;
-  double Task_And()    const;
-  double Task_OrNot()  const;
-  double Task_Or()     const;
+  double Task_Not() const;
+  double Task_Nand() const;
+  double Task_And() const;
+  double Task_OrNot() const;
+  double Task_Or() const;
   double Task_AndNot() const;
-  double Task_Nor()    const;
-  double Task_Xor()    const;
-  double Task_Equ()    const;
+  double Task_Nor() const;
+  double Task_Xor() const;
+  double Task_Equ() const;
 
   // 3-Input Logic Tasks
   double Task_Logic3in_AA() const;

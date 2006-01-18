@@ -52,14 +52,15 @@ class cOrgMessage;
 class cEnvironment;
 class cCodeLabel;
 
-class cOrganism {
+class cOrganism
+{
 protected:
   cWorld* m_world;
-  cHardwareBase * hardware;  // The actual machinary running this organism.
-  cGenotype * genotype;      // Information about organisms with this genome.
+  cHardwareBase* hardware;  // The actual machinary running this organism.
+  cGenotype* genotype;      // Information about organisms with this genome.
   cPhenotype phenotype;      // Descriptive attributes of organism.
   const cGenome initial_genome;        // Initial genome; can never be changed!
-  std::deque<cInjectGenotype *> parasites; // List of all parasites associated with
+  std::deque<cInjectGenotype*> parasites; // List of all parasites associated with
                                     // this organism.
   cMutationRates mut_rates;            // Rate of all possible mutations.
   cLocalMutations mut_info;            // Info about possible mutations;
@@ -84,7 +85,7 @@ protected:
   int max_executed;      // Max number of instruction executed before death.
 
   int lineage_label;     // a lineages tag; inherited unchanged in offspring
-  cLineage * lineage;    // A lineage descriptor... (different from label)
+  cLineage* lineage;    // A lineage descriptor... (different from label)
 
   tBuffer<cOrgMessage> inbox;
   tBuffer<cOrgMessage> sent;
@@ -94,22 +95,17 @@ protected:
 #endif
   bool is_running;       // Does this organism have the CPU?
 
+
+  cOrganism(); // @not_implemented
+  cOrganism(const cOrganism&); // @not_implemented
+  cOrganism& operator=(const cOrganism&); // @not_implemented
+  
 public:
-  void PrintStatus(std::ostream& fp, const cString & next_name);
-
-  // Divide functions
-  bool Divide_CheckViable();
-  bool ActivateDivide();
-
-  // Other Special Functions
-  void Fault(int fault_loc, int fault_type, cString fault_desc="");
-
-public:
-  cOrganism(cWorld* world, const cGenome & in_genome);
+  cOrganism(cWorld* world, const cGenome& in_genome);
   ~cOrganism();
 
-  cHardwareBase & GetHardware() { return *hardware; }
-  cOrganism * GetNeighbor() { return pop_interface.GetNeighbor(); }
+  cHardwareBase& GetHardware() { return *hardware; }
+  cOrganism* GetNeighbor() { return pop_interface.GetNeighbor(); }
   int GetNeighborhoodSize() { return pop_interface.GetNumNeighbors(); }
   void Rotate(int direction) { pop_interface.Rotate(direction); }
   void DoBreakpoint() { pop_interface.Breakpoint(); }
@@ -212,6 +208,17 @@ public:
   // --------  DEBUG ---------
   void SetRunning(bool in_running) { is_running = in_running; }
   bool GetIsRunning() { return is_running; }
+
+
+  void PrintStatus(std::ostream& fp, const cString & next_name);
+  
+  // Divide functions
+  bool Divide_CheckViable();
+  bool ActivateDivide();
+  
+  // Other Special Functions
+  void Fault(int fault_loc, int fault_type, cString fault_desc="");
+  
 };
 
 #endif

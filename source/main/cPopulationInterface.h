@@ -30,6 +30,11 @@ private:
   cWorld* m_world;
   int cell_id;
 
+
+  cPopulationInterface(); // @not_implemented
+  cPopulationInterface(const cPopulationInterface&); // @not_implemented
+  cPopulationInterface operator=(const cPopulationInterface&); // @not_implemented
+  
 public:
   cPopulationInterface(cWorld* world) : m_world(world), cell_id(-1) { ; }
   virtual ~cPopulationInterface() { ; }

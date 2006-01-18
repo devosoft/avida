@@ -15,12 +15,10 @@
 #include "cMxCodeArray.h"
 #endif
 
-class MyCodeArrayLessThan {
+class MyCodeArrayLessThan
+{
 public:
-  bool operator()(const cMxCodeArray &x, const cMxCodeArray &y) const
-  {
-    return x < y;
-  }
+  bool operator()(const cMxCodeArray& x, const cMxCodeArray& y) const { return x < y; }
 };
 
 #endif

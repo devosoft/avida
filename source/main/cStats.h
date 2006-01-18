@@ -44,9 +44,8 @@ class cGenotype;
 class cInjectGenotype;
 class cWorld;
 
-class cStats {
-private:
-  cStats(const cStats &); // not implemented.
+class cStats
+{
 private:
   cWorld* m_world;
   
@@ -222,6 +221,10 @@ private:
   
   // State variables
   int last_update;
+
+  cStats(); // @not_implemented
+  cStats(const cStats&); // @not_implemented
+  cStats& operator=(const cStats&); // @not_implemented
 
 public:
   cStats(cWorld* world);

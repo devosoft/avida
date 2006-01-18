@@ -18,23 +18,25 @@
 #include "cTaskLib.h"
 #endif
 
-class cTaskEntry {
+class cTaskEntry
+{
 private:
-  cString name;  // Short keyword for task
-  cString desc;  // For more human-understandable output...
-  int id;
-  tTaskTest test_fun;
+  cString m_name;  // Short keyword for task
+  cString m_desc;  // For more human-understandable output...
+  int m_id;
+  tTaskTest m_test_fun;
+
 public:
-  cTaskEntry(const cString & _name, const cString & _desc, int _id, tTaskTest _test_fun)
-    : name(_name), desc(_desc), id(_id), test_fun(_test_fun)
+  cTaskEntry(const cString& name, const cString& desc, int in_id, tTaskTest test_fun)
+    : m_name(name), m_desc(desc), m_id(in_id), m_test_fun(test_fun)
   {
   }
   ~cTaskEntry() { ; }
 
-  const cString & GetName()    const { return name; }
-  const cString & GetDesc() const { return desc; }
-  const int       GetID()      const { return id; }
-  const tTaskTest GetTestFun() const { return test_fun; }
+  const cString& GetName() const { return m_name; }
+  const cString& GetDesc() const { return m_desc; }
+  const int GetID() const { return m_id; }
+  const tTaskTest GetTestFun() const { return m_test_fun; }
 };
 
 #endif

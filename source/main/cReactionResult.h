@@ -30,10 +30,15 @@ private:
   bool lethal;
   bool active_reaction;
 
+
   inline void ActivateReaction();
+  
+  cReactionResult(); // @not_implemented
+  cReactionResult(const cReactionResult&); // @not_implemented
+  cReactionResult& operator=(const cReactionResult&); // @not_implemented
+
 public:
-  cReactionResult(const int num_resources, const int num_tasks,
-		  const int num_reactions);
+  cReactionResult(const int num_resources, const int num_tasks, const int num_reactions);
   ~cReactionResult();
 
   bool GetActive() { return active_reaction; }
@@ -58,7 +63,7 @@ public:
   bool TaskDone(int id);
   double GetAddBonus();
   double GetMultBonus();
-  tArray<int> & GetInstArray();
+  tArray<int>& GetInstArray();
 };
 
 #endif

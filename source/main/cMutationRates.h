@@ -13,7 +13,8 @@
 
 class cWorld;
 
-class cMutationRates {
+class cMutationRates
+{
 private:
   cWorld* m_world;
   
@@ -45,11 +46,13 @@ private:
   };
   sDivideMuts divide;
   
-  void operator=(const cMutationRates & in_muts)
-    { (void) in_muts; } // Disable operator=
+  
+  cMutationRates(); // @not_implemented
+  cMutationRates& operator=(const cMutationRates&); // @not_implemented
+
 public:
   cMutationRates(cWorld* world) : m_world(world) { Clear(); }
-  cMutationRates(const cMutationRates & in_muts) : m_world(in_muts.m_world) { Copy(in_muts); }
+  cMutationRates(const cMutationRates& in_muts) : m_world(in_muts.m_world) { Copy(in_muts); }
   ~cMutationRates() { ; }
 
   void Clear();

@@ -38,7 +38,8 @@ using namespace std;
 
 class cWorld;
 
-class cInstSet {
+class cInstSet
+{
 public:
   cWorld* m_world;
   cInstLibBase *m_inst_lib;
@@ -62,13 +63,16 @@ public:
   //static const cInstruction inst_error;
   // static const cInstruction inst_none;
   static const cInstruction inst_default;
+  
+  
+  cInstSet(); // @not_implemented
 
 public:
   cInstSet(cWorld* world);
-  cInstSet(const cInstSet & in_inst_set);
+  cInstSet(const cInstSet& in_inst_set);
   ~cInstSet();
 
-  cInstSet & operator=(const cInstSet & _in);
+  cInstSet& operator=(const cInstSet& _in);
 
   bool OK() const;
 

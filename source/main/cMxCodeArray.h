@@ -48,7 +48,7 @@ private:
   mutable std::map<int, double, std::less<int> > m_trans_probs;
 
 
-  cMxCodeArray();
+  cMxCodeArray(); // @not_implemented
 
 public:
   cMxCodeArray(cWorld* world);

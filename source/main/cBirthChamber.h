@@ -56,46 +56,32 @@ private:
   tArray<int> swapped0;
   tArray<int> swapped1;
 
+
   // Private methods...
-  bool RegionSwap(cCPUMemory & genome0,
-		  cCPUMemory & genome1,
-		  int start0, int end0,
-		  int start1, int end1);
+  bool RegionSwap(cCPUMemory& genome0, cCPUMemory& genome1, int start0, int end0, int start1, int end1);
+  bool GenomeSwap(cCPUMemory& genome0, cCPUMemory& genome1, double& merit0, double& merit1);
 
-  bool GenomeSwap(cCPUMemory & genome0, 
-		  cCPUMemory & genome1,
-		  double & merit0, 
-		  double & merit1);
+  bool DoAsexBirth(const cGenome& child_genome, cOrganism& parent,
+                   tArray<cOrganism*>& child_array, tArray<cMerit>& merit_array);
+  bool DoPairAsexBirth(const cBirthEntry& old_entry, const cGenome& new_genome, cOrganism& parent,
+                       tArray<cOrganism*>& child_array, tArray<cMerit>& merit_array);
+  cBirthEntry* FindSexLocalWaiting(const cGenome& child_genome, cOrganism& parent);
+  cBirthEntry* FindSexDemeWaiting(const cGenome& child_genome, cOrganism& parent);
+  cBirthEntry* FindSexSizeWaiting(const cGenome & child_genome, cOrganism& parent);
+  cBirthEntry* FindSexMateSelectWaiting(const cGenome & child_genome, cOrganism& parent);
+  cBirthEntry* FindSexGlobalWaiting(const cGenome & child_genome, cOrganism& parent);
 
-  bool DoAsexBirth(const cGenome & child_genome, cOrganism & parent,
-	   tArray<cOrganism *> & child_array, tArray<cMerit> & merit_array);
-  bool DoPairAsexBirth(const cBirthEntry & old_entry,
-		       const cGenome & new_genome,
-		       cOrganism & parent,
-		       tArray<cOrganism *> & child_array,
-		       tArray<cMerit> & merit_array);
-  cBirthEntry * FindSexLocalWaiting(const cGenome & child_genome,
-				    cOrganism & parent);
-  cBirthEntry * FindSexDemeWaiting(const cGenome & child_genome,
-				   cOrganism & parent);
-  cBirthEntry * FindSexSizeWaiting(const cGenome & child_genome,
-				   cOrganism & parent);
-  cBirthEntry * FindSexMateSelectWaiting(const cGenome & child_genome,
-					 cOrganism & parent);
-  cBirthEntry * FindSexGlobalWaiting(const cGenome & child_genome,
-				     cOrganism & parent);
+  void DoBasicRecombination(cCPUMemory& genome0, cCPUMemory& genome1, double& merit0, double& merit1);
+  void DoModularContRecombination(cCPUMemory& genome0, cCPUMemory& genome1, double& merit0, double& merit1);
+  void DoModularNonContRecombination(cCPUMemory& genome0, cCPUMemory& genome1, double& merit0, double& merit1);
+  void DoModularShuffleRecombination(cCPUMemory& genome0, cCPUMemory& genome1, double& merit0, double& merit1);
 
-  void DoBasicRecombination(cCPUMemory & genome0, cCPUMemory & genome1, 
-			    double & merit0, double & merit1);
-  void DoModularContRecombination(cCPUMemory & genome0, cCPUMemory & genome1, 
-				  double & merit0, double & merit1);
-  void DoModularNonContRecombination(cCPUMemory &genome0, cCPUMemory &genome1, 
-				     double & merit0, double & merit1);
-  void DoModularShuffleRecombination(cCPUMemory &genome0, cCPUMemory &genome1, 
-				     double & merit0, double & merit1);
+  void SetupGenotypeInfo(cOrganism* organism, cGenotype* parent0_genotype, cGenotype* parent1_genotype);
 
-  void SetupGenotypeInfo(cOrganism * organism, cGenotype * parent0_genotype,
-			 cGenotype * parent1_genotype);
+  cBirthChamber(); // @not_implemented
+  cBirthChamber(const cBirthChamber&); // @not_implemented
+  cBirthChamber& operator=(const cBirthChamber&); // @not_implemented
+  
 public:
   cBirthChamber(cWorld* world);
   ~cBirthChamber();

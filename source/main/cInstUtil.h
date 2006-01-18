@@ -20,7 +20,12 @@
 class cInitFile;
 class cInstSet;
 class cString;
-class cInstUtil {
+
+class cInstUtil
+{
+private:
+  cInstUtil(); // @not_implemented
+  
 public:
 
   // ========= Genome-File Interaction =========

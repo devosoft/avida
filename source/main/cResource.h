@@ -15,7 +15,8 @@
 #include "cString.h"
 #endif
 
-class cResource {
+class cResource
+{
 private:
   cString name;
   int id;
@@ -36,8 +37,11 @@ private:
   double ydiffuse;
   double ygravity;
  
+  
+  cResource(); // @not_implemented
+  
 public:
-  cResource(const cString & _name, int _id);
+  cResource(const cString& _name, int _id);
   ~cResource() { ; }
 
   const cString & GetName() const { return name; }

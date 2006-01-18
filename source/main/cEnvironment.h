@@ -56,16 +56,11 @@ private:
   cInstSet inst_set;
   cMutationRates mut_rates;
 
-  static bool ParseSetting(cString entry, cString & var_name,
-			   cString & var_value, const cString & var_type);
-  static bool AssertInputInt(const cString & input, const cString & name,
-			     const cString & type);
-  static bool AssertInputDouble(const cString & input, const cString & name,
-				const cString & type);
-  static bool AssertInputBool(const cString & input, const cString & name,
-				const cString & type);
-  static bool AssertInputValid(void * input, const cString & name,
-			       const cString & type, const cString & value);
+  static bool ParseSetting(cString entry, cString& var_name, cString& var_value, const cString& var_type);
+  static bool AssertInputInt(const cString& input, const cString& name, const cString& type);
+  static bool AssertInputDouble(const cString& input, const cString& name, const cString& type);
+  static bool AssertInputBool(const cString& input, const cString& name, const cString& type);
+  static bool AssertInputValid(void* input, const cString& name, const cString& type, const cString& value);
 
   bool LoadReactionProcess(cReaction * reaction, cString desc);
   bool LoadReactionRequisite(cReaction * reaction, cString desc);
@@ -75,16 +70,14 @@ private:
 
   bool LoadSetActive(cString desc);
 
-  bool TestRequisites(const tList<cReactionRequisite> & req_list,
-		      int task_count,
-		      const tArray<int> & reaction_count) const;
-  void DoProcesses(const tList<cReactionProcess> & process_list,
-		   const tArray<double> & resource_count,
-		   const double task_quality,
-		   cReactionResult & result) const;
-private:
-  // disabled copy constructor.
-  cEnvironment(const cEnvironment &);
+  bool TestRequisites(const tList<cReactionRequisite>& req_list, int task_count, const tArray<int>& reaction_count) const;
+  void DoProcesses(const tList<cReactionProcess>& process_list, const tArray<double>& resource_count,
+                   const double task_quality, cReactionResult& result) const;
+
+  cEnvironment(); // @not_implemented
+  cEnvironment(const cEnvironment&); // @not_implemented
+  cEnvironment& operator=(const cEnvironment&); // @not_implemented
+
 public:
   cEnvironment(cWorld* world) : m_world(world), inst_set(world), mut_rates(world) { ; }
   ~cEnvironment() { ; }

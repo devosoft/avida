@@ -27,7 +27,8 @@ class cPopulation;
 class cOrganism;
 class cPopulationCell;
 
-class cPopulationCell {
+class cPopulationCell
+{
   friend class cPopulation;
 private:
   cWorld* m_world;
@@ -40,21 +41,21 @@ private:
   int cell_id;           // Unique id for position of cell in population.
   int organism_count;    // Total number of orgs to ever inhabit this cell.
 
-private:  // Organism changes should only occur through population...
+
   void InsertOrganism(cOrganism & new_org);
-  cOrganism * RemoveOrganism();
+  cOrganism* RemoveOrganism();
 
 public:
   cPopulationCell();
-  cPopulationCell(const cPopulationCell & in_cell);
+  cPopulationCell(const cPopulationCell& in_cell);
   ~cPopulationCell() { ; }
 
-  void operator=(const cPopulationCell & in_cell);
+  void operator=(const cPopulationCell& in_cell);
 
   void Setup(cWorld* world, int in_id, const cMutationRates & in_rates);
   void Rotate(cPopulationCell & new_facing);
 
-  cOrganism * GetOrganism() const { return organism; }
+  cOrganism* GetOrganism() const { return organism; }
   tList<cPopulationCell> & ConnectionList() { return connection_list; }
   const cMutationRates & MutationRates() const { return *mutation_rates; }
   cMutationRates & MutationRates() { return *mutation_rates; }

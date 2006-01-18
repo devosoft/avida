@@ -47,7 +47,8 @@ class cInstSet;
 class MyCodeArrayLessThan;
 class cWorld;
 
-class cFitnessMatrix {
+class cFitnessMatrix
+{
 private:
   cWorld* m_world;
 
@@ -90,25 +91,23 @@ private:
 
 
   /* Methods for Diagonalization of Transition Matrix */
-
-  double Diagonalize(std::vector<double>& randomVect, int hamDistThresh,
-                      double errorRate, std::ofstream& logfile);
+  double Diagonalize(std::vector<double>& randomVect, int hamDistThresh, double errorRate, std::ofstream& logfile);
   void MakeRandomVector(std::vector<double>& newVect, int size);
   void VectorDivideBy(std::vector<double>& vect, double div);
   double VectorNorm(const std::vector<double> &vect);
   void MatrixVectorMultiply(const std::vector<double>& vect, std::vector<double>& result);
-  void MakeTransitionProbabilities(int hamDistThresh, double errorRate,
-                                      std::ofstream& logfile);
-
+  void MakeTransitionProbabilities(int hamDistThresh, double errorRate, std::ofstream& logfile);
 
   /* Data Output */
-
   void PrintGenotypes(std::ostream& fp);
   void PrintTransitionMatrix(std::ostream& fp, int hamDistThresh, double errorRate, double avg_fitness, bool printMatrix=false);
   void PrintHammingVector(std::ostream& fp,const std::vector<double>& dataVect, double errProb, double avgFit);
   void PrintFitnessVector(std::ostream& fp,const std::vector<double>& dataVect, double errProb, double avgFit, double maxFit, double step);
   void PrintFullVector(std::ostream& fp, const std::vector<double>& dataVect, double errProb, double avgFit);
 
+  cFitnessMatrix(); // @not_implemented
+  cFitnessMatrix(const cFitnessMatrix&); // @not_implemented
+  cFitnessMatrix& operator=(const cFitnessMatrix&); // @not_implemented
 
 public:
   cFitnessMatrix(cWorld* world, const cGenome&, cInstSet* inst_set);

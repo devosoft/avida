@@ -80,6 +80,9 @@
 		706D32EB0854A39900D7DC8F /* organism.parasite in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311980762539F008F7A48 /* organism.parasite */; };
 		706D330F0854A7B900D7DC8F /* organism.smt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 706D330E0854A7B900D7DC8F /* organism.smt */; };
 		706D33280854A90D00D7DC8F /* inst_set.smt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 706D33270854A90D00D7DC8F /* inst_set.smt */; };
+		7073165D097C6C8F00815164 /* cParser.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7073165B097C6C8F00815164 /* cParser.cc */; };
+		70731665097C6DF500815164 /* cASLibrary.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70731663097C6DF500815164 /* cASLibrary.cc */; };
+		7073166B097C6E0C00815164 /* cASSymbol.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70731669097C6E0C00815164 /* cASSymbol.cc */; };
 		70B0865908F4974300FC65FE /* cLandscape.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865108F4974300FC65FE /* cLandscape.cc */; };
 		70B0865C08F4974300FC65FE /* cLocalMutations.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865408F4974300FC65FE /* cLocalMutations.cc */; };
 		70B0865E08F4974300FC65FE /* cMutationLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865608F4974300FC65FE /* cMutationLib.cc */; };
@@ -558,6 +561,12 @@
 		706D30CC0852328F00D7DC8F /* tInstLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tInstLib.h; sourceTree = "<group>"; };
 		706D330E0854A7B900D7DC8F /* organism.smt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = organism.smt; sourceTree = "<group>"; };
 		706D33270854A90D00D7DC8F /* inst_set.smt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = inst_set.smt; sourceTree = "<group>"; };
+		7073165A097C6C8F00815164 /* cParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cParser.h; sourceTree = "<group>"; };
+		7073165B097C6C8F00815164 /* cParser.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cParser.cc; sourceTree = "<group>"; };
+		70731662097C6DF500815164 /* cASLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASLibrary.h; sourceTree = "<group>"; };
+		70731663097C6DF500815164 /* cASLibrary.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cASLibrary.cc; sourceTree = "<group>"; };
+		70731668097C6E0C00815164 /* cASSymbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASSymbol.h; sourceTree = "<group>"; };
+		70731669097C6E0C00815164 /* cASSymbol.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cASSymbol.cc; sourceTree = "<group>"; };
 		707A687408E3750300576968 /* cHardwareTracer_SMT.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareTracer_SMT.h; sourceTree = "<group>"; };
 		70B0864808F4972600FC65FE /* cLandscape.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cLandscape.h; sourceTree = "<group>"; };
 		70B0864B08F4972600FC65FE /* cLocalMutations.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cLocalMutations.h; sourceTree = "<group>"; };
@@ -1061,8 +1070,14 @@
 			isa = PBXGroup;
 			children = (
 				70DCAD1F097AF81A002F8733 /* AvidaScript.h */,
+				70731662097C6DF500815164 /* cASLibrary.h */,
+				70731663097C6DF500815164 /* cASLibrary.cc */,
+				70731668097C6E0C00815164 /* cASSymbol.h */,
+				70731669097C6E0C00815164 /* cASSymbol.cc */,
 				70DCAD20097AF81A002F8733 /* cLexer.h */,
 				70DCAD21097AF81A002F8733 /* cLexer.l */,
+				7073165A097C6C8F00815164 /* cParser.h */,
+				7073165B097C6C8F00815164 /* cParser.cc */,
 				70DCAD22097AF81A002F8733 /* FlexLexer.h */,
 			);
 			path = script;
@@ -2007,6 +2022,9 @@
 				70DCAD06097AF7CC002F8733 /* primitive.cc in Sources */,
 				70DCAD25097AF81A002F8733 /* cLexer.l in Sources */,
 				70DCAD2F097AF8BC002F8733 /* main.cc in Sources */,
+				7073165D097C6C8F00815164 /* cParser.cc in Sources */,
+				70731665097C6DF500815164 /* cASLibrary.cc in Sources */,
+				7073166B097C6E0C00815164 /* cASSymbol.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

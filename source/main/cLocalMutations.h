@@ -16,16 +16,23 @@
 #endif
 
 class cMutationLib;
-class cLocalMutations {
+class cLocalMutations
+{
 private:
-  const cMutationLib & mut_lib;
+  const cMutationLib& mut_lib;
   tArray<double> rates;
   tArray<int> counts;
+  
+  
+  cLocalMutations(); // @not_implemented
+  cLocalMutations(const cLocalMutations&); // @not_implemented
+  cLocalMutations& operator=(const cLocalMutations&); // @not_implemented
+  
 public:
-  cLocalMutations(const cMutationLib & _lib, int genome_length);
-  ~cLocalMutations();
+  cLocalMutations(const cMutationLib& _lib, int genome_length);
+  ~cLocalMutations() { ; }
 
-  const cMutationLib & GetMutationLib() const { return mut_lib; }
+  const cMutationLib& GetMutationLib() const { return mut_lib; }
   double GetRate(int id) const { return rates[id]; }
   int GetCount(int id) const { return counts[id]; }
 

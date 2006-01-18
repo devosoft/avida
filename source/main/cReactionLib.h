@@ -18,18 +18,23 @@
 class cReaction;
 class cString;
 
-class cReactionLib {
+class cReactionLib
+{
 private:
-  tArray<cReaction *> reaction_array;
+  tArray<cReaction*> reaction_array;
+
+  cReactionLib(const cReactionLib&); // @not_implemented
+  cReactionLib& operator=(const cReactionLib&); // @not_implemented
+
 public:
   cReactionLib() { ; }
   ~cReactionLib();
 
   int GetSize() const { return reaction_array.GetSize(); }
   
-  cReaction * AddReaction(const cString & name);
-  cReaction * GetReaction(const cString & name) const;
-  cReaction * GetReaction(int id) const;
+  cReaction* AddReaction(const cString& name);
+  cReaction* GetReaction(const cString& name) const;
+  cReaction* GetReaction(int id) const;
 };
 
 #endif

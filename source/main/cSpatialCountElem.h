@@ -15,24 +15,27 @@
 #include "tArray.h"
 #endif
 
-class cSpatialCountElem {
+class cSpatialCountElem
+{
+private:
   mutable double amount, delta;
   tArray<int> elempt, xdist, ydist;
   tArray<double> dist;
+  
 public:
-  cSpatialCountElem (double initamount);
-  cSpatialCountElem ();
-  void Rate (double ratein) const {delta += ratein;}
-  void State () {amount += delta; delta = 0.0;}
-  const double GetAmount() const {return amount;}
-  void SetPtr (int innum, int inelempt, int inxdist, int  inydist, 
-               double indist);
-  int GetElemPtr (int innum) {return elempt[innum];}
-  int GetPtrXdist (int innum) {return xdist[innum];}
-  int GetPtrYdist (int innum) {return ydist[innum];}
-  double GetPtrDist (int innum) {return dist[innum];}
-  friend void FlowMatter (cSpatialCountElem&, cSpatialCountElem&, double, 
-                          double, double, double, int, int, double);
+  cSpatialCountElem();
+  cSpatialCountElem(double initamount);
+  
+  void Rate(double ratein) const { delta += ratein; }
+  void State() { amount += delta; delta = 0.0; }
+  const double GetAmount() const { return amount; }
+  void SetPtr(int innum, int inelempt, int inxdist, int  inydist, double indist);
+  int GetElemPtr(int innum) { return elempt[innum]; }
+  int GetPtrXdist(int innum) { return xdist[innum]; }
+  int GetPtrYdist(int innum) { return ydist[innum]; }
+  double GetPtrDist(int innum) { return dist[innum]; }
+  friend void FlowMatter(cSpatialCountElem&, cSpatialCountElem&, double, double, double, double,
+                         int, int, double);
 };
 
 #endif

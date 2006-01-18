@@ -24,7 +24,8 @@
 #include "tMatrix.h"
 #endif
 
-class cResourceCount {
+class cResourceCount
+{
 private:
   mutable tArray<double> resource_count;  // Current quantity of each resource
   tArray<double> decay_rate;      // Multiplies resource count at each step
@@ -45,41 +46,39 @@ private:
   static const double UPDATE_STEP;   // Fraction of an update per step
   static const double EPSILON;       // Tolorance for round off errors
   static const int PRECALC_DISTANCE; // Number of steps to precalculate
+  
 public:
-  cResourceCount(int num_resources=0);
-  cResourceCount(const cResourceCount &);
+  cResourceCount(int num_resources = 0);
+  cResourceCount(const cResourceCount&);
   ~cResourceCount();
 
-  const cResourceCount &operator=(const cResourceCount &);
+  const cResourceCount& operator=(const cResourceCount&);
 
   void SetSize(int num_resources);
 
-  void Setup(int id, cString name, double initial, double inflow,
-             double decay, int in_geometry, double in_xdiffuse,
-             double in_xgravity, double in_ydiffuse,
-             double in_ygravity, int in_inflowX1,
-             int in_inflowX2, int in_inflowY1,
-             int in_inflowY2, int in_outflowX1,
-             int in_outflowX2, int in_outflowY1,
-             int in_outflowY);
+  void Setup(int id, cString name, double initial, double inflow, double decay, int in_geometry,
+             double in_xdiffuse, double in_xgravity, double in_ydiffuse, double in_ygravity,
+             int in_inflowX1, int in_inflowX2, int in_inflowY1, int in_inflowY2,
+             int in_outflowX1, int in_outflowX2, int in_outflowY1, int in_outflowY);
   void Update(double in_time);
 
   int GetSize(void) const { return resource_count.GetSize(); }
-  const tArray<double> & ReadResources(void) const { return resource_count; }
-  const tArray<double> & GetResources() const;
-  const tArray<double> & GetCellResources(int cell_id) const;
-  const tArray<int> & GetResourcesGeometry() const;
-  const tArray< tArray<double> > & GetSpatialRes();
-  void Modify(const tArray<double> & res_change);
+  const tArray<double>& ReadResources(void) const { return resource_count; }
+  const tArray<double>& GetResources() const;
+  const tArray<double>& GetCellResources(int cell_id) const;
+  const tArray<int>& GetResourcesGeometry() const;
+  const tArray<tArray<double> >& GetSpatialRes();
+  void Modify(const tArray<double>& res_change);
   void Modify(int id, double change);
   void ModifyCell(const tArray<double> & res_change, int cell_id);
   void Set(int id, double new_level);
-  double Get(int id) const{
+  double Get(int id) const
+  {
     assert(id < resource_count.GetSize());
-    return resource_count[id]; }
+    return resource_count[id];
+  }
   void ResizeSpatialGrids(int in_x, int in_y);
-  cSpatialResCount GetSpatialResource(int id)
-       { return spatial_resource_count[id]; }
+  cSpatialResCount GetSpatialResource(int id) { return spatial_resource_count[id]; }
 };
 
 #endif

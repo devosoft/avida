@@ -17,27 +17,30 @@
 
 class cInstruction;
 
-class cGenomeUtil {
+class cGenomeUtil
+{
+private:
+  cGenomeUtil(); // @not_implemented
+  
 public:
   // ========= Detection =========
-  static int FindInst(const cGenome & gen, const cInstruction & inst,
-		      int start_index=0);
-  static bool HasInst(const cGenome & gen, const cInstruction & inst)
-    { return ( FindInst(gen, inst) >= 0 ) ? true : false; }
+  static int FindInst(const cGenome& gen, const cInstruction& inst, int start_index = 0);
+  static bool HasInst(const cGenome& gen, const cInstruction& inst)
+  {
+    return ( FindInst(gen, inst) >= 0 ) ? true : false;
+  }
 
   // === Genetic distance tools ===
-  static int FindOverlap(const cGenome & gen1, const cGenome & gen2,
-			 int offset = 0);
-  static int FindHammingDistance(const cGenome & gen1, const cGenome & gen2,
-				 int offset = 0);
-  static int FindBestOffset(const cGenome & gen1, const cGenome & gen2);
-  static int FindSlidingDistance(const cGenome & gen1, const cGenome & gen2);
-  static int FindEditDistance(const cGenome & gen1, const cGenome & gen2);
+  static int FindOverlap(const cGenome& gen1, const cGenome& gen2, int offset = 0);
+  static int FindHammingDistance(const cGenome& gen1, const cGenome& gen2, int offset = 0);
+  static int FindBestOffset(const cGenome& gen1, const cGenome& gen2);
+  static int FindSlidingDistance(const cGenome& gen1, const cGenome& gen2);
+  static int FindEditDistance(const cGenome& gen1, const cGenome& gen2);
 
   // ===== Construction methods =====
-  static cGenome Crop(const cGenome & genome, int start, int end);
-  static cGenome Cut(const cGenome & genome, int start, int end);
-  static cGenome Join(const cGenome & genome1, const cGenome & genome2);
+  static cGenome Crop(const cGenome& genome, int start, int end);
+  static cGenome Cut(const cGenome& genome, int start, int end);
+  static cGenome Join(const cGenome& genome1, const cGenome& genome2);
 };
 
 #endif

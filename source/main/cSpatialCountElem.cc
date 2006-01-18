@@ -13,24 +13,28 @@
 const int MAXFLOWPTS = 8;
 
 
-cSpatialCountElem::cSpatialCountElem (double initamount) {
-    amount = initamount;
-    delta=0.0;
-    elempt.Resize(MAXFLOWPTS);
-    xdist.Resize(MAXFLOWPTS);
-    ydist.Resize(MAXFLOWPTS);
-    dist.Resize(MAXFLOWPTS);
+cSpatialCountElem::cSpatialCountElem(double initamount)
+{
+  amount = initamount;
+  delta = 0.0;
+  elempt.Resize(MAXFLOWPTS);
+  xdist.Resize(MAXFLOWPTS);
+  ydist.Resize(MAXFLOWPTS);
+  dist.Resize(MAXFLOWPTS);
 }
-cSpatialCountElem::cSpatialCountElem () {
-    amount = 0.0;
-    delta=0.0;
-    elempt.Resize(MAXFLOWPTS);
-    xdist.Resize(MAXFLOWPTS);
-    ydist.Resize(MAXFLOWPTS);
-    dist.Resize(MAXFLOWPTS);
+
+cSpatialCountElem::cSpatialCountElem()
+{
+  amount = 0.0;
+  delta = 0.0;
+  elempt.Resize(MAXFLOWPTS);
+  xdist.Resize(MAXFLOWPTS);
+  ydist.Resize(MAXFLOWPTS);
+  dist.Resize(MAXFLOWPTS);
 }
-void cSpatialCountElem::SetPtr (int innum, int inelempt, int inxdist, 
-                        int inydist, double indist) {
+
+void cSpatialCountElem::SetPtr(int innum, int inelempt, int inxdist, int inydist, double indist)
+{
   elempt[innum] = inelempt;
   xdist[innum] = inxdist;
   ydist[innum] = inydist;

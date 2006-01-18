@@ -13,7 +13,8 @@
 
 #include <string>
 
-class cOrgMessage {
+class cOrgMessage
+{
 private:
   int time;
   int sender_id;
@@ -22,9 +23,8 @@ private:
   std::string data;
 
 public:
-  cOrgMessage() { time=sender_id=recipient_id=-1; label=data=""; }
-  cOrgMessage(std::string in_label, std::string in_data) 
-  { label = in_label; data = in_data; }
+  cOrgMessage() : time(-1), sender_id(-1), recipient_id(-1), label(""), data("") { ; }
+  cOrgMessage(std::string in_label, std::string in_data) { label = in_label; data = in_data; }
   
   void SetTime(int in_time) { time = in_time; }
   void SetSenderID(int in_id) { sender_id = in_id; }
