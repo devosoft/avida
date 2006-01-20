@@ -25,67 +25,61 @@
  * manipulating and comparing strings.
  **/
 
-class cString {
+class cString
+{
 protected:
-  void CopyOnWrite(){
-    if( value->IsShared() ){  // if it is shared
-      value->RemoveRef();     // remove our reference count
-      value = new cStringData(*value);  // make own copy of value
-    }
-  }
+  inline void CopyOnWrite();
 
   // -- Contained Classes --
 private:
   // Declarations (only needed)
   class cStringData;
 
-  // {{{ -- cCharProxy -- To detect rvalue vs lvalue ---------------------
-
-  class cCharProxy{
+  // cCharProxy -- To detect rvalue vs lvalue ---------------------
+  class cCharProxy
+  {
   private:
-    cString & string;
+    cString& string;
     short index;
 
   public:
-    cCharProxy( cString & _string, short _index) :
-     string(_string), index(_index) {;}
+    cCharProxy(cString& _string, short _index) : string(_string), index(_index) { ; }
 
-    inline cCharProxy & operator= (char c);     // lvalue
-    inline cCharProxy & operator+= (char c);    // lvalue
-    inline cCharProxy & operator-= (char c);    // lvalue
-    inline cCharProxy & operator++ ();          // lvalue (prefix)
-    inline char         operator++ (int dummy); // lvalue (postfix)
-    inline cCharProxy & operator-- ();          // lvalue (prefix)
-    inline char         operator-- (int dummy); // lvalue (postfix)
-    inline operator char () const ;             // rvalue
+    inline cCharProxy& operator=(char c);     // lvalue
+    inline cCharProxy& operator+=(char c);    // lvalue
+    inline cCharProxy& operator-=(char c);    // lvalue
+    inline cCharProxy& operator++();          // lvalue (prefix)
+    inline char        operator++(int dummy); // lvalue (postfix)
+    inline cCharProxy& operator--();          // lvalue (prefix)
+    inline char        operator--(int dummy); // lvalue (postfix)
+    inline operator char () const;            // rvalue
   };
-
-  //friend cCharProxy;  // Telling rvalue vs lvalue ....
-  // porting to gcc 3.1 -- k
   friend class cCharProxy;  // Telling rvalue vs lvalue ....
 
-  // }}}  End cCharProxy
-  // {{{ -- cStringData -- Holds the actual data and is reference count --
-  class cStringData{
+  // cStringData -- Holds the actual data and is reference count --
+  class cStringData
+  {
     // NOTE: Terminating NULL is always there (you can't assign!!)
-
   private:
     short refs;   // Number of references
     short size;   // size of data (NOT INCLUDING TRAILING NULL)
-    char * data;
+    char* data;
+    
+    
+    cStringData(); // @not_implemented
 
   public:
     explicit cStringData(short in_size);
-    cStringData(short in_size, const char * in);
-    cStringData(const cStringData & in);
+    cStringData(short in_size, const char* in);
+    cStringData(const cStringData& in);
 
     ~cStringData(){
       assert(refs == 0);  // Deleting cStringData with References!!
       delete [] data;
     }
 
-
-    cStringData & operator= (const cStringData & in) {
+    cStringData& operator=(const cStringData& in)
+    {
       delete [] data;
       size = in.GetSize();
       data = new char [size+1];
@@ -95,75 +89,64 @@ private:
       return (*this);
     }
 
-
     short GetSize() const { return size; }
+    const char* GetData() const { return data; }
 
-    const char * GetData() const { return data; }
-
-    char operator[] (int index) const {
+    char operator[] (int index) const
+    {
       assert(index >= 0);    // Lower Bounds Error
       assert(index <= size); // Upper Bounds Error
       return data[index];
     }
 
-    char & operator[](int index) {
+    char& operator[](int index)
+    {
       assert(index >= 0);     // Lower Bounds Error
       assert(index <= size);  // Upper Bounds Error
       assert(index != size);  // Cannot Change Terminating NULL
       return data[index];
     }
 
-
     bool IsShared() { return (refs > 1); }
     bool AtMaxRefs() { return (refs >= MAX_STRING_REF_COUNT); }
 
-    short RemoveRef() {
+    short RemoveRef()
+    {
       assert( refs > 0 );  // Reference count corrupted
-      return(--refs);
+      return (--refs);
     }
 
-    cStringData * NewRef() { ++refs; return this; }
-
+    cStringData* NewRef() { ++refs; return this; }
   };
-  // }}} End cStringData
 
-  // -- Constants --
 public:
   static const int MAX_LENGTH;
 
-
-
-  //  -- INTERFACE -----------------------------------------------------------
-public:
-
-  // -- Constructors --
-  cString(const char * in = "") : value(new cStringData(strlen(in), in)) {
+  cString(const char* in = "") : value(new cStringData(strlen(in), in))
+  {
     assert( in != NULL );     // NULL input string
     assert( value != NULL );  // Memory Allocation Error: Out of Memory
   }
-  explicit cString(const int size) : value(new cStringData(size)) {
-    assert( value!=NULL );    // Memory Allocation Error: Out of Memory
+  explicit cString(const int size) : value(new cStringData(size))
+  {
+    assert( value != NULL );    // Memory Allocation Error: Out of Memory
   }
-  cString(const cString & in) { CopyString(in); }
-
-
-  // -- Destructor --
-  virtual ~cString() { if( value->RemoveRef() == 0 )  delete value; }
+  cString(const cString& in) { CopyString(in); }
+  virtual ~cString() { if (value->RemoveRef() == 0) delete value; }
 
 
   // Cast to const char *
-  operator const char * () const { return value->GetData(); }
-  const char * operator() () const { return value->GetData(); } // Depricated
-  const char * GetData() const { return value->GetData(); } // Depricated
-
+  operator const char* () const { return value->GetData(); }
 
   // Assignment Operators
-  cString & operator= (const cString & in){
+  cString& operator=(const cString & in)
+  {
     if( value->RemoveRef() == 0 ) delete value;
     CopyString(in);
     return *this; 
   }
-  cString & operator= (const char * in){
+  cString& operator=(const char* in)
+  {
     assert( in != NULL ); // NULL input string
     if( value->RemoveRef() == 0 ) delete value;
     value = new cStringData(strlen(in),in);
@@ -572,6 +555,14 @@ std::ostream& operator << (std::ostream& out, const cString & string);
 // }}}
 
 // -- INLINE INCLUDES --
+
+void cString::CopyOnWrite()
+{
+  if (value->IsShared()) {  // if it is shared
+    value->RemoveRef();     // remove our reference count
+    value = new cStringData(*value);  // make own copy of value
+  }
+}
 
 cString::cCharProxy & cString::cCharProxy::operator= (char c){  // lvalue
   string.CopyOnWrite();

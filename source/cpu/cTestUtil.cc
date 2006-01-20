@@ -46,7 +46,7 @@ void cTestUtil::PrintGenome(cWorld* world, const cGenome & genome, cString filen
 
   // @CAO Fix!!!!!!
   if( fp.good() == false ) {
-    cerr << "Unable to open output file '" <<  filename() << "'" << endl;
+    cerr << "Unable to open output file '" <<  filename << "'" << endl;
     return;
   }
 
@@ -146,7 +146,7 @@ void cTestUtil::PrintGenome(cWorld* world, cInjectGenotype * inject_genotype,
 
   // @CAO Fix!!!!!!
   if( fp.good() == false ) {
-    cerr << "Unable to open output file '" <<  filename() << "'" <<
+    cerr << "Unable to open output file '" <<  filename << "'" <<
     endl;
     return;
   }

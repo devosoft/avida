@@ -30,11 +30,11 @@ bool cTools::MkDir(const cString & dirname, bool verbose)
 {
   if (verbose) cout << "Checking for directory '" << dirname << "'..." << flush;
 
-  FILE * fp = fopen ( dirname(), "r" );
+  FILE * fp = fopen(dirname, "r");
   if (fp == 0) {
     if (errno == ENOENT) {
       if (verbose) cout << "  not found, creating..." << flush;
-      if (mkdir( dirname(), (S_IRWXU|S_IRWXG|S_IRWXO) )) {
+      if (mkdir(dirname, (S_IRWXU|S_IRWXG|S_IRWXO))) {
         if (verbose)
           cerr << endl << "Warning: Failed to create directory '" << dirname << "'." << endl;
         return false;

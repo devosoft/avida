@@ -24,18 +24,19 @@
  * Its main usage is for the class @ref cInitFile.
  **/
 
-class cFile {
+class cFile
+{
 private:
-  cFile(const cFile &);
+  cFile(const cFile&); // @not_implemented
+  cFile& operator=(const cFile&); // @not_implemented
+
 protected:
   std::fstream fp;
   cString filename;
   bool is_open; // Have we successfully opened this file?
   bool verbose; // Should file be verbose about warnings to users?
+
 public:
-  /**
-   * The empty constructor does nothing.
-   **/ 
   cFile() : filename(""), is_open(false), verbose(false) { ; }
   
   /**
@@ -53,7 +54,7 @@ public:
   /**
    * @return The name of the file currently open.
    **/
-  const cString & GetFilename() const { return filename; }
+  const cString& GetFilename() const { return filename; }
   
   /**
    * Open a file of the given name. If another file was open previously,
@@ -82,8 +83,6 @@ public:
   bool Fail() const { return (fp.fail()); }
   bool Good() const { return (fp.good()); }
   bool Eof() const { return (fp.eof()); }
-  // int AtStart();
-  // int AtEnd();
 
   void SetVerbose(bool _v=true) { verbose = _v; }
 };

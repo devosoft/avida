@@ -21,12 +21,19 @@
 class cStringList;
 
 
-class cStringIterator {
+class cStringIterator
+{
 private:
   tConstListIterator<cString> list_it;
   static const cString null_str;
+  
+  
+  cStringIterator(); // @not_implemented
+  cStringIterator(const cStringIterator&); // @not_implemented
+  cStringIterator& operator=(const cStringIterator&); // @not_implemented
+  
 public:
-  cStringIterator(const cStringList & in_list);
+  cStringIterator(const cStringList& in_list);
 
   void Reset() { list_it.Reset(); }
   const cString & Get() {

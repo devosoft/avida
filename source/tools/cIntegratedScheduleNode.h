@@ -30,7 +30,8 @@
  * each item should be included in.
  **/
 
-class cIntegratedScheduleNode {
+class cIntegratedScheduleNode
+{
 private:
   tArray<int> active_array; // Each cell in this array corressponds to the
                       //  item with the same ID.  If creature is not in the
@@ -48,11 +49,21 @@ private:
   int process_count;  // Number of times this node has been executed.
   bool execute;       // Should this node execute or pass?
 
-  cIntegratedScheduleNode * next;
-  cIntegratedScheduleNode * prev;
+  cIntegratedScheduleNode* next;
+  cIntegratedScheduleNode* prev;
+  
+  
+  cIntegratedScheduleNode(const cIntegratedScheduleNode&); // @not_implemented
+  cIntegratedScheduleNode& operator=(const cIntegratedScheduleNode&); // @not_implemented
+  
 public:
-  cIntegratedScheduleNode(int _item_count = 0, int in_id = -1);
-  ~cIntegratedScheduleNode();
+  cIntegratedScheduleNode(int _item_count = 0, int in_id = -1)
+    : active_array(_item_count), first_entry(-1), active_entry(-1), node_id(in_id), size(0)
+    , process_size(1), process_count(0), execute(true), next(NULL), prev(NULL)
+  {
+      active_array.SetAll(0);
+  }
+  ~cIntegratedScheduleNode() { ; }
 
   void Insert(int item_id);
   void Remove(int item_id);

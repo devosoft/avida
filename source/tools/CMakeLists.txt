@@ -2,7 +2,6 @@ SET(libtools_a_SOURCES
   cBlockStruct.cc
   cChangeList.cc
   cConstSchedule.cc
-  cCountTracker.cc
   cDataFile.cc
   cDataFileManager.cc
   cDataManager_Base.cc

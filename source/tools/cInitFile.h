@@ -30,9 +30,8 @@
  * A class to handle initialization files.
  **/
 
-class cInitFile : public cFile {
-private:
-  cInitFile(const cInitFile &);
+class cInitFile : public cFile
+{
 private:
   struct sFileLineInfo {
     cString line;
@@ -46,6 +45,11 @@ private:
   cStringList file_format;
 
   int active_line;
+
+
+  cInitFile(const cInitFile&); // @not_implemented
+  cInitFile& operator=(const cInitFile&); // @not_implemented
+  
 public:
   /**
    * The empty constructor constructs an object that is in a clean

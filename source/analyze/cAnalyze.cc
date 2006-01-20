@@ -2460,7 +2460,7 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
     filename = "community.complexity.dat";
   }
   
-  filename.Set("%s%s", directory(), filename.GetData());
+  filename.Set("%s%s", static_cast<const char*>(directory), static_cast<const char*>(filename));
   ofstream& cpx_fp = m_world->GetDataFileOFStream(filename);
   
   cpx_fp << "# Legend:" << endl;
@@ -2949,7 +2949,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
     filename = "community.complexity.dat";
   }
   
-  filename.Set("%s%s", directory(), filename.GetData());
+  filename.Set("%s%s", static_cast<const char*>(directory), static_cast<const char*>(filename));
   ofstream& cpx_fp = m_world->GetDataFileOFStream(filename);
   
   cpx_fp << "# Legend:" << endl;
@@ -3899,9 +3899,9 @@ void cAnalyze::CommandMapTasks(cString cur_string)
     // Construct this filename...
     cString filename;
     if (file_type == FILE_TYPE_TEXT) {
-      filename.Set("%stasksites.%s.dat", directory(), genotype->GetName()());
+      filename.Set("%stasksites.%s.dat", static_cast<const char*>(directory), static_cast<const char*>(genotype->GetName()));
     } else {   //  if (file_type == FILE_TYPE_HTML) {
-      filename.Set("%stasksites.%s.html", directory(), genotype->GetName()());
+      filename.Set("%stasksites.%s.html", static_cast<const char*>(directory), static_cast<const char*>(genotype->GetName()));
     }
     ofstream& fp = m_world->GetDataFileOFStream(filename);
     
@@ -3911,13 +3911,13 @@ void cAnalyze::CommandMapTasks(cString cur_string)
     if (link_maps == true) {
       // Check the next genotype on the list...
       if (batch_it.Next() != NULL) {
-        next_file.Set("tasksites.%s.html", batch_it.Get()->GetName()());
+        next_file.Set("tasksites.%s.html", static_cast<const char*>(batch_it.Get()->GetName()));
       }
       batch_it.Prev();  // Put the list back where it was...
       
       // Check the previous genotype on the list...
       if (batch_it.Prev() != NULL) {
-        prev_file.Set("tasksites.%s.html", batch_it.Get()->GetName()());
+        prev_file.Set("tasksites.%s.html", static_cast<const char*>(batch_it.Get()->GetName()));
       }
       batch_it.Next();  // Put the list back where it was...
     }
@@ -4512,9 +4512,9 @@ void cAnalyze::CommandMapMutations(cString cur_string)
     // Construct this filename...
     cString filename;
     if (file_type == FILE_TYPE_TEXT) {
-      filename.Set("%smut_map.%s.dat", directory(), genotype->GetName()());
+      filename.Set("%smut_map.%s.dat", static_cast<const char*>(directory), static_cast<const char*>(genotype->GetName()));
     } else {   //  if (file_type == FILE_TYPE_HTML) {
-      filename.Set("%smut_map.%s.html", directory(), genotype->GetName()());
+      filename.Set("%smut_map.%s.html", static_cast<const char*>(directory), static_cast<const char*>(genotype->GetName()));
     }
     ofstream& fp = m_world->GetDataFileOFStream(filename);
     
@@ -5238,7 +5238,7 @@ void cAnalyze::AnalyzeNewInfo(cString cur_string)
   }
   
   cString newinfo_fn;
-  newinfo_fn.Set("%s%s.newinfo.dat", directory(), "lineage");
+  newinfo_fn.Set("%s%s.newinfo.dat", static_cast<const char*>(directory), "lineage");
   ofstream& newinfo_fp = m_world->GetDataFileOFStream(newinfo_fn);
   
   newinfo_fp << "# Legend:" << endl;
@@ -5617,7 +5617,7 @@ void cAnalyze::AnalyzeMuts(cString cur_string)
       for (int mut_id = 0; mut_id < total_diffs; mut_id++) {
         if ((combo_id >> mut_id) & 1) {
           const int cur_pos = mut_positions[mut_id];
-          test_sequence[cur_pos] = last_seq.GetData()[cur_pos];
+          test_sequence[cur_pos] = static_cast<const char*>(last_seq)[cur_pos];
           diff_count++;
         }
       }
@@ -6053,9 +6053,9 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
   
   cString lineage_filename;
   if (batch[cur_batch].IsLineage()) {
-    lineage_filename.Set("%s%s.complexity.dat", directory(), "lineage");
+    lineage_filename.Set("%s%s.complexity.dat", static_cast<const char*>(directory), "lineage");
   } else {
-    lineage_filename.Set("%s%s.complexity.dat", directory(), "nonlineage");
+    lineage_filename.Set("%s%s.complexity.dat", static_cast<const char*>(directory), "nonlineage");
   }
   ofstream& lineage_fp = m_world->GetDataFileOFStream(lineage_filename);
   
@@ -6066,7 +6066,7 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
     
     // Construct this filename...
     cString filename;
-    filename.Set("%s%s.complexity.dat", directory(), genotype->GetName()());
+    filename.Set("%s%s.complexity.dat", static_cast<const char*>(directory), static_cast<const char*>(genotype->GetName()));
     ofstream& fp = m_world->GetDataFileOFStream(filename);
     
     lineage_fp << genotype->GetID() << " ";
@@ -6199,7 +6199,7 @@ void cAnalyze::AnalyzePopComplexity(cString cur_string)
   
   // Construct filename...
   cString filename;
-  filename.Set("%spop%s.complexity.dat", directory(), file());
+  filename.Set("%spop%s.complexity.dat", static_cast<const char*>(directory), static_cast<const char*>(file));
   ofstream& fp = m_world->GetDataFileOFStream(filename);
   
   //////////////////////////////////////////////////////////
@@ -6279,20 +6279,6 @@ void cAnalyze::CommandHelpfile(cString cur_string)
   
   help_control.PrintHTML();
 }
-
-void cAnalyze::CommandDocfile(cString cur_string)
-{
-  cout << "Printing documentation files in: " << cur_string << endl;
-  
-  cHelpManager help_control;
-  if (verbose >= nAnalyze::VERBOSE_ON) help_control.SetVerbose();
-  while (cur_string.GetSize() > 0) {
-    help_control.LoadFile(cur_string.PopWord());
-  }
-  
-  help_control.PrintHTML();
-}
-
 
 
 //////////////// Control...
@@ -6562,7 +6548,7 @@ void cAnalyze::CommandSystem(cString cur_string)
 {
   cout << "Running System Command: " << cur_string << endl;
   
-  system(cur_string());
+  system(cur_string);
 }
 
 void cAnalyze::CommandInteractive(cString cur_string)
@@ -6764,12 +6750,11 @@ cString cAnalyze::PopDirectory(cString & in_string,
   }
   
   // Make sure the directory exists.
-  FILE *fp = fopen ( directory(), "r" );
-  if ( fp == 0 ){
-    if ( errno == ENOENT ){
-      cerr << "Directory '" << directory
-      << "' does not exist.  Creating..." << endl;
-      if ( mkdir( directory(), (S_IRWXU|S_IRWXG|S_IRWXO) ) )
+  FILE *fp = fopen (directory, "r");
+  if ( fp == 0 ) {
+    if ( errno == ENOENT ) {
+      cerr << "Directory '" << directory << "' does not exist.  Creating..." << endl;
+      if (mkdir(directory, (S_IRWXU|S_IRWXG|S_IRWXO)))
         cerr << " Error creating '" << directory << "'" << endl;
     }
     else cerr << " Error opening '" << directory << "'" << endl;

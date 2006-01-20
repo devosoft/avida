@@ -11,11 +11,13 @@
 #ifndef cCountTracker_h
 #define cCountTracker_h
 
-class cCountTracker {
+class cCountTracker
+{
 private:
   int cur_count;
   int last_count;
   int total_count;
+  
 public:
   cCountTracker() { Clear(); }
   ~cCountTracker() { ; }
@@ -24,10 +26,10 @@ public:
   int GetLast() const { return last_count; }
   int GetTotal() const { return total_count; }
 
-  void Inc();
-  void Dec();
-  void Next();
-  void Clear();
+  void Inc() { cur_count++; total_count++; }
+  void Dec() { cur_count--; }
+  void Next() { last_count = cur_count; cur_count = 0; }
+  void Clear() { cur_count = last_count = total_count = 0; }
 };
 
 #endif

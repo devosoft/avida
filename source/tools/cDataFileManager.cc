@@ -29,7 +29,8 @@ cDataFile & cDataFileManager::Get(const cString & name)
 
   // If it hasn't been found, create it...
   if (!m_datafiles.Find(name, found_file)) {
-    found_file = new cDataFile(m_target_dir + name);
+    cString filename = m_target_dir + name;
+    found_file = new cDataFile(filename);
     m_datafiles.Add(name, found_file);
   }
 

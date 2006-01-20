@@ -124,10 +124,8 @@
 		70B0874D08F5E82D00FC65FE /* cTaskLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872D08F5E82D00FC65FE /* cTaskLib.cc */; };
 		70B087E208F5F4BA00FC65FE /* cChangeList.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B087DF08F5F4BA00FC65FE /* cChangeList.cc */; };
 		70B087E308F5F4BA00FC65FE /* cConstSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B087E008F5F4BA00FC65FE /* cConstSchedule.cc */; };
-		70B087E408F5F4BA00FC65FE /* cCountTracker.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B087E108F5F4BA00FC65FE /* cCountTracker.cc */; };
 		70B087E508F5F4BA00FC65FE /* cChangeList.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B087DF08F5F4BA00FC65FE /* cChangeList.cc */; };
 		70B087E608F5F4BA00FC65FE /* cConstSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B087E008F5F4BA00FC65FE /* cConstSchedule.cc */; };
-		70B087E708F5F4BA00FC65FE /* cCountTracker.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B087E108F5F4BA00FC65FE /* cCountTracker.cc */; };
 		70B0885508F5FE5800FC65FE /* cDataFile.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0884F08F5FE5800FC65FE /* cDataFile.cc */; };
 		70B0885608F5FE5800FC65FE /* cDataFileManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0885008F5FE5800FC65FE /* cDataFileManager.cc */; };
 		70B0885708F5FE5800FC65FE /* cDataManager_Base.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0885108F5FE5800FC65FE /* cDataManager_Base.cc */; };
@@ -139,9 +137,7 @@
 		70B0885E08F5FE5800FC65FE /* cDefaultMessageDisplay.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0885208F5FE5800FC65FE /* cDefaultMessageDisplay.cc */; };
 		70B0885F08F5FE5800FC65FE /* cDoubleSum.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0885308F5FE5800FC65FE /* cDoubleSum.cc */; };
 		70B0888508F603D400FC65FE /* cFile.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0888308F603D400FC65FE /* cFile.cc */; };
-		70B0888608F603D400FC65FE /* cGenesis.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0888408F603D400FC65FE /* cGenesis.cc */; };
 		70B0888708F603D400FC65FE /* cFile.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0888308F603D400FC65FE /* cFile.cc */; };
-		70B0888808F603D400FC65FE /* cGenesis.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0888408F603D400FC65FE /* cGenesis.cc */; };
 		70B0892708F7630100FC65FE /* cHelpAlias.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0891608F7630100FC65FE /* cHelpAlias.cc */; };
 		70B0892808F7630100FC65FE /* cHelpManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0891708F7630100FC65FE /* cHelpManager.cc */; };
 		70B0892908F7630100FC65FE /* cHelpType.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0891808F7630100FC65FE /* cHelpType.cc */; };
@@ -301,14 +297,12 @@
 		70DCACD0097AF7CC002F8733 /* cTaskLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872D08F5E82D00FC65FE /* cTaskLib.cc */; };
 		70DCACD1097AF7CC002F8733 /* cChangeList.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B087DF08F5F4BA00FC65FE /* cChangeList.cc */; };
 		70DCACD2097AF7CC002F8733 /* cConstSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B087E008F5F4BA00FC65FE /* cConstSchedule.cc */; };
-		70DCACD3097AF7CC002F8733 /* cCountTracker.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B087E108F5F4BA00FC65FE /* cCountTracker.cc */; };
 		70DCACD4097AF7CC002F8733 /* cDataFile.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0884F08F5FE5800FC65FE /* cDataFile.cc */; };
 		70DCACD5097AF7CC002F8733 /* cDataFileManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0885008F5FE5800FC65FE /* cDataFileManager.cc */; };
 		70DCACD6097AF7CC002F8733 /* cDataManager_Base.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0885108F5FE5800FC65FE /* cDataManager_Base.cc */; };
 		70DCACD7097AF7CC002F8733 /* cDefaultMessageDisplay.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0885208F5FE5800FC65FE /* cDefaultMessageDisplay.cc */; };
 		70DCACD8097AF7CC002F8733 /* cDoubleSum.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0885308F5FE5800FC65FE /* cDoubleSum.cc */; };
 		70DCACD9097AF7CC002F8733 /* cFile.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0888308F603D400FC65FE /* cFile.cc */; };
-		70DCACDA097AF7CC002F8733 /* cGenesis.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0888408F603D400FC65FE /* cGenesis.cc */; };
 		70DCACDB097AF7CC002F8733 /* cHelpAlias.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0891608F7630100FC65FE /* cHelpAlias.cc */; };
 		70DCACDC097AF7CC002F8733 /* cHelpManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0891708F7630100FC65FE /* cHelpManager.cc */; };
 		70DCACDD097AF7CC002F8733 /* cHelpType.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0891808F7630100FC65FE /* cHelpType.cc */; };
@@ -627,7 +621,6 @@
 		70B087DE08F5F4A900FC65FE /* cVerifierSuiteRecurser.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cVerifierSuiteRecurser.h; sourceTree = "<group>"; };
 		70B087DF08F5F4BA00FC65FE /* cChangeList.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cChangeList.cc; sourceTree = "<group>"; };
 		70B087E008F5F4BA00FC65FE /* cConstSchedule.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cConstSchedule.cc; sourceTree = "<group>"; };
-		70B087E108F5F4BA00FC65FE /* cCountTracker.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCountTracker.cc; sourceTree = "<group>"; };
 		70B0884808F5FE4500FC65FE /* cDataEntry.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cDataEntry.h; sourceTree = "<group>"; };
 		70B0884908F5FE4500FC65FE /* cDataFile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cDataFile.h; sourceTree = "<group>"; };
 		70B0884A08F5FE4500FC65FE /* cDataFileManager.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cDataFileManager.h; sourceTree = "<group>"; };
@@ -1525,7 +1518,6 @@
 				70B0884D08F5FE4500FC65FE /* cDoubleSum.h */,
 				70B087DF08F5F4BA00FC65FE /* cChangeList.cc */,
 				70B087E008F5F4BA00FC65FE /* cConstSchedule.cc */,
-				70B087E108F5F4BA00FC65FE /* cCountTracker.cc */,
 				70B087D708F5F4A900FC65FE /* cBlockStruct.cc */,
 				70B087D808F5F4A900FC65FE /* cBlockStruct.h */,
 				70B087D908F5F4A900FC65FE /* cChangeList.h */,
@@ -1846,14 +1838,12 @@
 				70B0874D08F5E82D00FC65FE /* cTaskLib.cc in Sources */,
 				70B087E508F5F4BA00FC65FE /* cChangeList.cc in Sources */,
 				70B087E608F5F4BA00FC65FE /* cConstSchedule.cc in Sources */,
-				70B087E708F5F4BA00FC65FE /* cCountTracker.cc in Sources */,
 				70B0885B08F5FE5800FC65FE /* cDataFile.cc in Sources */,
 				70B0885C08F5FE5800FC65FE /* cDataFileManager.cc in Sources */,
 				70B0885D08F5FE5800FC65FE /* cDataManager_Base.cc in Sources */,
 				70B0885E08F5FE5800FC65FE /* cDefaultMessageDisplay.cc in Sources */,
 				70B0885F08F5FE5800FC65FE /* cDoubleSum.cc in Sources */,
 				70B0888708F603D400FC65FE /* cFile.cc in Sources */,
-				70B0888808F603D400FC65FE /* cGenesis.cc in Sources */,
 				70B0893808F7630100FC65FE /* cHelpAlias.cc in Sources */,
 				70B0893908F7630100FC65FE /* cHelpManager.cc in Sources */,
 				70B0893A08F7630100FC65FE /* cHelpType.cc in Sources */,
@@ -1968,14 +1958,12 @@
 				70DCACD0097AF7CC002F8733 /* cTaskLib.cc in Sources */,
 				70DCACD1097AF7CC002F8733 /* cChangeList.cc in Sources */,
 				70DCACD2097AF7CC002F8733 /* cConstSchedule.cc in Sources */,
-				70DCACD3097AF7CC002F8733 /* cCountTracker.cc in Sources */,
 				70DCACD4097AF7CC002F8733 /* cDataFile.cc in Sources */,
 				70DCACD5097AF7CC002F8733 /* cDataFileManager.cc in Sources */,
 				70DCACD6097AF7CC002F8733 /* cDataManager_Base.cc in Sources */,
 				70DCACD7097AF7CC002F8733 /* cDefaultMessageDisplay.cc in Sources */,
 				70DCACD8097AF7CC002F8733 /* cDoubleSum.cc in Sources */,
 				70DCACD9097AF7CC002F8733 /* cFile.cc in Sources */,
-				70DCACDA097AF7CC002F8733 /* cGenesis.cc in Sources */,
 				70DCACDB097AF7CC002F8733 /* cHelpAlias.cc in Sources */,
 				70DCACDC097AF7CC002F8733 /* cHelpManager.cc in Sources */,
 				70DCACDD097AF7CC002F8733 /* cHelpType.cc in Sources */,
@@ -2083,14 +2071,12 @@
 				70B0873D08F5E82D00FC65FE /* cTaskLib.cc in Sources */,
 				70B087E208F5F4BA00FC65FE /* cChangeList.cc in Sources */,
 				70B087E308F5F4BA00FC65FE /* cConstSchedule.cc in Sources */,
-				70B087E408F5F4BA00FC65FE /* cCountTracker.cc in Sources */,
 				70B0885508F5FE5800FC65FE /* cDataFile.cc in Sources */,
 				70B0885608F5FE5800FC65FE /* cDataFileManager.cc in Sources */,
 				70B0885708F5FE5800FC65FE /* cDataManager_Base.cc in Sources */,
 				70B0885808F5FE5800FC65FE /* cDefaultMessageDisplay.cc in Sources */,
 				70B0885908F5FE5800FC65FE /* cDoubleSum.cc in Sources */,
 				70B0888508F603D400FC65FE /* cFile.cc in Sources */,
-				70B0888608F603D400FC65FE /* cGenesis.cc in Sources */,
 				70B0892708F7630100FC65FE /* cHelpAlias.cc in Sources */,
 				70B0892808F7630100FC65FE /* cHelpManager.cc in Sources */,
 				70B0892908F7630100FC65FE /* cHelpType.cc in Sources */,

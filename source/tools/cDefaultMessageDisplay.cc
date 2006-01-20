@@ -15,7 +15,7 @@
 using namespace std;
 
 
-void cDefaultMessageDisplay::out(cString& final_msg) { *_out << final_msg << endl; _out->flush(); }
+void cDefaultMessageDisplay::out(cString& final_msg) { *m_out << final_msg << endl; m_out->flush(); }
 
 /*
 default instantiations of cDefaultMessageDisplay...

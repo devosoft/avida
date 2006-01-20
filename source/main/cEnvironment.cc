@@ -127,8 +127,7 @@ bool cEnvironment::LoadReactionProcess(cReaction * reaction, cString desc)
     cString var_entry = desc.Pop(':');
     cString var_name;
     cString var_value;
-    const cString var_type =
-      cStringUtil::Stringf("reaction '%s' process", reaction->GetName()());
+    const cString var_type = cStringUtil::Stringf("reaction '%s' process", static_cast<const char*>(reaction->GetName()));
 
     // Parse this entry.
     if (!ParseSetting(var_entry, var_name, var_value, var_type)) return false;
@@ -225,8 +224,7 @@ bool cEnvironment::LoadReactionRequisite(cReaction * reaction, cString desc)
     cString var_entry = desc.Pop(':');
     cString var_name;
     cString var_value;
-    const cString var_type =
-      cStringUtil::Stringf("reaction '%s' requisite", reaction->GetName()());
+    const cString var_type = cStringUtil::Stringf("reaction '%s' requisite", static_cast<const char*>(reaction->GetName()));
 
     // Parse this entry.
     if (!ParseSetting(var_entry, var_name, var_value, var_type)) return false;
@@ -281,7 +279,7 @@ bool cEnvironment::LoadResource(cString desc)
       cString var_entry = cur_resource.Pop(':');
       cString var_name;
       cString var_value;
-      const cString var_type = cStringUtil::Stringf("resource '%s'", name());
+      const cString var_type = cStringUtil::Stringf("resource '%s'", static_cast<const char*>(name));
 
       // Parse this entry.
       if (!ParseSetting(var_entry, var_name, var_value, var_type)) {

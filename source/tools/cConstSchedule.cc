@@ -14,17 +14,6 @@
 #include "cMerit.h"
 
 
-cConstSchedule::cConstSchedule(int _item_count)
-  : cSchedule(_item_count), is_active(_item_count)
-{
-  last_id = 0;
-  is_active.SetAll(false);
-}
-
-cConstSchedule::~cConstSchedule()
-{
-}
-
 bool cConstSchedule::OK()
 {
   assert(last_id == 0 || last_id < item_count);  //  invalid last_id

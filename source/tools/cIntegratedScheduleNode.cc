@@ -11,33 +11,6 @@
 #include "cIntegratedScheduleNode.h"
 
 
-cIntegratedScheduleNode::cIntegratedScheduleNode(int _item_count, int in_id)
-  : active_array(_item_count)
-{
-  // Store the input variables.
-
-  node_id = in_id;
-
-  // Initialize the remaining variables.
-
-  for (int i = 0; i < active_array.GetSize(); i++) {
-    active_array[i] = 0;
-  }
-  first_entry = -1;
-  active_entry = -1;
-  size = 0;
-  process_size = 1;
-  process_count = 0;
-  execute = true;
-  next = NULL;
-  prev = NULL;
-}
-
-cIntegratedScheduleNode::~cIntegratedScheduleNode()
-{
-}
-
-
 bool cIntegratedScheduleNode::OK()
 {
   bool result = true;

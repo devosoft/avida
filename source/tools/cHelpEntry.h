@@ -34,8 +34,7 @@ public:
 
   virtual bool IsAlias() const = 0;
 
-  cString GetHTMLFilename() const
-    { return cStringUtil::Stringf("help.%s.html", GetKeyword()()); }
+  cString GetHTMLFilename() const { return cStringUtil::Stringf("help.%s.html", static_cast<const char*>(GetKeyword())); }
 };
 
 #endif

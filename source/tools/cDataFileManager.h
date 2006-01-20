@@ -37,10 +37,10 @@ private:
   cString m_target_dir;
   tDictionary<cDataFile*> m_datafiles;
 
-  cDataFile* InternalFind(const cString & name);
+  cDataFile* InternalFind(const cString& name);
 
-  // disabled copy constructor.
-  cDataFileManager(const cDataFileManager &);
+  cDataFileManager(const cDataFileManager&); // @not_implemented
+  cDataFileManager& operator=(const cDataFileManager&); // @not_implemented
   
 public:
   inline cDataFileManager(cString target_dir = "");

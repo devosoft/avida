@@ -100,12 +100,10 @@ void cHelpType::PrintHTML()
 	    cerr << "  Warning: unknown help keyword \""
 		 << keyword << "\"." << endl;
 	  }
-	  new_word.Set("<a href=\"help.%s.html\">%s</a>%c",
-		       keyword(), keyword(), end_char);
+	  new_word.Set("<a href=\"help.%s.html\">%s</a>%c", static_cast<const char*>(keyword), static_cast<const char*>(keyword), end_char);
 	}
 	else {
-	  new_word.Set("<a href=\"%s\">%s</a>%c",
-		  found_entry->GetHTMLFilename()(), keyword(), end_char);
+	  new_word.Set("<a href=\"%s\">%s</a>%c", static_cast<const char*>(found_entry->GetHTMLFilename()), static_cast<const char*>(keyword), end_char);
 	}
 
 	// Rebuild the description with the new word...

@@ -436,7 +436,7 @@ void cString::Reverse()
   cString new_st(GetSize());
   for( int i=0; i<GetSize(); ++i ){
     // new_st[i] = (*this)[GetSize()-i-1];       // @CAO Problem in new gcc
-    new_st[i] = GetData()[GetSize()-i-1];
+    new_st[i] = value->GetData()[GetSize()-i-1];
   }
   (*this) = new_st;
 }
@@ -484,7 +484,7 @@ void cString::CompressWhitespace()
 	ws = false;
       }
       // new_st[pos] = (*this)[i]; // copy it & increment pos  @CAO prob in gcc
-      new_st[pos] = GetData()[i]; // copy it & increment pos
+      new_st[pos] = value->GetData()[i]; // copy it & increment pos
       ++pos;
     }
   }
@@ -493,17 +493,18 @@ void cString::CompressWhitespace()
 }
 
 
-void cString::RemoveWhitespace(){
+void cString::RemoveWhitespace()
+{
   int i;
   int new_size = 0;
-  for( i=0; i<GetSize(); ++i ){  // count new size
-    if( !IsWhitespace(i) )  ++new_size;
+  for (i = 0; i < GetSize(); ++i) {  // count new size
+    if (!IsWhitespace(i)) ++new_size;
   }
   cString new_st(new_size);      // allocate new string
   int pos = 0;
-  for( i=0; i<GetSize(); ++i ){  // count new size
-    if( !IsWhitespace(i) ){
-      new_st[pos] = GetData()[i]; // copy it & increment pos   @CAO prob in GCC
+  for (i = 0; i < GetSize(); ++i) {  // count new size
+    if (!IsWhitespace(i)) {
+      new_st[pos] = value->GetData()[i]; // copy it & increment pos   @CAO prob in GCC
       ++pos;
     }
   }
@@ -511,17 +512,18 @@ void cString::RemoveWhitespace(){
 }
 
 
-void cString::RemoveChar(char out_char){
+void cString::RemoveChar(char out_char)
+{
   int i;
   int new_size = 0;
-  for( i=0; i<GetSize(); ++i ){  // count new size
-    if( GetData()[i] != out_char )  ++new_size;
+  for (i = 0; i < GetSize(); ++i) {  // count new size
+    if (value->GetData()[i] != out_char) ++new_size;
   }
   cString new_st(new_size);      // allocate new string
   int pos = 0;
-  for( i=0; i<GetSize(); ++i ){  // count new size
-    if( GetData()[i] != out_char ){
-      new_st[pos] = GetData()[i]; // copy it & increment pos   @CAO prob in GCC
+  for(i = 0; i < GetSize(); ++i) {  // count new size
+    if (value->GetData()[i] != out_char ) {
+      new_st[pos] = value->GetData()[i]; // copy it & increment pos   @CAO prob in GCC
       ++pos;
     }
   }
@@ -535,7 +537,7 @@ void cString::RemovePos(int pos){
   int newpos = 0;
   for( i=0; i<GetSize(); ++i ){  // count new size
     if( i != pos ){
-      new_st[newpos++] = GetData()[i]; // copy it & increment pos
+      new_st[newpos++] = value->GetData()[i]; // copy it & increment pos
     }
   }
   (*this) = new_st;  // assign the new_st to this
@@ -636,9 +638,9 @@ istream & operator >> (istream & in, cString & string)
   return in;
 }
 
-ostream& operator << (ostream& out, const cString & string)
+ostream& operator << (ostream& out, const cString& string)
 {
-  out << string.GetData();
+  out << static_cast<const char*>(string);
   return out;
 }
 

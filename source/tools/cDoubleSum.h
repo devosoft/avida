@@ -25,9 +25,9 @@ private:
 public:
   static const double INF_ERR;  // Value Returned by StdError if Infinate
 
-  cDoubleSum(){ Clear(); }
+  cDoubleSum() { Clear(); }
 
-  void Clear(){ s1=0; s2=0; s3=0; s4=0; n=0; }
+  void Clear() { s1 = s2 = s3 = s4 = n = 0; }
 
   double Count()        const { return n; }
   double N()            const { return n; }

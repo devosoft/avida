@@ -16,7 +16,8 @@
 #include <limits.h>
 #include <assert.h>
 
-class cMerit {
+class cMerit
+{
 protected:
   int bits;
   unsigned int base;
@@ -26,21 +27,24 @@ protected:
   void UpdateValue(double in_value);
 
 public:
-  cMerit() : bits(0), base(0), offset(0), value(0) {;}
+  cMerit() : bits(0), base(0), offset(0), value(0) { ; }
 
   explicit cMerit(const int    in_value){ UpdateValue(in_value); }
   explicit cMerit(const unsigned int   in_value){ UpdateValue(in_value); }
   explicit cMerit(const double in_value){ UpdateValue(in_value); }
+  cMerit(const cMerit& merit) { *this = merit; }
 
-  bool OK() const ;
+  bool OK() const;
 
-  void operator=(const cMerit & _merit){
+  void operator=(const cMerit & _merit)
+  {
     bits   = _merit.bits;
     base   = _merit.base;
     offset = _merit.offset;
-    value  = _merit.value; }
+    value  = _merit.value;
+  }
 
-  void operator=(double _merit){ UpdateValue(_merit); }
+  void operator=(double _merit) { UpdateValue(_merit); }
   void operator+=(const cMerit & _m){ UpdateValue(value + _m.GetDouble()); }
 
   int  operator>(const cMerit & _m)  const { return value >  _m.GetDouble(); }

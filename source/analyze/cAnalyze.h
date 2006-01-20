@@ -206,7 +206,6 @@ private:
 
   // Documentation...
   void CommandHelpfile(cString cur_string);
-  void CommandDocfile(cString cur_string);
 
   // Control...
   void VarSet(cString cur_string);

@@ -23,13 +23,13 @@ using namespace std;
 bool cFile::Open(cString _fname, ios::openmode flags)
 {
   if( IsOpen() ) Close();    // If a file is already open, clost it first.
-  fp.open(_fname(), flags);  // Open the new file.
+  fp.open(_fname, flags);  // Open the new file.
 
   // Test if there was an error, and if so, try again!
   int err_id = fp.fail();
   if( err_id ){
     fp.clear();
-    fp.open(_fname(), flags);
+    fp.open(_fname, flags);
   }
 
   // If there is still an error, determine its type and report it.

@@ -167,7 +167,7 @@ void cEnvironmentScreen::UpdateResource()
   }
   
   SetBoldColor(COLOR_WHITE);
-  Print(res_lib.GetSize()+3, 37, "%s", res_lib.GetResource(res_selection)->GetName().GetData());
+  Print(res_lib.GetSize()+3, 37, "%s", res_lib.GetResource(res_selection)->GetName());
   Print(res_lib.GetSize()+3, res_lib.GetResource(res_selection)->GetName().GetSize()+37, ":");
   Print(res_lib.GetSize()+3, res_lib.GetResource(res_selection)->GetName().GetSize()+38, "        ");
   
@@ -210,7 +210,7 @@ void cEnvironmentScreen::UpdateReaction()
     offset++;  
   }
   SetBoldColor(COLOR_WHITE);
-  Print(rxn_lib.GetSize()+3, 37, "%s", rxn_lib.GetReaction(rxn_selection)->GetName().GetData());
+  Print(rxn_lib.GetSize()+3, 37, "%s", rxn_lib.GetReaction(rxn_selection)->GetName());
   Print(rxn_lib.GetSize()+3, rxn_lib.GetReaction(rxn_selection)->GetName().GetSize()+37, ":");
   Print(rxn_lib.GetSize()+3, rxn_lib.GetReaction(rxn_selection)->GetName().GetSize()+38, "        ");
   

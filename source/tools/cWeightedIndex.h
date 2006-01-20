@@ -24,13 +24,18 @@
  * that weight.
  **/
 
-class cWeightedIndex {
+class cWeightedIndex
+{
 protected:
   int size;
   tArray<double> item_weight;
   tArray<double> subtree_weight;
 
+  
   void AdjustSubtree(int id, double weight_change);
+  
+  cWeightedIndex(); // @not_implemented
+  
 public:
   cWeightedIndex(int in_size);
   ~cWeightedIndex();

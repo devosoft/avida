@@ -23,10 +23,8 @@
  * @ref cFile.
  */
 
-class cDataFile {
-
-private:
-  cDataFile(const cDataFile &); // not implemented.
+class cDataFile
+{
 private:
   cString m_name;
   cString m_data;
@@ -37,12 +35,11 @@ private:
   
   std::ofstream m_fp;
 
-  void Init();
+  cDataFile(const cDataFile&); // @not_implemented.
+  cDataFile& operator=(const cDataFile&); // @not_implemented
+
 public:
-  /**
-   * The empty constructor does nothing.
-   **/
-  cDataFile();
+  cDataFile() : num_cols(0), m_descr_written(false) { ; }
 
   /**
    * This constructor opens a file of the given name, and makes sure
@@ -50,17 +47,17 @@ public:
    *
    * @param _name The name of the file to open.
    **/
-  cDataFile(cString name);
+  cDataFile(cString& name);
 
   /**
    * The desctructor automatically closes the file.
    **/
-  ~cDataFile(){ m_fp.close(); }
+  ~cDataFile() { m_fp.close(); }
 
   /**
    * @return The file name used
    **/
-  const cString & GetName() const { return m_name; }
+  const cString& GetName() const { return m_name; }
 
   /**
    * @return A bool that indicates whether the file is actually usable.
@@ -85,9 +82,9 @@ public:
    * will be written only once, before the first data line has been finished.
    **/
 
-  void Write( double x,              const char * descr );
-  void Write( int i,                 const char * descr );
-  void Write( const char * data_str, const char * descr );
+  void Write( double x,              const char* descr );
+  void Write( int i,                 const char* descr );
+  void Write( const char* data_str, const char* descr );
   void WriteBlockElement (double x, int element, int x_size );
   void WriteBlockElement (int i, int element, int x_size );
 
@@ -96,26 +93,26 @@ public:
    * written if the first data line hasn't been completed (Endl() hasn't
    * been called. This allows to output initial comments into a file.
    **/
-  void WriteComment( const char * descr );
+  void WriteComment( const char* descr );
 
   /**
    * Same as WriteComment, but doesn't automatically include the # in the
    * front of the line.  This should only be used in special circumstances
    * where something outside of a typical comment needs to be at the top.
    **/
-  void WriteRawComment( const char * descr );
+  void WriteRawComment( const char* descr );
 
   /**
    * Writes text string any where in the data file. This should only be used 
    * in special circumstances where something outside of a typical comment 
    * needs to be placed in the file.
    **/
-  void WriteRaw( const char * descr );
+  void WriteRaw( const char* descr );
 
   /**
    * Writes the description for a single column; keeps track of column numbers.
    **/
-  void WriteColumnDesc(const char * descr );
+  void WriteColumnDesc(const char* descr );
 
   /**
    * Writes the current time into the data file. The time string is only
@@ -144,7 +141,7 @@ public:
   /**
    * This function makes sure that all cached data is written to the disk.
    **/
-  void Flush(){ m_fp.flush(); }
+  void Flush() { m_fp.flush(); }
 };
 
 #endif

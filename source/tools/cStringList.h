@@ -19,22 +19,25 @@
 #endif
 
 
-class cStringList {
+class cStringList
+{
 private:
   tList<cString> string_list;
 
-  inline cString ReturnString(cString * out_string) {
+  inline cString ReturnString(cString * out_string)
+  {
     cString tmp_string(*out_string);
     delete out_string;
     return tmp_string;
   }
+
 public:
   cStringList() { ; }
-  cStringList(const cString & _list, char seperator=' ');
-  cStringList(const cStringList & _list);
+  cStringList(const cString& _list, char seperator = ' ');
+  cStringList(const cStringList& _list);
   ~cStringList();
 
-  cStringList & operator=(const cStringList & _list);
+  cStringList& operator=(const cStringList & _list);
 
   int GetSize() const { return string_list.GetSize(); }
   cString GetLine(int line_num) const { return *(string_list.GetPos(line_num)); }

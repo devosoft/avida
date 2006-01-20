@@ -22,6 +22,12 @@ class cDataFile;
 class cDataManager_Base {
 private:
   cString filetype;
+  
+  
+  cDataManager_Base(); // @not_implemented
+  cDataManager_Base(const cDataManager_Base&); // @not_implemented
+  cDataManager_Base& operator=(const cDataManager_Base&); // @not_implemented
+
 public:
   cDataManager_Base(const cString & in_filetype) : filetype(in_filetype) { ; }
   virtual ~cDataManager_Base() { ; }

@@ -20,21 +20,8 @@ extern "C" {
 using namespace std;
 
 
-void cDataFile::Init()
+cDataFile::cDataFile(cString& name) : m_name(name), num_cols(0), m_descr_written(false)
 {
-  m_descr_written = false;
-  num_cols = 0;
-}
-
-cDataFile::cDataFile()
-{
-  Init();
-}
-
-cDataFile::cDataFile(cString name) : m_name(name)
-{
-  Init();
-   
   //if (fopen(name,"r")) {
     // cout << "File " << name() << " exists and is being overwritten" << endl;
   //}

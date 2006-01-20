@@ -26,10 +26,16 @@
 class cMerit;
 class cWorld;
 
-class cProbSchedule : public cSchedule {
+class cProbSchedule : public cSchedule
+{
 private:
   cWorld* m_world;
   cWeightedIndex chart;
+  
+  
+  cProbSchedule(const cProbSchedule&); // @not_implemented
+  cProbSchedule& operator=(const cProbSchedule&); // @not_implemented
+
 public:
   cProbSchedule(cWorld* world, int num_cells);
   ~cProbSchedule();

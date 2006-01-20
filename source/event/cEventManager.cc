@@ -955,7 +955,7 @@ public:
   void Process(){
     cGenotype * dom = m_world->GetClassificationManager().GetBestGenotype();
     cString filename(in_filename);
-    if (filename == "") filename.Set("archive/%s", dom->GetName()());
+    if (filename == "") filename.Set("archive/%s", static_cast<const char*>(dom->GetName()));
     cTestUtil::PrintGenome(m_world, dom->GetGenome(), filename, dom, m_world->GetStats().GetUpdate());
   }
 };
@@ -1018,7 +1018,7 @@ public:
     cInjectGenotype * dom = m_world->GetClassificationManager().GetBestInjectGenotype();
     if (dom!=NULL) {
       cString filename(in_filename);
-      if (filename == "") filename.Set("archive/%s", dom->GetName()());
+      if (filename == "") filename.Set("archive/%s", static_cast<const char*>(dom->GetName()));
       cTestUtil::PrintGenome(m_world, dom, dom->GetGenome(), filename, m_world->GetStats().GetUpdate()); }
   }
 };
@@ -1172,7 +1172,7 @@ public:
   }
   ///// load_population /////
   void Process(){
-    ifstream fp(fname());
+    ifstream fp(fname);
     m_world->GetPopulation().LoadPopulation(fp);
   }
 };
@@ -1230,7 +1230,7 @@ public:
   }
   ///// load_clone /////
   void Process(){
-    ifstream fp(fname());
+    ifstream fp(fname);
     m_world->GetPopulation().LoadClone(fp);
   }
 };

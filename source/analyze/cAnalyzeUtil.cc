@@ -291,7 +291,7 @@ void cAnalyzeUtil::CalcConsensus(cWorld* world, int lines_saved)
   
   cString con_name;
   con_name.Set("classmgr/%03d-consensus-u%i.gen", con_genome.GetSize(),update);
-  cTestUtil::PrintGenome(world, con_genome, con_name());
+  cTestUtil::PrintGenome(world, con_genome, con_name);
   
   
   if (con_genotype) {
@@ -391,7 +391,7 @@ void cAnalyzeUtil::AnalyzePopulation(cWorld* world, ofstream& fp,
                            world->GetStats().GetUpdate(), i );
     
     fp << i                                     << " "  // 1 cell ID
-      << creature_name()                       << " "  // 2 name
+      << creature_name                       << " "  // 2 name
       << genotype->GetLength()                 << " "  // 3 length
       << genotype->GetTestFitness()            << " "  // 4 fitness (test-cpu)
       << organism->GetPhenotype().GetFitness() << " "  // 5 fitness (actual)
@@ -409,7 +409,7 @@ void cAnalyzeUtil::AnalyzePopulation(cWorld* world, ofstream& fp,
     else fp << endl;
     if ( save_genotype ){
       char filename[40];
-      sprintf( filename, "classmgr/%s", creature_name() );
+      sprintf(filename, "classmgr/%s", static_cast<const char*>(creature_name));
       cTestUtil::PrintGenome(world, genome, filename);
     }
   }
@@ -522,12 +522,12 @@ void cAnalyzeUtil::PrintDetailedFitnessData(cWorld* world, cString& datafn,
     << fave_testCPU/ (double) n  << " "  // 4 average test fitness
     << n 	                      << " "  // 5 organism total
     << max_fitness               << " "  // 6 maximum fitness
-    << max_f_name()	      << " "  // 7 maxfit genotype name
+    << max_f_name	      << " "  // 7 maxfit genotype name
     << endl;
   
   if (save_max_f_genotype) {
     char filename[40];
-    sprintf( filename, "classmgr/%s", max_f_name() );
+    sprintf(filename, "classmgr/%s", static_cast<const char*>(max_f_name));
     cTestUtil::PrintGenome(world, max_f_genotype->GetGenome(), filename);
   }
   
@@ -646,18 +646,18 @@ void cAnalyzeUtil::GeneticDistancePopDump(cWorld* world, ofstream& fp,
     sum_fitness += cur_genotype->GetTestFitness() * num_orgs;
     sum_num_organisms += num_orgs;
     
-    fp << cur_genotype->GetName()()       << " "  // 1 name
+    fp << cur_genotype->GetName()       << " "  // 1 name
       << cur_genotype->GetTestFitness()  << " "  // 2 fitness
       << num_orgs                        << " "  // 3 abundance
       << cGenomeUtil::FindHammingDistance(reference_genome, genome) << " "
       << cGenomeUtil::FindEditDistance(reference_genome, genome) << " "  // 5
-      << genome.AsString()()             << " "  // 6 genome
+      << genome.AsString()             << " "  // 6 genome
       << endl;
     
     // save into classmgr
     if (save_creatures) {
       char filename[40];
-      sprintf( filename, "classmgr/%s", cur_genotype->GetName()() );
+      sprintf(filename, "classmgr/%s", static_cast<const char*>(cur_genotype->GetName()) );
       cTestUtil::PrintGenome(world, genome, filename);
     }
     
@@ -727,7 +727,7 @@ void cAnalyzeUtil::TaskSnapshot(cWorld* world, ofstream& fp)
       << parent_sum_tasks_rewarded  << " " // 6 parent number of tasks rewared
       << parent_sum_tasks_all       << " " // 7 parent total num tasks done
       << test_info.GetColonyFitness()         << " " // 8 genotype fitness
-      << organism->GetGenotype()->GetName()() << " " // 9 genotype name
+      << organism->GetGenotype()->GetName() << " " // 9 genotype name
       << endl;
   }
 }

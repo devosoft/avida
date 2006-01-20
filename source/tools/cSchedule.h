@@ -20,10 +20,17 @@
 class cMerit;
 class cChangeList;
 
-class cSchedule {
+class cSchedule
+{
 protected:
   int item_count;
   cChangeList* m_change_list;
+  
+
+  cSchedule(); // @not_implemented
+  cSchedule(const cSchedule&); // @not_implemented
+  cSchedule& operator=(const cSchedule&); // @not_implemented
+  
 public:
   cSchedule(int _item_count);
   virtual ~cSchedule();

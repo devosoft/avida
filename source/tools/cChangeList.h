@@ -21,7 +21,8 @@
  * registered changes.
  **/ 
 
-class cChangeList {
+class cChangeList
+{
 protected:
   /*
   Note that size of m_change_list is size of m_change_tracking, and that
@@ -39,41 +40,30 @@ protected:
   tArray<bool> m_change_tracking;
 
 public:
+  explicit cChangeList(int capacity = 0)
+    : m_change_count(0), m_change_list(0), m_change_tracking(0)
+  {
+    ResizeClear(capacity);
+  }
+  ~cChangeList() { ; }
+
   void ResizeClear(int capacity);
 
-  // Constructor.
-  explicit cChangeList(int capacity = 0);
-
-  //// Assignment operator.
-  //cChangeList & operator= (const cChangeList & rhs) {
-  //  m_change_list = rhs.m_change_list;
-  //  m_change_tracking = rhs.m_change_tracking;
-  //  m_change_count = rhs.m_change_count;
-  //}
-
-  //// Copy constructor.
-  //explicit cChangeList(const cChangeList & rhs) : cChangeList(0) {
-  //  this->operator=(rhs);
-  //}
-
-  // Destructor.
-  //virtual ~cChangeList(){}
-
-  // Interface Methods ///////////////////////////////////////////////////////
-
-  int GetSize() const;
-
-  int GetChangeCount() const;
+  int GetSize() const { return m_change_list.GetSize(); }
+  int GetChangeCount() const { return m_change_count; }
 
   // Note that decreasing size invalidates stored changes.
   void Resize(int capacity);
   
   // Unsafe version : assumes index is within change count.
-  int GetChangeAt(int index) const;
+  int GetChangeAt(int index) const { return m_change_list[index]; }
 
   // Safe version : returns -1 if index is outside change count.
-  int CheckChangeAt(int index) const;
-
+  int CheckChangeAt(int index) const
+  {
+    return (index < m_change_count) ? ((int) GetChangeAt(index)) : (-1);
+  }
+  
   // Unsafe version : assumes changed_index is within capacity.
   void MarkChange(int changed_index);
 

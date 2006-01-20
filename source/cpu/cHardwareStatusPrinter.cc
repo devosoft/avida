@@ -22,7 +22,7 @@
 
 cString cHardwareStatusPrinter::Bonus(const cString &next_name)
 {
-  return cStringUtil::Stringf("%s (bonus instruction)", next_name());
+  return cStringUtil::Stringf("%s (bonus instruction)", static_cast<const char*>(next_name));
 }
 
 void cHardwareStatusPrinter::PrintStatus(cHardwareBase& hardware, const cString& next_name)

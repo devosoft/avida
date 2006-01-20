@@ -208,7 +208,7 @@ cPopulation::cPopulation(cWorld* world)
       
       ifstream fp(fname);
       if( !fp.good() ){
-        cerr << "Error: Failed to load population file " << fname() << ". Exiting...\n" << endl;
+        cerr << "Error: Failed to load population file " << fname << ". Exiting...\n" << endl;
         exit(2);
       }
       LoadPopulation(fp);

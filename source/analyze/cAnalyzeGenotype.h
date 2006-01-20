@@ -254,7 +254,7 @@ public:
   cString GetHTMLSequence() const;
 
   cString GetMapLink() const {
-    return cStringUtil::Stringf("<a href=\"tasksites.%s.html\">Phenotype Map</a>", GetName()());
+    return cStringUtil::Stringf("<a href=\"tasksites.%s.html\">Phenotype Map</a>", static_cast<const char*>(GetName()));
   }
 
   int GetNumTasks() const { return task_counts.GetSize(); }

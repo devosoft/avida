@@ -24,16 +24,24 @@
 
 class cMerit;
 
-class cConstSchedule : public cSchedule {
+class cConstSchedule : public cSchedule
+{
 private:
   int last_id;
   tArray<bool> is_active;
+  
+  cConstSchedule(); // @not_implemented
+  
 public:
-  cConstSchedule(int _item_count);
-  ~cConstSchedule();
+  cConstSchedule(int _item_count)
+    : cSchedule(_item_count), last_id(0), is_active(_item_count)
+  {
+    is_active.SetAll(false);
+  }
+  ~cConstSchedule() { ; }
 
   bool OK();
-  void Adjust(int item_id, const cMerit & merit);
+  void Adjust(int item_id, const cMerit& merit);
 
   int GetNextID();
 };

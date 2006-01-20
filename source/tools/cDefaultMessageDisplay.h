@@ -34,11 +34,18 @@ with expected results.
 
 class cString;
 
-class cDefaultMessageDisplay : public cMessageDisplay {
+class cDefaultMessageDisplay : public cMessageDisplay
+{
 private:
-  std::ostream* _out;
+  std::ostream* m_out;
+
+
+  cDefaultMessageDisplay(); // @not_implemented
+  cDefaultMessageDisplay(const cDefaultMessageDisplay&); // @not_implemented
+  cDefaultMessageDisplay& operator=(const cDefaultMessageDisplay&); // @not_implemented
+
 public:
-  cDefaultMessageDisplay(std::ostream* stream):_out(stream){}
+  cDefaultMessageDisplay(std::ostream* stream) : m_out(stream) { ; }
   void out(cString& final_msg);
 };
 

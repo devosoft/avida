@@ -68,7 +68,7 @@ void cClassificationManager::UpdateReset()
     m_genotype_dom_time++;
     if (m_genotype_dom_time == m_world->GetConfig().GENOTYPE_PRINT_DOM.Get()) {
       cString filename;
-      filename.Set("archive/%s", best_genotype->GetName()());
+      filename.Set("archive/%s", static_cast<const char*>(best_genotype->GetName()));
       cTestUtil::PrintGenome(m_world, best_genotype->GetGenome(), 
                              filename, best_genotype, m_world->GetStats().GetUpdate());
     }
@@ -85,7 +85,7 @@ void cClassificationManager::UpdateReset()
     m_inject_dom_time++;
     if (m_inject_dom_time == m_world->GetConfig().GENOTYPE_PRINT_DOM.Get()) {
       cString filename;
-      filename.Set("archive/%s", best_inject_genotype->GetName()());
+      filename.Set("archive/%s", static_cast<const char*>(best_inject_genotype->GetName()));
       cTestUtil::PrintGenome(m_world, best_inject_genotype, best_inject_genotype->GetGenome(), 
                              filename, m_world->GetStats().GetUpdate());
     }
@@ -400,16 +400,16 @@ void cClassificationManager::ThresholdGenotype(cGenotype & in_genotype)
   
   // Do the relevent statistics...
   if (m_world->GetConfig().SPECIES_RECORDING.Get()) {
-    m_world->GetStats().AddThreshold(in_genotype.GetID(), in_genotype.GetName()(),
+    m_world->GetStats().AddThreshold(in_genotype.GetID(), in_genotype.GetName(),
                                      found_species->GetID());
   } else {
-    m_world->GetStats().AddThreshold(in_genotype.GetID(), in_genotype.GetName()());
+    m_world->GetStats().AddThreshold(in_genotype.GetID(), in_genotype.GetName());
   }
   
   // Print the genotype?
   if (m_world->GetConfig().GENOTYPE_PRINT.Get()) {
     cString filename;
-    filename.Set("archive/%s", in_genotype.GetName()());
+    filename.Set("archive/%s", static_cast<const char*>(in_genotype.GetName()));
     cTestUtil::PrintGenome(m_world, in_genotype.GetGenome(), filename,
                            &in_genotype, m_world->GetStats().GetUpdate());
   }

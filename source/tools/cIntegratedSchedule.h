@@ -32,7 +32,8 @@
 class cIntegratedScheduleNode;
 class cMerit;
 
-class cIntegratedSchedule : public cSchedule {
+class cIntegratedSchedule : public cSchedule
+{
 private:
   tArray<cIntegratedScheduleNode *> node_array;
   int num_active_nodes;
@@ -41,6 +42,11 @@ private:
   void InsertNode(int node_id);
   void RemoveNode(int node_id);
   void ResizeNodes(int new_size);
+
+  cIntegratedSchedule(); // @not_implemented
+  cIntegratedSchedule(const cIntegratedSchedule&); // @not_implemented
+  cIntegratedSchedule& operator=(const cIntegratedSchedule&); // @not_implemented
+
 public:
   cIntegratedSchedule(int _item_count);
   ~cIntegratedSchedule();

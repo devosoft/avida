@@ -17,15 +17,17 @@
 #define LONG_C_UINT
 
 #ifdef LONG_C_UINT
-class cUInt {
+class cUInt
+{
 private:
   long value;
   int size;
+
 public:
   inline cUInt() { size = 0; value = 0; }
   inline cUInt(int in_size) { size = in_size, value = 0; }
   inline cUInt(int in_size, int in_value) { size = in_size, value = in_value; }
-  inline ~cUInt() {;}
+  inline ~cUInt() { ; }
 
   inline void Print() const { printf ("%ld", value); }
   inline int AsInt() const { return (int) value; }

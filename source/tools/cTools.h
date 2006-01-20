@@ -17,7 +17,11 @@
 
 class cString;
 
-class cTools {
+class cTools
+{
+private:
+  cTools(); // @not_implemented
+
 public:
   static bool MkDir(const cString& dirname, bool verbose=false);
 };

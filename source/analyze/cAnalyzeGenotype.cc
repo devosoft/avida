@@ -547,8 +547,7 @@ cString cAnalyzeGenotype::GetHTMLSequence() const
 
       // Tack on the current symbol...
       cString symbol_string;
-      symbol_string.Set("<b><font color=\"%s\">%c</font></b>",
-			color(), symbol);
+      symbol_string.Set("<b><font color=\"%s\">%c</font></b>", static_cast<const char*>(color), symbol);
       html_code += symbol_string;
     }
   }
