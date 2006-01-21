@@ -23,7 +23,7 @@ void cBarScreen::Draw()
 
   int offset = prog_name.GetSize() + 4;
   VLine(Width() - offset - 2);
-  Print(1, Width() - offset, "%s", prog_name());
+  Print(1, Width() - offset, "%s", static_cast<const char*>(prog_name));
 
   Print(1, 2, "Update:");
 

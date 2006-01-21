@@ -298,10 +298,10 @@ void cView::CloneSoup()
 {
   cString filename;
   filename.Set("clone.%d", info.GetWorld().GetStats().GetUpdate());
-  ofstream fp(filename());
+  ofstream fp(static_cast<const char*>(filename));
   info.GetPopulation().SaveClone(fp);
   cString message;
-  message.Set("Saved clone to file: %s", filename());
+  message.Set("Saved clone to file: %s", static_cast<const char*>(filename));
   Notify(message);
 }
 
@@ -313,7 +313,7 @@ void cView::ExtractCreature()
   if (gen_name == "(no name)")
     gen_name.Set("%03d-unnamed", cur_gen->GetLength());
 
-  if (cur_screen) cur_screen->Print(20, 0, "Extracting %s...", gen_name());
+  if (cur_screen) cur_screen->Print(20, 0, "Extracting %s...", static_cast<const char*>(gen_name));
 
   cTestUtil::PrintGenome(&info.GetWorld(), cur_gen->GetGenome(), gen_name);
 
@@ -324,7 +324,7 @@ void cView::ExtractCreature()
 }
 
 
-void cView::ChangeCurScreen(cScreen * new_screen)
+void cView::ChangeCurScreen(cScreen* new_screen)
 {
   if (cur_screen) cur_screen->Exit();
 
@@ -390,7 +390,7 @@ int cView::Confirm(const cString & message)
     = new cTextWindow(3, mess_length + 10, 10, (70 - mess_length) / 2);
   conf_win->Box();
   conf_win->SetBoldColor(COLOR_WHITE);
-  conf_win->Print(1, 2, "%s (y/n)", message());
+  conf_win->Print(1, 2, "%s (y/n)", static_cast<const char*>(message));
   conf_win->SetBoldColor(COLOR_CYAN);
   conf_win->Print(1, mess_length + 4, 'y');
   conf_win->Print(1, mess_length + 6, 'n');
@@ -451,7 +451,7 @@ void cView::Notify(const cString & message)
   notify_win->Box();
   notify_win->SetBoldColor(COLOR_WHITE);
   for (int j = 0; j < num_lines; j++) {
-    notify_win->Print(1 + j, 2, "%s", line_array[j]());
+    notify_win->Print(1 + j, 2, "%s", static_cast<const char*>(line_array[j]));
   }
   notify_win->Refresh();
 

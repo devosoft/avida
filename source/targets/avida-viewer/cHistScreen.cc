@@ -25,7 +25,7 @@ void cHistScreen::PrintGenotype(cGenotype * in_gen, int in_pos,
   PrintFitness(in_pos, 0, in_gen->GetFitness());
 
   SetBoldColor(COLOR_WHITE);
-  Print(in_pos, 8, "%s: ", in_gen->GetName()());
+  Print(in_pos, 8, "%s: ", static_cast<const char*>(in_gen->GetName()));
 
   int max_stars = Width() - 28;
   int star_size = (max_num / max_stars);

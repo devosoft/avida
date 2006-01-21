@@ -85,9 +85,9 @@ void cOptionsScreen::Draw()
   Print(7, 15, "%d", info.GetRandom().GetSeed());
   Print(8, 15, "%d", info.GetConfig().THRESHOLD.Get());
 
-  Print(11, 15, "%s", info.GetConfig().INST_SET.Get()());
-  Print(12, 15, "%s", info.GetConfig().ENVIRONMENT_FILE.Get()());
-  Print(13, 15, "%s", info.GetConfig().EVENT_FILE.Get()());
+  Print(11, 15, "%s", static_cast<const char*>(info.GetConfig().INST_SET.Get()));
+  Print(12, 15, "%s", static_cast<const char*>(info.GetConfig().ENVIRONMENT_FILE.Get()));
+  Print(13, 15, "%s", static_cast<const char*>(info.GetConfig().EVENT_FILE.Get()));
 
   switch(info.GetConfig().SLICING_METHOD.Get()) {
   case SLICE_CONSTANT:
@@ -168,7 +168,7 @@ void cOptionsScreen::Update()
   Print(1, 15, "(%d, %d)",
 		     info.GetActiveID() % info.GetPopulation().GetWorldX(),
 		     info.GetActiveID() / info.GetPopulation().GetWorldY());
-  Print(2, 15, "%s", info.GetActiveName()());
+  Print(2, 15, "%s", static_cast<const char*>(info.GetActiveName()));
   Print(3, 15, "%d", info.GetActiveID());
 
   SetColor(COLOR_WHITE);

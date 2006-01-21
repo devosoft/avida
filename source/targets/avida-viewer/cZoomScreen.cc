@@ -178,7 +178,7 @@ void cZoomScreen::DrawStats()
          cur_row < Height() - 1 && task_num < info.GetWorld().GetNumTasks();
          cur_row++) {
       Print(cur_row, cur_col, "........:");
-      Print(cur_row, cur_col, "%s", task_lib.GetTask(task_num).GetName()());
+      Print(cur_row, cur_col, "%s", static_cast<const char*>(task_lib.GetTask(task_num).GetName()));
       task_num++;
     }
     col_num++;
@@ -567,7 +567,7 @@ void cZoomScreen::UpdateStats(cHardwareBase & hardware)
   
   // if there is an Active Genotype name AND it is not empty, show it
   Print(1, 12, "%9d", info.GetActiveGenotypeID());
-  Print(2, 12, "%s", info.GetActiveName()());
+  Print(2, 12, "%s", static_cast<const char*>(info.GetActiveName()));
   
   if (info.GetActiveSpecies())
     Print(3, 12, "%9d", info.GetActiveSpeciesID());
@@ -694,7 +694,7 @@ void cZoomScreen::UpdateStats_CPU(cHardwareBase & hardware)
     if (pos == 1) SetColor(COLOR_CYAN);
     
     // Draw the current instruction.
-    Print(17+pos, 29, "%s",	inst_set.GetName(inst_ptr.GetInst())());
+    Print(17+pos, 29, "%s",	static_cast<const char*>(inst_set.GetName(inst_ptr.GetInst())));
     inst_ptr.Advance();
   }
   
@@ -708,9 +708,9 @@ void cZoomScreen::UpdateStats_CPU(cHardwareBase & hardware)
   // @CAO assume no parasites for now.
   int cur_id = info.GetActiveCell()->GetID();
   //active_inst_ptr.GetCurHardware()->GetOrganism()->GetEnvironment()->GetID();
-  Print(11, 36, "%12s", cStringUtil::Stringf("[%2d,%2d] : %2d",
+  Print(11, 36, "%12s", static_cast<const char*>(cStringUtil::Stringf("[%2d,%2d] : %2d",
                                              cur_id % population.GetWorldX(), cur_id / population.GetWorldX(),
-                                             active_inst_ptr.GetPosition())() );
+                                             active_inst_ptr.GetPosition())) );
 }
 
 void cZoomScreen::UpdateStats_4Stack(cHardwareBase & hardware)
@@ -735,7 +735,7 @@ void cZoomScreen::UpdateStats_4Stack(cHardwareBase & hardware)
     if (pos == 1) SetColor(COLOR_CYAN);
     
     // Draw the current instruction.
-    Print(17+pos, 29, "%s",	inst_set.GetName(inst_ptr.GetInst())());
+    Print(17+pos, 29, "%s",	static_cast<const char*>(inst_set.GetName(inst_ptr.GetInst())));
     inst_ptr.Advance();
   }
   
@@ -744,9 +744,9 @@ void cZoomScreen::UpdateStats_4Stack(cHardwareBase & hardware)
   // @CAO assume no parasites for now.
   //int cur_id = info.GetActiveCell()->GetID();
   //active_inst_ptr.GetCurHardware()->GetOrganism()->GetEnvironment()->GetID();
-  Print(11, 36, "%12s", cStringUtil::Stringf("(%2d, %2d)",
+  Print(11, 36, "%12s", static_cast<const char*>(cStringUtil::Stringf("(%2d, %2d)",
                                              active_inst_ptr.GetMemSpace(),
-                                             active_inst_ptr.GetPosition())() );
+                                             active_inst_ptr.GetPosition())) );
 }
 
 void cZoomScreen::UpdateStats_SMT(cHardwareBase & hardware)
@@ -771,7 +771,7 @@ void cZoomScreen::UpdateStats_SMT(cHardwareBase & hardware)
     if (pos == 1) SetColor(COLOR_CYAN);
     
     // Draw the current instruction.
-    Print(17+pos, 29, "%s",	inst_set.GetName(inst_ptr.GetInst())());
+    Print(17+pos, 29, "%s",	static_cast<const char*>(inst_set.GetName(inst_ptr.GetInst())));
     inst_ptr.Advance();
   }
   
@@ -780,9 +780,9 @@ void cZoomScreen::UpdateStats_SMT(cHardwareBase & hardware)
   // @CAO assume no parasites for now.
   //int cur_id = info.GetActiveCell()->GetID();
   //active_inst_ptr.GetCurHardware()->GetOrganism()->GetEnvironment()->GetID();
-  Print(11, 36, "%12s", cStringUtil::Stringf("(%2d, %2d)",
+  Print(11, 36, "%12s", static_cast<const char*>(cStringUtil::Stringf("(%2d, %2d)",
                                              active_inst_ptr.GetMemSpace(),
-                                             active_inst_ptr.GetPosition())() );
+                                             active_inst_ptr.GetPosition())) );
 }
 
 void cZoomScreen::UpdateCPU(cHardwareBase & hardware)
@@ -799,7 +799,7 @@ void cZoomScreen::UpdateCPU(cHardwareBase & hardware)
   }
   
   Print(14, 69, "%10d", info.GetActiveGenotypeID());
-  Print(15, 69, "%10s", info.GetActiveName()());
+  Print(15, 69, "%10s", static_cast<const char*>(info.GetActiveName()));
   
   cPhenotype & phenotype = info.GetActiveCell()->GetOrganism()->GetPhenotype();
   Print(17, 69, "%10d", phenotype.GetCurNumErrors());
@@ -829,7 +829,7 @@ void cZoomScreen::UpdateCPU(cHardwareBase & hardware)
     SetBoldColor(COLOR_RED);
     Print(FAULT_Y, FAULT_X, "Fault:");
     SetBoldColor(COLOR_CYAN);
-    Print(FAULT_Y, FAULT_X + 7, cur_fault());
+    Print(FAULT_Y, FAULT_X + 7, static_cast<const char*>(cur_fault));
   } else {
     Print(FAULT_Y, FAULT_X, "                                        ");
   }
@@ -940,7 +940,7 @@ void cZoomScreen::UpdateCPU_Original(cHardwareBase & hardware)
       
       // Print the instruction...
       Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 6, "%8s ",
-            inst_set.GetName( memory[adj_inst_ptr] )());
+            static_cast<const char*>(inst_set.GetName(memory[adj_inst_ptr])));
       
       Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 15,
             "                    ");
@@ -1080,7 +1080,7 @@ void cZoomScreen::UpdateCPU_4Stack(cHardwareBase & hardware)
       
       // Print the instruction...
       Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 6, "%8s ",
-            inst_set.GetName( memory[adj_inst_ptr] )());
+            static_cast<const char*>(inst_set.GetName(memory[adj_inst_ptr])));
       
       Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 15,
             "                    ");
@@ -1223,7 +1223,7 @@ void cZoomScreen::UpdateCPU_SMT(cHardwareBase & hardware)
       
       // Print the instruction...
       Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 6, "%8s ",
-            inst_set.GetName( memory[adj_inst_ptr] )());
+            static_cast<const char*>(inst_set.GetName(memory[adj_inst_ptr])));
       
       Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 15,
             "                    ");
@@ -1271,7 +1271,7 @@ void cZoomScreen::UpdateGenotype()
   SetBoldColor(COLOR_CYAN);
   
   Print(1, 12, "%9d", info.GetActiveGenotypeID());
-  Print(2, 12, "%9s", info.GetActiveName()());
+  Print(2, 12, "%9s", static_cast<const char*>(info.GetActiveName()));
   Print(3, 12, "%9d", info.GetActiveSpeciesID());
   
   if (info.GetActiveGenotype() != NULL) {
@@ -1366,7 +1366,7 @@ void cZoomScreen::EditMemory()
     cMenuWindow inst_menu(inst_set.GetSize());
     inst_menu.SetTitle("Choose new instruction: ");
     for (int j = 0; j < inst_set.GetSize(); j++) {
-      inst_menu.AddOption(j, inst_set.GetName(j)());
+      inst_menu.AddOption(j, static_cast<const char*>(inst_set.GetName(j)));
     }
     inst_menu.SetActive(edit_head.GetInst().GetOp());
     new_inst = inst_menu.Activate();
@@ -1477,7 +1477,7 @@ void cZoomScreen::ViewInstruction()
   const cInstSet & inst_set = hardware.GetInstSet();
   
   window->SetBoldColor(COLOR_YELLOW);
-  window->Print(2, 16, "%s", inst_set.GetName(inst_ptr.GetInst())());
+  window->Print(2, 16, "%s", static_cast<const char*>(inst_set.GetName(inst_ptr.GetInst())));
   
   window->SetBoldColor(COLOR_WHITE);
   

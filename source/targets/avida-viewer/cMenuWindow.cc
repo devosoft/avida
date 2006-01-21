@@ -153,7 +153,7 @@ void cMenuWindow::DrawOption(int option_id, bool is_active)
   int col_id  = option_id / lines;
   int x_pos = col_id * (max_width + 2) + 2;
   int y_pos = line_id + ((title.IsEmpty()) ? 2 : 4);
-  window->Print(y_pos, x_pos, option_list[option_id]());
+  window->Print(y_pos, x_pos, static_cast<const char*>(option_list[option_id]));
 
   int hot_pos = FindHotkeyPos(option_list[option_id]);
   if (hot_pos != -1) {

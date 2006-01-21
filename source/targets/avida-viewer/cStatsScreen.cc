@@ -64,7 +64,7 @@ void cStatsScreen::Draw()
 	 row_id < 15 + task_rows && task_num < info.GetWorld().GetNumTasks();
 	 row_id++) {
       Print(row_id, col_id, ".........:");
-      Print(row_id, col_id, "%s", task_lib.GetTask(task_num).GetName()());
+      Print(row_id, col_id, "%s", static_cast<const char*>(task_lib.GetTask(task_num).GetName()));
       task_num++;
     }
   }
@@ -105,7 +105,7 @@ void cStatsScreen::Update()
   Print(11, 13, "%5d", stats.GetNumThreshold());
   Print(12, 13, "%5d", stats.GetNumSpecies());
 
-  Print(2, 37, "%s",  best_gen->GetName()());
+  Print(2, 37, "%s",  static_cast<const char*>(best_gen->GetName()));
   Print(3, 37, "%9d", best_gen->GetID());
   Print(4, 37, "%9d", (best_gen->GetSpecies()) ?
 	(best_gen->GetSpecies()->GetID()) : -1);

@@ -212,7 +212,7 @@ void cMapScreen::PlaceCursor()
     Print(Height() - 1, 33, "(%2d, %2d) - %s",
 		       info.GetActiveID() % x_size,
 		       info.GetActiveID() / x_size,
-		       cpu_gen->GetName()());
+		       static_cast<const char*>(cpu_gen->GetName()));
   }
 
   if (x_offset == 0 || x_offset == Width()/2 - 1) {
