@@ -45,6 +45,7 @@
 
 \.          return DOT;
 =           return ASSIGN;        // Assignment
+@           return REF;
 
 ==          return OP_EQ;         // Relational Operators
 \<=         return OP_LE;
@@ -79,6 +80,9 @@ endwhile    return CMD_ENDWHILE;
 
 foreach     return CMD_FOREACH;   // Foreach Blocks
 endforeach  return CMD_ENDFOREACH;
+
+function    return CMD_FUNCTION;  // Function Blocks
+endfunction return CMD_ENDFUNCTION;
 
 ([a-zA-Z]|_+[a-zA-Z])[a-zA-Z0-9_]*  return ID;      // Identifiers
   

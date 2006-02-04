@@ -30,6 +30,7 @@ enum eASTokens {
   
   DOT,
   ASSIGN,
+  REF,
   
   OP_EQ,
   OP_LE,
@@ -64,6 +65,9 @@ enum eASTokens {
   
   CMD_FOREACH,
   CMD_ENDFOREACH,
+  
+  CMD_FUNCTION,
+  CMD_ENDFUNCTION,
   
   ID,
   

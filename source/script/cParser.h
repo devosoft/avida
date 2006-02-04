@@ -10,14 +10,19 @@
 #ifndef cParser_h
 #define cParser_h
 
+#include <iostream>
+
 #ifndef cASLibrary_h
 #include "cASLibrary.h"
 #endif
-#ifndef cASSymbol_h
-#include "cASSymbol.h"
+#ifndef cLexer_h
+#include "cLexer.h"
 #endif
-#ifndef tDictionary_h
-#include "tDictionary.h"
+#ifndef cScriptObject_h
+#include "cScriptObject.h"
+#endif
+#ifndef cSymbolTable_h
+#include "cSymbolTable.h"
 #endif
 
 
@@ -25,13 +30,15 @@ class cParser
 {
 private:
   cASLibrary* m_library;
-  tDictionary<cASSymbol> m_symtbl;
+  cLexer* m_lexer;
+  cSymbolTable* m_symtbl;
   
   cParser();
   
 public:
-  cParser(cASLibrary* library) : m_library(library) { ; }
+  cParser(cASLibrary* library) : m_library(library), m_symtbl(NULL) { ; }
   
+  cScriptObject* Parse(std::istream* input);
 };
 
 #endif

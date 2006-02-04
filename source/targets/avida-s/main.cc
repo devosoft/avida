@@ -7,17 +7,17 @@
  *
  */
 
-#include "cLexer.h"
+#include "cASLibrary.h"
+#include "cParser.h"
+
 #include <iostream>
+
 
 int main (int argc, char * const argv[])
 {
-  cLexer* lexer = new cLexer;
+  cASLibrary* lib = new cASLibrary;
+  cParser* parser = new cParser(lib);
+  parser->Parse(&std::cin);
   
-  int tok = lexer->yylex();
-  while (tok) {
-    std::cout << "Token(" << tok << "): '" << lexer->YYText() << "'" << endl;
-    tok = lexer->yylex();
-  }
   return 0;
 }

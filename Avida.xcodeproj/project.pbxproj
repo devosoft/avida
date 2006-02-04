@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		700E2996085A1F6000CF158A /* primitive in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3164D07626CF3008F7A48 /* primitive */; };
+		700E2996085A1F6000CF158A /* avida in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3164D07626CF3008F7A48 /* avida */; };
 		700E2AF8085DE50C00CF158A /* avida.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3109C0762539E008F7A48 /* avida.cc */; };
 		700E2B6F085DE50C00CF158A /* analyze.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3114B0762539E008F7A48 /* analyze.cfg */; };
 		700E2B70085DE50C00CF158A /* environment.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311800762539F008F7A48 /* environment.cfg */; };
@@ -20,7 +20,7 @@
 		700E2B7A085DE50C00CF158A /* organism.parasite in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311980762539F008F7A48 /* organism.parasite */; };
 		700E2B7B085DE50C00CF158A /* organism.smt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 706D330E0854A7B900D7DC8F /* organism.smt */; };
 		700E2B7D085DE50C00CF158A /* inst_set.smt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 706D33270854A90D00D7DC8F /* inst_set.smt */; };
-		700E2B87085DE54400CF158A /* viewer in CopyFiles */ = {isa = PBXBuildFile; fileRef = 700E2B83085DE50C00CF158A /* viewer */; };
+		700E2B87085DE54400CF158A /* avida-viewer in CopyFiles */ = {isa = PBXBuildFile; fileRef = 700E2B83085DE50C00CF158A /* avida-viewer */; };
 		701384340900A45B0087ED2E /* organism.smtx in CopyFiles */ = {isa = PBXBuildFile; fileRef = 701384330900A45B0087ED2E /* organism.smtx */; };
 		701384350900A45B0087ED2E /* organism.smtx in CopyFiles */ = {isa = PBXBuildFile; fileRef = 701384330900A45B0087ED2E /* organism.smtx */; };
 		7013846209028B3E0087ED2E /* cAvidaConfig.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7013846009028B3E0087ED2E /* cAvidaConfig.cc */; };
@@ -44,6 +44,9 @@
 		702D4F0708DA5341007BA469 /* cPopulationInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EFD08DA5341007BA469 /* cPopulationInterface.cc */; };
 		702D4F4508DA61FE007BA469 /* cBirthChamber.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4F3F08DA61FE007BA469 /* cBirthChamber.cc */; };
 		702D4F4B08DA61FE007BA469 /* cBirthChamber.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4F3F08DA61FE007BA469 /* cBirthChamber.cc */; };
+		702F52AA0992F8F600B2B507 /* cSymbolTable.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702F52A80992F8F600B2B507 /* cSymbolTable.cc */; };
+		702F52E10992FD8000B2B507 /* cScriptObject.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702F52DF0992FD8000B2B507 /* cScriptObject.cc */; };
+		702F532F0993060A00B2B507 /* avida-s in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70DCAD1C097AF7CC002F8733 /* avida-s */; };
 		7040CF1C0906A52E00AA820F /* cEventManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7040CF1A0906A52E00AA820F /* cEventManager.cc */; };
 		7040CF1E0906A52E00AA820F /* cEventManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7040CF1A0906A52E00AA820F /* cEventManager.cc */; };
 		7040D3A6090964D100AA820F /* cMxCodeArray.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865808F4974300FC65FE /* cMxCodeArray.cc */; };
@@ -346,8 +349,6 @@
 		70DCAD03097AF7CC002F8733 /* cDefaultRunDriver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701D930C094CAD6B008B845F /* cDefaultRunDriver.cc */; };
 		70DCAD04097AF7CC002F8733 /* cDriverManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701D9382094CBA69008B845F /* cDriverManager.cc */; };
 		70DCAD05097AF7CC002F8733 /* cDefaultAnalyzeDriver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701D93E7094CBF71008B845F /* cDefaultAnalyzeDriver.cc */; };
-		70DCAD06097AF7CC002F8733 /* primitive.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC9B097AF7C0002F8733 /* primitive.cc */; };
-		70DCAD09097AF7CC002F8733 /* primitive in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3164D07626CF3008F7A48 /* primitive */; };
 		70DCAD0A097AF7CC002F8733 /* analyze.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3114B0762539E008F7A48 /* analyze.cfg */; };
 		70DCAD0B097AF7CC002F8733 /* environment.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311800762539F008F7A48 /* environment.cfg */; };
 		70DCAD0C097AF7CC002F8733 /* events.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311810762539F008F7A48 /* events.cfg */; };
@@ -363,7 +364,6 @@
 		70DCAD16097AF7CC002F8733 /* avida.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7013852C0902E36B0087ED2E /* avida.cfg */; };
 		70DCAD25097AF81A002F8733 /* cLexer.l in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAD21097AF81A002F8733 /* cLexer.l */; };
 		70DCAD2F097AF8BC002F8733 /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC57097AF730002F8733 /* main.cc */; };
-		70DCAD38097AF972002F8733 /* CMakeLists.txt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70DCAD37097AF972002F8733 /* CMakeLists.txt */; };
 		70F7D8CE09254787009E311D /* cFitnessMatrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB208DB7F8200068AC2 /* cFitnessMatrix.cc */; };
 		70F7DAF409290468009E311D /* cClassificationManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70F7DAF009290468009E311D /* cClassificationManager.cc */; };
 		70F7DCA009293E76009E311D /* cClassificationManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70F7DAF009290468009E311D /* cClassificationManager.cc */; };
@@ -422,7 +422,7 @@
 			dstPath = Avida.work;
 			dstSubfolderSpec = 16;
 			files = (
-				700E2B87085DE54400CF158A /* viewer in CopyFiles */,
+				700E2B87085DE54400CF158A /* avida-viewer in CopyFiles */,
 				700E2B6F085DE50C00CF158A /* analyze.cfg in CopyFiles */,
 				700E2B70085DE50C00CF158A /* environment.cfg in CopyFiles */,
 				700E2B71085DE50C00CF158A /* events.cfg in CopyFiles */,
@@ -448,7 +448,7 @@
 			dstPath = Avida.work;
 			dstSubfolderSpec = 16;
 			files = (
-				700E2996085A1F6000CF158A /* primitive in CopyFiles */,
+				700E2996085A1F6000CF158A /* avida in CopyFiles */,
 				70486BA00826722F009328F0 /* analyze.cfg in CopyFiles */,
 				70486BA10826722F009328F0 /* environment.cfg in CopyFiles */,
 				70486BA20826722F009328F0 /* events.cfg in CopyFiles */,
@@ -471,7 +471,7 @@
 			dstPath = Avida.work;
 			dstSubfolderSpec = 16;
 			files = (
-				70DCAD09097AF7CC002F8733 /* primitive in CopyFiles */,
+				702F532F0993060A00B2B507 /* avida-s in CopyFiles */,
 				70DCAD0A097AF7CC002F8733 /* analyze.cfg in CopyFiles */,
 				70DCAD0B097AF7CC002F8733 /* environment.cfg in CopyFiles */,
 				70DCAD0C097AF7CC002F8733 /* events.cfg in CopyFiles */,
@@ -485,7 +485,6 @@
 				70DCAD14097AF7CC002F8733 /* inst_set.smt in CopyFiles */,
 				70DCAD15097AF7CC002F8733 /* organism.smtx in CopyFiles */,
 				70DCAD16097AF7CC002F8733 /* avida.cfg in CopyFiles */,
-				70DCAD38097AF972002F8733 /* CMakeLists.txt in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -493,7 +492,7 @@
 
 /* Begin PBXFileReference section */
 		700E28CF0859FFD700CF158A /* tObjectFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tObjectFactory.h; sourceTree = "<group>"; };
-		700E2B83085DE50C00CF158A /* viewer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = viewer; sourceTree = BUILT_PRODUCTS_DIR; };
+		700E2B83085DE50C00CF158A /* avida-viewer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "avida-viewer"; sourceTree = BUILT_PRODUCTS_DIR; };
 		701384330900A45B0087ED2E /* organism.smtx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.smtx; sourceTree = "<group>"; };
 		7013845F09028B3E0087ED2E /* cAvidaConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaConfig.h; sourceTree = "<group>"; };
 		7013846009028B3E0087ED2E /* cAvidaConfig.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cAvidaConfig.cc; sourceTree = "<group>"; };
@@ -517,6 +516,10 @@
 		702D4F3808DA61E2007BA469 /* cAvidaTriggers.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAvidaTriggers.h; sourceTree = "<group>"; };
 		702D4F3908DA61E2007BA469 /* cBirthChamber.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cBirthChamber.h; sourceTree = "<group>"; };
 		702D4F3F08DA61FE007BA469 /* cBirthChamber.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cBirthChamber.cc; sourceTree = "<group>"; };
+		702F52A70992F8F600B2B507 /* cSymbolTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cSymbolTable.h; sourceTree = "<group>"; };
+		702F52A80992F8F600B2B507 /* cSymbolTable.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cSymbolTable.cc; sourceTree = "<group>"; };
+		702F52DE0992FD8000B2B507 /* cScriptObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cScriptObject.h; sourceTree = "<group>"; };
+		702F52DF0992FD8000B2B507 /* cScriptObject.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cScriptObject.cc; sourceTree = "<group>"; };
 		703F684207B437B800C1CA76 /* status.xml */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = status.xml; sourceTree = "<group>"; };
 		7040CF1A0906A52E00AA820F /* cEventManager.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cEventManager.cc; sourceTree = "<group>"; };
 		7040CF1B0906A52E00AA820F /* cEventManager.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cEventManager.h; sourceTree = "<group>"; };
@@ -804,7 +807,7 @@
 		70DCAC77097AF730002F8733 /* key_chart */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = key_chart; sourceTree = "<group>"; };
 		70DCAC78097AF730002F8733 /* viewer.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = viewer.cc; sourceTree = "<group>"; };
 		70DCAC9B097AF7C0002F8733 /* primitive.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = primitive.cc; sourceTree = "<group>"; };
-		70DCAD1C097AF7CC002F8733 /* primitive */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = primitive; sourceTree = BUILT_PRODUCTS_DIR; };
+		70DCAD1C097AF7CC002F8733 /* avida-s */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "avida-s"; sourceTree = BUILT_PRODUCTS_DIR; };
 		70DCAD1F097AF81A002F8733 /* AvidaScript.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = AvidaScript.h; sourceTree = "<group>"; };
 		70DCAD20097AF81A002F8733 /* cLexer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cLexer.h; sourceTree = "<group>"; };
 		70DCAD21097AF81A002F8733 /* cLexer.l */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.lex; path = cLexer.l; sourceTree = "<group>"; };
@@ -924,7 +927,7 @@
 		DCC315CF076253A5008F7A48 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		DCC315D0076253A5008F7A48 /* task_event_gen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = task_event_gen.cc; sourceTree = "<group>"; };
 		DCC315D1076253A5008F7A48 /* task_event_gen.old.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = task_event_gen.old.cc; sourceTree = "<group>"; };
-		DCC3164D07626CF3008F7A48 /* primitive */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = primitive; sourceTree = BUILT_PRODUCTS_DIR; };
+		DCC3164D07626CF3008F7A48 /* avida */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = avida; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1072,6 +1075,10 @@
 				7073165A097C6C8F00815164 /* cParser.h */,
 				7073165B097C6C8F00815164 /* cParser.cc */,
 				70DCAD22097AF81A002F8733 /* FlexLexer.h */,
+				702F52A70992F8F600B2B507 /* cSymbolTable.h */,
+				702F52A80992F8F600B2B507 /* cSymbolTable.cc */,
+				702F52DE0992FD8000B2B507 /* cScriptObject.h */,
+				702F52DF0992FD8000B2B507 /* cScriptObject.cc */,
 			);
 			path = script;
 			sourceTree = "<group>";
@@ -1588,9 +1595,9 @@
 		DCC3164E07626CF3008F7A48 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				DCC3164D07626CF3008F7A48 /* primitive */,
-				700E2B83085DE50C00CF158A /* viewer */,
-				70DCAD1C097AF7CC002F8733 /* primitive */,
+				DCC3164D07626CF3008F7A48 /* avida */,
+				700E2B83085DE50C00CF158A /* avida-viewer */,
+				70DCAD1C097AF7CC002F8733 /* avida-s */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1634,7 +1641,7 @@
 			);
 			name = "avida-viewer";
 			productName = primitive;
-			productReference = 700E2B83085DE50C00CF158A /* viewer */;
+			productReference = 700E2B83085DE50C00CF158A /* avida-viewer */;
 			productType = "com.apple.product-type.tool";
 		};
 		70DCAC9D097AF7CC002F8733 /* avida-s */ = {
@@ -1674,7 +1681,7 @@
 			);
 			name = "avida-s";
 			productName = primitive;
-			productReference = 70DCAD1C097AF7CC002F8733 /* primitive */;
+			productReference = 70DCAD1C097AF7CC002F8733 /* avida-s */;
 			productType = "com.apple.product-type.tool";
 		};
 		DCC3164C07626CF3008F7A48 /* avida */ = {
@@ -1713,7 +1720,7 @@
 			);
 			name = avida;
 			productName = primitive;
-			productReference = DCC3164D07626CF3008F7A48 /* primitive */;
+			productReference = DCC3164D07626CF3008F7A48 /* avida */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -2007,12 +2014,13 @@
 				70DCAD03097AF7CC002F8733 /* cDefaultRunDriver.cc in Sources */,
 				70DCAD04097AF7CC002F8733 /* cDriverManager.cc in Sources */,
 				70DCAD05097AF7CC002F8733 /* cDefaultAnalyzeDriver.cc in Sources */,
-				70DCAD06097AF7CC002F8733 /* primitive.cc in Sources */,
 				70DCAD25097AF81A002F8733 /* cLexer.l in Sources */,
 				70DCAD2F097AF8BC002F8733 /* main.cc in Sources */,
 				7073165D097C6C8F00815164 /* cParser.cc in Sources */,
 				70731665097C6DF500815164 /* cASLibrary.cc in Sources */,
 				7073166B097C6E0C00815164 /* cASSymbol.cc in Sources */,
+				702F52AA0992F8F600B2B507 /* cSymbolTable.cc in Sources */,
+				702F52E10992FD8000B2B507 /* cScriptObject.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2145,7 +2153,7 @@
 				HEADER_SEARCH_PATHS = source/event/;
 				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)/work";
 				LIBRARY_SEARCH_PATHS = "";
-				PRODUCT_NAME = viewer;
+				PRODUCT_NAME = "avida-viewer";
 				SKIP_INSTALL = YES;
 				WARNING_CFLAGS = (
 					"-Wmost",
@@ -2174,7 +2182,7 @@
 				HEADER_SEARCH_PATHS = source/event/;
 				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)/work";
 				LIBRARY_SEARCH_PATHS = "";
-				PRODUCT_NAME = viewer;
+				PRODUCT_NAME = "avida-viewer";
 				SKIP_INSTALL = YES;
 				WARNING_CFLAGS = (
 					"-Wmost",
@@ -2189,7 +2197,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_MODEL_CPU = G4;
-				PRODUCT_NAME = primitive;
+				PRODUCT_NAME = avida;
 			};
 			name = Development;
 		};
@@ -2197,7 +2205,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_MODEL_CPU = G4;
-				PRODUCT_NAME = primitive;
+				PRODUCT_NAME = avida;
 			};
 			name = "Deployment-G4";
 		};
@@ -2254,7 +2262,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_MODEL_CPU = G4;
-				PRODUCT_NAME = primitive;
+				PRODUCT_NAME = avida;
 			};
 			name = "Deployment-G5";
 		};
@@ -2262,7 +2270,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_MODEL_CPU = G4;
-				PRODUCT_NAME = primitive;
+				PRODUCT_NAME = avida;
 			};
 			name = Profile;
 		};
@@ -2284,7 +2292,7 @@
 				HEADER_SEARCH_PATHS = source/event/;
 				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)/work";
 				LIBRARY_SEARCH_PATHS = "";
-				PRODUCT_NAME = viewer;
+				PRODUCT_NAME = "avida-viewer";
 				SKIP_INSTALL = YES;
 				WARNING_CFLAGS = (
 					"-Wmost",
@@ -2313,7 +2321,7 @@
 				HEADER_SEARCH_PATHS = source/event/;
 				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)/work";
 				LIBRARY_SEARCH_PATHS = "";
-				PRODUCT_NAME = viewer;
+				PRODUCT_NAME = "avida-viewer";
 				SKIP_INSTALL = YES;
 				WARNING_CFLAGS = (
 					"-Wmost",
@@ -2375,7 +2383,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_MODEL_CPU = G4;
-				PRODUCT_NAME = primitive;
+				PRODUCT_NAME = "avida-s";
 			};
 			name = Development;
 		};
@@ -2383,7 +2391,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_MODEL_CPU = G4;
-				PRODUCT_NAME = primitive;
+				PRODUCT_NAME = "avida-s";
 			};
 			name = "Deployment-G4";
 		};
@@ -2391,7 +2399,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_MODEL_CPU = G4;
-				PRODUCT_NAME = primitive;
+				PRODUCT_NAME = "avida-s";
 			};
 			name = "Deployment-G5";
 		};
@@ -2399,7 +2407,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_MODEL_CPU = G4;
-				PRODUCT_NAME = primitive;
+				PRODUCT_NAME = "avida-s";
 			};
 			name = Profile;
 		};
