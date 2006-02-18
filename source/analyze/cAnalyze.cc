@@ -7060,6 +7060,10 @@ void cAnalyze::SetupGenotypeDataList()
                               ("complexity",   "Basic Complexity (all neutral/beneficial muts are equal)",
                                &cAnalyzeGenotype::GetComplexity,
                                (void (cAnalyzeGenotype::*)(double)) NULL));
+  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, double>
+                              ("land_fitness",   "Average Lanscape Fitness",
+                               &cAnalyzeGenotype::GetLandscapeFitness,
+                               (void (cAnalyzeGenotype::*)(double)) NULL));
   genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, const cString &>
                               ("parent_muts", "Mutations from Parent",
                                &cAnalyzeGenotype::GetParentMuts, &cAnalyzeGenotype::SetParentMuts,
