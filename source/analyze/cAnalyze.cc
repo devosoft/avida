@@ -3579,6 +3579,8 @@ void cAnalyze::AnalyzeComplexityDelta(cString cur_string)
     // Perform the per-site mutations -- we are going to keep looping until
     // we trigger at least one mutation.
     int num_mutations = 0;
+    int ins_line = -1;
+    int del_line = -1;
     while (num_mutations == 0) {
       if (copy_mut_prob > 0.0) {
         for (int i = 0; i < mod_genome.GetSize(); i++) {
@@ -3591,38 +3593,174 @@ void cAnalyze::AnalyzeComplexityDelta(cString cur_string)
       
       // Perform an Insertion if it has one.
       if (m_world->GetRandom().P(ins_mut_prob)) {
-        int ins_line = m_world->GetRandom().GetInt(mod_genome.GetSize() + 1);
+        ins_line = m_world->GetRandom().GetInt(mod_genome.GetSize() + 1);
         mod_genome.Insert(ins_line, inst_set.GetRandomInst());
         num_mutations++;
       }
       
       // Perform a Deletion if it has one.
       if (m_world->GetRandom().P(del_mut_prob)) {
-        int del_line = m_world->GetRandom().GetInt(mod_genome.GetSize());
+        del_line = m_world->GetRandom().GetInt(mod_genome.GetSize());
         mod_genome.Remove(del_line);
         num_mutations++;
       }
     }
     
-    // Calculate the complexities....
+    // Collect basic state before and after the mutations...
     genotype->Recalculate();
     double start_complexity = genotype->GetKO_Complexity();
     double start_fitness = genotype->GetFitness();
     int start_length = genotype->GetLength();
     int start_gest = genotype->GetGestTime();
+    const tArray<int>& start_task_counts = genotype->GetTaskCounts();
+    const tArray< tArray<int> >& start_KO_task_counts = genotype->GetKO_TaskCounts();
     
     cAnalyzeGenotype new_genotype(m_world, mod_genome, inst_set);
     new_genotype.Recalculate();
     double end_complexity = new_genotype.GetKO_Complexity();
-    double complexity_change = end_complexity - start_complexity;
     double end_fitness = new_genotype.GetFitness();
     int end_length = new_genotype.GetLength();
     int end_gest = new_genotype.GetGestTime();
+    const tArray<int> & end_task_counts = new_genotype.GetTaskCounts();
+    const tArray< tArray<int> >& end_KO_task_counts = new_genotype.GetKO_TaskCounts();
     
+    // Calculate the complexities....
+    double complexity_change = end_complexity - start_complexity;
+
+    // Loop through each line and determine if each line contributes to
+    int total_info_new = 0;    // Site didn't encode info, but now does.
+    int total_info_shift = 0;  // Shift in which tasks this site codes for.
+    int total_info_pshift = 0; // Partial, but not total shift of tasks.
+    int total_info_share = 0;  // Site codes for more tasks than before.
+    int total_info_lost = 0;   // Site list all tasks it encoded for.
+    int total_info_plost = 0;  // Site reduced tasks it encodes for.
+    int total_info_kept = 0;   // Site still codes for sames tasks as before
+    int total_info_lack = 0;   // Site never codes for any tasks.
+ 
+    const int num_tasks = start_task_counts.GetSize();
+    tArray<int> mut_effects(num_tasks);
+    for (int i = 0; i < num_tasks; i++) {
+      mut_effects[i] = end_task_counts[i] - start_task_counts[i];
+    }
+
+    int end_line = 0;
+    for (int start_line = 0; start_line < start_length; start_line++) {
+      if (start_line == del_line) {
+        // This line was deleted in the end.  Skip it, but don't increment
+        // the end_line
+        continue;
+      }
+      if (start_line == ins_line) {
+        // This position had an insertion.  Deal with it and then skip it.
+        end_line++;
+
+        // No "continue" here.  With the updated end_line we can move on.
+      }
+
+      // If we made it this far, the start_line and end_line should be aligned.
+      int info_maintained_count = 0;
+      int info_gained_count = 0;
+      int info_lost_count = 0;
+
+      for (int cur_task = 0; cur_task < num_tasks; cur_task++) {
+        // At the organism level, the mutation may have caused four options
+        // for this task  (A) Was never present, (B) Was present and still is,
+        // (C) Was not present, but is now, or (D) Was present, but was lost.
+
+        // Case A:
+        if (start_task_counts[cur_task]==0 && end_task_counts[cur_task]==0) {
+          // This task was never done.  Keep looping.
+          continue;
+        }
+
+        // Case B:
+        if (start_task_counts[cur_task] == end_task_counts[cur_task]) {
+          // The task hasn't changed.  Has its encoding?
+          bool KO_start = true;
+          bool KO_end = true;
+          if (start_KO_task_counts[start_line][cur_task]  ==
+              start_task_counts[cur_task]) {
+            // start_count is unchanged by knocking out this line.
+            KO_start = false;
+          }
+          if (end_KO_task_counts[end_line][cur_task]  ==
+              end_task_counts[cur_task]) {
+            // end_count is unchanged by knocking out this line.
+            KO_end = false;
+          }
+
+          if (KO_start == true && KO_end == true) info_maintained_count++;
+          if (KO_start == true && KO_end == false) info_lost_count++;
+          if (KO_start == false && KO_end == true) info_gained_count++;
+          continue;
+        }
+
+        // Case C:
+        if (start_task_counts[cur_task] < end_task_counts[cur_task]) {
+          // Task was GAINED...  Is this site important?
+          if (end_KO_task_counts[end_line][cur_task]  <
+              end_task_counts[cur_task]) {
+            info_gained_count++;
+          }
+          continue;
+        }
+
+        // Case D:
+        if (start_task_counts[cur_task] > end_task_counts[cur_task]) {
+          // The task was LOST...  Was this site important?
+          if (start_KO_task_counts[start_line][cur_task]  <
+              start_task_counts[cur_task]) {
+            info_lost_count++;
+          }
+          continue;
+        }
+      }
+
+      // We now have counts and know how often this site was responsible for
+      // a task gain, a task loss, or a task being maintained.
+
+      bool has_keep = info_maintained_count > 0;
+      bool has_loss = info_lost_count > 0;
+      bool has_gain = info_gained_count > 0;      
+
+      if      ( !has_loss  &&  !has_gain  &&  !has_keep ) total_info_lack++;
+      else if ( !has_loss  &&  !has_gain  &&   has_keep ) total_info_kept++;
+      else if ( !has_loss  &&   has_gain  &&  !has_keep ) total_info_new++;
+      else if ( !has_loss  &&   has_gain  &&   has_keep ) total_info_share++;
+      else if (  has_loss  &&  !has_gain  &&  !has_keep ) total_info_lost++;
+      else if (  has_loss  &&  !has_gain  &&   has_keep ) total_info_plost++;
+      else if (  has_loss  &&   has_gain  &&  !has_keep ) total_info_shift++;
+      else if (  has_loss  &&   has_gain  &&   has_keep ) total_info_pshift++;
+
+      end_line++;
+    }
+
+
+    // Output the results.
     df.Write(num_mutations, "Number of mutational differences between original organism and mutant.");
     df.Write(complexity_change, "Complexity difference between original organism and mutant.");
-    df.Write(start_complexity, "Complexity of initial organism.");
-    df.Write(end_complexity, "Complexity of mutant.");
+    df.Write(start_complexity, "Total complexity of initial organism.");
+    df.Write(end_complexity, "Total complexity of mutant.");
+
+    // Broken down complexity info
+    df.Write(total_info_lack, "Num sites with no info at all.");
+    df.Write(total_info_kept, "Num sites with info, but no change.");
+    df.Write(total_info_new, "Num sites with new info (prev. none).");
+    df.Write(total_info_share, "Num sites with newly shared info.");
+    df.Write(total_info_lost, "Num sites with lost info.");
+    df.Write(total_info_plost, "Num sites with parital lost info.");
+    df.Write(total_info_shift, "Num sites with shift in info.");
+    df.Write(total_info_pshift, "Num sites with partial shift in info.");
+
+    // Start and End task counts...
+    for (int i = 0; i < start_task_counts.GetSize(); i++) {
+      df.Write(start_task_counts[i], cStringUtil::Stringf("Start task %d", i));
+    }
+
+    for (int i = 0; i < end_task_counts.GetSize(); i++) {
+      df.Write(end_task_counts[i], cStringUtil::Stringf("End task %d", i));
+    }
+
     df.Write(start_fitness, "Fitness of initial organism.");
     df.Write(end_fitness, "Fitness of mutant.");
     df.Write(start_length, "Length of initial organism.");

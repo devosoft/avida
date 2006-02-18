@@ -88,12 +88,15 @@ private:
     int neut_count;
     int pos_count;
     
-    bool has_pair_info;
+    bool has_pair_info; // Try all pairs of knocks to get epistasis effects?
     int pair_dead_count;
     int pair_neg_count;
     int pair_neut_count;
     int pair_pos_count;
     
+    bool has_chart_info; // Keep a chart of which sites affect which tasks?
+    tArray< tArray<int> > task_counts;
+
     void Reset() {
       dead_count = 0;
       neg_count = 0;
@@ -105,6 +108,9 @@ private:
       pair_neg_count = 0;
       pair_neut_count = 0;
       pair_pos_count = 0;
+
+      has_chart_info = false;
+      task_counts.Resize(0);
     }
     
     cAnalyzeKnockouts() { Reset(); }
@@ -139,7 +145,7 @@ private:
   }
 
   int CalcMaxGestation() const;
-  void CalcKnockouts(bool check_pairs=false) const;
+  void CalcKnockouts(bool check_pairs=false, bool check_chart=false) const;
   void CalcLandscape() const;
 public:
   cAnalyzeGenotype(cWorld* world, cString symbol_string, cInstSet & in_inst_set);
@@ -236,6 +242,7 @@ public:
   int GetKOPair_NeutCount() const;
   int GetKOPair_PosCount() const;
   int GetKOPair_Complexity() const;
+  const tArray< tArray<int> > & GetKO_TaskCounts() const;
   
   // Landscape accessors
   double GetFracDead() const;
@@ -264,6 +271,9 @@ public:
     if (task_id >= task_counts.GetSize()) return 0;
     if (special_args.HasString("binary")) return (task_counts[task_id] > 0);
     return task_counts[task_id];
+  }
+  const tArray<int> & GetTaskCounts() const {
+    return task_counts;
   }
 
   // Comparisons...  Compares a genotype to the "previous" one, which is

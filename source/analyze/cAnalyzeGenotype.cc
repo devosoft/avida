@@ -158,7 +158,7 @@ int cAnalyzeGenotype::CalcMaxGestation() const
   return m_world->GetConfig().TEST_CPU_TIME_MOD.Get() * genome.GetSize();
 }
 
-void cAnalyzeGenotype::CalcKnockouts(bool check_pairs) const
+void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
 {
   if (knockout_stats == NULL) {
     // We've never called this before -- setup the stats.
@@ -166,6 +166,10 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs) const
   }
   else if (check_pairs == true && knockout_stats->has_pair_info == false) {
     // We don't have the pair stats we need -- keep going.
+    knockout_stats->Reset();
+  }
+  else if (check_chart == true && knockout_stats->has_chart_info == false) {
+    // We don't have the phyenotype chart we need -- keep going.
     knockout_stats->Reset();
   }
   else {
@@ -179,6 +183,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs) const
   cAnalyzeGenotype base_genotype(m_world, genome, inst_set);
   base_genotype.Recalculate();      
   double base_fitness = base_genotype.GetFitness();
+  const tArray<int> base_task_counts( base_genotype.GetTaskCounts() );
   
   // If the base fitness is 0, the organism is dead and has no complexity.
   if (base_fitness == 0.0) {
@@ -201,6 +206,13 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs) const
   }
   const cInstruction null_inst = ko_inst_set.GetInst("NULL");
   
+  // If we are keeping track of the specific effects on tasks from the
+  // knockouts, setup the matrix.
+  if (check_chart == true) {
+    knockout_stats->task_counts.Resize(length);
+    knockout_stats->has_chart_info = true;
+  }
+
   // Loop through all the lines of code, testing the removal of each.
   // -2=lethal, -1=detrimental, 0=neutral, 1=beneficial
   tArray<int> ko_effect(length);
@@ -210,6 +222,10 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs) const
     mod_genome[line_num] = null_inst;
     cAnalyzeGenotype ko_genotype(m_world, mod_genome, ko_inst_set);
     ko_genotype.Recalculate();
+    if (check_chart == true) {
+      const tArray<int> ko_task_counts( ko_genotype.GetTaskCounts() );
+      knockout_stats->task_counts[line_num] = ko_task_counts;
+    }
     
     double ko_fitness = ko_genotype.GetFitness();
     if (ko_fitness == 0.0) {
@@ -436,6 +452,12 @@ int cAnalyzeGenotype::GetKOPair_Complexity() const
 {
   CalcKnockouts(true);  // Make sure knockouts are calculated
   return knockout_stats->pair_dead_count + knockout_stats->pair_neg_count;
+}
+
+const tArray< tArray<int> > & cAnalyzeGenotype::GetKO_TaskCounts() const
+{
+  CalcKnockouts(false, true);  // Make sure knockouts are calculated
+  return knockout_stats->task_counts;
 }
 
 
