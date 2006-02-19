@@ -148,7 +148,6 @@ private:
 
   int CalcMaxGestation() const;
   void CalcKnockouts(bool check_pairs=false, bool check_chart=false) const;
-  void CalcLandscape() const;
 public:
   cAnalyzeGenotype(cWorld* world, cString symbol_string, cInstSet & in_inst_set);
   cAnalyzeGenotype(cWorld* world, const cGenome & _genome, cInstSet & in_inst_set);
@@ -160,6 +159,7 @@ public:
 
   void Recalculate(cAnalyzeGenotype * parent_genotype=NULL);
   void PrintTasks(std::ofstream& fp, int min_task=0, int max_task=-1);
+  void CalcLandscape() const;
 
   // Set...
   void SetSequence(cString _sequence);

@@ -77,6 +77,24 @@
 		70533482092A4F5D006BD186 /* cSpecies.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705332480929764A006BD186 /* cSpecies.cc */; };
 		70533483092A4F5F006BD186 /* cSpeciesControl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70F7DE6A09296613009E311D /* cSpeciesControl.cc */; };
 		70533484092A4F60006BD186 /* cSpeciesQueue.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7053324A0929764A006BD186 /* cSpeciesQueue.cc */; };
+		7054A12009A7BEFC00038658 /* cThread.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7054A11E09A7BEFC00038658 /* cThread.h */; };
+		7054A12109A7BEFC00038658 /* cThread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7054A11F09A7BEFC00038658 /* cThread.cc */; };
+		7054A12209A7BEFC00038658 /* cThread.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7054A11E09A7BEFC00038658 /* cThread.h */; };
+		7054A12309A7BEFC00038658 /* cThread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7054A11F09A7BEFC00038658 /* cThread.cc */; };
+		7054A12409A7BEFC00038658 /* cThread.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7054A11E09A7BEFC00038658 /* cThread.h */; };
+		7054A12509A7BEFC00038658 /* cThread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7054A11F09A7BEFC00038658 /* cThread.cc */; };
+		7054A17009A8014600038658 /* cAnalyzeJobQueue.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7054A16E09A8014600038658 /* cAnalyzeJobQueue.h */; };
+		7054A17109A8014600038658 /* cAnalyzeJobQueue.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7054A16F09A8014600038658 /* cAnalyzeJobQueue.cc */; };
+		7054A17209A8014600038658 /* cAnalyzeJobQueue.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7054A16E09A8014600038658 /* cAnalyzeJobQueue.h */; };
+		7054A17309A8014600038658 /* cAnalyzeJobQueue.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7054A16F09A8014600038658 /* cAnalyzeJobQueue.cc */; };
+		7054A17509A8014600038658 /* cAnalyzeJobQueue.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7054A16F09A8014600038658 /* cAnalyzeJobQueue.cc */; };
+		7054A17A09A802BD00038658 /* cAnalyzeJob.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7054A17909A802BC00038658 /* cAnalyzeJob.h */; };
+		7054A17B09A802BD00038658 /* cAnalyzeJob.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7054A17909A802BC00038658 /* cAnalyzeJob.h */; };
+		7054A1B509A810CB00038658 /* cAnalyzeJobWorker.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7054A1B309A810CB00038658 /* cAnalyzeJobWorker.h */; };
+		7054A1B609A810CB00038658 /* cAnalyzeJobWorker.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7054A1B409A810CB00038658 /* cAnalyzeJobWorker.cc */; };
+		7054A1B709A810CB00038658 /* cAnalyzeJobWorker.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7054A1B309A810CB00038658 /* cAnalyzeJobWorker.h */; };
+		7054A1B809A810CB00038658 /* cAnalyzeJobWorker.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7054A1B409A810CB00038658 /* cAnalyzeJobWorker.cc */; };
+		7054A1BA09A810CB00038658 /* cAnalyzeJobWorker.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7054A1B409A810CB00038658 /* cAnalyzeJobWorker.cc */; };
 		70658C5A085DF67D00486BED /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
 		706D32E90854A39800D7DC8F /* dummy in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311950762539F008F7A48 /* dummy */; };
 		706D32EA0854A39900D7DC8F /* organism.4stack in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311970762539F008F7A48 /* organism.4stack */; };
@@ -439,6 +457,10 @@
 				701D92E4094C9E6F008B845F /* cDriverManager.h in CopyFiles */,
 				701D930F094CAD6B008B845F /* cDefaultRunDriver.h in CopyFiles */,
 				701D93EA094CBF71008B845F /* cDefaultAnalyzeDriver.h in CopyFiles */,
+				7054A12209A7BEFC00038658 /* cThread.h in CopyFiles */,
+				7054A17209A8014600038658 /* cAnalyzeJobQueue.h in CopyFiles */,
+				7054A17B09A802BD00038658 /* cAnalyzeJob.h in CopyFiles */,
+				7054A1B709A810CB00038658 /* cAnalyzeJobWorker.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -462,6 +484,7 @@
 				706D33280854A90D00D7DC8F /* inst_set.smt in CopyFiles */,
 				701384350900A45B0087ED2E /* organism.smtx in CopyFiles */,
 				7013852D0902E36B0087ED2E /* avida.cfg in CopyFiles */,
+				7054A12409A7BEFC00038658 /* cThread.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -485,6 +508,10 @@
 				70DCAD14097AF7CC002F8733 /* inst_set.smt in CopyFiles */,
 				70DCAD15097AF7CC002F8733 /* organism.smtx in CopyFiles */,
 				70DCAD16097AF7CC002F8733 /* avida.cfg in CopyFiles */,
+				7054A12009A7BEFC00038658 /* cThread.h in CopyFiles */,
+				7054A17009A8014600038658 /* cAnalyzeJobQueue.h in CopyFiles */,
+				7054A17A09A802BD00038658 /* cAnalyzeJob.h in CopyFiles */,
+				7054A1B509A810CB00038658 /* cAnalyzeJobWorker.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -554,6 +581,14 @@
 		705333E5092A4B7C006BD186 /* cLineage.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cLineage.cc; sourceTree = "<group>"; };
 		705333E6092A4B7C006BD186 /* cLineage.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cLineage.h; sourceTree = "<group>"; };
 		7053345E092A4D88006BD186 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		7054A11E09A7BEFC00038658 /* cThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cThread.h; sourceTree = "<group>"; };
+		7054A11F09A7BEFC00038658 /* cThread.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cThread.cc; sourceTree = "<group>"; };
+		7054A16E09A8014600038658 /* cAnalyzeJobQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAnalyzeJobQueue.h; sourceTree = "<group>"; };
+		7054A16F09A8014600038658 /* cAnalyzeJobQueue.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeJobQueue.cc; sourceTree = "<group>"; };
+		7054A17909A802BC00038658 /* cAnalyzeJob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAnalyzeJob.h; sourceTree = "<group>"; };
+		7054A17D09A8032600038658 /* tAnalyzeJob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tAnalyzeJob.h; sourceTree = "<group>"; };
+		7054A1B309A810CB00038658 /* cAnalyzeJobWorker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAnalyzeJobWorker.h; sourceTree = "<group>"; };
+		7054A1B409A810CB00038658 /* cAnalyzeJobWorker.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeJobWorker.cc; sourceTree = "<group>"; };
 		70658C59085DF67D00486BED /* libncurses.5.4.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libncurses.5.4.dylib; path = /usr/lib/libncurses.5.4.dylib; sourceTree = "<absolute>"; };
 		706D30CC0852328F00D7DC8F /* tInstLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tInstLib.h; sourceTree = "<group>"; };
 		706D330E0854A7B900D7DC8F /* organism.smt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = organism.smt; sourceTree = "<group>"; };
@@ -927,7 +962,7 @@
 		DCC315CF076253A5008F7A48 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		DCC315D0076253A5008F7A48 /* task_event_gen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = task_event_gen.cc; sourceTree = "<group>"; };
 		DCC315D1076253A5008F7A48 /* task_event_gen.old.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = task_event_gen.old.cc; sourceTree = "<group>"; };
-		DCC3164D07626CF3008F7A48 /* avida */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "compiled.mach-o.executable"; path = avida; sourceTree = BUILT_PRODUCTS_DIR; };
+		DCC3164D07626CF3008F7A48 /* avida */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = avida; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -991,6 +1026,12 @@
 				70422A25091B141000A5E67F /* cAnalyzeGenotype.h */,
 				70422A26091B141000A5E67F /* cAnalyzeUtil.cc */,
 				70422A27091B141000A5E67F /* cAnalyzeUtil.h */,
+				7054A16E09A8014600038658 /* cAnalyzeJobQueue.h */,
+				7054A16F09A8014600038658 /* cAnalyzeJobQueue.cc */,
+				7054A17909A802BC00038658 /* cAnalyzeJob.h */,
+				7054A17D09A8032600038658 /* tAnalyzeJob.h */,
+				7054A1B309A810CB00038658 /* cAnalyzeJobWorker.h */,
+				7054A1B409A810CB00038658 /* cAnalyzeJobWorker.cc */,
 			);
 			path = analyze;
 			sourceTree = "<group>";
@@ -1546,6 +1587,8 @@
 				DCC315B5076253A5008F7A48 /* win32_mkdir_hack.hh */,
 				700E28CF0859FFD700CF158A /* tObjectFactory.h */,
 				70B3984E0947B29D0018F09D /* tManagedPointerArray.h */,
+				7054A11E09A7BEFC00038658 /* cThread.h */,
+				7054A11F09A7BEFC00038658 /* cThread.cc */,
 			);
 			path = tools;
 			sourceTree = "<group>";
@@ -1907,6 +1950,9 @@
 				70DCAC96097AF731002F8733 /* cZoomScreen.cc in Sources */,
 				70DCAC99097AF731002F8733 /* viewer.cc in Sources */,
 				70DCAC9A097AF754002F8733 /* cTextViewerDriver.cc in Sources */,
+				7054A12309A7BEFC00038658 /* cThread.cc in Sources */,
+				7054A17309A8014600038658 /* cAnalyzeJobQueue.cc in Sources */,
+				7054A1B809A810CB00038658 /* cAnalyzeJobWorker.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2021,6 +2067,9 @@
 				7073166B097C6E0C00815164 /* cASSymbol.cc in Sources */,
 				702F52AA0992F8F600B2B507 /* cSymbolTable.cc in Sources */,
 				702F52E10992FD8000B2B507 /* cScriptObject.cc in Sources */,
+				7054A12109A7BEFC00038658 /* cThread.cc in Sources */,
+				7054A17109A8014600038658 /* cAnalyzeJobQueue.cc in Sources */,
+				7054A1B609A810CB00038658 /* cAnalyzeJobWorker.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2129,6 +2178,9 @@
 				701D9383094CBA69008B845F /* cDriverManager.cc in Sources */,
 				701D93E9094CBF71008B845F /* cDefaultAnalyzeDriver.cc in Sources */,
 				70DCAC9C097AF7C0002F8733 /* primitive.cc in Sources */,
+				7054A12509A7BEFC00038658 /* cThread.cc in Sources */,
+				7054A17509A8014600038658 /* cAnalyzeJobQueue.cc in Sources */,
+				7054A1BA09A810CB00038658 /* cAnalyzeJobWorker.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

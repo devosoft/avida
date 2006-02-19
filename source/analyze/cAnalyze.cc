@@ -23,6 +23,8 @@
 #include "cAnalyzeFlowCommandDef.h"
 #include "cAnalyzeFunction.h"
 #include "cAnalyzeGenotype.h"
+#include "cAnalyzeJobQueue.h"
+#include "tAnalyzeJob.h"
 #include "cDataFile.h"
 #include "cEnvironment.h"
 #include "cFitnessMatrix.h"
@@ -1542,6 +1544,19 @@ void cAnalyze::CommandPrintTasks(cString cur_string)
     genotype->PrintTasks(fp);
     fp << endl;
   }
+}
+
+void cAnalyze::CommandLandscapePreGen(cString cur_string)
+{
+  cAnalyzeJobQueue queue(m_world);
+  tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+
+  cout << "Precalculating Fitness Landscape..." << endl;
+
+  for (cAnalyzeGenotype* cur_genotype = batch_it.Next(); cur_genotype; cur_genotype = batch_it.Next()) {
+    queue.AddJob(new tAnalyzeJob<cAnalyzeGenotype>(cur_genotype, &cAnalyzeGenotype::CalcLandscape));
+  }
+  queue.Execute();
 }
 
 void cAnalyze::CommandDetail(cString cur_string)
@@ -7603,6 +7618,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("SYSTEM", &cAnalyze::CommandSystem);
   AddLibraryDef("INTERACTIVE", &cAnalyze::CommandInteractive);
   AddLibraryDef("PRINT_TEST_CPU_RESOURCES", &cAnalyze::PrintTestCPUResources);
+  AddLibraryDef("LANDSCAPE_PREGEN", &cAnalyze::CommandLandscapePreGen);
   
   // Functions...
   AddLibraryDef("FUNCTION", &cAnalyze::FunctionCreate);

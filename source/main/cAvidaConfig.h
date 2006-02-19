@@ -154,6 +154,7 @@ public:
   CONFIG_ADD_VAR(VIEW_MODE, int, 0, "Initial viewer screen");
   CONFIG_ADD_VAR(CLONE_FILE, cString, "-", "Clone file to load");
   CONFIG_ADD_VAR(POPULATION_FILE, cString, "-", "Population file to load");
+  CONFIG_ADD_VAR(ANALYZE_MT_CONCURRENCY, int, 1, "Number of concurrent threads with which to process analyze job queues.");
   
   CONFIG_ADD_GROUP(ARCH_GROUP, "Architecture Variables");
   CONFIG_ADD_VAR(MAX_UPDATES, int, -1, "Maximum updates to run experiment (-1 = no limit)");
