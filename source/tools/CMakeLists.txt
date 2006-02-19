@@ -8,7 +8,6 @@ SET(libtools_a_SOURCES
   cDefaultMessageDisplay.cc
   cDoubleSum.cc
   cFile.cc
-	cGenesis.cc
   cHelpAlias.cc
   cHelpManager.cc
   cHelpType.cc
