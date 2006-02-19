@@ -83,12 +83,14 @@ private:
   // Group 4 : Landscape stats (obtained from testing all possible mutations)
   class cAnalyzeKnockouts {
   public:
+    // Calculations based off of all single knockouts
     int dead_count;
     int neg_count;
     int neut_count;
     int pos_count;
     
-    bool has_pair_info; // Try all pairs of knocks to get epistasis effects?
+    // Extra calculations based off of double knockouts...
+    bool has_pair_info;  // Have these calculations been made?
     int pair_dead_count;
     int pair_neg_count;
     int pair_neut_count;

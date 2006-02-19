@@ -170,6 +170,7 @@ private:
   void CommandFitnessMatrix(cString cur_string);
   void CommandMapTasks(cString cur_string);
   void CommandAverageModularity(cString cur_string);
+  void CommandAnalyzeModularity(cString cur_string);
   void CommandMapMutations(cString cur_string);
   void CommandMapDepth(cString cur_string);
 

@@ -4615,6 +4615,162 @@ void cAnalyze::CommandAverageModularity(cString cur_string)
   }
 
 
+void cAnalyze::CommandAnalyzeModularity(cString cur_string)
+{
+  cString filename("analyze_modularity.dat");
+  if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
+
+  cDataFile & df = m_world->GetDataFile(filename);
+  df.WriteComment( "Modularity Analysis" );
+  df.WriteTimeStamp();
+
+  // Determine which phenotypic traits we're working with
+  tList< tDataEntryCommand<cAnalyzeGenotype> > output_list;
+  tListIterator< tDataEntryCommand<cAnalyzeGenotype> > output_it(output_list);
+  cStringList arg_list(cur_string);
+  LoadGenotypeDataList(arg_list, output_list);
+  const int num_traits = output_list.GetSize();
+
+  // Setup the map_inst_set with the NULL instruction
+  cInstSet map_inst_set(inst_set);
+
+  // Locate the NULL instruction in the library
+  const cInstruction lib_null = map_inst_set.GetInstLib()->GetInst("NULL");
+  if (lib_null == map_inst_set.GetInstLib()->GetInstError()) {
+    cerr << "Internal ERROR: Instruction 'NULL' not found." << endl;
+    exit(1);
+  }
+
+  // Add mapping to located instruction.
+  map_inst_set.AddInst(lib_null.GetOp());
+  const cInstruction null_inst = map_inst_set.GetInst("NULL");
+
+
+  // Loop through all genotypes in this batch.
+  tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+  cAnalyzeGenotype * genotype = NULL;
+  while ((genotype = batch_it.Next()) != NULL) {
+    const int base_length = genotype->GetLength();
+    const cGenome & base_genome = genotype->GetGenome();
+    cGenome mod_genome(base_genome);
+    genotype->Recalculate();
+
+    tMatrix<bool> task_matrix(num_traits, base_length);
+    tArray<int> num_inst(num_traits);  // Number of instructions for each task
+    tArray<int> num_task(base_length); // Number of traits at each locus
+    task_matrix.SetAll(false);
+    num_inst.SetAll(0);
+    num_task.SetAll(0);
+
+    // Loop through all lines in this genome
+    for (int line_num = 0; line_num < base_length; line_num++) {
+      int cur_inst = base_genome[line_num].GetOp();
+
+      // Determine what happens to this genotype when this line is knocked out
+      mod_genome[line_num] = null_inst;
+      cAnalyzeGenotype test_genotype(m_world, mod_genome, map_inst_set);
+      test_genotype.Recalculate();
+
+      // Loop through the individual traits
+      output_it.Reset();
+      tDataEntryCommand<cAnalyzeGenotype> * data_command = NULL;
+      int cur_trait = 0;
+      while ((data_command = output_it.Next()) != NULL) {
+        data_command->SetTarget(&test_genotype);
+        test_genotype.SetSpecialArgs(data_command->GetArgs());
+        int compare = data_command->Compare(genotype);
+
+        // If knocking out the instruction turns off this trait, mark it in
+        // the modularity matrix.  Only check if the test_genotype replicates,
+        // i.e. if its fitness is not zeros
+        if (compare < 0  && test_genotype.GetFitness() != 0) {
+          task_matrix(cur_trait, line_num) = true;
+          num_inst[cur_trait]++;
+          num_task[line_num]++;
+          // cout << line_num << " : true" << endl;
+        } else {
+          // cout << line_num << " : false" << endl;
+        }
+        cur_trait++;
+      }
+
+      // Reset the mod_genome back to the original sequence.
+      mod_genome[line_num].SetOp(cur_inst);
+    } // end of genotype-phenotype mapping for a single organism
+
+    
+    // --== PHYSICAL MODULARITY ==--
+
+    double ave_dist = 0.0;  // Average distance between sites in traits.
+
+    // Loop through each task to calculate its physical modularity
+    int trait_count = 0; // Count active traits...
+    int site_count = 0;  // Count total sites for all traits...
+    for (int cur_trait = 0; cur_trait < num_traits; cur_trait++) {
+      //       cout << "Trait " << cur_trait << ", coded for by "
+      //         << num_inst[cur_trait] << " instructions." << endl;
+
+      // Ignore traits not coded for in this genome...
+      if (num_inst[cur_trait] == 0) continue;
+
+      // Keep track of how many traits we're examining...
+      trait_count++;
+
+      double trait_dist = 0.0;  // Total distance between sites in this trait.
+      int num_samples = 0;      // Count samples we take for this trait.
+
+      // Compare all pairs of positions.
+      for (int pos1 = 0; pos1 < base_length; pos1++) {
+        if (task_matrix(cur_trait, pos1) == false) continue;
+        site_count++;
+        for (int pos2 = pos1+1; pos2 < base_length; pos2++) {
+          if (task_matrix(cur_trait, pos2) == false) continue;
+
+          // We'll only make it this far if both positions code for the trait.
+          num_samples++;
+
+          // Calculate the distance...
+          int cur_dist = pos2 - pos1;
+
+          // Remember to consider that the genome is circular.
+          if (2*cur_dist > base_length) cur_dist = base_length - cur_dist;
+
+	  //        cout << "Pos " << pos1 << " and " << pos2 << "; distance="
+	  //             << cur_dist << endl;
+
+          // And add it into the total for this trait.
+          trait_dist += cur_dist;
+        }
+      }
+ 
+      // Assert that we found the correct number of samples.
+      assert(num_samples = num_inst(cur_trait) * (num_inst(cur_trait)-1) / 2);
+
+      // Now that we have all of the distances for this trait, divide by the
+      // number of samples and add it to the average.
+      ave_dist += trait_dist / num_samples;
+    }
+
+
+    // Now that we've summed up all of the average distances for this
+    // genotype, calculate the physical modularity.
+
+    double PM = 1.0 - (ave_dist / (double) (base_length * trait_count));
+    double ave_sites = ((double) site_count) / (double) trait_count;
+
+    // Write the restults to file...
+    df.Write(PM,          "Physical Modularity");
+    df.Write(trait_count, "Number of traits used in calculation");
+    df.Write(ave_sites,   "Average num sites associated with traits");
+    df.Write(base_length, "Genome length");
+    df.Write(ave_dist,    "Average Distance between trait sites");
+    df.Endl();
+  }
+
+  // @CAO CONTINUE HERE
+}
+
+
 void cAnalyze::CommandMapMutations(cString cur_string)
 {
   cout << "Constructing genome mutations maps..." << endl;
