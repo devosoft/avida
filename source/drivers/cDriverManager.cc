@@ -46,3 +46,24 @@ void cDriverManager::Destroy()
 {
   delete m_dm;
 }
+
+void cDriverManager::Register(cAvidaDriver* drv)
+{
+  if (m_dm) m_dm->m_adrvs.Push(drv);
+}
+
+void cDriverManager::Register(cWorldDriver* drv)
+{
+  if (m_dm) m_dm->m_wdrvs.Push(drv);
+}
+
+void cDriverManager::Unregister(cAvidaDriver* drv)
+{
+  if (m_dm) m_dm->m_adrvs.Remove(drv);
+}
+
+void cDriverManager::Unregister(cWorldDriver* drv)
+{
+  if (m_dm) m_dm->m_wdrvs.Remove(drv);
+}
+
