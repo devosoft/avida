@@ -117,11 +117,10 @@ void cCPUMemory::Resize(int new_size)
 
   // Do a sloppy resize first, saving old values...
   const int old_size = active_size;
-  const int old_array_size = genome.GetSize();
   SloppyResize(new_size);
   
   // Clean up all of the old memory that might need it...
-  for (int i = old_size; i < new_size && i < old_array_size; i++) {
+  for (int i = old_size; i < new_size; i++) {
     genome[i].SetOp(0);
     flag_array[i] = 0;
   }
@@ -132,8 +131,14 @@ void cCPUMemory::ResizeOld(int new_size)
 {
   assert(new_size >= 0);
 
+  const int old_size = active_size;
+
   // Do a sloppy resize, which will still have old values.
   SloppyResize(new_size);
+
+  for (int i = old_size; i < new_size; i++) {
+    flag_array[i] = 0;
+  }
 }
 
 
@@ -188,5 +193,6 @@ void cCPUMemory::Replace(int pos, int num_insts, const cGenome & in_genome)
   // Now just copy everything over!
   for (int i = 0; i < in_genome.GetSize(); i++) {
     genome[i + pos] = in_genome[i];
+    flag_array[i + pos] = 0;
   }
 }

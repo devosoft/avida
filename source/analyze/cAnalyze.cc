@@ -4759,7 +4759,7 @@ void cAnalyze::CommandAnalyzeModularity(cString cur_string)
       }
  
       // Assert that we found the correct number of samples.
-      assert(num_samples = num_inst(cur_trait) * (num_inst(cur_trait)-1) / 2);
+      //assert(num_samples = num_inst(cur_trait) * (num_inst(cur_trait)-1) / 2);
 
       // Now that we have all of the distances for this trait, divide by the
       // number of samples and add it to the average.

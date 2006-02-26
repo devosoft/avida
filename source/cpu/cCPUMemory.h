@@ -40,7 +40,7 @@ private:
   void SloppyInsert(int pos, int num_lines); // Add lines, ignore new contents.
 
 public:
-  explicit cCPUMemory(int _size=1)  : cGenome(_size), flag_array(_size) { ; }
+  explicit cCPUMemory(int _size=1)  : cGenome(_size), flag_array(_size) { ClearFlags(); }
   cCPUMemory(const cCPUMemory& in_memory);
   cCPUMemory(const cGenome& in_genome) : cGenome(in_genome), flag_array(in_genome.GetSize()) { ; }
   cCPUMemory(const cString& in_string) : cGenome(in_string), flag_array(in_string.GetSize()) { ; }
