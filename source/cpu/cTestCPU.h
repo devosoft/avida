@@ -19,9 +19,6 @@
 #ifndef cString_h
 #include "cString.h"
 #endif
-#ifndef cPopulationInterface_h
-#include "cPopulationInterface.h"
-#endif
 #ifndef cResourceCount_h
 #include "cResourceCount.h"
 #endif
@@ -36,27 +33,26 @@ class cTestCPU
 {
 private:
   cWorld* m_world;
-  cPopulationInterface test_interface;
   tArray<int> input_array;
   tArray<int> receive_array;
   int cur_input;
   int cur_receive;
+
   cResourceCount resource_count;
   bool d_useResources;
   tArray<double> d_emptyDoubleArray;
   tArray<double> d_resources;
-  int time_mod;
-
   
   bool ProcessGestation(cCPUTestInfo & test_info, int cur_depth);
   bool TestGenome_Body(cCPUTestInfo & test_info, const cGenome & genome, int cur_depth);
+  void SetupResources(void);
 
   cTestCPU(); // @not_implemented
   cTestCPU(const cTestCPU&); // @not_implemented
   cTestCPU& operator=(const cTestCPU&); // @not_implemented
   
 public:
-  cTestCPU(cWorld* world);
+  cTestCPU(cWorld* world) : m_world(world) { SetupResources(); }
   ~cTestCPU() { ; }
   
   bool TestGenome(cCPUTestInfo & test_info, const cGenome & genome);
@@ -69,12 +65,11 @@ public:
   // default set, has an allocate, a copy, and a divide).
   bool TestIntegrity(const cGenome & test_genome);
 
-  int GetInput();
-  int GetInputAt(int & input_pointer);
-  int GetReceiveValue();
-  const tArray<double> & GetResources();
-  void SetResource(int id, double new_level);
-  void SetupResources(void);
+  inline int GetInput();
+  inline int GetInputAt(int & input_pointer);
+  inline int GetReceiveValue();
+  inline const tArray<double>& GetResources();
+  inline void SetResource(int id, double new_level);
   void SetupResourceArray(const tArray<double> &resources);
   bool& UseResources(void) { return d_useResources; }
   cResourceCount& GetResourceCount(void) { return resource_count; }
@@ -103,9 +98,7 @@ inline int cTestCPU::GetReceiveValue()
 
 inline const tArray<double>& cTestCPU::GetResources()
 {
-  if(d_useResources) {
-    return d_resources;
-  }
+  if(d_useResources) return d_resources;
   
   return d_emptyDoubleArray;
 }

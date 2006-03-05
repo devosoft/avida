@@ -15,6 +15,7 @@ SET(libcpu_a_SOURCES
   cHeadCPU.cc
   cHeadMultiMem.cc
   cTestCPU.cc
+  cTestCPUInterface.cc
   cTestUtil.cc
 )
 

@@ -16,6 +16,7 @@
 #include "cGenome.h"
 #include "cGenomeUtil.h"
 #include "cHardwareBase.h"
+#include "cHardwareManager.h"
 #include "cInjectGenotype.h"
 #include "cInstSet.h"
 #include "cInstUtil.h"
@@ -23,6 +24,7 @@
 #include "cStringUtil.h"
 #include "tArray.h"
 #include "cTools.h"
+#include "cWorld.h"
 #include "tList.h"
 
 #include <iomanip>
@@ -30,14 +32,14 @@
 using namespace std;
 
 
-cOrganism::cOrganism(cWorld* world, const cGenome & in_genome)
+cOrganism::cOrganism(cWorld* world, const cGenome& in_genome)
   : m_world(world)
   , genotype(NULL)
   , phenotype(world)
   , initial_genome(in_genome)
   , mut_rates(world)
   , mut_info(world->GetEnvironment().GetMutationLib(), in_genome.GetSize())
-  , pop_interface(world)
+  , m_interface(NULL)
   , input_pointer(0)
   , input_buf(INPUT_BUF_SIZE)
   , output_buf(OUTPUT_BUF_SIZE)
@@ -54,9 +56,8 @@ cOrganism::cOrganism(cWorld* world, const cGenome & in_genome)
   , is_running(false)
 {
   // Initialization of structures...
-  hardware = pop_interface.NewHardware(this);
+  hardware = m_world->GetHardwareManager().Create(this);
   cpu_stats.Setup();
-  pop_interface.SetCellID(-1);  // No cell at the moment...
 
   if (m_world->GetConfig().DEATH_METHOD.Get() > 0) {
     max_executed = m_world->GetConfig().AGE_LIMIT.Get();
@@ -77,17 +78,26 @@ cOrganism::~cOrganism()
 {
   assert(is_running == false);
   delete hardware;
+  delete m_interface;
+}
+
+void cOrganism::SetOrgInterface(cOrgInterface* interface)
+{
+  delete m_interface;
+  m_interface = interface;
 }
 
 
 double cOrganism::GetTestFitness()
 {
-  return pop_interface.TestFitness();
+  assert(m_interface);
+  return m_interface->TestFitness();
 }
   
 int cOrganism::ReceiveValue()
 {
-  const int out_value = pop_interface.ReceiveValue();
+  assert(m_interface);
+  const int out_value = m_interface->ReceiveValue();
   receive_buf.Add(out_value);
   return out_value;
 }
@@ -101,17 +111,18 @@ void cOrganism::DoInput(const int value)
 
 void cOrganism::DoOutput(const int value)
 {
-  const tArray<double> & resource_count = pop_interface.GetResources();
+  assert(m_interface);
+  const tArray<double> & resource_count = m_interface->GetResources();
 
   tList<tBuffer<int> > other_input_list;
   tList<tBuffer<int> > other_output_list;
 
   // If tasks require us to consider neighbor inputs, collect them...
   if (m_world->GetEnvironment().GetTaskLib().UseNeighborInput() == true) {
-    const int num_neighbors = pop_interface.GetNumNeighbors();
+    const int num_neighbors = m_interface->GetNumNeighbors();
     for (int i = 0; i < num_neighbors; i++) {
-      pop_interface.Rotate();
-      cOrganism * cur_neighbor = pop_interface.GetNeighbor();
+      m_interface->Rotate();
+      cOrganism * cur_neighbor = m_interface->GetNeighbor();
       if (cur_neighbor == NULL) continue;
 
       other_input_list.Push( &(cur_neighbor->input_buf) );
@@ -120,10 +131,10 @@ void cOrganism::DoOutput(const int value)
 
   // If tasks require us to consider neighbor outputs, collect them...
   if (m_world->GetEnvironment().GetTaskLib().UseNeighborOutput() == true) {
-    const int num_neighbors = pop_interface.GetNumNeighbors();
+    const int num_neighbors = m_interface->GetNumNeighbors();
     for (int i = 0; i < num_neighbors; i++) {
-      pop_interface.Rotate();
-      cOrganism * cur_neighbor = pop_interface.GetNeighbor();
+      m_interface->Rotate();
+      cOrganism * cur_neighbor = m_interface->GetNeighbor();
       if (cur_neighbor == NULL) continue;
 
       other_output_list.Push( &(cur_neighbor->output_buf) );
@@ -137,7 +148,7 @@ void cOrganism::DoOutput(const int value)
   phenotype.TestOutput(input_buf, output_buf, send_buf, receive_buf,
 		       resource_count, res_change, insts_triggered,
 		       other_input_list, other_output_list);
-  pop_interface.UpdateResources(res_change);
+  m_interface->UpdateResources(res_change);
 
   for (int i = 0; i < insts_triggered.GetSize(); i++) {
     const int cur_inst = insts_triggered[i];
@@ -147,7 +158,8 @@ void cOrganism::DoOutput(const int value)
 
 void cOrganism::SendMessage(cOrgMessage & mess)
 {
-  if(pop_interface.SendMessage(mess))
+  assert(m_interface);
+  if(m_interface->SendMessage(mess))
     sent.Add(mess);
   else
     {
@@ -163,7 +175,8 @@ bool cOrganism::ReceiveMessage(cOrgMessage & mess)
 
 bool cOrganism::InjectParasite(const cGenome & injected_code)
 {
-  return pop_interface.InjectParasite(this, injected_code);
+  assert(m_interface);
+  return m_interface->InjectParasite(this, injected_code);
 }
 
 bool cOrganism::InjectHost(const cCodeLabel & label, const cGenome & injected_code)
@@ -208,7 +221,7 @@ double cOrganism::CalcMeritRatio()
 }
 
 
-bool cOrganism::GetTestOnDivide() const { return pop_interface.TestOnDivide();}
+bool cOrganism::GetTestOnDivide() const { return m_world->GetTestOnDivide();}
 bool cOrganism::GetFailImplicit() const { return m_world->GetConfig().FAIL_IMPLICIT.Get(); }
 
 bool cOrganism::GetRevertFatal() const { return m_world->GetConfig().REVERT_FATAL.Get(); }
@@ -268,8 +281,9 @@ bool cOrganism::Divide_CheckViable()
 
 bool cOrganism::ActivateDivide()
 {
+  assert(m_interface);
   // Activate the child!  (Keep Last: may kill this organism!)
-  return pop_interface.Divide(this, child_genome);
+  return m_interface->Divide(this, child_genome);
 }
 
 

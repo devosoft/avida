@@ -16,6 +16,9 @@
 #ifndef cBirthChamber_h
 #include "cBirthChamber.h"
 #endif
+#ifndef cOrgInterface_h
+#include "cOrgInterface.h"
+#endif
 #ifndef cPopulationInterface_h
 #include "cPopulationInterface.h"
 #endif

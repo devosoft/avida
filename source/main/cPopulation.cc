@@ -322,7 +322,7 @@ bool cPopulation::ActivateOffspring(cGenome & child_genome,
   
   // First, setup the genotype of all of the offspring.
   cGenotype * parent_genotype = parent_organism.GetGenotype();
-  const int parent_id = parent_organism.PopInterface().GetCellID();
+  const int parent_id = parent_organism.GetOrgInterface().GetCellID();
   assert(parent_id >= 0 && parent_id < cell_array.GetSize());
   cPopulationCell & parent_cell = cell_array[ parent_id ];
   
@@ -395,7 +395,7 @@ bool cPopulation::ActivateInject(cOrganism & parent, const cGenome & injected_co
   cHardwareBase& parent_cpu = parent.GetHardware();
   cInjectGenotype * parent_genotype = parent_cpu.GetCurThreadOwner();
   
-  const int parent_id = parent.PopInterface().GetCellID();
+  const int parent_id = parent.GetOrgInterface().GetCellID();
   assert(parent_id >= 0 && parent_id < cell_array.GetSize());
   cPopulationCell & parent_cell = cell_array[ parent_id ];
   
@@ -454,6 +454,8 @@ void cPopulation::ActivateOrganism(cOrganism * in_organism,
 {
   assert(in_organism != NULL);
   assert(in_organism->GetGenome().GetSize() > 1);
+  
+  in_organism->SetOrgInterface(new cPopulationInterface(m_world));
   
   // If the organism does not have a genotype, give it one!  No parent
   // information is provided so we must set parents to NULL.

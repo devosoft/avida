@@ -25,6 +25,7 @@
 #include "cStringUtil.h"
 #include "cTestCPU.h"
 #include "cWorldDriver.h"
+#include "cWorld.h"
 
 #include <limits.h>
 

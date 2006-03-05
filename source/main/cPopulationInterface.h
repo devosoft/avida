@@ -11,6 +11,9 @@
 #ifndef cPopulationInterface_h
 #define cPopulationInterface_h
 
+#ifndef cOrgInterface_h
+#include "cOrgInterface.h"
+#endif
 #ifndef cWorld_h
 #include "cWorld.h"
 #endif
@@ -18,18 +21,16 @@
 #include "cWorldDriver.h"
 #endif
 
-class cHardwareBase;
 class cPopulation;
 class cOrganism;
 class cGenome;
 template <class T> class tArray;
 class cOrgMessage;
 
-class cPopulationInterface {
+class cPopulationInterface : public cOrgInterface {
 private:
   cWorld* m_world;
   int cell_id;
-
 
   cPopulationInterface(); // @not_implemented
   cPopulationInterface(const cPopulationInterface&); // @not_implemented
@@ -42,27 +43,22 @@ public:
   int GetCellID() { return cell_id; }
   void SetCellID(int in_id) { cell_id = in_id; }
 
-  bool InTestPop() { return (cell_id == -1); }
-
-  // Activate callbacks...
-  cHardwareBase* NewHardware(cOrganism * owner);
-  bool Divide(cOrganism * parent, cGenome & child_genome);
-  bool TestOnDivide() const { return m_world->GetTestOnDivide(); }
-  cOrganism * GetNeighbor();
+  bool Divide(cOrganism* parent, cGenome& child_genome);
+  cOrganism* GetNeighbor();
   int GetNumNeighbors();
-  void Rotate(int direction=1);
+  void Rotate(int direction = 1);
   void Breakpoint() { m_world->GetDriver().SignalBreakpoint(); }
   double TestFitness();
   int GetInput();
-  int GetInputAt(int & input_pointer);
+  int GetInputAt(int& input_pointer);
   int Debug();
-  const tArray<double> & GetResources();
-  void UpdateResources(const tArray<double> & res_change);
+  const tArray<double>& GetResources();
+  void UpdateResources(const tArray<double>& res_change);
   void Die();
   void Kaboom();
-  bool SendMessage(cOrgMessage & mess);
+  bool SendMessage(cOrgMessage& mess);
   int ReceiveValue();
-  bool InjectParasite(cOrganism * parent, const cGenome & injected_code);
+  bool InjectParasite(cOrganism* parent, const cGenome& injected_code);
   bool UpdateMerit(double new_merit);
 };
 

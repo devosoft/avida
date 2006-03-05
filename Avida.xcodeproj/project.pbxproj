@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7005A70309BA0FA90007E16E /* cTestCPUInterface.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7005A70109BA0FA90007E16E /* cTestCPUInterface.h */; };
+		7005A70409BA0FA90007E16E /* cTestCPUInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */; };
+		7005A70509BA0FA90007E16E /* cTestCPUInterface.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7005A70109BA0FA90007E16E /* cTestCPUInterface.h */; };
+		7005A70609BA0FA90007E16E /* cTestCPUInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */; };
+		7005A70709BA0FA90007E16E /* cTestCPUInterface.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7005A70109BA0FA90007E16E /* cTestCPUInterface.h */; };
+		7005A70809BA0FA90007E16E /* cTestCPUInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */; };
+		7005A70A09BA0FBE0007E16E /* cOrgInterface.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7005A70909BA0FBE0007E16E /* cOrgInterface.h */; };
+		7005A70B09BA0FBE0007E16E /* cOrgInterface.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7005A70909BA0FBE0007E16E /* cOrgInterface.h */; };
+		7005A83209BA621F0007E16E /* cOrgMessage.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0868808F49EA800FC65FE /* cOrgMessage.cc */; };
 		700E2996085A1F6000CF158A /* avida in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3164D07626CF3008F7A48 /* avida */; };
 		700E2AF8085DE50C00CF158A /* avida.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3109C0762539E008F7A48 /* avida.cc */; };
 		700E2B6F085DE50C00CF158A /* analyze.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3114B0762539E008F7A48 /* analyze.cfg */; };
@@ -114,7 +123,6 @@
 		70B0866708F4974300FC65FE /* cMutationRates.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865708F4974300FC65FE /* cMutationRates.cc */; };
 		70B0866808F4974300FC65FE /* cMxCodeArray.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865808F4974300FC65FE /* cMxCodeArray.cc */; };
 		70B0868B08F49EA800FC65FE /* cOrganism.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0868708F49EA800FC65FE /* cOrganism.cc */; };
-		70B0868C08F49EA800FC65FE /* cOrgMessage.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0868808F49EA800FC65FE /* cOrgMessage.cc */; };
 		70B0868D08F49EA800FC65FE /* cPopulation.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0868908F49EA800FC65FE /* cPopulation.cc */; };
 		70B0868E08F49EA800FC65FE /* cPopulationCell.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0868A08F49EA800FC65FE /* cPopulationCell.cc */; };
 		70B0868F08F49EA800FC65FE /* cOrganism.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0868708F49EA800FC65FE /* cOrganism.cc */; };
@@ -461,6 +469,8 @@
 				7054A17209A8014600038658 /* cAnalyzeJobQueue.h in CopyFiles */,
 				7054A17B09A802BD00038658 /* cAnalyzeJob.h in CopyFiles */,
 				7054A1B709A810CB00038658 /* cAnalyzeJobWorker.h in CopyFiles */,
+				7005A70509BA0FA90007E16E /* cTestCPUInterface.h in CopyFiles */,
+				7005A70B09BA0FBE0007E16E /* cOrgInterface.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -485,6 +495,7 @@
 				701384350900A45B0087ED2E /* organism.smtx in CopyFiles */,
 				7013852D0902E36B0087ED2E /* avida.cfg in CopyFiles */,
 				7054A12409A7BEFC00038658 /* cThread.h in CopyFiles */,
+				7005A70709BA0FA90007E16E /* cTestCPUInterface.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -512,12 +523,17 @@
 				7054A17009A8014600038658 /* cAnalyzeJobQueue.h in CopyFiles */,
 				7054A17A09A802BD00038658 /* cAnalyzeJob.h in CopyFiles */,
 				7054A1B509A810CB00038658 /* cAnalyzeJobWorker.h in CopyFiles */,
+				7005A70309BA0FA90007E16E /* cTestCPUInterface.h in CopyFiles */,
+				7005A70A09BA0FBE0007E16E /* cOrgInterface.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		7005A70109BA0FA90007E16E /* cTestCPUInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cTestCPUInterface.h; sourceTree = "<group>"; };
+		7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cTestCPUInterface.cc; sourceTree = "<group>"; };
+		7005A70909BA0FBE0007E16E /* cOrgInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgInterface.h; sourceTree = "<group>"; };
 		700E28CF0859FFD700CF158A /* tObjectFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tObjectFactory.h; sourceTree = "<group>"; };
 		700E2B83085DE50C00CF158A /* avida-viewer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "avida-viewer"; sourceTree = BUILT_PRODUCTS_DIR; };
 		701384330900A45B0087ED2E /* organism.smtx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.smtx; sourceTree = "<group>"; };
@@ -1244,6 +1260,8 @@
 				70C1EF6708C395D300F50912 /* sCPUStats.h */,
 				706D30CC0852328F00D7DC8F /* tInstLib.h */,
 				DCC30FA90762539D008F7A48 /* CMakeLists.txt */,
+				7005A70109BA0FA90007E16E /* cTestCPUInterface.h */,
+				7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */,
 			);
 			path = cpu;
 			sourceTree = "<group>";
@@ -1343,6 +1361,7 @@
 				70B0867208F499C100FC65FE /* nMutation.h */,
 				70B0875C08F5ECBC00FC65FE /* nReaction.h */,
 				DCC310A90762539E008F7A48 /* CMakeLists.txt */,
+				7005A70909BA0FBE0007E16E /* cOrgInterface.h */,
 			);
 			path = main;
 			sourceTree = "<group>";
@@ -1953,6 +1972,7 @@
 				7054A12309A7BEFC00038658 /* cThread.cc in Sources */,
 				7054A17309A8014600038658 /* cAnalyzeJobQueue.cc in Sources */,
 				7054A1B809A810CB00038658 /* cAnalyzeJobWorker.cc in Sources */,
+				7005A70609BA0FA90007E16E /* cTestCPUInterface.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2070,6 +2090,7 @@
 				7054A12109A7BEFC00038658 /* cThread.cc in Sources */,
 				7054A17109A8014600038658 /* cAnalyzeJobQueue.cc in Sources */,
 				7054A1B609A810CB00038658 /* cAnalyzeJobWorker.cc in Sources */,
+				7005A70409BA0FA90007E16E /* cTestCPUInterface.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2112,7 +2133,6 @@
 				70B0865E08F4974300FC65FE /* cMutationLib.cc in Sources */,
 				70B0865F08F4974300FC65FE /* cMutationRates.cc in Sources */,
 				70B0868B08F49EA800FC65FE /* cOrganism.cc in Sources */,
-				70B0868C08F49EA800FC65FE /* cOrgMessage.cc in Sources */,
 				70B0868D08F49EA800FC65FE /* cPopulation.cc in Sources */,
 				70B0868E08F49EA800FC65FE /* cPopulationCell.cc in Sources */,
 				70B0869D08F49F4800FC65FE /* cPhenotype.cc in Sources */,
@@ -2181,6 +2201,8 @@
 				7054A12509A7BEFC00038658 /* cThread.cc in Sources */,
 				7054A17509A8014600038658 /* cAnalyzeJobQueue.cc in Sources */,
 				7054A1BA09A810CB00038658 /* cAnalyzeJobWorker.cc in Sources */,
+				7005A70809BA0FA90007E16E /* cTestCPUInterface.cc in Sources */,
+				7005A83209BA621F0007E16E /* cOrgMessage.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

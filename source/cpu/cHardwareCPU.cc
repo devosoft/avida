@@ -27,6 +27,7 @@
 #include "cStringUtil.h"
 #include "cTestCPU.h"
 #include "cWorldDriver.h"
+#include "cWorld.h"
 
 #include <limits.h>
 #include <fstream>
@@ -2761,7 +2762,7 @@ bool cHardwareCPU::Inst_Receive()
 
 bool cHardwareCPU::Inst_Sense()
 {
-  const tArray<double> & res_count = organism->PopInterface().GetResources();
+  const tArray<double> & res_count = organism->GetOrgInterface().GetResources();
   const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   
   // If there are no resources to measure, this instruction fails.

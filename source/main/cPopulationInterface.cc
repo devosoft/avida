@@ -26,28 +26,15 @@
 #endif
 
 
-cHardwareBase* cPopulationInterface::NewHardware(cOrganism * owner)
-{
-  return m_world->GetHardwareManager().Create(owner);
-}
-
 bool cPopulationInterface::Divide(cOrganism * parent, cGenome & child_genome)
 {
-  if (InTestPop()) {
-    parent->GetPhenotype().TestDivideReset(parent->GetGenome().GetSize());
-    // @CAO in the future, we probably want to pass this child the test_cpu!
-    return true;
-  } else {
-    assert(parent != NULL);
-    assert(m_world->GetPopulation().GetCell(cell_id).GetOrganism() == parent);
-    return m_world->GetPopulation().ActivateOffspring(child_genome, *parent);
-  }
+  assert(parent != NULL);
+  assert(m_world->GetPopulation().GetCell(cell_id).GetOrganism() == parent);
+  return m_world->GetPopulation().ActivateOffspring(child_genome, *parent);
 }
 
 cOrganism * cPopulationInterface::GetNeighbor()
 {
-  if (InTestPop()) return NULL;
-
   cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
   assert(cell.IsOccupied());
   
@@ -56,7 +43,6 @@ cOrganism * cPopulationInterface::GetNeighbor()
 
 int cPopulationInterface::GetNumNeighbors()
 {
-  if (InTestPop()) return 0;
   cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
   assert(cell.IsOccupied());
   
@@ -65,8 +51,6 @@ int cPopulationInterface::GetNumNeighbors()
 
 void cPopulationInterface::Rotate(int direction)
 {
-  if (InTestPop()) return;
-
   cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
   assert(cell.IsOccupied());
 
@@ -76,8 +60,6 @@ void cPopulationInterface::Rotate(int direction)
 
 double cPopulationInterface::TestFitness()
 {
-  if (InTestPop()) return -1.0;
-  
   cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
   assert(cell.IsOccupied());
   
@@ -86,8 +68,6 @@ double cPopulationInterface::TestFitness()
 
 int cPopulationInterface::GetInput()
 {
-  if (InTestPop()) return m_world->GetTestCPU().GetInput();
-  
   cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
   assert(cell.IsOccupied());
   return cell.GetInput();
@@ -95,8 +75,6 @@ int cPopulationInterface::GetInput()
 
 int cPopulationInterface::GetInputAt(int& input_pointer)
 {
-  if (InTestPop()) return m_world->GetTestCPU().GetInputAt(input_pointer);
-  
   cPopulationCell& cell = m_world->GetPopulation().GetCell(cell_id);
   assert(cell.IsOccupied());
   return cell.GetInputAt(input_pointer);
@@ -104,8 +82,6 @@ int cPopulationInterface::GetInputAt(int& input_pointer)
 
 int cPopulationInterface::Debug()
 {
-  if (InTestPop()) return -1;
-  
   cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
   assert(cell.IsOccupied());
   return cell.GetOrganism()->GetGenotype()->GetID();
@@ -113,36 +89,28 @@ int cPopulationInterface::Debug()
 
 const tArray<double> & cPopulationInterface::GetResources()
 {
-  if (InTestPop()) return m_world->GetTestCPU().GetResources();  
   return m_world->GetPopulation().GetCellResources(cell_id);
 }
 
 void cPopulationInterface::UpdateResources(const tArray<double> & res_change)
 {
-  if (InTestPop()) return;
   return m_world->GetPopulation().UpdateCellResources(res_change, cell_id);
 }
 
 void cPopulationInterface::Die()
 {
-  if (InTestPop()) return;
-  
   cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
   m_world->GetPopulation().KillOrganism(cell);
 }
 
 void cPopulationInterface::Kaboom()
 {
-  if (InTestPop()) return;
-  
   cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
 	m_world->GetPopulation().Kaboom(cell);
 }
 
 bool cPopulationInterface::SendMessage(cOrgMessage & mess)
 {
-  if (InTestPop()) return false;
-  
   mess.SetSenderID(cell_id);
   mess.SetTime(m_world->GetStats().GetUpdate());
   cPopulationCell& cell = m_world->GetPopulation().GetCell(cell_id);
@@ -154,8 +122,6 @@ bool cPopulationInterface::SendMessage(cOrgMessage & mess)
 
 int cPopulationInterface::ReceiveValue()
 {
-  if (InTestPop()) return m_world->GetTestCPU().GetReceiveValue();
-  
   cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
   assert(cell.IsOccupied());
   
@@ -177,8 +143,6 @@ int cPopulationInterface::ReceiveValue()
 
 bool cPopulationInterface::InjectParasite(cOrganism * parent, const cGenome & injected_code)
 {
-  if (InTestPop()) return false;
-  
   assert(parent != NULL);
   assert(m_world->GetPopulation().GetCell(cell_id).GetOrganism() == parent);
   
@@ -187,7 +151,6 @@ bool cPopulationInterface::InjectParasite(cOrganism * parent, const cGenome & in
 
 bool cPopulationInterface::UpdateMerit(double new_merit)
 {
-  if (InTestPop()) return false;
   return m_world->GetPopulation().UpdateMerit(cell_id, new_merit);
 }
 

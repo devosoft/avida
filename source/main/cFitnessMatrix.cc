@@ -11,6 +11,7 @@
 #include "cFitnessMatrix.h"
 
 #include "cInstSet.h"
+#include "cWorld.h"
 
 using namespace std;
 

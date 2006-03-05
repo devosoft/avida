@@ -15,6 +15,7 @@
 #include "cGenotype.h"
 #include "cGenomeUtil.h"
 #include "cTestCPU.h"
+#include "cWorld.h"
 
 using namespace std;
 

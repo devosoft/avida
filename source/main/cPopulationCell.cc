@@ -114,7 +114,7 @@ void cPopulationCell::InsertOrganism(cOrganism & new_org)
   organism_count++;
 
   // Adjust the organism's attributes to match this cell.
-  organism->PopInterface().SetCellID(cell_id);
+  organism->GetOrgInterface().SetCellID(cell_id);
 }
 
 cOrganism * cPopulationCell::RemoveOrganism()

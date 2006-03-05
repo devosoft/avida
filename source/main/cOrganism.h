@@ -32,8 +32,8 @@
 #ifndef cPhenotype_h
 #include "cPhenotype.h"
 #endif
-#ifndef cPopulationInterface_h
-#include "cPopulationInterface.h"
+#ifndef cOrgInterface_h
+#include "cOrgInterface.h"
 #endif
 #ifndef tBuffer_h
 #include "tBuffer.h"
@@ -64,7 +64,7 @@ protected:
                                     // this organism.
   cMutationRates mut_rates;            // Rate of all possible mutations.
   cLocalMutations mut_info;            // Info about possible mutations;
-  cPopulationInterface pop_interface;  // Interface back to the population.
+  cOrgInterface* m_interface;  // Interface back to the population.
 
   // Input and Output with the environment
   int input_pointer;
@@ -105,22 +105,22 @@ public:
   ~cOrganism();
 
   cHardwareBase& GetHardware() { return *hardware; }
-  cOrganism* GetNeighbor() { return pop_interface.GetNeighbor(); }
-  int GetNeighborhoodSize() { return pop_interface.GetNumNeighbors(); }
-  void Rotate(int direction) { pop_interface.Rotate(direction); }
-  void DoBreakpoint() { pop_interface.Breakpoint(); }
-  int GetNextInput() { return pop_interface.GetInputAt(input_pointer); }
-  void Die() { pop_interface.Die(); }
-  void Kaboom() {pop_interface.Kaboom();}
-  int GetCellID() { return pop_interface.GetCellID(); }
-  int GetDebugInfo() { return pop_interface.Debug(); }
+  cOrganism* GetNeighbor() { assert(m_interface); return m_interface->GetNeighbor(); }
+  int GetNeighborhoodSize() { assert(m_interface); return m_interface->GetNumNeighbors(); }
+  void Rotate(int direction) { assert(m_interface); m_interface->Rotate(direction); }
+  void DoBreakpoint() { assert(m_interface); m_interface->Breakpoint(); }
+  int GetNextInput() { assert(m_interface); return m_interface->GetInputAt(input_pointer); }
+  void Die() { assert(m_interface); m_interface->Die(); }
+  void Kaboom() { assert(m_interface); m_interface->Kaboom();}
+  int GetCellID() { assert(m_interface); return m_interface->GetCellID(); }
+  int GetDebugInfo() { assert(m_interface); return m_interface->Debug(); }
 
   bool GetSentActive() { return sent_active; }
   void SendValue(int value) { sent_active = true; sent_value = value; }
   int RetrieveSentValue() { sent_active = false; return sent_value; }
   int ReceiveValue();
 
-  void UpdateMerit(double new_merit) { pop_interface.UpdateMerit(new_merit); }
+  void UpdateMerit(double new_merit) { assert(m_interface); m_interface->UpdateMerit(new_merit); }
   
   // Input & Output Testing
   void DoInput(const int value);
@@ -194,10 +194,12 @@ public:
   cMutationRates & MutationRates() { return mut_rates; }
   const cLocalMutations & GetLocalMutations() const { return mut_info; }
   cLocalMutations & GetLocalMutations() { return mut_info; }
-  const cPopulationInterface& PopInterface() const { return pop_interface; }
-  cPopulationInterface& PopInterface() { return pop_interface; }
   
-  const cGenome & GetGenome() const { return initial_genome; }
+  const cOrgInterface& GetOrgInterface() const { assert(m_interface); return *m_interface; }
+  cOrgInterface& GetOrgInterface() { assert(m_interface); return *m_interface; }
+  void SetOrgInterface(cOrgInterface* interface);
+  
+  const cGenome& GetGenome() const { return initial_genome; }
   
   /*
   int GetCurGestation() const;

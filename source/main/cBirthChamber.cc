@@ -256,7 +256,7 @@ cBirthChamber::cBirthEntry *
   // Collect some info for building the child.
   const int world_x = m_world->GetConfig().WORLD_X.Get();
   const int world_y = m_world->GetConfig().WORLD_Y.Get();
-  const int parent_id = parent.PopInterface().GetCellID();
+  const int parent_id = parent.GetOrgInterface().GetCellID();
   
   // If nothing is waiting, store child locally.
   if (GetNeighborWaiting(parent_id, world_x, world_y) == false) { 
@@ -282,7 +282,7 @@ cBirthChamber::cBirthEntry *
   const int world_x = m_world->GetConfig().WORLD_X.Get();
   const int world_y = m_world->GetConfig().WORLD_Y.Get();
   const int num_demes = m_world->GetConfig().NUM_DEMES.Get();
-  const int parent_id = parent.PopInterface().GetCellID();
+  const int parent_id = parent.GetOrgInterface().GetCellID();
   
   const int parent_deme = (int) parent_id/(world_y*world_x/num_demes);
 

@@ -20,7 +20,7 @@
 #include "cInstUtil.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
-#include "cPopulationInterface.h"
+#include "cTestCPUInterface.h"
 #include "cResourceCount.h"
 #include "cResourceLib.h"
 #include "cResource.h"
@@ -31,15 +31,6 @@
 #include <iomanip>
 
 using namespace std;
-
-cTestCPU::cTestCPU(cWorld* world)
-  : m_world(world)
-  , test_interface(world)
-  , time_mod(world->GetConfig().TEST_CPU_TIME_MOD.Get())
-{
-  resource_count.SetSize(world->GetEnvironment().GetResourceLib().GetSize());
-  SetupResources();
-}
 
 void cTestCPU::SetupResources(void)
 {
@@ -72,10 +63,10 @@ void cTestCPU::SetupResources(void)
   }
 
   return;
-
 }
 
-void cTestCPU::SetupResourceArray(const tArray<double> &resources) {
+void cTestCPU::SetupResourceArray(const tArray<double> &resources)
+{
   for(int i=0; i<d_resources.GetSize(); i++) {
     if(i >= resources.GetSize()) {
       d_resources[i] = 0.0;
@@ -93,7 +84,7 @@ bool cTestCPU::ProcessGestation(cCPUTestInfo & test_info, int cur_depth)
   cOrganism & organism = *( test_info.org_array[cur_depth] );
 
   // Determine how long this organism should be tested for...
-  int time_allocated = time_mod * organism.GetGenome().GetSize();
+  int time_allocated = m_world->GetConfig().TEST_CPU_TIME_MOD.Get() * organism.GetGenome().GetSize();
 
   // Make sure this genome stands a chance...
   if (TestIntegrity(organism.GetGenome()) == false)  time_allocated = 0;
@@ -103,25 +94,22 @@ bool cTestCPU::ProcessGestation(cCPUTestInfo & test_info, int cur_depth)
   cur_receive = 0;
 
   // Determine if we're tracing and what we need to print.
-  cHardwareTracer * tracer =
-    test_info.GetTraceExecution() ? (test_info.GetTracer()) : NULL;
+  cHardwareTracer* tracer = test_info.GetTraceExecution() ? (test_info.GetTracer()) : NULL;
 
   int time_used = 0;
-  while (time_used < time_allocated &&
-	 organism.GetHardware().GetMemory().GetSize() &&
-	 organism.GetPhenotype().GetNumDivides() == 0) {
+  organism.GetHardware().SetTrace(tracer);
+  while (time_used < time_allocated && organism.GetHardware().GetMemory().GetSize() &&
+         organism.GetPhenotype().GetNumDivides() == 0)
+  {
     time_used++;
-    organism.GetHardware().SetTrace(tracer);
     organism.GetHardware().SingleProcess();
-    organism.GetHardware().SetTrace(NULL);
     // @CAO Need to watch out for parasites.
   }
+  organism.GetHardware().SetTrace(NULL);
 
   // Print out some final info in trace...
   if (tracer != NULL) {
-    if (cHardwareTracer_TestCPU * tracer_test_cpu
-        = dynamic_cast<cHardwareTracer_TestCPU *>(tracer)
-    ){
+    if (cHardwareTracer_TestCPU* tracer_test_cpu = dynamic_cast<cHardwareTracer_TestCPU*>(tracer)) {
       tracer_test_cpu->TraceHardware_TestCPU(
         time_used,
         time_allocated,
@@ -211,6 +199,7 @@ bool cTestCPU::TestGenome_Body(cCPUTestInfo & test_info,
   }
   test_info.org_array[cur_depth] = new cOrganism(m_world, genome);
   cOrganism & organism = *( test_info.org_array[cur_depth] );
+  organism.SetOrgInterface(new cTestCPUInterface(this));
   organism.GetPhenotype().SetupInject(genome.GetSize());
 
   // Run the current organism.

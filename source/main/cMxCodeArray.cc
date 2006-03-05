@@ -17,6 +17,7 @@
 #include "cOrganism.h"
 #include "cTestCPU.h"
 #include "cTools.h"
+#include "cWorld.h"
 
 #include <iomanip>
 
