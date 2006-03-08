@@ -13,7 +13,7 @@ SET(libtools_a_SOURCES
   cHelpType.cc
   cHistogram.cc
   cIndexedBlockStruct.cc
-	cInitFile.cc
+  cInitFile.cc
   cIntSum.cc
   cIntegratedSchedule.cc
   cIntegratedScheduleNode.cc
@@ -30,7 +30,6 @@ SET(libtools_a_SOURCES
   cThread.cc
   cTools.cc
   cWeightedIndex.cc
-
   cCycleCheck.cc
 )
 

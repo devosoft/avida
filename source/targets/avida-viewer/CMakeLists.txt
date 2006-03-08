@@ -38,7 +38,9 @@ TARGET_LINK_LIBRARIES(avida-viewer
   tools
   trio
   ${NCURSES_LIBRARY}
+  pthread
 )
+
 LINK_DIRECTORIES(${ALL_LIB_DIRS} ${THIRDPARTY_BLD_DIR}/trio)
 
 INSTALL_TARGETS(/work avida-viewer)
