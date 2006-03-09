@@ -555,6 +555,128 @@ double cAnalyze::AnalyzeEntropy(cAnalyzeGenotype * genotype, double mu)
   return entropy;
 }
 
+//@ MRR @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+tMatrix< double > cAnalyze::AnalyzeEntropyPairs(cAnalyzeGenotype * genotype, double mu) 
+{
+  
+  double entropy = 0.0;
+
+  genotype->Recalculate();
+
+   // Calculate the stats for the genotype we're working with ...
+  const int num_insts = inst_set.GetSize();
+  const int num_lines = genotype->GetLength();
+  const cGenome & base_genome = genotype->GetGenome();
+  cGenome mod_genome(base_genome);
+  double base_fitness = genotype->GetFitness();
+
+  cout << num_lines << endl;
+  tMatrix< double > pairwiseEntropy(num_lines, num_lines);
+  for (int i=0; i<num_lines; i++)
+    for (int j=-0; j<num_lines; j++)
+      pairwiseEntropy[i][j] = 0.0;
+  
+  cout << pairwiseEntropy.GetNumRows() << endl;
+
+  // If the fitness is 0, return empty matrix
+  
+  if (genotype->GetFitness() == 0) {
+    return pairwiseEntropy;
+  }
+
+
+  tMatrix< double >  test_fitness(num_insts,num_insts);
+  tMatrix< double >  prob(num_insts,num_insts);
+  
+  //Pairwise mutations; the diagonal of the matrix will be the information
+  //stored by that site alone
+  for (int line_1 = 0; line_1 < num_lines; line_1++){ 
+    for (int line_2 = line_1; line_2 < num_lines; line_2++) { 
+
+      cerr << "[ " << line_1 << ", " << line_2 << " ]" << endl;
+
+      int cur_inst_1 = base_genome[line_1].GetOp(); 
+      int cur_inst_2 = base_genome[line_2].GetOp();
+      
+      // Test fitness of each mutant.
+      for (int mod_inst_1 = 0; mod_inst_1 < num_insts; mod_inst_1++){
+	for (int mod_inst_2 = 0; mod_inst_2 < num_insts; mod_inst_2++) {
+	  mod_genome[line_1].SetOp(mod_inst_1);
+	  mod_genome[line_2].SetOp(mod_inst_2);
+	  cAnalyzeGenotype test_genotype(m_world, mod_genome, inst_set);
+	  test_genotype.Recalculate();
+	  // Adjust fitness ...
+	  if (test_genotype.GetFitness() <= base_fitness) {
+	    test_fitness[mod_inst_1][mod_inst_2] = test_genotype.GetFitness();
+	  } else {
+	    test_fitness[mod_inst_1][mod_inst_2] = base_fitness;
+	  }
+	}
+      }
+	
+	// Calculate probabilities at mut-sel balance
+	double w_bar = 1;
+	
+	// Normalize fitness values
+	double maxFitness = 0.0;
+	for(int i=0; i<num_insts; i++) {
+	  for (int j = 0; j < num_insts; j++){
+	    if(test_fitness[i][j] > maxFitness) {
+	      maxFitness = test_fitness[i][j];
+	    }
+	  }
+	}
+	
+	
+	for(int i=0; i<num_insts; i++) {
+	  for (int j=0; j<num_insts; j++){
+	    test_fitness[i][j] /= maxFitness;
+	  }
+	}
+	
+
+	while(1) {
+	  double sum = 0.0;
+	  for (int mod_inst_1 = 0; mod_inst_1 < num_insts; mod_inst_1++) {
+	    for (int mod_inst_2 = 0; mod_inst_2 < num_insts; mod_inst_2++){
+	      
+	      prob[mod_inst_1][mod_inst_2] = 
+		(mu * w_bar) / 
+		               ((double)num_insts * 
+		               (w_bar + test_fitness[mod_inst_1][mod_inst_2] 
+				* mu  - test_fitness[mod_inst_1][mod_inst_2]));
+	      sum = sum + prob[mod_inst_1][mod_inst_2];
+	    }
+	  }
+	  if ((sum-1.0)*(sum-1.0) <= 0.0001) 
+	    break;
+	  else
+	    w_bar = w_bar - 0.000001;
+	}
+    
+	// Calculate entropy ...
+	double this_entropy = 0.0;
+	for (int i = 0; i < num_insts; i++){
+	  for (int j = 0; j < num_insts; j++) {
+	    this_entropy += prob[i][j] * 
+	                    log((double) 1.0/prob[i][j]) / log ((double) num_insts);
+	  }
+	}
+	entropy += this_entropy;
+	pairwiseEntropy[line_1][line_2] = this_entropy;
+
+	// Reset the mod_genome back to the original sequence.
+	mod_genome[line_1].SetOp(cur_inst_1);
+	mod_genome[line_2].SetOp(cur_inst_2);
+	
+      }  
+    }  //End Loops
+  return pairwiseEntropy;
+}
+
+
+
+
 double cAnalyze::AnalyzeEntropyGivenParent(cAnalyzeGenotype * genotype,
                                            cAnalyzeGenotype * parent, double mut_rate)
 {
@@ -3302,6 +3424,94 @@ void cAnalyze::CommandLandscape(cString cur_string)
   }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//@ MRR @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+void cAnalyze::CommandPairwiseEntropy(cString cur_string)
+{
+  if (verbose >= nAnalyze::VERBOSE_ON)
+    cout << "Finding pairwise entropy on batch " << cur_batch << endl;
+  else
+    cout << "Finding pairwise entropy..." << endl;
+  
+  cout << "@MRR-> This command is being tested!" << endl;
+
+  cString directory = PopDirectory(cur_string, "pairwise_data/");
+  if (verbose >= nAnalyze::VERBOSE_ON)
+    cout << "\tUsing directory: " << directory << endl;
+  double mu = cur_string.PopWord().AsDouble();
+  if (verbose >= nAnalyze::VERBOSE_ON)
+    cout << "\tUsing mu=" << mu << endl;
+
+  tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+  cAnalyzeGenotype * genotype = batch_it.Next();
+
+  cout << genotype->GetName() << endl;
+
+  while(genotype != NULL)
+  { 
+    cString genName = genotype->GetName();
+
+    if (verbose >= nAnalyze::VERBOSE_ON)
+      cout << "\t...on genotype " << genName << endl;
+
+    cString filename;
+    filename.Set("%spairdata.%s.dat", static_cast<const char*>(directory),
+		 static_cast<const char*>(genName));
+
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+
+    if (verbose >= nAnalyze::VERBOSE_ON)
+	cout << "\t\t...with filename:  " << filename << endl;
+
+    cout << "# Pairwise Entropy Information" << endl;
+
+    tMatrix<double> pairdata = AnalyzeEntropyPairs(genotype, mu);
+
+    cout << pairdata.GetNumRows() << endl;
+
+    for (int i=0;  i < pairdata.GetNumRows(); i++){
+      for (int j=0; j < pairdata.GetNumCols(); j++)
+	cout << pairdata[i][j] << " ";
+      cout << endl;
+    }
+     m_world->GetDataFileManager().Remove(filename);
+    genotype = batch_it.Next();
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void cAnalyze::AnalyzeEpistasis(cString cur_string)
 {
   if (verbose >= nAnalyze::VERBOSE_ON) cout << "Epistasis on " << cur_batch << endl;
@@ -3326,6 +3536,7 @@ void cAnalyze::AnalyzeEpistasis(cString cur_string)
     landscape.PrintStats(fp);
   }
 }
+
 
 
 // This command will take the current batch and analyze how well organisms
@@ -7568,6 +7779,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("ANALYZE_KNOCKOUTS", &cAnalyze::AnalyzeKnockouts);
   AddLibraryDef("ANALYZE_POP_COMPLEXITY", &cAnalyze::AnalyzePopComplexity);
   AddLibraryDef("MAP_DEPTH", &cAnalyze::CommandMapDepth);
+  AddLibraryDef("PAIRWISE_ENTROPY", &cAnalyze::CommandPairwiseEntropy); //@MRR
   
   // Population comparison commands...
   AddLibraryDef("HAMMING", &cAnalyze::CommandHamming);

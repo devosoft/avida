@@ -28,6 +28,9 @@
 #ifndef tList_h
 #include "tList.h"
 #endif
+#ifndef tMatrix_h
+#include "tMatrix.h"
+#endif
 
 const int MAX_BATCHES = 2000;
 
@@ -173,6 +176,7 @@ private:
   void CommandAnalyzeModularity(cString cur_string);
   void CommandMapMutations(cString cur_string);
   void CommandMapDepth(cString cur_string);
+  void CommandPairwiseEntropy(cString cur_string);
 
   // Population Comparison Commands...
   void CommandHamming(cString cur_string);
@@ -243,6 +247,11 @@ private:
   double IncreasedInfo(cAnalyzeGenotype * genotype1, 
 		       cAnalyzeGenotype * genotype2, 
 		       double mut_rate);
+
+  //Calculate covarying information between pairs of sites
+  tMatrix<double> AnalyzeEntropyPairs(cAnalyzeGenotype * genotype,
+					       double mut_rate);
+
   
   // Flow Control...
   void CommandForeach(cString cur_string, tList<cAnalyzeCommand> & clist);
