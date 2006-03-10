@@ -11,6 +11,9 @@
 #ifndef cTaskLib_h
 #define cTaskLib_h
 
+#ifndef cTaskEntry_h
+#include "cTaskEntry.h"
+#endif
 #ifndef tArray_h
 #include "tArray.h"
 #endif
@@ -21,11 +24,30 @@
 #include "tList.h"
 #endif
 
-class cTaskLib;
-typedef double (cTaskLib::*tTaskTest)() const;
 
 class cString;
-class cTaskEntry;
+
+class cTaskContext
+{
+public:
+  tBuffer<int> input_buffer;
+  tBuffer<int> output_buffer;
+  tList<tBuffer<int> > other_input_buffers;
+  tList<tBuffer<int> > other_output_buffers;
+  int logic_id;
+  
+  cTaskContext(const tBuffer<int>& inputs, const tBuffer<int>& outputs,
+               const tList<tBuffer<int> >& other_inputs,
+               const tList<tBuffer<int> >& other_outputs, int in_logic_id)
+  : input_buffer(3), output_buffer(3), logic_id(in_logic_id)
+  {
+    input_buffer = inputs;
+    output_buffer = outputs;
+    other_input_buffers.Copy(other_inputs);
+    other_output_buffers.Copy(other_outputs);
+  }
+};
+
 
 class cTaskLib
 {
@@ -38,11 +60,6 @@ private:
   bool use_neighbor_output;
 
   // Active task information...
-  mutable tBuffer<int> input_buffer;
-  mutable tBuffer<int> output_buffer;
-  mutable tList<tBuffer<int> > other_input_buffers;
-  mutable tList<tBuffer<int> > other_output_buffers;
-  mutable int logic_id;
 
   enum req_list
   {
@@ -65,164 +82,174 @@ public:
   cTaskEntry* AddTask(const cString& name);
   const cTaskEntry& GetTask(int id) const;
   
-  void SetupTests(const tBuffer<int>& inputs, const tBuffer<int>& outputs,
-                  const tList<tBuffer<int> >& other_inputs,
-                  const tList<tBuffer<int> >& other_outputs) const;
-  double TestOutput(const cTaskEntry& task) const;
+  cTaskContext* SetupTests(const tBuffer<int>& inputs, const tBuffer<int>& outputs,
+                          const tList<tBuffer<int> >& other_inputs,
+                          const tList<tBuffer<int> >& other_outputs) const
+  {
+    return new cTaskContext(inputs, outputs, other_inputs, other_outputs, SetupLogicTests(inputs, outputs));
+  }
+  inline double TestOutput(const cTaskEntry& task, cTaskContext* ctx) const;
 
   bool UseNeighborInput() const { return use_neighbor_input; }
   bool UseNeighborOutput() const { return use_neighbor_output; }
-
+  
 private:  // Direct task related methods
   void NewTask(const cString& name, const cString& desc, tTaskTest task_fun, int reqs = 0);
-  void SetupLogicTests(const tBuffer<int>& inputs, const tBuffer<int>& outputs) const;
+  int SetupLogicTests(const tBuffer<int>& inputs, const tBuffer<int>& outputs) const;
 
   inline double FractionalReward(unsigned int supplied, unsigned int correct);  
 
-  double Task_Echo() const;
-  double Task_Add() const;
-  double Task_Sub() const;
+  double Task_Echo(cTaskContext* ctx) const;
+  double Task_Add(cTaskContext* ctx) const;
+  double Task_Sub(cTaskContext* ctx) const;
 
   // 1- and 2-Input Logic Tasks
-  double Task_Not() const;
-  double Task_Nand() const;
-  double Task_And() const;
-  double Task_OrNot() const;
-  double Task_Or() const;
-  double Task_AndNot() const;
-  double Task_Nor() const;
-  double Task_Xor() const;
-  double Task_Equ() const;
+  double Task_Not(cTaskContext* ctx) const;
+  double Task_Nand(cTaskContext* ctx) const;
+  double Task_And(cTaskContext* ctx) const;
+  double Task_OrNot(cTaskContext* ctx) const;
+  double Task_Or(cTaskContext* ctx) const;
+  double Task_AndNot(cTaskContext* ctx) const;
+  double Task_Nor(cTaskContext* ctx) const;
+  double Task_Xor(cTaskContext* ctx) const;
+  double Task_Equ(cTaskContext* ctx) const;
 
   // 3-Input Logic Tasks
-  double Task_Logic3in_AA() const;
-  double Task_Logic3in_AB() const;
-  double Task_Logic3in_AC() const;
-  double Task_Logic3in_AD() const;
-  double Task_Logic3in_AE() const;
-  double Task_Logic3in_AF() const;
-  double Task_Logic3in_AG() const;
-  double Task_Logic3in_AH() const;
-  double Task_Logic3in_AI() const;
-  double Task_Logic3in_AJ() const;
-  double Task_Logic3in_AK() const;
-  double Task_Logic3in_AL() const;
-  double Task_Logic3in_AM() const;
-  double Task_Logic3in_AN() const;
-  double Task_Logic3in_AO() const;
-  double Task_Logic3in_AP() const;
-  double Task_Logic3in_AQ() const;
-  double Task_Logic3in_AR() const;
-  double Task_Logic3in_AS() const;
-  double Task_Logic3in_AT() const;
-  double Task_Logic3in_AU() const;
-  double Task_Logic3in_AV() const;
-  double Task_Logic3in_AW() const;
-  double Task_Logic3in_AX() const;
-  double Task_Logic3in_AY() const;
-  double Task_Logic3in_AZ() const;
-  double Task_Logic3in_BA() const;
-  double Task_Logic3in_BB() const;
-  double Task_Logic3in_BC() const;
-  double Task_Logic3in_BD() const;
-  double Task_Logic3in_BE() const;
-  double Task_Logic3in_BF() const;
-  double Task_Logic3in_BG() const;
-  double Task_Logic3in_BH() const;
-  double Task_Logic3in_BI() const;
-  double Task_Logic3in_BJ() const;
-  double Task_Logic3in_BK() const;
-  double Task_Logic3in_BL() const;
-  double Task_Logic3in_BM() const;
-  double Task_Logic3in_BN() const;
-  double Task_Logic3in_BO() const;
-  double Task_Logic3in_BP() const;
-  double Task_Logic3in_BQ() const;
-  double Task_Logic3in_BR() const;
-  double Task_Logic3in_BS() const;
-  double Task_Logic3in_BT() const;
-  double Task_Logic3in_BU() const;
-  double Task_Logic3in_BV() const;
-  double Task_Logic3in_BW() const;
-  double Task_Logic3in_BX() const;
-  double Task_Logic3in_BY() const;
-  double Task_Logic3in_BZ() const;
-  double Task_Logic3in_CA() const;
-  double Task_Logic3in_CB() const;
-  double Task_Logic3in_CC() const;
-  double Task_Logic3in_CD() const;
-  double Task_Logic3in_CE() const;
-  double Task_Logic3in_CF() const;
-  double Task_Logic3in_CG() const;
-  double Task_Logic3in_CH() const;
-  double Task_Logic3in_CI() const;
-  double Task_Logic3in_CJ() const;
-  double Task_Logic3in_CK() const;
-  double Task_Logic3in_CL() const;
-  double Task_Logic3in_CM() const;
-  double Task_Logic3in_CN() const;
-  double Task_Logic3in_CO() const;
-  double Task_Logic3in_CP() const;
+  double Task_Logic3in_AA(cTaskContext* ctx) const;
+  double Task_Logic3in_AB(cTaskContext* ctx) const;
+  double Task_Logic3in_AC(cTaskContext* ctx) const;
+  double Task_Logic3in_AD(cTaskContext* ctx) const;
+  double Task_Logic3in_AE(cTaskContext* ctx) const;
+  double Task_Logic3in_AF(cTaskContext* ctx) const;
+  double Task_Logic3in_AG(cTaskContext* ctx) const;
+  double Task_Logic3in_AH(cTaskContext* ctx) const;
+  double Task_Logic3in_AI(cTaskContext* ctx) const;
+  double Task_Logic3in_AJ(cTaskContext* ctx) const;
+  double Task_Logic3in_AK(cTaskContext* ctx) const;
+  double Task_Logic3in_AL(cTaskContext* ctx) const;
+  double Task_Logic3in_AM(cTaskContext* ctx) const;
+  double Task_Logic3in_AN(cTaskContext* ctx) const;
+  double Task_Logic3in_AO(cTaskContext* ctx) const;
+  double Task_Logic3in_AP(cTaskContext* ctx) const;
+  double Task_Logic3in_AQ(cTaskContext* ctx) const;
+  double Task_Logic3in_AR(cTaskContext* ctx) const;
+  double Task_Logic3in_AS(cTaskContext* ctx) const;
+  double Task_Logic3in_AT(cTaskContext* ctx) const;
+  double Task_Logic3in_AU(cTaskContext* ctx) const;
+  double Task_Logic3in_AV(cTaskContext* ctx) const;
+  double Task_Logic3in_AW(cTaskContext* ctx) const;
+  double Task_Logic3in_AX(cTaskContext* ctx) const;
+  double Task_Logic3in_AY(cTaskContext* ctx) const;
+  double Task_Logic3in_AZ(cTaskContext* ctx) const;
+  double Task_Logic3in_BA(cTaskContext* ctx) const;
+  double Task_Logic3in_BB(cTaskContext* ctx) const;
+  double Task_Logic3in_BC(cTaskContext* ctx) const;
+  double Task_Logic3in_BD(cTaskContext* ctx) const;
+  double Task_Logic3in_BE(cTaskContext* ctx) const;
+  double Task_Logic3in_BF(cTaskContext* ctx) const;
+  double Task_Logic3in_BG(cTaskContext* ctx) const;
+  double Task_Logic3in_BH(cTaskContext* ctx) const;
+  double Task_Logic3in_BI(cTaskContext* ctx) const;
+  double Task_Logic3in_BJ(cTaskContext* ctx) const;
+  double Task_Logic3in_BK(cTaskContext* ctx) const;
+  double Task_Logic3in_BL(cTaskContext* ctx) const;
+  double Task_Logic3in_BM(cTaskContext* ctx) const;
+  double Task_Logic3in_BN(cTaskContext* ctx) const;
+  double Task_Logic3in_BO(cTaskContext* ctx) const;
+  double Task_Logic3in_BP(cTaskContext* ctx) const;
+  double Task_Logic3in_BQ(cTaskContext* ctx) const;
+  double Task_Logic3in_BR(cTaskContext* ctx) const;
+  double Task_Logic3in_BS(cTaskContext* ctx) const;
+  double Task_Logic3in_BT(cTaskContext* ctx) const;
+  double Task_Logic3in_BU(cTaskContext* ctx) const;
+  double Task_Logic3in_BV(cTaskContext* ctx) const;
+  double Task_Logic3in_BW(cTaskContext* ctx) const;
+  double Task_Logic3in_BX(cTaskContext* ctx) const;
+  double Task_Logic3in_BY(cTaskContext* ctx) const;
+  double Task_Logic3in_BZ(cTaskContext* ctx) const;
+  double Task_Logic3in_CA(cTaskContext* ctx) const;
+  double Task_Logic3in_CB(cTaskContext* ctx) const;
+  double Task_Logic3in_CC(cTaskContext* ctx) const;
+  double Task_Logic3in_CD(cTaskContext* ctx) const;
+  double Task_Logic3in_CE(cTaskContext* ctx) const;
+  double Task_Logic3in_CF(cTaskContext* ctx) const;
+  double Task_Logic3in_CG(cTaskContext* ctx) const;
+  double Task_Logic3in_CH(cTaskContext* ctx) const;
+  double Task_Logic3in_CI(cTaskContext* ctx) const;
+  double Task_Logic3in_CJ(cTaskContext* ctx) const;
+  double Task_Logic3in_CK(cTaskContext* ctx) const;
+  double Task_Logic3in_CL(cTaskContext* ctx) const;
+  double Task_Logic3in_CM(cTaskContext* ctx) const;
+  double Task_Logic3in_CN(cTaskContext* ctx) const;
+  double Task_Logic3in_CO(cTaskContext* ctx) const;
+  double Task_Logic3in_CP(cTaskContext* ctx) const;
 
   // 1-Input math tasks...
-  double Task_Math1in_AA() const;
-  double Task_Math1in_AB() const;
-  double Task_Math1in_AC() const;
-  double Task_Math1in_AD() const;
-  double Task_Math1in_AE() const;
-  double Task_Math1in_AF() const;
-  double Task_Math1in_AG() const;
-  double Task_Math1in_AH() const;
-  double Task_Math1in_AI() const;
-  double Task_Math1in_AJ() const;
-  double Task_Math1in_AK() const;
-  double Task_Math1in_AL() const;
-  double Task_Math1in_AM() const;
-  double Task_Math1in_AN() const;
-  double Task_Math1in_AO() const;
-  double Task_Math1in_AP() const;
+  double Task_Math1in_AA(cTaskContext* ctx) const;
+  double Task_Math1in_AB(cTaskContext* ctx) const;
+  double Task_Math1in_AC(cTaskContext* ctx) const;
+  double Task_Math1in_AD(cTaskContext* ctx) const;
+  double Task_Math1in_AE(cTaskContext* ctx) const;
+  double Task_Math1in_AF(cTaskContext* ctx) const;
+  double Task_Math1in_AG(cTaskContext* ctx) const;
+  double Task_Math1in_AH(cTaskContext* ctx) const;
+  double Task_Math1in_AI(cTaskContext* ctx) const;
+  double Task_Math1in_AJ(cTaskContext* ctx) const;
+  double Task_Math1in_AK(cTaskContext* ctx) const;
+  double Task_Math1in_AL(cTaskContext* ctx) const;
+  double Task_Math1in_AM(cTaskContext* ctx) const;
+  double Task_Math1in_AN(cTaskContext* ctx) const;
+  double Task_Math1in_AO(cTaskContext* ctx) const;
+  double Task_Math1in_AP(cTaskContext* ctx) const;
 
   // 2-Input math tasks...
-  double Task_Math2in_AA() const;
-  double Task_Math2in_AB() const;
-  double Task_Math2in_AC() const;
-  double Task_Math2in_AD() const;
-  double Task_Math2in_AE() const;
-  double Task_Math2in_AF() const;
-  double Task_Math2in_AG() const;
-  double Task_Math2in_AH() const;
-  double Task_Math2in_AI() const;
-  double Task_Math2in_AJ() const;
-  double Task_Math2in_AK() const;
-  double Task_Math2in_AL() const;
-  double Task_Math2in_AM() const;
-  double Task_Math2in_AN() const;
-  double Task_Math2in_AO() const;
-  double Task_Math2in_AP() const;
-  double Task_Math2in_AQ() const;
-  double Task_Math2in_AR() const;
-  double Task_Math2in_AS() const;
-  double Task_Math2in_AT() const;
-  double Task_Math2in_AU() const;
-  double Task_Math2in_AV() const;
+  double Task_Math2in_AA(cTaskContext* ctx) const;
+  double Task_Math2in_AB(cTaskContext* ctx) const;
+  double Task_Math2in_AC(cTaskContext* ctx) const;
+  double Task_Math2in_AD(cTaskContext* ctx) const;
+  double Task_Math2in_AE(cTaskContext* ctx) const;
+  double Task_Math2in_AF(cTaskContext* ctx) const;
+  double Task_Math2in_AG(cTaskContext* ctx) const;
+  double Task_Math2in_AH(cTaskContext* ctx) const;
+  double Task_Math2in_AI(cTaskContext* ctx) const;
+  double Task_Math2in_AJ(cTaskContext* ctx) const;
+  double Task_Math2in_AK(cTaskContext* ctx) const;
+  double Task_Math2in_AL(cTaskContext* ctx) const;
+  double Task_Math2in_AM(cTaskContext* ctx) const;
+  double Task_Math2in_AN(cTaskContext* ctx) const;
+  double Task_Math2in_AO(cTaskContext* ctx) const;
+  double Task_Math2in_AP(cTaskContext* ctx) const;
+  double Task_Math2in_AQ(cTaskContext* ctx) const;
+  double Task_Math2in_AR(cTaskContext* ctx) const;
+  double Task_Math2in_AS(cTaskContext* ctx) const;
+  double Task_Math2in_AT(cTaskContext* ctx) const;
+  double Task_Math2in_AU(cTaskContext* ctx) const;
+  double Task_Math2in_AV(cTaskContext* ctx) const;
 
-  double Task_Math3in_AA() const;
-  double Task_Math3in_AB() const;
-  double Task_Math3in_AC() const;
-  double Task_Math3in_AD() const;
-  double Task_Math3in_AE() const;
-  double Task_Math3in_AF() const;
-  double Task_Math3in_AG() const;
-  double Task_Math3in_AH() const;
-  double Task_Math3in_AI() const;
-  double Task_Math3in_AJ() const;
-  double Task_Math3in_AK() const;
-  double Task_Math3in_AL() const;
-  double Task_Math3in_AM() const;
+  double Task_Math3in_AA(cTaskContext* ctx) const;
+  double Task_Math3in_AB(cTaskContext* ctx) const;
+  double Task_Math3in_AC(cTaskContext* ctx) const;
+  double Task_Math3in_AD(cTaskContext* ctx) const;
+  double Task_Math3in_AE(cTaskContext* ctx) const;
+  double Task_Math3in_AF(cTaskContext* ctx) const;
+  double Task_Math3in_AG(cTaskContext* ctx) const;
+  double Task_Math3in_AH(cTaskContext* ctx) const;
+  double Task_Math3in_AI(cTaskContext* ctx) const;
+  double Task_Math3in_AJ(cTaskContext* ctx) const;
+  double Task_Math3in_AK(cTaskContext* ctx) const;
+  double Task_Math3in_AL(cTaskContext* ctx) const;
+  double Task_Math3in_AM(cTaskContext* ctx) const;
   
   // Communication Tasks...
-  double Task_CommEcho() const;
-  double Task_CommNot() const;
+  double Task_CommEcho(cTaskContext* ctx) const;
+  double Task_CommNot(cTaskContext* ctx) const;
 };
+
+
+inline double cTaskLib::TestOutput(const cTaskEntry& task, cTaskContext* ctx) const
+{
+  tTaskTest test_fun = task.GetTestFun();
+  return (this->*test_fun)(ctx);
+}
 
 #endif

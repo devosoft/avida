@@ -10,8 +10,6 @@
 
 #include "cTaskLib.h"
 
-#include "cTaskEntry.h"
-
 extern "C" {
 #include <math.h>
 #include <limits.h>
@@ -21,10 +19,8 @@ using namespace std;
 
 
 cTaskLib::cTaskLib()
-  : use_neighbor_input(false)
-  , use_neighbor_output(false)
-  , input_buffer(3)
-  , output_buffer(3)
+: use_neighbor_input(false)
+, use_neighbor_output(false)
 {
 }
 
@@ -53,14 +49,14 @@ cTaskEntry * cTaskLib::AddTask(const cString & name)
       return task_array[i];
     }
   }
-
+  
   // Match up this name to its corresponding task
   const int start_size = task_array.GetSize();
-
+  
   if (name == "echo")      NewTask(name, "Echo", &cTaskLib::Task_Echo);
   else if (name == "add")  NewTask(name, "Add",  &cTaskLib::Task_Add);
   else if (name == "sub")  NewTask(name, "Sub",  &cTaskLib::Task_Sub);
-
+  
   else if (name == "not")   NewTask(name, "Not",    &cTaskLib::Task_Not);
   else if (name == "nand")  NewTask(name, "Nand",   &cTaskLib::Task_Nand);
   else if (name == "and")   NewTask(name, "And",    &cTaskLib::Task_And);
@@ -70,7 +66,7 @@ cTaskEntry * cTaskLib::AddTask(const cString & name)
   else if (name == "nor")   NewTask(name, "Nor",    &cTaskLib::Task_Nor);
   else if (name == "xor")   NewTask(name, "Xor",    &cTaskLib::Task_Xor);
   else if (name == "equ")   NewTask(name, "Equals", &cTaskLib::Task_Equ);
-
+  
   else if (name == "logic_3AA")
     NewTask(name, "Logic 3AA (A+B+C == 0)", &cTaskLib::Task_Logic3in_AA);
   else if (name == "logic_3AB")
@@ -207,7 +203,7 @@ cTaskEntry * cTaskLib::AddTask(const cString & name)
     NewTask(name, "Logic 3CO", &cTaskLib::Task_Logic3in_CO);
   else if (name == "logic_3CP")
     NewTask(name, "Logic 3CP", &cTaskLib::Task_Logic3in_CP);
-
+  
   else if (name == "math_1AA")
     NewTask(name, "Math 1AA (2X)", &cTaskLib::Task_Math1in_AA);
   else if (name == "math_1AB")
@@ -240,7 +236,7 @@ cTaskEntry * cTaskLib::AddTask(const cString & name)
     NewTask(name, "Math 1AO (X-6)", &cTaskLib::Task_Math1in_AO);  
   else if (name == "math_1AP")
     NewTask(name, "Math 1AP (X-7)", &cTaskLib::Task_Math1in_AP);  
-
+  
   else if (name == "math_2AA")
     NewTask(name, "Math 2AA (sqrt(X+Y))", &cTaskLib::Task_Math2in_AA);  
   else if (name == "math_2AB")
@@ -285,7 +281,7 @@ cTaskEntry * cTaskLib::AddTask(const cString & name)
     NewTask(name, "Math 2AU (2X+3Y)", &cTaskLib::Task_Math2in_AU);
   else if (name == "math_2AV")
     NewTask(name, "Math 2AV (XY^2)", &cTaskLib::Task_Math2in_AV);
-
+  
   else if (name == "math_3AA")
     NewTask(name, "Math 3AA (X^2+Y^2+Z^2)", &cTaskLib::Task_Math3in_AA);  
   else if (name == "math_3AB")
@@ -293,11 +289,11 @@ cTaskEntry * cTaskLib::AddTask(const cString & name)
   else if (name == "math_3AC")
     NewTask(name, "Math 3AC (X+2Y+3Z)", &cTaskLib::Task_Math3in_AC);  
   /*
-  Visual Studio.net 2003 gives compiler error:
-    fatal error C1061: compiler limit : blocks nested too deeply
-  Sherri fixed this by removing the 'else' in the next line.
-  -- K
-  */
+   Visual Studio.net 2003 gives compiler error:
+   fatal error C1061: compiler limit : blocks nested too deeply
+   Sherri fixed this by removing the 'else' in the next line.
+   -- K
+   */
   //else if (name == "math_3AD")
   //  NewTask(name, "Math 3AD (XY^2+Z^3)", &cTaskLib::Task_Math3in_AD); 
   if (name == "math_3AD")
@@ -314,29 +310,29 @@ cTaskEntry * cTaskLib::AddTask(const cString & name)
     NewTask(name, "Math 3AI (-X-Y-Z)", &cTaskLib::Task_Math3in_AI);  
   else if (name == "math_3AJ")
     NewTask(name, "Math 3AJ ((X-Y)^2+(Y-Z)^2+(Z-X)^2)",
-	    &cTaskLib::Task_Math3in_AJ);  
+            &cTaskLib::Task_Math3in_AJ);  
   else if (name == "math_3AK")
     NewTask(name, "Math 3AK ((X+Y)^2+(Y+Z)^2+(Z+X)^2)",
-	    &cTaskLib::Task_Math3in_AK);  
+            &cTaskLib::Task_Math3in_AK);  
   else if (name == "math_3AL")
     NewTask(name, "Math 3AL ((X-Y)^2+(X-Z)^2)", &cTaskLib::Task_Math3in_AL);  
   else if (name == "math_3AM")
     NewTask(name, "Math 3AM ((X+Y)^2+(Y+Z)^2)", &cTaskLib::Task_Math3in_AM);  
-    
+  
 	// communication tasks
   else if (name == "comm_echo")
     NewTask(name, "Echo of Neighbor's Input", &cTaskLib::Task_CommEcho,
-	    REQ_NEIGHBOR_INPUT);
+            REQ_NEIGHBOR_INPUT);
   else if (name == "comm_not")
 	  NewTask(name, "Not of Neighbor's INput", &cTaskLib::Task_CommNot,
-		REQ_NEIGHBOR_INPUT);
+            REQ_NEIGHBOR_INPUT);
   // Make sure we have actually found a task.
-
+  
   if (task_array.GetSize() == start_size) {
     cerr << "Unknown task entry '" << name << "'." << endl;
     return NULL;
   }
-
+  
   // And return the found task.
   return task_array[start_size];
 }
@@ -345,32 +341,19 @@ const cTaskEntry & cTaskLib::GetTask(int id) const
 {
   return *(task_array[id]);
 }
-  
-void cTaskLib::SetupTests(const tBuffer<int> & inputs,
-			  const tBuffer<int> & outputs,
-			  const tList<tBuffer<int> > & other_inputs,
-			  const tList<tBuffer<int> > & other_outputs) const
-{
-  input_buffer = inputs;
-  output_buffer = outputs;
-  other_input_buffers.Copy(other_inputs);
-  other_output_buffers.Copy(other_outputs);
 
-  SetupLogicTests(inputs, outputs);
-}
-
-void cTaskLib::SetupLogicTests(const tBuffer<int> & inputs,
-			       const tBuffer<int> & outputs) const
+int cTaskLib::SetupLogicTests(const tBuffer<int> & inputs,
+                              const tBuffer<int> & outputs) const
 {
   // Collect the inputs in a useful form.
-  const int num_inputs = input_buffer.GetNumStored();
+  const int num_inputs = inputs.GetNumStored();
   int test_inputs[3];
   for (int i = 0; i < 3; i++) {
-    test_inputs[i] = (num_inputs > i) ? input_buffer[i] : 0;
+    test_inputs[i] = (num_inputs > i) ? inputs[i] : 0;
   }
-  int test_output = output_buffer[0];
-
-
+  int test_output = outputs[0];
+  
+  
   // Setup logic_out to test the output for each logical combination...
   // Assuming each bit in logic out to be based on the inputs:
   //
@@ -378,18 +361,18 @@ void cTaskLib::SetupLogicTests(const tBuffer<int> & inputs,
   //       Input C: 1 1 1 1 0 0 0 0
   //       Input B: 1 1 0 0 1 1 0 0
   //       Input A: 1 0 1 0 1 0 1 0
-
+  
   tArray<int> logic_out(8);
   logic_out.SetAll(-1);
- 
+  
   // Test all input combos!
   bool func_OK = true;  // Have all outputs been consistant?
   for (int test_pos = 0; test_pos < 32; test_pos++) {
     int logic_pos = 0;
     for (int i = 0; i < 3; i++)  logic_pos += (test_inputs[i] & 1) << i;
-
+    
     if ( logic_out[logic_pos] != -1 &&
-	 logic_out[logic_pos] != (test_output & 1) ) {
+         logic_out[logic_pos] != (test_output & 1) ) {
       func_OK = false;
       break;
     }
@@ -400,13 +383,10 @@ void cTaskLib::SetupLogicTests(const tBuffer<int> & inputs,
     test_output >>= 1;
     for (int i = 0; i < 3; i++) test_inputs[i] >>= 1;
   }
-
+  
   // If there were any inconsistancies, deal with them.
-  if (func_OK == false) {
-    logic_id = -1;
-    return;
-  }
-
+  if (func_OK == false) return -1;
+  
   // Determine the logic ID number of this task.
   if (num_inputs < 1) {  // 000 -> 001
     logic_out[1] = logic_out[0];
@@ -421,7 +401,7 @@ void cTaskLib::SetupLogicTests(const tBuffer<int> & inputs,
     logic_out[6] = logic_out[2];
     logic_out[7] = logic_out[3];
   }
-
+  
   // Lets just make sure we've gotten this correct...
   assert(logic_out[0] >= 0 && logic_out[0] <= 1);
   assert(logic_out[1] >= 0 && logic_out[1] <= 1);
@@ -431,16 +411,11 @@ void cTaskLib::SetupLogicTests(const tBuffer<int> & inputs,
   assert(logic_out[5] >= 0 && logic_out[5] <= 1);
   assert(logic_out[6] >= 0 && logic_out[6] <= 1);
   assert(logic_out[7] >= 0 && logic_out[7] <= 1);
-
-  logic_id = 0;
-  for (int i = 0; i < 8; i++) logic_id += logic_out[i] << i;
-}
-
-
-double cTaskLib::TestOutput(const cTaskEntry & task) const
-{
-  tTaskTest test_fun = task.GetTestFun();
-  return (this->*test_fun)();
+  
+  int logicid = 0;
+  for (int i = 0; i < 8; i++) logicid += logic_out[i] << i;
+  
+  return logicid;
 }
 
 
@@ -449,22 +424,23 @@ double cTaskLib::TestOutput(const cTaskEntry & task) const
 ////////////////////////
 
 void cTaskLib::NewTask(const cString & name, const cString & desc,
-		       tTaskTest task_fun, int reqs)
+                       tTaskTest task_fun, int reqs)
 {
   if (reqs & REQ_NEIGHBOR_INPUT == true) use_neighbor_input = true;
   if (reqs & REQ_NEIGHBOR_OUTPUT == true) use_neighbor_output = true;
-
+  
   const int id = task_array.GetSize();
   task_array.Resize(id+1);
   task_array[id] = new cTaskEntry(name, desc, id, task_fun);
 }
 
 
-double cTaskLib::Task_Echo() const
+double cTaskLib::Task_Echo(cTaskContext* ctx) const
 {
-  const int test_output = output_buffer[0];
-  for (int i = 0; i < input_buffer.GetNumStored(); i++) {
-    if (input_buffer[i] == test_output) {
+  const int test_output = ctx->output_buffer[0];
+  const int logic_id = ctx->logic_id;
+  for (int i = 0; i < ctx->input_buffer.GetNumStored(); i++) {
+    if (ctx->input_buffer[i] == test_output) {
       assert(logic_id == 170 || logic_id == 204 || logic_id == 240);
       return 1.0;
     }
@@ -473,1210 +449,1287 @@ double cTaskLib::Task_Echo() const
 }
 
 
-double cTaskLib::Task_Add() const
+double cTaskLib::Task_Add(cTaskContext* ctx) const
 {
-  const int test_output = output_buffer[0];
-  for (int i = 0; i < input_buffer.GetNumStored(); i++) {
+  const int test_output = ctx->output_buffer[0];
+  for (int i = 0; i < ctx->input_buffer.GetNumStored(); i++) {
     for (int j = 0; j < i; j++) {
-      if (test_output == input_buffer[i] + input_buffer[j]) return 1.0;
+      if (test_output == ctx->input_buffer[i] + ctx->input_buffer[j]) return 1.0;
     }
   }
   return 0.0;
 }
 
 
-double cTaskLib::Task_Sub() const
+double cTaskLib::Task_Sub(cTaskContext* ctx) const
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
-      if (test_output == input_buffer[i] - input_buffer[j]) return 1.0;
+      if (test_output == ctx->input_buffer[i] - ctx->input_buffer[j]) return 1.0;
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Not() const
+double cTaskLib::Task_Not(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 15 || logic_id == 51 || logic_id == 85) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Nand() const
+double cTaskLib::Task_Nand(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 63 || logic_id == 95 || logic_id == 119) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_And() const
+double cTaskLib::Task_And(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 136 || logic_id == 160 || logic_id == 192) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_OrNot() const
+double cTaskLib::Task_OrNot(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 175 || logic_id == 187 || logic_id == 207 ||
       logic_id == 221 || logic_id == 243 || logic_id == 245) return 1.0;
-
+  
   return 0.0;
 }
 
-double cTaskLib::Task_Or() const
+double cTaskLib::Task_Or(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 238 || logic_id == 250 || logic_id == 252) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_AndNot() const
+double cTaskLib::Task_AndNot(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 10 || logic_id == 12 || logic_id == 34 ||
       logic_id == 48 || logic_id == 68 || logic_id == 80) return 1.0;
-
+  
   return 0.0;
 }
 
-double cTaskLib::Task_Nor() const
+double cTaskLib::Task_Nor(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 3 || logic_id == 5 || logic_id == 17) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Xor() const
+double cTaskLib::Task_Xor(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 60 || logic_id == 90 || logic_id == 102) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Equ() const
+double cTaskLib::Task_Equ(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 153 || logic_id == 165 || logic_id == 195) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_AA() const
+double cTaskLib::Task_Logic3in_AA(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 1) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_AB() const
+double cTaskLib::Task_Logic3in_AB(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 22) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_AC() const
+double cTaskLib::Task_Logic3in_AC(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 23) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_AD() const
+double cTaskLib::Task_Logic3in_AD(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 104) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_AE() const
+double cTaskLib::Task_Logic3in_AE(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 105) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_AF() const
+double cTaskLib::Task_Logic3in_AF(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 126) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_AG() const
+double cTaskLib::Task_Logic3in_AG(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 127) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_AH() const
+double cTaskLib::Task_Logic3in_AH(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 128) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_AI() const
+double cTaskLib::Task_Logic3in_AI(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 129) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_AJ() const
+double cTaskLib::Task_Logic3in_AJ(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 150) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_AK() const
+double cTaskLib::Task_Logic3in_AK(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 151) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_AL() const
+double cTaskLib::Task_Logic3in_AL(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 232) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_AM() const
+double cTaskLib::Task_Logic3in_AM(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 233) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_AN() const
+double cTaskLib::Task_Logic3in_AN(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 254) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_AO() const
+double cTaskLib::Task_Logic3in_AO(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 2 || logic_id == 4 || logic_id == 16) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_AP() const
+double cTaskLib::Task_Logic3in_AP(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 6 || logic_id == 18 || logic_id == 20) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_AQ() const
+double cTaskLib::Task_Logic3in_AQ(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 7 || logic_id == 19 || logic_id == 21) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_AR() const
+double cTaskLib::Task_Logic3in_AR(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 8 || logic_id == 32 || logic_id == 64) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_AS() const
+double cTaskLib::Task_Logic3in_AS(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 9 || logic_id == 33 || logic_id == 65) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_AT() const
+double cTaskLib::Task_Logic3in_AT(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 14 || logic_id == 50 || logic_id == 84) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_AU() const
+double cTaskLib::Task_Logic3in_AU(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 24 || logic_id == 36 || logic_id == 66) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_AV() const
+double cTaskLib::Task_Logic3in_AV(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 25 || logic_id == 37 || logic_id == 67) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_AW() const
+double cTaskLib::Task_Logic3in_AW(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 30 || logic_id == 54 || logic_id == 86) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_AX() const
+double cTaskLib::Task_Logic3in_AX(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 31 || logic_id == 55 || logic_id == 87) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_AY() const
+double cTaskLib::Task_Logic3in_AY(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 40 || logic_id == 72 || logic_id == 96) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_AZ() const
+double cTaskLib::Task_Logic3in_AZ(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 41 || logic_id == 73 || logic_id == 97) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_BA() const
+double cTaskLib::Task_Logic3in_BA(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 42 || logic_id == 76 || logic_id == 112) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_BB() const
+double cTaskLib::Task_Logic3in_BB(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 43 || logic_id == 77 || logic_id == 113) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_BC() const
+double cTaskLib::Task_Logic3in_BC(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 61 || logic_id == 91 || logic_id == 103) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_BD() const
+double cTaskLib::Task_Logic3in_BD(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 62 || logic_id == 94 || logic_id == 118) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_BE() const
+double cTaskLib::Task_Logic3in_BE(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 106 || logic_id == 108 || logic_id == 120) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_BF() const
+double cTaskLib::Task_Logic3in_BF(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 107 || logic_id == 109 || logic_id == 121) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_BG() const
+double cTaskLib::Task_Logic3in_BG(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 110 || logic_id == 122 || logic_id == 124) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_BH() const
+double cTaskLib::Task_Logic3in_BH(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 111 || logic_id == 123 || logic_id == 125) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_BI() const
+double cTaskLib::Task_Logic3in_BI(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 130 || logic_id == 132 || logic_id == 144) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_BJ() const
+double cTaskLib::Task_Logic3in_BJ(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 131 || logic_id == 133 || logic_id == 145) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_BK() const
+double cTaskLib::Task_Logic3in_BK(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 134 || logic_id == 146 || logic_id == 148) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_BL() const
+double cTaskLib::Task_Logic3in_BL(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 135 || logic_id == 147 || logic_id == 149) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_BM() const
+double cTaskLib::Task_Logic3in_BM(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 137 || logic_id == 161 || logic_id == 193) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_BN() const
+double cTaskLib::Task_Logic3in_BN(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 142 || logic_id == 178 || logic_id == 212) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_BO() const
+double cTaskLib::Task_Logic3in_BO(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 143 || logic_id == 179 || logic_id == 213) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_BP() const
+double cTaskLib::Task_Logic3in_BP(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 152 || logic_id == 164 || logic_id == 194) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_BQ() const
+double cTaskLib::Task_Logic3in_BQ(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 158 || logic_id == 182 || logic_id == 214) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_BR() const
+double cTaskLib::Task_Logic3in_BR(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 159 || logic_id == 183 || logic_id == 215) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_BS() const
+double cTaskLib::Task_Logic3in_BS(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 168 || logic_id == 200 || logic_id == 224) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_BT() const
+double cTaskLib::Task_Logic3in_BT(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 169 || logic_id == 201 || logic_id == 225) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_BU() const
+double cTaskLib::Task_Logic3in_BU(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 171 || logic_id == 205 || logic_id == 241) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_BV() const
+double cTaskLib::Task_Logic3in_BV(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 188 || logic_id == 218 || logic_id == 230) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_BW() const
+double cTaskLib::Task_Logic3in_BW(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 189 || logic_id == 219 || logic_id == 231) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_BX() const
+double cTaskLib::Task_Logic3in_BX(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 190 || logic_id == 222 || logic_id == 246) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_BY() const
+double cTaskLib::Task_Logic3in_BY(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 191 || logic_id == 223 || logic_id == 247) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_BZ() const
+double cTaskLib::Task_Logic3in_BZ(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 234 || logic_id == 236 || logic_id == 248) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_CA() const
+double cTaskLib::Task_Logic3in_CA(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 235 || logic_id == 237 || logic_id == 249) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_CB() const
+double cTaskLib::Task_Logic3in_CB(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 239 || logic_id == 251 || logic_id == 253) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_CC() const
+double cTaskLib::Task_Logic3in_CC(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 11 || logic_id == 13 || logic_id == 35 ||
       logic_id == 49 || logic_id == 69 || logic_id == 81) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_CD() const
+double cTaskLib::Task_Logic3in_CD(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 26 || logic_id == 28 || logic_id == 38 ||
       logic_id == 52 || logic_id == 70 || logic_id == 82) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_CE() const
+double cTaskLib::Task_Logic3in_CE(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 27 || logic_id == 29 || logic_id == 39 ||
       logic_id == 53 || logic_id == 71 || logic_id == 83) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_CF() const
+double cTaskLib::Task_Logic3in_CF(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 44 || logic_id == 56 || logic_id == 74 ||
       logic_id == 88 || logic_id == 98 || logic_id == 100) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_CG() const
+double cTaskLib::Task_Logic3in_CG(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 45 || logic_id == 57 || logic_id == 75 ||
       logic_id == 89 || logic_id == 99 || logic_id == 101) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_CH() const
+double cTaskLib::Task_Logic3in_CH(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 46 || logic_id == 58 || logic_id == 78 ||
       logic_id == 92 || logic_id == 114 || logic_id == 116) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_CI() const
+double cTaskLib::Task_Logic3in_CI(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 47 || logic_id == 59 || logic_id == 79 ||
       logic_id == 93 || logic_id == 115 || logic_id == 117) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_CJ() const
+double cTaskLib::Task_Logic3in_CJ(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 138 || logic_id == 140 || logic_id == 162 ||
       logic_id == 176 || logic_id == 196 || logic_id == 208) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_CK() const
+double cTaskLib::Task_Logic3in_CK(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 139 || logic_id == 141 || logic_id == 163 ||
       logic_id == 177 || logic_id == 197 || logic_id == 209) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_CL() const
+double cTaskLib::Task_Logic3in_CL(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 154 || logic_id == 156 || logic_id == 166 ||
       logic_id == 180 || logic_id == 198 || logic_id == 210) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_CM() const
+double cTaskLib::Task_Logic3in_CM(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 155 || logic_id == 157 || logic_id == 167 ||
       logic_id == 181 || logic_id == 199 || logic_id == 211) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_CN() const
+double cTaskLib::Task_Logic3in_CN(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 172 || logic_id == 184 || logic_id == 202 ||
       logic_id == 216 || logic_id == 226 || logic_id == 228) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_CO() const
+double cTaskLib::Task_Logic3in_CO(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 173 || logic_id == 185 || logic_id == 203 ||
       logic_id == 217 || logic_id == 227 || logic_id == 229) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Logic3in_CP() const
+double cTaskLib::Task_Logic3in_CP(cTaskContext* ctx) const
 {
+  const int logic_id = ctx->logic_id;
   if (logic_id == 174 || logic_id == 186 || logic_id == 206 ||
       logic_id == 220 || logic_id == 242 || logic_id == 244) return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_Math1in_AA() const //(2X)
+double cTaskLib::Task_Math1in_AA(cTaskContext* ctx) const //(2X)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i++) {
-    if (test_output == 2 * input_buffer[i]) return 1.0;
+    if (test_output == 2 * ctx->input_buffer[i]) return 1.0;
   }
   return 0.0; 
 }
 
-double cTaskLib::Task_Math1in_AB() const //(2X/3)
+double cTaskLib::Task_Math1in_AB(cTaskContext* ctx) const //(2X/3)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
-    if (test_output == 2 * input_buffer[i] / 3) return 1.0;
+    if (test_output == 2 * ctx->input_buffer[i] / 3) return 1.0;
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math1in_AC() const //(5X/4)
+double cTaskLib::Task_Math1in_AC(cTaskContext* ctx) const //(5X/4)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
-    if (test_output == 5 * input_buffer[i] / 4) return 1.0;
+    if (test_output == 5 * ctx->input_buffer[i] / 4) return 1.0;
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math1in_AD() const //(X^2)
+double cTaskLib::Task_Math1in_AD(cTaskContext* ctx) const //(X^2)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
-    if (test_output == input_buffer[i] * input_buffer[i]) return 1.0;
+    if (test_output == ctx->input_buffer[i] * ctx->input_buffer[i]) return 1.0;
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math1in_AE() const //(X^3)
+double cTaskLib::Task_Math1in_AE(cTaskContext* ctx) const //(X^3)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
-    if (test_output == input_buffer[i] * input_buffer[i] * input_buffer[i])
+    if (test_output == ctx->input_buffer[i] * ctx->input_buffer[i] * ctx->input_buffer[i])
       return 1.0;
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math1in_AF() const //(sqrt(X)
+double cTaskLib::Task_Math1in_AF(cTaskContext* ctx) const //(sqrt(X)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
-    if (test_output == (int) sqrt((double) abs(input_buffer[i]))) return 1.0;
+    if (test_output == (int) sqrt((double) abs(ctx->input_buffer[i]))) return 1.0;
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math1in_AG() const //(log(X))
+double cTaskLib::Task_Math1in_AG(cTaskContext* ctx) const //(log(X))
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
-    if (input_buffer[i] <= 0) continue;
-    if (test_output == (int) log((double) input_buffer[i])) return 1.0;
+    if (ctx->input_buffer[i] <= 0) continue;
+    if (test_output == (int) log((double) ctx->input_buffer[i])) return 1.0;
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math1in_AH() const //(X^2+X^3)
+double cTaskLib::Task_Math1in_AH(cTaskContext* ctx) const //(X^2+X^3)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
-    if (test_output == input_buffer[i] * input_buffer[i] + input_buffer[i] * input_buffer[i] * input_buffer[i])
+    if (test_output == ctx->input_buffer[i] * ctx->input_buffer[i] + ctx->input_buffer[i] * ctx->input_buffer[i] * ctx->input_buffer[i])
       return 1.0;
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math1in_AI() const // (X^2 + sqrt(X))
+double cTaskLib::Task_Math1in_AI(cTaskContext* ctx) const // (X^2 + sqrt(X))
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
-    if (test_output == input_buffer[i] * input_buffer[i] + (int) sqrt((double) abs(input_buffer[i]))) 
+    if (test_output == ctx->input_buffer[i] * ctx->input_buffer[i] + (int) sqrt((double) abs(ctx->input_buffer[i]))) 
       return 1.0;
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math1in_AJ() const // abs(X)
+double cTaskLib::Task_Math1in_AJ(cTaskContext* ctx) const // abs(X)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
-    if (test_output == abs(input_buffer[i])) return 1.0;
+    if (test_output == abs(ctx->input_buffer[i])) return 1.0;
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math1in_AK() const //(X-5)
+double cTaskLib::Task_Math1in_AK(cTaskContext* ctx) const //(X-5)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
-    if (test_output == input_buffer[i] - 5) return 1.0;
+    if (test_output == ctx->input_buffer[i] - 5) return 1.0;
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math1in_AL() const //(-X)
+double cTaskLib::Task_Math1in_AL(cTaskContext* ctx) const //(-X)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
-    if (test_output == 0 - input_buffer[i]) return 1.0;
+    if (test_output == 0 - ctx->input_buffer[i]) return 1.0;
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math1in_AM() const //(5X)
+double cTaskLib::Task_Math1in_AM(cTaskContext* ctx) const //(5X)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
-    if (test_output == 5 * input_buffer[i]) return 1.0;
+    if (test_output == 5 * ctx->input_buffer[i]) return 1.0;
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math1in_AN() const //(X/4)
+double cTaskLib::Task_Math1in_AN(cTaskContext* ctx) const //(X/4)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
-    if (test_output == input_buffer[i] / 4) return 1.0;
+    if (test_output == ctx->input_buffer[i] / 4) return 1.0;
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math1in_AO() const //(X-6)
+double cTaskLib::Task_Math1in_AO(cTaskContext* ctx) const //(X-6)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
-    if (test_output == input_buffer[i] - 6) return 1.0;
+    if (test_output == ctx->input_buffer[i] - 6) return 1.0;
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math1in_AP() const //(X-7)
+double cTaskLib::Task_Math1in_AP(cTaskContext* ctx) const //(X-7)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
-    if (test_output == input_buffer[i] - 7) return 1.0;
+    if (test_output == ctx->input_buffer[i] - 7) return 1.0;
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math2in_AA() const //(sqrt(X+Y))
+double cTaskLib::Task_Math2in_AA(cTaskContext* ctx) const //(sqrt(X+Y))
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
-      if (test_output == (int) sqrt((double) abs(input_buffer[i] + input_buffer[j])))
-	return 1.0;
+      if (test_output == (int) sqrt((double) abs(ctx->input_buffer[i] + ctx->input_buffer[j])))
+        return 1.0;
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math2in_AB() const  //((X+Y)^2)
+double cTaskLib::Task_Math2in_AB(cTaskContext* ctx) const  //((X+Y)^2)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
-      if (test_output == (input_buffer[i] + input_buffer[j]) * 
-	  (input_buffer[i] + input_buffer[j])) return 1.0;
+      if (test_output == (ctx->input_buffer[i] + ctx->input_buffer[j]) * 
+          (ctx->input_buffer[i] + ctx->input_buffer[j])) return 1.0;
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math2in_AC() const //(X%Y)
+double cTaskLib::Task_Math2in_AC(cTaskContext* ctx) const //(X%Y)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
-      if (input_buffer[j] == 0) continue; // mod by zero
-      if (test_output == input_buffer[i] % input_buffer[j]) return 1.0;
+      if (ctx->input_buffer[j] == 0) continue; // mod by zero
+      if (test_output == ctx->input_buffer[i] % ctx->input_buffer[j]) return 1.0;
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math2in_AD() const //(3X/2+5Y/4)
+double cTaskLib::Task_Math2in_AD(cTaskContext* ctx) const //(3X/2+5Y/4)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
-      if (test_output == 3 * input_buffer[i] / 2 + 5 * input_buffer[j] / 4)
-	return 1.0;
+      if (test_output == 3 * ctx->input_buffer[i] / 2 + 5 * ctx->input_buffer[j] / 4)
+        return 1.0;
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math2in_AE() const //(abs(X-5)+abs(Y-6))
+double cTaskLib::Task_Math2in_AE(cTaskContext* ctx) const //(abs(X-5)+abs(Y-6))
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
-      if (test_output == abs(input_buffer[i] - 5) + abs(input_buffer[j] - 6))
-	return 1.0;
+      if (test_output == abs(ctx->input_buffer[i] - 5) + abs(ctx->input_buffer[j] - 6))
+        return 1.0;
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math2in_AF() const //(XY-X/Y)
+double cTaskLib::Task_Math2in_AF(cTaskContext* ctx) const //(XY-X/Y)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
-      if (input_buffer[j] == 0) continue;
-      if (0-INT_MAX > input_buffer[i] && input_buffer[j] == -1) continue;
-      if (test_output == input_buffer[i] * input_buffer[j] - 
-	  input_buffer[i] / input_buffer[j]) return 1.0;
+      if (ctx->input_buffer[j] == 0) continue;
+      if (0-INT_MAX > ctx->input_buffer[i] && ctx->input_buffer[j] == -1) continue;
+      if (test_output == ctx->input_buffer[i] * ctx->input_buffer[j] - 
+          ctx->input_buffer[i] / ctx->input_buffer[j]) return 1.0;
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math2in_AG() const //((X-Y)^2)
+double cTaskLib::Task_Math2in_AG(cTaskContext* ctx) const //((X-Y)^2)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
-      if (test_output == (input_buffer[i] - input_buffer[j]) *
-	  (input_buffer[i] - input_buffer[j])) return 1.0;
+      if (test_output == (ctx->input_buffer[i] - ctx->input_buffer[j]) *
+          (ctx->input_buffer[i] - ctx->input_buffer[j])) return 1.0;
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math2in_AH() const //(X^2+Y^2)
+double cTaskLib::Task_Math2in_AH(cTaskContext* ctx) const //(X^2+Y^2)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
-      if (test_output == input_buffer[i] * input_buffer[i] +
-	  input_buffer[j] * input_buffer[j]) return 1.0;
+      if (test_output == ctx->input_buffer[i] * ctx->input_buffer[i] +
+          ctx->input_buffer[j] * ctx->input_buffer[j]) return 1.0;
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math2in_AI() const //(X^2+Y^3)
+double cTaskLib::Task_Math2in_AI(cTaskContext* ctx) const //(X^2+Y^3)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
-      if (test_output == input_buffer[i] * input_buffer[i] + input_buffer[j] * input_buffer[j] * input_buffer[j]) 
-	return 1.0;
+      if (test_output == ctx->input_buffer[i] * ctx->input_buffer[i] + ctx->input_buffer[j] * ctx->input_buffer[j] * ctx->input_buffer[j]) 
+        return 1.0;
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math2in_AJ() const //((sqrt(X)+Y)/(X-7))
+double cTaskLib::Task_Math2in_AJ(cTaskContext* ctx) const //((sqrt(X)+Y)/(X-7))
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
-      if (input_buffer[i] - 7 == 0) continue;
-      if (test_output == ((int) sqrt((double) abs(input_buffer[i])) + input_buffer[j]) / (input_buffer[i] - 7)) return 1.0;
+      if (ctx->input_buffer[i] - 7 == 0) continue;
+      if (test_output == ((int) sqrt((double) abs(ctx->input_buffer[i])) + ctx->input_buffer[j]) / (ctx->input_buffer[i] - 7)) return 1.0;
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math2in_AK() const //(log(|X/Y|))
+double cTaskLib::Task_Math2in_AK(cTaskContext* ctx) const //(log(|X/Y|))
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
-      if (i == j || input_buffer[j] == 0 ) continue;
-      if (0-INT_MAX > input_buffer[i] && input_buffer[j] == -1) continue;
-      if (input_buffer[i] / input_buffer[j] == 0) continue;
-      if (test_output == (int) log((double) abs(input_buffer[i] / input_buffer[j])))
-	return 1.0;
+      if (i == j || ctx->input_buffer[j] == 0 ) continue;
+      if (0-INT_MAX > ctx->input_buffer[i] && ctx->input_buffer[j] == -1) continue;
+      if (ctx->input_buffer[i] / ctx->input_buffer[j] == 0) continue;
+      if (test_output == (int) log((double) abs(ctx->input_buffer[i] / ctx->input_buffer[j])))
+        return 1.0;
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math2in_AL() const //(log(|X|)/Y)
+double cTaskLib::Task_Math2in_AL(cTaskContext* ctx) const //(log(|X|)/Y)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
-      if (i == j || input_buffer[j] == 0) continue;
-      if (test_output == (int) log((double) abs(input_buffer[i])) / input_buffer[j])
-	return 1.0;
+      if (i == j || ctx->input_buffer[j] == 0) continue;
+      if (test_output == (int) log((double) abs(ctx->input_buffer[i])) / ctx->input_buffer[j])
+        return 1.0;
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math2in_AM() const //(X/log(|Y|))
+double cTaskLib::Task_Math2in_AM(cTaskContext* ctx) const //(X/log(|Y|))
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
-      if (i == j || log((double) abs(input_buffer[j])) == 0) continue;
-      if (0-INT_MAX > input_buffer[i] && log((double) abs(input_buffer[j])) == -1) continue;
-      if (test_output == input_buffer[i] / (int) log((double) abs(input_buffer[j])))
-	return 1.0;
+      if (i == j || log((double) abs(ctx->input_buffer[j])) == 0) continue;
+      if (0-INT_MAX > ctx->input_buffer[i] && log((double) abs(ctx->input_buffer[j])) == -1) continue;
+      if (test_output == ctx->input_buffer[i] / (int) log((double) abs(ctx->input_buffer[j])))
+        return 1.0;
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math2in_AN() const //(X+Y)
+double cTaskLib::Task_Math2in_AN(cTaskContext* ctx) const //(X+Y)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
-  for (int i = 0; i < input_size; i++) {
-    for (int j = 0; j < input_size; j++) {
-      if (i == j) continue;
-      if (test_output == input_buffer[i] + input_buffer[j])
-	return 1.0;
-    }
-  }
-  return 0.0;
-}
-
-double cTaskLib::Task_Math2in_AO() const //(X-Y)
-{
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
-      if (test_output == input_buffer[i] - input_buffer[j])
-	return 1.0;
+      if (test_output == ctx->input_buffer[i] + ctx->input_buffer[j])
+        return 1.0;
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math2in_AP() const //(X/Y)
+double cTaskLib::Task_Math2in_AO(cTaskContext* ctx) const //(X-Y)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
-  for (int i = 0; i < input_size; i++) {
-    for (int j = 0; j < input_size; j++) {
-      if (i == j || input_buffer[j] == 0) continue;
-      if (0 - INT_MAX > input_buffer[i] && input_buffer[j] == -1) continue;
-      if (test_output == input_buffer[i] / input_buffer[j])
-	return 1.0;
-    }
-  }
-  return 0.0;
-}
-
-double cTaskLib::Task_Math2in_AQ() const //(XY)
-{
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
-      if (test_output == input_buffer[i] * input_buffer[j])
-	return 1.0;
+      if (test_output == ctx->input_buffer[i] - ctx->input_buffer[j])
+        return 1.0;
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math2in_AR() const //(sqrt(X)+sqrt(Y))
+double cTaskLib::Task_Math2in_AP(cTaskContext* ctx) const //(X/Y)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
+  for (int i = 0; i < input_size; i++) {
+    for (int j = 0; j < input_size; j++) {
+      if (i == j || ctx->input_buffer[j] == 0) continue;
+      if (0 - INT_MAX > ctx->input_buffer[i] && ctx->input_buffer[j] == -1) continue;
+      if (test_output == ctx->input_buffer[i] / ctx->input_buffer[j])
+        return 1.0;
+    }
+  }
+  return 0.0;
+}
+
+double cTaskLib::Task_Math2in_AQ(cTaskContext* ctx) const //(XY)
+{
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
-      if (test_output == (int) sqrt((double) abs(input_buffer[i])) + (int) sqrt((double) abs(input_buffer[j])))
-	return 1.0;
+      if (test_output == ctx->input_buffer[i] * ctx->input_buffer[j])
+        return 1.0;
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math2in_AS() const //(X+2Y)
+double cTaskLib::Task_Math2in_AR(cTaskContext* ctx) const //(sqrt(X)+sqrt(Y))
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
-      if (test_output == input_buffer[i] + 2 * input_buffer[j])
-	return 1.0;
+      if (test_output == (int) sqrt((double) abs(ctx->input_buffer[i])) + (int) sqrt((double) abs(ctx->input_buffer[j])))
+        return 1.0;
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math2in_AT() const //(X+3Y)
+double cTaskLib::Task_Math2in_AS(cTaskContext* ctx) const //(X+2Y)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
-      if (test_output == input_buffer[i] + 3 * input_buffer[j])
-	return 1.0;
+      if (test_output == ctx->input_buffer[i] + 2 * ctx->input_buffer[j])
+        return 1.0;
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math2in_AU() const //(2X+3Y)
+double cTaskLib::Task_Math2in_AT(cTaskContext* ctx) const //(X+3Y)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
-      if (test_output == 2 * input_buffer[i] + 3 * input_buffer[j])
-	return 1.0;
+      if (test_output == ctx->input_buffer[i] + 3 * ctx->input_buffer[j])
+        return 1.0;
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math2in_AV() const //(XY^2)
+double cTaskLib::Task_Math2in_AU(cTaskContext* ctx) const //(2X+3Y)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
-      if (test_output == input_buffer[i] * input_buffer[j] * input_buffer[j])
-	return 1.0;
+      if (test_output == 2 * ctx->input_buffer[i] + 3 * ctx->input_buffer[j])
+        return 1.0;
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math3in_AA() const //(X^2+Y^2+Z^2)
+double cTaskLib::Task_Math2in_AV(cTaskContext* ctx) const //(XY^2)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
+  for (int i = 0; i < input_size; i++) {
+    for (int j = 0; j < input_size; j++) {
+      if (i == j) continue;
+      if (test_output == ctx->input_buffer[i] * ctx->input_buffer[j] * ctx->input_buffer[j])
+        return 1.0;
+    }
+  }
+  return 0.0;
+}
+
+double cTaskLib::Task_Math3in_AA(cTaskContext* ctx) const //(X^2+Y^2+Z^2)
+{
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
       for (int k = 0; k < input_size; k ++) {
-	if (i == j || j == k || i == k) continue;
-	if (test_output == input_buffer[i] * input_buffer[i] + 
-	    input_buffer[j] * input_buffer[j] + 
-	    input_buffer[k] * input_buffer[k]) return 1.0;
+        if (i == j || j == k || i == k) continue;
+        if (test_output == ctx->input_buffer[i] * ctx->input_buffer[i] + 
+            ctx->input_buffer[j] * ctx->input_buffer[j] + 
+            ctx->input_buffer[k] * ctx->input_buffer[k]) return 1.0;
       }
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math3in_AB() const //(sqrt(X)+sqrt(Y)+sqrt(Z))
+double cTaskLib::Task_Math3in_AB(cTaskContext* ctx) const //(sqrt(X)+sqrt(Y)+sqrt(Z))
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
       for (int k = 0; k < input_size; k ++) {
-	if (i == j || j == k || i == k) continue;
-	if (test_output == (int) sqrt((double) abs(input_buffer[i])) +
-	    (int) sqrt((double) abs(input_buffer[j])) + (int) sqrt((double) abs(input_buffer[k])))
-	  return 1.0;
+        if (i == j || j == k || i == k) continue;
+        if (test_output == (int) sqrt((double) abs(ctx->input_buffer[i])) +
+            (int) sqrt((double) abs(ctx->input_buffer[j])) + (int) sqrt((double) abs(ctx->input_buffer[k])))
+          return 1.0;
       }
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math3in_AC() const //(X+2Y+3Z)
+double cTaskLib::Task_Math3in_AC(cTaskContext* ctx) const //(X+2Y+3Z)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
       for (int k = 0; k < input_size; k ++) {
-	if (i == j || j == k || i == k) continue;
-	if (test_output == input_buffer[i] + 2 * input_buffer[j] +
-	    3 * input_buffer[k]) return 1.0;
+        if (i == j || j == k || i == k) continue;
+        if (test_output == ctx->input_buffer[i] + 2 * ctx->input_buffer[j] +
+            3 * ctx->input_buffer[k]) return 1.0;
       }
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math3in_AD() const //(XY^2+Z^3)
+double cTaskLib::Task_Math3in_AD(cTaskContext* ctx) const //(XY^2+Z^3)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
       for (int k = 0; k < input_size; k ++) {
-	if (i == j || j == k || i == k) continue;
-	if (test_output == input_buffer[i] * input_buffer[j] * input_buffer[j] + input_buffer[k] * input_buffer[k] * input_buffer[k])
-	  return 1.0;
+        if (i == j || j == k || i == k) continue;
+        if (test_output == ctx->input_buffer[i] * ctx->input_buffer[j] * ctx->input_buffer[j] + ctx->input_buffer[k] * ctx->input_buffer[k] * ctx->input_buffer[k])
+          return 1.0;
       }
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math3in_AE() const //((X%Y)*Z)
+double cTaskLib::Task_Math3in_AE(cTaskContext* ctx) const //((X%Y)*Z)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
       for (int k = 0; k < input_size; k ++) {
-	if (i == j || j == k || i == k) continue;
-	if (input_buffer[j] == 0) continue; // mod by zero
-	if (test_output == input_buffer[i] % input_buffer[j] * input_buffer[k])
-	  return 1.0;
+        if (i == j || j == k || i == k) continue;
+        if (ctx->input_buffer[j] == 0) continue; // mod by zero
+        if (test_output == ctx->input_buffer[i] % ctx->input_buffer[j] * ctx->input_buffer[k])
+          return 1.0;
       }
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math3in_AF() const //((X+Y)^2+sqrt(Y+Z))
+double cTaskLib::Task_Math3in_AF(cTaskContext* ctx) const //((X+Y)^2+sqrt(Y+Z))
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
       for (int k = 0; k < input_size; k ++) {
-	if (i == j || j == k || i == k) continue;
-	if (test_output == (input_buffer[i] + input_buffer[j]) *
-	    (input_buffer[i] + input_buffer[j]) +
-	    (int) sqrt((double) abs(input_buffer[j] + input_buffer[k])))
-	  return 1.0;
+        if (i == j || j == k || i == k) continue;
+        if (test_output == (ctx->input_buffer[i] + ctx->input_buffer[j]) *
+            (ctx->input_buffer[i] + ctx->input_buffer[j]) +
+            (int) sqrt((double) abs(ctx->input_buffer[j] + ctx->input_buffer[k])))
+          return 1.0;
       }
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math3in_AG() const //((XY)%(YZ))
+double cTaskLib::Task_Math3in_AG(cTaskContext* ctx) const //((XY)%(YZ))
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
       for (int k = 0; k < input_size; k ++) {
-	if (i == j || j == k || i == k) continue;
-	int mod_base = input_buffer[j] * input_buffer[k];
-	if (mod_base == 0) continue;
-	if (test_output == (input_buffer[i] * input_buffer[j]) %
-	    mod_base) return 1.0;
+        if (i == j || j == k || i == k) continue;
+        int mod_base = ctx->input_buffer[j] * ctx->input_buffer[k];
+        if (mod_base == 0) continue;
+        if (test_output == (ctx->input_buffer[i] * ctx->input_buffer[j]) %
+            mod_base) return 1.0;
       }
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math3in_AH() const //(X+Y+Z)
+double cTaskLib::Task_Math3in_AH(cTaskContext* ctx) const //(X+Y+Z)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
       for (int k = 0; k < input_size; k ++) {
-	if (i == j || j == k || i == k) continue;
-	if (test_output == input_buffer[i] + input_buffer[j] + input_buffer[k])
-	  return 1.0;
+        if (i == j || j == k || i == k) continue;
+        if (test_output == ctx->input_buffer[i] + ctx->input_buffer[j] + ctx->input_buffer[k])
+          return 1.0;
       }
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math3in_AI() const //(-X-Y-Z)
+double cTaskLib::Task_Math3in_AI(cTaskContext* ctx) const //(-X-Y-Z)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
       for (int k = 0; k < input_size; k ++) {
-	if (i == j || j == k || i == k) continue;
-	if (test_output == 0 - input_buffer[i] - input_buffer[j] - input_buffer[k])
-	  return 1.0;
+        if (i == j || j == k || i == k) continue;
+        if (test_output == 0 - ctx->input_buffer[i] - ctx->input_buffer[j] - ctx->input_buffer[k])
+          return 1.0;
       }
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math3in_AJ() const //((X-Y)^2+(Y-Z)^2+(Z-X)^2)
+double cTaskLib::Task_Math3in_AJ(cTaskContext* ctx) const //((X-Y)^2+(Y-Z)^2+(Z-X)^2)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
       for (int k = 0; k < input_size; k ++) {
-	if (i == j || j == k || i == k) continue;
-	if (test_output == (input_buffer[i] - input_buffer[j]) * (input_buffer[i] - input_buffer[j]) + (input_buffer[j] - input_buffer[k]) * (input_buffer[j] - input_buffer[k]) + (input_buffer[k] - input_buffer[i]) * (input_buffer[k] - input_buffer[i]))
-	  return 1.0;
+        if (i == j || j == k || i == k) continue;
+        if (test_output == (ctx->input_buffer[i] - ctx->input_buffer[j]) * (ctx->input_buffer[i] - ctx->input_buffer[j]) + (ctx->input_buffer[j] - ctx->input_buffer[k]) * (ctx->input_buffer[j] - ctx->input_buffer[k]) + (ctx->input_buffer[k] - ctx->input_buffer[i]) * (ctx->input_buffer[k] - ctx->input_buffer[i]))
+          return 1.0;
       }
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math3in_AK() const //((X+Y)^2+(Y+Z)^2+(Z+X)^2)
+double cTaskLib::Task_Math3in_AK(cTaskContext* ctx) const //((X+Y)^2+(Y+Z)^2+(Z+X)^2)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
       for (int k = 0; k < input_size; k ++) {
-	if (i == j || j == k || i == k) continue;
-	if (test_output == (input_buffer[i] + input_buffer[j]) * (input_buffer[i] + input_buffer[j]) + (input_buffer[j] + input_buffer[k]) * (input_buffer[j] + input_buffer[k]) + (input_buffer[k] + input_buffer[i]) * (input_buffer[k] + input_buffer[i])) 
-	  return 1.0;
+        if (i == j || j == k || i == k) continue;
+        if (test_output == (ctx->input_buffer[i] + ctx->input_buffer[j]) * (ctx->input_buffer[i] + ctx->input_buffer[j]) + (ctx->input_buffer[j] + ctx->input_buffer[k]) * (ctx->input_buffer[j] + ctx->input_buffer[k]) + (ctx->input_buffer[k] + ctx->input_buffer[i]) * (ctx->input_buffer[k] + ctx->input_buffer[i])) 
+          return 1.0;
       }
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math3in_AL() const //((X-Y)^2+(X-Z)^2)
+double cTaskLib::Task_Math3in_AL(cTaskContext* ctx) const //((X-Y)^2+(X-Z)^2)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
       for (int k = 0; k < input_size; k ++) {
-	if (i == j || j == k || i == k) continue;  
-	if (test_output == (input_buffer[i] - input_buffer[j]) * (input_buffer[i] - input_buffer[j]) + (input_buffer[i] - input_buffer[k]) * (input_buffer[i] - input_buffer[k]))
-	  return 1.0;
+        if (i == j || j == k || i == k) continue;  
+        if (test_output == (ctx->input_buffer[i] - ctx->input_buffer[j]) * (ctx->input_buffer[i] - ctx->input_buffer[j]) + (ctx->input_buffer[i] - ctx->input_buffer[k]) * (ctx->input_buffer[i] - ctx->input_buffer[k]))
+          return 1.0;
       }
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_Math3in_AM() const //((X+Y)^2+(Y+Z)^2)
+double cTaskLib::Task_Math3in_AM(cTaskContext* ctx) const //((X+Y)^2+(Y+Z)^2)
 {
-  const int test_output = output_buffer[0];
-  const int input_size = input_buffer.GetNumStored();
+  const int test_output = ctx->output_buffer[0];
+  const int input_size = ctx->input_buffer.GetNumStored();
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
       for (int k = 0; k < input_size; k ++) {
-	if (i == j || j == k || i == k) continue;  
-	if (test_output == (input_buffer[i] + input_buffer[j]) * (input_buffer[i] + input_buffer[j]) + (input_buffer[i] + input_buffer[k]) * (input_buffer[i] + input_buffer[k]))
-	  return 1.0;
+        if (i == j || j == k || i == k) continue;  
+        if (test_output == (ctx->input_buffer[i] + ctx->input_buffer[j]) * (ctx->input_buffer[i] + ctx->input_buffer[j]) + (ctx->input_buffer[i] + ctx->input_buffer[k]) * (ctx->input_buffer[i] + ctx->input_buffer[k]))
+          return 1.0;
       }
     }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_CommEcho() const
+double cTaskLib::Task_CommEcho(cTaskContext* ctx) const
 {
-  const int test_output = output_buffer[0];
-
-  tListIterator<tBuffer<int> > buff_it(other_input_buffers);  
-
+  const int test_output = ctx->output_buffer[0];
+  
+  tListIterator<tBuffer<int> > buff_it(ctx->other_input_buffers);  
+  
   while (buff_it.Next() != NULL) {
     tBuffer<int> & cur_buff = *(buff_it.Get());
     const int buff_size = cur_buff.GetNumStored();
@@ -1684,16 +1737,16 @@ double cTaskLib::Task_CommEcho() const
       if (test_output == cur_buff[i]) return 1.0;
     }
   }
-
+  
   return 0.0;
 }
 
-double cTaskLib::Task_CommNot() const
+double cTaskLib::Task_CommNot(cTaskContext* ctx) const
 {
-  const int test_output = output_buffer[0];
-
-  tListIterator<tBuffer<int> > buff_it(other_input_buffers);  
-
+  const int test_output = ctx->output_buffer[0];
+  
+  tListIterator<tBuffer<int> > buff_it(ctx->other_input_buffers);  
+  
   while (buff_it.Next() != NULL) {
     tBuffer<int> & cur_buff = *(buff_it.Get());
     const int buff_size = cur_buff.GetNumStored();
@@ -1701,6 +1754,6 @@ double cTaskLib::Task_CommNot() const
       if (test_output == (0-(cur_buff[i]+1))) return 1.0;
     }
   }
-
+  
   return 0.0;
 }

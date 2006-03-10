@@ -664,7 +664,7 @@ bool cEnvironment::TestOutput( cReactionResult & result,
 			       const tList< tBuffer<int> > & output_buffers) const
 {
   // Do setup for reaction tests...
-  task_lib.SetupTests(input_buf, output_buf, input_buffers, output_buffers);
+  cTaskContext* taskctx = task_lib.SetupTests(input_buf, output_buf, input_buffers, output_buffers);
 
   // Loop through all reactions to see if any have been triggered...
   const int num_reactions = reaction_lib.GetSize();
@@ -678,7 +678,7 @@ bool cEnvironment::TestOutput( cReactionResult & result,
     // Examine the task trigger associated with this reaction
     cTaskEntry * cur_task = cur_reaction->GetTask();
     assert(cur_task != NULL);
-    const double task_quality = task_lib.TestOutput(*cur_task);
+    const double task_quality = task_lib.TestOutput(*cur_task, taskctx);
     const int task_id = cur_task->GetID();
 
     // If this task wasn't performed, move on to the next one.
@@ -694,8 +694,7 @@ bool cEnvironment::TestOutput( cReactionResult & result,
     }
 
     // And lets process it!
-    DoProcesses(cur_reaction->GetProcesses(), resource_count,
-		task_quality, result);
+    DoProcesses(cur_reaction->GetProcesses(), resource_count, task_quality, result);
 
     // Mark this reaction as occuring...
     result.MarkReaction(cur_reaction->GetID());
@@ -705,8 +704,7 @@ bool cEnvironment::TestOutput( cReactionResult & result,
   // if (receive_buf.GetSize() != 0)
   {
     // Do setup for reaction tests...
-    task_lib.
-      SetupTests(receive_buf, output_buf, input_buffers, output_buffers);
+    taskctx = task_lib.SetupTests(receive_buf, output_buf, input_buffers, output_buffers);
 
     for (int i = 0; i < num_reactions; i++) {
       cReaction * cur_reaction = reaction_lib.GetReaction(i);
@@ -718,7 +716,7 @@ bool cEnvironment::TestOutput( cReactionResult & result,
       // Examine the task trigger associated with this reaction
       cTaskEntry * cur_task = cur_reaction->GetTask();
       assert(cur_task != NULL);
-      const double task_quality = task_lib.TestOutput(*cur_task);
+      const double task_quality = task_lib.TestOutput(*cur_task, taskctx);
       const int task_id = cur_task->GetID();
       
       // If this task wasn't performed, move on to the next one.

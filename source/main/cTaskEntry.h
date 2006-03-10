@@ -18,6 +18,11 @@
 #include "cTaskLib.h"
 #endif
 
+class cTaskLib;
+class cTaskContext;
+
+typedef double (cTaskLib::*tTaskTest)(cTaskContext*) const;
+
 class cTaskEntry
 {
 private:
