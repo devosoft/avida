@@ -13,6 +13,7 @@
 #include "cCPUMemory.h"
 #include "cEnvironment.h"
 #include "cInstSet.h"
+#include "cHardwareManager.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
 #include "cStats.h"             // For GetUpdate in outputs...
@@ -80,9 +81,9 @@ void cLandscape::Reset(const cGenome & in_genome)
   neut_max = 0.0;
 }
 
-void cLandscape::ProcessGenome(cGenome & in_genome)
+void cLandscape::ProcessGenome(cTestCPU* testcpu, cGenome & in_genome)
 {
-  m_world->GetTestCPU().TestGenome(test_info, in_genome);
+  testcpu->TestGenome(test_info, in_genome);
   
   test_fitness = test_info.GetColonyFitness();
   
@@ -106,11 +107,11 @@ void cLandscape::ProcessGenome(cGenome & in_genome)
   }
 }
 
-void cLandscape::ProcessBase()
+void cLandscape::ProcessBase(cTestCPU* testcpu)
 {
   // Collect info on base creature.
   
-  m_world->GetTestCPU().TestGenome(test_info, base_genome);
+  testcpu->TestGenome(test_info, base_genome);
   
   cPhenotype & phenotype = test_info.GetColonyOrganism()->GetPhenotype();
   base_fitness = test_info.GetColonyFitness();
@@ -127,13 +128,17 @@ void cLandscape::ProcessBase()
 
 void cLandscape::Process(int in_distance)
 {
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+
   distance = in_distance;
   
   // Get the info about the base creature.
-  ProcessBase();
+  ProcessBase(testcpu);
   
   // Now Process the new creature at the proper distance.
-  Process_Body(base_genome, distance, 0);
+  Process_Body(testcpu, base_genome, distance, 0);
+
+  delete testcpu;
   
   // Calculate the complexity...
   
@@ -150,8 +155,7 @@ void cLandscape::Process(int in_distance)
 
 // For distances greater than one, this needs to be called recursively.
 
-void cLandscape::Process_Body(cGenome & cur_genome, int cur_distance,
-                              int start_line)
+void cLandscape::Process_Body(cTestCPU* testcpu, cGenome& cur_genome, int cur_distance, int start_line)
 {
   const int max_line = base_genome.GetSize() - cur_distance + 1;
   const int inst_size = inst_set.GetSize();
@@ -168,10 +172,10 @@ void cLandscape::Process_Body(cGenome & cur_genome, int cur_distance,
       
       mod_genome[line_num].SetOp(inst_num);
       if (cur_distance <= 1) {
-        ProcessGenome(mod_genome);
+        ProcessGenome(testcpu, mod_genome);
         if (test_info.GetColonyFitness() >= neut_min) site_count[line_num]++;
       } else {
-        Process_Body(mod_genome, cur_distance - 1, line_num + 1);
+        Process_Body(testcpu, mod_genome, cur_distance - 1, line_num + 1);
       }
     }
     
@@ -182,8 +186,10 @@ void cLandscape::Process_Body(cGenome & cur_genome, int cur_distance,
 
 void cLandscape::ProcessDelete()
 {
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+
   // Get the info about the base creature.
-  ProcessBase();
+  ProcessBase(testcpu);
   
   const int max_line = base_genome.GetSize();
   cCPUMemory mod_genome(base_genome);
@@ -192,17 +198,20 @@ void cLandscape::ProcessDelete()
   for (int line_num = 0; line_num < max_line; line_num++) {
     int cur_inst = base_genome[line_num].GetOp();
     mod_genome.Remove(line_num);
-    ProcessGenome(mod_genome);
+    ProcessGenome(testcpu, mod_genome);
     if (test_info.GetColonyFitness() >= neut_min) site_count[line_num]++;
     mod_genome.Insert(line_num, cInstruction(cur_inst));
   }
   
+  delete testcpu;
 }
 
 void cLandscape::ProcessInsert()
 {
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+
   // Get the info about the base creature.
-  ProcessBase();
+  ProcessBase(testcpu);
   
   const int max_line = base_genome.GetSize();
   const int inst_size = inst_set.GetSize();
@@ -214,24 +223,27 @@ void cLandscape::ProcessInsert()
     // Loop through all instructions...
     for (int inst_num = 0; inst_num < inst_size; inst_num++) {
       mod_genome.Insert(line_num, cInstruction(inst_num));
-      ProcessGenome(mod_genome);
+      ProcessGenome(testcpu, mod_genome);
       if (test_info.GetColonyFitness() >= neut_min) site_count[line_num]++;
       mod_genome.Remove(line_num);
     }
   }
-  
+
+  delete testcpu;
 }
 
 // Prediction for a landscape where n sites are _randomized_.
 void cLandscape::PredictWProcess(ostream& fp, int update)
 {
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+
   distance = 1;
   
   // Get the info about the base creature.
-  ProcessBase();
+  ProcessBase(testcpu);
   if (base_fitness == 0.0) return;
   
-  BuildFitnessChart();
+  BuildFitnessChart(testcpu);
   const int genome_size = fitness_chart.GetNumRows();
   const int inst_size = fitness_chart.GetNumCols();
   const double min_neut_fitness = 0.99;
@@ -336,19 +348,23 @@ void cLandscape::PredictWProcess(ostream& fp, int update)
     total_entropy += (log((double) site_count[i] + 1) / max_ent);
   }
   complexity = base_genome.GetSize() - total_entropy;
+  
+  delete testcpu;
 }
 
 
 // Prediction for a landscape where n sites are _mutated_.
 void cLandscape::PredictNuProcess(ostream& fp, int update)
 {
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+
   distance = 1;
   
   // Get the info about the base creature.
-  ProcessBase();
+  ProcessBase(testcpu);
   if (base_fitness == 0.0) return;
   
-  BuildFitnessChart();
+  BuildFitnessChart(testcpu);
   const int genome_size = fitness_chart.GetNumRows();
   const int inst_size = fitness_chart.GetNumCols();
   const double min_neut_fitness = 0.99;
@@ -470,6 +486,8 @@ void cLandscape::PredictNuProcess(ostream& fp, int update)
     total_entropy += (log((double) site_count[i] + 1) / max_ent);
   }
   complexity = base_genome.GetSize() - total_entropy;
+  
+  delete testcpu;
 }
 
 
@@ -480,8 +498,10 @@ void cLandscape::SampleProcess(int in_trials)
   
   cGenome mod_genome(base_genome);
   int genome_size = base_genome.GetSize();
+
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
   
-  ProcessBase();
+  ProcessBase(testcpu);
   
   // Loop through all the lines of genome, testing each line.
   for (int line_num = 0; line_num < genome_size; line_num++) {
@@ -494,11 +514,13 @@ void cLandscape::SampleProcess(int in_trials)
       
       // Make the change, and test it!
       mod_genome[line_num] = new_inst;
-      ProcessGenome(mod_genome);
+      ProcessGenome(testcpu, mod_genome);
     }
     
     mod_genome[line_num] = cur_inst;
   }
+  
+  delete testcpu;
 }
 
 
@@ -510,7 +532,9 @@ int cLandscape::RandomProcess(int in_trials, int in_distance, int min_found,
   cGenome mod_genome(base_genome);
   int genome_size = base_genome.GetSize();
   
-  ProcessBase();
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+
+  ProcessBase(testcpu);
   
   int mut_num;
   tArray<int> mut_lines(distance);
@@ -544,7 +568,7 @@ int cLandscape::RandomProcess(int in_trials, int in_distance, int min_found,
     
     // And test it!
     
-    ProcessGenome(mod_genome);
+    ProcessGenome(testcpu, mod_genome);
     
     
     // And reset the genome.
@@ -554,11 +578,13 @@ int cLandscape::RandomProcess(int in_trials, int in_distance, int min_found,
   }
   
   trials = cur_trial;
+
+  delete testcpu;
   
   return total_found;
-  }
+}
 
-void cLandscape::BuildFitnessChart()
+void cLandscape::BuildFitnessChart(cTestCPU* testcpu)
 {
   // First, resize the fitness_chart.
   const int max_line = base_genome.GetSize();
@@ -579,23 +605,24 @@ void cLandscape::BuildFitnessChart()
       }
       
       mod_genome[line_num].SetOp(inst_num);
-      ProcessGenome(mod_genome);
+      ProcessGenome(testcpu, mod_genome);
       fitness_chart(line_num, inst_num) = test_info.GetColonyFitness();
     }
     
     mod_genome[line_num].SetOp(cur_inst);
   }
-  
 }
 
 void cLandscape::TestPairs(int in_trials, ostream& fp)
 {
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+
   trials = in_trials;
   
-  ProcessBase();
+  ProcessBase(testcpu);
   if (base_fitness == 0.0) return;
   
-  BuildFitnessChart();
+  BuildFitnessChart(testcpu);
   
   cGenome mod_genome(base_genome);
   const int genome_size = base_genome.GetSize();
@@ -620,20 +647,22 @@ void cLandscape::TestPairs(int in_trials, ostream& fp)
       mut_insts[mut_num] = new_inst;
     }
     
-    TestMutPair(mod_genome, mut_lines[0], mut_lines[1], mut_insts[0],
+    TestMutPair(testcpu, mod_genome, mut_lines[0], mut_lines[1], mut_insts[0],
                 mut_insts[1], fp);
     
   }
-  
+  delete testcpu;
 }
 
 
 void cLandscape::TestAllPairs(ostream& fp)
 {
-  ProcessBase();
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+
+  ProcessBase(testcpu);
   if (base_fitness == 0.0) return;
   
-  BuildFitnessChart();
+  BuildFitnessChart(testcpu);
   
   const int max_line = base_genome.GetSize();
   const int inst_size = inst_set.GetSize();
@@ -651,24 +680,27 @@ void cLandscape::TestAllPairs(ostream& fp)
         for (int inst2_num = 0; inst2_num < inst_size; inst2_num++) {
           inst2.SetOp(inst2_num);
           if (inst2 == base_genome[line2_num]) continue;
-          TestMutPair(mod_genome, line1_num, line2_num, inst1, inst2, fp);
+          TestMutPair(testcpu, mod_genome, line1_num, line2_num, inst1, inst2, fp);
         } // inst2_num loop
       } //inst1_num loop;
       
     } // line2_num loop
   } // line1_num loop.
   
+  delete testcpu;
 }
 
 
 void cLandscape::HillClimb(ofstream& fp)
 {
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
   cGenome cur_genome(base_genome);
   int gen = 0;
-  HillClimb_Body(fp, cur_genome, gen);
+  HillClimb_Body(testcpu, fp, cur_genome, gen);
+  delete testcpu;
 }
 
-void cLandscape::HillClimb_Body(ofstream& fp, cGenome & cur_genome,
+void cLandscape::HillClimb_Body(cTestCPU* testcpu, ofstream& fp, cGenome & cur_genome,
                                 int & gen)
 {
   cCPUMemory mod_genome(base_genome);
@@ -695,7 +727,7 @@ void cLandscape::HillClimb_Body(ofstream& fp, cGenome & cur_genome,
       // Loop through all instructions...
       for (int inst_num = 0; inst_num < inst_size; inst_num++) {
         mod_genome.Insert(line_num, cInstruction(inst_num));
-        ProcessGenome(mod_genome);
+        ProcessGenome(testcpu, mod_genome);
         mod_genome.Remove(line_num);
       }
     }
@@ -705,14 +737,14 @@ void cLandscape::HillClimb_Body(ofstream& fp, cGenome & cur_genome,
     for (int line_num = 0; line_num < max_line; line_num++) {
       int cur_inst = cur_genome[line_num].GetOp();
       mod_genome.Remove(line_num);
-      ProcessGenome(mod_genome);
+      ProcessGenome(testcpu, mod_genome);
       mod_genome.Insert(line_num, cInstruction(cur_inst));
     }
     
     pos_frac = GetProbPos();
     
     // Print the information on the current best.
-    HillClimb_Print(fp, cur_genome, gen);
+    HillClimb_Print(testcpu, fp, cur_genome, gen);
     
     // Move on to the peak genome found.
     cur_genome = GetPeakGenome();
@@ -728,10 +760,10 @@ void cLandscape::HillClimb_Rand(ofstream& fp)
 {
 }
 
-void cLandscape::HillClimb_Print(ofstream& fp, const cGenome & _genome, const int gen) const
+void cLandscape::HillClimb_Print(cTestCPU* testcpu, ofstream& fp, const cGenome & _genome, const int gen) const
 {
   cCPUTestInfo test_info;
-  m_world->GetTestCPU().TestGenome(test_info, _genome);
+  testcpu->TestGenome(test_info, _genome);
   cPhenotype &colony_phenotype = test_info.GetColonyOrganism()->GetPhenotype();
   fp << gen << " "
     << colony_phenotype.GetMerit().GetDouble() << " "
@@ -745,12 +777,12 @@ void cLandscape::HillClimb_Print(ofstream& fp, const cGenome & _genome, const in
     << endl;
 }
 
-double cLandscape::TestMutPair(cGenome & mod_genome, int line1, int line2,
-                               const cInstruction & mut1, const cInstruction & mut2, ostream& fp)
+double cLandscape::TestMutPair(cTestCPU* testcpu, cGenome& mod_genome, int line1, int line2,
+                               const cInstruction& mut1, const cInstruction& mut2, ostream& fp)
 {
   mod_genome[line1] = mut1;
   mod_genome[line2] = mut2;
-  m_world->GetTestCPU().TestGenome(test_info, mod_genome);
+  testcpu->TestGenome(test_info, mod_genome);
   double combo_fitness = test_info.GetColonyFitness() / base_fitness;
   
   mod_genome[line1] = base_genome[line1];

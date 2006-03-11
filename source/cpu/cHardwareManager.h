@@ -11,7 +11,10 @@
 #define cHardwareManager_h
 
 #ifndef cInstSet_h
-#include "cInstSet.h";
+#include "cInstSet.h"
+#endif
+#ifndef cTestCPU_h
+#include "cTestCPU.h"
 #endif
 
 class cOrganism;
@@ -24,7 +27,7 @@ private:
   cWorld* m_world;
   cInstSet m_inst_set;
   int m_type;
-  
+  cTestResources m_testres;
   
   cHardwareManager(); // @not_implemented
   cHardwareManager(const cHardwareManager&); // @not_implemented
@@ -35,6 +38,7 @@ public:
   ~cHardwareManager() { ; }
   
   cHardwareBase* Create(cOrganism* in_org);
+  cTestCPU* CreateTestCPU() { return new cTestCPU(m_world, &m_testres); }
 
   void LoadInstSet(cString filename);
   

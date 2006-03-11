@@ -3133,7 +3133,9 @@ public:
   
   ///// test_threads /////
   void Process(){
-    m_world->GetTestCPU().TestThreads(m_world->GetClassificationManager().GetBestGenotype()->GetGenome());
+    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+    testcpu->TestThreads(m_world->GetClassificationManager().GetBestGenotype()->GetGenome());
+    delete testcpu;
   }
 };
 
@@ -3156,7 +3158,9 @@ public:
   }
   ///// print_threads /////
   void Process(){
-    m_world->GetTestCPU().PrintThreads( m_world->GetClassificationManager().GetBestGenotype()->GetGenome() );
+    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+    testcpu->PrintThreads( m_world->GetClassificationManager().GetBestGenotype()->GetGenome() );
+    delete testcpu;
   }
 };
 

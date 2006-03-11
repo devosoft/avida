@@ -43,7 +43,6 @@ protected:
   cHardwareManager* m_hw_mgr;
   cPopulation* m_pop;
   cStats* m_stats;
-  cTestCPU* m_test_cpu;
   cWorldDriver* m_driver;
 
   cRandom m_rng;
@@ -76,7 +75,6 @@ public:
   cPopulation& GetPopulation() { return *m_pop; }
   cRandom& GetRandom() { return m_rng; }
   cStats& GetStats() { return *m_stats; }
-  cTestCPU& GetTestCPU() { return *m_test_cpu; }
   cWorldDriver& GetDriver() { return *m_driver; }
   
   // Access to Data File Manager

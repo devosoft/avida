@@ -11,6 +11,7 @@
 #include "cAnalyzeGenotype.h"
 
 #include "cCPUTestInfo.h"
+#include "cHardwareManager.h"
 #include "cInstSet.h"
 #include "cLandscape.h"
 #include "cOrganism.h"
@@ -177,17 +178,20 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
     return;
   }
   
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  
   // Calculate the base fitness for the genotype we're working with...
   // (This may not have been run already, and cost negligiably more time
   // considering the number of knockouts we need to do.
   cAnalyzeGenotype base_genotype(m_world, genome, inst_set);
-  base_genotype.Recalculate();      
+  base_genotype.Recalculate(testcpu);
   double base_fitness = base_genotype.GetFitness();
   const tArray<int> base_task_counts( base_genotype.GetTaskCounts() );
   
   // If the base fitness is 0, the organism is dead and has no complexity.
   if (base_fitness == 0.0) {
     knockout_stats->neut_count = length;
+    delete testcpu;
     return;
   }
   
@@ -221,7 +225,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
     int cur_inst = mod_genome[line_num].GetOp();
     mod_genome[line_num] = null_inst;
     cAnalyzeGenotype ko_genotype(m_world, mod_genome, ko_inst_set);
-    ko_genotype.Recalculate();
+    ko_genotype.Recalculate(testcpu);
     if (check_chart == true) {
       const tArray<int> ko_task_counts( ko_genotype.GetTaskCounts() );
       knockout_stats->task_counts[line_num] = ko_task_counts;
@@ -250,7 +254,10 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
   
   // Only continue from here if we are looking at all pairs of knockouts
   // as well.
-  if (check_pairs == false) return;
+  if (check_pairs == false) {
+    delete testcpu;
+    return;
+  }
   
   tArray<int> ko_pair_effect(ko_effect);
   for (int line1 = 0; line1 < length; line1++) {
@@ -278,7 +285,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
       mod_genome[line1] = null_inst;
       mod_genome[line2] = null_inst;
       cAnalyzeGenotype ko_genotype(m_world, mod_genome, ko_inst_set);
-      ko_genotype.Recalculate();
+      ko_genotype.Recalculate(testcpu);
       
       double ko_fitness = ko_genotype.GetFitness();
       
@@ -314,6 +321,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
   }
   
   knockout_stats->has_pair_info = true;
+  delete testcpu;
 }
 
 void cAnalyzeGenotype::CalcLandscape() const
@@ -331,7 +339,7 @@ void cAnalyzeGenotype::CalcLandscape() const
   landscape_stats->ave_fitness = landscape.GetAveFitness();
 }
 
-void cAnalyzeGenotype::Recalculate(cAnalyzeGenotype * parent_genotype)
+void cAnalyzeGenotype::Recalculate(cTestCPU* testcpu, cAnalyzeGenotype* parent_genotype)
 {
     // Build the test info for printing.
   cCPUTestInfo test_info;
@@ -346,15 +354,15 @@ void cAnalyzeGenotype::Recalculate(cAnalyzeGenotype * parent_genotype)
   cInstSet env_inst_set_backup = m_world->GetHardwareManager().GetInstSet();
   m_world->GetHardwareManager().GetInstSet() = inst_set;
 
-  m_world->GetTestCPU().TestGenome(test_info, genome);
+  testcpu->TestGenome(test_info, genome);
   
   // Restore the instruction set
   m_world->GetHardwareManager().GetInstSet() = env_inst_set_backup;
 
   viable = test_info.IsViable();
 
-  cOrganism * test_organism = test_info.GetTestOrganism();
-  cPhenotype & test_phenotype = test_organism->GetPhenotype();
+  cOrganism* test_organism = test_info.GetTestOrganism();
+  cPhenotype& test_phenotype = test_organism->GetPhenotype();
 
   length = test_organism->GetGenome().GetSize();
   copy_length = test_phenotype.GetCopiedSize();

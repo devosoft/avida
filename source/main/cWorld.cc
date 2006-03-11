@@ -36,7 +36,6 @@ cWorld::~cWorld()
   delete m_hw_mgr;
   delete m_pop;
   delete m_stats;
-  delete m_test_cpu;
 
   // cleanup driver object, if needed
   if (m_own_driver) delete m_driver;
@@ -73,8 +72,7 @@ void cWorld::Setup()
     cerr << "Unable to load environment... aborting!" << endl;
     ExitAvida(-1);
   }
-    
-  m_test_cpu = new cTestCPU(this);
+
   m_stats = new cStats(this);
   m_pop = new cPopulation(this);
 

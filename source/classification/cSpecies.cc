@@ -14,6 +14,7 @@
 #include "functions.h"
 #include "cGenotype.h"
 #include "cGenomeUtil.h"
+#include "cHardwareManager.h"
 #include "cTestCPU.h"
 #include "cWorld.h"
 
@@ -75,12 +76,13 @@ cSpecies::~cSpecies()
 
 int cSpecies::Compare(const cGenome & test_genome, int max_fail_count)
 {
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
   cCPUTestInfo test_info;
 
   // First, make some phenotypic comparisons between organisms.
   // For now, just check that they both copy-true.
 
-  m_world->GetTestCPU().TestGenome(test_info, test_genome);
+  testcpu->TestGenome(test_info, test_genome);
 
   // If the organisms aren't viable, return a -1...
   if (test_info.IsViable() == false) {
@@ -114,10 +116,10 @@ int cSpecies::Compare(const cGenome & test_genome, int max_fail_count)
       cross_genome2[i] = genome[i];
    
       // Run each side, and determine viability...
-      m_world->GetTestCPU().TestGenome(test_info, cross_genome1);
+      testcpu->TestGenome(test_info, cross_genome1);
       cross1_viable = test_info.IsViable();
 
-      m_world->GetTestCPU().TestGenome(test_info, cross_genome2);
+      testcpu->TestGenome(test_info, cross_genome2);
       cross2_viable = test_info.IsViable();
     }
 
@@ -127,6 +129,7 @@ int cSpecies::Compare(const cGenome & test_genome, int max_fail_count)
     if (max_fail_count != -1 && fail_count > max_fail_count) break;
   }
 
+  delete testcpu;
 
   return fail_count;
 }

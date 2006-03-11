@@ -16,6 +16,7 @@
 #include "cGenome.h"
 #include "cGenotype.h"
 #include "cHardwareBase.h"
+#include "cHardwareManager.h"
 #include "cInjectGenotype.h"
 #include "cInstUtil.h"
 #include "cOrganism.h"
@@ -37,9 +38,11 @@ void cTestUtil::PrintGenome(cWorld* world, const cGenome & genome, cString filen
   if (filename == "") filename.Set("%03d-unnamed", genome.GetSize());
 
   // Build the test info for printing.
+  cTestCPU* testcpu = world->GetHardwareManager().CreateTestCPU();
   cCPUTestInfo test_info;
   test_info.TestThreads();
-  world->GetTestCPU().TestGenome(test_info, genome);
+  testcpu->TestGenome(test_info, genome);
+  delete testcpu;
 
   // Open the file...
   ofstream& fp = world->GetDataFileOFStream(filename);
@@ -137,9 +140,11 @@ void cTestUtil::PrintGenome(cWorld* world, cInjectGenotype * inject_genotype,
   if (filename == "") filename.Set("p%03d-unnamed", genome.GetSize());
 
   // Build the test info for printing.
+  cTestCPU* testcpu = world->GetHardwareManager().CreateTestCPU();
   cCPUTestInfo test_info;
   test_info.TestThreads();
-  world->GetTestCPU().TestGenome(test_info, genome);
+  testcpu->TestGenome(test_info, genome);
+  delete testcpu;
 
   // Open the file...
   ofstream& fp = world->GetDataFileOFStream(filename);

@@ -90,7 +90,9 @@ cAnalyze::cAnalyze(cWorld* world)
     }
     resources.push_back(make_pair(0, r));
   }
-  FillResources(0);
+  // @DMB -  FillResources(0);
+
+  m_testcpu = m_world->GetHardwareManager().CreateTestCPU();
   
   cInitFile analyze_file(m_world->GetConfig().ANALYZE_FILE.Get());
   analyze_file.Load();
@@ -439,7 +441,7 @@ void cAnalyze::LoadResources(cString cur_string)
 
 // Looks up the resource concentrations that are the closest to the
 // given update and then fill in those concentrations into the environment.
-void cAnalyze::FillResources(int update)
+void cAnalyze::FillResources(cTestCPU* testcpu, int update)
 {
   // There must be some resources for at least one update
   //assert(!resources.empty());
@@ -471,9 +473,8 @@ void cAnalyze::FillResources(int update)
   for(unsigned int i=0; i<resources[which].second.size(); i++) {
     temp[i] = resources[which].second[i];
   }
-  m_world->GetTestCPU().SetupResourceArray(temp);
-  
-  return;
+
+  testcpu->SetupResourceArray(temp);
 }
 
 double cAnalyze::AnalyzeEntropy(cAnalyzeGenotype * genotype, double mu) 
@@ -481,7 +482,7 @@ double cAnalyze::AnalyzeEntropy(cAnalyzeGenotype * genotype, double mu)
   double entropy = 0.0;
   
   // If the fitness is 0, the entropy is the length of genotype ...
-  genotype->Recalculate();
+  genotype->Recalculate(m_testcpu);
   if (genotype->GetFitness() == 0) {
     return genotype->GetLength();
   }
@@ -503,7 +504,7 @@ double cAnalyze::AnalyzeEntropy(cAnalyzeGenotype * genotype, double mu)
     for (int mod_inst = 0; mod_inst < num_insts; mod_inst++) {
       mod_genome[line_no].SetOp(mod_inst);
       cAnalyzeGenotype test_genotype(m_world, mod_genome, inst_set);
-      test_genotype.Recalculate();
+      test_genotype.Recalculate(m_testcpu);
       // Ajust fitness ...
       if (test_genotype.GetFitness() <= base_fitness) {
         test_fitness[mod_inst] = test_genotype.GetFitness();
@@ -561,7 +562,7 @@ tMatrix< double > cAnalyze::AnalyzeEntropyPairs(cAnalyzeGenotype * genotype, dou
   
   double entropy = 0.0;
 
-  genotype->Recalculate();
+  genotype->Recalculate(m_testcpu);
 
    // Calculate the stats for the genotype we're working with ...
   const int num_insts = inst_set.GetSize();
@@ -604,7 +605,7 @@ tMatrix< double > cAnalyze::AnalyzeEntropyPairs(cAnalyzeGenotype * genotype, dou
 	  mod_genome[line_1].SetOp(mod_inst_1);
 	  mod_genome[line_2].SetOp(mod_inst_2);
 	  cAnalyzeGenotype test_genotype(m_world, mod_genome, inst_set);
-	  test_genotype.Recalculate();
+	  test_genotype.Recalculate(m_testcpu);
 	  // Adjust fitness ...
 	  if (test_genotype.GetFitness() <= base_fitness) {
 	    test_fitness[mod_inst_1][mod_inst_2] = test_genotype.GetFitness();
@@ -683,7 +684,7 @@ double cAnalyze::AnalyzeEntropyGivenParent(cAnalyzeGenotype * genotype,
   double entropy = 0.0;
   
   // Calculate the stats for the genotype we're working with ...
-  genotype->Recalculate();
+  genotype->Recalculate(m_testcpu);
   const int num_insts = inst_set.GetSize();
   const int num_lines = genotype->GetLength();
   const cGenome & base_genome = genotype->GetGenome();
@@ -701,7 +702,7 @@ double cAnalyze::AnalyzeEntropyGivenParent(cAnalyzeGenotype * genotype,
     for (int mod_inst = 0; mod_inst < num_insts; mod_inst++) {
       mod_genome[line_no].SetOp(mod_inst);
       cAnalyzeGenotype test_genotype(m_world, mod_genome, inst_set);
-      test_genotype.Recalculate();
+      test_genotype.Recalculate(m_testcpu);
       test_fitness[mod_inst] = test_genotype.GetFitness();
     }
     
@@ -776,7 +777,7 @@ double cAnalyze::IncreasedInfo(cAnalyzeGenotype * genotype1,
     exit(1);
   }
   
-  genotype1->Recalculate();
+  genotype1->Recalculate(m_testcpu);
   if (genotype1->GetFitness() == 0) {
     return 0.0;
   }
@@ -798,7 +799,7 @@ double cAnalyze::IncreasedInfo(cAnalyzeGenotype * genotype1,
     for (int mod_inst = 0; mod_inst < num_insts; mod_inst++) {
       genotype1_mod_genome[line_no].SetOp(mod_inst);
       cAnalyzeGenotype test_genotype(m_world, genotype1_mod_genome, inst_set);
-      test_genotype.Recalculate();
+      test_genotype.Recalculate(m_testcpu);
       // Ajust fitness ...
       if (test_genotype.GetFitness() <= genotype1_base_fitness) {
         test_fitness[mod_inst] = test_genotype.GetFitness();
@@ -847,7 +848,7 @@ double cAnalyze::IncreasedInfo(cAnalyzeGenotype * genotype1,
     genotype1_mod_genome[line_no].SetOp(cur_inst);
   }
   
-  genotype2->Recalculate();
+  genotype2->Recalculate(m_testcpu);
   if (genotype2->GetFitness() == 0) {
     for (int line_no = 0; line_no < num_lines; ++ line_no) {
       increased_info += genotype1_info[line_no];
@@ -867,7 +868,7 @@ double cAnalyze::IncreasedInfo(cAnalyzeGenotype * genotype1,
     for (int mod_inst = 0; mod_inst < num_insts; mod_inst++) {
       genotype2_mod_genome[line_no].SetOp(mod_inst);
       cAnalyzeGenotype test_genotype(m_world, genotype2_mod_genome, inst_set);
-      test_genotype.Recalculate();
+      test_genotype.Recalculate(m_testcpu);
       // Ajust fitness ...
       if (test_genotype.GetFitness() <= genotype2_base_fitness) {
         test_fitness[mod_inst] = test_genotype.GetFitness();
@@ -1601,16 +1602,8 @@ void cAnalyze::CommandTrace(cString cur_string)
     }
   }
   
-  bool backupUsage;
-  tArray<double> backupResources;
-  
-  if(useResources) {
-    // Backup test cpu data
-    backupUsage = m_world->GetTestCPU().UseResources();
-    backupResources = m_world->GetTestCPU().GetResources();
-    
-    m_world->GetTestCPU().UseResources() = true;
-  }
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();  
+  testcpu->SetUseResources(useResources);
   
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype * genotype = NULL;
@@ -1632,19 +1625,13 @@ void cAnalyze::CommandTrace(cString cur_string)
     test_info.TestThreads();
     test_info.SetTraceExecution(&trace_printer);
     
-    m_world->GetTestCPU().TestGenome(test_info, genotype->GetGenome());
+    testcpu->TestGenome(test_info, genotype->GetGenome());
     
     if (verbose >= nAnalyze::VERBOSE_ON) cout << "  Tracing: " << filename << endl;
     m_world->GetDataFileManager().Remove(filename);
   }
   
-  if(useResources) {
-    // Set the test cpu back to the state it was in before we messed with it
-    m_world->GetTestCPU().UseResources() = backupUsage;
-    m_world->GetTestCPU().SetupResourceArray(backupResources);
-  }
-  
-  return;
+  delete testcpu;
 }
 
 void cAnalyze::CommandPrintTasks(cString cur_string)
@@ -2636,11 +2623,10 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
   }
   
   ///////////////////////
-  // Backup test CPU data
-  bool backupUsage = m_world->GetTestCPU().UseResources();
-  tArray<double> backupResources(m_world->GetTestCPU().GetResources());
-  m_world->GetTestCPU().UseResources() = true;
-  FillResources(update);
+  // Create Test CPU
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  testcpu->SetUseResources(true);
+  FillResources(testcpu, update);
   
   ///////////////////////////////////////////////////////////////////////
   // Choose the first n most abundant genotypes and put them in community
@@ -2763,7 +2749,7 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
     genotype = sorted_community[i];
     
     // Skip the dead organisms
-    genotype->Recalculate();
+    genotype->Recalculate(testcpu);
     if (genotype->GetFitness() == 0) {
       continue;
     }
@@ -2867,7 +2853,7 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
         mod_genome = base_genome;
         mod_genome[line].SetOp(given_inst);
         cAnalyzeGenotype test_genotype(m_world, mod_genome, inst_set);
-        test_genotype.Recalculate();
+        test_genotype.Recalculate(testcpu);
         
         // Only when given inst make the genotype alive
         if (test_genotype.GetFitness() > 0) {
@@ -2890,7 +2876,7 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
     vector< vector<bool> > neutral_mut(length_genome, one_line_neutral);
     vector< vector<bool> > alive_mut(length_genome, one_line_neutral);
     
-    genotype->Recalculate();
+    genotype->Recalculate(testcpu);
     double base_fitness = genotype->GetFitness();
     cout << base_fitness << endl;
     const cGenome & base_genome = genotype->GetGenome();
@@ -2902,7 +2888,7 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
       for (int mod_inst = 0; mod_inst < num_insts; ++ mod_inst) {
         mod_genome[line].SetOp(mod_inst);
         cAnalyzeGenotype test_genotype(m_world, mod_genome, inst_set);
-        test_genotype.Recalculate();
+        test_genotype.Recalculate(testcpu);
         if (test_genotype.GetFitness() >= base_fitness) {
           neutral_mut[line][mod_inst] = true;
         } 
@@ -3052,9 +3038,7 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
     
   }
   
-  // Set the test CPU back to the state it was 
-  m_world->GetTestCPU().UseResources() = backupUsage;
-  m_world->GetTestCPU().SetupResourceArray(backupResources);
+  delete testcpu;
   
   m_world->GetDataFileManager().Remove(filename);
   return;
@@ -3104,10 +3088,9 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
   
   ///////////////////////
   // Backup test CPU data
-  bool backupUsage = m_world->GetTestCPU().UseResources();
-  tArray<double> backupResources(m_world->GetTestCPU().GetResources());
-  m_world->GetTestCPU().UseResources() = true;
-  FillResources(update);
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  testcpu->SetUseResources(true);
+  FillResources(testcpu, update);
   
   
   vector<cAnalyzeGenotype *> community;
@@ -3133,7 +3116,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
       m_world->GetDataFileManager().Remove(filename);
       return;
     }
-    genotype->Recalculate();
+    genotype->Recalculate(testcpu);
     int num_tasks = genotype->GetNumTasks();
     vector< vector<cAnalyzeGenotype *> > genotype_class(num_tasks);
     do {
@@ -3191,7 +3174,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
     cout << "Test point mutation for genotype " << genotype->GetID() << endl;
     tMatrix<double> prob(length_genome, num_insts);
     
-    genotype->Recalculate();
+    genotype->Recalculate(testcpu);
     double base_fitness = genotype->GetFitness();
     const cGenome & base_genome = genotype->GetGenome();
     cGenome mod_genome(base_genome);
@@ -3203,7 +3186,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
       for (int mod_inst = 0; mod_inst < num_insts; ++ mod_inst) {
         mod_genome[line].SetOp(mod_inst);
         cAnalyzeGenotype test_genotype(m_world, mod_genome, inst_set);
-        test_genotype.Recalculate();
+        test_genotype.Recalculate(testcpu);
         if (test_genotype.GetFitness() >= base_fitness) {
           prob[line][mod_inst] = 1.0;
           num_neutral ++;
@@ -3262,7 +3245,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
   int num_cpus = genotype->GetNumCPUs();
   total_cpus += num_cpus;
   cpx_fp << num_cpus << " " << total_cpus << "   ";
-  genotype->Recalculate();
+  genotype->Recalculate(testcpu);
   genotype->PrintTasks(cpx_fp, 0, -1);
   cpx_fp << endl;
   
@@ -3277,7 +3260,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
     }
     
     // Skip the dead organisms
-    genotype->Recalculate();
+    genotype->Recalculate(testcpu);
     cout << genotype->GetID() << " " << genotype->GetFitness() << endl;
     if (genotype->GetFitness() == 0) {
       continue;
@@ -3388,10 +3371,8 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
     given_genotypes.push_back(genotype);
   }
   
-  
-  // Set the test CPU back to the state it was 
-  m_world->GetTestCPU().UseResources() = backupUsage;
-  m_world->GetTestCPU().SetupResourceArray(backupResources);
+
+  delete testcpu;
   
   m_world->GetDataFileManager().Remove(filename);
   return;
@@ -3606,6 +3587,9 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
   int fail_count = 0;
   int match_fail_count = 0;
   
+  // Create a Test CPU
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  
   // Loop through all of the tests, picking random organisms each time and
   // performing a random cross test.
   cAnalyzeGenotype * genotype2 = NULL;
@@ -3665,12 +3649,13 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
     cCPUTestInfo test_info;
     
     // Run each side, and determine viability...
-    m_world->GetTestCPU().TestGenome(test_info, test_genome0);
+    testcpu->TestGenome(test_info, test_genome0);
     if( test_info.IsViable() == false ) {
       fail_count++;
       if (same_mate_id == true) match_fail_count++;
     }
   }
+  delete testcpu;
   
   // Do some calculations on the sizes of the mate groups...
   const int num_mate_groups = mate_id_counts.GetSize();
@@ -3833,7 +3818,7 @@ void cAnalyze::AnalyzeComplexityDelta(cString cur_string)
     }
     
     // Collect basic state before and after the mutations...
-    genotype->Recalculate();
+    genotype->Recalculate(m_testcpu);
     double start_complexity = genotype->GetKO_Complexity();
     double start_fitness = genotype->GetFitness();
     int start_length = genotype->GetLength();
@@ -3842,7 +3827,7 @@ void cAnalyze::AnalyzeComplexityDelta(cString cur_string)
     const tArray< tArray<int> >& start_KO_task_counts = genotype->GetKO_TaskCounts();
     
     cAnalyzeGenotype new_genotype(m_world, mod_genome, inst_set);
-    new_genotype.Recalculate();
+    new_genotype.Recalculate(m_testcpu);
     double end_complexity = new_genotype.GetKO_Complexity();
     double end_fitness = new_genotype.GetFitness();
     int end_length = new_genotype.GetLength();
@@ -4036,7 +4021,7 @@ void cAnalyze::AnalyzeKnockouts(cString cur_string)
     if (verbose >= nAnalyze::VERBOSE_ON) cout << "  Knockout: " << genotype->GetName() << endl;
     
     // Calculate the stats for the genotype we're working with...
-    genotype->Recalculate();
+    genotype->Recalculate(m_testcpu);
     const double base_fitness = genotype->GetFitness();
     
     const int max_line = genotype->GetLength();
@@ -4055,7 +4040,7 @@ void cAnalyze::AnalyzeKnockouts(cString cur_string)
       int cur_inst = base_genome[line_num].GetOp();
       mod_genome[line_num] = null_inst;
       cAnalyzeGenotype ko_genotype(m_world, mod_genome, ko_inst_set);
-      ko_genotype.Recalculate();
+      ko_genotype.Recalculate(m_testcpu);
       
       double ko_fitness = ko_genotype.GetFitness();
       if (ko_fitness == 0.0) {
@@ -4087,7 +4072,7 @@ void cAnalyze::AnalyzeKnockouts(cString cur_string)
           mod_genome[line1] = null_inst;
           mod_genome[line2] = null_inst;
           cAnalyzeGenotype ko_genotype(m_world, mod_genome, ko_inst_set);
-          ko_genotype.Recalculate();
+          ko_genotype.Recalculate(m_testcpu);
           
           double ko_fitness = ko_genotype.GetFitness();
           
@@ -4287,7 +4272,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
     }
     
     // Calculate the stats for the genotype we're working with...
-    genotype->Recalculate();
+    genotype->Recalculate(m_testcpu);
     
     // Headers...
     if (file_type == FILE_TYPE_TEXT) {
@@ -4406,7 +4391,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       
       mod_genome[line_num] = null_inst;
       cAnalyzeGenotype test_genotype(m_world, mod_genome, map_inst_set);
-      test_genotype.Recalculate();
+      test_genotype.Recalculate(m_testcpu);
       
       if (file_type == FILE_TYPE_HTML) fp << "<tr><td align=right>";
       fp << (line_num + 1) << " ";
@@ -4592,7 +4577,7 @@ void cAnalyze::CommandAverageModularity(cString cur_string)
     if (verbose >= nAnalyze::VERBOSE_ON) cout << "  Mapping " << genotype->GetName() << endl;
     
     // Calculate the stats for the genotype we're working with...
-    genotype->Recalculate();
+    genotype->Recalculate(m_testcpu);
     
     // Check if the organism does any tasks. 
     int does_tasks = 0;
@@ -4663,7 +4648,7 @@ void cAnalyze::CommandAverageModularity(cString cur_string)
           mod_genome[line_num] = null_inst;
           cAnalyzeGenotype test_genotype(m_world, mod_genome, map_inst_set);
           cAnalyzeGenotype old_genotype(m_world, base_genome, map_inst_set);
-          test_genotype.Recalculate();
+          test_genotype.Recalculate(m_testcpu);
           
           // Print the individual columns...
           output_it.Reset();
@@ -4879,7 +4864,7 @@ void cAnalyze::CommandAnalyzeModularity(cString cur_string)
     const int base_length = genotype->GetLength();
     const cGenome & base_genome = genotype->GetGenome();
     cGenome mod_genome(base_genome);
-    genotype->Recalculate();
+    genotype->Recalculate(m_testcpu);
 
     tMatrix<bool> task_matrix(num_traits, base_length);
     tArray<int> num_inst(num_traits);  // Number of instructions for each task
@@ -4895,7 +4880,7 @@ void cAnalyze::CommandAnalyzeModularity(cString cur_string)
       // Determine what happens to this genotype when this line is knocked out
       mod_genome[line_num] = null_inst;
       cAnalyzeGenotype test_genotype(m_world, mod_genome, map_inst_set);
-      test_genotype.Recalculate();
+      test_genotype.Recalculate(m_testcpu);
 
       // Loop through the individual traits
       output_it.Reset();
@@ -5039,7 +5024,7 @@ void cAnalyze::CommandMapMutations(cString cur_string)
     ofstream& fp = m_world->GetDataFileOFStream(filename);
     
     // Calculate the stats for the genotype we're working with...
-    genotype->Recalculate();
+    genotype->Recalculate(m_testcpu);
     const double base_fitness = genotype->GetFitness();
     const int num_insts = inst_set.GetSize();
     
@@ -5152,7 +5137,7 @@ void cAnalyze::CommandMapMutations(cString cur_string)
         else {
           mod_genome[line_num].SetOp(mod_inst);
           cAnalyzeGenotype test_genotype(m_world, mod_genome, inst_set);
-          test_genotype.Recalculate();
+          test_genotype.Recalculate(m_testcpu);
           const double test_fitness = test_genotype.GetFitness() / base_fitness;
           row_fitness += test_fitness;
           total_fitness += test_fitness;
@@ -5188,7 +5173,7 @@ void cAnalyze::CommandMapMutations(cString cur_string)
       // Column: Knockout
       mod_genome[line_num] = null_inst;
       cAnalyzeGenotype test_genotype(m_world, mod_genome, map_inst_set);
-      test_genotype.Recalculate();
+      test_genotype.Recalculate(m_testcpu);
       const double test_fitness = test_genotype.GetFitness() / base_fitness;
       col_fitness[num_insts] += test_fitness;
       
@@ -5464,6 +5449,8 @@ void cAnalyze::CommandSpecies(cString cur_string)
   int total_fail = 0;
   int total_count = 0;
   
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  
   tListIterator<cAnalyzeGenotype> list1_it(batch[batch1].List());
   tListIterator<cAnalyzeGenotype> list2_it(batch[batch2].List());
   
@@ -5525,10 +5512,10 @@ void cAnalyze::CommandSpecies(cString cur_string)
           
           // Run each side, and determine viability...
           cCPUTestInfo test_info;
-          m_world->GetTestCPU().TestGenome(test_info, test_genome0);
+          testcpu->TestGenome(test_info, test_genome0);
           cross1_viable = test_info.IsViable();
           
-          m_world->GetTestCPU().TestGenome(test_info, test_genome1);
+          testcpu->TestGenome(test_info, test_genome1);
           cross2_viable = test_info.IsViable();
           
           if (cross1_viable == false) fail_count++;   
@@ -5540,6 +5527,9 @@ void cAnalyze::CommandSpecies(cString cur_string)
       }
     }
   }
+  
+  delete testcpu;
+  
   // Calculate the final answer
   double ave_dist = (double) total_fail / (double) total_count;
   cout << "  ave distance = " << ave_dist
@@ -6124,6 +6114,8 @@ void cAnalyze::AnalyzeMuts(cString cur_string)
       test_count[i] = 0;
     }
     
+    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+
     // Loop through all of the combos...
     const int combo_step = total_combos / 79;
     for (int combo_id = 0; combo_id < total_combos; combo_id++) {
@@ -6146,11 +6138,11 @@ void cAnalyze::AnalyzeMuts(cString cur_string)
       cGenome test_genome(test_sequence);
       cCPUTestInfo test_info;
       test_info.TestThreads();
-      m_world->GetTestCPU().TestGenome(test_info, test_genome);
+      testcpu->TestGenome(test_info, test_genome);
       const double fitness = test_info.GetGenotypeFitness();
       
       //cAnalyzeGenotype test_genotype(test_sequence);
-      //test_genotype.Recalculate();
+      //test_genotype.Recalculate(testcpu);
       //const double fitness = test_genotype.GetFitness();
       
       total_fitness[diff_count] += fitness;
@@ -6171,7 +6163,7 @@ void cAnalyze::AnalyzeMuts(cString cur_string)
     
     for (int i = 0; i <= total_diffs; i++) {
       cAnalyzeGenotype max_genotype(m_world, max_sequence[i], inst_set);
-      max_genotype.Recalculate();
+      max_genotype.Recalculate(testcpu);
       fp << i                                         << " "  //  1
         << test_count[i]                             << " "  //  2
         << total_fitness[i] / (double) test_count[i] << " "  //  3
@@ -6191,6 +6183,8 @@ void cAnalyze::AnalyzeMuts(cString cur_string)
     delete [] max_fitness;
     delete [] max_sequence;
     delete [] test_count;
+    
+    delete testcpu;
   }
   // If we can't scan through all combos, give wanring.
   else {
@@ -6464,6 +6458,8 @@ void cAnalyze::AnalyzeMutationTraceback(cString cur_string)
   // Open the output file...
   ofstream& fp = m_world->GetDataFileOFStream(filename);
   
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+
   // Loop through all of the genotypes again, testing mutation reversions.
   cAnalyzeGenotype * prev_genotype = batch_it.Next();
   while ((genotype = batch_it.Next()) != NULL) {
@@ -6483,14 +6479,14 @@ void cAnalyze::AnalyzeMutationTraceback(cString cur_string)
     
     cGenome test_genome = genotype->GetGenome();
     cCPUTestInfo test_info;
-    m_world->GetTestCPU().TestGenome(test_info, test_genome);
+    testcpu->TestGenome(test_info, test_genome);
     const double base_fitness = test_info.GetGenotypeFitness();
     
     for (int i = 0; i < size; i++) {
       if (prev_inst[i] == -1) num_static++;
       else {
         test_genome[i].SetOp(prev_inst[i]);
-        m_world->GetTestCPU().TestGenome(test_info, test_genome);
+        testcpu->TestGenome(test_info, test_genome);
         const double cur_fitness = test_info.GetGenotypeFitness();
         if (cur_fitness > base_fitness) num_detrimental++;
         else if (cur_fitness < base_fitness) num_beneficial++;
@@ -6508,6 +6504,8 @@ void cAnalyze::AnalyzeMutationTraceback(cString cur_string)
     
     prev_genotype = genotype;
   }
+  
+  delete testcpu;
 }
 
 void cAnalyze::AnalyzeComplexity(cString cur_string)
@@ -6552,18 +6550,8 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
     }
   }
   
-  // These are used to backup the state of the environment and resource_count
-  // for the test cpu, and will be reset to their original values at the end
-  bool backupUsage;
-  tArray<double> backupResources;
-  
-  if(useResources) {
-    // Backup test cpu data
-    backupUsage = m_world->GetTestCPU().UseResources();
-    backupResources = m_world->GetTestCPU().GetResources();
-    
-    m_world->GetTestCPU().UseResources() = true;
-  }
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  testcpu->SetUseResources(useResources);
   
   ///////////////////////////////////////////////////////
   // Loop through all of the genotypes in this batch...
@@ -6594,11 +6582,11 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
     int updateBorn = -1;
     if(useResources) {
       updateBorn = genotype->GetUpdateBorn();
-      FillResources(updateBorn);
+      FillResources(testcpu, updateBorn);
     }
     
     // Calculate the stats for the genotype we're working with ...
-    genotype->Recalculate();
+    genotype->Recalculate(testcpu);
     cout << genotype->GetFitness() << endl;
     const int num_insts = inst_set.GetSize();
     const int max_line = genotype->GetLength();
@@ -6619,7 +6607,7 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
       for (int mod_inst = 0; mod_inst < num_insts; mod_inst++) {
         mod_genome[line_num].SetOp(mod_inst);
         cAnalyzeGenotype test_genotype(m_world, mod_genome, inst_set);
-        test_genotype.Recalculate();
+        test_genotype.Recalculate(testcpu);
         test_fitness[mod_inst] = test_genotype.GetFitness();
       }
       
@@ -6699,14 +6687,8 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
   }
   
   m_world->GetDataFileManager().Remove(lineage_filename);
-  
-  if(useResources) {
-    // Set the test cpu back to the state it was in before we messed with it
-    m_world->GetTestCPU().UseResources() = backupUsage;
-    m_world->GetTestCPU().SetupResourceArray(backupResources);
-  }
-  
-  return;
+
+  delete testcpu;
 }
 
 void cAnalyze::AnalyzePopComplexity(cString cur_string)
@@ -6922,16 +6904,8 @@ void cAnalyze::BatchRecalculate(cString cur_string)
     update = cur_string.PopWord().AsInt();
   }
   
-  bool backupUsage;
-  tArray<double> backupResources;
-  
-  if(useResources) {
-    // Backup test cpu data
-    backupUsage = m_world->GetTestCPU().UseResources();
-    backupResources = m_world->GetTestCPU().GetResources();
-    
-    m_world->GetTestCPU().UseResources() = true;
-  }
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  testcpu->SetUseResources(useResources);
   
   if (verbose >= nAnalyze::VERBOSE_ON) {
     cout << "Running batch " << cur_batch << " through test CPUs..." << endl;
@@ -6943,36 +6917,31 @@ void cAnalyze::BatchRecalculate(cString cur_string)
   }
   
   if (useResources && update > -1) {
-    FillResources(update);
+    FillResources(testcpu, update);
   }
   
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype * genotype = NULL;
   cAnalyzeGenotype * last_genotype = NULL;
   while ((genotype = batch_it.Next()) != NULL) {
-    
     // If use resources, load proper resource according to update_born
     if(useResources && update == -1) {
       int updateBorn = -1;
       updateBorn = genotype->GetUpdateBorn();
-      FillResources(updateBorn);
+      FillResources(testcpu, updateBorn);
     }
     
     // If the previous genotype was the parent of this one, pass in a pointer
     // to it for improved recalculate (such as distance to parent, etc.)
-    if (last_genotype != NULL &&
-        genotype->GetParentID() == last_genotype->GetID()) {
-      genotype->Recalculate(last_genotype);
+    if (last_genotype != NULL && genotype->GetParentID() == last_genotype->GetID()) {
+      genotype->Recalculate(testcpu, last_genotype);
+    } else {
+      genotype->Recalculate(testcpu);
     }
-    else genotype->Recalculate();
     last_genotype = genotype;
   }
   
-  if(useResources) {
-    // Set the test cpu back to the state it was in before we messed with it
-    m_world->GetTestCPU().UseResources() = backupUsage;
-    m_world->GetTestCPU().SetupResourceArray(backupResources);
-  }
+  delete testcpu;
   
   return;
 }
@@ -7079,19 +7048,19 @@ void cAnalyze::CommandInteractive(cString cur_string)
   RunInteractive();
 }
 
-void cAnalyze::PrintTestCPUResources(cString cur_string)
-{
-  cout << "TestCPU is using resources: ";
-  cout << m_world->GetTestCPU().UseResources() << endl;
-  cout << "Resources currently in TestCPU: ";
-  const tArray<double> &quantity = m_world->GetTestCPU().GetResources();
-  for(int i=0; i<quantity.GetSize(); i++) {
-    cout << quantity.ElementAt(i) << " ";
-  }
-  cout << endl;
-  
-  return;
-}
+//void cAnalyze::PrintTestCPUResources(cString cur_string)
+//{
+//  cout << "TestCPU is using resources: ";
+//  cout << m_world->GetTestCPU().GetUseResources() << endl;
+//  cout << "Resources currently in TestCPU: ";
+//  const tArray<double> &quantity = m_world->GetTestCPU().GetResources();
+//  for(int i=0; i<quantity.GetSize(); i++) {
+//    cout << quantity.ElementAt(i) << " ";
+//  }
+//  cout << endl;
+//  
+//  return;
+//}
 
 void cAnalyze::FunctionCreate(cString cur_string,
                               tList<cAnalyzeCommand> & clist)
@@ -7829,7 +7798,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("INCLUDE", &cAnalyze::IncludeFile);
   AddLibraryDef("SYSTEM", &cAnalyze::CommandSystem);
   AddLibraryDef("INTERACTIVE", &cAnalyze::CommandInteractive);
-  AddLibraryDef("PRINT_TEST_CPU_RESOURCES", &cAnalyze::PrintTestCPUResources);
+//  AddLibraryDef("PRINT_TEST_CPU_RESOURCES", &cAnalyze::PrintTestCPUResources);
   AddLibraryDef("LANDSCAPE_PREGEN", &cAnalyze::CommandLandscapePreGen);
   
   // Functions...

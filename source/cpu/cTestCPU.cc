@@ -32,10 +32,10 @@
 
 using namespace std;
 
-void cTestCPU::SetupResources(void)
+cTestResources::cTestResources(cWorld* world)
 {
   // Setup the resources...
-  const cResourceLib & resource_lib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceLib& resource_lib = world->GetEnvironment().GetResourceLib();
   assert(resource_lib.GetSize() >= 0);
 
   resource_count.SetSize(resource_lib.GetSize());
@@ -49,7 +49,7 @@ void cTestCPU::SetupResources(void)
   resource_count.ResizeSpatialGrids(1, 1);
 
   for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource * res = resource_lib.GetResource(i);
+    cResource* res = resource_lib.GetResource(i);
     const double decay = 1.0 - res->GetOutflow();
     resource_count.Setup(i, res->GetName(), res->GetInitial(), 
                            res->GetInflow(), decay,
@@ -61,20 +61,30 @@ void cTestCPU::SetupResources(void)
                            res->GetOutflowX2(), res->GetOutflowY1(), 
                            res->GetOutflowY2() );
   }
-
-  return;
 }
+
 
 void cTestCPU::SetupResourceArray(const tArray<double> &resources)
 {
-  for(int i=0; i<d_resources.GetSize(); i++) {
+  if (!m_localres) m_res = new cTestResources(*m_res);
+
+  for(int i = 0; i < m_res->d_resources.GetSize(); i++) {
     if(i >= resources.GetSize()) {
-      d_resources[i] = 0.0;
+      m_res->d_resources[i] = 0.0;
     } else {
-      d_resources[i] = resources[i];
+      m_res->d_resources[i] = resources[i];
     }
   }
 }
+
+void cTestCPU::SetUseResources(bool use)
+{
+  if (m_res->d_useResources != use) {
+    if (!m_localres) m_res = new cTestResources(*m_res);
+    m_res->d_useResources = use;
+  }
+}
+
 
 // NOTE: This method assumes that the organism is a fresh creation.
 bool cTestCPU::ProcessGestation(cCPUTestInfo & test_info, int cur_depth)

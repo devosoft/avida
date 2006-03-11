@@ -12,6 +12,7 @@
 
 #include "cCPUTestInfo.h"
 #include "cGenomeUtil.h"
+#include "cHardwareManager.h"
 #include "cMerit.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
@@ -198,9 +199,11 @@ void cGenotype::SetGenome(const cGenome & in_genome)
 
 void cGenotype::CalcTestStats() const
 {
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
   cCPUTestInfo test_info;
-  m_world->GetTestCPU().TestGenome(test_info, genome);
+  testcpu->TestGenome(test_info, genome);
   test_data.is_viable = test_info.IsViable();
+  delete testcpu;
 
   // Setup all possible test values.
   cPhenotype & phenotype = test_info.GetTestOrganism()->GetPhenotype();

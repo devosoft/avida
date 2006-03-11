@@ -15,6 +15,7 @@
 #include "functions.h"
 #include "cGenomeUtil.h"
 #include "cGenotype.h"
+#include "cHardwareManager.h"
 #include "cHardwareTracer.h"
 #include "cHardwareTracer_CPU.h"
 #include "cInstLibCPU.h"
@@ -1669,10 +1670,12 @@ void cHardwareCPU::Divide_TestFitnessMeasures()
   const double neut_min = parent_fitness * nHardware::FITNESS_NEUTRAL_MIN;
   const double neut_max = parent_fitness * nHardware::FITNESS_NEUTRAL_MAX;
   
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
   cCPUTestInfo test_info;
   test_info.UseRandomInputs();
-  m_world->GetTestCPU().TestGenome(test_info, organism->ChildGenome());
+  testcpu->TestGenome(test_info, organism->ChildGenome());
   const double child_fitness = test_info.GetGenotypeFitness();
+  delete testcpu;
   
   bool revert = false;
   bool sterilize = false;

@@ -84,15 +84,15 @@ private:
   tMatrix<double> fitness_chart; // Chart of all one-step mutations.
 
 
-  void BuildFitnessChart();
-  void ProcessGenome(cGenome& in_genome);
-  void ProcessBase();
-  void Process_Body(cGenome& cur_genome, int cur_distance, int start_line);
+  void BuildFitnessChart(cTestCPU* testcpu);
+  void ProcessGenome(cTestCPU* testcpu, cGenome& in_genome);
+  void ProcessBase(cTestCPU* testcpu);
+  void Process_Body(cTestCPU* testcpu, cGenome& cur_genome, int cur_distance, int start_line);
 
-  void HillClimb_Body(std::ofstream& fp, cGenome& cur_genome, int& gen);
-  void HillClimb_Print(std::ofstream& fp, const cGenome& _genome, const int gen) const;
+  void HillClimb_Body(cTestCPU* testcpu, std::ofstream& fp, cGenome& cur_genome, int& gen);
+  void HillClimb_Print(cTestCPU* testcpu, std::ofstream& fp, const cGenome& _genome, const int gen) const;
 
-  double TestMutPair(cGenome& mod_genome, int line1, int line2, const cInstruction& mut1,
+  double TestMutPair(cTestCPU* testcpu, cGenome& mod_genome, int line1, int line2, const cInstruction& mut1,
                      const cInstruction& mut2, std::ostream& fp);
 
   cLandscape(); // @not_implemented

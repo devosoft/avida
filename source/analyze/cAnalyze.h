@@ -59,6 +59,7 @@ class cStringList; // aggregate
 template <class T> class tDataEntryCommand;
 template <class T> class tListIterator;
 class cEnvironment;
+class cTestCPU;
 class cWorld;
 
 class cAnalyze {
@@ -74,6 +75,7 @@ private:
 
   cWorld* m_world;
   cInstSet& inst_set;
+  cTestCPU* m_testcpu;
 
   // This is the storage for the resource information from resource.dat.  It 
   // is a pair of the update and a vector of the resource concentrations
@@ -227,14 +229,14 @@ private:
   void IncludeFile(cString cur_string);
   void CommandSystem(cString cur_string);
   void CommandInteractive(cString cur_string);
-  void PrintTestCPUResources(cString cur_string);
+//  void PrintTestCPUResources(cString cur_string);
   void CommandLandscapePreGen(cString cur_string);
 
   // Functions...
   void FunctionCreate(cString cur_string, tList<cAnalyzeCommand> & clist);
   // Looks up the resource concentrations that are the closest to the
   // given update and then fill in those concentrations into the environment.
-  void FillResources(int update);
+  void FillResources(cTestCPU* testcpu, int update);
   // Analyze the entropy of genotype under default environment
   double AnalyzeEntropy(cAnalyzeGenotype * genotype, double mut_rate);
   // Analyze the entropy of child given parent and default environment

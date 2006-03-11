@@ -13,6 +13,7 @@
 #include "cCPUTestInfo.h"
 #include "cGenome.h"
 #include "cInstSet.h"
+#include "cHardwareManager.h"
 #include "MyCodeArrayLessThan.h"
 #include "cOrganism.h"
 #include "cTestCPU.h"
@@ -451,9 +452,13 @@ void cMxCodeArray::PrintTransitionList(ostream& fp, int size) const
 void cMxCodeArray::CalcFitness()
 {
   cGenome temp(1);
+  
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
   cCPUTestInfo test_info;
   CopyDataTo(temp); 
-  m_world->GetTestCPU().TestGenome(test_info, temp);
+  testcpu->TestGenome(test_info, temp);
+  delete testcpu;
+  
   if ( test_info.IsViable() )
     m_gestation_time =
       test_info.GetTestOrganism()->GetPhenotype().GetGestationTime();

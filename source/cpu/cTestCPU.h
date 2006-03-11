@@ -29,6 +29,19 @@ class cCPUTestInfo;
 class cGenome;
 class cWorld;
 
+class cTestResources
+{
+  friend class cTestCPU;
+private:
+  cResourceCount resource_count;
+  bool d_useResources;
+  tArray<double> d_emptyDoubleArray;
+  tArray<double> d_resources;
+  
+public:
+  cTestResources(cWorld* world);
+};
+
 class cTestCPU
 {
 private:
@@ -37,12 +50,10 @@ private:
   tArray<int> receive_array;
   int cur_input;
   int cur_receive;
-
-  cResourceCount resource_count;
-  bool d_useResources;
-  tArray<double> d_emptyDoubleArray;
-  tArray<double> d_resources;
   
+  cTestResources* m_res;
+  bool m_localres;
+
   bool ProcessGestation(cCPUTestInfo & test_info, int cur_depth);
   bool TestGenome_Body(cCPUTestInfo & test_info, const cGenome & genome, int cur_depth);
   void SetupResources(void);
@@ -52,8 +63,9 @@ private:
   cTestCPU& operator=(const cTestCPU&); // @not_implemented
   
 public:
-  cTestCPU(cWorld* world) : m_world(world) { SetupResources(); }
-  ~cTestCPU() { ; }
+  cTestCPU(cWorld* world) : m_world(world), m_res(new cTestResources(world)), m_localres(true) { ; }
+  cTestCPU(cWorld* world, cTestResources* res) : m_world(world), m_res(res), m_localres(false) { ; }
+  ~cTestCPU() { if (m_localres) delete m_res; }
   
   bool TestGenome(cCPUTestInfo & test_info, const cGenome & genome);
   bool TestGenome(cCPUTestInfo & test_info, const cGenome & genome, std::ofstream& out_fp);
@@ -71,8 +83,9 @@ public:
   inline const tArray<double>& GetResources();
   inline void SetResource(int id, double new_level);
   void SetupResourceArray(const tArray<double> &resources);
-  bool& UseResources(void) { return d_useResources; }
-  cResourceCount& GetResourceCount(void) { return resource_count; }
+  void SetUseResources(bool use);
+  bool GetUseResources() { return m_res->d_useResources; }
+  cResourceCount& GetResourceCount(void) { return m_res->resource_count; }
 };
 
 
@@ -98,14 +111,15 @@ inline int cTestCPU::GetReceiveValue()
 
 inline const tArray<double>& cTestCPU::GetResources()
 {
-  if(d_useResources) return d_resources;
+  if(m_res->d_useResources) return m_res->d_resources;
   
-  return d_emptyDoubleArray;
+  return m_res->d_emptyDoubleArray;
 }
 
 inline void cTestCPU::SetResource(int id, double new_level)
 {
-  resource_count.Set(id, new_level);
+  if (!m_localres) m_res = new cTestResources(*m_res);  // copy resources locally
+  m_res->resource_count.Set(id, new_level);
 }
 
 #endif
