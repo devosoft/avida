@@ -14,6 +14,7 @@
 #include <time.h>
 #include <limits.h>
 #include <math.h>
+#include <pthread.h>
 
 /**
  * A versatile and fast pseudo random number generator.
@@ -23,14 +24,13 @@ template <class T> class tArray;
 
 class cRandom
 {
-private:
+protected:
   // Internal memebers
   int seed;
   int original_seed;
   int inext;
   int inextp;
   int ma[56];
-  int use_count;
   
   // Constants ////////////////////////////////////////////////////////////////
   // Statistical Approximation
@@ -50,11 +50,10 @@ private:
   
   // Internal functions
   void init();	// Setup  (called by ResetSeed(in_seed);
-  void initStatFunctions();
   
   // Basic Random number
   // Returns a random number [0,_RAND_MBIG)
-  inline unsigned int Get();
+  virtual unsigned int Get();
   
 public:
   /**
@@ -64,9 +63,7 @@ public:
    * seed from the actual system time.
    **/
   cRandom(const int in_seed = -1);
-  
-  inline int GetUseCount() { return use_count; }
-  
+  virtual ~cRandom() { ; }
   
   /**
    * @return The seed that was actually used to start the random sequence.
@@ -85,7 +82,7 @@ public:
    * A negative seed means that the random number generator gets its
    * seed from the actual system time.
    **/
-  void ResetSeed(const int new_seed);
+  virtual void ResetSeed(const int new_seed);
   
   
   // Random Number Generation /////////////////////////////////////////////////
@@ -167,7 +164,7 @@ public:
   /**
    * Generate a random variable drawn from a unit normal distribution.
    **/
-  double GetRandNormal();
+  virtual double GetRandNormal();
   /**
    * Generate a random variable drawn from a distribution with given
    * mean and variance.
@@ -209,15 +206,23 @@ public:
   unsigned int GetRandBinomial(const double n, const double p); // Approx
 };
 
-inline unsigned int cRandom::Get()
+
+class cRandomMT : public cRandom
 {
-  if (++inext == 56) inext = 0;
-  if (++inextp == 56) inextp = 0;
-  int mj = ma[inext] - ma[inextp];
-  if (mj < 0) mj += _RAND_MBIG;
-  ma[inext] = mj;
-  return mj;
-}
+private:
+  pthread_mutex_t m_mutex;
+  
+  unsigned int Get();
+
+public:
+  cRandomMT(const int in_seed = -1) : cRandom(in_seed) { pthread_mutex_init(&m_mutex, NULL); }
+  ~cRandomMT() { pthread_mutex_destroy(&m_mutex); }
+
+  void ResetSeed(const int in_seed);
+
+  double GetRandNormal();
+};
+
 
 inline unsigned int cRandom::MutateByte(unsigned int value)
 {
@@ -248,5 +253,6 @@ inline unsigned int cRandom::MutateBit(unsigned int value, int in_byte)
   value ^= (1 << bit_pos);
   return value;
 }
+
 
 #endif

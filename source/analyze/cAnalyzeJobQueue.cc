@@ -16,6 +16,7 @@ cAnalyzeJobQueue::~cAnalyzeJobQueue()
 {
   cAnalyzeJob* job;
   while (job = m_queue.Pop()) delete job;
+  pthread_mutex_destroy(&m_mutex);
 }
 
 void cAnalyzeJobQueue::Execute()

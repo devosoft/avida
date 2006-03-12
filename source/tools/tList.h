@@ -108,10 +108,41 @@ public:
   bool AtEnd() const;
 };
 
+template <class T> class tLWConstListIterator : public tBaseIterator<T>
+{
+  friend class tList<T>;
+private:
+  const tList<T>& list;
+  const tListNode<T>* node;
+  
+  const tList<T>& GetConstList() { return list; }
+  const tListNode<T>* GetConstNode() { return node; }
+
+public:
+  explicit tLWConstListIterator(const tList<T>& _list) : list(_list), node(&(_list.root)) { ; }
+  explicit tLWConstListIterator(const tList<T>& _list, const tListNode<T>* start_node) : list(_list), node(start_node) { ; }
+  ~tLWConstListIterator() { ; }
+  
+  void Set(tListNode<T>* in_node) { node = in_node; }
+  void Reset();
+  
+  const T* Get();
+  const T* Next();
+  const T* Prev();
+  const T* GetConst() { return Get(); }
+  const T* NextConst() { return Next(); }
+  const T* PrevConst() { return Prev(); }
+  bool Find(const T* test_data);
+  
+  bool AtRoot() const;
+  bool AtEnd() const;
+};
+
 template <class T> class tList {
   friend class tBaseIterator<T>;
   friend class tListIterator<T>;
   friend class tConstListIterator<T>;
+  friend class tLWConstListIterator<T>;
 protected:
     tListNode<T> root;                     // Data root
   int size;
@@ -546,6 +577,49 @@ template <class T> bool tConstListIterator<T>::AtRoot() const
 }
 
 template <class T> bool tConstListIterator<T>::AtEnd() const
+{
+  return (node->next == &(list.root));
+}
+
+/////////////////////////
+//  tLWConstListIterator
+
+template <class T> void tLWConstListIterator<T>::Reset()
+{
+  node = &(list.root);
+}
+
+template <class T> const T* tLWConstListIterator<T>::Get()
+{
+  return node->data;
+}
+
+template <class T> const T* tLWConstListIterator<T>::Next()
+{
+  node = node->next;
+  return node->data;
+}
+
+template <class T> const T* tLWConstListIterator<T>::Prev()
+{
+  node = node->prev;
+  return node->data;
+}
+
+template <class T> bool tLWConstListIterator<T>::Find(const T* test_data)
+{
+  for (node = list.root.next; node != &(list.root); node = node->next) {
+    if (node->data == test_data) return true;
+  }
+  return false;
+}
+
+template <class T> bool tLWConstListIterator<T>::AtRoot() const
+{
+  return (node == &(list.root));
+}
+
+template <class T> bool tLWConstListIterator<T>::AtEnd() const
 {
   return (node->next == &(list.root));
 }

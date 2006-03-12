@@ -35,7 +35,7 @@ private:
   cAnalyzeJobQueue& operator=(const cAnalyzeJobQueue&); // @not_implemented
   
 public:
-  cAnalyzeJobQueue(cWorld* world) : m_world(world) { ; }
+  cAnalyzeJobQueue(cWorld* world) : m_world(world) { pthread_mutex_init(&m_mutex, NULL); }
   ~cAnalyzeJobQueue();
 
   void AddJob(cAnalyzeJob* job) { m_queue.PushRear(job); } // @DMB - warning: this method is NOT thread safe

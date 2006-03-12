@@ -109,7 +109,8 @@ public:
 
   int GetNopMod(const cInstruction & inst) const
   {
-    return m_inst_lib->GetNopMod(m_lib_nopmod_map[inst.GetOp()]);
+    int nopmod = m_lib_nopmod_map[inst.GetOp()];
+    return m_inst_lib->GetNopMod(nopmod);
   }
 
   cInstruction GetRandomInst() const;
