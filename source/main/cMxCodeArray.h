@@ -31,6 +31,7 @@
  * Cannot be run in a simulation.
  **/
 
+class cAvidaContext;
 class cGenome;
 class MyCodeArrayLessThan;
 class cWorld;
@@ -72,7 +73,7 @@ public:
     else return m_merit/m_gestation_time;}
   double GetMerit() const { return m_merit; }
   double GetGestationTime() const { return m_gestation_time; }
-  void CalcFitness();
+  void CalcFitness(cAvidaContext& ctx);
 
   inline const cInstruction & Get(int index) const {
     assert(index < size);

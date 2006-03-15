@@ -10,6 +10,7 @@
 
 #include "cPopulation.h"
 
+#include "cAvidaContext.h"
 #include "cChangeList.h"
 #include "cClassificationManager.h"
 #include "cCodeLabel.h"
@@ -1048,7 +1049,7 @@ int cPopulation::ScheduleOrganism()
   return schedule->GetNextID();
 }
 
-void cPopulation::ProcessStep(double step_size, int cell_id)
+void cPopulation::ProcessStep(cAvidaContext& ctx, double step_size, int cell_id)
 {
   assert(step_size > 0.0);
   assert(cell_id < cell_array.GetSize());
@@ -1056,11 +1057,11 @@ void cPopulation::ProcessStep(double step_size, int cell_id)
   // If cell_id is negative, no cell could be found -- stop here.
   if (cell_id < 0) return;
   
-  cPopulationCell & cell = GetCell(cell_id);
+  cPopulationCell& cell = GetCell(cell_id);
   assert(cell.IsOccupied()); // Unoccupied cell getting processor time!
   
-  cOrganism * cur_org = cell.GetOrganism();
-  cur_org->GetHardware().SingleProcess();
+  cOrganism* cur_org = cell.GetOrganism();
+  cur_org->GetHardware().SingleProcess(ctx);
   if (cur_org->GetPhenotype().GetToDelete() == true) {
     delete cur_org;
   }
@@ -1749,7 +1750,7 @@ void cPopulation::BuildTimeSlicer(cChangeList * change_list)
       schedule = new cConstSchedule(cell_array.GetSize());
       break;
     case SLICE_PROB_MERIT:
-      schedule = new cProbSchedule(m_world, cell_array.GetSize());
+      schedule = new cProbSchedule(cell_array.GetSize(), m_world->GetRandom().GetInt(1000000000));
       break;
     case SLICE_INTEGRATED_MERIT:
       schedule = new cIntegratedSchedule(cell_array.GetSize());

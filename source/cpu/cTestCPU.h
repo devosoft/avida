@@ -23,6 +23,7 @@
 #include "cResourceCount.h"
 #endif
 
+class cAvidaContext;
 class cInstSet;
 class cResourceCount;
 class cCPUTestInfo;
@@ -54,8 +55,8 @@ private:
   cTestResources* m_res;
   bool m_localres;
 
-  bool ProcessGestation(cCPUTestInfo & test_info, int cur_depth);
-  bool TestGenome_Body(cCPUTestInfo & test_info, const cGenome & genome, int cur_depth);
+  bool ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int cur_depth);
+  bool TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome, int cur_depth);
   void SetupResources(void);
 
   cTestCPU(); // @not_implemented
@@ -67,11 +68,11 @@ public:
   cTestCPU(cWorld* world, cTestResources* res) : m_world(world), m_res(res), m_localres(false) { ; }
   ~cTestCPU() { if (m_localres) delete m_res; }
   
-  bool TestGenome(cCPUTestInfo & test_info, const cGenome & genome);
-  bool TestGenome(cCPUTestInfo & test_info, const cGenome & genome, std::ofstream& out_fp);
+  bool TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome);
+  bool TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome & genome, std::ofstream& out_fp);
 
-  void TestThreads(const cGenome & genome);
-  void PrintThreads(const cGenome & genome);
+  void TestThreads(cAvidaContext& ctx, const cGenome& genome);
+  void PrintThreads(cAvidaContext& ctx, const cGenome& genome);
 
   // Test if a genome has any chance of being a replicator (i.e., in the
   // default set, has an allocate, a copy, and a divide).

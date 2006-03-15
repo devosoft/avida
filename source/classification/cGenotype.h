@@ -185,8 +185,8 @@ public:
 
 
   // For tracking the genotype line back to the ancestor...
-  cGenotype * GetParentGenotype() { return birth_data.parent_genotype; }
-  cGenotype * GetParent2Genotype() { return birth_data.parent2_genotype; }
+  cGenotype* GetParentGenotype() { return birth_data.parent_genotype; }
+  cGenotype* GetParent2Genotype() { return birth_data.parent2_genotype; }
   int GetNumOffspringGenotypes() const
     { return birth_data.num_offspring_genotypes; }
   void AddOffspringGenotype() { birth_data.num_offspring_genotypes++; }

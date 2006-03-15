@@ -10,6 +10,7 @@
 
 #include "cHardware4Stack.h"
 
+#include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
 #include "functions.h"
 #include "cGenomeUtil.h"
@@ -310,7 +311,7 @@ void cHardware4Stack::Reset()
 // This function processes the very next command in the genome, and is made
 // to be as optimized as possible.  This is the heart of avida.
 
-void cHardware4Stack::SingleProcess()
+void cHardware4Stack::SingleProcess(cAvidaContext& ctx)
 {
   // Mark this organism as running...
   organism->SetRunning(true);
@@ -343,14 +344,14 @@ void cHardware4Stack::SingleProcess()
     }
     
     // Find the instruction to be executed
-    const cInstruction & cur_inst = IP().GetInst();
+    const cInstruction& cur_inst = IP().GetInst();
     
     // Test if costs have been paid and it is okay to execute this now...
     const bool exec = SingleProcess_PayCosts(cur_inst);
     
     // Now execute the instruction...
     if (exec == true) {
-      SingleProcess_ExecuteInst(cur_inst);
+      SingleProcess_ExecuteInst(ctx, cur_inst);
       
       // Some instruction (such as jump) may turn advance_ip off.  Ususally
       // we now want to move to the next instruction in the memory.
@@ -403,14 +404,14 @@ bool cHardware4Stack::SingleProcess_PayCosts(const cInstruction & cur_inst)
 
 // This method will handle the actuall execution of an instruction
 // within single process, once that function has been finalized.
-bool cHardware4Stack::SingleProcess_ExecuteInst(const cInstruction & cur_inst) 
+bool cHardware4Stack::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction & cur_inst) 
 {
   // Copy Instruction locally to handle stochastic effects
   cInstruction actual_inst = cur_inst;
   
 #ifdef EXECUTION_ERRORS
   // If there is an execution error, execute a random instruction.
-  if (organism->TestExeErr()) actual_inst = m_inst_set->GetRandomInst();
+  if (organism->TestExeErr()) actual_inst = m_inst_set->GetRandomInst(ctx);
 #endif /* EXECUTION_ERRORS */
   
   // Get a pointer to the corrisponding method...
@@ -426,7 +427,7 @@ bool cHardware4Stack::SingleProcess_ExecuteInst(const cInstruction & cur_inst)
 #endif
 	
   // And execute it.
-  const bool exec_success = (this->*(m_functions[inst_idx]))();
+  const bool exec_success = (this->*(m_functions[inst_idx]))(ctx);
 	
 #ifdef INSTRUCTION_COUNT
   // decremenet if the instruction was not executed successfully
@@ -439,7 +440,7 @@ bool cHardware4Stack::SingleProcess_ExecuteInst(const cInstruction & cur_inst)
 }
 
 
-void cHardware4Stack::ProcessBonusInst(const cInstruction & inst)
+void cHardware4Stack::ProcessBonusInst(cAvidaContext& ctx, const cInstruction & inst)
 {
   // Mark this organism as running...
   bool prev_run_state = organism->GetIsRunning();
@@ -455,7 +456,7 @@ void cHardware4Stack::ProcessBonusInst(const cInstruction & inst)
     }
   }
   
-  SingleProcess_ExecuteInst(inst);
+  SingleProcess_ExecuteInst(ctx, inst);
   
   organism->SetRunning(prev_run_state);
 }
@@ -835,7 +836,7 @@ cHeadMultiMem cHardware4Stack::FindFullLabel(const cCodeLabel & in_label)
 }
 
 // This is the code run by the INFECTED organism.  Its function is to SPREAD infection.
-bool cHardware4Stack::InjectParasite(double mut_multiplier)
+bool cHardware4Stack::InjectParasite(cAvidaContext& ctx, double mut_multiplier)
 {
   const int end_pos = GetHead(nHardware::HEAD_WRITE).GetPosition();
   const int mem_space_used = GetHead(nHardware::HEAD_WRITE).GetMemSpace();
@@ -857,7 +858,7 @@ bool cHardware4Stack::InjectParasite(double mut_multiplier)
   
   cCPUMemory injected_code = GetMemory(mem_space_used);
   
-  Inject_DoMutations(mut_multiplier, injected_code);
+  Inject_DoMutations(ctx, mut_multiplier, injected_code);
   
   int inject_signal = false;
   
@@ -962,26 +963,26 @@ bool cHardware4Stack::InjectHost(const cCodeLabel & in_label, const cGenome & in
   return true; // (inject succeeds!)
 }
 
-void cHardware4Stack::Mutate(int mut_point)
+void cHardware4Stack::Mutate(cAvidaContext& ctx, int mut_point)
 {
   // Test if trying to mutate outside of genome...
   assert(mut_point >= 0 && mut_point < GetMemory(0).GetSize());
   
-  GetMemory(0)[mut_point] = m_inst_set->GetRandomInst();
+  GetMemory(0)[mut_point] = m_inst_set->GetRandomInst(ctx);
   GetMemory(0).SetFlagMutated(mut_point);
   GetMemory(0).SetFlagPointMut(mut_point);
   //organism->GetPhenotype().IsMutated() = true;
   organism->CPUStats().mut_stats.point_mut_count++;
 }
 
-int cHardware4Stack::PointMutate(const double mut_rate)
+int cHardware4Stack::PointMutate(cAvidaContext& ctx, const double mut_rate)
 {
   const int num_muts =
   m_world->GetRandom().GetRandBinomial(GetMemory(0).GetSize(), mut_rate);
   
   for (int i = 0; i < num_muts; i++) {
     const int pos = m_world->GetRandom().GetUInt(GetMemory(0).GetSize());
-    Mutate(pos);
+    Mutate(ctx, pos);
   }
   
   return num_muts;
@@ -991,7 +992,7 @@ int cHardware4Stack::PointMutate(const double mut_rate)
 // Trigger mutations of a specific type.  Outside triggers cannot specify
 // a head since hardware types are not known.
 
-bool cHardware4Stack::TriggerMutations(int trigger)
+bool cHardware4Stack::TriggerMutations(cAvidaContext& ctx, int trigger)
 {
   // Only update triggers should happen from the outside!
   assert(trigger == nMutation::TRIGGER_UPDATE);
@@ -999,10 +1000,10 @@ bool cHardware4Stack::TriggerMutations(int trigger)
   // Assume instruction pointer is the intended target (if one is even
   // needed!
   
-  return TriggerMutations(trigger, IP());
+  return TriggerMutations(ctx, trigger, IP());
 }
 
-bool cHardware4Stack::TriggerMutations(int trigger, cHeadCPU& cur_head)
+bool cHardware4Stack::TriggerMutations(cAvidaContext& ctx, int trigger, cHeadCPU& cur_head)
 {
   // Collect information about mutations from the organism.
   cLocalMutations & mut_info = organism->GetLocalMutations();
@@ -1027,14 +1028,14 @@ bool cHardware4Stack::TriggerMutations(int trigger, cHeadCPU& cur_head)
     const double rate = mut_info.GetRate(mut_id);
     switch (scope) {
       case nMutation::SCOPE_GENOME:
-        if (TriggerMutations_ScopeGenome(cur_mut, target_mem, cur_head, rate)) {
+        if (TriggerMutations_ScopeGenome(ctx, cur_mut, target_mem, cur_head, rate)) {
           has_mutation = true;
           mut_info.IncCount(mut_id);
         }
         break;
       case nMutation::SCOPE_LOCAL:
       case nMutation::SCOPE_PROP:
-        if (TriggerMutations_ScopeLocal(cur_mut, target_mem, cur_head, rate)) {
+        if (TriggerMutations_ScopeLocal(ctx, cur_mut, target_mem, cur_head, rate)) {
           has_mutation = true;
           mut_info.IncCount(mut_id);
         }
@@ -1042,7 +1043,7 @@ bool cHardware4Stack::TriggerMutations(int trigger, cHeadCPU& cur_head)
       case nMutation::SCOPE_GLOBAL:
       case nMutation::SCOPE_SPREAD:
         int num_muts =
-        TriggerMutations_ScopeGlobal(cur_mut, target_mem, cur_head, rate);
+        TriggerMutations_ScopeGlobal(ctx, cur_mut, target_mem, cur_head, rate);
         if (num_muts > 0) {
           has_mutation = true;
           mut_info.IncCount(mut_id, num_muts);
@@ -1054,7 +1055,7 @@ bool cHardware4Stack::TriggerMutations(int trigger, cHeadCPU& cur_head)
   return has_mutation;
 }
 
-bool cHardware4Stack::TriggerMutations_ScopeGenome(const cMutation* cur_mut,
+bool cHardware4Stack::TriggerMutations_ScopeGenome(cAvidaContext& ctx, const cMutation* cur_mut,
                                                    cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate)
 {
   // The rate we have stored indicates the probability that a single
@@ -1065,26 +1066,26 @@ bool cHardware4Stack::TriggerMutations_ScopeGenome(const cMutation* cur_mut,
     // position in the genome to be mutated.
     cHeadCPU tmp_head(cur_head);
     tmp_head.AbsSet(m_world->GetRandom().GetUInt(target_memory.GetSize()));
-    TriggerMutations_Body(cur_mut->GetType(), target_memory, tmp_head);
+    TriggerMutations_Body(ctx, cur_mut->GetType(), target_memory, tmp_head);
     return true;
   }
   return false;
 }
 
-bool cHardware4Stack::TriggerMutations_ScopeLocal(const cMutation* cur_mut,
+bool cHardware4Stack::TriggerMutations_ScopeLocal(cAvidaContext& ctx, const cMutation* cur_mut,
                                                   cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate)
 {
   // The rate we have stored is the probability for a mutation at this single
   // position in the genome.
   
   if (m_world->GetRandom().P(rate) == true) {
-    TriggerMutations_Body(cur_mut->GetType(), target_memory, cur_head);
+    TriggerMutations_Body(ctx, cur_mut->GetType(), target_memory, cur_head);
     return true;
   }
   return false;
 }
 
-int cHardware4Stack::TriggerMutations_ScopeGlobal(const cMutation* cur_mut,
+int cHardware4Stack::TriggerMutations_ScopeGlobal(cAvidaContext& ctx, const cMutation* cur_mut,
                                                   cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate)
 {
   // The probability we have stored is per-site, so we can pull a random
@@ -1098,20 +1099,21 @@ int cHardware4Stack::TriggerMutations_ScopeGlobal(const cMutation* cur_mut,
     for (int i = 0; i < num_mut; i++) {
       cHeadCPU tmp_head(cur_head);
       tmp_head.AbsSet(m_world->GetRandom().GetUInt(target_memory.GetSize()));
-      TriggerMutations_Body(cur_mut->GetType(), target_memory, tmp_head);
+      TriggerMutations_Body(ctx, cur_mut->GetType(), target_memory, tmp_head);
     }
   }
   
   return num_mut;
 }
 
-void cHardware4Stack::TriggerMutations_Body(int type, cCPUMemory & target_memory, cHeadCPU& cur_head)
+void cHardware4Stack::TriggerMutations_Body(cAvidaContext& ctx, int type,
+                                            cCPUMemory& target_memory, cHeadCPU& cur_head)
 {
   const int pos = cur_head.GetPosition();
   
   switch (type) {
     case nMutation::TYPE_POINT:
-      target_memory[pos] = m_inst_set->GetRandomInst();
+      target_memory[pos] = m_inst_set->GetRandomInst(ctx);
       target_memory.SetFlagMutated(pos);
       break;
     case nMutation::TYPE_INSERT:
@@ -1258,7 +1260,7 @@ inline void cHardware4Stack::Fault(int fault_loc, int fault_type, cString fault_
   organism->Fault(fault_loc, fault_type, fault_desc);
 }
 
-bool cHardware4Stack::Divide_CheckViable(const int parent_size,
+bool cHardware4Stack::Divide_CheckViable(cAvidaContext& ctx, const int parent_size,
                                          const int child_size, const int mem_space)
 {
   // Make sure the organism is okay with dividing now...
@@ -1316,7 +1318,7 @@ bool cHardware4Stack::Divide_CheckViable(const int parent_size,
   return true; // (divide succeeds!)
 }
 
-void cHardware4Stack::Divide_DoMutations(double mut_multiplier)
+void cHardware4Stack::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier)
 {
   sCPUStats & cpu_stats = organism->CPUStats();
   cCPUMemory & child_genome = organism->ChildGenome();
@@ -1326,14 +1328,14 @@ void cHardware4Stack::Divide_DoMutations(double mut_multiplier)
   // Divide Mutations
   if (organism->TestDivideMut()) {
     const unsigned int mut_line = m_world->GetRandom().GetUInt(child_genome.GetSize());
-    child_genome[mut_line] = m_inst_set->GetRandomInst();
+    child_genome[mut_line] = m_inst_set->GetRandomInst(ctx);
     cpu_stats.mut_stats.divide_mut_count++;
   }
   
   // Divide Insertions
   if (organism->TestDivideIns() && child_genome.GetSize() < MAX_CREATURE_SIZE){
     const unsigned int mut_line = m_world->GetRandom().GetUInt(child_genome.GetSize() + 1);
-    child_genome.Insert(mut_line, m_inst_set->GetRandomInst());
+    child_genome.Insert(mut_line, m_inst_set->GetRandomInst(ctx));
     cpu_stats.mut_stats.divide_insert_mut_count++;
   }
   
@@ -1352,7 +1354,7 @@ void cHardware4Stack::Divide_DoMutations(double mut_multiplier)
     if( num_mut > 0 ){
       for (int i = 0; i < num_mut; i++) {
         int site = m_world->GetRandom().GetUInt(child_genome.GetSize());
-        child_genome[site] = m_inst_set->GetRandomInst();
+        child_genome[site] = m_inst_set->GetRandomInst(ctx);
         cpu_stats.mut_stats.div_mut_count++;
       }
     }
@@ -1378,7 +1380,7 @@ void cHardware4Stack::Divide_DoMutations(double mut_multiplier)
       qsort( (void*)mut_sites, num_mut, sizeof(int), &IntCompareFunction );
       // Actually do the mutations (in reverse sort order)
       for(int i = num_mut-1; i >= 0; i--) {
-        child_genome.Insert(mut_sites[i], m_inst_set->GetRandomInst());
+        child_genome.Insert(mut_sites[i], m_inst_set->GetRandomInst(ctx));
         cpu_stats.mut_stats.insert_mut_count++;
       }
     }
@@ -1406,7 +1408,7 @@ void cHardware4Stack::Divide_DoMutations(double mut_multiplier)
   if (organism->GetParentMutProb() > 0) {
     for (int i = 0; i < GetMemory(0).GetSize(); i++) {
       if (organism->TestParentMut()) {
-        GetMemory(0)[i] = m_inst_set->GetRandomInst();
+        GetMemory(0)[i] = m_inst_set->GetRandomInst(ctx);
         cpu_stats.mut_stats.parent_mut_line_count++;
       }
     }
@@ -1426,7 +1428,7 @@ void cHardware4Stack::Divide_DoMutations(double mut_multiplier)
   }
 }
 
-void cHardware4Stack::Inject_DoMutations(double mut_multiplier, cCPUMemory & injected_code)
+void cHardware4Stack::Inject_DoMutations(cAvidaContext& ctx, double mut_multiplier, cCPUMemory & injected_code)
 {
   //sCPUStats & cpu_stats = organism->CPUStats();
   //cCPUMemory & child_genome = organism->ChildGenome();
@@ -1436,14 +1438,14 @@ void cHardware4Stack::Inject_DoMutations(double mut_multiplier, cCPUMemory & inj
   // Divide Mutations
   if (organism->TestDivideMut()) {
     const unsigned int mut_line = m_world->GetRandom().GetUInt(injected_code.GetSize());
-    injected_code[mut_line] = m_inst_set->GetRandomInst();
+    injected_code[mut_line] = m_inst_set->GetRandomInst(ctx);
     //cpu_stats.mut_stats.divide_mut_count++;
   }
   
   // Divide Insertions
   if (organism->TestDivideIns() && injected_code.GetSize() < MAX_CREATURE_SIZE){
     const unsigned int mut_line = m_world->GetRandom().GetUInt(injected_code.GetSize() + 1);
-    injected_code.Insert(mut_line, m_inst_set->GetRandomInst());
+    injected_code.Insert(mut_line, m_inst_set->GetRandomInst(ctx));
     //cpu_stats.mut_stats.divide_insert_mut_count++;
   }
   
@@ -1462,7 +1464,7 @@ void cHardware4Stack::Inject_DoMutations(double mut_multiplier, cCPUMemory & inj
     if( num_mut > 0 ){
       for (int i = 0; i < num_mut; i++) {
         int site = m_world->GetRandom().GetUInt(injected_code.GetSize());
-        injected_code[site] = m_inst_set->GetRandomInst();
+        injected_code[site] = m_inst_set->GetRandomInst(ctx);
         //cpu_stats.mut_stats.div_mut_count++;
       }
     }
@@ -1488,7 +1490,7 @@ void cHardware4Stack::Inject_DoMutations(double mut_multiplier, cCPUMemory & inj
       qsort( (void*)mut_sites, num_mut, sizeof(int), &IntCompareFunction );
       // Actually do the mutations (in reverse sort order)
       for(int i = num_mut-1; i >= 0; i--) {
-        injected_code.Insert(mut_sites[i], m_inst_set->GetRandomInst());
+        injected_code.Insert(mut_sites[i], m_inst_set->GetRandomInst(ctx));
         //cpu_stats.mut_stats.insert_mut_count++;
       }
     }
@@ -1516,7 +1518,7 @@ void cHardware4Stack::Inject_DoMutations(double mut_multiplier, cCPUMemory & inj
   if (organism->GetParentMutProb() > 0) {
     for (int i = 0; i < GetMemory(0).GetSize(); i++) {
       if (organism->TestParentMut()) {
-        GetMemory(0)[i] = m_inst_set->GetRandomInst();
+        GetMemory(0)[i] = m_inst_set->GetRandomInst(ctx);
         //cpu_stats.mut_stats.parent_mut_line_count++;
       }
     }
@@ -1526,7 +1528,7 @@ void cHardware4Stack::Inject_DoMutations(double mut_multiplier, cCPUMemory & inj
 
 
 // test whether the offspring creature contains an advantageous mutation.
-void cHardware4Stack::Divide_TestFitnessMeasures()
+void cHardware4Stack::Divide_TestFitnessMeasures(cAvidaContext& ctx)
 {
   cPhenotype & phenotype = organism->GetPhenotype();
   phenotype.CopyTrue() = ( organism->ChildGenome() == organism->GetGenome() );
@@ -1548,7 +1550,7 @@ void cHardware4Stack::Divide_TestFitnessMeasures()
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
   cCPUTestInfo test_info;
   test_info.UseRandomInputs();
-  testcpu->TestGenome(test_info, organism->ChildGenome());
+  testcpu->TestGenome(ctx, test_info, organism->ChildGenome());
   const double child_fitness = test_info.GetGenotypeFitness();
   delete testcpu;
   
@@ -1587,7 +1589,7 @@ void cHardware4Stack::Divide_TestFitnessMeasures()
 }
 
 
-bool cHardware4Stack::Divide_Main(int mem_space_used, double mut_multiplier)
+bool cHardware4Stack::Divide_Main(cAvidaContext& ctx, int mem_space_used, double mut_multiplier)
 {
   int write_head_pos = GetHead(nHardware::HEAD_WRITE).GetPosition();
   
@@ -1597,7 +1599,7 @@ bool cHardware4Stack::Divide_Main(int mem_space_used, double mut_multiplier)
     return false;
   
   // Make sure this divide will produce a viable offspring.
-  if(!Divide_CheckViable(GetMemory(IP().GetMemSpace()).GetSize(), 
+  if(!Divide_CheckViable(ctx, GetMemory(IP().GetMemSpace()).GetSize(), 
                          write_head_pos, mem_space_used)) 
     return false;
   
@@ -1608,12 +1610,12 @@ bool cHardware4Stack::Divide_Main(int mem_space_used, double mut_multiplier)
   child_genome = GetMemory(mem_space_used);
   
   // Handle Divide Mutations...
-  Divide_DoMutations(mut_multiplier);
+  Divide_DoMutations(ctx, mut_multiplier);
   
   // Many tests will require us to run the offspring through a test CPU;
   // this is, for example, to see if mutations need to be reverted or if
   // lineages need to be updated.
-  Divide_TestFitnessMeasures();
+  Divide_TestFitnessMeasures(ctx);
   
 #ifdef INSTRUCTION_COSTS
   // reset first time instruction costs
@@ -1682,7 +1684,7 @@ cString cHardware4Stack::ConvertToInstruction(int mem_space_used)
 
 
 //6
-bool cHardware4Stack::Inst_ShiftR()
+bool cHardware4Stack::Inst_ShiftR(cAvidaContext& ctx)
 {
   const int stack_used = FindModifiedStack(nHardware4Stack::STACK_BX);
   int value = Stack(stack_used).Pop();
@@ -1692,7 +1694,7 @@ bool cHardware4Stack::Inst_ShiftR()
 }
 
 //7
-bool cHardware4Stack::Inst_ShiftL()
+bool cHardware4Stack::Inst_ShiftL(cAvidaContext& ctx)
 {
   const int stack_used = FindModifiedStack(nHardware4Stack::STACK_BX);
   int value = Stack(stack_used).Pop();
@@ -1702,7 +1704,7 @@ bool cHardware4Stack::Inst_ShiftL()
 }
 
 //8
-bool cHardware4Stack::Inst_Val_Nand()
+bool cHardware4Stack::Inst_Val_Nand(cAvidaContext& ctx)
 {
   const int stack_used = FindModifiedStack(nHardware4Stack::STACK_BX);
   Stack(stack_used).Push(~(Stack(nHardware4Stack::STACK_BX).Top() & Stack(nHardware4Stack::STACK_CX).Top()));
@@ -1710,7 +1712,7 @@ bool cHardware4Stack::Inst_Val_Nand()
 }
 
 //9
-bool cHardware4Stack::Inst_Val_Add()
+bool cHardware4Stack::Inst_Val_Add(cAvidaContext& ctx)
 {
   const int stack_used = FindModifiedStack(nHardware4Stack::STACK_BX);
   Stack(stack_used).Push(Stack(nHardware4Stack::STACK_BX).Top() + Stack(nHardware4Stack::STACK_CX).Top());
@@ -1718,7 +1720,7 @@ bool cHardware4Stack::Inst_Val_Add()
 }
 
 //10
-bool cHardware4Stack::Inst_Val_Sub()
+bool cHardware4Stack::Inst_Val_Sub(cAvidaContext& ctx)
 {
   const int stack_used = FindModifiedStack(nHardware4Stack::STACK_BX);
   Stack(stack_used).Push(Stack(nHardware4Stack::STACK_BX).Top() - Stack(nHardware4Stack::STACK_CX).Top());
@@ -1726,7 +1728,7 @@ bool cHardware4Stack::Inst_Val_Sub()
 }
 
 //11
-bool cHardware4Stack::Inst_Val_Mult()
+bool cHardware4Stack::Inst_Val_Mult(cAvidaContext& ctx)
 {
   const int stack_used = FindModifiedStack(nHardware4Stack::STACK_BX);
   Stack(stack_used).Push(Stack(nHardware4Stack::STACK_BX).Top() * Stack(nHardware4Stack::STACK_CX).Top());
@@ -1734,7 +1736,7 @@ bool cHardware4Stack::Inst_Val_Mult()
 }
 
 //12
-bool cHardware4Stack::Inst_Val_Div()
+bool cHardware4Stack::Inst_Val_Div(cAvidaContext& ctx)
 {
   const int stack_used = FindModifiedStack(nHardware4Stack::STACK_BX);
   if (Stack(nHardware4Stack::STACK_CX).Top() != 0) {
@@ -1750,7 +1752,7 @@ bool cHardware4Stack::Inst_Val_Div()
 }
 
 //13 
-bool cHardware4Stack::Inst_SetMemory()   // Allocate maximal more
+bool cHardware4Stack::Inst_SetMemory(cAvidaContext& ctx)
 {
   int mem_space_used = FindModifiedStack(-1);
   
@@ -1765,22 +1767,16 @@ bool cHardware4Stack::Inst_SetMemory()   // Allocate maximal more
 }
 
 //14
-bool cHardware4Stack::Inst_Divide()
+bool cHardware4Stack::Inst_Divide(cAvidaContext& ctx)
 {
   int mem_space_used = GetHead(nHardware::HEAD_WRITE).GetMemSpace();
   int mut_multiplier = 1;
   
-  return Divide_Main(mem_space_used, mut_multiplier);
-}
-
-bool cHardware4Stack::Inst_HeadDivideMut(double mut_multiplier)
-{
-  // Unused for the moment...
-  return true;
+  return Divide_Main(ctx, mem_space_used, mut_multiplier);
 }
 
 //15
-bool cHardware4Stack::Inst_HeadRead()
+bool cHardware4Stack::Inst_HeadRead(cAvidaContext& ctx)
 {
   const int head_id = FindModifiedHead(nHardware::HEAD_READ);
   GetHead(head_id).Adjust();
@@ -1789,7 +1785,7 @@ bool cHardware4Stack::Inst_HeadRead()
   // Mutations only occur on the read, for the moment.
   int read_inst = 0;
   if (organism->TestCopyMut()) {
-    read_inst = m_inst_set->GetRandomInst().GetOp();
+    read_inst = m_inst_set->GetRandomInst(ctx).GetOp();
     cpu_stats.mut_stats.copy_mut_count++;  // @CAO, hope this is good!
   } else {
     read_inst = GetHead(head_id).GetInst().GetOp();
@@ -1803,7 +1799,7 @@ bool cHardware4Stack::Inst_HeadRead()
 }
 
 //16
-bool cHardware4Stack::Inst_HeadWrite()
+bool cHardware4Stack::Inst_HeadWrite(cAvidaContext& ctx)
 {
   const int head_id = FindModifiedHead(nHardware::HEAD_WRITE);
   cHeadMultiMem & active_head = GetHead(head_id);
@@ -1830,7 +1826,7 @@ bool cHardware4Stack::Inst_HeadWrite()
 }
 
 //??
-bool cHardware4Stack::Inst_HeadCopy()
+bool cHardware4Stack::Inst_HeadCopy(cAvidaContext& ctx)
 {
   // For the moment, this cannot be nop-modified.
   cHeadMultiMem & read_head = GetHead(nHardware::HEAD_READ);
@@ -1845,7 +1841,7 @@ bool cHardware4Stack::Inst_HeadCopy()
   // Do mutations.
   cInstruction read_inst = read_head.GetInst();
   if (organism->TestCopyMut()) {
-    read_inst = m_inst_set->GetRandomInst();
+    read_inst = m_inst_set->GetRandomInst(ctx);
     cpu_stats.mut_stats.copy_mut_count++; 
     write_head.SetFlagMutated();
     write_head.SetFlagCopyMut();
@@ -1866,7 +1862,7 @@ bool cHardware4Stack::Inst_HeadCopy()
 }
 
 //17
-bool cHardware4Stack::Inst_IfEqual()      // Execute next if bx == ?cx?
+bool cHardware4Stack::Inst_IfEqual(cAvidaContext& ctx)      // Execute next if bx == ?cx?
 {
   const int stack_used = FindModifiedStack(nHardware4Stack::STACK_AX);
   const int stack_used2 = (stack_used+1)%nHardware4Stack::NUM_STACKS;
@@ -1875,7 +1871,7 @@ bool cHardware4Stack::Inst_IfEqual()      // Execute next if bx == ?cx?
 }
 
 //18
-bool cHardware4Stack::Inst_IfNotEqual()     // Execute next if bx != ?cx?
+bool cHardware4Stack::Inst_IfNotEqual(cAvidaContext& ctx)     // Execute next if bx != ?cx?
 {
   const int stack_used = FindModifiedStack(nHardware4Stack::STACK_AX);
   const int stack_used2 = (stack_used+1)%nHardware4Stack::NUM_STACKS;
@@ -1884,7 +1880,7 @@ bool cHardware4Stack::Inst_IfNotEqual()     // Execute next if bx != ?cx?
 }
 
 //19
-bool cHardware4Stack::Inst_IfLess()       // Execute next if ?bx? < ?cx?
+bool cHardware4Stack::Inst_IfLess(cAvidaContext& ctx)       // Execute next if ?bx? < ?cx?
 {
   const int stack_used = FindModifiedStack(nHardware4Stack::STACK_AX);
   const int stack_used2 = (stack_used+1)%nHardware4Stack::NUM_STACKS;
@@ -1893,7 +1889,7 @@ bool cHardware4Stack::Inst_IfLess()       // Execute next if ?bx? < ?cx?
 }
 
 //20
-bool cHardware4Stack::Inst_IfGreater()       // Execute next if bx > ?cx?
+bool cHardware4Stack::Inst_IfGreater(cAvidaContext& ctx)       // Execute next if bx > ?cx?
 {
   const int stack_used = FindModifiedStack(nHardware4Stack::STACK_AX);
   const int stack_used2 = (stack_used+1)%nHardware4Stack::NUM_STACKS;
@@ -1902,7 +1898,7 @@ bool cHardware4Stack::Inst_IfGreater()       // Execute next if bx > ?cx?
 }
 
 //21
-bool cHardware4Stack::Inst_HeadPush()
+bool cHardware4Stack::Inst_HeadPush(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
   Stack(nHardware4Stack::STACK_BX).Push(GetHead(head_used).GetPosition());
@@ -1914,7 +1910,7 @@ bool cHardware4Stack::Inst_HeadPush()
 }
 
 //22
-bool cHardware4Stack::Inst_HeadPop()
+bool cHardware4Stack::Inst_HeadPop(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
   GetHead(head_used).Set(Stack(nHardware4Stack::STACK_BX).Pop(), 
@@ -1923,7 +1919,7 @@ bool cHardware4Stack::Inst_HeadPop()
 }
 
 //23 
-bool cHardware4Stack::Inst_HeadMove()
+bool cHardware4Stack::Inst_HeadMove(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
   if(head_used != nHardware::HEAD_FLOW)
@@ -1939,7 +1935,7 @@ bool cHardware4Stack::Inst_HeadMove()
 }
 
 //24
-bool cHardware4Stack::Inst_Search()
+bool cHardware4Stack::Inst_Search(cAvidaContext& ctx)
 {
   ReadLabel();
   GetLabel().Rotate(2, nHardware4Stack::NUM_NOPS);
@@ -1964,7 +1960,7 @@ bool cHardware4Stack::Inst_Search()
 }
 
 //25
-bool cHardware4Stack::Inst_PushNext() 
+bool cHardware4Stack::Inst_PushNext(cAvidaContext& ctx) 
 {
   int stack_used = FindModifiedStack(nHardware4Stack::STACK_AX);
   int successor = (stack_used+1)%nHardware4Stack::NUM_STACKS;
@@ -1973,7 +1969,7 @@ bool cHardware4Stack::Inst_PushNext()
 }
 
 //26
-bool cHardware4Stack::Inst_PushPrevious() 
+bool cHardware4Stack::Inst_PushPrevious(cAvidaContext& ctx) 
 {
   int stack_used = FindModifiedStack(nHardware4Stack::STACK_BX);
   int predecessor = (stack_used+nHardware4Stack::NUM_STACKS-1)%nHardware4Stack::NUM_STACKS;
@@ -1982,7 +1978,7 @@ bool cHardware4Stack::Inst_PushPrevious()
 }
 
 //27
-bool cHardware4Stack::Inst_PushComplement() 
+bool cHardware4Stack::Inst_PushComplement(cAvidaContext& ctx) 
 {
   int stack_used = FindModifiedStack(nHardware4Stack::STACK_BX);
   int complement = FindComplementStack(stack_used);
@@ -1991,7 +1987,7 @@ bool cHardware4Stack::Inst_PushComplement()
 }
 
 //28
-bool cHardware4Stack::Inst_ValDelete()
+bool cHardware4Stack::Inst_ValDelete(cAvidaContext& ctx)
 {
   int stack_used = FindModifiedStack(nHardware4Stack::STACK_BX);
   Stack(stack_used).Pop();
@@ -1999,7 +1995,7 @@ bool cHardware4Stack::Inst_ValDelete()
 }
 
 //29
-bool cHardware4Stack::Inst_ValCopy()
+bool cHardware4Stack::Inst_ValCopy(cAvidaContext& ctx)
 {
   const int stack_used = FindModifiedStack(nHardware4Stack::STACK_BX);
   Stack(stack_used).Push(Stack(stack_used).Top());
@@ -2007,7 +2003,7 @@ bool cHardware4Stack::Inst_ValCopy()
 }
 
 //30
-bool cHardware4Stack::Inst_ForkThread()
+bool cHardware4Stack::Inst_ForkThread(cAvidaContext& ctx)
 {
   if (!ForkThread()) 
     Fault(FAULT_LOC_THREAD_FORK, FAULT_TYPE_FORK_TH);
@@ -2017,7 +2013,7 @@ bool cHardware4Stack::Inst_ForkThread()
 }
 
 //31
-bool cHardware4Stack::Inst_IfLabel()
+bool cHardware4Stack::Inst_IfLabel(cAvidaContext& ctx)
 {
   ReadLabel();
   GetLabel().Rotate(2, nHardware4Stack::NUM_NOPS);
@@ -2026,7 +2022,7 @@ bool cHardware4Stack::Inst_IfLabel()
 }
 
 //32
-bool cHardware4Stack::Inst_Increment()
+bool cHardware4Stack::Inst_Increment(cAvidaContext& ctx)
 {
   const int stack_used = FindModifiedStack(nHardware4Stack::STACK_BX);
   int value = Stack(stack_used).Pop();
@@ -2035,7 +2031,7 @@ bool cHardware4Stack::Inst_Increment()
 }
 
 //33
-bool cHardware4Stack::Inst_Decrement()
+bool cHardware4Stack::Inst_Decrement(cAvidaContext& ctx)
 {
   const int stack_used = FindModifiedStack(nHardware4Stack::STACK_BX);
   int value = Stack(stack_used).Pop();
@@ -2044,7 +2040,7 @@ bool cHardware4Stack::Inst_Decrement()
 }
 
 //34
-bool cHardware4Stack::Inst_Mod()
+bool cHardware4Stack::Inst_Mod(cAvidaContext& ctx)
 {
   const int stack_used = FindModifiedStack(nHardware4Stack::STACK_BX);
   if (Stack(nHardware4Stack::STACK_CX).Top() != 0) {
@@ -2060,7 +2056,7 @@ bool cHardware4Stack::Inst_Mod()
 }
 
 //35
-bool cHardware4Stack::Inst_KillThread()
+bool cHardware4Stack::Inst_KillThread(cAvidaContext& ctx)
 {
   if (!KillThread()) Fault(FAULT_LOC_THREAD_KILL, FAULT_TYPE_KILL_TH);
   else AdvanceIP() = false;
@@ -2068,13 +2064,13 @@ bool cHardware4Stack::Inst_KillThread()
 }
 
 //36
-bool cHardware4Stack::Inst_IO()
+bool cHardware4Stack::Inst_IO(cAvidaContext& ctx)
 {
   const int stack_used = FindModifiedStack(nHardware4Stack::STACK_BX);
   
   // Do the "put" component
   const int value_out = Stack(stack_used).Top();
-  organism->DoOutput(value_out);  // Check for tasks compleated.
+  organism->DoOutput(ctx, value_out);  // Check for tasks compleated.
   
   // Do the "get" component
   const int value_in = organism->GetNextInput();
@@ -2131,11 +2127,11 @@ bool cHardware4Stack::isEmpty(int mem_space_used)
 // It will then look at the template that follows the command and inject it
 // into the complement template found in a neighboring organism.
 
-bool cHardware4Stack::Inst_Inject()
+bool cHardware4Stack::Inst_Inject(cAvidaContext& ctx)
 {
   double mut_multiplier = 1;
   
-  return InjectParasite(mut_multiplier);
+  return InjectParasite(ctx, mut_multiplier);
 }
 
 

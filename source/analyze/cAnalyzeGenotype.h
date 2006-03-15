@@ -34,6 +34,7 @@
 
 // cAnalyzeGenotype    : Collection of information about loaded genotypes
 
+class cAvidaContext;
 class cInstSet;
 class cTestCPU;
 class cWorld;
@@ -120,18 +121,12 @@ private:
   };
   mutable cAnalyzeKnockouts * knockout_stats;
 
-  class cAnalyzeLandscape {
-  public:
-    double frac_dead;
-    double frac_neg;
-    double frac_neut;
-    double frac_pos;
-    double complexity;
-    double ave_fitness;
-    cAnalyzeLandscape() : frac_dead(0.0), frac_neg(0.0),
-			  frac_neut(0.0), frac_pos(0.0), complexity(0.0), ave_fitness(0.0) { ; }
-  };
-  mutable cAnalyzeLandscape * landscape_stats;
+  double land_frac_dead;
+  double land_frac_neg;
+  double land_frac_neut;
+  double land_frac_pos;
+  double land_complexity;
+  double land_ave_fitness;
 
   // Group 5 : More complex stats (obtained indvidually, through tests)
   cString task_order;
@@ -148,7 +143,7 @@ private:
   }
 
   int CalcMaxGestation() const;
-  void CalcKnockouts(bool check_pairs=false, bool check_chart=false) const;
+  void CalcKnockouts(bool check_pairs = false, bool check_chart = false) const;
 public:
   cAnalyzeGenotype(cWorld* world, cString symbol_string, cInstSet & in_inst_set);
   cAnalyzeGenotype(cWorld* world, const cGenome & _genome, cInstSet & in_inst_set);
@@ -158,9 +153,9 @@ public:
   const cStringList & GetSpecialArgs() { return special_args; }
   void SetSpecialArgs(const cStringList & _args) { special_args = _args; }
 
-  void Recalculate(cTestCPU* testcpu, cAnalyzeGenotype* parent_genotype = NULL);
+  void Recalculate(cAvidaContext& ctx, cTestCPU* testcpu, cAnalyzeGenotype* parent_genotype = NULL);
   void PrintTasks(std::ofstream& fp, int min_task = 0, int max_task = -1);
-  void CalcLandscape() const;
+  void CalcLandscape(cAvidaContext& ctx);
 
   // Set...
   void SetSequence(cString _sequence);
@@ -248,12 +243,12 @@ public:
   const tArray< tArray<int> > & GetKO_TaskCounts() const;
   
   // Landscape accessors
-  double GetFracDead() const;
-  double GetFracNeg() const;
-  double GetFracNeut() const;
-  double GetFracPos() const;
-  double GetComplexity() const;
-  double GetLandscapeFitness() const;
+  double GetFracDead() const  { return land_frac_dead; }
+  double GetFracNeg() const { return land_frac_neg; }
+  double GetFracNeut() const { return land_frac_neut; }
+  double GetFracPos() const { return land_frac_pos; }
+  double GetComplexity() const { return land_complexity; }
+  double GetLandscapeFitness() const { return land_ave_fitness; }
 
   double GetFitnessRatio() const { return fitness_ratio; }
   double GetEfficiencyRatio() const { return efficiency_ratio; }

@@ -17,6 +17,7 @@
 #include "cGenome.h"
 #endif
 
+class cAvidaContext;
 class cInitFile;
 class cInstSet;
 class cString;
@@ -41,7 +42,7 @@ public:
 				 const cGenome &gen);
 
   // ========= Genome Construction =========
-  static cGenome RandomGenome(int length, const cInstSet & inst_set);
+  static cGenome RandomGenome(cAvidaContext& ctx, int length, const cInstSet & inst_set);
 };
 
 #endif

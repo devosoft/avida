@@ -13,17 +13,24 @@
 #ifndef cAnalyzeJob_h
 #include "cAnalyzeJob.h"
 #endif
+#ifndef cAvidaContext_h
+#include "cAvidaContext.h"
+#endif
 
 template <class T> class tAnalyzeJob : public cAnalyzeJob
 {
 protected:
   T* m_target;
-  void (T::*JobTask)() const;
+  void (T::*JobTask)(cAvidaContext&);
 
 public:
-  tAnalyzeJob(T* target, void (T::*funJ)() const) : cAnalyzeJob(), m_target(target), JobTask(funJ) { ; }
+  tAnalyzeJob(T* target, void (T::*funJ)(cAvidaContext&)) : cAnalyzeJob(), m_target(target), JobTask(funJ) { ; }
   
-  void Run() { (m_target->*JobTask)(); }
+  void Run()
+  {
+    cAvidaContext ctx(0);
+    (m_target->*JobTask)(ctx);
+  }
 };
 
 #endif

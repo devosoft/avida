@@ -449,14 +449,14 @@ void cMxCodeArray::PrintTransitionList(ostream& fp, int size) const
 }
 
 
-void cMxCodeArray::CalcFitness()
+void cMxCodeArray::CalcFitness(cAvidaContext& ctx)
 {
   cGenome temp(1);
   
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
   cCPUTestInfo test_info;
   CopyDataTo(temp); 
-  testcpu->TestGenome(test_info, temp);
+  testcpu->TestGenome(ctx, test_info, temp);
   delete testcpu;
   
   if ( test_info.IsViable() )

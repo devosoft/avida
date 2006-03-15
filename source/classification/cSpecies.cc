@@ -10,6 +10,7 @@
 
 #include "cSpecies.h"
 
+#include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
 #include "functions.h"
 #include "cGenotype.h"
@@ -77,12 +78,16 @@ cSpecies::~cSpecies()
 int cSpecies::Compare(const cGenome & test_genome, int max_fail_count)
 {
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  
+  // @DMB - Warning: Creating context out of band.
+  cAvidaContext ctx(0);
+
   cCPUTestInfo test_info;
 
   // First, make some phenotypic comparisons between organisms.
   // For now, just check that they both copy-true.
 
-  testcpu->TestGenome(test_info, test_genome);
+  testcpu->TestGenome(ctx, test_info, test_genome);
 
   // If the organisms aren't viable, return a -1...
   if (test_info.IsViable() == false) {
@@ -116,10 +121,10 @@ int cSpecies::Compare(const cGenome & test_genome, int max_fail_count)
       cross_genome2[i] = genome[i];
    
       // Run each side, and determine viability...
-      testcpu->TestGenome(test_info, cross_genome1);
+      testcpu->TestGenome(ctx, test_info, cross_genome1);
       cross1_viable = test_info.IsViable();
 
-      testcpu->TestGenome(test_info, cross_genome2);
+      testcpu->TestGenome(ctx, test_info, cross_genome2);
       cross2_viable = test_info.IsViable();
     }
 

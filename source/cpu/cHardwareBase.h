@@ -15,6 +15,7 @@
 
 using namespace std;
 
+class cAvidaContext;
 class cCodeLabel;
 class cCPUMemory;
 class cGenome;
@@ -55,8 +56,8 @@ public:
   
   // --------  Core Functionality  --------
   virtual void Reset() = 0;
-  virtual void SingleProcess() = 0;
-  virtual void ProcessBonusInst(const cInstruction& inst) = 0;
+  virtual void SingleProcess(cAvidaContext& ctx) = 0;
+  virtual void ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst) = 0;
   
   
   // --------  Helper methods  --------
@@ -124,14 +125,14 @@ public:
   
   
   // --------  Mutation  --------
-  virtual int PointMutate(const double mut_rate) = 0;
-  virtual bool TriggerMutations(int trigger) = 0;
-  virtual bool TriggerMutations(int trigger, cHeadCPU& cur_head) = 0;
+  virtual int PointMutate(cAvidaContext& ctx, const double mut_rate) = 0;
+  virtual bool TriggerMutations(cAvidaContext& ctx, int trigger) = 0;
+  virtual bool TriggerMutations(cAvidaContext& ctx, int trigger, cHeadCPU& cur_head) = 0;
   
   
 protected:
   // --------  No-Operation Instruction --------
-  bool Inst_Nop();  // A no-operation instruction that does nothing! 
+  bool Inst_Nop(cAvidaContext& ctx);  // A no-operation instruction that does nothing! 
 };
 
 #endif

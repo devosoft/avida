@@ -10,6 +10,7 @@
 
 #include "cFitnessMatrix.h"
 
+#include "cAvidaContext.h"
 #include "cInstSet.h"
 #include "cWorld.h"
 
@@ -20,8 +21,11 @@ cFitnessMatrix::cFitnessMatrix(cWorld* world, const cGenome& code,  cInstSet* in
   :  m_world(world), m_start_genotype(m_world, code), m_inst_set( inst_set ), m_DFS_MaxDepth(0),
      m_DFS_NumRecorded(0)
 {
+  // @DMB - Warning: Creating context out of band.
+  cAvidaContext ctx(0);
+  
   m_start_genotype.SetNumInstructions( m_inst_set->GetSize());
-  m_start_genotype.CalcFitness();
+  m_start_genotype.CalcFitness(ctx);
   m_data_set.insert(m_start_genotype);
 }
 
@@ -121,6 +125,9 @@ void cFitnessMatrix::DepthLimitedSearch(const cMxCodeArray& startNode, ofstream&
 
   // MyCodeArrayLessThan myLess;
 
+  // @DMB - Warning: Creating context out of band.
+  cAvidaContext ctx(0);
+
   for (list_iter = theMutants.begin(); list_iter != theMutants.end(); list_iter++)
     {
       // check if its already in the data set
@@ -135,7 +142,7 @@ void cFitnessMatrix::DepthLimitedSearch(const cMxCodeArray& startNode, ofstream&
       if (data_iter == m_data_set.end())
 	{
 
-	  list_iter->CalcFitness();
+	  list_iter->CalcFitness(ctx);
 	  double fitness = list_iter->GetFitness();
 	
 	  if (fitness == 0.0)

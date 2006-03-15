@@ -26,6 +26,7 @@
 
 #include <fstream>
 
+class cAvidaContext;
 class cInstSet;
 class cInstruction;
 class cWorld;
@@ -84,19 +85,20 @@ private:
   tMatrix<double> fitness_chart; // Chart of all one-step mutations.
 
 
-  void BuildFitnessChart(cTestCPU* testcpu);
-  void ProcessGenome(cTestCPU* testcpu, cGenome& in_genome);
-  void ProcessBase(cTestCPU* testcpu);
-  void Process_Body(cTestCPU* testcpu, cGenome& cur_genome, int cur_distance, int start_line);
+  void BuildFitnessChart(cAvidaContext& ctx, cTestCPU* testcpu);
+  void ProcessGenome(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& in_genome);
+  void ProcessBase(cAvidaContext& ctx, cTestCPU* testcpu);
+  void Process_Body(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& cur_genome, int cur_distance, int start_line);
 
-  void HillClimb_Body(cTestCPU* testcpu, std::ofstream& fp, cGenome& cur_genome, int& gen);
-  void HillClimb_Print(cTestCPU* testcpu, std::ofstream& fp, const cGenome& _genome, const int gen) const;
+  void HillClimb_Body(cAvidaContext& ctx, cTestCPU* testcpu, std::ofstream& fp, cGenome& cur_genome, int& gen);
+  void HillClimb_Print(cAvidaContext& ctx, cTestCPU* testcpu, std::ofstream& fp,
+                       const cGenome& _genome, const int gen) const;
 
-  double TestMutPair(cTestCPU* testcpu, cGenome& mod_genome, int line1, int line2, const cInstruction& mut1,
-                     const cInstruction& mut2, std::ostream& fp);
+  double TestMutPair(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& mod_genome, int line1, int line2,
+                     const cInstruction& mut1, const cInstruction& mut2, std::ostream& fp);
 
   cLandscape(); // @not_implemented
-  cLandscape(const cLandscape &); // @not_implemented
+  cLandscape(const cLandscape&); // @not_implemented
   cLandscape& operator=(const cLandscape&); // @not_implemented
 
 public:
@@ -105,21 +107,22 @@ public:
 
   void Reset(const cGenome& in_genome);
 
-  void Process(int in_distance = 1);
-  void ProcessDelete();
-  void ProcessInsert();
-  void PredictWProcess(std::ostream& fp, int update = -1);
-  void PredictNuProcess(std::ostream& fp, int update = -1);
+  void Process(cAvidaContext& ctx, int in_distance = 1);
+  void ProcessDelete(cAvidaContext& ctx);
+  void ProcessInsert(cAvidaContext& ctx);
+  void PredictWProcess(cAvidaContext& ctx, std::ostream& fp, int update = -1);
+  void PredictNuProcess(cAvidaContext& ctx, std::ostream& fp, int update = -1);
 
-  void SampleProcess(int in_trials);
-  int RandomProcess(int in_trials, int in_distance = 1, int min_found = 0, int max_trials = 0, bool print_if_found = false);
+  void SampleProcess(cAvidaContext& ctx, int in_trials);
+  int RandomProcess(cAvidaContext& ctx, int in_trials, int in_distance = 1, int min_found = 0,
+                    int max_trials = 0, bool print_if_found = false);
 
-  void TestPairs(int in_trials, std::ostream& fp);
-  void TestAllPairs(std::ostream& fp);
+  void TestPairs(cAvidaContext& ctx, int in_trials, std::ostream& fp);
+  void TestAllPairs(cAvidaContext& ctx, std::ostream& fp);
 
-  void HillClimb(std::ofstream& fp);
-  void HillClimb_Neut(std::ofstream& fp);
-  void HillClimb_Rand(std::ofstream& fp);
+  void HillClimb(cAvidaContext& ctx, std::ofstream& fp);
+  void HillClimb_Neut(cAvidaContext& ctx, std::ofstream& fp);
+  void HillClimb_Rand(cAvidaContext& ctx, std::ofstream& fp);
 
   void PrintStats(std::ofstream& fp, int update = -1);
   void PrintEntropy(std::ofstream& fp);

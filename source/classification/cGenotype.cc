@@ -10,6 +10,7 @@
 
 #include "cGenotype.h"
 
+#include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
 #include "cGenomeUtil.h"
 #include "cHardwareManager.h"
@@ -160,10 +161,8 @@ void cGenotype::Mutate()  // Check each location to be mutated.
   int i;
 
   for (i = 0; i < genome.GetSize(); i++) {
-    if (true) { // m_world->GetRandom().GetUInt()) {     //@CAO always true!
-      genome[i].SetOp(m_world->GetRandom().GetUInt(m_world->GetNumInstructions()));
-      // Flag command as having been mutated? @CAO
-    }
+    genome[i].SetOp(m_world->GetRandom().GetUInt(m_world->GetNumInstructions()));
+    // Flag command as having been mutated? @CAO
   }
 }
 
@@ -200,8 +199,12 @@ void cGenotype::SetGenome(const cGenome & in_genome)
 void cGenotype::CalcTestStats() const
 {
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  
+  // @DMB - Warning: Creating context out of band.
+  cAvidaContext ctx(0);
+
   cCPUTestInfo test_info;
-  testcpu->TestGenome(test_info, genome);
+  testcpu->TestGenome(ctx, test_info, genome);
   test_data.is_viable = test_info.IsViable();
   delete testcpu;
 

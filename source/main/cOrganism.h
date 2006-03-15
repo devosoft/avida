@@ -44,6 +44,7 @@
  * about a creature.  Effectively the chemistry acting on the genome.
  **/
 
+class cAvidaContext;
 class cHardwareBase;
 class cGenotype;
 class cInjectGenotype;
@@ -124,7 +125,7 @@ public:
   
   // Input & Output Testing
   void DoInput(const int value);
-  void DoOutput(const int value);
+  void DoOutput(cAvidaContext& ctx, const int value);
 
   // Message stuff
   void SendMessage(cOrgMessage & mess);

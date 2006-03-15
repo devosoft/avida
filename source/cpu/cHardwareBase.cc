@@ -10,7 +10,7 @@
 
 #include "cHardwareBase.h"
 
-bool cHardwareBase::Inst_Nop()          // Do Nothing.
+bool cHardwareBase::Inst_Nop(cAvidaContext& ctx)          // Do Nothing.
 {
   return true;
 }

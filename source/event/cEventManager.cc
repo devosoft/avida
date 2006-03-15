@@ -11,6 +11,7 @@
 #include "cEventManager.h"
 
 #include "cAnalyzeUtil.h"
+#include "cAvidaContext.h"
 #include "avida.h"
 #include "cClassificationManager.h"
 #include "cEnvironment.h"
@@ -1862,8 +1863,12 @@ public:
   ///// inject_random /////
   void Process(){
     if (cell_id == -1) cell_id = m_world->GetRandom().GetUInt(m_world->GetPopulation().GetSize());
+    
+    // @DMB - Warning: Creating context out of band.
+    cAvidaContext ctx(0);
+    
     cGenome genome =
-      cInstUtil::RandomGenome(length, m_world->GetHardwareManager().GetInstSet());
+      cInstUtil::RandomGenome(ctx, length, m_world->GetHardwareManager().GetInstSet());
     m_world->GetPopulation().Inject(genome, cell_id, merit, lineage_label, neutral_metric);
   }
 };
@@ -2282,9 +2287,12 @@ public:
   }
   ///// predict_w_landscape /////
   void Process(){
+    // @DMB - Warning: Creating context out of band.
+    cAvidaContext ctx(0);
+
     cGenome & genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
-    landscape.PredictWProcess(m_world->GetDataFileOFStream(datafile));
+    landscape.PredictWProcess(ctx, m_world->GetDataFileOFStream(datafile));
   }
 };
 
@@ -2310,9 +2318,12 @@ public:
   }
   ///// predict_nu_landscape /////
   void Process(){
-    cGenome & genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
+    // @DMB - Warning: Creating context out of band.
+    cAvidaContext ctx(0);
+
+    cGenome& genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
-    landscape.PredictNuProcess(m_world->GetDataFileOFStream(datafile));
+    landscape.PredictNuProcess(ctx, m_world->GetDataFileOFStream(datafile));
   }
 };
 
@@ -2338,10 +2349,13 @@ public:
   }
   ///// sample_landscape /////
   void Process(){
-    cGenome & genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
+    // @DMB - Warning: Creating context out of band.
+    cAvidaContext ctx(0);
+
+    cGenome& genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
     if (sample_size == 0) sample_size = m_world->GetHardwareManager().GetInstSet().GetSize() - 1;
-    landscape.SampleProcess(sample_size);
+    landscape.SampleProcess(ctx, sample_size);
     landscape.PrintStats(m_world->GetDataFileOFStream("land-sample.dat"), m_world->GetStats().GetUpdate());
   }
 };
@@ -2376,9 +2390,12 @@ public:
   }
   ///// random_landscape /////
   void Process(){
+    // @DMB - Warning: Creating context out of band.
+    cAvidaContext ctx(0);
+
     cGenome & genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
-    landscape.RandomProcess(sample_size, landscape_dist, min_found,
+    landscape.RandomProcess(ctx, sample_size, landscape_dist, min_found,
                             max_sample_size, print_if_found);
     landscape.PrintStats(m_world->GetDataFileOFStream("land-random.dat"), m_world->GetStats().GetUpdate());
   }
@@ -2881,9 +2898,12 @@ public:
     m_args = in_args; }
   ///// hillclimb /////
   void Process(){
-    cGenome & genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
+    // @DMB - Warning: Creating context out of band.
+    cAvidaContext ctx(0);
+
+    cGenome& genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
-    landscape.HillClimb(m_world->GetDataFileOFStream("hillclimb.dat"));
+    landscape.HillClimb(ctx, m_world->GetDataFileOFStream("hillclimb.dat"));
     m_world->GetDataFileManager().Remove("hillclimb.dat");
   }
 };
@@ -2906,9 +2926,12 @@ public:
     m_args = in_args; }
   ///// hillclimb_neut /////
   void Process(){
-    cGenome & genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
+    // @DMB - Warning: Creating context out of band.
+    cAvidaContext ctx(0);
+
+    cGenome& genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
-    landscape.HillClimb_Neut(m_world->GetDataFileOFStream("hillclimb.dat"));
+    landscape.HillClimb_Neut(ctx, m_world->GetDataFileOFStream("hillclimb.dat"));
     m_world->GetDataFileManager().Remove("hillclimb.dat");
   }
 };
@@ -2931,9 +2954,12 @@ public:
     m_args = in_args; }
   ///// hillclimb_rand /////
   void Process(){
-    cGenome & genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
+    // @DMB - Warning: Creating context out of band.
+    cAvidaContext ctx(0);
+
+    cGenome& genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
-    landscape.HillClimb_Rand(m_world->GetDataFileOFStream("hillclimb.dat"));
+    landscape.HillClimb_Rand(ctx, m_world->GetDataFileOFStream("hillclimb.dat"));
     m_world->GetDataFileManager().Remove("hillclimb.dat");
   }
 };
@@ -3133,8 +3159,11 @@ public:
   
   ///// test_threads /////
   void Process(){
+    // @DMB - Warning: Creating context out of band.
+    cAvidaContext ctx(0);
+
     cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
-    testcpu->TestThreads(m_world->GetClassificationManager().GetBestGenotype()->GetGenome());
+    testcpu->TestThreads(ctx, m_world->GetClassificationManager().GetBestGenotype()->GetGenome());
     delete testcpu;
   }
 };
@@ -3158,8 +3187,11 @@ public:
   }
   ///// print_threads /////
   void Process(){
+    // @DMB - Warning: Creating context out of band.
+    cAvidaContext ctx(0);
+
     cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
-    testcpu->PrintThreads( m_world->GetClassificationManager().GetBestGenotype()->GetGenome() );
+    testcpu->PrintThreads(ctx, m_world->GetClassificationManager().GetBestGenotype()->GetGenome() );
     delete testcpu;
   }
 };

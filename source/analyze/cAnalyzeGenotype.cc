@@ -10,6 +10,7 @@
 
 #include "cAnalyzeGenotype.h"
 
+#include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
 #include "cHardwareManager.h"
 #include "cInstSet.h"
@@ -55,7 +56,12 @@ cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, cString symbol_string, cInstSe
   , ancestor_dist(0)
   , parent_muts("")
   , knockout_stats(NULL)
-  , landscape_stats(NULL)
+  , land_frac_dead(0.0)
+  , land_frac_neg(0.0)
+  , land_frac_neut(0.0)
+  , land_frac_pos(0.0)
+  , land_complexity(0.0)
+  , land_ave_fitness(0.0)
 {
   // Make sure that the sequences jive with the inst_set
   for (int i = 0; i < genome.GetSize(); i++) {
@@ -100,7 +106,12 @@ cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, const cGenome& _genome, cInstS
   , ancestor_dist(0)
   , parent_muts("")
   , knockout_stats(NULL)
-  , landscape_stats(NULL)
+  , land_frac_dead(0.0)
+  , land_frac_neg(0.0)
+  , land_frac_neut(0.0)
+  , land_frac_pos(0.0)
+  , land_complexity(0.0)
+  , land_ave_fitness(0.0)
 {
 }
 
@@ -135,22 +146,22 @@ cAnalyzeGenotype::cAnalyzeGenotype(const cAnalyzeGenotype & _gen)
   , ancestor_dist(_gen.ancestor_dist)
   , parent_muts(_gen.parent_muts)
   , knockout_stats(NULL)
-  , landscape_stats(NULL)
+  , land_frac_dead(_gen.land_frac_dead)
+  , land_frac_neg(_gen.land_frac_neg)
+  , land_frac_neut(_gen.land_frac_neut)
+  , land_frac_pos(_gen.land_frac_pos)
+  , land_complexity(_gen.land_complexity)
+  , land_ave_fitness(_gen.land_ave_fitness)
 {
   if (_gen.knockout_stats != NULL) {
     knockout_stats = new cAnalyzeKnockouts;
     *knockout_stats = *(_gen.knockout_stats);
-  }
-  if (_gen.landscape_stats != NULL) {
-    landscape_stats = new cAnalyzeLandscape;
-    *landscape_stats = *(_gen.landscape_stats);
   }
 }
 
 cAnalyzeGenotype::~cAnalyzeGenotype()
 {
   if (knockout_stats != NULL) delete knockout_stats;
-  if (landscape_stats != NULL) delete landscape_stats;
 }
 
 
@@ -179,12 +190,15 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
   }
   
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+
+  // @DMB - Warning: Creating context out of band.
+  cAvidaContext ctx(0);
   
   // Calculate the base fitness for the genotype we're working with...
   // (This may not have been run already, and cost negligiably more time
   // considering the number of knockouts we need to do.
   cAnalyzeGenotype base_genotype(m_world, genome, inst_set);
-  base_genotype.Recalculate(testcpu);
+  base_genotype.Recalculate(ctx, testcpu);
   double base_fitness = base_genotype.GetFitness();
   const tArray<int> base_task_counts( base_genotype.GetTaskCounts() );
   
@@ -225,7 +239,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
     int cur_inst = mod_genome[line_num].GetOp();
     mod_genome[line_num] = null_inst;
     cAnalyzeGenotype ko_genotype(m_world, mod_genome, ko_inst_set);
-    ko_genotype.Recalculate(testcpu);
+    ko_genotype.Recalculate(ctx, testcpu);
     if (check_chart == true) {
       const tArray<int> ko_task_counts( ko_genotype.GetTaskCounts() );
       knockout_stats->task_counts[line_num] = ko_task_counts;
@@ -285,7 +299,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
       mod_genome[line1] = null_inst;
       mod_genome[line2] = null_inst;
       cAnalyzeGenotype ko_genotype(m_world, mod_genome, ko_inst_set);
-      ko_genotype.Recalculate(testcpu);
+      ko_genotype.Recalculate(ctx, testcpu);
       
       double ko_fitness = ko_genotype.GetFitness();
       
@@ -324,22 +338,19 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
   delete testcpu;
 }
 
-void cAnalyzeGenotype::CalcLandscape() const
+void cAnalyzeGenotype::CalcLandscape(cAvidaContext& ctx)
 {
-  if (landscape_stats != NULL) return;
-
-  landscape_stats = new cAnalyzeLandscape;
   cLandscape landscape(m_world, genome, inst_set);
-  landscape.Process(1);
-  landscape_stats->frac_dead = landscape.GetProbDead();
-  landscape_stats->frac_neg  = landscape.GetProbNeg();
-  landscape_stats->frac_neut = landscape.GetProbNeut();
-  landscape_stats->frac_pos  = landscape.GetProbPos();
-  landscape_stats->complexity = landscape.GetComplexity();
-  landscape_stats->ave_fitness = landscape.GetAveFitness();
+  landscape.Process(ctx, 1);
+  land_frac_dead = landscape.GetProbDead();
+  land_frac_neg = landscape.GetProbNeg();
+  land_frac_neut = landscape.GetProbNeut();
+  land_frac_pos = landscape.GetProbPos();
+  land_complexity = landscape.GetComplexity();
+  land_ave_fitness = landscape.GetAveFitness();
 }
 
-void cAnalyzeGenotype::Recalculate(cTestCPU* testcpu, cAnalyzeGenotype* parent_genotype)
+void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cTestCPU* testcpu, cAnalyzeGenotype* parent_genotype)
 {
     // Build the test info for printing.
   cCPUTestInfo test_info;
@@ -354,7 +365,7 @@ void cAnalyzeGenotype::Recalculate(cTestCPU* testcpu, cAnalyzeGenotype* parent_g
   cInstSet env_inst_set_backup = m_world->GetHardwareManager().GetInstSet();
   m_world->GetHardwareManager().GetInstSet() = inst_set;
 
-  testcpu->TestGenome(test_info, genome);
+  testcpu->TestGenome(ctx, test_info, genome);
   
   // Restore the instruction set
   m_world->GetHardwareManager().GetInstSet() = env_inst_set_backup;
@@ -466,43 +477,6 @@ const tArray< tArray<int> > & cAnalyzeGenotype::GetKO_TaskCounts() const
 {
   CalcKnockouts(false, true);  // Make sure knockouts are calculated
   return knockout_stats->task_counts;
-}
-
-
-double cAnalyzeGenotype::GetFracDead() const
-{
-  CalcLandscape();  // Make sure the landscape is calculated...
-  return landscape_stats->frac_dead;
-}
-
-double cAnalyzeGenotype::GetFracNeg() const
-{
-  CalcLandscape();  // Make sure the landscape is calculated...
-  return landscape_stats->frac_neg;
-}
-
-double cAnalyzeGenotype::GetFracNeut() const
-{
-  CalcLandscape();  // Make sure the landscape is calculated...
-  return landscape_stats->frac_neut;
-}
-
-double cAnalyzeGenotype::GetFracPos() const
-{
-  CalcLandscape();  // Make sure the landscape is calculated...
-  return landscape_stats->frac_pos;
-}
-
-double cAnalyzeGenotype::GetComplexity() const
-{
-  CalcLandscape();  // Make sure the landscape is calculated...
-  return landscape_stats->complexity;
-}
-
-double cAnalyzeGenotype::GetLandscapeFitness() const
-{
-  CalcLandscape();  // Make sure the landscape is calculated...
-  return landscape_stats->ave_fitness;
 }
 
 cString cAnalyzeGenotype::GetTaskList() const

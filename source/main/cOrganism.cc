@@ -109,7 +109,7 @@ void cOrganism::DoInput(const int value)
   phenotype.TestInput(input_buf, output_buf);
 }
 
-void cOrganism::DoOutput(const int value)
+void cOrganism::DoOutput(cAvidaContext& ctx, const int value)
 {
   assert(m_interface);
   const tArray<double> & resource_count = m_interface->GetResources();
@@ -152,7 +152,7 @@ void cOrganism::DoOutput(const int value)
 
   for (int i = 0; i < insts_triggered.GetSize(); i++) {
     const int cur_inst = insts_triggered[i];
-    hardware->ProcessBonusInst( cInstruction(cur_inst) );
+    hardware->ProcessBonusInst(ctx, cInstruction(cur_inst) );
   }
 }
 

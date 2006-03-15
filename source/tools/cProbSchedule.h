@@ -11,6 +11,9 @@
 #ifndef cProbSchedule_h
 #define cProbSchedule_h
 
+#ifndef cRandom_h
+#include "cRandom.h"
+#endif
 #ifndef cSchedule_h
 #include "cSchedule.h"
 #endif
@@ -24,12 +27,11 @@
  **/
 
 class cMerit;
-class cWorld;
 
 class cProbSchedule : public cSchedule
 {
 private:
-  cWorld* m_world;
+  cRandom m_rng;
   cWeightedIndex chart;
   
   
@@ -37,10 +39,10 @@ private:
   cProbSchedule& operator=(const cProbSchedule&); // @not_implemented
 
 public:
-  cProbSchedule(cWorld* world, int num_cells);
-  ~cProbSchedule();
+  cProbSchedule(int num_cells, int seed) : cSchedule(num_cells), m_rng(seed), chart(num_cells) { ; }
+  ~cProbSchedule() { ; }
 
-  void Adjust(int item_id, const cMerit & merit);
+  void Adjust(int item_id, const cMerit& merit);
   int GetNextID();
 };
 

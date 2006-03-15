@@ -41,6 +41,7 @@
 #include "tArray.h"
 #endif
 
+class cAvidaContext;
 class cOrganism;
 class cMutation;
 class cInjectGenotype;
@@ -65,7 +66,7 @@ class cOrganism;
 class cHardware4Stack : public cHardwareBase
 {
 public:
-  typedef bool (cHardware4Stack::*tHardware4StackMethod)();
+  typedef bool (cHardware4Stack::*tHardware4StackMethod)(cAvidaContext& ctx);
 private:
   static cInstLib4Stack* s_inst_slib;
   static cInstLib4Stack* initInstLib(void);
@@ -97,7 +98,7 @@ private:
 
   
   bool SingleProcess_PayCosts(const cInstruction & cur_inst);
-  bool SingleProcess_ExecuteInst(const cInstruction & cur_inst);
+  bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction & cur_inst);
   
   
   // --------  Stack Manipulation...  --------
@@ -123,13 +124,13 @@ private:
   cCodeLabel & GetReadLabel() { return threads[cur_thread].read_label; }
   
 
-  bool TriggerMutations_ScopeGenome(const cMutation* cur_mut, cCPUMemory& target_memory,
+  bool TriggerMutations_ScopeGenome(cAvidaContext& ctx, const cMutation* cur_mut, cCPUMemory& target_memory,
                                     cHeadCPU& cur_head, const double rate);
-  bool TriggerMutations_ScopeLocal(const cMutation* cur_mut, cCPUMemory& target_memory,
+  bool TriggerMutations_ScopeLocal(cAvidaContext& ctx, const cMutation* cur_mut, cCPUMemory& target_memory,
                                    cHeadCPU& cur_head, const double rate);
-  int TriggerMutations_ScopeGlobal(const cMutation* cur_mut, cCPUMemory& target_memory,
+  int TriggerMutations_ScopeGlobal(cAvidaContext& ctx, const cMutation* cur_mut, cCPUMemory& target_memory,
                                    cHeadCPU& cur_head, const double rate);
-  void TriggerMutations_Body(int type, cCPUMemory & target_memory, cHeadCPU& cur_head);
+  void TriggerMutations_Body(cAvidaContext& ctx, int type, cCPUMemory & target_memory, cHeadCPU& cur_head);
 
   // ---------- Instruction Helpers -----------
   int FindModifiedStack(int default_stack);
@@ -142,17 +143,16 @@ private:
   bool Allocate_Default(const int new_size);
   bool Allocate_Main(const int allocated_size);
   
-  bool Divide_Main(const int mem_space_used, double mut_multiplier=1);
-  bool Divide_CheckViable(const int parent_size, const int child_size, const int mem_space);
-  void Divide_DoMutations(double mut_multiplier=1);
-  void Inject_DoMutations(double mut_multiplier, cCPUMemory & injected_code);
-  void Divide_TestFitnessMeasures();
-  void Mutate(const int mut_point);
+  bool Divide_Main(cAvidaContext& ctx, const int mem_space_used, double mut_multiplier=1);
+  bool Divide_CheckViable(cAvidaContext& ctx, const int parent_size, const int child_size, const int mem_space);
+  void Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier = 1);
+  void Inject_DoMutations(cAvidaContext& ctx, double mut_multiplier, cCPUMemory & injected_code);
+  void Divide_TestFitnessMeasures(cAvidaContext& ctx);
+  void Mutate(cAvidaContext& ctx, const int mut_point);
   
   bool HeadCopy_ErrorCorrect(double reduction);
-  bool Inst_HeadDivideMut(double mut_multiplier=1);
 
-  bool InjectParasite(double mut_multiplier);
+  bool InjectParasite(cAvidaContext& ctx, double mut_multiplier);
 
   void ReadInst(const int in_inst);
   
@@ -172,8 +172,8 @@ public:
   static cString GetDefaultInstFilename() { return "inst_lib.4stack"; }
 
   void Reset();
-  void SingleProcess();
-  void ProcessBonusInst(const cInstruction & inst);
+  void SingleProcess(cAvidaContext& ctx);
+  void ProcessBonusInst(cAvidaContext& ctx, const cInstruction & inst);
 
   // --------  Helper methods  --------
   int GetType() const { return HARDWARE_TYPE_CPU_4STACK; }
@@ -242,46 +242,46 @@ public:
 	
   
   // --------  Mutation  --------
-  int PointMutate(const double mut_rate);  
-  bool TriggerMutations(int trigger);
-  bool TriggerMutations(int trigger, cHeadCPU& cur_head);
+  int PointMutate(cAvidaContext& ctx, const double mut_rate);  
+  bool TriggerMutations(cAvidaContext& ctx, int trigger);
+  bool TriggerMutations(cAvidaContext& ctx, int trigger, cHeadCPU& cur_head);
   
 
 private:
   // ---------- Instruction Library -----------
-  bool Inst_ShiftR();
-  bool Inst_ShiftL();
-  bool Inst_Val_Nand();
-  bool Inst_Val_Add();
-  bool Inst_Val_Sub();
-  bool Inst_Val_Mult();
-  bool Inst_Val_Div();
-  bool Inst_SetMemory();
-  bool Inst_Divide();
-  bool Inst_HeadRead();
-  bool Inst_HeadWrite();
-  bool Inst_HeadCopy();
-  bool Inst_IfEqual();
-  bool Inst_IfNotEqual();
-  bool Inst_IfLess();
-  bool Inst_IfGreater();
-  bool Inst_HeadPush();
-  bool Inst_HeadPop();
-  bool Inst_HeadMove();
-  bool Inst_Search();
-  bool Inst_PushNext();
-  bool Inst_PushPrevious();
-  bool Inst_PushComplement();
-  bool Inst_ValDelete();
-  bool Inst_ValCopy();
-  bool Inst_ForkThread();
-  bool Inst_IfLabel();
-  bool Inst_Increment();
-  bool Inst_Decrement();
-  bool Inst_Mod();
-  bool Inst_KillThread();
-  bool Inst_IO();
-  bool Inst_Inject();  
+  bool Inst_ShiftR(cAvidaContext& ctx);
+  bool Inst_ShiftL(cAvidaContext& ctx);
+  bool Inst_Val_Nand(cAvidaContext& ctx);
+  bool Inst_Val_Add(cAvidaContext& ctx);
+  bool Inst_Val_Sub(cAvidaContext& ctx);
+  bool Inst_Val_Mult(cAvidaContext& ctx);
+  bool Inst_Val_Div(cAvidaContext& ctx);
+  bool Inst_SetMemory(cAvidaContext& ctx);
+  bool Inst_Divide(cAvidaContext& ctx);
+  bool Inst_HeadRead(cAvidaContext& ctx);
+  bool Inst_HeadWrite(cAvidaContext& ctx);
+  bool Inst_HeadCopy(cAvidaContext& ctx);
+  bool Inst_IfEqual(cAvidaContext& ctx);
+  bool Inst_IfNotEqual(cAvidaContext& ctx);
+  bool Inst_IfLess(cAvidaContext& ctx);
+  bool Inst_IfGreater(cAvidaContext& ctx);
+  bool Inst_HeadPush(cAvidaContext& ctx);
+  bool Inst_HeadPop(cAvidaContext& ctx);
+  bool Inst_HeadMove(cAvidaContext& ctx);
+  bool Inst_Search(cAvidaContext& ctx);
+  bool Inst_PushNext(cAvidaContext& ctx);
+  bool Inst_PushPrevious(cAvidaContext& ctx);
+  bool Inst_PushComplement(cAvidaContext& ctx);
+  bool Inst_ValDelete(cAvidaContext& ctx);
+  bool Inst_ValCopy(cAvidaContext& ctx);
+  bool Inst_ForkThread(cAvidaContext& ctx);
+  bool Inst_IfLabel(cAvidaContext& ctx);
+  bool Inst_Increment(cAvidaContext& ctx);
+  bool Inst_Decrement(cAvidaContext& ctx);
+  bool Inst_Mod(cAvidaContext& ctx);
+  bool Inst_KillThread(cAvidaContext& ctx);
+  bool Inst_IO(cAvidaContext& ctx);
+  bool Inst_Inject(cAvidaContext& ctx);  
 };
 
 

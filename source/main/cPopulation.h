@@ -38,6 +38,7 @@
 #include "tList.h"
 #endif
 
+class cAvidaContext;
 class cSchedule;
 class cChangeList;
 class cEnvironment;
@@ -136,8 +137,8 @@ public:
 
   // Process a single organism one instruction...
   int ScheduleOrganism();          // Determine next organism to be processed.
-  void ProcessStep(double step_size, int cell_id);
-  void ProcessStep(double step_size) { ProcessStep(step_size, ScheduleOrganism()); }
+  void ProcessStep(cAvidaContext& ctx, double step_size, int cell_id);
+  void ProcessStep(cAvidaContext& ctx, double step_size) { ProcessStep(ctx, step_size, ScheduleOrganism()); }
 
   // Calculate the statistics from the most recent update.
   void CalcUpdateStats();

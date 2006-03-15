@@ -13,6 +13,9 @@
 
 #include <vector>
 
+#ifndef cAvidaContex_h
+#include "cAvidaContext.h"
+#endif
 #ifndef cGenotypeBatch_h
 #include "cGenotypeBatch.h"
 #endif
@@ -76,6 +79,8 @@ private:
   cWorld* m_world;
   cInstSet& inst_set;
   cTestCPU* m_testcpu;
+  cAvidaContext m_ctx;
+
 
   // This is the storage for the resource information from resource.dat.  It 
   // is a pair of the update and a vector of the resource concentrations

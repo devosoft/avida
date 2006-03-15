@@ -36,6 +36,7 @@ using namespace std;
  * attach different cInstSet objects to different hardware.
  **/
 
+class cAvidaContext;
 class cWorld;
 
 class cInstSet
@@ -113,10 +114,10 @@ public:
     return m_inst_lib->GetNopMod(nopmod);
   }
 
-  cInstruction GetRandomInst() const;
-  int GetRandFunctionIndex() const
+  cInstruction GetRandomInst(cAvidaContext& ctx) const;
+  int GetRandFunctionIndex(cAvidaContext& ctx) const
   {
-    return m_lib_name_map[ GetRandomInst().GetOp() ].lib_fun_id;
+    return m_lib_name_map[ GetRandomInst(ctx).GetOp() ].lib_fun_id;
   }
 
   int GetSize() const {

@@ -24,8 +24,7 @@
 using namespace std;
 
 
-cGenome cInstUtil::LoadGenome(const cString & filename,
-			      const cInstSet & inst_set)
+cGenome cInstUtil::LoadGenome(const cString& filename, const cInstSet& inst_set)
 {
     cInitFile input_file(filename);
   if (!input_file.IsOpen()) {
@@ -59,7 +58,7 @@ cGenome cInstUtil::LoadGenome(const cString & filename,
   return new_genome;
 }
 
-cGenome cInstUtil::LoadInternalGenome(istream & fp, const cInstSet &inst_set)
+cGenome cInstUtil::LoadInternalGenome(istream& fp, const cInstSet& inst_set)
 {
   assert(fp.good()); // Invalid stream to load genome from!
 
@@ -85,7 +84,7 @@ cGenome cInstUtil::LoadInternalGenome(istream & fp, const cInstSet &inst_set)
   return new_genome;
 }
 
-void cInstUtil::SaveGenome(ostream& fp, const cInstSet & inst_set,
+void cInstUtil::SaveGenome(ostream& fp, const cInstSet& inst_set,
 			   const cGenome & gen)
 {
   for (int i = 0; i < gen.GetSize(); i++) {
@@ -93,7 +92,7 @@ void cInstUtil::SaveGenome(ostream& fp, const cInstSet & inst_set,
   }
 }
 
-void cInstUtil::SaveInternalGenome(ostream& fp, const cInstSet & inst_set,
+void cInstUtil::SaveInternalGenome(ostream& fp, const cInstSet& inst_set,
 				   const cGenome & gen)
 {
   fp << gen.GetSize() << endl;
@@ -101,11 +100,11 @@ void cInstUtil::SaveInternalGenome(ostream& fp, const cInstSet & inst_set,
 }
 
 
-cGenome cInstUtil::RandomGenome(int length, const cInstSet & inst_set)
+cGenome cInstUtil::RandomGenome(cAvidaContext& ctx, int length, const cInstSet& inst_set)
 {
   cGenome genome(length);
   for (int i = 0; i < length; i++) {
-    genome[i] = inst_set.GetRandomInst();
+    genome[i] = inst_set.GetRandomInst(ctx);
   }
   return genome;
 }

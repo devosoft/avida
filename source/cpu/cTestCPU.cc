@@ -10,6 +10,7 @@
 
 #include "cTestCPU.h"
 
+#include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
 #include "functions.h"
@@ -87,7 +88,7 @@ void cTestCPU::SetUseResources(bool use)
 
 
 // NOTE: This method assumes that the organism is a fresh creation.
-bool cTestCPU::ProcessGestation(cCPUTestInfo & test_info, int cur_depth)
+bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int cur_depth)
 {
   assert(test_info.org_array[cur_depth] != NULL);
 
@@ -112,7 +113,7 @@ bool cTestCPU::ProcessGestation(cCPUTestInfo & test_info, int cur_depth)
          organism.GetPhenotype().GetNumDivides() == 0)
   {
     time_used++;
-    organism.GetHardware().SingleProcess();
+    organism.GetHardware().SingleProcess(ctx);
     // @CAO Need to watch out for parasites.
   }
   organism.GetHardware().SetTrace(NULL);
@@ -135,19 +136,19 @@ bool cTestCPU::ProcessGestation(cCPUTestInfo & test_info, int cur_depth)
 }
 
 
-bool cTestCPU::TestGenome(cCPUTestInfo & test_info, const cGenome & genome)
+bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome)
 {
   test_info.Clear();
-  TestGenome_Body(test_info, genome, 0);
+  TestGenome_Body(ctx, test_info, genome, 0);
 
   return test_info.is_viable;
 }
 
-bool cTestCPU::TestGenome(cCPUTestInfo & test_info, const cGenome & genome,
-		       ofstream& out_fp)
+bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome,
+                          ofstream& out_fp)
 {
   test_info.Clear();
-  TestGenome_Body(test_info, genome, 0);
+  TestGenome_Body(ctx, test_info, genome, 0);
 
   ////////////////////////////////////////////////////////////////
   // IsViable() == false
@@ -175,8 +176,8 @@ bool cTestCPU::TestGenome(cCPUTestInfo & test_info, const cGenome & genome,
   return test_info.is_viable;
 }
 
-bool cTestCPU::TestGenome_Body(cCPUTestInfo & test_info,
-			       const cGenome & genome, int cur_depth)
+bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info,
+                               const cGenome& genome, int cur_depth)
 {
   assert(cur_depth < test_info.generation_tests);
 
@@ -213,7 +214,7 @@ bool cTestCPU::TestGenome_Body(cCPUTestInfo & test_info,
   organism.GetPhenotype().SetupInject(genome.GetSize());
 
   // Run the current organism.
-  ProcessGestation(test_info, cur_depth);
+  ProcessGestation(ctx, test_info, cur_depth);
 
   // Must be able to divide twice in order to form a successful colony,
   // assuming the CPU doesn't get reset on divides.
@@ -254,7 +255,7 @@ bool cTestCPU::TestGenome_Body(cCPUTestInfo & test_info,
   // If we haven't reached maximum depth yet, check out the child.
   if (cur_depth+1 < test_info.generation_tests) {
     // Run the child's genome.
-    return TestGenome_Body(test_info, organism.ChildGenome(), cur_depth+1);
+    return TestGenome_Body(ctx, test_info, organism.ChildGenome(), cur_depth+1);
   }
 
   // All options have failed; just return false.
@@ -262,20 +263,20 @@ bool cTestCPU::TestGenome_Body(cCPUTestInfo & test_info,
 }
 
 
-void cTestCPU::TestThreads(const cGenome & genome)
+void cTestCPU::TestThreads(cAvidaContext& ctx, const cGenome& genome)
 {
   cCPUTestInfo test_info;
   test_info.TestThreads();
-  cTestCPU::TestGenome(test_info, genome);
+  cTestCPU::TestGenome(ctx, test_info, genome);
 }
 
 
-void cTestCPU::PrintThreads(const cGenome & genome)
+void cTestCPU::PrintThreads(cAvidaContext& ctx, const cGenome& genome)
 {
   cCPUTestInfo test_info;
   test_info.TestThreads();
   test_info.PrintThreads();
-  cTestCPU::TestGenome(test_info, genome);
+  cTestCPU::TestGenome(ctx, test_info, genome);
 }
 
 
