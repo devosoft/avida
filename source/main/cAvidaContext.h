@@ -10,16 +10,21 @@
 #ifndef cAvidaContext_h
 #define cAvidaContext_h
 
+class cRandom;
+
 class cAvidaContext
 {
 private:
-  int m_rng_id;
+  cRandom* m_rng;
   
 public:
-  cAvidaContext(int rng_id) : m_rng_id(rng_id) { ; }
+  cAvidaContext(cRandom& rng) : m_rng(&rng) { ; }
+  cAvidaContext(cRandom* rng) : m_rng(rng) { ; }
   ~cAvidaContext() { ; }
   
-  int GetRandomID() { return m_rng_id; }
+  void SetRandom(cRandom& rng) { m_rng = &rng; }  
+  void SetRandom(cRandom* rng) { m_rng = rng; }  
+  cRandom& GetRandom() { return *m_rng; }
 };
 
 #endif

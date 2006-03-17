@@ -51,7 +51,7 @@ void cDefaultRunDriver::Run()
   const int ave_time_slice = m_world->GetConfig().AVE_TIME_SLICE.Get();
   const double point_mut_prob = m_world->GetConfig().POINT_MUT_PROB.Get();
   
-  cAvidaContext ctx(0);
+  cAvidaContext ctx(m_world->GetRandom());
 
   while (!m_done) {
     if (cChangeList* change_list = population.GetChangeList()) {

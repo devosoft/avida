@@ -10,9 +10,11 @@
 #include "cAnalyzeJobWorker.h"
 
 #include "cAnalyzeJobQueue.h"
+#include "cAvidaContext.h"
 
 void cAnalyzeJobWorker::Run()
 {
+  cAvidaContext ctx(NULL);
   cAnalyzeJob* job = NULL;
   
   while (1) {
@@ -21,7 +23,8 @@ void cAnalyzeJobWorker::Run()
     pthread_mutex_unlock(&m_queue->m_mutex);
     
     if (job) {
-      job->Run();
+      ctx.SetRandom(m_queue->GetRandom(job->GetID()));
+      job->Run(ctx);
     } else {
       break;
     }

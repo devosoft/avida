@@ -1865,7 +1865,7 @@ public:
     if (cell_id == -1) cell_id = m_world->GetRandom().GetUInt(m_world->GetPopulation().GetSize());
     
     // @DMB - Warning: Creating context out of band.
-    cAvidaContext ctx(0);
+    cAvidaContext ctx(m_world->GetRandom());
     
     cGenome genome =
       cInstUtil::RandomGenome(ctx, length, m_world->GetHardwareManager().GetInstSet());
@@ -2288,7 +2288,7 @@ public:
   ///// predict_w_landscape /////
   void Process(){
     // @DMB - Warning: Creating context out of band.
-    cAvidaContext ctx(0);
+    cAvidaContext ctx(m_world->GetRandom());
 
     cGenome & genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
@@ -2319,7 +2319,7 @@ public:
   ///// predict_nu_landscape /////
   void Process(){
     // @DMB - Warning: Creating context out of band.
-    cAvidaContext ctx(0);
+    cAvidaContext ctx(m_world->GetRandom());
 
     cGenome& genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
@@ -2350,7 +2350,7 @@ public:
   ///// sample_landscape /////
   void Process(){
     // @DMB - Warning: Creating context out of band.
-    cAvidaContext ctx(0);
+    cAvidaContext ctx(m_world->GetRandom());
 
     cGenome& genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
@@ -2391,7 +2391,7 @@ public:
   ///// random_landscape /////
   void Process(){
     // @DMB - Warning: Creating context out of band.
-    cAvidaContext ctx(0);
+    cAvidaContext ctx(m_world->GetRandom());
 
     cGenome & genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
@@ -2899,7 +2899,7 @@ public:
   ///// hillclimb /////
   void Process(){
     // @DMB - Warning: Creating context out of band.
-    cAvidaContext ctx(0);
+    cAvidaContext ctx(m_world->GetRandom());
 
     cGenome& genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
@@ -2927,7 +2927,7 @@ public:
   ///// hillclimb_neut /////
   void Process(){
     // @DMB - Warning: Creating context out of band.
-    cAvidaContext ctx(0);
+    cAvidaContext ctx(m_world->GetRandom());
 
     cGenome& genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
@@ -2955,7 +2955,7 @@ public:
   ///// hillclimb_rand /////
   void Process(){
     // @DMB - Warning: Creating context out of band.
-    cAvidaContext ctx(0);
+    cAvidaContext ctx(m_world->GetRandom());
 
     cGenome& genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
@@ -3160,7 +3160,7 @@ public:
   ///// test_threads /////
   void Process(){
     // @DMB - Warning: Creating context out of band.
-    cAvidaContext ctx(0);
+    cAvidaContext ctx(m_world->GetRandom());
 
     cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
     testcpu->TestThreads(ctx, m_world->GetClassificationManager().GetBestGenotype()->GetGenome());
@@ -3188,7 +3188,7 @@ public:
   ///// print_threads /////
   void Process(){
     // @DMB - Warning: Creating context out of band.
-    cAvidaContext ctx(0);
+    cAvidaContext ctx(m_world->GetRandom());
 
     cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
     testcpu->PrintThreads(ctx, m_world->GetClassificationManager().GetBestGenotype()->GetGenome() );

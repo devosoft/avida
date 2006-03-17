@@ -12,6 +12,15 @@
 #include "cAnalyzeJobWorker.h"
 #include "cWorld.h"
 
+cAnalyzeJobQueue::cAnalyzeJobQueue(cWorld* world) : m_world(world), m_last_jobid(0)
+{
+  for (int i = 0; i < MT_RANDOM_POOL_SIZE; i++) {
+    m_rng_pool[i] = new cRandomMT(world->GetRandom().GetInt(0x7FFFFFFF));
+  }
+  
+  pthread_mutex_init(&m_mutex, NULL);
+}
+
 cAnalyzeJobQueue::~cAnalyzeJobQueue()
 {
   cAnalyzeJob* job;

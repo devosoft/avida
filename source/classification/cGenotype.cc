@@ -201,7 +201,7 @@ void cGenotype::CalcTestStats() const
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
   
   // @DMB - Warning: Creating context out of band.
-  cAvidaContext ctx(0);
+  cAvidaContext ctx(m_world->GetRandom());
 
   cCPUTestInfo test_info;
   testcpu->TestGenome(ctx, test_info, genome);

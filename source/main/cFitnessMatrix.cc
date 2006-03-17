@@ -22,7 +22,7 @@ cFitnessMatrix::cFitnessMatrix(cWorld* world, const cGenome& code,  cInstSet* in
      m_DFS_NumRecorded(0)
 {
   // @DMB - Warning: Creating context out of band.
-  cAvidaContext ctx(0);
+  cAvidaContext ctx(m_world->GetRandom());
   
   m_start_genotype.SetNumInstructions( m_inst_set->GetSize());
   m_start_genotype.CalcFitness(ctx);
@@ -126,7 +126,7 @@ void cFitnessMatrix::DepthLimitedSearch(const cMxCodeArray& startNode, ofstream&
   // MyCodeArrayLessThan myLess;
 
   // @DMB - Warning: Creating context out of band.
-  cAvidaContext ctx(0);
+  cAvidaContext ctx(m_world->GetRandom());
 
   for (list_iter = theMutants.begin(); list_iter != theMutants.end(); list_iter++)
     {

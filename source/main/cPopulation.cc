@@ -1750,7 +1750,7 @@ void cPopulation::BuildTimeSlicer(cChangeList * change_list)
       schedule = new cConstSchedule(cell_array.GetSize());
       break;
     case SLICE_PROB_MERIT:
-      schedule = new cProbSchedule(cell_array.GetSize(), m_world->GetRandom().GetInt(1000000000));
+      schedule = new cProbSchedule(cell_array.GetSize(), m_world->GetRandom().GetInt(0x7FFFFFFF));
       break;
     case SLICE_INTEGRATED_MERIT:
       schedule = new cIntegratedSchedule(cell_array.GetSize());

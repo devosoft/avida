@@ -42,7 +42,7 @@ void cTestUtil::PrintGenome(cWorld* world, const cGenome & genome, cString filen
   cTestCPU* testcpu = world->GetHardwareManager().CreateTestCPU();
 
   // @DMB - Warning: Creating context out of band.
-  cAvidaContext ctx(0);
+  cAvidaContext ctx(world->GetRandom());
   
   cCPUTestInfo test_info;
   test_info.TestThreads();
@@ -148,7 +148,7 @@ void cTestUtil::PrintGenome(cWorld* world, cInjectGenotype * inject_genotype,
   cTestCPU* testcpu = world->GetHardwareManager().CreateTestCPU();
   
   // @DMB - Warning: Creating context out of band.
-  cAvidaContext ctx(0);
+  cAvidaContext ctx(world->GetRandom());
 
   cCPUTestInfo test_info;
   test_info.TestThreads();

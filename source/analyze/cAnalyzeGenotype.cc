@@ -192,7 +192,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
 
   // @DMB - Warning: Creating context out of band.
-  cAvidaContext ctx(0);
+  cAvidaContext ctx(m_world->GetRandom());
   
   // Calculate the base fitness for the genotype we're working with...
   // (This may not have been run already, and cost negligiably more time
