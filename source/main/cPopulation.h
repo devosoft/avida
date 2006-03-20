@@ -102,7 +102,7 @@ private:
   void LineageSetupOrganism(cOrganism* organism, cLineage* lineage, int lin_label, cGenotype* parent_genotype = NULL);
 
   // Must be called to activate *any* organism in the population.
-  void ActivateOrganism(cOrganism* in_organism, cPopulationCell& target_cell);
+  void ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell);
 
   cPopulation(); // @not_implemented
   cPopulation(const cPopulation&); // @not_implemented
@@ -116,7 +116,7 @@ public:
   bool SetupDemes();
 
   // Activate the offspring of an organism in the population
-  bool ActivateOffspring(cGenome& child_genome, cOrganism& parent_organism);
+  bool ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, cOrganism& parent_organism);
 
   bool ActivateInject(cOrganism& parent, const cGenome& injected_code);
   bool ActivateInject(const int cell_id, const cGenome& injected_code);

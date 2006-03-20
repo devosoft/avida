@@ -26,6 +26,7 @@
 class cPopulation;
 class cOrganism;
 class cPopulationCell;
+class cWorld;
 
 class cPopulationCell
 {

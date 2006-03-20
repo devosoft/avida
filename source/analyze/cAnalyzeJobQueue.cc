@@ -12,6 +12,9 @@
 #include "cAnalyzeJobWorker.h"
 #include "cWorld.h"
 
+#include <iostream>
+using namespace std;
+
 cAnalyzeJobQueue::cAnalyzeJobQueue(cWorld* world) : m_world(world), m_last_jobid(0)
 {
   for (int i = 0; i < MT_RANDOM_POOL_SIZE; i++) {
@@ -33,6 +36,8 @@ void cAnalyzeJobQueue::Execute()
   const int num_workers = m_world->GetConfig().ANALYZE_MT_CONCURRENCY.Get();
   
   cAnalyzeJobWorker* workers[num_workers];
+  
+  cout << "Going Multithreaded..." << endl;
   
   for (int i = 0; i < num_workers; i++) {
     workers[i] = new cAnalyzeJobWorker(this);

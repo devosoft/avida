@@ -102,7 +102,6 @@ public:
   bool SaveClone(std::ofstream& fp);
   static cGenotype* LoadClone(cWorld* world, std::ifstream& fp);
   bool OK();
-  void Mutate();
   void UpdateReset();
 
   void SetGenome(const cGenome & in_genome);

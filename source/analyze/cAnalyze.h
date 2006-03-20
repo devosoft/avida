@@ -235,7 +235,7 @@ private:
   void CommandSystem(cString cur_string);
   void CommandInteractive(cString cur_string);
 //  void PrintTestCPUResources(cString cur_string);
-  void CommandLandscapePreGen(cString cur_string);
+  void CommandCalcLandscape(cString cur_string);
 
   // Functions...
   void FunctionCreate(cString cur_string, tList<cAnalyzeCommand> & clist);

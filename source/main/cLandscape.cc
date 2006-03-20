@@ -309,11 +309,11 @@ void cLandscape::PredictWProcess(cAvidaContext& ctx, ostream& fp, int update)
     int test_id = 0;
     while ((test_id < min_tests) ||
            (test_id < max_tests && (total_neut_found + total_pos_found) < min_found)) {
-      m_world->GetRandom().Choose(genome_size, mut_lines);
+      ctx.GetRandom().Choose(genome_size, mut_lines);
       test_fitness = 1.0;
       for (int j = 0; j < num_muts && test_fitness != 0.0; j++) {	
         test_fitness *=
-        fitness_chart(mut_lines[j], m_world->GetRandom().GetUInt(inst_size));
+        fitness_chart(mut_lines[j], ctx.GetRandom().GetUInt(inst_size));
       }
       total_fitness += test_fitness;
       total_sqr_fitness += test_fitness * test_fitness;
@@ -438,12 +438,12 @@ void cLandscape::PredictNuProcess(cAvidaContext& ctx, ostream& fp, int update)
     int test_id = 0;
     while ((test_id < min_tests) ||
            (test_id < max_tests && (total_neg_found + total_neut_found + total_pos_found) < min_found)) {
-      m_world->GetRandom().Choose(genome_size, mut_lines);
+      ctx.GetRandom().Choose(genome_size, mut_lines);
       test_fitness = 1.0;
       for (int j = 0; j < num_muts && test_fitness != 0.0; j++) {	
         int base_inst = base_genome[ mut_lines[j] ].GetOp();
-        int mut_inst = m_world->GetRandom().GetUInt(inst_size);
-        while (mut_inst == base_inst) mut_inst = m_world->GetRandom().GetUInt(inst_size);
+        int mut_inst = ctx.GetRandom().GetUInt(inst_size);
+        while (mut_inst == base_inst) mut_inst = ctx.GetRandom().GetUInt(inst_size);
         test_fitness *= fitness_chart(mut_lines[j], mut_inst);
         if (test_fitness == 0.0) break;
       }
@@ -553,7 +553,7 @@ int cLandscape::RandomProcess(cAvidaContext& ctx, int in_trials, int in_distance
   for (cur_trial = 0; cur_trial < in_trials; cur_trial++) { 
     
     // Choose the lines to mutate...
-    m_world->GetRandom().Choose(genome_size, mut_lines);
+    ctx.GetRandom().Choose(genome_size, mut_lines);
     
     // Choose the new instructions for those lines...
     for (mut_num = 0; mut_num < distance; mut_num++) {
@@ -634,7 +634,7 @@ void cLandscape::TestPairs(cAvidaContext& ctx, int in_trials, ostream& fp)
   // Loop through all the lines of genome, testing many combinations.
   for (int i = 0; i < trials; i++) {
     // Choose the lines to mutate...
-    m_world->GetRandom().Choose(genome_size, mut_lines);
+    ctx.GetRandom().Choose(genome_size, mut_lines);
     
     // Choose the new instructions for those lines...
     for (int mut_num = 0; mut_num < 2; mut_num++) {

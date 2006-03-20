@@ -32,7 +32,7 @@ public:
   int GetCellID() { return -1; }
   void SetCellID(int in_id) { ; }
 
-  bool Divide(cOrganism* parent, cGenome& child_genome);
+  bool Divide(cAvidaContext& ctx, cOrganism* parent, cGenome& child_genome);
   cOrganism* GetNeighbor();
   int GetNumNeighbors();
   void Rotate(int direction = 1);

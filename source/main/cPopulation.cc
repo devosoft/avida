@@ -303,8 +303,7 @@ bool cPopulation::SetupDemes()
 // Activate the child, given information from the parent.
 // Return true if parent lives through this process.
 
-bool cPopulation::ActivateOffspring(cGenome & child_genome,
-                                    cOrganism & parent_organism)
+bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, cOrganism& parent_organism)
 {
   assert(&parent_organism != NULL);
   
@@ -317,9 +316,7 @@ bool cPopulation::ActivateOffspring(cGenome & child_genome,
   cPhenotype & parent_phenotype = parent_organism.GetPhenotype();
   parent_phenotype.DivideReset(parent_organism.GetGenome().GetSize());
   
-  birth_chamber.SubmitOffspring(child_genome, parent_organism,
-                                child_array, merit_array);
-  
+  birth_chamber.SubmitOffspring(ctx, child_genome, parent_organism, child_array, merit_array);
   
   // First, setup the genotype of all of the offspring.
   cGenotype * parent_genotype = parent_organism.GetGenotype();
@@ -377,7 +374,7 @@ bool cPopulation::ActivateOffspring(cGenome & child_genome,
   
   // Place all of the offspring...
   for (int i = 0; i < child_array.GetSize(); i++) {
-    ActivateOrganism(child_array[i], GetCell(target_cells[i]));
+    ActivateOrganism(ctx, child_array[i], GetCell(target_cells[i]));
     cGenotype * child_genotype = child_array[i]->GetGenotype();
     child_genotype->DecDeferAdjust();
     m_world->GetClassificationManager().AdjustGenotype(*child_genotype);
@@ -450,8 +447,7 @@ bool cPopulation::ActivateInject(const int cell_id, const cGenome & injected_cod
   return true;
 }
 
-void cPopulation::ActivateOrganism(cOrganism * in_organism,
-                                   cPopulationCell & target_cell)
+void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell)
 {
   assert(in_organism != NULL);
   assert(in_organism->GetGenome().GetSize() > 1);
@@ -482,7 +478,7 @@ void cPopulation::ActivateOrganism(cOrganism * in_organism,
   target_cell.InsertOrganism(*in_organism);
   
   // Setup the inputs in the target cell.
-  environment.SetupInputs(target_cell.input_array);
+  environment.SetupInputs(ctx, target_cell.input_array);
   
   // Update the archive...
   in_genotype->AddOrganism();
@@ -1838,7 +1834,10 @@ void cPopulation::InjectGenotype(int cell_id, cGenotype *new_genotype)
 {
   assert(cell_id >= 0 && cell_id < cell_array.GetSize());
   
-  cOrganism * new_organism = new cOrganism(m_world, new_genotype->GetGenome());
+  // @DMB - Warning: Creating context out of band.
+  cAvidaContext ctx(m_world->GetRandom());
+  
+  cOrganism* new_organism = new cOrganism(m_world, ctx, new_genotype->GetGenome());
   
   // Set the genotype...
   new_organism->SetGenotype(new_genotype);
@@ -1866,18 +1865,21 @@ void cPopulation::InjectGenotype(int cell_id, cGenotype *new_genotype)
   
   
   // Activate the organism in the population...
-  ActivateOrganism(new_organism, cell_array[cell_id]);
+  ActivateOrganism(ctx, new_organism, cell_array[cell_id]);
 }
 
 
 // This function injects a new organism into the population at cell_id that
 // is an exact clone of the organism passed in.
 
-void cPopulation::InjectClone(int cell_id, cOrganism & orig_org)
+void cPopulation::InjectClone(int cell_id, cOrganism& orig_org)
 {
   assert(cell_id >= 0 && cell_id < cell_array.GetSize());
   
-  cOrganism * new_organism = new cOrganism(m_world, orig_org.GetGenome());
+  // @DMB - Warning: Creating context out of band.
+  cAvidaContext ctx(m_world->GetRandom());
+  
+  cOrganism* new_organism = new cOrganism(m_world, ctx, orig_org.GetGenome());
   
   // Set the genotype...
   new_organism->SetGenotype(orig_org.GetGenotype());
@@ -1896,7 +1898,7 @@ void cPopulation::InjectClone(int cell_id, cOrganism & orig_org)
   new_organism->MutationRates().Copy(cell_array[cell_id].MutationRates());
   
   // Activate the organism in the population...
-  ActivateOrganism(new_organism, cell_array[cell_id]);
+  ActivateOrganism(ctx, new_organism, cell_array[cell_id]);
 }
 
 

@@ -27,24 +27,42 @@
 
 class cString;
 
+//class cTaskContext
+//{
+//public:
+//  tBuffer<int> input_buffer;
+//  tBuffer<int> output_buffer;
+//  tList<tBuffer<int> > other_input_buffers;
+//  tList<tBuffer<int> > other_output_buffers;
+//  int logic_id;
+//  
+//  cTaskContext(const tBuffer<int>& inputs, const tBuffer<int>& outputs,
+//               const tList<tBuffer<int> >& other_inputs,
+//               const tList<tBuffer<int> >& other_outputs, int in_logic_id)
+//  : input_buffer(3), output_buffer(3), logic_id(in_logic_id)
+//  {
+//    input_buffer = inputs;
+//    output_buffer = outputs;
+//    other_input_buffers.Copy(other_inputs);
+//    other_output_buffers.Copy(other_outputs);
+//  }
+//};
+
 class cTaskContext
 {
 public:
-  tBuffer<int> input_buffer;
-  tBuffer<int> output_buffer;
-  tList<tBuffer<int> > other_input_buffers;
-  tList<tBuffer<int> > other_output_buffers;
+  const tBuffer<int>& input_buffer;
+  const tBuffer<int>& output_buffer;
+  const tList<tBuffer<int> >& other_input_buffers;
+  const tList<tBuffer<int> >& other_output_buffers;
   int logic_id;
   
   cTaskContext(const tBuffer<int>& inputs, const tBuffer<int>& outputs,
                const tList<tBuffer<int> >& other_inputs,
                const tList<tBuffer<int> >& other_outputs, int in_logic_id)
-  : input_buffer(3), output_buffer(3), logic_id(in_logic_id)
+    : input_buffer(inputs), output_buffer(outputs), other_input_buffers(other_inputs),
+    other_output_buffers(other_outputs), logic_id(in_logic_id)
   {
-    input_buffer = inputs;
-    output_buffer = outputs;
-    other_input_buffers.Copy(other_inputs);
-    other_output_buffers.Copy(other_outputs);
   }
 };
 
@@ -82,11 +100,11 @@ public:
   cTaskEntry* AddTask(const cString& name);
   const cTaskEntry& GetTask(int id) const;
   
-  cTaskContext* SetupTests(const tBuffer<int>& inputs, const tBuffer<int>& outputs,
+  cTaskContext SetupTests(const tBuffer<int>& inputs, const tBuffer<int>& outputs,
                           const tList<tBuffer<int> >& other_inputs,
                           const tList<tBuffer<int> >& other_outputs) const
   {
-    return new cTaskContext(inputs, outputs, other_inputs, other_outputs, SetupLogicTests(inputs, outputs));
+    return cTaskContext(inputs, outputs, other_inputs, other_outputs, SetupLogicTests(inputs, outputs));
   }
   inline double TestOutput(const cTaskEntry& task, cTaskContext* ctx) const;
 

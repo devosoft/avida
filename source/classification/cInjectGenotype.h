@@ -66,7 +66,6 @@ public:
   bool SaveClone(std::ofstream& fp);
   bool LoadClone(std::ifstream & fp);
   bool OK();
-  void Mutate();
   void UpdateReset();
 
   void SetGenome(const cGenome & in_genome);

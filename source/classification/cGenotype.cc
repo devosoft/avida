@@ -156,16 +156,6 @@ void cGenotype::SetParent(cGenotype * parent, cGenotype * parent2)
   tmp_sum_fitness.Add(        parent->GetFitness());
 }
 
-void cGenotype::Mutate()  // Check each location to be mutated.
-{
-  int i;
-
-  for (i = 0; i < genome.GetSize(); i++) {
-    genome[i].SetOp(m_world->GetRandom().GetUInt(m_world->GetNumInstructions()));
-    // Flag command as having been mutated? @CAO
-  }
-}
-
 void cGenotype::UpdateReset()
 {
   last_num_organisms = num_organisms;

@@ -10,8 +10,6 @@
 
 #include "cMutationRates.h"
 
-#include "cWorld.h"
-
 
 void cMutationRates::Clear()
 {
@@ -41,44 +39,4 @@ void cMutationRates::Copy(const cMutationRates & in_muts)
   divide.parent_mut_prob = in_muts.divide.parent_mut_prob;
   divide.crossover_prob = in_muts.divide.crossover_prob;
   divide.aligned_cross_prob = in_muts.divide.aligned_cross_prob;
-}
-
-bool cMutationRates::TestPointMut() const
-{
-  return m_world->GetRandom().P(exec.point_mut_prob);
-}
-
-bool cMutationRates::TestCopyMut() const
-{
-  return m_world->GetRandom().P(copy.copy_mut_prob);
-}
-
-bool cMutationRates::TestDivideMut() const
-{
-  return m_world->GetRandom().P(divide.divide_mut_prob);
-}
-
-bool cMutationRates::TestDivideIns() const
-{
-  return m_world->GetRandom().P(divide.divide_ins_prob);
-}
-
-bool cMutationRates::TestDivideDel() const
-{
-  return m_world->GetRandom().P(divide.divide_del_prob);
-}
-
-bool cMutationRates::TestParentMut() const
-{
-  return m_world->GetRandom().P(divide.parent_mut_prob);
-}
-
-bool cMutationRates::TestCrossover() const
-{
-  return m_world->GetRandom().P(divide.crossover_prob);
-}
-
-bool cMutationRates::TestAlignedCrossover() const
-{
-  return m_world->GetRandom().P(divide.aligned_cross_prob);
 }

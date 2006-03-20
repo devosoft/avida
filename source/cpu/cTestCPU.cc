@@ -198,8 +198,8 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info,
     receive_array[1] = 0x33083ee5;  // 00110011 00001000 00111110 11100101
     receive_array[2] = 0x5562eb41;  // 01010101 01100010 11101011 01000001
   } else {
-    m_world->GetEnvironment().SetupInputs(input_array);
-    m_world->GetEnvironment().SetupInputs(receive_array);
+    m_world->GetEnvironment().SetupInputs(ctx, input_array);
+    m_world->GetEnvironment().SetupInputs(ctx, receive_array);
   }
 
   if (cur_depth > test_info.max_depth) test_info.max_depth = cur_depth;
@@ -208,7 +208,7 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info,
   if (test_info.org_array[cur_depth] != NULL) {
     delete test_info.org_array[cur_depth];
   }
-  test_info.org_array[cur_depth] = new cOrganism(m_world, genome);
+  test_info.org_array[cur_depth] = new cOrganism(m_world, ctx, genome);
   cOrganism & organism = *( test_info.org_array[cur_depth] );
   organism.SetOrgInterface(new cTestCPUInterface(this));
   organism.GetPhenotype().SetupInject(genome.GetSize());

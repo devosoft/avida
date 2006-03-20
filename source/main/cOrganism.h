@@ -102,7 +102,7 @@ protected:
   cOrganism& operator=(const cOrganism&); // @not_implemented
   
 public:
-  cOrganism(cWorld* world, const cGenome& in_genome);
+  cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome);
   ~cOrganism();
 
   cHardwareBase& GetHardware() { return *hardware; }
@@ -146,14 +146,13 @@ public:
   cCPUMemory & ChildGenome() { return child_genome; }
   sCPUStats & CPUStats() { return cpu_stats; }
 
-  bool TestCopyMut() const { return MutationRates().TestCopyMut(); }
-  bool TestDivideMut() const { return MutationRates().TestDivideMut(); }
-  bool TestDivideIns() const { return MutationRates().TestDivideIns(); }
-  bool TestDivideDel() const { return MutationRates().TestDivideDel(); }
-  bool TestParentMut() const { return MutationRates().TestParentMut(); }
-  bool TestCrossover() const { return MutationRates().TestCrossover(); }
-  bool TestAlignedCrossover() const
-    { return MutationRates().TestAlignedCrossover(); }
+  bool TestCopyMut(cAvidaContext& ctx) const { return MutationRates().TestCopyMut(ctx); }
+  bool TestDivideMut(cAvidaContext& ctx) const { return MutationRates().TestDivideMut(ctx); }
+  bool TestDivideIns(cAvidaContext& ctx) const { return MutationRates().TestDivideIns(ctx); }
+  bool TestDivideDel(cAvidaContext& ctx) const { return MutationRates().TestDivideDel(ctx); }
+  bool TestParentMut(cAvidaContext& ctx) const { return MutationRates().TestParentMut(ctx); }
+  bool TestCrossover(cAvidaContext& ctx) const { return MutationRates().TestCrossover(ctx); }
+  bool TestAlignedCrossover(cAvidaContext& ctx) const { return MutationRates().TestAlignedCrossover(ctx); }
   
   double GetCopyMutProb() const { return MutationRates().GetCopyMutProb(); }
   void SetCopyMutProb(double _p) { return MutationRates().SetCopyMutProb(_p); }
@@ -217,7 +216,7 @@ public:
   
   // Divide functions
   bool Divide_CheckViable();
-  bool ActivateDivide();
+  bool ActivateDivide(cAvidaContext& ctx);
   
   // Other Special Functions
   void Fault(int fault_loc, int fault_type, cString fault_desc="");

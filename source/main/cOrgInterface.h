@@ -10,6 +10,7 @@
 #ifndef cOrgInterface_h
 #define cOrgInterface_h
 
+class cAvidaContext;
 class cOrganism;
 class cGenome;
 template <class T> class tArray;
@@ -28,7 +29,7 @@ public:
   virtual int GetCellID() = 0;
   virtual void SetCellID(int in_id) = 0;
 
-  virtual bool Divide(cOrganism* parent, cGenome& child_genome) = 0;
+  virtual bool Divide(cAvidaContext& ctx, cOrganism* parent, cGenome& child_genome) = 0;
   virtual cOrganism* GetNeighbor() = 0;
   virtual int GetNumNeighbors() = 0;
   virtual void Rotate(int direction = 1) = 0;

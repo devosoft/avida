@@ -347,7 +347,7 @@ void cHardware4Stack::SingleProcess(cAvidaContext& ctx)
     const cInstruction& cur_inst = IP().GetInst();
     
     // Test if costs have been paid and it is okay to execute this now...
-    const bool exec = SingleProcess_PayCosts(cur_inst);
+    const bool exec = SingleProcess_PayCosts(ctx, cur_inst);
     
     // Now execute the instruction...
     if (exec == true) {
@@ -373,7 +373,7 @@ void cHardware4Stack::SingleProcess(cAvidaContext& ctx)
 // This method will test to see if all costs have been paid associated
 // with executing an instruction and only return true when that instruction
 // should proceed.
-bool cHardware4Stack::SingleProcess_PayCosts(const cInstruction & cur_inst)
+bool cHardware4Stack::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
 {
 #ifdef INSTRUCTION_COSTS
   assert(cur_inst.GetOp() < inst_cost.GetSize());
@@ -396,7 +396,7 @@ bool cHardware4Stack::SingleProcess_PayCosts(const cInstruction & cur_inst)
   
   // Prob of exec
   if ( m_inst_set->GetProbFail(cur_inst) > 0.0 ){
-    return !( m_world->GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
+    return !( ctx.GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
   }
 #endif
   return true;
@@ -404,7 +404,7 @@ bool cHardware4Stack::SingleProcess_PayCosts(const cInstruction & cur_inst)
 
 // This method will handle the actuall execution of an instruction
 // within single process, once that function has been finalized.
-bool cHardware4Stack::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction & cur_inst) 
+bool cHardware4Stack::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst) 
 {
   // Copy Instruction locally to handle stochastic effects
   cInstruction actual_inst = cur_inst;
@@ -868,7 +868,7 @@ bool cHardware4Stack::InjectParasite(cAvidaContext& ctx, double mut_multiplier)
   //************* CALL GOES HERE ******************//
   // spin around randomly (caution: possible organism dizziness)
   //const int num_neighbors = organism->GetNeighborhoodSize();
-  //for(unsigned int i=0; i<m_world->GetRandom().GetUInt(num_neighbors); i++)
+  //for(unsigned int i=0; i<ctx.GetRandom().GetUInt(num_neighbors); i++)
   //  organism->Rotate(1);
   
   // If we don't have a host, stop here.
@@ -978,10 +978,10 @@ void cHardware4Stack::Mutate(cAvidaContext& ctx, int mut_point)
 int cHardware4Stack::PointMutate(cAvidaContext& ctx, const double mut_rate)
 {
   const int num_muts =
-  m_world->GetRandom().GetRandBinomial(GetMemory(0).GetSize(), mut_rate);
+  ctx.GetRandom().GetRandBinomial(GetMemory(0).GetSize(), mut_rate);
   
   for (int i = 0; i < num_muts; i++) {
-    const int pos = m_world->GetRandom().GetUInt(GetMemory(0).GetSize());
+    const int pos = ctx.GetRandom().GetUInt(GetMemory(0).GetSize());
     Mutate(ctx, pos);
   }
   
@@ -1061,11 +1061,11 @@ bool cHardware4Stack::TriggerMutations_ScopeGenome(cAvidaContext& ctx, const cMu
   // The rate we have stored indicates the probability that a single
   // mutation will occur anywhere in the genome.
   
-  if (m_world->GetRandom().P(rate) == true) {
+  if (ctx.GetRandom().P(rate) == true) {
     // We must create a temporary head and use it to randomly determine the
     // position in the genome to be mutated.
     cHeadCPU tmp_head(cur_head);
-    tmp_head.AbsSet(m_world->GetRandom().GetUInt(target_memory.GetSize()));
+    tmp_head.AbsSet(ctx.GetRandom().GetUInt(target_memory.GetSize()));
     TriggerMutations_Body(ctx, cur_mut->GetType(), target_memory, tmp_head);
     return true;
   }
@@ -1078,7 +1078,7 @@ bool cHardware4Stack::TriggerMutations_ScopeLocal(cAvidaContext& ctx, const cMut
   // The rate we have stored is the probability for a mutation at this single
   // position in the genome.
   
-  if (m_world->GetRandom().P(rate) == true) {
+  if (ctx.GetRandom().P(rate) == true) {
     TriggerMutations_Body(ctx, cur_mut->GetType(), target_memory, cur_head);
     return true;
   }
@@ -1093,12 +1093,12 @@ int cHardware4Stack::TriggerMutations_ScopeGlobal(cAvidaContext& ctx, const cMut
   // that should occur.
   
   const int num_mut =
-  m_world->GetRandom().GetRandBinomial(target_memory.GetSize(), rate);
+  ctx.GetRandom().GetRandBinomial(target_memory.GetSize(), rate);
   
   if (num_mut > 0) {
     for (int i = 0; i < num_mut; i++) {
       cHeadCPU tmp_head(cur_head);
-      tmp_head.AbsSet(m_world->GetRandom().GetUInt(target_memory.GetSize()));
+      tmp_head.AbsSet(ctx.GetRandom().GetUInt(target_memory.GetSize()));
       TriggerMutations_Body(ctx, cur_mut->GetType(), target_memory, tmp_head);
     }
   }
@@ -1326,34 +1326,34 @@ void cHardware4Stack::Divide_DoMutations(cAvidaContext& ctx, double mut_multipli
   organism->GetPhenotype().SetDivType(mut_multiplier);
   
   // Divide Mutations
-  if (organism->TestDivideMut()) {
-    const unsigned int mut_line = m_world->GetRandom().GetUInt(child_genome.GetSize());
+  if (organism->TestDivideMut(ctx)) {
+    const unsigned int mut_line = ctx.GetRandom().GetUInt(child_genome.GetSize());
     child_genome[mut_line] = m_inst_set->GetRandomInst(ctx);
     cpu_stats.mut_stats.divide_mut_count++;
   }
   
   // Divide Insertions
-  if (organism->TestDivideIns() && child_genome.GetSize() < MAX_CREATURE_SIZE){
-    const unsigned int mut_line = m_world->GetRandom().GetUInt(child_genome.GetSize() + 1);
+  if (organism->TestDivideIns(ctx) && child_genome.GetSize() < MAX_CREATURE_SIZE){
+    const unsigned int mut_line = ctx.GetRandom().GetUInt(child_genome.GetSize() + 1);
     child_genome.Insert(mut_line, m_inst_set->GetRandomInst(ctx));
     cpu_stats.mut_stats.divide_insert_mut_count++;
   }
   
   // Divide Deletions
-  if (organism->TestDivideDel() && child_genome.GetSize() > MIN_CREATURE_SIZE){
-    const unsigned int mut_line = m_world->GetRandom().GetUInt(child_genome.GetSize());
+  if (organism->TestDivideDel(ctx) && child_genome.GetSize() > MIN_CREATURE_SIZE){
+    const unsigned int mut_line = ctx.GetRandom().GetUInt(child_genome.GetSize());
     child_genome.Remove(mut_line);
     cpu_stats.mut_stats.divide_delete_mut_count++;
   }
   
   // Divide Mutations (per site)
   if(organism->GetDivMutProb() > 0){
-    int num_mut = m_world->GetRandom().GetRandBinomial(child_genome.GetSize(), 
+    int num_mut = ctx.GetRandom().GetRandBinomial(child_genome.GetSize(), 
                                                        organism->GetDivMutProb() / mut_multiplier);
     // If we have lines to mutate...
     if( num_mut > 0 ){
       for (int i = 0; i < num_mut; i++) {
-        int site = m_world->GetRandom().GetUInt(child_genome.GetSize());
+        int site = ctx.GetRandom().GetUInt(child_genome.GetSize());
         child_genome[site] = m_inst_set->GetRandomInst(ctx);
         cpu_stats.mut_stats.div_mut_count++;
       }
@@ -1363,7 +1363,7 @@ void cHardware4Stack::Divide_DoMutations(cAvidaContext& ctx, double mut_multipli
   
   // Insert Mutations (per site)
   if(organism->GetInsMutProb() > 0){
-    int num_mut = m_world->GetRandom().GetRandBinomial(child_genome.GetSize(),
+    int num_mut = ctx.GetRandom().GetRandBinomial(child_genome.GetSize(),
                                                        organism->GetInsMutProb());
     // If would make creature to big, insert up to MAX_CREATURE_SIZE
     if( num_mut + child_genome.GetSize() > MAX_CREATURE_SIZE ){
@@ -1374,7 +1374,7 @@ void cHardware4Stack::Divide_DoMutations(cAvidaContext& ctx, double mut_multipli
       // Build a list of the sites where mutations occured
       static int mut_sites[MAX_CREATURE_SIZE];
       for (int i = 0; i < num_mut; i++) {
-        mut_sites[i] = m_world->GetRandom().GetUInt(child_genome.GetSize() + 1);
+        mut_sites[i] = ctx.GetRandom().GetUInt(child_genome.GetSize() + 1);
       }
       // Sort the list
       qsort( (void*)mut_sites, num_mut, sizeof(int), &IntCompareFunction );
@@ -1389,7 +1389,7 @@ void cHardware4Stack::Divide_DoMutations(cAvidaContext& ctx, double mut_multipli
   
   // Delete Mutations (per site)
   if( organism->GetDelMutProb() > 0 ){
-    int num_mut = m_world->GetRandom().GetRandBinomial(child_genome.GetSize(),
+    int num_mut = ctx.GetRandom().GetRandBinomial(child_genome.GetSize(),
                                                        organism->GetDelMutProb());
     // If would make creature too small, delete down to MIN_CREATURE_SIZE
     if (child_genome.GetSize() - num_mut < MIN_CREATURE_SIZE) {
@@ -1398,7 +1398,7 @@ void cHardware4Stack::Divide_DoMutations(cAvidaContext& ctx, double mut_multipli
     
     // If we have lines to delete...
     for (int i = 0; i < num_mut; i++) {
-      int site = m_world->GetRandom().GetUInt(child_genome.GetSize());
+      int site = ctx.GetRandom().GetUInt(child_genome.GetSize());
       child_genome.Remove(site);
       cpu_stats.mut_stats.delete_mut_count++;
     }
@@ -1407,7 +1407,7 @@ void cHardware4Stack::Divide_DoMutations(cAvidaContext& ctx, double mut_multipli
   // Mutations in the parent's genome
   if (organism->GetParentMutProb() > 0) {
     for (int i = 0; i < GetMemory(0).GetSize(); i++) {
-      if (organism->TestParentMut()) {
+      if (organism->TestParentMut(ctx)) {
         GetMemory(0)[i] = m_inst_set->GetRandomInst(ctx);
         cpu_stats.mut_stats.parent_mut_line_count++;
       }
@@ -1436,34 +1436,34 @@ void cHardware4Stack::Inject_DoMutations(cAvidaContext& ctx, double mut_multipli
   organism->GetPhenotype().SetDivType(mut_multiplier);
   
   // Divide Mutations
-  if (organism->TestDivideMut()) {
-    const unsigned int mut_line = m_world->GetRandom().GetUInt(injected_code.GetSize());
+  if (organism->TestDivideMut(ctx)) {
+    const unsigned int mut_line = ctx.GetRandom().GetUInt(injected_code.GetSize());
     injected_code[mut_line] = m_inst_set->GetRandomInst(ctx);
     //cpu_stats.mut_stats.divide_mut_count++;
   }
   
   // Divide Insertions
-  if (organism->TestDivideIns() && injected_code.GetSize() < MAX_CREATURE_SIZE){
-    const unsigned int mut_line = m_world->GetRandom().GetUInt(injected_code.GetSize() + 1);
+  if (organism->TestDivideIns(ctx) && injected_code.GetSize() < MAX_CREATURE_SIZE){
+    const unsigned int mut_line = ctx.GetRandom().GetUInt(injected_code.GetSize() + 1);
     injected_code.Insert(mut_line, m_inst_set->GetRandomInst(ctx));
     //cpu_stats.mut_stats.divide_insert_mut_count++;
   }
   
   // Divide Deletions
-  if (organism->TestDivideDel() && injected_code.GetSize() > MIN_CREATURE_SIZE){
-    const unsigned int mut_line = m_world->GetRandom().GetUInt(injected_code.GetSize());
+  if (organism->TestDivideDel(ctx) && injected_code.GetSize() > MIN_CREATURE_SIZE){
+    const unsigned int mut_line = ctx.GetRandom().GetUInt(injected_code.GetSize());
     injected_code.Remove(mut_line);
     //cpu_stats.mut_stats.divide_delete_mut_count++;
   }
   
   // Divide Mutations (per site)
   if(organism->GetDivMutProb() > 0){
-    int num_mut = m_world->GetRandom().GetRandBinomial(injected_code.GetSize(), 
+    int num_mut = ctx.GetRandom().GetRandBinomial(injected_code.GetSize(), 
                                                        organism->GetDivMutProb() / mut_multiplier);
     // If we have lines to mutate...
     if( num_mut > 0 ){
       for (int i = 0; i < num_mut; i++) {
-        int site = m_world->GetRandom().GetUInt(injected_code.GetSize());
+        int site = ctx.GetRandom().GetUInt(injected_code.GetSize());
         injected_code[site] = m_inst_set->GetRandomInst(ctx);
         //cpu_stats.mut_stats.div_mut_count++;
       }
@@ -1473,7 +1473,7 @@ void cHardware4Stack::Inject_DoMutations(cAvidaContext& ctx, double mut_multipli
   
   // Insert Mutations (per site)
   if(organism->GetInsMutProb() > 0){
-    int num_mut = m_world->GetRandom().GetRandBinomial(injected_code.GetSize(),
+    int num_mut = ctx.GetRandom().GetRandBinomial(injected_code.GetSize(),
                                                        organism->GetInsMutProb());
     // If would make creature to big, insert up to MAX_CREATURE_SIZE
     if( num_mut + injected_code.GetSize() > MAX_CREATURE_SIZE ){
@@ -1484,7 +1484,7 @@ void cHardware4Stack::Inject_DoMutations(cAvidaContext& ctx, double mut_multipli
       // Build a list of the sites where mutations occured
       static int mut_sites[MAX_CREATURE_SIZE];
       for (int i = 0; i < num_mut; i++) {
-        mut_sites[i] = m_world->GetRandom().GetUInt(injected_code.GetSize() + 1);
+        mut_sites[i] = ctx.GetRandom().GetUInt(injected_code.GetSize() + 1);
       }
       // Sort the list
       qsort( (void*)mut_sites, num_mut, sizeof(int), &IntCompareFunction );
@@ -1499,7 +1499,7 @@ void cHardware4Stack::Inject_DoMutations(cAvidaContext& ctx, double mut_multipli
   
   // Delete Mutations (per site)
   if( organism->GetDelMutProb() > 0 ){
-    int num_mut = m_world->GetRandom().GetRandBinomial(injected_code.GetSize(),
+    int num_mut = ctx.GetRandom().GetRandBinomial(injected_code.GetSize(),
                                                        organism->GetDelMutProb());
     // If would make creature too small, delete down to MIN_CREATURE_SIZE
     if (injected_code.GetSize() - num_mut < MIN_CREATURE_SIZE) {
@@ -1508,7 +1508,7 @@ void cHardware4Stack::Inject_DoMutations(cAvidaContext& ctx, double mut_multipli
     
     // If we have lines to delete...
     for (int i = 0; i < num_mut; i++) {
-      int site = m_world->GetRandom().GetUInt(injected_code.GetSize());
+      int site = ctx.GetRandom().GetUInt(injected_code.GetSize());
       injected_code.Remove(site);
       //cpu_stats.mut_stats.delete_mut_count++;
     }
@@ -1517,7 +1517,7 @@ void cHardware4Stack::Inject_DoMutations(cAvidaContext& ctx, double mut_multipli
   // Mutations in the parent's genome
   if (organism->GetParentMutProb() > 0) {
     for (int i = 0; i < GetMemory(0).GetSize(); i++) {
-      if (organism->TestParentMut()) {
+      if (organism->TestParentMut(ctx)) {
         GetMemory(0)[i] = m_inst_set->GetRandomInst(ctx);
         //cpu_stats.mut_stats.parent_mut_line_count++;
       }
@@ -1564,17 +1564,17 @@ void cHardware4Stack::Divide_TestFitnessMeasures(cAvidaContext& ctx)
   
   if (child_fitness == 0.0) {
     // Fatal mutation... test for reversion.
-    if (m_world->GetRandom().P(organism->GetRevertFatal())) revert = true;
-    if (m_world->GetRandom().P(organism->GetSterilizeFatal())) sterilize = true;
+    if (ctx.GetRandom().P(organism->GetRevertFatal())) revert = true;
+    if (ctx.GetRandom().P(organism->GetSterilizeFatal())) sterilize = true;
   } else if (child_fitness < neut_min) {
-    if (m_world->GetRandom().P(organism->GetRevertNeg())) revert = true;
-    if (m_world->GetRandom().P(organism->GetSterilizeNeg())) sterilize = true;
+    if (ctx.GetRandom().P(organism->GetRevertNeg())) revert = true;
+    if (ctx.GetRandom().P(organism->GetSterilizeNeg())) sterilize = true;
   } else if (child_fitness <= neut_max) {
-    if (m_world->GetRandom().P(organism->GetRevertNeut())) revert = true;
-    if (m_world->GetRandom().P(organism->GetSterilizeNeut())) sterilize = true;
+    if (ctx.GetRandom().P(organism->GetRevertNeut())) revert = true;
+    if (ctx.GetRandom().P(organism->GetSterilizeNeut())) sterilize = true;
   } else {
-    if (m_world->GetRandom().P(organism->GetRevertPos())) revert = true;
-    if (m_world->GetRandom().P(organism->GetSterilizePos())) sterilize = true;
+    if (ctx.GetRandom().P(organism->GetRevertPos())) revert = true;
+    if (ctx.GetRandom().P(organism->GetSterilizePos())) sterilize = true;
   }
   
   // Ideally, we won't have reversions and sterilizations turned on at the
@@ -1624,7 +1624,7 @@ bool cHardware4Stack::Divide_Main(cAvidaContext& ctx, int mem_space_used, double
   }
 #endif
   
-  bool parent_alive = organism->ActivateDivide();
+  bool parent_alive = organism->ActivateDivide(ctx);
   
   //reset the memory of the memory space that has been divided off
   GetMemory(mem_space_used)=cGenome(ConvertToInstruction(mem_space_used)); 
@@ -1784,7 +1784,7 @@ bool cHardware4Stack::Inst_HeadRead(cAvidaContext& ctx)
   
   // Mutations only occur on the read, for the moment.
   int read_inst = 0;
-  if (organism->TestCopyMut()) {
+  if (organism->TestCopyMut(ctx)) {
     read_inst = m_inst_set->GetRandomInst(ctx).GetOp();
     cpu_stats.mut_stats.copy_mut_count++;  // @CAO, hope this is good!
   } else {
@@ -1840,7 +1840,7 @@ bool cHardware4Stack::Inst_HeadCopy(cAvidaContext& ctx)
   
   // Do mutations.
   cInstruction read_inst = read_head.GetInst();
-  if (organism->TestCopyMut()) {
+  if (organism->TestCopyMut(ctx)) {
     read_inst = m_inst_set->GetRandomInst(ctx);
     cpu_stats.mut_stats.copy_mut_count++; 
     write_head.SetFlagMutated();
@@ -2141,7 +2141,7 @@ bool cHardware4Stack::Inst_Inject(cAvidaContext& ctx)
  {
    // Rotate to a random facing and then run the normal inject instruction
    const int num_neighbors = organism->GetNeighborhoodSize();
-   organism->Rotate(m_world->GetRandom().GetUInt(num_neighbors));
+   organism->Rotate(ctx.GetRandom().GetUInt(num_neighbors));
    Inst_Inject();
    return true;
  }

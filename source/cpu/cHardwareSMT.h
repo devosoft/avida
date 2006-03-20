@@ -91,7 +91,7 @@ private:
 #endif
 
   
-  bool SingleProcess_PayCosts(const cInstruction& cur_inst);
+  bool SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst);
   bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst);
   	
 

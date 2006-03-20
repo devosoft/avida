@@ -11,13 +11,17 @@
 #ifndef cMutationRates_h
 #define cMutationRates_h
 
-class cWorld;
+#ifndef cAvidaContext_h
+#include "cAvidaContext.h"
+#endif
+#ifndef cRandom_h
+#include "cRandom.h"
+#endif
+
 
 class cMutationRates
 {
 private:
-  cWorld* m_world;
-  
   // Mutations are divided up by when they occur...
 
   // ...anytime during execution...
@@ -47,25 +51,24 @@ private:
   sDivideMuts divide;
   
   
-  cMutationRates(); // @not_implemented
   cMutationRates& operator=(const cMutationRates&); // @not_implemented
 
 public:
-  cMutationRates(cWorld* world) : m_world(world) { Clear(); }
-  cMutationRates(const cMutationRates& in_muts) : m_world(in_muts.m_world) { Copy(in_muts); }
+  cMutationRates() { Clear(); }
+  cMutationRates(const cMutationRates& in_muts) { Copy(in_muts); }
   ~cMutationRates() { ; }
 
   void Clear();
   void Copy(const cMutationRates & in_muts);
 
-  bool TestPointMut() const;
-  bool TestCopyMut() const;
-  bool TestDivideMut() const;
-  bool TestDivideIns() const;
-  bool TestDivideDel() const;
-  bool TestParentMut() const;
-  bool TestCrossover() const;
-  bool TestAlignedCrossover() const;
+  bool TestPointMut(cAvidaContext& ctx) const { return ctx.GetRandom().P(exec.point_mut_prob); }
+  bool TestCopyMut(cAvidaContext& ctx) const { return ctx.GetRandom().P(copy.copy_mut_prob); }
+  bool TestDivideMut(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_mut_prob); }
+  bool TestDivideIns(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_ins_prob); }
+  bool TestDivideDel(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_del_prob); }
+  bool TestParentMut(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.parent_mut_prob); }
+  bool TestCrossover(cAvidaContext& ctx) const  { return ctx.GetRandom().P(divide.crossover_prob); }
+  bool TestAlignedCrossover(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.aligned_cross_prob); }
 
   double GetPointMutProb() const     { return exec.point_mut_prob; }
   double GetCopyMutProb() const      { return copy.copy_mut_prob; }

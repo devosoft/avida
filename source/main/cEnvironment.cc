@@ -10,6 +10,7 @@
 
 #include "cEnvironment.h"
 
+#include "cAvidaContext.h"
 #include "cHardwareManager.h"
 #include "cInitFile.h"
 #include "nMutation.h"
@@ -28,8 +29,7 @@
 using namespace std;
 
 
-bool cEnvironment::ParseSetting(cString entry, cString & var_name,
-                                cString & var_value, const cString & var_type)
+bool cEnvironment::ParseSetting(cString entry, cString& var_name, cString& var_value, const cString& var_type)
 {
   // Make sure we have an actual entry to parse.
   if (entry.GetSize() == 0) {
@@ -626,7 +626,7 @@ bool cEnvironment::Load(const cString & filename)
 }
 
 
-void cEnvironment::SetupInputs( tArray<int> & input_array ) const
+void cEnvironment::SetupInputs(cAvidaContext& ctx, tArray<int>& input_array) const
 {
   input_array.Resize(3);
   
@@ -637,34 +637,32 @@ void cEnvironment::SetupInputs( tArray<int> & input_array ) const
   
   // And randomize the rest...
   for (int i = 0; i < 3; i++) {
-    input_array[i] += m_world->GetRandom().GetUInt(1 << 24);
+    input_array[i] += ctx.GetRandom().GetUInt(1 << 24);
   }
 }
 
 
-bool cEnvironment::TestInput( cReactionResult & result,
-                              const tBuffer<int> & inputs,
-                              const tBuffer<int> & outputs,
-                              const tArray<double> & resource_count ) const
+bool cEnvironment::TestInput(cReactionResult& result, const tBuffer<int>& inputs,
+                             const tBuffer<int>& outputs, const tArray<double>& resource_count ) const
 {
   // @CAO nothing for the moment...
   return false;
 }
 
 
-bool cEnvironment::TestOutput( cReactionResult & result,
-                               const tBuffer<int> & input_buf,
-                               const tBuffer<int> & output_buf,
-                               const tBuffer<int> & send_buf,
-                               const tBuffer<int> & receive_buf,
-                               const tArray<int> & task_count,
-                               const tArray<int> & reaction_count,
-                               const tArray<double> & resource_count,
-                               const tList< tBuffer<int> > & input_buffers,
-                               const tList< tBuffer<int> > & output_buffers) const
+bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
+                              const tBuffer<int>& input_buf,
+                              const tBuffer<int>& output_buf,
+                              const tBuffer<int>& send_buf,
+                              const tBuffer<int>& receive_buf,
+                              const tArray<int>& task_count,
+                              const tArray<int>& reaction_count,
+                              const tArray<double>& resource_count,
+                              const tList< tBuffer<int> >& input_buffers,
+                              const tList< tBuffer<int> >& output_buffers) const
 {
   // Do setup for reaction tests...
-  cTaskContext* taskctx = task_lib.SetupTests(input_buf, output_buf, input_buffers, output_buffers);
+  cTaskContext taskctx = task_lib.SetupTests(input_buf, output_buf, input_buffers, output_buffers);
   
   // Loop through all reactions to see if any have been triggered...
   const int num_reactions = reaction_lib.GetSize();
@@ -678,7 +676,7 @@ bool cEnvironment::TestOutput( cReactionResult & result,
     // Examine the task trigger associated with this reaction
     cTaskEntry * cur_task = cur_reaction->GetTask();
     assert(cur_task != NULL);
-    const double task_quality = task_lib.TestOutput(*cur_task, taskctx);
+    const double task_quality = task_lib.TestOutput(*cur_task, &taskctx);
     const int task_id = cur_task->GetID();
     
     // If this task wasn't performed, move on to the next one.
@@ -693,19 +691,17 @@ bool cEnvironment::TestOutput( cReactionResult & result,
     }
     
     // And lets process it!
-    DoProcesses(cur_reaction->GetProcesses(), resource_count, task_quality, result);
+    DoProcesses(ctx, cur_reaction->GetProcesses(), resource_count, task_quality, result);
     
     // Mark this reaction as occuring...
     result.MarkReaction(cur_reaction->GetID());
   }
   
-  delete taskctx;
-
   // Loop again to check receive tasks...
   // if (receive_buf.GetSize() != 0)
   {
     // Do setup for reaction tests...
-    taskctx = task_lib.SetupTests(receive_buf, output_buf, input_buffers, output_buffers);
+    cTaskContext taskctx = task_lib.SetupTests(receive_buf, output_buf, input_buffers, output_buffers);
     
     for (int i = 0; i < num_reactions; i++) {
       cReaction * cur_reaction = reaction_lib.GetReaction(i);
@@ -717,7 +713,7 @@ bool cEnvironment::TestOutput( cReactionResult & result,
       // Examine the task trigger associated with this reaction
       cTaskEntry * cur_task = cur_reaction->GetTask();
       assert(cur_task != NULL);
-      const double task_quality = task_lib.TestOutput(*cur_task, taskctx);
+      const double task_quality = task_lib.TestOutput(*cur_task, &taskctx);
       const int task_id = cur_task->GetID();
       
       // If this task wasn't performed, move on to the next one.
@@ -726,7 +722,6 @@ bool cEnvironment::TestOutput( cReactionResult & result,
       // Mark this task as performed...
       result.MarkReceiveTask(task_id);
     }
-    delete taskctx;
   }
   
   
@@ -783,10 +778,9 @@ bool cEnvironment::TestRequisites(const tList<cReactionRequisite>& req_list,
 }
 
 
-void cEnvironment::DoProcesses(const tList<cReactionProcess> & process_list,
-                               const tArray<double> & resource_count,
-                               const double task_quality,
-                               cReactionResult & result) const
+void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>& process_list,
+                               const tArray<double>& resource_count, const double task_quality,
+                               cReactionResult& result) const
 {
   const int num_process = process_list.GetSize();
   
@@ -845,12 +839,11 @@ void cEnvironment::DoProcesses(const tList<cReactionProcess> & process_list,
     };
     
     // Determine detection events
-    cResource * detected = cur_process->GetDetect();
+    cResource* detected = cur_process->GetDetect();
     if (detected != NULL) {
       const int detected_id = detected->GetID();
       const double real_amount = resource_count[detected_id];
-      double estimated_amount =
-        m_world->GetRandom().GetRandNormal(real_amount, cur_process->GetDetectionError()*real_amount);
+      double estimated_amount = ctx.GetRandom().GetRandNormal(real_amount, cur_process->GetDetectionError() * real_amount);
       if (estimated_amount < cur_process->GetDetectionThreshold()) {
         result.Detect(detected_id, 0.0);		
       } else {
@@ -859,7 +852,7 @@ void cEnvironment::DoProcesses(const tList<cReactionProcess> & process_list,
     }
     
     // Determine byproducts
-    cResource * product = cur_process->GetProduct();
+    cResource* product = cur_process->GetProduct();
     if (product != NULL) {
       int product_id = product->GetID();
       double product_size = consumed * cur_process->GetConversion();
@@ -876,24 +869,24 @@ void cEnvironment::DoProcesses(const tList<cReactionProcess> & process_list,
   }
 }
 
-double cEnvironment::GetReactionValue(int & reaction_id)
+double cEnvironment::GetReactionValue(int& reaction_id)
 {
-  cReaction * found_reaction = reaction_lib.GetReaction(reaction_id);
+  cReaction* found_reaction = reaction_lib.GetReaction(reaction_id);
   if (found_reaction == NULL) return false;
   return found_reaction->GetValue();
 }
 
-bool cEnvironment::SetReactionValue(const cString & name, double value)
+bool cEnvironment::SetReactionValue(const cString& name, double value)
 {
-  cReaction * found_reaction = reaction_lib.GetReaction(name);
+  cReaction* found_reaction = reaction_lib.GetReaction(name);
   if (found_reaction == NULL) return false;
   found_reaction->ModifyValue(value);
   return true;
 }
 
-bool cEnvironment::SetReactionValueMult(const cString & name, double value_mult)
+bool cEnvironment::SetReactionValueMult(const cString& name, double value_mult)
 {
-  cReaction * found_reaction = reaction_lib.GetReaction(name);
+  cReaction* found_reaction = reaction_lib.GetReaction(name);
   if (found_reaction == NULL) return false;
   found_reaction->MultiplyValue(value_mult);
   return true;

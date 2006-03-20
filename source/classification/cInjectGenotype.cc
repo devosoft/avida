@@ -104,16 +104,6 @@ void cInjectGenotype::SetParent(cInjectGenotype * parent)
   parent->AddOffspringGenotype();
 }
 
-void cInjectGenotype::Mutate()  // Check each location to be mutated.
-{
-  int i;
-
-  for (i = 0; i < genome.GetSize(); i++) {
-      genome[i].SetOp(m_world->GetRandom().GetUInt(m_world->GetNumInstructions()));
-    }
-  
-}
-
 void cInjectGenotype::UpdateReset()
 {
   last_num_injected = num_injected;

@@ -26,11 +26,11 @@
 #endif
 
 
-bool cPopulationInterface::Divide(cOrganism * parent, cGenome & child_genome)
+bool cPopulationInterface::Divide(cAvidaContext& ctx, cOrganism* parent, cGenome& child_genome)
 {
   assert(parent != NULL);
   assert(m_world->GetPopulation().GetCell(cell_id).GetOrganism() == parent);
-  return m_world->GetPopulation().ActivateOffspring(child_genome, *parent);
+  return m_world->GetPopulation().ActivateOffspring(ctx, child_genome, *parent);
 }
 
 cOrganism * cPopulationInterface::GetNeighbor()

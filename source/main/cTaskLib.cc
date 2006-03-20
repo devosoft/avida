@@ -342,8 +342,7 @@ const cTaskEntry & cTaskLib::GetTask(int id) const
   return *(task_array[id]);
 }
 
-int cTaskLib::SetupLogicTests(const tBuffer<int> & inputs,
-                              const tBuffer<int> & outputs) const
+int cTaskLib::SetupLogicTests(const tBuffer<int>& inputs, const tBuffer<int>& outputs) const
 {
   // Collect the inputs in a useful form.
   const int num_inputs = inputs.GetNumStored();
@@ -362,8 +361,8 @@ int cTaskLib::SetupLogicTests(const tBuffer<int> & inputs,
   //       Input B: 1 1 0 0 1 1 0 0
   //       Input A: 1 0 1 0 1 0 1 0
   
-  tArray<int> logic_out(8);
-  logic_out.SetAll(-1);
+  int logic_out[8];
+  for (int i = 0; i < 8; i++) logic_out[i] = -1;
   
   // Test all input combos!
   bool func_OK = true;  // Have all outputs been consistant?
@@ -1728,10 +1727,10 @@ double cTaskLib::Task_CommEcho(cTaskContext* ctx) const
 {
   const int test_output = ctx->output_buffer[0];
   
-  tListIterator<tBuffer<int> > buff_it(ctx->other_input_buffers);  
+  tConstListIterator<tBuffer<int> > buff_it(ctx->other_input_buffers);  
   
   while (buff_it.Next() != NULL) {
-    tBuffer<int> & cur_buff = *(buff_it.Get());
+    const tBuffer<int>& cur_buff = *(buff_it.Get());
     const int buff_size = cur_buff.GetNumStored();
     for (int i = 0; i < buff_size; i++) {
       if (test_output == cur_buff[i]) return 1.0;
@@ -1745,10 +1744,10 @@ double cTaskLib::Task_CommNot(cTaskContext* ctx) const
 {
   const int test_output = ctx->output_buffer[0];
   
-  tListIterator<tBuffer<int> > buff_it(ctx->other_input_buffers);  
+  tConstListIterator<tBuffer<int> > buff_it(ctx->other_input_buffers);  
   
   while (buff_it.Next() != NULL) {
-    tBuffer<int> & cur_buff = *(buff_it.Get());
+    const tBuffer<int>& cur_buff = *(buff_it.Get());
     const int buff_size = cur_buff.GetNumStored();
     for (int i = 0; i < buff_size; i++) {
       if (test_output == (0-(cur_buff[i]+1))) return 1.0;

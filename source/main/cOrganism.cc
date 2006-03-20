@@ -10,6 +10,7 @@
 
 #include "cOrganism.h"
 
+#include "cAvidaContext.h"
 #include "nHardware.h"
 #include "cEnvironment.h"
 #include "functions.h"
@@ -32,12 +33,11 @@
 using namespace std;
 
 
-cOrganism::cOrganism(cWorld* world, const cGenome& in_genome)
+cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome)
   : m_world(world)
   , genotype(NULL)
   , phenotype(world)
   , initial_genome(in_genome)
-  , mut_rates(world)
   , mut_info(world->GetEnvironment().GetMutationLib(), in_genome.GetSize())
   , m_interface(NULL)
   , input_pointer(0)
@@ -62,7 +62,7 @@ cOrganism::cOrganism(cWorld* world, const cGenome& in_genome)
   if (m_world->GetConfig().DEATH_METHOD.Get() > 0) {
     max_executed = m_world->GetConfig().AGE_LIMIT.Get();
     if (m_world->GetConfig().AGE_DEVIATION.Get() > 0.0) {
-      max_executed += (int) (m_world->GetRandom().GetRandNormal() * m_world->GetConfig().AGE_DEVIATION.Get());
+      max_executed += (int) (ctx.GetRandom().GetRandNormal() * m_world->GetConfig().AGE_DEVIATION.Get());
     }
     if (m_world->GetConfig().DEATH_METHOD.Get() == DEATH_METHOD_MULTIPLE) {
       max_executed *= initial_genome.GetSize();
@@ -145,7 +145,7 @@ void cOrganism::DoOutput(cAvidaContext& ctx, const int value)
   output_buf.Add(value);
   tArray<double> res_change(resource_count.GetSize());
   tArray<int> insts_triggered;
-  phenotype.TestOutput(input_buf, output_buf, send_buf, receive_buf,
+  phenotype.TestOutput(ctx, input_buf, output_buf, send_buf, receive_buf,
 		       resource_count, res_change, insts_triggered,
 		       other_input_list, other_output_list);
   m_interface->UpdateResources(res_change);
@@ -279,11 +279,11 @@ bool cOrganism::Divide_CheckViable()
 // This gets called after a successful divide to deal with the child. 
 // Returns true if parent lives through this process.
 
-bool cOrganism::ActivateDivide()
+bool cOrganism::ActivateDivide(cAvidaContext& ctx)
 {
   assert(m_interface);
   // Activate the child!  (Keep Last: may kill this organism!)
-  return m_interface->Divide(this, child_genome);
+  return m_interface->Divide(ctx, this, child_genome);
 }
 
 

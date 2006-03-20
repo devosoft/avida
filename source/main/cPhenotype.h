@@ -50,6 +50,7 @@
  *
  *************************************************************************/
 
+class cAvidaContext;
 class cEnvironment;
 template <class T> class tBuffer;
 template <class T> class tList;
@@ -155,7 +156,7 @@ public:
 
   // Input and Output Reaction Tests
   bool TestInput(tBuffer<int>& inputs, tBuffer<int>& outputs);
-  bool TestOutput(tBuffer<int>& input_buf, tBuffer<int>& output_buf, 
+  bool TestOutput(cAvidaContext& ctx, tBuffer<int>& input_buf, tBuffer<int>& output_buf, 
                   tBuffer<int>& send_buf, tBuffer<int>& receive_buf,
                   const tArray<double>& res_in, tArray<double>& res_change,
                   tArray<int>& insts_triggered, tList<tBuffer<int> >& other_inputs, 

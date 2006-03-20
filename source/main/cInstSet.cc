@@ -70,7 +70,7 @@ bool cInstSet::OK() const
 
 cInstruction cInstSet::GetRandomInst(cAvidaContext& ctx) const
 {
-  int inst_op = m_mutation_chart[m_world->GetRandom().GetUInt(m_mutation_chart.GetSize())];
+  int inst_op = m_mutation_chart[ctx.GetRandom().GetUInt(m_mutation_chart.GetSize())];
   return cInstruction(inst_op);
 }
 

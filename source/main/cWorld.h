@@ -45,7 +45,7 @@ protected:
   cStats* m_stats;
   cWorldDriver* m_driver;
 
-  cRandomMT m_rng;
+  cRandom m_rng;
   
   bool m_test_on_div;     // flag derived from a collection of configuration settings
   bool m_test_sterilize;  // flag derived from a collection of configuration settings

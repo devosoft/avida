@@ -488,7 +488,7 @@ bool cPhenotype::TestInput(tBuffer<int> & inputs, tBuffer<int> & outputs)
   return false; // Nothing happened...
 }
 
-bool cPhenotype::TestOutput(tBuffer<int> & input_buf, tBuffer<int> &output_buf,
+bool cPhenotype::TestOutput(cAvidaContext& ctx, tBuffer<int> & input_buf, tBuffer<int> &output_buf,
 			    tBuffer<int> & send_buf, tBuffer<int> &receive_buf,
 			    const tArray<double> & res_in,
 			    tArray<double> & res_change,
@@ -506,7 +506,7 @@ bool cPhenotype::TestOutput(tBuffer<int> & input_buf, tBuffer<int> &output_buf,
   cReactionResult result(num_resources, num_tasks, num_reactions);
 			
   // Run everything through the environment.
-  bool found = env.TestOutput(result, input_buf, output_buf, send_buf,
+  bool found = env.TestOutput(ctx, result, input_buf, output_buf, send_buf,
 			      receive_buf, cur_task_count, cur_reaction_count,
 			      res_in, other_inputs, other_outputs);
 
