@@ -7,8 +7,6 @@
  *
  */
 
-#include "system-alloc.h"
-
 // Copyright (c) 2005, Google Inc.
 // All rights reserved.
 // 
@@ -43,20 +41,17 @@
 
 #include "tcmalloc-config.h"
 
-#if defined HAVE_STDINT_H
 #include <stdint.h>
-#elif defined HAVE_INTTYPES_H
-#include <inttypes.h>
-#else
-#include <sys/types.h>
-#endif
-
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/mman.h>
 
 #include "spinlock.h"
 #include "tcmalloc-logging.h"
+
+#ifndef MAP_ANONYMOUS
+#define MAP_ANONYMOUS MAP_ANON
+#endif
 
 // Structure for discovering alignment
 union MemoryAligner {
@@ -99,7 +94,7 @@ static const int32_t FLAGS_malloc_devmem_limit = 0;
 static void* TrySbrk(size_t size, size_t alignment) {
   // sbrk will release memory if passed a negative number, so we do
   // a strict check here
-  if (static_cast<ptrdiff_t>(size + alignment) < 0) return NULL;
+  if (static_cast<uintptr_t>(size + alignment) < 0) return NULL;
   
   size = ((size + alignment - 1) / alignment) * alignment;
   void* result = sbrk(size);
@@ -276,7 +271,7 @@ void* TCMalloc_SystemAlloc(size_t size, size_t alignment) {
   
   // Try twice, once avoiding allocators that failed before, and once
   // more trying all allocators even if they failed before.
-// @not_used -  for (int i = 0; i < 2; i++) {
+  for (int i = 0; i < 2; i++) {
 // @not_used -    if (use_devmem && !devmem_failure) {
 // @not_used -      void* result = TryDevMem(size, alignment);
 // @not_used -      if (result != NULL) return result;
@@ -301,5 +296,6 @@ void* TCMalloc_SystemAlloc(size_t size, size_t alignment) {
     sbrk_failure = false;
     mmap_failure = false;
   }
+  
   return NULL;
 }

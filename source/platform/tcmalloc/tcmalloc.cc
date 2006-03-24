@@ -76,14 +76,8 @@
 #include <new>
 #include <stdio.h>
 #include <stddef.h>
-#if defined HAVE_STDINT_H
 #include <stdint.h>
-#elif defined HAVE_INTTYPES_H
-#include <inttypes.h>
-#else
-#include <sys/types.h>
-#endif
-#include <malloc.h>
+#include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
 #include <unistd.h>
@@ -91,7 +85,7 @@
 #include <stdarg.h>
 
 #include "tcmalloc-logging.h"
-#include "tcmalloc-spinlock.h"
+#include "spinlock.h"
 #include "pagemap.h"
 #include "system-alloc.h"
 
@@ -587,13 +581,13 @@ static inline bool DLL_IsEmpty(const Span* list) {
   return list->next == list;
 }
 
-static int DLL_Length(const Span* list) {
-  int result = 0;
-  for (Span* s = list->next; s != list; s = s->next) {
-    result++;
-  }
-  return result;
-}
+//static int DLL_Length(const Span* list) {
+//  int result = 0;
+//  for (Span* s = list->next; s != list; s = s->next) {
+//    result++;
+//  }
+//  return result;
+//}
 
 #if 0 /* Not needed at the moment -- causes compiler warnings if not used */
 static void DLL_Print(const char* label, const Span* list) {
@@ -646,7 +640,7 @@ static Span sampled_objects;
 // from the system.  Useful for finding allocation sites that cause
 // increase in the footprint of the system.  The linked list pointer
 // is stored in trace->stack[kMaxStackDepth-1].
-static StackTrace* growth_stacks = NULL;
+// @not_used -static StackTrace* growth_stacks = NULL;
 
 // -------------------------------------------------------------------------
 // Map from page-id to per-page data
@@ -950,13 +944,13 @@ void TCMalloc_PageHeap::RegisterSizeClass(Span* span, size_t sc) {
 // @not_used -              (cumulative << kPageShift) / 1048576.0);
 // @not_used -}
 
-static void RecordGrowth(size_t growth) {
-  StackTrace* t = stacktrace_allocator.New();
-  t->depth = GetStackTrace(t->stack, kMaxStackDepth-1, 3);
-  t->size = growth;
-  t->stack[kMaxStackDepth-1] = reinterpret_cast<void*>(growth_stacks);
-  growth_stacks = t;
-}
+// @not_used -static void RecordGrowth(size_t growth) {
+// @not_used -  StackTrace* t = stacktrace_allocator.New();
+// @not_used -  t->depth = GetStackTrace(t->stack, kMaxStackDepth-1, 3);
+// @not_used -  t->size = growth;
+// @not_used -  t->stack[kMaxStackDepth-1] = reinterpret_cast<void*>(growth_stacks);
+// @not_used -  growth_stacks = t;
+// @not_used -}
 
 bool TCMalloc_PageHeap::GrowHeap(Length n) {
   ASSERT(kMaxPages >= kMinSystemAlloc);
@@ -970,7 +964,7 @@ bool TCMalloc_PageHeap::GrowHeap(Length n) {
     }
     if (ptr == NULL) return false;
   }
-  RecordGrowth(ask << kPageShift);
+// @not_used -  RecordGrowth(ask << kPageShift);
 
   uint64_t old_system_bytes = system_bytes_;
   system_bytes_ += (ask << kPageShift);
@@ -1668,7 +1662,7 @@ inline TCMalloc_ThreadCache* TCMalloc_ThreadCache::GetCache() {
   if (!tsd_inited) {
     InitModule();
   } else {
-    ptr = perftools_pthread_getspecific(heap_key);
+    ptr = pthread_getspecific(heap_key);
   }
   if (ptr == NULL) ptr = CreateCacheIfNecessary();
   return reinterpret_cast<TCMalloc_ThreadCache*>(ptr);
@@ -1680,7 +1674,7 @@ inline TCMalloc_ThreadCache* TCMalloc_ThreadCache::GetCache() {
 inline TCMalloc_ThreadCache* TCMalloc_ThreadCache::GetCacheIfPresent() {
   if (!tsd_inited) return NULL;
   return reinterpret_cast<TCMalloc_ThreadCache*>
-    (perftools_pthread_getspecific(heap_key));
+    (pthread_getspecific(heap_key));
 }
 
 void TCMalloc_ThreadCache::PickNextSample() {
@@ -1721,7 +1715,7 @@ void TCMalloc_ThreadCache::InitModule() {
 
 void TCMalloc_ThreadCache::InitTSD() {
   ASSERT(!tsd_inited);
-  perftools_pthread_key_create(&heap_key, DeleteCache);
+  pthread_key_create(&heap_key, DeleteCache);
   tsd_inited = true;
 
   // We may have used a fake pthread_t for the main thread.  Fix it.
@@ -1778,7 +1772,7 @@ void* TCMalloc_ThreadCache::CreateCacheIfNecessary() {
   // pthread_setspecific() if we are already inside pthread_setspecific().
   if (!heap->in_setspecific_ && tsd_inited) {
     heap->in_setspecific_ = true;
-    perftools_pthread_setspecific(heap_key, heap);
+    pthread_setspecific(heap_key, heap);
     heap->in_setspecific_ = false;
   }
   return heap;
@@ -1832,40 +1826,40 @@ struct TCMallocStats {
   uint64_t metadata_bytes;      // Bytes alloced for metadata
 };
 
-// Get stats into "r".  Also get per-size-class counts if class_count != NULL
-static void ExtractStats(TCMallocStats* r, uint64_t* class_count) {
-  r->central_bytes = 0;
-  r->transfer_bytes = 0;
-  for (int cl = 0; cl < kNumClasses; ++cl) {
-    const int length = central_cache[cl].length();
-    const int tc_length = central_cache[cl].tc_length();
-    r->central_bytes += static_cast<uint64_t>(ByteSizeForClass(cl)) * length;
-    r->transfer_bytes +=
-      static_cast<uint64_t>(ByteSizeForClass(cl)) * tc_length;
-    if (class_count) class_count[cl] = length + tc_length;
-  }
-
-  // Add stats from per-thread heaps
-  r->thread_bytes = 0;
-  { // scope
-    SpinLockHolder h(&pageheap_lock);
-    for (TCMalloc_ThreadCache* h = thread_heaps; h != NULL; h = h->next_) {
-      r->thread_bytes += h->Size();
-      if (class_count) {
-        for (int cl = 0; cl < kNumClasses; ++cl) {
-          class_count[cl] += h->freelist_length(cl);
-        }
-      }
-    }
-  }
-
-  { //scope
-    SpinLockHolder h(&pageheap_lock);
-    r->system_bytes = pageheap->SystemBytes();
-    r->metadata_bytes = metadata_system_bytes;
-    r->pageheap_bytes = pageheap->FreeBytes();
-  }
-}
+//// Get stats into "r".  Also get per-size-class counts if class_count != NULL
+//static void ExtractStats(TCMallocStats* r, uint64_t* class_count) {
+//  r->central_bytes = 0;
+//  r->transfer_bytes = 0;
+//  for (int cl = 0; cl < kNumClasses; ++cl) {
+//    const int length = central_cache[cl].length();
+//    const int tc_length = central_cache[cl].tc_length();
+//    r->central_bytes += static_cast<uint64_t>(ByteSizeForClass(cl)) * length;
+//    r->transfer_bytes +=
+//      static_cast<uint64_t>(ByteSizeForClass(cl)) * tc_length;
+//    if (class_count) class_count[cl] = length + tc_length;
+//  }
+//
+//  // Add stats from per-thread heaps
+//  r->thread_bytes = 0;
+//  { // scope
+//    SpinLockHolder h(&pageheap_lock);
+//    for (TCMalloc_ThreadCache* h = thread_heaps; h != NULL; h = h->next_) {
+//      r->thread_bytes += h->Size();
+//      if (class_count) {
+//        for (int cl = 0; cl < kNumClasses; ++cl) {
+//          class_count[cl] += h->freelist_length(cl);
+//        }
+//      }
+//    }
+//  }
+//
+//  { //scope
+//    SpinLockHolder h(&pageheap_lock);
+//    r->system_bytes = pageheap->SystemBytes();
+//    r->metadata_bytes = metadata_system_bytes;
+//    r->pageheap_bytes = pageheap->FreeBytes();
+//  }
+//}
 
 //// WRITE stats to "out"
 //static void DumpStats(TCMalloc_Printer* out, int level) {
@@ -2116,71 +2110,71 @@ static inline void do_free(void* ptr) {
 // not be invoked very often.  This requirement simplifies our
 // implementation and allows us to tune for expected allocation
 // patterns.
-// @not_used -static void* do_memalign(size_t align, size_t size) {
-// @not_used -  ASSERT((align & (align - 1)) == 0);
-// @not_used -  ASSERT(align > 0);
-// @not_used -  if (size + align < size) return NULL;         // Overflow
-// @not_used -
-// @not_used -  if (pageheap == NULL) TCMalloc_ThreadCache::InitModule();
-// @not_used -
-// @not_used -  // Allocate at least one byte to avoid boundary conditions below
-// @not_used -  if (size == 0) size = 1;
-// @not_used -
-// @not_used -  if (size <= kMaxSize && align < kPageSize) {
-// @not_used -    // Search through acceptable size classes looking for one with
-// @not_used -    // enough alignment.  This depends on the fact that
-// @not_used -    // InitSizeClasses() currently produces several size classes that
-// @not_used -    // are aligned at powers of two.  We will waste time and space if
-// @not_used -    // we miss in the size class array, but that is deemed acceptable
-// @not_used -    // since memalign() should be used rarely.
-// @not_used -    int cl = SizeClass(size);
-// @not_used -    while (cl < kNumClasses && ((class_to_size[cl] & (align - 1)) != 0)) {
-// @not_used -      cl++;
-// @not_used -    }
-// @not_used -    if (cl < kNumClasses) {
-// @not_used -      TCMalloc_ThreadCache* heap = TCMalloc_ThreadCache::GetCache();
-// @not_used -      return heap->Allocate(class_to_size[cl]);
-// @not_used -    }
-// @not_used -  }
-// @not_used -
-// @not_used -  // We will allocate directly from the page heap
-// @not_used -  SpinLockHolder h(&pageheap_lock);
-// @not_used -
-// @not_used -  if (align <= kPageSize) {
-// @not_used -    // Any page-level allocation will be fine
-// @not_used -    // TODO: We could put the rest of this page in the appropriate
-// @not_used -    // TODO: cache but it does not seem worth it.
-// @not_used -    Span* span = pageheap->New(pages(size));
-// @not_used -    if (span == NULL) return NULL;
-// @not_used -    return reinterpret_cast<void*>(span->start << kPageShift);
-// @not_used -  }
-// @not_used -
-// @not_used -  // Allocate extra pages and carve off an aligned portion
-// @not_used -  const int alloc = pages(size + align);
-// @not_used -  Span* span = pageheap->New(alloc);
-// @not_used -  if (span == NULL) return NULL;
-// @not_used -
-// @not_used -  // Skip starting portion so that we end up aligned
-// @not_used -  int skip = 0;
-// @not_used -  while ((((span->start+skip) << kPageShift) & (align - 1)) != 0) {
-// @not_used -    skip++;
-// @not_used -  }
-// @not_used -  ASSERT(skip < alloc);
-// @not_used -  if (skip > 0) {
-// @not_used -    Span* rest = pageheap->Split(span, skip);
-// @not_used -    pageheap->Delete(span);
-// @not_used -    span = rest;
-// @not_used -  }
-// @not_used -
-// @not_used -  // Skip trailing portion that we do not need to return
-// @not_used -  const int needed = pages(size);
-// @not_used -  ASSERT(span->length >= needed);
-// @not_used -  if (span->length > needed) {
-// @not_used -    Span* trailer = pageheap->Split(span, needed);
-// @not_used -    pageheap->Delete(trailer);
-// @not_used -  }
-// @not_used -  return reinterpret_cast<void*>(span->start << kPageShift);
-// @not_used -}
+static void* do_memalign(size_t align, size_t size) {
+  ASSERT((align & (align - 1)) == 0);
+  ASSERT(align > 0);
+  if (size + align < size) return NULL;         // Overflow
+
+  if (pageheap == NULL) TCMalloc_ThreadCache::InitModule();
+
+  // Allocate at least one byte to avoid boundary conditions below
+  if (size == 0) size = 1;
+
+  if (size <= kMaxSize && align < kPageSize) {
+    // Search through acceptable size classes looking for one with
+    // enough alignment.  This depends on the fact that
+    // InitSizeClasses() currently produces several size classes that
+    // are aligned at powers of two.  We will waste time and space if
+    // we miss in the size class array, but that is deemed acceptable
+    // since memalign() should be used rarely.
+    int cl = SizeClass(size);
+    while (cl < kNumClasses && ((class_to_size[cl] & (align - 1)) != 0)) {
+      cl++;
+    }
+    if (cl < kNumClasses) {
+      TCMalloc_ThreadCache* heap = TCMalloc_ThreadCache::GetCache();
+      return heap->Allocate(class_to_size[cl]);
+    }
+  }
+
+  // We will allocate directly from the page heap
+  SpinLockHolder h(&pageheap_lock);
+
+  if (align <= kPageSize) {
+    // Any page-level allocation will be fine
+    // TODO: We could put the rest of this page in the appropriate
+    // TODO: cache but it does not seem worth it.
+    Span* span = pageheap->New(pages(size));
+    if (span == NULL) return NULL;
+    return reinterpret_cast<void*>(span->start << kPageShift);
+  }
+
+  // Allocate extra pages and carve off an aligned portion
+  const int alloc = pages(size + align);
+  Span* span = pageheap->New(alloc);
+  if (span == NULL) return NULL;
+
+  // Skip starting portion so that we end up aligned
+  int skip = 0;
+  while ((((span->start+skip) << kPageShift) & (align - 1)) != 0) {
+    skip++;
+  }
+  ASSERT(skip < alloc);
+  if (skip > 0) {
+    Span* rest = pageheap->Split(span, skip);
+    pageheap->Delete(span);
+    span = rest;
+  }
+
+  // Skip trailing portion that we do not need to return
+  const int needed = pages(size);
+  ASSERT(span->length >= needed);
+  if (span->length > needed) {
+    Span* trailer = pageheap->Split(span, needed);
+    pageheap->Delete(trailer);
+  }
+  return reinterpret_cast<void*>(span->start << kPageShift);
+}
 
 
 
@@ -2367,7 +2361,7 @@ void operator delete(void* p) OP_THROWNOTHING {
 }
 
 void operator delete(void* p, const std::nothrow_t&) OP_THROWNOTHING {
-  MallocHook::InvokeDeleteHook(p);
+// @not_used -  MallocHook::InvokeDeleteHook(p);
   do_free(p);
 }
 
@@ -2439,29 +2433,29 @@ extern "C" int mallopt(int cmd, int value) {
   return 1;     // Indicates error
 }
 
-extern "C" struct mallinfo mallinfo(void) {
-  TCMallocStats stats;
-  ExtractStats(&stats, NULL);
-
-  // Just some of the fields are filled in.
-  struct mallinfo info;
-  memset(&info, 0, sizeof(info));
-
-  // Unfortunately, the struct contains "int" field, so some of the
-  // size values will be truncated.
-  info.arena     = static_cast<int>(stats.system_bytes);
-  info.fsmblks   = static_cast<int>(stats.thread_bytes
-                                    + stats.central_bytes
-                                    + stats.transfer_bytes);
-  info.fordblks  = static_cast<int>(stats.pageheap_bytes);
-  info.uordblks  = static_cast<int>(stats.system_bytes
-                                    - stats.thread_bytes
-                                    - stats.central_bytes
-                                    - stats.transfer_bytes
-                                    - stats.pageheap_bytes);
-
-  return info;
-}
+// @not_used -extern "C" struct mallinfo mallinfo(void) {
+// @not_used -  TCMallocStats stats;
+// @not_used -  ExtractStats(&stats, NULL);
+// @not_used -
+// @not_used -  // Just some of the fields are filled in.
+// @not_used -  struct mallinfo info;
+// @not_used -  memset(&info, 0, sizeof(info));
+// @not_used -
+// @not_used -  // Unfortunately, the struct contains "int" field, so some of the
+// @not_used -  // size values will be truncated.
+// @not_used -  info.arena     = static_cast<int>(stats.system_bytes);
+// @not_used -  info.fsmblks   = static_cast<int>(stats.thread_bytes
+// @not_used -                                    + stats.central_bytes
+// @not_used -                                    + stats.transfer_bytes);
+// @not_used -  info.fordblks  = static_cast<int>(stats.pageheap_bytes);
+// @not_used -  info.uordblks  = static_cast<int>(stats.system_bytes
+// @not_used -                                    - stats.thread_bytes
+// @not_used -                                    - stats.central_bytes
+// @not_used -                                    - stats.transfer_bytes
+// @not_used -                                    - stats.pageheap_bytes);
+// @not_used -
+// @not_used -  return info;
+// @not_used -}
 
 //-------------------------------------------------------------------
 // Some library routines on RedHat 9 allocate memory using malloc()

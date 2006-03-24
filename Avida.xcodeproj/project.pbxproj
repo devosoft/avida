@@ -116,6 +116,9 @@
 		7073165D097C6C8F00815164 /* cParser.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7073165B097C6C8F00815164 /* cParser.cc */; };
 		70731665097C6DF500815164 /* cASLibrary.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70731663097C6DF500815164 /* cASLibrary.cc */; };
 		7073166B097C6E0C00815164 /* cASSymbol.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70731669097C6E0C00815164 /* cASSymbol.cc */; };
+		70AA941A09D486CA006A24C8 /* system-alloc.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCF50209CFB0B400924128 /* system-alloc.cc */; };
+		70AA941B09D486CB006A24C8 /* tcmalloc-logging.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCF57F09CFBD3D00924128 /* tcmalloc-logging.cc */; };
+		70AA941C09D486CD006A24C8 /* tcmalloc.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCF56309CFBB9500924128 /* tcmalloc.cc */; };
 		70B0865908F4974300FC65FE /* cLandscape.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865108F4974300FC65FE /* cLandscape.cc */; };
 		70B0865C08F4974300FC65FE /* cLocalMutations.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865408F4974300FC65FE /* cLocalMutations.cc */; };
 		70B0865E08F4974300FC65FE /* cMutationLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865608F4974300FC65FE /* cMutationLib.cc */; };
@@ -636,6 +639,7 @@
 		70731668097C6E0C00815164 /* cASSymbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASSymbol.h; sourceTree = "<group>"; };
 		70731669097C6E0C00815164 /* cASSymbol.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cASSymbol.cc; sourceTree = "<group>"; };
 		707A687408E3750300576968 /* cHardwareTracer_SMT.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareTracer_SMT.h; sourceTree = "<group>"; };
+		70AA941909D486AE006A24C8 /* libtcmalloc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libtcmalloc.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		70B0864808F4972600FC65FE /* cLandscape.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cLandscape.h; sourceTree = "<group>"; };
 		70B0864B08F4972600FC65FE /* cLocalMutations.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cLocalMutations.h; sourceTree = "<group>"; };
 		70B0864C08F4972600FC65FE /* cMutation.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMutation.h; sourceTree = "<group>"; };
@@ -1016,6 +1020,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				70658C5A085DF67D00486BED /* libncurses.5.4.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		70AA941709D486AE006A24C8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1715,11 +1726,22 @@
 				DCC3164D07626CF3008F7A48 /* avida */,
 				700E2B83085DE50C00CF158A /* avida-viewer */,
 				70DCAD1C097AF7CC002F8733 /* avida-s */,
+				70AA941909D486AE006A24C8 /* libtcmalloc.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		70AA941509D486AE006A24C8 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
 		700E2AF3085DE50C00CF158A /* avida-viewer */ = {
@@ -1760,6 +1782,31 @@
 			productName = primitive;
 			productReference = 700E2B83085DE50C00CF158A /* avida-viewer */;
 			productType = "com.apple.product-type.tool";
+		};
+		70AA941809D486AE006A24C8 /* tcmalloc */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 70AA942509D48715006A24C8 /* Build configuration list for PBXNativeTarget "tcmalloc" */;
+			buildPhases = (
+				70AA941509D486AE006A24C8 /* Headers */,
+				70AA941609D486AE006A24C8 /* Sources */,
+				70AA941709D486AE006A24C8 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			buildSettings = {
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = tcmalloc;
+				ZERO_LINK = YES;
+			};
+			dependencies = (
+			);
+			name = tcmalloc;
+			productName = tcmalloc;
+			productReference = 70AA941909D486AE006A24C8 /* libtcmalloc.a */;
+			productType = "com.apple.product-type.library.static";
 		};
 		70DCAC9D097AF7CC002F8733 /* avida-s */ = {
 			isa = PBXNativeTarget;
@@ -1861,6 +1908,7 @@
 				DCC3164C07626CF3008F7A48 /* avida */,
 				70DCAC9D097AF7CC002F8733 /* avida-s */,
 				700E2AF3085DE50C00CF158A /* avida-viewer */,
+				70AA941809D486AE006A24C8 /* tcmalloc */,
 			);
 		};
 /* End PBXProject section */
@@ -2029,6 +2077,16 @@
 				7054A1B809A810CB00038658 /* cAnalyzeJobWorker.cc in Sources */,
 				7005A70609BA0FA90007E16E /* cTestCPUInterface.cc in Sources */,
 				70DCF50809CFB0B400924128 /* system-alloc.cc in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		70AA941609D486AE006A24C8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				70AA941A09D486CA006A24C8 /* system-alloc.cc in Sources */,
+				70AA941B09D486CB006A24C8 /* tcmalloc-logging.cc in Sources */,
+				70AA941C09D486CD006A24C8 /* tcmalloc.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2392,6 +2450,59 @@
 			};
 			name = "Deployment-G4";
 		};
+		70AA942609D48715006A24C8 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_THREADSAFE_STATICS = NO;
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = tcmalloc;
+				ZERO_LINK = YES;
+			};
+			name = Development;
+		};
+		70AA942709D48715006A24C8 /* Deployment-G4 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_MODEL_TUNING = G4;
+				GCC_THREADSAFE_STATICS = NO;
+				PRODUCT_NAME = tcmalloc;
+			};
+			name = "Deployment-G4";
+		};
+		70AA942809D48715006A24C8 /* Deployment-G5 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_THREADSAFE_STATICS = NO;
+				PRODUCT_NAME = tcmalloc;
+			};
+			name = "Deployment-G5";
+		};
+		70AA942909D48715006A24C8 /* Profile */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_THREADSAFE_STATICS = NO;
+				PRODUCT_NAME = tcmalloc;
+			};
+			name = Profile;
+		};
 		70B393DC0944CA6F0018F09D /* Deployment-G5 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2498,6 +2609,7 @@
 				GCC_AUTO_VECTORIZATION = YES;
 				GCC_DYNAMIC_NO_PIC = YES;
 				GCC_FAST_MATH = YES;
+				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					NDEBUG,
@@ -2505,6 +2617,7 @@
 				);
 				GCC_STRICT_ALIASING = YES;
 				GCC_UNROLL_LOOPS = YES;
+				OTHER_CFLAGS = "-falign-loops=16";
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
@@ -2577,6 +2690,17 @@
 				702442D90859E0B00059BD9B /* Deployment-G4 */,
 				70B393E00944CA6F0018F09D /* Deployment-G5 */,
 				70B393E10944CA6F0018F09D /* Profile */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = "Deployment-G4";
+		};
+		70AA942509D48715006A24C8 /* Build configuration list for PBXNativeTarget "tcmalloc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				70AA942609D48715006A24C8 /* Development */,
+				70AA942709D48715006A24C8 /* Deployment-G4 */,
+				70AA942809D48715006A24C8 /* Deployment-G5 */,
+				70AA942909D48715006A24C8 /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = "Deployment-G4";
