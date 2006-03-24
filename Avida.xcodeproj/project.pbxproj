@@ -393,6 +393,15 @@
 		70DCAD16097AF7CC002F8733 /* avida.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7013852C0902E36B0087ED2E /* avida.cfg */; };
 		70DCAD25097AF81A002F8733 /* cLexer.l in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAD21097AF81A002F8733 /* cLexer.l */; };
 		70DCAD2F097AF8BC002F8733 /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC57097AF730002F8733 /* main.cc */; };
+		70DCF50509CFB0B400924128 /* system-alloc.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70DCF50109CFB0B400924128 /* system-alloc.h */; };
+		70DCF50609CFB0B400924128 /* system-alloc.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCF50209CFB0B400924128 /* system-alloc.cc */; };
+		70DCF50709CFB0B400924128 /* system-alloc.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70DCF50109CFB0B400924128 /* system-alloc.h */; };
+		70DCF50809CFB0B400924128 /* system-alloc.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCF50209CFB0B400924128 /* system-alloc.cc */; };
+		70DCF52A09CFB93200924128 /* spinlock.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70DCF52809CFB93200924128 /* spinlock.h */; };
+		70DCF52B09CFB93200924128 /* spinlock.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70DCF52809CFB93200924128 /* spinlock.h */; };
+		70DCF56409CFBB9500924128 /* tcmalloc.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCF56309CFBB9500924128 /* tcmalloc.cc */; };
+		70DCF58109CFBD4600924128 /* tcmalloc-logging.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCF57F09CFBD3D00924128 /* tcmalloc-logging.cc */; };
+		70DCF58209CFBD4800924128 /* system-alloc.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCF50209CFB0B400924128 /* system-alloc.cc */; };
 		70F7D8CE09254787009E311D /* cFitnessMatrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB208DB7F8200068AC2 /* cFitnessMatrix.cc */; };
 		70F7DAF409290468009E311D /* cClassificationManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70F7DAF009290468009E311D /* cClassificationManager.cc */; };
 		70F7DCA009293E76009E311D /* cClassificationManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70F7DAF009290468009E311D /* cClassificationManager.cc */; };
@@ -475,6 +484,8 @@
 				7005A70509BA0FA90007E16E /* cTestCPUInterface.h in CopyFiles */,
 				7005A70B09BA0FBE0007E16E /* cOrgInterface.h in CopyFiles */,
 				701D51D109C645F50009B4F8 /* cAvidaContext.h in CopyFiles */,
+				70DCF50709CFB0B400924128 /* system-alloc.h in CopyFiles */,
+				70DCF52B09CFB93200924128 /* spinlock.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -531,6 +542,8 @@
 				7005A70309BA0FA90007E16E /* cTestCPUInterface.h in CopyFiles */,
 				7005A70A09BA0FBE0007E16E /* cOrgInterface.h in CopyFiles */,
 				701D51CF09C645F50009B4F8 /* cAvidaContext.h in CopyFiles */,
+				70DCF50509CFB0B400924128 /* system-alloc.h in CopyFiles */,
+				70DCF52A09CFB93200924128 /* spinlock.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -872,6 +885,15 @@
 		70DCAD22097AF81A002F8733 /* FlexLexer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = FlexLexer.h; sourceTree = "<group>"; };
 		70DCAD37097AF972002F8733 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		70DCAD39097AF985002F8733 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		70DCF50109CFB0B400924128 /* system-alloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "system-alloc.h"; sourceTree = "<group>"; };
+		70DCF50209CFB0B400924128 /* system-alloc.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "system-alloc.cc"; sourceTree = "<group>"; };
+		70DCF52809CFB93200924128 /* spinlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spinlock.h; sourceTree = "<group>"; };
+		70DCF52E09CFB95600924128 /* pagemap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pagemap.h; sourceTree = "<group>"; };
+		70DCF56309CFBB9500924128 /* tcmalloc.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tcmalloc.cc; sourceTree = "<group>"; };
+		70DCF56C09CFBC3F00924128 /* tcmalloc-config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tcmalloc-config.h"; sourceTree = "<group>"; };
+		70DCF57409CFBCA500924128 /* tcmalloc-platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tcmalloc-platform.h"; sourceTree = "<group>"; };
+		70DCF57F09CFBD3D00924128 /* tcmalloc-logging.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = "tcmalloc-logging.cc"; sourceTree = "<group>"; };
+		70DCF58009CFBD3D00924128 /* tcmalloc-logging.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = "tcmalloc-logging.h"; sourceTree = "<group>"; };
 		70F7DAEF09290468009E311D /* cClassificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cClassificationManager.h; sourceTree = "<group>"; };
 		70F7DAF009290468009E311D /* cClassificationManager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cClassificationManager.cc; sourceTree = "<group>"; };
 		70F7DC9E09293E6F009E311D /* cGenotype.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cGenotype.cc; sourceTree = "<group>"; };
@@ -1147,6 +1169,30 @@
 			path = script;
 			sourceTree = "<group>";
 		};
+		70DCF4FF09CF81E400924128 /* platform */ = {
+			isa = PBXGroup;
+			children = (
+				70DCF50009CF823500924128 /* tcmalloc */,
+			);
+			path = platform;
+			sourceTree = "<group>";
+		};
+		70DCF50009CF823500924128 /* tcmalloc */ = {
+			isa = PBXGroup;
+			children = (
+				70DCF57F09CFBD3D00924128 /* tcmalloc-logging.cc */,
+				70DCF58009CFBD3D00924128 /* tcmalloc-logging.h */,
+				70DCF50109CFB0B400924128 /* system-alloc.h */,
+				70DCF50209CFB0B400924128 /* system-alloc.cc */,
+				70DCF52809CFB93200924128 /* spinlock.h */,
+				70DCF52E09CFB95600924128 /* pagemap.h */,
+				70DCF56309CFBB9500924128 /* tcmalloc.cc */,
+				70DCF56C09CFBC3F00924128 /* tcmalloc-config.h */,
+				70DCF57409CFBCA500924128 /* tcmalloc-platform.h */,
+			);
+			path = tcmalloc;
+			sourceTree = "<group>";
+		};
 		70F7D8C8092546DC009E311D /* classification */ = {
 			isa = PBXGroup;
 			children = (
@@ -1205,6 +1251,7 @@
 				701D9115094B770B008B845F /* drivers */,
 				DCC30FD00762539D008F7A48 /* event */,
 				DCC310040762539D008F7A48 /* main */,
+				70DCF4FF09CF81E400924128 /* platform */,
 				70DCAD1E097AF81A002F8733 /* script */,
 				70DCAC54097AF730002F8733 /* targets */,
 				DCC31340076253A0008F7A48 /* third-party */,
@@ -1981,6 +2028,7 @@
 				7054A17309A8014600038658 /* cAnalyzeJobQueue.cc in Sources */,
 				7054A1B809A810CB00038658 /* cAnalyzeJobWorker.cc in Sources */,
 				7005A70609BA0FA90007E16E /* cTestCPUInterface.cc in Sources */,
+				70DCF50809CFB0B400924128 /* system-alloc.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2099,6 +2147,7 @@
 				7054A17109A8014600038658 /* cAnalyzeJobQueue.cc in Sources */,
 				7054A1B609A810CB00038658 /* cAnalyzeJobWorker.cc in Sources */,
 				7005A70409BA0FA90007E16E /* cTestCPUInterface.cc in Sources */,
+				70DCF50609CFB0B400924128 /* system-alloc.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2211,6 +2260,9 @@
 				7054A1BA09A810CB00038658 /* cAnalyzeJobWorker.cc in Sources */,
 				7005A70809BA0FA90007E16E /* cTestCPUInterface.cc in Sources */,
 				7005A83209BA621F0007E16E /* cOrgMessage.cc in Sources */,
+				70DCF56409CFBB9500924128 /* tcmalloc.cc in Sources */,
+				70DCF58109CFBD4600924128 /* tcmalloc-logging.cc in Sources */,
+				70DCF58209CFBD4800924128 /* system-alloc.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
