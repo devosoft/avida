@@ -54,6 +54,8 @@ void cTextViewerDriver::Run()
   const int ave_time_slice = m_world->GetConfig().AVE_TIME_SLICE.Get();
   const double point_mut_prob = m_world->GetConfig().POINT_MUT_PROB.Get();
   
+  cAvidaContext ctx(m_world->GetRandom());
+  
   while (!m_done) {
     if (cChangeList* change_list = population.GetChangeList()) {
       change_list->Reset();
@@ -100,11 +102,11 @@ void cTextViewerDriver::Run()
             first_update = false;
           }
         }
-        population.ProcessStep(step_size, next_id);
+        population.ProcessStep(ctx, step_size, next_id);
       }
     }
     else {
-      for (int i = 0; i < UD_size; i++) population.ProcessStep(step_size);
+      for (int i = 0; i < UD_size; i++) population.ProcessStep(ctx, step_size);
     }
     
     
@@ -130,7 +132,7 @@ void cTextViewerDriver::Run()
     if (point_mut_prob > 0 ) {
       for (int i = 0; i < population.GetSize(); i++) {
         if (population.GetCell(i).IsOccupied()) {
-          population.GetCell(i).GetOrganism()->GetHardware().PointMutate(point_mut_prob);
+          population.GetCell(i).GetOrganism()->GetHardware().PointMutate(ctx, point_mut_prob);
         }
       }
     }

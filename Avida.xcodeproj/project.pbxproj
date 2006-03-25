@@ -453,7 +453,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 70AA941809D486AE006A24C8 /* tcmalloc */;
+			remoteGlobalIDString = 70AA941809D486AE006A24C8;
 			remoteInfo = tcmalloc;
 		};
 /* End PBXContainerItemProxy section */
