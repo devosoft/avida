@@ -104,11 +104,11 @@ bool cBirthChamber::RegionSwap(cCPUMemory& genome0, cCPUMemory& genome1, int sta
 
 void cBirthChamber::GenomeSwap(cCPUMemory& genome0, cCPUMemory& genome1, double& merit0, double& merit1)
 {
-  cCPUMemory& genome0_tmp = genome0;
+  cCPUMemory genome0_tmp = genome0;
   genome0 = genome1; 
   genome1 = genome0_tmp; 
 
-  double& merit0_tmp = merit0; 
+  double merit0_tmp = merit0; 
   merit0 = merit1; 
   merit1 = merit0_tmp;
 }

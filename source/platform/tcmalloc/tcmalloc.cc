@@ -1698,6 +1698,9 @@ void TCMalloc_ThreadCache::InitModule() {
   // object declared below.
   SpinLockHolder h(&pageheap_lock);
   if (!phinited) {
+    if (TCMallocDebug::level >= TCMallocDebug::kInfo) {
+      MESSAGE("TCMalloc_ThreadCache::InitModule()\n");
+    }
     InitSizeClasses();
     threadheap_allocator.Init();
     span_allocator.Init();
