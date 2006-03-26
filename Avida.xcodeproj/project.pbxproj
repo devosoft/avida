@@ -116,6 +116,7 @@
 		7073165D097C6C8F00815164 /* cParser.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7073165B097C6C8F00815164 /* cParser.cc */; };
 		70731665097C6DF500815164 /* cASLibrary.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70731663097C6DF500815164 /* cASLibrary.cc */; };
 		7073166B097C6E0C00815164 /* cASSymbol.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70731669097C6E0C00815164 /* cASSymbol.cc */; };
+		7093DB4109D6F50300DE7FEB /* tSmartArray.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7093DB4009D6F50300DE7FEB /* tSmartArray.h */; };
 		70AA941A09D486CA006A24C8 /* system-alloc.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCF50209CFB0B400924128 /* system-alloc.cc */; };
 		70AA941B09D486CB006A24C8 /* tcmalloc-logging.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCF57F09CFBD3D00924128 /* tcmalloc-logging.cc */; };
 		70AA941C09D486CD006A24C8 /* tcmalloc.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCF56309CFBB9500924128 /* tcmalloc.cc */; };
@@ -515,6 +516,7 @@
 				7054A12409A7BEFC00038658 /* cThread.h in CopyFiles */,
 				7005A70709BA0FA90007E16E /* cTestCPUInterface.h in CopyFiles */,
 				701D51CD09C645F50009B4F8 /* cAvidaContext.h in CopyFiles */,
+				7093DB4109D6F50300DE7FEB /* tSmartArray.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -637,6 +639,7 @@
 		70731668097C6E0C00815164 /* cASSymbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASSymbol.h; sourceTree = "<group>"; };
 		70731669097C6E0C00815164 /* cASSymbol.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cASSymbol.cc; sourceTree = "<group>"; };
 		707A687408E3750300576968 /* cHardwareTracer_SMT.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareTracer_SMT.h; sourceTree = "<group>"; };
+		7093DB4009D6F50300DE7FEB /* tSmartArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tSmartArray.h; sourceTree = "<group>"; };
 		70AA941909D486AE006A24C8 /* libtcmalloc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libtcmalloc.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		70B0864808F4972600FC65FE /* cLandscape.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cLandscape.h; sourceTree = "<group>"; };
 		70B0864B08F4972600FC65FE /* cLocalMutations.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cLocalMutations.h; sourceTree = "<group>"; };
@@ -1673,6 +1676,7 @@
 				70B3984E0947B29D0018F09D /* tManagedPointerArray.h */,
 				7054A11E09A7BEFC00038658 /* cThread.h */,
 				7054A11F09A7BEFC00038658 /* cThread.cc */,
+				7093DB4009D6F50300DE7FEB /* tSmartArray.h */,
 			);
 			path = tools;
 			sourceTree = "<group>";
