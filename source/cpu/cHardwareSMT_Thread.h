@@ -24,9 +24,6 @@
 #ifndef nHardwareSMT_h
 #include "nHardwareSMT.h"
 #endif
-#ifndef tBuffer_h
-#include "tBuffer.h"
-#endif
 
 /**
 * This class is needed to run several threads on a single genome.

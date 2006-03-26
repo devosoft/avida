@@ -61,7 +61,6 @@ class cInstLibCPU;
 class cInstSet;
 class cMutation;
 class cOrganism;
-template <class T> class tBuffer;
 
 class cHardwareCPU : public cHardwareBase
 {

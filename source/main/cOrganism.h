@@ -90,6 +90,9 @@ protected:
 
   tBuffer<cOrgMessage> inbox;
   tBuffer<cOrgMessage> sent;
+  
+  tBuffer<cOrgMessage*> m_net_pending;
+  t
 
 #ifdef DEBUG
   bool initialized;      // Has this CPU been initialized yet, w/hardware.

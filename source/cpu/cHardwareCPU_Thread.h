@@ -28,9 +28,6 @@
 #ifndef cCPUStack_h
 #include "cCPUStack.h"
 #endif
-#ifndef tBuffer_h
-#include "tBuffer.h"
-#endif
 
 /**
  * This class is needed to run several threads on a single genome.
