@@ -894,7 +894,7 @@ void cPopulation::PrintDemeStats()
       
       for (int j = 0; j < num_task; j++) {
         // only interested in tasks is done once! 
-        if (phenotype.GetLastTaskCount().ElementAt(j) > 0) {
+        if (phenotype.GetLastTaskCount()[j] > 0) {
           single_deme_task[j].Add(1);
         }
       }
@@ -1987,7 +1987,7 @@ void cPopulation::PrintPhenotypeData(const cString & filename)
     int id = 0;
     for (int j = 0; j < phenotype.GetLastTaskCount().GetSize(); j++)
     {
-      if (phenotype.GetLastTaskCount().ElementAt(j) > 0)
+      if (phenotype.GetLastTaskCount()[j] > 0)
         id += (1 << j);
     }
     ids.insert(id);

@@ -35,8 +35,17 @@
 #ifndef cOrgInterface_h
 #include "cOrgInterface.h"
 #endif
+#ifndef cOrgSourceMessage_h
+#include "cOrgSourceMessage.h"
+#endif
 #ifndef tBuffer_h
 #include "tBuffer.h"
+#endif
+#ifndef tList_h
+#include "tList.h"
+#endif
+#ifndef tSmartArray_h
+#include "tSmartArray.h"
 #endif
 
 /**
@@ -50,6 +59,7 @@ class cGenotype;
 class cInjectGenotype;
 class cLineage;
 class cOrgMessage;
+class cOrgSinkMessage;
 class cEnvironment;
 class cCodeLabel;
 
@@ -91,8 +101,9 @@ protected:
   tBuffer<cOrgMessage> inbox;
   tBuffer<cOrgMessage> sent;
   
-  //tBuffer<cOrgMessage*> m_net_pending;
-  
+  tList<cOrgSinkMessage> m_net_pending;
+  tSmartArray<cOrgSinkMessage*> m_net_received;
+  tSmartArray<cOrgSourceMessage> m_net_sent;
 
 #ifdef DEBUG
   bool initialized;      // Has this CPU been initialized yet, w/hardware.
@@ -133,6 +144,11 @@ public:
   // Message stuff
   void SendMessage(cOrgMessage & mess);
   bool ReceiveMessage(cOrgMessage & mess);
+  
+  // Network Stuff
+  void NetSend(int value);
+  cOrgSinkMessage* NetReceive() { return m_net_pending.PopRear(); }
+  bool NetValidate(int value);
 
   bool InjectParasite(const cGenome & genome);
   bool InjectHost(const cCodeLabel & in_label, const cGenome & genome);
@@ -146,8 +162,8 @@ public:
   double GetTestFitness();
   double CalcMeritRatio();
 
-  cCPUMemory & ChildGenome() { return child_genome; }
-  sCPUStats & CPUStats() { return cpu_stats; }
+  cCPUMemory& ChildGenome() { return child_genome; }
+  sCPUStats& CPUStats() { return cpu_stats; }
 
   bool TestCopyMut(cAvidaContext& ctx) const { return MutationRates().TestCopyMut(ctx); }
   bool TestDivideMut(cAvidaContext& ctx) const { return MutationRates().TestDivideMut(ctx); }

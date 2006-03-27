@@ -22,11 +22,10 @@
 #include "cInstSet.h"
 #include "cInstUtil.h"
 #include "cOrgMessage.h"
+#include "cOrgSinkMessage.h"
 #include "cStringUtil.h"
-#include "tArray.h"
 #include "cTools.h"
 #include "cWorld.h"
-#include "tList.h"
 
 #include <iomanip>
 
@@ -79,6 +78,8 @@ cOrganism::~cOrganism()
   assert(is_running == false);
   delete hardware;
   delete m_interface;
+  while (m_net_pending.GetSize()) delete m_net_pending.Pop();
+  for (int i = 0; i < m_net_received.GetSize(); i++) delete m_net_received[i];
 }
 
 void cOrganism::SetOrgInterface(cOrgInterface* interface)
@@ -172,6 +173,19 @@ bool cOrganism::ReceiveMessage(cOrgMessage & mess)
   inbox.Add(mess);
   return true;
 }
+
+void cOrganism::NetSend(int value)
+{
+  // @DMB - process message send
+}
+
+bool NetValidate(int value)
+{
+  // @DMB - check value against internal received buffer
+  
+  return false;
+}
+
 
 bool cOrganism::InjectParasite(const cGenome & injected_code)
 {

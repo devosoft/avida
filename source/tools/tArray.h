@@ -11,151 +11,102 @@
 #ifndef tArray_h
 #define tArray_h
 
-/*
-   Array Templates
-
-   Constructor:
-     tArray( int size )
-     tArray( const tArray & rhs )
-
-   Interface:
-     tArray & operator= ( const tArray & rhs )
-
-     bool Good () const
-       array is defined and ready to take data
-
-     unsigned int GetSize () const
-       returns the size of the array
-
-     const T& ElementAt ( const int index ) const
-           T& ElementAt ( const int index )
-     const T& operator[] ( const int index ) const
-           T& operator[] ( const int index )
-       return the element at index in the array
-*/
-
 #include <assert.h>
 
-#ifndef NULL
-#define NULL 0
-#endif
 
-/**
- * This class provides an array template.
- **/ 
-
-template <class T> class tArray {
-
-protected:
-  // Internal Variables
-  T * data;  // Data Elements
-  int size;  // Number of Elements
+template <class T> class tArray
+{
+private:
+  T* m_data;  // Data Elements
+  int m_size; // Number of Elements
 
 public:
-  void ResizeClear(const int in_size){
-    size = in_size;
-    assert(size >= 0);  // Invalid size specified for array intialization
-    if (data != NULL) delete [] data;  // remove old data if exists
-    if (size > 0) {
-      data = new T[size];   // Allocate block for data
-      assert(data != NULL); // Memory allocation error: Out of Memory?
-    }
-    else data = NULL;
-  }
+  explicit tArray(const int size = 0) : m_data(NULL), m_size(0) { ResizeClear(size); }
+  tArray(const tArray& rhs) : m_data(NULL), m_size(0) { this->operator=(rhs); }
 
-public:
-  // Constructor
-  explicit tArray(const int _size=0) : data(NULL) { ResizeClear(_size); }
+  ~tArray() { delete [] m_data; }
 
-  // Assingment Operator
-  tArray & operator= (const tArray & rhs) {
-    if (size != rhs.GetSize())  ResizeClear(rhs.GetSize());
-    for(int i = 0; i < size; i++) data[i] = rhs[i];
+  tArray& operator=(const tArray& rhs) {
+    if (m_size != rhs.GetSize())  ResizeClear(rhs.GetSize());
+    for(int i = 0; i < m_size; i++) m_data[i] = rhs[i];
     return *this;
   }
 
-  // Copy constructor
-  tArray(const tArray& rhs) : data(NULL), size(0) { this->operator=(rhs); }
+  bool Good() const { return (m_data != NULL); }
+  int GetSize() const { return m_size; }
 
-  // Destructor
-  virtual ~tArray() { if (data != NULL) delete [] data; }
+  void ResizeClear(const int in_size)
+  {
+    m_size = in_size;
+    assert(m_size >= 0);  // Invalid size specified for array intialization
+    if (m_data != NULL) delete [] m_data;  // remove old data if exists
+    if (m_size > 0) {
+      m_data = new T[m_size];   // Allocate block for data
+      assert(m_data != NULL); // Memory allocation error: Out of Memory?
+    }
+    else m_data = NULL;
+  }
 
-  
-  // Interface Methods ///////////////////////////////////////////////////////
-  
-  bool Good() const { return (data != NULL); }
-  int GetSize() const { return size; }
-
-  void Resize(int new_size) {
+  void Resize(int new_size)
+  {
     assert(new_size >= 0);
 
-   // If we're already at the size we want, don't bother doing anything.
-    if (size == new_size) return;
+    // If we're already at the size we want, don't bother doing anything.
+    if (m_size == new_size) return;
 
     // If new size is 0, clean up and go!
     if (new_size == 0) {
-      delete [] data;
-      data = NULL;
-      size = 0;
+      if (m_data != NULL) delete [] m_data;
+      m_data = NULL;
+      m_size = 0;
       return;
     }
 
     // If new size > 0
-    T * new_data = new T[new_size];
+    T* new_data = new T[new_size];
     assert(new_data != NULL); // Memory Allocation Error: Out of Memory?
 
     // Copy over old data...
-    for (int i = 0; i < size && i < new_size; i++) {
-      new_data[i] = data[i];
+    for (int i = 0; i < m_size && i < new_size; i++) {
+      new_data[i] = m_data[i];
     }
-    if (data != NULL) delete [] data;  // remove old data if exists
-    data = new_data;
+    if (m_data != NULL) delete [] m_data;  // remove old data if exists
+    m_data = new_data;
 
-    size = new_size;
+    m_size = new_size;
   }
 
 
-  void Resize(int new_size, const T & empty_value) {
-    assert(new_size >= 0);
-    int old_size = size;
+  void Resize(int new_size, const T & empty_value)
+  {
+    int old_size = m_size;
     Resize(new_size);
-    if( new_size > old_size ){
-      for (int i = old_size; i < new_size; i++) {
-	data[i] = empty_value;
-      }
-    }
+    for (int i = old_size; i < new_size; i++) m_data[i] = empty_value;
   }
 
+  T& operator[](const int index)
+  {
+    assert(index >= 0);     // Lower Bounds Error
+    assert(index < m_size); // Upper Bounds Error
+    return m_data[index];
+  }
+  const T& operator[](const int index) const
+  {
+    assert(index >= 0);     // Lower Bounds Error
+    assert(index < m_size); // Upper Bounds Error
+    return m_data[index];
+  }    
 
-  T & ElementAt(const int index){
-    // check range
-    assert(index >= 0);    // Lower Bounds Error
-    assert(index < size);  // Upper Bounds Error
-    return data[index];    // in range, so return element
+  void Push(const T& value)
+  {
+    Resize(m_size + 1);
+    m_data[m_size - 1] = value;
   }
 
-  const T & ElementAt(const int index) const {
-    // check range
-    assert(index >= 0);    // Lower Bounds Error
-    assert(index < size);  // Upper Bounds Error
-    return data[index];    // in range, so return element
+  void SetAll(const T& value)
+  {
+    for (int i = 0; i < m_size; i++) m_data[i] = value;
   }
-
-        T & operator[](const int index)       { return ElementAt(index); }
-  const T & operator[](const int index) const { return ElementAt(index); }
-
-
-  void Push(const T & value) {
-    Resize(size+1);
-    data[size-1] = value;
-  }
-
-  void SetAll(const T & value){
-    for( int i=0; i < size; ++i ){
-      data[i] = value;
-    }
-  }
-
 };
 
 #endif
