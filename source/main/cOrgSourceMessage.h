@@ -16,10 +16,11 @@ private:
   int m_value;
   int m_sent;
   int m_dropped;
+  int m_corrupt;
   
 public:
-  cOrgSourceMessage() : m_value(0), m_sent(0), m_dropped(0) { ; }
-  cOrgSourceMessage(int value) : m_value(value), m_sent(1), m_dropped(0) { ; }
+  cOrgSourceMessage() : m_value(0), m_sent(0), m_dropped(0), m_corrupt(0) { ; }
+  cOrgSourceMessage(int value) : m_value(value), m_sent(1), m_dropped(0), m_corrupt(0) { ; }
 
   int GetValue() { return m_value; }
   
@@ -27,6 +28,8 @@ public:
   void SetSent() { m_sent++; }  
   int GetDropped() { return m_dropped; }
   void SetDropped() { m_dropped++; }
+  int GetCorrupted() { return m_corrupt; }
+  void SetCorrupted() { m_corrupt++; }
 };
 
 #endif

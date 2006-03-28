@@ -12,6 +12,7 @@
 
 class cAvidaContext;
 class cOrganism;
+class cOrgSinkMessage;
 class cGenome;
 template <class T> class tArray;
 class cOrgMessage;
@@ -43,6 +44,7 @@ public:
   virtual void Die() = 0;
   virtual void Kaboom() = 0;
   virtual bool SendMessage(cOrgMessage& mess) = 0;
+  virtual cOrgSinkMessage* NetReceive() = 0;
   virtual int ReceiveValue() = 0;
   virtual bool InjectParasite(cOrganism* parent, const cGenome& injected_code) = 0;
   virtual bool UpdateMerit(double new_merit) = 0;

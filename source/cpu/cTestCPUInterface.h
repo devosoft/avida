@@ -20,6 +20,10 @@ template <class T> class tArray;
 class cOrgMessage;
 class cTestCPU;
 
+#ifndef NULL
+#define NULL 0
+#endif
+
 class cTestCPUInterface : public cOrgInterface
 {
 private:
@@ -46,6 +50,7 @@ public:
   void Die();
   void Kaboom();
   bool SendMessage(cOrgMessage& mess);
+  cOrgSinkMessage* NetReceive() { return NULL; } // @DMB - receive message
   int ReceiveValue();
   bool InjectParasite(cOrganism* parent, const cGenome& injected_code);
   bool UpdateMerit(double new_merit);

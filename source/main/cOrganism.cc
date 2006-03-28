@@ -174,12 +174,61 @@ bool cOrganism::ReceiveMessage(cOrgMessage & mess)
   return true;
 }
 
-void cOrganism::NetSend(int value)
+void cOrganism::NetSend(cAvidaContext& ctx, int value)
 {
-  // @DMB - process message send
+  int index = -1;
+  
+  // Search for previously sent value
+  for (int i = m_net_sent.GetSize() - 1; i >= 0; i--) {
+    if (m_net_sent[i].GetValue() == value) {
+      index = i;
+      m_net_sent[i].SetSent();
+      break;
+    }
+  }
+  
+  // If not found, add new message
+  if (index == -1) {
+    index = m_net_sent.GetSize();
+    m_net_sent.Resize(index + 1);
+    m_net_sent[index] = cOrgSourceMessage(value);
+  }
+  
+  // Test if this message will be dropped
+  const double drop_prob = m_world->GetConfig().NET_DROP_PROB.Get();
+  if (drop_prob > 0.0 && ctx.GetRandom().P(drop_prob)) {
+    m_net_sent[index].SetDropped();
+    return;
+  }
+  
+  // Test if this message will be corrupted
+  int actual_value = value;
+  const double mut_prob = m_world->GetConfig().NET_MUT_PROB.Get();
+  if (mut_prob > 0.0 && ctx.GetRandom().P(mut_prob)) {
+    actual_value ^= 1 << ctx.GetRandom().GetUInt(31); // Flip a single random bit
+    m_net_sent[index].SetCorrupted();
+  }
+  
+  assert(m_interface);
+  cOrgSinkMessage* msg = new cOrgSinkMessage(m_interface->GetCellID(), value, actual_value);
+  m_net_pending.Push(msg);
 }
 
-bool NetValidate(int value)
+bool cOrganism::NetReceive(int& value)
+{
+  assert(m_interface);
+  cOrgSinkMessage* msg = m_interface->NetReceive();
+  if (msg == NULL) {
+    value = 0;
+    return false;
+  }
+  
+  m_net_received.Push(msg);
+  value = msg->GetActualValue();
+  return true;
+}
+
+bool cOrganism::NetValidate(int value)
 {
   // @DMB - check value against internal received buffer
   

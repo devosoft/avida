@@ -146,8 +146,9 @@ public:
   bool ReceiveMessage(cOrgMessage & mess);
   
   // Network Stuff
-  void NetSend(int value);
-  cOrgSinkMessage* NetReceive() { return m_net_pending.PopRear(); }
+  void NetSend(cAvidaContext& ctx, int value);
+  cOrgSinkMessage* NetPopBuffer() { return m_net_pending.PopRear(); }
+  bool NetReceive(int& value);
   bool NetValidate(int value);
 
   bool InjectParasite(const cGenome & genome);
