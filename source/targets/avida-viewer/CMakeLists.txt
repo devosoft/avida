@@ -24,6 +24,23 @@ SET(libviewer_SOURCES
 ADD_LIBRARY(cursesviewer ${libviewer_SOURCES})
 
 ADD_EXECUTABLE(avida-viewer viewer.cc)
+IF(MSVC)
+TARGET_LINK_LIBRARIES(avida-viewer
+  cursesviewer
+  main
+  classification
+  cpu
+  event
+  analyze
+  drivers
+  analyze
+  cpu
+  main
+  tools
+  trio
+  ${NCURSES_LIBRARY}
+)
+ELSE(MSVC)
 TARGET_LINK_LIBRARIES(avida-viewer
   cursesviewer
   main
@@ -40,6 +57,7 @@ TARGET_LINK_LIBRARIES(avida-viewer
   ${NCURSES_LIBRARY}
   pthread
 )
+ENDIF(MSVC)
 
 LINK_DIRECTORIES(${ALL_LIB_DIRS} ${THIRDPARTY_BLD_DIR}/trio)
 

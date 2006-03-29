@@ -11,7 +11,9 @@
 
 cThread::~cThread()
 {
+#ifndef WIN32_PTHREAD_HACK
   if (m_running) pthread_detach(m_thread);
+#endif
 }
 
 
@@ -24,10 +26,13 @@ int cThread::Start()
     m_running = true;
     pthread_mutex_unlock(&m_mutex);
 
+#ifndef WIN32_PTHREAD_HACK
     // Create thread, mark as running when successful
     rval = pthread_create(&m_thread, NULL, &cThread::EntryPoint, this);
-    
     if (rval) m_running = false;
+#else
+    Run();
+#endif
   } else {
     pthread_mutex_unlock(&m_mutex);
   }
@@ -37,20 +42,24 @@ int cThread::Start()
 
 void cThread::Stop()
 {
+#ifndef WIN32_PTHREAD_HACK
   if (m_running) {
     // Close and clean up thread, set running to false
     pthread_cancel(m_thread);
     pthread_join(m_thread, NULL);
     m_running = false;
   }
+#endif
 }
 
 void cThread::Join()
 {
+#ifndef WIN32_PTHREAD_HACK
   if (m_running) {
     pthread_join(m_thread, NULL);
     m_running = false;
   }
+#endif
 }
 
 void* cThread::EntryPoint(void* arg)

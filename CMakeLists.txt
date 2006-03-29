@@ -216,6 +216,9 @@ IF(BUILD_TESTING)
   INCLUDE (${CMAKE_ROOT}/Modules/Dart.cmake)
 ENDIF(BUILD_TESTING)
 
+IF(MSVC)
+  INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/source/platform/win32-pthread)
+ENDIF(MSVC)
 
 # This section defines convenience variables.  They're available to
 # CMakeList.txt files in all subdirectories beneath the directory
