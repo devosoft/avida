@@ -35,6 +35,9 @@
 #ifndef cOrgInterface_h
 #include "cOrgInterface.h"
 #endif
+#ifndef cOrgSeqMessage_h
+#include "cOrgSeqMessage.h"
+#endif
 #ifndef cOrgSourceMessage_h
 #include "cOrgSourceMessage.h"
 #endif
@@ -101,9 +104,19 @@ protected:
   tBuffer<cOrgMessage> inbox;
   tBuffer<cOrgMessage> sent;
   
-  tList<cOrgSinkMessage> m_net_pending;
-  tSmartArray<cOrgSinkMessage*> m_net_received;
-  tSmartArray<cOrgSourceMessage> m_net_sent;
+  class cNetSupport
+  {
+  public:
+    tList<cOrgSinkMessage> pending;
+    tSmartArray<cOrgSinkMessage*> received;
+    tSmartArray<cOrgSourceMessage> sent;
+    tSmartArray<cOrgSeqMessage> seq; 
+    int last_seq;
+    
+    cNetSupport() : last_seq(-1) { ; }
+    ~cNetSupport();
+  };
+  cNetSupport* m_net;
 
 #ifdef DEBUG
   bool initialized;      // Has this CPU been initialized yet, w/hardware.
@@ -146,10 +159,13 @@ public:
   bool ReceiveMessage(cOrgMessage & mess);
   
   // Network Stuff
+  void NetGet(cAvidaContext& ctx, int& value, int& seq);
   void NetSend(cAvidaContext& ctx, int value);
-  cOrgSinkMessage* NetPopBuffer() { return m_net_pending.PopRear(); }
+  cOrgSinkMessage* NetPop() { return m_net->pending.PopRear(); }
   bool NetReceive(int& value);
-  bool NetValidate(int value);
+  bool NetValidate(cAvidaContext& ctx, int value);
+  bool NetRemoteValidate(cAvidaContext& ctx, int value);
+  int NetLast() { return m_net->last_seq; }
 
   bool InjectParasite(const cGenome & genome);
   bool InjectHost(const cCodeLabel & in_label, const cGenome & genome);

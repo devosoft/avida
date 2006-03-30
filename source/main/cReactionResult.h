@@ -39,7 +39,7 @@ private:
 
 public:
   cReactionResult(const int num_resources, const int num_tasks, const int num_reactions);
-  ~cReactionResult();
+  ~cReactionResult() { ; }
 
   bool GetActive() { return active_reaction; }
 
@@ -61,9 +61,9 @@ public:
   bool GetLethal();
   bool ReactionTriggered(int id);
   bool TaskDone(int id);
-  double GetAddBonus();
-  double GetMultBonus();
-  tArray<int>& GetInstArray();
+  double GetAddBonus() { return bonus_add; }
+  double GetMultBonus() { return bonus_mult; }
+  tArray<int>& GetInstArray() { return insts_triggered; }
 };
 
 #endif

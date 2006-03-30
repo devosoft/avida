@@ -45,6 +45,7 @@ public:
   virtual void Kaboom() = 0;
   virtual bool SendMessage(cOrgMessage& mess) = 0;
   virtual cOrgSinkMessage* NetReceive() = 0;
+  virtual bool NetRemoteValidate(cAvidaContext& ctx, cOrgSinkMessage* msg) = 0;
   virtual int ReceiveValue() = 0;
   virtual bool InjectParasite(cOrganism* parent, const cGenome& injected_code) = 0;
   virtual bool UpdateMerit(double new_merit) = 0;

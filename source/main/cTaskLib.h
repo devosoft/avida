@@ -11,60 +11,18 @@
 #ifndef cTaskLib_h
 #define cTaskLib_h
 
+#ifndef cTaskContext_h
+#include "cTaskContext.h"
+#endif
 #ifndef cTaskEntry_h
 #include "cTaskEntry.h"
 #endif
 #ifndef tArray_h
 #include "tArray.h"
 #endif
-#ifndef tBuffer_h
-#include "tBuffer.h"
-#endif
-#ifndef tList_h
-#include "tList.h"
-#endif
 
 
 class cString;
-
-//class cTaskContext
-//{
-//public:
-//  tBuffer<int> input_buffer;
-//  tBuffer<int> output_buffer;
-//  tList<tBuffer<int> > other_input_buffers;
-//  tList<tBuffer<int> > other_output_buffers;
-//  int logic_id;
-//  
-//  cTaskContext(const tBuffer<int>& inputs, const tBuffer<int>& outputs,
-//               const tList<tBuffer<int> >& other_inputs,
-//               const tList<tBuffer<int> >& other_outputs, int in_logic_id)
-//  : input_buffer(3), output_buffer(3), logic_id(in_logic_id)
-//  {
-//    input_buffer = inputs;
-//    output_buffer = outputs;
-//    other_input_buffers.Copy(other_inputs);
-//    other_output_buffers.Copy(other_outputs);
-//  }
-//};
-
-class cTaskContext
-{
-public:
-  const tBuffer<int>& input_buffer;
-  const tBuffer<int>& output_buffer;
-  const tList<tBuffer<int> >& other_input_buffers;
-  const tList<tBuffer<int> >& other_output_buffers;
-  int logic_id;
-  
-  cTaskContext(const tBuffer<int>& inputs, const tBuffer<int>& outputs,
-               const tList<tBuffer<int> >& other_inputs,
-               const tList<tBuffer<int> >& other_outputs, int in_logic_id)
-    : input_buffer(inputs), output_buffer(outputs), other_input_buffers(other_inputs),
-    other_output_buffers(other_outputs), logic_id(in_logic_id)
-  {
-  }
-};
 
 
 class cTaskLib
@@ -100,12 +58,7 @@ public:
   cTaskEntry* AddTask(const cString& name);
   const cTaskEntry& GetTask(int id) const;
   
-  cTaskContext SetupTests(const tBuffer<int>& inputs, const tBuffer<int>& outputs,
-                          const tList<tBuffer<int> >& other_inputs,
-                          const tList<tBuffer<int> >& other_outputs) const
-  {
-    return cTaskContext(inputs, outputs, other_inputs, other_outputs, SetupLogicTests(inputs, outputs));
-  }
+  void SetupTests(cTaskContext& ctx) const;
   inline double TestOutput(const cTaskEntry& task, cTaskContext* ctx) const;
 
   bool UseNeighborInput() const { return use_neighbor_input; }
@@ -113,7 +66,6 @@ public:
   
 private:  // Direct task related methods
   void NewTask(const cString& name, const cString& desc, tTaskTest task_fun, int reqs = 0);
-  int SetupLogicTests(const tBuffer<int>& inputs, const tBuffer<int>& outputs) const;
 
   inline double FractionalReward(unsigned int supplied, unsigned int correct);  
 
@@ -261,6 +213,9 @@ private:  // Direct task related methods
   // Communication Tasks...
   double Task_CommEcho(cTaskContext* ctx) const;
   double Task_CommNot(cTaskContext* ctx) const;
+  
+  double Task_NetSend(cTaskContext* ctx) const;
+  double Task_NetReceive(cTaskContext* ctx) const;
 };
 
 

@@ -326,6 +326,14 @@ cTaskEntry * cTaskLib::AddTask(const cString & name)
   else if (name == "comm_not")
 	  NewTask(name, "Not of Neighbor's INput", &cTaskLib::Task_CommNot,
             REQ_NEIGHBOR_INPUT);
+
+  else if (name == "net_send")
+	  NewTask(name, "Successfully Sent Network Message", &cTaskLib::Task_NetSend);
+  else if (name == "net_receive")
+	  NewTask(name, "Successfully Received Network Message", &cTaskLib::Task_NetReceive);
+  
+  
+  
   // Make sure we have actually found a task.
   
   if (task_array.GetSize() == start_size) {
@@ -342,15 +350,15 @@ const cTaskEntry & cTaskLib::GetTask(int id) const
   return *(task_array[id]);
 }
 
-int cTaskLib::SetupLogicTests(const tBuffer<int>& inputs, const tBuffer<int>& outputs) const
+void cTaskLib::SetupTests(cTaskContext& ctx) const
 {
   // Collect the inputs in a useful form.
-  const int num_inputs = inputs.GetNumStored();
+  const int num_inputs = ctx.input_buffer.GetNumStored();
   int test_inputs[3];
   for (int i = 0; i < 3; i++) {
-    test_inputs[i] = (num_inputs > i) ? inputs[i] : 0;
+    test_inputs[i] = (num_inputs > i) ? ctx.input_buffer[i] : 0;
   }
-  int test_output = outputs[0];
+  int test_output = ctx.output_buffer[0];
   
   
   // Setup logic_out to test the output for each logical combination...
@@ -384,7 +392,10 @@ int cTaskLib::SetupLogicTests(const tBuffer<int>& inputs, const tBuffer<int>& ou
   }
   
   // If there were any inconsistancies, deal with them.
-  if (func_OK == false) return -1;
+  if (func_OK == false) {
+    ctx.logic_id = -1;
+    return;
+  }
   
   // Determine the logic ID number of this task.
   if (num_inputs < 1) {  // 000 -> 001
@@ -414,7 +425,7 @@ int cTaskLib::SetupLogicTests(const tBuffer<int>& inputs, const tBuffer<int>& ou
   int logicid = 0;
   for (int i = 0; i < 8; i++) logicid += logic_out[i] << i;
   
-  return logicid;
+  ctx.logic_id = logicid;
 }
 
 
@@ -1754,5 +1765,16 @@ double cTaskLib::Task_CommNot(cTaskContext* ctx) const
     }
   }
   
+  return 0.0;
+}
+
+double cTaskLib::Task_NetSend(cTaskContext* ctx) const
+{
+  return 1.0 * ctx->net_completed;
+}
+
+double cTaskLib::Task_NetReceive(cTaskContext* ctx) const
+{
+  if (ctx->net_valid) return 1.0;
   return 0.0;
 }

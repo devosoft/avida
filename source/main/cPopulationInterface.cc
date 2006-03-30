@@ -14,6 +14,7 @@
 #include "cHardwareManager.h"
 #include "cOrganism.h"
 #include "cOrgMessage.h"
+#include "cOrgSinkMessage.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cStats.h"
@@ -120,6 +121,29 @@ bool cPopulationInterface::SendMessage(cOrgMessage & mess)
   return cell.ConnectionList().GetFirst()->GetOrganism()->ReceiveMessage(mess);
 }
 
+cOrgSinkMessage* cPopulationInterface::NetReceive()
+{
+  cPopulationCell& cell = m_world->GetPopulation().GetCell(cell_id);
+  assert(cell.IsOccupied());
+  
+  const int num_neighbors = cell.ConnectionList().GetSize();
+  for (int i = 0; i < num_neighbors; i++) {
+    cell.ConnectionList().CircNext();
+    
+    cOrganism* cur_neighbor = cell.ConnectionList().GetFirst()->GetOrganism();
+    cOrgSinkMessage* msg;
+    if (cur_neighbor != NULL || (msg = cur_neighbor->NetPop()) != NULL ) return msg;
+  }
+  
+  return NULL;
+}
+
+bool cPopulationInterface::NetRemoteValidate(cAvidaContext& ctx, cOrgSinkMessage* msg)
+{
+  cOrganism* org = m_world->GetPopulation().GetCell(msg->GetSourceID()).GetOrganism();
+  return (org != NULL && org->NetRemoteValidate(ctx, msg->GetOriginalValue()));
+}
+
 int cPopulationInterface::ReceiveValue()
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
@@ -127,10 +151,9 @@ int cPopulationInterface::ReceiveValue()
   
   const int num_neighbors = cell.ConnectionList().GetSize();
   for (int i = 0; i < num_neighbors; i++) {
-    cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
     cell.ConnectionList().CircNext();
     
-    cOrganism * cur_neighbor = cell.ConnectionList().GetFirst()->GetOrganism();
+    cOrganism* cur_neighbor = cell.ConnectionList().GetFirst()->GetOrganism();
     if (cur_neighbor == NULL || cur_neighbor->GetSentActive() == false) {
       continue;
     }

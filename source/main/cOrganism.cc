@@ -24,6 +24,7 @@
 #include "cOrgMessage.h"
 #include "cOrgSinkMessage.h"
 #include "cStringUtil.h"
+#include "cTaskContext.h"
 #include "cTools.h"
 #include "cWorld.h"
 
@@ -52,6 +53,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome
   , lineage(NULL)
   , inbox(0)
   , sent(0)
+  , m_net(NULL)
   , is_running(false)
 {
   // Initialization of structures...
@@ -70,6 +72,8 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome
     // max_executed must be positive or an organism will not die!
     if (max_executed < 1) max_executed = 1;
   }
+  
+  if (m_world->GetConfig().NET_ENABLED.Get()) m_net = new cNetSupport();
 }
 
 
@@ -78,8 +82,13 @@ cOrganism::~cOrganism()
   assert(is_running == false);
   delete hardware;
   delete m_interface;
-  while (m_net_pending.GetSize()) delete m_net_pending.Pop();
-  for (int i = 0; i < m_net_received.GetSize(); i++) delete m_net_received[i];
+  if (m_net != NULL) delete m_net;
+}
+
+cOrganism::cNetSupport::~cNetSupport()
+{
+  while (pending.GetSize()) delete pending.Pop();
+  for (int i = 0; i < received.GetSize(); i++) delete received[i];
 }
 
 void cOrganism::SetOrgInterface(cOrgInterface* interface)
@@ -141,14 +150,16 @@ void cOrganism::DoOutput(cAvidaContext& ctx, const int value)
       other_output_list.Push( &(cur_neighbor->output_buf) );
     }
   }
+  
+  bool net_valid = false;
+  if (m_net) net_valid = NetValidate(ctx, value);
 
   // Do the testing of tasks performed...
   output_buf.Add(value);
   tArray<double> res_change(resource_count.GetSize());
   tArray<int> insts_triggered;
-  phenotype.TestOutput(ctx, input_buf, output_buf, send_buf, receive_buf,
-		       resource_count, res_change, insts_triggered,
-		       other_input_list, other_output_list);
+  cTaskContext taskctx(input_buf, output_buf, other_input_list, other_output_list, net_valid, 0);
+  phenotype.TestOutput(ctx, taskctx, send_buf, receive_buf, resource_count, res_change, insts_triggered);
   m_interface->UpdateResources(res_change);
 
   for (int i = 0; i < insts_triggered.GetSize(); i++) {
@@ -174,30 +185,41 @@ bool cOrganism::ReceiveMessage(cOrgMessage & mess)
   return true;
 }
 
+
+void cOrganism::NetGet(cAvidaContext& ctx, int& value, int& seq)
+{
+  assert(m_net);
+  seq = m_net->seq.GetSize();
+  m_net->seq.Resize(seq + 1);
+  value = ctx.GetRandom().GetUInt(1 << 16);
+  m_net->seq[seq].SetValue(value);
+}
+
 void cOrganism::NetSend(cAvidaContext& ctx, int value)
 {
+  assert(m_net);
   int index = -1;
   
   // Search for previously sent value
-  for (int i = m_net_sent.GetSize() - 1; i >= 0; i--) {
-    if (m_net_sent[i].GetValue() == value) {
+  for (int i = m_net->sent.GetSize() - 1; i >= 0; i--) {
+    if (m_net->sent[i].GetValue() == value) {
       index = i;
-      m_net_sent[i].SetSent();
+      m_net->sent[i].SetSent();
       break;
     }
   }
   
   // If not found, add new message
   if (index == -1) {
-    index = m_net_sent.GetSize();
-    m_net_sent.Resize(index + 1);
-    m_net_sent[index] = cOrgSourceMessage(value);
+    index = m_net->sent.GetSize();
+    m_net->sent.Resize(index + 1);
+    m_net->sent[index] = cOrgSourceMessage(value);
   }
   
   // Test if this message will be dropped
   const double drop_prob = m_world->GetConfig().NET_DROP_PROB.Get();
   if (drop_prob > 0.0 && ctx.GetRandom().P(drop_prob)) {
-    m_net_sent[index].SetDropped();
+    m_net->sent[index].SetDropped();
     return;
   }
   
@@ -206,33 +228,115 @@ void cOrganism::NetSend(cAvidaContext& ctx, int value)
   const double mut_prob = m_world->GetConfig().NET_MUT_PROB.Get();
   if (mut_prob > 0.0 && ctx.GetRandom().P(mut_prob)) {
     actual_value ^= 1 << ctx.GetRandom().GetUInt(31); // Flip a single random bit
-    m_net_sent[index].SetCorrupted();
+    m_net->sent[index].SetCorrupted();
   }
   
   assert(m_interface);
   cOrgSinkMessage* msg = new cOrgSinkMessage(m_interface->GetCellID(), value, actual_value);
-  m_net_pending.Push(msg);
+  m_net->pending.Push(msg);
 }
 
 bool cOrganism::NetReceive(int& value)
 {
-  assert(m_interface);
+  assert(m_net && m_interface);
   cOrgSinkMessage* msg = m_interface->NetReceive();
   if (msg == NULL) {
     value = 0;
     return false;
   }
   
-  m_net_received.Push(msg);
+  m_net->received.Push(msg);
   value = msg->GetActualValue();
   return true;
 }
 
-bool cOrganism::NetValidate(int value)
+bool cOrganism::NetValidate(cAvidaContext& ctx, int value)
 {
-  // @DMB - check value against internal received buffer
+  assert(m_net);
   
+  if (0xFFFF0000 & value) return false;
+  
+  for (int i = 0; i < m_net->received.GetSize(); i++) {
+    cOrgSinkMessage* msg = m_net->received[i];
+    if (!msg->GetValidated() && (msg->GetOriginalValue() & 0xFFFF) == value) {
+      msg->SetValidated();
+      assert(m_interface);
+      return m_interface->NetRemoteValidate(ctx, msg);
+    }
+  }
+    
   return false;
+}
+
+bool cOrganism::NetRemoteValidate(cAvidaContext& ctx, int value)
+{
+  assert(m_net);
+
+  bool found = false;
+
+  for (int i = m_net->last_seq; i < m_net->seq.GetSize(); i++) {
+    cOrgSeqMessage& msg = m_net->seq[i];
+    if (msg.GetValue() == value && !msg.GetReceived()) {
+      m_net->seq[i].SetReceived();
+      found = true;
+      break;
+    }
+  }
+
+  if (!found) return false;
+
+  int completed = 0;
+  while (m_net->seq[m_net->last_seq].GetReceived()) {
+    completed++;
+    m_net->last_seq++;
+  }
+  
+  if (completed) {
+    assert(m_interface);
+    const tArray<double>& resource_count = m_interface->GetResources();
+    
+    tList<tBuffer<int> > other_input_list;
+    tList<tBuffer<int> > other_output_list;
+    
+    // If tasks require us to consider neighbor inputs, collect them...
+    if (m_world->GetEnvironment().GetTaskLib().UseNeighborInput() == true) {
+      const int num_neighbors = m_interface->GetNumNeighbors();
+      for (int i = 0; i < num_neighbors; i++) {
+        m_interface->Rotate();
+        cOrganism * cur_neighbor = m_interface->GetNeighbor();
+        if (cur_neighbor == NULL) continue;
+        
+        other_input_list.Push( &(cur_neighbor->input_buf) );
+      }
+    }
+    
+    // If tasks require us to consider neighbor outputs, collect them...
+    if (m_world->GetEnvironment().GetTaskLib().UseNeighborOutput() == true) {
+      const int num_neighbors = m_interface->GetNumNeighbors();
+      for (int i = 0; i < num_neighbors; i++) {
+        m_interface->Rotate();
+        cOrganism * cur_neighbor = m_interface->GetNeighbor();
+        if (cur_neighbor == NULL) continue;
+        
+        other_output_list.Push( &(cur_neighbor->output_buf) );
+      }
+    }
+        
+    // Do the testing of tasks performed...
+    output_buf.Add(value);
+    tArray<double> res_change(resource_count.GetSize());
+    tArray<int> insts_triggered;
+    cTaskContext taskctx(input_buf, output_buf, other_input_list, other_output_list, false, completed);
+    phenotype.TestOutput(ctx, taskctx, send_buf, receive_buf, resource_count, res_change, insts_triggered);
+    m_interface->UpdateResources(res_change);
+    
+    for (int i = 0; i < insts_triggered.GetSize(); i++) {
+      const int cur_inst = insts_triggered[i];
+      hardware->ProcessBonusInst(ctx, cInstruction(cur_inst) );
+    }
+  }
+  
+  return true;
 }
 
 

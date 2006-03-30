@@ -43,6 +43,7 @@ template <class T> class tArray;
 class cReactionProcess;
 class cReactionResult;
 template <class T> class tBuffer;
+class cTaskContext;
 class cWorld;
 
 class cEnvironment {
@@ -99,16 +100,10 @@ public:
   bool TestInput(cReactionResult& result, const tBuffer<int>& inputs,
                  const tBuffer<int>& outputs, const tArray<double>& resource_count ) const;
 
-  bool TestOutput(cAvidaContext& ctx, cReactionResult& result,
-		    const tBuffer<int>& input_buf,
-		    const tBuffer<int>& output_buf,
-		    const tBuffer<int>& send_buf,
-		    const tBuffer<int>& receive_buf,
-		    const tArray<int>& task_count,
-		    const tArray<int>& reaction_count,
-		    const tArray<double>& resource_count,
-		    const tList<tBuffer<int> >& other_inputs,
-		    const tList<tBuffer<int> >& other_outputs) const;
+  bool TestOutput(cAvidaContext& ctx, cReactionResult& result, cTaskContext& taskctx,
+                  const tBuffer<int>& send_buf, const tBuffer<int>& receive_buf,
+                  const tArray<int>& task_count, const tArray<int>& reaction_count,
+                  const tArray<double>& resource_count) const;
 
   // Accessors
   const cResourceLib & GetResourceLib() const { return resource_lib; }

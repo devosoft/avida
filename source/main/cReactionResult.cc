@@ -29,11 +29,6 @@ cReactionResult::cReactionResult(const int num_resources,
 {
 }
 
-cReactionResult::~cReactionResult()
-{
-}
-
-
 void cReactionResult::ActivateReaction()
 {
   // If this reaction is already active, don't worry about it.
@@ -161,21 +156,3 @@ bool cReactionResult::TaskDone(int id)
   if (GetActive() == false) return false;
   return tasks_done[id];
 }
-
-double cReactionResult::GetAddBonus()
-{
-  if (GetActive() == false) return 0.0;
-  return bonus_add;
-}
-
-double cReactionResult::GetMultBonus()
-{
-  if (GetActive() == false) return 1.0;
-  return bonus_mult;
-}
-
-tArray<int> & cReactionResult::GetInstArray()
-{
-  return insts_triggered;
-}
-

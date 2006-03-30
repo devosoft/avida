@@ -50,7 +50,8 @@ public:
   void Die();
   void Kaboom();
   bool SendMessage(cOrgMessage& mess);
-  cOrgSinkMessage* NetReceive() { return NULL; } // @DMB - receive message
+  cOrgSinkMessage* NetReceive() { return NULL; } // @DMB - todo: receive message
+  bool NetRemoteValidate(cAvidaContext& ctx, cOrgSinkMessage* msg) { return false; } // @DMB - todo: validate message
   int ReceiveValue();
   bool InjectParasite(cOrganism* parent, const cGenome& injected_code);
   bool UpdateMerit(double new_merit);
