@@ -131,8 +131,8 @@ cOrgSinkMessage* cPopulationInterface::NetReceive()
     cell.ConnectionList().CircNext();
     
     cOrganism* cur_neighbor = cell.ConnectionList().GetFirst()->GetOrganism();
-    cOrgSinkMessage* msg;
-    if (cur_neighbor != NULL || (msg = cur_neighbor->NetPop()) != NULL ) return msg;
+    cOrgSinkMessage* msg = NULL;
+    if (cur_neighbor != NULL && (msg = cur_neighbor->NetPop()) != NULL ) return msg;
   }
   
   return NULL;

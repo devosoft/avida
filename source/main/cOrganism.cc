@@ -272,8 +272,9 @@ bool cOrganism::NetRemoteValidate(cAvidaContext& ctx, int value)
 {
   assert(m_net);
 
-  bool found = false;
+  if (m_net->last_seq = -1) return false;
 
+  bool found = false;
   for (int i = m_net->last_seq; i < m_net->seq.GetSize(); i++) {
     cOrgSeqMessage& msg = m_net->seq[i];
     if (msg.GetValue() == value && !msg.GetReceived()) {
@@ -282,7 +283,6 @@ bool cOrganism::NetRemoteValidate(cAvidaContext& ctx, int value)
       break;
     }
   }
-
   if (!found) return false;
 
   int completed = 0;
