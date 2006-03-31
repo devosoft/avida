@@ -228,13 +228,11 @@ public:
   CONFIG_ADD_VAR(AVE_TIME_SLICE, int, 30, "Ave number of insts per org per update");
   CONFIG_ADD_VAR(SLICING_METHOD, int, 2, "0 = CONSTANT: all organisms get default...\n1 = PROBABILISTIC: Run _prob_ proportional to merit.\n2 = INTEGRATED: Perfectly integrated deterministic.");
   CONFIG_ADD_VAR(SIZE_MERIT_METHOD, int, 0, "0 = off (merit is independent of size)\n1 = Merit proportional to copied size\n2 = Merit prop. to executed size\n3 = Merit prop. to full size\n4 = Merit prop. to min of executed or copied size\n5 = Merit prop. to sqrt of the minimum size");
-  CONFIG_ADD_VAR(TASK_MERIT_METHOD, int, 1, "0 = No task bonuses\n1 = Bonus just equals the task bonus");
   CONFIG_ADD_VAR(MAX_CPU_THREADS, int, 1, "Number of Threads a CPU can spawn");
   CONFIG_ADD_VAR(THREAD_SLICING_METHOD, int, 0, "Formula for and organism's thread slicing -> 1 + (num_organism_threads-1) * THREAD_SLICING_METHOD.\n0 = One thread executed per time slice.\n1 = All threads executed each time slice.\n");
   CONFIG_ADD_VAR(MAX_LABEL_EXE_SIZE, int, 1, "Max nops marked as executed when labels are used");
   CONFIG_ADD_VAR(BASE_SIZE_MERIT, int, 100, "Base merit when size is *not* used");
   CONFIG_ADD_VAR(DEFAULT_BONUS, double, 1.0, "The bonus an organism gets before it has completed any tasks");
-  CONFIG_ADD_VAR(MERIT_TIME, int, 0, "0 = Merit Calculated when task completed\n1 = Merit Calculated on Divide");
   CONFIG_ADD_VAR(MERIT_GIVEN, double, 0.0, "Fraction of merit donated with 'donate' command");
   CONFIG_ADD_VAR(MERIT_RECEIVED, double, 0.0, "Multiplier of merit given with 'donate' command");
   CONFIG_ADD_VAR(MAX_DONATE_KIN_DIST, int, -1, "Limit on distance of relation for donate; -1=no max");

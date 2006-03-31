@@ -101,15 +101,6 @@ void cOptionsScreen::Draw()
     break;
   }
 
-  switch(info.GetConfig().TASK_MERIT_METHOD.Get()) {
-    case TASK_MERIT_NONE:
-      Print(2, 55, "No Task Bonuses");
-      break;
-    case TASK_MERIT_NORMAL:
-      Print(2, 55, "Normal");
-      break;
-  }
-
   switch(info.GetConfig().SIZE_MERIT_METHOD.Get()) {
   case SIZE_MERIT_OFF:
     Print(3, 55, "Off");

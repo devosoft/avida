@@ -144,13 +144,6 @@
 #define SEND_BUF_SIZE 3
 #define RECEIVE_BUF_SIZE 3
 
-// Task Merit Method //
-#define TASK_MERIT_NONE   0
-#define TASK_MERIT_NORMAL 1  // Bonus just equals the task bonus
-
-#define MERIT_TIME_AT_TASK     0
-#define MERIT_TIME_AT_DIVIDE   1
-
 #define FILE_TYPE_TEXT 0
 #define FILE_TYPE_HTML 1
 
@@ -189,10 +182,6 @@ enum tHARDWARE_TYPE
 
 #define GENERATION_INC_OFFSPRING 0
 #define GENERATION_INC_BOTH      1
-
-#define TASK_MERIT_OFF         0
-#define TASK_MERIT_EXPONENTIAL 1
-#define TASK_MERIT_LINEAR      2
 
 #define SIZE_MERIT_OFF         0
 #define SIZE_MERIT_COPIED      1
