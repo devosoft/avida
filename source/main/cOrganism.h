@@ -166,6 +166,7 @@ public:
   bool NetValidate(cAvidaContext& ctx, int value);
   bool NetRemoteValidate(cAvidaContext& ctx, int value);
   int NetLast() { return m_net->last_seq; }
+  void NetReset();
 
   bool InjectParasite(const cGenome & genome);
   bool InjectHost(const cCodeLabel & in_label, const cGenome & genome);

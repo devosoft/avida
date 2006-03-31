@@ -80,7 +80,7 @@ private:
   tHashTable<int, int> m_mem_lbls;
 
   // Threads
-  tArray<cHardwareSMT_Thread> m_threads;
+  tManagedPointerArray<cHardwareSMT_Thread> m_threads;
   int thread_id_chart;
   int m_cur_thread;
 	
@@ -274,12 +274,16 @@ private:
   bool Inst_PushComplement(cAvidaContext& ctx);
   bool Inst_ValDelete(cAvidaContext& ctx);
   bool Inst_ValCopy(cAvidaContext& ctx);
-  bool Inst_ForkThread(cAvidaContext& ctx);
+  bool Inst_ThreadCreate(cAvidaContext& ctx);
   bool Inst_IfLabel(cAvidaContext& ctx);
-  bool Inst_KillThread(cAvidaContext& ctx);
+  bool Inst_ThreadExit(cAvidaContext& ctx);
   bool Inst_IO(cAvidaContext& ctx);
   bool Inst_Inject(cAvidaContext& ctx);
   bool Inst_Apoptosis(cAvidaContext& ctx);
+  bool Inst_NetGet(cAvidaContext& ctx);
+  bool Inst_NetSend(cAvidaContext& ctx);
+  bool Inst_NetReceive(cAvidaContext& ctx);
+  bool Inst_NetLast(cAvidaContext& ctx);
 };
 
 

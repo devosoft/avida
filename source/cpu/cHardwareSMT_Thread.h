@@ -25,19 +25,14 @@
 #include "nHardwareSMT.h"
 #endif
 
-/**
-* This class is needed to run several threads on a single genome.
- *
- * @see cCPUStack, cHeadMultiMem, cHardwareSMT
- **/
-
 class cHardwareBase;
 class cInjectGenotype;
 
-struct cHardwareSMT_Thread
+class cHardwareSMT_Thread
 {
 private:
   int id;
+
 public:
   cHeadMultiMem heads[nHardware::NUM_HEADS];
   unsigned char cur_head;
@@ -53,11 +48,11 @@ public:
   
   cHardwareSMT_Thread(cHardwareBase* in_hardware = NULL, int _id = -1);
   cHardwareSMT_Thread(const cHardwareSMT_Thread& in_thread, int _id = -1);
-  ~cHardwareSMT_Thread();
-	
+  ~cHardwareSMT_Thread() { ; }
+
   void operator=(const cHardwareSMT_Thread& in_thread);
 	
-  void Reset(cHardwareBase* in_hardware, int _id);
+  void Reset(cHardwareBase* in_hardware, int _id, int mem_space = 0);
   int GetID() const { return id; }
   void SetID(int _id) { id = _id; }
 };

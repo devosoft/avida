@@ -87,11 +87,15 @@ tInstLib<cHardwareSMT::tMethod>* cHardwareSMT::initInstLib(void)
     cInstEntry("Push-Comp", &cHardwareSMT::Inst_PushComplement), // 30
     cInstEntry("Val-Delete", &cHardwareSMT::Inst_ValDelete), // 31
     cInstEntry("Val-Copy", &cHardwareSMT::Inst_ValCopy), // 32
-    cInstEntry("ThreadFork", &cHardwareSMT::Inst_ForkThread), // 33
-    cInstEntry("ThreadKill", &cHardwareSMT::Inst_KillThread), // 34
+    cInstEntry("Thread-Create", &cHardwareSMT::Inst_ThreadCreate), // 33
+    cInstEntry("Thread-Exit", &cHardwareSMT::Inst_ThreadExit), // 34
     cInstEntry("IO", &cHardwareSMT::Inst_IO), // 35
     cInstEntry("Inject", &cHardwareSMT::Inst_Inject), // 36
-    cInstEntry("Apoptosis", &cHardwareSMT::Inst_Apoptosis)
+    cInstEntry("Apoptosis", &cHardwareSMT::Inst_Apoptosis), // 37
+    cInstEntry("Net-Get", &cHardwareSMT::Inst_NetGet), // 38
+    cInstEntry("Net-Send", &cHardwareSMT::Inst_NetSend), // 39
+    cInstEntry("Net-Receive", &cHardwareSMT::Inst_NetReceive), // 40
+    cInstEntry("Net-Last", &cHardwareSMT::Inst_NetLast) // 41
   };
 	
   const int n_size = sizeof(s_n_array)/sizeof(cNOPEntry);
@@ -162,6 +166,8 @@ void cHardwareSMT::Reset()
     inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
   }
 #endif	
+  
+  organism->NetReset();
 }
 
 // This function processes the very next command in the genome, and is made
@@ -953,18 +959,14 @@ bool cHardwareSMT::ForkThread()
 	
   // Make room for the new thread.
   m_threads.Resize(num_threads + 1);
-	
-  //IP().Advance();
-	
-  // Initialize the new thread to the same values as the current one.
-  m_threads[num_threads] = m_threads[m_cur_thread]; 
-	
-  // Find the first free bit in thread_id_chart to determine the new
-  // thread id.
+  
+  // Find the first free bit in thread_id_chart to determine the new thread id.
   int new_id = 0;
   while ( (thread_id_chart >> new_id) & 1 == 1) new_id++;
-  m_threads[num_threads].SetID(new_id);
   thread_id_chart |= (1 << new_id);
+
+  // Setup this thread into the current selected memory space (Flow Head)
+  m_threads[num_threads].Reset(this, new_id, GetHead(nHardware::HEAD_FLOW).GetMemSpace());
 	
   return true;
 }
@@ -984,20 +986,13 @@ bool cHardwareSMT::KillThread()
   // Note the current thread and set the current back one.
   const int kill_thread = m_cur_thread;
   PrevThread();
+  if (m_cur_thread > kill_thread) m_cur_thread--;
   
   // Turn off this bit in the thread_id_chart...
   thread_id_chart ^= 1 << m_threads[kill_thread].GetID();
 	
-  // Copy the last thread into the kill position
-  const int last_thread = GetNumThreads() - 1;
-  if (last_thread != kill_thread) {
-    m_threads[kill_thread] = m_threads[last_thread];
-  }
-	
   // Kill the thread!
-  m_threads.Resize(GetNumThreads() - 1);
-	
-  if (m_cur_thread > kill_thread) m_cur_thread--;
+  m_threads.Remove(kill_thread);	
 	
   return true;
 }
@@ -1955,7 +1950,7 @@ bool cHardwareSMT::Inst_ValCopy(cAvidaContext& ctx)
 }
 
 //30
-bool cHardwareSMT::Inst_ForkThread(cAvidaContext& ctx)
+bool cHardwareSMT::Inst_ThreadCreate(cAvidaContext& ctx)
 {
   if (!ForkThread()) 
     Fault(FAULT_LOC_THREAD_FORK, FAULT_TYPE_FORK_TH);
@@ -1974,7 +1969,7 @@ bool cHardwareSMT::Inst_IfLabel(cAvidaContext& ctx)
 }
 
 //35
-bool cHardwareSMT::Inst_KillThread(cAvidaContext& ctx)
+bool cHardwareSMT::Inst_ThreadExit(cAvidaContext& ctx)
 {
   if (!KillThread()) Fault(FAULT_LOC_THREAD_KILL, FAULT_TYPE_KILL_TH);
   else AdvanceIP() = false;
@@ -2022,5 +2017,44 @@ bool cHardwareSMT::Inst_Apoptosis(cAvidaContext& ctx)
 {
   organism->Die();
   
+  return true;
+}
+
+bool cHardwareSMT::Inst_NetGet(cAvidaContext& ctx)
+{
+  const int dst = FindModifiedStack(nHardwareSMT::STACK_BX);
+#ifdef SMT_FULLY_ASSOCIATIVE
+  const int seq_dst = FindModifiedNextStack(dst);
+#else
+  const int seq_dst = FindNextStack(dst);
+#endif
+  int val, seq;
+  organism->NetGet(ctx, val, seq);
+  Stack(dst).Push(val);
+  Stack(seq_dst).Push(seq);
+  
+  return true;
+}
+
+bool cHardwareSMT::Inst_NetSend(cAvidaContext& ctx)
+{
+  const int src = FindModifiedStack(nHardwareSMT::STACK_BX);
+  organism->NetSend(ctx, Stack(src).Pop());
+  return true;
+}
+
+bool cHardwareSMT::Inst_NetReceive(cAvidaContext& ctx)
+{
+  const int dst = FindModifiedStack(nHardwareSMT::STACK_BX);
+  int val;
+  bool success = organism->NetReceive(val);
+  Stack(dst).Push(val);
+  return success;
+}
+
+bool cHardwareSMT::Inst_NetLast(cAvidaContext& ctx)
+{
+  const int dst = FindModifiedStack(nHardwareSMT::STACK_CX);
+  Stack(dst).Push(organism->NetLast());
   return true;
 }

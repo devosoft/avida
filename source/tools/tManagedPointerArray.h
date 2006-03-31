@@ -109,6 +109,39 @@ public:
     for (int i = old_size; i < new_size; i++) *m_data[i] = empty_value;
   }
   
+  void Remove(const int index)
+  {
+    assert(m_size != 0 || index < m_size || index >= 0);
+
+    int new_size = m_size - 1;
+    
+    // If new size is 0, clean up and go!
+    if (new_size == 0) {
+      for (int i = 0; i < m_size; i++) delete m_data[i];
+      delete [] m_data;
+      m_data = NULL;
+      m_size = 0;
+      return;
+    }
+    
+    T** new_data = new T*[new_size];
+    assert(new_data != NULL); // Memory Allocation Error: Out of Memory?
+    
+    delete m_data[index];
+    
+    // Copy over old data...
+    for (int i = 0; i < index; i++) {
+      new_data[i] = m_data[i];
+    }
+    for (int i = index + 1; i < m_size; i++) {
+      new_data[i - 1] = m_data[i];
+    }
+    delete [] m_data;
+    m_data = new_data;
+
+    m_size = new_size;
+  }
+  
   T& operator[](const int index)
   {
     assert(index >= 0);    // Lower Bounds Error

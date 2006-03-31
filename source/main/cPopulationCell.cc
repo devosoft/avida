@@ -20,6 +20,7 @@ using namespace std;
 cPopulationCell::cPopulationCell()
   : m_world(NULL)
   , organism(NULL)
+  , mutation_rates(NULL)
   , cur_input(0)
   , organism_count(0)
 {

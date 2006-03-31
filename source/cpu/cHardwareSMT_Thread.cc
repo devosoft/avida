@@ -11,12 +11,12 @@
 
 using namespace std;
 
-cHardwareSMT_Thread::cHardwareSMT_Thread(cHardwareBase * in_hardware, int _id)
+cHardwareSMT_Thread::cHardwareSMT_Thread(cHardwareBase* in_hardware, int _id)
 {
   Reset(in_hardware, _id);
 }
 
-cHardwareSMT_Thread::cHardwareSMT_Thread(const cHardwareSMT_Thread & in_thread, int _id)
+cHardwareSMT_Thread::cHardwareSMT_Thread(const cHardwareSMT_Thread& in_thread, int _id)
 {
 	id = _id;
 	if (id == -1) id = in_thread.id;
@@ -29,9 +29,7 @@ cHardwareSMT_Thread::cHardwareSMT_Thread(const cHardwareSMT_Thread & in_thread, 
 	owner = in_thread.owner;
 }
 
-cHardwareSMT_Thread::~cHardwareSMT_Thread() {}
-
-void cHardwareSMT_Thread::operator=(const cHardwareSMT_Thread & in_thread)
+void cHardwareSMT_Thread::operator=(const cHardwareSMT_Thread& in_thread)
 {
   id = in_thread.id;
   for (int i = 0; i < nHardwareSMT::NUM_LOCAL_STACKS; i++) {
@@ -43,12 +41,12 @@ void cHardwareSMT_Thread::operator=(const cHardwareSMT_Thread & in_thread)
   owner = in_thread.owner;
 }
 
-void cHardwareSMT_Thread::Reset(cHardwareBase * in_hardware, int _id)
+void cHardwareSMT_Thread::Reset(cHardwareBase* in_hardware, int _id, int mem_space)
 {
   id = _id;
 	
   for (int i = 0; i < nHardwareSMT::NUM_LOCAL_STACKS; i++) local_stacks[i].Clear();
-  for (int i = 0; i < nHardware::NUM_HEADS; i++) heads[i].Reset(0, in_hardware);
+  for (int i = 0; i < nHardware::NUM_HEADS; i++) heads[i].Reset(mem_space, in_hardware);
 	
   cur_head = nHardware::HEAD_IP;
   read_label.Clear();

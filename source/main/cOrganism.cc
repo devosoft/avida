@@ -339,6 +339,17 @@ bool cOrganism::NetRemoteValidate(cAvidaContext& ctx, int value)
   return true;
 }
 
+void cOrganism::NetReset()
+{
+  if (m_net) {
+    while (m_net->pending.GetSize()) delete m_net->pending.Pop();
+    for (int i = 0; i < m_net->received.GetSize(); i++) delete m_net->received[i];
+    m_net->received.Resize(0);
+    m_net->sent.Resize(0);
+    m_net->seq.Resize(0);
+  }
+}
+
 
 bool cOrganism::InjectParasite(const cGenome & injected_code)
 {
