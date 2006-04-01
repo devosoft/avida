@@ -113,7 +113,7 @@ protected:
     tSmartArray<cOrgSeqMessage> seq; 
     int last_seq;
     
-    cNetSupport() : last_seq(-1) { ; }
+    cNetSupport() : last_seq(0) { ; }
     ~cNetSupport();
   };
   cNetSupport* m_net;
