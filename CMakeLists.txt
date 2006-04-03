@@ -162,7 +162,7 @@ IF(AVD_PRIMITIVE)
 	# are run via 'make test' under unix.
 	OPTION(AVD_CONSISTENCY_TEST_PRIMITIVE
 		"Enable primitive consistency test suites."
-		OFF
+		ON
 	)
 	IF(AVD_CONSISTENCY_TEST_PRIMITIVE)
 		IF(EXISTS ${PROJECT_SOURCE_DIR}/consistencytests)
