@@ -1,0 +1,32 @@
+set email dule@alife.org # User's e-mail address
+
+set freq_email job    # Frequency status is e-mailed to you.  Choices are:
+                        #   job -- when this job is completed (default)
+                        #   run -- when each run is completed
+                        #   crash -- when a run crashes
+                        #   never -- no e-mail is sent
+
+set priority 3          # Priority of the job.  Normally an integer between 1
+                        # (low priority) and 5 (high priority)  where 3 is the
+                        # default priority.
+
+set description sex local/global # Description of the job to run
+
+#set class_pref 4,3,2,1 # List in order of preference which class of computers
+                        # you wish to run your programs on.  Current classes:
+                        # class   GHz   MB Description
+                        #     1  0.50   64 Original Leviathan computers
+                        #     2  1.40  512 Original Alice computers
+                        #     3  2.40  512 Alice computers with newer CPUs
+                        #     4  2.80  512 Single CPU Intel computers
+                        #   201  0.50  128 Original Leviathan using both CPUs
+                        #   202  1.40 1024 Original Alice using both CPUs
+                        #   203  2.60 1024 New CPU Alice using both CPUs
+                        # Default = 4,3,2,1
+
+set max_cpus 50         # Maximum number of CPUs that this job can run on
+                        # default=20
+
+
+100..149 GlobalSex ./primitive -s $seed -set INST_SET inst_set.sex -set START_CREATURE organism.100.sex -set BIRTH_METHOD 4
+100..149 GlobalAsex ./primitive -s $seed -set INST_SET inst_set.asex -set START_CREATURE organism.100.asex -set BIRTH_METHOD 4

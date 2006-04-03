@@ -1,0 +1,11 @@
+#!/bin/sh
+
+mkdir -p build
+cd build
+cmake \
+  -DAVD_CONSISTENCY_TEST_PRIMITIVE:BOOL=ON \
+  -DCMAKE_VERBOSE_MAKEFILE:BOOL=OFF \
+  ../
+make
+make install
+ctest --verbose -R Consistency

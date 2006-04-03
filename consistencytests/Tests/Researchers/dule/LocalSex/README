@@ -1,0 +1,43 @@
+start date: 	6/7/04
+
+dir name: 	/home/dule/data/local_sex/LocalSex
+
+code used: 	/home/dule/avida-source/current-5-26-04
+
+duration: 	100,000 updates
+pop.size:	3600 organisms
+birth method:	0 (random local)
+
+death:		on
+		DEATH_METHOD 2 
+		# 2 = Die when inst executed = length * AGE_LIMIT (+ dev.)
+		AGE_LIMIT 20    # Modifies DEATH_METHOD
+
+ancestor: 	organism.100.sex 
+
+env file: 	environment.cfg
+lineages: 	on
+
+fixed length: 	no
+		CHILD_SIZE_RANGE 2.0   # Maximal differential between child and parent sizes.
+		MIN_COPIED_LINES 0.95    # Code fraction which must be copied before divide.
+		MIN_EXE_LINES    0.05    # Code fraction which must be executed before divide.
+
+mutations: 	INS_MUT_PROB    0.0005     # Insertion rate (per site, applied on divide).
+		DEL_MUT_PROB    0.0005     # Deletion rate (per site, applied on divide).
+		DIV_MUT_PROB    0.002      # Mutation rate (per site, applied on divide).
+
+run_list: 
+
+100..149 LocalSex ./primitive -s $seed 
+100..149 LocalAsex ./primitive -s $seed 
+
+comments: 
+
+Testing the effect of newly implemented local nature of sex, using local,
+random replacement as the birth method 
+
+All the parameters in these runs are the same as sex-nature-new-mut 
+(p. 150.1) other than the birth method. 
+
+Also added the same treatment with asexuals, and repeated the mass action sex/asex runs. 

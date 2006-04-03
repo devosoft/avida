@@ -1,0 +1,33 @@
+
+import sys
+import site
+site.addsitedir('@AvidaConsistencyChecksPythonSiteDir@')
+from avida_consistency_checks import *
+
+avida_exe_path = '@_AvidaExePath@'
+seed_set = @SeedSet@
+run_subdir_path_base = '@RunSubdirPathBase@'
+output_file_name = '@OutputFileName@'
+expectation_file_path_base = '@ExpectationFilePathBase@'
+expectation_file_name = '@ExpectationFileName@'
+genesis_file = '@GenesisFile@'
+avida_args = '@AvidaArgs@'
+
+tail_checker = TailChecker(
+  seed_set,
+  run_subdir_path_base,
+  genesis_file,
+  output_file_name,
+  expectation_file_path_base,
+  expectation_file_name,
+  avida_exe_path,
+  avida_args
+)
+tail_checker.check_tails()
+
+for seed, lines in tail_checker.failures_dict.iteritems():
+  print 'Seed', seed, 'produced unexpected last line in file', output_file_name, ':'
+  print lines[0], 'Expected last line in file', expectation_file_name, ':'
+  print lines[1]
+
+sys.exit(len(tail_checker.failures_dict))

@@ -1,0 +1,30 @@
+
+import site
+import sys
+import site
+site.addsitedir('@AvidaConsistencyChecksPythonSiteDir@')
+from avida_consistency_checks import *
+
+avida_exe_path = '@_AvidaExePath@'
+seed_set = @SeedSet@
+run_subdir_path_base = '@RunSubdirPathBase@'
+output_file_name = '@OutputFileName@'
+# The line below causes expectation files to be saved in the same place
+# as the rest of Avida's output files (specifically this should avoid
+# overwritin existing expectation files saved in the source tree.
+expectation_file_path_base = '@RunSubdirPathBase@'
+expectation_file_name = '@ExpectationFileName@'
+genesis_file = '@GenesisFile@'
+avida_args = '@AvidaArgs@'
+
+tail_generator = TailGenerator(
+  seed_set,
+  run_subdir_path_base,
+  genesis_file,
+  output_file_name,
+  expectation_file_path_base,
+  expectation_file_name,
+  avida_exe_path,
+  avida_args
+)
+tail_generator.generate_tails()

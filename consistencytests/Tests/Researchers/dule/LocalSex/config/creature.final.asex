@@ -1,0 +1,143 @@
+# Filename........: creature.final
+# Update Output...: 100000
+# Is Viable.......: 1
+# Repro Cycle Size: 0
+# Depth to Viable.: 0
+# Update Created..: 99107
+# Genotype ID.....: 8095058
+# Parent Gen ID...: 8089738
+# Tree Depth......: 375
+# Parent Distance.: 1
+
+# Generation: 0
+# Merit...........:   2.2859e+08
+# Gestation Time..:          226
+# Fitness.........:  1.01146e+06
+# Errors..........:            4
+# Genome Size.....:          112
+# Copied Size.....:          112
+# Executed Size...:          109
+# Offspring.......:         SELF
+
+# not	1
+# nand	1
+# and	1
+# orn	1
+# or	1
+# andn	1
+# nor	1
+# xor	0
+# equ	1
+
+shift-r
+h-alloc
+set-flow
+nop-A
+mov-head
+nop-C
+jmp-head
+nop-A
+h-search
+shift-r
+nop-B
+swap
+h-search
+set-flow
+h-search
+div-asex
+push
+IO
+swap
+nand
+push
+nand
+IO
+nand
+nop-C
+h-copy
+pop
+sub
+nop-C
+IO
+nop-C
+h-alloc
+nand
+IO
+nop-C
+add
+nop-A
+if-n-equ
+shift-l
+nop-A
+set-flow
+nand
+nop-C
+h-copy
+nand
+nop-B
+if-less
+nop-A
+if-n-equ
+nop-C
+IO
+nand
+nop-B
+push
+nop-C
+shift-r
+sub
+nop-A
+nop-B
+nop-C
+shift-r
+pop
+IO
+nand
+inc
+nop-C
+nop-A
+push
+add
+push
+if-n-equ
+div-asex
+nop-A
+add
+nop-C
+sub
+nop-A
+div-asex
+pop
+IO
+add
+IO
+nop-B
+if-label
+if-label
+IO
+nop-C
+IO
+nop-A
+h-copy
+h-copy
+h-copy
+nand
+IO
+get-head
+nop-B
+set-flow
+nop-B
+swap
+h-search
+h-copy
+h-copy
+if-label
+nop-C
+nop-A
+div-asex
+h-copy
+h-copy
+h-copy
+mov-head
+nop-A
+nop-B
