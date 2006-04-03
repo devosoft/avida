@@ -167,9 +167,9 @@ IF(AVD_PRIMITIVE)
 	IF(AVD_CONSISTENCY_TEST_PRIMITIVE)
 		IF(EXISTS ${PROJECT_SOURCE_DIR}/consistencytests)
 			SET(_AvidaExePath
-				"${PROJECT_BINARY_DIR}/bin/primitive"
+				"${PROJECT_BINARY_DIR}/bin/avida"
 				CACHE FILEPATH
-				"Where can the Avida executable 'primitive' be found ?"
+				"Where can the Avida executable 'avida' be found ?"
 				FORCE
 			)
 			SET(BUILD_TESTING TRUE)

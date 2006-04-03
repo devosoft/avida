@@ -7,9 +7,9 @@ PROJECT(AvidaConsistencyChecks)
 #SET(AvidaExePath "/Users/kaben/Projects/Software/Avida/branch.kaben/current--HEAD--cvs/build.cmake.dbg/bin/primitive")
 #SET(PythonExePath "/sw/bin/python")
 FIND_PROGRAM(_AvidaExePath
-  NAMES primitive
+  NAMES avida
   PATHS ${PROJECT_BINARY_DIR}
-  DOC "Where can the Avida executable 'primitive' be found ?"
+  DOC "Where can the Avida executable 'avida' be found ?"
 )
 IF(_AvidaExePath)
   SET(AvidaExePath_FOUND TRUE)

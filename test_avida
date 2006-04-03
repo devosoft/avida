@@ -8,4 +8,4 @@ cmake \
   ../
 make
 make install
-ctest --verbose -R Consistency
+ctest --verbose "$@"
