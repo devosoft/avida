@@ -86,9 +86,19 @@ cStats::cStats(cWorld* world)
 {
   task_cur_count.Resize( m_world->GetNumTasks() );
   task_last_count.Resize( m_world->GetNumTasks() );
+  task_cur_quality.Resize( m_world->GetNumTasks() );
+  task_last_quality.Resize( m_world->GetNumTasks() );
+  task_cur_max_quality.Resize( m_world->GetNumTasks() );
+  task_last_max_quality.Resize( m_world->GetNumTasks() );
   task_exe_count.Resize( m_world->GetNumTasks() );
   task_cur_count.SetAll(0);
+  task_cur_quality.SetAll(0);
+  task_cur_max_quality.SetAll(0);
+  task_last_max_quality.SetAll(0);
+  task_last_quality.SetAll(0);
   task_last_count.SetAll(0);
+  task_cur_max_quality.SetAll(0);
+  task_last_max_quality.SetAll(0);
   task_exe_count.SetAll(0);
 
 #ifdef INSTRUCTION_COUNT
@@ -204,7 +214,11 @@ void cStats::ZeroTasks()
 {
   for( int i=0; i < task_cur_count.GetSize(); i++ ){
     task_cur_count[i] = 0;
-    task_last_count[i] = 0;
+	task_last_count[i] = 0;
+	task_cur_quality[i] = 0;
+	task_last_quality[i] = 0;
+	task_last_max_quality[i] = 0;
+	task_cur_max_quality[i] = 0;
   }
 }
 
@@ -357,6 +371,10 @@ void cStats::ProcessUpdate()
 
   task_cur_count.SetAll(0);
   task_last_count.SetAll(0);
+  task_cur_quality.SetAll(0);
+  task_last_quality.SetAll(0);
+  task_cur_max_quality.SetAll(0);
+  task_last_max_quality.SetAll(0);
   task_exe_count.SetAll(0);
 
   dom_merit = 0;
@@ -587,19 +605,40 @@ void cStats::PrintTotalsData(const cString & filename)
 
 void cStats::PrintTasksData(const cString & filename)
 {
-  cDataFile & df = m_world->GetDataFile(filename);
+	cString file = filename;
 
-  df.WriteComment( "Avida tasks data" );
-  df.WriteTimeStamp();
-  df.WriteComment( "First column gives the current update, all further columns give the number" );
-  df.WriteComment( "of organisms that have the particular task as a component of the merit." );
+	// flag to print both tasks.dat and taskquality.dat
+	if (filename == "tasksq.dat")
+	{
+		file = "tasks.dat";
+		cDataFile & df2 = m_world->GetDataFile("taskquality.dat");
+		df2.WriteComment( "First column gives the current update, rest give average and max task quality" );
+		df2.Write( GetUpdate(), "Update");
+		for(int i = 0; i < task_last_count.GetSize(); i++) {
+			double qual=0;
+			if (task_last_count[i] > 0)
+				qual = task_last_quality[i]/(double)task_last_count[i];
+			df2.Write( qual, task_names[i] );
+			df2.Write( task_last_max_quality[i], "Max" );
+		}
+		df2.Endl();
+	}
 
+	// print tasks.dat
+	cDataFile & df = m_world->GetDataFile(file);
+	df.WriteComment( "Avida tasks data" );
+	df.WriteTimeStamp();
+	df.WriteComment( "First column gives the current update, next columns give the number" );
+	df.WriteComment( "of organisms that have the particular task as a component of their merit" );
 
-  df.Write( GetUpdate(),   "Update");
-  for(int i = 0; i < task_last_count.GetSize(); i++) {
-    df.Write( task_last_count[i], task_names[i] );
-  }
-  df.Endl();
+	df.Write( GetUpdate(),   "Update");
+	for(int i = 0; i < task_last_count.GetSize(); i++) {
+		df.Write( task_last_count[i], task_names[i] );
+	}
+	df.Endl();
+
+  //cDataFile & df = m_world->GetDataFile(filename);
+
 }
 
 

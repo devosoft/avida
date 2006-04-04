@@ -25,7 +25,7 @@
 #include "cTaskEntry.h"
 #include "cTools.h"
 #include "cWorld.h"
-
+#include <iostream>
 using namespace std;
 
 
@@ -204,6 +204,9 @@ bool cEnvironment::LoadReactionProcess(cReaction * reaction, cString desc)
         return false;
       new_process->SetDetectionError(var_value.AsDouble());
     }
+	else if (var_name == "string") {
+		new_process->SetMatchString(var_value);
+	}
     else {
       cerr << "Error: Unknown process variable '" << var_name
       << "' in reaction '" << reaction->GetName() << "'" << endl;
@@ -406,10 +409,11 @@ bool cEnvironment::LoadReaction(cString desc)
   }
   
   // Finish loading in this reaction.
-  const cString trigger = desc.PopWord();
+    cString trigger_info = desc.PopWord();
+	cString trigger = trigger_info.Pop('=');
   
   // Load the task trigger
-  cTaskEntry * cur_task = task_lib.AddTask(trigger);
+   cTaskEntry * cur_task = task_lib.AddTask(trigger, trigger_info);
   if (cur_task == NULL) {
     cerr << "...failed to find task in cTaskLib..." << endl;
     return false;
@@ -676,14 +680,14 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result, cTask
     // If this task wasn't performed, move on to the next one.
     if (task_quality == 0.0) continue;
     
-    // Mark this task as performed...
-    result.MarkTask(task_id);
-    
     // Examine requisites on this reaction
     if (TestRequisites(cur_reaction->GetRequisites(), task_count[task_id], reaction_count) == false) {
       continue;
     }
     
+	// Mark this task as performed...
+	result.MarkTask(task_id, task_quality);
+
     // And lets process it!
     DoProcesses(ctx, cur_reaction->GetProcesses(), resource_count, task_quality, result);
     
@@ -790,7 +794,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     
     // Test if infinite resource
     if (in_resource == NULL) {
-      consumed = max_consumed;
+      consumed = max_consumed * task_quality;
     }
     
     // Otherwise we're using a finite resource
@@ -802,6 +806,8 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       
       // Make sure we're not above the maximum consumption.
       if (consumed > max_consumed) consumed = max_consumed;
+
+	  consumed *= task_quality;  // modify consumed based on task quality
       
       // Test if we are below the minimum consumption.
       if (consumed < min_consumed) consumed = 0.0;
@@ -814,7 +820,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     }
     
     // Calculate the bonus
-    double bonus = consumed * cur_process->GetValue() * task_quality;
+    double bonus = consumed * cur_process->GetValue();
     
     switch (cur_process->GetType()) {
       case nReaction::PROCTYPE_ADD:

@@ -30,10 +30,11 @@ private:
   cString m_desc;  // For more human-understandable output...
   int m_id;
   tTaskTest m_test_fun;
+  cString m_info;  // extra info (like the string or whatever to match)
 
 public:
-  cTaskEntry(const cString& name, const cString& desc, int in_id, tTaskTest test_fun)
-    : m_name(name), m_desc(desc), m_id(in_id), m_test_fun(test_fun)
+  cTaskEntry(const cString& name, const cString& desc, int in_id, tTaskTest test_fun, const cString& info)
+    : m_name(name), m_desc(desc), m_id(in_id), m_test_fun(test_fun), m_info(info)
   {
   }
   ~cTaskEntry() { ; }
@@ -42,6 +43,7 @@ public:
   const cString& GetDesc() const { return m_desc; }
   const int GetID() const { return m_id; }
   const tTaskTest GetTestFun() const { return m_test_fun; }
+  const cString & GetInfo() const { return m_info; }
 };
 
 #endif

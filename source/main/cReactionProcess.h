@@ -17,6 +17,9 @@
 #ifndef nReaction_h
 #include "nReaction.h"
 #endif
+#ifndef STRING_HH
+#include "cString.h"
+#endif
 
 #include <iostream>
 
@@ -35,6 +38,7 @@ private:
   cResource* product;   // Output resource.
   double conversion;     // Conversion factor.
   bool lethal;		 // Lethality of reaction
+  cString match_string;	 // Bit string to match if this is a match string reaction
   int inst_id;           // Instruction to be triggered if reaction successful.
 
   // Resource detection
@@ -78,6 +82,7 @@ public:
   cResource* GetDetect() const { return detect; }
   double GetDetectionThreshold() const { return detection_threshold; }
   double GetDetectionError() const { return detection_error; }
+  cString GetMatchString() const { return match_string; }
 
   void SetResource(cResource* _in) { resource = _in; }
   void SetValue(double _in) { value = _in; }
@@ -92,6 +97,7 @@ public:
   void SetDetect(cResource* _in) { detect = _in; }
   void SetDetectionThreshold(double _in) { detection_threshold = _in; }
   void SetDetectionError(double _in) { detection_error = _in; }
+  void SetMatchString(cString _in) { match_string = _in; }
 };
 
 #endif

@@ -36,6 +36,7 @@ private:
   bool use_neighbor_output;
 
   // Active task information...
+  mutable int cur_task; // the ID of the task currently being tested
 
   enum req_list
   {
@@ -55,7 +56,7 @@ public:
 
   int GetSize() const { return task_array.GetSize(); }
 
-  cTaskEntry* AddTask(const cString& name);
+  cTaskEntry * AddTask(const cString & name, const cString & info);
   const cTaskEntry& GetTask(int id) const;
   
   void SetupTests(cTaskContext& ctx) const;
@@ -65,7 +66,7 @@ public:
   bool UseNeighborOutput() const { return use_neighbor_output; }
   
 private:  // Direct task related methods
-  void NewTask(const cString& name, const cString& desc, tTaskTest task_fun, int reqs = 0);
+  void NewTask(const cString& name, const cString& desc, tTaskTest task_fun, int reqs = 0, const cString& info="");
 
   inline double FractionalReward(unsigned int supplied, unsigned int correct);  
 
@@ -210,6 +211,8 @@ private:  // Direct task related methods
   double Task_Math3in_AL(cTaskContext* ctx) const;
   double Task_Math3in_AM(cTaskContext* ctx) const;
   
+  // match string tasks
+  double Task_MatchStr(cTaskContext* ctx) const;
   // Communication Tasks...
   double Task_CommEcho(cTaskContext* ctx) const;
   double Task_CommNot(cTaskContext* ctx) const;
@@ -221,6 +224,7 @@ private:  // Direct task related methods
 
 inline double cTaskLib::TestOutput(const cTaskEntry& task, cTaskContext* ctx) const
 {
+  cur_task = task.GetID();
   tTaskTest test_fun = task.GetTestFun();
   return (this->*test_fun)(ctx);
 }

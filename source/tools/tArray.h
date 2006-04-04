@@ -11,6 +11,10 @@
 #ifndef tArray_h
 #define tArray_h
 
+#ifndef NULL
+#define NULL 0
+#endif
+
 #include <assert.h>
 
 #ifndef NULL

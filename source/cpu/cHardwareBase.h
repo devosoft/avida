@@ -11,6 +11,7 @@
 #ifndef cHardwareBase_h
 #define cHardwareBase_h
 
+#include <cassert>
 #include <iostream>
 
 using namespace std;

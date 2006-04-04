@@ -140,7 +140,7 @@
 
 // Number of distinct input and outputs stored in the IOBufs (to test tasks)
 #define INPUT_BUF_SIZE  3
-#define OUTPUT_BUF_SIZE 1
+#define OUTPUT_BUF_SIZE 3
 #define SEND_BUF_SIZE 3
 #define RECEIVE_BUF_SIZE 3
 

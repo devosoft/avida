@@ -206,7 +206,7 @@ cInstLibCPU *cHardwareCPU::initInstLib(void)
     cInstEntryCPU("put",       &cHardwareCPU::Inst_TaskPut),
     cInstEntryCPU("IO",        &cHardwareCPU::Inst_TaskIO, true,
                   "Output ?BX?, and input new number back into ?BX?"),
-    
+    cInstEntryCPU("match-strings", &cHardwareCPU::Inst_MatchStrings),
     cInstEntryCPU("send",      &cHardwareCPU::Inst_Send),
     cInstEntryCPU("receive",   &cHardwareCPU::Inst_Receive),
     cInstEntryCPU("sense",     &cHardwareCPU::Inst_Sense),
@@ -389,6 +389,7 @@ cHardwareCPU::cHardwareCPU(const cHardwareCPU &hardware_cpu)
 , cur_thread(hardware_cpu.cur_thread)
 , mal_active(hardware_cpu.mal_active)
 , advance_ip(hardware_cpu.advance_ip)
+, executedmatchstrings(hardware_cpu.executedmatchstrings)
 #ifdef INSTRUCTION_COSTS
 , inst_cost(hardware_cpu.inst_cost)
 , inst_ft_cost(hardware_cpu.inst_ft_cost)
@@ -415,6 +416,7 @@ void cHardwareCPU::Reset()
   cur_thread = 0;
   
   mal_active = false;
+  executedmatchstrings = false;
   
 #ifdef INSTRUCTION_COSTS
   // instruction cost arrays
@@ -2771,12 +2773,21 @@ bool cHardwareCPU::Inst_TaskIO(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareCPU::Inst_MatchStrings(cAvidaContext& ctx)
+{
+	if (executedmatchstrings)
+		return false;
+	organism->DoOutput(ctx, 357913941);
+	executedmatchstrings = true;
+	return true;
+}
+
 bool cHardwareCPU::Inst_Send(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   organism->SendValue(GetRegister(reg_used));
-GetRegister(reg_used) = 0;
-return true;
+  GetRegister(reg_used) = 0;
+  return true;
 }
 
 bool cHardwareCPU::Inst_Receive(cAvidaContext& ctx)

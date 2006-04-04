@@ -54,6 +54,12 @@ public:
     while (offset >= data.GetSize()) offset -= data.GetSize();
   }
 
+  void Pop(){
+	  total--;
+	  offset--;
+	  while (offset < 0) offset += data.GetSize();
+  }
+
   T operator[](int i) const
   {
     int index = offset - i - 1;

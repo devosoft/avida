@@ -114,7 +114,7 @@ cPopulation::cPopulation(cWorld* world)
     } else {
       right_flag = true;
     }
-    
+ 
     // Setup the connection list for each cell. (Clockwise from -1 to 1)
     
     tList<cPopulationCell> & conn_list=cell_array[cell_id].ConnectionList();
@@ -142,7 +142,7 @@ cPopulation::cPopulation(cWorld* world)
     if (left_flag) {
       conn_list.Push(&(cell_array[GridNeighbor(cell_id,world_x,world_y, -1,  0)]));
     }
-    
+
     // Setup the reaper queue...
     if (world->GetConfig().BIRTH_METHOD.Get() == POSITION_CHILD_FULL_SOUP_ELDEST) {
       reaper_queue.Push(&(cell_array[cell_id]));
@@ -172,7 +172,7 @@ cPopulation::cPopulation(cWorld* world)
                          res->GetOutflowY2() );
     m_world->GetStats().SetResourceName(i, res->GetName());
   }
-  
+ 
   // Give stats information about the environment...
   const cTaskLib & task_lib = environment.GetTaskLib();
   for (int i = 0; i < task_lib.GetSize(); i++) {
@@ -184,7 +184,7 @@ cPopulation::cPopulation(cWorld* world)
   for (int i = 0; i < inst_set.GetSize(); i++) {
     m_world->GetStats().SetInstName(i, inst_set.GetName(i));
   }
-  
+
   // Load a clone if one is provided, otherwise setup start organism.
   if (m_world->GetConfig().CLONE_FILE.Get() == "-" || m_world->GetConfig().CLONE_FILE.Get() == "") {
     cGenome start_org = cInstUtil::LoadGenome(m_world->GetConfig().START_CREATURE.Get(), world->GetHardwareManager().GetInstSet());
@@ -194,7 +194,7 @@ cPopulation::cPopulation(cWorld* world)
     ifstream fp(m_world->GetConfig().CLONE_FILE.Get());
     LoadClone(fp);
   }
-  
+
   // Load a saved population if one is provided.
   cString fname(m_world->GetConfig().POPULATION_FILE.Get());
   if (fname != "-" && fname != "") {
@@ -223,7 +223,6 @@ cPopulation::cPopulation(cWorld* world)
       LoadPopulation(fp);
     }
   }
-  
 }
 
 
@@ -1164,10 +1163,17 @@ void cPopulation::UpdateOrganismStats()
     
     // Test what tasks this creatures has completed.
     for (int j=0; j < m_world->GetEnvironment().GetTaskLib().GetSize(); j++) {
-      if (phenotype.GetCurTaskCount()[j] > 0)  stats.AddCurTask(j);
-      if (phenotype.GetLastTaskCount()[j] > 0) stats.AddLastTask(j);
-      if (phenotype.GetLastTaskCount()[j] > 0) 
-        stats.IncTaskExeCount(j, phenotype.GetLastTaskCount()[j]);
+      if (phenotype.GetCurTaskCount()[j] > 0)
+	  {
+		  stats.AddCurTask(j);
+		  stats.AddCurTaskQuality(j, phenotype.GetCurTaskQuality()[j]);
+	  }
+      if (phenotype.GetLastTaskCount()[j] > 0)
+	  {
+		  stats.AddLastTask(j);
+		  stats.AddLastTaskQuality(j, phenotype.GetLastTaskQuality()[j]);
+		  stats.IncTaskExeCount(j, phenotype.GetLastTaskCount()[j]);
+	  } 
     }
     
     // Increment the counts for all qualities the organism has...

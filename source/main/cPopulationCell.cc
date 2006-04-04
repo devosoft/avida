@@ -64,7 +64,8 @@ void cPopulationCell::Setup(cWorld* world, int in_id, const cMutationRates & in_
 {
   m_world = world;
   cell_id = in_id;
-  if (mutation_rates == NULL) mutation_rates = new cMutationRates();
+  if (mutation_rates == NULL) 
+	  mutation_rates = new cMutationRates();
   mutation_rates->Copy(in_rates);
 }
 

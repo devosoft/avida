@@ -45,14 +45,22 @@ int cGenesis::Open(cString _filename, ios::openmode mode)
 void cGenesis::AddInput(const cString & in_name, int in_value)
 {
   cString in_string;
-  in_string.Set("%s %d", in_name(), in_value);
+  in_string.Set("%s %s, ");
+  in_string += in_name;
+  in_string += "(), ";
+  in_string += in_value;
+  in_string += "()";
   AddLine(in_string);
 }
 
 void cGenesis::AddInput(const cString & in_name, const cString & in_value)
 {
   cString in_string;
-  in_string.Set("%s %s", in_name(), in_value());
+  in_string.Set("%s %s, ");
+  in_string += in_name;
+  in_string += "(), ";
+  in_string += in_value;
+  in_string += "()";
   AddLine(in_string);
 }
 

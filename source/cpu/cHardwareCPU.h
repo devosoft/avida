@@ -84,6 +84,7 @@ private:
   // Flags...
   bool mal_active;         // Has an allocate occured since last divide?
   bool advance_ip;         // Should the IP advance after this instruction?
+  bool executedmatchstrings;	// Have we already executed the match strings instruction?
 
   // Instruction costs...
 #ifdef INSTRUCTION_COSTS
@@ -298,6 +299,7 @@ private:
   bool Inst_TaskStackLoad(cAvidaContext& ctx);
   bool Inst_TaskPut(cAvidaContext& ctx);
   bool Inst_TaskIO(cAvidaContext& ctx);
+  bool Inst_MatchStrings(cAvidaContext& ctx);
   bool Inst_Send(cAvidaContext& ctx);
   bool Inst_Receive(cAvidaContext& ctx);
   bool Inst_Sense(cAvidaContext& ctx);

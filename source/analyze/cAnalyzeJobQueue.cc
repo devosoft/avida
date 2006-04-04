@@ -33,7 +33,7 @@ cAnalyzeJobQueue::~cAnalyzeJobQueue()
 
 void cAnalyzeJobQueue::Execute()
 {
-  const int num_workers = m_world->GetConfig().ANALYZE_MT_CONCURRENCY.Get();
+  const int num_workers = 1; //m_world->GetConfig().ANALYZE_MT_CONCURRENCY.Get();
   
   cAnalyzeJobWorker* workers[num_workers];
   

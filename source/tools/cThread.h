@@ -10,6 +10,10 @@
 #ifndef cThread_h
 #define cThread_h
 
+#ifndef NULL
+#define NULL 0
+#endif
+
 #include <pthread.h>
 
 class cThread

@@ -40,11 +40,12 @@ inline double cTaskLib::FractionalReward(unsigned int supplied, unsigned int cor
   return static_cast<double>(32 - bit_diff) / 32.0; 
 }
 
-cTaskEntry * cTaskLib::AddTask(const cString & name)
+cTaskEntry * cTaskLib::AddTask(const cString & name, const cString & info)
 {
   // Determine if this task is already in the active library.
   for (int i = 0; i < task_array.GetSize(); i++) {
-    if (task_array[i]->GetName() == name) {
+       if (task_array[i]->GetName() == name &&
+		   		task_array[i]->GetInfo() == info) {
       assert(task_array[i] != NULL);
       return task_array[i];
     }
@@ -319,6 +320,9 @@ cTaskEntry * cTaskLib::AddTask(const cString & name)
   else if (name == "math_3AM")
     NewTask(name, "Math 3AM ((X+Y)^2+(Y+Z)^2)", &cTaskLib::Task_Math3in_AM);  
   
+  // match string task
+  if (name == "matchstr")  NewTask(name, "MatchStr", &cTaskLib::Task_MatchStr, 0, info);
+
 	// communication tasks
   else if (name == "comm_echo")
     NewTask(name, "Echo of Neighbor's Input", &cTaskLib::Task_CommEcho,
@@ -434,14 +438,14 @@ void cTaskLib::SetupTests(cTaskContext& ctx) const
 ////////////////////////
 
 void cTaskLib::NewTask(const cString & name, const cString & desc,
-                       tTaskTest task_fun, int reqs)
+					   tTaskTest task_fun, int reqs, const cString & info)
 {
   if (reqs & REQ_NEIGHBOR_INPUT == true) use_neighbor_input = true;
   if (reqs & REQ_NEIGHBOR_OUTPUT == true) use_neighbor_output = true;
   
   const int id = task_array.GetSize();
   task_array.Resize(id+1);
-  task_array[id] = new cTaskEntry(name, desc, id, task_fun);
+  task_array[id] = new cTaskEntry(name, desc, id, task_fun, info);
 }
 
 
@@ -1732,6 +1736,44 @@ double cTaskLib::Task_Math3in_AM(cTaskContext* ctx) const //((X+Y)^2+(Y+Z)^2)
     }
   }
   return 0.0;
+}
+
+double cTaskLib::Task_MatchStr(cTaskContext* ctx) const
+{
+	tBuffer<int> temp_buf(ctx->output_buffer);
+	if (temp_buf[0] != 357913941)
+		return 0;
+
+	temp_buf.Pop(); // pop the signal value off of the buffer
+	if (temp_buf.GetNumStored() == 0)
+		return 0;
+
+	const cString & string_to_match = task_array[cur_task]->GetInfo();
+	int max_num_matched = 0;
+	//for (int i=0; i<temp_buf.GetNumStored(); i++)
+	//{
+		const int test_output = temp_buf[0];
+		int num_matched = 0;
+		int string_index;
+
+		for (int j=0; j<string_to_match.GetSize(); j++)
+		{	
+			string_index=string_to_match.GetSize()-j-1;		// start with last char in string
+			int k = 1 << j;
+			if ((string_to_match[string_index]=='0' && !(test_output & k)) || (string_to_match[string_index]=='1' && (test_output & k))) 
+				num_matched++;
+		}	
+		if (num_matched > max_num_matched)
+			max_num_matched = num_matched;
+	//}
+
+	double bonus = 0;
+	// return value between 0 & 1 representing the percentage of string that was matched
+	double base_bonus = double(max_num_matched)*2/(double)string_to_match.GetSize() - 1;
+	if (base_bonus > 0)
+		bonus = pow(base_bonus,2);
+	
+	return bonus;
 }
 
 double cTaskLib::Task_CommEcho(cTaskContext* ctx) const
