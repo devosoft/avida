@@ -1,0 +1,15 @@
+
+Import('environment')
+
+environment.Library('analyze',
+  [
+    'cAnalyze.cc',
+    'cAnalyzeGenotype.cc',
+    'cAnalyzeUtil.cc',
+    'cAnalyzeJobQueue.cc',
+    'cAnalyzeJobWorker.cc',
+  ],
+) 
+
+  
+# vim: set ft=python:

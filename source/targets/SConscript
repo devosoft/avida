@@ -1,0 +1,9 @@
+Import('environment')
+
+if environment['enablePrimitive'] in ('True', '1', 1):
+  environment.SConscript('avida/SConscript')
+if environment['enableGuiNcurses'] in ('True', '1', 1):
+  environment.SConscript('avida-viewer/SConscript')
+
+
+# vim: set ft=python:

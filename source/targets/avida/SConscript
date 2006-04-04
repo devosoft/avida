@@ -1,0 +1,31 @@
+Import('environment')
+
+avida = environment.Program(
+  'avida',
+  'primitive.cc',
+  LIBS = [
+    'main',
+    'classification',
+    'cpu',
+    'event',
+    'analyze',
+    'drivers',
+    'analyze',
+    'cpu',
+    'tools',
+    'main',
+  ],
+  LIBPATH = [
+    '#$buildDir/analyze',
+    '#$buildDir/classification',
+    '#$buildDir/cpu',
+    '#$buildDir/drivers',
+    '#$buildDir/event',
+    '#$buildDir/main',
+    '#$buildDir/tools',
+  ],
+)
+environment.Install('$execPrefix', avida)
+
+
+# vim: set ft=python:

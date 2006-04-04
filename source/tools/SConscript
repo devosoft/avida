@@ -1,0 +1,42 @@
+
+Import('environment')
+
+environment.Library('tools',
+  [
+    'cBlockStruct.cc',
+    'cChangeList.cc',
+    'cConstSchedule.cc',
+    'cDataFile.cc',
+    'cDataFileManager.cc',
+    'cDataManager_Base.cc',
+    'cDefaultMessageDisplay.cc',
+    'cDoubleSum.cc',
+    'cFile.cc',
+    'cHelpAlias.cc',
+    'cHelpManager.cc',
+    'cHelpType.cc',
+    'cHistogram.cc',
+    'cIndexedBlockStruct.cc',
+    'cInitFile.cc',
+    'cIntSum.cc',
+    'cIntegratedSchedule.cc',
+    'cIntegratedScheduleNode.cc',
+    'cMessageDisplay.cc',
+    'cMerit.cc',
+    'cProbSchedule.cc',
+    'cRandom.cc',
+    'cRunningAverage.cc',
+    'cSchedule.cc',
+    'cString.cc',
+    'cStringIterator.cc',
+    'cStringList.cc',
+    'cStringUtil.cc',
+    'cThread.cc',
+    'cTools.cc',
+    'cWeightedIndex.cc',
+    'cCycleCheck.cc',
+  ],
+) 
+
+  
+# vim: set ft=python:

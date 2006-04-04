@@ -1,0 +1,13 @@
+
+Import('environment')
+
+environment.Library('event',
+  [
+    'cEventManager.cc',
+    'cEventList.cc',
+    'cEventTriggers.cc',
+  ],
+) 
+
+  
+# vim: set ft=python:

@@ -1,0 +1,14 @@
+
+Import('environment')
+
+environment.Library('drivers',
+  [
+    'cDefaultAnalyzeDriver.cc',
+    'cDefaultRunDriver.cc',
+    'cDriverManager.cc',
+    'cFallbackWorldDriver.cc',
+  ],
+) 
+
+  
+# vim: set ft=python:

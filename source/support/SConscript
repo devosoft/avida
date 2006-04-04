@@ -1,0 +1,16 @@
+Import('environment')
+
+environment.Install('$configPrefix', [
+  'analyze.cfg',
+  'environment.cfg',
+  'events.cfg',
+  'avida.cfg',
+  'avida-smt.cfg',
+  'inst_set.default',
+  'organism.default',
+  'organism.smt',
+  'inst_set.4stack',
+  'inst_set.smt',
+] )
+
+# vim: set ft=python:

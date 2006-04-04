@@ -1,0 +1,18 @@
+
+Import('environment')
+
+environment.SConscript( [
+  'analyze/SConscript',
+  'classification/SConscript',
+  'cpu/SConscript',
+  'drivers/SConscript',
+  'event/SConscript',
+  'main/SConscript',
+  'targets/SConscript',
+  #'third-party/SConscript',
+  'tools/SConscript',
+  'support/SConscript',
+  #'utils/SConscript',
+] )
+
+# vim: set ft=python:

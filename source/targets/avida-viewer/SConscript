@@ -1,0 +1,45 @@
+
+Import('environment')
+
+environment.Library('cursesviewer',
+  [
+    'cBarScreen.cc',
+    'cEnvironmentScreen.cc',
+    'cHistScreen.cc',
+    'cMapScreen.cc',
+    'cMenuWindow.cc',
+    'cOptionsScreen.cc',
+    'cScreen.cc',
+    'cStatsScreen.cc',
+    'cSymbolUtil.cc',
+    'cTextViewerDriver.cc',
+    'cTextWindow.cc',
+    'cView.cc',
+    'cViewInfo.cc',
+    'cZoomScreen.cc',
+  ],
+) 
+
+avida_viewer = environment.Program(
+  'avida-viewer',
+  'viewer.cc',
+  LIBS = [
+    'cursesviewer',
+    'main',
+    'classification',
+    'cpu',
+    'event',
+    'analyze',
+    'drivers',
+    'analyze',
+    'cpu',
+    'tools',
+    'main',
+    'ncurses',
+    'pthread',
+  ],
+  LIBPATH = environment['LIBPATH'] + ['.'],
+)
+environment.Install('$execPrefix', avida_viewer)
+
+# vim: set ft=python:

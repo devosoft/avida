@@ -1,0 +1,42 @@
+
+Import('environment')
+
+environment.Library('main',
+  [
+    'avida.cc',
+    'cAvidaConfig.cc',
+    'cBirthChamber.cc',
+    'cEnvironment.cc',
+    'cFitnessMatrix.cc',
+    'cGenome.cc',
+    'cGenomeUtil.cc',
+    'cInstruction.cc',
+    'cInstSet.cc',
+    'cInstUtil.cc',
+    'cLandscape.cc',
+    'cLocalMutations.cc',
+    'cMutationLib.cc',
+    'cMutationRates.cc',
+    'cMxCodeArray.cc',
+    'cOrgMessage.cc',
+    'cOrganism.cc',
+    'cPhenotype.cc',
+    'cPopulation.cc',
+    'cPopulationCell.cc',
+    'cPopulationInterface.cc',
+    'cReaction.cc',
+    'cReactionLib.cc',
+    'cReactionResult.cc',
+    'cResource.cc',
+    'cResourceCount.cc',
+    'cResourceLib.cc',
+    'cSpatialCountElem.cc',
+    'cSpatialResCount.cc',
+    'cStats.cc',
+    'cTaskLib.cc',
+    'cWorld.cc',
+  ],
+) 
+
+  
+# vim: set ft=python:
