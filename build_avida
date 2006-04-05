@@ -2,7 +2,9 @@
 
 mkdir -p build
 cd build
-cmake ../
+cmake \
+  -DAVD_CONSISTENCY_TEST_PRIMITIVE:BOOL=ON \
+  ../
 make
 make install
 
