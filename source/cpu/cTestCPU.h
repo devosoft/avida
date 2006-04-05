@@ -57,7 +57,6 @@ private:
 
   bool ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int cur_depth);
   bool TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome, int cur_depth);
-  void SetupResources(void);
 
   cTestCPU(); // @not_implemented
   cTestCPU(const cTestCPU&); // @not_implemented

@@ -65,7 +65,6 @@ void cWorld::Setup()
   
   m_class_mgr = new cClassificationManager(this);
   m_env = new cEnvironment(this);
-  m_hw_mgr = new cHardwareManager(this);
   
   // Initialize the default environment...
   if (m_env->Load(m_conf->ENVIRONMENT_FILE.Get()) == false) {
@@ -73,6 +72,7 @@ void cWorld::Setup()
     ExitAvida(-1);
   }
 
+  m_hw_mgr = new cHardwareManager(this);
   m_stats = new cStats(this);
   m_pop = new cPopulation(this);
 

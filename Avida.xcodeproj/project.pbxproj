@@ -14,6 +14,9 @@
 		7005A70709BA0FA90007E16E /* cTestCPUInterface.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7005A70109BA0FA90007E16E /* cTestCPUInterface.h */; };
 		7005A70809BA0FA90007E16E /* cTestCPUInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */; };
 		7005A83209BA621F0007E16E /* cOrgMessage.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0868808F49EA800FC65FE /* cOrgMessage.cc */; };
+		700AEB7C09E3490400A073FD /* avida-smt.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 700AEB7B09E3490300A073FD /* avida-smt.cfg */; };
+		700AEB7D09E3490400A073FD /* avida-smt.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 700AEB7B09E3490300A073FD /* avida-smt.cfg */; };
+		700AEB7E09E3490400A073FD /* avida-smt.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 700AEB7B09E3490300A073FD /* avida-smt.cfg */; };
 		700E2996085A1F6000CF158A /* avida in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3164D07626CF3008F7A48 /* avida */; };
 		700E2AF8085DE50C00CF158A /* avida.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3109C0762539E008F7A48 /* avida.cc */; };
 		700E2B6F085DE50C00CF158A /* analyze.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3114B0762539E008F7A48 /* analyze.cfg */; };
@@ -486,6 +489,7 @@
 				7054A1B709A810CB00038658 /* cAnalyzeJobWorker.h in CopyFiles */,
 				7005A70509BA0FA90007E16E /* cTestCPUInterface.h in CopyFiles */,
 				701D51D109C645F50009B4F8 /* cAvidaContext.h in CopyFiles */,
+				700AEB7E09E3490400A073FD /* avida-smt.cfg in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -512,6 +516,7 @@
 				7054A12409A7BEFC00038658 /* cThread.h in CopyFiles */,
 				7005A70709BA0FA90007E16E /* cTestCPUInterface.h in CopyFiles */,
 				701D51CD09C645F50009B4F8 /* cAvidaContext.h in CopyFiles */,
+				700AEB7C09E3490400A073FD /* avida-smt.cfg in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -541,6 +546,7 @@
 				7054A1B509A810CB00038658 /* cAnalyzeJobWorker.h in CopyFiles */,
 				7005A70309BA0FA90007E16E /* cTestCPUInterface.h in CopyFiles */,
 				701D51CF09C645F50009B4F8 /* cAvidaContext.h in CopyFiles */,
+				700AEB7D09E3490400A073FD /* avida-smt.cfg in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -551,6 +557,7 @@
 		7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cTestCPUInterface.cc; sourceTree = "<group>"; };
 		7005A70909BA0FBE0007E16E /* cOrgInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgInterface.h; sourceTree = "<group>"; };
 		700AE91B09DB65F200A073FD /* cTaskContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cTaskContext.h; sourceTree = "<group>"; };
+		700AEB7B09E3490300A073FD /* avida-smt.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "avida-smt.cfg"; sourceTree = "<group>"; };
 		700E28CF0859FFD700CF158A /* tObjectFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tObjectFactory.h; sourceTree = "<group>"; };
 		700E2B83085DE50C00CF158A /* avida-viewer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "avida-viewer"; sourceTree = BUILT_PRODUCTS_DIR; };
 		701384330900A45B0087ED2E /* organism.smtx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.smtx; sourceTree = "<group>"; };
@@ -1439,6 +1446,7 @@
 		DCC3113A0762539E008F7A48 /* Support */ = {
 			isa = PBXGroup;
 			children = (
+				700AEB7B09E3490300A073FD /* avida-smt.cfg */,
 				701384330900A45B0087ED2E /* organism.smtx */,
 				DCC3114B0762539E008F7A48 /* analyze.cfg */,
 				DCC3114C0762539E008F7A48 /* CMakeLists.txt */,
