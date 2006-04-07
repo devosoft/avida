@@ -35,13 +35,13 @@ def Update(opts, env):
     SCons.Options.BoolOption(
       'enablePrimitive',
       """Set to "1" to enable building interfaceless Avida (fastest version).""",
-      '1',
+      1,
   ) )
   opts.Add(
     SCons.Options.BoolOption(
       'enableGuiNcurses',
       """Set to "1" to enable building Avida console interface.""",
-      '0',
+      0,
   ) )
   opts.Add(
     SCons.Options.BoolOption(
