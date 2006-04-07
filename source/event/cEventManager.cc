@@ -257,12 +257,12 @@ class cEvent_ ## NAME : public cEvent {                                         
 private:                                                                               /*  3 */ \
   cString fname;                                                                       /*  4 */ \
 public:                                                                                /*  5 */ \
-  const cString GetName() const { return "NAME"; }                                     /*  6 */ \
-  const cString GetDescription() const { return "NAME  [cString fname=\"DEFAULT\"]"; } /*  7 */ \
+  const cString GetName() const { return #NAME; }                                      /*  6 */ \
+  const cString GetDescription() const { return #NAME " [cString fname=\"" #DEFAULT "\"]"; } /*  7 */ \
   void Configure(cWorld* world, const cString& in_args)                                /*  8 */ \
   {                                                                                    /*  9 */ \
     m_world = world; m_args = in_args; cString args(in_args);                          /* 10 */ \
-    if (args == "") fname="DEFAULT"; else fname=args.PopWord();                        /* 11 */ \
+    if (args == "") fname = #DEFAULT; else fname=args.PopWord();                       /* 11 */ \
   }                                                                                    /* 12 */ \
   void Process() { m_world->GetStats().METHOD(fname); }                                /* 13 */ \
 }                                                                                      /* 14 */ \
@@ -3537,7 +3537,7 @@ public:
   }
 };
 
-#define REGISTER(EVENT_NAME) Register<cEvent_ ## EVENT_NAME>("EVENT_NAME")
+#define REGISTER(EVENT_NAME) Register<cEvent_ ## EVENT_NAME>(#EVENT_NAME)
 
 cEventManager::cEventManager(cWorld* world) : m_world(world)
 {
