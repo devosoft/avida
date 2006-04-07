@@ -383,36 +383,32 @@ void cStats::ProcessUpdate()
   max_fitness = 0.0;
 }
 
-void cStats::RemoveLineage(int id_num, int parent_id, int update_born,
-			   double generation_born,
-			   int total_CPUs, int total_genotypes, double fitness,
-			   double lineage_stat1, double lineage_stat2 )
+void cStats::RemoveLineage(int id_num, int parent_id, int update_born, double generation_born, int total_CPUs,
+                           int total_genotypes, double fitness, double lineage_stat1, double lineage_stat2 )
 {
   num_lineages--;
   if (m_world->GetConfig().LOG_LINEAGES.Get()) {
     cDataFile& lineage_log = m_world->GetDataFile("lineage.log");
 
-    lineage_log.WriteComment("(1) lineage id (2) parent lineage id (3) initial fitness (4) total number of creatures (5) total number of genotypes (6) update born (7) update extinct (8) generation born (9) generation extinct (10) lineage stat1 (11) lineage stat2 [10, 11 depend on lineage creation method chosen]");
-    lineage_log.Endl();
+    lineage_log.WriteComment("Columns 10, 11 depend on lineage creation method chosen.");
     
-    lineage_log.GetOFStream()
-      << id_num              << " "   // 1
-      << parent_id           << " "   // 2
-      << fitness             << " "   // 3
-      << total_CPUs          << " "   // 4
-      << total_genotypes     << " "   // 5
-      << update_born         << " "   // 6
-      << cStats::GetUpdate() << " "   // 7
-      << generation_born     << " "   // 8
-      << SumGeneration().Average() << " " // 9
-      << lineage_stat1 	  << " "   // 10
-      << lineage_stat2       << " " << endl;    
+    lineage_log.Write(id_num, "lineage id");
+    lineage_log.Write(parent_id, "parent lineage id");
+    lineage_log.Write(fitness, "initial fitness");
+    lineage_log.Write(total_CPUs, "total number of creatures");
+    lineage_log.Write(total_genotypes, "total number of genotypes");
+    lineage_log.Write(update_born, "update born");
+    lineage_log.Write(cStats::GetUpdate(), "update extinct");
+    lineage_log.Write(generation_born, "generation born");
+    lineage_log.Write(SumGeneration().Average(), "generation extinct");
+    lineage_log.Write(lineage_stat1, "lineage stat1");
+    lineage_log.Write(lineage_stat2, "lineage stat2");
+    lineage_log.Endl();
   }
 }
 
 
-void cStats::PrintDataFile(const cString & filename, const cString & format,
-			   char sep)
+void cStats::PrintDataFile(const cString& filename, const cString& format, char sep)
 {
   cDataFile & data_file = m_world->GetDataFile(filename);
   data_manager.PrintRow(data_file, format, sep);
@@ -426,23 +422,23 @@ void cStats::PrintAverageData(const cString & filename)
   df.WriteComment( "Avida average data" );
   df.WriteTimeStamp();
 
-  df.Write(GetUpdate(),                    "update" );
-  df.Write(sum_merit.Average(),            "average merit" );
-  df.Write(sum_gestation.Average(),        "average gestation time" );
-  df.Write(sum_fitness.Average(),          "average fitness" );
-  df.Write(sum_repro_rate.Average(),       "repro rate?" );
-  df.Write(sum_size.Average(),             "average size" );
-  df.Write(sum_copy_size.Average(),        "average copied size" );
-  df.Write(sum_exe_size.Average(),         "average executed size"  );
-  df.Write(sum_abundance.Average(),        "average abundance?" );
-  df.Write((double)num_births/num_creatures,
-	   "proportion of organisms that gave birth in this update" );
-  df.Write((double)num_breed_true/num_creatures,
-	   "proportion of breed true organisms" );
-  df.Write(sum_genotype_depth.Average(),   "average genotype depth" );
-  df.Write(sum_generation.Average(),       "average generation" );
-  df.Write(sum_neutral_metric.Average(),   "average neutral metric" );
-  df.Write(sum_lineage_label.Average(),    "average lineage label" );
+  df.Write(GetUpdate(),                    "update");
+  df.Write(sum_merit.Average(),            "average merit");
+  df.Write(sum_gestation.Average(),        "average gestation time");
+  df.Write(sum_fitness.Average(),          "average fitness");
+  df.Write(sum_repro_rate.Average(),       "repro rate?");
+  df.Write(sum_size.Average(),             "average size");
+  df.Write(sum_copy_size.Average(),        "average copied size");
+  df.Write(sum_exe_size.Average(),         "average executed size");
+  df.Write(sum_abundance.Average(),        "average abundance?");
+  df.Write(static_cast<double>(num_births / num_creatures),
+           "proportion of organisms that gave birth in this update");
+  df.Write(static_cast<double>(num_breed_true / num_creatures),
+	   "proportion of breed true organisms");
+  df.Write(sum_genotype_depth.Average(),   "average genotype depth");
+  df.Write(sum_generation.Average(),       "average generation");
+  df.Write(sum_neutral_metric.Average(),   "average neutral metric");
+  df.Write(sum_lineage_label.Average(),    "average lineage label");
   df.Write(rave_true_replication_rate.Average(),
 	   "true replication rate (based on births/update, time-averaged)");
   df.Endl();
@@ -496,7 +492,7 @@ void cStats::PrintVarianceData(const cString & filename)
 
 void cStats::PrintDominantData(const cString & filename)
 {
-  cDataFile & df = m_world->GetDataFile(filename);
+  cDataFile& df = m_world->GetDataFile(filename);
 
   df.WriteComment( "Avida dominant data" );
   df.WriteTimeStamp();
@@ -603,7 +599,7 @@ void cStats::PrintTotalsData(const cString & filename)
 }
 
 
-void cStats::PrintTasksData(const cString & filename)
+void cStats::PrintTasksData(const cString& filename)
 {
 	cString file = filename;
 
@@ -611,21 +607,11 @@ void cStats::PrintTasksData(const cString & filename)
 	if (filename == "tasksq.dat")
 	{
 		file = "tasks.dat";
-		cDataFile & df2 = m_world->GetDataFile("taskquality.dat");
-		df2.WriteComment( "First column gives the current update, rest give average and max task quality" );
-		df2.Write( GetUpdate(), "Update");
-		for(int i = 0; i < task_last_count.GetSize(); i++) {
-			double qual=0;
-			if (task_last_count[i] > 0)
-				qual = task_last_quality[i]/(double)task_last_count[i];
-			df2.Write( qual, task_names[i] );
-			df2.Write( task_last_max_quality[i], "Max" );
-		}
-		df2.Endl();
+		PrintTasksQualData("taskquality.dat");
 	}
 
 	// print tasks.dat
-	cDataFile & df = m_world->GetDataFile(file);
+	cDataFile& df = m_world->GetDataFile(file);
 	df.WriteComment( "Avida tasks data" );
 	df.WriteTimeStamp();
 	df.WriteComment( "First column gives the current update, next columns give the number" );
@@ -636,17 +622,14 @@ void cStats::PrintTasksData(const cString & filename)
 		df.Write( task_last_count[i], task_names[i] );
 	}
 	df.Endl();
-
-  //cDataFile & df = m_world->GetDataFile(filename);
-
 }
 
 
-void cStats::PrintTasksExeData(const cString & filename)
+void cStats::PrintTasksExeData(const cString& filename)
 {
-  cDataFile & df = m_world->GetDataFile(filename);
+  cDataFile& df = m_world->GetDataFile(filename);
 
-  df.WriteComment( "Avida tasks data" );
+  df.WriteComment( "Avida tasks execution data" );
   df.WriteTimeStamp();
   df.WriteComment( "First column gives the current update, all further columns give the number" );
   df.WriteComment( "of times the particular task has been executed this update." );
@@ -659,12 +642,29 @@ void cStats::PrintTasksExeData(const cString & filename)
   df.Endl();
 }
 
+void cStats::PrintTasksQualData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+
+  df.WriteComment( "Avida tasks quality data" );
+  df.WriteTimeStamp();
+  df.WriteComment( "First column gives the current update, rest give average and max task quality" );
+  df.Write( GetUpdate(), "Update");
+  for(int i = 0; i < task_last_count.GetSize(); i++) {
+    double qual = 0.0;
+    if (task_last_count[i] > 0) 
+      qual = task_last_quality[i] / static_cast<double>(task_last_count[i]);
+    df.Write(qual, task_names[i] + " Average");
+    df.Write(task_last_max_quality[i], task_names[i] + " Max");
+  }
+  df.Endl();
+}
 
 void cStats::PrintReactionData(const cString & filename)
 {
-  cDataFile & df = m_world->GetDataFile(filename);
+  cDataFile& df = m_world->GetDataFile(filename);
 
-  df.WriteComment( "Avida tasks data" );
+  df.WriteComment( "Avida reaction data" );
   df.WriteTimeStamp();
   df.WriteComment( "First column gives the current update, all further columns give the number" );
   df.WriteComment( "of currently living organisms each reaction has affected." );
@@ -808,7 +808,7 @@ void cStats::PrintMutationRateData(const cString & filename)
 
 void cStats::PrintDivideMutData(const cString & filename)
 {
-  cDataFile & df = m_world->GetDataFile(filename);
+  cDataFile& df = m_world->GetDataFile(filename);
 
   df.WriteComment( "Avida divide mutation rate data" );
   df.WriteTimeStamp();
@@ -826,23 +826,22 @@ void cStats::PrintDivideMutData(const cString & filename)
   df.Write( sum_log_div_mut_rate.Skw(),  "Skew in log(divide mutation rate)" );
   df.Write( sum_log_div_mut_rate.Kur(),  "Kurtosis in log(divide mutation rate)" );
   df.Endl();
-
 }
 
 void cStats::PrintInstructionData(const cString & filename)
 {
-  cDataFile & df = m_world->GetDataFile(filename);
+  cDataFile& df = m_world->GetDataFile(filename);
 
   df.WriteComment( "Avida instruction execution data" );
   df.WriteTimeStamp();
 
 #ifdef INSTRUCTION_COUNT
-  df.Write( GetUpdate(),              "Update" );
+  df.Write( GetUpdate(), "Update" );
   for( int i=0; i < sum_exe_inst_array.GetSize(); i++ ){
     df.Write( (int) sum_exe_inst_array[i].Sum(), inst_names[i] );
   }
 #else // INSTRUCTION_COUNT undefined
-  cerr<<"Warning: Instruction Counts not compiled in"<<endl;
+  cerr << "Warning: Instruction Counts not compiled in" << endl;
 #endif // ifdef INSTRUCTION_COUNT
 
   df.Endl();

@@ -237,26 +237,16 @@ public:
   void SetupPrintDatabase();
   void ProcessUpdate();
 
-
-  // GLOBAL STATS
-  inline void SetCurrentUpdate(int new_update) {
-    current_update = new_update;
-    sub_update = 0;
-  }
-
-  inline void IncCurrentUpdate() {
-    current_update++;
-    sub_update = 0;
-  }
-
-  void IncSubUpdate() { sub_update++; }
+  inline void SetCurrentUpdate(int new_update) { current_update = new_update; sub_update = 0; }
+  inline void IncCurrentUpdate() { current_update++; sub_update = 0; }
+  inline void IncSubUpdate() { sub_update++; }
 
   // Accessors...
   int GetUpdate() const { return current_update; }
   int GetSubUpdate() const { return sub_update; }
   double GetGeneration() const { return SumGeneration().Average(); }
 
-  cGenotype * GetDomGenotype() const { return dom_genotype; }
+  cGenotype* GetDomGenotype() const { return dom_genotype; }
   double GetDomMerit() const { return dom_merit; }
   double GetDomGestation() const { return dom_gestation; }
   double GetDomReproRate() const { return dom_repro_rate; }
@@ -337,61 +327,61 @@ public:
   void SetEntropy(double in_entropy) { entropy = in_entropy; }
   void SetSpeciesEntropy(double in_ent) { species_entropy = in_ent; }
 
-  cDoubleSum & SumFitness()       { return sum_fitness; }
-  cDoubleSum & SumGestation()     { return sum_gestation; }
-  cDoubleSum & SumMerit()         { return sum_merit; }
-  cDoubleSum & SumReproRate()     { return sum_repro_rate; }
+  cDoubleSum& SumFitness()       { return sum_fitness; }
+  cDoubleSum& SumGestation()     { return sum_gestation; }
+  cDoubleSum& SumMerit()         { return sum_merit; }
+  cDoubleSum& SumReproRate()     { return sum_repro_rate; }
 
-  cDoubleSum & SumCreatureAge()   { return sum_creature_age; }
-  cDoubleSum & SumGenotypeAge()   { return sum_genotype_age; }
-  cDoubleSum & SumGeneration()    { return sum_generation; }
-  cDoubleSum & SumAbundance()     { return sum_abundance; }
-  cDoubleSum & SumGenotypeDepth() { return sum_genotype_depth; }
-  cDoubleSum & SumThresholdAge()  { return sum_threshold_age; }
-  cDoubleSum & SumSpeciesAge()    { return sum_species_age; }
+  cDoubleSum& SumCreatureAge()   { return sum_creature_age; }
+  cDoubleSum& SumGenotypeAge()   { return sum_genotype_age; }
+  cDoubleSum& SumGeneration()    { return sum_generation; }
+  cDoubleSum& SumAbundance()     { return sum_abundance; }
+  cDoubleSum& SumGenotypeDepth() { return sum_genotype_depth; }
+  cDoubleSum& SumThresholdAge()  { return sum_threshold_age; }
+  cDoubleSum& SumSpeciesAge()    { return sum_species_age; }
 
-  cDoubleSum & SumNeutralMetric() { return sum_neutral_metric; }
-  cDoubleSum & SumLineageLabel()  { return sum_lineage_label; }
-  cDoubleSum & SumCopyMutRate()   { return sum_copy_mut_rate; }
-  cDoubleSum & SumLogCopyMutRate()   { return sum_log_copy_mut_rate; }
-  cDoubleSum & SumDivMutRate()   { return sum_div_mut_rate; }
-  cDoubleSum & SumLogDivMutRate()   { return sum_log_div_mut_rate; }
+  cDoubleSum& SumNeutralMetric() { return sum_neutral_metric; }
+  cDoubleSum& SumLineageLabel()  { return sum_lineage_label; }
+  cDoubleSum& SumCopyMutRate()   { return sum_copy_mut_rate; }
+  cDoubleSum& SumLogCopyMutRate()   { return sum_log_copy_mut_rate; }
+  cDoubleSum& SumDivMutRate()   { return sum_div_mut_rate; }
+  cDoubleSum& SumLogDivMutRate()   { return sum_log_div_mut_rate; }
 
-  cDoubleSum & SumSize()          { return sum_size; }
-  cDoubleSum & SumCopySize()      { return sum_copy_size; }
-  cDoubleSum & SumExeSize()       { return sum_exe_size; }
-  cDoubleSum & SumMemSize()       { return sum_mem_size; }
+  cDoubleSum& SumSize()          { return sum_size; }
+  cDoubleSum& SumCopySize()      { return sum_copy_size; }
+  cDoubleSum& SumExeSize()       { return sum_exe_size; }
+  cDoubleSum& SumMemSize()       { return sum_mem_size; }
 
 #ifdef INSTRUCTION_COUNT
   void ZeroInst();
 #endif
-  tArray<cIntSum> & SumExeInst() { return sum_exe_inst_array; }
+  tArray<cIntSum>& SumExeInst() { return sum_exe_inst_array; }
 
   // And constant versions of the above...
-  const cDoubleSum & SumFitness() const       { return sum_fitness; }
-  const cDoubleSum & SumGestation() const     { return sum_gestation; }
-  const cDoubleSum & SumMerit() const         { return sum_merit; }
-  const cDoubleSum & SumReproRate() const     { return sum_repro_rate; }
+  const cDoubleSum& SumFitness() const       { return sum_fitness; }
+  const cDoubleSum& SumGestation() const     { return sum_gestation; }
+  const cDoubleSum& SumMerit() const         { return sum_merit; }
+  const cDoubleSum& SumReproRate() const     { return sum_repro_rate; }
 
-  const cDoubleSum & SumCreatureAge() const   { return sum_creature_age; }
-  const cDoubleSum & SumGenotypeAge() const   { return sum_genotype_age; }
-  const cDoubleSum & SumGeneration() const    { return sum_generation; }
-  const cDoubleSum & SumAbundance() const     { return sum_abundance; }
-  const cDoubleSum & SumGenotypeDepth() const { return sum_genotype_depth; }
-  const cDoubleSum & SumThresholdAge() const  { return sum_threshold_age; }
-  const cDoubleSum & SumSpeciesAge() const    { return sum_species_age; }
+  const cDoubleSum& SumCreatureAge() const   { return sum_creature_age; }
+  const cDoubleSum& SumGenotypeAge() const   { return sum_genotype_age; }
+  const cDoubleSum& SumGeneration() const    { return sum_generation; }
+  const cDoubleSum& SumAbundance() const     { return sum_abundance; }
+  const cDoubleSum& SumGenotypeDepth() const { return sum_genotype_depth; }
+  const cDoubleSum& SumThresholdAge() const  { return sum_threshold_age; }
+  const cDoubleSum& SumSpeciesAge() const    { return sum_species_age; }
 
-  const cDoubleSum & SumNeutralMetric() const { return sum_neutral_metric; }
-  const cDoubleSum & SumLineageLabel() const  { return sum_lineage_label; }
-  const cDoubleSum & SumCopyMutRate() const   { return sum_copy_mut_rate; }
-  const cDoubleSum & SumLogCopyMutRate() const{ return sum_log_copy_mut_rate; }
-  const cDoubleSum & SumDivMutRate() const   { return sum_div_mut_rate; }
-  const cDoubleSum & SumLogDivMutRate() const{ return sum_log_div_mut_rate; }
+  const cDoubleSum& SumNeutralMetric() const { return sum_neutral_metric; }
+  const cDoubleSum& SumLineageLabel() const  { return sum_lineage_label; }
+  const cDoubleSum& SumCopyMutRate() const   { return sum_copy_mut_rate; }
+  const cDoubleSum& SumLogCopyMutRate() const{ return sum_log_copy_mut_rate; }
+  const cDoubleSum& SumDivMutRate() const   { return sum_div_mut_rate; }
+  const cDoubleSum& SumLogDivMutRate() const{ return sum_log_div_mut_rate; }
 
-  const cDoubleSum & SumSize() const          { return sum_size; }
-  const cDoubleSum & SumCopySize() const      { return sum_copy_size; }
-  const cDoubleSum & SumExeSize() const       { return sum_exe_size; }
-  const cDoubleSum & SumMemSize() const       { return sum_mem_size; }
+  const cDoubleSum& SumSize() const          { return sum_size; }
+  const cDoubleSum& SumCopySize() const      { return sum_copy_size; }
+  const cDoubleSum& SumExeSize() const       { return sum_exe_size; }
+  const cDoubleSum& SumMemSize() const       { return sum_mem_size; }
 
   void CalcEnergy();
   void CalcFidelity();
@@ -535,29 +525,29 @@ public:
   double GetMaxViableFitness() const { return max_viable_fitness; }
 
   // User-defined datafile...
-  void PrintDataFile(const cString & filename, const cString & format,
-		     char sep=' ');
+  void PrintDataFile(const cString& filename, const cString& format, char sep=' ');
 
   // Public calls to output data files (for events)
-  void PrintAverageData(const cString & filename);
-  void PrintErrorData(const cString & filename);
-  void PrintVarianceData(const cString & filename);
-  void PrintDominantData(const cString & filename);
-  void PrintDominantParaData(const cString & filename);
-  void PrintStatsData(const cString & filename);
-  void PrintCountData(const cString & filename);
-  void PrintTotalsData(const cString & filename);
-  void PrintTasksData(const cString & filename);
-  void PrintTasksExeData(const cString & filename);
-  void PrintReactionData(const cString & filename);
-  void PrintResourceData(const cString & filename);
-  void PrintSpatialResData(const cString & filename, int i);
-  void PrintTimeData(const cString & filename);
-  void PrintMutationData(const cString & filename);
-  void PrintDivideMutData(const cString & filename);
-  void PrintMutationRateData(const cString & filename);
-  void PrintInstructionData(const cString & filename);
-  void PrintGenotypeMap(const cString & filename);
+  void PrintAverageData(const cString& filename);
+  void PrintErrorData(const cString& filename);
+  void PrintVarianceData(const cString& filename);
+  void PrintDominantData(const cString& filename);
+  void PrintDominantParaData(const cString& filename);
+  void PrintStatsData(const cString& filename);
+  void PrintCountData(const cString& filename);
+  void PrintTotalsData(const cString& filename);
+  void PrintTasksData(const cString& filename);
+  void PrintTasksExeData(const cString& filename);
+  void PrintTasksQualData(const cString& filename);
+  void PrintReactionData(const cString& filename);
+  void PrintResourceData(const cString& filename);
+  void PrintSpatialResData(const cString& filename, int i);
+  void PrintTimeData(const cString& filename);
+  void PrintMutationData(const cString& filename);
+  void PrintDivideMutData(const cString& filename);
+  void PrintMutationRateData(const cString& filename);
+  void PrintInstructionData(const cString& filename);
+  void PrintGenotypeMap(const cString& filename);
 };
 
 

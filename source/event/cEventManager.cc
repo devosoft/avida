@@ -40,6 +40,7 @@
 using namespace std;
 
 
+
 class cEvent_exit : public cEvent {
 public:
   const cString GetName() const { return "exit"; }
@@ -220,10 +221,11 @@ public:
   }
 };
 
+
 ///// print_data /////
 
 /**
-* Output user-defined data from the cStats object...
+ * Output user-defined data from the cStats object...
  *
  * Parameters:
  * filename (string)
@@ -231,505 +233,59 @@ public:
  * format
  *   A comma-seperated list of statistics to output.
  **/
-
-
 class cEvent_print_data : public cEvent {
 private:
   cString filename;
   cString format;
 public:
-    const cString GetName() const { return "print_data"; }
+  const cString GetName() const { return "print_data"; }
   const cString GetDescription() const { return "print_data  <cString filename> <cString format>"; }
   
   void Configure(cWorld* world, const cString& in_args)
   {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
+    m_world = world; m_args = in_args; cString args(in_args);
     filename = args.PopWord();
     format = args.PopWord();
   }
-  ///// print_data /////
-  void Process(){
-    m_world->GetStats().PrintDataFile(filename, format, ',');
-  }
+  void Process() { m_world->GetStats().PrintDataFile(filename, format, ','); }
 };
 
-///// print_average_data /////
-
-/**
-* Output various average quantities into datafile.
- *
- * Parameters:
- * filename (string) default: average.dat
-   *   The name of the data file.
-   **/
 
 
-class cEvent_print_average_data : public cEvent {
-private:
-  cString fname;
-public:
-  const cString GetName() const { return "print_average_data"; }
-  const cString GetDescription() const { return "print_average_data  [cString fname=\"average.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") fname="average.dat"; else fname=args.PopWord();
-  }
-  ///// print_average_data /////
-  void Process(){
-    m_world->GetStats().PrintAverageData(fname);
-  }
-};
+#define STATS_OUT_FILE(NAME, METHOD, DEFAULT)                                          /*  1 */ \
+class cEvent_ ## NAME : public cEvent {                                                /*  2 */ \
+private:                                                                               /*  3 */ \
+  cString fname;                                                                       /*  4 */ \
+public:                                                                                /*  5 */ \
+  const cString GetName() const { return "NAME"; }                                     /*  6 */ \
+  const cString GetDescription() const { return "NAME  [cString fname=\"DEFAULT\"]"; } /*  7 */ \
+  void Configure(cWorld* world, const cString& in_args)                                /*  8 */ \
+  {                                                                                    /*  9 */ \
+    m_world = world; m_args = in_args; cString args(in_args);                          /* 10 */ \
+    if (args == "") fname="DEFAULT"; else fname=args.PopWord();                        /* 11 */ \
+  }                                                                                    /* 12 */ \
+  void Process() { m_world->GetStats().METHOD(fname); }                                /* 13 */ \
+}                                                                                      /* 14 */ \
 
-///// print_error_data /////
+STATS_OUT_FILE(print_average_data,        PrintAverageData,       average.dat         );
+STATS_OUT_FILE(print_error_data,          PrintErrorData,         error.dat           );
+STATS_OUT_FILE(print_variance_data,       PrintVarianceData,      variance.dat        );
+STATS_OUT_FILE(print_dominant_data,       PrintDominantData,      dominant.dat        );
+STATS_OUT_FILE(print_stats_data,          PrintStatsData,         stats.dat           );
+STATS_OUT_FILE(print_count_data,          PrintCountData,         count.dat           );
+STATS_OUT_FILE(print_totals_data,         PrintTotalsData,        totals.dat          );
+STATS_OUT_FILE(print_tasks_data,          PrintTasksData,         tasks.dat           );
+STATS_OUT_FILE(print_tasks_exe_data,      PrintTasksExeData,      tasks_exe.dat       );
+STATS_OUT_FILE(print_tasks_qual_data,     PrintTasksQualData,     tasks_quality.dat   );
+STATS_OUT_FILE(print_resource_data,       PrintResourceData,      resource.dat        );
+STATS_OUT_FILE(print_time_data,           PrintTimeData,          time.dat            );
+STATS_OUT_FILE(print_mutation_data,       PrintMutationData,      mutation.dat        );
+STATS_OUT_FILE(print_mutation_rate_data,  PrintMutationRateData,  mutation_rates.dat  );
+STATS_OUT_FILE(print_divide_mut_data,     PrintDivideMutData,     divide_mut.dat      );
+STATS_OUT_FILE(print_dom_parasite_data,   PrintDominantParaData,  parasite.dat        );
+STATS_OUT_FILE(print_instruction_data,    PrintInstructionData,   instruction.dat     );
+STATS_OUT_FILE(print_genotype_map,        PrintGenotypeMap,       genotype_map.m      );
 
-/**
-* Prints out various data related to statistical errors.
- *
- * Parameters:
- * filename (string) default: error.dat
-   *   The name of the data file.
-   **/
-
-
-class cEvent_print_error_data : public cEvent {
-private:
-  cString fname;
-public:
-  const cString GetName() const { return "print_error_data"; }
-  const cString GetDescription() const { return "print_error_data  [cString fname=\"error.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") fname="error.dat"; else fname=args.PopWord();
-  }
-  ///// print_error_data /////
-  void Process(){
-    m_world->GetStats().PrintErrorData(fname);
-  }
-};
-
-///// print_variance_data /////
-
-/**
-* Prints out various variances.
- *
- * Parameters:
- * filename (string) default: variance.dat
-   *   The name of the data file.
-   **/
-
-
-class cEvent_print_variance_data : public cEvent {
-private:
-  cString fname;
-public:
-  const cString GetName() const { return "print_variance_data"; }
-  const cString GetDescription() const { return "print_variance_data  [cString fname=\"variance.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") fname="variance.dat"; else fname=args.PopWord();
-  }
-  ///// print_variance_data /////
-  void Process(){
-    m_world->GetStats().PrintVarianceData(fname);
-  }
-};
-
-///// print_dominant_data /////
-
-/**
-* Output various quantities related to the dominant organism.
- *
- * Parameters:
- * filename (string) default: dominant.dat
-   *   The name of the data file.
-   **/
-
-
-class cEvent_print_dominant_data : public cEvent {
-private:
-  cString fname;
-public:
-  const cString GetName() const { return "print_dominant_data"; }
-  const cString GetDescription() const { return "print_dominant_data  [cString fname=\"dominant.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") fname="dominant.dat"; else fname=args.PopWord();
-  }
-  ///// print_dominant_data /////
-  void Process(){
-    m_world->GetStats().PrintDominantData(fname);
-  }
-};
-
-///// print_stats_data /////
-
-/**
-* Output various statistical quantities.
- *
- * Parameters:
- * filename (string) default: stats.dat
-   *   The name of the data file.
-   **/
-
-
-class cEvent_print_stats_data : public cEvent {
-private:
-  cString fname;
-public:
-  const cString GetName() const { return "print_stats_data"; }
-  const cString GetDescription() const { return "print_stats_data  [cString fname=\"stats.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") fname="stats.dat"; else fname=args.PopWord();
-  }
-  ///// print_stats_data /////
-  void Process(){
-    m_world->GetStats().PrintStatsData(fname);
-  }
-};
-
-///// print_count_data /////
-
-/**
-* Output various counts, such as number of organisms etc.
- *
- * Parameters:
- * filename (string) default: count.dat
-   *   The name of the data file.
-   **/
-
-
-class cEvent_print_count_data : public cEvent {
-private:
-  cString fname;
-public:
-  const cString GetName() const { return "print_count_data"; }
-  const cString GetDescription() const { return "print_count_data  [cString fname=\"count.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") fname="count.dat"; else fname=args.PopWord();
-  }
-  ///// print_count_data /////
-  void Process(){
-    m_world->GetStats().PrintCountData(fname);
-  }
-};
-
-///// print_totals_data /////
-
-/**
-* Various total numbers.
- *
- * Parameters:
- * filename (string) default: totals.dat
-   *   The name of the data file.
-   **/
-
-
-class cEvent_print_totals_data : public cEvent {
-private:
-  cString fname;
-public:
-  const cString GetName() const { return "print_totals_data"; }
-  const cString GetDescription() const { return "print_totals_data  [cString fname=\"totals.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") fname="totals.dat"; else fname=args.PopWord();
-  }
-  ///// print_totals_data /////
-  void Process(){
-    m_world->GetStats().PrintTotalsData(fname);
-  }
-};
-
-///// print_tasks_data /////
-
-/**
-* Output the number of times the various tasks have been performed in the
- * last update.
- *
- * Parameters:
- * filename (string) default: tasks.dat
-   *   The name of the data file.
-   **/
-
-
-class cEvent_print_tasks_data : public cEvent {
-private:
-  cString fname;
-public:
-  const cString GetName() const { return "print_tasks_data"; }
-  const cString GetDescription() const { return "print_tasks_data  [cString fname=\"tasks.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") fname="tasks.dat"; else fname=args.PopWord();
-  }
-  ///// print_tasks_data /////
-  void Process(){
-    m_world->GetStats().PrintTasksData(fname);
-  }
-};
-
-///// print_tasks_exe_data /////
-
-/**
-**/
-
-
-class cEvent_print_tasks_exe_data : public cEvent {
-private:
-  cString fname;
-public:
-  const cString GetName() const { return "print_tasks_exe_data"; }
-  const cString GetDescription() const { return "print_tasks_exe_data  [cString fname=\"tasks_exe.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") fname="tasks_exe.dat"; else fname=args.PopWord();
-  }
-  ///// print_tasks_exe_data /////
-  void Process(){
-    m_world->GetStats().PrintTasksExeData(fname);
-  }
-};
-
-///// print_resource_data /////
-
-/**
-**/
-
-
-class cEvent_print_resource_data : public cEvent {
-private:
-  cString fname;
-public:
-  const cString GetName() const { return "print_resource_data"; }
-  const cString GetDescription() const { return "print_resource_data  [cString fname=\"resource.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") fname="resource.dat"; else fname=args.PopWord();
-  }
-  ///// print_resource_data /////
-  void Process(){
-    m_world->GetStats().PrintResourceData(fname);
-  }
-};
-
-///// print_time_data /////
-
-/**
-* Output time related data, such as update, generation, etc.
- *
- * Parameters:
- * filename (string) default: time.dat
-   *   The name of the data file.
-   **/
-
-
-class cEvent_print_time_data : public cEvent {
-private:
-  cString fname;
-public:
-  const cString GetName() const { return "print_time_data"; }
-  const cString GetDescription() const { return "print_time_data  [cString fname=\"time.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") fname="time.dat"; else fname=args.PopWord();
-  }
-  ///// print_time_data /////
-  void Process(){
-    m_world->GetStats().PrintTimeData(fname);
-  }
-};
-
-///// print_mutation_data /////
-
-/**
-**/
-
-
-class cEvent_print_mutation_data : public cEvent {
-private:
-  cString fname;
-public:
-  const cString GetName() const { return "print_mutation_data"; }
-  const cString GetDescription() const { return "print_mutation_data  [cString fname=\"mutation.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") fname="mutation.dat"; else fname=args.PopWord();
-  }
-  ///// print_mutation_data /////
-  void Process(){
-    m_world->GetStats().PrintMutationData(fname);
-  }
-};
-
-///// print_mutation_rate_data /////
-
-/**
-Output (regular and log) statistics about individual copy
- mutation rates (aver, stdev, skew, cur).
- Useful only when mutation rate is set per organism.
- **/
-
-
-class cEvent_print_mutation_rate_data : public cEvent {
-private:
-  cString fname;
-public:
-  const cString GetName() const { return "print_mutation_rate_data"; }
-  const cString GetDescription() const { return "print_mutation_rate_data  [cString fname=\"mutation_rates.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") fname="mutation_rates.dat"; else fname=args.PopWord();
-  }
-  ///// print_mutation_rate_data /////
-  void Process(){
-    m_world->GetStats().PrintMutationRateData(fname);
-  }
-};
-
-///// print_divide_mut_data /////
-
-/**
-Output (regular and log) statistics about individual, per site,
- rates divide mutation rates (aver, stdev, skew, cur).
- Use with multiple divide instuction set.
- **/
-
-
-class cEvent_print_divide_mut_data : public cEvent {
-private:
-  cString fname;
-public:
-  const cString GetName() const { return "print_divide_mut_data"; }
-  const cString GetDescription() const { return "print_divide_mut_data  [cString fname=\"divide_mut.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") fname="divide_mut.dat"; else fname=args.PopWord();
-  }
-  ///// print_divide_mut_data /////
-  void Process(){
-    m_world->GetStats().PrintDivideMutData(fname);
-  }
-};
-
-///// print_dom_parasite_data /////
-
-/**
-* Output various quantities related to the dominant parasite.
- *
- * Parameters:
- * filename (string) default: parasite.dat
-   *   The name of the data file.
-   **/
-
-
-class cEvent_print_dom_parasite_data : public cEvent {
-private:
-  cString fname;
-public:
-  const cString GetName() const { return "print_dom_parasite_data"; }
-  const cString GetDescription() const { return "print_dom_parasite_data  [cString fname=\"parasite.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") fname="parasite.dat"; else fname=args.PopWord();
-  }
-  ///// print_dom_parasite_data /////
-  void Process(){
-    m_world->GetStats().PrintDominantParaData(fname);
-  }
-};
-
-///// print_instruction_data /////
-
-/**
-Sum of the by-organisms counts of what instructions they _successfully_
- execute beteween birth and divide. Prior to their first divide, organisms
- report values for their parents.
- **/
-
-
-class cEvent_print_instruction_data : public cEvent {
-private:
-  cString fname;
-public:
-  const cString GetName() const { return "print_instruction_data"; }
-  const cString GetDescription() const { return "print_instruction_data  [cString fname=\"instruction.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") fname="instruction.dat"; else fname=args.PopWord();
-  }
-  ///// print_instruction_data /////
-  void Process(){
-    m_world->GetStats().PrintInstructionData(fname);
-  }
-};
 
 ///// print_instruction_abundance_histogram /////
 
@@ -1021,33 +577,6 @@ public:
       cString filename(in_filename);
       if (filename == "") filename.Set("archive/%s", static_cast<const char*>(dom->GetName()));
       cTestUtil::PrintGenome(m_world, dom, dom->GetGenome(), filename, m_world->GetStats().GetUpdate()); }
-  }
-};
-
-///// print_genotype_map /////
-
-/**
-* write a matrix of genotype ID's to a file (matlab format)
- **/
-
-
-class cEvent_print_genotype_map : public cEvent {
-private:
-  cString fname;
-public:
-  const cString GetName() const { return "print_genotype_map"; }
-  const cString GetDescription() const { return "print_genotype_map  [cString fname=\"genotype_map.m\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") fname="genotype_map.m"; else fname=args.PopWord();
-  }
-  ///// print_genotype_map /////
-  void Process(){
-    m_world->GetStats().PrintGenotypeMap(fname);
   }
 };
 
@@ -4008,117 +3537,120 @@ public:
   }
 };
 
+#define REGISTER(EVENT_NAME) Register<cEvent_ ## EVENT_NAME>("EVENT_NAME")
+
 cEventManager::cEventManager(cWorld* world) : m_world(world)
 {
-  Register<cEvent_exit>("exit");
-  Register<cEvent_exit_if_generation_greater_than>("exit_if_generation_greater_than");
-  Register<cEvent_exit_if_update_greater_than>("exit_if_update_greater_than");
-  Register<cEvent_exit_if_ave_lineage_label_smaller>("exit_if_ave_lineage_label_smaller");
-  Register<cEvent_exit_if_ave_lineage_label_larger>("exit_if_ave_lineage_label_larger");
-  Register<cEvent_echo>("echo");
-  Register<cEvent_print_data>("print_data");
-  Register<cEvent_print_average_data>("print_average_data");
-  Register<cEvent_print_error_data>("print_error_data");
-  Register<cEvent_print_variance_data>("print_variance_data");
-  Register<cEvent_print_dominant_data>("print_dominant_data");
-  Register<cEvent_print_stats_data>("print_stats_data");
-  Register<cEvent_print_count_data>("print_count_data");
-  Register<cEvent_print_totals_data>("print_totals_data");
-  Register<cEvent_print_tasks_data>("print_tasks_data");
-  Register<cEvent_print_tasks_exe_data>("print_tasks_exe_data");
-  Register<cEvent_print_resource_data>("print_resource_data");
-  Register<cEvent_print_time_data>("print_time_data");
-  Register<cEvent_print_mutation_data>("print_mutation_data");
-  Register<cEvent_print_mutation_rate_data>("print_mutation_rate_data");
-  Register<cEvent_print_divide_mut_data>("print_divide_mut_data");
-  Register<cEvent_print_dom_parasite_data>("print_dom_parasite_data");
-  Register<cEvent_print_instruction_data>("print_instruction_data");
-  Register<cEvent_print_instruction_abundance_histogram>("print_instruction_abundance_histogram");
-  Register<cEvent_print_depth_histogram>("print_depth_histogram");
-  Register<cEvent_print_genotype_abundance_histogram>("print_genotype_abundance_histogram");
-  Register<cEvent_print_species_abundance_histogram>("print_species_abundance_histogram");
-  Register<cEvent_print_lineage_totals>("print_lineage_totals");
-  Register<cEvent_print_lineage_counts>("print_lineage_counts");
-  Register<cEvent_print_dom>("print_dom");
-  Register<cEvent_parasite_debug>("parasite_debug");
-  Register<cEvent_print_dom_parasite>("print_dom_parasite");
-  Register<cEvent_print_genotype_map>("print_genotype_map");
-  Register<cEvent_print_number_phenotypes>("print_number_phenotypes");
-  Register<cEvent_print_phenotype_status>("print_phenotype_status");
-  Register<cEvent_save_population>("save_population");
-  Register<cEvent_load_population>("load_population");
-  Register<cEvent_save_clone>("save_clone");
-  Register<cEvent_load_clone>("load_clone");
-  Register<cEvent_load_dump_file>("load_dump_file");
-  Register<cEvent_dump_pop>("dump_pop");
-  Register<cEvent_print_genotypes>("print_genotypes");
-  Register<cEvent_detail_pop>("detail_pop");
-  Register<cEvent_detail_sex_pop>("detail_sex_pop");
-  Register<cEvent_detail_parasite_pop>("detail_parasite_pop");
-  Register<cEvent_dump_historic_pop>("dump_historic_pop");
-  Register<cEvent_dump_historic_sex_pop>("dump_historic_sex_pop");
-  Register<cEvent_dump_memory>("dump_memory");
-  Register<cEvent_inject>("inject");
-  Register<cEvent_inject_all>("inject_all");
-  Register<cEvent_inject_range>("inject_range");
-  Register<cEvent_inject_sequence>("inject_sequence");
-  Register<cEvent_inject_random>("inject_random");
-  Register<cEvent_inject_range_parasite>("inject_range_parasite");
-  Register<cEvent_inject_range_pair>("inject_range_pair");
-  Register<cEvent_zero_muts>("zero_muts");
-  Register<cEvent_mod_copy_mut>("mod_copy_mut");
-  Register<cEvent_mod_div_mut>("mod_div_mut");
-  Register<cEvent_set_copy_mut>("set_copy_mut");
-  Register<cEvent_mod_point_mut>("mod_point_mut");
-  Register<cEvent_set_point_mut>("set_point_mut");
-  Register<cEvent_calc_landscape>("calc_landscape");
-  Register<cEvent_predict_w_landscape>("predict_w_landscape");
-  Register<cEvent_predict_nu_landscape>("predict_nu_landscape");
-  Register<cEvent_sample_landscape>("sample_landscape");
-  Register<cEvent_random_landscape>("random_landscape");
-  Register<cEvent_analyze_landscape>("analyze_landscape");
-  Register<cEvent_pairtest_landscape>("pairtest_landscape");
-  Register<cEvent_test_dom>("test_dom");
-  Register<cEvent_analyze_population>("analyze_population");
-  Register<cEvent_print_detailed_fitness_data>("print_detailed_fitness_data");
-  Register<cEvent_print_genetic_distance_data>("print_genetic_distance_data");
-  Register<cEvent_genetic_distance_pop_dump>("genetic_distance_pop_dump");
-  Register<cEvent_task_snapshot>("task_snapshot");
-  Register<cEvent_print_viable_tasks_data>("print_viable_tasks_data");
-  Register<cEvent_apocalypse>("apocalypse");
-  Register<cEvent_kill_rectangle>("kill_rectangle");
-  Register<cEvent_rate_kill>("rate_kill");
-  Register<cEvent_serial_transfer>("serial_transfer");
-  Register<cEvent_hillclimb>("hillclimb");
-  Register<cEvent_hillclimb_neut>("hillclimb_neut");
-  Register<cEvent_hillclimb_rand>("hillclimb_rand");
-  Register<cEvent_compete_demes>("compete_demes");
-  Register<cEvent_reset_demes>("reset_demes");
-  Register<cEvent_print_deme_stats>("print_deme_stats");
-  Register<cEvent_copy_deme>("copy_deme");
-  Register<cEvent_calc_consensus>("calc_consensus");
-  Register<cEvent_test_size_change_robustness>("test_size_change_robustness");
-  Register<cEvent_test_threads>("test_threads");
-  Register<cEvent_print_threads>("print_threads");
-  Register<cEvent_dump_fitness_grid>("dump_fitness_grid");
-  Register<cEvent_dump_genotype_grid>("dump_genotype_grid");
-  Register<cEvent_dump_task_grid>("dump_task_grid");
-  Register<cEvent_dump_donor_grid>("dump_donor_grid");
-  Register<cEvent_dump_receiver_grid>("dump_receiver_grid");
-  Register<cEvent_print_tree_depths>("print_tree_depths");
-  Register<cEvent_sever_grid_col>("sever_grid_col");
-  Register<cEvent_sever_grid_row>("sever_grid_row");
-  Register<cEvent_join_grid_col>("join_grid_col");
-  Register<cEvent_join_grid_row>("join_grid_row");
-  Register<cEvent_connect_cells>("connect_cells");
-  Register<cEvent_disconnect_cells>("disconnect_cells");
-  Register<cEvent_inject_resource>("inject_resource");
-  Register<cEvent_set_resource>("set_resource");
-  Register<cEvent_inject_scaled_resource>("inject_scaled_resource");
-  Register<cEvent_outflow_scaled_resource>("outflow_scaled_resource");
-  Register<cEvent_set_reaction_value>("set_reaction_value");
-  Register<cEvent_set_reaction_value_mult>("set_reaction_value_mult");
-  Register<cEvent_set_reaction_inst>("set_reaction_inst");
+  REGISTER(exit);
+  REGISTER(exit_if_generation_greater_than);
+  REGISTER(exit_if_update_greater_than);
+  REGISTER(exit_if_ave_lineage_label_smaller);
+  REGISTER(exit_if_ave_lineage_label_larger);
+  REGISTER(echo);
+  REGISTER(print_data);
+  REGISTER(print_average_data);
+  REGISTER(print_error_data);
+  REGISTER(print_variance_data);
+  REGISTER(print_dominant_data);
+  REGISTER(print_stats_data);
+  REGISTER(print_count_data);
+  REGISTER(print_totals_data);
+  REGISTER(print_tasks_data);
+  REGISTER(print_tasks_exe_data);
+  REGISTER(print_tasks_qual_data);
+  REGISTER(print_resource_data);
+  REGISTER(print_time_data);
+  REGISTER(print_mutation_data);
+  REGISTER(print_mutation_rate_data);
+  REGISTER(print_divide_mut_data);
+  REGISTER(print_dom_parasite_data);
+  REGISTER(print_instruction_data);
+  REGISTER(print_instruction_abundance_histogram);
+  REGISTER(print_depth_histogram);
+  REGISTER(print_genotype_abundance_histogram);
+  REGISTER(print_species_abundance_histogram);
+  REGISTER(print_lineage_totals);
+  REGISTER(print_lineage_counts);
+  REGISTER(print_dom);
+  REGISTER(parasite_debug);
+  REGISTER(print_dom_parasite);
+  REGISTER(print_genotype_map);
+  REGISTER(print_number_phenotypes);
+  REGISTER(print_phenotype_status);
+  REGISTER(save_population);
+  REGISTER(load_population);
+  REGISTER(save_clone);
+  REGISTER(load_clone);
+  REGISTER(load_dump_file);
+  REGISTER(dump_pop);
+  REGISTER(print_genotypes);
+  REGISTER(detail_pop);
+  REGISTER(detail_sex_pop);
+  REGISTER(detail_parasite_pop);
+  REGISTER(dump_historic_pop);
+  REGISTER(dump_historic_sex_pop);
+  REGISTER(dump_memory);
+  REGISTER(inject);
+  REGISTER(inject_all);
+  REGISTER(inject_range);
+  REGISTER(inject_sequence);
+  REGISTER(inject_random);
+  REGISTER(inject_range_parasite);
+  REGISTER(inject_range_pair);
+  REGISTER(zero_muts);
+  REGISTER(mod_copy_mut);
+  REGISTER(mod_div_mut);
+  REGISTER(set_copy_mut);
+  REGISTER(mod_point_mut);
+  REGISTER(set_point_mut);
+  REGISTER(calc_landscape);
+  REGISTER(predict_w_landscape);
+  REGISTER(predict_nu_landscape);
+  REGISTER(sample_landscape);
+  REGISTER(random_landscape);
+  REGISTER(analyze_landscape);
+  REGISTER(pairtest_landscape);
+  REGISTER(test_dom);
+  REGISTER(analyze_population);
+  REGISTER(print_detailed_fitness_data);
+  REGISTER(print_genetic_distance_data);
+  REGISTER(genetic_distance_pop_dump);
+  REGISTER(task_snapshot);
+  REGISTER(print_viable_tasks_data);
+  REGISTER(apocalypse);
+  REGISTER(kill_rectangle);
+  REGISTER(rate_kill);
+  REGISTER(serial_transfer);
+  REGISTER(hillclimb);
+  REGISTER(hillclimb_neut);
+  REGISTER(hillclimb_rand);
+  REGISTER(compete_demes);
+  REGISTER(reset_demes);
+  REGISTER(print_deme_stats);
+  REGISTER(copy_deme);
+  REGISTER(calc_consensus);
+  REGISTER(test_size_change_robustness);
+  REGISTER(test_threads);
+  REGISTER(print_threads);
+  REGISTER(dump_fitness_grid);
+  REGISTER(dump_genotype_grid);
+  REGISTER(dump_task_grid);
+  REGISTER(dump_donor_grid);
+  REGISTER(dump_receiver_grid);
+  REGISTER(print_tree_depths);
+  REGISTER(sever_grid_col);
+  REGISTER(sever_grid_row);
+  REGISTER(join_grid_col);
+  REGISTER(join_grid_row);
+  REGISTER(connect_cells);
+  REGISTER(disconnect_cells);
+  REGISTER(inject_resource);
+  REGISTER(set_resource);
+  REGISTER(inject_scaled_resource);
+  REGISTER(outflow_scaled_resource);
+  REGISTER(set_reaction_value);
+  REGISTER(set_reaction_value_mult);
+  REGISTER(set_reaction_inst);
 }
 
 cEvent* cEventManager::ConstructEvent(const cString name, const cString & args)
