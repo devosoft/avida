@@ -148,6 +148,7 @@ bool cEnvironment::LoadReactionProcess(cReaction * reaction, cString desc)
       if (var_value=="add") new_process->SetType(nReaction::PROCTYPE_ADD);
       else if (var_value=="mult") new_process->SetType(nReaction::PROCTYPE_MULT);
       else if (var_value=="pow") new_process->SetType(nReaction::PROCTYPE_POW);
+      else if (var_value=="lin") new_process->SetType(nReaction::PROCTYPE_LIN);
       else {
         cerr << "Unknown reaction process type '" << var_value
         << "' found in '" << reaction->GetName() << "'." << endl;
@@ -676,20 +677,21 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result, cTask
     assert(cur_task != NULL);
     const double task_quality = task_lib.TestOutput(*cur_task, &taskctx);
     const int task_id = cur_task->GetID();
+    const int task_cnt = task_count[task_id];
     
     // If this task wasn't performed, move on to the next one.
     if (task_quality == 0.0) continue;
     
     // Examine requisites on this reaction
-    if (TestRequisites(cur_reaction->GetRequisites(), task_count[task_id], reaction_count) == false) {
+    if (TestRequisites(cur_reaction->GetRequisites(), task_cnt, reaction_count) == false) {
       continue;
     }
     
-	// Mark this task as performed...
-	result.MarkTask(task_id, task_quality);
+    // Mark this task as performed...
+    result.MarkTask(task_id, task_quality);
 
     // And lets process it!
-    DoProcesses(ctx, cur_reaction->GetProcesses(), resource_count, task_quality, result);
+    DoProcesses(ctx, cur_reaction->GetProcesses(), resource_count, task_quality, task_cnt, result);
     
     // Mark this reaction as occuring...
     result.MarkReaction(cur_reaction->GetID());
@@ -777,7 +779,7 @@ bool cEnvironment::TestRequisites(const tList<cReactionRequisite>& req_list,
 
 void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>& process_list,
                                const tArray<double>& resource_count, const double task_quality,
-                               cReactionResult& result) const
+                               const int task_count, cReactionResult& result) const
 {
   const int num_process = process_list.GetSize();
   
@@ -796,7 +798,6 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     if (in_resource == NULL) {
       consumed = max_consumed * task_quality;
     }
-    
     // Otherwise we're using a finite resource
     else {
       const int res_id = in_resource->GetID();
@@ -807,7 +808,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       // Make sure we're not above the maximum consumption.
       if (consumed > max_consumed) consumed = max_consumed;
 
-	  consumed *= task_quality;  // modify consumed based on task quality
+      consumed *= task_quality;  // modify consumed based on task quality
       
       // Test if we are below the minimum consumption.
       if (consumed < min_consumed) consumed = 0.0;
@@ -831,6 +832,9 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
         break;
       case nReaction::PROCTYPE_POW:
         result.MultBonus( pow(2.0, bonus) );
+        break;
+      case nReaction::PROCTYPE_LIN:
+        result.AddBonus( bonus * task_count);
         break;
       default:
         assert(false);  // Should not get here!

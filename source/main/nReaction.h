@@ -14,7 +14,8 @@ namespace nReaction {
   enum {
     PROCTYPE_ADD = 0,
     PROCTYPE_MULT,
-    PROCTYPE_POW
+    PROCTYPE_POW,
+    PROCTYPE_LIN
   };
 }
 

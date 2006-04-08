@@ -11,7 +11,6 @@
 		7005A70409BA0FA90007E16E /* cTestCPUInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */; };
 		7005A70509BA0FA90007E16E /* cTestCPUInterface.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7005A70109BA0FA90007E16E /* cTestCPUInterface.h */; };
 		7005A70609BA0FA90007E16E /* cTestCPUInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */; };
-		7005A70709BA0FA90007E16E /* cTestCPUInterface.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7005A70109BA0FA90007E16E /* cTestCPUInterface.h */; };
 		7005A70809BA0FA90007E16E /* cTestCPUInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */; };
 		7005A83209BA621F0007E16E /* cOrgMessage.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0868808F49EA800FC65FE /* cOrgMessage.cc */; };
 		700AEB7C09E3490400A073FD /* avida-smt.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 700AEB7B09E3490300A073FD /* avida-smt.cfg */; };
@@ -37,7 +36,6 @@
 		7013846409028B3E0087ED2E /* cAvidaConfig.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7013846009028B3E0087ED2E /* cAvidaConfig.cc */; };
 		7013852D0902E36B0087ED2E /* avida.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7013852C0902E36B0087ED2E /* avida.cfg */; };
 		7013852E0902E36B0087ED2E /* avida.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7013852C0902E36B0087ED2E /* avida.cfg */; };
-		701D51CD09C645F50009B4F8 /* cAvidaContext.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 701D51CB09C645F50009B4F8 /* cAvidaContext.h */; };
 		701D51CF09C645F50009B4F8 /* cAvidaContext.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 701D51CB09C645F50009B4F8 /* cAvidaContext.h */; };
 		701D51D109C645F50009B4F8 /* cAvidaContext.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 701D51CB09C645F50009B4F8 /* cAvidaContext.h */; };
 		701D915D094B864A008B845F /* cFallbackWorldDriver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701D915C094B864A008B845F /* cFallbackWorldDriver.cc */; };
@@ -94,7 +92,6 @@
 		7054A12109A7BEFC00038658 /* cThread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7054A11F09A7BEFC00038658 /* cThread.cc */; };
 		7054A12209A7BEFC00038658 /* cThread.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7054A11E09A7BEFC00038658 /* cThread.h */; };
 		7054A12309A7BEFC00038658 /* cThread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7054A11F09A7BEFC00038658 /* cThread.cc */; };
-		7054A12409A7BEFC00038658 /* cThread.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7054A11E09A7BEFC00038658 /* cThread.h */; };
 		7054A12509A7BEFC00038658 /* cThread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7054A11F09A7BEFC00038658 /* cThread.cc */; };
 		7054A17009A8014600038658 /* cAnalyzeJobQueue.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7054A16E09A8014600038658 /* cAnalyzeJobQueue.h */; };
 		7054A17109A8014600038658 /* cAnalyzeJobQueue.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7054A16F09A8014600038658 /* cAnalyzeJobQueue.cc */; };
@@ -513,9 +510,6 @@
 				706D33280854A90D00D7DC8F /* inst_set.smt in CopyFiles */,
 				701384350900A45B0087ED2E /* organism.smtx in CopyFiles */,
 				7013852D0902E36B0087ED2E /* avida.cfg in CopyFiles */,
-				7054A12409A7BEFC00038658 /* cThread.h in CopyFiles */,
-				7005A70709BA0FA90007E16E /* cTestCPUInterface.h in CopyFiles */,
-				701D51CD09C645F50009B4F8 /* cAvidaContext.h in CopyFiles */,
 				700AEB7C09E3490400A073FD /* avida-smt.cfg in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

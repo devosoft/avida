@@ -74,7 +74,7 @@ private:
 
   bool TestRequisites(const tList<cReactionRequisite>& req_list, int task_count, const tArray<int>& reaction_count) const;
   void DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>& process_list, const tArray<double>& resource_count,
-                   const double task_quality, cReactionResult& result) const;
+                   const double task_quality, const int task_count, cReactionResult& result) const;
 
   cEnvironment(); // @not_implemented
   cEnvironment(const cEnvironment&); // @not_implemented
