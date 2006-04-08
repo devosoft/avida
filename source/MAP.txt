@@ -1,4 +1,3 @@
-
 These dependencies do not include built-in libraries, files from the
 tools directory in avida, or defs.hh.  It is further assumed that a *.ii
 file has the corresponding *.hh as its first include, and likewise *.cc
