@@ -46,6 +46,5 @@ sys.path.append('support/utils')
 # the next line.
 import scons
 
-
 # Vim modeline to tell Vim that this is a Python script.
 # vim: set ft=python:
