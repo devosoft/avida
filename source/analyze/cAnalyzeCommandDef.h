@@ -27,10 +27,10 @@ private:
 public:
   cAnalyzeCommandDef(const cString & _name, void (cAnalyze::*_cf)(cString))
     : cAnalyzeCommandDefBase(_name), CommandFunction(_cf) { ; }
-  virtual ~cAnalyzeCommandDef() { ; }
+  ~cAnalyzeCommandDef() { ; }
 
-  virtual void Run(cAnalyze * analyze, const cString & args,
-		   cAnalyzeCommand & command) const {
+  void Run(cAnalyze * analyze, const cString & args, cAnalyzeCommand & command) const
+  {
     (void) command; // used in other types of command defininitions.
     (analyze->*CommandFunction)(args);
   }

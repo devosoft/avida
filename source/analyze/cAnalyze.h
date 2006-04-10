@@ -13,7 +13,10 @@
 
 #include <vector>
 
-#ifndef cAvidaContex_h
+#ifndef cAnalyzeJobQueue_h
+#include "cAnalyzeJobQueue.h"
+#endif
+#ifndef cAvidaContext_h
 #include "cAvidaContext.h"
 #endif
 #ifndef cGenotypeBatch_h
@@ -65,7 +68,8 @@ class cEnvironment;
 class cTestCPU;
 class cWorld;
 
-class cAnalyze {
+class cAnalyze
+{
 private:
   int cur_batch;
   cGenotypeBatch batch[MAX_BATCHES];
@@ -80,6 +84,7 @@ private:
   cInstSet& inst_set;
   cTestCPU* m_testcpu;
   cAvidaContext m_ctx;
+  cAnalyzeJobQueue m_jobqueue;
 
 
   // This is the storage for the resource information from resource.dat.  It 
@@ -93,7 +98,7 @@ private:
 
   cRandom random;
 
-private:
+
   // Pop specific types of arguments from an arg list.
   cString PopDirectory(cString & in_string, const cString & default_dir);
   int PopBatch(const cString & in_string);
@@ -134,7 +139,6 @@ private:
   void CommandHistogram_Body(std::ostream& fp, int format_type,
             tListIterator< tDataEntryCommand<cAnalyzeGenotype> > & output_it);
 
-private:
   // Loading methods...
   void LoadOrganism(cString cur_string);
   void LoadBasicDump(cString cur_string);
@@ -234,7 +238,6 @@ private:
   void IncludeFile(cString cur_string);
   void CommandSystem(cString cur_string);
   void CommandInteractive(cString cur_string);
-//  void PrintTestCPUResources(cString cur_string);
   void CommandCalcLandscape(cString cur_string);
 
   // Functions...
@@ -264,14 +267,18 @@ private:
   void CommandForeach(cString cur_string, tList<cAnalyzeCommand> & clist);
   void CommandForRange(cString cur_string, tList<cAnalyzeCommand> & clist);
 
-private:
-  // disabled copy constructor.
-  cAnalyze(const cAnalyze &);
+  cAnalyze(const cAnalyze &); // @not_implemented
+
+
 public:
   cAnalyze(cWorld* world);
   ~cAnalyze();
 
+  void RunFile(cString filename);
   void RunInteractive();
+  
+  cGenotypeBatch& GetCurrentBatch() { return batch[cur_batch]; }
+  cAnalyzeJobQueue& GetJobQueue() { return m_jobqueue; }
 };
 
 #endif

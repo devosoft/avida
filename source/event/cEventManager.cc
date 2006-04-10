@@ -10,6 +10,8 @@
 
 #include "cEventManager.h"
 
+#include "cAction.h"
+#include "cActionLibrary.h"
 #include "cAnalyzeUtil.h"
 #include "cAvidaContext.h"
 #include "avida.h"
@@ -1393,8 +1395,7 @@ public:
   void Process(){
     if (cell_id == -1) cell_id = m_world->GetRandom().GetUInt(m_world->GetPopulation().GetSize());
     
-    // @DMB - Warning: Creating context out of band.
-    cAvidaContext ctx(m_world->GetRandom());
+    cAvidaContext& ctx = m_world->GetDefaultContext();
     
     cGenome genome =
       cInstUtil::RandomGenome(ctx, length, m_world->GetHardwareManager().GetInstSet());
@@ -1816,8 +1817,7 @@ public:
   }
   ///// predict_w_landscape /////
   void Process(){
-    // @DMB - Warning: Creating context out of band.
-    cAvidaContext ctx(m_world->GetRandom());
+    cAvidaContext& ctx = m_world->GetDefaultContext();
 
     cGenome & genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
@@ -1846,9 +1846,8 @@ public:
     if (args == "") datafile="land-predict.dat"; else datafile=args.PopWord();
   }
   ///// predict_nu_landscape /////
-  void Process(){
-    // @DMB - Warning: Creating context out of band.
-    cAvidaContext ctx(m_world->GetRandom());
+  void Process() {
+    cAvidaContext& ctx = m_world->GetDefaultContext();
 
     cGenome& genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
@@ -1878,13 +1877,13 @@ public:
   }
   ///// sample_landscape /////
   void Process(){
-    // @DMB - Warning: Creating context out of band.
-    cAvidaContext ctx(m_world->GetRandom());
+    cAvidaContext& ctx = m_world->GetDefaultContext();
 
     cGenome& genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
     if (sample_size == 0) sample_size = m_world->GetHardwareManager().GetInstSet().GetSize() - 1;
-    landscape.SampleProcess(ctx, sample_size);
+    landscape.SetTrials(sample_size);
+    landscape.SampleProcess(ctx);
     landscape.PrintStats(m_world->GetDataFileOFStream("land-sample.dat"), m_world->GetStats().GetUpdate());
   }
 };
@@ -1919,8 +1918,7 @@ public:
   }
   ///// random_landscape /////
   void Process(){
-    // @DMB - Warning: Creating context out of band.
-    cAvidaContext ctx(m_world->GetRandom());
+    cAvidaContext& ctx = m_world->GetDefaultContext();
 
     cGenome & genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
@@ -2427,8 +2425,7 @@ public:
     m_args = in_args; }
   ///// hillclimb /////
   void Process(){
-    // @DMB - Warning: Creating context out of band.
-    cAvidaContext ctx(m_world->GetRandom());
+    cAvidaContext& ctx = m_world->GetDefaultContext();
 
     cGenome& genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
@@ -2455,8 +2452,7 @@ public:
     m_args = in_args; }
   ///// hillclimb_neut /////
   void Process(){
-    // @DMB - Warning: Creating context out of band.
-    cAvidaContext ctx(m_world->GetRandom());
+    cAvidaContext& ctx = m_world->GetDefaultContext();
 
     cGenome& genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
@@ -2483,8 +2479,7 @@ public:
     m_args = in_args; }
   ///// hillclimb_rand /////
   void Process(){
-    // @DMB - Warning: Creating context out of band.
-    cAvidaContext ctx(m_world->GetRandom());
+    cAvidaContext& ctx = m_world->GetDefaultContext();
 
     cGenome& genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
@@ -2688,8 +2683,7 @@ public:
   
   ///// test_threads /////
   void Process(){
-    // @DMB - Warning: Creating context out of band.
-    cAvidaContext ctx(m_world->GetRandom());
+    cAvidaContext& ctx = m_world->GetDefaultContext();
 
     cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
     testcpu->TestThreads(ctx, m_world->GetClassificationManager().GetBestGenotype()->GetGenome());
@@ -2716,8 +2710,7 @@ public:
   }
   ///// print_threads /////
   void Process(){
-    // @DMB - Warning: Creating context out of band.
-    cAvidaContext ctx(m_world->GetRandom());
+    cAvidaContext& ctx = m_world->GetDefaultContext();
 
     cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
     testcpu->PrintThreads(ctx, m_world->GetClassificationManager().GetBestGenotype()->GetGenome() );
@@ -3537,6 +3530,29 @@ public:
   }
 };
 
+class cEventAction : public cEvent
+{
+private:
+  cAction* m_action;
+
+public:
+  cEventAction(cWorld* world, cAction* action, const cString& args)
+    : m_action(action) { Configure(world, args); }
+  ~cEventAction() { delete m_action; }
+  
+  const cString GetName() const { return "action wrapper"; }
+  const cString GetDescription() const { return "action wrapper - description not available"; }
+  
+  void Configure(cWorld* world, const cString& in_args) { m_world = world; m_args = in_args; }
+  void Process()
+  {
+    cAvidaContext& ctx = m_world->GetDefaultContext();
+    m_action->Process(ctx);
+  }
+};
+
+
+
 #define REGISTER(EVENT_NAME) Register<cEvent_ ## EVENT_NAME>(#EVENT_NAME)
 
 cEventManager::cEventManager(cWorld* world) : m_world(world)
@@ -3656,7 +3672,14 @@ cEventManager::cEventManager(cWorld* world) : m_world(world)
 cEvent* cEventManager::ConstructEvent(const cString name, const cString & args)
 {
   cEvent* event = Create(name);
-  event->Configure(m_world, args);
+  
+  if (event != NULL) {
+    event->Configure(m_world, args);
+  } else {
+    cAction* action = m_world->GetActionLibrary().Create(name, m_world, args);
+    if (action != NULL) event = new cEventAction(m_world, action, args);
+  }
+  
   return event;
 }
 

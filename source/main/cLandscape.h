@@ -31,7 +31,7 @@ class cInstSet;
 class cInstruction;
 class cWorld;
 
-struct cLandscape
+class cLandscape
 {
 private:
   cWorld* m_world;
@@ -112,8 +112,10 @@ public:
   void ProcessInsert(cAvidaContext& ctx);
   void PredictWProcess(cAvidaContext& ctx, std::ostream& fp, int update = -1);
   void PredictNuProcess(cAvidaContext& ctx, std::ostream& fp, int update = -1);
+  
+  void SetTrials(int in_trials) { trials = in_trials; }
 
-  void SampleProcess(cAvidaContext& ctx, int in_trials);
+  void SampleProcess(cAvidaContext& ctx);
   int RandomProcess(cAvidaContext& ctx, int in_trials, int in_distance = 1, int min_found = 0,
                     int max_trials = 0, bool print_if_found = false);
 

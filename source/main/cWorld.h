@@ -13,6 +13,9 @@
 #ifndef cAvidaConfig_h
 #include "cAvidaConfig.h"
 #endif
+#ifndef cAvidaContext_h
+#include "cAvidaContext.h"
+#endif
 #ifndef cDataFileManager_h
 #include "cDataFileManager.h"
 #endif
@@ -20,6 +23,8 @@
 #include "cRandom.h"
 #endif
 
+class cActionLibrary;
+class cAnalyze;
 class cAvidaDriver;
 class cClassificationManager;
 class cEnvironment;
@@ -34,7 +39,10 @@ class cWorldDriver;
 class cWorld
 {
 protected:
+  cActionLibrary* m_actlib;
+  cAnalyze* m_analyze;
   cAvidaConfig* m_conf;
+  cAvidaContext m_ctx;
   cClassificationManager* m_class_mgr;
   cDataFileManager* m_data_mgr;
   cEnvironment* m_env;
@@ -59,15 +67,18 @@ protected:
   cWorld& operator=(const cWorld&); // @not_implemented
   
 public:
-  explicit cWorld() : m_conf(new cAvidaConfig()) { Setup(); }
-  cWorld(cAvidaConfig* cfg) : m_conf(cfg) { Setup(); }
+  explicit cWorld() : m_analyze(NULL), m_conf(new cAvidaConfig()), m_ctx(m_rng) { Setup(); }
+  cWorld(cAvidaConfig* cfg) : m_analyze(NULL), m_conf(cfg), m_ctx(m_rng) { Setup(); }
   ~cWorld();
   
   void SetConfig(cAvidaConfig* cfg) { delete m_conf; m_conf = cfg; }
   void SetDriver(cWorldDriver* driver, bool take_ownership = false);
   
   // General Object Accessors
+  cActionLibrary& GetActionLibrary() { return *m_actlib; }
+  cAnalyze& GetAnalyze();
   cAvidaConfig& GetConfig() { return *m_conf; }
+  cAvidaContext& GetDefaultContext() { return m_ctx; }
   cClassificationManager& GetClassificationManager() { return *m_class_mgr; }
   cDataFileManager& GetDataFileManager() { return *m_data_mgr; }
   cEnvironment& GetEnvironment() { return *m_env; }

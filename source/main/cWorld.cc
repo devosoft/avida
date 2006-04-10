@@ -10,6 +10,8 @@
 #include "cWorld.h"
 
 #include "avida.h"
+#include "cActionLibrary.h"
+#include "cAnalyze.h"
 #include "cAvidaTriggers.h"
 #include "cClassificationManager.h"
 #include "cEnvironment.h"
@@ -23,11 +25,15 @@
 #include "cTools.h"
 #include "cFallbackWorldDriver.h"
 
+#include "LandscapeActions.h"
+
 
 cWorld::~cWorld()
 {
   m_data_mgr->FlushAll();
 
+  delete m_actlib;
+  delete m_analyze;
   delete m_conf;
   delete m_data_mgr;
   delete m_env;
@@ -52,6 +58,9 @@ void cWorld::Setup()
   m_rng.ResetSeed(rand_seed);
   if (rand_seed != m_rng.GetSeed()) cout << " -> " << m_rng.GetSeed();
   cout << endl;
+  
+  m_actlib = new cActionLibrary();
+  RegisterLandscapeActions(m_actlib);
   
   // The data directory should end in a '/'
   cString dir = m_conf->DATA_DIR.Get();
@@ -94,6 +103,12 @@ void cWorld::Setup()
   const bool sterilize_neut = m_conf->STERILIZE_NEUTRAL.Get() > 0.0;
   const bool sterilize_pos = m_conf->STERILIZE_BENEFICIAL.Get() > 0.0;
   m_test_sterilize = (sterilize_fatal || sterilize_neg || sterilize_neut || sterilize_pos);
+}
+
+cAnalyze& cWorld::GetAnalyze()
+{
+  if (m_analyze == NULL) m_analyze = new cAnalyze(this);
+  return *m_analyze;
 }
 
 void cWorld::ReadEventListFile(const cString & filename)

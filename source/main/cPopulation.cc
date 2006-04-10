@@ -1840,8 +1840,7 @@ void cPopulation::InjectGenotype(int cell_id, cGenotype *new_genotype)
 {
   assert(cell_id >= 0 && cell_id < cell_array.GetSize());
   
-  // @DMB - Warning: Creating context out of band.
-  cAvidaContext ctx(m_world->GetRandom());
+  cAvidaContext& ctx = m_world->GetDefaultContext();
   
   cOrganism* new_organism = new cOrganism(m_world, ctx, new_genotype->GetGenome());
   
@@ -1882,8 +1881,7 @@ void cPopulation::InjectClone(int cell_id, cOrganism& orig_org)
 {
   assert(cell_id >= 0 && cell_id < cell_array.GetSize());
   
-  // @DMB - Warning: Creating context out of band.
-  cAvidaContext ctx(m_world->GetRandom());
+  cAvidaContext& ctx = m_world->GetDefaultContext();
   
   cOrganism* new_organism = new cOrganism(m_world, ctx, orig_org.GetGenome());
   

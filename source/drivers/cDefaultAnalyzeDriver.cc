@@ -36,7 +36,7 @@ cDefaultAnalyzeDriver::~cDefaultAnalyzeDriver()
 void cDefaultAnalyzeDriver::Run()
 {
   cout << "In analyze mode!!" << endl;
-  cAnalyze analyze(m_world);
+  cAnalyze& analyze = m_world->GetAnalyze();
   if (m_interactive == true) {
     analyze.RunInteractive();
   }

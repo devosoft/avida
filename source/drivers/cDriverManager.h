@@ -14,8 +14,11 @@
 #include "tList.h"
 #endif
 
+#include <pthread.h>
+
 class cAvidaDriver;
 class cWorldDriver;
+
 
 class cDriverManager
 {
@@ -25,15 +28,18 @@ private:
   tList<cAvidaDriver> m_adrvs;
   tList<cWorldDriver> m_wdrvs;
   
-  cDriverManager() { ; }
+  pthread_mutex_t m_mutex;
+  
+  cDriverManager() { pthread_mutex_init(&m_mutex, NULL); }
   ~cDriverManager();
 
   cDriverManager(const cDriverManager&); // @not_implemented
   cDriverManager& operator=(const cDriverManager&); // @not_implemented
 
+  static void Destroy();    // destory the driver manager, and all registered drivers.  Registered with atexit(). 
+
 public:
   static void Initialize(); // initialize static driver manager.  This method is NOT thread-safe.
-  static void Destroy();    // destory the driver manager, and all registered drivers.  Registered with atexit(). 
 
   static void Register(cAvidaDriver* drv);
   static void Register(cWorldDriver* drv);

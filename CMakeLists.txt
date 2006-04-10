@@ -227,6 +227,7 @@ ENDIF(MSVC)
 # Shortcuts to the source subdirectories.
 SET(THIRDPARTY_SRC_DIR ${PROJECT_SOURCE_DIR}/source/third-party)
 SET(TOOLS_SRC_DIR ${PROJECT_SOURCE_DIR}/source/tools)
+SET(ACTIONS_SRC_DIR ${PROJECT_SOURCE_DIR}/source/actions)
 SET(ANALYZE_SRC_DIR ${PROJECT_SOURCE_DIR}/source/analyze)
 SET(CLASSIFICATION_SRC_DIR ${PROJECT_SOURCE_DIR}/source/classification)
 SET(CPU_SRC_DIR ${PROJECT_SOURCE_DIR}/source/cpu)
@@ -237,6 +238,7 @@ SET(MAIN_SRC_DIR ${PROJECT_SOURCE_DIR}/source/main)
 # Shortcuts to the build subdirectories.
 SET(THIRDPARTY_BLD_DIR ${PROJECT_BINARY_DIR}/source/third-party)
 SET(TOOLS_BLD_DIR ${PROJECT_BINARY_DIR}/source/tools)
+SET(ACTIONS_BLD_DIR ${PROJECT_BINARY_DIR}/source/actions)
 SET(ANALYZE_BLD_DIR ${PROJECT_BINARY_DIR}/source/analyze)
 SET(CLASSSIFICATION_BLD_DIR ${PROJECT_BINARY_DIR}/source/classification)
 SET(CPU_BLD_DIR ${PROJECT_BINARY_DIR}/source/cpu)
@@ -248,6 +250,7 @@ SET(MAIN_BLD_DIR ${PROJECT_BINARY_DIR}/source/main)
 # include-directories).
 SET(ALL_INC_DIRS
   ${TOOLS_SRC_DIR}
+  ${ACTIONS_SRC_DIR}
   ${ANALYZE_SRC_DIR}
   ${CLASSIFICATION_SRC_DIR}
   ${CPU_SRC_DIR}
@@ -262,6 +265,7 @@ SET(ALL_INC_DIRS
 # link-subdirecties).
 SET(ALL_LIB_DIRS
   ${TOOLS_BLD_DIR}
+  ${ACTIONS_BLD_DIR}
   ${ANALYZE_BLD_DIR}
   ${CLASSIFICATION_BLD_DIR}
   ${CPU_BLD_DIR}

@@ -44,7 +44,7 @@ private:
   cAnalyzeJobQueue& operator=(const cAnalyzeJobQueue&); // @not_implemented
   
 public:
-    cAnalyzeJobQueue(cWorld* world);
+  cAnalyzeJobQueue(cWorld* world);
   ~cAnalyzeJobQueue();
 
   void AddJob(cAnalyzeJob* job) { job->SetID(m_last_jobid++); m_queue.PushRear(job); } // @DMB - Warning: NOT thread safe

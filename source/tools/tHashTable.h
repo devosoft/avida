@@ -88,7 +88,7 @@ private:
   tArray< tListNode< tHashEntry<HASH_TYPE, DATA_TYPE> > * > cell_array;
   
   // Create an iterator for entry_list
-  tListIterator< tHashEntry<HASH_TYPE, DATA_TYPE> > list_it;
+  mutable tListIterator< tHashEntry<HASH_TYPE, DATA_TYPE> > list_it;
   
   // Create a set of HashKey methods for each of the basic data types that
   // we allow:
@@ -104,7 +104,7 @@ private:
   // that string and modding by the hash size.  For most applications this
   // will work fine (and reasonably fast!) but some patterns will cause all
   // strings to go into the same cell.  For example, "ABC"=="CBA"=="BBB".
-  int HashKey(const cString & key) const {
+  int HashKey(const cString& key) const {
     unsigned int out_hash = 0;
     for (int i = 0; i < key.GetSize(); i++)
       out_hash += (unsigned int) key[i];
@@ -113,7 +113,7 @@ private:
   
   // Function to find the appropriate tHashEntry for a key that is passed
   // in and return it.
-  tHashEntry<HASH_TYPE, DATA_TYPE> * FindEntry(const HASH_TYPE & key) {
+  tHashEntry<HASH_TYPE, DATA_TYPE> * FindEntry(const HASH_TYPE& key) const {
     const int bin = HashKey(key);
     if (cell_array[bin] == NULL) return NULL;
     
@@ -156,7 +156,7 @@ public:
   }
   
   
-  bool OK() {
+  bool OK() const {
     std::cout << "ENTRY_COUNT = " << entry_count << std::endl;
     std::cout << "TABLE_SIZE = " << table_size << std::endl;
     int count = 0;
@@ -186,7 +186,7 @@ public:
     return true;
   }
   
-  int GetSize() { return entry_count; }
+  int GetSize() const { return entry_count; }
   
   // This function is used to add a new entry...
   void Add(const HASH_TYPE & key, DATA_TYPE data) {
@@ -225,11 +225,11 @@ public:
   }
   
   
-  bool HasEntry(const HASH_TYPE & key) {
+  bool HasEntry(const HASH_TYPE & key) const {
     return FindEntry(key) != NULL;
   }
   
-  bool Find(const HASH_TYPE & key, DATA_TYPE & out_data) {
+  bool Find(const HASH_TYPE & key, DATA_TYPE & out_data) const {
     tHashEntry<HASH_TYPE, DATA_TYPE> * found_entry = FindEntry(key);
     if (found_entry != NULL) {
       out_data = found_entry->data;
@@ -304,7 +304,7 @@ public:
   // The following method allows the user to convert the dictionary contents
   // into lists.  Empty lists show be passed in as arguments and the method
   // will fill in their contents.
-  void AsLists(tList<HASH_TYPE> & key_list, tList<DATA_TYPE> & value_list) {
+  void AsLists(tList<HASH_TYPE> & key_list, tList<DATA_TYPE> & value_list) const {
     // Setup the lists to fill in.
     assert(key_list.GetSize() == 0);
     assert(value_list.GetSize() == 0);

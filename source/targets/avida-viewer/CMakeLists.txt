@@ -38,6 +38,7 @@ TARGET_LINK_LIBRARIES(avida-viewer
   main
   tools
   trio
+  actions
   ${NCURSES_LIBRARY}
 )
 ELSE(MSVC)
@@ -54,6 +55,7 @@ TARGET_LINK_LIBRARIES(avida-viewer
   main
   tools
   trio
+  actions
   ${NCURSES_LIBRARY}
   pthread
 )

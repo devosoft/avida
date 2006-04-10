@@ -43,9 +43,7 @@ void cAnalyzeUtil::TestGenome(cWorld* world, const cGenome & genome, cInstSet & 
                               ofstream& fp, int update)
 {
   cTestCPU* testcpu = world->GetHardwareManager().CreateTestCPU();
-  
-  // @DMB - Warning: Creating context out of band.
-  cAvidaContext ctx(world->GetRandom());
+  cAvidaContext& ctx = world->GetDefaultContext();
   
   cCPUTestInfo test_info;
   testcpu->TestGenome(ctx, test_info, genome);
@@ -69,9 +67,7 @@ void cAnalyzeUtil::TestInsSizeChangeRobustness(cWorld* world, ofstream& fp,
                                                int num_trials, int update)
 {
   cTestCPU* testcpu = world->GetHardwareManager().CreateTestCPU();
-  
-  // @DMB - Warning: Creating context out of band.
-  cAvidaContext ctx(world->GetRandom());
+  cAvidaContext& ctx = world->GetDefaultContext();
 
   cCPUTestInfo test_info;
   const cInstruction inst_none = inst_set.GetInst("instruction_none");
@@ -120,8 +116,7 @@ void cAnalyzeUtil::TestInsSizeChangeRobustness(cWorld* world, ofstream& fp,
 cGenome cAnalyzeUtil::CalcLandscape(cWorld* world, int dist, const cGenome & genome,
                                     cInstSet & inst_set)
 {
-  // @DMB - Warning: Creating context out of band.
-  cAvidaContext ctx(world->GetRandom());
+  cAvidaContext& ctx = world->GetDefaultContext();
 
   cLandscape landscape(world, genome, inst_set);
   landscape.Process(ctx, dist);
@@ -160,8 +155,7 @@ cGenome cAnalyzeUtil::CalcLandscape(cWorld* world, int dist, const cGenome & gen
 void cAnalyzeUtil::AnalyzeLandscape(cWorld* world, const cGenome & genome, cInstSet &inst_set,
                                     int sample_size, int min_found, int max_sample_size, int update)
 {
-  // @DMB - Warning: Creating context out of band.
-  cAvidaContext ctx(world->GetRandom());
+  cAvidaContext& ctx = world->GetDefaultContext();
 
   cLandscape landscape(world, genome, inst_set);
   ofstream& fp = world->GetDataFileOFStream("land_analyze.dat");
@@ -196,8 +190,7 @@ void cAnalyzeUtil::AnalyzeLandscape(cWorld* world, const cGenome & genome, cInst
 void cAnalyzeUtil::PairTestLandscape(cWorld* world, const cGenome &genome, cInstSet &inst_set,
                                      int sample_size, int update)
 {
-  // @DMB - Warning: Creating context out of band.
-  cAvidaContext ctx(world->GetRandom());
+  cAvidaContext& ctx = world->GetDefaultContext();
 
   cLandscape landscape(world, genome, inst_set);
   
@@ -342,9 +335,7 @@ void cAnalyzeUtil::CalcConsensus(cWorld* world, int lines_saved)
   }
   else {
     cTestCPU* testcpu = world->GetHardwareManager().CreateTestCPU();
-
-    // @DMB - Warning: Creating context out of band.
-    cAvidaContext ctx(world->GetRandom());
+    cAvidaContext& ctx = world->GetDefaultContext();
     
     cCPUTestInfo test_info;
     testcpu->TestGenome(ctx, test_info, con_genome);
@@ -406,8 +397,7 @@ void cAnalyzeUtil::AnalyzePopulation(cWorld* world, ofstream& fp,
   cPopulation* pop = &world->GetPopulation();
   fp << "# (1) cell number (2) genotype name (3) length (4) fitness [test-cpu] (5) fitness (actual) (6) merit (7) no of breed trues occurred (8) lineage label (9) neutral metric (10) -... landscape data" << endl;
   
-  // @DMB - Warning: Creating context out of band.
-  cAvidaContext ctx(world->GetRandom());
+  cAvidaContext& ctx = world->GetDefaultContext();
 
   const double skip_prob = 1.0 - sample_prob;
   for (int i = 0; i < pop->GetSize(); i++) {
@@ -501,9 +491,7 @@ void cAnalyzeUtil::PrintDetailedFitnessData(cWorld* world, cString& datafn,
   cGenotype * max_f_genotype = NULL;
   
   cTestCPU* testcpu = world->GetHardwareManager().CreateTestCPU();
-
-  // @DMB - Warning: Creating context out of band.
-  cAvidaContext ctx(world->GetRandom());
+  cAvidaContext& ctx = world->GetDefaultContext();
 
   for (int i = 0; i < pop->GetSize(); i++) {
     if (pop->GetCell(i).IsOccupied() == false) continue;  // One use organisms.
@@ -724,9 +712,7 @@ void cAnalyzeUtil::TaskSnapshot(cWorld* world, ofstream& fp)
   fp << "# (1) cell number\n# (2) number of rewarded tasks done so far\n# (3) total number of tasks done so far\n# (4) same as 2, but right before divide\n# (5) same as 3, but right before divide\n# (6) same as 2, but for parent\n# (7) same as 3, but for parent\n# (8) genotype fitness\n# (9) genotype name" << endl;
   
   cTestCPU* testcpu = world->GetHardwareManager().CreateTestCPU();
-
-  // @DMB - Warning: Creating context out of band.
-  cAvidaContext ctx(world->GetRandom());
+  cAvidaContext& ctx = world->GetDefaultContext();
 
   for (int i = 0; i < pop->GetSize(); i++) {
     if (pop->GetCell(i).IsOccupied() == false) continue;
@@ -783,9 +769,7 @@ void cAnalyzeUtil::TaskGrid(cWorld* world, ofstream& fp)
 { 
   cPopulation* pop = &world->GetPopulation();
   cTestCPU* testcpu = world->GetHardwareManager().CreateTestCPU();
-
-  // @DMB - Warning: Creating context out of band.
-  cAvidaContext ctx(world->GetRandom());
+  cAvidaContext& ctx = world->GetDefaultContext();
 
   for (int i = 0; i < pop->GetWorldX(); i++) {
     for (int j = 0; j < pop->GetWorldY(); j++) {

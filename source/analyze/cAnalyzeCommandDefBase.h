@@ -22,14 +22,13 @@ class cAnalyzeCommandDefBase {
 protected:
   cString name;
 public:
-  cAnalyzeCommandDefBase(const cString & _name) : name(_name) { ; }
+  cAnalyzeCommandDefBase(const cString& _name) : name(_name) { ; }
   virtual ~cAnalyzeCommandDefBase() { ; }
 
-  virtual void Run(cAnalyze * analyze, const cString & args,
-		   cAnalyzeCommand & command) const = 0;
+  virtual void Run(cAnalyze* analyze, const cString & args, cAnalyzeCommand& command) const = 0;
   virtual bool IsFlowCommand() { return false; }
 
-  const cString & GetName() const { return name; }
+  const cString& GetName() const { return name; }
 };
 
 #endif

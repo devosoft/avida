@@ -12,6 +12,7 @@
 #include "cAvidaDriver.h"
 #include "cWorldDriver.h"
 
+#include <assert.h>
 #include <stdlib.h>
 
 
@@ -28,12 +29,13 @@ cDriverManager::~cDriverManager()
   while (wdrv = m_wdrvs.Pop()) {
     delete wdrv;
   }
+  
+  pthread_mutex_destroy(&m_mutex);
 }
 
 void cDriverManager::Initialize()
 {
-  if (m_dm == NULL)
-  {
+  if (m_dm == NULL) {
     m_dm = new cDriverManager();
     if (atexit(cDriverManager::Destroy)) {
       // Failed to register with atexit, this is bad, very bad.
@@ -49,21 +51,33 @@ void cDriverManager::Destroy()
 
 void cDriverManager::Register(cAvidaDriver* drv)
 {
-  if (m_dm) m_dm->m_adrvs.Push(drv);
+  assert(m_dm);
+  pthread_mutex_lock(&m_dm->m_mutex);
+  m_dm->m_adrvs.Push(drv);
+  pthread_mutex_unlock(&m_dm->m_mutex);
 }
 
 void cDriverManager::Register(cWorldDriver* drv)
 {
-  if (m_dm) m_dm->m_wdrvs.Push(drv);
+  assert(m_dm);
+  pthread_mutex_lock(&m_dm->m_mutex);
+  m_dm->m_wdrvs.Push(drv);
+  pthread_mutex_unlock(&m_dm->m_mutex);
 }
 
 void cDriverManager::Unregister(cAvidaDriver* drv)
 {
-  if (m_dm) m_dm->m_adrvs.Remove(drv);
+  assert(m_dm);
+  pthread_mutex_lock(&m_dm->m_mutex);
+  m_dm->m_adrvs.Remove(drv);
+  pthread_mutex_unlock(&m_dm->m_mutex);
 }
 
 void cDriverManager::Unregister(cWorldDriver* drv)
 {
-  if (m_dm) m_dm->m_wdrvs.Remove(drv);
+  assert(m_dm);
+  pthread_mutex_lock(&m_dm->m_mutex);
+  m_dm->m_wdrvs.Remove(drv);
+  pthread_mutex_unlock(&m_dm->m_mutex);
 }
 

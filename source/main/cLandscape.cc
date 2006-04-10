@@ -26,7 +26,7 @@ using namespace std;
 
 
 cLandscape::cLandscape(cWorld* world, const cGenome & in_genome, const cInstSet & in_inst_set)
-: m_world(world), inst_set(in_inst_set), base_genome(1), peak_genome(1)
+: m_world(world), inst_set(in_inst_set), base_genome(1), peak_genome(1), trials(1)
 {
   site_count = NULL;
   Reset(in_genome);
@@ -492,9 +492,8 @@ void cLandscape::PredictNuProcess(cAvidaContext& ctx, ostream& fp, int update)
 }
 
 
-void cLandscape::SampleProcess(cAvidaContext& ctx, int in_trials)
+void cLandscape::SampleProcess(cAvidaContext& ctx)
 {
-  trials = in_trials;  // Trials _per line_
   distance = 1;
   
   cGenome mod_genome(base_genome);

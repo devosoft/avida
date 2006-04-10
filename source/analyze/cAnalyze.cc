@@ -16,14 +16,15 @@
 #include <queue>
 #include <stack>
 
+#include "cActionLibrary.h"
 #include "cAnalyzeCommand.h"
+#include "cAnalyzeCommandAction.h"
 #include "cAnalyzeCommandDef.h"
 #include "cAnalyzeCommandDefBase.h"
 #include "cAnalyzeFlowCommand.h"
 #include "cAnalyzeFlowCommandDef.h"
 #include "cAnalyzeFunction.h"
 #include "cAnalyzeGenotype.h"
-#include "cAnalyzeJobQueue.h"
 #include "tAnalyzeJob.h"
 #include "cAvidaContext.h"
 #include "cDataFile.h"
@@ -66,7 +67,8 @@ cAnalyze::cAnalyze(cWorld* world)
 : cur_batch(0)
 , m_world(world)
 , inst_set(world->GetHardwareManager().GetInstSet())
-, m_ctx(world->GetRandom())
+, m_ctx(world->GetDefaultContext())
+, m_jobqueue(world)
 , verbose(nAnalyze::VERBOSE_QUIET)
 , interactive_depth(0)
 {
@@ -96,16 +98,10 @@ cAnalyze::cAnalyze(cWorld* world)
 
   m_testcpu = m_world->GetHardwareManager().CreateTestCPU();
   
-  cInitFile analyze_file(m_world->GetConfig().ANALYZE_FILE.Get());
-  analyze_file.Load();
-  analyze_file.Compress();
-  analyze_file.Close();
-  
-  LoadCommandList(analyze_file, command_list);
-  ProcessCommands(command_list);
-  
-  return;
+  RunFile(m_world->GetConfig().ANALYZE_FILE.Get());
 }
+
+
 
 cAnalyze::~cAnalyze()
 {
@@ -114,6 +110,17 @@ cAnalyze::~cAnalyze()
   while (function_list.GetSize()) delete function_list.Pop();
 }
 
+
+void cAnalyze::RunFile(cString filename)
+{
+  cInitFile analyze_file(filename);
+  analyze_file.Load();
+  analyze_file.Compress();
+  analyze_file.Close();
+  
+  LoadCommandList(analyze_file, command_list);
+  ProcessCommands(command_list);
+}
 
 //////////////// Loading methods...
 
@@ -1659,15 +1666,14 @@ void cAnalyze::CommandPrintTasks(cString cur_string)
 
 void cAnalyze::CommandCalcLandscape(cString cur_string)
 {
-  cAnalyzeJobQueue queue(m_world);
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
-
+  
   cout << "Calculating Landscape..." << endl;
 
   for (cAnalyzeGenotype* cur_genotype = batch_it.Next(); cur_genotype; cur_genotype = batch_it.Next()) {
-    queue.AddJob(new tAnalyzeJob<cAnalyzeGenotype>(cur_genotype, &cAnalyzeGenotype::CalcLandscape));
+    m_jobqueue.AddJob(new tAnalyzeJob<cAnalyzeGenotype>(cur_genotype, &cAnalyzeGenotype::CalcLandscape));
   }
-  queue.Execute();
+  m_jobqueue.Execute();
 }
 
 void cAnalyze::CommandDetail(cString cur_string)
@@ -7050,19 +7056,6 @@ void cAnalyze::CommandInteractive(cString cur_string)
   RunInteractive();
 }
 
-//void cAnalyze::PrintTestCPUResources(cString cur_string)
-//{
-//  cout << "TestCPU is using resources: ";
-//  cout << m_world->GetTestCPU().GetUseResources() << endl;
-//  cout << "Resources currently in TestCPU: ";
-//  const tArray<double> &quantity = m_world->GetTestCPU().GetResources();
-//  for(int i=0; i<quantity.GetSize(); i++) {
-//    cout << quantity.ElementAt(i) << " ";
-//  }
-//  cout << endl;
-//  
-//  return;
-//}
 
 void cAnalyze::FunctionCreate(cString cur_string,
                               tList<cAnalyzeCommand> & clist)
@@ -7325,8 +7318,9 @@ void cAnalyze::LoadCommandList(cInitFile & init_file,
     cString command = cur_string.PopWord();
     command.ToUpper();
     
-    cAnalyzeCommand * cur_command;
-    cAnalyzeCommandDefBase * command_def = FindAnalyzeCommandDef(command);
+    cAnalyzeCommand* cur_command;
+    cAnalyzeCommandDefBase* command_def = FindAnalyzeCommandDef(command);
+    
     if (command == "END") {
       // We are done with this section of code; break out...
       break;
@@ -7800,7 +7794,6 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("INCLUDE", &cAnalyze::IncludeFile);
   AddLibraryDef("SYSTEM", &cAnalyze::CommandSystem);
   AddLibraryDef("INTERACTIVE", &cAnalyze::CommandInteractive);
-//  AddLibraryDef("PRINT_TEST_CPU_RESOURCES", &cAnalyze::PrintTestCPUResources);
   AddLibraryDef("CALC_LANDSCAPE", &cAnalyze::CommandCalcLandscape);
   
   // Functions...
@@ -7811,7 +7804,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("FORRANGE", &cAnalyze::CommandForRange);
 }
 
-cAnalyzeCommandDefBase * cAnalyze::FindAnalyzeCommandDef(const cString & name)
+cAnalyzeCommandDefBase* cAnalyze::FindAnalyzeCommandDef(const cString& name)
 {
   SetupCommandDefLibrary();
   
@@ -7819,8 +7812,14 @@ cAnalyzeCommandDefBase * cAnalyze::FindAnalyzeCommandDef(const cString & name)
   while (lib_it.Next() != (void *) NULL) {
     if (lib_it.Get()->GetName() == name) break;
   }
+  cAnalyzeCommandDefBase* command_def = lib_it.Get();
   
-  return lib_it.Get();
+  if (command_def == NULL && m_world->GetActionLibrary().Supports(name)) {
+    command_def = new cAnalyzeCommandAction(name, m_world);
+    command_lib.PushRear(command_def);
+  }
+  
+  return command_def;
 }
 
 void cAnalyze::RunInteractive()
@@ -7841,17 +7840,14 @@ void cAnalyze::RunInteractive()
     if (command == "") {
       // Don't worry about blank lines...
       continue;
-    }
-    else if (command == "END" || command == "QUIT" || command == "EXIT") {
+    } else if (command == "END" || command == "QUIT" || command == "EXIT") {
       // We are done with interactive mode...
       break;
-    }
-    else if (command_def != NULL && command_def->IsFlowCommand() == true) {
+    } else if (command_def != NULL && command_def->IsFlowCommand() == true) {
       // This code has a body to it... fill it out!
       cur_command = new cAnalyzeFlowCommand(command, cur_input);
       InteractiveLoadCommandList(*(cur_command->GetCommandList()));
-    }
-    else {
+    } else {
       // This is a normal command...
       cur_command = new cAnalyzeCommand(command, cur_input);
     }

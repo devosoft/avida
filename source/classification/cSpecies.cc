@@ -78,9 +78,7 @@ cSpecies::~cSpecies()
 int cSpecies::Compare(const cGenome & test_genome, int max_fail_count)
 {
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
-  
-  // @DMB - Warning: Creating context out of band.
-  cAvidaContext ctx(m_world->GetRandom());
+  cAvidaContext& ctx = m_world->GetDefaultContext();
 
   cCPUTestInfo test_info;
 

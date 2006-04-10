@@ -102,6 +102,8 @@ public:
     for (int i = 0; names_it.Next() != NULL; i++)
       objects[i] = Create(*names_it.Get());
   }
+  
+  bool Supports(const cString& key) const { return m_create_funcs.HasEntry(key); }
 };
 
 template<typename BaseType, typename Arg1Type>
@@ -114,7 +116,7 @@ protected:
   int m_factory_id;
   
 public:
-    tObjectFactory() : m_factory_id(0) { ; }
+  tObjectFactory() : m_factory_id(0) { ; }
   virtual ~tObjectFactory() { ; }
   
   void SetFactoryId(int id) { m_factory_id = id; }
@@ -142,5 +144,92 @@ public:
     
     return NULL;
   }
+
+  bool Supports(const cString& key) const { return m_create_funcs.HasEntry(key); }
 };
+
+template<typename BaseType, typename Arg1Type, typename Arg2Type>
+class tObjectFactory<BaseType (Arg1Type, Arg2Type)>
+{
+protected:
+  typedef BaseType (*CreateObjectFunction)(Arg1Type, Arg2Type);
+  
+  tDictionary<CreateObjectFunction> m_create_funcs;
+  int m_factory_id;
+  
+public:
+    tObjectFactory() : m_factory_id(0) { ; }
+  virtual ~tObjectFactory() { ; }
+  
+  void SetFactoryId(int id) { m_factory_id = id; }
+  int GetFactoryId() { return m_factory_id; }
+  
+  template<typename ClassType> bool Register(const cString& key)
+  {
+    CreateObjectFunction func;
+    if (m_create_funcs.Find(key, func)) return false;
+    
+    m_create_funcs.Add(key, &nObjectFactory::createObject<BaseType, ClassType, Arg1Type, Arg2Type>);
+    return true;
+  }
+  
+  bool Unregister(const cString& key)
+  {
+    return (m_create_funcs.Remove(key) != NULL);
+  }
+  
+  virtual BaseType Create(const cString& key, Arg1Type arg1, Arg2Type arg2)
+  {
+    CreateObjectFunction func;
+    if (m_create_funcs.Find(key, func))
+      return func(arg1, arg2);
+    
+    return NULL;
+  }
+
+  bool Supports(const cString& key) const { return m_create_funcs.HasEntry(key); }
+};
+
+template<typename BaseType, typename Arg1Type, typename Arg2Type, typename Arg3Type>
+class tObjectFactory<BaseType (Arg1Type, Arg2Type, Arg3Type)>
+{
+protected:
+  typedef BaseType (*CreateObjectFunction)(Arg1Type, Arg2Type, Arg3Type);
+  
+  tDictionary<CreateObjectFunction> m_create_funcs;
+  int m_factory_id;
+  
+public:
+    tObjectFactory() : m_factory_id(0) { ; }
+  virtual ~tObjectFactory() { ; }
+  
+  void SetFactoryId(int id) { m_factory_id = id; }
+  int GetFactoryId() { return m_factory_id; }
+  
+  template<typename ClassType> bool Register(const cString& key)
+  {
+    CreateObjectFunction func;
+    if (m_create_funcs.Find(key, func)) return false;
+    
+    m_create_funcs.Add(key, &nObjectFactory::createObject<BaseType, ClassType, Arg1Type, Arg2Type, Arg3Type>);
+    return true;
+  }
+  
+  bool Unregister(const cString& key)
+  {
+    return (m_create_funcs.Remove(key) != NULL);
+  }
+  
+  virtual BaseType Create(const cString& key, Arg1Type arg1, Arg2Type arg2, Arg3Type arg3)
+  {
+    CreateObjectFunction func;
+    if (m_create_funcs.Find(key, func))
+      return func(arg1, arg2, arg3);
+    
+    return NULL;
+  }
+
+  bool Supports(const cString& key) const { return m_create_funcs.HasEntry(key); }
+};
+
 #endif
