@@ -119,7 +119,8 @@ cGenome cAnalyzeUtil::CalcLandscape(cWorld* world, int dist, const cGenome & gen
   cAvidaContext& ctx = world->GetDefaultContext();
 
   cLandscape landscape(world, genome, inst_set);
-  landscape.Process(ctx, dist);
+  landscape.SetDistance(dist);
+  landscape.Process(ctx);
   double peak_fitness = landscape.GetPeakFitness();
   cGenome peak_genome = landscape.GetPeakGenome();
   
@@ -163,12 +164,16 @@ void cAnalyzeUtil::AnalyzeLandscape(cWorld* world, const cGenome & genome, cInst
   int num_found = 0;
   for (int dist = 1; dist <= 10; dist++) {
     landscape.Reset(genome);
+    landscape.SetDistance(dist);
+    landscape.SetTrials(sample_size);
     if (dist == 1) {
-      landscape.Process(ctx, dist);
-      num_found = genome.GetSize() * (inst_set.GetSize() - 1);
+      landscape.Process(ctx);
     } else {
-      num_found = landscape.RandomProcess(ctx, sample_size, dist, min_found, max_sample_size);
+      landscape.SetMinFound(min_found);
+      landscape.SetMaxTrials(max_sample_size);
+      landscape.RandomProcess(ctx);
     }
+    num_found = landscape.GetNumFound();
     
     fp << update                       << " "  // 1
       << dist                         << " "  // 2
@@ -426,7 +431,8 @@ void cAnalyzeUtil::AnalyzePopulation(cWorld* world, ofstream& fp,
     // create landscape object for this creature
     if (landscape &&  genotype->GetTestFitness() > 0) {
       cLandscape landscape(world, genome, world->GetHardwareManager().GetInstSet());
-      landscape.Process(ctx, 1);
+      landscape.SetDistance(1);
+      landscape.Process(ctx);
       landscape.PrintStats(fp);
     }
     else fp << endl;

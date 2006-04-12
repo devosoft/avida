@@ -50,6 +50,8 @@ private:
   int ins_distance;
 
   int trials;
+  int m_min_found;
+  int m_max_trials;
 
   int total_count;
 
@@ -83,6 +85,8 @@ private:
   double neut_min;         // These two variables are a range around the base
   double neut_max;         //   fitness to be counted as neutral mutations.
   tMatrix<double> fitness_chart; // Chart of all one-step mutations.
+  
+  int m_num_found;
 
 
   void BuildFitnessChart(cAvidaContext& ctx, cTestCPU* testcpu);
@@ -107,17 +111,21 @@ public:
 
   void Reset(const cGenome& in_genome);
 
-  void Process(cAvidaContext& ctx, int in_distance = 1);
+  void Process(cAvidaContext& ctx);
   void ProcessDelete(cAvidaContext& ctx);
   void ProcessInsert(cAvidaContext& ctx);
   void PredictWProcess(cAvidaContext& ctx, std::ostream& fp, int update = -1);
   void PredictNuProcess(cAvidaContext& ctx, std::ostream& fp, int update = -1);
   
-  void SetTrials(int in_trials) { trials = in_trials; }
+  inline void SetDistance(int in_distance) { distance = in_distance; }
+  inline void SetTrials(int in_trials) { trials = in_trials; }
+  inline void SetMinFound(int min_found) { m_min_found = min_found; }
+  inline void SetMaxTrials(int max_trials) { m_max_trials = max_trials; }
 
   void SampleProcess(cAvidaContext& ctx);
-  int RandomProcess(cAvidaContext& ctx, int in_trials, int in_distance = 1, int min_found = 0,
-                    int max_trials = 0, bool print_if_found = false);
+  void RandomProcess(cAvidaContext& ctx);
+  
+  inline int GetNumFound() { return m_num_found; }
 
   void TestPairs(cAvidaContext& ctx, int in_trials, std::ostream& fp);
   void TestAllPairs(cAvidaContext& ctx, std::ostream& fp);

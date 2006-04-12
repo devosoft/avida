@@ -3407,8 +3407,13 @@ void cAnalyze::CommandLandscape(cString cur_string)
   cAnalyzeGenotype * genotype = NULL;
   while ((genotype = batch_it.Next()) != NULL) {
     cLandscape landscape(m_world, genotype->GetGenome(), inst_set);
-    if (num_test == 0) landscape.Process(m_ctx, dist);
-    else landscape.RandomProcess(m_ctx, num_test,dist,num_test,num_test*2);
+    landscape.SetDistance(dist);
+    if (num_test == 0) {
+      landscape.Process(m_ctx);
+    } else {
+      landscape.SetTrials(num_test);
+      landscape.RandomProcess(m_ctx);
+    }
     landscape.PrintStats(fp);
   }
 }

@@ -1898,12 +1898,9 @@ class cEvent_random_landscape : public cEvent {
 private:
   int landscape_dist;
   int sample_size;
-  int min_found;
-  int max_sample_size;
-  bool print_if_found;
 public:
     const cString GetName() const { return "random_landscape"; }
-  const cString GetDescription() const { return "random_landscape  [int landscape_dist=1] [int sample_size=0] [int min_found=0] [int max_sample_size=0] [bool print_if_found=false]"; }
+  const cString GetDescription() const { return "random_landscape  [int landscape_dist=1] [int sample_size=0]"; }
   
   void Configure(cWorld* world, const cString& in_args)
   {
@@ -1912,9 +1909,6 @@ public:
     cString args(in_args);
     if (args == "") landscape_dist=1; else landscape_dist=args.PopWord().AsInt();
     if (args == "") sample_size=0; else sample_size=args.PopWord().AsInt();
-    if (args == "") min_found=0; else min_found=args.PopWord().AsInt();
-    if (args == "") max_sample_size=0; else max_sample_size=args.PopWord().AsInt();
-    if (args == "") print_if_found=false; else print_if_found=args.PopWord();
   }
   ///// random_landscape /////
   void Process(){
@@ -1922,8 +1916,9 @@ public:
 
     cGenome & genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
     cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
-    landscape.RandomProcess(ctx, sample_size, landscape_dist, min_found,
-                            max_sample_size, print_if_found);
+    landscape.SetDistance(landscape_dist);
+    landscape.SetTrials(sample_size);
+    landscape.RandomProcess(ctx);
     landscape.PrintStats(m_world->GetDataFileOFStream("land-random.dat"), m_world->GetStats().GetUpdate());
   }
 };

@@ -340,7 +340,8 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
 void cAnalyzeGenotype::CalcLandscape(cAvidaContext& ctx)
 {
   cLandscape landscape(m_world, genome, inst_set);
-  landscape.Process(ctx, 1);
+  landscape.SetDistance(1);
+  landscape.Process(ctx);
   land_frac_dead = landscape.GetProbDead();
   land_frac_neg = landscape.GetProbNeg();
   land_frac_neut = landscape.GetProbNeut();

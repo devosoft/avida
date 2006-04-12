@@ -34,6 +34,7 @@ public:
   
   const cString& GetArgs() const { return m_args; }
   
+  virtual const cString GetDescription() = 0;
   virtual void Process(cAvidaContext& ctx) = 0;
 };
 

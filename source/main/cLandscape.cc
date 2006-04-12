@@ -26,9 +26,9 @@ using namespace std;
 
 
 cLandscape::cLandscape(cWorld* world, const cGenome & in_genome, const cInstSet & in_inst_set)
-: m_world(world), inst_set(in_inst_set), base_genome(1), peak_genome(1), trials(1)
+: m_world(world), inst_set(in_inst_set), base_genome(1), peak_genome(1), trials(1), m_min_found(0),
+  m_max_trials(0), site_count(NULL)
 {
-  site_count = NULL;
   Reset(in_genome);
 }
 
@@ -71,7 +71,7 @@ void cLandscape::Reset(const cGenome & in_genome)
   neg_epi_size	= 0;
   no_epi_size	= 0;
   
-  if (site_count != NULL) delete [] site_count;
+  if (site_count) delete [] site_count;
   site_count = new int[base_genome.GetSize() + 1];
   for (int i = 0; i <= base_genome.GetSize(); i++) site_count[i] = 0;
   
@@ -79,6 +79,8 @@ void cLandscape::Reset(const cGenome & in_genome)
   complexity = 0.0;
   neut_min = 0.0;
   neut_max = 0.0;
+  
+  m_num_found = 0;
 }
 
 void cLandscape::ProcessGenome(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& in_genome)
@@ -126,11 +128,9 @@ void cLandscape::ProcessBase(cAvidaContext& ctx, cTestCPU* testcpu)
   
 }
 
-void cLandscape::Process(cAvidaContext& ctx, int in_distance)
+void cLandscape::Process(cAvidaContext& ctx)
 {
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
-
-  distance = in_distance;
   
   // Get the info about the base creature.
   ProcessBase(ctx, testcpu);
@@ -150,6 +150,8 @@ void cLandscape::Process(cAvidaContext& ctx, int in_distance)
     total_entropy += (log((double) site_count[i] + 1) / max_ent);
   }
   complexity = base_genome.GetSize() - total_entropy;
+  
+  m_num_found = base_genome.GetSize() * (inst_set.GetSize() - 1);
 }
 
 
@@ -524,11 +526,8 @@ void cLandscape::SampleProcess(cAvidaContext& ctx)
 }
 
 
-int cLandscape::RandomProcess(cAvidaContext& ctx, int in_trials, int in_distance, int min_found,
-                              int max_trials, bool print_if_found)
+void cLandscape::RandomProcess(cAvidaContext& ctx)
 {
-  distance = in_distance;
-  
   cGenome mod_genome(base_genome);
   int genome_size = base_genome.GetSize();
   
@@ -542,15 +541,8 @@ int cLandscape::RandomProcess(cAvidaContext& ctx, int in_trials, int in_distance
   // Loop through all the lines of genome, testing many combinations.
   int cur_trial = 0;
   int total_found = 0;
-  
-  //  for (cur_trial = 0;
-  //       (cur_trial < in_trials) ||
-  //	 (total_found < min_found && cur_trial < max_trials);
-  //       cur_trial++) {
-  // Way too confusing and not being used, commented it out DM
-  
-  for (cur_trial = 0; cur_trial < in_trials; cur_trial++) { 
     
+  for (cur_trial = 0; (cur_trial < trials) || (total_found < m_min_found && cur_trial < m_max_trials); cur_trial++) {    
     // Choose the lines to mutate...
     ctx.GetRandom().Choose(genome_size, mut_lines);
     
@@ -581,7 +573,7 @@ int cLandscape::RandomProcess(cAvidaContext& ctx, int in_trials, int in_distance
 
   delete testcpu;
   
-  return total_found;
+  m_num_found = total_found;
 }
 
 void cLandscape::BuildFitnessChart(cAvidaContext& ctx, cTestCPU* testcpu)
@@ -709,6 +701,8 @@ void cLandscape::HillClimb_Body(cAvidaContext& ctx, cTestCPU* testcpu, ofstream&
   
   double pos_frac = 1.0;
   
+  distance = 1;
+
   bool finished = false;
   while (finished == false) {
     if (pos_frac == 0.0) finished = true;
@@ -718,7 +712,7 @@ void cLandscape::HillClimb_Body(cAvidaContext& ctx, cTestCPU* testcpu, ofstream&
     const int max_line = cur_genome.GetSize();
     
     // Try all Mutations...
-    Process(ctx, 1);
+    Process(ctx);
     
     // Try Insertion Mutations.
     
