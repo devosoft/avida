@@ -1855,107 +1855,6 @@ public:
   }
 };
 
-///// sample_landscape /////
-
-/**
-**/
-
-
-class cEvent_sample_landscape : public cEvent {
-private:
-  int sample_size;
-public:
-  const cString GetName() const { return "sample_landscape"; }
-  const cString GetDescription() const { return "sample_landscape  [int sample_size=0]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") sample_size=0; else sample_size=args.PopWord().AsInt();
-  }
-  ///// sample_landscape /////
-  void Process(){
-    cAvidaContext& ctx = m_world->GetDefaultContext();
-
-    cGenome& genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
-    cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
-    if (sample_size == 0) sample_size = m_world->GetHardwareManager().GetInstSet().GetSize() - 1;
-    landscape.SetTrials(sample_size);
-    landscape.SampleProcess(ctx);
-    landscape.PrintStats(m_world->GetDataFileOFStream("land-sample.dat"), m_world->GetStats().GetUpdate());
-  }
-};
-
-///// random_landscape /////
-
-/**
-**/
-
-
-class cEvent_random_landscape : public cEvent {
-private:
-  int landscape_dist;
-  int sample_size;
-public:
-    const cString GetName() const { return "random_landscape"; }
-  const cString GetDescription() const { return "random_landscape  [int landscape_dist=1] [int sample_size=0]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") landscape_dist=1; else landscape_dist=args.PopWord().AsInt();
-    if (args == "") sample_size=0; else sample_size=args.PopWord().AsInt();
-  }
-  ///// random_landscape /////
-  void Process(){
-    cAvidaContext& ctx = m_world->GetDefaultContext();
-
-    cGenome & genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
-    cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
-    landscape.SetDistance(landscape_dist);
-    landscape.SetTrials(sample_size);
-    landscape.RandomProcess(ctx);
-    landscape.PrintStats(m_world->GetDataFileOFStream("land-random.dat"), m_world->GetStats().GetUpdate());
-  }
-};
-
-///// analyze_landscape /////
-
-/**
-**/
-
-
-class cEvent_analyze_landscape : public cEvent {
-private:
-  int sample_size;
-  int min_found;
-  int max_sample_size;
-public:
-    const cString GetName() const { return "analyze_landscape"; }
-  const cString GetDescription() const { return "analyze_landscape  [int sample_size=1000] [int min_found=0] [int max_sample_size=0]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") sample_size=1000; else sample_size=args.PopWord().AsInt();
-    if (args == "") min_found=0; else min_found=args.PopWord().AsInt();
-    if (args == "") max_sample_size=0; else max_sample_size=args.PopWord().AsInt();
-  }
-  ///// analyze_landscape /////
-  void Process(){
-    cGenome & genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
-    cAnalyzeUtil::AnalyzeLandscape(m_world, genome, m_world->GetHardwareManager().GetInstSet(),
-                     sample_size, min_found, max_sample_size,
-                     m_world->GetStats().GetUpdate());
-  }
-};
-
 ///// pairtest_landscape /////
 
 /**
@@ -3617,9 +3516,6 @@ cEventManager::cEventManager(cWorld* world) : m_world(world)
   REGISTER(calc_landscape);
   REGISTER(predict_w_landscape);
   REGISTER(predict_nu_landscape);
-  REGISTER(sample_landscape);
-  REGISTER(random_landscape);
-  REGISTER(analyze_landscape);
   REGISTER(pairtest_landscape);
   REGISTER(test_dom);
   REGISTER(analyze_population);

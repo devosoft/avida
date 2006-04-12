@@ -153,45 +153,6 @@ cGenome cAnalyzeUtil::CalcLandscape(cWorld* world, int dist, const cGenome & gen
 }
 
 
-void cAnalyzeUtil::AnalyzeLandscape(cWorld* world, const cGenome & genome, cInstSet &inst_set,
-                                    int sample_size, int min_found, int max_sample_size, int update)
-{
-  cAvidaContext& ctx = world->GetDefaultContext();
-
-  cLandscape landscape(world, genome, inst_set);
-  ofstream& fp = world->GetDataFileOFStream("land_analyze.dat");
-  
-  int num_found = 0;
-  for (int dist = 1; dist <= 10; dist++) {
-    landscape.Reset(genome);
-    landscape.SetDistance(dist);
-    landscape.SetTrials(sample_size);
-    if (dist == 1) {
-      landscape.Process(ctx);
-    } else {
-      landscape.SetMinFound(min_found);
-      landscape.SetMaxTrials(max_sample_size);
-      landscape.RandomProcess(ctx);
-    }
-    num_found = landscape.GetNumFound();
-    
-    fp << update                       << " "  // 1
-      << dist                         << " "  // 2
-      << landscape.GetProbDead()      << " "  // 3
-      << landscape.GetProbNeg()       << " "  // 4
-      << landscape.GetProbNeut()      << " "  // 5
-      << landscape.GetProbPos()       << " "  // 6
-      << landscape.GetNumTrials()     << " "  // 7
-      << num_found                    << " "  // 8
-      << landscape.GetAveFitness()    << " "  // 9
-      << landscape.GetAveSqrFitness() << " "  // 10
-      << endl;
-    
-    if ((dist > 1) && (num_found < min_found)) break;
-  }
-}
-
-
 void cAnalyzeUtil::PairTestLandscape(cWorld* world, const cGenome &genome, cInstSet &inst_set,
                                      int sample_size, int update)
 {

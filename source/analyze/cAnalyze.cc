@@ -97,8 +97,6 @@ cAnalyze::cAnalyze(cWorld* world)
   // @DMB -  FillResources(0);
 
   m_testcpu = m_world->GetHardwareManager().CreateTestCPU();
-  
-  RunFile(m_world->GetConfig().ANALYZE_FILE.Get());
 }
 
 
