@@ -2,6 +2,7 @@
 Import('environment')
 
 environment.SConscript( [
+  'actions/SConscript',
   'analyze/SConscript',
   'classification/SConscript',
   'cpu/SConscript',
@@ -9,7 +10,7 @@ environment.SConscript( [
   'event/SConscript',
   'main/SConscript',
   'targets/SConscript',
-  #'third-party/SConscript',
+  'third-party/SConscript',
   'tools/SConscript',
   'support/SConscript',
   #'utils/SConscript',

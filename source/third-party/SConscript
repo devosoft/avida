@@ -1,4 +1,10 @@
 
 Import('environment')
 
+SConscript(
+  [ 
+    'boost/serialization/SConscript',
+  ]
+)
+
 # vim: set ft=python:

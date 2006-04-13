@@ -30,21 +30,25 @@ AvidaUtils.Configure(ARGUMENTS, environment)
 environment.Append(
   CPPPATH = [
     '#/source',
+    '#/source/actions',
     '#/source/analyze',
     '#/source/classification',
     '#/source/cpu',
     '#/source/drivers',
     '#/source/event',
     '#/source/main',
+    '#/source/third-party/boost',
     '#/source/tools',
   ],
   LIBPATH = [
+    '#$buildDir/actions',
     '#$buildDir/analyze',
     '#$buildDir/classification',
     '#$buildDir/cpu',
     '#$buildDir/drivers',
     '#$buildDir/event',
     '#$buildDir/main',
+    '#$buildDir/third-party/boost/serialization',
     '#$buildDir/tools',
   ],
 )

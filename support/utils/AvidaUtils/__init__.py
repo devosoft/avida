@@ -28,6 +28,8 @@ def Configure(args, env):
   # Load platform-specific configuration and default options.
   env.Tool('PlatformTool', toolpath = __path__)
 
+  env.Tool('UnitTestTool', toolpath = __path__)
+
   # Parses Avida-specific command-line arguments, loads default values
   # for options not specified at the command line, and creates help text
   # for available options.

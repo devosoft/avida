@@ -1,7 +1,6 @@
 Import('environment')
 
-avida = environment.Program(
-  'avida',
+avida = environment.Program('avida',
   'primitive.cc',
   LIBS = [
     'main',
@@ -13,16 +12,8 @@ avida = environment.Program(
     'analyze',
     'cpu',
     'tools',
+    'actions',
     'main',
-  ],
-  LIBPATH = [
-    '#$buildDir/analyze',
-    '#$buildDir/classification',
-    '#$buildDir/cpu',
-    '#$buildDir/drivers',
-    '#$buildDir/event',
-    '#$buildDir/main',
-    '#$buildDir/tools',
   ],
 )
 environment.Install('$execPrefix', avida)
