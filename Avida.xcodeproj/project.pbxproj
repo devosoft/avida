@@ -13,29 +13,11 @@
 		7005A70609BA0FA90007E16E /* cTestCPUInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */; };
 		7005A70809BA0FA90007E16E /* cTestCPUInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */; };
 		7005A83209BA621F0007E16E /* cOrgMessage.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0868808F49EA800FC65FE /* cOrgMessage.cc */; };
-		700AEB7C09E3490400A073FD /* avida-smt.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 700AEB7B09E3490300A073FD /* avida-smt.cfg */; };
-		700AEB7D09E3490400A073FD /* avida-smt.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 700AEB7B09E3490300A073FD /* avida-smt.cfg */; };
-		700AEB7E09E3490400A073FD /* avida-smt.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 700AEB7B09E3490300A073FD /* avida-smt.cfg */; };
 		700E2996085A1F6000CF158A /* avida in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3164D07626CF3008F7A48 /* avida */; };
 		700E2AF8085DE50C00CF158A /* avida.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3109C0762539E008F7A48 /* avida.cc */; };
-		700E2B6F085DE50C00CF158A /* analyze.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3114B0762539E008F7A48 /* analyze.cfg */; };
-		700E2B70085DE50C00CF158A /* environment.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311800762539F008F7A48 /* environment.cfg */; };
-		700E2B71085DE50C00CF158A /* events.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311810762539F008F7A48 /* events.cfg */; };
-		700E2B74085DE50C00CF158A /* inst_set.4stack in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311840762539F008F7A48 /* inst_set.4stack */; };
-		700E2B75085DE50C00CF158A /* inst_set.default in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311850762539F008F7A48 /* inst_set.default */; };
-		700E2B76085DE50C00CF158A /* organism.default in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311890762539F008F7A48 /* organism.default */; };
-		700E2B78085DE50C00CF158A /* dummy in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311950762539F008F7A48 /* dummy */; };
-		700E2B79085DE50C00CF158A /* organism.4stack in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311970762539F008F7A48 /* organism.4stack */; };
-		700E2B7A085DE50C00CF158A /* organism.parasite in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311980762539F008F7A48 /* organism.parasite */; };
-		700E2B7B085DE50C00CF158A /* organism.smt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 706D330E0854A7B900D7DC8F /* organism.smt */; };
-		700E2B7D085DE50C00CF158A /* inst_set.smt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 706D33270854A90D00D7DC8F /* inst_set.smt */; };
 		700E2B87085DE54400CF158A /* avida-viewer in CopyFiles */ = {isa = PBXBuildFile; fileRef = 700E2B83085DE50C00CF158A /* avida-viewer */; };
-		701384340900A45B0087ED2E /* organism.smtx in CopyFiles */ = {isa = PBXBuildFile; fileRef = 701384330900A45B0087ED2E /* organism.smtx */; };
-		701384350900A45B0087ED2E /* organism.smtx in CopyFiles */ = {isa = PBXBuildFile; fileRef = 701384330900A45B0087ED2E /* organism.smtx */; };
 		7013846209028B3E0087ED2E /* cAvidaConfig.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7013846009028B3E0087ED2E /* cAvidaConfig.cc */; };
 		7013846409028B3E0087ED2E /* cAvidaConfig.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7013846009028B3E0087ED2E /* cAvidaConfig.cc */; };
-		7013852D0902E36B0087ED2E /* avida.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7013852C0902E36B0087ED2E /* avida.cfg */; };
-		7013852E0902E36B0087ED2E /* avida.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7013852C0902E36B0087ED2E /* avida.cfg */; };
 		701D51CF09C645F50009B4F8 /* cAvidaContext.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 701D51CB09C645F50009B4F8 /* cAvidaContext.h */; };
 		701D51D109C645F50009B4F8 /* cAvidaContext.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 701D51CB09C645F50009B4F8 /* cAvidaContext.h */; };
 		701D915D094B864A008B845F /* cFallbackWorldDriver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701D915C094B864A008B845F /* cFallbackWorldDriver.cc */; };
@@ -67,12 +49,6 @@
 		70422A34091B141000A5E67F /* cAnalyze.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70422A1C091B141000A5E67F /* cAnalyze.cc */; };
 		70422A3C091B141000A5E67F /* cAnalyzeGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70422A24091B141000A5E67F /* cAnalyzeGenotype.cc */; };
 		70422A3E091B141000A5E67F /* cAnalyzeUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70422A26091B141000A5E67F /* cAnalyzeUtil.cc */; };
-		70486BA00826722F009328F0 /* analyze.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3114B0762539E008F7A48 /* analyze.cfg */; };
-		70486BA10826722F009328F0 /* environment.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311800762539F008F7A48 /* environment.cfg */; };
-		70486BA20826722F009328F0 /* events.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311810762539F008F7A48 /* events.cfg */; };
-		70486BA50826722F009328F0 /* inst_set.4stack in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311840762539F008F7A48 /* inst_set.4stack */; };
-		70486BA60826722F009328F0 /* inst_set.default in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311850762539F008F7A48 /* inst_set.default */; };
-		70486BA70826722F009328F0 /* organism.default in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311890762539F008F7A48 /* organism.default */; };
 		7053324C0929764C006BD186 /* cSpecies.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705332480929764A006BD186 /* cSpecies.cc */; };
 		7053324D0929764E006BD186 /* cSpeciesQueue.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7053324A0929764A006BD186 /* cSpeciesQueue.cc */; };
 		7053336D092A3DF9006BD186 /* cInjectGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70533364092A3DF4006BD186 /* cInjectGenotype.cc */; };
@@ -106,11 +82,6 @@
 		7054A1B809A810CB00038658 /* cAnalyzeJobWorker.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7054A1B409A810CB00038658 /* cAnalyzeJobWorker.cc */; };
 		7054A1BA09A810CB00038658 /* cAnalyzeJobWorker.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7054A1B409A810CB00038658 /* cAnalyzeJobWorker.cc */; };
 		70658C5A085DF67D00486BED /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
-		706D32E90854A39800D7DC8F /* dummy in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311950762539F008F7A48 /* dummy */; };
-		706D32EA0854A39900D7DC8F /* organism.4stack in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311970762539F008F7A48 /* organism.4stack */; };
-		706D32EB0854A39900D7DC8F /* organism.parasite in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311980762539F008F7A48 /* organism.parasite */; };
-		706D330F0854A7B900D7DC8F /* organism.smt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 706D330E0854A7B900D7DC8F /* organism.smt */; };
-		706D33280854A90D00D7DC8F /* inst_set.smt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 706D33270854A90D00D7DC8F /* inst_set.smt */; };
 		7073165D097C6C8F00815164 /* cParser.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7073165B097C6C8F00815164 /* cParser.cc */; };
 		70731665097C6DF500815164 /* cASLibrary.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70731663097C6DF500815164 /* cASLibrary.cc */; };
 		7073166B097C6E0C00815164 /* cASSymbol.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70731669097C6E0C00815164 /* cASSymbol.cc */; };
@@ -382,19 +353,6 @@
 		70DCAD03097AF7CC002F8733 /* cDefaultRunDriver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701D930C094CAD6B008B845F /* cDefaultRunDriver.cc */; };
 		70DCAD04097AF7CC002F8733 /* cDriverManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701D9382094CBA69008B845F /* cDriverManager.cc */; };
 		70DCAD05097AF7CC002F8733 /* cDefaultAnalyzeDriver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701D93E7094CBF71008B845F /* cDefaultAnalyzeDriver.cc */; };
-		70DCAD0A097AF7CC002F8733 /* analyze.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3114B0762539E008F7A48 /* analyze.cfg */; };
-		70DCAD0B097AF7CC002F8733 /* environment.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311800762539F008F7A48 /* environment.cfg */; };
-		70DCAD0C097AF7CC002F8733 /* events.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311810762539F008F7A48 /* events.cfg */; };
-		70DCAD0D097AF7CC002F8733 /* inst_set.4stack in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311840762539F008F7A48 /* inst_set.4stack */; };
-		70DCAD0E097AF7CC002F8733 /* inst_set.default in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311850762539F008F7A48 /* inst_set.default */; };
-		70DCAD0F097AF7CC002F8733 /* organism.default in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311890762539F008F7A48 /* organism.default */; };
-		70DCAD10097AF7CC002F8733 /* dummy in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311950762539F008F7A48 /* dummy */; };
-		70DCAD11097AF7CC002F8733 /* organism.4stack in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311970762539F008F7A48 /* organism.4stack */; };
-		70DCAD12097AF7CC002F8733 /* organism.parasite in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC311980762539F008F7A48 /* organism.parasite */; };
-		70DCAD13097AF7CC002F8733 /* organism.smt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 706D330E0854A7B900D7DC8F /* organism.smt */; };
-		70DCAD14097AF7CC002F8733 /* inst_set.smt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 706D33270854A90D00D7DC8F /* inst_set.smt */; };
-		70DCAD15097AF7CC002F8733 /* organism.smtx in CopyFiles */ = {isa = PBXBuildFile; fileRef = 701384330900A45B0087ED2E /* organism.smtx */; };
-		70DCAD16097AF7CC002F8733 /* avida.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7013852C0902E36B0087ED2E /* avida.cfg */; };
 		70DCAD25097AF81A002F8733 /* cLexer.l in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAD21097AF81A002F8733 /* cLexer.l */; };
 		70DCAD2F097AF8BC002F8733 /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC57097AF730002F8733 /* main.cc */; };
 		70DCF66C09D4DE6500924128 /* libtcmalloc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70AA941909D486AE006A24C8 /* libtcmalloc.a */; };
@@ -467,19 +425,6 @@
 			dstSubfolderSpec = 16;
 			files = (
 				700E2B87085DE54400CF158A /* avida-viewer in CopyFiles */,
-				700E2B6F085DE50C00CF158A /* analyze.cfg in CopyFiles */,
-				700E2B70085DE50C00CF158A /* environment.cfg in CopyFiles */,
-				700E2B71085DE50C00CF158A /* events.cfg in CopyFiles */,
-				700E2B74085DE50C00CF158A /* inst_set.4stack in CopyFiles */,
-				700E2B75085DE50C00CF158A /* inst_set.default in CopyFiles */,
-				700E2B76085DE50C00CF158A /* organism.default in CopyFiles */,
-				700E2B78085DE50C00CF158A /* dummy in CopyFiles */,
-				700E2B79085DE50C00CF158A /* organism.4stack in CopyFiles */,
-				700E2B7A085DE50C00CF158A /* organism.parasite in CopyFiles */,
-				700E2B7B085DE50C00CF158A /* organism.smt in CopyFiles */,
-				700E2B7D085DE50C00CF158A /* inst_set.smt in CopyFiles */,
-				701384340900A45B0087ED2E /* organism.smtx in CopyFiles */,
-				7013852E0902E36B0087ED2E /* avida.cfg in CopyFiles */,
 				701D92E4094C9E6F008B845F /* cDriverManager.h in CopyFiles */,
 				701D930F094CAD6B008B845F /* cDefaultRunDriver.h in CopyFiles */,
 				701D93EA094CBF71008B845F /* cDefaultAnalyzeDriver.h in CopyFiles */,
@@ -489,7 +434,6 @@
 				7054A1B709A810CB00038658 /* cAnalyzeJobWorker.h in CopyFiles */,
 				7005A70509BA0FA90007E16E /* cTestCPUInterface.h in CopyFiles */,
 				701D51D109C645F50009B4F8 /* cAvidaContext.h in CopyFiles */,
-				700AEB7E09E3490400A073FD /* avida-smt.cfg in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -500,20 +444,6 @@
 			dstSubfolderSpec = 16;
 			files = (
 				700E2996085A1F6000CF158A /* avida in CopyFiles */,
-				70486BA00826722F009328F0 /* analyze.cfg in CopyFiles */,
-				70486BA10826722F009328F0 /* environment.cfg in CopyFiles */,
-				70486BA20826722F009328F0 /* events.cfg in CopyFiles */,
-				70486BA50826722F009328F0 /* inst_set.4stack in CopyFiles */,
-				70486BA60826722F009328F0 /* inst_set.default in CopyFiles */,
-				70486BA70826722F009328F0 /* organism.default in CopyFiles */,
-				706D32E90854A39800D7DC8F /* dummy in CopyFiles */,
-				706D32EA0854A39900D7DC8F /* organism.4stack in CopyFiles */,
-				706D32EB0854A39900D7DC8F /* organism.parasite in CopyFiles */,
-				706D330F0854A7B900D7DC8F /* organism.smt in CopyFiles */,
-				706D33280854A90D00D7DC8F /* inst_set.smt in CopyFiles */,
-				701384350900A45B0087ED2E /* organism.smtx in CopyFiles */,
-				7013852D0902E36B0087ED2E /* avida.cfg in CopyFiles */,
-				700AEB7C09E3490400A073FD /* avida-smt.cfg in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -524,26 +454,12 @@
 			dstSubfolderSpec = 16;
 			files = (
 				702F532F0993060A00B2B507 /* avida-s in CopyFiles */,
-				70DCAD0A097AF7CC002F8733 /* analyze.cfg in CopyFiles */,
-				70DCAD0B097AF7CC002F8733 /* environment.cfg in CopyFiles */,
-				70DCAD0C097AF7CC002F8733 /* events.cfg in CopyFiles */,
-				70DCAD0D097AF7CC002F8733 /* inst_set.4stack in CopyFiles */,
-				70DCAD0E097AF7CC002F8733 /* inst_set.default in CopyFiles */,
-				70DCAD0F097AF7CC002F8733 /* organism.default in CopyFiles */,
-				70DCAD10097AF7CC002F8733 /* dummy in CopyFiles */,
-				70DCAD11097AF7CC002F8733 /* organism.4stack in CopyFiles */,
-				70DCAD12097AF7CC002F8733 /* organism.parasite in CopyFiles */,
-				70DCAD13097AF7CC002F8733 /* organism.smt in CopyFiles */,
-				70DCAD14097AF7CC002F8733 /* inst_set.smt in CopyFiles */,
-				70DCAD15097AF7CC002F8733 /* organism.smtx in CopyFiles */,
-				70DCAD16097AF7CC002F8733 /* avida.cfg in CopyFiles */,
 				7054A12009A7BEFC00038658 /* cThread.h in CopyFiles */,
 				7054A17009A8014600038658 /* cAnalyzeJobQueue.h in CopyFiles */,
 				7054A17A09A802BD00038658 /* cAnalyzeJob.h in CopyFiles */,
 				7054A1B509A810CB00038658 /* cAnalyzeJobWorker.h in CopyFiles */,
 				7005A70309BA0FA90007E16E /* cTestCPUInterface.h in CopyFiles */,
 				701D51CF09C645F50009B4F8 /* cAvidaContext.h in CopyFiles */,
-				700AEB7D09E3490400A073FD /* avida-smt.cfg in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -554,14 +470,11 @@
 		7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cTestCPUInterface.cc; sourceTree = "<group>"; };
 		7005A70909BA0FBE0007E16E /* cOrgInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgInterface.h; sourceTree = "<group>"; };
 		700AE91B09DB65F200A073FD /* cTaskContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cTaskContext.h; sourceTree = "<group>"; };
-		700AEB7B09E3490300A073FD /* avida-smt.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "avida-smt.cfg"; sourceTree = "<group>"; };
 		700E28CF0859FFD700CF158A /* tObjectFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tObjectFactory.h; sourceTree = "<group>"; };
 		700E2B83085DE50C00CF158A /* avida-viewer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "avida-viewer"; sourceTree = BUILT_PRODUCTS_DIR; };
-		701384330900A45B0087ED2E /* organism.smtx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.smtx; sourceTree = "<group>"; };
 		7013845F09028B3E0087ED2E /* cAvidaConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaConfig.h; sourceTree = "<group>"; };
 		7013846009028B3E0087ED2E /* cAvidaConfig.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cAvidaConfig.cc; sourceTree = "<group>"; };
 		701384A10902A16F0087ED2E /* defs.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = defs.h; sourceTree = "<group>"; };
-		7013852C0902E36B0087ED2E /* avida.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = avida.cfg; sourceTree = "<group>"; };
 		701D51CB09C645F50009B4F8 /* cAvidaContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaContext.h; sourceTree = "<group>"; };
 		701D9116094B773E008B845F /* cWorldDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cWorldDriver.h; sourceTree = "<group>"; };
 		701D912B094B7AC1008B845F /* cAvidaDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaDriver.h; sourceTree = "<group>"; };
@@ -631,8 +544,6 @@
 		7054A1B409A810CB00038658 /* cAnalyzeJobWorker.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeJobWorker.cc; sourceTree = "<group>"; };
 		70658C59085DF67D00486BED /* libncurses.5.4.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libncurses.5.4.dylib; path = /usr/lib/libncurses.5.4.dylib; sourceTree = "<absolute>"; };
 		706D30CC0852328F00D7DC8F /* tInstLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tInstLib.h; sourceTree = "<group>"; };
-		706D330E0854A7B900D7DC8F /* organism.smt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = organism.smt; sourceTree = "<group>"; };
-		706D33270854A90D00D7DC8F /* inst_set.smt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = inst_set.smt; sourceTree = "<group>"; };
 		7073165A097C6C8F00815164 /* cParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cParser.h; sourceTree = "<group>"; };
 		7073165B097C6C8F00815164 /* cParser.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cParser.cc; sourceTree = "<group>"; };
 		70731662097C6DF500815164 /* cASLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASLibrary.h; sourceTree = "<group>"; };
@@ -646,6 +557,49 @@
 		707AF04409EAB529001AEA89 /* LandscapeActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeActions.h; sourceTree = "<group>"; };
 		707AF04509EAB529001AEA89 /* LandscapeActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeActions.cc; sourceTree = "<group>"; };
 		707AF0F809EACC5E001AEA89 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		707AF2D309EE8501001AEA89 /* analyze.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = analyze.cfg; sourceTree = "<group>"; };
+		707AF2D409EE8501001AEA89 /* avida-smt.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "avida-smt.cfg"; sourceTree = "<group>"; };
+		707AF2D509EE8501001AEA89 /* avida.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = avida.cfg; sourceTree = "<group>"; };
+		707AF2D609EE8501001AEA89 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		707AF2D709EE8501001AEA89 /* environment.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.cfg; sourceTree = "<group>"; };
+		707AF2D809EE8501001AEA89 /* events.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = events.cfg; sourceTree = "<group>"; };
+		707AF2D909EE8501001AEA89 /* inst_set.4stack */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.4stack; sourceTree = "<group>"; };
+		707AF2DA09EE8501001AEA89 /* inst_set.default */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.default; sourceTree = "<group>"; };
+		707AF2DB09EE8501001AEA89 /* inst_set.sex */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.sex; sourceTree = "<group>"; };
+		707AF2DC09EE8501001AEA89 /* inst_set.smt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.smt; sourceTree = "<group>"; };
+		707AF2DE09EE8501001AEA89 /* environment.2paths */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.2paths; sourceTree = "<group>"; };
+		707AF2DF09EE8501001AEA89 /* environment.9resource */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.9resource; sourceTree = "<group>"; };
+		707AF2E009EE8501001AEA89 /* environment.all_logic */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.all_logic; sourceTree = "<group>"; };
+		707AF2E109EE8501001AEA89 /* environment.cascade */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.cascade; sourceTree = "<group>"; };
+		707AF2E209EE8501001AEA89 /* inst_set.19.short */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.19.short; sourceTree = "<group>"; };
+		707AF2E309EE8501001AEA89 /* inst_set.24.old */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.24.old; sourceTree = "<group>"; };
+		707AF2E409EE8501001AEA89 /* inst_set.26.default */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.26.default; sourceTree = "<group>"; };
+		707AF2E509EE8501001AEA89 /* inst_set.27.multi */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.27.multi; sourceTree = "<group>"; };
+		707AF2E609EE8501001AEA89 /* inst_set.27.no-nop */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "inst_set.27.no-nop"; sourceTree = "<group>"; };
+		707AF2E709EE8501001AEA89 /* inst_set.27.parasite */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.27.parasite; sourceTree = "<group>"; };
+		707AF2E809EE8501001AEA89 /* inst_set.28.base */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.28.base; sourceTree = "<group>"; };
+		707AF2E909EE8501001AEA89 /* inst_set.28.const */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.28.const; sourceTree = "<group>"; };
+		707AF2EA09EE8501001AEA89 /* inst_set.29.base_memsize */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.29.base_memsize; sourceTree = "<group>"; };
+		707AF2EB09EE8501001AEA89 /* inst_set.31.multi */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.31.multi; sourceTree = "<group>"; };
+		707AF2EC09EE8501001AEA89 /* inst_set.32.heads */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.32.heads; sourceTree = "<group>"; };
+		707AF2ED09EE8501001AEA89 /* inst_set.heads.parasite */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.heads.parasite; sourceTree = "<group>"; };
+		707AF2EE09EE8501001AEA89 /* organism.heads.100 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.heads.100; sourceTree = "<group>"; };
+		707AF2EF09EE8501001AEA89 /* organism.heads.15 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.heads.15; sourceTree = "<group>"; };
+		707AF2F009EE8501001AEA89 /* organism.heads.50 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.heads.50; sourceTree = "<group>"; };
+		707AF2F109EE8501001AEA89 /* organism.host */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.host; sourceTree = "<group>"; };
+		707AF2F209EE8501001AEA89 /* organism.host2 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.host2; sourceTree = "<group>"; };
+		707AF2F309EE8501001AEA89 /* organism.infected */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.infected; sourceTree = "<group>"; };
+		707AF2F409EE8501001AEA89 /* organism.infected2 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.infected2; sourceTree = "<group>"; };
+		707AF2F509EE8501001AEA89 /* organism.noheads */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.noheads; sourceTree = "<group>"; };
+		707AF2F609EE8501001AEA89 /* organism.default */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.default; sourceTree = "<group>"; };
+		707AF2F709EE8501001AEA89 /* organism.sex */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.sex; sourceTree = "<group>"; };
+		707AF2F809EE8501001AEA89 /* organism.smt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.smt; sourceTree = "<group>"; };
+		707AF2F909EE8501001AEA89 /* organism.smtx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.smtx; sourceTree = "<group>"; };
+		707AF2FB09EE8501001AEA89 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		707AF2FC09EE8501001AEA89 /* dummy */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = dummy; sourceTree = "<group>"; };
+		707AF2FD09EE8501001AEA89 /* organism.4stack */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.4stack; sourceTree = "<group>"; };
+		707AF2FE09EE8501001AEA89 /* organism.parasite */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.parasite; sourceTree = "<group>"; };
+		707AF2FF09EE8501001AEA89 /* SConscript */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConscript; sourceTree = "<group>"; };
 		7093DB4009D6F50300DE7FEB /* tSmartArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tSmartArray.h; sourceTree = "<group>"; };
 		70AA941909D486AE006A24C8 /* libtcmalloc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libtcmalloc.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		70B0864808F4972600FC65FE /* cLandscape.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cLandscape.h; sourceTree = "<group>"; };
@@ -926,45 +880,6 @@
 		DCC30FEB0762539D008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		DCC3109C0762539E008F7A48 /* avida.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = avida.cc; sourceTree = "<group>"; };
 		DCC310A90762539E008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		DCC3114B0762539E008F7A48 /* analyze.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = analyze.cfg; sourceTree = "<group>"; };
-		DCC3114C0762539E008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		DCC311680762539E008F7A48 /* environment.2paths */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.2paths; sourceTree = "<group>"; };
-		DCC311690762539E008F7A48 /* environment.9resource */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.9resource; sourceTree = "<group>"; };
-		DCC3116A0762539E008F7A48 /* environment.all_logic */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.all_logic; sourceTree = "<group>"; };
-		DCC3116B0762539E008F7A48 /* environment.cascade */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.cascade; sourceTree = "<group>"; };
-		DCC3116C0762539E008F7A48 /* inst_set.19.short */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.19.short; sourceTree = "<group>"; };
-		DCC3116D0762539E008F7A48 /* inst_set.24.old */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.24.old; sourceTree = "<group>"; };
-		DCC3116E0762539E008F7A48 /* inst_set.26.default */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.26.default; sourceTree = "<group>"; };
-		DCC3116F0762539E008F7A48 /* inst_set.27.multi */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.27.multi; sourceTree = "<group>"; };
-		DCC311700762539E008F7A48 /* inst_set.27.no-nop */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "inst_set.27.no-nop"; sourceTree = "<group>"; };
-		DCC311710762539E008F7A48 /* inst_set.27.parasite */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.27.parasite; sourceTree = "<group>"; };
-		DCC311720762539E008F7A48 /* inst_set.28.base */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.28.base; sourceTree = "<group>"; };
-		DCC311730762539E008F7A48 /* inst_set.28.const */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.28.const; sourceTree = "<group>"; };
-		DCC311740762539E008F7A48 /* inst_set.29.base_memsize */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.29.base_memsize; sourceTree = "<group>"; };
-		DCC311750762539E008F7A48 /* inst_set.31.multi */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.31.multi; sourceTree = "<group>"; };
-		DCC311760762539F008F7A48 /* inst_set.32.heads */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.32.heads; sourceTree = "<group>"; };
-		DCC311770762539F008F7A48 /* inst_set.heads.parasite */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.heads.parasite; sourceTree = "<group>"; };
-		DCC311780762539F008F7A48 /* organism.heads.100 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.heads.100; sourceTree = "<group>"; };
-		DCC311790762539F008F7A48 /* organism.heads.15 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.heads.15; sourceTree = "<group>"; };
-		DCC3117A0762539F008F7A48 /* organism.heads.50 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.heads.50; sourceTree = "<group>"; };
-		DCC3117B0762539F008F7A48 /* organism.host */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.host; sourceTree = "<group>"; };
-		DCC3117C0762539F008F7A48 /* organism.host2 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.host2; sourceTree = "<group>"; };
-		DCC3117D0762539F008F7A48 /* organism.infected */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.infected; sourceTree = "<group>"; };
-		DCC3117E0762539F008F7A48 /* organism.infected2 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.infected2; sourceTree = "<group>"; };
-		DCC3117F0762539F008F7A48 /* organism.noheads */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.noheads; sourceTree = "<group>"; };
-		DCC311800762539F008F7A48 /* environment.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.cfg; sourceTree = "<group>"; };
-		DCC311810762539F008F7A48 /* events.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = events.cfg; sourceTree = "<group>"; };
-		DCC311840762539F008F7A48 /* inst_set.4stack */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.4stack; sourceTree = "<group>"; };
-		DCC311850762539F008F7A48 /* inst_set.default */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.default; sourceTree = "<group>"; };
-		DCC311860762539F008F7A48 /* inst_set.sex */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.sex; sourceTree = "<group>"; };
-		DCC311870762539F008F7A48 /* inst_set.tmp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.tmp; sourceTree = "<group>"; };
-		DCC311890762539F008F7A48 /* organism.default */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.default; sourceTree = "<group>"; };
-		DCC3118A0762539F008F7A48 /* organism.heads.100 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.heads.100; sourceTree = "<group>"; };
-		DCC3118B0762539F008F7A48 /* organism.sex */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.sex; sourceTree = "<group>"; };
-		DCC311940762539F008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		DCC311950762539F008F7A48 /* dummy */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = dummy; sourceTree = "<group>"; };
-		DCC311970762539F008F7A48 /* organism.4stack */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.4stack; sourceTree = "<group>"; };
-		DCC311980762539F008F7A48 /* organism.parasite */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.parasite; sourceTree = "<group>"; };
 		DCC31345076253A0008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		DCC3143B076253A1008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		DCC3143C076253A1008F7A48 /* compare.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = compare.c; sourceTree = "<group>"; };
@@ -1113,6 +1028,73 @@
 				707AF04509EAB529001AEA89 /* LandscapeActions.cc */,
 			);
 			path = actions;
+			sourceTree = "<group>";
+		};
+		707AF2D209EE8501001AEA89 /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				707AF2D309EE8501001AEA89 /* analyze.cfg */,
+				707AF2D409EE8501001AEA89 /* avida-smt.cfg */,
+				707AF2D509EE8501001AEA89 /* avida.cfg */,
+				707AF2D609EE8501001AEA89 /* CMakeLists.txt */,
+				707AF2D709EE8501001AEA89 /* environment.cfg */,
+				707AF2D809EE8501001AEA89 /* events.cfg */,
+				707AF2D909EE8501001AEA89 /* inst_set.4stack */,
+				707AF2DA09EE8501001AEA89 /* inst_set.default */,
+				707AF2DB09EE8501001AEA89 /* inst_set.sex */,
+				707AF2DC09EE8501001AEA89 /* inst_set.smt */,
+				707AF2DD09EE8501001AEA89 /* misc */,
+				707AF2F609EE8501001AEA89 /* organism.default */,
+				707AF2F709EE8501001AEA89 /* organism.sex */,
+				707AF2F809EE8501001AEA89 /* organism.smt */,
+				707AF2F909EE8501001AEA89 /* organism.smtx */,
+				707AF2FA09EE8501001AEA89 /* preset_organisms */,
+				707AF2FF09EE8501001AEA89 /* SConscript */,
+			);
+			name = Support;
+			path = support/config;
+			sourceTree = "<group>";
+		};
+		707AF2DD09EE8501001AEA89 /* misc */ = {
+			isa = PBXGroup;
+			children = (
+				707AF2DE09EE8501001AEA89 /* environment.2paths */,
+				707AF2DF09EE8501001AEA89 /* environment.9resource */,
+				707AF2E009EE8501001AEA89 /* environment.all_logic */,
+				707AF2E109EE8501001AEA89 /* environment.cascade */,
+				707AF2E209EE8501001AEA89 /* inst_set.19.short */,
+				707AF2E309EE8501001AEA89 /* inst_set.24.old */,
+				707AF2E409EE8501001AEA89 /* inst_set.26.default */,
+				707AF2E509EE8501001AEA89 /* inst_set.27.multi */,
+				707AF2E609EE8501001AEA89 /* inst_set.27.no-nop */,
+				707AF2E709EE8501001AEA89 /* inst_set.27.parasite */,
+				707AF2E809EE8501001AEA89 /* inst_set.28.base */,
+				707AF2E909EE8501001AEA89 /* inst_set.28.const */,
+				707AF2EA09EE8501001AEA89 /* inst_set.29.base_memsize */,
+				707AF2EB09EE8501001AEA89 /* inst_set.31.multi */,
+				707AF2EC09EE8501001AEA89 /* inst_set.32.heads */,
+				707AF2ED09EE8501001AEA89 /* inst_set.heads.parasite */,
+				707AF2EE09EE8501001AEA89 /* organism.heads.100 */,
+				707AF2EF09EE8501001AEA89 /* organism.heads.15 */,
+				707AF2F009EE8501001AEA89 /* organism.heads.50 */,
+				707AF2F109EE8501001AEA89 /* organism.host */,
+				707AF2F209EE8501001AEA89 /* organism.host2 */,
+				707AF2F309EE8501001AEA89 /* organism.infected */,
+				707AF2F409EE8501001AEA89 /* organism.infected2 */,
+				707AF2F509EE8501001AEA89 /* organism.noheads */,
+			);
+			path = misc;
+			sourceTree = "<group>";
+		};
+		707AF2FA09EE8501001AEA89 /* preset_organisms */ = {
+			isa = PBXGroup;
+			children = (
+				707AF2FB09EE8501001AEA89 /* CMakeLists.txt */,
+				707AF2FC09EE8501001AEA89 /* dummy */,
+				707AF2FD09EE8501001AEA89 /* organism.4stack */,
+				707AF2FE09EE8501001AEA89 /* organism.parasite */,
+			);
+			path = preset_organisms;
 			sourceTree = "<group>";
 		};
 		70DCAC54097AF730002F8733 /* targets */ = {
@@ -1267,7 +1249,7 @@
 			isa = PBXGroup;
 			children = (
 				DCC30C670762539A008F7A48 /* Main Source */,
-				DCC3113A0762539E008F7A48 /* Support */,
+				707AF2D209EE8501001AEA89 /* Support */,
 				DCC315B6076253A5008F7A48 /* Utilities */,
 				DCC3164E07626CF3008F7A48 /* Products */,
 				70FB86A908BFAFEC00BDF589 /* CMakeLists.txt */,
@@ -1458,74 +1440,6 @@
 				700AE91B09DB65F200A073FD /* cTaskContext.h */,
 			);
 			path = main;
-			sourceTree = "<group>";
-		};
-		DCC3113A0762539E008F7A48 /* Support */ = {
-			isa = PBXGroup;
-			children = (
-				700AEB7B09E3490300A073FD /* avida-smt.cfg */,
-				701384330900A45B0087ED2E /* organism.smtx */,
-				DCC3114B0762539E008F7A48 /* analyze.cfg */,
-				DCC3114C0762539E008F7A48 /* CMakeLists.txt */,
-				DCC3114D0762539E008F7A48 /* config */,
-				DCC311800762539F008F7A48 /* environment.cfg */,
-				DCC311810762539F008F7A48 /* events.cfg */,
-				DCC311840762539F008F7A48 /* inst_set.4stack */,
-				DCC311850762539F008F7A48 /* inst_set.default */,
-				DCC311860762539F008F7A48 /* inst_set.sex */,
-				706D33270854A90D00D7DC8F /* inst_set.smt */,
-				DCC311870762539F008F7A48 /* inst_set.tmp */,
-				DCC311890762539F008F7A48 /* organism.default */,
-				DCC3118A0762539F008F7A48 /* organism.heads.100 */,
-				DCC3118B0762539F008F7A48 /* organism.sex */,
-				706D330E0854A7B900D7DC8F /* organism.smt */,
-				DCC3118C0762539F008F7A48 /* preset_organisms */,
-				7013852C0902E36B0087ED2E /* avida.cfg */,
-			);
-			name = Support;
-			path = source/support;
-			sourceTree = "<group>";
-		};
-		DCC3114D0762539E008F7A48 /* config */ = {
-			isa = PBXGroup;
-			children = (
-				DCC311680762539E008F7A48 /* environment.2paths */,
-				DCC311690762539E008F7A48 /* environment.9resource */,
-				DCC3116A0762539E008F7A48 /* environment.all_logic */,
-				DCC3116B0762539E008F7A48 /* environment.cascade */,
-				DCC3116C0762539E008F7A48 /* inst_set.19.short */,
-				DCC3116D0762539E008F7A48 /* inst_set.24.old */,
-				DCC3116E0762539E008F7A48 /* inst_set.26.default */,
-				DCC3116F0762539E008F7A48 /* inst_set.27.multi */,
-				DCC311700762539E008F7A48 /* inst_set.27.no-nop */,
-				DCC311710762539E008F7A48 /* inst_set.27.parasite */,
-				DCC311720762539E008F7A48 /* inst_set.28.base */,
-				DCC311730762539E008F7A48 /* inst_set.28.const */,
-				DCC311740762539E008F7A48 /* inst_set.29.base_memsize */,
-				DCC311750762539E008F7A48 /* inst_set.31.multi */,
-				DCC311760762539F008F7A48 /* inst_set.32.heads */,
-				DCC311770762539F008F7A48 /* inst_set.heads.parasite */,
-				DCC311780762539F008F7A48 /* organism.heads.100 */,
-				DCC311790762539F008F7A48 /* organism.heads.15 */,
-				DCC3117A0762539F008F7A48 /* organism.heads.50 */,
-				DCC3117B0762539F008F7A48 /* organism.host */,
-				DCC3117C0762539F008F7A48 /* organism.host2 */,
-				DCC3117D0762539F008F7A48 /* organism.infected */,
-				DCC3117E0762539F008F7A48 /* organism.infected2 */,
-				DCC3117F0762539F008F7A48 /* organism.noheads */,
-			);
-			path = config;
-			sourceTree = "<group>";
-		};
-		DCC3118C0762539F008F7A48 /* preset_organisms */ = {
-			isa = PBXGroup;
-			children = (
-				DCC311940762539F008F7A48 /* CMakeLists.txt */,
-				DCC311950762539F008F7A48 /* dummy */,
-				DCC311970762539F008F7A48 /* organism.4stack */,
-				DCC311980762539F008F7A48 /* organism.parasite */,
-			);
-			path = preset_organisms;
 			sourceTree = "<group>";
 		};
 		DCC31340076253A0008F7A48 /* third-party */ = {

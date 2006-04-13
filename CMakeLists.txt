@@ -60,10 +60,22 @@ SET(CMAKE_BUILD_TYPE
   "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel."
 )
 
-# Default location for installed software / configs / docs is work
-# subdirectory of build directory.
+
+# This section introduces the Avida project to CMake.  In this file, it
+# must be between the configuration options above (otherwise it
+# overrides their defaults) and the configuration options, cmake module
+# includes, and convenience variables below (otherwise some variables
+# can't be properly defined because PROJECT_SOURCE_DIR and
+# PROJECT_BUILD_DIR aren't yet defined).
+
+PROJECT(AVIDA)
+SUBDIRS(source support)
+
+# The following three variables must be after the PROJECT statement, otherwise newer versions of cmake
+# will (correctly) use an empty value of PROJECT_BINARY_DIR, since the project didn't exist yet.
+
+# Default location for installed software / configs / docs is the build directory.
 SET(CMAKE_INSTALL_PREFIX
-  #"${PROJECT_BINARY_DIR}/work"
   "${PROJECT_BINARY_DIR}"
   CACHE PATH
   "Install path prefix, prepended onto install directories."
@@ -76,23 +88,11 @@ SET(EXECUTABLE_OUTPUT_PATH
   "Single output directory for building all executables."
 )
 
-
 SET(LIBRARY_OUTPUT_PATH
   "${PROJECT_BINARY_DIR}/lib"
   CACHE PATH
   "Built libraries are placed here before installation."
 )
-
-
-# This section introduces the Avida project to CMake.  In this file, it
-# must be between the configuration options above (otherwise it
-# overrides their defaults) and the configuration options, cmake module
-# includes, and convenience variables below (otherwise some variables
-# can't be properly defined because PROJECT_SOURCE_DIR and
-# PROJECT_BUILD_DIR aren't yet defined).
-
-PROJECT(AVIDA)
-SUBDIRS(source)
 
 # Experimental Boost.Python interface to avida is disabled by default.
 OPTION(AVD_PY_BINDINGS

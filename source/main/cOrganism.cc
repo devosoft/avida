@@ -349,7 +349,7 @@ void cOrganism::NetReset()
 }
 
 
-bool cOrganism::InjectParasite(const cGenome & injected_code)
+bool cOrganism::InjectParasite(const cGenome& injected_code)
 {
   assert(m_interface);
   return m_interface->InjectParasite(this, injected_code);

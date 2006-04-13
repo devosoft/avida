@@ -692,57 +692,31 @@ bool cHardwareSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier)
   const int end_pos = GetHead(nHardware::HEAD_WRITE).GetPosition();
   const int mem_space_used = GetHead(nHardware::HEAD_WRITE).GetMemSpace();
   
-  // Make sure the creature will still be above the minimum size,
-  // TEMPORARY!  INJECTED CODE CAN 
+  // Make sure the creature will still be above the minimum size
   if (end_pos <= 0) {
     Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: no code to inject");
     return false; // (inject fails)
   }
-  
   if (end_pos < MIN_INJECT_SIZE) {
     m_mem_array[mem_space_used] = cGenome("a"); 
     Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: new size too small");
     return false; // (inject fails)
-  }
-	
+  }  
+  
   m_mem_array[mem_space_used].Resize(end_pos);
 	
   cCPUMemory injected_code = m_mem_array[mem_space_used];
 	
   Inject_DoMutations(ctx, mut_multiplier, injected_code);
 	
-  int inject_signal = false;
-	
-  if(injected_code.GetSize() > 0)
-    inject_signal = organism->InjectParasite(injected_code);
-  
-  //************* CALL GOES HERE ******************//
-  // spin around randomly (caution: possible organism dizziness)
-  //const int num_neighbors = organism->GetNeighborhoodSize();
-  //for(unsigned int i=0; i<ctx.GetRandom().GetUInt(num_neighbors); i++)
-  //  organism->Rotate(1);
-	
-  // If we don't have a host, stop here.
-  //cOrganism * host_organism = organism->GetNeighbor();
-  
-	
-  //if(host_organism!=NULL)
-  //  {
-  //    
-  //  }
-	
-  //************** CALL ENDS HERE ******************//
+  bool inject_signal = false;
+  if (injected_code.GetSize() > 0) inject_signal = organism->InjectParasite(injected_code);
 	
   //reset the memory space which was injected
   m_mem_array[mem_space_used] = cGenome("a"); 
 	
-  for(int x=0; x<nHardware::NUM_HEADS; x++) {
-		GetHead(x).Reset(IP().GetMemSpace(), this);
-	}
-	
-  for(int x=0; x < nHardwareSMT::NUM_LOCAL_STACKS; x++) {
-		Stack(x).Clear();
-	}
+  for (int x = 0; x < nHardware::NUM_HEADS; x++) GetHead(x).Reset(IP().GetMemSpace(), this);
+  for (int x = 0; x < nHardwareSMT::NUM_LOCAL_STACKS; x++) Stack(x).Clear();
   
   AdvanceIP() = false;
   
@@ -750,7 +724,7 @@ bool cHardwareSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier)
 }
 
 //This is the code run by the TARGET of an injection.  This RECIEVES the infection.
-bool cHardwareSMT::InjectHost(const cCodeLabel & in_label, const cGenome & inject_code)
+bool cHardwareSMT::InjectHost(const cCodeLabel& in_label, const cGenome& inject_code)
 {
   // @DMB - Need to discuss how InjectHost should work with extensible memory spaces...
   return false;
@@ -2008,8 +1982,9 @@ bool cHardwareSMT::Inst_IO(cAvidaContext& ctx)
 
 bool cHardwareSMT::Inst_Inject(cAvidaContext& ctx)
 {
-  double mut_multiplier = 1;
-	
+  ReadLabel(nHardwareSMT::MAX_MEMSPACE_LABEL);
+  
+  double mut_multiplier = 1.0;	
   return InjectParasite(ctx, mut_multiplier);
 }
 
