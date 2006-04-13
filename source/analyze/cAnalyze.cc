@@ -111,6 +111,9 @@ cAnalyze::~cAnalyze()
 
 void cAnalyze::RunFile(cString filename)
 {
+  bool saved_analyze = m_world->GetDefaultContext().GetAnalyzeMode();
+  m_world->GetDefaultContext().SetAnalyzeMode();
+
   cInitFile analyze_file(filename);
   analyze_file.Load();
   analyze_file.Compress();
@@ -118,6 +121,8 @@ void cAnalyze::RunFile(cString filename)
   
   LoadCommandList(analyze_file, command_list);
   ProcessCommands(command_list);
+  
+  if (!saved_analyze) m_world->GetDefaultContext().ClearAnalyzeMode();
 }
 
 //////////////// Loading methods...
@@ -7827,6 +7832,9 @@ cAnalyzeCommandDefBase* cAnalyze::FindAnalyzeCommandDef(const cString& name)
 
 void cAnalyze::RunInteractive()
 {
+  bool saved_analyze = m_world->GetDefaultContext().GetAnalyzeMode();
+  m_world->GetDefaultContext().SetAnalyzeMode();
+  
   cout << "Entering interactive mode..." << endl;
   
   char text_input[2048];
@@ -7869,4 +7877,6 @@ void cAnalyze::RunInteractive()
     // Otherwise, give an error.
     else cerr << "Error: Unknown command '" << command << "'." << endl;
   }
+  
+  if (!saved_analyze) m_world->GetDefaultContext().ClearAnalyzeMode();
 }

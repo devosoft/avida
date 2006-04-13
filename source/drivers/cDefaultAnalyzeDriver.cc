@@ -35,12 +35,10 @@ cDefaultAnalyzeDriver::~cDefaultAnalyzeDriver()
 
 void cDefaultAnalyzeDriver::Run()
 {
-  m_world->GetDefaultContext().SetAnalyzeMode();
   cout << "In analyze mode!!" << endl;
   cAnalyze& analyze = m_world->GetAnalyze();
   analyze.RunFile(m_world->GetConfig().ANALYZE_FILE.Get());
   if (m_interactive == true) analyze.RunInteractive();
-  m_world->GetDefaultContext().ClearAnalyzeMode();
 }
 
 void cDefaultAnalyzeDriver::RaiseException(const cString& in_string)

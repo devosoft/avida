@@ -1,2 +1,0 @@
-MSVC6
-Jonathan H. Lundquist

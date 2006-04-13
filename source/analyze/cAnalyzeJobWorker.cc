@@ -15,6 +15,8 @@
 void cAnalyzeJobWorker::Run()
 {
   cAvidaContext ctx(NULL);
+  ctx.SetAnalyzeMode();
+  
   cAnalyzeJob* job = NULL;
   
   while (1) {
