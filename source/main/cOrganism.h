@@ -12,7 +12,6 @@
 #define cOrganism_h
 
 #include <fstream>
-#include <deque>
 
 #ifndef cCPUMemory_h
 #include "cCPUMemory.h"
@@ -41,6 +40,9 @@
 #ifndef cOrgSourceMessage_h
 #include "cOrgSourceMessage.h"
 #endif
+#ifndef tArray_h
+#include "tArray.h"
+#endif
 #ifndef tBuffer_h
 #include "tBuffer.h"
 #endif
@@ -57,6 +59,7 @@
  **/
 
 class cAvidaContext;
+class cCodeLabel;
 class cHardwareBase;
 class cGenotype;
 class cInjectGenotype;
@@ -70,15 +73,14 @@ class cOrganism
 {
 protected:
   cWorld* m_world;
-  cHardwareBase* hardware;  // The actual machinary running this organism.
-  cGenotype* genotype;      // Information about organisms with this genome.
-  cPhenotype phenotype;      // Descriptive attributes of organism.
-  const cGenome initial_genome;        // Initial genome; can never be changed!
-  std::deque<cInjectGenotype*> parasites; // List of all parasites associated with
-                                    // this organism.
-  cMutationRates mut_rates;            // Rate of all possible mutations.
-  cLocalMutations mut_info;            // Info about possible mutations;
-  cOrgInterface* m_interface;  // Interface back to the population.
+  cHardwareBase* m_hardware;            // The actual machinary running this organism.
+  cGenotype* genotype;                  // Information about organisms with this genome.
+  cPhenotype phenotype;                 // Descriptive attributes of organism.
+  const cGenome initial_genome;         // Initial genome; can never be changed!
+  tArray<cInjectGenotype*> m_parasites; // List of all parasites associated with this organism.
+  cMutationRates mut_rates;             // Rate of all possible mutations.
+  cLocalMutations mut_info;             // Info about possible mutations;
+  cOrgInterface* m_interface;           // Interface back to the population.
 
   // Input and Output with the environment
   int input_pointer;
@@ -132,7 +134,7 @@ public:
   cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome);
   ~cOrganism();
 
-  cHardwareBase& GetHardware() { return *hardware; }
+  cHardwareBase& GetHardware() { return *m_hardware; }
   cOrganism* GetNeighbor() { assert(m_interface); return m_interface->GetNeighbor(); }
   int GetNeighborhoodSize() { assert(m_interface); return m_interface->GetNumNeighbors(); }
   void Rotate(int direction) { assert(m_interface); m_interface->Rotate(direction); }
@@ -168,12 +170,12 @@ public:
   int NetLast() { return m_net->last_seq; }
   void NetReset();
 
-  bool InjectParasite(const cGenome & genome);
-  bool InjectHost(const cCodeLabel & in_label, const cGenome & genome);
-  void AddParasite(cInjectGenotype * cur);
-  cInjectGenotype & GetParasite(int x);
-  int GetNumParasites();
-  void ClearParasites();
+  bool InjectParasite(const cGenome& genome);
+  bool InjectHost(const cCodeLabel& in_label, const cGenome& genome);
+  void AddParasite(cInjectGenotype* cur) { m_parasites.Push(cur); }
+  cInjectGenotype& GetParasite(int x) { return *m_parasites[x]; }
+  int GetNumParasites() { return m_parasites.GetSize(); }
+  void ClearParasites() { m_parasites.Resize(0); }
 		      
   int OK();
 

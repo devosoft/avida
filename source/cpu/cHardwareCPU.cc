@@ -965,22 +965,17 @@ bool cHardwareCPU::InjectHost(const cCodeLabel & in_label, const cGenome & injec
   return true; // (inject succeeds!)
 }
 
-int cHardwareCPU::InjectThread(const cCodeLabel & in_label, const cGenome & injection)
+bool cHardwareCPU::InjectThread(const cCodeLabel& in_label)
 {
   // Make sure the genome will be below max size after injection.
   
-  const int new_size = injection.GetSize() + GetMemory().GetSize();
-  if (new_size > MAX_CREATURE_SIZE) return 1; // (inject fails)
-  
-  const int inject_line = FindFullLabel(in_label).GetPosition();
-  
-  // Abort if no compliment is found.
-  if (inject_line == -1) return 2; // (inject fails)
-  
-  // Inject the code!
-  InjectCodeThread(injection, inject_line+1);
-  
-  return 0; // (inject succeeds!)
+  if(ForkThread())
+  {
+    organism->GetPhenotype().IsMultiThread() = true;
+    return true;
+  }
+
+  return false;
 }
 
 void cHardwareCPU::InjectCode(const cGenome & inject_code, const int line_num)
@@ -1001,53 +996,14 @@ void cHardwareCPU::InjectCode(const cGenome & inject_code, const int line_num)
   
   // Adjust all of the heads to take into account the new mem size.
   
-  for (int i=0; i < nHardware::NUM_HEADS; i++) {    
-    if (!GetHead(i).TestParasite() &&
-        GetHead(i).GetPosition() > line_num)
+  for (int i = 0; i < nHardware::NUM_HEADS; i++) {    
+    if (!GetHead(i).TestParasite() && GetHead(i).GetPosition() > line_num)
       GetHead(i).Jump(inject_size);
   }
 }
 
 void cHardwareCPU::InjectCodeThread(const cGenome & inject_code, const int line_num)
 {
-  assert(line_num >= 0);
-  assert(line_num <= memory.GetSize());
-  assert(memory.GetSize() + inject_code.GetSize() < MAX_CREATURE_SIZE);
-  
-  if(ForkThread())
-  {
-    // Inject the new code.
-    const int inject_size = inject_code.GetSize();
-    memory.Insert(line_num, inject_code);
-    
-    // Set instruction flags on the injected code
-    for (int i = line_num; i < line_num + inject_size; i++) {
-      memory.SetFlagInjected(i);
-    }
-    organism->GetPhenotype().IsModified() = true;
-    organism->GetPhenotype().IsMultiThread() = true;
-    
-    // Adjust all of the heads to take into account the new mem size.
-    
-    int currthread = GetCurThread();
-    SetThread(0);
-    for (int i=0; i<GetNumThreads()-2; i++)
-    {
-      for (int j=0; j < nHardware::NUM_HEADS; j++) 
-	    {    
-	      if (!GetHead(i).TestParasite() && GetHead(i).GetPosition() > line_num)
-          GetHead(i).Jump(inject_size);
-	    }
-      NextThread();
-    }
-    SetThread(currthread);
-    
-  }
-  else
-  {
-    //Some kind of error message should go here...but what?
-  }
-  
 }
 
 void cHardwareCPU::Mutate(cAvidaContext& ctx, int mut_point)
@@ -2708,15 +2664,8 @@ bool cHardwareCPU::Inst_InjectThread(cAvidaContext& ctx)
   // Search for the label in the host...
   GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
   
-  const int inject_signal =
-    host_organism->GetHardware().InjectThread(GetLabel(), inject_code);
-  if (inject_signal == 1) {
-    Fault(FAULT_LOC_INJECT, FAULT_TYPE_WARNING, "inject: host too large.");
-    return false; // Inject failed.
-  }
-  if (inject_signal == 2) {
-    Fault(FAULT_LOC_INJECT, FAULT_TYPE_WARNING, "inject: target not in host.");
-    return false; // Inject failed.
+  if (host_organism->GetHardware().InjectHost(GetLabel(), inject_code)) {
+    host_organism->GetHardware().InjectThread(GetLabel());
   }
   
   // Set the relevent flags.

@@ -57,7 +57,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome
   , is_running(false)
 {
   // Initialization of structures...
-  hardware = m_world->GetHardwareManager().Create(this);
+  m_hardware = m_world->GetHardwareManager().Create(this);
   cpu_stats.Setup();
 
   if (m_world->GetConfig().DEATH_METHOD.Get() > 0) {
@@ -80,7 +80,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome
 cOrganism::~cOrganism()
 {
   assert(is_running == false);
-  delete hardware;
+  delete m_hardware;
   delete m_interface;
   if (m_net != NULL) delete m_net;
 }
@@ -164,7 +164,7 @@ void cOrganism::DoOutput(cAvidaContext& ctx, const int value)
 
   for (int i = 0; i < insts_triggered.GetSize(); i++) {
     const int cur_inst = insts_triggered[i];
-    hardware->ProcessBonusInst(ctx, cInstruction(cur_inst) );
+    m_hardware->ProcessBonusInst(ctx, cInstruction(cur_inst) );
   }
 }
 
@@ -330,7 +330,7 @@ bool cOrganism::NetRemoteValidate(cAvidaContext& ctx, int value)
     
     for (int i = 0; i < insts_triggered.GetSize(); i++) {
       const int cur_inst = insts_triggered[i];
-      hardware->ProcessBonusInst(ctx, cInstruction(cur_inst) );
+      m_hardware->ProcessBonusInst(ctx, cInstruction(cur_inst) );
     }
   }
   
@@ -355,37 +355,15 @@ bool cOrganism::InjectParasite(const cGenome& injected_code)
   return m_interface->InjectParasite(this, injected_code);
 }
 
-bool cOrganism::InjectHost(const cCodeLabel & label, const cGenome & injected_code)
+bool cOrganism::InjectHost(const cCodeLabel& label, const cGenome& injected_code)
 {
-  return hardware->InjectHost(label, injected_code);
-}
-
-void cOrganism::AddParasite(cInjectGenotype * in_genotype)
-{
-  parasites.push_back(in_genotype);
-}
-
-cInjectGenotype & cOrganism::GetParasite(int x)
-{
-  return *parasites[x];
-}
-
-int cOrganism::GetNumParasites()
-{
-  return parasites.size();
-}
-
-void cOrganism::ClearParasites()
-{
-  parasites.clear();
+  return m_hardware->InjectHost(label, injected_code);
 }
 
 int cOrganism::OK()
 {
-  if (!hardware->OK()) return false;
-  if (!phenotype.OK()) return false;
-
-  return true;
+  if (m_hardware->OK() && phenotype.OK()) return true;
+  return false;
 }
 
 
@@ -414,7 +392,7 @@ bool cOrganism::GetSterilizePos()  const { return m_world->GetConfig().STERILIZE
 void cOrganism::PrintStatus(ostream& fp, const cString & next_name)
 {
   fp << "---------------------------" << endl;
-  hardware->PrintStatus(fp);
+  m_hardware->PrintStatus(fp);
   phenotype.PrintStatus(fp);
   fp << "---------------------------" << endl;
   fp << "ABOUT TO EXECUTE: " << next_name << endl;

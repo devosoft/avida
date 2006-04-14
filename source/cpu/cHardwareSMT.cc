@@ -368,9 +368,15 @@ void cHardwareSMT::PrintStatus(ostream& fp)
 }
 
 
-int cHardwareSMT::FindMemorySpaceLabel(int mem_space)
+bool cHardwareSMT::MemorySpaceExists(const cCodeLabel& label)
 {
-  cCodeLabel& label = GetLabel();
+  int null;
+  if (label.GetSize() == 0 || m_mem_lbls.Find(label.AsInt(nHardwareSMT::NUM_NOPS), null)) return true;
+  return false;
+}
+
+int cHardwareSMT::FindMemorySpaceLabel(const cCodeLabel& label, int mem_space)
+{
 	if (label.GetSize() == 0) return 0;
   
   int hash_key = label.AsInt(nHardwareSMT::NUM_NOPS);
@@ -704,7 +710,6 @@ bool cHardwareSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier)
   }  
   
   m_mem_array[mem_space_used].Resize(end_pos);
-	
   cCPUMemory injected_code = m_mem_array[mem_space_used];
 	
   Inject_DoMutations(ctx, mut_multiplier, injected_code);
@@ -712,7 +717,7 @@ bool cHardwareSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier)
   bool inject_signal = false;
   if (injected_code.GetSize() > 0) inject_signal = organism->InjectParasite(injected_code);
 	
-  //reset the memory space which was injected
+  // reset the memory space that was injected
   m_mem_array[mem_space_used] = cGenome("a"); 
 	
   for (int x = 0; x < nHardware::NUM_HEADS; x++) GetHead(x).Reset(IP().GetMemSpace(), this);
@@ -726,8 +731,15 @@ bool cHardwareSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier)
 //This is the code run by the TARGET of an injection.  This RECIEVES the infection.
 bool cHardwareSMT::InjectHost(const cCodeLabel& in_label, const cGenome& inject_code)
 {
-  // @DMB - Need to discuss how InjectHost should work with extensible memory spaces...
-  return false;
+  // Inject fails if the memory space is already in use.
+  if (MemorySpaceExists(in_label)) return false;
+
+  // Otherwise create the memory space and copy in the genome
+  int mem_space_used = FindMemorySpaceLabel(GetLabel(), -1);
+  assert(mem_space_used == -1);
+  m_mem_array[mem_space_used] = inject_code;
+
+  return true;
 }
 
 void cHardwareSMT::Mutate(cAvidaContext& ctx, int mut_point)
@@ -908,19 +920,18 @@ void cHardwareSMT::ReadInst(const int in_inst)
 void cHardwareSMT::ReadLabel(int max_size)
 {
   int count = 0;
-  cHeadMultiMem* inst_ptr = &( IP() );
+  cHeadMultiMem& inst_ptr = IP();
 	
   GetLabel().Clear();
 	
-  while (m_inst_set->IsNop(inst_ptr->GetNextInst()) &&
-				 (count < max_size)) {
+  while (m_inst_set->IsNop(inst_ptr.GetNextInst()) && (count < max_size)) {
     count++;
-    inst_ptr->Advance();
-    GetLabel().AddNop(m_inst_set->GetNopMod(inst_ptr->GetInst()));
+    inst_ptr.Advance();
+    GetLabel().AddNop(m_inst_set->GetNopMod(inst_ptr.GetInst()));
 		
     // If this is the first line of the template, mark it executed.
     if (GetLabel().GetSize() <=	m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get()) {
-      inst_ptr->SetFlagExecuted();
+      inst_ptr.SetFlagExecuted();
     }
   }
 }
@@ -1632,7 +1643,7 @@ bool cHardwareSMT::Inst_SetMemory(cAvidaContext& ctx)
   if (GetLabel().GetSize() == 0) {
     GetHead(nHardware::HEAD_FLOW).Set(0, 0);
   } else {
-    int mem_space_used = FindMemorySpaceLabel(-1);
+    int mem_space_used = FindMemorySpaceLabel(GetLabel(), -1);
     if (mem_space_used == -1) return false;
     GetHead(nHardware::HEAD_FLOW).Set(0, mem_space_used);
   }

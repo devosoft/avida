@@ -382,35 +382,32 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
   return parent_alive;
 }
 
-bool cPopulation::ActivateInject(cOrganism & parent, const cGenome & injected_code)
+bool cPopulation::ActivateParasite(cOrganism& parent, const cGenome& injected_code)
 {
   assert(&parent != NULL);
   
-  if(injected_code.GetSize() ==0)
-    return false;
+  if (injected_code.GetSize() == 0) return false;
   
   cHardwareBase& parent_cpu = parent.GetHardware();
-  cInjectGenotype * parent_genotype = parent_cpu.GetCurThreadOwner();
+  cInjectGenotype* parent_genotype = parent_cpu.GetCurThreadOwner();
   
   const int parent_id = parent.GetOrgInterface().GetCellID();
   assert(parent_id >= 0 && parent_id < cell_array.GetSize());
-  cPopulationCell & parent_cell = cell_array[ parent_id ];
+  cPopulationCell& parent_cell = cell_array[ parent_id ];
   
   int num_neighbors = parent.GetNeighborhoodSize();
-  cOrganism * target_organism = 
+  cOrganism* target_organism = 
     parent_cell.connection_list.GetPos(m_world->GetRandom().GetUInt(num_neighbors))->GetOrganism();
   
-  if(target_organism==NULL)
-    return false;
+  if (target_organism == NULL) return false;
   
   cHardwareBase& child_cpu = target_organism->GetHardware();
   
-  if(child_cpu.GetNumThreads() == m_world->GetConfig().MAX_CPU_THREADS.Get())
-    return false;
+  if (child_cpu.GetNumThreads() == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
   
-  cInjectGenotype * child_genotype = parent_genotype;
+  cInjectGenotype* child_genotype = parent_genotype; // @DMB - uh, WTF?  This is not creating a copy. Should it?
   
-  if(target_organism->InjectHost(parent_cpu.GetLabel(), injected_code)) {
+  if (target_organism->InjectHost(parent_cpu.GetLabel(), injected_code)) {
     // If the parent genotype is not correct for the child, adjust it.
     if (parent_genotype == NULL || parent_genotype->GetGenome() != injected_code) {
       child_genotype = m_world->GetClassificationManager().GetInjectGenotype(injected_code, parent_genotype);
@@ -419,8 +416,6 @@ bool cPopulation::ActivateInject(cOrganism & parent, const cGenome & injected_co
     target_organism->AddParasite(child_genotype);
     child_genotype->AddParasite();
     child_cpu.SetThreadOwner(child_genotype);
-    //if(parent_genotype!=NULL)
-    //  parent_genotype->RemoveParasite();
     m_world->GetClassificationManager().AdjustInjectGenotype(*child_genotype);
   }
   else
@@ -429,7 +424,7 @@ bool cPopulation::ActivateInject(cOrganism & parent, const cGenome & injected_co
   return true;
 }
 
-bool cPopulation::ActivateInject(const int cell_id, const cGenome & injected_code)
+bool cPopulation::ActivateInject(const int cell_id, const cGenome& injected_code)
 {
   cInjectGenotype * child_genotype = m_world->GetClassificationManager().GetInjectGenotype(injected_code);
   cHardwareBase& child_cpu = cell_array[cell_id].GetOrganism()->GetHardware();

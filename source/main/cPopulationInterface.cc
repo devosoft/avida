@@ -30,13 +30,13 @@
 bool cPopulationInterface::Divide(cAvidaContext& ctx, cOrganism* parent, cGenome& child_genome)
 {
   assert(parent != NULL);
-  assert(m_world->GetPopulation().GetCell(cell_id).GetOrganism() == parent);
+  assert(m_world->GetPopulation().GetCell(m_cell_id).GetOrganism() == parent);
   return m_world->GetPopulation().ActivateOffspring(ctx, child_genome, *parent);
 }
 
 cOrganism * cPopulationInterface::GetNeighbor()
 {
-  cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
+  cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(cell.IsOccupied());
   
   return cell.ConnectionList().GetFirst()->GetOrganism();
@@ -44,7 +44,7 @@ cOrganism * cPopulationInterface::GetNeighbor()
 
 int cPopulationInterface::GetNumNeighbors()
 {
-  cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
+  cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(cell.IsOccupied());
   
   return cell.ConnectionList().GetSize();
@@ -52,7 +52,7 @@ int cPopulationInterface::GetNumNeighbors()
 
 void cPopulationInterface::Rotate(int direction)
 {
-  cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
+  cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(cell.IsOccupied());
 
   if (direction >= 0) cell.ConnectionList().CircNext();
@@ -61,7 +61,7 @@ void cPopulationInterface::Rotate(int direction)
 
 double cPopulationInterface::TestFitness()
 {
-  cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
+  cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(cell.IsOccupied());
   
   return cell.GetOrganism()->GetGenotype()->GetTestFitness();
@@ -69,52 +69,52 @@ double cPopulationInterface::TestFitness()
 
 int cPopulationInterface::GetInput()
 {
-  cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
+  cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(cell.IsOccupied());
   return cell.GetInput();
 }
 
 int cPopulationInterface::GetInputAt(int& input_pointer)
 {
-  cPopulationCell& cell = m_world->GetPopulation().GetCell(cell_id);
+  cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(cell.IsOccupied());
   return cell.GetInputAt(input_pointer);
 }
 
 int cPopulationInterface::Debug()
 {
-  cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
+  cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(cell.IsOccupied());
   return cell.GetOrganism()->GetGenotype()->GetID();
 }
 
 const tArray<double> & cPopulationInterface::GetResources()
 {
-  return m_world->GetPopulation().GetCellResources(cell_id);
+  return m_world->GetPopulation().GetCellResources(m_cell_id);
 }
 
 void cPopulationInterface::UpdateResources(const tArray<double> & res_change)
 {
-  return m_world->GetPopulation().UpdateCellResources(res_change, cell_id);
+  return m_world->GetPopulation().UpdateCellResources(res_change, m_cell_id);
 }
 
 void cPopulationInterface::Die()
 {
-  cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
+  cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
   m_world->GetPopulation().KillOrganism(cell);
 }
 
 void cPopulationInterface::Kaboom()
 {
-  cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
+  cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
 	m_world->GetPopulation().Kaboom(cell);
 }
 
 bool cPopulationInterface::SendMessage(cOrgMessage & mess)
 {
-  mess.SetSenderID(cell_id);
+  mess.SetSenderID(m_cell_id);
   mess.SetTime(m_world->GetStats().GetUpdate());
-  cPopulationCell& cell = m_world->GetPopulation().GetCell(cell_id);
+  cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
   if(cell.ConnectionList().GetFirst() == NULL)
     return false;
   mess.SetRecipientID(cell.ConnectionList().GetFirst()->GetID());
@@ -123,7 +123,7 @@ bool cPopulationInterface::SendMessage(cOrgMessage & mess)
 
 cOrgSinkMessage* cPopulationInterface::NetReceive()
 {
-  cPopulationCell& cell = m_world->GetPopulation().GetCell(cell_id);
+  cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(cell.IsOccupied());
   
   const int num_neighbors = cell.ConnectionList().GetSize();
@@ -146,7 +146,7 @@ bool cPopulationInterface::NetRemoteValidate(cAvidaContext& ctx, cOrgSinkMessage
 
 int cPopulationInterface::ReceiveValue()
 {
-  cPopulationCell & cell = m_world->GetPopulation().GetCell(cell_id);
+  cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(cell.IsOccupied());
   
   const int num_neighbors = cell.ConnectionList().GetSize();
@@ -164,16 +164,16 @@ int cPopulationInterface::ReceiveValue()
   return 0;
 }
 
-bool cPopulationInterface::InjectParasite(cOrganism * parent, const cGenome & injected_code)
+bool cPopulationInterface::InjectParasite(cOrganism* parent, const cGenome& injected_code)
 {
   assert(parent != NULL);
-  assert(m_world->GetPopulation().GetCell(cell_id).GetOrganism() == parent);
+  assert(m_world->GetPopulation().GetCell(m_cell_id).GetOrganism() == parent);
   
-  return m_world->GetPopulation().ActivateInject(*parent, injected_code);
+  return m_world->GetPopulation().ActivateParasite(*parent, injected_code);
 }
 
 bool cPopulationInterface::UpdateMerit(double new_merit)
 {
-  return m_world->GetPopulation().UpdateMerit(cell_id, new_merit);
+  return m_world->GetPopulation().UpdateMerit(m_cell_id, new_merit);
 }
 

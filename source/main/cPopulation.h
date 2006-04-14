@@ -39,7 +39,7 @@
 #endif
 
 class cAvidaContext;
-class cSchedule;
+class cCodeLabel;
 class cChangeList;
 class cEnvironment;
 class cGenome;
@@ -47,6 +47,8 @@ class cGenotype;
 class cLineage;
 class cOrganism;
 class cPopulationCell;
+class cSchedule;
+
 
 class cPopulation
 {
@@ -117,8 +119,8 @@ public:
 
   // Activate the offspring of an organism in the population
   bool ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, cOrganism& parent_organism);
-
-  bool ActivateInject(cOrganism& parent, const cGenome& injected_code);
+  bool ActivateParasite(cOrganism& parent, const cGenome& injected_code);
+  
   bool ActivateInject(const int cell_id, const cGenome& injected_code);
 
   // Inject an organism from the outside world.

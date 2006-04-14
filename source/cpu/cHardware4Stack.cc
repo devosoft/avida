@@ -862,8 +862,7 @@ bool cHardware4Stack::InjectParasite(cAvidaContext& ctx, double mut_multiplier)
   
   int inject_signal = false;
   
-  if(injected_code.GetSize()>0)
-    inject_signal = organism->InjectParasite(injected_code);
+  if (injected_code.GetSize() > 0) inject_signal = organism->InjectParasite(injected_code);
   
   //************* CALL GOES HERE ******************//
   // spin around randomly (caution: possible organism dizziness)

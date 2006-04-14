@@ -11,11 +11,13 @@
 #define cOrgInterface_h
 
 class cAvidaContext;
-class cOrganism;
-class cOrgSinkMessage;
+class cCodeLabel;
 class cGenome;
-template <class T> class tArray;
+class cOrganism;
 class cOrgMessage;
+class cOrgSinkMessage;
+template <class T> class tArray;
+
 
 class cOrgInterface
 {

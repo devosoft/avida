@@ -136,7 +136,8 @@ private:
   int FindNextStack(int default_stack);
   int FindPreviousStack(int default_stack);
   int FindComplementStack(int base_stack);
-  int FindMemorySpaceLabel(int mem_space);
+  int FindMemorySpaceLabel(const cCodeLabel& label, int mem_space);
+  bool MemorySpaceExists(const cCodeLabel& label);
 	
   void Fault(int fault_loc, int fault_type, cString fault_desc=""); 
   bool Allocate_Necro(const int new_size);
@@ -224,8 +225,8 @@ public:
   
   // --------  Parasite Stuff  --------
   int TestParasite() const;
-  bool InjectHost(const cCodeLabel& in_label, const cGenome & injection);
-  int InjectThread(const cCodeLabel&, const cGenome&) { return -1; }
+  bool InjectHost(const cCodeLabel& in_label, const cGenome& inject_code);
+  bool InjectThread(const cCodeLabel& in_label) { return false; }
 	
   
   // --------  Accessors  --------

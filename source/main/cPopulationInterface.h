@@ -22,26 +22,24 @@
 #endif
 
 class cPopulation;
-class cOrganism;
-class cGenome;
-template <class T> class tArray;
-class cOrgMessage;
 
-class cPopulationInterface : public cOrgInterface {
+
+class cPopulationInterface : public cOrgInterface
+{
 private:
   cWorld* m_world;
-  int cell_id;
+  int m_cell_id;
 
   cPopulationInterface(); // @not_implemented
   cPopulationInterface(const cPopulationInterface&); // @not_implemented
   cPopulationInterface operator=(const cPopulationInterface&); // @not_implemented
   
 public:
-  cPopulationInterface(cWorld* world) : m_world(world), cell_id(-1) { ; }
+  cPopulationInterface(cWorld* world) : m_world(world), m_cell_id(-1) { ; }
   virtual ~cPopulationInterface() { ; }
 
-  int GetCellID() { return cell_id; }
-  void SetCellID(int in_id) { cell_id = in_id; }
+  int GetCellID() { return m_cell_id; }
+  void SetCellID(int in_id) { m_cell_id = in_id; }
 
   bool Divide(cAvidaContext& ctx, cOrganism* parent, cGenome& child_genome);
   cOrganism* GetNeighbor();

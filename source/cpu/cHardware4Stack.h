@@ -227,8 +227,8 @@ public:
   
   // --------  Parasite Stuff  --------
   int TestParasite() const;
-  bool InjectHost(const cCodeLabel& in_label, const cGenome & injection);
-  int InjectThread(const cCodeLabel&, const cGenome&) { return -1; }
+  bool InjectHost(const cCodeLabel& in_label, const cGenome& injection);
+  bool InjectThread(const cCodeLabel& in_label) { return false; }
 
   
   // --------  Accessors  --------

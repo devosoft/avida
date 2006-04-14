@@ -73,7 +73,7 @@ void cTestCPUInterface::Kaboom()
 {
 }
 
-bool cTestCPUInterface::SendMessage(cOrgMessage & mess)
+bool cTestCPUInterface::SendMessage(cOrgMessage& mess)
 {
   return false;
 }
@@ -83,7 +83,7 @@ int cTestCPUInterface::ReceiveValue()
   return m_testcpu->GetReceiveValue();
 }
 
-bool cTestCPUInterface::InjectParasite(cOrganism * parent, const cGenome & injected_code)
+bool cTestCPUInterface::InjectParasite(cOrganism* parent, const cGenome& injected_code)
 {
   return false;
 }

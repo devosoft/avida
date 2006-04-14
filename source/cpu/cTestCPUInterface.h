@@ -14,10 +14,6 @@
 #include "cOrgInterface.h"
 #endif
 
-class cOrganism;
-class cGenome;
-template <class T> class tArray;
-class cOrgMessage;
 class cTestCPU;
 
 #ifndef NULL

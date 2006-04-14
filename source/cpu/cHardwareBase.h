@@ -115,7 +115,7 @@ public:
   // --------  Parasite Stuff  --------
   virtual int TestParasite() const = 0;
   virtual bool InjectHost(const cCodeLabel& in_label, const cGenome& injection) = 0;
-  virtual int InjectThread(const cCodeLabel& in_label, const cGenome& injection) = 0;
+  virtual bool InjectThread(const cCodeLabel& in_label) = 0;
   
   
   // --------  Accessors  --------
