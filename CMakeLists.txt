@@ -69,7 +69,6 @@ SET(CMAKE_BUILD_TYPE
 # PROJECT_BUILD_DIR aren't yet defined).
 
 PROJECT(AVIDA)
-SUBDIRS(source support)
 
 # The following three variables must be after the PROJECT statement, otherwise newer versions of cmake
 # will (correctly) use an empty value of PROJECT_BINARY_DIR, since the project didn't exist yet.
@@ -79,6 +78,7 @@ SET(CMAKE_INSTALL_PREFIX
   "${PROJECT_BINARY_DIR}"
   CACHE PATH
   "Install path prefix, prepended onto install directories."
+  FORCE
 )
 
 # Final software is built directly into the work subdirectory.
@@ -274,3 +274,5 @@ SET(ALL_LIB_DIRS
   ${MAIN_BLD_DIR}
   ${LIBRARY_OUTPUT_PATH}
 )
+
+SUBDIRS(source support)
