@@ -21,7 +21,7 @@ SET(EventFile "${CMAKE_CURRENT_BINARY_DIR}/events.cfg")
 CONFIGURE_FILE(${EventFileTemplate} ${EventFile} IMMEDIATE)
 
 # Where to find default configure files.
-SET(ConfigDir "${PROJECT_BINARY_DIR}/work")
+SET(ConfigDir "${AVIDA_BINARY_DIR}/work")
 # Configure files (other than the event file, generated above).
 SET(GenesisFile "${ConfigDir}/avida.cfg")
 SET(InstSetFile "${ConfigDir}/inst_set.default")
