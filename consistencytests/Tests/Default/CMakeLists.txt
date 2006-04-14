@@ -21,14 +21,14 @@ SET(EventFile "${CMAKE_CURRENT_BINARY_DIR}/events.cfg")
 CONFIGURE_FILE(${EventFileTemplate} ${EventFile} IMMEDIATE)
 
 # Where to find default configure files.
-SET(ConfigDir "${AVIDA_SOURCE_DIR}/source/support")
+SET(ConfigDir "${PROJECT_BINARY_DIR}/work" INTERNAL "Location of default configuration files")
 # Configure files (other than the event file, generated above).
-SET(GenesisFile "${ConfigDir}/avida.cfg")
-SET(InstSetFile "${ConfigDir}/inst_set.default")
-SET(EnvironmentFile "${ConfigDir}/environment.cfg")
-SET(StartCreatureFile "${ConfigDir}/organism.default")
+SET(GenesisFile "${ConfigDir}/avida.cfg" INTERNAL "Main configuration file")
+SET(InstSetFile "${ConfigDir}/inst_set.default" INTERNAL "Default instruction set")
+SET(EnvironmentFile "${ConfigDir}/environment.cfg" INTERNAL "Environment file")
+SET(StartCreatureFile "${ConfigDir}/organism.default" INTERNAL "Default organism")
 # Command-line arguments passed to Avida.
-SET(AvidaArgs "-c ${GenesisFile} -seed %d -set WORLD_X 40 -set WORLD_Y 40 -set INST_SET ${InstSetFile} -set EVENT_FILE ${EventFile} -set ENVIRONMENT_FILE ${EnvironmentFile} -set START_CREATURE ${StartCreatureFile} -set DATA_DIR .")
+SET(AvidaArgs "-c ${GenesisFile} -seed %d -set WORLD_X 40 -set WORLD_Y 40 -set INST_SET ${InstSetFile} -set EVENT_FILE ${EventFile} -set ENVIRONMENT_FILE ${EnvironmentFile} -set START_CREATURE ${StartCreatureFile} -set DATA_DIR ." INTERNAL "Command line arguments for tests")
 
 #
 # Consistency checks configuration
