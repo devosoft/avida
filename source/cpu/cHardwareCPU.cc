@@ -1002,174 +1002,6 @@ void cHardwareCPU::InjectCode(const cGenome & inject_code, const int line_num)
   }
 }
 
-void cHardwareCPU::InjectCodeThread(const cGenome & inject_code, const int line_num)
-{
-}
-
-void cHardwareCPU::Mutate(cAvidaContext& ctx, int mut_point)
-{
-  // Test if trying to mutate outside of genome...
-  assert(mut_point >= 0 && mut_point < GetMemory().GetSize());
-  
-  GetMemory()[mut_point] = m_inst_set->GetRandomInst(ctx);
-  GetMemory().SetFlagMutated(mut_point);
-  GetMemory().SetFlagPointMut(mut_point);
-  //organism->GetPhenotype().IsMutated() = true;
-  organism->CPUStats().mut_stats.point_mut_count++;
-}
-
-int cHardwareCPU::PointMutate(cAvidaContext& ctx, const double mut_rate)
-{
-  const int num_muts =
-  ctx.GetRandom().GetRandBinomial(GetMemory().GetSize(), mut_rate);
-  
-  for (int i = 0; i < num_muts; i++) {
-    const int pos = ctx.GetRandom().GetUInt(GetMemory().GetSize());
-    Mutate(ctx, pos);
-  }
-  
-  return num_muts;
-}
-
-
-// Trigger mutations of a specific type.  Outside triggers cannot specify
-// a head since hardware types are not known.
-
-bool cHardwareCPU::TriggerMutations(cAvidaContext& ctx, int trigger)
-{
-  // Only update triggers should happen from the outside!
-  assert(trigger == nMutation::TRIGGER_UPDATE);
-  
-  // Assume instruction pointer is the intended target (if one is even
-  // needed!
-  
-  return TriggerMutations(ctx, trigger, IP());
-}
-
-bool cHardwareCPU::TriggerMutations(cAvidaContext& ctx, int trigger, cHeadCPU & cur_head)
-{
-  // Collect information about mutations from the organism.
-  cLocalMutations & mut_info = organism->GetLocalMutations();
-  const tList<cMutation> & mut_list =
-    mut_info.GetMutationLib().GetMutationList(trigger);
-  
-  // If we have no mutations for this trigger, stop here.
-  if (mut_list.GetSize() == 0) return false;
-  bool has_mutation = false;
-  
-  // Determine what memory this mutation will be affecting.
-  cCPUMemory & target_mem = (trigger == nMutation::TRIGGER_DIVIDE) 
-    ? organism->ChildGenome() : GetMemory();
-  
-  // Loop through all mutations associated with this trigger and test them.
-  tConstListIterator<cMutation> mut_it(mut_list);
-  
-  while (mut_it.Next() != NULL) {
-    const cMutation * cur_mut = mut_it.Get();
-    const int mut_id = cur_mut->GetID();
-    const int scope = cur_mut->GetScope();
-    const double rate = mut_info.GetRate(mut_id);
-    switch (scope) {
-      case nMutation::SCOPE_GENOME:
-        if (TriggerMutations_ScopeGenome(ctx, cur_mut, target_mem, cur_head, rate)) {
-          has_mutation = true;
-          mut_info.IncCount(mut_id);
-        }
-        break;
-      case nMutation::SCOPE_LOCAL:
-      case nMutation::SCOPE_PROP:
-        if (TriggerMutations_ScopeLocal(ctx, cur_mut, target_mem, cur_head, rate)) {
-          has_mutation = true;
-          mut_info.IncCount(mut_id);
-        }
-        break;
-      case nMutation::SCOPE_GLOBAL:
-      case nMutation::SCOPE_SPREAD:
-        int num_muts =
-        TriggerMutations_ScopeGlobal(ctx, cur_mut, target_mem, cur_head, rate);
-        if (num_muts > 0) {
-          has_mutation = true;
-          mut_info.IncCount(mut_id, num_muts);
-        }
-          break;
-    }
-  }
-  
-  return has_mutation;
-}
-
-bool cHardwareCPU::TriggerMutations_ScopeGenome(cAvidaContext& ctx, const cMutation* cur_mut,
-                                                cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate)
-{
-  // The rate we have stored indicates the probability that a single
-  // mutation will occur anywhere in the genome.
-  
-  if (ctx.GetRandom().P(rate) == true) {
-    // We must create a temporary head and use it to randomly determine the
-    // position in the genome to be mutated.
-    cHeadCPU tmp_head(cur_head);
-    tmp_head.AbsSet(ctx.GetRandom().GetUInt(target_memory.GetSize()));
-    TriggerMutations_Body(ctx, cur_mut->GetType(), target_memory, tmp_head);
-    return true;
-  }
-  return false;
-}
-
-bool cHardwareCPU::TriggerMutations_ScopeLocal(cAvidaContext& ctx, const cMutation* cur_mut,
-                                               cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate)
-{
-  // The rate we have stored is the probability for a mutation at this single
-  // position in the genome.
-  
-  if (ctx.GetRandom().P(rate) == true) {
-    TriggerMutations_Body(ctx, cur_mut->GetType(), target_memory, cur_head);
-    return true;
-  }
-  return false;
-}
-
-int cHardwareCPU::TriggerMutations_ScopeGlobal(cAvidaContext& ctx, const cMutation* cur_mut,
-                                               cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate)
-{
-  // The probability we have stored is per-site, so we can pull a random
-  // number from a binomial distribution to determine the number of mutations
-  // that should occur.
-  
-  const int num_mut =
-  ctx.GetRandom().GetRandBinomial(target_memory.GetSize(), rate);
-  
-  if (num_mut > 0) {
-    for (int i = 0; i < num_mut; i++) {
-      cHeadCPU tmp_head(cur_head);
-      tmp_head.AbsSet(ctx.GetRandom().GetUInt(target_memory.GetSize()));
-      TriggerMutations_Body(ctx, cur_mut->GetType(), target_memory, tmp_head);
-    }
-  }
-  
-  return num_mut;
-}
-
-void cHardwareCPU::TriggerMutations_Body(cAvidaContext& ctx, int type, cCPUMemory & target_memory,
-                                         cHeadCPU & cur_head)
-{
-  const int pos = cur_head.GetPosition();
-  
-  switch (type) {
-    case nMutation::TYPE_POINT:
-      target_memory[pos] = m_inst_set->GetRandomInst(ctx);
-      target_memory.SetFlagMutated(pos);
-      break;
-    case nMutation::TYPE_INSERT:
-    case nMutation::TYPE_DELETE:
-    case nMutation::TYPE_HEAD_INC:
-    case nMutation::TYPE_HEAD_DEC:
-    case nMutation::TYPE_TEMP:
-    case nMutation::TYPE_KILL:
-    default:
-      m_world->GetDriver().RaiseException("Mutation type not implemented!");
-      break;
-  };
-}
 
 void cHardwareCPU::ReadInst(const int in_inst)
 {
@@ -1308,12 +1140,6 @@ inline int cHardwareCPU::FindComplementRegister(int base_reg)
 }
 
 
-inline void cHardwareCPU::Fault(int fault_loc, int fault_type, cString fault_desc)
-{
-  organism->Fault(fault_loc, fault_type, fault_desc);
-}
-
-
 bool cHardwareCPU::Allocate_Necro(const int new_size)
 {
   GetMemory().ResizeOld(new_size);
@@ -1343,11 +1169,11 @@ bool cHardwareCPU::Allocate_Main(cAvidaContext& ctx, const int allocated_size)
 {
   // must do divide before second allocate & must allocate positive amount...
   if (m_world->GetConfig().REQUIRE_ALLOCATE.Get() && mal_active == true) {
-    Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR, "Allocate already active");
+    organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR, "Allocate already active");
     return false;
   }
   if (allocated_size < 1) {
-    Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
+    organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
           cStringUtil::Stringf("Allocate of %d too small", allocated_size));
     return false;
   }
@@ -1357,7 +1183,7 @@ bool cHardwareCPU::Allocate_Main(cAvidaContext& ctx, const int allocated_size)
   
   // Make sure that the new size is in range.
   if (new_size > MAX_CREATURE_SIZE  ||  new_size < MIN_CREATURE_SIZE) {
-    Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
+    organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
           cStringUtil::Stringf("Invalid post-allocate size (%d)",
                                new_size));
     return false;
@@ -1365,7 +1191,7 @@ bool cHardwareCPU::Allocate_Main(cAvidaContext& ctx, const int allocated_size)
   
   const int max_alloc_size = (int) (old_size * m_world->GetConfig().CHILD_SIZE_RANGE.Get());
   if (allocated_size > max_alloc_size) {
-    Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
+    organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
           cStringUtil::Stringf("Allocate too large (%d > %d)",
                                allocated_size, max_alloc_size));
     return false;
@@ -1374,7 +1200,7 @@ bool cHardwareCPU::Allocate_Main(cAvidaContext& ctx, const int allocated_size)
   const int max_old_size =
     (int) (allocated_size * m_world->GetConfig().CHILD_SIZE_RANGE.Get());
   if (old_size > max_old_size) {
-    Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
+    organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
           cStringUtil::Stringf("Allocate too small (%d > %d)",
                                old_size, max_old_size));
     return false;
@@ -1397,278 +1223,15 @@ bool cHardwareCPU::Allocate_Main(cAvidaContext& ctx, const int allocated_size)
   return true;
 }
 
-
-bool cHardwareCPU::Divide_CheckViable(cAvidaContext& ctx, const int child_size,
-                                      const int parent_size)
+int cHardwareCPU::GetCopiedSize(const int parent_size, const int child_size)
 {
-  // Make sure the organism is okay with dividing now...
-  if (organism->Divide_CheckViable() == false) return false; // (divide fails)
-  
-  // If required, make sure an allocate has occured.
-  if (m_world->GetConfig().REQUIRE_ALLOCATE.Get() && mal_active == false) {
-    Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR, "Must allocate before divide");
-    return false; //  (divide fails)
-  }
-  
-  // Make sure that neither parent nor child will be below the minimum size.
-  
-  const int genome_size = organism->GetGenome().GetSize();
-  const double size_range = m_world->GetConfig().CHILD_SIZE_RANGE.Get();
-  const int min_size = Max(MIN_CREATURE_SIZE, (int) (genome_size/size_range));
-  const int max_size = Min(MAX_CREATURE_SIZE, (int) (genome_size*size_range));
-  
-  if (child_size < min_size || child_size > max_size) {
-    Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
-          cStringUtil::Stringf("Invalid offspring length (%d)", child_size));
-    return false; // (divide fails)
-  }
-  if (parent_size < min_size || parent_size > max_size) {
-    Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
-          cStringUtil::Stringf("Invalid post-divide length (%d)",parent_size));
-    return false; // (divide fails)
-  }
-  
-  // Count the number of lines executed in the parent, and make sure the
-  // specified fraction has been reached.
-  
-  int executed_size = 0;
-  for (int i = 0; i < parent_size; i++) {
-    if (GetMemory().FlagExecuted(i)) executed_size++;
-  }
-  
-  const int min_exe_lines = (int) (parent_size * m_world->GetConfig().MIN_EXE_LINES.Get());
-  if (executed_size < min_exe_lines) {
-    Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
-          cStringUtil::Stringf("Too few executed lines (%d < %d)",
-                               executed_size, min_exe_lines));
-    return false; // (divide fails)
-  }
-	
-  // Count the number of lines which were copied into the child, and make
-  // sure the specified fraction has been reached.
-  
   int copied_size = 0;
+  const cCPUMemory& memory = GetMemory();
   for (int i = parent_size; i < parent_size + child_size; i++) {
-    if (GetMemory().FlagCopied(i)) copied_size++;
+    if (memory.FlagCopied(i)) copied_size++;
   }
-  
-  const int min_copied =  (int) (child_size * m_world->GetConfig().MIN_COPIED_LINES.Get());
-  if (copied_size < min_copied) {
-    Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
-          cStringUtil::Stringf("Too few copied commands (%d < %d)",
-                               copied_size, min_copied));
-    return false; // (divide fails)
-  }
-  
-  // Save the information we collected here...
-  cPhenotype & phenotype = organism->GetPhenotype();
-  phenotype.SetLinesExecuted(executed_size);
-  phenotype.SetLinesCopied(copied_size);
-  
-  // Determine the fitness of this organism as compared to its parent...
-  if (m_world->GetTestSterilize() == true &&
-      phenotype.IsInjected() == false) {
-    const int merit_base = phenotype.CalcSizeMerit();
-    const double cur_fitness =
-      merit_base * phenotype.GetCurBonus() / phenotype.GetTimeUsed();
-    const double fitness_ratio = cur_fitness / phenotype.GetLastFitness();
-    
-    
-    //  const double neut_min = parent_fitness * nHardware::FITNESS_NEUTRAL_MIN;
-    //  const double neut_max = parent_fitness * nHardware::FITNESS_NEUTRAL_MAX;
-    
-    bool sterilize = false;
-    
-    if (fitness_ratio < nHardware::FITNESS_NEUTRAL_MIN) {
-      if (ctx.GetRandom().P(organism->GetSterilizeNeg())) sterilize = true;
-    } else if (fitness_ratio <= nHardware::FITNESS_NEUTRAL_MAX) {
-      if (ctx.GetRandom().P(organism->GetSterilizeNeut())) sterilize = true;
-    } else {
-      if (ctx.GetRandom().P(organism->GetSterilizePos())) sterilize = true;
-    }
-    
-    if (sterilize == true) {
-      //Don't let this organism have this or any more children!
-      phenotype.IsFertile() = false;
-      return false;
-    }    
-  }
-  
-  return true; // (divide succeeds!)
-}
-
-
-void cHardwareCPU::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier)
-{
-  sCPUStats & cpu_stats = organism->CPUStats();
-  cCPUMemory & child_genome = organism->ChildGenome();
-  
-  organism->GetPhenotype().SetDivType(mut_multiplier);
-  
-  // Divide Mutations
-  if (organism->TestDivideMut(ctx)) {
-    const unsigned int mut_line = ctx.GetRandom().GetUInt(child_genome.GetSize());
-    child_genome[mut_line] = m_inst_set->GetRandomInst(ctx);
-    cpu_stats.mut_stats.divide_mut_count++;
-  }
-  
-  // Divide Insertions
-  if (organism->TestDivideIns(ctx) && child_genome.GetSize() < MAX_CREATURE_SIZE){
-    const unsigned int mut_line = ctx.GetRandom().GetUInt(child_genome.GetSize() + 1);
-    child_genome.Insert(mut_line, m_inst_set->GetRandomInst(ctx));
-    cpu_stats.mut_stats.divide_insert_mut_count++;
-  }
-  
-  // Divide Deletions
-  if (organism->TestDivideDel(ctx) && child_genome.GetSize() > MIN_CREATURE_SIZE){
-    const unsigned int mut_line = ctx.GetRandom().GetUInt(child_genome.GetSize());
-    child_genome.Remove(mut_line);
-    cpu_stats.mut_stats.divide_delete_mut_count++;
-  }
-  
-  // Divide Mutations (per site)
-  if(organism->GetDivMutProb() > 0){
-    int num_mut = ctx.GetRandom().GetRandBinomial(child_genome.GetSize(), 
-                                                       organism->GetDivMutProb() / mut_multiplier);
-    // If we have lines to mutate...
-    if( num_mut > 0 ){
-      for (int i = 0; i < num_mut; i++) {
-        int site = ctx.GetRandom().GetUInt(child_genome.GetSize());
-        child_genome[site] = m_inst_set->GetRandomInst(ctx);
-        cpu_stats.mut_stats.div_mut_count++;
-      }
-    }
-  }
-  
-  
-  // Insert Mutations (per site)
-  if(organism->GetInsMutProb() > 0){
-    int num_mut = ctx.GetRandom().GetRandBinomial(child_genome.GetSize(),
-                                                       organism->GetInsMutProb());
-    // If would make creature to big, insert up to MAX_CREATURE_SIZE
-    if( num_mut + child_genome.GetSize() > MAX_CREATURE_SIZE ){
-      num_mut = MAX_CREATURE_SIZE - child_genome.GetSize();
-    }
-    // If we have lines to insert...
-    if( num_mut > 0 ){
-      // Build a list of the sites where mutations occured
-      static int mut_sites[MAX_CREATURE_SIZE];
-      for (int i = 0; i < num_mut; i++) {
-        mut_sites[i] = ctx.GetRandom().GetUInt(child_genome.GetSize() + 1);
-      }
-      // Sort the list
-      qsort( (void*)mut_sites, num_mut, sizeof(int), &IntCompareFunction );
-      // Actually do the mutations (in reverse sort order)
-      for(int i = num_mut-1; i >= 0; i--) {
-        child_genome.Insert(mut_sites[i], m_inst_set->GetRandomInst(ctx));
-        cpu_stats.mut_stats.insert_mut_count++;
-      }
-    }
-  }
-  
-  
-  // Delete Mutations (per site)
-  if( organism->GetDelMutProb() > 0 ){
-    int num_mut = ctx.GetRandom().GetRandBinomial(child_genome.GetSize(),
-                                                       organism->GetDelMutProb());
-    // If would make creature too small, delete down to MIN_CREATURE_SIZE
-    if (child_genome.GetSize() - num_mut < MIN_CREATURE_SIZE) {
-      num_mut = child_genome.GetSize() - MIN_CREATURE_SIZE;
-    }
-    
-    // If we have lines to delete...
-    for (int i = 0; i < num_mut; i++) {
-      int site = ctx.GetRandom().GetUInt(child_genome.GetSize());
-      child_genome.Remove(site);
-      cpu_stats.mut_stats.delete_mut_count++;
-    }
-  }
-  
-  // Mutations in the parent's genome
-  if (organism->GetParentMutProb() > 0) {
-    for (int i = 0; i < GetMemory().GetSize(); i++) {
-      if (organism->TestParentMut(ctx)) {
-        GetMemory()[i] = m_inst_set->GetRandomInst(ctx);
-        cpu_stats.mut_stats.parent_mut_line_count++;
-      }
-    }
-  }
-  
-  
-  // Count up mutated lines
-  for(int i = 0; i < GetMemory().GetSize(); i++){
-    if (GetMemory().FlagPointMut(i)) {
-      cpu_stats.mut_stats.point_mut_line_count++;
-    }
-  }
-  for(int i = 0; i < child_genome.GetSize(); i++){
-    if( child_genome.FlagCopyMut(i)) {
-      cpu_stats.mut_stats.copy_mut_line_count++;
-    }
-  }
-}
-
-
-// test whether the offspring creature contains an advantageous mutation.
-void cHardwareCPU::Divide_TestFitnessMeasures(cAvidaContext& ctx)
-{
-  cPhenotype & phenotype = organism->GetPhenotype();
-  phenotype.CopyTrue() = ( organism->ChildGenome() == organism->GetGenome() );
-  phenotype.ChildFertile() = true;
-  
-  // Only continue if we're supposed to do a fitness test on divide...
-  if (organism->GetTestOnDivide() == false) return;
-  
-  // If this was a perfect copy, then we don't need to worry about any other
-  // tests...  Theoretically, we need to worry about the parent changing,
-  // but as long as the child is always compared to the original genotype,
-  // this won't be an issue.
-  if (phenotype.CopyTrue() == true) return;
-  
-  const double parent_fitness = organism->GetTestFitness();
-  const double neut_min = parent_fitness * nHardware::FITNESS_NEUTRAL_MIN;
-  const double neut_max = parent_fitness * nHardware::FITNESS_NEUTRAL_MAX;
-  
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
-  cCPUTestInfo test_info;
-  test_info.UseRandomInputs();
-  testcpu->TestGenome(ctx, test_info, organism->ChildGenome());
-  const double child_fitness = test_info.GetGenotypeFitness();
-  delete testcpu;
-  
-  bool revert = false;
-  bool sterilize = false;
-  
-  // If implicit mutations are turned off, make sure this won't spawn one.
-  if (organism->GetFailImplicit() == true) {
-    if (test_info.GetMaxDepth() > 0) sterilize = true;
-  }
-  
-  if (child_fitness == 0.0) {
-    // Fatal mutation... test for reversion.
-    if (ctx.GetRandom().P(organism->GetRevertFatal())) revert = true;
-    if (ctx.GetRandom().P(organism->GetSterilizeFatal())) sterilize = true;
-  } else if (child_fitness < neut_min) {
-    if (ctx.GetRandom().P(organism->GetRevertNeg())) revert = true;
-    if (ctx.GetRandom().P(organism->GetSterilizeNeg())) sterilize = true;
-  } else if (child_fitness <= neut_max) {
-    if (ctx.GetRandom().P(organism->GetRevertNeut())) revert = true;
-    if (ctx.GetRandom().P(organism->GetSterilizeNeut())) sterilize = true;
-  } else {
-    if (ctx.GetRandom().P(organism->GetRevertPos())) revert = true;
-    if (ctx.GetRandom().P(organism->GetSterilizePos())) sterilize = true;
-  }
-  
-  // Ideally, we won't have reversions and sterilizations turned on at the
-  // same time, but if we do, give revert the priority.
-  if (revert == true) {
-    organism->ChildGenome() = organism->GetGenome();
-  }
-  
-  if (sterilize == true) {
-    organism->GetPhenotype().ChildFertile() = false;
-  }
-}
+  return copied_size;
+}  
 
 
 bool cHardwareCPU::Divide_Main(cAvidaContext& ctx, const int div_point,
@@ -1677,7 +1240,7 @@ bool cHardwareCPU::Divide_Main(cAvidaContext& ctx, const int div_point,
   const int child_size = GetMemory().GetSize() - div_point - extra_lines;
   
   // Make sure this divide will produce a viable offspring.
-  const bool viable = Divide_CheckViable(ctx, child_size, div_point);
+  const bool viable = Divide_CheckViable(ctx, div_point, child_size);
   if (viable == false) return false;
   
   // Since the divide will now succeed, set up the information to be sent
@@ -2195,7 +1758,7 @@ bool cHardwareCPU::Inst_Sqrt(cAvidaContext& ctx)
   const int value = GetRegister(reg_used);
   if (value > 1) GetRegister(reg_used) = (int) sqrt((double) value);
   else if (value < 0) {
-    Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "sqrt: value is negative");
+    organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "sqrt: value is negative");
     return false;
   }
   return true;
@@ -2207,7 +1770,7 @@ bool cHardwareCPU::Inst_Log(cAvidaContext& ctx)
   const int value = GetRegister(reg_used);
   if (value >= 1) GetRegister(reg_used) = (int) log((double) value);
   else if (value < 0) {
-    Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "log: value is negative");
+    organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "log: value is negative");
     return false;
   }
   return true;
@@ -2219,7 +1782,7 @@ bool cHardwareCPU::Inst_Log10(cAvidaContext& ctx)
   const int value = GetRegister(reg_used);
   if (value >= 1) GetRegister(reg_used) = (int) log10((double) value);
   else if (value < 0) {
-    Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "log10: value is negative");
+    organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "log10: value is negative");
     return false;
   }
   return true;
@@ -2258,11 +1821,11 @@ bool cHardwareCPU::Inst_Div(cAvidaContext& ctx)
   const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
   if (GetRegister(nHardwareCPU::REG_CX) != 0) {
     if (0-INT_MAX > GetRegister(nHardwareCPU::REG_BX) && GetRegister(nHardwareCPU::REG_CX) == -1)
-      Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: Float exception");
+      organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: Float exception");
     else
       GetRegister(reg_used) = GetRegister(nHardwareCPU::REG_BX) / GetRegister(nHardwareCPU::REG_CX);
   } else {
-    Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: dividing by 0");
+    organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: dividing by 0");
     return false;
   }
   return true;
@@ -2274,7 +1837,7 @@ bool cHardwareCPU::Inst_Mod(cAvidaContext& ctx)
   if (GetRegister(nHardwareCPU::REG_CX) != 0) {
     GetRegister(reg_used) = GetRegister(nHardwareCPU::REG_BX) % GetRegister(nHardwareCPU::REG_CX);
   } else {
-    Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "mod: modding by 0");
+    organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "mod: modding by 0");
     return false;
   }
   return true;
@@ -2569,11 +2132,11 @@ bool cHardwareCPU::Inst_Inject(cAvidaContext& ctx)
   
   // Make sure the creature will still be above the minimum size,
   if (inject_size <= 0) {
-    Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: no code to inject");
+    organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: no code to inject");
     return false; // (inject fails)
   }
   if (start_pos < MIN_CREATURE_SIZE) {
-    Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: new size too small");
+    organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: new size too small");
     return false; // (inject fails)
   }
   
@@ -2590,7 +2153,7 @@ bool cHardwareCPU::Inst_Inject(cAvidaContext& ctx)
   
   // If there is no label, abort.
   if (GetLabel().GetSize() == 0) {
-    Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: label required");
+    organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: label required");
     return false; // (inject fails)
   }
   
@@ -2599,7 +2162,7 @@ bool cHardwareCPU::Inst_Inject(cAvidaContext& ctx)
   
   const bool inject_signal = host_organism->GetHardware().InjectHost(GetLabel(), inject_code);
   if (inject_signal) {
-    Fault(FAULT_LOC_INJECT, FAULT_TYPE_WARNING, "inject: host too large.");
+    organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_WARNING, "inject: host too large.");
     return false; // Inject failed.
   }
   
@@ -2636,11 +2199,11 @@ bool cHardwareCPU::Inst_InjectThread(cAvidaContext& ctx)
   
   // Make sure the creature will still be above the minimum size,
   if (inject_size <= 0) {
-    Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: no code to inject");
+    organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: no code to inject");
     return false; // (inject fails)
   }
   if (start_pos < MIN_CREATURE_SIZE) {
-    Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: new size too small");
+    organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: new size too small");
     return false; // (inject fails)
   }
   
@@ -2657,7 +2220,7 @@ bool cHardwareCPU::Inst_InjectThread(cAvidaContext& ctx)
   
   // If there is no label, abort.
   if (GetLabel().GetSize() == 0) {
-    Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: label required");
+    organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: label required");
     return false; // (inject fails)
   }
   
@@ -3036,13 +2599,13 @@ bool cHardwareCPU::Inst_ModCopyMut(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_ForkThread(cAvidaContext& ctx)
 {
   IP().Advance();
-  if (!ForkThread()) Fault(FAULT_LOC_THREAD_FORK, FAULT_TYPE_FORK_TH);
+  if (!ForkThread()) organism->Fault(FAULT_LOC_THREAD_FORK, FAULT_TYPE_FORK_TH);
   return true;
 }
 
 bool cHardwareCPU::Inst_KillThread(cAvidaContext& ctx)
 {
-  if (!KillThread()) Fault(FAULT_LOC_THREAD_KILL, FAULT_TYPE_KILL_TH);
+  if (!KillThread()) organism->Fault(FAULT_LOC_THREAD_KILL, FAULT_TYPE_KILL_TH);
   else advance_ip = false;
   return true;
 }

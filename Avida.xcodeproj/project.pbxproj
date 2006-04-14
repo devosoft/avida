@@ -40,6 +40,17 @@
 		702F52AA0992F8F600B2B507 /* cSymbolTable.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702F52A80992F8F600B2B507 /* cSymbolTable.cc */; };
 		702F52E10992FD8000B2B507 /* cScriptObject.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702F52DF0992FD8000B2B507 /* cScriptObject.cc */; };
 		702F532F0993060A00B2B507 /* avida-s in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70DCAD1C097AF7CC002F8733 /* avida-s */; };
+		7039884C09F00CFE0052ACE7 /* avida-smt.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2D409EE8501001AEA89 /* avida-smt.cfg */; };
+		7039884D09F00D020052ACE7 /* analyze.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2D309EE8501001AEA89 /* analyze.cfg */; };
+		7039884E09F00D030052ACE7 /* avida.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2D509EE8501001AEA89 /* avida.cfg */; };
+		7039884F09F00D060052ACE7 /* environment.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2D709EE8501001AEA89 /* environment.cfg */; };
+		7039885009F00D080052ACE7 /* events.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2D809EE8501001AEA89 /* events.cfg */; };
+		7039885109F00D0D0052ACE7 /* inst_set.smt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2DC09EE8501001AEA89 /* inst_set.smt */; };
+		7039885209F00D0D0052ACE7 /* inst_set.sex in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2DB09EE8501001AEA89 /* inst_set.sex */; };
+		7039885309F00D0F0052ACE7 /* inst_set.default in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2DA09EE8501001AEA89 /* inst_set.default */; };
+		7039885409F00D150052ACE7 /* organism.default in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2F609EE8501001AEA89 /* organism.default */; };
+		7039885509F00D190052ACE7 /* organism.sex in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2F709EE8501001AEA89 /* organism.sex */; };
+		7039885609F00D1A0052ACE7 /* organism.smt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2F809EE8501001AEA89 /* organism.smt */; };
 		7040CF1C0906A52E00AA820F /* cEventManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7040CF1A0906A52E00AA820F /* cEventManager.cc */; };
 		7040CF1E0906A52E00AA820F /* cEventManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7040CF1A0906A52E00AA820F /* cEventManager.cc */; };
 		7040D3A6090964D100AA820F /* cMxCodeArray.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865808F4974300FC65FE /* cMxCodeArray.cc */; };
@@ -444,6 +455,17 @@
 			dstSubfolderSpec = 16;
 			files = (
 				700E2996085A1F6000CF158A /* avida in CopyFiles */,
+				7039884C09F00CFE0052ACE7 /* avida-smt.cfg in CopyFiles */,
+				7039884D09F00D020052ACE7 /* analyze.cfg in CopyFiles */,
+				7039884E09F00D030052ACE7 /* avida.cfg in CopyFiles */,
+				7039884F09F00D060052ACE7 /* environment.cfg in CopyFiles */,
+				7039885009F00D080052ACE7 /* events.cfg in CopyFiles */,
+				7039885109F00D0D0052ACE7 /* inst_set.smt in CopyFiles */,
+				7039885209F00D0D0052ACE7 /* inst_set.sex in CopyFiles */,
+				7039885309F00D0F0052ACE7 /* inst_set.default in CopyFiles */,
+				7039885409F00D150052ACE7 /* organism.default in CopyFiles */,
+				7039885509F00D190052ACE7 /* organism.sex in CopyFiles */,
+				7039885609F00D1A0052ACE7 /* organism.smt in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2383,7 +2405,6 @@
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
 				);
-				ZERO_LINK = YES;
 			};
 			name = Development;
 		};

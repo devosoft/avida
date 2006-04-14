@@ -25,6 +25,7 @@ class cHeadCPU;
 class cInjectGenotype;
 class cInstruction;
 class cInstSet;
+class cMutation;
 class cOrganism;
 class cString;
 class cWorld;
@@ -34,10 +35,24 @@ class cHardwareBase
 protected:
   cWorld* m_world;
   cOrganism* organism;       // Organism using this hardware.
-  cInstSet* m_inst_set;        // Instruction set being used.
+  cInstSet* m_inst_set;      // Instruction set being used.
   cHardwareTracer* m_tracer; // Set this if you want execution traced.
 
-
+  virtual int GetExecutedSize(const int parent_size);
+  virtual int GetCopiedSize(const int parent_size, const int child_size) = 0;  
+  
+  bool Divide_CheckViable(cAvidaContext& ctx, const int parent_size, const int child_size);
+  void Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier = 1.0);
+  void Divide_TestFitnessMeasures(cAvidaContext& ctx);
+  
+  void TriggerMutations_Body(cAvidaContext& ctx, int type, cCPUMemory& target_memory, cHeadCPU& cur_head);
+  bool TriggerMutations_ScopeGenome(cAvidaContext& ctx, const cMutation* cur_mut,
+																		cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);
+  bool TriggerMutations_ScopeLocal(cAvidaContext& ctx, const cMutation* cur_mut,
+																	 cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);
+  int TriggerMutations_ScopeGlobal(cAvidaContext& ctx, const cMutation* cur_mut,
+																	 cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);
+  
   cHardwareBase(); // @not_implemented
   cHardwareBase(const cHardwareBase&); // @not_implemented
   cHardwareBase& operator=(const cHardwareBase&); // @not_implemented
@@ -126,9 +141,9 @@ public:
   
   
   // --------  Mutation  --------
-  virtual int PointMutate(cAvidaContext& ctx, const double mut_rate) = 0;
-  virtual bool TriggerMutations(cAvidaContext& ctx, int trigger) = 0;
-  virtual bool TriggerMutations(cAvidaContext& ctx, int trigger, cHeadCPU& cur_head) = 0;
+  virtual int PointMutate(cAvidaContext& ctx, const double mut_rate);
+  virtual bool TriggerMutations(cAvidaContext& ctx, int trigger);
+  virtual bool TriggerMutations(cAvidaContext& ctx, int trigger, cHeadCPU& cur_head);
   
   
 protected:

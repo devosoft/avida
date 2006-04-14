@@ -67,7 +67,7 @@ class cHardwareCPU : public cHardwareBase
 public:
   typedef bool (cHardwareCPU::*tHardwareCPUMethod)(cAvidaContext& ctx);
 
-private:
+protected:
   static cInstLibCPU* s_inst_slib;
   static cInstLibCPU* initInstLib(void);
 
@@ -92,7 +92,57 @@ private:
   tArray<int> inst_ft_cost;
 #endif
   
+  
+  bool SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst);
+  bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst);
+  
+  // --------  Stack Manipulation...  --------
+  inline void StackPush(int value);
+  inline int StackPop();
+  inline void StackFlip();
+  inline void StackClear();
+  inline void SwitchStack();
+  
+  
+  // --------  Head Manipulation (including IP)  --------
+  cHeadCPU& GetActiveHead() { return threads[cur_thread].heads[threads[cur_thread].cur_head]; }
+  void AdjustHeads();
+  
+  
+  // --------  Label Manipulation  -------
+  void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
+  cHeadCPU FindLabel(int direction);
+  int FindLabel_Forward(const cCodeLabel & search_label, const cGenome& search_genome, int pos);
+  int FindLabel_Backward(const cCodeLabel & search_label, const cGenome& search_genome, int pos);
+  cHeadCPU FindLabel(const cCodeLabel & in_label, int direction);
+  cHeadCPU FindFullLabel(const cCodeLabel & in_label);
+  const cCodeLabel& GetReadLabel() const { return threads[cur_thread].read_label; }
+  cCodeLabel& GetReadLabel() { return threads[cur_thread].read_label; }
+  
+  
+  
+  // ---------- Instruction Helpers -----------
+  int FindModifiedRegister(int default_register);
+  int FindModifiedHead(int default_head);
+  int FindComplementRegister(int base_reg);
+  
+  bool Allocate_Necro(const int new_size);
+  bool Allocate_Random(cAvidaContext& ctx, const int old_size, const int new_size);
+  bool Allocate_Default(const int new_size);
+  bool Allocate_Main(cAvidaContext& ctx, const int allocated_size);
+  
+  int GetCopiedSize(const int parent_size, const int child_size);
+  
+  bool Divide_Main(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1);
+  
+  void InjectCode(const cGenome& injection, const int line_num);
+  
+  bool HeadCopy_ErrorCorrect(cAvidaContext& ctx, double reduction);
+  bool Inst_HeadDivideMut(cAvidaContext& ctx, double mut_multiplier = 1);
+  
+  void ReadInst(const int in_inst);
 
+  
   cHardwareCPU& operator=(const cHardwareCPU&); // @not_implemented
 
 public:
@@ -173,12 +223,6 @@ public:
   }
 
 
-  // --------  Mutation  --------
-  int PointMutate(cAvidaContext& ctx, const double mut_rate);  
-  bool TriggerMutations(cAvidaContext& ctx, int trigger);
-  bool TriggerMutations(cAvidaContext& ctx, int trigger, cHeadCPU& cur_head);
-  
-  
   // Non-Standard Methods
   
   int GetActiveStack() const { return threads[cur_thread].cur_stack; }
@@ -385,71 +429,6 @@ private:
 
   //// Placebo ////
   bool Inst_Skip(cAvidaContext& ctx);
-
-
-  // Internal Implementation
-
-  bool SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst);
-  bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst);
-  
-  // --------  Stack Manipulation...  --------
-  inline void StackPush(int value);
-  inline int StackPop();
-  inline void StackFlip();
-  inline void StackClear();
-  inline void SwitchStack();
-  
-  
-  // --------  Head Manipulation (including IP)  --------
-  cHeadCPU& GetActiveHead() { return threads[cur_thread].heads[threads[cur_thread].cur_head]; }
-  void AdjustHeads();
-  
-  
-  // --------  Label Manipulation  -------
-  void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
-  cHeadCPU FindLabel(int direction);
-  int FindLabel_Forward(const cCodeLabel & search_label, const cGenome& search_genome, int pos);
-  int FindLabel_Backward(const cCodeLabel & search_label, const cGenome& search_genome, int pos);
-  cHeadCPU FindLabel(const cCodeLabel & in_label, int direction);
-  cHeadCPU FindFullLabel(const cCodeLabel & in_label);
-  const cCodeLabel& GetReadLabel() const { return threads[cur_thread].read_label; }
-  cCodeLabel& GetReadLabel() { return threads[cur_thread].read_label; }
-  
-  
-  bool TriggerMutations_ScopeGenome(cAvidaContext& ctx, const cMutation* cur_mut,
-                                    cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);
-  bool TriggerMutations_ScopeLocal(cAvidaContext& ctx, const cMutation* cur_mut,
-                                   cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);
-  int TriggerMutations_ScopeGlobal(cAvidaContext& ctx, const cMutation* cur_mut, 
-                                   cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);
-  void TriggerMutations_Body(cAvidaContext& ctx, int type, cCPUMemory& target_memory, cHeadCPU& cur_head);
-  
-  
-  // ---------- Instruction Helpers -----------
-  int FindModifiedRegister(int default_register);
-  int FindModifiedHead(int default_head);
-  int FindComplementRegister(int base_reg);
-  
-  void Fault(int fault_loc, int fault_type, cString fault_desc="");
-  
-  bool Allocate_Necro(const int new_size);
-  bool Allocate_Random(cAvidaContext& ctx, const int old_size, const int new_size);
-  bool Allocate_Default(const int new_size);
-  bool Allocate_Main(cAvidaContext& ctx, const int allocated_size);
-  
-  bool Divide_Main(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1);
-  bool Divide_CheckViable(cAvidaContext& ctx, const int child_size, const int parent_size);
-  void Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier=1);
-  void Divide_TestFitnessMeasures(cAvidaContext& ctx);
-  void Mutate(cAvidaContext& ctx, const int mut_point);
-  
-  void InjectCode(const cGenome& injection, const int line_num);
-  void InjectCodeThread(const cGenome& injection, const int line_num);
-  
-  bool HeadCopy_ErrorCorrect(cAvidaContext& ctx, double reduction);
-  bool Inst_HeadDivideMut(cAvidaContext& ctx, double mut_multiplier = 1);
-  
-  void ReadInst(const int in_inst);
 };
 
 

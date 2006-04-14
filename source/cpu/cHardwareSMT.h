@@ -66,7 +66,7 @@ class cHardwareSMT : public cHardwareBase
 public:
   typedef bool (cHardwareSMT::*tMethod)(cAvidaContext& ctx);
 
-private:
+protected:
   static tInstLib<cHardwareSMT::tMethod>* s_inst_slib;
   static tInstLib<cHardwareSMT::tMethod>* initInstLib(void);
 
@@ -89,6 +89,8 @@ private:
   tArray<int> inst_cost;
   tArray<int> inst_ft_cost;
 #endif
+  
+  int m_cur_child;
 
   
   bool SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst);
@@ -117,16 +119,7 @@ private:
   const cCodeLabel& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
   cCodeLabel& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
 
-  
-  bool TriggerMutations_ScopeGenome(cAvidaContext& ctx, const cMutation* cur_mut,
-																		cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);
-  bool TriggerMutations_ScopeLocal(cAvidaContext& ctx, const cMutation* cur_mut,
-																	 cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);
-  int TriggerMutations_ScopeGlobal(cAvidaContext& ctx, const cMutation* cur_mut,
-																	 cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);
-  void TriggerMutations_Body(cAvidaContext& ctx, int type, cCPUMemory& target_memory,
-														 cHeadCPU& cur_head);
-	
+  	
   // ---------- Instruction Helpers -----------
   int FindModifiedStack(int default_stack);
   int FindModifiedNextStack(int default_stack);
@@ -139,18 +132,15 @@ private:
   int FindMemorySpaceLabel(const cCodeLabel& label, int mem_space);
   bool MemorySpaceExists(const cCodeLabel& label);
 	
-  void Fault(int fault_loc, int fault_type, cString fault_desc=""); 
   bool Allocate_Necro(const int new_size);
   bool Allocate_Random(const int old_size, const int new_size);
   bool Allocate_Default(const int new_size);
   bool Allocate_Main(const int allocated_size);
-	
-  bool Divide_Main(cAvidaContext& ctx, const int mem_space_used, double mut_multiplier=1);
-  bool Divide_CheckViable(cAvidaContext& ctx, const int parent_size, const int child_size, const int mem_space);
-  void Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier = 1);
+
+	int GetCopiedSize(const int parent_size, const int child_size);
+  
+  bool Divide_Main(cAvidaContext& ctx, const int mem_space_used, double mut_multiplier = 1.0);
   void Inject_DoMutations(cAvidaContext& ctx, double mut_multiplier, cCPUMemory& injected_code);
-  void Divide_TestFitnessMeasures(cAvidaContext& ctx);
-  void Mutate(cAvidaContext& ctx, const int mut_point);
 
   bool InjectParasite(cAvidaContext& ctx, double mut_multiplier);
 
@@ -239,12 +229,6 @@ public:
   }
 	
   
-  // --------  Mutation  --------
-  int PointMutate(cAvidaContext& ctx, const double mut_rate);  
-  bool TriggerMutations(cAvidaContext& ctx, int trigger);
-  bool TriggerMutations(cAvidaContext& ctx, int trigger, cHeadCPU& cur_head);
-
-
 private:
   // ---------- Instruction Library -----------
   bool Inst_ShiftR(cAvidaContext& ctx);
