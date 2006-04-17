@@ -10,7 +10,6 @@ SET(libcpu_a_SOURCES
   cHardwareCPU_Thread.cc
   cHardwareManager.cc
   cHardwareSMT.cc
-  cHardwareSMT_Thread.cc
   cHardwareStatusPrinter.cc
   cHeadCPU.cc
   cHeadMultiMem.cc
