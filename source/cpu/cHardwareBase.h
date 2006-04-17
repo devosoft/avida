@@ -117,29 +117,23 @@ public:
   
   
   // --------  Thread Manipulation  --------
-  virtual bool ForkThread() = 0;
-  virtual bool KillThread() = 0;
-  virtual void PrevThread() = 0;
-  virtual void NextThread() = 0;
-  virtual void SetThread(int value) = 0;
-  virtual cInjectGenotype* GetCurThreadOwner() = 0;
-  virtual cInjectGenotype* GetThreadOwner(int in_thread) = 0;
-  virtual void SetThreadOwner(cInjectGenotype* in_genotype) = 0;
+  virtual bool ThreadSelect(const int thread_id) = 0;
+  virtual bool ThreadSelect(const cCodeLabel& in_label) = 0;
+  virtual void ThreadPrev() = 0;
+  virtual void ThreadNext() = 0;
+  virtual cInjectGenotype* ThreadGetOwner() = 0;
+  virtual void ThreadSetOwner(cInjectGenotype* in_genotype) = 0;
+
+  virtual int GetNumThreads() const = 0;
+  virtual int GetCurThread() const = 0;
+  virtual int GetCurThreadID() const = 0;
   
   
   // --------  Parasite Stuff  --------
   virtual int TestParasite() const = 0;
   virtual bool InjectHost(const cCodeLabel& in_label, const cGenome& injection) = 0;
-  virtual bool InjectThread(const cCodeLabel& in_label) = 0;
   
-  
-  // --------  Accessors  --------
-  virtual int GetNumThreads() const = 0;
-  virtual int GetCurThread() const = 0;
-  virtual int GetCurThreadID() const = 0;
-  virtual int GetThreadDist() const = 0;
-  
-  
+    
   // --------  Mutation  --------
   virtual int PointMutate(cAvidaContext& ctx, const double mut_rate);
   virtual bool TriggerMutations(cAvidaContext& ctx, int trigger);

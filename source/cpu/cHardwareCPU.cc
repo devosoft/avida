@@ -453,7 +453,7 @@ num_threads : 1;
   
   for (int i = 0; i < num_inst_exec; i++) {
     // Setup the hardware for the next instruction to be executed.
-    NextThread();
+    ThreadNext();
     advance_ip = true;
     IP().Adjust();
     
@@ -965,19 +965,6 @@ bool cHardwareCPU::InjectHost(const cCodeLabel & in_label, const cGenome & injec
   return true; // (inject succeeds!)
 }
 
-bool cHardwareCPU::InjectThread(const cCodeLabel& in_label)
-{
-  // Make sure the genome will be below max size after injection.
-  
-  if(ForkThread())
-  {
-    organism->GetPhenotype().IsMultiThread() = true;
-    return true;
-  }
-
-  return false;
-}
-
 void cHardwareCPU::InjectCode(const cGenome & inject_code, const int line_num)
 {
   assert(line_num >= 0);
@@ -1084,7 +1071,7 @@ bool cHardwareCPU::KillThread()
   
   // Note the current thread and set the current back one.
   const int kill_thread = cur_thread;
-  PrevThread();
+  ThreadPrev();
   
   // Turn off this bit in the thread_id_chart...
   thread_id_chart ^= 1 << threads[kill_thread].GetID();
@@ -2228,7 +2215,7 @@ bool cHardwareCPU::Inst_InjectThread(cAvidaContext& ctx)
   GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
   
   if (host_organism->GetHardware().InjectHost(GetLabel(), inject_code)) {
-    host_organism->GetHardware().InjectThread(GetLabel());
+    if (ForkThread()) organism->GetPhenotype().IsMultiThread() = true;
   }
   
   // Set the relevent flags.

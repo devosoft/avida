@@ -125,7 +125,12 @@ protected:
   const cCodeLabel & GetReadLabel() const { return threads[cur_thread].read_label; }
   cCodeLabel & GetReadLabel() { return threads[cur_thread].read_label; }
   
-
+  
+  // ---------- Thread Manipulation -----------
+  bool ForkThread(); // Adds a new thread based off of m_cur_thread.
+  bool KillThread(); // Kill the current thread!
+  
+  
   // ---------- Instruction Helpers -----------
   int FindModifiedStack(int default_stack);
   int FindModifiedHead(int default_head);
@@ -206,30 +211,24 @@ public:
 
   
   // --------  Thread Manipulation  --------
-  bool ForkThread(); // Adds a new thread based off of cur_thread.
-  bool KillThread(); // Kill the current thread!
-  inline void PrevThread(); // Shift the current thread in use.
-  inline void NextThread();
-  inline void SetThread(int value);
-  cInjectGenotype* GetCurThreadOwner() { return threads[cur_thread].owner; }
-  cInjectGenotype* GetThreadOwner(int in_thread) { return threads[in_thread].owner; }
-  void SetThreadOwner(cInjectGenotype* in_genotype) { threads[cur_thread].owner = in_genotype; }
+  bool ThreadSelect(const int thread_num);
+  bool ThreadSelect(const cCodeLabel& in_label) { return false; } // Labeled threads not supported
+  inline void ThreadPrev(); // Shift the current thread in use.
+  inline void ThreadNext();
+  cInjectGenotype* ThreadGetOwner() { return threads[cur_thread].owner; }
+  void ThreadSetOwner(cInjectGenotype* in_genotype) { threads[cur_thread].owner = in_genotype; }
 	
+  int GetNumThreads() const     { return threads.GetSize(); }
+  int GetCurThread() const      { return cur_thread; }
+  int GetCurThreadID() const    { return threads[cur_thread].GetID(); }
+
   
   // --------  Parasite Stuff  --------
   int TestParasite() const;
   bool InjectHost(const cCodeLabel& in_label, const cGenome& injection);
-  bool InjectThread(const cCodeLabel& in_label) { return false; }
+  bool InjectThread(const cCodeLabel& in_label, const cGenome& injection) { return false; }
 
   
-  // --------  Accessors  --------
-  int GetNumThreads() const     { return threads.GetSize(); }
-  int GetCurThread() const      { return cur_thread; }
-  int GetCurThreadID() const    { return threads[cur_thread].GetID(); }
-  int GetThreadDist() const {
-    if (GetNumThreads() == 1) return 0;
-    return threads[0].heads[nHardware::HEAD_IP].GetPosition() - threads[1].heads[nHardware::HEAD_IP].GetPosition();
-  }
 	
   
 private:
@@ -270,22 +269,26 @@ private:
 };
 
 
-inline void cHardware4Stack::NextThread()
+inline bool cHardware4Stack::ThreadSelect(const int thread_num)
+{
+  if (thread_num >= 0 && thread_num < threads.GetSize()) {
+    cur_thread = thread_num;
+    return true;
+  }
+  
+  return false;
+}
+
+inline void cHardware4Stack::ThreadNext()
 {
   cur_thread++;
   if (cur_thread >= GetNumThreads()) cur_thread = 0;
 }
 
-inline void cHardware4Stack::PrevThread()
+inline void cHardware4Stack::ThreadPrev()
 {
   if (cur_thread == 0) cur_thread = GetNumThreads() - 1;
   else cur_thread--;
-}
-
-inline void cHardware4Stack::SetThread(int value)
-{
-  if (value>=0 && value < GetNumThreads())
-    cur_thread=value;
 }
 
 inline int cHardware4Stack::GetStack(int depth, int stack_id, int in_thread) const

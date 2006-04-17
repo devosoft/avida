@@ -324,7 +324,7 @@ void cHardware4Stack::SingleProcess(cAvidaContext& ctx)
   
   for (int i = 0; i < num_inst_exec; i++) {
     // Setup the hardware for the next instruction to be executed.
-    NextThread();
+    ThreadNext();
     AdvanceIP() = true;
     IP().Adjust();
     
@@ -1034,7 +1034,7 @@ bool cHardware4Stack::KillThread()
   
   // Note the current thread and set the current back one.
   const int kill_thread = cur_thread;
-  PrevThread();
+  ThreadPrev();
   
   // Turn off this bit in the thread_id_chart...
   thread_id_chart ^= 1 << threads[kill_thread].GetID();
