@@ -173,7 +173,7 @@ protected:
 
 	int GetCopiedSize(const int parent_size, const int child_size);
   
-  bool Divide_Main(cAvidaContext& ctx, const int mem_space_used, double mut_multiplier = 1.0);
+  bool Divide_Main(cAvidaContext& ctx, double mut_multiplier = 1.0);
   void Inject_DoMutations(cAvidaContext& ctx, double mut_multiplier, cCPUMemory& injected_code);
 
   bool InjectParasite(cAvidaContext& ctx, double mut_multiplier);

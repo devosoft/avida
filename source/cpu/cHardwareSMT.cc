@@ -346,6 +346,7 @@ bool cHardwareSMT::OK()
 void cHardwareSMT::PrintStatus(ostream& fp)
 {
   fp << organism->GetPhenotype().GetTimeUsed() << " "
+  << "THREAD: " << m_cur_thread << ", " << m_threads.GetSize() << "   "
 	<< "IP:(" << IP().GetMemSpace() << ", " << IP().GetPosition() << ")    "
 	
 	<< "AX:" << Stack(STACK_AX).Top() << " "
@@ -807,7 +808,7 @@ int cHardwareSMT::ThreadCreate(const cCodeLabel& label, int mem_space)
   m_thread_lbls.Add(hash_key, thread_id);
     
   // Setup this thread into the current selected memory space (Flow Head)
-  m_threads[thread_id].Reset(this, GetHead(nHardware::HEAD_FLOW).GetMemSpace());
+  m_threads[thread_id].Reset(this, mem_space);
 	
   return thread_id;
 }
@@ -1019,20 +1020,17 @@ void cHardwareSMT::Inject_DoMutations(cAvidaContext& ctx, double mut_multiplier,
 }
 
 
-bool cHardwareSMT::Divide_Main(cAvidaContext& ctx, int mem_space_used, double mut_multiplier)
+bool cHardwareSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
 {
-  int write_head_pos = GetHead(nHardware::HEAD_WRITE).GetPosition();
+  const int mem_space_used = GetHead(nHardware::HEAD_WRITE).GetMemSpace();
+  const int write_head_pos = GetHead(nHardware::HEAD_WRITE).GetPosition();
   
-  // We're going to disallow division calls from memory spaces other than zero for right now @law
-  // @DMB - change to allow ???
-  if(IP().GetMemSpace() != 0) return false;
-
   // Make sure the memory space we're using exists
   if (m_mem_array.GetSize() <= mem_space_used) return false;
   	
   // Make sure this divide will produce a viable offspring.
   m_cur_child = mem_space_used; // save current child memory space for use by dependent functions (e.g. GetCopiedSize())
-  if (!Divide_CheckViable(ctx, m_mem_array[IP().GetMemSpace()].GetSize(), write_head_pos)) return false;
+  if (!Divide_CheckViable(ctx, m_mem_array[0].GetSize(), write_head_pos)) return false;
   
   // Since the divide will now succeed, set up the information to be sent to the new organism
   m_mem_array[mem_space_used].Resize(write_head_pos);
@@ -1280,10 +1278,7 @@ bool cHardwareSMT::Inst_SetMemory(cAvidaContext& ctx)
 //17
 bool cHardwareSMT::Inst_Divide(cAvidaContext& ctx)
 {
-  int mem_space_used = GetHead(nHardware::HEAD_WRITE).GetMemSpace();
-  int mut_multiplier = 1;
-	
-  return Divide_Main(ctx, mem_space_used, mut_multiplier);
+  return Divide_Main(ctx);
 }
 
 //18
@@ -1556,7 +1551,7 @@ bool cHardwareSMT::Inst_IO(cAvidaContext& ctx)
 //34
 bool cHardwareSMT::Inst_ThreadCreate(cAvidaContext& ctx)
 {
-  ReadLabel();
+  ReadLabel(MAX_THREAD_LABEL);
   bool success = ThreadCreate(GetLabel(), GetHead(nHardware::HEAD_FLOW).GetMemSpace());
   if (!success) organism->Fault(FAULT_LOC_THREAD_FORK, FAULT_TYPE_FORK_TH);
   return success;
@@ -1573,7 +1568,7 @@ bool cHardwareSMT::Inst_ThreadCancel(cAvidaContext& ctx)
 //36
 bool cHardwareSMT::Inst_ThreadKill(cAvidaContext& ctx)
 {
-  ReadLabel();
+  ReadLabel(MAX_THREAD_LABEL);
   bool success = ThreadKill(GetLabel());
   if (!success) organism->Fault(FAULT_LOC_THREAD_KILL, FAULT_TYPE_KILL_TH);
   return success;

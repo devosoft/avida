@@ -88,6 +88,9 @@ Nop-C        #  8:
 Nop-C        #  8:
 Nop-C        #  8:
 Nop-C        #  8:
+Nop-C        #  8:
+Nop-C        #  8:
+Nop-C        #  8:
 Search       #  9:  Drop flow head at start of copy loop
 Inst-Read    # 10:
 Inst-Write   # 11: 
