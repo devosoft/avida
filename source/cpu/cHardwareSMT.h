@@ -297,6 +297,8 @@ private:
   bool Inst_NetSend(cAvidaContext& ctx);        // 40
   bool Inst_NetReceive(cAvidaContext& ctx);     // 41
   bool Inst_NetLast(cAvidaContext& ctx);        // 42
+  bool Inst_RotateLeft(cAvidaContext& ctx);     // 43
+  bool Inst_RotateRight(cAvidaContext& ctx);    // 44
 };
 
 

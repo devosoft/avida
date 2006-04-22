@@ -126,13 +126,29 @@ cOrgSinkMessage* cPopulationInterface::NetReceive()
   cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(cell.IsOccupied());
   
-  const int num_neighbors = cell.ConnectionList().GetSize();
-  for (int i = 0; i < num_neighbors; i++) {
-    cell.ConnectionList().CircNext();
+  switch(m_world->GetConfig().NET_STYLE.Get())
+  {
+  case 1: // Receiver Facing
+    {
+      cOrganism* cur_neighbor = cell.ConnectionList().GetFirst()->GetOrganism();
+      cOrgSinkMessage* msg = NULL;
+      if (cur_neighbor != NULL && (msg = cur_neighbor->NetPop()) != NULL) return msg;
+    }
+    break;
     
-    cOrganism* cur_neighbor = cell.ConnectionList().GetFirst()->GetOrganism();
-    cOrgSinkMessage* msg = NULL;
-    if (cur_neighbor != NULL && (msg = cur_neighbor->NetPop()) != NULL ) return msg;
+  case 0: // Random Next - First Available
+  default:
+    {
+      const int num_neighbors = cell.ConnectionList().GetSize();
+      for (int i = 0; i < num_neighbors; i++) {
+        cell.ConnectionList().CircNext();
+        
+        cOrganism* cur_neighbor = cell.ConnectionList().GetFirst()->GetOrganism();
+        cOrgSinkMessage* msg = NULL;
+        if (cur_neighbor != NULL && (msg = cur_neighbor->NetPop()) != NULL ) return msg;
+      }
+    }
+    break;
   }
   
   return NULL;

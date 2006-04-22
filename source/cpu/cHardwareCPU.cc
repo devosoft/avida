@@ -2517,7 +2517,8 @@ bool cHardwareCPU::Inst_RotateL(cAvidaContext& ctx)
         neighbor->GetHardware().GetType() == GetType()) {
       
       // If this facing has the full label, stop here.
-      cHardwareCPU & cur_hardware = (cHardwareCPU &) neighbor->GetHardware();
+      // @DMB - Warning: this is assuming homogenous hardware within the population
+      cHardwareCPU & cur_hardware = static_cast<cHardwareCPU&>(neighbor->GetHardware());
       if (cur_hardware.FindFullLabel( GetLabel() ).InMemory()) return true;
     }
     
@@ -2537,7 +2538,7 @@ bool cHardwareCPU::Inst_RotateR(cAvidaContext& ctx)
   ReadLabel();
   
   // Always rotate at least once.
-  organism->Rotate(-1);
+  organism->Rotate(1);
   
   // If there is no label, then the one rotation was all we want.
   if (!GetLabel().GetSize()) return true;

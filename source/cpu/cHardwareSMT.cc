@@ -93,7 +93,9 @@ tInstLib<cHardwareSMT::tMethod>* cHardwareSMT::initInstLib(void)
     cInstEntry("Net-Get", &cHardwareSMT::Inst_NetGet), // 39
     cInstEntry("Net-Send", &cHardwareSMT::Inst_NetSend), // 40
     cInstEntry("Net-Receive", &cHardwareSMT::Inst_NetReceive), // 41
-    cInstEntry("Net-Last", &cHardwareSMT::Inst_NetLast) // 42
+    cInstEntry("Net-Last", &cHardwareSMT::Inst_NetLast), // 42
+    cInstEntry("Rotate-Left", &cHardwareSMT::Inst_RotateLeft), // 43
+    cInstEntry("Rotate-Right", &cHardwareSMT::Inst_RotateRight) // 44
   };
 	
   const int n_size = sizeof(s_n_array)/sizeof(cNOPEntry);
@@ -1641,5 +1643,33 @@ bool cHardwareSMT::Inst_NetLast(cAvidaContext& ctx)
 {
   const int dst = FindModifiedStack(STACK_CX);
   Stack(dst).Push(organism->NetLast());
+  return true;
+}
+
+//43
+bool cHardwareSMT::Inst_RotateLeft(cAvidaContext& ctx)
+{
+  const int num_neighbors = organism->GetNeighborhoodSize();
+  
+  // If this organism has no neighbors, ignore rotate.
+  if (num_neighbors == 0) return false;
+  
+  // Always rotate at least once.
+  organism->Rotate(-1);
+  
+  return true;
+}
+
+//44
+bool cHardwareSMT::Inst_RotateRight(cAvidaContext& ctx)
+{
+  const int num_neighbors = organism->GetNeighborhoodSize();
+  
+  // If this organism has no neighbors, ignore rotate.
+  if (num_neighbors == 0) return false;
+  
+  // Always rotate at least once.
+  organism->Rotate(1);
+  
   return true;
 }

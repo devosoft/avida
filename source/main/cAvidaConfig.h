@@ -263,6 +263,7 @@ public:
   CONFIG_ADD_VAR(NET_ENABLED, bool, 0, "Enable Network Communication Support");
   CONFIG_ADD_VAR(NET_DROP_PROB, double, 0.0, "Message drop rate");
   CONFIG_ADD_VAR(NET_MUT_PROB, double, 0.0, "Message corruption probability");
+  CONFIG_ADD_VAR(NET_STYLE, int, 0, "Communication Style.  0 = Random Next, 1 = Receiver Facing");
 #endif
   
   void Load(const cString & filename);
