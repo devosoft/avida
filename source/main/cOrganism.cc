@@ -227,8 +227,20 @@ void cOrganism::NetSend(cAvidaContext& ctx, int value)
   int actual_value = value;
   const double mut_prob = m_world->GetConfig().NET_MUT_PROB.Get();
   if (mut_prob > 0.0 && ctx.GetRandom().P(mut_prob)) {
-    actual_value ^= 1 << ctx.GetRandom().GetUInt(31); // Flip a single random bit
-    m_net->sent[index].SetCorrupted();
+    switch (m_world->GetConfig().NET_MUT_TYPE.Get())
+    {
+      case 0: // Flip a single random bit
+        actual_value ^= 1 << ctx.GetRandom().GetUInt(31);
+        m_net->sent[index].SetCorrupted();
+        break;
+      case 1: // Flip the last bit
+        actual_value ^= 1;
+        m_net->sent[index].SetCorrupted();
+        break;
+      default:
+        // invalid selection, no action
+        break;
+    }
   }
   
   assert(m_interface);
