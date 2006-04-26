@@ -95,7 +95,9 @@ tInstLib<cHardwareSMT::tMethod>* cHardwareSMT::initInstLib(void)
     cInstEntry("Net-Receive", &cHardwareSMT::Inst_NetReceive), // 41
     cInstEntry("Net-Last", &cHardwareSMT::Inst_NetLast), // 42
     cInstEntry("Rotate-Left", &cHardwareSMT::Inst_RotateLeft), // 43
-    cInstEntry("Rotate-Right", &cHardwareSMT::Inst_RotateRight) // 44
+    cInstEntry("Rotate-Right", &cHardwareSMT::Inst_RotateRight), // 44
+    
+    cInstEntry("NULL", &cHardwareSMT::Inst_Nop) // Last Instruction Always NULL
   };
 	
   const int n_size = sizeof(s_n_array)/sizeof(cNOPEntry);

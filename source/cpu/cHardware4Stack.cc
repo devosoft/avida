@@ -196,7 +196,9 @@ cInstLib4Stack* cHardware4Stack::initInstLib(void)
     //36
     cInstEntry4Stack("IO", &cHardware4Stack::Inst_IO),
     //37
-    cInstEntry4Stack("Inject", &cHardware4Stack::Inst_Inject)
+    cInstEntry4Stack("Inject", &cHardware4Stack::Inst_Inject),
+    
+    cInstEntry4Stack("NULL", &cHardware4Stack::Inst_Nop) // Last Instruction Always NULL
   };
   
   const int n_size = sizeof(s_n_array)/sizeof(cNOPEntry4Stack);
