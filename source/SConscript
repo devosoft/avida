@@ -4,6 +4,7 @@ Import('environment')
 environment.SConscript( [
   'actions/SConscript',
   'analyze/SConscript',
+  'archive/SConscript',
   'classification/SConscript',
   'cpu/SConscript',
   'drivers/SConscript',
@@ -12,8 +13,11 @@ environment.SConscript( [
   'targets/SConscript',
   'third-party/SConscript',
   'tools/SConscript',
-  'support/SConscript',
+  #'support/SConscript',
   #'utils/SConscript',
 ] )
+
+if environment['enableTestCode'] in ('True', '1', 1):
+  environment.SConscript('testsuites/SConscript')
 
 # vim: set ft=python:

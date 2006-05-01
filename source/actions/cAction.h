@@ -36,6 +36,15 @@ public:
   
   virtual const cString GetDescription() = 0;
   virtual void Process(cAvidaContext& ctx) = 0;
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

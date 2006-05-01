@@ -54,6 +54,15 @@ public:
   inline int GetMinBin() { return min_bin; }
   inline int GetMaxBin() { return max_bin; }
   inline int GetNumBins() { return max_bin - min_bin + 1; }
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 inline void cHistogram::Clear()

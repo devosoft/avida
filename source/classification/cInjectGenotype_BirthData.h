@@ -37,6 +37,15 @@ public:
   cInjectGenotype * parent_genotype; // Pointer to parent genotype...
   //cSpecies * parent_species;
   int num_offspring_genotypes; // Num offspring genotypes still in memory.
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 inline cInjectGenotype_BirthData::cInjectGenotype_BirthData(int in_update_born)

@@ -11,6 +11,12 @@
 #ifndef cRandom_h
 #define cRandom_h
 
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
+
 #include <time.h>
 #include <limits.h>
 #include <math.h>
@@ -24,6 +30,9 @@ template <class T> class tArray;
 
 class cRandom
 {
+#if USE_tMemTrack
+  tMemTrack<cRandom> mt;
+#endif
 protected:
   // Internal memebers
   int seed;
@@ -204,6 +213,27 @@ public:
    * @see cRandom::GetFullRandBinomial
    **/  
   unsigned int GetRandBinomial(const double n, const double p); // Approx
+
+  /**
+   * Serialization to or from an archive.
+   **/  
+  template<class Archive>
+  void serialize(Archive & a, const unsigned int version){
+    a.ArkvObj("seed", seed);
+    a.ArkvObj("original_seed", original_seed);
+    a.ArkvObj("inext", inext);
+    a.ArkvObj("inextp", inextp);
+    a.ArkvObj("ma", ma);
+    a.ArkvObj("expRV", expRV);
+  }
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 

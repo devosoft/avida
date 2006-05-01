@@ -60,6 +60,15 @@ public:
   void Clear() {  // Called on any New Creature
     mut_stats.Clear();
   }
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

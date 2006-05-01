@@ -24,6 +24,15 @@ class cActionLibrary : public tObjectFactory<cAction* (cWorld*, const cString&)>
 {
 public:
   cActionLibrary() { ; }
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

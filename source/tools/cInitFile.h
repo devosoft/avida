@@ -11,7 +11,11 @@
 #ifndef cInitFile_h
 #define cInitFile_h
 
-#include <iostream>
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
 
 #ifndef cFile_h
 #include "cFile.h"
@@ -26,17 +30,44 @@
 #include "tArray.h"
 #endif
 
+#include <iostream>
+
 /**
  * A class to handle initialization files.
  **/
 
 class cInitFile : public cFile
 {
+#if USE_tMemTrack
+  tMemTrack<cInitFile> mt;
+#endif
 private:
   struct sFileLineInfo {
     cString line;
     int line_num;
     mutable bool used;
+
+    template<class Archive>
+    void save(Archive & a, const unsigned int version) const
+    {
+      int __used = (used == false)?(0):(1);
+      a.ArkvObj("line", line);
+      a.ArkvObj("line_num", line_num);
+      a.ArkvObj("used", __used);
+    }
+    template<class Archive>
+    void load(Archive & a, const unsigned int version)
+    {
+      int __used;
+      a.ArkvObj("line", line);
+      a.ArkvObj("line_num", line_num);
+      a.ArkvObj("used", __used);
+      used = (__used == false)?(0):(1);
+    }
+    template<class Archive>
+    void serialize(Archive & a, const unsigned int version)
+    { a.SplitLoadSave(*this, version); }
+
   };
 
   tArray<sFileLineInfo> line_array;
@@ -163,6 +194,27 @@ public:
 
   const cString & GetFiletype() { return filetype; }
   cStringList & GetFormat() { return file_format; }
+
+
+  template<class Archive>
+  void serialize(Archive & a, const unsigned int version)
+  {
+    a.ArkvBase("cFile", (cFile &)(*this), *this);
+    a.ArkvObj("line_array", line_array);
+    a.ArkvObj("extra_lines", extra_lines);
+    a.ArkvObj("filetype", filetype);
+    a.ArkvObj("file_format", file_format);
+    a.ArkvObj("active_line", active_line);
+  }
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

@@ -41,6 +41,15 @@ private:
   
 public:
   cTestResources(cWorld* world);
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 class cTestCPU

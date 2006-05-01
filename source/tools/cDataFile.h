@@ -142,6 +142,15 @@ public:
    * This function makes sure that all cached data is written to the disk.
    **/
   void Flush() { m_fp.flush(); }
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

@@ -38,6 +38,15 @@ public:
   virtual double GetGeneration() const = 0;
 
   double GetTriggerValue( eTriggerVariable trigger ) const;
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

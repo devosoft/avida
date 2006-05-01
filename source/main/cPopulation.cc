@@ -42,6 +42,7 @@
 #include <algorithm>
 #include <set>
 
+#include <float.h>
 #include <math.h>
 
 using namespace std;
@@ -1104,8 +1105,8 @@ void cPopulation::UpdateOrganismStats()
   int max_genome_length = 0;
   
   // Minimums...
-  cMerit min_merit(HUGE_VAL);
-  double min_fitness = HUGE_VAL;
+  cMerit min_merit(FLT_MAX);
+  double min_fitness = FLT_MAX;
   int min_gestation_time = INT_MAX;
   int min_genome_length = INT_MAX;
   

@@ -30,6 +30,15 @@ public:
   void Dec() { cur_count--; }
   void Next() { last_count = cur_count; cur_count = 0; }
   void Clear() { cur_count = last_count = total_count = 0; }
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

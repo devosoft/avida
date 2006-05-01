@@ -80,6 +80,15 @@ public:
   void SetXGravity(double _xgravity) { xgravity = _xgravity; }
   void SetYDiffuse(double _ydiffuse) { ydiffuse = _ydiffuse; }
   void SetYGravity(double _ygravity) { ygravity = _ygravity; }
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

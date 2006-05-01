@@ -49,6 +49,15 @@ public:
   int GetParent(int id)     { return (id-1) / 2; }
   int GetLeftChild(int id)  { return 2*id + 1; }
   int GetRightChild(int id) { return 2*id + 2; }
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

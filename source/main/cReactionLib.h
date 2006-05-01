@@ -35,6 +35,15 @@ public:
   cReaction* AddReaction(const cString& name);
   cReaction* GetReaction(const cString& name) const;
   cReaction* GetReaction(int id) const;
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

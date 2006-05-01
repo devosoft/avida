@@ -44,6 +44,15 @@ public:
   
   const cInstSet& GetInstSet() const { return m_inst_set; }
   cInstSet& GetInstSet() { return m_inst_set; }
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

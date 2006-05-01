@@ -16,6 +16,7 @@
 #include "tDataEntry.h"
 #include "cWorld.h"
 
+#include <float.h>
 #include <math.h>
 
 using namespace std;
@@ -46,8 +47,8 @@ cStats::cStats(cWorld* world)
   , max_merit(0)
   , max_gestation_time(0)
   , max_genome_length(0)
-  , min_fitness(HUGE_VAL)
-  , min_merit(HUGE_VAL)
+  , min_fitness(FLT_MAX)
+  , min_merit(FLT_MAX)
   , min_gestation_time(INT_MAX)
   , min_genome_length(INT_MAX)
   , dom_genotype_id(-1)

@@ -11,13 +11,22 @@
 #ifndef cDataEntry_h
 #define cDataEntry_h
 
-#include <iostream>
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
 
 #ifndef cString_h
 #include "cString.h"
 #endif
 
+#include <iostream>
+
 class cDataEntry {
+#if USE_tMemTrack
+  tMemTrack<cDataEntry> mt;
+#endif
 private:
   cString name;            // Short Name
   cString desc;            // Descriptive Name
@@ -37,6 +46,24 @@ public:
   const cString & GetHtmlCellFlags() const { return html_table_flags; }
 
   virtual bool Print(std::ostream& fp) const { (void) fp;  return false; }
+
+  template<class Archive>
+  void serialize(Archive & a, const unsigned int version)
+  { 
+    a.ArkvObj("name", name);
+    a.ArkvObj("desc", desc);
+    a.ArkvObj("null_value", null_value);
+    a.ArkvObj("html_table_flags", html_table_flags);
+  }   
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 inline std::ostream& operator << (std::ostream& out, cDataEntry & entry)

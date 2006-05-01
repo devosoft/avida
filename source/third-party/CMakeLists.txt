@@ -1,9 +1,8 @@
+SUBDIRS(boost/serialization)
+
 IF(AVD_GUI_NCURSES)
   SUBDIRS(trio)
 ENDIF(AVD_GUI_NCURSES)
-IF(AVD_UNIT_TESTS)
-  SUBDIRS(yaktest)
-ENDIF(AVD_UNIT_TESTS)
 
 IF(BUILD_AvidaSupportLibs)
   IF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/AvidaSupportLibs/CMakeLists.txt)

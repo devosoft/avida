@@ -1,46 +1,76 @@
-/*
- *  tMemTrack.h
- *  Avida
- *
- *  Created by David on 12/7/05.
- *  Copyright 2005-2006 Michigan State University. All rights reserved.
- *  Copyright 1993-2003 California Institute of Technology
- *
- */
-
 #ifndef tMemTrack_h
 #define tMemTrack_h
 
-template <class T> class tMemTrack {
+/*
+To add memory-tracking to a class or struct cA, add a member variable of
+type tMemTrack<cA> (this incurs a one-byte overhead):
+
+class cA {
 private:
-  static int obj_count;
+  tMemTrack<A> mt;
 public:
-  // These "New" commands can only be used with no arguments.
-  static T * New() {
-    obj_count++;
-    return new T;
-  }
-  static T * New(int count) {
-    obj_count += count;
-    return new T[count];
-  }
+  ...
+};
 
-  static void Free(T * ptr) {
-    obj_count--;
-    free ptr;
-  }
-  static void Free(T * ptr, int count) {
-    obj_count -= count;
-    free [] ptr;
-  }
+This also works with template classes:
 
-  // This New and Free just help keep track of things handled elsewhere...
-  static void MarkNew() { obj_count++; }
-  static void MarkFree() { obj_count--; }
+template <class T>
+class tA {
+private:
+  tMemTrack<tA<T> > mt;
+public:
+  ...
+};
 
- 
-  // And some methods to keep track of what's going on...
-  static int GetCount() { return obj_count; }
+The number of instances of cA is returned by calling
+tMemTrack<cA>::Instances(), and the number of tA<cFoo> by
+tMemTrack<tA<cFoo> >::Instances().
+
+To prevent the 1-byte overhead, one could manually increment and
+decrement the instance count from within cA's constructors and
+destructor:
+
+struct cA {
+  cA(){ tMemTrack<cA>::Instances(1); }
+  cA(const cA &){ tMemTrack<cA>::Instances(1); }
+  ~cA(){ tMemTrack<cA>::Instances(-1); }
+};
+
+***
+
+I like the former method, with a one-byte overhead, because it seems
+less error-prone. I've been wrapping the member variable in preprocessor
+conditionals so that I can easily turn-off memory-tracking (including the
+one-byte overhead):
+
+class cA {
+private:
+#if USE_tMemTrack
+  tMemTrack<cA> mt;
+#endif
+public:
+  ...
+};
+
+***
+
+Note: I think that if we build dynamic libraries on windows for
+Avida-ED, we'll have to turn memory tracking off, because it uses a
+static variable. But it will still help in debugging.
+
+@kgn
+*/
+
+template <class T> class tMemTrack {
+public:
+  tMemTrack(){ Instances(1); }
+  tMemTrack(const tMemTrack &){ Instances(1); }
+  ~tMemTrack(){ Instances(-1); }
+public:
+  static int Instances(int count = 0){
+    static int s_instances = 0;
+    return s_instances += count;
+  }
 };
 
 #endif

@@ -104,6 +104,15 @@ public:
   cEventListEntry*  GetPrev()     const { return m_prev; }
   cEventListEntry*  GetNext()     const { return m_next; }
 
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

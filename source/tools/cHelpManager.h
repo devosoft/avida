@@ -53,6 +53,15 @@ public:
   
   void SetVerbose(bool _verbose = true) { verbose = _verbose; }
   bool GetVerbose() const { return verbose; }
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

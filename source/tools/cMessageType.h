@@ -23,6 +23,15 @@ public:
   const char* m_type_name;
   const cMessageClass& m_message_class;
   bool m_is_active;
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

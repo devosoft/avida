@@ -93,6 +93,15 @@ public:
   void SetParentMutProb(double in_prob) { divide.parent_mut_prob = in_prob; }
   void SetCrossoverProb(double in_prob) { divide.crossover_prob  = in_prob; }
   void SetAlignedCrossProb(double in)   { divide.aligned_cross_prob = in; }
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

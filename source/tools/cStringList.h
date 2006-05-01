@@ -11,6 +11,12 @@
 #ifndef cStringList_h
 #define cStringList_h
 
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
+
 #ifndef cString_h
 #include "cString.h"
 #endif
@@ -21,6 +27,9 @@
 
 class cStringList
 {
+#if USE_tMemTrack
+  tMemTrack<cStringList> mt;
+#endif
 private:
   tList<cString> string_list;
 
@@ -57,6 +66,20 @@ public:
   void Clear() {
     while (string_list.GetSize() > 0) delete string_list.Pop(); 
   }
+
+  template<class Archive>
+  void serialize(Archive & a, const unsigned int version){
+    a.ArkvObj("string_list", string_list);
+  } 
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

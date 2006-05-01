@@ -60,6 +60,13 @@
 #include "tList.h"
 #endif
 
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
+
+
 #define HASH_TABLE_SIZE_DEFAULT 23
 #define HASH_TABLE_SIZE_MEDIUM  331
 #define HASH_TABLE_SIZE_LARGE   2311
@@ -68,13 +75,26 @@ template <class DATA_TYPE> class tList; // access
 template <class DATA_TYPE> class tListIterator; // aggregate
 
 template <class HASH_TYPE, class DATA_TYPE> class tHashTable {
+#if USE_tMemTrack
+  tMemTrack<tHashTable<HASH_TYPE, DATA_TYPE> > mt;
+#endif
   
   // We create a structure with full information about each entry stored in
   // this dictionary.
   template <class E_HASH_TYPE, class E_DATA_TYPE> struct tHashEntry {
+  #if USE_tMemTrack
+    tMemTrack<tHashEntry<E_HASH_TYPE, E_DATA_TYPE> > mt;
+  #endif
     E_HASH_TYPE key;
     int id;
     E_DATA_TYPE data;
+
+    template<class Archive>
+    void serialize(Archive & a, const unsigned int version){
+      a.ArkvObj("key", key);
+      a.ArkvObj("id", id);
+      a.ArkvObj("data", data);
+    }
   };
   
 private:
@@ -329,6 +349,13 @@ public:
       key_list.Insert(key_it, &cur_key);
       value_list.Insert(value_it, &cur_value);
     }
+  }
+  template<class Archive> 
+  void serialize(Archive & a, const unsigned int version){
+    a.ArkvObj("entry_count", entry_count);
+    a.ArkvObj("table_size", table_size);
+    a.ArkvObj("entry_list", entry_list);
+    a.ArkvObj("cell_array", cell_array);
   }
 };
 

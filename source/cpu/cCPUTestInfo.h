@@ -96,6 +96,15 @@ public:
   // And just because these are so commonly used...
   double GetGenotypeFitness();
   double GetColonyFitness();
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

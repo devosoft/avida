@@ -16,6 +16,12 @@
 #include <string.h>
 #include <assert.h>
 
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
+
 #define MAX_STRING_LENGTH 4096
 #define MAX_STRING_REF_COUNT 32767
 #define CONTINUE_LINE_CHAR '\\'
@@ -27,6 +33,9 @@
 
 class cString
 {
+#if USE_tMemTrack
+  tMemTrack<cString> mt;
+#endif
 protected:
   inline void CopyOnWrite();
 
@@ -510,8 +519,29 @@ public:
   cString Substring(int start, int size) const ;
   
   bool IsSubstring(const cString & in_string, int start) const;
-  
-  
+ 
+  /*
+  We have decided to not serialize information about data-sharing
+  between cStrings (via cStringData). This leads to plausible memory
+  bloat when formerly shared strings are reloaded (and are no longer
+  shared), but in the case of Avida, there shouldn't be much bloat. @kgn
+  */
+  template<class Archive>
+  void save(Archive & a, const unsigned int version) const {
+    std::string s(value->GetData());
+    a.ArkvObj("value", s);
+  }
+  template<class Archive>
+  void load(Archive & a, const unsigned int version){
+    std::string s;
+    a.ArkvObj("value", s);
+    (*this)=s.c_str();
+  }
+  template<class Archive>
+  void serialize(Archive & a, const unsigned int version){
+    a.SplitLoadSave(*this, version);
+  }
+
   // {{{ -- INTERNALS -------------------------------------------------------
 protected:
   // -- Internal Functions --
@@ -543,6 +573,14 @@ protected:
 
 // }}} End Internals
 
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 

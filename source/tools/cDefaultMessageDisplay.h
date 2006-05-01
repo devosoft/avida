@@ -47,6 +47,15 @@ private:
 public:
   cDefaultMessageDisplay(std::ostream* stream) : m_out(stream) { ; }
   void out(cString& final_msg);
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 extern cDefaultMessageDisplay s_info_msg_cout;

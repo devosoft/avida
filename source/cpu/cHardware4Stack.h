@@ -266,6 +266,15 @@ private:
   bool Inst_KillThread(cAvidaContext& ctx);
   bool Inst_IO(cAvidaContext& ctx);
   bool Inst_Inject(cAvidaContext& ctx);  
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 

@@ -56,6 +56,15 @@ public:
    
   int GetSize() const { return active_size; }
   cString AsString() const;
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

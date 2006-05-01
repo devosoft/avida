@@ -102,6 +102,15 @@ public:
 
   // Check the neighborhood for waiting genomes
   bool GetNeighborWaiting(const int & parent_id, int world_x, int world_y);
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

@@ -19,6 +19,15 @@ class MyCodeArrayLessThan
 {
 public:
   bool operator()(const cMxCodeArray& x, const cMxCodeArray& y) const { return x < y; }
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

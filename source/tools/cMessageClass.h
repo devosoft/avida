@@ -33,6 +33,15 @@ public:
   bool const m_no_prefix;
 private:
   bool _configured;
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 /*

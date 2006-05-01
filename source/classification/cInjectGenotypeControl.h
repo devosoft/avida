@@ -64,6 +64,15 @@ public:
     { return threads[thread] = historic_list; }
   cInjectGenotype * Next(int thread);
   cInjectGenotype * Prev(int thread);
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

@@ -44,6 +44,15 @@ public:
   const cString & Prev() { list_it.Prev(); return Get(); }
   bool AtRoot() const { return list_it.AtRoot(); }
   bool AtEnd() const { return list_it.AtEnd(); }
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

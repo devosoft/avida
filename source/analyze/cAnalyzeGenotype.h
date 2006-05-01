@@ -314,6 +314,15 @@ public:
   equality of two references means that they refer to the same object.
   */
   bool operator==(const cAnalyzeGenotype &in) const { return &in == this; }
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

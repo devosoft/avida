@@ -1,0 +1,11 @@
+
+Import('environment')
+
+environment.Library('archive',
+  [
+    'cXMLArchive.cc',
+  ],
+) 
+
+  
+# vim: set ft=python:

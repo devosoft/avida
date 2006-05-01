@@ -299,6 +299,15 @@ private:
   bool Inst_NetLast(cAvidaContext& ctx);        // 42
   bool Inst_RotateLeft(cAvidaContext& ctx);     // 43
   bool Inst_RotateRight(cAvidaContext& ctx);    // 44
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 

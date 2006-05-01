@@ -37,6 +37,15 @@ public:
     other_output_buffers(other_outputs), net_valid(in_net_valid), net_completed(in_net_completed), logic_id(0)
   {
   }
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

@@ -81,6 +81,15 @@ public:
   inline int GetProcessCount() { return process_count; }
   inline cIntegratedScheduleNode * GetNext() { return next; }
   inline cIntegratedScheduleNode * GetPrev() { return prev; }
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

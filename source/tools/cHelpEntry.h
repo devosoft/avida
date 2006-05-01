@@ -35,6 +35,15 @@ public:
   virtual bool IsAlias() const = 0;
 
   cString GetHTMLFilename() const { return cStringUtil::Stringf("help.%s.html", static_cast<const char*>(GetKeyword())); }
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

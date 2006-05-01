@@ -1,0 +1,13 @@
+
+Import('environment')
+
+environment.Library('trio',
+  [
+    'trio.c',
+    'triostr.c',
+    'trionan.c',
+  ],
+) 
+
+  
+# vim: set ft=python:

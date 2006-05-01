@@ -1,0 +1,10 @@
+
+Import('environment')
+
+tools_library = environment.Library('actions',
+  [
+    'LandscapeActions.cc',
+  ],
+)
+
+# vim: set ft=python:

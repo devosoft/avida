@@ -28,7 +28,17 @@
 #include "tHashTable.h"
 #endif
 
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
+
+
 template <class T> class tDictionary {
+#if USE_tMemTrack
+  tMemTrack<tDictionary<T> > mt;
+#endif
 private:
   tHashTable<cString, T> m_hash;
 
@@ -71,7 +81,11 @@ public:
     }
     return best_match;
   }
-  
+
+  template<class Archive>
+  void serialize(Archive & a, const unsigned int version){
+    a.ArkvObj("m_hash", m_hash);
+  }
 };
 
 #endif

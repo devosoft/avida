@@ -11,22 +11,39 @@
 #ifndef tList_h
 #define tList_h
 
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
+
 #ifndef NULL
 #define NULL 0
 #endif
 
 template <class T> class tListNode {
+#if USE_tMemTrack
+  tMemTrack<tListNode<T> > mt;
+#endif
 public:
   T * data;
   tListNode<T> * next;
   tListNode<T> * prev;
   
   tListNode() : data(NULL), next(this), prev(this) { ; }
+
+  template<class Archive>
+  void serialize(Archive & a, const unsigned int version){
+    a.ArkvObj("data", data);
+  }
 };
 
 template <class T> class tList;
 
 template <class T> class tBaseIterator {
+#if USE_tMemTrack
+  tMemTrack<tBaseIterator<T> > mt;
+#endif
   friend class tList<T>;
 protected:
   virtual const tList<T> & GetConstList() = 0;
@@ -47,6 +64,9 @@ public:
 };
 
 template <class T> class tListIterator : public tBaseIterator<T> {
+#if USE_tMemTrack
+  tMemTrack<tListIterator<T> > mt;
+#endif
   friend class tList<T>;
 private:
   tList<T> & list;
@@ -80,6 +100,9 @@ public:
 };
 
 template <class T> class tConstListIterator : public tBaseIterator<T> {
+#if USE_tMemTrack
+  tMemTrack<tConstListIterator<T> > mt;
+#endif
   friend class tList<T>;
 private:
   const tList<T> & list;
@@ -110,6 +133,9 @@ public:
 
 template <class T> class tLWConstListIterator : public tBaseIterator<T>
 {
+#if USE_tMemTrack
+  tMemTrack<tLWConstListIterator<T> > mt;
+#endif
   friend class tList<T>;
 private:
   const tList<T>& list;
@@ -139,6 +165,9 @@ public:
 };
 
 template <class T> class tList {
+#if USE_tMemTrack
+  tMemTrack<tList<T> > mt;
+#endif
   friend class tBaseIterator<T>;
   friend class tListIterator<T>;
   friend class tConstListIterator<T>;
@@ -373,16 +402,63 @@ public:
   
   
 public:
-    tList() : size(0), it_count(0) { }
+  tList() : size(0), it_count(0) { }
   ~tList() { Clear(); }
+
+
+  // Save to archive
+  template<class Archive>
+  void save(Archive & a, const unsigned int version) const {
+    // Save number of elements.
+    unsigned int count = size;
+    a.ArkvObj("count", count);
+    // Save elements.
+    const tListNode<T> * node = &root;
+    while(count-- > 0){
+      node = node->next;
+      a.ArkvObj("item", node);
+    }
+  }
+
+
+  // Load from archive
+  template<class Archive>
+  void load(Archive & a, const unsigned int version){
+    Clear();
+    // Retrieve number of elements.
+    unsigned int count;
+    a.ArkvObj("count", count);
+    // Retrieve elements.
+    while(count-- > 0){
+      tListNode<T> * new_node(0);
+      a.ArkvObj("item", new_node);
+
+      new_node->next = &root;
+      new_node->prev = root.prev;
+      root.prev->next = new_node;
+      root.prev = new_node;
+      size++;
+    }
+  }
+
+
+  // Ask archive to handle loads and saves separately
+  template<class Archive>
+  void serialize(Archive & a, const unsigned int version){
+    a.SplitLoadSave(*this, version);
+  }
+
 private:
-    tList(tList & _list) { ; }  // Never should be used...
-  };
+  tList(tList & _list) { ; }  // Never should be used...
+};
 
 
 // This is an extended version of tList that contains extra functions to
 // allow method pointer associated with the object type being listed.
 template <class T> class tListPlus : public tList<T> {
+#if USE_tMemTrack
+  tMemTrack<tListPlus<T> > mt;
+#endif
 private:
 public:
   

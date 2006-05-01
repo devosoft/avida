@@ -38,17 +38,26 @@
 
 */
 
-#include <assert.h>
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
 
 #ifndef tArray_h
 #include "tArray.h"
 #endif
+
+#include <assert.h>
 
 /**
  * This class provides a matrix template.
  **/ 
 
 template <class T> class tMatrix {
+#if USE_tMemTrack
+  tMemTrack<tMatrix<T> > mt;
+#endif
 protected:
   // Internal Variables
   tArray<T> * data;  // Data Elements
@@ -138,6 +147,43 @@ public:
 
   // Destructor
   virtual ~tMatrix(){ if(data!=NULL) delete [] data; }
+
+  // Save to archive
+  template<class Archive>
+  void save(Archive & a, const unsigned int version) const {
+    // Save number of elements.
+    unsigned int rows = GetNumRows();
+    unsigned int cols = GetNumCols();
+    a.ArkvObj("rows", rows);
+    a.ArkvObj("cols", cols);
+    // Save elements.
+    while(rows-- > 0){
+      a.ArkvObj("row", (*this)[rows]);
+    }
+  } 
+
+  
+  // Load from archive
+  template<class Archive>
+  void load(Archive & a, const unsigned int version){
+    // Retrieve number of elements.
+    unsigned int rows;
+    unsigned int cols;
+    a.ArkvObj("rows", rows);
+    a.ArkvObj("cols", cols);
+    ResizeClear(rows, cols);
+    // Retrieve elements.
+    while(rows-- > 0){
+      a.ArkvObj("row", (*this)[rows]);
+    }
+  }   
+      
+      
+  // Ask archive to handle loads and saves separately
+  template<class Archive>
+  void serialize(Archive & a, const unsigned int version){
+    a.SplitLoadSave(*this, version);
+  } 
 };
 
 #endif

@@ -55,6 +55,15 @@ public:
     { return garbage_queue.GetFirst(); }
   inline int GetSize() const { return active_queue.GetSize(); }
   inline int GetInactiveSize() const { return inactive_queue.GetSize(); }
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

@@ -135,6 +135,15 @@ public:
   // kaben changed this member function to static for easy access by
   // cEventListIterator.
   static void PrintEvent(cEventListEntry * event, std::ostream& os = std::cout);
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

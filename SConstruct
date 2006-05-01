@@ -27,11 +27,16 @@ environment.Export('environment')
 #
 AvidaUtils.Configure(ARGUMENTS, environment)
 
+if environment.subst('$enableTestCode') in ['1', 'yes']:
+  environment.SetDefault(enableSharedPtr = 1)
+  environment.Append(CPPDEFINES = ['USE_tMemTrack=1'])
+
 environment.Append(
   CPPPATH = [
     '#/source',
     '#/source/actions',
     '#/source/analyze',
+    '#/source/archive',
     '#/source/classification',
     '#/source/cpu',
     '#/source/drivers',
@@ -43,6 +48,7 @@ environment.Append(
   LIBPATH = [
     '#$buildDir/actions',
     '#$buildDir/analyze',
+    '#$buildDir/archive',
     '#$buildDir/classification',
     '#$buildDir/cpu',
     '#$buildDir/drivers',
@@ -53,8 +59,9 @@ environment.Append(
   ],
 )
 
-# Tell SCons to read script in 'source' subdirectory.
+# Tell SCons where to find its subscripts.
 environment.SConscript('source/SConscript', build_dir = "$buildDir")
+environment.SConscript('support/config/SConscript')
 
 
 # Vim modeline to tell Vim that this is a Python script.

@@ -89,6 +89,15 @@ public:
   cMessageClosure &va(const char *fmt, ...);
 private:
   void prefix(void);
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 /*

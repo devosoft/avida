@@ -228,6 +228,15 @@ public:
   inline int GetFixedSize() const { return fixed_size; }
   inline int GetBlocksUsed() const { return fixed_used.GetBlockNum() + 1; }
   inline void SetFixedSize(int in_fs) { fixed_size = in_fs; }
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 inline void * cBlockStruct::Find(const cFixedCoords & search_coords) const

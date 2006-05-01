@@ -43,6 +43,15 @@ public:
 
   void SaveState(std::ostream& fp);
   void LoadState(std::istream & fp);
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 

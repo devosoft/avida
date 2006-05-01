@@ -35,6 +35,15 @@ public:
   cResource* AddResource(const cString& res_name);
   cResource* GetResource(const cString& res_name) const;
   cResource* GetResource(int id) const;
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

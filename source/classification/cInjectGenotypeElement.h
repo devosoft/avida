@@ -36,6 +36,15 @@ public:
 
   void SetNext(cInjectGenotypeElement* in_next) { next = in_next; }
   void SetPrev(cInjectGenotypeElement* in_prev) { prev = in_prev; }
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

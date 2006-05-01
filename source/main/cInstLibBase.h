@@ -31,6 +31,15 @@ public:
   virtual cInstruction GetInst(const cString & in_name) = 0;
   virtual const cInstruction & GetInstDefault() = 0;
   virtual const cInstruction & GetInstError() = 0;
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

@@ -43,6 +43,15 @@ public:
   cChangeList *GetChangeList() { return m_change_list; }
 
   void SetSize(int _item_count);
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

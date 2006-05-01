@@ -17,6 +17,15 @@ public:
   virtual ~cHardwareTracer_SMT() { ; }
   virtual void TraceHardware_SMT(cHardwareSMT &) = 0;
   virtual void TraceHardware_SMTBonus(cHardwareSMT &) = 0;
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

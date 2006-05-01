@@ -66,6 +66,15 @@ public:
   void SetOutflowX2(int in_outflowX2) { outflowX2 = in_outflowX2; }
   void SetOutflowY1(int in_outflowY1) { outflowY1 = in_outflowY1; }
   void SetOutflowY2(int in_outflowY2) { outflowY2 = in_outflowY2; }
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

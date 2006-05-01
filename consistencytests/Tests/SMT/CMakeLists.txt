@@ -8,7 +8,7 @@
 # i.e., .../build/Tests/Default/.
 #
 
-SET(TestsName "default")
+SET(TestsName "SMT")
 
 #
 # Avida configuration

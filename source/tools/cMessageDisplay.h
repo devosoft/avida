@@ -31,6 +31,15 @@ public:
   
   virtual void out(cString &final_msg){}
   virtual void abort(){ abort(); }
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 void setInfoDisplay(cMessageDisplay &info);

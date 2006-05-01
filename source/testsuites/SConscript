@@ -1,0 +1,59 @@
+import os.path
+import string
+import tempfile
+
+
+def PhonyTarget(alias, action, depends = None):
+  """Returns an alias to a command that performs the action.
+  Implementated by a Command with a nonexistant file target.  This command will
+  run on every build, and will never be considered 'up to date'. Acts like a
+  'phony' target in make.
+  """
+  phony_file = os.path.normpath(tempfile.mktemp(prefix="phony_%s_" % alias, dir="."))
+  Depends(phony_file, depends)
+  return Alias(alias, Command(target=phony_file, source=None, action=action))
+
+def Test(env, prg):
+  """Creates unit test from given program.
+  When unit test passes, a file stamp is made. If it ran successfully and there
+  is nothing changed, the unit test can be skipped next time.
+
+  Makes three alii: the name of program, force-test, and test-changed:
+  - First can be used to run individual unit test.
+  - Second forces all unit tests to run.
+  - Third is used to run unit tests that changed or whose dependencies changed.
+  """
+  name = str(prg[0])
+  stamp = name + '.passed'
+  env.UnitTest(stamp, prg)
+  alias = PhonyTarget(name, [prg], stamp)
+  env.Alias('force-test', name)
+  env.Alias('test-changed', stamp)
+
+
+
+
+Import('environment')
+
+full_unit_tests = environment.Program('full-unit-tests',
+  'full-unit-tests.cc',
+  LIBS = [
+    'main',
+    'classification',
+    'cpu',
+    'event',
+    'analyze',
+    'drivers',
+    'analyze',
+    'cpu',
+    'tools',
+    'actions',
+    'main',
+    'archive',
+    'boost_serialization',
+  ],
+)
+
+Test(environment, full_unit_tests)
+
+# vim: set ft=python:

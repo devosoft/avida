@@ -2,6 +2,7 @@ SET(libtools_a_SOURCES
   cBlockStruct.cc
   cChangeList.cc
   cConstSchedule.cc
+  cDataEntry.cc
   cDataFile.cc
   cDataFileManager.cc
   cDataManager_Base.cc
@@ -27,6 +28,7 @@ SET(libtools_a_SOURCES
   cStringIterator.cc
   cStringList.cc
   cStringUtil.cc
+  cTemplateTests.cc
   cThread.cc
   cTools.cc
   cWeightedIndex.cc

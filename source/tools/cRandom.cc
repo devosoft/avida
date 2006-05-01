@@ -253,3 +253,163 @@ bool cRandom::Choose(int num_in, tArray<int>& out_array)
 
   return true;
 }
+
+
+
+/*
+Unit tests
+*/
+#include "cXMLArchive.h"
+
+#include <boost/detail/lightweight_test.hpp>
+
+#include <cstdio>    // for std::remove() to remove temporary files.
+#include <iomanip>
+#include <iostream>
+#include <fstream> 
+#include <string>
+
+namespace utRandom_hello_world {
+  void test(){
+    BOOST_TEST(true);
+    BOOST_TEST(false);
+  }
+}
+
+namespace utRandom_archiving {
+  /*
+  Test-helpers.
+  */
+  template <class T>
+  void save_stuff(const T &s, const char * filename){
+    std::ofstream ofs(filename);
+    cXMLOArchive oa(ofs);
+    oa.ArkvObj("cRandom_Archive", s);
+  }
+  
+  template <class T>
+  void restore_stuff(T &s, const char * filename) {
+    std::ifstream ifs(filename);
+    cXMLIArchive ia(ifs);
+    ia.ArkvObj("cRandom_Archive", s);
+  }
+
+  void test(){
+    { 
+      std::string filename("./cRandom_basic_serialization.xml");
+
+      // Using seed drawn from date and time.
+      // No, using a problematic seed found.
+      cRandom r(13396544);
+
+      /*
+      Exercise the random number generator a little bit before saving
+      and restoring.
+      */
+      int seed = r.GetSeed();
+      int original_seed = r.GetOriginalSeed();
+      double d = r.GetDouble();
+      double dm = r.GetDouble(1.0);
+      double dr = r.GetDouble(1.0, 2.0);
+      int i = r.GetInt(100);
+      int ir = r.GetInt(100, 200);
+      bool p = r.P(0.5);
+      bool up = r.uP(0.0000005);
+      double rn = r.GetRandNormal();
+      double rnr = r.GetRandNormal(10.0, 2.0);
+      unsigned int rpnp = r.GetRandPoisson(10.0, 0.5);
+      unsigned int rpm = r.GetRandPoisson(0.5);
+      unsigned int frb = r.GetFullRandBinomial(10.0, 3.0);
+      unsigned int rb = r.GetRandBinomial(10.0, 3.0);
+
+      /* Save random number generator state.  */
+      save_stuff<>(r, filename.c_str());
+
+      /* Get some random numbers...  */
+      seed = r.GetSeed();
+      original_seed = r.GetOriginalSeed();
+      d = r.GetDouble();
+      dm = r.GetDouble(1.0);
+      dr = r.GetDouble(1.0, 2.0);
+      i = r.GetInt(100);
+      ir = r.GetInt(100, 200);
+      p = r.P(0.5);
+      up = r.uP(0.0000005);
+      tArray<int> choose(10);
+      r.Choose(100, choose);
+      rn = r.GetRandNormal();
+      rnr = r.GetRandNormal(10.0, 2.0);
+      rpnp = r.GetRandPoisson(10.0, 0.5);
+      rpm = r.GetRandPoisson(0.5);
+      frb = r.GetFullRandBinomial(10.0, 3.0);
+      rb = r.GetRandBinomial(10.0, 3.0);
+
+      /* Reload saved random number generator state.  */
+      cRandom r2(0);
+      restore_stuff<>(r2, filename.c_str());
+
+      /*
+      Get some random numbers... Should be the same as those read above.
+      */
+      int seed2 = r2.GetSeed();
+      int original_seed2 = r2.GetOriginalSeed();
+      double d2 = r2.GetDouble();
+      double dm2 = r2.GetDouble(1.0);
+      double dr2 = r2.GetDouble(1.0, 2.0);
+      int i2 = r2.GetInt(100);
+      int ir2 = r2.GetInt(100, 200);
+      bool p2 = r2.P(0.5);
+      bool up2 = r2.uP(0.0000005);
+      tArray<int> choose2(10);
+      r2.Choose(100, choose2);
+      double rn2 = r2.GetRandNormal();
+      double rnr2 = r2.GetRandNormal(10.0, 2.0);
+      unsigned int rpnp2 = r2.GetRandPoisson(10.0, 0.5);
+      unsigned int rpm2 = r2.GetRandPoisson(0.5);
+      unsigned int frb2 = r2.GetFullRandBinomial(10.0, 3.0);
+      unsigned int rb2 = r2.GetRandBinomial(10.0, 3.0);
+
+      /* Compare results.  */
+      BOOST_TEST(seed2 == seed);
+      BOOST_TEST(original_seed2 == original_seed);
+      BOOST_TEST(d2 == d);
+      BOOST_TEST(dm2 == dm);
+      BOOST_TEST(dr2 == dr);
+      BOOST_TEST(i2 == i);
+      BOOST_TEST(ir2 == ir);
+      BOOST_TEST(p2 == p);
+      BOOST_TEST(up2 == up);
+      for(int i = 0; i < choose.GetSize(); i++){
+        BOOST_TEST(choose2[i] == choose[i]);
+      }
+      BOOST_TEST(rn2 == rn);
+      BOOST_TEST(rnr2 == rnr);
+      BOOST_TEST(rpnp2 == rpnp);
+      BOOST_TEST(rpm2 == rpm);
+      //std::cout<<"rnr2: "<<rnr2<<", rnr: "<<rnr<<std::endl;
+      //std::cout<<"rpnp2: "<<rpnp2<<", rpnp: "<<rpnp<<std::endl;
+      //std::cout<<"rpm2: "<<rpm2<<", rpm: "<<rpm<<std::endl;
+      BOOST_TEST(frb2 == frb);
+      BOOST_TEST(rb2 == rb);
+
+      /*
+      Print random number seeds to stdout, in case we run across a seed
+      that breaks things in weird ways.
+      */
+      std::cout << "utRandom_archiving info: seed " << seed << ", seed2 " << seed2
+      << ", original_seed " << original_seed << ", original_seed2 "
+      << original_seed2 << std::endl;
+
+      std::remove(filename.c_str());
+    }
+  }
+}
+
+void cRandom::UnitTests(bool full)
+{
+  //if(full) utRandom_hello_world::test();
+  if(full) {
+    std::cout << "utRandom_archiving" << std::endl;
+    utRandom_archiving::test();
+  }
+}

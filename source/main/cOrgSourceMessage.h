@@ -30,6 +30,15 @@ public:
   void SetDropped() { m_dropped++; }
   int GetCorrupted() { return m_corrupt; }
   void SetCorrupted() { m_corrupt++; }
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

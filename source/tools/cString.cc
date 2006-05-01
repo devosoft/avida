@@ -644,3 +644,203 @@ ostream& operator << (ostream& out, const cString& string)
   return out;
 }
 
+
+
+/*
+Unit tests
+*/
+#include "cXMLArchive.h"
+
+#include <boost/detail/lightweight_test.hpp>
+
+#include <cstdio>    // for std::remove() to remove temporary files.
+#include <iomanip>
+#include <iostream>
+#include <fstream> 
+#include <string>
+
+namespace utString_hello_world {
+  void test(){
+    BOOST_TEST(true);
+    BOOST_TEST(false);
+  }
+}
+
+namespace utString_archiving {
+  /*
+  Test-helpers.
+  */
+  class A {
+  public:
+    cString m_s1, m_s2;
+    cString *m_ps1, *m_ps2;
+    static int s_instance_ct;
+  public:
+    A():m_s1("blah."), m_s2(m_s1), m_ps1(new cString("ick.")), m_ps2(m_ps1) { s_instance_ct++; }
+    ~A(){ s_instance_ct--; }
+  public:
+    template<class Archive>
+    void serialize(Archive & a, const unsigned int version){
+      a.ArkvObj("m_s1", m_s1);
+      a.ArkvObj("m_s2", m_s2);
+      a.ArkvObj("m_ps1", m_ps1);
+      a.ArkvObj("m_ps2", m_ps2);
+    }
+  };
+  int A::s_instance_ct(0);
+  
+  template <class T>
+  void save_stuff(const T &s, const char * filename){
+    std::ofstream ofs(filename);
+    cXMLOArchive oa(ofs);
+    oa.ArkvObj("s", s);
+  }
+  
+  template <class T>
+  void restore_stuff(T &s, const char * filename) {
+    std::ifstream ifs(filename);
+    cXMLIArchive ia(ifs);
+    ia.ArkvObj("s", s);
+  }
+
+  void test(){
+    { 
+      BOOST_TEST(true);
+      std::string filename("./cString_basic_serialization.xml");
+
+      BOOST_TEST(0 == A::s_instance_ct);
+      A *a(new A);
+      BOOST_TEST(1 == A::s_instance_ct);
+
+      /*
+      Both instances of cString should share a single cStringData instance.
+      */
+      BOOST_TEST(cString("blah.") == a->m_s1);
+      BOOST_TEST(cString("blah.") == a->m_s2);
+      const char *s1(a->m_s1);
+      const char *s2(a->m_s2);
+      BOOST_TEST(s1 == s2);
+
+      /*
+      Both pointers should point to one cString instance.
+      */
+      BOOST_TEST(cString("ick.") == *a->m_ps1);
+      BOOST_TEST(cString("ick.") == *a->m_ps2);
+      const char *s3(*a->m_ps1);
+      const char *s4(*a->m_ps2);
+      BOOST_TEST(s3 == s4);
+
+      save_stuff<>(a, filename.c_str());
+      delete a;
+      BOOST_TEST(0 == A::s_instance_ct);
+
+      restore_stuff<>(a, filename.c_str());
+      BOOST_TEST(1 == A::s_instance_ct);
+
+      /*
+      Both instances of cString should share a single cStringData instance.
+      */
+      BOOST_TEST(cString("blah.") == a->m_s1);
+      BOOST_TEST(cString("blah.") == a->m_s2);
+      /*
+      We have decided to not track cStringData instance sharing;
+      consequently we now expect that if two strings sharing data are
+      both saved and then reloaded, the reloaded versions no longer
+      share data.
+      This prevents a certain kind of memory leak.
+      @kgn
+      */
+      const char *s5(a->m_s1);
+      const char *s6(a->m_s2);
+      BOOST_TEST(s5 != s6);
+
+      /*
+      Both pointers should point to one cString instance.
+      */
+      BOOST_TEST(cString("ick.") == *a->m_ps1);
+      BOOST_TEST(cString("ick.") == *a->m_ps2);
+      const char *s7(*a->m_ps1);
+      const char *s8(*a->m_ps2);
+      BOOST_TEST(s7 == s8);
+
+      delete a;
+      BOOST_TEST(0 == A::s_instance_ct);
+
+      std::remove(filename.c_str());
+    }
+    {
+      BOOST_TEST(true);
+      std::string filename("./cString_basic_serialization_2.xml");
+
+      BOOST_TEST(0 == A::s_instance_ct);
+      A *a(new A);
+      BOOST_TEST(1 == A::s_instance_ct);
+
+      /*
+      Both instances of cString were sharing a single cStringData
+      instance, but assigning a new string to the first should create a
+      new, unshared cStringData instance; so now each cString should
+      have its own cStringData.
+      */
+      a->m_s1 = "bleah.";
+      BOOST_TEST(cString("bleah.") == a->m_s1);
+      BOOST_TEST(cString("blah.") == a->m_s2);
+      const char *s1(a->m_s1);
+      const char *s2(a->m_s2);
+      BOOST_TEST(s1 != s2);
+
+      /*
+      Both pointers should point to one cString instance.
+      */
+      *a->m_ps1 = "ack.";
+      BOOST_TEST(cString("ack.") == *a->m_ps1);
+      BOOST_TEST(cString("ack.") == *a->m_ps2);
+      const char *s3(*a->m_ps1);
+      const char *s4(*a->m_ps2);
+      BOOST_TEST(s3 == s4);
+
+      save_stuff<>(a, filename.c_str());
+      delete a;
+      BOOST_TEST(0 == A::s_instance_ct);
+
+      restore_stuff<>(a, filename.c_str());
+      BOOST_TEST(1 == A::s_instance_ct);
+
+      /*
+      Each cString should have its own cStringData.
+      */
+      BOOST_TEST(cString("bleah.") == a->m_s1);
+      BOOST_TEST(cString("blah.") == a->m_s2);
+      const char *s5(a->m_s1);
+      const char *s6(a->m_s2);
+      BOOST_TEST(s5 != s6);
+
+      /*
+      Both pointers should point to one cString instance.
+      */
+      BOOST_TEST(cString("ack.") == *a->m_ps1);
+      BOOST_TEST(cString("ack.") == *a->m_ps2);
+      const char *s7(*a->m_ps1);
+      const char *s8(*a->m_ps2);
+      BOOST_TEST(s7 == s8);
+
+
+      delete a;
+      BOOST_TEST(0 == A::s_instance_ct);
+
+      std::remove(filename.c_str());
+    }
+  }
+}
+
+void cString::UnitTests(bool full)
+{
+  //if(full) {
+  //  std::cout << "utString_hello_world" << std::endl;
+  //  utString_hello_world::test();
+  //}
+  if(full) {
+    std::cout << "utString_archiving" << std::endl;
+    utString_archiving::test();
+  }
+}

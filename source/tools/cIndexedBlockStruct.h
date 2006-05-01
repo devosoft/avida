@@ -103,6 +103,15 @@ public:
     }
     else fixed_size = 1;
   }
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 inline int cIndexedBlockStruct::Find(cFixedCoords & search_coords) const

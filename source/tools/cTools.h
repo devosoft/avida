@@ -24,6 +24,15 @@ private:
 
 public:
   static bool MkDir(const cString& dirname, bool verbose=false);
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

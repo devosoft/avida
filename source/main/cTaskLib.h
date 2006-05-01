@@ -219,6 +219,15 @@ private:  // Direct task related methods
   
   double Task_NetSend(cTaskContext* ctx) const;
   double Task_NetReceive(cTaskContext* ctx) const;
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 

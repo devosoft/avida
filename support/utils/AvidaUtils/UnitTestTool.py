@@ -1,4 +1,5 @@
 import SCons
+import os
 
 def unit_test_action(target, source, env):
   app = str(source[0].abspath)

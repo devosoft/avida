@@ -69,6 +69,15 @@ public:
   int AsIntAdditivePolynomial(const int base) const;
   int AsIntFib(const int base) const;
   int AsIntPolynomialCoefficent(const int base) const;
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 void cCodeLabel::AddNop(int nop_num) {

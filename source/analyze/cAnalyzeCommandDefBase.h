@@ -29,6 +29,15 @@ public:
   virtual bool IsFlowCommand() { return false; }
 
   const cString& GetName() const { return name; }
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 #endif

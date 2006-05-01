@@ -10,11 +10,17 @@
 #ifndef tSmartArray_h
 #define tSmartArray_h
 
-#include <assert.h>
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
 
 #ifndef tArray_h
 #include "tArray.h"
 #endif
+
+#include <assert.h>
 
 // "I am so smart..."
 static const int SMRT_INCREASE_MINIMUM = 10;
@@ -23,6 +29,9 @@ static const double SMRT_SHRINK_TEST_FACTOR = 4.0;
 
 template <class T> class tSmartArray
 {
+#if USE_tMemTrack
+  tMemTrack<tSmartArray<T> > mt;
+#endif
 private:
   
   T* m_data;    // Data Array
@@ -137,6 +146,38 @@ public:
   {
     for (int i = 0; i < m_active; i++) m_data[i] = value;
   }
+
+  // Save to archive
+  template<class Archive>
+  void save(Archive & a, const unsigned int version) const {
+    // Save number of elements.
+    unsigned int count = m_active;
+    a.ArkvObj("count", count);
+    // Save elements.
+    while(count-- > 0){ 
+      a.ArkvObj("item", (*this)[count]);
+    } 
+  }   
+    
+    
+  // Load from archive
+  template<class Archive>
+  void load(Archive & a, const unsigned int version){
+    // Retrieve number of elements.
+    unsigned int count; 
+    a.ArkvObj("count", count);
+    ResizeClear(count);
+    // Retrieve elements.
+    while(count-- > 0){
+      a.ArkvObj("item", (*this)[count]);
+    }
+  } 
+  
+  // Ask archive to handle loads and saves separately
+  template<class Archive>
+  void serialize(Archive & a, const unsigned int version){
+    a.SplitLoadSave(*this, version);
+  } 
 };
 
 #endif

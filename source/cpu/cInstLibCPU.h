@@ -79,6 +79,15 @@ public:
   }
   const cInstruction & GetInstDefault(){ return inst_default; }
   const cInstruction & GetInstError(){ return inst_error; }
+
+public:
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+  
 };
 
 

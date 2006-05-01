@@ -15,16 +15,16 @@ IF(UNIX)
   # - release (Release)
   # - release with debug info (RelWithDebInfo)
   SET(CMAKE_CXX_FLAGS_DEBUG
-    "-g ${COMPILER_WARNING_FLAGS} -DDEBUG"
+    "-g ${COMPILER_WARNING_FLAGS} -DDEBUG -DUSE_tMemTrack=1"
     CACHE STRING "Flags used by the compiler during debug builds.")
   SET(CMAKE_CXX_FLAGS_MINSIZEREL
-    "-Os -DNDEBUG"
+    "-Os -DNDEBUG -DUSE_tMemTrack=1"
     CACHE STRING "Flags used by the compiler during release minsize builds.")
   SET(CMAKE_CXX_FLAGS_RELEASE
-    "-O3 -ffast-math -DNDEBUG"
+    "-O3 -ffast-math -DNDEBUG -DUSE_tMemTrack=1"
     CACHE STRING "Flags used by the compiler during release builds.")
   SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO
-    "-O2 -ffast-math -g ${COMPILER_WARNING_FLAGS} -DDEBUG"
+    "-O2 -ffast-math -g ${COMPILER_WARNING_FLAGS} -DDEBUG -DUSE_tMemTrack=1"
     CACHE STRING "Flags used by the compiler during release builds.")
 
   # Four types of c compilations:
@@ -33,16 +33,16 @@ IF(UNIX)
   # - release (Release)
   # - release with debug info (RelWithDebInfo)
   SET(CMAKE_C_FLAGS_DEBUG
-    "-g ${COMPILER_WARNING_FLAGS} -DDEBUG"
+    "-g ${COMPILER_WARNING_FLAGS} -DDEBUG -DUSE_tMemTrack=1"
     CACHE STRING "Flags used by the compiler during debug builds.")
   SET(CMAKE_C_FLAGS_MINSIZEREL
-    "-Os -DNDEBUG"
+    "-Os -DNDEBUG -DUSE_tMemTrack=1"
     CACHE STRING "Flags used by the compiler during release minsize builds.")
   SET(CMAKE_C_FLAGS_RELEASE
-    "-O3 -ffast-math -DNDEBUG"
+    "-O3 -ffast-math -DNDEBUG -DUSE_tMemTrack=1"
     CACHE STRING "Flags used by the compiler during release builds.")
   SET(CMAKE_C_FLAGS_RELWITHDEBINFO
-    "-O2 -ffast-math -g ${COMPILER_WARNING_FLAGS} -DDEBUG"
+    "-O2 -ffast-math -g ${COMPILER_WARNING_FLAGS} -DDEBUG -DUSE_tMemTrack=1"
     CACHE STRING "Flags used by the compiler during release builds.")
 
   # By default, show all build commands.
@@ -229,6 +229,8 @@ SET(THIRDPARTY_SRC_DIR ${PROJECT_SOURCE_DIR}/source/third-party)
 SET(TOOLS_SRC_DIR ${PROJECT_SOURCE_DIR}/source/tools)
 SET(ACTIONS_SRC_DIR ${PROJECT_SOURCE_DIR}/source/actions)
 SET(ANALYZE_SRC_DIR ${PROJECT_SOURCE_DIR}/source/analyze)
+SET(ARCHIVE_SRC_DIR ${PROJECT_SOURCE_DIR}/source/archive)
+SET(BOOST_SRC_DIR ${PROJECT_SOURCE_DIR}/source/third-party/boost)
 SET(CLASSIFICATION_SRC_DIR ${PROJECT_SOURCE_DIR}/source/classification)
 SET(CPU_SRC_DIR ${PROJECT_SOURCE_DIR}/source/cpu)
 SET(DRIVERS_SRC_DIR ${PROJECT_SOURCE_DIR}/source/drivers)
@@ -240,6 +242,8 @@ SET(THIRDPARTY_BLD_DIR ${PROJECT_BINARY_DIR}/source/third-party)
 SET(TOOLS_BLD_DIR ${PROJECT_BINARY_DIR}/source/tools)
 SET(ACTIONS_BLD_DIR ${PROJECT_BINARY_DIR}/source/actions)
 SET(ANALYZE_BLD_DIR ${PROJECT_BINARY_DIR}/source/analyze)
+SET(ARCHIVE_BLD_DIR ${PROJECT_BINARY_DIR}/source/archive)
+SET(BOOST_SERIALIZATION_BLD_DIR ${PROJECT_BINARY_DIR}/source/third-party/boost/serialization)
 SET(CLASSSIFICATION_BLD_DIR ${PROJECT_BINARY_DIR}/source/classification)
 SET(CPU_BLD_DIR ${PROJECT_BINARY_DIR}/source/cpu)
 SET(DRIVERS_BLD_DIR ${PROJECT_BINARY_DIR}/source/drivers)
@@ -252,6 +256,8 @@ SET(ALL_INC_DIRS
   ${TOOLS_SRC_DIR}
   ${ACTIONS_SRC_DIR}
   ${ANALYZE_SRC_DIR}
+  ${ARCHIVE_SRC_DIR}
+  ${BOOST_SRC_DIR}
   ${CLASSIFICATION_SRC_DIR}
   ${CPU_SRC_DIR}
   ${DRIVERS_SRC_DIR}
@@ -267,6 +273,8 @@ SET(ALL_LIB_DIRS
   ${TOOLS_BLD_DIR}
   ${ACTIONS_BLD_DIR}
   ${ANALYZE_BLD_DIR}
+  ${ARCHIVE_BLD_DIR}
+  ${BOOST_SERIALIZATION_BLD_DIR}
   ${CLASSIFICATION_BLD_DIR}
   ${CPU_BLD_DIR}
   ${DRIVERS_BLD_DIR}

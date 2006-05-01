@@ -11,8 +11,11 @@
 #ifndef tBuffer_h
 #define tBuffer_h
 
-#include <assert.h>
-#include <iostream>
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
 
 #ifndef cString_h
 #include "cString.h"
@@ -21,9 +24,15 @@
 #include "tArray.h"
 #endif
 
+#include <assert.h>
+#include <iostream>
+
 
 template <class T> class tBuffer
 {
+#if USE_tMemTrack
+  tMemTrack<tBuffer<T> > mt;
+#endif
 private:
   tArray<T> data;      // Contents of buffer...
   int offset;          // Position in buffer to next write.
@@ -72,26 +81,40 @@ public:
   int GetNumStored() const { return (total <= data.GetSize()) ? total : data.GetSize(); }
   int GetNum() const { return total - last_total; }
 
-  void SaveState(std::ostream& fp)
-  {
-    assert(fp.good());
-    fp << "tBuffer" << " ";
-    fp << data.GetSize() << " ";
-    for (int i = 0; i < data.GetSize(); i++)  fp << data[i] << " ";
-    fp << offset << " "  << total << " "  << last_total << " "  << std::endl;
+  template<class Archive>
+  void serialize(Archive & a, const unsigned int version){
+    a.ArkvObj("data", data);
+    a.ArkvObj("offset", offset);
+    a.ArkvObj("total", total);
+    a.ArkvObj("last_total", last_total);
   }
-  
-  void LoadState(std::istream& fp)
-  {
-    assert(fp.good());
-    cString foo;  fp >> foo;  assert(foo == "tBuffer");
-    int capacity;  fp >> capacity;
-    data.Resize(capacity);
-    for (int i = 0; i < capacity; i++) {
-      fp >> data[i];
-    }
-    fp  >>  offset  >>  total  >>  last_total;
-  }
+
+  /*
+  FIXME: I'm replacing the code below with a serializing system, but
+  want to keep the old around for reference until I'm sure the new
+  system works.
+  @kgn
+  */
+  //void SaveState(std::ostream& fp)
+  //{
+  //  assert(fp.good());
+  //  fp << "tBuffer" << " ";
+  //  fp << data.GetSize() << " ";
+  //  for (int i = 0; i < data.GetSize(); i++)  fp << data[i] << " ";
+  //  fp << offset << " "  << total << " "  << last_total << " "  << std::endl;
+  //}
+  //
+  //void LoadState(std::istream& fp)
+  //{
+  //  assert(fp.good());
+  //  cString foo;  fp >> foo;  assert(foo == "tBuffer");
+  //  int capacity;  fp >> capacity;
+  //  data.Resize(capacity);
+  //  for (int i = 0; i < capacity; i++) {
+  //    fp >> data[i];
+  //  }
+  //  fp  >>  offset  >>  total  >>  last_total;
+  //}
 };
 
 #endif
