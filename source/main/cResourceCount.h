@@ -80,6 +80,8 @@ public:
   void ResizeSpatialGrids(int in_x, int in_y);
   cSpatialResCount GetSpatialResource(int id) { return spatial_resource_count[id]; }
 
+
+#ifdef ENABLE_UNIT_TESTS
 public:
   /**
    * Run unit tests
@@ -87,7 +89,7 @@ public:
    * @param full Run full test suite; if false, just the fast tests.
    **/
   static void UnitTests(bool full = false);
-  
+#endif  
 };
 
 #endif

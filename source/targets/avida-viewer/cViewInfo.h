@@ -126,6 +126,8 @@ public:
   void SetThreadLock(int in_lock) { thread_lock = in_lock; }
   void SetStepOrganism(int in_id) { step_organism_id = in_id; }
 
+
+#ifdef ENABLE_UNIT_TESTS
 public:
   /**
    * Run unit tests
@@ -133,7 +135,7 @@ public:
    * @param full Run full test suite; if false, just the fast tests.
    **/
   static void UnitTests(bool full = false);
-  
+#endif  
 };
 
 inline void cViewInfo::DecMapMode()

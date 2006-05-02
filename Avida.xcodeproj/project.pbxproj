@@ -491,6 +491,7 @@
 		7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cTestCPUInterface.cc; sourceTree = "<group>"; };
 		7005A70909BA0FBE0007E16E /* cOrgInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgInterface.h; sourceTree = "<group>"; };
 		700AE91B09DB65F200A073FD /* cTaskContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cTaskContext.h; sourceTree = "<group>"; };
+		700E11BC0A0815B600B604CD /* cDataEntry.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDataEntry.cc; sourceTree = "<group>"; };
 		700E28CF0859FFD700CF158A /* tObjectFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tObjectFactory.h; sourceTree = "<group>"; };
 		700E2B83085DE50C00CF158A /* avida-viewer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "avida-viewer"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7013845F09028B3E0087ED2E /* cAvidaConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaConfig.h; sourceTree = "<group>"; };
@@ -1525,6 +1526,7 @@
 		DCC314D8076253A2008F7A48 /* tools */ = {
 			isa = PBXGroup;
 			children = (
+				700E11BC0A0815B600B604CD /* cDataEntry.cc */,
 				70B08B9008FB2E6B00FC65FE /* cTools.cc */,
 				70B08B9108FB2E6B00FC65FE /* cWeightedIndex.cc */,
 				70B08B8008FB2E5500FC65FE /* cTools.h */,

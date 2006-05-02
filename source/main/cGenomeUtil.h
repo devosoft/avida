@@ -42,6 +42,8 @@ public:
   static cGenome Cut(const cGenome& genome, int start, int end);
   static cGenome Join(const cGenome& genome1, const cGenome& genome2);
 
+
+#ifdef ENABLE_UNIT_TESTS
 public:
   /**
    * Run unit tests
@@ -49,7 +51,7 @@ public:
    * @param full Run full test suite; if false, just the fast tests.
    **/
   static void UnitTests(bool full = false);
-  
+#endif  
 };
 
 #endif

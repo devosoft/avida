@@ -9,6 +9,8 @@
 
 #include "cDataEntry.h"
 
+#ifdef ENABLE_UNIT_TESTS
+
 /*
 Unit tests
 */
@@ -95,3 +97,4 @@ void cDataEntry::UnitTests(bool full)
   }
 }
 
+#endif // ENABLE_UNIT_TESTS

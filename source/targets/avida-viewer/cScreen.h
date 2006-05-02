@@ -78,6 +78,8 @@ public:
   virtual void DoMouseClick(int x, int y) { (void) x; (void) y; }
   virtual void Exit() { ; }
 
+
+#ifdef ENABLE_UNIT_TESTS
 public:
   /**
    * Run unit tests
@@ -85,7 +87,7 @@ public:
    * @param full Run full test suite; if false, just the fast tests.
    **/
   static void UnitTests(bool full = false);
-  
+#endif  
 };
 
 

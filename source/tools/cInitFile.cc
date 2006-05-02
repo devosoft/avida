@@ -253,6 +253,8 @@ bool cInitFile::WarnUnused() const
 }
 
 
+#ifdef ENABLE_UNIT_TESTS
+
 /*
 Unit tests
 */
@@ -400,3 +402,5 @@ void cInitFile::UnitTests(bool full)
     nInitFileTests::utInitFile_archiving_closed_file::test();
   }
 }
+
+#endif // ENABLE_UNIT_TESTS

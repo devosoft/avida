@@ -25,6 +25,8 @@ public:
   inline int GetStart() { return start_point; }
   inline void SetStart(int in_sp) { start_point = in_sp; }
 
+
+#ifdef ENABLE_UNIT_TESTS
 public:
   /**
    * Run unit tests
@@ -32,7 +34,7 @@ public:
    * @param full Run full test suite; if false, just the fast tests.
    **/
   static void UnitTests(bool full = false);
-  
+#endif  
 };
 
 #endif

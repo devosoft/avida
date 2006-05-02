@@ -13,17 +13,17 @@
 
 class cMessageClass;
 
-class cMessageType{
-public:
-  cMessageType(
-    const char* type_name,
-    cMessageClass& message_class
-  );
+class cMessageType
+{
 public:
   const char* m_type_name;
   const cMessageClass& m_message_class;
   bool m_is_active;
+  
+  cMessageType(const char* type_name, cMessageClass& message_class);
 
+
+#ifdef ENABLE_UNIT_TESTS
 public:
   /**
    * Run unit tests
@@ -31,7 +31,7 @@ public:
    * @param full Run full test suite; if false, just the fast tests.
    **/
   static void UnitTests(bool full = false);
-  
+#endif
 };
 
 #endif

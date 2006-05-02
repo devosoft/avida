@@ -36,6 +36,8 @@ public:
   virtual void NotifyComment(const cString& in_string) = 0;
   virtual void NotifyWarning(const cString& in_string) = 0;
 
+
+#ifdef ENABLE_UNIT_TESTS
 public:
   /**
    * Run unit tests
@@ -43,7 +45,7 @@ public:
    * @param full Run full test suite; if false, just the fast tests.
    **/
   static void UnitTests(bool full = false);
-  
+#endif  
 };
 
 #endif

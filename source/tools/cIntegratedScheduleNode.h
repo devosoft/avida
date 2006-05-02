@@ -82,6 +82,8 @@ public:
   inline cIntegratedScheduleNode * GetNext() { return next; }
   inline cIntegratedScheduleNode * GetPrev() { return prev; }
 
+
+#ifdef ENABLE_UNIT_TESTS
 public:
   /**
    * Run unit tests
@@ -89,7 +91,7 @@ public:
    * @param full Run full test suite; if false, just the fast tests.
    **/
   static void UnitTests(bool full = false);
-  
+#endif  
 };
 
 #endif

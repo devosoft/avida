@@ -113,6 +113,8 @@ public:
   double TransitionProbability(const cMxCodeArray &other_gene, double errorRate) const;
   void PrintTransitionList(std::ostream& fp, int size) const;
 
+
+#ifdef ENABLE_UNIT_TESTS
 public:
   /**
    * Run unit tests
@@ -120,7 +122,7 @@ public:
    * @param full Run full test suite; if false, just the fast tests.
    **/
   static void UnitTests(bool full = false);
-  
+#endif  
 };
 
 cInstruction & cMxCodeArray::operator[](int index)

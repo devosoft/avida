@@ -256,6 +256,8 @@ bool cRandom::Choose(int num_in, tArray<int>& out_array)
 
 
 
+#ifdef ENABLE_UNIT_TESTS
+
 /*
 Unit tests
 */
@@ -413,3 +415,5 @@ void cRandom::UnitTests(bool full)
     utRandom_archiving::test();
   }
 }
+
+#endif // ENABLE_UNIT_TESTS

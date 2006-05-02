@@ -425,6 +425,8 @@ private:
   //// Placebo ////
   bool Inst_Skip(cAvidaContext& ctx);
 
+
+#ifdef ENABLE_UNIT_TESTS
 public:
   /**
    * Run unit tests
@@ -432,7 +434,7 @@ public:
    * @param full Run full test suite; if false, just the fast tests.
    **/
   static void UnitTests(bool full = false);
-  
+#endif  
 };
 
 

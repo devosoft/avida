@@ -645,6 +645,7 @@ ostream& operator << (ostream& out, const cString& string)
 }
 
 
+#ifdef ENABLE_UNIT_TESTS
 
 /*
 Unit tests
@@ -844,3 +845,5 @@ void cString::UnitTests(bool full)
     utString_archiving::test();
   }
 }
+
+#endif // ENABLE_UNIT_TESTS

@@ -300,6 +300,8 @@ private:
   bool Inst_RotateLeft(cAvidaContext& ctx);     // 43
   bool Inst_RotateRight(cAvidaContext& ctx);    // 44
 
+
+#ifdef ENABLE_UNIT_TESTS
 public:
   /**
    * Run unit tests
@@ -307,7 +309,7 @@ public:
    * @param full Run full test suite; if false, just the fast tests.
    **/
   static void UnitTests(bool full = false);
-  
+#endif  
 };
 
 

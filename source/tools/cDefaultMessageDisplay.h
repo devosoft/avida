@@ -48,6 +48,8 @@ public:
   cDefaultMessageDisplay(std::ostream* stream) : m_out(stream) { ; }
   void out(cString& final_msg);
 
+
+#ifdef ENABLE_UNIT_TESTS
 public:
   /**
    * Run unit tests
@@ -55,7 +57,7 @@ public:
    * @param full Run full test suite; if false, just the fast tests.
    **/
   static void UnitTests(bool full = false);
-  
+#endif  
 };
 
 extern cDefaultMessageDisplay s_info_msg_cout;

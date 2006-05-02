@@ -73,6 +73,8 @@ cString cStringList::PopString(const cString & test_string)
 }
 
 
+#ifdef ENABLE_UNIT_TESTS
+
 /*
 Unit tests
 */
@@ -186,3 +188,5 @@ void cStringList::UnitTests(bool full)
     nStringListTests::utStringList_archiving::test();
   }
 }
+
+#endif // ENABLE_UNIT_TESTS

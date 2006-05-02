@@ -39,6 +39,8 @@ public:
   void GetData(int & in_data);
   void GetData(double & in_data);
 
+
+#ifdef ENABLE_UNIT_TESTS
 public:
   /**
    * Run unit tests
@@ -46,7 +48,7 @@ public:
    * @param full Run full test suite; if false, just the fast tests.
    **/
   static void UnitTests(bool full = false);
-  
+#endif  
 };
 
 #endif

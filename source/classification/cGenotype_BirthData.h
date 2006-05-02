@@ -49,6 +49,8 @@ public:
   // [0]=parent1, [1]=parent2, [2]&[3]=grandparents 1, [4]&[5]=grandparents 2
   tArray<int> ancestor_ids;
 
+
+#ifdef ENABLE_UNIT_TESTS
 public:
   /**
    * Run unit tests
@@ -56,7 +58,7 @@ public:
    * @param full Run full test suite; if false, just the fast tests.
    **/
   static void UnitTests(bool full = false);
-  
+#endif
 };
 
 #endif

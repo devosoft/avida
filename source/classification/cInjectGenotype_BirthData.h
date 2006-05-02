@@ -38,6 +38,8 @@ public:
   //cSpecies * parent_species;
   int num_offspring_genotypes; // Num offspring genotypes still in memory.
 
+
+#ifdef ENABLE_UNIT_TESTS
 public:
   /**
    * Run unit tests
@@ -45,7 +47,7 @@ public:
    * @param full Run full test suite; if false, just the fast tests.
    **/
   static void UnitTests(bool full = false);
-  
+#endif  
 };
 
 inline cInjectGenotype_BirthData::cInjectGenotype_BirthData(int in_update_born)

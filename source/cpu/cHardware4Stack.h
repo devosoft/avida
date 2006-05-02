@@ -267,6 +267,8 @@ private:
   bool Inst_IO(cAvidaContext& ctx);
   bool Inst_Inject(cAvidaContext& ctx);  
 
+
+#ifdef ENABLE_UNIT_TESTS
 public:
   /**
    * Run unit tests
@@ -274,7 +276,7 @@ public:
    * @param full Run full test suite; if false, just the fast tests.
    **/
   static void UnitTests(bool full = false);
-  
+#endif  
 };
 
 

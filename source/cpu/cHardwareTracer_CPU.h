@@ -19,6 +19,8 @@ public:
   virtual void TraceHardware_CPU(cHardwareCPU &) = 0;
   virtual void TraceHardware_CPUBonus(cHardwareCPU &) = 0;
 
+
+#ifdef ENABLE_UNIT_TESTS
 public:
   /**
    * Run unit tests
@@ -26,7 +28,7 @@ public:
    * @param full Run full test suite; if false, just the fast tests.
    **/
   static void UnitTests(bool full = false);
-  
+#endif  
 };
 
 #endif

@@ -77,6 +77,9 @@ bool cFile::ReadLine(cString & in_string)
   return true;
 }
 
+
+#ifdef ENABLE_UNIT_TESTS
+
 /*
 Unit tests
 */
@@ -223,3 +226,5 @@ void cFile::UnitTests(bool full)
     nFileTests::utFile_archiving_closed_file::test();
   }
 }
+
+#endif // ENABLE_UNIT_TESTS

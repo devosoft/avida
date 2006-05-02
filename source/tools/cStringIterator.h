@@ -45,6 +45,8 @@ public:
   bool AtRoot() const { return list_it.AtRoot(); }
   bool AtEnd() const { return list_it.AtEnd(); }
 
+
+#ifdef ENABLE_UNIT_TESTS
 public:
   /**
    * Run unit tests
@@ -52,7 +54,7 @@ public:
    * @param full Run full test suite; if false, just the fast tests.
    **/
   static void UnitTests(bool full = false);
-  
+#endif  
 };
 
 #endif
