@@ -35,25 +35,14 @@ def Test(env, prg):
 
 Import('environment')
 
-full_unit_tests = environment.Program('full-unit-tests',
-  'full-unit-tests.cc',
-  LIBS = [
-    'main',
-    'classification',
-    'cpu',
-    'event',
-    'analyze',
-    'drivers',
-    'analyze',
-    'cpu',
-    'tools',
-    'actions',
-    'main',
-    'archive',
-    'boost_serialization',
-  ],
+full_unit_tests = environment.Program('full-unit-tests', 'full-unit-tests.cc',
+  LIBS = [ 'main', 'classification', 'cpu', 'event', 'analyze', 'drivers', 'analyze', 'cpu', 'tools', 'actions', 'main', 'archive', 'boost_serialization', ],
 )
-
 Test(environment, full_unit_tests)
+
+cInitFile_unit_tests = environment.Program('cInitFile-unit-tests', 'cInitFile-unit-tests.cc',
+  LIBS = [ 'main', 'classification', 'cpu', 'event', 'analyze', 'drivers', 'analyze', 'cpu', 'tools', 'actions', 'main', 'archive', 'boost_serialization', ],
+)
+Test(environment, cInitFile_unit_tests)
 
 # vim: set ft=python:

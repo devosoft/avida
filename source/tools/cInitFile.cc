@@ -366,7 +366,8 @@ namespace nInitFileTests {
 
       // Open cInitFile_data.txt for reading.
       cInitFile f(data_file_name.c_str());
-      // Close file.
+      f.Load();
+      f.Compress();
       f.Close();
       BOOST_TEST(!f.IsOpen());
 
@@ -385,6 +386,44 @@ namespace nInitFileTests {
       std::remove(data_file_name.c_str());
     }
   } // utInitFile_archiving_closed_file
+
+  /*
+  Bugfix: cInitFile was returning default value instead of value read
+  from a closed init file, even though file had been open and read.
+  @kgn
+  */
+  namespace utInitFile_ReadString_after_open_and_close {
+    void test(){
+      std::string data_file_name("./utInitFile_ReadString_after_open_and_close.cfg");
+      {
+        std::ofstream data_file(data_file_name.c_str());
+        data_file << "TEST_VALUE BLAH" << std::endl;
+        data_file << std::endl;
+      }
+
+      std::string filename("./cInitFile_serialize_closed_file.xml");
+
+      // Open cInitFile_data.txt for reading.
+      cInitFile f(data_file_name.c_str());
+      f.Load();
+      f.Compress();
+      f.Close();
+
+      const cString keyword("TEST_VALUE");
+      const cString expected_val("BLAH");
+      const cString default_val("ICK");
+      const cString loaded_val(f.ReadString(keyword, default_val));
+      BOOST_TEST(!f.IsOpen());
+      BOOST_TEST(loaded_val == expected_val);
+      std::cout << "utInitFile_ReadString_after_open_and_close:" << std::endl;
+      std::cout << "  keyword: " << keyword << std::endl;
+      std::cout << "  expected_val: " << expected_val << std::endl;
+      std::cout << "  default_val: " << default_val << std::endl;
+      std::cout << "  loaded_val: " << loaded_val << std::endl;
+
+      std::remove(data_file_name.c_str());
+    }
+  } // utInitFile_ReadString_after_open_and_close
 } // nInitFileTests
 
 void cInitFile::UnitTests(bool full)
@@ -400,6 +439,10 @@ void cInitFile::UnitTests(bool full)
   if(full) {
     std::cout << "nInitFileTests::utInitFile_archiving_closed_file" << std::endl;
     nInitFileTests::utInitFile_archiving_closed_file::test();
+  }
+  if(1) {
+    std::cout << "nInitFileTests::utInitFile_ReadString_after_open_and_close" << std::endl;
+    nInitFileTests::utInitFile_ReadString_after_open_and_close::test();
   }
 }
 
