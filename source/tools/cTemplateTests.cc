@@ -706,7 +706,10 @@ namespace nTemplateTests {
 
 void cTemplateTests::UnitTests(bool full)
 {
-  //if(full) nTemplateTests::utTemplateTests_hello_world::test();
+  //if(full) {
+  //  std::cout << "nTemplateTests::utTemplateTests_hello_world" << std::endl;
+  //  nTemplateTests::utTemplateTests_hello_world::test();
+  //}
   if(full) {
     std::cout << "nTemplateTests::utMemTrack" << std::endl;
     nTemplateTests::utMemTrack::test();
