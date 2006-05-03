@@ -411,15 +411,15 @@ namespace nInitFileTests {
 
       const cString keyword("TEST_VALUE");
       const cString expected_val("BLAH");
-      const cString default_val("ICK");
       const cString loaded_val(f.ReadString(keyword, default_val));
+      const cString default_val("ICK");
       BOOST_TEST(!f.IsOpen());
       BOOST_TEST(loaded_val == expected_val);
       std::cout << "utInitFile_ReadString_after_open_and_close:" << std::endl;
       std::cout << "  keyword: " << keyword << std::endl;
-      std::cout << "  expected_val: " << expected_val << std::endl;
       std::cout << "  default_val: " << default_val << std::endl;
       std::cout << "  loaded_val: " << loaded_val << std::endl;
+      std::cout << "  expected_val: " << expected_val << std::endl;
 
       std::remove(data_file_name.c_str());
     }
