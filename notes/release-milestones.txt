@@ -1,0 +1,101 @@
+Avida Release Milestones
+
+Feature Key:
+- Planned feature, to be implemented
++ Feature currently in development
+* Feature completed, ready for release
+
+
+Visualized development/support timeline (* current):
+--2.0--
+     --2.1--
+            --2.2----
+              --2.3--
+                     --2.4---*---------
+                       --2.5-*
+                              --2.6----------------------
+                                --2.7--
+                                       --2.8----------------------
+                                         --2.9--
+                                                --3.0-------------
++ end of planned timeline, begin future releases +                                                
+                                                  --3.1--
+                                                         --3.2-----------
+                                                           --3.3--
+                                                                  --3.4-----------
+                                                                    --3.5--
+                                                                           --3.6--
+
+
+Version 2.0 - stable      - Target: Unspecified    - Status: End of Life
+Version 2.1 - development - Target: Unspecified    - Status: Completed
+Version 2.2 - stable      - Target: Unspecified    - Status: End of Life
+Version 2.3 - development - Target: Unspecified    - Status: Completed
+
+
+Version 2.4 - stable      - Target: < Version 2.6  - Status: Active Maintaince
+
+Currently at 2.4.3.
+
+
+Version 2.5 - development - Target: July 2006      - Status: Active Development
+
+* New configuration framework
+* World Object based structure
+* Specifiable Data output directory
+* Transition all output files to use DataFileManager
+* Improved driver object framework
+* SMT Hardware
++ Basic multithreaded analyze mode support
++ TCMalloc OS X
+- TCMalloc Linux
+* Actions framework
++ Merge (meaningful) events and analyze commands into actions framework
++ Consistency test support
++ Framework for unit testing
+
+
+Version 2.6 - stable      - Target: < Mid 2007     - Status: Pending version 2.5 completion
+
+- Stable maintenance
+
+
+Version 2.7 - development - Target: July 2007      - Status: Planned
+
++ Transition all applicable output files to cDataFile objects, as opposed to raw ostream
++ Serialization
+- environment named regions
+- Schedulable object framework (organism threads scheduled rather than organisms, events, etc.) 
+- Energy model
++ AvidaScript (AS) lexer
+- AS Parser
+- AS specific executable - 'avida-s'
+- Implement threaded driver, multiple executing worlds via 'avida-s'
+- Win32 Pthreads wrapper library
+
+**** NOTE: Backwards compatibility breaks at this point ****
+
+
+Version 2.8 - stable      - Target: < Mid 2008     - Status: Planned, pending version 2.7 completion
+
+- Stable maintenance
+
+
+Version 2.9 - development - Target: July 2008      - Status: Planned
+
+- Completed AS language support
+- Remove Analyze Mode
+- Merged 'avida' and 'avida-s' functionality
+- New Mutation framework
+- Core GUI framework
+- Basic OS X native GUI
+
+**** NOTE: Backwards compatibility breaks at this point ****
+
+
+Version 3.0 - stable      - Target: Ongoing        - Status: Planned, pending version 2.9 completion
+
+- Stable maintenance
+
+
+Version 3.1 - development - Target: tbd            - Status: feature set tdb
