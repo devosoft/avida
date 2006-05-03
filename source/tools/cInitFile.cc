@@ -215,7 +215,7 @@ bool cInitFile::Find(cString & in_string, const cString & keyword,
 cString cInitFile::ReadString(const cString & name, cString def) const
 {
   // See if we definately can't find the keyword.
-  if (name == "" || IsOpen() == false) return def;
+  if (name == "") return def;
 
   // Search for the keyword.
   cString cur_line;
