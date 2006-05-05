@@ -14,77 +14,41 @@
 #define VERSION "2.5.0"
 #define VERSION_TAG "Jedi"
 
-// -= Various view modes =-
-#define VIEW_NEWVIEWER
-// #define VIEW_VISTA
-// #define VIEW_PRIMITIVE
-// #define VIEW_EXTERNAL
-// #define VIEW_CURSES
-// #define VIEW_NCURSES
+// -= Various view modes
 // #define VIEW_ANSI
 
 
-// #define BREAKPOINTS
-// #define QUICK_BASE_TEST_CPU
-// #define QUICK_HEAD_TEST_CPU
-#define INSTRUCTION_COSTS
-#define INSTRUCTION_COUNT
+// -= Configurable Features
+#ifndef BREAKPOINTS
+#define BREAKPOINTS 0
+#endif
+#ifndef INSTRUCTION_COSTS
+#define INSTRUCTION_COSTS 1
+#endif
+#ifndef INSTRUCTION_COUNT
+#define INSTRUCTION_COUNT 1
+#endif
+#ifndef SMT_FULLY_ASSOCIATIVE
+#define SMT_FULLY_ASSOCIATIVE 1
+#endif
+#ifndef WRITE_PROTECTION
+#define WRITE_PROTECTION 1
+#endif
+#ifndef FATAL_ERRORS
+#define FATAL_ERRORS 0
+#endif
+#ifndef FATAL_WARNINGS
+#define FATAL_WARNINGS 0
+#endif
 
-// -= Toggles =-      (define these to actually turn features on)
-
-#define SMT_FULLY_ASSOCIATIVE
-
-#define WRITE_PROTECTION
-// #define FATAL_ERRORS
-// #define FATAL_WARNINGS
-#define SINGLE_IO_BUFFER
-
-// Test to see if search approx equals size... value is +- tolerance
-// #define TEST_SEARCH_SIZE .25
-
-// #define DEBUG
-// #define DEBUG_CHECK_OK
-// #define DEBUG_MEMTRACK
-// #define INTEGRITY_CHECK
-// #define DEBUG_MEM_CHECK
-// #define TEST
+// #define SPECIES_TEST
 
 
-////// Compiler Compatability Stuff //////////
-
-// old compiler //
-//#define explicit
-//#define LONGINT int
-
-// snazzy compiler //
+// -= Compiler Compatability Stuff
 #define LONGINT long int
 
 
 ////// Don't change anything below this line. /////
-#ifdef QUICK_BASE_TEST_CPU
-#define QUICK_TEST_CPU
-#endif
-
-#ifdef QUICK_HEAD_TEST_CPU
-#define QUICK_TEST_CPU
-#endif
-
-#ifdef VIEW_primitive
-#define VIEW_PRIMITIVE
-#endif
-#ifdef VIEW_external
-#define VIEW_EXTERNAL
-#endif
-#ifdef VIEW_curses
-#define VIEW_CURSES
-#endif
-#ifdef VIEW_ncurses
-#define VIEW_NCURSES
-#endif
-#ifdef VIEW_vista
-#define VIEW_VISTA
-#define VIEW_PRIMITIVE
-#endif
 
 #ifdef VIEW_ANSI
 #define PLATFORM_WINDOWS     // enable to compile for Win32 console
@@ -116,36 +80,27 @@
  #endif
 #endif
 
-#define MAX_INT 4294967295
-#define MAX_INST_SET_SIZE 64
-
-// #ifndef FALSE
-//  #define FALSE 0
-//  #define TRUE !FALSE
-// #endif
-
 #ifndef NULL
  #define NULL 0
 #endif
 
-#define TOOLS_DIR tools
-#define CPU_DIR   cpu
-#define MAIN_DIR  main
-#define VIEW_DIR  viewers
+const int MIN_CREATURE_SIZE = 8;
+const int MAX_CREATURE_SIZE = 2048;
 
-#define MIN_CREATURE_SIZE 8
-#define MAX_CREATURE_SIZE 2048
-
-#define MIN_INJECT_SIZE 8
+const int MIN_INJECT_SIZE = 8;
 
 // Number of distinct input and outputs stored in the IOBufs (to test tasks)
-#define INPUT_BUF_SIZE  3
-#define OUTPUT_BUF_SIZE 3
-#define SEND_BUF_SIZE 3
-#define RECEIVE_BUF_SIZE 3
+const int INPUT_BUF_SIZE = 3;
+const int OUTPUT_BUF_SIZE = 3;
+const int SEND_BUF_SIZE = 3;
+const int RECEIVE_BUF_SIZE = 3;
 
-#define FILE_TYPE_TEXT 0
-#define FILE_TYPE_HTML 1
+
+enum tFileType
+{
+  FILE_TYPE_TEXT,
+  FILE_TYPE_HTML
+};
 
 enum tHARDWARE_TYPE
 {
@@ -154,41 +109,60 @@ enum tHARDWARE_TYPE
 	HARDWARE_TYPE_CPU_SMT
 };
 
-#define SLICE_CONSTANT         0
-#define SLICE_PROB_MERIT       1
-#define SLICE_INTEGRATED_MERIT 2
+enum tTIMESLICE
+{
+  SLICE_CONSTANT = 0,
+  SLICE_PROB_MERIT,
+  SLICE_INTEGRATED_MERIT
+};
 
-#define POSITION_CHILD_RANDOM           0
-#define POSITION_CHILD_AGE              1
-#define POSITION_CHILD_MERIT            2
-#define POSITION_CHILD_EMPTY            3
-#define NUM_LOCAL_POSITION_CHILD        4
+enum tPOSITION_CHILD
+{
+  POSITION_CHILD_RANDOM = 0,
+  POSITION_CHILD_AGE,
+  POSITION_CHILD_MERIT,
+  POSITION_CHILD_EMPTY,
+  POSITION_CHILD_FULL_SOUP_RANDOM,
+  POSITION_CHILD_FULL_SOUP_ELDEST,
+  POSITION_CHILD_DEME_RANDOM
+};
+const int NUM_LOCAL_POSITION_CHILD = POSITION_CHILD_FULL_SOUP_RANDOM;
 
-#define POSITION_CHILD_FULL_SOUP_RANDOM 4
-#define POSITION_CHILD_FULL_SOUP_ELDEST 5
-#define POSITION_CHILD_DEME_RANDOM      6
+enum tDEATH_METHOD
+{
+  DEATH_METHOD_OFF = 0,
+  DEATH_METHOD_CONST,
+  DEATH_METHOD_MULTIPLE
+};
 
-#define DEATH_METHOD_OFF       0
-#define DEATH_METHOD_CONST     1
-#define DEATH_METHOD_MULTIPLE  2
+enum tALLOC_METHOD
+{
+  ALLOC_METHOD_DEFAULT = 0,
+  ALLOC_METHOD_NECRO,
+  ALLOC_METHOD_RANDOM
+};
 
-#define ALLOC_METHOD_DEFAULT   0
-#define ALLOC_METHOD_NECRO     1
-#define ALLOC_METHOD_RANDOM    2
+enum tDIVIDE_METHOD
+{
+  DIVIDE_METHOD_OFFSPRING = 0,
+  DIVIDE_METHOD_SPLIT,
+  DIVIDE_METHOD_BIRTH
+};
 
-#define DIVIDE_METHOD_OFFSPRING 0
-#define DIVIDE_METHOD_SPLIT     1
-#define DIVIDE_METHOD_BIRTH     2
+enum tGENERATION_INCREMENT
+{
+  GENERATION_INC_OFFSPRING = 0,
+  GENERATION_INC_BOTH
+};
 
-#define GENERATION_INC_OFFSPRING 0
-#define GENERATION_INC_BOTH      1
-
-#define SIZE_MERIT_OFF         0
-#define SIZE_MERIT_COPIED      1
-#define SIZE_MERIT_EXECUTED    2
-#define SIZE_MERIT_FULL        3
-#define SIZE_MERIT_LEAST       4
-#define SIZE_MERIT_SQRT_LEAST  5
-
+enum tSIZE_MERIT
+{
+  SIZE_MERIT_OFF = 0,
+  SIZE_MERIT_COPIED,
+  SIZE_MERIT_EXECUTED,
+  SIZE_MERIT_FULL,
+  SIZE_MERIT_LEAST,
+  SIZE_MERIT_SQRT_LEAST
+};
 
 #endif

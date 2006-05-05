@@ -84,10 +84,6 @@ public:
   void TestThreads(cAvidaContext& ctx, const cGenome& genome);
   void PrintThreads(cAvidaContext& ctx, const cGenome& genome);
 
-  // Test if a genome has any chance of being a replicator (i.e., in the
-  // default set, has an allocate, a copy, and a divide).
-  bool TestIntegrity(const cGenome & test_genome);
-
   inline int GetInput();
   inline int GetInputAt(int & input_pointer);
   inline int GetReceiveValue();

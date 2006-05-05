@@ -53,7 +53,7 @@ cSpecies::~cSpecies()
     total_count += genotype_distance[i];
   }
 
-#ifdef TEST
+#ifdef SPECIES_TEST
   // Only print out the non-trivial species.
 
   if (total_count > 1) {

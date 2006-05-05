@@ -183,7 +183,7 @@ const cInstruction & cHeadCPU::GetInst(int offset) const {
 void cHeadCPU::SetInst(const cInstruction & value)
 {
   assert(cur_hardware != NULL);
-#ifdef WRITE_PROTECTION
+#if WRITE_PROTECTION
   if (main_hardware == cur_hardware) cur_hardware->GetMemory()[position] = value;
 #else
   cur_hardware->GetMemory()[position] = value;
@@ -195,7 +195,7 @@ void cHeadCPU::SetInst(const cInstruction & value)
 void cHeadCPU::InsertInst(const cInstruction & value)
 {
   assert(cur_hardware != NULL);
-#ifdef WRITE_PROTECTION
+#if WRITE_PROTECTION
   if (main_hardware == cur_hardware) cur_hardware->GetMemory().Insert(position, value);
 #else
   cur_hardware->GetMemory().Insert(position, value);
@@ -206,7 +206,7 @@ void cHeadCPU::InsertInst(const cInstruction & value)
 void cHeadCPU::RemoveInst()
 {
   assert(cur_hardware != NULL);
-#ifdef WRITE_PROTECTION
+#if WRITE_PROTECTION
   if (main_hardware == cur_hardware) cur_hardware->GetMemory().Remove(position);
 #else
   cur_hardware->GetMemory().Remove(position);

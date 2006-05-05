@@ -38,20 +38,29 @@ cString getAvidaVersion()
 #ifdef DEBUG
   version += " debug";
 #endif
-#ifdef BREAKPOINTS
+#if BREAKPOINTS
   version += " breakp";
 #endif
 #ifdef EXECUTION_ERRORS
   version += " exec_err";
 #endif
-#ifdef INSTRUCTION_COSTS
+#if INSTRUCTION_COSTS
   version += " inst_cost";
 #endif
-#ifdef INSTRUCTION_COUNT
+#if INSTRUCTION_COUNT
   version += " inst_cnt";
 #endif
-#ifdef SMT_FULLY_ASSOCIATIVE
+#if SMT_FULLY_ASSOCIATIVE
   version += " smt_fa";
+#endif
+#if WRITE_PROTECTION
+  version += " wp";
+#endif
+#ifdef ENABLE_UNIT_TESTS
+  version += " ut";
+#endif
+#if USE_tMemTrack
+  version += " memt";
 #endif
   
   return version;

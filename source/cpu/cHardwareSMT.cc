@@ -157,7 +157,7 @@ void cHardwareSMT::Reset()
 		Stack(i).Clear();
 	}
 	
-#ifdef INSTRUCTION_COSTS
+#if INSTRUCTION_COSTS
   // instruction cost arrays
   const int num_inst_cost = m_inst_set->GetSize();
   inst_cost.Resize(num_inst_cost);
@@ -206,7 +206,7 @@ void cHardwareSMT::SingleProcess(cAvidaContext& ctx)
     AdvanceIP() = true;
     IP().Adjust();
 		
-#ifdef BREAKPOINTS
+#if BREAKPOINTS
     if (IP().FlagBreakpoint()) organism->DoBreakpoint();
 #endif
     
@@ -249,7 +249,7 @@ void cHardwareSMT::SingleProcess(cAvidaContext& ctx)
 // should proceed.
 bool cHardwareSMT::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
 {
-#ifdef INSTRUCTION_COSTS
+#if INSTRUCTION_COSTS
   assert(cur_inst.GetOp() < inst_cost.GetSize());
 	
   // If first time cost hasn't been paid off...
@@ -295,7 +295,7 @@ bool cHardwareSMT::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruct
   IP().SetFlagExecuted();
 	
 	
-#ifdef INSTRUCTION_COUNT
+#if INSTRUCTION_COUNT
   // instruction execution count incremeneted
   organism->GetPhenotype().IncCurInstCount(actual_inst.GetOp());
 #endif
@@ -303,7 +303,7 @@ bool cHardwareSMT::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruct
   // And execute it.
   const bool exec_success = (this->*(m_functions[inst_idx]))(ctx);
 	
-#ifdef INSTRUCTION_COUNT
+#if INSTRUCTION_COUNT
   // decremenet if the instruction was not executed successfully
   if (exec_success == false) {
     organism->GetPhenotype().DecCurInstCount(actual_inst.GetOp());
@@ -1048,7 +1048,7 @@ bool cHardwareSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
   // lineages need to be updated.
   Divide_TestFitnessMeasures(ctx);
 	
-#ifdef INSTRUCTION_COSTS
+#if INSTRUCTION_COSTS
   // reset first time instruction costs
   for (int i = 0; i < inst_ft_cost.GetSize(); i++) {
     inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
@@ -1103,7 +1103,7 @@ bool cHardwareSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
 bool cHardwareSMT::Inst_ShiftR(cAvidaContext& ctx)
 {
   const int dst = FindModifiedStack(STACK_BX);
-#ifdef SMT_FULLY_ASSOCIATIVE
+#if SMT_FULLY_ASSOCIATIVE
   const int src = FindModifiedStack(dst);
 #else
   const int src = dst;
@@ -1118,7 +1118,7 @@ bool cHardwareSMT::Inst_ShiftR(cAvidaContext& ctx)
 bool cHardwareSMT::Inst_ShiftL(cAvidaContext& ctx)
 {
   const int dst = FindModifiedStack(STACK_BX);
-#ifdef SMT_FULLY_ASSOCIATIVE
+#if SMT_FULLY_ASSOCIATIVE
   const int src = FindModifiedStack(dst);
 #else
   const int src = dst;
@@ -1133,7 +1133,7 @@ bool cHardwareSMT::Inst_ShiftL(cAvidaContext& ctx)
 bool cHardwareSMT::Inst_Val_Nand(cAvidaContext& ctx)
 {
   const int dst = FindModifiedStack(STACK_BX);
-#ifdef SMT_FULLY_ASSOCIATIVE
+#if SMT_FULLY_ASSOCIATIVE
   const int op1 = FindModifiedStack(STACK_BX);
   const int op2 = FindModifiedNextStack(op1);
 #else
@@ -1148,7 +1148,7 @@ bool cHardwareSMT::Inst_Val_Nand(cAvidaContext& ctx)
 bool cHardwareSMT::Inst_Val_Add(cAvidaContext& ctx)
 {
   const int dst = FindModifiedStack(STACK_BX);
-#ifdef SMT_FULLY_ASSOCIATIVE
+#if SMT_FULLY_ASSOCIATIVE
   const int op1 = FindModifiedStack(STACK_BX);
   const int op2 = FindModifiedNextStack(op1);
 #else
@@ -1163,7 +1163,7 @@ bool cHardwareSMT::Inst_Val_Add(cAvidaContext& ctx)
 bool cHardwareSMT::Inst_Val_Sub(cAvidaContext& ctx)
 {
   const int dst = FindModifiedStack(STACK_BX);
-#ifdef SMT_FULLY_ASSOCIATIVE
+#if SMT_FULLY_ASSOCIATIVE
   const int op1 = FindModifiedStack(STACK_BX);
   const int op2 = FindModifiedNextStack(op1);
 #else
@@ -1178,7 +1178,7 @@ bool cHardwareSMT::Inst_Val_Sub(cAvidaContext& ctx)
 bool cHardwareSMT::Inst_Val_Mult(cAvidaContext& ctx)
 {
   const int dst = FindModifiedStack(STACK_BX);
-#ifdef SMT_FULLY_ASSOCIATIVE
+#if SMT_FULLY_ASSOCIATIVE
   const int op1 = FindModifiedStack(STACK_BX);
   const int op2 = FindModifiedNextStack(op1);
 #else
@@ -1193,7 +1193,7 @@ bool cHardwareSMT::Inst_Val_Mult(cAvidaContext& ctx)
 bool cHardwareSMT::Inst_Val_Div(cAvidaContext& ctx)
 {
   const int dst = FindModifiedStack(STACK_BX);
-#ifdef SMT_FULLY_ASSOCIATIVE
+#if SMT_FULLY_ASSOCIATIVE
   const int op1 = FindModifiedStack(STACK_BX);
   const int op2 = FindModifiedNextStack(op1);
 #else
@@ -1216,7 +1216,7 @@ bool cHardwareSMT::Inst_Val_Div(cAvidaContext& ctx)
 bool cHardwareSMT::Inst_Val_Mod(cAvidaContext& ctx)
 {
   const int dst = FindModifiedStack(STACK_BX);
-#ifdef SMT_FULLY_ASSOCIATIVE
+#if SMT_FULLY_ASSOCIATIVE
   const int op1 = FindModifiedStack(STACK_BX);
   const int op2 = FindModifiedNextStack(op1);
 #else
@@ -1239,7 +1239,7 @@ bool cHardwareSMT::Inst_Val_Mod(cAvidaContext& ctx)
 bool cHardwareSMT::Inst_Val_Inc(cAvidaContext& ctx)
 {
   const int dst = FindModifiedStack(STACK_BX);
-#ifdef SMT_FULLY_ASSOCIATIVE
+#if SMT_FULLY_ASSOCIATIVE
   const int src = FindModifiedStack(dst);
 #else
   const int src = dst;
@@ -1253,7 +1253,7 @@ bool cHardwareSMT::Inst_Val_Inc(cAvidaContext& ctx)
 bool cHardwareSMT::Inst_Val_Dec(cAvidaContext& ctx)
 {
   const int dst = FindModifiedStack(STACK_BX);
-#ifdef SMT_FULLY_ASSOCIATIVE
+#if SMT_FULLY_ASSOCIATIVE
   const int src = FindModifiedStack(dst);
 #else
   const int src = dst;
@@ -1289,7 +1289,7 @@ bool cHardwareSMT::Inst_Divide(cAvidaContext& ctx)
 bool cHardwareSMT::Inst_HeadRead(cAvidaContext& ctx)
 {
   const int head_id = FindModifiedHead(nHardware::HEAD_READ);
-#ifdef SMT_FULLY_ASSOCIATIVE
+#if SMT_FULLY_ASSOCIATIVE
   const int dst = FindModifiedStack(STACK_AX);
 #else
   const int dst = STACK_AX;
@@ -1318,7 +1318,7 @@ bool cHardwareSMT::Inst_HeadRead(cAvidaContext& ctx)
 bool cHardwareSMT::Inst_HeadWrite(cAvidaContext& ctx)
 {
   const int head_id = FindModifiedHead(nHardware::HEAD_WRITE);
-#ifdef SMT_FULLY_ASSOCIATIVE
+#if SMT_FULLY_ASSOCIATIVE
   const int src = FindModifiedStack(STACK_AX);
 #else
   const int src = STACK_AX;
@@ -1350,7 +1350,7 @@ bool cHardwareSMT::Inst_HeadWrite(cAvidaContext& ctx)
 bool cHardwareSMT::Inst_IfEqual(cAvidaContext& ctx)      // Execute next if bx == ?cx?
 {
   const int op1 = FindModifiedStack(STACK_AX);
-#ifdef SMT_FULLY_ASSOCIATIVE
+#if SMT_FULLY_ASSOCIATIVE
   const int op2 = FindModifiedNextStack(op1);
 #else
   const int op2 = FindNextStack(op1);
@@ -1363,7 +1363,7 @@ bool cHardwareSMT::Inst_IfEqual(cAvidaContext& ctx)      // Execute next if bx =
 bool cHardwareSMT::Inst_IfNotEqual(cAvidaContext& ctx)     // Execute next if bx != ?cx?
 {
   const int op1 = FindModifiedStack(STACK_AX);
-#ifdef SMT_FULLY_ASSOCIATIVE
+#if SMT_FULLY_ASSOCIATIVE
   const int op2 = FindModifiedNextStack(op1);
 #else
   const int op2 = FindNextStack(op1);
@@ -1376,7 +1376,7 @@ bool cHardwareSMT::Inst_IfNotEqual(cAvidaContext& ctx)     // Execute next if bx
 bool cHardwareSMT::Inst_IfLess(cAvidaContext& ctx)       // Execute next if ?bx? < ?cx?
 {
   const int op1 = FindModifiedStack(STACK_AX);
-#ifdef SMT_FULLY_ASSOCIATIVE
+#if SMT_FULLY_ASSOCIATIVE
   const int op2 = FindModifiedNextStack(op1);
 #else
   const int op2 = FindNextStack(op1);
@@ -1389,7 +1389,7 @@ bool cHardwareSMT::Inst_IfLess(cAvidaContext& ctx)       // Execute next if ?bx?
 bool cHardwareSMT::Inst_IfGreater(cAvidaContext& ctx)       // Execute next if bx > ?cx?
 {
   const int op1 = FindModifiedStack(STACK_AX);
-#ifdef SMT_FULLY_ASSOCIATIVE
+#if SMT_FULLY_ASSOCIATIVE
   const int op2 = FindModifiedNextStack(op1);
 #else
   const int op2 = FindNextStack(op1);
@@ -1402,7 +1402,7 @@ bool cHardwareSMT::Inst_IfGreater(cAvidaContext& ctx)       // Execute next if b
 bool cHardwareSMT::Inst_HeadPush(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
-#ifdef SMT_FULLY_ASSOCIATIVE
+#if SMT_FULLY_ASSOCIATIVE
   const int dst = FindModifiedStack(STACK_BX);
 #else
   const int dst = STACK_BX;
@@ -1415,7 +1415,7 @@ bool cHardwareSMT::Inst_HeadPush(cAvidaContext& ctx)
 bool cHardwareSMT::Inst_HeadPop(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
-#ifdef SMT_FULLY_ASSOCIATIVE
+#if SMT_FULLY_ASSOCIATIVE
   const int src = FindModifiedStack(STACK_BX);
 #else
   const int src = STACK_BX;
@@ -1468,7 +1468,7 @@ bool cHardwareSMT::Inst_Search(cAvidaContext& ctx)
 bool cHardwareSMT::Inst_PushNext(cAvidaContext& ctx) 
 {
   const int src = FindModifiedStack(STACK_AX);
-#ifdef SMT_FULLY_ASSOCIATIVE
+#if SMT_FULLY_ASSOCIATIVE
   const int dst = FindModifiedNextStack(src);
 #else
   const int dst = FindNextStack(src);
@@ -1481,7 +1481,7 @@ bool cHardwareSMT::Inst_PushNext(cAvidaContext& ctx)
 bool cHardwareSMT::Inst_PushPrevious(cAvidaContext& ctx) 
 {
   const int src = FindModifiedStack(STACK_BX);
-#ifdef SMT_FULLY_ASSOCIATIVE
+#if SMT_FULLY_ASSOCIATIVE
   const int dst = FindModifiedPreviousStack(src);
 #else
   const int dst = FindPreviousStack(src);
@@ -1494,7 +1494,7 @@ bool cHardwareSMT::Inst_PushPrevious(cAvidaContext& ctx)
 bool cHardwareSMT::Inst_PushComplement(cAvidaContext& ctx) 
 {
   int src = FindModifiedStack(STACK_BX);
-#ifdef SMT_FULLY_ASSOCIATIVE
+#if SMT_FULLY_ASSOCIATIVE
   const int dst = FindModifiedComplementStack(src);
 #else
   const int dst = FindComplementStack(src);
@@ -1515,7 +1515,7 @@ bool cHardwareSMT::Inst_ValDelete(cAvidaContext& ctx)
 bool cHardwareSMT::Inst_ValCopy(cAvidaContext& ctx)
 {
   const int dst = FindModifiedStack(STACK_BX);
-#ifdef SMT_FULLY_ASSOCIATIVE
+#if SMT_FULLY_ASSOCIATIVE
   const int src = FindModifiedStack(dst);
 #else
   const int src = dst;
@@ -1528,7 +1528,7 @@ bool cHardwareSMT::Inst_ValCopy(cAvidaContext& ctx)
 bool cHardwareSMT::Inst_IO(cAvidaContext& ctx)
 {
   const int dst = FindModifiedStack(STACK_BX);
-#ifdef SMT_FULLY_ASSOCIATIVE
+#if SMT_FULLY_ASSOCIATIVE
   const int src = FindModifiedStack(dst);
 #else
   const int src = dst;
@@ -1609,7 +1609,7 @@ bool cHardwareSMT::Inst_Apoptosis(cAvidaContext& ctx)
 bool cHardwareSMT::Inst_NetGet(cAvidaContext& ctx)
 {
   const int dst = FindModifiedStack(STACK_BX);
-#ifdef SMT_FULLY_ASSOCIATIVE
+#if SMT_FULLY_ASSOCIATIVE
   const int seq_dst = FindModifiedNextStack(dst);
 #else
   const int seq_dst = FindNextStack(dst);

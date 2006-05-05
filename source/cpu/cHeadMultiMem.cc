@@ -108,7 +108,7 @@ const cInstruction & cHeadMultiMem::GetInst(int offset) const
 void cHeadMultiMem::SetInst(const cInstruction & value)
 {
   assert(cur_hardware != NULL);
-#ifdef WRITE_PROTECTION
+#if WRITE_PROTECTION
   if (main_hardware == cur_hardware) GetMemory()[position] = value;
 #else
   GetMemory()[position] = value;
@@ -119,7 +119,7 @@ void cHeadMultiMem::SetInst(const cInstruction & value)
 void cHeadMultiMem::InsertInst(const cInstruction & value)
 {
   assert(cur_hardware != NULL);
-#ifdef WRITE_PROTECTION
+#if WRITE_PROTECTION
   if (main_hardware == cur_hardware) GetMemory().Insert(position, value);
 #else
   GetMemory().Insert(position, value);
@@ -130,7 +130,7 @@ void cHeadMultiMem::InsertInst(const cInstruction & value)
 void cHeadMultiMem::RemoveInst()
 {
   assert(cur_hardware != NULL);
-#ifdef WRITE_PROTECTION
+#if WRITE_PROTECTION
   if (main_hardware == cur_hardware) GetMemory().Remove(position);
 #else
   GetMemory().Remove(position);

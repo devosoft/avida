@@ -97,9 +97,6 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
   // Determine how long this organism should be tested for...
   int time_allocated = m_world->GetConfig().TEST_CPU_TIME_MOD.Get() * organism.GetGenome().GetSize();
 
-  // Make sure this genome stands a chance...
-  if (TestIntegrity(organism.GetGenome()) == false)  time_allocated = 0;
-
   // Prepare the inputs...
   cur_input = 0;
   cur_receive = 0;
@@ -278,43 +275,3 @@ void cTestCPU::PrintThreads(cAvidaContext& ctx, const cGenome& genome)
   test_info.PrintThreads();
   cTestCPU::TestGenome(ctx, test_info, genome);
 }
-
-
-bool cTestCPU::TestIntegrity(const cGenome & test_genome)
-{
-#ifdef QUICK_BASE_TEST_CPU
-  // This checks to make sure a 'copy', 'divide', and 'allocate' are all in
-  // the creatures, and if not doesn't even bother to test it.
-  static unsigned char copy_id  = inst_set->GetInstID("copy");
-  static unsigned char div_id   = inst_set->GetInstID("divide");
-  static unsigned char alloc_id = inst_set->GetInstID("allocate");
-#endif
-
-#ifdef QUICK_HEAD_TEST_CPU
-  // This checks to make sure a 'copy', 'divide', and 'allocate' are all in
-  // the creatures, and if not doesn't even bother to test it.
-  static unsigned char copy_id  = inst_set->GetInstID("h-copy");
-  static unsigned char div_id   = inst_set->GetInstID("h-divide");
-  static unsigned char alloc_id = inst_set->GetInstID("h-alloc");
-#endif
-
-
-#ifdef QUICK_TEST_CPU
-  bool copy_found = false;
-  bool div_found = false;
-  bool alloc_found = false;
-
-  for (int i = 0; i < test_genome.GetSize(); i++) {
-    if (test_genome[i].GetOp() == copy_id)  copy_found  = true;
-    if (test_genome[i].GetOp() == div_id)   div_found   = true;
-    if (test_genome[i].GetOp() == alloc_id) alloc_found = true;
-  }
-
-  if (copy_found == false || div_found == false || alloc_found == false) {
-    return false;
-  }
-#endif
-
-  return true;
-}
-

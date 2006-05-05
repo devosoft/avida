@@ -390,7 +390,7 @@ cHardwareCPU::cHardwareCPU(const cHardwareCPU &hardware_cpu)
 , mal_active(hardware_cpu.mal_active)
 , advance_ip(hardware_cpu.advance_ip)
 , executedmatchstrings(hardware_cpu.executedmatchstrings)
-#ifdef INSTRUCTION_COSTS
+#if INSTRUCTION_COSTS
 , inst_cost(hardware_cpu.inst_cost)
 , inst_ft_cost(hardware_cpu.inst_ft_cost)
 #endif
@@ -418,7 +418,7 @@ void cHardwareCPU::Reset()
   mal_active = false;
   executedmatchstrings = false;
   
-#ifdef INSTRUCTION_COSTS
+#if INSTRUCTION_COSTS
   // instruction cost arrays
   const int num_inst_cost = m_inst_set->GetSize();
   inst_cost.Resize(num_inst_cost);
@@ -457,7 +457,7 @@ num_threads : 1;
     advance_ip = true;
     IP().Adjust();
     
-#ifdef BREAKPOINTS
+#if BREAKPOINTS
     if (IP().FlagBreakpoint()) {
       organism->DoBreakpoint();
     }
@@ -505,7 +505,7 @@ num_threads : 1;
 // should proceed.
 bool cHardwareCPU::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
 {
-#ifdef INSTRUCTION_COSTS
+#if INSTRUCTION_COSTS
   assert(cur_inst.GetOp() < inst_cost.GetSize());
   
   // If first time cost hasn't been paid off...
@@ -551,7 +551,7 @@ bool cHardwareCPU::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruct
   IP().SetFlagExecuted();
 	
   
-#ifdef INSTRUCTION_COUNT
+#if INSTRUCTION_COUNT
   // instruction execution count incremeneted
   organism->GetPhenotype().IncCurInstCount(actual_inst.GetOp());
 #endif
@@ -559,7 +559,7 @@ bool cHardwareCPU::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruct
   // And execute it.
   const bool exec_success = (this->*(m_functions[inst_idx]))(ctx);
 	
-#ifdef INSTRUCTION_COUNT
+#if INSTRUCTION_COUNT
   // decremenet if the instruction was not executed successfully
   if (exec_success == false) {
     organism->GetPhenotype().DecCurInstCount(actual_inst.GetOp());
@@ -1246,7 +1246,7 @@ bool cHardwareCPU::Divide_Main(cAvidaContext& ctx, const int div_point,
   // lineages need to be updated.
   Divide_TestFitnessMeasures(ctx);
   
-#ifdef INSTRUCTION_COSTS
+#if INSTRUCTION_COSTS
   // reset first time instruction costs
   for (int i = 0; i < inst_ft_cost.GetSize(); i++) {
     inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
@@ -2064,7 +2064,7 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   // lineages need to be updated.
   Divide_TestFitnessMeasures(ctx);
   
-#ifdef INSTRUCTION_COSTS
+#if INSTRUCTION_COSTS
   // reset first time instruction costs
   for (int i = 0; i < inst_ft_cost.GetSize(); i++) {
     inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));

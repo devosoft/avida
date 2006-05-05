@@ -102,7 +102,7 @@ cStats::cStats(cWorld* world)
   task_last_max_quality.SetAll(0);
   task_exe_count.SetAll(0);
 
-#ifdef INSTRUCTION_COUNT
+#if INSTRUCTION_COUNT
   sum_exe_inst_array.Resize( m_world->GetNumInstructions() );
   ZeroInst();
 #endif
@@ -224,7 +224,7 @@ void cStats::ZeroTasks()
 }
 
 
-#ifdef INSTRUCTION_COUNT
+#if INSTRUCTION_COUNT
 void cStats::ZeroInst()
 {
   for( int i=0; i < sum_exe_inst_array.GetSize(); i++ ){
@@ -836,7 +836,7 @@ void cStats::PrintInstructionData(const cString & filename)
   df.WriteComment( "Avida instruction execution data" );
   df.WriteTimeStamp();
 
-#ifdef INSTRUCTION_COUNT
+#if INSTRUCTION_COUNT
   df.Write( GetUpdate(), "Update" );
   for( int i=0; i < sum_exe_inst_array.GetSize(); i++ ){
     df.Write( (int) sum_exe_inst_array[i].Sum(), inst_names[i] );

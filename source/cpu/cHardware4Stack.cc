@@ -259,7 +259,7 @@ cHardware4Stack::cHardware4Stack(const cHardware4Stack &hardware_4stack)
 , thread_id_chart(hardware_4stack.thread_id_chart)
 , cur_thread(hardware_4stack.cur_thread)
 , inst_cost(hardware_4stack.inst_cost)
-#ifdef INSTRUCTION_COSTS
+#if INSTRUCTION_COSTS
 , inst_ft_cost(hardware_4stack.inst_ft_cost)
 , inst_remainder(hardware_4stack.inst_remainder)
 #endif
@@ -296,7 +296,7 @@ void cHardware4Stack::Reset()
   // Reset all stacks (local and global)
   for(int i = 0; i < nHardware4Stack::NUM_STACKS; i++) Stack(i).Clear();
   
-#ifdef INSTRUCTION_COSTS
+#if INSTRUCTION_COSTS
   // instruction cost arrays
   const int num_inst_cost = m_inst_set->GetSize();
   inst_cost.Resize(num_inst_cost);
@@ -330,7 +330,7 @@ void cHardware4Stack::SingleProcess(cAvidaContext& ctx)
     AdvanceIP() = true;
     IP().Adjust();
     
-#ifdef BREAKPOINTS
+#if BREAKPOINTS
     if (IP().FlagBreakpoint()) {
       organism->DoBreakpoint();
     }
@@ -377,7 +377,7 @@ void cHardware4Stack::SingleProcess(cAvidaContext& ctx)
 // should proceed.
 bool cHardware4Stack::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
 {
-#ifdef INSTRUCTION_COSTS
+#if INSTRUCTION_COSTS
   assert(cur_inst.GetOp() < inst_cost.GetSize());
   
   // If first time cost hasn't been paid off...
@@ -423,7 +423,7 @@ bool cHardware4Stack::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstr
   IP().SetFlagExecuted();
 	
   
-#ifdef INSTRUCTION_COUNT
+#if INSTRUCTION_COUNT
   // instruction execution count incremeneted
   organism->GetPhenotype().IncCurInstCount(actual_inst.GetOp());
 #endif
@@ -431,7 +431,7 @@ bool cHardware4Stack::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstr
   // And execute it.
   const bool exec_success = (this->*(m_functions[inst_idx]))(ctx);
 	
-#ifdef INSTRUCTION_COUNT
+#if INSTRUCTION_COUNT
   // decremenet if the instruction was not executed successfully
   if (exec_success == false) {
     organism->GetPhenotype().DecCurInstCount(actual_inst.GetOp());
@@ -1230,7 +1230,7 @@ bool cHardware4Stack::Divide_Main(cAvidaContext& ctx, int mem_space_used, double
   // lineages need to be updated.
   Divide_TestFitnessMeasures(ctx);
   
-#ifdef INSTRUCTION_COSTS
+#if INSTRUCTION_COSTS
   // reset first time instruction costs
   for (int i = 0; i < inst_ft_cost.GetSize(); i++) {
     inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));

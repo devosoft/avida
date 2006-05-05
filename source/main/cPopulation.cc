@@ -1086,7 +1086,7 @@ void cPopulation::UpdateOrganismStats()
   
   stats.ZeroTasks();
   
-#ifdef INSTRUCTION_COUNT
+#if INSTRUCTION_COUNT
   stats.ZeroInst();
 #endif
   
@@ -1142,7 +1142,7 @@ void cPopulation::UpdateOrganismStats()
     stats.SumExeSize().Add(phenotype.GetExecutedSize());
     stats.SetGenoMapElement(i, organism->GetGenotype()->GetID());
     
-#ifdef INSTRUCTION_COUNT
+#if INSTRUCTION_COUNT
     for (int j=0; j < m_world->GetNumInstructions(); j++) {
       stats.SumExeInst()[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
     }

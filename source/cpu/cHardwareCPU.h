@@ -87,7 +87,7 @@ protected:
   bool executedmatchstrings;	// Have we already executed the match strings instruction?
 
   // Instruction costs...
-#ifdef INSTRUCTION_COSTS
+#if INSTRUCTION_COSTS
   tArray<int> inst_cost;
   tArray<int> inst_ft_cost;
 #endif

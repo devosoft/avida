@@ -352,7 +352,7 @@ public:
   cDoubleSum& SumExeSize()       { return sum_exe_size; }
   cDoubleSum& SumMemSize()       { return sum_mem_size; }
 
-#ifdef INSTRUCTION_COUNT
+#if INSTRUCTION_COUNT
   void ZeroInst();
 #endif
   tArray<cIntSum>& SumExeInst() { return sum_exe_inst_array; }

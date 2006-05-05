@@ -60,7 +60,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome
   m_hardware = m_world->GetHardwareManager().Create(this);
   cpu_stats.Setup();
 
-  if (m_world->GetConfig().DEATH_METHOD.Get() > 0) {
+  if (m_world->GetConfig().DEATH_METHOD.Get() > DEATH_METHOD_OFF) {
     max_executed = m_world->GetConfig().AGE_LIMIT.Get();
     if (m_world->GetConfig().AGE_DEVIATION.Get() > 0.0) {
       max_executed += (int) (ctx.GetRandom().GetRandNormal() * m_world->GetConfig().AGE_DEVIATION.Get());
@@ -459,19 +459,19 @@ void cOrganism::Fault(int fault_loc, int fault_type, cString fault_desc)
   (void) fault_type;
   (void) fault_desc;
 
-#ifdef FATAL_ERRORS
+#if FATAL_ERRORS
   if (fault_type == FAULT_TYPE_ERROR) {
     phenotype.IsFertile() = false;
   }
 #endif
 
-#ifdef FATAL_WARNINGS
+#if FATAL_WARNINGS
   if (fault_type == FAULT_TYPE_WARNING) {
     phenotype.IsFertile() = false;
   }
 #endif
 
-#ifdef BREAKPOINTS
+#if BREAKPOINTS
   phenotype.SetFault(fault_desc);
 #endif
 

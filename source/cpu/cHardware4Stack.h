@@ -83,7 +83,7 @@ protected:
   int cur_thread;
 
   // Instruction costs...
-#ifdef INSTRUCTION_COSTS
+#if INSTRUCTION_COSTS
   tArray<int> inst_cost;
   tArray<int> inst_ft_cost;
 #endif
