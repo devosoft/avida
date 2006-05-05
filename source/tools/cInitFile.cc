@@ -430,7 +430,7 @@ void cInitFile::UnitTests(bool full)
 {
   if(full) {
     //std::cout << "nInitFileTests::utInitFile_hello_world" << std::endl;
-    nInitFileTests::utInitFile_hello_world::test();
+    nInitFileTests::utInitFile_hello_world::test()
   }
   if(full) {
     std::cout << "nInitFileTests::utInitFile_archiving" << std::endl;
