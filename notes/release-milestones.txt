@@ -53,6 +53,7 @@ Version 2.5 - development - Target: July 2006      - Status: Active Development
 + Merge (meaningful) events and analyze commands into actions framework
 * Consistency test support
 * Framework for unit testing
+  * Move UnitTest functions from classes to namespaces
 
 
 Version 2.6 - stable      - Target: < Mid 2007     - Status: Pending version 2.5 completion
@@ -75,8 +76,6 @@ Version 2.7 - development - Target: July 2007      - Status: Planned
 + Consistency test support
   - Make it easier to generate new tails
   - Support under SCons
-+ Framework for unit testing
-  - Move UnitTest functions from classes to namespaces
 
 **** NOTE: Backwards compatibility breaks at this point ****
 
