@@ -93,7 +93,7 @@ Unit tests
 #include <fstream> 
 #include <string>
 
-namespace nFileTests {
+namespace nFile {
   /*
   Test-helpers.
   */
@@ -209,22 +209,26 @@ namespace nFileTests {
       std::remove(data_file_name.c_str());
     }
   } // utFile_archiving_closed_file
-} // nFileTests
 
-void cFile::UnitTests(bool full)
-{
-  //if(full) {
-  //  std::cout << "nFileTests::utFile_hello_world" << std::endl;
-  //  nFileTests::utFile_hello_world::test();
-  //}
-  if(full) {
-    std::cout << "nFileTests::utFile_archiving" << std::endl;
-    nFileTests::utFile_archiving::test();
+
+
+
+
+  void UnitTests(bool full)
+  {
+    //if(full) {
+    //  std::cout << "utFile_hello_world" << std::endl;
+    //  utFile_hello_world::test();
+    //}
+    if(full) {
+      std::cout << "utFile_archiving" << std::endl;
+      utFile_archiving::test();
+    }
+    if(full) {
+      std::cout << "utFile_archiving_closed_file" << std::endl;
+      utFile_archiving_closed_file::test();
+    }
   }
-  if(full) {
-    std::cout << "nFileTests::utFile_archiving_closed_file" << std::endl;
-    nFileTests::utFile_archiving_closed_file::test();
-  }
-}
+} // nFile
 
 #endif // ENABLE_UNIT_TESTS

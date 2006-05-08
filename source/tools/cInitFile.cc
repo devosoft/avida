@@ -430,7 +430,6 @@ namespace nInitFile {
 
   void UnitTests(bool full)
   {
-    std::cout << "nInitFile::UnitTests" << std::endl;
     //if(full) {
     //  std::cout << "utInitFile_hello_world" << std::endl;
     //  utInitFile_hello_world::test();

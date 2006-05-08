@@ -88,7 +88,6 @@ namespace nDataEntry {
 
   void UnitTests(bool full)
   {
-    std::cout << "nDataEntry::UnitTests" << std::endl;
     //if(full) {
     //  std::cout << "utDataEntry_hello_world" << std::endl;
     //  utDataEntry_hello_world::test();
