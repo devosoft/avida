@@ -268,7 +268,7 @@ Unit tests
 #include <fstream> 
 #include <string>
 
-namespace nInitFileTests {
+namespace nInitFile {
   /*
   Test-helpers.
   */
@@ -424,35 +424,30 @@ namespace nInitFileTests {
       std::remove(data_file_name.c_str());
     }
   } // utInitFile_ReadString_after_open_and_close
-} // nInitFileTests
 
-namespace nInitFile {
-/*
 
-};
 
-  UnitTests()
 
-*/
   void UnitTests(bool full)
   {
+    std::cout << "nInitFile::UnitTests" << std::endl;
     //if(full) {
-    //  std::cout << "nInitFileTests::utInitFile_hello_world" << std::endl;
-    //  nInitFileTests::utInitFile_hello_world::test();
+    //  std::cout << "utInitFile_hello_world" << std::endl;
+    //  utInitFile_hello_world::test();
     //}
     if(full) {
-      std::cout << "nInitFileTests::utInitFile_archiving" << std::endl;
-      nInitFileTests::utInitFile_archiving::test();
+      std::cout << "utInitFile_archiving" << std::endl;
+      utInitFile_archiving::test();
     }
     if(full) {
-      std::cout << "nInitFileTests::utInitFile_archiving_closed_file" << std::endl;
-      nInitFileTests::utInitFile_archiving_closed_file::test();
+      std::cout << "utInitFile_archiving_closed_file" << std::endl;
+      utInitFile_archiving_closed_file::test();
     }
     if(1) {
-      std::cout << "nInitFileTests::utInitFile_ReadString_after_open_and_close" << std::endl;
-      nInitFileTests::utInitFile_ReadString_after_open_and_close::test();
+      std::cout << "utInitFile_ReadString_after_open_and_close" << std::endl;
+      utInitFile_ReadString_after_open_and_close::test();
     }
   }
-}
+} // nInitFile
 
 #endif // ENABLE_UNIT_TESTS

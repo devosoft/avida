@@ -24,7 +24,7 @@ Unit tests
 #include <fstream>
 #include <string>
 
-namespace nDataEntryTests {
+namespace nDataEntry {
   /*
   Test-helpers.
   */
@@ -83,18 +83,21 @@ namespace nDataEntryTests {
       std::remove(filename.c_str());
     } 
   } // utDataEntry_archiving
-} // nDataEntryTests
 
-void cDataEntry::UnitTests(bool full)
-{
-  //if(full) {
-  //  std::cout << "nDataEntryTests::utDataEntry_hello_world" << std::endl;
-  //  nDataEntryTests::utDataEntry_hello_world::test();
-  //}
-  if(full) {
-    std::cout << "nDataEntryTests::utDataEntry_archiving" << std::endl;
-    nDataEntryTests::utDataEntry_archiving::test();
+
+
+  void UnitTests(bool full)
+  {
+    std::cout << "nDataEntry::UnitTests" << std::endl;
+    //if(full) {
+    //  std::cout << "utDataEntry_hello_world" << std::endl;
+    //  utDataEntry_hello_world::test();
+    //}
+    if(full) {
+      std::cout << "utDataEntry_archiving" << std::endl;
+      utDataEntry_archiving::test();
+    }
   }
-}
+} // nDataEntry
 
 #endif // ENABLE_UNIT_TESTS

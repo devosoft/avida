@@ -9,7 +9,7 @@
 
 int main() {
 
-  cDataEntry::UnitTests(true);
+  nDataEntry::UnitTests(true);
   cFile::UnitTests(true);
   nInitFile::UnitTests(true);
   cRandom::UnitTests(true);

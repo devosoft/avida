@@ -56,16 +56,6 @@ public:
     a.ArkvObj("html_table_flags", html_table_flags);
   }   
 
-  
-#ifdef ENABLE_UNIT_TESTS
-public:
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  static void UnitTests(bool full = false);
-#endif  
 };
 
 inline std::ostream& operator << (std::ostream& out, cDataEntry & entry)
@@ -73,5 +63,17 @@ inline std::ostream& operator << (std::ostream& out, cDataEntry & entry)
   entry.Print(out);
   return out;
 }
+
+  
+#ifdef ENABLE_UNIT_TESTS
+namespace nDataEntry {
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  void UnitTests(bool full = false);
+}
+#endif  
 
 #endif
