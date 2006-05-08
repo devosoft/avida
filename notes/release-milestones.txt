@@ -48,7 +48,7 @@ Version 2.5 - development - Target: July 2006      - Status: Active Development
 * SMT Hardware
 + Basic multithreaded analyze mode support
 * TCMalloc OS X
-- TCMalloc Linux
+* TCMalloc Linux
 * Actions framework
 + Merge (meaningful) events and analyze commands into actions framework
 + Consistency test support

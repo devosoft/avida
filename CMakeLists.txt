@@ -32,11 +32,11 @@ SET(LIBRARY_OUTPUT_PATH
   "Built libraries are placed here before installation."
 )
 
-IF(APPLE)
+IF(UNIX)
   SET(AVD_ENABLE_TCMALLOC TRUE)
-ELSE(APPLE)
+ELSE(UNIX)
   SET(AVD_ENABLE_TCMALLOC FALSE)
-ENDIF(APPLE)
+ENDIF(UNIX)
 
 # Experimental Boost.Python interface to avida is disabled by default.
 OPTION(AVD_PY_BINDINGS
