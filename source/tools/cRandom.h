@@ -226,18 +226,19 @@ public:
     a.ArkvObj("ma", ma);
     a.ArkvObj("expRV", expRV);
   }
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nRandom {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 
 class cRandomMT : public cRandom
@@ -255,6 +256,20 @@ public:
 
   double GetRandNormal();
 };
+
+
+
+#ifdef ENABLE_UNIT_TESTS
+namespace nRandomMT {
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  void UnitTests(bool full = false);
+}
+#endif  
+
 
 
 inline unsigned int cRandom::MutateByte(unsigned int value)
