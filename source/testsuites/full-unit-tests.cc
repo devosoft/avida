@@ -14,7 +14,7 @@ int main() {
   nInitFile::UnitTests(true);
   nRandom::UnitTests(true);
   nString::UnitTests(true);
-  cStringList::UnitTests(true);
+  nStringList::UnitTests(true);
   cTemplateTests::UnitTests(true);
 
   return boost::report_errors();

@@ -88,7 +88,7 @@ Unit tests
 #include <fstream> 
 #include <string>
 
-namespace nStringListTests {
+namespace nStringList {
   /*
   Test-helpers.
   */
@@ -175,18 +175,20 @@ namespace nStringListTests {
       std::remove(filename.c_str());
     }
   } // utStringList_archiving
-} // nStringListTests
 
-void cStringList::UnitTests(bool full)
-{
-  //if(full) {
-  //  std::cout << "nStringListTests::utStringList_hello_world" << std::endl;
-  //  nStringListTests::utStringList_hello_world::test();
-  //}
-  if(full) {
-    std::cout << "nStringListTests::utStringList_archiving" << std::endl;
-    nStringListTests::utStringList_archiving::test();
+
+
+  void UnitTests(bool full)
+  {
+    //if(full) {
+    //  std::cout << "utStringList_hello_world" << std::endl;
+    //  utStringList_hello_world::test();
+    //}
+    if(full) {
+      std::cout << "utStringList_archiving" << std::endl;
+      utStringList_archiving::test();
+    }
   }
-}
+} // nStringList
 
 #endif // ENABLE_UNIT_TESTS
