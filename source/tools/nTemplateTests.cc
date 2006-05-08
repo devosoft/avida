@@ -1,5 +1,5 @@
 /*
- *  cTemplateTests.cc
+ *  nTemplateTests.cc
  *  Avida
  *
  *  Copyright 2005-2006 Michigan State University. All rights reserved.
@@ -7,7 +7,7 @@
  *
  */
 
-#include "cTemplateTests.h"
+#include "nTemplateTests.h"
 
 
 /*
@@ -702,52 +702,55 @@ namespace nTemplateTests {
       std::remove(filename.c_str());
     }
   } // utMatrix_basic_serialization
-} // nTemplateTests
 
-void cTemplateTests::UnitTests(bool full)
-{
-  //if(full) {
-  //  std::cout << "nTemplateTests::utTemplateTests_hello_world" << std::endl;
-  //  nTemplateTests::utTemplateTests_hello_world::test();
-  //}
-  if(full) {
-    std::cout << "nTemplateTests::utMemTrack" << std::endl;
-    nTemplateTests::utMemTrack::test();
+
+
+
+  void UnitTests(bool full)
+  {
+    //if(full) {
+    //  std::cout << "utTemplateTests_hello_world" << std::endl;
+    //  utTemplateTests_hello_world::test();
+    //}
+    if(full) {
+      std::cout << "utMemTrack" << std::endl;
+      utMemTrack::test();
+    }
+    if(full) {
+      std::cout << "utList_basic_serialization" << std::endl;
+      utList_basic_serialization::test();
+    }
+    if(full) {
+      std::cout << "utList_archive_structure" << std::endl;
+      utList_archive_structure::test();
+    }
+    if(full) {
+      std::cout << "utArray_basic_serialization" << std::endl;
+      utArray_basic_serialization::test();
+    }
+    if(full) {
+      std::cout << "utHashTable_basic_serialization" << std::endl;
+      utHashTable_basic_serialization::test();
+    }
+    if(full) {
+      std::cout << "utDictionary_basic_serialization" << std::endl;
+      utDictionary_basic_serialization::test();
+    }
+    if(full) {
+      std::cout << "utBuffer_basic_serialization" << std::endl;
+      utBuffer_basic_serialization::test();
+    }
+    if(full) {
+      std::cout << "utManagedPointerArray_basic_serialization" << std::endl;
+      utManagedPointerArray_basic_serialization::test();
+    }
+    if(full) {
+      std::cout << "utSmartArray_basic_serialization" << std::endl;
+      utSmartArray_basic_serialization::test();
+    }
+    if(full) {
+      std::cout << "utMatrix_basic_serialization" << std::endl;
+      utMatrix_basic_serialization::test();
+    }
   }
-  if(full) {
-    std::cout << "nTemplateTests::utList_basic_serialization" << std::endl;
-    nTemplateTests::utList_basic_serialization::test();
-  }
-  if(full) {
-    std::cout << "nTemplateTests::utList_archive_structure" << std::endl;
-    nTemplateTests::utList_archive_structure::test();
-  }
-  if(full) {
-    std::cout << "nTemplateTests::utArray_basic_serialization" << std::endl;
-    nTemplateTests::utArray_basic_serialization::test();
-  }
-  if(full) {
-    std::cout << "nTemplateTests::utHashTable_basic_serialization" << std::endl;
-    nTemplateTests::utHashTable_basic_serialization::test();
-  }
-  if(full) {
-    std::cout << "nTemplateTests::utDictionary_basic_serialization" << std::endl;
-    nTemplateTests::utDictionary_basic_serialization::test();
-  }
-  if(full) {
-    std::cout << "nTemplateTests::utBuffer_basic_serialization" << std::endl;
-    nTemplateTests::utBuffer_basic_serialization::test();
-  }
-  if(full) {
-    std::cout << "nTemplateTests::utManagedPointerArray_basic_serialization" << std::endl;
-    nTemplateTests::utManagedPointerArray_basic_serialization::test();
-  }
-  if(full) {
-    std::cout << "nTemplateTests::utSmartArray_basic_serialization" << std::endl;
-    nTemplateTests::utSmartArray_basic_serialization::test();
-  }
-  if(full) {
-    std::cout << "nTemplateTests::utMatrix_basic_serialization" << std::endl;
-    nTemplateTests::utMatrix_basic_serialization::test();
-  }
-}
+} // nTemplateTests

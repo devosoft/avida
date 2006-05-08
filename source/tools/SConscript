@@ -32,11 +32,11 @@ environment.Library('tools',
     'cStringIterator.cc',
     'cStringList.cc',
     'cStringUtil.cc',
-    'cTemplateTests.cc',
     'cThread.cc',
     'cTools.cc',
     'cWeightedIndex.cc',
     'cCycleCheck.cc',
+    'nTemplateTests.cc',
   ],
 ) 
 

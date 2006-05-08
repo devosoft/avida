@@ -3,7 +3,7 @@
 #include "cInitFile.h"
 #include "cRandom.h"
 #include "cString.h"
-#include "cTemplateTests.h"
+#include "nTemplateTests.h"
 
 #include <boost/detail/lightweight_test.hpp>
 
@@ -15,7 +15,7 @@ int main() {
   nRandom::UnitTests(true);
   nString::UnitTests(true);
   nStringList::UnitTests(true);
-  cTemplateTests::UnitTests(true);
+  nTemplateTests::UnitTests(true);
 
   return boost::report_errors();
 }

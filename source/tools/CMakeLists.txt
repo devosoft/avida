@@ -28,11 +28,11 @@ SET(libtools_a_SOURCES
   cStringIterator.cc
   cStringList.cc
   cStringUtil.cc
-  cTemplateTests.cc
   cThread.cc
   cTools.cc
   cWeightedIndex.cc
   cCycleCheck.cc
+  nTemplateTests.cc
 )
 
 INCLUDE_DIRECTORIES(${ALL_INC_DIRS})
