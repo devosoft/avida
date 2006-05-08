@@ -38,17 +38,18 @@ public:
 
   const cString & GetName() { return name; }
   tList<cAnalyzeCommand> * GetCommandList() { return &command_list; }
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nAnalyzeFunction {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif

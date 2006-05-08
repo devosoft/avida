@@ -42,17 +42,18 @@ public:
     cAvidaContext& ctx = m_world->GetDefaultContext();
     action->Process(ctx);
   }
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nAnalyzeCommandAction {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif

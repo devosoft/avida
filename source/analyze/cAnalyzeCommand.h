@@ -41,17 +41,17 @@ public:
   equality of two references means that they refer to the same object.
   */
   bool operator==(const cAnalyzeCommand &in) const { return &in == this; }
-
+};
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nAnalyzeCommand {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif
