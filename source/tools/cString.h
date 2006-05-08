@@ -572,18 +572,19 @@ protected:
   cStringData * value;
 
 // }}} End Internals
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nString {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 
 // {{{ ** External cString Functions **
