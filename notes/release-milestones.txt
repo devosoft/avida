@@ -51,8 +51,8 @@ Version 2.5 - development - Target: July 2006      - Status: Active Development
 * TCMalloc Linux
 * Actions framework
 + Merge (meaningful) events and analyze commands into actions framework
-+ Consistency test support
-+ Framework for unit testing
+* Consistency test support
+* Framework for unit testing
 
 
 Version 2.6 - stable      - Target: < Mid 2007     - Status: Pending version 2.5 completion
@@ -72,6 +72,11 @@ Version 2.7 - development - Target: July 2007      - Status: Planned
 - AS specific executable - 'avida-s'
 - Implement threaded driver, multiple executing worlds via 'avida-s'
 - Win32 Pthreads wrapper library
++ Consistency test support
+  - Make it easier to generate new tails
+  - Support under SCons
++ Framework for unit testing
+  - Move UnitTest functions from classes to namespaces
 
 **** NOTE: Backwards compatibility breaks at this point ****
 
