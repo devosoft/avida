@@ -66,17 +66,18 @@ public:
     { return threads[thread] = historic_list; }
   cGenotype * Next(int thread);
   cGenotype * Prev(int thread);
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nGenotypeControl {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif

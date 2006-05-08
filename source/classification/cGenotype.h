@@ -221,18 +221,19 @@ public:
   int GetNumOrganisms()     { return num_organisms; }
   int GetTotalOrganisms()   { return total_organisms; }
   int GetTotalParasites()   { return total_parasites; }
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nGenotype {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 
 inline int cGenotype::AddOrganism()

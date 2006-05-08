@@ -110,18 +110,19 @@ public:
   int RemoveParasite();
   int GetNumInjected()    { return num_injected; }
   int GetTotalInjected()  { return total_injected; }
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nInjectGenotype {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif
-};
 
 
 inline void cInjectGenotype::SetThreshold()

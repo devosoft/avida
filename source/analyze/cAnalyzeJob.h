@@ -25,17 +25,18 @@ public:
   int GetID() { return m_id; }
   
   virtual void Run(cAvidaContext& ctx) = 0;
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nAnalyzeJob {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif
