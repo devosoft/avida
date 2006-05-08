@@ -9,7 +9,7 @@
 
 int main() {
 
-  cInitFile::UnitTests(true);
+  nInitFile::UnitTests(true);
 
   return boost::report_errors();
 }

@@ -11,7 +11,7 @@ int main() {
 
   cDataEntry::UnitTests(true);
   cFile::UnitTests(true);
-  cInitFile::UnitTests(true);
+  nInitFile::UnitTests(true);
   cRandom::UnitTests(true);
   cString::UnitTests(true);
   cStringList::UnitTests(true);

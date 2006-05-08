@@ -426,23 +426,32 @@ namespace nInitFileTests {
   } // utInitFile_ReadString_after_open_and_close
 } // nInitFileTests
 
-void cInitFile::UnitTests(bool full)
-{
-  //if(full) {
-  //  std::cout << "nInitFileTests::utInitFile_hello_world" << std::endl;
-  //  nInitFileTests::utInitFile_hello_world::test();
-  //}
-  if(full) {
-    std::cout << "nInitFileTests::utInitFile_archiving" << std::endl;
-    nInitFileTests::utInitFile_archiving::test();
-  }
-  if(full) {
-    std::cout << "nInitFileTests::utInitFile_archiving_closed_file" << std::endl;
-    nInitFileTests::utInitFile_archiving_closed_file::test();
-  }
-  if(1) {
-    std::cout << "nInitFileTests::utInitFile_ReadString_after_open_and_close" << std::endl;
-    nInitFileTests::utInitFile_ReadString_after_open_and_close::test();
+namespace nInitFile {
+/*
+
+};
+
+  UnitTests()
+
+*/
+  void UnitTests(bool full)
+  {
+    //if(full) {
+    //  std::cout << "nInitFileTests::utInitFile_hello_world" << std::endl;
+    //  nInitFileTests::utInitFile_hello_world::test();
+    //}
+    if(full) {
+      std::cout << "nInitFileTests::utInitFile_archiving" << std::endl;
+      nInitFileTests::utInitFile_archiving::test();
+    }
+    if(full) {
+      std::cout << "nInitFileTests::utInitFile_archiving_closed_file" << std::endl;
+      nInitFileTests::utInitFile_archiving_closed_file::test();
+    }
+    if(1) {
+      std::cout << "nInitFileTests::utInitFile_ReadString_after_open_and_close" << std::endl;
+      nInitFileTests::utInitFile_ReadString_after_open_and_close::test();
+    }
   }
 }
 
