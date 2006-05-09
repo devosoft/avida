@@ -44,17 +44,18 @@ public:
   const int GetID() const { return m_id; }
   const tTaskTest GetTestFun() const { return m_test_fun; }
   const cString & GetInfo() const { return m_info; }
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nTaskEntry {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif

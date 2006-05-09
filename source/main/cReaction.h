@@ -61,17 +61,18 @@ public:
   bool ModifyInst(int inst_id, int process_num = 0); 
 
   double GetValue(int process_num = 0);
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nReaction {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif
-};
 
 #endif

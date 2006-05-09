@@ -67,17 +67,18 @@ public:
   double GetAddBonus() { return bonus_add; }
   double GetMultBonus() { return bonus_mult; }
   tArray<int>& GetInstArray() { return insts_triggered; }
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nReactionResult {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif

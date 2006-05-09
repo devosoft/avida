@@ -548,18 +548,19 @@ public:
   void PrintMutationRateData(const cString& filename);
   void PrintInstructionData(const cString& filename);
   void PrintGenotypeMap(const cString& filename);
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nStats {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 
 inline void cStats::SetNumGenotypes(int new_genotypes)

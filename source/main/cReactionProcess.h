@@ -98,17 +98,18 @@ public:
   void SetDetectionThreshold(double _in) { detection_threshold = _in; }
   void SetDetectionError(double _in) { detection_error = _in; }
   void SetMatchString(cString _in) { match_string = _in; }
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nReactionProcess {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif
