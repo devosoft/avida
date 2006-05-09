@@ -30,17 +30,18 @@ public:
   void Dec() { cur_count--; }
   void Next() { last_count = cur_count; cur_count = 0; }
   void Clear() { cur_count = last_count = total_count = 0; }
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nCountTracker {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif

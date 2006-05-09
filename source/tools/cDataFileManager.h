@@ -65,18 +65,19 @@ public:
    * @return true if file existed, otherwise false.
    **/
   bool Remove(const cString& name);
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nDataFileManager {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 inline cDataFileManager::cDataFileManager(cString target_dir) : m_target_dir(target_dir)
 {

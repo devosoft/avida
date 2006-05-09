@@ -25,17 +25,18 @@ private:
 
 public:
   cASLibrary() { ; }
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nASLibrary {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
-#endif  
-};
+  void UnitTests(bool full = false);
+}
+#endif
 
 #endif

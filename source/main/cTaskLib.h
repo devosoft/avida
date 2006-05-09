@@ -219,18 +219,19 @@ private:  // Direct task related methods
   
   double Task_NetSend(cTaskContext* ctx) const;
   double Task_NetReceive(cTaskContext* ctx) const;
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nTaskLib {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 
 inline double cTaskLib::TestOutput(const cTaskEntry& task, cTaskContext* ctx) const

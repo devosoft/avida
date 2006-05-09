@@ -38,17 +38,18 @@ public:
   virtual bool GetDesc(const cString& name, cString& out_desc) = 0;
 
   bool PrintRow(cDataFile& data_file, cString row_entries, char sep=' ');
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nDataManager_Base {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif

@@ -39,17 +39,18 @@ public:
   cParser(cASLibrary* library) : m_library(library), m_symtbl(NULL) { ; }
   
   cScriptObject* Parse(std::istream* input);
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nParser {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif
