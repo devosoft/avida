@@ -272,18 +272,19 @@ public:
   void Status();
   
   void GenerateOverides();
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nAvidaConfig {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 // Concept:
 // Setup #define to build class that will manage the specific variable inside

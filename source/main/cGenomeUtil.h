@@ -41,17 +41,18 @@ public:
   static cGenome Crop(const cGenome& genome, int start, int end);
   static cGenome Cut(const cGenome& genome, int start, int end);
   static cGenome Join(const cGenome& genome1, const cGenome& genome2);
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nGenomeUtil {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif

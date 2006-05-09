@@ -120,17 +120,18 @@ public:
   bool SetReactionValue(const cString & name, double value);
   bool SetReactionValueMult(const cString & name, double value_mult);
   bool SetReactionInst(const cString & name, cString inst_name);
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nEnvironment {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif
