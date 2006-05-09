@@ -280,17 +280,18 @@ public:
   int& CrossNum()     { assert(initialized == true); return cross_num; }
   bool& ChildFertile() { assert(initialized == true); return child_fertile; }
   bool& IsMultiThread() { assert(initialized == true); return is_multi_thread; }
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nPhenotype {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif

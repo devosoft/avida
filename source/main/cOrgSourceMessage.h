@@ -30,17 +30,18 @@ public:
   void SetDropped() { m_dropped++; }
   int GetCorrupted() { return m_corrupt; }
   void SetCorrupted() { m_corrupt++; }
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nOrgSourceMessage {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif

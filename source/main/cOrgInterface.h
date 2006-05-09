@@ -51,17 +51,6 @@ public:
   virtual int ReceiveValue() = 0;
   virtual bool InjectParasite(cOrganism* parent, const cGenome& injected_code) = 0;
   virtual bool UpdateMerit(double new_merit) = 0;
-
-
-#ifdef ENABLE_UNIT_TESTS
-public:
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  static void UnitTests(bool full = false);
-#endif
 };
 
 #endif
