@@ -81,7 +81,7 @@ public:
 
 
 #ifdef ENABLE_UNIT_TESTS
-namespace cScreen {
+namespace nScreen {
   /**
    * Run unit tests
    *
