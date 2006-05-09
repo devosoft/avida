@@ -69,18 +69,19 @@ public:
   int AsIntAdditivePolynomial(const int base) const;
   int AsIntFib(const int base) const;
   int AsIntPolynomialCoefficent(const int base) const;
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nCodeLabel {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 void cCodeLabel::AddNop(int nop_num) {
   assert (nop_num < nHardware::MAX_NOPS);

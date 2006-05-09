@@ -61,17 +61,18 @@ public:
   void Reset(cHardwareBase * in_hardware, int _id);
   int GetID() const { return id; }
   void SetID(int _id) { id = _id; }
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nHardware4Stack_Thread {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif

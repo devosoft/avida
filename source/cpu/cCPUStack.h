@@ -43,18 +43,19 @@ public:
 
   void SaveState(std::ostream& fp);
   void LoadState(std::istream & fp);
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nCPUStack {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 
 inline void cCPUStack::Push(int value)

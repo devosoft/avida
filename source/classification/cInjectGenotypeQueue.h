@@ -37,17 +37,18 @@ public:
   void Insert(cInjectGenotype & in_inject_genotype);
   void Remove(cInjectGenotype & in_inject_genotype);
   cInjectGenotype * Find(const cGenome & in_genome) const;
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nInjectGenotypeQueue {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif
-};
 
 #endif
