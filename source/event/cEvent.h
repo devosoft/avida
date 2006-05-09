@@ -55,17 +55,6 @@ public:
   // Name and description of the event
   virtual const cString GetName() const = 0;
   virtual const cString GetDescription() const = 0;
-
-
-#ifdef ENABLE_UNIT_TESTS
-public:
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  static void UnitTests(bool full = false);
-#endif  
 };
 
 #endif
