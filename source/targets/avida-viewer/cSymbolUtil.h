@@ -22,17 +22,18 @@ public:
   static char GetMutSymbol(      const cPopulationCell & cell );
   static char GetThreadSymbol(const cPopulationCell & cell);
   static char GetLineageSymbol(  const cPopulationCell & cell );
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nSymbolUtil {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif

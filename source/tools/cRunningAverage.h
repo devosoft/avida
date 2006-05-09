@@ -56,17 +56,18 @@ public:
   // Notation Shortcuts
   double Ave() const { return Average(); }
   double Var() const { return Variance(); }
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nRunningAverage {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif

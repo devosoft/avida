@@ -132,17 +132,18 @@ public:
   inline void SetBoldColor(int color) {
     wattrset(win_id, COLOR_PAIR(color) | A_BOLD);
   }
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nTextWindow {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif

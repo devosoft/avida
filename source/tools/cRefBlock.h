@@ -39,17 +39,18 @@ public:
     ref_num = in_block.GetRef();
     size = in_block.GetSize();
   }
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nRefBlock {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif
-};
 
 #endif

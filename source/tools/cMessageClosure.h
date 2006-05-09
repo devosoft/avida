@@ -89,18 +89,19 @@ public:
   cMessageClosure &va(const char *fmt, ...);
 private:
   void prefix(void);
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nMessageClosure {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 /*
 you probably don't need to change these macros...

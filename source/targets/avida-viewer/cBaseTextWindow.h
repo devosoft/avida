@@ -35,18 +35,19 @@ public:
   int GetY() { return y; }
 
   void Set(int _x, int _y) { x = _x; y = _y; }
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nBaseTextWindow {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 
 class cBaseTextWindow {

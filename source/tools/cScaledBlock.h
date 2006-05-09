@@ -44,17 +44,18 @@ public:
     data = in_block.GetData();
     size = in_block.GetSize();
   }
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nScaledBlock {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif

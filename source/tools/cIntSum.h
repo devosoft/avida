@@ -78,17 +78,18 @@ public:
     s3 -= w_val * w_val * w_val;
     s4 -= w_val * w_val * w_val * w_val;
   }
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nIntSum {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif

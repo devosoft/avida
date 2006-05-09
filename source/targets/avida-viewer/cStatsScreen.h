@@ -32,17 +32,18 @@ public:
   void Draw();
   void Update();
   void DoInput(int in_char);
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nStatsScreen {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif
-};
 
 #endif

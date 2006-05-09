@@ -103,18 +103,19 @@ public:
     }
     else fixed_size = 1;
   }
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nIndexedBlockStruct {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 inline int cIndexedBlockStruct::Find(cFixedCoords & search_coords) const
 {

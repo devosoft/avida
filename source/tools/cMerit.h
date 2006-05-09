@@ -79,18 +79,19 @@ public:
     return ( gestation_time != 0 ) ? value / ((double) gestation_time) : 0; }
 
   std::ostream& BinaryPrint(std::ostream& os = std::cout) const ;
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nMerit {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 std::ostream& operator<<(std::ostream& os, const cMerit & merit);
 

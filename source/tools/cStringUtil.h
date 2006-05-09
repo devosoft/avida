@@ -59,17 +59,18 @@ public:
   static cString Convert(bool in_bool);
   static cString Convert(int in_int);
   static cString Convert(double in_double);
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nStringUtil {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif

@@ -56,17 +56,18 @@ public:
   double GetStatus(int id);
 
   bool OK();
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nIntegratedSchedule {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif

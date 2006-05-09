@@ -77,18 +77,19 @@ public:
   virtual void DoInput(int in_char) = 0;
   virtual void DoMouseClick(int x, int y) { (void) x; (void) y; }
   virtual void Exit() { ; }
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace cScreen {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 
 inline void cScreen::SetSymbolColor(char color)

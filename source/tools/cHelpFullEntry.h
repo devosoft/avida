@@ -42,17 +42,18 @@ public:
   cHelpType* GetType() const { return type; }
 
   bool IsAlias() const { return false; }
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nHelpFullEntry {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif
