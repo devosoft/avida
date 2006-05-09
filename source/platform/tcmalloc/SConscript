@@ -1,0 +1,13 @@
+
+Import('environment')
+
+environment.Library('tcmalloc',
+  [
+    'system-alloc.cc',
+    'tcmalloc-logging.cc',
+    'tcmalloc.cc',
+  ],
+) 
+
+  
+# vim: set ft=python:

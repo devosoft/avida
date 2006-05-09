@@ -31,6 +31,12 @@ if environment.subst('$enableTestCode') in ['1', 'yes']:
   environment.SetDefault(enableSharedPtr = 1)
   environment.Append(CPPDEFINES = ['USE_tMemTrack=1', 'ENABLE_UNIT_TESTS=1'])
 
+if environment['enableTCMalloc'] in ('True', '1', 1):
+  environment.Append(
+    CPPPATH = [ '#/source/platform/tcmalloc', ],
+    LIBPATH = [ '#$buildDir/platform/tcmalloc', ],
+  )
+
 environment.Append(
   CPPPATH = [
     '#/source',

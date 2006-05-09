@@ -1,8 +1,6 @@
 Import('environment')
 
-avida = environment.Program('avida',
-  'primitive.cc',
-  LIBS = [
+avida_LIBS = [
     'main',
     'classification',
     'cpu',
@@ -13,10 +11,18 @@ avida = environment.Program('avida',
     'cpu',
     'tools',
     'actions',
-    'main',
+    'ncurses',
+    'pthread',
     'archive',
     'boost_serialization',
-  ],
+    'main',
+  ]
+if environment['enableTCMalloc'] in ('True', '1', 1):
+  avida_LIBS = avida_LIBS + ['tcmalloc']
+
+avida = environment.Program('avida',
+  'primitive.cc',
+  LIBS = avida_LIBS,
 )
 environment.Install('$execPrefix', avida)
 

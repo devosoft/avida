@@ -10,6 +10,7 @@ environment.SConscript( [
   'drivers/SConscript',
   'event/SConscript',
   'main/SConscript',
+  'platform/SConscript',
   'targets/SConscript',
   'third-party/SConscript',
   'tools/SConscript',

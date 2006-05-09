@@ -20,10 +20,7 @@ environment.Library('cursesviewer',
   ],
 ) 
 
-avida_viewer = environment.Program(
-  'avida-viewer',
-  'viewer.cc',
-  LIBS = [
+avida_viewer_LIBS = [
     'cursesviewer',
     'main',
     'classification',
@@ -34,10 +31,20 @@ avida_viewer = environment.Program(
     'analyze',
     'cpu',
     'tools',
-    'main',
+    'actions',
     'ncurses',
     'pthread',
-  ],
+    'archive',
+    'boost_serialization',
+    'main',
+  ]
+if environment['enableTCMalloc'] in ('True', '1', 1):
+  avida_viewer_LIBS = avida_viewer_LIBS + ['tcmalloc']
+
+avida_viewer = environment.Program(
+  'avida-viewer',
+  'viewer.cc',
+  LIBS = avida_viewer_LIBS,
   LIBPATH = environment['LIBPATH'] + ['.'],
 )
 environment.Install('$execPrefix', avida_viewer)
