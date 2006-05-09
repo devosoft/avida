@@ -41,17 +41,18 @@ public:
   // Some extra methods to convert too and from alpha-numeric symbols...
   char GetSymbol() const;
   void SetSymbol(char symbol);
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nInstruction {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif

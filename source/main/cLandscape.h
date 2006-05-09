@@ -198,17 +198,18 @@ public:
   inline int GetNumTrials() const { return trials; }
   inline double GetTotalEntropy() const { return total_entropy; }
   inline double GetComplexity() const { return complexity; }
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nLandscape {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif

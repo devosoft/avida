@@ -41,17 +41,18 @@ public:
 
   const tArray<cMutation*>& GetMutationArray() const { return mutation_array; }
   const tList<cMutation>& GetMutationList(int trigger) const { return trigger_list_array[trigger]; }
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nMutationLib {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif

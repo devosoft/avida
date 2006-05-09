@@ -168,18 +168,19 @@ public:
     return inst_error2;
   }
   // static const cInstruction & GetInstNone()    { return inst_none; }
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nInstSet {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 
 inline cInstruction cInstSet::GetInst(const cString & in_name) const
