@@ -63,17 +63,18 @@ public:
   virtual void TraceHardware_SMTBonus(cHardwareSMT &hardware);
   virtual void TraceHardware_TestCPU(int time_used, int time_allocated, int size,
                                      const cString& final_memory, const cString& child_memory);
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nHardwareStatusPrinter {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif

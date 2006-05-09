@@ -17,17 +17,6 @@ public:
   virtual ~cHardwareTracer_4Stack() { ; }
   virtual void TraceHardware_4Stack(cHardware4Stack &) = 0;
   virtual void TraceHardware_4StackBonus(cHardware4Stack &) = 0;
-
-
-#ifdef ENABLE_UNIT_TESTS
-public:
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  static void UnitTests(bool full = false);
-#endif  
 };
 
 #endif

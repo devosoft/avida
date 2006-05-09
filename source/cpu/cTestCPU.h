@@ -41,18 +41,19 @@ private:
   
 public:
   cTestResources(cWorld* world);
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nTestResources {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
   static void UnitTests(bool full = false);
-#endif  
-};
+}
+#endif
 
 class cTestCPU
 {
@@ -94,6 +95,18 @@ public:
   bool GetUseResources() { return m_res->d_useResources; }
   cResourceCount& GetResourceCount(void) { return m_res->resource_count; }
 };
+
+#ifdef ENABLE_UNIT_TESTS
+namespace nTestCPU {
+  /**
+   * Run unit tests
+   *
+   * @param full Run full test suite; if false, just the fast tests.
+   **/
+  static void UnitTests(bool full = false);
+}
+#endif
+
 
 
 // Inline Methods

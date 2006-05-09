@@ -35,17 +35,18 @@ public:
                           cGenotype * genotype=NULL, int update_out=-1);
   static void PrintGenome(cWorld* world, cInjectGenotype * genotype, const cGenome & genome, 
                           cString filename="", int update_out=-1);
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nTestUtil {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif

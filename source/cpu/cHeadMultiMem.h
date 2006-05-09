@@ -61,17 +61,18 @@ public:
   bool operator==(const cHeadMultiMem& in_cpu_head) const; 
   bool AtEnd() const;
   bool InMemory() const;
+};
 
 
 #ifdef ENABLE_UNIT_TESTS
-public:
+namespace nHeadMultiMem {
   /**
    * Run unit tests
    *
    * @param full Run full test suite; if false, just the fast tests.
    **/
-  static void UnitTests(bool full = false);
+  void UnitTests(bool full = false);
+}
 #endif  
-};
 
 #endif
