@@ -3389,43 +3389,6 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
   return;
 }
 
-void cAnalyze::CommandLandscape(cString cur_string)
-{
-  if (verbose >= nAnalyze::VERBOSE_ON) cout << "Landscaping batch " << cur_batch << endl;
-  else cout << "Landscapping..." << endl;
-  
-  // Load in the variables...
-  cString filename;
-  if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
-  int dist = 1;
-  if (cur_string.GetSize() != 0) dist = cur_string.PopWord().AsInt();
-  int num_test = 0;
-  if (cur_string.GetSize() != 0) num_test=cur_string.PopWord().AsInt();
-  
-  // If we're given a file, write to it.
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
-  
-  // Loop through all of the genotypes in this batch...
-  tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
-  cAnalyzeGenotype * genotype = NULL;
-  while ((genotype = batch_it.Next()) != NULL) {
-    cLandscape landscape(m_world, genotype->GetGenome(), inst_set);
-    landscape.SetDistance(dist);
-    if (num_test == 0) {
-      landscape.Process(m_ctx);
-    } else {
-      landscape.SetTrials(num_test);
-      landscape.RandomProcess(m_ctx);
-    }
-    landscape.PrintStats(fp);
-  }
-}
-
-
-
-
-
-
 
 
 
@@ -7742,7 +7705,6 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("COMMUNITY_COMPLEXITY", &cAnalyze::AnalyzeCommunityComplexity);
   
   // Individual organism analysis...
-  AddLibraryDef("LANDSCAPE", &cAnalyze::CommandLandscape);
   AddLibraryDef("FITNESS_MATRIX", &cAnalyze::CommandFitnessMatrix);
   AddLibraryDef("MAP", &cAnalyze::CommandMapTasks);  // Deprecated...
   AddLibraryDef("MAP_TASKS", &cAnalyze::CommandMapTasks);

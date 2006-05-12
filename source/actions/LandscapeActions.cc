@@ -22,7 +22,9 @@
 #include "cStats.h"
 #include "cString.h"
 #include "cWorld.h"
+#include "cWorldDriver.h"
 #include "tSmartArray.h"
+#include "defs.h"
 
 
 class cActionAnalyzeLandscape : public cAction
@@ -57,6 +59,14 @@ public:
     cLandscape* land = NULL;
     
     if (ctx.GetAnalyzeMode()) {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+        cString msg("Performing landscape analysis on batch ");
+        msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
+        m_world->GetDriver().NotifyComment(msg);
+      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+        m_world->GetDriver().NotifyComment("Performing landscape analysis...");
+      }
+
       cAnalyzeGenotype* genotype = NULL;
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       while (genotype = batch_it.Next()) {
@@ -64,6 +74,9 @@ public:
         m_depths.Push(genotype->GetDepth());
       }
     } else {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+        m_world->GetDriver().NotifyComment("Performing landscape analysis...");
+
       cGenotype* genotype = m_world->GetClassificationManager().GetBestGenotype();
       LoadGenome(genotype->GetGenome());
       m_depths.Push(genotype->GetDepth());
@@ -119,6 +132,74 @@ private:
 };
 
 
+class cActionFullLandscape : public cAction
+{
+private:
+  cString m_filename;
+  int m_dist;
+  tList<cLandscape> m_batch;
+  
+public:
+  cActionFullLandscape(cWorld* world, const cString& args)
+    : cAction(world, args), m_filename("land-full.dat"), m_dist(1)
+  {
+      cString largs(args);
+      if (largs.GetSize()) m_filename = largs.PopWord();
+      if (largs.GetSize()) m_dist = largs.PopWord().AsInt();
+  }
+  
+  const cString GetDescription()
+  {
+    return "FullLandscape [filename='land-full.dat'] [int distance=1]";
+  }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    int update = -1;
+    cLandscape* land = NULL;
+    
+    if (ctx.GetAnalyzeMode()) {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+        cString msg("Full Landscaping batch ");
+        msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
+        m_world->GetDriver().NotifyComment(msg);
+      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+        m_world->GetDriver().NotifyComment("Full Landscapping...");
+      }
+
+      cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();
+      cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
+      
+      tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
+      cAnalyzeGenotype* genotype = NULL;
+      while (genotype = batch_it.Next()) {
+        cLandscape* land = new cLandscape(m_world, genotype->GetGenome(), inst_set);
+        land->SetDistance(m_dist);
+        m_batch.PushRear(land);
+        jobqueue.AddJob(new tAnalyzeJob<cLandscape>(land, &cLandscape::Process));
+      }
+      jobqueue.Execute();
+    } else {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+        m_world->GetDriver().NotifyComment("Full Landscaping...");
+      
+      land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetGenome(),
+                            m_world->GetHardwareManager().GetInstSet());
+      m_batch.PushRear(land);
+      land->SetDistance(m_dist);
+      land->Process(ctx);
+      update = m_world->GetStats().GetUpdate();      
+    }
+    
+    std::ofstream& outfile = m_world->GetDataFileOFStream(m_filename);
+    while (land = m_batch.Pop()) {
+      land->PrintStats(outfile, update);
+      delete land;
+    }
+  }
+};
+
+
 class cActionRandomLandscape : public cAction
 {
 private:
@@ -148,6 +229,14 @@ public:
     cLandscape* land = NULL;
     
     if (ctx.GetAnalyzeMode()) {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+        cString msg("Random Landscaping batch ");
+        msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
+        m_world->GetDriver().NotifyComment(msg);
+      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+        m_world->GetDriver().NotifyComment("Random Landscapping...");
+      }
+
       cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();
       cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
       
@@ -162,6 +251,9 @@ public:
       }
       jobqueue.Execute();
     } else {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+        m_world->GetDriver().NotifyComment("Random Landscaping...");
+
       land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetGenome(),
                             m_world->GetHardwareManager().GetInstSet());
       m_batch.PushRear(land);
@@ -208,6 +300,14 @@ public:
     cLandscape* land = NULL;
     
     if (ctx.GetAnalyzeMode()) {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+        cString msg("Sample Landscaping batch ");
+        msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
+        m_world->GetDriver().NotifyComment(msg);
+      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+        m_world->GetDriver().NotifyComment("Sample Landscapping...");
+      }
+
       cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();
       cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
       
@@ -221,6 +321,9 @@ public:
       }
       jobqueue.Execute();
     } else {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+        m_world->GetDriver().NotifyComment("Sample Landscaping...");
+
       land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetGenome(),
                             m_world->GetHardwareManager().GetInstSet());
       m_batch.PushRear(land);
@@ -241,6 +344,7 @@ public:
 void RegisterLandscapeActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionAnalyzeLandscape>("AnalyzeLandscape");
+  action_lib->Register<cActionRandomLandscape>("FullLandscape");
   action_lib->Register<cActionRandomLandscape>("RandomLandscape");
   action_lib->Register<cActionSampleLandscape>("SampleLandscape");
 }

@@ -180,7 +180,6 @@ private:
   void AnalyzeCommunityComplexity(cString cur_string);
 
   // Individual Organism Analysis...
-  void CommandLandscape(cString cur_string);
   void CommandFitnessMatrix(cString cur_string);
   void CommandMapTasks(cString cur_string);
   void CommandAverageModularity(cString cur_string);
@@ -277,6 +276,7 @@ public:
   void RunFile(cString filename);
   void RunInteractive();
   
+  int GetCurrentBatchID() { return cur_batch; }
   cGenotypeBatch& GetCurrentBatch() { return batch[cur_batch]; }
   cAnalyzeJobQueue& GetJobQueue() { return m_jobqueue; }
 };

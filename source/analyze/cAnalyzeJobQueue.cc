@@ -11,9 +11,12 @@
 
 #include "cAnalyzeJobWorker.h"
 #include "cWorld.h"
+#include "cWorldDriver.h"
+#include "defs.h"
 
 #include <iostream>
 using namespace std;
+
 
 cAnalyzeJobQueue::cAnalyzeJobQueue(cWorld* world) : m_world(world), m_last_jobid(0)
 {
@@ -33,11 +36,11 @@ cAnalyzeJobQueue::~cAnalyzeJobQueue()
 
 void cAnalyzeJobQueue::Execute()
 {
-  const int num_workers = 1; //m_world->GetConfig().ANALYZE_MT_CONCURRENCY.Get();
-  
+  const int num_workers = m_world->GetConfig().MT_CONCURRENCY.Get();
   cAnalyzeJobWorker* workers[num_workers];
   
-  cout << "Going Multithreaded..." << endl;
+  if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+    m_world->GetDriver().NotifyComment("Going Multithreaded...");
   
   for (int i = 0; i < num_workers; i++) {
     workers[i] = new cAnalyzeJobWorker(this);

@@ -26,6 +26,7 @@
 #include "cFallbackWorldDriver.h"
 
 #include "LandscapeActions.h"
+#include "PrintActions.h"
 
 
 cWorld::~cWorld()
@@ -61,6 +62,7 @@ void cWorld::Setup()
   
   m_actlib = new cActionLibrary();
   RegisterLandscapeActions(m_actlib);
+  RegisterPrintActions(m_actlib);
   
   // The data directory should end in a '/'
   cString dir = m_conf->DATA_DIR.Get();

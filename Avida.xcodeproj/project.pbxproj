@@ -92,6 +92,9 @@
 		7054A1B709A810CB00038658 /* cAnalyzeJobWorker.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7054A1B309A810CB00038658 /* cAnalyzeJobWorker.h */; };
 		7054A1B809A810CB00038658 /* cAnalyzeJobWorker.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7054A1B409A810CB00038658 /* cAnalyzeJobWorker.cc */; };
 		7054A1BA09A810CB00038658 /* cAnalyzeJobWorker.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7054A1B409A810CB00038658 /* cAnalyzeJobWorker.cc */; };
+		705ACD4F0A13FED5002D5BA0 /* PrintActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705ACD4D0A13FED4002D5BA0 /* PrintActions.cc */; };
+		705ACD630A1403A5002D5BA0 /* PrintActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705ACD4D0A13FED4002D5BA0 /* PrintActions.cc */; };
+		705ACD640A1403AA002D5BA0 /* PrintActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705ACD4D0A13FED4002D5BA0 /* PrintActions.cc */; };
 		70658C5A085DF67D00486BED /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
 		7073165D097C6C8F00815164 /* cParser.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7073165B097C6C8F00815164 /* cParser.cc */; };
 		70731665097C6DF500815164 /* cASLibrary.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70731663097C6DF500815164 /* cASLibrary.cc */; };
@@ -492,8 +495,6 @@
 		7005A70909BA0FBE0007E16E /* cOrgInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgInterface.h; sourceTree = "<group>"; };
 		700AE91B09DB65F200A073FD /* cTaskContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cTaskContext.h; sourceTree = "<group>"; };
 		700E11BC0A0815B600B604CD /* cDataEntry.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDataEntry.cc; sourceTree = "<group>"; };
-		700E123F0A084D3D00B604CD /* cTemplateTests.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTemplateTests.cc; sourceTree = "<group>"; };
-		700E12400A084D3D00B604CD /* cTemplateTests.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTemplateTests.h; sourceTree = "<group>"; };
 		700E12610A097A0800B604CD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		700E12630A097A1700B604CD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		700E28CF0859FFD700CF158A /* tObjectFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tObjectFactory.h; sourceTree = "<group>"; };
@@ -568,6 +569,8 @@
 		7054A17D09A8032600038658 /* tAnalyzeJob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tAnalyzeJob.h; sourceTree = "<group>"; };
 		7054A1B309A810CB00038658 /* cAnalyzeJobWorker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAnalyzeJobWorker.h; sourceTree = "<group>"; };
 		7054A1B409A810CB00038658 /* cAnalyzeJobWorker.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeJobWorker.cc; sourceTree = "<group>"; };
+		705ACD4C0A13FED4002D5BA0 /* PrintActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrintActions.h; sourceTree = "<group>"; };
+		705ACD4D0A13FED4002D5BA0 /* PrintActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PrintActions.cc; sourceTree = "<group>"; };
 		70658C59085DF67D00486BED /* libncurses.5.4.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libncurses.5.4.dylib; path = /usr/lib/libncurses.5.4.dylib; sourceTree = "<absolute>"; };
 		706D30CC0852328F00D7DC8F /* tInstLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tInstLib.h; sourceTree = "<group>"; };
 		7073165A097C6C8F00815164 /* cParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cParser.h; sourceTree = "<group>"; };
@@ -1049,6 +1052,8 @@
 				707AEEFE09E83381001AEA89 /* cActionLibrary.h */,
 				707AF04409EAB529001AEA89 /* LandscapeActions.h */,
 				707AF04509EAB529001AEA89 /* LandscapeActions.cc */,
+				705ACD4C0A13FED4002D5BA0 /* PrintActions.h */,
+				705ACD4D0A13FED4002D5BA0 /* PrintActions.cc */,
 			);
 			path = actions;
 			sourceTree = "<group>";
@@ -1532,8 +1537,6 @@
 		DCC314D8076253A2008F7A48 /* tools */ = {
 			isa = PBXGroup;
 			children = (
-				700E123F0A084D3D00B604CD /* cTemplateTests.cc */,
-				700E12400A084D3D00B604CD /* cTemplateTests.h */,
 				700E11BC0A0815B600B604CD /* cDataEntry.cc */,
 				70B08B9008FB2E6B00FC65FE /* cTools.cc */,
 				70B08B9108FB2E6B00FC65FE /* cWeightedIndex.cc */,
@@ -2046,6 +2049,7 @@
 				7054A1B809A810CB00038658 /* cAnalyzeJobWorker.cc in Sources */,
 				7005A70609BA0FA90007E16E /* cTestCPUInterface.cc in Sources */,
 				707AF0B409EAC805001AEA89 /* LandscapeActions.cc in Sources */,
+				705ACD630A1403A5002D5BA0 /* PrintActions.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2174,6 +2178,7 @@
 				7054A1B609A810CB00038658 /* cAnalyzeJobWorker.cc in Sources */,
 				7005A70409BA0FA90007E16E /* cTestCPUInterface.cc in Sources */,
 				707AF0B309EAC801001AEA89 /* LandscapeActions.cc in Sources */,
+				705ACD640A1403AA002D5BA0 /* PrintActions.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2286,6 +2291,7 @@
 				7005A70809BA0FA90007E16E /* cTestCPUInterface.cc in Sources */,
 				7005A83209BA621F0007E16E /* cOrgMessage.cc in Sources */,
 				707AF0B209EAC7FD001AEA89 /* LandscapeActions.cc in Sources */,
+				705ACD4F0A13FED5002D5BA0 /* PrintActions.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

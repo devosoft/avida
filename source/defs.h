@@ -165,4 +165,13 @@ enum tSIZE_MERIT
   SIZE_MERIT_SQRT_LEAST
 };
 
+typedef enum eVerbosity {
+  VERBOSE_SILENT = 0,   // No output at all
+  VERBOSE_QUIET,        // Notification at start of commands.
+  VERBOSE_ON,           // Verbose output, detailing progress
+  VERBOSE_DETAILS,      // High level of details, as available.
+  VERBOSE_DEBUG         // Print Debug Information, as applicable.
+};
+
+
 #endif
