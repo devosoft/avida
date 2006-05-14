@@ -24,6 +24,14 @@ public:
 
   inline int GetStart() { return start_point; }
   inline void SetStart(int in_sp) { start_point = in_sp; }
+
+  /**   
+   * Serialize to and from archive.
+   **/  
+  template<class Archive>
+  void serialize(Archive & a, const unsigned int version){
+    a.ArkvObj("start_point", start_point);
+  }   
 };
 
 

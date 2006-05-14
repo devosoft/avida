@@ -58,3 +58,105 @@ void cChangeList::Reset()
   }
   m_change_count = 0;
 }
+
+
+#ifdef ENABLE_UNIT_TESTS
+
+/*
+Unit tests
+*/
+#include "cFile.h"
+#include "cXMLArchive.h"
+
+#include <boost/detail/lightweight_test.hpp>
+
+#include <cstdio>    // for std::remove() to remove temporary files.
+#include <iomanip>
+#include <iostream>
+#include <fstream>
+#include <string>
+
+namespace nChangeList {
+  /*
+  Test-helpers.
+  */
+  template <class T>
+  void save_stuff(const T &s, const char * filename){
+    std::ofstream ofs(filename);
+    cXMLOArchive oa(ofs);
+    oa.ArkvObj("cChangeList_Archive", s);
+  }
+
+  template <class T>
+  void restore_stuff(T &s, const char * filename) {
+    std::ifstream ifs(filename);
+    cXMLIArchive ia(ifs);
+    ia.ArkvObj("cChangeList_Archive", s);
+  }
+
+
+  namespace utChangeList_hello_world {
+    void test(){
+      BOOST_TEST(true);
+      BOOST_TEST(false);
+    }
+  }
+
+  namespace utChangeList_archiving {
+    void test(){
+      std::string filename("./cChangeList_basic_serialization.xml");
+      int changelist_size = 10;
+      int change_count = 5;
+      tArray<int> recorded_changes(change_count);
+
+      {
+        cChangeList cl(changelist_size);
+        BOOST_TEST(cl.GetSize() == changelist_size);
+
+        BOOST_TEST(cl.GetChangeCount() == 0);
+        cl.PushChange(1);
+        cl.PushChange(7);
+        cl.PushChange(3);
+        cl.PushChange(5);
+        cl.PushChange(2);
+        BOOST_TEST(cl.GetChangeCount() == change_count);
+
+        for(int i = 0; i < change_count; i++) {
+          recorded_changes[i] = cl.CheckChangeAt(i);
+        }
+        save_stuff<>(cl, filename.c_str());
+      }
+
+      {
+        cChangeList cl;
+        BOOST_TEST(cl.GetSize() == 0);
+        BOOST_TEST(cl.GetChangeCount() == 0);
+
+        restore_stuff<>(cl, filename.c_str());
+        BOOST_TEST(cl.GetChangeCount() == change_count);
+        for(int i = 0; i < change_count; i++) {
+          BOOST_TEST(recorded_changes[i] == cl.CheckChangeAt(i));
+        }
+      }
+
+      //std::remove(filename.c_str());
+    }
+  } // utChangeList_archiving
+
+
+
+  void UnitTests(bool full)
+  { 
+    //if(full) {
+    //  std::cout << "utChangeList_hello_world" << std::endl;
+    //  utChangeList_hello_world::test();
+    //}
+    if(full) {
+      std::cout << "utChangeList_archiving" << std::endl;
+      utChangeList_archiving::test();
+    }
+  }
+} // nChangeList
+
+#endif // ENABLE_UNIT_TESTS
+

@@ -3,7 +3,7 @@ Import('environment')
 
 environment.Library('tools',
   [
-    'cBlockStruct.cc',
+    #'cBlockStruct.cc',
     'cChangeList.cc',
     'cConstSchedule.cc',
     'cDataEntry.cc',
@@ -12,6 +12,8 @@ environment.Library('tools',
     'cDataManager_Base.cc',
     'cDefaultMessageDisplay.cc',
     'cDoubleSum.cc',
+    #'cFixedBlock.cc',
+    'cFixedCoords.cc',
     'cFile.cc',
     'cHelpAlias.cc',
     'cHelpManager.cc',

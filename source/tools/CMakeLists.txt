@@ -1,5 +1,5 @@
 SET(libtools_a_SOURCES
-  cBlockStruct.cc
+  #cBlockStruct.cc
   cChangeList.cc
   cConstSchedule.cc
   cDataEntry.cc
@@ -9,6 +9,8 @@ SET(libtools_a_SOURCES
   cDefaultMessageDisplay.cc
   cDoubleSum.cc
   cFile.cc
+  #cFixedBlock.cc
+  cFixedCoords.cc
   cHelpAlias.cc
   cHelpManager.cc
   cHelpType.cc
