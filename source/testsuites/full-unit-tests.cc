@@ -1,4 +1,5 @@
 #include "cDataEntry.h"
+#include "cDataFile.h"
 #include "cFile.h"
 #include "cInitFile.h"
 #include "cRandom.h"
@@ -10,6 +11,7 @@
 int main() {
 
   nDataEntry::UnitTests(true);
+  nDataFile::UnitTests(true);
   nFile::UnitTests(true);
   nInitFile::UnitTests(true);
   nRandom::UnitTests(true);

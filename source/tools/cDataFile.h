@@ -142,6 +142,71 @@ public:
    * This function makes sure that all cached data is written to the disk.
    **/
   void Flush() { m_fp.flush(); }
+
+
+  /**
+   * Save to archive
+   **/
+  template<class Archive>
+  void save(Archive & a, const unsigned int version) const {
+    /*
+    __is_open and __verbose are workarounds for bool-serialization bugs.
+    @kgn
+    */
+    int __m_descr_written = (m_descr_written == false)?(0):(1);
+    int __is_open = (m_fp.is_open() == false)?(0):(1);
+
+    a.ArkvObj("m_name", m_name);
+    a.ArkvObj("m_data", m_data);
+    a.ArkvObj("m_descr", m_descr);
+    a.ArkvObj("num_cols", num_cols);
+    a.ArkvObj("m_descr_written", __m_descr_written);
+    a.ArkvObj("is_open", __is_open);
+    if(__is_open){
+      /*
+      If the file is open, record current read-position.
+      */
+      int position = m_fp.rdbuf()->pubseekoff(0,std::ios::cur);
+      a.ArkvObj("position", position);
+    }
+  }
+
+  /**
+   * Load from archive
+   **/
+  template<class Archive>
+  void load(Archive & a, const unsigned int version){
+    int __m_descr_written;
+    int __is_open;
+
+    a.ArkvObj("m_name", m_name);
+    a.ArkvObj("m_data", m_data);
+    a.ArkvObj("m_descr", m_descr);
+    a.ArkvObj("num_cols", num_cols);
+    a.ArkvObj("m_descr_written", __m_descr_written);
+    a.ArkvObj("is_open", __is_open);
+
+    m_descr_written = (__m_descr_written == 0)?(false):(true);
+
+    if(__is_open){
+      /*
+      If the file is open, record current read-position.
+      */
+      int position;
+      a.ArkvObj("position", position);
+      m_fp.open(m_name, std::ios::out|std::ios::app);
+      m_fp.rdbuf()->pubseekpos(position);
+    }
+  }
+  
+  /**
+   * Ask archive to handle loads and saves separately
+   **/
+  template<class Archive>
+  void serialize(Archive & a, const unsigned int version){
+    a.SplitLoadSave(*this, version);
+  }
+
 };
 
 
