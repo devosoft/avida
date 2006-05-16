@@ -423,23 +423,31 @@ void cStats::PrintAverageData(const cString & filename)
   df.WriteComment( "Avida average data" );
   df.WriteTimeStamp();
 
-  df.Write(GetUpdate(),                    "update");
-  df.Write(sum_merit.Average(),            "average merit");
-  df.Write(sum_gestation.Average(),        "average gestation time");
-  df.Write(sum_fitness.Average(),          "average fitness");
-  df.Write(sum_repro_rate.Average(),       "repro rate?");
-  df.Write(sum_size.Average(),             "average size");
-  df.Write(sum_copy_size.Average(),        "average copied size");
-  df.Write(sum_exe_size.Average(),         "average executed size");
-  df.Write(sum_abundance.Average(),        "average abundance?");
-  df.Write(static_cast<double>(num_births / num_creatures),
-           "proportion of organisms that gave birth in this update");
-  df.Write(static_cast<double>(num_breed_true / num_creatures),
-	   "proportion of breed true organisms");
-  df.Write(sum_genotype_depth.Average(),   "average genotype depth");
-  df.Write(sum_generation.Average(),       "average generation");
-  df.Write(sum_neutral_metric.Average(),   "average neutral metric");
-  df.Write(sum_lineage_label.Average(),    "average lineage label");
+  df.Write(GetUpdate(),                   "update");
+  df.Write(sum_merit.Average(),           "average merit");
+  df.Write(sum_gestation.Average(),       "average gestation time");
+  df.Write(sum_fitness.Average(),         "average fitness");
+  df.Write(sum_repro_rate.Average(),      "repro rate?");
+  df.Write(sum_size.Average(),            "average size");
+  df.Write(sum_copy_size.Average(),       "average copied size");
+  df.Write(sum_exe_size.Average(),        "average executed size");
+  df.Write(sum_abundance.Average(),       "average abundance?");
+  
+  // The following causes births and breed true to default to 0.0 when num_creatures is 0
+  double ave_births = 0.0;
+  double ave_breed_true = 0.0;
+  if (num_creatures > 0) {
+    const double d_num_creatures = static_cast<double>(num_creatures);
+    ave_births = static_cast<double>(num_births) / d_num_creatures;
+    ave_breed_true = static_cast<double>(num_breed_true) / d_num_creatures;
+  }
+  df.Write(ave_births,                    "proportion of organisms that gave birth in this update");
+  df.Write(ave_breed_true,                "proportion of breed true organisms");
+  
+  df.Write(sum_genotype_depth.Average(),  "average genotype depth");
+  df.Write(sum_generation.Average(),      "average generation");
+  df.Write(sum_neutral_metric.Average(),  "average neutral metric");
+  df.Write(sum_lineage_label.Average(),   "average lineage label");
   df.Write(rave_true_replication_rate.Average(),
 	   "true replication rate (based on births/update, time-averaged)");
   df.Endl();
