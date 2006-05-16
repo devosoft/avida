@@ -224,132 +224,6 @@ public:
 };
 
 
-///// print_data /////
-
-/**
- * Output user-defined data from the cStats object...
- *
- * Parameters:
- * filename (string)
- *   The name of the data file.
- * format
- *   A comma-seperated list of statistics to output.
- **/
-class cEvent_print_data : public cEvent {
-private:
-  cString filename;
-  cString format;
-public:
-  const cString GetName() const { return "print_data"; }
-  const cString GetDescription() const { return "print_data  <cString filename> <cString format>"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world; m_args = in_args; cString args(in_args);
-    filename = args.PopWord();
-    format = args.PopWord();
-  }
-  void Process() { m_world->GetStats().PrintDataFile(filename, format, ','); }
-};
-
-
-
-#define STATS_OUT_FILE(NAME, METHOD, DEFAULT)                                          /*  1 */ \
-class cEvent_ ## NAME : public cEvent {                                                /*  2 */ \
-private:                                                                               /*  3 */ \
-  cString fname;                                                                       /*  4 */ \
-public:                                                                                /*  5 */ \
-  const cString GetName() const { return #NAME; }                                      /*  6 */ \
-  const cString GetDescription() const { return #NAME " [cString fname=\"" #DEFAULT "\"]"; } /*  7 */ \
-  void Configure(cWorld* world, const cString& in_args)                                /*  8 */ \
-  {                                                                                    /*  9 */ \
-    m_world = world; m_args = in_args; cString args(in_args);                          /* 10 */ \
-    if (args == "") fname = #DEFAULT; else fname=args.PopWord();                       /* 11 */ \
-  }                                                                                    /* 12 */ \
-  void Process() { m_world->GetStats().METHOD(fname); }                                /* 13 */ \
-}                                                                                      /* 14 */ \
-
-STATS_OUT_FILE(print_average_data,        PrintAverageData,       average.dat         );
-STATS_OUT_FILE(print_error_data,          PrintErrorData,         error.dat           );
-STATS_OUT_FILE(print_variance_data,       PrintVarianceData,      variance.dat        );
-STATS_OUT_FILE(print_dominant_data,       PrintDominantData,      dominant.dat        );
-STATS_OUT_FILE(print_stats_data,          PrintStatsData,         stats.dat           );
-STATS_OUT_FILE(print_count_data,          PrintCountData,         count.dat           );
-STATS_OUT_FILE(print_totals_data,         PrintTotalsData,        totals.dat          );
-STATS_OUT_FILE(print_tasks_data,          PrintTasksData,         tasks.dat           );
-STATS_OUT_FILE(print_tasks_exe_data,      PrintTasksExeData,      tasks_exe.dat       );
-STATS_OUT_FILE(print_tasks_qual_data,     PrintTasksQualData,     tasks_quality.dat   );
-STATS_OUT_FILE(print_resource_data,       PrintResourceData,      resource.dat        );
-STATS_OUT_FILE(print_time_data,           PrintTimeData,          time.dat            );
-STATS_OUT_FILE(print_mutation_data,       PrintMutationData,      mutation.dat        );
-STATS_OUT_FILE(print_mutation_rate_data,  PrintMutationRateData,  mutation_rates.dat  );
-STATS_OUT_FILE(print_divide_mut_data,     PrintDivideMutData,     divide_mut.dat      );
-STATS_OUT_FILE(print_dom_parasite_data,   PrintDominantParaData,  parasite.dat        );
-STATS_OUT_FILE(print_instruction_data,    PrintInstructionData,   instruction.dat     );
-STATS_OUT_FILE(print_genotype_map,        PrintGenotypeMap,       genotype_map.m      );
-
-
-///// print_instruction_abundance_histogram /////
-
-/**
-*
- * Appends a line containing the bulk count (abundance) of
- * each instruction in the population onto a file.
- *
- * Parameters:
- * filename (string) default: "instruction_histogram.dat"
-   *
-   **/
-
-
-class cEvent_print_instruction_abundance_histogram : public cEvent {
-private:
-  cString filename;
-public:
-  const cString GetName() const { return "print_instruction_abundance_histogram"; }
-  const cString GetDescription() const { return "print_instruction_abundance_histogram  [cString filename=\"instruction_histogram.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") filename="instruction_histogram.dat"; else filename=args.PopWord();
-  }
-  ///// print_instruction_abundance_histogram /////
-  void Process(){
-    ofstream& fp = m_world->GetDataFileOFStream(filename);
-    cAnalyzeUtil::PrintInstructionAbundanceHistogram(m_world, fp);
-  }
-};
-
-///// print_depth_histogram /////
-
-/**
-**/
-
-
-class cEvent_print_depth_histogram : public cEvent {
-private:
-  cString filename;
-public:
-  const cString GetName() const { return "print_depth_histogram"; }
-  const cString GetDescription() const { return "print_depth_histogram  [cString filename=\"depth_histogram.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") filename="depth_histogram.dat"; else filename=args.PopWord();
-  }
-  ///// print_depth_histogram /////
-  void Process(){
-    ofstream& fp = m_world->GetDataFileOFStream(filename);
-    cAnalyzeUtil::PrintDepthHistogram(m_world, fp);
-  }
-};
-
 ///// print_genotype_abundance_histogram /////
 
 /**
@@ -638,6 +512,10 @@ public:
     m_world->GetPopulation().PrintPhenotypeStatus(fname);
   }
 };
+
+
+
+
 
 ///// save_population /////
 
@@ -3457,26 +3335,6 @@ cEventManager::cEventManager(cWorld* world) : m_world(world)
   REGISTER(exit_if_ave_lineage_label_smaller);
   REGISTER(exit_if_ave_lineage_label_larger);
   REGISTER(echo);
-  REGISTER(print_data);
-  REGISTER(print_average_data);
-  REGISTER(print_error_data);
-  REGISTER(print_variance_data);
-  REGISTER(print_dominant_data);
-  REGISTER(print_stats_data);
-  REGISTER(print_count_data);
-  REGISTER(print_totals_data);
-  REGISTER(print_tasks_data);
-  REGISTER(print_tasks_exe_data);
-  REGISTER(print_tasks_qual_data);
-  REGISTER(print_resource_data);
-  REGISTER(print_time_data);
-  REGISTER(print_mutation_data);
-  REGISTER(print_mutation_rate_data);
-  REGISTER(print_divide_mut_data);
-  REGISTER(print_dom_parasite_data);
-  REGISTER(print_instruction_data);
-  REGISTER(print_instruction_abundance_histogram);
-  REGISTER(print_depth_histogram);
   REGISTER(print_genotype_abundance_histogram);
   REGISTER(print_species_abundance_histogram);
   REGISTER(print_lineage_totals);
@@ -3484,7 +3342,6 @@ cEventManager::cEventManager(cWorld* world) : m_world(world)
   REGISTER(print_dom);
   REGISTER(parasite_debug);
   REGISTER(print_dom_parasite);
-  REGISTER(print_genotype_map);
   REGISTER(print_number_phenotypes);
   REGISTER(print_phenotype_status);
   REGISTER(save_population);
