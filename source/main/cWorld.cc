@@ -72,7 +72,6 @@ void cWorld::Setup()
     m_conf->DATA_DIR.Set(dir);
   }
   m_data_mgr = new cDataFileManager(dir);
-  cTools::MkDir(dir + "archive", true);
   
   m_class_mgr = new cClassificationManager(this);
   m_env = new cEnvironment(this);

@@ -7191,8 +7191,7 @@ void cAnalyze::CommandForRange(cString cur_string,
 
 ///////////////////  Private Methods ///////////////////////////
 
-cString cAnalyze::PopDirectory(cString & in_string,
-                               const cString & default_dir)
+cString cAnalyze::PopDirectory(cString& in_string, const cString& default_dir)
 {
   // Determing the directory name
   cString directory(default_dir);
@@ -7202,17 +7201,6 @@ cString cAnalyze::PopDirectory(cString & in_string,
   int last_pos = directory.GetSize() - 1;
   if (directory[last_pos] != '/' && directory[last_pos] != '\\') {
     directory += '/';
-  }
-  
-  // Make sure the directory exists.
-  FILE *fp = fopen (directory, "r");
-  if ( fp == 0 ) {
-    if ( errno == ENOENT ) {
-      cerr << "Directory '" << directory << "' does not exist.  Creating..." << endl;
-      if (mkdir(directory, (S_IRWXU|S_IRWXG|S_IRWXO)))
-        cerr << " Error creating '" << directory << "'" << endl;
-    }
-    else cerr << " Error opening '" << directory << "'" << endl;
   }
   
   return directory;

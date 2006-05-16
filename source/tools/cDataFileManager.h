@@ -37,8 +37,6 @@ private:
   cString m_target_dir;
   tDictionary<cDataFile*> m_datafiles;
 
-  cDataFile* InternalFind(const cString& name);
-
   cDataFileManager(const cDataFileManager&); // @not_implemented
   cDataFileManager& operator=(const cDataFileManager&); // @not_implemented
   
