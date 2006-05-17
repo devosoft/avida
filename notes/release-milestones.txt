@@ -54,6 +54,7 @@ Version 2.5 - development - Target: July 2006      - Status: Active Development
 * Consistency test support
 * Framework for unit testing
 * Move UnitTest functions from classes to namespaces
+- Update documentation
 
 
 Version 2.6 - stable      - Target: < Mid 2007     - Status: Pending version 2.5 completion
