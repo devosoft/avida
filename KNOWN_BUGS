@@ -1,7 +1,7 @@
 This file is used to keep track of known "bugs" in avida that are not
 important enough to fix, but that we do want to keep track of.
 
--- Genesis File Related --
+-- Configuration File Related --
 * The PARENT_MUT_RATE setting will cause the parent's genome to mutate when
   it gives birth, but currently it is not treated like a second child, so
   the genotype will not be changed, and in general it cannot act with many

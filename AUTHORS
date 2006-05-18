@@ -1,27 +1,79 @@
+The Avida Digital Life Platform
+--------------------------------------------------------------------------------
+
 This material was originally written and compiled by Charles Ofria from
-1993-2002 primarily at the California Institute of Technology and Michigan
-State University.
+1993-2002 primarily at the California Institute of Technology and Michigan State
+University.
 
-2005 - Present
-Starting with the 2.3 series, significant enhancements and features are being
-added, along vast portions of the code refactored.  David Michael Bryson,
-Charles Ofria, and Kaben Nanlohy are currently responsible for the changes.
+The following presents, in alphabetical order, a listing of many authors
+responsible for Avida's development.  A best effort has been made to include
+many of the contributors, however this list should in no way be interpreted as
+comprehensive.
 
-1999 - 2002
-The 2.0 release series contains many improvements over earlier releases.
-These improvements were written in 2000-2002 by Charles Ofria, Claus O. Wilke,
-and Kaben Nanlohy.
 
-1993 - 1998
-The core avida system was designed by Chris Adami, C. Titus Brown, and
-Charles Ofria in 1993-1998.  Portions of the design were supported by NSF
-grant #PHY91-15574, NSF grant #DEB-9981397, a Caltech divisional fellowship, 
-the 1993 Caltech SURF program, and the 1993 SUNY Stony Brook URECA program.
+Author  <email>
+  - Institution, Contributing Years
+--------------------------------------------------------------------------------
+Chris Adami
+  - California Institute of Technology 
 
-Portions of Avida have been implemented by: Charles Ofria, Claus O. Wilke,
-Kaben Nanlohy, Travis Collier, Dusan Misevic, Dennis Adler, and David Michael
-Bryson.
+Dennis Adler
+  - Microsoft
 
-This list is in no way comprehensive, many others have contributed various
-features.
+Brian Baer
+  - Michigan State University
 
+C. Titus Brown
+  - California Institute of Technology
+
+David Michael Bryson  <brysonda at msu.edu>
+  - Michigan State University, 2004 - present
+
+Jeff Clune
+  - Michigan State University
+
+Travis Collier
+  - California Institute of Technology
+
+Arthur Covert
+  - Michigan State University, 2004 - present
+
+Joshua Gerrish
+  - Michigan State University, 2005 - present
+
+Sherri Goings				
+  - Michigan State University
+
+Wei Huang
+  - Michigan State University, - 2005
+
+Dusan Misevic
+  - Michigan State University
+  - California Institute of Technology
+
+Kaben Nanlohy
+  - Michigan State University
+
+Charles Ofria
+  - Michigan State University, 1999 - present
+  - California Institute of Technology, 1993 - 1998
+
+Matthew Rupp
+  - Michigan State University
+
+Jason Stredwick
+  - Michigan State University, - 2006
+
+Claus O. Wilke
+  - California Institute of Technology
+
+Larry Wisne
+  - Stanford University
+
+
+Portions of the design were supported by NSF grant #PHY91-15574, NSF grant
+#DEB-9981397, a Caltech divisional fellowship, the 1993 Caltech SURF program,
+and the 1993 SUNY Stony Brook URECA program.
+
+
+Revised 2006-05-18 DMB
