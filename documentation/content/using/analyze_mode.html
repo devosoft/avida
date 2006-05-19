@@ -464,8 +464,30 @@ configuration file.
 </center>
 
 <p>
- Finally, if an ALIGN is run, one additional format is available:
- <b>alignment</b> (Aligned Sequence)
+If an ALIGN is run, one additional format is available:
+<p>
+<center>
+<table width=95%>
+<tr><td><b>alignment</b> (Aligned Sequence)
+</table>
+</center>
+    
+<p>
+Finally, there are a handful of commands that will automatically perform
+landscapping.  The landscape will only be run once per organism even when
+multiple output variables are used.
+<p>
+<center>
+<table width=95%>
+<tr><td><b>frac_dead</b> (Fraction of Lethal Mutations)</td>
+    <td><b>frac_neg</b> (Fraction of Harmful Mutations)</td></tr>
+<tr><td><b>frac_neut</b> (Fraction of Neutral Mutations)</td>
+    <td><b>frac_pos</b> (Fraction of Beneficial Mutations)</td></tr>
+<tr><td><b>complexity</b> (Physical Complexity of Organism)</td>
+    <td><b>land_fitness</b> (Average Mutation Fitness)</td></tr>
+</table>
+</center>
+
 
 
 <h3>Variables</h3>
