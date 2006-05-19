@@ -39,10 +39,11 @@ private:
   cRandomMT* m_rng_pool[MT_RANDOM_POOL_SIZE];
   pthread_mutex_t m_mutex;
   
-
+  cAnalyzeJobQueue(); // @not_implemented
   cAnalyzeJobQueue(const cAnalyzeJobQueue&); // @not_implemented
   cAnalyzeJobQueue& operator=(const cAnalyzeJobQueue&); // @not_implemented
   
+
 public:
   cAnalyzeJobQueue(cWorld* world);
   ~cAnalyzeJobQueue();

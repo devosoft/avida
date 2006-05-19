@@ -34,29 +34,33 @@ private:
   int m_trials;
   int m_min_found;
   int m_max_trials;
-  tArray<int> m_depths;
-  tList<cLandscape> m_batches[10];
+  int m_max_dist;
   
 public:
   cActionAnalyzeLandscape(cWorld* world, const cString& args)
-    : cAction(world, args), m_filename("land-analyze.dat"), m_trials(1000), m_min_found(0), m_max_trials(0)
+    : cAction(world, args), m_filename("land-analyze.dat"), m_trials(1000), m_min_found(0), m_max_trials(0), m_max_dist(10)
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
     if (largs.GetSize()) m_trials = largs.PopWord().AsInt();
     if (largs.GetSize()) m_min_found = largs.PopWord().AsInt();
     if (largs.GetSize()) m_max_trials = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_max_dist = largs.PopWord().AsInt();
+    if (m_max_dist <= 0) m_max_dist = 10;
   }
   
   const cString GetDescription()
   {
-    return "AnalyzeLandscape [filename='land-analyze.dat'] [int trials=1000] [int min_found=0] [int max_trials=0]";
+    return "AnalyzeLandscape [filename='land-analyze.dat'] [int trials=1000] [int min_found=0] [int max_trials=0] [int max_dist=10]";
   }
   
   void Process(cAvidaContext& ctx)
   {
     int update = -1;
     cLandscape* land = NULL;
+    tArray<tList<cLandscape> > batches(m_max_dist);
+    tArray<int> depths;
+    
     
     if (ctx.GetAnalyzeMode()) {
       if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
@@ -70,16 +74,16 @@ public:
       cAnalyzeGenotype* genotype = NULL;
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       while (genotype = batch_it.Next()) {
-        LoadGenome(genotype->GetGenome());
-        m_depths.Push(genotype->GetDepth());
+        LoadGenome(batches, genotype->GetGenome());
+        depths.Push(genotype->GetDepth());
       }
     } else {
       if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
         m_world->GetDriver().NotifyComment("Performing landscape analysis...");
 
       cGenotype* genotype = m_world->GetClassificationManager().GetBestGenotype();
-      LoadGenome(genotype->GetGenome());
-      m_depths.Push(genotype->GetDepth());
+      LoadGenome(batches, genotype->GetGenome());
+      depths.Push(genotype->GetDepth());
       update = m_world->GetStats().GetUpdate();
     }
     
@@ -87,12 +91,12 @@ public:
 
     cDataFile& outfile = m_world->GetDataFile(m_filename);
     outfile.WriteComment("Landscape analysis.  Distance results are grouped by update/depth.");
-    for (int i = 0; i < m_depths.GetSize(); i++) {
-      for (int dist = 1; dist <= 10; dist++) {
-        land = m_batches[dist - 1].Pop();
+    for (int i = 0; i < depths.GetSize(); i++) {
+      for (int dist = 1; dist <= batches.GetSize(); dist++) {
+        land = batches[dist - 1].Pop();
 
         outfile.Write(update, "update");
-        outfile.Write(m_depths[i], "tree depth");
+        outfile.Write(depths[i], "tree depth");
         outfile.Write(dist, "distance");
         outfile.Write(land->GetProbDead(), "fractional mutations lethal");
         outfile.Write(land->GetProbNeg(), "fractional mutations detrimental");
@@ -110,16 +114,16 @@ public:
   }
   
 private:
-  void LoadGenome(const cGenome& genome)
+  void LoadGenome(tArray<tList<cLandscape> >& batches, const cGenome& genome)
   {
     cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();
     cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
 
-    for (int dist = 10; dist >= 1; dist--) {
+    for (int dist = batches.GetSize(); dist >= 1; dist--) {
       cLandscape* land = new cLandscape(m_world, genome, inst_set);
       land->SetDistance(dist);
       land->SetTrials(m_trials);
-      m_batches[dist - 1].PushRear(land);
+      batches[dist - 1].PushRear(land);
       if (dist == 1) {
         jobqueue.AddJob(new tAnalyzeJob<cLandscape>(land, &cLandscape::Process));        
       } else {

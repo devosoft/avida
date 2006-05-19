@@ -7038,7 +7038,6 @@ void cAnalyze::FunctionCreate(cString cur_string,
   }
   
   cString fun_name = cur_string.PopWord();
-  fun_name.ToUpper();
   
   if (FindAnalyzeCommandDef(fun_name) != NULL) {
     cerr << "Error: Cannot create function '" << fun_name
@@ -7275,7 +7274,6 @@ void cAnalyze::LoadCommandList(cInitFile & init_file,
   while (init_file.GetLineNum() < init_file.GetNumLines()) {
     cString cur_string = init_file.GetNextLine();
     cString command = cur_string.PopWord();
-    command.ToUpper();
     
     cAnalyzeCommand* cur_command;
     cAnalyzeCommandDefBase* command_def = FindAnalyzeCommandDef(command);
@@ -7311,10 +7309,10 @@ void cAnalyze::InteractiveLoadCommandList(tList<cAnalyzeCommand> & clist)
     cin.getline(text_input, 2048);
     cString cur_input(text_input);
     cString command = cur_input.PopWord();
-    command.ToUpper();
     
     cAnalyzeCommand * cur_command;
     cAnalyzeCommandDefBase * command_def = FindAnalyzeCommandDef(command);
+
     if (command == "END") {
       // We are done with this section of code; break out...
       break;
@@ -7766,9 +7764,10 @@ cAnalyzeCommandDefBase* cAnalyze::FindAnalyzeCommandDef(const cString& name)
 {
   SetupCommandDefLibrary();
   
+  cString uppername(name);
   tListIterator<cAnalyzeCommandDefBase> lib_it(command_lib);
   while (lib_it.Next() != (void *) NULL) {
-    if (lib_it.Get()->GetName() == name) break;
+    if (lib_it.Get()->GetName() == uppername) break;
   }
   cAnalyzeCommandDefBase* command_def = lib_it.Get();
   
@@ -7794,7 +7793,6 @@ void cAnalyze::RunInteractive()
     cin.getline(text_input, 2048);
     cString cur_input(text_input);
     cString command = cur_input.PopWord();
-    command.ToUpper();
     
     cAnalyzeCommand * cur_command;
     cAnalyzeCommandDefBase * command_def = FindAnalyzeCommandDef(command);

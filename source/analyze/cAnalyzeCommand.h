@@ -19,22 +19,27 @@
 
 template <class T> class tList;
 
-class cAnalyzeCommand {
+class cAnalyzeCommand
+{
 protected:
-  cString command;
-  cString args;
+  cString m_command;
+  cString m_args;
+
+
 private:
-  // disabled copy constructor.
-  cAnalyzeCommand(const cAnalyzeCommand &);
+  cAnalyzeCommand(); // @not_implemented
+  cAnalyzeCommand(const cAnalyzeCommand&); // @not_implemented
+  cAnalyzeCommand& operator=(const cAnalyzeCommand&); // @not_implemented
+
+
 public:
-  cAnalyzeCommand(const cString & _command, const cString & _args)
-    : command(_command), args(_args) { command.ToUpper(); }
+  cAnalyzeCommand(const cString& command, const cString& args) : m_command(command), m_args(args) { ; }
   virtual ~cAnalyzeCommand() { ; }
 
-  const cString & GetCommand() { return command; }
-  const cString & GetArgs() const { return args; }
-  cString GetArgs() { return args; }
-  virtual tList<cAnalyzeCommand> * GetCommandList() { return NULL; }
+  const cString& GetCommand() { return m_command; }
+  const cString& GetArgs() const { return m_args; }
+  cString GetArgs() { return m_args; }
+  virtual tList<cAnalyzeCommand>* GetCommandList() { return NULL; }
 
   /*
   added to satisfy Boost.Python; the semantics are fairly useless --
