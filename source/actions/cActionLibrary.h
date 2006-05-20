@@ -24,7 +24,10 @@ class cActionLibrary : public tObjectFactory<cAction* (cWorld*, const cString&)>
 {
 public:
   cActionLibrary() { ; }
+
+  static cActionLibrary* ConstructDefaultActionLibrary();
 };
+
 
 #ifdef ENABLE_UNIT_TESTS
 namespace nActionLibrary {

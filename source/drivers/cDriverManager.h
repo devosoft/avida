@@ -16,6 +16,7 @@
 
 #include <pthread.h>
 
+class cActionLibrary;
 class cAvidaDriver;
 class cWorldDriver;
 
@@ -29,8 +30,9 @@ private:
   tList<cWorldDriver> m_wdrvs;
   
   pthread_mutex_t m_mutex;
+  cActionLibrary* m_actlib;
   
-  cDriverManager() { pthread_mutex_init(&m_mutex, NULL); }
+  cDriverManager();
   ~cDriverManager();
 
   cDriverManager(const cDriverManager&); // @not_implemented
@@ -46,6 +48,8 @@ public:
 
   static void Unregister(cAvidaDriver* drv);
   static void Unregister(cWorldDriver* drv);
+  
+  static cActionLibrary* GetActionLibrary();
 };
 
 

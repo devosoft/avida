@@ -188,334 +188,6 @@ public:
   }
 };
 
-///// echo /////
-
-/**
-* Writes out a message. If no message is given, average update and
- * generation are written out.
- *
- * Parameters:
- * message (string)
- **/
-
-
-class cEvent_echo : public cEvent {
-private:
-  cString mesg;
-public:
-  const cString GetName() const { return "echo"; }
-  const cString GetDescription() const { return "echo  <cString mesg>"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    mesg = args.PopWord();
-  }
-  ///// echo /////
-  void Process(){
-    if( mesg == "" ){
-      mesg.Set("Echo : Update = %f\t AveGeneration = %f",
-               m_world->GetStats().GetUpdate(), m_world->GetStats().SumGeneration().Average());
-    }
-    m_world->GetDriver().NotifyComment(mesg);
-  }
-};
-
-
-///// print_genotype_abundance_histogram /////
-
-/**
-* Writes out a genotype abundance histogram.
- *
- * Parameters:
- * filename (string) default: genotype_abundance_histogram.dat
-   *   The name of the file into which the histogram is written.
-   **/
-
-
-class cEvent_print_genotype_abundance_histogram : public cEvent {
-private:
-  cString filename;
-public:
-  const cString GetName() const { return "print_genotype_abundance_histogram"; }
-  const cString GetDescription() const { return "print_genotype_abundance_histogram  [cString filename=\"genotype_abundance_histogram.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") filename="genotype_abundance_histogram.dat"; else filename=args.PopWord();
-  }
-  ///// print_genotype_abundance_histogram /////
-  void Process(){
-    ofstream& fp = m_world->GetDataFileOFStream(filename);
-    cAnalyzeUtil::PrintGenotypeAbundanceHistogram(m_world, fp);
-  }
-};
-
-///// print_species_abundance_histogram /////
-
-/**
-* Writes out a species abundance histogram.
- *
- * Parameters:
- * filename (string) default: species_abundance_histogram.dat
-   *   The name of the file into which the histogram is written.
-   **/
-
-
-class cEvent_print_species_abundance_histogram : public cEvent {
-private:
-  cString filename;
-public:
-  const cString GetName() const { return "print_species_abundance_histogram"; }
-  const cString GetDescription() const { return "print_species_abundance_histogram  [cString filename=\"species_abundance_histogram.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") filename="species_abundance_histogram.dat"; else filename=args.PopWord();
-  }
-  ///// print_species_abundance_histogram /////
-  void Process(){
-    ofstream& fp = m_world->GetDataFileOFStream(filename);
-    cAnalyzeUtil::PrintSpeciesAbundanceHistogram(m_world, fp);
-  }
-};
-
-///// print_lineage_totals /////
-
-/**
-**/
-
-
-class cEvent_print_lineage_totals : public cEvent {
-private:
-  cString fname;
-  int verbose;
-public:
-    const cString GetName() const { return "print_lineage_totals"; }
-  const cString GetDescription() const { return "print_lineage_totals  [cString fname=\"lineage_totals.dat\"] [int verbose=1]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") fname="lineage_totals.dat"; else fname=args.PopWord();
-    if (args == "") verbose=1; else verbose=args.PopWord().AsInt();
-  }
-  ///// print_lineage_totals /////
-  void Process(){
-    if (!m_world->GetConfig().LOG_LINEAGES.Get()) {
-      m_world->GetDataFileOFStream(fname) << "No lineage data available!" << endl;
-      return;
-    }
-    m_world->GetClassificationManager().PrintLineageTotals(fname, verbose);
-  }
-};
-
-///// print_lineage_counts /////
-
-/**
-**/
-
-
-class cEvent_print_lineage_counts : public cEvent {
-private:
-  cString fname;
-  int verbose;
-public:
-    const cString GetName() const { return "print_lineage_counts"; }
-  const cString GetDescription() const { return "print_lineage_counts  [cString fname=\"lineage_counts.dat\"] [int verbose=0]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") fname="lineage_counts.dat"; else fname=args.PopWord();
-    if (args == "") verbose=0; else verbose=args.PopWord().AsInt();
-  }
-  ///// print_lineage_counts /////
-  void Process(){
-    if (!m_world->GetConfig().LOG_LINEAGES.Get()) {
-      m_world->GetDataFileOFStream(fname) << "No lineage data available!" << endl;
-      return;
-    }
-    if (verbose) {    // verbose mode is the same in both methods
-      m_world->GetClassificationManager().PrintLineageTotals(fname, verbose);
-      return;
-    }
-    m_world->GetClassificationManager().PrintLineageCurCounts(fname);
-  }
-};
-
-///// print_dom /////
-
-/**
-* Write the currently dominant genotype to disk.
- *
- * Parameters:
- * filename (string)
- *   The name under which the genotype should be saved. If no
- *   filename is given, the genotype is saved into the directory
- *   archive, under the name that the archive has associated with
- *   this genotype.
- **/
-
-
-class cEvent_print_dom : public cEvent {
-private:
-  cString in_filename;
-public:
-  const cString GetName() const { return "print_dom"; }
-  const cString GetDescription() const { return "print_dom  [cString in_filename=\"\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") in_filename=""; else in_filename=args.PopWord();
-  }
-  ///// print_dom /////
-  void Process(){
-    cGenotype * dom = m_world->GetClassificationManager().GetBestGenotype();
-    cString filename(in_filename);
-    if (filename == "") filename.Set("archive/%s", static_cast<const char*>(dom->GetName()));
-    cTestUtil::PrintGenome(m_world, dom->GetGenome(), filename, dom, m_world->GetStats().GetUpdate());
-  }
-};
-
-///// parasite_debug /////
-
-//midget
-
-
-class cEvent_parasite_debug : public cEvent {
-private:
-  cString in_filename;
-public:
-  const cString GetName() const { return "parasite_debug"; }
-  const cString GetDescription() const { return "parasite_debug  [cString in_filename=\"\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") in_filename=""; else in_filename=args.PopWord();
-  }
-  ///// parasite_debug /////
-  void Process(){
-    m_world->GetPopulation().ParasiteDebug();
-  }
-};
-
-///// print_dom_parasite /////
-
-/**
-* Write the currently dominant injected genotype to disk.
- *
- * Parameters:
- * filename (string)
- *   The name under which the genotype should be saved. If no
- *   filename is given, the genotype is saved into the directory
- *   archive, under the name that the archive has associated with
- *   this genotype.
- **/
-
-
-class cEvent_print_dom_parasite : public cEvent {
-private:
-  cString in_filename;
-public:
-  const cString GetName() const { return "print_dom_parasite"; }
-  const cString GetDescription() const { return "print_dom_parasite  [cString in_filename=\"\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") in_filename=""; else in_filename=args.PopWord();
-  }
-  ///// print_dom_parasite /////
-  void Process(){
-    cInjectGenotype * dom = m_world->GetClassificationManager().GetBestInjectGenotype();
-    if (dom!=NULL) {
-      cString filename(in_filename);
-      if (filename == "") filename.Set("archive/%s", static_cast<const char*>(dom->GetName()));
-      cTestUtil::PrintGenome(m_world, dom, dom->GetGenome(), filename, m_world->GetStats().GetUpdate()); }
-  }
-};
-
-///// print_number_phenotypes /////
-
-/**
-Output file with number of phenotypes based on tasks executed
- for this update.  Executing a task any numbers of times is considered
- the same as executing it once.
- **/
-
-
-class cEvent_print_number_phenotypes : public cEvent {
-private:
-  cString fname;
-public:
-  const cString GetName() const { return "print_number_phenotypes"; }
-  const cString GetDescription() const { return "print_number_phenotypes  [cString fname=\"phenotype_count.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") fname="phenotype_count.dat"; else fname=args.PopWord();
-  }
-  ///// print_number_phenotypes /////
-  void Process(){
-    m_world->GetPopulation().PrintPhenotypeData(fname);
-  }
-};
-
-///// print_phenotype_status /////
-
-/**
-Prints merit status for all the organisms in the population.
- Used for testing/debuging. 
- **/
-
-
-class cEvent_print_phenotype_status : public cEvent {
-private:
-  cString fname;
-public:
-  const cString GetName() const { return "print_phenotype_status"; }
-  const cString GetDescription() const { return "print_phenotype_status  [cString fname=\"phenotype_status.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") fname="phenotype_status.dat"; else fname=args.PopWord();
-  }
-  ///// print_phenotype_status /////
-  void Process(){
-    m_world->GetPopulation().PrintPhenotypeStatus(fname);
-  }
-};
-
-
-
-
 
 ///// save_population /////
 
@@ -3334,22 +3006,14 @@ cEventManager::cEventManager(cWorld* world) : m_world(world)
   REGISTER(exit_if_update_greater_than);
   REGISTER(exit_if_ave_lineage_label_smaller);
   REGISTER(exit_if_ave_lineage_label_larger);
-  REGISTER(echo);
-  REGISTER(print_genotype_abundance_histogram);
-  REGISTER(print_species_abundance_histogram);
-  REGISTER(print_lineage_totals);
-  REGISTER(print_lineage_counts);
-  REGISTER(print_dom);
-  REGISTER(parasite_debug);
-  REGISTER(print_dom_parasite);
-  REGISTER(print_number_phenotypes);
-  REGISTER(print_phenotype_status);
+  
   REGISTER(save_population);
   REGISTER(load_population);
   REGISTER(save_clone);
   REGISTER(load_clone);
   REGISTER(load_dump_file);
   REGISTER(dump_pop);
+  
   REGISTER(print_genotypes);
   REGISTER(detail_pop);
   REGISTER(detail_sex_pop);
@@ -3357,6 +3021,7 @@ cEventManager::cEventManager(cWorld* world) : m_world(world)
   REGISTER(dump_historic_pop);
   REGISTER(dump_historic_sex_pop);
   REGISTER(dump_memory);
+  
   REGISTER(inject);
   REGISTER(inject_all);
   REGISTER(inject_range);
@@ -3376,11 +3041,13 @@ cEventManager::cEventManager(cWorld* world) : m_world(world)
   REGISTER(pairtest_landscape);
   REGISTER(test_dom);
   REGISTER(analyze_population);
+
   REGISTER(print_detailed_fitness_data);
   REGISTER(print_genetic_distance_data);
   REGISTER(genetic_distance_pop_dump);
   REGISTER(task_snapshot);
   REGISTER(print_viable_tasks_data);
+  
   REGISTER(apocalypse);
   REGISTER(kill_rectangle);
   REGISTER(rate_kill);
@@ -3392,6 +3059,7 @@ cEventManager::cEventManager(cWorld* world) : m_world(world)
   REGISTER(reset_demes);
   REGISTER(print_deme_stats);
   REGISTER(copy_deme);
+  
   REGISTER(calc_consensus);
   REGISTER(test_size_change_robustness);
   REGISTER(test_threads);

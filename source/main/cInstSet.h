@@ -78,11 +78,11 @@ public:
   bool OK() const;
 
   // Accessors
-  const cString & GetName(int id) const
+  const cString& GetName(int id) const
   { 
     return m_inst_lib->GetName(m_lib_name_map[id].lib_fun_id);
   }
-  const cString & GetName(const cInstruction & inst) const
+  const cString& GetName(const cInstruction & inst) const
   {
     return GetName(inst.GetOp());
   }

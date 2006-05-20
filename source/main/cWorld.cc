@@ -10,7 +10,6 @@
 #include "cWorld.h"
 
 #include "avida.h"
-#include "cActionLibrary.h"
 #include "cAnalyze.h"
 #include "cAvidaTriggers.h"
 #include "cClassificationManager.h"
@@ -25,15 +24,12 @@
 #include "cTools.h"
 #include "cFallbackWorldDriver.h"
 
-#include "LandscapeActions.h"
-#include "PrintActions.h"
-
 
 cWorld::~cWorld()
 {
   m_data_mgr->FlushAll();
 
-  delete m_actlib;
+  // m_actlib is not owned by cWorld, DO NOT DELETE
   delete m_analyze;
   delete m_conf;
   delete m_data_mgr;
@@ -60,9 +56,7 @@ void cWorld::Setup()
   if (rand_seed != m_rng.GetSeed()) cout << " -> " << m_rng.GetSeed();
   cout << endl;
   
-  m_actlib = new cActionLibrary();
-  RegisterLandscapeActions(m_actlib);
-  RegisterPrintActions(m_actlib);
+  m_actlib = cDriverManager::GetActionLibrary();
   
   // The data directory should end in a '/'
   cString dir = m_conf->DATA_DIR.Get();

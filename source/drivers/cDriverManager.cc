@@ -9,6 +9,7 @@
 
 #include "cDriverManager.h"
 
+#include "cActionLibrary.h"
 #include "cAvidaDriver.h"
 #include "cWorldDriver.h"
 
@@ -17,6 +18,12 @@
 
 
 cDriverManager* cDriverManager::m_dm = NULL;
+
+cDriverManager::cDriverManager()
+{
+  pthread_mutex_init(&m_mutex, NULL);
+  m_actlib = cActionLibrary::ConstructDefaultActionLibrary();
+}
 
 cDriverManager::~cDriverManager()
 {
@@ -29,6 +36,8 @@ cDriverManager::~cDriverManager()
   while (wdrv = m_wdrvs.Pop()) {
     delete wdrv;
   }
+  
+  delete m_actlib;
   
   pthread_mutex_destroy(&m_mutex);
 }
@@ -81,3 +90,8 @@ void cDriverManager::Unregister(cWorldDriver* drv)
   pthread_mutex_unlock(&m_dm->m_mutex);
 }
 
+cActionLibrary* cDriverManager::GetActionLibrary()
+{
+  assert(m_dm);
+  return m_dm->m_actlib;
+}

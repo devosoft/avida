@@ -61,14 +61,6 @@ public:
   static void TaskGrid(cWorld* world, std::ofstream& fp);
   static void PrintViableTasksData(cWorld* world, std::ofstream& fp);
   static void PrintTreeDepths(cWorld* world, std::ofstream& fp);
-
-  static void PrintDepthHistogram(cWorld* world, std::ofstream& fp);
-  static void PrintGenotypeAbundanceHistogram(cWorld* world, std::ofstream& fp);
-  static void PrintSpeciesAbundanceHistogram(cWorld* world, std::ofstream& fp);
-
-  // this adds support for evan dorn's InstructionHistogramEvent.  -- kgn
-  static void PrintInstructionAbundanceHistogram(cWorld* world, std::ofstream& fp);
-  // -- kgn
 };
 
 #ifdef ENABLE_UNIT_TESTS
