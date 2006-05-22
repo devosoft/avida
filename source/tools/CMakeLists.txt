@@ -1,5 +1,4 @@
 SET(libtools_a_SOURCES
-  #cBlockStruct.cc
   cChangeList.cc
   cConstSchedule.cc
   cDataEntry.cc
@@ -9,7 +8,6 @@ SET(libtools_a_SOURCES
   cDefaultMessageDisplay.cc
   cDoubleSum.cc
   cFile.cc
-  #cFixedBlock.cc
   cFixedCoords.cc
   cHelpAlias.cc
   cHelpManager.cc
@@ -34,14 +32,12 @@ SET(libtools_a_SOURCES
   cTools.cc
   cWeightedIndex.cc
   cCycleCheck.cc
-  nTemplateTests.cc
 )
+
+IF(AVD_SERIALIZATION)
+  SET(libtools_a_SOURCES ${libtools_a_SOURCES} nTemplateTests.cc)
+ENDIF(AVD_SERIALIZATION)
 
 INCLUDE_DIRECTORIES(${ALL_INC_DIRS})
 
 ADD_LIBRARY(tools ${libtools_a_SOURCES})
-
-IF(BUILD_TESTING)
-  #SUBDIRS(tests)
-ENDIF(BUILD_TESTING)
-

@@ -18,9 +18,11 @@ IF(AVD_ENABLE_TCMALLOC)
   )
 ENDIF(AVD_ENABLE_TCMALLOC)
 
-SET(avida_target_link_libs
-  ${avida_target_link_libs} archive boost_serialization
-)
+IF(AVD_SERIALIZATION)
+  SET(avida_target_link_libs
+    ${avida_target_link_libs} archive boost_serialization
+  )
+ENDIF(AVD_SERIALIZATION)
 
 SET(avida_target_link_libs
   ${avida_target_link_libs} main

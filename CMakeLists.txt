@@ -38,6 +38,15 @@ ELSE(UNIX)
   SET(AVD_ENABLE_TCMALLOC FALSE)
 ENDIF(UNIX)
 
+IF(EXISTS ${PROJECT_SOURCE_DIR}/source/archive)
+  OPTION(AVD_SERIALIZATION
+    "Enable boost serialization support"
+    OFF
+  )
+ELSE(EXISTS ${PROJECT_SOURCE_DIR}/source/archive)
+  SET(AVD_SERIALIZATION FALSE)
+ENDIF(EXISTS ${PROJECT_SOURCE_DIR}/source/archive)
+
 # Experimental Boost.Python interface to avida is disabled by default.
 OPTION(AVD_PY_BINDINGS
   "Enable Python interface to Avida. (EXPERIMENTAL)"
@@ -116,7 +125,6 @@ IF(AVD_PRIMITIVE)
 				"Where can the Avida executable 'avida' be found ?"
 				FORCE
 			)
-			SET(BUILD_TESTING TRUE)
 			ENABLE_TESTING()
 			SET(AVD_CONSISTENCY_CHECK_PRIMITIVE
 				ON CACHE INTERNAL
@@ -125,7 +133,7 @@ IF(AVD_PRIMITIVE)
 			)
 		ELSE(EXISTS ${PROJECT_SOURCE_DIR}/consistencytests)
 			MESSAGE(SEND_ERROR
-				"The option AVD_CONSISTENCY_TEST_PRIMITIVE is enabled but I can't find the consistency test suites. They should be in the subdirectory ${PROJECT_SOURCE_DIR}/consistencytests; if you want to enable AVD_CONSISTENCY_TEST_PRIMITIVE, cd into ${PROJECT_SOURCE_DIR} and then check-out the 'consistencytests' project from cvs on rodan (ask kaben for help if you need it)."
+				"The option AVD_CONSISTENCY_TEST_PRIMITIVE is enabled but I can't find the consistency test suites. They should be in the subdirectory ${PROJECT_SOURCE_DIR}/consistencytests"
 			)
 		ENDIF(EXISTS ${PROJECT_SOURCE_DIR}/consistencytests)
 		IF(AVD_CONSISTENCY_CHECK_PRIMITIVE)
@@ -152,7 +160,7 @@ OPTION(AVD_UNIT_TESTS
 )
 IF(AVD_UNIT_TESTS)
   SET(UNIT_TESTS TRUE)
-  SET(BUILD_TESTING TRUE)
+  INCLUDE (${CMAKE_ROOT}/Modules/Dart.cmake)
   ADD_DEFINITIONS(-DENABLE_UNIT_TESTS)
   ADD_DEFINITIONS(-DUSE_tMemTrack=1)
   ENABLE_TESTING()
@@ -160,10 +168,6 @@ ELSE(AVD_UNIT_TESTS)
   REMOVE_DEFINITIONS(_DENABLE_UNIT_TESTS)
   REMOVE_DEFINITIONS(-DUSE_tMemTrack=1)
 ENDIF(AVD_UNIT_TESTS)
-
-IF(BUILD_TESTING)
-  INCLUDE (${CMAKE_ROOT}/Modules/Dart.cmake)
-ENDIF(BUILD_TESTING)
 
 IF(MSVC)
   INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/source/platform/win32-pthread)

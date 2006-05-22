@@ -1,4 +1,6 @@
-SUBDIRS(boost/serialization)
+IF(AVD_SERIALIZATION)
+  SUBDIRS(boost/serialization)
+ENDIF(AVD_SERIALIZATION)
 
 IF(AVD_GUI_NCURSES)
   SUBDIRS(trio)
