@@ -3,7 +3,10 @@ Import('environment')
 
 tools_library = environment.Library('actions',
   [
+    'cActionLibrary.cc',
     'LandscapeActions.cc',
+    'PrintActions.cc',
+    'SaveLoadActions.cc',
   ],
 )
 
