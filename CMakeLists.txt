@@ -289,10 +289,13 @@ SET(CMAKE_SKIP_RPATH TRUE CACHE INTERNAL "Fix Library Path Issues?")
 
 # Default build mode compiles c++ and c code with debug info and no
 # optimizations.
-SET(CMAKE_BUILD_TYPE
-  "Release"
-  CACHE STRING
-  "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel."
-)
+IF(NOT CMAKE_BUILD_TYPE)
+  SET(CMAKE_BUILD_TYPE
+    Release
+    CACHE STRING
+    "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel."
+    FORCE
+  )
+ENDIF(NOT CMAKE_BUILD_TYPE)
 
 
