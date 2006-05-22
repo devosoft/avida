@@ -59,14 +59,6 @@ void cPopulationInterface::Rotate(int direction)
   else cell.ConnectionList().CircPrev();
 }
 
-double cPopulationInterface::TestFitness()
-{
-  cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
-  assert(cell.IsOccupied());
-  
-  return cell.GetOrganism()->GetGenotype()->GetTestFitness();
-}
-
 int cPopulationInterface::GetInput()
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
@@ -193,3 +185,7 @@ bool cPopulationInterface::UpdateMerit(double new_merit)
   return m_world->GetPopulation().UpdateMerit(m_cell_id, new_merit);
 }
 
+bool cPopulationInterface::TestOnDivide()
+{
+  return m_world->GetTestOnDivide();
+}

@@ -15,7 +15,6 @@
 #include "cGenomeUtil.h"
 #include "cHardwareManager.h"
 #include "cMerit.h"
-#include "cOrganism.h"
 #include "cPhenotype.h"
 #include "cTestCPU.h"
 #include "cTools.h"
@@ -197,7 +196,7 @@ void cGenotype::CalcTestStats() const
   delete testcpu;
 
   // Setup all possible test values.
-  cPhenotype & phenotype = test_info.GetTestOrganism()->GetPhenotype();
+  cPhenotype & phenotype = test_info.GetTestPhenotype();
   test_data.fitness = test_info.GetGenotypeFitness();
   test_data.merit = phenotype.GetMerit().GetDouble();
   test_data.gestation_time = phenotype.GetGestationTime();

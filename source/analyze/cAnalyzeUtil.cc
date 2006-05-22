@@ -471,14 +471,14 @@ void cAnalyzeUtil::PrintDetailedFitnessData(cWorld* world, cString& datafn,
     // We calculate the fitness based on the current merit,
     // but with the true gestation time. Also, we set the fitness
     // to zero if the creature is not viable.
-    const double f = ( test_info.IsViable() ) ? organism->GetPhenotype().GetMerit().CalcFitness(test_info.GetTestOrganism()->GetPhenotype().GetGestationTime()) : 0;
+    const double f = ( test_info.IsViable() ) ? organism->GetPhenotype().GetMerit().CalcFitness(test_info.GetTestPhenotype().GetGestationTime()) : 0;
     const double f_testCPU = test_info.GetColonyFitness();
     
     // Get the maximum fitness in the population
     // Here, we want to count only organisms that can truly replicate,
     // to avoid complications
     if ( f_testCPU > max_fitness &&
-         test_info.GetTestOrganism()->GetPhenotype().CopyTrue() ){
+         test_info.GetTestPhenotype().CopyTrue() ){
       max_fitness = f_testCPU;
       max_f_genotype = genotype;
     }
@@ -688,7 +688,7 @@ void cAnalyzeUtil::TaskSnapshot(cWorld* world, ofstream& fp)
     // create a test-cpu for the current creature
     cCPUTestInfo test_info;
     testcpu->TestGenome(ctx, test_info, organism->GetGenome());
-    cPhenotype & test_phenotype = test_info.GetTestOrganism()->GetPhenotype();
+    cPhenotype & test_phenotype = test_info.GetTestPhenotype();
     cPhenotype & phenotype = organism->GetPhenotype();
     
     int num_tasks = world->GetEnvironment().GetTaskLib().GetSize();
@@ -746,7 +746,7 @@ void cAnalyzeUtil::TaskGrid(cWorld* world, ofstream& fp)
         cOrganism * organism = pop->GetCell(cell_num).GetOrganism();
         cCPUTestInfo test_info;
         testcpu->TestGenome(ctx, test_info, organism->GetGenome());
-        cPhenotype & test_phenotype = test_info.GetTestOrganism()->GetPhenotype();
+        cPhenotype& test_phenotype = test_info.GetTestPhenotype();
         int num_tasks = world->GetEnvironment().GetTaskLib().GetSize();   
         for (int k = 0; k < num_tasks; k++) {
           if (test_phenotype.GetLastTaskCount()[k]>0) {

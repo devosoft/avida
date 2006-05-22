@@ -16,6 +16,7 @@
 #include "functions.h"
 #include "cGenome.h"
 #include "cGenomeUtil.h"
+#include "cGenotype.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cInjectGenotype.h"
@@ -101,7 +102,7 @@ void cOrganism::SetOrgInterface(cOrgInterface* interface)
 double cOrganism::GetTestFitness()
 {
   assert(m_interface);
-  return m_interface->TestFitness();
+  return genotype->GetTestFitness();
 }
   
 int cOrganism::ReceiveValue()
@@ -387,7 +388,7 @@ double cOrganism::CalcMeritRatio()
 }
 
 
-bool cOrganism::GetTestOnDivide() const { return m_world->GetTestOnDivide();}
+bool cOrganism::GetTestOnDivide() const { return m_interface->TestOnDivide();}
 bool cOrganism::GetFailImplicit() const { return m_world->GetConfig().FAIL_IMPLICIT.Get(); }
 
 bool cOrganism::GetRevertFatal() const { return m_world->GetConfig().REVERT_FATAL.Get(); }

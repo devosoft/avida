@@ -37,7 +37,6 @@ public:
   virtual int GetNumNeighbors() = 0;
   virtual void Rotate(int direction = 1) = 0;
   virtual void Breakpoint() = 0;
-  virtual double TestFitness() = 0;
   virtual int GetInput() = 0;
   virtual int GetInputAt(int& input_pointer) = 0;
   virtual int Debug() = 0;
@@ -51,6 +50,7 @@ public:
   virtual int ReceiveValue() = 0;
   virtual bool InjectParasite(cOrganism* parent, const cGenome& injected_code) = 0;
   virtual bool UpdateMerit(double new_merit) = 0;
+  virtual bool TestOnDivide() = 0;
 };
 
 #endif

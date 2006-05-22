@@ -37,7 +37,6 @@ public:
   int GetNumNeighbors();
   void Rotate(int direction = 1);
   void Breakpoint() { ; }
-  double TestFitness();
   int GetInput();
   int GetInputAt(int& input_pointer);
   int Debug();
@@ -51,6 +50,7 @@ public:
   int ReceiveValue();
   bool InjectParasite(cOrganism* parent, const cGenome& injected_code);
   bool UpdateMerit(double new_merit);
+  bool TestOnDivide() { return false; }
 };
 
 

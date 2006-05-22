@@ -23,6 +23,7 @@
 
 class cHardwareTracer;
 class cOrganism;
+class cPhenotype;
 class cString;
 
 class cCPUTestInfo
@@ -82,16 +83,9 @@ public:
   int GetCycleTo() const { return cycle_to; }
 
   // Genotype Stats...
-  cOrganism * GetTestOrganism(int level=0) {
-    assert(org_array[level] != NULL);
-    return org_array[level];
-  }
-
-  cOrganism * GetColonyOrganism() {
-    const int depth_used = (depth_found == -1) ? 0 : depth_found;
-    assert(org_array[depth_used] != NULL);
-    return org_array[depth_used];
-  }
+  inline cOrganism* GetTestOrganism(int level = 0);
+  cPhenotype& GetTestPhenotype(int level = 0);
+  inline cOrganism* GetColonyOrganism();
 
   // And just because these are so commonly used...
   double GetGenotypeFitness();
@@ -109,5 +103,19 @@ namespace nCPUTestInfo {
   void UnitTests(bool full = false);
 }
 #endif  
+
+
+inline cOrganism* cCPUTestInfo::GetTestOrganism(int level)
+{
+  assert(org_array[level] != NULL);
+  return org_array[level];
+}
+
+inline cOrganism* cCPUTestInfo::GetColonyOrganism()
+{
+  const int depth_used = (depth_found == -1) ? 0 : depth_found;
+  assert(org_array[depth_used] != NULL);
+  return org_array[depth_used];
+}
 
 #endif

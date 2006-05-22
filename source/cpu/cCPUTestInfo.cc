@@ -74,3 +74,9 @@ double cCPUTestInfo::GetColonyFitness()
   if (IsViable()) return GetColonyOrganism()->GetPhenotype().GetFitness();
   return 0.0;
 }
+
+cPhenotype& cCPUTestInfo::GetTestPhenotype(int level)
+{
+  assert(org_array[level] != NULL);
+  return org_array[level]->GetPhenotype();
+}

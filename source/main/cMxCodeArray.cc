@@ -15,7 +15,7 @@
 #include "cInstSet.h"
 #include "cHardwareManager.h"
 #include "MyCodeArrayLessThan.h"
-#include "cOrganism.h"
+#include "cPhenotype.h"
 #include "cTestCPU.h"
 #include "cTools.h"
 #include "cWorld.h"
@@ -459,10 +459,9 @@ void cMxCodeArray::CalcFitness(cAvidaContext& ctx)
   testcpu->TestGenome(ctx, test_info, temp);
   delete testcpu;
   
-  if ( test_info.IsViable() )
-    m_gestation_time =
-      test_info.GetTestOrganism()->GetPhenotype().GetGestationTime();
+  if (test_info.IsViable())
+    m_gestation_time = test_info.GetTestPhenotype().GetGestationTime();
   else // if not viable, set a really high gestation time
     m_gestation_time = m_max_gestation_time;
-  m_merit = test_info.GetTestOrganism()->GetPhenotype().GetMerit().GetDouble();
+  m_merit = test_info.GetTestPhenotype().GetMerit().GetDouble();
 }

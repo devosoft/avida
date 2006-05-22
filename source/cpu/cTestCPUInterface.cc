@@ -36,11 +36,6 @@ void cTestCPUInterface::Rotate(int direction)
 {
 }
 
-double cTestCPUInterface::TestFitness()
-{
-  return -1.0;
-}
-
 int cTestCPUInterface::GetInput()
 {
   return m_testcpu->GetInput();
