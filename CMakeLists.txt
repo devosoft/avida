@@ -151,6 +151,11 @@ IF(AVD_GUI_PYQT)
   FIND_PROGRAM(PYUIC pyuic DOC "Path to pyuic.  Used to compile python files from .ui files.")
 ENDIF(AVD_GUI_PYQT)
 
+OPTION(AVD_TASK_EVENT_GEN
+  "Enable building the task_event_gen utility"
+  OFF
+)
+
 
 # By default, compile all unit tests of primitive Avida classes.  Tests
 # are run via 'make test' under unix.
