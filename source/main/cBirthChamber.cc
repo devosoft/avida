@@ -20,6 +20,7 @@
 #include "cOrganism.h"
 #include "cTools.h"
 #include "cWorld.h"
+#include "cStats.h"
 
 cBirthChamber::cBirthChamber(cWorld* world) : m_world(world)
 {
@@ -27,13 +28,6 @@ cBirthChamber::cBirthChamber(cWorld* world) : m_world(world)
   const int num_demes = m_world->GetConfig().NUM_DEMES.Get(); 
   local_wait_entry.Resize(num_orgs);
   deme_wait_entry.Resize(num_demes);
-  for (int i = 0; i < num_orgs; i++) {
-    local_wait_entry[i].is_waiting = false;
-  }
-  for (int i = 0; i < num_demes; i++) {
-    deme_wait_entry[i].is_waiting = false;
-  }
-  global_wait_entry.is_waiting = false;
 }
 
 bool cBirthChamber::GetNeighborWaiting(const int & parent_id, int world_x, int world_y)
@@ -41,7 +35,7 @@ bool cBirthChamber::GetNeighborWaiting(const int & parent_id, int world_x, int w
   for (int i=-1; i<=1; i++) {
     for (int j=-1; j<=1; j++) { 
       const int neighbor_id = GridNeighbor(parent_id, world_x, world_y, i, j);
-      if (local_wait_entry[neighbor_id].is_waiting == true) {
+      if (local_wait_entry[neighbor_id].update_in >= 0) {
         return true;
       }
     }
@@ -58,7 +52,7 @@ int cBirthChamber::PickRandRecGenome(cAvidaContext& ctx, const int& parent_id, i
     int i = test_neighbor / 3 - 1; 
     int j = test_neighbor % 3 - 1;
     int test_loc = GridNeighbor(parent_id,world_x, world_y, i, j); 		
-    if (local_wait_entry[test_loc].is_waiting == true) {
+    if (local_wait_entry[test_loc].update_in >= 0) {
       return test_loc;
     }
   }
@@ -174,19 +168,16 @@ cBirthChamber::cBirthEntry* cBirthChamber::FindSexSizeWaiting(const cGenome& chi
   if (size_wait_entry.GetSize() <= child_length) {
     int old_wait_size = size_wait_entry.GetSize();
     size_wait_entry.Resize(child_length + 1);
-    for (int i = old_wait_size; i <= child_length; i++) {
-      size_wait_entry[i].is_waiting = false;
-    }
   }
 
   // Determine if we have an offspring of this length waiting already...
-  if (size_wait_entry[child_length].is_waiting == false) {
+  if (size_wait_entry[child_length].update_in == -1) {
     cGenotype * parent_genotype = parent.GetGenotype();
     parent_genotype->IncDeferAdjust();
     size_wait_entry[child_length].genome = child_genome;
     size_wait_entry[child_length].merit = parent.GetPhenotype().GetMerit();
     size_wait_entry[child_length].parent_genotype = parent_genotype;
-    size_wait_entry[child_length].is_waiting = true;
+    size_wait_entry[child_length].update_in = m_world->GetStats().GetUpdate();
     return NULL; 				
   }
 
@@ -202,19 +193,16 @@ cBirthChamber::cBirthEntry* cBirthChamber::FindSexMateSelectWaiting(const cGenom
   if (mate_select_wait_entry.GetSize() <= mate_id) {
     int old_wait_size = mate_select_wait_entry.GetSize();
     mate_select_wait_entry.Resize(mate_id + 1);
-    for (int i = old_wait_size; i <= mate_id; i++) {
-      mate_select_wait_entry[i].is_waiting = false;
-    }
   }
 
   // Determine if we have an offspring of this length waiting already...
-  if (mate_select_wait_entry[mate_id].is_waiting == false) {
+  if (mate_select_wait_entry[mate_id].update_in == -1) {
     cGenotype * parent_genotype = parent.GetGenotype();
     parent_genotype->IncDeferAdjust();
     mate_select_wait_entry[mate_id].genome = child_genome;
     mate_select_wait_entry[mate_id].merit = parent.GetPhenotype().GetMerit();
     mate_select_wait_entry[mate_id].parent_genotype = parent_genotype;
-    mate_select_wait_entry[mate_id].is_waiting = true;
+    mate_select_wait_entry[mate_id].update_in = m_world->GetStats().GetUpdate();
     return NULL;
   }
 
@@ -237,7 +225,7 @@ cBirthChamber::cBirthEntry* cBirthChamber::FindSexLocalWaiting(cAvidaContext& ct
     local_wait_entry[parent_id].genome = child_genome;
     local_wait_entry[parent_id].merit = parent.GetPhenotype().GetMerit();
     local_wait_entry[parent_id].parent_genotype = parent_genotype;
-    local_wait_entry[parent_id].is_waiting = true;
+    local_wait_entry[parent_id].update_in = m_world->GetStats().GetUpdate();
     return NULL; 				
   }
 
@@ -257,13 +245,13 @@ cBirthChamber::cBirthEntry* cBirthChamber::FindSexDemeWaiting(const cGenome& chi
   const int parent_deme = (int) parent_id/(world_y*world_x/num_demes);
 
   // If nothing is waiting, store child locally.
-  if (deme_wait_entry[parent_deme].is_waiting == false) { 
+  if (deme_wait_entry[parent_deme].update_in == -1) { 
     cGenotype * parent_genotype = parent.GetGenotype();
     parent_genotype->IncDeferAdjust();
     deme_wait_entry[parent_deme].genome = child_genome;
     deme_wait_entry[parent_deme].merit = parent.GetPhenotype().GetMerit();
     deme_wait_entry[parent_deme].parent_genotype = parent_genotype;
-    deme_wait_entry[parent_deme].is_waiting = true;
+    deme_wait_entry[parent_deme].update_in = m_world->GetStats().GetUpdate();
     return NULL; 				
   }
 
@@ -275,13 +263,13 @@ cBirthChamber::cBirthEntry* cBirthChamber::FindSexDemeWaiting(const cGenome& chi
 cBirthChamber::cBirthEntry* cBirthChamber::FindSexGlobalWaiting(const cGenome& child_genome, cOrganism& parent)
 {
   // If no other child is waiting, store this one.
-  if (global_wait_entry.is_waiting == false){
+  if (global_wait_entry.update_in == -1){
     cGenotype * parent_genotype = parent.GetGenotype();
     parent_genotype->IncDeferAdjust();
     global_wait_entry.genome = child_genome; 
     global_wait_entry.merit = parent.GetPhenotype().GetMerit();
     global_wait_entry.parent_genotype = parent_genotype;
-    global_wait_entry.is_waiting = true;
+    global_wait_entry.update_in = m_world->GetStats().GetUpdate();
     return NULL;
   }
 
@@ -500,7 +488,7 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cGenome& child_gen
   }
 
   // We have now found a waiting entry.  Mark it no longer waiting and use it.
-  old_entry->is_waiting = false;
+  old_entry->update_in = -1;
 
   // If we are NOT recombining, handle that here.
   if (parent_phenotype.CrossNum() == 0 || 

@@ -41,7 +41,9 @@ private:
     cCPUMemory genome;
     cMerit merit;
     cGenotype * parent_genotype;
-    bool is_waiting;
+    int update_in;  // Update entry was created; Set to -1 if entry is empty.
+
+    cBirthEntry() : parent_genotype(NULL), update_in(-1) { ; }
   };
   
   cWorld* m_world;
