@@ -43,6 +43,25 @@ bool cBirthChamber::GetNeighborWaiting(const int & parent_id, int world_x, int w
   return false;
 }
 
+bool cBirthChamber::EvaluateEntry(const cBirthEntry & entry) const
+{
+  // If there is no organism in the entry, return false.
+  if (entry.update_in == -1) return false;
+
+  // If there is an organis, determien if it is still alive.
+  const int max_wait_time = m_world->GetConfig().MAX_BIRTH_WAIT_TIME.Get();
+
+  // If the max_wait_time is -1, there is no timeout, so its alive.
+  if (max_wait_time == -1) return true;
+
+  // Otherwise, check if few enough updates have gone by...
+  const int cur_update = m_world->GetStats().GetUpdate();
+  const int max_update = entry.update_in + max_wait_time;
+
+  if (cur_update > max_update) return false;  // Too many updates...
+
+  return true;
+}
 
 int cBirthChamber::PickRandRecGenome(cAvidaContext& ctx, const int& parent_id, int world_x, int world_y)
 {
@@ -134,8 +153,12 @@ bool cBirthChamber::DoAsexBirth(cAvidaContext& ctx, const cGenome& child_genome,
   return true;
 }
 
-bool cBirthChamber::DoPairAsexBirth(cAvidaContext& ctx, const cBirthEntry& old_entry, const cGenome& new_genome,
-                                    cOrganism& parent, tArray<cOrganism*>& child_array, tArray<cMerit>& merit_array)
+bool cBirthChamber::DoPairAsexBirth(cAvidaContext& ctx,
+				    const cBirthEntry& old_entry,
+				    const cGenome& new_genome,
+                                    cOrganism& parent,
+				    tArray<cOrganism*>& child_array,
+				    tArray<cMerit>& merit_array)
 {
   // Build both child organisms...
   child_array.Resize(2);
@@ -171,7 +194,7 @@ cBirthChamber::cBirthEntry* cBirthChamber::FindSexSizeWaiting(const cGenome& chi
   }
 
   // Determine if we have an offspring of this length waiting already...
-  if (size_wait_entry[child_length].update_in == -1) {
+  if ( EvaluateEntry(size_wait_entry[child_length]) == false ) {
     cGenotype * parent_genotype = parent.GetGenotype();
     parent_genotype->IncDeferAdjust();
     size_wait_entry[child_length].genome = child_genome;
@@ -196,7 +219,7 @@ cBirthChamber::cBirthEntry* cBirthChamber::FindSexMateSelectWaiting(const cGenom
   }
 
   // Determine if we have an offspring of this length waiting already...
-  if (mate_select_wait_entry[mate_id].update_in == -1) {
+  if ( EvaluateEntry(mate_select_wait_entry[mate_id]) == false ) {
     cGenotype * parent_genotype = parent.GetGenotype();
     parent_genotype->IncDeferAdjust();
     mate_select_wait_entry[mate_id].genome = child_genome;
@@ -245,7 +268,7 @@ cBirthChamber::cBirthEntry* cBirthChamber::FindSexDemeWaiting(const cGenome& chi
   const int parent_deme = (int) parent_id/(world_y*world_x/num_demes);
 
   // If nothing is waiting, store child locally.
-  if (deme_wait_entry[parent_deme].update_in == -1) { 
+  if ( EvaluateEntry(deme_wait_entry[parent_deme]) == false ) { 
     cGenotype * parent_genotype = parent.GetGenotype();
     parent_genotype->IncDeferAdjust();
     deme_wait_entry[parent_deme].genome = child_genome;
@@ -263,7 +286,7 @@ cBirthChamber::cBirthEntry* cBirthChamber::FindSexDemeWaiting(const cGenome& chi
 cBirthChamber::cBirthEntry* cBirthChamber::FindSexGlobalWaiting(const cGenome& child_genome, cOrganism& parent)
 {
   // If no other child is waiting, store this one.
-  if (global_wait_entry.update_in == -1){
+  if ( EvaluateEntry(global_wait_entry) == false ) {
     cGenotype * parent_genotype = parent.GetGenotype();
     parent_genotype->IncDeferAdjust();
     global_wait_entry.genome = child_genome; 

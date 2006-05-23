@@ -61,6 +61,8 @@ private:
 
 
   // Private methods...
+  bool EvaluateEntry(const cBirthEntry & entry) const;
+
   bool RegionSwap(cCPUMemory& genome0, cCPUMemory& genome1, int start0, int end0, int start1, int end1);
   void GenomeSwap(cCPUMemory& genome0, cCPUMemory& genome1, double& merit0, double& merit1);
 

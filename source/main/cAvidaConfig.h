@@ -54,16 +54,16 @@ class cEntry_ ## NAME : public cBaseConfigEntry {                     /* 2 */ \
 private:                                                                      \
   TYPE value;                                                         /* 3 */ \
 public:                                                                       \
-    void LoadString(const cString & str_value) {                        /* 4 */ \
-      value = cStringUtil::Convert(str_value, value);                           \
-    }                                                                           \
+    void LoadString(const cString & str_value) {                      /* 4 */ \
+      value = cStringUtil::Convert(str_value, value);                         \
+    }                                                                         \
     cEntry_ ## NAME() : cBaseConfigEntry(#NAME, #TYPE, #DEFAULT, DESC) {/* 5 */ \
-      LoadString(GetDefault());                                         /* 6 */ \
-        global_group_list.GetLast()->AddEntry(this);                      /* 7 */ \
-    }                                                                           \
-    TYPE Get() const { return value; }                                  /* 8 */ \
-    void Set(TYPE in_value) { value = in_value; }                               \
-    cString AsString() { return cStringUtil::Convert(value); }          /* 9 */ \
+      LoadString(GetDefault());                                       /* 6 */ \
+        global_group_list.GetLast()->AddEntry(this);                  /* 7 */ \
+    }                                                                         \
+    TYPE Get() const { return value; }                                /* 8 */ \
+    void Set(TYPE in_value) { value = in_value; }                             \
+    cString AsString() { return cStringUtil::Convert(value); }        /* 9 */ \
 } NAME                                                               /* 10 */ \
 
 
@@ -185,7 +185,10 @@ public:
   CONFIG_ADD_VAR(ALLOC_METHOD, int, 0, "(Orignal CPU Only)\n0 = Allocated space is set to default instruction.\n1 = Set to section of dead genome (Necrophilia)\n2 = Allocated space is set to random instruction.");
   CONFIG_ADD_VAR(DIVIDE_METHOD, int, 1, "0 = Divide leaves state of mother untouched.\n1 = Divide resets state of mother\n    (after the divide, we have 2 children)\n2 = Divide resets state of current thread only\n    (does not touch possible parasite threads)");
   CONFIG_ADD_VAR(GENERATION_INC_METHOD, int, 1, "0 = Only the generation of the child is\n    increased on divide.\n1 = Both the generation of the mother and child are\n    increased on divide (good with DIVIDE_METHOD 1).");
+
+  CONFIG_ADD_GROUP(RECOMBINATION_GROUP, "Sexual Recombination and Modularity");
   CONFIG_ADD_VAR(RECOMBINATION_PROB, double, 1.0, "probability of recombination in div-sex");
+  CONFIG_ADD_VAR(MAX_BIRTH_WAIT_TIME, int, -1, "Updates incipiant orgs can wait for crossover");
   CONFIG_ADD_VAR(MODULE_NUM, int, 0, "number of modules in the genome");
   CONFIG_ADD_VAR(CONT_REC_REGS, int, 1, "are (modular) recombination regions continuous");
   CONFIG_ADD_VAR(CORESPOND_REC_REGS, int, 1, "are (modular) recombination regions swapped randomly\n or with corresponding positions?");
