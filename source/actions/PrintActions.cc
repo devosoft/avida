@@ -438,6 +438,76 @@ public:
 };
 
 
+/*
+ This is a new version of "detail_pop" or "historic_dump".  It allows you to
+ output one line per genotype in memory where you get to choose what data
+ should be included.
+ 
+ Parameters
+   data_fields (string)
+     This must be a comma separated string of all data you wish to output.
+     Options include: id, parent_id, parent2_id (for sex), parent_dist,
+       num_cpus, total_cpus, length, merit, gest_time, fitness, update_born,
+       update_dead, depth, lineage, sequence
+   historic (int) default: 0
+     How many updates back of history should we include (-1 = all)
+   filename (string) default: "genotypes-<update>.dat"
+     The name of the file into which the population dump should be written.
+*/
+class cActionPrintGenotypes : public cAction
+{
+private:
+  cString m_datafields;
+  cString m_filename;
+  int m_historic;
+  
+public:
+  cActionPrintGenotypes(cWorld* world, const cString& args)
+    : cAction(world, args), m_datafields("all"), m_filename(""), m_historic(0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_datafields = largs.PopWord();
+    if (largs.GetSize()) m_historic = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  
+  const cString GetDescription() { return "PrintGenotypes [cString data_fields=\"all\"] [int historic=0] [cString fname='']"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("genotypes-%d.dat", m_world->GetStats().GetUpdate());
+    m_world->GetClassificationManager().PrintGenotypes(m_world->GetDataFileOFStream(filename),
+                                                       m_datafields, m_historic);
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
+
+class cActionDumpMemory : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpMemory(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  
+  const cString GetDescription() { return "PrintDumpMemory [cString fname='']"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("memory_dump-%d.dat", m_world->GetStats().GetUpdate());
+    m_world->GetPopulation().DumpMemorySummary(m_world->GetDataFileOFStream(filename));
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
+
 void RegisterPrintActions(cActionLibrary* action_lib)
 {
   // Stats Out Files
@@ -476,7 +546,9 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDominantGenotype>("PrintDominantGenotype");
   action_lib->Register<cActionPrintDominantParasiteGenotype>("PrintDominantParasiteGenotype");
   action_lib->Register<cActionPrintDebug>("PrintDebug");
-  
+
+  action_lib->Register<cActionPrintGenotypes>("PrintGenotypes");
+  action_lib->Register<cActionDumpMemory>("DumpMemory");
 
 
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
@@ -512,4 +584,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintLineageCounts>("print_lineage_counts");
   action_lib->Register<cActionPrintDominantGenotype>("print_dom");
   action_lib->Register<cActionPrintDominantParasiteGenotype>("print_dom_parasite");
+  
+  action_lib->Register<cActionPrintGenotypes>("print_genotypes");
+  action_lib->Register<cActionDumpMemory>("dump_memory");
 }

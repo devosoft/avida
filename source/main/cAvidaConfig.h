@@ -153,7 +153,6 @@ public:
   CONFIG_ADD_VAR(ANALYZE_MODE, int, 0, "0 = Disabled\n1 = Enabled\n2 = Interactive");
   CONFIG_ADD_VAR(VIEW_MODE, int, 0, "Initial viewer screen");
   CONFIG_ADD_VAR(CLONE_FILE, cString, "-", "Clone file to load");
-  CONFIG_ADD_VAR(POPULATION_FILE, cString, "-", "Population file to load");
   CONFIG_ADD_VAR(MT_CONCURRENCY, int, 1, "Number of concurrent analyze threads");
   CONFIG_ADD_VAR(VERBOSITY, int, 0, "Control output verbosity");
   

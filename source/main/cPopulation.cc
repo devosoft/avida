@@ -195,35 +195,6 @@ cPopulation::cPopulation(cWorld* world)
     ifstream fp(m_world->GetConfig().CLONE_FILE.Get());
     LoadClone(fp);
   }
-
-  // Load a saved population if one is provided.
-  cString fname(m_world->GetConfig().POPULATION_FILE.Get());
-  if (fname != "-" && fname != "") {
-    cout << "Loading Population: " <<  fname << endl;
-    
-    // If last three chars of filename are ".gz" , gunzip it first
-    if (fname.Find(".gz") == fname.GetSize() - 3) {
-      cString cmd(fname);
-      cmd.Insert("gunzip ");
-      fname.ClipEnd(3);
-      system(cmd);
-      
-      ifstream fp(fname);
-      if( !fp.good() ){
-        cerr << "Error: Failed to load population file " << fname << ". Exiting...\n" << endl;
-        exit(2);
-      }
-      LoadPopulation(fp);
-      
-      cmd = fname;
-      cmd.Insert("gzip ");
-      system(cmd);
-    } else {
-      // load normally
-      ifstream fp(fname);
-      LoadPopulation(fp);
-    }
-  }
 }
 
 
@@ -1595,41 +1566,6 @@ bool cPopulation::LoadDumpFile(cString filename, int update)
       break;
     }
   }
-  sync_events = true;
-  
-  return true;
-}
-
-//// Save And Load Populations ////
-bool cPopulation::SavePopulation(ofstream& fp)
-{
-  if (fp.good() == false) return false;
-  
-  // Save the update
-  fp << m_world->GetStats().GetUpdate() << endl;
-  
-  // looping through all cells saving state @DMB - these did nothing...
-  //for (int i = 0; i < cell_array.GetSize(); i++)  cell_array[i].SaveState(fp);
-  
-  return true;
-}
-
-
-bool cPopulation::LoadPopulation(ifstream & fp)
-{
-  if(fp.good() == false) return false;
-  
-  // Load Update...
-  int cur_update;
-  fp >> cur_update;
-  m_world->GetStats().SetCurrentUpdate(cur_update);
-  
-  // Clear out the current population
-  for (int i = 0; i < cell_array.GetSize(); i++) KillOrganism( cell_array[i] );
-  
-  // looping through all organims @DMB - these did nothing...
-  //for (int i = 0; i < cell_array.GetSize(); i++) cell_array[i].LoadState(fp);
-  
   sync_events = true;
   
   return true;

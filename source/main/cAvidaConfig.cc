@@ -316,7 +316,6 @@ cAvidaConfig* cAvidaConfig::LoadWithCmdLineArgs(int argc, char * argv[])
       << "  -v[ersion]            Prints the version number"<<endl
       << "  -set <name> <value>   Overide the genesis file"<<endl
       << "  -l[oad] <filename>    Load a clone file"<<endl
-      << "  -loadpop <filename>   Load a saved population file (precedence over load)"<<endl
       << "  -a[nalyze]            Process analyze.cfg instead of normal run."<<endl
       << "  -i[nteractive]        Run analyze mode interactively."
       << endl;
@@ -348,14 +347,6 @@ cAvidaConfig* cAvidaConfig::LoadWithCmdLineArgs(int argc, char * argv[])
       } else {
         arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
         cfg->CLONE_FILE.Set(cur_arg);
-      }
-    } else if (cur_arg == "-loadpop" || cur_arg == "-lp") {
-      if (arg_num + 1 == argc || args[arg_num + 1][0] == '-') {
-        cerr << "Error: Must include a filename to load from." << endl;
-        exit(0);
-      } else {
-        arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
-        cfg->POPULATION_FILE.Set(cur_arg);
       }
     } else if (cur_arg == "-version" || cur_arg == "-v") {
       cout << " For more information, see: http://devolab.cse.msu.edu/software/avida/" << endl;

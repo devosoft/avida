@@ -152,8 +152,6 @@ public:
   bool SaveClone(std::ofstream& fp);
   bool LoadClone(std::ifstream& fp);
   bool LoadDumpFile(cString filename, int update);
-  bool SavePopulation(std::ofstream& fp);
-  bool LoadPopulation(std::ifstream& fp);
   bool DumpMemorySummary(std::ofstream& fp);
 
   bool OK();
