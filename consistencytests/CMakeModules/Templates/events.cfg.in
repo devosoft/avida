@@ -12,6 +12,6 @@
 ##############################################################################
 
 # Setup the exit time and full population data collection.
-u @RunLength@:@RunLength@ detail_pop           # Save current state of population.
+u @RunLength@:@RunLength@ detail_pop detail_pop.@RunLength@ # Save current state of population.
 u @RunLength@ exit                      # exit
 
