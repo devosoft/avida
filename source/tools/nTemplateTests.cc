@@ -277,6 +277,22 @@ namespace nTemplateTests {
     }
   } // utList_archive_structure
 
+  namespace utArrays_of_pointers {
+    void test(){
+      const int num_instances = 3;
+      tArray<A *> instance_array(num_instances);
+      BOOST_TEST(0 == tMemTrack<A>::Instances());
+      for (int i = 0; i < num_instances; i++){
+        instance_array[i] = new A();
+      }
+      BOOST_TEST(num_instances == tMemTrack<A>::Instances());
+      for (int i = 0; i < num_instances; i++){
+        delete instance_array[i];
+      }
+      BOOST_TEST(0 == tMemTrack<A>::Instances());
+    }
+  } // utArrays_of_pointers
+
   namespace utArray_basic_serialization {
     void test(){
       std::string filename("./tArray_basic_serialization.xml");
@@ -723,6 +739,10 @@ namespace nTemplateTests {
     if(full) {
       std::cout << "utList_archive_structure" << std::endl;
       utList_archive_structure::test();
+    }
+    if(full) {
+      std::cout << "utArrays_of_pointers" << std::endl;
+      utArrays_of_pointers::test();
     }
     if(full) {
       std::cout << "utArray_basic_serialization" << std::endl;
