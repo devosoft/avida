@@ -14,6 +14,11 @@
 #ifndef cUInt_h
 #include "cUInt.h"
 #endif
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
 
 /**
  * Class used by @ref cBlockStruct.
@@ -23,6 +28,9 @@
  **/
 
 class cFixedCoords {
+#if USE_tMemTrack
+  tMemTrack<cFixedCoords> mt;
+#endif
 private:
   int block_num;
   int offset;

@@ -11,12 +11,6 @@
 #ifndef cInitFile_h
 #define cInitFile_h
 
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
-
 #ifndef cFile_h
 #include "cFile.h"
 #endif
@@ -29,6 +23,12 @@
 #ifndef tArray_h
 #include "tArray.h"
 #endif
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
+
 
 #include <iostream>
 

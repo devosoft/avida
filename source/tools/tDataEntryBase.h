@@ -17,10 +17,18 @@
 #ifndef cDataEntry_h
 #include "cDataEntry.h"
 #endif
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
 
 class cString;
 
 template <class T> class tDataEntryBase : public cDataEntry {
+#if USE_tMemTrack
+  tMemTrack<tDataEntryBase<T> > mt;
+#endif
 protected:
   T * target;
 public:

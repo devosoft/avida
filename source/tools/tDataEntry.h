@@ -22,8 +22,16 @@
 #ifndef tDataEntryBase_h
 #include "tDataEntryBase.h"
 #endif
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
 
 template <class T, class OUT> class tDataEntry : public tDataEntryBase<T> {
+#if USE_tMemTrack
+  tMemTrack<tDataEntry<T, OUT> > mt;
+#endif
 protected:
   OUT  (T::*DataRetrieval)() const;
   void (T::*DataSet)(OUT);
