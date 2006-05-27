@@ -11,14 +11,13 @@
 #ifndef cFile_h
 #define cFile_h
 
+#ifndef cString_h
+#include "cString.h"
+#endif
 #if USE_tMemTrack
 # ifndef tMemTrack_h
 #  include "tMemTrack.h"
 # endif
-#endif
-
-#ifndef cString_h
-#include "cString.h"
 #endif
 
 #include <fstream>

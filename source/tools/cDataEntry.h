@@ -11,15 +11,15 @@
 #ifndef cDataEntry_h
 #define cDataEntry_h
 
+#ifndef cString_h
+#include "cString.h"
+#endif
 #if USE_tMemTrack
 # ifndef tMemTrack_h
 #  include "tMemTrack.h"
 # endif
 #endif
 
-#ifndef cString_h
-#include "cString.h"
-#endif
 
 #include <iostream>
 
