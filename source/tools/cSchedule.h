@@ -11,6 +11,13 @@
 #ifndef cSchedule_h
 #define cSchedule_h
 
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
+
+
 /**
  * This class is the base object to handle time-slicing. All other schedulers
  * are derived from this class.  This is a pure virtual class.
@@ -22,6 +29,9 @@ class cChangeList;
 
 class cSchedule
 {
+#if USE_tMemTrack
+  tMemTrack<cSchedule> mt;
+#endif
 protected:
   int item_count;
   cChangeList* m_change_list;
