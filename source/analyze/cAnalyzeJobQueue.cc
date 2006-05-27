@@ -12,6 +12,9 @@
 #include "cAnalyzeJobWorker.h"
 #include "cWorld.h"
 #include "cWorldDriver.h"
+#include "tArray.h"
+
+
 #include "defs.h"
 
 #include <iostream>
@@ -37,15 +40,18 @@ cAnalyzeJobQueue::~cAnalyzeJobQueue()
 void cAnalyzeJobQueue::Execute()
 {
   const int num_workers = m_world->GetConfig().MT_CONCURRENCY.Get();
-  cAnalyzeJobWorker* workers[num_workers];
-  
+  tArray<cAnalyzeJobWorker*> workers(num_workers);
+
   if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
     m_world->GetDriver().NotifyComment("Going Multithreaded...");
-  
+
   for (int i = 0; i < num_workers; i++) {
     workers[i] = new cAnalyzeJobWorker(this);
     workers[i]->Start();
   }
 
-  for (int i = 0; i < num_workers; i++) workers[i]->Join();
+  for (int i = 0; i < num_workers; i++) {
+    workers[i]->Join();
+    delete workers[i];
+  }
 }
