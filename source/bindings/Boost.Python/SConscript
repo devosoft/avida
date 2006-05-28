@@ -1,0 +1,45 @@
+##############################################################################
+## Copyright (C) 1999-2005 Michigan State University                        ##
+## Based on work Copyright (C) 1993-2003 California Institute of Technology ##
+##                                                                          ##
+## Read the COPYING and README files, or contact 'avida@alife.org',         ##
+## before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     ##
+##############################################################################
+    
+import os
+    
+Import('environment')
+e = environment
+
+pf = e.File('pyste_util.py')
+e.Local(pf)
+
+package_name = 'AvidaCore'
+package_modules = e.PystePackageSubmodule(
+  [
+    'cUInt.pyste',
+  ],
+  pyste_package_name = package_name,
+  LIBS = ['tools'],
+)
+package_init_file = e.PystePackageInitFile(
+  package_modules,
+  pyste_package_name = package_name,
+)
+package = e.PystePackage(
+  package_modules + package_init_file,
+  pyste_package_name = package_name,
+)
+
+package_install_dir = os.path.join(e['execPrefix'], package_name)
+e.Install(
+  package_install_dir,
+  [package_modules, package_init_file]
+)
+e.Alias(
+  'install',
+  package_install_dir
+)
+
+#
+# vim: set ft=python:

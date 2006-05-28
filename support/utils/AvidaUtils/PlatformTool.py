@@ -25,7 +25,8 @@ def _posix_defaults(env):
   env.SetDefault(
     PLATFORM_CPPPATH = CLVar('/usr/include /usr/local/include /opt/local/include' '$CPPPATH'),
     PLATFORM_LIBPATH = CLVar('/usr/lib /usr/local/lib /opt/local/lib' '$LIBPATH'),
-    _PLATFORM_DEBUG_BUILD_FLAGS = "-g $COMPILER_WARNING_FLAGS -pedantic -DDEBUG",
+    #_PLATFORM_DEBUG_BUILD_FLAGS = "-g $COMPILER_WARNING_FLAGS -pedantic -DDEBUG",
+    _PLATFORM_DEBUG_BUILD_FLAGS = "-g $COMPILER_WARNING_FLAGS -DDEBUG",
     _PLATFORM_RELEASE_DEBUG_BUILD_FLAGS = "-O2 -ffast-math -g $COMPILER_WARNING_FLAGS -pedantic -DDEBUG",
     _PLATFORM_RELEASE_BUILD_FLAGS = "-O3 -ffast-math -DNDEBUG",
     _PLATFORM_MINIMUM_RELEASE_BUILD_FLAGS = "-Os -DNDEBUG",
@@ -54,7 +55,7 @@ def darwin_generate(env):
     plat_default_boostPythonLibDir = None,
     plat_default_boostPythonLib = None,
     plat_default_GccXmlCommand = None,
-    plat_default_pysteScriptPath = os.path.join(sys.path[0], '${support_utils_rel_dir}', 'AvidaPyste.py'),
+    plat_default_pysteScriptPath = os.path.join(sys.path[0], '${AvidaUtils_path}', 'AvidaPyste.py'),
     plat_default_pysteScriptCommand = SCons.Util.CLVar('$pythonCommand $pysteScriptPath'),
   )
 
@@ -354,7 +355,7 @@ def win32_generate(env):
     plat_default_boostPythonLibDir = None,
     plat_default_boostPythonLib = None,
     plat_default_GccXmlCommand = None,
-    plat_default_pysteScriptPath = os.path.join(sys.path[0], '${support_utils_rel_dir}', 'AvidaPyste.py'),
+    plat_default_pysteScriptPath = os.path.join(sys.path[0], '${AvidaUtils_path}', 'AvidaPyste.py'),
     plat_default_pysteScriptCommand = SCons.Util.CLVar('$pythonCommand $pysteScriptPath'),
   )
   env.SetDefault(

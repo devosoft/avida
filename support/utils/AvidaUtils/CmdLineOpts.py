@@ -49,12 +49,12 @@ def Update(opts, env):
       """Set to "1" to build and run test code.""",
       '$plat_default_enableTestCode',
   ) )
-  #opts.Add(
-  #  SCons.Options.BoolOption(
-  #    'enablePyPkg',
-  #  """Set to "1" to wrap c++ interfaces for use in Python scripts.""",
-  #    '$plat_default_enablePyPkg',
-  #) )
+  opts.Add(
+    SCons.Options.BoolOption(
+      'enablePyPkg',
+    """Set to "1" to wrap c++ interfaces for use in Python scripts.""",
+      '$plat_default_enablePyPkg',
+  ) )
 
   #opts.Add(
   #  SCons.Options.BoolOption(
@@ -152,46 +152,46 @@ def Update(opts, env):
   #  )
   #)
   #
-  #opts.Add(
-  #  'pythonCommand',
-  #  'Command used to invoke Python interpreter.',
-  #  '$plat_default_pythonCommand',
-  #)
-  #opts.Add(
-  #  'boostIncludeDir',
-  #  'Path to the header directory for Boost.',
-  #  '$plat_default_boostIncludeDir',
-  #)
-  #opts.Add(
-  #  'boostPythonLibDir',
-  #  'Directory containing Boost Python library.',
-  #  '$plat_default_boostPythonLibDir',
-  #)
-  #opts.Add(
-  #  'boostPythonLib',
-  #  """Name of the Boost Python library.
-  #  - Note : name is sans prefix and suffix; e.g., boost_python-1_33.""",
-  #  '$plat_default_boostPythonLib',
-  #)
-  #opts.Add(
-  #  'GccXmlCommand',
-  #  'Command used to call gccxml.',
-  #  '$plat_default_GccXmlCommand',
-  #)
-  #opts.Add(
-  #  'pysteScriptPath',
-  #  'Full path to Pyste script.',
-  #  '$plat_default_pysteScriptPath',
-  #)
-  #opts.Add(
-  #  'pysteScriptCommand',
-  #  'Command used to call Pyste script.',
-  #  '$plat_default_pysteScriptCommand',
-  #)
+  opts.Add(
+    'pythonCommand',
+    'Command used to invoke Python interpreter.',
+    '$plat_default_pythonCommand',
+  )
+  opts.Add(
+    'boostIncludeDir',
+    'Path to the header directory for Boost.',
+    '$plat_default_boostIncludeDir',
+  )
+  opts.Add(
+    'boostPythonLibDir',
+    'Directory containing Boost Python library.',
+    '$plat_default_boostPythonLibDir',
+  )
+  opts.Add(
+    'boostPythonLib',
+    """Name of the Boost Python library.
+    - Note : name is sans prefix and suffix; e.g., boost_python-1_33.""",
+    '$plat_default_boostPythonLib',
+  )
+  opts.Add(
+    'GccXmlCommand',
+    'Command used to call gccxml.',
+    '$plat_default_GccXmlCommand',
+  )
+  opts.Add(
+    'pysteScriptPath',
+    'Full path to Pyste script.',
+    '$plat_default_pysteScriptPath',
+  )
+  opts.Add(
+    'pysteScriptCommand',
+    'Command used to call Pyste script.',
+    '$plat_default_pysteScriptCommand',
+  )
 
   # FIXME : Move me to support/utils/PysteTool.py, into a conftest
   # therein. @kgn
-  #env.Append(PYSTE_CMD = '$pysteScriptCommand')
+  env.Append(PYSTE_CMD = '$pysteScriptCommand')
 
   #opts.Add(
   #  SCons.Options.BoolOption(
