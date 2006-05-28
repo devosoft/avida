@@ -44,10 +44,11 @@ def Configure(args, env):
   # Some of these can be tweaked by our custom command-line options, so
   # must be loaded after command-line arguments are parsed.
   #
-  env.Tool('GCCXMLTool', toolpath = __path__)
-  env.Tool('PythonTool', toolpath = __path__)
-  env.Tool('BoostPythonTool', toolpath = __path__)
-  env.Tool('PysteTool', toolpath = __path__)
+  if env['enablePyPkg'] in ('True', '1', 1):
+    env.Tool('GCCXMLTool', toolpath = __path__)
+    env.Tool('PythonTool', toolpath = __path__)
+    env.Tool('BoostPythonTool', toolpath = __path__)
+    env.Tool('PysteTool', toolpath = __path__)
   env.Tool('UnitTestTool', toolpath = __path__)
 
   # Provide help text.

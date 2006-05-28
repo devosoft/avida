@@ -11,12 +11,12 @@ avida_LIBS = [
     'cpu',
     'tools',
     'actions',
-    'ncurses',
-    'pthread',
     'archive',
     'boost_serialization',
     'main',
   ]
+if environment['PLATFORM'] not in ('win32'):
+  avida_LIBS = avida_LIBS + ['pthread']
 if environment['enableTCMalloc'] in ('True', '1', 1):
   avida_LIBS = avida_LIBS + ['tcmalloc']
 
