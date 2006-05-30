@@ -24,15 +24,15 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-__revision__ = "/home/scons/scons/branch.0/branch.96/baseline/src/script/sconsign.py 0.96.91.D001 2005/09/08 09:14:36 knight"
+__revision__ = "/home/scons/scons/branch.0/branch.96/baseline/src/script/sconsign.py 0.96.92.D002 2006/04/11 07:39:43 knight"
 
-__version__ = "0.96.91"
+__version__ = "0.96.92"
 
-__build__ = "D001"
+__build__ = "D002"
 
 __buildsys__ = "roxbury"
 
-__date__ = "2005/09/08 09:14:36"
+__date__ = "2006/04/11 07:39:43"
 
 __developer__ = "knight"
 

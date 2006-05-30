@@ -39,7 +39,7 @@ Note: if you need help, type
 # library, and our SCons customizations.
 sys.path.append('support/scons')
 os.environ["SCONS_LIB_DIR"] = os.path.join(sys.path[0],
-  'support/scons/scons-local-0.96.91')
+  'support/scons/scons-local-0.96.92')
 sys.path.append('support/utils')
 
 # Any command line arguments are passed to SCons when it is imported by
