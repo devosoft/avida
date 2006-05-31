@@ -1027,43 +1027,6 @@ public:
   }
 };
 
-///// print_detailed_fitness_data /////
-
-/**
-**/
-
-
-class cEvent_print_detailed_fitness_data : public cEvent {
-private:
-  int save_max_f_genotype;
-  int print_fitness_histo;
-  double hist_fmax;
-  double hist_fstep;
-  cString filename;
-  cString filename2;
-  cString filename3;
-public:
-    const cString GetName() const { return "print_detailed_fitness_data"; }
-  const cString GetDescription() const { return "print_detailed_fitness_data  [int save_max_f_genotype=0] [int print_fitness_histo=0] [double hist_fmax=1] [double hist_fstep=0.1] [cString filename=\"fitness.dat\"] [cString filename2=\"fitness_histos.dat\"] [cString filename3=\"fitness_histos_testCPU.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") save_max_f_genotype=0; else save_max_f_genotype=args.PopWord().AsInt();
-    if (args == "") print_fitness_histo=0; else print_fitness_histo=args.PopWord().AsInt();
-    if (args == "") hist_fmax=1; else hist_fmax=args.PopWord().AsDouble();
-    if (args == "") hist_fstep=0.1; else hist_fstep=args.PopWord().AsDouble();
-    if (args == "") filename="fitness.dat"; else filename=args.PopWord();
-    if (args == "") filename2="fitness_histos.dat"; else filename2=args.PopWord();
-    if (args == "") filename3="fitness_histos_testCPU.dat"; else filename3=args.PopWord();
-  }
-  ///// print_detailed_fitness_data /////
-  void Process(){
-    cAnalyzeUtil::PrintDetailedFitnessData(m_world, filename, filename2, filename3, save_max_f_genotype, print_fitness_histo, hist_fmax, hist_fstep );
-  }
-};
 
 ///// print_genetic_distance_data /////
 
@@ -2561,7 +2524,6 @@ cEventManager::cEventManager(cWorld* world) : m_world(world)
   REGISTER(test_dom);
   REGISTER(analyze_population);
 
-  REGISTER(print_detailed_fitness_data);
   REGISTER(print_genetic_distance_data);
   REGISTER(genetic_distance_pop_dump);
   REGISTER(task_snapshot);

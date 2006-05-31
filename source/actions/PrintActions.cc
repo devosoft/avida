@@ -13,6 +13,7 @@
 #include "cActionLibrary.h"
 #include "cAnalyzeUtil.h"
 #include "cClassificationManager.h"
+#include "cCPUTestInfo.h"
 #include "cGenotype.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
@@ -484,6 +485,173 @@ public:
 };
 
 
+/*
+ This function prints out fitness data. The main point is that it
+ calculates the average fitness from info from the testCPU + the actual
+ merit of the organisms, and assigns zero fitness to those organisms
+ that will never reproduce.
+ 
+ The function also determines the maximum fitness genotype, and can
+ produce fitness histograms.
+ 
+ Parameters
+   datafn (cString)
+     Where the fitness data should be written.
+   histofn (cString)
+     Where the fitness histogram should be written.
+   histotestfn (cString)
+     Where the fitness histogram as determined exclusively from the test-CPU should be written.
+   save_max_f_genotype (bool)
+     Whether the genotype with the maximum fitness should be saved into the classmgr.
+   print_fitness_histo (bool)
+     Determines whether fitness histograms should be written.
+   hist_fmax (double)
+     The maximum fitness value to be taken into account for the fitness histograms.
+   hist_fstep (double)
+     The width of the individual bins in the fitness histograms.
+*/
+class cActionPrintDetailedFitnessData : public cAction
+{
+private:
+  int m_save_max;
+  int m_print_fitness_histo;
+  double m_hist_fmax;
+  double m_hist_fstep;
+  cString m_filenames[3];
+
+public:
+  cActionPrintDetailedFitnessData(cWorld* world, const cString& args)
+    : cAction(world, args), m_save_max(0), m_print_fitness_histo(0), m_hist_fmax(1.0), m_hist_fstep(0.1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_save_max = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_print_fitness_histo = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_hist_fmax = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_hist_fstep = largs.PopWord().AsDouble();
+    if (!largs.GetSize()) m_filenames[0] = "fitness.dat"; else m_filenames[0] = largs.PopWord();
+    if (!largs.GetSize()) m_filenames[1] = "fitness_histos.dat"; else m_filenames[1] = largs.PopWord();
+    if (!largs.GetSize()) m_filenames[2] = "fitness_histos_testCPU.dat"; else m_filenames[2] = largs.PopWord();
+  }
+  
+  const cString GetDescription() { return "PrintDetailedFitnessData [int save_max_f_genotype=0] [int print_fitness_histo=0] [double hist_fmax=1] [double hist_fstep=0.1] [cString datafn=\"fitness.dat\"] [cString histofn=\"fitness_histos.dat\"] [cString histotestfn=\"fitness_histos_testCPU.dat\"]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cPopulation& pop = m_world->GetPopulation();
+    const int update = m_world->GetStats().GetUpdate();
+    const double generation = m_world->GetStats().SumGeneration().Average();
+    
+    // the histogram variables
+    tArray<int> histo;
+    tArray<int> histo_testCPU;
+    int bins = 0;
+    
+    if (m_print_fitness_histo) {
+      bins = static_cast<int>(m_hist_fmax / m_hist_fstep) + 1;
+      histo.Resize(bins, 0);
+      histo_testCPU.Resize(bins, 0 );
+    }
+    
+    int n = 0;
+    int nhist_tot = 0;
+    int nhist_tot_testCPU = 0;
+    double fave = 0;
+    double fave_testCPU = 0;
+    double max_fitness = -1; // we set this to -1, so that even 0 is larger...
+    cGenotype* max_f_genotype = NULL;
+    
+    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+
+    for (int i = 0; i < pop.GetSize(); i++) {
+      if (pop.GetCell(i).IsOccupied() == false) continue;  // One use organisms.
+      
+      cOrganism* organism = pop.GetCell(i).GetOrganism();
+      cGenotype* genotype = organism->GetGenotype();
+      
+      cCPUTestInfo test_info;
+      testcpu->TestGenome(ctx, test_info, genotype->GetGenome());
+      // We calculate the fitness based on the current merit,
+      // but with the true gestation time. Also, we set the fitness
+      // to zero if the creature is not viable.
+      const double f = (test_info.IsViable()) ? organism->GetPhenotype().GetMerit().CalcFitness(test_info.GetTestPhenotype().GetGestationTime()) : 0;
+      const double f_testCPU = test_info.GetColonyFitness();
+      
+      // Get the maximum fitness in the population
+      // Here, we want to count only organisms that can truly replicate,
+      // to avoid complications
+      if (f_testCPU > max_fitness && test_info.GetTestPhenotype().CopyTrue()) {
+        max_fitness = f_testCPU;
+        max_f_genotype = genotype;
+      }
+      
+      fave += f;
+      fave_testCPU += f_testCPU;
+      n += 1;
+      
+      
+      // histogram
+      if (m_print_fitness_histo && f < m_hist_fmax) {
+        histo[static_cast<int>(f / m_hist_fstep)] += 1;
+        nhist_tot += 1;
+      }
+      
+      if (m_print_fitness_histo && f_testCPU < m_hist_fmax) {
+        histo_testCPU[static_cast<int>(f_testCPU / m_hist_fstep)] += 1;
+        nhist_tot_testCPU += 1;
+      }
+    }
+    
+    delete testcpu;
+    
+    // determine the name of the maximum fitness genotype
+    cString max_f_name;
+    if (max_f_genotype->GetThreshold())
+      max_f_name = max_f_genotype->GetName();
+    else // we put the current update into the name, so that it becomes unique.
+      max_f_name.Set("%03d-no_name-u%i", max_f_genotype->GetLength(), update);
+    
+    cDataFile& df = m_world->GetDataFile(m_filenames[0]);
+    df.Write(update, "Update");
+    df.Write(generation, "Generation");
+    df.Write(fave / static_cast<double>(n), "Average Fitness");
+    df.Write(fave_testCPU / static_cast<double>(n), "Average Test Fitness");
+    df.Write(n, "Organism Total");
+    df.Write(max_fitness, "Maximum Fitness");
+    df.Write(max_f_name, "Maxfit genotype name");
+    df.Endl();
+    
+    if (m_save_max) {
+      cString filename;
+      filename.Set("classmgr/%s", static_cast<const char*>(max_f_name));
+      cTestUtil::PrintGenome(m_world, max_f_genotype->GetGenome(), filename);
+    }
+    
+    if (m_print_fitness_histo) {
+      cDataFile& hdf = m_world->GetDataFile(m_filenames[1]);
+      hdf.Write(update, "Update");
+      hdf.Write(generation, "Generation");
+      hdf.Write(fave / static_cast<double>(n), "Average Fitness");
+      
+      // now output the fitness histo
+      for (int i = 0; i < histo.GetSize(); i++)
+        hdf.Write(static_cast<double>(histo[i]) / static_cast<double>(nhist_tot), "");
+      hdf.Endl();
+      
+      
+      cDataFile& tdf = m_world->GetDataFile(m_filenames[2]);
+      tdf.Write(update, "Update");
+      tdf.Write(generation, "Generation");
+      tdf.Write(fave / static_cast<double>(n), "Average Fitness");
+      
+      // now output the fitness histo
+      for (int i = 0; i < histo_testCPU.GetSize(); i++)
+        tdf.Write(static_cast<double>(histo_testCPU[i]) / static_cast<double>(nhist_tot_testCPU), "");
+      tdf.Endl();
+    }
+  }
+};
+
+
 class cActionDumpMemory : public cAction
 {
 private:
@@ -545,6 +713,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintLineageCounts>("PrintLineageCounts");
   action_lib->Register<cActionPrintDominantGenotype>("PrintDominantGenotype");
   action_lib->Register<cActionPrintDominantParasiteGenotype>("PrintDominantParasiteGenotype");
+  action_lib->Register<cActionPrintDetailedFitnessData>("PrintDetailedFitnessData");
   action_lib->Register<cActionPrintDebug>("PrintDebug");
 
   action_lib->Register<cActionPrintGenotypes>("PrintGenotypes");
@@ -584,6 +753,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintLineageCounts>("print_lineage_counts");
   action_lib->Register<cActionPrintDominantGenotype>("print_dom");
   action_lib->Register<cActionPrintDominantParasiteGenotype>("print_dom_parasite");
+  action_lib->Register<cActionPrintDetailedFitnessData>("print_detailed_fitness_data");
   
   action_lib->Register<cActionPrintGenotypes>("print_genotypes");
   action_lib->Register<cActionDumpMemory>("dump_memory");

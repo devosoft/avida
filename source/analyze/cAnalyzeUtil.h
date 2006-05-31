@@ -48,10 +48,6 @@ public:
 				double sample_prob=1, bool landscape=false,
 				bool save_genotype=false);
 
-  static void PrintDetailedFitnessData(cWorld* world, cString& datafn,
-    cString& histofn, cString& histo_testCPU_fn, bool save_max_f_genotype,
-    bool print_fitness_histo, double hist_fmax, double hist_fstep);
-
   static void PrintGeneticDistanceData(cWorld* world, std::ofstream& fp,
 				const char *creature_name );
   static void GeneticDistancePopDump(cWorld* world, std::ofstream& fp,
