@@ -1,13 +1,30 @@
 
 Import('environment')
 
-environment.Library('event',
-  [
-    'cEventManager.cc',
-    'cEventList.cc',
-    'cEventTriggers.cc',
-  ],
-) 
+misc = ['SConscript']
 
+incs = [
+  'cEvent.h',
+  'cEventList.h',
+  'cEventListEntry.h',
+  'cEventListIterator.h',
+  'cEventManager.h',
+  'cEventTriggers.h',
+]
+
+srcs = [
+  'cEventManager.cc',
+  'cEventList.cc',
+  'cEventTriggers.cc',
+]
+
+environment.Library('event', srcs) 
+
+environment.AppendUnique(
+  avida_msvs_project_srcs = [File(src).srcnode().path for src in srcs],
+  avida_msvs_project_incs = [File(src).srcnode().path for src in incs],
+  avida_msvs_project_misc = [File(src).srcnode().path for src in misc],
+)
+ 
   
 # vim: set ft=python:

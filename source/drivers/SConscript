@@ -1,14 +1,31 @@
 
 Import('environment')
 
-environment.Library('drivers',
-  [
-    'cDefaultAnalyzeDriver.cc',
-    'cDefaultRunDriver.cc',
-    'cDriverManager.cc',
-    'cFallbackWorldDriver.cc',
-  ],
-) 
+misc = ['SConscript']
 
-  
+incs = [
+  'cAvidaDriver.h',
+  'cDefaultAnalyzeDriver.h',
+  'cDefaultRunDriver.h',
+  'cDriverManager.h',
+  'cFallbackWorldDriver.h',
+  'cWorldDriver.h',
+]
+
+srcs = [
+  'cDefaultAnalyzeDriver.cc',
+  'cDefaultRunDriver.cc',
+  'cDriverManager.cc',
+  'cFallbackWorldDriver.cc',
+]
+
+environment.Library('drivers', srcs) 
+
+environment.AppendUnique(
+  avida_msvs_project_srcs = [File(src).srcnode().path for src in srcs],
+  avida_msvs_project_incs = [File(src).srcnode().path for src in incs],
+  avida_msvs_project_misc = [File(src).srcnode().path for src in misc],
+)
+ 
+
 # vim: set ft=python:

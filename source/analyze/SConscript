@@ -1,15 +1,37 @@
 
 Import('environment')
 
-environment.Library('analyze',
-  [
-    'cAnalyze.cc',
-    'cAnalyzeGenotype.cc',
-    'cAnalyzeUtil.cc',
-    'cAnalyzeJobQueue.cc',
-    'cAnalyzeJobWorker.cc',
-  ],
-) 
+sources = [
+  'cAnalyze.cc',
+  'cAnalyzeGenotype.cc',
+  'cAnalyzeUtil.cc',
+  'cAnalyzeJobQueue.cc',
+  'cAnalyzeJobWorker.cc',
+]
+environment.AppendUnique(
+  avida_msvs_project_srcs = [File(src).srcnode().path for src in sources])
+
+environment.Library('analyze', sources) 
+
+headers = [
+  'cAnalyze.h',
+  'cAnalyzeCommand.h',
+  'cAnalyzeCommandAction.h',
+  'cAnalyzeCommandDef.h',
+  'cAnalyzeCommandDefBase.h',
+  'cAnalyzeFlowCommand.h',
+  'cAnalyzeFlowCommandDef.h',
+  'cAnalyzeFunction.h',
+  'cAnalyzeGenotype.h',
+  'cAnalyzeJob.h',
+  'cAnalyzeJobQueue.h',
+  'cAnalyzeJobWorker.h',
+  'cAnalyzeUtil.h',
+  'cGenotypeBatch.h',
+  'tAnalyzeJob.h',
+]
+environment.AppendUnique(
+  avida_msvs_project_incs = [File(src).srcnode().path for src in headers])
 
   
 # vim: set ft=python:

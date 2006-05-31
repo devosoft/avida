@@ -6,6 +6,9 @@
 ## before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     ##
 ##############################################################################
 
+import os
+import sys
+sys.path.append('support/utils')
 import AvidaUtils
 
 environment = Environment()
@@ -69,6 +72,19 @@ environment.Append(
 environment.SConscript('source/SConscript', build_dir = "$buildDir")
 environment.SConscript('support/config/SConscript')
 
+script_to_build_avida = environment.File(
+  os.path.join('#', os.path.basename(sys.argv[0]))
+).abspath
+environment.MSVSProject(
+  target = 'Avida' + environment['MSVSPROJECTSUFFIX'],
+  srcs = environment['avida_msvs_project_srcs'],
+  incs = environment['avida_msvs_project_incs'],
+  misc = environment['avida_msvs_project_misc'],
+  variant = 'Release',
+  #runfile = avida[0].abspath,
+  MSVSSCONS = '"%s" "%s"' % (sys.executable, script_to_build_avida),
+  MSVSSCONSFLAGS = '-C "${MSVSSCONSCRIPT.dir.abspath}" -f "${MSVSSCONSCRIPT.name}"'
+)
 
 # Vim modeline to tell Vim that this is a Python script.
 # vim: set ft=python:

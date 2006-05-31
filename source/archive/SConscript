@@ -1,11 +1,18 @@
 
 Import('environment')
 
-environment.Library('archive',
-  [
-    'cXMLArchive.cc',
-  ],
-) 
+misc = ['SConscript']
 
-  
+incs = ['cXMLArchive.h']
+
+srcs = ['cXMLArchive.cc']
+
+environment.Library('archive', srcs) 
+
+environment.AppendUnique(
+  avida_msvs_project_srcs = [File(src).srcnode().path for src in srcs],
+  avida_msvs_project_incs = [File(src).srcnode().path for src in incs],
+  avida_msvs_project_misc = [File(src).srcnode().path for src in misc],
+)
+ 
 # vim: set ft=python:

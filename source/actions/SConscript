@@ -1,13 +1,29 @@
 
 Import('environment')
 
-tools_library = environment.Library('actions',
-  [
-    'cActionLibrary.cc',
-    'LandscapeActions.cc',
-    'PrintActions.cc',
-    'SaveLoadActions.cc',
-  ],
+misc = ['SConscript']
+
+incs = [
+  'cAction.h',
+  'cActionLibrary.h',
+  'LandscapeActions.h',
+  'PrintActions.h',
+  'SaveLoadActions.h',
+]
+
+srcs = [
+  'cActionLibrary.cc',
+  'LandscapeActions.cc',
+  'PrintActions.cc',
+  'SaveLoadActions.cc',
+]
+
+tools_library = environment.Library('actions', srcs)
+
+environment.AppendUnique(
+  avida_msvs_project_srcs = [File(src).srcnode().path for src in srcs],
+  avida_msvs_project_incs = [File(src).srcnode().path for src in incs],
+  avida_msvs_project_misc = [File(src).srcnode().path for src in misc],
 )
 
 # vim: set ft=python:

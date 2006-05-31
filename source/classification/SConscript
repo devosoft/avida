@@ -1,21 +1,49 @@
 
 Import('environment')
 
-environment.Library('classification',
-  [
-    'cClassificationManager.cc',
-    'cGenotype.cc',
-    'cGenotype_BirthData.cc',
-    'cGenotypeControl.cc',
-    'cInjectGenotype.cc',
-    'cInjectGenotypeControl.cc',
-    'cInjectGenotypeQueue.cc',
-    'cLineage.cc',
-    'cSpecies.cc',
-    'cSpeciesControl.cc',
-    'cSpeciesQueue.cc',
-  ],
-) 
+misc = ['SConscript']
+
+incs = [
+  'cClassificationManager.h',
+  'cGenotype.h',
+  'cGenotype_BirthData.h',
+  'cGenotype_TestData.h',
+  'cGenotypeControl.h',
+  'cInjectGenotype.h',
+  'cInjectGenotype_BirthData.h',
+  'cInjectGenotypeControl.h',
+  'cInjectGenotypeElement.h',
+  'cInjectGenotypeQueue.h',
+  'cLineage.h',
+  'cSpecies.h',
+  'cSpeciesControl.h',
+  'cSpeciesQueue.h',
+  'nGenotype.h',
+  'nInjectGenotype.h',
+  'nSpecies.h',
+]
+
+srcs = [
+  'cClassificationManager.cc',
+  'cGenotype.cc',
+  'cGenotype_BirthData.cc',
+  'cGenotypeControl.cc',
+  'cInjectGenotype.cc',
+  'cInjectGenotypeControl.cc',
+  'cInjectGenotypeQueue.cc',
+  'cLineage.cc',
+  'cSpecies.cc',
+  'cSpeciesControl.cc',
+  'cSpeciesQueue.cc',
+]
+
+environment.Library('classification', srcs)
+
+environment.AppendUnique(
+  avida_msvs_project_srcs = [File(src).srcnode().path for src in srcs],
+  avida_msvs_project_incs = [File(src).srcnode().path for src in incs],
+  avida_msvs_project_misc = [File(src).srcnode().path for src in misc],
+)
 
 
 # vim: set ft=python:
