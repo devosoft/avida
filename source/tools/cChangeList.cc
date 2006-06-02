@@ -139,7 +139,7 @@ namespace nChangeList {
         }
       }
 
-      //std::remove(filename.c_str());
+      std::remove(filename.c_str());
     }
   } // utChangeList_archiving
 
