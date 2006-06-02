@@ -24,4 +24,5 @@ if environment['enableTestCode'] in ('True', '1', 1):
 if environment['enablePyPkg'] in ('True', '1', 1):
   environment.SConscript('bindings/Boost.Python/SConscript')
 
+
 # vim: set ft=python:

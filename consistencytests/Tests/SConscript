@@ -1,0 +1,7 @@
+
+Import('environment')
+e = environment
+
+e.SConscript('Default/SConscript')
+
+# vim: set ft=python:

@@ -73,7 +73,7 @@ environment.SConscript('source/SConscript', build_dir = '$buildDir')
 environment.SConscript('support/config/SConscript')
 
 # XXX beginnings of consistency tests. @kgn
-#environment.SConscript('consistencytests/SConscript', build_dir = 'consistencytest_output')
+environment.SConscript('consistencytests/SConscript', build_dir = 'consistencytest_output')
 
 if environment['PLATFORM'] == 'win32':
   script_to_build_avida = environment.File(
