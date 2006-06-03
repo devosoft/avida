@@ -1028,36 +1028,6 @@ public:
 };
 
 
-///// print_genetic_distance_data /////
-
-/**
-**/
-
-
-class cEvent_print_genetic_distance_data : public cEvent {
-private:
-  cString creature_name;
-  cString filename;
-public:
-    const cString GetName() const { return "print_genetic_distance_data"; }
-  const cString GetDescription() const { return "print_genetic_distance_data  [cString creature_name=\"\"] [cString filename=\"genetic_distance.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") creature_name=""; else creature_name=args.PopWord();
-    if (args == "") filename="genetic_distance.dat"; else filename=args.PopWord();
-  }
-  ///// print_genetic_distance_data /////
-  void Process(){
-    if( creature_name == "" || creature_name == "START_CREATURE" )
-      creature_name = m_world->GetConfig().START_CREATURE.Get();
-    cAnalyzeUtil::PrintGeneticDistanceData(m_world, m_world->GetDataFileOFStream(filename), creature_name);
-  }
-};
-
 ///// genetic_distance_pop_dump /////
 
 /**
@@ -2524,7 +2494,6 @@ cEventManager::cEventManager(cWorld* world) : m_world(world)
   REGISTER(test_dom);
   REGISTER(analyze_population);
 
-  REGISTER(print_genetic_distance_data);
   REGISTER(genetic_distance_pop_dump);
   REGISTER(task_snapshot);
   REGISTER(print_viable_tasks_data);

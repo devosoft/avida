@@ -14,11 +14,14 @@
 #include "cAnalyzeUtil.h"
 #include "cClassificationManager.h"
 #include "cCPUTestInfo.h"
+#include "cGenome.h"
+#include "cGenomeUtil.h"
 #include "cGenotype.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cInjectGenotype.h"
 #include "cInstSet.h"
+#include "cInstUtil.h"
 #include "cOrganism.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
@@ -652,6 +655,82 @@ public:
 };
 
 
+/*
+ This function goes through all genotypes currently present in the soup,
+ and writes into an output file the average Hamming distance between the
+ creatures in the population and a given reference genome.
+ 
+ Parameters
+   ref_creature_file (cString)
+     Filename for the reference genome, defaults to START_CREATURE
+   fname (cString)
+     Name of file to create, defaults to 'genetic_distance.dat'
+*/
+class cActionPrintGeneticDistanceData : public cAction
+{
+private:
+  cGenome m_reference;
+  cString m_filename;
+  
+public:
+  cActionPrintGeneticDistanceData(cWorld* world, const cString& args)
+    : cAction(world, args), m_filename("genetic_distance.dat")
+  {
+    cString creature_file;
+    cString largs(args);
+    
+    // Load the genome of the reference creature
+    if (largs.GetSize())
+      creature_file = largs.PopWord();
+    else
+      creature_file = m_world->GetConfig().START_CREATURE.Get();
+    m_reference = cInstUtil::LoadGenome(creature_file, world->GetHardwareManager().GetInstSet());
+    
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  
+  const cString GetDescription() { return "PrintGeneticDistanceData [cString ref_creature_file='START_CREATURE'] [cString fname='genetic_distance.dat']"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    double hamming_m1 = 0;
+    double hamming_m2 = 0;
+    int count = 0;
+    int dom_dist = 0;
+    
+    // get the info for the dominant genotype
+    cGenotype* cur_genotype = m_world->GetClassificationManager().GetBestGenotype();
+    cGenome genome = cur_genotype->GetGenome();
+    dom_dist = cGenomeUtil::FindHammingDistance(m_reference, genome);
+    hamming_m1 += dom_dist;
+    hamming_m2 += dom_dist*dom_dist;
+    count += cur_genotype->GetNumOrganisms();
+    // now cycle over the remaining genotypes
+    for (int i = 1; i < m_world->GetClassificationManager().GetGenotypeCount(); i++) {
+      cur_genotype = cur_genotype->GetNext();
+      cGenome genome = cur_genotype->GetGenome();
+      
+      int dist = cGenomeUtil::FindHammingDistance(m_reference, genome);
+      hamming_m1 += dist;
+      hamming_m2 += dist*dist;
+      count += cur_genotype->GetNumOrganisms();
+    }
+    
+    hamming_m1 /= static_cast<double>(count);
+    hamming_m2 /= static_cast<double>(count);
+
+    double hamming_best = cGenomeUtil::FindHammingDistance(m_reference, m_world->GetClassificationManager().GetBestGenotype()->GetGenome());
+
+    cDataFile& df = m_world->GetDataFile(m_filename);
+    df.Write(m_world->GetStats().GetUpdate(), "Update");
+    df.Write(hamming_m1, "Average Hamming Distance");
+    df.Write(sqrt((hamming_m2 - hamming_m1*hamming_m1) / static_cast<double>(count)), "Standard Error");
+    df.Write(hamming_best, "Best Genotype Hamming Distance");
+    df.Endl();
+  }
+};
+
+
 class cActionDumpMemory : public cAction
 {
 private:
@@ -714,6 +793,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDominantGenotype>("PrintDominantGenotype");
   action_lib->Register<cActionPrintDominantParasiteGenotype>("PrintDominantParasiteGenotype");
   action_lib->Register<cActionPrintDetailedFitnessData>("PrintDetailedFitnessData");
+  action_lib->Register<cActionPrintGeneticDistanceData>("PrintGenericDistanceData");
   action_lib->Register<cActionPrintDebug>("PrintDebug");
 
   action_lib->Register<cActionPrintGenotypes>("PrintGenotypes");
@@ -754,6 +834,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDominantGenotype>("print_dom");
   action_lib->Register<cActionPrintDominantParasiteGenotype>("print_dom_parasite");
   action_lib->Register<cActionPrintDetailedFitnessData>("print_detailed_fitness_data");
+  action_lib->Register<cActionPrintGeneticDistanceData>("print_genetic_distance_data");
   
   action_lib->Register<cActionPrintGenotypes>("print_genotypes");
   action_lib->Register<cActionDumpMemory>("dump_memory");

@@ -48,8 +48,6 @@ public:
 				double sample_prob=1, bool landscape=false,
 				bool save_genotype=false);
 
-  static void PrintGeneticDistanceData(cWorld* world, std::ofstream& fp,
-				const char *creature_name );
   static void GeneticDistancePopDump(cWorld* world, std::ofstream& fp,
 		    const char * creature_name, bool save_creatures=false);
 

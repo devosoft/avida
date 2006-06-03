@@ -406,58 +406,6 @@ void cAnalyzeUtil::AnalyzePopulation(cWorld* world, ofstream& fp,
 }
 
 
-/**
-* This function goes through all genotypes currently present in the soup,
- * and writes into an output file the average Hamming distance between the
- * creatures in the population and a given reference genome.
- *
- * @param fp The stream into which the data should be saved.
- * @param reference_genome The reference genome.
- * @param save_creatures A bool that indicates whether creatures should be
- * saved into the classmgr or not.
- **/
-
-void cAnalyzeUtil::PrintGeneticDistanceData(cWorld* world, ofstream& fp,
-                                            const char * creature_name)
-{
-  double hamming_m1 = 0;
-  double hamming_m2 = 0;
-  int count = 0;
-  int dom_dist = 0;
-  
-  // load the reference genome
-  cGenome reference_genome(cInstUtil::LoadGenome(creature_name, world->GetHardwareManager().GetInstSet()));
-  
-  // get the info for the dominant genotype
-  cGenotype * cur_genotype = world->GetClassificationManager().GetBestGenotype();
-  cGenome genome = cur_genotype->GetGenome();
-  dom_dist = cGenomeUtil::FindHammingDistance( reference_genome, genome );
-  hamming_m1 += dom_dist;
-  hamming_m2 += dom_dist*dom_dist;
-  count += cur_genotype->GetNumOrganisms();
-  // now cycle over the remaining genotypes
-  for (int i = 1; i < world->GetClassificationManager().GetGenotypeCount(); i++) {
-    cur_genotype = cur_genotype->GetNext();
-    cGenome genome = cur_genotype->GetGenome();
-    
-    int dist = cGenomeUtil::FindHammingDistance( reference_genome, genome );
-    hamming_m1 += dist;
-    hamming_m2 += dist*dist;
-    count += cur_genotype->GetNumOrganisms();
-  }
-  
-  hamming_m1 /= (double) count;
-  hamming_m2 /= (double) count;
-  
-  fp << world->GetStats().GetUpdate()          << " "  // 1 update
-    << hamming_m1 			     << " "  // ave. Hamming dist
-    << sqrt( ( hamming_m2 - hamming_m1*hamming_m1 ) / (double) count )
-    << " "  // std. error
-    << cGenomeUtil::FindHammingDistance( reference_genome,
-                                         world->GetClassificationManager().GetBestGenotype()->GetGenome() ) << " "
-    << endl;
-}
-
 
 /**
 * This function goes through all genotypes currently present in the soup,
