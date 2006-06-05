@@ -422,9 +422,11 @@ public:
   void Process(cAvidaContext& ctx)
   {
     cInjectGenotype* dom = m_world->GetClassificationManager().GetBestInjectGenotype();
-    cString filename(m_filename);
-    if (filename == "") filename.Set("archive/%s", static_cast<const char*>(dom->GetName()));
-    cTestUtil::PrintGenome(m_world, dom, dom->GetGenome(), filename, m_world->GetStats().GetUpdate());
+    if (dom != NULL) {
+      cString filename(m_filename);
+      if (filename == "") filename.Set("archive/%s", static_cast<const char*>(dom->GetName()));
+      cTestUtil::PrintGenome(m_world, dom, dom->GetGenome(), filename, m_world->GetStats().GetUpdate());
+    }
   }
 };
 
