@@ -27,7 +27,7 @@ public:
 
   void Adjust();
   void Reset(int in_mem_space = 0, cHardwareBase* new_hardware = NULL);
-  void Set(int new_pos, int in_mem_space = 0, cHardwareBase * in_hardware = NULL);
+  void Set(int new_pos, int in_mem_space = 0, cHardwareBase* in_hardware = NULL);
   void Set(const cHeadMultiMem& in_head);
   void LoopJump(int jump);
   const cCPUMemory& GetMemory() const;

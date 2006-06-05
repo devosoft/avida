@@ -251,9 +251,6 @@
 		70CA6EDF08DB7F8200068AC2 /* cInstruction.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EBF08DB7F8200068AC2 /* cInstruction.cc */; };
 		70CA6EE008DB7F8200068AC2 /* cInstSet.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EC008DB7F8200068AC2 /* cInstSet.cc */; };
 		70CA6EE108DB7F8200068AC2 /* cInstUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EC108DB7F8200068AC2 /* cInstUtil.cc */; };
-		70D46934085F61DA004C8409 /* trio.c in Sources */ = {isa = PBXBuildFile; fileRef = DCC3146D076253A1008F7A48 /* trio.c */; };
-		70D46935085F61DD004C8409 /* trionan.c in Sources */ = {isa = PBXBuildFile; fileRef = DCC31471076253A1008F7A48 /* trionan.c */; };
-		70D46936085F61DF004C8409 /* triostr.c in Sources */ = {isa = PBXBuildFile; fileRef = DCC31474076253A1008F7A48 /* triostr.c */; };
 		70DCAC7A097AF731002F8733 /* cBarScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC59097AF730002F8733 /* cBarScreen.cc */; };
 		70DCAC7D097AF731002F8733 /* cEnvironmentScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC5C097AF730002F8733 /* cEnvironmentScreen.cc */; };
 		70DCAC7F097AF731002F8733 /* cHistScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC5E097AF730002F8733 /* cHistScreen.cc */; };
@@ -2207,9 +2204,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				DCC3166107628531008F7A48 /* avida.cc in Sources */,
-				70D46934085F61DA004C8409 /* trio.c in Sources */,
-				70D46935085F61DD004C8409 /* trionan.c in Sources */,
-				70D46936085F61DF004C8409 /* triostr.c in Sources */,
 				70C1EF4808C393BA00F50912 /* cCodeLabel.cc in Sources */,
 				70C1EF5908C3948C00F50912 /* cCPUMemory.cc in Sources */,
 				70C1EF6208C3954700F50912 /* cCPUStack.cc in Sources */,

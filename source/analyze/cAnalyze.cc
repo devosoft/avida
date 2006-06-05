@@ -2621,11 +2621,11 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
   ////////////////////////////////////////////////
   // Check if all the genotypes having same length
   
-  int length_genome;
+  int length_genome = 0;
   if (genotype_database.size() > 0) {
     length_genome = genotype_database.begin()->second->GetLength();
   }
-  map<int, cAnalyzeGenotype *>::iterator gen_iterator = genotype_database.begin();
+  map<int, cAnalyzeGenotype*>::iterator gen_iterator = genotype_database.begin();
   for (; gen_iterator != genotype_database.end(); ++ gen_iterator) {
     if (gen_iterator->second->GetLength() != length_genome) {
       cerr << "Genotype " << gen_iterator->first << " has different genome length." << endl;
@@ -3172,7 +3172,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
   int num_insts = inst_set.GetSize();
   map<int, tMatrix<double> > point_mut; 
   int size_community = community.size();
-  int length_genome;
+  int length_genome = 0;
   if (size_community > 1) {
     length_genome = community[0]->GetLength();
   }
@@ -3278,8 +3278,9 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
     }
     
     double min_new_info = length_genome; 
-    double oo_initial_entropy, oo_conditional_entropy;
-    cAnalyzeGenotype * used_genotype;
+    double oo_initial_entropy = 0.0;
+    double oo_conditional_entropy = 0.0;
+    cAnalyzeGenotype* used_genotype = NULL;
     tMatrix<double> this_prob = point_mut.find(genotype->GetID())->second;
     
     // For any given genotype, calculate the new information in genotype
@@ -3436,7 +3437,7 @@ void cAnalyze::CommandPairwiseEntropy(cString cur_string)
     filename.Set("%spairdata.%s.dat", static_cast<const char*>(directory),
 		 static_cast<const char*>(genName));
 
-    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    // @DMB -- ofstream& fp = m_world->GetDataFileOFStream(filename);
 
     if (verbose >= nAnalyze::VERBOSE_ON)
 	cout << "\t\t...with filename:  " << filename << endl;

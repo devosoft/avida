@@ -117,7 +117,7 @@ public:
     
     tListIterator<cString> names_it(names);
     for (int i = 0; names_it.Next() != NULL; i++) {
-      CreateObjectFunction func;
+      CreateObjectFunction func = NULL;
       m_create_funcs.Find(*names_it.Get(), func);
       objects[i] = func();
     }

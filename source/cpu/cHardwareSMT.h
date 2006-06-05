@@ -299,6 +299,10 @@ private:
   bool Inst_NetLast(cAvidaContext& ctx);        // 42
   bool Inst_RotateLeft(cAvidaContext& ctx);     // 43
   bool Inst_RotateRight(cAvidaContext& ctx);    // 44
+  bool Inst_CallFlow(cAvidaContext& ctx);       // 45
+  bool Inst_CallLabel(cAvidaContext& ctx);      // 46
+  bool Inst_Return(cAvidaContext& ctx);         // 47
+  
 };
 
 

@@ -96,6 +96,9 @@ tInstLib<cHardwareSMT::tMethod>* cHardwareSMT::initInstLib(void)
     cInstEntry("Net-Last", &cHardwareSMT::Inst_NetLast), // 42
     cInstEntry("Rotate-Left", &cHardwareSMT::Inst_RotateLeft), // 43
     cInstEntry("Rotate-Right", &cHardwareSMT::Inst_RotateRight), // 44
+    cInstEntry("Call-Flow", &cHardwareSMT::Inst_CallFlow), // 44
+    cInstEntry("Call-Label", &cHardwareSMT::Inst_CallLabel), // 44
+    cInstEntry("Return", &cHardwareSMT::Inst_Return), // 44
     
     cInstEntry("NULL", &cHardwareSMT::Inst_Nop) // Last Instruction Always NULL
   };
@@ -1672,6 +1675,62 @@ bool cHardwareSMT::Inst_RotateRight(cAvidaContext& ctx)
   
   // Always rotate at least once.
   organism->Rotate(1);
+  
+  return true;
+}
+
+//45
+bool cHardwareSMT::Inst_CallFlow(cAvidaContext& ctx)
+{
+  const int dst = FindModifiedStack(STACK_AX);
+
+  const int location = IP().GetPosition() & 0xFFFF;
+  const int mem_space = IP().GetMemSpace() << 8;
+  const int ra  = location | mem_space;
+  
+  Stack(dst).Push(ra);
+  
+  cHeadMultiMem& flow = GetHead(nHardware::HEAD_FLOW);
+  IP().Set(flow.GetPosition(), flow.GetMemSpace());
+  
+  return true;
+}
+
+//46
+bool cHardwareSMT::Inst_CallLabel(cAvidaContext& ctx)
+{
+  const int dst = FindModifiedStack(STACK_AX);
+  
+  const unsigned int location = IP().GetPosition() & 0xFFFF;
+  const unsigned int mem_space = IP().GetMemSpace() << 8;
+  const unsigned int ra  = location | mem_space;
+  
+  Stack(dst).Push(ra);
+  
+  ReadLabel(MAX_MEMSPACE_LABEL);
+  
+  if (GetLabel().GetSize() != 0) {
+    int mem_space_used = FindMemorySpaceLabel(GetLabel(), -1);
+    if (mem_space_used > -1) {
+      // Jump to beginning of memory space
+      IP().Set(0, mem_space_used);
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+//47
+bool cHardwareSMT::Inst_Return(cAvidaContext& ctx)
+{
+  const int src = FindModifiedStack(STACK_AX);
+  const unsigned int ra = Stack(src).Pop();
+  
+  const int location = ra & 0xFFFF;
+  const int mem_space = NormalizeMemSpace(ra >> 8);
+  
+  IP().Set(location, mem_space);
   
   return true;
 }
