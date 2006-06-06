@@ -390,7 +390,7 @@ public:
   {
     cGenotype* dom = m_world->GetClassificationManager().GetBestGenotype();
     cString filename(m_filename);
-    if (filename == "") filename.Set("archive/%s", static_cast<const char*>(dom->GetName()));
+    if (filename == "") filename.Set("archive/%s.org", static_cast<const char*>(dom->GetName()));
     cTestUtil::PrintGenome(m_world, dom->GetGenome(), filename, dom, m_world->GetStats().GetUpdate());
   }
 };
@@ -424,7 +424,7 @@ public:
     cInjectGenotype* dom = m_world->GetClassificationManager().GetBestInjectGenotype();
     if (dom != NULL) {
       cString filename(m_filename);
-      if (filename == "") filename.Set("archive/%s", static_cast<const char*>(dom->GetName()));
+      if (filename == "") filename.Set("archive/%s.para", static_cast<const char*>(dom->GetName()));
       cTestUtil::PrintGenome(m_world, dom, dom->GetGenome(), filename, m_world->GetStats().GetUpdate());
     }
   }
