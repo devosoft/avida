@@ -150,6 +150,7 @@ void cHardwareSMT::Reset()
   
   // We want to reset to have a single thread.
   m_threads.Resize(1);
+  m_thread_lbls.ClearAll();
 	
   // Reset that single thread.
   m_threads[0].Reset(this, 0);
