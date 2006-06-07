@@ -32,6 +32,73 @@ SET(LIBRARY_OUTPUT_PATH
   "Built libraries are placed here before installation."
 )
 
+
+
+# This section defines default builtin configure options.
+
+IF(UNIX)
+
+  IF(APPLE)
+    SET(COMPILER_WARNING_FLAGS "-Wall -Wno-long-double -Wno-long-long")
+  ELSE(APPLE)
+    SET(COMPILER_WARNING_FLAGS "-Wall -Wno-long-long")
+  ENDIF(APPLE)
+
+  # Four types of c++ compilations:
+  # - debug (Debug)
+  # - minimum-size release (MinSizeRel)
+  # - release (Release)
+  # - release with debug info (RelWithDebInfo)
+  SET(CMAKE_CXX_FLAGS_DEBUG
+    "-g ${COMPILER_WARNING_FLAGS} -DDEBUG"
+    CACHE STRING "Flags used by the compiler during debug builds." FORCE)
+  SET(CMAKE_CXX_FLAGS_MINSIZEREL
+    "-Os -DNDEBUG"
+    CACHE STRING "Flags used by the compiler during release minsize builds." FORCE)
+  SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO
+    "-O2 -ffast-math -g ${COMPILER_WARNING_FLAGS} -DDEBUG"
+    CACHE STRING "Flags used by the compiler during release builds." FORCE)
+  SET(CMAKE_CXX_FLAGS_RELEASE
+    "-O3 -ffast-math -DNDEBUG"
+    CACHE STRING "Flags used by the compiler during release builds." FORCE)
+
+  # Four types of c compilations:
+  # - debug (Debug)
+  # - minimum-size release (MinSizeRel)
+  # - release (Release)
+  # - release with debug info (RelWithDebInfo)
+  SET(CMAKE_C_FLAGS_DEBUG
+    "-g ${COMPILER_WARNING_FLAGS} -DDEBUG"
+    CACHE STRING "Flags used by the compiler during debug builds." FORCE)
+  SET(CMAKE_C_FLAGS_MINSIZEREL
+    "-Os -DNDEBUG"
+    CACHE STRING "Flags used by the compiler during release minsize builds." FORCE)
+  SET(CMAKE_C_FLAGS_RELEASE
+    "-O3 -ffast-math -DNDEBUG"
+    CACHE STRING "Flags used by the compiler during release builds." FORCE)
+  SET(CMAKE_C_FLAGS_RELWITHDEBINFO
+    "-O2 -ffast-math -g ${COMPILER_WARNING_FLAGS} -DDEBUG"
+    CACHE STRING "Flags used by the compiler during release builds." FORCE)
+
+  # By default, show all build commands.
+  SET(CMAKE_VERBOSE_MAKEFILE TRUE CACHE BOOL
+    "If this value is on, makefiles will be generated without the .SILENT directive, and all commands will be echoed to the console during the make.  This is useful for debugging only.")
+ENDIF(UNIX)
+
+SET(CMAKE_SKIP_RPATH TRUE CACHE INTERNAL "Fix Library Path Issues?")
+
+# Default build mode compiles c++ and c code with debug info and no
+# optimizations.
+IF(NOT CMAKE_BUILD_TYPE)
+  SET(CMAKE_BUILD_TYPE
+    Release
+    CACHE STRING
+    "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel."
+    FORCE
+  )
+ENDIF(NOT CMAKE_BUILD_TYPE)
+
+
 IF(UNIX)
   SET(AVD_ENABLE_TCMALLOC TRUE)
 ELSE(UNIX)
@@ -242,69 +309,3 @@ SET(ALL_LIB_DIRS
 )
 
 SUBDIRS(source support)
-
-# This section defines default builtin configure options.
-
-IF(UNIX)
-
-  IF(APPLE)
-    SET(COMPILER_WARNING_FLAGS "-Wall -Wno-long-double -Wno-long-long")
-  ELSE(APPLE)
-    SET(COMPILER_WARNING_FLAGS "-Wall -Wno-long-long")
-  ENDIF(APPLE)
-
-  # Four types of c++ compilations:
-  # - debug (Debug)
-  # - minimum-size release (MinSizeRel)
-  # - release (Release)
-  # - release with debug info (RelWithDebInfo)
-  SET(CMAKE_CXX_FLAGS_DEBUG
-    "-g ${COMPILER_WARNING_FLAGS} -DDEBUG -DUSE_tMemTrack=1"
-    CACHE STRING "Flags used by the compiler during debug builds.")
-  SET(CMAKE_CXX_FLAGS_MINSIZEREL
-    "-Os -DNDEBUG -DUSE_tMemTrack=1"
-    CACHE STRING "Flags used by the compiler during release minsize builds.")
-  SET(CMAKE_CXX_FLAGS_RELEASE
-    "-O3 -ffast-math -DNDEBUG -DUSE_tMemTrack=1"
-    CACHE STRING "Flags used by the compiler during release builds.")
-  SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO
-    "-O2 -ffast-math -g ${COMPILER_WARNING_FLAGS} -DDEBUG -DUSE_tMemTrack=1"
-    CACHE STRING "Flags used by the compiler during release builds.")
-
-  # Four types of c compilations:
-  # - debug (Debug)
-  # - minimum-size release (MinSizeRel)
-  # - release (Release)
-  # - release with debug info (RelWithDebInfo)
-  SET(CMAKE_C_FLAGS_DEBUG
-    "-g ${COMPILER_WARNING_FLAGS} -DDEBUG -DUSE_tMemTrack=1"
-    CACHE STRING "Flags used by the compiler during debug builds.")
-  SET(CMAKE_C_FLAGS_MINSIZEREL
-    "-Os -DNDEBUG -DUSE_tMemTrack=1"
-    CACHE STRING "Flags used by the compiler during release minsize builds.")
-  SET(CMAKE_C_FLAGS_RELEASE
-    "-O3 -ffast-math -DNDEBUG -DUSE_tMemTrack=1"
-    CACHE STRING "Flags used by the compiler during release builds.")
-  SET(CMAKE_C_FLAGS_RELWITHDEBINFO
-    "-O2 -ffast-math -g ${COMPILER_WARNING_FLAGS} -DDEBUG -DUSE_tMemTrack=1"
-    CACHE STRING "Flags used by the compiler during release builds.")
-
-  # By default, show all build commands.
-  SET(CMAKE_VERBOSE_MAKEFILE TRUE CACHE BOOL
-    "If this value is on, makefiles will be generated without the .SILENT directive, and all commands will be echoed to the console during the make.  This is useful for debugging only.")
-ENDIF(UNIX)
-
-SET(CMAKE_SKIP_RPATH TRUE CACHE INTERNAL "Fix Library Path Issues?")
-
-# Default build mode compiles c++ and c code with debug info and no
-# optimizations.
-IF(NOT CMAKE_BUILD_TYPE)
-  SET(CMAKE_BUILD_TYPE
-    Release
-    CACHE STRING
-    "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel."
-    FORCE
-  )
-ENDIF(NOT CMAKE_BUILD_TYPE)
-
-
