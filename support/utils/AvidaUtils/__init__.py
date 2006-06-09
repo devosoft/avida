@@ -8,7 +8,7 @@
 
 import sys
 import SCons
-import CmdLineOpts, SConsOpts, StaticHelp
+import CmdLineOpts, SConsOpts, StaticHelp, TestUtil
 
 def Configure(args, env):
   env.Replace(AvidaUtils_path = __path__)

@@ -9,10 +9,10 @@ Import('avida_exe')
 
 TestsName = 'Default-CPU'
 ConfigDir = e.Dir('$execPrefix')
-GenesisFile = e.File('avida.cfg', ConfigDir)
-InstSetFile = e.File('inst_set.default', ConfigDir)
+GenesisFile = e.File('avida-smt.cfg', ConfigDir)
+InstSetFile = e.File('inst_set.smt', ConfigDir)
 EnvironmentFile = e.File('environment.cfg', ConfigDir)
-StartCreatureFile = e.File('organism.default', ConfigDir)
+StartCreatureFile = e.File('organism.smt', ConfigDir)
 
 AvidaArgs = "-c %(GenesisFile)s -set WORLD_X 40 -set WORLD_Y 40 -set INST_SET %(InstSetFile)s -set ENVIRONMENT_FILE %(EnvironmentFile)s -set START_CREATURE %(StartCreatureFile)s -seed %(Seed)s -set EVENT_FILE %(EventsFile)s -set DATA_DIR %(DataDir)s" % {
   'GenesisFile':GenesisFile.path,
@@ -29,7 +29,7 @@ TestDirBase = e.Dir('Seed_')
 SeedSet = range(100,105)
 OutputFileName = 'detail_pop.%s' % RunLength
 
-ConsistencyCheck(e, 'Default-CPU',
+ConsistencyCheck(e, 'Default-SMT',
   run_length = RunLength,
   seed_set = SeedSet,
   run_subdir_path_base = TestDirBase.path,
