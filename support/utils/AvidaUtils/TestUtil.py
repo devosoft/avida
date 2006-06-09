@@ -84,7 +84,7 @@ class TailChecker:
 
     #os.system(avida_command)
 
-    avida_output_fd = os.popen(avida_command, 'r', 1)
+    avida_output_fd = os.popen(avida_command, 'r', -1)
     line = avida_output_fd.readline()
     while line != "":
       print line,
