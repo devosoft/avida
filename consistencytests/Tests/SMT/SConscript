@@ -26,7 +26,7 @@ AvidaArgs = "-c %(GenesisFile)s -set WORLD_X 40 -set WORLD_Y 40 -set INST_SET %(
 
 RunLength = '500'
 TestDirBase = e.Dir('Seed_')
-SeedSet = range(100,105)
+SeedSet = range(100,101)
 OutputFileName = 'detail_pop.%s' % RunLength
 
 ConsistencyCheck(e, 'Default-SMT',
