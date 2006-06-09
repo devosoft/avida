@@ -82,15 +82,12 @@ class TailChecker:
 
     expected_last_line_fd = file(expectation_file_path, "rU")
 
-    #os.system(avida_command)
-
     avida_output_fd = os.popen(avida_command, 'r', -1)
     line = avida_output_fd.readline()
     while line != "":
       print line,
       line = avida_output_fd.readline()
     avida_output_fd.close()
-
 
     detail_fd = file(os.path.join(run_subdir, self.output_file_name),"rU") 
     next_detail_line = detail_fd.readline()
@@ -196,7 +193,12 @@ class TailGenerator:
 
     expected_last_line_fd = file(expectation_file_path, "wU")
 
-    os.system(avida_command)
+    avida_output_fd = os.popen(avida_command, 'r', -1)
+    line = avida_output_fd.readline()
+    while line != "":
+      print line,
+      line = avida_output_fd.readline()
+    avida_output_fd.close()
 
     detail_fd = file(os.path.join(run_subdir, self.output_file_name),"rU")
     next_detail_line = detail_fd.readline()
