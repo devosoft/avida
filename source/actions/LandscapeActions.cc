@@ -348,7 +348,7 @@ public:
 void RegisterLandscapeActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionAnalyzeLandscape>("AnalyzeLandscape");
-  action_lib->Register<cActionRandomLandscape>("FullLandscape");
+  action_lib->Register<cActionFullLandscape>("FullLandscape");
   action_lib->Register<cActionRandomLandscape>("RandomLandscape");
   action_lib->Register<cActionSampleLandscape>("SampleLandscape");
 }

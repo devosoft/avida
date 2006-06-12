@@ -13,6 +13,9 @@
 #ifndef cAnalyzeJob
 #include "cAnalyzeJob.h"
 #endif
+#ifndef tArray_h
+#include "tArray.h"
+#endif
 #ifndef tList_h
 #include "tList.h"
 #endif
@@ -28,6 +31,7 @@ class cWorld;
 const int MT_RANDOM_POOL_SIZE = 16;
 const int MT_RANDOM_INDEX_MASK = 0xF;
 
+
 class cAnalyzeJobQueue
 {
   friend class cAnalyzeJobWorker;
@@ -38,6 +42,14 @@ private:
   int m_last_jobid;
   cRandomMT* m_rng_pool[MT_RANDOM_POOL_SIZE];
   pthread_mutex_t m_mutex;
+  pthread_cond_t m_cond;
+  pthread_cond_t m_term_cond;
+  
+  volatile int m_jobs;      // count of waiting jobs, used in pthread_cond constructs
+  volatile int m_pending;   // count of currently executing jobs
+  
+  tArray<cAnalyzeJobWorker*> m_workers;
+
   
   cAnalyzeJobQueue(); // @not_implemented
   cAnalyzeJobQueue(const cAnalyzeJobQueue&); // @not_implemented
@@ -48,7 +60,8 @@ public:
   cAnalyzeJobQueue(cWorld* world);
   ~cAnalyzeJobQueue();
 
-  void AddJob(cAnalyzeJob* job) { job->SetID(m_last_jobid++); m_queue.PushRear(job); } // @DMB - Warning: NOT thread safe
+  void AddJob(cAnalyzeJob* job);
+  void AddJobImmediate(cAnalyzeJob* job);
 
   void Execute();
   
