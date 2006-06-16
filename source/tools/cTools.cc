@@ -30,7 +30,7 @@ bool cTools::MkDir(const cString & dirname, bool verbose)
 {
   if (verbose) cout << "Checking for directory '" << dirname << "'..." << flush;
 
-  FILE * fp = fopen(dirname, "r");
+  FILE* fp = fopen(dirname, "r");
   if (fp == 0) {
     if (errno == ENOENT) {
       if (verbose) cout << "  not found, creating..." << flush;
@@ -47,6 +47,7 @@ bool cTools::MkDir(const cString & dirname, bool verbose)
     if (verbose) cout << "Warning: Failed to open '" << dirname << "'." << endl;
     return false;
   }
+  fclose(fp);
 
   if (verbose) cout << " found." << endl;
   return true;
