@@ -4,7 +4,11 @@ import sys
 
 Import('environment')
 
-avida_LIBS = [
+misc = ['SConscript']
+
+srcs = ['primitive.cc']
+
+libs = [
     'main',
     'classification',
     'cpu',
@@ -20,56 +24,22 @@ avida_LIBS = [
     'main',
   ]
 if environment['PLATFORM'] not in ('win32'):
-  avida_LIBS = avida_LIBS + ['pthread']
+  libs = libs + ['pthread']
 if environment['enableTCMalloc'] in ('True', '1', 1):
-  avida_LIBS = avida_LIBS + ['tcmalloc']
-
-avida_main_source = ['primitive.cc']
+  libs = libs + ['tcmalloc']
 
 avida_exe = environment.Program('avida',
-  avida_main_source,
-  LIBS = avida_LIBS,
+  srcs,
+  LIBS = libs,
 )
 environment.Install('$execPrefix', avida_exe)
 # Make avida_exe visible to other SConscript files by the command
 # "Import('avida_exe')"
 environment.Export('avida_exe')
 
-# This assumes that the script to build Avida is in the top-level directory
-# of the Avida package; but it doesn't assume the script's name.
-script_to_build_avida = environment.File(
-  os.path.join('#', os.path.basename(sys.argv[0]))
-).abspath
-
-data_dir = environment.Dir(
-  os.path.join(environment['execPrefix'], 'data')
-).abspath
-
-config_file = environment.File(
-  os.path.join(
-    environment['configPrefix'],
-    'avida.cfg'
-) ).abspath
-
-work_directory = environment.Dir(environment['execPrefix'])
-
-build_options_file = environment.File(environment['customOptions'])
-print "build_options_file.abspath '%s'" % build_options_file.abspath
-
-avida_command = "echo Starting Avida &amp;&amp; &quot;%s&quot; -c &quot;%s&quot; -set DATA_DIR &quot;%s&quot; " % (
-  avida_exe[0].abspath,
-  config_file,
-  data_dir,
+environment.AppendUnique(
+  avida_msvs_project_srcs = [File(src).srcnode().path for src in srcs],
+  avida_msvs_project_misc = [File(src).srcnode().path for src in misc],
 )
-
-#environment.MSVSProject(
-#  target = 'Avida' + environment['MSVSPROJECTSUFFIX'],
-#  misc = '#/README',
-#  variant = 'Release',
-#  runfile = avida[0].abspath,
-#  MSVSSCONS = '"%s" "%s"' % (sys.executable, script_to_build_avida),
-#  MSVSSCONSFLAGS = '-C "${MSVSSCONSCRIPT.dir.abspath}" -f "${MSVSSCONSCRIPT.name}"'
-#)
-#
 
 # vim: set ft=python:

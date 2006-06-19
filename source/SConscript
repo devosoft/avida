@@ -24,5 +24,11 @@ if environment['enableTestCode'] in ('True', '1', 1):
 if environment['enablePyPkg'] in ('True', '1', 1):
   environment.SConscript('bindings/Boost.Python/SConscript')
 
+incs = ['defs.h']
+misc = ['SConscript']
+environment.AppendUnique(
+  avida_msvs_project_incs = [File(src).srcnode().path for src in incs],
+  avida_msvs_project_misc = [File(src).srcnode().path for src in misc],
+)
 
 # vim: set ft=python:

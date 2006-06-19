@@ -1,5 +1,10 @@
 Import('environment')
 
+misc = ['SConscript']
+environment.AppendUnique(
+  avida_msvs_project_misc = [File(src).srcnode().path for src in misc],
+)
+
 if environment['enablePrimitive'] in ('True', '1', 1):
   environment.SConscript('avida/SConscript')
 if environment['enableGuiNcurses'] in ('True', '1', 1):

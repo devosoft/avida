@@ -1,19 +1,17 @@
 
 Import('environment')
 
-sources = [
+misc = ['SConscript']
+
+srcs = [
   'cAnalyze.cc',
   'cAnalyzeGenotype.cc',
   'cAnalyzeUtil.cc',
   'cAnalyzeJobQueue.cc',
   'cAnalyzeJobWorker.cc',
 ]
-environment.AppendUnique(
-  avida_msvs_project_srcs = [File(src).srcnode().path for src in sources])
 
-environment.Library('analyze', sources) 
-
-headers = [
+hdrs = [
   'cAnalyze.h',
   'cAnalyzeCommand.h',
   'cAnalyzeCommandAction.h',
@@ -30,8 +28,13 @@ headers = [
   'cGenotypeBatch.h',
   'tAnalyzeJob.h',
 ]
-environment.AppendUnique(
-  avida_msvs_project_incs = [File(src).srcnode().path for src in headers])
 
-  
+environment.Library('analyze', srcs) 
+
+environment.AppendUnique(
+  avida_msvs_project_srcs = [File(src).srcnode().path for src in srcs],
+  avida_msvs_project_incs = [File(src).srcnode().path for src in hdrs],
+  avida_msvs_project_misc = [File(src).srcnode().path for src in misc],
+)
+
 # vim: set ft=python:
