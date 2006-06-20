@@ -84,7 +84,7 @@ private:
   // The cBaseConfigEntry class is a bass class for all configuration entries.
   // It is used to manage the various types of entries in a dynamic fashion.
   class cBaseConfigEntry {
-private:
+  private:
     const cString config_name;   // Name of this setting
     const cString type;          // What type does this entry return?
     cString default_value;       // Value to use if not found in config file.
@@ -95,7 +95,7 @@ private:
     // values (not changeable at run time).  Should this instance be one of
     // those classes?
     bool use_overide;
-public:
+  public:
       cBaseConfigEntry(const cString & _name, const cString & _type,
                        const cString & _def, const cString & _desc);
     virtual ~cBaseConfigEntry() { ; }
@@ -114,11 +114,11 @@ public:
   // The cBaseConfigGroup class is a bass class for objects that collect the
   // configuration entries into logical groups.
   class cBaseConfigGroup {
-private:
+  private:
     cString group_name;
     cString description;
     tList<cBaseConfigEntry> entry_list;
-public:
+  public:
       cBaseConfigGroup(const cString & _name, const cString & _desc)
       : group_name(_name), description(_desc) { global_group_list.PushRear(this); }
     ~cBaseConfigGroup() { ; }
@@ -154,7 +154,7 @@ public:
   CONFIG_ADD_VAR(VIEW_MODE, int, 0, "Initial viewer screen");
   CONFIG_ADD_VAR(CLONE_FILE, cString, "-", "Clone file to load");
   CONFIG_ADD_VAR(MT_CONCURRENCY, int, 1, "Number of concurrent analyze threads");
-  CONFIG_ADD_VAR(VERBOSITY, int, 0, "Control output verbosity");
+  CONFIG_ADD_VAR(VERBOSITY, int, 1, "Control output verbosity");
   
   CONFIG_ADD_GROUP(ARCH_GROUP, "Architecture Variables");
   CONFIG_ADD_VAR(MAX_UPDATES, int, -1, "Maximum updates to run experiment (-1 = no limit)");
@@ -270,8 +270,8 @@ public:
   CONFIG_ADD_VAR(NET_STYLE, int, 0, "Communication Style.  0 = Random Next, 1 = Receiver Facing");
 #endif
   
-  void Load(const cString & filename);
-  void Print(const cString & filename);
+  void Load(const cString& filename);
+  void Print(const cString& filename);
   void Status();
   
   void GenerateOverides();

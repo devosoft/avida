@@ -13,9 +13,6 @@
 
 #include <fstream>
 
-#ifndef cTools_h
-#include "cTools.h"
-#endif
 #ifndef cDataFile_h
 #include "cDataFile.h"
 #endif
@@ -41,7 +38,7 @@ private:
   cDataFileManager& operator=(const cDataFileManager&); // @not_implemented
   
 public:
-  inline cDataFileManager(cString target_dir = "");
+  cDataFileManager(const cString& target_dir = "", bool verbose = false);
   ~cDataFileManager();
 
   /**
@@ -63,6 +60,8 @@ public:
    * @return true if file existed, otherwise false.
    **/
   bool Remove(const cString& name);
+  
+  const cString& GetTargetDir() const { return m_target_dir; }
 };
 
 
@@ -77,14 +76,6 @@ namespace nDataFileManager {
 }
 #endif  
 
-inline cDataFileManager::cDataFileManager(cString target_dir) : m_target_dir(target_dir)
-{
-  if (m_target_dir.GetSize() > 0) {
-    char dir_tail = m_target_dir[m_target_dir.GetSize() - 1];
-    if (dir_tail != '\\' && dir_tail != '/') m_target_dir += "/";
-    cTools::MkDir(m_target_dir, true);
-  }
-}
 
 inline bool cDataFileManager::IsOpen(const cString & name)
 {

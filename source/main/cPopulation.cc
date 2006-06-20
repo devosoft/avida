@@ -74,16 +74,19 @@ cPopulation::cPopulation(cWorld* world)
   world_y = world->GetConfig().WORLD_Y.Get();
   int geometry = world->GetConfig().WORLD_GEOMETRY.Get();
   const int num_cells = world_x * world_y;
-  cout << "Building world " << world_x << "x" << world_y
-    << " = " << num_cells << " organisms." << endl;
-  if (geometry == nGeometry::GRID) {
-    cout << "Geometry: Bounded grid" << endl;
-  } else if (geometry == nGeometry::TORUS) {
-    cout << "Geometry: Torus" << endl;
-  } else {
-    cout << "Geometry: Unknown" << endl;
+
+  // Print out world details
+  if (world->GetConfig().VERBOSITY.Get() > VERBOSE_NORMAL) {
+    cout << "Building world " << world_x << "x" << world_y << " = " << num_cells << " organisms." << endl;
+    if (geometry == nGeometry::GRID) {
+      cout << "Geometry: Bounded grid" << endl;
+    } else if (geometry == nGeometry::TORUS) {
+      cout << "Geometry: Torus" << endl;
+    } else {
+      cout << "Geometry: Unknown" << endl;
+    }
+    cout << endl;
   }
-  cout << endl;
   
   cell_array.Resize(num_cells);
   resource_count.ResizeSpatialGrids(world_x, world_y);

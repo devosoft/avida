@@ -96,13 +96,15 @@ void cDefaultRunDriver::Run()
     
     
     // No viewer; print out status for this update....
-    cout.setf(ios::left);
-    cout.setf(ios::showpoint);
-    cout << "UD: " << setw(6) << stats.GetUpdate() << "  "
-      << "Gen: " << setw(9) << setprecision(7) << stats.SumGeneration().Average() << "  "
-      << "Fit: " << setw(9) << setprecision(7) << stats.GetAveFitness() << "  "
-      << "Size: " << population.GetNumOrganisms()
-      << endl;
+    if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+      cout.setf(ios::left);
+      cout.setf(ios::showpoint);
+      cout << "UD: " << setw(6) << stats.GetUpdate() << "  "
+        << "Gen: " << setw(9) << setprecision(7) << stats.SumGeneration().Average() << "  "
+        << "Fit: " << setw(9) << setprecision(7) << stats.GetAveFitness() << "  "
+        << "Size: " << population.GetNumOrganisms()
+        << endl;
+    }
     
     
     // Do Point Mutations

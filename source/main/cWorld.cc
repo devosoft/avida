@@ -58,14 +58,9 @@ void cWorld::Setup()
   
   m_actlib = cDriverManager::GetActionLibrary();
   
-  // The data directory should end in a '/'
-  cString dir = m_conf->DATA_DIR.Get();
-  char dir_tail = dir[dir.GetSize() - 1];
-  if (dir_tail != '\\' && dir_tail != '/') {
-    dir += "/";
-    m_conf->DATA_DIR.Set(dir);
-  }
-  m_data_mgr = new cDataFileManager(dir);
+  m_data_mgr = new cDataFileManager(m_conf->DATA_DIR.Get(), (m_conf->VERBOSITY.Get() > VERBOSE_ON));
+  if (m_conf->VERBOSITY.Get() > VERBOSE_NORMAL)
+    cout << "Data Directory: " << m_data_mgr->GetTargetDir() << endl;
   
   m_class_mgr = new cClassificationManager(this);
   m_env = new cEnvironment(this);

@@ -314,6 +314,7 @@ cAvidaConfig* cAvidaConfig::LoadWithCmdLineArgs(int argc, char * argv[])
       << "  -e[vents]             Print a list of all known events"<< endl
       << "  -s[eed] <value>       Set random seed to <value>"<<endl
       << "  -v[ersion]            Prints the version number"<<endl
+      << "  -v0 -v1 -v2 -v3 -v4   Set output verbosity to 0..4"
       << "  -set <name> <value>   Overide the genesis file"<<endl
       << "  -l[oad] <filename>    Load a clone file"<<endl
       << "  -a[nalyze]            Process analyze.cfg instead of normal run."<<endl
@@ -348,9 +349,15 @@ cAvidaConfig* cAvidaConfig::LoadWithCmdLineArgs(int argc, char * argv[])
         arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
         cfg->CLONE_FILE.Set(cur_arg);
       }
-    } else if (cur_arg == "-version" || cur_arg == "-v") {
-      cout << " For more information, see: http://devolab.cse.msu.edu/software/avida/" << endl;
+    } else if (cur_arg == "-version") {
       exit(0);
+    } else if (cur_arg.Substring(0, 2) == "-v") {
+      if (cur_arg.GetSize() == 2) { // equivalent to -version
+        exit(0);
+      } else { // set verbosity
+        int level = cur_arg.Substring(2, cur_arg.GetSize() - 2).AsInt();
+        cfg->VERBOSITY.Set(level);
+      }
     } else if (cur_arg == "-set") {
       if (arg_num + 1 == argc || arg_num + 2 == argc) {
         cerr << "'-set' option must be followed by name and value" << endl;
@@ -379,14 +386,18 @@ cAvidaConfig* cAvidaConfig::LoadWithCmdLineArgs(int argc, char * argv[])
   
   // Loop through all groups, then all entrys, and try to load each one.
   tListIterator<cBaseConfigGroup> group_it(cfg->group_list);
-  cBaseConfigGroup * cur_group;
+  cBaseConfigGroup* cur_group;
   cString val;
   while ((cur_group = group_it.Next()) != NULL) {
     // Loop through entries for this group...
     tListIterator<cBaseConfigEntry> entry_it(cur_group->GetEntryList());
-    cBaseConfigEntry * cur_entry;
+    cBaseConfigEntry* cur_entry;
     while ((cur_entry = entry_it.Next()) != NULL) {
-      if (sets.Find(cur_entry->GetName(), val)) cur_entry->LoadString(val);
+      if (sets.Find(cur_entry->GetName(), val)) {
+        cur_entry->LoadString(val);
+        if (cfg->VERBOSITY.Get() > VERBOSE_NORMAL)
+          cout << "CmdLine Set: " << cur_entry->GetName() << " " << val << endl;
+      }
     }
   }
   

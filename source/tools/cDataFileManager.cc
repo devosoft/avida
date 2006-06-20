@@ -12,8 +12,33 @@
 
 #include "cTools.h"
 
+#include <unistd.h>
+
+#define MAXIMUM_DIRECTORY_LENGTH 2048
+
 using namespace std;
 
+
+cDataFileManager::cDataFileManager(const cString& target_dir, bool verbose) : m_target_dir(target_dir)
+{
+  m_target_dir.Trim();
+  
+  // If 
+  if (m_target_dir.GetSize() == 0 || (m_target_dir[0] != '/' && m_target_dir[0] != '\\')) {
+    char* dirbuf = new char[MAXIMUM_DIRECTORY_LENGTH];    
+    char* cwd = getcwd(dirbuf, MAXIMUM_DIRECTORY_LENGTH);
+    if (cwd != NULL) {
+      m_target_dir = cString(cwd) + "/" + m_target_dir;
+    }
+    delete dirbuf;
+  }
+  
+  if (m_target_dir.GetSize() > 0) {
+    char dir_tail = m_target_dir[m_target_dir.GetSize() - 1];
+    if (dir_tail != '\\' && dir_tail != '/') m_target_dir += "/";
+    cTools::MkDir(m_target_dir, verbose);
+  }
+}
 
 cDataFileManager::~cDataFileManager()
 {

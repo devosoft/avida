@@ -42,7 +42,7 @@ const int MAX_BATCHES = 2000;
 
 namespace nAnalyze {
   const int VERBOSE_SILENT  = 0;  // No output at all
-  const int VERBOSE_QUIET   = 1;  // Notification at start of commands.
+  const int VERBOSE_NORMAL   = 1;  // Notification at start of commands.
   const int VERBOSE_ON      = 2;  // Verbose output, detailing progress
   const int VERBOSE_DETAILS = 3;  // High level of details, as available.
 }

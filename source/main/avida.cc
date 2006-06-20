@@ -77,6 +77,8 @@ void printVersionBanner()
   cout << "Avida comes with ABSOLUTELY NO WARRANTY." << endl;
   cout << "This is free software, and you are welcome to redistribute it" << endl;
   cout << "under certain conditions. See file COPYING for details." << endl << endl;
+
+  cout << "For more information, see: http://devolab.cse.msu.edu/software/avida/" << endl << endl;
 }
 
 void ExitAvida(int exit_code)

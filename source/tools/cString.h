@@ -308,20 +308,20 @@ public:
    *
    * @return The integer value corresponding to the string.
    **/
-  int AsInt() const { return atoi(*this); }
+  int AsInt() const { return static_cast<int>(strtol(*this, NULL, 10)); }
   
   /**
    * Convert string to double.
    *
    * @return The double value corresponding to the string.
    **/
-  double AsDouble() const { return atof(*this); }
+  double AsDouble() const { return strtod(*this, NULL); }
 
   // Accessors & Information
   /**
    * Tests whether the string is empty.
    **/
-  bool IsEmpty() const { return GetSize()==0; } // Can just call GetSize
+  bool IsEmpty() const { return GetSize() == 0; } // Can just call GetSize
     
   /**
    * Test if the continuation character is at the end of the line

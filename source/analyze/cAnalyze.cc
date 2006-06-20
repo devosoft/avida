@@ -69,7 +69,7 @@ cAnalyze::cAnalyze(cWorld* world)
 , inst_set(world->GetHardwareManager().GetInstSet())
 , m_ctx(world->GetDefaultContext())
 , m_jobqueue(world)
-, verbose(nAnalyze::VERBOSE_QUIET)
+, verbose(nAnalyze::VERBOSE_NORMAL)
 , interactive_depth(0)
 {
   
@@ -5285,7 +5285,7 @@ void cAnalyze::CommandHamming(cString cur_string)
     int tmp = batch1;  batch1 = batch2;  batch2 = tmp;
   }
   
-  if (verbose <= nAnalyze::VERBOSE_QUIET) {
+  if (verbose <= nAnalyze::VERBOSE_NORMAL) {
     cout << "Calculating Hamming Distance... ";
     cout.flush();
   } else {
@@ -5352,7 +5352,7 @@ void cAnalyze::CommandLevenstein(cString cur_string)
     int tmp = batch1;  batch1 = batch2;  batch2 = tmp;
   }
   
-  if (verbose <= nAnalyze::VERBOSE_QUIET) {
+  if (verbose <= nAnalyze::VERBOSE_NORMAL) {
     cout << "Calculating Levenstein Distance... ";
     cout.flush();
   } else {
@@ -5419,7 +5419,7 @@ void cAnalyze::CommandSpecies(cString cur_string)
     int tmp = batch1;  batch1 = batch2;  batch2 = tmp;
   }
   
-  if (verbose <= nAnalyze::VERBOSE_QUIET) cout << "Calculating Species Distance... " << endl;
+  if (verbose <= nAnalyze::VERBOSE_NORMAL) cout << "Calculating Species Distance... " << endl;
   else cout << "Calculating Species Distance between batch "
     << batch1 << " and " << batch2 << endl;
   
@@ -5540,7 +5540,7 @@ void cAnalyze::CommandRecombine(cString cur_string)
     int tmp = batch1;  batch1 = batch2;  batch2 = tmp;
   }
   
-  if (verbose <= nAnalyze::VERBOSE_QUIET) cout << "Creating recombinants...  " << endl;
+  if (verbose <= nAnalyze::VERBOSE_NORMAL) cout << "Creating recombinants...  " << endl;
   else cout << "Creating recombinants between batch "
     << batch1 << " and " << batch2 << endl;
   
@@ -6928,7 +6928,7 @@ void cAnalyze::BatchRecalculate(cString cur_string)
 
 void cAnalyze::BatchRename(cString cur_string)
 {
-  if (verbose <= nAnalyze::VERBOSE_QUIET) cout << "Renaming organisms..." << endl;
+  if (verbose <= nAnalyze::VERBOSE_NORMAL) cout << "Renaming organisms..." << endl;
   else cout << "Renaming organisms in batch " << cur_batch << endl;
   
   // If a number is given with rename, start at that number...
@@ -6973,22 +6973,22 @@ void cAnalyze::CommandVerbose(cString cur_string)
   cur_string.ToUpper();
   
   // If no arguments are given, assume a basic toggle.
-  if (cur_string.GetSize() == 0 && verbose <= nAnalyze::VERBOSE_QUIET) {
+  if (cur_string.GetSize() == 0 && verbose <= nAnalyze::VERBOSE_NORMAL) {
     verbose = nAnalyze::VERBOSE_ON;
   }
   else if (cur_string.GetSize() == 0 && verbose >= nAnalyze::VERBOSE_ON) {
-    verbose = nAnalyze::VERBOSE_QUIET;
+    verbose = nAnalyze::VERBOSE_NORMAL;
   }
   
   // Otherwise, read in the argument to decide the new mode.
   else if (cur_string == "SILENT") verbose = nAnalyze::VERBOSE_SILENT;
-  else if (cur_string == "QUIET") verbose = nAnalyze::VERBOSE_QUIET;
-  else if (cur_string == "OFF") verbose = nAnalyze::VERBOSE_QUIET;
+  else if (cur_string == "QUIET") verbose = nAnalyze::VERBOSE_NORMAL;
+  else if (cur_string == "OFF") verbose = nAnalyze::VERBOSE_NORMAL;
   else if (cur_string == "ON") verbose = nAnalyze::VERBOSE_ON;
   else if (cur_string == "DETAILS") verbose = nAnalyze::VERBOSE_DETAILS;
   else if (cur_string == "HIGH") verbose = nAnalyze::VERBOSE_DETAILS;
   // Print out new verbose level (nothing for silent!)
-  if (verbose == nAnalyze::VERBOSE_QUIET) {
+  if (verbose == nAnalyze::VERBOSE_NORMAL) {
     cout << "Verbose QUIET: Using minimal log messages..." << endl;
   } else if (verbose == nAnalyze::VERBOSE_ON) {
     cout << "Verbose ON: Using verbose log messages..." << endl;
