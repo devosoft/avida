@@ -24,37 +24,57 @@ cDataFileManager::~cDataFileManager()
   while (list_it.Next() != NULL) delete *list_it.Get();
 }
 
-cDataFile & cDataFileManager::Get(const cString & name)
+cDataFile& cDataFileManager::Get(const cString& name)
 {
-  // Find the file by this name...
-  cDataFile* found_file;
+  assert(name.GetSize());
 
-  // If it hasn't been found, create it...
-  if (!m_datafiles.Find(name, found_file)) {
-    // Create directory structure, as necessary
-    int i = 0;
-    while (i < name.GetSize()) {
-      int d = name.Find('/', i);
-      int b = name.Find('\\', i);
-      
-      // If a backslash is found, and earlier then next forward slash, use it instead
-      if (b != -1 && b < d) d = b;
-      
-      // Exit if neither slash is found
-      if (d == -1) break;
-      
-      // If directory name is not null
-      if (d - i > 0) cTools::MkDir(m_target_dir + name.Substring(0, d - i), false);
-      
-      // Adjust next directory name starting point
-      i = d + 1;
-    }
-    cString filename = m_target_dir + name;
-    found_file = new cDataFile(filename);
-    m_datafiles.Add(name, found_file);
+  cDataFile* found_file;
+  
+  // If found, return file
+  if (m_datafiles.Find(name, found_file)) return *found_file;
+  
+  
+  // Create and sanitize a local copy of the file name
+  cString target(name);
+  target.Trim();
+  
+  // Determine directory prefix, default being the current data directory
+  cString dir_prefix(m_target_dir);
+  if (target[0] == '.' &&             // Must start with '.' to trigger further testing
+      (target.GetSize() == 1 ||       // If string is exactly "."
+       (target.GetSize() > 1 &&       //   or if it ".." or "./" or ".\"
+        (target[1] == '.' || target[1] == '/' || target[1] == '\\')
+       )
+      )
+     )
+  {
+    // Treat path as current working directory relative
+    dir_prefix = "";
+  }
+  
+  // Create directory structure, as necessary
+  int i = 0;
+  while (i < target.GetSize()) {
+    int d = target.Find('/', i);
+    int b = target.Find('\\', i);
+    
+    // If a backslash is found, and earlier then next forward slash, use it instead
+    if (b != -1 && b < d) d = b;
+    
+    // Exit if neither slash is found
+    if (d == -1) break;
+    
+    // If directory name is not null
+    if (d - i > 0) cTools::MkDir(dir_prefix + target.Substring(0, d - i), false);
+    
+    // Adjust next directory name starting point
+    i = d + 1;
   }
 
-  // and return it.
+  target = dir_prefix + target;
+  found_file = new cDataFile(target);
+  m_datafiles.Add(name, found_file);
+
   return *found_file;
 }
 

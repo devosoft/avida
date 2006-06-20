@@ -227,7 +227,7 @@ public:
   int GetUpdateDead() const { return update_dead; }
   int GetDepth() const { return depth; }
 
-  const cString & GetParentMuts() const { return parent_muts; }
+  const cString& GetParentMuts() const { return parent_muts; }
 
   // Knockout accessors
   int GetKO_DeadCount() const;

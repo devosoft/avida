@@ -366,6 +366,18 @@ int cString::RightJustify()
   return ws_count;
 }
 
+void cString::Trim()
+{
+  // Trim front
+  int ws_count = CountWhitespace();
+  if (ws_count > 0) InsertStr(0, NULL, 0, ws_count);
+
+  // Trim trailing
+  ws_count = 0;
+  while (GetSize() - ws_count - 1 > 0 && IsWhitespace(GetSize() - ws_count - 1)) ws_count++;
+  if (ws_count > 0) InsertStr(0, NULL, GetSize() - ws_count, ws_count);
+}
+
 
 cString cString::Pop(const char delim)
 {

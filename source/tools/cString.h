@@ -249,6 +249,11 @@ public:
    * @return The number of characters removed.
    **/
   int RightJustify(); 
+
+  /**
+    * Remove beginning and ending whitespace.
+   **/
+  void Trim(); 
   
   /**
    * Reverse the order of the characters in the string.
