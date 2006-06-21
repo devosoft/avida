@@ -263,12 +263,12 @@ public:
   /**
    * Convert the string to lowercase.
    **/
-  cString & ToLower(); 
+  cString& ToLower(); 
   
   /** 
    * Convert the string to uppercase.
    **/
-  cString & ToUpper();
+  cString& ToUpper();
   
   /**
    * Replace all blocks of whitespace with a single space (' ').

@@ -432,7 +432,7 @@ cString & cString::ToLower()
 }
 
 
-cString & cString::ToUpper()
+cString& cString::ToUpper()
 {
   for (int pos = 0; pos < GetSize(); pos++) {
     if( (*this)[pos] >= 'a' && (*this)[pos] <= 'z' )

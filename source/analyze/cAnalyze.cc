@@ -7766,6 +7766,7 @@ cAnalyzeCommandDefBase* cAnalyze::FindAnalyzeCommandDef(const cString& name)
   SetupCommandDefLibrary();
   
   cString uppername(name);
+  uppername.ToUpper();
   tListIterator<cAnalyzeCommandDefBase> lib_it(command_lib);
   while (lib_it.Next() != (void *) NULL) {
     if (lib_it.Get()->GetName() == uppername) break;
