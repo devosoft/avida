@@ -237,7 +237,6 @@ private:
   void IncludeFile(cString cur_string);
   void CommandSystem(cString cur_string);
   void CommandInteractive(cString cur_string);
-  void CommandCalcLandscape(cString cur_string);
 
   // Functions...
   void FunctionCreate(cString cur_string, tList<cAnalyzeCommand> & clist);

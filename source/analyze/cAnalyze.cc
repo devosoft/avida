@@ -980,10 +980,10 @@ void cAnalyze::LoadFile(cString cur_string)
   for (int line_id = 0; line_id < input_file.GetNumLines(); line_id++) {
     cString cur_line = input_file.GetLine(line_id);
     
-    cAnalyzeGenotype * genotype = new cAnalyzeGenotype(m_world, default_genome, inst_set);
+    cAnalyzeGenotype* genotype = new cAnalyzeGenotype(m_world, default_genome, inst_set);
     
     output_it.Reset();
-    tDataEntryCommand<cAnalyzeGenotype> * data_command = NULL;
+    tDataEntryCommand<cAnalyzeGenotype>* data_command = NULL;
     while ((data_command = output_it.Next()) != NULL) {
       data_command->SetTarget(genotype);
       //        genotype->SetSpecialArgs(data_command->GetArgs());
@@ -1665,18 +1665,6 @@ void cAnalyze::CommandPrintTasks(cString cur_string)
     genotype->PrintTasks(fp);
     fp << endl;
   }
-}
-
-void cAnalyze::CommandCalcLandscape(cString cur_string)
-{
-  tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
-  
-  cout << "Calculating Landscape..." << endl;
-
-  for (cAnalyzeGenotype* cur_genotype = batch_it.Next(); cur_genotype; cur_genotype = batch_it.Next()) {
-    m_jobqueue.AddJob(new tAnalyzeJob<cAnalyzeGenotype>(cur_genotype, &cAnalyzeGenotype::CalcLandscape));
-  }
-  m_jobqueue.Execute();
 }
 
 void cAnalyze::CommandDetail(cString cur_string)
@@ -7751,7 +7739,6 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("INCLUDE", &cAnalyze::IncludeFile);
   AddLibraryDef("SYSTEM", &cAnalyze::CommandSystem);
   AddLibraryDef("INTERACTIVE", &cAnalyze::CommandInteractive);
-  AddLibraryDef("CALC_LANDSCAPE", &cAnalyze::CommandCalcLandscape);
   
   // Functions...
   AddLibraryDef("FUNCTION", &cAnalyze::FunctionCreate);

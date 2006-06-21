@@ -19,6 +19,9 @@
 #ifndef cGenome_h
 #include "cGenome.h"
 #endif
+#ifndef cLandscape_h
+#include "cLandscape.h"
+#endif
 #ifndef cString_h
 #include "cString.h"
 #endif
@@ -121,12 +124,7 @@ private:
   };
   mutable cAnalyzeKnockouts * knockout_stats;
 
-  double land_frac_dead;
-  double land_frac_neg;
-  double land_frac_neut;
-  double land_frac_pos;
-  double land_complexity;
-  double land_ave_fitness;
+  mutable cLandscape* m_land;
 
   // Group 5 : More complex stats (obtained indvidually, through tests)
   cString task_order;
@@ -144,6 +142,9 @@ private:
 
   int CalcMaxGestation() const;
   void CalcKnockouts(bool check_pairs = false, bool check_chart = false) const;
+  void CheckLand() const;
+
+
 public:
   cAnalyzeGenotype(cWorld* world, cString symbol_string, cInstSet & in_inst_set);
   cAnalyzeGenotype(cWorld* world, const cGenome & _genome, cInstSet & in_inst_set);
@@ -243,12 +244,12 @@ public:
   const tArray< tArray<int> > & GetKO_TaskCounts() const;
   
   // Landscape accessors
-  double GetFracDead() const  { return land_frac_dead; }
-  double GetFracNeg() const { return land_frac_neg; }
-  double GetFracNeut() const { return land_frac_neut; }
-  double GetFracPos() const { return land_frac_pos; }
-  double GetComplexity() const { return land_complexity; }
-  double GetLandscapeFitness() const { return land_ave_fitness; }
+  double GetFracDead() const  { CheckLand(); return m_land->GetProbDead(); }
+  double GetFracNeg() const { CheckLand(); return m_land->GetProbNeg(); }
+  double GetFracNeut() const { CheckLand(); return m_land->GetProbNeut(); }
+  double GetFracPos() const { CheckLand(); return m_land->GetProbPos(); }
+  double GetComplexity() const { CheckLand(); return m_land->GetComplexity(); }
+  double GetLandscapeFitness() const { CheckLand(); return m_land->GetAveFitness(); }
 
   double GetFitnessRatio() const { return fitness_ratio; }
   double GetEfficiencyRatio() const { return efficiency_ratio; }

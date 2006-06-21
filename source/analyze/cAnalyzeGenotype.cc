@@ -14,7 +14,6 @@
 #include "cCPUTestInfo.h"
 #include "cHardwareManager.h"
 #include "cInstSet.h"
-#include "cLandscape.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
 #include "cTestCPU.h"
@@ -56,12 +55,7 @@ cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, cString symbol_string, cInstSe
   , ancestor_dist(0)
   , parent_muts("")
   , knockout_stats(NULL)
-  , land_frac_dead(0.0)
-  , land_frac_neg(0.0)
-  , land_frac_neut(0.0)
-  , land_frac_pos(0.0)
-  , land_complexity(0.0)
-  , land_ave_fitness(0.0)
+  , m_land(NULL)
 {
   // Make sure that the sequences jive with the inst_set
   for (int i = 0; i < genome.GetSize(); i++) {
@@ -106,16 +100,11 @@ cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, const cGenome& _genome, cInstS
   , ancestor_dist(0)
   , parent_muts("")
   , knockout_stats(NULL)
-  , land_frac_dead(0.0)
-  , land_frac_neg(0.0)
-  , land_frac_neut(0.0)
-  , land_frac_pos(0.0)
-  , land_complexity(0.0)
-  , land_ave_fitness(0.0)
+  , m_land(NULL)
 {
 }
 
-cAnalyzeGenotype::cAnalyzeGenotype(const cAnalyzeGenotype & _gen)
+cAnalyzeGenotype::cAnalyzeGenotype(const cAnalyzeGenotype& _gen)
   : m_world(_gen.m_world)
   , genome(_gen.genome)
   , inst_set(_gen.inst_set)
@@ -146,12 +135,7 @@ cAnalyzeGenotype::cAnalyzeGenotype(const cAnalyzeGenotype & _gen)
   , ancestor_dist(_gen.ancestor_dist)
   , parent_muts(_gen.parent_muts)
   , knockout_stats(NULL)
-  , land_frac_dead(_gen.land_frac_dead)
-  , land_frac_neg(_gen.land_frac_neg)
-  , land_frac_neut(_gen.land_frac_neut)
-  , land_frac_pos(_gen.land_frac_pos)
-  , land_complexity(_gen.land_complexity)
-  , land_ave_fitness(_gen.land_ave_fitness)
+  , m_land(NULL)
 {
   if (_gen.knockout_stats != NULL) {
     knockout_stats = new cAnalyzeKnockouts;
@@ -337,17 +321,21 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
   delete testcpu;
 }
 
+void cAnalyzeGenotype::CheckLand() const
+{
+  if (m_land == NULL) {
+    m_land = new cLandscape(m_world, genome, inst_set);
+    m_land->SetDistance(1);
+    m_land->Process(m_world->GetDefaultContext());
+  }
+}
+
+
 void cAnalyzeGenotype::CalcLandscape(cAvidaContext& ctx)
 {
-  cLandscape landscape(m_world, genome, inst_set);
-  landscape.SetDistance(1);
-  landscape.Process(ctx);
-  land_frac_dead = landscape.GetProbDead();
-  land_frac_neg = landscape.GetProbNeg();
-  land_frac_neut = landscape.GetProbNeut();
-  land_frac_pos = landscape.GetProbPos();
-  land_complexity = landscape.GetComplexity();
-  land_ave_fitness = landscape.GetAveFitness();
+  if (m_land == NULL) m_land = new cLandscape(m_world, genome, inst_set);
+  m_land->SetDistance(1);
+  m_land->Process(ctx);
 }
 
 void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cTestCPU* testcpu, cAnalyzeGenotype* parent_genotype)

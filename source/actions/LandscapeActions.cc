@@ -136,6 +136,43 @@ private:
 };
 
 
+/*
+ Precalculates landscape data for use in detail files.  The primary advantage of
+ this is that it supports multithreaded execution, whereas lazy evaluation during
+ detailing will be serialized.
+*/
+class cActionCalcLandscape : public cAction
+{
+public:
+  cActionCalcLandscape(cWorld* world, const cString& args) : cAction(world, args) { ; }
+  
+  const cString GetDescription()
+  {
+    return "CalcLandscape";
+  }
+  
+  void Process(cAvidaContext& ctx)
+  {    
+    if (ctx.GetAnalyzeMode()) {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+        cString msg("Precalculating landscape for batch ");
+        msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
+        m_world->GetDriver().NotifyComment(msg);
+      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+        m_world->GetDriver().NotifyComment("Precalculating landscape...");
+      }
+      
+      cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();      
+      tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
+      for (cAnalyzeGenotype* cur_genotype = batch_it.Next(); cur_genotype; cur_genotype = batch_it.Next()) {
+        jobqueue.AddJob(new tAnalyzeJob<cAnalyzeGenotype>(cur_genotype, &cAnalyzeGenotype::CalcLandscape));
+      }
+      jobqueue.Execute();
+    }
+  }
+};
+
+
 class cActionFullLandscape : public cAction
 {
 private:
@@ -348,6 +385,7 @@ public:
 void RegisterLandscapeActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionAnalyzeLandscape>("AnalyzeLandscape");
+  action_lib->Register<cActionCalcLandscape>("CalcLandscape");
   action_lib->Register<cActionFullLandscape>("FullLandscape");
   action_lib->Register<cActionRandomLandscape>("RandomLandscape");
   action_lib->Register<cActionSampleLandscape>("SampleLandscape");
