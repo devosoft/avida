@@ -26,7 +26,7 @@ cPopulationCell::cPopulationCell()
 {
 }
 
-cPopulationCell::cPopulationCell(const cPopulationCell & in_cell)
+cPopulationCell::cPopulationCell(const cPopulationCell& in_cell)
   : m_world(in_cell.m_world)
   , organism(in_cell.organism)
   , cur_input(in_cell.cur_input)
@@ -34,8 +34,7 @@ cPopulationCell::cPopulationCell(const cPopulationCell & in_cell)
   , organism_count(in_cell.organism_count)
 {
   for (int i = 0; i < nHardware::IO_SIZE; i++) input_array[i] = in_cell.input_array[i];
-  mutation_rates = new cMutationRates();
-  mutation_rates->Copy(*in_cell.mutation_rates);
+  mutation_rates = new cMutationRates(*in_cell.mutation_rates);
   tConstListIterator<cPopulationCell> conn_it(in_cell.connection_list);
   cPopulationCell * test_cell;
   while ( (test_cell = (cPopulationCell *) conn_it.Next()) != NULL) {
@@ -43,7 +42,7 @@ cPopulationCell::cPopulationCell(const cPopulationCell & in_cell)
   }
 }
 
-void cPopulationCell::operator=(const cPopulationCell & in_cell)
+void cPopulationCell::operator=(const cPopulationCell& in_cell)
 {
   m_world = in_cell.m_world;
   organism = in_cell.organism;
@@ -51,8 +50,10 @@ void cPopulationCell::operator=(const cPopulationCell & in_cell)
   cur_input = in_cell.cur_input;
   cell_id = in_cell.cell_id;
   organism_count = in_cell.organism_count;
-  if (mutation_rates == NULL) mutation_rates = new cMutationRates();
-  mutation_rates->Copy(*in_cell.mutation_rates);
+  if (mutation_rates == NULL)
+    mutation_rates = new cMutationRates(*in_cell.mutation_rates);
+  else
+    mutation_rates->Copy(*in_cell.mutation_rates);
   tConstListIterator<cPopulationCell> conn_it(in_cell.connection_list);
   cPopulationCell * test_cell;
   while ( (test_cell = (cPopulationCell *) conn_it.Next()) != NULL) {
@@ -60,13 +61,14 @@ void cPopulationCell::operator=(const cPopulationCell & in_cell)
   }
 }
 
-void cPopulationCell::Setup(cWorld* world, int in_id, const cMutationRates & in_rates)
+void cPopulationCell::Setup(cWorld* world, int in_id, const cMutationRates& in_rates)
 {
   m_world = world;
   cell_id = in_id;
-  if (mutation_rates == NULL) 
-	  mutation_rates = new cMutationRates();
-  mutation_rates->Copy(in_rates);
+  if (mutation_rates == NULL)
+    mutation_rates = new cMutationRates(in_rates);
+  else
+    mutation_rates->Copy(in_rates);
 }
 
 void cPopulationCell::Rotate(cPopulationCell & new_facing)

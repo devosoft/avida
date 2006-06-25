@@ -57,18 +57,6 @@ cPopulation::cPopulation(cWorld* world)
 , num_organisms(0)
 , sync_events(false)
 {
-  // Setup the default mutation rates...
-  cMutationRates& default_mut_rates = environment.GetMutRates();
-  default_mut_rates.SetCopyMutProb  ( world->GetConfig().COPY_MUT_PROB.Get() );
-  default_mut_rates.SetInsMutProb   ( world->GetConfig().INS_MUT_PROB.Get() );
-  default_mut_rates.SetDelMutProb   ( world->GetConfig().DEL_MUT_PROB.Get() );
-  default_mut_rates.SetDivMutProb   ( world->GetConfig().DIV_MUT_PROB.Get() );
-  default_mut_rates.SetPointMutProb ( world->GetConfig().POINT_MUT_PROB.Get() );
-  default_mut_rates.SetDivideMutProb( world->GetConfig().DIVIDE_MUT_PROB.Get() );
-  default_mut_rates.SetDivideInsProb( world->GetConfig().DIVIDE_INS_PROB.Get() );
-  default_mut_rates.SetDivideDelProb( world->GetConfig().DIVIDE_DEL_PROB.Get() );
-  default_mut_rates.SetParentMutProb( world->GetConfig().PARENT_MUT_PROB.Get() );
-  
   // Avida specific information.
   world_x = world->GetConfig().WORLD_X.Get();
   world_y = world->GetConfig().WORLD_Y.Get();
@@ -95,7 +83,7 @@ cPopulation::cPopulation(cWorld* world)
   for (int cell_id = 0; cell_id < num_cells; cell_id++) {
     int x = cell_id % world_x;
     int y = cell_id / world_x;
-    cell_array[cell_id].Setup(world, cell_id, default_mut_rates);
+    cell_array[cell_id].Setup(world, cell_id, environment.GetMutRates());
     
     
     if ((y == 0) && (geometry == nGeometry::GRID)) {

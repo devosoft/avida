@@ -215,6 +215,9 @@ public:
   CONFIG_ADD_VAR(DIVIDE_DEL_PROB, double, 0.05, "Deletion rate (per divide)");
   CONFIG_ADD_VAR(PARENT_MUT_PROB, double, 0.0, "Per-site, in parent, on divide");
   CONFIG_ADD_VAR(SPECIAL_MUT_LINE, int, -1, "If this is >= 0, ONLY this line is mutated");
+  CONFIG_ADD_VAR(INJECT_INS_PROB, double, 0.0, "Insertion rate (per site, applied on inject)");
+  CONFIG_ADD_VAR(INJECT_DEL_PROB, double, 0.0, "Deletion rate (per site, applied on inject)");
+  CONFIG_ADD_VAR(INJECT_MUT_PROB, double, 0.0, "Mutation rate (per site, applied on inject)");
   
   CONFIG_ADD_GROUP(REVERSION_GROUP, "Mutation Reversion\nThese slow down avida a lot, and should be set to 0.0 normally.");
   CONFIG_ADD_VAR(REVERT_FATAL, double, 0.0, "Should any mutations be reverted on birth?");

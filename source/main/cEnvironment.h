@@ -81,7 +81,7 @@ private:
   cEnvironment& operator=(const cEnvironment&); // @not_implemented
 
 public:
-  cEnvironment(cWorld* world) : m_world(world), inst_set(world) { ; }
+  cEnvironment(cWorld* world) : m_world(world), inst_set(world) { mut_rates.Setup(world); }
   ~cEnvironment() { ; }
 
   /**

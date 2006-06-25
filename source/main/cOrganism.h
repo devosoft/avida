@@ -190,8 +190,6 @@ public:
   bool TestDivideIns(cAvidaContext& ctx) const { return MutationRates().TestDivideIns(ctx); }
   bool TestDivideDel(cAvidaContext& ctx) const { return MutationRates().TestDivideDel(ctx); }
   bool TestParentMut(cAvidaContext& ctx) const { return MutationRates().TestParentMut(ctx); }
-  bool TestCrossover(cAvidaContext& ctx) const { return MutationRates().TestCrossover(ctx); }
-  bool TestAlignedCrossover(cAvidaContext& ctx) const { return MutationRates().TestAlignedCrossover(ctx); }
   
   double GetCopyMutProb() const { return MutationRates().GetCopyMutProb(); }
   void SetCopyMutProb(double _p) { return MutationRates().SetCopyMutProb(_p); }
@@ -202,6 +200,10 @@ public:
   double GetDivMutProb() const { return MutationRates().GetDivMutProb(); }
   double GetParentMutProb() const { return MutationRates().GetParentMutProb();}
 
+  double GetInjectInsProb() const { return MutationRates().GetInjectInsProb(); }
+  double GetInjectDelProb() const { return MutationRates().GetInjectDelProb(); }
+  double GetInjectMutProb() const { return MutationRates().GetInjectMutProb(); }
+  
 
   bool GetTestOnDivide() const;
   bool GetFailImplicit() const;
@@ -229,10 +231,10 @@ public:
   void SetGenotype(cGenotype * in_genotype) { genotype = in_genotype; }
   cGenotype * GetGenotype() const { return genotype; }
 
-  const cMutationRates & MutationRates() const { return mut_rates; }
-  cMutationRates & MutationRates() { return mut_rates; }
-  const cLocalMutations & GetLocalMutations() const { return mut_info; }
-  cLocalMutations & GetLocalMutations() { return mut_info; }
+  const cMutationRates& MutationRates() const { return mut_rates; }
+  cMutationRates& MutationRates() { return mut_rates; }
+  const cLocalMutations& GetLocalMutations() const { return mut_info; }
+  cLocalMutations& GetLocalMutations() { return mut_info; }
   
   const cOrgInterface& GetOrgInterface() const { assert(m_interface); return *m_interface; }
   cOrgInterface& GetOrgInterface() { assert(m_interface); return *m_interface; }

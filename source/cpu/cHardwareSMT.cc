@@ -939,32 +939,14 @@ int cHardwareSMT::GetCopiedSize(const int parent_size, const int child_size)
   return copied_size;
 }
 
-void cHardwareSMT::Inject_DoMutations(cAvidaContext& ctx, double mut_multiplier, cCPUMemory & injected_code)
+void cHardwareSMT::Inject_DoMutations(cAvidaContext& ctx, double mut_multiplier, cCPUMemory& injected_code)
 {
   organism->GetPhenotype().SetDivType(mut_multiplier);
-	
-  // Divide Mutations
-  if (organism->TestDivideMut(ctx)) {
-    const unsigned int mut_line = ctx.GetRandom().GetUInt(injected_code.GetSize());
-    injected_code[mut_line] = m_inst_set->GetRandomInst(ctx);
-  }
-	
-  // Divide Insertions
-  if (organism->TestDivideIns(ctx) && injected_code.GetSize() < MAX_CREATURE_SIZE){
-    const unsigned int mut_line = ctx.GetRandom().GetUInt(injected_code.GetSize() + 1);
-    injected_code.Insert(mut_line, m_inst_set->GetRandomInst(ctx));
-  }
-	
-  // Divide Deletions
-  if (organism->TestDivideDel(ctx) && injected_code.GetSize() > MIN_CREATURE_SIZE){
-    const unsigned int mut_line = ctx.GetRandom().GetUInt(injected_code.GetSize());
-    injected_code.Remove(mut_line);
-  }
 	
   // Divide Mutations (per site)
   if(organism->GetDivMutProb() > 0){
     int num_mut = ctx.GetRandom().GetRandBinomial(injected_code.GetSize(), 
-																					 organism->GetDivMutProb() / mut_multiplier);
+																					 organism->GetInjectMutProb() / mut_multiplier);
     // If we have lines to mutate...
     if( num_mut > 0 ){
       for (int i = 0; i < num_mut; i++) {
@@ -978,7 +960,7 @@ void cHardwareSMT::Inject_DoMutations(cAvidaContext& ctx, double mut_multiplier,
   // Insert Mutations (per site)
   if(organism->GetInsMutProb() > 0){
     int num_mut = ctx.GetRandom().GetRandBinomial(injected_code.GetSize(),
-																					 organism->GetInsMutProb());
+																					 organism->GetInjectInsProb());
     // If would make creature to big, insert up to MAX_CREATURE_SIZE
     if( num_mut + injected_code.GetSize() > MAX_CREATURE_SIZE ){
       num_mut = MAX_CREATURE_SIZE - injected_code.GetSize();
@@ -1003,7 +985,7 @@ void cHardwareSMT::Inject_DoMutations(cAvidaContext& ctx, double mut_multiplier,
   // Delete Mutations (per site)
   if( organism->GetDelMutProb() > 0 ){
     int num_mut = ctx.GetRandom().GetRandBinomial(injected_code.GetSize(),
-																					 organism->GetDelMutProb());
+																					 organism->GetInjectDelProb());
     // If would make creature too small, delete down to MIN_CREATURE_SIZE
     if (injected_code.GetSize() - num_mut < MIN_CREATURE_SIZE) {
       num_mut = injected_code.GetSize() - MIN_CREATURE_SIZE;
