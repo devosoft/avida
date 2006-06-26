@@ -121,12 +121,11 @@ public:
   bool ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, cOrganism& parent_organism);
   bool ActivateParasite(cOrganism& parent, const cGenome& injected_code);
   
-  bool ActivateInject(const int cell_id, const cGenome& injected_code);
-
   // Inject an organism from the outside world.
   void Inject(const cGenome& genome, int cell_id = -1, double merit = -1, int lineage_label = 0,
-              double neutral_metric = 0, int mem_space = 0);
-
+              double neutral_metric = 0);
+  void InjectParasite(const cCodeLabel& label, const cGenome& injected_code, int cell_id);
+  
   // Deactivate an organism in the population (required for deactivations)
   void KillOrganism(cPopulationCell& in_cell);
   void Kaboom(cPopulationCell& in_cell);

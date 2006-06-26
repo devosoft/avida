@@ -202,6 +202,10 @@
 		70B08B9308FB2E6B00FC65FE /* cWeightedIndex.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B08B9108FB2E6B00FC65FE /* cWeightedIndex.cc */; };
 		70B08B9408FB2E6B00FC65FE /* cTools.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B08B9008FB2E6B00FC65FE /* cTools.cc */; };
 		70B08B9508FB2E6B00FC65FE /* cWeightedIndex.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B08B9108FB2E6B00FC65FE /* cWeightedIndex.cc */; };
+		70C054ED0A4F6FD2002703C1 /* PopulationActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C054C90A4F6E19002703C1 /* PopulationActions.cc */; };
+		70C054F80A4F704D002703C1 /* PopulationActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C054C90A4F6E19002703C1 /* PopulationActions.cc */; };
+		70C054F90A4F704E002703C1 /* SaveLoadActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708051A80A1F65FE00CBB8B6 /* SaveLoadActions.cc */; };
+		70C054FA0A4F7053002703C1 /* PopulationActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C054C90A4F6E19002703C1 /* PopulationActions.cc */; };
 		70C1EF4808C393BA00F50912 /* cCodeLabel.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF4608C393BA00F50912 /* cCodeLabel.cc */; };
 		70C1EF4A08C393BA00F50912 /* cCodeLabel.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF4608C393BA00F50912 /* cCodeLabel.cc */; };
 		70C1EF5908C3948C00F50912 /* cCPUMemory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF5808C3948C00F50912 /* cCPUMemory.cc */; };
@@ -755,6 +759,12 @@
 		70B08B9008FB2E6B00FC65FE /* cTools.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTools.cc; sourceTree = "<group>"; };
 		70B08B9108FB2E6B00FC65FE /* cWeightedIndex.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cWeightedIndex.cc; sourceTree = "<group>"; };
 		70B3984E0947B29D0018F09D /* tManagedPointerArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tManagedPointerArray.h; sourceTree = "<group>"; };
+		70C054C80A4F6E19002703C1 /* PopulationActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PopulationActions.h; sourceTree = "<group>"; };
+		70C054C90A4F6E19002703C1 /* PopulationActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PopulationActions.cc; sourceTree = "<group>"; };
+		70C054F10A4F6FF1002703C1 /* SConscript */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConscript; sourceTree = "<group>"; };
+		70C054F50A4F701B002703C1 /* SConscript */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConscript; sourceTree = "<group>"; };
+		70C054F60A4F7030002703C1 /* SConscript */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConscript; sourceTree = "<group>"; };
+		70C054F70A4F703D002703C1 /* SConscript */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConscript; sourceTree = "<group>"; };
 		70C1EF4608C393BA00F50912 /* cCodeLabel.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCodeLabel.cc; sourceTree = "<group>"; };
 		70C1EF4708C393BA00F50912 /* cCodeLabel.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCodeLabel.h; sourceTree = "<group>"; };
 		70C1EF5808C3948C00F50912 /* cCPUMemory.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCPUMemory.cc; sourceTree = "<group>"; };
@@ -1001,6 +1011,7 @@
 		70422A1B091B141000A5E67F /* analyze */ = {
 			isa = PBXGroup;
 			children = (
+				70C054F50A4F701B002703C1 /* SConscript */,
 				70F7DE76092967A8009E311D /* cGenotypeBatch.h */,
 				70422A44091B1B8500A5E67F /* CMakeLists.txt */,
 				70422A1C091B141000A5E67F /* cAnalyze.cc */,
@@ -1029,6 +1040,7 @@
 		707AEEEE09E80699001AEA89 /* actions */ = {
 			isa = PBXGroup;
 			children = (
+				70C054F10A4F6FF1002703C1 /* SConscript */,
 				707AF0F809EACC5E001AEA89 /* CMakeLists.txt */,
 				707AEEEF09E80725001AEA89 /* cAction.h */,
 				707AEEFE09E83381001AEA89 /* cActionLibrary.h */,
@@ -1039,6 +1051,8 @@
 				708051A70A1F65FE00CBB8B6 /* SaveLoadActions.h */,
 				708051A80A1F65FE00CBB8B6 /* SaveLoadActions.cc */,
 				708051BA0A1F66B400CBB8B6 /* cActionLibrary.cc */,
+				70C054C80A4F6E19002703C1 /* PopulationActions.h */,
+				70C054C90A4F6E19002703C1 /* PopulationActions.cc */,
 			);
 			path = actions;
 			sourceTree = "<group>";
@@ -1227,6 +1241,7 @@
 		70F7D8C8092546DC009E311D /* classification */ = {
 			isa = PBXGroup;
 			children = (
+				70C054F60A4F7030002703C1 /* SConscript */,
 				705333E5092A4B7C006BD186 /* cLineage.cc */,
 				705333E6092A4B7C006BD186 /* cLineage.h */,
 				70533363092A3DF4006BD186 /* cInjectGenotype_BirthData.h */,
@@ -1299,6 +1314,7 @@
 		DCC30F7C0762539D008F7A48 /* cpu */ = {
 			isa = PBXGroup;
 			children = (
+				70C054F70A4F703D002703C1 /* SConscript */,
 				70C1EF4608C393BA00F50912 /* cCodeLabel.cc */,
 				70C1EF4708C393BA00F50912 /* cCodeLabel.h */,
 				70C1EF5808C3948C00F50912 /* cCPUMemory.cc */,
@@ -1963,6 +1979,7 @@
 				705ACD630A1403A5002D5BA0 /* PrintActions.cc in Sources */,
 				708051BD0A1F66B400CBB8B6 /* cActionLibrary.cc in Sources */,
 				E626209E0A372C2A00C07685 /* SaveLoadActions.cc in Sources */,
+				70C054FA0A4F7053002703C1 /* PopulationActions.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2093,6 +2110,8 @@
 				707AF0B309EAC801001AEA89 /* LandscapeActions.cc in Sources */,
 				705ACD640A1403AA002D5BA0 /* PrintActions.cc in Sources */,
 				708051BC0A1F66B400CBB8B6 /* cActionLibrary.cc in Sources */,
+				70C054F80A4F704D002703C1 /* PopulationActions.cc in Sources */,
+				70C054F90A4F704E002703C1 /* SaveLoadActions.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2205,6 +2224,7 @@
 				705ACD4F0A13FED5002D5BA0 /* PrintActions.cc in Sources */,
 				708051B20A1F663100CBB8B6 /* SaveLoadActions.cc in Sources */,
 				708051BB0A1F66B400CBB8B6 /* cActionLibrary.cc in Sources */,
+				70C054ED0A4F6FD2002703C1 /* PopulationActions.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

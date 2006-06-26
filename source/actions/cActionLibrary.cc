@@ -10,6 +10,7 @@
 #include "cActionLibrary.h"
 
 #include "LandscapeActions.h"
+#include "PopulationActions.h"
 #include "PrintActions.h"
 #include "SaveLoadActions.h"
 
@@ -19,6 +20,7 @@ cActionLibrary* cActionLibrary::ConstructDefaultActionLibrary()
   cActionLibrary* actlib = new cActionLibrary();
 
   RegisterLandscapeActions(actlib);
+  RegisterPopulationActions(actlib);
   RegisterPrintActions(actlib);
   RegisterSaveLoadActions(actlib);
   

@@ -7,6 +7,7 @@ incs = [
   'cAction.h',
   'cActionLibrary.h',
   'LandscapeActions.h',
+  'PopulationActions.h',
   'PrintActions.h',
   'SaveLoadActions.h',
 ]
@@ -14,6 +15,7 @@ incs = [
 srcs = [
   'cActionLibrary.cc',
   'LandscapeActions.cc',
+  'PopulationActions.cc',
   'PrintActions.cc',
   'SaveLoadActions.cc',
 ]

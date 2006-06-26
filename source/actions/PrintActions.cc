@@ -96,7 +96,7 @@ public:
     m_format = largs.PopWord();
   }
   
-  const cString GetDescription() { return "PringData <cString fname> <cString format>"; }
+  const cString GetDescription() { return "PrintData <cString fname> <cString format>"; }
 
   void Process(cAvidaContext& ctx)
   {

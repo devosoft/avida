@@ -190,182 +190,6 @@ public:
 
 
 
-
-///// inject /////
-
-/**
-* Injects a single organism into the population.
- *
- * Parameters:
- * filename (string)
- *   The filename of the genotype to load. If this is left empty, or the keyword
- *   "START_CREATURE" is given, than the genotype specified in the genesis
- *   file under "START_CREATURE" is used.
- * cell ID (integer) default: 0
-   *   The grid-point into which the organism should be placed.
-   * merit (double) default: -1
-     *   The initial merit of the organism. If set to -1, this is ignored.
-     * lineage label (integer) default: 0
-       *   An integer that marks all descendants of this organism.
-       * neutral metric (double) default: 0
-         *   A double value that randomly drifts over time.
-         **/
-
-
-class cEvent_inject : public cEvent {
-private:
-  cString fname;
-  int cell_id;
-  double merit;
-  int lineage_label;
-  double neutral_metric;
-public:
-    const cString GetName() const { return "inject"; }
-  const cString GetDescription() const { return "inject  [cString fname=\"START_CREATURE\"] [int cell_id=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") fname="START_CREATURE"; else fname=args.PopWord();
-    if (args == "") cell_id=0; else cell_id=args.PopWord().AsInt();
-    if (args == "") merit=-1; else merit=args.PopWord().AsDouble();
-    if (args == "") lineage_label=0; else lineage_label=args.PopWord().AsInt();
-    if (args == "") neutral_metric=0; else neutral_metric=args.PopWord().AsDouble();
-  }
-  ///// inject /////
-  void Process(){
-    if (fname == "START_CREATURE") fname = m_world->GetConfig().START_CREATURE.Get();
-    cGenome genome =
-      cInstUtil::LoadGenome(fname, m_world->GetHardwareManager().GetInstSet());
-    m_world->GetPopulation().Inject(genome, cell_id, merit, lineage_label, neutral_metric);
-  }
-};
-
-///// inject_all /////
-
-/**
-* Injects identical organisms into all cells of the population.
- *
- * Parameters:
- * filename (string)
- *   The filename of the genotype to load. If this is left empty, or the keyword
- *   "START_CREATURE" is given, than the genotype specified in the genesis
- *   file under "START_CREATURE" is used.
- * merit (double) default: -1
-   *   The initial merit of the organism. If set to -1, this is ignored.
-   * lineage label (integer) default: 0
-     *   An integer that marks all descendants of this organism.
-     * neutral metric (double) default: 0
-       *   A double value that randomly drifts over time.
-       **/
-
-
-class cEvent_inject_all : public cEvent {
-private:
-  cString fname;
-  double merit;
-  int lineage_label;
-  double neutral_metric;
-public:
-    const cString GetName() const { return "inject_all"; }
-  const cString GetDescription() const { return "inject_all  [cString fname=\"START_CREATURE\"] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") fname="START_CREATURE"; else fname=args.PopWord();
-    if (args == "") merit=-1; else merit=args.PopWord().AsDouble();
-    if (args == "") lineage_label=0; else lineage_label=args.PopWord().AsInt();
-    if (args == "") neutral_metric=0; else neutral_metric=args.PopWord().AsDouble();
-  }
-  ///// inject_all /////
-  void Process(){
-    if (fname == "START_CREATURE") fname = m_world->GetConfig().START_CREATURE.Get();
-    cGenome genome =
-      cInstUtil::LoadGenome(fname, m_world->GetHardwareManager().GetInstSet());
-    for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
-      m_world->GetPopulation().Inject(genome, i, merit, lineage_label, neutral_metric);
-    }
-    m_world->GetPopulation().SetSyncEvents(true);
-  }
-};
-
-///// inject_range /////
-
-/**
-* Injects identical organisms into a range of cells of the population.
- *
- * Parameters:
- * filename (string)
- *   The filename of the genotype to load. If this is left empty, or the keyword
- *   "START_CREATURE" is given, than the genotype specified in the genesis
- *   file under "START_CREATURE" is used.
- * start_cell (int)
- *   First cell to inject into.
- * stop_cell (int)
- *   First cell *not* to inject into.
- * merit (double) default: -1
-   *   The initial merit of the organism. If set to -1, this is ignored.
-   * lineage label (integer) default: 0
-     *   An integer that marks all descendants of this organism.
-     * neutral metric (double) default: 0
-       *   A double value that randomly drifts over time.
-       *
-       * Example:
-       *   inject_range creature.gen 0 10
-       *
-       * Will inject 10 organisms into cells 0 through 9.
-       **/
-
-
-class cEvent_inject_range : public cEvent {
-private:
-  cString fname;
-  int start_cell;
-  int end_cell;
-  double merit;
-  int lineage_label;
-  double neutral_metric;
-public:
-    const cString GetName() const { return "inject_range"; }
-  const cString GetDescription() const { return "inject_range  [cString fname=\"START_CREATURE\"] [int start_cell=0] [int end_cell=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") fname="START_CREATURE"; else fname=args.PopWord();
-    if (args == "") start_cell=0; else start_cell=args.PopWord().AsInt();
-    if (args == "") end_cell=-1; else end_cell=args.PopWord().AsInt();
-    if (args == "") merit=-1; else merit=args.PopWord().AsDouble();
-    if (args == "") lineage_label=0; else lineage_label=args.PopWord().AsInt();
-    if (args == "") neutral_metric=0; else neutral_metric=args.PopWord().AsDouble();
-  }
-  ///// inject_range /////
-  void Process(){
-    if (fname == "START_CREATURE") fname = m_world->GetConfig().START_CREATURE.Get();
-    if (end_cell == -1) end_cell = start_cell + 1;
-    if (start_cell < 0 ||
-        end_cell > m_world->GetPopulation().GetSize() ||
-        start_cell >= end_cell) {
-      m_world->GetDriver().NotifyWarning("inject_range has invalid range!");
-    }
-    else {
-      cGenome genome =
-      cInstUtil::LoadGenome(fname, m_world->GetHardwareManager().GetInstSet());
-      for (int i = start_cell; i < end_cell; i++) {
-        m_world->GetPopulation().Inject(genome, i, merit, lineage_label, neutral_metric);
-      }
-      m_world->GetPopulation().SetSyncEvents(true);
-    }
-  }
-};
-
 ///// inject_sequence /////
 
 /**
@@ -487,79 +311,6 @@ public:
   }
 };
 
-///// inject_range_parasite /////
-
-/**
-* Injects identical organisms into a range of cells of the population.
- *
- * Parameters:
- * filename (string)
- *   The filename of the genotype to load. If this is left empty, or the keyword
- *   "START_CREATURE" is given, than the genotype specified in the genesis
- *   file under "START_CREATURE" is used.
- * start_cell (int)
- *   First cell to inject into.
- * stop_cell (int)
- *   First cell *not* to inject into.
- * merit (double) default: -1
-   *   The initial merit of the organism. If set to -1, this is ignored.
-   * lineage label (integer) default: 0
-     *   An integer that marks all descendants of this organism.
-     * neutral metric (double) default: 0
-       *   A double value that randomly drifts over time.
-       *
-       * Example:
-       *   inject_range creature.gen 0 10
-       *
-       * Will inject 10 organisms into cells 0 through 9.
-       **/
-
-
-class cEvent_inject_range_parasite : public cEvent {
-private:
-  cString fname_parasite;
-  int start_cell;
-  int end_cell;
-  double merit;
-  int lineage_label;
-  double neutral_metric;
-  int mem_space;
-public:
-    const cString GetName() const { return "inject_range_parasite"; }
-  const cString GetDescription() const { return "inject_range_parasite  [cString fname_parasite=\"organism.parasite\"] [int start_cell=0] [int end_cell=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0] [int mem_space=2]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") fname_parasite="organism.parasite"; else fname_parasite=args.PopWord();
-    if (args == "") start_cell=0; else start_cell=args.PopWord().AsInt();
-    if (args == "") end_cell=-1; else end_cell=args.PopWord().AsInt();
-    if (args == "") merit=-1; else merit=args.PopWord().AsDouble();
-    if (args == "") lineage_label=0; else lineage_label=args.PopWord().AsInt();
-    if (args == "") neutral_metric=0; else neutral_metric=args.PopWord().AsDouble();
-    if (args == "") mem_space=2; else mem_space=args.PopWord().AsInt();
-  }
-  ///// inject_range_parasite /////
-  void Process(){
-    if (fname_parasite == "START_CREATURE") fname_parasite = m_world->GetConfig().START_CREATURE.Get();
-    if (end_cell == -1) end_cell = start_cell + 1;
-    if (start_cell < 0 ||
-        end_cell > m_world->GetPopulation().GetSize() ||
-        start_cell >= end_cell) {
-      m_world->GetDriver().NotifyWarning("inject_range has invalid range!");
-    }
-    else {
-      cGenome genome_parasite =
-      cInstUtil::LoadGenome(fname_parasite, m_world->GetHardwareManager().GetInstSet());
-      for (int i = start_cell; i < end_cell; i++) {
-        m_world->GetPopulation().Inject(genome_parasite, i, merit, lineage_label, neutral_metric, mem_space);
-      }
-      m_world->GetPopulation().SetSyncEvents(true);
-    }
-  }
-};
 
 ///// inject_range_pair /////
 
@@ -633,7 +384,7 @@ public:
         cInstUtil::LoadGenome(fname_parasite, m_world->GetHardwareManager().GetInstSet());
       for (int i = start_cell; i < end_cell; i++) {
         m_world->GetPopulation().Inject(genome, i, merit, lineage_label, neutral_metric);
-        m_world->GetPopulation().Inject(genome_parasite, i, merit, lineage_label, neutral_metric, mem_space);
+// @DMB        m_world->GetPopulation().Inject(genome_parasite, i, merit, lineage_label, neutral_metric, mem_space);
       }
       m_world->GetPopulation().SetSyncEvents(true);
     }
@@ -2474,12 +2225,8 @@ cEventManager::cEventManager(cWorld* world) : m_world(world)
   REGISTER(exit_if_ave_lineage_label_smaller);
   REGISTER(exit_if_ave_lineage_label_larger);
   
-  REGISTER(inject);
-  REGISTER(inject_all);
-  REGISTER(inject_range);
   REGISTER(inject_sequence);
   REGISTER(inject_random);
-  REGISTER(inject_range_parasite);
   REGISTER(inject_range_pair);
   REGISTER(zero_muts);
   REGISTER(mod_copy_mut);

@@ -388,23 +388,6 @@ bool cPopulation::ActivateParasite(cOrganism& parent, const cGenome& injected_co
   return true;
 }
 
-bool cPopulation::ActivateInject(const int cell_id, const cGenome& injected_code)
-{
-  cInjectGenotype* child_genotype = m_world->GetClassificationManager().GetInjectGenotype(injected_code);
-  cHardwareBase& child_cpu = cell_array[cell_id].GetOrganism()->GetHardware();
-  if(cell_array[cell_id].GetOrganism()->InjectHost(cCodeLabel(), injected_code))
-  {
-    cell_array[cell_id].GetOrganism()->AddParasite(child_genotype);
-    child_genotype->AddParasite();
-    child_cpu.ThreadSetOwner(child_genotype);
-    m_world->GetClassificationManager().AdjustInjectGenotype(*child_genotype);
-  }
-  else
-    return false;
-  
-  return true;
-}
-
 void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell)
 {
   assert(in_organism != NULL);
@@ -1612,8 +1595,7 @@ bool cPopulation::OK()
  * this organism.
  **/
 
-void cPopulation::Inject(const cGenome & genome, int cell_id, double merit, 
-                         int lineage_label, double neutral, int mem_space )
+void cPopulation::Inject(const cGenome & genome, int cell_id, double merit, int lineage_label, double neutral)
 {
   // If an invalid cell was given, choose a new ID for it.
   if (cell_id < 0) {
@@ -1625,24 +1607,37 @@ void cPopulation::Inject(const cGenome & genome, int cell_id, double merit,
     }
   }
   
-  if(mem_space==0) {
-    InjectGenome( cell_id, genome, lineage_label );
-    cPhenotype & phenotype = GetCell(cell_id).GetOrganism()->GetPhenotype();
-    phenotype.SetNeutralMetric(neutral);
-    
-    if (merit > 0) phenotype.SetMerit( cMerit(merit) );
-    schedule->Adjust(cell_id, phenotype.GetMerit());
-    
-    LineageSetupOrganism(GetCell(cell_id).GetOrganism(), 0, lineage_label);
-  }
-  else
-  {
-    ActivateInject(cell_id, genome);
-  }
+  InjectGenome(cell_id, genome, lineage_label);
+  cPhenotype& phenotype = GetCell(cell_id).GetOrganism()->GetPhenotype();
+  phenotype.SetNeutralMetric(neutral);
   
+  if (merit > 0) phenotype.SetMerit(cMerit(merit));
+  schedule->Adjust(cell_id, phenotype.GetMerit());
+  
+  LineageSetupOrganism(GetCell(cell_id).GetOrganism(), 0, lineage_label);
 }
 
-cPopulationCell & cPopulation::GetCell(int in_num)
+void cPopulation::InjectParasite(const cCodeLabel& label, const cGenome& injected_code, int cell_id)
+{
+  cOrganism* target_organism = cell_array[cell_id].GetOrganism();
+  
+  if (target_organism == NULL) return;
+  
+  cHardwareBase& child_cpu = target_organism->GetHardware();
+  if (child_cpu.GetNumThreads() == m_world->GetConfig().MAX_CPU_THREADS.Get()) return;
+  
+  if (target_organism->InjectHost(label, injected_code)) {
+    cInjectGenotype* child_genotype = m_world->GetClassificationManager().GetInjectGenotype(injected_code, NULL);
+    
+    target_organism->AddParasite(child_genotype);
+    child_genotype->AddParasite();
+    child_cpu.ThreadSetOwner(child_genotype);
+    m_world->GetClassificationManager().AdjustInjectGenotype(*child_genotype);
+  }
+}
+
+
+cPopulationCell& cPopulation::GetCell(int in_num)
 {
   return cell_array[in_num];
 }
