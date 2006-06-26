@@ -190,207 +190,6 @@ public:
 
 
 
-///// inject_sequence /////
-
-/**
-* Injects identical organisms into a range of cells of the population.
- *
- * Parameters:
- * sequence (string)
- *   The genome sequence for this organism.  This is a mandatory argument.
- * start_cell (int)
- *   First cell to inject into.
- * stop_cell (int)
- *   First cell *not* to inject into.
- * merit (double) default: -1
-   *   The initial merit of the organism. If set to -1, this is ignored.
-   * lineage label (integer) default: 0
-     *   An integer that marks all descendants of this organism.
-     * neutral metric (double) default: 0
-       *   A double value that randomly drifts over time.
-       *
-       * Example:
-       *   inject_range ckdfhgklsahnfsaggdsgajfg 0 10 100
-       *
-       * Will inject 10 organisms into cells 0 through 9 with a merit of 100.
-       **/
-
-
-class cEvent_inject_sequence : public cEvent {
-private:
-  cString seq;
-  int start_cell;
-  int end_cell;
-  double merit;
-  int lineage_label;
-  double neutral_metric;
-public:
-    const cString GetName() const { return "inject_sequence"; }
-  const cString GetDescription() const { return "inject_sequence  <cString seq> [int start_cell=0] [int end_cell=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    seq = args.PopWord();
-    if (args == "") start_cell=0; else start_cell=args.PopWord().AsInt();
-    if (args == "") end_cell=-1; else end_cell=args.PopWord().AsInt();
-    if (args == "") merit=-1; else merit=args.PopWord().AsDouble();
-    if (args == "") lineage_label=0; else lineage_label=args.PopWord().AsInt();
-    if (args == "") neutral_metric=0; else neutral_metric=args.PopWord().AsDouble();
-  }
-  ///// inject_sequence /////
-  void Process(){
-    if (end_cell == -1) end_cell = start_cell + 1;
-    if (start_cell < 0 ||
-        end_cell > m_world->GetPopulation().GetSize() ||
-        start_cell >= end_cell) {
-      m_world->GetDriver().NotifyWarning("inject_sequence has invalid range!");
-    }
-    else {
-      cGenome genome(seq);
-      for (int i = start_cell; i < end_cell; i++) {
-        m_world->GetPopulation().Inject(genome, i, merit, lineage_label, neutral_metric);
-      }
-      m_world->GetPopulation().SetSyncEvents(true);
-    }
-  }
-};
-
-///// inject_random /////
-
-/**
-* Injects a randomly generated genome into the population.
- *
- * Parameters:
- * length (integer) [required]
- *   Number of instructions in the randomly generated genome.
- * cell ID (integer) default: -1
-   *   The grid-point into which the genome should be placed.  Default is random.
-   * merit (double) default: -1
-     *   The initial merit of the organism. If set to -1, this is ignored.
-     * lineage label (integer) default: 0
-       *   An integer that marks all descendants of this organism.
-       * neutral metric (double) default: 0
-         *   A double value that randomly drifts over time.
-         **/
-
-
-class cEvent_inject_random : public cEvent {
-private:
-  int length;
-  int cell_id;
-  double merit;
-  int lineage_label;
-  double neutral_metric;
-public:
-    const cString GetName() const { return "inject_random"; }
-  const cString GetDescription() const { return "inject_random  <int length> [int cell_id=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    length = args.PopWord().AsInt();
-    if (args == "") cell_id=-1; else cell_id=args.PopWord().AsInt();
-    if (args == "") merit=-1; else merit=args.PopWord().AsDouble();
-    if (args == "") lineage_label=0; else lineage_label=args.PopWord().AsInt();
-    if (args == "") neutral_metric=0; else neutral_metric=args.PopWord().AsDouble();
-  }
-  ///// inject_random /////
-  void Process(){
-    if (cell_id == -1) cell_id = m_world->GetRandom().GetUInt(m_world->GetPopulation().GetSize());
-    
-    cAvidaContext& ctx = m_world->GetDefaultContext();
-    
-    cGenome genome =
-      cInstUtil::RandomGenome(ctx, length, m_world->GetHardwareManager().GetInstSet());
-    m_world->GetPopulation().Inject(genome, cell_id, merit, lineage_label, neutral_metric);
-  }
-};
-
-
-///// inject_range_pair /////
-
-/**
-* Injects identical organisms into a range of cells of the population.
- *
- * Parameters:
- * filename (string)
- *   The filename of the genotype to load. If this is left empty, or the keyword
- *   "START_CREATURE" is given, than the genotype specified in the genesis
- *   file under "START_CREATURE" is used.
- * start_cell (int)
- *   First cell to inject into.
- * stop_cell (int)
- *   First cell *not* to inject into.
- * merit (double) default: -1
-   *   The initial merit of the organism. If set to -1, this is ignored.
-   * lineage label (integer) default: 0
-     *   An integer that marks all descendants of this organism.
-     * neutral metric (double) default: 0
-       *   A double value that randomly drifts over time.
-       *
-       * Example:
-       *   inject_range creature.gen 0 10
-       *
-       * Will inject 10 organisms into cells 0 through 9.
-       **/
-
-
-class cEvent_inject_range_pair : public cEvent {
-private:
-  cString fname;
-  cString fname_parasite;
-  int start_cell;
-  int end_cell;
-  double merit;
-  int lineage_label;
-  double neutral_metric;
-  int mem_space;
-public:
-    const cString GetName() const { return "inject_range_pair"; }
-  const cString GetDescription() const { return "inject_range_pair  [cString fname=\"START_CREATURE\"] [cString fname_parasite=\"organism.parasite\"] [int start_cell=0] [int end_cell=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0] [int mem_space=2]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") fname="START_CREATURE"; else fname=args.PopWord();
-    if (args == "") fname_parasite="organism.parasite"; else fname_parasite=args.PopWord();
-    if (args == "") start_cell=0; else start_cell=args.PopWord().AsInt();
-    if (args == "") end_cell=-1; else end_cell=args.PopWord().AsInt();
-    if (args == "") merit=-1; else merit=args.PopWord().AsDouble();
-    if (args == "") lineage_label=0; else lineage_label=args.PopWord().AsInt();
-    if (args == "") neutral_metric=0; else neutral_metric=args.PopWord().AsDouble();
-    if (args == "") mem_space=2; else mem_space=args.PopWord().AsInt();
-  }
-  ///// inject_range_pair /////
-  void Process(){
-    if (fname == "START_CREATURE") fname = m_world->GetConfig().START_CREATURE.Get();
-    if (end_cell == -1) end_cell = start_cell + 1;
-    if (start_cell < 0 ||
-        end_cell > m_world->GetPopulation().GetSize() ||
-        start_cell >= end_cell) {
-      m_world->GetDriver().NotifyWarning("inject_range has invalid range!");
-    }
-    else {
-      cGenome genome =
-      cInstUtil::LoadGenome(fname, m_world->GetHardwareManager().GetInstSet());
-      cGenome genome_parasite =
-        cInstUtil::LoadGenome(fname_parasite, m_world->GetHardwareManager().GetInstSet());
-      for (int i = start_cell; i < end_cell; i++) {
-        m_world->GetPopulation().Inject(genome, i, merit, lineage_label, neutral_metric);
-// @DMB        m_world->GetPopulation().Inject(genome_parasite, i, merit, lineage_label, neutral_metric, mem_space);
-      }
-      m_world->GetPopulation().SetSyncEvents(true);
-    }
-  }
-};
-
 ///// zero_muts /////
 
 /**
@@ -641,7 +440,7 @@ private:
   cString datafile;
 public:
   const cString GetName() const { return "predict_w_landscape"; }
-  const cString GetDescription() const { return "predict_w_landscape  [cString datafile=\"land-predict.dat\"]"; }
+  const cString GetDescription() const { return "predict_w_landscape  [string datafile=\"land-predict.dat\"]"; }
   
   void Configure(cWorld* world, const cString& in_args)
   {
@@ -671,7 +470,7 @@ private:
   cString datafile;
 public:
   const cString GetName() const { return "predict_nu_landscape"; }
-  const cString GetDescription() const { return "predict_nu_landscape  [cString datafile=\"land-predict.dat\"]"; }
+  const cString GetDescription() const { return "predict_nu_landscape  [string datafile=\"land-predict.dat\"]"; }
   
   void Configure(cWorld* world, const cString& in_args)
   {
@@ -757,7 +556,7 @@ private:
   cString filename;
 public:
     const cString GetName() const { return "analyze_population"; }
-  const cString GetDescription() const { return "analyze_population  [double sample_prob=1] [int landscape=0] [int save_genotype=0] [cString filename=\"\"]"; }
+  const cString GetDescription() const { return "analyze_population  [double sample_prob=1] [int landscape=0] [int save_genotype=0] [string filename=\"\"]"; }
   
   void Configure(cWorld* world, const cString& in_args)
   {
@@ -792,7 +591,7 @@ private:
   int save_genotype;
 public:
     const cString GetName() const { return "genetic_distance_pop_dump"; }
-  const cString GetDescription() const { return "genetic_distance_pop_dump  [cString creature_name=\"\"] [cString filename=\"\"] [int save_genotype=0]"; }
+  const cString GetDescription() const { return "genetic_distance_pop_dump  [string creature_name=\"\"] [string filename=\"\"] [int save_genotype=0]"; }
   
   void Configure(cWorld* world, const cString& in_args)
   {
@@ -826,7 +625,7 @@ private:
   cString filename;
 public:
   const cString GetName() const { return "task_snapshot"; }
-  const cString GetDescription() const { return "task_snapshot  [cString filename=\"\"]"; }
+  const cString GetDescription() const { return "task_snapshot  [string filename=\"\"]"; }
   
   void Configure(cWorld* world, const cString& in_args)
   {
@@ -855,7 +654,7 @@ private:
   cString filename;
 public:
   const cString GetName() const { return "print_viable_tasks_data"; }
-  const cString GetDescription() const { return "print_viable_tasks_data  [cString filename=\"viable_tasks.dat\"]"; }
+  const cString GetDescription() const { return "print_viable_tasks_data  [string filename=\"viable_tasks.dat\"]"; }
   
   void Configure(cWorld* world, const cString& in_args)
   {
@@ -1305,7 +1104,7 @@ private:
   cString filename;
 public:
     const cString GetName() const { return "test_size_change_robustness"; }
-  const cString GetDescription() const { return "test_size_change_robustness  [int num_trials=100] [cString filename=\"size_change.dat\"]"; }
+  const cString GetDescription() const { return "test_size_change_robustness  [int num_trials=100] [string filename=\"size_change.dat\"]"; }
   
   void Configure(cWorld* world, const cString& in_args)
   {
@@ -1580,7 +1379,7 @@ private:
   cString filename;
 public:
   const cString GetName() const { return "print_tree_depths"; }
-  const cString GetDescription() const { return "print_tree_depths  [cString filename=\"\"]"; }
+  const cString GetDescription() const { return "print_tree_depths  [string filename=\"\"]"; }
   
   void Configure(cWorld* world, const cString& in_args)
   {
@@ -2225,9 +2024,6 @@ cEventManager::cEventManager(cWorld* world) : m_world(world)
   REGISTER(exit_if_ave_lineage_label_smaller);
   REGISTER(exit_if_ave_lineage_label_larger);
   
-  REGISTER(inject_sequence);
-  REGISTER(inject_random);
-  REGISTER(inject_range_pair);
   REGISTER(zero_muts);
   REGISTER(mod_copy_mut);
   REGISTER(mod_div_mut);

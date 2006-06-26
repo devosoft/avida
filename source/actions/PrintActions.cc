@@ -42,7 +42,7 @@ public:                                                                         
     cString largs(args);                                                                  /*  8 */ \
     if (largs == "") m_filename = #DEFAULT; else m_filename = largs.PopWord();            /*  9 */ \
   }                                                                                       /* 10 */ \
-  const cString GetDescription() { return #METHOD " [cString fname=\"" #DEFAULT "\"]"; }  /* 11 */ \
+  const cString GetDescription() { return #METHOD " [string fname=\"" #DEFAULT "\"]"; }  /* 11 */ \
   void Process(cAvidaContext& ctx) { m_world->GetStats().METHOD(m_filename); }            /* 12 */ \
 }                                                                                         /* 13 */ \
 
@@ -75,7 +75,7 @@ public:                                                                         
     cString largs(args);                                                                  /*  8 */ \
     if (largs == "") m_filename = #DEFAULT; else m_filename = largs.PopWord();            /*  9 */ \
   }                                                                                       /* 10 */ \
-  const cString GetDescription() { return #METHOD " [cString fname=\"" #DEFAULT "\"]"; }  /* 11 */ \
+  const cString GetDescription() { return #METHOD " [string fname=\"" #DEFAULT "\"]"; }  /* 11 */ \
   void Process(cAvidaContext& ctx) { m_world->GetPopulation().METHOD(m_filename); }       /* 12 */ \
 }                                                                                         /* 13 */ \
 
@@ -117,7 +117,7 @@ public:
     if (largs == "") m_filename = "instruction_histogram.dat"; else m_filename = largs.PopWord();
   }
 
-  const cString GetDescription() { return "PrintInstructionAbundanceHistogram [cString fname=\"instruction_histogram.dat\"]"; }
+  const cString GetDescription() { return "PrintInstructionAbundanceHistogram [string fname=\"instruction_histogram.dat\"]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -161,7 +161,7 @@ public:
     if (largs == "") m_filename = "depth_histogram.dat"; else m_filename = largs.PopWord();
   }
   
-  const cString GetDescription() { return "PrintDepthHistogram [cString fname=\"depth_histogram.dat\"]"; }
+  const cString GetDescription() { return "PrintDepthHistogram [string fname=\"depth_histogram.dat\"]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -234,7 +234,7 @@ public:
     if (largs == "") m_filename = "genotype_abundance_histogram.dat"; else m_filename = largs.PopWord();
   }
   
-  const cString GetDescription() { return "PrintGenotypeAbundanceHistogram [cString fname=\"genotype_abundance_histogram.dat\"]"; }
+  const cString GetDescription() { return "PrintGenotypeAbundanceHistogram [string fname=\"genotype_abundance_histogram.dat\"]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -270,7 +270,7 @@ public:
     if (largs == "") m_filename = "species_abundance_histogram.dat"; else m_filename = largs.PopWord();
   }
   
-  const cString GetDescription() { return "PrintSpeciesAbundanceHistogram [cString fname=\"species_abundance_histogram.dat\"]"; }
+  const cString GetDescription() { return "PrintSpeciesAbundanceHistogram [string fname=\"species_abundance_histogram.dat\"]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -320,7 +320,7 @@ public:
     if (largs.GetSize()) m_verbose = largs.PopWord().AsInt();
   }
   
-  const cString GetDescription() { return "PrintLineageTotals [cString fname='lineage_totals.dat'] [int verbose=1]"; }
+  const cString GetDescription() { return "PrintLineageTotals [string fname='lineage_totals.dat'] [int verbose=1]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -345,7 +345,7 @@ public:
     if (largs.GetSize()) m_verbose = largs.PopWord().AsInt();
   }
   
-  const cString GetDescription() { return "PrintLineageCounts [cString fname='lineage_counts.dat'] [int verbose=1]"; }
+  const cString GetDescription() { return "PrintLineageCounts [string fname='lineage_counts.dat'] [int verbose=1]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -384,7 +384,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   
-  const cString GetDescription() { return "PrintDominantGenotype [cString fname='']"; }
+  const cString GetDescription() { return "PrintDominantGenotype [string fname='']"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -417,7 +417,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   
-  const cString GetDescription() { return "PrintDominantParasiteGenotype [cString fname='']"; }
+  const cString GetDescription() { return "PrintDominantParasiteGenotype [string fname='']"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -477,7 +477,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   
-  const cString GetDescription() { return "PrintGenotypes [cString data_fields=\"all\"] [int historic=0] [cString fname='']"; }
+  const cString GetDescription() { return "PrintGenotypes [string data_fields=\"all\"] [int historic=0] [string fname='']"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -538,7 +538,7 @@ public:
     if (!largs.GetSize()) m_filenames[2] = "fitness_histos_testCPU.dat"; else m_filenames[2] = largs.PopWord();
   }
   
-  const cString GetDescription() { return "PrintDetailedFitnessData [int save_max_f_genotype=0] [int print_fitness_histo=0] [double hist_fmax=1] [double hist_fstep=0.1] [cString datafn=\"fitness.dat\"] [cString histofn=\"fitness_histos.dat\"] [cString histotestfn=\"fitness_histos_testCPU.dat\"]"; }
+  const cString GetDescription() { return "PrintDetailedFitnessData [int save_max_f_genotype=0] [int print_fitness_histo=0] [double hist_fmax=1] [double hist_fstep=0.1] [string datafn=\"fitness.dat\"] [string histofn=\"fitness_histos.dat\"] [string histotestfn=\"fitness_histos_testCPU.dat\"]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -691,7 +691,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   
-  const cString GetDescription() { return "PrintGeneticDistanceData [cString ref_creature_file='START_CREATURE'] [cString fname='genetic_distance.dat']"; }
+  const cString GetDescription() { return "PrintGeneticDistanceData [string ref_creature_file='START_CREATURE'] [string fname='genetic_distance.dat']"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -745,7 +745,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   
-  const cString GetDescription() { return "PrintDumpMemory [cString fname='']"; }
+  const cString GetDescription() { return "PrintDumpMemory [string fname='']"; }
   
   void Process(cAvidaContext& ctx)
   {

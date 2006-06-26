@@ -746,11 +746,11 @@ bool cHardwareSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier)
 bool cHardwareSMT::InjectHost(const cCodeLabel& in_label, const cGenome& inject_code)
 {
   // Inject fails if the memory space is already in use or thread exists
-  if (MemorySpaceExists(in_label) || FindThreadLabel(in_label) == -1) return false;
+  if (MemorySpaceExists(in_label) || FindThreadLabel(in_label) != -1) return false;
 
   // Otherwise create the memory space and copy in the genome
   int mem_space_used = FindMemorySpaceLabel(in_label, -1);
-  assert(mem_space_used == -1);
+  assert(mem_space_used != -1);
   m_mem_array[mem_space_used] = inject_code;
   
   // Create a thread for this parasite

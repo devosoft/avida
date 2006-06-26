@@ -35,33 +35,34 @@
 class cCodeLabel
 {
 private:
-  tArray<char> nop_sequence;
-  int size;
+  tArray<char> m_nops;
+  int m_size;
 
 public:
-  cCodeLabel() : size(0) { ; }
-  cCodeLabel(const cCodeLabel& in_label) : nop_sequence(in_label.nop_sequence), size(in_label.size) { ; }  
+  cCodeLabel() : m_size(0) { ; }
+  cCodeLabel(const cCodeLabel& in_label) : m_nops(in_label.m_nops), m_size(in_label.m_size) { ; }  
   ~cCodeLabel() { ; }
 
   bool OK();
   bool operator==(const cCodeLabel& other_label) const;
   bool operator!=(const cCodeLabel& other_label) const { return !(operator==(other_label)); }
-  char operator[](int position) const { return (int) nop_sequence[position]; }
+  char operator[](int position) const { return (int) m_nops[position]; }
   cCodeLabel& operator=(const cCodeLabel& in_lbl)
   {
-    nop_sequence = in_lbl.nop_sequence;
-    size = in_lbl.size;
+    m_nops = in_lbl.m_nops;
+    m_size = in_lbl.m_size;
     return *this;
   }
-  
-  int FindSublabel(cCodeLabel & sub_label);
 
-  void Clear() { size = 0; }
+  void ReadString(const cString& label_str);
+  
+  int FindSublabel(cCodeLabel& sub_label);
+
+  void Clear() { m_size = 0; }
   inline void AddNop(int nop_num);
   inline void Rotate(const int rot, const int base);
 
-  int GetSize() const { return size; }
-  //int GetBase() const { return base; }
+  int GetSize() const { return m_size; }
   inline cString AsString() const;
   int AsInt(const int base) const;
   int AsIntGreyCode(const int base) const;
@@ -86,19 +87,19 @@ namespace nCodeLabel {
 void cCodeLabel::AddNop(int nop_num) {
   assert (nop_num < nHardware::MAX_NOPS);
 
-  if (size < nHardware::MAX_LABEL_SIZE) {
-    if (size == nop_sequence.GetSize()) {
-      nop_sequence.Resize(size+1);
+  if (m_size < nHardware::MAX_LABEL_SIZE) {
+    if (m_size == m_nops.GetSize()) {
+      m_nops.Resize(m_size + 1);
     }
-    nop_sequence[size++] = (char) nop_num;
+    m_nops[m_size++] = (char) nop_num;
   }
 }
 
 void cCodeLabel::Rotate(const int rot, const int base)
 {
-  for (int i = 0; i < size; i++) {
-    nop_sequence[i] += rot;
-    if (nop_sequence[i] >= base) nop_sequence[i] -= base;
+  for (int i = 0; i < m_size; i++) {
+    m_nops[i] += rot;
+    if (m_nops[i] >= base) m_nops[i] -= base;
   }
 }
 
@@ -106,8 +107,8 @@ void cCodeLabel::Rotate(const int rot, const int base)
 cString cCodeLabel::AsString() const
 {
   cString out_string;
-  for (int i = 0; i < size; i++) {
-    out_string += (char) nop_sequence[i] + 'A';
+  for (int i = 0; i < m_size; i++) {
+    out_string += (char) m_nops[i] + 'A';
   }
 
   return out_string;

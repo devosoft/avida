@@ -169,8 +169,7 @@ void cEventList::Process(){
           
         }
         
-      } // End Non-IMMEDITAE events
-      
+      } // End Non-IMMEDIATE events
     }  // end condition to do event
     
     entry = next_entry;

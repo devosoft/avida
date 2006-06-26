@@ -39,7 +39,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
 
-  const cString GetDescription() { return "SaveClone [cString fname='']"; }
+  const cString GetDescription() { return "SaveClone [string fname='']"; }
 
   void Process(cAvidaContext& ctx)
   {
@@ -135,7 +135,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   
-  const cString GetDescription() { return "DumpPopulation [cString fname='']"; }
+  const cString GetDescription() { return "DumpPopulation [string fname='']"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -165,7 +165,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   
-  const cString GetDescription() { return "SavePopulation [cString fname='']"; }
+  const cString GetDescription() { return "SavePopulation [string fname='']"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -197,7 +197,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   
-  const cString GetDescription() { return "SaveSexPopulation [cString fname='']"; }
+  const cString GetDescription() { return "SaveSexPopulation [string fname='']"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -221,7 +221,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   
-  const cString GetDescription() { return "SaveParasitePopulation [cString fname='']"; }
+  const cString GetDescription() { return "SaveParasitePopulation [string fname='']"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -260,7 +260,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   
-  const cString GetDescription() { return "SaveHistoricPopulation [int back_dist=-1] [cString fname='']"; }
+  const cString GetDescription() { return "SaveHistoricPopulation [int back_dist=-1] [string fname='']"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -292,7 +292,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   
-  const cString GetDescription() { return "SaveHistoricSexPopulation [cString fname='']"; }
+  const cString GetDescription() { return "SaveHistoricSexPopulation [string fname='']"; }
   
   void Process(cAvidaContext& ctx)
   {
