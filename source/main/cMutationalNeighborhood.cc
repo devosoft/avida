@@ -209,54 +209,108 @@ void cMutationalNeighborhood::ProcessTwoStep(cAvidaContext& ctx, cTestCPU* testc
 void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
 {
   // Initialize values
-  m_total = 0;
-  m_total_sqr_fitness = 0.0;
-  m_dead = 0;
-  m_neg = 0;
-  m_neut = 0;
-  m_pos = 0;
-  m_size_pos = 0.0;
-  m_size_neg = 0.0;
-  m_peak_fitness = m_base_fitness;
-  m_peak_genome = m_base_genome;  
-  m_site_count.Resize(m_base_genome.GetSize(), 0);
+  m_o_total = 0;
+  m_o_total_sqr_fitness = 0.0;
+  m_o_dead = 0;
+  m_o_neg = 0;
+  m_o_neut = 0;
+  m_o_pos = 0;
+  m_o_size_pos = 0.0;
+  m_o_size_neg = 0.0;
+  m_o_peak_fitness = m_base_fitness;
+  m_o_peak_genome = m_base_genome;  
+  m_o_site_count.Resize(m_base_genome.GetSize(), 0);
+  m_o_total_entropy = 0;
+  m_o_task_target = 0;
+  m_o_task_total = 0;
+  m_o_task_knockout = 0;
 
   for (int i = 0; i < m_onestep.GetSize(); i++) {
     sOneStep& odata = m_onestep[i];
-    m_total += odata.total;
-    m_total_fitness += odata.total_fitness;
-    m_total_sqr_fitness += odata.total_sqr_fitness;
-    m_dead += odata.dead;
-    m_neg += odata.neg;
-    m_neut += odata.neut;
-    m_pos += odata.pos;
-    m_size_pos += odata.size_pos; 
-    m_size_neg += odata.size_neg; 
+    m_o_total += odata.total;
+    m_o_total_fitness += odata.total_fitness;
+    m_o_total_sqr_fitness += odata.total_sqr_fitness;
+    m_o_dead += odata.dead;
+    m_o_neg += odata.neg;
+    m_o_neut += odata.neut;
+    m_o_pos += odata.pos;
+    m_o_size_pos += odata.size_pos; 
+    m_o_size_neg += odata.size_neg; 
   
-    if (odata.peak_fitness > m_peak_fitness) {
-      m_peak_genome = odata.peak_genome;
-      m_peak_fitness = odata.peak_fitness;
+    if (odata.peak_fitness > m_o_peak_fitness) {
+      m_o_peak_genome = odata.peak_genome;
+      m_o_peak_fitness = odata.peak_fitness;
     }
   
   
-    for (int j = 0; j < m_site_count.GetSize(); j++) {
-      m_site_count[j] += odata.site_count[j];
+    for (int j = 0; j < m_o_site_count.GetSize(); j++) {
+      m_o_site_count[j] += odata.site_count[j];
     }
       
     // @TODO - aggregate task data
   }
   
-  double max_ent = log(static_cast<double>(m_inst_set.GetSize()));
-  m_total_entropy = 0;
+  const double max_ent = log(static_cast<double>(m_inst_set.GetSize()));
   for (int i = 0; i < m_base_genome.GetSize(); i++) {
     // Per-site entropy is the log of the number of legal states for that
     // site.  Add one to account for the unmutated state.
-    m_total_entropy += log(static_cast<double>(m_site_count[i] + 1)) / max_ent;
+    m_o_total_entropy += log(static_cast<double>(m_o_site_count[i] + 1)) / max_ent;
   }
-  m_complexity = m_base_genome.GetSize() - m_total_entropy;
+  m_o_complexity = m_base_genome.GetSize() - m_o_total_entropy;
   
   
-  // @TODO - aggregate two step task data
+  // Initialize values
+  m_t_total = 0;
+  m_t_total_sqr_fitness = 0.0;
+  m_t_dead = 0;
+  m_t_neg = 0;
+  m_t_neut = 0;
+  m_t_pos = 0;
+  m_t_size_pos = 0.0;
+  m_t_size_neg = 0.0;
+  m_t_peak_fitness = m_base_fitness;
+  m_t_peak_genome = m_base_genome;  
+  m_t_site_count.Resize(m_base_genome.GetSize(), 0);
+  m_t_total_entropy = 0;
+  m_t_task_target = 0;
+  m_t_task_target_pos = 0;
+  m_t_task_target_neg = 0;
+  m_t_task_target_neut = 0;
+  m_t_task_target_dead = 0;
+  m_t_task_total = 0;
+  m_t_task_knockout = 0;
+  
+  for (int i = 0; i < m_twostep.GetSize(); i++) {
+    sTwoStep& tdata = m_twostep[i];
+    m_t_total += tdata.total;
+    m_t_total_fitness += tdata.total_fitness;
+    m_t_total_sqr_fitness += tdata.total_sqr_fitness;
+    m_t_dead += tdata.dead;
+    m_t_neg += tdata.neg;
+    m_t_neut += tdata.neut;
+    m_t_pos += tdata.pos;
+    m_t_size_pos += tdata.size_pos; 
+    m_t_size_neg += tdata.size_neg; 
+  
+    if (tdata.peak_fitness > m_t_peak_fitness) {
+      m_t_peak_genome = tdata.peak_genome;
+      m_t_peak_fitness = tdata.peak_fitness;
+    }
+  
+  
+    for (int j = 0; j < m_t_site_count.GetSize(); j++) {
+      m_t_site_count[j] += tdata.site_count[j];
+    }
+      
+    // @TODO - aggregate task data
+  }
+
+  for (int i = 0; i < m_base_genome.GetSize(); i++) {
+    // Per-site entropy is the log of the number of legal states for that
+    // site.  Add one to account for the unmutated state.
+    m_t_total_entropy += log(static_cast<double>(m_t_site_count[i] + 1)) / max_ent;
+  }
+  m_t_complexity = m_base_genome.GetSize() - m_t_total_entropy;
 
   
   pthread_rwlock_unlock(&m_rwlock);
@@ -265,38 +319,48 @@ void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
 
 void cMutationalNeighborhood::PrintStats(cDataFile& df, int update)
 {
-  df.Write(update, "Update");
-  df.Write(m_base_fitness, "Base Fitness");
-  df.Write(m_base_merit, "Base Merit");
-  df.Write(m_base_gestation, "Base Gestation");
-  df.Write(m_total, "Total One Step Mutants");
-  df.Write(GetProbDead(), "One Step Probability Dead");
-  df.Write(GetProbNeg(), "One Step Probability Deleterious");
-  df.Write(GetProbNeut(), "One Step Probability Neutral");
-  df.Write(GetProbPos(), "One Step Probability Positive");
-  df.Write(GetAvPosSize(), "One Step Average Positive Size");
-  df.Write(GetAvNegSize(), "One Step Average Negative Size");
-  df.Write(m_peak_fitness, "One Step Peak Fitness");
-  df.Write(GetAveFitness(), "One Step Average Fitness");
-  df.Write(GetAveSqrFitness(), "One Step Average Square Fitness");
-  df.Write(m_total_entropy, "One Step Total Entropy");
-  df.Write(m_complexity, "One Step Total Complexity");
-  df.Endl();
-}
+  df.Write(update, "Update/Tree Depth");
+  
+  df.Write(GetBaseFitness(), "Base Fitness");
+  df.Write(GetBaseMerit(), "Base Merit");
+  df.Write(GetBaseGestation(), "Base Gestation");
+  df.Write(GetBaseGenome().GetSize(), "Base Genome Length");
 
-void cMutationalNeighborhood::PrintEntropy(cDataFile& df)
-{
-  double max_ent = log(static_cast<double>(m_inst_set.GetSize()));
-  for (int j = 0; j < m_base_genome.GetSize(); j++) {
-    df.Write(log(static_cast<double>(m_site_count[j] + 1)) / max_ent, " ");
-  }
-  df.Endl();
-}
+  df.Write(GetSingleTotal(), "Total One Step Mutants");
+  df.Write(GetSingleProbPos(), "One Step Probability Positive");
+  df.Write(GetSingleProbNeg(), "One Step Probability Deleterious");
+  df.Write(GetSingleProbNeut(), "One Step Probability Neutral");
+  df.Write(GetSingleProbDead(), "One Step Probability Dead");
+  df.Write(GetSingleAverageSizePos(), "One Step Average Positive Size");
+  df.Write(GetSingleAverageSizeNeg(), "One Step Average Negative Size");
+  df.Write(GetSinglePeakFitness(), "One Step Peak Fitness");
+  df.Write(GetSingleAverageFitness(), "One Step Average Fitness");
+  df.Write(GetSingleAverageSqrFitness(), "One Step Average Square Fitness");
+  df.Write(GetSingleTotalEntropy(), "One Step Total Entropy");
+  df.Write(GetSingleComplexity(), "One Step Total Complexity");
+  df.Write(GetSingleProbTargetTask(), "One Step Probability Confers Target Task");
+  df.Write(GetSingleProbTask(), "One Step Probability Confers Any Task");
+  df.Write(GetSingleProbKnockout(), "One Step Probability Knockout Task");
 
-void cMutationalNeighborhood::PrintSiteCount(cDataFile& df)
-{
-  for (int j = 0; j < m_base_genome.GetSize(); j++) {
-    df.Write(m_site_count[j], " ");
-  }
+  df.Write(GetDoubleTotal(), "Total Two Step Mutants");
+  df.Write(GetDoubleProbPos(), "Two Step Probability Positive");
+  df.Write(GetDoubleProbNeg(), "Two Step Probability Deleterious");
+  df.Write(GetDoubleProbDead(), "Two Step Probability Fatal");
+  df.Write(GetDoubleProbNeut(), "Two Step Probability Neutral");
+  df.Write(GetDoubleAverageSizePos(), "Two Step Average Positive Size");
+  df.Write(GetDoubleAverageSizeNeg(), "Two Step Average Negative Size");
+  df.Write(GetDoublePeakFitness(), "Two Step Peak Fitness");
+  df.Write(GetDoubleAverageFitness(), "Two Step Average Fitness");
+  df.Write(GetDoubleAverageSqrFitness(), "Two Step Average Square Fitness");
+  df.Write(GetDoubleTotalEntropy(), "Two Step Total Entropy");
+  df.Write(GetDoubleComplexity(), "Two Step Total Complexity");
+  df.Write(GetDoubleProbTargetTask(), "Two Step Probability Confers Target Task");
+  df.Write(GetDoubleProbTargetTaskPos(), "Two Step Prob. Confers Target - Previous Positive");
+  df.Write(GetDoubleProbTargetTaskNeg(), "Two Step Prob. Confers Target - Previous Deleterious");
+  df.Write(GetDoubleProbTargetTaskNeut(), "Two Step Prob. Confers Target - Previous Neutral");
+  df.Write(GetDoubleProbTargetTaskDead(), "Two Step Prob. Confers Target - Previous Fatal");
+  df.Write(GetDoubleProbTask(), "Two Step Probability Confers Any Task");
+  df.Write(GetDoubleProbKnockout(), "Two Step Probability Knockout Task");
+  
   df.Endl();
 }

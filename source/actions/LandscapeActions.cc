@@ -388,7 +388,15 @@ class cActionMutationalNeighborhood : public cAction
 {
 private:
   cString m_filename;
-  tList<cMutationalNeighborhood> m_batch;
+  
+  struct sBatchEntry {
+    cMutationalNeighborhood* mutn;
+    int depth;
+    
+    sBatchEntry(cMutationalNeighborhood* in_mutn, int in_depth) : mutn(in_mutn), depth(in_depth) { ; }
+    ~sBatchEntry() { delete mutn; }
+  };
+  tList<sBatchEntry> m_batch;
   
 public:
   cActionMutationalNeighborhood(cWorld* world, const cString& args)
@@ -405,7 +413,6 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    int update = -1;
     cMutationalNeighborhood* mutn = NULL;
     cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
     
@@ -423,29 +430,29 @@ public:
       cAnalyzeGenotype* genotype = NULL;
       while (genotype = batch_it.Next()) {
         mutn = new cMutationalNeighborhood(m_world, genotype->GetGenome(), inst_set);
-        m_batch.PushRear(mutn);
+        m_batch.PushRear(new sBatchEntry(mutn, genotype->GetDepth()));
         jobqueue.AddJob(new tAnalyzeJob<cMutationalNeighborhood>(mutn, &cMutationalNeighborhood::Process));
       }
       jobqueue.Execute();
     } else {
       if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
-        m_world->GetDriver().NotifyComment("Full Landscaping...");
+        m_world->GetDriver().NotifyComment("Calculating Mutational Neighborhood...");
       
       const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
       mutn = new cMutationalNeighborhood(m_world, best_genome, inst_set);
 
-      m_batch.PushRear(mutn);
+      m_batch.PushRear(new sBatchEntry(mutn, m_world->GetStats().GetUpdate()));
       mutn->Process(ctx);
-      update = m_world->GetStats().GetUpdate();      
     }
     
     cMutationalNeighborhoodResults* results = NULL;
+    sBatchEntry* entry = NULL;
     cDataFile& df = m_world->GetDataFile(m_filename);
-    while (mutn = m_batch.Pop()) {
-      results = new cMutationalNeighborhoodResults(mutn);
-      results->PrintStats(df, update);
+    while (entry = m_batch.Pop()) {
+      results = new cMutationalNeighborhoodResults(entry->mutn);
+      results->PrintStats(df, entry->depth);
       delete results;
-      delete mutn;
+      delete entry;
     }
   }
 };
