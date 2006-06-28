@@ -81,6 +81,15 @@ void cAnalyzeJobQueue::AddJobImmediate(cAnalyzeJob* job)
 }
 
 
+void cAnalyzeJobQueue::Start()
+{
+  if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+    m_world->GetDriver().NotifyComment("waking worker threads...");
+
+  pthread_cond_broadcast(&m_cond);
+}
+
+
 void cAnalyzeJobQueue::Execute()
 {
   if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)

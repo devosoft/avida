@@ -19,6 +19,8 @@
 #include "cGenotypeBatch.h"
 #include "cHardwareManager.h"
 #include "cLandscape.h"
+#include "cMutationalNeighborhood.h"
+#include "cMutationalNeighborhoodResults.h"
 #include "cStats.h"
 #include "cString.h"
 #include "cWorld.h"
@@ -214,7 +216,7 @@ public:
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       cAnalyzeGenotype* genotype = NULL;
       while (genotype = batch_it.Next()) {
-        cLandscape* land = new cLandscape(m_world, genotype->GetGenome(), inst_set);
+        land = new cLandscape(m_world, genotype->GetGenome(), inst_set);
         land->SetDistance(m_dist);
         m_batch.PushRear(land);
         jobqueue.AddJob(new tAnalyzeJob<cLandscape>(land, &cLandscape::Process));
@@ -382,6 +384,73 @@ public:
 };
 
 
+class cActionMutationalNeighborhood : public cAction
+{
+private:
+  cString m_filename;
+  tList<cMutationalNeighborhood> m_batch;
+  
+public:
+  cActionMutationalNeighborhood(cWorld* world, const cString& args)
+    : cAction(world, args), m_filename("mut-neighborhood.dat")
+  {
+      cString largs(args);
+      if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  
+  const cString GetDescription()
+  {
+    return "MutationalNeighborhood [filename='mut-neighborhood.dat']";
+  }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    int update = -1;
+    cMutationalNeighborhood* mutn = NULL;
+    cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
+    
+    if (ctx.GetAnalyzeMode()) {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+        cString msg("Calculating Mutational Neighborhood for batch ");
+        msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
+        m_world->GetDriver().NotifyComment(msg);
+      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+        m_world->GetDriver().NotifyComment("Calculating Mutational Neighborhood...");
+      }
+
+      cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();
+      tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
+      cAnalyzeGenotype* genotype = NULL;
+      while (genotype = batch_it.Next()) {
+        mutn = new cMutationalNeighborhood(m_world, genotype->GetGenome(), inst_set);
+        m_batch.PushRear(mutn);
+        jobqueue.AddJob(new tAnalyzeJob<cMutationalNeighborhood>(mutn, &cMutationalNeighborhood::Process));
+      }
+      jobqueue.Execute();
+    } else {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+        m_world->GetDriver().NotifyComment("Full Landscaping...");
+      
+      const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
+      mutn = new cMutationalNeighborhood(m_world, best_genome, inst_set);
+
+      m_batch.PushRear(mutn);
+      mutn->Process(ctx);
+      update = m_world->GetStats().GetUpdate();      
+    }
+    
+    cMutationalNeighborhoodResults* results = NULL;
+    cDataFile& df = m_world->GetDataFile(m_filename);
+    while (mutn = m_batch.Pop()) {
+      results = new cMutationalNeighborhoodResults(mutn);
+      results->PrintStats(df, update);
+      delete results;
+      delete mutn;
+    }
+  }
+};
+
+
 void RegisterLandscapeActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionAnalyzeLandscape>("AnalyzeLandscape");
@@ -389,4 +458,5 @@ void RegisterLandscapeActions(cActionLibrary* action_lib)
   action_lib->Register<cActionFullLandscape>("FullLandscape");
   action_lib->Register<cActionRandomLandscape>("RandomLandscape");
   action_lib->Register<cActionSampleLandscape>("SampleLandscape");
+  action_lib->Register<cActionMutationalNeighborhood>("MutationalNeighborhood");
 }

@@ -28,6 +28,14 @@
 #define pthread_cond_broadcast(x)
 #define pthread_cond_destroy(x)
 
+// Just define away rwlock support
+#define pthread_rwlock_t int
+#define pthread_rwlock_init(x, y)
+#define pthread_rwlock_rdlock(x)
+#define pthread_rwlock_wrlock(x)
+#define pthread_rwlock_unlock(x)
+#define pthread_rwlock_destroy(x)
+
 // Define away pthread support
 #define pthread_t int
 #define pthread_exit(x)

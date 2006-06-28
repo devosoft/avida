@@ -63,6 +63,7 @@ public:
   void AddJob(cAnalyzeJob* job);
   void AddJobImmediate(cAnalyzeJob* job);
 
+  void Start();
   void Execute();
   
   cRandom* GetRandom(int jobid) { return m_rng_pool[jobid & MT_RANDOM_INDEX_MASK]; } 

@@ -48,8 +48,6 @@ void cLandscape::Reset(const cGenome & in_genome)
   total_fitness   = 0.0;
   total_sqr_fitness = 0.0;
   distance        = 0;
-  del_distance    = 0;
-  ins_distance    = 0;
   trials          = 0;
   
   total_count   = 0;
@@ -87,7 +85,7 @@ void cLandscape::ProcessGenome(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& i
 {
   testcpu->TestGenome(ctx, test_info, in_genome);
   
-  test_fitness = test_info.GetColonyFitness();
+  double test_fitness = test_info.GetColonyFitness();
   
   total_fitness += test_fitness;
   total_sqr_fitness += test_fitness * test_fitness;

@@ -46,8 +46,6 @@ private:
   double total_sqr_fitness;
 
   int distance;
-  int del_distance;
-  int ins_distance;
 
   int trials;
   int m_min_found;
@@ -72,9 +70,6 @@ private:
   double pos_epi_size; 
   double neg_epi_size; 
   double no_epi_size; 
-
-
-  double test_fitness;
 
   int * site_count;
 
