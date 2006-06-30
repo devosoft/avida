@@ -19,6 +19,12 @@
 #ifndef tArray_h
 #include "tArray.h"
 #endif
+#ifndef tList_h
+#include "tList.h"
+#endif
+#ifndef tMatrix_h
+#include "tMatrix.h"
+#endif
 
 #include <pthread.h>
 
@@ -47,7 +53,7 @@ private:
   int m_cur_site;
   int m_completed;
   
-  struct sOneStep
+  struct sStep
   {
     int total;
     
@@ -69,48 +75,25 @@ private:
     int task_total;
     int task_knockout;
 
-    // state used in two step calculations
-    tArray<double> fitness;
-    tArray<int> cur_tasks;
     
-    sOneStep() : total(0), total_fitness(0.0), total_sqr_fitness(0.0), peak_fitness(0.0), dead(0), neg(0), neut(0), pos(0),
+    sStep() : total(0), total_fitness(0.0), total_sqr_fitness(0.0), peak_fitness(0.0), dead(0), neg(0), neut(0), pos(0),
       size_pos(0.0), size_neg(0.0), task_target(0), task_total(0), task_knockout(0) { ; }
   };
-  tArray<sOneStep> m_onestep;
+  tArray<sStep> m_onestep;
+  tArray<sStep> m_twostep;
+
+  tMatrix<double> m_fitness;
   
-  struct sTwoStep
+  struct sPendingTarget
   {
-    int total;
-    
-    double total_fitness;
-    double total_sqr_fitness;
-    cGenome peak_genome;
-    double peak_fitness;
-    
-    int dead;
-    int neg;
-    int neut;
-    int pos;
-    double size_pos;
-    double size_neg;
-    
-    tArray<int> site_count;
-    
-    int task_target;
-    int task_target_pos;
-    int task_target_neg;
-    int task_target_neut;
-    int task_target_dead;
-    int task_total;
-    int task_knockout;
-    
-    sTwoStep() : total(0), total_fitness(0.0), total_sqr_fitness(0.0), peak_fitness(0.0), dead(0), neg(0), neut(0), pos(0),
-      size_pos(0.0), size_neg(0.0), task_target(0), task_target_pos(0), task_target_neg(0), task_target_dead(0),
-      task_total(0), task_knockout(0) { ; }
+    int site;
+    int inst;
+    sPendingTarget(int in_site, int in_inst) : site(in_site), inst(in_inst) { ; }
   };
-  tArray<sTwoStep> m_twostep;
+  tList<sPendingTarget> m_pending;
   
-  const cInstSet& m_inst_set;
+  const cInstSet& m_inst_set;  
+  int m_target;
   
   // Base data
   // --------------------------------------------------------------------------
@@ -187,8 +170,8 @@ private:
   cMutationalNeighborhood& operator=(const cMutationalNeighborhood&); // @not_implemented
   
 public:
-  cMutationalNeighborhood(cWorld* world, const cGenome& genome, const cInstSet& inst_set)
-  : m_world(world), m_initialized(false), m_inst_set(inst_set), m_base_genome(genome)
+  cMutationalNeighborhood(cWorld* world, const cGenome& genome, const cInstSet& inst_set, int target)
+  : m_world(world), m_initialized(false), m_inst_set(inst_set), m_target(target), m_base_genome(genome)
   {
     pthread_rwlock_init(&m_rwlock, NULL);
     pthread_mutex_init(&m_mutex, NULL);
@@ -207,13 +190,19 @@ public:
   
 // These methods can only be accessed via a cMutationalNeighborhoodResults object
 private:
-  void PrintStats(cDataFile& df, int update = -1);
+  void PrintStats(cDataFile& df, int update = -1) const;
   
+  inline int GetTargetTask() const { return m_target; }
+
   inline const cGenome& GetBaseGenome() const { return m_base_genome; }
   inline double GetBaseFitness() const { return m_base_fitness; }
   inline double GetBaseMerit() const { return m_base_merit; }
   inline double GetBaseGestation() const { return m_base_gestation; }
-  
+  inline bool GetBaseTargetTask() const
+  {
+    if (m_base_tasks.GetSize()) return m_base_tasks[m_target]; else return false;
+  }
+
   inline int GetSingleTotal() const { return m_o_total; }
   
   inline double GetSingleAverageFitness() const { return m_o_total_fitness / m_o_total; }
@@ -259,13 +248,25 @@ private:
   inline int GetDoubleTargetTask() const { return m_t_task_target; }
   inline double GetDoubleProbTargetTask() const { return static_cast<double>(m_t_task_target) / m_t_total; }
   inline int GetDoubleTargetTaskPos() const { return m_t_task_target_pos; }
-  inline double GetDoubleProbTargetTaskPos() const { return static_cast<double>(m_t_task_target_pos) / m_t_total; }
+  inline double GetDoubleProbTargetTaskPos() const
+  {
+    if (m_t_task_target == 0) return 0.0; else return static_cast<double>(m_t_task_target_pos) / (2 * m_t_task_target);
+  }
   inline int GetDoubleTargetTaskNeg() const { return m_t_task_target_neg; }
-  inline double GetDoubleProbTargetTaskNeg() const { return static_cast<double>(m_t_task_target_neg) / m_t_total; }
+  inline double GetDoubleProbTargetTaskNeg() const
+  {
+    if (m_t_task_target == 0) return 0.0; else return static_cast<double>(m_t_task_target_neg) / (2 * m_t_task_target);
+  }
   inline int GetDoubleTargetTaskNeut() const { return m_t_task_target_neut; }
-  inline double GetDoubleProbTargetTaskNeut() const { return static_cast<double>(m_t_task_target_neut) / m_t_total; }
+  inline double GetDoubleProbTargetTaskNeut() const
+  {
+    if (m_t_task_target == 0) return 0.0; else return static_cast<double>(m_t_task_target_neut) / (2 * m_t_task_target);
+  }
   inline int GetDoubleTargetTaskDead() const { return m_t_task_target_dead; }
-  inline double GetDoubleProbTargetTaskDead() const { return static_cast<double>(m_t_task_target_dead) / m_t_total; }
+  inline double GetDoubleProbTargetTaskDead() const
+  {
+    if (m_t_task_target == 0) return 0.0; else return static_cast<double>(m_t_task_target_dead) / (2 * m_t_task_target);
+  }
   inline int GetDoubleTask() const { return m_t_task_total; }
   inline double GetDoubleProbTask() const { return static_cast<double>(m_t_task_total) / m_t_total; }
   inline int GetDoubleKnockout() const { return m_t_task_knockout; }

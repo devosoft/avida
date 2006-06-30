@@ -40,10 +40,13 @@ public:
   
   inline void PrintStats(cDataFile& df, int update = -1) const { m_src.PrintStats(df, update); }
   
+  inline int GetTargetTask() const { return m_src.GetTargetTask(); }
+  
   inline const cGenome& GetBaseGenome() const { return m_src.GetBaseGenome(); }
   inline double GetBaseFitness() const { return m_src.GetBaseFitness(); }
   inline double GetBaseMerit() const { return m_src.GetBaseMerit(); }
   inline double GetBaseGestation() const { return m_src.GetBaseGestation(); }
+  inline bool GetBaseTargetTask() const { return m_src.GetBaseTargetTask(); }
   
   inline int GetSingleTotal() const { return m_src.GetSingleTotal(); }
   

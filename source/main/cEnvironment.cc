@@ -696,32 +696,35 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result, cTask
     // Mark this reaction as occuring...
     result.MarkReaction(cur_reaction->GetID());
   }
-  
-  // Loop again to check receive tasks...
-  // if (receive_buf.GetSize() != 0)
-  {
-    // Do setup for reaction tests...
-    
-    for (int i = 0; i < num_reactions; i++) {
-      cReaction * cur_reaction = reaction_lib.GetReaction(i);
-      assert(cur_reaction != NULL);
-      
-      // Only use active reactions...
-      if (cur_reaction->GetActive() == false) continue;
-      
-      // Examine the task trigger associated with this reaction
-      cTaskEntry * cur_task = cur_reaction->GetTask();
-      assert(cur_task != NULL);
-      const double task_quality = task_lib.TestOutput(*cur_task, &taskctx);
-      const int task_id = cur_task->GetID();
-      
-      // If this task wasn't performed, move on to the next one.
-      if (task_quality == 0.0) continue;
-      
-      // Mark this task as performed...
-      result.MarkReceiveTask(task_id);
-    }
-  }
+
+// @DMB - The following block of code only seems to affect MarkReceiveTask, the side effect of which
+//        is not used anywhere.
+//
+//  // Loop again to check receive tasks...
+//  // if (receive_buf.GetSize() != 0)
+//  {
+//    // Do setup for reaction tests...
+//    
+//    for (int i = 0; i < num_reactions; i++) {
+//      cReaction * cur_reaction = reaction_lib.GetReaction(i);
+//      assert(cur_reaction != NULL);
+//      
+//      // Only use active reactions...
+//      if (cur_reaction->GetActive() == false) continue;
+//      
+//      // Examine the task trigger associated with this reaction
+//      cTaskEntry * cur_task = cur_reaction->GetTask();
+//      assert(cur_task != NULL);
+//      const double task_quality = task_lib.TestOutput(*cur_task, &taskctx);
+//      const int task_id = cur_task->GetID();
+//      
+//      // If this task wasn't performed, move on to the next one.
+//      if (task_quality == 0.0) continue;
+//      
+//      // Mark this task as performed...
+//      result.MarkReceiveTask(task_id);
+//    }
+//  }
   
   
   return result.GetActive();

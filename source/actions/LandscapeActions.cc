@@ -388,6 +388,7 @@ class cActionMutationalNeighborhood : public cAction
 {
 private:
   cString m_filename;
+  int m_target;
   
   struct sBatchEntry {
     cMutationalNeighborhood* mutn;
@@ -400,15 +401,16 @@ private:
   
 public:
   cActionMutationalNeighborhood(cWorld* world, const cString& args)
-    : cAction(world, args), m_filename("mut-neighborhood.dat")
+    : cAction(world, args), m_filename("mut-neighborhood.dat"), m_target(-1)
   {
       cString largs(args);
       if (largs.GetSize()) m_filename = largs.PopWord();
+      if (largs.GetSize()) m_target = largs.PopWord().AsInt();
   }
   
   const cString GetDescription()
   {
-    return "MutationalNeighborhood [filename='mut-neighborhood.dat']";
+    return "MutationalNeighborhood [string fname='mut-neighborhood.dat'] [int target=-1]";
   }
   
   void Process(cAvidaContext& ctx)
@@ -429,7 +431,7 @@ public:
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       cAnalyzeGenotype* genotype = NULL;
       while (genotype = batch_it.Next()) {
-        mutn = new cMutationalNeighborhood(m_world, genotype->GetGenome(), inst_set);
+        mutn = new cMutationalNeighborhood(m_world, genotype->GetGenome(), inst_set, m_target);
         m_batch.PushRear(new sBatchEntry(mutn, genotype->GetDepth()));
         jobqueue.AddJob(new tAnalyzeJob<cMutationalNeighborhood>(mutn, &cMutationalNeighborhood::Process));
       }
@@ -439,7 +441,7 @@ public:
         m_world->GetDriver().NotifyComment("Calculating Mutational Neighborhood...");
       
       const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
-      mutn = new cMutationalNeighborhood(m_world, best_genome, inst_set);
+      mutn = new cMutationalNeighborhood(m_world, best_genome, inst_set, m_target);
 
       m_batch.PushRear(new sBatchEntry(mutn, m_world->GetStats().GetUpdate()));
       mutn->Process(ctx);
