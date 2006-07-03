@@ -401,34 +401,6 @@ public:
   }
 };
 
-///// calc_landscape /////
-
-/**
-**/
-
-
-class cEvent_calc_landscape : public cEvent {
-private:
-  int landscape_dist;
-public:
-  const cString GetName() const { return "calc_landscape"; }
-  const cString GetDescription() const { return "calc_landscape  [int landscape_dist=1]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") landscape_dist=1; else landscape_dist=args.PopWord().AsInt();
-  }
-  ///// calc_landscape /////
-  void Process(){
-    cGenome & genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
-    cAnalyzeUtil::CalcLandscape(m_world, landscape_dist, genome,
-                                m_world->GetHardwareManager().GetInstSet());
-  }
-};
-
 ///// pairtest_landscape /////
 
 /**
@@ -1970,7 +1942,6 @@ cEventManager::cEventManager(cWorld* world) : m_world(world)
   REGISTER(set_copy_mut);
   REGISTER(mod_point_mut);
   REGISTER(set_point_mut);
-  REGISTER(calc_landscape);
   REGISTER(pairtest_landscape);
   REGISTER(test_dom);
   REGISTER(analyze_population);

@@ -111,48 +111,6 @@ void cAnalyzeUtil::TestInsSizeChangeRobustness(cWorld* world, ofstream& fp,
 }
 
 
-
-// Returns the genome of maximal fitness.
-cGenome cAnalyzeUtil::CalcLandscape(cWorld* world, int dist, const cGenome & genome,
-                                    cInstSet & inst_set)
-{
-  cAvidaContext& ctx = world->GetDefaultContext();
-
-  cLandscape landscape(world, genome, inst_set);
-  landscape.SetDistance(dist);
-  landscape.Process(ctx);
-  double peak_fitness = landscape.GetPeakFitness();
-  cGenome peak_genome = landscape.GetPeakGenome();
-  
-  // Print the results.
-  landscape.PrintStats(world->GetDataFileOFStream("landscape.dat"));
-  landscape.PrintEntropy(world->GetDataFileOFStream("land-entropy.dat"));
-  landscape.PrintSiteCount(world->GetDataFileOFStream("land-sitecount.dat"));
-  
-  // Repeat for Insertions...
-  landscape.Reset(genome);
-  landscape.ProcessInsert(ctx);
-  landscape.PrintStats(world->GetDataFileOFStream("landscape-ins.dat"));
-  landscape.PrintSiteCount(world->GetDataFileOFStream("land-ins-sitecount.dat"));
-  if (landscape.GetPeakFitness() > peak_fitness) {
-    peak_fitness = landscape.GetPeakFitness();
-    peak_genome = landscape.GetPeakGenome();
-  }
-  
-  // And Deletions...
-  landscape.Reset(genome);
-  landscape.ProcessDelete(ctx);
-  landscape.PrintStats(world->GetDataFileOFStream("landscape-del.dat"));
-  landscape.PrintSiteCount(world->GetDataFileOFStream("land-del-sitecount.dat"));
-  if (landscape.GetPeakFitness() > peak_fitness) {
-    peak_fitness = landscape.GetPeakFitness();
-    peak_genome = landscape.GetPeakGenome();
-  }
-  
-  return peak_genome;
-}
-
-
 void cAnalyzeUtil::PairTestLandscape(cWorld* world, const cGenome &genome, cInstSet &inst_set,
                                      int sample_size, int update)
 {

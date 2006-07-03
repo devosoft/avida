@@ -143,14 +143,14 @@ private:
  this is that it supports multithreaded execution, whereas lazy evaluation during
  detailing will be serialized.
 */
-class cActionCalcLandscape : public cAction  // @parallelized
+class cActionPrecalcLandscape : public cAction  // @parallelized
 {
 public:
-  cActionCalcLandscape(cWorld* world, const cString& args) : cAction(world, args) { ; }
+  cActionPrecalcLandscape(cWorld* world, const cString& args) : cAction(world, args) { ; }
   
   const cString GetDescription()
   {
-    return "CalcLandscape";
+    return "PrecalcLandscape";
   }
   
   void Process(cAvidaContext& ctx)
@@ -178,22 +178,26 @@ public:
 class cActionFullLandscape : public cAction  // @parallelized
 {
 private:
-  cString m_filename;
+  cString m_sfilename;
+  cString m_efilename;
+  cString m_cfilename;
   int m_dist;
   tList<cLandscape> m_batch;
   
 public:
   cActionFullLandscape(cWorld* world, const cString& args)
-    : cAction(world, args), m_filename("land-full.dat"), m_dist(1)
+    : cAction(world, args), m_sfilename("land-full.dat"), m_efilename(""), m_cfilename(""), m_dist(1)
   {
       cString largs(args);
-      if (largs.GetSize()) m_filename = largs.PopWord();
+      if (largs.GetSize()) m_sfilename = largs.PopWord();
       if (largs.GetSize()) m_dist = largs.PopWord().AsInt();
+      if (largs.GetSize()) m_efilename = largs.PopWord();
+      if (largs.GetSize()) m_cfilename = largs.PopWord();
   }
   
   const cString GetDescription()
   {
-    return "FullLandscape [filename='land-full.dat'] [int distance=1]";
+    return "FullLandscape [string filename='land-full.dat'] [int distance=1] [string entropy_file=''] [string sitecount_file='']";
   }
   
   void Process(cAvidaContext& ctx)
@@ -234,9 +238,153 @@ public:
       update = m_world->GetStats().GetUpdate();      
     }
     
-    std::ofstream& outfile = m_world->GetDataFileOFStream(m_filename);
+    std::ofstream& sfile = m_world->GetDataFileOFStream(m_sfilename);
     while (land = m_batch.Pop()) {
-      land->PrintStats(outfile, update);
+      land->PrintStats(sfile, update);
+      if (m_efilename.GetSize()) land->PrintEntropy(m_world->GetDataFileOFStream(m_efilename));
+      if (m_cfilename.GetSize()) land->PrintSiteCount(m_world->GetDataFileOFStream(m_cfilename));
+      delete land;
+    }
+  }
+};
+
+
+class cActionDeletionLandscape : public cAction  // @parallelized
+{
+private:
+  cString m_sfilename;
+  cString m_cfilename;
+  int m_dist;
+  tList<cLandscape> m_batch;
+  
+public:
+  cActionDeletionLandscape(cWorld* world, const cString& args)
+    : cAction(world, args), m_sfilename("land-del.dat"), m_cfilename(""), m_dist(1)
+  {
+      cString largs(args);
+      if (largs.GetSize()) m_sfilename = largs.PopWord();
+      if (largs.GetSize()) m_dist = largs.PopWord().AsInt();
+      if (largs.GetSize()) m_cfilename = largs.PopWord();
+  }
+  
+  const cString GetDescription()
+  {
+    return "DeletionLandscape [string filename='land-del.dat'] [int distance=1] [string sitecount_file='']";
+  }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    int update = -1;
+    cLandscape* land = NULL;
+    
+    if (ctx.GetAnalyzeMode()) {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+        cString msg("Deletion Landscaping batch ");
+        msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
+        m_world->GetDriver().NotifyComment(msg);
+      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+        m_world->GetDriver().NotifyComment("Deletion Landscapping...");
+      }
+
+      cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();
+      cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
+      
+      tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
+      cAnalyzeGenotype* genotype = NULL;
+      while (genotype = batch_it.Next()) {
+        land = new cLandscape(m_world, genotype->GetGenome(), inst_set);
+        land->SetDistance(m_dist);
+        m_batch.PushRear(land);
+        jobqueue.AddJob(new tAnalyzeJob<cLandscape>(land, &cLandscape::ProcessDelete));
+      }
+      jobqueue.Execute();
+    } else {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+        m_world->GetDriver().NotifyComment("Deletion Landscaping...");
+      
+      land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetGenome(),
+                            m_world->GetHardwareManager().GetInstSet());
+      m_batch.PushRear(land);
+      land->SetDistance(m_dist);
+      land->ProcessDelete(ctx);
+      update = m_world->GetStats().GetUpdate();      
+    }
+    
+    std::ofstream& sfile = m_world->GetDataFileOFStream(m_sfilename);
+    while (land = m_batch.Pop()) {
+      land->PrintStats(sfile, update);
+      if (m_cfilename.GetSize()) land->PrintSiteCount(m_world->GetDataFileOFStream(m_cfilename));
+      delete land;
+    }
+  }
+};
+
+
+class cActionInsertionLandscape : public cAction  // @parallelized
+{
+private:
+  cString m_sfilename;
+  cString m_cfilename;
+  int m_dist;
+  tList<cLandscape> m_batch;
+  
+public:
+  cActionInsertionLandscape(cWorld* world, const cString& args)
+    : cAction(world, args), m_sfilename("land-ins.dat"), m_cfilename(""), m_dist(1)
+  {
+      cString largs(args);
+      if (largs.GetSize()) m_sfilename = largs.PopWord();
+      if (largs.GetSize()) m_dist = largs.PopWord().AsInt();
+      if (largs.GetSize()) m_cfilename = largs.PopWord();
+  }
+  
+  const cString GetDescription()
+  {
+    return "InsertionLandscape [string filename='land-ins.dat'] [int distance=1] [string sitecount_file='']";
+  }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    int update = -1;
+    cLandscape* land = NULL;
+    
+    if (ctx.GetAnalyzeMode()) {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+        cString msg("Insertion Landscaping batch ");
+        msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
+        m_world->GetDriver().NotifyComment(msg);
+      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+        m_world->GetDriver().NotifyComment("Insertion Landscapping...");
+      }
+
+      cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();
+      cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
+      
+      tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
+      cAnalyzeGenotype* genotype = NULL;
+      while (genotype = batch_it.Next()) {
+        land = new cLandscape(m_world, genotype->GetGenome(), inst_set);
+        land->SetDistance(m_dist);
+        m_batch.PushRear(land);
+        jobqueue.AddJob(new tAnalyzeJob<cLandscape>(land, &cLandscape::ProcessInsert));
+      }
+      jobqueue.Execute();
+    } else {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+        m_world->GetDriver().NotifyComment("Insertion Landscaping...");
+      
+      land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetGenome(),
+                            m_world->GetHardwareManager().GetInstSet());
+      m_batch.PushRear(land);
+      land->SetDistance(m_dist);
+      land->ProcessInsert(ctx);
+      update = m_world->GetStats().GetUpdate();      
+    }
+    
+    std::ofstream& sfile = m_world->GetDataFileOFStream(m_sfilename);
+    while (land = m_batch.Pop()) {
+      land->PrintStats(sfile, update);
+      if (m_cfilename.GetSize()) land->PrintSiteCount(m_world->GetDataFileOFStream(m_cfilename));
       delete land;
     }
   }
@@ -563,8 +711,10 @@ public:
 void RegisterLandscapeActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionAnalyzeLandscape>("AnalyzeLandscape");
-  action_lib->Register<cActionCalcLandscape>("CalcLandscape");
+  action_lib->Register<cActionPrecalcLandscape>("PrecalcLandscape");
   action_lib->Register<cActionFullLandscape>("FullLandscape");
+  action_lib->Register<cActionDeletionLandscape>("DeletionLandscape");
+  action_lib->Register<cActionInsertionLandscape>("InsertionLandscape");
   action_lib->Register<cActionPredictWLandscape>("PredictWLandscape");
   action_lib->Register<cActionPredictNuLandscape>("PredictNuLandscape");
   action_lib->Register<cActionRandomLandscape>("RandomLandscape");

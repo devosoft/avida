@@ -35,8 +35,6 @@ public:
 
 
   // Landscape-based analysis
-  static cGenome CalcLandscape(cWorld* world, int dist, const cGenome & genome,
-			       cInstSet & inst_set);
   static void PairTestLandscape(cWorld* world, const cGenome & genome, cInstSet & inst_set,
 				int sample_size=0, int update=-1);
 
