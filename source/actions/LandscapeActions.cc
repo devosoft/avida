@@ -29,7 +29,7 @@
 #include "defs.h"
 
 
-class cActionAnalyzeLandscape : public cAction
+class cActionAnalyzeLandscape : public cAction  // @parallelized
 {
 private:
   cString m_filename;
@@ -143,7 +143,7 @@ private:
  this is that it supports multithreaded execution, whereas lazy evaluation during
  detailing will be serialized.
 */
-class cActionCalcLandscape : public cAction
+class cActionCalcLandscape : public cAction  // @parallelized
 {
 public:
   cActionCalcLandscape(cWorld* world, const cString& args) : cAction(world, args) { ; }
@@ -175,7 +175,7 @@ public:
 };
 
 
-class cActionFullLandscape : public cAction
+class cActionFullLandscape : public cAction  // @parallelized
 {
 private:
   cString m_filename;
@@ -243,7 +243,107 @@ public:
 };
 
 
-class cActionRandomLandscape : public cAction
+class cActionPredictWLandscape : public cAction  // @not_parallelized
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPredictWLandscape(cWorld* world, const cString& args)
+  : cAction(world, args), m_filename("land-predict.dat")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  
+  const cString GetDescription()
+  {
+    return "PredictWLandscape [filename='land-predict.dat']";
+  }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
+    std::ofstream& outfile = m_world->GetDataFileOFStream(m_filename);
+
+    if (ctx.GetAnalyzeMode()) {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+        cString msg("Predicting W Landscape on batch ");
+        msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
+        m_world->GetDriver().NotifyComment(msg);
+      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+        m_world->GetDriver().NotifyComment("Predicting W Landscape...");
+      }
+      
+      tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
+      cAnalyzeGenotype* genotype = NULL;
+      while (genotype = batch_it.Next()) {
+        cLandscape land(m_world, genotype->GetGenome(), inst_set);
+        land.PredictWProcess(ctx, outfile);
+      }
+    } else {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+        m_world->GetDriver().NotifyComment("Predicting W Landscape...");
+      
+      const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
+      cLandscape land(m_world, best_genome, inst_set);
+      land.PredictWProcess(ctx, outfile, m_world->GetStats().GetUpdate());
+    }
+  }
+};
+
+
+class cActionPredictNuLandscape : public cAction  // @not_parallized
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPredictNuLandscape(cWorld* world, const cString& args)
+  : cAction(world, args), m_filename("land-predict.dat")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  
+  const cString GetDescription()
+  {
+    return "PredictNuLandscape [filename='land-predict.dat']";
+  }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
+    std::ofstream& outfile = m_world->GetDataFileOFStream(m_filename);
+
+    if (ctx.GetAnalyzeMode()) {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+        cString msg("Predicting Nu Landscape on batch ");
+        msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
+        m_world->GetDriver().NotifyComment(msg);
+      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+        m_world->GetDriver().NotifyComment("Predicting Nu Landscape...");
+      }
+      
+      tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
+      cAnalyzeGenotype* genotype = NULL;
+      while (genotype = batch_it.Next()) {
+        cLandscape land(m_world, genotype->GetGenome(), inst_set);
+        land.PredictWProcess(ctx, outfile);
+      }
+    } else {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+        m_world->GetDriver().NotifyComment("Predicting Nu Landscape...");
+      
+      const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
+      cLandscape land(m_world, best_genome, inst_set);
+      land.PredictWProcess(ctx, outfile, m_world->GetStats().GetUpdate());
+    }
+  }
+};
+
+
+class cActionRandomLandscape : public cAction  // @parallelized
 {
 private:
   cString m_filename;
@@ -315,7 +415,7 @@ public:
 };
 
 
-class cActionSampleLandscape : public cAction
+class cActionSampleLandscape : public cAction  // @parallelized
 {
 private:
   cString m_filename;
@@ -384,7 +484,7 @@ public:
 };
 
 
-class cActionMutationalNeighborhood : public cAction
+class cActionMutationalNeighborhood : public cAction  // @parallelized
 {
 private:
   cString m_filename;
@@ -465,6 +565,8 @@ void RegisterLandscapeActions(cActionLibrary* action_lib)
   action_lib->Register<cActionAnalyzeLandscape>("AnalyzeLandscape");
   action_lib->Register<cActionCalcLandscape>("CalcLandscape");
   action_lib->Register<cActionFullLandscape>("FullLandscape");
+  action_lib->Register<cActionPredictWLandscape>("PredictWLandscape");
+  action_lib->Register<cActionPredictNuLandscape>("PredictNuLandscape");
   action_lib->Register<cActionRandomLandscape>("RandomLandscape");
   action_lib->Register<cActionSampleLandscape>("SampleLandscape");
   action_lib->Register<cActionMutationalNeighborhood>("MutationalNeighborhood");

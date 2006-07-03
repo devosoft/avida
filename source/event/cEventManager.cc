@@ -429,66 +429,6 @@ public:
   }
 };
 
-///// predict_w_landscape /////
-
-/**
-**/
-
-
-class cEvent_predict_w_landscape : public cEvent {
-private:
-  cString datafile;
-public:
-  const cString GetName() const { return "predict_w_landscape"; }
-  const cString GetDescription() const { return "predict_w_landscape  [string datafile=\"land-predict.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") datafile="land-predict.dat"; else datafile=args.PopWord();
-  }
-  ///// predict_w_landscape /////
-  void Process(){
-    cAvidaContext& ctx = m_world->GetDefaultContext();
-
-    cGenome & genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
-    cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
-    landscape.PredictWProcess(ctx, m_world->GetDataFileOFStream(datafile));
-  }
-};
-
-///// predict_nu_landscape /////
-
-/**
-**/
-
-
-class cEvent_predict_nu_landscape : public cEvent {
-private:
-  cString datafile;
-public:
-  const cString GetName() const { return "predict_nu_landscape"; }
-  const cString GetDescription() const { return "predict_nu_landscape  [string datafile=\"land-predict.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") datafile="land-predict.dat"; else datafile=args.PopWord();
-  }
-  ///// predict_nu_landscape /////
-  void Process() {
-    cAvidaContext& ctx = m_world->GetDefaultContext();
-
-    cGenome& genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
-    cLandscape landscape(m_world, genome, m_world->GetHardwareManager().GetInstSet());
-    landscape.PredictNuProcess(ctx, m_world->GetDataFileOFStream(datafile));
-  }
-};
-
 ///// pairtest_landscape /////
 
 /**
@@ -2031,8 +1971,6 @@ cEventManager::cEventManager(cWorld* world) : m_world(world)
   REGISTER(mod_point_mut);
   REGISTER(set_point_mut);
   REGISTER(calc_landscape);
-  REGISTER(predict_w_landscape);
-  REGISTER(predict_nu_landscape);
   REGISTER(pairtest_landscape);
   REGISTER(test_dom);
   REGISTER(analyze_population);
