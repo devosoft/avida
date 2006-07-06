@@ -582,82 +582,6 @@ public:
 };
 
 
-///// kill_rectangle /////
-
-/**
-* Kills all cell in a rectangle.
- *
- * Parameters:
- * cell [X1][Y1][x2][Y2] (integer) default: 0
-   *   The start and stoping grid-points into which the organism should
-   be killed.
-   **/
-
-
-class cEvent_kill_rectangle : public cEvent {
-private:
-  int cell_X1;
-  int cell_Y1;
-  int cell_X2;
-  int cell_Y2;
-public:
-    const cString GetName() const { return "kill_rectangle"; }
-  const cString GetDescription() const { return "kill_rectangle  [int cell_X1=0] [int cell_Y1=0] [int cell_X2=0] [int cell_Y2=0]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") cell_X1=0; else cell_X1=args.PopWord().AsInt();
-    if (args == "") cell_Y1=0; else cell_Y1=args.PopWord().AsInt();
-    if (args == "") cell_X2=0; else cell_X2=args.PopWord().AsInt();
-    if (args == "") cell_Y2=0; else cell_Y2=args.PopWord().AsInt();
-  }
-  ///// kill_rectangle /////
-  void Process(){
-    int i, j, loc;
-    /* Be sure the user entered a valid range */
-    if (cell_X1 < 0) {
-      cell_X1 = 0;
-    } else if (cell_X1 > m_world->GetPopulation().GetWorldX() - 1) {
-      cell_X1 = m_world->GetPopulation().GetWorldX() - 1;
-    }
-    if (cell_X2 < 0) {
-      cell_X2 = 0;
-    } else if (cell_X2 > m_world->GetPopulation().GetWorldX() - 1) {
-      cell_X2 = m_world->GetPopulation().GetWorldX() - 1;
-    }
-    if (cell_Y1 < 0) {
-      cell_Y1 = 0;
-    } else if (cell_Y1 > m_world->GetPopulation().GetWorldY() - 1) {
-      cell_Y1 = m_world->GetPopulation().GetWorldY() - 1;
-    }
-    if (cell_Y2 < 0) {
-      cell_Y2 = 0;
-    } else if (cell_Y2 > m_world->GetPopulation().GetWorldY() - 1) {
-      cell_Y2 = m_world->GetPopulation().GetWorldY() - 1;
-    }
-    /* Account for a rectangle that crosses over the Zero X or Y cell */
-    if (cell_X2 < cell_X1) {
-      cell_X2 = cell_X2 + m_world->GetPopulation().GetWorldX();
-    }
-    if (cell_Y2 < cell_Y1) {
-      cell_Y2 = cell_Y2 + m_world->GetPopulation().GetWorldY();
-    }
-    for (i = cell_Y1; i <= cell_Y2; i++) {
-      for (j = cell_X1; j <= cell_X2; j++) {
-        loc = (i % m_world->GetPopulation().GetWorldY()) * m_world->GetPopulation().GetWorldX() +
-        (j % m_world->GetPopulation().GetWorldX());
-        cPopulationCell & cell = m_world->GetPopulation().GetCell(loc);
-        if (cell.IsOccupied() == true) {
-          m_world->GetPopulation().KillOrganism(cell);
-        }
-      }
-    }
-    m_world->GetPopulation().SetSyncEvents(true);
-  }
-};
 
 ///// rate_kill /////
 
@@ -1916,7 +1840,6 @@ cEventManager::cEventManager(cWorld* world) : m_world(world)
   REGISTER(task_snapshot);
   REGISTER(print_viable_tasks_data);
   
-  REGISTER(kill_rectangle);
   REGISTER(rate_kill);
   REGISTER(serial_transfer);
   REGISTER(hillclimb);

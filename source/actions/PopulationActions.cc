@@ -425,6 +425,77 @@ public:
 };
 
 
+/*
+ Kills all cell in a rectangle.
+ 
+ Parameters:
+   cell [X1][Y1][x2][Y2] (integer) default: 0
+     The start and stoping grid-points into which the organism should be killed.
+*/
+class cActionKillRectangle : public cAction
+{
+private:
+  int m_x1;
+  int m_y1;
+  int m_x2;
+  int m_y2;
+public:
+  cActionKillRectangle(cWorld* world, const cString& args) : cAction(world, args), m_x1(0), m_y1(0), m_x2(0), m_y2(0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_x1 = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_y1 = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_x2 = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_y2 = largs.PopWord().AsInt();
+
+    /* Be sure the user entered a valid range */
+    if (m_x1 < 0) {
+      m_x1 = 0;
+    } else if (m_x1 > m_world->GetPopulation().GetWorldX() - 1) {
+      m_x1 = m_world->GetPopulation().GetWorldX() - 1;
+    }
+    if (m_x2 < 0) {
+      m_x2 = 0;
+    } else if (m_x2 > m_world->GetPopulation().GetWorldX() - 1) {
+      m_x2 = m_world->GetPopulation().GetWorldX() - 1;
+    }
+    if (m_y1 < 0) {
+      m_y1 = 0;
+    } else if (m_y1 > m_world->GetPopulation().GetWorldY() - 1) {
+      m_y1 = m_world->GetPopulation().GetWorldY() - 1;
+    }
+    if (m_y2 < 0) {
+      m_y2 = 0;
+    } else if (m_y2 > m_world->GetPopulation().GetWorldY() - 1) {
+      m_y2 = m_world->GetPopulation().GetWorldY() - 1;
+    }
+
+    /* Account for a rectangle that crosses over the Zero X or Y cell */
+    if (m_x2 < m_x1) {
+      m_x2 = m_x2 + m_world->GetPopulation().GetWorldX();
+    }
+    if (m_y2 < m_y1) {
+      m_y2 = m_y2 + m_world->GetPopulation().GetWorldY();
+    }
+  }
+  
+  const cString GetDescription() { return "KillRectangle [int x1=0] [int y1=0] [int x2=0] [int y2=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cPopulation& pop = m_world->GetPopulation();
+    for (int i = m_y1; i <= m_y2; i++) {
+      for (int j = m_x1; j <= m_x2; j++) {
+        int loc = (i % pop.GetWorldY()) * pop.GetWorldX() + (j % pop.GetWorldX());
+        cPopulationCell& cell = pop.GetCell(loc);
+        if (cell.IsOccupied()) pop.KillOrganism(cell);
+      }
+    }
+    m_world->GetPopulation().SetSyncEvents(true);
+  }
+};
+
+
 
 void RegisterPopulationActions(cActionLibrary* action_lib)
 {
@@ -438,6 +509,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionInjectParasitePair>("InjectParasitePair");
 
   action_lib->Register<cActionApocalypse>("Apocalypse");
+  action_lib->Register<cActionKillRectangle>("KillRectangle");
 
 
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
@@ -448,4 +520,5 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionInject>("inject_sequence");
 
   action_lib->Register<cActionApocalypse>("apocalypse");
+  action_lib->Register<cActionKillRectangle>("kill_rectangle");
 }
