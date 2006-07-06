@@ -6,6 +6,7 @@ SET(libanalyze_a_SOURCES
   cAnalyzeUtil.cc
   cAnalyzeJobQueue.cc
   cAnalyzeJobWorker.cc
+  cMutationalNeighborhood.cc
 )
 
 ADD_LIBRARY(analyze ${libanalyze_a_SOURCES})

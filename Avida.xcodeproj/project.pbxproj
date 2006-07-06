@@ -92,6 +92,9 @@
 		708051BC0A1F66B400CBB8B6 /* cActionLibrary.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708051BA0A1F66B400CBB8B6 /* cActionLibrary.cc */; };
 		708051BD0A1F66B400CBB8B6 /* cActionLibrary.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708051BA0A1F66B400CBB8B6 /* cActionLibrary.cc */; };
 		709A09D409F3D3B400F9A4BF /* organism.smtx in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2F909EE8501001AEA89 /* organism.smtx */; };
+		709D924C0A5D950D00D6A163 /* cMutationalNeighborhood.cc in Sources */ = {isa = PBXBuildFile; fileRef = 709D924B0A5D950D00D6A163 /* cMutationalNeighborhood.cc */; };
+		709D924D0A5D950E00D6A163 /* cMutationalNeighborhood.cc in Sources */ = {isa = PBXBuildFile; fileRef = 709D924B0A5D950D00D6A163 /* cMutationalNeighborhood.cc */; };
+		709D924E0A5D950E00D6A163 /* cMutationalNeighborhood.cc in Sources */ = {isa = PBXBuildFile; fileRef = 709D924B0A5D950D00D6A163 /* cMutationalNeighborhood.cc */; };
 		70AA941A09D486CA006A24C8 /* system-alloc.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCF50209CFB0B400924128 /* system-alloc.cc */; };
 		70AA941B09D486CB006A24C8 /* tcmalloc-logging.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCF57F09CFBD3D00924128 /* tcmalloc-logging.cc */; };
 		70AA941C09D486CD006A24C8 /* tcmalloc.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCF56309CFBB9500924128 /* tcmalloc.cc */; };
@@ -191,7 +194,6 @@
 		70C054F80A4F704D002703C1 /* PopulationActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C054C90A4F6E19002703C1 /* PopulationActions.cc */; };
 		70C054F90A4F704E002703C1 /* SaveLoadActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708051A80A1F65FE00CBB8B6 /* SaveLoadActions.cc */; };
 		70C054FA0A4F7053002703C1 /* PopulationActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C054C90A4F6E19002703C1 /* PopulationActions.cc */; };
-		70C0557D0A50C587002703C1 /* cMutationalNeighborhood.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C0557A0A50C57E002703C1 /* cMutationalNeighborhood.cc */; };
 		70C1EF4808C393BA00F50912 /* cCodeLabel.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF4608C393BA00F50912 /* cCodeLabel.cc */; };
 		70C1EF4A08C393BA00F50912 /* cCodeLabel.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF4608C393BA00F50912 /* cCodeLabel.cc */; };
 		70C1EF5908C3948C00F50912 /* cCPUMemory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF5808C3948C00F50912 /* cCPUMemory.cc */; };
@@ -599,6 +601,9 @@
 		708051A80A1F65FE00CBB8B6 /* SaveLoadActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SaveLoadActions.cc; sourceTree = "<group>"; };
 		708051BA0A1F66B400CBB8B6 /* cActionLibrary.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cActionLibrary.cc; sourceTree = "<group>"; };
 		7093DB4009D6F50300DE7FEB /* tSmartArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tSmartArray.h; sourceTree = "<group>"; };
+		709D92490A5D94FD00D6A163 /* cMutationalNeighborhood.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMutationalNeighborhood.h; sourceTree = "<group>"; };
+		709D924A0A5D94FD00D6A163 /* cMutationalNeighborhoodResults.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMutationalNeighborhoodResults.h; sourceTree = "<group>"; };
+		709D924B0A5D950D00D6A163 /* cMutationalNeighborhood.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cMutationalNeighborhood.cc; sourceTree = "<group>"; };
 		70AA941909D486AE006A24C8 /* libtcmalloc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libtcmalloc.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		70B0864808F4972600FC65FE /* cLandscape.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cLandscape.h; sourceTree = "<group>"; };
 		70B0864B08F4972600FC65FE /* cLocalMutations.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cLocalMutations.h; sourceTree = "<group>"; };
@@ -748,9 +753,6 @@
 		70C054F50A4F701B002703C1 /* SConscript */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConscript; sourceTree = "<group>"; };
 		70C054F60A4F7030002703C1 /* SConscript */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConscript; sourceTree = "<group>"; };
 		70C054F70A4F703D002703C1 /* SConscript */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConscript; sourceTree = "<group>"; };
-		70C0557A0A50C57E002703C1 /* cMutationalNeighborhood.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cMutationalNeighborhood.cc; sourceTree = "<group>"; };
-		70C0557B0A50C57E002703C1 /* cMutationalNeighborhood.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMutationalNeighborhood.h; sourceTree = "<group>"; };
-		70C0557C0A50C57E002703C1 /* cMutationalNeighborhoodResults.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMutationalNeighborhoodResults.h; sourceTree = "<group>"; };
 		70C1EF4608C393BA00F50912 /* cCodeLabel.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCodeLabel.cc; sourceTree = "<group>"; };
 		70C1EF4708C393BA00F50912 /* cCodeLabel.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCodeLabel.h; sourceTree = "<group>"; };
 		70C1EF5808C3948C00F50912 /* cCPUMemory.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCPUMemory.cc; sourceTree = "<group>"; };
@@ -998,6 +1000,9 @@
 		70422A1B091B141000A5E67F /* analyze */ = {
 			isa = PBXGroup;
 			children = (
+				709D924B0A5D950D00D6A163 /* cMutationalNeighborhood.cc */,
+				709D92490A5D94FD00D6A163 /* cMutationalNeighborhood.h */,
+				709D924A0A5D94FD00D6A163 /* cMutationalNeighborhoodResults.h */,
 				70C054F50A4F701B002703C1 /* SConscript */,
 				70F7DE76092967A8009E311D /* cGenotypeBatch.h */,
 				70422A44091B1B8500A5E67F /* CMakeLists.txt */,
@@ -1379,9 +1384,6 @@
 		DCC310040762539D008F7A48 /* main */ = {
 			isa = PBXGroup;
 			children = (
-				70C0557A0A50C57E002703C1 /* cMutationalNeighborhood.cc */,
-				70C0557B0A50C57E002703C1 /* cMutationalNeighborhood.h */,
-				70C0557C0A50C57E002703C1 /* cMutationalNeighborhoodResults.h */,
 				703CA36F0A5072B700AB4DB4 /* SConscript */,
 				DCC3109C0762539E008F7A48 /* avida.cc */,
 				70B086BE08F5D86100FC65FE /* avida.h */,
@@ -1981,6 +1983,7 @@
 				708051BD0A1F66B400CBB8B6 /* cActionLibrary.cc in Sources */,
 				E626209E0A372C2A00C07685 /* SaveLoadActions.cc in Sources */,
 				70C054FA0A4F7053002703C1 /* PopulationActions.cc in Sources */,
+				709D924E0A5D950E00D6A163 /* cMutationalNeighborhood.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2113,6 +2116,7 @@
 				708051BC0A1F66B400CBB8B6 /* cActionLibrary.cc in Sources */,
 				70C054F80A4F704D002703C1 /* PopulationActions.cc in Sources */,
 				70C054F90A4F704E002703C1 /* SaveLoadActions.cc in Sources */,
+				709D924D0A5D950E00D6A163 /* cMutationalNeighborhood.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2226,7 +2230,7 @@
 				708051B20A1F663100CBB8B6 /* SaveLoadActions.cc in Sources */,
 				708051BB0A1F66B400CBB8B6 /* cActionLibrary.cc in Sources */,
 				70C054ED0A4F6FD2002703C1 /* PopulationActions.cc in Sources */,
-				70C0557D0A50C587002703C1 /* cMutationalNeighborhood.cc in Sources */,
+				709D924C0A5D950D00D6A163 /* cMutationalNeighborhood.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

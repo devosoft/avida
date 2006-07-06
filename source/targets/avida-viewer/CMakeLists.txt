@@ -26,7 +26,7 @@ ADD_LIBRARY(cursesviewer ${libviewer_SOURCES})
 ADD_EXECUTABLE(avida-viewer viewer.cc)
 
 SET(avida_viewer_target_link_libs
-  cursesviewer main classification cpu event analyze drivers analyze cpu tools trio actions ${NCURSES_LIBRARY}
+  cursesviewer main classification cpu event analyze drivers cpu tools trio actions analyze ${NCURSES_LIBRARY}
 )
 
 

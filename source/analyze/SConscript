@@ -9,6 +9,7 @@ srcs = [
   'cAnalyzeUtil.cc',
   'cAnalyzeJobQueue.cc',
   'cAnalyzeJobWorker.cc',
+  'cMutationalNeighborhood.cc'
 ]
 
 hdrs = [
@@ -26,6 +27,8 @@ hdrs = [
   'cAnalyzeJobWorker.h',
   'cAnalyzeUtil.h',
   'cGenotypeBatch.h',
+  'cMutationalNeighborhood.h',
+  'cMutationalNeighborhoodResults.h',
   'tAnalyzeJob.h',
 ]
 

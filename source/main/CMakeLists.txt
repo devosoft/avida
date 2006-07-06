@@ -13,7 +13,6 @@ SET(libmain_a_SOURCES
   cInstUtil.cc
   cLandscape.cc
   cLocalMutations.cc
-  cMutationalNeighborhood.cc
   cMutationLib.cc
   cMutationRates.cc
   cMxCodeArray.cc
