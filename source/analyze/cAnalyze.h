@@ -160,6 +160,7 @@ private:
   void SampleOrganisms(cString cur_string);
   void SampleGenotypes(cString cur_string);
   void KeepTopGenotypes(cString cur_string);
+  void TruncateLineage(cString cur_string);
 
   // Direct Output Commands...
   void CommandPrint(cString cur_string);

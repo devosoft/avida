@@ -1565,6 +1565,36 @@ void cAnalyze::KeepTopGenotypes(cString cur_string)
   batch[cur_batch].SetAligned(false);
 }
 
+void cAnalyze::TruncateLineage(cString cur_string)
+{
+  cString type("task");
+  int arg_i = -1;
+  if (cur_string.GetSize()) type = cur_string.PopWord();
+  if (type == "task") {
+    if (cur_string.GetSize()) arg_i = cur_string.PopWord().AsInt();
+    const int env_size = m_world->GetEnvironment().GetTaskLib().GetSize();
+    if (arg_i < 0 || arg_i >= env_size) arg_i = env_size - 1;
+  }
+  cString lin_type("num_cpus");
+  if (cur_string.GetSize()) lin_type = cur_string.PopWord();
+  FindLineage(lin_type);
+  BatchRecalculate("");
+
+  if (type == "task") {
+    bool found = false;
+    tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+    cAnalyzeGenotype* genotype = NULL;
+    
+    while (genotype = batch_it.Next()) {
+      if (found) {
+        batch_it.Remove();
+        delete genotype;
+        continue;
+      }
+      if (genotype->GetTaskCount(arg_i)) found = true;
+    }
+  }  
+}
 
 
 //////////////// Output Commands...
@@ -7662,6 +7692,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("SAMPLE_ORGANISMS", &cAnalyze::SampleOrganisms);
   AddLibraryDef("SAMPLE_GENOTYPES", &cAnalyze::SampleGenotypes);
   AddLibraryDef("KEEP_TOP", &cAnalyze::KeepTopGenotypes);
+  AddLibraryDef("TRUNCATELINEAGE", &cAnalyze::TruncateLineage);
   
   // Direct output commands...
   AddLibraryDef("PRINT", &cAnalyze::CommandPrint);
