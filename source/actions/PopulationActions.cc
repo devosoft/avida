@@ -16,6 +16,7 @@
 #include "cHardwareManager.h"
 #include "cInstUtil.h"
 #include "cPopulation.h"
+#include "cPopulationCell.h"
 #include "cWorld.h"
 
 
@@ -393,6 +394,37 @@ public:
 };
 
 
+/*
+ Randomly removes a certain proportion of the population.
+ 
+ Parameters:
+  removal probability (double) default: 0.9
+    The probability with which a single organism is removed.
+*/
+class cActionApocalypse : public cAction
+{
+private:
+  double m_killprob;
+public:
+  cActionApocalypse(cWorld* world, const cString& args) : cAction(world, args), m_killprob(0.9)
+  {
+      cString largs(args);
+      if (largs.GetSize()) m_killprob = largs.PopWord().AsDouble();
+  }
+  
+  const cString GetDescription() { return "Apocalypse [double killprob=0.9]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
+      cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
+      if (cell.IsOccupied() == false) continue;
+      if (ctx.GetRandom().P(m_killprob))  m_world->GetPopulation().KillOrganism(cell);
+    }
+  }
+};
+
+
 
 void RegisterPopulationActions(cActionLibrary* action_lib)
 {
@@ -405,6 +437,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionInjectParasite>("InjectParasite");
   action_lib->Register<cActionInjectParasitePair>("InjectParasitePair");
 
+  action_lib->Register<cActionApocalypse>("Apocalypse");
 
 
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
@@ -413,4 +446,6 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionInjectAll>("inject_all");
   action_lib->Register<cActionInjectRange>("inject_range");
   action_lib->Register<cActionInject>("inject_sequence");
+
+  action_lib->Register<cActionApocalypse>("apocalypse");
 }

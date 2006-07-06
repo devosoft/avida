@@ -581,40 +581,6 @@ public:
   }
 };
 
-///// apocalypse /////
-
-/**
-* Randomly removes a certain proportion of the population.
- *
- * Parameters:
- * removal probability (double) default: 0.9
-   *   The probability with which a single organism is removed.
-   **/
-
-
-class cEvent_apocalypse : public cEvent {
-private:
-  double kill_prob;
-public:
-  const cString GetName() const { return "apocalypse"; }
-  const cString GetDescription() const { return "apocalypse  [double kill_prob=.9]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") kill_prob=.9; else kill_prob=args.PopWord().AsDouble();
-  }
-  ///// apocalypse /////
-  void Process(){
-    for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
-      cPopulationCell & cell = m_world->GetPopulation().GetCell(i);
-      if (cell.IsOccupied() == false) continue;
-      if (m_world->GetRandom().P(kill_prob))  m_world->GetPopulation().KillOrganism(cell);
-    }
-  }
-};
 
 ///// kill_rectangle /////
 
@@ -1950,7 +1916,6 @@ cEventManager::cEventManager(cWorld* world) : m_world(world)
   REGISTER(task_snapshot);
   REGISTER(print_viable_tasks_data);
   
-  REGISTER(apocalypse);
   REGISTER(kill_rectangle);
   REGISTER(rate_kill);
   REGISTER(serial_transfer);
