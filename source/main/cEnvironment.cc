@@ -43,14 +43,12 @@ bool cEnvironment::ParseSetting(cString entry, cString& var_name, cString& var_v
   
   // Make sure we have both a name and a value...
   if (var_name.GetSize() == 0) {
-    cerr << "Error: No variable povided to set to '" << var_value
-    << "' in " << var_type << endl;
+    cerr << "Error: No variable povided to set to '" << var_value << "' in " << var_type << endl;
     return false;
   }
   
   if (var_value.GetSize() == 0) {
-    cerr << "Error: No value given for '" << var_name
-    << "' in " << var_type << endl;
+    cerr << "Error: No value given for '" << var_name << "' in " << var_type << endl;
     return false;
   }
   
@@ -60,56 +58,42 @@ bool cEnvironment::ParseSetting(cString entry, cString& var_name, cString& var_v
   return true;
 }
 
-bool cEnvironment::AssertInputInt(const cString & input,
-                                  const cString & name,
-                                  const cString & type)
+bool cEnvironment::AssertInputInt(const cString& input, const cString& name, const cString& type)
 {
   if (input.IsNumeric() == false) {
-    cerr << "Error: In " << type << "," << name << " set to non-integer."
-    << endl;
+    cerr << "Error: In " << type << "," << name << " set to non-integer." << endl;
     return false;
   }
   return true;
 }
 
-bool cEnvironment::AssertInputDouble(const cString & input,
-                                     const cString & name,
-                                     const cString & type)
+bool cEnvironment::AssertInputDouble(const cString& input, const cString& name, const cString& type)
 {
   if (input.IsNumber() == false) {
-    cerr << "Error: In " << type << "," << name << " set to non-number."
-    << endl;
+    cerr << "Error: In " << type << "," << name << " set to non-number." << endl;
     return false;
   }
   return true;
 }
 
-bool cEnvironment::AssertInputBool(const cString & input,
-                                   const cString & name,
-                                   const cString & type)
+bool cEnvironment::AssertInputBool(const cString& input, const cString& name, const cString& type)
 {
   if (input.IsNumber() == false) {
-    cerr << "Error: In " << type << "," << name << " set to non-number."
-    << endl;
+    cerr << "Error: In " << type << "," << name << " set to non-number." << endl;
     return false;
   }
   int value = input.AsInt();
   if ((value != 1) && (value != 0))  {
-    cerr << "Error: In " << type << "," << name << " set to non-bool."
-    << endl;
+    cerr << "Error: In " << type << "," << name << " set to non-bool." << endl;
     return false;
   }
   return true;
 }
 
-bool cEnvironment::AssertInputValid(void * input,
-                                    const cString & name,
-                                    const cString & type,
-                                    const cString & value)
+bool cEnvironment::AssertInputValid(void* input, const cString& name, const cString& type, const cString& value)
 {
   if (input == NULL) {
-    cerr << "Error: In " << type << ", '" << name << "' setting of '"
-    << value << "' not found." << endl;
+    cerr << "Error: In " << type << ", '" << name << "' setting of '" << value << "' not found." << endl;
     return false;
   }
   return true;
@@ -117,9 +101,9 @@ bool cEnvironment::AssertInputValid(void * input,
 
 
 
-bool cEnvironment::LoadReactionProcess(cReaction * reaction, cString desc)
+bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc)
 {
-  cReactionProcess * new_process = reaction->AddProcess();
+  cReactionProcess* new_process = reaction->AddProcess();
   
   // Loop through all entries in description.
   while (desc.GetSize() > 0) {
@@ -134,7 +118,7 @@ bool cEnvironment::LoadReactionProcess(cReaction * reaction, cString desc)
     
     // Now that we know we have a variable name and its value, set it!
     if (var_name == "resource") {
-      cResource * test_resource = resource_lib.GetResource(var_value);
+      cResource* test_resource = resource_lib.GetResource(var_value);
       if (!AssertInputValid(test_resource, "resource", var_type, var_value)) {
         return false;
       }
@@ -170,7 +154,7 @@ bool cEnvironment::LoadReactionProcess(cReaction * reaction, cString desc)
       new_process->SetMaxFraction(in_frac);
     }
     else if (var_name == "product") {
-      cResource * test_resource = resource_lib.GetResource(var_value);
+      cResource* test_resource = resource_lib.GetResource(var_value);
       if (!AssertInputValid(test_resource, "product", var_type, var_value)) {
         return false;
       }
@@ -189,7 +173,7 @@ bool cEnvironment::LoadReactionProcess(cReaction * reaction, cString desc)
       new_process->SetLethal(var_value.AsInt());
     }
     else if (var_name == "detect") {
-      cResource * test_resource = resource_lib.GetResource(var_value);
+      cResource* test_resource = resource_lib.GetResource(var_value);
       if (!AssertInputValid(test_resource, "product", var_type, var_value)) {
         return false;
       }
@@ -218,9 +202,9 @@ bool cEnvironment::LoadReactionProcess(cReaction * reaction, cString desc)
   return true;
 }
 
-bool cEnvironment::LoadReactionRequisite(cReaction * reaction, cString desc)
+bool cEnvironment::LoadReactionRequisite(cReaction* reaction, cString desc)
 {
-  cReactionRequisite * new_requisite = reaction->AddRequisite();
+  cReactionRequisite* new_requisite = reaction->AddRequisite();
   
   // Loop through all entries in description.
   while (desc.GetSize() > 0) {
@@ -235,14 +219,14 @@ bool cEnvironment::LoadReactionRequisite(cReaction * reaction, cString desc)
     
     // Now that we know we have a variable name and its value, set it!
     if (var_name == "reaction") {
-      cReaction * test_reaction = reaction_lib.GetReaction(var_value);
+      cReaction* test_reaction = reaction_lib.GetReaction(var_value);
       if (!AssertInputValid(test_reaction, "reaction", var_type, var_value)) {
         return false;
       }
       new_requisite->AddReaction(test_reaction);
     }
     else if (var_name == "noreaction") {
-      cReaction * test_reaction = reaction_lib.GetReaction(var_value);
+      cReaction* test_reaction = reaction_lib.GetReaction(var_value);
       if (!AssertInputValid(test_reaction,"noreaction",var_type, var_value)) {
         return false;
       }
@@ -277,7 +261,7 @@ bool cEnvironment::LoadResource(cString desc)
   while (desc.GetSize() > 0) {
     cString cur_resource = desc.PopWord();
     const cString name = cur_resource.Pop(':');
-    cResource * new_resource = resource_lib.AddResource(name);
+    cResource* new_resource = resource_lib.AddResource(name);
     
     while (cur_resource.GetSize() != 0) {
       cString var_entry = cur_resource.Pop(':');
@@ -395,7 +379,7 @@ bool cEnvironment::LoadReaction(cString desc)
   
   // Load in the reaction name
   const cString name = desc.PopWord();
-  cReaction * new_reaction = reaction_lib.AddReaction(name);
+  cReaction* new_reaction = reaction_lib.AddReaction(name);
   
   // If only a name was present, assume this reaction is a pre-declaration.
   if (desc.GetSize() == 0) {
@@ -414,7 +398,7 @@ bool cEnvironment::LoadReaction(cString desc)
 	cString trigger = trigger_info.Pop('=');
   
   // Load the task trigger
-   cTaskEntry * cur_task = task_lib.AddTask(trigger, trigger_info);
+   cTaskEntry * cur_task = m_tasklib.AddTask(trigger, trigger_info);
   if (cur_task == NULL) {
     cerr << "...failed to find task in cTaskLib..." << endl;
     return false;
@@ -561,7 +545,7 @@ bool cEnvironment::LoadSetActive(cString desc)
   if (item_active == "0" || item_active == "FALSE") new_active = false;
   
   if (item_type == "REACTION") {
-    cReaction * cur_reaction = reaction_lib.GetReaction(item_name);
+    cReaction* cur_reaction = reaction_lib.GetReaction(item_name);
     if (cur_reaction == NULL) {
       cerr << "Unknown REACTION: '" << item_name << "'" << endl;
       return false;
@@ -600,7 +584,7 @@ bool cEnvironment::LoadLine(cString line)
   return true;
 }
 
-bool cEnvironment::Load(const cString & filename)
+bool cEnvironment::Load(const cString& filename)
 {
   cInitFile infile(filename);
   if (infile.Good() == false) {
@@ -661,12 +645,12 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result, cTask
                               const tArray<double>& resource_count) const
 {
   // Do setup for reaction tests...
-  task_lib.SetupTests(taskctx);
+  m_tasklib.SetupTests(taskctx);
   
   // Loop through all reactions to see if any have been triggered...
   const int num_reactions = reaction_lib.GetSize();
   for (int i = 0; i < num_reactions; i++) {
-    cReaction * cur_reaction = reaction_lib.GetReaction(i);
+    cReaction* cur_reaction = reaction_lib.GetReaction(i);
     assert(cur_reaction != NULL);
     
     // Only use active reactions...
@@ -675,7 +659,7 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result, cTask
     // Examine the task trigger associated with this reaction
     cTaskEntry * cur_task = cur_reaction->GetTask();
     assert(cur_task != NULL);
-    const double task_quality = task_lib.TestOutput(*cur_task, &taskctx);
+    const double task_quality = m_tasklib.TestOutput(*cur_task, &taskctx);
     const int task_id = cur_task->GetID();
     const int task_cnt = task_count[task_id];
     
@@ -706,7 +690,7 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result, cTask
 //    // Do setup for reaction tests...
 //    
 //    for (int i = 0; i < num_reactions; i++) {
-//      cReaction * cur_reaction = reaction_lib.GetReaction(i);
+//      cReaction* cur_reaction = reaction_lib.GetReaction(i);
 //      assert(cur_reaction != NULL);
 //      
 //      // Only use active reactions...
@@ -715,7 +699,7 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result, cTask
 //      // Examine the task trigger associated with this reaction
 //      cTaskEntry * cur_task = cur_reaction->GetTask();
 //      assert(cur_task != NULL);
-//      const double task_quality = task_lib.TestOutput(*cur_task, &taskctx);
+//      const double task_quality = m_tasklib.TestOutput(*cur_task, &taskctx);
 //      const int task_id = cur_task->GetID();
 //      
 //      // If this task wasn't performed, move on to the next one.
@@ -898,9 +882,9 @@ bool cEnvironment::SetReactionValueMult(const cString& name, double value_mult)
   return true;
 }
 
-bool cEnvironment::SetReactionInst(const cString & name, cString inst_name)
+bool cEnvironment::SetReactionInst(const cString& name, cString inst_name)
 {
-  cReaction * found_reaction = reaction_lib.GetReaction(name);
+  cReaction* found_reaction = reaction_lib.GetReaction(name);
   if (found_reaction == NULL) return false;
   found_reaction->ModifyInst( m_world->GetHardwareManager().GetInstSet().GetInst(inst_name).GetOp() );
   return true;

@@ -23,11 +23,13 @@
 
 
 class cString;
+class cWorld;
 
 
 class cTaskLib
 {
 private:
+  cWorld* m_world;
   tArray<cTaskEntry*> task_array;
 
   // What extra information should be sent along when we are evaluating
@@ -51,7 +53,7 @@ private:
   cTaskLib& operator=(const cTaskLib&); // @not_implemented
 
 public:
-  cTaskLib();
+  cTaskLib(cWorld* world) : m_world(world), use_neighbor_input(false), use_neighbor_output(false) { ; }
   ~cTaskLib();
 
   int GetSize() const { return task_array.GetSize(); }

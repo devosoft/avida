@@ -18,12 +18,6 @@ extern "C" {
 using namespace std;
 
 
-cTaskLib::cTaskLib()
-: use_neighbor_input(false)
-, use_neighbor_output(false)
-{
-}
-
 cTaskLib::~cTaskLib()
 {
   for (int i = 0; i < task_array.GetSize(); i++) {

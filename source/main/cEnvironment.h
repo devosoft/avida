@@ -54,7 +54,7 @@ private:
   cResourceLib resource_lib;
   cReactionLib reaction_lib;
   cMutationLib mutation_lib;
-  cTaskLib task_lib;
+  cTaskLib m_tasklib;
   cInstSet inst_set;
   cMutationRates mut_rates;
 
@@ -81,18 +81,11 @@ private:
   cEnvironment& operator=(const cEnvironment&); // @not_implemented
 
 public:
-  cEnvironment(cWorld* world) : m_world(world), inst_set(world) { mut_rates.Setup(world); }
+  cEnvironment(cWorld* world) : m_world(world), m_tasklib(world), inst_set(world) { mut_rates.Setup(world); }
   ~cEnvironment() { ; }
 
-  /**
-   * Reads the environment from disk.
-   **/
-  bool Load(const cString & filename);
-
-  /**
-   * Reads in a single environment configuration line
-   **/
-  bool LoadLine(cString line);
+  bool Load(const cString& filename);  // Reads the environment from disk.
+  bool LoadLine(cString line);  // Reads in a single environment configuration line
 
   // Interaction with the organisms
   void SetupInputs(cAvidaContext& ctx, tArray<int>& input_array) const;
@@ -106,20 +99,20 @@ public:
                   const tArray<double>& resource_count) const;
 
   // Accessors
-  const cResourceLib & GetResourceLib() const { return resource_lib; }
-  const cReactionLib & GetReactionLib() const { return reaction_lib; }
-  const cMutationLib & GetMutationLib() const { return mutation_lib; }
-  const cTaskLib & GetTaskLib() const { return task_lib; }
-  const cMutationRates & GetMutRates() const { return mut_rates; }
+  const cResourceLib& GetResourceLib() const { return resource_lib; }
+  const cReactionLib& GetReactionLib() const { return reaction_lib; }
+  const cMutationLib& GetMutationLib() const { return mutation_lib; }
+  const cTaskLib& GetTaskLib() const { return m_tasklib; }
+  const cMutationRates& GetMutRates() const { return mut_rates; }
 
-  cResourceLib & GetResourceLib() { return resource_lib; }
-  cReactionLib & GetReactionLib() { return reaction_lib; }
-  cMutationRates & GetMutRates() { return mut_rates; }
+  cResourceLib& GetResourceLib() { return resource_lib; }
+  cReactionLib& GetReactionLib() { return reaction_lib; }
+  cMutationRates& GetMutRates() { return mut_rates; }
 
-  double GetReactionValue(int & reaction_id);
-  bool SetReactionValue(const cString & name, double value);
-  bool SetReactionValueMult(const cString & name, double value_mult);
-  bool SetReactionInst(const cString & name, cString inst_name);
+  double GetReactionValue(int& reaction_id);
+  bool SetReactionValue(const cString& name, double value);
+  bool SetReactionValueMult(const cString& name, double value_mult);
+  bool SetReactionInst(const cString& name, cString inst_name);
 };
 
 
