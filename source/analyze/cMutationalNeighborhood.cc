@@ -157,16 +157,18 @@ void cMutationalNeighborhood::ProcessOneStep(cAvidaContext& ctx, cTestCPU* testc
     
     m_fitness[cur_site][cur_inst] = test_fitness;
 
-    const tArray<int>& cur_tasks = test_info.GetColonyOrganism()->GetPhenotype().GetLastTaskCount();    
-    bool knockout = false;
-    bool anytask = false;
-    for (int i = 0; i < m_base_tasks.GetSize(); i++) {
-      if (m_base_tasks[i] && !cur_tasks[i]) knockout = true;
-      else if (!m_base_tasks[i] && cur_tasks[i]) anytask = true;
+    if (test_fitness != 0.0) { // Only count tasks if the organism is alive
+      const tArray<int>& cur_tasks = test_info.GetColonyOrganism()->GetPhenotype().GetLastTaskCount();    
+      bool knockout = false;
+      bool anytask = false;
+      for (int i = 0; i < m_base_tasks.GetSize(); i++) {
+        if (m_base_tasks[i] && !cur_tasks[i]) knockout = true;
+        else if (!m_base_tasks[i] && cur_tasks[i]) anytask = true;
+      }
+      if (knockout) odata.task_knockout++;
+      if (anytask) odata.task_total++;
+      if (m_base_tasks.GetSize() && !m_base_tasks[m_target] && cur_tasks[m_target]) odata.task_target++;
     }
-    if (knockout) odata.task_knockout++;
-    if (anytask) odata.task_total++;
-    if (m_base_tasks.GetSize() && !m_base_tasks[m_target] && cur_tasks[m_target]) odata.task_target++;
 
     ProcessTwoStep(ctx, testcpu, test_info, cur_site, mod_genome);
   }
@@ -211,20 +213,22 @@ void cMutationalNeighborhood::ProcessTwoStep(cAvidaContext& ctx, cTestCPU* testc
       
       if (test_fitness >= m_neut_min) tdata.site_count[line_num]++;
       
-      const tArray<int>& cur_tasks = test_info.GetColonyOrganism()->GetPhenotype().GetLastTaskCount();    
-      bool knockout = false;
-      bool anytask = false;
-      for (int i = 0; i < m_base_tasks.GetSize(); i++) {
-        if (m_base_tasks[i] && !cur_tasks[i]) knockout = true;
-        else if (!m_base_tasks[i] && cur_tasks[i]) anytask = true;
-      }
-      if (knockout) tdata.task_knockout++;
-      if (anytask) tdata.task_total++;
-      if (m_base_tasks.GetSize() && !m_base_tasks[m_target] && cur_tasks[m_target]) {
-        tdata.task_target++;
-        // Push both instructions as possible first mutations, for post determination of relative fitness
-        m_pending.Push(new sPendingTarget(cur_site, mod_genome[cur_site].GetOp()));
-        m_pending.Push(new sPendingTarget(line_num, inst_num));
+      if (test_fitness != 0.0) { // Only count tasks if the organism is alive
+        const tArray<int>& cur_tasks = test_info.GetColonyOrganism()->GetPhenotype().GetLastTaskCount();    
+        bool knockout = false;
+        bool anytask = false;
+        for (int i = 0; i < m_base_tasks.GetSize(); i++) {
+          if (m_base_tasks[i] && !cur_tasks[i]) knockout = true;
+          else if (!m_base_tasks[i] && cur_tasks[i]) anytask = true;
+        }
+        if (knockout) tdata.task_knockout++;
+        if (anytask) tdata.task_total++;
+        if (m_base_tasks.GetSize() && !m_base_tasks[m_target] && cur_tasks[m_target]) {
+          tdata.task_target++;
+          // Push both instructions as possible first mutations, for post determination of relative fitness
+          m_pending.Push(new sPendingTarget(cur_site, mod_genome[cur_site].GetOp()));
+          m_pending.Push(new sPendingTarget(line_num, inst_num));
+        }
       }
       
     }
