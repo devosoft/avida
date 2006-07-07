@@ -17,6 +17,7 @@
 #include "cInstUtil.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
+#include "cStats.h"
 #include "cWorld.h"
 
 
@@ -401,18 +402,18 @@ public:
   removal probability (double) default: 0.9
     The probability with which a single organism is removed.
 */
-class cActionApocalypse : public cAction
+class cActionKillProb : public cAction
 {
 private:
   double m_killprob;
 public:
-  cActionApocalypse(cWorld* world, const cString& args) : cAction(world, args), m_killprob(0.9)
+  cActionKillProb(cWorld* world, const cString& args) : cAction(world, args), m_killprob(0.9)
   {
       cString largs(args);
       if (largs.GetSize()) m_killprob = largs.PopWord().AsDouble();
   }
   
-  const cString GetDescription() { return "Apocalypse [double killprob=0.9]"; }
+  const cString GetDescription() { return "KillProb [double probability=0.9]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -420,6 +421,46 @@ public:
       cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
       if (cell.IsOccupied() == false) continue;
       if (ctx.GetRandom().P(m_killprob))  m_world->GetPopulation().KillOrganism(cell);
+    }
+  }
+};
+
+
+/*
+ Randomly removes a certain proportion of the population.
+ In principle, this event does the same thing as the apocalypse event.
+ However, instead of a probability, here one has to specify a rate. The
+ rate has the same unit as fitness. So if the average fitness is 20000,
+ then you remove 50% of the population on every update with a removal rate
+ of 10000.
+ 
+ Parameters:
+   removal rate (double)
+     The rate at which organisms are removed.
+*/
+class cActionKillRate : public cAction
+{
+private:
+  double m_killrate;
+public:
+  cActionKillRate(cWorld* world, const cString& args) : cAction(world, args), m_killrate(0.0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_killrate = largs.PopWord().AsDouble();
+  }
+  
+  const cString GetDescription() { return "KillRate <double probability>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    double ave_merit = m_world->GetStats().SumMerit().Average();
+    if (ave_merit <= 0) ave_merit = 1; // make sure that we don't get NAN's or negative numbers
+    ave_merit /= m_world->GetConfig().AVE_TIME_SLICE.Get();
+    const double kill_prob = m_killrate / ave_merit;
+    for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
+      cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
+      if (cell.IsOccupied() == false) continue;
+      if (ctx.GetRandom().P(kill_prob))  m_world->GetPopulation().KillOrganism(cell);
     }
   }
 };
@@ -508,7 +549,8 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionInjectParasite>("InjectParasite");
   action_lib->Register<cActionInjectParasitePair>("InjectParasitePair");
 
-  action_lib->Register<cActionApocalypse>("Apocalypse");
+  action_lib->Register<cActionKillProb>("KillProb");
+  action_lib->Register<cActionKillProb>("KillRate");
   action_lib->Register<cActionKillRectangle>("KillRectangle");
 
 
@@ -519,6 +561,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionInjectRange>("inject_range");
   action_lib->Register<cActionInject>("inject_sequence");
 
-  action_lib->Register<cActionApocalypse>("apocalypse");
+  action_lib->Register<cActionKillProb>("apocalypse");
+  action_lib->Register<cActionKillRate>("rate_kill");
   action_lib->Register<cActionKillRectangle>("kill_rectangle");
 }

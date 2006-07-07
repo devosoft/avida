@@ -582,52 +582,6 @@ public:
 };
 
 
-
-///// rate_kill /////
-
-/**
-* Randomly removes a certain proportion of the population.
- * In principle, this event does the same thing as the apocalypse event.
- * However, instead of a probability, here one has to specify a rate. The
- * rate has the same unit as fitness. So if the average fitness is 20000,
- * then you remove 50% of the population on every update with a removal rate
- * of 10000.
- *
- * Parameters:
- * removal rate (double)
- *   The rate at which organisms are removed.
- **/
-
-
-class cEvent_rate_kill : public cEvent {
-private:
-  double kill_rate;
-public:
-  const cString GetName() const { return "rate_kill"; }
-  const cString GetDescription() const { return "rate_kill  <double kill_rate>"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    kill_rate = args.PopWord().AsDouble();
-  }
-  ///// rate_kill /////
-  void Process(){
-    double ave_merit = m_world->GetStats().SumMerit().Average();
-    if ( ave_merit <= 0 )
-      ave_merit = 1; // make sure that we don't get NAN's or negative numbers
-    ave_merit /= m_world->GetConfig().AVE_TIME_SLICE.Get();
-    const double kill_prob = kill_rate / ave_merit;
-    for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
-      cPopulationCell & cell = m_world->GetPopulation().GetCell(i);
-      if (cell.IsOccupied() == false) continue;
-      if (m_world->GetRandom().P(kill_prob))  m_world->GetPopulation().KillOrganism(cell);
-    }
-  }
-};
-
 ///// serial_transfer /////
 
 /**
@@ -1840,7 +1794,6 @@ cEventManager::cEventManager(cWorld* world) : m_world(world)
   REGISTER(task_snapshot);
   REGISTER(print_viable_tasks_data);
   
-  REGISTER(rate_kill);
   REGISTER(serial_transfer);
   REGISTER(hillclimb);
   REGISTER(hillclimb_neut);
