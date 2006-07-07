@@ -428,7 +428,7 @@ public:
 
 /*
  Randomly removes a certain proportion of the population.
- In principle, this event does the same thing as the apocalypse event.
+ In principle, this event does the same thing as the KillProb action.
  However, instead of a probability, here one has to specify a rate. The
  rate has the same unit as fitness. So if the average fitness is 20000,
  then you remove 50% of the population on every update with a removal rate
@@ -537,6 +537,45 @@ public:
 };
 
 
+/*
+ This event does again the same thing as KillProb. However, now
+ the number of organisms to be retained can be specified
+ exactly. Also, it is possible to specify whether any of these
+ organisms may be dead or not.
+ 
+ Parameters:
+   transfer size (int) default: 1
+     The number of organisms to retain. If there are fewer living
+     organisms than the specified transfer size, then all living
+     organisms are retained.
+   ignore deads (int) default: 1
+     When set to 1, only living organisms are retained. Otherwise,
+     every type of organism can be retained.
+*/
+class cActionSerialTransfer : public cAction
+{
+private:
+  int m_size;
+  int m_ignore_deads;
+public:
+  cActionSerialTransfer(cWorld* world, const cString& args) : cAction(world, args), m_size(1), m_ignore_deads(1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_size = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_ignore_deads = largs.PopWord().AsInt();
+    
+    if (m_size < 0) m_size = 1;
+  }
+  
+  const cString GetDescription() { return "SerialTransfer [int transfer_size=1] [int ignore_deads=1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().SerialTransfer(m_size, m_ignore_deads);
+  }
+};
+
+
 
 void RegisterPopulationActions(cActionLibrary* action_lib)
 {
@@ -552,6 +591,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionKillProb>("KillProb");
   action_lib->Register<cActionKillProb>("KillRate");
   action_lib->Register<cActionKillRectangle>("KillRectangle");
+  action_lib->Register<cActionSerialTransfer>("SerialTransfer");
 
 
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
@@ -564,4 +604,5 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionKillProb>("apocalypse");
   action_lib->Register<cActionKillRate>("rate_kill");
   action_lib->Register<cActionKillRectangle>("kill_rectangle");
+  action_lib->Register<cActionSerialTransfer>("serial_transfer");
 }

@@ -632,6 +632,157 @@ public:
 };
 
 
+class cActionHillClimb : public cAction  // @not_parallized
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionHillClimb(cWorld* world, const cString& args)
+  : cAction(world, args), m_filename("hillclimb.dat")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  
+  const cString GetDescription()
+  {
+    return "HillClimb [filename='hillclimb.dat']";
+  }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
+    std::ofstream& outfile = m_world->GetDataFileOFStream(m_filename);
+    
+    if (ctx.GetAnalyzeMode()) {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+        cString msg("Calculating Hill Climb on batch ");
+        msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
+        m_world->GetDriver().NotifyComment(msg);
+      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+        m_world->GetDriver().NotifyComment("Calculating Hill Climb...");
+      }
+      
+      tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
+      cAnalyzeGenotype* genotype = NULL;
+      while (genotype = batch_it.Next()) {
+        cLandscape land(m_world, genotype->GetGenome(), inst_set);
+        land.HillClimb(ctx, outfile);
+      }
+    } else {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+        m_world->GetDriver().NotifyComment("Calculating Hill Climb...");
+      
+      const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
+      cLandscape land(m_world, best_genome, inst_set);
+      land.HillClimb(ctx, outfile);
+    }
+  }
+};
+
+
+class cActionHillClimbNeut : public cAction  // @not_parallized
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionHillClimbNeut(cWorld* world, const cString& args)
+  : cAction(world, args), m_filename("hillclimb.dat")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  
+  const cString GetDescription()
+  {
+    return "HillClimbNeut [filename='hillclimb.dat']";
+  }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
+    std::ofstream& outfile = m_world->GetDataFileOFStream(m_filename);
+    
+    if (ctx.GetAnalyzeMode()) {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+        cString msg("Calculating Hill Climb on batch ");
+        msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
+        m_world->GetDriver().NotifyComment(msg);
+      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+        m_world->GetDriver().NotifyComment("Calculating Hill Climb...");
+      }
+      
+      tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
+      cAnalyzeGenotype* genotype = NULL;
+      while (genotype = batch_it.Next()) {
+        cLandscape land(m_world, genotype->GetGenome(), inst_set);
+        land.HillClimb_Neut(ctx, outfile);
+      }
+    } else {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+        m_world->GetDriver().NotifyComment("Calculating Hill Climb...");
+      
+      const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
+      cLandscape land(m_world, best_genome, inst_set);
+      land.HillClimb_Neut(ctx, outfile);
+    }
+  }
+};
+
+
+class cActionHillClimbRand : public cAction  // @not_parallized
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionHillClimbRand(cWorld* world, const cString& args)
+  : cAction(world, args), m_filename("hillclimb.dat")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  
+  const cString GetDescription()
+  {
+    return "HillClimbRand [filename='hillclimb.dat']";
+  }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
+    std::ofstream& outfile = m_world->GetDataFileOFStream(m_filename);
+    
+    if (ctx.GetAnalyzeMode()) {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+        cString msg("Calculating Hill Climb on batch ");
+        msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
+        m_world->GetDriver().NotifyComment(msg);
+      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+        m_world->GetDriver().NotifyComment("Calculating Hill Climb...");
+      }
+      
+      tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
+      cAnalyzeGenotype* genotype = NULL;
+      while (genotype = batch_it.Next()) {
+        cLandscape land(m_world, genotype->GetGenome(), inst_set);
+        land.HillClimb_Rand(ctx, outfile);
+      }
+    } else {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+        m_world->GetDriver().NotifyComment("Calculating Hill Climb...");
+      
+      const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
+      cLandscape land(m_world, best_genome, inst_set);
+      land.HillClimb_Rand(ctx, outfile);
+    }
+  }
+};
+
+
+
 class cActionMutationalNeighborhood : public cAction  // @parallelized
 {
 private:
@@ -719,5 +870,10 @@ void RegisterLandscapeActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPredictNuLandscape>("PredictNuLandscape");
   action_lib->Register<cActionRandomLandscape>("RandomLandscape");
   action_lib->Register<cActionSampleLandscape>("SampleLandscape");
+  action_lib->Register<cActionHillClimb>("HillClimb");
+  action_lib->Register<cActionHillClimb>("HillClimbNeut");
+  action_lib->Register<cActionHillClimb>("HillClimbRand");
+
   action_lib->Register<cActionMutationalNeighborhood>("MutationalNeighborhood");
+  
 }
