@@ -69,7 +69,7 @@ cAnalyze::cAnalyze(cWorld* world)
 , inst_set(world->GetHardwareManager().GetInstSet())
 , m_ctx(world->GetDefaultContext())
 , m_jobqueue(world)
-, verbose(nAnalyze::VERBOSE_NORMAL)
+, verbose(world->GetConfig().VERBOSITY.Get())
 , interactive_depth(0)
 {
   
@@ -1581,6 +1581,11 @@ void cAnalyze::TruncateLineage(cString cur_string)
   BatchRecalculate("");
 
   if (type == "task") {
+    if (verbose >= nAnalyze::VERBOSE_ON)
+      cout << "Truncating batch " << cur_batch << " based on task " << arg_i << " emergence..." << endl;
+    else 
+      cout << "Truncating lineage..." << endl;
+
     bool found = false;
     tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
     cAnalyzeGenotype* genotype = NULL;
