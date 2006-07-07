@@ -62,10 +62,10 @@ private:
     cGenome peak_genome;
     double peak_fitness;
     
-    int dead;
+    int pos;
     int neg;
     int neut;
-    int pos;
+    int dead;
     double size_pos;
     double size_neg;
     
@@ -76,7 +76,7 @@ private:
     int task_knockout;
 
     
-    sStep() : total(0), total_fitness(0.0), total_sqr_fitness(0.0), peak_fitness(0.0), dead(0), neg(0), neut(0), pos(0),
+    sStep() : total(0), total_fitness(0.0), total_sqr_fitness(0.0), peak_fitness(0.0), pos(0), neg(0), neut(0), dead(0),
       size_pos(0.0), size_neg(0.0), task_target(0), task_total(0), task_knockout(0) { ; }
   };
   tArray<sStep> m_onestep;
@@ -114,10 +114,10 @@ private:
   cGenome m_o_peak_genome;
   double m_o_peak_fitness;
   
-  int m_o_dead;
+  int m_o_pos;
   int m_o_neg;
   int m_o_neut;
-  int m_o_pos;
+  int m_o_dead;
   double m_o_size_pos; 
   double m_o_size_neg; 
   
@@ -139,10 +139,10 @@ private:
   cGenome m_t_peak_genome;
   double m_t_peak_fitness;
   
-  int m_t_dead;
+  int m_t_pos;
   int m_t_neg;
   int m_t_neut;
-  int m_t_pos;
+  int m_t_dead;
   double m_t_size_pos; 
   double m_t_size_neg; 
   
@@ -210,12 +210,12 @@ private:
   inline const cGenome& GetSinglePeakGenome() const { return m_o_peak_genome; }
   inline double GetSinglePeakFitness() const { return m_o_peak_fitness; }
   
-  inline double GetSingleProbPos()  const { return static_cast<double>(m_o_pos) / m_o_total; }
-  inline double GetSingleProbNeg()  const { return static_cast<double>(m_o_neg) / m_o_total; }
-  inline double GetSingleProbNeut() const { return static_cast<double>(m_o_neut) / m_o_total; }
+  inline double GetSingleProbBeneficial()  const { return static_cast<double>(m_o_pos) / m_o_total; }
+  inline double GetSingleProbDeleterious()  const { return static_cast<double>(m_o_neg) / m_o_total; }
+  inline double GetSingleProbNeutral() const { return static_cast<double>(m_o_neut) / m_o_total; }
   inline double GetSingleProbLethal() const { return static_cast<double>(m_o_dead) / m_o_total; }
-  inline double GetSingleAverageSizePos() const { if (m_o_pos == 0) return 0.0; else return m_o_size_pos / m_o_pos; }
-  inline double GetSingleAverageSizeNeg() const { if (m_o_neg == 0) return 0.0; else return m_o_size_neg / m_o_neg; }
+  inline double GetSingleAverageSizeBeneficial() const { if (m_o_pos == 0) return 0.0; else return m_o_size_pos / m_o_pos; }
+  inline double GetSingleAverageSizeDeleterious() const { if (m_o_neg == 0) return 0.0; else return m_o_size_neg / m_o_neg; }
   
   inline double GetSingleTotalEntropy() const { return m_o_total_entropy; }
   inline double GetSingleComplexity() const { return m_o_complexity; }
@@ -235,30 +235,30 @@ private:
   inline const cGenome& GetDoublePeakGenome() const { return m_t_peak_genome; }
   inline double GetDoublePeakFitness() const { return m_t_peak_fitness; }
   
-  inline double GetDoubleProbPos()  const { return static_cast<double>(m_t_pos) / m_t_total; }
-  inline double GetDoubleProbNeg()  const { return static_cast<double>(m_t_neg) / m_t_total; }
-  inline double GetDoubleProbNeut() const { return static_cast<double>(m_t_neut) / m_t_total; }
+  inline double GetDoubleProbBeneficial()  const { return static_cast<double>(m_t_pos) / m_t_total; }
+  inline double GetDoubleProbDeleterious()  const { return static_cast<double>(m_t_neg) / m_t_total; }
+  inline double GetDoubleProbNeutral() const { return static_cast<double>(m_t_neut) / m_t_total; }
   inline double GetDoubleProbLethal() const { return static_cast<double>(m_t_dead) / m_t_total; }
-  inline double GetDoubleAverageSizePos() const { if (m_t_pos == 0) return 0.0; else return m_t_size_pos / m_t_pos; }
-  inline double GetDoubleAverageSizeNeg() const { if (m_t_neg == 0) return 0.0; else return m_t_size_neg / m_t_neg; }
+  inline double GetDoubleAverageSizeBeneficial() const { if (m_t_pos == 0) return 0.0; else return m_t_size_pos / m_t_pos; }
+  inline double GetDoubleAverageSizeDeleterious() const { if (m_t_neg == 0) return 0.0; else return m_t_size_neg / m_t_neg; }
   
   inline double GetDoubleTotalEntropy() const { return m_t_total_entropy; }
   inline double GetDoubleComplexity() const { return m_t_complexity; }
 
   inline int GetDoubleTargetTask() const { return m_t_task_target; }
   inline double GetDoubleProbTargetTask() const { return static_cast<double>(m_t_task_target) / m_t_total; }
-  inline int GetDoubleTargetTaskPos() const { return m_t_task_target_pos; }
-  inline double GetDoubleProbTargetTaskPos() const
+  inline int GetDoubleTargetTaskBeneficial() const { return m_t_task_target_pos; }
+  inline double GetDoubleProbTargetTaskBeneficial() const
   {
     if (m_t_task_target == 0) return 0.0; else return static_cast<double>(m_t_task_target_pos) / (2 * m_t_task_target);
   }
-  inline int GetDoubleTargetTaskNeg() const { return m_t_task_target_neg; }
-  inline double GetDoubleProbTargetTaskNeg() const
+  inline int GetDoubleTargetTaskDeleterious() const { return m_t_task_target_neg; }
+  inline double GetDoubleProbTargetTaskDeleterious() const
   {
     if (m_t_task_target == 0) return 0.0; else return static_cast<double>(m_t_task_target_neg) / (2 * m_t_task_target);
   }
-  inline int GetDoubleTargetTaskNeut() const { return m_t_task_target_neut; }
-  inline double GetDoubleProbTargetTaskNeut() const
+  inline int GetDoubleTargetTaskNeutral() const { return m_t_task_target_neut; }
+  inline double GetDoubleProbTargetTaskNeutral() const
   {
     if (m_t_task_target == 0) return 0.0; else return static_cast<double>(m_t_task_target_neut) / (2 * m_t_task_target);
   }

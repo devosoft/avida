@@ -243,10 +243,10 @@ void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
   // Initialize values
   m_o_total = 0;
   m_o_total_sqr_fitness = 0.0;
-  m_o_dead = 0;
+  m_o_pos = 0;
   m_o_neg = 0;
   m_o_neut = 0;
-  m_o_pos = 0;
+  m_o_dead = 0;
   m_o_size_pos = 0.0;
   m_o_size_neg = 0.0;
   m_o_peak_fitness = m_base_fitness;
@@ -262,10 +262,10 @@ void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
     m_o_total += odata.total;
     m_o_total_fitness += odata.total_fitness;
     m_o_total_sqr_fitness += odata.total_sqr_fitness;
-    m_o_dead += odata.dead;
+    m_o_pos += odata.pos;
     m_o_neg += odata.neg;
     m_o_neut += odata.neut;
-    m_o_pos += odata.pos;
+    m_o_dead += odata.dead;
     m_o_size_pos += odata.size_pos; 
     m_o_size_neg += odata.size_neg; 
   
@@ -296,10 +296,10 @@ void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
   // Initialize values
   m_t_total = 0;
   m_t_total_sqr_fitness = 0.0;
-  m_t_dead = 0;
+  m_t_pos = 0;
   m_t_neg = 0;
   m_t_neut = 0;
-  m_t_pos = 0;
+  m_t_dead = 0;
   m_t_size_pos = 0.0;
   m_t_size_neg = 0.0;
   m_t_peak_fitness = m_base_fitness;
@@ -319,10 +319,10 @@ void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
     m_t_total += tdata.total;
     m_t_total_fitness += tdata.total_fitness;
     m_t_total_sqr_fitness += tdata.total_sqr_fitness;
-    m_t_dead += tdata.dead;
+    m_t_pos += tdata.pos;
     m_t_neg += tdata.neg;
     m_t_neut += tdata.neut;
-    m_t_pos += tdata.pos;
+    m_t_dead += tdata.dead;
     m_t_size_pos += tdata.size_pos; 
     m_t_size_neg += tdata.size_neg; 
   
@@ -382,12 +382,12 @@ void cMutationalNeighborhood::PrintStats(cDataFile& df, int update) const
   df.Write(GetBaseTargetTask(), "Base Performs Target Task");
 
   df.Write(GetSingleTotal(), "Total One Step Mutants");
-  df.Write(GetSingleProbPos(), "One Step Probability Positive");
-  df.Write(GetSingleProbNeg(), "One Step Probability Deleterious");
-  df.Write(GetSingleProbNeut(), "One Step Probability Neutral");
+  df.Write(GetSingleProbBeneficial(), "One Step Probability Beneficial");
+  df.Write(GetSingleProbDeleterious(), "One Step Probability Deleterious");
+  df.Write(GetSingleProbNeutral(), "One Step Probability Neutral");
   df.Write(GetSingleProbLethal(), "One Step Probability Lethal");
-  df.Write(GetSingleAverageSizePos(), "One Step Average Positive Size");
-  df.Write(GetSingleAverageSizeNeg(), "One Step Average Negative Size");
+  df.Write(GetSingleAverageSizeBeneficial(), "One Step Average Beneficial Size");
+  df.Write(GetSingleAverageSizeDeleterious(), "One Step Average Deleterious Size");
   df.Write(GetSinglePeakFitness(), "One Step Peak Fitness");
   df.Write(GetSingleAverageFitness(), "One Step Average Fitness");
   df.Write(GetSingleAverageSqrFitness(), "One Step Average Square Fitness");
@@ -401,12 +401,12 @@ void cMutationalNeighborhood::PrintStats(cDataFile& df, int update) const
   df.Write(GetSingleProbKnockout(), "One Step Probability Knockout Task");
 
   df.Write(GetDoubleTotal(), "Total Two Step Mutants");
-  df.Write(GetDoubleProbPos(), "Two Step Probability Positive");
-  df.Write(GetDoubleProbNeg(), "Two Step Probability Deleterious");
-  df.Write(GetDoubleProbNeut(), "Two Step Probability Neutral");
+  df.Write(GetDoubleProbBeneficial(), "Two Step Probability Beneficial");
+  df.Write(GetDoubleProbDeleterious(), "Two Step Probability Deleterious");
+  df.Write(GetDoubleProbNeutral(), "Two Step Probability Neutral");
   df.Write(GetDoubleProbLethal(), "Two Step Probability Lethal");
-  df.Write(GetDoubleAverageSizePos(), "Two Step Average Positive Size");
-  df.Write(GetDoubleAverageSizeNeg(), "Two Step Average Negative Size");
+  df.Write(GetDoubleAverageSizeBeneficial(), "Two Step Average Beneficial Size");
+  df.Write(GetDoubleAverageSizeDeleterious(), "Two Step Average Deleterious Size");
   df.Write(GetDoublePeakFitness(), "Two Step Peak Fitness");
   df.Write(GetDoubleAverageFitness(), "Two Step Average Fitness");
   df.Write(GetDoubleAverageSqrFitness(), "Two Step Average Square Fitness");
@@ -414,12 +414,12 @@ void cMutationalNeighborhood::PrintStats(cDataFile& df, int update) const
   df.Write(GetDoubleComplexity(), "Two Step Total Complexity");
   df.Write(GetDoubleTargetTask(), "Two Step Confers Target Task");
   df.Write(GetDoubleProbTargetTask(), "Two Step Probability Confers Target Task");
-  df.Write(GetDoubleTargetTaskPos(), "Two Step Confers Target - Previous Positive");
-  df.Write(GetDoubleProbTargetTaskPos(), "Two Step Prob. Confers Target - Previous Positive");
-  df.Write(GetDoubleTargetTaskNeg(), "Two Step Confers Target - Previous Deleterious");
-  df.Write(GetDoubleProbTargetTaskNeg(), "Two Step Prob. Confers Target - Previous Deleterious");
-  df.Write(GetDoubleTargetTaskNeut(), "Two Step Confers Target - Previous Neutral");
-  df.Write(GetDoubleProbTargetTaskNeut(), "Two Step Prob. Confers Target - Previous Neutral");
+  df.Write(GetDoubleTargetTaskBeneficial(), "Two Step Confers Target - Previous Beneficial");
+  df.Write(GetDoubleProbTargetTaskBeneficial(), "Two Step Prob. Confers Target - Previous Beneficial");
+  df.Write(GetDoubleTargetTaskDeleterious(), "Two Step Confers Target - Previous Deleterious");
+  df.Write(GetDoubleProbTargetTaskDeleterious(), "Two Step Prob. Confers Target - Previous Deleterious");
+  df.Write(GetDoubleTargetTaskNeutral(), "Two Step Confers Target - Previous Neutral");
+  df.Write(GetDoubleProbTargetTaskNeutral(), "Two Step Prob. Confers Target - Previous Neutral");
   df.Write(GetDoubleTargetTaskLethal(), "Two Step Confers Target - Previous Lethal");
   df.Write(GetDoubleProbTargetTaskLethal(), "Two Step Prob. Confers Target - Previous Lethal");
   df.Write(GetDoubleTask(), "Two Step Confers Any Task");
