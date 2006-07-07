@@ -210,10 +210,10 @@ private:
   inline const cGenome& GetSinglePeakGenome() const { return m_o_peak_genome; }
   inline double GetSinglePeakFitness() const { return m_o_peak_fitness; }
   
-  inline double GetSingleProbDead() const { return static_cast<double>(m_o_dead) / m_o_total; }
+  inline double GetSingleProbPos()  const { return static_cast<double>(m_o_pos) / m_o_total; }
   inline double GetSingleProbNeg()  const { return static_cast<double>(m_o_neg) / m_o_total; }
   inline double GetSingleProbNeut() const { return static_cast<double>(m_o_neut) / m_o_total; }
-  inline double GetSingleProbPos()  const { return static_cast<double>(m_o_pos) / m_o_total; }
+  inline double GetSingleProbLethal() const { return static_cast<double>(m_o_dead) / m_o_total; }
   inline double GetSingleAverageSizePos() const { if (m_o_pos == 0) return 0.0; else return m_o_size_pos / m_o_pos; }
   inline double GetSingleAverageSizeNeg() const { if (m_o_neg == 0) return 0.0; else return m_o_size_neg / m_o_neg; }
   
@@ -235,10 +235,10 @@ private:
   inline const cGenome& GetDoublePeakGenome() const { return m_t_peak_genome; }
   inline double GetDoublePeakFitness() const { return m_t_peak_fitness; }
   
-  inline double GetDoubleProbDead() const { return static_cast<double>(m_t_dead) / m_t_total; }
+  inline double GetDoubleProbPos()  const { return static_cast<double>(m_t_pos) / m_t_total; }
   inline double GetDoubleProbNeg()  const { return static_cast<double>(m_t_neg) / m_t_total; }
   inline double GetDoubleProbNeut() const { return static_cast<double>(m_t_neut) / m_t_total; }
-  inline double GetDoubleProbPos()  const { return static_cast<double>(m_t_pos) / m_t_total; }
+  inline double GetDoubleProbLethal() const { return static_cast<double>(m_t_dead) / m_t_total; }
   inline double GetDoubleAverageSizePos() const { if (m_t_pos == 0) return 0.0; else return m_t_size_pos / m_t_pos; }
   inline double GetDoubleAverageSizeNeg() const { if (m_t_neg == 0) return 0.0; else return m_t_size_neg / m_t_neg; }
   
@@ -262,8 +262,8 @@ private:
   {
     if (m_t_task_target == 0) return 0.0; else return static_cast<double>(m_t_task_target_neut) / (2 * m_t_task_target);
   }
-  inline int GetDoubleTargetTaskDead() const { return m_t_task_target_dead; }
-  inline double GetDoubleProbTargetTaskDead() const
+  inline int GetDoubleTargetTaskLethal() const { return m_t_task_target_dead; }
+  inline double GetDoubleProbTargetTaskLethal() const
   {
     if (m_t_task_target == 0) return 0.0; else return static_cast<double>(m_t_task_target_dead) / (2 * m_t_task_target);
   }

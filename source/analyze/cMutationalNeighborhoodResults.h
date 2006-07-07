@@ -55,10 +55,10 @@ public:
   inline const cGenome& GetSinglePeakGenome() const { return m_src.GetSinglePeakGenome(); }
   inline double GetSinglePeakFitness() const { return m_src.GetSinglePeakFitness(); }
 
-  inline double GetSingleProbDead() const { return m_src.GetSingleProbDead(); }
+  inline double GetSingleProbPos() const { return m_src.GetSingleProbPos(); }
   inline double GetSingleProbNeg() const { return m_src.GetSingleProbNeg(); }
   inline double GetSingleProbNeut() const { return m_src.GetSingleProbNeut(); }
-  inline double GetSingleProbPos() const { return m_src.GetSingleProbPos(); }
+  inline double GetSingleProbLethal() const { return m_src.GetSingleProbLethal(); }
   inline double GetSingleAverageSizePos() const { return m_src.GetSingleAverageSizePos(); }
   inline double GetSingleAverageSizeNeg() const { return m_src.GetSingleAverageSizeNeg(); }
 
@@ -80,10 +80,10 @@ public:
   inline const cGenome& GetDoublePeakGenome() const { return m_src.GetDoublePeakGenome(); }
   inline double GetDoublePeakFitness() const { return m_src.GetDoublePeakFitness(); }
 
-  inline double GetDoubleProbDead() const { return m_src.GetDoubleProbDead(); }
+  inline double GetDoubleProbPos() const { return m_src.GetDoubleProbPos(); }
   inline double GetDoubleProbNeg() const { return m_src.GetDoubleProbNeg(); }
   inline double GetDoubleProbNeut() const { return m_src.GetDoubleProbNeut(); }
-  inline double GetDoubleProbPos() const { return m_src.GetDoubleProbPos(); }
+  inline double GetDoubleProbLethal() const { return m_src.GetDoubleProbLethal(); }
   inline double GetDoubleAverageSizePos() const { return m_src.GetDoubleAverageSizePos(); }
   inline double GetDoubleAverageSizeNeg() const { return m_src.GetDoubleAverageSizeNeg(); }
 
@@ -98,8 +98,8 @@ public:
   inline double GetDoubleProbTargetTaskNeg() const { return m_src.GetDoubleProbTargetTaskNeg(); }
   inline int GetDoubleTargetTaskNeut() const { return m_src.GetDoubleTargetTaskNeut(); }
   inline double GetDoubleProbTargetTaskNeut() const { return m_src.GetDoubleProbTargetTaskNeut(); }
-  inline int GetDoubleTargetTaskDead() const { return m_src.GetDoubleTargetTaskDead(); }
-  inline double GetDoubleProbTargetTaskDead() const { return m_src.GetDoubleProbTargetTaskDead(); }
+  inline int GetDoubleTargetTaskLethal() const { return m_src.GetDoubleTargetTaskLethal(); }
+  inline double GetDoubleProbTargetTaskLethal() const { return m_src.GetDoubleProbTargetTaskLethal(); }
   inline int GetDoubleTask() const { return m_src.GetDoubleProbTask(); }
   inline double GetDoubleProbTask() const { return m_src.GetDoubleProbTask(); }
   inline int GetDoubleKnockout() const { return m_src.GetDoubleKnockout(); }

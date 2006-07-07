@@ -385,7 +385,7 @@ void cMutationalNeighborhood::PrintStats(cDataFile& df, int update) const
   df.Write(GetSingleProbPos(), "One Step Probability Positive");
   df.Write(GetSingleProbNeg(), "One Step Probability Deleterious");
   df.Write(GetSingleProbNeut(), "One Step Probability Neutral");
-  df.Write(GetSingleProbDead(), "One Step Probability Fatal");
+  df.Write(GetSingleProbLethal(), "One Step Probability Lethal");
   df.Write(GetSingleAverageSizePos(), "One Step Average Positive Size");
   df.Write(GetSingleAverageSizeNeg(), "One Step Average Negative Size");
   df.Write(GetSinglePeakFitness(), "One Step Peak Fitness");
@@ -404,7 +404,7 @@ void cMutationalNeighborhood::PrintStats(cDataFile& df, int update) const
   df.Write(GetDoubleProbPos(), "Two Step Probability Positive");
   df.Write(GetDoubleProbNeg(), "Two Step Probability Deleterious");
   df.Write(GetDoubleProbNeut(), "Two Step Probability Neutral");
-  df.Write(GetDoubleProbDead(), "Two Step Probability Fatal");
+  df.Write(GetDoubleProbLethal(), "Two Step Probability Lethal");
   df.Write(GetDoubleAverageSizePos(), "Two Step Average Positive Size");
   df.Write(GetDoubleAverageSizeNeg(), "Two Step Average Negative Size");
   df.Write(GetDoublePeakFitness(), "Two Step Peak Fitness");
@@ -420,8 +420,8 @@ void cMutationalNeighborhood::PrintStats(cDataFile& df, int update) const
   df.Write(GetDoubleProbTargetTaskNeg(), "Two Step Prob. Confers Target - Previous Deleterious");
   df.Write(GetDoubleTargetTaskNeut(), "Two Step Confers Target - Previous Neutral");
   df.Write(GetDoubleProbTargetTaskNeut(), "Two Step Prob. Confers Target - Previous Neutral");
-  df.Write(GetDoubleTargetTaskDead(), "Two Step Confers Target - Previous Fatal");
-  df.Write(GetDoubleProbTargetTaskDead(), "Two Step Prob. Confers Target - Previous Fatal");
+  df.Write(GetDoubleTargetTaskLethal(), "Two Step Confers Target - Previous Lethal");
+  df.Write(GetDoubleProbTargetTaskLethal(), "Two Step Prob. Confers Target - Previous Lethal");
   df.Write(GetDoubleTask(), "Two Step Confers Any Task");
   df.Write(GetDoubleProbTask(), "Two Step Probability Confers Any Task");
   df.Write(GetDoubleKnockout(), "Two Step Knockout Task");
