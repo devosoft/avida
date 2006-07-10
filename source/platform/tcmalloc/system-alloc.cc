@@ -94,7 +94,7 @@ static const int32_t FLAGS_malloc_devmem_limit = 0;
 static void* TrySbrk(size_t size, size_t alignment) {
   // sbrk will release memory if passed a negative number, so we do
   // a strict check here
-  if (static_cast<uintptr_t>(size + alignment) < 0) return NULL;
+  if (static_cast<int>(size + alignment) < 0) return NULL;
   
   size = ((size + alignment - 1) / alignment) * alignment;
   void* result = sbrk(size);
