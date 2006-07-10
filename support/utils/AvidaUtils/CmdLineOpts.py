@@ -39,6 +39,12 @@ def Update(opts, env):
   ) )
   opts.Add(
     SCons.Options.BoolOption(
+      'enableTCMalloc',
+      """Set to "1" to enable TCMalloc""",
+      1,
+  ) )
+  opts.Add(
+    SCons.Options.BoolOption(
       'enableGuiNcurses',
       """Set to "1" to enable building Avida console interface.""",
       0,
@@ -47,13 +53,15 @@ def Update(opts, env):
     SCons.Options.BoolOption(
       'enableTestCode',
       """Set to "1" to build and run test code.""",
-      '$plat_default_enableTestCode',
+      0
+#      '$plat_default_enableTestCode',
   ) )
   opts.Add(
     SCons.Options.BoolOption(
       'enablePyPkg',
     """Set to "1" to wrap c++ interfaces for use in Python scripts.""",
-      '$plat_default_enablePyPkg',
+      0
+#      '$plat_default_enablePyPkg',
   ) )
 
   #opts.Add(

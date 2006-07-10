@@ -25,6 +25,7 @@
 
 #include <pthread.h>
 
+class cAnalyzeJobWorker;
 class cWorld;
 
 

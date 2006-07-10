@@ -67,7 +67,7 @@ public:
 
   inline int GetSingleTargetTask() const { return m_src.GetSingleTargetTask(); }
   inline double GetSingleProbTargetTask() const { return m_src.GetSingleProbTargetTask(); }
-  inline int GetSingleTask() const { return m_src.GetSingleProbTask(); }
+  inline int GetSingleTask() const { return m_src.GetSingleTask(); }
   inline double GetSingleProbTask() const { return m_src.GetSingleProbTask(); }
   inline int GetSingleKnockout() const { return m_src.GetSingleKnockout(); }
   inline double GetSingleProbKnockout() const { return m_src.GetSingleProbKnockout(); }
@@ -100,7 +100,7 @@ public:
   inline double GetDoubleProbTargetTaskNeutral() const { return m_src.GetDoubleProbTargetTaskNeutral(); }
   inline int GetDoubleTargetTaskLethal() const { return m_src.GetDoubleTargetTaskLethal(); }
   inline double GetDoubleProbTargetTaskLethal() const { return m_src.GetDoubleProbTargetTaskLethal(); }
-  inline int GetDoubleTask() const { return m_src.GetDoubleProbTask(); }
+  inline int GetDoubleTask() const { return m_src.GetDoubleTask(); }
   inline double GetDoubleProbTask() const { return m_src.GetDoubleProbTask(); }
   inline int GetDoubleKnockout() const { return m_src.GetDoubleKnockout(); }
   inline double GetDoubleProbKnockout() const { return m_src.GetDoubleProbKnockout(); }  

@@ -29,6 +29,7 @@
 class cAvidaContext;
 class cInstSet;
 class cInstruction;
+class cTestCPU;
 class cWorld;
 
 class cLandscape
