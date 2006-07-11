@@ -137,7 +137,7 @@ Unit tests
 #include "cFile.h"
 #include "cXMLArchive.h"
 
-#include <boost/detail/lightweight_test.hpp>
+#include "lightweight_test.h"
 
 #include <cstdio>    // for std::remove() to remove temporary files.
 #include <iomanip>
@@ -166,13 +166,16 @@ namespace nDataFile {
 
   namespace utDataFile_hello_world {
     void test(){
-      BOOST_TEST(true);
-      BOOST_TEST(false);
+      utDataFile_hello_world::test();
+      TEST(true);
+      TEST(false);
     }
   }
 
   namespace utDataFile_archiving {
     void test(){
+#   ifdef ENABLE_SERIALIZATION
+      std::cout << CURRENT_FUNCTION << std::endl;
       std::string filename("./cDataFile_basic_serialization.xml");
       int linecount = 3;
       std::string data_file_name("./cDataFile_data.txt");
@@ -200,20 +203,20 @@ namespace nDataFile {
       */
       {
         cFile f(dfn);
-        BOOST_TEST(f.Good());
+        TEST(f.Good());
 
         cString l[7];
         for(int i = 0; i<7; i++){
           f.ReadLine(l[i]);
           //std::cout << "\"" << l[i] << "\"" << std::endl;
         }
-        BOOST_TEST(cString("# Comment!") == l[0]);
-        BOOST_TEST(cString("#  1: descr1") == l[1]);
-        BOOST_TEST(cString("#  2: descr2") == l[2]);
-        BOOST_TEST(cString("#  3: descr3") == l[3]);
-        BOOST_TEST(cString("") == l[4]);
-        BOOST_TEST(cString("1 1.000000 blah ") == l[5]);
-        BOOST_TEST(cString("2 2 blahblah ") == l[6]);
+        TEST(cString("# Comment!") == l[0]);
+        TEST(cString("#  1: descr1") == l[1]);
+        TEST(cString("#  2: descr2") == l[2]);
+        TEST(cString("#  3: descr3") == l[3]);
+        TEST(cString("") == l[4]);
+        TEST(cString("1 1.000000 blah ") == l[5]);
+        TEST(cString("2 2 blahblah ") == l[6]);
       }
       /*
       Reload the data file object, write another line of data ...
@@ -230,21 +233,21 @@ namespace nDataFile {
       */
       {
         cFile f(dfn);
-        BOOST_TEST(f.Good());
+        TEST(f.Good());
 
         cString l[8];
         for(int i = 0; i<8; i++){
           f.ReadLine(l[i]);
           //std::cout << "\"" << l[i] << "\"" << std::endl;
         }
-        BOOST_TEST(cString("# Comment!") == l[0]);
-        BOOST_TEST(cString("#  1: descr1") == l[1]);
-        BOOST_TEST(cString("#  2: descr2") == l[2]);
-        BOOST_TEST(cString("#  3: descr3") == l[3]);
-        BOOST_TEST(cString("") == l[4]);
-        BOOST_TEST(cString("1 1.000000 blah ") == l[5]);
-        BOOST_TEST(cString("2 2 blahblah ") == l[6]);
-        BOOST_TEST(cString("3 3 blahblahblah ") == l[7]);
+        TEST(cString("# Comment!") == l[0]);
+        TEST(cString("#  1: descr1") == l[1]);
+        TEST(cString("#  2: descr2") == l[2]);
+        TEST(cString("#  3: descr3") == l[3]);
+        TEST(cString("") == l[4]);
+        TEST(cString("1 1.000000 blah ") == l[5]);
+        TEST(cString("2 2 blahblah ") == l[6]);
+        TEST(cString("3 3 blahblahblah ") == l[7]);
       }
 
       /*
@@ -262,35 +265,30 @@ namespace nDataFile {
       */
       {
         cFile f(dfn);
-        BOOST_TEST(f.Good());
+        TEST(f.Good());
 
         cString l[4];
         for(int i = 0; i<4; i++){
           f.ReadLine(l[i]);
           //std::cout << "\"" << l[i] << "\"" << std::endl;
         }
-        BOOST_TEST(cString("# This should be a new file.") == l[0]);
-        BOOST_TEST(cString("#  1: newdescr") == l[1]);
-        BOOST_TEST(cString("") == l[2]);
-        BOOST_TEST(cString("1 ") == l[3]);
+        TEST(cString("# This should be a new file.") == l[0]);
+        TEST(cString("#  1: newdescr") == l[1]);
+        TEST(cString("") == l[2]);
+        TEST(cString("1 ") == l[3]);
       }
 
       std::remove(filename.c_str());
       std::remove(data_file_name.c_str());
+#   endif // ENABLE_SERIALIZATION
     }
   } // utDataFile_archiving
 
 
   void UnitTests(bool full)
   {
-    //if(full) {
-    //  std::cout << "utDataFile_hello_world" << std::endl;
-    //  utDataFile_hello_world::test();
-    //}
-    if(full) {
-      std::cout << "utDataFile_archiving" << std::endl;
-      utDataFile_archiving::test();
-    }
+    //if(full) utDataFile_hello_world::test();
+    if(full) utDataFile_archiving::test();
   }
 } // nDataFile
 

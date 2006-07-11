@@ -45,6 +45,7 @@ namespace nFixedCoords {
 
   namespace utFixedCoords_hello_world {
     void test(){
+      std::cout << "utFixedCoords_hello_world" << std::endl;
       BOOST_TEST(true);
       BOOST_TEST(false);
     }
@@ -52,6 +53,8 @@ namespace nFixedCoords {
 
   namespace utFixedCoords_archiving {
     void test(){
+#   ifdef ENABLE_SERIALIZATION
+      std::cout << "utFixedCoords_archiving" << std::endl;
       std::string filename("./cFixedCoords_basic_serialization.xml");
 
       /*
@@ -79,20 +82,15 @@ namespace nFixedCoords {
       }
 
       std::remove(filename.c_str());
+#   endif // ENABLE_SERIALIZATION
     }
   } // utFixedCoords_archiving
 
 
   void UnitTests(bool full)
   {
-    //if(full) {
-    //  std::cout << "utFixedCoords_hello_world" << std::endl;
-    //  utFixedCoords_hello_world::test();
-    //}
-    if(full) {
-      std::cout << "utFixedCoords_archiving" << std::endl;
-      utFixedCoords_archiving::test();
-    }
+    //if(full) utFixedCoords_hello_world::test();
+    if(full) utFixedCoords_archiving::test();
   }
 } // nFixedCoords
 

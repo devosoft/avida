@@ -51,6 +51,12 @@ def Update(opts, env):
   ) )
   opts.Add(
     SCons.Options.BoolOption(
+      'enableSerialization',
+      """Set to "1" to build and run test code.""",
+      '$plat_default_enableSerialization',
+  ) )
+  opts.Add(
+    SCons.Options.BoolOption(
       'enableTestCode',
       """Set to "1" to build and run test code.""",
       0

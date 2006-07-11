@@ -260,7 +260,7 @@ Unit tests
 */
 #include "cXMLArchive.h"
 
-#include <boost/detail/lightweight_test.hpp>
+#include "lightweight_test.h"
 
 #include <cstdio>    // for std::remove() to remove temporary files.
 #include <iomanip>
@@ -289,13 +289,16 @@ namespace nInitFile {
 
   namespace utInitFile_hello_world {
     void test(){
-      BOOST_TEST(true);
-      BOOST_TEST(false);
+      std::cout << CURRENT_FUNCTION << std::endl;
+      TEST(true);
+      TEST(false);
     }
   }
 
   namespace utInitFile_archiving {
     void test(){
+#   ifdef ENABLE_SERIALIZATION
+      std::cout << CURRENT_FUNCTION << std::endl;
       int linecount = 3;
       std::string data_file_name("./cInitFile_data.txt");
       { 
@@ -334,26 +337,29 @@ namespace nInitFile {
       f.ReadLine(s3);
 
       // Sanity checks...
-      //BOOST_TEST(false);
-      BOOST_TEST(cString("0") == s1);
-      BOOST_TEST(cString("2") == s2);
-      BOOST_TEST(cString("4") == s3);
+      //TEST(false);
+      TEST(cString("0") == s1);
+      TEST(cString("2") == s2);
+      TEST(cString("4") == s3);
 
       // Verify reading expected lines from various reloaded states.
       f3.ReadLine(l3);
       f2.ReadLine(l2);
       f1.ReadLine(l1);
-      BOOST_TEST(l1 == s1);
-      BOOST_TEST(l2 == s2);
-      BOOST_TEST(l3 == s3);
+      TEST(l1 == s1);
+      TEST(l2 == s2);
+      TEST(l3 == s3);
 
       std::remove(filename.c_str());
       std::remove(data_file_name.c_str());
+#   endif // ENABLE_SERIALIZATION
     }
   } // utInitFile_archiving
 
   namespace utInitFile_archiving_closed_file {
     void test(){
+#   ifdef ENABLE_SERIALIZATION
+      std::cout << CURRENT_FUNCTION << std::endl;
       std::string data_file_name("./cInitFile_data.txt");
       {
         std::ofstream data_file(data_file_name.c_str());
@@ -369,7 +375,7 @@ namespace nInitFile {
       f.Load();
       f.Compress();
       f.Close();
-      BOOST_TEST(!f.IsOpen());
+      TEST(!f.IsOpen());
 
       cInitFile f1;
 
@@ -378,12 +384,13 @@ namespace nInitFile {
       // Reload state into new cInitFile.
       restore_stuff<>(f1, filename.c_str());
       // Verify new cInitFile has matching filename.
-      BOOST_TEST(f.GetFilename() == f1.GetFilename());
+      TEST(f.GetFilename() == f1.GetFilename());
       // Verify new cInitFile is closed.
-      BOOST_TEST(!f1.IsOpen());
+      TEST(!f1.IsOpen());
 
       std::remove(filename.c_str());
       std::remove(data_file_name.c_str());
+#   endif // ENABLE_SERIALIZATION
     }
   } // utInitFile_archiving_closed_file
 
@@ -394,6 +401,7 @@ namespace nInitFile {
   */
   namespace utInitFile_ReadString_after_open_and_close {
     void test(){
+      std::cout << CURRENT_FUNCTION << std::endl;
       std::string data_file_name("./utInitFile_ReadString_after_open_and_close.cfg");
       {
         std::ofstream data_file(data_file_name.c_str());
@@ -413,8 +421,8 @@ namespace nInitFile {
       const cString default_val("ICK");
       const cString loaded_val(f.ReadString(keyword, default_val));
       const cString expected_val("BLAH");
-      BOOST_TEST(!f.IsOpen());
-      BOOST_TEST(loaded_val == expected_val);
+      TEST(!f.IsOpen());
+      TEST(loaded_val == expected_val);
       std::cout << "utInitFile_ReadString_after_open_and_close:" << std::endl;
       std::cout << "  keyword: " << keyword << std::endl;
       std::cout << "  default_val: " << default_val << std::endl;
@@ -430,22 +438,10 @@ namespace nInitFile {
 
   void UnitTests(bool full)
   {
-    //if(full) {
-    //  std::cout << "utInitFile_hello_world" << std::endl;
-    //  utInitFile_hello_world::test();
-    //}
-    if(full) {
-      std::cout << "utInitFile_archiving" << std::endl;
-      utInitFile_archiving::test();
-    }
-    if(full) {
-      std::cout << "utInitFile_archiving_closed_file" << std::endl;
-      utInitFile_archiving_closed_file::test();
-    }
-    if(1) {
-      std::cout << "utInitFile_ReadString_after_open_and_close" << std::endl;
-      utInitFile_ReadString_after_open_and_close::test();
-    }
+    //if(full) utInitFile_hello_world::test();
+    if(full) utInitFile_archiving::test();
+    if(full) utInitFile_archiving_closed_file::test();
+    if(1) utInitFile_ReadString_after_open_and_close::test();
   }
 } // nInitFile
 

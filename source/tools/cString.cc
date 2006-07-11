@@ -664,7 +664,7 @@ Unit tests
 */
 #include "cXMLArchive.h"
 
-#include <boost/detail/lightweight_test.hpp>
+#include "lightweight_test.h"
 
 #include <cstdio>    // for std::remove() to remove temporary files.
 #include <iomanip>
@@ -714,51 +714,54 @@ namespace nString {
 
   namespace utString_hello_world {
     void test(){
-      BOOST_TEST(true);
-      BOOST_TEST(false);
+      std::cout << CURRENT_FUNCTION << std::endl;
+      TEST(true);
+      TEST(false);
     }
   }
   
   namespace utString_archiving {
-    void test(){
+    void test() {
+#   ifdef ENABLE_SERIALIZATION
+      std::cout << CURRENT_FUNCTION << std::endl;
       { 
-        BOOST_TEST(true);
+        TEST(true);
         std::string filename("./cString_basic_serialization.xml");
   
-        BOOST_TEST(0 == A::s_instance_ct);
+        TEST(0 == A::s_instance_ct);
         A *a(new A);
-        BOOST_TEST(1 == A::s_instance_ct);
+        TEST(1 == A::s_instance_ct);
   
         /*
         Both instances of cString should share a single cStringData instance.
         */
-        BOOST_TEST(cString("blah.") == a->m_s1);
-        BOOST_TEST(cString("blah.") == a->m_s2);
+        TEST(cString("blah.") == a->m_s1);
+        TEST(cString("blah.") == a->m_s2);
         const char *s1(a->m_s1);
         const char *s2(a->m_s2);
-        BOOST_TEST(s1 == s2);
+        TEST(s1 == s2);
   
         /*
         Both pointers should point to one cString instance.
         */
-        BOOST_TEST(cString("ick.") == *a->m_ps1);
-        BOOST_TEST(cString("ick.") == *a->m_ps2);
+        TEST(cString("ick.") == *a->m_ps1);
+        TEST(cString("ick.") == *a->m_ps2);
         const char *s3(*a->m_ps1);
         const char *s4(*a->m_ps2);
-        BOOST_TEST(s3 == s4);
+        TEST(s3 == s4);
   
         save_stuff<>(a, filename.c_str());
         delete a;
-        BOOST_TEST(0 == A::s_instance_ct);
+        TEST(0 == A::s_instance_ct);
   
         restore_stuff<>(a, filename.c_str());
-        BOOST_TEST(1 == A::s_instance_ct);
+        TEST(1 == A::s_instance_ct);
   
         /*
         Both instances of cString should share a single cStringData instance.
         */
-        BOOST_TEST(cString("blah.") == a->m_s1);
-        BOOST_TEST(cString("blah.") == a->m_s2);
+        TEST(cString("blah.") == a->m_s1);
+        TEST(cString("blah.") == a->m_s2);
         /*
         We have decided to not track cStringData instance sharing;
         consequently we now expect that if two strings sharing data are
@@ -769,29 +772,29 @@ namespace nString {
         */
         const char *s5(a->m_s1);
         const char *s6(a->m_s2);
-        BOOST_TEST(s5 != s6);
+        TEST(s5 != s6);
   
         /*
         Both pointers should point to one cString instance.
         */
-        BOOST_TEST(cString("ick.") == *a->m_ps1);
-        BOOST_TEST(cString("ick.") == *a->m_ps2);
+        TEST(cString("ick.") == *a->m_ps1);
+        TEST(cString("ick.") == *a->m_ps2);
         const char *s7(*a->m_ps1);
         const char *s8(*a->m_ps2);
-        BOOST_TEST(s7 == s8);
+        TEST(s7 == s8);
   
         delete a;
-        BOOST_TEST(0 == A::s_instance_ct);
+        TEST(0 == A::s_instance_ct);
   
         std::remove(filename.c_str());
       }
       {
-        BOOST_TEST(true);
+        TEST(true);
         std::string filename("./cString_basic_serialization_2.xml");
   
-        BOOST_TEST(0 == A::s_instance_ct);
+        TEST(0 == A::s_instance_ct);
         A *a(new A);
-        BOOST_TEST(1 == A::s_instance_ct);
+        TEST(1 == A::s_instance_ct);
   
         /*
         Both instances of cString were sharing a single cStringData
@@ -800,53 +803,54 @@ namespace nString {
         have its own cStringData.
         */
         a->m_s1 = "bleah.";
-        BOOST_TEST(cString("bleah.") == a->m_s1);
-        BOOST_TEST(cString("blah.") == a->m_s2);
+        TEST(cString("bleah.") == a->m_s1);
+        TEST(cString("blah.") == a->m_s2);
         const char *s1(a->m_s1);
         const char *s2(a->m_s2);
-        BOOST_TEST(s1 != s2);
+        TEST(s1 != s2);
   
         /*
         Both pointers should point to one cString instance.
         */
         *a->m_ps1 = "ack.";
-        BOOST_TEST(cString("ack.") == *a->m_ps1);
-        BOOST_TEST(cString("ack.") == *a->m_ps2);
+        TEST(cString("ack.") == *a->m_ps1);
+        TEST(cString("ack.") == *a->m_ps2);
         const char *s3(*a->m_ps1);
         const char *s4(*a->m_ps2);
-        BOOST_TEST(s3 == s4);
+        TEST(s3 == s4);
   
         save_stuff<>(a, filename.c_str());
         delete a;
-        BOOST_TEST(0 == A::s_instance_ct);
+        TEST(0 == A::s_instance_ct);
   
         restore_stuff<>(a, filename.c_str());
-        BOOST_TEST(1 == A::s_instance_ct);
+        TEST(1 == A::s_instance_ct);
   
         /*
         Each cString should have its own cStringData.
         */
-        BOOST_TEST(cString("bleah.") == a->m_s1);
-        BOOST_TEST(cString("blah.") == a->m_s2);
+        TEST(cString("bleah.") == a->m_s1);
+        TEST(cString("blah.") == a->m_s2);
         const char *s5(a->m_s1);
         const char *s6(a->m_s2);
-        BOOST_TEST(s5 != s6);
+        TEST(s5 != s6);
   
         /*
         Both pointers should point to one cString instance.
         */
-        BOOST_TEST(cString("ack.") == *a->m_ps1);
-        BOOST_TEST(cString("ack.") == *a->m_ps2);
+        TEST(cString("ack.") == *a->m_ps1);
+        TEST(cString("ack.") == *a->m_ps2);
         const char *s7(*a->m_ps1);
         const char *s8(*a->m_ps2);
-        BOOST_TEST(s7 == s8);
+        TEST(s7 == s8);
   
   
         delete a;
-        BOOST_TEST(0 == A::s_instance_ct);
+        TEST(0 == A::s_instance_ct);
   
         std::remove(filename.c_str());
       }
+#   endif // ENABLE_SERIALIZATION
     }
   } // utString_archiving
 
@@ -854,14 +858,8 @@ namespace nString {
   
   void UnitTests(bool full)
   {
-    //if(full) {
-    //  std::cout << "utString_hello_world" << std::endl;
-    //  utString_hello_world::test();
-    //}
-    if(full) {
-      std::cout << "utString_archiving" << std::endl;
-      utString_archiving::test();
-    }
+    //if(full) utString_hello_world::test();
+    if(full) utString_archiving::test();
   }
 } // nString
 

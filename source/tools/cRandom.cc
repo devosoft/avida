@@ -263,7 +263,7 @@ Unit tests
 */
 #include "cXMLArchive.h"
 
-#include <boost/detail/lightweight_test.hpp>
+#include "lightweight_test.h"
 
 #include <cstdio>    // for std::remove() to remove temporary files.
 #include <iomanip>
@@ -292,13 +292,16 @@ namespace nRandom {
 
   namespace utRandom_hello_world {
     void test(){
-      BOOST_TEST(true);
-      BOOST_TEST(false);
+      std::cout << CURRENT_FUNCTION << std::endl;
+      TEST(true);
+      TEST(false);
     }
   }
   
   namespace utRandom_archiving {
-    void test(){
+    void test() {
+#   ifdef ENABLE_SERIALIZATION
+      std::cout << CURRENT_FUNCTION << std::endl;
       { 
         std::string filename("./cRandom_basic_serialization.xml");
   
@@ -374,27 +377,27 @@ namespace nRandom {
         unsigned int rb2 = r2.GetRandBinomial(10.0, 3.0);
   
         /* Compare results.  */
-        BOOST_TEST(seed2 == seed);
-        BOOST_TEST(original_seed2 == original_seed);
-        BOOST_TEST(d2 == d);
-        BOOST_TEST(dm2 == dm);
-        BOOST_TEST(dr2 == dr);
-        BOOST_TEST(i2 == i);
-        BOOST_TEST(ir2 == ir);
-        BOOST_TEST(p2 == p);
-        BOOST_TEST(up2 == up);
+        TEST(seed2 == seed);
+        TEST(original_seed2 == original_seed);
+        TEST(d2 == d);
+        TEST(dm2 == dm);
+        TEST(dr2 == dr);
+        TEST(i2 == i);
+        TEST(ir2 == ir);
+        TEST(p2 == p);
+        TEST(up2 == up);
         for(int i = 0; i < choose.GetSize(); i++){
-          BOOST_TEST(choose2[i] == choose[i]);
+          TEST(choose2[i] == choose[i]);
         }
-        BOOST_TEST(rn2 == rn);
-        BOOST_TEST(rnr2 == rnr);
-        BOOST_TEST(rpnp2 == rpnp);
-        BOOST_TEST(rpm2 == rpm);
+        TEST(rn2 == rn);
+        TEST(rnr2 == rnr);
+        TEST(rpnp2 == rpnp);
+        TEST(rpm2 == rpm);
         //std::cout<<"rnr2: "<<rnr2<<", rnr: "<<rnr<<std::endl;
         //std::cout<<"rpnp2: "<<rpnp2<<", rpnp: "<<rpnp<<std::endl;
         //std::cout<<"rpm2: "<<rpm2<<", rpm: "<<rpm<<std::endl;
-        BOOST_TEST(frb2 == frb);
-        BOOST_TEST(rb2 == rb);
+        TEST(frb2 == frb);
+        TEST(rb2 == rb);
   
         /*
         Print random number seeds to stdout, in case we run across a seed
@@ -406,16 +409,14 @@ namespace nRandom {
   
         std::remove(filename.c_str());
       }
+#   endif // ENABLE_SERIALIZATION
     }
   }
 
   void UnitTests(bool full)
   {
     //if(full) utRandom_hello_world::test();
-    if(full) {
-      std::cout << "utRandom_archiving" << std::endl;
-      utRandom_archiving::test();
-    }
+    if(full) utRandom_archiving::test();
   }
 } // nRandom
 

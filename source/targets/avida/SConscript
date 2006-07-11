@@ -19,8 +19,8 @@ libs = [
     'tools',
     'actions',
     'analyze',
-    'archive',
-    'boost_serialization',
+    #'archive',
+    #'boost_serialization',
     'main',
   ]
 if environment['PLATFORM'] not in ('win32'):

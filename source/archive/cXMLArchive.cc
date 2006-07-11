@@ -1,6 +1,8 @@
 
 #include "cXMLArchive.h"
 
+#ifdef ENABLE_SERIALIZATION
+
 // explicitly instantiate for this type of xml stream
 #include <boost/archive/impl/basic_xml_iarchive.ipp>
 #include <boost/archive/impl/archive_pointer_iserializer.ipp>
@@ -16,3 +18,4 @@ template class boost::archive::basic_xml_oarchive<cXMLOArchive> ;
 template class boost::archive::detail::archive_pointer_oserializer<cXMLOArchive> ;
 template class boost::archive::xml_oarchive_impl<cXMLOArchive> ;
 
+#endif // ENABLE_SERIALIZATION

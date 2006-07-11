@@ -4,7 +4,7 @@ Import('environment')
 environment.SConscript( [
   'actions/SConscript',
   'analyze/SConscript',
-  'archive/SConscript',
+  #'archive/SConscript',
   'classification/SConscript',
   'cpu/SConscript',
   'drivers/SConscript',

@@ -34,8 +34,8 @@ avida_viewer_LIBS = [
     'analyze',
     'ncurses',
     'pthread',
-    'archive',
-    'boost_serialization',
+    #'archive',
+    #'boost_serialization',
     'main',
   ]
 if environment['enableTCMalloc'] in ('True', '1', 1):

@@ -47,6 +47,7 @@ def darwin_generate(env):
 
   env.SetDefault(
     COMPILER_WARNING_FLAGS = "-Wall -Wno-long-double -Wno-long-long",
+    plat_default_enableSerialization = 0,
     plat_default_enableTestCode = 0,
     plat_default_enablePyPkg = 0,
     plat_default_enableSharedPtr = 0,
@@ -347,6 +348,7 @@ def win32_generate(env):
   env.Append(CPPPATH = ['#/source/platform/win32-pthread'])
 
   env.SetDefault(
+    plat_default_enableSerialization = 0,
     plat_default_enableTestCode = 0,
     plat_default_enablePyPkg = 0,
     plat_default_enableSharedPtr = 0,

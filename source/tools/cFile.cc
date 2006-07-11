@@ -85,7 +85,7 @@ Unit tests
 */
 #include "cXMLArchive.h"
 
-#include <boost/detail/lightweight_test.hpp>
+#include "lightweight_test.h"
 
 #include <cstdio>    // for std::remove() to remove temporary files.
 #include <iomanip>
@@ -114,13 +114,16 @@ namespace nFile {
 
   namespace utFile_hello_world {
     void test(){
-      BOOST_TEST(true);
-      BOOST_TEST(false);
+      std::cout << CURRENT_FUNCTION << std::endl;
+      TEST(true);
+      TEST(false);
     }
   }
 
   namespace utFile_archiving {
     void test(){
+#   ifdef ENABLE_SERIALIZATION
+      std::cout << CURRENT_FUNCTION << std::endl;
       std::string filename("./cFile_basic_serialization.xml");
       int linecount = 3;
       std::string data_file_name("./cFile_data.txt");
@@ -158,26 +161,29 @@ namespace nFile {
       f.ReadLine(s3);
   
       // Sanity checks...
-      //BOOST_TEST(false);
-      BOOST_TEST(cString("0") == s1);
-      BOOST_TEST(cString("2") == s2);
-      BOOST_TEST(cString("4") == s3);
+      //TEST(false);
+      TEST(cString("0") == s1);
+      TEST(cString("2") == s2);
+      TEST(cString("4") == s3);
   
       // Verify reading expected lines from various reloaded states.
       f3.ReadLine(l3);
       f2.ReadLine(l2);
       f1.ReadLine(l1);
-      BOOST_TEST(l1 == s1);
-      BOOST_TEST(l2 == s2);
-      BOOST_TEST(l3 == s3);
+      TEST(l1 == s1);
+      TEST(l2 == s2);
+      TEST(l3 == s3);
   
       std::remove(filename.c_str());
       std::remove(data_file_name.c_str());
+#   endif // ENABLE_SERIALIZATION
     }
   } // utFile_archiving
 
   namespace utFile_archiving_closed_file {
     void test(){
+#   ifdef ENABLE_SERIALIZATION
+      std::cout << CURRENT_FUNCTION << std::endl;
       std::string data_file_name("./cFile_data.txt");
       {
         std::ofstream data_file(data_file_name.c_str());
@@ -192,7 +198,7 @@ namespace nFile {
       cFile f(data_file_name.c_str());
       // Close file.
       f.Close();
-      BOOST_TEST(!f.IsOpen());
+      TEST(!f.IsOpen());
 
       cFile f1;
 
@@ -201,12 +207,13 @@ namespace nFile {
       // Reload state into new cFile.
       restore_stuff<>(f1, filename.c_str());
       // Verify new cFile has matching filename.
-      BOOST_TEST(f.GetFilename() == f1.GetFilename());
+      TEST(f.GetFilename() == f1.GetFilename());
       // Verify new cFile is closed.
-      BOOST_TEST(!f1.IsOpen());
+      TEST(!f1.IsOpen());
 
       std::remove(filename.c_str());
       std::remove(data_file_name.c_str());
+#   endif // ENABLE_SERIALIZATION
     }
   } // utFile_archiving_closed_file
 
@@ -216,18 +223,9 @@ namespace nFile {
 
   void UnitTests(bool full)
   {
-    //if(full) {
-    //  std::cout << "utFile_hello_world" << std::endl;
-    //  utFile_hello_world::test();
-    //}
-    if(full) {
-      std::cout << "utFile_archiving" << std::endl;
-      utFile_archiving::test();
-    }
-    if(full) {
-      std::cout << "utFile_archiving_closed_file" << std::endl;
-      utFile_archiving_closed_file::test();
-    }
+    //if(full) utFile_hello_world::test();
+    if(full) utFile_archiving::test();
+    if(full) utFile_archiving_closed_file::test();
   }
 } // nFile
 

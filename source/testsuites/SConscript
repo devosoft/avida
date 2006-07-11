@@ -36,8 +36,8 @@ all_libs = [
   'tools',
   'actions',
   'main',
-  'archive',
-  'boost_serialization',
+  #'archive',
+  #'boost_serialization',
 ]
 
 Test(environment, 'full-unit-tests', 'full-unit-tests.cc', LIBS = all_libs)

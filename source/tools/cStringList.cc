@@ -80,7 +80,7 @@ Unit tests
 */
 #include "cXMLArchive.h"
 
-#include <boost/detail/lightweight_test.hpp>
+#include "lightweight_test.h"
 
 #include <cstdio>    // for std::remove() to remove temporary files.
 #include <iomanip>
@@ -109,13 +109,16 @@ namespace nStringList {
 
   namespace utStringList_hello_world {
     void test(){
-      BOOST_TEST(true);
-      BOOST_TEST(false);
+      std::cout << CURRENT_FUNCTION << std::endl;
+      TEST(true);
+      TEST(false);
     }
   }
 
   namespace utStringList_archiving {
-    void test(){
+    void test() {
+#   ifdef ENABLE_SERIALIZATION
+      std::cout << CURRENT_FUNCTION << std::endl;
       char numstr[] = "number 0";
       cString s;
       cStringList sl;
@@ -126,13 +129,13 @@ namespace nStringList {
       /*
       Construct basic list.
       */
-      BOOST_TEST(0 == sl.GetSize());
+      TEST(0 == sl.GetSize());
       for(i=0; i<listsize; i++){
         numstr[7] = '0' + i; 
         s = cString(numstr);
         sl.PushRear(s);
       }
-      BOOST_TEST(listsize == sl.GetSize());
+      TEST(listsize == sl.GetSize());
     
       /*
       Verify basic list contents.
@@ -141,22 +144,22 @@ namespace nStringList {
       for(i=0; !it.AtEnd(); i++){
         s = it.Next();
         numstr[7] = '0' + i;
-        BOOST_TEST(cString(numstr) == s);
+        TEST(cString(numstr) == s);
       }
-      BOOST_TEST(i == listsize);
+      TEST(i == listsize);
 
       /*
       Save basic list.
       */
       save_stuff<>(sl, filename.c_str());
       sl.Clear();
-      BOOST_TEST(0 == sl.GetSize());
+      TEST(0 == sl.GetSize());
 
       /*
       Reload basic list.
       */
       restore_stuff<>(sl, filename.c_str());
-      BOOST_TEST(listsize == sl.GetSize());
+      TEST(listsize == sl.GetSize());
 
       /*
       Verify contents of reloaded basic list.
@@ -165,14 +168,15 @@ namespace nStringList {
       for(i=0; !it.AtEnd(); i++){
         s = it.Next();
         numstr[7] = '0' + i;
-        BOOST_TEST(cString(numstr) == s);
+        TEST(cString(numstr) == s);
       }
-      BOOST_TEST(i == listsize);
+      TEST(i == listsize);
 
       sl.Clear();
-      BOOST_TEST(0 == sl.GetSize());
+      TEST(0 == sl.GetSize());
 
       std::remove(filename.c_str());
+#   endif // ENABLE_SERIALIZATION
     }
   } // utStringList_archiving
 
@@ -180,14 +184,8 @@ namespace nStringList {
 
   void UnitTests(bool full)
   {
-    //if(full) {
-    //  std::cout << "utStringList_hello_world" << std::endl;
-    //  utStringList_hello_world::test();
-    //}
-    if(full) {
-      std::cout << "utStringList_archiving" << std::endl;
-      utStringList_archiving::test();
-    }
+    //if(full) utStringList_hello_world::test();
+    if(full) utStringList_archiving::test();
   }
 } // nStringList
 

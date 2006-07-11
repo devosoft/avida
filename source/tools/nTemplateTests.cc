@@ -78,6 +78,7 @@ namespace nTemplateTests {
 
   namespace utTemplateTests_hello_world {
     void test(){
+      std::cout << "utTemplateTests_hello_world" << std::endl;
       BOOST_TEST(true);
       BOOST_TEST(false);
     }
@@ -85,7 +86,8 @@ namespace nTemplateTests {
   
 
   namespace utMemTrack {
-    void test(){
+    void test() {
+      std::cout << "utMemTrack" << std::endl;
       BOOST_TEST(0 == tMemTrack<A>::Instances());
       {
         A a;
@@ -103,7 +105,9 @@ namespace nTemplateTests {
   }
   
   namespace utList_basic_serialization {
-    void test(){
+    void test() {
+#   ifdef ENABLE_SERIALIZATION
+      std::cout << "utList_basic_serialization" << std::endl;
       BOOST_TEST(0 == tMemTrack<A>::Instances());
       A *a;
       tList<A> l;
@@ -170,11 +174,14 @@ namespace nTemplateTests {
       BOOST_TEST(1 == tMemTrack<tListNode<A> >::Instances());
   
       std::remove(filename.c_str());
+#   endif // ENABLE_SERIALIZATION
     }
   } // utList_basic_serialization
   
   namespace utList_archive_structure {
-    void test(){
+    void test() {
+#   ifdef ENABLE_SERIALIZATION
+      std::cout << "utList_archive_structure" << std::endl;
       std::string filename("./tList_archive_structure.xml");
       
       A *a1, *a2, *a3, *a4, *a5, *a6, *a7, *a8, *a9, *a10;
@@ -274,11 +281,14 @@ namespace nTemplateTests {
       BOOST_TEST(0 == tMemTrack<A>::Instances());
   
       std::remove(filename.c_str());
+#   endif // ENABLE_SERIALIZATION
     }
   } // utList_archive_structure
 
   namespace utArrays_of_pointers {
-    void test(){
+    void test() {
+#   ifdef ENABLE_SERIALIZATION
+      std::cout << "utArrays_of_pointers" << std::endl;
       const int num_instances = 3;
       tArray<A *> instance_array(num_instances);
       BOOST_TEST(0 == tMemTrack<A>::Instances());
@@ -290,11 +300,14 @@ namespace nTemplateTests {
         delete instance_array[i];
       }
       BOOST_TEST(0 == tMemTrack<A>::Instances());
+#   endif // ENABLE_SERIALIZATION
     }
   } // utArrays_of_pointers
 
   namespace utArray_basic_serialization {
-    void test(){
+    void test() {
+#   ifdef ENABLE_SERIALIZATION
+      std::cout << "utArray_basic_serialization" << std::endl;
       std::string filename("./tArray_basic_serialization.xml");
       int i, arraysize = 10;
 
@@ -340,11 +353,14 @@ namespace nTemplateTests {
       BOOST_TEST(0 == tMemTrack<A>::Instances());
 
       std::remove(filename.c_str());
+#   endif // ENABLE_SERIALIZATION
     }
   } // utArray_basic_serialization
   
   namespace utHashTable_basic_serialization {
-    void test(){
+    void test() {
+#   ifdef ENABLE_SERIALIZATION
+      std::cout << "utHashTable_basic_serialization" << std::endl;
       std::string filename("./tHashTable_basic_serialization.xml");
 
       BOOST_TEST(0 == tMemTrack<A>::Instances());
@@ -414,11 +430,14 @@ namespace nTemplateTests {
       BOOST_TEST(dictsize == tMemTrack<A>::Instances());
 
       std::remove(filename.c_str());
+#   endif // ENABLE_SERIALIZATION
     }
   } // utHashTable_basic_serialization
 
   namespace utDictionary_basic_serialization {
-    void test(){
+    void test() {
+#   ifdef ENABLE_SERIALIZATION
+      std::cout << "utDictionary_basic_serialization" << std::endl;
       std::string filename("./tDictionary_basic_serialization.xml");
 
       BOOST_TEST(0 == tMemTrack<A>::Instances());
@@ -489,11 +508,14 @@ namespace nTemplateTests {
       BOOST_TEST(dictsize == tMemTrack<A>::Instances());
 
       std::remove(filename.c_str());
+#   endif // ENABLE_SERIALIZATION
     }
   } // utDictionary_basic_serialization
 
   namespace utBuffer_basic_serialization {
-    void test(){
+    void test() {
+#   ifdef ENABLE_SERIALIZATION
+      std::cout << "utBuffer_basic_serialization" << std::endl;
       std::string filename("./tBuffer_basic_serialization.xml");
       A a;
       int i, buffer_size = 10;
@@ -557,11 +579,14 @@ namespace nTemplateTests {
       BOOST_TEST(b.GetNum() == buffer_size - 1);
 
       std::remove(filename.c_str());
+#   endif // ENABLE_SERIALIZATION
     }
   } // utBuffer_basic_serialization
 
   namespace utManagedPointerArray_basic_serialization {
-    void test(){
+    void test() {
+#   ifdef ENABLE_SERIALIZATION
+      std::cout << "utManagedPointerArray_basic_serialization" << std::endl;
       std::string filename("./tManagedPointerArray_basic_serialization.xml");
       int i, arraysize = 10;
 
@@ -607,11 +632,14 @@ namespace nTemplateTests {
       BOOST_TEST(0 == tMemTrack<A>::Instances());
 
       std::remove(filename.c_str());
+#   endif // ENABLE_SERIALIZATION
     }
   } // utManagedPointerArray_basic_serialization
 
   namespace utSmartArray_basic_serialization {
-    void test(){
+    void test() {
+#   ifdef ENABLE_SERIALIZATION
+      std::cout << "utSmartArray_basic_serialization" << std::endl;
       std::string filename("./tSmartArray_basic_serialization.xml");
       int i, arraysize = 10;
 
@@ -657,11 +685,14 @@ namespace nTemplateTests {
       BOOST_TEST(0 == tMemTrack<A>::Instances());
 
       std::remove(filename.c_str());
+#   endif // ENABLE_SERIALIZATION
     }
   } // utSmartArray_basic_serialization
 
   namespace utMatrix_basic_serialization {
-    void test(){
+    void test() {
+#   ifdef ENABLE_SERIALIZATION
+      std::cout << "utMatrix_basic_serialization" << std::endl;
       std::string filename("./tMatrix_basic_serialization.xml");
       int i, j, rows = 3, cols = 5;
       
@@ -716,6 +747,7 @@ namespace nTemplateTests {
       BOOST_TEST(1 == tMemTrack<A>::Instances());
 
       std::remove(filename.c_str());
+#   endif // ENABLE_SERIALIZATION
     }
   } // utMatrix_basic_serialization
 
@@ -724,53 +756,17 @@ namespace nTemplateTests {
 
   void UnitTests(bool full)
   {
-    //if(full) {
-    //  std::cout << "utTemplateTests_hello_world" << std::endl;
-    //  utTemplateTests_hello_world::test();
-    //}
-    if(full) {
-      std::cout << "utMemTrack" << std::endl;
-      utMemTrack::test();
-    }
-    if(full) {
-      std::cout << "utList_basic_serialization" << std::endl;
-      utList_basic_serialization::test();
-    }
-    if(full) {
-      std::cout << "utList_archive_structure" << std::endl;
-      utList_archive_structure::test();
-    }
-    if(full) {
-      std::cout << "utArrays_of_pointers" << std::endl;
-      utArrays_of_pointers::test();
-    }
-    if(full) {
-      std::cout << "utArray_basic_serialization" << std::endl;
-      utArray_basic_serialization::test();
-    }
-    if(full) {
-      std::cout << "utHashTable_basic_serialization" << std::endl;
-      utHashTable_basic_serialization::test();
-    }
-    if(full) {
-      std::cout << "utDictionary_basic_serialization" << std::endl;
-      utDictionary_basic_serialization::test();
-    }
-    if(full) {
-      std::cout << "utBuffer_basic_serialization" << std::endl;
-      utBuffer_basic_serialization::test();
-    }
-    if(full) {
-      std::cout << "utManagedPointerArray_basic_serialization" << std::endl;
-      utManagedPointerArray_basic_serialization::test();
-    }
-    if(full) {
-      std::cout << "utSmartArray_basic_serialization" << std::endl;
-      utSmartArray_basic_serialization::test();
-    }
-    if(full) {
-      std::cout << "utMatrix_basic_serialization" << std::endl;
-      utMatrix_basic_serialization::test();
-    }
+    //if(full) utTemplateTests_hello_world::test();
+    if(full) utMemTrack::test();
+    if(full) utList_basic_serialization::test();
+    if(full) utList_archive_structure::test();
+    if(full) utArrays_of_pointers::test();
+    if(full) utArray_basic_serialization::test();
+    if(full) utHashTable_basic_serialization::test();
+    if(full) utDictionary_basic_serialization::test();
+    if(full) utBuffer_basic_serialization::test();
+    if(full) utManagedPointerArray_basic_serialization::test();
+    if(full) utSmartArray_basic_serialization::test();
+    if(full) utMatrix_basic_serialization::test();
   }
 } // nTemplateTests

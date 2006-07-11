@@ -30,6 +30,9 @@ environment.Export('environment')
 #
 AvidaUtils.Configure(ARGUMENTS, environment)
 
+if environment.subst('$enableSerialization') in ['1', 'yes']:
+  environment.Append(CPPDEFINES = ['ENABLE_SERIALIZATION=1'])
+
 if environment.subst('$enableTestCode') in ['1', 'yes']:
   environment.SetDefault(enableSharedPtr = 1)
   environment.Append(CPPDEFINES = ['USE_tMemTrack=1', 'ENABLE_UNIT_TESTS=1'])
@@ -57,7 +60,7 @@ environment.Append(
   LIBPATH = [
     '#$buildDir/actions',
     '#$buildDir/analyze',
-    '#$buildDir/archive',
+    #'#$buildDir/archive',
     '#$buildDir/classification',
     '#$buildDir/cpu',
     '#$buildDir/drivers',

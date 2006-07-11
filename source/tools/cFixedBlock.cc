@@ -16,7 +16,7 @@ Unit tests
 */
 #include "cXMLArchive.h"
 
-#include <boost/detail/lightweight_test.hpp>
+#include "lightweight_test.h"
 
 #include <cstdio>    // for std::remove() to remove temporary files.
 #include <iomanip>
@@ -45,13 +45,16 @@ namespace nFixedBlock {
 
   namespace utFixedBlock_hello_world {
     void test(){
-      BOOST_TEST(true);
-      BOOST_TEST(false);
+      std::cout << CURRENT_FUNCTION << std::endl;
+      TEST(true);
+      TEST(false);
     }
   }
 
   namespace utFixedBlock_archiving {
     void test(){
+#   ifdef ENABLE_SERIALIZATION
+      std::cout << CURRENT_FUNCTION << std::endl;
       std::string filename("./cFixedBlock_basic_serialization.xml");
 
       /*
@@ -59,9 +62,9 @@ namespace nFixedBlock {
       */
       {
         cFixedBlock fb;
-        BOOST_TEST(0 == fb.GetStart());
+        TEST(0 == fb.GetStart());
         fb.SetStart(2);
-        BOOST_TEST(2 == fb.GetStart());
+        TEST(2 == fb.GetStart());
         save_stuff<>(fb, filename.c_str());
       }
       /*
@@ -69,26 +72,21 @@ namespace nFixedBlock {
       */
       {
         cFixedBlock fb;
-        BOOST_TEST(0 == fb.GetStart());
+        TEST(0 == fb.GetStart());
         restore_stuff<>(fb, filename.c_str());
-        BOOST_TEST(2 == fb.GetStart());
+        TEST(2 == fb.GetStart());
       }
 
       std::remove(filename.c_str());
+#   endif // ENABLE_SERIALIZATION
     }
   } // utFixedBlock_archiving
 
 
   void UnitTests(bool full)
   {
-    //if(full) {
-    //  std::cout << "utFixedBlock_hello_world" << std::endl;
-    //  utFixedBlock_hello_world::test();
-    //}
-    if(full) {
-      std::cout << "utFixedBlock_archiving" << std::endl;
-      utFixedBlock_archiving::test();
-    }
+    //if(full) utFixedBlock_hello_world::test();
+    if(full) utFixedBlock_archiving::test();
   }
 } // nFixedBlock
 

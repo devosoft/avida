@@ -16,7 +16,7 @@ Unit tests
 */
 #include "cXMLArchive.h"
 
-#include <boost/detail/lightweight_test.hpp>
+#include "lightweight_test.h"
 
 #include <cstdio>    // for std::remove() to remove temporary files.
 #include <iomanip>
@@ -45,13 +45,16 @@ namespace nDataEntry {
 
   namespace utDataEntry_hello_world {
     void test(){
-      BOOST_TEST(true);
-      BOOST_TEST(false);
+      std::cout << CURRENT_FUNCTION << std::endl;
+      TEST(true);
+      TEST(false);
     }
   }
 
   namespace utDataEntry_archiving {
     void test(){
+#   ifdef ENABLE_SERIALIZATION
+      std::cout << CURRENT_FUNCTION << std::endl;
       std::string filename("./cDataEntry_basic_serialization.xml");
 
       // Open cDataEntry_data.txt for reading.
@@ -59,15 +62,15 @@ namespace nDataEntry {
       cDataEntry d1("n", "d", "nv", "htf");
 
       // Sanity checks...
-      BOOST_TEST(cString("name") == d.GetName());
-      BOOST_TEST(cString("desc") == d.GetDesc());
-      BOOST_TEST(cString("null_value") == d.GetNull());
-      BOOST_TEST(cString("html_table_flags") == d.GetHtmlCellFlags());
+      TEST(cString("name") == d.GetName());
+      TEST(cString("desc") == d.GetDesc());
+      TEST(cString("null_value") == d.GetNull());
+      TEST(cString("html_table_flags") == d.GetHtmlCellFlags());
 
-      BOOST_TEST(cString("n") == d1.GetName());
-      BOOST_TEST(cString("d") == d1.GetDesc());
-      BOOST_TEST(cString("nv") == d1.GetNull());
-      BOOST_TEST(cString("htf") == d1.GetHtmlCellFlags());
+      TEST(cString("n") == d1.GetName());
+      TEST(cString("d") == d1.GetDesc());
+      TEST(cString("nv") == d1.GetNull());
+      TEST(cString("htf") == d1.GetHtmlCellFlags());
 
       // Save cDataEntry state.
       save_stuff<>(d, filename.c_str());
@@ -75,12 +78,13 @@ namespace nDataEntry {
       restore_stuff<>(d1, filename.c_str());
 
       // Check reloaded state.
-      BOOST_TEST(cString("name") == d1.GetName());
-      BOOST_TEST(cString("desc") == d1.GetDesc());
-      BOOST_TEST(cString("null_value") == d1.GetNull());
-      BOOST_TEST(cString("html_table_flags") == d1.GetHtmlCellFlags());
+      TEST(cString("name") == d1.GetName());
+      TEST(cString("desc") == d1.GetDesc());
+      TEST(cString("null_value") == d1.GetNull());
+      TEST(cString("html_table_flags") == d1.GetHtmlCellFlags());
 
       std::remove(filename.c_str());
+#   endif // ENABLE_SERIALIZATION
     } 
   } // utDataEntry_archiving
 
@@ -88,14 +92,8 @@ namespace nDataEntry {
 
   void UnitTests(bool full)
   {
-    //if(full) {
-    //  std::cout << "utDataEntry_hello_world" << std::endl;
-    //  utDataEntry_hello_world::test();
-    //}
-    if(full) {
-      std::cout << "utDataEntry_archiving" << std::endl;
-      utDataEntry_archiving::test();
-    }
+    //if(full) utDataEntry_hello_world::test();
+    if(full) utDataEntry_archiving::test();
   }
 } // nDataEntry
 
