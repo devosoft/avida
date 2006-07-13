@@ -10,7 +10,6 @@
 #include "cHardwareManager.h"
 
 #include "cHardwareCPU.h"
-#include "cHardware4Stack.h"
 #include "cHardwareSMT.h"
 #include "cInitFile.h"
 #include "cInstLibCPU.h"
@@ -35,11 +34,8 @@ void cHardwareManager::LoadInstSet(cString filename)
       m_inst_set.SetInstLib(cHardwareCPU::GetInstLib());
 			default_filename = cHardwareCPU::GetDefaultInstFilename();
 			break;
-		case HARDWARE_TYPE_CPU_4STACK:
-      m_inst_set.SetInstLib(cHardware4Stack::GetInstLib());
-			default_filename = cHardware4Stack::GetDefaultInstFilename();
-			break;
 		case HARDWARE_TYPE_CPU_SMT:
+		case HARDWARE_TYPE_CPU_OLDSMT:
       m_inst_set.SetInstLib(cHardwareSMT::GetInstLib());
 			default_filename = cHardwareSMT::GetDefaultInstFilename();
 			break;		
@@ -115,9 +111,8 @@ cHardwareBase* cHardwareManager::Create(cOrganism* in_org)
   {
     case HARDWARE_TYPE_CPU_ORIGINAL:
       return new cHardwareCPU(m_world, in_org, &m_inst_set);
-    case HARDWARE_TYPE_CPU_4STACK:
-      return new cHardware4Stack(m_world, in_org, &m_inst_set);
     case HARDWARE_TYPE_CPU_SMT:
+    case HARDWARE_TYPE_CPU_OLDSMT:
       return new cHardwareSMT(m_world, in_org, &m_inst_set);
     default:
       return NULL;

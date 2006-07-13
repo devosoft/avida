@@ -191,7 +191,7 @@ public:
   cHardwareSMT(cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
   ~cHardwareSMT() { ; }
   static cInstLibBase* GetInstLib() { return s_inst_slib; }
-  static cString GetDefaultInstFilename() { return "inst_lib.4stack"; }
+  static cString GetDefaultInstFilename() { return "inst_set.smt"; }
 	
   void Reset();
   void SingleProcess(cAvidaContext& ctx);

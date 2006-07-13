@@ -6,7 +6,6 @@ INSTALL_FILES(/work FILES
   avida.cfg
   environment.cfg
   events.cfg
-  inst_set.4stack
   inst_set.default
   inst_set.sex
   inst_set.smt

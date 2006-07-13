@@ -3,8 +3,6 @@ SET(libcpu_a_SOURCES
   cCPUMemory.cc
   cCPUStack.cc
   cCPUTestInfo.cc
-  cHardware4Stack.cc
-  cHardware4Stack_Thread.cc
   cHardwareBase.cc
   cHardwareCPU.cc
   cHardwareCPU_Thread.cc

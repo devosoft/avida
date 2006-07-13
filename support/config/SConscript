@@ -9,7 +9,6 @@ environment.Install('$configPrefix', [
   'inst_set.default',
   'organism.default',
   'organism.smt',
-  'inst_set.4stack',
   'inst_set.smt',
 ] )
 
