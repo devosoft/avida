@@ -179,6 +179,7 @@ public:
 
   // --------  Stack Manipulation...  --------
   inline int GetStack(int depth=0, int stack_id=-1, int in_thread=-1) const;
+  inline int GetNumStacks() const { return nHardware4Stack::NUM_STACKS; }
 
   
   // --------  Head Manipulation (including IP)  --------
@@ -208,6 +209,7 @@ public:
   // --------  Register Manipulation  --------
   const int GetRegister(int reg_id) const { return Stack(reg_id).Peek(); }
   int& GetRegister(int reg_id) { return Stack(reg_id).Peek(); }
+  int GetNumRegisters() const { return nHardware4Stack::NUM_STACKS; }
 
   
   // --------  Thread Manipulation  --------

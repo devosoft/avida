@@ -18,9 +18,10 @@
 #include "cStringUtil.h"
 #include "cTaskEntry.h"
 
+#include "cHardwareBase.h"
 #include "cHardwareCPU.h"
-#include "cHardware4Stack.h"
-#include "cHardwareSMT.h"
+#include "nHardware.h"
+#include "cHeadMultiMem.h"
 
 #include "cView.h"
 #include "cMenuWindow.h"
@@ -91,9 +92,7 @@ void cZoomScreen::Draw()
   {
     if(info.GetConfig().HARDWARE_TYPE.Get() == HARDWARE_TYPE_CPU_ORIGINAL) 
       DrawCPU_Original();
-    if(info.GetConfig().HARDWARE_TYPE.Get() == HARDWARE_TYPE_CPU_4STACK) 
-      DrawCPU_4Stack();
-    if(info.GetConfig().HARDWARE_TYPE.Get() == HARDWARE_TYPE_CPU_SMT) 
+    else
       DrawCPU_SMT();
   }
   else if (mode == ZOOM_MODE_STATS) DrawStats();
@@ -132,24 +131,13 @@ void cZoomScreen::DrawStats()
   Print(10, 27, "Thread:");
   Print(11, 27, "IP....:");
   
-  if(info.GetConfig().HARDWARE_TYPE.Get() == HARDWARE_TYPE_CPU_ORIGINAL)
-  {
+  if(info.GetConfig().HARDWARE_TYPE.Get() == HARDWARE_TYPE_CPU_ORIGINAL) {
     Print(12, 27, "AX....:");
     Print(13, 27, "BX....:");
     Print(14, 27, "CX....:");
     Print(15, 27, "Stack.:");
     Print(16, 27, "---- Memory ----");
-  }
-  else if(info.GetConfig().HARDWARE_TYPE.Get() == HARDWARE_TYPE_CPU_4STACK)
-  {
-    Print(12, 27, "Stack AX:");
-    Print(13, 27, "Stack BX:");
-    Print(14, 27, "Stack CX:");
-    Print(15, 27, "Stack DX:");
-    Print(16, 27, "---- Memory ----");
-  }
-  else if(info.GetConfig().HARDWARE_TYPE.Get() == HARDWARE_TYPE_CPU_SMT)
-  {
+  } else {
     Print(12, 27, "Stack AX:");
     Print(13, 27, "Stack BX:");
     Print(14, 27, "Stack CX:");
@@ -274,109 +262,6 @@ void cZoomScreen::DrawCPU_Original()
   
   Print(STACK_Y,     STACK_X, CHAR_TTEE);
   Print(STACK_Y + 2, STACK_X, CHAR_PLUS);
-  Print(STACK_Y + 6, STACK_X, CHAR_BTEE);
-  
-  
-  // A few stats on this screen...
-  
-  SetBoldColor(COLOR_WHITE);
-  
-  Print(13, 52, "Location.....:");
-  Print(14, 52, "Genotype ID..:");
-  Print(15, 52, "Genotype Name:");
-  
-  Print(17, 52, "Faults.......:");
-  Print(18, 52, "Offspring....:");
-  Print(19, 52, "Thread.......:");
-}
-
-void cZoomScreen::DrawCPU_4Stack()
-{
-  SetColor(COLOR_WHITE);
-  
-  // --== Registers ==--
-  Box(REG_X, REG_Y-1, 19, 8);
-  Print(REG_Y, REG_X + 2, "Stacks:");
-  HLine(REG_Y + 1, REG_X, 19);
-  
-  SetBoldColor(COLOR_WHITE);
-  Print(REG_Y + 2, REG_X + 2, "AX:");
-  Print(REG_Y + 3, REG_X + 2, "BX:");
-  Print(REG_Y + 4, REG_X + 2, "CX:");
-  Print(REG_Y + 5, REG_X + 2, "DX:");
-  SetColor(COLOR_WHITE);
-  
-  // --== Inputs ==--
-  Box(INPUT_X, INPUT_Y-1, 16, 8);
-  Print(INPUT_Y, INPUT_X + 2, "Inputs:");
-  HLine(INPUT_Y+1, INPUT_X, 16);
-  
-  // --== Mini-Map ==--
-  Box(MINI_MAP_X, MINI_MAP_Y, 17, 3);
-  Print(MINI_MAP_Y + 1, MINI_MAP_X + 2, "Mini-Map");
-  //HLine(MINI_MAP_Y + 2, MINI_MAP_X, 19);
-  
-  SetBoldColor(COLOR_WHITE);
-  Print(MINI_MAP_Y + 11, MINI_MAP_X,  "[ ]           [ ]");
-  SetBoldColor(COLOR_CYAN);
-  Print(MINI_MAP_Y + 11, MINI_MAP_X + 1,  '-');
-  Print(MINI_MAP_Y + 11, MINI_MAP_X + 15, '+');
-  SetColor(COLOR_WHITE);
-  
-  // --== Memory ==--
-  Box(MEMORY_X, MEMORY_Y, 36, 5 + MEMORY_PRE_SIZE + MEMORY_POST_SIZE);
-  Print(MEMORY_Y + 1, MEMORY_X + 2,  "Memory Space");
-  HLine(MEMORY_Y + 2, MEMORY_X, 36);
-  
-  // --== Stack ==--
-  Box(STACK_X, STACK_Y-1, 15, 8);
-  HLine(STACK_Y + 1, STACK_X, 15);
-  
-  // --== Options ==--
-  SetBoldColor(COLOR_YELLOW);
-  Print(OPTIONS_Y, OPTIONS_X+4,    "Component Zoom");
-  SetBoldColor(COLOR_WHITE);
-  
-  //Print(OPTIONS_Y+6, OPTIONS_X+2, "[E]dit Component");
-  //Print(OPTIONS_Y+7, OPTIONS_X+2, "[V]iew Component");
-  Print(OPTIONS_Y+5, OPTIONS_X+2, "Next Stac[K]");
-  if(info.GetConfig().MAX_CPU_THREADS.Get() >1)
-    Print(OPTIONS_Y+6, OPTIONS_X+2, "Next [T]hread");
-  //Print(OPTIONS_Y+9, OPTIONS_X+2, "[TAB] Shift Active");
-  
-  if (info.GetPauseLevel()) {
-    Print(OPTIONS_Y+7, OPTIONS_X+2, "[UP, DOWN]");
-    Print(OPTIONS_Y+8, OPTIONS_X+2, "Scroll Instruction");
-    Print(OPTIONS_Y+9, OPTIONS_X+2, "[LEFT, RIGHT]");
-    Print(OPTIONS_Y+10, OPTIONS_X+2, "Change Mem Space");
-  } else {
-    Print(OPTIONS_Y+7, OPTIONS_X+2, "               ");
-    Print(OPTIONS_Y+8, OPTIONS_X+2, "                  ");
-    Print(OPTIONS_Y+9, OPTIONS_X+2, "               ");
-    Print(OPTIONS_Y+10, OPTIONS_X+2, "                 ");
-  }
-  
-  
-  SetBoldColor(COLOR_CYAN);
-  Print(OPTIONS_Y+5, OPTIONS_X+12, "K");
-  if(info.GetConfig().MAX_CPU_THREADS.Get() >1)
-    Print(OPTIONS_Y+6, OPTIONS_X+8, "T");
-  
-  if (info.GetPauseLevel()) {
-    Print(OPTIONS_Y+7, OPTIONS_X+3, "UP, DOWN");
-    Print(OPTIONS_Y+9, OPTIONS_X+3, "LEFT, RIGHT");
-  }
-  
-  // Highlight the active section...
-  SetActiveSection(active_section);
-  
-  // Add on a bunch of special characters to smooth the view out...
-  Print(INPUT_Y - 1, INPUT_X, CHAR_TTEE);
-  Print(INPUT_Y + 1, INPUT_X, CHAR_PLUS);
-  Print(INPUT_Y + 6, INPUT_X, CHAR_BTEE);
-  
-  Print(STACK_Y - 1, STACK_X, CHAR_TTEE);
-  Print(STACK_Y + 1, STACK_X, CHAR_PLUS);
   Print(STACK_Y + 6, STACK_X, CHAR_BTEE);
   
   
@@ -596,9 +481,7 @@ void cZoomScreen::UpdateStats(cHardwareBase & hardware)
   
   if(info.GetConfig().HARDWARE_TYPE.Get() == HARDWARE_TYPE_CPU_ORIGINAL)
     UpdateStats_CPU(hardware);
-  else if(info.GetConfig().HARDWARE_TYPE.Get() == HARDWARE_TYPE_CPU_4STACK)
-    UpdateStats_4Stack(hardware);
-  else if(info.GetConfig().HARDWARE_TYPE.Get() == HARDWARE_TYPE_CPU_SMT)
+  else
     UpdateStats_SMT(hardware);
   
   if (phenotype.ParentTrue()) SetBoldColor(COLOR_CYAN);
@@ -672,20 +555,18 @@ void cZoomScreen::UpdateStats(cHardwareBase & hardware)
   
 }
 
-void cZoomScreen::UpdateStats_CPU(cHardwareBase & hardware)
+void cZoomScreen::UpdateStats_CPU(cHardwareBase& hardware)
 {
-  cHardwareCPU & hardwareCPU = (cHardwareCPU &) hardware;
+  Print(10, 43, "%2d/%2d", hardware.GetCurThread() + 1,
+        hardware.GetNumThreads());
   
-  Print(10, 43, "%2d/%2d", hardwareCPU.GetCurThread() + 1,
-        hardwareCPU.GetNumThreads());
+  Print(12, 34, "%14d", hardware.GetRegister(0));
+  Print(13, 34, "%14d", hardware.GetRegister(1));
+  Print(14, 34, "%14d", hardware.GetRegister(2));
+  Print(15, 34, "%14d", hardware.GetStack(0));
   
-  Print(12, 34, "%14d", hardwareCPU.GetRegister(0));
-  Print(13, 34, "%14d", hardwareCPU.GetRegister(1));
-  Print(14, 34, "%14d", hardwareCPU.GetRegister(2));
-  Print(15, 34, "%14d", hardwareCPU.GetStack(0));
-  
-  cHeadCPU inst_ptr(hardwareCPU.IP());
-  const cInstSet & inst_set = hardwareCPU.GetInstSet();
+  cHeadCPU inst_ptr(hardware.IP());
+  const cInstSet & inst_set = hardware.GetInstSet();
   
   for (int pos = 0; pos < 3; pos++) {
     // Clear the line
@@ -699,12 +580,13 @@ void cZoomScreen::UpdateStats_CPU(cHardwareBase & hardware)
   }
   
   // Flags...
-  if (hardwareCPU.GetMalActive()) SetBoldColor(COLOR_CYAN);
-  else SetColor(COLOR_CYAN);
+//  if (hardware.GetMalActive()) SetBoldColor(COLOR_CYAN);
+//  else SetColor(COLOR_CYAN);
+  SetColor(COLOR_CYAN);
   Print(CPU_FLAGS_Y + 1, CPU_FLAGS_X + 1, "Mem Allocated");
   
   // And print the IP.
-  const cHeadCPU & active_inst_ptr = hardwareCPU.IP();
+  const cHeadCPU & active_inst_ptr = hardware.IP();
   // @CAO assume no parasites for now.
   int cur_id = info.GetActiveCell()->GetID();
   //active_inst_ptr.GetCurHardware()->GetOrganism()->GetEnvironment()->GetID();
@@ -713,20 +595,18 @@ void cZoomScreen::UpdateStats_CPU(cHardwareBase & hardware)
                                              active_inst_ptr.GetPosition())) );
 }
 
-void cZoomScreen::UpdateStats_4Stack(cHardwareBase & hardware)
+void cZoomScreen::UpdateStats_SMT(cHardwareBase& hardware)
 {
-  cHardware4Stack & hardware4Stack = (cHardware4Stack &) hardware;
+  Print(10, 43, "%2d/%2d", hardware.GetCurThread() + 1,
+        hardware.GetNumThreads());
   
-  Print(10, 43, "%2d/%2d", hardware4Stack.GetCurThread() + 1,
-        hardware4Stack.GetNumThreads());
+  Print(12, 34, "%14d", hardware.GetStack(0, 0));
+  Print(13, 34, "%14d", hardware.GetStack(0, 1));
+  Print(14, 34, "%14d", hardware.GetStack(0, 2));
+  Print(15, 34, "%14d", hardware.GetStack(0, 3));
   
-  Print(12, 34, "%14d", hardware4Stack.GetStack(0, 0));
-  Print(13, 34, "%14d", hardware4Stack.GetStack(0, 1));
-  Print(14, 34, "%14d", hardware4Stack.GetStack(0, 2));
-  Print(15, 34, "%14d", hardware4Stack.GetStack(0, 3));
-  
-  cHeadMultiMem inst_ptr(hardware4Stack.IP());
-  const cInstSet & inst_set = hardware4Stack.GetInstSet();
+  cHeadCPU inst_ptr(hardware.IP());
+  const cInstSet& inst_set = hardware.GetInstSet();
   
   for (int pos = 0; pos < 3; pos++) {
     // Clear the line
@@ -740,49 +620,11 @@ void cZoomScreen::UpdateStats_4Stack(cHardwareBase & hardware)
   }
   
   // And print the IP.
-  const cHeadMultiMem & active_inst_ptr = hardware4Stack.IP();
+  const cHeadCPU& active_inst_ptr = hardware.IP();
   // @CAO assume no parasites for now.
   //int cur_id = info.GetActiveCell()->GetID();
   //active_inst_ptr.GetCurHardware()->GetOrganism()->GetEnvironment()->GetID();
-  Print(11, 36, "%12s", static_cast<const char*>(cStringUtil::Stringf("(%2d, %2d)",
-                                             active_inst_ptr.GetMemSpace(),
-                                             active_inst_ptr.GetPosition())) );
-}
-
-void cZoomScreen::UpdateStats_SMT(cHardwareBase & hardware)
-{
-  cHardwareSMT& hardware4Stack = (cHardwareSMT&) hardware;
-  
-  Print(10, 43, "%2d/%2d", hardware4Stack.GetCurThread() + 1,
-        hardware4Stack.GetNumThreads());
-  
-  Print(12, 34, "%14d", hardware4Stack.GetStack(0, 0));
-  Print(13, 34, "%14d", hardware4Stack.GetStack(0, 1));
-  Print(14, 34, "%14d", hardware4Stack.GetStack(0, 2));
-  Print(15, 34, "%14d", hardware4Stack.GetStack(0, 3));
-    
-  cHeadMultiMem inst_ptr(hardware4Stack.IP());
-  const cInstSet & inst_set = hardware4Stack.GetInstSet();
-  
-  for (int pos = 0; pos < 3; pos++) {
-    // Clear the line
-    Print(17+pos, 29, "                    ");
-    if (inst_ptr.InMemory() == false) continue;
-    if (pos == 1) SetColor(COLOR_CYAN);
-    
-    // Draw the current instruction.
-    Print(17+pos, 29, "%s",	static_cast<const char*>(inst_set.GetName(inst_ptr.GetInst())));
-    inst_ptr.Advance();
-  }
-  
-  // And print the IP.
-  const cHeadMultiMem & active_inst_ptr = hardware4Stack.IP();
-  // @CAO assume no parasites for now.
-  //int cur_id = info.GetActiveCell()->GetID();
-  //active_inst_ptr.GetCurHardware()->GetOrganism()->GetEnvironment()->GetID();
-  Print(11, 36, "%12s", static_cast<const char*>(cStringUtil::Stringf("(%2d, %2d)",
-                                             active_inst_ptr.GetMemSpace(),
-                                             active_inst_ptr.GetPosition())) );
+  Print(11, 36, "%12s", static_cast<const char*>(active_inst_ptr.GetPositionString()));
 }
 
 void cZoomScreen::UpdateCPU(cHardwareBase & hardware)
@@ -809,9 +651,7 @@ void cZoomScreen::UpdateCPU(cHardwareBase & hardware)
   
   if(info.GetConfig().HARDWARE_TYPE.Get() == HARDWARE_TYPE_CPU_ORIGINAL)
     UpdateCPU_Original(hardware);
-  else if(info.GetConfig().HARDWARE_TYPE.Get() == HARDWARE_TYPE_CPU_4STACK)
-    UpdateCPU_4Stack(hardware);
-  else if(info.GetConfig().HARDWARE_TYPE.Get() == HARDWARE_TYPE_CPU_SMT)
+  else
     UpdateCPU_SMT(hardware);
   
   // Place the input buffer on the screen.
@@ -844,15 +684,22 @@ void cZoomScreen::UpdateCPU(cHardwareBase & hardware)
   Refresh();
 }
 
-void cZoomScreen::UpdateCPU_Original(cHardwareBase & hardware)
+void cZoomScreen::UpdateCPU_Original(cHardwareBase& hardware)
 {
-  cHardwareCPU & hardwareCPU = (cHardwareCPU &) hardware;
-  //hardwareCPU.SetThread(cur_view_thread);
+  // @DMB - This is making a relatively safe assumption of hardware type, but it IS an assumption
+#ifdef DEBUG
+  cHardwareCPU* p_hw = dynamic_cast<cHardwareCPU*>(&hardware);
+  assert(p_hw);
+  cHardwareCPU& hardwareCPU = *p_hw;
+#else
+  cHardwareCPU& hardwareCPU = static_cast<cHardwareCPU&>(hardware);
+#endif
+  
   
   // Place the registers onto the screen.
   SetBoldColor(COLOR_CYAN);
-  for (int i = 0; i < nHardwareCPU::NUM_REGISTERS; i++) {
-    Print(REG_Y+3 + i, REG_X+6, "%11d", hardwareCPU.GetRegister(i));
+  for (int i = 0; i < hardware.GetNumRegisters(); i++) {
+    Print(REG_Y+3 + i, REG_X+6, "%11d", hardware.GetRegister(i));
   }
   
   // Place the active stack onto the screen.
@@ -860,13 +707,13 @@ void cZoomScreen::UpdateCPU_Original(cHardwareBase & hardware)
   // Stack A
   // SetBoldColor(COLOR_CYAN);   // -Redundant
   SetColor(COLOR_WHITE);
-  Print(STACK_Y + 1, STACK_X + 2, "Stack %s", 'A' + hardwareCPU.GetActiveStack());
+  Print(STACK_Y + 1, STACK_X + 2, "Stack %c", 'A' + hardwareCPU.GetActiveStack());
   
   SetBoldColor(COLOR_CYAN);
-  Print(STACK_Y+3, STACK_X + 2, "%11d", hardwareCPU.GetStack(0));
+  Print(STACK_Y+3, STACK_X + 2, "%11d", hardware.GetStack(0));
   SetColor(COLOR_CYAN);
   for (int i = 1; i <= 2; i++) {
-    Print(STACK_Y+3 + i, STACK_X+2, "%11d", hardwareCPU.GetStack(i));
+    Print(STACK_Y+3 + i, STACK_X+2, "%11d", hardware.GetStack(i));
   }
   
   // Place the input buffer on the screen.
@@ -879,15 +726,15 @@ void cZoomScreen::UpdateCPU_Original(cHardwareBase & hardware)
     Print(INPUT_Y+3+i, INPUT_X+2, "%12d", info.GetActiveCell()->GetInput(i));
   }
   
-  Print(19, 74, "%2d/%2d", hardwareCPU.GetCurThread() + 1,
-        hardwareCPU.GetNumThreads());
+  Print(19, 74, "%2d/%2d", hardware.GetCurThread() + 1,
+        hardware.GetNumThreads());
   
   // This line gets the creature that is currently executing. Usually the
   // creature we are viewing, but can also be a different one (if this is a
   // parasite).
   
   const cCPUMemory & memory = (parasite_zoom) ?
-    hardware.GetMemory() : hardwareCPU.IP().GetMemory();
+    hardware.GetMemory() : hardware.IP().GetMemory();
   SetColor(COLOR_WHITE);
   Print(MEMORY_Y + 1, MEMORY_X + 9, "%4d", memory.GetSize());
   
@@ -902,10 +749,10 @@ void cZoomScreen::UpdateCPU_Original(cHardwareBase & hardware)
   }
   
   int adj_inst_ptr = 0;
-  int base_inst_ptr = hardwareCPU.IP().GetPosition();
+  int base_inst_ptr = hardware.IP().GetPosition();
   if (base_inst_ptr < 0 || parasite_zoom == true) base_inst_ptr = 0;
   
-  const cInstSet & inst_set = hardwareCPU.GetInstSet();
+  const cInstSet & inst_set = hardware.GetInstSet();
   
   // Determine the center (must be between 0 and size - 1)
   int center_pos = (base_inst_ptr + memory_offset) % memory.GetSize();
@@ -964,13 +811,13 @@ void cZoomScreen::UpdateCPU_Original(cHardwareBase & hardware)
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 27, "Bp");
       }
       
-      if (adj_inst_ptr == hardwareCPU.GetHead(nHardware::HEAD_READ).GetPosition()) {
+      if (adj_inst_ptr == hardware.GetHead(nHardware::HEAD_READ).GetPosition()) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 30, "R");
       }
-      if (adj_inst_ptr == hardwareCPU.GetHead(nHardware::HEAD_WRITE).GetPosition()) {
+      if (adj_inst_ptr == hardware.GetHead(nHardware::HEAD_WRITE).GetPosition()) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 31, "W");
       }
-      if (adj_inst_ptr == hardwareCPU.GetHead(nHardware::HEAD_FLOW).GetPosition()) {
+      if (adj_inst_ptr == hardware.GetHead(nHardware::HEAD_FLOW).GetPosition()) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 32, "F");
       }
     }
@@ -980,165 +827,33 @@ void cZoomScreen::UpdateCPU_Original(cHardwareBase & hardware)
   DrawMiniMap();
 }
 
-void cZoomScreen::UpdateCPU_4Stack(cHardwareBase & hardware)
-{
-  cHardware4Stack & hardware4Stack = (cHardware4Stack &) hardware;
-  
-  if(cur_view_thread>=hardware4Stack.GetNumThreads())
-  {
-    cur_view_thread=0;
-    cur_mem_space = hardware4Stack.IP(cur_view_thread).GetMemSpace();
-  }
-  //hardware4Stack.SetThread(cur_view_thread);
-  cHeadMultiMem & cur_ip = hardware4Stack.IP(cur_view_thread);
-  
-  // Place the stacks onto the screen.
-  SetBoldColor(COLOR_CYAN);
-  for (int i = 0; i < 4; i++) {
-    Print(REG_Y+2 + i, REG_X+6, "%11d", hardware4Stack.GetStack(0, i, cur_view_thread));
-  }
-  
-  // Place the active stack onto the screen.
-  
-  // Stack AX
-  //SetBoldColor(COLOR_CYAN);   // -Redundant
-  SetColor(COLOR_WHITE);
-  
-  Print(STACK_Y, STACK_X + 2, "Stack   :");
-  Print(STACK_Y, STACK_X + 8, "%cX" , 'A' + cur_stack);
-  
-  //SetBoldColor(COLOR_CYAN);
-  //Print(STACK_Y+2, STACK_X + 2, "%11d", hardware4Stack.GetStack(0, cur_stack));
-  SetColor(COLOR_CYAN);
-  for (int i = 0; i <= 3; i++) {
-    Print(STACK_Y+2 + i, STACK_X+2, "%11d", hardware4Stack.GetStack(i, cur_stack, cur_view_thread));
-  }
-  
-  Print(19, 74, "%2d/%2d", cur_view_thread + 1,
-        hardware4Stack.GetNumThreads());
-  
-  // This line gets the creature that is currently executing. Usually the
-  // creature we are viewing, but can also be a different one (if this is a
-  // parasite).
-  
-  const cCPUMemory & memory = hardware4Stack.GetMemory(cur_mem_space);
-  SetBoldColor(COLOR_BLUE);
-  Print(MEMORY_Y + 1, MEMORY_X + 8, " Space ");	
-  SetColor(COLOR_WHITE);
-  Print(MEMORY_Y + 1, MEMORY_X + 15, "%2d", cur_mem_space);
-  
-  Print(MEMORY_Y + 1, MEMORY_X + 17, ":");	
-  Print(MEMORY_Y + 1, MEMORY_X + 18, "%4d", memory.GetSize());
-  
-  
-  
-  // Nothing past this point gets executed for empty creatures....
-  if (memory.GetSize() == 0) {
-    for (int i = -MEMORY_PRE_SIZE; i <= MEMORY_POST_SIZE; i++) {
-      HLine(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X, 36);
-    }
-    return;
-  }
-  
-  int adj_inst_ptr = 0;
-  int base_inst_ptr = cur_ip.GetPosition();
-  if (base_inst_ptr < 0 || parasite_zoom == true) base_inst_ptr = 0;
-  
-  const cInstSet & inst_set = hardware4Stack.GetInstSet();
-  
-  // Determine the center (must be between 0 and size - 1)
-  int center_pos = (base_inst_ptr + memory_offset) % memory.GetSize();
-  if (center_pos < 0) center_pos += memory.GetSize();
-  
-  for (int i = -MEMORY_PRE_SIZE; i <= MEMORY_POST_SIZE; i++) {
-    adj_inst_ptr = (center_pos + i) % (memory.GetSize() + 1);
-    if (adj_inst_ptr < 0) adj_inst_ptr += memory.GetSize() + 1;
-    
-    if (adj_inst_ptr == memory.GetSize()) {
-      HLine(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X, 36);
-    } else {
-      Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X, CHAR_VLINE);
-      Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 35, CHAR_VLINE);
-      
-      // If we are on the instruction about to be executed by the CPU,
-      // hilight it...
-      if (adj_inst_ptr == base_inst_ptr && 
-          hardware4Stack.IP(cur_view_thread).GetMemSpace() == cur_mem_space) {
-        SetBoldColor(COLOR_WHITE);
-        Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 1, "%3d: ",
-              adj_inst_ptr);
-        SetBoldColor(COLOR_CYAN);
-      } else {
-        if (i == 0) SetBoldColor(COLOR_YELLOW);
-        Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 1, "%3d: ",
-              adj_inst_ptr);
-        // If we are scrolling through memory, make the current position
-        // yellow.
-        if (i == 0) SetColor(COLOR_YELLOW);
-        else SetColor(COLOR_CYAN);
-      }
-      
-      // Print the instruction...
-      Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 6, "%8s ",
-            static_cast<const char*>(inst_set.GetName(memory[adj_inst_ptr])));
-      
-      Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 15,
-            "                    ");
-      
-      // Only list the "Cpy" flag or the "Inj" flag...
-      if (memory.FlagCopied(adj_inst_ptr)) {
-        Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 16, "Cpy");
-      }
-      if (memory.FlagInjected(adj_inst_ptr)) {
-        Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 16, "Inj");
-      }
-      
-      // Other flags we're interested in...
-      if (memory.FlagMutated(adj_inst_ptr)) {
-        Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 20, "Mut");
-      }
-      if (memory.FlagExecuted(adj_inst_ptr)) {
-        Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 24, "Exe");
-      }
-      if (memory.FlagBreakpoint(adj_inst_ptr)) {
-        Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 28, "Bp");
-      }
-      
-      if (adj_inst_ptr == hardware4Stack.GetHead(nHardware::HEAD_READ, cur_view_thread).GetPosition() &&
-          cur_mem_space == hardware4Stack.GetHead(nHardware::HEAD_READ, cur_view_thread).GetMemSpace()) {
-        Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 31, "R");
-      }
-      if (adj_inst_ptr == hardware4Stack.GetHead(nHardware::HEAD_WRITE, cur_view_thread).GetPosition() &&
-          cur_mem_space == hardware4Stack.GetHead(nHardware::HEAD_WRITE, cur_view_thread).GetMemSpace()) {
-        Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 32, "W");
-      }
-      if (adj_inst_ptr == hardware4Stack.GetHead(nHardware::HEAD_FLOW, cur_view_thread).GetPosition() &&
-          cur_mem_space == hardware4Stack.GetHead(nHardware::HEAD_FLOW, cur_view_thread).GetMemSpace()) {
-        Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 33, "F");
-      }
-    }
-    SetColor(COLOR_WHITE);
-  }
-  
-  DrawMiniMap();
-}
 
-void cZoomScreen::UpdateCPU_SMT(cHardwareBase & hardware)
+void cZoomScreen::UpdateCPU_SMT(cHardwareBase& hardware)
 {
-  cHardwareSMT& hardware4Stack = (cHardwareSMT&) hardware;
-  
-  if(cur_view_thread>=hardware4Stack.GetNumThreads())
+  if (cur_view_thread >= hardware.GetNumThreads())
   {
-    cur_view_thread=0;
-    cur_mem_space = hardware4Stack.IP(cur_view_thread).GetMemSpace();
+    cur_view_thread = 0;
+#ifdef DEBUG
+    cHeadMultiMem* p_cur_ip = dynamic_cast<cHeadMultiMem*>(&hardware.IP(cur_view_thread));
+    assert(p_cur_ip);
+    cur_mem_space = p_cur_ip->GetMemSpace();
+#else
+    cur_mem_space = static_cast<cHeadMultiMem&>(hardware.IP(cur_view_thread)).GetMemSpace();
+#endif
   }
-  //hardware4Stack.SetThread(cur_view_thread);
-  cHeadMultiMem & cur_ip = hardware4Stack.IP(cur_view_thread);
+
+#ifdef DEBUG
+  cHeadMultiMem* p_cur_ip = dynamic_cast<cHeadMultiMem*>(&hardware.IP(cur_view_thread));
+  assert(p_cur_ip);
+  cHeadMultiMem& cur_ip = *p_cur_ip;
+#else
+  cHeadMultiMem& cur_ip = static_cast<cHeadMultiMem&>(hardware.IP(cur_view_thread));
+#endif
   
   // Place the stacks onto the screen.
   SetBoldColor(COLOR_CYAN);
   for (int i = 0; i < 4; i++) {
-    Print(REG_Y+2 + i, REG_X+6, "%11d", hardware4Stack.GetStack(0, i, cur_view_thread));
+    Print(REG_Y+2 + i, REG_X+6, "%11d", hardware.GetStack(0, i, cur_view_thread));
   }
   
   // Place the active stack onto the screen.
@@ -1151,20 +866,20 @@ void cZoomScreen::UpdateCPU_SMT(cHardwareBase & hardware)
   Print(STACK_Y, STACK_X + 8, "%cX" , 'A' + cur_stack);
   
   //SetBoldColor(COLOR_CYAN);
-  //Print(STACK_Y+2, STACK_X + 2, "%11d", hardware4Stack.GetStack(0, cur_stack));
+  //Print(STACK_Y+2, STACK_X + 2, "%11d", hardware.GetStack(0, cur_stack));
   SetColor(COLOR_CYAN);
   for (int i = 0; i <= 3; i++) {
-    Print(STACK_Y+2 + i, STACK_X+2, "%11d", hardware4Stack.GetStack(i, cur_stack, cur_view_thread));
+    Print(STACK_Y+2 + i, STACK_X+2, "%11d", hardware.GetStack(i, cur_stack, cur_view_thread));
   }
   
   Print(19, 74, "%2d/%2d", cur_view_thread + 1,
-        hardware4Stack.GetNumThreads());
+        hardware.GetNumThreads());
   
   // This line gets the creature that is currently executing. Usually the
   // creature we are viewing, but can also be a different one (if this is a
   // parasite).
   
-  const cCPUMemory & memory = hardware4Stack.GetMemory(cur_mem_space);
+  const cCPUMemory & memory = hardware.GetMemory(cur_mem_space);
   SetBoldColor(COLOR_BLUE);
   Print(MEMORY_Y + 1, MEMORY_X + 8, " Space ");	
   SetColor(COLOR_WHITE);
@@ -1187,7 +902,7 @@ void cZoomScreen::UpdateCPU_SMT(cHardwareBase & hardware)
   int base_inst_ptr = cur_ip.GetPosition();
   if (base_inst_ptr < 0 || parasite_zoom == true) base_inst_ptr = 0;
   
-  const cInstSet & inst_set = hardware4Stack.GetInstSet();
+  const cInstSet & inst_set = hardware.GetInstSet();
   
   // Determine the center (must be between 0 and size - 1)
   int center_pos = (base_inst_ptr + memory_offset) % memory.GetSize();
@@ -1205,8 +920,7 @@ void cZoomScreen::UpdateCPU_SMT(cHardwareBase & hardware)
       
       // If we are on the instruction about to be executed by the CPU,
       // hilight it...
-      if (adj_inst_ptr == base_inst_ptr && 
-          hardware4Stack.IP(cur_view_thread).GetMemSpace() == cur_mem_space) {
+      if (adj_inst_ptr == base_inst_ptr && cur_ip.GetMemSpace() == cur_mem_space) {
         SetBoldColor(COLOR_WHITE);
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 1, "%3d: ",
               adj_inst_ptr);
@@ -1247,16 +961,16 @@ void cZoomScreen::UpdateCPU_SMT(cHardwareBase & hardware)
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 28, "Bp");
       }
       
-      if (adj_inst_ptr == hardware4Stack.GetHead(nHardware::HEAD_READ, cur_view_thread).GetPosition() &&
-          cur_mem_space == hardware4Stack.GetHead(nHardware::HEAD_READ, cur_view_thread).GetMemSpace()) {
+      if (adj_inst_ptr == hardware.GetHead(nHardware::HEAD_READ, cur_view_thread).GetPosition() &&
+          cur_mem_space == static_cast<cHeadMultiMem&>(hardware.GetHead(nHardware::HEAD_READ, cur_view_thread)).GetMemSpace()) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 31, "R");
       }
-      if (adj_inst_ptr == hardware4Stack.GetHead(nHardware::HEAD_WRITE, cur_view_thread).GetPosition() &&
-          cur_mem_space == hardware4Stack.GetHead(nHardware::HEAD_WRITE, cur_view_thread).GetMemSpace()) {
+      if (adj_inst_ptr == hardware.GetHead(nHardware::HEAD_WRITE, cur_view_thread).GetPosition() &&
+          cur_mem_space == static_cast<cHeadMultiMem&>(hardware.GetHead(nHardware::HEAD_WRITE, cur_view_thread)).GetMemSpace()) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 32, "W");
       }
-      if (adj_inst_ptr == hardware4Stack.GetHead(nHardware::HEAD_FLOW, cur_view_thread).GetPosition() &&
-          cur_mem_space == hardware4Stack.GetHead(nHardware::HEAD_FLOW, cur_view_thread).GetMemSpace()) {
+      if (adj_inst_ptr == hardware.GetHead(nHardware::HEAD_FLOW, cur_view_thread).GetPosition() &&
+          cur_mem_space == static_cast<cHeadMultiMem&>(hardware.GetHead(nHardware::HEAD_FLOW, cur_view_thread)).GetMemSpace()) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 33, "F");
       }
     }
@@ -1338,8 +1052,7 @@ void cZoomScreen::UpdateGenotype()
 void cZoomScreen::EditMemory()
 {
   // Collect all of the needed variables.
-  cHardwareCPU & hardware =
-  (cHardwareCPU &) info.GetActiveCell()->GetOrganism()->GetHardware();
+  cHardwareBase& hardware = info.GetActiveCell()->GetOrganism()->GetHardware();
   const cInstSet & inst_set = hardware.GetInstSet();
   cHeadCPU edit_head( hardware.IP() );
   if (parasite_zoom == true) {
@@ -1410,7 +1123,7 @@ void cZoomScreen::EditMemory()
 void cZoomScreen::ViewMemory()
 {
   // Collect all of the needed variables.
-  cHardwareCPU& hardware = (cHardwareCPU&) info.GetActiveCell()->GetOrganism()->GetHardware();
+  cHardwareBase& hardware = info.GetActiveCell()->GetOrganism()->GetHardware();
   cHeadCPU view_head( hardware.IP() );
   if (parasite_zoom == true) {
     view_head.Set(0, &(info.GetActiveCell()->GetOrganism()->GetHardware()) );
@@ -1445,8 +1158,7 @@ void cZoomScreen::ThreadOptions()
     case THREAD_OPTIONS_LOCK:
       if (info.GetThreadLock() != -1) info.SetThreadLock(-1);
       else {
-        cHardwareCPU & hardware =
-        (cHardwareCPU &) info.GetActiveCell()->GetOrganism()->GetHardware();
+        cHardwareBase& hardware = info.GetActiveCell()->GetOrganism()->GetHardware();
         info.SetThreadLock( hardware.GetCurThread() );
       }
         
@@ -1460,14 +1172,13 @@ void cZoomScreen::ThreadOptions()
 
 void cZoomScreen::ViewInstruction()
 {
-  cTextWindow * window = new cTextWindow(10, 40, 7, 20);
+  cTextWindow* window = new cTextWindow(10, 40, 7, 20);
   window->SetBoldColor(COLOR_WHITE);
   window->Box();
   
   // Place the data.
   
-  cHardwareCPU & hardware =
-    (cHardwareCPU &) info.GetActiveCell()->GetOrganism()->GetHardware();
+  cHardwareBase& hardware = info.GetActiveCell()->GetOrganism()->GetHardware();
   cHeadCPU inst_ptr( hardware.IP() );
   if (parasite_zoom == true) {
     inst_ptr.Set(0, &(info.GetActiveCell()->GetOrganism()->GetHardware()) );
@@ -1537,9 +1248,8 @@ void cZoomScreen::ViewInstruction()
 
 void cZoomScreen::ViewRegisters()
 {
-  cTextWindow * window = new cTextWindow(9, 54, 4, 13);
-  cHardwareCPU & hardware =
-    (cHardwareCPU &) info.GetActiveCell()->GetOrganism()->GetHardware();
+  cTextWindow* window = new cTextWindow(9, 54, 4, 13);
+  cHardwareBase& hardware = info.GetActiveCell()->GetOrganism()->GetHardware();
   
   window->SetBoldColor(COLOR_WHITE);
   window->Box();
@@ -1583,9 +1293,19 @@ void cZoomScreen::ViewRegisters()
 
 void cZoomScreen::ViewStack()
 {
-  cTextWindow * window = new cTextWindow(16, 50, 4, 15);
-  cHardwareCPU & hardware =
-    (cHardwareCPU &) info.GetActiveCell()->GetOrganism()->GetHardware();
+  cTextWindow* window = new cTextWindow(16, 50, 4, 15);
+  
+  // @DMB - Warning: This is making an unsafe assumption of hardware type.
+  //                 While this option is not listed on the ZoomScreen for other hardware types,
+  //                 it nonetheless is still possible to press the key to trigger it
+#ifdef DEBUG
+  cHardwareCPU* p_hw = dynamic_cast<cHardwareCPU*>(&info.GetActiveCell()->GetOrganism()->GetHardware());
+  assert(p_hw);
+  cHardwareCPU& hardware = *p_hw;
+#else
+  cHardwareCPU& hardware = static_cast<cHardwareCPU&>(info.GetActiveCell()->GetOrganism()->GetHardware());
+#endif
+  
   
   bool finished = false;
   int active_stack = hardware.GetActiveStack();
@@ -1697,47 +1417,23 @@ cCoords cZoomScreen::GetSectionCoords(int in_section)
       
     case ZOOM_SECTION_REGISTERS:
       if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_ORIGINAL)
-      {
         return cCoords(REG_X, REG_Y);
-      }
-      else if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_4STACK)
-      {
+      else
         return cCoords(REG_X, REG_Y-1);
-      }
-      else if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_SMT)
-      {
-        return cCoords(REG_X, REG_Y-1);
-      }
       break;
       
     case ZOOM_SECTION_STACK:
       if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_ORIGINAL)
-      {
         return cCoords(STACK_X, STACK_Y);
-      }
-      else if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_4STACK)
-      {
+      else
         return cCoords(STACK_X, STACK_Y-1);
-      }
-      else if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_SMT)
-      {
-        return cCoords(STACK_X, STACK_Y-1);
-      }
       break;
       
     case ZOOM_SECTION_INPUTS:
       if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_ORIGINAL)
-      {
         return cCoords(INPUT_X, INPUT_Y);
-      }
-      else if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_4STACK)
-      {
+      else
         return cCoords(INPUT_X, INPUT_Y-1);
-      }
-      else if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_SMT)
-      {
-        return cCoords(INPUT_X, INPUT_Y-1);
-      }
       break;
       
     case ZOOM_SECTION_MAP:
@@ -1748,79 +1444,22 @@ cCoords cZoomScreen::GetSectionCoords(int in_section)
   return cCoords(0,0);
 }
 
-/*
- cString cZoomScreen::GetSectionName(int in_section)
- {
-   switch (in_section) {
-     case ZOOM_SECTION_MEMORY:
-       if(cConfig::GetHardwareType()==HARDWARE_TYPE_CPU_ORIGINAL)
-       {
-         return cString("Memory");
-       }
-       else if(cConfig::GetHardwareType()==HARDWARE_TYPE_CPU_4STACK)
-       {
-         return cString("Memory Space");
-       }
-       break;
-       
-     case ZOOM_SECTION_REGISTERS:
-       if(cConfig::GetHardwareType()==HARDWARE_TYPE_CPU_ORIGINAL)
-       {
-         return cString("Registers:");
-       }
-       else if(cConfig::GetHardwareType()==HARDWARE_TYPE_CPU_4STACK)
-       {
-         return cString("Stacks:");
-       }
-       break;
-       
-     case ZOOM_SECTION_STACK:
-       return cString("Stack ");
-       break;
-       
-     case ZOOM_SECTION_INPUTS:
-       return cString("Inputs:");
-       break;
-       
-     case ZOOM_SECTION_MAP:
-       return cString("Mini-Map");
-       break;
-   }
-   
-   return cString("Unknown!");
- }*/
 
 char* cZoomScreen::GetSectionName(int in_section)
 {
   switch (in_section) {
     case ZOOM_SECTION_MEMORY:
       if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_ORIGINAL)
-      {
         return "Memory";
-      }
-      else if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_4STACK)
-      {
+      else
         return "Memory Space";
-      }
-      else if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_SMT)
-      {
-        return "Memory Space";
-      }
       break;
       
     case ZOOM_SECTION_REGISTERS:
       if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_ORIGINAL)
-      {
         return "Registers:";
-      }
-      else if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_4STACK)
-      {
+      else
         return "Stacks:";
-      }
-      else if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_SMT)
-      {
-        return "Stacks:";
-      }
       break;
       
     case ZOOM_SECTION_STACK:
@@ -1861,6 +1500,8 @@ void cZoomScreen::SetActiveSection(int in_section)
 
 void cZoomScreen::DoInput(int in_char)
 {
+  cHardwareBase& hardware = info.GetActiveCell()->GetOrganism()->GetHardware();
+
   // First do the Mode specific io...
   
   if (mode == ZOOM_MODE_CPU      && DoInputCPU(in_char)) return;
@@ -1869,7 +1510,7 @@ void cZoomScreen::DoInput(int in_char)
   
   int num_threads = 0;
   if (info.GetActiveCell()->GetOrganism() != NULL) {
-    num_threads = info.GetActiveCell()->GetOrganism()->GetHardware().GetNumThreads();
+    num_threads = hardware.GetNumThreads();
   }
   switch(in_char) {
     case 't':
@@ -1878,17 +1519,15 @@ void cZoomScreen::DoInput(int in_char)
       {
         memory_offset=0;
         ++cur_view_thread%=num_threads;
-        if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_4STACK)
+        if(info.GetConfig().HARDWARE_TYPE.Get() != HARDWARE_TYPE_CPU_ORIGINAL)
         {
-          cHardware4Stack & hardware4Stack = 
-          (cHardware4Stack &) info.GetActiveCell()->GetOrganism()->GetHardware();
-          cur_mem_space=hardware4Stack.IP(cur_view_thread).GetMemSpace();
-        }
-        else if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_SMT)
-        {
-          cHardwareSMT & hardwareSMT = 
-          (cHardwareSMT&) info.GetActiveCell()->GetOrganism()->GetHardware();
-          cur_mem_space=hardwareSMT.IP(cur_view_thread).GetMemSpace();
+#ifdef DEBUG
+          cHeadMultiMem* p_cur_ip = dynamic_cast<cHeadMultiMem*>(&hardware.IP(cur_view_thread));
+          assert(p_cur_ip);
+          cur_mem_space = p_cur_ip->GetMemSpace();
+#else
+          cur_mem_space = static_cast<cHeadMultiMem&>(hardware.IP(cur_view_thread)).GetMemSpace();
+#endif
         }
         Update();
       }
@@ -1969,12 +1608,7 @@ bool cZoomScreen::DoInputCPU(int in_char)
         }
       }
       else if (active_section == ZOOM_SECTION_MEMORY) {
-        if(info.GetConfig().HARDWARE_TYPE.Get() == HARDWARE_TYPE_CPU_4STACK)
-        {
-          cur_mem_space++;
-          cur_mem_space %= nHardware4Stack::NUM_MEMORY_SPACES;
-        }
-        else if(info.GetConfig().HARDWARE_TYPE.Get() == HARDWARE_TYPE_CPU_SMT)
+        if(info.GetConfig().HARDWARE_TYPE.Get() != HARDWARE_TYPE_CPU_ORIGINAL)
         {
           cur_mem_space++;
           // @DMB - Should handle the extensibility of SMT Memory Spaces
@@ -1994,11 +1628,7 @@ bool cZoomScreen::DoInputCPU(int in_char)
         }
       }
       else if (active_section == ZOOM_SECTION_MEMORY) {
-        if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_4STACK) {
-          cur_mem_space--;
-          if (cur_mem_space < 0) cur_mem_space = nHardware4Stack::NUM_MEMORY_SPACES - 1;
-        }
-        else if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_SMT) {
+        if(info.GetConfig().HARDWARE_TYPE.Get() != HARDWARE_TYPE_CPU_ORIGINAL) {
           cur_mem_space--;
           // @DMB - Should handle the extensibility of SMT Memory Spaces
           if (cur_mem_space < 0) cur_mem_space = 0;
@@ -2008,10 +1638,7 @@ bool cZoomScreen::DoInputCPU(int in_char)
       break;
     case 'K':
     case 'k':
-      if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_4STACK) {
-        ++cur_stack%=4;
-      }
-      else if(info.GetConfig().HARDWARE_TYPE.Get()==HARDWARE_TYPE_CPU_SMT) {
+      if(info.GetConfig().HARDWARE_TYPE.Get() != HARDWARE_TYPE_CPU_ORIGINAL) {
         ++cur_stack%=4;
       }
       Update();

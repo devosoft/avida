@@ -14,6 +14,7 @@
 #include "cHardwareBase.h"
 #include "cInstSet.h"
 #include "cInstruction.h"
+#include "cStringUtil.h"
 
 #include <assert.h>
 
@@ -241,3 +242,7 @@ bool cHeadMultiMem::InMemory() const
   return (position >= 0 && position < GetMemory().GetSize());
 }
 
+cString cHeadMultiMem::GetPositionString() const
+{
+  return cStringUtil::Stringf("(%2d, %2d)", mem_space, position);
+}

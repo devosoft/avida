@@ -61,6 +61,8 @@ public:
   bool operator==(const cHeadMultiMem& in_cpu_head) const; 
   bool AtEnd() const;
   bool InMemory() const;
+  
+  cString GetPositionString() const;
 };
 
 

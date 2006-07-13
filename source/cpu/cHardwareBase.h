@@ -85,6 +85,7 @@ public:
   
   // --------  Stack Manipulation...  --------
   virtual int GetStack(int depth = 0, int stack_id = -1, int in_thread = -1) const = 0;
+  virtual int GetNumStacks() const = 0;
   
   
   // --------  Head Manipulation (including IP)  --------
@@ -114,6 +115,7 @@ public:
   // --------  Register Manipulation  --------
   virtual const int GetRegister(int reg_id) const = 0;
   virtual int& GetRegister(int reg_id) = 0;
+  virtual int GetNumRegisters() const = 0;
   
   
   // --------  Thread Manipulation  --------

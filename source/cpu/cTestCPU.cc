@@ -116,17 +116,8 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
   organism.GetHardware().SetTrace(NULL);
 
   // Print out some final info in trace...
-  if (tracer != NULL) {
-    if (cHardwareTracer_TestCPU* tracer_test_cpu = dynamic_cast<cHardwareTracer_TestCPU*>(tracer)) {
-      tracer_test_cpu->TraceHardware_TestCPU(
-        time_used,
-        time_allocated,
-        organism.GetHardware().GetMemory().GetSize(),
-        organism.GetHardware().GetMemory().AsString(),
-        organism.ChildGenome().AsString()
-      );
-    }
-  }
+  if (tracer != NULL) tracer->TraceTestCPU(time_used, time_allocated, organism.GetHardware().GetMemory().GetSize(),
+                                           organism.GetHardware().GetMemory().AsString(), organism.ChildGenome().AsString());
 
   // For now, always return true.
   return true;

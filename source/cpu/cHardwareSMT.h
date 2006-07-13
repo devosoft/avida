@@ -205,6 +205,7 @@ public:
 	
   // --------  Stack Manipulation...  --------
   inline int GetStack(int depth=0, int stack_id=-1, int in_thread=-1) const;
+  inline int GetNumStacks() const { return NUM_STACKS; }
 	
 
   // --------  Head Manipulation (including IP)  --------
@@ -234,6 +235,7 @@ public:
   // --------  Register Manipulation  --------
   const int GetRegister(int reg_id) const { return Stack(reg_id).Peek(); }
   int& GetRegister(int reg_id) { return Stack(reg_id).Peek(); }
+  int GetNumRegisters() const { return NUM_STACKS; }
   
   
   // --------  Thread Manipulation  --------
@@ -381,8 +383,8 @@ inline const cCPUStack& cHardwareSMT::Stack(int stack_id) const
 
 inline cCPUStack& cHardwareSMT::Stack(int stack_id, int in_thread) 
 {
-  if(stack_id >= NUM_STACKS) stack_id = 0;
-  if(in_thread >= m_threads.GetSize()) in_thread = m_cur_thread;
+  if(stack_id >= NUM_STACKS || stack_id < 0) stack_id = 0;
+  if(in_thread >= m_threads.GetSize() || in_thread < 0) in_thread = m_cur_thread;
 	
   if(stack_id < NUM_LOCAL_STACKS)
     return m_threads[in_thread].local_stacks[stack_id];
@@ -392,8 +394,8 @@ inline cCPUStack& cHardwareSMT::Stack(int stack_id, int in_thread)
 
 inline const cCPUStack& cHardwareSMT::Stack(int stack_id, int in_thread) const 
 {
-  if(stack_id >= NUM_STACKS) stack_id = 0;
-  if(in_thread >= m_threads.GetSize()) in_thread = m_cur_thread;
+  if(stack_id >= NUM_STACKS || stack_id < 0) stack_id = 0;
+  if(in_thread >= m_threads.GetSize() || in_thread < 0) in_thread = m_cur_thread;
 	
   if(stack_id < NUM_LOCAL_STACKS)
     return m_threads[in_thread].local_stacks[stack_id];

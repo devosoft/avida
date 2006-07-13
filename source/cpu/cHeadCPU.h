@@ -24,6 +24,7 @@ class cCodeLabel;
 class cCPUMemory;
 class cGenome;
 class cInstruction;
+class cString;
 
 class cHeadCPU
 {
@@ -122,6 +123,8 @@ public:
 
   // Test functions...
   int TestParasite() const;
+  
+  virtual cString GetPositionString() const;
 };
 
 

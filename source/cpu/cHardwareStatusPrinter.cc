@@ -10,84 +10,32 @@
 
 #include "cHardwareStatusPrinter.h"
 
-#include "cHeadCPU.h"
-#include "cHardware4Stack.h"
 #include "cHardwareBase.h"
-#include "cHardwareCPU.h"
-#include "cHardwareSMT.h"
+#include "cHeadCPU.h"
 #include "cInstSet.h"
 #include "cOrganism.h"
 #include "cString.h"
 #include "cStringUtil.h"
 
-cString cHardwareStatusPrinter::Bonus(const cString &next_name)
+void cHardwareStatusPrinter::TraceHardware(cHardwareBase& hardware, bool bonus)
 {
-  return cStringUtil::Stringf("%s (bonus instruction)", static_cast<const char*>(next_name));
+  cString next_name(hardware.GetInstSet().GetName(hardware.IP().GetInst()));
+  if (bonus) next_name = cStringUtil::Stringf("%s (bonus instruction)", static_cast<const char*>(next_name));
+
+  cOrganism* organism = hardware.GetOrganism();
+  if (organism) organism->PrintStatus(m_trace_fp, next_name);
 }
 
-void cHardwareStatusPrinter::PrintStatus(cHardwareBase& hardware, const cString& next_name)
-{
-  cOrganism *organism = hardware.GetOrganism();
-  if(organism) organism->PrintStatus(m_trace_fp, next_name);
-}
-
-// CPU
-const cString& cHardwareStatusPrinter::GetNextInstName(cHardwareCPU& hardware)
-{
-  return hardware.GetInstSet().GetName(hardware.IP().GetInst());
-}
-void cHardwareStatusPrinter::TraceHardware_CPU(cHardwareCPU &hardware)
-{
-  PrintStatus(hardware, GetNextInstName(hardware));
-}
-void cHardwareStatusPrinter::TraceHardware_CPUBonus(cHardwareCPU &hardware)
-{
-  PrintStatus(hardware, Bonus(GetNextInstName(hardware)));
-}
-
-// 4Stack
-const cString& cHardwareStatusPrinter::GetNextInstName(cHardware4Stack& hardware)
-{
-  return hardware.GetInstSet().GetName(hardware.IP().GetInst());
-}
-void cHardwareStatusPrinter::TraceHardware_4Stack(cHardware4Stack &hardware)
-{
-  PrintStatus(hardware, GetNextInstName(hardware));
-}
-void cHardwareStatusPrinter::TraceHardware_4StackBonus(cHardware4Stack &hardware)
-{
-  PrintStatus(hardware, Bonus(GetNextInstName(hardware)));
-}
-
-// SMT
-const cString& cHardwareStatusPrinter::GetNextInstName(cHardwareSMT& hardware)
-{
-  return hardware.GetInstSet().GetName(hardware.IP().GetInst());
-}
-void cHardwareStatusPrinter::TraceHardware_SMT(cHardwareSMT &hardware)
-{
-  PrintStatus(hardware, GetNextInstName(hardware));
-}
-void cHardwareStatusPrinter::TraceHardware_SMTBonus(cHardwareSMT &hardware)
-{
-  PrintStatus(hardware, Bonus(GetNextInstName(hardware)));
-}
-
-void cHardwareStatusPrinter::TraceHardware_TestCPU(
-  int time_used,
-  int time_allocated,
-  int size,
-  const cString &final_memory,
-  const cString &child_memory
-)
+void cHardwareStatusPrinter::TraceTestCPU(int time_used, int time_allocated, int size, 
+                                          const cString& final_memory, const cString& child_memory)
 {
   if (time_used == time_allocated) {
     m_trace_fp << endl << "# TIMEOUT: No offspring produced." << endl;
   } else if (size == 0) {
     m_trace_fp << endl << "# ORGANISM DEATH: No offspring produced." << endl;
   } else {
-    m_trace_fp
-    << endl << "# Final Memory: " << final_memory
-    << endl << "# Child Memory: " << child_memory << endl;
+    m_trace_fp << endl;
+    m_trace_fp << "# Final Memory: " << final_memory << endl;
+    m_trace_fp << "# Child Memory: " << child_memory << endl;
   }
 }

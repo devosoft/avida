@@ -18,7 +18,6 @@
 #include "cInstSet.h"
 #include "cHardwareManager.h"
 #include "cHardwareTracer.h"
-#include "cHardwareTracer_4Stack.h"
 #include "cMutation.h"
 #include "cMutationLib.h"
 #include "nMutation.h"
@@ -337,13 +336,7 @@ void cHardware4Stack::SingleProcess(cAvidaContext& ctx)
 #endif
     
     // Print the status of this CPU at each step...
-    if (m_tracer != NULL) {
-      if (cHardwareTracer_4Stack * tracer
-          = dynamic_cast<cHardwareTracer_4Stack *>(m_tracer)
-          ){
-        tracer->TraceHardware_4Stack(*this);
-      }
-    }
+    if (m_tracer != NULL) m_tracer->TraceHardware(*this);
     
     // Find the instruction to be executed
     const cInstruction& cur_inst = IP().GetInst();
@@ -448,15 +441,7 @@ void cHardware4Stack::ProcessBonusInst(cAvidaContext& ctx, const cInstruction & 
   bool prev_run_state = organism->GetIsRunning();
   organism->SetRunning(true);
   
-  // @CAO FIX PRINTING TO INDICATE THIS IS A BONUS
-  // Print the status of this CPU at each step...
-  if (m_tracer != NULL) {
-    if (cHardwareTracer_4Stack * tracer
-        = dynamic_cast<cHardwareTracer_4Stack *>(m_tracer)
-        ){
-      tracer->TraceHardware_4StackBonus(*this);
-    }
-  }
+  if (m_tracer != NULL) m_tracer->TraceHardware(*this, true);
   
   SingleProcess_ExecuteInst(ctx, inst);
   

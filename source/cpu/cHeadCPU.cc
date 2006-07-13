@@ -16,6 +16,7 @@
 #include "cHardwareBase.h"
 #include "cInstSet.h"
 #include "cInstruction.h"
+#include "cStringUtil.h"
 
 #include <assert.h>
 
@@ -506,4 +507,9 @@ int cHeadCPU::TestParasite() const
 {
   // If CPU has a head in another creature, mark it as a parasite.
   return (cur_hardware != main_hardware);
+}
+
+cString cHeadCPU::GetPositionString() const
+{
+  return cStringUtil::Stringf("%2d", position);
 }

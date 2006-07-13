@@ -2248,29 +2248,7 @@
 		700E2B7F085DE50C00CF158A /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_AUTO_VECTORIZATION = YES;
-				GCC_DEBUGGING_SYMBOLS = full;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_FAST_MATH = YES;
-				GCC_MODEL_CPU = G4;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					DEBUG,
-					REVISION_SUPPORT,
-				);
-				GCC_UNROLL_LOOPS = YES;
-				HEADER_SEARCH_PATHS = source/event/;
-				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)/work";
-				LIBRARY_SEARCH_PATHS = "";
 				PRODUCT_NAME = "avida-viewer";
-				SKIP_INSTALL = YES;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				ZERO_LINK = YES;
 			};
 			name = Development;
 		};

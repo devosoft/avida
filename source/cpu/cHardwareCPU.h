@@ -169,6 +169,7 @@ public:
 
   // --------  Stack Manipulation...  --------
   inline int GetStack(int depth=0, int stack_id=-1, int in_thread=-1) const;
+  inline int GetNumStacks() const { return 2; }
 
 
   // --------  Head Manipulation (including IP)  --------
@@ -198,6 +199,7 @@ public:
   // --------  Register Manipulation  --------
   const int GetRegister(int reg_id) const { return threads[cur_thread].reg[reg_id]; }
   int& GetRegister(int reg_id) { return threads[cur_thread].reg[reg_id]; }
+  int GetNumRegisters() const { return nHardwareCPU::NUM_REGISTERS; }
 
   
   // --------  Thread Manipulation  --------
@@ -494,12 +496,13 @@ inline void cHardwareCPU::StackFlip()
 
 inline int cHardwareCPU::GetStack(int depth, int stack_id, int in_thread) const
 {
-  // @DMB - warning: cHardwareCPU::GetStack ignores in_thread
   int value = 0;
 
-  if (stack_id == -1) stack_id = threads[cur_thread].cur_stack;
+  if(in_thread >= threads.GetSize() || in_thread < 0) in_thread = cur_thread;
 
-  if (stack_id == 0) value = threads[cur_thread].stack.Get(depth);
+  if (stack_id == -1) stack_id = threads[in_thread].cur_stack;
+
+  if (stack_id == 0) value = threads[in_thread].stack.Get(depth);
   else if (stack_id == 1) value = global_stack.Get(depth);
 
   return value;

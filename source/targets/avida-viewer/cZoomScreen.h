@@ -81,17 +81,14 @@ private:
 
 private:
   void DrawCPU_Original();
-  void DrawCPU_4Stack();
   void DrawCPU_SMT();
   void DrawStats();
   void DrawGenotype();
   void UpdateCPU(cHardwareBase & hardware);
   void UpdateCPU_Original(cHardwareBase & hardware);
-  void UpdateCPU_4Stack(cHardwareBase & hardware);
   void UpdateCPU_SMT(cHardwareBase & hardware);
   void UpdateStats(cHardwareBase & hardware);
   void UpdateStats_CPU(cHardwareBase & hardware);
-  void UpdateStats_4Stack(cHardwareBase & hardware);
   void UpdateStats_SMT(cHardwareBase & hardware);
   void UpdateGenotype();
 
