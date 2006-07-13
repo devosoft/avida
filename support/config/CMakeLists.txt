@@ -1,16 +1,14 @@
-SUBDIRS(preset_organisms)
-
 INSTALL_FILES(/work FILES
   analyze.cfg
-  avida-smt.cfg
   avida.cfg
   environment.cfg
   events.cfg
-  inst_set.default
-  inst_set.sex
-  inst_set.smt
-  organism.default
-  organism.sex
-  organism.smt
-  organism.smtx
+  instset-classic.cfg
+  instset-sex-classic.cfg
+  instset-smt.cfg
+  instset-transsmt.cfg
+  default-classic.org
+  default-sex-classic.org
+  default-smt.org
+  default-transsmt.org
 )

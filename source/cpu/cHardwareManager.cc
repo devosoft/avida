@@ -11,6 +11,7 @@
 
 #include "cHardwareCPU.h"
 #include "cHardwareSMT.h"
+#include "cHardwareTransSMT.h"
 #include "cInitFile.h"
 #include "cInstLibCPU.h"
 #include "cInstSet.h"
@@ -35,17 +36,20 @@ void cHardwareManager::LoadInstSet(cString filename)
 			default_filename = cHardwareCPU::GetDefaultInstFilename();
 			break;
 		case HARDWARE_TYPE_CPU_SMT:
-		case HARDWARE_TYPE_CPU_OLDSMT:
       m_inst_set.SetInstLib(cHardwareSMT::GetInstLib());
 			default_filename = cHardwareSMT::GetDefaultInstFilename();
-			break;		
+			break;
+		case HARDWARE_TYPE_CPU_TRANSSMT:
+      m_inst_set.SetInstLib(cHardwareTransSMT::GetInstLib());
+			default_filename = cHardwareTransSMT::GetDefaultInstFilename();
+			break;
 		default:
 			default_filename = "unknown";
   }
   
-  if (filename == "") {
+  if (filename == "" || filename == "-") {
     filename = default_filename;
-    m_world->GetDriver().NotifyWarning(cString("No instruction set specified, using default '") + filename + "'.");
+    m_world->GetDriver().NotifyComment(cString("Using default instruction set: ") + filename);
   }
   
   cInitFile file(filename);
@@ -112,8 +116,9 @@ cHardwareBase* cHardwareManager::Create(cOrganism* in_org)
     case HARDWARE_TYPE_CPU_ORIGINAL:
       return new cHardwareCPU(m_world, in_org, &m_inst_set);
     case HARDWARE_TYPE_CPU_SMT:
-    case HARDWARE_TYPE_CPU_OLDSMT:
       return new cHardwareSMT(m_world, in_org, &m_inst_set);
+    case HARDWARE_TYPE_CPU_TRANSSMT:
+      return new cHardwareTransSMT(m_world, in_org, &m_inst_set);
     default:
       return NULL;
   }

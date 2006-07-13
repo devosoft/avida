@@ -24,9 +24,9 @@ CONFIGURE_FILE(${EventFileTemplate} ${EventFile} IMMEDIATE)
 SET(ConfigDir "${AVIDA_BINARY_DIR}/work")
 # Configure files (other than the event file, generated above).
 SET(GenesisFile "${ConfigDir}/avida.cfg")
-SET(InstSetFile "${ConfigDir}/inst_set.default")
+SET(InstSetFile "${ConfigDir}/instset-classic.cfg")
 SET(EnvironmentFile "${ConfigDir}/environment.cfg")
-SET(StartCreatureFile "${ConfigDir}/organism.default")
+SET(StartCreatureFile "${ConfigDir}/default-classic.org")
 # Command-line arguments passed to Avida.
 SET(AvidaArgs "-c ${GenesisFile} -seed %d -set WORLD_X 40 -set WORLD_Y 40 -set INST_SET ${InstSetFile} -set EVENT_FILE ${EventFile} -set ENVIRONMENT_FILE ${EnvironmentFile} -set START_CREATURE ${StartCreatureFile} -set DATA_DIR .")
 

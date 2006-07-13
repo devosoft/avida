@@ -1,14 +1,14 @@
 /*
- *  cHardwareSMT.h
+ *  cHardwareTransSMT.h
  *  Avida
  *
- *  Created by David on 6/4/05.
+ *  Created by David on 7/13/06.
  *  Copyright 2005-2006 Michigan State University. All rights reserved.
  *
  */
 
-#ifndef cHardwareSMT_h
-#define cHardwareSMT_h
+#ifndef cHardwareTransSMT_h
+#define cHardwareTransSMT_h
 
 #ifndef defs_h
 #include "defs.h"
@@ -43,10 +43,10 @@
 #endif
 
 
-class cHardwareSMT : public cHardwareBase
+class cHardwareTransSMT : public cHardwareBase
 {
 public:
-  typedef bool (cHardwareSMT::*tMethod)(cAvidaContext& ctx);
+  typedef bool (cHardwareTransSMT::*tMethod)(cAvidaContext& ctx);
 
 protected:
   // --------  Structure Constants  --------
@@ -88,8 +88,8 @@ protected:
   };
   
   // --------  Static Variables  --------
-  static tInstLib<cHardwareSMT::tMethod>* s_inst_slib;
-  static tInstLib<cHardwareSMT::tMethod>* initInstLib(void);
+  static tInstLib<cHardwareTransSMT::tMethod>* s_inst_slib;
+  static tInstLib<cHardwareTransSMT::tMethod>* initInstLib(void);
     
 
   // --------  Member Variables  --------
@@ -184,14 +184,14 @@ protected:
 	
   inline int NormalizeMemSpace(int mem_space) const;
 
-  cHardwareSMT(const cHardwareSMT&); // @not_implemented
-  cHardwareSMT& operator=(const cHardwareSMT&); // @not_implemented
+  cHardwareTransSMT(const cHardwareTransSMT&); // @not_implemented
+  cHardwareTransSMT& operator=(const cHardwareTransSMT&); // @not_implemented
   
 public:
-  cHardwareSMT(cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
-  ~cHardwareSMT() { ; }
+  cHardwareTransSMT(cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
+  ~cHardwareTransSMT() { ; }
   static cInstLibBase* GetInstLib() { return s_inst_slib; }
-  static cString GetDefaultInstFilename() { return "instset-smt.cfg"; }
+  static cString GetDefaultInstFilename() { return "instset-transsmt.cfg"; }
 	
   void Reset();
   void SingleProcess(cAvidaContext& ctx);
@@ -309,7 +309,7 @@ private:
 
 
 #ifdef ENABLE_UNIT_TESTS
-namespace nHardwareSMT {
+namespace nHardwareTransSMT {
   /**
    * Run unit tests
    *
@@ -320,12 +320,12 @@ namespace nHardwareSMT {
 #endif  
 
 
-inline bool cHardwareSMT::ThreadKill(const cCodeLabel& in_label)
+inline bool cHardwareTransSMT::ThreadKill(const cCodeLabel& in_label)
 {
   return ThreadKill(FindThreadLabel(in_label));
 }
 
-inline bool cHardwareSMT::ThreadSelect(const int thread_id)
+inline bool cHardwareTransSMT::ThreadSelect(const int thread_id)
 {
   if (thread_id >= 0 && thread_id < m_threads.GetSize()) {
     m_cur_thread = thread_id;
@@ -335,25 +335,25 @@ inline bool cHardwareSMT::ThreadSelect(const int thread_id)
   return false;
 }
 
-inline bool cHardwareSMT::ThreadSelect(const cCodeLabel& in_label)
+inline bool cHardwareTransSMT::ThreadSelect(const cCodeLabel& in_label)
 {
   return ThreadSelect(FindThreadLabel(in_label));
 }
 
-inline void cHardwareSMT::ThreadNext()
+inline void cHardwareTransSMT::ThreadNext()
 {
   m_cur_thread++;
   if (m_cur_thread >= GetNumThreads()) m_cur_thread = 0;
 }
 
-inline void cHardwareSMT::ThreadPrev()
+inline void cHardwareTransSMT::ThreadPrev()
 {
   if (m_cur_thread == 0) m_cur_thread = GetNumThreads() - 1;
   else m_cur_thread--;
 }
 
 
-inline int cHardwareSMT::GetStack(int depth, int stack_id, int in_thread) const
+inline int cHardwareTransSMT::GetStack(int depth, int stack_id, int in_thread) const
 {
   if(stack_id<0 || stack_id > NUM_STACKS) stack_id=0;
   
@@ -363,7 +363,7 @@ inline int cHardwareSMT::GetStack(int depth, int stack_id, int in_thread) const
   return Stack(stack_id, in_thread).Get(depth);
 }
 
-inline cCPUStack& cHardwareSMT::Stack(int stack_id)
+inline cCPUStack& cHardwareTransSMT::Stack(int stack_id)
 {
   if(stack_id >= NUM_STACKS) stack_id = 0;
   if(stack_id < NUM_LOCAL_STACKS)
@@ -372,7 +372,7 @@ inline cCPUStack& cHardwareSMT::Stack(int stack_id)
     return m_global_stacks[stack_id % NUM_LOCAL_STACKS];
 }
 
-inline const cCPUStack& cHardwareSMT::Stack(int stack_id) const 
+inline const cCPUStack& cHardwareTransSMT::Stack(int stack_id) const 
 {
   if(stack_id >= NUM_STACKS) stack_id = 0;
   if(stack_id < NUM_LOCAL_STACKS)
@@ -381,7 +381,7 @@ inline const cCPUStack& cHardwareSMT::Stack(int stack_id) const
     return m_global_stacks[stack_id % NUM_LOCAL_STACKS];
 }
 
-inline cCPUStack& cHardwareSMT::Stack(int stack_id, int in_thread) 
+inline cCPUStack& cHardwareTransSMT::Stack(int stack_id, int in_thread) 
 {
   if(stack_id >= NUM_STACKS || stack_id < 0) stack_id = 0;
   if(in_thread >= m_threads.GetSize() || in_thread < 0) in_thread = m_cur_thread;
@@ -392,7 +392,7 @@ inline cCPUStack& cHardwareSMT::Stack(int stack_id, int in_thread)
     return m_global_stacks[stack_id % NUM_LOCAL_STACKS];
 }
 
-inline const cCPUStack& cHardwareSMT::Stack(int stack_id, int in_thread) const 
+inline const cCPUStack& cHardwareTransSMT::Stack(int stack_id, int in_thread) const 
 {
   if(stack_id >= NUM_STACKS || stack_id < 0) stack_id = 0;
   if(in_thread >= m_threads.GetSize() || in_thread < 0) in_thread = m_cur_thread;
@@ -403,21 +403,21 @@ inline const cCPUStack& cHardwareSMT::Stack(int stack_id, int in_thread) const
     return m_global_stacks[stack_id % NUM_LOCAL_STACKS];
 }
 
-inline int cHardwareSMT::NormalizeMemSpace(int mem_space) const
+inline int cHardwareTransSMT::NormalizeMemSpace(int mem_space) const
 {
   if(mem_space >= m_mem_array.GetSize())
     mem_space %= m_mem_array.GetSize();
   return mem_space;
 }
 
-inline bool cHardwareSMT::MemorySpaceExists(const cCodeLabel& label)
+inline bool cHardwareTransSMT::MemorySpaceExists(const cCodeLabel& label)
 {
   int null;
   if (label.GetSize() == 0 || m_mem_lbls.Find(label.AsInt(NUM_NOPS), null)) return true;
   return false;
 }
 
-inline int cHardwareSMT::FindThreadLabel(const cCodeLabel& label)
+inline int cHardwareTransSMT::FindThreadLabel(const cCodeLabel& label)
 {
   int thread_id = -1;
   if (label.GetSize() == 0) return 0;

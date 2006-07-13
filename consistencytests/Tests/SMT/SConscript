@@ -9,12 +9,12 @@ Import('avida_exe')
 
 TestsName = 'Default-CPU'
 ConfigDir = e.Dir('$execPrefix')
-GenesisFile = e.File('avida-smt.cfg', ConfigDir)
-InstSetFile = e.File('inst_set.smt', ConfigDir)
+GenesisFile = e.File('avida.cfg', ConfigDir)
+InstSetFile = e.File('instset-transsmt.cfg', ConfigDir)
 EnvironmentFile = e.File('environment.cfg', ConfigDir)
-StartCreatureFile = e.File('organism.smt', ConfigDir)
+StartCreatureFile = e.File('default-transsmt.org', ConfigDir)
 
-AvidaArgs = "-c %(GenesisFile)s -set WORLD_X 40 -set WORLD_Y 40 -set INST_SET %(InstSetFile)s -set ENVIRONMENT_FILE %(EnvironmentFile)s -set START_CREATURE %(StartCreatureFile)s -seed %(Seed)s -set EVENT_FILE %(EventsFile)s -set DATA_DIR %(DataDir)s" % {
+AvidaArgs = "-c %(GenesisFile)s -set HARDWARE_TYPE 2 -set SIZE_MERIT_METHOD 0 -set WORLD_X 40 -set WORLD_Y 40 -set INST_SET %(InstSetFile)s -set ENVIRONMENT_FILE %(EnvironmentFile)s -set START_CREATURE %(StartCreatureFile)s -seed %(Seed)s -set EVENT_FILE %(EventsFile)s -set DATA_DIR %(DataDir)s" % {
   'GenesisFile':GenesisFile.path,
   'InstSetFile':InstSetFile.path,
   'EnvironmentFile':EnvironmentFile.path,

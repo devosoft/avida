@@ -5,11 +5,14 @@ environment.Install('$configPrefix', [
   'environment.cfg',
   'events.cfg',
   'avida.cfg',
-  'avida-smt.cfg',
-  'inst_set.default',
-  'organism.default',
-  'organism.smt',
-  'inst_set.smt',
+  'instset-classic.cfg',
+  'instset-sex-classic.cfg',
+  'instset-smt.cfg',
+  'instset-transsmt.cfg',
+  'default-classic.org',
+  'default-sex-classic.org',
+  'default-smt.org',
+  'default-transsmt.org',
 ] )
 
 # vim: set ft=python:

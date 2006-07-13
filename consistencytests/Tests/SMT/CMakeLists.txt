@@ -23,12 +23,12 @@ CONFIGURE_FILE(${EventFileTemplate} ${EventFile} IMMEDIATE)
 # Where to find default configure files.
 SET(ConfigDir "${AVIDA_BINARY_DIR}/work")
 # Configure files (other than the event file, generated above).
-SET(GenesisFile "${ConfigDir}/avida-smt.cfg")
-SET(InstSetFile "${ConfigDir}/inst_set.smt")
+SET(GenesisFile "${ConfigDir}/avida.cfg")
+SET(InstSetFile "${ConfigDir}/instset-transsmt.cfg")
 SET(EnvironmentFile "${ConfigDir}/environment.cfg")
-SET(StartCreatureFile "${ConfigDir}/organism.smt")
+SET(StartCreatureFile "${ConfigDir}/default-transsmt.org")
 # Command-line arguments passed to Avida.
-SET(AvidaArgs "-c ${GenesisFile} -seed %d -set WORLD_X 40 -set WORLD_Y 40 -set INST_SET ${InstSetFile} -set EVENT_FILE ${EventFile} -set ENVIRONMENT_FILE ${EnvironmentFile} -set START_CREATURE ${StartCreatureFile} -set DATA_DIR .")
+SET(AvidaArgs "-c ${GenesisFile} -seed %d -set HARDWARE_TYPE 2 -set SIZE_MERIT_METHOD 0 -set WORLD_X 40 -set WORLD_Y 40 -set INST_SET ${InstSetFile} -set EVENT_FILE ${EventFile} -set ENVIRONMENT_FILE ${EnvironmentFile} -set START_CREATURE ${StartCreatureFile} -set DATA_DIR .")
 
 #
 # Consistency checks configuration

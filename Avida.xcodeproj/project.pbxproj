@@ -33,17 +33,10 @@
 		702F52AA0992F8F600B2B507 /* cSymbolTable.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702F52A80992F8F600B2B507 /* cSymbolTable.cc */; };
 		702F52E10992FD8000B2B507 /* cScriptObject.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702F52DF0992FD8000B2B507 /* cScriptObject.cc */; };
 		702F532F0993060A00B2B507 /* avida-s in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70DCAD1C097AF7CC002F8733 /* avida-s */; };
-		7039884C09F00CFE0052ACE7 /* avida-smt.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2D409EE8501001AEA89 /* avida-smt.cfg */; };
 		7039884D09F00D020052ACE7 /* analyze.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2D309EE8501001AEA89 /* analyze.cfg */; };
 		7039884E09F00D030052ACE7 /* avida.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2D509EE8501001AEA89 /* avida.cfg */; };
 		7039884F09F00D060052ACE7 /* environment.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2D709EE8501001AEA89 /* environment.cfg */; };
 		7039885009F00D080052ACE7 /* events.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2D809EE8501001AEA89 /* events.cfg */; };
-		7039885109F00D0D0052ACE7 /* inst_set.smt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2DC09EE8501001AEA89 /* inst_set.smt */; };
-		7039885209F00D0D0052ACE7 /* inst_set.sex in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2DB09EE8501001AEA89 /* inst_set.sex */; };
-		7039885309F00D0F0052ACE7 /* inst_set.default in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2DA09EE8501001AEA89 /* inst_set.default */; };
-		7039885409F00D150052ACE7 /* organism.default in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2F609EE8501001AEA89 /* organism.default */; };
-		7039885509F00D190052ACE7 /* organism.sex in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2F709EE8501001AEA89 /* organism.sex */; };
-		7039885609F00D1A0052ACE7 /* organism.smt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2F809EE8501001AEA89 /* organism.smt */; };
 		7040CF1C0906A52E00AA820F /* cEventManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7040CF1A0906A52E00AA820F /* cEventManager.cc */; };
 		7040CF1E0906A52E00AA820F /* cEventManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7040CF1A0906A52E00AA820F /* cEventManager.cc */; };
 		7040D3A6090964D100AA820F /* cMxCodeArray.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865808F4974300FC65FE /* cMxCodeArray.cc */; };
@@ -53,6 +46,17 @@
 		70422A34091B141000A5E67F /* cAnalyze.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70422A1C091B141000A5E67F /* cAnalyze.cc */; };
 		70422A3C091B141000A5E67F /* cAnalyzeGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70422A24091B141000A5E67F /* cAnalyzeGenotype.cc */; };
 		70422A3E091B141000A5E67F /* cAnalyzeUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70422A26091B141000A5E67F /* cAnalyzeUtil.cc */; };
+		7049F2D90A66859700640512 /* cHardwareTransSMT.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7049F2D70A66859300640512 /* cHardwareTransSMT.cc */; };
+		7049F2DA0A66859B00640512 /* cHardwareTransSMT.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7049F2D70A66859300640512 /* cHardwareTransSMT.cc */; };
+		7049F2DB0A66859F00640512 /* cHardwareTransSMT.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7049F2D70A66859300640512 /* cHardwareTransSMT.cc */; };
+		7049F3560A66A8F500640512 /* instset-classic.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F3520A66A8F500640512 /* instset-classic.cfg */; };
+		7049F3570A66A8F500640512 /* instset-sex-classic.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F3530A66A8F500640512 /* instset-sex-classic.cfg */; };
+		7049F3580A66A8F500640512 /* instset-smt.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F3540A66A8F500640512 /* instset-smt.cfg */; };
+		7049F3590A66A8F500640512 /* instset-transsmt.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F3550A66A8F500640512 /* instset-transsmt.cfg */; };
+		7049F3700A66AD7E00640512 /* default-classic.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F36C0A66AD7E00640512 /* default-classic.org */; };
+		7049F3710A66AD7E00640512 /* default-sex-classic.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F36D0A66AD7E00640512 /* default-sex-classic.org */; };
+		7049F3720A66AD7E00640512 /* default-smt.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F36E0A66AD7E00640512 /* default-smt.org */; };
+		7049F3730A66AD7E00640512 /* default-transsmt.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F36F0A66AD7E00640512 /* default-transsmt.org */; };
 		7053324C0929764C006BD186 /* cSpecies.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705332480929764A006BD186 /* cSpecies.cc */; };
 		7053324D0929764E006BD186 /* cSpeciesQueue.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7053324A0929764A006BD186 /* cSpeciesQueue.cc */; };
 		7053336D092A3DF9006BD186 /* cInjectGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70533364092A3DF4006BD186 /* cInjectGenotype.cc */; };
@@ -91,7 +95,6 @@
 		708051BB0A1F66B400CBB8B6 /* cActionLibrary.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708051BA0A1F66B400CBB8B6 /* cActionLibrary.cc */; };
 		708051BC0A1F66B400CBB8B6 /* cActionLibrary.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708051BA0A1F66B400CBB8B6 /* cActionLibrary.cc */; };
 		708051BD0A1F66B400CBB8B6 /* cActionLibrary.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708051BA0A1F66B400CBB8B6 /* cActionLibrary.cc */; };
-		709A09D409F3D3B400F9A4BF /* organism.smtx in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2F909EE8501001AEA89 /* organism.smtx */; };
 		709D924C0A5D950D00D6A163 /* cMutationalNeighborhood.cc in Sources */ = {isa = PBXBuildFile; fileRef = 709D924B0A5D950D00D6A163 /* cMutationalNeighborhood.cc */; };
 		709D924D0A5D950E00D6A163 /* cMutationalNeighborhood.cc in Sources */ = {isa = PBXBuildFile; fileRef = 709D924B0A5D950D00D6A163 /* cMutationalNeighborhood.cc */; };
 		709D924E0A5D950E00D6A163 /* cMutationalNeighborhood.cc in Sources */ = {isa = PBXBuildFile; fileRef = 709D924B0A5D950D00D6A163 /* cMutationalNeighborhood.cc */; };
@@ -394,7 +397,7 @@
 		700E2B6D085DE50C00CF158A /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = Avida.work;
+			dstPath = work;
 			dstSubfolderSpec = 16;
 			files = (
 				700E2B87085DE54400CF158A /* avida-viewer in CopyFiles */,
@@ -404,29 +407,29 @@
 		70486B9508267145009328F0 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = Avida.work;
+			dstPath = work;
 			dstSubfolderSpec = 16;
 			files = (
 				700E2996085A1F6000CF158A /* avida in CopyFiles */,
-				7039884C09F00CFE0052ACE7 /* avida-smt.cfg in CopyFiles */,
 				7039884D09F00D020052ACE7 /* analyze.cfg in CopyFiles */,
 				7039884E09F00D030052ACE7 /* avida.cfg in CopyFiles */,
 				7039884F09F00D060052ACE7 /* environment.cfg in CopyFiles */,
 				7039885009F00D080052ACE7 /* events.cfg in CopyFiles */,
-				7039885109F00D0D0052ACE7 /* inst_set.smt in CopyFiles */,
-				7039885209F00D0D0052ACE7 /* inst_set.sex in CopyFiles */,
-				7039885309F00D0F0052ACE7 /* inst_set.default in CopyFiles */,
-				7039885409F00D150052ACE7 /* organism.default in CopyFiles */,
-				7039885509F00D190052ACE7 /* organism.sex in CopyFiles */,
-				7039885609F00D1A0052ACE7 /* organism.smt in CopyFiles */,
-				709A09D409F3D3B400F9A4BF /* organism.smtx in CopyFiles */,
+				7049F3560A66A8F500640512 /* instset-classic.cfg in CopyFiles */,
+				7049F3570A66A8F500640512 /* instset-sex-classic.cfg in CopyFiles */,
+				7049F3580A66A8F500640512 /* instset-smt.cfg in CopyFiles */,
+				7049F3590A66A8F500640512 /* instset-transsmt.cfg in CopyFiles */,
+				7049F3700A66AD7E00640512 /* default-classic.org in CopyFiles */,
+				7049F3710A66AD7E00640512 /* default-sex-classic.org in CopyFiles */,
+				7049F3720A66AD7E00640512 /* default-smt.org in CopyFiles */,
+				7049F3730A66AD7E00640512 /* default-transsmt.org in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		70DCAD08097AF7CC002F8733 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = Avida.work;
+			dstPath = work;
 			dstSubfolderSpec = 16;
 			files = (
 				702F532F0993060A00B2B507 /* avida-s in CopyFiles */,
@@ -501,6 +504,16 @@
 		70422A26091B141000A5E67F /* cAnalyzeUtil.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeUtil.cc; sourceTree = "<group>"; };
 		70422A27091B141000A5E67F /* cAnalyzeUtil.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAnalyzeUtil.h; sourceTree = "<group>"; };
 		70422A44091B1B8500A5E67F /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		7049F2D70A66859300640512 /* cHardwareTransSMT.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareTransSMT.cc; sourceTree = "<group>"; };
+		7049F2D80A66859300640512 /* cHardwareTransSMT.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareTransSMT.h; sourceTree = "<group>"; };
+		7049F3520A66A8F500640512 /* instset-classic.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "instset-classic.cfg"; sourceTree = "<group>"; };
+		7049F3530A66A8F500640512 /* instset-sex-classic.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "instset-sex-classic.cfg"; sourceTree = "<group>"; };
+		7049F3540A66A8F500640512 /* instset-smt.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "instset-smt.cfg"; sourceTree = "<group>"; };
+		7049F3550A66A8F500640512 /* instset-transsmt.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "instset-transsmt.cfg"; sourceTree = "<group>"; };
+		7049F36C0A66AD7E00640512 /* default-classic.org */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "default-classic.org"; sourceTree = "<group>"; };
+		7049F36D0A66AD7E00640512 /* default-sex-classic.org */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "default-sex-classic.org"; sourceTree = "<group>"; };
+		7049F36E0A66AD7E00640512 /* default-smt.org */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "default-smt.org"; sourceTree = "<group>"; };
+		7049F36F0A66AD7E00640512 /* default-transsmt.org */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "default-transsmt.org"; sourceTree = "<group>"; };
 		705332480929764A006BD186 /* cSpecies.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cSpecies.cc; sourceTree = "<group>"; };
 		705332490929764A006BD186 /* cSpecies.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cSpecies.h; sourceTree = "<group>"; };
 		7053324A0929764A006BD186 /* cSpeciesQueue.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cSpeciesQueue.cc; sourceTree = "<group>"; };
@@ -548,14 +561,10 @@
 		707AF04509EAB529001AEA89 /* LandscapeActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeActions.cc; sourceTree = "<group>"; };
 		707AF0F809EACC5E001AEA89 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		707AF2D309EE8501001AEA89 /* analyze.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = analyze.cfg; sourceTree = "<group>"; };
-		707AF2D409EE8501001AEA89 /* avida-smt.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "avida-smt.cfg"; sourceTree = "<group>"; };
 		707AF2D509EE8501001AEA89 /* avida.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = avida.cfg; sourceTree = "<group>"; };
 		707AF2D609EE8501001AEA89 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		707AF2D709EE8501001AEA89 /* environment.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.cfg; sourceTree = "<group>"; };
 		707AF2D809EE8501001AEA89 /* events.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = events.cfg; sourceTree = "<group>"; };
-		707AF2DA09EE8501001AEA89 /* inst_set.default */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.default; sourceTree = "<group>"; };
-		707AF2DB09EE8501001AEA89 /* inst_set.sex */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.sex; sourceTree = "<group>"; };
-		707AF2DC09EE8501001AEA89 /* inst_set.smt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.smt; sourceTree = "<group>"; };
 		707AF2DE09EE8501001AEA89 /* environment.2paths */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.2paths; sourceTree = "<group>"; };
 		707AF2DF09EE8501001AEA89 /* environment.9resource */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.9resource; sourceTree = "<group>"; };
 		707AF2E009EE8501001AEA89 /* environment.all_logic */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.all_logic; sourceTree = "<group>"; };
@@ -580,13 +589,6 @@
 		707AF2F309EE8501001AEA89 /* organism.infected */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.infected; sourceTree = "<group>"; };
 		707AF2F409EE8501001AEA89 /* organism.infected2 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.infected2; sourceTree = "<group>"; };
 		707AF2F509EE8501001AEA89 /* organism.noheads */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.noheads; sourceTree = "<group>"; };
-		707AF2F609EE8501001AEA89 /* organism.default */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.default; sourceTree = "<group>"; };
-		707AF2F709EE8501001AEA89 /* organism.sex */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.sex; sourceTree = "<group>"; };
-		707AF2F809EE8501001AEA89 /* organism.smt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.smt; sourceTree = "<group>"; };
-		707AF2F909EE8501001AEA89 /* organism.smtx */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.smtx; sourceTree = "<group>"; };
-		707AF2FB09EE8501001AEA89 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		707AF2FC09EE8501001AEA89 /* dummy */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = dummy; sourceTree = "<group>"; };
-		707AF2FE09EE8501001AEA89 /* organism.parasite */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.parasite; sourceTree = "<group>"; };
 		707AF2FF09EE8501001AEA89 /* SConscript */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConscript; sourceTree = "<group>"; };
 		708051A70A1F65FE00CBB8B6 /* SaveLoadActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SaveLoadActions.h; sourceTree = "<group>"; };
 		708051A80A1F65FE00CBB8B6 /* SaveLoadActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SaveLoadActions.cc; sourceTree = "<group>"; };
@@ -1035,21 +1037,20 @@
 		707AF2D209EE8501001AEA89 /* Support */ = {
 			isa = PBXGroup;
 			children = (
+				7049F36C0A66AD7E00640512 /* default-classic.org */,
+				7049F36D0A66AD7E00640512 /* default-sex-classic.org */,
+				7049F36E0A66AD7E00640512 /* default-smt.org */,
+				7049F36F0A66AD7E00640512 /* default-transsmt.org */,
 				707AF2D309EE8501001AEA89 /* analyze.cfg */,
-				707AF2D409EE8501001AEA89 /* avida-smt.cfg */,
 				707AF2D509EE8501001AEA89 /* avida.cfg */,
 				707AF2D609EE8501001AEA89 /* CMakeLists.txt */,
 				707AF2D709EE8501001AEA89 /* environment.cfg */,
 				707AF2D809EE8501001AEA89 /* events.cfg */,
-				707AF2DA09EE8501001AEA89 /* inst_set.default */,
-				707AF2DB09EE8501001AEA89 /* inst_set.sex */,
-				707AF2DC09EE8501001AEA89 /* inst_set.smt */,
+				7049F3520A66A8F500640512 /* instset-classic.cfg */,
+				7049F3530A66A8F500640512 /* instset-sex-classic.cfg */,
+				7049F3540A66A8F500640512 /* instset-smt.cfg */,
+				7049F3550A66A8F500640512 /* instset-transsmt.cfg */,
 				707AF2DD09EE8501001AEA89 /* misc */,
-				707AF2F609EE8501001AEA89 /* organism.default */,
-				707AF2F709EE8501001AEA89 /* organism.sex */,
-				707AF2F809EE8501001AEA89 /* organism.smt */,
-				707AF2F909EE8501001AEA89 /* organism.smtx */,
-				707AF2FA09EE8501001AEA89 /* preset_organisms */,
 				707AF2FF09EE8501001AEA89 /* SConscript */,
 			);
 			name = Support;
@@ -1085,16 +1086,6 @@
 				707AF2F509EE8501001AEA89 /* organism.noheads */,
 			);
 			path = misc;
-			sourceTree = "<group>";
-		};
-		707AF2FA09EE8501001AEA89 /* preset_organisms */ = {
-			isa = PBXGroup;
-			children = (
-				707AF2FB09EE8501001AEA89 /* CMakeLists.txt */,
-				707AF2FC09EE8501001AEA89 /* dummy */,
-				707AF2FE09EE8501001AEA89 /* organism.parasite */,
-			);
-			path = preset_organisms;
 			sourceTree = "<group>";
 		};
 		70DCAC54097AF730002F8733 /* targets */ = {
@@ -1293,6 +1284,8 @@
 		DCC30F7C0762539D008F7A48 /* cpu */ = {
 			isa = PBXGroup;
 			children = (
+				7049F2D70A66859300640512 /* cHardwareTransSMT.cc */,
+				7049F2D80A66859300640512 /* cHardwareTransSMT.h */,
 				70C054F70A4F703D002703C1 /* SConscript */,
 				70C1EF4608C393BA00F50912 /* cCodeLabel.cc */,
 				70C1EF4708C393BA00F50912 /* cCodeLabel.h */,
@@ -1954,6 +1947,7 @@
 				E626209E0A372C2A00C07685 /* SaveLoadActions.cc in Sources */,
 				70C054FA0A4F7053002703C1 /* PopulationActions.cc in Sources */,
 				709D924E0A5D950E00D6A163 /* cMutationalNeighborhood.cc in Sources */,
+				7049F2DB0A66859F00640512 /* cHardwareTransSMT.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2085,6 +2079,7 @@
 				70C054F80A4F704D002703C1 /* PopulationActions.cc in Sources */,
 				70C054F90A4F704E002703C1 /* SaveLoadActions.cc in Sources */,
 				709D924D0A5D950E00D6A163 /* cMutationalNeighborhood.cc in Sources */,
+				7049F2DA0A66859B00640512 /* cHardwareTransSMT.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2197,6 +2192,7 @@
 				708051BB0A1F66B400CBB8B6 /* cActionLibrary.cc in Sources */,
 				70C054ED0A4F6FD2002703C1 /* PopulationActions.cc in Sources */,
 				709D924C0A5D950D00D6A163 /* cMutationalNeighborhood.cc in Sources */,
+				7049F2D90A66859700640512 /* cHardwareTransSMT.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2221,8 +2217,6 @@
 		700E2B80085DE50C00CF158A /* Deployment-G4 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DEAD_CODE_STRIPPING = YES;
 				GCC_ALTIVEC_EXTENSIONS = YES;
 				GCC_AUTO_VECTORIZATION = YES;
 				GCC_DEBUGGING_SYMBOLS = full;
@@ -2233,17 +2227,12 @@
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PREPROCESSOR_DEFINITIONS = REVISION_SUPPORT;
 				GCC_UNROLL_LOOPS = YES;
-				HEADER_SEARCH_PATHS = source/event/;
-				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)/work";
-				LIBRARY_SEARCH_PATHS = "";
 				PRODUCT_NAME = "avida-viewer";
-				SKIP_INSTALL = YES;
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
 				);
-				ZERO_LINK = NO;
 			};
 			name = "Deployment-G4";
 		};
@@ -2413,8 +2402,6 @@
 		70B393DE0944CA6F0018F09D /* Deployment-G5 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DEAD_CODE_STRIPPING = YES;
 				GCC_ALTIVEC_EXTENSIONS = YES;
 				GCC_AUTO_VECTORIZATION = YES;
 				GCC_DEBUGGING_SYMBOLS = full;
@@ -2425,25 +2412,18 @@
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PREPROCESSOR_DEFINITIONS = REVISION_SUPPORT;
 				GCC_UNROLL_LOOPS = YES;
-				HEADER_SEARCH_PATHS = source/event/;
-				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)/work";
-				LIBRARY_SEARCH_PATHS = "";
 				PRODUCT_NAME = "avida-viewer";
-				SKIP_INSTALL = YES;
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
 				);
-				ZERO_LINK = NO;
 			};
 			name = "Deployment-G5";
 		};
 		70B393DF0944CA6F0018F09D /* Profile */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DEAD_CODE_STRIPPING = YES;
 				GCC_ALTIVEC_EXTENSIONS = YES;
 				GCC_AUTO_VECTORIZATION = YES;
 				GCC_DEBUGGING_SYMBOLS = full;
@@ -2454,17 +2434,12 @@
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PREPROCESSOR_DEFINITIONS = REVISION_SUPPORT;
 				GCC_UNROLL_LOOPS = YES;
-				HEADER_SEARCH_PATHS = source/event/;
-				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)/work";
-				LIBRARY_SEARCH_PATHS = "";
 				PRODUCT_NAME = "avida-viewer";
-				SKIP_INSTALL = YES;
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
 				);
-				ZERO_LINK = NO;
 			};
 			name = Profile;
 		};
@@ -2590,8 +2565,6 @@
 		E626209C0A372B9900C07685 /* Deployment-Intel */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DEAD_CODE_STRIPPING = YES;
 				GCC_ALTIVEC_EXTENSIONS = YES;
 				GCC_AUTO_VECTORIZATION = YES;
 				GCC_DEBUGGING_SYMBOLS = full;
@@ -2602,17 +2575,12 @@
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PREPROCESSOR_DEFINITIONS = REVISION_SUPPORT;
 				GCC_UNROLL_LOOPS = YES;
-				HEADER_SEARCH_PATHS = source/event/;
-				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)/work";
-				LIBRARY_SEARCH_PATHS = "";
 				PRODUCT_NAME = "avida-viewer";
-				SKIP_INSTALL = YES;
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
 				);
-				ZERO_LINK = NO;
 			};
 			name = "Deployment-Intel";
 		};

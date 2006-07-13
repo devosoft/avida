@@ -169,11 +169,11 @@ public:
   
   CONFIG_ADD_GROUP(CONFIG_FILE_GROUP, "Configuration Files");
   CONFIG_ADD_VAR(DATA_DIR, cString, "data", "Directory in which config files are found");
-  CONFIG_ADD_VAR(INST_SET, cString, "inst_set.default", "File containing instruction set");
+  CONFIG_ADD_VAR(INST_SET, cString, "-", "File containing instruction set");
   CONFIG_ADD_VAR(EVENT_FILE, cString, "events.cfg", "File containing list of events during run");
   CONFIG_ADD_VAR(ANALYZE_FILE, cString, "analyze.cfg", "File used for analysis mode");
   CONFIG_ADD_VAR(ENVIRONMENT_FILE, cString, "environment.cfg", "File that describes the environment");
-  CONFIG_ADD_VAR(START_CREATURE, cString, "organism.default", "Organism to seed the soup");
+  CONFIG_ADD_VAR(START_CREATURE, cString, "default-classic.org", "Organism to seed the soup");
   
   CONFIG_ADD_GROUP(REPRODUCTION_GROUP, "Birth and Death");
   CONFIG_ADD_VAR(BIRTH_METHOD, int, 4, "0 = Replace random organism in neighborhood\n1 = Replace oldest organism in neighborhood\n2 = Replace largest Age/Merit in neighborhood\n3 = Place only in empty cells in neighborhood\n4 = Replace random from population (Mass Action)\n5 = Replace oldest in entire population (like Tierra)\n6 = Replace random within deme");

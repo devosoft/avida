@@ -154,7 +154,7 @@ public:
   explicit cHardwareCPU(const cHardwareCPU&);
   ~cHardwareCPU();
   static cInstLibCPU* GetInstLib() { return s_inst_slib; }
-  static cString GetDefaultInstFilename() { return "inst_lib.default"; }
+  static cString GetDefaultInstFilename() { return "instset-classic.cfg"; }
 
   void Reset();
   void SingleProcess(cAvidaContext& ctx);
