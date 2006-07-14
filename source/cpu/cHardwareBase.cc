@@ -283,7 +283,7 @@ bool cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)
   } else if (child_fitness <= neut_max) {
     if (ctx.GetRandom().P(organism->GetRevertNeut())) revert = true;
     if (ctx.GetRandom().P(organism->GetSterilizeNeut())) sterilize = true;
-  } else (child_fitness > neut_max){
+  } else {
     if (ctx.GetRandom().P(organism->GetRevertPos())) revert = true;
     if (ctx.GetRandom().P(organism->GetSterilizePos())) sterilize = true;
   }

@@ -55,50 +55,14 @@ help:
 	@echo "... depend"
 	@echo "... install"
 	@echo "... rebuild_cache"
-	@echo "... task_event_gen"
 
 
-TARGETS =  \
-/home/covertar/source/development_52205/bin/task_event_gen
-
-task_event_gen_SRC_OBJS = \
-task_event_gen.o
-
-task_event_gen_EXTERNAL_OBJS = 
-
-task_event_gen_SRC_OBJS_QUOTED = \
-"task_event_gen.o" 
-
-task_event_gen_EXTERNAL_OBJS_QUOTED = 
+TARGETS = 
 
 TARGET_EXTRAS = 
 
-CLEAN_OBJECT_FILES = $(task_event_gen_SRC_OBJS) 
+CLEAN_OBJECT_FILES = 
 
-task_event_gen_DEPEND_LIBS = /home/covertar/source/development_52205/lib/libtools.a /home/covertar/source/development_52205/lib/libarchive.a /home/covertar/source/development_52205/lib/libboost_serialization.a 
-
-/home/covertar/source/development_52205/lib/libarchive.a:
-	cd /home/covertar/source/development_52205/source/archive; $(MAKE) $(MAKESILENT) cmake.depends; $(MAKE) $(MAKESILENT) cmake.check_depends; $(MAKE) $(MAKESILENT) -f cmake.check_depends; $(MAKE) $(MAKESILENT) libarchive.a
-
-/home/covertar/source/development_52205/lib/libboost_serialization.a:
-	cd /home/covertar/source/development_52205/source/third-party/boost/serialization; $(MAKE) $(MAKESILENT) cmake.depends; $(MAKE) $(MAKESILENT) cmake.check_depends; $(MAKE) $(MAKESILENT) -f cmake.check_depends; $(MAKE) $(MAKESILENT) libboost_serialization.a
-
-/home/covertar/source/development_52205/lib/libtools.a:
-	cd /home/covertar/source/development_52205/source/tools; $(MAKE) $(MAKESILENT) cmake.depends; $(MAKE) $(MAKESILENT) cmake.check_depends; $(MAKE) $(MAKESILENT) -f cmake.check_depends; $(MAKE) $(MAKESILENT) libtools.a
-
-#---------------------------------------------------------
-# executable
-#
-
-/home/covertar/source/development_52205/bin/task_event_gen: $(task_event_gen_SRC_OBJS) $(task_event_gen_EXTERNAL_OBJS) $(task_event_gen_DEPEND_LIBS)
-	@echo "Building executable /home/covertar/source/development_52205/bin/task_event_gen..."
-	c++       -fPIC  $(task_event_gen_SRC_OBJS) $(task_event_gen_EXTERNAL_OBJS)   -o /home/covertar/source/development_52205/bin/task_event_gen -rdynamic -L/home/covertar/source/development_52205/lib -L/home/covertar/source/development_52205/source/tools -L/home/covertar/source/development_52205/source/actions -L/home/covertar/source/development_52205/source/analyze -L/home/covertar/source/development_52205/source/archive -L/home/covertar/source/development_52205/source/third-party/boost/serialization -L/home/covertar/source/development_52205/source/cpu -L/home/covertar/source/development_52205/source/drivers -L/home/covertar/source/development_52205/source/event -L/home/covertar/source/development_52205/source/main -ltools -larchive -lboost_serialization 
-
-#---------------------------------------------------------
-# executable
-#
-
-task_event_gen: /home/covertar/source/development_52205/bin/task_event_gen
 
 #---------------------------------------------------------
 # default build rule
@@ -125,7 +89,7 @@ cmake.depends: $(CMAKE_MAKEFILE_SOURCES)
 # dependencies
 #
 
-cmake.check_depends: /home/covertar/source/development_52205/source/utils/task_events/task_event_gen.cc
+cmake.check_depends:
 	@echo "Building dependencies cmake.check_depends..."
 	$(CMAKE_COMMAND) -S$(CMAKE_CURRENT_SOURCE) -O$(CMAKE_CURRENT_BINARY) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 
@@ -184,14 +148,6 @@ edit_cache:
 .PRECIOUS: Makefile cmake.depends
 
 # Rules to build .o files from their sources:
-#---------------------------------------------------------
-# object file
-#
-
-task_event_gen.o: /home/covertar/source/development_52205/source/utils/task_events/task_event_gen.cc
-	@echo "Building object file task_event_gen.o..."
-	c++ -o task_event_gen.o   -O3 $(INCLUDE_FLAGS)  -c /home/covertar/source/development_52205/source/utils/task_events/task_event_gen.cc
-
 ARGS=
 #---------------------------------------------------------
 # tests
