@@ -82,5 +82,17 @@ CONFIGURE_FILE(${GenerateTailsScriptTemplate} ${GenerateTailsScript} IMMEDIATE)
 # to reduce the chance of inadvertently clobbering existing consistency-check suites.
 #
 
+
+# Fast version of test, checking only first seed.
+SET(SeedSet "range(100,101)")
+
+SET(CheckTailsScriptTemplate "${PROJECT_SOURCE_DIR}/CMakeModules/Templates/check_tails.py.in") 
+SET(CheckTailsScript "${CMAKE_CURRENT_BINARY_DIR}/fast_check_tails.py") 
+CONFIGURE_FILE(${CheckTailsScriptTemplate} ${CheckTailsScript} IMMEDIATE)
+
+IF(AVD_CONSISTENCY_TEST_PRIMITIVE)
+  ADD_TEST("Consistency-Check--Fast--${TestsName}" "${_PythonExePath}" "${CheckTailsScript}")
+ENDIF(AVD_CONSISTENCY_TEST_PRIMITIVE)
+
 # Vim modeline to tell Vim that this is a configuration script.
 # vim: set ft=config:

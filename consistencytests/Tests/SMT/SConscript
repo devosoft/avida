@@ -40,5 +40,16 @@ ConsistencyCheck(e, 'Default-SMT',
   avida_args = AvidaArgs,
 )
 
+ConsistencyCheck(e, 'Fast--Default-SMT',
+  run_length = RunLength,
+  seed_set = SeedSet[0:1],
+  run_subdir_path_base = TestDirBase.path,
+  output_file_name = OutputFileName,
+  expectation_file_path_base = TestDirBase.srcnode().path,
+  expectation_file_name = '%s.expected_last_line' % OutputFileName,
+  avida_exe_path = avida_exe[0].path,
+  avida_args = AvidaArgs,
+)
+
 
 # vim: set ft=python:
