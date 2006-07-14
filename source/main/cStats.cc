@@ -141,6 +141,9 @@ void cStats::SetupPrintDatabase()
   data_manager.Add("richness",        "Number of Different Genotypes (Richness)", &cStats::GetNumGenotypes);
   data_manager.Add("eveness",         "Equitability of Genotype Distribution (Evenness)", &cStats::GetEvenness);
   data_manager.Add("coal_depth",      "Depth of Coalescent Genotype", &cStats::GetCoalescentDepth);
+  data_manager.Add("num_resamplings",  "Total Number of resamplings this time step", &cStats::GetResamplings);
+  data_manager.Add("num_failedResamplings",  "Total Number of divide commands that reached the resampling hard-cap this time step", &cStats::GetFailedResamplings);
+
 
   // Dominant Genotype Stats
   data_manager.Add("dom_merit",      "Ave Merit of Dominant Genotype",          &cStats::GetDomMerit);
@@ -382,6 +385,10 @@ void cStats::ProcessUpdate()
   dom_gestation = 0.0;
   dom_fitness = 0.0;
   max_fitness = 0.0;
+
+  num_resamplings = 0;
+  num_failedResamplings = 0;
+
 }
 
 void cStats::RemoveLineage(int id_num, int parent_id, int update_born, double generation_born, int total_CPUs,
@@ -551,16 +558,19 @@ void cStats::PrintStatsData(const cString & filename)
   df.WriteComment( "Generic Statistics Data" );
   df.WriteTimeStamp();
 
-  df.Write( GetUpdate(),        "update" );
-  df.Write( energy,             "average inferiority (energy)");
-  df.Write( 1.0 - ave_fidelity, "ave probability of any mutations in genome" );
-  df.Write( 1.0 - dom_fidelity, "probability of any mutations in dom genome" );
-  df.Write( log_ave_fid,        "log(average fidelity)");
-  df.Write( log_dom_fid,        "log(dominant fidelity)");
-  df.Write( genotype_change,    "change in number of genotypes");
-  df.Write( entropy,            "genotypic entropy");
-  df.Write( species_entropy,    "species entropy");
-  df.Write( coal_depth,         "depth of most reacent coalescence");
+  df.Write( GetUpdate(),          "update" );
+  df.Write( energy,               "average inferiority (energy)");
+  df.Write( 1.0 - ave_fidelity,   "ave probability of any mutations in genome" );
+  df.Write( 1.0 - dom_fidelity,   "probability of any mutations in dom genome" );
+  df.Write( log_ave_fid,          "log(average fidelity)");
+  df.Write( log_dom_fid,          "log(dominant fidelity)");
+  df.Write( genotype_change,      "change in number of genotypes");
+  df.Write( entropy,              "genotypic entropy");
+  df.Write( species_entropy,      "species entropy");
+  df.Write( coal_depth,           "depth of most reacent coalescence");
+  df.Write( num_resamplings,      "Total number of resamplings this generation");
+  df.Write( num_failedResamplings, "Total number of organisms that failed to resample this generation"); 
+
   df.Endl();
 }
 

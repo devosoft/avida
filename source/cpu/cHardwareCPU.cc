@@ -191,6 +191,7 @@ cInstLibCPU *cHardwareCPU::initInstLib(void)
     cInstEntryCPU("if-n-cpy",  &cHardwareCPU::Inst_IfNCpy),
     cInstEntryCPU("allocate",  &cHardwareCPU::Inst_Allocate),
     cInstEntryCPU("divide",    &cHardwareCPU::Inst_Divide),
+    cInstEntryCPU("divideRS",  &cHardwareCPU::Inst_DivideRS),
     cInstEntryCPU("c-alloc",   &cHardwareCPU::Inst_CAlloc),
     cInstEntryCPU("c-divide",  &cHardwareCPU::Inst_CDivide),
     cInstEntryCPU("inject",    &cHardwareCPU::Inst_Inject),
@@ -231,6 +232,8 @@ cInstLibCPU *cHardwareCPU::initInstLib(void)
                   "Allocate maximum allowed space"),
     cInstEntryCPU("h-divide",  &cHardwareCPU::Inst_HeadDivide, true,
                   "Divide code between read and write heads."),
+    cInstEntryCPU("h-divideRS",  &cHardwareCPU::Inst_HeadDivideRS, true,
+                  "Divide code between read and write heads, resample reversions."),
     cInstEntryCPU("h-read",    &cHardwareCPU::Inst_HeadRead),
     cInstEntryCPU("h-write",   &cHardwareCPU::Inst_HeadWrite),
     cInstEntryCPU("h-copy",    &cHardwareCPU::Inst_HeadCopy, true,
@@ -1253,6 +1256,92 @@ bool cHardwareCPU::Divide_Main(cAvidaContext& ctx, const int div_point,
   return true;
 }
 
+/*
+  Almost the same as Divide_Main, but resamples reverted offspring.
+
+  RESAMPLING ONLY WORKS CORRECTLY WHEN ALL MUTIONS OCCUR ON DIVIDE!!
+
+  AWC - 06/29/06
+*/
+bool cHardwareCPU::Divide_MainRS(cAvidaContext& ctx, const int div_point,
+                               const int extra_lines, double mut_multiplier)
+{
+
+  //cStats stats = m_world->GetStats();
+  const int child_size = GetMemory().GetSize() - div_point - extra_lines;
+  
+  // Make sure this divide will produce a viable offspring.
+  const bool viable = Divide_CheckViable(ctx, div_point, child_size);
+  if (viable == false) return false;
+  
+  // Since the divide will now succeed, set up the information to be sent
+  // to the new organism
+  cGenome & child_genome = organism->ChildGenome();
+  child_genome = cGenomeUtil::Crop(memory, div_point, div_point+child_size);
+  
+  // Cut off everything in this memory past the divide point.
+  GetMemory().Resize(div_point);
+  
+  unsigned 
+    totalMutations = 0,
+    mutations = 0,
+    RScount = 0;
+
+
+
+  // Handle Divide Mutations...
+  /*
+    Do mutations until one of these conditions are satisified:
+     we have resampled X times
+     we have an offspring with the same number of muations as the first offspring
+      that is not reverted
+     the parent is steralized (usually means an implicit mutation)
+  */
+  do{
+    if(!RScount){
+      mutations = totalMutations = Divide_DoMutations(ctx, mut_multiplier);
+    }
+    else{
+      mutations = Divide_DoMutations(ctx, mut_multiplier);
+      m_world->GetStats().IncResamplings();
+    }
+
+    
+    
+  }while (RScount++ < 10 && mutations >= totalMutations && Divide_TestFitnessMeasures(ctx)); 
+  // think about making this mutations == totalMuations - though this may be too hard...
+  /*
+  if(RScount > 2)
+    cerr << "Resampled " << RScount << endl;
+  */
+  //org could not be resampled beneath the hard cap -- it is then steraalized
+  if(RScount == 10) {
+    organism->GetPhenotype().ChildFertile() = false;
+    m_world->GetStats().IncFailedResamplings();
+  }
+
+#if INSTRUCTION_COSTS
+  // reset first time instruction costs
+  for (int i = 0; i < inst_ft_cost.GetSize(); i++) {
+    inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+  }
+#endif
+  
+  mal_active = false;
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
+    advance_ip = false;
+  }
+  
+  // Activate the child, and do more work if the parent lives through the
+  // birth.
+  bool parent_alive = organism->ActivateDivide(ctx);
+  if (parent_alive) {
+    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
+  }
+  
+  return true;
+}
+
 
 //////////////////////////
 // And the instructions...
@@ -1998,6 +2087,20 @@ bool cHardwareCPU::Inst_Divide(cAvidaContext& ctx)
   return Divide_Main(ctx, GetRegister(nHardwareCPU::REG_AX));    
 }
 
+/*
+  Divide with resampling -- Same as regular divide but on reversions will be 
+  resampled after they are reverted.
+
+  AWC 06/29/06
+
+ */
+
+bool cHardwareCPU::Inst_DivideRS(cAvidaContext& ctx)  
+{ 
+  return Divide_MainRS(ctx, GetRegister(nHardwareCPU::REG_AX));    
+}
+
+
 bool cHardwareCPU::Inst_CDivide(cAvidaContext& ctx) 
 { 
   return Divide_Main(ctx, GetMemory().GetSize() / 2);   
@@ -2666,6 +2769,24 @@ bool cHardwareCPU::Inst_HeadDivideMut(cAvidaContext& ctx, double mut_multiplier)
 bool cHardwareCPU::Inst_HeadDivide(cAvidaContext& ctx)
 {
   return Inst_HeadDivideMut(ctx, 1);
+  
+}
+
+/*
+  Resample Divide -- AWC 06/29/06
+*/
+
+bool cHardwareCPU::Inst_HeadDivideRS(cAvidaContext& ctx)
+{
+  AdjustHeads();
+  const int divide_pos = GetHead(nHardware::HEAD_READ).GetPosition();
+  int child_end =  GetHead(nHardware::HEAD_WRITE).GetPosition();
+  if (child_end == 0) child_end = GetMemory().GetSize();
+  const int extra_lines = GetMemory().GetSize() - child_end;
+  bool ret_val = Divide_MainRS(ctx, divide_pos, extra_lines, 1);
+  // Re-adjust heads.
+  AdjustHeads();
+  return ret_val; 
 }
 
 bool cHardwareCPU::Inst_HeadDivideSex(cAvidaContext& ctx)  

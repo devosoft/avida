@@ -217,7 +217,8 @@ public:
   bool GetSterilizeNeg() const;
   bool GetSterilizeNeut() const;
   bool GetSterilizePos() const;
-
+  double GetNeutralMin() const;
+  double GetNeutralMax() const;
 
   // Access to private variables
   int GetMaxExecuted() const { return max_executed; }

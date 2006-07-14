@@ -29,6 +29,7 @@ class cMutation;
 class cOrganism;
 class cString;
 class cWorld;
+//class cStats; //AWC 06/29/06
 
 class cHardwareBase
 {
@@ -42,8 +43,8 @@ protected:
   virtual int GetCopiedSize(const int parent_size, const int child_size) = 0;  
   
   bool Divide_CheckViable(cAvidaContext& ctx, const int parent_size, const int child_size);
-  void Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier = 1.0);
-  void Divide_TestFitnessMeasures(cAvidaContext& ctx);
+  unsigned Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier = 1.0);
+  bool Divide_TestFitnessMeasures(cAvidaContext& ctx);
   
   void TriggerMutations_Body(cAvidaContext& ctx, int type, cCPUMemory& target_memory, cHeadCPU& cur_head);
   bool TriggerMutations_ScopeGenome(cAvidaContext& ctx, const cMutation* cur_mut,

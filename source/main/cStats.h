@@ -222,6 +222,11 @@ private:
   tArray<cString> inst_names;
   tArray<cString> reaction_names;
   tArray<cString> resource_names;
+
+  // Resampling Statistics AWC - 06/29/06
+  int num_resamplings;
+  int num_failedResamplings;
+  
   
   // State variables
   int last_update;
@@ -383,6 +388,10 @@ public:
   const cDoubleSum& SumExeSize() const       { return sum_exe_size; }
   const cDoubleSum& SumMemSize() const       { return sum_mem_size; }
 
+  
+  void IncResamplings() { ++num_resamplings;}  //AWC 06/29/06
+  void IncFailedResamplings() { ++num_failedResamplings;}  //AWC 06/29/06
+
   void CalcEnergy();
   void CalcFidelity();
 
@@ -516,6 +525,10 @@ public:
   double GetMinMerit() const { return min_merit; }
   int GetMinGestationTime() const { return min_gestation_time; }
   int GetMinGenomeLength() const { return min_genome_length; }
+
+
+  int GetResamplings() const { return num_resamplings;}  //AWC 06/29/06
+  int GetFailedResamplings() const { return num_failedResamplings;}  //AWC 06/29/06
 
 
   // this value gets recorded when a creature with the particular

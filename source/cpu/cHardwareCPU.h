@@ -47,6 +47,9 @@
 #ifndef tArray_h
 #include "tArray.h"
 #endif
+#ifndef cStats_h
+#include "cStats.h"
+#endif
 
 /**
  * Each organism may have a cHardwareCPU structure which keeps track of the
@@ -138,6 +141,8 @@ protected:
   int GetCopiedSize(const int parent_size, const int child_size);
   
   bool Divide_Main(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1);
+  bool Divide_MainRS(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1); //AWC 06/29/06
+
   
   void InjectCode(const cGenome& injection, const int line_num);
   
@@ -324,6 +329,7 @@ private:
   bool Inst_IfNCpy(cAvidaContext& ctx);
   bool Inst_Allocate(cAvidaContext& ctx);
   bool Inst_Divide(cAvidaContext& ctx);
+  bool Inst_DivideRS(cAvidaContext& ctx); // AWC 06/29/06
   bool Inst_CAlloc(cAvidaContext& ctx);
   bool Inst_CDivide(cAvidaContext& ctx);
   bool Inst_MaxAlloc(cAvidaContext& ctx);
@@ -378,6 +384,7 @@ private:
   bool Inst_IfLabel(cAvidaContext& ctx);
   bool Inst_IfLabel2(cAvidaContext& ctx);
   bool Inst_HeadDivide(cAvidaContext& ctx);
+  bool Inst_HeadDivideRS(cAvidaContext& ctx); //AWC 06/29/06
   bool Inst_HeadRead(cAvidaContext& ctx);
   bool Inst_HeadWrite(cAvidaContext& ctx);
   bool Inst_HeadCopy(cAvidaContext& ctx);

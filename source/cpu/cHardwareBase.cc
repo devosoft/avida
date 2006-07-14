@@ -112,8 +112,13 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
 }
 
 
-void cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier)
+/*
+  Return the number of mutations that occur on divide.  AWC 06/29/06
+*/
+unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier)
 {
+  unsigned totalMutations = 0;
+
   sCPUStats& cpu_stats = organism->CPUStats();
   cCPUMemory& child_genome = organism->ChildGenome();
   
@@ -123,21 +128,21 @@ void cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier
   if (organism->TestDivideMut(ctx)) {
     const unsigned int mut_line = ctx.GetRandom().GetUInt(child_genome.GetSize());
     child_genome[mut_line] = m_inst_set->GetRandomInst(ctx);
-    cpu_stats.mut_stats.divide_mut_count++;
+    totalMutations += ++cpu_stats.mut_stats.divide_mut_count;
   }
   
   // Divide Insertions
   if (organism->TestDivideIns(ctx) && child_genome.GetSize() < MAX_CREATURE_SIZE) {
     const unsigned int mut_line = ctx.GetRandom().GetUInt(child_genome.GetSize() + 1);
     child_genome.Insert(mut_line, m_inst_set->GetRandomInst(ctx));
-    cpu_stats.mut_stats.divide_insert_mut_count++;
+    totalMutations += ++cpu_stats.mut_stats.divide_insert_mut_count;
   }
   
   // Divide Deletions
   if (organism->TestDivideDel(ctx) && child_genome.GetSize() > MIN_CREATURE_SIZE) {
     const unsigned int mut_line = ctx.GetRandom().GetUInt(child_genome.GetSize());
     child_genome.Remove(mut_line);
-    cpu_stats.mut_stats.divide_delete_mut_count++;
+    totalMutations += ++cpu_stats.mut_stats.divide_delete_mut_count;
   }
   
   // Divide Mutations (per site)
@@ -152,6 +157,7 @@ void cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier
         cpu_stats.mut_stats.div_mut_count++;
       }
     }
+    totalMutations += cpu_stats.mut_stats.div_mut_count;
   }
   
   
@@ -176,6 +182,7 @@ void cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier
       for (int i = num_mut-1; i >= 0; i--) {
         child_genome.Insert(mut_sites[i], m_inst_set->GetRandomInst(ctx));
         cpu_stats.mut_stats.insert_mut_count++;
+	totalMutations++; //Unline the others we can't be sure this was done only on divide -- AWC 06/29/06
       }
     }
   }
@@ -204,6 +211,8 @@ void cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier
       if (organism->TestParentMut(ctx)) {
         GetMemory()[i] = m_inst_set->GetRandomInst(ctx);
         cpu_stats.mut_stats.parent_mut_line_count++;
+	totalMutations++; //Unline the others we can't be sure this was done only on divide -- AWC 06/29/06
+
       }
     }
   }
@@ -220,28 +229,34 @@ void cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier
       cpu_stats.mut_stats.copy_mut_line_count++;
     }
   }
+
+  return totalMutations;
 }
 
 
 // test whether the offspring creature contains an advantageous mutation.
-void cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)
+/*
+  Return true iff only a reversion is performed -- returns false is steralized regardless of weather or 
+  not a reversion is performed.  AWC 06/29/06
+*/
+bool cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)
 {
   cPhenotype & phenotype = organism->GetPhenotype();
   phenotype.CopyTrue() = ( organism->ChildGenome() == organism->GetGenome() );
   phenotype.ChildFertile() = true;
 	
   // Only continue if we're supposed to do a fitness test on divide...
-  if (organism->GetTestOnDivide() == false) return;
+  if (organism->GetTestOnDivide() == false) return false;
 	
   // If this was a perfect copy, then we don't need to worry about any other
   // tests...  Theoretically, we need to worry about the parent changing,
   // but as long as the child is always compared to the original genotype,
   // this won't be an issue.
-  if (phenotype.CopyTrue() == true) return;
+  if (phenotype.CopyTrue() == true) return false;
 	
   const double parent_fitness = organism->GetTestFitness();
-  const double neut_min = parent_fitness * nHardware::FITNESS_NEUTRAL_MIN;
-  const double neut_max = parent_fitness * nHardware::FITNESS_NEUTRAL_MAX;
+  const double neut_min = parent_fitness * (1.0 - organism->GetNeutralMin());//nHardware::FITNESS_NEUTRAL_MIN;
+  const double neut_max = parent_fitness * (1.0 + organism->GetNeutralMax());//nHardware::FITNESS_NEUTRAL_MAX;
   
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
   cCPUTestInfo test_info;
@@ -257,7 +272,7 @@ void cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)
   if (organism->GetFailImplicit() == true) {
     if (test_info.GetMaxDepth() > 0) sterilize = true;
   }
-  
+
   if (child_fitness == 0.0) {
     // Fatal mutation... test for reversion.
     if (ctx.GetRandom().P(organism->GetRevertFatal())) revert = true;
@@ -268,7 +283,7 @@ void cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)
   } else if (child_fitness <= neut_max) {
     if (ctx.GetRandom().P(organism->GetRevertNeut())) revert = true;
     if (ctx.GetRandom().P(organism->GetSterilizeNeut())) sterilize = true;
-  } else {
+  } else (child_fitness > neut_max){
     if (ctx.GetRandom().P(organism->GetRevertPos())) revert = true;
     if (ctx.GetRandom().P(organism->GetSterilizePos())) sterilize = true;
   }
@@ -282,6 +297,8 @@ void cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)
   if (sterilize == true) {
     organism->GetPhenotype().ChildFertile() = false;
   }
+
+  return (!sterilize) && revert;
 }
 
 int cHardwareBase::PointMutate(cAvidaContext& ctx, const double mut_rate)

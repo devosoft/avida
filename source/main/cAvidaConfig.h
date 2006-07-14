@@ -229,6 +229,8 @@ public:
   CONFIG_ADD_VAR(STERILIZE_NEUTRAL, double, 0.0, "");
   CONFIG_ADD_VAR(STERILIZE_BENEFICIAL, double, 0.0, "");
   CONFIG_ADD_VAR(FAIL_IMPLICIT, int, 0, "Should copies that failed *not* due to mutations\nbe eliminated?");
+  CONFIG_ADD_VAR(NEUTRAL_MAX,double, 0.0, "The percent benifical change from parent fitness to be considered neutral.");
+  CONFIG_ADD_VAR(NEUTRAL_MIN,double, 0.0, "The percent deleterious change from parent fitness to be considered neutral.");
   
   CONFIG_ADD_GROUP(TIME_GROUP, "Time Slicing");
   CONFIG_ADD_VAR(AVE_TIME_SLICE, int, 30, "Ave number of insts per org per update");
