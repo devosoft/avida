@@ -178,7 +178,7 @@ void cHardwareSMT::Reset()
 void cHardwareSMT::cLocalThread::Reset(cHardwareBase* in_hardware, int mem_space)
 {
   for (int i = 0; i < NUM_LOCAL_STACKS; i++) local_stacks[i].Clear();
-  for (int i = 0; i < nHardware::NUM_HEADS; i++) heads[i].Reset(mem_space, in_hardware);
+  for (int i = 0; i < NUM_EXTENDED_HEADS; i++) heads[i].Reset(in_hardware, mem_space);
 	
   cur_head = nHardware::HEAD_IP;
   read_label.Clear();
@@ -403,12 +403,12 @@ int cHardwareSMT::FindMemorySpaceLabel(const cCodeLabel& label, int mem_space)
 // results.  If direction is 0, search from the beginning of the genome.
 //
 /////////////////////////////////////////////////////////////////////////
-cHeadMultiMem cHardwareSMT::FindLabel(int direction)
+cHeadCPU cHardwareSMT::FindLabel(int direction)
 {
-  cHeadMultiMem& inst_ptr = IP();
+  cHeadCPU& inst_ptr = IP();
 	
   // Start up a search head at the position of the instruction pointer.
-  cHeadMultiMem search_head(inst_ptr);
+  cHeadCPU search_head(inst_ptr);
   cCodeLabel& search_label = GetLabel();
 	
   // Make sure the label is of size  > 0.
@@ -602,7 +602,7 @@ int cHardwareSMT::FindLabel_Backward(const cCodeLabel & search_label,
 }
 
 // Search for 'in_label' anywhere in the hardware.
-cHeadMultiMem cHardwareSMT::FindLabel(const cCodeLabel& in_label, int direction)
+cHeadCPU cHardwareSMT::FindLabel(const cCodeLabel& in_label, int direction)
 {
   assert (in_label.GetSize() > 0);
 	
@@ -613,7 +613,7 @@ cHeadMultiMem cHardwareSMT::FindLabel(const cCodeLabel& in_label, int direction)
   // FOR NOW:
   // Get something which works, no matter how inefficient!!!
 	
-  cHeadMultiMem temp_head(this);
+  cHeadCPU temp_head(this);
 	
   while (temp_head.InMemory()) {
     // IDEALY: Analyze the label we are in; see if the one we are looking
@@ -640,11 +640,11 @@ cHeadMultiMem cHardwareSMT::FindLabel(const cCodeLabel& in_label, int direction)
 
 // @CAO: direction is not currently used; should be used to indicate the
 // direction which the heads[nHardware::HEAD_IP] should progress through a creature.
-cHeadMultiMem cHardwareSMT::FindFullLabel(const cCodeLabel & in_label)
+cHeadCPU cHardwareSMT::FindFullLabel(const cCodeLabel & in_label)
 {
   assert(in_label.GetSize() > 0); // Trying to find label of 0 size!
 	
-  cHeadMultiMem temp_head(this);
+  cHeadCPU temp_head(this);
 	
   while (temp_head.InMemory()) {
     // If we are not in a label, jump to the next checkpoint...
@@ -725,7 +725,7 @@ bool cHardwareSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier)
   // reset the memory space that was injected
   m_mem_array[mem_space_used] = cGenome("a"); 
 	
-  for (int x = 0; x < nHardware::NUM_HEADS; x++) GetHead(x).Reset(IP().GetMemSpace(), this);
+  for (int x = 0; x < nHardware::NUM_HEADS; x++) GetHead(x).Reset(this, IP().GetMemSpace());
   for (int x = 0; x < NUM_LOCAL_STACKS; x++) Stack(x).Clear();
   
   AdvanceIP() = false;
@@ -767,7 +767,7 @@ void cHardwareSMT::ReadInst(const int in_inst)
 void cHardwareSMT::ReadLabel(int max_size)
 {
   int count = 0;
-  cHeadMultiMem& inst_ptr = IP();
+  cHeadCPU& inst_ptr = IP();
 	
   GetLabel().Clear();
 	
@@ -823,12 +823,6 @@ bool cHardwareSMT::ThreadKill(const int thread_id)
   m_threads[thread_id].running = false;
 	
   return true;
-}
-
-
-int cHardwareSMT::TestParasite() const
-{
-  return IP().TestParasite();
 }
 
 
@@ -1059,7 +1053,7 @@ bool cHardwareSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
         //this will reset the current thread's heads and stacks.  It will 
         //not touch any other threads or memory spaces (ie: parasites)
 	      for(int x = 0; x < nHardware::NUM_HEADS; x++) {
-					GetHead(x).Reset(0, this);
+					GetHead(x).Reset(this, 0);
 				}
 	      for(int x = 0; x < NUM_LOCAL_STACKS; x++) {
 					Stack(x).Clear();
@@ -1301,7 +1295,7 @@ bool cHardwareSMT::Inst_HeadWrite(cAvidaContext& ctx)
   const int src = STACK_AX;
 #endif
 
-  cHeadMultiMem & active_head = GetHead(head_id);
+  cHeadCPU & active_head = GetHead(head_id);
   int mem_space_used = active_head.GetMemSpace();
   
   if(active_head.GetPosition() >= m_mem_array[mem_space_used].GetSize() - 1)
@@ -1313,7 +1307,7 @@ bool cHardwareSMT::Inst_HeadWrite(cAvidaContext& ctx)
   active_head.Adjust();
 	
   int value = Stack(src).Pop();
-  if (value < 0 || value >= m_inst_set->GetSize()) value = NOPX;
+  if (value < 0 || value >= m_inst_set->GetSize()) value = 0;
 	
   active_head.SetInst(cInstruction(value));
   active_head.SetFlagCopied();
@@ -1397,7 +1391,7 @@ bool cHardwareSMT::Inst_HeadPop(cAvidaContext& ctx)
 #else
   const int src = STACK_BX;
 #endif
-  GetHead(head_used).Set(Stack(src).Pop(), GetHead(head_used).GetMemSpace(), this);
+  GetHead(head_used).Set(Stack(src).Pop(), GetHead(head_used).GetMemSpace());
   return true;
 }
 
@@ -1422,10 +1416,10 @@ bool cHardwareSMT::Inst_Search(cAvidaContext& ctx)
 {
   ReadLabel();
   GetLabel().Rotate(2, NUM_NOPS);
-  cHeadMultiMem found_pos = FindLabel(0);
+  cHeadCPU found_pos = FindLabel(0);
   if(found_pos.GetPosition() - IP().GetPosition() == 0)
 	{
-		GetHead(nHardware::HEAD_FLOW).Set(IP().GetPosition() + 1, IP().GetMemSpace(), this);
+		GetHead(nHardware::HEAD_FLOW).Set(IP().GetPosition() + 1, IP().GetMemSpace());
 		// pushing zero into STACK_AX on a missed search makes it difficult to create
 		// a self-replicating organism.  @law
 		Stack(STACK_BX).Push(0);
@@ -1664,7 +1658,7 @@ bool cHardwareSMT::Inst_CallFlow(cAvidaContext& ctx)
   
   Stack(dst).Push(ra);
   
-  cHeadMultiMem& flow = GetHead(nHardware::HEAD_FLOW);
+  cHeadCPU& flow = GetHead(nHardware::HEAD_FLOW);
   IP().Set(flow.GetPosition(), flow.GetMemSpace());
   
   return true;
@@ -1683,6 +1677,7 @@ bool cHardwareSMT::Inst_CallLabel(cAvidaContext& ctx)
   
   ReadLabel(MAX_MEMSPACE_LABEL);
   
+  // If a label was specified, call target label
   if (GetLabel().GetSize() != 0) {
     int mem_space_used = FindMemorySpaceLabel(GetLabel(), -1);
     if (mem_space_used > -1) {
@@ -1690,9 +1685,14 @@ bool cHardwareSMT::Inst_CallLabel(cAvidaContext& ctx)
       IP().Set(0, mem_space_used);
       return true;
     }
+    return false;
   }
-  
-  return false;
+
+  // Default to calling the flow head
+  cHeadCPU& flow = GetHead(nHardware::HEAD_FLOW);
+  IP().Set(flow.GetPosition(), flow.GetMemSpace());
+
+  return true;
 }
 
 //47

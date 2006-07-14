@@ -23,8 +23,8 @@
 #ifndef cCPUStack_h
 #include "cCPUStack.h"
 #endif
-#ifndef cHeadMultiMem_h
-#include "cHeadMultiMem.h"
+#ifndef cHeadCPU_h
+#include "cHeadCPU.h"
 #endif
 #ifndef cHardwareBase_h
 #include "cHardwareBase.h"
@@ -54,9 +54,9 @@ protected:
   static const int NUM_GLOBAL_STACKS = 1;
   static const int NUM_STACKS = NUM_LOCAL_STACKS + NUM_GLOBAL_STACKS;
   static const int NUM_NOPS = 4;
-  static const int NOPX = 4;
   static const int MAX_MEMSPACE_LABEL = 3;
   static const int MAX_THREAD_LABEL = 3;
+  static const int NUM_EXTENDED_HEADS = nHardware::NUM_HEADS + NUM_NOPS;
 
   enum tStacks { STACK_AX = 0, STACK_BX, STACK_CX, STACK_DX };
   
@@ -68,7 +68,7 @@ protected:
   class cLocalThread
   {
   public:
-    cHeadMultiMem heads[nHardware::NUM_HEADS];
+    cHeadCPU heads[NUM_EXTENDED_HEADS];
     unsigned char cur_head;
     cCPUStack local_stacks[NUM_LOCAL_STACKS];
     
@@ -143,11 +143,11 @@ protected:
   
   // --------  Label Manipulation  -------
   void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
-  cHeadMultiMem FindLabel(int direction);
+  cHeadCPU FindLabel(int direction);
   int FindLabel_Forward(const cCodeLabel& search_label, const cGenome& search_genome, int pos);
   int FindLabel_Backward(const cCodeLabel& search_label, const cGenome& search_genome, int pos);
-  cHeadMultiMem FindLabel(const cCodeLabel& in_label, int direction);
-  cHeadMultiMem FindFullLabel(const cCodeLabel& in_label);
+  cHeadCPU FindLabel(const cCodeLabel& in_label, int direction);
+  cHeadCPU FindFullLabel(const cCodeLabel& in_label);
   const cCodeLabel& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
   cCodeLabel& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
 
@@ -209,15 +209,16 @@ public:
 	
 
   // --------  Head Manipulation (including IP)  --------
-  const cHeadMultiMem& GetHead(int head_id) const { return m_threads[m_cur_thread].heads[head_id]; }
-  cHeadMultiMem& GetHead(int head_id) { return m_threads[m_cur_thread].heads[head_id];}
-  const cHeadMultiMem& GetHead(int head_id, int thread) const { return m_threads[thread].heads[head_id]; }
-  cHeadMultiMem& GetHead(int head_id, int thread) { return m_threads[thread].heads[head_id];}
+  const cHeadCPU& GetHead(int head_id) const { return m_threads[m_cur_thread].heads[head_id]; }
+  cHeadCPU& GetHead(int head_id) { return m_threads[m_cur_thread].heads[head_id];}
+  const cHeadCPU& GetHead(int head_id, int thread) const { return m_threads[thread].heads[head_id]; }
+  cHeadCPU& GetHead(int head_id, int thread) { return m_threads[thread].heads[head_id];}
+  int GetNumHeads() const { return NUM_EXTENDED_HEADS; }
 	
-  const cHeadMultiMem& IP() const { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
-  cHeadMultiMem& IP() { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
-  const cHeadMultiMem& IP(int thread) const { return m_threads[thread].heads[nHardware::HEAD_IP]; }
-  cHeadMultiMem& IP(int thread) { return m_threads[thread].heads[nHardware::HEAD_IP]; }
+  const cHeadCPU& IP() const { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
+  cHeadCPU& IP() { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
+  const cHeadCPU& IP(int thread) const { return m_threads[thread].heads[nHardware::HEAD_IP]; }
+  cHeadCPU& IP(int thread) { return m_threads[thread].heads[nHardware::HEAD_IP]; }
 	  
   
   // --------  Label Manipulation  -------
@@ -252,7 +253,6 @@ public:
   
   
   // --------  Parasite Stuff  --------
-  int TestParasite() const;
   bool InjectHost(const cCodeLabel& in_label, const cGenome& inject_code);
 	
   

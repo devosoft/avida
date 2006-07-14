@@ -21,7 +21,6 @@
 #include "cHardwareBase.h"
 #include "cHardwareCPU.h"
 #include "nHardware.h"
-#include "cHeadMultiMem.h"
 
 #include "cView.h"
 #include "cMenuWindow.h"
@@ -34,8 +33,7 @@ using namespace std;
 //  The Zoom Screen
 /////////////////////
 
-cZoomScreen::cZoomScreen(int y_size, int x_size, int y_start, int x_start,
-                         cViewInfo & in_info, cPopulation & in_pop)
+cZoomScreen::cZoomScreen(int y_size, int x_size, int y_start, int x_start, cViewInfo& in_info, cPopulation& in_pop)
 : cScreen(y_size, x_size, y_start, x_start, in_info), population(in_pop)
 {
   memory_offset = 0;
@@ -158,7 +156,7 @@ void cZoomScreen::DrawStats()
   
   int task_num = task_offset;
   int col_num = 0;
-  const cTaskLib & task_lib = population.GetEnvironment().GetTaskLib();
+  const cTaskLib& task_lib = population.GetEnvironment().GetTaskLib();
   for (int cur_col = TASK_X + 2;
        task_num < info.GetWorld().GetNumTasks();
        cur_col += 14) {
@@ -429,7 +427,7 @@ void cZoomScreen::Update()
   if (info.GetActiveCell() == NULL ||
       info.GetActiveCell()->IsOccupied() == false) return;
   
-  cHardwareBase & hardware = info.GetActiveCell()->GetOrganism()->GetHardware();
+  cHardwareBase& hardware = info.GetActiveCell()->GetOrganism()->GetHardware();
   if(mode == ZOOM_MODE_CPU) UpdateCPU(hardware);
   else if (mode == ZOOM_MODE_STATS) UpdateStats(hardware);
   else if (mode == ZOOM_MODE_GENOTYPE) UpdateGenotype();
@@ -437,16 +435,13 @@ void cZoomScreen::Update()
   Refresh();
 }
 
-void cZoomScreen::UpdateStats(cHardwareBase & hardware)
+void cZoomScreen::UpdateStats(cHardwareBase& hardware)
 {
   if (info.GetActiveCell() == NULL ||
       info.GetActiveCell()->IsOccupied() == false) return;
   
-  cGenotype * genotype = info.GetActiveGenotype();
-  cPhenotype & phenotype = info.GetActiveCell()->GetOrganism()->GetPhenotype();
-  
-  //cHardwareBase & hardware =
-  //  info.GetActiveCell()->GetOrganism()->GetHardware();
+  cGenotype* genotype = info.GetActiveGenotype();
+  cPhenotype& phenotype = info.GetActiveCell()->GetOrganism()->GetPhenotype();
   
   SetBoldColor(COLOR_CYAN);
   
@@ -533,7 +528,7 @@ void cZoomScreen::UpdateStats(cHardwareBase & hardware)
   
   
   if (info.GetActiveCell() == NULL) {
-    info.SetActiveCell( &(population.GetCell(0)) );
+    info.SetActiveCell(&(population.GetCell(0)) );
   }
   SetBoldColor(COLOR_WHITE);
   
@@ -566,7 +561,7 @@ void cZoomScreen::UpdateStats_CPU(cHardwareBase& hardware)
   Print(15, 34, "%14d", hardware.GetStack(0));
   
   cHeadCPU inst_ptr(hardware.IP());
-  const cInstSet & inst_set = hardware.GetInstSet();
+  const cInstSet& inst_set = hardware.GetInstSet();
   
   for (int pos = 0; pos < 3; pos++) {
     // Clear the line
@@ -586,7 +581,7 @@ void cZoomScreen::UpdateStats_CPU(cHardwareBase& hardware)
   Print(CPU_FLAGS_Y + 1, CPU_FLAGS_X + 1, "Mem Allocated");
   
   // And print the IP.
-  const cHeadCPU & active_inst_ptr = hardware.IP();
+  const cHeadCPU& active_inst_ptr = hardware.IP();
   // @CAO assume no parasites for now.
   int cur_id = info.GetActiveCell()->GetID();
   //active_inst_ptr.GetCurHardware()->GetOrganism()->GetEnvironment()->GetID();
@@ -620,14 +615,12 @@ void cZoomScreen::UpdateStats_SMT(cHardwareBase& hardware)
   }
   
   // And print the IP.
-  const cHeadCPU& active_inst_ptr = hardware.IP();
+  const cHeadCPU& ip = hardware.IP();
   // @CAO assume no parasites for now.
-  //int cur_id = info.GetActiveCell()->GetID();
-  //active_inst_ptr.GetCurHardware()->GetOrganism()->GetEnvironment()->GetID();
-  Print(11, 36, "%12s", static_cast<const char*>(active_inst_ptr.GetPositionString()));
+  Print(11, 36, "%12s", static_cast<const char*>(cStringUtil::Stringf("(%2d, %2d)", ip.GetMemSpace(), ip.GetPosition())));
 }
 
-void cZoomScreen::UpdateCPU(cHardwareBase & hardware)
+void cZoomScreen::UpdateCPU(cHardwareBase& hardware)
 {
   // Place the visible section of the current memory onto the screen.
   
@@ -643,7 +636,7 @@ void cZoomScreen::UpdateCPU(cHardwareBase & hardware)
   Print(14, 69, "%10d", info.GetActiveGenotypeID());
   Print(15, 69, "%10s", static_cast<const char*>(info.GetActiveName()));
   
-  cPhenotype & phenotype = info.GetActiveCell()->GetOrganism()->GetPhenotype();
+  cPhenotype& phenotype = info.GetActiveCell()->GetOrganism()->GetPhenotype();
   Print(17, 69, "%10d", phenotype.GetCurNumErrors());
   Print(18, 69, "%10d", phenotype.GetNumDivides());
   if (info.GetThreadLock() != -1) Print(19, 67, "LOCKED");
@@ -664,7 +657,7 @@ void cZoomScreen::UpdateCPU(cHardwareBase & hardware)
     Print(INPUT_Y+3+i, INPUT_X+2, "%12d", info.GetActiveCell()->GetInput(i));
   }
   
-  const cString & cur_fault = phenotype.GetFault();
+  const cString& cur_fault = phenotype.GetFault();
   if (cur_fault.GetSize() > 0) {
     SetBoldColor(COLOR_RED);
     Print(FAULT_Y, FAULT_X, "Fault:");
@@ -733,8 +726,7 @@ void cZoomScreen::UpdateCPU_Original(cHardwareBase& hardware)
   // creature we are viewing, but can also be a different one (if this is a
   // parasite).
   
-  const cCPUMemory & memory = (parasite_zoom) ?
-    hardware.GetMemory() : hardware.IP().GetMemory();
+  const cCPUMemory& memory = parasite_zoom ? hardware.GetMemory() : hardware.IP().GetMemory();
   SetColor(COLOR_WHITE);
   Print(MEMORY_Y + 1, MEMORY_X + 9, "%4d", memory.GetSize());
   
@@ -752,7 +744,7 @@ void cZoomScreen::UpdateCPU_Original(cHardwareBase& hardware)
   int base_inst_ptr = hardware.IP().GetPosition();
   if (base_inst_ptr < 0 || parasite_zoom == true) base_inst_ptr = 0;
   
-  const cInstSet & inst_set = hardware.GetInstSet();
+  const cInstSet& inst_set = hardware.GetInstSet();
   
   // Determine the center (must be between 0 and size - 1)
   int center_pos = (base_inst_ptr + memory_offset) % memory.GetSize();
@@ -833,22 +825,10 @@ void cZoomScreen::UpdateCPU_SMT(cHardwareBase& hardware)
   if (cur_view_thread >= hardware.GetNumThreads())
   {
     cur_view_thread = 0;
-#ifdef DEBUG
-    cHeadMultiMem* p_cur_ip = dynamic_cast<cHeadMultiMem*>(&hardware.IP(cur_view_thread));
-    assert(p_cur_ip);
-    cur_mem_space = p_cur_ip->GetMemSpace();
-#else
-    cur_mem_space = static_cast<cHeadMultiMem&>(hardware.IP(cur_view_thread)).GetMemSpace();
-#endif
+    cur_mem_space = hardware.IP(cur_view_thread).GetMemSpace();
   }
 
-#ifdef DEBUG
-  cHeadMultiMem* p_cur_ip = dynamic_cast<cHeadMultiMem*>(&hardware.IP(cur_view_thread));
-  assert(p_cur_ip);
-  cHeadMultiMem& cur_ip = *p_cur_ip;
-#else
-  cHeadMultiMem& cur_ip = static_cast<cHeadMultiMem&>(hardware.IP(cur_view_thread));
-#endif
+  cHeadCPU& cur_ip = hardware.IP(cur_view_thread);
   
   // Place the stacks onto the screen.
   SetBoldColor(COLOR_CYAN);
@@ -879,7 +859,7 @@ void cZoomScreen::UpdateCPU_SMT(cHardwareBase& hardware)
   // creature we are viewing, but can also be a different one (if this is a
   // parasite).
   
-  const cCPUMemory & memory = hardware.GetMemory(cur_mem_space);
+  const cCPUMemory& memory = hardware.GetMemory(cur_mem_space);
   SetBoldColor(COLOR_BLUE);
   Print(MEMORY_Y + 1, MEMORY_X + 8, " Space ");	
   SetColor(COLOR_WHITE);
@@ -902,7 +882,7 @@ void cZoomScreen::UpdateCPU_SMT(cHardwareBase& hardware)
   int base_inst_ptr = cur_ip.GetPosition();
   if (base_inst_ptr < 0 || parasite_zoom == true) base_inst_ptr = 0;
   
-  const cInstSet & inst_set = hardware.GetInstSet();
+  const cInstSet& inst_set = hardware.GetInstSet();
   
   // Determine the center (must be between 0 and size - 1)
   int center_pos = (base_inst_ptr + memory_offset) % memory.GetSize();
@@ -962,15 +942,15 @@ void cZoomScreen::UpdateCPU_SMT(cHardwareBase& hardware)
       }
       
       if (adj_inst_ptr == hardware.GetHead(nHardware::HEAD_READ, cur_view_thread).GetPosition() &&
-          cur_mem_space == static_cast<cHeadMultiMem&>(hardware.GetHead(nHardware::HEAD_READ, cur_view_thread)).GetMemSpace()) {
+          cur_mem_space == hardware.GetHead(nHardware::HEAD_READ, cur_view_thread).GetMemSpace()) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 31, "R");
       }
       if (adj_inst_ptr == hardware.GetHead(nHardware::HEAD_WRITE, cur_view_thread).GetPosition() &&
-          cur_mem_space == static_cast<cHeadMultiMem&>(hardware.GetHead(nHardware::HEAD_WRITE, cur_view_thread)).GetMemSpace()) {
+          cur_mem_space == hardware.GetHead(nHardware::HEAD_WRITE, cur_view_thread).GetMemSpace()) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 32, "W");
       }
       if (adj_inst_ptr == hardware.GetHead(nHardware::HEAD_FLOW, cur_view_thread).GetPosition() &&
-          cur_mem_space == static_cast<cHeadMultiMem&>(hardware.GetHead(nHardware::HEAD_FLOW, cur_view_thread)).GetMemSpace()) {
+          cur_mem_space == hardware.GetHead(nHardware::HEAD_FLOW, cur_view_thread).GetMemSpace()) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 33, "F");
       }
     }
@@ -989,7 +969,7 @@ void cZoomScreen::UpdateGenotype()
   Print(3, 12, "%9d", info.GetActiveSpeciesID());
   
   if (info.GetActiveGenotype() != NULL) {
-    cGenotype & genotype = *(info.GetActiveGenotype());
+    cGenotype& genotype = *(info.GetActiveGenotype());
     Print(5, 12, "%9d", genotype.GetNumOrganisms());
     Print(6, 12, "%9d", genotype.GetLength());
     Print(7, 12, "%9d", genotype.GetCopiedSize());
@@ -1053,11 +1033,9 @@ void cZoomScreen::EditMemory()
 {
   // Collect all of the needed variables.
   cHardwareBase& hardware = info.GetActiveCell()->GetOrganism()->GetHardware();
-  const cInstSet & inst_set = hardware.GetInstSet();
-  cHeadCPU edit_head( hardware.IP() );
-  if (parasite_zoom == true) {
-    edit_head.Set(0, &(info.GetActiveCell()->GetOrganism()->GetHardware()) );
-  }
+  const cInstSet& inst_set = hardware.GetInstSet();
+  cHeadCPU edit_head(hardware.IP());
+  if (parasite_zoom == true) edit_head.Set(0);
   edit_head.LoopJump(memory_offset);
   
   // Assemble first choice window.
@@ -1124,10 +1102,8 @@ void cZoomScreen::ViewMemory()
 {
   // Collect all of the needed variables.
   cHardwareBase& hardware = info.GetActiveCell()->GetOrganism()->GetHardware();
-  cHeadCPU view_head( hardware.IP() );
-  if (parasite_zoom == true) {
-    view_head.Set(0, &(info.GetActiveCell()->GetOrganism()->GetHardware()) );
-  }
+  cHeadCPU view_head(hardware.IP());
+  if (parasite_zoom == true) view_head.Set(0);
   view_head.LoopJump(memory_offset);
   
   // Act on the view method!
@@ -1179,13 +1155,11 @@ void cZoomScreen::ViewInstruction()
   // Place the data.
   
   cHardwareBase& hardware = info.GetActiveCell()->GetOrganism()->GetHardware();
-  cHeadCPU inst_ptr( hardware.IP() );
-  if (parasite_zoom == true) {
-    inst_ptr.Set(0, &(info.GetActiveCell()->GetOrganism()->GetHardware()) );
-  }
+  cHeadCPU inst_ptr(hardware.IP());
+  if (parasite_zoom == true) inst_ptr.Set(0);
   inst_ptr.LoopJump(memory_offset);
   
-  const cInstSet & inst_set = hardware.GetInstSet();
+  const cInstSet& inst_set = hardware.GetInstSet();
   
   window->SetBoldColor(COLOR_YELLOW);
   window->Print(2, 16, "%s", static_cast<const char*>(inst_set.GetName(inst_ptr.GetInst())));
@@ -1363,7 +1337,7 @@ void cZoomScreen::ViewStack()
 
 void cZoomScreen::ViewInputs()
 {
-  cTextWindow * window = new cTextWindow(9, 54, 4, 13);
+  cTextWindow* window = new cTextWindow(9, 54, 4, 13);
   
   window->SetBoldColor(COLOR_WHITE);
   window->Box();
@@ -1521,13 +1495,7 @@ void cZoomScreen::DoInput(int in_char)
         ++cur_view_thread%=num_threads;
         if(info.GetConfig().HARDWARE_TYPE.Get() != HARDWARE_TYPE_CPU_ORIGINAL)
         {
-#ifdef DEBUG
-          cHeadMultiMem* p_cur_ip = dynamic_cast<cHeadMultiMem*>(&hardware.IP(cur_view_thread));
-          assert(p_cur_ip);
-          cur_mem_space = p_cur_ip->GetMemSpace();
-#else
-          cur_mem_space = static_cast<cHeadMultiMem&>(hardware.IP(cur_view_thread)).GetMemSpace();
-#endif
+          cur_mem_space = hardware.IP(cur_view_thread).GetMemSpace();
         }
         Update();
       }
@@ -1573,7 +1541,7 @@ bool cZoomScreen::DoInputCPU(int in_char)
         cur_view_thread=0;
         if (population.GetCell(mini_center_id).IsOccupied()) {
           memory_offset = 0;
-          info.SetActiveCell( &(population.GetCell(mini_center_id)));
+          info.SetActiveCell(&(population.GetCell(mini_center_id)));
         }
         Update();
       } else if (active_section == ZOOM_SECTION_MEMORY) {
@@ -1589,7 +1557,7 @@ bool cZoomScreen::DoInputCPU(int in_char)
         if (mini_center_id < 0) mini_center_id += population.GetSize();
         if (population.GetCell(mini_center_id).IsOccupied()) {
           memory_offset = 0;
-          info.SetActiveCell( &(population.GetCell(mini_center_id)));
+          info.SetActiveCell(&(population.GetCell(mini_center_id)));
         }
         Update();
       } else if (active_section == ZOOM_SECTION_MEMORY) {
@@ -1604,7 +1572,7 @@ bool cZoomScreen::DoInputCPU(int in_char)
         if (mini_center_id == population.GetSize()) mini_center_id = 0;
         if (population.GetCell(mini_center_id).IsOccupied()) {
           memory_offset = 0;
-          info.SetActiveCell( &(population.GetCell(mini_center_id)));
+          info.SetActiveCell(&(population.GetCell(mini_center_id)));
         }
       }
       else if (active_section == ZOOM_SECTION_MEMORY) {
@@ -1624,7 +1592,7 @@ bool cZoomScreen::DoInputCPU(int in_char)
         if (mini_center_id < 0) mini_center_id += population.GetSize();
         if (population.GetCell(mini_center_id).IsOccupied()) {
           memory_offset = 0;
-          info.SetActiveCell( &(population.GetCell(mini_center_id)));
+          info.SetActiveCell(&(population.GetCell(mini_center_id)));
         }
       }
       else if (active_section == ZOOM_SECTION_MEMORY) {
@@ -1657,7 +1625,7 @@ bool cZoomScreen::DoInputCPU(int in_char)
     case '\r':
       if (active_section == ZOOM_SECTION_MAP) {
         memory_offset = 0;
-        info.SetActiveCell( &(population.GetCell(mini_center_id)));
+        info.SetActiveCell(&(population.GetCell(mini_center_id)));
       }
       Update();
       break;

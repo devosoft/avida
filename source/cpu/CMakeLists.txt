@@ -11,7 +11,6 @@ SET(libcpu_a_SOURCES
   cHardwareStatusPrinter.cc
   cHardwareTransSMT.cc
   cHeadCPU.cc
-  cHeadMultiMem.cc
   cTestCPU.cc
   cTestCPUInterface.cc
   cTestUtil.cc

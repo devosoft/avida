@@ -969,11 +969,9 @@ void cHardwareCPU::InjectCode(const cGenome & inject_code, const int line_num)
   }
   organism->GetPhenotype().IsModified() = true;
   
-  // Adjust all of the heads to take into account the new mem size.
-  
+  // Adjust all of the heads to take into account the new mem size.  
   for (int i = 0; i < nHardware::NUM_HEADS; i++) {    
-    if (!GetHead(i).TestParasite() && GetHead(i).GetPosition() > line_num)
-      GetHead(i).Jump(inject_size);
+    if (GetHead(i).GetPosition() > line_num) GetHead(i).Jump(inject_size);
   }
 }
 
@@ -1043,12 +1041,6 @@ bool cHardwareCPU::ForkThread()
   thread_id_chart |= (1 << new_id);
   
   return true;
-}
-
-
-int cHardwareCPU::TestParasite() const
-{
-  return IP().TestParasite();
 }
 
 
@@ -1535,7 +1527,7 @@ bool cHardwareCPU::Inst_JumpP(cAvidaContext& ctx)
   // If there is no label, jump to line BX in creature.
   if (GetLabel().GetSize() == 0) {
     const int new_pos = GetRegister(nHardwareCPU::REG_BX);
-    IP().Set(new_pos, &other_hardware);
+    IP().Set(new_pos);
     organism->GetPhenotype().IsParasite() = true;
     return true;
   }
@@ -1563,7 +1555,7 @@ bool cHardwareCPU::Inst_JumpSelf(cAvidaContext& ctx)
   
   // If there is no label, jump to line BX in creature.
   if (GetLabel().GetSize() == 0) {
-    IP().Set(GetRegister(nHardwareCPU::REG_BX), this);
+    IP().Set(GetRegister(nHardwareCPU::REG_BX));
     return true;
   }
   
@@ -1630,7 +1622,7 @@ bool cHardwareCPU::Inst_Push(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_HeadPop(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
-  GetHead(head_used).Set(StackPop(), this);
+  GetHead(head_used).Set(StackPop());
   return true;
 }
 
@@ -2980,7 +2972,7 @@ bool cHardwareCPU::Inst_HeadSearch(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_SetFlow(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(nHardwareCPU::REG_CX);
-  GetHead(nHardware::HEAD_FLOW).Set(GetRegister(reg_used), this);
+  GetHead(nHardware::HEAD_FLOW).Set(GetRegister(reg_used));
 return true; 
 }
 

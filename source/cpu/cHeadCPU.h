@@ -11,6 +11,15 @@
 #ifndef cHeadCPU_h
 #define cHeadCPU_h
 
+#ifndef cCPUMemory_h
+#include "cCPUMemory.h"
+#endif
+#ifndef cHardwareBase_h
+#include "cHardwareBase.h"
+#endif
+#ifndef cInstSet_h
+#include "cInstSet.h"
+#endif
 #ifndef defs_h
 #include "defs.h"
 #endif
@@ -19,9 +28,7 @@
  * The cHeadCPU class contains a pointer to locations in memory for a CPU.
  **/
 
-class cHardwareBase;
 class cCodeLabel;
-class cCPUMemory;
 class cGenome;
 class cInstruction;
 class cString;
@@ -29,103 +36,118 @@ class cString;
 class cHeadCPU
 {
 protected:
-  cHardwareBase* main_hardware;
-  cHardwareBase* cur_hardware;
-  int position;
+  cHardwareBase* m_hardware;
+  int m_position;
+  int m_mem_space;
 
   int FindLabel_Forward(const cCodeLabel& search_label, const cGenome& search_mem, int pos);
   int FindLabel_Backward(const cCodeLabel& search_label, const cGenome& search_mem, int pos);
+  
 
 public:
-  cHeadCPU();
-  cHeadCPU(cHardwareBase* in_hardware, int in_pos = 0);
-  cHeadCPU(const cHeadCPU& in_cpu_head);
-  virtual ~cHeadCPU() { ; }
+  inline cHeadCPU(cHardwareBase* hw = NULL, int pos = 0, int ms = 0);
+  inline cHeadCPU(const cHeadCPU& in_cpu_head);
+  ~cHeadCPU() { ; }
   
-  /**
-   * This function keeps the position within the range of the current memory.
-   **/
-  virtual void Adjust();
-
-  virtual void Reset(cHardwareBase * new_hardware = NULL);
+  inline const cCPUMemory& GetMemory() const { return m_hardware->GetMemory(m_mem_space); }
+  inline cCPUMemory& GetMemory() { return m_hardware->GetMemory(m_mem_space); }
   
-  /**
-   * Set the new position of the head (and adjust it into range in Set()).
-   **/
+  inline int GetMemSpace() const { return m_mem_space; }
 
-  virtual void Set(int new_pos, cHardwareBase * in_hardware = NULL);
+  void Adjust();
+  inline void Reset(cHardwareBase* hw, int ms = 0) { m_hardware = hw; m_position = 0; m_mem_space = ms; }
   
-  void AbsSet(int new_pos) { position = new_pos; }
+  inline void Set(int pos, int ms = 0) { m_position = pos; m_mem_space = ms; Adjust(); }
+  inline void Set(const cHeadCPU& in_head) { m_position = in_head.m_position; m_mem_space = in_head.m_mem_space; }
+  inline void AbsSet(int new_pos) { m_position = new_pos; }
+
+  inline void Jump(int jump) { m_position += jump; Adjust(); }
+  inline void AbsJump(int jump) { m_position += jump; }
+  inline void LoopJump(int jump);
   
-  virtual void Set(const cHeadCPU & in_head) {
-    position = in_head.position;
-    cur_hardware  = in_head.cur_hardware;
-  }
+  inline void Advance() { m_position++; Adjust(); }
+  inline void Retreat() { m_position--; Adjust(); }
+  cHeadCPU FindLabel(const cCodeLabel& label, int direction = 1);
 
-  /**
-   * Increment the new position of the head by 'jump'.
-   **/
+  inline int GetPosition() const { return m_position; }
+  inline const cInstruction& GetInst() const { return GetMemory()[m_position]; }
+  inline const cInstruction& GetInst(int offset) const { return GetMemory()[m_position + offset]; }
+  inline const cInstruction& GetNextInst() const;
 
-  void Jump(int jump);
-  virtual void LoopJump(int jump);
-  void AbsJump(int jump);
+  inline void SetInst(const cInstruction& value) { GetMemory()[m_position] = value; }
+  inline void InsertInst(const cInstruction& inst) { GetMemory().Insert(m_position, inst); }
+  inline void RemoveInst() { GetMemory().Remove(m_position); }
+
+  inline void SetFlagCopied() { return GetMemory().SetFlagCopied(m_position); }
+  inline void SetFlagMutated() { return GetMemory().SetFlagMutated(m_position); }
+  inline void SetFlagExecuted() { return GetMemory().SetFlagExecuted(m_position); }
+  inline void SetFlagBreakpoint() { return GetMemory().SetFlagBreakpoint(m_position); }
+  inline void SetFlagPointMut() { return GetMemory().SetFlagPointMut(m_position); }
+  inline void SetFlagCopyMut() { return GetMemory().SetFlagCopyMut(m_position); }
   
-  // Other manipulation functions.
-  void Advance();
-  void Retreat();
-  cHeadCPU FindLabel(const cCodeLabel & label, int direction=1);
-
-  // Accessors.
-  int GetPosition() const { return position; }
-  virtual const cCPUMemory & GetMemory() const;
-  cHardwareBase * GetCurHardware() const { return cur_hardware; }
-  cHardwareBase * GetMainHardware() const { return main_hardware; }
-  virtual const cInstruction & GetInst() const;
-  virtual const cInstruction & GetInst(int offset) const;
-  // int GetFlag(int id) const;
-
-  virtual void SetInst(const cInstruction & value);
-  virtual void InsertInst(const cInstruction & in_char);
-  virtual void RemoveInst();
-  virtual const cInstruction & GetNextInst();
-
-  virtual void SetFlagCopied();
-  virtual void SetFlagMutated();
-  virtual void SetFlagExecuted();
-  virtual void SetFlagBreakpoint();
-  virtual void SetFlagPointMut();
-  virtual void SetFlagCopyMut();
+  inline void ClearFlagCopied() { return GetMemory().ClearFlagCopied(m_position); }
+  inline void ClearFlagMutated() { return GetMemory().ClearFlagMutated(m_position); }
+  inline void ClearFlagExecuted() { return GetMemory().ClearFlagExecuted(m_position); }
+  inline void ClearFlagBreakpoint() { return GetMemory().ClearFlagBreakpoint(m_position); }
+  inline void ClearFlagPointMut() { return GetMemory().ClearFlagPointMut(m_position); }
+  inline void ClearFlagCopyMut() { return GetMemory().ClearFlagCopyMut(m_position); }
   
-  virtual void ClearFlagCopied();
-  virtual void ClearFlagMutated();
-  virtual void ClearFlagExecuted();
-  virtual void ClearFlagBreakpoint();
-  virtual void ClearFlagPointMut();
-  virtual void ClearFlagCopyMut();
-    
   // Operator Overloading...
-  virtual cHeadCPU& operator=(const cHeadCPU& in_cpu_head);
-  cHeadCPU & operator++();
-  cHeadCPU & operator--();
-  cHeadCPU & operator++(int);
-  cHeadCPU & operator--(int);
-
-  inline int operator-(const cHeadCPU & in_cpu_head) {
-    if (cur_hardware != in_cpu_head.cur_hardware) return 0;
-    else return position - in_cpu_head.position;
-  }
-  virtual bool operator==(const cHeadCPU & in_cpu_head) const;
+  inline cHeadCPU& operator=(const cHeadCPU& in_cpu_head);
+  inline cHeadCPU& operator++() { m_position++; Adjust(); return *this; }
+  inline cHeadCPU& operator--() { m_position--; Adjust(); return *this; }
+  inline cHeadCPU& operator++(int) { return operator++(); }
+  inline cHeadCPU& operator--(int) { return operator--(); }
+  inline int operator-(const cHeadCPU& in_cpu_head) { return m_position - in_cpu_head.m_position; }
+  inline bool operator==(const cHeadCPU& in_cpu_head) const;
 
   // Bool Tests...
-  inline bool AtFront() const { return (position == 0); }
-  virtual bool AtEnd() const;
-  virtual bool InMemory() const;
-
-  // Test functions...
-  int TestParasite() const;
-  
-  virtual cString GetPositionString() const;
+  inline bool AtFront() const { return (m_position == 0); }
+  inline bool AtEnd() const { return (m_position + 1 == GetMemory().GetSize()); }
+  inline bool InMemory() const { return (m_position >= 0 && m_position < GetMemory().GetSize()); }
 };
+
+
+inline cHeadCPU::cHeadCPU(cHardwareBase* hw, int pos, int ms) : m_hardware(hw), m_position(pos), m_mem_space(ms)
+{
+  if (pos) Adjust();
+}
+
+inline cHeadCPU::cHeadCPU(const cHeadCPU& in_cpu_head)
+{
+  m_hardware = in_cpu_head.m_hardware;
+  m_position = in_cpu_head.m_position;
+  m_mem_space = in_cpu_head.m_mem_space;
+}
+
+inline void cHeadCPU::LoopJump(int jump)
+{
+  m_position += jump;
+  
+  // keep in range
+  m_position %= GetMemory().GetSize();
+  if (m_position <= 0) m_position += GetMemory().GetSize();
+}
+
+inline cHeadCPU& cHeadCPU::operator=(const cHeadCPU& in_cpu_head)
+{
+  m_hardware = in_cpu_head.m_hardware;
+  m_position = in_cpu_head.m_position;
+  m_mem_space = in_cpu_head.m_mem_space;
+  return *this;
+}
+
+inline bool cHeadCPU::operator==(const cHeadCPU& in_cpu_head) const
+{
+  return (m_hardware == in_cpu_head.m_hardware) && (m_position == in_cpu_head.m_position) &&
+  (m_mem_space == in_cpu_head.m_mem_space);
+}
+
+inline const cInstruction& cHeadCPU::GetNextInst() const
+{
+  return (AtEnd()) ? cInstSet::GetInstError() : GetMemory()[m_position + 1];
+}
+
 
 
 #ifdef ENABLE_UNIT_TESTS

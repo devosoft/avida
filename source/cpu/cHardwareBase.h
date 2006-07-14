@@ -94,6 +94,7 @@ public:
   virtual cHeadCPU& GetHead(int head_id) = 0;
   virtual const cHeadCPU& GetHead(int head_id, int thread) const = 0;
   virtual cHeadCPU& GetHead(int head_id, int thread) = 0;
+  virtual int GetNumHeads() const = 0;
   
   virtual const cHeadCPU& IP() const = 0;
   virtual cHeadCPU& IP() = 0;
@@ -133,7 +134,6 @@ public:
   
   
   // --------  Parasite Stuff  --------
-  virtual int TestParasite() const = 0;
   virtual bool InjectHost(const cCodeLabel& in_label, const cGenome& injection) = 0;
   
     

@@ -182,6 +182,7 @@ public:
   cHeadCPU& GetHead(int head_id) { return threads[cur_thread].heads[head_id];}
   const cHeadCPU& GetHead(int head_id, int thread) const { return threads[thread].heads[head_id]; }
   cHeadCPU& GetHead(int head_id, int thread) { return threads[thread].heads[head_id];}
+  int GetNumHeads() const { return nHardware::NUM_HEADS; }
   
   const cHeadCPU& IP() const { return threads[cur_thread].heads[nHardware::HEAD_IP]; }
   cHeadCPU& IP() { return threads[cur_thread].heads[nHardware::HEAD_IP]; }
@@ -197,7 +198,7 @@ public:
   // --------  Memory Manipulation  --------
   const cCPUMemory& GetMemory() const { return memory; }
   cCPUMemory& GetMemory() { return memory; }
-  const cCPUMemory& GetMemory(int value) const { return memory;}
+  const cCPUMemory& GetMemory(int value) const { return memory; }
   cCPUMemory& GetMemory(int value) { return memory; }
   
   
@@ -221,7 +222,6 @@ public:
   
   
   // --------  Parasite Stuff  --------
-  int TestParasite() const;
   bool InjectHost(const cCodeLabel& in_label, const cGenome& injection);
 
   
