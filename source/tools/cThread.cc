@@ -11,6 +11,7 @@
 
 cThread::~cThread()
 {
+  pthread_mutex_destroy(&m_mutex);
 #ifndef WIN32_PTHREAD_HACK
   if (m_running) pthread_detach(m_thread);
 #endif

@@ -31,7 +31,7 @@ protected:
   cThread& operator=(const cThread&); // @not_implemented
 
 public:
-  cThread() : m_running(false) { ; }
+  cThread() : m_running(false) { pthread_mutex_init(&m_mutex, NULL); }
   virtual ~cThread();
   
   int Start();
