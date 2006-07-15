@@ -130,7 +130,7 @@ tInstLib<cHardwareSMT::tMethod>* cHardwareSMT::initInstLib(void)
 }
 
 cHardwareSMT::cHardwareSMT(cWorld* world, cOrganism* in_organism, cInstSet* in_m_inst_set)
-: cHardwareBase(world, in_organism, in_m_inst_set), m_mem_array(1)
+: cHardwareBase(world, in_organism, in_m_inst_set), m_mem_array(1), m_mem_marks(1)
 , m_mem_lbls(Pow(NUM_NOPS, MAX_MEMSPACE_LABEL) / MEM_LBLS_HASH_FACTOR)
 , m_thread_lbls(Pow(NUM_NOPS, MAX_THREAD_LABEL) / THREAD_LBLS_HASH_FACTOR)
 {
@@ -146,6 +146,8 @@ void cHardwareSMT::Reset()
 {
   // Setup the memory...
   m_mem_array.Resize(1);
+  m_mem_marks.Resize(1);
+  m_mem_marks[0] = false;
   m_mem_lbls.ClearAll();
   
   // We want to reset to have a single thread.
@@ -374,7 +376,7 @@ void cHardwareSMT::PrintStatus(ostream& fp)
 	
   for (int i = 0; i < m_mem_array.GetSize(); i++) {
     const cCPUMemory& mem = m_mem_array[i];
-    fp << "  Mem " << i << " (" << mem.GetSize() << "): " << mem.AsString() << endl;
+    fp << "  Mem " << i << " (" << mem.GetSize() << ")[" << (m_mem_marks[i] ? '*':' ') << "]: " << mem.AsString() << endl;
   }
   
   fp.flush();
@@ -389,6 +391,8 @@ int cHardwareSMT::FindMemorySpaceLabel(const cCodeLabel& label, int mem_space)
   if (!m_mem_lbls.Find(hash_key, mem_space)) {
     mem_space = m_mem_array.GetSize();
     m_mem_array.Resize(mem_space + 1);
+    m_mem_marks.Resize(mem_space + 1);
+    m_mem_marks[mem_space] = false;
     m_mem_lbls.Add(hash_key, mem_space);
   }
   
@@ -447,8 +451,7 @@ cHeadCPU cHardwareSMT::FindLabel(int direction)
 // Search forwards for search_label from _after_ position pos in the
 // memory.  Return the first line _after_ the the found label.  It is okay
 // to find search label's match inside another label.
-int cHardwareSMT::FindLabel_Forward(const cCodeLabel& search_label,
-                                    const cGenome& search_genome, int pos)
+int cHardwareSMT::FindLabel_Forward(const cCodeLabel& search_label, const cGenome& search_genome, int pos)
 {
   assert (pos < search_genome.GetSize() && pos >= 0);
 	
@@ -528,8 +531,7 @@ int cHardwareSMT::FindLabel_Forward(const cCodeLabel& search_label,
 // Search backwards for search_label from _before_ position pos in the
 // memory.  Return the first line _after_ the the found label.  It is okay
 // to find search label's match inside another label.
-int cHardwareSMT::FindLabel_Backward(const cCodeLabel & search_label,
-                                     const cGenome & search_genome, int pos)
+int cHardwareSMT::FindLabel_Backward(const cCodeLabel& search_label, const cGenome& search_genome, int pos)
 {
   assert (pos < search_genome.GetSize());
 	
@@ -831,9 +833,7 @@ bool cHardwareSMT::ThreadKill(int thread_id)
 
 
 
-////////////////////////////
-//  Instruction Helpers...
-////////////////////////////
+// --------  Instruction Helpers  --------
 
 inline int cHardwareSMT::FindModifiedStack(int default_stack)
 {
@@ -1308,20 +1308,21 @@ bool cHardwareSMT::Inst_MemSet(cAvidaContext& ctx)
 {
   ReadLabel(MAX_MEMSPACE_LABEL);
   
-  if (GetLabel().GetSize() == 0) {
-    GetHead(nHardware::HEAD_FLOW).Set(0, 0);
-  } else {
-    int mem_space_used = FindMemorySpaceLabel(GetLabel(), -1);
-    if (mem_space_used == -1) return false;
-    GetHead(nHardware::HEAD_FLOW).Set(0, mem_space_used);
-  }
+  int mem_space_used = FindMemorySpaceLabel(GetLabel(), -1);
+  if (mem_space_used == -1) return false;
+  GetHead(nHardware::HEAD_FLOW).Set(0, mem_space_used);
   
   return true;
 }
 
 bool cHardwareSMT::Inst_MemMark(cAvidaContext& ctx) 
 {
-  // @DMB - todo
+  ReadLabel(MAX_MEMSPACE_LABEL);
+  
+  int mem_space_used = FindMemorySpaceLabel(GetLabel(), -1);
+  if (mem_space_used == -1) return false;
+  m_mem_marks[mem_space_used] = !m_mem_marks[mem_space_used];
+  
   return true;
 }
 

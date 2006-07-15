@@ -100,6 +100,7 @@ protected:
 	
   // Memory
   tManagedPointerArray<cCPUMemory> m_mem_array;
+  tArray<bool> m_mem_marks;
   tHashTable<int, int> m_mem_lbls;
 
   // Threads

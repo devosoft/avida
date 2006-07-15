@@ -89,7 +89,7 @@ public:
   }
 
 
-  void Resize(int new_size, const T & empty_value)
+  void Resize(int new_size, const T& empty_value)
   {
     int old_size = m_size;
     Resize(new_size);
