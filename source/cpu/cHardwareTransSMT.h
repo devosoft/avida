@@ -231,6 +231,7 @@ public:
   const cCPUMemory& GetMemory() const { return m_mem_array[0]; }
   cCPUMemory& GetMemory(int mem_space) { return m_mem_array[NormalizeMemSpace(mem_space)]; }
   const cCPUMemory& GetMemory(int mem_space) const { return m_mem_array[NormalizeMemSpace(mem_space)]; }
+  int GetNumMemSpaces() const { return m_mem_array.GetSize(); }
   
   
   // --------  Register Manipulation  --------

@@ -112,6 +112,7 @@ public:
   virtual cCPUMemory& GetMemory() = 0;
   virtual const cCPUMemory& GetMemory(int value) const = 0;
   virtual cCPUMemory& GetMemory(int value) = 0;
+  virtual int GetNumMemSpaces() const = 0;
   
   
   // --------  Register Manipulation  --------

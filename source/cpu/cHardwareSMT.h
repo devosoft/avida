@@ -231,6 +231,7 @@ public:
   const cCPUMemory& GetMemory() const { return m_mem_array[0]; }
   cCPUMemory& GetMemory(int mem_space) { return m_mem_array[NormalizeMemSpace(mem_space)]; }
   const cCPUMemory& GetMemory(int mem_space) const { return m_mem_array[NormalizeMemSpace(mem_space)]; }
+  int GetNumMemSpaces() const { return m_mem_array.GetSize(); }
   
   
   // --------  Register Manipulation  --------
@@ -260,51 +261,50 @@ private:
   // ---------- Instruction Library -----------
 
   // Core Instuction Set
-  bool Inst_ShiftR(cAvidaContext& ctx);         // 6
-  bool Inst_ShiftL(cAvidaContext& ctx);         // 7
-  bool Inst_Val_Nand(cAvidaContext& ctx);       // 8
-  bool Inst_Val_Add(cAvidaContext& ctx);        // 9
-  bool Inst_Val_Sub(cAvidaContext& ctx);        // 10
-  bool Inst_Val_Mult(cAvidaContext& ctx);       // 11
-  bool Inst_Val_Div(cAvidaContext& ctx);        // 12
-  bool Inst_Val_Mod(cAvidaContext& ctx);        // 13
-  bool Inst_Val_Inc(cAvidaContext& ctx);        // 14
-  bool Inst_Val_Dec(cAvidaContext& ctx);        // 15
-  bool Inst_SetMemory(cAvidaContext& ctx);      // 16
-  bool Inst_Divide(cAvidaContext& ctx);         // 17
-  bool Inst_HeadRead(cAvidaContext& ctx);       // 18
-  bool Inst_HeadWrite(cAvidaContext& ctx);      // 19
-  bool Inst_IfEqual(cAvidaContext& ctx);        // 20
-  bool Inst_IfNotEqual(cAvidaContext& ctx);     // 21
-  bool Inst_IfLess(cAvidaContext& ctx);         // 22
-  bool Inst_IfGreater(cAvidaContext& ctx);      // 23
-  bool Inst_HeadPush(cAvidaContext& ctx);       // 24
-  bool Inst_HeadPop(cAvidaContext& ctx);        // 25
-  bool Inst_HeadMove(cAvidaContext& ctx);       // 26
-  bool Inst_Search(cAvidaContext& ctx);         // 27
-  bool Inst_PushNext(cAvidaContext& ctx);       // 28
-  bool Inst_PushPrevious(cAvidaContext& ctx);   // 29
-  bool Inst_PushComplement(cAvidaContext& ctx); // 30
-  bool Inst_ValDelete(cAvidaContext& ctx);      // 31
-  bool Inst_ValCopy(cAvidaContext& ctx);        // 32
-  bool Inst_IO(cAvidaContext& ctx);             // 33
+  bool Inst_Alt(cAvidaContext& ctx);
+  bool Inst_ValShift(cAvidaContext& ctx);
+  bool Inst_ValNand(cAvidaContext& ctx);
+  bool Inst_ValAdd(cAvidaContext& ctx);
+  bool Inst_ValSub(cAvidaContext& ctx);
+  bool Inst_ValNegate(cAvidaContext& ctx);
+  bool Inst_ValMult(cAvidaContext& ctx);
+  bool Inst_ValDiv(cAvidaContext& ctx);
+  bool Inst_ValMod(cAvidaContext& ctx);
+  bool Inst_ValInc(cAvidaContext& ctx);
+  bool Inst_ValDec(cAvidaContext& ctx);
+  bool Inst_ValCopy(cAvidaContext& ctx);
+  bool Inst_ValDelete(cAvidaContext& ctx);
+  bool Inst_StackDelete(cAvidaContext& ctx);
+  bool Inst_PushNext(cAvidaContext& ctx);
+  bool Inst_PushPrev(cAvidaContext& ctx);
+  bool Inst_PushComp(cAvidaContext& ctx);
+  bool Inst_MemSet(cAvidaContext& ctx);
+  bool Inst_MemMark(cAvidaContext& ctx);
+  bool Inst_MemSplit(cAvidaContext& ctx);
+  bool Inst_MemMerge(cAvidaContext& ctx);
+  bool Inst_Divide(cAvidaContext& ctx);
+  bool Inst_Inject(cAvidaContext& ctx);
+  bool Inst_InstRead(cAvidaContext& ctx);
+  bool Inst_InstWrite(cAvidaContext& ctx);
+  bool Inst_BlockRead(cAvidaContext& ctx);
+  bool Inst_BlockWrite(cAvidaContext& ctx);
+  bool Inst_IfEqual(cAvidaContext& ctx);
+  bool Inst_IfNotEqual(cAvidaContext& ctx);
+  bool Inst_IfLess(cAvidaContext& ctx);
+  bool Inst_IfGreater(cAvidaContext& ctx);
+  bool Inst_HeadPush(cAvidaContext& ctx);
+  bool Inst_HeadPop(cAvidaContext& ctx);
+  bool Inst_HeadMove(cAvidaContext& ctx);
+  bool Inst_HeadSet(cAvidaContext& ctx);
+  bool Inst_Call(cAvidaContext& ctx);
+  bool Inst_Return(cAvidaContext& ctx);
+  bool Inst_Search(cAvidaContext& ctx);
+  bool Inst_SearchMem(cAvidaContext& ctx);
+  bool Inst_IO(cAvidaContext& ctx);
+  bool Inst_ThreadSet(cAvidaContext& ctx);
+  bool Inst_ThreadGet(cAvidaContext& ctx);
   
-  // Additional Instructions
-  bool Inst_ThreadCreate(cAvidaContext& ctx);   // 34
-  bool Inst_ThreadCancel(cAvidaContext& ctx);   // 35
-  bool Inst_ThreadKill(cAvidaContext& ctx);     // 36
-  bool Inst_Inject(cAvidaContext& ctx);         // 37
-  bool Inst_Apoptosis(cAvidaContext& ctx);      // 38
-  bool Inst_NetGet(cAvidaContext& ctx);         // 39
-  bool Inst_NetSend(cAvidaContext& ctx);        // 40
-  bool Inst_NetReceive(cAvidaContext& ctx);     // 41
-  bool Inst_NetLast(cAvidaContext& ctx);        // 42
-  bool Inst_RotateLeft(cAvidaContext& ctx);     // 43
-  bool Inst_RotateRight(cAvidaContext& ctx);    // 44
-  bool Inst_CallFlow(cAvidaContext& ctx);       // 45
-  bool Inst_CallLabel(cAvidaContext& ctx);      // 46
-  bool Inst_Return(cAvidaContext& ctx);         // 47
-  
+  bool Inst_Apoptosis(cAvidaContext& ctx);
 };
 
 

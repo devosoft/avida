@@ -200,6 +200,7 @@ public:
   cCPUMemory& GetMemory() { return memory; }
   const cCPUMemory& GetMemory(int value) const { return memory; }
   cCPUMemory& GetMemory(int value) { return memory; }
+  int GetNumMemSpaces() const { return 1; }
   
   
   // --------  Register Manipulation  --------

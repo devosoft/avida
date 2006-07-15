@@ -20,6 +20,9 @@
 
 void cHeadCPU::Adjust()
 {
+  // Ensure that m_mem_space is valid
+  m_mem_space %= m_hardware->GetNumMemSpaces();
+  
   const int mem_size = GetMemory().GetSize();
   
   // If we are still in range, stop here!

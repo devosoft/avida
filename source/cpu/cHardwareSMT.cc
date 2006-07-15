@@ -51,53 +51,54 @@ tInstLib<cHardwareSMT::tMethod>* cHardwareSMT::initInstLib(void)
     tMethod function;
   };
   static const cInstEntry s_f_array[] = {
-    cInstEntry("Nop-A", &cHardwareSMT::Inst_Nop), // 1
-    cInstEntry("Nop-B", &cHardwareSMT::Inst_Nop), // 2
-    cInstEntry("Nop-C", &cHardwareSMT::Inst_Nop), // 3
-    cInstEntry("Nop-D", &cHardwareSMT::Inst_Nop), // 4
-    cInstEntry("Nop-X", &cHardwareSMT::Inst_Nop), // 5
-    cInstEntry("Val-Shift-R", &cHardwareSMT::Inst_ShiftR), // 6
-    cInstEntry("Val-Shift-L", &cHardwareSMT::Inst_ShiftL), // 7
-    cInstEntry("Val-Nand", &cHardwareSMT::Inst_Val_Nand), // 8
-    cInstEntry("Val-Add", &cHardwareSMT::Inst_Val_Add), // 9
-    cInstEntry("Val-Sub", &cHardwareSMT::Inst_Val_Sub), // 10
-    cInstEntry("Val-Mult", &cHardwareSMT::Inst_Val_Mult), // 11
-    cInstEntry("Val-Div", &cHardwareSMT::Inst_Val_Div), // 12
-    cInstEntry("Val-Mod", &cHardwareSMT::Inst_Val_Mod), // 13
-    cInstEntry("Val-Inc", &cHardwareSMT::Inst_Val_Inc), // 14
-    cInstEntry("Val-Dec", &cHardwareSMT::Inst_Val_Dec), // 15
-    cInstEntry("SetMemory", &cHardwareSMT::Inst_SetMemory), // 16
-    cInstEntry("Divide", &cHardwareSMT::Inst_Divide), // 17
-    cInstEntry("Inst-Read", &cHardwareSMT::Inst_HeadRead), // 18
-    cInstEntry("Inst-Write", &cHardwareSMT::Inst_HeadWrite), // 19
-    cInstEntry("If-Equal", &cHardwareSMT::Inst_IfEqual), // 20
-    cInstEntry("If-Not-Equal", &cHardwareSMT::Inst_IfNotEqual), // 21
-    cInstEntry("If-Less", &cHardwareSMT::Inst_IfLess), // 22
-    cInstEntry("If-Greater", &cHardwareSMT::Inst_IfGreater), // 23
-    cInstEntry("Head-Push", &cHardwareSMT::Inst_HeadPush), // 24
-    cInstEntry("Head-Pop", &cHardwareSMT::Inst_HeadPop), // 25
-    cInstEntry("Head-Move", &cHardwareSMT::Inst_HeadMove), // 26
-    cInstEntry("Search", &cHardwareSMT::Inst_Search), // 27
-    cInstEntry("Push-Next", &cHardwareSMT::Inst_PushNext), // 28
-    cInstEntry("Push-Prev", &cHardwareSMT::Inst_PushPrevious), // 29
-    cInstEntry("Push-Comp", &cHardwareSMT::Inst_PushComplement), // 30
-    cInstEntry("Val-Delete", &cHardwareSMT::Inst_ValDelete), // 31
-    cInstEntry("Val-Copy", &cHardwareSMT::Inst_ValCopy), // 32
-    cInstEntry("IO", &cHardwareSMT::Inst_IO), // 33
-    cInstEntry("Thread-Create", &cHardwareSMT::Inst_ThreadCreate), // 34
-    cInstEntry("Thread-Cancel", &cHardwareSMT::Inst_ThreadCancel), // 35
-    cInstEntry("Thread-Kill", &cHardwareSMT::Inst_ThreadKill), // 36
-    cInstEntry("Inject", &cHardwareSMT::Inst_Inject), // 37
-    cInstEntry("Apoptosis", &cHardwareSMT::Inst_Apoptosis), // 38
-    cInstEntry("Net-Get", &cHardwareSMT::Inst_NetGet), // 39
-    cInstEntry("Net-Send", &cHardwareSMT::Inst_NetSend), // 40
-    cInstEntry("Net-Receive", &cHardwareSMT::Inst_NetReceive), // 41
-    cInstEntry("Net-Last", &cHardwareSMT::Inst_NetLast), // 42
-    cInstEntry("Rotate-Left", &cHardwareSMT::Inst_RotateLeft), // 43
-    cInstEntry("Rotate-Right", &cHardwareSMT::Inst_RotateRight), // 44
-    cInstEntry("Call-Flow", &cHardwareSMT::Inst_CallFlow), // 44
-    cInstEntry("Call-Label", &cHardwareSMT::Inst_CallLabel), // 44
-    cInstEntry("Return", &cHardwareSMT::Inst_Return), // 44
+    cInstEntry("Nop-A", &cHardwareSMT::Inst_Nop),
+    cInstEntry("Nop-B", &cHardwareSMT::Inst_Nop),
+    cInstEntry("Nop-C", &cHardwareSMT::Inst_Nop),
+    cInstEntry("Nop-D", &cHardwareSMT::Inst_Nop),
+    cInstEntry("Alt", &cHardwareSMT::Inst_Alt),
+    cInstEntry("Val-Shift", &cHardwareSMT::Inst_ValShift),
+    cInstEntry("Val-Nand", &cHardwareSMT::Inst_ValNand),
+    cInstEntry("Val-Add", &cHardwareSMT::Inst_ValAdd),
+    cInstEntry("Val-Sub", &cHardwareSMT::Inst_ValSub),
+    cInstEntry("Val-Negate", &cHardwareSMT::Inst_ValNegate),
+    cInstEntry("Val-Mult", &cHardwareSMT::Inst_ValMult),
+    cInstEntry("Val-Div", &cHardwareSMT::Inst_ValDiv),
+    cInstEntry("Val-Mod", &cHardwareSMT::Inst_ValMod),
+    cInstEntry("Val-Inc", &cHardwareSMT::Inst_ValInc),
+    cInstEntry("Val-Dec", &cHardwareSMT::Inst_ValDec),
+    cInstEntry("Val-Copy", &cHardwareSMT::Inst_ValCopy),
+    cInstEntry("Val-Delete", &cHardwareSMT::Inst_ValDelete),
+    cInstEntry("Stack-Delete", &cHardwareSMT::Inst_StackDelete),
+    cInstEntry("Push-Next", &cHardwareSMT::Inst_PushNext),
+    cInstEntry("Push-Prev", &cHardwareSMT::Inst_PushPrev),
+    cInstEntry("Push-Comp", &cHardwareSMT::Inst_PushComp),
+    cInstEntry("Mem-Set", &cHardwareSMT::Inst_MemSet),
+    cInstEntry("Mem-Mark", &cHardwareSMT::Inst_MemMark),
+    cInstEntry("Mem-Split", &cHardwareSMT::Inst_MemSplit),
+    cInstEntry("Mem-Merge", &cHardwareSMT::Inst_MemMerge),
+    cInstEntry("Divide", &cHardwareSMT::Inst_Divide),
+    cInstEntry("Inject", &cHardwareSMT::Inst_Inject),
+    cInstEntry("Inst-Read", &cHardwareSMT::Inst_InstRead),
+    cInstEntry("Inst-Write", &cHardwareSMT::Inst_InstWrite),
+    cInstEntry("Block-Read", &cHardwareSMT::Inst_BlockRead),
+    cInstEntry("Block-Write", &cHardwareSMT::Inst_BlockWrite),
+    cInstEntry("If-Equal", &cHardwareSMT::Inst_IfEqual),
+    cInstEntry("If-Not-Equal", &cHardwareSMT::Inst_IfNotEqual),
+    cInstEntry("If-Less", &cHardwareSMT::Inst_IfLess),
+    cInstEntry("If-Greater", &cHardwareSMT::Inst_IfGreater),
+    cInstEntry("Head-Push", &cHardwareSMT::Inst_HeadPush),
+    cInstEntry("Head-Pop", &cHardwareSMT::Inst_HeadPop),
+    cInstEntry("Head-Move", &cHardwareSMT::Inst_HeadMove),
+    cInstEntry("Head-Set", &cHardwareSMT::Inst_HeadSet),
+    cInstEntry("Call", &cHardwareSMT::Inst_Call),
+    cInstEntry("Return", &cHardwareSMT::Inst_Return),
+    cInstEntry("Search", &cHardwareSMT::Inst_Search),
+    cInstEntry("Search-Mem", &cHardwareSMT::Inst_SearchMem),
+    cInstEntry("IO", &cHardwareSMT::Inst_IO),
+    cInstEntry("Thread-Set", &cHardwareSMT::Inst_ThreadSet),
+    cInstEntry("Thread-Get", &cHardwareSMT::Inst_ThreadGet),
+    
+    cInstEntry("Apoptosis", &cHardwareSMT::Inst_Apoptosis),
     
     cInstEntry("NULL", &cHardwareSMT::Inst_Nop) // Last Instruction Always NULL
   };
@@ -725,7 +726,7 @@ bool cHardwareSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier)
   // reset the memory space that was injected
   m_mem_array[mem_space_used] = cGenome("a"); 
 	
-  for (int x = 0; x < nHardware::NUM_HEADS; x++) GetHead(x).Reset(this, IP().GetMemSpace());
+  for (int x = 0; x < NUM_EXTENDED_HEADS; x++) GetHead(x).Reset(this, IP().GetMemSpace());
   for (int x = 0; x < NUM_LOCAL_STACKS; x++) Stack(x).Clear();
   
   AdvanceIP() = false;
@@ -789,16 +790,16 @@ int cHardwareSMT::ThreadCreate(const cCodeLabel& label, int mem_space)
   int thread_id = m_threads.GetSize();
   
   // Check for thread cap, base thread label (i.e. no label)
-  if (thread_id == m_world->GetConfig().MAX_CPU_THREADS.Get() || label.GetSize() == 0) return -1;	
+  if (thread_id == m_world->GetConfig().MAX_CPU_THREADS.Get() || label.GetSize() == 0) return 0;	
   
   // Check for existing thread
   int hash_key = label.AsInt(NUM_NOPS);
   if (m_thread_lbls.Find(hash_key, thread_id)) {
     if (m_threads[thread_id].running) {
-      return -1;  // Thread exists, and is running... call fails
+      return 0;  // Thread exists, and is running... call fails
     } else {
       m_threads[thread_id].Reset(this, mem_space);
-      return thread_id;
+      return (thread_id + 1);
     }
   }
   
@@ -809,13 +810,16 @@ int cHardwareSMT::ThreadCreate(const cCodeLabel& label, int mem_space)
   // Setup this thread into the current selected memory space (Flow Head)
   m_threads[thread_id].Reset(this, mem_space);
 	
-  return thread_id;
+  return (thread_id + 1);
 }
 
-bool cHardwareSMT::ThreadKill(const int thread_id)
+bool cHardwareSMT::ThreadKill(int thread_id)
 {
-  if (thread_id < 1 || thread_id >= m_threads.GetSize()) return false;
+  if (thread_id < 1 || thread_id > m_threads.GetSize()) return false;
 
+  // Adjust thread id to thread array index
+  thread_id--;
+  
   // Increment thread, if killing current thread
   if (m_cur_thread == thread_id) ThreadNext();
   
@@ -887,12 +891,12 @@ inline int cHardwareSMT::FindModifiedComplementStack(int default_stack)
 
 inline int cHardwareSMT::FindModifiedHead(int default_head)
 {
-  assert(default_head < nHardware::NUM_HEADS); // Head ID too high.
+  assert(default_head < NUM_EXTENDED_HEADS); // Head ID too high.
 	
   if (m_inst_set->IsNop(IP().GetNextInst())) {
     IP().Advance();    
     int nop_head = m_inst_set->GetNopMod(IP().GetInst());
-    if (nop_head < nHardware::NUM_HEADS) default_head = nop_head;
+    if (nop_head < NUM_EXTENDED_HEADS) default_head = nop_head;
     IP().SetFlagExecuted();
   }
   return default_head;
@@ -1048,11 +1052,11 @@ bool cHardwareSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
 		else if (div_method == DIVIDE_METHOD_BIRTH)
 		{
 			if((!organism->GetPhenotype().IsModified() && GetNumThreads() > 1) || GetNumThreads() > 2) {
-	      ThreadKill(m_cur_thread);
+	      ThreadKill(m_cur_thread + 1);
 	    } else {
         //this will reset the current thread's heads and stacks.  It will 
         //not touch any other threads or memory spaces (ie: parasites)
-	      for(int x = 0; x < nHardware::NUM_HEADS; x++) {
+	      for(int x = 0; x < NUM_EXTENDED_HEADS; x++) {
 					GetHead(x).Reset(this, 0);
 				}
 	      for(int x = 0; x < NUM_LOCAL_STACKS; x++) {
@@ -1069,39 +1073,38 @@ bool cHardwareSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
 
 // --------  Begin Core Instruction Set --------
 
+bool cHardwareSMT::Inst_Alt(cAvidaContext& ctx)
+{
+  // @DMB - todo
+  return true;
+}
 
-//6
-bool cHardwareSMT::Inst_ShiftR(cAvidaContext& ctx)
+bool cHardwareSMT::Inst_ValShift(cAvidaContext& ctx)
 {
   const int dst = FindModifiedStack(STACK_BX);
 #if SMT_FULLY_ASSOCIATIVE
-  const int src = FindModifiedStack(dst);
+  const int op1 = FindModifiedStack(dst);
+  const int op2 = FindModifiedNextStack(op1);
 #else
-  const int src = dst;
+  const int op1 = dst;
+  const int op2 = FindNextStack(dst);
 #endif
-  int value = Stack(src).Pop();
-  value >>= 1;
+  int value = Stack(op1).Top();
+  int shift = Stack(op2).Top();
+  
+  const int bits = sizeof(int) * 8;
+  if (shift >= 0 && shift < bits) {           // Positive shift == right shift
+    value >>= shift;
+  } else if (shift < 0 && (-shift) < bits) {  // Negative shift == left shift
+    value <<= -shift;    
+  } else {                                    // if shift > num_bits then flush to 0
+    value = 0;
+  }
   Stack(dst).Push(value);
   return true;
 }
 
-//7
-bool cHardwareSMT::Inst_ShiftL(cAvidaContext& ctx)
-{
-  const int dst = FindModifiedStack(STACK_BX);
-#if SMT_FULLY_ASSOCIATIVE
-  const int src = FindModifiedStack(dst);
-#else
-  const int src = dst;
-#endif
-  int value = Stack(src).Pop();
-  value <<= 1;
-  Stack(dst).Push(value);
-  return true;
-}
-
-//8
-bool cHardwareSMT::Inst_Val_Nand(cAvidaContext& ctx)
+bool cHardwareSMT::Inst_ValNand(cAvidaContext& ctx)
 {
   const int dst = FindModifiedStack(STACK_BX);
 #if SMT_FULLY_ASSOCIATIVE
@@ -1115,8 +1118,7 @@ bool cHardwareSMT::Inst_Val_Nand(cAvidaContext& ctx)
   return true;
 }
 
-//9
-bool cHardwareSMT::Inst_Val_Add(cAvidaContext& ctx)
+bool cHardwareSMT::Inst_ValAdd(cAvidaContext& ctx)
 {
   const int dst = FindModifiedStack(STACK_BX);
 #if SMT_FULLY_ASSOCIATIVE
@@ -1130,8 +1132,19 @@ bool cHardwareSMT::Inst_Val_Add(cAvidaContext& ctx)
   return true;
 }
 
-//10
-bool cHardwareSMT::Inst_Val_Sub(cAvidaContext& ctx)
+bool cHardwareSMT::Inst_ValNegate(cAvidaContext& ctx)
+{
+  const int dst = FindModifiedStack(STACK_BX);
+#if SMT_FULLY_ASSOCIATIVE
+  const int op1 = FindModifiedStack(STACK_BX);
+#else
+  const int op1 = STACK_BX;
+#endif
+  Stack(dst).Push(-Stack(op1).Top());
+  return true;
+}
+
+bool cHardwareSMT::Inst_ValSub(cAvidaContext& ctx)
 {
   const int dst = FindModifiedStack(STACK_BX);
 #if SMT_FULLY_ASSOCIATIVE
@@ -1145,8 +1158,7 @@ bool cHardwareSMT::Inst_Val_Sub(cAvidaContext& ctx)
   return true;
 }
 
-//11
-bool cHardwareSMT::Inst_Val_Mult(cAvidaContext& ctx)
+bool cHardwareSMT::Inst_ValMult(cAvidaContext& ctx)
 {
   const int dst = FindModifiedStack(STACK_BX);
 #if SMT_FULLY_ASSOCIATIVE
@@ -1160,8 +1172,7 @@ bool cHardwareSMT::Inst_Val_Mult(cAvidaContext& ctx)
   return true;
 }
 
-//12
-bool cHardwareSMT::Inst_Val_Div(cAvidaContext& ctx)
+bool cHardwareSMT::Inst_ValDiv(cAvidaContext& ctx)
 {
   const int dst = FindModifiedStack(STACK_BX);
 #if SMT_FULLY_ASSOCIATIVE
@@ -1172,10 +1183,12 @@ bool cHardwareSMT::Inst_Val_Div(cAvidaContext& ctx)
   const int op2 = STACK_CX;
 #endif
   if (Stack(op2).Top() != 0) {
-    if (0-INT_MAX > Stack(op1).Top() && Stack(op2).Top() == -1)
-      organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: Float exception");
-    else
+    if (-INT_MAX > Stack(op1).Top() && Stack(op2).Top() == -1) {
+      organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: overflow exception");
+      return false;
+    } else {
       Stack(dst).Push(Stack(op1).Top() / Stack(op2).Top());
+    }
   } else {
     organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: dividing by 0");
     return false;
@@ -1183,8 +1196,7 @@ bool cHardwareSMT::Inst_Val_Div(cAvidaContext& ctx)
   return true;
 }
 
-//13
-bool cHardwareSMT::Inst_Val_Mod(cAvidaContext& ctx)
+bool cHardwareSMT::Inst_ValMod(cAvidaContext& ctx)
 {
   const int dst = FindModifiedStack(STACK_BX);
 #if SMT_FULLY_ASSOCIATIVE
@@ -1195,10 +1207,7 @@ bool cHardwareSMT::Inst_Val_Mod(cAvidaContext& ctx)
   const int op2 = STACK_CX;
 #endif
   if (Stack(op2).Top() != 0) {
-    if(Stack(op2).Top() == -1)
-      Stack(dst).Push(0);
-    else
-      Stack(dst).Push(Stack(op1).Top() % Stack(op2).Top());
+    Stack(dst).Push(Stack(op1).Top() % Stack(op2).Top());
   } else {
     organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "mod: modding by 0");
 		return false;
@@ -1206,8 +1215,7 @@ bool cHardwareSMT::Inst_Val_Mod(cAvidaContext& ctx)
   return true;
 }
 
-//14
-bool cHardwareSMT::Inst_Val_Inc(cAvidaContext& ctx)
+bool cHardwareSMT::Inst_ValInc(cAvidaContext& ctx)
 {
   const int dst = FindModifiedStack(STACK_BX);
 #if SMT_FULLY_ASSOCIATIVE
@@ -1215,13 +1223,12 @@ bool cHardwareSMT::Inst_Val_Inc(cAvidaContext& ctx)
 #else
   const int src = dst;
 #endif
-  int value = Stack(src).Pop();
+  int value = Stack(src).Top();
   Stack(dst).Push(++value);
   return true;
 }
 
-//15
-bool cHardwareSMT::Inst_Val_Dec(cAvidaContext& ctx)
+bool cHardwareSMT::Inst_ValDec(cAvidaContext& ctx)
 {
   const int dst = FindModifiedStack(STACK_BX);
 #if SMT_FULLY_ASSOCIATIVE
@@ -1229,13 +1236,75 @@ bool cHardwareSMT::Inst_Val_Dec(cAvidaContext& ctx)
 #else
   const int src = dst;
 #endif
-  int value = Stack(src).Pop();
+  int value = Stack(src).Top();
   Stack(dst).Push(--value);
   return true;
 }
 
-//16
-bool cHardwareSMT::Inst_SetMemory(cAvidaContext& ctx) 
+bool cHardwareSMT::Inst_ValCopy(cAvidaContext& ctx)
+{
+  const int dst = FindModifiedStack(STACK_BX);
+#if SMT_FULLY_ASSOCIATIVE
+  const int src = FindModifiedStack(dst);
+#else
+  const int src = dst;
+#endif
+  Stack(dst).Push(Stack(src).Top());
+  return true;
+}
+
+bool cHardwareSMT::Inst_ValDelete(cAvidaContext& ctx)
+{
+  int stack_used = FindModifiedStack(STACK_BX);
+  Stack(stack_used).Pop();
+  return true;
+}
+
+bool cHardwareSMT::Inst_StackDelete(cAvidaContext& ctx)
+{
+  int stack_used = FindModifiedStack(STACK_BX);
+  Stack(stack_used).Clear();
+  return true;
+}
+
+
+bool cHardwareSMT::Inst_PushNext(cAvidaContext& ctx) 
+{
+  const int src = FindModifiedStack(STACK_AX);
+#if SMT_FULLY_ASSOCIATIVE
+  const int dst = FindModifiedNextStack(src);
+#else
+  const int dst = FindNextStack(src);
+#endif
+  Stack(dst).Push(Stack(src).Pop());
+  return true;
+}
+
+bool cHardwareSMT::Inst_PushPrev(cAvidaContext& ctx) 
+{
+  const int src = FindModifiedStack(STACK_BX);
+#if SMT_FULLY_ASSOCIATIVE
+  const int dst = FindModifiedPreviousStack(src);
+#else
+  const int dst = FindPreviousStack(src);
+#endif
+  Stack(dst).Push(Stack(src).Pop());
+  return true;
+}
+
+bool cHardwareSMT::Inst_PushComp(cAvidaContext& ctx) 
+{
+  int src = FindModifiedStack(STACK_BX);
+#if SMT_FULLY_ASSOCIATIVE
+  const int dst = FindModifiedComplementStack(src);
+#else
+  const int dst = FindComplementStack(src);
+#endif
+  Stack(dst).Push(Stack(src).Pop());
+  return true;
+}
+
+bool cHardwareSMT::Inst_MemSet(cAvidaContext& ctx) 
 {
   ReadLabel(MAX_MEMSPACE_LABEL);
   
@@ -1250,14 +1319,38 @@ bool cHardwareSMT::Inst_SetMemory(cAvidaContext& ctx)
   return true;
 }
 
-//17
+bool cHardwareSMT::Inst_MemMark(cAvidaContext& ctx) 
+{
+  // @DMB - todo
+  return true;
+}
+
+bool cHardwareSMT::Inst_MemSplit(cAvidaContext& ctx) 
+{
+  // @DMB - todo
+  return true;
+}
+
+bool cHardwareSMT::Inst_MemMerge(cAvidaContext& ctx) 
+{
+  // @DMB - todo
+  return true;
+}
+
 bool cHardwareSMT::Inst_Divide(cAvidaContext& ctx)
 {
   return Divide_Main(ctx);
 }
 
-//18
-bool cHardwareSMT::Inst_HeadRead(cAvidaContext& ctx)
+bool cHardwareSMT::Inst_Inject(cAvidaContext& ctx)
+{
+  ReadLabel(MAX_MEMSPACE_LABEL);
+  
+  double mut_multiplier = 1.0;	
+  return InjectParasite(ctx, mut_multiplier);
+}
+
+bool cHardwareSMT::Inst_InstRead(cAvidaContext& ctx)
 {
   const int head_id = FindModifiedHead(nHardware::HEAD_READ);
 #if SMT_FULLY_ASSOCIATIVE
@@ -1267,7 +1360,7 @@ bool cHardwareSMT::Inst_HeadRead(cAvidaContext& ctx)
 #endif
   
   GetHead(head_id).Adjust();
-  sCPUStats & cpu_stats = organism->CPUStats();
+  sCPUStats& cpu_stats = organism->CPUStats();
 	
   // Mutations only occur on the read, for the moment.
   int read_inst = 0;
@@ -1285,8 +1378,7 @@ bool cHardwareSMT::Inst_HeadRead(cAvidaContext& ctx)
   return true;
 }
 
-//19
-bool cHardwareSMT::Inst_HeadWrite(cAvidaContext& ctx)
+bool cHardwareSMT::Inst_InstWrite(cAvidaContext& ctx)
 {
   const int head_id = FindModifiedHead(nHardware::HEAD_WRITE);
 #if SMT_FULLY_ASSOCIATIVE
@@ -1317,8 +1409,19 @@ bool cHardwareSMT::Inst_HeadWrite(cAvidaContext& ctx)
   return true;
 }
 
-//20
-bool cHardwareSMT::Inst_IfEqual(cAvidaContext& ctx)      // Execute next if bx == ?cx?
+bool cHardwareSMT::Inst_BlockRead(cAvidaContext& ctx)
+{
+  // @DMB - todo
+  return true;
+}
+
+bool cHardwareSMT::Inst_BlockWrite(cAvidaContext& ctx)
+{
+  // @DMB - todo
+  return true;
+}
+
+bool cHardwareSMT::Inst_IfEqual(cAvidaContext& ctx) // Execute next if op1 == op2
 {
   const int op1 = FindModifiedStack(STACK_AX);
 #if SMT_FULLY_ASSOCIATIVE
@@ -1326,12 +1429,11 @@ bool cHardwareSMT::Inst_IfEqual(cAvidaContext& ctx)      // Execute next if bx =
 #else
   const int op2 = FindNextStack(op1);
 #endif
-  if (Stack(op1).Top() != Stack(op2).Top())  IP().Advance();
+  if (Stack(op1).Top() != Stack(op2).Top()) IP().Advance();
   return true;
 }
 
-//21
-bool cHardwareSMT::Inst_IfNotEqual(cAvidaContext& ctx)     // Execute next if bx != ?cx?
+bool cHardwareSMT::Inst_IfNotEqual(cAvidaContext& ctx) // Execute next if op1 != op2
 {
   const int op1 = FindModifiedStack(STACK_AX);
 #if SMT_FULLY_ASSOCIATIVE
@@ -1339,12 +1441,11 @@ bool cHardwareSMT::Inst_IfNotEqual(cAvidaContext& ctx)     // Execute next if bx
 #else
   const int op2 = FindNextStack(op1);
 #endif
-  if (Stack(op1).Top() == Stack(op2).Top())  IP().Advance();
+  if (Stack(op1).Top() == Stack(op2).Top()) IP().Advance();
   return true;
 }
 
-//22
-bool cHardwareSMT::Inst_IfLess(cAvidaContext& ctx)       // Execute next if ?bx? < ?cx?
+bool cHardwareSMT::Inst_IfLess(cAvidaContext& ctx) // Execute next if op1 < op2
 {
   const int op1 = FindModifiedStack(STACK_AX);
 #if SMT_FULLY_ASSOCIATIVE
@@ -1352,12 +1453,11 @@ bool cHardwareSMT::Inst_IfLess(cAvidaContext& ctx)       // Execute next if ?bx?
 #else
   const int op2 = FindNextStack(op1);
 #endif
-  if (Stack(op1).Top() >=  Stack(op2).Top())  IP().Advance();
+  if (Stack(op1).Top() >= Stack(op2).Top()) IP().Advance();
   return true;
 }
 
-//23
-bool cHardwareSMT::Inst_IfGreater(cAvidaContext& ctx)       // Execute next if bx > ?cx?
+bool cHardwareSMT::Inst_IfGreater(cAvidaContext& ctx) // Execute next if op1 > op2
 {
   const int op1 = FindModifiedStack(STACK_AX);
 #if SMT_FULLY_ASSOCIATIVE
@@ -1365,11 +1465,10 @@ bool cHardwareSMT::Inst_IfGreater(cAvidaContext& ctx)       // Execute next if b
 #else
   const int op2 = FindNextStack(op1);
 #endif
-  if (Stack(op1).Top() <= Stack(op2).Top())  IP().Advance();
+  if (Stack(op1).Top() <= Stack(op2).Top()) IP().Advance();
   return true;
 }
 
-//24
 bool cHardwareSMT::Inst_HeadPush(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
@@ -1378,11 +1477,10 @@ bool cHardwareSMT::Inst_HeadPush(cAvidaContext& ctx)
 #else
   const int dst = STACK_BX;
 #endif
-  Stack(dst).Push(GetHead(head_used).GetPosition());
+  Stack(dst).Push(GetHead(head_used).GetFullLocation());
   return true;
 }
 
-//25
 bool cHardwareSMT::Inst_HeadPop(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
@@ -1391,11 +1489,10 @@ bool cHardwareSMT::Inst_HeadPop(cAvidaContext& ctx)
 #else
   const int src = STACK_BX;
 #endif
-  GetHead(head_used).Set(Stack(src).Pop(), GetHead(head_used).GetMemSpace());
+  GetHead(head_used).SetFullLocation(Stack(src).Pop());
   return true;
 }
 
-//26
 bool cHardwareSMT::Inst_HeadMove(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
@@ -1411,7 +1508,44 @@ bool cHardwareSMT::Inst_HeadMove(cAvidaContext& ctx)
   return true;
 }
 
-//27
+bool cHardwareSMT::Inst_HeadSet(cAvidaContext& ctx)
+{
+  // @DMB - todo
+  return true;
+}
+
+bool cHardwareSMT::Inst_Call(cAvidaContext& ctx)
+{
+  const int dst = FindModifiedStack(STACK_AX);
+  
+  Stack(dst).Push(IP().GetFullLocation());
+  
+  ReadLabel(MAX_MEMSPACE_LABEL);
+  
+  // If a label was specified, call target label
+  if (GetLabel().GetSize() != 0) {
+    int mem_space_used = FindMemorySpaceLabel(GetLabel(), -1);
+    if (mem_space_used > -1) {
+      // Jump to beginning of memory space
+      IP().Set(0, mem_space_used);
+      return true;
+    }
+    return false;
+  }
+  
+  // Default to calling the flow head
+  IP().Set(GetHead(nHardware::HEAD_FLOW));
+  
+  return true;
+}
+
+bool cHardwareSMT::Inst_Return(cAvidaContext& ctx)
+{
+  const int src = FindModifiedStack(STACK_AX);
+  IP().SetFullLocation(Stack(src).Pop());
+  return true;
+}
+
 bool cHardwareSMT::Inst_Search(cAvidaContext& ctx)
 {
   ReadLabel();
@@ -1435,69 +1569,17 @@ bool cHardwareSMT::Inst_Search(cAvidaContext& ctx)
   return true; 
 }
 
-//28
-bool cHardwareSMT::Inst_PushNext(cAvidaContext& ctx) 
+bool cHardwareSMT::Inst_SearchMem(cAvidaContext& ctx)
 {
-  const int src = FindModifiedStack(STACK_AX);
-#if SMT_FULLY_ASSOCIATIVE
-  const int dst = FindModifiedNextStack(src);
-#else
-  const int dst = FindNextStack(src);
-#endif
-  Stack(dst).Push(Stack(src).Pop());
-  return true;
+  // @DMB - todo
+  return true; 
 }
 
-//29
-bool cHardwareSMT::Inst_PushPrevious(cAvidaContext& ctx) 
-{
-  const int src = FindModifiedStack(STACK_BX);
-#if SMT_FULLY_ASSOCIATIVE
-  const int dst = FindModifiedPreviousStack(src);
-#else
-  const int dst = FindPreviousStack(src);
-#endif
-  Stack(dst).Push(Stack(src).Pop());
-  return true;
-}
-
-//30
-bool cHardwareSMT::Inst_PushComplement(cAvidaContext& ctx) 
-{
-  int src = FindModifiedStack(STACK_BX);
-#if SMT_FULLY_ASSOCIATIVE
-  const int dst = FindModifiedComplementStack(src);
-#else
-  const int dst = FindComplementStack(src);
-#endif
-  Stack(dst).Push(Stack(src).Pop());
-  return true;
-}
-
-//31
-bool cHardwareSMT::Inst_ValDelete(cAvidaContext& ctx)
-{
-  int stack_used = FindModifiedStack(STACK_BX);
-  Stack(stack_used).Pop();
-  return true;
-}
-
-//32
-bool cHardwareSMT::Inst_ValCopy(cAvidaContext& ctx)
-{
-  const int dst = FindModifiedStack(STACK_BX);
-#if SMT_FULLY_ASSOCIATIVE
-  const int src = FindModifiedStack(dst);
-#else
-  const int src = dst;
-#endif
-  Stack(dst).Push(Stack(src).Top());
-  return true;
-}
-
-//33
 bool cHardwareSMT::Inst_IO(cAvidaContext& ctx)
 {
+  // @DMB - todo : exchange full stack...
+  
+  
   const int dst = FindModifiedStack(STACK_BX);
 #if SMT_FULLY_ASSOCIATIVE
   const int src = FindModifiedStack(dst);
@@ -1516,195 +1598,77 @@ bool cHardwareSMT::Inst_IO(cAvidaContext& ctx)
   return true;
 }
 
-
-// --------  End Core Instruction Set --------
-
-
-// --------  Additional Instructions --------
-
-
-//34
-bool cHardwareSMT::Inst_ThreadCreate(cAvidaContext& ctx)
+bool cHardwareSMT::Inst_ThreadSet(cAvidaContext& ctx)
 {
-  ReadLabel(MAX_THREAD_LABEL);
-  bool success = ThreadCreate(GetLabel(), GetHead(nHardware::HEAD_FLOW).GetMemSpace());
-  if (!success) organism->Fault(FAULT_LOC_THREAD_FORK, FAULT_TYPE_FORK_TH);
-  return success;
-}
-
-//35
-bool cHardwareSMT::Inst_ThreadCancel(cAvidaContext& ctx)
-{
-  bool success = ThreadKill(m_cur_thread);
-  if (!success) organism->Fault(FAULT_LOC_THREAD_KILL, FAULT_TYPE_KILL_TH);
-  return success;
-}
-
-//36
-bool cHardwareSMT::Inst_ThreadKill(cAvidaContext& ctx)
-{
-  ReadLabel(MAX_THREAD_LABEL);
-  bool success = ThreadKill(GetLabel());
-  if (!success) organism->Fault(FAULT_LOC_THREAD_KILL, FAULT_TYPE_KILL_TH);
-  return success;
-}
-
-
-
-//37
-//
-// The inject instruction can be used instead of a divide command, paired
-// with an allocate.  Note that for an inject to work, one needs to have a
-// broad range for sizes allowed to be allocated.
-//
-// This command will cut out from read-head to write-head.
-// It will then look at the template that follows the command and inject it
-// into the complement template found in a neighboring organism.
-bool cHardwareSMT::Inst_Inject(cAvidaContext& ctx)
-{
-  ReadLabel(MAX_MEMSPACE_LABEL);
+  // @DMB - todo : add actual thread priority handling
   
-  double mut_multiplier = 1.0;	
-  return InjectParasite(ctx, mut_multiplier);
+  ReadLabel(MAX_THREAD_LABEL);
+  bool success = false;
+  
+  const int priority = Stack(STACK_BX).Top();
+  
+  if (GetLabel().GetSize()) { // working with a labeled thread
+    if (priority) {
+      int thread_id = ThreadCreate(GetLabel(), GetHead(nHardware::HEAD_FLOW).GetMemSpace());
+      Stack(STACK_CX).Push(thread_id);
+      if (!thread_id) {
+        success = false;
+        organism->Fault(FAULT_LOC_THREAD_FORK, FAULT_TYPE_FORK_TH);
+      }
+    } else {
+      success = ThreadKill(GetLabel());
+      if (!success) organism->Fault(FAULT_LOC_THREAD_KILL, FAULT_TYPE_KILL_TH);
+    }
+  } else { // working with an absolute thread ID
+    int thread_id = Stack(STACK_CX).Top();
+    if (!thread_id) thread_id = m_cur_thread + 1;
+    
+    if (!priority) {
+      success = ThreadKill(thread_id);
+      if (!success) organism->Fault(FAULT_LOC_THREAD_KILL, FAULT_TYPE_KILL_TH);
+    }
+  }
+
+  return success;
 }
 
-//38
+bool cHardwareSMT::Inst_ThreadGet(cAvidaContext& ctx)
+{
+  // @DMB - todo : add actual thread priority handling
+
+  ReadLabel(MAX_THREAD_LABEL);
+  int thread_id = 0;
+
+  
+  if (GetLabel().GetSize()) {
+    int hash_key = GetLabel().AsInt(NUM_NOPS);
+    if (m_thread_lbls.Find(hash_key, thread_id)) {
+      Stack(STACK_BX).Push(m_threads[thread_id].running);
+      Stack(STACK_CX).Push(thread_id + 1);
+    } else {
+      Stack(STACK_BX).Push(0);
+      Stack(STACK_CX).Push(0);
+    }
+  } else {
+    thread_id = Stack(STACK_CX).Top();
+    if (thread_id == 0) {                                           // Current Thread
+      Stack(STACK_BX).Push(1); // should be priority
+      Stack(STACK_CX).Push(m_cur_thread + 1);
+    } else if (thread_id < 1 || thread_id > m_threads.GetSize()) {  // Thread out of range
+      Stack(STACK_BX).Push(0);
+      Stack(STACK_CX).Push(0);
+    } else {                                                        // Lookup valid thread
+      Stack(STACK_BX).Push(m_threads[thread_id - 1].running);
+      Stack(STACK_CX).Push(thread_id);
+    }
+  }
+
+  return true;
+}
+
+
 bool cHardwareSMT::Inst_Apoptosis(cAvidaContext& ctx)
 {
   organism->Die();
-  
-  return true;
-}
-
-//39
-bool cHardwareSMT::Inst_NetGet(cAvidaContext& ctx)
-{
-  const int dst = FindModifiedStack(STACK_BX);
-#if SMT_FULLY_ASSOCIATIVE
-  const int seq_dst = FindModifiedNextStack(dst);
-#else
-  const int seq_dst = FindNextStack(dst);
-#endif
-  int val, seq;
-  organism->NetGet(ctx, val, seq);
-  Stack(dst).Push(val);
-  Stack(seq_dst).Push(seq);
-  
-  return true;
-}
-
-//40
-bool cHardwareSMT::Inst_NetSend(cAvidaContext& ctx)
-{
-  const int src = FindModifiedStack(STACK_BX);
-  organism->NetSend(ctx, Stack(src).Pop());
-  return true;
-}
-
-//41
-bool cHardwareSMT::Inst_NetReceive(cAvidaContext& ctx)
-{
-  const int dst = FindModifiedStack(STACK_BX);
-  int val;
-  bool success = organism->NetReceive(val);
-  Stack(dst).Push(val);
-  return success;
-}
-
-//42
-bool cHardwareSMT::Inst_NetLast(cAvidaContext& ctx)
-{
-  const int dst = FindModifiedStack(STACK_CX);
-  Stack(dst).Push(organism->NetLast());
-  return true;
-}
-
-//43
-bool cHardwareSMT::Inst_RotateLeft(cAvidaContext& ctx)
-{
-  const int num_neighbors = organism->GetNeighborhoodSize();
-  
-  // If this organism has no neighbors, ignore rotate.
-  if (num_neighbors == 0) return false;
-  
-  // Always rotate at least once.
-  organism->Rotate(-1);
-  
-  return true;
-}
-
-//44
-bool cHardwareSMT::Inst_RotateRight(cAvidaContext& ctx)
-{
-  const int num_neighbors = organism->GetNeighborhoodSize();
-  
-  // If this organism has no neighbors, ignore rotate.
-  if (num_neighbors == 0) return false;
-  
-  // Always rotate at least once.
-  organism->Rotate(1);
-  
-  return true;
-}
-
-//45
-bool cHardwareSMT::Inst_CallFlow(cAvidaContext& ctx)
-{
-  const int dst = FindModifiedStack(STACK_AX);
-
-  const int location = IP().GetPosition() & 0xFFFF;
-  const int mem_space = IP().GetMemSpace() << 8;
-  const int ra  = location | mem_space;
-  
-  Stack(dst).Push(ra);
-  
-  cHeadCPU& flow = GetHead(nHardware::HEAD_FLOW);
-  IP().Set(flow.GetPosition(), flow.GetMemSpace());
-  
-  return true;
-}
-
-//46
-bool cHardwareSMT::Inst_CallLabel(cAvidaContext& ctx)
-{
-  const int dst = FindModifiedStack(STACK_AX);
-  
-  const unsigned int location = IP().GetPosition() & 0xFFFF;
-  const unsigned int mem_space = IP().GetMemSpace() << 8;
-  const unsigned int ra  = location | mem_space;
-  
-  Stack(dst).Push(ra);
-  
-  ReadLabel(MAX_MEMSPACE_LABEL);
-  
-  // If a label was specified, call target label
-  if (GetLabel().GetSize() != 0) {
-    int mem_space_used = FindMemorySpaceLabel(GetLabel(), -1);
-    if (mem_space_used > -1) {
-      // Jump to beginning of memory space
-      IP().Set(0, mem_space_used);
-      return true;
-    }
-    return false;
-  }
-
-  // Default to calling the flow head
-  cHeadCPU& flow = GetHead(nHardware::HEAD_FLOW);
-  IP().Set(flow.GetPosition(), flow.GetMemSpace());
-
-  return true;
-}
-
-//47
-bool cHardwareSMT::Inst_Return(cAvidaContext& ctx)
-{
-  const int src = FindModifiedStack(STACK_AX);
-  const unsigned int ra = Stack(src).Pop();
-  
-  const int location = ra & 0xFFFF;
-  const int mem_space = NormalizeMemSpace(ra >> 8);
-  
-  IP().Set(location, mem_space);
-  
   return true;
 }

@@ -18,35 +18,10 @@ using namespace std;
 
 
 // Initialize static variables
-const cInstruction cInstSet::inst_default(   0 );
-cInstruction cInstSet::inst_default2(   0 );
-cInstruction cInstSet::inst_error2  ( 255 );
+const cInstruction cInstSet::inst_default(0);
+cInstruction cInstSet::inst_default2(0);
+cInstruction cInstSet::inst_error2(255);
 
-cInstSet::cInstSet(cWorld* world) : m_world(world)
-{
-}
-
-cInstSet::cInstSet(const cInstSet & in_inst_set)
-  : m_world(in_inst_set.m_world)
-  , m_inst_lib(in_inst_set.m_inst_lib)
-  , m_lib_name_map(in_inst_set.m_lib_name_map)
-  , m_lib_nopmod_map(in_inst_set.m_lib_nopmod_map)
-  , m_mutation_chart(in_inst_set.m_mutation_chart)
-{
-}
-
-cInstSet::~cInstSet()
-{
-}
-
-cInstSet & cInstSet::operator=(const cInstSet & _in)
-{
-  m_inst_lib = _in.m_inst_lib;
-  m_lib_name_map = _in.m_lib_name_map;
-  m_lib_nopmod_map = _in.m_lib_nopmod_map;
-  m_mutation_chart = _in.m_mutation_chart;
-  return *this;
-}
 
 bool cInstSet::OK() const
 {
@@ -74,13 +49,7 @@ cInstruction cInstSet::GetRandomInst(cAvidaContext& ctx) const
   return cInstruction(inst_op);
 }
 
-int cInstSet::AddInst(
-  const int lib_fun_id,
-  const int redundancy,
-  const int ft_cost,
-  const int cost,
-  const double prob_fail
-)
+int cInstSet::AddInst(int lib_fun_id, int redundancy, int ft_cost, int cost, double prob_fail)
 {
   const int inst_id = m_lib_name_map.GetSize();
 
@@ -105,14 +74,8 @@ int cInstSet::AddInst(
   return inst_id;
 }
 
-int cInstSet::AddNop(
-  const int lib_nopmod_id,
-  const int redundancy,
-  const int ft_cost,
-  const int cost,
-  const double prob_fail
-)
-{ 
+int cInstSet::AddNop(int lib_nopmod_id, int redundancy, int ft_cost, int cost, double prob_fail)
+{
   // Assert nops are at the _beginning_ of an inst_set.
   assert(m_lib_name_map.GetSize() == m_lib_nopmod_map.GetSize());
 
@@ -124,7 +87,7 @@ int cInstSet::AddNop(
   return inst_id;
 }
 
-cString cInstSet::FindBestMatch(const cString & in_name) const
+cString cInstSet::FindBestMatch(const cString& in_name) const
 {
   int best_dist = 1024;
   cString best_name("");

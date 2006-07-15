@@ -52,12 +52,15 @@ public:
   inline const cCPUMemory& GetMemory() const { return m_hardware->GetMemory(m_mem_space); }
   inline cCPUMemory& GetMemory() { return m_hardware->GetMemory(m_mem_space); }
   
-  inline int GetMemSpace() const { return m_mem_space; }
-
   void Adjust();
   inline void Reset(cHardwareBase* hw, int ms = 0) { m_hardware = hw; m_position = 0; m_mem_space = ms; }
   
+  inline int GetMemSpace() const { return m_mem_space; }
+  inline int GetPosition() const { return m_position; }
+  inline int GetFullLocation() const { return (m_position & 0xFFFFFF) | (m_mem_space << 24); }
+  
   inline void Set(int pos, int ms = 0) { m_position = pos; m_mem_space = ms; Adjust(); }
+  inline void SetFullLocation(int loc) { m_position = loc & 0xFFFFFF; m_mem_space = (loc >> 24); Adjust(); }
   inline void Set(const cHeadCPU& in_head) { m_position = in_head.m_position; m_mem_space = in_head.m_mem_space; }
   inline void AbsSet(int new_pos) { m_position = new_pos; }
 
@@ -69,7 +72,6 @@ public:
   inline void Retreat() { m_position--; Adjust(); }
   cHeadCPU FindLabel(const cCodeLabel& label, int direction = 1);
 
-  inline int GetPosition() const { return m_position; }
   inline const cInstruction& GetInst() const { return GetMemory()[m_position]; }
   inline const cInstruction& GetInst(int offset) const { return GetMemory()[m_position + offset]; }
   inline const cInstruction& GetNextInst() const;

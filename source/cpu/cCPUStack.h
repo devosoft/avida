@@ -83,7 +83,7 @@ inline int cCPUStack::Get(int depth) const
 
 inline void cCPUStack::Clear()
 {
-  for (int i =0; i < nHardware::STACK_SIZE; i++) { stack[i] = 0; }
+  for (int i = 0; i < nHardware::STACK_SIZE; i++) stack[i] = 0;
   stack_pointer = 0;
 }
 
