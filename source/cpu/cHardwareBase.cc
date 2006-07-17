@@ -11,6 +11,7 @@
 #include "cHardwareBase.h"
 
 #include "cAvidaContext.h"
+#include "cCodeLabel.h"
 #include "cCPUTestInfo.h"
 #include "cHardwareManager.h"
 #include "cHeadCPU.h"

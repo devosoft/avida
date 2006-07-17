@@ -2531,7 +2531,7 @@ bool cHardwareCPU::Inst_RotateL(cAvidaContext& ctx)
   for (int i = 1; i < num_neighbors; i++) {
     cOrganism* neighbor = organism->GetNeighbor();
     
-    if (neighbor != NULL && neighbor->FindLabelFull(GetLabel()).InMemory()) return true;
+    if (neighbor != NULL && neighbor->GetHardware().FindLabelFull(GetLabel()).InMemory()) return true;
     
     // Otherwise keep rotating...
     organism->Rotate(-1);
@@ -2559,7 +2559,7 @@ bool cHardwareCPU::Inst_RotateR(cAvidaContext& ctx)
   for (int i = 1; i < num_neighbors; i++) {
     cOrganism* neighbor = organism->GetNeighbor();
     
-    if (neighbor != NULL && neighbor->FindLabelFull(GetLabel()).InMemory()) return true;
+    if (neighbor != NULL && neighbor->GetHardware().FindLabelFull(GetLabel()).InMemory()) return true;
     
     // Otherwise keep rotating...
     organism->Rotate(1);
