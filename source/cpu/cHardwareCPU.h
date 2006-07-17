@@ -118,7 +118,6 @@ protected:
   int FindLabel_Forward(const cCodeLabel & search_label, const cGenome& search_genome, int pos);
   int FindLabel_Backward(const cCodeLabel & search_label, const cGenome& search_genome, int pos);
   cHeadCPU FindLabel(const cCodeLabel & in_label, int direction);
-  cHeadCPU FindFullLabel(const cCodeLabel & in_label);
   const cCodeLabel& GetReadLabel() const { return threads[cur_thread].read_label; }
   cCodeLabel& GetReadLabel() { return threads[cur_thread].read_label; }
   
@@ -254,8 +253,6 @@ private:
 
   bool Inst_JumpF(cAvidaContext& ctx);
   bool Inst_JumpB(cAvidaContext& ctx);
-  bool Inst_JumpP(cAvidaContext& ctx);
-  bool Inst_JumpSelf(cAvidaContext& ctx);
   bool Inst_Call(cAvidaContext& ctx);
   bool Inst_Return(cAvidaContext& ctx);
 

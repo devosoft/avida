@@ -112,7 +112,7 @@ public:
 
 inline cHeadCPU::cHeadCPU(cHardwareBase* hw, int pos, int ms) : m_hardware(hw), m_position(pos), m_mem_space(ms)
 {
-  if (pos) Adjust();
+  if (pos || ms) Adjust();
 }
 
 inline cHeadCPU::cHeadCPU(const cHeadCPU& in_cpu_head)

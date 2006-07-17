@@ -82,7 +82,7 @@ public:
   int GetRedundancy(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].redundancy; }
   int GetLibFunctionIndex(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].lib_fun_id; }
 
-  int GetNopMod(const cInstruction & inst) const
+  int GetNopMod(const cInstruction& inst) const
   {
     int nopmod = m_lib_nopmod_map[inst.GetOp()];
     return m_inst_lib->GetNopMod(nopmod);

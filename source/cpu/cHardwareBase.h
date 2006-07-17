@@ -101,6 +101,8 @@ public:
   virtual const cHeadCPU& IP(int thread) const = 0;
   virtual cHeadCPU& IP(int thread) = 0;
   
+  cHeadCPU FindLabelFull(const cCodeLabel& label);
+  
   
   // --------  Label Manipulation  -------
   virtual const cCodeLabel& GetLabel() const = 0;

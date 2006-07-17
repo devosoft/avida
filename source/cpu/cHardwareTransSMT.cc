@@ -638,64 +638,6 @@ cHeadCPU cHardwareTransSMT::FindLabel(const cCodeLabel& in_label, int direction)
   return temp_head;
 }
 
-// @CAO: direction is not currently used; should be used to indicate the
-// direction which the heads[nHardware::HEAD_IP] should progress through a creature.
-cHeadCPU cHardwareTransSMT::FindFullLabel(const cCodeLabel & in_label)
-{
-  assert(in_label.GetSize() > 0); // Trying to find label of 0 size!
-	
-  cHeadCPU temp_head(this);
-	
-  while (temp_head.InMemory()) {
-    // If we are not in a label, jump to the next checkpoint...
-    if (m_inst_set->IsNop(temp_head.GetInst())) {
-      temp_head.AbsJump(in_label.GetSize());
-      continue;
-    }
-		
-    // Otherwise, rewind to the begining of this label...
-    while (!(temp_head.AtFront()) && m_inst_set->IsNop(temp_head.GetInst(-1)))
-      temp_head.AbsJump(-1);
-		
-    // Calculate the size of the label being checked, and make sure they
-    // are equal.		
-    int checked_size = 0;
-    while (m_inst_set->IsNop(temp_head.GetInst(checked_size))) {
-      checked_size++;
-    }
-    if (checked_size != in_label.GetSize()) {
-      temp_head.AbsJump(checked_size + 1);
-      continue;
-    }
-
-    // ...and do the comparison...
-    int j;
-    bool label_match = true;
-    for (j = 0; j < in_label.GetSize(); j++) {
-      if (!m_inst_set->IsNop(temp_head.GetInst(j)) ||
-					in_label[j] != m_inst_set->GetNopMod(temp_head.GetInst(j))) {
-				temp_head.AbsJump(in_label.GetSize() + 1);
-				label_match = false;
-				break;
-      }
-    }
-		
-    if (label_match) {
-      // If we have found the label, return the position after it.
-      temp_head.AbsJump(j - 1);
-      return temp_head;
-    }
-		
-    // We have not found the label... increment i.
-		
-    temp_head.AbsJump(in_label.GetSize() + 1);
-  }
-	
-  // The label does not exist in this creature.
-	
-  temp_head.AbsSet(-1);
-  return temp_head;
-}
 
 // This is the code run by the INFECTED organism.  Its function is to SPREAD infection.
 bool cHardwareTransSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier)

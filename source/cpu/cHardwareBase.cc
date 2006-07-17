@@ -453,6 +453,55 @@ bool cHardwareBase::TriggerMutations(cAvidaContext& ctx, int trigger, cHeadCPU& 
 }
 
 
+cHeadCPU cHardwareBase::FindLabelFull(const cCodeLabel& label)
+{
+  assert(label.GetSize() > 0); // Trying to find label of 0 size!
+  
+  cHeadCPU temp_head(this);
+  
+  while (temp_head.InMemory()) {
+    // If we are not in a label, jump to the next checkpoint...
+    if (!m_inst_set->IsNop(temp_head.GetInst())) {
+      temp_head.AbsJump(label.GetSize());
+      continue;
+    }
+    
+    // Otherwise, rewind to the begining of this label...
+    
+    while (!(temp_head.AtFront()) && m_inst_set->IsNop(temp_head.GetInst(-1)))
+      temp_head.AbsJump(-1);
+    
+    // Calculate the size of the label being checked, and make sure they
+    // are equal.
+    
+    int size = 0;
+    bool label_match = true;
+    do {
+      // Check if the nop matches
+      if (size < label.GetSize() && label[size] != m_inst_set->GetNopMod(temp_head.GetInst()))
+        label_match = false;
+      
+      // Increment the current position and length calculation
+      temp_head.AbsJump(1);
+      size++;
+      
+      // While still within memory and the instruction is a nop
+    } while (temp_head.InMemory() && m_inst_set->IsNop(temp_head.GetInst()));
+    
+    if (size != label.GetSize()) continue;
+    
+    // temp_head will point to the first non-nop instruction after the label, or the end of the memory space
+    //   if this is a match, return this position
+    if (label_match) return temp_head;
+  }
+  
+  // The label does not exist in this creature.
+  
+  temp_head.AbsSet(-1);
+  return temp_head;
+}
+
+
 bool cHardwareBase::Inst_Nop(cAvidaContext& ctx)          // Do Nothing.
 {
   return true;
