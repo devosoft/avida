@@ -16,7 +16,7 @@ Unit tests
 */
 #include "cXMLArchive.h"
 
-#include <boost/detail/lightweight_test.hpp>
+#include "lightweight_test.h"
 
 #include <cstdio>    // for std::remove() to remove temporary files.
 #include <iomanip>
@@ -45,16 +45,16 @@ namespace nFixedCoords {
 
   namespace utFixedCoords_hello_world {
     void test(){
-      std::cout << "utFixedCoords_hello_world" << std::endl;
-      BOOST_TEST(true);
-      BOOST_TEST(false);
+      std::cout << CURRENT_FUNCTION << std::endl;
+      TEST(true);
+      TEST(false);
     }
   }
 
   namespace utFixedCoords_archiving {
     void test(){
 #   ifdef ENABLE_SERIALIZATION
-      std::cout << "utFixedCoords_archiving" << std::endl;
+      std::cout << CURRENT_FUNCTION << std::endl;
       std::string filename("./cFixedCoords_basic_serialization.xml");
 
       /*
@@ -62,11 +62,11 @@ namespace nFixedCoords {
       */
       {
         cFixedCoords fc;
-        BOOST_TEST(0 == fc.GetBlockNum());
-        BOOST_TEST(0 == fc.GetOffset());
+        TEST(0 == fc.GetBlockNum());
+        TEST(0 == fc.GetOffset());
         fc(2,3);
-        BOOST_TEST(2 == fc.GetBlockNum());
-        BOOST_TEST(3 == fc.GetOffset());
+        TEST(2 == fc.GetBlockNum());
+        TEST(3 == fc.GetOffset());
         save_stuff<>(fc, filename.c_str());
       }
       /*
@@ -74,11 +74,11 @@ namespace nFixedCoords {
       */
       {
         cFixedCoords fc;
-        BOOST_TEST(0 == fc.GetBlockNum());
-        BOOST_TEST(0 == fc.GetOffset());
+        TEST(0 == fc.GetBlockNum());
+        TEST(0 == fc.GetOffset());
         restore_stuff<>(fc, filename.c_str());
-        BOOST_TEST(2 == fc.GetBlockNum());
-        BOOST_TEST(3 == fc.GetOffset());
+        TEST(2 == fc.GetBlockNum());
+        TEST(3 == fc.GetOffset());
       }
 
       std::remove(filename.c_str());

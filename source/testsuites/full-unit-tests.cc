@@ -9,7 +9,7 @@
 #include "cString.h"
 #include "nTemplateTests.h"
 
-#include <boost/detail/lightweight_test.hpp>
+#include "lightweight_test.h"
 
 int main() {
 
@@ -26,6 +26,6 @@ int main() {
   nStringList::UnitTests(true);
   nTemplateTests::UnitTests(true);
 
-  return boost::report_errors();
+  return report_errors();
 }
 

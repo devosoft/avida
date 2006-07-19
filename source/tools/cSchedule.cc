@@ -41,7 +41,7 @@ Unit tests
 #include "cFile.h"
 #include "cXMLArchive.h"
 
-#include <boost/detail/lightweight_test.hpp>
+#include "lightweight_test.h"
 
 #include <cstdio>    // for std::remove() to remove temporary files.
 #include <iomanip>   
@@ -76,15 +76,17 @@ namespace nSchedule {
 
   namespace utSchedule_hello_world {
     void test(){
-      BOOST_TEST(true);
-      BOOST_TEST(false);
+      std::cout << CURRENT_FUNCTION << std::endl;
+      TEST(true);
+      TEST(false);
     }
   }
 
   namespace utSchedule_archiving {
     void test(){
+      std::cout << CURRENT_FUNCTION << std::endl;
       std::string filename("./cSchedule_basic_serialization.xml");
-      BOOST_TEST(tMemTrack<cChangeList>::Instances() == 0);
+      TEST(tMemTrack<cChangeList>::Instances() == 0);
       {
       }
       {
@@ -97,14 +99,8 @@ namespace nSchedule {
 
   void UnitTests(bool full)
   {
-    //if(full) {
-    //  std::cout << "utSchedule_hello_world" << std::endl;
-    //  utSchedule_hello_world::test();
-    //}
-    if(full) {
-      std::cout << "utSchedule_archiving" << std::endl;
-      utSchedule_archiving::test();
-    }
+    //if(full) utSchedule_hello_world::test();
+    if(full) utSchedule_archiving::test();
   }
 } // nSchedule
 

@@ -719,6 +719,40 @@ namespace nString {
       TEST(false);
     }
   }
+
+  namespace utString_string_manip {
+    void test() {
+      std::cout << CURRENT_FUNCTION << std::endl;
+      cString test_str("string is string 321");
+      TEST(test_str.Replace("ring", "rung", 9) != -1);
+      TEST(test_str[3] == 'i');
+      TEST(test_str[13] == 'u');
+      TEST(test_str.PopWord() == "string");
+      TEST(test_str.Pop('s') == "i");
+      TEST(test_str.LeftJustify() == 1);
+      test_str.Reverse();
+      TEST(test_str == "123 gnurts");
+      TEST(test_str.GetWord(1) == "gnurts");
+      TEST(test_str.GetWordAt(6) == "urts");
+      TEST(test_str.ToUpper() == "123 GNURTS");
+      TEST(test_str.IsWhitespace(2) == false);
+      TEST(test_str.IsWhitespace(3) == true);
+      TEST(test_str.IsWhitespace(4) == false);
+      TEST(test_str.CountNumWords() == 2);
+      TEST(test_str.PopWord().AsInt() == 123);
+      TEST(test_str.Find('T') == 4);
+      TEST((test_str += " 4fun") == "GNURTS 4fun");
+      TEST(test_str.ToLower() == "gnurts 4fun");
+      TEST(test_str.Insert("  should r", 3, 6) == "gnu  should run");
+      TEST(test_str.ClipEnd(3) == "gnu  should ");
+      test_str.CompressWhitespace();
+      TEST(test_str == "gnu should");
+      test_str.RemoveChar('u');
+      TEST(test_str == "gn shold");
+
+      std::cout << "Finished: " << CURRENT_FUNCTION << std::endl;      
+    }
+  }
   
   namespace utString_archiving {
     void test() {
@@ -859,6 +893,7 @@ namespace nString {
   void UnitTests(bool full)
   {
     //if(full) utString_hello_world::test();
+    if(full) utString_string_manip::test();
     if(full) utString_archiving::test();
   }
 } // nString

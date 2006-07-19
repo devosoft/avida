@@ -1,11 +1,11 @@
 #include "cInitFile.h"
 
-#include <boost/detail/lightweight_test.hpp>
+#include "lightweight_test.h"
 
 int main() {
 
   nInitFile::UnitTests(true);
 
-  return boost::report_errors();
+  return report_errors();
 }
 
