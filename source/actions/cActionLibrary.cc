@@ -9,6 +9,7 @@
 
 #include "cActionLibrary.h"
 
+#include "DriverActions.h"
 #include "LandscapeActions.h"
 #include "PopulationActions.h"
 #include "PrintActions.h"
@@ -19,6 +20,7 @@ cActionLibrary* cActionLibrary::ConstructDefaultActionLibrary()
 {
   cActionLibrary* actlib = new cActionLibrary();
 
+  RegisterDriverActions(actlib);
   RegisterLandscapeActions(actlib);
   RegisterPopulationActions(actlib);
   RegisterPrintActions(actlib);

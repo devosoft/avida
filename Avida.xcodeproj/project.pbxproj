@@ -57,6 +57,9 @@
 		7049F3710A66AD7E00640512 /* default-sex-classic.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F36D0A66AD7E00640512 /* default-sex-classic.org */; };
 		7049F3720A66AD7E00640512 /* default-smt.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F36E0A66AD7E00640512 /* default-smt.org */; };
 		7049F3730A66AD7E00640512 /* default-transsmt.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F36F0A66AD7E00640512 /* default-transsmt.org */; };
+		704ADBC60A6EEFC300666970 /* DriverActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704ADBC40A6EEFC300666970 /* DriverActions.cc */; };
+		704ADBC80A6EEFC300666970 /* DriverActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704ADBC40A6EEFC300666970 /* DriverActions.cc */; };
+		704ADBF90A6EF3A300666970 /* DriverActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704ADBC40A6EEFC300666970 /* DriverActions.cc */; };
 		7053324C0929764C006BD186 /* cSpecies.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705332480929764A006BD186 /* cSpecies.cc */; };
 		7053324D0929764E006BD186 /* cSpeciesQueue.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7053324A0929764A006BD186 /* cSpeciesQueue.cc */; };
 		7053336D092A3DF9006BD186 /* cInjectGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70533364092A3DF4006BD186 /* cInjectGenotype.cc */; };
@@ -511,6 +514,8 @@
 		7049F36D0A66AD7E00640512 /* default-sex-classic.org */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "default-sex-classic.org"; sourceTree = "<group>"; };
 		7049F36E0A66AD7E00640512 /* default-smt.org */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "default-smt.org"; sourceTree = "<group>"; };
 		7049F36F0A66AD7E00640512 /* default-transsmt.org */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "default-transsmt.org"; sourceTree = "<group>"; };
+		704ADBC30A6EEFC300666970 /* DriverActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DriverActions.h; sourceTree = "<group>"; };
+		704ADBC40A6EEFC300666970 /* DriverActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DriverActions.cc; sourceTree = "<group>"; };
 		705332480929764A006BD186 /* cSpecies.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cSpecies.cc; sourceTree = "<group>"; };
 		705332490929764A006BD186 /* cSpecies.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cSpecies.h; sourceTree = "<group>"; };
 		7053324A0929764A006BD186 /* cSpeciesQueue.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cSpeciesQueue.cc; sourceTree = "<group>"; };
@@ -1025,6 +1030,8 @@
 				708051BA0A1F66B400CBB8B6 /* cActionLibrary.cc */,
 				70C054C80A4F6E19002703C1 /* PopulationActions.h */,
 				70C054C90A4F6E19002703C1 /* PopulationActions.cc */,
+				704ADBC30A6EEFC300666970 /* DriverActions.h */,
+				704ADBC40A6EEFC300666970 /* DriverActions.cc */,
 			);
 			path = actions;
 			sourceTree = "<group>";
@@ -1940,6 +1947,7 @@
 				70C054FA0A4F7053002703C1 /* PopulationActions.cc in Sources */,
 				709D924E0A5D950E00D6A163 /* cMutationalNeighborhood.cc in Sources */,
 				7049F2DB0A66859F00640512 /* cHardwareTransSMT.cc in Sources */,
+				704ADBC80A6EEFC300666970 /* DriverActions.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2071,6 +2079,7 @@
 				70C054F90A4F704E002703C1 /* SaveLoadActions.cc in Sources */,
 				709D924D0A5D950E00D6A163 /* cMutationalNeighborhood.cc in Sources */,
 				7049F2DA0A66859B00640512 /* cHardwareTransSMT.cc in Sources */,
+				704ADBC60A6EEFC300666970 /* DriverActions.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2183,6 +2192,7 @@
 				70C054ED0A4F6FD2002703C1 /* PopulationActions.cc in Sources */,
 				709D924C0A5D950D00D6A163 /* cMutationalNeighborhood.cc in Sources */,
 				7049F2D90A66859700640512 /* cHardwareTransSMT.cc in Sources */,
+				704ADBF90A6EF3A300666970 /* DriverActions.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
