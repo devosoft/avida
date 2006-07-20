@@ -366,65 +366,6 @@ void cAnalyzeUtil::AnalyzePopulation(cWorld* world, ofstream& fp,
 
 
 /**
-* This function goes through all genotypes currently present in the soup,
- * and writes into an output file the names of the genotypes, the fitness
- * as determined in the test cpu, and the genetic distance to a reference
- * genome.
- *
- * @param fp The stream into which the data should be saved.
- * @param reference_genome The reference genome.
- * @param save_creatures A bool that indicates whether creatures should be
- * saved into the classmgr or not.
- **/
-
-void cAnalyzeUtil::GeneticDistancePopDump(cWorld* world, ofstream& fp,
-                                          const char * creature_name, bool save_creatures)
-{
-  double sum_fitness = 0;
-  int sum_num_organisms = 0;
-  
-  // load the reference genome
-  cGenome reference_genome( cInstUtil::LoadGenome(creature_name, world->GetHardwareManager().GetInstSet()) );
-  
-  // first, print out some documentation...
-  fp << "# (1) genotype name (2) fitness [test-cpu] (3) abundance (4) Hamming distance to reference (5) Levenstein distance to reference" << endl;
-  fp << "# reference genome is the START_CREATURE" << endl;
-  
-  // cycle over all genotypes
-  cGenotype * cur_genotype = world->GetClassificationManager().GetBestGenotype();
-  for (int i = 0; i < world->GetClassificationManager().GetGenotypeCount(); i++) {
-    const cGenome & genome = cur_genotype->GetGenome();
-    const int num_orgs = cur_genotype->GetNumOrganisms();
-    
-    // now output
-    
-    sum_fitness += cur_genotype->GetTestFitness() * num_orgs;
-    sum_num_organisms += num_orgs;
-    
-    fp << cur_genotype->GetName()       << " "  // 1 name
-      << cur_genotype->GetTestFitness()  << " "  // 2 fitness
-      << num_orgs                        << " "  // 3 abundance
-      << cGenomeUtil::FindHammingDistance(reference_genome, genome) << " "
-      << cGenomeUtil::FindEditDistance(reference_genome, genome) << " "  // 5
-      << genome.AsString()             << " "  // 6 genome
-      << endl;
-    
-    // save into classmgr
-    if (save_creatures) {
-      char filename[40];
-      sprintf(filename, "classmgr/%s", static_cast<const char*>(cur_genotype->GetName()) );
-      cTestUtil::PrintGenome(world, genome, filename);
-    }
-    
-    // ...and advance to the next genotype...
-    cur_genotype = cur_genotype->GetNext();
-  }
-  fp << "# ave fitness from Test CPU's: "
-    << sum_fitness/sum_num_organisms << endl;
-}
-
-
-/**
 * This function goes through all creatures in the soup, and writes out
  * how many tasks the different creatures have done up to now. It counts
  * every task only once, i.e., if a creature does 'put' three times, that

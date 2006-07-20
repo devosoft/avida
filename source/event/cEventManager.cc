@@ -342,42 +342,6 @@ public:
 };
 
 
-///// genetic_distance_pop_dump /////
-
-/**
-**/
-
-
-class cEvent_genetic_distance_pop_dump : public cEvent {
-private:
-  cString creature_name;
-  cString filename;
-  int save_genotype;
-public:
-    const cString GetName() const { return "genetic_distance_pop_dump"; }
-  const cString GetDescription() const { return "genetic_distance_pop_dump  [string creature_name=\"\"] [string filename=\"\"] [int save_genotype=0]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") creature_name=""; else creature_name=args.PopWord();
-    if (args == "") filename=""; else filename=args.PopWord();
-    if (args == "") save_genotype=0; else save_genotype=args.PopWord().AsInt();
-  }
-  ///// genetic_distance_pop_dump /////
-  void Process() {
-    if (creature_name == "" || creature_name == "START_CREATURE")
-      creature_name = m_world->GetConfig().START_CREATURE.Get();
-    if (filename == "" || filename == "AUTO")
-      filename.Set("pop_dump_%d.dat",m_world->GetStats().GetUpdate());
-    cAnalyzeUtil::GeneticDistancePopDump(m_world, m_world->GetDataFileOFStream(filename),
-                                         creature_name, save_genotype);
-    m_world->GetDataFileManager().Remove(filename);
-  }
-};
-
 ///// task_snapshot /////
 
 /**
@@ -1513,7 +1477,6 @@ cEventManager::cEventManager(cWorld* world) : m_world(world)
   REGISTER(test_dom);
   REGISTER(analyze_population);
 
-  REGISTER(genetic_distance_pop_dump);
   REGISTER(task_snapshot);
   REGISTER(print_viable_tasks_data);
   
@@ -1547,7 +1510,7 @@ cEventManager::cEventManager(cWorld* world) : m_world(world)
   REGISTER(set_reaction_inst);
 }
 
-cEvent* cEventManager::ConstructEvent(const cString name, const cString & args)
+cEvent* cEventManager::ConstructEvent(const cString name, const cString& args)
 {
   cEvent* event = Create(name);
   

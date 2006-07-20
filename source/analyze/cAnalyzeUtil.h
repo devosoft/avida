@@ -46,9 +46,6 @@ public:
 				double sample_prob=1, bool landscape=false,
 				bool save_genotype=false);
 
-  static void GeneticDistancePopDump(cWorld* world, std::ofstream& fp,
-		    const char * creature_name, bool save_creatures=false);
-
   static void TaskSnapshot(cWorld* world, std::ofstream& fp);
   static void TaskGrid(cWorld* world, std::ofstream& fp);
   static void PrintViableTasksData(cWorld* world, std::ofstream& fp);

@@ -745,13 +745,84 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   
-  const cString GetDescription() { return "PrintDumpMemory [string fname='']"; }
+  const cString GetDescription() { return "DumpMemory [string fname='']"; }
   
   void Process(cAvidaContext& ctx)
   {
     cString filename(m_filename);
     if (filename == "") filename.Set("memory_dump-%d.dat", m_world->GetStats().GetUpdate());
     m_world->GetPopulation().DumpMemorySummary(m_world->GetDataFileOFStream(filename));
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
+
+/*
+ This action goes through all genotypes currently present in the population,
+ and writes into an output file the names of the genotypes, the fitness as
+ determined in the test cpu, and the genetic distance to a reference genome.
+*/
+class cActionPrintPopulationDistanceData : public cAction
+{
+private:
+  cString m_creature;
+  cString m_filename;
+  int m_save_genotypes;
+  
+public:
+  cActionPrintPopulationDistanceData(cWorld* world, const cString& args)
+    : cAction(world, args), m_creature("START_CREATURE"), m_filename(""), m_save_genotypes(0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_creature = largs.PopWord();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    if (largs.GetSize()) m_save_genotypes = largs.PopWord().AsInt();
+
+    if (m_creature == "" || m_creature == "START_CREATURE") m_creature = m_world->GetConfig().START_CREATURE.Get();
+}
+  
+  const cString GetDescription() { return "PrintPopulationDistanceData [string creature=\"START_CREATURE\"] [string fname=\"\"] [int save_genotypes=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("pop_distance-%d.dat", m_world->GetStats().GetUpdate());
+    cDataFile& df = m_world->GetDataFile(filename);
+
+    double sum_fitness = 0;
+    int sum_num_organisms = 0;
+    
+    // load the reference genome
+    cGenome reference_genome(cInstUtil::LoadGenome(m_creature, m_world->GetHardwareManager().GetInstSet()));    
+    
+    // cycle over all genotypes
+    cGenotype* cur_genotype = m_world->GetClassificationManager().GetBestGenotype();
+    for (int i = 0; i < m_world->GetClassificationManager().GetGenotypeCount(); i++) {
+      const cGenome& genome = cur_genotype->GetGenome();
+      const int num_orgs = cur_genotype->GetNumOrganisms();
+      
+      // now output
+      
+      sum_fitness += cur_genotype->GetTestFitness() * num_orgs;
+      sum_num_organisms += num_orgs;
+      
+      df.Write(cur_genotype->GetName(), "Genotype Name");
+      df.Write(cur_genotype->GetTestFitness(), "Fitness (test-cpu)");
+      df.Write(num_orgs, "Abundance");
+      df.Write(cGenomeUtil::FindHammingDistance(reference_genome, genome), "Hamming distance to reference");
+      df.Write(cGenomeUtil::FindEditDistance(reference_genome, genome), "Levenstein distance to reference");
+      df.Write(genome.AsString(), "Genome");
+      
+      // save into archive
+      if (m_save_genotypes) {
+        cTestUtil::PrintGenome(m_world, genome, cStringUtil::Stringf("archive/%s.org", static_cast<const char*>(cur_genotype->GetName())));
+      }
+      
+      // ...and advance to the next genotype...
+      cur_genotype = cur_genotype->GetNext();
+    }
+    df.WriteRaw(cStringUtil::Stringf("# ave fitness from Test CPU's: %d\n", sum_fitness / sum_num_organisms));
+
     m_world->GetDataFileManager().Remove(filename);
   }
 };
@@ -796,6 +867,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDominantParasiteGenotype>("PrintDominantParasiteGenotype");
   action_lib->Register<cActionPrintDetailedFitnessData>("PrintDetailedFitnessData");
   action_lib->Register<cActionPrintGeneticDistanceData>("PrintGenericDistanceData");
+  action_lib->Register<cActionPrintPopulationDistanceData>("PrintPopulationDistanceData");
   action_lib->Register<cActionPrintDebug>("PrintDebug");
 
   action_lib->Register<cActionPrintGenotypes>("PrintGenotypes");
@@ -837,6 +909,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDominantParasiteGenotype>("print_dom_parasite");
   action_lib->Register<cActionPrintDetailedFitnessData>("print_detailed_fitness_data");
   action_lib->Register<cActionPrintGeneticDistanceData>("print_genetic_distance_data");
+  action_lib->Register<cActionPrintPopulationDistanceData>("genetic_distance_pop_dump");
   
   action_lib->Register<cActionPrintGenotypes>("print_genotypes");
   action_lib->Register<cActionDumpMemory>("dump_memory");
