@@ -253,35 +253,6 @@ public:
   }
 };
 
-///// pairtest_landscape /////
-
-/**
-* If sample_size = 0, pairtest the full landscape.
- **/
-
-
-class cEvent_pairtest_landscape : public cEvent {
-private:
-  int sample_size;
-public:
-  const cString GetName() const { return "pairtest_landscape"; }
-  const cString GetDescription() const { return "pairtest_landscape  [int sample_size=0]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") sample_size=0; else sample_size=args.PopWord().AsInt();
-  }
-  ///// pairtest_landscape /////
-  void Process(){
-    cGenome & genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
-    cAnalyzeUtil::PairTestLandscape(m_world, genome, m_world->GetHardwareManager().GetInstSet(),
-                                    sample_size, m_world->GetStats().GetUpdate());
-  }
-};
-
 ///// test_dom /////
 
 /**
@@ -1473,7 +1444,6 @@ cEventManager::cEventManager(cWorld* world) : m_world(world)
   REGISTER(set_copy_mut);
   REGISTER(mod_point_mut);
   REGISTER(set_point_mut);
-  REGISTER(pairtest_landscape);
   REGISTER(test_dom);
   REGISTER(analyze_population);
 

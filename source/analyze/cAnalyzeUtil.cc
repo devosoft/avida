@@ -111,24 +111,6 @@ void cAnalyzeUtil::TestInsSizeChangeRobustness(cWorld* world, ofstream& fp,
 }
 
 
-void cAnalyzeUtil::PairTestLandscape(cWorld* world, const cGenome &genome, cInstSet &inst_set,
-                                     int sample_size, int update)
-{
-  cAvidaContext& ctx = world->GetDefaultContext();
-
-  cLandscape landscape(world, genome, inst_set);
-  
-  cString filename;
-  filename.Set("pairtest.%d.dat", update);
-  ofstream& fp = world->GetDataFileOFStream(filename);
-  
-  if (sample_size != 0) landscape.TestPairs(ctx, sample_size, fp);
-  else landscape.TestAllPairs(ctx, fp);
-  
-  world->GetDataFileManager().Remove(filename);
-}
-
-
 void cAnalyzeUtil::CalcConsensus(cWorld* world, int lines_saved)
 {
   const int num_inst = world->GetHardwareManager().GetInstSet().GetSize();

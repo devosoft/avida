@@ -406,7 +406,7 @@ public:
   
   const cString GetDescription()
   {
-    return "PredictWLandscape [filename='land-predict.dat']";
+    return "PredictWLandscape [string filename='land-predict.dat']";
   }
   
   void Process(cAvidaContext& ctx)
@@ -456,7 +456,7 @@ public:
   
   const cString GetDescription()
   {
-    return "PredictNuLandscape [filename='land-predict.dat']";
+    return "PredictNuLandscape [string filename='land-predict.dat']";
   }
   
   void Process(cAvidaContext& ctx)
@@ -511,7 +511,7 @@ public:
   
   const cString GetDescription()
   {
-    return "RandomLandscape [filename='land-random.dat'] [int distance=1] [int trials=0]";
+    return "RandomLandscape [string filename='land-random.dat'] [int distance=1] [int trials=0]";
   }
   
   void Process(cAvidaContext& ctx)
@@ -582,7 +582,7 @@ public:
   
   const cString GetDescription()
   {
-    return "SampleLandscape [filename='land-sample.dat'] [int trials=0]";
+    return "SampleLandscape [string filename='land-sample.dat'] [int trials=0]";
   }
   
   void Process(cAvidaContext& ctx)
@@ -647,7 +647,7 @@ public:
   
   const cString GetDescription()
   {
-    return "HillClimb [filename='hillclimb.dat']";
+    return "HillClimb [string filename='hillclimb.dat']";
   }
   
   void Process(cAvidaContext& ctx)
@@ -697,7 +697,7 @@ public:
   
   const cString GetDescription()
   {
-    return "HillClimbNeut [filename='hillclimb.dat']";
+    return "HillClimbNeut [string filename='hillclimb.dat']";
   }
   
   void Process(cAvidaContext& ctx)
@@ -747,7 +747,7 @@ public:
   
   const cString GetDescription()
   {
-    return "HillClimbRand [filename='hillclimb.dat']";
+    return "HillClimbRand [string filename='hillclimb.dat']";
   }
   
   void Process(cAvidaContext& ctx)
@@ -859,6 +859,65 @@ public:
 };
 
 
+class cActionPairTestLandscape : public cAction  // @not_parallelized
+{
+private:
+  cString m_filename;
+  int m_sample_size;
+  
+public:
+  cActionPairTestLandscape(cWorld* world, const cString& args)
+  : cAction(world, args), m_filename(""), m_sample_size(0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    if (largs.GetSize()) m_sample_size = largs.PopWord().AsInt();
+  }
+  
+  const cString GetDescription()
+  {
+    return "PairTestLandscape [string filename=''] [int sample_size=0]";
+  }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("land-pairs-%d.dat", m_world->GetStats().GetUpdate());
+    
+    cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
+    std::ofstream& outfile = m_world->GetDataFileOFStream(filename);
+    
+    if (ctx.GetAnalyzeMode()) {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+        cString msg("Pair Testing Landscape on batch ");
+        msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
+        m_world->GetDriver().NotifyComment(msg);
+      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+        m_world->GetDriver().NotifyComment("Pair Testing Landscape...");
+      }
+      
+      tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
+      cAnalyzeGenotype* genotype = NULL;
+      while (genotype = batch_it.Next()) {
+        cLandscape land(m_world, genotype->GetGenome(), inst_set);
+        if (m_sample_size) land.TestPairs(ctx, m_sample_size, outfile);
+        else land.TestAllPairs(ctx, outfile);
+      }
+    } else {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+        m_world->GetDriver().NotifyComment("Pair Testing Landscape...");
+      
+      const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
+      cLandscape land(m_world, best_genome, inst_set);
+      if (m_sample_size) land.TestPairs(ctx, m_sample_size, outfile);
+      else land.TestAllPairs(ctx, outfile);
+    }
+
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
+
 void RegisterLandscapeActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionAnalyzeLandscape>("AnalyzeLandscape");
@@ -873,6 +932,7 @@ void RegisterLandscapeActions(cActionLibrary* action_lib)
   action_lib->Register<cActionHillClimb>("HillClimb");
   action_lib->Register<cActionHillClimb>("HillClimbNeut");
   action_lib->Register<cActionHillClimb>("HillClimbRand");
+  action_lib->Register<cActionPairTestLandscape>("PairTestLandscape");
 
   action_lib->Register<cActionMutationalNeighborhood>("MutationalNeighborhood");
   

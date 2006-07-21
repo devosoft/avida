@@ -34,11 +34,6 @@ public:
                  int num_trials, int update);
 
 
-  // Landscape-based analysis
-  static void PairTestLandscape(cWorld* world, const cGenome & genome, cInstSet & inst_set,
-				int sample_size=0, int update=-1);
-
-
   // Population-wide analysis
   static void CalcConsensus(cWorld* world, int lines_saved);
 
