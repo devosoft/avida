@@ -1,0 +1,4 @@
+
+cBlockStruct = Class("cBlockStruct", "cBlockStruct.h")
+
+# vim: set ft=python:

@@ -1,0 +1,4 @@
+
+cThread = Class("cThread", "cThread.h")
+
+# vim: set ft=python:

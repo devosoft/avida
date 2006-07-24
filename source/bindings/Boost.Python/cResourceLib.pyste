@@ -1,0 +1,4 @@
+
+cResourceLib = Class("cResourceLib", "cResourceLib.h")
+
+# vim: set ft=python:

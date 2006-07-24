@@ -1,0 +1,4 @@
+
+cAnalyzeCommandDefBase = Class("cAnalyzeCommandDefBase", "cAnalyzeCommandDefBase.h")
+
+# vim: set ft=python:

@@ -1,0 +1,4 @@
+
+cStringList = Class("cStringList", "cStringList.h")
+
+# vim: set ft=python:

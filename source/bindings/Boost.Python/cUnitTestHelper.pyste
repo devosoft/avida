@@ -1,0 +1,4 @@
+
+cUnitTestHelper = Class("cUnitTestHelper", "cUnitTestHelper.h")
+
+# vim: set ft=python:

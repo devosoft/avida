@@ -1,0 +1,7 @@
+
+cDataFileManager = Class("cDataFileManager", "cDataFileManager.h")
+
+set_policy(cDataFileManager.Get, return_internal_reference())
+set_policy(cDataFileManager.GetOFStream, return_internal_reference())
+
+# vim: set ft=python:

@@ -1,0 +1,4 @@
+
+tBuffer = Class("tBuffer", "tBuffer.h")
+
+# vim: set ft=python:

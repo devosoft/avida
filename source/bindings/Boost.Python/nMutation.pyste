@@ -1,0 +1,4 @@
+
+nMutation = Class("nMutation", "nMutation.h")
+
+# vim: set ft=python:

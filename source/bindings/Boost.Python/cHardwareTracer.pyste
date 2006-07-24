@@ -1,0 +1,4 @@
+
+cHardwareTracer = Class("cHardwareTracer", "cHardwareTracer.h")
+
+# vim: set ft=python:

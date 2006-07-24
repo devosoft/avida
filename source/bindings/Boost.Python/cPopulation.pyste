@@ -1,0 +1,4 @@
+
+cPopulation = Class("cPopulation", "cPopulation.h")
+
+# vim: set ft=python:

@@ -1,0 +1,4 @@
+
+cAnalyzeFlowCommand = Class("cAnalyzeFlowCommand", "cAnalyzeFlowCommand.h")
+
+# vim: set ft=python:

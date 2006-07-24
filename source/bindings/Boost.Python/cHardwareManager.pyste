@@ -1,0 +1,4 @@
+
+cHardwareManager = Class("cHardwareManager", "cHardwareManager.h")
+
+# vim: set ft=python:

@@ -1,0 +1,4 @@
+
+cIndexedBlockStruct = Class("cIndexedBlockStruct", "cIndexedBlockStruct.h")
+
+# vim: set ft=python:

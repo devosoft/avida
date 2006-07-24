@@ -1,0 +1,4 @@
+
+cGenotype_BirthData = Class("cGenotype_BirthData", "cGenotype_BirthData.h")
+
+# vim: set ft=python:

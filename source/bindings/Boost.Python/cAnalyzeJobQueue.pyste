@@ -1,0 +1,4 @@
+
+cAnalyzeJobQueue = Class("cAnalyzeJobQueue", "cAnalyzeJobQueue.h")
+
+# vim: set ft=python:

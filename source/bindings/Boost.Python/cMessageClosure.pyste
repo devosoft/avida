@@ -1,0 +1,10 @@
+
+Include("cMessageType.h")
+
+cMessageClosure = Class("cMessageClosure", "cMessageClosure.h")
+
+exclude(cMessageClosure.va)
+exclude(cMessageClosure.operator['<<'])
+set_policy(cMessageClosure.operator['()'], return_self())
+
+# vim: set ft=python:

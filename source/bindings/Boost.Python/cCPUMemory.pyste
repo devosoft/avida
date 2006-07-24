@@ -1,0 +1,4 @@
+
+cCPUMemory = Class("cCPUMemory", "cCPUMemory.h")
+
+# vim: set ft=python:

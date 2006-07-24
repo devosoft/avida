@@ -1,0 +1,4 @@
+
+cInstSet = Class("cInstSet", "cInstSet.h")
+
+# vim: set ft=python:

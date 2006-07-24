@@ -1,0 +1,4 @@
+
+cGenotypeControl = Class("cGenotypeControl", "cGenotypeControl.h")
+
+# vim: set ft=python:

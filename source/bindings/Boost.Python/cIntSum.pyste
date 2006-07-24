@@ -1,0 +1,4 @@
+
+cIntSum = Class("cIntSum", "cIntSum.h")
+
+# vim: set ft=python:

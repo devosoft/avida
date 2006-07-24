@@ -1,0 +1,4 @@
+
+cAnalyzeGenotype = Class("cAnalyzeGenotype", "cAnalyzeGenotype.h")
+
+# vim: set ft=python:

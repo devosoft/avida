@@ -1,0 +1,4 @@
+
+cOrgSinkMessage = Class("cOrgSinkMessage", "cOrgSinkMessage.h")
+
+# vim: set ft=python:

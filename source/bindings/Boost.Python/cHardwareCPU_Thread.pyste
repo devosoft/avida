@@ -1,0 +1,4 @@
+
+cHardwareCPU_Thread = Class("cHardwareCPU_Thread", "cHardwareCPU_Thread.h")
+
+# vim: set ft=python:

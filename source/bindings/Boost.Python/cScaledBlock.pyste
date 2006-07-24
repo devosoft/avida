@@ -1,0 +1,4 @@
+
+cScaledBlock = Class("cScaledBlock", "cScaledBlock.h")
+
+# vim: set ft=python:

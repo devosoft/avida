@@ -1,0 +1,4 @@
+
+cTaskContext = Class("cTaskContext", "cTaskContext.h")
+
+# vim: set ft=python:

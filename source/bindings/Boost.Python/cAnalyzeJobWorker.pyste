@@ -1,0 +1,4 @@
+
+cAnalyzeJobWorker = Class("cAnalyzeJobWorker", "cAnalyzeJobWorker.h")
+
+# vim: set ft=python:

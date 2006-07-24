@@ -1,0 +1,4 @@
+
+cReactionLib = Class("cReactionLib", "cReactionLib.h")
+
+# vim: set ft=python:

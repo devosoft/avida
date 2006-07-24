@@ -1,0 +1,6 @@
+
+Include("cStringList.h")
+
+cStringIterator = Class("cStringIterator", "cStringIterator.h")
+
+# vim: set ft=python:

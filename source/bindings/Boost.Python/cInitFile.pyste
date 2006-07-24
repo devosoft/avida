@@ -1,0 +1,8 @@
+
+Import("cFile.pyste")
+
+cInitFile = Class("cInitFile", "cInitFile.h")
+
+set_policy(cInitFile.GetFormat, return_internal_reference())
+
+# vim: set ft=python:

@@ -1,0 +1,4 @@
+
+cScriptObject = Class("cScriptObject", "cScriptObject.h")
+
+# vim: set ft=python:

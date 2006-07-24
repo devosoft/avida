@@ -1,0 +1,4 @@
+
+nHardware = Class("nHardware", "nHardware.h")
+
+# vim: set ft=python:

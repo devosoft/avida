@@ -1,0 +1,4 @@
+
+cInjectGenotype_BirthData = Class("cInjectGenotype_BirthData", "cInjectGenotype_BirthData.h")
+
+# vim: set ft=python:

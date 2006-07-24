@@ -1,0 +1,4 @@
+
+cTaskEntry = Class("cTaskEntry", "cTaskEntry.h")
+
+# vim: set ft=python:

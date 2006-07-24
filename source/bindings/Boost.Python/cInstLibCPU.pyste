@@ -1,0 +1,4 @@
+
+cInstLibCPU = Class("cInstLibCPU", "cInstLibCPU.h")
+
+# vim: set ft=python:

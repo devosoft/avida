@@ -1,0 +1,4 @@
+
+tSmartArray = Class("tSmartArray", "tSmartArray.h")
+
+# vim: set ft=python:

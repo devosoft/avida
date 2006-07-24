@@ -1,0 +1,4 @@
+
+cLexer = Class("cLexer", "cLexer.h")
+
+# vim: set ft=python:

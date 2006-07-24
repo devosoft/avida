@@ -1,0 +1,4 @@
+
+cLineage = Class("cLineage", "cLineage.h")
+
+# vim: set ft=python:

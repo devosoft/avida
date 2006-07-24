@@ -1,0 +1,6 @@
+
+Include("tArray.h")
+
+cRandom = Class("cRandom", "cRandom.h")
+
+# vim: set ft=python:

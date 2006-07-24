@@ -1,0 +1,4 @@
+
+tObjectFactory = Class("tObjectFactory", "tObjectFactory.h")
+
+# vim: set ft=python:

@@ -1,0 +1,4 @@
+
+LandscapeActions = Class("LandscapeActions", "LandscapeActions.h")
+
+# vim: set ft=python:

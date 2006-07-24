@@ -1,0 +1,4 @@
+
+cTestCPU = Class("cTestCPU", "cTestCPU.h")
+
+# vim: set ft=python:

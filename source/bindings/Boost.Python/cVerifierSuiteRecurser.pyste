@@ -1,0 +1,4 @@
+
+cVerifierSuiteRecurser = Class("cVerifierSuiteRecurser", "cVerifierSuiteRecurser.h")
+
+# vim: set ft=python:

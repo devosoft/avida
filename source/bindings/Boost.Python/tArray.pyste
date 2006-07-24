@@ -1,0 +1,4 @@
+
+tArray = Class("tArray", "tArray.h")
+
+# vim: set ft=python:

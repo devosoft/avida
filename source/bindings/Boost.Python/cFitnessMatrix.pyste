@@ -1,0 +1,4 @@
+
+cFitnessMatrix = Class("cFitnessMatrix", "cFitnessMatrix.h")
+
+# vim: set ft=python:

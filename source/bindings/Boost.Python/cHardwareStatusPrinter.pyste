@@ -1,0 +1,4 @@
+
+cHardwareStatusPrinter = Class("cHardwareStatusPrinter", "cHardwareStatusPrinter.h")
+
+# vim: set ft=python:

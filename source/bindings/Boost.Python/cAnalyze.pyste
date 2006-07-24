@@ -1,0 +1,4 @@
+
+cAnalyze = Class("cAnalyze", "cAnalyze.h")
+
+# vim: set ft=python:

@@ -1,0 +1,4 @@
+
+cASSymbol = Class("cASSymbol", "cASSymbol.h")
+
+# vim: set ft=python:

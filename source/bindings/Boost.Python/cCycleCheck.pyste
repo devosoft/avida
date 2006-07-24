@@ -1,0 +1,4 @@
+
+cCycleCheck = Class("cCycleCheck", "cCycleCheck.h")
+
+# vim: set ft=python:

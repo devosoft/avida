@@ -1,0 +1,4 @@
+
+cCPUStack = Class("cCPUStack", "cCPUStack.h")
+
+# vim: set ft=python:

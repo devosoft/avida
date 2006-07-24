@@ -1,0 +1,4 @@
+
+cEvent = Class("cEvent", "cEvent.h")
+
+# vim: set ft=python:

@@ -1,0 +1,6 @@
+
+Include("cString.h")
+
+cTools = Class("cTools", "cTools.h")
+
+# vim: set ft=python:

@@ -1,0 +1,4 @@
+
+tDictionary = Class("tDictionary", "tDictionary.h")
+
+# vim: set ft=python:

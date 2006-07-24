@@ -1,0 +1,4 @@
+
+cReactionRequisite = Class("cReactionRequisite", "cReactionRequisite.h")
+
+# vim: set ft=python:

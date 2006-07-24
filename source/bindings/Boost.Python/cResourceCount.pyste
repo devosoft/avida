@@ -1,0 +1,4 @@
+
+cResourceCount = Class("cResourceCount", "cResourceCount.h")
+
+# vim: set ft=python:

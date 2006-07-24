@@ -1,0 +1,6 @@
+
+cDataEntry = Class("cDataEntry", "cDataEntry.h")
+
+exclude(cDataEntry.operator['<<'])
+
+# vim: set ft=python:

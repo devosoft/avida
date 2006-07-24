@@ -1,0 +1,4 @@
+
+cASLibrary = Class("cASLibrary", "cASLibrary.h")
+
+# vim: set ft=python:

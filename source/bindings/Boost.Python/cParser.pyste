@@ -1,0 +1,4 @@
+
+cParser = Class("cParser", "cParser.h")
+
+# vim: set ft=python:

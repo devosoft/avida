@@ -1,0 +1,4 @@
+
+cOrgSeqMessage = Class("cOrgSeqMessage", "cOrgSeqMessage.h")
+
+# vim: set ft=python:

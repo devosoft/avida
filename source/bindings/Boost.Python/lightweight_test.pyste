@@ -1,0 +1,4 @@
+
+lightweight_test = Class("lightweight_test", "lightweight_test.h")
+
+# vim: set ft=python:

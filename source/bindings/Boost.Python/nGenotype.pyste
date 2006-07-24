@@ -1,0 +1,4 @@
+
+nGenotype = Class("nGenotype", "nGenotype.h")
+
+# vim: set ft=python:

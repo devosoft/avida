@@ -1,0 +1,4 @@
+
+avida = Class("avida", "avida.h")
+
+# vim: set ft=python:

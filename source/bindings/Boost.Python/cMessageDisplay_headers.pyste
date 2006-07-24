@@ -1,0 +1,8 @@
+
+NoPrefix_Msg = Var("NoPrefix_Msg", "cMessageDisplay_headers.h")
+Info_GEN_Msg = Var("Info_GEN_Msg", "cMessageDisplay_headers.h")
+Debug_GEN_Msg = Var("Debug_GEN_Msg", "cMessageDisplay_headers.h")
+Error_GEN_Msg = Var("Error_GEN_Msg", "cMessageDisplay_headers.h")
+Fatal_GEN_Msg = Var("Fatal_GEN_Msg", "cMessageDisplay_headers.h")
+
+# vim: set ft=python:

@@ -1,0 +1,6 @@
+
+Include("cString.h")
+
+cMessageDisplay = Class("cMessageDisplay", "cMessageDisplay.h")
+
+# vim: set ft=python:

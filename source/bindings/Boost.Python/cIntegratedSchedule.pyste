@@ -1,0 +1,8 @@
+
+Import("cSchedule.pyste")
+
+Include("cMerit.h")
+
+cIntegratedSchedule = Class("cIntegratedSchedule", "cIntegratedSchedule.h")
+
+# vim: set ft=python:

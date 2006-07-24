@@ -1,0 +1,4 @@
+
+cPopulationInterface = Class("cPopulationInterface", "cPopulationInterface.h")
+
+# vim: set ft=python:
