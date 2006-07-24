@@ -99,10 +99,10 @@ void cOrganism::SetOrgInterface(cOrgInterface* interface)
 }
 
 
-double cOrganism::GetTestFitness()
+double cOrganism::GetTestFitness(cAvidaContext& ctx)
 {
   assert(m_interface);
-  return genotype->GetTestFitness();
+  return genotype->GetTestFitness(ctx);
 }
   
 int cOrganism::ReceiveValue()

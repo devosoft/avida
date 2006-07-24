@@ -35,6 +35,7 @@
 #include "tList.h"
 #endif
 
+class cAvidaContext;
 class cLineage;
 class cOrganism;
 class cWorld;
@@ -166,7 +167,8 @@ public:
 
 
   // Lineage Manipulators
-  cLineage* GetLineage(cGenotype* child_genotype, cGenotype* parent_genotype, cLineage* parent_lineage, int parent_lin_id);
+  cLineage* GetLineage(cAvidaContext& ctx, cGenotype* child_genotype,
+                       cGenotype* parent_genotype, cLineage* parent_lineage, int parent_lin_id);
   void RemoveLineageOrganism(cOrganism* org);  
   cLineage* FindLineage(int lineage_id) const;
   cLineage* GetMaxFitnessLineage() const { return m_max_fitness_lineage; }

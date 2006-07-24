@@ -185,10 +185,9 @@ void cGenotype::SetGenome(const cGenome & in_genome)
   name.Set("%03d-no_name", genome.GetSize());
 }
 
-void cGenotype::CalcTestStats() const
+void cGenotype::CalcTestStats(cAvidaContext& ctx) const
 {
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
-  cAvidaContext& ctx = m_world->GetDefaultContext();
 
   cCPUTestInfo test_info;
   testcpu->TestGenome(ctx, test_info, genome);

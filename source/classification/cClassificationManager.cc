@@ -936,8 +936,8 @@ void cClassificationManager::UpdateLineages()
       del = true;
     }
     else { // otherwise it is a candidate for the best/ dominant/... lineage
-      if ( !m_best_lineage ||
-           (*it)->GetAveFitness() > m_best_lineage->GetAveFitness() )
+      cAvidaContext& ctx = m_world->GetDefaultContext();
+      if (!m_best_lineage || (*it)->GetAveFitness(ctx) > m_best_lineage->GetAveFitness(ctx))
         m_best_lineage = (*it);
       
       if ( !m_dominant_lineage ||
@@ -969,7 +969,8 @@ void cClassificationManager::UpdateLineages()
 }
 
 
-cLineage* cClassificationManager::GetLineage(cGenotype* child_genotype, cGenotype* parent_genotype, cLineage* parent_lineage, int parent_lin_id)
+cLineage* cClassificationManager::GetLineage(cAvidaContext& ctx, cGenotype* child_genotype,
+                                             cGenotype* parent_genotype, cLineage* parent_lineage, int parent_lin_id)
 {
   // Collect any information we can about the parent.
   double parent_fitness = 0.0;
@@ -987,9 +988,9 @@ cLineage* cClassificationManager::GetLineage(cGenotype* child_genotype, cGenotyp
   
   if (parent_genotype != NULL) {
     assert( parent_genotype->GetNumOrganisms() > 0 );
-    parent_fitness = parent_genotype->GetTestColonyFitness();
+    parent_fitness = parent_genotype->GetTestColonyFitness(ctx);
   }
-  double child_fitness = child_genotype->GetTestColonyFitness();
+  double child_fitness = child_genotype->GetTestColonyFitness(ctx);
   cLineage * child_lineage = parent_lineage;
   bool create_lineage = false;
   double lineage_stat1 = child_fitness;
@@ -1043,10 +1044,10 @@ cLineage* cClassificationManager::GetLineage(cGenotype* child_genotype, cGenotyp
         break;
       case 4: // new lineage whenever a new child exceeds the
               // fitness of the dominant creature (and the fitness of its own lineage)
-        if (child_fitness > m_world->GetClassificationManager().GetBestGenotype()->GetTestColonyFitness()
+        if (child_fitness > m_world->GetClassificationManager().GetBestGenotype()->GetTestColonyFitness(ctx)
             && child_fitness > parent_lineage->GetMaxFitness() ){
           create_lineage = true;
-          lineage_stat1=m_world->GetClassificationManager().GetBestGenotype()->GetTestColonyFitness();
+          lineage_stat1=m_world->GetClassificationManager().GetBestGenotype()->GetTestColonyFitness(ctx);
           lineage_stat2=parent_lineage->GetMaxFitness();
         }
         break;
@@ -1082,7 +1083,7 @@ cLineage* cClassificationManager::GetLineage(cGenotype* child_genotype, cGenotyp
   }
   
   // add to the lineage
-  child_lineage->AddCreature( child_genotype );
+  child_lineage->AddCreature(ctx, child_genotype);
   
   // This would be nice, but the current Avida code doesn't allow for it.
   // Try to implement it in a new version...
@@ -1091,7 +1092,7 @@ cLineage* cClassificationManager::GetLineage(cGenotype* child_genotype, cGenotyp
   //  cpu->SetLineageLabel( lineage->GetID() );
   
   // test whether this makes the new lineage the best
-  if (!m_best_lineage || child_lineage->GetAveFitness() > m_best_lineage->GetAveFitness())
+  if (!m_best_lineage || child_lineage->GetAveFitness(ctx) > m_best_lineage->GetAveFitness(ctx))
     m_best_lineage = child_lineage;
   
   // test whether this makes the new lineage the dominant
@@ -1112,7 +1113,7 @@ void cClassificationManager::RemoveLineageOrganism(cOrganism* org)
   
   if (cur_lineage) {
     // remove the creature
-    if ( cur_lineage->RemoveCreature(org->GetGenotype())
+    if ( cur_lineage->RemoveCreature(m_world->GetDefaultContext(), org->GetGenotype())
          || cur_lineage == m_dominant_lineage
          || cur_lineage == m_best_lineage ) {
       // If this lineage no longer exists, tell stats...
@@ -1177,7 +1178,7 @@ void cClassificationManager::PrintLineageTotals(const cString &filename, bool ve
     list<cLineage *>::const_iterator it = lineage_list.begin();
     for ( ; it != lineage_list.end(); it++ ){
       num_organisms = (*it)->GetNumCreatures();
-      fitness = (*it)->GetAveFitness();
+      fitness = (*it)->GetAveFitness(m_world->GetDefaultContext());
       fitness_sum += fitness * num_organisms;
       total_num_organisms += num_organisms;
       fp << " "

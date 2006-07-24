@@ -277,41 +277,6 @@ public:
   }
 };
 
-///// analyze_population /////
-
-/**
-**/
-
-
-class cEvent_analyze_population : public cEvent {
-private:
-  double sample_prob;
-  int landscape;
-  int save_genotype;
-  cString filename;
-public:
-    const cString GetName() const { return "analyze_population"; }
-  const cString GetDescription() const { return "analyze_population  [double sample_prob=1] [int landscape=0] [int save_genotype=0] [string filename=\"\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") sample_prob=1; else sample_prob=args.PopWord().AsDouble();
-    if (args == "") landscape=0; else landscape=args.PopWord().AsInt();
-    if (args == "") save_genotype=0; else save_genotype=args.PopWord().AsInt();
-    if (args == "") filename=""; else filename=args.PopWord();
-  }
-  ///// analyze_population /////
-  void Process(){
-    if (filename == "") filename.Set("population_info_%d.dat",m_world->GetStats().GetUpdate());
-    cAnalyzeUtil::AnalyzePopulation(m_world, m_world->GetDataFileOFStream(filename), sample_prob,
-                                    landscape, save_genotype);
-    m_world->GetDataFileManager().Remove(filename);
-  }
-};
-
 
 ///// task_snapshot /////
 
@@ -1445,7 +1410,6 @@ cEventManager::cEventManager(cWorld* world) : m_world(world)
   REGISTER(mod_point_mut);
   REGISTER(set_point_mut);
   REGISTER(test_dom);
-  REGISTER(analyze_population);
 
   REGISTER(task_snapshot);
   REGISTER(print_viable_tasks_data);

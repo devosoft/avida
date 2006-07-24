@@ -255,7 +255,7 @@ bool cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)
   // this won't be an issue.
   if (phenotype.CopyTrue() == true) return false;
 	
-  const double parent_fitness = organism->GetTestFitness();
+  const double parent_fitness = organism->GetTestFitness(ctx);
   const double neut_min = parent_fitness * (1.0 - organism->GetNeutralMin());//nHardware::FITNESS_NEUTRAL_MIN;
   const double neut_max = parent_fitness * (1.0 + organism->GetNeutralMax());//nHardware::FITNESS_NEUTRAL_MAX;
   

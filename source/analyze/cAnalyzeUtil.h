@@ -37,10 +37,6 @@ public:
   // Population-wide analysis
   static void CalcConsensus(cWorld* world, int lines_saved);
 
-  static void AnalyzePopulation(cWorld* world, std::ofstream& fp,
-				double sample_prob=1, bool landscape=false,
-				bool save_genotype=false);
-
   static void TaskSnapshot(cWorld* world, std::ofstream& fp);
   static void TaskGrid(cWorld* world, std::ofstream& fp);
   static void PrintViableTasksData(cWorld* world, std::ofstream& fp);

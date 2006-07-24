@@ -880,7 +880,7 @@ void cPopulation::LineageSetupOrganism(cOrganism* organism, cLineage* lin, int l
 {
   // If we have some kind of lineage control, adjust the default values passed in.
   if (m_world->GetConfig().LOG_LINEAGES.Get()){
-    lin = m_world->GetClassificationManager().GetLineage(organism->GetGenotype(), parent_genotype, lin, lin_label);
+    lin = m_world->GetClassificationManager().GetLineage(m_world->GetDefaultContext(), organism->GetGenotype(), parent_genotype, lin, lin_label);
     lin_label = lin->GetID();
   }
   
@@ -1769,12 +1769,12 @@ void cPopulation::InjectGenotype(int cell_id, cGenotype *new_genotype)
   // Setup the phenotype...
   cPhenotype & phenotype = new_organism->GetPhenotype();
   phenotype.SetupInject(new_genotype->GetLength());
-  phenotype.SetMerit( cMerit(new_genotype->GetTestMerit()) );
+  phenotype.SetMerit( cMerit(new_genotype->GetTestMerit(ctx)) );
   
   // @CAO are these really needed?
-  phenotype.SetLinesCopied( new_genotype->GetTestCopiedSize() );
-  phenotype.SetLinesExecuted( new_genotype->GetTestExecutedSize() );
-  phenotype.SetGestationTime( new_genotype->GetTestGestationTime() );
+  phenotype.SetLinesCopied( new_genotype->GetTestCopiedSize(ctx) );
+  phenotype.SetLinesExecuted( new_genotype->GetTestExecutedSize(ctx) );
+  phenotype.SetGestationTime( new_genotype->GetTestGestationTime(ctx) );
   
   // Prep the cell..
   if (m_world->GetConfig().BIRTH_METHOD.Get() == POSITION_CHILD_FULL_SOUP_ELDEST &&
@@ -1843,7 +1843,7 @@ void cPopulation::SerialTransfer(int transfer_size, bool ignore_deads)
   if (ignore_deads == true) {
     for (int i = 0; i < GetSize(); i++) {
       cPopulationCell & cell = cell_array[i];
-      if (cell.IsOccupied() && cell.GetOrganism()->GetTestFitness() == 0.0) {
+      if (cell.IsOccupied() && cell.GetOrganism()->GetTestFitness(m_world->GetDefaultContext()) == 0.0) {
         KillOrganism(cell);
       }
     }

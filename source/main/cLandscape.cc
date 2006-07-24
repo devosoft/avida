@@ -11,6 +11,7 @@
 #include "cLandscape.h"
 
 #include "cCPUMemory.h"
+#include "cDataFile.h"
 #include "cEnvironment.h"
 #include "cInstSet.h"
 #include "cHardwareManager.h"
@@ -848,6 +849,36 @@ void cLandscape::PrintStats(ofstream& fp, int update)
   << GetAvNoEpiSize()      << " "   // 24
   << total_epi_count        << endl; // 25
   fp.flush();
+}
+
+void cLandscape::PrintStats(cDataFile& df, int update)
+{
+  df.Write(update, "Update");
+  df.Write(GetProbDead(), "Probability Lethal");
+  df.Write(GetProbNeg(), "Probability Deleterious");
+  df.Write(GetProbNeut(), "Probability Neutral");
+  df.Write(GetProbPos(), "Probability Beneficial");
+  df.Write(GetAvPosSize(), "Average Beneficial Size");
+  df.Write(GetAvNegSize(), "Average Deleterious Size");
+  df.Write(total_count, "Total Mutants");
+  df.Write(distance, "Distance");
+  df.Write(base_fitness, "Base Fitness");
+  df.Write(base_merit, "Base Merit");
+  df.Write(base_gestation, "Base Gestation");
+  df.Write(peak_fitness, "Peak Fitness");
+  df.Write(GetAveFitness(), "Average Fitness");
+  df.Write(GetAveSqrFitness(), "Average Square Fitness");
+  df.Write(total_entropy, "Total Entropy");
+  df.Write(complexity, "Total Complexity");
+  df.Write(GetProbEpiDead(), "Probability Lethal Epistasis");
+  df.Write(GetProbEpiPos(), "Probability Synergistic Epistasis");
+  df.Write(GetProbEpiNeg(), "Probability Antagonistic Epistasis");
+  df.Write(GetProbNoEpi(), "Probability No Epistasis");
+  df.Write(GetAvPosEpiSize(), "Average Synergistic Epistasis Size");
+  df.Write(GetAvNegEpiSize(), "Average Antagonistic Epistasis Size");
+  df.Write(GetAvNoEpiSize(), "Average Size - No Epistasis");
+  df.Write(total_epi_count, "Total Epistasis Count");
+  df.Endl();
 }
 
 void cLandscape::PrintEntropy(ofstream& fp)

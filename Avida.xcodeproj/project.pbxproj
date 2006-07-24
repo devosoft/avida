@@ -673,10 +673,8 @@
 		70B0887D08F603C600FC65FE /* cFile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cFile.h; sourceTree = "<group>"; };
 		70B0887F08F603C600FC65FE /* cFixedBlock.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cFixedBlock.h; sourceTree = "<group>"; };
 		70B0888008F603C600FC65FE /* cFixedCoords.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cFixedCoords.h; sourceTree = "<group>"; };
-		70B0888108F603C600FC65FE /* cGenesis.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenesis.h; sourceTree = "<group>"; };
 		70B0888208F603C600FC65FE /* functions.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = functions.h; sourceTree = "<group>"; };
 		70B0888308F603D400FC65FE /* cFile.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cFile.cc; sourceTree = "<group>"; };
-		70B0888408F603D400FC65FE /* cGenesis.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cGenesis.cc; sourceTree = "<group>"; };
 		70B088F708F762EA00FC65FE /* cHelpAlias.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHelpAlias.h; sourceTree = "<group>"; };
 		70B088F808F762EA00FC65FE /* cHelpEntry.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHelpEntry.h; sourceTree = "<group>"; };
 		70B088F908F762EA00FC65FE /* cHelpFullEntry.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHelpFullEntry.h; sourceTree = "<group>"; };
@@ -1576,11 +1574,9 @@
 				70B0891408F762EA00FC65FE /* cStringList.h */,
 				70B0891508F762EA00FC65FE /* cStringUtil.h */,
 				70B0888308F603D400FC65FE /* cFile.cc */,
-				70B0888408F603D400FC65FE /* cGenesis.cc */,
 				70B0887D08F603C600FC65FE /* cFile.h */,
 				70B0887F08F603C600FC65FE /* cFixedBlock.h */,
 				70B0888008F603C600FC65FE /* cFixedCoords.h */,
-				70B0888108F603C600FC65FE /* cGenesis.h */,
 				70B0888208F603C600FC65FE /* functions.h */,
 				70B0884F08F5FE5800FC65FE /* cDataFile.cc */,
 				70B0885008F5FE5800FC65FE /* cDataFileManager.cc */,

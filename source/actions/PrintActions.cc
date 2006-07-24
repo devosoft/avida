@@ -11,7 +11,6 @@
 
 #include "cAction.h"
 #include "cActionLibrary.h"
-#include "cAnalyzeUtil.h"
 #include "cClassificationManager.h"
 #include "cCPUTestInfo.h"
 #include "cGenome.h"
@@ -803,11 +802,11 @@ public:
       
       // now output
       
-      sum_fitness += cur_genotype->GetTestFitness() * num_orgs;
+      sum_fitness += cur_genotype->GetTestFitness(ctx) * num_orgs;
       sum_num_organisms += num_orgs;
       
       df.Write(cur_genotype->GetName(), "Genotype Name");
-      df.Write(cur_genotype->GetTestFitness(), "Fitness (test-cpu)");
+      df.Write(cur_genotype->GetTestFitness(ctx), "Fitness (test-cpu)");
       df.Write(num_orgs, "Abundance");
       df.Write(cGenomeUtil::FindHammingDistance(reference_genome, genome), "Hamming distance to reference");
       df.Write(cGenomeUtil::FindEditDistance(reference_genome, genome), "Levenstein distance to reference");

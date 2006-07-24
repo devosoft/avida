@@ -29,8 +29,9 @@
 #include "cString.h"
 #endif
 
-class cSpecies;
+class cAvidaContext;
 class cMerit;
+class cSpecies;
 class cWorld;
 
 class cGenotype {
@@ -60,8 +61,8 @@ private:
   cSpecies* species;
 
   // Data Structure stuff...
-  cGenotype * next;
-  cGenotype * prev;
+  cGenotype* next;
+  cGenotype* prev;
 
 
   ////// Statistical info //////
@@ -88,7 +89,7 @@ private:
   cDoubleSum tmp_sum_fitness;
 
   
-  void CalcTestStats() const;
+  void CalcTestStats(cAvidaContext& ctx) const;
   
   cGenotype(cWorld* world, int in_update_born, int in_id);
   
@@ -108,19 +109,19 @@ public:
   void SetSpecies(cSpecies * in_species) { species = in_species; }
 
   // Test CPU info -- only used with limited options on.
-  inline bool GetTestViable() const;
-  inline double GetTestFitness() const;
-  inline double GetTestMerit() const;
-  inline int GetTestGestationTime() const;
-  inline int GetTestExecutedSize() const;
-  inline int GetTestCopiedSize() const;
-  inline double GetTestColonyFitness() const;
-  inline int GetTestGenerations() const;
+  inline bool GetTestViable(cAvidaContext& ctx) const;
+  inline double GetTestFitness(cAvidaContext& ctx) const;
+  inline double GetTestMerit(cAvidaContext& ctx) const;
+  inline int GetTestGestationTime(cAvidaContext& ctx) const;
+  inline int GetTestExecutedSize(cAvidaContext& ctx) const;
+  inline int GetTestCopiedSize(cAvidaContext& ctx) const;
+  inline double GetTestColonyFitness(cAvidaContext& ctx) const;
+  inline int GetTestGenerations(cAvidaContext& ctx) const;
 
-  void SetParent(cGenotype * parent, cGenotype * parent2);
+  void SetParent(cGenotype* parent, cGenotype* parent2);
   void SetName(cString in_name)     { name = in_name; }
-  void SetNext(cGenotype * in_next) { next = in_next; }
-  void SetPrev(cGenotype * in_prev) { prev = in_prev; }
+  void SetNext(cGenotype* in_next) { next = in_next; }
+  void SetPrev(cGenotype* in_prev) { prev = in_prev; }
   void SetSymbol(char in_symbol) { symbol = in_symbol; }
   inline void SetThreshold();
   void IncDeferAdjust() { defer_adjust++; }
@@ -128,25 +129,19 @@ public:
   void SetLineageLabel(int in_label) { birth_data.lineage_label = in_label; }
 
   // Setting New Stats
-  void AddCopiedSize      (int in)   { sum_copied_size.Add(in); }
-  void AddExecutedSize         (int in)   { sum_exe_size.Add(in); }
-  void AddGestationTime   (int in)   { sum_gestation_time.Add(in);
+  void AddCopiedSize(int in) { sum_copied_size.Add(in); }
+  void AddExecutedSize(int in) { sum_exe_size.Add(in); }
+  void AddGestationTime(int in) { sum_gestation_time.Add(in);
                                        sum_repro_rate.Add(1/(double)in); }
-  void AddMerit      (const cMerit & in);
-  void RemoveMerit   (const cMerit & in);
-  void AddFitness    (double in){
-    assert(in >= 0.0);
-    sum_fitness.Add(in);
-  }
-  void RemoveFitness (double in){
-    assert(in >= 0.0);
-    sum_fitness.Subtract(in);
-  }
+  void AddMerit(const cMerit& in);
+  void RemoveMerit(const cMerit& in);
+  void AddFitness(double in) { assert(in >= 0.0); sum_fitness.Add(in); }
+  void RemoveFitness(double in) { assert(in >= 0.0); sum_fitness.Subtract(in); }
 
   //// Properties Native to Genotype ////
-  cGenome & GetGenome()             { return genome; }
-  const cGenome & GetGenome() const { return genome; }
-  int GetLength()             const { return genome.GetSize(); }
+  cGenome& GetGenome() { return genome; }
+  const cGenome& GetGenome() const { return genome; }
+  int GetLength() const { return genome.GetSize(); }
 
   int GetBirths()    const { return birth_data.birth_track.GetTotal(); }
   int GetBreedOut()  const { return birth_data.breed_out_track.GetTotal(); }
@@ -201,18 +196,18 @@ public:
   int GetParentDistance() const { return birth_data.parent_distance; }
   int GetDepth() const          { return birth_data.gene_depth; }
   int GetLineageLabel() const   { return birth_data.lineage_label; }
-  cString & GetName()           { return name; }
-  cSpecies * GetSpecies()       { return species; }
-  cSpecies * GetParentSpecies() { return birth_data.parent_species; }
-  cGenotype * GetNext()         { return next; }
-  cGenotype * GetPrev()         { return prev; }
+  cString& GetName()            { return name; }
+  cSpecies* GetSpecies()        { return species; }
+  cSpecies* GetParentSpecies()  { return birth_data.parent_species; }
+  cGenotype* GetNext()          { return next; }
+  cGenotype* GetPrev()          { return prev; }
   bool GetThreshold() const     { return flag_threshold; }
   int GetID() const             { return id_num; }
   char GetSymbol() const        { return symbol; }
 
   // Calculate a crude phylogentic distance based off of tracking parents
   // and grand-parents, including sexual tracking.
-  int GetPhyloDistance(cGenotype * test_genotype);
+  int GetPhyloDistance(cGenotype* test_genotype);
 
   inline int AddOrganism();
   inline int RemoveOrganism();
@@ -265,50 +260,50 @@ inline void cGenotype::SetBreedStats(cGenotype & daughter)
   }
 }
 
-inline bool cGenotype::GetTestViable() const {
-  if (test_data.fitness == -1) CalcTestStats();
+inline bool cGenotype::GetTestViable(cAvidaContext& ctx) const {
+  if (test_data.fitness == -1) CalcTestStats(ctx);
   return test_data.is_viable;
 }
 
 
-inline double cGenotype::GetTestFitness() const {
-  if (test_data.fitness == -1) CalcTestStats();
+inline double cGenotype::GetTestFitness(cAvidaContext& ctx) const {
+  if (test_data.fitness == -1) CalcTestStats(ctx);
   return test_data.fitness;
 }
 
 
-inline double cGenotype::GetTestMerit() const {
-  if (test_data.fitness == -1) CalcTestStats();
+inline double cGenotype::GetTestMerit(cAvidaContext& ctx) const {
+  if (test_data.fitness == -1) CalcTestStats(ctx);
   return test_data.merit;
 }
 
 
-inline int cGenotype::GetTestGestationTime() const {
-  if (test_data.fitness == -1) CalcTestStats();
+inline int cGenotype::GetTestGestationTime(cAvidaContext& ctx) const {
+  if (test_data.fitness == -1) CalcTestStats(ctx);
   return test_data.gestation_time;
 }
 
 
-inline int cGenotype::GetTestExecutedSize() const {
-  if (test_data.fitness == -1) CalcTestStats();
+inline int cGenotype::GetTestExecutedSize(cAvidaContext& ctx) const {
+  if (test_data.fitness == -1) CalcTestStats(ctx);
   return test_data.executed_size;
 }
 
 
-inline int cGenotype::GetTestCopiedSize() const {
-  if (test_data.fitness == -1) CalcTestStats();
+inline int cGenotype::GetTestCopiedSize(cAvidaContext& ctx) const {
+  if (test_data.fitness == -1) CalcTestStats(ctx);
   return test_data.copied_size;
 }
 
 
-inline double cGenotype::GetTestColonyFitness() const {
-  if (test_data.fitness == -1) CalcTestStats();
+inline double cGenotype::GetTestColonyFitness(cAvidaContext& ctx) const {
+  if (test_data.fitness == -1) CalcTestStats(ctx);
   return test_data.colony_fitness;
 }
 
 
-inline int cGenotype::GetTestGenerations() const {
-  if (test_data.fitness == -1) CalcTestStats();
+inline int cGenotype::GetTestGenerations(cAvidaContext& ctx) const {
+  if (test_data.fitness == -1) CalcTestStats(ctx);
   return test_data.generations;
 }
 

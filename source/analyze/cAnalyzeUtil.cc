@@ -279,74 +279,6 @@ void cAnalyzeUtil::CalcConsensus(cWorld* world, int lines_saved)
 }
 
 
-
-/**
-* This function goes through all creatures in the soup, and saves the
- * basic landscape data (neutrality, fitness, and so on) into a stream.
- *
- * @param fp The stream into which the data should be saved.
- *
- * @param sample_prob The probability with which a particular creature should
- * be analyzed (a value of 1 analyzes all creatures, a value of 0.1 analyzes
-                * 10%, and so on).
- *
- * @param landscape A bool that indicates whether the creatures should be
- * landscaped (calc. neutrality and so on) or not.
- *
- * @param save_genotype A bool that indicates whether the creatures should
- * be saved or not.
- **/
-
-void cAnalyzeUtil::AnalyzePopulation(cWorld* world, ofstream& fp,
-                                     double sample_prob, bool landscape, bool save_genotype)
-{
-  cPopulation* pop = &world->GetPopulation();
-  fp << "# (1) cell number (2) genotype name (3) length (4) fitness [test-cpu] (5) fitness (actual) (6) merit (7) no of breed trues occurred (8) lineage label (9) neutral metric (10) -... landscape data" << endl;
-  
-  cAvidaContext& ctx = world->GetDefaultContext();
-
-  const double skip_prob = 1.0 - sample_prob;
-  for (int i = 0; i < pop->GetSize(); i++) {
-    if (pop->GetCell(i).IsOccupied() == false) continue;  // No organism...
-    if (world->GetRandom().P(skip_prob)) continue;               // Not sampled...
-    
-    cOrganism * organism = pop->GetCell(i).GetOrganism();
-    cGenotype * genotype = organism->GetGenotype();
-    const cGenome & genome = organism->GetGenome();
-    
-    cString creature_name;
-    if ( genotype->GetThreshold() ) creature_name = genotype->GetName();
-    else creature_name.Set("%03d-no_name-u%i-c%i", genotype->GetLength(),
-                           world->GetStats().GetUpdate(), i );
-    
-    fp << i                                     << " "  // 1 cell ID
-      << creature_name                       << " "  // 2 name
-      << genotype->GetLength()                 << " "  // 3 length
-      << genotype->GetTestFitness()            << " "  // 4 fitness (test-cpu)
-      << organism->GetPhenotype().GetFitness() << " "  // 5 fitness (actual)
-      << organism->GetPhenotype().GetMerit()   << " "  // 6 merit
-      << genotype->GetBreedTrue()              << " "  // 7 breed true?
-      << organism->GetLineageLabel()           << " "  // 8 lineage label
-      << organism->GetPhenotype().GetNeutralMetric() << " "; // 9 neut metric
-    
-    // create landscape object for this creature
-    if (landscape &&  genotype->GetTestFitness() > 0) {
-      cLandscape landscape(world, genome, world->GetHardwareManager().GetInstSet());
-      landscape.SetDistance(1);
-      landscape.Process(ctx);
-      landscape.PrintStats(fp);
-    }
-    else fp << endl;
-    if ( save_genotype ){
-      char filename[40];
-      sprintf(filename, "classmgr/%s", static_cast<const char*>(creature_name));
-      cTestUtil::PrintGenome(world, genome, filename);
-    }
-  }
-}
-
-
-
 /**
 * This function goes through all creatures in the soup, and writes out
  * how many tasks the different creatures have done up to now. It counts
@@ -463,7 +395,7 @@ void cAnalyzeUtil::PrintViableTasksData(cWorld* world, ofstream& fp)
   
   for (int i = 0; i < pop->GetSize(); i++) {
     if (pop->GetCell(i).IsOccupied() == false) continue;
-    if (pop->GetCell(i).GetOrganism()->GetGenotype()->GetTestFitness() > 0.0) {
+    if (pop->GetCell(i).GetOrganism()->GetGenotype()->GetTestFitness(world->GetDefaultContext()) > 0.0) {
       cPhenotype & phenotype = pop->GetCell(i).GetOrganism()->GetPhenotype();
       for (int j = 0; j < num_tasks; j++) {
         if (phenotype.GetCurTaskCount()[j] > 0)  tasks[j] += 1;
@@ -483,7 +415,7 @@ void cAnalyzeUtil::PrintTreeDepths(cWorld* world, ofstream& fp)
   cGenotype* genotype = world->GetClassificationManager().GetBestGenotype();
   for (int i = 0; i < world->GetClassificationManager().GetGenotypeCount(); i++) {
     fp << genotype->GetID() << " "             // 1
-    << genotype->GetTestFitness() << " "    // 2
+    << genotype->GetTestFitness(world->GetDefaultContext()) << " "    // 2
     << genotype->GetNumOrganisms() << " "   // 3
     << genotype->GetDepth() << " "          // 4
     << endl;

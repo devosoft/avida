@@ -21,8 +21,13 @@
 #include "cLandscape.h"
 #include "cMutationalNeighborhood.h"
 #include "cMutationalNeighborhoodResults.h"
+#include "cOrganism.h"
+#include "cPhenotype.h"
+#include "cPopulation.h"
+#include "cPopulationCell.h"
 #include "cStats.h"
 #include "cString.h"
+#include "cTestUtil.h"
 #include "cWorld.h"
 #include "cWorldDriver.h"
 #include "tSmartArray.h"
@@ -918,6 +923,121 @@ public:
 };
 
 
+class cActionAnalyzePopulation : public cAction  // @parallelized
+{
+private:
+  double m_sprob;
+  int m_cland;
+  int m_save_genotypes;
+  cString m_filename;
+
+  class cPopOrgData
+  {
+  private:
+    cWorld* m_world;
+    cOrganism* m_org;
+    int m_cell;
+    bool m_cland;
+    cLandscape* m_land;
+
+  public:
+    cPopOrgData(cWorld* world, cOrganism* org, int cell, bool cland)
+      : m_world(world), m_org(org), m_cell(cell), m_cland(cland), m_land(NULL) { ; }
+    ~cPopOrgData() { delete m_land; }
+    
+    inline cOrganism* GetOrganism() { return m_org; }
+    inline int GetCellID() { return m_cell; }
+    inline void PrintLand(cDataFile& df, int update) { if (m_land) m_land->PrintStats(df, update); else df.Endl(); }
+    
+    void Process(cAvidaContext& ctx)
+    {
+      if (m_org->GetTestFitness(ctx) > 0.0 && m_cland) {
+        m_land = new cLandscape(m_world, m_org->GetGenome(), m_world->GetHardwareManager().GetInstSet());
+        m_land->SetDistance(1);
+        m_land->Process(ctx);
+      }
+    }
+  };
+  
+  
+public:
+  cActionAnalyzePopulation(cWorld* world, const cString& args)
+    : cAction(world, args), m_sprob(1.0), m_cland(0), m_save_genotypes(0), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_sprob = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_cland = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_save_genotypes = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  
+  const cString GetDescription()
+  {
+    return "AnalyzePopulation [double sample_prob=1] [int landscape=0] [int save_genotype=0] [string filename='']";
+  }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    if (ctx.GetAnalyzeMode()) {
+      m_world->GetDriver().NotifyWarning("AnalyzePopulation not currently supported in Analyze Mode.");
+    } else {
+      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+        m_world->GetDriver().NotifyComment("Analyzing Population...");
+
+      const int update = m_world->GetStats().GetUpdate();
+
+      cString filename(m_filename);
+      if (filename == "") filename.Set("pop-analysis-%d.dat", update);
+            
+      cPopOrgData* orgdata;
+      tList<cPopOrgData> batch;
+ 
+      cPopulation& pop = m_world->GetPopulation();
+      cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();
+      const double skip_prob = 1.0 - m_sprob;
+      for (int i = 0; i < pop.GetSize(); i++) {
+        if (pop.GetCell(i).IsOccupied() == false) continue;  // No organism...
+        if (ctx.GetRandom().P(skip_prob)) continue;       // Not sampled...
+        
+        orgdata = new cPopOrgData(m_world, pop.GetCell(i).GetOrganism(), i, m_cland);
+        batch.PushRear(orgdata);
+        jobqueue.AddJob(new tAnalyzeJob<cPopOrgData>(orgdata, &cPopOrgData::Process));
+      }
+
+      cDataFile& df = m_world->GetDataFile(filename);
+      while (orgdata = batch.Pop()) {
+        cOrganism* organism = orgdata->GetOrganism();
+        cGenotype* genotype = organism->GetGenotype();
+        cPhenotype& phenotype = organism->GetPhenotype();
+        
+        cString name;
+        if (genotype->GetThreshold()) name = genotype->GetName();
+        else name.Set("%03d-no_name-u%i-c%i", genotype->GetLength(), update, orgdata->GetCellID());
+
+        
+        df.Write(orgdata->GetCellID(), "Cell ID");
+        df.Write(name, "Organism Name");
+        df.Write(genotype->GetLength(),"Genome Length");
+        df.Write(genotype->GetTestFitness(ctx), "Fitness (test-cpu)");
+        df.Write(phenotype.GetFitness(), "Fitness (actual)");
+        df.Write(genotype->GetBreedTrue(), "Breed True");
+        df.Write(organism->GetLineageLabel(), "Lineage Label");
+        df.Write(phenotype.GetNeutralMetric(), "Neutral Metric");
+        orgdata->PrintLand(df, update);
+        
+        // save into archive
+        if (m_save_genotypes) {
+          name.Set("archive/%s.org", static_cast<const char *>(name));
+          cTestUtil::PrintGenome(m_world, organism->GetGenome(), name);
+        }
+      }
+      m_world->GetDataFileManager().Remove(filename);
+    }
+  }
+};
+
+
+
 void RegisterLandscapeActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionAnalyzeLandscape>("AnalyzeLandscape");
@@ -933,6 +1053,7 @@ void RegisterLandscapeActions(cActionLibrary* action_lib)
   action_lib->Register<cActionHillClimb>("HillClimbNeut");
   action_lib->Register<cActionHillClimb>("HillClimbRand");
   action_lib->Register<cActionPairTestLandscape>("PairTestLandscape");
+  action_lib->Register<cActionAnalyzeLandscape>("AnalyzePopulation");
 
   action_lib->Register<cActionMutationalNeighborhood>("MutationalNeighborhood");
   

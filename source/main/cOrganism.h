@@ -179,7 +179,7 @@ public:
 		      
   int OK();
 
-  double GetTestFitness();
+  double GetTestFitness(cAvidaContext& ctx);
   double CalcMeritRatio();
 
   cCPUMemory& ChildGenome() { return child_genome; }

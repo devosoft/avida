@@ -13,7 +13,9 @@
 
 #include <map>
 
+class cAvidaContext;
 class cGenotype;
+
 
 // struct to compare to genotypes
 struct gt_gentype
@@ -21,7 +23,9 @@ struct gt_gentype
   bool operator()(const cGenotype * g1, const cGenotype * g2) const;
 };
 
-class cLineage {
+
+class cLineage
+{
 private:
   friend class cClassificationManager;
   
@@ -36,14 +40,14 @@ private:
   mutable double m_ave_fitness;
   double m_generation_born;
 
-  std::map<const cGenotype *, int, gt_gentype> m_genotype_map;
+  std::map<const cGenotype*, int, gt_gentype> m_genotype_map;
   bool m_threshold;
   mutable bool m_ave_fitness_changed;
   mutable double m_max_fitness_ever;
   double m_lineage_stat1;
   double m_lineage_stat2;
 
-  void CalcCurrentFitness() const;
+  void CalcCurrentFitness(cAvidaContext& ctx) const;
 
   /**
     * Creates a new lineage with a given start fitness and parent id.
@@ -56,8 +60,7 @@ private:
    * responsibility not to request two identical ones for different lineages
    * (the class @ref cLineageControl does that correctly).
    **/
-  cLineage(double start_fitness, int parent_id, int id,
-           int update, double generation,
+  cLineage(double start_fitness, int parent_id, int id, int update, double generation,
            double lineage_stat1 = 0.0, double lineage_stat2 = 0.0);
   
   cLineage(); // @not_implemented
@@ -67,10 +70,8 @@ private:
 public:
   ~cLineage() { ; }
 
-  /**
-   * Adds one instance of the given genotype to the lineage.
-   **/
-  void AddCreature( cGenotype * genotype );
+  // Adds one instance of the given genotype to the lineage.
+  void AddCreature(cAvidaContext& ctx, cGenotype* genotype);
 
   /**
    * Removes on instance of the given genotype from the lineage.
@@ -78,55 +79,22 @@ public:
    * @return True if the removal of this creature potentially creates a new
    * best lineage, otherwise false.
    **/
-  bool RemoveCreature( cGenotype * genotype );
+  bool RemoveCreature(cAvidaContext& ctx, cGenotype* genotype);
   void SetThreshold() { m_threshold = true; }
 
-  /**
-   * @return The id of the lineage.
-   **/
   int GetID() const { return m_id; }
-
-  /**
-   * @return The id of the parent lineage.
-   **/
   int GetParentID() const { return m_parent_id; }
-
-  /**
-   * @return The update at which the lineage was created.
-   **/
   int GetUpdateBorn() const { return m_update_born; }
-
-  /**
-   * @return The generation at which the lineage was created.
-   **/
   double GetGenerationBorn() const { return m_generation_born; }
-
-  /**
-   * @return The initial fitness of the lineage.
-   **/
   double GetStartFitness() const { return m_start_fitness; }
-
-  /**
-   * @return The current maximum fitness of the lineage.
-   **/
   double GetMaxFitness() const { return m_max_fitness; }
-  
-  /**
-   * @return The average fitness of the lineage.
-   **/
-  double GetAveFitness() const {
-    if ( m_ave_fitness_changed )
-      CalcCurrentFitness();
-    return m_ave_fitness; }
+  double GetAveFitness(cAvidaContext& ctx) const
+  {
+    if (m_ave_fitness_changed) CalcCurrentFitness(ctx);
+    return m_ave_fitness;
+  }
 
-  /**
-   * @return The current number of genotypes in the lineage.
-   **/
   int GetNumGenotypes() const { return m_genotype_map.size(); }
-
-  /**
-   * @return The current number of creatures in the lineage.
-   **/
   int GetNumCreatures() const { return m_num_CPUs; }
 
   /**
