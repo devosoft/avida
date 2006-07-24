@@ -1,9 +1,0 @@
-
-Include("cInjectGenotype.h")
-
-cInjectGenotypeElement = Class("cInjectGenotypeElement", "cInjectGenotypeElement.h")
-set_policy(cInjectGenotypeElement.GetInjectGenotype, return_internal_reference())
-set_policy(cInjectGenotypeElement.GetNext, return_internal_reference())
-set_policy(cInjectGenotypeElement.GetPrev, return_internal_reference())
-
-# vim: set ft=python:

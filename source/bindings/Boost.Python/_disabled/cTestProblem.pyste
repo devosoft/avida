@@ -1,4 +1,0 @@
-
-cTestProblem = Class("cTestProblem", "cTestProblem.hh")
-
-# vim: set ft=python:

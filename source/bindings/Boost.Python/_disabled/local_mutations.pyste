@@ -1,6 +1,0 @@
-
-Include("cMutationLib.h")
-
-cLocalMutations = Class("cLocalMutations", "cLocalMutations.h")
-
-# vim: set ft=python:

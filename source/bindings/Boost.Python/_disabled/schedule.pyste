@@ -1,9 +1,0 @@
-
-Include("cChangeList.h")
-Include("cMerit.h")
-
-cSchedule = Class("cSchedule", "cSchedule.h")
-
-exclude(cSchedule.GetChangeList)
-
-# vim: set ft=python:

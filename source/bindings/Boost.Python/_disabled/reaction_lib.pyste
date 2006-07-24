@@ -1,9 +1,0 @@
-
-Include("cString.h")
-Include("cReaction.h")
-
-cReactionLib = Class("cReactionLib", "cReactionLib.h")
-set_policy(cReactionLib.AddReaction, return_internal_reference())
-set_policy(cReactionLib.GetReaction, return_internal_reference())
-
-# vim: set ft=python:

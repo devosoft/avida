@@ -1,6 +1,0 @@
-
-Include("cHardware4Stack.h")
-
-cHardwareTracer_4Stack = Class("cHardwareTracer_4Stack", "cHardwareTracer_4Stack.h")
-
-# vim: set ft=python:

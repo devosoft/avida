@@ -1,4 +1,0 @@
-
-cStringable = Class("cStringable", "cStringable.hh")
-
-# vim: set ft=python:

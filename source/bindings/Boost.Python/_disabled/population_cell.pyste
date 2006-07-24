@@ -1,9 +1,0 @@
-
-Include("cOrganism.h")
-
-cPopulationCell = Class("cPopulationCell", "cPopulationCell.h")
-set_policy(cPopulationCell.GetOrganism, return_internal_reference())
-set_policy(cPopulationCell.ConnectionList, return_internal_reference())
-set_policy(cPopulationCell.MutationRates, return_internal_reference())
-
-# vim: set ft=python:

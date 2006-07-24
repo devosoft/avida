@@ -1,7 +1,0 @@
-
-Include("cOrganism.h")
-Include("cGenebank.h")
-
-cBirthChamber = Class("cBirthChamber", "cBirthChamber.h")
-
-# vim: set ft=python:

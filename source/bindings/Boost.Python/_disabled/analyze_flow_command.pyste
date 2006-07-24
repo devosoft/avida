@@ -1,7 +1,0 @@
-
-Import("analyze_command.pyste")
-
-cAnalyzeFlowCommand = Class("cAnalyzeFlowCommand", "cAnalyzeFlowCommand.h")
-set_policy(cAnalyzeFlowCommand.GetCommandList, return_internal_reference())
-
-# vim: set ft=python:

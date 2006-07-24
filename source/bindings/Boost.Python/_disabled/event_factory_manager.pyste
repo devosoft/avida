@@ -1,7 +1,0 @@
-
-Include("cEvent.h")
-
-cEventFactoryManager = Class("cEventFactoryManager", "cEventFactoryManager.h")
-set_policy(cEventFactoryManager.ConstructEvent, return_internal_reference())
-
-# vim: set ft=python:

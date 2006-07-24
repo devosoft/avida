@@ -1,8 +1,0 @@
-
-Include("cInstSet.h")
-
-Include("fstream")
-
-cLandscape = Class("cLandscape", "cLandscape.h")
-
-# vim: set ft=python:

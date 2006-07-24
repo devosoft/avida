@@ -1,6 +1,0 @@
-
-Import("event_triggers.pyste")
-
-cAvidaTriggers = Class("cAvidaTriggers", "cAvidaTriggers.h")
-
-# vim: set ft=python:

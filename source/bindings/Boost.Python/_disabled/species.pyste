@@ -1,8 +1,0 @@
-
-Include("cGenotype.h")
-
-cSpecies = Class("cSpecies", "cSpecies.h")
-set_policy(cSpecies.GetNext, return_internal_reference())
-set_policy(cSpecies.GetPrev, return_internal_reference())
-
-# vim: set ft=python:

@@ -1,4 +1,0 @@
-Import("analyze_command_def_base.pyste")
-cAnalyzeFlowCommandDef = Class("cAnalyzeFlowCommandDef", "cAnalyzeFlowCommandDef.h")
-
-# vim: set ft=python:

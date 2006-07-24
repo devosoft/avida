@@ -1,5 +1,0 @@
-
-cInstSet = Class("cInstSet", "cInstSet.h")
-set_policy(cInstSet.GetInstLib, return_value_policy(reference_existing_object))
-
-# vim: set ft=python:

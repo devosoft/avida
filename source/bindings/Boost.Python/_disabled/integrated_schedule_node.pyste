@@ -1,6 +1,0 @@
-
-cIntegratedScheduleNode = Class("cIntegratedScheduleNode", "cIntegratedScheduleNode.h")
-set_policy(cIntegratedScheduleNode.GetNext, return_internal_reference())
-set_policy(cIntegratedScheduleNode.GetPrev, return_internal_reference())
-
-# vim: set ft=python:

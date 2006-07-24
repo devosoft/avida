@@ -1,7 +1,0 @@
-
-Include("cInstSet.h")
-
-cHardwareUtil = Class("cHardwareUtil", "cHardwareUtil.h")
-set_policy(cHardwareUtil.DefaultInstSet, return_value_policy(reference_existing_object))
-
-# vim: set ft=python:

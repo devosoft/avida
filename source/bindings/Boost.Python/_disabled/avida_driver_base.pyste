@@ -1,9 +1,0 @@
-declaration_code("""
-#ifndef STRING_HH
-#include "cString.h"
-#endif
-""")
-
-cAvidaDriver_Base = Class("cAvidaDriver_Base", "cAvidaDriver_Base.h")
-
-# vim: set ft=python:

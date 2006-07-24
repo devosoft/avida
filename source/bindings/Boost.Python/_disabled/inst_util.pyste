@@ -1,5 +1,0 @@
-Include("cInstSet.h")
-
-cInstUtil = Class("cInstUtil", "cInstUtil.h")
-
-# vim: set ft=python:

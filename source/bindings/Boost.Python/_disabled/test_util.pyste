@@ -1,8 +1,0 @@
-
-Include("cGenome.h")
-Include("cInjectGenotype.h")
-Include("cGenotype.h")
-
-cTestUtil = Class("cTestUtil", "cTestUtil.h")
-
-# vim: set ft=python:

@@ -1,6 +1,0 @@
-
-Include("cHardwareCPU.h")
-
-cHardwareTracer_CPU = Class("cHardwareTracer_CPU", "cHardwareTracer_CPU.h")
-
-# vim: set ft=python:

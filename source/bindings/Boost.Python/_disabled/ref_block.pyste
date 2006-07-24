@@ -1,4 +1,0 @@
-
-cRefBlock = Class("cRefBlock", "cRefBlock.h")
-
-# vim: set ft=python:

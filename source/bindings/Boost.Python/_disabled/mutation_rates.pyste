@@ -1,4 +1,0 @@
-
-cMutationRates = Class("cMutationRates", "cMutationRates.h")
-
-# vim: set ft=python:

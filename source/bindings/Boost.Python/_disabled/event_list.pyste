@@ -1,6 +1,0 @@
-
-Include("cEventFactoryManager.h")
-
-cEventList = Class("cEventList", "cEventList.h")
-
-# vim: set ft=python:

@@ -1,5 +1,0 @@
-
-cScaledBlock = Class("cScaledBlock", "cScaledBlock.h")
-set_policy(cScaledBlock.GetData, return_internal_reference())
-
-# vim: set ft=python:

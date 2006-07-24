@@ -1,6 +1,0 @@
-
-Include("cString.h")
-
-cHardwareTracer_TestCPU = Class("cHardwareTracer_TestCPU", "cHardwareTracer_TestCPU.h")
-
-# vim: set ft=python:

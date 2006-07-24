@@ -1,6 +1,0 @@
-
-Include("nHardware.h")
-
-cHardwareDefs = Class("cHardwareDefs", "nHardware-fixups.h")
-
-# vim: set ft=python:

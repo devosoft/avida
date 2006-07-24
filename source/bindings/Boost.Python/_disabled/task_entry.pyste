@@ -1,7 +1,0 @@
-
-cTaskEntry = Class("cTaskEntry", "cTaskEntry.h")
-# GetTestFun returns a instance method pointer, doesn't play well with
-# Python.
-exclude(cTaskEntry.GetTestFun)
-
-# vim: set ft=python:

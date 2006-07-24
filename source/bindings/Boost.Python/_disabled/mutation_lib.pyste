@@ -1,8 +1,0 @@
-
-Include("cString.h")
-Include("cMutation.h")
-
-cMutationLib = Class("cMutationLib", "cMutationLib.h")
-set_policy(cMutationLib.AddMutation, return_internal_reference())
-
-# vim: set ft=python:

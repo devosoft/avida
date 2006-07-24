@@ -1,9 +1,0 @@
-
-cInjectGenotype = Class("cInjectGenotype", "cInjectGenotype.h")
-set_policy(cInjectGenotype.GetGenome, return_internal_reference())
-set_policy(cInjectGenotype.GetParentGenotype, return_internal_reference())
-set_policy(cInjectGenotype.GetName, return_internal_reference())
-set_policy(cInjectGenotype.GetNext, return_internal_reference())
-set_policy(cInjectGenotype.GetPrev, return_internal_reference())
-
-# vim: set ft=python:

@@ -1,4 +1,0 @@
-A = Class("A", "A.hh")
-C = Class("C", "A.hh")
-
-# vim: set ft=python:

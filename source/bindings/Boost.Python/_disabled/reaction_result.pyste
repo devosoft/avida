@@ -1,5 +1,0 @@
-cReactionResult = Class("cReactionResult", "cReactionResult.h")
-
-set_policy(cReactionResult.GetInstArray, return_internal_reference())
-
-# vim: set ft=python:

@@ -1,4 +1,0 @@
-
-cHistogram = Class("cHistogram", "cHistogram.h")
-
-# vim: set ft=python:
