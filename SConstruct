@@ -33,6 +33,9 @@ AvidaUtils.Configure(ARGUMENTS, environment)
 if environment.subst('$enableSerialization') in ['1', 'yes']:
   environment.Append(CPPDEFINES = ['ENABLE_SERIALIZATION=1'])
 
+if environment.subst('$enablePyPkg') in ['1', 'yes']:
+  environment.Append(CPPPATH = ['#/source/bindings/Boost.Python'])
+
 if environment.subst('$enableTestCode') in ['1', 'yes']:
   environment.SetDefault(enableSharedPtr = 1)
   environment.Append(CPPDEFINES = ['USE_tMemTrack=1', 'ENABLE_UNIT_TESTS=1'])

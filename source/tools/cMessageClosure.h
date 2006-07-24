@@ -74,9 +74,15 @@ public:
   cMessageClosure &operator()(unsigned long i){ return operator<<(i); }
   cMessageClosure &operator()(float f){ return operator<<(f); }
   cMessageClosure &operator()(double f){ return operator<<(f); }
-  cMessageClosure &operator()(const void *p){ return operator<<(p); }
+  /*
+  @kgn : I've disabled void* and QString& versions below because they
+  aren't Pyste-friendly; but they're still enabled in the operator<<
+  calls above, which are more convenient for c++ use (and we aren't
+  using them from Python).
+  */
+  //cMessageClosure &operator()(const void *p){ return operator<<(p); }
   cMessageClosure &operator()(const char *s){ return operator<<(s); }
-  cMessageClosure &operator()(const QString &s){ return operator<<(s); }
+  //cMessageClosure &operator()(const QString &s){ return operator<<(s); }
 
   /*
   cMessageClosure::va():

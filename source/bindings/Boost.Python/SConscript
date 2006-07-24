@@ -17,7 +17,96 @@ e.Local(pf)
 package_name = 'AvidaCore'
 package_modules = e.PystePackageSubmodule(
   [
+    #  cBlockStruct is not used in Avida. @kgn
+    #'cBlockStruct.pyste',
+
+    'cChangeList.pyste',
+    'cConstSchedule.pyste',
+    'cCountTracker.pyste',
+
+    #  No longer used. @kgn
+    #'cCycleCheck.pyste',
+
+    'cDataEntry.pyste',
+    'cDataFile.pyste',
+    'cDataFileManager.pyste',
+    'cDataManager_Base.pyste',
+    'cDefaultMessageDisplay.pyste',
+    'cDoubleSum.pyste',
+    'cFile.pyste',
+    'cFixedBlock.pyste',
+    'cFixedCoords.pyste',
+    'cGenesis.pyste',
+    'cHelpAlias.pyste',
+    'cHelpEntry.pyste',
+    'cHelpFullEntry.pyste',
+    'cHelpManager.pyste',
+    'cHelpType.pyste',
+    'cHistogram.pyste',
+
+    #  No longer used. @kgn
+    #'cID.pyste',
+
+    'cIndexedBlockStruct.pyste',
+    'cInitFile.pyste',
+    'cIntSum.pyste',
+    'cIntegratedSchedule.pyste',
+    'cIntegratedScheduleNode.pyste',
+    'cMerit.pyste',
+
+    #  These rely on the third-party library "trio", which isn't
+    #  incorporated yet... @kgn
+    #'cMessageClass.pyste',
+    #'cMessageClosure.pyste',
+    #'cMessageDisplay.pyste',
+    #'cMessageDisplay_headers.pyste',
+    #'cMessageType.pyste',
+
+    'cProbSchedule.pyste',
+    'cRandom.pyste',
+    'cRefBlock.pyste',
+    'cRunningAverage.pyste',
+
+    #  cScaledBlock is not used in Avida. @kgn
+    #'cScaledBlock.pyste',
+
+    #  cSchedule must be loaded before its subclasses, so it must be
+    #  listed early in this PystePackageSubmodule command.
+    'cSchedule.pyste',
+
+    'cString.pyste',
+    'cStringIterator.pyste',
+    'cStringList.pyste',
+    'cStringUtil.pyste',
+    'cThread.pyste',
+    'cTools.pyste',
     'cUInt.pyste',
+    #  No longer used. @kgn
+    #'cUnitTestHelper.pyste',
+    #'cVerifierSuiteRecurser.pyste',
+
+    'cWeightedIndex.pyste',
+
+    #  Wrappers not yet complete. @kgn
+    #'functions.pyste',
+    #'lightweight_test.pyste',
+    #'nTemplateTests.pyste',
+    #'tArgDataEntry.pyste',
+    #'tArray.pyste',
+    #'tBuffer.pyste',
+    #'tDataEntry.pyste',
+    #'tDataEntryBase.pyste',
+    #'tDataEntryCommand.pyste',
+    #'tDataManager.pyste',
+    #'tDictionary.pyste',
+    #'tHashTable.pyste',
+    #'tList.pyste',
+    #'tManagedPointerArray.pyste',
+    #'tMatrix.pyste',
+    #'tMemTrack.pyste',
+    #'tObjectFactory.pyste',
+    #'tSmartArray.pyste',
+    #'tVector.pyste',
   ],
   pyste_package_name = package_name,
   LIBS = ['tools'],
