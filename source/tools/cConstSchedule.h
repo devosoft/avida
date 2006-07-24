@@ -31,7 +31,9 @@ private:
   tArray<bool> is_active;
   
   cConstSchedule(); // @not_implemented
-  
+  cConstSchedule(const cConstSchedule&); // @not_implemented
+  cConstSchedule& operator=(const cConstSchedule&); // @not_implemented
+
 public:
   cConstSchedule(int _item_count)
     : cSchedule(_item_count), last_id(0), is_active(_item_count)

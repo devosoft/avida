@@ -17,6 +17,12 @@ e.Local(pf)
 package_name = 'AvidaCore'
 package_modules = e.PystePackageSubmodule(
   [
+    #  These classes must be loaded before its subclasses, so they must
+    #  be listed early in this PystePackageSubmodule command.
+    'cHelpEntry.pyste',
+    'cSchedule.pyste',
+    'cString.pyste',
+
     #  cBlockStruct is not used in Avida. @kgn
     #'cBlockStruct.pyste',
 
@@ -36,9 +42,11 @@ package_modules = e.PystePackageSubmodule(
     'cFile.pyste',
     'cFixedBlock.pyste',
     'cFixedCoords.pyste',
-    'cGenesis.pyste',
+
+    #  No longer used. @kgn
+    #'cGenesis.pyste',
+
     'cHelpAlias.pyste',
-    'cHelpEntry.pyste',
     'cHelpFullEntry.pyste',
     'cHelpManager.pyste',
     'cHelpType.pyste',
@@ -70,11 +78,6 @@ package_modules = e.PystePackageSubmodule(
     #  cScaledBlock is not used in Avida. @kgn
     #'cScaledBlock.pyste',
 
-    #  cSchedule must be loaded before its subclasses, so it must be
-    #  listed early in this PystePackageSubmodule command.
-    'cSchedule.pyste',
-
-    'cString.pyste',
     'cStringIterator.pyste',
     'cStringList.pyste',
     'cStringUtil.pyste',
