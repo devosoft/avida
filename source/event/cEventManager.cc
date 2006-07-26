@@ -140,47 +140,6 @@ public:
   }
 };
 
-///// set_copy_mut /////
-
-/**
-**/
-
-
-class cEvent_set_copy_mut : public cEvent {
-private:
-  double cmut;
-  int start_cell;
-  int end_cell;
-public:
-    const cString GetName() const { return "set_copy_mut"; }
-  const cString GetDescription() const { return "set_copy_mut  <double cmut> [int start_cell=-1] [int end_cell=-1]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    cmut = args.PopWord().AsDouble();
-    if (args == "") start_cell=-1; else start_cell=args.PopWord().AsInt();
-    if (args == "") end_cell=-1; else end_cell=args.PopWord().AsInt();
-  }
-  ///// set_copy_mut /////
-  void Process(){
-    if (start_cell < 0) {   // start_cell == -1  -->  all
-      m_world->GetConfig().COPY_MUT_PROB.Set(cmut);
-      start_cell = 0;
-      end_cell = m_world->GetPopulation().GetSize();
-    }
-    else if (end_cell < -1)  { // end_cell == -1 --> Only one cell!
-      end_cell = start_cell + 1;
-    }
-    assert(start_cell >= 0 && start_cell < m_world->GetPopulation().GetSize());
-    assert(end_cell > 0 && end_cell <= m_world->GetPopulation().GetSize());
-    for (int i = start_cell; i < end_cell; i++) {
-      m_world->GetPopulation().GetCell(i).MutationRates().SetCopyMutProb(cmut);
-    }
-  }
-};
 
 ///// mod_point_mut /////
 
@@ -214,41 +173,6 @@ public:
       m_world->GetConfig().POINT_MUT_PROB.Set(new_pmut);
     } else {
       m_world->GetPopulation().GetCell(cell).MutationRates().SetPointMutProb(new_pmut);
-    }
-  }
-};
-
-///// set_point_mut /////
-
-/**
-**/
-
-
-class cEvent_set_point_mut : public cEvent {
-private:
-  double pmut;
-  int cell;
-public:
-    const cString GetName() const { return "set_point_mut"; }
-  const cString GetDescription() const { return "set_point_mut  <double pmut> [int cell=-1]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    pmut = args.PopWord().AsDouble();
-    if (args == "") cell=-1; else cell=args.PopWord().AsInt();
-  }
-  ///// set_point_mut /////
-  void Process(){
-    if (cell < 0) {   // cell == -1   -->  all
-      for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
-        m_world->GetPopulation().GetCell(i).MutationRates().SetPointMutProb(pmut);
-      }
-      m_world->GetConfig().POINT_MUT_PROB.Set(pmut);
-    } else {
-      m_world->GetPopulation().GetCell(cell).MutationRates().SetPointMutProb(pmut);
     }
   }
 };
@@ -1406,9 +1330,7 @@ cEventManager::cEventManager(cWorld* world) : m_world(world)
   REGISTER(zero_muts);
   REGISTER(mod_copy_mut);
   REGISTER(mod_div_mut);
-  REGISTER(set_copy_mut);
   REGISTER(mod_point_mut);
-  REGISTER(set_point_mut);
   REGISTER(test_dom);
 
   REGISTER(task_snapshot);

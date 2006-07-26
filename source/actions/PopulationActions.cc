@@ -620,6 +620,7 @@ public:
       m_start = m_end;
       m_end = temp;
     }
+    if (m_end > m_world->GetPopulation().GetSize()) m_end = m_world->GetPopulation().GetSize();
   }
   
   const cString GetDescription() { return "SetMutProb [string mut_type='copy'] [double prob=0.0] [int start_cell=-1] [int end_cell=-1]"; }
