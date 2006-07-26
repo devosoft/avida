@@ -576,6 +576,95 @@ public:
 };
 
 
+class cActionSetMutProb : public cAction
+{
+private:
+  enum { POINT, COPY, INS, DEL, DIV, DIVIDE, D_INS, D_DEL, PARENT, INJECT, I_INS, I_DEL } m_mut_type;
+  double m_prob;
+  int m_start;
+  int m_end;
+  bool m_setconf;
+  
+public:
+  cActionSetMutProb(cWorld* world, const cString& args) : cAction(world, args), m_prob(0.0), m_start(-1), m_end(-1), m_setconf(false)
+  {
+    cString mutstr("COPY");
+
+    cString largs(args);
+    if (largs.GetSize()) mutstr = largs.PopWord().ToUpper();
+    if (largs.GetSize()) m_prob = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_start = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_end = largs.PopWord().AsInt();
+    
+    if (mutstr == "POINT") m_mut_type = POINT;
+    else if (mutstr == "COPY") m_mut_type = COPY;
+    else if (mutstr == "INS" || mutstr == "INSERT") m_mut_type = INS;
+    else if (mutstr == "DEL" || mutstr == "DELETE") m_mut_type = DEL;
+    else if (mutstr == "DIV") m_mut_type = DIV;
+    else if (mutstr == "DIVIDE") m_mut_type = DIVIDE;
+    else if (mutstr == "DIVIDE_INS") m_mut_type = D_INS;
+    else if (mutstr == "DIVIDE_DEL") m_mut_type = D_DEL;
+    else if (mutstr == "PARENT") m_mut_type = PARENT;
+    else if (mutstr == "INJECT") m_mut_type = INJECT;
+    else if (mutstr == "INJECT_INS") m_mut_type = I_INS;
+    else if (mutstr == "INJECT_DEL") m_mut_type = I_DEL;
+
+    if (m_start < 0) { // start == -1  -->  all
+      m_setconf = true;
+      m_start = 0;
+      m_end = m_world->GetPopulation().GetSize();
+    }
+    if (m_end < 0)  m_end = m_start + 1; // end == -1 --> Only one cell!
+    if (m_end < m_start) { // swap order
+      int temp = m_start;
+      m_start = m_end;
+      m_end = temp;
+    }
+  }
+  
+  const cString GetDescription() { return "SetMutProb [string mut_type='copy'] [double prob=0.0] [int start_cell=-1] [int end_cell=-1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    if (m_setconf) {
+      switch (m_mut_type) {
+        case POINT: m_world->GetConfig().POINT_MUT_PROB.Set(m_prob); break;
+        case COPY: m_world->GetConfig().COPY_MUT_PROB.Set(m_prob); break;
+        case INS: m_world->GetConfig().INS_MUT_PROB.Set(m_prob); break;
+        case DEL: m_world->GetConfig().DEL_MUT_PROB.Set(m_prob); break;
+        case DIV: m_world->GetConfig().DIV_MUT_PROB.Set(m_prob); break;
+        case DIVIDE: m_world->GetConfig().DIVIDE_MUT_PROB.Set(m_prob); break;
+        case D_INS: m_world->GetConfig().DIVIDE_INS_PROB.Set(m_prob); break;
+        case D_DEL: m_world->GetConfig().DIVIDE_DEL_PROB.Set(m_prob); break;
+        case PARENT: m_world->GetConfig().PARENT_MUT_PROB.Set(m_prob); break;
+        case INJECT: m_world->GetConfig().INJECT_MUT_PROB.Set(m_prob); break;
+        case I_INS: m_world->GetConfig().INJECT_INS_PROB.Set(m_prob); break;
+        case I_DEL: m_world->GetConfig().INJECT_DEL_PROB.Set(m_prob); break;
+        default:
+          return;
+      }
+    }
+
+    switch (m_mut_type) {
+      case POINT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetPointMutProb(m_prob); break;
+      case COPY: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetCopyMutProb(m_prob); break;
+      case INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInsMutProb(m_prob); break;
+      case DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDelMutProb(m_prob); break;
+      case DIV: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivMutProb(m_prob); break;
+      case DIVIDE: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideMutProb(m_prob); break;
+      case D_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideInsProb(m_prob); break;
+      case D_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideDelProb(m_prob); break;
+      case PARENT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetParentMutProb(m_prob); break;
+      case INJECT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectMutProb(m_prob); break;
+      case I_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectInsProb(m_prob); break;
+      case I_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectDelProb(m_prob); break;
+      default:
+        return;
+    }
+  }
+};
+
+
 
 void RegisterPopulationActions(cActionLibrary* action_lib)
 {
@@ -592,6 +681,8 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionKillProb>("KillRate");
   action_lib->Register<cActionKillRectangle>("KillRectangle");
   action_lib->Register<cActionSerialTransfer>("SerialTransfer");
+
+  action_lib->Register<cActionSetMutProb>("SetMutProb");
 
 
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
