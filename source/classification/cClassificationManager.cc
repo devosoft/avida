@@ -77,17 +77,18 @@ void cClassificationManager::UpdateReset()
 
   cInjectGenotype* best_inject_genotype = GetBestInjectGenotype();
   
-  if (best_inject_genotype && best_inject_genotype->GetID() != m_inject_prev_dom) {
-    m_inject_dom_time = 0;
-    m_inject_prev_dom = best_inject_genotype->GetID();
-  }
-  else {
-    m_inject_dom_time++;
-    if (m_inject_dom_time == m_world->GetConfig().GENOTYPE_PRINT_DOM.Get()) {
-      cString filename;
-      filename.Set("archive/%s", static_cast<const char*>(best_inject_genotype->GetName()));
-      cTestUtil::PrintGenome(m_world, best_inject_genotype, best_inject_genotype->GetGenome(), 
-                             filename, m_world->GetStats().GetUpdate());
+  if (best_inject_genotype) {  // If there is a dominant parasite
+    if (best_inject_genotype->GetID() != m_inject_prev_dom) {
+      m_inject_dom_time = 0;
+      m_inject_prev_dom = best_inject_genotype->GetID();
+    } else {
+      m_inject_dom_time++;
+      if (m_inject_dom_time == m_world->GetConfig().GENOTYPE_PRINT_DOM.Get()) {
+        cString filename;
+        filename.Set("archive/%s", static_cast<const char*>(best_inject_genotype->GetName()));
+        cTestUtil::PrintGenome(m_world, best_inject_genotype, best_inject_genotype->GetGenome(), 
+                               filename, m_world->GetStats().GetUpdate());
+      }
     }
   }
 }
