@@ -32,8 +32,6 @@ class cCPUTestInfo
 private:
   // Inputs...
   const int generation_tests; // Maximum depth in generations to test
-  bool test_threads;          // Should a report of threading be saved?
-  bool print_threads;         // Should the report be printed?
   bool trace_execution;       // Should we trace this CPU?
   bool trace_task_order;      // Should we keep track of ordering of tasks?
   bool use_random_inputs;     // Should we give the organism random inputs?
@@ -59,16 +57,12 @@ public:
   void Clear();
  
   // Input Setup
-  void TestThreads(bool _test=true) { test_threads = _test; }
-  void PrintThreads(bool _print=true) { print_threads = _print; }
   void TraceTaskOrder(bool _trace=true) { trace_task_order = _trace; }
   void UseRandomInputs(bool _rand=true) { use_random_inputs = _rand; }
   void SetTraceExecution(cHardwareTracer *tracer = NULL);
 
   // Input Accessors
   int GetGenerationTests() const { return generation_tests; }
-  bool GetTestThreads() const { return test_threads; }
-  bool GetPrintThreads() const { return print_threads; }
   bool GetTraceTaskOrder() const { return trace_task_order; }
   bool GetUseRandomInputs() const { return use_random_inputs; }
   bool GetTraceExecution() const { return trace_execution; }

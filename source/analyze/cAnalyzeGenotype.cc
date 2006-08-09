@@ -342,7 +342,6 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cTestCPU* testcpu, cAnaly
 {
     // Build the test info for printing.
   cCPUTestInfo test_info;
-  test_info.TestThreads();
   // test_info.TraceTaskOrder();
 
   // @DMB - This does some 'interesting' things with the instruction set

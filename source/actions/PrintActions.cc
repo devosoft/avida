@@ -1194,6 +1194,177 @@ public:
 };
 
 
+class cActionDumpFitnessGrid : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpFitnessGrid(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  const cString GetDescription() { return "DumpFitnessGrid [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_fitness.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
+      for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
+        cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
+        double fitness = (cell.IsOccupied()) ? cell.GetOrganism()->GetGenotype()->GetFitness() : 0.0;
+        fp << fitness << " ";
+      }
+      fp << endl;
+    }
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
+
+class cActionDumpGenotypeIDGrid : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpGenotypeIDGrid(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  const cString GetDescription() { return "DumpGenotypeIDGrid [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_genotype_id.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
+      for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
+        cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
+        int id = (cell.IsOccupied()) ? cell.GetOrganism()->GetGenotype()->GetID() : -1;
+        fp << id << " ";
+      }
+      fp << endl;
+    }
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
+
+class cActionDumpTaskGrid : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpTaskGrid(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  const cString GetDescription() { return "DumpTaskGrid [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_task.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    cPopulation* pop = &m_world->GetPopulation();
+    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+    
+    const int num_tasks = m_world->GetNumTasks();
+
+    for (int i = 0; i < pop->GetWorldX(); i++) {
+      for (int j = 0; j < pop->GetWorldY(); j++) {
+        int task_sum = 0;
+        int cell_num = i * pop->GetWorldX() + j;
+        if (pop->GetCell(cell_num).IsOccupied() == true) {
+          cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
+          cCPUTestInfo test_info;
+          testcpu->TestGenome(ctx, test_info, organism->GetGenome());
+          cPhenotype& test_phenotype = test_info.GetTestPhenotype();
+          for (int k = 0; k < num_tasks; k++) {
+            if (test_phenotype.GetLastTaskCount()[k] > 0) task_sum += static_cast<int>(pow(2.0, k)); 
+          }
+        }
+        fp << task_sum << " ";
+      }
+      fp << endl;
+    }
+    
+    delete testcpu;    
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
+
+class cActionDumpDonorGrid : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpDonorGrid(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  const cString GetDescription() { return "DumpDonorGrid [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_donor.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
+      for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
+        cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
+        int donor = (cell.IsOccupied()) ? cell.GetOrganism()->GetPhenotype().IsDonorLast() : -1;
+        fp << donor << " ";
+      }
+      fp << endl;
+    }
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
+
+class cActionDumpReceiverGrid : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpReceiverGrid(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  const cString GetDescription() { return "DumpReceiverGrid [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_receiver.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
+      for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
+        cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
+        int recv = (cell.IsOccupied()) ? cell.GetOrganism()->GetPhenotype().IsReceiver() : -1;
+        fp << recv << " ";
+      }
+      fp << endl;
+    }
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
+
 void RegisterPrintActions(cActionLibrary* action_lib)
 {
   // Stats Out Files
@@ -1244,6 +1415,11 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintViableTasksData>("PrintViableTasksData");
   action_lib->Register<cActionPrintTreeDepths>("PrintTreeDepths");
   
+  action_lib->Register<cActionDumpFitnessGrid>("DumpFitnessGrid");
+  action_lib->Register<cActionDumpGenotypeIDGrid>("DumpGenotypeIDGrid");
+  action_lib->Register<cActionDumpTaskGrid>("DumpTaskGrid");
+  action_lib->Register<cActionDumpDonorGrid>("DumpDonorGrid");
+  action_lib->Register<cActionDumpReceiverGrid>("DumpReceiverGrid");
 
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
   action_lib->Register<cActionPrintAverageData>("print_average_data");
@@ -1289,4 +1465,10 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintTaskSnapshot>("task_snapshot");
   action_lib->Register<cActionPrintViableTasksData>("print_viable_tasks_data");
   action_lib->Register<cActionPrintTreeDepths>("print_tree_depths");
+
+  action_lib->Register<cActionDumpFitnessGrid>("dump_fitness_grid");
+  action_lib->Register<cActionDumpGenotypeIDGrid>("dump_enotype_grid");
+  action_lib->Register<cActionDumpTaskGrid>("dump_task_grid");
+  action_lib->Register<cActionDumpDonorGrid>("dump_donor_grid");
+  action_lib->Register<cActionDumpReceiverGrid>("dump_receiver_grid");
 }

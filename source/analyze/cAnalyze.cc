@@ -1669,7 +1669,6 @@ void cAnalyze::CommandTrace(cString cur_string)
     
     // Build the test info for printing.
     cCPUTestInfo test_info;
-    test_info.TestThreads();
     test_info.SetTraceExecution(&trace_printer);
     
     testcpu->TestGenome(m_ctx, test_info, genotype->GetGenome());
@@ -6140,7 +6139,6 @@ void cAnalyze::AnalyzeMuts(cString cur_string)
       // Determine the fitness of the current sequence...
       cGenome test_genome(test_sequence);
       cCPUTestInfo test_info;
-      test_info.TestThreads();
       testcpu->TestGenome(m_ctx, test_info, test_genome);
       const double fitness = test_info.GetGenotypeFitness();
       

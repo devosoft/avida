@@ -82,9 +82,6 @@ public:
   bool TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome);
   bool TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome & genome, std::ofstream& out_fp);
 
-  void TestThreads(cAvidaContext& ctx, const cGenome& genome);
-  void PrintThreads(cAvidaContext& ctx, const cGenome& genome);
-
   inline int GetInput();
   inline int GetInputAt(int & input_pointer);
   inline int GetReceiveValue();

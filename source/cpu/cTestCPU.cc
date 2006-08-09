@@ -249,20 +249,3 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info,
   // All options have failed; just return false.
   return false;
 }
-
-
-void cTestCPU::TestThreads(cAvidaContext& ctx, const cGenome& genome)
-{
-  cCPUTestInfo test_info;
-  test_info.TestThreads();
-  cTestCPU::TestGenome(ctx, test_info, genome);
-}
-
-
-void cTestCPU::PrintThreads(cAvidaContext& ctx, const cGenome& genome)
-{
-  cCPUTestInfo test_info;
-  test_info.TestThreads();
-  test_info.PrintThreads();
-  cTestCPU::TestGenome(ctx, test_info, genome);
-}

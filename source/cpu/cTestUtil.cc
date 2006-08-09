@@ -43,7 +43,6 @@ void cTestUtil::PrintGenome(cWorld* world, const cGenome & genome, cString filen
   cAvidaContext& ctx = world->GetDefaultContext();
   
   cCPUTestInfo test_info;
-  test_info.TestThreads();
   testcpu->TestGenome(ctx, test_info, genome);
   delete testcpu;
 
@@ -147,7 +146,6 @@ void cTestUtil::PrintGenome(cWorld* world, cInjectGenotype * inject_genotype,
   cAvidaContext& ctx = world->GetDefaultContext();
 
   cCPUTestInfo test_info;
-  test_info.TestThreads();
   testcpu->TestGenome(ctx, test_info, genome);
   delete testcpu;
 

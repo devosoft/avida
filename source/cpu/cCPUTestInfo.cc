@@ -18,8 +18,6 @@
 
 cCPUTestInfo::cCPUTestInfo(int max_tests)
   : generation_tests(max_tests)  // These vars not reset on Clear()
-  , test_threads(false)
-  , print_threads(false)
   , trace_execution(false)
   , trace_task_order(false)
   , use_random_inputs(false)
