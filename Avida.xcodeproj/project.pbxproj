@@ -42,10 +42,8 @@
 		7040D3A6090964D100AA820F /* cMxCodeArray.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865808F4974300FC65FE /* cMxCodeArray.cc */; };
 		70422A28091B141000A5E67F /* cAnalyze.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70422A1C091B141000A5E67F /* cAnalyze.cc */; };
 		70422A30091B141000A5E67F /* cAnalyzeGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70422A24091B141000A5E67F /* cAnalyzeGenotype.cc */; };
-		70422A32091B141000A5E67F /* cAnalyzeUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70422A26091B141000A5E67F /* cAnalyzeUtil.cc */; };
 		70422A34091B141000A5E67F /* cAnalyze.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70422A1C091B141000A5E67F /* cAnalyze.cc */; };
 		70422A3C091B141000A5E67F /* cAnalyzeGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70422A24091B141000A5E67F /* cAnalyzeGenotype.cc */; };
-		70422A3E091B141000A5E67F /* cAnalyzeUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70422A26091B141000A5E67F /* cAnalyzeUtil.cc */; };
 		7049F2D90A66859700640512 /* cHardwareTransSMT.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7049F2D70A66859300640512 /* cHardwareTransSMT.cc */; };
 		7049F2DA0A66859B00640512 /* cHardwareTransSMT.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7049F2D70A66859300640512 /* cHardwareTransSMT.cc */; };
 		7049F2DB0A66859F00640512 /* cHardwareTransSMT.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7049F2D70A66859300640512 /* cHardwareTransSMT.cc */; };
@@ -338,7 +336,6 @@
 		70DCACF2097AF7CC002F8733 /* cMxCodeArray.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865808F4974300FC65FE /* cMxCodeArray.cc */; };
 		70DCACF3097AF7CC002F8733 /* cAnalyze.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70422A1C091B141000A5E67F /* cAnalyze.cc */; };
 		70DCACF4097AF7CC002F8733 /* cAnalyzeGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70422A24091B141000A5E67F /* cAnalyzeGenotype.cc */; };
-		70DCACF5097AF7CC002F8733 /* cAnalyzeUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70422A26091B141000A5E67F /* cAnalyzeUtil.cc */; };
 		70DCACF6097AF7CC002F8733 /* cFitnessMatrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB208DB7F8200068AC2 /* cFitnessMatrix.cc */; };
 		70DCACF7097AF7CC002F8733 /* cClassificationManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70F7DAF009290468009E311D /* cClassificationManager.cc */; };
 		70DCACF8097AF7CC002F8733 /* cGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70F7DC9E09293E6F009E311D /* cGenotype.cc */; };
@@ -501,8 +498,6 @@
 		70422A23091B141000A5E67F /* cAnalyzeFunction.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAnalyzeFunction.h; sourceTree = "<group>"; };
 		70422A24091B141000A5E67F /* cAnalyzeGenotype.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeGenotype.cc; sourceTree = "<group>"; };
 		70422A25091B141000A5E67F /* cAnalyzeGenotype.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAnalyzeGenotype.h; sourceTree = "<group>"; };
-		70422A26091B141000A5E67F /* cAnalyzeUtil.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeUtil.cc; sourceTree = "<group>"; };
-		70422A27091B141000A5E67F /* cAnalyzeUtil.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAnalyzeUtil.h; sourceTree = "<group>"; };
 		70422A44091B1B8500A5E67F /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		7049F2D70A66859300640512 /* cHardwareTransSMT.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareTransSMT.cc; sourceTree = "<group>"; };
 		7049F2D80A66859300640512 /* cHardwareTransSMT.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareTransSMT.h; sourceTree = "<group>"; };
@@ -999,8 +994,6 @@
 				70422A23091B141000A5E67F /* cAnalyzeFunction.h */,
 				70422A24091B141000A5E67F /* cAnalyzeGenotype.cc */,
 				70422A25091B141000A5E67F /* cAnalyzeGenotype.h */,
-				70422A26091B141000A5E67F /* cAnalyzeUtil.cc */,
-				70422A27091B141000A5E67F /* cAnalyzeUtil.h */,
 				7054A16E09A8014600038658 /* cAnalyzeJobQueue.h */,
 				7054A16F09A8014600038658 /* cAnalyzeJobQueue.cc */,
 				7054A17909A802BC00038658 /* cAnalyzeJob.h */,
@@ -1901,7 +1894,6 @@
 				7040CF1E0906A52E00AA820F /* cEventManager.cc in Sources */,
 				70422A28091B141000A5E67F /* cAnalyze.cc in Sources */,
 				70422A30091B141000A5E67F /* cAnalyzeGenotype.cc in Sources */,
-				70422A32091B141000A5E67F /* cAnalyzeUtil.cc in Sources */,
 				70F7DCA009293E76009E311D /* cClassificationManager.cc in Sources */,
 				70F7DCA109293E77009E311D /* cGenotype.cc in Sources */,
 				70533479092A4F4D006BD186 /* cGenotype_BirthData.cc in Sources */,
@@ -2040,7 +2032,6 @@
 				70DCACF2097AF7CC002F8733 /* cMxCodeArray.cc in Sources */,
 				70DCACF3097AF7CC002F8733 /* cAnalyze.cc in Sources */,
 				70DCACF4097AF7CC002F8733 /* cAnalyzeGenotype.cc in Sources */,
-				70DCACF5097AF7CC002F8733 /* cAnalyzeUtil.cc in Sources */,
 				70DCACF6097AF7CC002F8733 /* cFitnessMatrix.cc in Sources */,
 				70DCACF7097AF7CC002F8733 /* cClassificationManager.cc in Sources */,
 				70DCACF8097AF7CC002F8733 /* cGenotype.cc in Sources */,
@@ -2158,7 +2149,6 @@
 				7040D3A6090964D100AA820F /* cMxCodeArray.cc in Sources */,
 				70422A34091B141000A5E67F /* cAnalyze.cc in Sources */,
 				70422A3C091B141000A5E67F /* cAnalyzeGenotype.cc in Sources */,
-				70422A3E091B141000A5E67F /* cAnalyzeUtil.cc in Sources */,
 				70F7D8CE09254787009E311D /* cFitnessMatrix.cc in Sources */,
 				70F7DAF409290468009E311D /* cClassificationManager.cc in Sources */,
 				70F7DCA309293E87009E311D /* cGenotype.cc in Sources */,

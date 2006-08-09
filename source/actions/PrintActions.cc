@@ -18,6 +18,7 @@
 #include "cGenotype.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
+#include "cHistogram.h"
 #include "cInjectGenotype.h"
 #include "cInstSet.h"
 #include "cInstUtil.h"
@@ -827,6 +828,372 @@ public:
 };
 
 
+class cActionTestDominant : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionTestDominant(cWorld* world, const cString& args) : cAction(world, args), m_filename("dom-test.dat")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  const cString GetDescription() { return "TestDominant [string fname='dom-test.dat']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cGenome& genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
+
+    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+    cCPUTestInfo test_info;
+    testcpu->TestGenome(ctx, test_info, genome);
+    delete testcpu;
+    
+    cPhenotype& colony_phenotype = test_info.GetColonyOrganism()->GetPhenotype();
+
+    cDataFile& df = m_world->GetDataFile(m_filename);
+    df.Write(m_world->GetStats().GetUpdate(), "Update");
+    df.Write(colony_phenotype.GetMerit().GetDouble(), "Merit");
+    df.Write(colony_phenotype.GetGestationTime(), "Gestation Time");
+    df.Write(colony_phenotype.GetFitness(), "Fitness");
+    df.Write(1.0 / (0.1 + colony_phenotype.GetGestationTime()), "Reproduction Rate");
+    df.Write(genome.GetSize(), "Genome Length");
+    df.Write(colony_phenotype.GetCopiedSize(), "Copied Size");
+    df.Write(colony_phenotype.GetExecutedSize(), "Executed Size");
+    df.Endl();
+  }
+};
+
+
+class cActionPrintTaskSnapshot : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPrintTaskSnapshot(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  const cString GetDescription() { return "PrintTaskSnapshot [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("tasks_%d.dat", m_world->GetStats().GetUpdate());
+    cDataFile& df = m_world->GetDataFile(filename);
+    
+    cPopulation& pop = m_world->GetPopulation();
+    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+    
+    for (int i = 0; i < pop.GetSize(); i++) {
+      if (pop.GetCell(i).IsOccupied() == false) continue;
+      cOrganism* organism = pop.GetCell(i).GetOrganism();
+      
+      // create a test-cpu for the current creature
+      cCPUTestInfo test_info;
+      testcpu->TestGenome(ctx, test_info, organism->GetGenome());
+      cPhenotype& test_phenotype = test_info.GetTestPhenotype();
+      cPhenotype& phenotype = organism->GetPhenotype();
+      
+      int num_tasks = m_world->GetNumTasks();
+      int sum_tasks_all = 0;
+      int sum_tasks_rewarded = 0;
+      int divide_sum_tasks_all = 0;
+      int divide_sum_tasks_rewarded = 0;
+      int parent_sum_tasks_all = 0;
+      int parent_sum_tasks_rewarded = 0;
+      
+      for (int j = 0; j < num_tasks; j++) {
+        // get the number of bonuses for this task
+        int bonuses = 1; //phenotype.GetTaskLib().GetTaskNumBonus(j);
+        int task_count = ( phenotype.GetCurTaskCount()[j] == 0 ) ? 0 : 1;
+        int divide_tasks_count = (test_phenotype.GetLastTaskCount()[j] == 0)?0:1;
+        int parent_task_count = (phenotype.GetLastTaskCount()[j] == 0) ? 0 : 1;
+        
+        // If only one bonus, this task is not rewarded, as last bonus is + 0.
+        if (bonuses > 1) {
+          sum_tasks_rewarded += task_count;
+          divide_sum_tasks_rewarded += divide_tasks_count;
+          parent_sum_tasks_rewarded += parent_task_count;
+        }
+        sum_tasks_all += task_count;
+        divide_sum_tasks_all += divide_tasks_count;
+        parent_sum_tasks_all += parent_task_count;
+      }
+      
+      df.Write(i, "Cell Number");
+      df.Write(sum_tasks_rewarded, "Number of Tasks Rewarded");
+      df.Write(sum_tasks_all, "Total Number of Tasks Done");
+      df.Write(divide_sum_tasks_rewarded, "Number of Rewarded Tasks on Divide");
+      df.Write(divide_sum_tasks_all, "Number of Total Tasks on Divide");
+      df.Write(parent_sum_tasks_rewarded, "Parent Number of Tasks Rewared");
+      df.Write(parent_sum_tasks_all, "Parent Total Number of Tasks Done");
+      df.Write(test_info.GetColonyFitness(), "Genotype Fitness");
+      df.Write(organism->GetGenotype()->GetName(), "Genotype Name");
+      df.Endl();
+    }
+    
+    m_world->GetDataFileManager().Remove(filename);
+    delete testcpu;
+  }
+};
+
+
+class cActionPrintViableTasksData : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPrintViableTasksData(cWorld* world, const cString& args) : cAction(world, args), m_filename("viable_tasks.dat")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  const cString GetDescription() { return "PrintViableTasksData [string fname='viable_tasks.dat']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cDataFile& df = m_world->GetDataFile(m_filename);
+    cPopulation& pop = m_world->GetPopulation();
+    const int num_tasks = m_world->GetNumTasks();
+    
+    tArray<int> tasks(num_tasks);
+    tasks.SetAll(0);
+    
+    for (int i = 0; i < pop.GetSize(); i++) {
+      if (!pop.GetCell(i).IsOccupied()) continue;
+      if (pop.GetCell(i).GetOrganism()->GetGenotype()->GetTestFitness(ctx) > 0.0) {
+        cPhenotype& phenotype = pop.GetCell(i).GetOrganism()->GetPhenotype();
+        for (int j = 0; j < num_tasks; j++) if (phenotype.GetCurTaskCount()[j] > 0) tasks[j]++;
+      }
+    }
+
+    df.WriteComment("Avida viable tasks data");
+    df.WriteTimeStamp();
+    df.WriteComment("First column gives the current update, next columns give the number");
+    df.WriteComment("of organisms that have the particular task as a component of their merit");
+    
+    df.Write(m_world->GetStats().GetUpdate(), "Update");
+    for(int i = 0; i < tasks.GetSize(); i++) {
+      df.Write(tasks[i], "");
+    }
+    df.Endl();
+  }
+};
+
+
+class cActionPrintTreeDepths : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPrintTreeDepths(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  const cString GetDescription() { return "PrintTreeDepths [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("tree_depth.%d.dat", m_world->GetStats().GetUpdate());
+    cDataFile& df = m_world->GetDataFile(filename);
+    
+    cPopulation& pop = m_world->GetPopulation();
+    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+    
+    cGenotype* genotype = m_world->GetClassificationManager().GetBestGenotype();
+    for (int i = 0; i < m_world->GetClassificationManager().GetGenotypeCount(); i++) {
+      df.Write(genotype->GetID(), "Genotype ID");
+      df.Write(genotype->GetTestFitness(ctx), "Fitness");
+      df.Write(genotype->GetNumOrganisms(), "Abundance");
+      df.Write(genotype->GetDepth(), "Tree Depth");
+      df.Endl();
+      
+      // ...and advance to the next genotype...
+      genotype = genotype->GetNext();
+    }
+    
+    m_world->GetDataFileManager().Remove(filename);
+    delete testcpu;
+  }
+};
+
+
+class cActionCalcConsensus : public cAction
+{
+private:
+  int m_lines_saved;
+  
+public:
+  cActionCalcConsensus(cWorld* world, const cString& args) : cAction(world, args), m_lines_saved(0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_lines_saved = largs.PopWord().AsInt();  
+  }
+  const cString GetDescription() { return "CalcConsensus [int lines_saved=0]"; }
+  void Process(cAvidaContext& ctx)
+  {
+    const int num_inst = m_world->GetHardwareManager().GetInstSet().GetSize();
+    const int update = m_world->GetStats().GetUpdate();
+    cClassificationManager& classmgr = m_world->GetClassificationManager();
+    
+    // Setup the histogtams...
+    tArray<cHistogram> inst_hist(MAX_CREATURE_SIZE);
+    for (int i = 0; i < MAX_CREATURE_SIZE; i++) inst_hist[i].Resize(num_inst,-1);
+    
+    // Loop through all of the genotypes adding them to the histograms.
+    cGenotype* cur_genotype = classmgr.GetBestGenotype();
+    for (int i = 0; i < classmgr.GetGenotypeCount(); i++) {
+      const int num_organisms = cur_genotype->GetNumOrganisms();
+      const int length = cur_genotype->GetLength();
+      const cGenome& genome = cur_genotype->GetGenome();
+      
+      // Place this genotype into the histograms.
+      for (int j = 0; j < length; j++) {
+        assert(genome[j].GetOp() < num_inst);
+        inst_hist[j].Insert(genome[j].GetOp(), num_organisms);
+      }
+      
+      // Mark all instructions beyond the length as -1 in histogram...
+      for (int j = length; j < MAX_CREATURE_SIZE; j++) {
+        inst_hist[j].Insert(-1, num_organisms);
+      }
+      
+      // ...and advance to the next genotype...
+      cur_genotype = cur_genotype->GetNext();
+    }
+    
+    // Now, lets print something!
+    cDataFile& df = m_world->GetDataFile("consensus.dat");
+    cDataFile& df_abundance = m_world->GetDataFile("consensus-abundance.dat");
+    cDataFile& df_var = m_world->GetDataFile("consensus-var.dat");
+    cDataFile& df_entropy = m_world->GetDataFile("consensus-entropy.dat");
+    
+    // Determine the length of the concensus genome
+    int con_length;
+    for (con_length = 0; con_length < MAX_CREATURE_SIZE; con_length++) {
+      if (inst_hist[con_length].GetMode() == -1) break;
+    }
+    
+    // Build the concensus genotype...
+    cGenome con_genome(con_length);
+    double total_entropy = 0.0;
+    for (int i = 0; i < MAX_CREATURE_SIZE; i++) {
+      const int mode = inst_hist[i].GetMode();
+      const int count = inst_hist[i].GetCount(mode);
+      const int total = inst_hist[i].GetCount();
+      const double entropy = inst_hist[i].GetNormEntropy();
+      if (i < con_length) total_entropy += entropy;
+      
+      // Break out if ALL creatures have a -1 in this area, and we've
+      // finished printing all of the files.
+      if (mode == -1 && count == total) break;
+      
+      if ( i < con_length )
+        con_genome[i].SetOp(mode);
+      
+      // Print all needed files.
+      if (i < m_lines_saved) {
+        df_abundance.Write(count, "");
+        df_var.Write(inst_hist[i].GetCountVariance(), "");
+        df_entropy.Write(entropy, "");
+      }
+    }
+    
+    // Put end-of-lines on the files.
+    if (m_lines_saved > 0) {
+      df_abundance.Endl();
+      df_var.Endl();
+      df_entropy.Endl();
+    }
+    
+    // --- Study the consensus genome ---
+    
+    // Loop through genotypes again, and determine the average genetic distance.
+    cur_genotype = classmgr.GetBestGenotype();
+    cDoubleSum distance_sum;
+    for (int i = 0; i < classmgr.GetGenotypeCount(); i++) {
+      const int num_organisms = cur_genotype->GetNumOrganisms();
+      const int cur_dist = cGenomeUtil::FindEditDistance(con_genome, cur_genotype->GetGenome());
+      distance_sum.Add(cur_dist, num_organisms);
+      
+      // ...and advance to the next genotype...
+      cur_genotype = cur_genotype->GetNext();
+    }
+    
+    // Finally, gather last bits of data and print the results.
+    cGenotype* con_genotype = classmgr.FindGenotype(con_genome, -1);
+    const int best_dist = cGenomeUtil::FindEditDistance(con_genome, classmgr.GetBestGenotype()->GetGenome());
+    
+    const double ave_dist = distance_sum.Average();
+    const double var_dist = distance_sum.Variance();
+    const double complexity_base = static_cast<double>(con_genome.GetSize()) - total_entropy;
+    
+    cString con_name;
+    con_name.Set("archive/%03d-consensus-u%i.gen", con_genome.GetSize(),update);
+    cTestUtil::PrintGenome(m_world, con_genome, con_name);
+    
+    
+    if (con_genotype) {
+      df.Write(update, "Update");
+      df.Write(con_genotype->GetMerit(), "Merit");
+      df.Write(con_genotype->GetGestationTime(), "Gestation Time");
+      df.Write(con_genotype->GetFitness(), "Fitness");
+      df.Write(con_genotype->GetReproRate(), "Reproduction Rate");
+      df.Write(con_genotype->GetLength(), "Length");
+      df.Write(con_genotype->GetCopiedSize(), "Copied Size");
+      df.Write(con_genotype->GetExecutedSize(), "Executed Size");
+      df.Write(con_genotype->GetBirths(), "Get Births");
+      df.Write(con_genotype->GetBreedTrue(), "Breed True");
+      df.Write(con_genotype->GetBreedIn(), "Breed In");
+      df.Write(con_genotype->GetNumOrganisms(), "Abundance");
+      df.Write(con_genotype->GetDepth(), "Tree Depth");
+      df.Write(con_genotype->GetID(), "Genotype ID");
+      df.Write(update - con_genotype->GetUpdateBorn(), "Age (in updates)");
+      df.Write(best_dist, "Best Distance");
+      df.Write(ave_dist, "Average Distance");
+      df.Write(var_dist, "Var Distance");
+      df.Write(total_entropy, "Total Entropy");
+      df.Write(complexity_base, "Complexity");
+      df.Endl();
+    } else {
+      cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+      
+      cCPUTestInfo test_info;
+      testcpu->TestGenome(ctx, test_info, con_genome);
+      delete testcpu;
+      
+      cPhenotype& colony_phenotype = test_info.GetColonyOrganism()->GetPhenotype();
+      
+      df.Write(update, "Update");
+      df.Write(colony_phenotype.GetMerit().GetDouble(), "Merit");
+      df.Write(colony_phenotype.GetGestationTime(), "Gestation Time");
+      df.Write(colony_phenotype.GetFitness(), "Fitness");
+      df.Write(1.0 / (0.1  + colony_phenotype.GetGestationTime()), "Reproduction Rate");
+      df.Write(con_genome.GetSize(), "Length");
+      df.Write(colony_phenotype.GetCopiedSize(), "Copied Size");
+      df.Write(colony_phenotype.GetExecutedSize(), "Executed Size");
+      df.Write(0, "Get Births");
+      df.Write(0, "Breed True");
+      df.Write(0, "Breed In");
+      df.Write(0, "Abundance");
+      df.Write(-1, "Tree Depth");
+      df.Write(-1, "Genotype ID");
+      df.Write(0, "Age (in updates)");
+      df.Write(best_dist, "Best Distance");
+      df.Write(ave_dist, "Average Distance");
+      df.Write(var_dist, "Var Distance");
+      df.Write(total_entropy, "Total Entropy");
+      df.Write(complexity_base, "Complexity");
+      df.Endl();
+    }
+  }
+};
+
+
 void RegisterPrintActions(cActionLibrary* action_lib)
 {
   // Stats Out Files
@@ -872,6 +1239,11 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintGenotypes>("PrintGenotypes");
   action_lib->Register<cActionDumpMemory>("DumpMemory");
 
+  action_lib->Register<cActionTestDominant>("TestDominant");
+  action_lib->Register<cActionPrintTaskSnapshot>("PrintTaskSnapshot");
+  action_lib->Register<cActionPrintViableTasksData>("PrintViableTasksData");
+  action_lib->Register<cActionPrintTreeDepths>("PrintTreeDepths");
+  
 
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
   action_lib->Register<cActionPrintAverageData>("print_average_data");
@@ -912,4 +1284,9 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   
   action_lib->Register<cActionPrintGenotypes>("print_genotypes");
   action_lib->Register<cActionDumpMemory>("dump_memory");
+
+  action_lib->Register<cActionTestDominant>("test_dom");
+  action_lib->Register<cActionPrintTaskSnapshot>("task_snapshot");
+  action_lib->Register<cActionPrintViableTasksData>("print_viable_tasks_data");
+  action_lib->Register<cActionPrintTreeDepths>("print_tree_depths");
 }

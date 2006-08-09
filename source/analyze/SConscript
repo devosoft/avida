@@ -6,7 +6,6 @@ misc = ['SConscript']
 srcs = [
   'cAnalyze.cc',
   'cAnalyzeGenotype.cc',
-  'cAnalyzeUtil.cc',
   'cAnalyzeJobQueue.cc',
   'cAnalyzeJobWorker.cc',
   'cMutationalNeighborhood.cc'
@@ -25,7 +24,6 @@ hdrs = [
   'cAnalyzeJob.h',
   'cAnalyzeJobQueue.h',
   'cAnalyzeJobWorker.h',
-  'cAnalyzeUtil.h',
   'cGenotypeBatch.h',
   'cMutationalNeighborhood.h',
   'cMutationalNeighborhoodResults.h',

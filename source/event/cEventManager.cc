@@ -42,221 +42,6 @@
 using namespace std;
 
 
-///// zero_muts /////
-
-/**
-* This event will set all mutation rates to zero...
- **/
-
-
-class cEvent_zero_muts : public cEvent {
-private:
-public:
-  const cString GetName() const { return "zero_muts"; }
-  const cString GetDescription() const { return "zero_muts"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-  }
-  ///// zero_muts /////
-  void Process(){
-    for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
-      m_world->GetPopulation().GetCell(i).MutationRates().Clear();
-    }
-  }
-};
-
-///// mod_copy_mut /////
-
-/**
-**/
-
-
-class cEvent_mod_copy_mut : public cEvent {
-private:
-  double cmut_inc;
-  int cell;
-public:
-    const cString GetName() const { return "mod_copy_mut"; }
-  const cString GetDescription() const { return "mod_copy_mut  <double cmut_inc> [int cell=-1]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    cmut_inc = args.PopWord().AsDouble();
-    if (args == "") cell=-1; else cell=args.PopWord().AsInt();
-  }
-  ///// mod_copy_mut /////
-  void Process(){
-    const double new_cmut = m_world->GetConfig().COPY_MUT_PROB.Get() + cmut_inc;
-    if (cell < 0) {   // cell == -1  -->  all
-      for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
-        m_world->GetPopulation().GetCell(i).MutationRates().SetCopyMutProb(new_cmut);
-      }
-      m_world->GetConfig().COPY_MUT_PROB.Set(new_cmut);
-    } else {
-      m_world->GetPopulation().GetCell(cell).MutationRates().SetCopyMutProb(new_cmut);
-    }
-  }
-};
-
-///// mod_div_mut /////
-
-/**
-**/
-
-
-class cEvent_mod_div_mut : public cEvent {
-private:
-  double dmut_inc;
-  int cell;
-public:
-    const cString GetName() const { return "mod_div_mut"; }
-  const cString GetDescription() const { return "mod_div_mut  <double dmut_inc> [int cell=-1]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    dmut_inc = args.PopWord().AsDouble();
-    if (args == "") cell=-1; else cell=args.PopWord().AsInt();
-  }
-  ///// mod_div_mut /////
-  void Process(){
-    const double new_div_mut = m_world->GetConfig().DIV_MUT_PROB.Get() + dmut_inc;
-    if (cell < 0) {   // cell == -1  -->  all
-      for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
-        m_world->GetPopulation().GetCell(i).MutationRates().SetDivMutProb(new_div_mut);
-      }
-      m_world->GetConfig().DIV_MUT_PROB.Set(new_div_mut);
-    } else {
-      m_world->GetPopulation().GetCell(cell).MutationRates().SetDivMutProb(new_div_mut);
-    }
-  }
-};
-
-
-///// mod_point_mut /////
-
-/**
-**/
-
-
-class cEvent_mod_point_mut : public cEvent {
-private:
-  double pmut_inc;
-  int cell;
-public:
-    const cString GetName() const { return "mod_point_mut"; }
-  const cString GetDescription() const { return "mod_point_mut  <double pmut_inc> [int cell=-1]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    pmut_inc = args.PopWord().AsDouble();
-    if (args == "") cell=-1; else cell=args.PopWord().AsInt();
-  }
-  ///// mod_point_mut /////
-  void Process(){
-    const double new_pmut = m_world->GetConfig().POINT_MUT_PROB.Get() + pmut_inc;
-    if (cell < 0) {   // cell == -1   -->  all
-      for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
-        m_world->GetPopulation().GetCell(i).MutationRates().SetPointMutProb(new_pmut);
-      }
-      m_world->GetConfig().POINT_MUT_PROB.Set(new_pmut);
-    } else {
-      m_world->GetPopulation().GetCell(cell).MutationRates().SetPointMutProb(new_pmut);
-    }
-  }
-};
-
-///// test_dom /////
-
-/**
-**/
-
-
-class cEvent_test_dom : public cEvent {
-private:
-public:
-  const cString GetName() const { return "test_dom"; }
-  const cString GetDescription() const { return "test_dom"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args; }
-  ///// test_dom /////
-  void Process(){
-    cGenome & genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
-    cAnalyzeUtil::TestGenome(m_world, genome, m_world->GetHardwareManager().GetInstSet(),
-                             m_world->GetDataFileOFStream("dom-test.dat"), m_world->GetStats().GetUpdate());
-  }
-};
-
-
-///// task_snapshot /////
-
-/**
-**/
-
-
-class cEvent_task_snapshot : public cEvent {
-private:
-  cString filename;
-public:
-  const cString GetName() const { return "task_snapshot"; }
-  const cString GetDescription() const { return "task_snapshot  [string filename=\"\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") filename = "";
-    else filename = args.PopWord();
-  }
-  ///// task_snapshot /////
-  void Process(){
-    if (filename == "") filename.Set("tasks_%d.dat",m_world->GetStats().GetUpdate());
-    cAnalyzeUtil::TaskSnapshot(m_world, m_world->GetDataFileOFStream(filename));
-    m_world->GetDataFileManager().Remove(filename);
-  }
-};
-
-///// print_viable_tasks_data /////
-
-/**
-**/
-
-
-class cEvent_print_viable_tasks_data : public cEvent {
-private:
-  cString filename;
-public:
-  const cString GetName() const { return "print_viable_tasks_data"; }
-  const cString GetDescription() const { return "print_viable_tasks_data  [string filename=\"viable_tasks.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") filename="viable_tasks.dat"; else filename=args.PopWord();
-  }
-  ///// print_viable_tasks_data /////
-  void Process(){
-    cAnalyzeUtil::PrintViableTasksData(m_world, m_world->GetDataFileOFStream(filename));
-  }
-};
-
 
 ///// compete_demes /////
 
@@ -370,68 +155,7 @@ public:
   }
 };
 
-///// calc_consensus /////
 
-/**
-* Calculates the consensus sequence.
- *
- * Parameters:
- * lines saved (integer) default: 0
-   *    ???
-   **/
-
-
-class cEvent_calc_consensus : public cEvent {
-private:
-  int lines_saved;
-public:
-  const cString GetName() const { return "calc_consensus"; }
-  const cString GetDescription() const { return "calc_consensus  [int lines_saved=0]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") lines_saved=0; else lines_saved=args.PopWord().AsInt();
-  }
-  ///// calc_consensus /////
-  void Process(){
-    cAnalyzeUtil::CalcConsensus(m_world, lines_saved);
-  }
-};
-
-///// test_size_change_robustness /////
-
-/**
-**/
-
-
-class cEvent_test_size_change_robustness : public cEvent {
-private:
-  int num_trials;
-  cString filename;
-public:
-    const cString GetName() const { return "test_size_change_robustness"; }
-  const cString GetDescription() const { return "test_size_change_robustness  [int num_trials=100] [string filename=\"size_change.dat\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") num_trials=100; else num_trials=args.PopWord().AsInt();
-    if (args == "") filename="size_change.dat"; else filename=args.PopWord();
-  }
-  ///// test_size_change_robustness /////
-  void Process(){
-    ofstream& fp = m_world->GetDataFileOFStream(filename);
-    cAnalyzeUtil::TestInsSizeChangeRobustness(m_world, fp,
-                                              m_world->GetHardwareManager().GetInstSet(),
-                                              m_world->GetClassificationManager().GetBestGenotype()->GetGenome(),
-                                              num_trials, m_world->GetStats().GetUpdate());
-  }
-};
 
 ///// test_threads /////
 
@@ -592,7 +316,34 @@ public:
   void Process(){
     cString filename;
     filename.Set("task_grid_%d.dat", m_world->GetStats().GetUpdate());
-    cAnalyzeUtil::TaskGrid(m_world, m_world->GetDataFileOFStream(filename));
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    cPopulation* pop = &m_world->GetPopulation();
+    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+    cAvidaContext& ctx = m_world->GetDefaultContext();
+    
+    for (int i = 0; i < pop->GetWorldX(); i++) {
+      for (int j = 0; j < pop->GetWorldY(); j++) {
+        int task_sum = 0;
+        int cell_num = i * pop->GetWorldX()+j;
+        if (pop->GetCell(cell_num).IsOccupied() == true) {
+          cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
+          cCPUTestInfo test_info;
+          testcpu->TestGenome(ctx, test_info, organism->GetGenome());
+          cPhenotype& test_phenotype = test_info.GetTestPhenotype();
+          int num_tasks = m_world->GetEnvironment().GetTaskLib().GetSize();   
+          for (int k = 0; k < num_tasks; k++) {
+            if (test_phenotype.GetLastTaskCount()[k] > 0) {
+              task_sum = task_sum + static_cast<int>(pow(2.0, k)); 
+            } 
+          }
+        }
+        fp << task_sum << " ";
+      }
+      fp << endl;
+    }
+    
+    delete testcpu;    
     m_world->GetDataFileManager().Remove(filename);
   }
 };
@@ -672,35 +423,6 @@ public:
       }
       fp << endl;
     }
-    m_world->GetDataFileManager().Remove(filename);
-  }
-};
-
-///// print_tree_depths /////
-
-/**
-* Reconstruction of phylogenetic trees.
- **/
-
-
-class cEvent_print_tree_depths : public cEvent {
-private:
-  cString filename;
-public:
-  const cString GetName() const { return "print_tree_depths"; }
-  const cString GetDescription() const { return "print_tree_depths  [string filename=\"\"]"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    if (args == "") filename=""; else filename=args.PopWord();
-  }
-  ///// print_tree_depths /////
-  void Process(){
-    if (filename == "") filename.Set("tree_depth.%d.dat", m_world->GetStats().GetUpdate());
-    cAnalyzeUtil::PrintTreeDepths(m_world, m_world->GetDataFileOFStream(filename));
     m_world->GetDataFileManager().Remove(filename);
   }
 };
@@ -1327,22 +1049,11 @@ public:
 
 cEventManager::cEventManager(cWorld* world) : m_world(world)
 {
-  REGISTER(zero_muts);
-  REGISTER(mod_copy_mut);
-  REGISTER(mod_div_mut);
-  REGISTER(mod_point_mut);
-  REGISTER(test_dom);
-
-  REGISTER(task_snapshot);
-  REGISTER(print_viable_tasks_data);
-  
   REGISTER(compete_demes);
   REGISTER(reset_demes);
   REGISTER(print_deme_stats);
   REGISTER(copy_deme);
   
-  REGISTER(calc_consensus);
-  REGISTER(test_size_change_robustness);
   REGISTER(test_threads);
   REGISTER(print_threads);
   REGISTER(dump_fitness_grid);
@@ -1350,7 +1061,6 @@ cEventManager::cEventManager(cWorld* world) : m_world(world)
   REGISTER(dump_task_grid);
   REGISTER(dump_donor_grid);
   REGISTER(dump_receiver_grid);
-  REGISTER(print_tree_depths);
   REGISTER(sever_grid_col);
   REGISTER(sever_grid_row);
   REGISTER(join_grid_col);
