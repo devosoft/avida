@@ -12,7 +12,6 @@
 
 #include "cAction.h"
 #include "cActionLibrary.h"
-#include "cAnalyzeUtil.h"
 #include "cAvidaContext.h"
 #include "avida.h"
 #include "cClassificationManager.h"
