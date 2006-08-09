@@ -68,6 +68,7 @@ Version 2.7 - development - Target: July 2007      - Status: Planned
 + Transition all applicable output files to cDataFile objects, as opposed to raw ostream
 + Serialization
 - environment named regions
+- Topology manager
 - Schedulable object framework (organism threads scheduled rather than organisms, events, etc.) 
 - Energy model
 + AvidaScript (AS) lexer

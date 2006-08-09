@@ -777,6 +777,7 @@ public:
 
 cEventManager::cEventManager(cWorld* world) : m_world(world)
 {
+  // Population events --> Population Actions
   REGISTER(compete_demes);
   REGISTER(reset_demes);
   REGISTER(print_deme_stats);
@@ -788,6 +789,8 @@ cEventManager::cEventManager(cWorld* world) : m_world(world)
   REGISTER(join_grid_row);
   REGISTER(connect_cells);
   REGISTER(disconnect_cells);
+  
+  // Environment events --> Environment Action
   REGISTER(inject_resource);
   REGISTER(set_resource);
   REGISTER(inject_scaled_resource);

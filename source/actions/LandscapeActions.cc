@@ -854,6 +854,8 @@ public:
     cMutationalNeighborhoodResults* results = NULL;
     sBatchEntry* entry = NULL;
     cDataFile& df = m_world->GetDataFile(m_filename);
+    df.WriteComment("IMPORTANT: Mutational Neighborhood is *EXPERIMENTAL*");
+    df.WriteComment("Output data and format is subject to change in future releases.");
     while (entry = m_batch.Pop()) {
       results = new cMutationalNeighborhoodResults(entry->mutn);
       results->PrintStats(df, entry->depth);
