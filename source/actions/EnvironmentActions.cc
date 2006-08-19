@@ -91,7 +91,7 @@ public:
     if (largs.GetSize()) m_res_percent = largs.PopWord().AsDouble();
   }
   
-  const cString GetDescription() { return "OutflowScaledResource <string res_name> <double res_count>"; }
+  const cString GetDescription() { return "OutflowScaledResource <string res_name> <double res_percent>"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -134,6 +134,75 @@ public:
 };
 
 
+class cActionSetReactionValue : public cAction
+{
+private:
+  cString m_name;
+  double m_value;
+  
+public:
+  cActionSetReactionValue(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_value(0.0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_name = largs.PopWord();
+    if (largs.GetSize()) m_value = largs.PopWord().AsDouble();
+  }
+  
+  const cString GetDescription() { return "SetReactionValue <string reaction_name> <double value>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetEnvironment().SetReactionValue(m_name, m_value);
+  }
+};
+
+
+class cActionSetReactionValueMult : public cAction
+{
+private:
+  cString m_name;
+  double m_value;
+  
+public:
+  cActionSetReactionValueMult(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_value(0.0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_name = largs.PopWord();
+    if (largs.GetSize()) m_value = largs.PopWord().AsDouble();
+  }
+  
+  const cString GetDescription() { return "SetReactionValueMult <string reaction_name> <double value>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetEnvironment().SetReactionValueMult(m_name, m_value);
+  }
+};
+
+
+class cActionSetReactionInst : public cAction
+{
+private:
+  cString m_name;
+  cString m_inst;
+  
+public:
+  cActionSetReactionInst(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_inst("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_name = largs.PopWord();
+    if (largs.GetSize()) m_inst = largs.PopWord();
+  }
+  
+  const cString GetDescription() { return "SetReactionInst <string reaction_name> <string inst>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetEnvironment().SetReactionInst(m_name, m_inst);
+  }
+};
+
+
 
 void RegisterEnvironmentActions(cActionLibrary* action_lib)
 {
@@ -141,10 +210,18 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionInjectScaledResource>("InjectScaledResource");
   action_lib->Register<cActionOutflowScaledResource>("OutflowScaledResource");
   action_lib->Register<cActionSetResource>("SetResource");
-  
+
+  action_lib->Register<cActionSetReactionValue>("SetReactionValue");
+  action_lib->Register<cActionSetReactionValueMult>("SetReactionValueMult");
+  action_lib->Register<cActionSetReactionInst>("SetReactionInst");
+
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
   action_lib->Register<cActionInjectResource>("inject_resource");
   action_lib->Register<cActionInjectScaledResource>("inject_scaled_resource");
   action_lib->Register<cActionOutflowScaledResource>("outflow_scaled_resource");
   action_lib->Register<cActionSetResource>("set_resource");
+
+  action_lib->Register<cActionSetReactionValue>("set_reaction_value");
+  action_lib->Register<cActionSetReactionValueMult>("set_reaction_value_mult");
+  action_lib->Register<cActionSetReactionInst>("set_reaction_inst");
 }

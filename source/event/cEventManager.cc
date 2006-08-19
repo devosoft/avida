@@ -526,91 +526,6 @@ public:
 };
 
 
-
-
-///// set_reaction_value /////
-
-/**
-* Set the value associated with a reaction to a specific level
- **/
-class cEvent_set_reaction_value : public cEvent {
-private:
-  cString reaction_name;
-  double reaction_value;
-public:
-    const cString GetName() const { return "set_reaction_value"; }
-  const cString GetDescription() const { return "set_reaction_value  <cString reaction_name> <double reaction_value>"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    reaction_name = args.PopWord();
-    reaction_value = args.PopWord().AsDouble();
-  }
-  void Process()
-  {
-    m_world->GetEnvironment().SetReactionValue(reaction_name, reaction_value);
-  }
-};
-
-
-///// set_reaction_value_mult /////
-
-/**
-* Change the value of the reaction by multiplying it with the imput number
- **/
-class cEvent_set_reaction_value_mult : public cEvent {
-private:
-  cString reaction_name;
-  double value_mult;
-public:
-    const cString GetName() const { return "set_reaction_value_mult"; }
-  const cString GetDescription() const { return "set_reaction_value_mult  <cString reaction_name> <double value_mult>"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    reaction_name = args.PopWord();
-    value_mult = args.PopWord().AsDouble();
-  }
-  void Process()
-  {
-    m_world->GetEnvironment().SetReactionValueMult(reaction_name, value_mult);
-  }
-};
-
-
-///// set_reaction_inst /////
-
-/**
-* Change the instruction triggered by the task
- **/
-class cEvent_set_reaction_inst : public cEvent {
-private:
-  cString reaction_name;
-  cString inst_name;
-public:
-    const cString GetName() const { return "set_reaction_inst"; }
-  const cString GetDescription() const { return "set_reaction_inst <cString reaction_name> <cString inst_name>"; }
-  
-  void Configure(cWorld* world, const cString& in_args)
-  {
-    m_world = world;
-    m_args = in_args;
-    cString args(in_args);
-    reaction_name = args.PopWord();
-    inst_name = args.PopWord();
-  }
-  void Process()
-  {
-    m_world->GetEnvironment().SetReactionInst(reaction_name, inst_name);
-  }
-};
-
 class cEventAction : public cEvent
 {
 private:
@@ -650,11 +565,6 @@ cEventManager::cEventManager(cWorld* world) : m_world(world)
   REGISTER(join_grid_row);
   REGISTER(connect_cells);
   REGISTER(disconnect_cells);
-  
-  // Environment events --> Environment Action
-  REGISTER(set_reaction_value);
-  REGISTER(set_reaction_value_mult);
-  REGISTER(set_reaction_inst);
 }
 
 cEvent* cEventManager::ConstructEvent(const cString name, const cString& args)
