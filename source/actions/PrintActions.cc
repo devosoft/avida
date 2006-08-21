@@ -1365,6 +1365,21 @@ public:
 };
 
 
+class cActionPrintDemeStats : public cAction
+{
+public:
+  cActionPrintDemeStats(cWorld* world, const cString& args) : cAction(world, args) { ; }
+  
+  const cString GetDescription() { return "PrintDemeStats"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().PrintDemeStats();
+  }
+};
+
+
+
 void RegisterPrintActions(cActionLibrary* action_lib)
 {
   // Stats Out Files
@@ -1421,6 +1436,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpDonorGrid>("DumpDonorGrid");
   action_lib->Register<cActionDumpReceiverGrid>("DumpReceiverGrid");
 
+  action_lib->Register<cActionPrintDemeStats>("PrintDemeStats");
+
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
   action_lib->Register<cActionPrintAverageData>("print_average_data");
   action_lib->Register<cActionPrintErrorData>("print_error_data");
@@ -1471,4 +1488,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpTaskGrid>("dump_task_grid");
   action_lib->Register<cActionDumpDonorGrid>("dump_donor_grid");
   action_lib->Register<cActionDumpReceiverGrid>("dump_receiver_grid");
+
+  action_lib->Register<cActionPrintDemeStats>("print_deme_stats");
 }

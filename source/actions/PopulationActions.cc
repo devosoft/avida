@@ -788,6 +788,200 @@ public:
 };
 
 
+/*
+ Compete all of the demes using a basic genetic algorithm approach. Fitness
+ of each deme is determined differently depending on the competition_type: 
+ 0: deme fitness = 1 (control, random deme selection)
+ 1: deme fitness = number of births since last competition (default) 
+ 2: deme fitness = average organism fitness at the current update
+ 3: deme fitness = average mutation rate at the current update
+*/
+class cActionCompeteDemes : public cAction
+{
+private:
+  int m_type;
+public:
+  cActionCompeteDemes(cWorld* world, const cString& args) : cAction(world, args), m_type(1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_type = largs.PopWord().AsInt();
+  }
+  
+  const cString GetDescription() { return "CompeteDemes [int type=1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().CompeteDemes(m_type);
+  }
+};
+
+
+/*
+ Designed to serve as a control for the compete_demes. Each deme is 
+ copied into itself and the parameters reset. 
+*/
+class cActionResetDemes : public cAction
+{
+public:
+  cActionResetDemes(cWorld* world, const cString& args) : cAction(world, args) { ; }
+  
+  const cString GetDescription() { return "ResetDemes"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().ResetDemes();
+  }
+};
+
+
+class cActionCopyDeme : public cAction
+{
+private:
+  int m_id1;
+  int m_id2;
+public:
+  cActionCopyDeme(cWorld* world, const cString& args) : cAction(world, args), m_id1(0), m_id2(1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_id1 = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_id2 = largs.PopWord().AsInt();
+  }
+  
+  const cString GetDescription() { return "CopyDeme <int src_id> <int dest_id>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().CopyDeme(m_id1, m_id2);
+  }
+};
+
+
+/*
+ Remove the connections between cells along a column in an avida grid.
+ 
+ Arguments:
+   col_id:  indicates the number of columns to the left of the cut.
+            default (or -1) = cut population in half
+   min_row: First row to start cutting from
+            default = 0
+   max_row: Last row to cut to
+            default (or -1) = last row in population.
+*/
+class cActionSeverGridCol : public cAction
+{
+private:
+  int m_id;
+  int m_min;
+  int m_max;
+public:
+  cActionSeverGridCol(cWorld* world, const cString& args) : cAction(world, args), m_id(-1), m_min(0), m_max(-1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_id = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_min = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_max = largs.PopWord().AsInt();
+  }
+  
+  const cString GetDescription() { return "SeverGridCol [int col_id=-1] [int min_row=0] [int max_row=-1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    const int world_x = m_world->GetPopulation().GetWorldX();
+    const int world_y = m_world->GetPopulation().GetWorldY();
+    if (m_id == -1) m_id = world_x / 2;
+    if (m_max == -1) m_max = world_y;
+    if (m_id < 0 || m_id >= world_x) {
+      cString err = cStringUtil::Stringf("Column ID %d out of range for SeverGridCol", m_id);
+      m_world->GetDriver().RaiseException(err);
+      return;
+    }
+    // Loop through all of the rows and make the cut on each...
+    for (int row_id = m_min; row_id < m_max; row_id++) {
+      int idA = row_id * world_x + m_id;
+      int idB  = GridNeighbor(idA, world_x, world_y, -1,  0);
+      int idA0 = GridNeighbor(idA, world_x, world_y,  0, -1);
+      int idA1 = GridNeighbor(idA, world_x, world_y,  0,  1);
+      int idB0 = GridNeighbor(idA, world_x, world_y, -1, -1);
+      int idB1 = GridNeighbor(idA, world_x, world_y, -1,  1);
+      cPopulationCell& cellA = m_world->GetPopulation().GetCell(idA);
+      cPopulationCell& cellB = m_world->GetPopulation().GetCell(idB);
+      tList<cPopulationCell>& cellA_list = cellA.ConnectionList();
+      tList<cPopulationCell>& cellB_list = cellB.ConnectionList();
+      cellA_list.Remove(&m_world->GetPopulation().GetCell(idB));
+      cellA_list.Remove(&m_world->GetPopulation().GetCell(idB0));
+      cellA_list.Remove(&m_world->GetPopulation().GetCell(idB1));
+      cellB_list.Remove(&m_world->GetPopulation().GetCell(idA));
+      cellB_list.Remove(&m_world->GetPopulation().GetCell(idA0));
+      cellB_list.Remove(&m_world->GetPopulation().GetCell(idA1));
+    }
+  }
+};
+
+
+///// sever_grid_row /////
+
+/*
+ Remove the connections between cells along a column in an avida grid.
+
+ Arguments:
+   row_id:  indicates the number of rows above the cut.
+            default (or -1) = cut population in half
+   min_col: First row to start cutting from
+            default = 0
+   max_col: Last row to cut to
+            default (or -1) = last row in population.
+*/
+class cActionSeverGridRow : public cAction
+{
+private:
+  int m_id;
+  int m_min;
+  int m_max;
+public:
+  cActionSeverGridRow(cWorld* world, const cString& args) : cAction(world, args), m_id(-1), m_min(0), m_max(-1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_id = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_min = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_max = largs.PopWord().AsInt();
+  }
+  
+  const cString GetDescription() { return "SeverGridRow [int row_id=-1] [int min_col=0] [int max_col=-1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    const int world_x = m_world->GetPopulation().GetWorldX();
+    const int world_y = m_world->GetPopulation().GetWorldY();
+    if (m_id == -1) m_id = world_x / 2;
+    if (m_max == -1) m_max = world_y;
+    if (m_id < 0 || m_id >= world_x) {
+      cString err = cStringUtil::Stringf("Row ID %d out of range for SeverGridRow", m_id);
+      m_world->GetDriver().RaiseException(err);
+      return;
+    }
+    // Loop through all of the rows and make the cut on each...
+    for (int col_id = m_min; col_id < m_max; col_id++) {
+      int idA = col_id * world_x + m_id;
+      int idB  = GridNeighbor(idA, world_x, world_y,  0, -1);
+      int idA0 = GridNeighbor(idA, world_x, world_y, -1,  0);
+      int idA1 = GridNeighbor(idA, world_x, world_y,  1,  0);
+      int idB0 = GridNeighbor(idA, world_x, world_y, -1, -1);
+      int idB1 = GridNeighbor(idA, world_x, world_y,  1, -1);
+      cPopulationCell& cellA = m_world->GetPopulation().GetCell(idA);
+      cPopulationCell& cellB = m_world->GetPopulation().GetCell(idB);
+      tList<cPopulationCell>& cellA_list = cellA.ConnectionList();
+      tList<cPopulationCell>& cellB_list = cellB.ConnectionList();
+      cellA_list.Remove(&m_world->GetPopulation().GetCell(idB));
+      cellA_list.Remove(&m_world->GetPopulation().GetCell(idB0));
+      cellA_list.Remove(&m_world->GetPopulation().GetCell(idB1));
+      cellB_list.Remove(&m_world->GetPopulation().GetCell(idA));
+      cellB_list.Remove(&m_world->GetPopulation().GetCell(idA0));
+      cellB_list.Remove(&m_world->GetPopulation().GetCell(idA1));
+    }
+  }
+};
+
+
 
 void RegisterPopulationActions(cActionLibrary* action_lib)
 {
@@ -809,6 +1003,12 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionModMutProb>("ModMutProb");
   action_lib->Register<cActionZeroMuts>("ZeroMuts");
 
+  action_lib->Register<cActionCompeteDemes>("CompeteDemes");
+  action_lib->Register<cActionResetDemes>("ResetDemes");
+  action_lib->Register<cActionCopyDeme>("CopyDeme");
+  
+  action_lib->Register<cActionSeverGridCol>("SeverGridCol");
+  action_lib->Register<cActionSeverGridRow>("SeverGridRow");
 
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
   action_lib->Register<cActionInject>("inject");
@@ -823,4 +1023,11 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSerialTransfer>("serial_transfer");
 
   action_lib->Register<cActionZeroMuts>("zero_muts");
+  
+  action_lib->Register<cActionCompeteDemes>("compete_demes");
+  action_lib->Register<cActionResetDemes>("reset_demes");
+  action_lib->Register<cActionCopyDeme>("copy_deme");
+  
+  action_lib->Register<cActionSeverGridCol>("sever_grid_col");
+  action_lib->Register<cActionSeverGridRow>("sever_grid_row");
 }
