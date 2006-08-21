@@ -953,7 +953,9 @@ void cAnalyze::LoadFile(cString cur_string)
   input_file.Load();
   input_file.ReadHeader();
   input_file.Compress();
-  input_file.Close();
+  if (input_file.Close() == false) {
+    cerr << "Error: Failed to Close file!" << endl;
+  }
   
   const cString filetype = input_file.GetFiletype();
   if (filetype != "population_data" &&  // Depricated
@@ -6986,7 +6988,7 @@ void cAnalyze::PrintStatus(cString cur_string)
 
 void cAnalyze::PrintDebug(cString cur_string)
 {
-  cerr << "Debug Args: " << cur_string << endl;
+  cerr << "::: " << cur_string << endl;
 }
 
 void cAnalyze::CommandVerbose(cString cur_string)
@@ -7296,6 +7298,7 @@ void cAnalyze::LoadCommandList(cInitFile & init_file,
   while (init_file.GetLineNum() < init_file.GetNumLines()) {
     cString cur_string = init_file.GetNextLine();
     cString command = cur_string.PopWord();
+    command.ToUpper();
     
     cAnalyzeCommand* cur_command;
     cAnalyzeCommandDefBase* command_def = FindAnalyzeCommandDef(command);
@@ -7771,6 +7774,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("ECHO", &cAnalyze::PrintDebug);
   AddLibraryDef("VERBOSE", &cAnalyze::CommandVerbose);
   AddLibraryDef("INCLUDE", &cAnalyze::IncludeFile);
+  AddLibraryDef("RUN", &cAnalyze::IncludeFile);
   AddLibraryDef("SYSTEM", &cAnalyze::CommandSystem);
   AddLibraryDef("INTERACTIVE", &cAnalyze::CommandInteractive);
   

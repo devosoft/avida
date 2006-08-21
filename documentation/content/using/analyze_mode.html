@@ -18,7 +18,7 @@ perform additional tests on genotypes after a run has completed.
 This analysis language is basically a simple programming language.  The
 structure of a program involves loading in genotypes in one or more
 "batches", and then either manipulating single batches, or doing comparisons
-between batches.  Currently there can be up to 300 batches of genotypes, but
+between batches.  Currently there can be up to 2000 batches of genotypes, but
 we will eventually remove this limit.
 
 <p>
@@ -40,17 +40,12 @@ There are currently six ways to load in genotypes:
         from avida.  These consist of lots of organismal information inside
         of comments, and then the full genome of the organism with one
         instruction per line.
-<tr><td><b>LOAD_BASE_DUMP [<font color="#0000AA">filename</font>]</b><br>
-	Load in a basic dump file from avida.  Each line contains a genotype
-        sequence, but little additional information.
-<tr><td><b>LOAD_DETAIL_DUMP [<font color="#0000AA">filename</font>]</b><br>
-	Load in a detail file.  These are similar to the basic dump files,
-        but contain a lot more information on each line.  These files are
-        saved from avida typically beginning with the word "detail" or
-        "historic".
 <tr><td><b>LOAD [<font color="#0000AA">filename</font>]</b><br>
-	Load in a file. This command LOAD_BASE_DUMP and LOAD_DETAIL_DUMP 
-	by automatically recognizing the type of the file being loaded. 
+    Load in a file that contains a list of genotypes, one-per-line with
+    additional informaiton about those genotypes. Avida now includes a header
+    on such files indicating the values containted in each column.  As such,
+    this command supercedes the now-depricated "LOAD_BASE_DUMP" and
+    "LOAD_DETAIL_DUMP", and can handle those file types.
 <tr><td><b>LOAD_SEQUENCE [<font color="#0000AA">sequence</font>]</b><br>
 	Load in a user-provided sequence as the genotype.  Avida has a
         symbol associated with each instruction; this command is simply
