@@ -952,16 +952,16 @@ public:
   {
     const int world_x = m_world->GetPopulation().GetWorldX();
     const int world_y = m_world->GetPopulation().GetWorldY();
-    if (m_id == -1) m_id = world_x / 2;
-    if (m_max == -1) m_max = world_y;
-    if (m_id < 0 || m_id >= world_x) {
+    if (m_id == -1) m_id = world_y / 2;
+    if (m_max == -1) m_max = world_x;
+    if (m_id < 0 || m_id >= world_y) {
       cString err = cStringUtil::Stringf("Row ID %d out of range for SeverGridRow", m_id);
       m_world->GetDriver().RaiseException(err);
       return;
     }
     // Loop through all of the rows and make the cut on each...
     for (int col_id = m_min; col_id < m_max; col_id++) {
-      int idA = col_id * world_x + m_id;
+      int idA = col_id * world_y + m_id;
       int idB  = GridNeighbor(idA, world_x, world_y,  0, -1);
       int idA0 = GridNeighbor(idA, world_x, world_y, -1,  0);
       int idA1 = GridNeighbor(idA, world_x, world_y,  1,  0);
@@ -977,6 +977,130 @@ public:
       cellB_list.Remove(&m_world->GetPopulation().GetCell(idA));
       cellB_list.Remove(&m_world->GetPopulation().GetCell(idA0));
       cellB_list.Remove(&m_world->GetPopulation().GetCell(idA1));
+    }
+  }
+};
+
+
+/*
+ Join the connections between cells along a column in an avida grid.
+
+ Arguments:
+   col_id:  indicates the number of columns to the left of the joining.
+            default (or -1) = join population halves.
+   min_row: First row to start joining from
+            default = 0
+   max_row: Last row to join to
+            default (or -1) = last row in population.
+*/
+class cActionJoinGridCol : public cAction
+{
+private:
+  int m_id;
+  int m_min;
+  int m_max;
+public:
+  cActionJoinGridCol(cWorld* world, const cString& args) : cAction(world, args), m_id(-1), m_min(0), m_max(-1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_id = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_min = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_max = largs.PopWord().AsInt();
+  }
+  
+  const cString GetDescription() { return "JoinGridCol [int col_id=-1] [int min_col=0] [int max_col=-1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    const int world_x = m_world->GetPopulation().GetWorldX();
+    const int world_y = m_world->GetPopulation().GetWorldY();
+    if (m_id == -1) m_id = world_x / 2;
+    if (m_max == -1) m_max = world_y;
+    if (m_id < 0 || m_id >= world_x) {
+      cString err = cStringUtil::Stringf("Column ID %d out of range for JoinGridCol", m_id);
+      m_world->GetDriver().RaiseException(err);
+      return;
+    }
+    // Loop through all of the rows and make the cut on each...
+    for (int row_id = m_min; row_id < m_max; row_id++) {
+      int idA = row_id * world_x + m_id;
+      int idB  = GridNeighbor(idA, world_x, world_y, -1,  0);
+      cPopulationCell& cellA = m_world->GetPopulation().GetCell(idA);
+      cPopulationCell& cellB = m_world->GetPopulation().GetCell(idB);
+      cPopulationCell& cellA0 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y,  0, -1));
+      cPopulationCell& cellA1 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y,  0,  1));
+      cPopulationCell& cellB0 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y, -1, -1));
+      cPopulationCell& cellB1 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y, -1,  1));
+      tList<cPopulationCell>& cellA_list = cellA.ConnectionList();
+      tList<cPopulationCell>& cellB_list = cellB.ConnectionList();
+      if (cellA_list.FindPtr(&cellB)  == NULL) cellA_list.Push(&cellB);
+      if (cellA_list.FindPtr(&cellB0) == NULL) cellA_list.Push(&cellB0);
+      if (cellA_list.FindPtr(&cellB1) == NULL) cellA_list.Push(&cellB1);
+      if (cellB_list.FindPtr(&cellA)  == NULL) cellB_list.Push(&cellA);
+      if (cellB_list.FindPtr(&cellA0) == NULL) cellB_list.Push(&cellA0);
+      if (cellB_list.FindPtr(&cellA1) == NULL) cellB_list.Push(&cellA1);
+    }
+  }
+};
+
+
+/*
+ Remove the connections between cells along a column in an avida grid.
+
+ Arguments:
+   row_id:  indicates the number of rows abovef the cut.
+            default (or -1) = cut population in half
+   min_col: First row to start cutting from
+            default = 0
+   max_col: Last row to cut to
+            default (or -1) = last row in population.
+*/
+class cActionJoinGridRow : public cAction
+{
+private:
+  int m_id;
+  int m_min;
+  int m_max;
+public:
+  cActionJoinGridRow(cWorld* world, const cString& args) : cAction(world, args), m_id(-1), m_min(0), m_max(-1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_id = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_min = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_max = largs.PopWord().AsInt();
+  }
+  
+  const cString GetDescription() { return "JoinGridRow [int col_id=-1] [int min_col=0] [int max_col=-1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    const int world_x = m_world->GetPopulation().GetWorldX();
+    const int world_y = m_world->GetPopulation().GetWorldY();
+    if (m_id == -1) m_id = world_y / 2;
+    if (m_max == -1) m_max = world_x;
+    if (m_id < 0 || m_id >= world_y) {
+      cString err = cStringUtil::Stringf("Row ID %d out of range for JoinGridCol", m_id);
+      m_world->GetDriver().RaiseException(err);
+      return;
+    }
+    // Loop through all of the rows and make the cut on each...
+    for (int col_id = m_min; col_id < m_max; col_id++) {
+      int idA = col_id * world_y + m_id;
+      int idB  = GridNeighbor(idA, world_x, world_y, 0, -1);
+      cPopulationCell& cellA = m_world->GetPopulation().GetCell(idA);
+      cPopulationCell& cellB = m_world->GetPopulation().GetCell(idB);
+      cPopulationCell& cellA0 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y, -1,  0));
+      cPopulationCell& cellA1 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y,  1,  0));
+      cPopulationCell& cellB0 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y, -1, -1));
+      cPopulationCell& cellB1 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y,  1, -1));
+      tList<cPopulationCell>& cellA_list = cellA.ConnectionList();
+      tList<cPopulationCell>& cellB_list = cellB.ConnectionList();
+      if (cellA_list.FindPtr(&cellB)  == NULL) cellA_list.Push(&cellB);
+      if (cellA_list.FindPtr(&cellB0) == NULL) cellA_list.Push(&cellB0);
+      if (cellA_list.FindPtr(&cellB1) == NULL) cellA_list.Push(&cellB1);
+      if (cellB_list.FindPtr(&cellA)  == NULL) cellB_list.Push(&cellA);
+      if (cellB_list.FindPtr(&cellA0) == NULL) cellB_list.Push(&cellA0);
+      if (cellB_list.FindPtr(&cellA1) == NULL) cellB_list.Push(&cellA1);
     }
   }
 };
@@ -1009,6 +1133,8 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   
   action_lib->Register<cActionSeverGridCol>("SeverGridCol");
   action_lib->Register<cActionSeverGridRow>("SeverGridRow");
+  action_lib->Register<cActionJoinGridCol>("JoinGridCol");
+  action_lib->Register<cActionJoinGridRow>("JoinGridRow");
 
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
   action_lib->Register<cActionInject>("inject");
@@ -1030,4 +1156,6 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   
   action_lib->Register<cActionSeverGridCol>("sever_grid_col");
   action_lib->Register<cActionSeverGridRow>("sever_grid_row");
+  action_lib->Register<cActionJoinGridCol>("join_grid_col");
+  action_lib->Register<cActionJoinGridRow>("join_grid_row");
 }
