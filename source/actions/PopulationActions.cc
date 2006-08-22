@@ -1106,6 +1106,86 @@ public:
 };
 
 
+class cActionConnectCells : public cAction
+{
+private:
+  int m_a_x;
+  int m_a_y;
+  int m_b_x;
+  int m_b_y;
+public:
+  cActionConnectCells(cWorld* world, const cString& args) : cAction(world, args), m_a_x(-1), m_a_y(-1), m_b_x(-1), m_b_y(-1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_a_x = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_a_y = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_b_x = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_b_y = largs.PopWord().AsInt();
+  }
+  
+  const cString GetDescription() { return "ConnectCells <int cellA_x> <int cellA_y> <int cellB_x> <int cellB_y>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    const int world_x = m_world->GetPopulation().GetWorldX();
+    const int world_y = m_world->GetPopulation().GetWorldY();
+    if (m_a_x < 0 || m_a_x >= world_x || m_a_y < 0 || m_a_y >= world_y ||
+        m_b_x < 0 || m_b_x >= world_x || m_b_y < 0 || m_b_y >= world_y) {
+      m_world->GetDriver().RaiseException("ConnectCells cell out of range");
+      return;
+    }
+    int idA = m_a_y * world_x + m_a_x;
+    int idB = m_b_y * world_x + m_b_x;
+    cPopulationCell& cellA = m_world->GetPopulation().GetCell(idA);
+    cPopulationCell& cellB = m_world->GetPopulation().GetCell(idB);
+    tList<cPopulationCell>& cellA_list = cellA.ConnectionList();
+    tList<cPopulationCell>& cellB_list = cellB.ConnectionList();
+    cellA_list.PushRear(&cellB);
+    cellB_list.PushRear(&cellA);
+  }
+};
+
+
+class cActionDisconnectCells : public cAction
+{
+private:
+  int m_a_x;
+  int m_a_y;
+  int m_b_x;
+  int m_b_y;
+public:
+  cActionDisconnectCells(cWorld* world, const cString& args) : cAction(world, args), m_a_x(-1), m_a_y(-1), m_b_x(-1), m_b_y(-1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_a_x = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_a_y = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_b_x = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_b_y = largs.PopWord().AsInt();
+  }
+  
+  const cString GetDescription() { return "DisconnectCells <int cellA_x> <int cellA_y> <int cellB_x> <int cellB_y>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    const int world_x = m_world->GetPopulation().GetWorldX();
+    const int world_y = m_world->GetPopulation().GetWorldY();
+    if (m_a_x < 0 || m_a_x >= world_x || m_a_y < 0 || m_a_y >= world_y ||
+        m_b_x < 0 || m_b_x >= world_x || m_b_y < 0 || m_b_y >= world_y) {
+      m_world->GetDriver().RaiseException("DisconnectCells cell out of range");
+      return;
+    }
+    int idA = m_a_y * world_x + m_a_x;
+    int idB = m_b_y * world_x + m_b_x;
+    cPopulationCell& cellA = m_world->GetPopulation().GetCell(idA);
+    cPopulationCell& cellB = m_world->GetPopulation().GetCell(idB);
+    tList<cPopulationCell>& cellA_list = cellA.ConnectionList();
+    tList<cPopulationCell>& cellB_list = cellB.ConnectionList();
+    cellA_list.Remove(&cellB);
+    cellB_list.Remove(&cellA);
+  }
+};
+
+
 
 void RegisterPopulationActions(cActionLibrary* action_lib)
 {
@@ -1136,6 +1216,9 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionJoinGridCol>("JoinGridCol");
   action_lib->Register<cActionJoinGridRow>("JoinGridRow");
 
+  action_lib->Register<cActionConnectCells>("ConnectCells");
+  action_lib->Register<cActionDisconnectCells>("DisconnectCells");
+
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
   action_lib->Register<cActionInject>("inject");
   action_lib->Register<cActionInjectRandom>("inject_random");
@@ -1158,4 +1241,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSeverGridRow>("sever_grid_row");
   action_lib->Register<cActionJoinGridCol>("join_grid_col");
   action_lib->Register<cActionJoinGridRow>("join_grid_row");
+
+  action_lib->Register<cActionConnectCells>("connect_cells");
+  action_lib->Register<cActionDisconnectCells>("disconnect_cells");
 }
