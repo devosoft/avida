@@ -8,12 +8,10 @@ incs = [
   'cEventList.h',
   'cEventListEntry.h',
   'cEventListIterator.h',
-  'cEventManager.h',
   'cEventTriggers.h',
 ]
 
 srcs = [
-  'cEventManager.cc',
   'cEventList.cc',
   'cEventTriggers.cc',
 ]

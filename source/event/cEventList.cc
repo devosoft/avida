@@ -11,10 +11,12 @@
 #include "cEventList.h"
 
 #include "defs.h"
-#include "cEventManager.h"
+#include "cAction.h"
+#include "cActionLibrary.h"
 #include "cEventListEntry.h"
 #include "cEventTriggers.h"
 #include "cString.h"
+#include "cWorld.h"
 
 #include <float.h>           // for DBL_MIN
 #include <iostream>
@@ -22,15 +24,9 @@
 using namespace std;
 
 
-cEventList::cEventList( cEventManager* factory_manager,  cEventTriggers *triggers ) :
-m_factory_manager( factory_manager ),
-m_triggers( triggers ),
-m_head(NULL),
-m_tail(NULL),
-m_current(NULL),
-m_num_events(0)
-{
-}
+cEventList::cEventList(cWorld* world, cEventTriggers* triggers)
+: m_world(world), m_triggers(triggers), m_head(NULL), m_tail(NULL), m_current(NULL), m_num_events(0)
+{ ; }
 
 cEventList::~cEventList()
 {
@@ -38,19 +34,41 @@ cEventList::~cEventList()
   delete m_triggers;
 }
 
-bool
-cEventList::AddEvent( cEventTriggers::eTriggerVariable trigger,
-                      double start, double interval, double stop,
-                      const cString & name, const cString & args ){
-  assert( m_factory_manager != NULL );
-  cEvent *event = m_factory_manager->ConstructEvent( name, args );
+
+class cEventAction : public cEvent
+{
+private:
+  cAction* m_action;
+
+public:
+  cEventAction(cWorld* world, cAction* action, const cString& args)
+    : m_action(action) { Configure(world, args); }
+  ~cEventAction() { delete m_action; }
+  
+  const cString GetName() const { return "action wrapper"; }
+  const cString GetDescription() const { return "action wrapper - description not available"; }
+  
+  void Configure(cWorld* world, const cString& in_args) { m_world = world; m_args = in_args; }
+  void Process()
+  {
+    cAvidaContext& ctx = m_world->GetDefaultContext();
+    m_action->Process(ctx);
+  }
+};
+
+
+bool cEventList::AddEvent(cEventTriggers::eTriggerVariable trigger, double start, double interval,
+                          double stop, const cString& name, const cString& args)
+{
+  cAction* action = m_world->GetActionLibrary().Create(name, m_world, args);
   
   ///// Adding Event to the list /////
-  if( event != NULL ){
-    InsertEvent(event, trigger, start, interval, stop);
+  if (action != NULL) {
+    InsertEvent(new cEventAction(m_world, action, args), trigger, start, interval, stop);
     return true;
   }
-  else return false;
+  
+  return false;
 }
 
 

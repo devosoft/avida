@@ -46,11 +46,11 @@ Version 2.5 - development - Target: July 2006      - Status: Active Development
 * Transition all output files to use DataFileManager
 * Improved driver object framework
 * SMT Hardware
-+ Basic multithreaded analyze mode support
+* Basic multithreaded analyze mode support
 * TCMalloc OS X
 * TCMalloc Linux
 * Actions framework
-+ Merge (meaningful) events and analyze commands into actions framework
+* Merge (meaningful) events and analyze commands into actions framework
 * Consistency test support
 * Framework for unit testing
 * Move UnitTest functions from classes to namespaces

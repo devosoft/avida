@@ -15,7 +15,6 @@
 #include "cClassificationManager.h"
 #include "cEnvironment.h"
 #include "cEventList.h"
-#include "cEventManager.h"
 #include "cHardwareManager.h"
 #include "cInitFile.h"
 #include "cPopulation.h"
@@ -34,7 +33,6 @@ cWorld::~cWorld()
   delete m_conf;
   delete m_data_mgr;
   delete m_env;
-  delete m_event_mgr;
   delete m_event_list;
   delete m_hw_mgr;
   delete m_pop;
@@ -75,9 +73,8 @@ void cWorld::Setup()
   m_stats = new cStats(this);
   m_pop = new cPopulation(this);
 
-  //Setup Event List
-  m_event_mgr = new cEventManager(this);
-  m_event_list = new cEventList(m_event_mgr, new cAvidaTriggers(*m_stats) );
+  // Setup Event List
+  m_event_list = new cEventList(this, new cAvidaTriggers(*m_stats));
   
   ReadEventListFile(m_conf->EVENT_FILE.Get());
     

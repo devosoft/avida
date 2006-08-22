@@ -12,7 +12,6 @@
 
 #include <fstream>
 #include "defs.h"
-#include "cEventManager.h"
 #include "cInitFile.h"
 #include "tDictionary.h"
 
@@ -301,13 +300,17 @@ cAvidaConfig* cAvidaConfig::LoadWithCmdLineArgs(int argc, char * argv[])
     cString cur_arg = args[arg_num];
     
     // Test against the possible inputs.
-    if (cur_arg == "-events" || cur_arg == "-e") {
-      cout << "Known events:" << endl;
-      cEventManager event_manager(NULL);
-      event_manager.PrintAllEventDescriptions();
-      exit(0);
-    }
-    else if (cur_arg == "--help" || cur_arg == "-help" || cur_arg == "-h") {
+
+// @DMB - todo: print out all now *actions* 
+//
+//    if (cur_arg == "-events" || cur_arg == "-e") {
+//      cout << "Known events:" << endl;
+//      cEventManager event_manager(NULL);
+//      event_manager.PrintAllEventDescriptions();
+//      exit(0);
+//    } else
+    
+    if (cur_arg == "--help" || cur_arg == "-help" || cur_arg == "-h") {
       cout << "Options:"<<endl
       << "  -c[onfig] <filename>  Set config file to be <filename>"<<endl
       << "  -h[elp]               Help on options (this listing)"<<endl

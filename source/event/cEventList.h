@@ -28,21 +28,23 @@
  **/
 
 class cEvent;
-class cEventManager;
 class cString;
 
-class cEventList {
-friend class cEventListIterator;
+class cEventList
+{
+  friend class cEventListIterator;
+
 public:
   cEventListIterator begin() { return cEventListIterator(m_head); }
   const cEventListIterator end() const { return cEventListIterator(0); }
-protected:
-  cEventManager *m_factory_manager;
-  cEventTriggers *m_triggers;
 
-  cEventListEntry *m_head;
-  cEventListEntry *m_tail;
-  cEventListEntry *m_current;
+protected:
+  cWorld* m_world;
+  cEventTriggers* m_triggers;
+
+  cEventListEntry* m_head;
+  cEventListEntry* m_tail;
+  cEventListEntry* m_current;
   int m_num_events;
 
   void InsertEvent(cEvent *event, cEventTriggers::eTriggerVariable trigger,
@@ -59,22 +61,15 @@ private:
   cEventList& operator=( const cEventList& );
 
 public:
-  // creators
   /**
-   * The cEventList assumes ownership of both objects it is handed, and
-   * destroys them when it is done.
-   *
-   * @param factory_manager A pointer to an event factory manager,
-   * @ref cEventFactoryManager. The event factory manager is responsible
-   * for finding the appropriate event factory to construct a given event.
+   * The cEventList assumes ownership of triggers and destroys it when done.
    *
    * @param triggers A trigger object. The event list needs a trigger object
    * to determine what events to call when.
    **/
-  cEventList( cEventManager *factory_manager, cEventTriggers *triggers );
+  cEventList(cWorld* world, cEventTriggers* triggers);
   ~cEventList();
 
-  // manipulators
   /**
    * Adds an event with given name and argument list. The event will be of
    * type immediate, i.e. it is processed only once, and then deleted.
@@ -82,8 +77,10 @@ public:
    * @param name The name of the event.
    * @param args The argument list.
    **/
-  bool AddEvent( const cString & name, const cString & args ){
-    return AddEvent( cEventTriggers::IMMEDIATE, cEventTriggers::TRIGGER_BEGIN, cEventTriggers::TRIGGER_ONCE, cEventTriggers::TRIGGER_END, name, args); }
+  bool AddEvent(const cString& name, const cString& args)
+  {
+    return AddEvent(cEventTriggers::IMMEDIATE, cEventTriggers::TRIGGER_BEGIN, cEventTriggers::TRIGGER_ONCE, cEventTriggers::TRIGGER_END, name, args);
+  }
 
 
   /**

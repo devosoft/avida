@@ -28,7 +28,6 @@ class cAnalyze;
 class cAvidaDriver;
 class cClassificationManager;
 class cEnvironment;
-class cEventManager;
 class cEventList;
 class cHardwareManager;
 class cPopulation;
@@ -46,7 +45,6 @@ protected:
   cClassificationManager* m_class_mgr;
   cDataFileManager* m_data_mgr;
   cEnvironment* m_env;
-  cEventManager* m_event_mgr;
   cEventList* m_event_list;
   cHardwareManager* m_hw_mgr;
   cPopulation* m_pop;
@@ -117,7 +115,6 @@ public:
     a.ArkvObj("m_class_mgr", m_class_mgr);
     a.ArkvObj("m_data_mgr", m_data_mgr);
     a.ArkvObj("m_env", m_env);
-    a.ArkvObj("m_event_mgr", m_event_mgr);
     a.ArkvObj("m_event_list", m_event_list);
     a.ArkvObj("m_hw_mgr", m_hw_mgr);
     a.ArkvObj("m_pop", m_pop);
@@ -142,7 +139,6 @@ public:
     a.ArkvObj("m_class_mgr", m_class_mgr);
     a.ArkvObj("m_data_mgr", m_data_mgr);
     a.ArkvObj("m_env", m_env);
-    a.ArkvObj("m_event_mgr", m_event_mgr);
     a.ArkvObj("m_event_list", m_event_list);
     a.ArkvObj("m_hw_mgr", m_hw_mgr);
     a.ArkvObj("m_pop", m_pop);
