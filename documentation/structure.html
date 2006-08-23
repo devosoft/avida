@@ -1,26 +1,34 @@
 <html>
-<title>Directory and File Structure of Avida</title>
-<body
- bgcolor="#FFFFFF"
- text="#000000"
- link="#0000AA"
- alink="#0000FF"
- vlink="#000044">
+<head>
+	<title>Directory and File Structure of Avida</title>
+</head>
+<body>
 
-<h2 align=center>Directory and File Structure of Avida</h2>
+<p><a href="index.html">Return to the Index</a></p>
+<hr />
+
+<div align="center">
+<h1>Directory and File Structure of Avida</h1>
+</div>
 
 <p>
-This document contains a guide to all of the files present in avida, and
-where they are located.
+This document contains a guide to the files present in Avida, and where they are located.
+</p>
 
-
-<h3>Filenames</h3>
+<h2>Filenames</h2>
 
 <p>
 Source code files in avida follow a standard naming convention.
-A file that ended in "<tt><font color="000088">.hh</font></tt>" is a called
-a "header" file, while one that ends in
-"<tt><font color="000088">.cc</font></tt>" is a "code" file.  Headers
+All header files end with <code style="color: #000088">.h</code>.
+C++ source files use the extension <code style="color: #000088">.cc</code>.
+Python files are identified using <code style="color: #000088">.py</code>.
+In the main C++ source files, the general convention of one class per
+header/source file pair is used, with only very specific exceptions.
+
+
+
+
+Headers
 tend to contain class descriptions with only the declaration of their
 methods, while their corresponding code files contain the method
 definitions.  When one file needs to use a class defined in another, all
@@ -507,7 +515,8 @@ a <tt><font color="#008844">config/</font></tt> sub-directory under here
 with additional, optional configuration files that you may want to look at
 to see other possible pre-configured settings.
 
-<br><hr>
-Project hosted by:<br>
-<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=46761&type=2" width="125" height="37" border="0" alt="SourceForge.net"/></a>
-    
+<hr />
+<p><a href="index.html">Return to the Index</a></p>
+
+</body>
+</html>
