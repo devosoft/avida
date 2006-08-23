@@ -2,7 +2,7 @@
  *  cDataFileManager.cc
  *  Avida
  *
- *  Created by David on 10/18/05.
+ *  Called "data_file_manager.cc" prior to 10/18/05.
  *  Copyright 2005-2006 Michigan State University. All rights reserved.
  *  Copyright 1993-2005 California Institute of Technology
  *

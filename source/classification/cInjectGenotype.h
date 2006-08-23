@@ -2,7 +2,7 @@
  *  cInjectGenotype.h
  *  Avida
  *
- *  Created by David on 11/15/05.
+ *  Called "inject_genotype.hh" prior to 11/15/05.
  *  Copyright 2005-2006 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *

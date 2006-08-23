@@ -2,7 +2,7 @@
  *  cCPUMemory.cc
  *  Avida
  *
- *  Created by David on 11/22/05.
+ *  Called "cpu_memory.cc" prior to 11/22/05.
  *  Copyright 2005-2006 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *

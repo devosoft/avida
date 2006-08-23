@@ -2,7 +2,7 @@
  *  cInstLibCPU.h
  *  Avida
  *
- *  Created by David on 11/30/05.
+ *  Called "inst_lib_cpu.hh" prior to 11/30/05.
  *  Copyright 2005-2006 Michigan State University. All rights reserved.
  *
  */

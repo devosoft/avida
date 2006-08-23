@@ -2,7 +2,7 @@
  *  cCPUStack.cc
  *  Avida
  *
- *  Created by David on 11/17/05.
+ *  Called "cpu_stack.cc" prior to 11/17/05.
  *  Copyright 2005-2006 Michigan State University. All rights reserved.
  *  Copyright 1999-2001 California Institute of Technology.
  *

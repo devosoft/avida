@@ -2,7 +2,7 @@
  *  cSpatialCountElem.cc
  *  Avida
  *
- *  Created by David on 12/5/05.
+ *  Called "spatial_count_elem.cc" prior to 12/5/05.
  *  Copyright 2005-2006 Michigan State University. All rights reserved.
  *  Copyright 1993-2001 California Institute of Technology.
  *

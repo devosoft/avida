@@ -2,7 +2,7 @@
  *  tInstLib.h
  *  Avida
  *
- *  Created by David on 6/4/05.
+ *  Called "tInstLib.hh" prior to 6/4/05.
  *  Copyright 2005-2006 Michigan State University. All rights reserved.
  *
  */

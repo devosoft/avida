@@ -2,7 +2,7 @@
  *  cSpeciesControl.cc
  *  Avida
  *
- *  Created by David on 11/30/05.
+ *  Called "species_control.cc" prior to 11/30/05.
  *  Copyright 2005-2006 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *

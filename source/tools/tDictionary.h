@@ -2,7 +2,7 @@
  *  tDictionary.h
  *  Avida
  *
- *  Created by David on 10/11/05.
+ *  Called "tDictionary.hh" prior to 10/11/05.
  *  Copyright 2005-2006 Michigan State University. All rights reserved.
  *
  */
