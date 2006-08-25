@@ -39,7 +39,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
 
-  const cString GetDescription() { return "SaveClone [string fname='']"; }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
 
   void Process(cAvidaContext& ctx)
   {
@@ -70,7 +70,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   
-  const cString GetDescription() { return "LoadClone <cString fname>"; }
+  static const cString GetDescription() { return "Arguments: <cString fname>"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -105,7 +105,7 @@ public:
     if (largs.GetSize()) m_update = largs.PopWord().AsInt();
   }
   
-  const cString GetDescription() { return "LoadPopulation <cString fname> [int update=-1]"; }
+  static const cString GetDescription() { return "Arguments: <cString fname> [int update=-1]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -135,7 +135,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   
-  const cString GetDescription() { return "DumpPopulation [string fname='']"; }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -165,7 +165,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   
-  const cString GetDescription() { return "SavePopulation [string fname='']"; }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -197,7 +197,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   
-  const cString GetDescription() { return "SaveSexPopulation [string fname='']"; }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -221,7 +221,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   
-  const cString GetDescription() { return "SaveParasitePopulation [string fname='']"; }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -260,7 +260,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   
-  const cString GetDescription() { return "SaveHistoricPopulation [int back_dist=-1] [string fname='']"; }
+  static const cString GetDescription() { return "Arguments: [int back_dist=-1] [string fname='']"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -292,7 +292,7 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   
-  const cString GetDescription() { return "SaveHistoricSexPopulation [string fname='']"; }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
   
   void Process(cAvidaContext& ctx)
   {

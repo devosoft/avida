@@ -56,9 +56,9 @@ public:
     if (m_max_dist <= 0) m_max_dist = 10;
   }
   
-  const cString GetDescription()
+  static const cString GetDescription()
   {
-    return "AnalyzeLandscape [filename='land-analyze.dat'] [int trials=1000] [int min_found=0] [int max_trials=0] [int max_dist=10]";
+    return "Arguments: [filename='land-analyze.dat'] [int trials=1000] [int min_found=0] [int max_trials=0] [int max_dist=10]";
   }
   
   void Process(cAvidaContext& ctx)
@@ -153,9 +153,9 @@ class cActionPrecalcLandscape : public cAction  // @parallelized
 public:
   cActionPrecalcLandscape(cWorld* world, const cString& args) : cAction(world, args) { ; }
   
-  const cString GetDescription()
+  static const cString GetDescription()
   {
-    return "PrecalcLandscape";
+    return "No Arguments";
   }
   
   void Process(cAvidaContext& ctx)
@@ -200,9 +200,9 @@ public:
       if (largs.GetSize()) m_cfilename = largs.PopWord();
   }
   
-  const cString GetDescription()
+  static const cString GetDescription()
   {
-    return "FullLandscape [string filename='land-full.dat'] [int distance=1] [string entropy_file=''] [string sitecount_file='']";
+    return "Arguments: [string filename='land-full.dat'] [int distance=1] [string entropy_file=''] [string sitecount_file='']";
   }
   
   void Process(cAvidaContext& ctx)
@@ -272,9 +272,9 @@ public:
       if (largs.GetSize()) m_cfilename = largs.PopWord();
   }
   
-  const cString GetDescription()
+  static const cString GetDescription()
   {
-    return "DeletionLandscape [string filename='land-del.dat'] [int distance=1] [string sitecount_file='']";
+    return "Arguments: [string filename='land-del.dat'] [int distance=1] [string sitecount_file='']";
   }
   
   void Process(cAvidaContext& ctx)
@@ -343,9 +343,9 @@ public:
       if (largs.GetSize()) m_cfilename = largs.PopWord();
   }
   
-  const cString GetDescription()
+  static const cString GetDescription()
   {
-    return "InsertionLandscape [string filename='land-ins.dat'] [int distance=1] [string sitecount_file='']";
+    return "Arguments: [string filename='land-ins.dat'] [int distance=1] [string sitecount_file='']";
   }
   
   void Process(cAvidaContext& ctx)
@@ -409,9 +409,9 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   
-  const cString GetDescription()
+  static const cString GetDescription()
   {
-    return "PredictWLandscape [string filename='land-predict.dat']";
+    return "Arguments: [string filename='land-predict.dat']";
   }
   
   void Process(cAvidaContext& ctx)
@@ -459,9 +459,9 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   
-  const cString GetDescription()
+  static const cString GetDescription()
   {
-    return "PredictNuLandscape [string filename='land-predict.dat']";
+    return "Arguments: [string filename='land-predict.dat']";
   }
   
   void Process(cAvidaContext& ctx)
@@ -514,9 +514,9 @@ public:
     if (largs.GetSize()) m_trials = largs.PopWord().AsInt();
   }
   
-  const cString GetDescription()
+  static const cString GetDescription()
   {
-    return "RandomLandscape [string filename='land-random.dat'] [int distance=1] [int trials=0]";
+    return "Arguments: [string filename='land-random.dat'] [int distance=1] [int trials=0]";
   }
   
   void Process(cAvidaContext& ctx)
@@ -585,9 +585,9 @@ public:
     if (m_trials == 0) m_trials = m_world->GetHardwareManager().GetInstSet().GetSize() - 1;
   }
   
-  const cString GetDescription()
+  static const cString GetDescription()
   {
-    return "SampleLandscape [string filename='land-sample.dat'] [int trials=0]";
+    return "Arguments: [string filename='land-sample.dat'] [int trials=0]";
   }
   
   void Process(cAvidaContext& ctx)
@@ -650,9 +650,9 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   
-  const cString GetDescription()
+  static const cString GetDescription()
   {
-    return "HillClimb [string filename='hillclimb.dat']";
+    return "Arguments: [string filename='hillclimb.dat']";
   }
   
   void Process(cAvidaContext& ctx)
@@ -700,9 +700,9 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   
-  const cString GetDescription()
+  static const cString GetDescription()
   {
-    return "HillClimbNeut [string filename='hillclimb.dat']";
+    return "Arguments: [string filename='hillclimb.dat']";
   }
   
   void Process(cAvidaContext& ctx)
@@ -750,9 +750,9 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   
-  const cString GetDescription()
+  static const cString GetDescription()
   {
-    return "HillClimbRand [string filename='hillclimb.dat']";
+    return "Arguments: [string filename='hillclimb.dat']";
   }
   
   void Process(cAvidaContext& ctx)
@@ -812,9 +812,9 @@ public:
       if (largs.GetSize()) m_target = largs.PopWord().AsInt();
   }
   
-  const cString GetDescription()
+  static const cString GetDescription()
   {
-    return "MutationalNeighborhood [string fname='mut-neighborhood.dat'] [int target=-1]";
+    return "Arguments: [string fname='mut-neighborhood.dat'] [int target=-1]";
   }
   
   void Process(cAvidaContext& ctx)
@@ -881,9 +881,9 @@ public:
     if (largs.GetSize()) m_sample_size = largs.PopWord().AsInt();
   }
   
-  const cString GetDescription()
+  static const cString GetDescription()
   {
-    return "PairTestLandscape [string filename=''] [int sample_size=0]";
+    return "Arguments: [string filename=''] [int sample_size=0]";
   }
   
   void Process(cAvidaContext& ctx)
@@ -973,9 +973,9 @@ public:
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   
-  const cString GetDescription()
+  static const cString GetDescription()
   {
-    return "AnalyzePopulation [double sample_prob=1] [int landscape=0] [int save_genotype=0] [string filename='']";
+    return "Arguments: [double sample_prob=1] [int landscape=0] [int save_genotype=0] [string filename='']";
   }
   
   void Process(cAvidaContext& ctx)

@@ -59,7 +59,7 @@ public:
     if (m_filename == "START_CREATURE") m_filename = m_world->GetConfig().START_CREATURE.Get();
 }
   
-  const cString GetDescription() { return "Inject [string fname=\"START_CREATURE\"] [int cell_id=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: [string fname=\"START_CREATURE\"] [int cell_id=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
 
   void Process(cAvidaContext& ctx)
   {
@@ -103,7 +103,7 @@ public:
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
   }
   
-  const cString GetDescription() { return "InjectRandom <int length> [int cell_id=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: <int length> [int cell_id=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
 
   void Process(cAvidaContext& ctx)
   {
@@ -149,7 +149,7 @@ public:
     if (m_filename == "START_CREATURE") m_filename = m_world->GetConfig().START_CREATURE.Get();
   }
   
-  const cString GetDescription() { return "InjectAll [string fname=\"START_CREATURE\"] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: [string fname=\"START_CREATURE\"] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -203,7 +203,7 @@ public:
     if (m_cell_end == -1) m_cell_end = m_cell_start + 1;
   }
   
-  const cString GetDescription() { return "InjectRange [string fname=\"START_CREATURE\"] [int cell_start=0] [int cell_end=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: [string fname=\"START_CREATURE\"] [int cell_start=0] [int cell_end=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -261,7 +261,7 @@ public:
     if (m_cell_end == -1) m_cell_end = m_cell_start + 1;
   }
   
-  const cString GetDescription() { return "InjectSequence [string fname=\"START_CREATURE\"] [int cell_start=0] [int cell_end=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: [string fname=\"START_CREATURE\"] [int cell_start=0] [int cell_end=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -310,7 +310,7 @@ public:
     if (m_cell_end == -1) m_cell_end = m_cell_start + 1;
   }
   
-  const cString GetDescription() { return "InjectParasite <string filename> <string label> [int cell_start=0] [int cell_end=-1]"; }
+  static const cString GetDescription() { return "Arguments: <string filename> <string label> [int cell_start=0] [int cell_end=-1]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -376,7 +376,7 @@ public:
     if (m_cell_end == -1) m_cell_end = m_cell_start + 1;
   }
   
-  const cString GetDescription() { return "InjectParasitePair <string filename_genome> <string filename_parasite> <string label> [int cell_start=0] [int cell_end=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: <string filename_genome> <string filename_parasite> <string label> [int cell_start=0] [int cell_end=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -413,7 +413,7 @@ public:
       if (largs.GetSize()) m_killprob = largs.PopWord().AsDouble();
   }
   
-  const cString GetDescription() { return "KillProb [double probability=0.9]"; }
+  static const cString GetDescription() { return "Arguments: [double probability=0.9]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -449,7 +449,7 @@ public:
     if (largs.GetSize()) m_killrate = largs.PopWord().AsDouble();
   }
   
-  const cString GetDescription() { return "KillRate <double probability>"; }
+  static const cString GetDescription() { return "Arguments: <double probability>"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -520,7 +520,7 @@ public:
     }
   }
   
-  const cString GetDescription() { return "KillRectangle [int x1=0] [int y1=0] [int x2=0] [int y2=0]"; }
+  static const cString GetDescription() { return "Arguments: [int x1=0] [int y1=0] [int x2=0] [int y2=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -567,7 +567,7 @@ public:
     if (m_size < 0) m_size = 1;
   }
   
-  const cString GetDescription() { return "SerialTransfer [int transfer_size=1] [int ignore_deads=1]"; }
+  static const cString GetDescription() { return "Arguments: [int transfer_size=1] [int ignore_deads=1]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -623,7 +623,7 @@ public:
     if (m_end > m_world->GetPopulation().GetSize()) m_end = m_world->GetPopulation().GetSize();
   }
   
-  const cString GetDescription() { return "SetMutProb [string mut_type='copy'] [double prob=0.0] [int start_cell=-1] [int end_cell=-1]"; }
+  static const cString GetDescription() { return "Arguments: [string mut_type='copy'] [double prob=0.0] [int start_cell=-1] [int end_cell=-1]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -712,7 +712,7 @@ public:
       if (m_end > m_world->GetPopulation().GetSize()) m_end = m_world->GetPopulation().GetSize();
   }
   
-  const cString GetDescription() { return "ModMutProb [string mut_type='copy'] [double prob=0.0] [int start_cell=-1] [int end_cell=-1]"; }
+  static const cString GetDescription() { return "Arguments: [string mut_type='copy'] [double prob=0.0] [int start_cell=-1] [int end_cell=-1]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -778,7 +778,7 @@ class cActionZeroMuts : public cAction
 {
 public:
   cActionZeroMuts(cWorld* world, const cString& args) : cAction(world, args) { ; }
-  const cString GetDescription() { return "ZeroMuts"; }
+  static const cString GetDescription() { return "No Arguments"; }
   void Process(cAvidaContext& ctx)
   {
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
@@ -807,7 +807,7 @@ public:
     if (largs.GetSize()) m_type = largs.PopWord().AsInt();
   }
   
-  const cString GetDescription() { return "CompeteDemes [int type=1]"; }
+  static const cString GetDescription() { return "Arguments: [int type=1]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -825,7 +825,7 @@ class cActionResetDemes : public cAction
 public:
   cActionResetDemes(cWorld* world, const cString& args) : cAction(world, args) { ; }
   
-  const cString GetDescription() { return "ResetDemes"; }
+  static const cString GetDescription() { return "No Arguments"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -847,7 +847,7 @@ public:
     if (largs.GetSize()) m_id2 = largs.PopWord().AsInt();
   }
   
-  const cString GetDescription() { return "CopyDeme <int src_id> <int dest_id>"; }
+  static const cString GetDescription() { return "Arguments: <int src_id> <int dest_id>"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -882,7 +882,7 @@ public:
     if (largs.GetSize()) m_max = largs.PopWord().AsInt();
   }
   
-  const cString GetDescription() { return "SeverGridCol [int col_id=-1] [int min_row=0] [int max_row=-1]"; }
+  static const cString GetDescription() { return "Arguments: [int col_id=-1] [int min_row=0] [int max_row=-1]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -946,7 +946,7 @@ public:
     if (largs.GetSize()) m_max = largs.PopWord().AsInt();
   }
   
-  const cString GetDescription() { return "SeverGridRow [int row_id=-1] [int min_col=0] [int max_col=-1]"; }
+  static const cString GetDescription() { return "Arguments: [int row_id=-1] [int min_col=0] [int max_col=-1]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -1008,7 +1008,7 @@ public:
     if (largs.GetSize()) m_max = largs.PopWord().AsInt();
   }
   
-  const cString GetDescription() { return "JoinGridCol [int col_id=-1] [int min_col=0] [int max_col=-1]"; }
+  static const cString GetDescription() { return "Arguments: [int col_id=-1] [int min_col=0] [int max_col=-1]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -1070,7 +1070,7 @@ public:
     if (largs.GetSize()) m_max = largs.PopWord().AsInt();
   }
   
-  const cString GetDescription() { return "JoinGridRow [int col_id=-1] [int min_col=0] [int max_col=-1]"; }
+  static const cString GetDescription() { return "Arguments: [int col_id=-1] [int min_col=0] [int max_col=-1]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -1123,7 +1123,7 @@ public:
     if (largs.GetSize()) m_b_y = largs.PopWord().AsInt();
   }
   
-  const cString GetDescription() { return "ConnectCells <int cellA_x> <int cellA_y> <int cellB_x> <int cellB_y>"; }
+  static const cString GetDescription() { return "Arguments: <int cellA_x> <int cellA_y> <int cellB_x> <int cellB_y>"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -1163,7 +1163,7 @@ public:
     if (largs.GetSize()) m_b_y = largs.PopWord().AsInt();
   }
   
-  const cString GetDescription() { return "DisconnectCells <int cellA_x> <int cellA_y> <int cellB_x> <int cellB_y>"; }
+  static const cString GetDescription() { return "Arguments: <int cellA_x> <int cellA_y> <int cellB_x> <int cellB_y>"; }
   
   void Process(cAvidaContext& ctx)
   {

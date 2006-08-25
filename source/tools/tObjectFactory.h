@@ -61,15 +61,11 @@ protected:
   typedef BaseType (*CreateObjectFunction)();
   
   tDictionary<CreateObjectFunction> m_create_funcs;
-  int m_factory_id;
   mutable pthread_mutex_t m_mutex;
   
 public:
-  tObjectFactory() : m_factory_id(0) { pthread_mutex_init(&m_mutex, NULL); }
+  tObjectFactory() { pthread_mutex_init(&m_mutex, NULL); }
   virtual ~tObjectFactory() { pthread_mutex_destroy(&m_mutex); }
-  
-  void SetFactoryId(int id) { m_factory_id = id; }
-  int GetFactoryId() { return m_factory_id; }
 
   template<typename ClassType> bool Register(const cString& key)
   {
@@ -141,15 +137,11 @@ protected:
   typedef BaseType (*CreateObjectFunction)(Arg1Type);
   
   tDictionary<CreateObjectFunction> m_create_funcs;
-  int m_factory_id;
   mutable pthread_mutex_t m_mutex;
   
 public:
-  tObjectFactory() : m_factory_id(0) { pthread_mutex_init(&m_mutex, NULL); }
+  tObjectFactory() { pthread_mutex_init(&m_mutex, NULL); }
   virtual ~tObjectFactory() { pthread_mutex_destroy(&m_mutex); }
-  
-  void SetFactoryId(int id) { m_factory_id = id; }
-  int GetFactoryId() { return m_factory_id; }
   
   template<typename ClassType> bool Register(const cString& key)
   {
@@ -201,15 +193,11 @@ protected:
   typedef BaseType (*CreateObjectFunction)(Arg1Type, Arg2Type);
   
   tDictionary<CreateObjectFunction> m_create_funcs;
-  int m_factory_id;
   mutable pthread_mutex_t m_mutex;
   
 public:
-    tObjectFactory() : m_factory_id(0) { pthread_mutex_init(&m_mutex, NULL); }
+  tObjectFactory() { pthread_mutex_init(&m_mutex, NULL); }
   virtual ~tObjectFactory() { pthread_mutex_destroy(&m_mutex); }
-  
-  void SetFactoryId(int id) { m_factory_id = id; }
-  int GetFactoryId() { return m_factory_id; }
   
   template<typename ClassType> bool Register(const cString& key)
   {
@@ -261,15 +249,11 @@ protected:
   typedef BaseType (*CreateObjectFunction)(Arg1Type, Arg2Type, Arg3Type);
   
   tDictionary<CreateObjectFunction> m_create_funcs;
-  int m_factory_id;
   mutable pthread_mutex_t m_mutex;
   
 public:
-  tObjectFactory() : m_factory_id(0) { pthread_mutex_init(&m_mutex, NULL); }
+  tObjectFactory() { pthread_mutex_init(&m_mutex, NULL); }
   virtual ~tObjectFactory() { pthread_mutex_destroy(&m_mutex); }
-  
-  void SetFactoryId(int id) { m_factory_id = id; }
-  int GetFactoryId() { return m_factory_id; }
   
   template<typename ClassType> bool Register(const cString& key)
   {

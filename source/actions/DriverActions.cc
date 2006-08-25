@@ -19,7 +19,7 @@ class cActionExit : public cAction
 {
 public:
   cActionExit(cWorld* world, const cString& args) : cAction(world, args) { ; }
-  const cString GetDescription() { return "Exit"; }
+  static const cString GetDescription() { return "No Arguments"; }
   void Process(cAvidaContext& ctx) { m_world->GetDriver().SetDone(); }
 };
 
@@ -34,7 +34,7 @@ public:
     if (largs.GetSize()) m_threshold = largs.PopWord().AsDouble();
   }
   
-  const cString GetDescription() { return "ExitAveLineageLabelGreater <double threshold>"; }
+  static const cString GetDescription() { return "Arguments: <double threshold>"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -55,7 +55,7 @@ public:
     if (largs.GetSize()) m_threshold = largs.PopWord().AsDouble();
   }
   
-  const cString GetDescription() { return "ExitAveLineageLabelLess <double threshold>"; }
+  static const cString GetDescription() { return "Arguments: <double threshold>"; }
   
   void Process(cAvidaContext& ctx)
   {

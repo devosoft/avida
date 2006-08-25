@@ -35,7 +35,7 @@ In Mac OS X's Xcode, select the appropriate build style for the CPU
 type within your Mac (G4, G5, or Intel).  Click the 'Build' button on
 the project window.  The compiled binary and starting config files
 will be copied (by default) into:
-${PROJECT_DIR}/build/Deployment-{selected processor type}/Avida.work
+${PROJECT_DIR}/build/Deployment-{selected processor type}/work
 
 
 CMAKE CONFIGURATION OPTIONS

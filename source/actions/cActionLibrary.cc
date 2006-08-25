@@ -30,3 +30,19 @@ cActionLibrary* cActionLibrary::ConstructDefaultActionLibrary()
   
   return actlib;
 }
+
+const cString cActionLibrary::DescribeAll() const
+{
+  tList<cString> names;
+  tList<ClassDescFunction> funcs;
+  m_desc_funcs.AsLists(names, funcs);
+  
+  cString ret("");
+  
+  tListIterator<cString> names_it(names);
+  for (int i = 0; names_it.Next() != NULL; i++) {
+    ret = ret + *names_it.Get() + " - " + Describe(*names_it.Get()) + "\n";
+  }
+  
+  return ret;
+}

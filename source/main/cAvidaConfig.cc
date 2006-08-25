@@ -12,6 +12,8 @@
 
 #include <fstream>
 #include "defs.h"
+#include "cActionLibrary.h"
+#include "cDriverManager.h"
 #include "cInitFile.h"
 #include "tDictionary.h"
 
@@ -301,20 +303,15 @@ cAvidaConfig* cAvidaConfig::LoadWithCmdLineArgs(int argc, char * argv[])
     
     // Test against the possible inputs.
 
-// @DMB - todo: print out all now *actions* 
-//
-//    if (cur_arg == "-events" || cur_arg == "-e") {
-//      cout << "Known events:" << endl;
-//      cEventManager event_manager(NULL);
-//      event_manager.PrintAllEventDescriptions();
-//      exit(0);
-//    } else
-    
-    if (cur_arg == "--help" || cur_arg == "-help" || cur_arg == "-h") {
+    if (cur_arg == "-e") {
+      cout << endl << "Supported Actions:" << endl;
+      cout << cDriverManager::GetActionLibrary()->DescribeAll() << endl;
+      exit(0);
+    } else if (cur_arg == "--help" || cur_arg == "-help" || cur_arg == "-h") {
       cout << "Options:"<<endl
       << "  -c[onfig] <filename>  Set config file to be <filename>"<<endl
       << "  -h[elp]               Help on options (this listing)"<<endl
-      << "  -e[vents]             Print a list of all known events"<< endl
+      << "  -e                    Print a list of all known actions"<< endl
       << "  -s[eed] <value>       Set random seed to <value>"<<endl
       << "  -v[ersion]            Prints the version number"<<endl
       << "  -v0 -v1 -v2 -v3 -v4   Set output verbosity to 0..4"

@@ -31,7 +31,7 @@ public:
     if (largs.GetSize()) m_res_count = largs.PopWord().AsDouble();
   }
 
-  const cString GetDescription() { return "InjectResource <string res_name> <double res_count>"; }
+  static const cString GetDescription() { return "Arguments: <string res_name> <double res_count>"; }
 
   void Process(cAvidaContext& ctx)
   {
@@ -59,7 +59,7 @@ public:
     if (largs.GetSize()) m_res_count = largs.PopWord().AsDouble();
   }
   
-  const cString GetDescription() { return "InjectScaledResource <string res_name> <double res_count>"; }
+  static const cString GetDescription() { return "Arguments: <string res_name> <double res_count>"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -91,7 +91,7 @@ public:
     if (largs.GetSize()) m_res_percent = largs.PopWord().AsDouble();
   }
   
-  const cString GetDescription() { return "OutflowScaledResource <string res_name> <double res_percent>"; }
+  static const cString GetDescription() { return "Arguments: <string res_name> <double res_percent>"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -124,7 +124,7 @@ public:
     if (largs.GetSize()) m_res_count = largs.PopWord().AsDouble();
   }
   
-  const cString GetDescription() { return "SetResource <string res_name> <double res_count>"; }
+  static const cString GetDescription() { return "Arguments: <string res_name> <double res_count>"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -148,7 +148,7 @@ public:
     if (largs.GetSize()) m_value = largs.PopWord().AsDouble();
   }
   
-  const cString GetDescription() { return "SetReactionValue <string reaction_name> <double value>"; }
+  static const cString GetDescription() { return "Arguments: <string reaction_name> <double value>"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -171,7 +171,7 @@ public:
     if (largs.GetSize()) m_value = largs.PopWord().AsDouble();
   }
   
-  const cString GetDescription() { return "SetReactionValueMult <string reaction_name> <double value>"; }
+  static const cString GetDescription() { return "Arguments: <string reaction_name> <double value>"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -194,7 +194,7 @@ public:
     if (largs.GetSize()) m_inst = largs.PopWord();
   }
   
-  const cString GetDescription() { return "SetReactionInst <string reaction_name> <string inst>"; }
+  static const cString GetDescription() { return "Arguments: <string reaction_name> <string inst>"; }
   
   void Process(cAvidaContext& ctx)
   {
