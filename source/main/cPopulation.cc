@@ -455,8 +455,7 @@ void cPopulation::KillOrganism(cPopulationCell & in_cell)
   // Statistics...
   cOrganism * organism = in_cell.GetOrganism();
   cGenotype * genotype = organism->GetGenotype();
-  m_world->GetStats().RecordDeath(in_cell.GetID(), genotype->GetID(),
-                                  organism->GetPhenotype().GetAge());
+  m_world->GetStats().RecordDeath();
   
   // Do the lineage handling
   if (m_world->GetConfig().LOG_LINEAGES.Get()) { m_world->GetClassificationManager().RemoveLineageOrganism(organism); }

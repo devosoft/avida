@@ -586,6 +586,7 @@
 		707AF2F409EE8501001AEA89 /* organism.infected2 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.infected2; sourceTree = "<group>"; };
 		707AF2F509EE8501001AEA89 /* organism.noheads */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.noheads; sourceTree = "<group>"; };
 		707AF2FF09EE8501001AEA89 /* SConscript */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConscript; sourceTree = "<group>"; };
+		707CE51D0A9E49A50022D19C /* config.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = config.html; sourceTree = "<group>"; };
 		708051A70A1F65FE00CBB8B6 /* SaveLoadActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SaveLoadActions.h; sourceTree = "<group>"; };
 		708051A80A1F65FE00CBB8B6 /* SaveLoadActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SaveLoadActions.cc; sourceTree = "<group>"; };
 		708051BA0A1F66B400CBB8B6 /* cActionLibrary.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cActionLibrary.cc; sourceTree = "<group>"; };
@@ -604,7 +605,6 @@
 		70920C280A9CCE2C00757CDB /* cpu_tour.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = cpu_tour.html; sourceTree = "<group>"; };
 		70920C290A9CCE2C00757CDB /* environment.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = environment.html; sourceTree = "<group>"; };
 		70920C2A0A9CCE2C00757CDB /* events.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = events.html; sourceTree = "<group>"; };
-		70920C2B0A9CCE2C00757CDB /* genesis.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = genesis.html; sourceTree = "<group>"; };
 		70920C2D0A9CCE2C00757CDB /* components.help */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = components.help; sourceTree = "<group>"; };
 		70920C2E0A9CCE2C00757CDB /* help.add.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = help.add.html; sourceTree = "<group>"; };
 		70920C2F0A9CCE2C00757CDB /* help.Bitwise.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = help.Bitwise.html; sourceTree = "<group>"; };
@@ -1161,6 +1161,7 @@
 		70920C1A0A9CCE2C00757CDB /* Documentation */ = {
 			isa = PBXGroup;
 			children = (
+				707CE51D0A9E49A50022D19C /* config.html */,
 				70920C1B0A9CCE2C00757CDB /* analyze_mode.html */,
 				70920C1C0A9CCE2C00757CDB /* analyze_samples.html */,
 				70920C1D0A9CCE2C00757CDB /* code_c++_intro.html */,
@@ -1176,7 +1177,6 @@
 				70920C280A9CCE2C00757CDB /* cpu_tour.html */,
 				70920C290A9CCE2C00757CDB /* environment.html */,
 				70920C2A0A9CCE2C00757CDB /* events.html */,
-				70920C2B0A9CCE2C00757CDB /* genesis.html */,
 				70920C2C0A9CCE2C00757CDB /* glossary */,
 				70920C5C0A9CCE2C00757CDB /* images */,
 				70920C5F0A9CCE2C00757CDB /* index.html */,

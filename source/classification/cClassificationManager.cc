@@ -287,7 +287,7 @@ void cClassificationManager::RemoveGenotype(cGenotype & in_genotype)
                                      m_world->GetStats().GetUpdate() - in_genotype.GetUpdateBorn(),
                                      in_genotype.GetLength());
   if (in_genotype.GetThreshold()) {
-    m_world->GetStats().RemoveThreshold(in_genotype.GetID());
+    m_world->GetStats().RemoveThreshold();
   }
   
   
@@ -355,7 +355,7 @@ void cClassificationManager::ThresholdGenotype(cGenotype & in_genotype)
       if (in_genotype.GetSpecies())
         found_species->SetParentID(in_genotype.GetSpecies()->GetID());
       m_species_ctl->SetActive(*found_species);
-      m_world->GetStats().AddSpecies(found_species->GetID());
+      m_world->GetStats().AddSpecies();
       
       // Since this is a new species, see if we should be printing it.
       

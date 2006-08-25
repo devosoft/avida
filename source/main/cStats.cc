@@ -15,16 +15,15 @@
 #include "cStringUtil.h"
 #include "tDataEntry.h"
 #include "cWorld.h"
+#include "cWorldDriver.h"
 
 #include <float.h>
 #include <math.h>
 
-using namespace std;
-
 
 cStats::cStats(cWorld* world)
   : m_world(world)
-  , current_update(-1)
+  , m_update(-1)
   , sub_update(0)
   , avida_time(0)
   , data_manager(this, "population_data")
@@ -216,13 +215,13 @@ void cStats::SetupPrintDatabase()
 
 void cStats::ZeroTasks()
 {
-  for( int i=0; i < task_cur_count.GetSize(); i++ ){
+  for (int i = 0; i < task_cur_count.GetSize(); i++) {
     task_cur_count[i] = 0;
-	task_last_count[i] = 0;
-	task_cur_quality[i] = 0;
-	task_last_quality[i] = 0;
-	task_last_max_quality[i] = 0;
-	task_cur_max_quality[i] = 0;
+    task_last_count[i] = 0;
+    task_cur_quality[i] = 0;
+    task_last_quality[i] = 0;
+    task_last_max_quality[i] = 0;
+    task_cur_max_quality[i] = 0;
   }
 }
 
@@ -254,8 +253,8 @@ void cStats::CalcFidelity()
   // after a mutation occurs, that it will be the original instruction again;
   // This needs to be adjusted for!
 
-  double adj = ((double) (m_world->GetNumInstructions() - 1)) /
-    (double) m_world->GetNumInstructions();
+  double adj = static_cast<double>(m_world->GetNumInstructions() - 1) /
+    static_cast<double>(m_world->GetNumInstructions());
 
   double base_fidelity = (1.0 - adj * m_world->GetConfig().DIVIDE_MUT_PROB.Get()) *
     (1.0 - m_world->GetConfig().DIVIDE_INS_PROB.Get()) * (1.0 - m_world->GetConfig().DIVIDE_DEL_PROB.Get());
@@ -271,19 +270,17 @@ void cStats::RecordBirth(int cell_id, int genotype_id, bool breed_true)
   num_births++;
 
   if (m_world->GetConfig().LOG_CREATURES.Get()) {
-    m_world->GetDataFileOFStream("creature.log") << GetUpdate() << " "
-      << cell_id << " " << genotype_id   << endl;
+    cDataFile& df = m_world->GetDataFile("creature.log");
+    df.Write(m_update, "Update");
+    df.Write(cell_id, "Cell ID");
+    df.Write(genotype_id, "Genotype ID");
+    df.Endl();
   }
 
-  if (breed_true == true) num_breed_true++;
+  if (breed_true) num_breed_true++;
   else num_breed_in++;
 }
 
-
-void cStats::RecordDeath(int cell_id, int genotype_id, int age)
-{
-  num_deaths++;
-}
 
 void cStats::RemoveGenotype(int id_num, int parent_id,
    int parent_dist, int depth, int max_abundance, int parasite_abundance,
@@ -292,77 +289,63 @@ void cStats::RemoveGenotype(int id_num, int parent_id,
   if (m_world->GetConfig().LOG_GENOTYPES.Get() &&
       (m_world->GetConfig().LOG_GENOTYPES.Get() != 2 || max_abundance > 2)) {
     const int update_born = cStats::GetUpdate() - age + 1;
-    m_world->GetDataFileOFStream("genotype.log")
-      << id_num             << " "    //  1
-      << update_born        << " "    //  2
-      << parent_id          << " "    //  3
-      << parent_dist        << " "    //  4
-      << depth              << " "    //  5
-      << max_abundance      << " "    //  6
-      << age                << " "    //  7
-      << length             << endl;  //  8
+    cDataFile& df = m_world->GetDataFile("genotype.log");
+    df.Write(id_num, "Genotype ID");
+    df.Write(update_born, "Update Born");
+    df.Write(parent_id, "Parent ID");
+    df.Write(parent_dist, "Parent Distance");
+    df.Write(depth, "Depth");
+    df.Write(max_abundance, "Maximum Abundance");
+    df.Write(age, "Age");
+    df.Write(length, "Length");
+    df.Endl();
   }
 
   (void) parasite_abundance; // Not used now, but maybe in future.
 }
 
-void cStats::AddThreshold(int id_num, const char * name, int species_num)
+void cStats::AddThreshold(int id_num, const char* name, int species_num)
 {
   num_threshold++;
   tot_threshold++;
-  if (m_world->GetConfig().LOG_THRESHOLD.Get())
-    m_world->GetDataFileOFStream("threshold.log")
-      << cStats::GetUpdate() << " "   // 1
-      << id_num              << " "   // 2
-      << species_num         << " "   // 3
-      << name                << endl; // 4
+  if (m_world->GetConfig().LOG_THRESHOLD.Get()) {
+    cDataFile& df = m_world->GetDataFile("threshold.log");
+    df.Write(m_update, "Update");
+    df.Write(id_num, "ID");
+    df.Write(species_num, "Species Num");
+    df.Write(name, "Name");
+    df.Endl();
+  }
 }
 
-void cStats::RemoveThreshold(int id_num)
-{
-  id_num = -1;  // @CAO do we still need id_num here?
-  num_threshold--;
-}
 
-void cStats::AddSpecies(int id_num)
-{
-  id_num = -1; // @CAO do we still need id_num here?
-  tot_species++;
-  num_species++;
-}
-
-void cStats::RemoveSpecies(int id_num, int parent_id,
-			   int max_gen_abundance, int max_abundance, int age)
+void cStats::RemoveSpecies(int id_num, int parent_id, int max_gen_abundance, int max_abundance, int age)
 {
   num_species--;
-  if (m_world->GetConfig().LOG_SPECIES.Get())
-    m_world->GetDataFileOFStream("species.log")
-      << cStats::GetUpdate() << " "   // 1
-      << id_num              << " "   // 2
-      << parent_id           << " "   // 3
-      << max_gen_abundance   << " "   // 4
-      << max_abundance       << " "   // 5
-      << age                 << endl; // 6
-}
-
-void cStats::AddLineage()
-{
-  tot_lineages++;
-  num_lineages++;
+  if (m_world->GetConfig().LOG_SPECIES.Get()) {
+    cDataFile& df = m_world->GetDataFile("species.log");
+    df.Write(m_update, "Update");
+    df.Write(id_num, "Species ID");
+    df.Write(parent_id, "Parent ID");
+    df.Write(max_gen_abundance, "Maximum Gen Abundance");
+    df.Write(max_abundance, "Maximum Abundance");
+    df.Write(age, "Age");
+    df.Endl();
+  }
 }
 
 void cStats::ProcessUpdate()
 {
   // Increment the "avida_time"
   if (sum_merit.Count() > 0 && sum_merit.Average() > 0) {
-    double delta = ((double)(current_update-last_update))/sum_merit.Average();
+    double delta = ((double)(m_update-last_update))/sum_merit.Average();
     avida_time += delta;
 
     // calculate the true replication rate in this update
     rave_true_replication_rate.Add( num_births/
 	  (delta * m_world->GetConfig().AVE_TIME_SLICE.Get() * num_creatures) );
   }
-  last_update = current_update;
+  last_update = m_update;
 
   // Zero-out any variables which need to be cleared at end of update.
 
@@ -418,27 +401,27 @@ void cStats::RemoveLineage(int id_num, int parent_id, int update_born, double ge
 
 void cStats::PrintDataFile(const cString& filename, const cString& format, char sep)
 {
-  cDataFile & data_file = m_world->GetDataFile(filename);
+  cDataFile& data_file = m_world->GetDataFile(filename);
   data_manager.PrintRow(data_file, format, sep);
 }
 
 
-void cStats::PrintAverageData(const cString & filename)
+void cStats::PrintAverageData(const cString& filename)
 {
-  cDataFile & df = m_world->GetDataFile(filename);
+  cDataFile& df = m_world->GetDataFile(filename);
 
-  df.WriteComment( "Avida average data" );
+  df.WriteComment("Avida Average Data");
   df.WriteTimeStamp();
 
-  df.Write(GetUpdate(),                   "update");
-  df.Write(sum_merit.Average(),           "average merit");
-  df.Write(sum_gestation.Average(),       "average gestation time");
-  df.Write(sum_fitness.Average(),         "average fitness");
-  df.Write(sum_repro_rate.Average(),      "repro rate?");
-  df.Write(sum_size.Average(),            "average size");
-  df.Write(sum_copy_size.Average(),       "average copied size");
-  df.Write(sum_exe_size.Average(),        "average executed size");
-  df.Write(sum_abundance.Average(),       "average abundance?");
+  df.Write(m_update,                "Update");
+  df.Write(sum_merit.Average(),           "Merit");
+  df.Write(sum_gestation.Average(),       "Gestation Time");
+  df.Write(sum_fitness.Average(),         "Fitness");
+  df.Write(sum_repro_rate.Average(),      "Repro Rate?");
+  df.Write(sum_size.Average(),            "Size");
+  df.Write(sum_copy_size.Average(),       "Copied Size");
+  df.Write(sum_exe_size.Average(),        "Executed Size");
+  df.Write(sum_abundance.Average(),       "Abundance");
   
   // The following causes births and breed true to default to 0.0 when num_creatures is 0
   double ave_births = 0.0;
@@ -448,173 +431,181 @@ void cStats::PrintAverageData(const cString & filename)
     ave_births = static_cast<double>(num_births) / d_num_creatures;
     ave_breed_true = static_cast<double>(num_breed_true) / d_num_creatures;
   }
-  df.Write(ave_births,                    "proportion of organisms that gave birth in this update");
-  df.Write(ave_breed_true,                "proportion of breed true organisms");
+  df.Write(ave_births,                    "Proportion of organisms that gave birth in this update");
+  df.Write(ave_breed_true,                "Proportion of Breed True Organisms");
   
-  df.Write(sum_genotype_depth.Average(),  "average genotype depth");
-  df.Write(sum_generation.Average(),      "average generation");
-  df.Write(sum_neutral_metric.Average(),  "average neutral metric");
-  df.Write(sum_lineage_label.Average(),   "average lineage label");
-  df.Write(rave_true_replication_rate.Average(),
-	   "true replication rate (based on births/update, time-averaged)");
+  df.Write(sum_genotype_depth.Average(),  "Genotype Depth");
+  df.Write(sum_generation.Average(),      "Generation");
+  df.Write(sum_neutral_metric.Average(),  "Neutral Metric");
+  df.Write(sum_lineage_label.Average(),   "Lineage Label");
+  df.Write(rave_true_replication_rate.Average(), "True Replication Rate (based on births/update, time-averaged)");
   df.Endl();
 }
 
 
-void cStats::PrintErrorData(const cString & filename)
+void cStats::PrintErrorData(const cString& filename)
 {
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
-  assert(fp.good());
-  fp<< GetUpdate()                          << " "  // 1
-    << sum_merit.StdError()                 << " "  // 2
-    << sum_gestation.StdError()             << " "  // 3
-    << sum_fitness.StdError()               << " "  // 4
-    << sum_repro_rate.StdError()            << " "  // 5
-    << sum_size.StdError()                  << " "  // 6
-    << sum_copy_size.StdError()             << " "  // 7
-    << sum_exe_size.StdError()              << " "  // 8
-    << sum_abundance.StdError()             << " "  // 9
-    << -1                                   << " "  // 10
-    << -1                                   << " "  // 11
-    << sum_genotype_depth.StdError()        << " "  // 12
-    << sum_generation.StdError()            << " "  // 15
-    << sum_neutral_metric.StdError()        << " "  // 16
-    << sum_lineage_label.StdError()         << endl;// 17
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Avida Standard Error Data");
+  df.WriteTimeStamp();
+
+  df.Write(m_update,                 "Update");
+  df.Write(sum_merit.StdError(),           "Merit");
+  df.Write(sum_gestation.StdError(),       "Gestation Time");
+  df.Write(sum_fitness.StdError(),         "Fitness");
+  df.Write(sum_repro_rate.StdError(),      "Repro Rate?");
+  df.Write(sum_size.StdError(),            "Size");
+  df.Write(sum_copy_size.StdError(),       "Copied Size");
+  df.Write(sum_exe_size.StdError(),        "Executed Size");
+  df.Write(sum_abundance.StdError(),       "Abundance");
+  df.Write(-1,                             "(No Data)");
+  df.Write(-1,                             "(No Data)");
+  df.Write(sum_genotype_depth.StdError(),  "Genotype Depth");
+  df.Write(sum_generation.StdError(),      "Generation");
+  df.Write(sum_neutral_metric.StdError(),  "Neutral Metric");
+  df.Write(sum_lineage_label.StdError(),   "Lineage Label");
+  df.Write(rave_true_replication_rate.StdError(), "True Replication Rate (based on births/update, time-averaged)");
+  df.Endl();
 }
 
 
-void cStats::PrintVarianceData(const cString & filename)
-{
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
-  assert(fp.good());
-  fp<<GetUpdate()                           << " "  // 1
-    << sum_merit.Variance()                 << " "  // 2
-    << sum_gestation.Variance()             << " "  // 3
-    << sum_fitness.Variance()               << " "  // 4
-    << sum_repro_rate.Variance()            << " "  // 5
-    << sum_size.Variance()                  << " "  // 6
-    << sum_copy_size.Variance()             << " "  // 7
-    << sum_exe_size.Variance()              << " "  // 8
-    << sum_abundance.Variance()             << " "  // 9
-    << -1                                   << " "  // 10
-    << -1                                   << " "  // 11
-    << sum_genotype_depth.Variance()        << " "  // 12
-    << sum_generation.Variance()            << " "  // 15
-    << sum_neutral_metric.Variance()        << " "  // 16
-    << sum_lineage_label.Variance()         << " "  // 17
-    << rave_true_replication_rate.Variance()<< endl;// 18
-}
-
-
-void cStats::PrintDominantData(const cString & filename)
+void cStats::PrintVarianceData(const cString& filename)
 {
   cDataFile& df = m_world->GetDataFile(filename);
 
-  df.WriteComment( "Avida dominant data" );
+  df.WriteComment("Avida Variance Data");
   df.WriteTimeStamp();
 
-  df.Write( GetUpdate(),     "update" );
-  df.Write( dom_merit,       "average merit of dominant genotype" );
-  df.Write( dom_gestation,   "average gestation time of dominant" );
-  df.Write( dom_fitness,     "average fitness of dominant genotype" );
-  df.Write( dom_repro_rate,  "repro rate?" );
-  df.Write( dom_size,        "size of dominant genotype" );
-  df.Write( dom_copied_size, "copied size of dominant genotype" );
-  df.Write( dom_exe_size,    "executed size of dominant genotype" );
-  df.Write( dom_abundance,   "abundance of dominant genotype" );
-  df.Write( dom_births,      "number of births" );
-  df.Write( dom_breed_true,  "number of dominant breed true?" );
-  df.Write( dom_gene_depth,  "dominant gene depth" );
-  df.Write( dom_breed_in,    "dominant breed in");
-  df.Write( max_fitness,     "max fitness?" );
-  df.Write( dom_genotype_id, "genotype ID of dominant genotype" );
-  df.Write( dom_name,        "name of dominant genotype" );
+  df.Write(m_update,                 "Update");
+  df.Write(sum_merit.Variance(),           "Merit");
+  df.Write(sum_gestation.Variance(),       "Gestation Time");
+  df.Write(sum_fitness.Variance(),         "Fitness");
+  df.Write(sum_repro_rate.Variance(),      "Repro Rate?");
+  df.Write(sum_size.Variance(),            "Size");
+  df.Write(sum_copy_size.Variance(),       "Copied Size");
+  df.Write(sum_exe_size.Variance(),        "Executed Size");
+  df.Write(sum_abundance.Variance(),       "Abundance");
+  df.Write(-1,                             "(No Data)");
+  df.Write(-1,                             "(No Data)");
+  df.Write(sum_genotype_depth.Variance(),  "Genotype Depth");
+  df.Write(sum_generation.Variance(),      "Generation");
+  df.Write(sum_neutral_metric.Variance(),  "Neutral Metric");
+  df.Write(sum_lineage_label.Variance(),   "Lineage Label");
+  df.Write(rave_true_replication_rate.Variance(), "True Replication Rate (based on births/update, time-averaged)");
   df.Endl();
 }
 
-void cStats::PrintDominantParaData(const cString & filename)
+
+void cStats::PrintDominantData(const cString& filename)
 {
-  cDataFile & df = m_world->GetDataFile(filename);
+  cDataFile& df = m_world->GetDataFile(filename);
 
-  df.WriteComment( "Avida dominant parasite data" );
+  df.WriteComment("Avida Dominant Data");
   df.WriteTimeStamp();
 
-  df.Write( GetUpdate(),     "update" );
-  df.Write( dom_inj_size,        "size of dominant genotype" );
-  df.Write( dom_inj_abundance,   "abundance of dominant genotype" );
-  df.Write( dom_inj_genotype_id, "genotype ID of dominant genotype" );
-  df.Write( dom_inj_name,        "name of dominant genotype" );
+  df.Write(m_update,     "Update");
+  df.Write(dom_merit,       "Average Merit of the Dominant Genotype");
+  df.Write(dom_gestation,   "Average Gestation Time of the Dominant Genotype");
+  df.Write(dom_fitness,     "Average Fitness of the Dominant Genotype");
+  df.Write(dom_repro_rate,  "Repro Rate?");
+  df.Write(dom_size,        "Size of Dominant Genotype");
+  df.Write(dom_copied_size, "Copied Size of Dominant Genotype");
+  df.Write(dom_exe_size,    "Executed Size of Dominant Genotype");
+  df.Write(dom_abundance,   "Abundance of Dominant Genotype");
+  df.Write(dom_births,      "Number of Births");
+  df.Write(dom_breed_true,  "Number of Dominant Breed True?");
+  df.Write(dom_gene_depth,  "Dominant Gene Depth");
+  df.Write(dom_breed_in,    "Dominant Breed In");
+  df.Write(max_fitness,     "Max Fitness?");
+  df.Write(dom_genotype_id, "Genotype ID of Dominant Genotype");
+  df.Write(dom_name,        "Name of the Dominant Genotype");
   df.Endl();
 }
 
-void cStats::PrintStatsData(const cString & filename)
+void cStats::PrintDominantParaData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+
+  df.WriteComment("Avida Dominant Parasite Data");
+  df.WriteTimeStamp();
+
+  df.Write(m_update, "Update");
+  df.Write(dom_inj_size, "Size of Dominant Parasite Genotype");
+  df.Write(dom_inj_abundance, "Abundance of Dominant Parasite Genotype");
+  df.Write(dom_inj_genotype_id, "Genotype ID of Dominant Parasite Genotype");
+  df.Write(dom_inj_name, "Name of the Dominant Parasite Genotype");
+  df.Endl();
+}
+
+void cStats::PrintStatsData(const cString& filename)
 {
   const int genotype_change = num_genotypes - num_genotypes_last;
   const double log_ave_fid = (ave_fidelity > 0) ? -Log(ave_fidelity) : 0.0;
   const double log_dom_fid = (dom_fidelity > 0) ? -Log(dom_fidelity) : 0.0;
 
-  cDataFile & df = m_world->GetDataFile(filename);
+  cDataFile& df = m_world->GetDataFile(filename);
 
-  df.WriteComment( "Generic Statistics Data" );
+  df.WriteComment("Generic Statistics Data");
   df.WriteTimeStamp();
 
-  df.Write( GetUpdate(),          "update" );
-  df.Write( energy,               "average inferiority (energy)");
-  df.Write( 1.0 - ave_fidelity,   "ave probability of any mutations in genome" );
-  df.Write( 1.0 - dom_fidelity,   "probability of any mutations in dom genome" );
-  df.Write( log_ave_fid,          "log(average fidelity)");
-  df.Write( log_dom_fid,          "log(dominant fidelity)");
-  df.Write( genotype_change,      "change in number of genotypes");
-  df.Write( entropy,              "genotypic entropy");
-  df.Write( species_entropy,      "species entropy");
-  df.Write( coal_depth,           "depth of most reacent coalescence");
-  df.Write( num_resamplings,      "Total number of resamplings this generation");
-  df.Write( num_failedResamplings, "Total number of organisms that failed to resample this generation"); 
+  df.Write(m_update,          "update");
+  df.Write(energy,               "average inferiority (energy)");
+  df.Write(1.0 - ave_fidelity,   "ave probability of any mutations in genome");
+  df.Write(1.0 - dom_fidelity,   "probability of any mutations in dom genome");
+  df.Write(log_ave_fid,          "log(average fidelity)");
+  df.Write(log_dom_fid,          "log(dominant fidelity)");
+  df.Write(genotype_change,      "change in number of genotypes");
+  df.Write(entropy,              "genotypic entropy");
+  df.Write(species_entropy,      "species entropy");
+  df.Write(coal_depth,           "depth of most reacent coalescence");
+  df.Write(num_resamplings,      "Total number of resamplings this generation");
+  df.Write(num_failedResamplings, "Total number of organisms that failed to resample this generation"); 
 
   df.Endl();
 }
 
 
-void cStats::PrintCountData(const cString & filename)
+void cStats::PrintCountData(const cString& filename)
 {
-  cDataFile & df = m_world->GetDataFile(filename);
+  cDataFile& df = m_world->GetDataFile(filename);
 
-  df.WriteComment( "Avida count data" );
+  df.WriteComment("Avida count data");
   df.WriteTimeStamp();
 
-  df.Write( GetUpdate(),            "update");
-  df.Write( num_executed,           "number of insts executed this update");
-  df.Write( num_creatures,          "number of organisms");
-  df.Write( num_genotypes,          "number of different genotypes");
-  df.Write( num_threshold,          "number of different threshold genotypes");
-  df.Write( num_species,            "number of different species");
-  df.Write( num_thresh_species,     "number of different threshold species");
-  df.Write( num_lineages,           "number of different lineages");
-  df.Write( num_births,             "number of births in this update");
-  df.Write( num_deaths,             "number of deaths in this update");
-  df.Write( num_breed_true,         "number of breed true");
-  df.Write( num_breed_true_creatures, "number of breed true organisms?");
-  //df.Write( num_parasites,            "number of parasites");
-  df.Write( num_no_birth_creatures,   "number of no-birth organisms");
-  df.Write( num_single_thread_creatures, "number of single-threaded organisms");
-  df.Write( num_multi_thread_creatures, "number of multi-threaded organisms");
-  df.Write( num_modified, "number of modified organisms");
+  df.Write(m_update,         "update");
+  df.Write(num_executed,           "number of insts executed this update");
+  df.Write(num_creatures,          "number of organisms");
+  df.Write(num_genotypes,          "number of different genotypes");
+  df.Write(num_threshold,          "number of different threshold genotypes");
+  df.Write(num_species,            "number of different species");
+  df.Write(num_thresh_species,     "number of different threshold species");
+  df.Write(num_lineages,           "number of different lineages");
+  df.Write(num_births,             "number of births in this update");
+  df.Write(num_deaths,             "number of deaths in this update");
+  df.Write(num_breed_true,         "number of breed true");
+  df.Write(num_breed_true_creatures, "number of breed true organisms?");
+  //df.Write(num_parasites,            "number of parasites");
+  df.Write(num_no_birth_creatures,   "number of no-birth organisms");
+  df.Write(num_single_thread_creatures, "number of single-threaded organisms");
+  df.Write(num_multi_thread_creatures, "number of multi-threaded organisms");
+  df.Write(num_modified, "number of modified organisms");
   df.Endl();
 }
 
 
-void cStats::PrintTotalsData(const cString & filename)
+void cStats::PrintTotalsData(const cString& filename)
 {
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
-  assert(fp.good());
-  fp << GetUpdate()                  << " " // 1
-     << (tot_executed+num_executed)  << " " // 2
-     << num_executed            << " " // 3
-     << tot_organisms                << " " // 4
-     << tot_genotypes                << " " // 5
-     << tot_threshold                << " " // 6
-     << tot_species                  << " " // 7
-     << tot_lineages                 << endl; // 8
+  cDataFile& df = m_world->GetDataFile(filename);
+  df.Write(m_update, "Update");
+  df.Write((tot_executed+num_executed), "Total Instructions Executed");
+  df.Write(num_executed, "Instructions Executed This Update");
+  df.Write(tot_organisms, "Total Organisms");
+  df.Write(tot_genotypes, "Total Genotypes");
+  df.Write(tot_threshold, "Total Threshold");
+  df.Write(tot_species, "Total Species");
+  df.Write(tot_lineages, "Total Lineages");
+  df.Endl();
 }
 
 
@@ -631,14 +622,14 @@ void cStats::PrintTasksData(const cString& filename)
 
 	// print tasks.dat
 	cDataFile& df = m_world->GetDataFile(file);
-	df.WriteComment( "Avida tasks data" );
+	df.WriteComment("Avida tasks data");
 	df.WriteTimeStamp();
-	df.WriteComment( "First column gives the current update, next columns give the number" );
-	df.WriteComment( "of organisms that have the particular task as a component of their merit" );
+	df.WriteComment("First column gives the current update, next columns give the number");
+	df.WriteComment("of organisms that have the particular task as a component of their merit");
 
-	df.Write( GetUpdate(),   "Update");
+	df.Write(m_update,   "Update");
 	for(int i = 0; i < task_last_count.GetSize(); i++) {
-		df.Write( task_last_count[i], task_names[i] );
+		df.Write(task_last_count[i], task_names[i] );
 	}
 	df.Endl();
 }
@@ -648,14 +639,14 @@ void cStats::PrintTasksExeData(const cString& filename)
 {
   cDataFile& df = m_world->GetDataFile(filename);
 
-  df.WriteComment( "Avida tasks execution data" );
+  df.WriteComment("Avida tasks execution data");
   df.WriteTimeStamp();
-  df.WriteComment( "First column gives the current update, all further columns give the number" );
-  df.WriteComment( "of times the particular task has been executed this update." );
+  df.WriteComment("First column gives the current update, all further columns give the number");
+  df.WriteComment("of times the particular task has been executed this update.");
 
-  df.Write( GetUpdate(),   "Update");
+  df.Write(m_update,   "Update");
   for (int i = 0; i < task_exe_count.GetSize(); i++) {
-    df.Write( task_exe_count[i], task_names[i] );
+    df.Write(task_exe_count[i], task_names[i] );
     task_exe_count[i] = 0;
   }
   df.Endl();
@@ -665,10 +656,10 @@ void cStats::PrintTasksQualData(const cString& filename)
 {
   cDataFile& df = m_world->GetDataFile(filename);
 
-  df.WriteComment( "Avida tasks quality data" );
+  df.WriteComment("Avida tasks quality data");
   df.WriteTimeStamp();
-  df.WriteComment( "First column gives the current update, rest give average and max task quality" );
-  df.Write( GetUpdate(), "Update");
+  df.WriteComment("First column gives the current update, rest give average and max task quality");
+  df.Write(m_update, "Update");
   for(int i = 0; i < task_last_count.GetSize(); i++) {
     double qual = 0.0;
     if (task_last_count[i] > 0) 
@@ -679,35 +670,35 @@ void cStats::PrintTasksQualData(const cString& filename)
   df.Endl();
 }
 
-void cStats::PrintReactionData(const cString & filename)
+void cStats::PrintReactionData(const cString& filename)
 {
   cDataFile& df = m_world->GetDataFile(filename);
 
-  df.WriteComment( "Avida reaction data" );
+  df.WriteComment("Avida reaction data");
   df.WriteTimeStamp();
-  df.WriteComment( "First column gives the current update, all further columns give the number" );
-  df.WriteComment( "of currently living organisms each reaction has affected." );
+  df.WriteComment("First column gives the current update, all further columns give the number");
+  df.WriteComment("of currently living organisms each reaction has affected.");
 
-  df.Write( GetUpdate(),   "Update");
+  df.Write(m_update,   "Update");
   for (int i = 0; i < reaction_count.GetSize(); i++) {
-    df.Write( reaction_count[i], reaction_names[i] );
+    df.Write(reaction_count[i], reaction_names[i] );
     task_exe_count[i] = 0;
   }
   df.Endl();
 }
 
-void cStats::PrintResourceData(const cString & filename)
+void cStats::PrintResourceData(const cString& filename)
 {
-  cDataFile & df = m_world->GetDataFile(filename);
+  cDataFile& df = m_world->GetDataFile(filename);
 
-  df.WriteComment( "Avida resource data" );
+  df.WriteComment("Avida resource data");
   df.WriteTimeStamp();
-  df.WriteComment( "First column gives the current update, all further columns give the quantity" );
-  df.WriteComment( "of the particular resource at that update." );
+  df.WriteComment("First column gives the current update, all further columns give the quantity");
+  df.WriteComment("of the particular resource at that update.");
 
-  df.Write( GetUpdate(),   "Update");
+  df.Write(m_update,   "Update");
   for (int i = 0; i < resource_count.GetSize(); i++) {
-    df.Write( resource_count[i], resource_names[i] );
+    df.Write(resource_count[i], resource_names[i] );
     if (resource_geometry[i] != nGeometry::GLOBAL) {
       PrintSpatialResData(filename, i);
     }
@@ -715,14 +706,14 @@ void cStats::PrintResourceData(const cString & filename)
   df.Endl();
 }
 
-void cStats::PrintSpatialResData(const cString & filename, int i)
+void cStats::PrintSpatialResData(const cString& filename, int i)
 {
 
   // Write spatial data to a file that can easily be read into Matlab
 
   cString tmpfilename = "resource_";
   tmpfilename +=  resource_names[i] + ".m";
-  cDataFile & df = m_world->GetDataFile(tmpfilename);
+  cDataFile& df = m_world->GetDataFile(tmpfilename);
   cString UpdateStr = resource_names[i] + 
                       cStringUtil::Stringf( "%07i", GetUpdate() ) + " = [ ...";
 
@@ -740,133 +731,87 @@ void cStats::PrintSpatialResData(const cString & filename, int i)
 }
 
 
-void cStats::PrintTimeData(const cString & filename)
-{
-  cDataFile & df = m_world->GetDataFile(filename);
-
-  df.WriteComment( "Avida time data" );
-  df.WriteTimeStamp();
-
-  df.Write( GetUpdate(),              "update" );
-  df.Write( avida_time,               "avida time" );
-  df.Write( sum_generation.Average(), "average generation" );
-  df.Write( num_executed,             "num_executed?" );
-  df.Endl();
-}
-
-
-void cStats::PrintMutationData(const cString & filename)
-{
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
-  assert(fp.good());
-  fp << GetUpdate()                              << " "   //  1
-     << isum_parent_dist.Ave()                   << " "   //  2
-     << isum_parent_size.Ave()                   << " "   //  3
-     << isum_child_size.Ave()                    << " "   //  4
-     << isum_copied_size.Ave()                   << " "   //  5
-     << isum_executed_size.Ave()                 << " "   //  6
-     << isum_copies_exec.Ave()                   << " "   //  7
-     << isum_point_mut.Ave()                     << " "   //  8
-     << isum_copy_mut.Ave()                      << " "   //  9
-     << isum_insert_mut.Ave()                    << " "   // 10
-     << isum_delete_mut.Ave()                    << " "   // 11
-     << isum_point_mut_line.Ave()                << " "   // 12
-     << isum_copy_mut_line.Ave()                 << " "   // 13
-     << isum_divide_mut.Ave()                    << " "   // 14
-     << isum_divide_insert_mut.Ave()             << " "   // 15
-     << isum_divide_delete_mut.Ave()             << " "   // 16
-     << dsum_copy_mut_by_copies_exec.Ave()       << " "   // 17
-     << dsum_copied_size_by_copies_exec.Ave()    << " "   // 18
-     << dsum_copy_mut_lines_by_copied_size.Ave() << " "   // 19
-     << dsum_copy_mut_lines_by_copy_mut.Ave()    << endl; // 20
-
-  isum_parent_dist.Clear();
-  isum_parent_size.Clear();
-  isum_child_size.Clear();
-  isum_point_mut.Clear();
-  isum_copy_mut.Clear();
-  isum_insert_mut.Clear();
-  isum_point_mut_line.Clear();
-  isum_copy_mut_line.Clear();
-  isum_delete_mut.Clear();
-  isum_divide_mut.Clear();
-  isum_divide_insert_mut.Clear();
-  isum_divide_delete_mut.Clear();
-  isum_copied_size.Clear();
-  isum_executed_size.Clear();
-  isum_copies_exec.Clear();
-  dsum_copy_mut_by_copies_exec.Clear();
-  dsum_copied_size_by_copies_exec.Clear();
-  dsum_copy_mut_lines_by_copied_size.Clear();
-  dsum_copy_mut_lines_by_copy_mut.Clear();
-}
-
-void cStats::PrintMutationRateData(const cString & filename)
-{
-  cDataFile & df = m_world->GetDataFile(filename);
-
-  df.WriteComment( "Avida copy mutation rate data" );
-  df.WriteTimeStamp();
-
-  df.Write( GetUpdate(),              "Update" );
-  df.Write( sum_copy_mut_rate.Ave(),  "Average copy mutation rate" );
-  df.Write( sum_copy_mut_rate.Var(),  "Variance in copy mutation rate" );
-  df.Write( sum_copy_mut_rate.StdDeviation(),  "Standard Deviation in copy mutation rate" );
-  df.Write( sum_copy_mut_rate.Skw(),  "Skew in copy mutation rate" );
-  df.Write( sum_copy_mut_rate.Kur(),  "Kurtosis in copy mutation rate" );
-
-  df.Write( sum_log_copy_mut_rate.Ave(),  "Average log(copy mutation rate)" );
-  df.Write( sum_log_copy_mut_rate.Var(),  "Variance in log(copy mutation rate)" );
-  df.Write( sum_log_copy_mut_rate.StdDeviation(),  "Standard Deviation in log(copy mutation rate)" );
-  df.Write( sum_log_copy_mut_rate.Skw(),  "Skew in log(copy mutation rate)" );
-  df.Write( sum_log_copy_mut_rate.Kur(),  "Kurtosis in log(copy mutation rate)" );
-  df.Endl();
-
-}
-
-
-void cStats::PrintDivideMutData(const cString & filename)
+void cStats::PrintTimeData(const cString& filename)
 {
   cDataFile& df = m_world->GetDataFile(filename);
 
-  df.WriteComment( "Avida divide mutation rate data" );
+  df.WriteComment("Avida time data");
   df.WriteTimeStamp();
 
-  df.Write( GetUpdate(),              "Update" );
-  df.Write( sum_div_mut_rate.Ave(),  "Average divide mutation rate" );
-  df.Write( sum_div_mut_rate.Var(),  "Variance in divide mutation rate" );
-  df.Write( sum_div_mut_rate.StdDeviation(),  "Standard Deviation in divide mutation rate" );
-  df.Write( sum_div_mut_rate.Skw(),  "Skew in divide mutation rate" );
-  df.Write( sum_div_mut_rate.Kur(),  "Kurtosis in divide mutation rate" );
-
-  df.Write( sum_log_div_mut_rate.Ave(),  "Average log(divide mutation rate)" );
-  df.Write( sum_log_div_mut_rate.Var(),  "Variance in log(divide mutation rate)" );
-  df.Write( sum_log_div_mut_rate.StdDeviation(),  "Standard Deviation in log(divide mutation rate)" );
-  df.Write( sum_log_div_mut_rate.Skw(),  "Skew in log(divide mutation rate)" );
-  df.Write( sum_log_div_mut_rate.Kur(),  "Kurtosis in log(divide mutation rate)" );
+  df.Write(m_update,              "update");
+  df.Write(avida_time,               "avida time");
+  df.Write(sum_generation.Average(), "average generation");
+  df.Write(num_executed,             "num_executed?");
   df.Endl();
 }
 
-void cStats::PrintInstructionData(const cString & filename)
+
+void cStats::PrintMutationRateData(const cString& filename)
 {
   cDataFile& df = m_world->GetDataFile(filename);
 
-  df.WriteComment( "Avida instruction execution data" );
+  df.WriteComment("Avida copy mutation rate data");
+  df.WriteTimeStamp();
+
+  df.Write(m_update, "Update");
+  df.Write(sum_copy_mut_rate.Ave(), "Average copy mutation rate");
+  df.Write(sum_copy_mut_rate.Var(), "Variance in copy mutation rate");
+  df.Write(sum_copy_mut_rate.StdDeviation(), "Standard Deviation in copy mutation rate");
+  df.Write(sum_copy_mut_rate.Skw(), "Skew in copy mutation rate");
+  df.Write(sum_copy_mut_rate.Kur(), "Kurtosis in copy mutation rate");
+
+  df.Write(sum_log_copy_mut_rate.Ave(), "Average log(copy mutation rate)");
+  df.Write(sum_log_copy_mut_rate.Var(), "Variance in log(copy mutation rate)");
+  df.Write(sum_log_copy_mut_rate.StdDeviation(), "Standard Deviation in log(copy mutation rate)");
+  df.Write(sum_log_copy_mut_rate.Skw(), "Skew in log(copy mutation rate)");
+  df.Write(sum_log_copy_mut_rate.Kur(), "Kurtosis in log(copy mutation rate)");
+  df.Endl();
+
+}
+
+
+void cStats::PrintDivideMutData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+
+  df.WriteComment("Avida divide mutation rate data");
+  df.WriteTimeStamp();
+
+  df.Write(m_update, "Update");
+  df.Write(sum_div_mut_rate.Ave(), "Average divide mutation rate");
+  df.Write(sum_div_mut_rate.Var(), "Variance in divide mutation rate");
+  df.Write(sum_div_mut_rate.StdDeviation(), "Standard Deviation in divide mutation rate");
+  df.Write(sum_div_mut_rate.Skw(), "Skew in divide mutation rate");
+  df.Write(sum_div_mut_rate.Kur(), "Kurtosis in divide mutation rate");
+
+  df.Write(sum_log_div_mut_rate.Ave(), "Average log(divide mutation rate)");
+  df.Write(sum_log_div_mut_rate.Var(), "Variance in log(divide mutation rate)");
+  df.Write(sum_log_div_mut_rate.StdDeviation(), "Standard Deviation in log(divide mutation rate)");
+  df.Write(sum_log_div_mut_rate.Skw(), "Skew in log(divide mutation rate)");
+  df.Write(sum_log_div_mut_rate.Kur(), "Kurtosis in log(divide mutation rate)");
+  df.Endl();
+}
+
+void cStats::PrintInstructionData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+
+  df.WriteComment("Avida instruction execution data");
   df.WriteTimeStamp();
 
 #if INSTRUCTION_COUNT
-  df.Write( GetUpdate(), "Update" );
+  df.Write(m_update, "Update");
   for( int i=0; i < sum_exe_inst_array.GetSize(); i++ ){
-    df.Write( (int) sum_exe_inst_array[i].Sum(), inst_names[i] );
+    df.Write((int) sum_exe_inst_array[i].Sum(), inst_names[i]);
   }
 #else // INSTRUCTION_COUNT undefined
-  cerr << "Warning: Instruction Counts not compiled in" << endl;
+  m_world->GetDriver().RaiseException("Warning: Instruction Counts not compiled in");
 #endif // ifdef INSTRUCTION_COUNT
 
   df.Endl();
 }
 
-void cStats::PrintGenotypeMap(const cString & filename)
+void cStats::PrintGenotypeMap(const cString& filename)
 {
   cDataFile& df = m_world->GetDataFile(filename);
   cString UpdateStr =

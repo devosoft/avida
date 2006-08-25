@@ -58,7 +58,6 @@ STATS_OUT_FILE(PrintTasksExeData,      tasks_exe.dat       );
 STATS_OUT_FILE(PrintTasksQualData,     tasks_quality.dat   );
 STATS_OUT_FILE(PrintResourceData,      resource.dat        );
 STATS_OUT_FILE(PrintTimeData,          time.dat            );
-STATS_OUT_FILE(PrintMutationData,      mutation.dat        );
 STATS_OUT_FILE(PrintMutationRateData,  mutation_rates.dat  );
 STATS_OUT_FILE(PrintDivideMutData,     divide_mut.dat      );
 STATS_OUT_FILE(PrintDominantParaData,  parasite.dat        );
@@ -1395,7 +1394,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintTasksQualData>("PrintTasksQualData");
   action_lib->Register<cActionPrintResourceData>("PrintResourceData");
   action_lib->Register<cActionPrintTimeData>("PrintTimeData");
-  action_lib->Register<cActionPrintMutationData>("PrintMutationData");
   action_lib->Register<cActionPrintMutationRateData>("PrintMutationRateData");
   action_lib->Register<cActionPrintDivideMutData>("PrintDivideMutData");
   action_lib->Register<cActionPrintDominantParaData>("PrintDominantParaData");
@@ -1451,7 +1449,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintTasksQualData>("print_tasks_qual_data");
   action_lib->Register<cActionPrintResourceData>("print_resource_data");
   action_lib->Register<cActionPrintTimeData>("print_time_data");
-  action_lib->Register<cActionPrintMutationData>("print_mutation_dat");
   action_lib->Register<cActionPrintMutationRateData>("print_mutation_rate_data");
   action_lib->Register<cActionPrintDivideMutData>("print_divide_mut_data");
   action_lib->Register<cActionPrintDominantParaData>("print_dom_parasite_data");

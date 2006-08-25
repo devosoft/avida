@@ -50,7 +50,7 @@ private:
   cWorld* m_world;
   
   // Time scales...
-  int current_update;
+  int m_update;
   int sub_update;
   double avida_time;
 
@@ -102,27 +102,6 @@ private:
 
   cDoubleSum sum_species_age;
 
-
-  //// Sums cleard on output only ////
-  cIntSum isum_parent_dist;
-  cIntSum isum_parent_size;
-  cIntSum isum_child_size;
-  cIntSum isum_point_mut;
-  cIntSum isum_copy_mut;
-  cIntSum isum_insert_mut;
-  cIntSum isum_point_mut_line;
-  cIntSum isum_copy_mut_line;
-  cIntSum isum_delete_mut;
-  cIntSum isum_divide_mut;
-  cIntSum isum_divide_insert_mut;
-  cIntSum isum_divide_delete_mut;
-  cIntSum isum_copied_size;
-  cIntSum isum_executed_size;
-  cIntSum isum_copies_exec;
-  cDoubleSum dsum_copy_mut_by_copies_exec;
-  cDoubleSum dsum_copied_size_by_copies_exec;
-  cDoubleSum dsum_copy_mut_lines_by_copied_size;
-  cDoubleSum dsum_copy_mut_lines_by_copy_mut;
 
   // Instruction Counts (DM)
   tArray<cIntSum> sum_exe_inst_array;
@@ -223,7 +202,7 @@ private:
   tArray<cString> reaction_names;
   tArray<cString> resource_names;
 
-  // Resampling Statistics AWC - 06/29/06
+  // Resampling Statistics @AWC - 06/29/06
   int num_resamplings;
   int num_failedResamplings;
   
@@ -242,12 +221,12 @@ public:
   void SetupPrintDatabase();
   void ProcessUpdate();
 
-  inline void SetCurrentUpdate(int new_update) { current_update = new_update; sub_update = 0; }
-  inline void IncCurrentUpdate() { current_update++; sub_update = 0; }
+  inline void SetCurrentUpdate(int new_update) { m_update = new_update; sub_update = 0; }
+  inline void IncCurrentUpdate() { m_update++; sub_update = 0; }
   inline void IncSubUpdate() { sub_update++; }
 
   // Accessors...
-  int GetUpdate() const { return current_update; }
+  int GetUpdate() const { return m_update; }
   int GetSubUpdate() const { return sub_update; }
   double GetGeneration() const { return SumGeneration().Average(); }
 
@@ -389,25 +368,25 @@ public:
   const cDoubleSum& SumMemSize() const       { return sum_mem_size; }
 
   
-  void IncResamplings() { ++num_resamplings;}  //AWC 06/29/06
-  void IncFailedResamplings() { ++num_failedResamplings;}  //AWC 06/29/06
+  void IncResamplings() { ++num_resamplings; }  // @AWC 06/29/06
+  void IncFailedResamplings() { ++num_failedResamplings; }  // @AWC 06/29/06
 
   void CalcEnergy();
   void CalcFidelity();
 
   void RecordBirth(int cell_id, int genotype_id, bool breed_true);
-  void RecordDeath(int genotype_id, int num_divides, int age);
+  void RecordDeath() { num_deaths++; }
   void AddGenotype() { tot_genotypes++; }
   void RemoveGenotype(int id_num, int parent_id,
 			     int parent_distance, int depth, int max_abundance,
 			     int parasite_abundance, int age, int length);
   void AddThreshold(int id_num, const char * name,
 				  int species_num=-1);
-  void RemoveThreshold(int id_num);
-  void AddSpecies(int id_num);
+  void RemoveThreshold() { num_threshold--; }
+  void AddSpecies() { tot_species++; num_species++; }
   void RemoveSpecies(int id_num, int parent_id,
 			 int max_gen_abundance, int max_abundance, int age);
-  void AddLineage();
+  void AddLineage() { tot_lineages++; num_lineages++; }
   void RemoveLineage(int id_num, int parent_id, int update_born,
 		     double generation_born, int total_CPUs,
 		     int total_genotypes, double fitness, 
@@ -556,7 +535,6 @@ public:
   void PrintResourceData(const cString& filename);
   void PrintSpatialResData(const cString& filename, int i);
   void PrintTimeData(const cString& filename);
-  void PrintMutationData(const cString& filename);
   void PrintDivideMutData(const cString& filename);
   void PrintMutationRateData(const cString& filename);
   void PrintInstructionData(const cString& filename);
