@@ -336,6 +336,7 @@ private:
   bool Inst_InjectThread(cAvidaContext& ctx);
   bool Inst_Repro(cAvidaContext& ctx);
   bool Inst_Kazi(cAvidaContext& ctx);
+  bool Inst_Kazi5(cAvidaContext& ctx);
   bool Inst_Die(cAvidaContext& ctx);
 
   // I/O and Sensory

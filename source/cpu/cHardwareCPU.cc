@@ -329,6 +329,7 @@ cInstLibCPU *cHardwareCPU::initInstLib(void)
     
     // Suicide
     cInstEntryCPU("kazi",	&cHardwareCPU::Inst_Kazi),
+    cInstEntryCPU("kazi5",	&cHardwareCPU::Inst_Kazi5),
     cInstEntryCPU("die",	&cHardwareCPU::Inst_Die),
     
     
@@ -2101,18 +2102,18 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_Kazi(cAvidaContext& ctx)
 {
-	const int reg_used = FindModifiedRegister(nHardwareCPU::REG_AX);
-	int percentProb = GetRegister(reg_used) % 100;
-	int random = abs(rand()) % 100;
-	if (random >= percentProb)
-	{
-		return true;
-	}
-	else
-	{
-		organism->Kaboom();
-		return true;
-	}
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_AX);
+  double percentProb = ((double) (GetRegister(reg_used) % 100)) / 100.0;
+  if ( ctx.GetRandom().P(percentProb) ) organism->Kaboom(0);
+  return true;
+}
+
+bool cHardwareCPU::Inst_Kazi5(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_AX);
+  double percentProb = ((double) (GetRegister(reg_used) % 100)) / 100.0;
+  if ( ctx.GetRandom().P(percentProb) ) organism->Kaboom(0);
+  return true;
 }
 
 bool cHardwareCPU::Inst_Die(cAvidaContext& ctx)

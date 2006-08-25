@@ -43,7 +43,7 @@ public:
   virtual const tArray<double>& GetResources() = 0;
   virtual void UpdateResources(const tArray<double>& res_change) = 0;
   virtual void Die() = 0;
-  virtual void Kaboom() = 0;
+  virtual void Kaboom(int distance) = 0;
   virtual bool SendMessage(cOrgMessage& mess) = 0;
   virtual cOrgSinkMessage* NetReceive() = 0;
   virtual bool NetRemoteValidate(cAvidaContext& ctx, cOrgSinkMessage* msg) = 0;

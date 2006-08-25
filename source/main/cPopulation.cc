@@ -481,15 +481,14 @@ void cPopulation::KillOrganism(cPopulationCell & in_cell)
   m_world->GetClassificationManager().AdjustGenotype(*genotype);
 }
 
-void cPopulation::Kaboom(cPopulationCell & in_cell)
+void cPopulation::Kaboom(cPopulationCell & in_cell, int distance)
 {
   cOrganism * organism = in_cell.GetOrganism();
   cGenotype * genotype = organism->GetGenotype();
   cGenome genome = genotype->GetGenome();
   int id = genotype->GetID();
   
-  int radius = 2;
-  int distance = 0;
+  int radius = 1;
   int count = 0;
   
   for (int i=-1*radius; i<=radius; i++) {

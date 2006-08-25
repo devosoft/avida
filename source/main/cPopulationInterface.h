@@ -52,7 +52,7 @@ public:
   const tArray<double>& GetResources();
   void UpdateResources(const tArray<double>& res_change);
   void Die();
-  void Kaboom();
+  void Kaboom(int distance);
   bool SendMessage(cOrgMessage& mess);
   cOrgSinkMessage* NetReceive();
   bool NetRemoteValidate(cAvidaContext& ctx, cOrgSinkMessage* msg);

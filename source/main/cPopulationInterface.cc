@@ -96,10 +96,10 @@ void cPopulationInterface::Die()
   m_world->GetPopulation().KillOrganism(cell);
 }
 
-void cPopulationInterface::Kaboom()
+void cPopulationInterface::Kaboom(int distance)
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
-	m_world->GetPopulation().Kaboom(cell);
+  m_world->GetPopulation().Kaboom(cell, distance);
 }
 
 bool cPopulationInterface::SendMessage(cOrgMessage & mess)

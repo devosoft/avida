@@ -128,7 +128,7 @@ public:
   
   // Deactivate an organism in the population (required for deactivations)
   void KillOrganism(cPopulationCell& in_cell);
-  void Kaboom(cPopulationCell& in_cell);
+  void Kaboom(cPopulationCell& in_cell, int distance=0);
 
   // Deme-related methods
   void CompeteDemes(int competition_type);

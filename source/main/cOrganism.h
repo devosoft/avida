@@ -141,7 +141,7 @@ public:
   void DoBreakpoint() { assert(m_interface); m_interface->Breakpoint(); }
   int GetNextInput() { assert(m_interface); return m_interface->GetInputAt(input_pointer); }
   void Die() { assert(m_interface); m_interface->Die(); }
-  void Kaboom() { assert(m_interface); m_interface->Kaboom();}
+  void Kaboom(int dist) { assert(m_interface); m_interface->Kaboom(dist);}
   int GetCellID() { assert(m_interface); return m_interface->GetCellID(); }
   int GetDebugInfo() { assert(m_interface); return m_interface->Debug(); }
 
