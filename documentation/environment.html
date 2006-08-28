@@ -1,133 +1,211 @@
 <html>
-<title>The Environment File</title>
-<body
- bgcolor="#FFFFFF"
- text="#000000"
- link="#0000AA"
- alink="#0000FF"
- vlink="#000044">
+<head>
+  <title>Avida : The Environment File</title>
+</head>
+<body>
 
-<h2 align=center>The Environment File</h2>
+<div style="float: right">
+Revised 2006-08-28 DMB
+</div>
+
+<p><a href="index.html">Return to the Index</a></p>
+<hr />
+
+<div align="center">
+<h1>The Environment File</h1>
+</div>
 
 <p>
-This is the setup file for the task/resource system in avida.
-
+This is the setup file for the task/resource system in Avida.
+</p>
 <p>
 Two main keywords are used in this file, RESOURCE and REACTION.  Their
 formats are:
-
+</p>
+<pre>
+  RESOURCE  name[:flow]  {name ...}
+  REACTION  name  task  [process:...]  [requisite:...]
+</pre>
 <p>
-&nbsp;&nbsp;&nbsp;RESOURCE  name[:flow]  {name ...}<br>
-&nbsp;&nbsp;&nbsp;REACTION  name  task  [process:...]  [requisite:...]
-
+Where <code>name</code> is a unique identifier.  Resources can have additional
+flow information to indicate starting amounts, inflow and outflow.  Reactions
+are further described by the task that triggers them, the processes they
+perform (including resources used and the results of using them), and
+requisites on when they can occur.
+</p>
 <p>
-Where 'name' is a unique identifier.   Resources can have additional flow
-information to indicate starting amounts, inflow and outflow.  Reactions are
-further described by
-the task that triggers them, the processes they perform (including
-resources used and the results of using them), and requisites on when
-they can occur.
-
-<p>
-All entries on a resource line are names of individual resources.
-Resources have a global quantity depleatable by all organisms.  The resource
-name "infinite" is used to refer to an undepleatable resource.  The
+All entries on a resource line are names of individual resources. Resources
+have a global quantity depleatable by all organisms.  The resource name
+<code>infinite</code> is used to refer to an undepleatable resource.  The
 following chart specifies additional descriptions for resource initialization.
+</p>
 
+
+<div align="center">
+<p>&nbsp;</p>
+<h3>Table 1: <span style="color: #004400">Resource Specifications</span></h3>
 <p>
-<p align=center><b>Table 1: <font color="#004400">Resource Specifications</font></b>
-<br>(<font color="#0000AA">blue</font> variables used for all resources
-while <font color="#AA0000">red</font> variables are only used for
+(<span style="color: #0000AA">blue</span> variables used for all resources
+while <span style="color: #AA0000">red</span> variables are only used for
 spatial resources)
-
-<table cellpadding=4 border=2>
-<tr><th>Argument <th>Description <th>Default
-<tr><td><font color="#0000AA">inflow</font>
-    <td>The number of units of the resource that enter the population over
-        the course of an update.  For a global resource this inflow
-        occurs evenly throughout the update, not all at once. For a
-        spatial resource this inflow amount is added every update
-        evenly to all grid cells in the rectangle described by the
-        points (inflowx1,inflowy1) and (inflowx2,inflowy2).
-    <td>0
-<tr><td><font color="#0000AA">outflow</font>
-    <td>The fraction of the resource that will flow out of the population
-        each update.  As with inflow, this happens continuously over the
-        course of the update for a global resource.  In the case of a
-        spatial resource the fraction is withdrawn each update from
-        each cell in the rectangle described by the points 
-        (outflowx1,outflowy1) and (outflowx2,outflowy2).
-
-    <td>0.0
-<tr><td><font color="#0000AA">initial</font>
-    <td>The initial abundance of the resource in the population at the
-        start of an experiment.  For a spatial resource the initial
-        amount is spread evenly to each cell in the world grid.
-    <td>0
-<tr><td><font color="#0000AA">geometry</font>
-    <td>The layout of the resource in space.<br>
-        <b><i>global</i></b> -- the entire pool of a resource is
-        available to all organisms<br>
-        <b><i>grid</i></b> -- organisms can only access resources in
-        their grid cell.  Resource can not flow past the edges of the
-        world grid. (resource will use spatial parameters)<br>
-        <b><i>torus</i></b> -- organisms can only access resources in
-        their grid cell.  Resource can flow to the oposite edges of the
-        world grid. (resource will use spatial parameters)
-    <td>global
-<tr><td><font color="#AA0000">inflowx1</font>
-    <td>Leftmost coordinate of the rectange where resource will flow
+</p>
+<table border="1" cellpadding="2">
+<tr>
+  <th>Argument</th>
+  <th>Description</th>
+  <th>Default</th>
+</tr>
+<tr>
+  <td style="color: #0000AA">inflow</td>
+  <td>
+    The number of units of the resource that enter the population over
+    the course of an update.  For a global resource this inflow
+    occurs evenly throughout the update, not all at once. For a
+    spatial resource this inflow amount is added every update
+    evenly to all grid cells in the rectangle described by the
+    points (inflowx1,inflowy1) and (inflowx2,inflowy2).
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td style="color: #0000AA">outflow</td>
+  <td>
+    The fraction of the resource that will flow out of the population
+    each update.  As with inflow, this happens continuously over the
+    course of the update for a global resource.  In the case of a
+    spatial resource the fraction is withdrawn each update from
+    each cell in the rectangle described by the points 
+    (outflowx1,outflowy1) and (outflowx2,outflowy2).
+  </td>
+  <td>0.0</td>
+</tr>
+<tr>
+  <td style="color: #0000AA">initial</td>
+  <td>
+    The initial abundance of the resource in the population at the
+    start of an experiment.  For a spatial resource the initial
+    amount is spread evenly to each cell in the world grid.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td style="color: #0000AA">geometry</td>
+  <td>
+    The layout of the resource in space.<br>
+    <em>global</em> -- the entire pool of a resource is
+    available to all organisms<br>
+    <em>grid</em> -- organisms can only access resources in
+    their grid cell.  Resource can not flow past the edges of the
+    world grid. (resource will use spatial parameters)<br>
+    <em>torus</em> -- organisms can only access resources in
+    their grid cell.  Resource can flow to the oposite edges of the
+    world grid. (resource will use spatial parameters)
+  </td>
+  <td>global</td>
+</tr>
+<tr>
+  <td style="color: #AA0000">inflowx1</td>
+  <td>
+    Leftmost coordinate of the rectange where resource will flow
     into world grid.
-    <td>0
-<tr><td><font color="#AA0000">inflowx2</font>
-    <td>Rightmost coordinate of the rectange where resource will flow
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td style="color: #AA0000">inflowx2</td>
+  <td>
+    Rightmost coordinate of the rectange where resource will flow
     into world grid.
-    <td>0
-<tr><td><font color="#AA0000">inflowy1</font>
-    <td>Topmost coordinate of the rectange where resource will flow
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td style="color: #AA0000">inflowy1</td>
+  <td>
+    Topmost coordinate of the rectange where resource will flow
     into world grid.
-    <td>0
-<tr><td><font color="#AA0000">inflowy2</font>
-    <td>Bottommost coordinate of the rectange where resource will flow
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td style="color: #AA0000">inflowy2</td>
+  <td>
+    Bottommost coordinate of the rectange where resource will flow
     into world grid.
-    <td>0
-<tr><td><font color="#AA0000">outflowx1</font>
-    <td>Leftmost coordinate of the rectange where resource will flow
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td style="color: #AA0000">outflowx1</td>
+  <td>
+    Leftmost coordinate of the rectange where resource will flow
     out of world grid.
-    <td>0
-<tr><td><font color="#AA0000">outflowx2</font>
-    <td>Rightmost coordinate of the rectange where resource will flow
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td style="color: #AA0000">outflowx2</td>
+  <td>
+    Rightmost coordinate of the rectange where resource will flow
     out of world grid.
-    <td>0
-<tr><td><font color="#AA0000">outflowy1</font>
-    <td>Topmost coordinate of the rectange where resource will flow
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td style="color: #AA0000">outflowy1</td>
+  <td>
+    Topmost coordinate of the rectange where resource will flow
     out of world grid.
-    <td>0
-<tr><td><font color="#AA0000">outflowy2</font>
-    <td>Bottommost coordinate of the rectange where resource will flow
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td style="color: #AA0000">outflowy2</td>
+  <td>
+    Bottommost coordinate of the rectange where resource will flow
     out of world grid.
-    <td>0
-<tr><td><font color="#AA0000">xdiffuse</font>
-    <td>How fast material will diffuse right <i>and</i> left.  This flow
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td style="color: #AA0000">xdiffuse</td>
+  <td>
+    How fast material will diffuse right <em>and</em> left.  This flow
     depends on the amount of resources in a given cell and amount in
     the cells to the right and left of it.  (0.0 - 1.0)
-    <td>1.0
-<tr><td><font color="#AA0000">xgravity</font>
-    <td>How fast material will move to the right <i>or</i> left.  This
+  </td>
+  <td>1.0</td>
+</tr>
+<tr>
+  <td style="color: #AA0000">xgravity</td>
+  <td>
+    How fast material will move to the right <em>or</em> left.  This
     movement depends only on the amount of resource in a given cell.
     (-1.0 - 1.0) 
-    <td>0
-<tr><td><font color="#AA0000">ydiffuse</font>
-    <td>How fast material will diffuse up <i>and</i> down.  This flow
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td style="color: #AA0000">ydiffuse</td>
+  <td>
+    How fast material will diffuse up <em>and</em> down.  This flow
     depends on the amount of resources in a given cell and amount in
     the cells above and below it.  (0.0 - 1.0)
-    <td>1.0
-<tr><td><font color="#AA0000">ygravity</font>
-    <td>How fast material will move to the up <i>or</i> down.  This
+  </td>
+  <td>1.0</td>
+</tr>
+<tr>
+  <td style="color: #AA0000">ygravity</td>
+  <td>
+    How fast material will move to the up <em>or</em> down.  This
     movement depends only on the amount of resource in a given cell.
     (-1.0 - 1.0) 
-    <td>0
+  </td>
+  <td>0</td>
+</tr>
 </table>
+<p>&nbsp;</p>
+</div>
 
 <p>
 An example of a RESOURCE statement that begins a run with a fixed amount of the
@@ -135,13 +213,15 @@ An example of a RESOURCE statement that begins a run with a fixed amount of the
 <pre>
   RESOURCE  glucose:initial=10000
 </pre>
-
+</p>
+<p>
 If you wanted to make this into a chemostat with a 10000 equilibrium
 concentration for unused resources, you could put:
 <pre>
   RESOURCE  maltose:initial=10000:inflow=100:outflow=0.01
 </pre>
-
+</p>
+<p>
 If you want a resource that exists spatially where the resource enters
 from the top and flows towards the bottom where it exits the system,
 you could use:
@@ -150,259 +230,390 @@ you could use:
   inflowx2=100:inflowy1=0:inflowy2=0:outflowx1=0:outflowx2=100:\
   outflowy1=100:outflowy2=100:ygravity=0.5
 </pre>
-
-
+</p>
+<p>
 Defining a resource with no parameters means that it will start at a zero
 quantity and have no inflow or outflow.  This is sometimes desirable if you
 want that resource to only be present as a byproduct of a reaction.
 Remember, though, that you should still have an outflow rate if its in
 a chemostat.
-
+</p>
 <p>
 Each reaction must have a task that triggers it.  Currently, eighty tasks
 have been implemented, as summarized in the following table (in approximate
 order of complexity):
+</p>
 
-<p>
-<p align=center><b>Table 2: <font color="#004400">Available Tasks</font></b>
-<table cellpadding=4 border=2>
-<tr><th>Task <th>Description
-<tr><td><font color="#0000AA">echo</font>
-    <td>This task is triggered when an organism inputs a single number and
+<div align="center">
+<p>&nbsp;</p>
+<h3>Table 2: <span style="color: #004400">Available Tasks</span></h3>
+<table border="1" cellpadding="2">
+<tr>
+  <th>Task</th>
+  <th>Description</th>
+</tr>
+<tr>
+  <td style="color: #0000AA">echo</td>
+  <td>
+    This task is triggered when an organism inputs a single number and
         outputs it without modification.
-<tr><td><font color="#0000AA">add</font>
-    <td>This task is triggered when an organism inputs two numbers, sums them
+  </td>
+</tr>
+<tr>
+  <td style="color: #0000AA">add</td>
+  <td>
+    This task is triggered when an organism inputs two numbers, sums them
         together, and outputs the result.
-<tr><td><font color="#0000AA">sub</font>
-    <td>This task is triggered when an organism inputs two numbers, subtracts
+  </td>
+</tr>
+<tr>
+  <td style="color: #0000AA">sub</td>
+  <td>
+    This task is triggered when an organism inputs two numbers, subtracts
         one from the other, and outputs the result.
-<tr><td><font color="#0000AA">not   </font>
-    <td>This task is triggered when an organism inputs a 32 bit number,
-        toggles all of the bits, and outputs the result.  This is typically
-        done either by nanding (by use of the <tt>nand</tt> instruction) the
-        sequence to itself, or negating it and subtracting one.  The latter
-        approach only works since numbers are stored in twos-complement
-        notation.
-<tr><td><font color="#0000AA">nand  </font>
-    <td>This task is triggered when two 32 bit numbers are input, the values
-        are "nanded" together in a bitwise fashion, and the result is output.
-        Nand stands for "not and".  
-        The nand operation returns a zero if and only if both inputs are one;
-        otherwise it returns a one.
-<tr><td><font color="#0000AA">and   </font>
-    <td>This task is triggered when two 32 bit numbers are input, the values
-        are "anded" together in a bitwise fashion, and the result is output.
-        The and operation returns a one if and only if both inputs are one;
-        otherwise it returns a zero.
-<tr><td><font color="#0000AA">orn   </font>
-    <td>This task is triggered when two 32 bit numbers are input, the values
-        are "orn" together in a bitwise fashion, and the result is output.
-        The orn operation stands for or-not.  It is returns true if for each
-        bit pair one input is one <i>or</i> the other one is zero.
-<tr><td><font color="#0000AA">or    </font>
-    <td>This task is triggered when two 32 bit numbers are input, the values
-        are "ored" together in a bitwise fashion, and the result is output.
-        It returns a one if either the first input <i>or</i> the second input
-        is a one, otherwise it returns a zero.
-<tr><td><font color="#0000AA">andn  </font>
-    <td>This task is triggered when two 32 bit numbers are input, the values
-        are "andn-ed" together in a bitwise fashion, and the result is output.
-        The andn operation stands for and-not.  It only returns a one if
-        for each bit pair one input is a one <i>and</i> the other input is
-        not a one.  Otherwise it returns a zero.
-<tr><td><font color="#0000AA">nor   </font>
-    <td>This task is triggered when two 32 bit numbers are input, the values
-        are "nored" together in a bitwise fashion, and the result is output.
-        The nor operation stands for not-or and returns a one only if both
-        inputs are zero.  Otherwise a zero is returned.
-<tr><td><font color="#0000AA">xor   </font>
-    <td>This task is triggered when two 32 bit numbers are input, the values
-        are "xored" together in a bitwise fashion, and the result is output.
-        The xor operation stands for "exclusive or" and returns a one
-        if one, but not both, of the inputs is a one.  Otherwise a zero is
-        returned.
-<tr><td><font color="#0000AA">equ   </font>
-    <td>This task is triggered when two 32 bit numbers are input, the values
-        are equated together in a bitwise fashion, and the result is output.
-        The equ operation stands for "equals" and will return a one if both
-        bits are identical, and a zero if they are different.
-<tr><td><font color="#0000AA">logic_3AA-<br> logic_3CP</font>
-    <td>These tasks include all 68 possible unique 3-input logic operations,
-        many of which don't have easy-to-understand human readable names.
+  </td>
+</tr>
+<tr>
+  <td style="color: #0000AA">not</td>
+  <td>
+    This task is triggered when an organism inputs a 32 bit number,
+    toggles all of the bits, and outputs the result.  This is typically
+    done either by nanding (by use of the <tt>nand</tt> instruction) the
+    sequence to itself, or negating it and subtracting one.  The latter
+    approach only works since numbers are stored in twos-complement
+    notation.
+  </td>
+</tr>
+<tr>
+  <td style="color: #0000AA">nand</td>
+  <td>
+    This task is triggered when two 32 bit numbers are input, the values
+    are 'nanded' together in a bitwise fashion, and the result is output.
+    Nand stands for "not and".  
+    The nand operation returns a zero if and only if both inputs are one;
+    otherwise it returns a one.
+  </td>
+</tr>
+<tr>
+  <td style="color: #0000AA">and</td>
+  <td>
+    This task is triggered when two 32 bit numbers are input, the values
+    are 'anded' together in a bitwise fashion, and the result is output.
+    The and operation returns a one if and only if both inputs are one;
+    otherwise it returns a zero.
+  </td>
+</tr>
+<tr>
+  <td style="color: #0000AA">orn</td>
+  <td>
+    This task is triggered when two 32 bit numbers are input, the values
+    are 'orn' together in a bitwise fashion, and the result is output.
+    The orn operation stands for or-not.  It is returns true if for each
+    bit pair one input is one <em>or</em> the other one is zero.
+  </td>
+</tr>
+<tr>
+  <td style="color: #0000AA">or</td>
+  <td>
+    This task is triggered when two 32 bit numbers are input, the values
+    are 'ored' together in a bitwise fashion, and the result is output.
+    It returns a one if either the first input <em>or</em> the second input
+    is a one, otherwise it returns a zero.
+  </td>
+</tr>
+<tr>
+  <td style="color: #0000AA">andn</td>
+  <td>
+    This task is triggered when two 32 bit numbers are input, the values
+    are 'andn-ed' together in a bitwise fashion, and the result is output.
+    The andn operation stands for and-not.  It only returns a one if
+    for each bit pair one input is a one <em>and</em> the other input is
+    not a one.  Otherwise it returns a zero.
+  </td>
+</tr>
+<tr>
+  <td style="color: #0000AA">nor</td>
+  <td>
+    This task is triggered when two 32 bit numbers are input, the values
+    are 'nored' together in a bitwise fashion, and the result is output.
+    The nor operation stands for not-or and returns a one only if both
+    inputs are zero.  Otherwise a zero is returned.
+  </td>
+</tr>
+<tr>
+  <td style="color: #0000AA">xor</td>
+  <td>
+    This task is triggered when two 32 bit numbers are input, the values
+    are 'xored' together in a bitwise fashion, and the result is output.
+    The xor operation stands for "exclusive or" and returns a one
+    if one, but not both, of the inputs is a one.  Otherwise a zero is
+    returned.
+  </td>
+</tr>
+<tr>
+  <td style="color: #0000AA">equ</td>
+  <td>
+    This task is triggered when two 32 bit numbers are input, the values
+    are equated together in a bitwise fashion, and the result is output.
+    The equ operation stands for 'equals' and will return a one if both
+    bits are identical, and a zero if they are different.
+  </td>
+</tr>
+<tr>
+  <td style="color: #0000AA">logic_3AA-<br />logic_3CP</td>
+  <td>
+    These tasks include all 68 possible unique 3-input logic operations,
+    many of which don't have easy-to-understand human readable names.
+  </td>
+</tr>
 </table>
+<p>&nbsp;</p>
+</div>
+
 
 <p>
-When describing a reaction, the "process" portion determines consumption
-of resources, their byproducts, and the resulting bonuses.  There are
-several arguments (separated by colons; example below) to detail the use of a
-resource.  Default values are in brackets:
+When describing a reaction, the <code>process</code> portion determines consumption
+of resources, their byproducts, and the resulting bonuses.  There are several
+arguments (separated by colons; example below) to detail the use of a resource. 
+Default values are in brackets:
+</p>
 
-<p>
-<p align=center><b>Table 3: <font color="#004400">Reaction Process Specifications</font></b>
-<table cellpadding=4 border=2>
-<tr><th>Argument <th>Description <th>Default
-<tr><td><font color="#0000AA">resource</font>
-    <td>The name of the resource consumed.  By default, no resource is being
-        consumed, and the 'max' limit is the amount absorbed.
-    <td>infinite
-<tr><td><font color="#0000AA">value</font>
-    <td>Multiply the value set here by the amount of the resource consumed
-        to obtain the bonus. (0.5 may be inefficient, while 5.0 is very
-        efficient.)  This allows different reactions to make use of the
-        same resource at different efficiency levels.
-    <td>1.0
-<tr><td><font color="#0000AA">type</font>
-    <td>Determines how to apply the bonus (i.e. the amount of the resource
-        absorbed times the value of this process) to change the merit of the
-        organism.<br>
-        <b>add</b>: Directly add the bonus to the current merit.<br>
-        <b>mult</b>: Multiply the current merit by the bonus (warning: if
-           the bonus is ever less than one, this will be detrimental!)<br>
-        <b>pow</b>: Multiply the current merit by 2<sup>bonus</sup>.
-           this is effectively multiplicative, but positive bonuses are
-           always beneficial, and negative bonuses are harmful.<br>
-    <td>add
-<tr><td><font color="#0000AA">max</font>
-    <td>The maximum amount of the resource consumed per occurrence.
-    <td>1.0
-<tr><td><font color="#0000AA">min</font>
-    <td>The minimum amount of resource required.  If less than this quantity
-        is available, the reaction ceases to proceed.
-    <td>0.0
-<tr><td><font color="#0000AA">frac</font>
-    <td>The maximum fraction of the available resource that can be consumed.
-    <td>1.0
-<tr><td><font color="#0000AA">product</font>
-    <td>The name of the by-product resource.  At the moment, only a single
-        by-product can be produced at a time.
-    <td>none
-<tr><td><font color="#0000AA">conversion</font>
-    <td>The conversion rate to by-product resource
-    <td>1.0
-<tr><td><font color="#0000AA">inst</font>
-    <td>The instruction that gets executed when this reaction gets preformed. If 
+<div align="center">
+<p>&nbsp;</p>
+<h3>Table 3: <span style="color: #004400">Reaction Process Specifications</span></h3>
+<table border="1" cellpadding="2">
+<tr>
+  <th>Argument</th>
+  <th>Description</th>
+  <th>Default</th>
+</tr>
+<tr>
+  <td style="color: #0000AA">resource</td>
+  <td>
+    The name of the resource consumed.  By default, no resource is being
+    consumed, and the 'max' limit is the amount absorbed.
+  </td>
+  <td>infinite</td>
+</tr>
+<tr>
+  <td style="color: #0000AA">value</td>
+  <td>
+    Multiply the value set here by the amount of the resource consumed
+    to obtain the bonus. (0.5 may be inefficient, while 5.0 is very
+    efficient.)  This allows different reactions to make use of the
+    same resource at different efficiency levels.
+  </td>
+  <td>1.0</td>
+</tr>
+<tr>
+  <td style="color: #0000AA">type</td>
+  <td>
+    Determines how to apply the bonus (i.e. the amount of the resource
+    absorbed times the value of this process) to change the merit of the
+    organism.
+    <br /><em>add</em>: Directly add the bonus to the current merit.
+    <br /><em>mult</em>: Multiply the current merit by the bonus (warning: if
+       the bonus is ever less than one, this will be detrimental!)
+    <br /><em>pow</em>: Multiply the current merit by 2<sup>bonus</sup>.
+       this is effectively multiplicative, but positive bonuses are
+       always beneficial, and negative bonuses are harmful.
+  </td>
+  <td>add</td>
+</tr>
+<tr>
+  <td style="color: #0000AA">max</td>
+  <td>The maximum amount of the resource consumed per occurrence.</td>
+  <td>1.0</td>
+</tr>
+<tr>
+  <td style="color: #0000AA">min</td>
+  <td>
+    The minimum amount of resource required.  If less than this quantity
+    is available, the reaction ceases to proceed.
+  </td>
+  <td>0.0</td>
+</tr>
+<tr>
+  <td style="color: #0000AA">frac</td>
+  <td>The maximum fraction of the available resource that can be consumed.</td>
+  <td>1.0</td>
+</tr>
+<tr>
+  <td style="color: #0000AA">product</td>
+  <td>
+    The name of the by-product resource.  At the moment, only a single
+    by-product can be produced at a time.
+  </td>
+  <td>none</td>
+</tr>
+<tr>
+  <td style="color: #0000AA">conversion</td>
+  <td>The conversion rate to by-product resource</td>
+  <td>1.0</td>
+</tr>
+<tr>
+  <td style="color: #0000AA">inst</td>
+  <td>
+    The instruction that gets executed when this reaction gets preformed. If 
     you do not want an organism to be able to have the instruction in their
     genome, you still must put it in the instruction set file, but set its weight
-    to zero. The instruction is executed at no cost to the organism. 
-    <td>none
-<tr><td><font color="#0000AA">lethal</font>
-    <td>Whether the cell dies after performing the process
-    <td>0
+    to zero. The instruction is executed at no cost to the organism.
+  </td>
+  <td>none</td>
+</tr>
+<tr>
+  <td style="color: #0000AA">lethal</td>
+  <td>Whether the cell dies after performing the process</td>
+  <td>0</td>
+</tr>
 </table>
+<p>&nbsp;</p>
+</div>
+
 
 <p>
 If no process is given, a single associated process with all default
-settings is assumed.  If multiple process statements are given, <i>all</i> are
+settings is assumed.  If multiple process statements are given, <em>all</em> are
 acted upon when the reaction is triggered.  Assuming you were going to set
 all of the portions of process to be their default values, this portion of
 the reaction statement would appear as:
-
 <pre>
   process:resource=infinite:value=1:type=add:max=1:min=0:frac=1:product=none:conversion=1
 </pre>
-
+</p>
 <p>
 This statement has many redundancies; for example, it would indicate that the
 associated reaction should use the inifite resource, making 'frac' and 'min'
 settings irrelevant.  Likewise, since 'product' is set to none, the
 'conversion' rate is never considered.
-
+</p>
 <p>
-The "requisite" entry limits when this reaction can be triggered.  The
+The <code>requisite</code> entry limits when this reaction can be triggered.  The
 following requisites (in any combination) are possible:
+</p>
 
-<p>
-<p align=center><b>Table 4: <font color="#004400">Reaction Requisite Specifications</font></b>
-<table cellpadding=4 border=2>
-<tr><th>Argument <th>Description <th>Default
-<tr><td><font color="#0000AA">reaction</font>
-    <td>This limits this reaction from being triggered until the other
-        reaction specified here has been triggered first.  With this, the
-        user can force organisms to perform reactions in a specified order.
-    <td>none
-<tr><td><font color="#0000AA">noreaction</font>
-    <td>This limits this reaction from being triggered if the reaction
-        specified here has already been triggered.  This allows the user to
-        make mutually exclusive reactions, and force organisms to "choose"
-        their own path.
-    <td>none
-<tr><td><font color="#0000AA">min_count</font>
-    <td>This restriction requires that the task used to trigger this reaction
-        must be performed a certain number of times before the trigger will
-        actually occur.  This (along with max_count) allows the user to
-        provide different reactions depending on the number of times an
-        organism has performed a task.
-    <td>0
-<tr><td><font color="#0000AA">max_count</font>
-    <td>This restriction places a cap on the number of times a task can
-        be done and still trigger this reaction.  It allows the user to
-        limit the number of times a reaction can be done, as well as 
-        (along with min_count) provide different reactions depending on the
-        number of times an organism as performed a task.
-    <td>INT_MAX
+
+<div align="center">
+<p>&nbsp;</p>
+<h3>Table 4: <span style="color: #004400">Reaction Requisite Specifications</span></h3>
+<table border="1" cellpadding="2">
+<tr>
+  <th>Argument</th>
+  <th>Description</th>
+  <th>Default</th>
+</tr>
+<tr>
+  <td style="color: #0000AA">reaction</td>
+  <td>
+    This limits this reaction from being triggered until the other
+    reaction specified here has been triggered first.  With this, the
+    user can force organisms to perform reactions in a specified order.
+  </td>
+  <td>none</td>
+</tr>
+<tr>
+  <td style="color: #0000AA">noreaction</td>
+  <td>
+    This limits this reaction from being triggered if the reaction
+    specified here has already been triggered.  This allows the user to
+    make mutually exclusive reactions, and force organisms to "choose"
+    their own path.
+  </td>
+  <td>none</td>
+</tr>
+<tr>
+  <td style="color: #0000AA">min_count</td>
+  <td>
+    This restriction requires that the task used to trigger this reaction
+    must be performed a certain number of times before the trigger will
+    actually occur.  This (along with max_count) allows the user to
+    provide different reactions depending on the number of times an
+    organism has performed a task.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td style="color: #0000AA">max_count</font>
+  <td>
+    This restriction places a cap on the number of times a task can
+    be done and still trigger this reaction.  It allows the user to
+    limit the number of times a reaction can be done, as well as 
+    (along with min_count) provide different reactions depending on the
+    number of times an organism as performed a task.
+  </td>
+  <td>INT_MAX</td>
+</tr>
 </table>
+<p>&nbsp;</p>
+</div>
 
 <p>
 No restrictions are present by default.  If there are multiple requisite 
 entries, only *one* of them need be satisfied in order to trigger the
 reaction.  Note though that a single requisite entry can have as many
 portions as needed.
+</p>
 
-<p>
-EXAMPLES:
+<h2>Examples</h2>
 
 <p>
 We could simulate the pre-environment system (in which no resources were
 present and task performace was rewarded with a fixed bonus) with a file
 including only lines like:
-
-<p>
-&nbsp;&nbsp;&nbsp;REACTION AND logic:2a process:type=mult:value=4.0   requisite:max_count=1<br>
-&nbsp;&nbsp;&nbsp;REACTION EQU logic:2h process:type=mult:value=32.0  requisite:max_count=1<br>
+<pre>
+  REACTION AND logic:2a process:type=mult:value=4.0   requisite:max_count=1
+  REACTION EQU logic:2h process:type=mult:value=32.0  requisite:max_count=1
+</pre>
+</p>
 
 <p>
 No RESOURCE statements need be included since only the infinite resource is
 used (by default, since we don't specify another resources' name)
 # To create an environment with two resources that are converted back and
 forth as tasks are performed, we might have:
-
+<pre>
+  RESOURCE  yummyA:initial=1000
+  RESOURCE  yummyB:initial=1000
+  REACTION  AtoB  gobbleA  process:resource=yummyA:frac=0.001:product=yummyB
+  REACTION  BtoA  gobbleB  process:resource=yummyB:frac=0.001:product=yummyA
+</pre>
+</p>
 <p>
-&nbsp;&nbsp;&nbsp;RESOURCE  yummyA:initial=1000<br>
-&nbsp;&nbsp;&nbsp;RESOURCE  yummyB:initial=1000<br>
-&nbsp;&nbsp;&nbsp;REACTION  AtoB  gobbleA  process:resource=yummyA:frac=0.001:product=yummyB<br>
-&nbsp;&nbsp;&nbsp;REACTION  BtoA  gobbleB  process:resource=yummyB:frac=0.001:product=yummyA<br>
-
-<p>
-A value of 1.0 per reaction is default.  Obviously "gobbleA" and "gobbleB"
-would have to be tasks described within avida.
+A value of 1.0 per reaction is default.  Obviously <code>gobbleA</code> and 
+<code>gobbleB</code> would have to be tasks described within Avida.
+</p>
 
 <p>
 A requisite against the other reaction being performed would prevent a
 single organism from garnering both rewards in equal measure.
-
+</p>
 <p>
-As an example, to simulate a chemostat, we might have:<br>
-<p>
-&nbsp;&nbsp;&nbsp;RESOURCE glucose:inflow=100:outflow=0.01
-
+As an example, to simulate a chemostat, we might have:
+<pre>
+  RESOURCE glucose:inflow=100:outflow=0.01
+</pre>
+</p>
 <p>
 This would create a resource called "glucose" that has a fixed inflow rate of
 10000 units where 20% flows out every update.  (Leaving a steady state of
 50,000 units if no organism-consumption occurs).
+</p>
 
 <p>
 Limitations to this system:
-<menu>
-<li>Resources are currently all global; at some point soon we need to
-    implement local resources.
-<li>Only a single resource can be required at a time, and only a single
-    by-product can be produced.
-<li>Events to affect resources have not yet been implemented.
-</menu>
+<ul>
+<li>
+  Resources are currently all global; at some point soon we need to implement
+  local resources.
+</li>
+<li>
+  Only a single resource can be required at a time, and only a single
+  by-product can be produced.
+</li>
+</ul>
 
 <p>
 The default setup is:
-
 <pre>
   REACTION  NOT  not   process:value=1.0:type=pow  requisite:max_count=1
   REACTION  NAND nand  process:value=1.0:type=pow  requisite:max_count=1
@@ -414,6 +625,7 @@ The default setup is:
   REACTION  XOR  xor   process:value=4.0:type=pow  requisite:max_count=1
   REACTION  EQU  equ   process:value=5.0:type=pow  requisite:max_count=1
 </pre>
+</p>
 
 <p>
 This creates an environment where the organisms get a bonus for performing
@@ -421,11 +633,11 @@ any of nine tasks.  Since none of the reactions are associated with a
 resource, the infinite resource is assumed, which is non-depeleatable.
 The max_count of one means they can only get the bonus from each reaction
 a single time.
+</p>
 
 <p>
 A similar setup that has 9 resources, one corresponding to each of the nine
 possible tasks listed above is:
-
 <pre>
   RESOURCE  resNOT:inflow=100:outflow=0.01   resNAND:inflow=100:outflow=0.01
   RESOURCE  resAND:inflow=100:outflow=0.01   resORN:inflow=100:outflow=0.01
@@ -443,7 +655,10 @@ possible tasks listed above is:
   REACTION  XOR  xor   process:resource=resXOR:value=8.0:frac=0.0025
   REACTION  EQU  equ   process:resource=resEQU:value=16.0:frac=0.0025
 </pre>
+</p>
 
-<br><hr>
-Project hosted by:<br>
-<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=46761&type=2" width="125" height="37" border="0" alt="SourceForge.net"/></a>
+<hr />
+<p><a href="index.html">Return to the Index</a></p>
+
+</body>
+</html>
