@@ -261,7 +261,7 @@ public:
     if (m_cell_end == -1) m_cell_end = m_cell_start + 1;
   }
   
-  static const cString GetDescription() { return "Arguments: [string fname=\"START_CREATURE\"] [int cell_start=0] [int cell_end=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: <string sequence> [int cell_start=0] [int cell_end=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -1008,7 +1008,7 @@ public:
     if (largs.GetSize()) m_max = largs.PopWord().AsInt();
   }
   
-  static const cString GetDescription() { return "Arguments: [int col_id=-1] [int min_col=0] [int max_col=-1]"; }
+  static const cString GetDescription() { return "Arguments: [int col_id=-1] [int min_row=0] [int max_row=-1]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -1070,7 +1070,7 @@ public:
     if (largs.GetSize()) m_max = largs.PopWord().AsInt();
   }
   
-  static const cString GetDescription() { return "Arguments: [int col_id=-1] [int min_col=0] [int max_col=-1]"; }
+  static const cString GetDescription() { return "Arguments: [int row_id=-1] [int min_col=0] [int max_col=-1]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -1079,7 +1079,7 @@ public:
     if (m_id == -1) m_id = world_y / 2;
     if (m_max == -1) m_max = world_x;
     if (m_id < 0 || m_id >= world_y) {
-      cString err = cStringUtil::Stringf("Row ID %d out of range for JoinGridCol", m_id);
+      cString err = cStringUtil::Stringf("Row ID %d out of range for JoinGridRow", m_id);
       m_world->GetDriver().RaiseException(err);
       return;
     }

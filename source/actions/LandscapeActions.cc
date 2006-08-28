@@ -1055,7 +1055,6 @@ void RegisterLandscapeActions(cActionLibrary* action_lib)
   action_lib->Register<cActionHillClimb>("HillClimbNeut");
   action_lib->Register<cActionHillClimb>("HillClimbRand");
   action_lib->Register<cActionPairTestLandscape>("PairTestLandscape");
-  action_lib->Register<cActionAnalyzeLandscape>("AnalyzePopulation");
 
   action_lib->Register<cActionMutationalNeighborhood>("MutationalNeighborhood");
   

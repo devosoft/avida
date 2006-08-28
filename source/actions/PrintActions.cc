@@ -1403,6 +1403,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   // Population Out Files
   action_lib->Register<cActionPrintPhenotypeData>("PrintPhenotypeData");
   action_lib->Register<cActionPrintPhenotypeStatus>("PrintPhenotypeStatus");
+  action_lib->Register<cActionPrintDemeStats>("PrintDemeStats");
   
   // Processed Data
   action_lib->Register<cActionPrintData>("PrintData");
@@ -1416,25 +1417,25 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDominantGenotype>("PrintDominantGenotype");
   action_lib->Register<cActionPrintDominantParasiteGenotype>("PrintDominantParasiteGenotype");
   action_lib->Register<cActionPrintDetailedFitnessData>("PrintDetailedFitnessData");
-  action_lib->Register<cActionPrintGeneticDistanceData>("PrintGenericDistanceData");
+  action_lib->Register<cActionPrintGeneticDistanceData>("PrintGeneticDistanceData");
   action_lib->Register<cActionPrintPopulationDistanceData>("PrintPopulationDistanceData");
   action_lib->Register<cActionPrintDebug>("PrintDebug");
 
   action_lib->Register<cActionPrintGenotypes>("PrintGenotypes");
-  action_lib->Register<cActionDumpMemory>("DumpMemory");
 
   action_lib->Register<cActionTestDominant>("TestDominant");
   action_lib->Register<cActionPrintTaskSnapshot>("PrintTaskSnapshot");
   action_lib->Register<cActionPrintViableTasksData>("PrintViableTasksData");
   action_lib->Register<cActionPrintTreeDepths>("PrintTreeDepths");
   
+  // Grid Information Dumps
+  action_lib->Register<cActionDumpMemory>("DumpMemory");
   action_lib->Register<cActionDumpFitnessGrid>("DumpFitnessGrid");
   action_lib->Register<cActionDumpGenotypeIDGrid>("DumpGenotypeIDGrid");
   action_lib->Register<cActionDumpTaskGrid>("DumpTaskGrid");
   action_lib->Register<cActionDumpDonorGrid>("DumpDonorGrid");
   action_lib->Register<cActionDumpReceiverGrid>("DumpReceiverGrid");
 
-  action_lib->Register<cActionPrintDemeStats>("PrintDemeStats");
 
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
   action_lib->Register<cActionPrintAverageData>("print_average_data");
@@ -1457,6 +1458,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   
   action_lib->Register<cActionPrintPhenotypeData>("print_number_phenotypes");
   action_lib->Register<cActionPrintPhenotypeStatus>("print_phenotype_status");
+  action_lib->Register<cActionPrintDemeStats>("print_deme_stats");
   
   action_lib->Register<cActionPrintData>("print_data");
   action_lib->Register<cActionPrintInstructionAbundanceHistogram>("print_instruction_abundance_histogram");
@@ -1473,18 +1475,16 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintPopulationDistanceData>("genetic_distance_pop_dump");
   
   action_lib->Register<cActionPrintGenotypes>("print_genotypes");
-  action_lib->Register<cActionDumpMemory>("dump_memory");
 
   action_lib->Register<cActionTestDominant>("test_dom");
   action_lib->Register<cActionPrintTaskSnapshot>("task_snapshot");
   action_lib->Register<cActionPrintViableTasksData>("print_viable_tasks_data");
   action_lib->Register<cActionPrintTreeDepths>("print_tree_depths");
 
+  action_lib->Register<cActionDumpMemory>("dump_memory");
   action_lib->Register<cActionDumpFitnessGrid>("dump_fitness_grid");
   action_lib->Register<cActionDumpGenotypeIDGrid>("dump_enotype_grid");
   action_lib->Register<cActionDumpTaskGrid>("dump_task_grid");
   action_lib->Register<cActionDumpDonorGrid>("dump_donor_grid");
   action_lib->Register<cActionDumpReceiverGrid>("dump_receiver_grid");
-
-  action_lib->Register<cActionPrintDemeStats>("print_deme_stats");
 }
