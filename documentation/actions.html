@@ -1036,9 +1036,8 @@ for these compuations.
   
   <p>
   Precalculate the distance 1 full landscape for the current batch in parallel
-  using multiple threads.  The resulting data can be used by the analyze mode
-  <code>DETAIL</code> command. The values created can be lazily evaluated by
-  the <code>DETAIL</code>, however the calculation will be serialized.
+  using multiple threads.  The resulting data is stored into the current batch
+  and can be used by many subsequent output commands within Analyze mode.
   </p>
 </li>
 <li>
