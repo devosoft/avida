@@ -20,23 +20,23 @@
 class cInstruction
 {
 private:
-  unsigned char operand;
+  unsigned char m_operand;
 
 public:
   // Constructors and Destructor...
-  cInstruction() { operand = 0; }
-  cInstruction(const cInstruction& _inst) { *this = _inst; }
+  cInstruction() : m_operand(0) { ; }
+  cInstruction(const cInstruction& inst) { *this = inst; }
   explicit cInstruction(int in_op) { SetOp(in_op); }
   ~cInstruction() { ; }
   
   // Accessors...
-  int GetOp() const { return (int) operand; }
-  void SetOp(int in_op) { assert(in_op < 256); operand = in_op; }
+  int GetOp() const { return static_cast<int>(m_operand); }
+  void SetOp(int in_op) { assert(in_op < 256); m_operand = in_op; }
 
   // Operators...
-  void operator=(const cInstruction & inst) { if (this != &inst) operand = inst.operand; }
-  bool operator==(const cInstruction & inst) const { return (operand == inst.operand); }
-  bool operator!=(const cInstruction & inst) const { return !(operator==(inst)); }
+  void operator=(const cInstruction& inst) { if (this != &inst) m_operand = inst.m_operand; }
+  bool operator==(const cInstruction& inst) const { return (m_operand == inst.m_operand); }
+  bool operator!=(const cInstruction& inst) const { return !(operator==(inst)); }
 
   // Some extra methods to convert too and from alpha-numeric symbols...
   char GetSymbol() const;

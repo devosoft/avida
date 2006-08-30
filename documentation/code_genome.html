@@ -1,133 +1,138 @@
 <html>
-<title>The building blocks of the virtual CPU</title>
-<body
- bgcolor="#FFFFFF"
- text="#000000"
- link="#0000AA"
- alink="#0000FF"
- vlink="#000044">
+<head>
+  <title>Avida : The Building Blocks of the Virtual CPU</title>
+</head>
+<body>
 
-<h2 align=center>The building blocks of the virtual CPU</h2>
+<div style="float: right">
+Revised 2006-08-30 DMB
+</div>
+
+<p><a href="index.html">Return to the Index</a></p>
+<hr />
+
+<div align="center">
+<h1>The Building Blocks of the Virtual CPU</h1>
+</div>
 
 <p>
 This document discusses the implementation of the cInstruction, cGenome,
 and cInstLib (instruction library) classes.
+</p>
 
-<p>
-<h3>The cInstruction class</h3>
+
+<p>&nbsp;</p>
+<h2>The cInstruction Class</h2>
 
 <p>
 This class is used to represent a single instruction within a genome.  The
 private portion of this class consists of a single number that uniquely
 identifies the type of instruction, and the public section
 has a number of helper methods that allow us to work with that number.
+</p>
 
 <pre>
-  class <font color="#880000">cInstruction</font> {
-  private:
-    <font color="#880000">UCHAR</font> <font color="#000088">operand</font>;
- 
-  public:
-    <font color="#886600">// Accessors...</font>
-    <font color="#880000">int</font> <font color="#008800">GetOp()</font> const { return (<font color="#880000">int</font>) <font color="#000088">operand</font>; }
-    void <font color="#008800">SetOp</font>(<font color="#880000">int</font> <font color="#000088">in_op</font>) { <font color="#008800">assert</font>(<font color="#000088">in_op</font> &lt; 256); <font color="#000088">operand</font> = <font color="#000088">in_op</font>; }
- 
-    <font color="#886600">// Operators...</font>
-    void <font color="#008800">operator=</font>(const <font color="#880000">cInstruction</font> & <font color="#000088">inst</font>) { <font color="#000088">operand</font> = <font color="#000088">inst</font>.<font color="#000088">operand</font>; }
-    <font color="#880000">bool</font> <font color="#008800">operator==</font>(const <font color="#880000">cInstruction</font> & <font color="#000088">inst</font>) const
-      { return (<font color="#000088">operand</font> == <font color="#000088">inst</font>.<font color="#000088">operand</font>); }
-    <font color="#880000">bool</font> <font color="#008800">operator!=</font>(const <font color="#880000">cInstruction</font> & <font color="#000088">inst</font>) const
-      { return !(<font color="#008800">operator==</font>(<font color="#000088">inst</font>)); }
+class <font color="#880000">cInstruction</font> {
+private:
+  unsigned char <font color="#000088">m_operand</font>;
 
-    <font color="#886600">// Constructors and Destructor...</font>
-    <font color="#008800">cInstruction()</font> { <font color="#000088">operand</font> = 0; }
-    <font color="#008800">cInstruction</font>(const <font color="#880000">cInstruction</font> & <font color="#000088">_inst</font>) { *<font color="#000088">this</font> = <font color="#000088">_inst</font>; }
-    explicit <font color="#008800">cInstruction</font>(<font color="#880000">int</font> <font color="#000088">in_op</font>) { <font color="#008800">SetOp</font>(<font color="#000088">in_op</font>); }
-    <font color="#008800">~cInstruction</font>() { ; }
- 
-    <font color="#886600">// Some extra methods to convert too and from alpha-numeric symbols...</font>
-    <font color="#880000">char</font> <font color="#008800">GetSymbol()</font> const;
-    void <font color="#008800">SetSymbol</font>(<font color="#880000">char</font> <font color="#000088">symbol</font>);
-  };
+public:
+  <font color="#886600">// Constructors and Destructor...</font>
+  <font color="#008800">cInstruction()</font> : <font color="#000088">m_operand</font>(0) { ; }
+  <font color="#008800">cInstruction</font>(const <font color="#880000">cInstruction</font>&amp; <font color="#000088">inst</font>) { *<font color="#000088">this</font> = <font color="#000088">inst</font>; }
+  explicit <font color="#008800">cInstruction</font>(<font color="#880000">int</font> <font color="#000088">in_op</font>) { <font color="#008800">SetOp</font>(<font color="#000088">in_op</font>); }
+  <font color="#008800">~cInstruction</font>() { ; }
+
+  <font color="#886600">// Accessors...</font>
+  <font color="#880000">int</font> <font color="#008800">GetOp()</font> const { return static_cast&lt;int&gt;(<font color="#000088">m_operand</font>); }
+  void <font color="#008800">SetOp</font>(<font color="#880000">int</font> <font color="#000088">in_op</font>) { <font color="#008800">assert</font>(<font color="#000088">in_op</font> &lt; 256); <font color="#000088">m_operand</font> = <font color="#000088">in_op</font>; }
+
+  <font color="#886600">// Operators...</font>
+  void <font color="#008800">operator=</font>(const <font color="#880000">cInstruction</font>&amp; <font color="#000088">inst</font>) { <font color="#000088">m_operand</font> = <font color="#000088">inst</font>.<font color="#000088">m_operand</font>; }
+  <font color="#880000">bool</font> <font color="#008800">operator==</font>(const <font color="#880000">cInstruction</font>&amp; <font color="#000088">inst</font>) const { return (<font color="#000088">m_operand</font> == <font color="#000088">inst</font>.<font color="#000088">m_operand</font>); }
+  <font color="#880000">bool</font> <font color="#008800">operator!=</font>(const <font color="#880000">cInstruction</font>&amp; <font color="#000088">inst</font>) const { return !(<font color="#008800">operator==</font>(<font color="#000088">inst</font>)); }
+
+  <font color="#886600">// Some extra methods to convert too and from alpha-numeric symbols...</font>
+  <font color="#880000">char</font> <font color="#008800">GetSymbol</font>() const;
+  void <font color="#008800">SetSymbol</font>(<font color="#880000">char</font> <font color="#000088">symbol</font>);
+};
 </pre>
 
 <p>
-As I stated above, the only private datum is a numerical value that
-identifies this instruction.  The name "<font color="#000088">operand</font>"
-is the term that is used for a command name in an assembly language.  Most
-normal assembly languages have both an operand and arguments associated with
-each full command.  In avida, the commands have no arguments, and hence they
-just consist of a single operand.  The data type used for this is 
-<font color="#880000">UCHAR</font>, which is short for
-"<font color="#880000">unsigned char</font>".  A char is an 8 bit number,
-so when one is unsigned, it represents a number from 0 to 255.  As avida
-is currently implemented, we are limited to 256 distinct instructions.  To
-the outside world, we treat the instruction operand like an integer, so it
-would be easy to 
-modify this class were we ever to need more than 256 instructions in the
-set.  The only reason to limit it to 8 bits internally (rather than the 32
-of an int) is to save memory when we have a very large number of instructions
-throughout a population.  Instructions already make up over half of all
-the memory resources used by avida.
-
+As stated above, the only private datum is a numerical value that identifies
+this instruction.  The name <font color="#000088">m_operand</font> is the term
+that is used for a command name in an assembly language.  Most normal assembly
+languages have both an operand and arguments associated with each full command.
+In Avida, the commands have no arguments, and hence they just consist of a
+single operand.  The data type used for this is <code>unsigned char</code>.  A
+char is an 8 bit number, so when one is unsigned, it represents a number from 0
+to 255. As Avida is currently implemented, we are limited to 256 distinct
+instructions.  To the outside world, we treat the instruction operand like an
+integer, so it would be easy to modify this class were we ever to need more
+than 256 instructions in the set.  The only reason to limit it to 8 bits
+internally (rather than the 32 of an int) is to save memory when we have a very
+large number of instructions throughout a population.  Instructions already
+make up over half of all the memory resources used by Avida.
+</p>
 <p>
-The public methods begin with the <font color="#008800">GetOp()</font> and
-<font color="#008800">SetOp()</font> methods, which  are standard accessors.
-Next, we have a collection of methods that begin with the word "operator".
+The public methods begin with the <font color="#008800">GetOp</font>() and
+<font color="#008800">SetOp</font>() methods, which are standard accessors.
+Next, we have a collection of methods that begin with the word 'operator'.
 These are used to define how the corresponding symbols should be treated
 when applied to objects of this class.  For example, the method 
-<font color="#008800">operator==()</font> is called when we try to compare
-on object of type cInstruction to another.  We have full control over the
+<font color="#008800">operator==</font>() is called when we try to compare
+an object of type cInstruction to another.  We have full control over the
 definition of this method, just like any other.
-
-<p>
-The next batch of methods we come to are the constructors and destructor.
-Notice that there are three different constructors, so there are multiple
-ways an instruction object can be created.
-
+</p>
 <p>
 Finally, we have a pair of methods that convert instructions to and from
-alphanumeric characters (symbols).  These methods are used to 
-print instructions out in a maximally compressed format, and to load them back
-in.  The order of symbols used are the letters 'a' through 'z' in lowercase,
-followed by an uppercase 'A' through 'Z' and finally the numbers '0' through
-'9'.  If there are more
-than 62 possible instructions, all the rest are assigned a '?' when printed
-out, and cannot be read back in properly from this format.
+alphanumeric characters (symbols). These methods are used to print instructions
+out in a maximally compressed format, and to load them back in.  The order of
+symbols used are the letters 'a' through 'z' in lowercase, followed by an
+uppercase 'A' through 'Z' and finally the numbers '0' through '9'.  If there
+are more than 62 possible instructions, all the rest are assigned a '?' when
+printed out, and cannot be read back in properly from this format.
+</p>
 
 
-<h3>The cGenome class</h3>
+<p>&nbsp;</p>
+<h2>The cGenome class</h2>
 
 <p>
-A genome is a sequence of instructions.  The following
-class maintains this sequence as an array, and provides a collection of
-methods to manipulate the total construct.
+A genome is a sequence of instructions.  The following class maintains this
+sequence as an array, and provides a collection of methods to manipulate the
+total construct.
+</p>
 
 <pre>
-  class <font color="#880000">cGenome</font> {
-  protected:
-    <font color="#880000">tArray</font>&lt;<font color="#880000">cInstruction</font>&gt; <font color="#000088">genome</font>;
-    <font color="#880000">int</font> <font color="#000088">active_size</font>;
-   
-  public:
-    explicit <font color="#008800">cGenome</font>(<font color="#880000">int</font> <font color="#000088">_size</font>);
-    <font color="#008800">cGenome</font>(const <font color="#880000">cGenome</font> & <font color="#000088">in_genome</font>);
-    <font color="#008800">cGenome</font>(const <font color="#880000">cString</font> & <font color="#000088">in_string</font>);
-    virtual <font color="#008800">~cGenome</font>();
-   
-    virtual void <font color="#008800">operator=</font>(const <font color="#880000">cGenome</font> & <font color="#000088">other_genome</font>);
-    virtual <font color="#880000">bool</font> <font color="#008800">operator==</font>(const <font color="#880000">cGenome</font> & <font color="#000088">other_genome</font>) const;
-   
-    <font color="#880000">cInstruction</font> & <font color="#008800">operator[]</font>(<font color="#880000">int</font> <font color="#000088">index</font>)
-      { <font color="#008800">assert</font>(<font color="#000088">index</font> &gt;= 0 && <font color="#000088">index</font> &lt; <font color="#000088">active_size</font>);  return <font color="#000088">genome</font>[<font color="#000088">index</font>]; }
-    const <font color="#880000">cInstruction</font> & <font color="#008800">operator[]</font>(<font color="#880000">int</font> <font color="#000088">index</font>) const
-      { <font color="#008800">assert</font>(<font color="#000088">index</font> &gt;= 0 && <font color="#000088">index</font> &lt; <font color="#000088">active_size</font>);  return <font color="#000088">genome</font>[<font color="#000088">index</font>]; }
-   
-    virtual void <font color="#008800">Copy</font>(<font color="#880000">int</font> <font color="#000088">to</font>, <font color="#880000">int</font> <font color="#000088">from</font>);
-   
-    <font color="#880000">int</font> <font color="#008800">GetSize()</font> const { return <font color="#000088">active_size</font>; }
-    <font color="#880000">cString</font> <font color="#008800">AsString()</font> const;
-  };
+class <font color="#880000">cGenome</font>
+{
+protected:
+  <font color="#880000">tArray</font>&lt;<font color="#880000">cInstruction</font>&gt; <font color="#000088">genome</font>;
+  int <font color="#000088">active_size</font>;
+ 
+public:
+  <font color="#008800">cGenome</font>() { ; }
+  explicit <font color="#008800">cGenome</font>(int <font color="#000088">_size</font>);
+  <font color="#008800">cGenome</font>(const <font color="#880000">cGenome</font>&amp; <font color="#000088">in_genome</font>);
+  <font color="#008800">cGenome</font>(const <font color="#880000">cString</font>&amp; <font color="#000088">in_string</font>);
+  virtual <font color="#008800">~cGenome</font>();
+ 
+  virtual void <font color="#008800">operator=</font>(const <font color="#880000">cGenome</font>&amp; <font color="#000088">other_genome</font>);
+  virtual bool <font color="#008800">operator==</font>(const <font color="#880000">cGenome</font>&amp; <font color="#000088">other_genome</font>) const;
+  virtual bool <font color="#008800">operator!=</font>(const <font color="#880000">cGenome</font>&amp; <font color="#000088">other_genome</font>) const { return !(<font color="#000088">this</font>-&gt;<font color="#008800">operator==</font>(<font color="#000088">other_genome</font>)); }
+  virtual bool <font color="#008800">operator&lt;</font>(const <font color="#880000">cGenome</font>&amp; <font color="#000088">other_genome</font>) const { return <font color="#008800">AsString</font>() &lt; <font color="#000088">other_genome</font>.<font color="#008800">AsString</font>(); }
+ 
+  <font color="#880000">cInstruction</font> & <font color="#008800">operator[]</font>(<font color="#880000">int</font> <font color="#000088">index</font>)
+    { <font color="#008800">assert</font>(<font color="#000088">index</font> &gt;= 0 && <font color="#000088">index</font> &lt; <font color="#000088">active_size</font>);  return <font color="#000088">genome</font>[<font color="#000088">index</font>]; }
+  const <font color="#880000">cInstruction</font> & <font color="#008800">operator[]</font>(<font color="#880000">int</font> <font color="#000088">index</font>) const
+    { <font color="#008800">assert</font>(<font color="#000088">index</font> &gt;= 0 && <font color="#000088">index</font> &lt; <font color="#000088">active_size</font>);  return <font color="#000088">genome</font>[<font color="#000088">index</font>]; }
+ 
+  virtual void <font color="#008800">Copy</font>(<font color="#880000">int</font> <font color="#000088">to</font>, <font color="#880000">int</font> <font color="#000088">from</font>);
+ 
+  <font color="#880000">int</font> <font color="#008800">GetSize()</font> const { return <font color="#000088">active_size</font>; }
+  <font color="#880000">cString</font> <font color="#008800">AsString()</font> const;
+};
 </pre>
 
 <p>
@@ -373,7 +378,9 @@ discussed here with the classes that directly implment the hardware.
 Finally, three static methods are included to provide access to the
 three pre-defined instructions.
 
-<br><hr>
-Project hosted by:<br>
-<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=46761&type=2" width="125" height="37" border="0" alt="SourceForge.net"/></a>
-    
+
+<hr />
+<p><a href="index.html">Return to the Index</a></p>
+
+</body>
+</html>

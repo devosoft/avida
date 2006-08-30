@@ -42,13 +42,13 @@ public:
   cGenome(const cString& in_string);
   virtual ~cGenome();
 
-  virtual void operator=(const cGenome & other_genome);
-  virtual bool operator==(const cGenome & other_genome) const;
-  virtual bool operator!=(const cGenome & other_genome) const { return !(this->operator==(other_genome)); }
-  virtual bool operator<(const cGenome & other_genome) const { return AsString() < other_genome.AsString(); }
+  virtual void operator=(const cGenome& other_genome);
+  virtual bool operator==(const cGenome& other_genome) const;
+  virtual bool operator!=(const cGenome& other_genome) const { return !(this->operator==(other_genome)); }
+  virtual bool operator<(const cGenome& other_genome) const { return AsString() < other_genome.AsString(); }
 
-  cInstruction & operator[](int index) { assert(index >= 0 && index < active_size);  return genome[index]; }
-  const cInstruction & operator[](int index) const { assert(index >= 0 && index < active_size);  return genome[index]; }
+  cInstruction& operator[](int index) { assert(index >= 0 && index < active_size);  return genome[index]; }
+  const cInstruction& operator[](int index) const { assert(index >= 0 && index < active_size);  return genome[index]; }
 
   virtual void Copy(int to, int from);
 

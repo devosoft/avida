@@ -598,7 +598,6 @@
 		70920C1E0A9CCE2C00757CDB /* code_death_birth.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = code_death_birth.html; sourceTree = "<group>"; };
 		70920C1F0A9CCE2C00757CDB /* code_environment.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = code_environment.html; sourceTree = "<group>"; };
 		70920C220A9CCE2C00757CDB /* code_genome.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = code_genome.html; sourceTree = "<group>"; };
-		70920C230A9CCE2C00757CDB /* code_init_file.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = code_init_file.html; sourceTree = "<group>"; };
 		70920C240A9CCE2C00757CDB /* code_instruction.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = code_instruction.html; sourceTree = "<group>"; };
 		70920C250A9CCE2C00757CDB /* code_life_cycle.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = code_life_cycle.html; sourceTree = "<group>"; };
 		70920C260A9CCE2C00757CDB /* code_task.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = code_task.html; sourceTree = "<group>"; };
@@ -1123,7 +1122,6 @@
 				70920C1E0A9CCE2C00757CDB /* code_death_birth.html */,
 				70920C1F0A9CCE2C00757CDB /* code_environment.html */,
 				70920C220A9CCE2C00757CDB /* code_genome.html */,
-				70920C230A9CCE2C00757CDB /* code_init_file.html */,
 				70920C240A9CCE2C00757CDB /* code_instruction.html */,
 				70920C250A9CCE2C00757CDB /* code_life_cycle.html */,
 				70920C260A9CCE2C00757CDB /* code_task.html */,
