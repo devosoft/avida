@@ -1,401 +1,255 @@
 <html>
-<title>Organism Placement the Population</title>
-<body
- bgcolor="#FFFFFF"
- text="#000000"
- link="#0000AA"
- alink="#0000FF"
- vlink="#000044">
+<head>
+  <title>Avida : Guide to the Death/Birth Cycle</title>
+</head>
+<body>
 
-<h2 align=center>Organism Placement the Population</h2>
+<div style="float: right">
+Revised 2006-08-30 DMB
+</div>
+
+<p><a href="index.html">Return to the Index</a></p>
+<hr />
+
+<div align="center">
+<h1>Guide to the Death/Birth Cycle</h1>
+</div>
 
 <p>
-This document describes the interaction between organisms and the
-population.
+This document describes the interaction between organisms and the population.
+</p>
 
-<h3>The Death of an Organism</h3>
+
+<p>&nbsp;</p>
+<h2>The Death of an Organism</h2>
 
 <p>
-When an organism is killed off, its location in the population (that is,
-its population cell) needs to be emptied, the scheduler needs to be notified,
-and various statistics need to be update to reflect the recently deceased. 
-All of this is handled with the
-method below.  In a default avida setup, this method will only be called when
-a cell needs to be cleared out for a new occupant, but you've already seen
-this method used when you implemented the kill-related events in a previous
-homework.  We'll see it also called from code displayed in the next section
-of this document.
+When an organism is killed off, its location in the population (that is, its
+population cell) needs to be emptied, the scheduler needs to be notified, and
+various statistics need to be updated to reflect the recently deceased. All of
+this is handled with the method below.  In a default Avida setup, this method
+will only be called when a cell needs to be cleared out for a new occupant,
+but you've already seen this method used when you implemented the kill-related
+events in a previous homework.  We'll see it also called from code displayed in
+the next section of this document.
+</p>
 
 <pre>
-  void <font color="#880000">cPopulation</font>::<font color="#008800">KillOrganism</font>(<font color="#880000">cPopulationCell</font> & <font color="#000088">in_cell</font>)
-  {
-    <font color="#886600">// do we actually have something to kill?</font>
-    if (<font color="#000088">in_cell</font>.<font color="#008800">IsOccupied</font>() == false) {
-      return;
-    }
+void <span style="color: #880000">cPopulation</span>::<span style="color: #008800">KillOrganism</span>(<span style="color: #880000">cPopulationCell</span>&amp; <span style="color: #000088">in_cell</span>)
+{
+  <span style="color: #886600">// do we actually have something to kill?</span>
+  if (<span style="color: #000088">in_cell</span>.<span style="color: #008800">IsOccupied</span>() == false) return;
 
-    <font color="#886600">// Statistics...</font>
-    <font color="#880000">cOrganism</font> * <font color="#000088">organism</font> = <font color="#000088">in_cell</font>.<font color="#008800">GetOrganism</font>();
-    <font color="#000088">stats</font>.<font color="#008800">RecordDeath</font>(<font color="#000088">in_cell</font>.<font color="#008800">GetID</font>(), <font color="#000088">organism</font>-><font color="#008800">GetGenotype</font>()-><font color="#008800">GetID</font>(),
-                      <font color="#000088">organism</font>-><font color="#008800">GetPhenotype</font>().<font color="#008800">GetAge</font>());
-    <font color="#000088">num_organisms</font>--;
+  <span style="color: #886600">// Statistics...</span>
+  <span style="color: #880000">cOrganism</span>* <span style="color: #000088">organism</span> = <span style="color: #000088">in_cell</span>.<span style="color: #008800">GetOrganism</span>();
+  <span style="color: #880000">cGenotype</span>* <span style="color: #000088">genotype</span> = <span style="color: #000088">organism</span>-&gt;<span style="color: #008800">GetGenotype</span>();
+  <span style="color: #000088">m_world</span>-&gt;<span style="color: #008800">GetStats</span>().<span style="color: #008800">RecordDeath</span>();
 
-    if (<font color="#000088">organism</font>-><font color="#008800">GetPhenotype</font>().<font color="#008800">IsParasite</font>() == true) {
-      <font color="#000088">organism</font>-><font color="#008800">GetGenotype</font>()-><font color="#008800">AddParasite</font>();
-    }
-    <font color="#000088">organism</font>-><font color="#008800">GetGenotype</font>()-><font color="#008800">RemoveOrganism</font>();
+  <span style="color: #886600">// Do the lineage handling</span>
+  if (<span style="color: #000088">m_world</span>-&gt;<span style="color: #008800">GetConfig</span>().<span style="color: #000088">LOG_LINEAGES</span>.<span style="color: #008800">Get</span>()) { <span style="color: #000088">m_world</span>-><span style="color: #008800">GetClassificationManager</span>().<span style="color: #008800">RemoveLineageOrganism</span>(<span style="color: #000088">organism</span>); }
 
-    <font color="#886600">// And clear it!</font>
-    <font color="#000088">in_cell</font>.<font color="#008800">RemoveOrganism</font>();
-    delete <font color="#000088">organism</font>;
-  
-    <font color="#886600">// adjust the scheduler</font>
-    <font color="#000088">schedule</font>-><font color="#008800">Adjust</font>( <font color="#000088">in_cell</font>.<font color="#008800">GetID</font>(), <font color="#880000">cMerit</font>(0) );
-  }
+  <span style="color: #000088">num_organisms</span>--;
+  <span style="color: #000088">genotype</span>-&gt;<span style="color: #008800">RemoveOrganism</span>();
+
+  <span style="color: #886600">// And clear it!</span>
+  <span style="color: #000088">in_cell</span>.<span style="color: #008800">RemoveOrganism</span>();
+  if (!<span style="color: #000088">organism</span>-&gt;<span style="color: #008800">GetIsRunning</span>()) delete <span style="color: #000088">organism</span>;
+  else <span style="color: #000088">organism</span>-&gt;<span style="color: #008800">GetPhenotype</span>().<span style="color: #008800">SetToDelete</span>();
+
+  <span style="color: #886600">// Alert the scheduler that this cell has a 0 merit.</span>
+  <span style="color: #000088">schedule</span>-&gt;<span style="color: #008800">Adjust</span>(<span style="color: #000088">in_cell</span>.<span style="color: #008800">GetID</span>(), <span style="color: #880000">cMerit</span>(0));
+
+  <span style="color: #886600">// Update the archive (note: genotype adjustment may be defered)</span>
+  <span style="color: #000088">m_world</span>-&gt;<span style="color: #008800">GetClassificationManager</span>().<span style="color: #008800">AdjustGenotype</span>(*<span style="color: #000088">genotype</span>);
+}
 </pre>
 
 <p>
-This method takes as an argument the cell that needs to be emptied.  It
-starts off by making sure that the cell in question actually has
-an organism in it to be killed.  If not, it stops right there.  If so,
-it records some statistics about that organism's life, and updates its
-counter of living organisms to reflect that there is one fewer.  If the
-organism is a parasite, it also lets the genotype know this.  The genotype
-object keeps track of the number of organisms of that genotype that have
-exhibited parasitic behavior since some organisms may only moonlight as
-parasites, but be perfectly normal at other times.  Note that this currently
-only works for old-style parasites that are separate organisms.  The new
-style parasites that exist within other organisms and cannot be so easily
-detected, but I will likely add new code here in the future to monitor
-the "infection rates" of genotypes.
-
+This method takes as an argument the cell that needs to be emptied.  It starts
+off by making sure that the cell in question actually has an organism in it to
+be killed.  If not, it stops right there.  If so, it records some statistics
+about that organism's life, and updates its counter of living organisms to
+reflect that there is one fewer.
+</p>
 <p>
 Once the statistics are finished, the cell itself is cleared with the
-<font color="#880000">cPopulationCell</font>::<font color="#008800">RemoveOrganism</font>()
-method (in which the pointer to the organism it once contained is set to
-NULL), and the old organism is deleted.  Finally, the scheduler (which is the
-object that doles out CPU cycles to the individual organisms) is updated to
-reflect that this cell is now empty.
+<span style="color: #880000">cPopulationCell</span>::<span style="color: #008800">RemoveOrganism</span>()
+method (in which the pointer to the organism it once contained is set to NULL).
+At this point if the organism is not the currently running CPU it will be
+deleted.  Otherwise, a flag is set that marks the organism for deletion after
+the current instruction has finished executing.  Finally, the scheduler (which
+is the object that doles out CPU cycles to the individual organisms) is updated
+to reflect that this cell is now empty.
+</p>
 
 
-<h3>Activating an Organism in a Specific Cell</h3>
+<p>&nbsp;</p>
+<h2>Activating an Organism in a Specific Cell</h2>
 
 <p>
 If an organism is going to be placed into a specific cell of the population,
 the method ActivateOrganism can be called on the population, telling it the
 location in memory of the organism to be placed and the cell to place it in.
-This method will call the <font color="#008800">KillOrganism</font>() method
-to make sure the cell is unoccupied.  In turn, this method is called from the
-<font color="#008800">Inject</font>() method as well as <font
-color="#008800">ActivateOffspring</font>(), described below.
+This method will call the <span style="color: #008800">KillOrganism</span>() method
+to make sure the cell is unoccupied.  This method is called from the
+<span style="color: #008800">Inject</span>() method as well as
+<span style="color: #008800">ActivateOffspring</span>(), described below.
 Here is the ActivateOrganism method:
 
 <pre>
-  void <font color="#880000">cPopulation</font>::<font color="#008800">ActivateOrganism</font>(<font color="#880000">cOrganism</font> * <font color="#000088">in_organism</font>,
-                                     <font color="#880000">cPopulationCell</font> & <font color="#000088">target_cell</font>)
-  {
-    <font color="#008800">assert</font>(<font color="#000088">in_organism</font> != NULL);
-  
-    <font color="#886600">// If the organism does not have a genotype, give it one!</font>
-    if (<font color="#000088">in_organism</font>-><font color="#008800">GetGenotype</font>() == NULL) {
-      <font color="#880000">cGenotype</font> * <font color="#000088">new_genotype</font> = <font color="#000088">genebank</font>-><font color="#008800">AddGenotype</font>(<font color="#000088">in_organism</font>-><font color="#008800">GetGenome</font>());
-      <font color="#000088">in_organism</font>-><font color="#008800">SetGenotype</font>(<font color="#000088">new_genotype</font>);
-    }
-    <font color="#880000">cGenotype</font> * <font color="#000088">in_genotype</font> = <font color="#000088">in_organism</font>-><font color="#008800">GetGenotype</font>();
-  
-    <font color="#886600">// Save the old genotype from this cell...</font>
-    <font color="#880000">cGenotype</font> * <font color="#000088">old_genotype</font> = (<font color="#000088">target_cell</font>.<font color="#008800">IsOccupied</font>()) ?
-      <font color="#000088">target_cell</font>.<font color="#008800">GetOrganism</font>()-><font color="#008800">GetGenotype</font>() : NULL;
-  
-    <font color="#886600">// Update the contents of the target cell.</font>
-    <font color="#008800">KillOrganism</font>(<font color="#000088">target_cell</font>);
-    <font color="#000088">target_cell</font>.<font color="#008800">InsertOrganism</font>(*<font color="#000088">in_organism</font>);
-  
-    <font color="#886600">// Update the genebank...</font>
-    <font color="#000088">in_genotype</font>-><font color="#008800">AddOrganism</font>();
-  
-    if (<font color="#000088">old_genotype</font> != NULL) <font color="#000088">genebank</font>-><font color="#008800">AdjustGenotype</font>(*<font color="#000088">old_genotype</font>);
-    <font color="#000088">genebank</font>-><font color="#008800">AdjustGenotype</font>(*<font color="#000088">in_genotype</font>);
-  
-    <font color="#886600">// Initialize the time-slice for this new organism.</font>
-    <font color="#000088">schedule</font>-><font color="#008800">Adjust</font>(<font color="#000088">target_cell</font>.<font color="#008800">GetID</font>(),<font color="#000088">in_organism</font>-><font color="#008800">GetPhenotype</font>().<font color="#008800">GetMerit</font>());
-  
-    <font color="#886600">// Special handling for certain birth methods.</font>
-    if (<font color="#880000">cConfig</font>::<font color="#008800">GetBirthMethod</font>() == POSITION_CHILD_FULL_SOUP_ELDEST) {
-      <font color="#000088">reaper_queue</font>.<font color="#008800">Push</font>(&<font color="#000088">target_cell</font>);
-    }
-  
-    <font color="#000088">num_organisms</font>++;
-  
-    <font color="#886600">// Statistics...</font>
-    <font color="#000088">stats</font>.<font color="#008800">RecordBirth</font>(<font color="#000088">target_cell</font>.<font color="#008800">GetID</font>(), <font color="#000088">in_genotype</font>-><font color="#008800">GetID</font>(),
-                      <font color="#000088">in_organism</font>-><font color="#008800">GetPhenotype</font>().<font color="#008800">ParentTrue</font>());
+void <span style="color: #880000">cPopulation</span>::<span style="color: #008800">ActivateOrganism</span>(<span style="color: #880000">cAvidaContext</span>&amp; <span style="color: #000088">ctx</span>, <span style="color: #880000">cOrganism</span>* <span style="color: #000088">in_organism</span>, <span style="color: #880000">cPopulationCell</span>&amp; <span style="color: #000088">target_cell</span>)
+{
+  <span style="color: #000088">in_organism</span>-&gt;<span style="color: #008800">SetOrgInterface</span>(new <span style="color: #880000">cPopulationInterface</span>(<span style="color: #000088">m_world</span>));
+
+  <span style="color: #886600">// If the organism does not have a genotype, give it one!  No parent</span>
+  <span style="color: #886600">// information is provided so we must set parents to NULL.</span>
+  if (<span style="color: #000088">in_organism</span>-&gt;<span style="color: #008800">GetGenotype</span>() == NULL) {
+    <span style="color: #880000">cGenotype</span>* <span style="color: #000088">new_genotype</span> = <span style="color: #000088">m_world</span>-&gt;<span style="color: #008800">GetClassificationManager</span>().<span style="color: #008800">GetGenotype</span>(<span style="color: #000088">in_organism</span>-&gt;<span style="color: #008800">GetGenome</span>(), NULL, NULL);
+    <span style="color: #000088">in_organism</span>-><span style="color: #008800">SetGenotype</span>(<span style="color: #000088">new_genotype</span>);
   }
+  <span style="color: #880000">cGenotype</span>* <span style="color: #000088">in_genotype</span> = <span style="color: #000088">in_organism</span>-><span style="color: #008800">GetGenotype</span>();
+
+  <span style="color: #886600">// Save the old genotype from this cell...</span>
+  <span style="color: #880000">cGenotype</span>* <span style="color: #000088">old_genotype</span> = NULL;
+  if (<span style="color: #000088">target_cell</span>.<span style="color: #008800">IsOccupied</span>()) {
+    <span style="color: #000088">old_genotype</span> = <span style="color: #000088">target_cell</span>.<span style="color: #008800">GetOrganism</span>()-&gt;<span style="color: #008800">GetGenotype</span>();
+    
+    <span style="color: #886600">// Sometimes a new organism will kill off the last member of its genotype</span>
+    <span style="color: #886600">// in the population.  Normally this would remove the genotype, so we</span>
+    <span style="color: #886600">// want to defer adjusting that genotype until the new one is placed.</span>
+    <span style="color: #000088">old_genotype</span>-&gt;<span style="color: #008800">IncDeferAdjust</span>();
+  }
+
+  <span style="color: #886600">// Update the contents of the target cell.</span>
+  <span style="color: #008800">KillOrganism</span>(<span style="color: #000088">target_cell</span>);
+  <span style="color: #000088">target_cell</span>.<span style="color: #008800">InsertOrganism</span>(*<span style="color: #000088">in_organism</span>);
+
+  <span style="color: #886600">// Update the archive...</span>
+  <span style="color: #000088">in_genotype</span>-><span style="color: #008800">AddOrganism</span>();
+
+  if (<span style="color: #000088">old_genotype</span> != NULL) {
+    <span style="color: #000088">old_genotype</span>-&gt;<span style="color: #008800">DecDeferAdjust</span>();
+    <span style="color: #000088">m_world</span>-&gt;<span style="color: #008800">GetClassificationManager</span>().<span style="color: #008800">AdjustGenotype</span>(*<span style="color: #000088">old_genotype</span>);
+  }
+  <span style="color: #000088">m_world</span>-&gt;<span style="color: #008800">GetClassificationManager</span>().<span style="color: #008800">AdjustGenotype</span>(*<span style="color: #000088">in_genotype</span>);
+
+  <span style="color: #886600">// Initialize the time-slice for this new organism.</span>
+  <span style="color: #000088">schedule</span>-><span style="color: #008800">Adjust</span>(<span style="color: #000088">target_cell</span>.<span style="color: #008800">GetID</span>(), <span style="color: #000088">in_organism</span>-><span style="color: #008800">GetPhenotype</span>().<span style="color: #008800">GetMerit</span>());
+
+  <span style="color: #886600">// Special handling for certain birth methods.</span>
+  if (<span style="color: #000088">m_world</span>-&gt;<span style="color: #008800">GetConfig</span>().<span style="color: #000088">BIRTH_METHOD</span>.<span style="color: #008800">Get</span>() == POSITION_CHILD_FULL_SOUP_ELDEST) {
+    <span style="color: #000088">reaper_queue</span>.<span style="color: #008800">Push</span>(&amp;<span style="color: #000088">target_cell</span>);
+  }
+
+  <span style="color: #000088">num_organisms</span>++;
+
+  <span style="color: #886600">// Statistics...</span>
+  <span style="color: #000088">m_world</span>-&gt;<span style="color: #008800">GetStats</span>().<span style="color: #008800">RecordBirth</span>(<span style="color: #000088">target_cell</span>.<span style="color: #008800">GetID</span>(), <span style="color: #000088">in_genotype</span>-><span style="color: #008800">GetID</span>(),
+                                  <span style="color: #000088">in_organism</span>-&gt;<span style="color: #008800">GetPhenotype</span>().<span style="color: #008800">ParentTrue</span>());
+}
 </pre>
 
 <p>
-After asserting that we are indeed injecting a legal organism, the first thing
-we do is check to see if that organism has already been assigned its genotype.
-If an organism was born from a parent in the population, it will have been
-assigned a genotype by the time this method is called.  If it does not have a
-genotype, however, the genebank object will be called to look up any
-genotypes that match this genome.  The genebank will either return an exact
-match, or else create a new genotype, add it to the genebank, and return its
-pointer.  In either case, we now have a genotype for this organism.
-
+The first thing we do build a new interface object and attach it to the
+organism object.  Next we check to see if the organism has already been
+assigned its genotype. If an organism was born from a parent in the population,
+it will have been assigned a genotype by the time this method is called.  If it
+does not have a genotype, however, the classification manager object will be
+called to look up any genotypes that match this genome.  The classification
+manager will either return an exact match, or else create a new genotype, add it
+to the archive, and return its pointer.  In either case, we now have a genotype
+for this organism.
+</p>
 <p>
 Before we erase the organism currently in this cell, we want to keep track of
-what genotype it was part of for use in updating the genebank later.  We then
+what genotype it was part of for use in updating the archive later.  We then
 kill the organism in the cell (as described above) and insert the new one.
-The <font color="#880000">cPopulationCell</font>::<font color="#008800">InsertOrganism</font>()
+The <span style="color: #880000">cPopulationCell</span>::<span style="color: #008800">InsertOrganism</span>()
 method will setup the organism based on the environmental conditions of this
 cell (mutation rate, tasks rewarded, etc), and store the organism for future
 use.
-
+</p>
 <p>
 We then adjust the genotype to let it know a new organism of its type has
-been created, and tell the genebank that it should also adjust the genotypes
-to reflect their new abundances (one genotype has grown by one, the other has
-shrunk, so the genotype ordering may change).  Other maintenance we need to
-do at this point includes adjusting the scheduler to let it know the merit of
-this new organism, and the "reaper_queue" if we keep track of the birth order
-of organisms so that we can always kill off the oldest in the population.
-
+been created, and tell the classification manager that it should also adjust
+the genotypes to reflect their new abundances (one genotype has grown by one,
+the other has shrunk, so the genotype ordering may change).  Other maintenance
+we need to do at this point includes adjusting the scheduler to let it know the
+merit of this new organism, and the <code>reaper_queue</code> if we keep track
+of the birth order of organisms so that we can always kill off the oldest in
+the population.
+</p>
 <p>
 Finally, we adjust some more statistics by incrementing the number of
 organisms in the population and let the statistics object know that a new
-organism was born, with all of its information.
-Remember, if this cell was already occupied, KillOrganism() would have
-decremented it, so this will properly reflect the number of organisms alive
-in the population at any moment.
+organism was born, with all of its information. Remember, if this cell was
+already occupied, KillOrganism() would have decremented it, so this will
+properly reflect the number of organisms alive in the population at any moment.
+</p>
 
-<h3>Placing an Offspring in the Population</h3>
+
+<p>&nbsp;</p>
+<h2>Placing an Offspring in the Population</h2>
 
 <p>
 When an organism gives birth, we must collect some relevent statistics,
 which can best be accomplished in the population object.  Then we must
 place the offspring into its own cell in the population.  This is all done
-with the following method:
-
-<pre>
-  void <font color="#880000">cPopulation</font>::<font color="#008800">ActivateOffspring</font>(<font color="#880000">cOrganism</font> * <font color="#000088">child_organism</font>,
-  				    <font color="#880000">cOrganism</font> & <font color="#000088">parent_organism</font>)
-  {
-    <font color="#008800">assert</font>(<font color="#000088">child_organism</font> != NULL);
-    <font color="#008800">assert</font>(&<font color="#000088">parent_organism</font> != NULL);
-    <font color="#008800">assert</font>(<font color="#000088">child_organism</font> != &<font color="#000088">parent_organism</font>);
-  
-    <font color="#886600">// First, setup the genotype of the offspring.</font>
-    <font color="#880000">cGenotype</font> * <font color="#000088">parent_genotype</font> = <font color="#000088">parent_organism</font>.<font color="#008800">GetGenotype</font>();
-    <font color="#880000">cGenotype</font> * <font color="#000088">child_genotype</font> = <font color="#000088">parent_genotype</font>;
-  
-    <font color="#886600">// If the parent genotype is not correct for the child, adjust it.</font>
-    if (<font color="#000088">parent_organism</font>.<font color="#008800">GetPhenotype</font>().<font color="#008800">CopyTrue</font>() == false) {
-      <font color="#000088">child_genotype</font> =
-        <font color="#000088">genebank</font>-><font color="#008800">AddGenotype</font>(<font color="#000088">child_organism</font>-><font color="#008800">GetGenome</font>(), <font color="#000088">parent_genotype</font>);
-    }
-  
-    <font color="#886600">// And set the genotype now that we know it.</font>
-    <font color="#000088">child_organism</font>-><font color="#008800">SetGenotype</font>(<font color="#000088">child_genotype</font>);
-    <font color="#000088">parent_genotype</font>-><font color="#008800">SetBreedStats</font>(*<font color="#000088">child_genotype</font>);
-  
-  
-    <font color="#886600">// Determine the placement of the offspring...</font>
-    const <font color="#880000">int</font> <font color="#000088">parent_id</font> = <font color="#000088">parent_organism</font>.<font color="#008800">PopInterface</font>().<font color="#008800">GetCellID</font>();
-  
-    <font color="#880000">cPopulationCell</font> & <font color="#000088">parent_cell</font> = <font color="#000088">cell_array</font>[ <font color="#000088">parent_id</font> ];
-    <font color="#880000">cPopulationCell</font> & <font color="#000088">target_cell</font> = <font color="#008800">PositionChild</font>( <font color="#000088">parent_cell</font> );
-  
-    <font color="#886600">// Update the parent's and child's phenotype.</font>
-    <font color="#880000">cPhenotype</font> & <font color="#000088">parent_phenotype</font> = <font color="#000088">parent_organism</font>.<font color="#008800">GetPhenotype</font>();
-    const <font color="#880000">int</font> <font color="#000088">child_length</font> = <font color="#000088">child_organism</font>-><font color="#008800">GetGenome</font>().<font color="#008800">GetSize</font>();
-    <font color="#000088">parent_phenotype</font>.<font color="#008800">DivideReset</font>(<font color="#000088">parent_organism</font>.<font color="#008800">GetGenome</font>().<font color="#008800">GetSize</font>());
-    <font color="#000088">child_organism</font>-><font color="#008800">GetPhenotype</font>().<font color="#008800">SetupOffspring</font>(<font color="#000088">parent_phenotype</font>,<font color="#000088">child_length</font>);
-  
-    <font color="#886600">// If we're not about to kill the parent, do some extra work on it.</font>
-    if (<font color="#000088">parent_cell</font>.<font color="#008800">GetID</font>() != <font color="#000088">target_cell</font>.<font color="#008800">GetID</font>()) {
-      <font color="#000088">schedule</font>-><font color="#008800">Adjust</font>(<font color="#000088">parent_cell</font>.<font color="#008800">GetID</font>(), <font color="#000088">parent_phenotype</font>.<font color="#008800">GetMerit</font>());
-  
-      <font color="#886600">// In a local run, face the child towards the parent.</font>
-      if (<font color="#880000">cConfig</font>::<font color="#008800">GetBirthMethod</font>() < NUM_LOCAL_POSITION_CHILD) {
-        <font color="#000088">target_cell</font>.<font color="#008800">Rotate</font>(<font color="#000088">parent_cell</font>);
-      }
-    }
-  
-    <font color="#886600">// Do any statistics on the parent that just gave birth...</font>
-    <font color="#000088">parent_genotype</font>-><font color="#008800">AddGestationTime</font>( <font color="#000088">parent_phenotype</font>.<font color="#008800">GetGestationTime</font>() );
-    <font color="#000088">parent_genotype</font>-><font color="#008800">AddFitness</font>(       <font color="#000088">parent_phenotype</font>.<font color="#008800">GetFitness</font>()       );
-    <font color="#000088">parent_genotype</font>-><font color="#008800">AddMerit</font>(         <font color="#000088">parent_phenotype</font>.<font color="#008800">GetMerit</font>()         );
-    <font color="#000088">parent_genotype</font>-><font color="#008800">AddCopiedSize</font>(    <font color="#000088">parent_phenotype</font>.<font color="#008800">GetCopiedSize</font>()    );
-    <font color="#000088">parent_genotype</font>-><font color="#008800">AddExecutedSize</font>(  <font color="#000088">parent_phenotype</font>.<font color="#008800">GetExecutedSize</font>()  );
-  
-    <font color="#886600">// Place the offspring...</font>
-    <font color="#008800">ActivateOrganism</font>(<font color="#000088">child_organism</font>, <font color="#000088">target_cell</font>);
-  }
-</pre>
-
+with the <span style="color: #880000">cPopulation</span>::<span style="color: #008800">ActivateOffspring</span>
+method. This method takes as arguments the parent organism and child genome
+that we're working with.  It is called by the divide command via the
+population interface. As this method is quite long, refer to it in the source
+code in <kbd>cPopulation.cc</kbd> while reading the remainder of this section.
+</p>
 <p>
-This method takes as arguments the parent and child organisms that we're
-working with.  It is called by the divide command via the population
-interface.  The first thing it does is assert that both the parent and child
-are valid organisms, and that their not the same as each other (since we don't
-allow strange time-travel paradoxes in Avida).
-
+The first step in activing an offspring involves performing some book keeping
+on the parent's phenotype via the <span style="color: #008800">DivideReset</span>()
+method. After this, the child genome is submitted to the birth chamber.  The
+birth chamber is responsible for handling the details of reproduction, such as
+genome recombination in sexual populations. The
+<span style="color: #008800">SubmitOffspring</span>() method will add organism objects
+to the <span style="color: #000088">child_array</span> for each offspring produced.
+</p>
 <p>
-The default genotype of the child is the same as its parent.  If, however,
-there were any mutations, the "copy true" flag will be false causing the
-genebank to be called to determine its real genotype.  The child will then
-have its genotype assigned, and the parent will have its breed statistics
-updated to help keep track of phylogenetic tree information.
-
+The next section of code is in charge of finding where in the population each
+child organism should be placed.  The cell of the parent is looked up, and then
+the <span style="color: #008800">PositionChild</span>() method is called to determine
+the child's cell.
+</p>
 <p>
-The next section of code is in charge of finding where in the population
-this organism should be placed.  The cell of the parent is looked up, and
-then the <font color="#008800">PositionChild</font>() method is called to
-determine the child's cell.  Since there are so many possible placement
-options that can be set in the genesis file, PositionChild() is actually
-reasonably complicated and I will devote a section to it below.
-
-<p>
-A couple of values are setup as easy-to-use variables, and then the
-<font color="#008800">DivideReset</font>() method is run on the parent's
-phenotype to update everything that has to be done on a divide, and
-<font color="#008800">SetupOffpsring</font>() is run on the child's phenotype
-to initialize it, using information from the parent.
-
-<p>
-If the parent is not about to be killed off (due to being replaced by the
-child), we actually want to do a bit more work -- we need to adjust
+If the parent is not about to be killed off (due to being replaced by one of
+the children), we actually want to do a bit more work -- we need to adjust
 it in the schedule in case its merit has changed over this gestation cycle,
 and (if we are on a grid) we want to turn the child so that it is facing
 its parent.
-
+</p>
 <p>
 Finally, we collect a bunch of statistics for the parent's genotype object,
-and we run ActivateOffspring using the cell we have chosen in order the place
-the child into the population.
+and we run ActivateOffspring for each offspring produced using the cell we have
+chosen in order to place the child into the population.
+</p>
 
-<h3>Injecting an Organism into the Population</h3>
+
+<p>&nbsp;</p>
+<h2>Injecting an Organism into the Population</h2>
 
 <p>
 Injecting a genome into the population that does not have a parent (such as
-with the <tt>inject</tt> event) is somewhat easier to deal with:
-
-<pre>
-  void <font color="#880000">cPopulation</font>::<font color="#008800">InjectGenome</font>(<font color="#880000">int</font> <font color="#000088">cell_id</font>, const <font color="#880000">cGenome</font> & <font color="#000088">genome</font>)
-  {
-    <font color="#008800">assert</font>(<font color="#000088">cell_id</font> >= 0 && <font color="#000088">cell_id</font> < <font color="#000088">cell_array</font>.<font color="#008800">GetSize</font>());
-  
-    <font color="#880000">cOrganism</font> * <font color="#000088">new_organism</font> = new <font color="#880000">cOrganism</font>(<font color="#000088">genome</font>, <font color="#000088">default_interface</font>,
-                                             <font color="#000088">environment</font>);
-  
-    <font color="#886600">// Setup the genotype...</font>
-    <font color="#880000">cGenotype</font> * <font color="#000088">new_genotype</font> = <font color="#000088">genebank</font>-><font color="#008800">AddGenotype</font>(<font color="#000088">genome</font>);
-    <font color="#000088">new_organism</font>-><font color="#008800">SetGenotype</font>(<font color="#000088">new_genotype</font>);
-  
-    <font color="#886600">// Setup the phenotype...</font>
-    <font color="#880000">cPhenotype</font> & <font color="#000088">phenotype</font> = <font color="#000088">new_organism</font>-><font color="#008800">GetPhenotype</font>();
-    <font color="#000088">phenotype</font>.<font color="#008800">SetupInject</font>(<font color="#000088">genome</font>.<font color="#008800">GetSize</font>());
-    <font color="#000088">phenotype</font>.<font color="#008800">SetMerit</font>( <font color="#880000">cMerit</font>(<font color="#000088">new_genotype</font>-><font color="#008800">GetTestMerit</font>()) );
-  
-    <font color="#886600">// Activate the organism in the population...</font>
-    <font color="#008800">ActivateOrganism</font>(<font color="#000088">new_organism</font>, <font color="#000088">cell_array</font>[<font color="#000088">cell_id</font>]);
-  }
-</pre>
-
-<p>
+with the <code>Inject</code> action) is somewhat easier to deal with.
 Basically, all that this method needs to do is build the organism with the
 proper genome, determine its genotype, setup its phenotype, put it into a
 test CPU to get its initial merit, and activate it!  You should be able to
 go line-by-line through the code to see how exactly this happens for
-yourself.
+yourself.  See
+<span style="color: #880000">cPopulation</span>::<span style="color: #008800">InjectGenome</span>,
+and more importantly
+<span style="color: #880000">cPopulation</span>::<span style="color: #008800">InjectGenotype</span>
+in <kbd>cPopulation.cc</kbd>.
+</p>
 
-<h3>Choosing the Position of a Child</h3>
 
-<p>
-The final method we're going to examine here is the one that determines which
-population cell a child organism should be placed into
+<hr />
+<p><a href="index.html">Return to the Index</a></p>
 
-<pre>
-  <font color="#880000">cPopulationCell</font> & <font color="#880000">cPopulation</font>::<font color="#008800">PositionChild</font>(<font color="#880000">cPopulationCell</font> & <font color="#000088">parent_cell</font>)
-  {
-    <font color="#886600">// If we are not using a local (grid) placement method, this is easy.</font>
-    if (<font color="#880000">cConfig</font>::<font color="#008800">GetBirthMethod</font>() >= NUM_LOCAL_POSITION_CHILD) {
-      switch (<font color="#880000">cConfig</font>::<font color="#008800">GetBirthMethod</font>()) {
-      case POSITION_CHILD_FULL_SOUP_RANDOM:
-        return <font color="#008800">GetCell</font>(<font color="#000088">g_random</font>.<font color="#008800">GetUInt</font>(<font color="#000088">cell_array</font>.<font color="#008800">GetSize</font>()));
-      case POSITION_CHILD_FULL_SOUP_ELDEST:
-        return *( <font color="#000088">reaper_queue</font>.<font color="#008800">PopRear</font>() );
-      }
-    }
-  
-    <font color="#886600">// Construct a list of equally viable locations to place the child...</font>
-    <font color="#880000">tList</font><<font color="#880000">cPopulationCell</font>> <font color="#000088">found_list</font>;
-  
-    <font color="#886600">// First, check if there is an empty organism to work with (always preferred)</font>
-    <font color="#880000">tList</font><<font color="#880000">cPopulationCell</font>> & <font color="#000088">conn_list</font> = <font color="#000088">parent_cell</font>.<font color="#008800">ConnectionList</font>();
-    <font color="#008800">FindEmptyCell</font>(<font color="#000088">conn_list</font>, <font color="#000088">found_list</font>);
-  
-    <font color="#886600">// If we have not found an empty organism, we must use the specified function</font>
-    <font color="#886600">// to determine how to choose among the filled organisms.</font>
-    if (<font color="#000088">found_list</font>.<font color="#008800">GetSize</font>() == 0) {
-      switch(<font color="#880000">cConfig</font>::<font color="#008800">GetBirthMethod</font>()) {
-      case POSITION_CHILD_AGE:
-        <font color="#008800">PositionAge</font>(<font color="#000088">parent_cell</font>, <font color="#000088">found_list</font>);
-        break;
-      case POSITION_CHILD_MERIT:
-        <font color="#008800">PositionMerit</font>(<font color="#000088">parent_cell</font>, <font color="#000088">found_list</font>);
-        break;
-      case POSITION_CHILD_RANDOM:
-        <font color="#000088">found_list</font>.<font color="#008800">Append</font>(<font color="#000088">conn_list</font>);
-        <font color="#000088">found_list</font>.<font color="#008800">Push</font>(&<font color="#000088">parent_cell</font>);
-        break;
-      case POSITION_CHILD_EMPTY:
-        <font color="#886600">// Nothing is in list if no empty cells are found...</font>
-        <font color="#886600">// Just return the parent.</font>
-        return <font color="#000088">parent_cell</font>;
-        break;
-      }
-    }
-  
-    <font color="#886600">// Choose the organism randomly from those in the list, and return it.</font>
-    <font color="#880000">int</font> <font color="#000088">choice</font> = <font color="#000088">g_random</font>.<font color="#008800">GetUInt</font>(<font color="#000088">found_list</font>.<font color="#008800">GetSize</font>());
-    return *( <font color="#000088">found_list</font>.<font color="#008800">GetPos</font>(<font color="#000088">choice</font>) );
-  }
-</pre>
-
-<p>
-This method first checks if we are using a global or local replacement method.
-Global methods are easier to deal with, so it handles those first.  The
-two currently implemented are "Replace Random in the Full Population" (mass
-action) and "Replace Oldest in the Full Population" (a la Tierra).
-The first of these simply requests a random number and returns the 
-corresponding cell.  The second uses the reaper_queue, discussed earlier, to
-return the ID of the last cell in it.
-
-<p>
-The remainder of this method deals with the local replacement methods
-We create a list of population cells (initially empty) called
-<font color="#000088">found_list</font> as a place to contain the cells that
-are good candidates for replacement.  We then create a second list called
-<font color="#000088">conn_list</font> that contains all of the cells that
-the current cell is connected to.  We run this connection list through a
-method called <font color="#008800">FindEmptyCell</font>() to see if out
-job is going to be easy -- if there are any empty cells, they should always
-be our first choice for replacement.
-
-<p>
-Alas, if there are no empty cells, we need to do some more work, and we
-have a collection of options that can be chosen by the user in the genesis
-file.  We select the appropriate case, and use it to fill out the found_list.
-Currently, in all cases except "Find Empty" there will always be at least one
-cell placed in the found_list.
-
-<p>
-If the found list ends with more than one candidate cell in it, the one used
-is selected randomly from the options available.
-
-<br><hr>
-Project hosted by:<br>
-<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=46761&type=2" width="125" height="37" border="0" alt="SourceForge.net"/></a>
-    
+</body>
+</html>

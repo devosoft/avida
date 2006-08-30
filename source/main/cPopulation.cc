@@ -269,48 +269,45 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
 {
   assert(&parent_organism != NULL);
   
-  tArray<cOrganism *> child_array;
+  tArray<cOrganism*> child_array;
   tArray<cMerit> merit_array;
   
   // Update the parent's phenotype.
   // This needs to be done before the parent goes into the brith chamber
   // or the merit doesn't get passed onto the child correctly
-  cPhenotype & parent_phenotype = parent_organism.GetPhenotype();
+  cPhenotype& parent_phenotype = parent_organism.GetPhenotype();
   parent_phenotype.DivideReset(parent_organism.GetGenome().GetSize());
   
   birth_chamber.SubmitOffspring(ctx, child_genome, parent_organism, child_array, merit_array);
   
   // First, setup the genotype of all of the offspring.
-  cGenotype * parent_genotype = parent_organism.GetGenotype();
+  cGenotype* parent_genotype = parent_organism.GetGenotype();
   const int parent_id = parent_organism.GetOrgInterface().GetCellID();
   assert(parent_id >= 0 && parent_id < cell_array.GetSize());
-  cPopulationCell & parent_cell = cell_array[ parent_id ];
-  
-  
+  cPopulationCell& parent_cell = cell_array[parent_id];
+    
   tArray<int> target_cells(child_array.GetSize());
   
   // Loop through choosing the later placement of each child in the population.
   bool parent_alive = true;  // Will the parent live through this process?
   for (int i = 0; i < child_array.GetSize(); i++) {
-    target_cells[i] = PositionChild( parent_cell ).GetID();
+    target_cells[i] = PositionChild(parent_cell).GetID();
+    
     // If we replaced the parent, make a note of this.
     if (target_cells[i] == parent_cell.GetID()) parent_alive = false;      
     
     // Update the mutation rates of each child....
-    child_array[i]->MutationRates().
-      Copy(GetCell(target_cells[i]).MutationRates());
+    child_array[i]->MutationRates().Copy(GetCell(target_cells[i]).MutationRates());
     
     // Update the phenotypes of each child....
     const int child_length = child_array[i]->GetGenome().GetSize();
-    child_array[i]->GetPhenotype().
-      SetupOffspring(parent_phenotype,child_length);
+    child_array[i]->GetPhenotype().SetupOffspring(parent_phenotype,child_length);
     
     child_array[i]->GetPhenotype().SetMerit(merit_array[i]);
     
     // Do lineage tracking for the new organisms.
-    LineageSetupOrganism( child_array[i], parent_organism.GetLineage(),
-                          parent_organism.GetLineageLabel(),
-                          parent_genotype );
+    LineageSetupOrganism(child_array[i], parent_organism.GetLineage(),
+                         parent_organism.GetLineageLabel(), parent_genotype);
     
   }
   
@@ -337,7 +334,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
   // Place all of the offspring...
   for (int i = 0; i < child_array.GetSize(); i++) {
     ActivateOrganism(ctx, child_array[i], GetCell(target_cells[i]));
-    cGenotype * child_genotype = child_array[i]->GetGenotype();
+    cGenotype* child_genotype = child_array[i]->GetGenotype();
     child_genotype->DecDeferAdjust();
     m_world->GetClassificationManager().AdjustGenotype(*child_genotype);
   }
@@ -401,10 +398,10 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
     cGenotype* new_genotype = m_world->GetClassificationManager().GetGenotype(in_organism->GetGenome(), NULL, NULL);
     in_organism->SetGenotype(new_genotype);
   }
-  cGenotype * in_genotype = in_organism->GetGenotype();
+  cGenotype* in_genotype = in_organism->GetGenotype();
   
   // Save the old genotype from this cell...
-  cGenotype * old_genotype = NULL;
+  cGenotype* old_genotype = NULL;
   if (target_cell.IsOccupied()) {
     old_genotype = target_cell.GetOrganism()->GetGenotype();
     
@@ -431,7 +428,7 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   m_world->GetClassificationManager().AdjustGenotype(*in_genotype);
   
   // Initialize the time-slice for this new organism.
-  schedule->Adjust(target_cell.GetID(),in_organism->GetPhenotype().GetMerit());
+  schedule->Adjust(target_cell.GetID(), in_organism->GetPhenotype().GetMerit());
   
   // Special handling for certain birth methods.
   if (m_world->GetConfig().BIRTH_METHOD.Get() == POSITION_CHILD_FULL_SOUP_ELDEST) {
@@ -445,37 +442,33 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
                                   in_organism->GetPhenotype().ParentTrue());
 }
 
-void cPopulation::KillOrganism(cPopulationCell & in_cell)
+void cPopulation::KillOrganism(cPopulationCell& in_cell)
 {
   // do we actually have something to kill?
-  if (in_cell.IsOccupied() == false) {
-    return;
-  }
+  if (in_cell.IsOccupied() == false) return;
   
   // Statistics...
-  cOrganism * organism = in_cell.GetOrganism();
-  cGenotype * genotype = organism->GetGenotype();
+  cOrganism* organism = in_cell.GetOrganism();
+  cGenotype* genotype = organism->GetGenotype();
   m_world->GetStats().RecordDeath();
   
   // Do the lineage handling
   if (m_world->GetConfig().LOG_LINEAGES.Get()) { m_world->GetClassificationManager().RemoveLineageOrganism(organism); }
   
-  // Do statistics
   num_organisms--;
-  
   genotype->RemoveOrganism();
 
-  for(int i=0; i<organism->GetNumParasites(); i++) {
+  for (int i = 0; i < organism->GetNumParasites(); i++) {
     organism->GetParasite(i).RemoveParasite();
   }
 
   // And clear it!
   in_cell.RemoveOrganism();
-  if (organism->GetIsRunning() == false) delete organism;
+  if (!organism->GetIsRunning()) delete organism;
   else organism->GetPhenotype().SetToDelete();
 
   // Alert the scheduler that this cell has a 0 merit.
-  schedule->Adjust( in_cell.GetID(), cMerit(0) );
+  schedule->Adjust(in_cell.GetID(), cMerit(0));
 
   // Update the archive (note: genotype adjustment may be defered)
   m_world->GetClassificationManager().AdjustGenotype(*genotype);
@@ -895,8 +888,7 @@ void cPopulation::LineageSetupOrganism(cOrganism* organism, cLineage* lin, int l
  * if it is okay to replace the parent.
  **/
 
-cPopulationCell & cPopulation::PositionChild(cPopulationCell & parent_cell,
-                                             bool parent_ok)
+cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool parent_ok)
 {
   assert(parent_cell.IsOccupied());
   
