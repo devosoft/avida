@@ -508,6 +508,7 @@
 		7049F36F0A66AD7E00640512 /* default-transsmt.org */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "default-transsmt.org"; sourceTree = "<group>"; };
 		704ADBC30A6EEFC300666970 /* DriverActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DriverActions.h; sourceTree = "<group>"; };
 		704ADBC40A6EEFC300666970 /* DriverActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DriverActions.cc; sourceTree = "<group>"; };
+		704D57210AA53F8600207FC1 /* code_standards.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = code_standards.html; sourceTree = "<group>"; };
 		705332480929764A006BD186 /* cSpecies.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cSpecies.cc; sourceTree = "<group>"; };
 		705332490929764A006BD186 /* cSpecies.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cSpecies.h; sourceTree = "<group>"; };
 		7053324A0929764A006BD186 /* cSpeciesQueue.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cSpeciesQueue.cc; sourceTree = "<group>"; };
@@ -1113,6 +1114,7 @@
 		70920C1A0A9CCE2C00757CDB /* Documentation */ = {
 			isa = PBXGroup;
 			children = (
+				704D57210AA53F8600207FC1 /* code_standards.html */,
 				707CE7500AA334120022D19C /* analyze.html */,
 				707CE7490AA333060022D19C /* actions.html */,
 				707CE51D0A9E49A50022D19C /* config.html */,
