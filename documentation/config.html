@@ -274,7 +274,7 @@ there will be more options here in the future.
     that it will be mutated each update.  In other words, this should
     be a very low value if it is turned on at all.  If a mutation occurs,
     that site is replaced with a random instruction.  In practice this
-    also slows avida down if it is non-zero because it requires so many
+    also slows Avida down if it is non-zero because it requires so many
     random numbers to be tested every update.
   </td>
 </tr>
@@ -448,7 +448,7 @@ allocated to organisms during that update.
 <h2>Geneology Info</h2>
 
 <p>
-These settings control how avida monitors and deals with genotypes,
+These settings control how Avida monitors and deals with genotypes,
 species, and lineages.
 </p>
 <table border="1">
@@ -498,7 +498,7 @@ species, and lineages.
 <tr>
   <td valign="top"><strong><code>SPECIES_RECORDING</code></strong></td>
   <td>
-    This entry sets if and how species should be recorded in avida.  A
+    This entry sets if and how species should be recorded in Avida.  A
     setting of 0 turns all species tests off.  A setting of 1 means that
     every time a genotype reaches threshold, it is tested against all
     currently existing species to determine if it is part of any of them.
@@ -536,7 +536,7 @@ species, and lineages.
 <tr style="background-color: #AAFFAA">
   <td valign="top"><strong><code>TRACK_MAIN_LINEAGE</code></strong></td>
   <td>
-    In a normal avida run, the genebank keeps track of all existing
+    In a normal Avida run, the genebank keeps track of all existing
     genotypes, and deletes them when the last organism of that genotype
     dies out.  With this flag set, a genotype will not be deleted unless
     both it and <em>all of its descendents</em> have died off.  This allows

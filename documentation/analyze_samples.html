@@ -1,24 +1,32 @@
 <html>
-<title>Sample Programs from Analyze Mode</title>
-<body
- bgcolor="#FFFFFF"
- text="#000000"
- link="#0000AA"
- alink="#0000FF"
- vlink="#000044">
+<head>
+  <title>Avida : Sample Programs from Analyze Mode</title>
+</head>
+<body>
 
-<h2 align=center>Sample Programs from Analyze Mode</h2>
+<div style="float: right">
+Revised 2006-08-29 DMB
+</div>
+
+<p><a href="index.html">Return to the Index</a></p>
+<hr />
+
+<div align="center">
+<h1>Sample Programs from Analyze Mode</h1>
+</div>
 
 <p>
 This document gives some example analyze programs and explains how they
 function.
+</p>
 
-<h3>Testing a genome sequence</h3>
+<p>&nbsp;</p>
+<h2>Testing a genome sequence</h2>
 
 <p>
 The following program will load in a genome sequence, run it through a test
 CPU, and output the information about it in a couple of formats.
-
+</p>
 <pre>
   VERBOSE
   LOAD_SEQUENCE rmzavcgmciqqptqpqcpctletncogcbeamqdtqcptipqfpgqxutycuastttva
@@ -29,7 +37,7 @@ CPU, and output the information about it in a couple of formats.
 </pre>
 
 <p>
-This program starts off with the "VERBOSE" command so that avida will print
+This program starts off with the VERBOSE command so that Avida will print
 to the screen all of the details about what is going on as it runs the
 analyze script; I recommend you begin all of your programs this way for
 debugging purposes.  The program then uses the LOAD_SEQUENCE command to allow
@@ -37,7 +45,7 @@ the user to enter a specific genome sequence in its compressed format.  This
 will translate the genome into the proper genotype as long as you are using
 the correct instruction set file, since that file determines the mappings of
 letters to instructions).
-
+</p>
 <p>
 The RECALCULATE command places the genome sequence into a test CPU, and
 determines its fitness, merit, gestation time, etc. so that the DETAIL
@@ -46,46 +54,48 @@ prints it to the file "detail_test.dat" (its first argument).  The TRACE
 and PRINT commands will then print individual files about this genome, the
 first tracing its execution line-by-line, and the second summarizing all 
 sorts of statistics about it and displaying the genome.
-Since no directory was specified for these commands, "<tt>genebank/</tt>" is
-assumed, and the filenames are "<tt>org-S1.trace</tt>" and
-"<tt>org-S1.gen</tt>".  If a genotype has a name when it is loaded, that
+Since no directory was specified for these commands, <kbd>archive/</kbd> is
+assumed, and the filenames are <kbd>org-S1.trace</kbd> and
+<kbd>org-S1.gen</kbd>.  If a genotype has a name when it is loaded, that
 name will be kept, but if it doesn't, it will be assigned a name starting at
 org-S1, then org-S2, and so on counting higher.  The TRACE and PRINT commands
 add their own suffixes to the genome's name to determine the filename they
 will be printed as.
 
-<h3>Using Variables</h3>
+
+<p>&nbsp;</p>
+<h2>Using Variables</h2>
 
 <p>
 Often, you will want to run the same section of analyze code with multiple 
-different "inputs" each time through, or else you might simply want a single
+different inputs each time through, or else you might simply want a single
 value to be easy to change throughout the code.  To facilitate such
 programming practices, variables are available in analyze mode that can be
 altered for each repitition through the code.
-
+</p>
 <p>
 There are actually several types of variables, all of which are a single
 letter of number.  For a command that requires a variable name as an input,
 you simply put that variable where it is requested.  For example, if you
 were going to set the variable i to be equal to the number 12, you would
 type:
-
+</p>
 <pre>
   SET i 12
 </pre>
 
 <p>
-But later on in the code, how does avida know when you type an i if you
+But later on in the code, how does Avida know when you type an i if you
 really want the letter 'i' there, or if you prefer the number 12 to be there?
-To distinguish these cases, you must put a dollar sign ("$") before a variable
+To distinguish these cases, you must put a dollar sign '$' before a variable
 wherever you want it to be translated to its value instead of just using
 the variable name itself.
-
+</p>
 <p>
 There are a few different commands that allow you to manipulate a variable's
 value, and sometimes execute a section of code multiple times based off of 
 each of the possible values.  Here is one example:
-
+</p>
 <pre>
   FORRANGE i 100 199
     SET d /home/charles/dev/avida/runs/evo-neut/evo_neut_$i
@@ -102,7 +112,7 @@ value in the range, setting the variable i to each of these values in turn.
 Thus the first time through the loop, 'i' will be equal to the value '100',
 then '101', '102', all the way up to '199'.  In this particular case, we have
 100 runs (numbered 100 through 199) that we want to work with.
-
+</p>
 <p>
 The first thing we do once we're inside the loop is set the value of the
 variable 'd' to be the name of the directory we're going to be working
@@ -110,31 +120,34 @@ with.  Since this is a long directory name, we don't want to have to type
 it over every time we need it.  If we set it to the variable d, then all we
 need to do is type '$d' in the future, and it will be translated to the
 full name.  Note that in this case we are setting a variable to a string
-instead of a number; that's just fine and avida will figure out how to
+instead of a number; that's just fine and Avida will figure out how to
 handle it properly.  This directory we are working with will change each
 time through the loop, and that it is no problem to use one variable as part
 of setting another.
-
+</p>
 <p>
 After we know what directory we are using, we run a PURGE_BATCH to get rid of
 all of the genotypes from the last time through
 the loop (lest we just keep building up more and more genotypes in the
 current batch)
 and then we refill the batch by using LOAD_DETAIL_DUMP to load in all of the
-genotypes saved in the file "<tt>detail_pop.100000</tt>" within our chosen
+genotypes saved in the file <kbd>detail-100000.pop</kbd> within our chosen
 directory.  The RECALCULATE command runs all of the genotypes through a
 test CPU so we have all the statistics we need, and finally DETAIL will print
-out the stats we want to the file "<tt>detail.dat</tt>", again
+out the stats we want to the file <kbd>detail.dat</kbd>, again
 placing it in the proper directory.  The END command signifies the end of the
 FORRANGE loop.
+</p>
 
-<h3>Finding Lineages</h3>
+
+<p>&nbsp;</p>
+<h2>Finding Lineages</h2>
 
 <p>
-Quite often, the portion of an avida run that we will be most interested
+Quite often, the portion of an Avida run that we will be most interested
 in is the lineage from the final dominant genotype back to the original
-ancestor.  As such, there are tools in avida to get at this information.
-
+ancestor.  As such, there are tools in Avida to get at this information.
+</p>
 <pre>
   FORRANGE i 100 199
     SET d /home/charles/dev/avida/runs/evo-neut/evo_neut_$i
@@ -160,12 +173,12 @@ a single lineage, the next thing we do is run the FIND_LINEAGE command to
 pick out a single genotype, and discard everything else except for its
 lineage.  In this case, we pick the genotype with the highest abundance 
 (the most virtual CPUs associated with it) at the time of printing.
-
+</p>
 <p>
 As before, the RECALCULATE command gets us any additional information we
 may need about the genotypes, and then we print that information to a file
 using the DETAIL command.  The filenames that we are using this time
-have the format "<tt>lineage.$i.html</tt>", so they are all being written
+have the format <kbd>lineage.$i.html</kbd>, so they are all being written
 to the current directory with filenames that incorporate the run number
 right in them.  Also, because the filename ends in the suffix '.html', Avida
 knows to print the file in a proper html format.  Note that the specific
@@ -173,16 +186,19 @@ values that we choose to print take advantage of the fact that we have a
 lineage (and hence measured things like the genetic distance to the parent)
 and are in html mode (and thus can print the sequence using colors to specify
 where exactly mutations occurred).
+</p>
 
-<h3>Working with Batches</h3>
+
+<p>&nbsp;</p>
+<h2>Working with Batches</h2>
 
 <p>
 In analyze mode, we can load genotypes into multiple batches and we then
 operate on a single batch at a time.  So, for example, if we wanted
 to only consider the dominant genotypes at time points 100 updates apart, but
-all we had to work with were the detail files (containing <i>all</i>
+all we had to work with were the detail files (containing <em>all</em>
 genotypes at each time point) we might write a program like:
-
+</p>
 <pre>
   SET d /home/charles/avida/runs/mydir/here-it-is
   SET_BATCH 0
@@ -205,17 +221,20 @@ down to only the single most abundant genotype, and then copy that genotype
 over into batch one.  By the time we're done, we have all of the dominant
 genotypes inside of batch one, so we can print anything we need right from
 there.
+</p>
 
-<h3>Building your own Commands</h3>
+
+<p>&nbsp;</p>
+<h2>Building your own Commands</h2>
 
 <p>
 One really useful feature that I have added to the analyze mode is the
 ability for the user to construct a variety of their own commands without
 modifying the source code.  This is done with the FUNCTION command.
 For example, if you know you will always need a file called
-"<tt>lineage.html</tt>" with very specific information in it, you might write
+<kbd>lineage.html</kbd> with very specific information in it, you might write
 a helper command for yourself as follows:
-
+</p>
 <pre>
   FUNCTION MY_HTML_LINEAGE  # arg1=run_directory
     PURGE_BATCH
@@ -230,13 +249,13 @@ a helper command for yourself as follows:
 <p>
 This works identically to how we found lineages and printed their data in
 the section above.  Only this time, it has created the new command called
-"MY_HTML_LINEAGE" that you can use anytime thereafter.  Arguments to functions
+MY_HTML_LINEAGE that you can use anytime thereafter.  Arguments to functions
 work similar to variables, but they are numbers instead of letters.  Thus
 $1 translates to the first arguments, $2 becomes the second, and so on.  You
 are limited to 9 arguments at this point, but that should be enough for
 most tasks.  $0 is the name of the function you are running, in case you
 ever need to use that.
-
+</p>
 <p>
 You may be interested in also using functions in conjunction with the
 SYSTEM command.  Anything you type as arguments to this command gets run on
@@ -244,7 +263,7 @@ the command line, so you can make functions to do anything that could
 otherwise be done were you at the shell prompt.  For example, imagine that
 you were going to use a lot of compressed files in your analysis that you
 would first need to uncompress.  You might right a function like:
-
+</p>
 <pre>
   FUNCTION UNZIP   # Arg1=filename
     SYSTEM gunzip $1
@@ -254,14 +273,14 @@ would first need to uncompress.  You might right a function like:
 <p>
 This is a shorter example than you might typically want to write a function
 for, but it does get the point across.  This would allow you to just type
-"UNZIP <filename>" whenever you needed to uncompress something.
-
+<code>UNZIP &lt;filename&gt;</code> whenever you needed to uncompress something.
+</p>
 <p>
 Functions are particularly useful in conjunction with the INCLUDE command.
-You can create a file called something like "<tt>my_functions.cfg</tt>" in
-your avida work directory, define a bunch of functions there, and then start
-all of your <tt>analyze.cfg</tt> files with the line:
-
+You can create a file called something like <kbd>my_functions.cfg</kbd> in
+your Avida work directory, define a bunch of functions there, and then start
+all of your <kbd>analyze.cfg</kbd> files with the line:
+</p>
 <pre>
   INCLUDE my_functions.cfg
 </pre>
@@ -271,54 +290,60 @@ and you will have access to all of your functions thereafter.  Ideally, as
 this language becomes more flexible, so will your ability to
 create functions within the language, so you will be able to develop
 flexible and useful libraries for yourself.
+</p>
 
-<h3>Try it Out...</h3>
+
+<p>&nbsp;</p>
+<h2>Try it Out...</h2>
 
 <p>
 Here are a couple of example problems you can try to see how well you can
 use analyze mode.  These should get you used to working with it for future
 projects.
-
+</p>
 <p>
-<b>Problem 1</b>. A detail file in avida contains one line associated with
-  each genotype, in order from the most abundant to the least.  Currently,
-  the LOAD_DETAIL_DUMP command will load the entire file's worth of
-  genotypes into the current batch, but what if you only wanted the top
-  few?  You should write a function called "LOAD_DETAIL_TOP" that takes
-  two arguments.  The first ($1) is the name file that needs to be loaded
-  in (just as in the original command), and the second is the number of 
-  lines you want to load.
-
+<strong>Problem 1</strong>. A detail file in Avida contains one line associated with
+each genotype, in order from the most abundant to the least.  Currently,
+the LOAD_DETAIL_DUMP command will load the entire file's worth of
+genotypes into the current batch, but what if you only wanted the top
+few?  You should write a function called LOAD_DETAIL_TOP that takes
+two arguments.  The first ($1) is the name file that needs to be loaded
+in (just as in the original command), and the second is the number of 
+lines you want to load.
+</p>
 <p>
-  The easiest way to go about doing this is by using the SYSTEM command
-  along with the Unix command "<tt>head</tt>" which will output the very
-  top of a file.  If you typed the line:
-
+The easiest way to go about doing this is by using the SYSTEM command
+along with the Unix command <kbd>head</kbd> which will output the very
+top of a file.  If you typed the line:
+</p>
 <pre>
-  head -42 detail_pop.1000 > my_temp_file
+  head -42 detail_pop.1000 &gt; my_temp_file
 </pre>
 
 <p>
-  The file "<tt>my_temp_file</tt>" would be created, and its contents would
-  be the first 42 lines of <tt>detail_pop.1000</tt>.  So, what you need this
-  function to do is create a temporary file with proper number of lines from
-  the detail file in it, load that temp file into the current batch, and
-  then delete the file (using the <tt>rm</tt> command).
-  <i>Warning</i>: be very careful with the automated deletions -- you don't
-  want to accidentally remove something that you really need!  I recommend
-  that you use the command "rm -i" until you finish debugging.  This
-  problem may end up being a little tricky for you, but you should be able to
-  work your way through it.
-
+The file <kbd>my_temp_file</kbd> would be created, and its contents would
+be the first 42 lines of <kbd>detail-1000.pop</kbd>.  So, what you need this
+function to do is create a temporary file with proper number of lines from
+the detail file in it, load that temp file into the current batch, and
+then delete the file (using the <kbd>rm</kbd> command).
+<em>Warning</em>: be very careful with the automated deletions -- you don't
+want to accidentally remove something that you really need!  I recommend
+that you use the command <kbd>rm -i</kbd> until you finish debugging.  This
+problem may end up being a little tricky for you, but you should be able to
+work your way through it.
+</p>
 <p>
-<b>Problem 2</b>. Now that you have a working LOAD_DETAIL_TOP command, you
-  can run "LOAD_DETAIL_TOP <filename> 1" in order to only load the most
-  dominant genotype from the detail file.  Rewrite the example program from
-  the section "Working with Batches" above such that you now only need to
-  work within a single batch.
+<strong>Problem 2</strong>. Now that you have a working LOAD_DETAIL_TOP command, you
+can run <code>LOAD_DETAIL_TOP &lt;filename&gt; 1</code> in order to only load the most
+dominant genotype from the detail file.  Rewrite the example program from
+the section "Working with Batches" above such that you now only need to
+work within a single batch.
+</p>
 
 
-<br><hr>
-Project hosted by:<br>
-<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=46761&type=2" width="125" height="37" border="0" alt="SourceForge.net"/></a>
+<hr />
+<p><a href="index.html">Return to the Index</a></p>
+
+</body>
+</html>
     
