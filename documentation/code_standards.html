@@ -1,0 +1,97 @@
+<html>
+<head>
+  <title>Avida : Coding Standards</title>
+</head>
+<body>
+
+<div style="float: right">
+Revised 2006-08-30 DMB
+</div>
+
+<p><a href="index.html">Return to the Index</a></p>
+<hr />
+
+<div align="center">
+<h1>Coding Standards</h1>
+</div>
+
+<p>
+This document describes the coding standards that should be followed
+when developing within Avida.
+</p>
+
+
+<p>&nbsp;</p>
+<h2>Coding Style Guidelines</h2>
+
+<h3>Indentation</h3>
+<ul>
+<li>
+  All source code indentation should be spaces.  This includes C++, Python,
+  and HTML.
+</li>
+<li>
+  The size of a single indentation is 2 spaces.
+</li>
+</ul>
+
+<h3>Braces</h3>
+
+<div style="margin-left: 10px">
+  <h4>Function Definitions</h4>
+  <div style="margin-left: 10px">
+    <p>
+    Open and close braces should each be on their own line.  Do not
+    place the open brace on the same line as the function signature. The only
+    exception to this rule is single line class methods, in which both braces
+    are allowed to be on the same line as the code (but only in pairs).  Examples:
+    </p>
+    <h5>Right:</h5>
+<pre>
+void cFoo::Method()
+{
+  // code goes here
+}
+
+// ... in a class
+inline void Method() { ; }
+
+inline void Method()
+{ // longer code in here }
+</pre>
+    <h5>Wrong:</h5>
+<pre>
+void cFoo::Method() {
+  // code goes here
+}
+
+// ... in a class
+inline void Method() { 
+  ; }
+</pre>
+
+  </div>
+
+  <h4>For, While, Do Loops and Switch Statements</h4>
+
+  <h4>If/Else Statements</h4>
+</div>
+
+<h3>Parentheses</h3>
+
+<h3>NULL, false, and 0</h3>
+
+<h3>Other Punctation</h3>
+
+<h3>Include Guards and Statements</h3>
+
+
+<p>&nbsp;</p>
+<h2>Naming Conventions</h2>
+
+
+<hr />
+<p><a href="index.html">Return to the Index</a></p>
+
+</body>
+</html>
