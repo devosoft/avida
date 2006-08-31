@@ -43,7 +43,7 @@ public:
   const cString& GetDesc() const { return m_desc; }
   const int GetID() const { return m_id; }
   const tTaskTest GetTestFun() const { return m_test_fun; }
-  const cString & GetInfo() const { return m_info; }
+  const cString& GetInfo() const { return m_info; }
 };
 
 

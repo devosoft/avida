@@ -16,8 +16,7 @@ Revised 2006-08-30 DMB
 </div>
 
 <p>
-This document discusses the implementation of the cInstruction, cGenome,
-and cInstLib (instruction library) classes.
+This document discusses the implementation of the cInstruction and cGenome classes.
 </p>
 
 
@@ -32,35 +31,35 @@ has a number of helper methods that allow us to work with that number.
 </p>
 
 <pre>
-class <font color="#880000">cInstruction</font> {
+class <span style="color: #880000">cInstruction</span> {
 private:
-  unsigned char <font color="#000088">m_operand</font>;
+  unsigned char <span style="color: #000088">m_operand</span>;
 
 public:
-  <font color="#886600">// Constructors and Destructor...</font>
-  <font color="#008800">cInstruction()</font> : <font color="#000088">m_operand</font>(0) { ; }
-  <font color="#008800">cInstruction</font>(const <font color="#880000">cInstruction</font>&amp; <font color="#000088">inst</font>) { *<font color="#000088">this</font> = <font color="#000088">inst</font>; }
-  explicit <font color="#008800">cInstruction</font>(<font color="#880000">int</font> <font color="#000088">in_op</font>) { <font color="#008800">SetOp</font>(<font color="#000088">in_op</font>); }
-  <font color="#008800">~cInstruction</font>() { ; }
+  <span style="color: #886600">// Constructors and Destructor...</span>
+  <span style="color: #008800">cInstruction()</span> : <span style="color: #000088">m_operand</span>(0) { ; }
+  <span style="color: #008800">cInstruction</span>(const <span style="color: #880000">cInstruction</span>&amp; <span style="color: #000088">inst</span>) { *<span style="color: #000088">this</span> = <span style="color: #000088">inst</span>; }
+  explicit <span style="color: #008800">cInstruction</span>(<span style="color: #880000">int</span> <span style="color: #000088">in_op</span>) { <span style="color: #008800">SetOp</span>(<span style="color: #000088">in_op</span>); }
+  <span style="color: #008800">~cInstruction</span>() { ; }
 
-  <font color="#886600">// Accessors...</font>
-  <font color="#880000">int</font> <font color="#008800">GetOp()</font> const { return static_cast&lt;int&gt;(<font color="#000088">m_operand</font>); }
-  void <font color="#008800">SetOp</font>(<font color="#880000">int</font> <font color="#000088">in_op</font>) { <font color="#008800">assert</font>(<font color="#000088">in_op</font> &lt; 256); <font color="#000088">m_operand</font> = <font color="#000088">in_op</font>; }
+  <span style="color: #886600">// Accessors...</span>
+  <span style="color: #880000">int</span> <span style="color: #008800">GetOp()</span> const { return static_cast&lt;int&gt;(<span style="color: #000088">m_operand</span>); }
+  void <span style="color: #008800">SetOp</span>(<span style="color: #880000">int</span> <span style="color: #000088">in_op</span>) { <span style="color: #008800">assert</span>(<span style="color: #000088">in_op</span> &lt; 256); <span style="color: #000088">m_operand</span> = <span style="color: #000088">in_op</span>; }
 
-  <font color="#886600">// Operators...</font>
-  void <font color="#008800">operator=</font>(const <font color="#880000">cInstruction</font>&amp; <font color="#000088">inst</font>) { <font color="#000088">m_operand</font> = <font color="#000088">inst</font>.<font color="#000088">m_operand</font>; }
-  <font color="#880000">bool</font> <font color="#008800">operator==</font>(const <font color="#880000">cInstruction</font>&amp; <font color="#000088">inst</font>) const { return (<font color="#000088">m_operand</font> == <font color="#000088">inst</font>.<font color="#000088">m_operand</font>); }
-  <font color="#880000">bool</font> <font color="#008800">operator!=</font>(const <font color="#880000">cInstruction</font>&amp; <font color="#000088">inst</font>) const { return !(<font color="#008800">operator==</font>(<font color="#000088">inst</font>)); }
+  <span style="color: #886600">// Operators...</span>
+  void <span style="color: #008800">operator=</span>(const <span style="color: #880000">cInstruction</span>&amp; <span style="color: #000088">inst</span>) { <span style="color: #000088">m_operand</span> = <span style="color: #000088">inst</span>.<span style="color: #000088">m_operand</span>; }
+  <span style="color: #880000">bool</span> <span style="color: #008800">operator==</span>(const <span style="color: #880000">cInstruction</span>&amp; <span style="color: #000088">inst</span>) const { return (<span style="color: #000088">m_operand</span> == <span style="color: #000088">inst</span>.<span style="color: #000088">m_operand</span>); }
+  <span style="color: #880000">bool</span> <span style="color: #008800">operator!=</span>(const <span style="color: #880000">cInstruction</span>&amp; <span style="color: #000088">inst</span>) const { return !(<span style="color: #008800">operator==</span>(<span style="color: #000088">inst</span>)); }
 
-  <font color="#886600">// Some extra methods to convert too and from alpha-numeric symbols...</font>
-  <font color="#880000">char</font> <font color="#008800">GetSymbol</font>() const;
-  void <font color="#008800">SetSymbol</font>(<font color="#880000">char</font> <font color="#000088">symbol</font>);
+  <span style="color: #886600">// Some extra methods to convert too and from alpha-numeric symbols...</span>
+  <span style="color: #880000">char</span> <span style="color: #008800">GetSymbol</span>() const;
+  void <span style="color: #008800">SetSymbol</span>(<span style="color: #880000">char</span> <span style="color: #000088">symbol</span>);
 };
 </pre>
 
 <p>
 As stated above, the only private datum is a numerical value that identifies
-this instruction.  The name <font color="#000088">m_operand</font> is the term
+this instruction.  The name <span style="color: #000088">m_operand</span> is the term
 that is used for a command name in an assembly language.  Most normal assembly
 languages have both an operand and arguments associated with each full command.
 In Avida, the commands have no arguments, and hence they just consist of a
@@ -75,12 +74,12 @@ large number of instructions throughout a population.  Instructions already
 make up over half of all the memory resources used by Avida.
 </p>
 <p>
-The public methods begin with the <font color="#008800">GetOp</font>() and
-<font color="#008800">SetOp</font>() methods, which are standard accessors.
+The public methods begin with the <span style="color: #008800">GetOp</span>() and
+<span style="color: #008800">SetOp</span>() methods, which are standard accessors.
 Next, we have a collection of methods that begin with the word 'operator'.
 These are used to define how the corresponding symbols should be treated
 when applied to objects of this class.  For example, the method 
-<font color="#008800">operator==</font>() is called when we try to compare
+<span style="color: #008800">operator==</span>() is called when we try to compare
 an object of type cInstruction to another.  We have full control over the
 definition of this method, just like any other.
 </p>
@@ -105,278 +104,78 @@ total construct.
 </p>
 
 <pre>
-class <font color="#880000">cGenome</font>
+class <span style="color: #880000">cGenome</span>
 {
 protected:
-  <font color="#880000">tArray</font>&lt;<font color="#880000">cInstruction</font>&gt; <font color="#000088">genome</font>;
-  int <font color="#000088">active_size</font>;
+  <span style="color: #880000">tArray</span>&lt;<span style="color: #880000">cInstruction</span>&gt; <span style="color: #000088">genome</span>;
+  int <span style="color: #000088">active_size</span>;
  
 public:
-  <font color="#008800">cGenome</font>() { ; }
-  explicit <font color="#008800">cGenome</font>(int <font color="#000088">_size</font>);
-  <font color="#008800">cGenome</font>(const <font color="#880000">cGenome</font>&amp; <font color="#000088">in_genome</font>);
-  <font color="#008800">cGenome</font>(const <font color="#880000">cString</font>&amp; <font color="#000088">in_string</font>);
-  virtual <font color="#008800">~cGenome</font>();
+  <span style="color: #008800">cGenome</span>() { ; }
+  explicit <span style="color: #008800">cGenome</span>(int <span style="color: #000088">_size</span>);
+  <span style="color: #008800">cGenome</span>(const <span style="color: #880000">cGenome</span>&amp; <span style="color: #000088">in_genome</span>);
+  <span style="color: #008800">cGenome</span>(const <span style="color: #880000">cString</span>&amp; <span style="color: #000088">in_string</span>);
+  virtual <span style="color: #008800">~cGenome</span>();
  
-  virtual void <font color="#008800">operator=</font>(const <font color="#880000">cGenome</font>&amp; <font color="#000088">other_genome</font>);
-  virtual bool <font color="#008800">operator==</font>(const <font color="#880000">cGenome</font>&amp; <font color="#000088">other_genome</font>) const;
-  virtual bool <font color="#008800">operator!=</font>(const <font color="#880000">cGenome</font>&amp; <font color="#000088">other_genome</font>) const { return !(<font color="#000088">this</font>-&gt;<font color="#008800">operator==</font>(<font color="#000088">other_genome</font>)); }
-  virtual bool <font color="#008800">operator&lt;</font>(const <font color="#880000">cGenome</font>&amp; <font color="#000088">other_genome</font>) const { return <font color="#008800">AsString</font>() &lt; <font color="#000088">other_genome</font>.<font color="#008800">AsString</font>(); }
+  virtual void <span style="color: #008800">operator=</span>(const <span style="color: #880000">cGenome</span>&amp; <span style="color: #000088">other_genome</span>);
+  virtual bool <span style="color: #008800">operator==</span>(const <span style="color: #880000">cGenome</span>&amp; <span style="color: #000088">other_genome</span>) const;
+  virtual bool <span style="color: #008800">operator!=</span>(const <span style="color: #880000">cGenome</span>&amp; <span style="color: #000088">other_genome</span>) const { return !(<span style="color: #000088">this</span>-&gt;<span style="color: #008800">operator==</span>(<span style="color: #000088">other_genome</span>)); }
+  virtual bool <span style="color: #008800">operator&lt;</span>(const <span style="color: #880000">cGenome</span>&amp; <span style="color: #000088">other_genome</span>) const { return <span style="color: #008800">AsString</span>() &lt; <span style="color: #000088">other_genome</span>.<span style="color: #008800">AsString</span>(); }
  
-  <font color="#880000">cInstruction</font> & <font color="#008800">operator[]</font>(<font color="#880000">int</font> <font color="#000088">index</font>)
-    { <font color="#008800">assert</font>(<font color="#000088">index</font> &gt;= 0 && <font color="#000088">index</font> &lt; <font color="#000088">active_size</font>);  return <font color="#000088">genome</font>[<font color="#000088">index</font>]; }
-  const <font color="#880000">cInstruction</font> & <font color="#008800">operator[]</font>(<font color="#880000">int</font> <font color="#000088">index</font>) const
-    { <font color="#008800">assert</font>(<font color="#000088">index</font> &gt;= 0 && <font color="#000088">index</font> &lt; <font color="#000088">active_size</font>);  return <font color="#000088">genome</font>[<font color="#000088">index</font>]; }
+  <span style="color: #880000">cInstruction</span>&amp; <span style="color: #008800">operator[]</span>(int <span style="color: #000088">index</span>) { <span style="color: #008800">assert</span>(<span style="color: #000088">index</span> &gt;= 0 &amp;&amp; <span style="color: #000088">index</span> &lt; <span style="color: #000088">active_size</span>);  return <span style="color: #000088">genome</span>[<span style="color: #000088">index</span>]; }
+  const <span style="color: #880000">cInstruction</span>&amp; <span style="color: #008800">operator[]</span>(<span style="color: #880000">int</span> <span style="color: #000088">index</span>) const { <span style="color: #008800">assert</span>(<span style="color: #000088">index</span> &gt;= 0 &amp;&amp; <span style="color: #000088">index</span> &lt; <span style="color: #000088">active_size</span>);  return <span style="color: #000088">genome</span>[<span style="color: #000088">index</span>]; }
  
-  virtual void <font color="#008800">Copy</font>(<font color="#880000">int</font> <font color="#000088">to</font>, <font color="#880000">int</font> <font color="#000088">from</font>);
+  virtual void <span style="color: #008800">Copy</span>(int <span style="color: #000088">to</span>, int <span style="color: #000088">from</span>);
  
-  <font color="#880000">int</font> <font color="#008800">GetSize()</font> const { return <font color="#000088">active_size</font>; }
-  <font color="#880000">cString</font> <font color="#008800">AsString()</font> const;
+  int <span style="color: #008800">GetSize</span>() const { return <span style="color: #000088">active_size</span>; }
+  <span style="color: #880000">cString</span> <span style="color: #008800">AsString</span>() const;
 };
 </pre>
 
 <p>
-The protected variable <font color="#000088">genome</font> is an array 
+The protected variable <span style="color: #000088">genome</span> is an array 
 containing an object of type cInstruction at each position.  The second
-variable, <font color="#000088">active_size</font> denotes the number of
+variable <span style="color: #000088">active_size</span> denotes the number of
 instructions in this array that are currently being used.  The fact that
 these variables are "protected" instead of "private" means that any
-class derived from cGenome will also have access to the variables.  In
-particular, we will discuss the class <font color="#880000">cCPUMemory</font>
-in a future lecture, which extends cGenome, adding methods to alter the
-array length and new variables to keep track of information about each
-instruction.
-
+class derived from <span style="color: #880000">cGenome</span> will also have direct
+access to the variables.  In particular, the class
+<span style="color: #880000">cCPUMemory</span> extends cGenome, adding methods to
+alter the array length and new variables to keep track of information about
+each instruction.
+</p>
 <p>
 Three constructors allow for a new cGenome object to be specified by either a
 genome length, a previously created genome, or else a string -- a sequence
 of symbols representing each instruction in order.
-
+</p>
 <p>
 The operators created for manipulating genomes include both assignment 
 (setting one genome equal to another) and comparison (testing to see if
 two genomes are identical.)  Additionally, there are two
-<font color="#008800">operator[]</font> methods.  These means that if you
+<span style="color: #008800">operator[]</span> methods.  This means that if you
 have an object of type cGenome, you can index into it to retrieve a single
-instruction.  Thus, if the object was called "initial_genome", the 
-statement "initial_genome[15]" would return the instruction at position
-fifteen in the genome.  This occurs by calling one of these methods with
-the appropriate integer.  The difference between these two operator methods
-is that one of them is for mutable genomes (i.e. those that can be modified)
--- a reference
-to the instruction in question is returned allowing it to be altered.
-The other index operator (operator[] method) is for const genomes, which
-can never be changed so only the value of the instruction is returned.
-
+instruction.  Thus, if the object was called <code>initial_genome</code>, the 
+statement <code>initial_genome[15]</code> would return the instruction at
+position fifteen in the genome. This occurs by calling one of these methods
+with the appropriate integer. The difference between these two operator
+methods is that one of them is for mutable genomes (i.e. those that can be
+modified) -- a reference to the instruction in question is returned allowing
+it to be altered. The other index operator (operator[] method) is for const
+genomes, which can never be changed so only the value of the instruction is
+returned.
+</p>
 <p>
-The <font color="#008800">Copy()</font> method is a shortcut to copy memory
+The <span style="color: #008800">Copy(</span>) method is a shortcut to copy memory
 from one position in the genome to another.  This method will later be
-<b>overloaded</b> (that is, replaced with a newer version) by cCPUMemory such
-that the proper flags will be copied, with
-the instruction and others will be set to indicate the copied instruction
-for future tests.  <font color="#008800">GetSize</font> returns the length
-of the genome, and <font color="#008800">AsString</font> returns a string
-who has symbols in each position that correspond to the the instruction in
-the same position in the genome.
-
-<h3>The cInstLib class</h3>
-
-<p>
-This class keeps track of all of the possible, legal instructions, and 
-relates each of them to the hardware method that should be triggered when
-that instruction is executed.
-
-<p>
-The beginning of the <tt>inst_lib.hh</tt> file has a couple of commands
-required for the class definition.  They are:
-
-<pre>
-  class <font color="#880000">cHardwareBase</font>;
-  typedef void (<font color="#880000">cHardwareBase</font>::*<font color="#880000">tHardwareMethod</font>)();
-</pre>
-
-<p>
-The first command basically states that there will be a class called
-<font color="#880000">cHardwareBase</font> that will be fully defined at
-some point in the future.  We need to refer to the class here, but not
-directly interact with any of its methods or variables, so it is sufficient
-to just tell the compiler that it is a class.  This form of statement is
-called a <b>predeclaration</b>.
-
-<p>
-The second line is a <tt>typedef</tt> statement, which defines a new data \
-type.  A typedef looks just like a variable declaration, but the
-keyword <tt>typedef</tt> indicates that the "variable" that
-would have been defined is instead a new "type".  For example, the command
-"<tt>typedef unsigned char UCHAR</tt>" creates a new type called "UCHAR" that
-is just an unsigned char.  In the case above, we are creating a new type
-called <font color="#880000">tHardwareMethod</font>, which is a pointer to
-a method in the class cHardwareBase.  Basically it will point to a location
-in memory that contains a method in the yet-to-be-defined class.  This is
-a tricky concept -- but it is the easiest way to point to a variable method
-that we don't know about until run time (when we load the instruction set
-file in).
-
-<p>
-The cInstLib class is long, so I'm going to split the code presentation into
-two halves, with explanation in between.  Here is the first part:
-
-<pre>
-  class <font color="#880000">cInstLib</font> {
-  private:
-
-    // This class gives full info about a single instruction in the library.
-    class <font color="#880000">cInstEntry</font> {
-    public:
-      <font color="#880000">cString</font> <font color="#000088">name</font>;             <font color="#886600">// Name of this instruction.</font>
-      <font color="#880000">tHardwareMethod</font> <font color="#000088">function</font>; <font color="#886600">// Pointer to hardware method.</font>
-  
-      <font color="#886600">// Some additional details to be used in the future...</font>
-      <font color="#880000">int</font> <font color="#000088">redundancy</font>;           <font color="#886600">// Weight in instruction set</font>
-      <font color="#880000">int</font> <font color="#000088">cost</font>;                 <font color="#886600">// additional time spent to execute inst.</font>
-      <font color="#880000">int</font> <font color="#000088">ft_cost</font>;              <font color="#886600">// additional time spent first time exec</font>
-      <font color="#880000">double</font> <font color="#000088">prob_fail</font>;         <font color="#886600">// probability of failing to execute inst</font>
-    };
-   
-    <font color="#880000">tArray&lt;cInstEntry&gt;</font> <font color="#000088">inst_array</font>;  <font color="#886600">// The instructions</font>
-    <font color="#880000">tArray&lt;int&gt;</font> <font color="#000088">nop_mods</font>;           <font color="#886600">// Modification table for nops</font>
-  
-    <font color="#886600">// Static components...</font>
-    static const <font color="#880000">cInstruction</font> <font color="#000088">inst_error</font>;
-    static const <font color="#880000">cInstruction</font> <font color="#000088">inst_none</font>;
-    static const <font color="#880000">cInstruction</font> <font color="#000088">inst_default</font>;
-</pre>
-
-<p>
-The first thing that I do in the private section of the cInstLib definition is
-define another class called <font color="#880000">cInstEntry</font>, which
-contains all of the information about a single entry in an instruction
-library.  Since it is defined internally and privately, cInstEntry can only
-be used <i>inside</i> of cInstLib; we refer to it as a <b>helper</b> class.
-
-<p>
-cInstEntry contains only pubiic data about a single instruction.  At the
-moment, the only portion of that data that we are using is the instruction
-name and the hardware method that it is supposed to call.  We also have
-room to record how redundant this instruction is supposed to be in the 
-full instruction set, how many CPU cycles should be spent as the cost to
-executing it, an additional first-time cost incurred only the first time
-the instruction is used by an organism, and a probability of failure, that
-the instruction will not be executed at all.  Any other useful information
-about an instruction can be put here, but then it should also be made use
-of elsewhere in the code.
-
-<p>
-After the definition of cInstEntry, we have the declaration of an array of
-entries called <font color="#000088">inst_array</font>.  The position of
-an instruction in this array is the ID number that uniquely identifies that
-instruction.  Thus, whichever instruction entry is placed in the array first,
-that instruction has ID of 0.  The next one has an ID of 1, then 2, and so on.
-
-<p>
-The inst_array has the instructions ordered in the same order they are
-presented in the inst_lib file from which they are loaded with one
-caveat: all no-operation instructions must be listed first.  This is 
-because the next variable, <font color="#000088">nop_mods</font> is an
-array that indicates which CPU component each nop is associated with.
-The size of this array determines how many nops there are, and they 
-directly correspond to the same array positions in inst_array.
-
-<p>
-In the default instruction set, the inst_array has 26 entries contained
-in it, since this is the size of the instruction set, the first three of
-which are <tt>nop-A</tt>, <tt>nop-B</tt>, and <tt>nop-C</tt> respectively.
-The nop_mods array has three integers in it, one for each of the three
-nops.
-
-<p>
-The remainder of the private section of the cInstSet definition contains
-three static and constant variables that represent special instructions.
-They are <font color="#000088">inst_error</font>, for an illegal instruction
-(it will be given the ID number 254), <font color="#000088">inst_none</font>
-to represent an empty position (ID number 255), and
-<font color="#000088">inst_default</font> for the default instruction to
-initialize genomes with, unless otherwise specified (usually ID number 0
--- <tt>nop-A</tt> in the default set -- but this can be changed).
-
-<p>
-Here is the public portion of the cInstLib definition:
-
-<pre>
-  public:
-    <font color="#008800">cInstLib()</font> { ; }
-    <font color="#008800">cInstLib</font>(const <font color="#880000">cInstLib</font> & <font color="#000088">in_inst_lib</font>);
-    <font color="#008800">~cInstLib()</font> { ; }
-   
-    <font color="#880000">cInstLib</font> & <font color="#008800">operator=</font>(const <font color="#880000">cInstLib</font> & <font color="#000088">_in</font>);
-   
-    <font color="#886600">// Accessors</font>
-    const <font color="#880000">cString</font> & <font color="#008800">GetName</font>(const <font color="#880000">cInstruction</font> & <font color="#000088">inst</font>) const;
-    <font color="#880000">tHardwareMethod</font> <font color="#008800">GetFunction</font>(const <font color="#880000">cInstruction</font> & <font color="#000088">inst</font>) const;
-    <font color="#880000">int</font> <font color="#008800">GetNopMod</font>(const <font color="#880000">cInstruction</font> & <font color="#000088">inst</font>) const
-      { return <font color="#000088">nop_mods</font>[<font color="#000088">inst</font>.<font color="#008800">GetOp()</font>]; }
-
-    <font color="#880000">cInstruction</font> <font color="#008800">GetInst</font>(const <font color="#880000">cString</font> & <font color="#000088">in_name</font>) const;
-   
-    <font color="#880000">int</font> <font color="#008800">GetSize()</font> const { return <font color="#000088">inst_array</font>.<font color="#008800">GetSize()</font>; }
-    <font color="#880000">int</font> <font color="#008800">GetNumNops()</font> const { return <font color="#000088">nop_mods</font>.<font color="#008800">GetSize()</font>; }
-   
-    <font color="#886600">// Instruction Analysis.</font>
-    <font color="#880000">int</font> <font color="#008800">IsNop</font>(const <font color="#880000">cInstruction</font> & <font color="#000088">inst</font>) const
-      { return (<font color="#000088">inst</font>.<font color="#008800">GetOp()</font> &lt; <font color="#000088">nop_mods</font>.<font color="#008800">GetSize()</font>); }
-    <font color="#880000">cString</font> <font color="#008800">FindBestMatch</font>(const <font color="#880000">cString</font> & <font color="#000088">in_name</font>) const;
-  
-    <font color="#886600">// Insertion of new instructions...</font>
-    <font color="#880000">int</font> <font color="#008800">Add</font>(const <font color="#880000">cString</font> & <font color="#000088">_name</font>, <font color="#880000">tHardwareMethod</font> <font color="#000088">_fun</font>,
-            <font color="#880000">int</font> <font color="#000088">redundancy</font>=1, <font color="#880000">int</font> <font color="#000088">ft_cost</font>=0, <font color="#880000">int</font> <font color="#000088">cost</font>=0, <font color="#880000">double</font> <font color="#000088">prob_fail</font>=0.0);
-    <font color="#880000">int</font> <font color="#008800">AddNop</font>(const <font color="#880000">cString</font> & <font color="#000088">_name</font>, <font color="#880000">tHardwareMethod</font> <font color="#000088">_fun</font>, <font color="#880000">int</font> <font color="#000088">reg</font>,
-            <font color="#880000">int</font> <font color="#000088">redundancy</font>=1, <font color="#880000">int</font> <font color="#000088">ft_cost</font>=0, <font color="#880000">int</font> <font color="#000088">cost</font>=0, <font color="#880000">double</font> <font color="#000088">prob_fail</font>=0.0);
-   
-    <font color="#886600">// Static methods...</font>
-    static const <font color="#880000">cInstruction</font> & <font color="#008800">GetInstDefault()</font> { return <font color="#000088">inst_default</font>; }
-    static const <font color="#880000">cInstruction</font> & <font color="#008800">GetInstError()</font>   { return <font color="#000088">inst_error</font>; }
-    static const <font color="#880000">cInstruction</font> & <font color="#008800">GetInstNone()</font>    { return <font color="#000088">inst_none</font>; }
-  };
-</pre>
-
-<p>
-The constructors, destructor, and assignment operator are all rather standard
-for this class -- an instruction library can either be created from scratch
-or else copied over from a pre-existing one.
-
-<p>
-The accessors in this class allow specific information to be obtained about
-instructions passed in.  The <font color="#008800">GetName()</font> method
-returns the human-readable name for a specific instruction,
-<font color="#008800">GetFunction()</font> returns a pointer to the method
-associated with an instruction, and <font color="#008800">GetNopMod()</font>
-returns the id of the component modified by a nop-instruction passed in.
-Conversely, <font color="#008800">GetInst()</font> will return an instruction
-object when an instruction name (as a string) is passed in.
-Additionally, there are the accessors <font color="#008800">GetSize()</font>
-to obtain the total number of instructions in the set, and
-<font color="#008800">GetNumNops()</font> will return the number of nop
-instructions in the set.
-
-<p>
-Two instruction analysis methods also exist; one to determine if an
-instruction is a nop called <font color="#008800">IsNop()</font>, and
-another method called <font color="#008800">FindBestMatch()</font> takes
-in an unknown instruction name, and returns the closest name match that it
-can find in the set.  This allows Avida to make suggestions to the user
-in the case of a mis-spelled instruction name.
-
-<p>
-An instruction set is initially loaded by successive calls to the
-<font color="#008800">Add()</font> and <font color="#008800">AddNop()</font>,
-filling in the appropriate arguments.  These methods are called from a
-utility class (<font color="#880000">cHardwareUtil</font>) that manages the
-loading of the inst_set file.  Next class we will be integrating the classes
-discussed here with the classes that directly implment the hardware.
-
-<p>
-Finally, three static methods are included to provide access to the
-three pre-defined instructions.
+<strong>overloaded</strong> (that is, replaced with a newer version) by
+cCPUMemory such that the proper flags will be copied, with the instruction
+and others will be set to indicate the copied instruction for future tests.
+<span style="color: #008800">GetSize</span>() returns the length of the genome, and
+<span style="color: #008800">AsString</span>() returns a string who has symbols in
+each position that correspond to the the instruction in the same position in
+the genome.
+</p>
 
 
 <hr />

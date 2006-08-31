@@ -49,7 +49,7 @@ private:
   };
   
 
-  cTaskLib(const cTaskLib &); // @not_implemented
+  cTaskLib(const cTaskLib&); // @not_implemented
   cTaskLib& operator=(const cTaskLib&); // @not_implemented
 
 public:
@@ -58,7 +58,7 @@ public:
 
   int GetSize() const { return task_array.GetSize(); }
 
-  cTaskEntry * AddTask(const cString & name, const cString & info);
+  cTaskEntry* AddTask(const cString& name, const cString& info);
   const cTaskEntry& GetTask(int id) const;
   
   void SetupTests(cTaskContext& ctx) const;
