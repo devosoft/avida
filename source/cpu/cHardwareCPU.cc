@@ -2807,14 +2807,12 @@ bool cHardwareCPU::Inst_HeadWrite(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_HeadCopy(cAvidaContext& ctx)
 {
   // For the moment, this cannot be nop-modified.
-  cHeadCPU & read_head = GetHead(nHardware::HEAD_READ);
-  cHeadCPU & write_head = GetHead(nHardware::HEAD_WRITE);
-  sCPUStats & cpu_stats = organism->CPUStats();
+  cHeadCPU& read_head = GetHead(nHardware::HEAD_READ);
+  cHeadCPU& write_head = GetHead(nHardware::HEAD_WRITE);
+  sCPUStats& cpu_stats = organism->CPUStats();
   
   read_head.Adjust();
   write_head.Adjust();
-  
-  // TriggerMutations(nMutation::TRIGGER_READ, read_head);
   
   // Do mutations.
   cInstruction read_inst = read_head.GetInst();
@@ -2824,15 +2822,12 @@ bool cHardwareCPU::Inst_HeadCopy(cAvidaContext& ctx)
     cpu_stats.mut_stats.copy_mut_count++; 
     write_head.SetFlagMutated();
     write_head.SetFlagCopyMut();
-    //organism->GetPhenotype().IsMutated() = true;
   }
   
   cpu_stats.mut_stats.copies_exec++;
   
   write_head.SetInst(read_inst);
   write_head.SetFlagCopied();  // Set the copied flag...
-  
-  // TriggerMutations(nMutation::TRIGGER_WRITE, write_head);
   
   read_head.Advance();
   write_head.Advance();

@@ -1,57 +1,60 @@
 <html>
-<title>The Stages of Replication</title>
-<body
- bgcolor="#FFFFFF"
- text="#000000"
- link="#0000AA"
- alink="#0000FF"
- vlink="#000044">
+<head>
+  <title>Avida : Guide to an Avidian Life Cycle</title>
+</head>
+<body>
 
-<h2 align=center>The Stages of Replication</h2>
+<div style="float: right">
+Revised 2006-08-31 DMB
+</div>
 
-This document examines the details of commands directly involved in
-replication.
+<p><a href="index.html">Return to the Index</a></p>
+<hr />
 
-<h3>1. Allocation of Offspring Memory</h3>
+<div align="center">
+<h1>Guide to an Avidian Life Cycle</h1>
+</div>
 
 <p>
-The very first instruction in most heads-based organisms is "<tt>h-alloc</tt>",
+This document examines the details of commands directly involved in
+replication.
+</p>
+
+
+<p>&nbsp;</p>
+<h2>1. Allocation of Offspring Memory</h2>
+
+<p>
+The very first instruction in most heads-based organisms is <code>h-alloc</code>,
 which will allocate space for an offspring to be placed into.  If you look at
-the file <tt>source/cpu/hardware_util.cc</tt>, you will see that this
+the file <kbd>source/cpu/cHardwareCPU.cc</kbd>, you will see that this
 instruction is associated with the method
 <font color="#880000">cHardwareCPU</font>::<font color="#008800">Inst_MaxAlloc</font>().
 What this means is that the organism will automatically allocate as much
 space as it possibly can, without having to first calculate its needs.  When
 the organism is finished copying itself and divides off its child, any excess
-allocated memory will automatically be discarded.  It appears in the
-code as follows:
+allocated memory will automatically be discarded.
+<p/>
+<p>
+This Inst_MaxAlloc() method will determine the maximum amount of extra space
+that an organism is allowed to allocate, and then run the Allocate_Main()
+function passing in that amount.  Allocate_Main is a very long method which is
+mostly just check to make sure that everything going on is legal, and then
+initializes the new memory that was allocated as per the configuration file:
+random, default instruction, or leave as it was in the previous organism that
+used it (for &quot;necrophelia&quot;).
+</p>
 
-<pre>
-  void <font color="#880000">cHardwareCPU</font>::<font color="#008800">Inst_MaxAlloc</font>()   <font color="#886600">// Allocate maximum additional memory</font>
-  {
-    const <font color="#880000">int</font> <font color="#000088">cur_size</font> = <font color="#008800">GetMemory</font>().<font color="#008800">GetSize</font>();
-    const <font color="#880000">int</font> <font color="#000088">alloc_size</font> = <font color="#008800">Min</font>((<font color="#880000">int</font>) (<font color="#880000">cConfig</font>::<font color="#008800">GetChildSizeRange</font>() * <font color="#000088">cur_size</font>),
-                               MAX_CREATURE_SIZE - <font color="#000088">cur_size</font>);
-    if( <font color="#008800">Allocate_Main</font>(<font color="#000088">alloc_size</font>) )  <font color="#008800">Register</font>(REG_AX) = <font color="#000088">cur_size</font>;
-  }
-</pre>
+
+<p>&nbsp;</p>
+<h2>2. Initial Self-Analysis</h2>
 
 <p>
-This method will determine the maximum amount of extra space that an organism
-is allowed to allocate, and then run the Allocate_Main() function passing in
-that amount.  Allocate_Main is a very long method which is mostly just check
-to make sure that everything going on is legal, and then initializes the new
-memory that was allocated as per the genesis file: random, default instruction,
-or leave as it was in the previous organism that used it (for "necrophelia").
-
-<h3>2. Initial Self-Analysis</h3>
-
-<p>
-Most of the initial self-analysis done on avida organisms is with the
-<tt>search</tt> instruction or one of its variants.  In the heads based
-instruction set, we call this "<tt>h-search</tt>" and associate it with the
+Most of the initial self-analysis done on Avida organisms is with the
+<code>search</code> instruction or one of its variants.  In the heads based
+instruction set, we call this <code>h-search</code> and associate it with the
 method <font color="#880000">cHardwareCPU</font>::<font color="#008800">Inst_HeadSearch</font>().
-
+</p>
 <p>
 The search type instructions read in the template (series of nops) that
 follows it, determine the complement template, and find that complement
@@ -60,56 +63,43 @@ distance to the found template and the size of that template respectively.
 Finally, we place the flow control head at the end of the template found in
 order to reference it later on.  Obviously this last step only occurs
 in the heads-based search.
-
+</p>
 <p>
 The first search instruction executed by a heads organism is typically used
 to locate the end of its genome.  The search will place the flow-head at
 the end of the genome, which the organism will use to move the write head to
-this point as well.  This is done with the "<tt>mov-head</tt>" instruction,
-implemented as follows:
-
-<pre>
-  void <font color="#880000">cHardwareCPU</font>::<font color="#008800">Inst_MoveHead</font>()
-  {
-    const <font color="#880000">int</font> <font color="#000088">head_used</font> = <font color="#008800">FindModifiedHead</font>(HEAD_IP);
-    <font color="#008800">GetHead</font>(<font color="#000088">head_used</font>).<font color="#008800">Set</font>(<font color="#008800">GetHead</font>(HEAD_FLOW));
-    if (<font color="#000088">head_used</font> == HEAD_IP) <font color="#000088">advance_ip</font> = false;
-  }
-</pre>
-
+this point as well.  This is done with the <code>mov-head</code> instruction.
+</p>
 <p>
-If the <tt>mov-head</tt> instruction is followed by a <tt>nop-C</tt> it will
-move the write head to the flow head, and ideally be ready to start copying
-itself into the newly allocated space for the offspring.
+If the <code>mov-head</code> instruction is followed by a <code>nop-C</code> it
+will move the write head to the flow head, and ideally be ready to start
+copying itself into the newly allocated space for the offspring.
+</p>
 
-<br>
-<br>
-<br>
-<br>
-<h3>3. The Copy Loop</h3>
+
+<p>&nbsp;</p>
+<h2>3. The Copy Loop</h2>
 
 <p>
 The copy loop is the heart of any organism.  It consists of a setup,
 a copy segment to copy one or more instructions, a test segment to determine
-if the loop has finished, and a "jump" type instruction to move back to
+if the loop has finished, and a 'jump' type instruction to move back to
 copy the next line.
-
+</p>
 <p>
-In a hand written organism, the setup is an <tt>h-search</tt> command with
+In a hand written organism, the setup is an <code>h-search</code> command with
 no template to direct its behavior.  The default when this instruction does not
 have a template is to just drop the flow-head at the very next instruction,
 which is what it is used for here -- it places the flow head at the beginning
 of the portion of code that will actually be looped through copying each line.
-
+</p>
 <p>
-The copy segment is typically just a single h-copy
-instruction, which will read in an instruction from the location of the 
-read-head, and write it out to the location of the write-head.  It will then
-advance both heads to the next positions in the genomes.  Take a look at
-the source code for the method
-<font color="#880000">cHardwareCPU</font>::<font color="#008800">Inst_HeadCopy</font>(),
-which you will find in your handout for the file <tt>hardware_cpu.cc</tt>.
-
+The copy segment is typically just a single <code>h-copy</code> instruction
+that will read in an instruction from the location of the read-head, and write
+it out to the location of the write-head.  It will then advance both heads to
+the next positions in the genomes.  Take a look at the source code for the
+method <font color="#880000">cHardwareCPU</font>::<font color="#008800">Inst_HeadCopy</font>().
+</p>
 <p>
 The first thing that happens in this method is the variables
 <font color="#000088">read_head</font>,
@@ -122,42 +112,41 @@ we are working with.  The read_head and write_head are then adjusted to make
 sure they are in a legal position on the genome (if, for example, the last
 instruction changed the organism's size, the heads might no longer be
 pointing to memory that still exists).
-
+</p>
 <p>
 Next, the instruction at the read head is recorded in the variable
 <font color="#000088">read_inst</font>, and we test to see if this should
 be mutated to some other value.  If a mutation does occur, we change the
 read_inst variable to a random value, increment the mutation count, and mark
-flags at
-the instruction position of the write head to denote the mutation.  After we
-determine what instruction was read (be it a correct reading or not), we call
-the <font color="#008800">ReadHead</font>() method, which is simply used to
-keep track of the most recent template copied.  This template is used to help
-detect the end of the organism, which we shall discuss in a moment.
-
+flags at the instruction position of the write head to denote the mutation.
+After we determine what instruction was read (be it a correct reading or not),
+we call the <font color="#008800">ReadInst</font>() method, which is simply
+used to keep track of the most recent template copied.  This template is used
+to help detect the end of the organism, which we shall discuss in a moment.
+</p>
 <p>
 Finally, we collect the statistics that another copy command was executed
 in this organism, finish the write by placing this instruction at the position
 of the write head (and setting its flag as being a copied instruction) and
 then advancing both heads to their next positions.
-
+</p>
 <p>
 After an organism executes one of these copies it has to test to see if it
 is done copying itself.  The heads based organisms will typically do this
-with the aid of the <tt>if-label</tt> instruction, which tests to see if
+with the aid of the <code>if-label</code> instruction, which tests to see if
 the most recent label copied is the complement of the one that follows it.
 If so, it will execute the next instruction (often a divide), otherwise it
-will skip that next instruction and execute a <tt>mov-head</tt> that will
+will skip that next instruction and execute a <code>mov-head</code> that will
 jump the instruction pointer back to the flow head that was placed at the
 beginning of the copy loop.  It will continue this copy-test-jump cycle
 until all the lines have been copied.
-
+</p>
 <p>
-A common adaptation is "unrolling the loop".
+A common adaptation is &quot;unrolling the loop&quot;.
 In the hand-written version discussed above, each instruction must have
-three instructions executed to copy it: <tt>h-copy</tt>, <tt>if-label</tt>,
-and <tt>mov-head</tt>.  But what if a second
-<tt>h-copy</tt> command were inserted after the first?  Now the program
+three instructions executed to copy it: <code>h-copy</code>,
+<code>if-label</code>, and <code>mov-head</code>.  But what if a second
+<code>h-copy</code> command were inserted after the first?  Now the program
 would be one line longer, so it would have more to copy, but each time
 through the loop would now copy two instructions while executing four --
 that means that on average only two instructions need be executed to copy
@@ -165,32 +154,29 @@ one.  A *huge* savings.  The main drawback to the organism is that its
 length will need to be a multiple of two, or else the test to see if it is
 finished won't occur at the proper time.  This loop unrolling becomes less
 and less beneficial each time the organism does it, so it won't go completely
-out of control, but I do think it is a bit too easy in the current version of
-the code.
+out of control.
+</p>
 
-<br>
-<br>
-<br>
-<br>
-<br>
-<h3>4. Dividing off the Child</h3>
+
+<p>&nbsp;</p>
+<h2>4. Dividing off the Child</h2>
 
 <p>
 When an organism finishes copying itself, it needs to divide off its
 child using a divide command.  In the heads based instruction set, this is
-the <tt>h-divide</tt> command which calls the
+the <code>h-divide</code> command which calls the
 <font color="#880000">cHardwareCPU</font>::<font color="#008800">Inst_HeadDivide</font>()
-method, found in your <tt>hardware_cpu.cc</tt> handout.
-
+method.
+</p>
 <p>
 This method will use the read head to determine the starting location of the
 offspring, and the write head to determine its end.  This is logical because
 these are the locations that the heads should be in right after the copy loop
 has finished.  Everything after the write head is cut off and discarded as
-"extra_lines".  This information is passed into the Divide_Main method
-which does the bulk of the work for divide (and is called by all of the
-various divide instructions in all of the sets).
-
+&quot;extra lines&quot;. This information is passed into the Divide_Main method
+which does the bulk of the work for divide (and is called by all of the various
+divide instructions in all of the sets).
+</p>
 <p>
 The <font color="#880000">cHardwareCPU</font>::<font color="#008800">Divide_Main</font>()
 method is therefore what we are most interested in.  It begins by calculating
@@ -199,9 +185,9 @@ extra_line count that were passed into it, and runs
 <font color="#008800">Divide_CheckViable</font>() to make sure that all of
 these values are legal (that is that both parent and child are reasonable
 sizes for organisms, and reasonable sizes in relationship to each other -- for
-definitions of reasonable as found in the <tt>genesis</tt> file).  If any of
+definitions of reasonable as found in the configuration file).  If any of
 them are not legal, the method returns false.
-
+</p>
 <p>
 From this point on, we know the divide is legal, so we just need to process
 it.  We create a variable called <font color="#000088">child_genome</font>,
@@ -213,7 +199,7 @@ this method.  We initialize the child genome to the section of the parents
 genome that was created for it.  We then run
 <font color="#008800">Resize</font>() on the parent genome to get
 rid of all of this extra space (both child and extra lines).
-
+</p>
 <p>
 The <font color="#008800">Divide_DoMutations</font>() method will test and
 (if needed) process any divide mutations that may occur.  There are many of
@@ -224,60 +210,48 @@ genesis file (such as mutation reversions).  Obviously this is very processor
 intensive since it would occur with every birth, so tests are only performed
 if required.  Both of these methods are left to the reader to step through
 themselves.
-
-<p>
-Next, the method <font color="#008800">Divide_SetupChild</font>() is
-executed on the organism to transform the child genome we have constructed
-into a full-fledged child organism (adding in references to the environment,
-its interface to the population, its parent's phenotypic characteristics,
-etc.)  Basically, it gets the child organism ready to be inserted into the
-population, but does not do so yet.  This method is located in
-<tt>source/main/organism.cc</tt> if you wish to look at it for yourself.
-
+</p>
 <p>
 If we are using extra costs associated with the first time instructions are
 used, those costs a reset now that a divide has occurred, and must be paid for
 again on the next divide cycle.
-
+</p>
 <p>
 After a divide, we mark that we no longer have a mal (Memory ALlocation)
 active.  If the parent is reset (i.e., we have two offspring, not a parent
 and child) we need to make sure not to advance the IP of the parent.  The
 reset parent has its IP placed at the beginning of its genome, and we want
 to leave it there to execute the very first instruction.
-
+</p>
 <p>
 Finally, we tell the organism to activate the divide and do something with
 the child.  Give the child to the population (or the test CPU as the case
 may be) to be dealt with, and reset the parent if we're splitting into two
 offspring.
+</p>
+
+
+<p>&nbsp;</p>
+<h2>5. Other Bits</h2>
 
 <p>
-We will examine the population in a future class, where I'll go into more
-detail as to how the child organism is placed.  By default, the placing of
-an organism in the population can cause the removal of an organism that is
-already there, and this is the only way that an organism can be killed off.
-
-<br>
-<br>
-<br>
-<h3>5. Other Bits</h3>
-
-<p>
-In the description of this life-cycle, one issue that I have not discussed is
-where these organisms would perform their computations.  In truth, there
-isn't a fixed time other than it must be before the divide occurs, since
-merit is recalculated on a divide.  In practice it will typically be place
-right before the copy loop, but there are plenty of exceptions.
-
+In the description of this life-cycle, one issue that has not been discussed is
+where these organisms would perform their computations.  In truth, there  isn't
+a fixed time other than it must be before the divide occurs, since merit is
+recalculated on a divide.  In practice it will typically be placed right before
+the copy loop, but there are plenty of exceptions.
+</p>
 <p>
 Ideally, in the longer term, an organism's life will be composed of much
 more than just replication and computations -- they will have to interact with
 each other and have more interactions with the environment.  In a
 multi-threaded model, organisms will be doing many activities at the same
 time.
+</p>
 
-<br><hr>
-Project hosted by:<br>
-<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=46761&type=2" width="125" height="37" border="0" alt="SourceForge.net"/></a>
-    
+
+<hr />
+<p><a href="index.html">Return to the Index</a></p>
+
+</body>
+</html>
