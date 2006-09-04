@@ -5,8 +5,8 @@
 </head>
 <body>
 
-<div style="float: right">
-Revised 2006-08-30 DMB
+<div class="revision">
+Revised 2006-09-03 DMB
 </div>
 
 <p><a href="index.html">Return to the Index</a></p>
@@ -36,32 +36,32 @@ the next section of this document.
 </p>
 
 <pre>
-void <span style="color: #880000">cPopulation</span>::<span style="color: #008800">KillOrganism</span>(<span style="color: #880000">cPopulationCell</span>&amp; <span style="color: #000088">in_cell</span>)
+void <span class="class">cPopulation</span>::<span class="method">KillOrganism</span>(<span class="class">cPopulationCell</span>&amp; <span class="object">in_cell</span>)
 {
-  <span style="color: #886600">// do we actually have something to kill?</span>
-  if (<span style="color: #000088">in_cell</span>.<span style="color: #008800">IsOccupied</span>() == false) return;
+  <span class="comment">// do we actually have something to kill?</span>
+  if (<span class="object">in_cell</span>.<span class="method">IsOccupied</span>() == false) return;
 
-  <span style="color: #886600">// Statistics...</span>
-  <span style="color: #880000">cOrganism</span>* <span style="color: #000088">organism</span> = <span style="color: #000088">in_cell</span>.<span style="color: #008800">GetOrganism</span>();
-  <span style="color: #880000">cGenotype</span>* <span style="color: #000088">genotype</span> = <span style="color: #000088">organism</span>-&gt;<span style="color: #008800">GetGenotype</span>();
-  <span style="color: #000088">m_world</span>-&gt;<span style="color: #008800">GetStats</span>().<span style="color: #008800">RecordDeath</span>();
+  <span class="comment">// Statistics...</span>
+  <span class="class">cOrganism</span>* <span class="object">organism</span> = <span class="object">in_cell</span>.<span class="method">GetOrganism</span>();
+  <span class="class">cGenotype</span>* <span class="object">genotype</span> = <span class="object">organism</span>-&gt;<span class="method">GetGenotype</span>();
+  <span class="object">m_world</span>-&gt;<span class="method">GetStats</span>().<span class="method">RecordDeath</span>();
 
-  <span style="color: #886600">// Do the lineage handling</span>
-  if (<span style="color: #000088">m_world</span>-&gt;<span style="color: #008800">GetConfig</span>().<span style="color: #000088">LOG_LINEAGES</span>.<span style="color: #008800">Get</span>()) { <span style="color: #000088">m_world</span>-><span style="color: #008800">GetClassificationManager</span>().<span style="color: #008800">RemoveLineageOrganism</span>(<span style="color: #000088">organism</span>); }
+  <span class="comment">// Do the lineage handling</span>
+  if (<span class="object">m_world</span>-&gt;<span class="method">GetConfig</span>().<span class="object">LOG_LINEAGES</span>.<span class="method">Get</span>()) { <span class="object">m_world</span>-><span class="method">GetClassificationManager</span>().<span class="method">RemoveLineageOrganism</span>(<span class="object">organism</span>); }
 
-  <span style="color: #000088">num_organisms</span>--;
-  <span style="color: #000088">genotype</span>-&gt;<span style="color: #008800">RemoveOrganism</span>();
+  <span class="object">num_organisms</span>--;
+  <span class="object">genotype</span>-&gt;<span class="method">RemoveOrganism</span>();
 
-  <span style="color: #886600">// And clear it!</span>
-  <span style="color: #000088">in_cell</span>.<span style="color: #008800">RemoveOrganism</span>();
-  if (!<span style="color: #000088">organism</span>-&gt;<span style="color: #008800">GetIsRunning</span>()) delete <span style="color: #000088">organism</span>;
-  else <span style="color: #000088">organism</span>-&gt;<span style="color: #008800">GetPhenotype</span>().<span style="color: #008800">SetToDelete</span>();
+  <span class="comment">// And clear it!</span>
+  <span class="object">in_cell</span>.<span class="method">RemoveOrganism</span>();
+  if (!<span class="object">organism</span>-&gt;<span class="method">GetIsRunning</span>()) delete <span class="object">organism</span>;
+  else <span class="object">organism</span>-&gt;<span class="method">GetPhenotype</span>().<span class="method">SetToDelete</span>();
 
-  <span style="color: #886600">// Alert the scheduler that this cell has a 0 merit.</span>
-  <span style="color: #000088">schedule</span>-&gt;<span style="color: #008800">Adjust</span>(<span style="color: #000088">in_cell</span>.<span style="color: #008800">GetID</span>(), <span style="color: #880000">cMerit</span>(0));
+  <span class="comment">// Alert the scheduler that this cell has a 0 merit.</span>
+  <span class="object">schedule</span>-&gt;<span class="method">Adjust</span>(<span class="object">in_cell</span>.<span class="method">GetID</span>(), <span class="class">cMerit</span>(0));
 
-  <span style="color: #886600">// Update the archive (note: genotype adjustment may be defered)</span>
-  <span style="color: #000088">m_world</span>-&gt;<span style="color: #008800">GetClassificationManager</span>().<span style="color: #008800">AdjustGenotype</span>(*<span style="color: #000088">genotype</span>);
+  <span class="comment">// Update the archive (note: genotype adjustment may be defered)</span>
+  <span class="object">m_world</span>-&gt;<span class="method">GetClassificationManager</span>().<span class="method">AdjustGenotype</span>(*<span class="object">genotype</span>);
 }
 </pre>
 
@@ -74,7 +74,7 @@ reflect that there is one fewer.
 </p>
 <p>
 Once the statistics are finished, the cell itself is cleared with the
-<span style="color: #880000">cPopulationCell</span>::<span style="color: #008800">RemoveOrganism</span>()
+<span class="class">cPopulationCell</span>::<span class="method">RemoveOrganism</span>()
 method (in which the pointer to the organism it once contained is set to NULL).
 At this point if the organism is not the currently running CPU it will be
 deleted.  Otherwise, a flag is set that marks the organism for deletion after
@@ -91,62 +91,62 @@ to reflect that this cell is now empty.
 If an organism is going to be placed into a specific cell of the population,
 the method ActivateOrganism can be called on the population, telling it the
 location in memory of the organism to be placed and the cell to place it in.
-This method will call the <span style="color: #008800">KillOrganism</span>() method
+This method will call the <span class="method">KillOrganism</span>() method
 to make sure the cell is unoccupied.  This method is called from the
-<span style="color: #008800">Inject</span>() method as well as
-<span style="color: #008800">ActivateOffspring</span>(), described below.
+<span class="method">Inject</span>() method as well as
+<span class="method">ActivateOffspring</span>(), described below.
 Here is the ActivateOrganism method:
 
 <pre>
-void <span style="color: #880000">cPopulation</span>::<span style="color: #008800">ActivateOrganism</span>(<span style="color: #880000">cAvidaContext</span>&amp; <span style="color: #000088">ctx</span>, <span style="color: #880000">cOrganism</span>* <span style="color: #000088">in_organism</span>, <span style="color: #880000">cPopulationCell</span>&amp; <span style="color: #000088">target_cell</span>)
+void <span class="class">cPopulation</span>::<span class="method">ActivateOrganism</span>(<span class="class">cAvidaContext</span>&amp; <span class="object">ctx</span>, <span class="class">cOrganism</span>* <span class="object">in_organism</span>, <span class="class">cPopulationCell</span>&amp; <span class="object">target_cell</span>)
 {
-  <span style="color: #000088">in_organism</span>-&gt;<span style="color: #008800">SetOrgInterface</span>(new <span style="color: #880000">cPopulationInterface</span>(<span style="color: #000088">m_world</span>));
+  <span class="object">in_organism</span>-&gt;<span class="method">SetOrgInterface</span>(new <span class="class">cPopulationInterface</span>(<span class="object">m_world</span>));
 
-  <span style="color: #886600">// If the organism does not have a genotype, give it one!  No parent</span>
-  <span style="color: #886600">// information is provided so we must set parents to NULL.</span>
-  if (<span style="color: #000088">in_organism</span>-&gt;<span style="color: #008800">GetGenotype</span>() == NULL) {
-    <span style="color: #880000">cGenotype</span>* <span style="color: #000088">new_genotype</span> = <span style="color: #000088">m_world</span>-&gt;<span style="color: #008800">GetClassificationManager</span>().<span style="color: #008800">GetGenotype</span>(<span style="color: #000088">in_organism</span>-&gt;<span style="color: #008800">GetGenome</span>(), NULL, NULL);
-    <span style="color: #000088">in_organism</span>-><span style="color: #008800">SetGenotype</span>(<span style="color: #000088">new_genotype</span>);
+  <span class="comment">// If the organism does not have a genotype, give it one!  No parent</span>
+  <span class="comment">// information is provided so we must set parents to NULL.</span>
+  if (<span class="object">in_organism</span>-&gt;<span class="method">GetGenotype</span>() == NULL) {
+    <span class="class">cGenotype</span>* <span class="object">new_genotype</span> = <span class="object">m_world</span>-&gt;<span class="method">GetClassificationManager</span>().<span class="method">GetGenotype</span>(<span class="object">in_organism</span>-&gt;<span class="method">GetGenome</span>(), NULL, NULL);
+    <span class="object">in_organism</span>-><span class="method">SetGenotype</span>(<span class="object">new_genotype</span>);
   }
-  <span style="color: #880000">cGenotype</span>* <span style="color: #000088">in_genotype</span> = <span style="color: #000088">in_organism</span>-><span style="color: #008800">GetGenotype</span>();
+  <span class="class">cGenotype</span>* <span class="object">in_genotype</span> = <span class="object">in_organism</span>-><span class="method">GetGenotype</span>();
 
-  <span style="color: #886600">// Save the old genotype from this cell...</span>
-  <span style="color: #880000">cGenotype</span>* <span style="color: #000088">old_genotype</span> = NULL;
-  if (<span style="color: #000088">target_cell</span>.<span style="color: #008800">IsOccupied</span>()) {
-    <span style="color: #000088">old_genotype</span> = <span style="color: #000088">target_cell</span>.<span style="color: #008800">GetOrganism</span>()-&gt;<span style="color: #008800">GetGenotype</span>();
+  <span class="comment">// Save the old genotype from this cell...</span>
+  <span class="class">cGenotype</span>* <span class="object">old_genotype</span> = NULL;
+  if (<span class="object">target_cell</span>.<span class="method">IsOccupied</span>()) {
+    <span class="object">old_genotype</span> = <span class="object">target_cell</span>.<span class="method">GetOrganism</span>()-&gt;<span class="method">GetGenotype</span>();
     
-    <span style="color: #886600">// Sometimes a new organism will kill off the last member of its genotype</span>
-    <span style="color: #886600">// in the population.  Normally this would remove the genotype, so we</span>
-    <span style="color: #886600">// want to defer adjusting that genotype until the new one is placed.</span>
-    <span style="color: #000088">old_genotype</span>-&gt;<span style="color: #008800">IncDeferAdjust</span>();
+    <span class="comment">// Sometimes a new organism will kill off the last member of its genotype</span>
+    <span class="comment">// in the population.  Normally this would remove the genotype, so we</span>
+    <span class="comment">// want to defer adjusting that genotype until the new one is placed.</span>
+    <span class="object">old_genotype</span>-&gt;<span class="method">IncDeferAdjust</span>();
   }
 
-  <span style="color: #886600">// Update the contents of the target cell.</span>
-  <span style="color: #008800">KillOrganism</span>(<span style="color: #000088">target_cell</span>);
-  <span style="color: #000088">target_cell</span>.<span style="color: #008800">InsertOrganism</span>(*<span style="color: #000088">in_organism</span>);
+  <span class="comment">// Update the contents of the target cell.</span>
+  <span class="method">KillOrganism</span>(<span class="object">target_cell</span>);
+  <span class="object">target_cell</span>.<span class="method">InsertOrganism</span>(*<span class="object">in_organism</span>);
 
-  <span style="color: #886600">// Update the archive...</span>
-  <span style="color: #000088">in_genotype</span>-><span style="color: #008800">AddOrganism</span>();
+  <span class="comment">// Update the archive...</span>
+  <span class="object">in_genotype</span>-><span class="method">AddOrganism</span>();
 
-  if (<span style="color: #000088">old_genotype</span> != NULL) {
-    <span style="color: #000088">old_genotype</span>-&gt;<span style="color: #008800">DecDeferAdjust</span>();
-    <span style="color: #000088">m_world</span>-&gt;<span style="color: #008800">GetClassificationManager</span>().<span style="color: #008800">AdjustGenotype</span>(*<span style="color: #000088">old_genotype</span>);
+  if (<span class="object">old_genotype</span> != NULL) {
+    <span class="object">old_genotype</span>-&gt;<span class="method">DecDeferAdjust</span>();
+    <span class="object">m_world</span>-&gt;<span class="method">GetClassificationManager</span>().<span class="method">AdjustGenotype</span>(*<span class="object">old_genotype</span>);
   }
-  <span style="color: #000088">m_world</span>-&gt;<span style="color: #008800">GetClassificationManager</span>().<span style="color: #008800">AdjustGenotype</span>(*<span style="color: #000088">in_genotype</span>);
+  <span class="object">m_world</span>-&gt;<span class="method">GetClassificationManager</span>().<span class="method">AdjustGenotype</span>(*<span class="object">in_genotype</span>);
 
-  <span style="color: #886600">// Initialize the time-slice for this new organism.</span>
-  <span style="color: #000088">schedule</span>-><span style="color: #008800">Adjust</span>(<span style="color: #000088">target_cell</span>.<span style="color: #008800">GetID</span>(), <span style="color: #000088">in_organism</span>-><span style="color: #008800">GetPhenotype</span>().<span style="color: #008800">GetMerit</span>());
+  <span class="comment">// Initialize the time-slice for this new organism.</span>
+  <span class="object">schedule</span>-><span class="method">Adjust</span>(<span class="object">target_cell</span>.<span class="method">GetID</span>(), <span class="object">in_organism</span>-><span class="method">GetPhenotype</span>().<span class="method">GetMerit</span>());
 
-  <span style="color: #886600">// Special handling for certain birth methods.</span>
-  if (<span style="color: #000088">m_world</span>-&gt;<span style="color: #008800">GetConfig</span>().<span style="color: #000088">BIRTH_METHOD</span>.<span style="color: #008800">Get</span>() == POSITION_CHILD_FULL_SOUP_ELDEST) {
-    <span style="color: #000088">reaper_queue</span>.<span style="color: #008800">Push</span>(&amp;<span style="color: #000088">target_cell</span>);
+  <span class="comment">// Special handling for certain birth methods.</span>
+  if (<span class="object">m_world</span>-&gt;<span class="method">GetConfig</span>().<span class="object">BIRTH_METHOD</span>.<span class="method">Get</span>() == POSITION_CHILD_FULL_SOUP_ELDEST) {
+    <span class="object">reaper_queue</span>.<span class="method">Push</span>(&amp;<span class="object">target_cell</span>);
   }
 
-  <span style="color: #000088">num_organisms</span>++;
+  <span class="object">num_organisms</span>++;
 
-  <span style="color: #886600">// Statistics...</span>
-  <span style="color: #000088">m_world</span>-&gt;<span style="color: #008800">GetStats</span>().<span style="color: #008800">RecordBirth</span>(<span style="color: #000088">target_cell</span>.<span style="color: #008800">GetID</span>(), <span style="color: #000088">in_genotype</span>-><span style="color: #008800">GetID</span>(),
-                                  <span style="color: #000088">in_organism</span>-&gt;<span style="color: #008800">GetPhenotype</span>().<span style="color: #008800">ParentTrue</span>());
+  <span class="comment">// Statistics...</span>
+  <span class="object">m_world</span>-&gt;<span class="method">GetStats</span>().<span class="method">RecordBirth</span>(<span class="object">target_cell</span>.<span class="method">GetID</span>(), <span class="object">in_genotype</span>-><span class="method">GetID</span>(),
+                                  <span class="object">in_organism</span>-&gt;<span class="method">GetPhenotype</span>().<span class="method">ParentTrue</span>());
 }
 </pre>
 
@@ -165,7 +165,7 @@ for this organism.
 Before we erase the organism currently in this cell, we want to keep track of
 what genotype it was part of for use in updating the archive later.  We then
 kill the organism in the cell (as described above) and insert the new one.
-The <span style="color: #880000">cPopulationCell</span>::<span style="color: #008800">InsertOrganism</span>()
+The <span class="class">cPopulationCell</span>::<span class="method">InsertOrganism</span>()
 method will setup the organism based on the environmental conditions of this
 cell (mutation rate, tasks rewarded, etc), and store the organism for future
 use.
@@ -196,7 +196,7 @@ properly reflect the number of organisms alive in the population at any moment.
 When an organism gives birth, we must collect some relevent statistics,
 which can best be accomplished in the population object.  Then we must
 place the offspring into its own cell in the population.  This is all done
-with the <span style="color: #880000">cPopulation</span>::<span style="color: #008800">ActivateOffspring</span>
+with the <span class="class">cPopulation</span>::<span class="method">ActivateOffspring</span>
 method. This method takes as arguments the parent organism and child genome
 that we're working with.  It is called by the divide command via the
 population interface. As this method is quite long, refer to it in the source
@@ -204,17 +204,17 @@ code in <kbd>cPopulation.cc</kbd> while reading the remainder of this section.
 </p>
 <p>
 The first step in activing an offspring involves performing some book keeping
-on the parent's phenotype via the <span style="color: #008800">DivideReset</span>()
+on the parent's phenotype via the <span class="method">DivideReset</span>()
 method. After this, the child genome is submitted to the birth chamber.  The
 birth chamber is responsible for handling the details of reproduction, such as
 genome recombination in sexual populations. The
-<span style="color: #008800">SubmitOffspring</span>() method will add organism objects
-to the <span style="color: #000088">child_array</span> for each offspring produced.
+<span class="method">SubmitOffspring</span>() method will add organism objects
+to the <span class="object">child_array</span> for each offspring produced.
 </p>
 <p>
 The next section of code is in charge of finding where in the population each
 child organism should be placed.  The cell of the parent is looked up, and then
-the <span style="color: #008800">PositionChild</span>() method is called to determine
+the <span class="method">PositionChild</span>() method is called to determine
 the child's cell.
 </p>
 <p>
@@ -242,9 +242,9 @@ proper genome, determine its genotype, setup its phenotype, put it into a
 test CPU to get its initial merit, and activate it!  You should be able to
 go line-by-line through the code to see how exactly this happens for
 yourself.  See
-<span style="color: #880000">cPopulation</span>::<span style="color: #008800">InjectGenome</span>,
+<span class="class">cPopulation</span>::<span class="method">InjectGenome</span>,
 and more importantly
-<span style="color: #880000">cPopulation</span>::<span style="color: #008800">InjectGenotype</span>
+<span class="class">cPopulation</span>::<span class="method">InjectGenotype</span>
 in <kbd>cPopulation.cc</kbd>.
 </p>
 

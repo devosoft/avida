@@ -5,8 +5,8 @@
 </head>
 <body>
 
-<div style="float: right">
-Revised 2006-08-30 DMB
+<div class="revision">
+Revised 2006-09-03 DMB
 </div>
 
 <p><a href="index.html">Return to the Index</a></p>
@@ -30,28 +30,28 @@ A task library is composed of a collection of entries, each of which fully
 describes a single task that can be used to trigger reactions.
 </p>
 <pre>
-typedef <span style="color: #880000">double</span> (<span style="color: #880000">cTaskLib</span>::*<span style="color: #000088">tTaskTest</span>)(<span style="color: #880000">cTaskContext</span>*) const;
+typedef <span class="class">double</span> (<span class="class">cTaskLib</span>::*<span class="object">tTaskTest</span>)(<span class="class">cTaskContext</span>*) const;
 
-class <span style="color: #880000">cTaskEntry</span> {
+class <span class="class">cTaskEntry</span> {
 private:
-  <span style="color: #880000">cString</span> <span style="color: #000088">m_name</span>;  <span style="color: #886600">// Short keyword for task</span>
-  <span style="color: #880000">cString</span> <span style="color: #000088">m_desc</span>;  <span style="color: #886600">// For more human-understandable output...</span>
-  <span style="color: #880000">int</span> <span style="color: #000088">m_id</span>;
-  <span style="color: #880000">tTaskTest</span> <span style="color: #000088">m_test_fun</span>;
-  <span style="color: #880000">cString</span> <span style="color: #000088">m_info</span>;  <span style="color: #886600">// extra info (like the string or whatever to match)</span>
+  <span class="class">cString</span> <span class="object">m_name</span>;  <span class="comment">// Short keyword for task</span>
+  <span class="class">cString</span> <span class="object">m_desc</span>;  <span class="comment">// For more human-understandable output...</span>
+  <span class="class">int</span> <span class="object">m_id</span>;
+  <span class="class">tTaskTest</span> <span class="object">m_test_fun</span>;
+  <span class="class">cString</span> <span class="object">m_info</span>;  <span class="comment">// extra info (like the string or whatever to match)</span>
   
 public:
-  <span style="color: #008800">cTaskEntry</span>(const <span style="color: #880000">cString</span>&amp; <span style="color: #000088">name</span>, const <span style="color: #880000">cString</span>&amp; <span style="color: #000088">desc</span>, int <span style="color: #000088">in_id</span>, <span style="color: #880000">tTaskTest</span> <span style="color: #000088">test_fun</span>, const <span style="color: #880000">cString</span>&amp; <span style="color: #000088">info</span>);
+  <span class="method">cTaskEntry</span>(const <span class="class">cString</span>&amp; <span class="object">name</span>, const <span class="class">cString</span>&amp; <span class="object">desc</span>, int <span class="object">in_id</span>, <span class="class">tTaskTest</span> <span class="object">test_fun</span>, const <span class="class">cString</span>&amp; <span class="object">info</span>);
     : m_name(name), m_desc(desc), m_id(in_id), m_test_fun(test_fun), m_info(info)
   {
   }
-  ~<span style="color: #008800">cTaskEntry</span>() { ; }
+  ~<span class="method">cTaskEntry</span>() { ; }
 
-  const <span style="color: #880000">cString</span>&amp; <span style="color: #008800">GetName</span>() const { return <span style="color: #000088">m_name</span>; }
-  const <span style="color: #880000">cString</span>&amp; <span style="color: #008800">GetDesc</span>() const { return <span style="color: #000088">m_desc</span>; }
-  const int <span style="color: #008800">GetID</span>() const { return <span style="color: #000088">m_id</span>; }
-  const <span style="color: #880000">tTaskTest</span> <span style="color: #008800">GetTestFun</span>() const { return <span style="color: #000088">m_test_fun</span>; }
-  const <span style="color: #880000">cString</span>&amp; <span style="color: #008800">GetInfo</span>() const { return <span style="color: #000088">m_info</span>; }
+  const <span class="class">cString</span>&amp; <span class="method">GetName</span>() const { return <span class="object">m_name</span>; }
+  const <span class="class">cString</span>&amp; <span class="method">GetDesc</span>() const { return <span class="object">m_desc</span>; }
+  const int <span class="method">GetID</span>() const { return <span class="object">m_id</span>; }
+  const <span class="class">tTaskTest</span> <span class="method">GetTestFun</span>() const { return <span class="object">m_test_fun</span>; }
+  const <span class="class">cString</span>&amp; <span class="method">GetInfo</span>() const { return <span class="object">m_info</span>; }
 };
 </pre>
 
@@ -75,28 +75,28 @@ individual entries:
 </p>
 
 <pre>
-class <span style="color: #880000">cTaskLib</span> {
+class <span class="class">cTaskLib</span> {
 private:
-  <span style="color: #880000">tArray</span>&lt;<span style="color: #880000">cTaskEntry</span>*&gt; <span style="color: #000088">task_array</span>;
+  <span class="class">tArray</span>&lt;<span class="class">cTaskEntry</span>*&gt; <span class="object">task_array</span>;
 
 public:
-  int <span style="color: #008800">GetSize</span>() const { return <span style="color: #000088">task_array</span>.<span style="color: #008800">GetSize</span>(); }
+  int <span class="method">GetSize</span>() const { return <span class="object">task_array</span>.<span class="method">GetSize</span>(); }
 
-  <span style="color: #880000">cTaskEntry</span>* <span style="color: #008800">AddTask</span>(const <span style="color: #880000">cString</span>&amp; <span style="color: #000088">name</span>, const <span style="color: #880000">cString</span>&amp; <span style="color: #000088">info</span>);
-  const <span style="color: #880000">cTaskEntry</span>&amp; <span style="color: #008800">GetTask</span>(<span style="color: #880000">int</span> <span style="color: #000088">id</span>) const;
+  <span class="class">cTaskEntry</span>* <span class="method">AddTask</span>(const <span class="class">cString</span>&amp; <span class="object">name</span>, const <span class="class">cString</span>&amp; <span class="object">info</span>);
+  const <span class="class">cTaskEntry</span>&amp; <span class="method">GetTask</span>(<span class="class">int</span> <span class="object">id</span>) const;
 
-  void <span style="color: #008800">SetupTests</span>(<span style="color: #880000">cTaskContext</span>&amp; <span style="color: #000088">ctx</span>) const;
-  inline double <span style="color: #008800">TestOutput</span>(const <span style="color: #880000">cTaskEntry</span>&amp; <span style="color: #000088">task</span>, <span style="color: #880000">cTaskContext</span>* ctx) const;
+  void <span class="method">SetupTests</span>(<span class="class">cTaskContext</span>&amp; <span class="object">ctx</span>) const;
+  inline double <span class="method">TestOutput</span>(const <span class="class">cTaskEntry</span>&amp; <span class="object">task</span>, <span class="class">cTaskContext</span>* ctx) const;
 
 private:
-  double <span style="color: #008800">Task_Echo</span>(<span style="color: #880000">cTaskContext</span>* <span style="color: #000088">ctx</span>) const;
-  double <span style="color: #008800">Task_Add</span>(<span style="color: #880000">cTaskContext</span>* <span style="color: #000088">ctx</span>) const;
-  double <span style="color: #008800">Task_Sub</span>(<span style="color: #880000">cTaskContext</span>* <span style="color: #000088">ctx</span>) const;
+  double <span class="method">Task_Echo</span>(<span class="class">cTaskContext</span>* <span class="object">ctx</span>) const;
+  double <span class="method">Task_Add</span>(<span class="class">cTaskContext</span>* <span class="object">ctx</span>) const;
+  double <span class="method">Task_Sub</span>(<span class="class">cTaskContext</span>* <span class="object">ctx</span>) const;
 
-  double <span style="color: #008800">Task_Not</span>(<span style="color: #880000">cTaskContext</span>* <span style="color: #000088">ctx</span>) const;
-  double <span style="color: #008800">Task_Nand</span>(<span style="color: #880000">cTaskContext</span>* <span style="color: #000088">ctx</span>) const;
-  double <span style="color: #008800">Task_And</span>(<span style="color: #880000">cTaskContext</span>* <span style="color: #000088">ctx</span>) const;
-  <span style="color: #886600">// ... And a whole bunch more ...</span>
+  double <span class="method">Task_Not</span>(<span class="class">cTaskContext</span>* <span class="object">ctx</span>) const;
+  double <span class="method">Task_Nand</span>(<span class="class">cTaskContext</span>* <span class="object">ctx</span>) const;
+  double <span class="method">Task_And</span>(<span class="class">cTaskContext</span>* <span class="object">ctx</span>) const;
+  <span class="comment">// ... And a whole bunch more ...</span>
 
 };
 </pre>
@@ -106,9 +106,9 @@ The task library contains an array of task entries that define all of the
 rewarded (or otherwise acted upon) tasks in an environment.
 </p>
 <p>
-The <span style="color: #008800">TestOutput</span>() method can only be run with
-as <span style="color: #880000">cTaskContext</span> object that has been initialized
-with the <span style="color: #008800">SetupTests</span> method. It will test the
+The <span class="method">TestOutput</span>() method can only be run with
+as <span class="class">cTaskContext</span> object that has been initialized
+with the <span class="method">SetupTests</span> method. It will test the
 specific task passed in and return the 0.0 - 1.0 quality measure of how well
 that task was done with the most recent output.
 </p>
@@ -117,12 +117,12 @@ that task was done with the most recent output.
 Below is a sample task-tester implementation:
 
 <pre>
-double <span style="color: #880000">cTaskLib</span>::<span style="color: #008800">Task_Add</span>(<span style="color: #880000">cTaskContext</span>* <span style="color: #000088">ctx</span>) const
+double <span class="class">cTaskLib</span>::<span class="method">Task_Add</span>(<span class="class">cTaskContext</span>* <span class="object">ctx</span>) const
 {
-  const int <span style="color: #000088">test_output</span> = <span style="color: #000088">ctx</span>-&gt;<span style="color: #000088">output_buffer</span>[0];
-  for (<span style="color: #880000">int</span> <span style="color: #000088">i</span> = 0; <span style="color: #000088">i</span> &lt; <span style="color: #000088">ctx</span>-&gt;<span style="color: #000088">input_buffer</span>.<span style="color: #008800">GetNumStored</span>(); <span style="color: #000088">i</span>++) {
-    for (<span style="color: #880000">int</span> <span style="color: #000088">j</span> = 0; <span style="color: #000088">j</span> < <span style="color: #000088">i</span>; <span style="color: #000088">j</span>++) {
-      if (<span style="color: #000088">test_output</span> == <span style="color: #000088">ctx</span>-&gt;<span style="color: #000088">input_buffer</span>[<span style="color: #000088">i</span>] + <span style="color: #000088">ctx</span>-&gt;<span style="color: #000088">input_buffer</span>[<span style="color: #000088">j</span>]) return 1.0;
+  const int <span class="object">test_output</span> = <span class="object">ctx</span>-&gt;<span class="object">output_buffer</span>[0];
+  for (<span class="class">int</span> <span class="object">i</span> = 0; <span class="object">i</span> &lt; <span class="object">ctx</span>-&gt;<span class="object">input_buffer</span>.<span class="method">GetNumStored</span>(); <span class="object">i</span>++) {
+    for (<span class="class">int</span> <span class="object">j</span> = 0; <span class="object">j</span> < <span class="object">i</span>; <span class="object">j</span>++) {
+      if (<span class="object">test_output</span> == <span class="object">ctx</span>-&gt;<span class="object">input_buffer</span>[<span class="object">i</span>] + <span class="object">ctx</span>-&gt;<span class="object">input_buffer</span>[<span class="object">j</span>]) return 1.0;
     }
   }
   return 0.0;
@@ -137,19 +137,19 @@ If no match is found, no reward is given (0.0).
 </p>
 
 <p>
-The <span style="color: #008800">SetupTests</span> method performs some
+The <span class="method">SetupTests</span> method performs some
 precomptution for all of the logic tasks, creating the value
-<span style="color: #000088">logic_id</span> within the task context.  The
-<span style="color: #000088">logic_id</span> has 256 possible values, each of which
+<span class="object">logic_id</span> within the task context.  The
+<span class="object">logic_id</span> has 256 possible values, each of which
 can only be associated with a single logic task.  These tests look more like:
 </p>
 
 <pre>
-double <span style="color: #880000">cTaskLib</span>::<span style="color: #008800">Task_AndNot</span>(<span style="color: #880000">cTaskContext</span>* <span style="color: #000088">ctx</span>) const
+double <span class="class">cTaskLib</span>::<span class="method">Task_AndNot</span>(<span class="class">cTaskContext</span>* <span class="object">ctx</span>) const
 {
-  const int <span style="color: #000088">logic_id</span> = <span style="color: #000088">ctx</span>-&gt;<span style="color: #000088">logic_id</span>;
-  if (<span style="color: #000088">logic_id</span> == 10 || <span style="color: #000088">logic_id</span> == 12 || <span style="color: #000088">logic_id</span> == 34 ||
-      <span style="color: #000088">logic_id</span> == 48 || <span style="color: #000088">logic_id</span> == 68 || <span style="color: #000088">logic_id</span> == 80) return 1.0;
+  const int <span class="object">logic_id</span> = <span class="object">ctx</span>-&gt;<span class="object">logic_id</span>;
+  if (<span class="object">logic_id</span> == 10 || <span class="object">logic_id</span> == 12 || <span class="object">logic_id</span> == 34 ||
+      <span class="object">logic_id</span> == 48 || <span class="object">logic_id</span> == 68 || <span class="object">logic_id</span> == 80) return 1.0;
   return 0.0;
 }
 </pre>
@@ -180,43 +180,43 @@ acts a a single place to store all of this information.
 
 <p>
 Resources are a little more complicated than task entries to manage
-and understand.  An object of type <span style="color: #880000">cResource</span>
+and understand.  An object of type <span class="class">cResource</span>
 contains 18 pieces of data, and the associated accessors.  Like all of the
 other individual units we have discussed, resources have a unique 
-<span style="color: #000088">name</span> and numerical
-<span style="color: #000088">id</span>.  For all resource we store the quantities
-associated with their <span style="color: #000088">inflow</span>,
-<span style="color: #000088">outflow</span>, and
-<span style="color: #000088">initial</span> count (each stored as a
-double) as well as the <span style="color: #000088">geometry</span> of that resource.
+<span class="object">name</span> and numerical
+<span class="object">id</span>.  For all resource we store the quantities
+associated with their <span class="object">inflow</span>,
+<span class="object">outflow</span>, and
+<span class="object">initial</span> count (each stored as a
+double) as well as the <span class="object">geometry</span> of that resource.
 
 <p>
 For spatial resources we need to be able to describe how a resource
 exists in space so we store data for:
 <ul>
   <li>
-    <span style="color: #000088">inflowX1</span>, 
-    <span style="color: #000088">inflowX2</span>,
-    <span style="color: #000088">inflowY1</span>, and 
-    <span style="color: #000088">inflowY2</span> to describe a rectangle where
+    <span class="object">inflowX1</span>, 
+    <span class="object">inflowX2</span>,
+    <span class="object">inflowY1</span>, and 
+    <span class="object">inflowY2</span> to describe a rectangle where
     resources flow in.
   </li>
   <li>
-    <span style="color: #000088">outflowX1</span>,
-    <span style="color: #000088">outflowX2</span>,
-    <span style="color: #000088">outflowY1</span>, and 
-    <span style="color: #000088">outfowY2</span> for a rectangle where resources
+    <span class="object">outflowX1</span>,
+    <span class="object">outflowX2</span>,
+    <span class="object">outflowY1</span>, and 
+    <span class="object">outfowY2</span> for a rectangle where resources
     flow out.
   </li>
   <li>
-    <span style="color: #000088">xdiffuse</span> and
-    <span style="color: #000088">ydiffuse</span> describe how fast resources will
+    <span class="object">xdiffuse</span> and
+    <span class="object">ydiffuse</span> describe how fast resources will
     flow from cells of higher amounts of that resource to cells with
     lower amounts of that resource.
   </li>
   <li>
-    <span style="color: #000088">xgravity</span> and
-    <span style="color: #000088">ygravity</span> describe the preferential flow of
+    <span class="object">xgravity</span> and
+    <span class="object">ygravity</span> describe the preferential flow of
     resource in a given direction.
   </li>
 </ul>                                   
@@ -239,46 +239,46 @@ abbreviated version of this class:
 </p>
 
 <pre>
-class <span style="color: #880000">cEnvironment</span> {
+class <span class="class">cEnvironment</span> {
 private:
-  <span style="color: #886600">// Keep libraries of resources, reactions, and tasks.</span>
-  <span style="color: #880000">cResourceLib</span> <span style="color: #000088">resource_lib</span>;
-  <span style="color: #880000">cReactionLib</span> <span style="color: #000088">reaction_lib</span>;
-  <span style="color: #880000">cTaskLib</span> <span style="color: #000088">task_lib</span>;
-  <span style="color: #880000">cInstLib</span> <span style="color: #000088">inst_lib</span>;
-  <span style="color: #880000">cMutationRates</span> <span style="color: #000088">mut_rates</span>;
+  <span class="comment">// Keep libraries of resources, reactions, and tasks.</span>
+  <span class="class">cResourceLib</span> <span class="object">resource_lib</span>;
+  <span class="class">cReactionLib</span> <span class="object">reaction_lib</span>;
+  <span class="class">cTaskLib</span> <span class="object">task_lib</span>;
+  <span class="class">cInstLib</span> <span class="object">inst_lib</span>;
+  <span class="class">cMutationRates</span> <span class="object">mut_rates</span>;
 
 public:
-  <span style="color: #880000">bool</span> <span style="color: #008800">Load</span>(const <span style="color: #880000">cString</span>&amp; <span style="color: #000088">filename</span>);
+  <span class="class">bool</span> <span class="method">Load</span>(const <span class="class">cString</span>&amp; <span class="object">filename</span>);
 
-  <span style="color: #886600">// Interaction with the organisms</span>
-  <span style="color: #880000">bool</span> <span style="color: #008800">TestOutput</span>(<span style="color: #880000">cAvidaContext</span>&amp; <span style="color: #000088">ctx</span>, <span style="color: #880000">cReactionResult</span>&amp; <span style="color: #000088">result</span>, <span style="color: #880000">cTaskContext</span>&amp; <span style="color: #000088">taskctx</span>,
-                 const <span style="color: #880000">tBuffer</span>&lt;int&gt;&amp; <span style="color: #000088">send_buf</span>, const <span style="color: #880000">tBuffer</span>&lt;int&gt;&amp; <span style="color: #000088">receive_buf</span>,
-                 const <span style="color: #880000">tArray</span>&lt;int&gt;&amp; <span style="color: #000088">task_count</span>, const <span style="color: #880000">tArray</span>&lt;int&gt;&amp; <span style="color: #000088">reaction_count</span>,
-                 const <span style="color: #880000">tArray</span>&lt;double&gt;&amp; <span style="color: #000088">resource_count</span>) const;
+  <span class="comment">// Interaction with the organisms</span>
+  <span class="class">bool</span> <span class="method">TestOutput</span>(<span class="class">cAvidaContext</span>&amp; <span class="object">ctx</span>, <span class="class">cReactionResult</span>&amp; <span class="object">result</span>, <span class="class">cTaskContext</span>&amp; <span class="object">taskctx</span>,
+                 const <span class="class">tBuffer</span>&lt;int&gt;&amp; <span class="object">send_buf</span>, const <span class="class">tBuffer</span>&lt;int&gt;&amp; <span class="object">receive_buf</span>,
+                 const <span class="class">tArray</span>&lt;int&gt;&amp; <span class="object">task_count</span>, const <span class="class">tArray</span>&lt;int&gt;&amp; <span class="object">reaction_count</span>,
+                 const <span class="class">tArray</span>&lt;double&gt;&amp; <span class="object">resource_count</span>) const;
 };
 </pre>
 
 <p>
 The private data members include all of the libraries needed to specify
 the environment, plus its mutation rates.  The
-<span style="color: #008800">Load</span>() method takes a filename
+<span class="method">Load</span>() method takes a filename
 (<kbd>environment.cfg</kbd> by default) and will fill out all of the libraries
 in this environment.  The most important feature of this class is the
-<span style="color: #008800">TestOutput</span>() method, which takes in all sorts
+<span class="method">TestOutput</span>() method, which takes in all sorts
 of information about the current state of the organism that has just done
 an output and fills out an object of type
-<span style="color: #880000">cReactionResult</span> with information about what
+<span class="class">cReactionResult</span> with information about what
 happened.  It also directly returns a bool that will indicate if there have
 been any changes at all. The specific information it uses to determine
 the results are the inputs the organism has taken in and the outputs it has
 produced -- both needed to determine what tasks have been done, and therefore
 what reactions may have been triggered.  This information is encapsulated in
-the task context <span style="color: #000088">taskctx</span>.  The organism's
-previous <span style="color: #000088">task_count</span> and
-<span style="color: #000088">resource_count</span> are also needed to determine
+the task context <span class="object">taskctx</span>.  The organism's
+previous <span class="object">task_count</span> and
+<span class="object">resource_count</span> are also needed to determine
 if the reactions requisites have been met.  And finally the
-<span style="color: #000088">resource_count</span> available to the organisms is
+<span class="object">resource_count</span> available to the organisms is
 needed to determine how much of each resource can be used in the reactions.
 </p>
 

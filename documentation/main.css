@@ -1,3 +1,28 @@
 pre {
   margin-left: 10px;
 }
+
+div.revision {
+  float: right;
+}
+
+.cmdarg {
+  color: #0000AA;
+}
+
+.cmdargopt {
+  color: #008800;
+}
+
+.comment {
+  color: #886600;
+}
+.method {
+  color: #008800;
+}
+.class {
+  color: #880000;
+}
+.object {
+  color: #0000AA;
+}

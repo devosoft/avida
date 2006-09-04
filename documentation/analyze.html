@@ -5,8 +5,8 @@
 </head>
 <body>
 
-<div style="float: right">
-Revised 2006-08-28 DMB
+<div class="revision">
+Revised 2006-09-03 DMB
 </div>
 
 <p><a href="index.html">Return to the Index</a></p>
@@ -33,10 +33,10 @@ we will eventually remove this limit.
 The rest of this file describes how individual commands work, as well
 as some notes on other languages features, like how to use variables.  As
 a formatting guide, command arguments will be presented between brackets,
-such as [<span style="color: #0000AA">filename</span>].  If that argument is
+such as [<span class="cmdarg">filename</span>].  If that argument is
 mandatory, it will be in blue.  If it is optional, it will be in green, and
 (if relevant) a default value will be listed, such as
-[<span style="color: #008800">filename='output.dat'</span>].
+[<span class="cmdargopt">filename='output.dat'</span>].
 </p>
 
 <p>&nbsp;</p>
@@ -55,20 +55,20 @@ commands detailed in the following sections, all of the
 There are currently four ways to load in genotypes:
 </p>
 <dl>
-<dt><strong>LOAD_ORGANISM [<font color="#0000AA">filename</font>]</strong></dt>
+<dt><strong>LOAD_ORGANISM [<span class="cmdarg">filename</span>]</strong></dt>
 <dd>
   Load in a normal single-organism file of the type that is output
   from Avida.  These consist of lots of organismal information inside
   of comments, and then the full genome of the organism with one
   instruction per line.
 </dd>
-<dt><strong>LOAD [<font color="#0000AA">filename</font>]</strong></dt>
+<dt><strong>LOAD [<span class="cmdarg">filename</span>]</strong></dt>
 <dd>  
   Load in a file that contains a list of genotypes, one-per-line with
   additional informaiton about those genotypes. Avida now includes a header
   on such files indicating the values containted in each column.
 </dd>
-<dt><strong>LOAD_SEQUENCE [<font color="#0000AA">sequence</font>]</strong></dt>
+<dt><strong>LOAD_SEQUENCE [<span class="cmdarg">sequence</span>]</strong></dt>
 <dd>  
 	Load in a user-provided sequence as the genotype.  Avida has a
   symbol associated with each instruction; this command is simply
@@ -76,9 +76,9 @@ There are currently four ways to load in genotypes:
   into a proper genotype.
 </dd>
 <dt><strong>
-  LOAD_MULTI_DETAIL [<font color="#0000AA">start-UD</font>]
-  [<font color="#0000AA">step-UD</font>] [<font color="#0000AA">stop-UD</font>]
-  [<font color="#008800">dir='./'</font>] [<font color="#008800">start batch=0</font>]
+  LOAD_MULTI_DETAIL [<span class="cmdarg">start-UD</span>]
+  [<span class="cmdarg">step-UD</span>] [<span class="cmdarg">stop-UD</span>]
+  [<span class="cmdargopt">dir='./'</span>] [<span class="cmdargopt">start batch=0</span>]
 </strong></dt>
 <dd>  
   Allows the user to load in multiple detail files at once, one per
@@ -109,23 +109,23 @@ functions that allow you to manipulate the batches.
 </p>
 
 <dl>
-<dt><strong>SET_BATCH [<font color="#0000AA">id</font>]</strong></dt>
+<dt><strong>SET_BATCH [<span class="cmdarg">id</span>]</strong></dt>
 <dd>
   Set the batch that is currently active; the initial active batch
   at the start of a program is 0.
 </dd>
-<dt><strong>NAME_BATCH [<font color="#0000AA">name</font>]</strong></dt>
+<dt><strong>NAME_BATCH [<span class="cmdarg">name</span>]</strong></dt>
 <dd>
   Attach a name to the current batch.  Some of the printing methods
   will print data from multiple batches, and we want the data from each
   batch to be attached to a meaningful identifier.
 </dd>
-<dt><strong>PURGE_BATCH [<font color="#008800">id=current</font>]</strong></dt>
+<dt><strong>PURGE_BATCH [<span class="cmdargopt">id=current</span>]</strong></dt>
 <dd>
   Remove all genotypes in the specified batch (if no argument is given,
   the current batch is purged.
 </dd>
-<dt><strong>DUPLICATE [<font color="#0000AA">id1</font>] [<font color="#008800">id2=current</font>]</strong></dt>
+<dt><strong>DUPLICATE [<span class="cmdarg">id1</span>] [<span class="cmdargopt">id2=current</span>]</strong></dt>
 <dd>
   Copy the genotypes from batch id1 into id2.  By default,
   copy id1 into the current batch.  Note that duplicate is
@@ -160,13 +160,13 @@ control commands.
   recommended if you're in interactive mode.
   <br />Levels: SILENT, NORMAL, ON, DETAILS
 </dd>
-<dt><strong>SYSTEM [<font color="#0000AA">command</font>]</strong></dt>
+<dt><strong>SYSTEM [<span class="cmdarg">command</span>]</strong></dt>
 <dd>
   Run the command listed on the command line.  This is particularly
   useful if you need to unzip files before you can use them, or if
   you want to delete files no longer in use.
 </dd>
-<dt><strong>INCLUDE [<font color="#0000AA">filename</font>]</strong></dt>
+<dt><strong>INCLUDE [<span class="cmdarg">filename</span>]</strong></dt>
 <dd>
   Include another file into this one and run its contents immediately.
   This is useful if you have some pre-written routines that you want
@@ -181,8 +181,8 @@ control commands.
   processing done before interactive mode starts.  You can type <kbd>quit</kbd>
   at any point to continue with the normal processing of the file.
 </dd>
-<dt><strong>DEBUG [<font color="#0000AA">message</font>]</strong></dt>
-<dt><strong>ECHO [<font color="#0000AA">message</font>]</strong></dt>
+<dt><strong>DEBUG [<span class="cmdarg">message</span>]</strong></dt>
+<dt><strong>ECHO [<span class="cmdarg">message</span>]</strong></dt>
 <dd>
   These are both <em>echo</em> commands that will print a message (the
   arguments given) onto the screen.  If there are any variables (see
@@ -203,7 +203,7 @@ to only include those genotypes that are needed.
 </p>
 
 <dl>
-<dt><strong>RECALCULATE [<font color="#008800">use_resources=0</font>]</strong></dt>
+<dt><strong>RECALCULATE [<span class="cmdargopt">use_resources=0</span>]</strong></dt>
 <dd>
   Run all of the genotypes in the current batch through a test CPU
   and record the measurements taken (fitness, gestation time, etc.).
@@ -212,7 +212,7 @@ to only include those genotypes that are needed.
   test cpu will use resources when it runs.  For more information 
   on resources, see the <a href="#USING_RESOURCES">summary</a> below.
 </dd>
-<dt><strong>FIND_GENOTYPE [<font color="#008800">type='num_cpus' ...</font>]</strong></dt>
+<dt><strong>FIND_GENOTYPE [<span class="cmdargopt">type='num_cpus' ...</span>]</strong></dt>
 <dd>
   Remove all genotypes but the one selected.  Type indicates which
   genotype to choose.  Options available for type are <em>num_cpus</em> (to
@@ -224,7 +224,7 @@ to only include those genotypes that are needed.
   this command, in which case all those genotypes in that list will be
   preserved and the remainder deleted.
 </dd>
-<dt><strong>FIND_ORGANISM [<font color="#008800">random</font>]</strong></dt>
+<dt><strong>FIND_ORGANISM [<span class="cmdargopt">random</span>]</strong></dt>
 <dd>
 	Picks out a random organism from the population and removes all 
 	others. It is different from FIND_GENOTYPE because it takes into 
@@ -232,7 +232,7 @@ to only include those genotypes that are needed.
 	more than one organisms, list the word 'random' multiple times. This 
 	is essentially sampling without replacement from the population.
 </dd>
-<dt><strong>FIND_LINEAGE [<font color="#008800">type="num_cpus"</font>]</strong></dt>
+<dt><strong>FIND_LINEAGE [<span class="cmdargopt">type="num_cpus"</span>]</strong></dt>
 <dd>
   Delete everything except the lineage from the chosen genotype back
   to the most distant ancestor available.  This command will only
@@ -240,8 +240,8 @@ to only include those genotypes that are needed.
   genotypes.  Type is the same as the FIND_GENOTYPE command.
 </dd>
 <dt><strong>
-  FIND_SEX_LINEAGE [<font color="#008800">type="num_cpus"</font>]
-  [<font color="#008800">parent_method="rec_region_size"</font>]
+  FIND_SEX_LINEAGE [<span class="cmdargopt">type="num_cpus"</span>]
+  [<span class="cmdargopt">parent_method="rec_region_size"</span>]
 </strong></dt>
 <dd>
   Delete everything except the lineage from the chosen genotype back
@@ -263,7 +263,7 @@ to only include those genotypes that are needed.
   must first be run on the batch in order for the alignment to be
   possible.
 </dd>
-<dt><strong>SAMPLE_ORGANISMS [<font color="#0000AA">fraction</font>] [<font color="#008800">test_viable=0</font>]</strong></dt>
+<dt><strong>SAMPLE_ORGANISMS [<span class="cmdarg">fraction</span>] [<span class="cmdargopt">test_viable=0</span>]</strong></dt>
 <dd>
   Keep only fraction of organisms in the current batch.  This
   is done per organism, <em>not</em> per genotype.  Thus, genotypes of high
@@ -271,12 +271,12 @@ to only include those genotypes that are needed.
   of abundance 1 will either stay or be removed entirely. If test_viable is
   set to 1, sample only from the viable organisms. 
 </dd>
-<dt><strong>SAMPLE_GENOTYPES [<font color="#0000AA">fraction</font>] [<font color="#008800">test_viable=0</font>]</strong></dt>
+<dt><strong>SAMPLE_GENOTYPES [<span class="cmdarg">fraction</span>] [<span class="cmdargopt">test_viable=0</span>]</strong></dt>
 <dd>
   Keep only fraction of genotypes in the current batch. If test_viable is
   set to 1, sample only from the viable genotypes. 
 </dd>
-<dt><strong>RENAME [<font color="#008800">start_id=0</font>]</strong></dt>
+<dt><strong>RENAME [<span class="cmdargopt">start_id=0</span>]</strong></dt>
 <dd>
   Change the id numbers of all the genotypes to start at a given value.
   Often in long runs we will be dealing with ID's in the millions.  In
@@ -295,14 +295,14 @@ save information generated in analyze mode.
 </p>
 
 <dl>
-<dt><strong>PRINT [<font color="#008800">dir='archive/'</font>] [<font color="#008800">filename</font>]</strong></dt>
+<dt><strong>PRINT [<span class="cmdargopt">dir='archive/'</span>] [<span class="cmdargopt">filename</span>]</strong></dt>
 <dd>
   Print the genotypes from the current batch as individual files (one
   genotype per file) in the directory given. If no filename is specified,  
   the files will be named by the genotype name, with a <kbd>.gen</kbd> appended to 
   them. Specifying the filename is useful when printing a single genotype. 
 </dd>
-<dt><strong>TRACE [<font color="#008800">dir='archive/'</font>] [ <font color="#008800">use_resources=0</font>]</strong></dt>
+<dt><strong>TRACE [<span class="cmdargopt">dir='archive/'</span>] [ <span class="cmdargopt">use_resources=0</span>]</strong></dt>
 <dd>
   Trace all of the genotypes and print a listing of their execution.
   This will show step-by-step the status of all of the CPU components
@@ -312,14 +312,14 @@ save information generated in analyze mode.
   resources when it runs.  For more information on resources, see the 
   <a href="#USING_RESOURCES">summary</a> below.
 </dd>
-<dt><strong>PRINT_TASKS [<font color="#008800">file='tasks.dat'</font>]</strong></dt>
+<dt><strong>PRINT_TASKS [<span class="cmdargopt">file='tasks.dat'</span>]</strong></dt>
 <dd>
   This will print out the tasks doable by each genotype, one per line
   in the output file specified.  Note that this information must either
   have been loaded in, or a RECALCULATE must have been run to collect
   it.
 </dd>
-<dt><strong>DETAIL [<font color="#008800">file='detail.dat'</font>] [<font color="#008800">format ...</font>]</strong></dt>
+<dt><strong>DETAIL [<span class="cmdargopt">file='detail.dat'</span>] [<span class="cmdargopt">format ...</span>]</strong></dt>
 <dd>
   Print out all of the stats for each genotype, one per line.  The
   format indicates the layout of columns in the file.  If the filename
@@ -328,31 +328,31 @@ save information generated in analyze mode.
   <a href="#OUTPUT_FORMATS">Output Formats</a> below.
 </dd>
 <dt><strong>
-  DETAIL_TIMELINE [<font color="#008800">file='detail_timeline.dat'</font>] 
-	[<font color="#008800">time_step=100</font>]
-	[<font color="#008800">max_time=100000</font>]
+  DETAIL_TIMELINE [<span class="cmdargopt">file='detail_timeline.dat'</span>] 
+	[<span class="cmdargopt">time_step=100</span>]
+	[<span class="cmdargopt">max_time=100000</span>]
 </strong></dt>
 <dd>
 	Details a time-sequence of dump files. 
 </dd>
 <dt><strong>
-  DETAIL_BATCHES [<font color="#008800">file='detail_baches.dat'</font>]
-	[<font color="#008800">format ...</font>]
+  DETAIL_BATCHES [<span class="cmdargopt">file='detail_baches.dat'</span>]
+	[<span class="cmdargopt">format ...</span>]
 </strong></dt>
 <dd>
   Details all batches. 
 </dd>
 <dt><strong>
-  DETAIL_INDEX [<font color="#0000AA">file</font>]
-	[<font color="#0000AA">min_batch</font>] [<font color="#0000AA">max_batch</font>]
-	[<font color="#008800">format ...</font>]
+  DETAIL_INDEX [<span class="cmdarg">file</span>]
+	[<span class="cmdarg">min_batch</span>] [<span class="cmdarg">max_batch</span>]
+	[<span class="cmdargopt">format ...</span>]
 </strong></dt>
 <dd>
 	Detail all the batches between min_batch and max_batch. 
 </dd>
 <dt><strong>
-  DETAIL_AVERAGE [<font color="#008800">file="detail.dat"</font>] 
-	[<font color="#008800">format ...</font>]
+  DETAIL_AVERAGE [<span class="cmdargopt">file="detail.dat"</span>] 
+	[<span class="cmdargopt">format ...</span>]
 </strong></dt>
 <dd>
 	Detail the current batch, but print out the average for each argument, as opposed to the 
@@ -373,8 +373,8 @@ the data and output the results.
 
 <dl>
 <dt><strong>
-  ANALYZE_EPISTASIS [<font color="#008800">file='epistasis.dat'</font>]
-	[<font color="#008800">num_test=(all)</font>]
+  ANALYZE_EPISTASIS [<span class="cmdargopt">file='epistasis.dat'</span>]
+	[<span class="cmdargopt">num_test=(all)</span>]
 </strong></dt>
 <dd>
   For each genotype in the current batch, test possible 
@@ -384,8 +384,8 @@ the data and output the results.
   number to be tested.
 </dd>
 <dt><strong>
-  MAP_TASKS [<font color="#008800">dir="phenotype/"</font>]
-	[<font color="#008800">flags ...</font>] [<font color="#008800">format ...</font>]
+  MAP_TASKS [<span class="cmdargopt">dir="phenotype/"</span>]
+	[<span class="cmdargopt">flags ...</span>] [<span class="cmdargopt">format ...</span>]
 </strong></dt>
 <dd>
   Construct a genotype-phenotype array for each genotype in the
@@ -396,8 +396,8 @@ the data and output the results.
   consecutive genotypes in a lineage.
 </dd>
 <dt><strong>
-  MAP_MUTATIONS [<font color="#008800">dir="mutations/"</font>]
-	[<font color="#008800">flags ...</font>]
+  MAP_MUTATIONS [<span class="cmdargopt">dir="mutations/"</span>]
+	[<span class="cmdargopt">flags ...</span>]
 </strong></dt>
 <dd>
   Construct a genome-mutation array for each genotype in the
@@ -408,8 +408,8 @@ the data and output the results.
   If the 'html' flag is used, the charts will be output in HTML format.
 </dd>
 <dt><strong>
-  MAP_DEPTH [<font color="#008800">filename='depth_map.dat'</font>]
-  [<font color="#008800">min_batch=0</font>] [<font color="#008800">max_batch=cur_batch-1</font>]
+  MAP_DEPTH [<span class="cmdargopt">filename='depth_map.dat'</span>]
+  [<span class="cmdargopt">min_batch=0</span>] [<span class="cmdargopt">max_batch=cur_batch-1</span>]
 </strong></dt>
 <dd>
   This will create a depth map (like those we use for phylogeny
@@ -418,9 +418,9 @@ the data and output the results.
   a LOAD_MULTI_DETAIL.
 </dd>
 <dt><strong>
-  AVERAGE_MODULATITY [<font color="#008800">file='modularity.dat'</font>]
-	[<font color="#008800">task.0 task.1 task.2 task.3 task.4 task.5      
-	task.6 task.7 task.8</font>]
+  AVERAGE_MODULATITY [<span class="cmdargopt">file='modularity.dat'</span>]
+	[<span class="cmdargopt">task.0 task.1 task.2 task.3 task.4 task.5      
+	task.6 task.7 task.8</span>]
 </strong></dt>
 <dd>
   Calculate several modularity measuers, such as how many tasks is an 
@@ -431,16 +431,16 @@ the data and output the results.
   output format and works with only 1 and 2 input tasks. 
 </dd>
 <dt><strong>
-  HAMMING [<font color="#008800">file="hamming.dat"</font>]
-	[<font color="#008800">b1=current</font>] [<font color="#008800">b2=b1</font>]
+  HAMMING [<span class="cmdargopt">file="hamming.dat"</span>]
+	[<span class="cmdargopt">b1=current</span>] [<span class="cmdargopt">b2=b1</span>]
 </strong></dt>
 <dd>
   Calculate the hamming distance between batches b1 and b2.  If only
   one batch is given, calculations are on all pairs within that batch.
 </dd>
 <dt><strong>
-  LEVENSTEIN [<font color="#008800">file='lev.dat'</font>]
-	[<font color="#008800">batch1</font>] [<font color="#008800">b2=b1</font>]
+  LEVENSTEIN [<span class="cmdargopt">file='lev.dat'</span>]
+	[<span class="cmdargopt">batch1</span>] [<span class="cmdargopt">b2=b1</span>]
 </strong></dt>
 <dd>
   Calculate the levenstein distance (edit distance) between batches b1
@@ -449,9 +449,9 @@ the data and output the results.
   move from one sequence to the other.
 </dd>
 <dt><strong>
-  SPECIES [<font color="#008800">file='species.dat'</font>]
-	[<font color="#0000AA">batch1</font>] [<font color="#0000AA">batch2</font>]
-  [<font color="#0000AA">num_recombinants</font>]
+  SPECIES [<span class="cmdargopt">file='species.dat'</span>]
+	[<span class="cmdarg">batch1</span>] [<span class="cmdarg">batch2</span>]
+  [<span class="cmdarg">num_recombinants</span>]
 </strong></dt>
 <dd>
 	Calculates the percentage of non-viable recombinants between all 
@@ -463,8 +463,8 @@ the data and output the results.
 </dd>
 <dt><strong>
   RECOMBINE 
-	[<font color="#0000AA">batch1</font>] [<font color="#0000AA">batch2</font>]
-	[<font color="#0000AA">batch3</font>] [<font color="#0000AA">num_recombinants</font>]
+	[<span class="cmdarg">batch1</span>] [<span class="cmdarg">batch2</span>]
+	[<span class="cmdarg">batch3</span>] [<span class="cmdarg">num_recombinants</span>]
 </strong></dt>
 <dd>
 	Similar to Species command, but instead of calculating things on the spot, 
@@ -513,7 +513,7 @@ configuration file.
   This command first prints the whether or not the test cpu is using 
   resources.  Then it will print the concentration for each resource.
 </dd>
-<dt><strong>LOAD_RESOURCES [<font color="#008800">file_name="resource.dat"</font>]</strong></dt>
+<dt><strong>LOAD_RESOURCES [<span class="cmdargopt">file_name="resource.dat"</span>]</strong></dt>
 <dd>
   This command loads a time oriented list of resource concentrations.  
   The command takes a file name containing this type of data, and 
@@ -658,13 +658,13 @@ function.  A $$ will act as a single dollar sign, if needed.
 </p>
 
 <dl>
-<dt><strong>SET [<font color="#0000AA">variable</font>] [<font color="#0000AA">value</font>]</strong></dt>
+<dt><strong>SET [<span class="cmdarg">variable</span>] [<span class="cmdarg">value</span>]</strong></dt>
 <dd>
   Sets the variable to the value...
 </dd>
 <dt><strong>
-  FOREACH [<font color="#0000AA">variable</font>] [<font color="#0000AA">value</font>]
-	[<font color="#008800">value ...</font>]
+  FOREACH [<span class="cmdarg">variable</span>] [<span class="cmdarg">value</span>]
+	[<span class="cmdargopt">value ...</span>]
 </strong></dt>
 <dd>
   Set the variable to each of the values listed, and run the code that
@@ -672,8 +672,8 @@ function.  A $$ will act as a single dollar sign, if needed.
   those values.
 </dd>
 <dt><strong>
-  FORRANGE [<font color="#0000AA">variable</font>] [<font color="#0000AA">min_value</font>]
-	[<font color="#0000AA">max_value</font>] [<font color="#008800">step_value=1</font>]
+  FORRANGE [<span class="cmdarg">variable</span>] [<span class="cmdarg">min_value</span>]
+	[<span class="cmdarg">max_value</span>] [<span class="cmdargopt">step_value=1</span>]
 </strong></dt>
 <dd>
   Set the variable to each of the values between min and max (at steps
@@ -694,7 +694,7 @@ be run just like any other command.
 </p>
 
 <dl>
-<dt><strong>FUNCTION [<font color="#0000AA">name</font>]</strong></dt>
+<dt><strong>FUNCTION [<span class="cmdarg">name</span>]</strong></dt>
 <dd>
   This will create a function of the given name, including in it all
   of the commands up until an END is found.  These commands will be
