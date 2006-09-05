@@ -5,8 +5,8 @@
 </head>
 <body>
 
-<div style="float: right">
-Revised 2006-08-28 DMB
+<div class="revision">
+Revised 2006-09-05 DMB
 </div>
 
 <p><a href="index.html">Return to the Index</a></p>
@@ -44,10 +44,10 @@ following chart specifies additional descriptions for resource initialization.
 
 <div align="center">
 <p>&nbsp;</p>
-<h3>Table 1: <span style="color: #004400">Resource Specifications</span></h3>
+<h3>Table 1: <span>Resource Specifications</span></h3>
 <p>
-(<span style="color: #0000AA">blue</span> variables used for all resources
-while <span style="color: #AA0000">red</span> variables are only used for
+(<span class="resall">blue</span> variables used for all resources
+while <span class="resspatial">red</span> variables are only used for
 spatial resources)
 </p>
 <table border="1" cellpadding="2">
@@ -57,7 +57,7 @@ spatial resources)
   <th>Default</th>
 </tr>
 <tr>
-  <td style="color: #0000AA">inflow</td>
+  <td class="resall">inflow</td>
   <td>
     The number of units of the resource that enter the population over
     the course of an update.  For a global resource this inflow
@@ -69,7 +69,7 @@ spatial resources)
   <td>0</td>
 </tr>
 <tr>
-  <td style="color: #0000AA">outflow</td>
+  <td class="resall">outflow</td>
   <td>
     The fraction of the resource that will flow out of the population
     each update.  As with inflow, this happens continuously over the
@@ -81,7 +81,7 @@ spatial resources)
   <td>0.0</td>
 </tr>
 <tr>
-  <td style="color: #0000AA">initial</td>
+  <td class="resall">initial</td>
   <td>
     The initial abundance of the resource in the population at the
     start of an experiment.  For a spatial resource the initial
@@ -90,7 +90,7 @@ spatial resources)
   <td>0</td>
 </tr>
 <tr>
-  <td style="color: #0000AA">geometry</td>
+  <td class="resall">geometry</td>
   <td>
     The layout of the resource in space.<br>
     <em>global</em> -- the entire pool of a resource is
@@ -105,7 +105,7 @@ spatial resources)
   <td>global</td>
 </tr>
 <tr>
-  <td style="color: #AA0000">inflowx1</td>
+  <td class="resspatial">inflowx1</td>
   <td>
     Leftmost coordinate of the rectange where resource will flow
     into world grid.
@@ -113,7 +113,7 @@ spatial resources)
   <td>0</td>
 </tr>
 <tr>
-  <td style="color: #AA0000">inflowx2</td>
+  <td class="resspatial">inflowx2</td>
   <td>
     Rightmost coordinate of the rectange where resource will flow
     into world grid.
@@ -121,7 +121,7 @@ spatial resources)
   <td>0</td>
 </tr>
 <tr>
-  <td style="color: #AA0000">inflowy1</td>
+  <td class="resspatial">inflowy1</td>
   <td>
     Topmost coordinate of the rectange where resource will flow
     into world grid.
@@ -129,7 +129,7 @@ spatial resources)
   <td>0</td>
 </tr>
 <tr>
-  <td style="color: #AA0000">inflowy2</td>
+  <td class="resspatial">inflowy2</td>
   <td>
     Bottommost coordinate of the rectange where resource will flow
     into world grid.
@@ -137,7 +137,7 @@ spatial resources)
   <td>0</td>
 </tr>
 <tr>
-  <td style="color: #AA0000">outflowx1</td>
+  <td class="resspatial">outflowx1</td>
   <td>
     Leftmost coordinate of the rectange where resource will flow
     out of world grid.
@@ -145,7 +145,7 @@ spatial resources)
   <td>0</td>
 </tr>
 <tr>
-  <td style="color: #AA0000">outflowx2</td>
+  <td class="resspatial">outflowx2</td>
   <td>
     Rightmost coordinate of the rectange where resource will flow
     out of world grid.
@@ -153,7 +153,7 @@ spatial resources)
   <td>0</td>
 </tr>
 <tr>
-  <td style="color: #AA0000">outflowy1</td>
+  <td class="resspatial">outflowy1</td>
   <td>
     Topmost coordinate of the rectange where resource will flow
     out of world grid.
@@ -161,7 +161,7 @@ spatial resources)
   <td>0</td>
 </tr>
 <tr>
-  <td style="color: #AA0000">outflowy2</td>
+  <td class="resspatial">outflowy2</td>
   <td>
     Bottommost coordinate of the rectange where resource will flow
     out of world grid.
@@ -169,7 +169,7 @@ spatial resources)
   <td>0</td>
 </tr>
 <tr>
-  <td style="color: #AA0000">xdiffuse</td>
+  <td class="resspatial">xdiffuse</td>
   <td>
     How fast material will diffuse right <em>and</em> left.  This flow
     depends on the amount of resources in a given cell and amount in
@@ -178,7 +178,7 @@ spatial resources)
   <td>1.0</td>
 </tr>
 <tr>
-  <td style="color: #AA0000">xgravity</td>
+  <td class="resspatial">xgravity</td>
   <td>
     How fast material will move to the right <em>or</em> left.  This
     movement depends only on the amount of resource in a given cell.
@@ -187,7 +187,7 @@ spatial resources)
   <td>0</td>
 </tr>
 <tr>
-  <td style="color: #AA0000">ydiffuse</td>
+  <td class="resspatial">ydiffuse</td>
   <td>
     How fast material will diffuse up <em>and</em> down.  This flow
     depends on the amount of resources in a given cell and amount in
@@ -196,7 +196,7 @@ spatial resources)
   <td>1.0</td>
 </tr>
 <tr>
-  <td style="color: #AA0000">ygravity</td>
+  <td class="resspatial">ygravity</td>
   <td>
     How fast material will move to the up <em>or</em> down.  This
     movement depends only on the amount of resource in a given cell.
@@ -247,35 +247,35 @@ order of complexity):
 
 <div align="center">
 <p>&nbsp;</p>
-<h3>Table 2: <span style="color: #004400">Available Tasks</span></h3>
+<h3>Table 2: <span>Available Tasks</span></h3>
 <table border="1" cellpadding="2">
 <tr>
   <th>Task</th>
   <th>Description</th>
 </tr>
 <tr>
-  <td style="color: #0000AA">echo</td>
+  <td class="resall">echo</td>
   <td>
     This task is triggered when an organism inputs a single number and
         outputs it without modification.
   </td>
 </tr>
 <tr>
-  <td style="color: #0000AA">add</td>
+  <td class="resall">add</td>
   <td>
     This task is triggered when an organism inputs two numbers, sums them
         together, and outputs the result.
   </td>
 </tr>
 <tr>
-  <td style="color: #0000AA">sub</td>
+  <td class="resall">sub</td>
   <td>
     This task is triggered when an organism inputs two numbers, subtracts
         one from the other, and outputs the result.
   </td>
 </tr>
 <tr>
-  <td style="color: #0000AA">not</td>
+  <td class="resall">not</td>
   <td>
     This task is triggered when an organism inputs a 32 bit number,
     toggles all of the bits, and outputs the result.  This is typically
@@ -286,7 +286,7 @@ order of complexity):
   </td>
 </tr>
 <tr>
-  <td style="color: #0000AA">nand</td>
+  <td class="resall">nand</td>
   <td>
     This task is triggered when two 32 bit numbers are input, the values
     are 'nanded' together in a bitwise fashion, and the result is output.
@@ -296,7 +296,7 @@ order of complexity):
   </td>
 </tr>
 <tr>
-  <td style="color: #0000AA">and</td>
+  <td class="resall">and</td>
   <td>
     This task is triggered when two 32 bit numbers are input, the values
     are 'anded' together in a bitwise fashion, and the result is output.
@@ -305,7 +305,7 @@ order of complexity):
   </td>
 </tr>
 <tr>
-  <td style="color: #0000AA">orn</td>
+  <td class="resall">orn</td>
   <td>
     This task is triggered when two 32 bit numbers are input, the values
     are 'orn' together in a bitwise fashion, and the result is output.
@@ -314,7 +314,7 @@ order of complexity):
   </td>
 </tr>
 <tr>
-  <td style="color: #0000AA">or</td>
+  <td class="resall">or</td>
   <td>
     This task is triggered when two 32 bit numbers are input, the values
     are 'ored' together in a bitwise fashion, and the result is output.
@@ -323,7 +323,7 @@ order of complexity):
   </td>
 </tr>
 <tr>
-  <td style="color: #0000AA">andn</td>
+  <td class="resall">andn</td>
   <td>
     This task is triggered when two 32 bit numbers are input, the values
     are 'andn-ed' together in a bitwise fashion, and the result is output.
@@ -333,7 +333,7 @@ order of complexity):
   </td>
 </tr>
 <tr>
-  <td style="color: #0000AA">nor</td>
+  <td class="resall">nor</td>
   <td>
     This task is triggered when two 32 bit numbers are input, the values
     are 'nored' together in a bitwise fashion, and the result is output.
@@ -342,7 +342,7 @@ order of complexity):
   </td>
 </tr>
 <tr>
-  <td style="color: #0000AA">xor</td>
+  <td class="resall">xor</td>
   <td>
     This task is triggered when two 32 bit numbers are input, the values
     are 'xored' together in a bitwise fashion, and the result is output.
@@ -352,7 +352,7 @@ order of complexity):
   </td>
 </tr>
 <tr>
-  <td style="color: #0000AA">equ</td>
+  <td class="resall">equ</td>
   <td>
     This task is triggered when two 32 bit numbers are input, the values
     are equated together in a bitwise fashion, and the result is output.
@@ -361,7 +361,7 @@ order of complexity):
   </td>
 </tr>
 <tr>
-  <td style="color: #0000AA">logic_3AA-<br />logic_3CP</td>
+  <td class="resall">logic_3AA-<br />logic_3CP</td>
   <td>
     These tasks include all 68 possible unique 3-input logic operations,
     many of which don't have easy-to-understand human readable names.
@@ -381,7 +381,7 @@ Default values are in brackets:
 
 <div align="center">
 <p>&nbsp;</p>
-<h3>Table 3: <span style="color: #004400">Reaction Process Specifications</span></h3>
+<h3>Table 3: <span>Reaction Process Specifications</span></h3>
 <table border="1" cellpadding="2">
 <tr>
   <th>Argument</th>
@@ -389,7 +389,7 @@ Default values are in brackets:
   <th>Default</th>
 </tr>
 <tr>
-  <td style="color: #0000AA">resource</td>
+  <td class="resall">resource</td>
   <td>
     The name of the resource consumed.  By default, no resource is being
     consumed, and the 'max' limit is the amount absorbed.
@@ -397,7 +397,7 @@ Default values are in brackets:
   <td>infinite</td>
 </tr>
 <tr>
-  <td style="color: #0000AA">value</td>
+  <td class="resall">value</td>
   <td>
     Multiply the value set here by the amount of the resource consumed
     to obtain the bonus. (0.5 may be inefficient, while 5.0 is very
@@ -407,7 +407,7 @@ Default values are in brackets:
   <td>1.0</td>
 </tr>
 <tr>
-  <td style="color: #0000AA">type</td>
+  <td class="resall">type</td>
   <td>
     Determines how to apply the bonus (i.e. the amount of the resource
     absorbed times the value of this process) to change the merit of the
@@ -422,12 +422,12 @@ Default values are in brackets:
   <td>add</td>
 </tr>
 <tr>
-  <td style="color: #0000AA">max</td>
+  <td class="resall">max</td>
   <td>The maximum amount of the resource consumed per occurrence.</td>
   <td>1.0</td>
 </tr>
 <tr>
-  <td style="color: #0000AA">min</td>
+  <td class="resall">min</td>
   <td>
     The minimum amount of resource required.  If less than this quantity
     is available, the reaction ceases to proceed.
@@ -435,12 +435,12 @@ Default values are in brackets:
   <td>0.0</td>
 </tr>
 <tr>
-  <td style="color: #0000AA">frac</td>
+  <td class="resall">frac</td>
   <td>The maximum fraction of the available resource that can be consumed.</td>
   <td>1.0</td>
 </tr>
 <tr>
-  <td style="color: #0000AA">product</td>
+  <td class="resall">product</td>
   <td>
     The name of the by-product resource.  At the moment, only a single
     by-product can be produced at a time.
@@ -448,12 +448,12 @@ Default values are in brackets:
   <td>none</td>
 </tr>
 <tr>
-  <td style="color: #0000AA">conversion</td>
+  <td class="resall">conversion</td>
   <td>The conversion rate to by-product resource</td>
   <td>1.0</td>
 </tr>
 <tr>
-  <td style="color: #0000AA">inst</td>
+  <td class="resall">inst</td>
   <td>
     The instruction that gets executed when this reaction gets preformed. If 
     you do not want an organism to be able to have the instruction in their
@@ -463,7 +463,7 @@ Default values are in brackets:
   <td>none</td>
 </tr>
 <tr>
-  <td style="color: #0000AA">lethal</td>
+  <td class="resall">lethal</td>
   <td>Whether the cell dies after performing the process</td>
   <td>0</td>
 </tr>
@@ -496,7 +496,7 @@ following requisites (in any combination) are possible:
 
 <div align="center">
 <p>&nbsp;</p>
-<h3>Table 4: <span style="color: #004400">Reaction Requisite Specifications</span></h3>
+<h3>Table 4: <span>Reaction Requisite Specifications</span></h3>
 <table border="1" cellpadding="2">
 <tr>
   <th>Argument</th>
@@ -504,7 +504,7 @@ following requisites (in any combination) are possible:
   <th>Default</th>
 </tr>
 <tr>
-  <td style="color: #0000AA">reaction</td>
+  <td class="resall">reaction</td>
   <td>
     This limits this reaction from being triggered until the other
     reaction specified here has been triggered first.  With this, the
@@ -513,7 +513,7 @@ following requisites (in any combination) are possible:
   <td>none</td>
 </tr>
 <tr>
-  <td style="color: #0000AA">noreaction</td>
+  <td class="resall">noreaction</td>
   <td>
     This limits this reaction from being triggered if the reaction
     specified here has already been triggered.  This allows the user to
@@ -523,7 +523,7 @@ following requisites (in any combination) are possible:
   <td>none</td>
 </tr>
 <tr>
-  <td style="color: #0000AA">min_count</td>
+  <td class="resall">min_count</td>
   <td>
     This restriction requires that the task used to trigger this reaction
     must be performed a certain number of times before the trigger will
@@ -534,7 +534,7 @@ following requisites (in any combination) are possible:
   <td>0</td>
 </tr>
 <tr>
-  <td style="color: #0000AA">max_count</font>
+  <td class="resall">max_count</font>
   <td>
     This restriction places a cap on the number of times a task can
     be done and still trigger this reaction.  It allows the user to

@@ -5,8 +5,8 @@
 </head>
 <body>
 
-<div style="float: right">
-Revised 2006-08-31 DMB
+<div class="revision">
+Revised 2006-09-05 DMB
 </div>
 
 <p><a href="index.html">Return to the Index</a></p>
@@ -50,7 +50,7 @@ when developing within Avida.
     exception to this rule is single line class methods, in which both braces
     are allowed to be on the same line as the code (but only in pairs).  Examples:
     </p>
-    <h5 style="color: #008800">Right:</h5>
+    <h5 class="method">Right:</h5>
 <pre>
 void cFoo::Method()
 {
@@ -63,7 +63,7 @@ inline void Method() { ; }
 inline void Method()
 { // longer code in here }
 </pre>
-    <h5 style="color: #880000">Wrong:</h5>
+    <h5 class="class">Wrong:</h5>
 <pre>
 void cFoo::Method() {
   // code goes here
@@ -82,13 +82,13 @@ inline void Method() {
     The open brace should go on the same line as the control structure,
     the close brace on its own line.  Examples:
     </p>
-    <h5 style="color: #008800">Right:</h5>
+    <h5 class="method">Right:</h5>
 <pre>
 while (foo) {
   // code goes here
 }
 </pre>
-    <h5 style="color: #880000">Wrong:</h5>
+    <h5 class="class">Wrong:</h5>
 <pre>
 while (foo)
 {
@@ -105,7 +105,7 @@ while (foo)
     line if else statements should not get braces, unless they accompany a
     multi-line statement.  Examples:
     </p>
-    <h5 style="color: #008800">Right:</h5>
+    <h5 class="method">Right:</h5>
 <pre>
 if (foo) {
   DoSomething();
@@ -117,7 +117,7 @@ if (foo) {
 if (!foo) CallAFunction();
 else CallBFunction();
 </pre>
-    <h5 style="color: #880000">Wrong:</h5>
+    <h5 class="class">Wrong:</h5>
 <pre>
 if (foo)
 {
@@ -145,12 +145,12 @@ else CallBFunction();
     parentheses, or before commas that separate arguments.  A single space
     should follow commas that separate arguments.  Examples:
     </p>
-    <h5 style="color: #008800">Right:</h5>
+    <h5 class="method">Right:</h5>
 <pre>
 void cFoo::Method(int arg1, double arg2);
 int aFunction();
 </pre>
-    <h5 style="color: #880000">Wrong:</h5>
+    <h5 class="class">Wrong:</h5>
 <pre>
 void cFoo::Method( int arg1 , double arg2 );
 void cFoo::Method (int arg1, double arg2);

@@ -5,8 +5,8 @@
 </head>
 <body>
 
-<div style="float: right">
-Revised 2006-08-30 DMB
+<div class="revision">
+Revised 2006-09-05 DMB
 </div>
 
 <p><a href="index.html">Return to the Index</a></p>
@@ -42,7 +42,7 @@ could double one of their inputs, we might call that task 'times2'.  We would
 then add the line to this file:
 </p>
 <pre>
-double <span style="color: #008800">Task_Times2</span>(<span style="color: #880000">cTaskContext</span>* <span style="color: #000088">ctx</span>) const;
+double <span class="method">Task_Times2</span>(<span class="class">cTaskContext</span>* <span class="object">ctx</span>) const;
 </pre>
 
 <p>
@@ -63,11 +63,11 @@ immediately after it.
 </p>
 
 <pre>
-double <span style="color: #880000">cTaskLib</span>::<span style="color: #008800">Task_Times2</span>(<span style="color: #880000">cTaskContext</span>* <span style="color: #000088">ctx</span>) const
+double <span class="class">cTaskLib</span>::<span class="method">Task_Times2</span>(<span class="class">cTaskContext</span>* <span class="object">ctx</span>) const
 {
-  const <span style="color: #880000">int</span> <span style="color: #000088">test_output</span> = <span style="color: #000088">ctx</span>-&gt;<span style="color: #000088">output_buffer</span>[0];
-  for (<span style="color: #880000">int</span> <span style="color: #000088">i</span> = 0; <span style="color: #000088">i</span> &lt; <span style="color: #000088">ctx</span>-&gt;<span style="color: #000088">input_buffer</span>.<span style="color: #008800">GetNumStored</span>(); <span style="color: #000088">i</span>++) {
-    if (2 * <span style="color: #000088">ctx</span>-&gt;<span style="color: #000088">input_buffer</span>[i] == <span style="color: #000088">test_output</span>) {
+  const <span class="class">int</span> <span class="object">test_output</span> = <span class="object">ctx</span>-&gt;<span class="object">output_buffer</span>[0];
+  for (<span class="class">int</span> <span class="object">i</span> = 0; <span class="object">i</span> &lt; <span class="object">ctx</span>-&gt;<span class="object">input_buffer</span>.<span class="method">GetNumStored</span>(); <span class="object">i</span>++) {
+    if (2 * <span class="object">ctx</span>-&gt;<span class="object">input_buffer</span>[i] == <span class="object">test_output</span>) {
       return 1.0;
     }
   }
@@ -78,7 +78,7 @@ double <span style="color: #880000">cTaskLib</span>::<span style="color: #008800
 <p>
 The most recent output is always placed at the beginning of the output
 buffer, so we store it in the variable
-<span style="color: #000088">test_output</span> to compare it against all of the
+<span class="object">test_output</span> to compare it against all of the
 different inputs.  We then have a for-loop that goes from 0 to the number
 of inputs stored in the input buffer.  Inside the body of the loop, we
 test for each input if twice that input is equal to the output.  If so,
@@ -101,14 +101,14 @@ higher.
 
 <p>
 This next step is also done in the code file, inside the
-<span style="color: #880000">cTaskLib</span>::<span style="color: #008800">AddTask</span>()
+<span class="class">cTaskLib</span>::<span class="method">AddTask</span>()
 method.  Again, we want this to be in the same place, so we locate the
 task 'echo' that its supposed to follow, and add in the new line.
 </p>
 
 <pre>
-else if (<span style="color: #000088">name</span> == &quot;times2&quot;)
-  <span style="color: #008800">NewTask</span>(<span style="color: #000088">name</span>, &quot;Times2&quot;, &amp;<span style="color: #880000">cTaskLib</span>::<span style="color: #008800">Task_Times2</span>);
+else if (<span class="object">name</span> == &quot;times2&quot;)
+  <span class="method">NewTask</span>(<span class="object">name</span>, &quot;Times2&quot;, &amp;<span class="class">cTaskLib</span>::<span class="method">Task_Times2</span>);
 </pre>    
 
 <p>

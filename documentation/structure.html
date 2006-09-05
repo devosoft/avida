@@ -5,8 +5,8 @@
 </head>
 <body>
 
-<div style="float: right">
-Revised 2006-08-28 DMB
+<div class="revision">
+Revised 2006-09-05 DMB
 </div>
 
 <p><a href="index.html">Return to the Index</a></p>
@@ -28,13 +28,13 @@ This document contains a guide to the files present in Avida, and where they are
 Source code files in Avida follow a standard naming convention.  The C++ core,
 in general, maintains one class per header/source file pair.  The file name
 should exactly match the class that it defines.  All header files use
-<code style="color: #000088">.h</code> and all source files use
-<code style="color: #000088">.cc</code> as their respective file extensions.
+<code>.h</code> and all source files use
+<code>.cc</code> as their respective file extensions.
 </p>
 <p>
 When you compile a program in C++, it goes through a <em>compilation</em> phase
-and then a <em>link</em> phase.  The compilation phase takes each source (<code style="color: #000088">.cc</code>)
-file and compiles it independently into an object (<code style="color: #000088">.o</code>) file.  In the
+and then a <em>link</em> phase.  The compilation phase takes each source (<code>.cc</code>)
+file and compiles it independently into an object (<code>.o</code>) file.  In the
 link phase, all of these compiled object files are linked together into a
 single executable (such as <kbd>avida</kbd>).
 </p>
@@ -49,14 +49,14 @@ if the method is never directly called within the object file being created.
 
 <p>
 For example: The cOrganism object is declared in the file
-<code style="color: #000088">cOrganism.h</code> and fully
-defined in <code style="color: #000088">cOrganism.cc</code>.  When
+<code>cOrganism.h</code> and fully
+defined in <code>cOrganism.cc</code>.  When
 this file is compiled, it creates the object file
-<code style="color: #000088">cOrganism.o</code>.  Both the cPopulation
-class (<code style="color: #000088">cPopulation.cc</code>) and the
-cTestCPU class (<code style="color: #000088">cTestCPU.cc</code>) use
+<code>cOrganism.o</code>.  Both the cPopulation
+class (<code>cPopulation.cc</code>) and the
+cTestCPU class (<code>cTestCPU.cc</code>) use
 the cOrganism object.  Since the majority of its methods are defined in
-<code style="color: #000088">cOrganism.cc</code>, the compiler only
+<code>cOrganism.cc</code>, the compiler only
 needs to be compile these methods once.  During the link phase
 the linker connects the references together.
 </p>
@@ -364,12 +364,12 @@ This class contains all of the information associated with task evaluation.
 <h3>Directory: <kbd style="color: #008844">source/analyze/</kbd></h3>
 
 <p>
-The primary class in this directory is <code style="color: #000088">cAnalyze</code>.
+The primary class in this directory is <code>cAnalyze</code>.
 This class processes <kbd style="color: #000088">analyze.cfg</kbd> files to perform
 data analysis on run data.  The additional classes in this directory support various
 types of analyses, along with provide the foundation for multithreaded execution.
-The <code style="color: #000088">cAnalyzeJobQueue</code> object, instatiated by
-<code style="color: #000088">cAnalyze</code>, orchestrates queuing and executing
+The <code>cAnalyzeJobQueue</code> object, instatiated by
+<code>cAnalyze</code>, orchestrates queuing and executing
 jobs on parallel worker objects.
 </p>
 

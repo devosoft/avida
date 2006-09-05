@@ -5,8 +5,8 @@
 </head>
 <body>
 
-<div style="float: right">
-Revised 2006-08-30 DMB
+<div class="revision">
+Revised 2006-09-05 DMB
 </div>
 
 <p><a href="index.html">Return to the Index</a></p>
@@ -32,35 +32,35 @@ has a number of helper methods that allow us to work with that number.
 </p>
 
 <pre>
-class <span style="color: #880000">cInstruction</span> {
+class <span class="class">cInstruction</span> {
 private:
-  unsigned char <span style="color: #000088">m_operand</span>;
+  unsigned char <span class="object">m_operand</span>;
 
 public:
-  <span style="color: #886600">// Constructors and Destructor...</span>
-  <span style="color: #008800">cInstruction()</span> : <span style="color: #000088">m_operand</span>(0) { ; }
-  <span style="color: #008800">cInstruction</span>(const <span style="color: #880000">cInstruction</span>&amp; <span style="color: #000088">inst</span>) { *<span style="color: #000088">this</span> = <span style="color: #000088">inst</span>; }
-  explicit <span style="color: #008800">cInstruction</span>(<span style="color: #880000">int</span> <span style="color: #000088">in_op</span>) { <span style="color: #008800">SetOp</span>(<span style="color: #000088">in_op</span>); }
-  <span style="color: #008800">~cInstruction</span>() { ; }
+  <span class="comment">// Constructors and Destructor...</span>
+  <span class="method">cInstruction</span>() : <span class="object">m_operand</span>(0) { ; }
+  <span class="method">cInstruction</span>(const <span class="class">cInstruction</span>&amp; <span class="object">inst</span>) { *<span class="object">this</span> = <span class="object">inst</span>; }
+  explicit <span class="method">cInstruction</span>(<span class="class">int</span> <span class="object">in_op</span>) { <span class="method">SetOp</span>(<span class="object">in_op</span>); }
+  <span class="method">~cInstruction</span>() { ; }
 
-  <span style="color: #886600">// Accessors...</span>
-  <span style="color: #880000">int</span> <span style="color: #008800">GetOp()</span> const { return static_cast&lt;int&gt;(<span style="color: #000088">m_operand</span>); }
-  void <span style="color: #008800">SetOp</span>(<span style="color: #880000">int</span> <span style="color: #000088">in_op</span>) { <span style="color: #008800">assert</span>(<span style="color: #000088">in_op</span> &lt; 256); <span style="color: #000088">m_operand</span> = <span style="color: #000088">in_op</span>; }
+  <span class="comment">// Accessors...</span>
+  <span class="class">int</span> <span class="method">GetOp()</span> const { return static_cast&lt;int&gt;(<span class="object">m_operand</span>); }
+  void <span class="method">SetOp</span>(<span class="class">int</span> <span class="object">in_op</span>) { <span class="method">assert</span>(<span class="object">in_op</span> &lt; 256); <span class="object">m_operand</span> = <span class="object">in_op</span>; }
 
-  <span style="color: #886600">// Operators...</span>
-  void <span style="color: #008800">operator=</span>(const <span style="color: #880000">cInstruction</span>&amp; <span style="color: #000088">inst</span>) { <span style="color: #000088">m_operand</span> = <span style="color: #000088">inst</span>.<span style="color: #000088">m_operand</span>; }
-  <span style="color: #880000">bool</span> <span style="color: #008800">operator==</span>(const <span style="color: #880000">cInstruction</span>&amp; <span style="color: #000088">inst</span>) const { return (<span style="color: #000088">m_operand</span> == <span style="color: #000088">inst</span>.<span style="color: #000088">m_operand</span>); }
-  <span style="color: #880000">bool</span> <span style="color: #008800">operator!=</span>(const <span style="color: #880000">cInstruction</span>&amp; <span style="color: #000088">inst</span>) const { return !(<span style="color: #008800">operator==</span>(<span style="color: #000088">inst</span>)); }
+  <span class="comment">// Operators...</span>
+  void <span class="method">operator=</span>(const <span class="class">cInstruction</span>&amp; <span class="object">inst</span>) { <span class="object">m_operand</span> = <span class="object">inst</span>.<span class="object">m_operand</span>; }
+  <span class="class">bool</span> <span class="method">operator==</span>(const <span class="class">cInstruction</span>&amp; <span class="object">inst</span>) const { return (<span class="object">m_operand</span> == <span class="object">inst</span>.<span class="object">m_operand</span>); }
+  <span class="class">bool</span> <span class="method">operator!=</span>(const <span class="class">cInstruction</span>&amp; <span class="object">inst</span>) const { return !(<span class="method">operator==</span>(<span class="object">inst</span>)); }
 
-  <span style="color: #886600">// Some extra methods to convert too and from alpha-numeric symbols...</span>
-  <span style="color: #880000">char</span> <span style="color: #008800">GetSymbol</span>() const;
-  void <span style="color: #008800">SetSymbol</span>(<span style="color: #880000">char</span> <span style="color: #000088">symbol</span>);
+  <span class="comment">// Some extra methods to convert too and from alpha-numeric symbols...</span>
+  <span class="class">char</span> <span class="method">GetSymbol</span>() const;
+  void <span class="method">SetSymbol</span>(<span class="class">char</span> <span class="object">symbol</span>);
 };
 </pre>
 
 <p>
 As stated above, the only private datum is a numerical value that identifies
-this instruction.  The name <span style="color: #000088">m_operand</span> is the term
+this instruction.  The name <span class="object">m_operand</span> is the term
 that is used for a command name in an assembly language.  Most normal assembly
 languages have both an operand and arguments associated with each full command.
 In Avida, the commands have no arguments, and hence they just consist of a
@@ -75,12 +75,12 @@ large number of instructions throughout a population.  Instructions already
 make up over half of all the memory resources used by Avida.
 </p>
 <p>
-The public methods begin with the <span style="color: #008800">GetOp</span>() and
-<span style="color: #008800">SetOp</span>() methods, which are standard accessors.
+The public methods begin with the <span class="method">GetOp</span>() and
+<span class="method">SetOp</span>() methods, which are standard accessors.
 Next, we have a collection of methods that begin with the word 'operator'.
 These are used to define how the corresponding symbols should be treated
 when applied to objects of this class.  For example, the method 
-<span style="color: #008800">operator==</span>() is called when we try to compare
+<span class="method">operator==</span>() is called when we try to compare
 an object of type cInstruction to another.  We have full control over the
 definition of this method, just like any other.
 </p>
@@ -105,43 +105,43 @@ total construct.
 </p>
 
 <pre>
-class <span style="color: #880000">cGenome</span>
+class <span class="class">cGenome</span>
 {
 protected:
-  <span style="color: #880000">tArray</span>&lt;<span style="color: #880000">cInstruction</span>&gt; <span style="color: #000088">genome</span>;
-  int <span style="color: #000088">active_size</span>;
+  <span class="class">tArray</span>&lt;<span class="class">cInstruction</span>&gt; <span class="object">genome</span>;
+  int <span class="object">active_size</span>;
  
 public:
-  <span style="color: #008800">cGenome</span>() { ; }
-  explicit <span style="color: #008800">cGenome</span>(int <span style="color: #000088">_size</span>);
-  <span style="color: #008800">cGenome</span>(const <span style="color: #880000">cGenome</span>&amp; <span style="color: #000088">in_genome</span>);
-  <span style="color: #008800">cGenome</span>(const <span style="color: #880000">cString</span>&amp; <span style="color: #000088">in_string</span>);
-  virtual <span style="color: #008800">~cGenome</span>();
+  <span class="method">cGenome</span>() { ; }
+  explicit <span class="method">cGenome</span>(int <span class="object">_size</span>);
+  <span class="method">cGenome</span>(const <span class="class">cGenome</span>&amp; <span class="object">in_genome</span>);
+  <span class="method">cGenome</span>(const <span class="class">cString</span>&amp; <span class="object">in_string</span>);
+  virtual <span class="method">~cGenome</span>();
  
-  virtual void <span style="color: #008800">operator=</span>(const <span style="color: #880000">cGenome</span>&amp; <span style="color: #000088">other_genome</span>);
-  virtual bool <span style="color: #008800">operator==</span>(const <span style="color: #880000">cGenome</span>&amp; <span style="color: #000088">other_genome</span>) const;
-  virtual bool <span style="color: #008800">operator!=</span>(const <span style="color: #880000">cGenome</span>&amp; <span style="color: #000088">other_genome</span>) const { return !(<span style="color: #000088">this</span>-&gt;<span style="color: #008800">operator==</span>(<span style="color: #000088">other_genome</span>)); }
-  virtual bool <span style="color: #008800">operator&lt;</span>(const <span style="color: #880000">cGenome</span>&amp; <span style="color: #000088">other_genome</span>) const { return <span style="color: #008800">AsString</span>() &lt; <span style="color: #000088">other_genome</span>.<span style="color: #008800">AsString</span>(); }
+  virtual void <span class="method">operator=</span>(const <span class="class">cGenome</span>&amp; <span class="object">other_genome</span>);
+  virtual bool <span class="method">operator==</span>(const <span class="class">cGenome</span>&amp; <span class="object">other_genome</span>) const;
+  virtual bool <span class="method">operator!=</span>(const <span class="class">cGenome</span>&amp; <span class="object">other_genome</span>) const { return !(<span class="object">this</span>-&gt;<span class="method">operator==</span>(<span class="object">other_genome</span>)); }
+  virtual bool <span class="method">operator&lt;</span>(const <span class="class">cGenome</span>&amp; <span class="object">other_genome</span>) const { return <span class="method">AsString</span>() &lt; <span class="object">other_genome</span>.<span class="method">AsString</span>(); }
  
-  <span style="color: #880000">cInstruction</span>&amp; <span style="color: #008800">operator[]</span>(int <span style="color: #000088">index</span>) { <span style="color: #008800">assert</span>(<span style="color: #000088">index</span> &gt;= 0 &amp;&amp; <span style="color: #000088">index</span> &lt; <span style="color: #000088">active_size</span>);  return <span style="color: #000088">genome</span>[<span style="color: #000088">index</span>]; }
-  const <span style="color: #880000">cInstruction</span>&amp; <span style="color: #008800">operator[]</span>(<span style="color: #880000">int</span> <span style="color: #000088">index</span>) const { <span style="color: #008800">assert</span>(<span style="color: #000088">index</span> &gt;= 0 &amp;&amp; <span style="color: #000088">index</span> &lt; <span style="color: #000088">active_size</span>);  return <span style="color: #000088">genome</span>[<span style="color: #000088">index</span>]; }
+  <span class="class">cInstruction</span>&amp; <span class="method">operator[]</span>(int <span class="object">index</span>) { <span class="method">assert</span>(<span class="object">index</span> &gt;= 0 &amp;&amp; <span class="object">index</span> &lt; <span class="object">active_size</span>);  return <span class="object">genome</span>[<span class="object">index</span>]; }
+  const <span class="class">cInstruction</span>&amp; <span class="method">operator[]</span>(<span class="class">int</span> <span class="object">index</span>) const { <span class="method">assert</span>(<span class="object">index</span> &gt;= 0 &amp;&amp; <span class="object">index</span> &lt; <span class="object">active_size</span>);  return <span class="object">genome</span>[<span class="object">index</span>]; }
  
-  virtual void <span style="color: #008800">Copy</span>(int <span style="color: #000088">to</span>, int <span style="color: #000088">from</span>);
+  virtual void <span class="method">Copy</span>(int <span class="object">to</span>, int <span class="object">from</span>);
  
-  int <span style="color: #008800">GetSize</span>() const { return <span style="color: #000088">active_size</span>; }
-  <span style="color: #880000">cString</span> <span style="color: #008800">AsString</span>() const;
+  int <span class="method">GetSize</span>() const { return <span class="object">active_size</span>; }
+  <span class="class">cString</span> <span class="method">AsString</span>() const;
 };
 </pre>
 
 <p>
-The protected variable <span style="color: #000088">genome</span> is an array 
+The protected variable <span class="object">genome</span> is an array 
 containing an object of type cInstruction at each position.  The second
-variable <span style="color: #000088">active_size</span> denotes the number of
+variable <span class="object">active_size</span> denotes the number of
 instructions in this array that are currently being used.  The fact that
 these variables are "protected" instead of "private" means that any
-class derived from <span style="color: #880000">cGenome</span> will also have direct
+class derived from <span class="class">cGenome</span> will also have direct
 access to the variables.  In particular, the class
-<span style="color: #880000">cCPUMemory</span> extends cGenome, adding methods to
+<span class="class">cCPUMemory</span> extends cGenome, adding methods to
 alter the array length and new variables to keep track of information about
 each instruction.
 </p>
@@ -154,7 +154,7 @@ of symbols representing each instruction in order.
 The operators created for manipulating genomes include both assignment 
 (setting one genome equal to another) and comparison (testing to see if
 two genomes are identical.)  Additionally, there are two
-<span style="color: #008800">operator[]</span> methods.  This means that if you
+<span class="method">operator[]</span> methods.  This means that if you
 have an object of type cGenome, you can index into it to retrieve a single
 instruction.  Thus, if the object was called <code>initial_genome</code>, the 
 statement <code>initial_genome[15]</code> would return the instruction at
@@ -167,13 +167,13 @@ genomes, which can never be changed so only the value of the instruction is
 returned.
 </p>
 <p>
-The <span style="color: #008800">Copy(</span>) method is a shortcut to copy memory
+The <span class="method">Copy(</span>) method is a shortcut to copy memory
 from one position in the genome to another.  This method will later be
 <strong>overloaded</strong> (that is, replaced with a newer version) by
 cCPUMemory such that the proper flags will be copied, with the instruction
 and others will be set to indicate the copied instruction for future tests.
-<span style="color: #008800">GetSize</span>() returns the length of the genome, and
-<span style="color: #008800">AsString</span>() returns a string who has symbols in
+<span class="method">GetSize</span>() returns the length of the genome, and
+<span class="method">AsString</span>() returns a string who has symbols in
 each position that correspond to the the instruction in the same position in
 the genome.
 </p>

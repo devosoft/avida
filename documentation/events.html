@@ -5,8 +5,8 @@
 </head>
 <body>
 
-<div style="float: right">
-Revised 2006-08-28 DMB
+<div class="revision">
+Revised 2006-09-05 DMB
 </div>
 
 <p><a href="index.html">Return to the Index</a></p>
@@ -62,23 +62,23 @@ available options.
 <p>
 Some examples:
 </p>
-<div style="margin-left: 10px">
+<div class="sub">
   <p>
-  <code style="color: #0000AA">i Inject</code>
+  <code>i Inject</code>
   <br />
   Inject an additional start creature immediately.
   </p>
 
   <p>
-  <code style="color: #0000AA">u 100:100 PrintAverageData</code>
+  <code>u 100:100 PrintAverageData</code>
   <br />Print out all average measurements collected every one hundred updates,
   starting at update 100.
   </p>
 
   <p>
-  <code style="color: #0000AA">g 10000:10:20000 PrintData dom_info.dat update,dom_fitness,dom_depth,dom_sequence</code>
+  <code>g 10000:10:20000 PrintData dom_info.dat update,dom_fitness,dom_depth,dom_sequence</code>
   <br />Between generations 10,000 and 20,000, append the specified information to
-  the file <kbd style="color: #000088">dom_info.dat</kbd> every ten generations.  Specifically, the first
+  the file <kbd>dom_info.dat</kbd> every ten generations.  Specifically, the first
   column in the file would be update number, second is the fitness of
   the dominant genotype, followed by the depth in the phylogentic
   tree of the dominant genotype, and finally its genome sequence.

@@ -1,9 +1,25 @@
-pre {
+pre, .sub {
   margin-left: 10px;
 }
 
+
 div.revision {
   float: right;
+}
+
+tr.important {
+  background-color: #AAFFAA;
+}
+
+h3 span {
+  color: #004400;
+}
+
+.resall {
+  color: #0000AA;
+}
+.resspatial {
+  color: #AA0000;
 }
 
 .cmdarg {

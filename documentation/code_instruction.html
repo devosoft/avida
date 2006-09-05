@@ -5,8 +5,8 @@
 </head>
 <body>
 
-<div style="float: right">
-Revised 2006-08-31 DMB
+<div class="revision">
+Revised 2006-09-05 DMB
 </div>
 
 <p><a href="index.html">Return to the Index</a></p>
@@ -35,7 +35,7 @@ instruction <code>minus-17</code> (which performs the oh-so-useful behavior
 of subtracting 17 from the ?BX? register), you would add the line:
 </p>
 <pre>
-bool <span style="color: #008800">Inst_Minus17</span>(<span style="color: #880000">cAvidaContext</span>&amp; <span style="color: #000088">ctx</span>);
+bool <span class="method">Inst_Minus17</span>(<span class="class">cAvidaContext</span>&amp; <span class="object">ctx</span>);
 </pre>
 
 <p>
@@ -47,7 +47,7 @@ affect a single register.
 </p>
 <p>
 All methods associated with instructions return a
-<span style="color: #880000">bool</span> value that determines if it was
+<span class="class">bool</span> value that determines if it was
 successfully executed.  Most instructions will always return true since they
 have now way to fail.  The convention that we use to designate a method
 explicitly associated with an instruction is placing a prefix of
@@ -61,17 +61,17 @@ find the proper position, and write something to the effect of:
 </p>
 
 <pre>
-void <span style="color: #880000">cHardwareCPU</span>::<span style="color: #008800">Inst_Minus17</span>(<span style="color: #880000">cAvidaContext</span>&amp; <span style="color: #000088">ctx</span>)
+void <span class="class">cHardwareCPU</span>::<span class="method">Inst_Minus17</span>(<span class="class">cAvidaContext</span>&amp; <span class="object">ctx</span>)
 {
-  const <span style="color: #880000">int</span> <span style="color: #000088">reg_used</span> = <span style="color: #008800">FindModifiedRegister</span>(nHardwareCPU::REG_BX);
-  <span style="color: #008800">GetRegister</span>(<span style="color: #000088">reg_used</span>) -= 17;
+  const <span class="class">int</span> <span class="object">reg_used</span> = <span class="method">FindModifiedRegister</span>(nHardwareCPU::REG_BX);
+  <span class="method">GetRegister</span>(<span class="object">reg_used</span>) -= 17;
   return true;
 }
 </pre>
 
 <p>
 The first line of this method uses a helper function called
-<span style="color: #008800">FindModifiedRegister</span>() to identify the register
+<span class="method">FindModifiedRegister</span>() to identify the register
 that should be affected (it scans the next instruction to test if it is a
 <code>nop</code>), with a default value of <code>REG_BX</code> passed in.
 The second line then subtracts 17 from the value in that register.  The
@@ -89,11 +89,11 @@ well your implementation is going so far.
 <h2>2. Link the instruction name to its method</h2>
 
 For this step, you will need to edit the code file.  You would go into the method
-<span style="color: #880000">cHardwareCPU</span>::<span style="color: #008800">initInstLib</span>()
+<span class="class">cHardwareCPU</span>::<span class="method">initInstLib</span>()
 and add in the line
 
 <pre>
-<span style="color: #880000">cInstEntryCPU</span>(&quot;minus-17&quot;, &amp;<span style="color: #880000">cHardwareCPU</span>::<span style="color: #008800">Inst_Minus17</span>);
+<span class="class">cInstEntryCPU</span>(&quot;minus-17&quot;, &amp;<span class="class">cHardwareCPU</span>::<span class="method">Inst_Minus17</span>);
 </pre>
 
 <p>
@@ -102,9 +102,9 @@ in the same order that it was defined in the class definition.
 <p>
 Since we want to use a pointer to the appropriate method, that is what we
 must pass into the dictionary.  To obtain said pointer, we must list the class
-the function is part of (<span style="color: #880000">cHardwareCPU</span>) follow it
+the function is part of (<span class="class">cHardwareCPU</span>) follow it
 by a double colon (::) and then give the method name
-(<span style="color: #008800">Inst_Minus17</span>) <em>without</em> the normal
+(<span class="method">Inst_Minus17</span>) <em>without</em> the normal
 parentheses following it.  The parentheses indicate that we should execute
 the method.  Without them, it is just the data that represents the method,
 and by preceding this whole mess with an ampersand ('&amp;') we get the pointer
@@ -171,9 +171,9 @@ component for you.
 <dl>
 <dt>
 <pre>
-void <span style="color: #008800">StackPush</span>(<span style="color: #880000">int</span> <span style="color: #000088">value</span>);
-<span style="color: #880000">int</span> <span style="color: #008800">StackPop</span>();
-void <span style="color: #008800">SwitchStack</span>();
+void <span class="method">StackPush</span>(<span class="class">int</span> <span class="object">value</span>);
+<span class="class">int</span> <span class="method">StackPop</span>();
+void <span class="method">SwitchStack</span>();
 </pre>
 </dt>
 <dd>
@@ -184,8 +184,8 @@ remove the top value, and the last will toggle the currently active stack.
 </dd>
 <dt>
 <pre>
-<span style="color: #880000">cCPUHead</span>&amp; <span style="color: #008800">GetHead</span>(int <span style="color: #000088">head_id</span>);
-<span style="color: #880000">cCPUHead</span>&amp; <span style="color: #008800">IP</span>();</pre>
+<span class="class">cCPUHead</span>&amp; <span class="method">GetHead</span>(int <span class="object">head_id</span>);
+<span class="class">cCPUHead</span>&amp; <span class="method">IP</span>();</pre>
 </dt>
 <dd>
 Each thread in a CPU has four heads associated with it, designated by the
@@ -201,7 +201,7 @@ qualities of the instruction pointer.)
 </dd>
 <dt>
 <pre>
-int&amp; <span style="color: #008800">Register</span>(int <span style="color: #000088">reg_id</span>);
+int&amp; <span class="method">Register</span>(int <span class="object">reg_id</span>);
 </pre>
 </dt>
 <dd>
@@ -213,7 +213,7 @@ change to the register in question.
 </dd>
 <dt>
 <pre>
-<span style="color: #880000">cCPUMemory</span>&amp; <span style="color: #008800">GetMemory</span>();
+<span class="class">cCPUMemory</span>&amp; <span class="method">GetMemory</span>();
 </pre>
 </dt>
 <dd>
@@ -243,9 +243,9 @@ helper function to ease the creation of new instructions.
 <dl>
 <dt>
 <pre>
-void <span style="color: #008800">ReadLabel</span>();
-<span style="color: #880000">cCodeLabel</span>&amp; <span style="color: #008800">GetLabel</span>();
-<span style="color: #880000">cCPUHead</span> <span style="color: #008800">FindLabel</span>(int <span style="color: #000088">direction</span>);
+void <span class="method">ReadLabel</span>();
+<span class="class">cCodeLabel</span>&amp; <span class="method">GetLabel</span>();
+<span class="class">cCPUHead</span> <span class="method">FindLabel</span>(int <span class="object">direction</span>);
 </pre>
 </dt>
 <dd>
@@ -264,8 +264,8 @@ example of how these are used.
 </dd>
 <dt>
 <pre>
-int <span style="color: #008800">FindModifiedRegister</span>(int <span style="color: #000088">default_register</span>);
-int <span style="color: #008800">FindModifiedHead</span>(int <span style="color: #000088">default_head</span>);
+int <span class="method">FindModifiedRegister</span>(int <span class="object">default_register</span>);
+int <span class="method">FindModifiedHead</span>(int <span class="object">default_head</span>);
 </pre>
 </dt>
 <dd>
@@ -278,7 +278,7 @@ instruction above.
 </dd>
 <dt>
 <pre>
-int <span style="color: #008800">FindComplementRegister</span>(int <span style="color: #000088">base_reg</span>);
+int <span class="method">FindComplementRegister</span>(int <span class="object">base_reg</span>);
 </pre>
 </dt>
 <dd>
