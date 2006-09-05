@@ -28,33 +28,33 @@ cDataFile::cDataFile(cString& name) : m_name(name), num_cols(0), m_descr_written
 }
 
 
-void cDataFile::Write( double x, const char * descr )
+void cDataFile::Write( double x, const char* descr )
 {
-  if ( !m_descr_written ){
-    m_data += cStringUtil::Stringf( "%f ", x );
+  if (!m_descr_written) {
+    m_data += cStringUtil::Stringf("%f ", x);
     WriteColumnDesc(descr);
-  }
-  else m_fp << x << " ";
+  } else
+    m_fp << x << " ";
 }
 
 
-void cDataFile::Write( int i, const char * descr )
+void cDataFile::Write(int i, const char* descr)
 {
-  if ( !m_descr_written ){
-    m_data += cStringUtil::Stringf( "%i ", i );
+  if (!m_descr_written) {
+    m_data += cStringUtil::Stringf("%i ", i);
     WriteColumnDesc(descr);
-  }
-  else m_fp << i << " ";
+  } else
+    m_fp << i << " ";
 }
 
 
-void cDataFile::Write( const char * data_str, const char * descr )
+void cDataFile::Write(const char* data_str, const char* descr)
 {
-  if ( !m_descr_written ) {
-    m_data += cStringUtil::Stringf( "%s ", data_str );
+  if (!m_descr_written) {
+    m_data += cStringUtil::Stringf("%s ", data_str);
     WriteColumnDesc(descr);
-  }
-  else m_fp << data_str << " ";
+  } else
+    m_fp << data_str << " ";
 }
 
 

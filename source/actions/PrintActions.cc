@@ -195,7 +195,7 @@ public:
     df.Write(m_world->GetStats().GetUpdate(), "Update");
     df.Write(min, "Minimum");
     df.Write(max, "Maximum");
-    for (int i = 0; i < n.GetSize(); i++)  df.Write(n[i], "");
+    for (int i = 0; i < n.GetSize(); i++)  df.WriteAnonymous(n[i]);
     df.Endl();
   }
 };
@@ -301,7 +301,7 @@ public:
     // Actual output
     cDataFile& df = m_world->GetDataFile(m_filename);
     df.Write(m_world->GetStats().GetUpdate(), "Update");
-    for (int i = 0; i < hist.GetSize(); i++) df.Write(hist[i], "");
+    for (int i = 0; i < hist.GetSize(); i++) df.WriteAnonymous(hist[i]);
     df.Endl();
   }
 };
@@ -638,7 +638,7 @@ public:
       
       // now output the fitness histo
       for (int i = 0; i < histo.GetSize(); i++)
-        hdf.Write(static_cast<double>(histo[i]) / static_cast<double>(nhist_tot), "");
+        hdf.WriteAnonymous(static_cast<double>(histo[i]) / static_cast<double>(nhist_tot));
       hdf.Endl();
       
       
@@ -649,7 +649,7 @@ public:
       
       // now output the fitness histo
       for (int i = 0; i < histo_testCPU.GetSize(); i++)
-        tdf.Write(static_cast<double>(histo_testCPU[i]) / static_cast<double>(nhist_tot_testCPU), "");
+        tdf.WriteAnonymous(static_cast<double>(histo_testCPU[i]) / static_cast<double>(nhist_tot_testCPU));
       tdf.Endl();
     }
   }
@@ -975,7 +975,7 @@ public:
     
     df.Write(m_world->GetStats().GetUpdate(), "Update");
     for(int i = 0; i < tasks.GetSize(); i++) {
-      df.Write(tasks[i], "");
+      df.WriteAnonymous(tasks[i]);
     }
     df.Endl();
   }
@@ -1096,9 +1096,9 @@ public:
       
       // Print all needed files.
       if (i < m_lines_saved) {
-        df_abundance.Write(count, "");
-        df_var.Write(inst_hist[i].GetCountVariance(), "");
-        df_entropy.Write(entropy, "");
+        df_abundance.WriteAnonymous(count);
+        df_var.WriteAnonymous(inst_hist[i].GetCountVariance());
+        df_entropy.WriteAnonymous(entropy);
       }
     }
     

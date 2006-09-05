@@ -131,10 +131,9 @@ public:
   void HillClimb_Neut(cAvidaContext& ctx, std::ofstream& fp);
   void HillClimb_Rand(cAvidaContext& ctx, std::ofstream& fp);
 
-  void PrintStats(std::ofstream& fp, int update = -1);
   void PrintStats(cDataFile& df, int update = -1);
-  void PrintEntropy(std::ofstream& fp);
-  void PrintSiteCount(std::ofstream& fp);
+  void PrintEntropy(cDataFile& fp);
+  void PrintSiteCount(cDataFile& fp);
   void PrintBase(cString filename);
   void PrintPeak(cString filename);
 

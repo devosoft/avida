@@ -815,42 +815,6 @@ double cLandscape::TestMutPair(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& m
 }
 
 
-void cLandscape::PrintStats(ofstream& fp, int update)
-{
-  fp << update                 << " "   // 1
-  << GetProbDead()          << " "   // 2
-  << GetProbNeg()           << " "   // 3
-  << GetProbNeut()          << " "   // 4
-  << GetProbPos()           << " "   // 5
-                                     //     << pos_size         << " "   // 6
-                                     //     << pos_count         << " "   // 6
-  << GetAvPosSize()         << " "   // 6
-  << GetAvNegSize()         << " "   // 7
-  << total_count            << " "   // 8
-  << distance               << " "   // 9
-                                     //     << neut_min           << "   "   // 10
-                                     //     << neut_max           << "   "   // 10
-                                     //     << nHardware::FITNESS_NEUTRAL_MIN           << "   "   // 10
-                                     //     << nHardware::FITNESS_NEUTRAL_MAX           << "   "   // 10
-  << base_fitness           << " "   // 10
-  << base_merit             << " "   // 11
-  << base_gestation         << " "   // 12
-  << peak_fitness           << " "   // 13
-  << GetAveFitness()        << " "   // 14
-  << GetAveSqrFitness()     << " "   // 15
-  << total_entropy          << " "   // 16
-  << complexity             << " "   // 17
-  << GetProbEpiDead()       << " "   // 18
-  << GetProbEpiPos()        << " "   // 19
-  << GetProbEpiNeg()        << " "   // 20
-  << GetProbNoEpi()         << " "   // 21
-  << GetAvPosEpiSize()      << " "   // 22
-  << GetAvNegEpiSize()      << " "   // 23
-  << GetAvNoEpiSize()      << " "   // 24
-  << total_epi_count        << endl; // 25
-  fp.flush();
-}
-
 void cLandscape::PrintStats(cDataFile& df, int update)
 {
   df.Write(update, "Update");
@@ -881,23 +845,19 @@ void cLandscape::PrintStats(cDataFile& df, int update)
   df.Endl();
 }
 
-void cLandscape::PrintEntropy(ofstream& fp)
+void cLandscape::PrintEntropy(cDataFile& df)
 {
-  double max_ent = log((double) inst_set.GetSize());
-  for (int j = 0; j < base_genome.GetSize(); j++) {
-    fp << (log((double) site_count[j] + 1) / max_ent) << " ";
-  }
-  fp << endl;
-  fp.flush();
+  df.WriteComment("Entropy Data");
+  double max_ent = log(static_cast<double>(inst_set.GetSize()));
+  for (int j = 0; j < base_genome.GetSize(); j++) df.WriteAnonymous(log(static_cast<double>(site_count[j] + 1)) / max_ent);
+  df.Endl();
 }
 
-void cLandscape::PrintSiteCount(ofstream& fp)
+void cLandscape::PrintSiteCount(cDataFile& df)
 {
-  for (int j = 0; j < base_genome.GetSize(); j++) {
-    fp << site_count[j] << " ";
-  }
-  fp << endl;
-  fp.flush();
+  df.WriteComment("Site Counts");
+  for (int j = 0; j < base_genome.GetSize(); j++) df.WriteAnonymous(site_count[j]);
+  df.Endl();
 }
 
 void cLandscape::PrintBase(cString filename)

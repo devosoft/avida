@@ -243,11 +243,11 @@ public:
       update = m_world->GetStats().GetUpdate();      
     }
     
-    std::ofstream& sfile = m_world->GetDataFileOFStream(m_sfilename);
+    cDataFile& df = m_world->GetDataFile(m_sfilename);
     while (land = m_batch.Pop()) {
-      land->PrintStats(sfile, update);
-      if (m_efilename.GetSize()) land->PrintEntropy(m_world->GetDataFileOFStream(m_efilename));
-      if (m_cfilename.GetSize()) land->PrintSiteCount(m_world->GetDataFileOFStream(m_cfilename));
+      land->PrintStats(df, update);
+      if (m_efilename.GetSize()) land->PrintEntropy(m_world->GetDataFile(m_efilename));
+      if (m_cfilename.GetSize()) land->PrintSiteCount(m_world->GetDataFile(m_cfilename));
       delete land;
     }
   }
@@ -315,10 +315,10 @@ public:
       update = m_world->GetStats().GetUpdate();      
     }
     
-    std::ofstream& sfile = m_world->GetDataFileOFStream(m_sfilename);
+    cDataFile& df = m_world->GetDataFile(m_sfilename);
     while (land = m_batch.Pop()) {
-      land->PrintStats(sfile, update);
-      if (m_cfilename.GetSize()) land->PrintSiteCount(m_world->GetDataFileOFStream(m_cfilename));
+      land->PrintStats(df, update);
+      if (m_cfilename.GetSize()) land->PrintSiteCount(m_world->GetDataFile(m_cfilename));
       delete land;
     }
   }
@@ -386,10 +386,10 @@ public:
       update = m_world->GetStats().GetUpdate();      
     }
     
-    std::ofstream& sfile = m_world->GetDataFileOFStream(m_sfilename);
+    cDataFile& df = m_world->GetDataFile(m_sfilename);
     while (land = m_batch.Pop()) {
-      land->PrintStats(sfile, update);
-      if (m_cfilename.GetSize()) land->PrintSiteCount(m_world->GetDataFileOFStream(m_cfilename));
+      land->PrintStats(df, update);
+      if (m_cfilename.GetSize()) land->PrintSiteCount(m_world->GetDataFile(m_cfilename));
       delete land;
     }
   }
@@ -559,9 +559,9 @@ public:
       update = m_world->GetStats().GetUpdate();      
     }
     
-    std::ofstream& outfile = m_world->GetDataFileOFStream(m_filename);
+    cDataFile& df = m_world->GetDataFile(m_filename);
     while (land = m_batch.Pop()) {
-      land->PrintStats(outfile, update);
+      land->PrintStats(df, update);
       delete land;
     }
   }
@@ -628,9 +628,9 @@ public:
       update = m_world->GetStats().GetUpdate();      
     }
     
-    std::ofstream& outfile = m_world->GetDataFileOFStream(m_filename);
+    cDataFile& df = m_world->GetDataFile(m_filename);
     while (land = m_batch.Pop()) {
-      land->PrintStats(outfile, update);
+      land->PrintStats(df, update);
       delete land;
     }
   }

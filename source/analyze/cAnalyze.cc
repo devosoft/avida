@@ -3509,16 +3509,16 @@ void cAnalyze::AnalyzeEpistasis(cString cur_string)
   if (cur_string.GetSize() != 0) test_num = cur_string.PopWord().AsInt();
   
   // If we're given a file, write to it.
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
+  cDataFile& df = m_world->GetDataFile(filename);
 
   // Loop through all of the genotypes in this batch...
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype * genotype = NULL;
   while ((genotype = batch_it.Next()) != NULL) {
     cLandscape landscape(m_world, genotype->GetGenome(), inst_set);
-    if (test_num == 1)  landscape.TestAllPairs(m_ctx, fp);
-    else 		landscape.TestPairs(m_ctx, test_num,fp); 
-    landscape.PrintStats(fp);
+    if (test_num == 1)  landscape.TestAllPairs(m_ctx, df.GetOFStream());
+    else 		landscape.TestPairs(m_ctx, test_num, df.GetOFStream()); 
+    landscape.PrintStats(df);
   }
 }
 
