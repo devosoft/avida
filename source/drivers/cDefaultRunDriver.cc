@@ -96,7 +96,7 @@ void cDefaultRunDriver::Run()
     
     
     // No viewer; print out status for this update....
-    if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+    if (m_world->GetVerbosity() > VERBOSE_SILENT) {
       cout.setf(ios::left);
       cout.setf(ios::showpoint);
       cout << "UD: " << setw(6) << stats.GetUpdate() << "  "

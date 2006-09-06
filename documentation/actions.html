@@ -148,6 +148,7 @@ actions, along with detailed sections for each them.
       <br /><a href="#SetReactionValue">SetReactionValue</a>
       <br /><a href="#SetReactionValueMult">SetReactionValueMult</a>
       <br /><a href="#SetResource">SetResource</a>
+      <br /><a href="#SetVerbose">SetVerbose</a>
       <br /><a href="#SeverGridCol">SeverGridCol</a>
       <br /><a href="#SeverGridRow">SeverGridRow</a>
       <br /><a href="#TestDominant">TestDominant</a>
@@ -586,6 +587,19 @@ a single, complete file for each trigger.
   
   <p>
   Print out the grid of organisms who received merit.
+  </p>
+</li>
+<li>
+  <strong><a name="SetVerbose">SetVerbose</a></strong>
+  [<span class="cmdarg">string verbosity=''</span>]
+  
+  <p>
+  Change the level of output verbosity.  Verbose messages will print all
+  of the details of what is happening to the screen.  Minimal messages
+  will only briefly state the process being run.  Verbose messages are
+  recommended if you're in interactive analysis mode. When no arguments
+  are supplied, action will toggle between NORMAL and ON.
+  <br />Levels: SILENT, NORMAL, ON, DETAILS, DEBUG
   </p>
 </li>
 </ul>

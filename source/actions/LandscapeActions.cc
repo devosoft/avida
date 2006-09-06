@@ -70,11 +70,11 @@ public:
     
     
     if (ctx.GetAnalyzeMode()) {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+      if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Performing landscape analysis on batch ");
         msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
         m_world->GetDriver().NotifyComment(msg);
-      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+      } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
         m_world->GetDriver().NotifyComment("Performing landscape analysis...");
       }
 
@@ -85,7 +85,7 @@ public:
         depths.Push(genotype->GetDepth());
       }
     } else {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
         m_world->GetDriver().NotifyComment("Performing landscape analysis...");
 
       cGenotype* genotype = m_world->GetClassificationManager().GetBestGenotype();
@@ -161,11 +161,11 @@ public:
   void Process(cAvidaContext& ctx)
   {    
     if (ctx.GetAnalyzeMode()) {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+      if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Precalculating landscape for batch ");
         msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
         m_world->GetDriver().NotifyComment(msg);
-      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+      } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
         m_world->GetDriver().NotifyComment("Precalculating landscape...");
       }
       
@@ -211,11 +211,11 @@ public:
     cLandscape* land = NULL;
     
     if (ctx.GetAnalyzeMode()) {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+      if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Full Landscaping batch ");
         msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
         m_world->GetDriver().NotifyComment(msg);
-      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+      } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
         m_world->GetDriver().NotifyComment("Full Landscapping...");
       }
 
@@ -232,7 +232,7 @@ public:
       }
       jobqueue.Execute();
     } else {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
         m_world->GetDriver().NotifyComment("Full Landscaping...");
       
       land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetGenome(),
@@ -283,11 +283,11 @@ public:
     cLandscape* land = NULL;
     
     if (ctx.GetAnalyzeMode()) {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+      if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Deletion Landscaping batch ");
         msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
         m_world->GetDriver().NotifyComment(msg);
-      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+      } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
         m_world->GetDriver().NotifyComment("Deletion Landscapping...");
       }
 
@@ -304,7 +304,7 @@ public:
       }
       jobqueue.Execute();
     } else {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
         m_world->GetDriver().NotifyComment("Deletion Landscaping...");
       
       land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetGenome(),
@@ -354,11 +354,11 @@ public:
     cLandscape* land = NULL;
     
     if (ctx.GetAnalyzeMode()) {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+      if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Insertion Landscaping batch ");
         msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
         m_world->GetDriver().NotifyComment(msg);
-      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+      } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
         m_world->GetDriver().NotifyComment("Insertion Landscapping...");
       }
 
@@ -375,7 +375,7 @@ public:
       }
       jobqueue.Execute();
     } else {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
         m_world->GetDriver().NotifyComment("Insertion Landscaping...");
       
       land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetGenome(),
@@ -420,11 +420,11 @@ public:
     std::ofstream& outfile = m_world->GetDataFileOFStream(m_filename);
 
     if (ctx.GetAnalyzeMode()) {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+      if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Predicting W Landscape on batch ");
         msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
         m_world->GetDriver().NotifyComment(msg);
-      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+      } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
         m_world->GetDriver().NotifyComment("Predicting W Landscape...");
       }
       
@@ -435,7 +435,7 @@ public:
         land.PredictWProcess(ctx, outfile);
       }
     } else {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
         m_world->GetDriver().NotifyComment("Predicting W Landscape...");
       
       const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
@@ -470,11 +470,11 @@ public:
     std::ofstream& outfile = m_world->GetDataFileOFStream(m_filename);
 
     if (ctx.GetAnalyzeMode()) {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+      if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Predicting Nu Landscape on batch ");
         msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
         m_world->GetDriver().NotifyComment(msg);
-      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+      } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
         m_world->GetDriver().NotifyComment("Predicting Nu Landscape...");
       }
       
@@ -485,7 +485,7 @@ public:
         land.PredictWProcess(ctx, outfile);
       }
     } else {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
         m_world->GetDriver().NotifyComment("Predicting Nu Landscape...");
       
       const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
@@ -525,11 +525,11 @@ public:
     cLandscape* land = NULL;
     
     if (ctx.GetAnalyzeMode()) {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+      if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Random Landscaping batch ");
         msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
         m_world->GetDriver().NotifyComment(msg);
-      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+      } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
         m_world->GetDriver().NotifyComment("Random Landscapping...");
       }
 
@@ -547,7 +547,7 @@ public:
       }
       jobqueue.Execute();
     } else {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
         m_world->GetDriver().NotifyComment("Random Landscaping...");
 
       land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetGenome(),
@@ -596,11 +596,11 @@ public:
     cLandscape* land = NULL;
     
     if (ctx.GetAnalyzeMode()) {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+      if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Sample Landscaping batch ");
         msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
         m_world->GetDriver().NotifyComment(msg);
-      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+      } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
         m_world->GetDriver().NotifyComment("Sample Landscapping...");
       }
 
@@ -617,7 +617,7 @@ public:
       }
       jobqueue.Execute();
     } else {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
         m_world->GetDriver().NotifyComment("Sample Landscaping...");
 
       land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetGenome(),
@@ -661,11 +661,11 @@ public:
     std::ofstream& outfile = m_world->GetDataFileOFStream(m_filename);
     
     if (ctx.GetAnalyzeMode()) {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+      if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Calculating Hill Climb on batch ");
         msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
         m_world->GetDriver().NotifyComment(msg);
-      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+      } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
         m_world->GetDriver().NotifyComment("Calculating Hill Climb...");
       }
       
@@ -676,7 +676,7 @@ public:
         land.HillClimb(ctx, outfile);
       }
     } else {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
         m_world->GetDriver().NotifyComment("Calculating Hill Climb...");
       
       const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
@@ -711,11 +711,11 @@ public:
     std::ofstream& outfile = m_world->GetDataFileOFStream(m_filename);
     
     if (ctx.GetAnalyzeMode()) {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+      if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Calculating Hill Climb on batch ");
         msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
         m_world->GetDriver().NotifyComment(msg);
-      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+      } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
         m_world->GetDriver().NotifyComment("Calculating Hill Climb...");
       }
       
@@ -726,7 +726,7 @@ public:
         land.HillClimb_Neut(ctx, outfile);
       }
     } else {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
         m_world->GetDriver().NotifyComment("Calculating Hill Climb...");
       
       const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
@@ -761,11 +761,11 @@ public:
     std::ofstream& outfile = m_world->GetDataFileOFStream(m_filename);
     
     if (ctx.GetAnalyzeMode()) {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+      if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Calculating Hill Climb on batch ");
         msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
         m_world->GetDriver().NotifyComment(msg);
-      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+      } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
         m_world->GetDriver().NotifyComment("Calculating Hill Climb...");
       }
       
@@ -776,7 +776,7 @@ public:
         land.HillClimb_Rand(ctx, outfile);
       }
     } else {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
         m_world->GetDriver().NotifyComment("Calculating Hill Climb...");
       
       const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
@@ -823,11 +823,11 @@ public:
     cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
     
     if (ctx.GetAnalyzeMode()) {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+      if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Calculating Mutational Neighborhood for batch ");
         msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
         m_world->GetDriver().NotifyComment(msg);
-      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+      } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
         m_world->GetDriver().NotifyComment("Calculating Mutational Neighborhood...");
       }
 
@@ -841,7 +841,7 @@ public:
       }
       jobqueue.Execute();
     } else {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
         m_world->GetDriver().NotifyComment("Calculating Mutational Neighborhood...");
       
       const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
@@ -895,11 +895,11 @@ public:
     std::ofstream& outfile = m_world->GetDataFileOFStream(filename);
     
     if (ctx.GetAnalyzeMode()) {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_ON) {
+      if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Pair Testing Landscape on batch ");
         msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
         m_world->GetDriver().NotifyComment(msg);
-      } else if (m_world->GetConfig().VERBOSITY.Get() > VERBOSE_SILENT) {
+      } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
         m_world->GetDriver().NotifyComment("Pair Testing Landscape...");
       }
       
@@ -911,7 +911,7 @@ public:
         else land.TestAllPairs(ctx, outfile);
       }
     } else {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
         m_world->GetDriver().NotifyComment("Pair Testing Landscape...");
       
       const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
@@ -983,7 +983,7 @@ public:
     if (ctx.GetAnalyzeMode()) {
       m_world->GetDriver().NotifyWarning("AnalyzePopulation not currently supported in Analyze Mode.");
     } else {
-      if (m_world->GetConfig().VERBOSITY.Get() >= VERBOSE_DETAILS)
+      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
         m_world->GetDriver().NotifyComment("Analyzing Population...");
 
       const int update = m_world->GetStats().GetUpdate();

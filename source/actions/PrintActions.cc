@@ -1378,6 +1378,48 @@ public:
 };
 
 
+class cActionSetVerbose : public cAction
+{
+private:
+  cString m_verbose;
+  
+public:
+  cActionSetVerbose(cWorld* world, const cString& args) : cAction(world, args), m_verbose("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_verbose = largs.PopWord();
+    m_verbose.ToUpper();
+  }
+  static const cString GetDescription() { return "Arguments: [string verbosity='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    // If no arguments are given, assume a basic toggle.
+    // Otherwise, read in the argument to decide the new mode.
+    if (m_verbose.GetSize() == 0 && m_world->GetVerbosity() <= VERBOSE_NORMAL) {
+      m_world->SetVerbosity(VERBOSE_ON);
+    } else if (m_verbose.GetSize() == 0 && m_world->GetVerbosity() >= VERBOSE_ON) {
+      m_world->SetVerbosity(VERBOSE_NORMAL);
+    } else if (m_verbose == "SILENT") m_world->SetVerbosity(VERBOSE_SILENT);
+    else if (m_verbose == "QUIET") m_world->SetVerbosity(VERBOSE_NORMAL);
+    else if (m_verbose == "OFF") m_world->SetVerbosity(VERBOSE_NORMAL);
+    else if (m_verbose == "ON") m_world->SetVerbosity(VERBOSE_ON);
+    else if (m_verbose == "DETAILS") m_world->SetVerbosity(VERBOSE_DETAILS);
+    else if (m_verbose == "HIGH") m_world->SetVerbosity(VERBOSE_DETAILS);
+    
+    // Print out new verbose level (nothing for silent!)
+    if (m_world->GetVerbosity() == VERBOSE_NORMAL) {
+      cout << "Verbose QUIET: Using minimal log messages..." << endl;
+    } else if (m_world->GetVerbosity() == VERBOSE_ON) {
+      cout << "Verbose ON: Using verbose log messages..." << endl;
+    } else if (m_world->GetVerbosity() == VERBOSE_DETAILS) {
+      cout << "Verbose DETAILS: Using detailed log messages..." << endl;
+    }    
+  
+  }
+};
+
+
+
 
 void RegisterPrintActions(cActionLibrary* action_lib)
 {
@@ -1435,6 +1477,10 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpTaskGrid>("DumpTaskGrid");
   action_lib->Register<cActionDumpDonorGrid>("DumpDonorGrid");
   action_lib->Register<cActionDumpReceiverGrid>("DumpReceiverGrid");
+  
+  // Print Settings
+  action_lib->Register<cActionSetVerbose>("SetVerbose");
+  
 
 
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
@@ -1487,4 +1533,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpTaskGrid>("dump_task_grid");
   action_lib->Register<cActionDumpDonorGrid>("dump_donor_grid");
   action_lib->Register<cActionDumpReceiverGrid>("dump_receiver_grid");
+
+  action_lib->Register<cActionSetVerbose>("VERBOSE");
 }

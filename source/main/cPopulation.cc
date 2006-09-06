@@ -64,7 +64,7 @@ cPopulation::cPopulation(cWorld* world)
   const int num_cells = world_x * world_y;
 
   // Print out world details
-  if (world->GetConfig().VERBOSITY.Get() > VERBOSE_NORMAL) {
+  if (world->GetVerbosity() > VERBOSE_NORMAL) {
     cout << "Building world " << world_x << "x" << world_y << " = " << num_cells << " organisms." << endl;
     if (geometry == nGeometry::GRID) {
       cout << "Geometry: Bounded grid" << endl;
