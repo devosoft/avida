@@ -1400,15 +1400,17 @@ public:
     } else if (m_verbose.GetSize() == 0 && m_world->GetVerbosity() >= VERBOSE_ON) {
       m_world->SetVerbosity(VERBOSE_NORMAL);
     } else if (m_verbose == "SILENT") m_world->SetVerbosity(VERBOSE_SILENT);
+    else if (m_verbose == "NORMAL") m_world->SetVerbosity(VERBOSE_NORMAL);
     else if (m_verbose == "QUIET") m_world->SetVerbosity(VERBOSE_NORMAL);
     else if (m_verbose == "OFF") m_world->SetVerbosity(VERBOSE_NORMAL);
     else if (m_verbose == "ON") m_world->SetVerbosity(VERBOSE_ON);
     else if (m_verbose == "DETAILS") m_world->SetVerbosity(VERBOSE_DETAILS);
     else if (m_verbose == "HIGH") m_world->SetVerbosity(VERBOSE_DETAILS);
+    else m_world->SetVerbosity(VERBOSE_NORMAL);
     
     // Print out new verbose level (nothing for silent!)
     if (m_world->GetVerbosity() == VERBOSE_NORMAL) {
-      cout << "Verbose QUIET: Using minimal log messages..." << endl;
+      cout << "Verbose NORMAL: Using standard log messages..." << endl;
     } else if (m_world->GetVerbosity() == VERBOSE_ON) {
       cout << "Verbose ON: Using verbose log messages..." << endl;
     } else if (m_world->GetVerbosity() == VERBOSE_DETAILS) {
