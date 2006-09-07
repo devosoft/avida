@@ -118,6 +118,7 @@ public:
         delete land;
       }
     }
+    if (ctx.GetAnalyzeMode()) m_world->GetDataFileManager().Remove(m_filename);
   }
   
 private:
@@ -250,6 +251,11 @@ public:
       if (m_cfilename.GetSize()) land->PrintSiteCount(m_world->GetDataFile(m_cfilename));
       delete land;
     }
+    if (ctx.GetAnalyzeMode()) {
+      m_world->GetDataFileManager().Remove(m_sfilename);
+      if (m_efilename.GetSize()) m_world->GetDataFileManager().Remove(m_efilename);
+      if (m_cfilename.GetSize()) m_world->GetDataFileManager().Remove(m_cfilename);
+    }
   }
 };
 
@@ -320,6 +326,10 @@ public:
       land->PrintStats(df, update);
       if (m_cfilename.GetSize()) land->PrintSiteCount(m_world->GetDataFile(m_cfilename));
       delete land;
+    }
+    if (ctx.GetAnalyzeMode()) {
+      m_world->GetDataFileManager().Remove(m_sfilename);
+      if (m_cfilename.GetSize()) m_world->GetDataFileManager().Remove(m_cfilename);
     }
   }
 };
@@ -392,6 +402,10 @@ public:
       if (m_cfilename.GetSize()) land->PrintSiteCount(m_world->GetDataFile(m_cfilename));
       delete land;
     }
+    if (ctx.GetAnalyzeMode()) {
+      m_world->GetDataFileManager().Remove(m_sfilename);
+      if (m_cfilename.GetSize()) m_world->GetDataFileManager().Remove(m_cfilename);
+    }
   }
 };
 
@@ -434,6 +448,7 @@ public:
         cLandscape land(m_world, genotype->GetGenome(), inst_set);
         land.PredictWProcess(ctx, df);
       }
+      m_world->GetDataFileManager().Remove(m_filename);
     } else {
       if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
         m_world->GetDriver().NotifyComment("Predicting W Landscape...");
@@ -467,7 +482,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
-    std::ofstream& outfile = m_world->GetDataFileOFStream(m_filename);
+    cDataFile& df = m_world->GetDataFile(m_filename);
 
     if (ctx.GetAnalyzeMode()) {
       if (m_world->GetVerbosity() >= VERBOSE_ON) {
@@ -482,15 +497,16 @@ public:
       cAnalyzeGenotype* genotype = NULL;
       while (genotype = batch_it.Next()) {
         cLandscape land(m_world, genotype->GetGenome(), inst_set);
-        land.PredictNuProcess(ctx, outfile);
+        land.PredictNuProcess(ctx, df);
       }
+      m_world->GetDataFileManager().Remove(m_filename);
     } else {
       if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
         m_world->GetDriver().NotifyComment("Predicting Nu Landscape...");
       
       const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
       cLandscape land(m_world, best_genome, inst_set);
-      land.PredictNuProcess(ctx, outfile, m_world->GetStats().GetUpdate());
+      land.PredictNuProcess(ctx, df, m_world->GetStats().GetUpdate());
     }
   }
 };
@@ -564,6 +580,7 @@ public:
       land->PrintStats(df, update);
       delete land;
     }
+    if (ctx.GetAnalyzeMode()) m_world->GetDataFileManager().Remove(m_filename);
   }
 };
 
@@ -633,6 +650,7 @@ public:
       land->PrintStats(df, update);
       delete land;
     }
+    if (ctx.GetAnalyzeMode()) m_world->GetDataFileManager().Remove(m_filename);
   }
 };
 
@@ -862,6 +880,7 @@ public:
       delete results;
       delete entry;
     }
+    if (ctx.GetAnalyzeMode()) m_world->GetDataFileManager().Remove(m_filename);
   }
 };
 
@@ -1057,6 +1076,7 @@ void RegisterLandscapeActions(cActionLibrary* action_lib)
   action_lib->Register<cActionHillClimb>("HillClimbNeut");
   action_lib->Register<cActionHillClimb>("HillClimbRand");
   action_lib->Register<cActionPairTestLandscape>("PairTestLandscape");
+  action_lib->Register<cActionAnalyzePopulation>("AnalyzePopulation");
 
   action_lib->Register<cActionMutationalNeighborhood>("MutationalNeighborhood");
   

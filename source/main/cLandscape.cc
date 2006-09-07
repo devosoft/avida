@@ -342,10 +342,10 @@ void cLandscape::PredictWProcess(cAvidaContext& ctx, cDataFile& df, int update)
   
   // Calculate the complexity...
   
-  double max_ent = log((double) inst_set.GetSize());
+  double max_ent = log(static_cast<double>(inst_set.GetSize()));
   total_entropy = 0;
   for (int i = 0; i < base_genome.GetSize(); i++) {
-    total_entropy += (log((double) site_count[i] + 1) / max_ent);
+    total_entropy += (log(static_cast<double>(site_count[i] + 1)) / max_ent);
   }
   complexity = base_genome.GetSize() - total_entropy;
   
@@ -354,7 +354,7 @@ void cLandscape::PredictWProcess(cAvidaContext& ctx, cDataFile& df, int update)
 
 
 // Prediction for a landscape where n sites are _mutated_.
-void cLandscape::PredictNuProcess(cAvidaContext& ctx, ostream& fp, int update)
+void cLandscape::PredictNuProcess(cAvidaContext& ctx, cDataFile& df, int update)
 {
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
 
@@ -404,19 +404,18 @@ void cLandscape::PredictNuProcess(cAvidaContext& ctx, ostream& fp, int update)
   const int total_tests = genome_size * inst_size;
   total_live_found = total_pos_found + total_neut_found + total_neg_found;
   total_dead_found = total_tests - total_live_found;
-  fp << update                                             << " "
-    << "1 "
-    << ((double) total_dead_found / (double) total_tests) << " "
-    << ((double) total_neg_found / (double) total_tests)  << " "
-    << ((double) total_neut_found / (double) total_tests) << " "
-    << ((double) total_pos_found / (double) total_tests)  << " "
-    << total_tests                                        << " "
-    << total_live_found                                   << " "
-    << total_fitness / (double) total_tests               << " "
-    << total_sqr_fitness / (double) total_tests           << " "
-    << max_found_fitness                                   << " "
-    << endl;
-  fp.flush();
+  df.Write(update, "Update");
+  df.Write(1, "Number of Mutations");
+  df.Write((static_cast<double>(total_dead_found) / static_cast<double>(total_tests)), "Probability Lethal");
+  df.Write((static_cast<double>(total_neg_found) / static_cast<double>(total_tests)), "Probability Deleterious");
+  df.Write((static_cast<double>(total_neut_found) / static_cast<double>(total_tests)), "Probability Neutral");
+  df.Write((static_cast<double>(total_pos_found) / static_cast<double>(total_tests)), "Probability Beneficial");
+  df.Write(total_tests, "Total Tests");
+  df.Write(total_live_found, "Total Living Mutants");
+  df.Write(total_fitness / static_cast<double>(total_tests), "Average Fitness");
+  df.Write(total_sqr_fitness / static_cast<double>(total_tests), "Average Square Fitness");
+  df.Write(max_found_fitness, "Maximum Fitness");
+  df.Endl();
   
   // Sample the table out to 10 mutations
   const int max_muts = 10;
@@ -460,30 +459,28 @@ void cLandscape::PredictNuProcess(cAvidaContext& ctx, ostream& fp, int update)
     total_live_found = total_neg_found + total_neut_found + total_pos_found;
     total_dead_found = test_id - total_live_found;
     
-    
-    fp << update                                         << " " //  1
-      << num_muts                                       << " " //  2
-      << ((double) total_dead_found / (double) test_id) << " " //  3
-      << ((double) total_neg_found / (double) test_id)  << " " //  4
-      << ((double) total_neut_found / (double) test_id) << " " //  5
-      << ((double) total_pos_found / (double) test_id)  << " " //  6
-      << test_id                                        << " " //  7
-      << total_live_found                               << " " //  8
-      << total_fitness / (double) test_id               << " " //  9
-      << total_sqr_fitness / (double) test_id           << " " // 10
-      << max_found_fitness                              << " " // 11
-      << endl;
-    fp.flush();
-    
+    df.Write(update, "Update");
+    df.Write(num_muts, "Number of Mutations");
+    df.Write((static_cast<double>(total_dead_found) / static_cast<double>(test_id)), "Probability Lethal");
+    df.Write((static_cast<double>(total_neg_found) / static_cast<double>(test_id)), "Probability Deleterious");
+    df.Write((static_cast<double>(total_neut_found) / static_cast<double>(test_id)), "Probability Neutral");
+    df.Write((static_cast<double>(total_pos_found) / static_cast<double>(test_id)), "Probability Beneficial");
+    df.Write(total_tests, "Total Tests");
+    df.Write(total_live_found, "Total Living Mutants");
+    df.Write(total_fitness / static_cast<double>(test_id), "Average Fitness");
+    df.Write(total_sqr_fitness / static_cast<double>(test_id), "Average Square Fitness");
+    df.Write(max_found_fitness, "Maximum Fitness");
+    df.Endl();
+
     if (total_live_found < min_found / 2) break;
   }
   
   // Calculate the complexity...
   
-  double max_ent = log((double) inst_set.GetSize());
+  double max_ent = log(static_cast<double>(inst_set.GetSize()));
   total_entropy = 0;
   for (int i = 0; i < base_genome.GetSize(); i++) {
-    total_entropy += (log((double) site_count[i] + 1) / max_ent);
+    total_entropy += (log(static_cast<double>(site_count[i] + 1)) / max_ent);
   }
   complexity = base_genome.GetSize() - total_entropy;
   
