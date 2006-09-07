@@ -175,9 +175,8 @@ public:
 
   bool GetSyncEvents() { return sync_events; }
   void SetSyncEvents(bool _in) { sync_events = _in; }
-  void ParasiteDebug();
-  void PrintPhenotypeData(const cString & filename);
-  void PrintPhenotypeStatus(const cString & filename);
+  void PrintPhenotypeData(const cString& filename);
+  void PrintPhenotypeStatus(const cString& filename);
 
   bool UpdateMerit(int cell_id, double new_merit);
 

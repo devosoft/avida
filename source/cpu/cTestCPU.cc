@@ -14,6 +14,7 @@
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
 #include "functions.h"
+#include "cGenotype.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cHardwareStatusPrinter.h"
@@ -249,3 +250,79 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info,
   // All options have failed; just return false.
   return false;
 }
+
+
+void cTestCPU::PrintGenome(cAvidaContext& ctx, const cGenome& genome, cString filename,
+                           cGenotype* genotype, int update)
+{
+  if (filename == "") filename.Set("archive/%03d-unnamed.org", genome.GetSize());
+    
+  cCPUTestInfo test_info;
+  TestGenome(ctx, test_info, genome);
+  
+  // Open the file...
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  // Print the useful info at the top...
+  df.WriteTimeStamp();  
+  cString c("");
+  
+  df.WriteComment(c.Set("Filename........: %s", static_cast<const char*>(filename)));
+  
+  if (update >= 0) df.WriteComment(c.Set("Update Output...: %d", update));
+  else df.WriteComment("Update Output...: N/A");
+  
+  df.WriteComment(c.Set("Is Viable.......: %d", test_info.IsViable()));
+  df.WriteComment(c.Set("Repro Cycle Size: %d", test_info.GetMaxCycle()));
+  df.WriteComment(c.Set("Depth to Viable.: %d", test_info.GetDepthFound()));
+  
+  if (genotype != NULL) {
+    df.WriteComment(c.Set("Update Created..: %d", genotype->GetUpdateBorn()));
+    df.WriteComment(c.Set("Genotype ID.....: %d", genotype->GetID()));
+    df.WriteComment(c.Set("Parent Gen ID...: %d", genotype->GetParentID()));
+    df.WriteComment(c.Set("Tree Depth......: %d", genotype->GetDepth()));
+    df.WriteComment(c.Set("Parent Distance.: %d", genotype->GetParentDistance()));
+  }
+
+  df.WriteComment("");
+  
+  const int num_levels = test_info.GetMaxDepth() + 1;
+  for (int j = 0; j < num_levels; j++) {
+    df.WriteComment(c.Set("Generation: %d", j));
+
+    cOrganism* organism = test_info.GetTestOrganism(j);
+    assert(organism != NULL);
+    cPhenotype& phenotype = organism->GetPhenotype();
+    
+    df.WriteComment(c.Set("Merit...........: %f", phenotype.GetMerit().GetDouble()));
+    df.WriteComment(c.Set("Gestation Time..: %d", phenotype.GetGestationTime()));
+    df.WriteComment(c.Set("Fitness.........: %f", phenotype.GetFitness()));
+    df.WriteComment(c.Set("Errors..........: %d", phenotype.GetLastNumErrors()));
+    df.WriteComment(c.Set("Genome Size.....: %d", organism->GetGenome().GetSize()));
+    df.WriteComment(c.Set("Copied Size.....: %d", phenotype.GetCopiedSize()));
+    df.WriteComment(c.Set("Executed Size...: %d", phenotype.GetExecutedSize()));
+    
+    if (phenotype.GetNumDivides() == 0) df.WriteComment("Offspring.......: NONE");
+    else if (phenotype.CopyTrue() == true) df.WriteComment("Offspring.......: SELF");
+    else if (test_info.GetCycleTo() != -1) df.WriteComment(c.Set("Offspring.......: %d", test_info.GetCycleTo()));
+    else df.WriteComment(c.Set("Offspring.......: %d", j + 1));
+    
+    df.WriteComment("");
+  }
+  
+  df.WriteComment("Tasks Performed:");
+  cPhenotype& phenotype = test_info.GetTestPhenotype();
+  for (int i = 0; i < m_world->GetEnvironment().GetTaskLib().GetSize(); i++) {
+    df.WriteComment(c.Set("%s %d",
+                          static_cast<const char*>(m_world->GetEnvironment().GetTaskLib().GetTask(i).GetName()),
+                          phenotype.GetLastTaskCount()[i]));
+  }
+
+  df.Endl();
+  
+  // Display the genome
+  cInstUtil::SaveGenome(df.GetOFStream(), test_info.GetTestOrganism()->GetHardware().GetInstSet(), genome);
+  
+  m_world->GetDataFileManager().Remove(filename);
+}
+

@@ -1859,66 +1859,38 @@ void cPopulation::SerialTransfer(int transfer_size, bool ignore_deads)
   }
 }
 
-void cPopulation::ParasiteDebug()
-{
-  ofstream& outfile = m_world->GetDataFileOFStream("debug.out");
-  outfile << m_world->GetStats().GetUpdate() << endl;
-  int total=0;
-  cInjectGenotype * temp;
-  for(int x=0; x<cell_array.GetSize(); x++)
-  {
-    if(cell_array[x].GetOrganism()!=NULL)
-    {
-      assert(cell_array[x].GetOrganism()->GetNumParasites()>=0 && 
-             cell_array[x].GetOrganism()->GetNumParasites()<=1);
-      total+=cell_array[x].GetOrganism()->GetNumParasites();
-      if(cell_array[x].GetOrganism()->GetNumParasites())
-	    {
-	      cHardwareBase& cpu = cell_array[x].GetOrganism()->GetHardware();
-	      outfile << x << " ";
-	      outfile << cell_array[x].GetOrganism()->GetGenotype()->GetID() << " ";
-        int prev_thread = cpu.GetCurThread();
-        cpu.ThreadSelect(1);
-	      temp = cpu.ThreadGetOwner();
-        cpu.ThreadSelect(prev_thread);
-	      assert(temp!=NULL);
-	      outfile << temp->GetID() << endl;	      
-	    }
-    }
-  }
-  outfile << total << endl;
-}
 
-void cPopulation::PrintPhenotypeData(const cString & filename)
+void cPopulation::PrintPhenotypeData(const cString& filename)
 {
   set<int> ids;
-  for (int i = 0; i < cell_array.GetSize(); i++) 
-  {
+
+  for (int i = 0; i < cell_array.GetSize(); i++) {
     // Only look at cells with organisms in them.
     if (cell_array[i].IsOccupied() == false) continue;
     
-    cOrganism * organism = cell_array[i].GetOrganism();
-    const cPhenotype & phenotype = organism->GetPhenotype();
+    const cPhenotype& phenotype = cell_array[i].GetOrganism()->GetPhenotype();
     
     int id = 0;
-    for (int j = 0; j < phenotype.GetLastTaskCount().GetSize(); j++)
-    {
-      if (phenotype.GetLastTaskCount()[j] > 0)
-        id += (1 << j);
+    for (int j = 0; j < phenotype.GetLastTaskCount().GetSize(); j++) {
+      if (phenotype.GetLastTaskCount()[j] > 0) id += (1 << j);
     }
     ids.insert(id);
   }
-  m_world->GetDataFileOFStream(filename)
-    << m_world->GetStats().GetUpdate() << "\t" << ids.size() << endl;
+  
+  cDataFile& df = m_world->GetDataFile(filename);
+  df.WriteTimeStamp();
+  df.Write(m_world->GetStats().GetUpdate(), "Update");
+  df.Write(static_cast<int>(ids.size()), "Unique Phenotypes");
+  df.Endl();
 }
 
-void cPopulation::PrintPhenotypeStatus(const cString & filename)
+void cPopulation::PrintPhenotypeStatus(const cString& filename)
 {
-  cDataFile & df_phen = m_world->GetDataFile(filename);
+  cDataFile& df_phen = m_world->GetDataFile(filename);
   
   df_phen.WriteComment("Num orgs doing each task for each deme in population");
   df_phen.WriteTimeStamp();
-  df_phen.Write(m_world->GetStats().GetUpdate(), "update");
+  df_phen.Write(m_world->GetStats().GetUpdate(), "Update");
   
   cString comment;
   
@@ -1927,8 +1899,7 @@ void cPopulation::PrintPhenotypeStatus(const cString & filename)
     // Only look at cells with organisms in them.
     if (cell_array[i].IsOccupied() == false) continue;
     
-    cOrganism * organism = cell_array[i].GetOrganism();
-    const cPhenotype & phenotype = organism->GetPhenotype();
+    const cPhenotype& phenotype = cell_array[i].GetOrganism()->GetPhenotype();
     
     comment.Set("cur_merit %d;", i); 
     df_phen.Write(phenotype.GetMerit().GetDouble(), comment); 

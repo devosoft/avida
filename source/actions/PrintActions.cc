@@ -438,7 +438,6 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().ParasiteDebug();
   }
 };
 

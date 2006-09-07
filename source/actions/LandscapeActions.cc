@@ -1007,6 +1007,7 @@ public:
       }
 
       cDataFile& df = m_world->GetDataFile(filename);
+      cTestCPU* testcpu = (m_save_genotypes) ? m_world->GetHardwareManager().CreateTestCPU() : NULL;
       while (orgdata = batch.Pop()) {
         cOrganism* organism = orgdata->GetOrganism();
         cGenotype* genotype = organism->GetGenotype();
@@ -1030,9 +1031,10 @@ public:
         // save into archive
         if (m_save_genotypes) {
           name.Set("archive/%s.org", static_cast<const char *>(name));
-          cTestUtil::PrintGenome(m_world, organism->GetGenome(), name);
+          testcpu->PrintGenome(ctx, organism->GetGenome(), name);
         }
       }
+      delete testcpu;
       m_world->GetDataFileManager().Remove(filename);
     }
   }
