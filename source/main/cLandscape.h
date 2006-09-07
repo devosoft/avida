@@ -111,7 +111,7 @@ public:
   void Process(cAvidaContext& ctx);
   void ProcessDelete(cAvidaContext& ctx);
   void ProcessInsert(cAvidaContext& ctx);
-  void PredictWProcess(cAvidaContext& ctx, std::ostream& fp, int update = -1);
+  void PredictWProcess(cAvidaContext& ctx, cDataFile& df, int update = -1);
   void PredictNuProcess(cAvidaContext& ctx, std::ostream& fp, int update = -1);
   
   inline void SetDistance(int in_distance) { distance = in_distance; }
