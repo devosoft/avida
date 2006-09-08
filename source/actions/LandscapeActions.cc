@@ -461,7 +461,7 @@ public:
 };
 
 
-class cActionPredictNuLandscape : public cAction  // @not_parallized
+class cActionPredictNuLandscape : public cAction  // @not_parallelized
 {
 private:
   cString m_filename;
@@ -655,7 +655,7 @@ public:
 };
 
 
-class cActionHillClimb : public cAction  // @not_parallized
+class cActionHillClimb : public cAction  // @not_parallelized
 {
 private:
   cString m_filename;
@@ -786,15 +786,18 @@ public:
 };
 
 
-class cActionPairTestLandscape : public cAction  // @not_parallelized
+
+
+class cActionPairTestLandscape : public cAction  // @parallelized
 {
 private:
   cString m_filename;
   int m_sample_size;
+  tList<cLandscape> m_batch;
   
 public:
   cActionPairTestLandscape(cWorld* world, const cString& args)
-  : cAction(world, args), m_filename(""), m_sample_size(0)
+  : cAction(world, args), m_filename("land-pairs.dat"), m_sample_size(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -807,12 +810,9 @@ public:
   }
   
   void Process(cAvidaContext& ctx)
-  {
-    cString filename(m_filename);
-    if (filename == "") filename.Set("land-pairs-%d.dat", m_world->GetStats().GetUpdate());
-    
-    cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
-    std::ofstream& outfile = m_world->GetDataFileOFStream(filename);
+  {    
+    int update = -1;
+    cLandscape* land = NULL;
     
     if (ctx.GetAnalyzeMode()) {
       if (m_world->GetVerbosity() >= VERBOSE_ON) {
@@ -823,24 +823,43 @@ public:
         m_world->GetDriver().NotifyComment("Pair Testing Landscape...");
       }
       
+      cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();
+      cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
+      
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       cAnalyzeGenotype* genotype = NULL;
       while (genotype = batch_it.Next()) {
-        cLandscape land(m_world, genotype->GetGenome(), inst_set);
-        if (m_sample_size) land.TestPairs(ctx, m_sample_size, outfile);
-        else land.TestAllPairs(ctx, outfile);
+        cLandscape* land = new cLandscape(m_world, genotype->GetGenome(), inst_set);
+        if (m_sample_size) {
+          land->SetTrials(m_sample_size);
+          jobqueue.AddJob(new tAnalyzeJob<cLandscape>(land, &cLandscape::TestPairs));
+        } else {
+          jobqueue.AddJob(new tAnalyzeJob<cLandscape>(land, &cLandscape::TestAllPairs));
+        }
+        m_batch.PushRear(land);
       }
+      jobqueue.Execute();
     } else {
       if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
         m_world->GetDriver().NotifyComment("Pair Testing Landscape...");
       
-      const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
-      cLandscape land(m_world, best_genome, inst_set);
-      if (m_sample_size) land.TestPairs(ctx, m_sample_size, outfile);
-      else land.TestAllPairs(ctx, outfile);
+      land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetGenome(),
+                            m_world->GetHardwareManager().GetInstSet());
+      m_batch.PushRear(land);
+      if (m_sample_size) {
+        land->SetTrials(m_sample_size);        
+        land->TestPairs(ctx);
+      } else land->TestAllPairs(ctx);
+      
+      update = m_world->GetStats().GetUpdate();      
     }
-
-    m_world->GetDataFileManager().Remove(filename);
+    
+    cDataFile& df = m_world->GetDataFile(m_filename);
+    while (land = m_batch.Pop()) {
+      land->PrintStats(df, update);
+      delete land;
+    }
+    if (ctx.GetAnalyzeMode()) m_world->GetDataFileManager().Remove(m_filename);
   }
 };
 

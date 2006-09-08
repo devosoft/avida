@@ -24,8 +24,6 @@
 #include "tMatrix.h"
 #endif
 
-#include <fstream>
-
 class cAvidaContext;
 class cDataFile;
 class cInstSet;
@@ -37,7 +35,7 @@ class cLandscape
 {
 private:
   cWorld* m_world;
-  const cInstSet & inst_set;
+  const cInstSet& inst_set;
   cGenome base_genome;
   cGenome peak_genome;
   double base_fitness;
@@ -73,7 +71,7 @@ private:
   double neg_epi_size; 
   double no_epi_size; 
 
-  int * site_count;
+  int* site_count;
 
   double total_entropy;
   double complexity;
@@ -92,7 +90,7 @@ private:
   void Process_Body(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& cur_genome, int cur_distance, int start_line);
 
   double TestMutPair(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& mod_genome, int line1, int line2,
-                     const cInstruction& mut1, const cInstruction& mut2, std::ostream& fp);
+                     const cInstruction& mut1, const cInstruction& mut2);
 
   cLandscape(); // @not_implemented
   cLandscape(const cLandscape&); // @not_implemented
@@ -120,8 +118,8 @@ public:
   
   inline int GetNumFound() { return m_num_found; }
 
-  void TestPairs(cAvidaContext& ctx, int in_trials, std::ostream& fp);
-  void TestAllPairs(cAvidaContext& ctx, std::ostream& fp);
+  void TestPairs(cAvidaContext& ctx);
+  void TestAllPairs(cAvidaContext& ctx);
 
   void HillClimb(cAvidaContext& ctx, cDataFile& df);
 
@@ -131,60 +129,36 @@ public:
   void PrintBase(cString filename);
   void PrintPeak(cString filename);
 
-  inline const cGenome & GetPeakGenome() { return peak_genome; }
+  inline const cGenome& GetPeakGenome() { return peak_genome; }
   inline double GetAveFitness() { return total_fitness / total_count; }
   inline double GetAveSqrFitness() { return total_sqr_fitness / total_count; }
   inline double GetPeakFitness() { return peak_fitness; }
 
-  inline double GetProbDead() const { return ((double)dead_count) / total_count;}
-  inline double GetProbNeg()  const { return ((double)neg_count) / total_count;}
-  inline double GetProbNeut() const { return ((double)neut_count) / total_count;}
-  inline double GetProbPos()  const { return ((double)pos_count) / total_count;}
-  inline double GetAvPosSize() const
-  { 
-    if (pos_count == 0) return 0;
-    else return pos_size / pos_count;
-  }
-  inline double GetAvNegSize() const
-  { 
-    if (neg_count == 0) return 0;
-    else return neg_size / neg_count;
-  }
+  inline double GetProbDead() const { return static_cast<double>(dead_count) / total_count; }
+  inline double GetProbNeg()  const { return static_cast<double>(neg_count) / total_count; }
+  inline double GetProbNeut() const { return static_cast<double>(neut_count) / total_count; }
+  inline double GetProbPos()  const { return static_cast<double>(pos_count) / total_count; }
+  inline double GetAvPosSize() const { if (pos_count == 0) return 0; else return pos_size / pos_count; }
+  inline double GetAvNegSize() const { if (neg_count == 0) return 0; else return neg_size / neg_count; }
   inline double GetProbEpiDead() const
-  { 
-    if (total_epi_count == 0) return 0;
-    else	return ((double)dead_epi_count) / total_epi_count;
+  {
+    if (total_epi_count == 0) return 0; else return static_cast<double>(dead_epi_count) / total_epi_count;
   }
   inline double GetProbEpiPos()  const
   { 
-    if (total_epi_count == 0) return 0;
-    else return ((double)pos_epi_count) / total_epi_count;
+    if (total_epi_count == 0) return 0; else return static_cast<double>(pos_epi_count) / total_epi_count;
   }
   inline double GetProbEpiNeg()  const
   { 
-    if (total_epi_count == 0) return 0;
-    else return ((double)neg_epi_count) / total_epi_count;
+    if (total_epi_count == 0) return 0; else return static_cast<double>(neg_epi_count) / total_epi_count;
   }
   inline double GetProbNoEpi() const
   {
-    if (total_epi_count == 0) return 0;
-    else return ((double)no_epi_count) / total_epi_count;
+    if (total_epi_count == 0) return 0; else return static_cast<double>(no_epi_count) / total_epi_count;
   }
-  inline double GetAvPosEpiSize() const
-  { 
-    if (pos_epi_count == 0) return 0;
-    else return pos_epi_size / pos_epi_count;
-  }
-  inline double GetAvNegEpiSize() const
-  {
-    if (neg_epi_count == 0) return 0;
-    else return neg_epi_size / neg_epi_count;
-  }
-  inline double GetAvNoEpiSize() const
-  { 
-    if (no_epi_count == 0) return 0;
-    else return no_epi_size / no_epi_count;
-  }
+  inline double GetAvPosEpiSize() const { if (pos_epi_count == 0) return 0; else return pos_epi_size / pos_epi_count; }
+  inline double GetAvNegEpiSize() const { if (neg_epi_count == 0) return 0; else return neg_epi_size / neg_epi_count; }
+  inline double GetAvNoEpiSize() const { if (no_epi_count == 0) return 0; else return no_epi_size / no_epi_count; }
 
   inline int GetNumTrials() const { return trials; }
   inline double GetTotalEntropy() const { return total_entropy; }

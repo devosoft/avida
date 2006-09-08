@@ -3487,44 +3487,6 @@ void cAnalyze::CommandPairwiseEntropy(cString cur_string)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-void cAnalyze::AnalyzeEpistasis(cString cur_string)
-{
-  if (m_world->GetVerbosity() >= VERBOSE_ON) cout << "Epistasis on " << cur_batch << endl;
-  else cout << "Calculating epistasis values..." << endl;
-  
-  // Load in the variables...
-  cString filename;
-  if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
-  int test_num = 1;
-  if (cur_string.GetSize() != 0) test_num = cur_string.PopWord().AsInt();
-  
-  // If we're given a file, write to it.
-  cDataFile& df = m_world->GetDataFile(filename);
-
-  // Loop through all of the genotypes in this batch...
-  tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
-  cAnalyzeGenotype * genotype = NULL;
-  while ((genotype = batch_it.Next()) != NULL) {
-    cLandscape landscape(m_world, genotype->GetGenome(), inst_set);
-    if (test_num == 1)  landscape.TestAllPairs(m_ctx, df.GetOFStream());
-    else 		landscape.TestPairs(m_ctx, test_num, df.GetOFStream()); 
-    landscape.PrintStats(df);
-  }
-}
-
-
-
 // This command will take the current batch and analyze how well organisms
 // cross-over with each other, both across the population and between mates.
 
@@ -7722,7 +7684,6 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("ANALYZE_BRANCHING", &cAnalyze::AnalyzeBranching);
   AddLibraryDef("ANALYZE_MUTATION_TRACEBACK",
                 &cAnalyze::AnalyzeMutationTraceback);
-  AddLibraryDef("ANALYZE_EPISTASIS", &cAnalyze::AnalyzeEpistasis);
   AddLibraryDef("ANALYZE_MATE_SELECTION", &cAnalyze::AnalyzeMateSelection);
   AddLibraryDef("ANALYZE_COMPLEXITY_DELTA", &cAnalyze::AnalyzeComplexityDelta);
   

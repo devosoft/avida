@@ -23,8 +23,6 @@
 #include "cTools.h"
 #include "cWorld.h"
 
-using namespace std;
-
 
 cLandscape::cLandscape(cWorld* world, const cGenome & in_genome, const cInstSet & in_inst_set)
 : m_world(world), inst_set(in_inst_set), base_genome(1), peak_genome(1), trials(1), m_min_found(0),
@@ -599,12 +597,10 @@ void cLandscape::BuildFitnessChart(cAvidaContext& ctx, cTestCPU* testcpu)
   }
 }
 
-void cLandscape::TestPairs(cAvidaContext& ctx, int in_trials, ostream& fp)
+void cLandscape::TestPairs(cAvidaContext& ctx)
 {
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
 
-  trials = in_trials;
-  
   ProcessBase(ctx, testcpu);
   if (base_fitness == 0.0) return;
   
@@ -624,7 +620,7 @@ void cLandscape::TestPairs(cAvidaContext& ctx, int in_trials, ostream& fp)
     // Choose the new instructions for those lines...
     for (int mut_num = 0; mut_num < 2; mut_num++) {
       const cInstruction new_inst( inst_set.GetRandomInst(ctx) );
-      const cInstruction & cur_inst = base_genome[ mut_lines[mut_num] ];
+      const cInstruction& cur_inst = base_genome[ mut_lines[mut_num] ];
       if (cur_inst == new_inst) {
         mut_num--;
         continue;
@@ -633,15 +629,13 @@ void cLandscape::TestPairs(cAvidaContext& ctx, int in_trials, ostream& fp)
       mut_insts[mut_num] = new_inst;
     }
     
-    TestMutPair(ctx, testcpu, mod_genome, mut_lines[0], mut_lines[1], mut_insts[0],
-                mut_insts[1], fp);
-    
+    TestMutPair(ctx, testcpu, mod_genome, mut_lines[0], mut_lines[1], mut_insts[0], mut_insts[1]);
   }
   delete testcpu;
 }
 
 
-void cLandscape::TestAllPairs(cAvidaContext& ctx, ostream& fp)
+void cLandscape::TestAllPairs(cAvidaContext& ctx)
 {
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
 
@@ -666,7 +660,7 @@ void cLandscape::TestAllPairs(cAvidaContext& ctx, ostream& fp)
         for (int inst2_num = 0; inst2_num < inst_size; inst2_num++) {
           inst2.SetOp(inst2_num);
           if (inst2 == base_genome[line2_num]) continue;
-          TestMutPair(ctx, testcpu, mod_genome, line1_num, line2_num, inst1, inst2, fp);
+          TestMutPair(ctx, testcpu, mod_genome, line1_num, line2_num, inst1, inst2);
         } // inst2_num loop
       } //inst1_num loop;
       
@@ -749,7 +743,7 @@ void cLandscape::HillClimb(cAvidaContext& ctx, cDataFile& df)
 
 
 double cLandscape::TestMutPair(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& mod_genome, int line1, int line2,
-                               const cInstruction& mut1, const cInstruction& mut2, ostream& fp)
+                               const cInstruction& mut1, const cInstruction& mut2)
 {
   mod_genome[line1] = mut1;
   mod_genome[line2] = mut2;
@@ -764,7 +758,7 @@ double cLandscape::TestMutPair(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& m
   double mult_combo = mut1_fitness * mut2_fitness;
     
   total_epi_count++;
-  if ((mut1_fitness==0 || mut2_fitness==0)&&(combo_fitness==0)) {
+  if ((mut1_fitness == 0 || mut2_fitness == 0) && (combo_fitness == 0)) {
     dead_epi_count++;
   } else if (combo_fitness < mult_combo) {
     neg_epi_count++;
