@@ -50,7 +50,8 @@ actions, along with detailed sections for each them.
 <table>
   <tr>
     <td>
-      <br /><a href="#AnalyzeLandscape">AnalyzeLandscape</a>
+      <a href="#AnalyzeLandscape">AnalyzeLandscape</a>
+      <br /><a href="#AnalyzePopulation">AnalyzePopulation</a>
       <br /><a href="#CompeteDemes">CompeteDemes</a>
       <br /><a href="#ConnectCells">ConnectCells</a>
       <br /><a href="#CopyDeme">CopyDeme</a>
@@ -69,8 +70,6 @@ actions, along with detailed sections for each them.
       <br /><a href="#ExitAveLineageLabelLess">ExitAveLineageLabelLess</a>
       <br /><a href="#FullLandscape">FullLandscape</a>
       <br /><a href="#HillClimb">HillClimb</a>
-      <br /><a href="#HillClimbNeut">HillClimbNeut</a>
-      <br /><a href="#HillClimbRand">HillClimbRand</a>
       <br /><a href="#Inject">Inject</a>
       <br /><a href="#InjectAll">InjectAll</a>
       <br /><a href="#InjectParasite">InjectParasite</a>
@@ -83,10 +82,10 @@ actions, along with detailed sections for each them.
       <br /><a href="#JoinGridCol">JoinGridCol</a>
       <br /><a href="#JoinGridRow">JoinGridRow</a>
       <br /><a href="#KillProb">KillProb</a>
+      <br /><a href="#KillRate">KillRate</a>
     </td>
     <td>
-      <br /><a href="#KillRate">KillRate</a>
-      <br /><a href="#KillRectangle">KillRectangle</a>
+      <a href="#KillRectangle">KillRectangle</a>
       <br /><a href="#LoadClone">LoadClone</a>
       <br /><a href="#LoadPopulation">LoadPopulation</a>
       <br /><a href="#ModMutProb">ModMutProb</a>
@@ -118,10 +117,10 @@ actions, along with detailed sections for each them.
       <br /><a href="#PrintLineageTotals">PrintLineageTotals</a>
       <br /><a href="#PrintMutationRateData">PrintMutationRateData</a>
       <br /><a href="#PrintPhenotypeData">PrintPhenotypeData</a>
+      <br /><a href="#PrintPhenotypeStatus">PrintPhenotypeStatus</a>
     </td>
     <td>
-      <br /><a href="#PrintPhenotypeStatus">PrintPhenotypeStatus</a>
-      <br /><a href="#PrintPopulationDistanceData">PrintPopulationDistanceData</a>
+      <a href="#PrintPopulationDistanceData">PrintPopulationDistanceData</a>
       <br /><a href="#PrintResourceData">PrintResourceData</a>
       <br /><a href="#PrintSpeciesAbundanceData">PrintSpeciesAbundanceData</a>
       <br /><a href="#PrintStatsData">PrintStatsData</a>
@@ -1121,25 +1120,19 @@ for these compuations.
   </p>
 </li>
 <li>
-  <strong><a name="HillClimbNeut">HillClimbNeut</a></strong>
-  [<span class="cmdarg">string filename='hillclimb.dat'</span>]
-  
-  <p>
-  </p>
-</li>
-<li>
-  <strong><a name="HillClimbRand">HillClimbRand</a></strong>
-  [<span class="cmdarg">string filename='hillclimb.dat'</span>]
-  
-  <p>
-  </p>
-</li>
-<li>
   <strong><a name="PairTestLandscape">PairTestLandscape</a></strong>
   [<span class="cmdarg">string filename=''</span>] [<span class="cmdarg">int sample_size=0</span>]
   
   <p>
   If sample_size = 0, pairtest the full landscape.
+  </p>
+</li>
+<li>
+  <strong><a name="AnalyzePopulation">AnalyzePopulation</a></strong>
+  [<span class="cmdarg">double sample_prob=1</span>] [<span class="cmdarg">int landscape=0</span>]
+  [<span class="cmdarg">int save_genotype=0</span>] [<span class="cmdarg">string filename=''</span>]
+
+  <p>
   </p>
 </li>
 </ul>

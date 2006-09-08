@@ -91,10 +91,6 @@ private:
   void ProcessBase(cAvidaContext& ctx, cTestCPU* testcpu);
   void Process_Body(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& cur_genome, int cur_distance, int start_line);
 
-  void HillClimb_Body(cAvidaContext& ctx, cTestCPU* testcpu, std::ofstream& fp, cGenome& cur_genome, int& gen);
-  void HillClimb_Print(cAvidaContext& ctx, cTestCPU* testcpu, std::ofstream& fp,
-                       const cGenome& _genome, const int gen) const;
-
   double TestMutPair(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& mod_genome, int line1, int line2,
                      const cInstruction& mut1, const cInstruction& mut2, std::ostream& fp);
 
@@ -127,9 +123,7 @@ public:
   void TestPairs(cAvidaContext& ctx, int in_trials, std::ostream& fp);
   void TestAllPairs(cAvidaContext& ctx, std::ostream& fp);
 
-  void HillClimb(cAvidaContext& ctx, std::ofstream& fp);
-  void HillClimb_Neut(cAvidaContext& ctx, std::ofstream& fp);
-  void HillClimb_Rand(cAvidaContext& ctx, std::ofstream& fp);
+  void HillClimb(cAvidaContext& ctx, cDataFile& df);
 
   void PrintStats(cDataFile& df, int update = -1);
   void PrintEntropy(cDataFile& fp);

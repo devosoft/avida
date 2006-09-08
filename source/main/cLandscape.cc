@@ -677,26 +677,19 @@ void cLandscape::TestAllPairs(cAvidaContext& ctx, ostream& fp)
 }
 
 
-void cLandscape::HillClimb(cAvidaContext& ctx, ofstream& fp)
+void cLandscape::HillClimb(cAvidaContext& ctx, cDataFile& df)
 {
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
   cGenome cur_genome(base_genome);
-  int gen = 0;
-  HillClimb_Body(ctx, testcpu, fp, cur_genome, gen);
-  delete testcpu;
-}
-
-void cLandscape::HillClimb_Body(cAvidaContext& ctx, cTestCPU* testcpu, ofstream& fp, cGenome & cur_genome,
-                                int & gen)
-{
   cCPUMemory mod_genome(base_genome);
+
+  int gen = 0;
   
   const int inst_size = inst_set.GetSize();
-  
   double pos_frac = 1.0;
   
   distance = 1;
-
+  
   bool finished = false;
   while (finished == false) {
     if (pos_frac == 0.0) finished = true;
@@ -732,39 +725,28 @@ void cLandscape::HillClimb_Body(cAvidaContext& ctx, cTestCPU* testcpu, ofstream&
     pos_frac = GetProbPos();
     
     // Print the information on the current best.
-    HillClimb_Print(ctx, testcpu, fp, cur_genome, gen);
-    
+    cCPUTestInfo test_info;
+    testcpu->TestGenome(ctx, test_info, cur_genome);
+    cPhenotype& colony_phenotype = test_info.GetColonyOrganism()->GetPhenotype();
+    df.Write(gen, "Generation");
+    df.Write(colony_phenotype.GetMerit().GetDouble(), "Merit");
+    df.Write(colony_phenotype.GetGestationTime(), "Gestation Time");
+    df.Write(colony_phenotype.GetFitness(), "Fitness");
+    df.Write(cur_genome.GetSize(), "Genome Length");
+    df.Write(GetProbDead(), "Probability Lethal");
+    df.Write(GetProbNeg(), "Probability Deleterious");
+    df.Write(GetProbNeut(), "Probability Neutral");
+    df.Write(GetProbPos(), "Probability Beneficial");
+    df.Endl();
+              
     // Move on to the peak genome found.
     cur_genome = GetPeakGenome();
     gen++;
   }
+
+  delete testcpu;
 }
 
-void cLandscape::HillClimb_Neut(cAvidaContext& ctx, ofstream& fp)
-{
-}
-
-void cLandscape::HillClimb_Rand(cAvidaContext& ctx, ofstream& fp)
-{
-}
-
-void cLandscape::HillClimb_Print(cAvidaContext& ctx, cTestCPU* testcpu, ofstream& fp,
-                                 const cGenome& _genome, const int gen) const
-{
-  cCPUTestInfo test_info;
-  testcpu->TestGenome(ctx, test_info, _genome);
-  cPhenotype &colony_phenotype = test_info.GetColonyOrganism()->GetPhenotype();
-  fp << gen << " "
-    << colony_phenotype.GetMerit().GetDouble() << " "
-    << colony_phenotype.GetGestationTime() << " "
-    << colony_phenotype.GetFitness() << " "
-    << _genome.GetSize() << " "
-    << GetProbDead() << " "
-    << GetProbNeg() << " "
-    << GetProbNeut() << " "
-    << GetProbPos() << " "
-    << endl;
-}
 
 double cLandscape::TestMutPair(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& mod_genome, int line1, int line2,
                                const cInstruction& mut1, const cInstruction& mut2, ostream& fp)
@@ -780,18 +762,7 @@ double cLandscape::TestMutPair(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& m
   double mut1_fitness = fitness_chart(line1, mut1.GetOp()) / base_fitness;
   double mut2_fitness = fitness_chart(line2, mut2.GetOp()) / base_fitness;
   double mult_combo = mut1_fitness * mut2_fitness;
-  
-  /*
-   fp << line1        << " "
-   << line2        << " "
-   << ( (int) mut1.GetOp() ) << " "
-   << ( (int) mut2.GetOp() ) << " ";
-   
-   fp << ( fitness_chart(line1, mut1.GetOp()) / base_fitness ) << " "
-   << ( fitness_chart(line2, mut2.GetOp()) / base_fitness ) << " "
-   << combo_fitness << endl;
-   */
-  
+    
   total_epi_count++;
   if ((mut1_fitness==0 || mut2_fitness==0)&&(combo_fitness==0)) {
     dead_epi_count++;
