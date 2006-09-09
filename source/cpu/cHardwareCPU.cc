@@ -50,12 +50,12 @@ cInstLibCPU *cHardwareCPU::initInstLib(void)
       : name(name), nop_mod(nop_mod) {}
   };
   static const cNOPEntryCPU s_n_array[] = {
-    cNOPEntryCPU("nop-A", nHardwareCPU::REG_AX),
-    cNOPEntryCPU("nop-B", nHardwareCPU::REG_BX),
-    cNOPEntryCPU("nop-C", nHardwareCPU::REG_CX),
-    cNOPEntryCPU("nop-D", nHardwareCPU::REG_DX),
-    cNOPEntryCPU("nop-E", nHardwareCPU::REG_EX),
-    cNOPEntryCPU("nop-F", nHardwareCPU::REG_FX)
+    cNOPEntryCPU("nop-A", REG_AX),
+    cNOPEntryCPU("nop-B", REG_BX),
+    cNOPEntryCPU("nop-C", REG_CX),
+    cNOPEntryCPU("nop-D", REG_DX),
+    cNOPEntryCPU("nop-E", REG_EX),
+    cNOPEntryCPU("nop-F", REG_FX)
   };
   
   struct cInstEntryCPU { 
@@ -349,7 +349,7 @@ cInstLibCPU *cHardwareCPU::initInstLib(void)
   
   static cString n_names[n_size];
   static int nop_mods[n_size];
-  for (int i = 0; i < n_size && i < nHardwareCPU::NUM_REGISTERS; i++) {
+  for (int i = 0; i < n_size && i < NUM_REGISTERS; i++) {
     n_names[i] = s_n_array[i].name;
     nop_mods[i] = s_n_array[i].nop_mod;
   }
@@ -429,6 +429,29 @@ void cHardwareCPU::Reset()
 #endif
   
 }
+
+void cHardwareCPU::cLocalThread::operator=(const cLocalThread& in_thread)
+{
+  m_id = in_thread.m_id;
+  for (int i = 0; i < NUM_REGISTERS; i++) reg[i] = in_thread.reg[i];
+  for (int i = 0; i < nHardware::NUM_HEADS; i++) heads[i] = in_thread.heads[i];
+  stack = in_thread.stack;
+}
+
+void cHardwareCPU::cLocalThread::Reset(cHardwareBase* in_hardware, int in_id)
+{
+  m_id = in_id;
+  
+  for (int i = 0; i < NUM_REGISTERS; i++) reg[i] = 0;
+  for (int i = 0; i < nHardware::NUM_HEADS; i++) heads[i].Reset(in_hardware);
+  
+  stack.Clear();
+  cur_stack = 0;
+  cur_head = nHardware::HEAD_IP;
+  read_label.Clear();
+  next_label.Clear();
+}
+
 
 
 // This function processes the very next command in the genome, and is made
@@ -595,14 +618,14 @@ void cHardwareCPU::PrintStatus(ostream& fp)
   fp << organism->GetPhenotype().GetTimeUsed() << " "
   << "IP:" << IP().GetPosition() << "    "
   
-  << "AX:" << GetRegister(nHardwareCPU::REG_AX) << " "
-  << setbase(16) << "[0x" << GetRegister(nHardwareCPU::REG_AX) << "]  " << setbase(10)
+  << "AX:" << GetRegister(REG_AX) << " "
+  << setbase(16) << "[0x" << GetRegister(REG_AX) << "]  " << setbase(10)
   
-  << "BX:" << GetRegister(nHardwareCPU::REG_BX) << " "
-  << setbase(16) << "[0x" << GetRegister(nHardwareCPU::REG_BX) << "]  " << setbase(10)
+  << "BX:" << GetRegister(REG_BX) << " "
+  << setbase(16) << "[0x" << GetRegister(REG_BX) << "]  " << setbase(10)
   
-  << "CX:" << GetRegister(nHardwareCPU::REG_CX) << " "
-  << setbase(16) << "[0x" << GetRegister(nHardwareCPU::REG_CX) << "]" << setbase(10)
+  << "CX:" << GetRegister(REG_CX) << " "
+  << setbase(16) << "[0x" << GetRegister(REG_CX) << "]" << setbase(10)
   
   << endl;
   
@@ -1010,7 +1033,7 @@ bool cHardwareCPU::KillThread()
 
 inline int cHardwareCPU::FindModifiedRegister(int default_register)
 {
-  assert(default_register < nHardwareCPU::NUM_REGISTERS);  // Reg ID too high.
+  assert(default_register < NUM_REGISTERS);  // Reg ID too high.
   
   if (m_inst_set->IsNop(IP().GetNextInst())) {
     IP().Advance();
@@ -1037,7 +1060,7 @@ inline int cHardwareCPU::FindModifiedHead(int default_head)
 inline int cHardwareCPU::FindComplementRegister(int base_reg)
 {
   const int comp_reg = base_reg + 1;
-  return (comp_reg  == nHardwareCPU::NUM_REGISTERS) ? 0 : comp_reg;
+  return (comp_reg  == NUM_REGISTERS) ? 0 : comp_reg;
 }
 
 
@@ -1275,21 +1298,21 @@ bool cHardwareCPU::Divide_MainRS(cAvidaContext& ctx, const int div_point,
 
 bool cHardwareCPU::Inst_If0(cAvidaContext& ctx)          // Execute next if ?bx? ==0.
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   if (GetRegister(reg_used) != 0)  IP().Advance();
   return true; 
 }
 
 bool cHardwareCPU::Inst_IfNot0(cAvidaContext& ctx)       // Execute next if ?bx? != 0.
 { 
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   if (GetRegister(reg_used) == 0)  IP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfEqu(cAvidaContext& ctx)      // Execute next if bx == ?cx?
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   const int reg_used2 = FindComplementRegister(reg_used);
   if (GetRegister(reg_used) != GetRegister(reg_used2))  IP().Advance();
   return true;
@@ -1297,7 +1320,7 @@ bool cHardwareCPU::Inst_IfEqu(cAvidaContext& ctx)      // Execute next if bx == 
 
 bool cHardwareCPU::Inst_IfNEqu(cAvidaContext& ctx)     // Execute next if bx != ?cx?
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   const int reg_used2 = FindComplementRegister(reg_used);
   if (GetRegister(reg_used) == GetRegister(reg_used2))  IP().Advance();
   return true;
@@ -1305,14 +1328,14 @@ bool cHardwareCPU::Inst_IfNEqu(cAvidaContext& ctx)     // Execute next if bx != 
 
 bool cHardwareCPU::Inst_IfGr0(cAvidaContext& ctx)       // Execute next if ?bx? ! < 0.
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   if (GetRegister(reg_used) <= 0)  IP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfGr(cAvidaContext& ctx)       // Execute next if bx > ?cx?
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   const int reg_used2 = FindComplementRegister(reg_used);
   if (GetRegister(reg_used) <= GetRegister(reg_used2))  IP().Advance();
   return true;
@@ -1320,14 +1343,14 @@ bool cHardwareCPU::Inst_IfGr(cAvidaContext& ctx)       // Execute next if bx > ?
 
 bool cHardwareCPU::Inst_IfGrEqu0(cAvidaContext& ctx)       // Execute next if ?bx? != 0.
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   if (GetRegister(reg_used) < 0)  IP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfGrEqu(cAvidaContext& ctx)       // Execute next if bx > ?cx?
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   const int reg_used2 = FindComplementRegister(reg_used);
   if (GetRegister(reg_used) < GetRegister(reg_used2)) IP().Advance();
   return true;
@@ -1335,14 +1358,14 @@ bool cHardwareCPU::Inst_IfGrEqu(cAvidaContext& ctx)       // Execute next if bx 
 
 bool cHardwareCPU::Inst_IfLess0(cAvidaContext& ctx)       // Execute next if ?bx? != 0.
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   if (GetRegister(reg_used) >= 0)  IP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfLess(cAvidaContext& ctx)       // Execute next if ?bx? < ?cx?
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   const int reg_used2 = FindComplementRegister(reg_used);
   if (GetRegister(reg_used) >=  GetRegister(reg_used2))  IP().Advance();
   return true;
@@ -1350,14 +1373,14 @@ bool cHardwareCPU::Inst_IfLess(cAvidaContext& ctx)       // Execute next if ?bx?
 
 bool cHardwareCPU::Inst_IfLsEqu0(cAvidaContext& ctx)       // Execute next if ?bx? != 0.
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   if (GetRegister(reg_used) > 0) IP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfLsEqu(cAvidaContext& ctx)       // Execute next if bx > ?cx?
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   const int reg_used2 = FindComplementRegister(reg_used);
   if (GetRegister(reg_used) >  GetRegister(reg_used2))  IP().Advance();
   return true;
@@ -1365,37 +1388,37 @@ bool cHardwareCPU::Inst_IfLsEqu(cAvidaContext& ctx)       // Execute next if bx 
 
 bool cHardwareCPU::Inst_IfBit1(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   if ((GetRegister(reg_used) & 1) == 0)  IP().Advance();
 return true;
 }
 
 bool cHardwareCPU::Inst_IfANotEqB(cAvidaContext& ctx)     // Execute next if AX != BX
 {
-  if (GetRegister(nHardwareCPU::REG_AX) == GetRegister(nHardwareCPU::REG_BX) )  IP().Advance();
+  if (GetRegister(REG_AX) == GetRegister(REG_BX) )  IP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfBNotEqC(cAvidaContext& ctx)     // Execute next if BX != CX
 {
-  if (GetRegister(nHardwareCPU::REG_BX) == GetRegister(nHardwareCPU::REG_CX) )  IP().Advance();
+  if (GetRegister(REG_BX) == GetRegister(REG_CX) )  IP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfANotEqC(cAvidaContext& ctx)     // Execute next if AX != BX
 {
-  if (GetRegister(nHardwareCPU::REG_AX) == GetRegister(nHardwareCPU::REG_CX) )  IP().Advance();
+  if (GetRegister(REG_AX) == GetRegister(REG_CX) )  IP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_JumpF(cAvidaContext& ctx)
 {
   ReadLabel();
-  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
+  GetLabel().Rotate(1, NUM_NOPS);
   
   // If there is no label, jump BX steps.
   if (GetLabel().GetSize() == 0) {
-    GetActiveHead().Jump(GetRegister(nHardwareCPU::REG_BX));
+    GetActiveHead().Jump(GetRegister(REG_BX));
     return true;
   }
   
@@ -1416,11 +1439,11 @@ bool cHardwareCPU::Inst_JumpF(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_JumpB(cAvidaContext& ctx)
 {
   ReadLabel();
-  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
+  GetLabel().Rotate(1, NUM_NOPS);
   
   // If there is no label, jump BX steps.
   if (GetLabel().GetSize() == 0) {
-    GetActiveHead().Jump(GetRegister(nHardwareCPU::REG_BX));
+    GetActiveHead().Jump(GetRegister(REG_BX));
     return true;
   }
   
@@ -1458,11 +1481,11 @@ bool cHardwareCPU::Inst_JumpB(cAvidaContext& ctx)
 //  cHardwareCPU & other_hardware = (cHardwareCPU &) other_organism->GetHardware();
 //  
 //  ReadLabel();
-//  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
+//  GetLabel().Rotate(1, NUM_NOPS);
 //  
 //  // If there is no label, jump to line BX in creature.
 //  if (GetLabel().GetSize() == 0) {
-//    const int new_pos = GetRegister(nHardwareCPU::REG_BX);
+//    const int new_pos = GetRegister(REG_BX);
 //    IP().Set(new_pos);
 //    organism->GetPhenotype().IsParasite() = true;
 //    return true;
@@ -1489,11 +1512,11 @@ bool cHardwareCPU::Inst_JumpB(cAvidaContext& ctx)
 //bool cHardwareCPU::Inst_JumpSelf(cAvidaContext& ctx)
 //{
 //  ReadLabel();
-//  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
+//  GetLabel().Rotate(1, NUM_NOPS);
 //  
 //  // If there is no label, jump to line BX in creature.
 //  if (GetLabel().GetSize() == 0) {
-//    IP().Set(GetRegister(nHardwareCPU::REG_BX));
+//    IP().Set(GetRegister(REG_BX));
 //    return true;
 //  }
 //  
@@ -1518,10 +1541,10 @@ bool cHardwareCPU::Inst_Call(cAvidaContext& ctx)
   
   // Jump to the compliment label (or by the ammount in the bx register)
   ReadLabel();
-  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
+  GetLabel().Rotate(1, NUM_NOPS);
   
   if (GetLabel().GetSize() == 0) {
-    IP().Jump(GetRegister(nHardwareCPU::REG_BX));
+    IP().Jump(GetRegister(REG_BX));
     return true;
   }
   
@@ -1545,14 +1568,14 @@ bool cHardwareCPU::Inst_Return(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_Pop(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   GetRegister(reg_used) = StackPop();
   return true;
 }
 
 bool cHardwareCPU::Inst_Push(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   StackPush(GetRegister(reg_used));
   return true;
 }
@@ -1576,20 +1599,20 @@ bool cHardwareCPU::Inst_HeadPush(cAvidaContext& ctx)
 }
 
 
-bool cHardwareCPU::Inst_PopA(cAvidaContext& ctx) { GetRegister(nHardwareCPU::REG_AX) = StackPop(); return true;}
-bool cHardwareCPU::Inst_PopB(cAvidaContext& ctx) { GetRegister(nHardwareCPU::REG_BX) = StackPop(); return true;}
-bool cHardwareCPU::Inst_PopC(cAvidaContext& ctx) { GetRegister(nHardwareCPU::REG_CX) = StackPop(); return true;}
+bool cHardwareCPU::Inst_PopA(cAvidaContext& ctx) { GetRegister(REG_AX) = StackPop(); return true;}
+bool cHardwareCPU::Inst_PopB(cAvidaContext& ctx) { GetRegister(REG_BX) = StackPop(); return true;}
+bool cHardwareCPU::Inst_PopC(cAvidaContext& ctx) { GetRegister(REG_CX) = StackPop(); return true;}
 
-bool cHardwareCPU::Inst_PushA(cAvidaContext& ctx) { StackPush(GetRegister(nHardwareCPU::REG_AX)); return true;}
-bool cHardwareCPU::Inst_PushB(cAvidaContext& ctx) { StackPush(GetRegister(nHardwareCPU::REG_BX)); return true;}
-bool cHardwareCPU::Inst_PushC(cAvidaContext& ctx) { StackPush(GetRegister(nHardwareCPU::REG_CX)); return true;}
+bool cHardwareCPU::Inst_PushA(cAvidaContext& ctx) { StackPush(GetRegister(REG_AX)); return true;}
+bool cHardwareCPU::Inst_PushB(cAvidaContext& ctx) { StackPush(GetRegister(REG_BX)); return true;}
+bool cHardwareCPU::Inst_PushC(cAvidaContext& ctx) { StackPush(GetRegister(REG_CX)); return true;}
 
 bool cHardwareCPU::Inst_SwitchStack(cAvidaContext& ctx) { SwitchStack(); return true;}
 bool cHardwareCPU::Inst_FlipStack(cAvidaContext& ctx)   { StackFlip(); return true;}
 
 bool cHardwareCPU::Inst_Swap(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   const int other_reg = FindComplementRegister(reg_used);
   nFunctions::Swap(GetRegister(reg_used), GetRegister(other_reg));
   return true;
@@ -1597,20 +1620,20 @@ bool cHardwareCPU::Inst_Swap(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_SwapAB(cAvidaContext& ctx)\
 {
-  nFunctions::Swap(GetRegister(nHardwareCPU::REG_AX), GetRegister(nHardwareCPU::REG_BX)); return true;
+  nFunctions::Swap(GetRegister(REG_AX), GetRegister(REG_BX)); return true;
 }
 bool cHardwareCPU::Inst_SwapBC(cAvidaContext& ctx)
 {
-  nFunctions::Swap(GetRegister(nHardwareCPU::REG_BX), GetRegister(nHardwareCPU::REG_CX)); return true;
+  nFunctions::Swap(GetRegister(REG_BX), GetRegister(REG_CX)); return true;
 }
 bool cHardwareCPU::Inst_SwapAC(cAvidaContext& ctx)
 {
-  nFunctions::Swap(GetRegister(nHardwareCPU::REG_AX), GetRegister(nHardwareCPU::REG_CX)); return true;
+  nFunctions::Swap(GetRegister(REG_AX), GetRegister(REG_CX)); return true;
 }
 
 bool cHardwareCPU::Inst_CopyReg(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   const int other_reg = FindComplementRegister(reg_used);
   GetRegister(other_reg) = GetRegister(reg_used);
   return true;
@@ -1618,55 +1641,55 @@ bool cHardwareCPU::Inst_CopyReg(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_CopyRegAB(cAvidaContext& ctx)
 {
-  GetRegister(nHardwareCPU::REG_AX) = GetRegister(nHardwareCPU::REG_BX);   return true;
+  GetRegister(REG_AX) = GetRegister(REG_BX);   return true;
 }
 bool cHardwareCPU::Inst_CopyRegAC(cAvidaContext& ctx)
 {
-  GetRegister(nHardwareCPU::REG_AX) = GetRegister(nHardwareCPU::REG_CX);   return true;
+  GetRegister(REG_AX) = GetRegister(REG_CX);   return true;
 }
 bool cHardwareCPU::Inst_CopyRegBA(cAvidaContext& ctx)
 {
-  GetRegister(nHardwareCPU::REG_BX) = GetRegister(nHardwareCPU::REG_AX);   return true;
+  GetRegister(REG_BX) = GetRegister(REG_AX);   return true;
 }
 bool cHardwareCPU::Inst_CopyRegBC(cAvidaContext& ctx)
 {
-  GetRegister(nHardwareCPU::REG_BX) = GetRegister(nHardwareCPU::REG_CX);   return true;
+  GetRegister(REG_BX) = GetRegister(REG_CX);   return true;
 }
 bool cHardwareCPU::Inst_CopyRegCA(cAvidaContext& ctx)
 {
-  GetRegister(nHardwareCPU::REG_CX) = GetRegister(nHardwareCPU::REG_AX);   return true;
+  GetRegister(REG_CX) = GetRegister(REG_AX);   return true;
 }
 bool cHardwareCPU::Inst_CopyRegCB(cAvidaContext& ctx)
 {
-  GetRegister(nHardwareCPU::REG_CX) = GetRegister(nHardwareCPU::REG_BX);   return true;
+  GetRegister(REG_CX) = GetRegister(REG_BX);   return true;
 }
 
 bool cHardwareCPU::Inst_Reset(cAvidaContext& ctx)
 {
-  GetRegister(nHardwareCPU::REG_AX) = 0;
-  GetRegister(nHardwareCPU::REG_BX) = 0;
-  GetRegister(nHardwareCPU::REG_CX) = 0;
+  GetRegister(REG_AX) = 0;
+  GetRegister(REG_BX) = 0;
+  GetRegister(REG_CX) = 0;
   StackClear();
   return true;
 }
 
 bool cHardwareCPU::Inst_ShiftR(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   GetRegister(reg_used) >>= 1;
   return true;
 }
 
 bool cHardwareCPU::Inst_ShiftL(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   GetRegister(reg_used) <<= 1;
   return true;
 }
 
 bool cHardwareCPU::Inst_Bit1(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   GetRegister(reg_used) |=  1;
   return true;
 }
@@ -1674,78 +1697,78 @@ bool cHardwareCPU::Inst_Bit1(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_SetNum(cAvidaContext& ctx)
 {
   ReadLabel();
-  GetRegister(nHardwareCPU::REG_BX) = GetLabel().AsInt(nHardwareCPU::NUM_NOPS);
+  GetRegister(REG_BX) = GetLabel().AsInt(NUM_NOPS);
   return true;
 }
 
 bool cHardwareCPU::Inst_ValGrey(cAvidaContext& ctx) {
   ReadLabel();
-  GetRegister(nHardwareCPU::REG_BX) = GetLabel().AsIntGreyCode(nHardwareCPU::NUM_NOPS);
+  GetRegister(REG_BX) = GetLabel().AsIntGreyCode(NUM_NOPS);
   return true;
 }
 
 bool cHardwareCPU::Inst_ValDir(cAvidaContext& ctx) {
   ReadLabel();
-  GetRegister(nHardwareCPU::REG_BX) = GetLabel().AsIntDirect(nHardwareCPU::NUM_NOPS);
+  GetRegister(REG_BX) = GetLabel().AsIntDirect(NUM_NOPS);
   return true;
 }
 
 bool cHardwareCPU::Inst_ValAddP(cAvidaContext& ctx) {
   ReadLabel();
-  GetRegister(nHardwareCPU::REG_BX) = GetLabel().AsIntAdditivePolynomial(nHardwareCPU::NUM_NOPS);
+  GetRegister(REG_BX) = GetLabel().AsIntAdditivePolynomial(NUM_NOPS);
   return true;
 }
 
 bool cHardwareCPU::Inst_ValFib(cAvidaContext& ctx) {
   ReadLabel();
-  GetRegister(nHardwareCPU::REG_BX) = GetLabel().AsIntFib(nHardwareCPU::NUM_NOPS);
+  GetRegister(REG_BX) = GetLabel().AsIntFib(NUM_NOPS);
   return true;
 }
 
 bool cHardwareCPU::Inst_ValPolyC(cAvidaContext& ctx) {
   ReadLabel();
-  GetRegister(nHardwareCPU::REG_BX) = GetLabel().AsIntPolynomialCoefficent(nHardwareCPU::NUM_NOPS);
+  GetRegister(REG_BX) = GetLabel().AsIntPolynomialCoefficent(NUM_NOPS);
   return true;
 }
 
 bool cHardwareCPU::Inst_Inc(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   GetRegister(reg_used) += 1;
   return true;
 }
 
 bool cHardwareCPU::Inst_Dec(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   GetRegister(reg_used) -= 1;
   return true;
 }
 
 bool cHardwareCPU::Inst_Zero(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   GetRegister(reg_used) = 0;
   return true;
 }
 
 bool cHardwareCPU::Inst_Neg(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   GetRegister(reg_used) = 0 - GetRegister(reg_used);
   return true;
 }
 
 bool cHardwareCPU::Inst_Square(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   GetRegister(reg_used) = GetRegister(reg_used) * GetRegister(reg_used);
   return true;
 }
 
 bool cHardwareCPU::Inst_Sqrt(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   const int value = GetRegister(reg_used);
   if (value > 1) GetRegister(reg_used) = (int) sqrt((double) value);
   else if (value < 0) {
@@ -1757,7 +1780,7 @@ bool cHardwareCPU::Inst_Sqrt(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_Log(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   const int value = GetRegister(reg_used);
   if (value >= 1) GetRegister(reg_used) = (int) log((double) value);
   else if (value < 0) {
@@ -1769,7 +1792,7 @@ bool cHardwareCPU::Inst_Log(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_Log10(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   const int value = GetRegister(reg_used);
   if (value >= 1) GetRegister(reg_used) = (int) log10((double) value);
   else if (value < 0) {
@@ -1781,40 +1804,40 @@ bool cHardwareCPU::Inst_Log10(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_Minus17(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   GetRegister(reg_used) -= 17;
   return true;
 }
 
 bool cHardwareCPU::Inst_Add(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
-  GetRegister(reg_used) = GetRegister(nHardwareCPU::REG_BX) + GetRegister(nHardwareCPU::REG_CX);
+  const int reg_used = FindModifiedRegister(REG_BX);
+  GetRegister(reg_used) = GetRegister(REG_BX) + GetRegister(REG_CX);
   return true;
 }
 
 bool cHardwareCPU::Inst_Sub(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
-  GetRegister(reg_used) = GetRegister(nHardwareCPU::REG_BX) - GetRegister(nHardwareCPU::REG_CX);
+  const int reg_used = FindModifiedRegister(REG_BX);
+  GetRegister(reg_used) = GetRegister(REG_BX) - GetRegister(REG_CX);
   return true;
 }
 
 bool cHardwareCPU::Inst_Mult(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
-  GetRegister(reg_used) = GetRegister(nHardwareCPU::REG_BX) * GetRegister(nHardwareCPU::REG_CX);
+  const int reg_used = FindModifiedRegister(REG_BX);
+  GetRegister(reg_used) = GetRegister(REG_BX) * GetRegister(REG_CX);
   return true;
 }
 
 bool cHardwareCPU::Inst_Div(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
-  if (GetRegister(nHardwareCPU::REG_CX) != 0) {
-    if (0-INT_MAX > GetRegister(nHardwareCPU::REG_BX) && GetRegister(nHardwareCPU::REG_CX) == -1)
+  const int reg_used = FindModifiedRegister(REG_BX);
+  if (GetRegister(REG_CX) != 0) {
+    if (0-INT_MAX > GetRegister(REG_BX) && GetRegister(REG_CX) == -1)
       organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: Float exception");
     else
-      GetRegister(reg_used) = GetRegister(nHardwareCPU::REG_BX) / GetRegister(nHardwareCPU::REG_CX);
+      GetRegister(reg_used) = GetRegister(REG_BX) / GetRegister(REG_CX);
   } else {
     organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: dividing by 0");
     return false;
@@ -1824,9 +1847,9 @@ bool cHardwareCPU::Inst_Div(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_Mod(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
-  if (GetRegister(nHardwareCPU::REG_CX) != 0) {
-    GetRegister(reg_used) = GetRegister(nHardwareCPU::REG_BX) % GetRegister(nHardwareCPU::REG_CX);
+  const int reg_used = FindModifiedRegister(REG_BX);
+  if (GetRegister(REG_CX) != 0) {
+    GetRegister(reg_used) = GetRegister(REG_BX) % GetRegister(REG_CX);
   } else {
     organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "mod: modding by 0");
     return false;
@@ -1837,51 +1860,51 @@ bool cHardwareCPU::Inst_Mod(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_Nand(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
-  GetRegister(reg_used) = ~(GetRegister(nHardwareCPU::REG_BX) & GetRegister(nHardwareCPU::REG_CX));
+  const int reg_used = FindModifiedRegister(REG_BX);
+  GetRegister(reg_used) = ~(GetRegister(REG_BX) & GetRegister(REG_CX));
   return true;
 }
 
 bool cHardwareCPU::Inst_Nor(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
-  GetRegister(reg_used) = ~(GetRegister(nHardwareCPU::REG_BX) | GetRegister(nHardwareCPU::REG_CX));
+  const int reg_used = FindModifiedRegister(REG_BX);
+  GetRegister(reg_used) = ~(GetRegister(REG_BX) | GetRegister(REG_CX));
   return true;
 }
 
 bool cHardwareCPU::Inst_And(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
-  GetRegister(reg_used) = (GetRegister(nHardwareCPU::REG_BX) & GetRegister(nHardwareCPU::REG_CX));
+  const int reg_used = FindModifiedRegister(REG_BX);
+  GetRegister(reg_used) = (GetRegister(REG_BX) & GetRegister(REG_CX));
   return true;
 }
 
 bool cHardwareCPU::Inst_Not(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   GetRegister(reg_used) = ~(GetRegister(reg_used));
   return true;
 }
 
 bool cHardwareCPU::Inst_Order(cAvidaContext& ctx)
 {
-  if (GetRegister(nHardwareCPU::REG_BX) > GetRegister(nHardwareCPU::REG_CX)) {
-    nFunctions::Swap(GetRegister(nHardwareCPU::REG_BX), GetRegister(nHardwareCPU::REG_CX));
+  if (GetRegister(REG_BX) > GetRegister(REG_CX)) {
+    nFunctions::Swap(GetRegister(REG_BX), GetRegister(REG_CX));
   }
   return true;
 }
 
 bool cHardwareCPU::Inst_Xor(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
-  GetRegister(reg_used) = GetRegister(nHardwareCPU::REG_BX) ^ GetRegister(nHardwareCPU::REG_CX);
+  const int reg_used = FindModifiedRegister(REG_BX);
+  GetRegister(reg_used) = GetRegister(REG_BX) ^ GetRegister(REG_CX);
   return true;
 }
 
 bool cHardwareCPU::Inst_Copy(cAvidaContext& ctx)
 {
-  const cHeadCPU from(this, GetRegister(nHardwareCPU::REG_BX));
-  cHeadCPU to(this, GetRegister(nHardwareCPU::REG_AX) + GetRegister(nHardwareCPU::REG_BX));
+  const cHeadCPU from(this, GetRegister(REG_BX));
+  cHeadCPU to(this, GetRegister(REG_AX) + GetRegister(REG_BX));
   sCPUStats & cpu_stats = organism->CPUStats();
   
   if (organism->TestCopyMut(ctx)) {
@@ -1903,8 +1926,8 @@ bool cHardwareCPU::Inst_Copy(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_ReadInst(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_CX);
-  const cHeadCPU from(this,GetRegister(nHardwareCPU::REG_BX));
+  const int reg_used = FindModifiedRegister(REG_CX);
+  const cHeadCPU from(this,GetRegister(REG_BX));
   
   // Dis-allowing mutations on read, for the moment (write only...)
   // @CAO This allows perfect error-correction...
@@ -1914,8 +1937,8 @@ bool cHardwareCPU::Inst_ReadInst(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_WriteInst(cAvidaContext& ctx)
 {
-  cHeadCPU to(this, GetRegister(nHardwareCPU::REG_AX) + GetRegister(nHardwareCPU::REG_BX));
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_CX);
+  cHeadCPU to(this, GetRegister(REG_AX) + GetRegister(REG_BX));
+  const int reg_used = FindModifiedRegister(REG_CX);
   const int value = Mod(GetRegister(reg_used), m_inst_set->GetSize());
   sCPUStats & cpu_stats = organism->CPUStats();
 
@@ -1939,7 +1962,7 @@ bool cHardwareCPU::Inst_WriteInst(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_StackReadInst(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_CX);
+  const int reg_used = FindModifiedRegister(REG_CX);
   cHeadCPU from(this, GetRegister(reg_used));
   StackPush(from.GetInst().GetOp());
   return true;
@@ -1947,8 +1970,8 @@ bool cHardwareCPU::Inst_StackReadInst(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_StackWriteInst(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
-  cHeadCPU to(this, GetRegister(nHardwareCPU::REG_AX) + GetRegister(reg_used));
+  const int reg_used = FindModifiedRegister(REG_BX);
+  cHeadCPU to(this, GetRegister(REG_AX) + GetRegister(reg_used));
   const int value = Mod(StackPop(), m_inst_set->GetSize());
   sCPUStats & cpu_stats = organism->CPUStats();
   
@@ -1972,9 +1995,9 @@ bool cHardwareCPU::Inst_StackWriteInst(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_Compare(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_CX);
-  cHeadCPU from(this, GetRegister(nHardwareCPU::REG_BX));
-  cHeadCPU to(this, GetRegister(nHardwareCPU::REG_AX) + GetRegister(nHardwareCPU::REG_BX));
+  const int reg_used = FindModifiedRegister(REG_CX);
+  cHeadCPU from(this, GetRegister(REG_BX));
+  cHeadCPU to(this, GetRegister(REG_AX) + GetRegister(REG_BX));
   
   // Compare is dangerous -- it can cause mutations!
   if (organism->TestCopyMut(ctx)) {
@@ -1991,8 +2014,8 @@ bool cHardwareCPU::Inst_Compare(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_IfNCpy(cAvidaContext& ctx)
 {
-  const cHeadCPU from(this, GetRegister(nHardwareCPU::REG_BX));
-  const cHeadCPU to(this, GetRegister(nHardwareCPU::REG_AX) + GetRegister(nHardwareCPU::REG_BX));
+  const cHeadCPU from(this, GetRegister(REG_BX));
+  const cHeadCPU to(this, GetRegister(REG_AX) + GetRegister(REG_BX));
   
   // Allow for errors in this test...
   if (organism->TestCopyMut(ctx)) {
@@ -2006,15 +2029,15 @@ bool cHardwareCPU::Inst_IfNCpy(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_Allocate(cAvidaContext& ctx)   // Allocate bx more space...
 {
   const int size = GetMemory().GetSize();
-  if( Allocate_Main(ctx, GetRegister(nHardwareCPU::REG_BX)) ) {
-  GetRegister(nHardwareCPU::REG_AX) = size;
+  if( Allocate_Main(ctx, GetRegister(REG_BX)) ) {
+  GetRegister(REG_AX) = size;
   return true;
 } else return false;
 }
 
 bool cHardwareCPU::Inst_Divide(cAvidaContext& ctx)  
 { 
-  return Divide_Main(ctx, GetRegister(nHardwareCPU::REG_AX));    
+  return Divide_Main(ctx, GetRegister(REG_AX));    
 }
 
 /*
@@ -2027,7 +2050,7 @@ bool cHardwareCPU::Inst_Divide(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_DivideRS(cAvidaContext& ctx)  
 { 
-  return Divide_MainRS(ctx, GetRegister(nHardwareCPU::REG_AX));    
+  return Divide_MainRS(ctx, GetRegister(REG_AX));    
 }
 
 
@@ -2047,7 +2070,7 @@ bool cHardwareCPU::Inst_MaxAlloc(cAvidaContext& ctx)   // Allocate maximal more
   const int alloc_size = Min((int) (m_world->GetConfig().CHILD_SIZE_RANGE.Get() * cur_size),
                              MAX_CREATURE_SIZE - cur_size);
   if( Allocate_Main(ctx, alloc_size) ) {
-    GetRegister(nHardwareCPU::REG_AX) = cur_size;
+    GetRegister(REG_AX) = cur_size;
     return true;
   } else return false;
 }
@@ -2099,7 +2122,7 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_Kazi(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_AX);
+  const int reg_used = FindModifiedRegister(REG_AX);
   double percentProb = ((double) (GetRegister(reg_used) % 100)) / 100.0;
   if ( ctx.GetRandom().P(percentProb) ) organism->Kaboom(0);
   return true;
@@ -2107,7 +2130,7 @@ bool cHardwareCPU::Inst_Kazi(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_Kazi5(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_AX);
+  const int reg_used = FindModifiedRegister(REG_AX);
   double percentProb = ((double) (GetRegister(reg_used) % 100)) / 100.0;
   if ( ctx.GetRandom().P(percentProb) ) organism->Kaboom(0);
   return true;
@@ -2163,7 +2186,7 @@ bool cHardwareCPU::Inst_Inject(cAvidaContext& ctx)
   }
   
   // Search for the label in the host...
-  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
+  GetLabel().Rotate(1, NUM_NOPS);
   
   const bool inject_signal = host_organism->GetHardware().InjectHost(GetLabel(), inject_code);
   if (inject_signal) {
@@ -2230,7 +2253,7 @@ bool cHardwareCPU::Inst_InjectThread(cAvidaContext& ctx)
   }
   
   // Search for the label in the host...
-  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
+  GetLabel().Rotate(1, NUM_NOPS);
   
   if (host_organism->GetHardware().InjectHost(GetLabel(), inject_code)) {
     if (ForkThread()) organism->GetPhenotype().IsMultiThread() = true;
@@ -2244,7 +2267,7 @@ bool cHardwareCPU::Inst_InjectThread(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_TaskGet(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_CX);
+  const int reg_used = FindModifiedRegister(REG_CX);
   const int value = organism->GetNextInput();
   GetRegister(reg_used) = value;
   organism->DoInput(value);
@@ -2268,7 +2291,7 @@ bool cHardwareCPU::Inst_TaskStackLoad(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_TaskPut(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   const int value = GetRegister(reg_used);
   GetRegister(reg_used) = 0;
   organism->DoOutput(ctx, value);
@@ -2277,7 +2300,7 @@ bool cHardwareCPU::Inst_TaskPut(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_TaskIO(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   
   // Do the "put" component
   const int value_out = GetRegister(reg_used);
@@ -2301,7 +2324,7 @@ bool cHardwareCPU::Inst_MatchStrings(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_Send(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   organism->SendValue(GetRegister(reg_used));
   GetRegister(reg_used) = 0;
   return true;
@@ -2309,7 +2332,7 @@ bool cHardwareCPU::Inst_Send(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_Receive(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   GetRegister(reg_used) = organism->ReceiveValue();
   return true;
 }
@@ -2317,7 +2340,7 @@ bool cHardwareCPU::Inst_Receive(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_Sense(cAvidaContext& ctx)
 {
   const tArray<double> & res_count = organism->GetOrgInterface().GetResources();
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   
   // If there are no resources to measure, this instruction fails.
   if (res_count.GetSize() == 0) return false;
@@ -2485,26 +2508,26 @@ bool cHardwareCPU::Inst_DonateNULL(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_SearchF(cAvidaContext& ctx)
 {
   ReadLabel();
-  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
+  GetLabel().Rotate(1, NUM_NOPS);
   const int search_size = FindLabel(1).GetPosition() - IP().GetPosition();
-  GetRegister(nHardwareCPU::REG_BX) = search_size;
-  GetRegister(nHardwareCPU::REG_CX) = GetLabel().GetSize();
+  GetRegister(REG_BX) = search_size;
+  GetRegister(REG_CX) = GetLabel().GetSize();
   return true;
 }
 
 bool cHardwareCPU::Inst_SearchB(cAvidaContext& ctx)
 {
   ReadLabel();
-  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
+  GetLabel().Rotate(1, NUM_NOPS);
   const int search_size = IP().GetPosition() - FindLabel(-1).GetPosition();
-  GetRegister(nHardwareCPU::REG_BX) = search_size;
-  GetRegister(nHardwareCPU::REG_CX) = GetLabel().GetSize();
+  GetRegister(REG_BX) = search_size;
+  GetRegister(REG_CX) = GetLabel().GetSize();
   return true;
 }
 
 bool cHardwareCPU::Inst_MemSize(cAvidaContext& ctx)
 {
-  GetRegister(FindModifiedRegister(nHardwareCPU::REG_BX)) = GetMemory().GetSize();
+  GetRegister(FindModifiedRegister(REG_BX)) = GetMemory().GetSize();
   return true;
 }
 
@@ -2525,7 +2548,7 @@ bool cHardwareCPU::Inst_RotateL(cAvidaContext& ctx)
   if (!GetLabel().GetSize()) return true;
   
   // Rotate until a complement label is found (or all have been checked).
-  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
+  GetLabel().Rotate(1, NUM_NOPS);
   for (int i = 1; i < num_neighbors; i++) {
     cOrganism* neighbor = organism->GetNeighbor();
     
@@ -2553,7 +2576,7 @@ bool cHardwareCPU::Inst_RotateR(cAvidaContext& ctx)
   if (!GetLabel().GetSize()) return true;
   
   // Rotate until a complement label is found (or all have been checked).
-  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
+  GetLabel().Rotate(1, NUM_NOPS);
   for (int i = 1; i < num_neighbors; i++) {
     cOrganism* neighbor = organism->GetNeighbor();
     
@@ -2567,7 +2590,7 @@ bool cHardwareCPU::Inst_RotateR(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_SetCopyMut(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   const int new_mut_rate = Max(GetRegister(reg_used), 1 );
   organism->SetCopyMutProb(((double) new_mut_rate) / 10000.0);
   return true;
@@ -2575,7 +2598,7 @@ bool cHardwareCPU::Inst_SetCopyMut(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_ModCopyMut(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   const double new_mut_rate = organism->GetCopyMutProb() +
     ((double)GetRegister(reg_used)) / 10000.0;
   if (new_mut_rate > 0.0) organism->SetCopyMutProb(new_mut_rate);
@@ -2601,7 +2624,7 @@ bool cHardwareCPU::Inst_KillThread(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_ThreadID(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_BX);
+  const int reg_used = FindModifiedRegister(REG_BX);
   GetRegister(reg_used) = GetCurThreadID();
   return true;
 }
@@ -2634,21 +2657,21 @@ bool cHardwareCPU::Inst_MoveHead(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_JumpHead(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
-  GetHead(head_used).Jump(GetRegister(nHardwareCPU::REG_CX) );
+  GetHead(head_used).Jump(GetRegister(REG_CX) );
   return true;
 }
 
 bool cHardwareCPU::Inst_GetHead(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
-  GetRegister(nHardwareCPU::REG_CX) = GetHead(head_used).GetPosition();
+  GetRegister(REG_CX) = GetHead(head_used).GetPosition();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfLabel(cAvidaContext& ctx)
 {
   ReadLabel();
-  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
+  GetLabel().Rotate(1, NUM_NOPS);
   if (GetLabel() != GetReadLabel())  IP().Advance();
   return true;
 }
@@ -2658,7 +2681,7 @@ bool cHardwareCPU::Inst_IfLabel(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_IfLabel2(cAvidaContext& ctx)
 {
   ReadLabel();
-  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
+  GetLabel().Rotate(1, NUM_NOPS);
   if (GetLabel() != GetReadLabel()) {
     IP().Advance();
     if (m_inst_set->IsNop( IP().GetNextInst() ))  IP().Advance();
@@ -2728,7 +2751,7 @@ bool cHardwareCPU::Inst_HeadDivideMateSelect(cAvidaContext& ctx)
   // Take the label that follows this divide and use it as the ID for which
   // other organisms this one is willing to mate with.
   ReadLabel();
-  organism->GetPhenotype().SetMateSelectID( GetLabel().AsInt(nHardwareCPU::NUM_NOPS) );
+  organism->GetPhenotype().SetMateSelectID( GetLabel().AsInt(NUM_NOPS) );
   
   // Proceed as normal with the rest of mate selection.
   organism->GetPhenotype().SetDivideSex(true);
@@ -2775,7 +2798,7 @@ bool cHardwareCPU::Inst_HeadRead(cAvidaContext& ctx)
   } else {
     read_inst = GetHead(head_id).GetInst().GetOp();
   }
-  GetRegister(nHardwareCPU::REG_BX) = read_inst;
+  GetRegister(REG_BX) = read_inst;
   ReadInst(read_inst);
   
   cpu_stats.mut_stats.copies_exec++;  // @CAO, this too..
@@ -2790,7 +2813,7 @@ bool cHardwareCPU::Inst_HeadWrite(cAvidaContext& ctx)
   
   active_head.Adjust();
   
-  int value = GetRegister(nHardwareCPU::REG_BX);
+  int value = GetRegister(REG_BX);
   if (value < 0 || value >= m_inst_set->GetSize()) value = 0;
   
   active_head.SetInst(cInstruction(value));
@@ -2875,11 +2898,11 @@ bool cHardwareCPU::Inst_HeadCopy10(cAvidaContext& ctx) { return HeadCopy_ErrorCo
 bool cHardwareCPU::Inst_HeadSearch(cAvidaContext& ctx)
 {
   ReadLabel();
-  GetLabel().Rotate(1, nHardwareCPU::NUM_NOPS);
+  GetLabel().Rotate(1, NUM_NOPS);
   cHeadCPU found_pos = FindLabel(0);
   const int search_size = found_pos.GetPosition() - IP().GetPosition();
-  GetRegister(nHardwareCPU::REG_BX) = search_size;
-  GetRegister(nHardwareCPU::REG_CX) = GetLabel().GetSize();
+  GetRegister(REG_BX) = search_size;
+  GetRegister(REG_CX) = GetLabel().GetSize();
   GetHead(nHardware::HEAD_FLOW).Set(found_pos);
   GetHead(nHardware::HEAD_FLOW).Advance();
   return true; 
@@ -2887,7 +2910,7 @@ bool cHardwareCPU::Inst_HeadSearch(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_SetFlow(cAvidaContext& ctx)
 {
-  const int reg_used = FindModifiedRegister(nHardwareCPU::REG_CX);
+  const int reg_used = FindModifiedRegister(REG_CX);
   GetHead(nHardware::HEAD_FLOW).Set(GetRegister(reg_used));
 return true; 
 }

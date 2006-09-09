@@ -10,7 +10,6 @@ incs = [
   'cCPUTestInfo.h',
   'cHardwareBase.h',
   'cHardwareCPU.h',
-  'cHardwareCPU_Thread.h',
   'cHardwareManager.h',
   'cHardwareSMT.h',
   'cHardwareStatusPrinter.h',
@@ -22,7 +21,6 @@ incs = [
   'cTestCPUInterface.h',
   'cTestUtil.h',
   'nHardware.h',
-  'nHardwareCPU.h',
   'sCPUStats.h',
   'tInstLib.h',
 ]
@@ -34,7 +32,6 @@ srcs = [
   'cCPUTestInfo.cc',
   'cHardwareBase.cc',
   'cHardwareCPU.cc',
-  'cHardwareCPU_Thread.cc',
   'cHardwareManager.cc',
   'cHardwareSMT.cc',
   'cHardwareStatusPrinter.cc',

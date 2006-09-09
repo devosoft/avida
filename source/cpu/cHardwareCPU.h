@@ -23,9 +23,6 @@
 #ifndef nHardware_h
 #include "nHardware.h"
 #endif
-#ifndef nHardwareCPU_h
-#include "nHardwareCPU.h"
-#endif
 #ifndef cHeadCPU_h
 #include "cHeadCPU.h"
 #endif
@@ -37,9 +34,6 @@
 #endif
 #ifndef cHardwareBase_h
 #include "cHardwareBase.h"
-#endif
-#ifndef cHardwareCPU_Thread_h
-#include "cHardwareCPU_Thread.h"
 #endif
 #ifndef cString_h
 #include "cString.h"
@@ -71,16 +65,52 @@ public:
   typedef bool (cHardwareCPU::*tHardwareCPUMethod)(cAvidaContext& ctx);
 
 protected:
+  // --------  Structure Constants  --------
+  static const int NUM_REGISTERS = 3;  
+  enum tRegisters { REG_AX = 0, REG_BX, REG_CX, REG_DX, REG_EX, REG_FX };
+  static const int NUM_NOPS = 3;
+  
+  // --------  Data Structures  --------
+  struct cLocalThread
+  {
+  private:
+    int m_id;
+    
+  public:
+    int reg[NUM_REGISTERS];
+    cHeadCPU heads[nHardware::NUM_HEADS];
+    cCPUStack stack;
+    unsigned char cur_stack;              // 0 = local stack, 1 = global stack.
+    unsigned char cur_head;
+    
+    cCodeLabel read_label;
+    cCodeLabel next_label;
+    
+    
+    cLocalThread(cHardwareBase* in_hardware = NULL, int in_id = -1) { Reset(in_hardware, in_id); }
+    ~cLocalThread() { ; }
+    
+    void operator=(const cLocalThread& in_thread);
+    
+    void Reset(cHardwareBase* in_hardware, int in_id);
+    int GetID() const { return m_id; }
+    void SetID(int in_id) { m_id = in_id; }
+  };
+
+    
+  // --------  Static Variables  --------
   static cInstLibCPU* s_inst_slib;
   static cInstLibCPU* initInstLib(void);
 
+
+  // --------  Member Variables  --------
   tHardwareCPUMethod* m_functions;
 
   cCPUMemory memory;          // Memory...
   cCPUStack global_stack;     // A stack that all threads share.
   int thread_time_used;
 
-  tArray<cHardwareCPU_Thread> threads;
+  tArray<cLocalThread> threads;
   int thread_id_chart;
   int cur_thread;
 
@@ -205,7 +235,7 @@ public:
   // --------  Register Manipulation  --------
   const int GetRegister(int reg_id) const { return threads[cur_thread].reg[reg_id]; }
   int& GetRegister(int reg_id) { return threads[cur_thread].reg[reg_id]; }
-  int GetNumRegisters() const { return nHardwareCPU::NUM_REGISTERS; }
+  int GetNumRegisters() const { return NUM_REGISTERS; }
 
   
   // --------  Thread Manipulation  --------

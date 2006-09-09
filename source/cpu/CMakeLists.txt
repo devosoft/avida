@@ -5,7 +5,6 @@ SET(libcpu_a_SOURCES
   cCPUTestInfo.cc
   cHardwareBase.cc
   cHardwareCPU.cc
-  cHardwareCPU_Thread.cc
   cHardwareManager.cc
   cHardwareSMT.cc
   cHardwareStatusPrinter.cc

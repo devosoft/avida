@@ -11,7 +11,6 @@
 #include "cCodeLabel.h"
 
 #include "cTools.h"
-#include "nHardwareCPU.h"
 
 #include <cmath>
 #include <vector>
@@ -112,8 +111,7 @@ int cCodeLabel::AsIntGreyCode(const int base) const
     if(oddCount % 2 == 0) {
       value += m_nops[i];
     } else {
-      // @DMB - this should not be relying on hardware specific NUM_NOPS
-      value += (nHardwareCPU::NUM_NOPS - 1) - m_nops[i];
+      value += (base - 1) - m_nops[i];
     }
 
     if(m_nops[i] % 2 == 1) {
