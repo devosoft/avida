@@ -53,7 +53,9 @@ cInstLibCPU *cHardwareCPU::initInstLib(void)
     cNOPEntryCPU("nop-A", nHardwareCPU::REG_AX),
     cNOPEntryCPU("nop-B", nHardwareCPU::REG_BX),
     cNOPEntryCPU("nop-C", nHardwareCPU::REG_CX),
-    cNOPEntryCPU("nop-D", nHardwareCPU::REG_DX)
+    cNOPEntryCPU("nop-D", nHardwareCPU::REG_DX),
+    cNOPEntryCPU("nop-E", nHardwareCPU::REG_EX),
+    cNOPEntryCPU("nop-F", nHardwareCPU::REG_FX)
   };
   
   struct cInstEntryCPU { 
@@ -79,6 +81,10 @@ cInstLibCPU *cHardwareCPU::initInstLib(void)
     cInstEntryCPU("nop-C",     &cHardwareCPU::Inst_Nop, true,
                   "No-operation instruction; modifies other instructions"),
     cInstEntryCPU("nop-D",     &cHardwareCPU::Inst_Nop, true,
+                  "No-operation instruction; modifies other instructions"),
+    cInstEntryCPU("nop-E",     &cHardwareCPU::Inst_Nop, true,
+                  "No-operation instruction; modifies other instructions"),
+    cInstEntryCPU("nop-F",     &cHardwareCPU::Inst_Nop, true,
                   "No-operation instruction; modifies other instructions"),
     
     cInstEntryCPU("NULL",      &cHardwareCPU::Inst_Nop, false,
@@ -343,7 +349,7 @@ cInstLibCPU *cHardwareCPU::initInstLib(void)
   
   static cString n_names[n_size];
   static int nop_mods[n_size];
-  for (int i = 0; i < n_size; i++){
+  for (int i = 0; i < n_size && i < nHardwareCPU::NUM_REGISTERS; i++) {
     n_names[i] = s_n_array[i].name;
     nop_mods[i] = s_n_array[i].nop_mod;
   }
@@ -356,16 +362,7 @@ cInstLibCPU *cHardwareCPU::initInstLib(void)
     functions[i] = s_f_array[i].function;
   }
   
-  cInstLibCPU *inst_lib = new cInstLibCPU(
-                                          n_size,
-                                          f_size,
-                                          n_names,
-                                          f_names,
-                                          nop_mods,
-                                          functions
-                                          );
-  
-  return inst_lib;
+  return new cInstLibCPU(n_size, f_size, n_names, f_names, nop_mods, functions);
 }
 
 cHardwareCPU::cHardwareCPU(cWorld* world, cOrganism* in_organism, cInstSet* in_m_inst_set)
