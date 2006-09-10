@@ -337,7 +337,7 @@ inline cUInt::cUInt(int in_size, int in_value)
   size = in_size;
   value = new unsigned char[size];
   for (i = 0; i < size && i < 4; i++) {
-    value[i] = (unsigned char) (in_value >> (8 * i));
+    value[i] = static_cast<unsigned char>(in_value >> (8 * i));
   }
   while (i < size) {
     value[i++] = 0;
@@ -476,7 +476,7 @@ inline cUInt& cUInt::operator=(const int in_int)
 {
   int i;
   for (i = 0; i < 4 && i < size; i++) {
-    value[i] = (unsigned char) (in_int >> (8*i));
+    value[i] = static_cast<unsigned char>(in_int >> (8*i));
   }
   for (i = 4; i < size; i++) {
     value[i] = 0;
@@ -564,14 +564,14 @@ inline cUInt& cUInt::operator+=(const cUInt& in_cUInt)
   for (i = 0; i < size && i < in_cUInt.GetSize(); i++) {
     cur_sum += value[i];
     cur_sum += in_cUInt.GetByte(i);
-    value[i] = (unsigned char) (cur_sum & 255);
+    value[i] = static_cast<unsigned char>(cur_sum & 255);
     cur_sum = cur_sum >> 8;
   }
 
   // If there is still a remainder, and room for it, continue.
 
   while (cur_sum && i < size) {
-    value[i++] = (unsigned char) (cur_sum & 255);
+    value[i++] = static_cast<unsigned char>(cur_sum & 255);
   }
 
   return *this;
@@ -586,11 +586,11 @@ inline cUInt& cUInt::operator-=(const cUInt& in_cUInt)
     byte1 = (int) value[i];
     byte2 = (int) in_cUInt.GetByte(i);
     if (byte1 + next_byte >= byte2) {
-      value[i] = (unsigned char) (byte1 + next_byte - byte2);
+      value[i] = static_cast<unsigned char>(byte1 + next_byte - byte2);
       next_byte = 0;
     }
     else {
-      value[i] = (unsigned char) (256 + byte1 + next_byte - byte2);
+      value[i] = static_cast<unsigned char>(256 + byte1 + next_byte - byte2);
       next_byte = -1;
     }
   }
@@ -603,7 +603,7 @@ inline cUInt& cUInt::operator-=(const cUInt& in_cUInt)
       next_byte = 0;
     }
     else {
-      value[i] = (unsigned char) (256 + next_byte + (int) value[i]);
+      value[i] = static_cast<unsigned char>(256 + next_byte + (int) value[i]);
       next_byte = -1;
     }
   }

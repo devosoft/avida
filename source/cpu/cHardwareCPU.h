@@ -66,9 +66,9 @@ public:
 
 protected:
   // --------  Structure Constants  --------
-  static const int NUM_REGISTERS = 3;  
+  static const int NUM_REGISTERS = 4;
   enum tRegisters { REG_AX = 0, REG_BX, REG_CX, REG_DX, REG_EX, REG_FX };
-  static const int NUM_NOPS = 3;
+  static const int NUM_NOPS = 4;
   
   // --------  Data Structures  --------
   struct cLocalThread
@@ -78,7 +78,7 @@ protected:
     
   public:
     int reg[NUM_REGISTERS];
-    cHeadCPU heads[nHardware::NUM_HEADS];
+    cHeadCPU heads[nHardware::NUM_HEADS >= NUM_REGISTERS ? nHardware::NUM_HEADS : NUM_REGISTERS];
     cCPUStack stack;
     unsigned char cur_stack;              // 0 = local stack, 1 = global stack.
     unsigned char cur_head;
@@ -106,18 +106,17 @@ protected:
   // --------  Member Variables  --------
   tHardwareCPUMethod* m_functions;
 
-  cCPUMemory memory;          // Memory...
-  cCPUStack global_stack;     // A stack that all threads share.
-  int thread_time_used;
+  cCPUMemory m_memory;          // Memory...
+  cCPUStack m_global_stack;     // A stack that all threads share.
 
-  tArray<cLocalThread> threads;
-  int thread_id_chart;
-  int cur_thread;
+  tArray<cLocalThread> m_threads;
+  int m_thread_id_chart;
+  int m_cur_thread;
 
   // Flags...
-  bool mal_active;         // Has an allocate occured since last divide?
-  bool advance_ip;         // Should the IP advance after this instruction?
-  bool executedmatchstrings;	// Have we already executed the match strings instruction?
+  bool m_mal_active;         // Has an allocate occured since last divide?
+  bool m_advance_ip;         // Should the IP advance after this instruction?
+  bool m_executedmatchstrings;	// Have we already executed the match strings instruction?
 
   // Instruction costs...
 #if INSTRUCTION_COSTS
@@ -138,7 +137,7 @@ protected:
   
   
   // --------  Head Manipulation (including IP)  --------
-  cHeadCPU& GetActiveHead() { return threads[cur_thread].heads[threads[cur_thread].cur_head]; }
+  cHeadCPU& GetActiveHead() { return m_threads[m_cur_thread].heads[m_threads[m_cur_thread].cur_head]; }
   void AdjustHeads();
   
   
@@ -148,12 +147,12 @@ protected:
   int FindLabel_Forward(const cCodeLabel & search_label, const cGenome& search_genome, int pos);
   int FindLabel_Backward(const cCodeLabel & search_label, const cGenome& search_genome, int pos);
   cHeadCPU FindLabel(const cCodeLabel & in_label, int direction);
-  const cCodeLabel& GetReadLabel() const { return threads[cur_thread].read_label; }
-  cCodeLabel& GetReadLabel() { return threads[cur_thread].read_label; }
+  const cCodeLabel& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
+  cCodeLabel& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
   
   
   // --------  Thread Manipulation  -------
-  bool ForkThread(); // Adds a new thread based off of cur_thread.
+  bool ForkThread(); // Adds a new thread based off of m_cur_thread.
   bool KillThread(); // Kill the current thread!
   
   
@@ -186,7 +185,7 @@ protected:
 public:
   cHardwareCPU(cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
   explicit cHardwareCPU(const cHardwareCPU&);
-  ~cHardwareCPU();
+  ~cHardwareCPU() { ; }
   static cInstLibCPU* GetInstLib() { return s_inst_slib; }
   static cString GetDefaultInstFilename() { return "instset-classic.cfg"; }
 
@@ -207,34 +206,34 @@ public:
 
 
   // --------  Head Manipulation (including IP)  --------
-  const cHeadCPU& GetHead(int head_id) const { return threads[cur_thread].heads[head_id]; }
-  cHeadCPU& GetHead(int head_id) { return threads[cur_thread].heads[head_id];}
-  const cHeadCPU& GetHead(int head_id, int thread) const { return threads[thread].heads[head_id]; }
-  cHeadCPU& GetHead(int head_id, int thread) { return threads[thread].heads[head_id];}
+  const cHeadCPU& GetHead(int head_id) const { return m_threads[m_cur_thread].heads[head_id]; }
+  cHeadCPU& GetHead(int head_id) { return m_threads[m_cur_thread].heads[head_id];}
+  const cHeadCPU& GetHead(int head_id, int thread) const { return m_threads[thread].heads[head_id]; }
+  cHeadCPU& GetHead(int head_id, int thread) { return m_threads[thread].heads[head_id];}
   int GetNumHeads() const { return nHardware::NUM_HEADS; }
   
-  const cHeadCPU& IP() const { return threads[cur_thread].heads[nHardware::HEAD_IP]; }
-  cHeadCPU& IP() { return threads[cur_thread].heads[nHardware::HEAD_IP]; }
-  const cHeadCPU& IP(int thread) const { return threads[thread].heads[nHardware::HEAD_IP]; }
-  cHeadCPU& IP(int thread) { return threads[thread].heads[nHardware::HEAD_IP]; }
+  const cHeadCPU& IP() const { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
+  cHeadCPU& IP() { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
+  const cHeadCPU& IP(int thread) const { return m_threads[thread].heads[nHardware::HEAD_IP]; }
+  cHeadCPU& IP(int thread) { return m_threads[thread].heads[nHardware::HEAD_IP]; }
   
   
   // --------  Label Manipulation  -------
-  const cCodeLabel& GetLabel() const { return threads[cur_thread].next_label; }
-  cCodeLabel& GetLabel() { return threads[cur_thread].next_label; }
+  const cCodeLabel& GetLabel() const { return m_threads[m_cur_thread].next_label; }
+  cCodeLabel& GetLabel() { return m_threads[m_cur_thread].next_label; }
   
   
   // --------  Memory Manipulation  --------
-  const cCPUMemory& GetMemory() const { return memory; }
-  cCPUMemory& GetMemory() { return memory; }
-  const cCPUMemory& GetMemory(int value) const { return memory; }
-  cCPUMemory& GetMemory(int value) { return memory; }
+  const cCPUMemory& GetMemory() const { return m_memory; }
+  cCPUMemory& GetMemory() { return m_memory; }
+  const cCPUMemory& GetMemory(int value) const { return m_memory; }
+  cCPUMemory& GetMemory(int value) { return m_memory; }
   int GetNumMemSpaces() const { return 1; }
   
   
   // --------  Register Manipulation  --------
-  const int GetRegister(int reg_id) const { return threads[cur_thread].reg[reg_id]; }
-  int& GetRegister(int reg_id) { return threads[cur_thread].reg[reg_id]; }
+  const int GetRegister(int reg_id) const { return m_threads[m_cur_thread].reg[reg_id]; }
+  int& GetRegister(int reg_id) { return m_threads[m_cur_thread].reg[reg_id]; }
   int GetNumRegisters() const { return NUM_REGISTERS; }
 
   
@@ -246,9 +245,9 @@ public:
   cInjectGenotype* ThreadGetOwner() { return NULL; } // @DMB - cHardwareCPU does not really implement cInjectGenotype yet
   void ThreadSetOwner(cInjectGenotype* in_genotype) { return; }
   
-  int GetNumThreads() const     { return threads.GetSize(); }
-  int GetCurThread() const      { return cur_thread; }
-  int GetCurThreadID() const    { return threads[cur_thread].GetID(); }
+  int GetNumThreads() const     { return m_threads.GetSize(); }
+  int GetCurThread() const      { return m_cur_thread; }
+  int GetCurThreadID() const    { return m_threads[m_cur_thread].GetID(); }
   
   
   // --------  Parasite Stuff  --------
@@ -257,8 +256,8 @@ public:
   
   // Non-Standard Methods
   
-  int GetActiveStack() const { return threads[cur_thread].cur_stack; }
-  bool GetMalActive() const   { return mal_active; }
+  int GetActiveStack() const { return m_threads[m_cur_thread].cur_stack; }
+  bool GetMalActive() const   { return m_mal_active; }
   
 private:
   // ---------- Instruction Library -----------
@@ -479,8 +478,8 @@ namespace nHardwareCPU {
 
 inline bool cHardwareCPU::ThreadSelect(const int thread_num)
 {
-  if (thread_num >= 0 && thread_num < threads.GetSize()) {
-    cur_thread = thread_num;
+  if (thread_num >= 0 && thread_num < m_threads.GetSize()) {
+    m_cur_thread = thread_num;
     return true;
   }
   
@@ -489,22 +488,22 @@ inline bool cHardwareCPU::ThreadSelect(const int thread_num)
 
 inline void cHardwareCPU::ThreadNext()
 {
-  cur_thread++;
-  if (cur_thread >= GetNumThreads()) cur_thread = 0;
+  m_cur_thread++;
+  if (m_cur_thread >= GetNumThreads()) m_cur_thread = 0;
 }
 
 inline void cHardwareCPU::ThreadPrev()
 {
-  if (cur_thread == 0) cur_thread = GetNumThreads() - 1;
-  else cur_thread--;
+  if (m_cur_thread == 0) m_cur_thread = GetNumThreads() - 1;
+  else m_cur_thread--;
 }
 
 inline void cHardwareCPU::StackPush(int value)
 {
-  if (threads[cur_thread].cur_stack == 0) {
-    threads[cur_thread].stack.Push(value);
+  if (m_threads[m_cur_thread].cur_stack == 0) {
+    m_threads[m_cur_thread].stack.Push(value);
   } else {
-    global_stack.Push(value);
+    m_global_stack.Push(value);
   }
 }
 
@@ -512,10 +511,10 @@ inline int cHardwareCPU::StackPop()
 {
   int pop_value;
 
-  if (threads[cur_thread].cur_stack == 0) {
-    pop_value = threads[cur_thread].stack.Pop();
+  if (m_threads[m_cur_thread].cur_stack == 0) {
+    pop_value = m_threads[m_cur_thread].stack.Pop();
   } else {
-    pop_value = global_stack.Pop();
+    pop_value = m_global_stack.Pop();
   }
 
   return pop_value;
@@ -523,10 +522,10 @@ inline int cHardwareCPU::StackPop()
 
 inline void cHardwareCPU::StackFlip()
 {
-  if (threads[cur_thread].cur_stack == 0) {
-    threads[cur_thread].stack.Flip();
+  if (m_threads[m_cur_thread].cur_stack == 0) {
+    m_threads[m_cur_thread].stack.Flip();
   } else {
-    global_stack.Flip();
+    m_global_stack.Flip();
   }
 }
 
@@ -534,29 +533,29 @@ inline int cHardwareCPU::GetStack(int depth, int stack_id, int in_thread) const
 {
   int value = 0;
 
-  if(in_thread >= threads.GetSize() || in_thread < 0) in_thread = cur_thread;
+  if(in_thread >= m_threads.GetSize() || in_thread < 0) in_thread = m_cur_thread;
 
-  if (stack_id == -1) stack_id = threads[in_thread].cur_stack;
+  if (stack_id == -1) stack_id = m_threads[in_thread].cur_stack;
 
-  if (stack_id == 0) value = threads[in_thread].stack.Get(depth);
-  else if (stack_id == 1) value = global_stack.Get(depth);
+  if (stack_id == 0) value = m_threads[in_thread].stack.Get(depth);
+  else if (stack_id == 1) value = m_global_stack.Get(depth);
 
   return value;
 }
 
 inline void cHardwareCPU::StackClear()
 {
-  if (threads[cur_thread].cur_stack == 0) {
-    threads[cur_thread].stack.Clear();
+  if (m_threads[m_cur_thread].cur_stack == 0) {
+    m_threads[m_cur_thread].stack.Clear();
   } else {
-    global_stack.Clear();
+    m_global_stack.Clear();
   }
 }
 
 inline void cHardwareCPU::SwitchStack()
 {
-  threads[cur_thread].cur_stack++;
-  if (threads[cur_thread].cur_stack > 1) threads[cur_thread].cur_stack = 0;
+  m_threads[m_cur_thread].cur_stack++;
+  if (m_threads[m_cur_thread].cur_stack > 1) m_threads[m_cur_thread].cur_stack = 0;
 }
 
 #endif

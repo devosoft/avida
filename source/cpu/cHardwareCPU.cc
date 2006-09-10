@@ -371,7 +371,7 @@ cHardwareCPU::cHardwareCPU(cWorld* world, cOrganism* in_organism, cInstSet* in_m
   /* FIXME:  reorganize storage of m_functions.  -- kgn */
   m_functions = s_inst_slib->GetFunctions();
   /**/
-  memory = in_organism->GetGenome();  // Initialize memory...
+  m_memory = in_organism->GetGenome();  // Initialize memory...
   Reset();                            // Setup the rest of the hardware...
 }
 
@@ -379,15 +379,14 @@ cHardwareCPU::cHardwareCPU(cWorld* world, cOrganism* in_organism, cInstSet* in_m
 cHardwareCPU::cHardwareCPU(const cHardwareCPU &hardware_cpu)
 : cHardwareBase(hardware_cpu.m_world, hardware_cpu.organism, hardware_cpu.m_inst_set)
 , m_functions(hardware_cpu.m_functions)
-, memory(hardware_cpu.memory)
-, global_stack(hardware_cpu.global_stack)
-, thread_time_used(hardware_cpu.thread_time_used)
-, threads(hardware_cpu.threads)
-, thread_id_chart(hardware_cpu.thread_id_chart)
-, cur_thread(hardware_cpu.cur_thread)
-, mal_active(hardware_cpu.mal_active)
-, advance_ip(hardware_cpu.advance_ip)
-, executedmatchstrings(hardware_cpu.executedmatchstrings)
+, m_memory(hardware_cpu.m_memory)
+, m_global_stack(hardware_cpu.m_global_stack)
+, m_threads(hardware_cpu.m_threads)
+, m_thread_id_chart(hardware_cpu.m_thread_id_chart)
+, m_cur_thread(hardware_cpu.m_cur_thread)
+, m_mal_active(hardware_cpu.m_mal_active)
+, m_advance_ip(hardware_cpu.m_advance_ip)
+, m_executedmatchstrings(hardware_cpu.m_executedmatchstrings)
 #if INSTRUCTION_COSTS
 , inst_cost(hardware_cpu.inst_cost)
 , inst_ft_cost(hardware_cpu.inst_ft_cost)
@@ -396,25 +395,20 @@ cHardwareCPU::cHardwareCPU(const cHardwareCPU &hardware_cpu)
 }
 
 
-cHardwareCPU::~cHardwareCPU()
-{
-}
-
 void cHardwareCPU::Reset()
 {
-  global_stack.Clear();
-  thread_time_used = 0;
+  m_global_stack.Clear();
   
   // We want to reset to have a single thread.
-  threads.Resize(1);
+  m_threads.Resize(1);
   
   // Reset that single thread.
-  threads[0].Reset(this, 0);
-  thread_id_chart = 1; // Mark only the first thread as taken...
-  cur_thread = 0;
+  m_threads[0].Reset(this, 0);
+  m_thread_id_chart = 1; // Mark only the first thread as taken...
+  m_cur_thread = 0;
   
-  mal_active = false;
-  executedmatchstrings = false;
+  m_mal_active = false;
+  m_executedmatchstrings = false;
   
 #if INSTRUCTION_COSTS
   // instruction cost arrays
@@ -465,7 +459,6 @@ void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
   cPhenotype & phenotype = organism->GetPhenotype();
   phenotype.IncTimeUsed();
   const int num_threads = GetNumThreads();
-  if (num_threads > 1) thread_time_used++;
   
   // If we have threads turned on and we executed each thread in a single
   // timestep, adjust the number of instructions executed accordingly.
@@ -475,7 +468,7 @@ num_threads : 1;
   for (int i = 0; i < num_inst_exec; i++) {
     // Setup the hardware for the next instruction to be executed.
     ThreadNext();
-    advance_ip = true;
+    m_advance_ip = true;
     IP().Adjust();
     
 #if BREAKPOINTS
@@ -497,9 +490,9 @@ num_threads : 1;
     if (exec == true) {
       SingleProcess_ExecuteInst(ctx, cur_inst);
       
-      // Some instruction (such as jump) may turn advance_ip off.  Ususally
+      // Some instruction (such as jump) may turn m_advance_ip off.  Ususally
       // we now want to move to the next instruction in the memory.
-      if (advance_ip == true) IP().Advance();
+      if (m_advance_ip == true) IP().Advance();
     } // if exec
     
   } // Previous was executed once for each thread...
@@ -603,11 +596,11 @@ bool cHardwareCPU::OK()
 {
   bool result = true;
   
-  if (!memory.OK()) result = false;
+  if (!m_memory.OK()) result = false;
   
   for (int i = 0; i < GetNumThreads(); i++) {
-    if (threads[i].stack.OK() == false) result = false;
-    if (threads[i].next_label.OK() == false) result = false;
+    if (m_threads[i].stack.OK() == false) result = false;
+    if (m_threads[i].next_label.OK() == false) result = false;
   }
   
   return result;
@@ -907,16 +900,16 @@ bool cHardwareCPU::InjectHost(const cCodeLabel & in_label, const cGenome & injec
 void cHardwareCPU::InjectCode(const cGenome & inject_code, const int line_num)
 {
   assert(line_num >= 0);
-  assert(line_num <= memory.GetSize());
-  assert(memory.GetSize() + inject_code.GetSize() < MAX_CREATURE_SIZE);
+  assert(line_num <= m_memory.GetSize());
+  assert(m_memory.GetSize() + inject_code.GetSize() < MAX_CREATURE_SIZE);
   
   // Inject the new code.
   const int inject_size = inject_code.GetSize();
-  memory.Insert(line_num, inject_code);
+  m_memory.Insert(line_num, inject_code);
   
   // Set instruction flags on the injected code
   for (int i = line_num; i < line_num + inject_size; i++) {
-    memory.SetFlagInjected(i);
+    m_memory.SetFlagInjected(i);
   }
   organism->GetPhenotype().IsModified() = true;
   
@@ -941,7 +934,7 @@ void cHardwareCPU::AdjustHeads()
 {
   for (int i = 0; i < GetNumThreads(); i++) {
     for (int j = 0; j < nHardware::NUM_HEADS; j++) {
-      threads[i].heads[j].Adjust();
+      m_threads[i].heads[j].Adjust();
     }
   }
 }
@@ -979,17 +972,17 @@ bool cHardwareCPU::ForkThread()
   if (num_threads == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
   
   // Make room for the new thread.
-  threads.Resize(num_threads + 1);
+  m_threads.Resize(num_threads + 1);
   
   // Initialize the new thread to the same values as the current one.
-  threads[num_threads] = threads[cur_thread];
+  m_threads[num_threads] = m_threads[m_cur_thread];
   
-  // Find the first free bit in thread_id_chart to determine the new
+  // Find the first free bit in m_thread_id_chart to determine the new
   // thread id.
   int new_id = 0;
-  while ( (thread_id_chart >> new_id) & 1 == 1) new_id++;
-  threads[num_threads].SetID(new_id);
-  thread_id_chart |= (1 << new_id);
+  while ( (m_thread_id_chart >> new_id) & 1 == 1) new_id++;
+  m_threads[num_threads].SetID(new_id);
+  m_thread_id_chart |= (1 << new_id);
   
   return true;
 }
@@ -1001,22 +994,22 @@ bool cHardwareCPU::KillThread()
   if (GetNumThreads() == 1) return false;
   
   // Note the current thread and set the current back one.
-  const int kill_thread = cur_thread;
+  const int kill_thread = m_cur_thread;
   ThreadPrev();
   
-  // Turn off this bit in the thread_id_chart...
-  thread_id_chart ^= 1 << threads[kill_thread].GetID();
+  // Turn off this bit in the m_thread_id_chart...
+  m_thread_id_chart ^= 1 << m_threads[kill_thread].GetID();
   
   // Copy the last thread into the kill position
   const int last_thread = GetNumThreads() - 1;
   if (last_thread != kill_thread) {
-    threads[kill_thread] = threads[last_thread];
+    m_threads[kill_thread] = m_threads[last_thread];
   }
   
   // Kill the thread!
-  threads.Resize(GetNumThreads() - 1);
+  m_threads.Resize(GetNumThreads() - 1);
   
-  if (cur_thread > kill_thread) cur_thread--;
+  if (m_cur_thread > kill_thread) m_cur_thread--;
   
   return true;
 }
@@ -1086,7 +1079,7 @@ bool cHardwareCPU::Allocate_Default(const int new_size)
 bool cHardwareCPU::Allocate_Main(cAvidaContext& ctx, const int allocated_size)
 {
   // must do divide before second allocate & must allocate positive amount...
-  if (m_world->GetConfig().REQUIRE_ALLOCATE.Get() && mal_active == true) {
+  if (m_world->GetConfig().REQUIRE_ALLOCATE.Get() && m_mal_active == true) {
     organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR, "Allocate already active");
     return false;
   }
@@ -1136,7 +1129,7 @@ bool cHardwareCPU::Allocate_Main(cAvidaContext& ctx, const int allocated_size)
       break;
   }
   
-  mal_active = true;
+  m_mal_active = true;
   
   return true;
 }
@@ -1164,7 +1157,7 @@ bool cHardwareCPU::Divide_Main(cAvidaContext& ctx, const int div_point,
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
   cGenome & child_genome = organism->ChildGenome();
-  child_genome = cGenomeUtil::Crop(memory, div_point, div_point+child_size);
+  child_genome = cGenomeUtil::Crop(m_memory, div_point, div_point+child_size);
   
   // Cut off everything in this memory past the divide point.
   GetMemory().Resize(div_point);
@@ -1184,9 +1177,9 @@ bool cHardwareCPU::Divide_Main(cAvidaContext& ctx, const int div_point,
   }
 #endif
   
-  mal_active = false;
+  m_mal_active = false;
   if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
-    advance_ip = false;
+    m_advance_ip = false;
   }
   
   // Activate the child, and do more work if the parent lives through the
@@ -1220,7 +1213,7 @@ bool cHardwareCPU::Divide_MainRS(cAvidaContext& ctx, const int div_point,
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
   cGenome & child_genome = organism->ChildGenome();
-  child_genome = cGenomeUtil::Crop(memory, div_point, div_point+child_size);
+  child_genome = cGenomeUtil::Crop(m_memory, div_point, div_point+child_size);
   
   // Cut off everything in this memory past the divide point.
   GetMemory().Resize(div_point);
@@ -1270,9 +1263,9 @@ bool cHardwareCPU::Divide_MainRS(cAvidaContext& ctx, const int div_point,
   }
 #endif
   
-  mal_active = false;
+  m_mal_active = false;
   if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
-    advance_ip = false;
+    m_advance_ip = false;
   }
   
   // Activate the child, and do more work if the parent lives through the
@@ -1587,7 +1580,7 @@ bool cHardwareCPU::Inst_HeadPush(cAvidaContext& ctx)
   StackPush(GetHead(head_used).GetPosition());
   if (head_used == nHardware::HEAD_IP) {
     GetHead(head_used).Set(GetHead(nHardware::HEAD_FLOW));
-    advance_ip = false;
+    m_advance_ip = false;
   }
   return true;
 }
@@ -2106,7 +2099,7 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   }
 #endif
   
-  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) advance_ip = false;
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) m_advance_ip = false;
   
   organism->ActivateDivide(ctx);
   
@@ -2309,10 +2302,10 @@ bool cHardwareCPU::Inst_TaskIO(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_MatchStrings(cAvidaContext& ctx)
 {
-	if (executedmatchstrings)
+	if (m_executedmatchstrings)
 		return false;
 	organism->DoOutput(ctx, 357913941);
-	executedmatchstrings = true;
+	m_executedmatchstrings = true;
 	return true;
 }
 
@@ -2612,7 +2605,7 @@ bool cHardwareCPU::Inst_ForkThread(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_KillThread(cAvidaContext& ctx)
 {
   if (!KillThread()) organism->Fault(FAULT_LOC_THREAD_KILL, FAULT_TYPE_KILL_TH);
-  else advance_ip = false;
+  else m_advance_ip = false;
   return true;
 }
 
@@ -2629,7 +2622,7 @@ bool cHardwareCPU::Inst_ThreadID(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_SetHead(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
-  threads[cur_thread].cur_head = (unsigned char) head_used;
+  m_threads[m_cur_thread].cur_head = static_cast<unsigned char>(head_used);
   return true;
 }
 
@@ -2644,7 +2637,7 @@ bool cHardwareCPU::Inst_MoveHead(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
   GetHead(head_used).Set(GetHead(nHardware::HEAD_FLOW));
-  if (head_used == nHardware::HEAD_IP) advance_ip = false;
+  if (head_used == nHardware::HEAD_IP) m_advance_ip = false;
   return true;
 }
 
