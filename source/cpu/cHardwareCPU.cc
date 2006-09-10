@@ -615,19 +615,13 @@ bool cHardwareCPU::OK()
 
 void cHardwareCPU::PrintStatus(ostream& fp)
 {
-  fp << organism->GetPhenotype().GetTimeUsed() << " "
-  << "IP:" << IP().GetPosition() << "    "
+  fp << organism->GetPhenotype().GetTimeUsed() << " " << "IP:" << IP().GetPosition() << "    ";
   
-  << "AX:" << GetRegister(REG_AX) << " "
-  << setbase(16) << "[0x" << GetRegister(REG_AX) << "]  " << setbase(10)
-  
-  << "BX:" << GetRegister(REG_BX) << " "
-  << setbase(16) << "[0x" << GetRegister(REG_BX) << "]  " << setbase(10)
-  
-  << "CX:" << GetRegister(REG_CX) << " "
-  << setbase(16) << "[0x" << GetRegister(REG_CX) << "]" << setbase(10)
-  
-  << endl;
+  for (int i = 0; i < NUM_REGISTERS; i++) {
+    fp << static_cast<char>('A' + i) << "X:" << GetRegister(i) << " ";
+    fp << setbase(16) << "[0x" << GetRegister(i) << "]  " << setbase(10);
+  }
+  fp << endl;
   
   fp << "  R-Head:" << GetHead(nHardware::HEAD_READ).GetPosition() << " "
     << "W-Head:" << GetHead(nHardware::HEAD_WRITE).GetPosition()  << " "
