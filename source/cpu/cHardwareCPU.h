@@ -66,9 +66,9 @@ public:
 
 protected:
   // --------  Structure Constants  --------
-  static const int NUM_REGISTERS = 4;
+  static const int NUM_REGISTERS = 3;
   enum tRegisters { REG_AX = 0, REG_BX, REG_CX, REG_DX, REG_EX, REG_FX };
-  static const int NUM_NOPS = 4;
+  static const int NUM_NOPS = 3;
   
   // --------  Data Structures  --------
   struct cLocalThread
@@ -158,8 +158,10 @@ protected:
   
   // ---------- Instruction Helpers -----------
   int FindModifiedRegister(int default_register);
+  int FindModifiedNextRegister(int default_register);
+  int FindModifiedPreviousRegister(int default_register);
   int FindModifiedHead(int default_head);
-  int FindComplementRegister(int base_reg);
+  int FindNextRegister(int base_reg);
   
   bool Allocate_Necro(const int new_size);
   bool Allocate_Random(cAvidaContext& ctx, const int old_size, const int new_size);
