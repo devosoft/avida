@@ -83,6 +83,10 @@ cStats::cStats(cWorld* world)
   , tot_lineages(0)
   , tot_executed(0)
   , last_update(0)
+  , num_bought(0)
+  , num_sold(0)
+  , num_used(0)
+  , num_own_used(0)
 {
   task_cur_count.Resize( m_world->GetNumTasks() );
   task_last_count.Resize( m_world->GetNumTasks() );
@@ -827,4 +831,20 @@ void cStats::PrintGenotypeMap(const cString& filename)
     df.WriteBlockElement(genotype_map[i],i,xsize);
   }
   df.WriteRaw("];");
+}
+
+void cStats::PrintMarketData(const cString& filename)
+{
+	cDataFile& df = m_world->GetDataFile(filename);
+
+	df.WriteComment( "Avida market data\n" );
+	df.WriteComment("cumulative totals since the last update data was printed" );
+	df.WriteTimeStamp();
+	df.Write( GetUpdate(), "update" );
+	df.Write( num_bought, "num bought" );
+	df.Write( num_sold, "num sold" );
+	df.Write(num_used, "num used" );
+	df.Write(num_own_used, "num own used" );
+	num_bought = num_sold = num_used = num_own_used = 0;
+df.Endl();
 }

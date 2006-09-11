@@ -28,6 +28,7 @@
 #include "cTaskContext.h"
 #include "cTools.h"
 #include "cWorld.h"
+#include "cStats.h"
 
 #include <iomanip>
 
@@ -55,6 +56,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome
   , inbox(0)
   , sent(0)
   , m_net(NULL)
+  , received_messages(RECEIVED_MESSAGES_SIZE)
   , is_running(false)
 {
   // Initialization of structures...
@@ -75,6 +77,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome
   }
   
   if (m_world->GetConfig().NET_ENABLED.Get()) m_net = new cNetSupport();
+  m_id = m_world->GetStats().GetTotCreatures();
 }
 
 
@@ -113,6 +116,38 @@ int cOrganism::ReceiveValue()
   return out_value;
 }
 
+void cOrganism::SellValue(const int data, const int label, const int sell_price)
+{
+	if (sold_items.GetSize() < 10)
+	{
+		assert (m_interface);
+		m_interface->SellValue(data, label, sell_price, m_id);
+		m_world->GetStats().AddMarketItemSold();
+	}
+}
+
+int cOrganism::BuyValue(const int label, const int buy_price)
+{
+	assert (m_interface);
+	const int receive_value = m_interface->BuyValue(label, buy_price);
+	if (receive_value != 0)
+	{
+		// put this value in storage place for recieved values
+		received_messages.Add(receive_value);
+		// update loss of buy_price to merit
+		double cur_merit = GetPhenotype().GetMerit().GetDouble();
+		cur_merit -= buy_price;
+		UpdateMerit(cur_merit);
+		m_world->GetStats().AddMarketItemBought();
+	}
+	return receive_value;
+}
+
+tListNode<tListNode<cSaleItem> >* cOrganism::AddSoldItem(tListNode<cSaleItem>* sold_node)
+{
+	tListNode<tListNode<cSaleItem> >* node_pt = sold_items.PushRear(sold_node);
+	return node_pt;
+}
 
 void cOrganism::DoInput(const int value)
 {
@@ -159,7 +194,11 @@ void cOrganism::DoOutput(cAvidaContext& ctx, const int value)
   output_buf.Add(value);
   tArray<double> res_change(resource_count.GetSize());
   tArray<int> insts_triggered;
-  cTaskContext taskctx(input_buf, output_buf, other_input_list, other_output_list, net_valid, 0);
+
+  tBuffer<int>* received_messages_point = &received_messages;
+  if (!m_world->GetConfig().SAVE_RECEIVED.Get())
+	  received_messages_point = NULL;
+  cTaskContext taskctx(input_buf, output_buf, other_input_list, other_output_list, net_valid, 0, received_messages_point);
   phenotype.TestOutput(ctx, taskctx, send_buf, receive_buf, resource_count, res_change, insts_triggered);
   m_interface->UpdateResources(res_change);
 

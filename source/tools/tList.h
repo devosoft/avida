@@ -254,7 +254,7 @@ public:
     size++;
   }
   
-  void PushRear(T * _in) {
+  tListNode<T>* PushRear(T * _in) {
     tListNode<T> * new_node = new tListNode<T>;
     new_node->data = _in;
     new_node->next = &root;
@@ -262,6 +262,7 @@ public:
     root.prev->next = new_node;
     root.prev = new_node;
     size++;
+	return new_node;
   }
   
   const T * GetFirst() const { return root.next->data; }

@@ -20,6 +20,12 @@
 #ifndef tArray_h
 #include "tArray.h"
 #endif
+#ifndef cWorld_h
+#include "cWorld.h"
+#endif
+#ifndef cStats_h
+#include "cStats.h"
+#endif
 
 
 class cString;

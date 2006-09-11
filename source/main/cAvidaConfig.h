@@ -273,6 +273,12 @@ public:
   CONFIG_ADD_VAR(NET_MUT_PROB, double, 0.0, "Message corruption probability");
   CONFIG_ADD_VAR(NET_MUT_TYPE, int, 0, "Type of message corruption.  0 = Random Single Bit, 1 = Always Flip Last");
   CONFIG_ADD_VAR(NET_STYLE, int, 0, "Communication Style.  0 = Random Next, 1 = Receiver Facing");
+
+  CONFIG_ADD_GROUP(BUY_SELL_GROUP, "Buying and Selling Parameters");
+  CONFIG_ADD_VAR(SAVE_RECEIVED, bool, 0, "Enable storage of all inputs bought from other orgs");
+  CONFIG_ADD_VAR(BUY_PRICE, int, 0, "price offered by organisms attempting to buy");
+  CONFIG_ADD_VAR(SELL_PRICE, int, 0, "price offered by organisms attempting to sell");
+
 #endif
   
   void Load(const cString& filename);

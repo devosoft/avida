@@ -210,6 +210,8 @@ cInstLibCPU *cHardwareCPU::initInstLib(void)
     cInstEntryCPU("IO",        &cHardwareCPU::Inst_TaskIO, true,
                   "Output ?BX?, and input new number back into ?BX?"),
     cInstEntryCPU("match-strings", &cHardwareCPU::Inst_MatchStrings),
+	cInstEntryCPU("sell", &cHardwareCPU::Inst_Sell),
+	cInstEntryCPU("buy", &cHardwareCPU::Inst_Buy),
     cInstEntryCPU("send",      &cHardwareCPU::Inst_Send),
     cInstEntryCPU("receive",   &cHardwareCPU::Inst_Receive),
     cInstEntryCPU("sense",     &cHardwareCPU::Inst_Sense),
@@ -2522,6 +2524,23 @@ bool cHardwareCPU::Inst_MatchStrings(cAvidaContext& ctx)
 		return false;
 	organism->DoOutput(ctx, 357913941);
 	m_executedmatchstrings = true;
+	return true;
+}
+
+bool cHardwareCPU::Inst_Sell(cAvidaContext& ctx)
+{
+	int search_label = GetLabel().AsInt(3) % MARKET_SIZE;
+	int send_value = GetRegister(REG_BX);
+	int sell_price = m_world->GetConfig().SELL_PRICE.Get();
+	organism->SellValue(send_value, search_label, sell_price);
+	return true;
+}
+
+bool cHardwareCPU::Inst_Buy(cAvidaContext& ctx)
+{
+	int search_label = GetLabel().AsInt(3) % MARKET_SIZE;
+	int buy_price = m_world->GetConfig().BUY_PRICE.Get();
+	GetRegister(REG_BX) = organism->BuyValue(search_label, buy_price);
 	return true;
 }
 

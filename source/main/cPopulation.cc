@@ -78,6 +78,7 @@ cPopulation::cPopulation(cWorld* world)
   
   cell_array.Resize(num_cells);
   resource_count.ResizeSpatialGrids(world_x, world_y);
+  market.Resize(MARKET_SIZE);
   
   bool bottom_flag, top_flag, right_flag, left_flag;
   for (int cell_id = 0; cell_id < num_cells; cell_id++) {
@@ -451,7 +452,20 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell)
   cOrganism* organism = in_cell.GetOrganism();
   cGenotype* genotype = organism->GetGenotype();
   m_world->GetStats().RecordDeath();
-  
+
+  tList<tListNode<cSaleItem> >* sold_items = organism->GetSoldItems();
+  if (sold_items)
+  {
+	  tListIterator<tListNode<cSaleItem> > sold_it(*sold_items);
+	  tListNode<cSaleItem> * test_node;
+
+	  while ( (test_node = sold_it.Next()) != NULL)
+	  {
+		tListIterator<cSaleItem> market_it(market[test_node->data->GetLabel()]);
+		market_it.Set(test_node);
+		delete market_it.Remove();
+	  }
+  }
   // Do the lineage handling
   if (m_world->GetConfig().LOG_LINEAGES.Get()) { m_world->GetClassificationManager().RemoveLineageOrganism(organism); }
   
@@ -519,6 +533,81 @@ void cPopulation::Kaboom(cPopulationCell & in_cell, int distance)
   // @SLG my prediction = 92% and, 28 get equals
 }
 
+void cPopulation::AddSellValue(const int data, const int label, const int sell_price, const int org_id, const int cell_id)
+{
+	// find list under appropriate label, labels more than 8 nops long are simply the same
+	// as a smaller label modded by the market size
+	//int pos = label % market.GetSize();
+
+	//// id of genotype currently residing in cell that seller live(d) in compared to 
+	//// id of genotype of actual seller, if different than seller is dead, remove item from list
+	//while ( market[pos].GetSize() > 0 && 
+	//	(!GetCell(market[pos].GetFirst()->GetCellID()).IsOccupied() ||
+	//	GetCell(market[pos].GetFirst()->GetCellID()).GetOrganism()->GetID()
+	//	!= 	market[pos].GetFirst()->GetOrgID()) )
+	//{
+	//	market[pos].Pop();
+	//}
+
+	// create sale item
+	cSaleItem *new_item = new cSaleItem(data, label, sell_price, org_id, cell_id);
+
+	// place into array by label, array is big enough for labels up to 8 nops long
+	tListNode<cSaleItem>* sell_node = market[label].PushRear(new_item);
+	tListNode<tListNode<cSaleItem> >* org_node = GetCell(cell_id).GetOrganism()->AddSoldItem(sell_node);
+	sell_node->data->SetNodePtr(org_node);
+
+	//:7 for Kolby
+}
+
+int cPopulation::BuyValue(const int label, const int buy_price, const int cell_id)
+{
+	// find list under appropriate label, labels more than 8 nops long are simply the same
+	// as a smaller label modded by the market size
+	//int pos = label % market.GetSize();
+
+	//// id of genotype currently residing in cell that seller live(d) in compared to 
+	//// id of genotype of actual seller, if different than seller is dead, remove item from list
+	//while ( market[pos].GetSize() > 0 && 
+	//	(!GetCell(market[pos].GetFirst()->GetCellID()).IsOccupied() ||
+	//	GetCell(market[pos].GetFirst()->GetCellID()).GetOrganism()->GetID()
+	//	!= 	market[pos].GetFirst()->GetOrgID()) )
+	//{
+	//	market[pos].Pop();
+	//}
+
+	// if there's nothing in the list don't bother with rest
+	if (market[label].GetSize() <= 0)
+		return 0;
+
+	// if the sell price is higher than we're willing to pay no purchase made
+	if (market[label].GetFirst()->GetPrice() > buy_price)
+		return 0;
+
+	// if the buy price is higher than buying org's current merit no purchase made
+	if (GetCell(cell_id).GetOrganism()->GetPhenotype().GetMerit().GetDouble() < buy_price)
+		return 0;
+
+	// otherwise transaction should be completed!
+	cSaleItem* chosen = market[label].Pop();
+	tListIterator<tListNode<cSaleItem> > sold_it(*GetCell(chosen->GetCellID()).GetOrganism()->GetSoldItems());
+	sold_it.Set(chosen->GetNodePtr());
+	sold_it.Remove();
+
+	// first update sellers merit
+	double cur_merit = GetCell(chosen->GetCellID()).GetOrganism()->GetPhenotype().GetMerit().GetDouble();
+	cur_merit += buy_price;
+	
+	GetCell(chosen->GetCellID()).GetOrganism()->UpdateMerit(cur_merit);
+	
+	// next remove sold item from list in market 
+	//market[pos].Remove(chosen);
+
+
+	// finally return recieve value, buyer merit will be updated if return a valid value here
+	int receive_value = chosen->GetData();
+	return receive_value;
+}
 
 // CompeteDemes  probabilistically copies demes into the next generation
 // based on their fitness. How deme fitness is estimated is specified by 
@@ -999,6 +1088,12 @@ void cPopulation::ProcessStep(cAvidaContext& ctx, double step_size, int cell_id)
 
 void cPopulation::UpdateOrganismStats()
 {
+	if (m_world->GetStats().GetUpdate() % 100 == 0)
+	{
+		int market_tot = 0;
+		for (int i=0; i<10000; i++)
+			market_tot += market[i].GetSize();
+	}
   // Loop through all the cells getting stats and doing calculations
   // which must be done on a creature by creature basis.
   

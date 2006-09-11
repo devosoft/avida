@@ -377,6 +377,8 @@ private:
   bool Inst_TaskPut(cAvidaContext& ctx);
   bool Inst_TaskIO(cAvidaContext& ctx);
   bool Inst_MatchStrings(cAvidaContext& ctx);
+  bool Inst_Sell(cAvidaContext& ctx);
+  bool Inst_Buy(cAvidaContext& ctx);
   bool Inst_Send(cAvidaContext& ctx);
   bool Inst_Receive(cAvidaContext& ctx);
   bool Inst_Sense(cAvidaContext& ctx);

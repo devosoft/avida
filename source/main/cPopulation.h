@@ -48,6 +48,7 @@ class cLineage;
 class cOrganism;
 class cPopulationCell;
 class cSchedule;
+class cSaleItem;
 
 
 class cPopulation
@@ -59,6 +60,7 @@ private:
   tArray<cPopulationCell> cell_array;  // Local cells composing the population
   cResourceCount resource_count;       // Global resources available
   cBirthChamber birth_chamber;         // Global birth chamber.
+  tArray<tList<cSaleItem> > market;   // list of lists of items for sale, each list goes with 1 label
 
   // Data Tracking...
   tList<cPopulationCell> reaper_queue; // Death order in some mass-action runs
@@ -129,7 +131,8 @@ public:
   // Deactivate an organism in the population (required for deactivations)
   void KillOrganism(cPopulationCell& in_cell);
   void Kaboom(cPopulationCell& in_cell, int distance=0);
-
+  void AddSellValue(const int data, const int label, const int sell_price, const int org_id, const int cell_id);
+  int BuyValue(const int label, const int buy_price, const int cell_id);
   // Deme-related methods
   void CompeteDemes(int competition_type);
   void ResetDemes();

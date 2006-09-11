@@ -2,7 +2,7 @@
 // sends to standard out a matrix where each row is a histogram of the
 // relevant column.
 
-#include <iostream.h>
+#include <iostream>
 
 #include "../../tools/tMatrix.h"
 

@@ -97,6 +97,8 @@ const int INPUT_BUF_SIZE = 3;
 const int OUTPUT_BUF_SIZE = 3;
 const int SEND_BUF_SIZE = 3;
 const int RECEIVE_BUF_SIZE = 3;
+#define RECEIVED_MESSAGES_SIZE 10
+const int MARKET_SIZE = 10000;
 
 
 enum tFileType

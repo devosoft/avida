@@ -57,6 +57,8 @@ public:
   cOrgSinkMessage* NetReceive();
   bool NetRemoteValidate(cAvidaContext& ctx, cOrgSinkMessage* msg);
   int ReceiveValue();
+  void SellValue(const int data, const int label, const int sell_price, const int org_id);
+  int BuyValue(const int label, const int buy_price);
   bool InjectParasite(cOrganism* parent, const cGenome& injected_code);
   bool UpdateMerit(double new_merit);
   bool TestOnDivide();

@@ -1739,69 +1739,96 @@ double cTaskLib::Task_MatchStr(cTaskContext* ctx) const
 		return 0;
 
 	temp_buf.Pop(); // pop the signal value off of the buffer
-	if (temp_buf.GetNumStored() == 0)
-		return 0;
 
 	const cString & string_to_match = task_array[cur_task]->GetInfo();
-	int max_num_matched = 0;
-	//for (int i=0; i<temp_buf.GetNumStored(); i++)
-	//{
-		const int test_output = temp_buf[0];
-		int num_matched = 0;
-		int string_index;
+	int string_index;
+	int num_matched = 0;
+	int test_output, max_num_matched = 0;
 
+	if (temp_buf.GetNumStored() > 0)
+	{
+		test_output = temp_buf[0];
+	
 		for (int j=0; j<string_to_match.GetSize(); j++)
 		{	
 			string_index=string_to_match.GetSize()-j-1;		// start with last char in string
 			int k = 1 << j;
 			if ((string_to_match[string_index]=='0' && !(test_output & k)) || (string_to_match[string_index]=='1' && (test_output & k))) 
 				num_matched++;
-		}	
-		if (num_matched > max_num_matched)
-			max_num_matched = num_matched;
-	//}
+		}
+		max_num_matched = num_matched;
+	}
+
+	bool used_received = false;
+	if (ctx->received_messages)
+	{
+		tBuffer<int> received(*(ctx->received_messages));
+		for (int i=0; i<received.GetNumStored(); i++)
+		{
+			test_output = received[i];
+			num_matched = 0;
+			for (int j=0; j<string_to_match.GetSize(); j++)
+			{	
+				string_index=string_to_match.GetSize()-j-1;		// start with last char in string
+				int k = 1 << j;
+				if ((string_to_match[string_index]=='0' && !(test_output & k)) || (string_to_match[string_index]=='1' && (test_output & k))) 
+					num_matched++;
+			}
+			if (num_matched > max_num_matched)
+			{
+				max_num_matched = num_matched;
+				used_received = true;
+			}
+		}
+	}
 
 	double bonus = 0;
 	// return value between 0 & 1 representing the percentage of string that was matched
 	double base_bonus = double(max_num_matched)*2/(double)string_to_match.GetSize() - 1;
-	if (base_bonus > 0)
-		bonus = pow(base_bonus,2);
 	
+	if (base_bonus > 0)
+	{
+		bonus = pow(base_bonus,2);
+		if (used_received)
+			m_world->GetStats().AddMarketItemUsed();
+		else
+			m_world->GetStats().AddMarketOwnItemUsed();
+	}	
 	return bonus;
 }
 
 double cTaskLib::Task_CommEcho(cTaskContext* ctx) const
 {
-  const int test_output = ctx->output_buffer[0];
-  
-  tConstListIterator<tBuffer<int> > buff_it(ctx->other_input_buffers);  
-  
-  while (buff_it.Next() != NULL) {
-    const tBuffer<int>& cur_buff = *(buff_it.Get());
-    const int buff_size = cur_buff.GetNumStored();
-    for (int i = 0; i < buff_size; i++) {
-      if (test_output == cur_buff[i]) return 1.0;
-    }
-  }
-  
-  return 0.0;
+	const int test_output = ctx->output_buffer[0];
+
+	tConstListIterator<tBuffer<int> > buff_it(ctx->other_input_buffers);  
+
+	while (buff_it.Next() != NULL) {
+		const tBuffer<int>& cur_buff = *(buff_it.Get());
+		const int buff_size = cur_buff.GetNumStored();
+		for (int i = 0; i < buff_size; i++) {
+			if (test_output == cur_buff[i]) return 1.0;
+		}
+	}
+
+	return 0.0;
 }
 
 double cTaskLib::Task_CommNot(cTaskContext* ctx) const
 {
-  const int test_output = ctx->output_buffer[0];
-  
-  tConstListIterator<tBuffer<int> > buff_it(ctx->other_input_buffers);  
-  
-  while (buff_it.Next() != NULL) {
-    const tBuffer<int>& cur_buff = *(buff_it.Get());
-    const int buff_size = cur_buff.GetNumStored();
-    for (int i = 0; i < buff_size; i++) {
-      if (test_output == (0-(cur_buff[i]+1))) return 1.0;
-    }
-  }
-  
-  return 0.0;
+	const int test_output = ctx->output_buffer[0];
+
+	tConstListIterator<tBuffer<int> > buff_it(ctx->other_input_buffers);  
+
+	while (buff_it.Next() != NULL) {
+		const tBuffer<int>& cur_buff = *(buff_it.Get());
+		const int buff_size = cur_buff.GetNumStored();
+		for (int i = 0; i < buff_size; i++) {
+			if (test_output == (0-(cur_buff[i]+1))) return 1.0;
+		}
+	}
+
+	return 0.0;
 }
 
 double cTaskLib::Task_NetSend(cTaskContext* ctx) const

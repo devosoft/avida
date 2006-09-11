@@ -52,6 +52,9 @@
 #ifndef tSmartArray_h
 #include "tSmartArray.h"
 #endif
+#ifndef cSaleItem_h
+#include "cSaleItem.h"
+#endif
 
 /**
  * The cOrganism class controls the running and manages all the statistics
@@ -81,6 +84,7 @@ protected:
   cMutationRates mut_rates;             // Rate of all possible mutations.
   cLocalMutations mut_info;             // Info about possible mutations;
   cOrgInterface* m_interface;           // Interface back to the population.
+  int m_id;								// unique id for each org, is just the number it was born
 
   // Input and Output with the environment
   int input_pointer;
@@ -88,6 +92,8 @@ protected:
   tBuffer<int> output_buf;
   tBuffer<int> send_buf;
   tBuffer<int> receive_buf;
+  tBuffer<int> received_messages;
+  tList<tListNode<cSaleItem> > sold_items;
 
   // Communication
   int sent_value;         // What number is this org sending?
@@ -144,12 +150,15 @@ public:
   void Kaboom(int dist) { assert(m_interface); m_interface->Kaboom(dist);}
   int GetCellID() { assert(m_interface); return m_interface->GetCellID(); }
   int GetDebugInfo() { assert(m_interface); return m_interface->Debug(); }
-
+  int GetID() { return m_id; }
   bool GetSentActive() { return sent_active; }
   void SendValue(int value) { sent_active = true; sent_value = value; }
   int RetrieveSentValue() { sent_active = false; return sent_value; }
   int ReceiveValue();
-
+  void SellValue(const int data, const int label, const int sell_price);
+  int BuyValue(const int label, const int buy_price);
+  tListNode<tListNode<cSaleItem> >* AddSoldItem(tListNode<cSaleItem>* );
+  tList<tListNode<cSaleItem> >* GetSoldItems() { return &sold_items; }
   void UpdateMerit(double new_merit) { assert(m_interface); m_interface->UpdateMerit(new_merit); }
   
   // Input & Output Testing

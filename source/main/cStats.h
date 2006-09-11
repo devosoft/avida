@@ -210,6 +210,12 @@ private:
   // State variables
   int last_update;
 
+  // Stats for market econ
+  int num_bought;
+  int num_sold;
+  int num_used;
+  int num_own_used;
+
   cStats(); // @not_implemented
   cStats(const cStats&); // @not_implemented
   cStats& operator=(const cStats&); // @not_implemented
@@ -427,6 +433,12 @@ public:
   void SetReactionName(int id, const cString & name) { reaction_names[id] = name; }
   void SetResourceName(int id, const cString & name) { resource_names[id] = name; }
 
+  //market info
+  void AddMarketItemBought() { num_bought++;}
+  void AddMarketItemSold() { num_sold++; }
+  void AddMarketItemUsed() { num_used++; }
+  void AddMarketOwnItemUsed() { num_own_used++; }
+
   // Information retrieval section...
 
   int GetNumBirths() const          { return num_births; }
@@ -463,6 +475,12 @@ public:
 
   const tArray<double> & GetReactions() const { return reaction_count; }
   const tArray<double> & GetResources() const { return resource_count; }
+
+  // market info
+  int GetMarketNumBought() const { return num_bought; }
+  int GetMarketNumSold() const { return num_sold; }
+  int GetMarketNumUsed() const { return num_used; }
+  int GetMarketNumOwnUsed() const { return num_own_used; }
 
   double GetAveReproRate() const  { return sum_repro_rate.Average(); }
 
@@ -539,6 +557,7 @@ public:
   void PrintMutationRateData(const cString& filename);
   void PrintInstructionData(const cString& filename);
   void PrintGenotypeMap(const cString& filename);
+  void PrintMarketData(const cString& filename);
 };
 
 

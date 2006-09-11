@@ -172,6 +172,17 @@ int cPopulationInterface::ReceiveValue()
   return 0;
 }
 
+void cPopulationInterface::SellValue(const int data, const int label, const int sell_price, const int org_id)
+{
+	m_world->GetPopulation().AddSellValue(data, label, sell_price, org_id, m_cell_id);
+}
+
+int cPopulationInterface::BuyValue(const int label, const int buy_price)
+{
+	int value = m_world->GetPopulation().BuyValue(label, buy_price, m_cell_id);
+	return value;
+}
+
 bool cPopulationInterface::InjectParasite(cOrganism* parent, const cGenome& injected_code)
 {
   assert(parent != NULL);
