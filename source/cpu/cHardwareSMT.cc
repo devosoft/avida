@@ -1433,14 +1433,17 @@ bool cHardwareSMT::Inst_HeadPop(cAvidaContext& ctx)
 bool cHardwareSMT::Inst_HeadMove(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
-  if(head_used != nHardware::HEAD_FLOW)
-	{
-		GetHead(head_used).Set(GetHead(nHardware::HEAD_FLOW));
+#if SMT_FULLY_ASSOCIATIVE
+  const int target = FindModifiedHead(nHardware::HEAD_FLOW);
+#else
+  const int target = nHardware::HEAD_FLOW;
+#endif
+
+  if (head_used != target) {
+		GetHead(head_used).Set(GetHead(target));
 		if (head_used == nHardware::HEAD_IP) AdvanceIP() = false;
-	}
-  else
-	{
-		m_threads[m_cur_thread].heads[nHardware::HEAD_FLOW]++;
+	} else {
+		m_threads[m_cur_thread].heads[head_used]++;
 	}
   return true;
 }

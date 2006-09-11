@@ -2851,7 +2851,12 @@ bool cHardwareCPU::Inst_AdvanceHead(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_MoveHead(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
-  GetHead(head_used).Set(GetHead(nHardware::HEAD_FLOW));
+#if CLASSIC_FULLY_ASSOCIATIVE
+  const int target = FindModifiedHead(nHardware::HEAD_FLOW);
+#else
+  const int target = nHardware::HEAD_FLOW;
+#endif
+  GetHead(head_used).Set(GetHead(target));
   if (head_used == nHardware::HEAD_IP) m_advance_ip = false;
   return true;
 }
