@@ -1088,12 +1088,6 @@ void cPopulation::ProcessStep(cAvidaContext& ctx, double step_size, int cell_id)
 
 void cPopulation::UpdateOrganismStats()
 {
-	if (m_world->GetStats().GetUpdate() % 100 == 0)
-	{
-		int market_tot = 0;
-		for (int i=0; i<10000; i++)
-			market_tot += market[i].GetSize();
-	}
   // Loop through all the cells getting stats and doing calculations
   // which must be done on a creature by creature basis.
   
