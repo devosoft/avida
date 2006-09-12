@@ -157,9 +157,6 @@ public:
   CONFIG_ADD_VAR(VERBOSITY, int, 1, "Control output verbosity");
   
   CONFIG_ADD_GROUP(ARCH_GROUP, "Architecture Variables");
-  CONFIG_ADD_VAR(MAX_UPDATES, int, -1, "Maximum updates to run experiment (-1 = no limit)");
-  CONFIG_ADD_VAR(MAX_GENERATIONS, int, -1, "Maximum generations to run experiment (-1 = no limit)");
-  CONFIG_ADD_VAR(END_CONDITION_MODE, int, 0, "End run when ...\n0 = MAX_UPDATES _OR_ MAX_GENERATIONS is reached\n1 = MAX_UPDATES _AND_ MAX_GENERATIONS is reached");
   CONFIG_ADD_VAR(WORLD_X, int, 100, "Width of the Avida world");
   CONFIG_ADD_VAR(WORLD_Y, int, 100, "Height of the Avida world");
   CONFIG_ADD_VAR(WORLD_GEOMETRY, int, 2, "1 = Bounded Grid\n2 = Torus");

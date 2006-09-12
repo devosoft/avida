@@ -79,7 +79,6 @@ void cOptionsScreen::Draw()
   Box(0, Height() - 5, Width(), 5);
 
   SetBoldColor(COLOR_CYAN);
-  Print(5, 15, "%d", info.GetConfig().MAX_UPDATES.Get());
   Print(6, 15, "%dx%d", info.GetPopulation().GetWorldX(),
 	info.GetPopulation().GetWorldY());
   Print(7, 15, "%d", info.GetRandom().GetSeed());

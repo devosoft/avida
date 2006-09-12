@@ -103,9 +103,7 @@ public:
   inline void SetVerbosity(int v) { m_conf->VERBOSITY.Set(v); }
 
   // @DMB - Inherited from cAvidaDriver heritage
-  void GetEvents();
-  void ReadEventListFile(const cString & filename);
-  void SyncEventList();
+  void GetEvents(cAvidaContext& ctx);
 
   // Save to archive 
   template<class Archive>

@@ -3,7 +3,7 @@ INCLUDE_DIRECTORIES(${ALL_INC_DIRS})
 ADD_EXECUTABLE(avida primitive.cc)
 
 SET(avida_target_link_libs
-  main classification cpu event analyze drivers cpu tools actions analyze
+  main classification cpu analyze drivers cpu tools actions analyze
 )
 
 IF(NOT MSVC)

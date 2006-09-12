@@ -25,7 +25,6 @@ avida_viewer_LIBS = [
     'main',
     'classification',
     'cpu',
-    'event',
     'analyze',
     'drivers',
     'cpu',

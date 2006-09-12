@@ -8,7 +8,6 @@ environment.SConscript( [
   'classification/SConscript',
   'cpu/SConscript',
   'drivers/SConscript',
-  'event/SConscript',
   'main/SConscript',
   'platform/SConscript',
   'targets/SConscript',

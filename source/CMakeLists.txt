@@ -1,5 +1,5 @@
 
-SUBDIRS(actions analyze classification cpu drivers event main platform targets third-party tools utils/task_events)
+SUBDIRS(actions analyze classification cpu drivers main platform targets third-party tools utils/task_events)
 IF(AVD_SERIALIZATION)
   SUBDIRS(archive)
 ENDIF(AVD_SERIALIZATION)

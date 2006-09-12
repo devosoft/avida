@@ -58,7 +58,7 @@ void cDefaultRunDriver::Run()
       change_list->Reset();
     }
     
-    m_world->GetEvents();
+    m_world->GetEvents(ctx);
     if (m_done == true) break;
     
     // Increment the Update.
