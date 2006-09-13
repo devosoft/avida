@@ -495,7 +495,7 @@ void cPopulation::Kaboom(cPopulationCell & in_cell, int distance)
   cGenome genome = genotype->GetGenome();
   int id = genotype->GetID();
   
-  int radius = 1;
+  int radius = 2;
   int count = 0;
   
   for (int i=-1*radius; i<=radius; i++) {

@@ -2264,7 +2264,7 @@ bool cHardwareCPU::Inst_Kazi5(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_AX);
   double percentProb = ((double) (GetRegister(reg_used) % 100)) / 100.0;
-  if ( ctx.GetRandom().P(percentProb) ) organism->Kaboom(0);
+  if ( ctx.GetRandom().P(percentProb) ) organism->Kaboom(5);
   return true;
 }
 

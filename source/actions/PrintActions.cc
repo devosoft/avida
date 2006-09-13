@@ -1000,7 +1000,7 @@ public:
     if (filename == "") filename.Set("tree_depth.%d.dat", m_world->GetStats().GetUpdate());
     cDataFile& df = m_world->GetDataFile(filename);
     
-    cPopulation& pop = m_world->GetPopulation();
+    //    cPopulation& pop = m_world->GetPopulation();
     cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
     
     cGenotype* genotype = m_world->GetClassificationManager().GetBestGenotype();
@@ -1255,6 +1255,37 @@ public:
 };
 
 
+class cActionDumpLineageGrid : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpLineageGrid(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_lineage.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
+      for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
+        cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
+        int id = (cell.IsOccupied()) ? cell.GetOrganism()->GetGenotype()->GetLineageLabel() : -1;
+        fp << id << " ";
+      }
+      fp << endl;
+    }
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
+
 class cActionDumpTaskGrid : public cAction
 {
 private:
@@ -1477,6 +1508,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpMemory>("DumpMemory");
   action_lib->Register<cActionDumpFitnessGrid>("DumpFitnessGrid");
   action_lib->Register<cActionDumpGenotypeIDGrid>("DumpGenotypeIDGrid");
+  action_lib->Register<cActionDumpLineageGrid>("DumpLineageGrid");
   action_lib->Register<cActionDumpTaskGrid>("DumpTaskGrid");
   action_lib->Register<cActionDumpDonorGrid>("DumpDonorGrid");
   action_lib->Register<cActionDumpReceiverGrid>("DumpReceiverGrid");
@@ -1533,7 +1565,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
 
   action_lib->Register<cActionDumpMemory>("dump_memory");
   action_lib->Register<cActionDumpFitnessGrid>("dump_fitness_grid");
-  action_lib->Register<cActionDumpGenotypeIDGrid>("dump_enotype_grid");
+  action_lib->Register<cActionDumpGenotypeIDGrid>("dump_genotype_grid");
+  action_lib->Register<cActionDumpLineageGrid>("dump_lineage_grid");
   action_lib->Register<cActionDumpTaskGrid>("dump_task_grid");
   action_lib->Register<cActionDumpDonorGrid>("dump_donor_grid");
   action_lib->Register<cActionDumpReceiverGrid>("dump_receiver_grid");
