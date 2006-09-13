@@ -20,9 +20,7 @@ using namespace std;
 
 cTaskLib::~cTaskLib()
 {
-  for (int i = 0; i < task_array.GetSize(); i++) {
-    delete task_array[i];
-  }
+  for (int i = 0; i < task_array.GetSize(); i++) delete task_array[i];
 }
 
 inline double cTaskLib::FractionalReward(unsigned int supplied, unsigned int correct)
@@ -34,35 +32,37 @@ inline double cTaskLib::FractionalReward(unsigned int supplied, unsigned int cor
   return static_cast<double>(32 - bit_diff) / 32.0; 
 }
 
-cTaskEntry * cTaskLib::AddTask(const cString & name, const cString & info)
+cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info)
 {
   // Determine if this task is already in the active library.
   for (int i = 0; i < task_array.GetSize(); i++) {
-       if (task_array[i]->GetName() == name &&
-		   		task_array[i]->GetInfo() == info) {
-      assert(task_array[i] != NULL);
-      return task_array[i];
-    }
+    assert(task_array[i] != NULL);
+    if (task_array[i]->GetName() == name && task_array[i]->GetInfo() == info) return task_array[i];
   }
   
   // Match up this name to its corresponding task
   const int start_size = task_array.GetSize();
   
+  // The following if blocks are grouped based on class of task.  Chaining too
+  // many if block causes problems block nesting depth in Visual Studio.net 2003.
+
   if (name == "echo")      NewTask(name, "Echo", &cTaskLib::Task_Echo);
   else if (name == "add")  NewTask(name, "Add",  &cTaskLib::Task_Add);
   else if (name == "sub")  NewTask(name, "Sub",  &cTaskLib::Task_Sub);
   
-  else if (name == "not")   NewTask(name, "Not",    &cTaskLib::Task_Not);
-  else if (name == "nand")  NewTask(name, "Nand",   &cTaskLib::Task_Nand);
-  else if (name == "and")   NewTask(name, "And",    &cTaskLib::Task_And);
-  else if (name == "orn")   NewTask(name, "OrNot",  &cTaskLib::Task_OrNot);
-  else if (name == "or")    NewTask(name, "Or",     &cTaskLib::Task_Or);
-  else if (name == "andn")  NewTask(name, "AndNot", &cTaskLib::Task_AndNot);
-  else if (name == "nor")   NewTask(name, "Nor",    &cTaskLib::Task_Nor);
-  else if (name == "xor")   NewTask(name, "Xor",    &cTaskLib::Task_Xor);
-  else if (name == "equ")   NewTask(name, "Equals", &cTaskLib::Task_Equ);
+  // All one and two input logic functions
+  if (name == "not") NewTask(name, "Not", &cTaskLib::Task_Not);
+  else if (name == "nand") NewTask(name, "Nand", &cTaskLib::Task_Nand);
+  else if (name == "and") NewTask(name, "And", &cTaskLib::Task_And);
+  else if (name == "orn") NewTask(name, "OrNot", &cTaskLib::Task_OrNot);
+  else if (name == "or") NewTask(name, "Or", &cTaskLib::Task_Or);
+  else if (name == "andn") NewTask(name, "AndNot", &cTaskLib::Task_AndNot);
+  else if (name == "nor") NewTask(name, "Nor", &cTaskLib::Task_Nor);
+  else if (name == "xor") NewTask(name, "Xor", &cTaskLib::Task_Xor);
+  else if (name == "equ") NewTask(name, "Equals", &cTaskLib::Task_Equ);
   
-  else if (name == "logic_3AA")
+  // All three input logic functions
+  if (name == "logic_3AA")
     NewTask(name, "Logic 3AA (A+B+C == 0)", &cTaskLib::Task_Logic3in_AA);
   else if (name == "logic_3AB")
     NewTask(name, "Logic 3AB (A+B+C == 1)", &cTaskLib::Task_Logic3in_AB);
@@ -199,6 +199,7 @@ cTaskEntry * cTaskLib::AddTask(const cString & name, const cString & info)
   else if (name == "logic_3CP")
     NewTask(name, "Logic 3CP", &cTaskLib::Task_Logic3in_CP);
   
+  // Arbitrary one input math tasks
   else if (name == "math_1AA")
     NewTask(name, "Math 1AA (2X)", &cTaskLib::Task_Math1in_AA);
   else if (name == "math_1AB")
@@ -230,9 +231,10 @@ cTaskEntry * cTaskLib::AddTask(const cString & name, const cString & info)
   else if (name == "math_1AO")
     NewTask(name, "Math 1AO (X-6)", &cTaskLib::Task_Math1in_AO);  
   else if (name == "math_1AP")
-    NewTask(name, "Math 1AP (X-7)", &cTaskLib::Task_Math1in_AP);  
+    NewTask(name, "Math 1AP (X-7)", &cTaskLib::Task_Math1in_AP);
   
-  else if (name == "math_2AA")
+  // Arbitrary two input math tasks
+  if (name == "math_2AA")
     NewTask(name, "Math 2AA (sqrt(X+Y))", &cTaskLib::Task_Math2in_AA);  
   else if (name == "math_2AB")
     NewTask(name, "Math 2AB ((X+Y)^2)", &cTaskLib::Task_Math2in_AB);  
@@ -277,21 +279,14 @@ cTaskEntry * cTaskLib::AddTask(const cString & name, const cString & info)
   else if (name == "math_2AV")
     NewTask(name, "Math 2AV (XY^2)", &cTaskLib::Task_Math2in_AV);
   
-  else if (name == "math_3AA")
+  // Arbitrary three input logic tasks
+  if (name == "math_3AA")
     NewTask(name, "Math 3AA (X^2+Y^2+Z^2)", &cTaskLib::Task_Math3in_AA);  
   else if (name == "math_3AB")
     NewTask(name, "Math 3AB (sqrt(X)+sqrt(Y)+sqrt(Z))", &cTaskLib::Task_Math3in_AB);  
   else if (name == "math_3AC")
     NewTask(name, "Math 3AC (X+2Y+3Z)", &cTaskLib::Task_Math3in_AC);  
-  /*
-   Visual Studio.net 2003 gives compiler error:
-   fatal error C1061: compiler limit : blocks nested too deeply
-   Sherri fixed this by removing the 'else' in the next line.
-   -- K
-   */
-  //else if (name == "math_3AD")
-  //  NewTask(name, "Math 3AD (XY^2+Z^3)", &cTaskLib::Task_Math3in_AD); 
-  if (name == "math_3AD")
+  else if (name == "math_3AD")
     NewTask(name, "Math 3AD (XY^2+Z^3)", &cTaskLib::Task_Math3in_AD);  
   else if (name == "math_3AE")
     NewTask(name, "Math 3AE ((X%Y)*Z)", &cTaskLib::Task_Math3in_AE);  
@@ -304,11 +299,9 @@ cTaskEntry * cTaskLib::AddTask(const cString & name, const cString & info)
   else if (name == "math_3AI")
     NewTask(name, "Math 3AI (-X-Y-Z)", &cTaskLib::Task_Math3in_AI);  
   else if (name == "math_3AJ")
-    NewTask(name, "Math 3AJ ((X-Y)^2+(Y-Z)^2+(Z-X)^2)",
-            &cTaskLib::Task_Math3in_AJ);  
+    NewTask(name, "Math 3AJ ((X-Y)^2+(Y-Z)^2+(Z-X)^2)", &cTaskLib::Task_Math3in_AJ);  
   else if (name == "math_3AK")
-    NewTask(name, "Math 3AK ((X+Y)^2+(Y+Z)^2+(Z+X)^2)",
-            &cTaskLib::Task_Math3in_AK);  
+    NewTask(name, "Math 3AK ((X+Y)^2+(Y+Z)^2+(Z+X)^2)", &cTaskLib::Task_Math3in_AK);  
   else if (name == "math_3AL")
     NewTask(name, "Math 3AL ((X-Y)^2+(X-Z)^2)", &cTaskLib::Task_Math3in_AL);  
   else if (name == "math_3AM")
@@ -318,22 +311,20 @@ cTaskEntry * cTaskLib::AddTask(const cString & name, const cString & info)
   if (name == "matchstr")  NewTask(name, "MatchStr", &cTaskLib::Task_MatchStr, 0, info);
 
 	// communication tasks
-  else if (name == "comm_echo")
-    NewTask(name, "Echo of Neighbor's Input", &cTaskLib::Task_CommEcho,
-            REQ_NEIGHBOR_INPUT);
+  if (name == "comm_echo")
+    NewTask(name, "Echo of Neighbor's Input", &cTaskLib::Task_CommEcho, REQ_NEIGHBOR_INPUT);
   else if (name == "comm_not")
-	  NewTask(name, "Not of Neighbor's INput", &cTaskLib::Task_CommNot,
-            REQ_NEIGHBOR_INPUT);
+	  NewTask(name, "Not of Neighbor's Input", &cTaskLib::Task_CommNot, REQ_NEIGHBOR_INPUT);
 
-  else if (name == "net_send")
+  // Network tasks
+  if (name == "net_send")
 	  NewTask(name, "Successfully Sent Network Message", &cTaskLib::Task_NetSend);
   else if (name == "net_receive")
 	  NewTask(name, "Successfully Received Network Message", &cTaskLib::Task_NetReceive);
   
   
   
-  // Make sure we have actually found a task.
-  
+  // Make sure we have actually found a task  
   if (task_array.GetSize() == start_size) {
     cerr << "Unknown task entry '" << name << "'." << endl;
     return NULL;
@@ -343,10 +334,6 @@ cTaskEntry * cTaskLib::AddTask(const cString & name, const cString & info)
   return task_array[start_size];
 }
 
-const cTaskEntry & cTaskLib::GetTask(int id) const
-{
-  return *(task_array[id]);
-}
 
 void cTaskLib::SetupTests(cTaskContext& ctx) const
 {
@@ -1735,12 +1722,11 @@ double cTaskLib::Task_Math3in_AM(cTaskContext* ctx) const //((X+Y)^2+(Y+Z)^2)
 double cTaskLib::Task_MatchStr(cTaskContext* ctx) const
 {
 	tBuffer<int> temp_buf(ctx->output_buffer);
-	if (temp_buf[0] != 357913941)
-		return 0;
+	if (temp_buf[0] != 357913941) return 0;
 
 	temp_buf.Pop(); // pop the signal value off of the buffer
 
-	const cString & string_to_match = task_array[cur_task]->GetInfo();
+	const cString& string_to_match = ctx->task_entry->GetInfo();
 	int string_index;
 	int num_matched = 0;
 	int test_output, max_num_matched = 0;

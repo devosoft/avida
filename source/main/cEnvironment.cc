@@ -394,11 +394,11 @@ bool cEnvironment::LoadReaction(cString desc)
   }
   
   // Finish loading in this reaction.
-    cString trigger_info = desc.PopWord();
+  cString trigger_info = desc.PopWord();
 	cString trigger = trigger_info.Pop('=');
   
   // Load the task trigger
-   cTaskEntry * cur_task = m_tasklib.AddTask(trigger, trigger_info);
+  cTaskEntry* cur_task = m_tasklib.AddTask(trigger, trigger_info);
   if (cur_task == NULL) {
     cerr << "...failed to find task in cTaskLib..." << endl;
     return false;
@@ -657,9 +657,11 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result, cTask
     if (cur_reaction->GetActive() == false) continue;
     
     // Examine the task trigger associated with this reaction
-    cTaskEntry * cur_task = cur_reaction->GetTask();
+    cTaskEntry* cur_task = cur_reaction->GetTask();
     assert(cur_task != NULL);
-    const double task_quality = m_tasklib.TestOutput(*cur_task, &taskctx);
+    
+    taskctx.SetTaskEntry(cur_task); // Set task entry in the context, so that tasks can reference task settings
+    const double task_quality = m_tasklib.TestOutput(&taskctx);
     const int task_id = cur_task->GetID();
     const int task_cnt = task_count[task_id];
     
