@@ -189,7 +189,6 @@ cBirthChamber::cBirthEntry* cBirthChamber::FindSexSizeWaiting(const cGenome& chi
 
   // If this is a new largest genome, increase the array size.
   if (size_wait_entry.GetSize() <= child_length) {
-    // @DMB unused? -- int old_wait_size = size_wait_entry.GetSize();
     size_wait_entry.Resize(child_length + 1);
   }
 
@@ -214,7 +213,6 @@ cBirthChamber::cBirthEntry* cBirthChamber::FindSexMateSelectWaiting(const cGenom
 
   // If this is a new largest ID, increase the array size.
   if (mate_select_wait_entry.GetSize() <= mate_id) {
-    // @DMB unused? -- int old_wait_size = mate_select_wait_entry.GetSize();
     mate_select_wait_entry.Resize(mate_id + 1);
   }
 

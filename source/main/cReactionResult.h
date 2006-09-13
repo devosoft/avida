@@ -22,8 +22,6 @@ private:
   tArray<double> resources_detected;  //Initialize to -1.0
   tArray<bool> tasks_done;
   tArray<double> tasks_quality;
-// @DMB - not used -   tArray<bool> receive_tasks_done;
-// @DMB - not used -   tArray<bool> send_tasks_done;
   tArray<bool> reactions_triggered;
   double bonus_add;
   double bonus_mult;
@@ -50,8 +48,6 @@ public:
   void Lethal(bool flag);
   void MarkTask(int id, const double quality=1);
 
-// @DMB - not used -   void MarkReceiveTask(int id);
-// @DMB - not used -   void MarkSendTask(int id);
   void MarkReaction(int id);
   void AddBonus(double value);
   void MultBonus(double value);

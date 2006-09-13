@@ -19,8 +19,6 @@ cReactionResult::cReactionResult(const int num_resources,
   , resources_detected(num_resources)
   , tasks_done(num_tasks)
   , tasks_quality(num_tasks)
-// @DMB - not used -  , receive_tasks_done(num_tasks)
-// @DMB - not used -  , send_tasks_done(num_tasks)
   , reactions_triggered(num_reactions)
   , bonus_add(0.0)
   , bonus_mult(1.0)
@@ -41,8 +39,6 @@ void cReactionResult::ActivateReaction()
   resources_detected.SetAll(-1.0);
   tasks_done.SetAll(false);
   tasks_quality.SetAll(0.0);
-// @DMB - not used - receive_tasks_done.SetAll(false);
-// @DMB - not used - send_tasks_done.SetAll(false);
   reactions_triggered.SetAll(false);
 
   // And finally note that this is indeed already active.
@@ -82,19 +78,6 @@ void cReactionResult::MarkTask(int id, const double quality)
   tasks_done[id] = true;
   tasks_quality[id] = quality;
 }
-
-
-// @DMB - not used - void cReactionResult::MarkReceiveTask(int id)
-// @DMB - not used - {
-// @DMB - not used -   ActivateReaction();
-// @DMB - not used -   receive_tasks_done[id] = true;
-// @DMB - not used - }
-
-// @DMB - not used - void cReactionResult::MarkSendTask(int id)
-// @DMB - not used - {
-// @DMB - not used -   ActivateReaction();
-// @DMB - not used -   send_tasks_done[id] = true;
-// @DMB - not used - }
 
 
 void cReactionResult::MarkReaction(int id)
