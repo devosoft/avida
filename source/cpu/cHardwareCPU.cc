@@ -209,6 +209,9 @@ cInstLibCPU *cHardwareCPU::initInstLib(void)
     cInstEntryCPU("put",       &cHardwareCPU::Inst_TaskPut),
     cInstEntryCPU("IO",        &cHardwareCPU::Inst_TaskIO, true,
                   "Output ?BX?, and input new number back into ?BX?"),
+    cInstEntryCPU("IO-Feedback",        &cHardwareCPU::Inst_TaskIO_Feedback, true,\
+                  "Output ?BX?, and input new number back into ?BX?,  and push 1,0,\
+                  or -1 onto stack1 if merit increased, stayed the same, or decreased"),
     cInstEntryCPU("match-strings", &cHardwareCPU::Inst_MatchStrings),
 	cInstEntryCPU("sell", &cHardwareCPU::Inst_Sell),
 	cInstEntryCPU("buy", &cHardwareCPU::Inst_Buy),
@@ -622,6 +625,12 @@ void cHardwareCPU::PrintStatus(ostream& fp)
     << "F-Head:" << GetHead(nHardware::HEAD_FLOW).GetPosition()   << "  "
     << "RL:" << GetReadLabel().AsString() << "   "
     << endl;
+    
+  int number_of_stacks = GetNumStacks();
+  for (int stack_id = 0; stack_id < number_of_stacks; stack_id++) {
+    fp << "Top of stack " << stack_id << ":"
+    << GetStack(0, stack_id, 0) << endl;
+  }
   
   fp << "  Mem (" << GetMemory().GetSize() << "):"
 		  << "  " << GetMemory().AsString()
@@ -2436,7 +2445,49 @@ bool cHardwareCPU::Inst_TaskIO(cAvidaContext& ctx)
   
   // Do the "put" component
   const int value_out = GetRegister(reg_used);
-  organism->DoOutput(ctx, value_out);  // Check for tasks compleated.
+  organism->DoOutput(ctx, value_out);  // Check for tasks completed.
+  
+  // Do the "get" component
+  const int value_in = organism->GetNextInput();
+  GetRegister(reg_used) = value_in;
+  organism->DoInput(value_in);
+  return true;
+}
+bool cHardwareCPU::Inst_TaskIO_Feedback(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(REG_BX);
+
+  //check cur_bonus before the output
+  double preOutputBonus = organism->GetPhenotype().GetCurBonus();
+  
+  // Do the "put" component
+  const int value_out = GetRegister(reg_used);
+  organism->DoOutput(ctx, value_out);  // Check for tasks completed.
+
+  //check cur_merit after the output
+  double postOutputBonus = organism->GetPhenotype().GetCurBonus(); 
+  
+  
+  //push the effect of the IO on merit (+,0,-) to the active stack
+
+  if (preOutputBonus > postOutputBonus){
+    StackPush(-1);
+    }
+  else if (preOutputBonus == postOutputBonus){
+    StackPush(0);
+    }
+  else if (preOutputBonus < postOutputBonus){
+    StackPush(1);
+    }
+  else {
+    assert(0);
+    //Bollocks. There was an error.
+    }
+
+
+  
+
+
   
   // Do the "get" component
   const int value_in = organism->GetNextInput();
