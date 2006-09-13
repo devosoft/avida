@@ -1,7 +1,8 @@
 
 Import('environment')
-
+    
 if environment['enableTCMalloc'] in ('True', '1', 1):
+  print "I am descending into tcmalloc."
   environment.SConscript('tcmalloc/SConscript')
-
+  
 # vim: set ft=python:

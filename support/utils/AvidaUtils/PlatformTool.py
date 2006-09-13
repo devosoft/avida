@@ -30,9 +30,7 @@ def _posix_defaults(env):
     _PLATFORM_RELEASE_DEBUG_BUILD_FLAGS = "-O2 -ffast-math -g $COMPILER_WARNING_FLAGS -pedantic -DDEBUG",
     _PLATFORM_RELEASE_BUILD_FLAGS = "-O3 -ffast-math -DNDEBUG",
     _PLATFORM_MINIMUM_RELEASE_BUILD_FLAGS = "-Os -DNDEBUG",
-  )
-  env.SetDefault(
-    enableTCMalloc = 1,
+    plat_default_enableTCMalloc = 1,
   )
 
 def darwin_generate(env):
@@ -352,6 +350,7 @@ def win32_generate(env):
     plat_default_enableTestCode = 0,
     plat_default_enablePyPkg = 0,
     plat_default_enableSharedPtr = 0,
+    plat_default_enableTCMalloc = 0,
     plat_default_pythonCommand = sys.executable,
     plat_default_boostIncludeDir = None,
     plat_default_boostPythonLibDir = None,
@@ -360,10 +359,6 @@ def win32_generate(env):
     plat_default_pysteScriptPath = os.path.join(sys.path[0], '${AvidaUtils_path}', 'AvidaPyste.py'),
     plat_default_pysteScriptCommand = SCons.Util.CLVar('$pythonCommand $pysteScriptPath'),
   )
-  env.SetDefault(
-    enableTCMalloc = 0,
-  )
-
 
 
 platform_generators = {

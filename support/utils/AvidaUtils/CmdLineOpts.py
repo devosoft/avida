@@ -41,7 +41,7 @@ def Update(opts, env):
     SCons.Options.BoolOption(
       'enableTCMalloc',
       """Set to "1" to enable TCMalloc""",
-      1,
+       '$plat_default_enableTCMalloc',
   ) )
   opts.Add(
     SCons.Options.BoolOption(
