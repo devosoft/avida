@@ -172,6 +172,8 @@ protected:
   
   bool Divide_Main(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1);
   bool Divide_MainRS(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1); //AWC 06/29/06
+  bool Divide_Main1RS(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1); //AWC 07/28/06
+  bool Divide_Main2RS(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1); //AWC 07/28/06
 
   
   void InjectCode(const cGenome& injection, const int line_num);
@@ -418,6 +420,8 @@ private:
   bool Inst_IfLabel2(cAvidaContext& ctx);
   bool Inst_HeadDivide(cAvidaContext& ctx);
   bool Inst_HeadDivideRS(cAvidaContext& ctx); //AWC 06/29/06
+  bool Inst_HeadDivide1RS(cAvidaContext& ctx); //AWC 07/28/06
+  bool Inst_HeadDivide2RS(cAvidaContext& ctx); //AWC 08/29/06
   bool Inst_HeadRead(cAvidaContext& ctx);
   bool Inst_HeadWrite(cAvidaContext& ctx);
   bool Inst_HeadCopy(cAvidaContext& ctx);

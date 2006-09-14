@@ -240,8 +240,12 @@ cInstLibCPU *cHardwareCPU::initInstLib(void)
                   "Allocate maximum allowed space"),
     cInstEntryCPU("h-divide",  &cHardwareCPU::Inst_HeadDivide, true,
                   "Divide code between read and write heads."),
+    cInstEntryCPU("h-divide1RS",  &cHardwareCPU::Inst_HeadDivide1RS, true,
+		  "Divide code between read and write heads, at most one mutation on divide, resample if reverted."),
+    cInstEntryCPU("h-divide2RS",  &cHardwareCPU::Inst_HeadDivide2RS, true,
+                  "Divide code between read and write heads, at most two mutations on divide, resample if reverted."),
     cInstEntryCPU("h-divideRS",  &cHardwareCPU::Inst_HeadDivideRS, true,
-                  "Divide code between read and write heads, resample reversions."),
+                  "Divide code between read and write heads, resample if reverted."),
     cInstEntryCPU("h-read",    &cHardwareCPU::Inst_HeadRead),
     cInstEntryCPU("h-write",   &cHardwareCPU::Inst_HeadWrite),
     cInstEntryCPU("h-copy",    &cHardwareCPU::Inst_HeadCopy, true,
@@ -1257,9 +1261,102 @@ bool cHardwareCPU::Divide_MainRS(cAvidaContext& ctx, const int div_point,
   
   unsigned 
     totalMutations = 0,
-    mutations = 0,
-    RScount = 0;
+    mutations = 0;
+    //RScount = 0;
 
+
+  bool
+    fitTest = false;
+
+  // Handle Divide Mutations...
+  /*
+    Do mutations until one of these conditions are satisified:
+     we have resampled X times
+     we have an offspring with the same number of muations as the first offspring
+      that is not reverted
+     the parent is steralized (usually means an implicit mutation)
+  */
+  for(unsigned i = 0; i <= 100; i++){
+    if(i == 0){
+      mutations = totalMutations = Divide_DoMutations(ctx, mut_multiplier);
+    }
+    else{
+      mutations = Divide_DoMutations(ctx, mut_multiplier);
+      m_world->GetStats().IncResamplings();
+    }
+
+    fitTest = Divide_TestFitnessMeasures(ctx);
+    
+    if(!fitTest && mutations >= totalMutations) break;
+
+  } 
+  // think about making this mutations == totalMuations - though this may be too hard...
+  /*
+  if(RScount > 2)
+    cerr << "Resampled " << RScount << endl;
+  */
+  //org could not be resampled beneath the hard cap -- it is then steraalized
+  if(fitTest/*RScount == 11*/) {
+    organism->GetPhenotype().ChildFertile() = false;
+    m_world->GetStats().IncFailedResamplings();
+  }
+
+#if INSTRUCTION_COSTS
+  // reset first time instruction costs
+  for (int i = 0; i < inst_ft_cost.GetSize(); i++) {
+    inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+  }
+#endif
+  
+  m_mal_active = false;
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
+    m_advance_ip = false;
+  }
+  
+  // Activate the child, and do more work if the parent lives through the
+  // birth.
+  bool parent_alive = organism->ActivateDivide(ctx);
+  if (parent_alive) {
+    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
+  }
+  
+  return true;
+}
+
+/*
+  Almost the same as Divide_Main, but only allows for one mutation 
+    on divde and resamples reverted offspring.
+
+  RESAMPLING ONLY WORKS CORRECTLY WHEN ALL MUTIONS OCCUR ON DIVIDE!!
+
+  AWC - 07/28/06
+*/
+bool cHardwareCPU::Divide_Main1RS(cAvidaContext& ctx, const int div_point,
+                               const int extra_lines, double mut_multiplier)
+{
+
+  //cStats stats = m_world->GetStats();
+  const int child_size = GetMemory().GetSize() - div_point - extra_lines;
+  
+  // Make sure this divide will produce a viable offspring.
+  const bool viable = Divide_CheckViable(ctx, div_point, child_size);
+  if (viable == false) return false;
+  
+  // Since the divide will now succeed, set up the information to be sent
+  // to the new organism
+  cGenome & child_genome = organism->ChildGenome();
+  child_genome = cGenomeUtil::Crop(m_memory, div_point, div_point+child_size);
+  
+  // Cut off everything in this memory past the divide point.
+  GetMemory().Resize(div_point);
+  
+  unsigned 
+    totalMutations = 0,
+    mutations = 0;
+  //    RScount = 0;
+
+  bool
+    fitTest = false;
 
 
   // Handle Divide Mutations...
@@ -1270,25 +1367,118 @@ bool cHardwareCPU::Divide_MainRS(cAvidaContext& ctx, const int div_point,
       that is not reverted
      the parent is steralized (usually means an implicit mutation)
   */
-  do{
-    if(!RScount){
-      mutations = totalMutations = Divide_DoMutations(ctx, mut_multiplier);
+  for(unsigned i = 0; i < 100; i++){
+    if(!i){
+      mutations = totalMutations = Divide_DoMutations(ctx, mut_multiplier,1);
     }
     else{
-      mutations = Divide_DoMutations(ctx, mut_multiplier);
+      mutations = Divide_DoExactMutations(ctx, mut_multiplier,1);
       m_world->GetStats().IncResamplings();
     }
 
-    
-    
-  }while (RScount++ < 10 && mutations >= totalMutations && Divide_TestFitnessMeasures(ctx)); 
+    fitTest = Divide_TestFitnessMeasures(ctx);
+    //if(mutations > 1 ) cerr << "Too Many mutations!!!!!!!!!!!!!!!" << endl;
+    if(!fitTest && mutations >= totalMutations) break;
+
+  } 
   // think about making this mutations == totalMuations - though this may be too hard...
   /*
   if(RScount > 2)
     cerr << "Resampled " << RScount << endl;
   */
   //org could not be resampled beneath the hard cap -- it is then steraalized
-  if(RScount == 10) {
+  if(fitTest/*RScount == 11*/) {
+    organism->GetPhenotype().ChildFertile() = false;
+    m_world->GetStats().IncFailedResamplings();
+  }
+
+#if INSTRUCTION_COSTS
+  // reset first time instruction costs
+  for (int i = 0; i < inst_ft_cost.GetSize(); i++) {
+    inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+  }
+#endif
+  
+  m_mal_active = false;
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
+    m_advance_ip = false;
+  }
+  
+  // Activate the child, and do more work if the parent lives through the
+  // birth.
+  bool parent_alive = organism->ActivateDivide(ctx);
+  if (parent_alive) {
+    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
+  }
+  
+  return true;
+}
+
+/*
+  Almost the same as Divide_Main, but only allows for one mutation 
+    on divde and resamples reverted offspring.
+
+  RESAMPLING ONLY WORKS CORRECTLY WHEN ALL MUTIONS OCCUR ON DIVIDE!!
+
+  AWC - 07/28/06
+*/
+bool cHardwareCPU::Divide_Main2RS(cAvidaContext& ctx, const int div_point,
+                               const int extra_lines, double mut_multiplier)
+{
+
+  //cStats stats = m_world->GetStats();
+  const int child_size = GetMemory().GetSize() - div_point - extra_lines;
+  
+  // Make sure this divide will produce a viable offspring.
+  const bool viable = Divide_CheckViable(ctx, div_point, child_size);
+  if (viable == false) return false;
+  
+  // Since the divide will now succeed, set up the information to be sent
+  // to the new organism
+  cGenome & child_genome = organism->ChildGenome();
+  child_genome = cGenomeUtil::Crop(m_memory, div_point, div_point+child_size);
+  
+  // Cut off everything in this memory past the divide point.
+  GetMemory().Resize(div_point);
+  
+  unsigned 
+    totalMutations = 0,
+    mutations = 0;
+  //    RScount = 0;
+
+  bool
+    fitTest = false;
+
+
+  // Handle Divide Mutations...
+  /*
+    Do mutations until one of these conditions are satisified:
+     we have resampled X times
+     we have an offspring with the same number of muations as the first offspring
+      that is not reverted
+     the parent is steralized (usually means an implicit mutation)
+  */
+  for(unsigned i = 0; i < 100; i++){
+    if(!i){
+      mutations = totalMutations = Divide_DoMutations(ctx, mut_multiplier,2);
+    }
+    else{
+      Divide_DoExactMutations(ctx, mut_multiplier,mutations);
+      m_world->GetStats().IncResamplings();
+    }
+
+    fitTest = Divide_TestFitnessMeasures(ctx);
+    //if(mutations > 1 ) cerr << "Too Many mutations!!!!!!!!!!!!!!!" << endl;
+    if(!fitTest && mutations >= totalMutations) break;
+
+  } 
+  // think about making this mutations == totalMuations - though this may be too hard...
+  /*
+  if(RScount > 2)
+    cerr << "Resampled " << RScount << endl;
+  */
+  //org could not be resampled beneath the hard cap -- it is then steraalized
+  if(fitTest/*RScount == 11*/) {
     organism->GetPhenotype().ChildFertile() = false;
     m_world->GetStats().IncFailedResamplings();
   }
@@ -2928,6 +3118,41 @@ bool cHardwareCPU::Inst_HeadDivideRS(cAvidaContext& ctx)
   AdjustHeads();
   return ret_val; 
 }
+
+/*
+  Resample Divide -- single mut on divide-- AWC 07/28/06
+*/
+
+bool cHardwareCPU::Inst_HeadDivide1RS(cAvidaContext& ctx)
+{
+  AdjustHeads();
+  const int divide_pos = GetHead(nHardware::HEAD_READ).GetPosition();
+  int child_end =  GetHead(nHardware::HEAD_WRITE).GetPosition();
+  if (child_end == 0) child_end = GetMemory().GetSize();
+  const int extra_lines = GetMemory().GetSize() - child_end;
+  bool ret_val = Divide_Main1RS(ctx, divide_pos, extra_lines, 1);
+  // Re-adjust heads.
+  AdjustHeads();
+  return ret_val; 
+}
+
+/*
+  Resample Divide -- double mut on divide-- AWC 08/29/06
+*/
+
+bool cHardwareCPU::Inst_HeadDivide2RS(cAvidaContext& ctx)
+{
+  AdjustHeads();
+  const int divide_pos = GetHead(nHardware::HEAD_READ).GetPosition();
+  int child_end =  GetHead(nHardware::HEAD_WRITE).GetPosition();
+  if (child_end == 0) child_end = GetMemory().GetSize();
+  const int extra_lines = GetMemory().GetSize() - child_end;
+  bool ret_val = Divide_Main2RS(ctx, divide_pos, extra_lines, 1);
+  // Re-adjust heads.
+  AdjustHeads();
+  return ret_val; 
+}
+
 
 bool cHardwareCPU::Inst_HeadDivideSex(cAvidaContext& ctx)  
 { 
