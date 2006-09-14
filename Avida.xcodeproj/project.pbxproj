@@ -930,7 +930,7 @@
 		DCC315CF076253A5008F7A48 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		DCC315D0076253A5008F7A48 /* task_event_gen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = task_event_gen.cc; sourceTree = "<group>"; };
 		DCC315D1076253A5008F7A48 /* task_event_gen.old.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = task_event_gen.old.cc; sourceTree = "<group>"; };
-		DCC3164D07626CF3008F7A48 /* avida */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = avida; sourceTree = BUILT_PRODUCTS_DIR; };
+		DCC3164D07626CF3008F7A48 /* avida */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "compiled.mach-o.executable"; path = avida; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2308,7 +2308,6 @@
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
 					"-Wconversion",
-					"-Winline",
 				);
 			};
 			name = Development;
@@ -2334,7 +2333,6 @@
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
 					"-Wconversion",
-					"-Winline",
 				);
 			};
 			name = "Deployment-G4";
@@ -2490,7 +2488,6 @@
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
 					"-Wconversion",
-					"-Winline",
 				);
 			};
 			name = "Deployment-G5";
@@ -2518,7 +2515,6 @@
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
 					"-Wconversion",
-					"-Winline",
 				);
 			};
 			name = Profile;
@@ -2555,7 +2551,7 @@
 			};
 			name = Profile;
 		};
-		E62620990A372B9900C07685 /* Deployment-Intel */ = {
+		E62620990A372B9900C07685 /* Deployment-Universal */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -2565,9 +2561,9 @@
 				GCC_THREADSAFE_STATICS = NO;
 				PRODUCT_NAME = tcmalloc;
 			};
-			name = "Deployment-Intel";
+			name = "Deployment-Universal";
 		};
-		E626209A0A372B9900C07685 /* Deployment-Intel */ = {
+		E626209A0A372B9900C07685 /* Deployment-Universal */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_MODEL_CPU = G4;
@@ -2577,17 +2573,17 @@
 				);
 				PRODUCT_NAME = avida;
 			};
-			name = "Deployment-Intel";
+			name = "Deployment-Universal";
 		};
-		E626209B0A372B9900C07685 /* Deployment-Intel */ = {
+		E626209B0A372B9900C07685 /* Deployment-Universal */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_MODEL_CPU = G4;
 				PRODUCT_NAME = "avida-s";
 			};
-			name = "Deployment-Intel";
+			name = "Deployment-Universal";
 		};
-		E626209C0A372B9900C07685 /* Deployment-Intel */ = {
+		E626209C0A372B9900C07685 /* Deployment-Universal */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_ALTIVEC_EXTENSIONS = YES;
@@ -2607,16 +2603,20 @@
 					"-Wno-unknown-pragmas",
 				);
 			};
-			name = "Deployment-Intel";
+			name = "Deployment-Universal";
 		};
-		E626209D0A372B9900C07685 /* Deployment-Intel */ = {
+		E626209D0A372B9900C07685 /* Deployment-Universal */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
 				DEPLOYMENT_POSTPROCESSING = YES;
 				GCC_AUTO_VECTORIZATION = YES;
 				GCC_DYNAMIC_NO_PIC = YES;
 				GCC_FAST_MATH = YES;
-				GCC_MODEL_TUNING = "";
+				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					NDEBUG,
@@ -2625,15 +2625,15 @@
 				GCC_STRICT_ALIASING = YES;
 				GCC_UNROLL_LOOPS = YES;
 				PREBINDING = NO;
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				WARNING_CFLAGS = (
 					"-Wextra",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
 					"-Wconversion",
-					"-Winline",
 				);
 			};
-			name = "Deployment-Intel";
+			name = "Deployment-Universal";
 		};
 /* End XCBuildConfiguration section */
 
@@ -2644,7 +2644,7 @@
 				700E2B7F085DE50C00CF158A /* Development */,
 				700E2B80085DE50C00CF158A /* Deployment-G4 */,
 				70B393DE0944CA6F0018F09D /* Deployment-G5 */,
-				E626209C0A372B9900C07685 /* Deployment-Intel */,
+				E626209C0A372B9900C07685 /* Deployment-Universal */,
 				70B393DF0944CA6F0018F09D /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -2656,7 +2656,7 @@
 				702442D30859E0B00059BD9B /* Development */,
 				702442D40859E0B00059BD9B /* Deployment-G4 */,
 				70B393DC0944CA6F0018F09D /* Deployment-G5 */,
-				E626209A0A372B9900C07685 /* Deployment-Intel */,
+				E626209A0A372B9900C07685 /* Deployment-Universal */,
 				70B393DD0944CA6F0018F09D /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -2668,7 +2668,7 @@
 				702442D80859E0B00059BD9B /* Development */,
 				702442D90859E0B00059BD9B /* Deployment-G4 */,
 				70B393E00944CA6F0018F09D /* Deployment-G5 */,
-				E626209D0A372B9900C07685 /* Deployment-Intel */,
+				E626209D0A372B9900C07685 /* Deployment-Universal */,
 				70B393E10944CA6F0018F09D /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -2680,7 +2680,7 @@
 				70AA942609D48715006A24C8 /* Development */,
 				70AA942709D48715006A24C8 /* Deployment-G4 */,
 				70AA942809D48715006A24C8 /* Deployment-G5 */,
-				E62620990A372B9900C07685 /* Deployment-Intel */,
+				E62620990A372B9900C07685 /* Deployment-Universal */,
 				70AA942909D48715006A24C8 /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -2692,7 +2692,7 @@
 				70DCAD18097AF7CC002F8733 /* Development */,
 				70DCAD19097AF7CC002F8733 /* Deployment-G4 */,
 				70DCAD1A097AF7CC002F8733 /* Deployment-G5 */,
-				E626209B0A372B9900C07685 /* Deployment-Intel */,
+				E626209B0A372B9900C07685 /* Deployment-Universal */,
 				70DCAD1B097AF7CC002F8733 /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
