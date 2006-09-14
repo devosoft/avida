@@ -11,10 +11,10 @@ Visualized development/support timeline (* current):
      --2.1--
             --2.2----
               --2.3--
-                     --2.4---*---------
-                       --2.5-*
+                     --2.4-------------
+                       --2.5--
                               --2.6----------------------
-                                --2.7--
+                                *-2.7--
                                        --2.8----------------------
                                          --2.9--
                                                 --3.0-------------
@@ -27,43 +27,20 @@ Visualized development/support timeline (* current):
                                                                            --3.6--
 
 
-Version 2.0 - stable      - Target: Unspecified    - Status: End of Life
-Version 2.1 - development - Target: Unspecified    - Status: Completed
-Version 2.2 - stable      - Target: Unspecified    - Status: End of Life
-Version 2.3 - development - Target: Unspecified    - Status: Completed
+Version 2.0 - stable      - Status: End of Life
+Version 2.1 - development - Status: Completed
+Version 2.2 - stable      - Status: End of Life
+Version 2.3 - development - Status: Completed
+Version 2.4 - stable      - Status: End of Life
+Version 2.5 - development - Status: Completed
 
 
-Version 2.4 - stable      - Target: < Version 2.6  - Status: Active Maintaince
+Version 2.6 - stable      - Target: < Mid 2007     - Status: Active Maintenance
 
-Currently at 2.4.3.
-
-
-Version 2.5 - development - Target: July 2006      - Status: Active Development
-
-* New configuration framework
-* World Object based structure
-* Specifiable Data output directory
-* Transition all output files to use DataFileManager
-* Improved driver object framework
-* SMT Hardware
-* Basic multithreaded analyze mode support
-* TCMalloc OS X
-* TCMalloc Linux
-* Actions framework
-* Merge (meaningful) events and analyze commands into actions framework
-* Consistency test support
-* Framework for unit testing
-* Move UnitTest functions from classes to namespaces
-* Update documentation
-+ Code release cleanup
+Currently at 2.6.0
 
 
-Version 2.6 - stable      - Target: < Mid 2007     - Status: Pending version 2.5 completion
-
-- Stable maintenance
-
-
-Version 2.7 - development - Target: July 2007      - Status: Planned
+Version 2.7 - development - Target: July 2007      - Status: Active Development
 
 + Transition all applicable output files to cDataFile objects, as opposed to raw ostream
 + Serialization
