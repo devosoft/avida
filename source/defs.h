@@ -11,8 +11,8 @@
 #ifndef defs_h
 #define defs_h
 
-#define VERSION "2.5.0"
-#define VERSION_TAG "Jedi"
+#define VERSION "2.7.0"
+#define VERSION_TAG "Jedi Knight"
 
 // -= Various view modes
 // #define VIEW_ANSI
