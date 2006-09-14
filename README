@@ -26,7 +26,7 @@ $ ./build_avida
 
 By default, you will get an optimized version of the code, as well as
 the NCurses viewer. The installation goes into a directory called
-'work' that is created in a subdirectory named 'build' directory.
+'work' that is created in a subdirectory named 'cbuild' directory.
 See below how to change that.
 
 OR 
