@@ -12,6 +12,8 @@ incs = [
   'tVerifierSuite.hh',
   'tVerifierSuiteRecurser.hh',
   'win32_mkdir_hack.hh',
+  'cArgContainer.h',
+  'cArgSchema.h',
   'cBlockStruct.h',
   'cChangeList.h',
   'cConstSchedule.h',
@@ -82,6 +84,8 @@ incs = [
 
 srcs = [
   #'cBlockStruct.cc',
+  'cArgContainer.cc',
+  'cArgSchema.cc',
   'cChangeList.cc',
   'cConstSchedule.cc',
   'cDataEntry.cc',

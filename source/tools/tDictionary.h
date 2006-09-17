@@ -45,19 +45,19 @@ private:
   // disabled copy constructor.
   tDictionary(const tDictionary &);
 public:
-  tDictionary() {}
-  tDictionary(int in_hash_size) : m_hash(in_hash_size) {}
+  tDictionary() { ; }
+  tDictionary(int in_hash_size) : m_hash(in_hash_size) { ; }
 
   // The following methods just call the encapsulated tHashTable
   bool OK() { return m_hash.OK(); }
   int GetSize() { return m_hash.GetSize(); }
-  void Add(const cString & name, T data) { m_hash.Add(name, data); }
-  void SetValue(const cString & name, T data) { m_hash.SetValue(name, data); }
-  bool HasEntry(const cString & name) const { return m_hash.HasEntry(name); }
-  bool Find(const cString & name, T & out_data) const { return m_hash.Find(name, out_data); }
-  T Remove(const cString & name) { return m_hash.Remove(name); }
+  void Add(const cString& name, T data) { m_hash.Add(name, data); }
+  void SetValue(const cString& name, T data) { m_hash.SetValue(name, data); }
+  bool HasEntry(const cString& name) const { return m_hash.HasEntry(name); }
+  bool Find(const cString& name, T& out_data) const { return m_hash.Find(name, out_data); }
+  T Remove(const cString& name) { return m_hash.Remove(name); }
   void SetHash(int _hash) { m_hash.SetTableSize(_hash); }
-  void AsLists(tList<cString> & name_list, tList<T> & value_list) const
+  void AsLists(tList<cString>& name_list, tList<T>& value_list) const
   {
     m_hash.AsLists(name_list, value_list);
   }
@@ -83,7 +83,7 @@ public:
   }
 
   template<class Archive>
-  void serialize(Archive & a, const unsigned int version){
+  void serialize(Archive& a, const unsigned int version){
     a.ArkvObj("m_hash", m_hash);
   }
 };

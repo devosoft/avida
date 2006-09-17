@@ -1,4 +1,6 @@
 SET(libtools_a_SOURCES
+  cArgContainer.cc
+  cArgSchema.cc
   cChangeList.cc
   cConstSchedule.cc
   cDataEntry.cc

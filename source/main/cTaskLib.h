@@ -71,7 +71,8 @@ public:
   bool UseNeighborOutput() const { return use_neighbor_output; }
   
 private:  // Direct task related methods
-  void NewTask(const cString& name, const cString& desc, tTaskTest task_fun, int reqs = 0, const cString& info = "");
+  void NewTask(const cString& name, const cString& desc, tTaskTest task_fun, int reqs = 0,
+               cArgContainer* args = NULL);
 
   inline double FractionalReward(unsigned int supplied, unsigned int correct);  
 
@@ -79,7 +80,7 @@ private:  // Direct task related methods
   double Task_Add(cTaskContext* ctx) const;
   double Task_Sub(cTaskContext* ctx) const;
 
-  // 1- and 2-Input Logic Tasks
+  // All 1- and 2-Input Logic Functions
   double Task_Not(cTaskContext* ctx) const;
   double Task_Nand(cTaskContext* ctx) const;
   double Task_And(cTaskContext* ctx) const;
@@ -90,7 +91,7 @@ private:  // Direct task related methods
   double Task_Xor(cTaskContext* ctx) const;
   double Task_Equ(cTaskContext* ctx) const;
 
-  // 3-Input Logic Tasks
+  // All 3-Input Logic Functions
   double Task_Logic3in_AA(cTaskContext* ctx) const;
   double Task_Logic3in_AB(cTaskContext* ctx) const;
   double Task_Logic3in_AC(cTaskContext* ctx) const;
@@ -160,7 +161,7 @@ private:  // Direct task related methods
   double Task_Logic3in_CO(cTaskContext* ctx) const;
   double Task_Logic3in_CP(cTaskContext* ctx) const;
 
-  // 1-Input math tasks...
+  // Arbitrary 1-Input Math Tasks
   double Task_Math1in_AA(cTaskContext* ctx) const;
   double Task_Math1in_AB(cTaskContext* ctx) const;
   double Task_Math1in_AC(cTaskContext* ctx) const;
@@ -178,7 +179,7 @@ private:  // Direct task related methods
   double Task_Math1in_AO(cTaskContext* ctx) const;
   double Task_Math1in_AP(cTaskContext* ctx) const;
 
-  // 2-Input math tasks...
+  // Arbitrary 2-Input Math Tasks
   double Task_Math2in_AA(cTaskContext* ctx) const;
   double Task_Math2in_AB(cTaskContext* ctx) const;
   double Task_Math2in_AC(cTaskContext* ctx) const;
@@ -202,6 +203,7 @@ private:  // Direct task related methods
   double Task_Math2in_AU(cTaskContext* ctx) const;
   double Task_Math2in_AV(cTaskContext* ctx) const;
 
+  // Arbitrary 3-Input Math Tasks
   double Task_Math3in_AA(cTaskContext* ctx) const;
   double Task_Math3in_AB(cTaskContext* ctx) const;
   double Task_Math3in_AC(cTaskContext* ctx) const;
@@ -216,12 +218,15 @@ private:  // Direct task related methods
   double Task_Math3in_AL(cTaskContext* ctx) const;
   double Task_Math3in_AM(cTaskContext* ctx) const;
   
-  // match string tasks
+  // Matching Tasks
   double Task_MatchStr(cTaskContext* ctx) const;
-  // Communication Tasks...
+  double Task_MatchNumber(cTaskContext* ctx) const;
+
+  // Communication Tasks
   double Task_CommEcho(cTaskContext* ctx) const;
   double Task_CommNot(cTaskContext* ctx) const;
   
+  // Network Tasks
   double Task_NetSend(cTaskContext* ctx) const;
   double Task_NetReceive(cTaskContext* ctx) const;
 };

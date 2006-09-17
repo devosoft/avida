@@ -11,6 +11,9 @@
 #ifndef cTaskEntry_h
 #define cTaskEntry_h
 
+#ifndef cArgContainer_h
+#include "cArgContainer.h"
+#endif
 #ifndef cString_h
 #include "cString.h"
 #endif
@@ -30,20 +33,22 @@ private:
   cString m_desc;  // For more human-understandable output...
   int m_id;
   tTaskTest m_test_fun;
-  cString m_info;  // extra info (like the string or whatever to match)
+  cArgContainer* m_args;
 
 public:
-  cTaskEntry(const cString& name, const cString& desc, int in_id, tTaskTest test_fun, const cString& info)
-    : m_name(name), m_desc(desc), m_id(in_id), m_test_fun(test_fun), m_info(info)
+  cTaskEntry(const cString& name, const cString& desc, int in_id, tTaskTest fun, cArgContainer* args)
+    : m_name(name), m_desc(desc), m_id(in_id), m_test_fun(fun), m_args(args)
   {
   }
-  ~cTaskEntry() { ; }
+  ~cTaskEntry() { delete m_args; }
 
   const cString& GetName() const { return m_name; }
   const cString& GetDesc() const { return m_desc; }
   const int GetID() const { return m_id; }
   const tTaskTest GetTestFun() const { return m_test_fun; }
-  const cString& GetInfo() const { return m_info; }
+  
+  bool HasArguments() const { return (m_args != NULL); }
+  const cArgContainer& GetArguments() const { return *m_args; }
 };
 
 

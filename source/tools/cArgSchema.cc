@@ -1,0 +1,104 @@
+/*
+ *  cArgSchema.cc
+ *  Avida
+ *
+ *  Created by David Bryson on 9/14/06.
+ *  Copyright 2006 Michigan State University. All rights reserved.
+ *
+ */
+
+#include "cArgSchema.h"
+
+
+cArgSchema::~cArgSchema()
+{
+  for (int i = 0; i < m_ints.GetSize(); i++) delete m_ints[i];
+  for (int i = 0; i < m_doubles.GetSize(); i++) delete m_doubles[i];
+  for (int i = 0; i < m_strings.GetSize(); i++) delete m_strings[i];
+}
+
+bool cArgSchema::AddEntry(cString in_name, int in_idx, tType in_type)
+{
+  AdjustArgName(in_name);
+  if (m_entries.HasEntry(in_name)) return false;
+  
+  sArgSchemaEntry* entry = new sArgSchemaEntry(in_name, in_idx, in_type);
+  
+  switch (in_type) {
+    case SCHEMA_INT:
+      if (m_ints.GetSize() <= in_idx) m_ints.Resize(in_idx + 1, NULL);
+      m_ints[in_idx] = entry;
+      break;
+    case SCHEMA_DOUBLE:
+      if (m_doubles.GetSize() <= in_idx) m_doubles.Resize(in_idx + 1, NULL);
+      m_doubles[in_idx] = entry;
+      break;
+    case SCHEMA_STRING:
+      if (m_strings.GetSize() <= in_idx) m_strings.Resize(in_idx + 1, NULL);
+      m_strings[in_idx] = entry;
+      break;
+    default:
+      delete entry;
+      return false;
+  }
+  
+  m_entries.Add(in_name, entry);
+  
+  return true;
+}
+
+bool cArgSchema::AddEntry(cString in_name, int in_idx, int def)
+{
+  AdjustArgName(in_name);
+  if (m_entries.HasEntry(in_name)) return false;
+  
+  sArgSchemaEntry* entry = new sArgSchemaEntry(in_name, in_idx, def); 
+  m_entries.Add(in_name, entry);
+
+  if (m_ints.GetSize() <= in_idx) m_ints.Resize(in_idx + 1, NULL);
+  m_ints[in_idx] = entry;
+  
+  return true;
+}
+
+bool cArgSchema::AddEntry(cString in_name, int in_idx, double def)
+{
+  AdjustArgName(in_name);
+  if (m_entries.HasEntry(in_name)) return false;
+  
+  sArgSchemaEntry* entry = new sArgSchemaEntry(in_name, in_idx, def); 
+  m_entries.Add(in_name, entry);
+  
+  if (m_doubles.GetSize() <= in_idx) m_doubles.Resize(in_idx + 1, NULL);
+  m_doubles[in_idx] = entry;
+  
+  return true;
+}
+
+bool cArgSchema::AddEntry(cString in_name, int in_idx, const cString& def)
+{
+  AdjustArgName(in_name);
+  if (m_entries.HasEntry(in_name)) return false;
+  
+  cString* str = new cString(def);
+  sArgSchemaEntry* entry = new sArgSchemaEntry(in_name, in_idx, str); 
+  m_entries.Add(in_name, entry);
+  
+  if (m_strings.GetSize() <= in_idx) m_strings.Resize(in_idx + 1, NULL);
+  m_strings[in_idx] = entry;
+  
+  return true;
+}
+
+
+bool cArgSchema::FindEntry(const cString& in_name, tType& ret_type, int& ret_idx) const
+{
+  sArgSchemaEntry* entry;
+  if (m_entries.Find(in_name, entry)) {
+    ret_type = entry->type;
+    ret_idx = entry->index;
+    return true;
+  }
+  
+  return false;
+}

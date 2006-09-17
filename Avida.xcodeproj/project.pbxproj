@@ -37,6 +37,10 @@
 		7039884E09F00D030052ACE7 /* avida.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2D509EE8501001AEA89 /* avida.cfg */; };
 		7039884F09F00D060052ACE7 /* environment.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2D709EE8501001AEA89 /* environment.cfg */; };
 		7039885009F00D080052ACE7 /* events.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2D809EE8501001AEA89 /* events.cfg */; };
+		703D4D6E0ABA374A0032C8A0 /* cArgSchema.cc in Sources */ = {isa = PBXBuildFile; fileRef = 703D4D6D0ABA374A0032C8A0 /* cArgSchema.cc */; };
+		703D4D6F0ABA374A0032C8A0 /* cArgSchema.cc in Sources */ = {isa = PBXBuildFile; fileRef = 703D4D6D0ABA374A0032C8A0 /* cArgSchema.cc */; };
+		703D4D700ABA374A0032C8A0 /* cArgSchema.cc in Sources */ = {isa = PBXBuildFile; fileRef = 703D4D6D0ABA374A0032C8A0 /* cArgSchema.cc */; };
+		703D4E2E0ABCAC4A0032C8A0 /* cArgContainer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70BCB21C0AB7ADA6003FF331 /* cArgContainer.cc */; };
 		7040D3A6090964D100AA820F /* cMxCodeArray.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865808F4974300FC65FE /* cMxCodeArray.cc */; };
 		70422A28091B141000A5E67F /* cAnalyze.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70422A1C091B141000A5E67F /* cAnalyze.cc */; };
 		70422A30091B141000A5E67F /* cAnalyzeGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70422A24091B141000A5E67F /* cAnalyzeGenotype.cc */; };
@@ -198,6 +202,8 @@
 		70B08B9308FB2E6B00FC65FE /* cWeightedIndex.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B08B9108FB2E6B00FC65FE /* cWeightedIndex.cc */; };
 		70B08B9408FB2E6B00FC65FE /* cTools.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B08B9008FB2E6B00FC65FE /* cTools.cc */; };
 		70B08B9508FB2E6B00FC65FE /* cWeightedIndex.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B08B9108FB2E6B00FC65FE /* cWeightedIndex.cc */; };
+		70BCB22E0AB7B23D003FF331 /* cArgContainer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70BCB21C0AB7ADA6003FF331 /* cArgContainer.cc */; };
+		70BCB2350AB7B26B003FF331 /* cArgContainer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70BCB21C0AB7ADA6003FF331 /* cArgContainer.cc */; };
 		70C054ED0A4F6FD2002703C1 /* PopulationActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C054C90A4F6E19002703C1 /* PopulationActions.cc */; };
 		70C054F80A4F704D002703C1 /* PopulationActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C054C90A4F6E19002703C1 /* PopulationActions.cc */; };
 		70C054F90A4F704E002703C1 /* SaveLoadActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708051A80A1F65FE00CBB8B6 /* SaveLoadActions.cc */; };
@@ -477,6 +483,7 @@
 		703CA3760A5073CD00AB4DB4 /* SConscript */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConscript; sourceTree = "<group>"; };
 		703CA3770A50740300AB4DB4 /* SConscript */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConscript; sourceTree = "<group>"; };
 		703CA3780A50749F00AB4DB4 /* SConstruct */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConstruct; sourceTree = "<group>"; };
+		703D4D6D0ABA374A0032C8A0 /* cArgSchema.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cArgSchema.cc; sourceTree = "<group>"; };
 		70422A1C091B141000A5E67F /* cAnalyze.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyze.cc; sourceTree = "<group>"; };
 		70422A1D091B141000A5E67F /* cAnalyze.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAnalyze.h; sourceTree = "<group>"; };
 		70422A1E091B141000A5E67F /* cAnalyzeCommand.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAnalyzeCommand.h; sourceTree = "<group>"; };
@@ -757,6 +764,9 @@
 		70B08B9008FB2E6B00FC65FE /* cTools.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTools.cc; sourceTree = "<group>"; };
 		70B08B9108FB2E6B00FC65FE /* cWeightedIndex.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cWeightedIndex.cc; sourceTree = "<group>"; };
 		70B3984E0947B29D0018F09D /* tManagedPointerArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tManagedPointerArray.h; sourceTree = "<group>"; };
+		70BCB21B0AB7ADA6003FF331 /* cArgContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cArgContainer.h; sourceTree = "<group>"; };
+		70BCB21C0AB7ADA6003FF331 /* cArgContainer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cArgContainer.cc; sourceTree = "<group>"; };
+		70BCB2470AB7B634003FF331 /* cArgSchema.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cArgSchema.h; sourceTree = "<group>"; };
 		70C054C80A4F6E19002703C1 /* PopulationActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PopulationActions.h; sourceTree = "<group>"; };
 		70C054C90A4F6E19002703C1 /* PopulationActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PopulationActions.cc; sourceTree = "<group>"; };
 		70C054F10A4F6FF1002703C1 /* SConscript */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConscript; sourceTree = "<group>"; };
@@ -1653,6 +1663,10 @@
 				7054A11E09A7BEFC00038658 /* cThread.h */,
 				7054A11F09A7BEFC00038658 /* cThread.cc */,
 				7093DB4009D6F50300DE7FEB /* tSmartArray.h */,
+				70BCB21B0AB7ADA6003FF331 /* cArgContainer.h */,
+				70BCB21C0AB7ADA6003FF331 /* cArgContainer.cc */,
+				70BCB2470AB7B634003FF331 /* cArgSchema.h */,
+				703D4D6D0ABA374A0032C8A0 /* cArgSchema.cc */,
 			);
 			path = tools;
 			sourceTree = "<group>";
@@ -1979,6 +1993,8 @@
 				704ADBC80A6EEFC300666970 /* DriverActions.cc in Sources */,
 				705ABB3E0A8A6B4400A6A80E /* EnvironmentActions.cc in Sources */,
 				708BF3000AB65DC700A923BF /* cEventList.cc in Sources */,
+				70BCB2350AB7B26B003FF331 /* cArgContainer.cc in Sources */,
+				703D4D700ABA374A0032C8A0 /* cArgSchema.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2108,6 +2124,8 @@
 				704ADBC60A6EEFC300666970 /* DriverActions.cc in Sources */,
 				705ABB3D0A8A6B4100A6A80E /* EnvironmentActions.cc in Sources */,
 				708BF2FF0AB65DC700A923BF /* cEventList.cc in Sources */,
+				703D4D6F0ABA374A0032C8A0 /* cArgSchema.cc in Sources */,
+				703D4E2E0ABCAC4A0032C8A0 /* cArgContainer.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2218,6 +2236,8 @@
 				704ADBF90A6EF3A300666970 /* DriverActions.cc in Sources */,
 				705ABB3C0A8A6B3D00A6A80E /* EnvironmentActions.cc in Sources */,
 				708BF2FE0AB65DC700A923BF /* cEventList.cc in Sources */,
+				70BCB22E0AB7B23D003FF331 /* cArgContainer.cc in Sources */,
+				703D4D6E0ABA374A0032C8A0 /* cArgSchema.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2351,14 +2371,6 @@
 				INSTALL_PATH = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = tcmalloc;
-				WARNING_CFLAGS = (
-					"-Wextra",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-					"-Wconversion",
-					"-Winline",
-					"-Wno-sign-compare",
-				);
 				ZERO_LINK = YES;
 			};
 			name = Development;

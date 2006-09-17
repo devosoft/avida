@@ -10,6 +10,9 @@
 
 #include "cTaskLib.h"
 
+#include "cArgSchema.h"
+
+#include <stdlib.h>
 extern "C" {
 #include <math.h>
 #include <limits.h>
@@ -37,7 +40,7 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info)
   // Determine if this task is already in the active library.
   for (int i = 0; i < task_array.GetSize(); i++) {
     assert(task_array[i] != NULL);
-    if (task_array[i]->GetName() == name && task_array[i]->GetInfo() == info) return task_array[i];
+    if (task_array[i]->GetName() == name && !task_array[i]->HasArguments()) return task_array[i];
   }
   
   // Match up this name to its corresponding task
@@ -50,7 +53,7 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info)
   else if (name == "add")  NewTask(name, "Add",  &cTaskLib::Task_Add);
   else if (name == "sub")  NewTask(name, "Sub",  &cTaskLib::Task_Sub);
   
-  // All one and two input logic functions
+  // All 1- and 2-Input Logic Functions
   if (name == "not") NewTask(name, "Not", &cTaskLib::Task_Not);
   else if (name == "nand") NewTask(name, "Nand", &cTaskLib::Task_Nand);
   else if (name == "and") NewTask(name, "And", &cTaskLib::Task_And);
@@ -61,7 +64,7 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info)
   else if (name == "xor") NewTask(name, "Xor", &cTaskLib::Task_Xor);
   else if (name == "equ") NewTask(name, "Equals", &cTaskLib::Task_Equ);
   
-  // All three input logic functions
+  // All 3-Input Logic Functions
   if (name == "logic_3AA")
     NewTask(name, "Logic 3AA (A+B+C == 0)", &cTaskLib::Task_Logic3in_AA);
   else if (name == "logic_3AB")
@@ -199,7 +202,7 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info)
   else if (name == "logic_3CP")
     NewTask(name, "Logic 3CP", &cTaskLib::Task_Logic3in_CP);
   
-  // Arbitrary one input math tasks
+  // Arbitrary 1-Input Math Tasks
   else if (name == "math_1AA")
     NewTask(name, "Math 1AA (2X)", &cTaskLib::Task_Math1in_AA);
   else if (name == "math_1AB")
@@ -233,7 +236,7 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info)
   else if (name == "math_1AP")
     NewTask(name, "Math 1AP (X-7)", &cTaskLib::Task_Math1in_AP);
   
-  // Arbitrary two input math tasks
+  // Arbitrary 2-Input Math Tasks
   if (name == "math_2AA")
     NewTask(name, "Math 2AA (sqrt(X+Y))", &cTaskLib::Task_Math2in_AA);  
   else if (name == "math_2AB")
@@ -279,7 +282,7 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info)
   else if (name == "math_2AV")
     NewTask(name, "Math 2AV (XY^2)", &cTaskLib::Task_Math2in_AV);
   
-  // Arbitrary three input logic tasks
+  // Arbitrary 3-Input Math Tasks
   if (name == "math_3AA")
     NewTask(name, "Math 3AA (X^2+Y^2+Z^2)", &cTaskLib::Task_Math3in_AA);  
   else if (name == "math_3AB")
@@ -307,16 +310,32 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info)
   else if (name == "math_3AM")
     NewTask(name, "Math 3AM ((X+Y)^2+(Y+Z)^2)", &cTaskLib::Task_Math3in_AM);  
   
-  // match string task
-  if (name == "matchstr")  NewTask(name, "MatchStr", &cTaskLib::Task_MatchStr, 0, info);
+  // Matching Tasks
+  if (name == "matchstr") {
+    cArgSchema schema(',',':');
+    schema.AddEntry("string", 0, cArgSchema::SCHEMA_STRING);
+    cArgContainer* args = cArgContainer::Load(info, schema);
+    if (args) NewTask(name, "MatchStr", &cTaskLib::Task_MatchStr, 0, args);
+  } else if (name == "match_number") {
+    cArgSchema schema(',',':');
+    
+    // Integer Arguments
+    schema.AddEntry("target", 0, cArgSchema::SCHEMA_INT);
+    schema.AddEntry("threshold", 1, -1);
+    // Double Arguments
+    schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
+    
+    cArgContainer* args = cArgContainer::Load(info, schema);
+    if (args) NewTask(name, "Match Number", &cTaskLib::Task_MatchNumber, 0, args);
+  }
 
-	// communication tasks
+	// Communication Tasks
   if (name == "comm_echo")
     NewTask(name, "Echo of Neighbor's Input", &cTaskLib::Task_CommEcho, REQ_NEIGHBOR_INPUT);
   else if (name == "comm_not")
 	  NewTask(name, "Not of Neighbor's Input", &cTaskLib::Task_CommNot, REQ_NEIGHBOR_INPUT);
 
-  // Network tasks
+  // Network Tasks
   if (name == "net_send")
 	  NewTask(name, "Successfully Sent Network Message", &cTaskLib::Task_NetSend);
   else if (name == "net_receive")
@@ -333,6 +352,20 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info)
   // And return the found task.
   return task_array[start_size];
 }
+
+void cTaskLib::NewTask(const cString& name, const cString& desc, tTaskTest task_fun, int reqs,
+                       cArgContainer* args)
+{
+  if (reqs & REQ_NEIGHBOR_INPUT == true) use_neighbor_input = true;
+  if (reqs & REQ_NEIGHBOR_OUTPUT == true) use_neighbor_output = true;
+  
+  const int id = task_array.GetSize();
+  task_array.Resize(id + 1);
+  task_array[id] = new cTaskEntry(name, desc, id, task_fun, args);
+}
+
+
+
 
 
 void cTaskLib::SetupTests(cTaskContext& ctx) const
@@ -413,21 +446,6 @@ void cTaskLib::SetupTests(cTaskContext& ctx) const
   ctx.logic_id = logicid;
 }
 
-
-////////////////////////
-//  cTaskLib (private)
-////////////////////////
-
-void cTaskLib::NewTask(const cString & name, const cString & desc,
-					   tTaskTest task_fun, int reqs, const cString & info)
-{
-  if (reqs & REQ_NEIGHBOR_INPUT == true) use_neighbor_input = true;
-  if (reqs & REQ_NEIGHBOR_OUTPUT == true) use_neighbor_output = true;
-  
-  const int id = task_array.GetSize();
-  task_array.Resize(id+1);
-  task_array[id] = new cTaskEntry(name, desc, id, task_fun, info);
-}
 
 
 double cTaskLib::Task_Echo(cTaskContext* ctx) const
@@ -1726,61 +1744,74 @@ double cTaskLib::Task_MatchStr(cTaskContext* ctx) const
 
 	temp_buf.Pop(); // pop the signal value off of the buffer
 
-	const cString& string_to_match = ctx->task_entry->GetInfo();
+	const cString& string_to_match = ctx->task_entry->GetArguments().GetString(0);
 	int string_index;
 	int num_matched = 0;
-	int test_output, max_num_matched = 0;
+	int test_output;
+  int max_num_matched = 0;
 
-	if (temp_buf.GetNumStored() > 0)
-	{
+	if (temp_buf.GetNumStored() > 0) {
 		test_output = temp_buf[0];
 	
-		for (int j=0; j<string_to_match.GetSize(); j++)
-		{	
-			string_index=string_to_match.GetSize()-j-1;		// start with last char in string
+		for (int j = 0; j < string_to_match.GetSize(); j++) {	
+			string_index = string_to_match.GetSize() - j - 1; // start with last char in string
 			int k = 1 << j;
-			if ((string_to_match[string_index]=='0' && !(test_output & k)) || (string_to_match[string_index]=='1' && (test_output & k))) 
-				num_matched++;
+			if ((string_to_match[string_index] == '0' && !(test_output & k)) ||
+          (string_to_match[string_index] == '1' && (test_output & k))) num_matched++;
 		}
 		max_num_matched = num_matched;
 	}
 
 	bool used_received = false;
-	if (ctx->received_messages)
-	{
+	if (ctx->received_messages) {
 		tBuffer<int> received(*(ctx->received_messages));
-		for (int i=0; i<received.GetNumStored(); i++)
-		{
+		for (int i = 0; i < received.GetNumStored(); i++) {
 			test_output = received[i];
 			num_matched = 0;
-			for (int j=0; j<string_to_match.GetSize(); j++)
-			{	
-				string_index=string_to_match.GetSize()-j-1;		// start with last char in string
+			
+      for (int j = 0; j < string_to_match.GetSize(); j++) {
+				string_index = string_to_match.GetSize() - j - 1; // start with last char in string
 				int k = 1 << j;
-				if ((string_to_match[string_index]=='0' && !(test_output & k)) || (string_to_match[string_index]=='1' && (test_output & k))) 
-					num_matched++;
+				if ((string_to_match[string_index]=='0' && !(test_output & k)) ||
+            (string_to_match[string_index]=='1' && (test_output & k))) num_matched++;
 			}
-			if (num_matched > max_num_matched)
-			{
+			
+      if (num_matched > max_num_matched) {
 				max_num_matched = num_matched;
 				used_received = true;
 			}
 		}
 	}
 
-	double bonus = 0;
+	double bonus = 0.0;
 	// return value between 0 & 1 representing the percentage of string that was matched
-	double base_bonus = double(max_num_matched)*2/(double)string_to_match.GetSize() - 1;
+	double base_bonus = static_cast<double>(max_num_matched) * 2.0 / static_cast<double>(string_to_match.GetSize()) - 1;
 	
-	if (base_bonus > 0)
-	{
-		bonus = pow(base_bonus,2);
+	if (base_bonus > 0.0) {
+		bonus = pow(base_bonus, 2);
 		if (used_received)
-			m_world->GetStats().AddMarketItemUsed();
+      m_world->GetStats().AddMarketItemUsed();
 		else
 			m_world->GetStats().AddMarketOwnItemUsed();
-	}	
+	}
 	return bonus;
+}
+
+double cTaskLib::Task_MatchNumber(cTaskContext* ctx) const
+{
+  double quality = 0.0;
+  const cArgContainer& args = ctx->task_entry->GetArguments();
+
+  int diff = abs(args.GetInt(0) - ctx->output_buffer[0]);
+  int threshold = args.GetInt(1);
+    
+  if (threshold < 0 || diff <= abs(threshold)) { // Negative threshold == infinite
+    // If within threshold range, quality decays based on absolute difference
+    double halflife = -1.0 * fabs(args.GetDouble(0));
+    quality = pow(2.0, static_cast<double>(diff) / halflife);
+  }
+
+  return quality;
 }
 
 double cTaskLib::Task_CommEcho(cTaskContext* ctx) const
