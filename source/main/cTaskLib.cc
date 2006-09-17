@@ -1797,6 +1797,7 @@ double cTaskLib::Task_MatchStr(cTaskContext* ctx) const
 	return bonus;
 }
 
+
 double cTaskLib::Task_MatchNumber(cTaskContext* ctx) const
 {
   double quality = 0.0;
