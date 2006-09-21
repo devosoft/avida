@@ -19,43 +19,40 @@ void cMerit::UpdateValue(double in_value)
   static double mult[max_bits];
   static bool mult_initilalized = false;
 
-  // Do not allow negative merits.
-  if (in_value < 0.0) in_value = 0.0;
+  // Do not allow negative merits. If less than 1, set to 0.
+  if (in_value < 1.0) in_value = 0.0;
 
   // Initilize multipliers only once
-  if( mult_initilalized == false ){
+  if (mult_initilalized == false) {
     mult_initilalized = true;
-    for( int i=0; i<max_bits; ++i ){
-      mult[i] = pow((double)2,i);
-    }
+    for (int i = 0; i < max_bits; ++i) mult[i] = pow(2.0, i);
   }
 
   value = in_value;
 
-  double mant = frexp (value , &bits);
+  double mant = frexp(value , &bits);
 
-  if( bits > max_bits ){
+  if (bits > max_bits)
     offset = bits - max_bits;
-  }else{
+  else
     offset = 0;
-  }
 
-  base = (unsigned int) (mant * mult[bits-offset-1] * 2 );
+  base = static_cast<unsigned int>(mant * mult[bits-offset-1] * 2);
 }
 
 
-ostream& cMerit::BinaryPrint(ostream& os) const {
-  for( int i=GetNumBits()-1; i>=0; --i ){
-    os<<GetBit(i);
-  }
+ostream& cMerit::BinaryPrint(ostream& os) const
+{
+  for (int i = GetNumBits() - 1; i >= 0; --i) os << GetBit(i);
   return os;
 }
 
 
-bool cMerit::OK() const {
-  double test_value = (double)base * pow((double)2,(int)offset);
-  int test_bits = (int)(log(value)/log((double)2)) + 1;
-  if( base == 0 ) test_bits = 0;
+bool cMerit::OK() const
+{
+  double test_value = static_cast<double>(base) * pow(2.0, offset);
+  int test_bits = static_cast<int>(log(value) / log(2.0)) + 1;
+  if (base == 0) test_bits = 0;
 
   // Uncomment block for debugging output and assertion of OK
   /*
@@ -65,20 +62,20 @@ bool cMerit::OK() const {
   BinaryPrint(cout)<<endl;
 
   */
-  assert ( test_bits == bits &&
-	   ( test_value <= value * (1 + 1/UINT_MAX) ||
-	     test_value >= value / (1 + 1/UINT_MAX) ) );
+  assert(test_bits == bits &&
+         (test_value <= value * (1 + 1 / UINT_MAX) ||
+          test_value >= value / (1 + 1 / UINT_MAX)));
 
-  return ( test_bits == bits &&
-	   ( test_value <= value * (1 + 1/UINT_MAX) ||
-	     test_value >= value / (1 + 1/UINT_MAX) ) );
+  return (test_bits == bits &&
+          (test_value <= value * (1 + 1 / UINT_MAX) ||
+           test_value >= value / (1 + 1 / UINT_MAX)));
 }
 
 
 
-
-ostream& operator<<(ostream& os, const cMerit & merit){
-  os<<merit.GetDouble();
+ostream& operator<<(ostream& os, const cMerit& merit)
+{
+  os << merit.GetDouble();
   return os;
 }
 
