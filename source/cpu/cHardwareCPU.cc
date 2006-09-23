@@ -345,9 +345,7 @@ cInstLibCPU *cHardwareCPU::initInstLib(void)
     cInstEntryCPU("kazi",	&cHardwareCPU::Inst_Kazi),
     cInstEntryCPU("kazi5",	&cHardwareCPU::Inst_Kazi5),
     cInstEntryCPU("die",	&cHardwareCPU::Inst_Die),
-    
-    
-    
+	    
     // Placebo instructions
     // nop-x (included with nops)
     cInstEntryCPU("skip",      &cHardwareCPU::Inst_Skip)
@@ -2729,20 +2727,80 @@ bool cHardwareCPU::Inst_Receive(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_Sense(cAvidaContext& ctx)
 {
-  const tArray<double>& res_count = organism->GetOrgInterface().GetResources();
-  const int reg_used = FindModifiedRegister(REG_BX);
-  
-  // If there are no resources to measure, this instruction fails.
+  // Returns the log2 amount of a resource or resources 
+  // specified by modifying NOPs into register BX
+
+  const tArray<double> & res_count = organism->GetOrgInterface().GetResources();
+
+  // Arbitrarily set to BX since the conditionals use this directly.
+  int reg_to_set = cHardwareCPU::REG_BX;
+
+  // There are no resources, return
   if (res_count.GetSize() == 0) return false;
+
+  // Only recalculate logs if these values have changed
+  static int last_num_resources = 0;
+  static int max_label_length = 0;
+ 
+  if ((last_num_resources != res_count.GetSize()))
+  {
+      int max_label_length = (int) ceil(log(res_count.GetSize())/log(cHardwareCPU::NUM_NOPS));
+      last_num_resources = res_count.GetSize();
+  }
+
+  // Convert modifying NOPs to the index of the resource.
+  // If there are fewer than the number of NOPs required
+  // to uniquely specify a resource, then add together
+  // a subset of resources (motivation: regulation can evolve
+  // to be more specific if there is an advantage)
+   
+  // Find the maximum number of NOPs needed to specify this number of resources
+  // Note: It's a bit wasteful to recalculate this every time and organisms will
+  // definitely be confused if the number of resources changes during a run
+  // because their mapping to resources will be disrupted
   
-  // Always get the first resource, and convert it to and int.
-  GetRegister(reg_used) = (int) res_count[0];
+  // Attempt to read a label with this maximum length
+  cHardwareCPU::ReadLabel(max_label_length);
   
-  // @CAO Since resources are sometimes less than one, perhaps we should
-  // multiply it by some constant?  Or perhaps taking the log would be more
-  // useful so they can easily scan across orders of magnitude?
+  // Find the length of the label that we actually obtained (max is max_reg_needed)
+  int real_label_length = GetLabel().GetSize();
   
-  return true;
+  // Start and end labels to define the start and end indices of  
+  // resources that we need to add together
+  cCodeLabel start_label = cCodeLabel(GetLabel());
+  cCodeLabel   end_label = cCodeLabel(GetLabel());
+  
+  for (int i = 0; i < max_label_length - real_label_length; i++)
+  {
+    start_label.AddNop(0);
+    end_label.AddNop(cHardwareCPU::NUM_NOPS-1);
+  }
+  
+  int start_index = start_label.AsInt(cHardwareCPU::NUM_NOPS);
+  int   end_index =   end_label.AsInt(cHardwareCPU::NUM_NOPS);
+
+  // If the label refers to ONLY resources that 
+  // do not exist, then the operation fails
+  if (start_index >= res_count.GetSize()) return false;
+
+  // Otherwise sum all valid resources that it might refer to
+  // (this will only be ONE if the label was of the maximum length).
+  int resource_result = 0;
+  for (int i = start_index; i <= end_index; i++)
+  {
+    // if it's a valid resource and not zero
+    // (alternately you could assign min_int for zero resources, but
+    // that would cause wierdness when adding sense values together)
+    if ((i < res_count.GetSize()) && (res_count[i] > 0)) resource_result += (int)(log(res_count[i])/0.69314718056);
+    // 0.69314718056 is log (2)
+  }
+    
+  //Dump this value into an arbitrary register: BX
+  GetRegister(reg_to_set) = resource_result;
+  
+  return true; 
+
+  // Note that we are converting <double> resources to <int> register values
 }
 
 void cHardwareCPU::DoDonate(cOrganism* to_org)
@@ -3354,7 +3412,6 @@ bool cHardwareCPU::Inst_SetFlow(cAvidaContext& ctx)
   GetHead(nHardware::HEAD_FLOW).Set(GetRegister(reg_used));
 return true; 
 }
-
 
 //// Placebo insts ////
 bool cHardwareCPU::Inst_Skip(cAvidaContext& ctx)
