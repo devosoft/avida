@@ -15,14 +15,14 @@
 
 // Just define away mutex support
 #define pthread_mutex_t int
-#define pthread_mutex_init(x)
+#define pthread_mutex_init(x, y)
 #define pthread_mutex_lock(x)
 #define pthread_mutex_unlock(x)
 #define pthread_mutex_destroy(x)
 
 // Just define away condition variable support
 #define pthread_cond_t int
-#define pthread_cond_init(x)
+#define pthread_cond_init(x, y)
 #define pthread_cond_wait(x, y)
 #define pthread_cond_signal(x)
 #define pthread_cond_broadcast(x)
