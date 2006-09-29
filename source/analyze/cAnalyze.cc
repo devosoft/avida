@@ -6986,8 +6986,7 @@ void cAnalyze::CommandInteractive(cString cur_string)
 }
 
 
-void cAnalyze::FunctionCreate(cString cur_string,
-                              tList<cAnalyzeCommand> & clist)
+void cAnalyze::FunctionCreate(cString cur_string, tList<cAnalyzeCommand>& clist)
 {
   int num_args = cur_string.CountNumWords();
   if (num_args < 1) {
@@ -7226,13 +7225,11 @@ cString & cAnalyze::GetVariable(const cString & var)
 }
 
 
-void cAnalyze::LoadCommandList(cInitFile & init_file,
-                               tList<cAnalyzeCommand> & clist)
+void cAnalyze::LoadCommandList(cInitFile& init_file, tList<cAnalyzeCommand>& clist)
 {
   while (init_file.GetLineNum() < init_file.GetNumLines()) {
     cString cur_string = init_file.GetNextLine();
     cString command = cur_string.PopWord();
-    command.ToUpper();
     
     cAnalyzeCommand* cur_command;
     cAnalyzeCommandDefBase* command_def = FindAnalyzeCommandDef(command);
@@ -7240,13 +7237,11 @@ void cAnalyze::LoadCommandList(cInitFile & init_file,
     if (command == "END") {
       // We are done with this section of code; break out...
       break;
-    }
-    else if (command_def != NULL && command_def->IsFlowCommand() == true) {
+    } else if (command_def != NULL && command_def->IsFlowCommand() == true) {
       // This code has a body to it... fill it out!
       cur_command = new cAnalyzeFlowCommand(command, cur_string);
       LoadCommandList( init_file, *(cur_command->GetCommandList()) );
-    }
-    else {
+    } else {
       // This is a normal command...
       cur_command = new cAnalyzeCommand(command, cur_string);
     }
@@ -7326,28 +7321,24 @@ void cAnalyze::PreProcessArgs(cString & args)
   }
 }
 
-void cAnalyze::ProcessCommands(tList<cAnalyzeCommand> & clist)
+void cAnalyze::ProcessCommands(tList<cAnalyzeCommand>& clist)
 {
   // Process the command list...
   tListIterator<cAnalyzeCommand> command_it(clist);
   command_it.Reset();
-  cAnalyzeCommand * cur_command = NULL;
+  cAnalyzeCommand* cur_command = NULL;
   while ((cur_command = command_it.Next()) != NULL) {
     cString command = cur_command->GetCommand();
     cString args = cur_command->GetArgs();
     PreProcessArgs(args);
     
-    cAnalyzeCommandDefBase * command_fun = FindAnalyzeCommandDef(command);
+    cAnalyzeCommandDefBase* command_fun = FindAnalyzeCommandDef(command);
     
     if (command_fun != NULL) command_fun->Run(this, args, *cur_command);
-    else if (FunctionRun(command, args) == true) {
-      // Found a defined function by this name.
-    }
-    else {
+    else if (!FunctionRun(command, args)) {
       cerr << "Error: Unknown analysis keyword '" << command << "'." << endl;
       exit(1);
-    }
-    
+    }    
   }
 }
 
@@ -7753,8 +7744,8 @@ void cAnalyze::RunInteractive()
     cString cur_input(text_input);
     cString command = cur_input.PopWord();
     
-    cAnalyzeCommand * cur_command;
-    cAnalyzeCommandDefBase * command_def = FindAnalyzeCommandDef(command);
+    cAnalyzeCommand* cur_command;
+    cAnalyzeCommandDefBase* command_def = FindAnalyzeCommandDef(command);
     if (command == "") {
       // Don't worry about blank lines...
       continue;
@@ -7773,7 +7764,7 @@ void cAnalyze::RunInteractive()
     cString args = cur_command->GetArgs();
     PreProcessArgs(args);
     
-    cAnalyzeCommandDefBase * command_fun = FindAnalyzeCommandDef(command);
+    cAnalyzeCommandDefBase* command_fun = FindAnalyzeCommandDef(command);
     
     // First check for built-in functions...
     if (command_fun != NULL) command_fun->Run(this, args, *cur_command);
