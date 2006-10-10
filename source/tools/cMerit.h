@@ -21,7 +21,7 @@ class cMerit
 protected:
   int bits;
   unsigned int base;
-  unsigned int offset;
+  int offset;
   double value;
 
   void UpdateValue(double in_value);
