@@ -654,6 +654,16 @@ function.  A $$ will act as a single dollar sign, if needed.
 <dd>
   Sets the variable to the value...
 </dd>
+<dt><strong>CONFIG_GET [<span class="cmdarg">config variable</span>] [<span class="cmdarg">variable</span>]</strong></dt>
+<dd>
+  Retrieves the value of the supplied configuration variable and places it into the supplied analyze mode variable.
+  For example, 'CONFIG_GET RANDOM_SEED r' will place the value of the random number seed (as specified in the
+  configuration settings) into the variable r.
+</dd>
+<dt><strong>CONFIG_SET [<span class="cmdarg">config variable</span>] [<span class="cmdarg">value</span>]</strong></dt>
+<dd>
+  Sets the supplied configuration variable to the value specified with the command.
+</dd>
 <dt><strong>
   FOREACH [<span class="cmdarg">variable</span>] [<span class="cmdarg">value</span>]
 	[<span class="cmdargopt">value ...</span>]

@@ -208,6 +208,8 @@ private:
 
   // Control...
   void VarSet(cString cur_string);
+  void ConfigGet(cString cur_string);
+  void ConfigSet(cString cur_string);
   void BatchSet(cString cur_string);
   void BatchName(cString cur_string);
   void BatchTag(cString cur_string);

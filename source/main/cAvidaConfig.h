@@ -49,22 +49,22 @@ using namespace std;
 //     accessors were declared above, we can refer to this setting by the
 //     setting name inside of config.
 
-#define CONFIG_ADD_VAR(NAME, TYPE, DEFAULT, DESC)                     /* 1 */ \
-class cEntry_ ## NAME : public cBaseConfigEntry {                     /* 2 */ \
-private:                                                                      \
-  TYPE value;                                                         /* 3 */ \
-public:                                                                       \
-    void LoadString(const cString & str_value) {                      /* 4 */ \
-      value = cStringUtil::Convert(str_value, value);                         \
-    }                                                                         \
-    cEntry_ ## NAME() : cBaseConfigEntry(#NAME, #TYPE, #DEFAULT, DESC) {/* 5 */ \
-      LoadString(GetDefault());                                       /* 6 */ \
-        global_group_list.GetLast()->AddEntry(this);                  /* 7 */ \
-    }                                                                         \
-    TYPE Get() const { return value; }                                /* 8 */ \
-    void Set(TYPE in_value) { value = in_value; }                             \
-    cString AsString() { return cStringUtil::Convert(value); }        /* 9 */ \
-} NAME                                                               /* 10 */ \
+#define CONFIG_ADD_VAR(NAME, TYPE, DEFAULT, DESC)                      /* 1 */ \
+class cEntry_ ## NAME : public cBaseConfigEntry {                      /* 2 */ \
+private:                                                                       \
+  TYPE value;                                                          /* 3 */ \
+public:                                                                        \
+  void LoadString(const cString& str_value) {                          /* 4 */ \
+    value = cStringUtil::Convert(str_value, value);                            \
+  }                                                                            \
+  cEntry_ ## NAME() : cBaseConfigEntry(#NAME, #TYPE, #DEFAULT, DESC) { /* 5 */ \
+    LoadString(GetDefault());                                          /* 6 */ \
+    global_group_list.GetLast()->AddEntry(this);                       /* 7 */ \
+  }                                                                            \
+  TYPE Get() const { return value; }                                   /* 8 */ \
+  void Set(TYPE in_value) { value = in_value; }                                \
+  cString AsString() const { return cStringUtil::Convert(value); }     /*  9 */ \
+} NAME                                                                 /* 10 */ \
 
 
 // Now we're going to make another macro to deal with groups.  This time its
@@ -95,20 +95,21 @@ private:
     // values (not changeable at run time).  Should this instance be one of
     // those classes?
     bool use_overide;
+    
   public:
-      cBaseConfigEntry(const cString & _name, const cString & _type,
-                       const cString & _def, const cString & _desc);
+      cBaseConfigEntry(const cString& _name, const cString& _type,
+                       const cString& _def, const cString& _desc);
     virtual ~cBaseConfigEntry() { ; }
     
-    virtual void LoadString(const cString & str_value) = 0;
+    virtual void LoadString(const cString& str_value) = 0;
     
-    const cString & GetName() { return config_name; }
-    const cString & GetType() { return type; }
-    const cString & GetDefault() { return default_value; }
-    const cString & GetDesc() { return description; }
-    bool GetUseOveride() { return use_overide; }
+    const cString& GetName() const { return config_name; }
+    const cString& GetType() const { return type; }
+    const cString& GetDefault() const { return default_value; }
+    const cString& GetDesc() const { return description; }
+    bool GetUseOveride() const { return use_overide; }
     
-    virtual cString AsString() = 0;
+    virtual cString AsString() const = 0;
   };
   
   // The cBaseConfigGroup class is a bass class for objects that collect the
@@ -119,15 +120,16 @@ private:
     cString description;
     tList<cBaseConfigEntry> entry_list;
   public:
-      cBaseConfigGroup(const cString & _name, const cString & _desc)
+      cBaseConfigGroup(const cString& _name, const cString& _desc)
       : group_name(_name), description(_desc) { global_group_list.PushRear(this); }
     ~cBaseConfigGroup() { ; }
     
-    const cString & GetName() { return group_name; }
-    const cString & GetDesc() { return description; }
-    tList<cBaseConfigEntry> & GetEntryList() { return entry_list; }
+    const cString& GetName() const { return group_name; }
+    const cString& GetDesc() const { return description; }
+    tList<cBaseConfigEntry>& GetEntryList() { return entry_list; }
+    const tList<cBaseConfigEntry>& GetEntryList() const { return entry_list; }
     
-    void AddEntry(cBaseConfigEntry * _entry) { entry_list.PushRear(_entry); }
+    void AddEntry(cBaseConfigEntry* _entry) { entry_list.PushRear(_entry); }
   };
   
   // We need to keep track of all configuration groups and the entry objects
@@ -153,7 +155,6 @@ public:
   CONFIG_ADD_VAR(ANALYZE_MODE, int, 0, "0 = Disabled\n1 = Enabled\n2 = Interactive");
   CONFIG_ADD_VAR(VIEW_MODE, int, 0, "Initial viewer screen");
   CONFIG_ADD_VAR(CLONE_FILE, cString, "-", "Clone file to load");
-  CONFIG_ADD_VAR(MT_CONCURRENCY, int, 1, "Number of concurrent analyze threads");
   CONFIG_ADD_VAR(VERBOSITY, int, 1, "Control output verbosity");
   
   CONFIG_ADD_GROUP(ARCH_GROUP, "Architecture Variables");
@@ -275,12 +276,20 @@ public:
   CONFIG_ADD_VAR(SAVE_RECEIVED, bool, 0, "Enable storage of all inputs bought from other orgs");
   CONFIG_ADD_VAR(BUY_PRICE, int, 0, "price offered by organisms attempting to buy");
   CONFIG_ADD_VAR(SELL_PRICE, int, 0, "price offered by organisms attempting to sell");
+  
+  CONFIG_ADD_GROUP(ANALYZE_GROUP, "Analysis Settings");
+  CONFIG_ADD_VAR(MT_CONCURRENCY, int, 1, "Number of concurrent analyze threads");
+  CONFIG_ADD_VAR(ANALYZE_OPTION_1, cString, "", "String variable accessible from analysis scripts");
+  CONFIG_ADD_VAR(ANALYZE_OPTION_2, cString, "", "String variable accessible from analysis scripts");
 
 #endif
   
   void Load(const cString& filename);
   void Print(const cString& filename);
   void Status();
+  
+  bool Get(const cString& entry, cString& ret) const;
+  bool Set(const cString& entry, const cString& val);
   
   void GenerateOverides();
 };
