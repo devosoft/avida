@@ -57,10 +57,9 @@ def Update(opts, env):
   ) )
   opts.Add(
     SCons.Options.BoolOption(
-      'enableTestCode',
-      """Set to "1" to build and run test code.""",
-      0
-#      '$plat_default_enableTestCode',
+      'enableMemTracking',
+      """Set to "1" to track creation and deletion of some c++ objects.""",
+      '$plat_default_enableMemTracking',
   ) )
   opts.Add(
     SCons.Options.BoolOption(
@@ -78,6 +77,12 @@ def Update(opts, env):
   #  use Avida in primitive mode, in which case Avida will run faster).""",
   #    '$plat_default_enableSharedPtr',
   #) )
+
+  opts.Add(
+    'extrasDir',
+    'Path to the avida-extras subdirectory.',
+    '$plat_default_extrasDir',
+  )
 
   # Store option names and values in the construction env so that any
   # user overrides from the command line can be retrieved.
@@ -120,18 +125,31 @@ def Update(opts, env):
 
 
   # Make a default build directory name based on values of options 'buildType'
-  # and 'enableTestCode'.
+  # and 'enableMemTracking'.
   #
   default_build_dir = 'build'
   if env.subst('$buildType') is not 'None':
     default_build_dir += '-' + env.subst('$buildType')
+  if env.subst('$enableMemTracking') in ['yes', '1']:
+    default_build_dir += '-MemTrack'
+  if env.subst('$enableSerialization') in ['yes', '1']:
+    default_build_dir += '-Ser'
   # XXX reenable when we have code using its value.
-  #if env.subst('$enableTestCode') in ['yes', '1']:
-  #  default_build_dir += '-Test'
   #if env.subst('$enablePyPkg') in ['yes', '1']:
   #  default_build_dir += '-Py'
   #elif env.subst('$enableSharedPtr') in ['yes', '1']:
   #  default_build_dir += '-ShPtr'
+
+  extras_build_dir = None
+  if env.subst('$extrasDir') not in ['None', 'none', '']:
+    extras_build_dir = os.path.join(env.subst('$extrasDir'), default_build_dir)
+    opts.Add(
+      'extrasBuildDir',
+      """Where to place derived build files for avida-extras.
+      - Default is derived from build options.
+      """,
+      extras_build_dir
+    )
 
   opts.Add(
     'buildDir',

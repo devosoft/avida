@@ -36,9 +36,9 @@ if environment.subst('$enableSerialization') in ['1', 'yes']:
 if environment.subst('$enablePyPkg') in ['1', 'yes']:
   environment.Append(CPPPATH = ['#/source/bindings/Boost.Python'])
 
-if environment.subst('$enableTestCode') in ['1', 'yes']:
-  environment.SetDefault(enableSharedPtr = 1)
-  environment.Append(CPPDEFINES = ['USE_tMemTrack=1', 'ENABLE_UNIT_TESTS=1'])
+if environment.subst('$enableMemTracking') in ['1', 'yes']:
+  #environment.SetDefault(enableSharedPtr = 1)
+  environment.Append(CPPDEFINES = ['USE_tMemTrack=1'])
 
 if environment['enableTCMalloc'] in ('True', '1', 1):
   environment.Append(
@@ -67,9 +67,9 @@ environment.Append(
     '#$buildDir/classification',
     '#$buildDir/cpu',
     '#$buildDir/drivers',
-    '#$buildDir/event',
+    #'#$buildDir/event',
     '#$buildDir/main',
-    '#$buildDir/third-party/boost/serialization',
+    #'#$buildDir/third-party/boost/serialization',
     '#$buildDir/tools',
   ],
 )
@@ -80,6 +80,17 @@ environment.SConscript('support/config/SConscript')
 
 # XXX beginnings of consistency tests. @kgn
 environment.SConscript('consistencytests/SConscript', build_dir = 'consistencytest_output')
+
+# XXX beginnings of 'extras'. @kgn
+#environment.SConscript('../avida-extras/SConscript', build_dir =
+#'../avida-extras/$buildDir')
+
+# XXX beginnings of 'extras'. @kgn
+if environment.subst('$extrasDir') not in ['None', 'none', '']:
+  environment.SConscript(
+    os.path.join(environment.subst('$extrasDir'), 'SConscript'),
+    build_dir = '$extrasBuildDir'
+  )
 
 if environment['PLATFORM'] == 'win32':
   script_to_build_avida = environment.File(

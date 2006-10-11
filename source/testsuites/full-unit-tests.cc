@@ -13,18 +13,18 @@
 
 int main() {
 
-  nChangeList::UnitTests(true);
+//  nChangeList::UnitTests(true);
   //nBlockStruct::UnitTests(true);
-  nDataEntry::UnitTests(true);
-  nDataFile::UnitTests(true);
-  nFile::UnitTests(true);
+//  nDataEntry::UnitTests(true);
+//  nDataFile::UnitTests(true);
+//  nFile::UnitTests(true);
   //nFixedBlock::UnitTests(true);
-  nFixedCoords::UnitTests(true);
-  nInitFile::UnitTests(true);
-  nRandom::UnitTests(true);
-  nString::UnitTests(true);
-  nStringList::UnitTests(true);
-  nTemplateTests::UnitTests(true);
+//  nFixedCoords::UnitTests(true);
+//  nInitFile::UnitTests(true);
+//  nRandom::UnitTests(true);
+//  nString::UnitTests(true);
+//  nStringList::UnitTests(true);
+//  nTemplateTests::UnitTests(true);
 
   return report_errors();
 }

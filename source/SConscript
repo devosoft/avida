@@ -17,8 +17,8 @@ environment.SConscript( [
   #'utils/SConscript',
 ] )
 
-if environment['enableTestCode'] in ('True', '1', 1):
-  environment.SConscript('testsuites/SConscript')
+#if environment['enableTestCode'] in ('True', '1', 1):
+#  environment.SConscript('testsuites/SConscript')
 
 if environment['enablePyPkg'] in ('True', '1', 1):
   environment.SConscript('bindings/Boost.Python/SConscript')
