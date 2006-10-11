@@ -338,10 +338,19 @@ void cAnalyzeGenotype::CalcLandscape(cAvidaContext& ctx)
   m_land->Process(ctx);
 }
 
-void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cTestCPU* testcpu, cAnalyzeGenotype* parent_genotype)
+void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cTestCPU* testcpu, cAnalyzeGenotype* parent_genotype, cCPUTestInfo* test_info)
 {
     // Build the test info for printing.
-  cCPUTestInfo test_info;
+  
+  //Allocate our own test info if it wasn't provided
+  cCPUTestInfo* temp_test_info = NULL;
+  if (!test_info)
+  {
+      temp_test_info = new cCPUTestInfo();
+      test_info = temp_test_info;
+  }
+  
+  //cCPUTestInfo test_info;
   // test_info.TraceTaskOrder();
 
   // @DMB - This does some 'interesting' things with the instruction set
@@ -352,14 +361,14 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cTestCPU* testcpu, cAnaly
   cInstSet env_inst_set_backup = m_world->GetHardwareManager().GetInstSet();
   m_world->GetHardwareManager().GetInstSet() = inst_set;
 
-  testcpu->TestGenome(ctx, test_info, genome);
+  testcpu->TestGenome(ctx, *test_info, genome);
   
   // Restore the instruction set
   m_world->GetHardwareManager().GetInstSet() = env_inst_set_backup;
 
-  viable = test_info.IsViable();
+  viable = test_info->IsViable();
 
-  cOrganism* test_organism = test_info.GetTestOrganism();
+  cOrganism* test_organism = test_info->GetTestOrganism();
   cPhenotype& test_phenotype = test_organism->GetPhenotype();
 
   length = test_organism->GetGenome().GetSize();
@@ -382,6 +391,9 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cTestCPU* testcpu, cAnaly
 		    parent_genotype->GetGenome().AsString(), parent_muts);
     ancestor_dist = parent_genotype->GetAncestorDist() + parent_dist;
   }
+  
+  //Deallocate if we created
+  if (temp_test_info) delete temp_test_info;
 }
 
 

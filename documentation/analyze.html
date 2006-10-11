@@ -195,14 +195,19 @@ to only include those genotypes that are needed.
 </p>
 
 <dl>
-<dt><strong>RECALCULATE [<span class="cmdargopt">use_resources=0</span>]</strong></dt>
+<dt><strong>RECALCULATE [<span class="cmdargopt">use_resources=0</span>] [<span class="cmdargopt">update=-1</span>] [<span class="cmdargopt">use_random_inputs=0</span>]</strong></dt>
 <dd>
   Run all of the genotypes in the current batch through a test CPU
   and record the measurements taken (fitness, gestation time, etc.).
   This overrides any values that may have been loaded in with the
   genotypes.  The use_resources flags signifies whether or not the
-  test cpu will use resources when it runs.  For more information 
-  on resources, see the <a href="#USING_RESOURCES">summary</a> below.
+  test cpu will use resources when it runs.  If resources are used, the
+  update parameter allows setting resource values from a specific time point
+  in the resource list. For more information on resources, see the 
+  <a href="#USING_RESOURCES">summary</a> below.  If the use_random_inputs flag
+  is set, then organisms will be provided with new, random input strings for 
+  each trace as they would experience during an actual Avida run. By default, 
+  the same inputs are provided every time to organisms in analysis mode.
 </dd>
 <dt><strong>FIND_GENOTYPE [<span class="cmdargopt">type='num_cpus' ...</span>]</strong></dt>
 <dd>
@@ -294,15 +299,19 @@ save information generated in analyze mode.
   the files will be named by the genotype name, with a <kbd>.gen</kbd> appended to 
   them. Specifying the filename is useful when printing a single genotype. 
 </dd>
-<dt><strong>TRACE [<span class="cmdargopt">dir='archive/'</span>] [ <span class="cmdargopt">use_resources=0</span>]</strong></dt>
+<dt><strong>TRACE [<span class="cmdargopt">dir='archive/'</span>] [ <span class="cmdargopt">use_resources=0</span>] [<span class="cmdargopt">update=-1</span>] [ <span class="cmdargopt">use_random_inputs=0</span>]</strong></dt>
 <dd>
   Trace all of the genotypes and print a listing of their execution.
   This will show step-by-step the status of all of the CPU components
   and the genome during the course of the execution.  The filename used
   for each trace will be the genotype's name with a <kbd>.trace</kbd> appended.
   The use resources flag signifies whether or not the test cpu will use
-  resources when it runs.  For more information on resources, see the 
-  <a href="#USING_RESOURCES">summary</a> below.
+  resources when it runs.  If resources are used, the update parameter allows 
+  setting resource values from a specific time point in the resource list. 
+  For more information on resources, see the <a href="#USING_RESOURCES">summary</a> below.
+  If the use_random_inputs flag is set, then organisms will be provided with new, 
+  random input strings for each trace as they would experience during an actual Avida run.  
+  By default, the same inputs are provided every time to organisms in analysis mode.
 </dd>
 <dt><strong>PRINT_TASKS [<span class="cmdargopt">file='tasks.dat'</span>]</strong></dt>
 <dd>
@@ -491,12 +500,11 @@ not changed.  This was a design decision, but is easily changed.
 <p>
 In analyze, a new data structure was included which contains a time ordered 
 list of resource concentrations.  This list can be used to set up resources 
-from different time points.  By using the FillResources function, you can 
-have the resource library updated with resource concentrations from a time 
-point closest to the user specified time point.  If the LOAD_RESOURCES 
-command is not called, the list defaults to a single entry which is the 
-the initial concentrations of the resources specified in the environment 
-configuration file.
+from different time points.  By using the update parameter in the RECALCULATE function, 
+you can use the resource concentrations from a specified time 
+point.  If the LOAD_RESOURCES command is not called, the list defaults to 
+a single entry which is the the initial concentrations of the resources 
+specified in the environment configuration file.
 </p>
 
 <dl>

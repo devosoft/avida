@@ -1644,16 +1644,32 @@ void cAnalyze::CommandTrace(cString cur_string)
   cString directory = PopDirectory(dir, defaultDirectory);
   
   int useResources = 0;
+  int useRandomInputs = 0;
+  int update = -1;
   if(words >= 2) {
     useResources = cur_string.PopWord().AsInt();
-    // All non-zero values are considered false
+    // All invalid values are considered false
     if(useResources != 0 && useResources != 1) {
       useResources = 0;
+    }
+  }
+  if (words >= 3) {
+    update = cur_string.PopWord().AsInt();
+  }
+  if (words >= 4) {
+    useRandomInputs = cur_string.PopWord().AsInt();
+    // All invalid values are considered false
+    if(useRandomInputs != 0 && useRandomInputs != 1) {
+      useRandomInputs = 0;
     }
   }
   
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();  
   testcpu->SetUseResources(useResources);
+  
+  if (useResources && update > -1) {
+    FillResources(testcpu, update);
+  }
   
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype * genotype = NULL;
@@ -1673,6 +1689,7 @@ void cAnalyze::CommandTrace(cString cur_string)
     // Build the test info for printing.
     cCPUTestInfo test_info;
     test_info.SetTraceExecution(&trace_printer);
+    test_info.UseRandomInputs(useRandomInputs==1); 
     
     testcpu->TestGenome(m_ctx, test_info, genotype->GetGenome());
     
@@ -6901,6 +6918,7 @@ void cAnalyze::BatchRecalculate(cString cur_string)
 {
   int words = cur_string.CountNumWords();
   int useResources = 0;
+  int useRandomInputs = 0;
   int update = -1;
   if(words >= 1) {
     useResources = cur_string.PopWord().AsInt();
@@ -6912,9 +6930,20 @@ void cAnalyze::BatchRecalculate(cString cur_string)
   if (words >= 2) {
     update = cur_string.PopWord().AsInt();
   }
+  if (words >= 3) {
+    useRandomInputs = cur_string.PopWord().AsInt();
+    // All invalid values are considered false
+    if(useRandomInputs != 0 && useRandomInputs != 1) {
+      useRandomInputs = 0;
+    }
+  }
+
   
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
   testcpu->SetUseResources(useResources);
+  
+  cCPUTestInfo *test_info = new cCPUTestInfo();
+  test_info->UseRandomInputs(useRandomInputs==1); 
   
   if (m_world->GetVerbosity() >= VERBOSE_ON) {
     cout << "Running batch " << cur_batch << " through test CPUs..." << endl;
@@ -6943,13 +6972,14 @@ void cAnalyze::BatchRecalculate(cString cur_string)
     // If the previous genotype was the parent of this one, pass in a pointer
     // to it for improved recalculate (such as distance to parent, etc.)
     if (last_genotype != NULL && genotype->GetParentID() == last_genotype->GetID()) {
-      genotype->Recalculate(m_ctx, testcpu, last_genotype);
+      genotype->Recalculate(m_ctx, testcpu, last_genotype, test_info);
     } else {
-      genotype->Recalculate(m_ctx, testcpu);
+      genotype->Recalculate(m_ctx, testcpu, NULL, test_info);
     }
     last_genotype = genotype;
   }
   
+  delete test_info;
   delete testcpu;
   
   return;
