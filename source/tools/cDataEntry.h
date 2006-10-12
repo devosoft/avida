@@ -64,16 +64,4 @@ inline std::ostream& operator << (std::ostream& out, cDataEntry & entry)
   return out;
 }
 
-  
-#ifdef ENABLE_UNIT_TESTS
-namespace nDataEntry {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 #endif

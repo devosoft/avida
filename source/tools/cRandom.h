@@ -259,19 +259,6 @@ public:
 
 
 
-#ifdef ENABLE_UNIT_TESTS
-namespace nRandomMT {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
-
-
 inline unsigned int cRandom::MutateByte(unsigned int value)
 {
   int byte_pos = 8 * GetUInt(4);
