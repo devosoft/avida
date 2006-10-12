@@ -24,15 +24,15 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-__revision__ = "/home/scons/scons/branch.0/branch.96/baseline/src/script/scons.py 0.96.92.D002 2006/04/11 07:39:43 knight"
+__revision__ = "/home/scons/scons/branch.0/baseline/src/script/scons.py 0.96.1.D001 2004/08/23 09:55:29 knight"
 
-__version__ = "0.96.92"
+__version__ = "0.96.1"
 
-__build__ = "D002"
+__build__ = "D001"
 
-__buildsys__ = "roxbury"
+__buildsys__ = "casablanca"
 
-__date__ = "2006/04/11 07:39:43"
+__date__ = "2004/08/23 09:55:29"
 
 __developer__ = "knight"
 
@@ -128,23 +128,6 @@ else:
                                            'site-packages'),
                            prefs))
     prefs = temp
-
-    # Add the parent directory of the current python's library to the
-    # preferences.  On SuSE-91/AMD64, for example, this is /usr/lib64,
-    # not /usr/lib.
-    try:
-        libpath = os.__file__
-    except AttributeError:
-        pass
-    else:
-        while libpath:
-            libpath, tail = os.path.split(libpath)
-            if tail[:6] == "python":
-                break
-        if libpath:
-            # Python library is in /usr/libfoo/python*;
-            # check /usr/libfoo/scons*.
-            prefs.append(libpath)
 
 # Look first for 'scons-__version__' in all of our preference libs,
 # then for 'scons'.

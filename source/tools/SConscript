@@ -63,7 +63,6 @@ incs = [
   'cVerifierSuiteRecurser.h',
   'cWeightedIndex.h',
   'functions.h',
-  'nTemplateTests.h',
   'tArgDataEntry.h',
   'tArray.h',
   'tBuffer.h',
@@ -120,7 +119,6 @@ srcs = [
   'cTools.cc',
   'cWeightedIndex.cc',
   'cCycleCheck.cc',
-  'nTemplateTests.cc',
 ]
 
 environment.Library('tools', srcs) 

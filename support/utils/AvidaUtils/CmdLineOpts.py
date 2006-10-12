@@ -235,19 +235,19 @@ def Update(opts, env):
   #)
   #env.Append(PYSTE_DEBUG = '$pysteDebug')
 
-  def customOptionsPathValidator(key, val, env):
-    if val not in ['None', 'none']:
-      if not os.path.exists(val):
-        print """
-... Creating "%s" since it doesn't exist.
-""" % env.subst('$default_custom_options_filename')
-        shutil.copyfile(
-          os.path.join(
-            env.subst('$AvidaUtils_path'),
-            env.subst('$default_custom_options_filename')
-          ),
-          val
-        )
+#  def customOptionsPathValidator(key, val, env):
+#    if val not in ['None', 'none']:
+#      if not os.path.exists(val):
+#        print """
+#... Creating "%s" since it doesn't exist.
+#""" % env.subst('$default_custom_options_filename')
+#        shutil.copyfile(
+#          os.path.join(
+#            env.subst('$AvidaUtils_path'),
+#            env.subst('$default_custom_options_filename')
+#          ),
+#          val
+#        )
 
   opts.AddOptions(
     SCons.Options.PathOption(
@@ -256,7 +256,7 @@ def Update(opts, env):
     - This file will be created if it doesn't exist.
     """,
       '$default_custom_options_filename',
-      customOptionsPathValidator
+      #customOptionsPathValidator
     ),
   )
   opts.Update(env)

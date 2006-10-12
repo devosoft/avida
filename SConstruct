@@ -57,7 +57,7 @@ environment.Append(
     '#/source/drivers',
     '#/source/event',
     '#/source/main',
-    '#/source/third-party/boost',
+    #'#/source/third-party/boost',
     '#/source/tools',
   ],
   LIBPATH = [
@@ -75,21 +75,24 @@ environment.Append(
 )
 
 # Tell SCons where to find its subscripts.
-environment.SConscript('source/SConscript', build_dir = '$buildDir')
+environment.SConscript('source/SConscript',
+  build_dir = '$buildDir',
+  duplicate = 0,
+)
 environment.SConscript('support/config/SConscript')
 
 # XXX beginnings of consistency tests. @kgn
-environment.SConscript('consistencytests/SConscript', build_dir = 'consistencytest_output')
-
-# XXX beginnings of 'extras'. @kgn
-#environment.SConscript('../avida-extras/SConscript', build_dir =
-#'../avida-extras/$buildDir')
+environment.SConscript('consistencytests/SConscript',
+  build_dir = 'consistencytest_output',
+  duplicate = 0,
+)
 
 # XXX beginnings of 'extras'. @kgn
 if environment.subst('$extrasDir') not in ['None', 'none', '']:
   environment.SConscript(
     os.path.join(environment.subst('$extrasDir'), 'SConscript'),
-    build_dir = '$extrasBuildDir'
+    #build_dir = '$extrasBuildDir',
+    duplicate = 0
   )
 
 if environment['PLATFORM'] == 'win32':

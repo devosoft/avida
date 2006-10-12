@@ -1,21 +1,31 @@
 
 Import('environment')
 
-environment.SConscript( [
-  'actions/SConscript',
-  'analyze/SConscript',
-  #'archive/SConscript',
-  'classification/SConscript',
-  'cpu/SConscript',
-  'drivers/SConscript',
-  'main/SConscript',
-  'platform/SConscript',
-  'targets/SConscript',
-  'third-party/SConscript',
-  'tools/SConscript',
-  #'support/SConscript',
-  #'utils/SConscript',
-] )
+#environment.SConscript( [
+#  'actions/SConscript',
+#  'analyze/SConscript',
+#  #'archive/SConscript',
+#  'classification/SConscript',
+#  'cpu/SConscript',
+#  'drivers/SConscript',
+#  'main/SConscript',
+#  'platform/SConscript',
+#  'targets/SConscript',
+#  'third-party/SConscript',
+#  'tools/SConscript',
+#  #'support/SConscript',
+#  #'utils/SConscript',
+#] )
+environment.SConscript('actions/SConscript')
+environment.SConscript('analyze/SConscript')
+environment.SConscript('classification/SConscript')
+environment.SConscript('cpu/SConscript')
+environment.SConscript('drivers/SConscript')
+environment.SConscript('main/SConscript')
+environment.SConscript('platform/SConscript')
+environment.SConscript('targets/SConscript')
+environment.SConscript('third-party/SConscript')
+environment.SConscript('tools/SConscript')
 
 #if environment['enableTestCode'] in ('True', '1', 1):
 #  environment.SConscript('testsuites/SConscript')

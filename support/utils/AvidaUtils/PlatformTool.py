@@ -22,7 +22,7 @@ def _posix_defaults(env):
   """
   Default compiler options for posix platforms, assuming they use gcc.
   """
-  env.SetDefault(
+  env.Replace(
     PLATFORM_CPPPATH = CLVar('/usr/include /usr/local/include /opt/local/include' '$CPPPATH'),
     PLATFORM_LIBPATH = CLVar('/usr/lib /usr/local/lib /opt/local/lib' '$LIBPATH'),
     #_PLATFORM_DEBUG_BUILD_FLAGS = "-g $COMPILER_WARNING_FLAGS -pedantic -DDEBUG",
@@ -44,7 +44,7 @@ def darwin_generate(env):
   env['ENV']['MACOSX_DEPLOYMENT_TARGET'] = '10.4'
   env['ENV']['GCCXML_COMPILER'] = 'c++-3.3'
 
-  env.SetDefault(
+  env.Replace(
     COMPILER_WARNING_FLAGS = "-Wall -Wno-long-double -Wno-long-long",
     plat_default_enableMemTracking = 0,
     plat_default_enablePyPkg = 0,
@@ -334,7 +334,7 @@ def win32_generate(env):
 #   - No
 #   - Yes (/u)
 
-  env.SetDefault(
+  env.Replace(
     _PLATFORM_DEBUG_BUILD_FLAGS = '/D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FD /EHsc /RTCs /MDd /GS /GR /W3 /nologo /c /Zi /TP /Zm1000',
     _PLATFORM_RELEASE_DEBUG_BUILD_FLAGS = '/D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /O1 /EHsc /MD /W3 /nologo /c /Zi /TP /Zm1000',
 
@@ -346,7 +346,7 @@ def win32_generate(env):
   # header file with a null pthread implementation.
   env.Append(CPPPATH = ['#/source/platform/win32-pthread'])
 
-  env.SetDefault(
+  env.Replace(
     plat_default_enableMemTracking = 0,
     plat_default_enablePyPkg = 0,
     plat_default_enableSerialization = 0,
@@ -376,7 +376,7 @@ def generate(env):
   """
   # PLATFORM_TOOL_ERR is used to report messages back to the rest of the build
   # system. You can use them as error messages to the user.
-  env.SetDefault(
+  env.Replace(
     PLATFORM_TOOL_ERR = '',
   )
   if env.Dictionary().has_key('PLATFORM'):

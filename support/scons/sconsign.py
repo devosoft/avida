@@ -24,15 +24,15 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-__revision__ = "/home/scons/scons/branch.0/branch.96/baseline/src/script/sconsign.py 0.96.92.D002 2006/04/11 07:39:43 knight"
+__revision__ = "/home/scons/scons/branch.0/baseline/src/script/sconsign.py 0.96.1.D001 2004/08/23 09:55:29 knight"
 
-__version__ = "0.96.92"
+__version__ = "0.96.1"
 
-__build__ = "D002"
+__build__ = "D001"
 
-__buildsys__ = "roxbury"
+__buildsys__ = "casablanca"
 
-__date__ = "2006/04/11 07:39:43"
+__date__ = "2004/08/23 09:55:29"
 
 __developer__ = "knight"
 
@@ -130,23 +130,6 @@ else:
                            prefs))
     prefs = temp
 
-    # Add the parent directory of the current python's library to the
-    # preferences.  On SuSE-91/AMD64, for example, this is /usr/lib64,
-    # not /usr/lib.
-    try:
-        libpath = os.__file__
-    except AttributeError:
-        pass
-    else:
-        while libpath:
-            libpath, tail = os.path.split(libpath)
-            if tail[:6] == "python":
-                break
-        if libpath:
-            # Python library is in /usr/libfoo/python*;
-            # check /usr/libfoo/scons*.
-            prefs.append(libpath)
-
 # Look first for 'scons-__version__' in all of our preference libs,
 # then for 'scons'.
 libs.extend(map(lambda x: os.path.join(x, scons_version), prefs))
@@ -201,7 +184,6 @@ Print_Entries = []
 Print_Flags = Flagger()
 Verbose = 0
 Readable = 0
-Raw = 0
 
 def default_mapper(entry, name):
     try:
@@ -242,44 +224,23 @@ map_name = {
     'implicit'  : 'bkids',
 }
 
-def field(name, entry, verbose=Verbose):
-    if not Print_Flags[name]:
-        return None
-    fieldname = map_name.get(name, name)
-    mapper = map_field.get(fieldname, default_mapper)
-    val = mapper(entry, name)
-    if verbose:
-        val = name + ": " + val
-    return val
+def printfield(name, entry):
+    def field(name, verbose=Verbose, entry=entry):
+        if not Print_Flags[name]:
+            return None
+        fieldname = map_name.get(name, name)
+        mapper = map_field.get(fieldname, default_mapper)
+        val = mapper(entry, name)
+        if verbose:
+            val = name + ": " + val
+        return val
 
-def nodeinfo_raw(name, ninfo, prefix=""):
-    # This does essentially what the pprint module does,
-    # except that it sorts the keys for deterministic output.
-    d = ninfo.__dict__
-    keys = d.keys()
-    keys.sort()
-    l = []
-    for k in keys:
-        l.append('%s: %s' % (repr(k), repr(d[k])))
-    return name + ': {' + string.join(l, ', ') + '}'
+    fieldlist = ["timestamp", "bsig", "csig"]
+    outlist = [name+":"] + filter(None, map(field, fieldlist))
+    sep = Verbose and "\n    " or " "
+    print string.join(outlist, sep)
 
-def nodeinfo_string(name, ninfo, prefix=""):
-    fieldlist = ["bsig", "csig", "timestamp", "size"]
-    f = lambda x, ni=ninfo, v=Verbose: field(x, ni, v)
-    outlist = [name+":"] + filter(None, map(f, fieldlist))
-    if Verbose:
-        sep = "\n    " + prefix
-    else:
-        sep = " "
-    return string.join(outlist, sep)
-
-def printfield(name, entry, prefix=""):
-    if Raw:
-        print nodeinfo_raw(name, entry.ninfo, prefix)
-    else:
-        print nodeinfo_string(name, entry.ninfo, prefix)
-
-    outlist = field("implicit", entry, 0)
+    outlist = field("implicit", 0)
     if outlist:
         if Verbose:
             print "    implicit:"
@@ -295,10 +256,8 @@ def printentries(entries):
             else:
                 printfield(name, entry)
     else:
-        names = entries.keys()
-        names.sort()
-        for name in names:
-            printfield(name, entries[name])
+        for name, e in entries.items():
+            printfield(name, e)
 
 class Do_SConsignDB:
     def __init__(self, dbm_name, dbm):
@@ -386,17 +345,14 @@ Options:
   -h, --help                  Print this message and exit.
   -i, --implicit              Print implicit dependency information.
   -r, --readable              Print timestamps in human-readable form.
-  --raw                       Print raw Python object representations.
-  -s, --size                  Print file sizes.
   -t, --timestamp             Print timestamp information.
   -v, --verbose               Verbose, describe each field.
 """
 
-opts, args = getopt.getopt(sys.argv[1:], "bcd:e:f:hirstv",
+opts, args = getopt.getopt(sys.argv[1:], "bcd:e:f:hirtv",
                             ['bsig', 'csig', 'dir=', 'entry=',
                              'format=', 'help', 'implicit',
-                             'raw', 'readable',
-                             'size', 'timestamp', 'verbose'])
+                             'readable', 'timestamp', 'verbose'])
 
 
 for o, a in opts:
@@ -427,12 +383,8 @@ for o, a in opts:
         sys.exit(0)
     elif o in ('-i', '--implicit'):
         Print_Flags['implicit'] = 1
-    elif o in ('--raw',):
-        Raw = 1
     elif o in ('-r', '--readable'):
         Readable = 1
-    elif o in ('-s', '--size'):
-        Print_Flags['size'] = 1
     elif o in ('-t', '--timestamp'):
         Print_Flags['timestamp'] = 1
     elif o in ('-v', '--verbose'):
