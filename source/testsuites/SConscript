@@ -40,7 +40,7 @@ all_libs = [
   #'boost_serialization',
 ]
 
-Test(environment, 'full-unit-tests', 'full-unit-tests.cc', LIBS = all_libs)
-Test(environment, 'cInitFile-unit-tests', 'cInitFile-unit-tests.cc', LIBS = all_libs)
+#Test(environment, 'full-unit-tests', 'full-unit-tests.cc', LIBS = all_libs)
+#Test(environment, 'cInitFile-unit-tests', 'cInitFile-unit-tests.cc', LIBS = all_libs)
 
 # vim: set ft=python:
