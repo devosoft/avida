@@ -462,8 +462,11 @@ void cBirthChamber::SetupGenotypeInfo(cOrganism* organism, cGenotype* parent0, c
   child_genotype->IncDeferAdjust();
 }
 
-bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cGenome& child_genome, cOrganism& parent,
-                                    tArray<cOrganism*>& child_array, tArray<cMerit>& merit_array)
+bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx,
+				    const cGenome& child_genome,
+				    cOrganism& parent,
+                                    tArray<cOrganism*>& child_array,
+				    tArray<cMerit>& merit_array)
 {
   cPhenotype& parent_phenotype = parent.GetPhenotype();
 
@@ -479,7 +482,8 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cGenome& child_gen
   // Find a waiting entry (locally or globally)
   cBirthEntry * old_entry = NULL;
   // First check if the birth method is one of the local ones... 
-  if (birth_method < NUM_LOCAL_POSITION_CHILD) { 
+  if (birth_method < NUM_LOCAL_POSITION_CHILD ||
+      birth_method == POSITION_CHILD_PARENT_FACING) { 
     old_entry = FindSexLocalWaiting(ctx, child_genome, parent);
   }
   // ... then check if population is split into demes

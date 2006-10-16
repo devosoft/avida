@@ -6,3 +6,8 @@ important enough to fix, but that we do want to keep track of.
   it gives birth, but currently it is not treated like a second child, so
   the genotype will not be changed, and in general it cannot act with many
   other settings (like mutation reversions)
+
+-- Not bugs, per-se, but ugly coding that should be cleaned up
+* BIRTH_METHOD 7 is currently a local birth method, but not grouped with the
+  rest of them.  This required a special condition in cBirthChamber.cc for
+  local recombination and in cPopulation.cc for offspring facing parent.

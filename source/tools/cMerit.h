@@ -69,9 +69,10 @@ public:
 
   double GetDouble()      const { return value; }
 
-  int GetBit(unsigned int bit_num)  const {
-    return ( bit_num >= offset && bit_num < (unsigned int)bits ) ?
-			( base >> (bit_num-offset) ) & 1 : 0; }
+  int GetBit(int bit_num)  const {
+    assert(bit_num >= 0);
+    return ( bit_num >= offset && bit_num < bits ) ?
+      ( base >> (bit_num-offset) ) & 1 : 0; }
 
   int GetNumBits() const { return bits; }
 

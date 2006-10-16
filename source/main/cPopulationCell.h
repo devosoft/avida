@@ -58,6 +58,7 @@ public:
 
   cOrganism* GetOrganism() const { return organism; }
   tList<cPopulationCell> & ConnectionList() { return connection_list; }
+  cPopulationCell & GetCellFaced() { return *(connection_list.GetFirst()); }
   const cMutationRates & MutationRates() const { return *mutation_rates; }
   cMutationRates & MutationRates() { return *mutation_rates; }
   int GetInput();

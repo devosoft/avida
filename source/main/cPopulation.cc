@@ -318,7 +318,9 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
     schedule->Adjust(parent_cell.GetID(), parent_phenotype.GetMerit());
     
     // In a local run, face the child toward the parent. 
-    if (m_world->GetConfig().BIRTH_METHOD.Get() < NUM_LOCAL_POSITION_CHILD) {
+    const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
+    if (birth_method < NUM_LOCAL_POSITION_CHILD ||
+	birth_method == POSITION_CHILD_PARENT_FACING) {
       for (int i = 0; i < child_array.GetSize(); i++) {
         GetCell(target_cells[i]).Rotate(parent_cell);
       }
@@ -1010,7 +1012,12 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
     deme_birth_count[cur_deme]++;
     return GetCell(out_pos);    
   }
-  
+  else if (birth_method == POSITION_CHILD_PARENT_FACING) {
+    return parent_cell.GetCellFaced();
+  }
+
+  // All remaining methods require us to choose among mulitple local positions.
+
   // Construct a list of equally viable locations to place the child...
   tList<cPopulationCell> found_list;
   

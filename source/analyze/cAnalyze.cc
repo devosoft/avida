@@ -1593,7 +1593,7 @@ void cAnalyze::TruncateLineage(cString cur_string)
     tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
     cAnalyzeGenotype* genotype = NULL;
     
-    while (genotype = batch_it.Next()) {
+    while ((genotype = batch_it.Next())) {
       if (found) {
         batch_it.Remove();
         delete genotype;

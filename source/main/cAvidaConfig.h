@@ -153,13 +153,13 @@ public:
 #else
   CONFIG_ADD_GROUP(GENERAL_GROUP, "General Settings");
   CONFIG_ADD_VAR(ANALYZE_MODE, int, 0, "0 = Disabled\n1 = Enabled\n2 = Interactive");
-  CONFIG_ADD_VAR(VIEW_MODE, int, 0, "Initial viewer screen");
+  CONFIG_ADD_VAR(VIEW_MODE, int, 1, "Initial viewer screen");
   CONFIG_ADD_VAR(CLONE_FILE, cString, "-", "Clone file to load");
   CONFIG_ADD_VAR(VERBOSITY, int, 1, "Control output verbosity");
   
   CONFIG_ADD_GROUP(ARCH_GROUP, "Architecture Variables");
-  CONFIG_ADD_VAR(WORLD_X, int, 100, "Width of the Avida world");
-  CONFIG_ADD_VAR(WORLD_Y, int, 100, "Height of the Avida world");
+  CONFIG_ADD_VAR(WORLD_X, int, 60, "Width of the Avida world");
+  CONFIG_ADD_VAR(WORLD_Y, int, 60, "Height of the Avida world");
   CONFIG_ADD_VAR(WORLD_GEOMETRY, int, 2, "1 = Bounded Grid\n2 = Torus");
   CONFIG_ADD_VAR(NUM_DEMES, int, 0, "Number of independed groups in the population; 0=off");
   CONFIG_ADD_VAR(RANDOM_SEED, int, 0, "Random number seed (0 for based on time)");
@@ -174,7 +174,7 @@ public:
   CONFIG_ADD_VAR(START_CREATURE, cString, "default-classic.org", "Organism to seed the soup");
   
   CONFIG_ADD_GROUP(REPRODUCTION_GROUP, "Birth and Death");
-  CONFIG_ADD_VAR(BIRTH_METHOD, int, 4, "0 = Replace random organism in neighborhood\n1 = Replace oldest organism in neighborhood\n2 = Replace largest Age/Merit in neighborhood\n3 = Place only in empty cells in neighborhood\n4 = Replace random from population (Mass Action)\n5 = Replace oldest in entire population (like Tierra)\n6 = Replace random within deme");
+  CONFIG_ADD_VAR(BIRTH_METHOD, int, 0, "Which organism should be replaced on birth?\n0 = Random organism in neighborhood\n1 = Oldest in neighborhood\n2 = Largest Age/Merit in neighborhood\n3 = None (use only empty cells in neighborhood)\n4 = Random from population (Mass Action)\n5 = Oldest in entire population\n6 = Random within deme\n7 = Organism faced by parent");
   CONFIG_ADD_VAR(PREFER_EMPTY, int, 1, "Give empty cells preference in offsping placement?");
   CONFIG_ADD_VAR(DEATH_METHOD, int, 2, "0 = Never die of old age.\n1 = Die when inst executed = AGE_LIMIT (+deviation)\n2 = Die when inst executed = length*AGE_LIMIT (+dev)");
   CONFIG_ADD_VAR(AGE_LIMIT, int, 20, "Modifies DEATH_METHOD");
