@@ -625,8 +625,18 @@ int cPopulation::BuyValue(const int label, const int buy_price, const int cell_i
 
 // CompeteDemes  probabilistically copies demes into the next generation
 // based on their fitness. How deme fitness is estimated is specified by 
-// competition_type input argument as by the birth count (1), average
-// fitness (2), or equal for all demes (3). For ease of use, each organism 
+// competition_type input argument as:
+/*
+ 0: deme fitness = 1 (control, random deme selection)
+ 1: deme fitness = number of births since last competition (default) 
+ 2: deme fitness = average organism fitness at the current update (uses parent's fitness, so
+                     does not work with donations)
+ 3: deme fitness = average mutation rate at the current update
+ 4: deme fitness = strong rank selection on (parents) fitness (2^-deme fitness rank)
+ 5: deme fitness = average organism life (current, not parents) fitness (works with donations)
+ 6: deme fitness = strong rank selection on life (current, not parents) fitness
+*/
+//  For ease of use, each organism 
 // is setup as if it we just injected into the population.
 
 void cPopulation::CompeteDemes(int competition_type)
