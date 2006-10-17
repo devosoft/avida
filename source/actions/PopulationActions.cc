@@ -793,8 +793,13 @@ public:
  of each deme is determined differently depending on the competition_type: 
  0: deme fitness = 1 (control, random deme selection)
  1: deme fitness = number of births since last competition (default) 
- 2: deme fitness = average organism fitness at the current update
+ 2: deme fitness = average organism fitness at the current update (uses parent's fitness, so
+                     does not work with donations)
  3: deme fitness = average mutation rate at the current update
+ 4: deme fitness = strong rank selection on (parents) fitness (2^-deme fitness rank)
+ 5: deme fitness = average organism life (current, not parents) fitness (works with donations)
+ 6: deme fitness = strong rank selection on life (current, not parents) fitness
+
 */
 class cActionCompeteDemes : public cAction
 {
