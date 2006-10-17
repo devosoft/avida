@@ -40,6 +40,7 @@ private:
   int cur_input;                           // Next input to give organism.
 
   int cell_id;           // Unique id for position of cell in population.
+  int deme_id;           // ID of the deme that this cell is part of.
   int organism_count;    // Total number of orgs to ever inhabit this cell.
 
 
@@ -54,6 +55,7 @@ public:
   void operator=(const cPopulationCell& in_cell);
 
   void Setup(cWorld* world, int in_id, const cMutationRates & in_rates);
+  void SetDemeID(int in_id) { deme_id = in_id; }
   void Rotate(cPopulationCell & new_facing);
 
   cOrganism* GetOrganism() const { return organism; }
@@ -66,6 +68,7 @@ public:
   int GetInputAt(int & input_pointer);
 
   int GetID() const { return cell_id; }
+  int GetDemeID() const { return deme_id; }
   int GetOrganismCount() const { return organism_count; }
 
   bool IsOccupied() const { return organism != NULL; }

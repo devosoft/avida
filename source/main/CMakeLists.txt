@@ -4,6 +4,7 @@ SET(libmain_a_SOURCES
   avida.cc
   cAvidaConfig.cc
   cBirthChamber.cc
+  cDeme.cc
   cEnvironment.cc
   cEventList.cc
   cFitnessMatrix.cc

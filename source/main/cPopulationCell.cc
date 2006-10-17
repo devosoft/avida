@@ -31,6 +31,7 @@ cPopulationCell::cPopulationCell(const cPopulationCell& in_cell)
   , organism(in_cell.organism)
   , cur_input(in_cell.cur_input)
   , cell_id(in_cell.cell_id)
+  , deme_id(in_cell.deme_id)
   , organism_count(in_cell.organism_count)
 {
   for (int i = 0; i < nHardware::IO_SIZE; i++) input_array[i] = in_cell.input_array[i];
@@ -49,6 +50,7 @@ void cPopulationCell::operator=(const cPopulationCell& in_cell)
   for (int i = 0; i < nHardware::IO_SIZE; i++) input_array[i] = in_cell.input_array[i];
   cur_input = in_cell.cur_input;
   cell_id = in_cell.cell_id;
+  deme_id = in_cell.deme_id;
   organism_count = in_cell.organism_count;
   if (mutation_rates == NULL)
     mutation_rates = new cMutationRates(*in_cell.mutation_rates);
@@ -65,6 +67,8 @@ void cPopulationCell::Setup(cWorld* world, int in_id, const cMutationRates& in_r
 {
   m_world = world;
   cell_id = in_id;
+  deme_id = -1;
+  
   if (mutation_rates == NULL)
     mutation_rates = new cMutationRates(in_rates);
   else

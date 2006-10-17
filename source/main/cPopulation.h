@@ -16,6 +16,9 @@
 #ifndef cBirthChamber_h
 #include "cBirthChamber.h"
 #endif
+#ifndef cDeme_h
+#include "cDeme.h"
+#endif
 #ifndef cOrgInterface_h
 #include "cOrgInterface.h"
 #endif
@@ -72,9 +75,7 @@ private:
   int world_x;                         // Structured population width.
   int world_y;                         // Structured population
   int num_organisms;                   // Cell count with living organisms
-  int num_demes;                       // Number of sub-groups of organisms
-  int deme_size;                       // Number of organims in a deme.
-  tArray<int> deme_birth_count;        // Track number of births in each deme.
+  tArray<cDeme> deme_array;            // Deme structure of the population.
  
   // Outside interactions...
   bool sync_events;   // Do we need to sync up the event list with population?
@@ -133,10 +134,12 @@ public:
   void Kaboom(cPopulationCell& in_cell, int distance=0);
   void AddSellValue(const int data, const int label, const int sell_price, const int org_id, const int cell_id);
   int BuyValue(const int label, const int buy_price, const int cell_id);
+
   // Deme-related methods
   void CompeteDemes(int competition_type);
   void ResetDemes();
   void CopyDeme(int deme1_id, int deme2_id);
+  void SpawnDeme(int deme1_id, int deme2_id);
   void PrintDemeStats();
 
   // Process a single organism one instruction...

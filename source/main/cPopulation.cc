@@ -199,9 +199,10 @@ cPopulation::~cPopulation()
 
 // This method configures demes in the population.  Demes are subgroups of
 // organisms evolved together and used in group selection experiments.
+
 bool cPopulation::SetupDemes()
 {
-  num_demes = m_world->GetConfig().NUM_DEMES.Get();
+  const int num_demes = m_world->GetConfig().NUM_DEMES.Get();
   const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
   
   // If we are not using demes, stop here.
@@ -214,6 +215,8 @@ bool cPopulation::SetupDemes()
     return true;
   }
   
+  deme_array.Resize(num_demes);
+
   // Check to make sure all other settings are reasonable to have demes.
   // ...make sure populaiton can be divided up evenly.
   if (world_y % num_demes != 0) {
@@ -231,11 +234,20 @@ bool cPopulation::SetupDemes()
   
   const int deme_size_x = world_x;
   const int deme_size_y = world_y / num_demes;
-  deme_size = deme_size_x * deme_size_y;
+  const int deme_size = deme_size_x * deme_size_y;
   
-  // Track birth counts...
-  deme_birth_count.Resize(num_demes);
-  deme_birth_count.SetAll(0);
+  
+  // Setup the deme structures.
+  tArray<int> deme_cells(deme_size);
+  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+    for (int offset = 0; offset < deme_size; offset++) {
+      int cell_id = deme_id * deme_size + offset;
+      deme_cells[offset] = cell_id;
+      cell_array[cell_id].SetDemeID(deme_id);
+    }
+    deme_array[deme_id].Setup(deme_cells);
+  }
+
   
   // Build walls in the population.
   for (int row_id = 0; row_id < world_y; row_id += deme_size_y) {
@@ -619,6 +631,7 @@ int cPopulation::BuyValue(const int label, const int buy_price, const int cell_i
 
 void cPopulation::CompeteDemes(int competition_type)
 {
+  const int num_demes = deme_array.GetSize();
   
   double total_fitness = 0; 
   tArray<double> deme_fitness(num_demes); 
@@ -630,117 +643,125 @@ void cPopulation::CompeteDemes(int competition_type)
       break; 
     case 1:     // deme fitness = number of births
                 // Determine the scale for fitness by totaling births across demes.
-      for (int cur_deme = 0; cur_deme < num_demes; cur_deme++) {
-        deme_fitness[cur_deme] = (double) deme_birth_count[cur_deme]; 
-        total_fitness += deme_birth_count[cur_deme];
+      for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+	double cur_fitness = (double) deme_array[deme_id].GetBirthCount();
+        deme_fitness[deme_id] = cur_fitness;
+        total_fitness += cur_fitness;
       }
       break; 
     case 2:    // deme fitness = average organism fitness at the current update
-      for (int cur_deme = 0; cur_deme < num_demes; cur_deme++) {
+      for (int deme_id = 0; deme_id < num_demes; deme_id++) {
         cDoubleSum single_deme_fitness;
-        for (int i = 0; i < deme_size; i++) {
-          int cur_cell = cur_deme * deme_size + i;
+	const cDeme & cur_deme = deme_array[deme_id];
+        for (int i = 0; i < cur_deme.GetSize(); i++) {
+          int cur_cell = cur_deme.GetCellID(i);
           if (cell_array[cur_cell].IsOccupied() == false) continue;
-          cPhenotype & phenotype = GetCell(cur_cell).GetOrganism()->GetPhenotype();
+          cPhenotype & phenotype =
+	    GetCell(cur_cell).GetOrganism()->GetPhenotype();
           single_deme_fitness.Add(phenotype.GetFitness());
         } 
-        deme_fitness[cur_deme] = single_deme_fitness.Ave();
-        total_fitness += deme_fitness[cur_deme];
+        deme_fitness[deme_id] = single_deme_fitness.Ave();
+        total_fitness += deme_fitness[deme_id];
       }
       break; 
     case 3: 	// deme fitness = average mutation rate at the current update 
-      for (int cur_deme = 0; cur_deme < num_demes; cur_deme++) {
+      for (int deme_id = 0; deme_id < num_demes; deme_id++) {
         cDoubleSum single_deme_div_type;
-        for (int i = 0; i < deme_size; i++) {
-          int cur_cell = cur_deme * deme_size + i;
+	const cDeme & cur_deme = deme_array[deme_id];
+        for (int i = 0; i < cur_deme.GetSize(); i++) {
+          int cur_cell = cur_deme.GetCellID(i);
           if (cell_array[cur_cell].IsOccupied() == false) continue;
-          cPhenotype & phenotype = GetCell(cur_cell).GetOrganism()->GetPhenotype();
+          cPhenotype & phenotype =
+	    GetCell(cur_cell).GetOrganism()->GetPhenotype();
           assert(phenotype.GetDivType()>0);
           single_deme_div_type.Add(1/phenotype.GetDivType());
         }
-        deme_fitness[cur_deme] = single_deme_div_type.Ave();
-        total_fitness += deme_fitness[cur_deme];
-      } 			 	      	
+        deme_fitness[deme_id] = single_deme_div_type.Ave();
+        total_fitness += deme_fitness[deme_id];
+      }
       break; 
     case 4: 	// deme fitness = 2^(-deme fitness rank) 
               // first find all the deme fitness values ...
     {      
-      for (int cur_deme = 0; cur_deme < num_demes; cur_deme++) {
+      for (int deme_id = 0; deme_id < num_demes; deme_id++) {
         cDoubleSum single_deme_fitness;
-        for (int i = 0; i < deme_size; i++) {
-          int cur_cell = cur_deme * deme_size + i; 
+	const cDeme & cur_deme = deme_array[deme_id];
+        for (int i = 0; i < cur_deme.GetSize(); i++) {
+          int cur_cell = cur_deme.GetCellID(i);
           if (cell_array[cur_cell].IsOccupied() == false) continue;
           cPhenotype & phenotype = GetCell(cur_cell).GetOrganism()->GetPhenotype();
           single_deme_fitness.Add(phenotype.GetFitness());
         }  
-        deme_fitness[cur_deme] = single_deme_fitness.Ave();
+        deme_fitness[deme_id] = single_deme_fitness.Ave();
       }
       // ... then determine the rank of each deme based on its fitness
       tArray<double> deme_rank(num_demes);
       deme_rank.SetAll(1);
-      for (int cur_deme = 0; cur_deme < num_demes; cur_deme++) {
+      for (int deme_id = 0; deme_id < num_demes; deme_id++) {
         for (int test_deme = 0; test_deme < num_demes; test_deme++) {
-          if (deme_fitness[cur_deme] < deme_fitness[test_deme]) {
-            deme_rank[cur_deme]++;
+          if (deme_fitness[deme_id] < deme_fitness[test_deme]) {
+            deme_rank[deme_id]++;
           } 
         } 
       } 
       // ... finally, make deme fitness 2^(-deme rank)
       deme_fitness.SetAll(1);	
-      for (int cur_deme = 0; cur_deme < num_demes; cur_deme++) {
-        for (int i = 0; i < deme_rank[cur_deme]; i++) { 
-          deme_fitness[cur_deme] = deme_fitness[cur_deme]/2;
+      for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+        for (int i = 0; i < deme_rank[deme_id]; i++) { 
+          deme_fitness[deme_id] = deme_fitness[deme_id]/2;
         } 
-        total_fitness += deme_fitness[cur_deme]; 
+        total_fitness += deme_fitness[deme_id]; 
       } 
     }
-      break; 
-    case 5:    // deme fitness = average organism life fitness at the current update
-      for (int cur_deme = 0; cur_deme < num_demes; cur_deme++) {
+    break; 
+  case 5:    // deme fitness = average organism life fitness at the current update
+    for (int deme_id = 0; deme_id < num_demes; deme_id++) {
         cDoubleSum single_deme_life_fitness;
-        for (int i = 0; i < deme_size; i++) {
-          int cur_cell = cur_deme * deme_size + i;
+	const cDeme & cur_deme = deme_array[deme_id];
+        for (int i = 0; i < cur_deme.GetSize(); i++) {
+          int cur_cell = cur_deme.GetCellID(i);
           if (cell_array[cur_cell].IsOccupied() == false) continue;
           cPhenotype & phenotype = GetCell(cur_cell).GetOrganism()->GetPhenotype();
           single_deme_life_fitness.Add(phenotype.GetLifeFitness());
         }
-        deme_fitness[cur_deme] = single_deme_life_fitness.Ave();
-        total_fitness += deme_fitness[cur_deme];
-      }
-      break; 
-    case 6:     // deme fitness = 2^(-deme life fitness rank) (same as 4, but with life fitness)
-                // first find all the deme fitness values ...
+        deme_fitness[deme_id] = single_deme_life_fitness.Ave();
+        total_fitness += deme_fitness[deme_id];
+    }
+    break; 
+  case 6:     // deme fitness = 2^(-deme life fitness rank) (same as 4, but with life fitness)
+    // first find all the deme fitness values ...
     {
-      for (int cur_deme = 0; cur_deme < num_demes; cur_deme++) {
+      for (int deme_id = 0; deme_id < num_demes; deme_id++) {
         cDoubleSum single_deme_life_fitness;
-        for (int i = 0; i < deme_size; i++) {
-          int cur_cell = cur_deme * deme_size + i;
+	const cDeme & cur_deme = deme_array[deme_id];
+        for (int i = 0; i < cur_deme.GetSize(); i++) {
+          int cur_cell = cur_deme.GetCellID(i);
           if (cell_array[cur_cell].IsOccupied() == false) continue;
           cPhenotype & phenotype = GetCell(cur_cell).GetOrganism()->GetPhenotype();
           single_deme_life_fitness.Add(phenotype.GetLifeFitness());
         }
-        deme_fitness[cur_deme] = single_deme_life_fitness.Ave();
+        deme_fitness[deme_id] = single_deme_life_fitness.Ave();
       }
       // ... then determine the rank of each deme based on its fitness
       tArray<double> deme_rank(num_demes);
       deme_rank.SetAll(1);
-      for (int cur_deme = 0; cur_deme < num_demes; cur_deme++) {
+      for (int deme_id = 0; deme_id < num_demes; deme_id++) {
         for (int test_deme = 0; test_deme < num_demes; test_deme++) {
-          if (deme_fitness[cur_deme] < deme_fitness[test_deme]) {
-            deme_rank[cur_deme]++;
+          if (deme_fitness[deme_id] < deme_fitness[test_deme]) {
+            deme_rank[deme_id]++;
           }
         }
       }
       // ... finally, make deme fitness 2^(-deme rank)
       deme_fitness.SetAll(1);
-      for (int cur_deme = 0; cur_deme < num_demes; cur_deme++) {
-        for (int i = 0; i < deme_rank[cur_deme]; i++) {
-          deme_fitness[cur_deme] = deme_fitness[cur_deme]/2;
+      for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+        for (int i = 0; i < deme_rank[deme_id]; i++) {
+          deme_fitness[deme_id] = deme_fitness[deme_id]/2;
         }
-        total_fitness += deme_fitness[cur_deme];
+        total_fitness += deme_fitness[deme_id];
       }
     }
-      break;
+    break;
   } 
   
   // Pick which demes should be in the next generation.
@@ -770,42 +791,52 @@ void cPopulation::CompeteDemes(int competition_type)
   // Copy demes until all deme counts are 1.
   while (true) {
     // Find the next deme to copy...
-    int from_deme, to_deme;
-    for (from_deme = 0; from_deme < num_demes; from_deme++) {
-      if (deme_count[from_deme] > 1) break;
+    int from_deme_id, to_deme_id;
+    for (from_deme_id = 0; from_deme_id < num_demes; from_deme_id++) {
+      if (deme_count[from_deme_id] > 1) break;
     }
-    if (from_deme == num_demes) break; // If we don't find another deme to copy
     
-    for (to_deme = 0; to_deme < num_demes; to_deme++) {
-      if (deme_count[to_deme] == 0) break;
+    // Stop If we didn't find another deme to copy
+    if (from_deme_id == num_demes) break;
+    
+    for (to_deme_id = 0; to_deme_id < num_demes; to_deme_id++) {
+      if (deme_count[to_deme_id] == 0) break;
     }
     
     // We now have both a from and a to deme....
-    deme_count[from_deme]--;
-    deme_count[to_deme]++;
+    deme_count[from_deme_id]--;
+    deme_count[to_deme_id]++;
     
+    cDeme & from_deme = deme_array[from_deme_id];
+    cDeme & to_deme   = deme_array[to_deme_id];
+
     // Do the actual copy!
-    for (int i = 0; i < deme_size; i++) {
-      int from_cell = from_deme * deme_size + i;
-      int to_cell = to_deme * deme_size + i;
-      if (cell_array[from_cell].IsOccupied() == true) {
-        InjectClone( to_cell, *(cell_array[from_cell].GetOrganism()) );
+    for (int i = 0; i < from_deme.GetSize(); i++) {
+      int from_cell_id = from_deme.GetCellID(i);
+      int to_cell_id = to_deme.GetCellID(i);
+      if (cell_array[from_cell_id].IsOccupied() == true) {
+        InjectClone( to_cell_id, *(cell_array[from_cell_id].GetOrganism()) );
       }
     }
-    is_init[to_deme] = true;
+    is_init[to_deme_id] = true;
   }
   
   // Now re-inject all remaining demes into themselves to reset them.
-  for (int cur_deme = 0; cur_deme < num_demes; cur_deme++) {
-    if (is_init[cur_deme] == true) continue;
-    for (int i = 0; i < deme_size; i++) {
-      int cur_cell = cur_deme * deme_size + i;
-      if (cell_array[cur_cell].IsOccupied() == false) continue;
-      InjectClone( cur_cell, *(cell_array[cur_cell].GetOrganism()) );
+  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+    if (is_init[deme_id] == true) continue;
+    cDeme & cur_deme = deme_array[deme_id];
+
+    for (int i = 0; i < cur_deme.GetSize(); i++) {
+      int cur_cell_id = cur_deme.GetCellID(i);
+      if (cell_array[cur_cell_id].IsOccupied() == false) continue;
+      InjectClone( cur_cell_id, *(cell_array[cur_cell_id].GetOrganism()) );
     }
   }
   
-  deme_birth_count.SetAll(0);
+  // Reset all deme stats to zero.
+  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+    deme_array[deme_id].Reset();
+  }
 }
 
 
@@ -815,27 +846,55 @@ void cPopulation::CompeteDemes(int competition_type)
 void cPopulation::ResetDemes()
 {
   // re-inject all demes into themselves to reset them.
-  for (int cur_deme = 0; cur_deme < num_demes; cur_deme++) {
-    for (int i = 0; i < deme_size; i++) {
-      int cur_cell = cur_deme * deme_size + i;
-      if (cell_array[cur_cell].IsOccupied() == false) continue;
-      InjectClone( cur_cell, *(cell_array[cur_cell].GetOrganism()) );
+  for (int deme_id = 0; deme_id < deme_array.GetSize(); deme_id++) {
+    for (int i = 0; i < deme_array[deme_id].GetSize(); i++) {
+      int cur_cell_id = deme_array[deme_id].GetCellID(i);
+      if (cell_array[cur_cell_id].IsOccupied() == false) continue;
+      InjectClone( cur_cell_id, *(cell_array[cur_cell_id].GetOrganism()) );
     }
   }
 }
 
-// Copy the contents of one deme into another.
+
+// Copy the full contents of one deme into another.
+
 void cPopulation::CopyDeme(int deme1_id, int deme2_id)
 {
-  for (int i = 0; i < deme_size; i++) {
-    int from_cell = deme1_id * deme_size + i;
-    int to_cell = deme2_id * deme_size + i;
+  cDeme & deme1 = deme_array[deme1_id];
+  cDeme & deme2 = deme_array[deme2_id];
+
+  for (int i = 0; i < deme1.GetSize(); i++) {
+    int from_cell = deme1.GetCellID(i);
+    int to_cell = deme2.GetCellID(i);
     if (cell_array[from_cell].IsOccupied() == false) {
       KillOrganism(cell_array[to_cell]);
       continue;
     }
     InjectClone( to_cell, *(cell_array[from_cell].GetOrganism()) );    
   }
+}
+
+
+// Copy a single indvidual out of a deme into a new one (which is first purged
+// of existing organisms.)
+
+void cPopulation::SpawnDeme(int deme1_id, int deme2_id)
+{
+  cDeme & deme1 = deme_array[deme1_id];
+  cDeme & deme2 = deme_array[deme2_id];
+
+  // Determine the cell to copy from and to.
+  cRandom & random = m_world->GetRandom();
+  int cell1_id = deme1.GetCellID( random.GetUInt(deme1.GetSize()) );
+  int cell2_id = deme2.GetCellID( random.GetUInt(deme2.GetSize()) );
+
+  // Clear out existing cells in target deme.
+  for (int i = 0; i < deme2.GetSize(); i++) {
+    KillOrganism(cell_array[ deme2.GetCellID(i) ]);
+  }
+
+  // And do the spawning.
+  InjectClone( cell2_id, *(cell_array[cell1_id].GetOrganism()) );    
 }
 
 
@@ -880,13 +939,14 @@ void cPopulation::PrintDemeStats()
   const int num_inst = m_world->GetNumInstructions();
   const int num_task = environment.GetTaskLib().GetSize();
   
-  for (int cur_deme = 0; cur_deme < num_demes; cur_deme++) {
+  const int num_demes = deme_array.GetSize();
+  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     cString filename;
-    filename.Set("deme_instruction-%d.dat", cur_deme);
+    filename.Set("deme_instruction-%d.dat", deme_id);
     cDataFile & df_inst = m_world->GetDataFile(filename); 
     cString comment;
     comment.Set("Number of times each instruction is exectued in deme %d",
-                cur_deme);
+                deme_id);
     df_inst.WriteComment(comment);
     df_inst.WriteTimeStamp();
     df_inst.Write(stats.GetUpdate(), "update");
@@ -900,8 +960,9 @@ void cPopulation::PrintDemeStats()
     tArray<cIntSum> single_deme_task(num_task);
     tArray<cIntSum> single_deme_inst(num_inst);
     
-    for (int i = 0; i < deme_size; i++) {
-      int cur_cell = cur_deme * deme_size + i;
+    const cDeme & cur_deme = deme_array[deme_id];
+    for (int i = 0; i < cur_deme.GetSize(); i++) {
+      int cur_cell = cur_deme.GetCellID(i);
       if (cell_array[cur_cell].IsOccupied() == false) continue;
       cPhenotype & phenotype = GetCell(cur_cell).GetOrganism()->GetPhenotype();
       single_deme_fitness.Add(phenotype.GetFitness()); 	
@@ -923,7 +984,7 @@ void cPopulation::PrintDemeStats()
       }
     }
     
-    comment.Set("Deme %d", cur_deme);
+    comment.Set("Deme %d", deme_id);
     df_fit.Write(single_deme_fitness.Ave(), comment);
     df_life_fit.Write(single_deme_life_fitness.Ave(), comment);
     df_merit.Write(single_deme_merit.Ave(), comment);
@@ -932,7 +993,7 @@ void cPopulation::PrintDemeStats()
     df_receiver.Write(single_deme_receiver.Sum(), comment);
     
     for (int j = 0; j < num_task; j++) {
-      comment.Set("Deme %d, Task %d", cur_deme, j);
+      comment.Set("Deme %d, Task %d", deme_id, j);
       df_task.Write((int) single_deme_task[j].Sum(), comment);
     }
     
@@ -1003,14 +1064,18 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
     return *out_cell;
   }
   else if (birth_method == POSITION_CHILD_DEME_RANDOM) {
-    const int parent_id = parent_cell.GetID();
-    const int cur_deme = parent_id / deme_size;
-    int out_pos = m_world->GetRandom().GetUInt(deme_size) + deme_size * cur_deme;
-    while (parent_ok == false && out_pos == parent_cell.GetID()) {
-      out_pos = m_world->GetRandom().GetUInt(deme_size) + deme_size * cur_deme;
+    const int deme_id = parent_cell.GetDemeID();
+    const int deme_size = deme_array[deme_id].GetSize();
+
+    int out_pos = m_world->GetRandom().GetUInt(deme_size);
+    int out_cell_id = deme_array[deme_id].GetCellID(out_pos);
+    while (parent_ok == false && out_cell_id == parent_cell.GetID()) {
+      out_pos = m_world->GetRandom().GetUInt(deme_size);
+      out_cell_id = deme_array[deme_id].GetCellID(out_pos);
     }
-    deme_birth_count[cur_deme]++;
-    return GetCell(out_pos);    
+
+    deme_array[deme_id].IncBirthCount();
+    return GetCell(out_cell_id);    
   }
   else if (birth_method == POSITION_CHILD_PARENT_FACING) {
     return parent_cell.GetCellFaced();
@@ -1052,10 +1117,9 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
     }
   }
   
-  if (num_demes > 0) {
-    const int parent_id = parent_cell.GetID();
-    const int cur_deme = parent_id / deme_size;
-    deme_birth_count[cur_deme]++;
+  if (deme_array.GetSize() > 0) {
+    const int deme_id = parent_cell.GetDemeID();
+    deme_array[deme_id].IncBirthCount();
   }
   
   // If there are no possibilities, return parent.
