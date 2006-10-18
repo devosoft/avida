@@ -148,6 +148,7 @@ public:
   int GetNextInput() { assert(m_interface); return m_interface->GetInputAt(input_pointer); }
   void Die() { assert(m_interface); m_interface->Die(); }
   void Kaboom(int dist) { assert(m_interface); m_interface->Kaboom(dist);}
+  void SpawnDeme() { assert(m_interface); m_interface->SpawnDeme(); }
   int GetCellID() { assert(m_interface); return m_interface->GetCellID(); }
   int GetDebugInfo() { assert(m_interface); return m_interface->Debug(); }
   int GetID() { return m_id; }

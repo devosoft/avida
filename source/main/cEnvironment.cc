@@ -639,10 +639,11 @@ bool cEnvironment::TestInput(cReactionResult& result, const tBuffer<int>& inputs
 }
 
 
-bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result, cTaskContext& taskctx,
-                              const tBuffer<int>& send_buf, const tBuffer<int>& receive_buf,
-                              const tArray<int>& task_count, const tArray<int>& reaction_count,
-                              const tArray<double>& resource_count) const
+bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
+	      cTaskContext& taskctx,
+              const tBuffer<int>& send_buf, const tBuffer<int>& receive_buf,
+              const tArray<int>& task_count, const tArray<int>& reaction_count,
+	      const tArray<double>& resource_count) const
 {
   // Do setup for reaction tests...
   m_tasklib.SetupTests(taskctx);

@@ -7,6 +7,15 @@
  *
  */
 
+// This class is responsible for establishing the interface that links an
+// organism back to its population.  It is a base class that is derived in:
+//
+//   cpu/cTestCPUInterface.{h,cc}      - Test CPU interface
+//   main/cPopulationInterface.{h,cc}  - Main population interface.
+//
+// Make sure that any new function you implment here also has versions in
+// those classes.
+
 #ifndef cOrgInterface_h
 #define cOrgInterface_h
 
@@ -44,6 +53,7 @@ public:
   virtual void UpdateResources(const tArray<double>& res_change) = 0;
   virtual void Die() = 0;
   virtual void Kaboom(int distance) = 0;
+  virtual void SpawnDeme() = 0;
   virtual bool SendMessage(cOrgMessage& mess) = 0;
   virtual cOrgSinkMessage* NetReceive() = 0;
   virtual bool NetRemoteValidate(cAvidaContext& ctx, cOrgSinkMessage* msg) = 0;

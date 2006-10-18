@@ -11,6 +11,7 @@
 cDeme::cDeme()
   : width(0)
   , birth_count(0)
+  , org_count(0)
 {
 }
 
@@ -22,6 +23,7 @@ void cDeme::Setup(const tArray<int> & in_cells, int in_width)
 {
   cell_ids = in_cells;
   birth_count = 0;
+  org_count = 0;
 
   // If width is negative, set it to the full number of cells.
   width = in_width;

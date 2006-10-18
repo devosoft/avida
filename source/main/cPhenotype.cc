@@ -498,9 +498,11 @@ bool cPhenotype::TestInput(tBuffer<int> & inputs, tBuffer<int> & outputs)
   return false; // Nothing happened...
 }
 
-bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx, tBuffer<int>& send_buf,
-                            tBuffer<int>& receive_buf, const tArray<double>& res_in,
-                            tArray<double>& res_change, tArray<int>& insts_triggered)
+bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
+			    tBuffer<int>& send_buf, tBuffer<int>& receive_buf,
+			    const tArray<double>& res_in,
+                            tArray<double>& res_change,
+			    tArray<int>& insts_triggered)
 {
   assert(initialized == true);
 
@@ -524,9 +526,7 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx, tBuffer<i
   // Start with updating task and reaction counters
   for (int i = 0; i < num_tasks; i++) {
     if (result.TaskDone(i) == true) cur_task_count[i]++;
-  }
-  for (int i = 0; i < num_tasks; i++) {
-	  if (result.TaskQuality(i) > 0) cur_task_quality[i]+= result.TaskQuality(i);
+    if (result.TaskQuality(i) > 0) cur_task_quality[i]+= result.TaskQuality(i);
   }
   for (int i = 0; i < num_reactions; i++) {
     if (result.ReactionTriggered(i) == true) cur_reaction_count[i]++;

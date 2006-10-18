@@ -1815,44 +1815,48 @@ double cTaskLib::Task_MatchNumber(cTaskContext* ctx) const
   return quality;
 }
 
+
 double cTaskLib::Task_CommEcho(cTaskContext* ctx) const
 {
-	const int test_output = ctx->output_buffer[0];
+  const int test_output = ctx->output_buffer[0];
 
-	tConstListIterator<tBuffer<int> > buff_it(ctx->other_input_buffers);  
+  tConstListIterator<tBuffer<int> > buff_it(ctx->other_input_buffers);  
+  
+  while (buff_it.Next() != NULL) {
+    const tBuffer<int>& cur_buff = *(buff_it.Get());
+    const int buff_size = cur_buff.GetNumStored();
+    for (int i = 0; i < buff_size; i++) {
+      if (test_output == cur_buff[i]) return 1.0;
+    }
+  }
 
-	while (buff_it.Next() != NULL) {
-		const tBuffer<int>& cur_buff = *(buff_it.Get());
-		const int buff_size = cur_buff.GetNumStored();
-		for (int i = 0; i < buff_size; i++) {
-			if (test_output == cur_buff[i]) return 1.0;
-		}
-	}
-
-	return 0.0;
+  return 0.0;
 }
+
 
 double cTaskLib::Task_CommNot(cTaskContext* ctx) const
 {
-	const int test_output = ctx->output_buffer[0];
-
-	tConstListIterator<tBuffer<int> > buff_it(ctx->other_input_buffers);  
-
-	while (buff_it.Next() != NULL) {
-		const tBuffer<int>& cur_buff = *(buff_it.Get());
-		const int buff_size = cur_buff.GetNumStored();
-		for (int i = 0; i < buff_size; i++) {
-			if (test_output == (0-(cur_buff[i]+1))) return 1.0;
-		}
-	}
-
-	return 0.0;
+  const int test_output = ctx->output_buffer[0];
+  
+  tConstListIterator<tBuffer<int> > buff_it(ctx->other_input_buffers);  
+  
+  while (buff_it.Next() != NULL) {
+    const tBuffer<int>& cur_buff = *(buff_it.Get());
+    const int buff_size = cur_buff.GetNumStored();
+    for (int i = 0; i < buff_size; i++) {
+      if (test_output == (0-(cur_buff[i]+1))) return 1.0;
+    }
+  }
+  
+  return 0.0;
 }
+
 
 double cTaskLib::Task_NetSend(cTaskContext* ctx) const
 {
   return 1.0 * ctx->net_completed;
 }
+
 
 double cTaskLib::Task_NetReceive(cTaskContext* ctx) const
 {

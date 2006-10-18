@@ -340,6 +340,8 @@ cInstLibCPU *cHardwareCPU::initInstLib(void)
     cInstEntryCPU("repro-X",    &cHardwareCPU::Inst_Repro),
     cInstEntryCPU("repro-Y",    &cHardwareCPU::Inst_Repro),
     cInstEntryCPU("repro-Z",    &cHardwareCPU::Inst_Repro),
+
+    cInstEntryCPU("spawn-deme", &cHardwareCPU::Inst_SpawnDeme),
     
     // Suicide
     cInstEntryCPU("kazi",	&cHardwareCPU::Inst_Kazi),
@@ -2449,6 +2451,12 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
 }
 
 
+bool cHardwareCPU::Inst_SpawnDeme(cAvidaContext& ctx)
+{
+  organism->SpawnDeme();
+  return true;
+}
+
 bool cHardwareCPU::Inst_Kazi(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_AX);
@@ -2467,8 +2475,7 @@ bool cHardwareCPU::Inst_Kazi5(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_Die(cAvidaContext& ctx)
 {
-  const double die_prob = m_world->GetConfig().DIE_PROB.Get();
-  if(ctx.GetRandom().GetDouble() < die_prob) { organism->Die(); }
+  organism->Die();
   return true; 
 }
 
@@ -2641,6 +2648,7 @@ bool cHardwareCPU::Inst_TaskIO(cAvidaContext& ctx)
   organism->DoInput(value_in);
   return true;
 }
+
 bool cHardwareCPU::Inst_TaskIO_Feedback(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_BX);

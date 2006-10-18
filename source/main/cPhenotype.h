@@ -159,8 +159,10 @@ public:
 
   // Input and Output Reaction Tests
   bool TestInput(tBuffer<int>& inputs, tBuffer<int>& outputs);
-  bool TestOutput(cAvidaContext& ctx, cTaskContext& taskctx, tBuffer<int>& send_buf, tBuffer<int>& receive_buf,
-                  const tArray<double>& res_in, tArray<double>& res_change, tArray<int>& insts_triggered);
+  bool TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
+		  tBuffer<int>& send_buf, tBuffer<int>& receive_buf,
+                  const tArray<double>& res_in, tArray<double>& res_change,
+		  tArray<int>& insts_triggered);
 
   // State saving and loading, and printing...
   bool SaveState(std::ofstream& fp);

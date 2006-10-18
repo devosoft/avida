@@ -139,7 +139,7 @@ public:
   void CompeteDemes(int competition_type);
   void ResetDemes();
   void CopyDeme(int deme1_id, int deme2_id);
-  void SpawnDeme(int deme1_id, int deme2_id);
+  void SpawnDeme(int deme1_id, int deme2_id=-1);
   void PrintDemeStats();
 
   // Process a single organism one instruction...
@@ -164,6 +164,7 @@ public:
   int GetSize() { return cell_array.GetSize(); }
   int GetWorldX() { return world_x; }
   int GetWorldY() { return world_y; }
+  int GetNumDemes() { return deme_array.GetSize(); }
 
   cPopulationCell& GetCell(int in_num);
   const tArray<double>& GetResources() const { return resource_count.GetResources(); }

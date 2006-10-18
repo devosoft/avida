@@ -429,7 +429,7 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   // Update the contents of the target cell.
   KillOrganism(target_cell);
   target_cell.InsertOrganism(*in_organism);
-  
+
   // Setup the inputs in the target cell.
   environment.SetupInputs(ctx, target_cell.input_array);
   
@@ -450,7 +450,11 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
     reaper_queue.Push(&target_cell);
   }
   
+  // Keep track of statistics for organism counts...
   num_organisms++;
+  if (deme_array.GetSize() > 0) {
+    deme_array[target_cell.GetDemeID()].IncOrgCount();
+  }
   
   // Statistics...
   m_world->GetStats().RecordBirth(target_cell.GetID(), in_genotype->GetID(),
@@ -483,7 +487,11 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell)
   // Do the lineage handling
   if (m_world->GetConfig().LOG_LINEAGES.Get()) { m_world->GetClassificationManager().RemoveLineageOrganism(organism); }
   
+  // Update count statistics...
   num_organisms--;
+  if (deme_array.GetSize() > 0) {
+    deme_array[in_cell.GetDemeID()].DecOrgCount();
+  }
   genotype->RemoveOrganism();
 
   for (int i = 0; i < organism->GetNumParasites(); i++) {
@@ -890,20 +898,41 @@ void cPopulation::CopyDeme(int deme1_id, int deme2_id)
 
 void cPopulation::SpawnDeme(int deme1_id, int deme2_id)
 {
+  // Must spawn into a different deme.
+  assert(deme1_id != deme2_id);
+
+  const int num_demes = deme_array.GetSize();
+
+  // If the second argument is a -1, choose a deme at random.
+  cRandom & random = m_world->GetRandom();
+  while (deme2_id == -1 || deme2_id == deme1_id) {
+    deme2_id = random.GetUInt(num_demes);
+  }
+
+  // Make sure we have all legal values...
+  assert(deme1_id >= 0 && deme1_id < num_demes);
+  assert(deme2_id >= 0 && deme2_id < num_demes);
+
+  // Find the demes that we're working with.
   cDeme & deme1 = deme_array[deme1_id];
   cDeme & deme2 = deme_array[deme2_id];
 
-  // Determine the cell to copy from and to.
-  cRandom & random = m_world->GetRandom();
-  int cell1_id = deme1.GetCellID( random.GetUInt(deme1.GetSize()) );
-  int cell2_id = deme2.GetCellID( random.GetUInt(deme2.GetSize()) );
+  // Make sure that the deme we're copying from has at least 1 organism.
+  assert(deme1.GetOrgCount() > 0);
 
+  // Determine the cell to copy from.
+  int cell1_id = deme1.GetCellID( random.GetUInt(deme1.GetSize()) );
+  while (cell_array[cell1_id].IsOccupied() == false) {
+    cell1_id = deme1.GetCellID( random.GetUInt(deme1.GetSize()) );
+  }
+  
   // Clear out existing cells in target deme.
   for (int i = 0; i < deme2.GetSize(); i++) {
     KillOrganism(cell_array[ deme2.GetCellID(i) ]);
   }
 
   // And do the spawning.
+  int cell2_id = deme2.GetCellID( random.GetUInt(deme2.GetSize()) );
   InjectClone( cell2_id, *(cell_array[cell1_id].GetOrganism()) );    
 }
 

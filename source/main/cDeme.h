@@ -22,8 +22,9 @@
 class cDeme {
 private:
   tArray<int> cell_ids;
-  int width;
-  int birth_count;
+  int width;        // How wide is the deme?
+  int birth_count;  // How many organisms have been born into deme since reset?
+  int org_count;    // How many organisms are currently in the deme?
 
 public:
   cDeme();
@@ -41,6 +42,10 @@ public:
   void Reset() { birth_count = 0; }
   int GetBirthCount() const { return birth_count; }
   void IncBirthCount() { birth_count++; }
+
+  int GetOrgCount() const { return org_count; }
+  void IncOrgCount() { org_count++; }
+  void DecOrgCount() { org_count--; }
 };
 
 #endif

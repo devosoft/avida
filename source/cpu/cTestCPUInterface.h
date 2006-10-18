@@ -44,6 +44,7 @@ public:
   void UpdateResources(const tArray<double>& res_change);
   void Die();
   void Kaboom(int distance);
+  void SpawnDeme();
   bool SendMessage(cOrgMessage& mess);
   cOrgSinkMessage* NetReceive() { return NULL; } // @DMB - todo: receive message
   bool NetRemoteValidate(cAvidaContext& ctx, cOrgSinkMessage* msg) { return false; } // @DMB - todo: validate message

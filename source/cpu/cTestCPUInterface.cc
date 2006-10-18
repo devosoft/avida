@@ -71,6 +71,10 @@ void cTestCPUInterface::Kaboom(int distance)
   // record the probability it used.
 }
 
+void cTestCPUInterface::SpawnDeme()
+{
+}
+
 bool cTestCPUInterface::SendMessage(cOrgMessage& mess)
 {
   return false;
