@@ -249,8 +249,19 @@ void cPhenotype::DivideReset(int _length)
 
   // Update these values as needed...
   int cur_merit_base = CalcSizeMerit();
-  merit = cur_merit_base * cur_bonus;
-
+  
+  // If we are resetting the current merit, do it here
+  // and it will also be propagated to the child
+  const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
+  if (merit_default_bonus)
+  {
+    merit = cur_merit_base * m_world->GetConfig().DEFAULT_BONUS.Get();
+  }
+  else // Default
+  {
+    merit = cur_merit_base * cur_bonus;
+  }
+  
   genome_length   = _length;
   (void) copied_size;          // Unchanged
   (void) executed_size;        // Unchanged

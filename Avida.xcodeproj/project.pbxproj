@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1097463F0AE9606E00929ED6 /* cDeme.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1097463D0AE9606E00929ED6 /* cDeme.cc */; };
+		109746400AE9606E00929ED6 /* cDeme.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1097463E0AE9606E00929ED6 /* cDeme.h */; };
+		109746410AE9606E00929ED6 /* cDeme.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1097463D0AE9606E00929ED6 /* cDeme.cc */; };
+		109746420AE9606E00929ED6 /* cDeme.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1097463E0AE9606E00929ED6 /* cDeme.h */; };
+		109746430AE9606E00929ED6 /* cDeme.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1097463D0AE9606E00929ED6 /* cDeme.cc */; };
+		109746440AE9606E00929ED6 /* cDeme.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1097463E0AE9606E00929ED6 /* cDeme.h */; };
 		7005A70409BA0FA90007E16E /* cTestCPUInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */; };
 		7005A70609BA0FA90007E16E /* cTestCPUInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */; };
 		7005A70809BA0FA90007E16E /* cTestCPUInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */; };
@@ -398,6 +404,7 @@
 			dstSubfolderSpec = 16;
 			files = (
 				700E2B87085DE54400CF158A /* avida-viewer in CopyFiles */,
+				109746440AE9606E00929ED6 /* cDeme.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -420,6 +427,7 @@
 				7049F3710A66AD7E00640512 /* default-sex-classic.org in CopyFiles */,
 				7049F3720A66AD7E00640512 /* default-smt.org in CopyFiles */,
 				7049F3730A66AD7E00640512 /* default-transsmt.org in CopyFiles */,
+				109746400AE9606E00929ED6 /* cDeme.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -430,12 +438,15 @@
 			dstSubfolderSpec = 16;
 			files = (
 				702F532F0993060A00B2B507 /* avida-s in CopyFiles */,
+				109746420AE9606E00929ED6 /* cDeme.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1097463D0AE9606E00929ED6 /* cDeme.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDeme.cc; sourceTree = "<group>"; };
+		1097463E0AE9606E00929ED6 /* cDeme.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cDeme.h; sourceTree = "<group>"; };
 		7005A70109BA0FA90007E16E /* cTestCPUInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cTestCPUInterface.h; sourceTree = "<group>"; };
 		7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cTestCPUInterface.cc; sourceTree = "<group>"; };
 		7005A70909BA0FBE0007E16E /* cOrgInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgInterface.h; sourceTree = "<group>"; };
@@ -940,7 +951,7 @@
 		DCC315CF076253A5008F7A48 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		DCC315D0076253A5008F7A48 /* task_event_gen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = task_event_gen.cc; sourceTree = "<group>"; };
 		DCC315D1076253A5008F7A48 /* task_event_gen.old.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = task_event_gen.old.cc; sourceTree = "<group>"; };
-		DCC3164D07626CF3008F7A48 /* avida */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = avida; sourceTree = BUILT_PRODUCTS_DIR; };
+		DCC3164D07626CF3008F7A48 /* avida */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "compiled.mach-o.executable"; path = avida; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1403,6 +1414,8 @@
 				7013845F09028B3E0087ED2E /* cAvidaConfig.h */,
 				702D4F3F08DA61FE007BA469 /* cBirthChamber.cc */,
 				702D4F3908DA61E2007BA469 /* cBirthChamber.h */,
+				1097463D0AE9606E00929ED6 /* cDeme.cc */,
+				1097463E0AE9606E00929ED6 /* cDeme.h */,
 				702D4EFC08DA5341007BA469 /* cEnvironment.cc */,
 				702D4EF508DA5328007BA469 /* cEnvironment.h */,
 				70CA6EB208DB7F8200068AC2 /* cFitnessMatrix.cc */,
@@ -1995,6 +2008,7 @@
 				708BF3000AB65DC700A923BF /* cEventList.cc in Sources */,
 				70BCB2350AB7B26B003FF331 /* cArgContainer.cc in Sources */,
 				703D4D700ABA374A0032C8A0 /* cArgSchema.cc in Sources */,
+				109746430AE9606E00929ED6 /* cDeme.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2126,6 +2140,7 @@
 				708BF2FF0AB65DC700A923BF /* cEventList.cc in Sources */,
 				703D4D6F0ABA374A0032C8A0 /* cArgSchema.cc in Sources */,
 				703D4E2E0ABCAC4A0032C8A0 /* cArgContainer.cc in Sources */,
+				109746410AE9606E00929ED6 /* cDeme.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2238,6 +2253,7 @@
 				708BF2FE0AB65DC700A923BF /* cEventList.cc in Sources */,
 				70BCB22E0AB7B23D003FF331 /* cArgContainer.cc in Sources */,
 				703D4D6E0ABA374A0032C8A0 /* cArgSchema.cc in Sources */,
+				1097463F0AE9606E00929ED6 /* cDeme.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

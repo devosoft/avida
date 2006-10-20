@@ -473,6 +473,14 @@ bool cOrganism::Divide_CheckViable()
           cStringUtil::Stringf("Lacks required reaction (%d)", required_reaction));
     return false; //  (divide fails)
   }
+  
+  // Make sure that an organism has accumulated any required bonus
+  const int bonus_required = m_world->GetConfig().REQUIRED_BONUS.Get();
+  if (phenotype.GetCurBonus() < bonus_required) {
+    Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
+          cStringUtil::Stringf("Lacks required bonus to divide (has %d, needs %d)", phenotype.GetCurBonus(), bonus_required));
+    return false; //  (divide fails)
+  }
 
   // Make sure the parent is fertile
   if ( phenotype.IsFertile() == false ) {

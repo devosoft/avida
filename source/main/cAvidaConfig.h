@@ -200,7 +200,8 @@ public:
   CONFIG_ADD_VAR(REQUIRED_TASK, int, -1, "Task ID required for successful divide.");
   CONFIG_ADD_VAR(IMMUNITY_TASK, int, -1, "Task providing immunity from the required task.");
   CONFIG_ADD_VAR(REQUIRED_REACTION, int, -1, "Reaction ID required for successful divide.");
-
+  CONFIG_ADD_VAR(REQUIRED_BONUS, int, 0, "The bonus that an organism must accumulate to divide."); 
+ 
   CONFIG_ADD_GROUP(MUTATION_GROUP, "Mutations");
   CONFIG_ADD_VAR(POINT_MUT_PROB, double, 0.0, "Mutation rate (per-location per update)");
   CONFIG_ADD_VAR(COPY_MUT_PROB, double, 0.0075, "Mutation rate (per copy)");
@@ -238,6 +239,7 @@ public:
   CONFIG_ADD_VAR(MAX_LABEL_EXE_SIZE, int, 1, "Max nops marked as executed when labels are used");
   CONFIG_ADD_VAR(BASE_SIZE_MERIT, int, 100, "Base merit when size is *not* used");
   CONFIG_ADD_VAR(DEFAULT_BONUS, double, 1.0, "The bonus an organism gets before any tasks");
+  CONFIG_ADD_VAR(MERIT_DEFAULT_BONUS, int, 0, "Scale the merit of an offspring by the default bonus\nrather than the accumulated bonus of the parent?"); 
   CONFIG_ADD_VAR(MERIT_GIVEN, double, 0.0, "Fraction of merit donated with 'donate' command");
   CONFIG_ADD_VAR(MERIT_RECEIVED, double, 0.0, "Multiplier of merit given with 'donate' command");
   CONFIG_ADD_VAR(MAX_DONATE_KIN_DIST, int, -1, "Limit on distance of relation for donate; -1=no max");
