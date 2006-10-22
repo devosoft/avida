@@ -215,6 +215,12 @@ private:
   int num_sold;
   int num_used;
   int num_own_used;
+  
+  // Stats for how sense instruction is being used
+  int sense_size;
+  tArray<int> sense_last_count;
+  tArray<int> sense_last_exe_count;
+  tArray<cString> sense_names;
 
   cStats(); // @not_implemented
   cStats(const cStats&); // @not_implemented
@@ -262,6 +268,8 @@ public:
   int GetDomInjBirths() const { return dom_inj_births; }
   int GetDomInjAbundance() const { return dom_inj_abundance; }
   const cString & GetDomInjSequence() const { return dom_inj_sequence; }
+  
+  int GetSenseSize() const { return sense_size; }
 
   // Settings...
   void SetDomGenotype(cGenotype * in_gen) { dom_genotype = in_gen; }
@@ -417,7 +425,11 @@ public:
   void IncTaskExeCount(int task_num, int task_count) 
     { task_exe_count[task_num] += task_count; }
   void ZeroTasks();
-
+  
+  void AddLastSense(int res_comb_index) { sense_last_count[res_comb_index]++; }
+  void IncLastSenseExeCount(int res_comb_index, int count) 
+    { sense_last_exe_count[res_comb_index]+= count; }
+    
   void SetReactions(const tArray<double> &_in) { reaction_count = _in; }
   void SetResources(const tArray<double> &_in) { resource_count = _in; }
   void SetResourcesGeometry(const tArray<int> &_in) { resource_geometry = _in;}
@@ -527,6 +539,7 @@ public:
   int GetResamplings() const { return num_resamplings;}  //AWC 06/29/06
   int GetFailedResamplings() const { return num_failedResamplings;}  //AWC 06/29/06
 
+  int GetNumSenseSlots();
 
   // this value gets recorded when a creature with the particular
   // fitness value gets born. It will never change to a smaller value,
@@ -558,6 +571,9 @@ public:
   void PrintInstructionData(const cString& filename);
   void PrintGenotypeMap(const cString& filename);
   void PrintMarketData(const cString& filename);
+  void PrintSenseData(const cString& filename);
+  void PrintSenseExeData(const cString& filename);
+  
 };
 
 

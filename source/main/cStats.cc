@@ -16,6 +16,7 @@
 #include "tDataEntry.h"
 #include "cWorld.h"
 #include "cWorldDriver.h"
+#include "cHardwareManager.h"
 
 #include <float.h>
 #include <math.h>
@@ -87,6 +88,7 @@ cStats::cStats(cWorld* world)
   , num_sold(0)
   , num_used(0)
   , num_own_used(0)
+  , sense_size(0)
 {
   task_cur_count.Resize( m_world->GetNumTasks() );
   task_last_count.Resize( m_world->GetNumTasks() );
@@ -111,8 +113,6 @@ cStats::cStats(cWorld* world)
 #endif
   inst_names.Resize( m_world->GetNumInstructions() );
 
-
-
   reaction_count.Resize( m_world->GetNumReactions() );
   reaction_count.SetAll(0);
 
@@ -123,6 +123,42 @@ cStats::cStats(cWorld* world)
   reaction_names.Resize( m_world->GetNumReactions() );
   resource_names.Resize( m_world->GetNumResources() );
 
+  // This block calculates how many slots we need to
+  // make for paying attention to different label combinations 
+  int on = 1;
+  int max_sense_label_length = 0;
+  while (on < m_world->GetNumResources())
+  {
+    max_sense_label_length++;
+    sense_size += on;
+    on *= m_world->GetHardwareManager().GetInstSet().GetNumNops();
+  }
+  sense_size += on;
+
+  sense_last_count.Resize( sense_size );
+  sense_last_count.SetAll(0);
+    
+  sense_last_exe_count.Resize( sense_size );
+  sense_last_exe_count.SetAll(0);
+  
+  sense_names.Resize( sense_size );
+  int assign_index = 0;
+  int num_per = 1;
+  for (int i=0; i<= max_sense_label_length; i++)
+  {
+    for (int j=0; j< num_per; j++)
+    {
+      sense_names[assign_index] = (on > 1) ? 
+        cStringUtil::Stringf("sense_res.%i-%i", j*on, (j+1)*on-1) :
+        cStringUtil::Stringf("sense_res.%i", j);
+  
+      assign_index++;
+    }
+    on /= m_world->GetHardwareManager().GetInstSet().GetNumNops();
+    num_per *= m_world->GetHardwareManager().GetInstSet().GetNumNops();
+
+  }
+  
   genotype_map.Resize( m_world->GetConfig().WORLD_X.Get() * m_world->GetConfig().WORLD_Y.Get() );
   SetupPrintDatabase();
 }
@@ -367,6 +403,9 @@ void cStats::ProcessUpdate()
   task_cur_max_quality.SetAll(0);
   task_last_max_quality.SetAll(0);
   task_exe_count.SetAll(0);
+
+  sense_last_count.SetAll(0);
+  sense_last_exe_count.SetAll(0);
 
   dom_merit = 0;
   dom_gestation = 0.0;
@@ -846,5 +885,35 @@ void cStats::PrintMarketData(const cString& filename)
 	df.Write(num_used, "num used" );
 	df.Write(num_own_used, "num own used" );
 	num_bought = num_sold = num_used = num_own_used = 0;
-df.Endl();
+  df.Endl();
+}
+
+void cStats::PrintSenseData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+
+  df.WriteComment( "Avida sense instruction usage\n" );
+  df.WriteComment("total number of organisms whose parents executed sense instructions with given labels" );
+
+  df.Write( GetUpdate(), "update" );
+
+  for( int i=0; i < sense_last_count.GetSize(); i++ ){
+    df.Write(sense_last_count[i], sense_names[i]);
+  }
+  df.Endl();
+}
+
+void cStats::PrintSenseExeData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+
+  df.WriteComment( "Avida sense instruction usage\n" );
+  df.WriteComment("total number of sense instructions executed by the parents of current organisms with given labels" );
+  
+  df.Write( GetUpdate(), "update" );
+    
+  for( int i=0; i < sense_last_exe_count.GetSize(); i++ ){
+    df.Write(sense_last_exe_count[i], sense_names[i]);
+  }
+  df.Endl();
 }

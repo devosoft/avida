@@ -213,8 +213,8 @@ cInstLibCPU *cHardwareCPU::initInstLib(void)
                   "Output ?BX?, and input new number back into ?BX?,  and push 1,0,\
                   or -1 onto stack1 if merit increased, stayed the same, or decreased"),
     cInstEntryCPU("match-strings", &cHardwareCPU::Inst_MatchStrings),
-	cInstEntryCPU("sell", &cHardwareCPU::Inst_Sell),
-	cInstEntryCPU("buy", &cHardwareCPU::Inst_Buy),
+    cInstEntryCPU("sell", &cHardwareCPU::Inst_Sell),
+    cInstEntryCPU("buy", &cHardwareCPU::Inst_Buy),
     cInstEntryCPU("send",      &cHardwareCPU::Inst_Send),
     cInstEntryCPU("receive",   &cHardwareCPU::Inst_Receive),
     cInstEntryCPU("sense",     &cHardwareCPU::Inst_Sense),
@@ -2749,10 +2749,11 @@ bool cHardwareCPU::Inst_Sense(cAvidaContext& ctx)
   // Only recalculate logs if these values have changed
   static int last_num_resources = 0;
   static int max_label_length = 0;
- 
+  int num_nops = GetInstSet().GetNumNops();
+  
   if ((last_num_resources != res_count.GetSize()))
   {
-      int max_label_length = (int) ceil(log((float) res_count.GetSize())/log((float) cHardwareCPU::NUM_NOPS));
+      max_label_length = (int)ceil(log(res_count.GetSize())/log(num_nops));
       last_num_resources = res_count.GetSize();
   }
 
@@ -2781,11 +2782,11 @@ bool cHardwareCPU::Inst_Sense(cAvidaContext& ctx)
   for (int i = 0; i < max_label_length - real_label_length; i++)
   {
     start_label.AddNop(0);
-    end_label.AddNop(cHardwareCPU::NUM_NOPS-1);
+    end_label.AddNop(num_nops-1);
   }
   
-  int start_index = start_label.AsInt(cHardwareCPU::NUM_NOPS);
-  int   end_index =   end_label.AsInt(cHardwareCPU::NUM_NOPS);
+  int start_index = start_label.AsInt(num_nops);
+  int   end_index =   end_label.AsInt(num_nops);
 
   // If the label refers to ONLY resources that 
   // do not exist, then the operation fails
@@ -2805,6 +2806,17 @@ bool cHardwareCPU::Inst_Sense(cAvidaContext& ctx)
     
   //Dump this value into an arbitrary register: BX
   GetRegister(reg_to_set) = resource_result;
+  
+  //We have to convert this to a different index that includes all degenerate labels possible: shortest to longest
+  int sensed_index = 0;
+  int on = 1;
+  for (int i = 0; i < real_label_length; i++)
+  {
+    sensed_index += on;
+    on *= num_nops;
+  }
+  sensed_index+= GetLabel().AsInt(num_nops);
+  organism->GetPhenotype().IncSenseCount(sensed_index);
   
   return true; 
 

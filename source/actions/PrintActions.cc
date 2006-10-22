@@ -63,7 +63,10 @@ STATS_OUT_FILE(PrintDivideMutData,     divide_mut.dat      );
 STATS_OUT_FILE(PrintDominantParaData,  parasite.dat        );
 STATS_OUT_FILE(PrintInstructionData,   instruction.dat     );
 STATS_OUT_FILE(PrintGenotypeMap,       genotype_map.m      );
-STATS_OUT_FILE(PrintMarketData,		   market.dat		   );
+STATS_OUT_FILE(PrintMarketData,        market.dat          );
+STATS_OUT_FILE(PrintSenseData,         sense.dat           );
+STATS_OUT_FILE(PrintSenseExeData,      sense_exe.dat       );
+
 
 #define POP_OUT_FILE(METHOD, DEFAULT)                                                     /*  1 */ \
 class cAction ## METHOD : public cAction {                                                /*  2 */ \
@@ -1475,7 +1478,9 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintInstructionData>("PrintInstructionData");
   action_lib->Register<cActionPrintGenotypeMap>("PrintGenotypeMap");
   action_lib->Register<cActionPrintMarketData>("PrintMarketData");
-  
+  action_lib->Register<cActionPrintSenseData>("PrintSenseData");
+  action_lib->Register<cActionPrintSenseExeData>("PrintSenseExeData");
+
   // Population Out Files
   action_lib->Register<cActionPrintPhenotypeData>("PrintPhenotypeData");
   action_lib->Register<cActionPrintPhenotypeStatus>("PrintPhenotypeStatus");

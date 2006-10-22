@@ -1307,13 +1307,22 @@ void cPopulation::UpdateOrganismStats()
 	  } 
     }
     
+    // Test what resource combinations this creature has sensed
+    for (int j=0; j < stats.GetSenseSize(); j++) {
+      if (phenotype.GetLastSenseCount()[j] > 0)
+	  {
+		  stats.AddLastSense(j);
+		  stats.IncLastSenseExeCount(j, phenotype.GetLastSenseCount()[j]);
+	  }
+    }
+    
     // Increment the counts for all qualities the organism has...
     if (phenotype.ParentTrue()) num_breed_true++;
     if (phenotype.IsParasite()) num_parasites++;
     if( phenotype.GetNumDivides() == 0 ) num_no_birth++;
     if(phenotype.IsMultiThread()) num_multi_thread++;
     else num_single_thread++;
-    if(phenotype.IsModified()) num_modified++;
+    if(phenotype.IsModified()) num_modified++;    
     
     // Hardware specific collections...
     if (organism->GetHardware().GetType() == HARDWARE_TYPE_CPU_ORIGINAL) {

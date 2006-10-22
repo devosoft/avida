@@ -80,7 +80,8 @@ private:
   tArray<int> cur_task_count;     // Total times each task was performed
   tArray<double> cur_task_quality;	  // Average (total?) quality with which each task was performed
   tArray<int> cur_reaction_count; // Total times each reaction was triggered.
-  tArray<int> cur_inst_count;	  // Intruction exection counter
+  tArray<int> cur_inst_count;	    // Intsruction exection counter
+  tArray<int> cur_sense_count;     // Total times resource combinations have been sensed; JEB 10-22-06 
   tArray<double> sensed_resources; // Resources of which the organism is explictly aware
   
   // 3. These mark the status of "in progess" variables at the last divide.
@@ -91,7 +92,8 @@ private:
   tArray<int> last_task_count;
   tArray<double> last_task_quality;
   tArray<int> last_reaction_count;
-  tArray<int> last_inst_count;	  // Intruction exection counter
+  tArray<int> last_inst_count;	  // Instruction exection counter
+  tArray<int> last_sense_count;   // Total times resource combinations have been sensed; JEB 10-22-06 
   double last_fitness;            // Used to determine sterilization.
 
   // 4. Records from this organisms life...
@@ -197,6 +199,7 @@ public:
   const tArray<double> & GetCurTaskQuality() const { assert(initialized == true); return cur_task_quality; }
   const tArray<int>& GetCurReactionCount() const { assert(initialized == true); return cur_reaction_count;}
   const tArray<int>& GetCurInstCount() const { assert(initialized == true); return cur_inst_count; }
+  const tArray<int>& GetCurSenseCount() const { assert(initialized == true); return cur_sense_count; }
   
   double GetSensedResource(int _in) { assert(initialized == true); return sensed_resources[_in]; }
 
@@ -209,6 +212,7 @@ public:
     const tArray<double> & GetLastTaskQuality() const { assert(initialized == true); return last_task_quality; }
   const tArray<int>& GetLastReactionCount() const { assert(initialized == true); return last_reaction_count; }
   const tArray<int>& GetLastInstCount() const { assert(initialized == true); return last_inst_count; }
+  const tArray<int>& GetLastSenseCount() const { assert(initialized == true); return last_sense_count; }
   double GetLastFitness() const { assert(initialized == true); return last_fitness; }
 
   int GetNumDivides() const { assert(initialized == true); return num_divides;}
@@ -267,6 +271,7 @@ public:
   void IncTimeUsed() { assert(initialized == true); time_used++; }
   void IncErrors()   { assert(initialized == true); cur_num_errors++; }
   void IncDonates()   { assert(initialized == true); cur_num_donates++; }
+  void IncSenseCount(const int i) { assert(initialized == true); cur_sense_count[i]++; }  
   bool& IsInjected() { assert(initialized == true); return is_injected; }
   bool& IsParasite() { assert(initialized == true); return is_parasite; }
   bool& IsModifier() { assert(initialized == true); return is_modifier; }
