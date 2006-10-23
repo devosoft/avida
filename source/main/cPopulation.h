@@ -137,6 +137,7 @@ public:
 
   // Deme-related methods
   void CompeteDemes(int competition_type);
+  void ReplicateDemes(int rep_trigger);
   void ResetDemes();
   void CopyDeme(int deme1_id, int deme2_id);
   void SpawnDeme(int deme1_id, int deme2_id=-1);

@@ -240,8 +240,8 @@ public:
   CONFIG_ADD_VAR(BASE_SIZE_MERIT, int, 100, "Base merit when size is *not* used");
   CONFIG_ADD_VAR(DEFAULT_BONUS, double, 1.0, "The bonus an organism gets before any tasks");
   CONFIG_ADD_VAR(MERIT_DEFAULT_BONUS, int, 0, "Scale the merit of an offspring by the default bonus\nrather than the accumulated bonus of the parent?"); 
-  CONFIG_ADD_VAR(MERIT_GIVEN, double, 0.0, "Fraction of merit donated with 'donate' command");
-  CONFIG_ADD_VAR(MERIT_RECEIVED, double, 0.0, "Multiplier of merit given with 'donate' command");
+  CONFIG_ADD_VAR(MERIT_GIVEN, double, 0.0, "Amount of merit donated with 'donate' command");
+  CONFIG_ADD_VAR(MERIT_RECEIVED, double, 0.0, "Amount of merit received with 'donate' command");
   CONFIG_ADD_VAR(MAX_DONATE_KIN_DIST, int, -1, "Limit on distance of relation for donate; -1=no max");
   CONFIG_ADD_VAR(MAX_DONATE_EDIT_DIST, int, -1, "Limit on edit distance for donate; -1=no max");
   CONFIG_ADD_VAR(MAX_DONATES, int, 1000000, "Limit on number of donates organisms are allowed.");

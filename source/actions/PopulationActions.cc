@@ -799,8 +799,8 @@ public:
  4: deme fitness = strong rank selection on (parents) fitness (2^-deme fitness rank)
  5: deme fitness = average organism life (current, not parents) fitness (works with donations)
  6: deme fitness = strong rank selection on life (current, not parents) fitness
-
 */
+
 class cActionCompeteDemes : public cAction
 {
 private:
@@ -817,6 +817,46 @@ public:
   void Process(cAvidaContext& ctx)
   {
     m_world->GetPopulation().CompeteDemes(m_type);
+  }
+};
+
+
+/* This Action will check if any demes have met the critera to be replicated
+   and do so.  There are several bases this can be checked on:
+
+    'all'       - ...all non-empty demes in the population.
+    'full_deme' - ...demes that have been filled up.
+    'corners'   - ...demes with upper left and lower right corners filled.
+*/
+
+class cActionReplicateDemes : public cAction
+{
+private:
+  int m_rep_trigger;
+public:
+  cActionReplicateDemes(cWorld* world, const cString& args) : cAction(world, args), m_rep_trigger(-1)
+  {
+    cString largs(args);
+    cString in_trigger("full_deme");
+    if (largs.GetSize()) in_trigger = largs.PopWord();
+
+    if (in_trigger == "all") m_rep_trigger = 0;
+    else if (in_trigger == "full_deme") m_rep_trigger = 1;
+    else if (in_trigger == "corners") m_rep_trigger = 2;
+    else {
+      cString err("Unknown replication trigger '");
+      err += in_trigger;
+      err += "' in ReplicatDemes action.";
+      m_world->GetDriver().RaiseException(err);
+      return;
+    }
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string trigger=full_deme]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().ReplicateDemes(m_rep_trigger);
   }
 };
 
@@ -1213,6 +1253,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionZeroMuts>("ZeroMuts");
 
   action_lib->Register<cActionCompeteDemes>("CompeteDemes");
+  action_lib->Register<cActionReplicateDemes>("ReplicateDemes");
   action_lib->Register<cActionResetDemes>("ResetDemes");
   action_lib->Register<cActionCopyDeme>("CopyDeme");
   
@@ -1239,6 +1280,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionZeroMuts>("zero_muts");
   
   action_lib->Register<cActionCompeteDemes>("compete_demes");
+  action_lib->Register<cActionReplicateDemes>("replicate_demes");
   action_lib->Register<cActionResetDemes>("reset_demes");
   action_lib->Register<cActionCopyDeme>("copy_deme");
   

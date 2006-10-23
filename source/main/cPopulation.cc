@@ -80,34 +80,24 @@ cPopulation::cPopulation(cWorld* world)
   resource_count.ResizeSpatialGrids(world_x, world_y);
   market.Resize(MARKET_SIZE);
   
-  bool bottom_flag, top_flag, right_flag, left_flag;
   for (int cell_id = 0; cell_id < num_cells; cell_id++) {
     int x = cell_id % world_x;
     int y = cell_id / world_x;
     cell_array[cell_id].Setup(world, cell_id, environment.GetMutRates());
     
-    
-    if ((y == 0) && (geometry == nGeometry::GRID)) {
-      bottom_flag = false;
-    } else {
-      bottom_flag = true;
+    // If we're working with a bounded grid, we need to take care of it.
+    bool bottom_flag = true;
+    bool top_flag = true;
+    bool right_flag = true;
+    bool left_flag = true;
+
+    if (geometry == nGeometry::GRID) {
+      if (y == 0)  bottom_flag = false;
+      if (y == world_y-1)  top_flag = false;
+      if (x == 0) left_flag = false;
+      if (x == world_x-1) right_flag = false;
     }
-    if ((y == world_y-1) && (geometry == nGeometry::GRID)) {
-      top_flag = false;
-    } else {
-      top_flag = true;
-    }
-    if ((x == 0) && (geometry == nGeometry::GRID)) {
-      left_flag = false;
-    } else {
-      left_flag = true;
-    }
-    if ((x == world_x-1) && (geometry == nGeometry::GRID)) {
-      right_flag = false;
-    } else {
-      right_flag = true;
-    }
- 
+
     // Setup the connection list for each cell. (Clockwise from -1 to 1)
     
     tList<cPopulationCell> & conn_list=cell_array[cell_id].ConnectionList();
@@ -854,6 +844,92 @@ void cPopulation::CompeteDemes(int competition_type)
   // Reset all deme stats to zero.
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     deme_array[deme_id].Reset();
+  }
+}
+
+
+/* Check if any demes have met the critera to be replicated and do so.
+   There are several bases this can be checked on:
+
+    0: 'all'       - ...all non-empty demes in the population.
+    1: 'full_deme' - ...demes that have been filled up.
+    2: 'corners'   - ...demes with upper left and lower right corners filled.
+*/
+
+void cPopulation::ReplicateDemes(int rep_trigger)
+{
+  // Determine which demes should be replicated.
+  const int num_demes = GetNumDemes();
+
+  // Loop through all candidate demes...
+  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+    cDeme & source_deme = deme_array[deme_id];
+
+    // Test this deme to determine if it should be replicated.  If not,
+    // continue on to the next deme.
+    switch (rep_trigger) {
+    case 0:    // CASE: Replicate all non-empty demes...
+      // If this deme is empt, continue looping...
+      if (source_deme.IsEmpty()) continue;
+      break;
+    case 1:    // Replicate all full demes...
+      if (source_deme.IsFull() == false) continue;
+      break;
+    case 2:    // Replicate all demes with the corners filled in.
+      {
+	// The first and last IDs represent the two corners.
+	const int id1 = source_deme.GetCellID(0);
+	const int id2 = source_deme.GetCellID(source_deme.GetSize() - 1);
+	if (cell_array[id1].IsOccupied() == false ||
+	    cell_array[id2].IsOccupied() == false) continue;
+      }
+      break;
+    default:
+      cerr << "ERROR: Invalid replication trigger " << rep_trigger
+	   << " in cPopulation::ReplicateDemes()" << endl;
+      continue;
+    }
+
+    // -- If we made it this far, we should replicate this deme --
+
+    cRandom & random = m_world->GetRandom();
+
+    // Choose a random organism from this deme...
+    int cell1_id = -1;
+    const int deme1_size = source_deme.GetSize();
+    while (cell1_id == -1 || cell_array[cell1_id].IsOccupied() == false) {
+      cell1_id = source_deme.GetCellID(random.GetUInt(deme1_size));
+    }
+
+    // Choose a random target deme to replicate to...
+    int target_id = deme_id;
+    while (target_id == deme_id) target_id = random.GetUInt(num_demes);
+    cDeme & target_deme = deme_array[target_id];
+    
+    // Clear out existing cells in target deme.
+    const int deme2_size = target_deme.GetSize();
+    for (int i = 0; i < deme2_size; i++) {
+      KillOrganism(cell_array[ target_deme.GetCellID(i) ]);
+    }
+    
+    // And do the replication into the central cell of the target deme...
+    const int cell2_id = target_deme.GetCellID( deme2_size/2 );
+    InjectClone( cell2_id, *(cell_array[cell1_id].GetOrganism()) );    
+
+    // Clear out the source deme to reset it
+    for (int i = 0; i < deme1_size; i++) {
+      KillOrganism(cell_array[ source_deme.GetCellID(i) ]);
+    }
+
+    // Inject the target offspring back into the source ID.
+    const int cell3_id = source_deme.GetCellID( deme1_size/2 );
+    InjectClone( cell3_id, *(cell_array[cell2_id].GetOrganism()) );        
+
+    // Rotate both injected cells to face northwest.
+    cell_array[cell2_id].Rotate(
+		cell_array[GridNeighbor(cell2_id, world_x, world_y, -1, -1)] );
+    cell_array[cell3_id].Rotate(
+		cell_array[GridNeighbor(cell3_id, world_x, world_y, -1, -1)] );
   }
 }
 
