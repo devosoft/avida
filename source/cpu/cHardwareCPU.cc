@@ -117,6 +117,11 @@ cInstLibCPU *cHardwareCPU::initInstLib(void)
     cInstEntryCPU("jump-b",    &cHardwareCPU::Inst_JumpB),
     cInstEntryCPU("call",      &cHardwareCPU::Inst_Call),
     cInstEntryCPU("return",    &cHardwareCPU::Inst_Return),
+
+    cInstEntryCPU("throw",     &cHardwareCPU::Inst_Throw),
+    cInstEntryCPU("throwif=0", &cHardwareCPU::Inst_ThrowIf0),    
+    cInstEntryCPU("throwif!=0",&cHardwareCPU::Inst_ThrowIfNot0),
+    cInstEntryCPU("catch",     &cHardwareCPU::Inst_Catch),
     
     cInstEntryCPU("pop",       &cHardwareCPU::Inst_Pop, true,
                   "Remove top number from stack and place into ?BX?"),
@@ -207,6 +212,7 @@ cInstLibCPU *cHardwareCPU::initInstLib(void)
     cInstEntryCPU("stk-get",   &cHardwareCPU::Inst_TaskStackGet),
     cInstEntryCPU("stk-load",  &cHardwareCPU::Inst_TaskStackLoad),
     cInstEntryCPU("put",       &cHardwareCPU::Inst_TaskPut),
+    cInstEntryCPU("put-cost", &cHardwareCPU::Inst_TaskPutCost),
     cInstEntryCPU("IO",        &cHardwareCPU::Inst_TaskIO, true,
                   "Output ?BX?, and input new number back into ?BX?"),
     cInstEntryCPU("IO-Feedback",        &cHardwareCPU::Inst_TaskIO_Feedback, true,\
@@ -1731,6 +1737,65 @@ bool cHardwareCPU::Inst_Return(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareCPU::Inst_Throw(cAvidaContext& ctx)
+{
+  // Only initialize this once to save some time...
+  static cInstruction catch_inst = GetInstLib()->GetInst(cStringUtil::Stringf("catch"));
+
+  //What label complement are we looking for?
+  //If the size is zero then we just find the first example of a catch
+  ReadLabel();
+  GetLabel().Rotate(1, NUM_NOPS);
+  
+  cHeadCPU search_head(IP());
+  int start_pos = search_head.GetPosition();
+  search_head++;
+  
+  while (start_pos != search_head.GetPosition()) {
+    
+    // If we find a catch instruction, compare the NOPs following it
+    if (search_head.GetInst() == catch_inst)
+    {
+      int catch_pos = search_head.GetPosition();
+      search_head++;
+      int size_matched = 0;
+      while ( GetLabel().GetSize() > size_matched )
+      {
+        if ( !m_inst_set->IsNop( search_head.GetInst()) ) break;
+        if ( GetLabel()[size_matched] != m_inst_set->GetNopMod( search_head.GetInst()) ) break;
+        search_head++;
+        size_matched++;
+      }
+      
+      // We found a matching catch instruction
+      // set the catch to execute 
+      if (GetLabel().GetSize() == size_matched)
+      {
+        IP().Set(catch_pos);
+        m_advance_ip = false; // Don't automatically move the IP
+                              // so we mark the catch as executed.
+        return true;
+      }
+    }
+    search_head.Advance();
+  }
+
+  return false;
+}
+
+
+bool cHardwareCPU::Inst_ThrowIfNot0(cAvidaContext& ctx)
+{
+  if (GetRegister(REG_BX) == 0) return false;
+  return Inst_Throw(ctx);
+}
+
+bool cHardwareCPU::Inst_ThrowIf0(cAvidaContext& ctx)
+{
+  if (GetRegister(REG_BX) != 0) return false;
+  return Inst_Throw(ctx);
+}
+
 bool cHardwareCPU::Inst_Pop(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_BX);
@@ -2634,6 +2699,26 @@ bool cHardwareCPU::Inst_TaskPut(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareCPU::Inst_TaskPutCost(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(REG_BX);
+  const int value = GetRegister(reg_used);
+  GetRegister(reg_used) = 0;
+/*
+  double before_bonus = organism->GetPhenotype().GetCurBonus();
+  organism->DoOutput(ctx, value);
+
+  if (organism->GetPhenotype().GetCurBonus() == before_bonus)
+  {
+    organism->GetPhenotype().SetCurBonus(before_bonus * 0.5); 
+  }
+*/  
+
+  organism->DoOutput(ctx, value);
+  organism->GetPhenotype().SetCurBonus(organism->GetPhenotype().GetCurBonus() * 0.5);
+  return true;
+}
+
 bool cHardwareCPU::Inst_TaskIO(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_BX);
@@ -2741,7 +2826,7 @@ bool cHardwareCPU::Inst_Sense(cAvidaContext& ctx)
   const tArray<double> & res_count = organism->GetOrgInterface().GetResources();
 
   // Arbitrarily set to BX since the conditionals use this directly.
-  int reg_to_set = cHardwareCPU::REG_BX;
+  int reg_to_set = REG_BX;
 
   // There are no resources, return
   if (res_count.GetSize() == 0) return false;

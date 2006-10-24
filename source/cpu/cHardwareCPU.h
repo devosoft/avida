@@ -288,7 +288,12 @@ private:
   bool Inst_JumpB(cAvidaContext& ctx);
   bool Inst_Call(cAvidaContext& ctx);
   bool Inst_Return(cAvidaContext& ctx);
-
+  
+  bool Inst_Throw(cAvidaContext& ctx);
+  bool Inst_ThrowIf0(cAvidaContext& ctx);
+  bool Inst_ThrowIfNot0(cAvidaContext& ctx);  
+  bool Inst_Catch(cAvidaContext& ctx) { return true; };
+  
   // Stack and Register Operations
   bool Inst_Pop(cAvidaContext& ctx);
   bool Inst_Push(cAvidaContext& ctx);
@@ -378,6 +383,7 @@ private:
   bool Inst_TaskStackGet(cAvidaContext& ctx);
   bool Inst_TaskStackLoad(cAvidaContext& ctx);
   bool Inst_TaskPut(cAvidaContext& ctx);
+  bool Inst_TaskPutCost(cAvidaContext& ctx);  
   bool Inst_TaskIO(cAvidaContext& ctx);
   bool Inst_TaskIO_Feedback(cAvidaContext& ctx);
   bool Inst_MatchStrings(cAvidaContext& ctx);

@@ -263,6 +263,7 @@ public:
   void SetIsDonorCur() { is_donor_cur = true; } 
   void SetIsReceiver() { is_receiver = true; } 
   
+  void SetCurBonus(double _bonus) { cur_bonus = _bonus; }
 
   void IncCurInstCount(int _inst_num)  { assert(initialized == true); cur_inst_count[_inst_num]++; } 
   void DecCurInstCount(int _inst_num)  { assert(initialized == true); cur_inst_count[_inst_num]--; } 
