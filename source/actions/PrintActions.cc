@@ -1245,8 +1245,8 @@ public:
     if (filename == "") filename.Set("grid_genotype_id.%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
     
-    for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
-      for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
+    for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
+      for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
         int id = (cell.IsOccupied()) ? cell.GetOrganism()->GetGenotype()->GetID() : -1;
         fp << id << " ";

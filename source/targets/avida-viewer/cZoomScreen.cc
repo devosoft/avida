@@ -1474,7 +1474,10 @@ void cZoomScreen::SetActiveSection(int in_section)
 
 void cZoomScreen::DoInput(int in_char)
 {
-  cHardwareBase& hardware = info.GetActiveCell()->GetOrganism()->GetHardware();
+  cHardwareBase * hardware = NULL;
+  if (info.GetActiveCell()->IsOccupied()) {
+    hardware = &(info.GetActiveCell()->GetOrganism()->GetHardware());
+  }
 
   // First do the Mode specific io...
   
@@ -1483,19 +1486,16 @@ void cZoomScreen::DoInput(int in_char)
   if (mode == ZOOM_MODE_GENOTYPE && DoInputGenotype(in_char)) return;
   
   int num_threads = 0;
-  if (info.GetActiveCell()->GetOrganism() != NULL) {
-    num_threads = hardware.GetNumThreads();
-  }
+  if (hardware != NULL)  num_threads = hardware->GetNumThreads();
+
   switch(in_char) {
     case 't':
     case 'T':
-      if(num_threads>1)
-      {
+      if (num_threads > 1) {
         memory_offset=0;
         ++cur_view_thread%=num_threads;
-        if(info.GetConfig().HARDWARE_TYPE.Get() != HARDWARE_TYPE_CPU_ORIGINAL)
-        {
-          cur_mem_space = hardware.IP(cur_view_thread).GetMemSpace();
+        if(info.GetConfig().HARDWARE_TYPE.Get() != HARDWARE_TYPE_CPU_ORIGINAL){
+	  cur_mem_space = hardware->IP(cur_view_thread).GetMemSpace();
         }
         Update();
       }
@@ -1576,8 +1576,7 @@ bool cZoomScreen::DoInputCPU(int in_char)
         }
       }
       else if (active_section == ZOOM_SECTION_MEMORY) {
-        if(info.GetConfig().HARDWARE_TYPE.Get() != HARDWARE_TYPE_CPU_ORIGINAL)
-        {
+        if(info.GetConfig().HARDWARE_TYPE.Get() != HARDWARE_TYPE_CPU_ORIGINAL){
           cur_mem_space++;
           // @DMB - Should handle the extensibility of SMT Memory Spaces
           cur_mem_space %= 1;
@@ -1596,7 +1595,7 @@ bool cZoomScreen::DoInputCPU(int in_char)
         }
       }
       else if (active_section == ZOOM_SECTION_MEMORY) {
-        if(info.GetConfig().HARDWARE_TYPE.Get() != HARDWARE_TYPE_CPU_ORIGINAL) {
+        if(info.GetConfig().HARDWARE_TYPE.Get() != HARDWARE_TYPE_CPU_ORIGINAL){
           cur_mem_space--;
           // @DMB - Should handle the extensibility of SMT Memory Spaces
           if (cur_mem_space < 0) cur_mem_space = 0;

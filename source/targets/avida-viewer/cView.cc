@@ -282,7 +282,9 @@ void cView::TogglePause()
   if (info.GetPauseLevel() != PAUSE_OFF) {
     info.DisEngageStepMode();
     info.SetPauseLevel(PAUSE_OFF);
-    info.GetActiveCell()->GetOrganism()->GetPhenotype().SetFault("");
+    if (info.GetActiveCell()->IsOccupied()) {
+      info.GetActiveCell()->GetOrganism()->GetPhenotype().SetFault("");
+    }
   }
 
   // Otherwise, turn on the pause.

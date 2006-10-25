@@ -267,28 +267,28 @@ int cStringUtil::EditDistance(const cString & string1, const cString & string2,
   return (int) dist_matrix(size2, size1);
 }
 
-const cString & cStringUtil::Convert(const cString & in_string,
-				     const cString & out_string)
+const cString & cStringUtil::Convert(const cString& in_string,
+				     const cString& out_string)
 {
   return in_string;
 }
 
-bool cStringUtil::Convert(const cString & in_string, bool type_bool)
+bool cStringUtil::Convert(const cString& in_string, bool type_bool)
 {
   return (in_string.AsInt() != 0);
 }
 
-int cStringUtil::Convert(const cString & in_string, int type_int)
+int cStringUtil::Convert(const cString& in_string, int type_int)
 {
   return in_string.AsInt();
 }
 
-double cStringUtil::Convert(const cString & in_string, double type_double)
+double cStringUtil::Convert(const cString& in_string, double type_double)
 {
   return in_string.AsDouble();
 }
 
-cString cStringUtil::Convert(const cString & in_string)
+cString cStringUtil::Convert(const cString& in_string)
 {
   return in_string;
 }

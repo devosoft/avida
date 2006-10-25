@@ -17,7 +17,7 @@
 
 int cProbSchedule::GetNextID()
 {
-  assert(chart.GetTotalWeight() > 0);
+  if (chart.GetTotalWeight() == 0) return -1;
   const double position = m_rng.GetDouble(chart.GetTotalWeight());
   return chart.FindPosition(position);
 }

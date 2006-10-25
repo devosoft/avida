@@ -226,7 +226,7 @@ protected:
   }
   
 public:
-    T * Pop() { return RemoveNode(root.next); }
+  T * Pop() { return RemoveNode(root.next); }
   T * PopRear() { return RemoveNode(root.prev); }
   
   void Clear() { while (size > 0) Pop(); }

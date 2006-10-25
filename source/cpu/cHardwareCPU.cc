@@ -1229,9 +1229,10 @@ bool cHardwareCPU::Divide_Main(cAvidaContext& ctx, const int div_point,
     m_advance_ip = false;
   }
   
-  // Activate the child, and do more work if the parent lives through the
-  // birth.
+  // Activate the child
   bool parent_alive = organism->ActivateDivide(ctx);
+
+  // Do more work if the parent lives through the birth of the offspring
   if (parent_alive) {
     if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
   }

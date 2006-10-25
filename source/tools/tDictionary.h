@@ -57,9 +57,21 @@ public:
   bool Find(const cString& name, T& out_data) const { return m_hash.Find(name, out_data); }
   T Remove(const cString& name) { return m_hash.Remove(name); }
   void SetHash(int _hash) { m_hash.SetTableSize(_hash); }
-  void AsLists(tList<cString>& name_list, tList<T>& value_list) const
-  {
+  void AsLists(tList<cString>& name_list, tList<T>& value_list) const {
     m_hash.AsLists(name_list, value_list);
+  }
+
+  // This function will take an input string and load its value into the
+  // dictionary; it will only work for types that cStringUtil can convert to.
+  void Load(cString load_string, char assign='=') {
+    // Break the string into two based on the assignment character.
+    cString key(load_string.Pop(assign));
+ 
+    // Convert the value to the correct type.
+    T value;
+    value = cStringUtil::Convert(load_string, value);
+
+    SetValue(key, value);
   }
   
   // This function has no direct implementation in tHashTable
