@@ -95,7 +95,9 @@ if environment.subst('$extrasDir') not in ['None', 'none', '']:
     duplicate = 0
   )
 
+
 if environment['PLATFORM'] == 'win32':
+  environment.Import('avida_exe')
   script_to_build_avida = environment.File(
     os.path.join('#', os.path.basename(sys.argv[0]))
   ).abspath
@@ -105,6 +107,7 @@ if environment['PLATFORM'] == 'win32':
     incs = environment['avida_msvs_project_incs'],
     misc = environment['avida_msvs_project_misc'],
     variant = 'Release',
+    buildtarget = avida_exe,
     #runfile = avida[0].abspath,
     MSVSSCONS = '"%s" "%s"' % (sys.executable, script_to_build_avida),
     MSVSSCONSFLAGS = '-C "${MSVSSCONSCRIPT.dir.abspath}" -f "${MSVSSCONSCRIPT.name}"'

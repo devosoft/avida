@@ -2839,7 +2839,7 @@ bool cHardwareCPU::Inst_Sense(cAvidaContext& ctx)
   
   if ((last_num_resources != res_count.GetSize()))
   {
-      max_label_length = (int)ceil(log(res_count.GetSize())/log(num_nops));
+      max_label_length = (int)ceil(log((double)res_count.GetSize())/log((double)num_nops));
       last_num_resources = res_count.GetSize();
   }
 
