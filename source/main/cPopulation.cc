@@ -1195,6 +1195,11 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
   else if (birth_method == POSITION_CHILD_PARENT_FACING) {
     return parent_cell.GetCellFaced();
   }
+  else if (birth_method == POSITION_CHILD_NEXT_CELL) {
+    int out_cell_id = parent_cell.GetID() + 1;
+    if (out_cell_id == cell_array.GetSize()) out_cell_id = 0;
+    return GetCell(out_cell_id);
+  }
 
   // All remaining methods require us to choose among mulitple local positions.
 

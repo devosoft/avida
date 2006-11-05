@@ -48,7 +48,7 @@ bool cBirthChamber::EvaluateEntry(const cBirthEntry & entry) const
   // If there is no organism in the entry, return false.
   if (entry.update_in == -1) return false;
 
-  // If there is an organis, determien if it is still alive.
+  // If there is an organism, determine if it is still alive.
   const int max_wait_time = m_world->GetConfig().MAX_BIRTH_WAIT_TIME.Get();
 
   // If the max_wait_time is -1, there is no timeout, so its alive.

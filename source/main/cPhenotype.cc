@@ -258,12 +258,10 @@ void cPhenotype::DivideReset(int _length)
   // If we are resetting the current merit, do it here
   // and it will also be propagated to the child
   const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
-  if (merit_default_bonus)
-  {
+  if (merit_default_bonus) {
     merit = cur_merit_base * m_world->GetConfig().DEFAULT_BONUS.Get();
   }
-  else // Default
-  {
+  else { // Default
     merit = cur_merit_base * cur_bonus;
   }
   
@@ -755,30 +753,30 @@ int cPhenotype::CalcSizeMerit() const
 
   int out_size;
 
-  switch (m_world->GetConfig().SIZE_MERIT_METHOD.Get()) {
-  case SIZE_MERIT_COPIED:
+  switch (m_world->GetConfig().BASE_MERIT_METHOD.Get()) {
+  case BASE_MERIT_COPIED_SIZE:
     out_size = copied_size;
     break;
-  case SIZE_MERIT_EXECUTED:
+  case BASE_MERIT_EXE_SIZE:
     out_size = executed_size;
     break;
-  case SIZE_MERIT_FULL:
+  case BASE_MERIT_FULL_SIZE:
     out_size = genome_length;
     break;
-  case SIZE_MERIT_LEAST:
+  case BASE_MERIT_LEAST_SIZE:
     out_size = genome_length;
     if (out_size > copied_size) out_size = copied_size;
     if (out_size > executed_size)    out_size = executed_size;
     break;
-  case SIZE_MERIT_SQRT_LEAST:
+  case BASE_MERIT_SQRT_LEAST_SIZE:
     out_size = genome_length;
     if (out_size > copied_size) out_size = copied_size;
     if (out_size > executed_size)    out_size = executed_size;
     out_size = (int) sqrt((double) out_size);
     break;
-  case SIZE_MERIT_OFF:
+  case BASE_MERIT_CONST:
   default:
-    out_size = m_world->GetConfig().BASE_SIZE_MERIT.Get();
+    out_size = m_world->GetConfig().BASE_CONST_MERIT.Get();
     break;
   }
 

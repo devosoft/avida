@@ -100,20 +100,20 @@ void cOptionsScreen::Draw()
     break;
   }
 
-  switch(info.GetConfig().SIZE_MERIT_METHOD.Get()) {
-  case SIZE_MERIT_OFF:
+  switch(info.GetConfig().BASE_MERIT_METHOD.Get()) {
+  case BASE_MERIT_CONST:
     Print(3, 55, "Off");
     break;
-  case SIZE_MERIT_COPIED:
+  case BASE_MERIT_COPIED_SIZE:
     Print(3, 55, "Copied Size");
     break;
-  case SIZE_MERIT_EXECUTED:
+  case BASE_MERIT_EXE_SIZE:
     Print(3, 55, "Executed Size");
     break;
-  case SIZE_MERIT_FULL:
+  case BASE_MERIT_FULL_SIZE:
     Print(3, 55, "Full Size");
     break;
-  case SIZE_MERIT_LEAST:
+  case BASE_MERIT_LEAST_SIZE:
     Print(3, 55, "Least Size");
     break;
   }

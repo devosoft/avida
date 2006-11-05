@@ -2913,8 +2913,9 @@ void cHardwareCPU::DoDonate(cOrganism* to_org)
 {
   assert(to_org != NULL);
   
-  const double merit_given = m_world->GetConfig().MERIT_GIVEN.Get();
-  const double merit_received = m_world->GetConfig().MERIT_RECEIVED.Get();
+  const double merit_given = m_world->GetConfig().DONATE_SIZE.Get();
+  const double merit_received =
+    merit_given * m_world->GetConfig().DONATE_MULT.Get();
   
   double cur_merit = organism->GetPhenotype().GetMerit().GetDouble();
   cur_merit -= merit_given; 
@@ -3048,7 +3049,7 @@ bool cHardwareCPU::Inst_DonateNULL(cAvidaContext& ctx)
   // This is a fake donate command that causes the organism to lose merit,
   // but no one else to gain any.
   
-  const double merit_given = m_world->GetConfig().MERIT_GIVEN.Get();
+  const double merit_given = m_world->GetConfig().DONATE_SIZE.Get();
   double cur_merit = organism->GetPhenotype().GetMerit().GetDouble();
   cur_merit -= merit_given;
   

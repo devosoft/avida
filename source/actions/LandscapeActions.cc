@@ -80,7 +80,7 @@ public:
 
       cAnalyzeGenotype* genotype = NULL;
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
-      while (genotype = batch_it.Next()) {
+      while ((genotype = batch_it.Next())) {
         LoadGenome(batches, genotype->GetGenome());
         depths.Push(genotype->GetDepth());
       }
@@ -225,7 +225,7 @@ public:
       
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       cAnalyzeGenotype* genotype = NULL;
-      while (genotype = batch_it.Next()) {
+      while ((genotype = batch_it.Next())) {
         land = new cLandscape(m_world, genotype->GetGenome(), inst_set);
         land->SetDistance(m_dist);
         m_batch.PushRear(land);
@@ -245,7 +245,7 @@ public:
     }
     
     cDataFile& df = m_world->GetDataFile(m_sfilename);
-    while (land = m_batch.Pop()) {
+    while ((land = m_batch.Pop())) {
       land->PrintStats(df, update);
       if (m_efilename.GetSize()) land->PrintEntropy(m_world->GetDataFile(m_efilename));
       if (m_cfilename.GetSize()) land->PrintSiteCount(m_world->GetDataFile(m_cfilename));
@@ -302,7 +302,7 @@ public:
       
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       cAnalyzeGenotype* genotype = NULL;
-      while (genotype = batch_it.Next()) {
+      while ((genotype = batch_it.Next())) {
         land = new cLandscape(m_world, genotype->GetGenome(), inst_set);
         land->SetDistance(m_dist);
         m_batch.PushRear(land);
@@ -322,7 +322,7 @@ public:
     }
     
     cDataFile& df = m_world->GetDataFile(m_sfilename);
-    while (land = m_batch.Pop()) {
+    while ((land = m_batch.Pop())) {
       land->PrintStats(df, update);
       if (m_cfilename.GetSize()) land->PrintSiteCount(m_world->GetDataFile(m_cfilename));
       delete land;
@@ -377,7 +377,7 @@ public:
       
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       cAnalyzeGenotype* genotype = NULL;
-      while (genotype = batch_it.Next()) {
+      while ((genotype = batch_it.Next())) {
         land = new cLandscape(m_world, genotype->GetGenome(), inst_set);
         land->SetDistance(m_dist);
         m_batch.PushRear(land);
@@ -397,7 +397,7 @@ public:
     }
     
     cDataFile& df = m_world->GetDataFile(m_sfilename);
-    while (land = m_batch.Pop()) {
+    while ((land = m_batch.Pop())) {
       land->PrintStats(df, update);
       if (m_cfilename.GetSize()) land->PrintSiteCount(m_world->GetDataFile(m_cfilename));
       delete land;
@@ -444,7 +444,7 @@ public:
       
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       cAnalyzeGenotype* genotype = NULL;
-      while (genotype = batch_it.Next()) {
+      while ((genotype = batch_it.Next())) {
         cLandscape land(m_world, genotype->GetGenome(), inst_set);
         land.PredictWProcess(ctx, df);
       }
@@ -495,7 +495,7 @@ public:
       
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       cAnalyzeGenotype* genotype = NULL;
-      while (genotype = batch_it.Next()) {
+      while ((genotype = batch_it.Next())) {
         cLandscape land(m_world, genotype->GetGenome(), inst_set);
         land.PredictNuProcess(ctx, df);
       }
@@ -554,7 +554,7 @@ public:
       
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       cAnalyzeGenotype* genotype = NULL;
-      while (genotype = batch_it.Next()) {
+      while ((genotype = batch_it.Next())) {
         cLandscape* land = new cLandscape(m_world, genotype->GetGenome(), inst_set);
         land->SetDistance(m_dist);
         land->SetTrials(m_trials);
@@ -576,7 +576,7 @@ public:
     }
     
     cDataFile& df = m_world->GetDataFile(m_filename);
-    while (land = m_batch.Pop()) {
+    while ((land = m_batch.Pop())) {
       land->PrintStats(df, update);
       delete land;
     }
@@ -626,7 +626,7 @@ public:
       
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       cAnalyzeGenotype* genotype = NULL;
-      while (genotype = batch_it.Next()) {
+      while ((genotype = batch_it.Next())) {
         cLandscape* land = new cLandscape(m_world, genotype->GetGenome(), inst_set);
         land->SetTrials(m_trials);
         m_batch.PushRear(land);
@@ -646,7 +646,7 @@ public:
     }
     
     cDataFile& df = m_world->GetDataFile(m_filename);
-    while (land = m_batch.Pop()) {
+    while ((land = m_batch.Pop())) {
       land->PrintStats(df, update);
       delete land;
     }
@@ -689,7 +689,7 @@ public:
       cDataFile& df = m_world->GetDataFile(m_filename);
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       cAnalyzeGenotype* genotype = NULL;
-      while (genotype = batch_it.Next()) {
+      while ((genotype = batch_it.Next())) {
         cLandscape land(m_world, genotype->GetGenome(), inst_set);
         land.HillClimb(ctx, df);
       }
@@ -753,7 +753,7 @@ public:
       cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       cAnalyzeGenotype* genotype = NULL;
-      while (genotype = batch_it.Next()) {
+      while ((genotype = batch_it.Next())) {
         mutn = new cMutationalNeighborhood(m_world, genotype->GetGenome(), inst_set, m_target);
         m_batch.PushRear(new sBatchEntry(mutn, genotype->GetDepth()));
         jobqueue.AddJob(new tAnalyzeJob<cMutationalNeighborhood>(mutn, &cMutationalNeighborhood::Process));
@@ -775,7 +775,7 @@ public:
     cDataFile& df = m_world->GetDataFile(m_filename);
     df.WriteComment("IMPORTANT: Mutational Neighborhood is *EXPERIMENTAL*");
     df.WriteComment("Output data and format is subject to change in future releases.");
-    while (entry = m_batch.Pop()) {
+    while ((entry = m_batch.Pop())) {
       results = new cMutationalNeighborhoodResults(entry->mutn);
       results->PrintStats(df, entry->depth);
       delete results;
@@ -828,7 +828,7 @@ public:
       
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       cAnalyzeGenotype* genotype = NULL;
-      while (genotype = batch_it.Next()) {
+      while ((genotype = batch_it.Next())) {
         cLandscape* land = new cLandscape(m_world, genotype->GetGenome(), inst_set);
         if (m_sample_size) {
           land->SetTrials(m_sample_size);
@@ -855,7 +855,7 @@ public:
     }
     
     cDataFile& df = m_world->GetDataFile(m_filename);
-    while (land = m_batch.Pop()) {
+    while ((land = m_batch.Pop())) {
       land->PrintStats(df, update);
       delete land;
     }
@@ -947,7 +947,7 @@ public:
 
       cDataFile& df = m_world->GetDataFile(filename);
       cTestCPU* testcpu = (m_save_genotypes) ? m_world->GetHardwareManager().CreateTestCPU() : NULL;
-      while (orgdata = batch.Pop()) {
+      while ((orgdata = batch.Pop())) {
         cOrganism* organism = orgdata->GetOrganism();
         cGenotype* genotype = organism->GetGenotype();
         cPhenotype& phenotype = organism->GetPhenotype();
