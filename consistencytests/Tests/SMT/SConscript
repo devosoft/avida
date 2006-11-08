@@ -14,7 +14,7 @@ InstSetFile = e.File('instset-transsmt.cfg', ConfigDir)
 EnvironmentFile = e.File('environment.cfg', ConfigDir)
 StartCreatureFile = e.File('default-transsmt.org', ConfigDir)
 
-AvidaArgs = "-c %(GenesisFile)s -set HARDWARE_TYPE 2 -set SIZE_MERIT_METHOD 0 -set WORLD_X 40 -set WORLD_Y 40 -set INST_SET %(InstSetFile)s -set ENVIRONMENT_FILE %(EnvironmentFile)s -set START_CREATURE %(StartCreatureFile)s -seed %(Seed)s -set EVENT_FILE %(EventsFile)s -set DATA_DIR %(DataDir)s" % {
+AvidaArgs = "-c %(GenesisFile)s -set HARDWARE_TYPE 2 -set BASE_MERIT_METHOD 0 -set WORLD_X 40 -set WORLD_Y 40 -set INST_SET %(InstSetFile)s -set ENVIRONMENT_FILE %(EnvironmentFile)s -set START_CREATURE %(StartCreatureFile)s -seed %(Seed)s -set EVENT_FILE %(EventsFile)s -set DATA_DIR %(DataDir)s -set BIRTH_METHOD 4 -set SLICING_METHOD 2" % {
   'GenesisFile':GenesisFile.path,
   'InstSetFile':InstSetFile.path,
   'EnvironmentFile':EnvironmentFile.path,
