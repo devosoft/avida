@@ -212,7 +212,8 @@ cInstLibCPU *cHardwareCPU::initInstLib(void)
     cInstEntryCPU("stk-get",   &cHardwareCPU::Inst_TaskStackGet),
     cInstEntryCPU("stk-load",  &cHardwareCPU::Inst_TaskStackLoad),
     cInstEntryCPU("put",       &cHardwareCPU::Inst_TaskPut),
-    cInstEntryCPU("put-cost", &cHardwareCPU::Inst_TaskPutCost),
+    cInstEntryCPU("put-bcost2", &cHardwareCPU::Inst_TaskPutBonusCost2),
+    cInstEntryCPU("put-mcost2", &cHardwareCPU::Inst_TaskPutMeritCost2),
     cInstEntryCPU("IO",        &cHardwareCPU::Inst_TaskIO, true,
                   "Output ?BX?, and input new number back into ?BX?"),
     cInstEntryCPU("IO-Feedback",        &cHardwareCPU::Inst_TaskIO_Feedback, true,\
@@ -1741,7 +1742,7 @@ bool cHardwareCPU::Inst_Return(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_Throw(cAvidaContext& ctx)
 {
   // Only initialize this once to save some time...
-  static cInstruction catch_inst = GetInstLib()->GetInst(cStringUtil::Stringf("catch"));
+  static cInstruction catch_inst = GetInstSet().GetInst(cStringUtil::Stringf("catch"));
 
   //What label complement are we looking for?
   //If the size is zero then we just find the first example of a catch
@@ -2479,6 +2480,13 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   cCPUMemory& child_genome = organism->ChildGenome();
   child_genome = GetMemory();
   organism->GetPhenotype().SetLinesCopied(GetMemory().GetSize());
+
+  // JEB Hack
+  // Make sure that an organism has accumulated any required bonus
+  const int bonus_required = m_world->GetConfig().REQUIRED_BONUS.Get();
+  if (organism->GetPhenotype().GetCurBonus() < bonus_required) {
+    return false; //  (divide fails)
+  }
   
   int lines_executed = 0;
   for ( int i = 0; i < GetMemory().GetSize(); i++ ) {
@@ -2700,23 +2708,34 @@ bool cHardwareCPU::Inst_TaskPut(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareCPU::Inst_TaskPutCost(cAvidaContext& ctx)
+bool cHardwareCPU::Inst_TaskPutBonusCost2(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_BX);
   const int value = GetRegister(reg_used);
   GetRegister(reg_used) = 0;
-/*
-  double before_bonus = organism->GetPhenotype().GetCurBonus();
-  organism->DoOutput(ctx, value);
-
-  if (organism->GetPhenotype().GetCurBonus() == before_bonus)
-  {
-    organism->GetPhenotype().SetCurBonus(before_bonus * 0.5); 
-  }
-*/  
-
   organism->DoOutput(ctx, value);
   organism->GetPhenotype().SetCurBonus(organism->GetPhenotype().GetCurBonus() * 0.5);
+  return true;
+}
+
+bool cHardwareCPU::Inst_TaskPutMeritCost2(cAvidaContext& ctx)
+{
+  // Normal put code
+  const int reg_used = FindModifiedRegister(REG_BX);
+  const int value = GetRegister(reg_used);
+  GetRegister(reg_used) = 0;
+  organism->DoOutput(ctx, value);
+  
+  // Immediately half the merit of the current organism, never going below 1
+  double bone = organism->GetPhenotype().GetCurBonus();
+  double mere = organism->GetPhenotype().GetMerit().GetDouble();
+  double new_merit = organism->GetPhenotype().GetMerit().GetDouble();
+  new_merit /= 2;
+  if (new_merit < 1) new_merit = 1;
+  
+  // Immediately re-initialize the time-slice for this organism.  
+  organism->UpdateMerit(new_merit);
+  
   return true;
 }
 

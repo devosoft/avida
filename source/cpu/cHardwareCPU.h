@@ -383,7 +383,8 @@ private:
   bool Inst_TaskStackGet(cAvidaContext& ctx);
   bool Inst_TaskStackLoad(cAvidaContext& ctx);
   bool Inst_TaskPut(cAvidaContext& ctx);
-  bool Inst_TaskPutCost(cAvidaContext& ctx);  
+  bool Inst_TaskPutBonusCost2(cAvidaContext& ctx);  
+  bool Inst_TaskPutMeritCost2(cAvidaContext& ctx); 
   bool Inst_TaskIO(cAvidaContext& ctx);
   bool Inst_TaskIO_Feedback(cAvidaContext& ctx);
   bool Inst_MatchStrings(cAvidaContext& ctx);
