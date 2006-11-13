@@ -838,8 +838,41 @@ double cEnvironment::GetReactionValue(int& reaction_id)
   return found_reaction->GetValue();
 }
 
-bool cEnvironment::SetReactionValue(const cString& name, double value)
+bool cEnvironment::SetReactionValue(cAvidaContext& ctx, const cString& name, double value)
 {
+  const int num_reactions = reaction_lib.GetSize();
+
+  // See if this should be applied to all reactions.
+  if (name == "ALL") {
+    // Loop through all reactions to update their values.
+    for (int i = 0; i < num_reactions; i++) {
+      cReaction* cur_reaction = reaction_lib.GetReaction(i);
+      assert(cur_reaction != NULL);
+      cur_reaction->ModifyValue(value);
+    }
+
+    return true;
+  }
+
+  // See if this should be applied to random reactions.
+  if (name.IsSubstring("RANDOM:", 0)) {
+    // Determine how many reactions to set.
+    const int num_set = name.Substring(7, name.GetSize()-7).AsInt();
+    if (num_set > num_reactions) return false;
+
+    // Choose the reactions.
+    tArray<int> reaction_ids(num_set);
+    ctx.GetRandom().Choose(num_reactions, reaction_ids);
+
+    // And set them...
+    for (int i = 0; i < num_set; i++) {
+      cReaction* cur_reaction = reaction_lib.GetReaction(reaction_ids[i]);
+      assert(cur_reaction != NULL);
+      cur_reaction->ModifyValue(value);      
+    }
+    return true;
+  }
+  
   cReaction* found_reaction = reaction_lib.GetReaction(name);
   if (found_reaction == NULL) return false;
   found_reaction->ModifyValue(value);

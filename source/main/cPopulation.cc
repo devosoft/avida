@@ -860,6 +860,7 @@ void cPopulation::ReplicateDemes(int rep_trigger)
 {
   // Determine which demes should be replicated.
   const int num_demes = GetNumDemes();
+  cRandom & random = m_world->GetRandom();
 
   // Loop through all candidate demes...
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
@@ -892,8 +893,6 @@ void cPopulation::ReplicateDemes(int rep_trigger)
 
     // -- If we made it this far, we should replicate this deme --
 
-    cRandom & random = m_world->GetRandom();
-
     // Choose a random organism from this deme...
     int cell1_id = -1;
     const int deme1_size = source_deme.GetSize();
@@ -905,7 +904,7 @@ void cPopulation::ReplicateDemes(int rep_trigger)
     int target_id = deme_id;
     while (target_id == deme_id) target_id = random.GetUInt(num_demes);
     cDeme & target_deme = deme_array[target_id];
-    
+
     // Clear out existing cells in target deme.
     const int deme2_size = target_deme.GetSize();
     for (int i = 0; i < deme2_size; i++) {
@@ -930,6 +929,74 @@ void cPopulation::ReplicateDemes(int rep_trigger)
 		cell_array[GridNeighbor(cell2_id, world_x, world_y, -1, -1)] );
     cell_array[cell3_id].Rotate(
 		cell_array[GridNeighbor(cell3_id, world_x, world_y, -1, -1)] );
+  }
+}
+
+
+// Loop through all demes to determine if any are ready to be divided.  All
+// full demes have 1/2 of their organisms (the odd ones) moved into a new deme.
+
+void cPopulation::DivideDemes()
+{
+  // Determine which demes should be replicated.
+  const int num_demes = GetNumDemes();
+  cRandom & random = m_world->GetRandom();
+
+  // Loop through all candidate demes...
+  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+    cDeme & source_deme = deme_array[deme_id];
+
+    // Only divide full demes.
+    if (source_deme.IsFull() == false) continue;
+
+    // Choose a random target deme to replicate to...
+    int target_id = deme_id;
+    while (target_id == deme_id) target_id = random.GetUInt(num_demes);
+    cDeme & target_deme = deme_array[target_id];
+    const int deme_size = target_deme.GetSize();
+
+    // Clear out existing cells in target deme.
+    for (int i = 0; i < deme_size; i++) {
+      KillOrganism(cell_array[ target_deme.GetCellID(i) ]);
+    }
+
+    // Setup an array to collect the total number of tasks performed.
+    const int num_tasks = cell_array[source_deme.GetCellID(0)].GetOrganism()->
+      GetPhenotype().GetLastTaskCount().GetSize();
+    tArray<int> tot_tasks(num_tasks);
+    tot_tasks.SetAll(0);
+    
+    // Move over the odd numbered cells.
+    for (int pos = 0; pos < deme_size; pos += 2) {
+      const int cell1_id = source_deme.GetCellID( pos+1 );
+      const int cell2_id = target_deme.GetCellID( pos );
+      cOrganism * org1 = cell_array[cell1_id].GetOrganism();
+
+      // Keep track of what tasks have been done.
+      const tArray<int> & cur_tasks = org1->GetPhenotype().GetLastTaskCount();
+      for (int i = 0; i < num_tasks; i++) {
+	tot_tasks[i] += cur_tasks[i];
+      }
+
+      // Inject a copy of the odd organisms into the even cells.
+      InjectClone( cell2_id, *org1 );    
+
+      // Kill the organisms in the odd cells.
+      KillOrganism( cell_array[cell1_id] );
+    }
+    
+    // Figure out the merit each organism should have.
+    int merit = 100;
+    for (int i = 0; i < num_tasks; i++) {
+      if (tot_tasks[i] > 0) merit *= 2;
+    }
+
+    // Setup the merit of both old and new individuals.
+    for (int pos = 0; pos < deme_size; pos += 2) {
+      cell_array[source_deme.GetCellID(pos)].GetOrganism()->UpdateMerit(merit);
+      cell_array[target_deme.GetCellID(pos)].GetOrganism()->UpdateMerit(merit);
+    }
+
   }
 }
 

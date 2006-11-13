@@ -134,6 +134,11 @@ public:
 };
 
 
+// Set the values associated with a specified reaction.  If the name of the
+// reaction used is "ALL" then all reactions will be changed.  If the name is
+// "RANDOM:3" then random reactions will be set to the specified value.  The
+// number after the colon indicated the number of reactions to set.
+
 class cActionSetReactionValue : public cAction
 {
 private:
@@ -152,7 +157,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetEnvironment().SetReactionValue(m_name, m_value);
+    m_world->GetEnvironment().SetReactionValue(ctx, m_name, m_value);
   }
 };
 

@@ -110,7 +110,7 @@ public:
   cMutationRates& GetMutRates() { return mut_rates; }
 
   double GetReactionValue(int& reaction_id);
-  bool SetReactionValue(const cString& name, double value);
+  bool SetReactionValue(cAvidaContext& ctx, const cString& name, double value);
   bool SetReactionValueMult(const cString& name, double value_mult);
   bool SetReactionInst(const cString& name, cString inst_name);
 };

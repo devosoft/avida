@@ -523,6 +523,13 @@ public:
    **/
   cString Substring(int start, int size) const ;
   
+  /**
+   * Determine if in_string is a substring of this string.
+   *
+   * @return Is this a substring?
+   * @param in_string the string to test.
+   * @param start The beginning of the substring in the string.
+   **/
   bool IsSubstring(const cString & in_string, int start) const;
  
   /*

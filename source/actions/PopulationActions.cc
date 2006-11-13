@@ -118,11 +118,9 @@ public:
  
  Parameters:
    filename (string)
-     The filename of the genotype to load. If this is left empty, or the keyword
-     "START_CREATURE" is given, than the genotype specified in the genesis
+     The filename of the genotype to load.  If empty (or the keyword
+     "START_CREATURE" is given) than the genotype specified in the genesis
      file under "START_CREATURE" is used.
-   cell ID (integer) default: 0
-     The grid-point into which the organism should be placed.
    merit (double) default: -1
      The initial merit of the organism. If set to -1, this is ignored.
    lineage label (integer) default: 0
@@ -862,6 +860,42 @@ public:
 
 
 /*
+   This action will determine if any demes have filled up, and if so move half
+   of the members into a new deme.  Specifically, it will leave the even
+   numbered cells (0,2,4, etc.) and take the odd numbered ones (1,3,5, etc.)
+
+   @CAO This next part should be configurable
+   All replicated organisms will have their merit recalculated given the full
+   list of completed tasks, and assigned to all offspring *and* all parents.
+
+   This action should be used in combination with:
+      BIRTH_METHOD 8 (always repoduce into id+1)
+      BASE_MERIT_METHOD 0 (Constant base merit)
+      BASE_CONST_MERIT 0 (Use a base merit of zero, hence all merits = 0)
+
+   These settings will make sure that all merit will be set by this action.
+*/
+
+class cActionDivideDemes : public cAction
+{
+private:
+public:
+  cActionDivideDemes(cWorld* world, const cString& args) : cAction(world, args)
+  {
+    cString largs(args);
+    // Nothing to do here yet....
+  }
+  
+  static const cString GetDescription() { return "No arguments (yet!)"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().DivideDemes();
+  }
+};
+
+
+/*
  Designed to serve as a control for the compete_demes. Each deme is 
  copied into itself and the parameters reset. 
 */
@@ -1254,6 +1288,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
 
   action_lib->Register<cActionCompeteDemes>("CompeteDemes");
   action_lib->Register<cActionReplicateDemes>("ReplicateDemes");
+  action_lib->Register<cActionDivideDemes>("DivideDemes");
   action_lib->Register<cActionResetDemes>("ResetDemes");
   action_lib->Register<cActionCopyDeme>("CopyDeme");
   
