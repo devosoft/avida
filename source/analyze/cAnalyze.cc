@@ -3097,6 +3097,104 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
   return;
 }
 
+
+// Calculate various stats for trees in population.
+void cAnalyze::CommandPrintTreeStats(cString cur_string)
+{
+  // @CAO GRAB FILENAME!
+
+  cAnalyzeGenotype * genotype = NULL;
+  tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+  const int num_gens = batch[cur_batch].List().GetSize();
+  
+  // Put all of the genotypes in an array for easy reference and collect
+  // other information on them as we process them.
+  tArray<cAnalyzeGenotype *> gen_array(num_gens);
+  tHashTable<int, int> id_hash;  // Store array pos for each id.
+  tArray<int> id_array(num_gens), pid_array(num_gens);
+  tArray<int> depth_array(num_gens), birth_array(num_gens);
+  int array_pos = 0;
+  while ((genotype = batch_it.Next()) != NULL) {
+    // Put the genotype in an array.
+    gen_array[array_pos] = genotype;
+    id_hash.Add(genotype->GetID(), array_pos);
+    id_array[array_pos] = genotype->GetID();
+    pid_array[array_pos] = genotype->GetParentID();
+    depth_array[array_pos] = genotype->GetDepth();
+    birth_array[array_pos] = genotype->GetUpdateBorn();
+    array_pos++;
+  }
+
+  // Now collect information about the offspring of each individual.
+  tArray<int> ppos_array(num_gens), offspring_count(num_gens);
+  offspring_count.SetAll(0);
+  for (int pos = 0; pos < num_gens; pos++) {
+    int parent_id = gen_array[pos]->GetParentID();
+    if (parent_id == -1) {  // Organism has no parent (i.e., ancestor)
+      ppos_array[pos] = -1;
+      continue;
+    }
+    int parent_pos = -1;
+    id_hash.Find(parent_id, parent_pos);
+    ppos_array[pos] = parent_pos;
+    offspring_count[parent_pos]++;
+  }
+
+  // For each genotype, figure out how far back you need to go to get to a
+  // branch point.
+  tArray<int> branch_dist_array(num_gens);
+  tArray<int> branch_pos_array(num_gens);
+  branch_dist_array.SetAll(-1);
+  branch_pos_array.SetAll(-1);
+  bool found = true;
+  int loop_count = 0;
+  while (found == true) {
+    found = false;
+    for (int pos = 0; pos < num_gens; pos++) {
+      if (branch_dist_array[pos] > -1) continue; // continue if its set.
+      found = true;
+      int parent_pos = ppos_array[pos];
+      if (parent_pos == -1) branch_dist_array[pos] = 0;  // Org is root.
+      else if (offspring_count[parent_pos] > 1) {        // Parent is branch.
+	branch_dist_array[pos] = 1;
+	branch_pos_array[pos] = parent_pos;
+      }
+      else if (branch_dist_array[parent_pos] > -1) {     // Parent calculated.
+	branch_dist_array[pos] = branch_dist_array[parent_pos]+1;
+	branch_pos_array[pos] = branch_pos_array[parent_pos];
+      }
+      // Otherwise, we are not yet ready to calculate this entry.
+    }
+    loop_count++;
+  }
+
+  
+  // Cumulative Stemminess
+  for (int pos = 0; pos < num_gens; pos++) {
+    // We're only interested in internal n-furcating nodes.
+    if (pid_array[pos] == -1) continue;  // Don't want root.
+    if (offspring_count[pos] <= 1) continue; // No leaves or nonfurcating nodes
+
+    // @CAO Find distance to all children.
+    // @CAO Find distance to parent branch.
+    // @CAO DO math.
+  }
+
+
+  cout << "LOOP COUNT:" << loop_count << endl;
+  for (int i = 0; i < num_gens; i++) {
+    int branch_pos = branch_pos_array[i];
+    int branch_id = (branch_pos == -1) ? -1 : id_array[branch_pos];
+    cout << i << " "
+	 << id_array[i] << " "
+	 << offspring_count[i] << " "
+	 << branch_dist_array[i] << " "
+	 << branch_id << " "
+	 << endl;
+  }
+}
+
+
 void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
 {
   /////////////////////////////////////////////////////////////////////
@@ -7712,6 +7810,7 @@ void cAnalyze::SetupCommandDefLibrary()
   // Population analysis commands...
   AddLibraryDef("PRINT_PHENOTYPES", &cAnalyze::CommandPrintPhenotypes);
   AddLibraryDef("PRINT_DIVERSITY", &cAnalyze::CommandPrintDiversity);
+  AddLibraryDef("PRINT_TREE_STATS", &cAnalyze::CommandPrintTreeStats);
   AddLibraryDef("COMMUNITY_COMPLEXITY", &cAnalyze::AnalyzeCommunityComplexity);
   
   // Individual organism analysis...

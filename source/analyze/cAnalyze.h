@@ -161,6 +161,7 @@ private:
   // Population Analysis Commands...
   void CommandPrintPhenotypes(cString cur_string);
   void CommandPrintDiversity(cString cur_string);
+  void CommandPrintTreeStats(cString cur_string);
   void PhyloCommunityComplexity(cString cur_string);
   void AnalyzeCommunityComplexity(cString cur_string);
 
