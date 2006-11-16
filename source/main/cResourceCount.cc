@@ -23,7 +23,8 @@ const double cResourceCount::EPSILON (1.0e-15);
 const int cResourceCount::PRECALC_DISTANCE(100);
 
 
-void FlowMatter(cSpatialCountElem &elem1, cSpatialCountElem &elem2, double inxdiffuse, 
+void FlowMatter(cSpatialCountElem &elem1, cSpatialCountElem &elem2, 
+                double inxdiffuse, 
                 double inydiffuse, double inxgravity, double inygravity,
                 int xdist, int ydist, double dist) {
 

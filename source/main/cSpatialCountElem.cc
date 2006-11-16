@@ -13,6 +13,8 @@
 const int MAXFLOWPTS = 8;
 
 
+/* Intial spatial resource count elements with an initial amount */
+
 cSpatialCountElem::cSpatialCountElem(double initamount)
 {
   amount = initamount;
@@ -23,6 +25,8 @@ cSpatialCountElem::cSpatialCountElem(double initamount)
   dist.Resize(MAXFLOWPTS);
 }
 
+/* Intial spatial resource count elements without an initial amount */
+
 cSpatialCountElem::cSpatialCountElem()
 {
   amount = 0.0;
@@ -32,6 +36,8 @@ cSpatialCountElem::cSpatialCountElem()
   ydist.Resize(MAXFLOWPTS);
   dist.Resize(MAXFLOWPTS);
 }
+
+/* Set pointer to one other elements from the current element */  
 
 void cSpatialCountElem::SetPtr(int innum, int inelempt, int inxdist, int inydist, double indist)
 {
