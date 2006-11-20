@@ -20,10 +20,10 @@ RM = /usr/local/bin/cmake -E remove -f
 CMAKE_EDIT_COMMAND = /usr/local/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/covertar/source/development_72806/development
+CMAKE_SOURCE_DIR = /home/baer/avida_official/development
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/covertar/source/development_72806/development
+CMAKE_BINARY_DIR = /home/baer/avida_official/development
 
 # Default target executed when no arguments are given to make.
 default_target: all
@@ -31,7 +31,7 @@ default_target: all
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	cd /home/covertar/source/development_72806/development/source/utils/task_events && /usr/local/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	cd /home/baer/avida_official/development/source/utils/task_events && /usr/local/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 
 # Special rule for the target edit_cache
 edit_cache/fast: edit_cache
@@ -39,17 +39,17 @@ edit_cache/fast: edit_cache
 # Special rule for the target install
 install: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	cd /home/covertar/source/development_72806/development/source/utils/task_events && /usr/local/bin/cmake -P cmake_install.cmake
+	cd /home/baer/avida_official/development/source/utils/task_events && /usr/local/bin/cmake -P cmake_install.cmake
 
 # Special rule for the target install
 install/fast: preinstall/fast
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	cd /home/covertar/source/development_72806/development/source/utils/task_events && /usr/local/bin/cmake -P cmake_install.cmake
+	cd /home/baer/avida_official/development/source/utils/task_events && /usr/local/bin/cmake -P cmake_install.cmake
 
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	cd /home/covertar/source/development_72806/development/source/utils/task_events && /usr/local/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	cd /home/baer/avida_official/development/source/utils/task_events && /usr/local/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 
 # Special rule for the target rebuild_cache
 rebuild_cache/fast: rebuild_cache
@@ -57,16 +57,13 @@ rebuild_cache/fast: rebuild_cache
 # Special rule for the target test
 test:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running tests..."
-	cd /home/covertar/source/development_72806/development/source/utils/task_events && /usr/local/bin/ctest --force-new-ctest-process
+	cd /home/baer/avida_official/development/source/utils/task_events && /usr/local/bin/ctest --force-new-ctest-process
 
 # Special rule for the target test
 test/fast: test
 
 #=============================================================================
 # Special targets provided by cmake.
-
-# Produce verbose output by default.
-VERBOSE = 1
 
 # Suppress display of executed commands.
 $(VERBOSE).SILENT:
@@ -78,24 +75,24 @@ $(VERBOSE).SILENT:
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/covertar/source/development_72806/development && $(CMAKE_COMMAND) -E cmake_progress_start /home/covertar/source/development_72806/development/CMakeFiles $(CMAKE_ALL_PROGRESS)
-	cd /home/covertar/source/development_72806/development && $(MAKE) -f CMakeFiles/Makefile2 source/utils/task_events/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/covertar/source/development_72806/development/CMakeFiles 0
+	cd /home/baer/avida_official/development && $(CMAKE_COMMAND) -E cmake_progress_start /home/baer/avida_official/development/CMakeFiles $(CMAKE_ALL_PROGRESS)
+	cd /home/baer/avida_official/development && $(MAKE) -f CMakeFiles/Makefile2 source/utils/task_events/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/baer/avida_official/development/CMakeFiles 0
 
 # The main clean target
 clean:
-	cd /home/covertar/source/development_72806/development && $(MAKE) -f CMakeFiles/Makefile2 source/utils/task_events/clean
+	cd /home/baer/avida_official/development && $(MAKE) -f CMakeFiles/Makefile2 source/utils/task_events/clean
 
 # The main clean target
 clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/covertar/source/development_72806/development && $(MAKE) -f CMakeFiles/Makefile2 source/utils/task_events/preinstall
+	cd /home/baer/avida_official/development && $(MAKE) -f CMakeFiles/Makefile2 source/utils/task_events/preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/covertar/source/development_72806/development && $(MAKE) -f CMakeFiles/Makefile2 source/utils/task_events/preinstall
+	cd /home/baer/avida_official/development && $(MAKE) -f CMakeFiles/Makefile2 source/utils/task_events/preinstall
 
 # clear depends
 depend:
@@ -121,5 +118,5 @@ help::
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/covertar/source/development_72806/development && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/baer/avida_official/development && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 

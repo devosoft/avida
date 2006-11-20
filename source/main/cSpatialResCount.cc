@@ -14,6 +14,8 @@
 #include "nGeometry.h"
 
 
+/* Setup a single spatial resource with known flows */
+
 cSpatialResCount::cSpatialResCount(int inworld_x, int inworld_y, 
                   int ingeometry, 
                   double inxdiffuse, double inydiffuse, double inxgravity, 
@@ -36,6 +38,8 @@ cSpatialResCount::cSpatialResCount(int inworld_x, int inworld_y,
   } 
   SetPointers();
 }
+
+/* Setup a single spatial resource using default flow amounts  */
 
 cSpatialResCount::cSpatialResCount(int inworld_x, int inworld_y, int ingeometry)
                  : grid(inworld_x * inworld_y) {
@@ -136,7 +140,9 @@ void cSpatialResCount::CheckRanges() {
 
   // Check that the x, y ranges of the inflow and outflow rectangles 
   // are valid
+
   /* check range of inputs */
+
   if (inflowX1 < 0) { 
     inflowX1 = 0; 
   } else if (inflowX1 > world_x) { 
@@ -159,6 +165,7 @@ void cSpatialResCount::CheckRanges() {
   }
 
   /* allow for rectangles that cross over the zero X or zero Y boundry */
+
   if (inflowX2 < inflowX1) { inflowX2 += world_x; }
   if (inflowY2 < inflowY1) { inflowY2 += world_y; }
   if (outflowX1 < 0) { 
@@ -183,6 +190,7 @@ void cSpatialResCount::CheckRanges() {
   }
 
   /* allow for rectangles that cross over the zero X or zero Y boundry */
+
   if (outflowX2 < outflowX1) { outflowX2 += world_x; }
   if (outflowY2 < outflowY1) { outflowY2 += world_y; }
 
@@ -196,6 +204,9 @@ void cSpatialResCount::RateAll(double ratein) {
     grid[i].Rate(ratein);
   } 
 }
+
+/* For each cell in the grid add the changes stored in the rate variable
+   with the total of the resource */
 
 void cSpatialResCount::StateAll() {
 
@@ -229,6 +240,8 @@ void cSpatialResCount::FlowAll() {
   }
 }
 
+/* Total up all the resources in each cell */
+
 const double cSpatialResCount::SumAll() const{
 
   int i;
@@ -244,7 +257,6 @@ const double cSpatialResCount::SumAll() const{
 void cSpatialResCount::Source(double amount) const {
   int     i, j, elem;
   double  totalcells;
-
 
   totalcells = (inflowY2 - inflowY1 + 1) * (inflowX2 - inflowX1 + 1) * 1.0;
   amount /= totalcells;

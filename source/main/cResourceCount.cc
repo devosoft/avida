@@ -150,7 +150,7 @@ void cResourceCount::Setup(int id, cString name, double initial, double inflow,
                            int in_inflowX2, int in_inflowY1, 
                            int in_inflowY2, int in_outflowX1, 
                            int in_outflowX2, int in_outflowY1, 
-                           int in_outflowY2)
+                           int in_outflowY2, int verbosity_level)
 {
   assert(id >= 0 && id < resource_count.GetSize());
   assert(initial >= 0.0);
@@ -166,31 +166,34 @@ void cResourceCount::Setup(int id, cString name, double initial, double inflow,
   } else if (in_geometry == nGeometry::TORUS) {
     geo_name = "TORUS";
   }
-#if 0
-  cerr << "Setting up resource " << name
-       << "(" << geo_name 
-       << ") with initial quatity=" << initial
-       << ", decay=" << decay
-       << ", inflow=" << inflow
-       << endl;
-  if ((in_geometry == nGeometry::GRID) || (in_geometry == nGeometry::TORUS)) {
-    cerr << "  Inflow rectangle (" << in_inflowX1 
-         << "," << in_inflowY1 
-         << ") to (" << in_inflowX2 
-         << "," << in_inflowY2 
-         << ")" << endl; 
-    cerr << "  Outflow rectangle (" << in_outflowX1 
-         << "," << in_outflowY1 
-         << ") to (" << in_outflowX2 
-         << "," << in_outflowY2 
-         << ")" << endl;
-    cerr << "  xdiffuse=" << in_xdiffuse
-         << ", xgravity=" << in_xgravity
-         << ", ydiffuse=" << in_ydiffuse
-         << ", ygravity=" << in_ygravity
+
+  /* If the verbose flag is set print out information about resources */
+
+  if (verbosity_level > VERBOSE_NORMAL) {
+    cout << "Setting up resource " << name
+         << "(" << geo_name 
+         << ") with initial quatity=" << initial
+         << ", decay=" << decay
+         << ", inflow=" << inflow
          << endl;
-  }   
-#endif
+    if ((in_geometry == nGeometry::GRID) || (in_geometry == nGeometry::TORUS)) {
+      cout << "  Inflow rectangle (" << in_inflowX1 
+           << "," << in_inflowY1 
+           << ") to (" << in_inflowX2 
+           << "," << in_inflowY2 
+           << ")" << endl; 
+      cout << "  Outflow rectangle (" << in_outflowX1 
+           << "," << in_outflowY1 
+           << ") to (" << in_outflowX2 
+           << "," << in_outflowY2 
+           << ")" << endl;
+      cout << "  xdiffuse=" << in_xdiffuse
+           << ", xgravity=" << in_xgravity
+           << ", ydiffuse=" << in_ydiffuse
+           << ", ygravity=" << in_ygravity
+           << endl;
+    }   
+  }
 
   resource_count[id] = initial;
   spatial_resource_count[id].RateAll
@@ -308,6 +311,14 @@ void cResourceCount::ModifyCell(const tArray<double> & res_change, int cell_id)
       assert(resource_count[i] >= 0.0);
     } else {
       spatial_resource_count[i].Rate(cell_id, res_change[i]);
+
+      /* Ideally the state of the cell's resource should not be set till
+         the end of the update so that all processes (inflow, outflow, 
+         diffision, gravity and organism demand) have the same weight.  However
+         waiting can cause problems with negative resources so we allow
+         the organism demand work immediately on the state of the resource */ 
+    
+      spatial_resource_count[i].State(cell_id);
     }
   }
 }
