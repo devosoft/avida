@@ -42,7 +42,7 @@ private:
       : name(in_name), type(SCHEMA_DOUBLE), index(in_idx), optional(true), def_double(def) { ; }
     sArgSchemaEntry(const cString& in_name, int in_idx, cString* def)   // Optional String Argument
       : name(in_name), type(SCHEMA_STRING), index(in_idx), optional(true), def_string(def) { ; }
-    ~sArgSchemaEntry() { if (type == SCHEMA_STRING) delete def_string; }  // Cleanup string object
+    ~sArgSchemaEntry() { if (type == SCHEMA_STRING && optional) delete def_string; }  // Cleanup string object
   };
   
   
