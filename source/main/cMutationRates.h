@@ -57,7 +57,13 @@ private:
   };
   sInjectMuts inject;
   
-  
+  // Mutations in mutation rates...
+  struct sMetaMuts {
+    double copy_mut_prob;  // Prob of copy mut changing.
+    double standard_dev;   // Standard dev. on meta muts.
+  };
+  sMetaMuts meta;
+
   cMutationRates& operator=(const cMutationRates&); // @not_implemented
 
 public:
@@ -75,6 +81,13 @@ public:
   bool TestDivideIns(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_ins_prob); }
   bool TestDivideDel(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_del_prob); }
   bool TestParentMut(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.parent_mut_prob); }
+  double DoMetaCopyMut(cAvidaContext& ctx) {
+    if (ctx.GetRandom().P(meta.copy_mut_prob) == false) return 1.0;
+    const double exp = ctx.GetRandom().GetRandNormal() * meta.standard_dev;
+    const double change = pow(2, exp);
+    copy.mut_prob *= change;
+    return change;
+  }
 
   double GetPointMutProb() const     { return exec.point_mut_prob; }
   double GetCopyMutProb() const      { return copy.mut_prob; }
@@ -88,9 +101,11 @@ public:
   double GetInjectInsProb() const    { return inject.ins_prob; }
   double GetInjectDelProb() const    { return inject.del_prob; }
   double GetInjectMutProb() const    { return inject.mut_prob; }
+  double GetMetaCopyMutProb() const  { return meta.copy_mut_prob; }
+  double GetMetaStandardDev() const  { return meta.standard_dev; }
   
   void SetPointMutProb(double in_prob)  { exec.point_mut_prob    = in_prob; }
-  void SetCopyMutProb(double in_prob)   { copy.mut_prob     = in_prob; }
+  void SetCopyMutProb(double in_prob)   { copy.mut_prob          = in_prob; }
   void SetInsMutProb(double in_prob)    { divide.ins_prob        = in_prob; }
   void SetDelMutProb(double in_prob)    { divide.del_prob        = in_prob; }
   void SetDivMutProb(double in_prob)    { divide.mut_prob        = in_prob; }
@@ -101,6 +116,8 @@ public:
   void SetInjectInsProb(double in_prob) { inject.ins_prob        = in_prob; }
   void SetInjectDelProb(double in_prob) { inject.del_prob        = in_prob; }
   void SetInjectMutProb(double in_prob) { inject.mut_prob        = in_prob; }
+  void SetMetaCopyMutProb(double in_prob) { meta.copy_mut_prob   = in_prob; }
+  void SetMetaStandardDev(double in_dev) { meta.standard_dev     = in_dev; }
 };
 
 

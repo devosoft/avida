@@ -15,14 +15,12 @@ using namespace std;
 
 int cBarScreen::AddMenuOption(const cString option, int max_x, int cur_x)
 {
-  if (cur_x + option.GetSize() + 2 >= max_x) return cur_x;
+  if (cur_x + option.GetSize() >= max_x) return cur_x;
 
-  SetBoldColor(COLOR_WHITE);
-  Print(1, cur_x, option);
-  SetBoldColor(COLOR_CYAN);
-  Print(1, cur_x+1, option[1]);  
+  PrintOption(1, cur_x, option);
 
-  return cur_x+option.GetSize()+2;
+  if (option.GetSize() < 6)  return cur_x+option.GetSize()+2;
+  return cur_x+option.GetSize()+1;
 }
 
 void cBarScreen::Draw()
@@ -35,7 +33,7 @@ void cBarScreen::Draw()
 
   int offset = prog_name.GetSize() + 4;
   VLine(Width() - offset - 2);
-  Print(1, Width() - offset, "%s", static_cast<const char*>(prog_name));
+  Print(1, Width() - offset+1, "%s", static_cast<const char*>(prog_name));
 
   Print(1, 2, "Update:");
 
@@ -45,10 +43,11 @@ void cBarScreen::Draw()
   // Include options in their general order of importance.
   cur_x = AddMenuOption("[M]ap", max_x, cur_x);
   cur_x = AddMenuOption("[S]tats", max_x, cur_x);
-  cur_x = AddMenuOption("[O]ptions", max_x, cur_x);
+  cur_x = AddMenuOption("[A]nalyze", max_x, cur_x);
   cur_x = AddMenuOption("[Z]oom", max_x, cur_x);
-  cur_x = AddMenuOption("[E]nv", max_x, cur_x);
+  cur_x = AddMenuOption("[O]ptions", max_x, cur_x);
   cur_x = AddMenuOption("[H]ist", max_x, cur_x);
+  cur_x = AddMenuOption("[E]nv", max_x, cur_x);
   cur_x = AddMenuOption("[B]lank", max_x, cur_x);
   cur_x = AddMenuOption("[P]ause", max_x, cur_x);
   cur_x = AddMenuOption("[C]hoose CPU", max_x, cur_x);

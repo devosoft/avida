@@ -28,7 +28,7 @@ protected:
   cPopulation & population;
   int mode;
 
-  void PrintGenotype(cGenotype * in_gen, int in_pos, int max_num);
+  void PrintGenotype(cGenotype * in_gen, int in_pos, int max_stars, int star_size);
   void PrintSpecies(cSpecies * in_species, int in_pos, int max_num);
 public:
   cHistScreen(int y_size, int x_size, int y_start, int x_start,

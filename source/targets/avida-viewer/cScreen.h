@@ -65,6 +65,8 @@ protected:
   inline void SetSymbolColor(char color);
   inline void PrintMerit(int in_y, int in_x, cMerit in_merit);
   inline void PrintFitness(int in_y, int in_x, double in_fitness);
+  inline void PrintOption(int in_y, int in_x, const cString & option);
+
 public:
   cScreen(int y_size, int x_size, int y_start, int x_start,
 	  cViewInfo & in_info) :
@@ -163,6 +165,23 @@ inline void cScreen::PrintFitness(int in_y, int in_x, double in_fitness)
   // Otherwise use scientific notations.
   else
     Print(in_y, in_x, "%7.1e", in_fitness);
+}
+
+
+inline void cScreen::PrintOption(int in_y, int in_x, const cString & option)
+{
+  // Print the main option...
+  SetBoldColor(COLOR_WHITE);
+  Print(in_y, in_x, option);
+
+  // Highlight the keypress...
+  SetBoldColor(COLOR_YELLOW);
+  bool highlight = false;
+  for (int i = 0; i < option.GetSize(); i++) {
+    if (option[i] == '[') { highlight = true; continue; }
+    if (option[i] == ']') { highlight = false; continue; }
+    if (highlight == true) Print(in_y, in_x+i, option[i]);
+  }
 }
 
 #endif

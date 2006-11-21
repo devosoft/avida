@@ -226,7 +226,7 @@ void cView::DoInputs()
       break;
     case 'e':
     case 'E':
-      if(info.GetPopulation().GetEnvironment().GetResourceLib().GetSize() > 0)
+      //      if(info.GetPopulation().GetEnvironment().GetResourceLib().GetSize() > 0)
 	ChangeCurScreen(environment_screen);
       break;
     case 's':
@@ -384,12 +384,12 @@ void cView::NavigateMapWindow()
 
 int cView::Confirm(const cString & message)
 {
-  int mess_length = message.GetSize();
+  const int mess_length = message.GetSize();
 
   // Create a confirm window, and draw it on the screen.
 
   cTextWindow * conf_win
-    = new cTextWindow(3, mess_length + 10, 10, (70 - mess_length) / 2);
+    = new cTextWindow(3, mess_length + 10, 10, (base_window->Width() - 10 - mess_length) / 2);
   conf_win->Box();
   conf_win->SetBoldColor(COLOR_WHITE);
   conf_win->Print(1, 2, "%s (y/n)", static_cast<const char*>(message));

@@ -134,38 +134,40 @@ void cEnvironmentScreen::UpdateResource()
 {
   const cResourceLib & res_lib = m_world->GetEnvironment().GetResourceLib();
   const cReactionLib & rxn_lib = m_world->GetEnvironment().GetReactionLib();
+  const int num_resources = m_world->GetPopulation().GetResources().GetSize();
   
+  // If there are no resources, then we have nothing to update.
+  if (num_resources == 0) return;
+
+  // Update the quantity of each resource.
   SetBoldColor(COLOR_CYAN);
-  //int j=0;
-  //int last_count=0;
-  for(int i=0; i<m_world->GetPopulation().GetResources().GetSize(); i++)
+  for(int i = 0; i < num_resources; i++)
   {
     Print(i+1, 40, "%7.2f", m_world->GetPopulation().GetResources()[i]);
   }
   
+  // Highlight the current resource in blue.
   SetBoldColor(COLOR_BLUE);
   Print(res_selection+1, 1, res_lib.GetResource(res_selection)->GetName());
   Print(res_selection+1, 12, "%7.2f", res_lib.GetResource(res_selection)->GetInflow());
   Print(res_selection+1, 24, "%7.2f", res_lib.GetResource(res_selection)->GetOutflow());
   Print(res_selection+1, 40, "%7.2f", m_world->GetPopulation().GetResources()[res_selection]);
   
+  // Print all of the information about the current resources.
   int offset=0;
-  
   SetBoldColor(COLOR_CYAN);
-  for(int i=0; i<rxn_lib.GetSize(); i++)
-  {
-    for(int j=0; j<rxn_lib.GetReaction(i)->GetProcesses().GetSize(); j++)
-    {
+  for(int i=0; i<rxn_lib.GetSize(); i++) {
+    for(int j=0; j<rxn_lib.GetReaction(i)->GetProcesses().GetSize(); j++) {
       if(rxn_lib.GetReaction(i)->GetProcesses().GetPos(j)->GetResource()->GetName() == 
-         res_lib.GetResource(res_selection)->GetName())
-	    {
-	      Print(m_world->GetPopulation().GetResources().GetSize()+5+offset, 2, 
-              rxn_lib.GetReaction(i)->GetName());
-	      offset++;
-	    }
+         res_lib.GetResource(res_selection)->GetName()) {
+	Print(num_resources + 5 + offset, 2,
+	      rxn_lib.GetReaction(i)->GetName());
+	offset++;
+      }
     }
   }
   
+  // Print the name of the current resource at the bottom of the screen.
   SetBoldColor(COLOR_WHITE);
   Print(res_lib.GetSize()+3, 37, "%s", static_cast<const char*>(res_lib.GetResource(res_selection)->GetName()));
   Print(res_lib.GetSize()+3, res_lib.GetResource(res_selection)->GetName().GetSize()+37, ":");
@@ -177,43 +179,55 @@ void cEnvironmentScreen::UpdateReaction()
 {
   const cReactionLib & rxn_lib = m_world->GetEnvironment().GetReactionLib();
   const cResourceLib & res_lib = m_world->GetEnvironment().GetResourceLib();
+  const int num_reactions = m_world->GetStats().GetReactions().GetSize();
   
+  // If we have no reactions, stop right here.
+  if (num_reactions == 0) return;
+
+  // For each reaction, print how often it was performed.
   SetBoldColor(COLOR_CYAN);
-  for(int i=0; i<m_world->GetStats().GetReactions().GetSize(); i++)
-  {
+  for(int i = 0; i < num_reactions; i++) {
     Print(i+1, 40, "%7.2f", m_world->GetStats().GetReactions()[i]);
   }
   
+  // Highlight the selected reaction.
   SetBoldColor(COLOR_BLUE);
   Print(rxn_selection+1, 1, rxn_lib.GetReaction(rxn_selection)->GetName());
   Print(rxn_selection+1, 40, "%7.2f", m_world->GetStats().GetReactions()[rxn_selection]);
   
   
-  int offset=0;
-  
-  SetBoldColor(COLOR_CYAN);
-  for(int i=0; i<rxn_lib.GetReaction(rxn_selection)->GetProcesses().GetSize(); i++)
-  {
-    Print(m_world->GetStats().GetReactions().GetSize()+5+offset, 2, 
-          rxn_lib.GetReaction(rxn_selection)->GetProcesses().GetPos(i)->GetResource()->GetName());
-    Print(m_world->GetStats().GetReactions().GetSize()+5+offset, 13, "%7.2f",
-          rxn_lib.GetReaction(rxn_selection)->GetProcesses().GetPos(i)->GetResource()->GetInflow());
-    Print(m_world->GetStats().GetReactions().GetSize()+5+offset, 25, "%7.2f",
-          rxn_lib.GetReaction(rxn_selection)->GetProcesses().GetPos(i)->GetResource()->GetOutflow());
-    for(int j=0; j<res_lib.GetSize(); j++)
-    {
-      if(res_lib.GetResource(j)->GetName() ==
-         rxn_lib.GetReaction(rxn_selection)->GetProcesses().GetPos(i)->GetResource()->GetName())
-        Print(m_world->GetStats().GetReactions().GetSize()+5+offset, 40, "%7.2f", 
-              m_world->GetPopulation().GetResources()[j]);
-    }
-    offset++;  
-  }
+  // Update header on reaction section.
   SetBoldColor(COLOR_WHITE);
   Print(rxn_lib.GetSize()+3, 37, "%s", static_cast<const char*>(rxn_lib.GetReaction(rxn_selection)->GetName()));
   Print(rxn_lib.GetSize()+3, rxn_lib.GetReaction(rxn_selection)->GetName().GetSize()+37, ":");
   Print(rxn_lib.GetSize()+3, rxn_lib.GetReaction(rxn_selection)->GetName().GetSize()+38, "        ");
   
+  // Print information about each resource associated with active reaction.
+  int offset=0;
+  SetBoldColor(COLOR_CYAN);
+  const int num_processes = rxn_lib.GetReaction(rxn_selection)->GetProcesses().GetSize();
+  for(int i = 0; i < num_processes; i++) {
+    cResource * cur_resource =
+      rxn_lib.GetReaction(rxn_selection)->GetProcesses().GetPos(i)->GetResource();
+
+    // Ignore all processes that are not associated with resources.
+    if (cur_resource == NULL) continue;
+
+    // Print info about this resource.
+    Print(m_world->GetStats().GetReactions().GetSize()+5+offset, 2,
+	  cur_resource->GetName());
+    Print(m_world->GetStats().GetReactions().GetSize()+5+offset, 13, "%7.2f",
+	  cur_resource->GetInflow());
+    Print(m_world->GetStats().GetReactions().GetSize()+5+offset, 25, "%7.2f",
+          cur_resource->GetOutflow());
+    for(int j=0; j < res_lib.GetSize(); j++) {
+      if (res_lib.GetResource(j)->GetName() == cur_resource->GetName()) {
+        Print(m_world->GetStats().GetReactions().GetSize()+5+offset, 40, "%7.2f", 
+              m_world->GetPopulation().GetResources()[j]);
+      }
+    }
+    offset++;  
+  }
 }
 
 void cEnvironmentScreen::DoInput(int in_char)
@@ -224,59 +238,73 @@ void cEnvironmentScreen::DoInput(int in_char)
   SetBoldColor(COLOR_CYAN);
   
   switch (in_char) {
-    case KEY_DOWN:
-      if(mode==ENVIRONMENT_MODE_RESOURCE ) {
-        last_selection=res_selection;
-        res_selection++;
-        res_selection%=m_world->GetPopulation().GetResources().GetSize();
-        
-        Print(last_selection+1, 1, res_lib.GetResource(last_selection)->GetName());
-        Print(last_selection+1, 12, "%7.2f", res_lib.GetResource(last_selection)->GetInflow());
-        Print(last_selection+1, 24, "%7.2f", res_lib.GetResource(last_selection)->GetOutflow());
+  case KEY_DOWN:
+    if(mode==ENVIRONMENT_MODE_RESOURCE ) {
+      const int num_resources = m_world->GetPopulation().GetResources().GetSize();
+      if (num_resources > 0) {
+	last_selection=res_selection;
+	res_selection++;
+	res_selection %= num_resources;
+	
+	Print(last_selection+1, 1, res_lib.GetResource(last_selection)->GetName());
+	Print(last_selection+1, 12, "%7.2f", res_lib.GetResource(last_selection)->GetInflow());
+	Print(last_selection+1, 24, "%7.2f", res_lib.GetResource(last_selection)->GetOutflow());
       }
-      else {
-        last_selection=rxn_selection;
-        rxn_selection++;
-        rxn_selection%=m_world->GetStats().GetReactions().GetSize();
-        
-        Print(last_selection+1, 1, rxn_lib.GetReaction(last_selection)->GetName());
-        //Print(last_selection+1, 12, "%7.2f", rxn_lib.GetReaction(last_selection)->GetInflow());
-        //Print(last_selection+1, 24, "%7.2f", rxn_lib.GetReaction(last_selection)->GetOutflow());
+    }
+    else { // ENVIRONMENT_MODE_REACTION
+      const int num_reactions = m_world->GetStats().GetReactions().GetSize();
+      if (num_reactions > 0) {
+	last_selection = rxn_selection;
+	rxn_selection++;
+	rxn_selection %= num_reactions;
+	
+	Print(last_selection+1, 1, rxn_lib.GetReaction(last_selection)->GetName());
+	//Print(last_selection+1, 12, "%7.2f", rxn_lib.GetReaction(last_selection)->GetInflow());
+	//Print(last_selection+1, 24, "%7.2f", rxn_lib.GetReaction(last_selection)->GetOutflow());
       }
-      
-      Update();
-      break;
-    case KEY_UP:
-      if(mode==ENVIRONMENT_MODE_RESOURCE) {
-        last_selection=res_selection;
-        res_selection--;
-        if(res_selection < 0) res_selection=m_world->GetPopulation().GetResources().GetSize()-1;
-        
-        Print(last_selection+1, 1, res_lib.GetResource(last_selection)->GetName());
-        Print(last_selection+1, 12, "%7.2f", res_lib.GetResource(last_selection)->GetInflow());
-        Print(last_selection+1, 24, "%7.2f", res_lib.GetResource(last_selection)->GetOutflow());
+    }
+    
+    Update();
+    break;
+  case KEY_UP:
+    if(mode == ENVIRONMENT_MODE_RESOURCE) {
+      const int num_resources = m_world->GetPopulation().GetResources().GetSize();
+      if (num_resources > 0) {
+	last_selection = res_selection;
+	res_selection--;
+	if(res_selection < 0) res_selection = num_resources - 1;
+	
+	Print(last_selection+1, 1, res_lib.GetResource(last_selection)->GetName());
+	Print(last_selection+1, 12, "%7.2f", res_lib.GetResource(last_selection)->GetInflow());
+	Print(last_selection+1, 24, "%7.2f", res_lib.GetResource(last_selection)->GetOutflow());
       }
-      else {
-        last_selection=rxn_selection;
-        rxn_selection--;
-        if(rxn_selection < 0) rxn_selection=m_world->GetStats().GetReactions().GetSize()-1;
-        
-        Print(last_selection+1, 1, rxn_lib.GetReaction(last_selection)->GetName());
-        //Print(last_selection+1, 12, "%7.2f", rxn_lib.GetReaction(last_selection)->GetInflow());
-        //Print(last_selection+1, 24, "%7.2f", rxn_lib.GetReaction(last_selection)->GetOutflow());
+    }
+    else { // ENVIRONMENT_MODE_REACTIONS
+      const int num_reactions = m_world->GetStats().GetReactions().GetSize();
+      if (num_reactions > 0) {
+	last_selection=rxn_selection;
+	rxn_selection--;
+	if (rxn_selection < 0) rxn_selection = num_reactions - 1;
+	
+	Print(last_selection+1, 1, rxn_lib.GetReaction(last_selection)->GetName());
+	//Print(last_selection+1, 12, "%7.2f", rxn_lib.GetReaction(last_selection)->GetInflow());
+	//Print(last_selection+1, 24, "%7.2f", rxn_lib.GetReaction(last_selection)->GetOutflow());
       }
-      
-      Update();
-      break;
-    case '>':
-    case '<':
-      if(mode==ENVIRONMENT_MODE_RESOURCE)
-        mode=ENVIRONMENT_MODE_REACTION;
-      else
-        mode=ENVIRONMENT_MODE_RESOURCE;
-      Clear();
-      Draw();
-      break;
+    }
+    
+    Update();
+    break;
+  case '>':
+  case '.':
+  case '<':
+  case ',':
+    if(mode==ENVIRONMENT_MODE_RESOURCE)
+      mode=ENVIRONMENT_MODE_REACTION;
+    else
+      mode=ENVIRONMENT_MODE_RESOURCE;
+    Clear();
+    Draw();
+    break;
   }
 }
 

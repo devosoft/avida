@@ -28,6 +28,8 @@ void cMutationRates::Setup(cWorld* world)
   inject.ins_prob = world->GetConfig().INJECT_INS_PROB.Get();
   inject.del_prob = world->GetConfig().INJECT_DEL_PROB.Get();
   inject.mut_prob = world->GetConfig().INJECT_MUT_PROB.Get();
+  meta.copy_mut_prob = world->GetConfig().META_COPY_MUT.Get();
+  meta.standard_dev = world->GetConfig().META_STD_DEV.Get();
 }
 
 void cMutationRates::Clear()
@@ -44,6 +46,8 @@ void cMutationRates::Clear()
   inject.ins_prob = 0.0;
   inject.del_prob = 0.0;
   inject.mut_prob = 0.0;
+  meta.copy_mut_prob = 0.0;
+  meta.standard_dev = 0.0;
 }
 
 void cMutationRates::Copy(const cMutationRates& in_muts)
@@ -60,4 +64,6 @@ void cMutationRates::Copy(const cMutationRates& in_muts)
   inject.ins_prob = in_muts.inject.ins_prob;
   inject.del_prob = in_muts.inject.del_prob;
   inject.mut_prob = in_muts.inject.mut_prob;
+  meta.copy_mut_prob = in_muts.meta.copy_mut_prob;
+  meta.standard_dev = in_muts.meta.standard_dev;
 }

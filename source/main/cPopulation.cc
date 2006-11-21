@@ -299,9 +299,19 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
     // If we replaced the parent, make a note of this.
     if (target_cells[i] == parent_cell.GetID()) parent_alive = false;      
     
-    // Update the mutation rates of each child....
-    child_array[i]->MutationRates().Copy(GetCell(target_cells[i]).MutationRates());
-    
+    const int mut_source = m_world->GetConfig().MUT_RATE_SOURCE.Get();
+    if (mut_source == 1) {
+      // Update the mutation rates of each child from the environment....
+      child_array[i]->MutationRates().Copy(GetCell(target_cells[i]).MutationRates());
+    } else {
+      // Update the mutation rates of each child from its parent.
+      child_array[i]->MutationRates().Copy(parent_organism.MutationRates());
+      // If there is a meta-mutation rate, do tests for it.
+      if (child_array[i]->MutationRates().GetMetaCopyMutProb() > 0.0) {
+	child_array[i]->MutationRates().DoMetaCopyMut(ctx);
+      }    
+    }
+
     // Update the phenotypes of each child....
     const int child_length = child_array[i]->GetGenome().GetSize();
     child_array[i]->GetPhenotype().SetupOffspring(parent_phenotype,child_length);
@@ -1093,6 +1103,7 @@ void cPopulation::PrintDemeStats()
   cDataFile & df_task = m_world->GetDataFile("deme_task.dat");
   cDataFile & df_donor = m_world->GetDataFile("deme_donor.dat");
   cDataFile & df_receiver = m_world->GetDataFile("deme_receiver.dat");
+  cDataFile & df_mut_rates = m_world->GetDataFile("deme_mut_rates.dat");
   
   df_fit.WriteComment("Average fitnesses for each deme in the population");
   df_life_fit.WriteComment("Average life fitnesses for each deme in the population");
@@ -1101,6 +1112,7 @@ void cPopulation::PrintDemeStats()
   df_task.WriteComment("Num orgs doing each task for each deme in population");
   df_donor.WriteComment("Num orgs doing doing a donate for each deme in population");
   df_receiver.WriteComment("Num orgs doing receiving a donate for each deme in population");
+  df_mut_rates.WriteComment("Average mutation rates for organisms in each deme");
   
   df_fit.WriteTimeStamp();
   df_life_fit.WriteTimeStamp();
@@ -1109,6 +1121,7 @@ void cPopulation::PrintDemeStats()
   df_task.WriteTimeStamp();
   df_donor.WriteTimeStamp();
   df_receiver.WriteTimeStamp();
+  df_mut_rates.WriteTimeStamp();
   
   df_fit.Write(stats.GetUpdate(), "update");
   df_life_fit.Write(stats.GetUpdate(), "update");
@@ -1117,6 +1130,7 @@ void cPopulation::PrintDemeStats()
   df_task.Write(stats.GetUpdate(), "update");
   df_donor.Write(stats.GetUpdate(), "update");
   df_receiver.Write(stats.GetUpdate(), "update");
+  df_mut_rates.Write(stats.GetUpdate(), "update");
   
   const int num_inst = m_world->GetNumInstructions();
   const int num_task = environment.GetTaskLib().GetSize();
@@ -1139,6 +1153,7 @@ void cPopulation::PrintDemeStats()
     cDoubleSum single_deme_gest_time;
     cDoubleSum single_deme_donor;
     cDoubleSum single_deme_receiver;
+    cDoubleSum single_deme_mut_rate;
     tArray<cIntSum> single_deme_task(num_task);
     tArray<cIntSum> single_deme_inst(num_inst);
     
@@ -1153,6 +1168,7 @@ void cPopulation::PrintDemeStats()
       single_deme_gest_time.Add(phenotype.GetGestationTime()); 	
       single_deme_donor.Add(phenotype.IsDonorLast()); 	
       single_deme_receiver.Add(phenotype.IsReceiver()); 	
+      single_deme_mut_rate.Add(GetCell(cur_cell).GetOrganism()->MutationRates().GetCopyMutProb());
       
       for (int j = 0; j < num_inst; j++) {
         single_deme_inst[j].Add(phenotype.GetLastInstCount()[j]);
@@ -1173,6 +1189,7 @@ void cPopulation::PrintDemeStats()
     df_gest.Write(single_deme_gest_time.Ave(), comment);
     df_donor.Write(single_deme_donor.Sum(), comment);
     df_receiver.Write(single_deme_receiver.Sum(), comment);
+    df_mut_rates.Write(single_deme_mut_rate.Ave(), comment);
     
     for (int j = 0; j < num_task; j++) {
       comment.Set("Deme %d, Task %d", deme_id, j);
@@ -1193,6 +1210,7 @@ void cPopulation::PrintDemeStats()
   df_task.Endl();
   df_donor.Endl();
   df_receiver.Endl();
+  df_mut_rates.Endl();
 }
 
 
