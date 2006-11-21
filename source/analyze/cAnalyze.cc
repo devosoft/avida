@@ -6091,6 +6091,8 @@ void cAnalyze::WriteCompetition(cString cur_string)
 }
 
 
+// Analyze the mutations along an aligned lineage.
+
 void cAnalyze::AnalyzeMuts(cString cur_string)
 {
   cout << "Analyzing Mutations" << endl;
@@ -6280,12 +6282,16 @@ void cAnalyze::AnalyzeMuts(cString cur_string)
   delete [] mut_positions;
 }
 
+
+// Analyze the frequency that each instruction appears in the batch, and
+// make note of those that appear more or less often than expected.
+
 void cAnalyze::AnalyzeInstructions(cString cur_string)
 {
   if (m_world->GetVerbosity() >= VERBOSE_ON) {
     cout << "Analyzing Instructions in batch " << cur_batch << endl;
   }
-  else cout << "Analyzeing Instructions..." << endl;
+  else cout << "Analyzing Instructions..." << endl;
   
   // Load in the variables...
   cString filename("inst_analyze.dat");

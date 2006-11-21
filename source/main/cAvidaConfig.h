@@ -30,41 +30,47 @@ using namespace std;
 // entry for a new setting in the configuration.
 //
 // To step through what we are doing:
-// 1 - Load in four variables representing the setting name, its type, its
-//     default value, and a brief description of what its for.  The description
-//     should be a string, enclosed in quotes.
+// 1 - Load in four variables representing the setting:
+//     NAME = The name of the variable in the config file.
+//     TYPE = The type of the variable (int, double, or cString)
+//     DEFAULT = Value to use if this isn't set by user.
+//     DESC = a brief description of the setting (a string, enclosed in quotes)
 // 2 - Build a new class using the setting name with the prefix cEntry_
 //     This class will contain all of the info about this setting, and will
 //     be derived from the cBaseConfigEntry class so that we may easily refer
 //     to any of these dynamically created classes.
 // 3 - Create a private value for this setting.
 // 4 - Create a LoadString() method to load the settings in from a string.
-// 5 - Create a constructor that passes all of the information to the base
+// 5 - Create a EqualsString() method to determine if the values are the same.
+// 6 - Create a constructor that passes all of the information to the base
 //     class that it can manage to.
-// 6 - Initialize the value of this setting to its default.
-// 7 - Insert the newly built object into the full list of settings objects.
-// 8 - Create Get() and Set() methods to act as accessors.
-// 9 - Setup a method to return the value of this setting as a string.
-// 10 - Declare a variable of this class's type to use in the future.  Since
+// 7 - Initialize the value of this setting to its default.
+// 8 - Insert the newly built object into the full list of settings objects.
+// 9 - Create Get() and Set() methods to act as accessors.
+// 10 - Setup a method to return the value of this setting as a string.
+// 11 - Declare a variable of this class's type to use in the future.  Since
 //     accessors were declared above, we can refer to this setting by the
 //     setting name inside of config.
 
-#define CONFIG_ADD_VAR(NAME, TYPE, DEFAULT, DESC)                      /* 1 */ \
-class cEntry_ ## NAME : public cBaseConfigEntry {                      /* 2 */ \
-private:                                                                       \
-  TYPE value;                                                          /* 3 */ \
-public:                                                                        \
-  void LoadString(const cString& str_value) {                          /* 4 */ \
-    value = cStringUtil::Convert(str_value, value);                            \
-  }                                                                            \
-  cEntry_ ## NAME() : cBaseConfigEntry(#NAME, #TYPE, #DEFAULT, DESC) { /* 5 */ \
-    LoadString(GetDefault());                                          /* 6 */ \
-    global_group_list.GetLast()->AddEntry(this);                       /* 7 */ \
-  }                                                                            \
-  TYPE Get() const { return value; }                                   /* 8 */ \
-  void Set(TYPE in_value) { value = in_value; }                                \
-  cString AsString() const { return cStringUtil::Convert(value); }     /*  9 */ \
-} NAME                                                                 /* 10 */ \
+#define CONFIG_ADD_VAR(NAME, TYPE, DEFAULT, DESC)                     /* 1 */ \
+class cEntry_ ## NAME : public cBaseConfigEntry {                     /* 2 */ \
+private:                                                                      \
+  TYPE value;                                                         /* 3 */ \
+public:                                                                       \
+  void LoadString(const cString& str_value) {                         /* 4 */ \
+    value = cStringUtil::Convert(str_value, value);                           \
+  }                                                                           \
+  bool EqualsString(const cString& str_value) const {                 /* 5 */ \
+    return (value == cStringUtil::Convert(str_value, value));                 \
+  }                                                                           \
+  cEntry_ ## NAME() : cBaseConfigEntry(#NAME,#TYPE,#DEFAULT,DESC) {   /* 6 */ \
+    LoadString(GetDefault());                                         /* 7 */ \
+    global_group_list.GetLast()->AddEntry(this);                      /* 8 */ \
+  }                                                                           \
+  TYPE Get() const { return value; }                                  /* 9 */ \
+  void Set(TYPE in_value) { value = in_value; }                               \
+  cString AsString() const { return cStringUtil::Convert(value); }    /* 10 */\
+} NAME                                                                /* 11 */\
 
 
 // Now we're going to make another macro to deal with groups.  This time its
@@ -97,11 +103,12 @@ private:
     bool use_overide;
     
   public:
-      cBaseConfigEntry(const cString& _name, const cString& _type,
-                       const cString& _def, const cString& _desc);
+    cBaseConfigEntry(const cString& _name, const cString& _type,
+		     const cString& _def, const cString& _desc);
     virtual ~cBaseConfigEntry() { ; }
     
-    virtual void LoadString(const cString& str_value) = 0;
+    virtual void LoadString(const cString & str_value) = 0;
+    virtual bool EqualsString(const cString & str_value) const = 0;
     
     const cString& GetName() const { return config_name; }
     const cString& GetType() const { return type; }
@@ -288,6 +295,7 @@ public:
   void Load(const cString& filename);
   void Print(const cString& filename);
   void Status();
+  void PrintReview();
   
   bool Get(const cString& entry, cString& ret) const;
   bool Set(const cString& entry, const cString& val);

@@ -71,16 +71,31 @@ cString getAvidaVersion()
 void printVersionBanner()
 {
   // output copyright message
-  cout << getAvidaVersion() << endl;
   cout << "----------------------------------------------------------------------" << endl;
+  cout << getAvidaVersion() << endl << endl;
+  cout << "by Charles Ofria" << endl << endl;
+  cout << "Lead Developers: David Bryson (Avida) and Kaben Nanlohy (Avida-ED)" << endl << endl;
+  cout << "Portions by Brian Baer, Jeffrey Barrick, Benjamin Beckmann, Jeffrey Clune," << endl
+       << "Travis Collier, Art Covert, Evan Dorn, Sherri Goings, George Hagstrom," << endl
+       << "Dehua Hang, Wei Huang, David Knoester, Dusan Misevic, Elizabeth Ostrowski," << endl
+       << "Matthew Rupp, Jason Stredwick, Bess Walker, Claus Wilke, and Larry Wisne" << endl << endl;
+
+  cout << "With design help from Christoph Adami, C. Titus Brown, Timothy Cooper," << endl
+       << "Santiago Elena, Richard Lenski, Philip McKinley, Robert Pennock, Thomas" << endl
+       << "Schmidt, Robert Schwartz, Eric Torng, Jialan Wang, Daniel Weise, and Gabriel" << endl
+       << "Yedid" << endl;
+
+  cout << endl;
+
   cout << "Copyright (C) 1999-2006 Michigan State University." << endl;
-  cout << "Copyright (C) 1993-2005 California Institute of Technology." << endl << endl;
+  cout << "Copyright (C) 1993-2003 California Institute of Technology." << endl << endl;
   
   cout << "Avida comes with ABSOLUTELY NO WARRANTY." << endl;
   cout << "This is free software, and you are welcome to redistribute it" << endl;
   cout << "under certain conditions. See file COPYING for details." << endl << endl;
 
-  cout << "For more information, see: http://devolab.cse.msu.edu/software/avida/" << endl << endl;
+  cout << "For more information, see: http://devolab.cse.msu.edu/software/avida/" << endl;
+  cout << "----------------------------------------------------------------------" << endl << endl;
 }
 
 void ExitAvida(int exit_code)

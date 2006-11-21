@@ -145,10 +145,11 @@ private:
 
 
 /*
- Precalculates landscape data for use in detail files.  The primary advantage of
- this is that it supports multithreaded execution, whereas lazy evaluation during
- detailing will be serialized.
+ * Precalculates landscape data for use in detail files.  The primary
+ * advantage of this is that it supports multithreaded execution, whereas
+ * lazy evaluation during detailing will be serialized.
 */
+
 class cActionPrecalcLandscape : public cAction  // @parallelized
 {
 public:

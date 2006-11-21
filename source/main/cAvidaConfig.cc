@@ -158,6 +158,37 @@ void cAvidaConfig::Status()
   }
 }
 
+void cAvidaConfig::PrintReview()
+{
+  cout << endl << "Non-Default Settings: " << endl << endl;
+
+  // Loop through all possible groups.
+  tListIterator<cBaseConfigGroup> group_it(group_list);
+  cBaseConfigGroup * cur_group;
+  while ((cur_group = group_it.Next()) != NULL) {
+    // Loop through entries for this group...
+    tConstListIterator<cBaseConfigEntry> entry_it(cur_group->GetEntryList());
+    const cBaseConfigEntry* cur_entry;
+    while ((cur_entry = entry_it.Next()) != NULL) {
+      if (cur_entry->EqualsString( cur_entry->GetDefault() ) == false) {
+	cout << " " << cur_entry->GetName() << " ";
+	if (cur_entry->GetType() == "double") {
+	  cout << cur_entry->AsString().AsDouble() << " ";
+	} else if (cur_entry->GetType() == "int") {
+	  cout << cur_entry->AsString().AsInt() << " ";
+	} else {
+	  cout << cur_entry->AsString() << " ";
+	}
+	cout << "(default=" << cur_entry->GetDefault() << ")"
+	     << endl;
+      }
+    }
+  }
+  cout << endl;
+  
+}
+
+
 void cAvidaConfig::GenerateOverides()
 {
   ofstream fp("config_overrides.h");  
@@ -305,23 +336,33 @@ cAvidaConfig* cAvidaConfig::LoadWithCmdLineArgs(int argc, char * argv[])
     
     // Test against the possible inputs.
 
-    if (cur_arg == "-e") {
+    // Print out a list of all possibel actions (was events).
+    if (cur_arg == "-e" || cur_arg == "-events" || cur_arg == "-actions") {
       cout << endl << "Supported Actions:" << endl;
       cout << cDriverManager::GetActionLibrary()->DescribeAll() << endl;
       exit(0);
-    } else if (cur_arg == "--help" || cur_arg == "-help" || cur_arg == "-h") {
+    }
+
+    // Review configuration options, listing those non-default.
+    else if (cur_arg == "-review" || cur_arg == "-r") {
+      cfg->PrintReview();
+      exit(0);
+    }
+    
+    else if (cur_arg == "--help" || cur_arg == "-help" || cur_arg == "-h") {
       cout << "Options:"<<endl
-      << "  -c[onfig] <filename>  Set config file to be <filename>"<<endl
-      << "  -h[elp]               Help on options (this listing)"<<endl
-      << "  -e                    Print a list of all known actions"<< endl
-      << "  -s[eed] <value>       Set random seed to <value>"<<endl
-      << "  -v[ersion]            Prints the version number"<<endl
-      << "  -v0 -v1 -v2 -v3 -v4   Set output verbosity to 0..4"
-      << "  -set <name> <value>   Overide the genesis file"<<endl
-      << "  -l[oad] <filename>    Load a clone file"<<endl
-      << "  -a[nalyze]            Process analyze.cfg instead of normal run."<<endl
-      << "  -i[nteractive]        Run analyze mode interactively."
-      << endl;
+	   << "  -a[nalyze]            Process analyze.cfg instead of normal run." << endl
+	   << "  -c[onfig] <filename>  Set config file to be <filename>"<<endl
+	   << "  -e; -actions          Print a list of all known actions"<< endl
+	   << "  -h[elp]               Help on options (this listing)"<<endl
+	   << "  -i[nteractive]        Run analyze mode interactively" << endl
+	   << "  -l[oad] <filename>    Load a clone file" << endl
+	   << "  -r[eview]             Review analyze.cfg settings."
+	   << "  -s[eed] <value>       Set random seed to <value>" << endl
+	   << "  -set <name> <value>   Overide values in avida.cfg" << endl
+	   << "  -v[ersion]            Prints the version number" << endl
+	   << "  -v0 -v1 -v2 -v3 -v4   Set output verbosity to 0..4" << endl
+	   << endl;
       
       exit(0);
     }
@@ -351,15 +392,12 @@ cAvidaConfig* cAvidaConfig::LoadWithCmdLineArgs(int argc, char * argv[])
         arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
         cfg->CLONE_FILE.Set(cur_arg);
       }
-    } else if (cur_arg == "-version") {
+    } else if (cur_arg == "-version" || cur_arg == "-v") {
+      // We've already showed version info, so just quit.
       exit(0);
     } else if (cur_arg.Substring(0, 2) == "-v") {
-      if (cur_arg.GetSize() == 2) { // equivalent to -version
-        exit(0);
-      } else { // set verbosity
-        int level = cur_arg.Substring(2, cur_arg.GetSize() - 2).AsInt();
-        cfg->VERBOSITY.Set(level);
-      }
+      int level = cur_arg.Substring(2, cur_arg.GetSize() - 2).AsInt();
+      cfg->VERBOSITY.Set(level);
     } else if (cur_arg == "-set") {
       if (arg_num + 1 == argc || arg_num + 2 == argc) {
         cerr << "'-set' option must be followed by name and value" << endl;
