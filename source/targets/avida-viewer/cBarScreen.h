@@ -19,6 +19,8 @@ class cBarScreen : public cScreen {
 protected:
   cWorld* m_world;
   cString prog_name;
+
+  int AddMenuOption(const cString option, int max_x, int cur_x);
 public:
   cBarScreen(cWorld* world, int y_size, int x_size, int y_start, int x_start, cViewInfo & in_info, const cString & in_name)
     : cScreen(y_size, x_size, y_start, x_start, in_info), m_world(world), prog_name(in_name) { ; }
