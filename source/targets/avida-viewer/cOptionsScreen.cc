@@ -42,20 +42,20 @@ void cOptionsScreen::Draw()
   Print(2, 0, "Genotype.....:");
   Print(3, 0, "ID #.........:");
 
-  PrintOption(Height() - 4, 2, "[M]ap Screen");
-  PrintOption(Height() - 4, 2, "[S]tats Screen");
+  PrintOption(Height() - 6, 2, "[M]ap Screen");
+  PrintOption(Height() - 5, 2, "[S]tats Screen");
   PrintOption(Height() - 4, 2, "[A]nalyze Screen");
-  PrintOption(Height() - 4, 2, "[Z]oom Screen");
-  PrintOption(Height() - 4, 2, "[H]istogram Screen");
-  PrintOption(Height() - 4, 2, "[E]nvironment Screen");
+  PrintOption(Height() - 3, 2, "[Z]oom Screen");
+  PrintOption(Height() - 2, 2, "[H]istogram Screen");
 
-  PrintOption(Height() - 4, 2, "[O]ptions Screen");
-  PrintOption(Height() - 3, 2, "[B]lank Screen");
-  PrintOption(Height() - 2, 2, "[CTRL-L] Redraw Screen");
-  PrintOption(Height() - 4, 30, "[C]hoose New CPU");
-  PrintOption(Height() - 3, 30, "E[x]tract Creature");
-  PrintOption(Height() - 2, 30, "[W]rite Soup Clone");
+  PrintOption(Height() - 6, 30, "[E]nvironment Screen");
+  PrintOption(Height() - 5, 30, "[O]ptions Screen");
+  PrintOption(Height() - 4, 30, "[B]lank Screen");
+  PrintOption(Height() - 3, 30, "[CTRL-L] Redraw Screen");
+  PrintOption(Height() - 2, 30, "[C]hoose New CPU");
 
+  PrintOption(Height() - 6, 55, "E[x]tract Creature");
+  PrintOption(Height() - 5, 55, "[W]rite Soup Clone");
   if (info.GetPauseLevel()) {
     PrintOption(Height() - 4, 55, "Un-[P]ause");
     PrintOption(Height() - 3, 55, "[N]ext Update");
@@ -65,7 +65,7 @@ void cOptionsScreen::Draw()
   }
 
   SetColor(COLOR_WHITE);
-  Box(0, Height() - 5, Width(), 5);
+  Box(0, Height() - 7, Width(), 7);
 
   SetBoldColor(COLOR_CYAN);
   Print(6, 15, "%dx%d", info.GetPopulation().GetWorldX(),

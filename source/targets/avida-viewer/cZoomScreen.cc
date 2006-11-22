@@ -62,31 +62,19 @@ void cZoomScreen::Draw()
   // Draw the options block which is on all screens.
   
   SetBoldColor(COLOR_WHITE);
-  Print(OPTIONS_Y, OPTIONS_X, "[<]                [>]");
+  PrintOption(OPTIONS_Y, OPTIONS_X, "[<]                [>]");
   if (info.GetPauseLevel()) {
-    Print(OPTIONS_Y+2, OPTIONS_X+2, "Un-[P]ause");
-    Print(OPTIONS_Y+3, OPTIONS_X+2, "[N]ext Update");
-    Print(OPTIONS_Y+4, OPTIONS_X+2, "[Space] Next Inst");
+    PrintOption(OPTIONS_Y+2, OPTIONS_X+2, "Un-[P]ause");
+    PrintOption(OPTIONS_Y+3, OPTIONS_X+2, "[N]ext Update");
+    PrintOption(OPTIONS_Y+4, OPTIONS_X+2, "[Space] Next Inst");
   } else {
-    Print(OPTIONS_Y+2, OPTIONS_X+2, "[P]ause   ");
+    PrintOption(OPTIONS_Y+2, OPTIONS_X+2, "[P]ause   ");
     Print(OPTIONS_Y+3, OPTIONS_X+2, "             ");
     Print(OPTIONS_Y+4, OPTIONS_X+2, "                 ");
   }
   
-  SetBoldColor(COLOR_CYAN);
-  Print(OPTIONS_Y, OPTIONS_X+1, "<");
-  Print(OPTIONS_Y, OPTIONS_X+20, ">");
-  if (info.GetPauseLevel()) {
-    Print(OPTIONS_Y+2, OPTIONS_X+6, "P");
-    Print(OPTIONS_Y+3, OPTIONS_X+3, "N");
-    //Print(OPTIONS_Y+4, OPTIONS_X+3, "Space");
-  } else {
-    Print(OPTIONS_Y+2, OPTIONS_X+3, "P");
-  }
-  
   // Redirect to the proper Draw() method.
-  
-  if (mode == ZOOM_MODE_CPU)
+    if (mode == ZOOM_MODE_CPU)
   {
     if(info.GetConfig().HARDWARE_TYPE.Get() == HARDWARE_TYPE_CPU_ORIGINAL) 
       DrawCPU_Original();
@@ -173,10 +161,7 @@ void cZoomScreen::DrawStats()
   
   if (task_num < info.GetWorld().GetNumTasks() || task_offset != 0) {
     SetBoldColor(COLOR_WHITE);
-    Print(Height()-1, Width() - 23, " [<-] More [->] ");
-    SetBoldColor(COLOR_CYAN);
-    Print(Height()-1, Width() - 21, "<-");
-    Print(Height()-1, Width() - 11, "->");
+    PrintOption(Height()-1, Width() - 23, " [<-] More [->] ");
   }
 }
 
@@ -206,10 +191,7 @@ void cZoomScreen::DrawCPU_Original()
   // HLine(MINI_MAP_Y + 2, MINI_MAP_X, 19);
   
   SetBoldColor(COLOR_WHITE);
-  Print(MINI_MAP_Y + 11, MINI_MAP_X,  "[-]           [+]");
-  SetBoldColor(COLOR_CYAN);
-  Print(MINI_MAP_Y + 11, MINI_MAP_X + 1,  '-');
-  Print(MINI_MAP_Y + 11, MINI_MAP_X + 15, '+');
+  PrintOption(MINI_MAP_Y + 11, MINI_MAP_X,  "[-]           [+]");
   SetColor(COLOR_WHITE);
   
   // --== Memory ==--
@@ -226,29 +208,18 @@ void cZoomScreen::DrawCPU_Original()
   Print(OPTIONS_Y, OPTIONS_X+4,    "Component Zoom");
   SetBoldColor(COLOR_WHITE);
   
-  Print(OPTIONS_Y+6, OPTIONS_X+2, "[E]dit Component");
-  Print(OPTIONS_Y+7, OPTIONS_X+2, "[V]iew Component");
+  PrintOption(OPTIONS_Y+6, OPTIONS_X+2, "[E]dit Component");
+  PrintOption(OPTIONS_Y+7, OPTIONS_X+2, "[V]iew Component");
   if(info.GetConfig().MAX_CPU_THREADS.Get() >1)
-    Print(OPTIONS_Y+8, OPTIONS_X+2, "Next [T]hread");
-  Print(OPTIONS_Y+9, OPTIONS_X+2, "[TAB] Shift Active");
+    PrintOption(OPTIONS_Y+8, OPTIONS_X+2, "Next [T]hread");
+  PrintOption(OPTIONS_Y+9, OPTIONS_X+2, "[TAB] Shift Active");
   
   if (info.GetPauseLevel()) {
-    Print(OPTIONS_Y+10, OPTIONS_X+2, "[Arrows] Scroll");
+    PrintOption(OPTIONS_Y+10, OPTIONS_X+2, "[Arrows] Scroll");
   } else {
     Print(OPTIONS_Y+10, OPTIONS_X+2, "               ");
   }
   
-  
-  SetBoldColor(COLOR_CYAN);
-  Print(OPTIONS_Y+6, OPTIONS_X+3, "E");
-  Print(OPTIONS_Y+7, OPTIONS_X+3, "V");
-  if(info.GetConfig().MAX_CPU_THREADS.Get() >1)
-    Print(OPTIONS_Y+8, OPTIONS_X+8, "T");
-  Print(OPTIONS_Y+9, OPTIONS_X+3, "TAB");
-  
-  if (info.GetPauseLevel()) {
-    Print(OPTIONS_Y+10, OPTIONS_X+3, "Arrows");
-  }
   
   // Highlight the active section...
   SetActiveSection(active_section);
@@ -456,10 +427,10 @@ void cZoomScreen::UpdateStats(cHardwareBase& hardware)
   
   const cMerit cur_merit(phenotype.GetCurBonus());
   
-  PrintFitness(5, 14, phenotype.GetFitness());
+  PrintDouble(5, 14, phenotype.GetFitness());
   Print(6, 15, "%6d ", phenotype.GetGestationTime());
-  PrintMerit(7, 14, phenotype.GetMerit());
-  PrintMerit(8, 14, cur_merit);
+  PrintDouble(7, 14, phenotype.GetMerit().GetDouble());
+  PrintDouble(8, 14, cur_merit.GetDouble());
   Print(9, 15, "%6d ", genotype ? genotype->GetLength() : 0);
   Print(10, 15, "%6d ", hardware.GetMemory().GetSize());
   
@@ -972,13 +943,13 @@ void cZoomScreen::UpdateGenotype()
     cGenotype& genotype = *(info.GetActiveGenotype());
     Print(5, 12, "%9d", genotype.GetNumOrganisms());
     Print(6, 12, "%9d", genotype.GetLength());
-    Print(7, 12, "%9d", genotype.GetCopiedSize());
-    Print(8, 12, "%9d", genotype.GetExecutedSize());
+    PrintDouble(7, 14, genotype.GetCopiedSize());
+    PrintDouble(8, 14, genotype.GetExecutedSize());
     
-    PrintFitness(10, 14, genotype.GetFitness());
-    Print(11, 12, "%9f", genotype.GetGestationTime());
-    Print(12, 14, "%9f", genotype.GetMerit());
-    Print(13, 12, "%9f", genotype.GetReproRate());
+    PrintDouble(10, 14, genotype.GetFitness());
+    PrintDouble(11, 14, genotype.GetGestationTime());
+    PrintDouble(12, 14, genotype.GetMerit());
+    PrintDouble(13, 14, genotype.GetReproRate());
     
     // Column 2
     Print(1, 40, "%9d", genotype.GetUpdateBorn());

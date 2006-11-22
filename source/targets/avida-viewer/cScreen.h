@@ -63,8 +63,7 @@ protected:
   cViewInfo& info;
 
   inline void SetSymbolColor(char color);
-  inline void PrintMerit(int in_y, int in_x, cMerit in_merit);
-  inline void PrintFitness(int in_y, int in_x, double in_fitness);
+  inline void PrintDouble(int in_y, int in_x, double in_value);
   inline void PrintOption(int in_y, int in_x, const cString & option);
 
 public:
@@ -132,39 +131,44 @@ inline void cScreen::SetSymbolColor(char color)
   }
 }
 
-inline void cScreen::PrintMerit(int in_y, int in_x, cMerit in_merit)
+inline void cScreen::PrintDouble(int in_y, int in_x, double in_value)
 {
   // if we can print the merit normally, do so.
-  //if (in_merit.GetDouble() < 1000000) {
-    //Print(in_y, in_x, "%7d", in_merit.GetUInt());
-  //}
+  if (in_value == 0.0) {
+    Print(in_y, in_x, "    0.0");
+  }
+
+  if (in_value < 10000000.0) {
+    // If this is an integer, print it as such.
+    int int_value = (int) in_value;
+    if (in_value == ((double) int_value)) {
+      Print(in_y, in_x, "%7d", int_value);
+    }
+
+    else if (in_value < 10.0) {
+      Print(in_y, in_x, "%1.5f", in_value);
+    }
+    else if (in_value < 100.0) {
+      Print(in_y, in_x, "%2.4f", in_value);
+    }
+    else if (in_value < 1000.0) {
+      Print(in_y, in_x, "%3.3f", in_value);
+    }
+    else if (in_value < 10000.0) {
+      Print(in_y, in_x, "%4.2f", in_value);
+    }
+    else if (in_value < 100000.0) {
+      Print(in_y, in_x, "%5.1f", in_value);
+    }
+    else {
+      Print(in_y, in_x, "%7d", int_value);
+    }
+  }
 
   // otherwise use scientific notation. (or somesuch)
-  //else {
-    Print(in_y, in_x, "%7.1e", in_merit.GetDouble());
-  //}
-}
-
-inline void cScreen::PrintFitness(int in_y, int in_x, double in_fitness)
-{
-  // If we can print the fitness, do so!
-  if (in_fitness <= 0.0) {
-    Print(in_y, in_x, " 0.0000");
+  else {
+    Print(in_y, in_x, "%7.1e", in_value);
   }
-  else if (in_fitness < 10)
-    Print(in_y, in_x, "%7.4f", in_fitness);
-  //  else if (in_fitness < 100)
-  //    Print(in_y, in_x, "%7.3f", in_fitness);
-  else if (in_fitness < 1000)
-    Print(in_y, in_x, "%7.2f", in_fitness);
-  //  else if (in_fitness < 10000)
-  //    Print(in_y, in_x, "%7.1f", in_fitness);
-  else if (in_fitness < 100000)
-    Print(in_y, in_x, "%7.0f", in_fitness);
-
-  // Otherwise use scientific notations.
-  else
-    Print(in_y, in_x, "%7.1e", in_fitness);
 }
 
 

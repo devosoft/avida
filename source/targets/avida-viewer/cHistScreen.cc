@@ -22,7 +22,7 @@ void cHistScreen::PrintGenotype(cGenotype * in_gen, int in_pos,
 				int max_stars, int star_size)
 {
   SetBoldColor(COLOR_CYAN);
-  PrintFitness(in_pos, 0, in_gen->GetFitness());
+  PrintDouble(in_pos, 0, in_gen->GetFitness());
 
   SetBoldColor(COLOR_WHITE);
   Print(in_pos, 8, "%s: ", static_cast<const char*>(in_gen->GetName()));
@@ -58,11 +58,6 @@ void cHistScreen::PrintGenotype(cGenotype * in_gen, int in_pos,
 
 void cHistScreen::PrintSpecies(cSpecies * in_species, int in_pos, int max_num)
 {
-  //  SetBoldColor(COLOR_CYAN);
-  //  if (in_gen->GetGestationTime())
-  //    PrintFitness(in_pos, 0, in_gen->GetFitness());
-  //  else Print(in_pos, 0, "    0.0");
-
   SetBoldColor(COLOR_WHITE);
   Print(in_pos, 0, "        sp-%06d: ", in_species->GetID());
 

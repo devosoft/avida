@@ -57,7 +57,7 @@ private:
 
   // Screen helpers
   void ChangeCurScreen(cScreen * new_screen);
-  void PrintMerit(int in_y, int in_x, cMerit in_merit);
+  void PrintMerit(int in_y, int in_x, double in_merit);
   void PrintFitness(int in_y, int in_x, double in_fitness);
 
   // Map navigation

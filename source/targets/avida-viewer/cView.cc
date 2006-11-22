@@ -339,17 +339,17 @@ void cView::ChangeCurScreen(cScreen* new_screen)
   }
 }
 
-void cView::PrintMerit(int in_y, int in_x, cMerit in_merit)
+void cView::PrintMerit(int in_y, int in_x, double in_merit)
 {
   // if we can print the merit normally, do so.
-  //if (in_merit.GetDouble() < 1000000) {
-    //if (cur_screen) cur_screen->Print(in_y, in_x, "%7d", in_merit.GetUInt());
-  //}
+  if (in_merit < 1000000.0) {
+    if (cur_screen) cur_screen->Print(in_y, in_x, "%d", ((int) in_merit));
+  }
 
   // otherwise use scientific notation. (or somesuch)
-  //else {
-    if (cur_screen) cur_screen->Print(in_y, in_x, "%7.1e", in_merit.GetDouble());
-  //}
+  else {
+    if (cur_screen) cur_screen->Print(in_y, in_x, "%7.1e", in_merit);
+  }
 }
 
 void cView::PrintFitness(int in_y, int in_x, double in_fitness)

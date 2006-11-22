@@ -19,7 +19,6 @@ int cBarScreen::AddMenuOption(const cString option, int max_x, int cur_x)
 
   PrintOption(1, cur_x, option);
 
-  if (option.GetSize() < 6)  return cur_x+option.GetSize()+2;
   return cur_x+option.GetSize()+1;
 }
 
@@ -41,15 +40,15 @@ void cBarScreen::Draw()
   int cur_x = 21;
 
   // Include options in their general order of importance.
-  cur_x = AddMenuOption("[M]ap", max_x, cur_x);
+  cur_x = AddMenuOption("[M]ap ", max_x, cur_x);
   cur_x = AddMenuOption("[S]tats", max_x, cur_x);
   cur_x = AddMenuOption("[A]nalyze", max_x, cur_x);
   cur_x = AddMenuOption("[Z]oom", max_x, cur_x);
   cur_x = AddMenuOption("[O]ptions", max_x, cur_x);
   cur_x = AddMenuOption("[H]ist", max_x, cur_x);
-  cur_x = AddMenuOption("[E]nv", max_x, cur_x);
-  cur_x = AddMenuOption("[B]lank", max_x, cur_x);
+  cur_x = AddMenuOption("[E]nv ", max_x, cur_x);
   cur_x = AddMenuOption("[P]ause", max_x, cur_x);
+  cur_x = AddMenuOption("[B]lank", max_x, cur_x);
   cur_x = AddMenuOption("[C]hoose CPU", max_x, cur_x);
 
   // Always place Quit as the last option.
