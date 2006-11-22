@@ -42,7 +42,7 @@ void cBarScreen::Draw()
   // Include options in their general order of importance.
   cur_x = AddMenuOption("[M]ap ", max_x, cur_x);
   cur_x = AddMenuOption("[S]tats", max_x, cur_x);
-  cur_x = AddMenuOption("[A]nalyze", max_x, cur_x);
+  // cur_x = AddMenuOption("[A]nalyze", max_x, cur_x);
   cur_x = AddMenuOption("[Z]oom", max_x, cur_x);
   cur_x = AddMenuOption("[O]ptions", max_x, cur_x);
   cur_x = AddMenuOption("[H]ist", max_x, cur_x);

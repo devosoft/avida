@@ -8,6 +8,10 @@
 #ifndef cMenuWindow_h
 #define cMenuWindow_h
 
+#ifndef tArray_h
+#include "tArray.h"
+#endif
+
 #ifndef cString_h
 #include "cString.h"
 #endif
@@ -19,15 +23,15 @@ class cMenuWindow {
 private:
   cTextWindow * window;
   cString title;
-  cString * option_list;
-  char * key_list;
+  tArray<cString> option_array;
+  cString key_array;
   int num_options;
 
   // menu status variables
-  int active_id;
-  int max_width;
-  int lines;
-  int cols;
+  int active_id; // Currently active option.
+  int num_rows;  // Number of rows of options.
+  int num_cols;  // Number of columns of options.
+  int max_entry; // Maximum width of any entry.
 
   // Private helper functions
   void DrawOption(int option_id, bool is_active=false);
@@ -38,8 +42,8 @@ public:
   ~cMenuWindow();
 
   void SetTitle(const char * in_title) { title = in_title; }
-  void AddOption(int option_id, const char * in_option);
-  int Activate();
+  void AddOption(int option_id, const cString & in_option);
+  int Activate(cTextWindow * parent_window);
 
   inline void SetActive(int in_id) { active_id = in_id; }
 };

@@ -259,7 +259,7 @@ void cView::DoInputs()
 	  menu.AddOption(j, message);
 	}
 	menu.SetActive(3);
-	menu.Activate();
+	menu.Activate(base_window);
 	Redraw();
       }
       break;

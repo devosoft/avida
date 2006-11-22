@@ -11,10 +11,11 @@ using namespace std;
 
 
 cMenuWindow::cMenuWindow(int menu_size)
+  : option_array(menu_size)
+  , key_array(menu_size)
+
 {
   window = NULL;
-  option_list = new cString[menu_size];
-  key_list = new char[menu_size];
   num_options = menu_size;
   active_id = 0;
 }
@@ -22,59 +23,72 @@ cMenuWindow::cMenuWindow(int menu_size)
 cMenuWindow::~cMenuWindow()
 {
   if (window) delete window;
-  delete [] option_list;
-  delete [] key_list;
 }
 
-void cMenuWindow::AddOption(int option_id, const char * in_option)
+void cMenuWindow::AddOption(int option_id, const cString & in_option)
 {
-  option_list[option_id] = in_option;
+  assert(option_id >= 0 && option_id < option_array.GetSize());
+  option_array[option_id] = in_option;
   int hot_pos = FindHotkeyPos(in_option);
-  key_list[option_id] = (hot_pos == -1)  ?  -1 : in_option[hot_pos];
+  key_array[option_id] = (hot_pos == -1)  ?  -1 : in_option[hot_pos];
 }
 
-int cMenuWindow::Activate()
+int cMenuWindow::Activate(cTextWindow * parent_window)
 {
-  int i;
-
   // Calculate number of columns needed and the width of each
-
-  max_width = 0;
-  for (i = 0; i < num_options; i++) {
-    if (max_width < option_list[i].GetSize())
-      max_width = option_list[i].GetSize();
+  max_entry = 0;
+  for (int i = 0; i < num_options; i++) {
+    if (max_entry < option_array[i].GetSize())
+      max_entry = option_array[i].GetSize();
   }
 
-  // @CAO should make these more flexible.
-  int max_lines = title.IsEmpty() ? 20 : 18;
-  // int max_cols = 80 / (max_width + 3);
+  const int max_height = parent_window->Height() - 4;
+  const int max_width = parent_window->Width() - 4;
+  const int min_width = title.GetSize() + 2;
 
   // The minimum number of columns available is determined by the title.
-  int min_cols = (title.GetSize() + 2) / (max_width + 2) ;
+  const int max_rows = max_height - (title.IsEmpty() ? 0 : 2);
+  const int min_cols = min_width / (max_entry + 2);
+  const int max_cols = max_width / (max_entry + 2);
 
-  cols = num_options / max_lines + 1;
-  if (cols < min_cols) cols = min_cols;
-  lines = num_options / cols;
-  if (lines * cols < num_options) lines++;  // In case of roundoff error.
+  // The number of columns should be adjusted by the number of items, and then
+  // forced back into range.
+  num_cols = 1;
+  if (num_options > 80) num_cols = 5;
+  else if (num_options > 45) num_cols = 4;
+  else if (num_options > 20) num_cols = 3;
+  else if (num_options > 6) num_cols = 2;
+  
+  // Now force the number of columns back into range.
+  if (num_cols < min_cols) num_cols = min_cols;
+  if (num_cols > max_cols) num_cols = max_cols;
+
+  // Next, figure out how many rows we need for this to work.
+  num_rows = 1 + (num_options-1) / num_cols;
+
+  // @CAO We need to identify if we have a problem fitting everything!)
+  if (num_rows > max_rows) ;
 
   // Determine dimenstions for window
-  int win_height = lines + 4;
-  int win_width = (max_width + 2) * cols + 2;
+  int win_height = num_rows + 4;
+  int win_width = (max_entry + 2) * num_cols + 2;
 
   // Adjust the dimensions to make sure the title will fit.
   if (!title.IsEmpty()) win_height += 2;
   if (win_width < title.GetSize() + 4) win_width = title.GetSize() + 4;
 
   // Create and draw the window.
-  window = new cTextWindow(win_height, win_width,
-			   (23 - win_height) / 2, (80 - win_width) / 2);
+  const int win_x = (parent_window->Width() - win_width) / 2;
+  const int win_y = (parent_window->Height() - win_height) / 2;
+  window = new cTextWindow(win_height, win_width, win_y, win_x);
+
   window->Box();
   if (!title.IsEmpty()) {
     window->SetBoldColor(COLOR_WHITE);
-//    window->Print (2, 2, title());
+    window->Print(2, 2, title);
   }
 
-  for (i = 0; i < num_options; i++) {
+  for (int i = 0; i < num_options; i++) {
     DrawOption(i);
   }
   DrawOption(active_id, true);
@@ -89,8 +103,8 @@ int cMenuWindow::Activate()
 
     // First see if we have hit a hotkey for an option.
 
-    for (i = 0; i < num_options; i++) {
-      const char test_char = key_list[i];
+    for (int i = 0; i < num_options; i++) {
+      const char test_char = key_array[i];
       if (test_char != -1 &&
 	  (test_char == cur_char || test_char - 'A' + 'a' == cur_char)) {
 	active_id = i;
@@ -104,6 +118,7 @@ int cMenuWindow::Activate()
     switch (cur_char) {
     case 'q':
     case 'Q':
+    case 27: // ESCAPE
       // Abort!
       finished = true;
       active_id = -1;
@@ -121,10 +136,10 @@ int cMenuWindow::Activate()
       MoveActiveID(active_id + 1);
       break;
     case KEY_LEFT:
-      MoveActiveID(active_id - lines);
+      MoveActiveID(active_id - num_rows);
       break;
     case KEY_RIGHT:
-      MoveActiveID(active_id + lines);
+      MoveActiveID(active_id + num_rows);
       break;
     case KEY_HOME:
       MoveActiveID(0);
@@ -146,21 +161,21 @@ int cMenuWindow::Activate()
 
 void cMenuWindow::DrawOption(int option_id, bool is_active)
 {
-  if (is_active) window->SetBoldColor(COLOR_CYAN);
+  if (is_active) window->SetBoldColor(COLOR_YELLOW);
   else window->SetColor(COLOR_CYAN);
 
-  int line_id = option_id % lines;
-  int col_id  = option_id / lines;
-  int x_pos = col_id * (max_width + 2) + 2;
+  int line_id = option_id % num_rows;
+  int col_id  = option_id / num_rows;
+  int x_pos = col_id * (max_entry + 2) + 2;
   int y_pos = line_id + ((title.IsEmpty()) ? 2 : 4);
-  window->Print(y_pos, x_pos, static_cast<const char*>(option_list[option_id]));
+  window->Print(y_pos, x_pos, static_cast<const char*>(option_array[option_id]));
 
-  int hot_pos = FindHotkeyPos(option_list[option_id]);
+  int hot_pos = FindHotkeyPos(option_array[option_id]);
   if (hot_pos != -1) {
     window->SetBoldColor(COLOR_WHITE);
-    window->Print(y_pos, x_pos + hot_pos, option_list[option_id][hot_pos]);
+    window->Print(y_pos, x_pos + hot_pos, option_array[option_id][hot_pos]);
   }
-  window->Move(y_pos, x_pos + option_list[option_id].GetSize());
+  window->Move(y_pos, x_pos + option_array[option_id].GetSize());
 }
 
 void cMenuWindow::MoveActiveID(int new_id)

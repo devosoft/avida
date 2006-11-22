@@ -46,9 +46,9 @@ void cStatsScreen::Draw()
   Print(2, 50, "Fitness..:");
   Print(3, 50, "Merit....:");
   Print(4, 50, "Gestation:");
-  Print(5, 50, "Size.....:");
-  Print(6, 50, "Copy Size:");
-  Print(7, 50, "Exec Size:");
+  Print(5, 50, "Length...:");
+  Print(6, 50, "Copy Len.:");
+  Print(7, 50, "Exec Len.:");
   Print(8, 50, "Abundance:");
   Print(9, 50, "Births...:");
   Print(10, 50, "BirthRate:");

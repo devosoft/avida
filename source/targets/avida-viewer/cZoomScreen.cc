@@ -208,16 +208,16 @@ void cZoomScreen::DrawCPU_Original()
   Print(OPTIONS_Y, OPTIONS_X+4,    "Component Zoom");
   SetBoldColor(COLOR_WHITE);
   
-  PrintOption(OPTIONS_Y+6, OPTIONS_X+2, "[E]dit Component");
-  PrintOption(OPTIONS_Y+7, OPTIONS_X+2, "[V]iew Component");
-  if(info.GetConfig().MAX_CPU_THREADS.Get() >1)
-    PrintOption(OPTIONS_Y+8, OPTIONS_X+2, "Next [T]hread");
-  PrintOption(OPTIONS_Y+9, OPTIONS_X+2, "[TAB] Shift Active");
-  
   if (info.GetPauseLevel()) {
-    PrintOption(OPTIONS_Y+10, OPTIONS_X+2, "[Arrows] Scroll");
+    PrintOption(OPTIONS_Y+5, OPTIONS_X+2, "[Arrows] Scroll");
   } else {
-    Print(OPTIONS_Y+10, OPTIONS_X+2, "               ");
+    Print(OPTIONS_Y+5, OPTIONS_X+2, "               ");
+  }
+  PrintOption(OPTIONS_Y+6, OPTIONS_X+2, "[Enter] View/Edit");
+  PrintOption(OPTIONS_Y+7, OPTIONS_X+2, "[TAB] Shift Active");
+  
+  if(info.GetConfig().MAX_CPU_THREADS.Get() >1) {
+    PrintOption(OPTIONS_Y+8, OPTIONS_X+2, "Next [T]hread");
   }
   
   
@@ -1018,7 +1018,7 @@ void cZoomScreen::EditMemory()
   menu1.AddOption(INST_EDIT_INSERT,     "[I]nsert Instruction");
   menu1.AddOption(INST_EDIT_REMOVE,     "[D]elete Instruction");
   menu1.SetActive(INST_EDIT_CHANGE);
-  int edit_method = menu1.Activate();
+  int edit_method = menu1.Activate(this);
   cView::Redraw();
   
   // If we need to choose a new instruction, bring up a window for it.
@@ -1031,7 +1031,7 @@ void cZoomScreen::EditMemory()
       inst_menu.AddOption(j, static_cast<const char*>(inst_set.GetName(j)));
     }
     inst_menu.SetActive(edit_head.GetInst().GetOp());
-    new_inst = inst_menu.Activate();
+    new_inst = inst_menu.Activate(this);
     
     cView::Redraw();
     if (new_inst == -1) {
@@ -1069,21 +1069,6 @@ void cZoomScreen::EditMemory()
   Update();
 }
 
-void cZoomScreen::ViewMemory()
-{
-  // Collect all of the needed variables.
-  cHardwareBase& hardware = info.GetActiveCell()->GetOrganism()->GetHardware();
-  cHeadCPU view_head(hardware.IP());
-  if (parasite_zoom == true) view_head.Set(0);
-  view_head.LoopJump(memory_offset);
-  
-  // Act on the view method!
-  if (inst_view_mode == true) inst_view_mode = false;
-  else inst_view_mode = true;
-  
-  Update();
-}
-
 void cZoomScreen::ThreadOptions()
 {
   int thread_method = THREAD_OPTIONS_VIEW;
@@ -1094,7 +1079,7 @@ void cZoomScreen::ThreadOptions()
   menu1.AddOption(THREAD_OPTIONS_VIEW, "[V]iew Thread Info");
   menu1.AddOption(THREAD_OPTIONS_LOCK, "[T]oggle Thread Lock");
   menu1.SetActive(THREAD_OPTIONS_VIEW);
-  thread_method = menu1.Activate();
+  thread_method = menu1.Activate(this);
   cView::Redraw();
   
   // Act on the view method!
@@ -1593,10 +1578,25 @@ bool cZoomScreen::DoInputCPU(int in_char)
       break;
     case '\n':
     case '\r':
-      if (active_section == ZOOM_SECTION_MAP) {
+      switch (active_section) {
+      case ZOOM_SECTION_MEMORY:
+	EditMemory();
+	break;
+      case ZOOM_SECTION_MAP:
         memory_offset = 0;
         info.SetActiveCell(&(population.GetCell(mini_center_id)));
+	break;
+      case ZOOM_SECTION_REGISTERS:
+	ViewRegisters();
+	break;
+      case ZOOM_SECTION_STACK:
+	ViewStack();
+	break;
+      case ZOOM_SECTION_INPUTS:
+	ViewInputs();
+	break;
       }
+      
       Update();
       break;
     case '\t':
@@ -1608,32 +1608,7 @@ bool cZoomScreen::DoInputCPU(int in_char)
       Refresh();
       break;
       
-    case 'e':
-    case 'E':
-      if( active_section == ZOOM_SECTION_MEMORY) {
-        EditMemory();
-      }
-      break;
-      
-    case 'v':
-    case 'V':
-      switch (active_section) {
-        case ZOOM_SECTION_MEMORY:
-          ViewMemory();
-          break;
-        case ZOOM_SECTION_REGISTERS:
-          ViewRegisters();
-          break;
-        case ZOOM_SECTION_STACK:
-          ViewStack();
-          break;
-        case ZOOM_SECTION_INPUTS:
-          ViewInputs();
-          break;
-      }
-      break;
-      
-      
+        
     default:
       return false;
   };

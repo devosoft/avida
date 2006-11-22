@@ -124,11 +124,11 @@ void cOptionsScreen::Draw()
 
   Print(5, 55, "%d", info.GetConfig().AVE_TIME_SLICE.Get());
 
-  Print(7, 52, "%.3f", info.GetConfig().POINT_MUT_PROB.Get());
-  Print(8, 52, "%.3f", info.GetConfig().COPY_MUT_PROB.Get());
-  Print(9, 52, "%.3f", info.GetConfig().DIVIDE_MUT_PROB.Get());
-  Print(10, 52, "%.3f", info.GetConfig().DIVIDE_INS_PROB.Get());
-  Print(11, 52, "%.3f", info.GetConfig().DIVIDE_DEL_PROB.Get());
+  PrintDouble(7, 52, info.GetConfig().POINT_MUT_PROB.Get());
+  PrintDouble(8, 52, info.GetConfig().COPY_MUT_PROB.Get());
+  PrintDouble(9, 52, info.GetConfig().DIVIDE_MUT_PROB.Get());
+  PrintDouble(10, 52, info.GetConfig().DIVIDE_INS_PROB.Get());
+  PrintDouble(11, 52, info.GetConfig().DIVIDE_DEL_PROB.Get());
 
   SetColor(COLOR_WHITE);
 
