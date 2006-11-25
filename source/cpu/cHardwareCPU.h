@@ -392,7 +392,9 @@ private:
   bool Inst_Buy(cAvidaContext& ctx);
   bool Inst_Send(cAvidaContext& ctx);
   bool Inst_Receive(cAvidaContext& ctx);
-  bool Inst_Sense(cAvidaContext& ctx);
+  bool Inst_SenseLog2(cAvidaContext& ctx);
+  bool Inst_SenseMult100(cAvidaContext& ctx);
+  bool DoSense(cAvidaContext& ctx, int conversion_method, double base);
 
   void DoDonate(cOrganism * to_org);
   bool Inst_DonateRandom(cAvidaContext& ctx);

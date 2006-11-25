@@ -269,7 +269,7 @@ public:
   void DecCurInstCount(int _inst_num)  { assert(initialized == true); cur_inst_count[_inst_num]--; } 
 
   void IncAge()      { assert(initialized == true); age++; }
-  void IncTimeUsed() { assert(initialized == true); time_used++; }
+  void IncTimeUsed(int i=1) { assert(initialized == true); time_used+=i; }
   void IncErrors()   { assert(initialized == true); cur_num_errors++; }
   void IncDonates()   { assert(initialized == true); cur_num_donates++; }
   void IncSenseCount(const int i) { assert(initialized == true); cur_sense_count[i]++; }  

@@ -76,7 +76,8 @@ void cHardwareManager::LoadInstSet(cString filename)
     int cost = cur_line.PopWord().AsInt();
     int ft_cost = cur_line.PopWord().AsInt();
     double prob_fail = cur_line.PopWord().AsDouble();
-    
+    int addl_time_cost = cur_line.PopWord().AsInt();
+
     // If this instruction has 0 redundancy, we don't want it!
     if (redundancy < 0) continue;
     if (redundancy > 256) {
@@ -90,14 +91,14 @@ void cHardwareManager::LoadInstSet(cString filename)
     // First, determine if it is a nop...
     int nop_mod = -1;
     if(nop_dict.Find(inst_name, nop_mod) == true) {
-      m_inst_set.AddNop(nop_mod, redundancy, ft_cost, cost, prob_fail);
+      m_inst_set.AddNop(nop_mod, redundancy, ft_cost, cost, prob_fail, addl_time_cost);
       continue;
     }
     
     // Otherwise, it had better be in the main dictionary...
     int fun_id = -1;
     if(inst_dict.Find(inst_name, fun_id) == true){
-      m_inst_set.AddInst(fun_id, redundancy, ft_cost, cost, prob_fail);
+      m_inst_set.AddInst(fun_id, redundancy, ft_cost, cost, prob_fail, addl_time_cost);
       continue;
     }
     

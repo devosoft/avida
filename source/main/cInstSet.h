@@ -51,6 +51,7 @@ public:
     int cost;                 // additional time spent to exectute inst.
     int ft_cost;              // time spent first time exec (in add to cost)
     double prob_fail;         // probability of failing to execute inst
+    int addl_time_cost;       // additional time added to age for executing instruction
   };
   tArray<cInstEntry> m_lib_name_map;
   tArray<int> m_lib_nopmod_map;
@@ -78,6 +79,7 @@ public:
   const cString& GetName(const cInstruction& inst) const { return GetName(inst.GetOp()); }
   int GetCost(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].cost; }
   int GetFTCost(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].ft_cost; }
+  int GetAddlTimeCost(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].addl_time_cost; }
   double GetProbFail(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].prob_fail; }
   int GetRedundancy(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].redundancy; }
   int GetLibFunctionIndex(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].lib_fun_id; }
@@ -98,8 +100,8 @@ public:
   int IsNop(const cInstruction& inst) const { return (inst.GetOp() < m_lib_nopmod_map.GetSize()); }
 
   // Insertion of new instructions...
-  int AddInst(int lib_fun_id, int redundancy = 1, int ft_cost = 0, int cost = 0, double prob_fail = 0.0);
-  int AddNop(int lib_nopmod_id, int redundancy = 1, int ft_cost = 0, int cost = 0, double prob_fail = 0.0);
+  int AddInst(int lib_fun_id, int redundancy = 1, int ft_cost = 0, int cost = 0, double prob_fail = 0.0, int addl_time_cost = 0);
+  int AddNop(int lib_nopmod_id, int redundancy = 1, int ft_cost = 0, int cost = 0, double prob_fail = 0.0, int addl_time_cost = 0);
 
   // accessors for instruction library
   cInstLibBase* GetInstLib() { return m_inst_lib; }

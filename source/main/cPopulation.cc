@@ -44,6 +44,7 @@
 
 #include <float.h>
 #include <math.h>
+#include <limits.h>
 
 using namespace std;
 
@@ -1285,6 +1286,27 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
     if (out_cell_id == cell_array.GetSize()) out_cell_id = 0;
     return GetCell(out_cell_id);
   }
+    else if (birth_method == POSITION_CHILD_FULL_SOUP_TIME_USED) {
+    tList<cPopulationCell> found_list;
+    int max_time_used = 0;
+    for  (int i=0; i < cell_array.GetSize(); i++)
+    {
+      int time_used = cell_array[i].IsOccupied() ? cell_array[i].GetOrganism()->GetPhenotype().GetTimeUsed() : INT_MAX;
+      if (time_used == max_time_used)
+      {
+        found_list.Push(&cell_array[i]);
+      }
+      else if (time_used > max_time_used)
+      {
+        max_time_used = time_used;
+        found_list.Clear();
+        found_list.Push(&cell_array[i]);
+      }
+    }
+    int choice = m_world->GetRandom().GetUInt(found_list.GetSize());
+    return *( found_list.GetPos(choice) );
+  }
+  
 
   // All remaining methods require us to choose among mulitple local positions.
 

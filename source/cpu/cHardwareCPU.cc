@@ -224,7 +224,8 @@ cInstLibCPU *cHardwareCPU::initInstLib(void)
     cInstEntryCPU("buy", &cHardwareCPU::Inst_Buy),
     cInstEntryCPU("send",      &cHardwareCPU::Inst_Send),
     cInstEntryCPU("receive",   &cHardwareCPU::Inst_Receive),
-    cInstEntryCPU("sense",     &cHardwareCPU::Inst_Sense),
+    cInstEntryCPU("sense",     &cHardwareCPU::Inst_SenseLog2),
+    cInstEntryCPU("sense-m100",     &cHardwareCPU::Inst_SenseMult100),
     
     cInstEntryCPU("donate-rnd",  &cHardwareCPU::Inst_DonateRandom),
     cInstEntryCPU("donate-kin",  &cHardwareCPU::Inst_DonateKin),
@@ -435,7 +436,7 @@ void cHardwareCPU::Reset()
     inst_cost[i] = m_inst_set->GetCost(cInstruction(i));
     inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
   }
-#endif
+#endif 
   
 }
 
@@ -505,9 +506,13 @@ num_threads : 1;
     if (exec == true) {
       SingleProcess_ExecuteInst(ctx, cur_inst);
       
-      // Some instruction (such as jump) may turn m_advance_ip off.  Ususally
+      // Some instruction (such as jump) may turn m_advance_ip off.  Usually
       // we now want to move to the next instruction in the memory.
       if (m_advance_ip == true) IP().Advance();
+      
+      // Pay the additional death_cost of the instruction now
+      phenotype.IncTimeUsed(m_inst_set->GetAddlTimeCost(cur_inst));
+      
     } // if exec
     
   } // Previous was executed once for each thread...
@@ -2476,6 +2481,10 @@ bool cHardwareCPU::Inst_MaxAlloc(cAvidaContext& ctx)   // Allocate maximal more
 
 bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
 {
+  // const bool viable = Divide_CheckViable(ctx, div_point, child_size);
+  // these checks should be done, but currently they make some assumptions
+  // that crash when evaluating this kind of organism -- JEB
+
   // Setup child
   cCPUMemory& child_genome = organism->ChildGenome();
   child_genome = GetMemory();
@@ -2521,6 +2530,9 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   
   organism->ActivateDivide(ctx);
   
+  //Reset the parent
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
+
   return true;
 }
 
@@ -2714,7 +2726,10 @@ bool cHardwareCPU::Inst_TaskPutBonusCost2(cAvidaContext& ctx)
   const int value = GetRegister(reg_used);
   GetRegister(reg_used) = 0;
   organism->DoOutput(ctx, value);
-  organism->GetPhenotype().SetCurBonus(organism->GetPhenotype().GetCurBonus() * 0.5);
+  double new_bonus = organism->GetPhenotype().GetCurBonus();
+  new_bonus *= 0.5;
+//if (new_bonus < 1) new_bonus = 1;
+  organism->GetPhenotype().SetCurBonus(new_bonus);
   return true;
 }
 
@@ -2838,11 +2853,20 @@ bool cHardwareCPU::Inst_Receive(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareCPU::Inst_Sense(cAvidaContext& ctx)
+bool cHardwareCPU::Inst_SenseLog2(cAvidaContext& ctx)
+{
+  return DoSense(ctx, 0, 2);
+}
+
+bool cHardwareCPU::Inst_SenseMult100(cAvidaContext& ctx)
+{
+  return DoSense(ctx, 1, 100);
+}
+
+bool cHardwareCPU::DoSense(cAvidaContext& ctx, int conversion_method, double base)
 {
   // Returns the log2 amount of a resource or resources 
   // specified by modifying NOPs into register BX
-
   const tArray<double> & res_count = organism->GetOrgInterface().GetResources();
 
   // Arbitrarily set to BX since the conditionals use this directly.
@@ -2858,7 +2882,7 @@ bool cHardwareCPU::Inst_Sense(cAvidaContext& ctx)
   
   if ((last_num_resources != res_count.GetSize()))
   {
-      max_label_length = (int)ceil(log((double)res_count.GetSize())/log((double)num_nops));
+      max_label_length = (int) ceil(log((double)res_count.GetSize())/log((double)num_nops));
       last_num_resources = res_count.GetSize();
   }
 
@@ -2902,11 +2926,22 @@ bool cHardwareCPU::Inst_Sense(cAvidaContext& ctx)
   int resource_result = 0;
   for (int i = start_index; i <= end_index; i++)
   {
-    // if it's a valid resource and not zero
-    // (alternately you could assign min_int for zero resources, but
-    // that would cause wierdness when adding sense values together)
-    if ((i < res_count.GetSize()) && (res_count[i] > 0)) resource_result += (int)(log(res_count[i])/0.69314718056);
-    // 0.69314718056 is log (2)
+    // if it's a valid resource
+    if (i < res_count.GetSize())
+    {
+      if (conversion_method == 0) // Log2
+      {
+        // (alternately you could assign min_int for zero resources, but
+        // that would cause wierdness when adding sense values together)
+        if (res_count[i] > 0) resource_result += (int)(log(res_count[i])/log(base));
+      }
+      else if (conversion_method == 1) // Addition of multiplied resource amount
+      {
+        int add_amount = (int) (res_count[i] * base);
+        // Do some range checking to make sure we don't overflow
+        resource_result = (INT_MAX - resource_result <= add_amount) ? INT_MAX : resource_result + add_amount;
+      }
+    } 
   }
     
   //Dump this value into an arbitrary register: BX
