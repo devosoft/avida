@@ -67,6 +67,7 @@ private:
   bool LoadReactionProcess(cReaction * reaction, cString desc);
   bool LoadReactionRequisite(cReaction * reaction, cString desc);
   bool LoadResource(cString desc);
+  bool LoadCell(cString desc);
   bool LoadReaction(cString desc);
   bool LoadMutation(cString desc);
 

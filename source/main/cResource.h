@@ -14,6 +14,27 @@
 #ifndef cString_h
 #include "cString.h"
 #endif
+#ifndef tArray_h
+#include "tArray.h"
+#endif
+
+
+/* class to hold resource informations for individual cells (mini-chemostats) */
+
+class cCellResource
+{
+private:
+  int cell_id;
+  double initial;
+  double inflow;
+  double outflow;
+
+public:
+  cCellResource();
+  cCellResource(int _cell_id, double _initial, double _inflow, double _outflow);
+};
+
+/* class to hold all infromation for a single resource */
 
 class cResource
 {
@@ -36,6 +57,7 @@ private:
   double xgravity;
   double ydiffuse;
   double ygravity;
+  tArray<cCellResource> cell_list;
  
   
   cResource(); // @not_implemented
@@ -80,6 +102,7 @@ public:
   void SetXGravity(double _xgravity) { xgravity = _xgravity; }
   void SetYDiffuse(double _ydiffuse) { ydiffuse = _ydiffuse; }
   void SetYGravity(double _ygravity) { ygravity = _ygravity; }
+  void AddCellResource(cCellResource new_cell) { cell_list.Push(new_cell); }
 };
 
 

@@ -15,6 +15,10 @@
 #include "cString.h"
 #endif
 
+#ifndef tArray_h
+#include "tArray.h"
+#endif
+
 class cStringUtil
 {
 private:
@@ -59,6 +63,10 @@ public:
   static cString Convert(bool in_bool);
   static cString Convert(int in_int);
   static cString Convert(double in_double);
+
+  /* Return an array of integers from a string with format x,y..z,a */
+
+  static tArray<int> ReturnArray(cString& in_string);
 };
 
 

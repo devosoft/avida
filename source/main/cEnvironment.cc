@@ -26,6 +26,11 @@
 #include "cTools.h"
 #include "cWorld.h"
 #include <iostream>
+
+#ifndef tArray_h
+#include "tArray.h"
+#endif
+
 using namespace std;
 
 
@@ -261,7 +266,17 @@ bool cEnvironment::LoadResource(cString desc)
   while (desc.GetSize() > 0) {
     cString cur_resource = desc.PopWord();
     const cString name = cur_resource.Pop(':');
-    cResource* new_resource = resource_lib.AddResource(name);
+
+    /* If resource does not already exist create it, however if it already
+       exists (for instance was created as a cell resource) pull it out of
+       the library and modify the existing values */
+
+    cResource* new_resource;
+    if (! resource_lib.DoesResourceExist(name)) {
+      new_resource = resource_lib.AddResource(name);
+    } else {
+      new_resource = resource_lib.GetResource(name);
+    }
     
     while (cur_resource.GetSize() != 0) {
       cString var_entry = cur_resource.Pop(':');
@@ -350,7 +365,7 @@ bool cEnvironment::LoadResource(cString desc)
     
     // If there are valid values for X/Y1's but not for X/Y2's assume that 
     // the user is interested only in one point and set the X/Y2's to the
-    // same value as 
+    // same value as X/Y1's
     
     if (new_resource->GetInflowX1()>-99 && new_resource->GetInflowX2()==-99){
       new_resource->SetInflowX2(new_resource->GetInflowX1());
@@ -364,6 +379,92 @@ bool cEnvironment::LoadResource(cString desc)
     if (new_resource->GetOutflowY1()>-99 && new_resource->GetOutflowY2()==-99) {
       new_resource->SetOutflowY2(new_resource->GetOutflowY1());
     }
+  }
+  
+  return true;
+}
+
+bool cEnvironment::LoadCell(cString desc)
+
+/* Routine to read in spatial resources loaded in one cell at a time */
+
+{
+  if (desc.GetSize() == 0) {
+    cerr << "Warning: Resource line with no resources listed." << endl;
+    return false;
+  }
+  
+  cResource* this_resource;
+  while (desc.GetSize() > 0) {
+    cString cur_resource = desc.PopWord();
+    const cString name = cur_resource.Pop(':');
+
+    /* if this resource has not been already created go ahead and create it and
+       set some default global values */
+
+    if (! resource_lib.DoesResourceExist(name)) {
+      this_resource = resource_lib.AddResource(name);
+      this_resource->SetInitial(0.0);
+      this_resource->SetInflow(0.0);
+      this_resource->SetOutflow(0.0);
+      this_resource->SetGeometry("GRID");
+      this_resource->SetInflowX1(-99);
+      this_resource->SetInflowX2(-99);
+      this_resource->SetInflowY1(-99);
+      this_resource->SetInflowY2(-99);
+      this_resource->SetOutflowX1(-99);
+      this_resource->SetOutflowX2(-99);
+      this_resource->SetOutflowY1(-99);
+      this_resource->SetOutflowY2(-99);
+      this_resource->SetXDiffuse(0.0);
+      this_resource->SetXGravity(0.0);
+      this_resource->SetYDiffuse(0.0);
+      this_resource->SetYGravity(0.0);
+    } else {
+      this_resource = resource_lib.GetResource(name);
+    }
+    cString cell_list_str = cur_resource.Pop(':'); 
+    tArray<int> cell_list = cStringUtil::ReturnArray(cell_list_str);
+    double tmp_initial = 0.0;
+    double tmp_inflow = 0.0;
+    double tmp_outflow = 0.0;
+    while (cur_resource.GetSize() != 0) {
+      cString var_entry = cur_resource.Pop(':');
+      cString var_name;
+      cString var_value;
+      const cString var_type = 
+        cStringUtil::Stringf("resource '%s'", static_cast<const char*>(name));
+      
+      // Parse this entry.
+      if (!ParseSetting(var_entry, var_name, var_value, var_type)) {
+        return false;
+      }
+      
+      if (var_name == "inflow") {
+        if (!AssertInputDouble(var_value, "inflow", var_type)) return false;
+        tmp_inflow = var_value.AsDouble();
+      }
+      else if (var_name == "outflow") {
+        if (!AssertInputDouble(var_value, "outflow", var_type)) return false;
+        tmp_outflow = var_value.AsDouble();
+      }
+      else if (var_name == "initial") {
+        if (!AssertInputDouble(var_value, "initial", var_type)) return false;
+        tmp_initial = var_value.AsDouble();
+      }
+      else {
+        cerr << "Error: Unknown variable '" << var_name
+        << "' in resource '" << name << "'" << endl;
+        return false;
+      }
+    }
+    for (int i=0; i < cell_list.GetSize(); i++) {
+      cCellResource tmp_cell_resource(cell_list[i],tmp_initial,
+                                      tmp_inflow, tmp_outflow);
+      this_resource->AddCellResource(tmp_cell_resource);
+      cout << "cell_list[" << i << "] = " << cell_list[i] << endl;
+    }
+    
   }
   
   return true;
@@ -562,6 +663,9 @@ bool cEnvironment::LoadSetActive(cString desc)
 }
 
 bool cEnvironment::LoadLine(cString line) 
+
+/* Routine to read in a line from the enviroment file and hand that line
+   line to the approprate routine to process it.                         */ 
 {
   cString type = line.PopWord();      // Determine type of this entry.
   type.ToUpper();                     // Make type case insensitive.
@@ -571,6 +675,7 @@ bool cEnvironment::LoadLine(cString line)
   else if (type == "REACTION") load_ok = LoadReaction(line);
   else if (type == "MUTATION") load_ok = LoadMutation(line);
   else if (type == "SET_ACTIVE") load_ok = LoadSetActive(line);
+  else if (type == "CELL") load_ok = LoadCell(line);
   else {
     cerr << "Error: Unknown environment keyword '" << type << "." << endl;
     return false;

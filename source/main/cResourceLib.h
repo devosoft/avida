@@ -35,6 +35,7 @@ public:
   cResource* AddResource(const cString& res_name);
   cResource* GetResource(const cString& res_name) const;
   cResource* GetResource(int id) const;
+  bool DoesResourceExist(const cString & res_name);
 };
 
 

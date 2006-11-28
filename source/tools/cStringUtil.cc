@@ -308,3 +308,28 @@ cString cStringUtil::Convert(double in_double)
 {
   return Stringf("%f", in_double);
 }
+
+/* Return an array of integers from a string with format x,y..z,a */
+
+tArray<int> cStringUtil::ReturnArray(cString& in_string)
+{
+  tArray<int> out_list;
+  while (in_string.GetSize() != 0) {
+    cString chunk = in_string.Pop(',');
+
+    /* if the string has a .. in it find the two numbers on either side of it */
+
+    if (chunk.IsSubstring(".",1)) {
+      cString start_str = chunk.Pop('.');
+      chunk.RemoveChar('.');
+      cString stop_str = chunk.PopWord();
+      int start_int = start_str.AsInt();
+      int stop_int = stop_str.AsInt();
+      for (int i = start_int; i <= stop_int; i++) out_list.Push(i);
+    } else {
+      out_list.Push(chunk.AsInt());
+    }
+  }
+  return(out_list);
+}
+

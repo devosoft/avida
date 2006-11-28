@@ -44,3 +44,15 @@ cResource * cResourceLib::GetResource(int id) const
 {
   return resource_array[id];
 }
+
+bool cResourceLib::DoesResourceExist(const cString & res_name) 
+
+/* Return boolean for if the named resource exists in the resource library */
+
+{
+  for (int i = 0; i < resource_array.GetSize(); i++) {
+    if (resource_array[i]->GetName() == res_name) return true;
+  }
+  return false;
+}
+

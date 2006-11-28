@@ -14,7 +14,23 @@
 
 using namespace std;
 
+cCellResource::cCellResource()
+  : cell_id(-99)
+  , initial(0.0)
+  , inflow(0.0)
+  , outflow(0.0)
+{
+}
 
+cCellResource::cCellResource(int _cell_id, double _initial, double _inflow, 
+                             double _outflow)
+  : cell_id(_cell_id)
+  , initial(_initial)
+  , inflow(_inflow)
+  , outflow(_outflow)
+{
+}
+  
 cResource::cResource(const cString & _name, int _id)
   : name(_name)
   , id(_id)

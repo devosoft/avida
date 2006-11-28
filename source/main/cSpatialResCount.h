@@ -18,6 +18,10 @@
 #include "tArray.h"
 #endif
 
+#ifndef cResource_h
+#include "cResource.h"
+#endif
+
 class cSpatialResCount
 {
 private:
@@ -31,7 +35,8 @@ private:
 public:
   cSpatialResCount();
   cSpatialResCount(int inworld_x, int inworld_y, int ingeometry);
-  cSpatialResCount(int inworld_x, int inworld_y, int ingeometry, double inxdiffuse, double inydiffuse,
+  cSpatialResCount(int inworld_x, int inworld_y, int ingeometry, 
+                   double inxdiffuse, double inydiffuse,
                    double inxgravity, double inygravity);
   
   void ResizeClear(int inworld_x, int inworld_y, int ingeometry);
@@ -52,7 +57,9 @@ public:
   void FlowAll();
   const double SumAll() const;
   void Source(double amount) const;
+  // void Source(tArray<cCellReource> cell_list) const;
   void Sink(double percent) const;
+  // void Sink(tArray<cCellReource> cell_list) const;
   void SetGeometry(int in_geometry) { geometry = in_geometry; }
   void SetXdiffuse(double in_xdiffuse) { xdiffuse = in_xdiffuse; }
   void SetXgravity(double in_xgravity) { xgravity = in_xgravity; }
