@@ -84,7 +84,7 @@ public:
   double DoMetaCopyMut(cAvidaContext& ctx) {
     if (ctx.GetRandom().P(meta.copy_mut_prob) == false) return 1.0;
     const double exp = ctx.GetRandom().GetRandNormal() * meta.standard_dev;
-    const double change = pow(2, exp);
+    const double change = pow(2.0, exp);
     copy.mut_prob *= change;
     return change;
   }
