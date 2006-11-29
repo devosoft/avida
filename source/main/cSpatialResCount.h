@@ -31,6 +31,7 @@ private:
   int    outflowX1, outflowX2, outflowY1, outflowY2;
   int    geometry;
   int    world_x, world_y, num_cells;
+  tArray<cCellResource> cell_list;
   
 public:
   cSpatialResCount();
@@ -42,24 +43,30 @@ public:
   void ResizeClear(int inworld_x, int inworld_y, int ingeometry);
   void SetPointers();
   void CheckRanges();
+  void SetCellList(tArray<cCellResource> in_cell_list);
   int GetSize() { return grid.GetSize(); }
   int GetX() { return world_x; }
   int GetY() { return world_y; }
+  int GetCellListSize() { return cell_list.GetSize(); }
   cSpatialCountElem Element(int x) { return grid[x]; }
   void Rate(int x, double ratein) const { grid[x].Rate(ratein); }
-  void Rate(int x, int y, double ratein) const { grid[y * world_x + x].Rate(ratein); }
+  void Rate(int x, int y, double ratein) const 
+     { grid[y * world_x + x].Rate(ratein); }
   void State(int x) { grid[x].State(); }
   void State(int x, int y) { grid[y*world_x + x].State(); }
   const double GetAmount(int x) const { return grid[x].GetAmount(); }
-  const double GetAmount(int x, int y) const { return grid[y*world_x + x].GetAmount(); }
+  const double GetAmount(int x, int y) const 
+     { return grid[y*world_x + x].GetAmount(); }
   void RateAll(double ratein);
   void StateAll();
   void FlowAll();
   const double SumAll() const;
   void Source(double amount) const;
-  // void Source(tArray<cCellReource> cell_list) const;
+  // void CellInflow(tArray<cCellResource> cell_list) const;
+  void CellInflow() const;
   void Sink(double percent) const;
-  // void Sink(tArray<cCellReource> cell_list) const;
+  // void CellOutflow(tArray<cCellResource> cell_list) const;
+  void CellOutflow() const;
   void SetGeometry(int in_geometry) { geometry = in_geometry; }
   void SetXdiffuse(double in_xdiffuse) { xdiffuse = in_xdiffuse; }
   void SetXgravity(double in_xgravity) { xgravity = in_xgravity; }

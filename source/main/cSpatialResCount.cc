@@ -13,6 +13,7 @@
 #include "functions.h"
 #include "nGeometry.h"
 
+using namespace std;
 
 /* Setup a single spatial resource with known flows */
 
@@ -196,6 +197,14 @@ void cSpatialResCount::CheckRanges() {
 
 }
 
+void cSpatialResCount::SetCellList(tArray<cCellResource> in_cell_list) {
+  cell_list = in_cell_list;
+  for (int i = 0; i < cell_list.GetSize(); i++) {
+    Rate(cell_list[i].GetId(), cell_list[i].GetInitial());
+    State(cell_list[i].GetId());
+  }
+}
+
 void cSpatialResCount::RateAll(double ratein) {
 
   int i;
@@ -253,6 +262,8 @@ const double cSpatialResCount::SumAll() const{
   return sum;
 }
 
+/* Take a given amount of resource and spread it among all the cells in the 
+   inflow rectange */
 
 void cSpatialResCount::Source(double amount) const {
   int     i, j, elem;
@@ -269,6 +280,16 @@ void cSpatialResCount::Source(double amount) const {
   }
 }
 
+/* Handle the inflow for a list of individual cells */
+
+void cSpatialResCount::CellInflow() const {
+  for (int i=0; i < cell_list.GetSize(); i++) {
+    Rate(cell_list[i].GetId(), cell_list[i].GetInflow());
+  }
+}
+
+/* Take away a give percentage of a resource from outflow rectangle */
+
 void cSpatialResCount::Sink(double decay) const {
 
   int     i, j, elem;
@@ -281,5 +302,18 @@ void cSpatialResCount::Sink(double decay) const {
       deltaamount = Max((GetAmount(elem) * (1.0 - decay)), 0.0);
       Rate(elem,-deltaamount); 
     }
+  }
+}
+
+/* Take away a give percentage of a resource from individual cells */
+
+void cSpatialResCount::CellOutflow() const {
+
+  double  deltaamount;
+
+  for (int i=0; i < cell_list.GetSize(); i++) {
+    deltaamount = Max((GetAmount(cell_list[i].GetId()) *
+                       cell_list[i].GetOutflow()), 0.0);
+    Rate(cell_list[i].GetId(), -deltaamount); 
   }
 }

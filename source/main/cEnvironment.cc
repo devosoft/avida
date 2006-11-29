@@ -462,7 +462,6 @@ bool cEnvironment::LoadCell(cString desc)
       cCellResource tmp_cell_resource(cell_list[i],tmp_initial,
                                       tmp_inflow, tmp_outflow);
       this_resource->AddCellResource(tmp_cell_resource);
-      cout << "cell_list[" << i << "] = " << cell_list[i] << endl;
     }
     
   }

@@ -153,7 +153,8 @@ cPopulation::cPopulation(cWorld* world)
                          res->GetInflowX2(), res->GetInflowY1(), 
                          res->GetInflowY2(), res->GetOutflowX1(), 
                          res->GetOutflowX2(), res->GetOutflowY1(), 
-                         res->GetOutflowY2(), world->GetVerbosity() );
+                         res->GetOutflowY2(), res->GetCellList(),
+                         world->GetVerbosity() );
     m_world->GetStats().SetResourceName(i, res->GetName());
   }
  

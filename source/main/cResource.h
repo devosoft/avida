@@ -32,6 +32,10 @@ private:
 public:
   cCellResource();
   cCellResource(int _cell_id, double _initial, double _inflow, double _outflow);
+  int GetId() const { return cell_id; }
+  double GetInitial() const { return initial; }
+  double GetInflow() const { return inflow; }
+  double GetOutflow() const { return outflow; }
 };
 
 /* class to hold all infromation for a single resource */
@@ -84,6 +88,7 @@ public:
   double GetXGravity() const { return xgravity; }
   double GetYDiffuse() const { return ydiffuse; }
   double GetYGravity() const { return ygravity; }
+  tArray<cCellResource> GetCellList() const { return cell_list; }
 
 
   void SetInitial(double _initial) { initial = _initial; }

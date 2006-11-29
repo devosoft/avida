@@ -150,7 +150,8 @@ void cResourceCount::Setup(int id, cString name, double initial, double inflow,
                            int in_inflowX2, int in_inflowY1, 
                            int in_inflowY2, int in_outflowX1, 
                            int in_outflowX2, int in_outflowY1, 
-                           int in_outflowY2, int verbosity_level)
+                           int in_outflowY2, tArray<cCellResource> in_cell_list,
+                           int verbosity_level)
 {
   assert(id >= 0 && id < resource_count.GetSize());
   assert(initial >= 0.0);
@@ -204,6 +205,7 @@ void cResourceCount::Setup(int id, cString name, double initial, double inflow,
   geometry[id] = in_geometry;
   spatial_resource_count[id].SetGeometry(in_geometry);
   spatial_resource_count[id].SetPointers();
+  spatial_resource_count[id].SetCellList(in_cell_list);
 
   double step_decay = pow(decay, UPDATE_STEP);
   double step_inflow = inflow * UPDATE_STEP;
@@ -316,7 +318,7 @@ void cResourceCount::ModifyCell(const tArray<double> & res_change, int cell_id)
          the end of the update so that all processes (inflow, outflow, 
          diffision, gravity and organism demand) have the same weight.  However
          waiting can cause problems with negative resources so we allow
-         the organism demand work immediately on the state of the resource */ 
+         the organism demand to work immediately on the state of the resource */ 
     
       spatial_resource_count[i].State(cell_id);
     }
@@ -374,6 +376,10 @@ void cResourceCount::DoUpdates() const
       if (geometry[i] != nGeometry::GLOBAL) {
         spatial_resource_count[i].Source(inflow_rate[i]);
         spatial_resource_count[i].Sink(decay_rate[i]);
+        if (spatial_resource_count[i].GetCellListSize() > 0) {
+          spatial_resource_count[i].CellInflow();
+          spatial_resource_count[i].CellOutflow();
+        }
         spatial_resource_count[i].FlowAll();
         spatial_resource_count[i].StateAll();
         resource_count[i] = spatial_resource_count[i].SumAll();
