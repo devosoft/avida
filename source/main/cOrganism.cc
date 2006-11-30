@@ -191,7 +191,10 @@ void cOrganism::DoOutput(cAvidaContext& ctx, const int value, const bool on_divi
   if (m_net) net_valid = NetValidate(ctx, value);
 
   // Do the testing of tasks performed...
-  output_buf.Add(value);
+
+  // if on IO add value to output_buf, if on divide don't need to
+  if (!on_divide)
+    output_buf.Add(value);
   tArray<double> res_change(resource_count.GetSize());
   tArray<int> insts_triggered;
 
@@ -500,8 +503,7 @@ bool cOrganism::ActivateDivide(cAvidaContext& ctx)
   assert(m_interface);
   // Test tasks one last time before actually dividing, pass true so 
   // know that should only test "divide" tasks here
-  // Sending last output just for lack of better idea at the moment
-  DoOutput(ctx, output_buf[0], true);
+  DoOutput(ctx, 0, true);
 
   // Activate the child!  (Keep Last: may kill this organism!)
   return m_interface->Divide(ctx, this, child_genome);

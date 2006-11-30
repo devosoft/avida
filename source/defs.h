@@ -94,7 +94,7 @@ const int MIN_INJECT_SIZE = 8;
 
 // Number of distinct input and outputs stored in the IOBufs (to test tasks)
 const int INPUT_BUF_SIZE = 3;
-const int OUTPUT_BUF_SIZE = 3;
+const int OUTPUT_BUF_SIZE = 10;
 const int SEND_BUF_SIZE = 3;
 const int RECEIVE_BUF_SIZE = 3;
 #define RECEIVED_MESSAGES_SIZE 10
