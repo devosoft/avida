@@ -197,11 +197,74 @@ void cSpatialResCount::CheckRanges() {
 
 }
 
-void cSpatialResCount::SetCellList(tArray<cCellResource> in_cell_list) {
-  cell_list = in_cell_list;
-  for (int i = 0; i < cell_list.GetSize(); i++) {
-    Rate(cell_list[i].GetId(), cell_list[i].GetInitial());
-    State(cell_list[i].GetId());
+/* Set all the individual cells to their initial values */
+
+void cSpatialResCount::SetCellList(tArray<cCellResource> *in_cell_list_ptr) {
+  cell_list_ptr = in_cell_list_ptr;
+  for (int i = 0; i < cell_list_ptr->GetSize(); i++) {
+    int cell_id = (*cell_list_ptr)[i].GetId();
+    
+    /* Be sure the user entered a valid cell id or if the the program is loading
+       the resource for the testCPU that does not have a grid set up */
+       
+    if (cell_id >= 0 && cell_id <= grid.GetSize()) {
+      Rate((*cell_list_ptr)[i].GetId(), (*cell_list_ptr)[i].GetInitial());
+      State((*cell_list_ptr)[i].GetId());
+    }
+  }
+}
+
+/* Set the rate variable for one element using the array index */
+
+void cSpatialResCount::Rate(int x, double ratein) const { 
+  if (x >= 0 && x < grid.GetSize()) {
+    grid[x].Rate(ratein);
+  }
+}
+
+/* Set the rate variable for one element using the x,y coordinate */
+
+void cSpatialResCount::Rate(int x, int y, double ratein) const { 
+  if (x >= 0 && x < world_x && y>= 0 && y < world_y) {
+    grid[y * world_x + x].Rate(ratein);
+  }
+}
+
+/* Fold the rate variable into the resource state for one element using 
+   the array index */
+   
+void cSpatialResCount::State(int x) { 
+  if (x >= 0 && x < grid.GetSize()) {
+    grid[x].State();
+  }
+}
+
+/* Fold the rate variable into the resource state for one element using 
+   the x,y coordinate */
+   
+void cSpatialResCount::State(int x, int y) { 
+  if (x >= 0 && x < world_x && y >= 0 && y < world_y) {
+    grid[y*world_x + x].State();
+  }
+}
+
+/* Get the state of one element using the array index */
+
+const double cSpatialResCount::GetAmount(int x) const { 
+  if (x >= 0 && x < grid.GetSize()) {
+    return grid[x].GetAmount(); 
+  } else {
+    return -99.9;
+  }
+}
+
+/* Get the state of one element using the the x,y coordinate */
+
+const double cSpatialResCount::GetAmount(int x, int y) const { 
+  if (x >= 0 && x < world_x && y >= 0 && y < world_y) {
+    return grid[y*world_x + x].GetAmount(); 
+  } else {
+    return -99.9;
   }
 }
 
@@ -283,8 +346,15 @@ void cSpatialResCount::Source(double amount) const {
 /* Handle the inflow for a list of individual cells */
 
 void cSpatialResCount::CellInflow() const {
-  for (int i=0; i < cell_list.GetSize(); i++) {
-    Rate(cell_list[i].GetId(), cell_list[i].GetInflow());
+  for (int i=0; i < cell_list_ptr->GetSize(); i++) {
+    const int cell_id = (*cell_list_ptr)[i].GetId();
+    
+    /* Be sure the user entered a valid cell id or if the the program is loading
+       the resource for the testCPU that does not have a grid set up */
+       
+    if (cell_id >= 0 && cell_id < grid.GetSize()) {
+      Rate(cell_id, (*cell_list_ptr)[i].GetInflow());
+    }
   }
 }
 
@@ -311,9 +381,16 @@ void cSpatialResCount::CellOutflow() const {
 
   double  deltaamount;
 
-  for (int i=0; i < cell_list.GetSize(); i++) {
-    deltaamount = Max((GetAmount(cell_list[i].GetId()) *
-                       cell_list[i].GetOutflow()), 0.0);
-    Rate(cell_list[i].GetId(), -deltaamount); 
+  for (int i=0; i < cell_list_ptr->GetSize(); i++) {
+    const int cell_id = (*cell_list_ptr)[i].GetId();
+    
+    /* Be sure the user entered a valid cell id or if the the program is loading
+       the resource for the testCPU that does not have a grid set up */
+       
+    if (cell_id >= 0 && cell_id < grid.GetSize()) {
+      deltaamount = Max((GetAmount(cell_id) *
+                         (*cell_list_ptr)[i].GetOutflow()), 0.0);
+    }                     
+    Rate((*cell_list_ptr)[i].GetId(), -deltaamount); 
   }
 }

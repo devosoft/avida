@@ -150,7 +150,7 @@ void cResourceCount::Setup(int id, cString name, double initial, double inflow,
                            int in_inflowX2, int in_inflowY1, 
                            int in_inflowY2, int in_outflowX1, 
                            int in_outflowX2, int in_outflowY1, 
-                           int in_outflowY2, tArray<cCellResource> in_cell_list,
+                           int in_outflowY2, tArray<cCellResource> *in_cell_list_ptr,
                            int verbosity_level)
 {
   assert(id >= 0 && id < resource_count.GetSize());
@@ -205,11 +205,11 @@ void cResourceCount::Setup(int id, cString name, double initial, double inflow,
   geometry[id] = in_geometry;
   spatial_resource_count[id].SetGeometry(in_geometry);
   spatial_resource_count[id].SetPointers();
-  spatial_resource_count[id].SetCellList(in_cell_list);
+  spatial_resource_count[id].SetCellList(in_cell_list_ptr);
 
   double step_decay = pow(decay, UPDATE_STEP);
   double step_inflow = inflow * UPDATE_STEP;
-
+  
   decay_precalc(id, 0) = 1.0;
   inflow_precalc(id, 0) = 0.0;
   for (int i = 1; i <= PRECALC_DISTANCE; i++) {

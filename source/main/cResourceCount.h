@@ -64,7 +64,7 @@ public:
              double in_ydiffuse, double in_ygravity,
              int in_inflowX1, int in_inflowX2, int in_inflowY1, int in_inflowY2,
              int in_outflowX1, int in_outflowX2, int in_outflowY1, 
-             int in_outflowY, tArray<cCellResource> in_cell_list,
+             int in_outflowY, tArray<cCellResource> *in_cell_list_ptr,
              int verbosity_level);
   void Update(double in_time);
 

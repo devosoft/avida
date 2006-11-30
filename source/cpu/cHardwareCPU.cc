@@ -498,19 +498,32 @@ num_threads : 1;
     
     // Find the instruction to be executed
     const cInstruction& cur_inst = IP().GetInst();
+    // cout << "cHardwareCPU: " <<  cur_inst.GetOp() << " " << cur_inst.GetSymbol() << endl;
+    if (cur_inst.GetOp() > 26) {
+      cout << "cHardwareCPU1: " << cur_inst.GetOp() << " " << cur_inst.GetSymbol() << endl;
+    }
     
     // Test if costs have been paid and it is okay to execute this now...
     const bool exec = SingleProcess_PayCosts(ctx, cur_inst);
-    
+    if (cur_inst.GetOp() > 26) {
+      cout << "cHardwareCPU2: " << cur_inst.GetOp() << " " << cur_inst.GetSymbol() << endl;
+    }
+
     // Now execute the instruction...
     if (exec == true) {
       SingleProcess_ExecuteInst(ctx, cur_inst);
+      if (cur_inst.GetOp() > 26) {
+        cout << "cHardwareCPU3: " << cur_inst.GetOp() << " " << cur_inst.GetSymbol() << endl;
+      }
       
       // Some instruction (such as jump) may turn m_advance_ip off.  Usually
       // we now want to move to the next instruction in the memory.
       if (m_advance_ip == true) IP().Advance();
       
       // Pay the additional death_cost of the instruction now
+      if (cur_inst.GetOp() > 26) {
+        cout << "cHardwareCPU4: " << cur_inst.GetOp() << " " << cur_inst.GetSymbol() << endl;
+      }
       phenotype.IncTimeUsed(m_inst_set->GetAddlTimeCost(cur_inst));
       
     } // if exec

@@ -88,7 +88,7 @@ public:
   double GetXGravity() const { return xgravity; }
   double GetYDiffuse() const { return ydiffuse; }
   double GetYGravity() const { return ygravity; }
-  tArray<cCellResource> GetCellList() const { return cell_list; }
+  tArray<cCellResource> *GetCellListPtr() { return &cell_list; }
 
 
   void SetInitial(double _initial) { initial = _initial; }

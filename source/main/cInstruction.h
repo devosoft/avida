@@ -31,6 +31,11 @@ public:
   
   // Accessors...
   int GetOp() const { return static_cast<int>(m_operand); }
+  // int GetOp() const { return static_cast<int>(m_operand); 
+  //                     if (static_cast<int>(m_operand) > 30) { 
+  //                       cout << m_operand << "  " << static_cast<int>(m_operand) << endl; 
+  //                     }
+  //                   }
   void SetOp(int in_op) { assert(in_op < 256); m_operand = in_op; }
 
   // Operators...
