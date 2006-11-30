@@ -32,20 +32,22 @@ private:
   int net_completed;
   tBuffer<int>* received_messages;
   int logic_id;
+  bool on_divide;
   
   cTaskEntry* task_entry;
 
 public:
   cTaskContext(const tBuffer<int>& inputs, const tBuffer<int>& outputs, const tList<tBuffer<int> >& other_inputs,
                const tList<tBuffer<int> >& other_outputs, bool in_net_valid, int in_net_completed, 
-               tBuffer<int>* in_received_messages = NULL)
+			   bool in_on_divide = false, tBuffer<int>* in_received_messages = NULL)
     : input_buffer(inputs), output_buffer(outputs), other_input_buffers(other_inputs),
     other_output_buffers(other_outputs), net_valid(in_net_valid), net_completed(in_net_completed), 
-    received_messages(in_received_messages), logic_id(0), task_entry(NULL)
+	on_divide(in_on_divide), received_messages(in_received_messages), logic_id(0), task_entry(NULL)
   {
   }
   
   void SetTaskEntry(cTaskEntry* in_entry) { task_entry = in_entry; }
+  bool GetOnDivide() { return on_divide; }
 };
 
 

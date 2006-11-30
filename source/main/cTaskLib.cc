@@ -1740,9 +1740,9 @@ double cTaskLib::Task_Math3in_AM(cTaskContext* ctx) const //((X+Y)^2+(Y+Z)^2)
 double cTaskLib::Task_MatchStr(cTaskContext* ctx) const
 {
 	tBuffer<int> temp_buf(ctx->output_buffer);
-	if (temp_buf[0] != 357913941) return 0;
+	//	if (temp_buf[0] != 357913941) return 0;
 
-	temp_buf.Pop(); // pop the signal value off of the buffer
+	//	temp_buf.Pop(); // pop the signal value off of the buffer
 
 	const cString& string_to_match = ctx->task_entry->GetArguments().GetString(0);
 	int string_index;

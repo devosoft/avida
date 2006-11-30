@@ -155,7 +155,7 @@ void cOrganism::DoInput(const int value)
   phenotype.TestInput(input_buf, output_buf);
 }
 
-void cOrganism::DoOutput(cAvidaContext& ctx, const int value)
+void cOrganism::DoOutput(cAvidaContext& ctx, const int value, const bool on_divide)
 {
   assert(m_interface);
   const tArray<double> & resource_count = m_interface->GetResources();
@@ -198,7 +198,7 @@ void cOrganism::DoOutput(cAvidaContext& ctx, const int value)
   tBuffer<int>* received_messages_point = &received_messages;
   if (!m_world->GetConfig().SAVE_RECEIVED.Get())
 	  received_messages_point = NULL;
-  cTaskContext taskctx(input_buf, output_buf, other_input_list, other_output_list, net_valid, 0, received_messages_point);
+  cTaskContext taskctx(input_buf, output_buf, other_input_list, other_output_list, net_valid, 0, on_divide, received_messages_point);
   phenotype.TestOutput(ctx, taskctx, send_buf, receive_buf, resource_count, res_change, insts_triggered);
   m_interface->UpdateResources(res_change);
 
@@ -498,6 +498,11 @@ bool cOrganism::Divide_CheckViable()
 bool cOrganism::ActivateDivide(cAvidaContext& ctx)
 {
   assert(m_interface);
+  // Test tasks one last time before actually dividing, pass true so 
+  // know that should only test "divide" tasks here
+  // Sending last output just for lack of better idea at the moment
+  DoOutput(ctx, output_buf[0], true);
+
   // Activate the child!  (Keep Last: may kill this organism!)
   return m_interface->Divide(ctx, this, child_genome);
 }

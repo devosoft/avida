@@ -245,6 +245,10 @@ bool cEnvironment::LoadReactionRequisite(cReaction* reaction, cString desc)
       if (!AssertInputInt(var_value, "max_count", var_type)) return false;
       new_requisite->SetMaxTaskCount(var_value.AsInt());
     }
+	else if (var_name == "divide_only") {
+		if (!AssertInputInt(var_value, "divide_only", var_type)) return false;
+		new_requisite->SetDivideOnly(var_value.AsInt());
+	}
     else {
       cerr << "Error: Unknown requisite variable '" << var_name
       << "' in reaction '" << reaction->GetName() << "'" << endl;
@@ -769,14 +773,16 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
     const double task_quality = m_tasklib.TestOutput(&taskctx);
     const int task_id = cur_task->GetID();
     const int task_cnt = task_count[task_id];
+	const bool on_divide = taskctx.GetOnDivide();
     
     // If this task wasn't performed, move on to the next one.
     if (task_quality == 0.0) continue;
     
     // Examine requisites on this reaction
-    if (TestRequisites(cur_reaction->GetRequisites(), task_cnt, reaction_count) == false) {
+    if (TestRequisites(cur_reaction->GetRequisites(), task_cnt, reaction_count, on_divide) == false) {
       continue;
     }
+
     
     // Mark this task as performed...
     result.MarkTask(task_id, task_quality);
@@ -793,13 +799,19 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
 
 
 bool cEnvironment::TestRequisites(const tList<cReactionRequisite>& req_list,
-                                  int task_count, const tArray<int>& reaction_count) const
+                                  int task_count, const tArray<int>& reaction_count, const bool on_divide) const
 {
   const int num_reqs = req_list.GetSize();
-  
+
   // If there are no requisites, there is nothing to meet!
-  if (num_reqs == 0) return true;
-  
+  // (unless this is a check upon dividing, in which case we want the default to be to not check the task
+  // and only if the requisite has been added to check it
+  if (num_reqs == 0) {
+	  if (on_divide)
+		  return false;
+	  else
+		return true;
+  }
   tLWConstListIterator<cReactionRequisite> req_it(req_list);
   for (int i = 0; i < num_reqs; i++) {
     // See if this requisite batch can be satisfied.
@@ -831,8 +843,14 @@ bool cEnvironment::TestRequisites(const tList<cReactionRequisite>& req_list,
     // Have all task counts been met?
     if (task_count < cur_req->GetMinTaskCount()) continue;
     
-    // Have all reactions been met?
+    // Have divide task reqs been met?
+    // If div_type is 0 we only check on IO, if 1 we only check on divide,
+    // if 2 we check always
     if (task_count >= cur_req->GetMaxTaskCount()) continue;
+
+	int div_type = cur_req->GetDivideOnly();
+	if (div_type == 1 && on_divide == false) continue;
+	if (div_type == 0 && on_divide) continue;
     
     return true;
   }

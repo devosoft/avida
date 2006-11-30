@@ -164,7 +164,7 @@ public:
   
   // Input & Output Testing
   void DoInput(const int value);
-  void DoOutput(cAvidaContext& ctx, const int value);
+  void DoOutput(cAvidaContext& ctx, const int value, const bool on_divide = false);
 
   // Message stuff
   void SendMessage(cOrgMessage & mess);
