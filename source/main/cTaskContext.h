@@ -41,8 +41,8 @@ public:
                const tList<tBuffer<int> >& other_outputs, bool in_net_valid, int in_net_completed, 
 			   bool in_on_divide = false, tBuffer<int>* in_received_messages = NULL)
     : input_buffer(inputs), output_buffer(outputs), other_input_buffers(other_inputs),
-    other_output_buffers(other_outputs), net_valid(in_net_valid), net_completed(in_net_completed), 
-	on_divide(in_on_divide), received_messages(in_received_messages), logic_id(0), task_entry(NULL)
+    other_output_buffers(other_outputs), net_valid(in_net_valid), net_completed(in_net_completed), received_messages(in_received_messages), logic_id(0), 
+    on_divide(in_on_divide), task_entry(NULL)
   {
   }
   

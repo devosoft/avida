@@ -47,6 +47,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome
   , output_buf(OUTPUT_BUF_SIZE)
   , send_buf(SEND_BUF_SIZE)
   , receive_buf(RECEIVE_BUF_SIZE)
+  , received_messages(RECEIVED_MESSAGES_SIZE)
   , sent_value(0)
   , sent_active(false)
   , test_receive_pos(0)
@@ -56,7 +57,6 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome
   , inbox(0)
   , sent(0)
   , m_net(NULL)
-  , received_messages(RECEIVED_MESSAGES_SIZE)
   , is_running(false)
 {
   // Initialization of structures...

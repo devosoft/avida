@@ -79,13 +79,7 @@ public:
   const cString& GetName(const cInstruction& inst) const { return GetName(inst.GetOp()); }
   int GetCost(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].cost; }
   int GetFTCost(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].ft_cost; }
-  // int GetAddlTimeCost(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].addl_time_cost; }
-  int GetAddlTimeCost(const cInstruction& inst) const { if (inst.GetOp() > 30) {
-                                                          cout << "cInstSet.h " << inst.GetOp() << " " << inst.GetSymbol() << endl;
-                                                         } else {
-                                                           return m_lib_name_map[inst.GetOp()].addl_time_cost;
-                                                         }
-                                                       } 
+  int GetAddlTimeCost(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].addl_time_cost; }
   double GetProbFail(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].prob_fail; }
   int GetRedundancy(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].redundancy; }
   int GetLibFunctionIndex(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].lib_fun_id; }

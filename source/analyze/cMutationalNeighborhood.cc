@@ -350,7 +350,7 @@ void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
 
   // @TODO - Do post relative fitness determination for target task counts
   sPendingTarget* pend = NULL;
-  while (pend = m_pending.Pop()) {
+  while ((pend = m_pending.Pop())) {
     double fitness = m_fitness[pend->site][pend->inst];
     
     if (fitness == 0.0)

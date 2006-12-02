@@ -547,8 +547,6 @@
 		7054A1B409A810CB00038658 /* cAnalyzeJobWorker.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeJobWorker.cc; sourceTree = "<group>"; };
 		7057886F0A21FE8D00E85D8E /* cFixedBlock.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cFixedBlock.cc; sourceTree = "<group>"; };
 		705788700A21FE8D00E85D8E /* cFixedCoords.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cFixedCoords.cc; sourceTree = "<group>"; };
-		705788710A21FE8D00E85D8E /* nTemplateTests.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = nTemplateTests.cc; sourceTree = "<group>"; };
-		705788720A21FE8D00E85D8E /* nTemplateTests.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = nTemplateTests.h; sourceTree = "<group>"; };
 		705ABB170A8A6A6000A6A80E /* EnvironmentActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EnvironmentActions.h; sourceTree = "<group>"; };
 		705ABB180A8A6A6000A6A80E /* EnvironmentActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EnvironmentActions.cc; sourceTree = "<group>"; };
 		705ACD4C0A13FED4002D5BA0 /* PrintActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrintActions.h; sourceTree = "<group>"; };
@@ -1567,8 +1565,6 @@
 				703CA3760A5073CD00AB4DB4 /* SConscript */,
 				7057886F0A21FE8D00E85D8E /* cFixedBlock.cc */,
 				705788700A21FE8D00E85D8E /* cFixedCoords.cc */,
-				705788710A21FE8D00E85D8E /* nTemplateTests.cc */,
-				705788720A21FE8D00E85D8E /* nTemplateTests.h */,
 				700E11BC0A0815B600B604CD /* cDataEntry.cc */,
 				70B08B9008FB2E6B00FC65FE /* cTools.cc */,
 				70B08B9108FB2E6B00FC65FE /* cWeightedIndex.cc */,
