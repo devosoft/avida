@@ -1137,6 +1137,8 @@ void cPopulation::PrintDemeStats()
   const int num_inst = m_world->GetNumInstructions();
   const int num_task = environment.GetTaskLib().GetSize();
   
+  cDoubleSum total_mut_rate;
+
   const int num_demes = deme_array.GetSize();
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     cString filename;
@@ -1156,6 +1158,7 @@ void cPopulation::PrintDemeStats()
     cDoubleSum single_deme_donor;
     cDoubleSum single_deme_receiver;
     cDoubleSum single_deme_mut_rate;
+
     tArray<cIntSum> single_deme_task(num_task);
     tArray<cIntSum> single_deme_inst(num_inst);
     
@@ -1192,7 +1195,9 @@ void cPopulation::PrintDemeStats()
     df_donor.Write(single_deme_donor.Sum(), comment);
     df_receiver.Write(single_deme_receiver.Sum(), comment);
     df_mut_rates.Write(single_deme_mut_rate.Ave(), comment);
-    
+ 
+    total_mut_rate.Add(single_deme_mut_rate.Ave());
+   
     for (int j = 0; j < num_task; j++) {
       comment.Set("Deme %d, Task %d", deme_id, j);
       df_task.Write((int) single_deme_task[j].Sum(), comment);
@@ -1204,6 +1209,8 @@ void cPopulation::PrintDemeStats()
     }
     df_inst.Endl();
   } 
+
+  df_mut_rates.Write(total_mut_rate.Ave(), "Average deme mutation rate averaged across Demes.");
   
   df_fit.Endl();
   df_life_fit.Endl();
@@ -2205,7 +2212,14 @@ void cPopulation::InjectClone(int cell_id, cOrganism& orig_org)
   }
   
   // Setup the mutation rate based on the population cell...
-  new_organism->MutationRates().Copy(cell_array[cell_id].MutationRates());
+  const int mut_source = m_world->GetConfig().MUT_RATE_SOURCE.Get();
+  if (mut_source == 1) {
+    // Update the mutation rates of each child from the environment....
+    new_organism->MutationRates().Copy(cell_array[cell_id].MutationRates());
+  } else {
+    // Update the mutation rates of each child from its parent.
+    new_organism->MutationRates().Copy(orig_org.MutationRates());
+  }
   
   // Activate the organism in the population...
   ActivateOrganism(ctx, new_organism, cell_array[cell_id]);
