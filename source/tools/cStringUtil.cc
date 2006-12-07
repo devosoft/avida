@@ -319,7 +319,7 @@ tArray<int> cStringUtil::ReturnArray(cString& in_string)
 
     /* if the string has a .. in it find the two numbers on either side of it */
 
-    if (chunk.IsSubstring(".",1)) {
+    if (chunk.Find(".") != -1) {
       cString start_str = chunk.Pop('.');
       chunk.RemoveChar('.');
       cString stop_str = chunk.PopWord();
