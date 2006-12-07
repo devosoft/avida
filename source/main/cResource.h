@@ -38,7 +38,7 @@ public:
   double GetOutflow() const { return outflow; }
 };
 
-/* class to hold all infromation for a single resource */
+/* class to hold all information for a single resource */
 
 class cResource
 {

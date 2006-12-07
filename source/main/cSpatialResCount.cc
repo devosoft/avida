@@ -394,3 +394,11 @@ void cSpatialResCount::CellOutflow() const {
     Rate((*cell_list_ptr)[i].GetId(), -deltaamount); 
   }
 }
+
+void cSpatialResCount::SetCellAmount(int cell_id, double res)
+{
+  if (cell_id >= 0 && cell_id < grid.GetSize())
+  {
+    Element(cell_id).SetAmount(res);
+  }
+}

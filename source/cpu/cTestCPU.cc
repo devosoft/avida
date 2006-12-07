@@ -34,17 +34,24 @@
 
 using namespace std;
 
-cTestResources::cTestResources(cWorld* world)
+cTestCPU::cTestCPU(cWorld* world)
 {
-  // Setup the resources...
-  const cResourceLib& resource_lib = world->GetEnvironment().GetResourceLib();
+  m_world = world;
+  InitResources();
+}  
+ 
+void cTestCPU::InitResources()
+{  
+   // Setup the resources...
+  // unless another 'set' method is called, they default to zero
+  m_res_method = RES_STATIC;
+
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   assert(resource_lib.GetSize() >= 0);
 
   resource_count.SetSize(resource_lib.GetSize());
-  d_emptyDoubleArray.ResizeClear(resource_lib.GetSize());
   d_resources.ResizeClear(resource_lib.GetSize());
   for(int i=0; i<resource_lib.GetSize(); i++) {
-    d_emptyDoubleArray[i] = 0.0;
     d_resources[i] = 0.0;
   }
 
@@ -62,30 +69,60 @@ cTestResources::cTestResources(cWorld* world)
                            res->GetInflowY2(), res->GetOutflowX1(), 
                            res->GetOutflowX2(), res->GetOutflowY1(), 
                            res->GetOutflowY2(), res->GetCellListPtr(),
-                           world->GetVerbosity() );
+                           m_world->GetVerbosity() );
   }
+
 }
 
-
-void cTestCPU::SetupResourceArray(const tArray<double> &resources)
+void cTestCPU::SetResourcesFromArray(const tArray<double> &resources)
 {
-  if (!m_localres) m_res = new cTestResources(*m_res);
-
-  for(int i = 0; i < m_res->d_resources.GetSize(); i++) {
+  // Set STATIC resources according to the input array
+  m_res_method = RES_STATIC;
+  
+  for(int i = 0; i < d_resources.GetSize(); i++) {
     if(i >= resources.GetSize()) {
-      m_res->d_resources[i] = 0.0;
+      d_resources[i] = 0.0;
     } else {
-      m_res->d_resources[i] = resources[i];
+      d_resources[i] = resources[i];
     }
   }
 }
 
-void cTestCPU::SetUseResources(bool use)
+
+void cTestCPU::SetResourcesFromCell(int cell_x, int cell_y)
 {
-  if (m_res->d_useResources != use) {
-    if (!m_localres) m_res = new cTestResources(*m_res);
-    m_res->d_useResources = use;
+  // Set DYNAMIC resources according to the input array
+  m_res_method = RES_DYNAMIC;
+
+  // Setup the resources...
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  assert(resource_lib.GetSize() >= 0);
+
+  // Make a parallel world that consists of one cell
+  for (int i = 0; i < resource_lib.GetSize(); i++) {
+    cResource* res = resource_lib.GetResource(i);
+    const double decay = 1.0 - res->GetOutflow();
+    
+    // Set up the resource. 
+    // (1) Diffusion and gravity don't make sense in a one-cell world.
+    // (2) We offset all of the X, Y coords so this cell is at 0,0 (the only valid cell in the world)
+    resource_count.Setup(i, res->GetName(), res->GetInitial(), 
+                           res->GetInflow(), decay,
+                           res->GetGeometry(), 0.0 /*res->GetXDiffuse()*/,
+                           0.0 /*res->GetXGravity()*/, 0.0 /*res->GetYDiffuse()*/, 
+                           0.0 /*res->GetYGravity()*/, res->GetInflowX1() - cell_x, 
+                           res->GetInflowX2() - cell_x, res->GetInflowY1() - cell_y, 
+                           res->GetInflowY2() - cell_y, res->GetOutflowX1() - cell_x, 
+                           res->GetOutflowX2() - cell_x, res->GetOutflowY1() - cell_y, 
+                           res->GetOutflowY2() - cell_y, res->GetCellListPtr(),
+                           m_world->GetVerbosity() );
   }
+}
+
+void cTestCPU::ModifyResources(const tArray<double>& res_change)
+{
+  //We only let the testCPU modify the resources if we are using DYNAMIC ones.
+  if (m_res_method == RES_DYNAMIC) resource_count.Modify(res_change);
 }
 
 

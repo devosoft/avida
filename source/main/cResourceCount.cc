@@ -143,6 +143,25 @@ cResourceCount::~cResourceCount()
 {
 }
 
+void cResourceCount::SetCellResources(int cell_id, const tArray<double> & res)
+{
+  assert(resource_count.GetSize() == res.GetSize());
+
+  for (int i = 0; i < resource_count.GetSize(); i++) {
+    if (geometry[i] == nGeometry::GLOBAL) {
+      // Set global quantity of resource
+    } else {
+      spatial_resource_count[i].SetCellAmount(cell_id, res[i]);
+
+      /* Ideally the state of the cell's resource should not be set till
+         the end of the update so that all processes (inflow, outflow, 
+         diffision, gravity and organism demand) have the same weight.  However
+         waiting can cause problems with negative resources so we allow
+         the organism demand to work immediately on the state of the resource */ 
+    }
+  }
+}
+
 void cResourceCount::Setup(int id, cString name, double initial, double inflow,
                            double decay, int in_geometry, double in_xdiffuse,
                            double in_xgravity, double in_ydiffuse, 

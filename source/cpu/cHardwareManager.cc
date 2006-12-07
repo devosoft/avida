@@ -20,7 +20,7 @@
 #include "tDictionary.h"
 
 cHardwareManager::cHardwareManager(cWorld* world)
-: m_world(world), m_inst_set(world), m_type(world->GetConfig().HARDWARE_TYPE.Get()), m_testres(world)
+: m_world(world), m_inst_set(world), m_type(world->GetConfig().HARDWARE_TYPE.Get()) /*, m_testres(world) */
 {
   LoadInstSet(world->GetConfig().INST_SET.Get());
 }

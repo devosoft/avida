@@ -178,6 +178,7 @@ public:
   void UpdateCellResources(const tArray<double>& res_change, const int cell_id);
   void SetResource(int id, double new_level);
   double GetResource(int id) const { return resource_count.Get(id); }
+  cResourceCount& GetResourceCount() { return resource_count; }
 
   cEnvironment& GetEnvironment() { return environment; }
   int GetNumOrganisms() { return num_organisms; }

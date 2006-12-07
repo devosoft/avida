@@ -31,31 +31,6 @@ class cGenome;
 class cGenotype;
 class cWorld;
 
-class cTestResources
-{
-  friend class cTestCPU;
-private:
-  cResourceCount resource_count;
-  bool d_useResources;
-  tArray<double> d_emptyDoubleArray;
-  tArray<double> d_resources;
-  
-public:
-  cTestResources(cWorld* world);
-};
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nTestResources {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif
-
 class cTestCPU
 {
 private:
@@ -63,10 +38,12 @@ private:
   tArray<int> input_array;
   tArray<int> receive_array;
   int cur_input;
-  int cur_receive;
-  
-  cTestResources* m_res;
-  bool m_localres;
+  int cur_receive;  
+
+  enum tTestCPUResourceMethod { RES_STATIC = 0, RES_DYNAMIC };  
+  tTestCPUResourceMethod m_res_method;
+  cResourceCount resource_count;
+  tArray<double> d_resources;
 
   bool ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int cur_depth);
   bool TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome, int cur_depth);
@@ -76,9 +53,8 @@ private:
   cTestCPU& operator=(const cTestCPU&); // @not_implemented
   
 public:
-  cTestCPU(cWorld* world) : m_world(world), m_res(new cTestResources(world)), m_localres(true) { ; }
-  cTestCPU(cWorld* world, cTestResources* res) : m_world(world), m_res(res), m_localres(false) { ; }
-  ~cTestCPU() { if (m_localres) delete m_res; }
+  cTestCPU(cWorld* world);
+  ~cTestCPU() { }
   
   bool TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome);
   bool TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome, std::ofstream& out_fp);
@@ -89,12 +65,13 @@ public:
   inline int GetInput();
   inline int GetInputAt(int & input_pointer);
   inline int GetReceiveValue();
-  inline const tArray<double>& GetResources();
+  inline const tArray<double>& GetResources();  
   inline void SetResource(int id, double new_level);
-  void SetupResourceArray(const tArray<double> &resources);
-  void SetUseResources(bool use);
-  bool GetUseResources() { return m_res->d_useResources; }
-  cResourceCount& GetResourceCount(void) { return m_res->resource_count; }
+  void InitResources();
+  void SetResourcesFromArray(const tArray<double> &resources);
+  void SetResourcesFromCell(int cell_x, int cell_y);
+  void ModifyResources(const tArray<double>& res_change);
+  cResourceCount& GetResourceCount() { return resource_count; }
 };
 
 #ifdef ENABLE_UNIT_TESTS
@@ -132,15 +109,14 @@ inline int cTestCPU::GetReceiveValue()
 
 inline const tArray<double>& cTestCPU::GetResources()
 {
-  if(m_res->d_useResources) return m_res->d_resources;
+  if(m_res_method == RES_STATIC) return d_resources;
   
-  return m_res->d_emptyDoubleArray;
+  return resource_count.GetResources();
 }
 
 inline void cTestCPU::SetResource(int id, double new_level)
 {
-  if (!m_localres) m_res = new cTestResources(*m_res);  // copy resources locally
-  m_res->resource_count.Set(id, new_level);
+  resource_count.Set(id, new_level);
 }
 
 #endif

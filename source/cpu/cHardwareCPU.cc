@@ -3273,6 +3273,9 @@ bool cHardwareCPU::Inst_JumpHead(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
   GetHead(head_used).Jump(GetRegister(REG_CX) );
+  // JEB - probably shouldn't advance inst ptr after jumping here?
+  // Any negative number jumps to the beginning of the genome (pos 0)
+  // and then we immediately advance past that first instruction.
   return true;
 }
 

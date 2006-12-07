@@ -49,7 +49,7 @@ public:
   int GetX() { return world_x; }
   int GetY() { return world_y; }
   int GetCellListSize() { return cell_list_ptr->GetSize(); }
-  cSpatialCountElem Element(int x) { return grid[x]; }
+  cSpatialCountElem& Element(int x) { return grid[x]; }
   void Rate(int x, double ratein) const;
   void Rate(int x, int y, double ratein) const;
   void State(int x);
@@ -64,6 +64,7 @@ public:
   void CellInflow() const;
   void Sink(double percent) const;
   void CellOutflow() const;
+  void SetCellAmount(int cell_id, double res);
   void SetGeometry(int in_geometry) { geometry = in_geometry; }
   void SetXdiffuse(double in_xdiffuse) { xdiffuse = in_xdiffuse; }
   void SetXgravity(double in_xgravity) { xgravity = in_xgravity; }

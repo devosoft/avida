@@ -487,7 +487,7 @@ void cAnalyze::FillResources(cTestCPU* testcpu, int update)
     temp[i] = resources[which].second[i];
   }
 
-  testcpu->SetupResourceArray(temp);
+  testcpu->SetResourcesFromArray(temp);
 }
 
 double cAnalyze::AnalyzeEntropy(cAnalyzeGenotype * genotype, double mu) 
@@ -1665,7 +1665,6 @@ void cAnalyze::CommandTrace(cString cur_string)
   }
   
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();  
-  testcpu->SetUseResources(useResources);
   
   if (useResources && update > -1) {
     FillResources(testcpu, update);
@@ -2678,7 +2677,6 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
   ///////////////////////
   // Create Test CPU
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
-  testcpu->SetUseResources(true);
   FillResources(testcpu, update);
   
   ///////////////////////////////////////////////////////////////////////
@@ -3240,7 +3238,6 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
   ///////////////////////
   // Backup test CPU data
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
-  testcpu->SetUseResources(true);
   FillResources(testcpu, update);
   
   
@@ -6638,7 +6635,6 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
   }
   
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
-  testcpu->SetUseResources(useResources);
   
   ///////////////////////////////////////////////////////
   // Loop through all of the genotypes in this batch...
@@ -7044,7 +7040,6 @@ void cAnalyze::BatchRecalculate(cString cur_string)
 
   
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
-  testcpu->SetUseResources(useResources);
   
   cCPUTestInfo *test_info = new cCPUTestInfo();
   test_info->UseRandomInputs(useRandomInputs==1); 

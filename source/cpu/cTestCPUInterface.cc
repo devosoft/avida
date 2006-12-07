@@ -58,6 +58,7 @@ const tArray<double>& cTestCPUInterface::GetResources()
 
 void cTestCPUInterface::UpdateResources(const tArray<double>& res_change)
 {
+   m_testcpu->ModifyResources(res_change);
 }
 
 void cTestCPUInterface::Die()

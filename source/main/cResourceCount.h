@@ -58,6 +58,7 @@ public:
   const cResourceCount& operator=(const cResourceCount&);
 
   void SetSize(int num_resources);
+  void SetCellResources(int cell_id, const tArray<double> & res);
 
   void Setup(int id, cString name, double initial, double inflow, double decay,
              int in_geometry, double in_xdiffuse, double in_xgravity, 

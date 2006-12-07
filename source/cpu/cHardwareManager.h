@@ -27,7 +27,7 @@ private:
   cWorld* m_world;
   cInstSet m_inst_set;
   int m_type;
-  cTestResources m_testres;
+//  cTestResources m_testres;
   
   cHardwareManager(); // @not_implemented
   cHardwareManager(const cHardwareManager&); // @not_implemented
@@ -38,7 +38,7 @@ public:
   ~cHardwareManager() { ; }
   
   cHardwareBase* Create(cOrganism* in_org);
-  cTestCPU* CreateTestCPU() { return new cTestCPU(m_world, &m_testres); }
+  cTestCPU* CreateTestCPU() { return new cTestCPU(m_world /*, &m_testres*/); }
 
   void LoadInstSet(cString filename);
   

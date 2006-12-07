@@ -133,6 +133,44 @@ public:
   }
 };
 
+class cActionSetCellResource : public cAction
+{
+private:
+  tArray<int> m_cell_list;
+  cString m_res_name;
+  double m_res_count;
+  
+public:
+  cActionSetCellResource(cWorld* world, const cString& args) : cAction(world, args), m_cell_list(0), m_res_name(""), m_res_count(0.0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) 
+    {
+      cString s = largs.PopWord();
+      m_cell_list = cStringUtil::ReturnArray(s);    
+    }
+    if (largs.GetSize()) m_res_name = largs.PopWord();
+    if (largs.GetSize()) m_res_count = largs.PopWord().AsDouble();
+  }
+
+  static const cString GetDescription() { return "Arguments: <int cell_id> <string res_name> <double res_count>"; }
+
+  void Process(cAvidaContext& ctx)
+  {
+    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+    for(int i=0; i<m_cell_list.GetSize(); i++)
+    {
+      int m_cell_id = m_cell_list[i];
+      tArray<double> counts = m_world->GetPopulation().GetResourceCount().GetCellResources(m_cell_id);
+      if ((res != NULL) && (res->GetID() < counts.GetSize()))
+      {
+        counts[res->GetID()] = m_res_count;
+        m_world->GetPopulation().GetResourceCount().SetCellResources(m_cell_id, counts);
+      }
+    }
+  }
+};
+
 
 // Set the values associated with a specified reaction.  If the name of the
 // reaction used is "ALL" then all reactions will be changed.  If the name is
@@ -215,6 +253,7 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionInjectScaledResource>("InjectScaledResource");
   action_lib->Register<cActionOutflowScaledResource>("OutflowScaledResource");
   action_lib->Register<cActionSetResource>("SetResource");
+  action_lib->Register<cActionSetCellResource>("SetCellResource");
 
   action_lib->Register<cActionSetReactionValue>("SetReactionValue");
   action_lib->Register<cActionSetReactionValueMult>("SetReactionValueMult");
