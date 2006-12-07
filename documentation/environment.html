@@ -5,8 +5,9 @@
 </head>
 <body>
 
-<div class="revision">
-Revised 2006-09-05 DMB
+<div class="revision" align="right">
+Revised 2006-09-05 DMB<br>
+        2006-12-05 BDB
 </div>
 
 <p><a href="index.html">Return to the Index</a></p>
@@ -20,31 +21,48 @@ Revised 2006-09-05 DMB
 This is the setup file for the task/resource system in Avida.
 </p>
 <p>
-Two main keywords are used in this file, RESOURCE and REACTION.  Their
+Five main keywords are used in this file, RESOURCE, REACTION, CELL, MUTATION, 
+and SET_ACTIVE.  Their
 formats are:
 </p>
 <pre>
-  RESOURCE  name[:flow]  {name ...}
-  REACTION  name  task  [process:...]  [requisite:...]
+  <a href="#RESOURCE">RESOURCE</a>  resource_name[:options]  {resource_name ...}
+  <a href="#REACTION">REACTION</a>  reaction_name  task  [process:...]  [requisite:...]
+  <a href="#CELL">CELL</a> resource_name:cell_list[:flow]
+  <a href="#MUTATION">MUTATION</a> name trigger scope type rate
+  <a href="#SET_ACTIVE">SET_ACTIVE</a> type name new_status(default=true)
 </pre>
+
+<h2>Resources</h2>
 <p>
-Where <code>name</code> is a unique identifier.  Resources can have additional
-flow information to indicate starting amounts, inflow and outflow.  Reactions
-are further described by the task that triggers them, the processes they
-perform (including resources used and the results of using them), and
-requisites on when they can occur.
-</p>
-<p>
-All entries on a resource line are names of individual resources. Resources
-have a global quantity depleatable by all organisms.  The resource name
-<code>infinite</code> is used to refer to an undepleatable resource.  The
-following chart specifies additional descriptions for resource initialization.
+All entries on a resource line are names of individual resources. Resources can
+have a global quantity depletable by all organisms or can have quantities that
+vary from cell to cell.  The resource name
+<code>infinite</code> is used to refer to an undepletable resource.  There are
+two basic commands to set up a resource: RESOURCE and CELL.
 </p>
 
+<h3><A name = "RESOURCE">RESOURCE Command</A></h3>
 
+<p>The syntax for the Resource command is:</p>
+
+  <pre>RESOURCE resource_name[:options]  {resource_name ...}</pre>
+
+<Blockquote> 
+<P>
+Where <code>resource_name</code> is a unique name of the resource.  This name
+may be used by the <code>CELL</code> command to further define the resource or
+in the <code>REACTION</code> to define which resource is consumed/created
+by a reaction.
+</P>
+<P>
+Where <code>options</code> is a colon delimited list of factors that modify the 
+resource. The following chart specifies these options.
+</P>
+</Blockquote>
 <div align="center">
 <p>&nbsp;</p>
-<h3>Table 1: <span>Resource Specifications</span></h3>
+<h3>Table 1: <span>Resources Options</span></h3>
 <p>
 (<span class="resall">blue</span> variables used for all resources
 while <span class="resspatial">red</span> variables are only used for
@@ -99,7 +117,7 @@ spatial resources)
     their grid cell.  Resource can not flow past the edges of the
     world grid. (resource will use spatial parameters)<br>
     <em>torus</em> -- organisms can only access resources in
-    their grid cell.  Resource can flow to the oposite edges of the
+    their grid cell.  Resource can flow to the opposite edges of the
     world grid. (resource will use spatial parameters)
   </td>
   <td>global</td>
@@ -107,7 +125,7 @@ spatial resources)
 <tr>
   <td class="resspatial">inflowx1</td>
   <td>
-    Leftmost coordinate of the rectange where resource will flow
+    Leftmost coordinate of the rectangle where resource will flow
     into world grid.
   </td>
   <td>0</td>
@@ -115,7 +133,7 @@ spatial resources)
 <tr>
   <td class="resspatial">inflowx2</td>
   <td>
-    Rightmost coordinate of the rectange where resource will flow
+    Rightmost coordinate of the rectangle where resource will flow
     into world grid.
   </td>
   <td>0</td>
@@ -123,7 +141,7 @@ spatial resources)
 <tr>
   <td class="resspatial">inflowy1</td>
   <td>
-    Topmost coordinate of the rectange where resource will flow
+    Topmost coordinate of the rectangle where resource will flow
     into world grid.
   </td>
   <td>0</td>
@@ -131,7 +149,7 @@ spatial resources)
 <tr>
   <td class="resspatial">inflowy2</td>
   <td>
-    Bottommost coordinate of the rectange where resource will flow
+    Bottommost coordinate of the rectangle where resource will flow
     into world grid.
   </td>
   <td>0</td>
@@ -139,7 +157,7 @@ spatial resources)
 <tr>
   <td class="resspatial">outflowx1</td>
   <td>
-    Leftmost coordinate of the rectange where resource will flow
+    Leftmost coordinate of the rectangle where resource will flow
     out of world grid.
   </td>
   <td>0</td>
@@ -147,7 +165,7 @@ spatial resources)
 <tr>
   <td class="resspatial">outflowx2</td>
   <td>
-    Rightmost coordinate of the rectange where resource will flow
+    Rightmost coordinate of the rectangle where resource will flow
     out of world grid.
   </td>
   <td>0</td>
@@ -155,7 +173,7 @@ spatial resources)
 <tr>
   <td class="resspatial">outflowy1</td>
   <td>
-    Topmost coordinate of the rectange where resource will flow
+    Topmost coordinate of the rectangle where resource will flow
     out of world grid.
   </td>
   <td>0</td>
@@ -163,7 +181,7 @@ spatial resources)
 <tr>
   <td class="resspatial">outflowy2</td>
   <td>
-    Bottommost coordinate of the rectange where resource will flow
+    Bottommost coordinate of the rectangle where resource will flow
     out of world grid.
   </td>
   <td>0</td>
@@ -236,18 +254,121 @@ you could use:
 Defining a resource with no parameters means that it will start at a zero
 quantity and have no inflow or outflow.  This is sometimes desirable if you
 want that resource to only be present as a byproduct of a reaction.
-Remember, though, that you should still have an outflow rate if its in
+Remember, though, that you should still have an outflow rate if it's in
 a chemostat.
 </p>
+<h3><a name="CELL">CELL Command</a></h3>
 <p>
-Each reaction must have a task that triggers it.  Currently, eighty tasks
-have been implemented, as summarized in the following table (in approximate
-order of complexity):
+Using Cell can help increase the detail of a spatial resource.  Any cell in a
+grid can be given their own initial amount of a resource, inflow amount and 
+outflow rate.  These values are in addition to any other values set for the
+spatial resource for the entire for the grid (diffusion and gravity for 
+instance). The command has the format:
 </p>
+  <pre>CELL resource_name:cell_list[:options]</pre>
+<p>
+<Blockquote>
+Where <code>resource_name</code> is the name of the spatial resource that this 
+cell command will modify.  If this resource has not been defined yet a new 
+resource with this name will be created.
+</P>
+<p>
+Where <code>cell_list</code> is comma delimited list of cells that will be set.
+We treat the grid like a one dimensional array where 0 is the upper left corner,
+world_x - 1 is the upper right corner, and (world_x * world_y) - 1 is the 
+lower right corner.  As well as single cell you can also enter a range of 
+cells by using the format a..b.
+</P>
+<P>
+Where <code>options</code> is a colon delimited list of factors that modify the 
+resource. The following chart specifies these options.
+</P>
+</Blockquote>
 
 <div align="center">
 <p>&nbsp;</p>
-<h3>Table 2: <span>Available Tasks</span></h3>
+<h3>Table 2: <span>Cell Options</span></h3>
+<table border="1" cellpadding="2">
+<tr>
+  <th>Argument</th>
+  <th>Description</th>
+  <th>Default</th>
+</tr>
+<tr>
+  <td class="rescell">inflow</td>
+  <td>
+    The number of units of the resource that enter a cell at the end of an 
+    update.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="rescell">outflow</td>
+  <td>
+    The fraction of the resource that will flow out a cell each update.  
+  </td>
+  <td>0.0</td>
+</tr>
+<tr>
+  <td class="rescell">initial</td>
+  <td>
+    The initial abundance of the resource in a cell at the start of an 
+    experiment. 
+  </td>
+  <td>0</td>
+</tr>
+</table>
+<p>&nbsp;</p>
+</div>
+
+<p>
+An example of setting two cells in the glucose spatial resource:
+</P>
+  <pre>CELL glucose:20,50:initial=100:inflow=10:outflow=0.1</pre>
+  
+<P>
+An example of setting a 3 x 3 square of cells in the middle of a a maltose 
+spatial resource (assuming a 10 x 10 world):
+</P>
+  <pre>CELL maltose:33..35,43..45,53..55:initial=500:inflow=5:outflow=0.01</pre>
+  
+<h2>Reactions</h2>
+
+<p>
+Reactions are set to allow organisms to consume or produce resources when those
+organisms preform certain tasks.  Reactions can be used to reward (or punish) 
+organisms for performing tasks or to set up a "food web". They 
+are described by the task that triggers them, the processes they
+perform (including resources used and the results of using them), and
+requisites on when they can occur.
+</p>
+
+<h3>REACTION Command</h3>
+  <pre>REACTION  reaction_name  task  [process:...]  [requisite:...]</pre>
+<blockquote>
+  <p>
+  Where <code>reaction_name</code> is a unique name for a reaction.
+  </P>
+  <P>
+  Where <code>task</code> is the name of the task that must be be performed to
+  trigger the reaction.  A list of common tasks is listed in Table 3.
+  </P>
+  Where <code>process</code> is a colon delimited list of information about how
+  resources are consumed/produced.  Process settings are described in Table 4.
+  </P>
+  <p>
+  Where <code>requisite</code> is a colon delimited list describing when 
+  reactions can be triggered.  Requisite settings are described in Table 5.
+  <p>
+  Each reaction must have a task that triggers it.  Currently, eighty tasks
+  have been implemented, as summarized in the following table (in approximate
+  order of complexity):
+  </p>
+</blockquote>
+
+<div align="center">
+<p>&nbsp;</p>
+<h3>Table 3: <span>Available Tasks</span></h3>
 <table border="1" cellpadding="2">
 <tr>
   <th>Task</th>
@@ -371,7 +492,6 @@ order of complexity):
 <p>&nbsp;</p>
 </div>
 
-
 <p>
 When describing a reaction, the <code>process</code> portion determines consumption
 of resources, their byproducts, and the resulting bonuses.  There are several
@@ -381,7 +501,7 @@ Default values are in brackets:
 
 <div align="center">
 <p>&nbsp;</p>
-<h3>Table 3: <span>Reaction Process Specifications</span></h3>
+<h3>Table 4: <span>Reaction Process Specifications</span></h3>
 <table border="1" cellpadding="2">
 <tr>
   <th>Argument</th>
@@ -484,7 +604,7 @@ the reaction statement would appear as:
 </p>
 <p>
 This statement has many redundancies; for example, it would indicate that the
-associated reaction should use the inifite resource, making 'frac' and 'min'
+associated reaction should use the infinite resource, making 'frac' and 'min'
 settings irrelevant.  Likewise, since 'product' is set to none, the
 'conversion' rate is never considered.
 </p>
@@ -496,7 +616,7 @@ following requisites (in any combination) are possible:
 
 <div align="center">
 <p>&nbsp;</p>
-<h3>Table 4: <span>Reaction Requisite Specifications</span></h3>
+<h3>Table 5: <span>Reaction Requisite Specifications</span></h3>
 <table border="1" cellpadding="2">
 <tr>
   <th>Argument</th>
@@ -569,7 +689,7 @@ portions as needed.
 
 <p>
 We could simulate the pre-environment system (in which no resources were
-present and task performace was rewarded with a fixed bonus) with a file
+present and task performance was rewarded with a fixed bonus) with a file
 including only lines like:
 <pre>
   REACTION AND logic:2a process:type=mult:value=4.0   requisite:max_count=1
@@ -614,10 +734,6 @@ This would create a resource called "glucose" that has a fixed inflow rate of
 Limitations to this system:
 <ul>
 <li>
-  Resources are currently all global; at some point soon we need to implement
-  local resources.
-</li>
-<li>
   Only a single resource can be required at a time, and only a single
   by-product can be produced.
 </li>
@@ -641,7 +757,7 @@ The default setup is:
 <p>
 This creates an environment where the organisms get a bonus for performing
 any of nine tasks.  Since none of the reactions are associated with a
-resource, the infinite resource is assumed, which is non-depeleatable.
+resource, the infinite resource is assumed, which is non-depeletable.
 The max_count of one means they can only get the bonus from each reaction
 a single time.
 </p>
@@ -667,6 +783,33 @@ possible tasks listed above is:
   REACTION  EQU  equ   process:resource=resEQU:value=16.0:frac=0.0025
 </pre>
 </p>
+
+<H2>Other Commands</H2>
+<h3>SET_ACTIVE Command</h3>
+<p>
+Allows user to activate or deactivate a reaction. If this command is not 
+used all reactionsare active.
+</p>
+<pre>
+  <a name="SET_ACTIVE">SET_ACTIVE</a> type name new_status(default=true)
+</pre>
+<blockquote>
+  <P>
+  Where <code>type</code> is the type of command to activate/deactivate.
+  Currently <b>REACTION</b> is the only choice.
+  </P>
+  <p>
+  Where <code>name</code> is the name of the item to activate/deactivate.
+  </p>
+  <p>
+  Where <code>new_status</code> sets if the item is active (0 or FALSE will
+  deactivate).
+</Blockquote>
+<p>
+O.K. I don't know what the following commands does, but it is in the code:
+</P>
+<pre>
+  <a name="MUTATION">MUTATION</a> name trigger scope type rate
 
 <hr />
 <p><a href="index.html">Return to the Index</a></p>

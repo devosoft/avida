@@ -5,8 +5,9 @@
 </head>
 <body>
 
-<div class="revision">
-Revised 2006-09-03 DMB
+<div class="revision" align="right">
+Revised 2006-09-03 DMB<br>
+        2006-12-05 BDB
 </div>
 
 <p><a href="index.html">Return to the Index</a></p>
@@ -181,7 +182,7 @@ acts a a single place to store all of this information.
 <p>
 Resources are a little more complicated than task entries to manage
 and understand.  An object of type <span class="class">cResource</span>
-contains 18 pieces of data, and the associated accessors.  Like all of the
+contains 19 pieces of data, and the associated accessors.  Like all of the
 other individual units we have discussed, resources have a unique 
 <span class="object">name</span> and numerical
 <span class="object">id</span>.  For all resource we store the quantities
@@ -208,6 +209,9 @@ exists in space so we store data for:
     <span class="object">outfowY2</span> for a rectangle where resources
     flow out.
   </li>
+  <li>
+     <span class="object">cell_list</span> is a list of individual cells with 
+       their own initial, inflow and outflow values.
   <li>
     <span class="object">xdiffuse</span> and
     <span class="object">ydiffuse</span> describe how fast resources will
