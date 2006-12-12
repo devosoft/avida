@@ -26,11 +26,15 @@
 # Note: this file is also a Python script, so you can do some processing
 # here if you like.
 
-buildType = "Release"
+extrasDir = '../avida-extras'
+execPrefix = "#/work"
+
+#buildType = "Release"
+buildType = "Debug"
 
 enablePyPkg = "no"
-enableTestCode = "no"
-#enableTCMalloc = "no"
+enableMemTracking = "yes"
+enableGuiNcurses = "yes"
 
 boostIncludeDir = None
 boostPythonLibDir = None

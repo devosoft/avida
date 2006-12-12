@@ -55,7 +55,12 @@ class cWorld;
 
 class cAnalyze
 {
-private:
+/*
+FIXME : switch back to private.
+- switched to public while I brainstorm.  @kgn 06.11.22
+*/
+//private:
+public:
   int cur_batch;
   cGenotypeBatch batch[MAX_BATCHES];
   tList<cAnalyzeCommand> command_list;

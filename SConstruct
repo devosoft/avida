@@ -28,6 +28,12 @@ environment.Export('environment')
 # Static help text is defined in
 # support/utils/AvidaUtils/StaticHelp.py
 #
+
+# XXX Must not use default scons signatures database; as of SCons
+# 0.96.93, default database seems to be too-easily corrupted.
+# @kgn 06-Dec-6
+import anydbm
+SConsignFile('scons-signatures', anydbm)
 AvidaUtils.Configure(ARGUMENTS, environment)
 
 if environment.subst('$enableSerialization') in ['1', 'yes']:
@@ -91,7 +97,7 @@ environment.SConscript('consistencytests/SConscript',
 if environment.subst('$extrasDir') not in ['None', 'none', '']:
   environment.SConscript(
     os.path.join(environment.subst('$extrasDir'), 'SConscript'),
-    #build_dir = '$extrasBuildDir',
+    build_dir = '$extrasBuildDir',
     duplicate = 0
   )
 

@@ -3099,7 +3099,14 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
 // Calculate various stats for trees in population.
 void cAnalyze::CommandPrintTreeStats(cString cur_string)
 {
-  // @CAO GRAB FILENAME!
+  if (m_world->GetVerbosity() >= VERBOSE_ON) cout << "Printing tree stats for batch "
+    << cur_batch << endl;
+  else cout << "Printing tree stats..." << endl;
+  
+  // Load in the variables...
+  cString filename("tree_stats.dat");
+  if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
+  
 
   cAnalyzeGenotype * genotype = NULL;
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());

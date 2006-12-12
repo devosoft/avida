@@ -146,6 +146,7 @@ cAnalyzeGenotype::cAnalyzeGenotype(const cAnalyzeGenotype& _gen)
 cAnalyzeGenotype::~cAnalyzeGenotype()
 {
   if (knockout_stats != NULL) delete knockout_stats;
+  Unlink();
 }
 
 

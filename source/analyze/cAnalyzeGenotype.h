@@ -42,7 +42,40 @@ class cInstSet;
 class cTestCPU;
 class cWorld;
 
+/* FIXME : Refactor. @kgn */
+class cAnalyzeGenotype;
+class cAnalyzeGenotypeLink {
+private:
+  cAnalyzeGenotype *m_parent;
+  tList<cAnalyzeGenotype> m_child_list;
+public:
+  cAnalyzeGenotypeLink():m_parent(0) {
+    SetParent(0);
+    ClearChildren();
+  }
+  void SetParent(cAnalyzeGenotype *parent){ m_parent = parent; }
+  cAnalyzeGenotype *GetParent(){ return m_parent; }
+  tList<cAnalyzeGenotype> &GetChildList(){ return m_child_list; }
+  cAnalyzeGenotype *FindChild(cAnalyzeGenotype *child){
+    return GetChildList().FindPtr(child);
+  }
+  cAnalyzeGenotype *RemoveChild(cAnalyzeGenotype *child){
+    return GetChildList().Remove(child);
+  }
+  void AddChild(cAnalyzeGenotype *child){
+    if(!FindChild(child)){
+      GetChildList().PushRear(child);
+    }
+  }
+  void ClearChildren(){
+    m_child_list.Clear();
+  }
+};
+
+
 class cAnalyzeGenotype {
+private:
+  cAnalyzeGenotypeLink m_link;
 private:
   cWorld* m_world;
   cGenome genome;            // Full Genome
@@ -315,17 +348,37 @@ public:
   equality of two references means that they refer to the same object.
   */
   bool operator==(const cAnalyzeGenotype &in) const { return &in == this; }
-};
 
-#ifdef ENABLE_UNIT_TESTS
-namespace nAnalyzeGenotype {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
+  cAnalyzeGenotypeLink &GetLink(){ return m_link; }
+  void LinkParent(cAnalyzeGenotype *parent){
+    if(GetLink().GetParent() && GetLink().GetParent() != parent){
+      GetLink().GetParent()->GetLink().RemoveChild(this);
+    }
+    GetLink().SetParent(parent);
+    if(parent){ parent->GetLink().AddChild(this); }
+  }
+  void LinkChild(cAnalyzeGenotype &child){ child.LinkParent(this); }
+  void UnlinkParent(){ LinkParent(0); }
+  void UnlinkChildren(){
+    tListIterator<cAnalyzeGenotype> it(GetLink().GetChildList());
+    while (it.Next() != NULL) { it.Get()->GetLink().SetParent(0); }
+    GetLink().ClearChildren();
+  }
+  void Unlink(){
+    UnlinkParent();
+    UnlinkChildren();
+  }
+  cAnalyzeGenotype *GetParent(){ return GetLink().GetParent(); }
+  bool HasChild(cAnalyzeGenotype &child){ return GetLink().FindChild(&child); }
+  bool UnlinkChild(cAnalyzeGenotype &child){
+    if(HasChild(child)){
+      child.UnlinkParent();
+      return true;
+    } else {
+      return false;
+    }
+  }
+  tList<cAnalyzeGenotype> &GetChildList(){ return GetLink().GetChildList(); }
+};
 
 #endif
