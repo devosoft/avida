@@ -59,7 +59,7 @@ class cTextWindow : public cBaseTextWindow {
 protected:
   WINDOW * win_id;
 
-  void NoDelay();
+  void NoDelay(bool setting=true);
 public:
   cTextWindow();
   cTextWindow(int y_size, int x_size, int y_start=0, int x_start=0);
@@ -93,8 +93,9 @@ public:
   // coords and a length, they only draw the line from the specified start,
   // to the specified distance.
   inline void Box() { box(win_id, 0, 0); }
-  void Box(int x, int y, int w, int h);
+  void Box(int x, int y, int w, int h, bool test);
   void VLine(int in_x);
+  void VLine(int in_x, int start_y, int length);
   void HLine(int in_y);
   void HLine(int in_y, int start_x, int length);
 

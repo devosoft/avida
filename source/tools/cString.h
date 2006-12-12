@@ -13,6 +13,7 @@
 
 #include <stdlib.h>
 #include <iostream>
+#include <string>
 #include <string.h>
 #include <assert.h>
 
@@ -141,6 +142,7 @@ public:
     assert( value != NULL );    // Memory Allocation Error: Out of Memory
   }
   cString(const cString& in) { CopyString(in); }
+
   virtual ~cString() { if (value->RemoveRef() == 0) delete value; }
 
 
@@ -532,6 +534,15 @@ public:
    **/
   bool IsSubstring(const cString & in_string, int start) const;
  
+  /**
+   * Clip a portion of the string and output it.
+   *
+   * @return Removed substring.
+   * @param pos the position to start the ejection.
+   * @param excise number of sites to eject.
+   **/
+  cString EjectStr(int pos, int excise);
+
   /*
   We have decided to not serialize information about data-sharing
   between cStrings (via cStringData). This leads to plausible memory

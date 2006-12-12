@@ -6,6 +6,8 @@ INCLUDE_DIRECTORIES(
 )
 
 SET(libviewer_SOURCES
+  cAnalyzeScreen.cc
+  cAnalyzeView.cc
   cBarScreen.cc
   cEnvironmentScreen.cc
   cHistScreen.cc
@@ -15,7 +17,9 @@ SET(libviewer_SOURCES
   cScreen.cc
   cStatsScreen.cc
   cSymbolUtil.cc
+  cTextViewerAnalyzeDriver.cc
   cTextViewerDriver.cc
+  cTextViewerDriver_Base.cc
   cTextWindow.cc
   cView.cc
   cViewInfo.cc

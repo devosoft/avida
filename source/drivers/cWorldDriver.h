@@ -19,6 +19,7 @@
 # endif
 #endif
 
+#include <iostream>
 
 class cString;
 
@@ -30,7 +31,6 @@ class cWorldDriver
 private:
   cWorldDriver(const cWorldDriver&); // @not_implemented
   cWorldDriver& operator=(const cWorldDriver&); // @not_implemented
-
 public:
   cWorldDriver() { ; }
   virtual ~cWorldDriver() { ; }
@@ -45,6 +45,11 @@ public:
   // Notifications
   virtual void NotifyComment(const cString& in_string) = 0;
   virtual void NotifyWarning(const cString& in_string) = 0;
+
+  // Input/Output
+  virtual bool IsInteractive() { return false; }
+  virtual void Flush() { std::cout.flush(); std::cerr.flush(); }
+  virtual bool ProcessKeypress(int keypress) { return false; }
 };
 
 

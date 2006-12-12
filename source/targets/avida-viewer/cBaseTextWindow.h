@@ -129,7 +129,7 @@ public:
   // coords and a length, they only draw the line from the specified start,
   // to the specified distance.
   virtual void Box() = 0;
-  virtual void Box(int x, int y, int w, int h) = 0;
+  virtual void Box(int y, int x, int h, int w, bool test) = 0;
   virtual void VLine(int in_x) = 0;
   virtual void HLine(int in_y) = 0;
   virtual void HLine(int in_y, int start_x, int length) = 0;

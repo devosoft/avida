@@ -43,7 +43,6 @@ cWorld::~cWorld()
 
   // cleanup driver object, if needed
   if (m_own_driver) { assert(m_driver); delete m_driver; m_driver=0; }
-
 }
 
 void cWorld::Setup()

@@ -71,7 +71,7 @@ void cStatsScreen::Draw()
 
   SetColor(COLOR_WHITE);
 
-  Box(0, 14, Width(), task_rows + 2);
+  Box(14, 0, task_rows + 2, Width(), true);
 
   if (task_num < info.GetWorld().GetNumTasks() || task_offset != 0) {
     SetBoldColor(COLOR_WHITE);

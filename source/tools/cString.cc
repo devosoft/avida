@@ -615,6 +615,36 @@ cString & cString::InsertStr(const int in_size, const char * in,
 }
 
 
+cString cString::EjectStr(int pos, int excise )
+{
+  // Delete excise characters at pos and return the substring.
+
+  // Validate inputs:
+  assert (pos >= 0);                   // Negative position
+  assert (pos <= GetSize());           // Position past end of string
+  assert (excise > 0);                 // Must excise something...
+  assert (excise <= GetSize()-pos);    // Excise number too large
+
+  // Collect substring to output.
+  cString out_string(Substring(pos, excise));
+
+  // Allocate a new string
+  const int new_size = GetSize() - excise;
+  cStringData * new_value = new cStringData(new_size);
+  assert (new_value != NULL);  // Memory Allocation Error: Out of Memory
+
+  for(int i = 0; i < pos; i++){             // Copy self up to pos
+    (*new_value)[i] = this->operator[](i);
+  }
+  for(int i=pos+excise; i<GetSize(); ++i ){  // Copy post-excise self
+    (*new_value)[i-excise] = this->operator[](i);
+  }
+
+  TakeValue(new_value);                      // Reassing data to new data
+  return out_string;
+}
+
+
 int cString::FindStr(const char * in, const int in_size, int pos) const
 {
   assert (pos>=0);         // Negative position

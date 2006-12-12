@@ -11,8 +11,8 @@
 
 using namespace std;
 
-void cTextWindow::NoDelay() {
-  nodelay(stdscr, 1);       // Don't wait for input if no key is pressed.
+void cTextWindow::NoDelay(bool setting) {
+  nodelay(stdscr, setting);       // Don't wait for input if no key is pressed.
 }
 
 cTextWindow::cTextWindow(int y_size, int x_size, int y_start, int x_start)
@@ -42,7 +42,7 @@ void cTextWindow::Construct(int y_size, int x_size, int y_start, int x_start)
   keypad(win_id, 1);        // Allows the keypad to be used.
 }
 
-void cTextWindow::Box(int x, int y, int w, int h)
+void cTextWindow::Box(int y, int x, int h, int w, bool test)
 {
   int i;
   for (i = 1; i < h - 1; i++) {
@@ -65,6 +65,15 @@ void cTextWindow::VLine(int in_x)
   mvwaddch(win_id, Height() - 1, in_x, ACS_BTEE);
   for (int i = 1; i < Height() - 1; i++) {
     mvwaddch(win_id, i, in_x, ACS_VLINE);
+  }
+}
+
+void cTextWindow::VLine(int in_x, int start_y, int length)
+{
+  mvwaddch(win_id, start_y, in_x, ACS_TTEE);
+  mvwaddch(win_id, start_y + length - 1, in_x, ACS_BTEE);
+  for (int i = 1; i < length - 1; i++) {
+    mvwaddch(win_id, start_y+i, in_x, ACS_VLINE);
   }
 }
 
@@ -94,7 +103,8 @@ void cTextWindow::HLine(int in_y, int start_x, int length)
 void StartProg()
 {
   initscr();                // Set up the terminal for curses.
-  cbreak();                 // Don't buffer input.
+  //  cbreak();                 // Don't buffer input.
+  raw();                    // Don't even buffer escape characters!
   noecho();                 // Don't echo keypresses to the screen.
   nonl();                   // No new line with CR (when echo is on)
 

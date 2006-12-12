@@ -10,27 +10,14 @@
 #ifndef cTextViewerDriver_h
 #define cTextViewerDriver_h
 
-#ifndef cAvidaDriver_h
-#include "cAvidaDriver.h"
-#endif
-#ifndef cWorldDriver_h
-#include "cWorldDriver.h"
+#ifndef cTextViewerDriver_Base_h
+#include "cTextViewerDriver_Base.h"
 #endif
 
-class cString;
-class cView;
-class cWorld;
-
-class cTextViewerDriver : public cAvidaDriver, public cWorldDriver
+class cTextViewerDriver : public cTextViewerDriver_Base
 {
 private:
   cTextViewerDriver();  // not implemented
-  
-protected:
-  cWorld* m_world;
-  bool m_done;  // This is set to true when run should finish.
-
-  cView* m_view;
   
 public:
   cTextViewerDriver(cWorld* world);

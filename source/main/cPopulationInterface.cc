@@ -103,7 +103,7 @@ void cPopulationInterface::Kaboom(int distance)
 
 void cPopulationInterface::SpawnDeme()
 {
-  const int num_demes = m_world->GetPopulation().GetNumDemes();
+  // const int num_demes = m_world->GetPopulation().GetNumDemes();
 
   // Spawn the current deme; no target ID will put it into a random deme.
   const int deme_id = m_world->GetPopulation().GetCell(m_cell_id).GetDemeID();

@@ -42,7 +42,7 @@ cAnalyzeJobQueue::~cAnalyzeJobQueue()
   
   // Clean out any waiting jobs
   cAnalyzeJob* job;
-  while (job = m_queue.Pop()) delete job;
+  while ((job = m_queue.Pop())) delete job;
   
   // Set job count so that all workers receive NULL jobs
   m_jobs = num_workers;

@@ -65,7 +65,7 @@ void cOptionsScreen::Draw()
   }
 
   SetColor(COLOR_WHITE);
-  Box(0, Height() - 7, Width(), 7);
+  Box(Height() - 7, 0, 7, Width(), true);
 
   SetBoldColor(COLOR_CYAN);
   Print(6, 15, "%dx%d", info.GetPopulation().GetWorldX(),

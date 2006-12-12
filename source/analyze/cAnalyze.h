@@ -11,6 +11,7 @@
 #ifndef cAnalyze_h
 #define cAnalyze_h
 
+#include <iostream>
 #include <vector>
 
 #ifndef cAnalyzeJobQueue_h
@@ -50,6 +51,7 @@ const int MAX_BATCHES = 2000;
 class cAnalyzeCommand;
 class cAnalyzeFunction;
 class cAnalyzeCommandDefBase;
+class cAnalyzeScreen;
 template <class T> class tDataEntryBase;
 class cInstSet;
 class cAnalyzeGenotype;
@@ -59,9 +61,8 @@ class cEnvironment;
 class cTestCPU;
 class cWorld;
 
-
-class cAnalyze
-{
+class cAnalyze {
+  friend class cAnalyzeScreen;
 #if USE_tMemTrack
   tMemTrack<cAnalyze> mt;
 #endif
@@ -76,16 +77,17 @@ public:
   tList<cAnalyzeCommand> command_list;
   tList<cAnalyzeFunction> function_list;
   tList<cAnalyzeCommandDefBase> command_lib;
-  cString variables[26];
-  cString local_variables[26];
-  cString arg_variables[10];
+  tArray<cString> variables;
+  tArray<cString> local_variables;
+  tArray<cString> arg_variables;
+
+  bool exit_on_error;
 
   cWorld* m_world;
   cInstSet& inst_set;
   cTestCPU* m_testcpu;
   cAvidaContext m_ctx;
   cAnalyzeJobQueue m_jobqueue;
-
 
   // This is the storage for the resource information from resource.dat.  It 
   // is a pair of the update and a vector of the resource concentrations
@@ -266,8 +268,7 @@ public:
   void CommandForeach(cString cur_string, tList<cAnalyzeCommand> & clist);
   void CommandForRange(cString cur_string, tList<cAnalyzeCommand> & clist);
 
-  cAnalyze(const cAnalyze &); // @not_implemented
-
+  cAnalyze(const cAnalyze &); // Intentially not implemented
 
 public:
   cAnalyze(cWorld* world);
@@ -278,6 +279,10 @@ public:
   
   int GetCurrentBatchID() { return cur_batch; }
   cGenotypeBatch& GetCurrentBatch() { return batch[cur_batch]; }
+  cGenotypeBatch& GetBatch(int id) {
+    assert(id >= 0 && id < MAX_BATCHES);
+    return batch[id];
+  }
   cAnalyzeJobQueue& GetJobQueue() { return m_jobqueue; }
 };
 

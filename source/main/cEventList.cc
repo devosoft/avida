@@ -109,15 +109,17 @@ double cEventList::GetTriggerValue(eTriggerType trigger) const
   // Returns TRIGGER_END if invalid, TRIGGER_BEGIN for IMMEDIATE
   double t_val = TRIGGER_END;
   switch (trigger) {
-    case IMMEDIATE:
-      t_val = TRIGGER_BEGIN;
-      break;
-    case UPDATE:
-      t_val = m_world->GetStats().GetUpdate();
-      break;
-    case GENERATION:
-      t_val = m_world->GetStats().SumGeneration().Average();
-      break;
+  case IMMEDIATE:
+    t_val = TRIGGER_BEGIN;
+    break;
+  case UPDATE:
+    t_val = m_world->GetStats().GetUpdate();
+    break;
+  case GENERATION:
+    t_val = m_world->GetStats().SumGeneration().Average();
+    break;
+  case UNDEFINED:
+    break;
   }
   return t_val;
 }

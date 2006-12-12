@@ -49,10 +49,12 @@ class cInjectGenotype;
 #define NUM_MAP_MODES 12
 
 #include "cWorld.h"
+#include "cView_Base.h"
 
 class cViewInfo {
 private:
   cWorld* m_world;
+  cView_Base* m_view;
   cPopulationCell * active_cell;
 
   int pause_level;
@@ -80,7 +82,7 @@ private:
   void AddSpeciesChart(cSpecies * in_species);
   void AddInjectGenChart(cInjectGenotype * in_gen);
 public:
-  cViewInfo(cWorld* world);
+  cViewInfo(cWorld* world, cView_Base * view);
   ~cViewInfo() { ; }
 
   void UpdateSymbols();
@@ -100,6 +102,7 @@ public:
   cAvidaConfig& GetConfig() { return m_world->GetConfig(); }
   cRandom& GetRandom() { return m_world->GetRandom(); }
   cWorld& GetWorld() { return *m_world; }
+  cView_Base& GetView() { return *m_view; }
 
   int GetNumSymbols() { return NUM_SYMBOLS; }
   cGenotype * GetGenotype(int index) { return genotype_chart[index]; }

@@ -3,6 +3,8 @@ Import('environment')
 
 environment.Library('cursesviewer',
   [
+    'cAnalyzeScreen.cc',
+    'cAnalyzeView.cc',
     'cBarScreen.cc',
     'cEnvironmentScreen.cc',
     'cHistScreen.cc',
@@ -12,7 +14,9 @@ environment.Library('cursesviewer',
     'cScreen.cc',
     'cStatsScreen.cc',
     'cSymbolUtil.cc',
+    'cTextViewerAnalyzeDriver.cc',
     'cTextViewerDriver.cc',
+    'cTextViewerDriver_Base.cc',
     'cTextWindow.cc',
     'cView.cc',
     'cViewInfo.cc',

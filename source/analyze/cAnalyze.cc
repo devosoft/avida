@@ -52,6 +52,7 @@
 #include "cResource.h"
 #include "tHashTable.h"
 #include "cWorld.h"
+#include "cWorldDriver.h"
 #ifdef WIN32
 #  include "win32_mkdir_hack.hh"
 #endif
@@ -67,14 +68,18 @@ using namespace std;
 
 cAnalyze::cAnalyze(cWorld* world)
 : cur_batch(0)
+, variables(26)
+, local_variables(26)
+, arg_variables(26)
+, exit_on_error(true)
 , m_world(world)
 , inst_set(world->GetHardwareManager().GetInstSet())
 , m_ctx(world->GetDefaultContext())
 , m_jobqueue(world)
 , interactive_depth(0)
 {
-  
   random.ResetSeed(m_world->GetConfig().RANDOM_SEED.Get());
+  if (m_world->GetDriver().IsInteractive()) exit_on_error = false;
   
   for (int i = 0; i < MAX_BATCHES; i++) {
     batch[i].Name().Set("Batch%d", i);
@@ -134,7 +139,8 @@ void cAnalyze::LoadOrganism(cString cur_string)
   
   cString filename = cur_string.PopWord();
   
-  cout << "Loading: " << filename << endl;
+  // Output information about loading file.
+  cout << "Loading: " << filename << '\n';
   
   // Setup the genome...
   cGenome genome( cInstUtil::LoadGenome(filename, inst_set) );
@@ -162,12 +168,12 @@ void cAnalyze::LoadBasicDump(cString cur_string)
   
   cString filename = cur_string.PopWord();
   
-  cout << "Loading: " << filename << endl;
+  cout << "Loading: " << filename << '\n';
   
   cInitFile input_file(filename);
   if (!input_file.IsOpen()) {
     cerr << "Error: Cannot load file: \"" << filename << "\"." << endl;
-    exit(1);
+    if (exit_on_error) exit(1);
   }
   input_file.Load();
   input_file.Compress();
@@ -199,17 +205,17 @@ void cAnalyze::LoadBasicDump(cString cur_string)
 
 void cAnalyze::LoadDetailDump(cString cur_string)
 {
-  cout << "Warning: Use of LoadDetailDump() is deprecated.  Use \"LOAD\" instead." << endl;  
+  cerr << "Warning: Use of LOAD_DETAIL_DUMP is deprecated.  Use \"LOAD\" instead." << endl;
   // LOAD_DETAIL_DUMP
   
   cString filename = cur_string.PopWord();
   
-  cout << "Loading: " << filename << endl;
+  cout << "Loading: " << filename << '\n';
   
   cInitFile input_file(filename);
   if (!input_file.IsOpen()) {
     cerr << "Error: Cannot load file: \"" << filename << "\"." << endl;
-    exit(1);
+    if (exit_on_error) exit(1);
   }
   input_file.Load();
   input_file.Compress();
@@ -285,9 +291,9 @@ void cAnalyze::LoadMultiDetail(cString cur_string)
   
   if (m_world->GetVerbosity() >= VERBOSE_ON) {
     cout << "Loading in " << num_steps
-    << " detail files from update " << start_UD
-    << " to update " << stop_UD
-    << endl;
+	 << " detail files from update " << start_UD
+	 << " to update " << stop_UD
+	 << endl;
   } else {
     cout << "Running LOAD_MULTI_DETAIL" << endl;
   }
@@ -302,7 +308,7 @@ void cAnalyze::LoadMultiDetail(cString cur_string)
     cInitFile input_file(filename);
     if (!input_file.IsOpen()) {
       cerr << "Error: Cannot load file: \"" << filename << "\"." << endl;
-      exit(1);
+      if (exit_on_error) exit(1);
     }
     input_file.Load();
     input_file.Compress();
@@ -787,7 +793,7 @@ double cAnalyze::IncreasedInfo(cAnalyzeGenotype * genotype1,
   // Calculate the stats for the genotypes we're working with ...
   if ( genotype1->GetLength() != genotype2->GetLength() ) {
     cerr << "Error: Two genotypes don't have same length.(cAnalyze::IncreasedInfo)" << endl;
-    exit(1);
+    if (exit_on_error) exit(1);
   }
   
   genotype1->Recalculate(m_ctx, m_testcpu);
@@ -949,7 +955,7 @@ void cAnalyze::LoadFile(cString cur_string)
   cInitFile input_file(filename);
   if (!input_file.IsOpen()) {
     cerr << "Error: Cannot load file: \"" << filename << "\"." << endl;
-    exit(1);
+    if (exit_on_error) exit(1);
   }
   input_file.Load();
   input_file.ReadHeader();
@@ -962,7 +968,7 @@ void cAnalyze::LoadFile(cString cur_string)
   if (filetype != "population_data" &&  // Depricated
       filetype != "genotype_data") {
     cerr << "Error: Cannot load files of type \"" << filetype << "\"." << endl;
-    exit(1);
+    if (exit_on_error) exit(1);
   }
   
   if (m_world->GetVerbosity() >= VERBOSE_ON) {
@@ -1919,7 +1925,7 @@ void cAnalyze::CommandDetail_Body(ostream& fp, int format_type,
   }
   }
 
-void cAnalyze::CommandDetailAverage_Body(ostream& fp, int num_outputs,
+void cAnalyze::CommandDetailAverage_Body(ostream& fp, int nucoutputs,
                                          tListIterator< tDataEntryCommand<cAnalyzeGenotype> > & output_it)
 {
   // Loop through all of the genotypes in this batch...
@@ -1928,8 +1934,8 @@ void cAnalyze::CommandDetailAverage_Body(ostream& fp, int num_outputs,
   cAnalyzeGenotype * next_genotype = batch_it.Next();
   cAnalyzeGenotype * prev_genotype = NULL;
   
-  tArray<cDoubleSum> output_counts(num_outputs);
-  for (int i = 0; i < num_outputs; i++) { output_counts[i].Clear();} 
+  tArray<cDoubleSum> output_counts(nucoutputs);
+  for (int i = 0; i < nucoutputs; i++) { output_counts[i].Clear();} 
   int count; 
   while (cur_genotype != NULL) { 
     count = 0; 
@@ -1949,7 +1955,7 @@ void cAnalyze::CommandDetailAverage_Body(ostream& fp, int num_outputs,
     next_genotype = batch_it.Next();
   }
   fp << batch[cur_batch].Name() << " "; 
-  for (int i = 0; i < num_outputs; i++) {  
+  for (int i = 0; i < nucoutputs; i++) {  
     fp << output_counts[i].Average() << " ";
   } 
   fp << endl;   
@@ -2103,7 +2109,7 @@ void cAnalyze::CommandDetailIndex(cString cur_string)
   if (cur_string.CountNumWords() < 3) {
     cerr << "Error: must include filename, and min and max batch numbers."
     << endl;
-    exit(1);
+    if (exit_on_error) exit(1);
   }
   
   // Load in the variables...
@@ -2114,7 +2120,7 @@ void cAnalyze::CommandDetailIndex(cString cur_string)
   if (max_batch < min_batch) {
     cerr << "Error: min_batch=" << min_batch
     << ", max_batch=" << max_batch << "  (incorrect order?)" << endl;
-    exit(1);
+    if (exit_on_error) exit(1);
   }
   
   // Construct a linked list of details needed...
@@ -2670,7 +2676,7 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
   for (; gen_iterator != genotype_database.end(); ++ gen_iterator) {
     if (gen_iterator->second->GetLength() != length_genome) {
       cerr << "Genotype " << gen_iterator->first << " has different genome length." << endl;
-      exit(1);
+      if (exit_on_error) exit(1);
     }
   }
   
@@ -2696,7 +2702,7 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
   int size_community = community.size();
   if (size_community == 0) {
     cerr << "There is no genotype in this community." << endl;
-    exit(1);
+    if (exit_on_error) exit(1);
   }
   typedef pair<int,int> gen_pair;
   map<gen_pair, int> hamming_dist;
@@ -2966,7 +2972,7 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
       }
       if (cur_total_prob > 1) {
         cout << "Total probability at " << line << " is greater than 0." << endl;
-        exit(1);
+        if (exit_on_error) exit(1);
       }
       double left_prob = 1 - cur_total_prob;
       
@@ -2993,7 +2999,7 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
       }
       if (sum > 1.001 || sum < 0.999) {
         cout << "Sum of probability is not 1 at line " << line << endl;
-        exit(1);
+        if (exit_on_error) exit(1);
       }
     }
     
@@ -3039,7 +3045,7 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
       }
       if (sum > 1.001 || sum < 0.999) {
         cout << "Sum of probability is not 1 at line " << line << " " << sum << endl;
-        exit(1);
+        if (exit_on_error) exit(1);
       }
     }
     
@@ -3069,7 +3075,7 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
         information += entropy_before - entropy_given_env[line];
         if (information < 0) {
           cout << "Negative information at site " << line << endl;
-          exit(1);
+          if (exit_on_error) exit(1);
         }
       }
       
@@ -3411,7 +3417,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
     genotype = community[i];
     if (genotype->GetLength() != length_genome) {
       cerr << "Genotypes in the community do not same genome length.\n";
-      exit(1);
+      if (exit_on_error) exit(1);
     }
     
     // Skip the dead organisms
@@ -3490,7 +3496,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
           }
           cout << endl;
           
-          exit(1);
+          if (exit_on_error) exit(1);
         }
         
         new_info += initial_entropy - conditional_entropy;
@@ -4093,7 +4099,7 @@ void cAnalyze::AnalyzeKnockouts(cString cur_string)
     if (lib_null_inst == ko_inst_set.GetInstLib()->GetInstError()) {
       cout << "<cAnalyze::AnalyzeKnockouts> got error:" << endl
       << "  instruction 'NULL' not in current hardware type" << endl;
-      exit(1);
+      if (exit_on_error) exit(1);
     }
     // Add mapping to located instruction. 
     ko_inst_set.AddInst(lib_null_inst.GetOp());
@@ -4463,7 +4469,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
         cout << "<cAnalyze::CommandMapTasks> got error:" << endl;
         cout << " --- instruction \"NULL\" isn't in the instruction library for the" << endl;
         cout << " --- current hardware type." << endl;
-        exit(1);
+        if (exit_on_error) exit(1);
       }
       // Add mapping to located instruction. 
       map_inst_set.AddInst(inst_lib_null_inst.GetOp());
@@ -4720,7 +4726,7 @@ void cAnalyze::CommandAverageModularity(cString cur_string)
             cout << " --- (probably to class method \"cHardware-of-some-type::initInstLib\"" << endl;
             cout << " --- in file named \"cpu/hardware-of-some-type.cc\".)" << endl;
             cout << " --- bailing-out." << endl;
-            exit(1);
+            if (exit_on_error) exit(1);
           }
           // Add mapping to located instruction. 
           map_inst_set.AddInst(inst_lib_null_inst.GetOp());
@@ -4935,7 +4941,7 @@ void cAnalyze::CommandAnalyzeModularity(cString cur_string)
   const cInstruction lib_null = map_inst_set.GetInstLib()->GetInst("NULL");
   if (lib_null == map_inst_set.GetInstLib()->GetInstError()) {
     cerr << "Internal ERROR: Instruction 'NULL' not found." << endl;
-    exit(1);
+    if (exit_on_error) exit(1);
   }
 
   // Add mapping to located instruction.
@@ -5187,7 +5193,7 @@ void cAnalyze::CommandMapMutations(cString cur_string)
         cout << " --- (probably to class method \"cHardware-of-some-type::initInstLib\"" << endl;
         cout << " --- in file named \"cpu/hardware-of-some-type.cc\".)" << endl;
         cout << " --- bailing-out." << endl;
-        exit(1);
+        if (exit_on_error) exit(1);
       }
       // Add mapping to located instruction. 
       map_inst_set.AddInst(inst_lib_null_inst.GetOp());
@@ -5869,7 +5875,7 @@ void cAnalyze::AnalyzeNewInfo(cString cur_string)
     if (I_P_E == 0) {
       cerr << "Error: Information between parent and its enviroment is zero."
       << "(cAnalyze::AnalyzeNewInfo)" << endl;
-      exit(1);
+      if (exit_on_error) exit(1);
     }
     
     double H_C_E = AnalyzeEntropy(child_genotype, mu);
@@ -6944,7 +6950,7 @@ void cAnalyze::BatchSet(cString cur_string)
   if (m_world->GetVerbosity() >= VERBOSE_ON) cout << "Setting current batch to " << next_batch << endl;
   if (next_batch >= MAX_BATCHES) {
     cerr << "  Error: max batches is " << MAX_BATCHES << endl;
-    exit(1);
+    if (exit_on_error) exit(1);
   } else {
     cur_batch = next_batch;
   }
@@ -6999,7 +7005,7 @@ void cAnalyze::BatchDuplicate(cString cur_string)
 {
   if (cur_string.GetSize() == 0) {
     cerr << "Duplicate Error: Must include from ID!" << endl;
-    exit(1);
+    if (exit_on_error) exit(1);
   }
   int batch_from = cur_string.PopWord().AsInt();
   
@@ -7130,7 +7136,7 @@ void cAnalyze::PrintStatus(cString cur_string)
 
 void cAnalyze::PrintDebug(cString cur_string)
 {
-  cerr << "::: " << cur_string << endl;
+  cout << "::: " << cur_string << '\n';
 }
 
 void cAnalyze::IncludeFile(cString cur_string)
@@ -7170,7 +7176,7 @@ void cAnalyze::FunctionCreate(cString cur_string, tList<cAnalyzeCommand>& clist)
   int num_args = cur_string.CountNumWords();
   if (num_args < 1) {
     cerr << "Error: Must provide function name when creating function.";
-    exit(1);
+    if (exit_on_error) exit(1);
   }
   
   cString fun_name = cur_string.PopWord();
@@ -7178,7 +7184,7 @@ void cAnalyze::FunctionCreate(cString cur_string, tList<cAnalyzeCommand>& clist)
   if (FindAnalyzeCommandDef(fun_name) != NULL) {
     cerr << "Error: Cannot create function '" << fun_name
     << "'; already exists." << endl;
-    exit(1);
+    if (exit_on_error) exit(1);
   }
   
   if (m_world->GetVerbosity() >= VERBOSE_ON) cout << "Creating function: " << fun_name << endl;
@@ -7284,7 +7290,7 @@ void cAnalyze::CommandForRange(cString cur_string,
   if (num_args < 3) {
     cerr << "  Error: Must give variable, min and max with FORRANGE!"
     << endl;
-    exit(1);
+    if (exit_on_error) exit(1);
   }
   
   cString var = cur_string.PopWord();
@@ -7375,7 +7381,7 @@ cAnalyzeGenotype * cAnalyze::PopGenotype(cString gen_desc, int batch_id)
   }
   else {
     cout << "  Error: unknown type " << gen_desc << endl;
-    exit(1);
+    if (exit_on_error) exit(1);
   }
   
   return found_gen;
@@ -7387,7 +7393,7 @@ cString& cAnalyze::GetVariable(const cString & var)
   if (var.GetSize() != 1 ||
       (var.IsLetter(0) == false && var.IsNumeric(0) == false)) {
     cerr << "Error: Illegal variable " << var << " being used." << endl;
-    exit(1);
+    if (exit_on_error) exit(1);
   }
   
   if (var.IsLowerLetter(0) == true) {
@@ -7516,7 +7522,7 @@ void cAnalyze::ProcessCommands(tList<cAnalyzeCommand>& clist)
     if (command_fun != NULL) command_fun->Run(this, args, *cur_command);
     else if (!FunctionRun(command, args)) {
       cerr << "Error: Unknown analysis keyword '" << command << "'." << endl;
-      exit(1);
+      if (exit_on_error) exit(1);
     }    
   }
 }

@@ -84,7 +84,7 @@ void cEnvironmentScreen::DrawResource()
   
   
   SetColor(COLOR_WHITE);
-  Box(0, res_lib.GetSize()+2, Width(), Height()-res_lib.GetSize()-2);
+  Box(res_lib.GetSize()+2, 0, Height()-res_lib.GetSize()-2, Width(), true);
   
   SetBoldColor(COLOR_YELLOW);
   Print(1, 58, "Resource View");
@@ -115,7 +115,7 @@ void cEnvironmentScreen::DrawReaction()
   }  
   
   SetColor(COLOR_WHITE);
-  Box(0, rxn_lib.GetSize()+2, Width(), Height()-rxn_lib.GetSize()-2);
+  Box(rxn_lib.GetSize()+2, 0, Height()-rxn_lib.GetSize()-2, Width(), true);
   
   SetBoldColor(COLOR_YELLOW);
   Print(1, 58, "Reaction View");

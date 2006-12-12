@@ -28,12 +28,12 @@ cDriverManager::cDriverManager()
 cDriverManager::~cDriverManager()
 {
   cAvidaDriver* adrv;
-  while (adrv = m_adrvs.Pop()) {
+  while ((adrv = m_adrvs.Pop())) {
     delete adrv;
   }
   
   cWorldDriver* wdrv;
-  while (wdrv = m_wdrvs.Pop()) {
+  while ((wdrv = m_wdrvs.Pop())) {
     delete wdrv;
   }
   

@@ -10,7 +10,7 @@
 
 #include "avida.h"
 #include "cAvidaConfig.h"
-#include "cDefaultAnalyzeDriver.h"
+#include "cTextViewerAnalyzeDriver.h"
 #include "cDriverManager.h"
 #include "cTextViewerDriver.h"
 #include "cWorld.h"
@@ -31,7 +31,7 @@ int main(int argc, char * argv[])
   cAvidaDriver* driver = NULL;
   
   if (world->GetConfig().ANALYZE_MODE.Get() > 0) {
-    driver = new cDefaultAnalyzeDriver(world, (world->GetConfig().ANALYZE_MODE.Get() == 2));
+    driver = new cTextViewerAnalyzeDriver(world, (world->GetConfig().ANALYZE_MODE.Get() == 2));
   } else {
     driver = new cTextViewerDriver(world);
   }

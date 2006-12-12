@@ -29,8 +29,8 @@ public:
   void Rate(double ratein) const { delta += ratein; }
   void State() { amount += delta; delta = 0.0; }
   const double GetAmount() const { return amount; }
-  const double SetAmount(double res) const { amount = res; }
-    void SetPtr(int innum, int inelempt, int inxdist, int  inydist, double indist);
+  void SetAmount(double res) const { amount = res; }
+  void SetPtr(int innum, int inelempt, int inxdist, int  inydist, double indist);
   int GetElemPtr(int innum) { return elempt[innum]; }
   int GetPtrXdist(int innum) { return xdist[innum]; }
   int GetPtrYdist(int innum) { return ydist[innum]; }

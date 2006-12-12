@@ -139,7 +139,7 @@ void cZoomScreen::DrawStats()
   
   // --== Tasks ==--
   SetColor(COLOR_WHITE);
-  Box(TASK_X, TASK_Y, 30, Height()-TASK_Y);
+  Box(TASK_Y, TASK_X, Height()-TASK_Y, 30, true);
   
   
   int task_num = task_offset;
@@ -170,7 +170,7 @@ void cZoomScreen::DrawCPU_Original()
   SetColor(COLOR_WHITE);
   
   // --== Registers ==--
-  Box(REG_X, REG_Y, 19, 7);
+  Box(REG_Y, REG_X, 7, 19, true);
   Print(REG_Y + 1, REG_X + 2, "Registers");
   HLine(REG_Y + 2, REG_X, 19);
   
@@ -181,12 +181,12 @@ void cZoomScreen::DrawCPU_Original()
   SetColor(COLOR_WHITE);
   
   // --== Inputs ==--
-  Box(INPUT_X, INPUT_Y, 16, 7);
+  Box(INPUT_Y, INPUT_X, 7, 16, true);
   Print(INPUT_Y + 1, INPUT_X + 2, "Inputs");
   HLine(INPUT_Y + 2, INPUT_X, 16);
   
   // --== Mini-Map ==--
-  Box(MINI_MAP_X, MINI_MAP_Y, 17, 3);
+  Box(MINI_MAP_Y, MINI_MAP_X, 3, 17, true);
   Print(MINI_MAP_Y + 1, MINI_MAP_X + 2, "Mini-Map");
   // HLine(MINI_MAP_Y + 2, MINI_MAP_X, 19);
   
@@ -195,12 +195,12 @@ void cZoomScreen::DrawCPU_Original()
   SetColor(COLOR_WHITE);
   
   // --== Memory ==--
-  Box(MEMORY_X, MEMORY_Y, 36, 5 + MEMORY_PRE_SIZE + MEMORY_POST_SIZE);
+  Box(MEMORY_Y, MEMORY_X, 5 + MEMORY_PRE_SIZE + MEMORY_POST_SIZE, 36, true);
   Print(MEMORY_Y + 1, MEMORY_X + 2,  "Memory:");
   HLine(MEMORY_Y + 2, MEMORY_X, 36);
   
   // --== Stack ==--
-  Box(STACK_X, STACK_Y, 15, 7);
+  Box(STACK_Y, STACK_X, 7, 15, true);
   HLine(STACK_Y + 2, STACK_X, 15);
   
   // --== Options ==--
@@ -252,7 +252,7 @@ void cZoomScreen::DrawCPU_SMT()
   SetColor(COLOR_WHITE);
   
   // --== Registers ==--
-  Box(REG_X, REG_Y-1, 19, 8);
+  Box(REG_Y-1, REG_X, 8, 19, true);
   Print(REG_Y, REG_X + 2, "Stacks:");
   HLine(REG_Y + 1, REG_X, 19);
   
@@ -264,12 +264,12 @@ void cZoomScreen::DrawCPU_SMT()
   SetColor(COLOR_WHITE);
   
   // --== Inputs ==--
-  Box(INPUT_X, INPUT_Y-1, 16, 8);
+  Box(INPUT_Y-1, INPUT_X, 8, 16, true);
   Print(INPUT_Y, INPUT_X + 2, "Inputs:");
   HLine(INPUT_Y+1, INPUT_X, 16);
   
   // --== Mini-Map ==--
-  Box(MINI_MAP_X, MINI_MAP_Y, 17, 3);
+  Box(MINI_MAP_Y, MINI_MAP_X, 3, 17, true);
   Print(MINI_MAP_Y + 1, MINI_MAP_X + 2, "Mini-Map");
   //HLine(MINI_MAP_Y + 2, MINI_MAP_X, 19);
   
@@ -281,12 +281,12 @@ void cZoomScreen::DrawCPU_SMT()
   SetColor(COLOR_WHITE);
   
   // --== Memory ==--
-  Box(MEMORY_X, MEMORY_Y, 36, 5 + MEMORY_PRE_SIZE + MEMORY_POST_SIZE);
+  Box(MEMORY_Y, MEMORY_X, 5 + MEMORY_PRE_SIZE + MEMORY_POST_SIZE, 36, true);
   Print(MEMORY_Y + 1, MEMORY_X + 2,  "Memory Space");
   HLine(MEMORY_Y + 2, MEMORY_X, 36);
   
   // --== Stack ==--
-  Box(STACK_X, STACK_Y-1, 15, 8);
+  Box(STACK_Y-1, STACK_X, 8, 15, true);
   HLine(STACK_Y + 1, STACK_X, 15);
   
   // --== Options ==--
@@ -1019,7 +1019,7 @@ void cZoomScreen::EditMemory()
   menu1.AddOption(INST_EDIT_REMOVE,     "[D]elete Instruction");
   menu1.SetActive(INST_EDIT_CHANGE);
   int edit_method = menu1.Activate(this);
-  cView::Redraw();
+  info.GetView().Redraw();
   
   // If we need to choose a new instruction, bring up a window for it.
   
@@ -1033,9 +1033,9 @@ void cZoomScreen::EditMemory()
     inst_menu.SetActive(edit_head.GetInst().GetOp());
     new_inst = inst_menu.Activate(this);
     
-    cView::Redraw();
+    info.GetView().Redraw();
     if (new_inst == -1) {
-      //  cView::Notify("Aborted!");
+      //  info.GetView().Notify("Aborted!");
       return;
     }
   }
@@ -1062,7 +1062,7 @@ void cZoomScreen::EditMemory()
       edit_head.RemoveInst();
       break;
     default:
-      //    cView::Notify("Aborted!");
+      //    info.GetView().Notify("Aborted!");
       break;
   }
   
@@ -1080,7 +1080,7 @@ void cZoomScreen::ThreadOptions()
   menu1.AddOption(THREAD_OPTIONS_LOCK, "[T]oggle Thread Lock");
   menu1.SetActive(THREAD_OPTIONS_VIEW);
   thread_method = menu1.Activate(this);
-  cView::Redraw();
+  info.GetView().Redraw();
   
   // Act on the view method!
   switch (thread_method) {
@@ -1173,7 +1173,7 @@ void cZoomScreen::ViewInstruction()
   }
   
   delete window;
-  cView::Redraw();
+  info.GetView().Redraw();
 }
 
 void cZoomScreen::ViewRegisters()
@@ -1217,7 +1217,7 @@ void cZoomScreen::ViewRegisters()
   }
   
   delete window;
-  cView::Redraw();
+  info.GetView().Redraw();
 }
 
 
@@ -1287,7 +1287,7 @@ void cZoomScreen::ViewStack()
   }
   
   delete window;
-  cView::Redraw();
+  info.GetView().Redraw();
 }
 
 
@@ -1330,7 +1330,7 @@ void cZoomScreen::ViewInputs()
   }
   
   delete window;
-  cView::Redraw();
+  info.GetView().Redraw();
 }
 
 
@@ -1461,6 +1461,7 @@ void cZoomScreen::DoInput(int in_char)
       parasite_zoom = false;
       info.GetActiveCell()->GetOrganism()->GetPhenotype().SetFault("");
       info.EngageStepMode();
+      nodelay(stdscr, true); // Don't delay for input; get to processing.
       break;
     case '>':
     case '.':

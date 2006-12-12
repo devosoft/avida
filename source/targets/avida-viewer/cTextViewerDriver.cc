@@ -27,7 +27,8 @@
 using namespace std;
 
 
-cTextViewerDriver::cTextViewerDriver(cWorld* world) : m_world(world), m_done(false), m_view(NULL)
+cTextViewerDriver::cTextViewerDriver(cWorld* world)
+  : cTextViewerDriver_Base(world)
 {
   m_view = new cView(world);
   m_view->SetViewMode(world->GetConfig().VIEW_MODE.Get());
@@ -39,7 +40,6 @@ cTextViewerDriver::cTextViewerDriver(cWorld* world) : m_world(world), m_done(fal
 cTextViewerDriver::~cTextViewerDriver()
 {
   cDriverManager::Unregister(static_cast<cAvidaDriver*>(this));
-  delete m_world;
   
   if (m_view != NULL) EndProg(0);
 }
