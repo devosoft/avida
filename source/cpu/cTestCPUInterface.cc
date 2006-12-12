@@ -11,7 +11,6 @@
 
 #include "cGenotype.h"
 #include "cOrganism.h"
-#include "cOrgMessage.h"
 #include "cTestCPU.h"
 
 
@@ -74,11 +73,6 @@ void cTestCPUInterface::Kaboom(int distance)
 
 void cTestCPUInterface::SpawnDeme()
 {
-}
-
-bool cTestCPUInterface::SendMessage(cOrgMessage& mess)
-{
-  return false;
 }
 
 int cTestCPUInterface::ReceiveValue()

@@ -18,7 +18,6 @@ SET(libmain_a_SOURCES
   cMutationLib.cc
   cMutationRates.cc
   cMxCodeArray.cc
-  cOrgMessage.cc
   cOrganism.cc
   cPhenotype.cc
   cPopulation.cc

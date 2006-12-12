@@ -319,7 +319,7 @@ bool cHardwareSMT::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruct
 void cHardwareSMT::ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst)
 {
   // Mark this organism as running...
-  bool prev_run_state = organism->GetIsRunning();
+  bool prev_run_state = organism->IsRunning();
   organism->SetRunning(true);
 	
   // Print the status of this CPU at each step...

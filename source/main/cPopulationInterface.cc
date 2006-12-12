@@ -13,7 +13,6 @@
 #include "cGenotype.h"
 #include "cHardwareManager.h"
 #include "cOrganism.h"
-#include "cOrgMessage.h"
 #include "cOrgSinkMessage.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
@@ -110,17 +109,6 @@ void cPopulationInterface::SpawnDeme()
   const int deme_id = m_world->GetPopulation().GetCell(m_cell_id).GetDemeID();
 
   m_world->GetPopulation().SpawnDeme(deme_id);
-}
-
-bool cPopulationInterface::SendMessage(cOrgMessage & mess)
-{
-  mess.SetSenderID(m_cell_id);
-  mess.SetTime(m_world->GetStats().GetUpdate());
-  cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
-  if(cell.ConnectionList().GetFirst() == NULL)
-    return false;
-  mess.SetRecipientID(cell.ConnectionList().GetFirst()->GetID());
-  return cell.ConnectionList().GetFirst()->GetOrganism()->ReceiveMessage(mess);
 }
 
 cOrgSinkMessage* cPopulationInterface::NetReceive()

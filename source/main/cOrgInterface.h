@@ -23,7 +23,6 @@ class cAvidaContext;
 class cCodeLabel;
 class cGenome;
 class cOrganism;
-class cOrgMessage;
 class cOrgSinkMessage;
 template <class T> class tArray;
 
@@ -54,7 +53,6 @@ public:
   virtual void Die() = 0;
   virtual void Kaboom(int distance) = 0;
   virtual void SpawnDeme() = 0;
-  virtual bool SendMessage(cOrgMessage& mess) = 0;
   virtual cOrgSinkMessage* NetReceive() = 0;
   virtual bool NetRemoteValidate(cAvidaContext& ctx, cOrgSinkMessage* msg) = 0;
   virtual int ReceiveValue() = 0;

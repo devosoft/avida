@@ -45,7 +45,6 @@ public:
   void Die();
   void Kaboom(int distance);
   void SpawnDeme();
-  bool SendMessage(cOrgMessage& mess);
   cOrgSinkMessage* NetReceive() { return NULL; } // @DMB - todo: receive message
   bool NetRemoteValidate(cAvidaContext& ctx, cOrgSinkMessage* msg) { return false; } // @DMB - todo: validate message
   int ReceiveValue();

@@ -32,6 +32,7 @@
 #include "cPopulationCell.h"
 #include "cProbSchedule.h"
 #include "cResource.h"
+#include "cSaleItem.h"
 #include "cSpecies.h"
 #include "cStats.h"
 #include "cTaskEntry.h"
@@ -502,7 +503,7 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell)
 
   // And clear it!
   in_cell.RemoveOrganism();
-  if (!organism->GetIsRunning()) delete organism;
+  if (!organism->IsRunning()) delete organism;
   else organism->GetPhenotype().SetToDelete();
 
   // Alert the scheduler that this cell has a 0 merit.
