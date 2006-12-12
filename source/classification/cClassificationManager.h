@@ -35,6 +35,13 @@
 #include "tList.h"
 #endif
 
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
+
+
 class cAvidaContext;
 class cLineage;
 class cOrganism;
@@ -42,6 +49,9 @@ class cWorld;
 
 class cClassificationManager
 {
+#if USE_tMemTrack
+  tMemTrack<cClassificationManager> mt;
+#endif
 private:
   cWorld* m_world;
   

@@ -36,6 +36,13 @@
 #include "tList.h"
 #endif
 
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
+
+
 class cAvidaContext;
 class cReaction;
 class cReactionRequisite;
@@ -47,6 +54,9 @@ class cTaskContext;
 class cWorld;
 
 class cEnvironment {
+#if USE_tMemTrack
+  tMemTrack<cEnvironment> mt;
+#endif
 private:
   cWorld* m_world;
   

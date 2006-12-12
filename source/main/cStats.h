@@ -40,12 +40,22 @@
 #include "nGeometry.h"
 #endif
 
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
+
+
 class cGenotype;
 class cInjectGenotype;
 class cWorld;
 
 class cStats
 {
+#if USE_tMemTrack
+  tMemTrack<cStats> mt;
+#endif
 private:
   cWorld* m_world;
   

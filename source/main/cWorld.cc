@@ -21,23 +21,29 @@
 #include "cTools.h"
 #include "cFallbackWorldDriver.h"
 
+#include <assert.h>
+
 
 cWorld::~cWorld()
 {
-  m_data_mgr->FlushAll();
+  if(m_data_mgr) { m_data_mgr->FlushAll(); }
+
+  if(m_pop){ delete m_pop; m_pop=0; }
 
   // m_actlib is not owned by cWorld, DO NOT DELETE
-  delete m_analyze;
-  delete m_conf;
-  delete m_data_mgr;
-  delete m_env;
-  delete m_event_list;
-  delete m_hw_mgr;
-  delete m_pop;
-  delete m_stats;
+  if(m_analyze){ delete m_analyze; m_analyze=0; }
+  if(m_conf){ delete m_conf; m_conf=0; }
+  if(m_data_mgr){ delete m_data_mgr; m_data_mgr=0; }
+  if(m_env){ delete m_env; m_env=0; }
+  if(m_event_list){ delete m_event_list; m_event_list=0; }
+  // must occur *after* m_pop is deleted. @kgn
+  if(m_hw_mgr){ delete m_hw_mgr; m_hw_mgr=0; }
+  if(m_class_mgr){ delete m_class_mgr; m_class_mgr=0; }
+  if(m_stats){ delete m_stats; m_stats=0; }
 
   // cleanup driver object, if needed
-  if (m_own_driver) delete m_driver;
+  if (m_own_driver) { assert(m_driver); delete m_driver; m_driver=0; }
+
 }
 
 void cWorld::Setup()
@@ -127,7 +133,7 @@ int cWorld::GetNumResources()
 void cWorld::SetDriver(cWorldDriver* driver, bool take_ownership)
 {
   // cleanup current driver, if needed
-  if (m_own_driver) delete m_driver;
+  if (m_own_driver) { assert(m_driver); delete m_driver; m_driver=0; }
   
   // store new driver information
   m_driver = driver;

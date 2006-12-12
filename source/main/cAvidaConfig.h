@@ -23,6 +23,13 @@
 #include "cStringUtil.h"
 #include "tList.h"
 
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
+
+
 using namespace std;
 
 
@@ -86,6 +93,9 @@ public:                                                                    \
 } NAME                                                                     \
 
 class cAvidaConfig {
+#if USE_tMemTrack
+  tMemTrack<cAvidaConfig> mt;
+#endif
 private:
   // The cBaseConfigEntry class is a bass class for all configuration entries.
   // It is used to manage the various types of entries in a dynamic fashion.

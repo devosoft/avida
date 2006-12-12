@@ -20,6 +20,13 @@
 #include "tDictionary.h"
 #endif
 
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
+
+
 /**
  * This class helps to manage a collection of data files. It is possible
  * to add files, to remove files, and to access existing files by name.
@@ -30,6 +37,9 @@ class cString;
 template <class T> class tList; // aggregate
 
 class cDataFileManager {
+#if USE_tMemTrack
+  tMemTrack<cDataFileManager> mt;
+#endif
 private:
   cString m_target_dir;
   tDictionary<cDataFile*> m_datafiles;

@@ -15,6 +15,13 @@
 #include "cAction.h"
 #endif
 
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
+
+
 class cAvidaContext;
 class cString;
 class cWorld;
@@ -26,6 +33,9 @@ class cWorld;
 
 class cEventList
 {
+#if USE_tMemTrack
+  tMemTrack<cEventList> mt;
+#endif
 public:
   enum eTriggerType { UPDATE, GENERATION, IMMEDIATE, UNDEFINED };
   

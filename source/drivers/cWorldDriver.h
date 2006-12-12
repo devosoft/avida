@@ -13,10 +13,20 @@
 // This class is an abstract base class that is used by actions within
 // a cWorld to notify its driver of various states and conditions.
 
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
+
+
 class cString;
 
 class cWorldDriver
 {
+#if USE_tMemTrack
+  tMemTrack<cWorldDriver> mt;
+#endif
 private:
   cWorldDriver(const cWorldDriver&); // @not_implemented
   cWorldDriver& operator=(const cWorldDriver&); // @not_implemented

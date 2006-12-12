@@ -38,6 +38,13 @@
 #include "tMatrix.h"
 #endif
 
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
+
+
 const int MAX_BATCHES = 2000;
 
 class cAnalyzeCommand;
@@ -55,6 +62,9 @@ class cWorld;
 
 class cAnalyze
 {
+#if USE_tMemTrack
+  tMemTrack<cAnalyze> mt;
+#endif
 /*
 FIXME : switch back to private.
 - switched to public while I brainstorm.  @kgn 06.11.22

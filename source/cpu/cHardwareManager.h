@@ -17,12 +17,22 @@
 #include "cTestCPU.h"
 #endif
 
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
+
+
 class cOrganism;
 class cHardwareBase;
 class cWorld;
 
 class cHardwareManager
 {
+#if USE_tMemTrack
+  tMemTrack<cHardwareManager> mt;
+#endif
 private:
   cWorld* m_world;
   cInstSet m_inst_set;

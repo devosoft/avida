@@ -17,11 +17,21 @@
 #include "tObjectFactory.h"
 #endif
 
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
+
+
 class cWorld;
 class cString;
 
 class cActionLibrary
 {
+#if USE_tMemTrack
+  tMemTrack<cActionLibrary> mt;
+#endif
 private:
   typedef const cString (*ClassDescFunction)();
   

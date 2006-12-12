@@ -41,6 +41,13 @@
 #include "tList.h"
 #endif
 
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
+
+
 class cAvidaContext;
 class cCodeLabel;
 class cChangeList;
@@ -56,6 +63,9 @@ class cSaleItem;
 
 class cPopulation
 {
+#if USE_tMemTrack
+  tMemTrack<cPopulation> mt;
+#endif
 private:
   // Components...
   cWorld* m_world;

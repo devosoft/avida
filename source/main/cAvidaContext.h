@@ -10,10 +10,20 @@
 #ifndef cAvidaContext_h
 #define cAvidaContext_h
 
+#if USE_tMemTrack
+# ifndef tMemTrack_h
+#  include "tMemTrack.h"
+# endif
+#endif
+
+
 class cRandom;
 
 class cAvidaContext
 {
+#if USE_tMemTrack
+  tMemTrack<cAvidaContext> mt;
+#endif
 private:
   cRandom* m_rng;
   bool m_analyze;
