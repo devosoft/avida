@@ -72,6 +72,7 @@ private:
   cMutationRates mut_rates;
 
   int m_input_size;
+  int m_output_size;
   
   
   static bool ParseSetting(cString entry, cString& var_name, cString& var_value, const cString& var_type);
@@ -98,8 +99,8 @@ private:
   cEnvironment& operator=(const cEnvironment&); // @not_implemented
 
 public:
-  cEnvironment(cWorld* world) : m_world(world), m_tasklib(world), inst_set(world), m_input_size(INPUT_SIZE_DEFAULT) { mut_rates.Setup(world); }
-  ~cEnvironment() { ; }
+  inline cEnvironment(cWorld* world);
+  inline ~cEnvironment() { ; }
 
   bool Load(const cString& filename);  // Reads the environment from disk.
   bool LoadLine(cString line);  // Reads in a single environment configuration line
@@ -126,12 +127,24 @@ public:
   cMutationRates& GetMutRates() { return mut_rates; }
   
   int GetInputSize() { return m_input_size; }
+  int GetOutputSize() { return m_input_size; }
 
   double GetReactionValue(int& reaction_id);
   bool SetReactionValue(cAvidaContext& ctx, const cString& name, double value);
   bool SetReactionValueMult(const cString& name, double value_mult);
   bool SetReactionInst(const cString& name, cString inst_name);
 };
+
+inline cEnvironment::cEnvironment(cWorld* world)
+  : m_world(world)
+  , m_tasklib(world)
+  , inst_set(world)
+  , m_input_size(INPUT_SIZE_DEFAULT)
+  , m_output_size(OUTPUT_SIZE_DEFAULT)
+{
+  mut_rates.Setup(world);
+}
+
 
 
 #ifdef ENABLE_UNIT_TESTS

@@ -45,7 +45,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome
   , m_lineage(NULL)
   , m_input_pointer(0)
   , m_input_buf(world->GetEnvironment().GetInputSize())
-  , m_output_buf(OUTPUT_BUF_SIZE)
+  , m_output_buf(world->GetEnvironment().GetOutputSize())
   , m_received_messages(RECEIVED_MESSAGES_SIZE)
   , m_sent_value(0)
   , m_sent_active(false)
@@ -196,7 +196,7 @@ void cOrganism::DoOutput(cAvidaContext& ctx, const int value, const bool on_divi
 
   for (int i = 0; i < insts_triggered.GetSize(); i++) {
     const int cur_inst = insts_triggered[i];
-    m_hardware->ProcessBonusInst(ctx, cInstruction(cur_inst) );
+    m_hardware->ProcessBonusInst(ctx, cInstruction(cur_inst));
   }
 }
 

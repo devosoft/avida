@@ -539,6 +539,7 @@ bool cEnvironment::LoadReaction(cString desc)
   
   // Process the environment requirements of this task
   if (envreqs.GetMinInputs() > m_input_size) m_input_size = envreqs.GetMinInputs();
+  if (envreqs.GetMinOutputs() > m_output_size) m_output_size = envreqs.GetMinOutputs();
   
   return true;
 }
@@ -745,7 +746,7 @@ void cEnvironment::SetupInputs(cAvidaContext& ctx, tArray<int>& input_array) con
 
 
 bool cEnvironment::TestInput(cReactionResult& result, const tBuffer<int>& inputs,
-                             const tBuffer<int>& outputs, const tArray<double>& resource_count ) const
+                             const tBuffer<int>& outputs, const tArray<double>& resource_count) const
 {
   // @CAO nothing for the moment...
   return false;
@@ -753,9 +754,8 @@ bool cEnvironment::TestInput(cReactionResult& result, const tBuffer<int>& inputs
 
 
 bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
-	      cTaskContext& taskctx,
-              const tArray<int>& task_count, const tArray<int>& reaction_count,
-	      const tArray<double>& resource_count) const
+                              cTaskContext& taskctx, const tArray<int>& task_count,
+                              const tArray<int>& reaction_count, const tArray<double>& resource_count) const
 {
   // Do setup for reaction tests...
   m_tasklib.SetupTests(taskctx);
@@ -811,11 +811,9 @@ bool cEnvironment::TestRequisites(const tList<cReactionRequisite>& req_list,
   // (unless this is a check upon dividing, in which case we want the default to be to not check the task
   // and only if the requisite has been added to check it
   if (num_reqs == 0) {
-	  if (on_divide)
-		  return false;
-	  else
-		return true;
+	  return !on_divide;
   }
+  
   tLWConstListIterator<cReactionRequisite> req_it(req_list);
   for (int i = 0; i < num_reqs; i++) {
     // See if this requisite batch can be satisfied.
@@ -852,9 +850,9 @@ bool cEnvironment::TestRequisites(const tList<cReactionRequisite>& req_list,
     // if 2 we check always
     if (task_count >= cur_req->GetMaxTaskCount()) continue;
 
-	int div_type = cur_req->GetDivideOnly();
-	if (div_type == 1 && on_divide == false) continue;
-	if (div_type == 0 && on_divide) continue;
+    int div_type = cur_req->GetDivideOnly();
+    if (div_type == 1 && !on_divide) continue;
+    if (div_type == 0 && on_divide) continue;
     
     return true;
   }

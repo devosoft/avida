@@ -34,9 +34,6 @@
 #ifndef SMT_FULLY_ASSOCIATIVE
 #define SMT_FULLY_ASSOCIATIVE 1
 #endif
-#ifndef WRITE_PROTECTION
-#define WRITE_PROTECTION 1
-#endif
 #ifndef FATAL_ERRORS
 #define FATAL_ERRORS 0
 #endif
@@ -94,7 +91,7 @@ const int MIN_INJECT_SIZE = 8;
 
 // Number of distinct input and outputs stored in the IOBufs (to test tasks)
 const int INPUT_SIZE_DEFAULT = 3;
-const int OUTPUT_BUF_SIZE = 10;
+const int OUTPUT_SIZE_DEFAULT = 1;
 #define RECEIVED_MESSAGES_SIZE 10
 const int MARKET_SIZE = 10000;
 
