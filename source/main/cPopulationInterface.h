@@ -46,7 +46,6 @@ public:
   int GetNumNeighbors();
   void Rotate(int direction = 1);
   void Breakpoint() { m_world->GetDriver().SignalBreakpoint(); }
-  int GetInput();
   int GetInputAt(int& input_pointer);
   int Debug();
   const tArray<double>& GetResources();

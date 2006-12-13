@@ -89,8 +89,6 @@ protected:
   int m_input_pointer;
   tBuffer<int> m_input_buf;
   tBuffer<int> m_output_buf;
-  tBuffer<int> m_send_buf;
-  tBuffer<int> m_receive_buf;
   tBuffer<int> m_received_messages;
   tList<tListNode<cSaleItem> > m_sold_items;
 

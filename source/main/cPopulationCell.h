@@ -37,7 +37,6 @@ private:
   tList<cPopulationCell> connection_list;  // A list of neighboring cells.
   cMutationRates* mutation_rates;           // Mutation rates at this cell.
   tArray<int> input_array;                 // Environmental Inputs...
-  int cur_input;                           // Next input to give organism.
 
   int cell_id;           // Unique id for position of cell in population.
   int deme_id;           // ID of the deme that this cell is part of.
@@ -63,7 +62,6 @@ public:
   cPopulationCell & GetCellFaced() { return *(connection_list.GetFirst()); }
   const cMutationRates & MutationRates() const { return *mutation_rates; }
   cMutationRates & MutationRates() { return *mutation_rates; }
-  int GetInput();
   int GetInput(int);
   int GetInputAt(int & input_pointer);
 

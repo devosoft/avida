@@ -60,19 +60,20 @@ public:
     data[offset] = in_value;
     total++;
     offset++;
-    while (offset >= data.GetSize()) offset -= data.GetSize();
+    offset %= data.GetSize();
   }
 
-  void Pop(){
+  void Pop()
+  {
 	  total--;
 	  offset--;
-	  while (offset < 0) offset += data.GetSize();
+	  if (offset < 0) offset += data.GetSize();
   }
 
   T operator[](int i) const
   {
     int index = offset - i - 1;
-    while (index < 0)  index += data.GetSize();
+    if (index < 0)  index += data.GetSize();
     return data[index];
   }
 
@@ -81,6 +82,7 @@ public:
   int GetNumStored() const { return (total <= data.GetSize()) ? total : data.GetSize(); }
   int GetNum() const { return total - last_total; }
 
+  
   template<class Archive>
   void serialize(Archive & a, const unsigned int version){
     a.ArkvObj("data", data);

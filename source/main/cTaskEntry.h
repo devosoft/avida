@@ -24,7 +24,7 @@
 class cTaskLib;
 class cTaskContext;
 
-typedef double (cTaskLib::*tTaskTest)(cTaskContext*) const;
+typedef double (cTaskLib::*tTaskTest)(cTaskContext&) const;
 
 class cTaskEntry
 {

@@ -46,8 +46,6 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome
   , m_input_pointer(0)
   , m_input_buf(INPUT_BUF_SIZE)
   , m_output_buf(OUTPUT_BUF_SIZE)
-  , m_send_buf(SEND_BUF_SIZE)
-  , m_receive_buf(RECEIVE_BUF_SIZE)
   , m_received_messages(RECEIVED_MESSAGES_SIZE)
   , m_sent_value(0)
   , m_sent_active(false)
@@ -109,7 +107,6 @@ int cOrganism::ReceiveValue()
 {
   assert(m_interface);
   const int out_value = m_interface->ReceiveValue();
-  m_receive_buf.Add(out_value);
   return out_value;
 }
 
@@ -185,16 +182,16 @@ void cOrganism::DoOutput(cAvidaContext& ctx, const int value, const bool on_divi
   // Do the testing of tasks performed...
 
   // if on IO add value to m_output_buf, if on divide don't need to
-  if (!on_divide)
-    m_output_buf.Add(value);
+  if (!on_divide) m_output_buf.Add(value);
+  
   tArray<double> res_change(resource_count.GetSize());
   tArray<int> insts_triggered;
 
   tBuffer<int>* received_messages_point = &m_received_messages;
-  if (!m_world->GetConfig().SAVE_RECEIVED.Get())
-	  received_messages_point = NULL;
+  if (!m_world->GetConfig().SAVE_RECEIVED.Get()) received_messages_point = NULL;
+  
   cTaskContext taskctx(m_input_buf, m_output_buf, other_input_list, other_output_list, net_valid, 0, on_divide, received_messages_point);
-  m_phenotype.TestOutput(ctx, taskctx, m_send_buf, m_receive_buf, resource_count, res_change, insts_triggered);
+  m_phenotype.TestOutput(ctx, taskctx, resource_count, res_change, insts_triggered);
   m_interface->UpdateResources(res_change);
 
   for (int i = 0; i < insts_triggered.GetSize(); i++) {
@@ -355,7 +352,7 @@ bool cOrganism::NetRemoteValidate(cAvidaContext& ctx, int value)
     tArray<double> res_change(resource_count.GetSize());
     tArray<int> insts_triggered;
     cTaskContext taskctx(m_input_buf, m_output_buf, other_input_list, other_output_list, false, completed);
-    m_phenotype.TestOutput(ctx, taskctx, m_send_buf, m_receive_buf, resource_count, res_change, insts_triggered);
+    m_phenotype.TestOutput(ctx, taskctx, resource_count, res_change, insts_triggered);
     m_interface->UpdateResources(res_change);
     
     for (int i = 0; i < insts_triggered.GetSize(); i++) {

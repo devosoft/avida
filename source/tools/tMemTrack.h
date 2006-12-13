@@ -67,7 +67,9 @@ public:
   tMemTrack(const tMemTrack &){ Instances(1); }
   ~tMemTrack(){ Instances(-1); }
 public:
-  static int Instances(int count = 0){
+  // @DMB - Note: This method is not thread safe.  Instance count may become
+  //              inaccurate during threaded execution.
+  static int Instances(int count = 0) {
     static int s_instances = 0;
     return s_instances += count;
   }

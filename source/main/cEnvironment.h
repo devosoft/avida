@@ -105,7 +105,6 @@ public:
                  const tBuffer<int>& outputs, const tArray<double>& resource_count ) const;
 
   bool TestOutput(cAvidaContext& ctx, cReactionResult& result, cTaskContext& taskctx,
-                  const tBuffer<int>& send_buf, const tBuffer<int>& receive_buf,
                   const tArray<int>& task_count, const tArray<int>& reaction_count,
                   const tArray<double>& resource_count) const;
 

@@ -35,11 +35,6 @@ void cTestCPUInterface::Rotate(int direction)
 {
 }
 
-int cTestCPUInterface::GetInput()
-{
-  return m_testcpu->GetInput();
-}
-
 int cTestCPUInterface::GetInputAt(int& input_pointer)
 {
   return m_testcpu->GetInputAt(input_pointer);

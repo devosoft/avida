@@ -519,9 +519,7 @@ bool cPhenotype::TestInput(tBuffer<int> & inputs, tBuffer<int> & outputs)
 }
 
 bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
-			    tBuffer<int>& send_buf, tBuffer<int>& receive_buf,
-			    const tArray<double>& res_in,
-                            tArray<double>& res_change,
+			    const tArray<double>& res_in, tArray<double>& res_change,
 			    tArray<int>& insts_triggered)
 {
   assert(initialized == true);
@@ -534,7 +532,7 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   cReactionResult result(num_resources, num_tasks, num_reactions);
 			
   // Run everything through the environment.
-  bool found = env.TestOutput(ctx, result, taskctx, send_buf, receive_buf, cur_task_count, cur_reaction_count, res_in);
+  bool found = env.TestOutput(ctx, result, taskctx, cur_task_count, cur_reaction_count, res_in);
 
   // If nothing was found, stop here.
   if (found == false) {
@@ -555,9 +553,6 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   // Update the merit bonus
   cur_bonus *= result.GetMultBonus();
   cur_bonus += result.GetAddBonus();
-
-  // Bonus should never go negative...
-  // if (cur_bonus < 0.0) cur_bonus = 0.0;
 
   // Denote consumed resources...
   for (int i = 0; i < res_in.GetSize(); i++) {

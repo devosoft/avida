@@ -21,7 +21,6 @@ cPopulationCell::cPopulationCell()
   : m_world(NULL)
   , organism(NULL)
   , mutation_rates(NULL)
-  , cur_input(0)
   , organism_count(0)
 {
 }
@@ -29,7 +28,6 @@ cPopulationCell::cPopulationCell()
 cPopulationCell::cPopulationCell(const cPopulationCell& in_cell)
   : m_world(in_cell.m_world)
   , organism(in_cell.organism)
-  , cur_input(in_cell.cur_input)
   , cell_id(in_cell.cell_id)
   , deme_id(in_cell.deme_id)
   , organism_count(in_cell.organism_count)
@@ -48,7 +46,6 @@ void cPopulationCell::operator=(const cPopulationCell& in_cell)
   m_world = in_cell.m_world;
   organism = in_cell.organism;
   for (int i = 0; i < nHardware::IO_SIZE; i++) input_array[i] = in_cell.input_array[i];
-  cur_input = in_cell.cur_input;
   cell_id = in_cell.cell_id;
   deme_id = in_cell.deme_id;
   organism_count = in_cell.organism_count;
@@ -90,12 +87,6 @@ void cPopulationCell::Rotate(cPopulationCell & new_facing)
   }
 }
 
-
-int cPopulationCell::GetInput()
-{
-  if (cur_input >= nHardware::IO_SIZE) cur_input = 0;
-  return input_array[cur_input++];
-}
 
 int cPopulationCell::GetInputAt(int & input_pointer)
 {

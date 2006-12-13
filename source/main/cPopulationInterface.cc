@@ -58,13 +58,6 @@ void cPopulationInterface::Rotate(int direction)
   else cell.ConnectionList().CircPrev();
 }
 
-int cPopulationInterface::GetInput()
-{
-  cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
-  assert(cell.IsOccupied());
-  return cell.GetInput();
-}
-
 int cPopulationInterface::GetInputAt(int& input_pointer)
 {
   cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);

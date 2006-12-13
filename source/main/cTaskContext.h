@@ -22,7 +22,6 @@ class cTaskEntry;
 
 class cTaskContext
 {
-  friend class cTaskLib;
 private:
   const tBuffer<int>& input_buffer;
   const tBuffer<int>& output_buffer;
@@ -39,15 +38,33 @@ private:
 public:
   cTaskContext(const tBuffer<int>& inputs, const tBuffer<int>& outputs, const tList<tBuffer<int> >& other_inputs,
                const tList<tBuffer<int> >& other_outputs, bool in_net_valid, int in_net_completed, 
-			   bool in_on_divide = false, tBuffer<int>* in_received_messages = NULL)
-    : input_buffer(inputs), output_buffer(outputs), other_input_buffers(other_inputs),
-    other_output_buffers(other_outputs), net_valid(in_net_valid), net_completed(in_net_completed), received_messages(in_received_messages), logic_id(0), 
-    on_divide(in_on_divide), task_entry(NULL)
+               bool in_on_divide = false, tBuffer<int>* in_received_messages = NULL)
+    : input_buffer(inputs)
+    , output_buffer(outputs)
+    , other_input_buffers(other_inputs)
+    , other_output_buffers(other_outputs)
+    , net_valid(in_net_valid)
+    , net_completed(in_net_completed)
+    , received_messages(in_received_messages)
+    , logic_id(0)
+    , on_divide(in_on_divide)
+    , task_entry(NULL)
   {
   }
   
+  inline const tBuffer<int>& GetInputBuffer() { return input_buffer; }
+  inline const tBuffer<int>& GetOutputBuffer() { return output_buffer; }
+  inline const tList<tBuffer<int> >& GetNeighborhoodInputBuffers() { return other_input_buffers; }
+  inline const tList<tBuffer<int> >& GetNeighborhoodOutputBuffers() { return other_output_buffers; }
+  inline bool NetIsValid() { return net_valid; }
+  inline int GetNetCompleted() { return net_completed; }
+  inline tBuffer<int>* GetReceivedMessages() { return received_messages; }
+  inline int GetLogicId() { return logic_id; }
+  inline void SetLogicId(int v) { logic_id = v; }
+  inline bool GetOnDivide() { return on_divide; }
+  
   void SetTaskEntry(cTaskEntry* in_entry) { task_entry = in_entry; }
-  bool GetOnDivide() { return on_divide; }
+  cTaskEntry* GetTaskEntry() { return task_entry; }
 };
 
 

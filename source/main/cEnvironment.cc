@@ -749,7 +749,6 @@ bool cEnvironment::TestInput(cReactionResult& result, const tBuffer<int>& inputs
 
 bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
 	      cTaskContext& taskctx,
-              const tBuffer<int>& send_buf, const tBuffer<int>& receive_buf,
               const tArray<int>& task_count, const tArray<int>& reaction_count,
 	      const tArray<double>& resource_count) const
 {
@@ -770,10 +769,10 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
     assert(cur_task != NULL);
     
     taskctx.SetTaskEntry(cur_task); // Set task entry in the context, so that tasks can reference task settings
-    const double task_quality = m_tasklib.TestOutput(&taskctx);
+    const double task_quality = m_tasklib.TestOutput(taskctx);
     const int task_id = cur_task->GetID();
     const int task_cnt = task_count[task_id];
-	const bool on_divide = taskctx.GetOnDivide();
+    const bool on_divide = taskctx.GetOnDivide();
     
     // If this task wasn't performed, move on to the next one.
     if (task_quality == 0.0) continue;

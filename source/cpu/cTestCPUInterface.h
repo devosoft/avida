@@ -37,7 +37,6 @@ public:
   int GetNumNeighbors();
   void Rotate(int direction = 1);
   void Breakpoint() { ; }
-  int GetInput();
   int GetInputAt(int& input_pointer);
   int Debug();
   const tArray<double>& GetResources();
