@@ -500,7 +500,7 @@ num_threads : 1;
     const cInstruction& cur_inst = IP().GetInst();
     
     // Test if costs have been paid and it is okay to execute this now...
-    const bool exec = SingleProcess_PayCosts(ctx, cur_inst);
+    bool exec = SingleProcess_PayCosts(ctx, cur_inst);
 
     // Now execute the instruction...
     if (exec == true) {
@@ -509,7 +509,13 @@ num_threads : 1;
       //       certain classes of instructions (namely divide instructions) @DMB
       const int addl_time_cost = m_inst_set->GetAddlTimeCost(cur_inst);
 
-      SingleProcess_ExecuteInst(ctx, cur_inst);
+      // Prob of exec (moved from SingleProcess_PayCosts so that we advance IP after a fail)
+      if ( m_inst_set->GetProbFail(cur_inst) > 0.0 ) 
+      {
+        exec = !( ctx.GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
+      }
+      
+      if (exec == true) SingleProcess_ExecuteInst(ctx, cur_inst);
       
       // Some instruction (such as jump) may turn m_advance_ip off.  Usually
       // we now want to move to the next instruction in the memory.
@@ -556,10 +562,6 @@ bool cHardwareCPU::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction
     }
   }
   
-  // Prob of exec
-  if ( m_inst_set->GetProbFail(cur_inst) > 0.0 ){
-    return !( ctx.GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
-  }
 #endif
   return true;
 }
