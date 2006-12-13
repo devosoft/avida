@@ -23,7 +23,6 @@ namespace nHardware {
   enum tHeads { HEAD_IP = 0, HEAD_READ, HEAD_WRITE, HEAD_FLOW, NUM_HEADS };
   
   static const int STACK_SIZE = 10;
-  static const int IO_SIZE = 3;
 }
 
 enum tFaultTypes {

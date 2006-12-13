@@ -28,6 +28,7 @@
 #endif
 
 
+class cEnvReqs;
 class cString;
 class cWorld;
 
@@ -61,7 +62,7 @@ public:
 
   int GetSize() const { return task_array.GetSize(); }
 
-  cTaskEntry* AddTask(const cString& name, const cString& info);
+  cTaskEntry* AddTask(const cString& name, const cString& info, cEnvReqs& envreqs);
   const cTaskEntry& GetTask(int id) const { return *(task_array[id]); }
   
   void SetupTests(cTaskContext& ctx) const;
@@ -69,6 +70,7 @@ public:
 
   bool UseNeighborInput() const { return use_neighbor_input; }
   bool UseNeighborOutput() const { return use_neighbor_output; }
+  
   
 private:  // Direct task related methods
   void NewTask(const cString& name, const cString& desc, tTaskTest task_fun, int reqs = 0,
@@ -219,7 +221,9 @@ private:  // Direct task related methods
   double Task_Math3in_AM(cTaskContext& ctx) const;
   
   // Matching Tasks
+  void Load_MatchStr(const cString& name, const cString& argstr, cEnvReqs& envreqs);
   double Task_MatchStr(cTaskContext& ctx) const;
+  void Load_MatchNumber(const cString& name, const cString& argstr, cEnvReqs& envreqs);
   double Task_MatchNumber(cTaskContext& ctx) const;
 
   // Communication Tasks

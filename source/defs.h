@@ -93,7 +93,7 @@ const int MAX_CREATURE_SIZE = 2048;
 const int MIN_INJECT_SIZE = 8;
 
 // Number of distinct input and outputs stored in the IOBufs (to test tasks)
-const int INPUT_BUF_SIZE = 3;
+const int INPUT_SIZE_DEFAULT = 3;
 const int OUTPUT_BUF_SIZE = 10;
 #define RECEIVED_MESSAGES_SIZE 10
 const int MARKET_SIZE = 10000;

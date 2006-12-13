@@ -109,6 +109,13 @@
 		708BF2FE0AB65DC700A923BF /* cEventList.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708BF2FD0AB65DC700A923BF /* cEventList.cc */; };
 		708BF2FF0AB65DC700A923BF /* cEventList.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708BF2FD0AB65DC700A923BF /* cEventList.cc */; };
 		708BF3000AB65DC700A923BF /* cEventList.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708BF2FD0AB65DC700A923BF /* cEventList.cc */; };
+		7099EEC00B2F9D2A001269F6 /* cEnvReqs.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7099EEBF0B2F9D2A001269F6 /* cEnvReqs.h */; };
+		7099EEC10B2F9D2A001269F6 /* cEnvReqs.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7099EEBF0B2F9D2A001269F6 /* cEnvReqs.h */; };
+		7099EEC20B2F9D2A001269F6 /* cEnvReqs.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7099EEBF0B2F9D2A001269F6 /* cEnvReqs.h */; };
+		7099EF510B2FBC85001269F6 /* cAnalyzeScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7099EF470B2FBC85001269F6 /* cAnalyzeScreen.cc */; };
+		7099EF530B2FBC85001269F6 /* cAnalyzeView.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7099EF490B2FBC85001269F6 /* cAnalyzeView.cc */; };
+		7099EF560B2FBC86001269F6 /* cTextViewerAnalyzeDriver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7099EF4C0B2FBC85001269F6 /* cTextViewerAnalyzeDriver.cc */; };
+		7099EF580B2FBC86001269F6 /* cTextViewerDriver_Base.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7099EF4E0B2FBC85001269F6 /* cTextViewerDriver_Base.cc */; };
 		709D924C0A5D950D00D6A163 /* cMutationalNeighborhood.cc in Sources */ = {isa = PBXBuildFile; fileRef = 709D924B0A5D950D00D6A163 /* cMutationalNeighborhood.cc */; };
 		709D924D0A5D950E00D6A163 /* cMutationalNeighborhood.cc in Sources */ = {isa = PBXBuildFile; fileRef = 709D924B0A5D950D00D6A163 /* cMutationalNeighborhood.cc */; };
 		709D924E0A5D950E00D6A163 /* cMutationalNeighborhood.cc in Sources */ = {isa = PBXBuildFile; fileRef = 709D924B0A5D950D00D6A163 /* cMutationalNeighborhood.cc */; };
@@ -402,6 +409,7 @@
 			files = (
 				700E2B87085DE54400CF158A /* avida-viewer in CopyFiles */,
 				109746440AE9606E00929ED6 /* cDeme.h in CopyFiles */,
+				7099EEC10B2F9D2A001269F6 /* cEnvReqs.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -425,6 +433,7 @@
 				7049F3720A66AD7E00640512 /* default-smt.org in CopyFiles */,
 				7049F3730A66AD7E00640512 /* default-transsmt.org in CopyFiles */,
 				109746400AE9606E00929ED6 /* cDeme.h in CopyFiles */,
+				7099EEC20B2F9D2A001269F6 /* cEnvReqs.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -436,6 +445,7 @@
 			files = (
 				702F532F0993060A00B2B507 /* avida-s in CopyFiles */,
 				109746420AE9606E00929ED6 /* cDeme.h in CopyFiles */,
+				7099EEC00B2F9D2A001269F6 /* cEnvReqs.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -626,6 +636,17 @@
 		70920C690A9CCE2C00757CDB /* structure.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = structure.html; sourceTree = "<group>"; };
 		70920C6A0A9CCE2C00757CDB /* svn.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = svn.html; sourceTree = "<group>"; };
 		7093DB4009D6F50300DE7FEB /* tSmartArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tSmartArray.h; sourceTree = "<group>"; };
+		7099EEBF0B2F9D2A001269F6 /* cEnvReqs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cEnvReqs.h; sourceTree = "<group>"; };
+		7099EF470B2FBC85001269F6 /* cAnalyzeScreen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeScreen.cc; sourceTree = "<group>"; };
+		7099EF480B2FBC85001269F6 /* cAnalyzeScreen.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAnalyzeScreen.h; sourceTree = "<group>"; };
+		7099EF490B2FBC85001269F6 /* cAnalyzeView.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeView.cc; sourceTree = "<group>"; };
+		7099EF4A0B2FBC85001269F6 /* cAnalyzeView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAnalyzeView.h; sourceTree = "<group>"; };
+		7099EF4B0B2FBC85001269F6 /* cTabBox.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTabBox.h; sourceTree = "<group>"; };
+		7099EF4C0B2FBC85001269F6 /* cTextViewerAnalyzeDriver.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTextViewerAnalyzeDriver.cc; sourceTree = "<group>"; };
+		7099EF4D0B2FBC85001269F6 /* cTextViewerAnalyzeDriver.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTextViewerAnalyzeDriver.h; sourceTree = "<group>"; };
+		7099EF4E0B2FBC85001269F6 /* cTextViewerDriver_Base.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTextViewerDriver_Base.cc; sourceTree = "<group>"; };
+		7099EF4F0B2FBC85001269F6 /* cTextViewerDriver_Base.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTextViewerDriver_Base.h; sourceTree = "<group>"; };
+		7099EF500B2FBC85001269F6 /* cView_Base.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cView_Base.h; sourceTree = "<group>"; };
 		709D92490A5D94FD00D6A163 /* cMutationalNeighborhood.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMutationalNeighborhood.h; sourceTree = "<group>"; };
 		709D924A0A5D94FD00D6A163 /* cMutationalNeighborhoodResults.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMutationalNeighborhoodResults.h; sourceTree = "<group>"; };
 		709D924B0A5D950D00D6A163 /* cMutationalNeighborhood.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cMutationalNeighborhood.cc; sourceTree = "<group>"; };
@@ -1194,6 +1215,16 @@
 		70DCAC58097AF730002F8733 /* avida-viewer */ = {
 			isa = PBXGroup;
 			children = (
+				7099EF470B2FBC85001269F6 /* cAnalyzeScreen.cc */,
+				7099EF480B2FBC85001269F6 /* cAnalyzeScreen.h */,
+				7099EF490B2FBC85001269F6 /* cAnalyzeView.cc */,
+				7099EF4A0B2FBC85001269F6 /* cAnalyzeView.h */,
+				7099EF4B0B2FBC85001269F6 /* cTabBox.h */,
+				7099EF4C0B2FBC85001269F6 /* cTextViewerAnalyzeDriver.cc */,
+				7099EF4D0B2FBC85001269F6 /* cTextViewerAnalyzeDriver.h */,
+				7099EF4E0B2FBC85001269F6 /* cTextViewerDriver_Base.cc */,
+				7099EF4F0B2FBC85001269F6 /* cTextViewerDriver_Base.h */,
+				7099EF500B2FBC85001269F6 /* cView_Base.h */,
 				703CA3730A50737700AB4DB4 /* SConscript */,
 				70DCAC59097AF730002F8733 /* cBarScreen.cc */,
 				70DCAC5A097AF730002F8733 /* cBarScreen.h */,
@@ -1481,6 +1512,7 @@
 				7027621A09D73E7700741717 /* cOrgSinkMessage.h */,
 				70DA5E9D09DA1A8D00FFF42B /* cOrgSeqMessage.h */,
 				700AE91B09DB65F200A073FD /* cTaskContext.h */,
+				7099EEBF0B2F9D2A001269F6 /* cEnvReqs.h */,
 			);
 			path = main;
 			sourceTree = "<group>";
@@ -1997,6 +2029,10 @@
 				70BCB2350AB7B26B003FF331 /* cArgContainer.cc in Sources */,
 				703D4D700ABA374A0032C8A0 /* cArgSchema.cc in Sources */,
 				109746430AE9606E00929ED6 /* cDeme.cc in Sources */,
+				7099EF510B2FBC85001269F6 /* cAnalyzeScreen.cc in Sources */,
+				7099EF530B2FBC85001269F6 /* cAnalyzeView.cc in Sources */,
+				7099EF560B2FBC86001269F6 /* cTextViewerAnalyzeDriver.cc in Sources */,
+				7099EF580B2FBC86001269F6 /* cTextViewerDriver_Base.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

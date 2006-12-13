@@ -624,7 +624,7 @@ void cZoomScreen::UpdateCPU(cHardwareBase& hardware)
   Print(INPUT_Y+3, INPUT_X+2, "%12d", info.GetActiveCell()->GetInput(0));
   
   SetColor(COLOR_CYAN);
-  for (int i = 1; i < nHardware::IO_SIZE; i++) {
+  for (int i = 1; i < info.GetActiveCell()->GetInputSize(); i++) {
     Print(INPUT_Y+3+i, INPUT_X+2, "%12d", info.GetActiveCell()->GetInput(i));
   }
   
@@ -686,7 +686,7 @@ void cZoomScreen::UpdateCPU_Original(cHardwareBase& hardware)
   Print(INPUT_Y+3, INPUT_X+2, "%12d", info.GetActiveCell()->GetInput(0));
   
   SetColor(COLOR_CYAN);
-  for (int i = 1; i < nHardware::IO_SIZE; i++) {
+  for (int i = 1; i < info.GetActiveCell()->GetInputSize(); i++) {
     Print(INPUT_Y+3+i, INPUT_X+2, "%12d", info.GetActiveCell()->GetInput(i));
   }
   

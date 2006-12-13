@@ -11,6 +11,7 @@
 #include "cTaskLib.h"
 
 #include "cArgSchema.h"
+#include "cEnvReqs.h"
 
 #include <stdlib.h>
 extern "C" {
@@ -35,7 +36,7 @@ inline double cTaskLib::FractionalReward(unsigned int supplied, unsigned int cor
   return static_cast<double>(32 - bit_diff) / 32.0; 
 }
 
-cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info)
+cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs& envreqs)
 {
   // Determine if this task is already in the active library.
   for (int i = 0; i < task_array.GetSize(); i++) {
@@ -311,23 +312,10 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info)
     NewTask(name, "Math 3AM ((X+Y)^2+(Y+Z)^2)", &cTaskLib::Task_Math3in_AM);  
   
   // Matching Tasks
-  if (name == "matchstr") {
-    cArgSchema schema(',',':');
-    schema.AddEntry("string", 0, cArgSchema::SCHEMA_STRING);
-    cArgContainer* args = cArgContainer::Load(info, schema);
-    if (args) NewTask(name, "MatchStr", &cTaskLib::Task_MatchStr, 0, args);
-  } else if (name == "match_number") {
-    cArgSchema schema(',',':');
-    
-    // Integer Arguments
-    schema.AddEntry("target", 0, cArgSchema::SCHEMA_INT);
-    schema.AddEntry("threshold", 1, -1);
-    // Double Arguments
-    schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
-    
-    cArgContainer* args = cArgContainer::Load(info, schema);
-    if (args) NewTask(name, "Match Number", &cTaskLib::Task_MatchNumber, 0, args);
-  }
+  if (name == "matchstr") 
+    Load_MatchStr(name, info, envreqs);
+  else if (name == "match_number")
+    Load_MatchNumber(name, info, envreqs);
 
 	// Communication Tasks
   if (name == "comm_echo")
@@ -1792,6 +1780,15 @@ double cTaskLib::Task_Math3in_AM(cTaskContext& ctx) const //((X+Y)^2+(Y+Z)^2)
   return 0.0;
 }
 
+
+void cTaskLib::Load_MatchStr(const cString& name, const cString& argstr, cEnvReqs& envreqs)
+{
+  cArgSchema schema(',',':');
+  schema.AddEntry("string", 0, cArgSchema::SCHEMA_STRING);
+  cArgContainer* args = cArgContainer::Load(argstr, schema);
+  if (args) NewTask(name, "MatchStr", &cTaskLib::Task_MatchStr, 0, args);
+}
+
 double cTaskLib::Task_MatchStr(cTaskContext& ctx) const
 {
 	tBuffer<int> temp_buf(ctx.GetOutputBuffer());
@@ -1852,6 +1849,20 @@ double cTaskLib::Task_MatchStr(cTaskContext& ctx) const
 	return bonus;
 }
 
+
+void cTaskLib::Load_MatchNumber(const cString& name, const cString& argstr, cEnvReqs& envreqs)
+{
+  cArgSchema schema(',',':');
+  
+  // Integer Arguments
+  schema.AddEntry("target", 0, cArgSchema::SCHEMA_INT);
+  schema.AddEntry("threshold", 1, -1);
+  // Double Arguments
+  schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
+  
+  cArgContainer* args = cArgContainer::Load(argstr, schema);
+  if (args) NewTask(name, "Match Number", &cTaskLib::Task_MatchNumber, 0, args);
+}
 
 double cTaskLib::Task_MatchNumber(cTaskContext& ctx) const
 {

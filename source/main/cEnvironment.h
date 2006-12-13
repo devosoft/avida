@@ -32,6 +32,9 @@
 #ifndef cTaskLib_h
 #include "cTaskLib.h"
 #endif
+#ifndef defs_h
+#include "defs.h"
+#endif
 #ifndef tList_h
 #include "tList.h"
 #endif
@@ -68,6 +71,9 @@ private:
   cInstSet inst_set;
   cMutationRates mut_rates;
 
+  int m_input_size;
+  
+  
   static bool ParseSetting(cString entry, cString& var_name, cString& var_value, const cString& var_type);
   static bool AssertInputInt(const cString& input, const cString& name, const cString& type);
   static bool AssertInputDouble(const cString& input, const cString& name, const cString& type);
@@ -92,7 +98,7 @@ private:
   cEnvironment& operator=(const cEnvironment&); // @not_implemented
 
 public:
-  cEnvironment(cWorld* world) : m_world(world), m_tasklib(world), inst_set(world) { mut_rates.Setup(world); }
+  cEnvironment(cWorld* world) : m_world(world), m_tasklib(world), inst_set(world), m_input_size(INPUT_SIZE_DEFAULT) { mut_rates.Setup(world); }
   ~cEnvironment() { ; }
 
   bool Load(const cString& filename);  // Reads the environment from disk.
@@ -118,6 +124,8 @@ public:
   cResourceLib& GetResourceLib() { return resource_lib; }
   cReactionLib& GetReactionLib() { return reaction_lib; }
   cMutationRates& GetMutRates() { return mut_rates; }
+  
+  int GetInputSize() { return m_input_size; }
 
   double GetReactionValue(int& reaction_id);
   bool SetReactionValue(cAvidaContext& ctx, const cString& name, double value);

@@ -49,6 +49,8 @@ public:
   
   bool HasArguments() const { return (m_args != NULL); }
   const cArgContainer& GetArguments() const { return *m_args; }
+  
+  
 };
 
 

@@ -28,15 +28,15 @@ cPopulationCell::cPopulationCell()
 cPopulationCell::cPopulationCell(const cPopulationCell& in_cell)
   : m_world(in_cell.m_world)
   , organism(in_cell.organism)
+  , input_array(in_cell.input_array)
   , cell_id(in_cell.cell_id)
   , deme_id(in_cell.deme_id)
   , organism_count(in_cell.organism_count)
 {
-  for (int i = 0; i < nHardware::IO_SIZE; i++) input_array[i] = in_cell.input_array[i];
   mutation_rates = new cMutationRates(*in_cell.mutation_rates);
   tConstListIterator<cPopulationCell> conn_it(in_cell.connection_list);
-  cPopulationCell * test_cell;
-  while ( (test_cell = (cPopulationCell *) conn_it.Next()) != NULL) {
+  cPopulationCell* test_cell;
+  while ( (test_cell = (cPopulationCell*) conn_it.Next()) != NULL) {
     connection_list.PushRear(test_cell);
   }
 }
@@ -45,7 +45,7 @@ void cPopulationCell::operator=(const cPopulationCell& in_cell)
 {
   m_world = in_cell.m_world;
   organism = in_cell.organism;
-  for (int i = 0; i < nHardware::IO_SIZE; i++) input_array[i] = in_cell.input_array[i];
+  input_array = in_cell.input_array;
   cell_id = in_cell.cell_id;
   deme_id = in_cell.deme_id;
   organism_count = in_cell.organism_count;
@@ -90,13 +90,13 @@ void cPopulationCell::Rotate(cPopulationCell & new_facing)
 
 int cPopulationCell::GetInputAt(int & input_pointer)
 {
-  if (input_pointer >= nHardware::IO_SIZE) input_pointer = 0;
+  input_pointer %= input_array.GetSize();
   return input_array[input_pointer++];
 }
 
 int cPopulationCell::GetInput(int id)
 {
-  assert(id >= 0 && id < nHardware::IO_SIZE);
+  assert(id >= 0 && id < input_array.GetSize());
   return input_array[id];
 }
 

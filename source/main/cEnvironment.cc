@@ -11,6 +11,7 @@
 #include "cEnvironment.h"
 
 #include "cAvidaContext.h"
+#include "cEnvReqs.h"
 #include "cHardwareManager.h"
 #include "cInitFile.h"
 #include "nMutation.h"
@@ -502,7 +503,8 @@ bool cEnvironment::LoadReaction(cString desc)
 	cString trigger = trigger_info.Pop('=');
   
   // Load the task trigger
-  cTaskEntry* cur_task = m_tasklib.AddTask(trigger, trigger_info);
+  cEnvReqs envreqs;
+  cTaskEntry* cur_task = m_tasklib.AddTask(trigger, trigger_info, envreqs);
   if (cur_task == NULL) {
     cerr << "...failed to find task in cTaskLib..." << endl;
     return false;
@@ -534,6 +536,9 @@ bool cEnvironment::LoadReaction(cString desc)
       return false;
     }
   }
+  
+  // Process the environment requirements of this task
+  if (envreqs.GetMinInputs() > m_input_size) m_input_size = envreqs.GetMinInputs();
   
   return true;
 }
@@ -725,7 +730,7 @@ bool cEnvironment::Load(const cString& filename)
 
 void cEnvironment::SetupInputs(cAvidaContext& ctx, tArray<int>& input_array) const
 {
-  input_array.Resize(3);
+  input_array.Resize(m_input_size);
   
   // Set the top 8 bits of the input buffer...
   input_array[0] = 15 << 24;  // 00001111
@@ -733,7 +738,7 @@ void cEnvironment::SetupInputs(cAvidaContext& ctx, tArray<int>& input_array) con
   input_array[2] = 85 << 24;  // 01010101
   
   // And randomize the rest...
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < m_input_size; i++) {
     input_array[i] += ctx.GetRandom().GetUInt(1 << 24);
   }
 }

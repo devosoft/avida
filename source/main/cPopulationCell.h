@@ -64,6 +64,7 @@ public:
   cMutationRates & MutationRates() { return *mutation_rates; }
   int GetInput(int);
   int GetInputAt(int & input_pointer);
+  int GetInputSize() { return input_array.GetSize(); }
 
   int GetID() const { return cell_id; }
   int GetDemeID() const { return deme_id; }

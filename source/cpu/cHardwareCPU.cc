@@ -2710,7 +2710,8 @@ bool cHardwareCPU::Inst_TaskStackGet(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_TaskStackLoad(cAvidaContext& ctx)
 {
-  for (int i = 0; i < nHardware::IO_SIZE; i++) 
+  // @DMB - TODO: this should look at the input_size...
+  for (int i = 0; i < 3; i++) 
     StackPush( organism->GetNextInput() );
   return true;
 }

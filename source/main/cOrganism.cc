@@ -44,7 +44,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome
   , m_lineage_label(-1)
   , m_lineage(NULL)
   , m_input_pointer(0)
-  , m_input_buf(INPUT_BUF_SIZE)
+  , m_input_buf(world->GetEnvironment().GetInputSize())
   , m_output_buf(OUTPUT_BUF_SIZE)
   , m_received_messages(RECEIVED_MESSAGES_SIZE)
   , m_sent_value(0)
