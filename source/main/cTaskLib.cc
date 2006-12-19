@@ -12,6 +12,7 @@
 
 #include "cArgSchema.h"
 #include "cEnvReqs.h"
+#include "tHashTable.h"
 
 #include <stdlib.h>
 extern "C" {
@@ -316,6 +317,9 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
     Load_MatchStr(name, info, envreqs);
   else if (name == "match_number")
     Load_MatchNumber(name, info, envreqs);
+
+  if (name == "sort_inputs")
+    Load_SortInputs(name, info, envreqs);
 
 	// Communication Tasks
   if (name == "comm_echo")
@@ -1878,6 +1882,134 @@ double cTaskLib::Task_MatchNumber(cTaskContext& ctx) const
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
 
+  return quality;
+}
+
+
+void cTaskLib::Load_SortInputs(const cString& name, const cString& argstr, cEnvReqs& envreqs)
+{
+  cArgSchema schema(',',':');
+  
+  // Integer Arguments
+  schema.AddEntry("size", 0, cArgSchema::SCHEMA_INT); // Number of items to sort
+  schema.AddEntry("direction", 1, 0); // < 0 = Descending, Otherwise = Ascending
+  schema.AddEntry("contiguous", 2, 1); // 0 = No, Otherwise = Yes
+  // Double Arguments
+  schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
+  
+  cArgContainer* args = cArgContainer::Load(argstr, schema);
+  if (args) {
+    envreqs.SetMinInputs(args->GetInt(0));
+    envreqs.SetMinOutputs(args->GetInt(0));
+    NewTask(name, "Sort Inputs", &cTaskLib::Task_SortInputs, 0, args);
+  }
+}
+
+double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
+{
+  const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
+  const tBuffer<int>& input = ctx.GetInputBuffer();
+  const tBuffer<int>& output = ctx.GetOutputBuffer();
+  const int size = args.GetInt(0);
+  const int stored = output.GetNumStored();
+  
+  // if less than half, can't possibly reach threshold
+  if (stored <= (size / 2)) return 0.0;
+
+  tHashTable<int, int> valmap;
+  int score = 0;
+  int maxscore = 0;
+  
+  // add all valid inputs into the value map
+  for (int i = 0; i < size; i++) valmap.Add(ctx.GetInputAt(i), -1);
+  
+  int span_start = -1;
+  int span_end = stored;
+
+  if (args.GetInt(2)) { // Contiguous
+    // scan for the largest contiguous span
+    // - in the event of a tie, keep the first discovered
+    for (int i = 0; i < stored; i++) {
+      if (valmap.HasEntry(output[i])) {
+        int t_start = i;
+        while (++i < stored && valmap.HasEntry(output[i]));
+        if (span_start == -1 || (i - t_start) > (span_end - span_start)) {
+          span_start = t_start;
+          span_end = i;
+        }
+      }
+    }
+
+    // no span was found
+    if (span_start == -1) return 0.0;    
+  } else { // Scattered
+    // search for first valid entry
+    while (++span_start < stored && valmap.HasEntry(output[span_start]));
+    
+    // scanned past the end of the output, nothing to validate
+    if (span_start >= stored) return 0.0;
+  }
+  
+  // again, if span is less than half the size can't possibly reach threshold
+  if ((span_end - span_start) <= (size / 2)) return 0.0;
+  
+  // insertion sort span
+  // - count number of actual entries
+  // - count moves required
+  // - update valmap, tracking observed inputs
+  int sorted[size];
+  const bool ascending = (args.GetInt(1) >= 0);
+  int count = 1;
+
+  // store first value
+  valmap.SetValue(output[span_start], span_start);
+  sorted[0] = output[span_start];
+  
+  // iterate over the remaining span (discovered for contiguous, full output for scattered)
+  for (int i = span_start + 1; i < span_end; i++) {      
+    int value = output[i];
+    
+    // check for a dup or invalid output, skip it if so
+    int idx;
+    if (!valmap.Find(value, idx) || idx != -1) continue;
+    
+    maxscore += count; // count the maximum moves possible
+    count++; // iterate the observed count
+    valmap.SetValue(value,i); // save position, so that missing values can be determined later
+    
+    // sort value based on ascending for descending, counting moves
+    int j = count - 2;
+    while (j >= 0 && ((ascending && sorted[j] > value) || (!ascending && sorted[j] < value))) {
+      sorted[j + 1] = sorted[j];
+      j--;
+      score++;
+    }
+    sorted[j + 1] = value;
+  }
+  
+  // if not all of the inputs were observed
+  if (count < size) {
+    // iterate over all inputs
+    for (int i = 0; i < size; i++) {
+      int idx;
+      // if input was not observed
+      if (valmap.Find(ctx.GetInputAt(i), idx) && idx == -1) {
+        maxscore += count; // add to the maximum move count
+        score += count; // missing values, scored as maximally out of order
+        count++; // increment observed count
+      }
+    }
+  }
+  
+  double quality = 0.0;
+
+  // score of 50% expected with random output
+  // - only grant quality when less than 50% maximum moves are required
+  if (static_cast<double>(score) / static_cast<double>(maxscore) < 0.5) {
+    double halflife = -1.0 * fabs(args.GetDouble(0));
+    quality = pow(2.0, static_cast<double>(score) / halflife);
+  }
+  
   return quality;
 }
 

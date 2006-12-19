@@ -729,18 +729,31 @@ bool cEnvironment::Load(const cString& filename)
 }
 
 
-void cEnvironment::SetupInputs(cAvidaContext& ctx, tArray<int>& input_array) const
+void cEnvironment::SetupInputs(cAvidaContext& ctx, tArray<int>& input_array, bool random) const
 {
   input_array.Resize(m_input_size);
   
-  // Set the top 8 bits of the input buffer...
-  input_array[0] = 15 << 24;  // 00001111
-  input_array[1] = 51 << 24;  // 00110011
-  input_array[2] = 85 << 24;  // 01010101
-  
-  // And randomize the rest...
-  for (int i = 0; i < m_input_size; i++) {
-    input_array[i] += ctx.GetRandom().GetUInt(1 << 24);
+  if (random) {    
+    // Set the top 8 bits of the input buffer...
+    input_array[0] = 15 << 24;  // 00001111
+    input_array[1] = 51 << 24;  // 00110011
+    input_array[2] = 85 << 24;  // 01010101
+    
+    // And randomize the rest...
+    for (int i = 0; i < m_input_size; i++) {
+      input_array[i] += ctx.GetRandom().GetUInt(1 << 24);
+    }
+  } else {
+    // We make sure that all combinations of inputs are present.  This is
+    // done explicitly in the key columns... (0f, 33, and 55)
+    input_array[0] = 0x0f13149f;  // 00001111 00010011 00010100 10011111
+    input_array[1] = 0x3308e53e;  // 00110011 00001000 11100101 00111110
+    input_array[2] = 0x556241eb;  // 01010101 01100010 01000001 11101011
+    
+    // Fill out the rest with deterministically bit-shifted versions of the default 3
+    for (int i = 3; i < m_input_size; i++) {
+      input_array[i] = input_array[i % 3] << (i / 3);
+    }
   }
 }
 
@@ -774,19 +787,20 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
     assert(cur_task != NULL);
     
     taskctx.SetTaskEntry(cur_task); // Set task entry in the context, so that tasks can reference task settings
-    const double task_quality = m_tasklib.TestOutput(taskctx);
     const int task_id = cur_task->GetID();
     const int task_cnt = task_count[task_id];
     const bool on_divide = taskctx.GetOnDivide();
-    
-    // If this task wasn't performed, move on to the next one.
-    if (task_quality == 0.0) continue;
     
     // Examine requisites on this reaction
     if (TestRequisites(cur_reaction->GetRequisites(), task_cnt, reaction_count, on_divide) == false) {
       continue;
     }
 
+    const double task_quality = m_tasklib.TestOutput(taskctx);
+
+    // If this task wasn't performed, move on to the next one.
+    if (task_quality == 0.0) continue;
+    
     
     // Mark this task as performed...
     result.MarkTask(task_id, task_quality);

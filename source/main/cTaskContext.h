@@ -10,6 +10,9 @@
 #ifndef cTaskContext_h
 #define cTaskContext_h
 
+#ifndef cOrgInterface_h
+#include "cOrgInterface.h"
+#endif
 #ifndef tBuffer_h
 #include "tBuffer.h"
 #endif
@@ -23,6 +26,7 @@ class cTaskEntry;
 class cTaskContext
 {
 private:
+  cOrgInterface* m_interface;
   const tBuffer<int>& input_buffer;
   const tBuffer<int>& output_buffer;
   const tList<tBuffer<int> >& other_input_buffers;
@@ -36,10 +40,12 @@ private:
   cTaskEntry* task_entry;
 
 public:
-  cTaskContext(const tBuffer<int>& inputs, const tBuffer<int>& outputs, const tList<tBuffer<int> >& other_inputs,
-               const tList<tBuffer<int> >& other_outputs, bool in_net_valid, int in_net_completed, 
-               bool in_on_divide = false, tBuffer<int>* in_received_messages = NULL)
-    : input_buffer(inputs)
+  cTaskContext(cOrgInterface* interface, const tBuffer<int>& inputs, const tBuffer<int>& outputs,
+               const tList<tBuffer<int> >& other_inputs, const tList<tBuffer<int> >& other_outputs,
+               bool in_net_valid, int in_net_completed, bool in_on_divide = false,
+               tBuffer<int>* in_received_messages = NULL)
+    : m_interface(interface)
+    , input_buffer(inputs)
     , output_buffer(outputs)
     , other_input_buffers(other_inputs)
     , other_output_buffers(other_outputs)
@@ -52,6 +58,7 @@ public:
   {
   }
   
+  inline int GetInputAt(int index) { return m_interface->GetInputAt(index); }
   inline const tBuffer<int>& GetInputBuffer() { return input_buffer; }
   inline const tBuffer<int>& GetOutputBuffer() { return output_buffer; }
   inline const tList<tBuffer<int> >& GetNeighborhoodInputBuffers() { return other_input_buffers; }

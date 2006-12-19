@@ -190,7 +190,7 @@ void cOrganism::DoOutput(cAvidaContext& ctx, const int value, const bool on_divi
   tBuffer<int>* received_messages_point = &m_received_messages;
   if (!m_world->GetConfig().SAVE_RECEIVED.Get()) received_messages_point = NULL;
   
-  cTaskContext taskctx(m_input_buf, m_output_buf, other_input_list, other_output_list, net_valid, 0, on_divide, received_messages_point);
+  cTaskContext taskctx(m_interface, m_input_buf, m_output_buf, other_input_list, other_output_list, net_valid, 0, on_divide, received_messages_point);
   m_phenotype.TestOutput(ctx, taskctx, resource_count, res_change, insts_triggered);
   m_interface->UpdateResources(res_change);
 
@@ -351,7 +351,7 @@ bool cOrganism::NetRemoteValidate(cAvidaContext& ctx, int value)
     m_output_buf.Add(value);
     tArray<double> res_change(resource_count.GetSize());
     tArray<int> insts_triggered;
-    cTaskContext taskctx(m_input_buf, m_output_buf, other_input_list, other_output_list, false, completed);
+    cTaskContext taskctx(m_interface, m_input_buf, m_output_buf, other_input_list, other_output_list, false, completed);
     m_phenotype.TestOutput(ctx, taskctx, resource_count, res_change, insts_triggered);
     m_interface->UpdateResources(res_change);
     
@@ -417,6 +417,28 @@ void cOrganism::PrintStatus(ostream& fp, const cString& next_name)
   fp << "---------------------------" << endl;
   m_hardware->PrintStatus(fp);
   m_phenotype.PrintStatus(fp);
+  fp << endl;
+
+  fp << setbase(16) << setfill('0');
+  
+  fp << "Input (env):";
+  for (int i = 0; i < m_input_buf.GetCapacity(); i++) {
+    int j = i; // temp holder, because GetInputAt self adjusts the input pointer
+    fp << " 0x" << setw(8) << m_interface->GetInputAt(j);
+  }
+  fp << endl;
+  
+  fp << "Input (buf):";
+  for (int i = 0; i < m_input_buf.GetNumStored(); i++) fp << " 0x" << setw(8) << m_input_buf[i];
+  fp << endl;
+
+  fp << "Output:     ";
+  for (int i = 0; i < m_output_buf.GetNumStored(); i++) fp << " 0x" << setw(8) << m_output_buf[i];
+  fp << endl;
+  
+  
+  fp << setfill(' ') << setbase(10);
+    
   fp << "---------------------------" << endl;
   fp << "ABOUT TO EXECUTE: " << next_name << endl;
 }

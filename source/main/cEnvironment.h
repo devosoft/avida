@@ -106,10 +106,10 @@ public:
   bool LoadLine(cString line);  // Reads in a single environment configuration line
 
   // Interaction with the organisms
-  void SetupInputs(cAvidaContext& ctx, tArray<int>& input_array) const;
+  void SetupInputs(cAvidaContext& ctx, tArray<int>& input_array, bool random = true) const;
 
   bool TestInput(cReactionResult& result, const tBuffer<int>& inputs,
-                 const tBuffer<int>& outputs, const tArray<double>& resource_count ) const;
+                 const tBuffer<int>& outputs, const tArray<double>& resource_count) const;
 
   bool TestOutput(cAvidaContext& ctx, cReactionResult& result, cTaskContext& taskctx,
                   const tArray<int>& task_count, const tArray<int>& reaction_count,

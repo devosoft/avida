@@ -1696,9 +1696,9 @@ void cAnalyze::CommandTrace(cString cur_string)
     test_info.SetTraceExecution(&trace_printer);
     test_info.UseRandomInputs(useRandomInputs==1); 
     
+    if (m_world->GetVerbosity() >= VERBOSE_ON) cout << "  Tracing: " << filename << endl;
     testcpu->TestGenome(m_ctx, test_info, genotype->GetGenome());
     
-    if (m_world->GetVerbosity() >= VERBOSE_ON) cout << "  Tracing: " << filename << endl;
     m_world->GetDataFileManager().Remove(filename);
   }
   

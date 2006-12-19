@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		1097463F0AE9606E00929ED6 /* cDeme.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1097463D0AE9606E00929ED6 /* cDeme.cc */; };
-		109746400AE9606E00929ED6 /* cDeme.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1097463E0AE9606E00929ED6 /* cDeme.h */; };
 		109746410AE9606E00929ED6 /* cDeme.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1097463D0AE9606E00929ED6 /* cDeme.cc */; };
 		109746420AE9606E00929ED6 /* cDeme.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1097463E0AE9606E00929ED6 /* cDeme.h */; };
 		109746430AE9606E00929ED6 /* cDeme.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1097463D0AE9606E00929ED6 /* cDeme.cc */; };
@@ -111,7 +110,6 @@
 		708BF3000AB65DC700A923BF /* cEventList.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708BF2FD0AB65DC700A923BF /* cEventList.cc */; };
 		7099EEC00B2F9D2A001269F6 /* cEnvReqs.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7099EEBF0B2F9D2A001269F6 /* cEnvReqs.h */; };
 		7099EEC10B2F9D2A001269F6 /* cEnvReqs.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7099EEBF0B2F9D2A001269F6 /* cEnvReqs.h */; };
-		7099EEC20B2F9D2A001269F6 /* cEnvReqs.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7099EEBF0B2F9D2A001269F6 /* cEnvReqs.h */; };
 		7099EF510B2FBC85001269F6 /* cAnalyzeScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7099EF470B2FBC85001269F6 /* cAnalyzeScreen.cc */; };
 		7099EF530B2FBC85001269F6 /* cAnalyzeView.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7099EF490B2FBC85001269F6 /* cAnalyzeView.cc */; };
 		7099EF560B2FBC86001269F6 /* cTextViewerAnalyzeDriver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7099EF4C0B2FBC85001269F6 /* cTextViewerAnalyzeDriver.cc */; };
@@ -432,8 +430,6 @@
 				7049F3710A66AD7E00640512 /* default-sex-classic.org in CopyFiles */,
 				7049F3720A66AD7E00640512 /* default-smt.org in CopyFiles */,
 				7049F3730A66AD7E00640512 /* default-transsmt.org in CopyFiles */,
-				109746400AE9606E00929ED6 /* cDeme.h in CopyFiles */,
-				7099EEC20B2F9D2A001269F6 /* cEnvReqs.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

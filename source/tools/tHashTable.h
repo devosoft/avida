@@ -59,6 +59,8 @@
 #include "tList.h"
 #endif
 
+#include <stdlib.h>
+
 #if USE_tMemTrack
 # ifndef tMemTrack_h
 #  include "tMemTrack.h"
@@ -114,8 +116,9 @@ private:
   
   // HASH_TYPE = int
   // Simply mod the into by the size of the hash table and hope for the best
-  int HashKey(const int & key) const {
-    return key % table_size;
+  int HashKey(const int& key) const
+  {
+    return abs(key % table_size);
   }
   
   // HASH_TYPE = cString

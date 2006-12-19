@@ -650,8 +650,9 @@ void cHardwareCPU::PrintStatus(ostream& fp)
     
   int number_of_stacks = GetNumStacks();
   for (int stack_id = 0; stack_id < number_of_stacks; stack_id++) {
-    fp << "Top of stack " << stack_id << ":"
-    << GetStack(0, stack_id, 0) << endl;
+    fp << ((m_threads[m_cur_thread].cur_stack == stack_id) ? '*' : ' ') << " Stack " << stack_id << ":" << setbase(16) << setfill('0');
+    for (int i = 0; i < nHardware::STACK_SIZE; i++) fp << " Ox" << setw(8) << GetStack(i, stack_id, 0);
+    fp << setfill(' ') << setbase(10) << endl;
   }
   
   fp << "  Mem (" << GetMemory().GetSize() << "):"

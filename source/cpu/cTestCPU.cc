@@ -208,27 +208,20 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info,
 {
   assert(cur_depth < test_info.generation_tests);
 
-  if (test_info.GetUseRandomInputs() == false) {
-    // We make sure that all combinations of inputs are present.  This is
-    // done explicitly in the key columns... (0f, 33, and 55)
-    input_array.Resize(3);
-    //    input_array[0] = 0x130f149f;  // 00010011 00001111 00010100 10011111
-    //    input_array[1] = 0x0833e53e;  // 00001000 00110011 11100101 00111110
-    //    input_array[2] = 0x625541eb;  // 01100010 01010101 01000001 11101011
+  // Input sizes can vary based on environment settings, must at least initialize
+  m_world->GetEnvironment().SetupInputs(ctx, input_array, test_info.GetUseRandomInputs());
 
-    input_array[0] = 0x0f13149f;  // 00001111 00010011 00010100 10011111
-    input_array[1] = 0x3308e53e;  // 00110011 00001000 11100101 00111110
-    input_array[2] = 0x556241eb;  // 01010101 01100010 01000001 11101011
-
-    receive_array.Resize(3);
+  receive_array.Resize(3);
+  if (test_info.GetUseRandomInputs()) {
+    receive_array[0] = (15 << 24) + ctx.GetRandom().GetUInt(1 << 24);  // 00001111
+    receive_array[1] = (51 << 24) + ctx.GetRandom().GetUInt(1 << 24);  // 00110011
+    receive_array[2] = (85 << 24) + ctx.GetRandom().GetUInt(1 << 24);  // 01010101
+  } else {
     receive_array[0] = 0x0f139f14;  // 00001111 00010011 10011111 00010100
     receive_array[1] = 0x33083ee5;  // 00110011 00001000 00111110 11100101
     receive_array[2] = 0x5562eb41;  // 01010101 01100010 11101011 01000001
-  } else {
-    m_world->GetEnvironment().SetupInputs(ctx, input_array);
-    m_world->GetEnvironment().SetupInputs(ctx, receive_array);
   }
-
+  
   if (cur_depth > test_info.max_depth) test_info.max_depth = cur_depth;
 
   // Setup the organism we're working with now.

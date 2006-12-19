@@ -226,6 +226,9 @@ private:  // Direct task related methods
   void Load_MatchNumber(const cString& name, const cString& argstr, cEnvReqs& envreqs);
   double Task_MatchNumber(cTaskContext& ctx) const;
 
+  void Load_SortInputs(const cString& name, const cString& argstr, cEnvReqs& envreqs);
+  double Task_SortInputs(cTaskContext& ctx) const;
+
   // Communication Tasks
   double Task_CommEcho(cTaskContext& ctx) const;
   double Task_CommNot(cTaskContext& ctx) const;
