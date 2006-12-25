@@ -114,6 +114,7 @@ public:
 
   inline cInstruction GetInst(const cString& in_name) const;
   cString FindBestMatch(const cString& in_name) const;
+  bool InstInSet(const cString& in_name) const;
 
   // Static methods..
   static const cInstruction& GetInstDefault() { return inst_default2; }

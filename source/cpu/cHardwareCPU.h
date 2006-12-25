@@ -175,6 +175,7 @@ protected:
   bool Divide_Main1RS(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1); //AWC 07/28/06
   bool Divide_Main2RS(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1); //AWC 07/28/06
 
+  void Divide_DoTransposons(cAvidaContext& ctx);
   
   void InjectCode(const cGenome& injection, const int line_num);
   
@@ -292,8 +293,13 @@ private:
   bool Inst_Throw(cAvidaContext& ctx);
   bool Inst_ThrowIf0(cAvidaContext& ctx);
   bool Inst_ThrowIfNot0(cAvidaContext& ctx);  
-  bool Inst_Catch(cAvidaContext& ctx) { return true; };
-  
+  bool Inst_Catch(cAvidaContext& ctx) { ReadLabel(); return true; };
+ 
+  bool Inst_Goto(cAvidaContext& ctx);
+  bool Inst_GotoIf0(cAvidaContext& ctx);
+  bool Inst_GotoIfNot0(cAvidaContext& ctx);  
+  bool Inst_Label(cAvidaContext& ctx) { ReadLabel(); return true; };
+    
   // Stack and Register Operations
   bool Inst_Pop(cAvidaContext& ctx);
   bool Inst_Push(cAvidaContext& ctx);
@@ -372,6 +378,7 @@ private:
   bool Inst_Inject(cAvidaContext& ctx);
   bool Inst_InjectRand(cAvidaContext& ctx);
   bool Inst_InjectThread(cAvidaContext& ctx);
+  bool Inst_Transposon(cAvidaContext& ctx);
   bool Inst_Repro(cAvidaContext& ctx);
   bool Inst_SpawnDeme(cAvidaContext& ctx);
   bool Inst_Kazi(cAvidaContext& ctx);

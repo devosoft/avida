@@ -22,6 +22,9 @@
 #ifndef tArray_h
 #include "tArray.h"
 #endif
+#ifndef cCodeLabel_h
+#include "cCodeLabel.h"
+#endif
 
 
 /*************************************************************************
@@ -83,6 +86,7 @@ private:
   tArray<int> cur_inst_count;	    // Intsruction exection counter
   tArray<int> cur_sense_count;     // Total times resource combinations have been sensed; JEB 10-22-06 
   tArray<double> sensed_resources; // Resources of which the organism is explictly aware
+  tArray<cCodeLabel> active_transposons; // Transposons that are active
   
   // 3. These mark the status of "in progess" variables at the last divide.
   double last_merit_base;         // Either constant or based on genome length.
@@ -199,8 +203,8 @@ public:
   const tArray<int>& GetCurReactionCount() const { assert(initialized == true); return cur_reaction_count;}
   const tArray<int>& GetCurInstCount() const { assert(initialized == true); return cur_inst_count; }
   const tArray<int>& GetCurSenseCount() const { assert(initialized == true); return cur_sense_count; }
-  
   double GetSensedResource(int _in) { assert(initialized == true); return sensed_resources[_in]; }
+  const tArray<cCodeLabel>& GetActiveTransposons() { assert(initialized == true); return active_transposons; }
 
   double GetLastMeritBase() const { assert(initialized == true); return last_merit_base; }
   double GetLastBonus() const { assert(initialized == true); return last_bonus; }
@@ -266,6 +270,8 @@ public:
 
   void IncCurInstCount(int _inst_num)  { assert(initialized == true); cur_inst_count[_inst_num]++; } 
   void DecCurInstCount(int _inst_num)  { assert(initialized == true); cur_inst_count[_inst_num]--; } 
+  
+  void ActivateTransposon(cCodeLabel & in_label) { assert(initialized == true); active_transposons.Push(in_label); }
 
   void IncAge()      { assert(initialized == true); age++; }
   void IncTimeUsed(int i=1) { assert(initialized == true); time_used+=i; }

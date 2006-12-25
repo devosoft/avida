@@ -123,6 +123,11 @@ cInstLibCPU *cHardwareCPU::initInstLib(void)
     cInstEntryCPU("throwif!=0",&cHardwareCPU::Inst_ThrowIfNot0),
     cInstEntryCPU("catch",     &cHardwareCPU::Inst_Catch),
     
+    cInstEntryCPU("goto",      &cHardwareCPU::Inst_Goto),
+    cInstEntryCPU("goto-if=0", &cHardwareCPU::Inst_GotoIf0),    
+    cInstEntryCPU("goto-if!=0",&cHardwareCPU::Inst_GotoIfNot0),
+    cInstEntryCPU("label",     &cHardwareCPU::Inst_Label),
+    
     cInstEntryCPU("pop",       &cHardwareCPU::Inst_Pop, true,
                   "Remove top number from stack and place into ?BX?"),
     cInstEntryCPU("push",      &cHardwareCPU::Inst_Push, true,
@@ -204,6 +209,7 @@ cInstLibCPU *cHardwareCPU::initInstLib(void)
     cInstEntryCPU("c-divide",  &cHardwareCPU::Inst_CDivide),
     cInstEntryCPU("inject",    &cHardwareCPU::Inst_Inject),
     cInstEntryCPU("inject-r",  &cHardwareCPU::Inst_InjectRand),
+    cInstEntryCPU("transposon",&cHardwareCPU::Inst_Transposon),
     cInstEntryCPU("search-f",  &cHardwareCPU::Inst_SearchF),
     cInstEntryCPU("search-b",  &cHardwareCPU::Inst_SearchB),
     cInstEntryCPU("mem-size",  &cHardwareCPU::Inst_MemSize),
@@ -1756,40 +1762,46 @@ bool cHardwareCPU::Inst_Throw(cAvidaContext& ctx)
   // Only initialize this once to save some time...
   static cInstruction catch_inst = GetInstSet().GetInst(cStringUtil::Stringf("catch"));
 
-  //What label complement are we looking for?
-  //If the size is zero then we just find the first example of a catch
+  //Look for the label directly (no complement)
   ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
-  
+    
   cHeadCPU search_head(IP());
   int start_pos = search_head.GetPosition();
   search_head++;
   
-  while (start_pos != search_head.GetPosition()) {
-    
+  while (start_pos != search_head.GetPosition()) 
+  {
     // If we find a catch instruction, compare the NOPs following it
     if (search_head.GetInst() == catch_inst)
     {
       int catch_pos = search_head.GetPosition();
       search_head++;
-      int size_matched = 0;
-      while ( GetLabel().GetSize() > size_matched )
+
+      // Continue to examine the label after the catch
+      //  (1) It ends (=> use the catch!)
+      //  (2) It becomes longer than the throw label (=> use the catch!)
+      //  (3) We find a NOP that doesnt match the throw (=> DON'T use the catch...)
+      
+      bool match = true;
+      int size_matched = 0;      
+      while ( match && m_inst_set->IsNop(search_head.GetInst()) && (GetLabel().GetSize() > size_matched) )
       {
-        if ( !m_inst_set->IsNop( search_head.GetInst()) ) break;
-        if ( GetLabel()[size_matched] != m_inst_set->GetNopMod( search_head.GetInst()) ) break;
+        if ( GetLabel()[size_matched] != m_inst_set->GetNopMod( search_head.GetInst()) ) match = false;
         search_head++;
         size_matched++;
       }
       
       // We found a matching catch instruction
-      // set the catch to execute 
-      if (GetLabel().GetSize() == size_matched)
+      if (match)
       {
         IP().Set(catch_pos);
         m_advance_ip = false; // Don't automatically move the IP
                               // so we mark the catch as executed.
         return true;
       }
+      
+      //If we advanced past NOPs during testing, retreat
+      if ( !m_inst_set->IsNop(search_head.GetInst()) ) search_head--;
     }
     search_head.Advance();
   }
@@ -1809,6 +1821,66 @@ bool cHardwareCPU::Inst_ThrowIf0(cAvidaContext& ctx)
   if (GetRegister(REG_BX) != 0) return false;
   return Inst_Throw(ctx);
 }
+
+bool cHardwareCPU::Inst_Goto(cAvidaContext& ctx)
+{
+  // Only initialize this once to save some time...
+  static cInstruction label_inst = GetInstSet().GetInst(cStringUtil::Stringf("label"));
+
+  //Look for an EXACT label match after a 'label' instruction
+  ReadLabel();
+  
+  cHeadCPU search_head(IP());
+  int start_pos = search_head.GetPosition();
+  search_head++;
+  
+  while (start_pos != search_head.GetPosition()) 
+  {
+    if (search_head.GetInst() == label_inst)
+    {
+      int label_pos = search_head.GetPosition();
+      search_head++;
+      int size_matched = 0;
+      bool match = true;
+      while ( match && m_inst_set->IsNop(search_head.GetInst()) && (GetLabel().GetSize() > size_matched) )
+      {
+        if ( GetLabel()[size_matched] != m_inst_set->GetNopMod( search_head.GetInst()) ) match = false;
+        search_head++;
+        size_matched++;
+      }
+      
+      // We found a matching 'label' instruction only if the next 
+      // instruction (at the search head now) is not a NOP
+      if ( match && !m_inst_set->IsNop(search_head.GetInst()) )
+      {
+        IP().Set(label_pos);
+        m_advance_ip = false; // Don't automatically move the IP
+                              // so we mark the catch as executed.
+        return true;
+      }
+
+      //If we advanced past NOPs during testing, retreat
+      if ( !m_inst_set->IsNop(search_head.GetInst()) ) search_head--;
+    }
+    search_head++;
+  }
+
+  return false;
+}
+
+
+bool cHardwareCPU::Inst_GotoIfNot0(cAvidaContext& ctx)
+{
+  if (GetRegister(REG_BX) == 0) return false;
+  return Inst_Goto(ctx);
+}
+
+bool cHardwareCPU::Inst_GotoIf0(cAvidaContext& ctx)
+{
+  if (GetRegister(REG_BX) != 0) return false;
+  return Inst_Goto(ctx);
+}
+
 
 bool cHardwareCPU::Inst_Pop(cAvidaContext& ctx)
 {
@@ -2485,6 +2557,52 @@ bool cHardwareCPU::Inst_MaxAlloc(cAvidaContext& ctx)   // Allocate maximal more
   } else return false;
 }
 
+bool cHardwareCPU::Inst_Transposon(cAvidaContext& ctx)
+{
+  ReadLabel();
+  //organism->GetPhenotype().ActivateTransposon(GetLabel());
+}
+
+void cHardwareCPU::Divide_DoTransposons(cAvidaContext& ctx)
+{
+  // This only works if 'transposon' is in the current instruction set
+  static bool transposon_in_use = GetInstSet().InstInSet(cStringUtil::Stringf("transposon"));
+  if (!transposon_in_use) return;
+  
+  static cInstruction transposon_inst = GetInstSet().GetInst(cStringUtil::Stringf("transposon"));
+  cCPUMemory& child_genome = organism->ChildGenome();
+
+  // Count the number of transposons that are marked as executed
+  int tr_count = 0;
+  for (int i=0; i < child_genome.GetSize(); i++) 
+  {
+    if (child_genome.FlagExecuted(i) && (child_genome[i] == transposon_inst)) tr_count++;
+  }
+  
+  for (int i=0; i < tr_count; i++) 
+  {
+    if (ctx.GetRandom().P(0.01))
+    {
+      const unsigned int mut_line = ctx.GetRandom().GetUInt(child_genome.GetSize() + 1);
+      child_genome.Insert(mut_line, transposon_inst);
+    }
+  }
+  
+  
+/*
+  const tArray<cCodeLabel> tr = organism->GetPhenotype().GetActiveTransposons();
+  cCPUMemory& child_genome = organism->ChildGenome();
+  
+  for (int i=0; i < tr.GetSize(); i++) 
+  {
+    if (ctx.GetRandom().P(0.1))
+    {
+      const unsigned int mut_line = ctx.GetRandom().GetUInt(child_genome.GetSize() + 1);
+      child_genome.Insert(mut_line, transposon_inst);
+    }
+  }
+*/  
+}
 
 bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
 {
@@ -2509,6 +2627,9 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
     if ( GetMemory().FlagExecuted(i)) lines_executed++;
   }
   organism->GetPhenotype().SetLinesExecuted(lines_executed);
+  
+  // Do transposon movement and copying before other mutations
+  Divide_DoTransposons(ctx);
   
   // Perform Copy Mutations...
   if (organism->GetCopyMutProb() > 0) { // Skip this if no mutations....
