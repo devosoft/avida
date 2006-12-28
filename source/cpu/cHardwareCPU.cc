@@ -1784,7 +1784,7 @@ bool cHardwareCPU::Inst_Throw(cAvidaContext& ctx)
       
       bool match = true;
       int size_matched = 0;      
-      while ( match && m_inst_set->IsNop(search_head.GetInst()) && (GetLabel().GetSize() > size_matched) )
+      while ( match && m_inst_set->IsNop(search_head.GetInst()) && (size_matched < GetLabel().GetSize()) )
       {
         if ( GetLabel()[size_matched] != m_inst_set->GetNopMod( search_head.GetInst()) ) match = false;
         search_head++;
@@ -1842,16 +1842,19 @@ bool cHardwareCPU::Inst_Goto(cAvidaContext& ctx)
       search_head++;
       int size_matched = 0;
       bool match = true;
-      while ( match && m_inst_set->IsNop(search_head.GetInst()) && (GetLabel().GetSize() > size_matched) )
+      while ( size_matched < GetLabel().GetSize() )
       {
-        if ( GetLabel()[size_matched] != m_inst_set->GetNopMod( search_head.GetInst()) ) match = false;
-        search_head++;
+        if ( !m_inst_set->IsNop(search_head.GetInst()) ) break;
+        if ( GetLabel()[size_matched] != m_inst_set->GetNopMod( search_head.GetInst()) ) break;
+        if ( !m_inst_set->IsNop(search_head.GetInst()) ) break;
+
         size_matched++;
+        search_head++;
       }
       
       // We found a matching 'label' instruction only if the next 
-      // instruction (at the search head now) is not a NOP
-      if ( match && !m_inst_set->IsNop(search_head.GetInst()) )
+      // instruction (at the search head now) is also not a NOP
+      if ( (size_matched == GetLabel().GetSize()) && !m_inst_set->IsNop(search_head.GetInst()) )
       {
         IP().Set(label_pos);
         m_advance_ip = false; // Don't automatically move the IP
