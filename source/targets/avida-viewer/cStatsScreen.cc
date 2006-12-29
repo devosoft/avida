@@ -13,7 +13,6 @@
 #include "cPopulation.h"
 #include "cSpecies.h"
 #include "cStats.h"
-#include "cTaskEntry.h"
 
 using namespace std;
 
@@ -57,14 +56,15 @@ void cStatsScreen::Draw()
 
 
   int task_num = task_offset;
-  const cTaskLib & task_lib = m_world->GetEnvironment().GetTaskLib();
-  for (int col_id = 3; task_num < info.GetWorld().GetNumTasks(); col_id += 20) {
+  const cEnvironment& environment = m_world->GetEnvironment();
+  const int num_tasks = environment.GetNumTasks();
+  for (int col_id = 3; task_num < num_tasks; col_id += 20) {
     if (col_id + 16 > Width()) break;
     for (int row_id = 15;
-	 row_id < 15 + task_rows && task_num < info.GetWorld().GetNumTasks();
+	 row_id < 15 + task_rows && task_num < num_tasks;
 	 row_id++) {
       Print(row_id, col_id, ".........:");
-      Print(row_id, col_id, "%s", static_cast<const char*>(task_lib.GetTask(task_num).GetName()));
+      Print(row_id, col_id, "%s", static_cast<const char*>(environment.GetTask(task_num).GetName()));
       task_num++;
     }
   }
@@ -73,7 +73,7 @@ void cStatsScreen::Draw()
 
   Box(14, 0, task_rows + 2, Width(), true);
 
-  if (task_num < info.GetWorld().GetNumTasks() || task_offset != 0) {
+  if (task_num < num_tasks || task_offset != 0) {
     SetBoldColor(COLOR_WHITE);
     Print(15 + task_rows, Width() - 20, " [<-] More [->] ");
     SetBoldColor(COLOR_CYAN);
@@ -163,10 +163,11 @@ void cStatsScreen::Update()
 
   // This section needs to be changed to work with new task_lib @TCC
   int task_num = task_offset;
-  for (int col_id = 14; task_num < info.GetWorld().GetNumTasks(); col_id += 20) {
+  const int num_tasks = info.GetWorld().GetEnvironment().GetNumTasks();
+  for (int col_id = 14; task_num < num_tasks; col_id += 20) {
     if (col_id + 5 > Width()) break;
     for (int row_id = 15;
-	 row_id < 15 + task_rows && task_num < info.GetWorld().GetNumTasks();
+	 row_id < 15 + task_rows && task_num < num_tasks;
 	 row_id++) {
       Print(row_id, col_id, "%4d", stats.GetTaskLastCount(task_num));
       task_num++;
@@ -190,7 +191,7 @@ void cStatsScreen::DoInput(int in_char)
     break;
   case '6':
   case KEY_RIGHT:
-    if (task_rows * task_cols + task_offset < info.GetWorld().GetNumTasks()) {
+    if (task_rows * task_cols + task_offset < info.GetWorld().GetEnvironment().GetNumTasks()) {
       task_offset += 5;
       Draw();
     }

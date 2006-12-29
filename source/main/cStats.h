@@ -447,7 +447,6 @@ public:
     spatial_res_count = _in;
   }
 
-  void SetTaskName(int id, const cString & name) { task_names[id] = name; }
   void SetInstName(int id, const cString & name) {
     assert(id < inst_names.GetSize());
     inst_names[id] = name;

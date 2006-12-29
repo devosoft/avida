@@ -27,7 +27,6 @@
 #include "cPopulationCell.h"
 #include "cStats.h"
 #include "cString.h"
-#include "cTestUtil.h"
 #include "cWorld.h"
 #include "cWorldDriver.h"
 #include "tSmartArray.h"

@@ -153,7 +153,7 @@ void cOrganism::DoOutput(cAvidaContext& ctx, const int value, const bool on_divi
   tList<tBuffer<int> > other_output_list;
 
   // If tasks require us to consider neighbor inputs, collect them...
-  if (m_world->GetEnvironment().GetTaskLib().UseNeighborInput() == true) {
+  if (m_world->GetEnvironment().UseNeighborInput()) {
     const int num_neighbors = m_interface->GetNumNeighbors();
     for (int i = 0; i < num_neighbors; i++) {
       m_interface->Rotate();
@@ -165,7 +165,7 @@ void cOrganism::DoOutput(cAvidaContext& ctx, const int value, const bool on_divi
   }
 
   // If tasks require us to consider neighbor outputs, collect them...
-  if (m_world->GetEnvironment().GetTaskLib().UseNeighborOutput() == true) {
+  if (m_world->GetEnvironment().UseNeighborOutput()) {
     const int num_neighbors = m_interface->GetNumNeighbors();
     for (int i = 0; i < num_neighbors; i++) {
       m_interface->Rotate();
@@ -324,7 +324,7 @@ bool cOrganism::NetRemoteValidate(cAvidaContext& ctx, int value)
     tList<tBuffer<int> > other_output_list;
     
     // If tasks require us to consider neighbor inputs, collect them...
-    if (m_world->GetEnvironment().GetTaskLib().UseNeighborInput() == true) {
+    if (m_world->GetEnvironment().UseNeighborInput()) {
       const int num_neighbors = m_interface->GetNumNeighbors();
       for (int i = 0; i < num_neighbors; i++) {
         m_interface->Rotate();
@@ -336,7 +336,7 @@ bool cOrganism::NetRemoteValidate(cAvidaContext& ctx, int value)
     }
     
     // If tasks require us to consider neighbor outputs, collect them...
-    if (m_world->GetEnvironment().GetTaskLib().UseNeighborOutput() == true) {
+    if (m_world->GetEnvironment().UseNeighborOutput()) {
       const int num_neighbors = m_interface->GetNumNeighbors();
       for (int i = 0; i < num_neighbors; i++) {
         m_interface->Rotate();
@@ -441,6 +441,23 @@ void cOrganism::PrintStatus(ostream& fp, const cString& next_name)
     
   fp << "---------------------------" << endl;
   fp << "ABOUT TO EXECUTE: " << next_name << endl;
+}
+
+void cOrganism::PrintFinalStatus(ostream& fp, int time_used, int time_allocated) const
+{
+  fp << "---------------------------" << endl;
+  m_phenotype.PrintStatus(fp);
+  fp << endl;
+
+  if (time_used == time_allocated) {
+    fp << endl << "# TIMEOUT: No offspring produced." << endl;
+  } else if (m_hardware->GetMemory().GetSize() == 0) {
+    fp << endl << "# ORGANISM DEATH: No offspring produced." << endl;
+  } else {
+    fp << endl;
+    fp << "# Final Memory: " << m_hardware->GetMemory().AsString() << endl;
+    fp << "# Child Memory: " << m_child_genome.AsString() << endl;
+  }
 }
 
 

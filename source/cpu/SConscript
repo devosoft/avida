@@ -19,7 +19,6 @@ incs = [
   'cInstLibCPU.h',
   'cTestCPU.h',
   'cTestCPUInterface.h',
-  'cTestUtil.h',
   'nHardware.h',
   'sCPUStats.h',
   'tInstLib.h',
@@ -39,7 +38,6 @@ srcs = [
   'cHeadCPU.cc',
   'cTestCPU.cc',
   'cTestCPUInterface.cc',
-  'cTestUtil.cc',
 ]
 
 environment.Library('cpu', srcs) 

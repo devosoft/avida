@@ -126,8 +126,6 @@ public:
   void PrintStats(cDataFile& df, int update = -1);
   void PrintEntropy(cDataFile& fp);
   void PrintSiteCount(cDataFile& fp);
-  void PrintBase(cString filename);
-  void PrintPeak(cString filename);
 
   inline const cGenome& GetPeakGenome() { return peak_genome; }
   inline double GetAveFitness() { return total_fitness / total_count; }

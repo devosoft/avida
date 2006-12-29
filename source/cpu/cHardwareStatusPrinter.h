@@ -16,11 +16,7 @@
 #ifndef cHardwareTracer_h
 #include "cHardwareTracer.h"
 #endif
-#ifndef cString_h
-#include "cString.h"
-#endif
 
-class cHardwareBase;
 
 class cHardwareStatusPrinter : public cHardwareTracer
 {
@@ -36,8 +32,7 @@ public:
   cHardwareStatusPrinter(std::ostream& trace_fp) : m_trace_fp(trace_fp) { ; }
 
   virtual void TraceHardware(cHardwareBase& hardware, bool bonus);
-  virtual void TraceTestCPU(int time_used, int time_allocated, int size,
-                            const cString& final_memory, const cString& child_memory);
+  virtual void TraceTestCPU(int time_used, int time_allocated, const cOrganism& organism);
 };
 
 

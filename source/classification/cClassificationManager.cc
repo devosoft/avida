@@ -13,13 +13,14 @@
 #include "cDataFile.h"
 #include "cGenome.h"
 #include "cGenotype.h"
+#include "cHardwareManager.h"
 #include "cInjectGenotype.h"
 #include "cLineage.h"
 #include "cOrganism.h"
 #include "cSpecies.h"
 #include "cStats.h"
 #include "cStringList.h"
-#include "cTestUtil.h"
+#include "cTestCPU.h"
 #include "cWorld.h"
 #include "cWorldDriver.h"
 
@@ -59,6 +60,8 @@ void cClassificationManager::UpdateReset()
 {
   cGenotype* best_genotype = GetBestGenotype();
   
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+
   m_species_ctl->Purge(m_world->GetStats());
   if (best_genotype && best_genotype->GetID() != m_genotype_prev_dom) {
     m_genotype_dom_time = 0;
@@ -69,8 +72,8 @@ void cClassificationManager::UpdateReset()
     if (m_genotype_dom_time == m_world->GetConfig().GENOTYPE_PRINT_DOM.Get()) {
       cString filename;
       filename.Set("archive/%s", static_cast<const char*>(best_genotype->GetName()));
-      cTestUtil::PrintGenome(m_world, best_genotype->GetGenome(), 
-                             filename, best_genotype, m_world->GetStats().GetUpdate());
+      testcpu->PrintGenome(m_world->GetDefaultContext(), best_genotype->GetGenome(), 
+                           filename, best_genotype, m_world->GetStats().GetUpdate());
     }
   }
   
@@ -86,11 +89,13 @@ void cClassificationManager::UpdateReset()
       if (m_inject_dom_time == m_world->GetConfig().GENOTYPE_PRINT_DOM.Get()) {
         cString filename;
         filename.Set("archive/%s", static_cast<const char*>(best_inject_genotype->GetName()));
-        cTestUtil::PrintGenome(m_world, best_inject_genotype, best_inject_genotype->GetGenome(), 
+        testcpu->PrintInjectGenome(m_world->GetDefaultContext(), best_inject_genotype, best_inject_genotype->GetGenome(), 
                                filename, m_world->GetStats().GetUpdate());
       }
     }
   }
+
+  delete testcpu;
 }
 
 void cClassificationManager::AddGenotype(cGenotype* in_genotype, int list_num)
@@ -362,8 +367,10 @@ void cClassificationManager::ThresholdGenotype(cGenotype & in_genotype)
       if (m_world->GetConfig().SPECIES_PRINT.Get()) {
         cString filename;
         filename.Set("archive/spec-%04d", found_species->GetID());
-        cTestUtil::PrintGenome(m_world, in_genotype.GetGenome(), filename,
-                               &in_genotype, m_world->GetStats().GetUpdate());
+        cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+        testcpu->PrintGenome(m_world->GetDefaultContext(), in_genotype.GetGenome(), filename,
+                             &in_genotype, m_world->GetStats().GetUpdate());
+        delete testcpu;
       }
     } else {
       // If we are not creating a new species, but are adding a threshold
@@ -411,8 +418,10 @@ void cClassificationManager::ThresholdGenotype(cGenotype & in_genotype)
   if (m_world->GetConfig().GENOTYPE_PRINT.Get()) {
     cString filename;
     filename.Set("archive/%s", static_cast<const char*>(in_genotype.GetName()));
-    cTestUtil::PrintGenome(m_world, in_genotype.GetGenome(), filename,
-                           &in_genotype, m_world->GetStats().GetUpdate());
+    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+    testcpu->PrintGenome(m_world->GetDefaultContext(), in_genotype.GetGenome(), filename,
+                         &in_genotype, m_world->GetStats().GetUpdate());
+    delete testcpu;
   }
 }
 

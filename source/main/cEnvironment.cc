@@ -540,6 +540,7 @@ bool cEnvironment::LoadReaction(cString desc)
   // Process the environment requirements of this task
   if (envreqs.GetMinInputs() > m_input_size) m_input_size = envreqs.GetMinInputs();
   if (envreqs.GetMinOutputs() > m_output_size) m_output_size = envreqs.GetMinOutputs();
+  if (envreqs.GetTrueRandInputs()) m_true_rand = true;
   
   return true;
 }
@@ -733,15 +734,21 @@ void cEnvironment::SetupInputs(cAvidaContext& ctx, tArray<int>& input_array, boo
 {
   input_array.Resize(m_input_size);
   
-  if (random) {    
-    // Set the top 8 bits of the input buffer...
-    input_array[0] = 15 << 24;  // 00001111
-    input_array[1] = 51 << 24;  // 00110011
-    input_array[2] = 85 << 24;  // 01010101
-    
-    // And randomize the rest...
-    for (int i = 0; i < m_input_size; i++) {
-      input_array[i] += ctx.GetRandom().GetUInt(1 << 24);
+  if (random) {
+    if (m_true_rand) {
+      for (int i = 0; i < m_input_size; i++) {
+        input_array[i] = ctx.GetRandom().GetUInt(1 << 31);
+      }
+    } else {
+      // Set the top 8 bits of the input buffer...
+      input_array[0] = 15 << 24;  // 00001111
+      input_array[1] = 51 << 24;  // 00110011
+      input_array[2] = 85 << 24;  // 01010101
+      
+      // And randomize the rest...
+      for (int i = 0; i < m_input_size; i++) {
+        input_array[i] += ctx.GetRandom().GetUInt(1 << 24);
+      }
     }
   } else {
     // We make sure that all combinations of inputs are present.  This is

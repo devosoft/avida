@@ -16,7 +16,6 @@
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cStringUtil.h"
-#include "cTaskEntry.h"
 
 #include "cHardwareBase.h"
 #include "cHardwareCPU.h"
@@ -144,22 +143,19 @@ void cZoomScreen::DrawStats()
   
   int task_num = task_offset;
   int col_num = 0;
-  const cTaskLib& task_lib = population.GetEnvironment().GetTaskLib();
-  for (int cur_col = TASK_X + 2;
-       task_num < info.GetWorld().GetNumTasks();
-       cur_col += 14) {
-    for (int cur_row = TASK_Y + 1;
-         cur_row < Height() - 1 && task_num < info.GetWorld().GetNumTasks();
-         cur_row++) {
+  const cEnvironment& environment = info.GetWorld().GetEnvironment();
+  const int num_tasks = environment.GetNumTasks();
+  for (int cur_col = TASK_X + 2; task_num < num_tasks; cur_col += 14) {
+    for (int cur_row = TASK_Y + 1; cur_row < Height() - 1 && task_num < num_tasks; cur_row++) {
       Print(cur_row, cur_col, "........:");
-      Print(cur_row, cur_col, "%s", static_cast<const char*>(task_lib.GetTask(task_num).GetName()));
+      Print(cur_row, cur_col, "%s", static_cast<const char*>(environment.GetTask(task_num).GetName()));
       task_num++;
     }
     col_num++;
     if (col_num == 2) break;
   }
   
-  if (task_num < info.GetWorld().GetNumTasks() || task_offset != 0) {
+  if (task_num < num_tasks || task_offset != 0) {
     SetBoldColor(COLOR_WHITE);
     PrintOption(Height()-1, Width() - 23, " [<-] More [->] ");
   }
@@ -481,13 +477,10 @@ void cZoomScreen::UpdateStats(cHardwareBase& hardware)
   SetColor(COLOR_CYAN);
   
   int task_num = task_offset;
+  int num_tasks = info.GetWorld().GetEnvironment().GetNumTasks();
   int col_num = 0;
-  for (int cur_col = TASK_X + 12;
-       task_num < info.GetWorld().GetNumTasks();
-       cur_col += 14) {
-    for (int cur_row = TASK_Y + 1;
-         cur_row <= Height() - 2 && task_num < info.GetWorld().GetNumTasks();
-         cur_row++) {
+  for (int cur_col = TASK_X + 12; task_num < num_tasks; cur_col += 14) {
+    for (int cur_row = TASK_Y + 1; cur_row <= Height() - 2 && task_num < num_tasks; cur_row++) {
       if (col_num < 2) {
         Print(cur_row, cur_col, "%2d", phenotype.GetCurTaskCount()[task_num]);
       }
@@ -1624,7 +1617,7 @@ bool cZoomScreen::DoInputStats(int in_char)
     case KEY_RIGHT:
     {
       const int new_task_offset = task_offset + Height() - TASK_Y - 2;
-      if (new_task_offset < info.GetWorld().GetNumTasks()) {
+      if (new_task_offset < info.GetWorld().GetEnvironment().GetNumTasks()) {
         task_offset = new_task_offset;
         Draw();
       }

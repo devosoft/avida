@@ -12,6 +12,7 @@
 #define cHardwareTracer_h
 
 class cHardwareBase;
+class cOrganism;
 class cString;
 
 class cHardwareTracer
@@ -19,8 +20,7 @@ class cHardwareTracer
 public:
   virtual ~cHardwareTracer() { ; }
   virtual void TraceHardware(cHardwareBase&, bool bonus = false) = 0;
-  virtual void TraceTestCPU(int time_used, int time_allocated, int size,
-                            const cString& final_memory, const cString& child_memory) = 0;
+  virtual void TraceTestCPU(int time_used, int time_allocated, const cOrganism& organism)= 0;
 };
 
 #endif

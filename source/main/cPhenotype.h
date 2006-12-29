@@ -172,7 +172,7 @@ public:
   // State saving and loading, and printing...
   bool SaveState(std::ofstream& fp);
   bool LoadState(std::ifstream & fp);
-  void PrintStatus(std::ostream& fp);
+  void PrintStatus(std::ostream& fp) const;
 
   // Some useful methods...
   int CalcSizeMerit() const;
@@ -212,7 +212,7 @@ public:
   int GetLastNumErrors() const { assert(initialized == true); return last_num_errors; }
   int GetLastNumDonates() const { assert(initialized == true); return last_num_donates; }
   const tArray<int>& GetLastTaskCount() const { assert(initialized == true); return last_task_count; }
-    const tArray<double> & GetLastTaskQuality() const { assert(initialized == true); return last_task_quality; }
+  const tArray<double>& GetLastTaskQuality() const { assert(initialized == true); return last_task_quality; }
   const tArray<int>& GetLastReactionCount() const { assert(initialized == true); return last_reaction_count; }
   const tArray<int>& GetLastInstCount() const { assert(initialized == true); return last_inst_count; }
   const tArray<int>& GetLastSenseCount() const { assert(initialized == true); return last_sense_count; }

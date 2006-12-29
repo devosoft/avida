@@ -24,14 +24,14 @@ using namespace std;
 cPhenotype::cPhenotype(cWorld* world)
   : m_world(world)
   , initialized(false)
-  , cur_task_count(m_world->GetEnvironment().GetTaskLib().GetSize())
-  , cur_task_quality(m_world->GetEnvironment().GetTaskLib().GetSize())
+  , cur_task_count(m_world->GetEnvironment().GetNumTasks())
+  , cur_task_quality(m_world->GetEnvironment().GetNumTasks())
   , cur_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
   , cur_inst_count(world->GetHardwareManager().GetInstSet().GetSize())
   , cur_sense_count(m_world->GetStats().GetSenseSize())
   , sensed_resources(m_world->GetEnvironment().GetResourceLib().GetSize())
-  , last_task_count(m_world->GetEnvironment().GetTaskLib().GetSize())
-  , last_task_quality(m_world->GetEnvironment().GetTaskLib().GetSize())
+  , last_task_count(m_world->GetEnvironment().GetNumTasks())
+  , last_task_quality(m_world->GetEnvironment().GetNumTasks())
   , last_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
   , last_inst_count(world->GetHardwareManager().GetInstSet().GetSize())
   , last_sense_count(m_world->GetStats().GetSenseSize())
@@ -511,7 +511,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
 
 
 
-bool cPhenotype::TestInput(tBuffer<int> & inputs, tBuffer<int> & outputs)
+bool cPhenotype::TestInput(tBuffer<int>& inputs, tBuffer<int>& outputs)
 {
   assert(initialized == true);
   // For the moment, lets not worry about inputs...
@@ -526,7 +526,7 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
 
   const cEnvironment& env = m_world->GetEnvironment();
   const int num_resources = env.GetResourceLib().GetSize();
-  const int num_tasks = env.GetTaskLib().GetSize();
+  const int num_tasks = env.GetNumTasks();
   const int num_reactions = env.GetReactionLib().GetSize();
 
   cReactionResult result(num_resources, num_tasks, num_reactions);
@@ -724,19 +724,18 @@ bool cPhenotype::LoadState(ifstream & fp)
   return true;
 }
 
-void cPhenotype::PrintStatus(ostream& fp)
+void cPhenotype::PrintStatus(ostream& fp) const
 {
   fp << "  MeritBase:"
      << CalcSizeMerit()
      << " Bonus: " << cur_bonus
      << " Errors:" << cur_num_errors
-     << " Donates:" << cur_num_donates
-     << " Tasks:";
-
-  for (int i = 0; i < cur_task_count.GetSize(); i++) {
-    fp << " " << cur_task_count[i];
-  }
-
+     << " Donates:" << cur_num_donates;
+  fp << endl;
+  
+  fp << "  Task Count (Quality):";
+  for (int i = 0; i < cur_task_count.GetSize(); i++)
+    fp << " " << cur_task_count[i] << " (" << cur_task_quality[i] << ")";
   fp << endl;
 }
 

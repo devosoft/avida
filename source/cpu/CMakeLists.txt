@@ -12,7 +12,6 @@ SET(libcpu_a_SOURCES
   cHeadCPU.cc
   cTestCPU.cc
   cTestCPUInterface.cc
-  cTestUtil.cc
 )
 
 INCLUDE_DIRECTORIES(${ALL_INC_DIRS})

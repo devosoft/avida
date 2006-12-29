@@ -212,7 +212,8 @@ public:
   double GetTestFitness(cAvidaContext& ctx);
   double CalcMeritRatio();
   
-  void PrintStatus(std::ostream& fp, const cString & next_name);
+  void PrintStatus(std::ostream& fp, const cString& next_name);
+  void PrintFinalStatus(std::ostream& fp, int time_used, int time_allocated) const;
   void Fault(int fault_loc, int fault_type, cString fault_desc="");
 
 

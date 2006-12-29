@@ -18,9 +18,8 @@
 #include "cHardwareManager.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
-#include "cStats.h"             // For GetUpdate in outputs...
+#include "cStats.h"
 #include "cTestCPU.h"
-#include "cTestUtil.h"
 #include "cTools.h"
 #include "cWorld.h"
 #include "tAnalyzeJob.h"

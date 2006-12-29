@@ -9,12 +9,13 @@
 
 #include "cEnvironment.h"
 #include "cGenotype.h"
+#include "cHardwareManager.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cStats.h"
-#include "cTestUtil.h"
+#include "cTestCPU.h"
 #include "cHardwareBase.h"
 
 #include "cMenuWindow.h"
@@ -338,7 +339,9 @@ void cView::ExtractCreature()
 
   if (cur_screen) cur_screen->Print(20, 0, "Extracting %s...", static_cast<const char*>(gen_name));
 
-  cTestUtil::PrintGenome(&info.GetWorld(), cur_gen->GetGenome(), gen_name);
+  cTestCPU* testcpu = info.GetWorld().GetHardwareManager().CreateTestCPU();
+  testcpu->PrintGenome(info.GetWorld().GetDefaultContext(), cur_gen->GetGenome(), gen_name);
+  delete testcpu;
 
   if (cur_screen) {
     cur_screen->Print(20, 24, "Done.");

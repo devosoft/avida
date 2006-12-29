@@ -26,24 +26,26 @@
 
 cWorld::~cWorld()
 {
-  if(m_data_mgr) { m_data_mgr->FlushAll(); }
-
-  if(m_pop){ delete m_pop; m_pop=0; }
-
+  if (m_data_mgr) { m_data_mgr->FlushAll(); }
+  
+  delete m_pop; m_pop = NULL;
+  
   // m_actlib is not owned by cWorld, DO NOT DELETE
-  if(m_analyze){ delete m_analyze; m_analyze=0; }
-  if(m_conf){ delete m_conf; m_conf=0; }
-  if(m_data_mgr){ delete m_data_mgr; m_data_mgr=0; }
-  if(m_env){ delete m_env; m_env=0; }
-  if(m_event_list){ delete m_event_list; m_event_list=0; }
+  delete m_analyze; m_analyze = NULL;
+  delete m_conf; m_conf = NULL;
+  delete m_data_mgr; m_data_mgr = NULL;
+  delete m_env; m_env = NULL;
+  delete m_event_list; m_event_list = NULL;
+  
   // must occur *after* m_pop is deleted. @kgn
-  if(m_hw_mgr){ delete m_hw_mgr; m_hw_mgr=0; }
-  if(m_class_mgr){ delete m_class_mgr; m_class_mgr=0; }
-  if(m_stats){ delete m_stats; m_stats=0; }
-
+  delete m_hw_mgr; m_hw_mgr = NULL;
+  delete m_class_mgr; m_class_mgr = NULL;
+  delete m_stats; m_stats = NULL;
+  
   // cleanup driver object, if needed
-  if (m_own_driver) { assert(m_driver); delete m_driver; m_driver=0; }
+  if (m_own_driver) { delete m_driver; m_driver = NULL; }
 }
+
 
 void cWorld::Setup()
 {
@@ -71,22 +73,32 @@ void cWorld::Setup()
     cerr << "Unable to load environment... aborting!" << endl;
     ExitAvida(-1);
   }
-
+  
   m_hw_mgr = new cHardwareManager(this);
+  
+  
+  // Setup Stats Object
   m_stats = new cStats(this);
+    
+  const cInstSet& inst_set = m_hw_mgr->GetInstSet();
+  for (int i = 0; i < inst_set.GetSize(); i++)
+    m_stats->SetInstName(i, inst_set.GetName(i));
+  
+  
   m_pop = new cPopulation(this);
-
+  
   // Setup Event List
   m_event_list = new cEventList(this);
   m_event_list->LoadEventFile(m_conf->EVENT_FILE.Get());
-    
+  
+  
   const bool revert_fatal = m_conf->REVERT_FATAL.Get() > 0.0;
   const bool revert_neg = m_conf->REVERT_DETRIMENTAL.Get() > 0.0;
   const bool revert_neut = m_conf->REVERT_NEUTRAL.Get() > 0.0;
   const bool revert_pos = m_conf->REVERT_BENEFICIAL.Get() > 0.0;
   const bool fail_implicit = m_conf->FAIL_IMPLICIT.Get() > 0;
   m_test_on_div = (revert_fatal || revert_neg || revert_neut || revert_pos || fail_implicit);
-
+  
   const bool sterilize_fatal = m_conf->STERILIZE_FATAL.Get() > 0.0;
   const bool sterilize_neg = m_conf->STERILIZE_DETRIMENTAL.Get() > 0.0;
   const bool sterilize_neut = m_conf->STERILIZE_NEUTRAL.Get() > 0.0;
@@ -114,11 +126,6 @@ int cWorld::GetNumInstructions()
   return m_hw_mgr->GetInstSet().GetSize();
 }
 
-int cWorld::GetNumTasks()
-{
-  return m_env->GetTaskLib().GetSize(); 
-}
-
 int cWorld::GetNumReactions()
 {
   return m_env->GetReactionLib().GetSize();
@@ -132,7 +139,7 @@ int cWorld::GetNumResources()
 void cWorld::SetDriver(cWorldDriver* driver, bool take_ownership)
 {
   // cleanup current driver, if needed
-  if (m_own_driver) { assert(m_driver); delete m_driver; m_driver=0; }
+  if (m_own_driver) delete m_driver;
   
   // store new driver information
   m_driver = driver;

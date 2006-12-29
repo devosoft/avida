@@ -13,6 +13,7 @@
 #include "cActionLibrary.h"
 #include "cClassificationManager.h"
 #include "cCPUTestInfo.h"
+#include "cEnvironment.h"
 #include "cGenome.h"
 #include "cGenomeUtil.h"
 #include "cGenotype.h"
@@ -27,7 +28,6 @@
 #include "cPopulationCell.h"
 #include "cSpecies.h"
 #include "cStats.h"
-#include "cTestUtil.h"
 #include "cWorld.h"
 #include "cWorldDriver.h"
 
@@ -394,7 +394,9 @@ public:
     cGenotype* dom = m_world->GetClassificationManager().GetBestGenotype();
     cString filename(m_filename);
     if (filename == "") filename.Set("archive/%s.org", static_cast<const char*>(dom->GetName()));
-    cTestUtil::PrintGenome(m_world, dom->GetGenome(), filename, dom, m_world->GetStats().GetUpdate());
+    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+    testcpu->PrintGenome(ctx, dom->GetGenome(), filename, dom, m_world->GetStats().GetUpdate());
+    delete testcpu;
   }
 };
 
@@ -428,7 +430,9 @@ public:
     if (dom != NULL) {
       cString filename(m_filename);
       if (filename == "") filename.Set("archive/%s.para", static_cast<const char*>(dom->GetName()));
-      cTestUtil::PrintGenome(m_world, dom, dom->GetGenome(), filename, m_world->GetStats().GetUpdate());
+      cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+      testcpu->PrintInjectGenome(ctx, dom, dom->GetGenome(), filename, m_world->GetStats().GetUpdate());
+      delete testcpu;
     }
   }
 };
@@ -608,7 +612,6 @@ public:
       }
     }
     
-    delete testcpu;
     
     // determine the name of the maximum fitness genotype
     cString max_f_name;
@@ -629,9 +632,11 @@ public:
     
     if (m_save_max) {
       cString filename;
-      filename.Set("classmgr/%s", static_cast<const char*>(max_f_name));
-      cTestUtil::PrintGenome(m_world, max_f_genotype->GetGenome(), filename);
+      filename.Set("archive/%s", static_cast<const char*>(max_f_name));
+      testcpu->PrintGenome(ctx, max_f_genotype->GetGenome(), filename);
     }
+
+    delete testcpu;
     
     if (m_print_fitness_histo) {
       cDataFile& hdf = m_world->GetDataFile(m_filenames[1]);
@@ -817,7 +822,9 @@ public:
       
       // save into archive
       if (m_save_genotypes) {
-        cTestUtil::PrintGenome(m_world, genome, cStringUtil::Stringf("archive/%s.org", static_cast<const char*>(cur_genotype->GetName())));
+        cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+        testcpu->PrintGenome(ctx, genome, cStringUtil::Stringf("archive/%s.org", static_cast<const char*>(cur_genotype->GetName())));
+        delete testcpu;
       }
       
       // ...and advance to the next genotype...
@@ -898,7 +905,7 @@ public:
       cPhenotype& test_phenotype = test_info.GetTestPhenotype();
       cPhenotype& phenotype = organism->GetPhenotype();
       
-      int num_tasks = m_world->GetNumTasks();
+      int num_tasks = m_world->GetEnvironment().GetNumTasks();
       int sum_tasks_all = 0;
       int sum_tasks_rewarded = 0;
       int divide_sum_tasks_all = 0;
@@ -958,7 +965,7 @@ public:
   {
     cDataFile& df = m_world->GetDataFile(m_filename);
     cPopulation& pop = m_world->GetPopulation();
-    const int num_tasks = m_world->GetNumTasks();
+    const int num_tasks = m_world->GetEnvironment().GetNumTasks();
     
     tArray<int> tasks(num_tasks);
     tasks.SetAll(0);
@@ -1136,7 +1143,9 @@ public:
     
     cString con_name;
     con_name.Set("archive/%03d-consensus-u%i.gen", con_genome.GetSize(),update);
-    cTestUtil::PrintGenome(m_world, con_genome, con_name);
+    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+    testcpu->PrintGenome(ctx, con_genome, con_name);
+    delete testcpu;
     
     
     if (con_genotype) {
@@ -1310,7 +1319,7 @@ public:
     cPopulation* pop = &m_world->GetPopulation();
     cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
     
-    const int num_tasks = m_world->GetNumTasks();
+    const int num_tasks = m_world->GetEnvironment().GetNumTasks();
 
     for (int i = 0; i < pop->GetWorldX(); i++) {
       for (int j = 0; j < pop->GetWorldY(); j++) {

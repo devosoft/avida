@@ -19,7 +19,6 @@
 #include "cPhenotype.h"
 #include "cStats.h"             // For GetUpdate in outputs...
 #include "cTestCPU.h"
-#include "cTestUtil.h"
 #include "cTools.h"
 #include "cWorld.h"
 
@@ -818,14 +817,4 @@ void cLandscape::PrintSiteCount(cDataFile& df)
   df.WriteComment("Site Counts");
   for (int j = 0; j < base_genome.GetSize(); j++) df.WriteAnonymous(site_count[j]);
   df.Endl();
-}
-
-void cLandscape::PrintBase(cString filename)
-{
-  cTestUtil::PrintGenome(m_world, base_genome, filename);
-}
-
-void cLandscape::PrintPeak(cString filename)
-{
-  cTestUtil::PrintGenome(m_world, peak_genome, filename);
 }

@@ -11,6 +11,7 @@
 #include "cStats.h"
 
 #include "cDataFile.h"
+#include "cEnvironment.h"
 #include "functions.h"
 #include "cStringUtil.h"
 #include "tDataEntry.h"
@@ -90,13 +91,16 @@ cStats::cStats(cWorld* world)
   , num_own_used(0)
   , sense_size(0)
 {
-  task_cur_count.Resize( m_world->GetNumTasks() );
-  task_last_count.Resize( m_world->GetNumTasks() );
-  task_cur_quality.Resize( m_world->GetNumTasks() );
-  task_last_quality.Resize( m_world->GetNumTasks() );
-  task_cur_max_quality.Resize( m_world->GetNumTasks() );
-  task_last_max_quality.Resize( m_world->GetNumTasks() );
-  task_exe_count.Resize( m_world->GetNumTasks() );
+  const cEnvironment& env = m_world->GetEnvironment();
+  const int num_tasks = env.GetNumTasks();
+    
+  task_cur_count.Resize(num_tasks);
+  task_last_count.Resize(num_tasks);
+  task_cur_quality.Resize(num_tasks);
+  task_last_quality.Resize(num_tasks);
+  task_cur_max_quality.Resize(num_tasks);
+  task_last_max_quality.Resize(num_tasks);
+  task_exe_count.Resize(num_tasks);
   task_cur_count.SetAll(0);
   task_cur_quality.SetAll(0);
   task_cur_max_quality.SetAll(0);
@@ -119,7 +123,10 @@ cStats::cStats(cWorld* world)
   resource_count.Resize( m_world->GetNumResources() );
   resource_count.SetAll(0);
 
-  task_names.Resize( m_world->GetNumTasks() );
+  task_names.Resize(num_tasks);
+  for (int i = 0; i < num_tasks; i++)
+    task_names[i] = env.GetTask(i).GetDesc();
+  
   reaction_names.Resize( m_world->GetNumReactions() );
   resource_names.Resize( m_world->GetNumResources() );
 

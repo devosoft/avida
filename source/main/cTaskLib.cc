@@ -1900,7 +1900,8 @@ void cTaskLib::Load_SortInputs(const cString& name, const cString& argstr, cEnvR
   cArgContainer* args = cArgContainer::Load(argstr, schema);
   if (args) {
     envreqs.SetMinInputs(args->GetInt(0));
-    envreqs.SetMinOutputs(args->GetInt(0));
+    envreqs.SetMinOutputs(args->GetInt(0) * 2);
+    envreqs.SetTrueRandInputs();
     NewTask(name, "Sort Inputs", &cTaskLib::Task_SortInputs, 0, args);
   }
 }

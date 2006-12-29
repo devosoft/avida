@@ -17,9 +17,6 @@
 #ifndef cString_h
 #include "cString.h"
 #endif
-#ifndef cTaskLib_h
-#include "cTaskLib.h"
-#endif
 
 class cTaskLib;
 class cTaskContext;

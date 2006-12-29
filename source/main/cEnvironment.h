@@ -73,6 +73,7 @@ private:
 
   int m_input_size;
   int m_output_size;
+  bool m_true_rand;
   
   
   static bool ParseSetting(cString entry, cString& var_name, cString& var_value, const cString& var_type);
@@ -116,10 +117,14 @@ public:
                   const tArray<double>& resource_count) const;
 
   // Accessors
+  int GetNumTasks() const { return m_tasklib.GetSize(); }
+  const cTaskEntry& GetTask(int id) const { return m_tasklib.GetTask(id); }
+  bool UseNeighborInput() const { return m_tasklib.UseNeighborInput(); }
+  bool UseNeighborOutput() const { return m_tasklib.UseNeighborOutput(); }
+
   const cResourceLib& GetResourceLib() const { return resource_lib; }
   const cReactionLib& GetReactionLib() const { return reaction_lib; }
   const cMutationLib& GetMutationLib() const { return mutation_lib; }
-  const cTaskLib& GetTaskLib() const { return m_tasklib; }
   const cMutationRates& GetMutRates() const { return mut_rates; }
 
   cResourceLib& GetResourceLib() { return resource_lib; }
@@ -141,6 +146,7 @@ inline cEnvironment::cEnvironment(cWorld* world)
   , inst_set(world)
   , m_input_size(INPUT_SIZE_DEFAULT)
   , m_output_size(OUTPUT_SIZE_DEFAULT)
+  , m_true_rand(false)
 {
   mut_rates.Setup(world);
 }

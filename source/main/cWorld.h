@@ -77,24 +77,10 @@ protected:
   cWorld& operator=(const cWorld&); // @not_implemented
   
 public:
-  explicit cWorld()
-  : m_actlib(NULL)
-  , m_analyze(NULL)
-  , m_conf(new cAvidaConfig())
-  , m_ctx(m_rng)
-  , m_class_mgr(NULL)
-  , m_data_mgr(NULL)
-  , m_env(NULL)
-  , m_event_list(NULL)
-  , m_hw_mgr(NULL)
-  , m_pop(NULL)
-  , m_stats(NULL)
-  , m_driver(NULL)
-  { Setup(); }
   cWorld(cAvidaConfig* cfg) : m_analyze(NULL), m_conf(cfg), m_ctx(m_rng) { Setup(); }
   ~cWorld();
   
-  void SetConfig(cAvidaConfig* cfg) { assert(m_conf); delete m_conf; m_conf = cfg; }
+  void SetConfig(cAvidaConfig* cfg) { delete m_conf; m_conf = cfg; }
   void SetDriver(cWorldDriver* driver, bool take_ownership = false);
   
   // General Object Accessors
@@ -121,7 +107,6 @@ public:
   
   // Convenience Accessors
   int GetNumInstructions();
-  int GetNumTasks();
   int GetNumReactions();
   int GetNumResources();
   inline int GetVerbosity() { return m_conf->VERBOSITY.Get(); }

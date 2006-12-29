@@ -42,13 +42,11 @@
 #include "cPhenotype.h"
 #include "cSpecies.h"
 #include "tArgDataEntry.h"
-#include "cTaskEntry.h"
 #include "tDataEntry.h"
 #include "tDataEntryCommand.h"
 #include "tMatrix.h"
 #include "cTestCPU.h"
 #include "cCPUTestInfo.h"
-#include "cTestUtil.h"
 #include "cResource.h"
 #include "tHashTable.h"
 #include "cWorld.h"
@@ -117,8 +115,8 @@ cAnalyze::~cAnalyze()
 
 void cAnalyze::RunFile(cString filename)
 {
-  bool saved_analyze = m_world->GetDefaultContext().GetAnalyzeMode();
-  m_world->GetDefaultContext().SetAnalyzeMode();
+  bool saved_analyze = m_ctx.GetAnalyzeMode();
+  m_ctx.SetAnalyzeMode();
 
   cInitFile analyze_file(filename);
   analyze_file.Load();
@@ -128,7 +126,7 @@ void cAnalyze::RunFile(cString filename)
   LoadCommandList(analyze_file, command_list);
   ProcessCommands(command_list);
   
-  if (!saved_analyze) m_world->GetDefaultContext().ClearAnalyzeMode();
+  if (!saved_analyze) m_ctx.ClearAnalyzeMode();
 }
 
 //////////////// Loading methods...
@@ -1581,7 +1579,7 @@ void cAnalyze::TruncateLineage(cString cur_string)
   if (cur_string.GetSize()) type = cur_string.PopWord();
   if (type == "task") {
     if (cur_string.GetSize()) arg_i = cur_string.PopWord().AsInt();
-    const int env_size = m_world->GetEnvironment().GetTaskLib().GetSize();
+    const int env_size = m_world->GetEnvironment().GetNumTasks();
     if (arg_i < 0 || arg_i >= env_size) arg_i = env_size - 1;
   }
   cString lin_type("num_cpus");
@@ -1621,7 +1619,8 @@ void cAnalyze::CommandPrint(cString cur_string)
   cString directory = PopDirectory(cur_string, "archive/");
   
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
-  cAnalyzeGenotype * genotype = NULL;
+  cAnalyzeGenotype* genotype = NULL;
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
   while ((genotype = batch_it.Next()) != NULL) {
     cString filename(directory);
     
@@ -1633,9 +1632,10 @@ void cAnalyze::CommandPrint(cString cur_string)
       filename += ".gen";
     }
     
-    cTestUtil::PrintGenome(m_world, genotype->GetGenome(), filename);
+    testcpu->PrintGenome(m_ctx, genotype->GetGenome(), filename);
     if (m_world->GetVerbosity() >= VERBOSE_ON) cout << "Printing: " << filename << endl;
   }
+  delete testcpu;
 }
 
 void cAnalyze::CommandTrace(cString cur_string)
@@ -4266,7 +4266,9 @@ void cAnalyze::CommandFitnessMatrix(cString cur_string)
   
   cFitnessMatrix matrix(m_world, genotype->GetGenome(), &inst_set);
   
-  matrix.CalcFitnessMatrix( depth_limit, fitness_threshold_ratio, ham_thresh, error_rate_min, error_rate_max, error_rate_step, vect_fmax, vect_fstep, diag_iters, write_ham_vector, write_full_vector );
+  matrix.CalcFitnessMatrix(depth_limit, fitness_threshold_ratio, ham_thresh, error_rate_min,
+                           error_rate_max, error_rate_step, vect_fmax, vect_fstep, diag_iters,
+                           write_ham_vector, write_full_vector );
 }
 
 
@@ -7674,14 +7676,13 @@ void cAnalyze::SetupGenotypeDataList()
                                (void (cAnalyzeGenotype::*)(cString)) NULL,
                                &cAnalyzeGenotype::CompareNULL, "(N/A)", ""));
   
-  const cTaskLib & task_lib = m_world->GetEnvironment().GetTaskLib();
-  for (int i = 0; i < task_lib.GetSize(); i++) {
+  const cEnvironment& environment = m_world->GetEnvironment();
+  for (int i = 0; i < environment.GetNumTasks(); i++) {
     cString t_name, t_desc;
     t_name.Set("task.%d", i);
-    t_desc = task_lib.GetTask(i).GetDesc();
+    t_desc = environment.GetTask(i).GetDesc();
     genotype_data_list.PushRear(new tArgDataEntry<cAnalyzeGenotype, int, int>
-                                (t_name, t_desc, &cAnalyzeGenotype::GetTaskCount, i,
-                                 &cAnalyzeGenotype::CompareTaskCount));
+                                (t_name, t_desc, &cAnalyzeGenotype::GetTaskCount, i, &cAnalyzeGenotype::CompareTaskCount));
   }
   
   // The remaining values should actually go in a seperate list called
@@ -7919,8 +7920,8 @@ cAnalyzeCommandDefBase* cAnalyze::FindAnalyzeCommandDef(const cString& name)
 
 void cAnalyze::RunInteractive()
 {
-  bool saved_analyze = m_world->GetDefaultContext().GetAnalyzeMode();
-  m_world->GetDefaultContext().SetAnalyzeMode();
+  bool saved_analyze = m_ctx.GetAnalyzeMode();
+  m_ctx.SetAnalyzeMode();
   
   cout << "Entering interactive mode..." << endl;
   
@@ -7964,5 +7965,5 @@ void cAnalyze::RunInteractive()
     else cerr << "Error: Unknown command '" << command << "'." << endl;
   }
   
-  if (!saved_analyze) m_world->GetDefaultContext().ClearAnalyzeMode();
+  if (!saved_analyze) m_ctx.ClearAnalyzeMode();
 }

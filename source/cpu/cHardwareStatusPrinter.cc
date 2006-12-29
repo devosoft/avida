@@ -26,16 +26,7 @@ void cHardwareStatusPrinter::TraceHardware(cHardwareBase& hardware, bool bonus)
   if (organism) organism->PrintStatus(m_trace_fp, next_name);
 }
 
-void cHardwareStatusPrinter::TraceTestCPU(int time_used, int time_allocated, int size, 
-                                          const cString& final_memory, const cString& child_memory)
+void cHardwareStatusPrinter::TraceTestCPU(int time_used, int time_allocated, const cOrganism& organism)
 {
-  if (time_used == time_allocated) {
-    m_trace_fp << endl << "# TIMEOUT: No offspring produced." << endl;
-  } else if (size == 0) {
-    m_trace_fp << endl << "# ORGANISM DEATH: No offspring produced." << endl;
-  } else {
-    m_trace_fp << endl;
-    m_trace_fp << "# Final Memory: " << final_memory << endl;
-    m_trace_fp << "# Child Memory: " << child_memory << endl;
-  }
+  organism.PrintFinalStatus(m_trace_fp, time_used, time_allocated);
 }

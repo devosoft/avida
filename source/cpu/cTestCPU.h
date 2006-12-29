@@ -24,12 +24,14 @@
 #endif
 
 class cAvidaContext;
-class cInstSet;
-class cResourceCount;
 class cCPUTestInfo;
 class cGenome;
 class cGenotype;
+class cInjectGenotype;
+class cInstSet;
+class cResourceCount;
 class cWorld;
+
 
 class cTestCPU
 {
@@ -61,6 +63,8 @@ public:
   
   void PrintGenome(cAvidaContext& ctx, const cGenome& genome, cString filename,
                    cGenotype* genotype = NULL, int update = -1);
+  void PrintInjectGenome(cAvidaContext& ctx, cInjectGenotype* inject_genotype,
+                         const cGenome& genome, cString filename = "", int update = -1);
 
   inline int GetInput();
   inline int GetInputAt(int & input_pointer);

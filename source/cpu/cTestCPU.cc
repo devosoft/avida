@@ -18,6 +18,7 @@
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cHardwareStatusPrinter.h"
+#include "cInjectGenotype.h"
 #include "cInstSet.h"
 #include "cInstUtil.h"
 #include "cOrganism.h"
@@ -155,8 +156,7 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
   organism.GetHardware().SetTrace(NULL);
 
   // Print out some final info in trace...
-  if (tracer != NULL) tracer->TraceTestCPU(time_used, time_allocated, organism.GetHardware().GetMemory().GetSize(),
-                                           organism.GetHardware().GetMemory().AsString(), organism.ChildGenome().AsString());
+  if (tracer != NULL) tracer->TraceTestCPU(time_used, time_allocated, organism);
 
   // For now, always return true.
   return true;
@@ -333,26 +333,73 @@ void cTestCPU::PrintGenome(cAvidaContext& ctx, const cGenome& genome, cString fi
     df.WriteComment(c.Set("Copied Size.....: %d", phenotype.GetCopiedSize()));
     df.WriteComment(c.Set("Executed Size...: %d", phenotype.GetExecutedSize()));
     
-    if (phenotype.GetNumDivides() == 0) df.WriteComment("Offspring.......: NONE");
-    else if (phenotype.CopyTrue() == true) df.WriteComment("Offspring.......: SELF");
-    else if (test_info.GetCycleTo() != -1) df.WriteComment(c.Set("Offspring.......: %d", test_info.GetCycleTo()));
-    else df.WriteComment(c.Set("Offspring.......: %d", j + 1));
+    if (phenotype.GetNumDivides() == 0)
+      df.WriteComment("Offspring.......: NONE");
+    else if (phenotype.CopyTrue())
+      df.WriteComment("Offspring.......: SELF");
+    else if (test_info.GetCycleTo() != -1)
+      df.WriteComment(c.Set("Offspring.......: %d", test_info.GetCycleTo()));
+    else
+      df.WriteComment(c.Set("Offspring.......: %d", j + 1));
     
     df.WriteComment("");
   }
   
   df.WriteComment("Tasks Performed:");
-  cPhenotype& phenotype = test_info.GetTestPhenotype();
-  for (int i = 0; i < m_world->GetEnvironment().GetTaskLib().GetSize(); i++) {
-    df.WriteComment(c.Set("%s %d",
-                          static_cast<const char*>(m_world->GetEnvironment().GetTaskLib().GetTask(i).GetName()),
-                          phenotype.GetLastTaskCount()[i]));
+  
+  const cEnvironment& env = m_world->GetEnvironment();
+  const tArray<int>& task_count = test_info.GetTestPhenotype().GetLastTaskCount();
+  const tArray<double>& task_qual = test_info.GetTestPhenotype().GetLastTaskQuality();
+  for (int i = 0; i < task_count.GetSize(); i++) {
+    df.WriteComment(c.Set("%s %d (%f)", static_cast<const char*>(env.GetTask(i).GetName()),
+                          task_count[i], task_qual[i]));
   }
 
   df.Endl();
   
   // Display the genome
   cInstUtil::SaveGenome(df.GetOFStream(), test_info.GetTestOrganism()->GetHardware().GetInstSet(), genome);
+  
+  m_world->GetDataFileManager().Remove(filename);
+}
+
+
+void cTestCPU::PrintInjectGenome(cAvidaContext& ctx, cInjectGenotype* inject_genotype,
+                                 const cGenome& genome, cString filename, int update)
+{
+  if (filename == "") filename.Set("p%03d-unnamed", genome.GetSize());
+  
+  // Build the test info for printing.
+  cCPUTestInfo test_info;
+  TestGenome(ctx, test_info, genome);
+  
+  // Open the file...
+  ofstream& fp = m_world->GetDataFileOFStream(filename);
+  
+  // @CAO Fix!!!!!!
+  if( fp.good() == false ) {
+    cerr << "Unable to open output file '" <<  filename << "'" << endl;
+    return;
+  }
+  
+  // Print the useful info at the top...
+  
+  fp << "# Filename........: " << filename << endl;
+  
+  if (update >= 0) fp << "# Update Output...: " << update << endl;
+  else fp << "# Update Output...: N/A" << endl;
+  
+  
+  if (inject_genotype != NULL) {
+    fp << "# Update Created..: " << inject_genotype->GetUpdateBorn() << endl;
+    fp << "# Genotype ID.....: " << inject_genotype->GetID() << endl;
+    fp << "# Parent Gen ID...: " << inject_genotype->GetParentID() << endl;
+    fp << "# Tree Depth......: " << inject_genotype->GetDepth() << endl;
+  }
+  fp << endl;
+  
+  // Display the genome
+  cInstUtil::SaveGenome(fp, test_info.GetTestOrganism()->GetHardware().GetInstSet(), genome);
   
   m_world->GetDataFileManager().Remove(filename);
 }
