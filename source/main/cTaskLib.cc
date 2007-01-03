@@ -320,6 +320,8 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
 
   if (name == "sort_inputs")
     Load_SortInputs(name, info, envreqs);
+  else if (name == "fibonacci_seq")
+    Load_FibonacciSequence(name, info, envreqs);
 
 	// Communication Tasks
   if (name == "comm_echo")
@@ -346,14 +348,14 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
 }
 
 void cTaskLib::NewTask(const cString& name, const cString& desc, tTaskTest task_fun, int reqs,
-                       cArgContainer* args)
+                       cArgContainer* args, cTaskState* state)
 {
   if (reqs & REQ_NEIGHBOR_INPUT == true) use_neighbor_input = true;
   if (reqs & REQ_NEIGHBOR_OUTPUT == true) use_neighbor_output = true;
   
   const int id = task_array.GetSize();
   task_array.Resize(id + 1);
-  task_array[id] = new cTaskEntry(name, desc, id, task_fun, args);
+  task_array[id] = new cTaskEntry(name, desc, id, task_fun, args, state);
 }
 
 
@@ -2013,6 +2015,57 @@ double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
   
   return quality;
 }
+
+
+
+
+class cFibSeqState : public cTaskState
+{
+public:
+  int seq[2];
+  int count;
+  
+  cFibSeqState() : count(0) { seq[0] = 1; seq[1] = 0; }
+};
+
+void cTaskLib::Load_FibonacciSequence(const cString& name, const cString& argstr, cEnvReqs& envreqs)
+{
+  cArgSchema schema(',',':');
+  
+  // Integer Arguments
+  schema.AddEntry("target", 0, cArgSchema::SCHEMA_INT);
+  // Double Arguments
+  schema.AddEntry("penalty", 0, 0.0);
+  
+  cArgContainer* args = cArgContainer::Load(argstr, schema);
+  cFibSeqState* state = new cFibSeqState();
+  
+  if (args) NewTask(name, "Fibonacci Sequence", &cTaskLib::Task_FibonacciSequence, 0, args, state);
+}
+
+double cTaskLib::Task_FibonacciSequence(cTaskContext& ctx) const
+{
+  double quality = 0.0;
+  const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
+  cFibSeqState* state = static_cast<cFibSeqState*>(ctx.GetTaskEntry()->GetState());
+
+  const int next = state->seq[0] + state->seq[1];
+  
+  // If output matches next in sequence
+  if (ctx.GetOutputBuffer()[0] == next) {
+    // Increment count and store next value
+    state->count++;
+    state->seq[state->count % 2] = next;
+    
+    // If past target sequence ending point, return the penalty setting
+    if (state->count > args.GetInt(0)) return args.GetDouble(0);
+    
+    return 1.0;
+  }
+  
+  return 0.0;
+}
+
 
 
 double cTaskLib::Task_CommEcho(cTaskContext& ctx) const

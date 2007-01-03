@@ -74,7 +74,7 @@ public:
   
 private:  // Direct task related methods
   void NewTask(const cString& name, const cString& desc, tTaskTest task_fun, int reqs = 0,
-               cArgContainer* args = NULL);
+               cArgContainer* args = NULL, cTaskState* state = NULL);
 
   inline double FractionalReward(unsigned int supplied, unsigned int correct);  
 
@@ -228,6 +228,8 @@ private:  // Direct task related methods
 
   void Load_SortInputs(const cString& name, const cString& argstr, cEnvReqs& envreqs);
   double Task_SortInputs(cTaskContext& ctx) const;
+  void Load_FibonacciSequence(const cString& name, const cString& argstr, cEnvReqs& envreqs);
+  double Task_FibonacciSequence(cTaskContext& ctx) const;
 
   // Communication Tasks
   double Task_CommEcho(cTaskContext& ctx) const;

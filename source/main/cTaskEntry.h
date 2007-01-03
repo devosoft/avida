@@ -23,6 +23,16 @@ class cTaskContext;
 
 typedef double (cTaskLib::*tTaskTest)(cTaskContext&) const;
 
+class cTaskState
+{
+protected:
+  cTaskState() { ; }
+  
+public:
+  virtual ~cTaskState() { ; }
+};
+
+
 class cTaskEntry
 {
 private:
@@ -31,13 +41,18 @@ private:
   int m_id;
   tTaskTest m_test_fun;
   cArgContainer* m_args;
+  cTaskState* m_state;
 
 public:
-  cTaskEntry(const cString& name, const cString& desc, int in_id, tTaskTest fun, cArgContainer* args)
-    : m_name(name), m_desc(desc), m_id(in_id), m_test_fun(fun), m_args(args)
+  cTaskEntry(const cString& name, const cString& desc, int in_id, tTaskTest fun, cArgContainer* args, cTaskState* state = NULL)
+    : m_name(name), m_desc(desc), m_id(in_id), m_test_fun(fun), m_args(args), m_state(state)
   {
   }
-  ~cTaskEntry() { delete m_args; }
+  ~cTaskEntry()
+  {
+    delete m_args;
+    delete m_state;
+  }
 
   const cString& GetName() const { return m_name; }
   const cString& GetDesc() const { return m_desc; }
@@ -46,8 +61,7 @@ public:
   
   bool HasArguments() const { return (m_args != NULL); }
   const cArgContainer& GetArguments() const { return *m_args; }
-  
-  
+  cTaskState* GetState() { return m_state; }
 };
 
 
