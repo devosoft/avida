@@ -741,13 +741,13 @@ void cEnvironment::SetupInputs(cAvidaContext& ctx, tArray<int>& input_array, boo
       }
     } else {
       // Set the top 8 bits of the input buffer...
-      input_array[0] = 15 << 24;  // 00001111
-      input_array[1] = 51 << 24;  // 00110011
-      input_array[2] = 85 << 24;  // 01010101
-      
+      input_array[0] = (15 << 24) + ctx.GetRandom().GetUInt(1 << 24);  // 00001111
+      input_array[1] = (51 << 24) + ctx.GetRandom().GetUInt(1 << 24);  // 00110011
+      input_array[2] = (85 << 24) + ctx.GetRandom().GetUInt(1 << 24);  // 01010101
+
       // And randomize the rest...
-      for (int i = 0; i < m_input_size; i++) {
-        input_array[i] += ctx.GetRandom().GetUInt(1 << 24);
+      for (int i = 3; i < m_input_size; i++) {
+        input_array[i] = ctx.GetRandom().GetUInt(1 << 24);
       }
     }
   } else {
