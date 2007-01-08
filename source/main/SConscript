@@ -47,6 +47,7 @@ incs = [
   'cTaskContext.h',
   'cTaskEntry.h',
   'cTaskLib.h',
+  'cTaskState.h',
   'cWorld.h',
   'MyCodeArrayLessThan.h',
   'nGeometry.h',

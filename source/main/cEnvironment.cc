@@ -500,13 +500,18 @@ bool cEnvironment::LoadReaction(cString desc)
   
   // Finish loading in this reaction.
   cString trigger_info = desc.PopWord();
-	cString trigger = trigger_info.Pop('=');
+	cString trigger = trigger_info.Pop(':');
   
   // Load the task trigger
   cEnvReqs envreqs;
-  cTaskEntry* cur_task = m_tasklib.AddTask(trigger, trigger_info, envreqs);
-  if (cur_task == NULL) {
-    cerr << "...failed to find task in cTaskLib..." << endl;
+  tList<cString> errors;
+  cTaskEntry* cur_task = m_tasklib.AddTask(trigger, trigger_info, envreqs, &errors);
+  if (cur_task == NULL || errors.GetSize() > 0) {
+    cString* err_str;
+    while ((err_str = errors.Pop()) != NULL) {
+      cerr << *err_str << endl;
+      delete err_str;
+    }
     return false;
   }
   new_reaction->SetTask(cur_task);      // Attack task to reaction.

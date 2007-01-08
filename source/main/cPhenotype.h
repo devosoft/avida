@@ -25,6 +25,9 @@
 #ifndef cCodeLabel_h
 #include "cCodeLabel.h"
 #endif
+#ifndef tHashTable_h
+#include "tHashTable.h"
+#endif
 
 
 /*************************************************************************
@@ -58,6 +61,7 @@ class cEnvironment;
 template <class T> class tBuffer;
 template <class T> class tList;
 class cTaskContext;
+class cTaskState;
 class cWorld;
 
 class cPhenotype
@@ -87,6 +91,7 @@ private:
   tArray<int> cur_sense_count;     // Total times resource combinations have been sensed; JEB 10-22-06 
   tArray<double> sensed_resources; // Resources of which the organism is explictly aware
   tArray<cCodeLabel> active_transposons; // Transposons that are active
+  tHashTable<void*, cTaskState*> m_task_states;
   
   // 3. These mark the status of "in progess" variables at the last divide.
   double last_merit_base;         // Either constant or based on genome length.

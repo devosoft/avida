@@ -9,9 +9,7 @@
 /* Begin PBXBuildFile section */
 		1097463F0AE9606E00929ED6 /* cDeme.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1097463D0AE9606E00929ED6 /* cDeme.cc */; };
 		109746410AE9606E00929ED6 /* cDeme.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1097463D0AE9606E00929ED6 /* cDeme.cc */; };
-		109746420AE9606E00929ED6 /* cDeme.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1097463E0AE9606E00929ED6 /* cDeme.h */; };
 		109746430AE9606E00929ED6 /* cDeme.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1097463D0AE9606E00929ED6 /* cDeme.cc */; };
-		109746440AE9606E00929ED6 /* cDeme.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1097463E0AE9606E00929ED6 /* cDeme.h */; };
 		7005A70409BA0FA90007E16E /* cTestCPUInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */; };
 		7005A70609BA0FA90007E16E /* cTestCPUInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */; };
 		7005A70809BA0FA90007E16E /* cTestCPUInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */; };
@@ -108,8 +106,6 @@
 		708BF2FE0AB65DC700A923BF /* cEventList.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708BF2FD0AB65DC700A923BF /* cEventList.cc */; };
 		708BF2FF0AB65DC700A923BF /* cEventList.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708BF2FD0AB65DC700A923BF /* cEventList.cc */; };
 		708BF3000AB65DC700A923BF /* cEventList.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708BF2FD0AB65DC700A923BF /* cEventList.cc */; };
-		7099EEC00B2F9D2A001269F6 /* cEnvReqs.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7099EEBF0B2F9D2A001269F6 /* cEnvReqs.h */; };
-		7099EEC10B2F9D2A001269F6 /* cEnvReqs.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7099EEBF0B2F9D2A001269F6 /* cEnvReqs.h */; };
 		7099EF510B2FBC85001269F6 /* cAnalyzeScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7099EF470B2FBC85001269F6 /* cAnalyzeScreen.cc */; };
 		7099EF530B2FBC85001269F6 /* cAnalyzeView.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7099EF490B2FBC85001269F6 /* cAnalyzeView.cc */; };
 		7099EF560B2FBC86001269F6 /* cTextViewerAnalyzeDriver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7099EF4C0B2FBC85001269F6 /* cTextViewerAnalyzeDriver.cc */; };
@@ -403,8 +399,6 @@
 			dstSubfolderSpec = 16;
 			files = (
 				700E2B87085DE54400CF158A /* avida-viewer in CopyFiles */,
-				109746440AE9606E00929ED6 /* cDeme.h in CopyFiles */,
-				7099EEC10B2F9D2A001269F6 /* cEnvReqs.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -437,8 +431,6 @@
 			dstSubfolderSpec = 16;
 			files = (
 				702F532F0993060A00B2B507 /* avida-s in CopyFiles */,
-				109746420AE9606E00929ED6 /* cDeme.h in CopyFiles */,
-				7099EEC00B2F9D2A001269F6 /* cEnvReqs.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -459,6 +451,7 @@
 		7013845F09028B3E0087ED2E /* cAvidaConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaConfig.h; sourceTree = "<group>"; };
 		7013846009028B3E0087ED2E /* cAvidaConfig.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cAvidaConfig.cc; sourceTree = "<group>"; };
 		701384A10902A16F0087ED2E /* defs.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = defs.h; sourceTree = "<group>"; };
+		70166B8D0B519CFE009533A5 /* cTaskState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cTaskState.h; sourceTree = "<group>"; };
 		701D51CB09C645F50009B4F8 /* cAvidaContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaContext.h; sourceTree = "<group>"; };
 		701D9116094B773E008B845F /* cWorldDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cWorldDriver.h; sourceTree = "<group>"; };
 		701D912B094B7AC1008B845F /* cAvidaDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaDriver.h; sourceTree = "<group>"; };
@@ -1502,6 +1495,7 @@
 				70DA5E9D09DA1A8D00FFF42B /* cOrgSeqMessage.h */,
 				700AE91B09DB65F200A073FD /* cTaskContext.h */,
 				7099EEBF0B2F9D2A001269F6 /* cEnvReqs.h */,
+				70166B8D0B519CFE009533A5 /* cTaskState.h */,
 			);
 			path = main;
 			sourceTree = "<group>";

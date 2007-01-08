@@ -62,7 +62,7 @@ public:
 
   int GetSize() const { return task_array.GetSize(); }
 
-  cTaskEntry* AddTask(const cString& name, const cString& info, cEnvReqs& envreqs);
+  cTaskEntry* AddTask(const cString& name, const cString& info, cEnvReqs& envreqs, tList<cString>* errors);
   const cTaskEntry& GetTask(int id) const { return *(task_array[id]); }
   
   void SetupTests(cTaskContext& ctx) const;
@@ -74,7 +74,7 @@ public:
   
 private:  // Direct task related methods
   void NewTask(const cString& name, const cString& desc, tTaskTest task_fun, int reqs = 0,
-               cArgContainer* args = NULL, cTaskState* state = NULL);
+               cArgContainer* args = NULL);
 
   inline double FractionalReward(unsigned int supplied, unsigned int correct);  
 
@@ -221,15 +221,35 @@ private:  // Direct task related methods
   double Task_Math3in_AM(cTaskContext& ctx) const;
   
   // Matching Tasks
-  void Load_MatchStr(const cString& name, const cString& argstr, cEnvReqs& envreqs);
+  void Load_MatchStr(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
   double Task_MatchStr(cTaskContext& ctx) const;
-  void Load_MatchNumber(const cString& name, const cString& argstr, cEnvReqs& envreqs);
+  void Load_MatchNumber(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
   double Task_MatchNumber(cTaskContext& ctx) const;
 
-  void Load_SortInputs(const cString& name, const cString& argstr, cEnvReqs& envreqs);
+  void Load_SortInputs(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
   double Task_SortInputs(cTaskContext& ctx) const;
-  void Load_FibonacciSequence(const cString& name, const cString& argstr, cEnvReqs& envreqs);
+  void Load_FibonacciSequence(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
   double Task_FibonacciSequence(cTaskContext& ctx) const;
+  
+  void Load_Mult(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
+  double Task_Mult(cTaskContext& ctx) const;
+  void Load_Div(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
+  double Task_Div(cTaskContext& ctx) const;
+  void Load_Log(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
+  double Task_Log(cTaskContext& ctx) const;
+  void Load_Log2(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
+  double Task_Log2(cTaskContext& ctx) const;
+  void Load_Log10(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
+  double Task_Log10(cTaskContext& ctx) const;
+  void Load_Sqrt(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
+  double Task_Sqrt(cTaskContext& ctx) const;
+  void Load_Sine(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
+  double Task_Sine(cTaskContext& ctx) const;
+  void Load_Cosine(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
+  double Task_Cosine(cTaskContext& ctx) const;
+  void Load_Tangent(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
+  double Task_Tangent(cTaskContext& ctx) const;
+
 
   // Communication Tasks
   double Task_CommEcho(cTaskContext& ctx) const;

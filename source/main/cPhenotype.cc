@@ -13,6 +13,7 @@
 #include "cEnvironment.h"
 #include "cHardwareManager.h"
 #include "cReactionResult.h"
+#include "cTaskState.h"
 #include "cTools.h"
 #include "cWorld.h"
 
@@ -40,6 +41,10 @@ cPhenotype::cPhenotype(cWorld* world)
 
 cPhenotype::~cPhenotype()
 {
+  // Remove Task States
+  tArray<cTaskState*> task_states(0);
+  m_task_states.GetValues(task_states);
+  for (int i = 0; i < task_states.GetSize(); i++) delete task_states[i];
 }
 
 bool cPhenotype::OK()
@@ -335,6 +340,12 @@ void cPhenotype::DivideReset(int _length)
   }
 
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() == GENERATION_INC_BOTH) generation++;
+  
+  // Reset Task States
+  tArray<cTaskState*> task_states(0);
+  m_task_states.GetValues(task_states);
+  for (int i = 0; i < task_states.GetSize(); i++) delete task_states[i];
+  m_task_states.ClearAll();
 }
 
 
@@ -523,6 +534,8 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
 			    tArray<int>& insts_triggered)
 {
   assert(initialized == true);
+  
+  taskctx.SetTaskStates(&m_task_states);
 
   const cEnvironment& env = m_world->GetEnvironment();
   const int num_resources = env.GetResourceLib().GetSize();
