@@ -16,10 +16,8 @@
 #include "cTaskState.h"
 
 #include <stdlib.h>
-extern "C" {
 #include <math.h>
 #include <limits.h>
-}
 
 
 static const float fCastPrecision = 10000.0f;
@@ -2161,10 +2159,11 @@ double cTaskLib::Task_Div(cTaskContext& ctx) const
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
   
-  int diff = abs((input_buffer[0] / input_buffer[0]) - test_output);
+  int diff = INT_MAX;
   
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
+      if (input_buffer[j] == 0) continue;
       int cur_diff = abs((input_buffer[i] / input_buffer[j]) - test_output);
       if (cur_diff < diff) diff = cur_diff;
     }

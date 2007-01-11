@@ -87,7 +87,7 @@ public:
     m_task_states->Find(m_task_entry, ret);
     return ret;
   }
-  inline cTaskState* AddTaskState(cTaskState* value) { m_task_states->Add(m_task_entry, value); }
+  inline void AddTaskState(cTaskState* value) { m_task_states->Add(m_task_entry, value); }
 };
 
 
