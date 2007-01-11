@@ -4,7 +4,7 @@
  *
  *  Created by David on 10/16/05.
  *  Designed by Charles.
- *  Copyright 2005-2006 Michigan State University. All rights reserved.
+ *  Copyright 2005-2007 Michigan State University. All rights reserved.
  *
  */
 
@@ -365,13 +365,14 @@ cAvidaConfig* cAvidaConfig::LoadWithCmdLineArgs(int argc, char * argv[])
     
     else if (cur_arg == "--help" || cur_arg == "-help" || cur_arg == "-h") {
       cout << "Options:"<<endl
-	   << "  -a[nalyze]            Process analyze.cfg instead of normal run." << endl
+	   << "  -a[nalyze]            Process analyze.cfg instead of normal "
+               << "run." << endl
 	   << "  -c[onfig] <filename>  Set config file to be <filename>"<<endl
 	   << "  -e; -actions          Print a list of all known actions"<< endl
 	   << "  -h[elp]               Help on options (this listing)"<<endl
 	   << "  -i[nteractive]        Run analyze mode interactively" << endl
 	   << "  -l[oad] <filename>    Load a clone file" << endl
-	   << "  -r[eview]             Review analyze.cfg settings."
+	   << "  -r[eview]             Review analyze.cfg settings." << endl
 	   << "  -s[eed] <value>       Set random seed to <value>" << endl
 	   << "  -set <name> <value>   Overide values in avida.cfg" << endl
 	   << "  -v[ersion]            Prints the version number" << endl
