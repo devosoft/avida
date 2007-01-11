@@ -305,7 +305,7 @@ public:
 
 #endif
   
-  void Load(const cString& filename);
+  void Load(const cString& filename, const bool& crash_if_not_found);
   void Print(const cString& filename);
   void Status();
   void PrintReview();

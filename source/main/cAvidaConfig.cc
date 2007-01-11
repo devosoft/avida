@@ -36,15 +36,24 @@ cAvidaConfig::cBaseConfigEntry::cBaseConfigEntry(const cString & _name,
   }
 }
 
-void cAvidaConfig::Load(const cString & filename)
+void cAvidaConfig::Load(const cString & filename, 
+                        const bool & crash_if_not_found = false)
 {
   // Load the contents from the file.
   cInitFile init_file(filename);
   
   if (!init_file.IsOpen()) {
-    // If we failed to open the config file, try creating it.
-    cerr << "Warning: Unable to find file '" << filename << "'.  Creating default." << endl;
-    Print(filename);
+    if (crash_if_not_found) {
+      // exit the program if the requested configuration file is not found
+      cerr << "Warning: Unable to find file '" << filename 
+           << "'.  Ending the program." << endl;
+      exit(-1);
+    } else {
+      // If we failed to open the config file, try creating it.
+      cerr << "Warning: Unable to find file '" << filename 
+           << "'.  Creating default." << endl;
+      Print(filename);
+    }
   }
   
   init_file.Load();
@@ -76,6 +85,8 @@ void cAvidaConfig::Load(const cString & filename)
   
   init_file.WarnUnused();
 }
+
+/* Routine to create an avida configuration file from internal default values */
 
 void cAvidaConfig::Print(const cString & filename)
 {
@@ -300,6 +311,7 @@ void cAvidaConfig::GenerateOverides()
 cAvidaConfig* cAvidaConfig::LoadWithCmdLineArgs(int argc, char * argv[])
 {
   cString config_filename = "avida.cfg";
+  bool crash_if_not_found = false;
   tDictionary<cString> sets;
   
   int arg_num = 1;              // Argument number being looked at.
@@ -315,6 +327,7 @@ cAvidaConfig* cAvidaConfig::LoadWithCmdLineArgs(int argc, char * argv[])
       exit(0);
     }
     config_filename = args[2];
+    crash_if_not_found = true;
     arg_num += 2;
   } else if (argc > 1 && (args[1] == "-g" || args[1] == "-genesis")) {
     cerr << "Warning: Use of -g[enesis] deprecated in favor of -c[onfig]." << endl;
@@ -323,12 +336,13 @@ cAvidaConfig* cAvidaConfig::LoadWithCmdLineArgs(int argc, char * argv[])
       exit(0);
     }
     config_filename = args[2];
+    crash_if_not_found = true;
     arg_num += 2;
   }
   
   // Create Config object, load with values from configuration file
   cAvidaConfig* cfg = new cAvidaConfig();
-  cfg->Load(config_filename);
+  cfg->Load(config_filename, crash_if_not_found);
   
   // Then scan through and process the rest of the args.
   while (arg_num < argc) {
