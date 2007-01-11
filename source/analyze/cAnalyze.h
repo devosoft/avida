@@ -276,6 +276,7 @@ public:
 
   void RunFile(cString filename);
   void RunInteractive();
+  bool Send(const cString &text_input);
   
   int GetCurrentBatchID() { return cur_batch; }
   cGenotypeBatch& GetCurrentBatch() { return batch[cur_batch]; }

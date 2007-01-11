@@ -42,20 +42,26 @@ class cInstSet;
 class cTestCPU;
 class cWorld;
 
-/* FIXME : Refactor. @kgn */
+
 class cAnalyzeGenotype;
 class cAnalyzeGenotypeLink {
 private:
   cAnalyzeGenotype *m_parent;
   tList<cAnalyzeGenotype> m_child_list;
 public:
-  cAnalyzeGenotypeLink():m_parent(0) {
+  cAnalyzeGenotypeLink(){
     SetParent(0);
-    ClearChildren();
+    m_child_list.Clear();
   }
-  void SetParent(cAnalyzeGenotype *parent){ m_parent = parent; }
-  cAnalyzeGenotype *GetParent(){ return m_parent; }
-  tList<cAnalyzeGenotype> &GetChildList(){ return m_child_list; }
+  void SetParent(cAnalyzeGenotype *parent){
+    m_parent = parent;
+  }
+  cAnalyzeGenotype *GetParent(){
+    return m_parent;
+  }
+  tList<cAnalyzeGenotype> &GetChildList(){
+    return m_child_list;
+  }
   cAnalyzeGenotype *FindChild(cAnalyzeGenotype *child){
     return GetChildList().FindPtr(child);
   }
@@ -66,9 +72,6 @@ public:
     if(!FindChild(child)){
       GetChildList().PushRear(child);
     }
-  }
-  void ClearChildren(){
-    m_child_list.Clear();
   }
 };
 
@@ -349,27 +352,43 @@ public:
   */
   bool operator==(const cAnalyzeGenotype &in) const { return &in == this; }
 
-  cAnalyzeGenotypeLink &GetLink(){ return m_link; }
+  cAnalyzeGenotypeLink &GetLink(){
+    return m_link;
+  }
+  cAnalyzeGenotype *GetParent(){
+    return GetLink().GetParent();
+  }
   void LinkParent(cAnalyzeGenotype *parent){
-    if(GetLink().GetParent() && GetLink().GetParent() != parent){
-      GetLink().GetParent()->GetLink().RemoveChild(this);
+    if(GetParent() && GetParent() != parent){
+      GetParent()->GetLink().RemoveChild(this);
     }
     GetLink().SetParent(parent);
-    if(parent){ parent->GetLink().AddChild(this); }
+    if(parent){
+      parent->GetLink().AddChild(this);
+    }
   }
-  void LinkChild(cAnalyzeGenotype &child){ child.LinkParent(this); }
-  void UnlinkParent(){ LinkParent(0); }
+  void LinkChild(cAnalyzeGenotype &child){
+    child.LinkParent(this);
+  }
+  void UnlinkParent(){
+    LinkParent(0);
+  }
+  tList<cAnalyzeGenotype> &GetChildList(){
+    return GetLink().GetChildList();
+  }
   void UnlinkChildren(){
-    tListIterator<cAnalyzeGenotype> it(GetLink().GetChildList());
-    while (it.Next() != NULL) { it.Get()->GetLink().SetParent(0); }
-    GetLink().ClearChildren();
+    tListIterator<cAnalyzeGenotype> it(GetChildList());
+    while (it.Next() != NULL) {
+      it.Get()->UnlinkParent();
+    }
   }
   void Unlink(){
     UnlinkParent();
     UnlinkChildren();
   }
-  cAnalyzeGenotype *GetParent(){ return GetLink().GetParent(); }
-  bool HasChild(cAnalyzeGenotype &child){ return GetLink().FindChild(&child); }
+  bool HasChild(cAnalyzeGenotype &child){
+    return GetLink().FindChild(&child);
+  }
   bool UnlinkChild(cAnalyzeGenotype &child){
     if(HasChild(child)){
       child.UnlinkParent();
@@ -378,7 +397,6 @@ public:
       return false;
     }
   }
-  tList<cAnalyzeGenotype> &GetChildList(){ return GetLink().GetChildList(); }
 };
 
 #endif

@@ -7967,3 +7967,42 @@ void cAnalyze::RunInteractive()
   
   if (!saved_analyze) m_ctx.ClearAnalyzeMode();
 }
+
+bool cAnalyze::Send(const cString &text_input)
+{
+    cString cur_input(text_input);
+    cString command = cur_input.PopWord();
+    
+    cAnalyzeCommand* cur_command;
+    cAnalyzeCommandDefBase* command_def = FindAnalyzeCommandDef(command);
+    if (command == "") {
+      // Don't worry about blank lines...
+      ;
+    } else if (command_def != NULL && command_def->IsFlowCommand() == true) {
+      // This code has a body to it... fill it out!
+      cur_command = new cAnalyzeFlowCommand(command, cur_input);
+      InteractiveLoadCommandList(*(cur_command->GetCommandList()));
+    } else {
+      // This is a normal command...
+      cur_command = new cAnalyzeCommand(command, cur_input);
+    }
+    
+    cString args = cur_command->GetArgs();
+    PreProcessArgs(args);
+    
+    cAnalyzeCommandDefBase* command_fun = FindAnalyzeCommandDef(command);
+    
+    // First check for built-in functions...
+    if (command_fun != NULL) command_fun->Run(this, args, *cur_command);
+    
+    // Then for user defined functions
+    else if (FunctionRun(command, args) == true) { }
+    
+    // Otherwise, give an error.
+    else {
+      cerr << "Error: Unknown command '" << command << "'." << endl;
+      return false;
+    }
+
+    return true;
+}
