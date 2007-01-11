@@ -1938,7 +1938,6 @@ void cTaskLib::Load_SortInputs(const cString& name, const cString& argstr, cEnvR
 double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
 {
   const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
-  const tBuffer<int>& input = ctx.GetInputBuffer();
   const tBuffer<int>& output = ctx.GetOutputBuffer();
   const int size = args.GetInt(0);
   const int stored = output.GetNumStored();
@@ -2071,7 +2070,6 @@ void cTaskLib::Load_FibonacciSequence(const cString& name, const cString& argstr
 
 double cTaskLib::Task_FibonacciSequence(cTaskContext& ctx) const
 {
-  double quality = 0.0;
   const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
   cFibSeqState* state = static_cast<cFibSeqState*>(ctx.GetTaskState());
   if (state == NULL) {
