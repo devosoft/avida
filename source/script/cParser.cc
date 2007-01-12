@@ -14,67 +14,111 @@
 /*
  script: statement_list
  
- statement_list:	statement |	statement_list statement |
- statement: expression ENDL
+ statement_list: statement statement_list
+               |
+ 
+ statement: expr ENDL
           | var_declare ENDL
-          | flow_command
+          | if_block
+          | while_block
+          | foreach_block
           | declare_function
           | define_function
           | ENDL
   
  type_any: TYPE_BOOL | TYPE_CHAR | TYPE_FLOAT | TYPE_INT | TYPE_VOID
  
- expression: OP_BIT_NOT expression
-           | expression OP_BIT_AND expression
-           | expression OP_BIT_OR expression
+ expr: p0_expr expr_1
 
-           | OP_LOGIC_NOT expression
-           | expression OP_LOGIC_AND expression
-           | expression OP_LOGIC_OR expression
-
-           | expression OP_ADD expression
-           | expression OP_SUB expression
-           | expression OP_MUL expression
-           | expression OP_DIV expression
-           | expression OP_MOD expression
+ expr_1: ASSIGN p0_expr expr_1
+      |
  
-           | ID ASSIGN expression
-
-           | expression OP_EQ expression
-           | expression OP_LE expression
-           | expression OP_GE expression
-           | expression OP_LT expression
-           | expression OP_GT expression
-           | expression OP_NEQ expression
-
-           | OP_SUB expression
  
-           | PREC_OPEN expression PREC_CLOSE
-
-           | FLOAT
-           | INT
-           | STRING
-           | CHAR
+ p0_expr: p1_expr p0_expr_1
  
-           | ID
-           | ID IDX_OPEN expression IDX_CLOSE
-           | ID PREC_OPEN argument_list PREC_CLOSE
-           | expression DOT ID PREC_OPEN argument_list PREC_CLOSE
-  
- argument_list: argument_list2 | 
- argument_list2: argument_list2 ',' expression |	expression 
+ p0_expr_1: OP_LOGIC_AND p1_expr p0_expr_1
+          | OP_LOGIC_OR p1_expr p0_expr_1
+          |
 
- if_block: CMD_IF PREC_OPEN expression PREC_CLOSE ENDL statement_list CMD_ENDIF ENDL
-         | CMD_IF PREC_OPEN expression PREC_CLOSE ENDL statement_list CMD_ELSE statement_list CMD_ENDIF ENDL
+ p1_expr: p2_expr p1_expr_1
  
- while_block: CMD_WHILE PREC_OPEN expression PREC_CLOSE ENDL statement_list CMD_ENDWHILE ENDL
- 
- foreach_block: CMD_FOREACH REF ID PREC_OPEN expression PREC_CLOSE ENDL statement_list CMD_ENDFOREACH ENDL
-              | CMD_FOREACH type_any ID PREC_OPEN expression PREC_CLOSE ENDL statement_list CMD_ENDFOREACH ENDL
+ p1_expr_1: OP_BIT_AND p2_expr p1_expr_1
+          | OP_BIT_OR p2_expr p1_expr_1
+          |
 
- var_declare: type_any ID | type_any ID ASSIGN expression
- var_declare_list: var_declare_list2 |  
- var_declare_list2: var_declare_list2 ',' var_declare | var_declare
+ 
+ p2_expr: p3_expr p2_expr_1
+ 
+ p2_expr_1: OP_EQ p3_expr p2_expr_1
+          | OP_LE p3_expr p2_expr_1
+          | OP_GE p3_expr p2_expr_1
+          | OP_LT p3_expr p2_expr_1
+          | OP_GT p3_expr p2_expr_1
+          | OP_NEQ p3_expr p2_expr_1
+          |
+ 
+ 
+ p3_expr: p4_expr p3_expr_1
+ 
+ p3_expr_1: OP_ADD p4_expr p3_expr_1
+          | OP_SUB p4_expr p3_expr_1
+          |
+
+ 
+ p4_expr: p5_expr prec_4_expr_1
+ 
+ p4_expr_1: OP_MUL p5_expr p4_expr_1
+          | OP_DIV p5_expr p4_expr_1
+          | OP_MOD p5_expr p4_expr_1
+          |
+ 
+ 
+ p5_expr: value p5_expr_1
+        | OP_BIT_NOT expr
+        | OP_LOGIC_NOT expr
+        | OP_SUB expr
+ 
+ p5_expr_1: DOT ID id_expr
+          |
+ 
+ 
+ value: FLOAT
+      | INT
+      | STRING
+      | CHAR
+      | ID id_expr
+      | PREC_OPEN expr PREC_CLOSE
+ 
+ id_expr: IDX_OPEN expr IDX_CLOSE
+        | PREC_OPEN argument_list PREC_CLOSE
+        |
+ 
+ argument_list: argument_list_1
+              |
+ 
+ argument_list_1: expr argument_list_2
+ 
+ argument_list_2: COMMA expr argument_list_2
+                |
+
+ if_block: CMD_IF PREC_OPEN expr PREC_CLOSE ENDL statement_list CMD_ENDIF ENDL
+         | CMD_IF PREC_OPEN expr PREC_CLOSE ENDL statement_list CMD_ELSE statement_list CMD_ENDIF ENDL
+ 
+ while_block: CMD_WHILE PREC_OPEN expr PREC_CLOSE ENDL statement_list CMD_ENDWHILE ENDL
+ 
+ foreach_block: CMD_FOREACH REF ID PREC_OPEN expr PREC_CLOSE ENDL statement_list CMD_ENDFOREACH ENDL
+              | CMD_FOREACH type_any ID PREC_OPEN expr PREC_CLOSE ENDL statement_list CMD_ENDFOREACH ENDL
+
+ var_declare: type_any ID
+            | type_any ID ASSIGN expr
+ 
+ var_declare_list: var_declare_list_1
+                 |
+ 
+ var_declare_list_1: var_declare var_declare_list_2
+ 
+ var_declare_list_2: COMMA var_declare var_declare_list_2
+                   | 
  
  declare_function: REF CMD_FUNCTION type_any ID PREC_OPEN var_declare_list PREC_CLOSE ENDL
  define_function: CMD_FUNCTION type_any ID PREC_OPEN var_declare_list PREC_CLOSE ENDL statement_list CMD_ENDFUNCTION

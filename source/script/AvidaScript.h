@@ -13,6 +13,7 @@
 enum eASTokens {
   SUPRESS = 1,
   ENDL,
+  COMMA,
   
   OP_BIT_NOT,
   OP_BIT_AND,

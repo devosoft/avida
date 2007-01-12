@@ -28,6 +28,7 @@
 
 ;           return SUPRESS;       // End-of-line
 \n          return ENDL;
+,           return COMMA;
 
 ~           return OP_BIT_NOT;    // Bitwise Operators
 &           return OP_BIT_AND;
