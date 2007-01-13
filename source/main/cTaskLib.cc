@@ -2374,7 +2374,7 @@ double cTaskLib::Task_Sine(cTaskContext& ctx) const
   int diff = abs(static_cast<int>(sinf(static_cast<float>(input_buffer[0]) / fCastPrecision) * fCastPrecision) - test_output);
   
   for (int i = 0; i < input_size; i ++) {
-    int cur_diff = abs(static_cast<int>(sinf(static_cast<float>(input_buffer[0]) / fCastPrecision) * fCastPrecision) - test_output);
+    int cur_diff = abs(static_cast<int>(sinf(static_cast<float>(input_buffer[i]) / fCastPrecision) * fCastPrecision) - test_output);
     if (cur_diff < diff) diff = cur_diff;
   }
   
@@ -2415,7 +2415,7 @@ double cTaskLib::Task_Cosine(cTaskContext& ctx) const
   int diff = abs(static_cast<int>(cosf(static_cast<float>(input_buffer[0]) / fCastPrecision) * fCastPrecision) - test_output);
   
   for (int i = 0; i < input_size; i ++) {
-    int cur_diff = abs(static_cast<int>(cosf(static_cast<float>(input_buffer[0]) / fCastPrecision) * fCastPrecision) - test_output);
+    int cur_diff = abs(static_cast<int>(cosf(static_cast<float>(input_buffer[i]) / fCastPrecision) * fCastPrecision) - test_output);
     if (cur_diff < diff) diff = cur_diff;
   }
   
@@ -2456,7 +2456,7 @@ double cTaskLib::Task_Tangent(cTaskContext& ctx) const
   int diff = abs(static_cast<int>(tanf(static_cast<float>(input_buffer[0]) / fCastPrecision) * fCastPrecision) - test_output);
   
   for (int i = 0; i < input_size; i ++) {
-    int cur_diff = abs(static_cast<int>(tanf(static_cast<float>(input_buffer[0]) / fCastPrecision) * fCastPrecision) - test_output);
+    int cur_diff = abs(static_cast<int>(tanf(static_cast<float>(input_buffer[i]) / fCastPrecision) * fCastPrecision) - test_output);
     if (cur_diff < diff) diff = cur_diff;
   }
   
