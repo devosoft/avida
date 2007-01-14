@@ -1903,8 +1903,8 @@ double cTaskLib::Task_MatchNumber(cTaskContext& ctx) const
   int diff = abs(args.GetInt(0) - ctx.GetOutputBuffer()[0]);
   int threshold = args.GetInt(1);
     
-  if (threshold < 0 || diff <= abs(threshold)) { // Negative threshold == infinite
-    // If within threshold range, quality decays based on absolute difference
+  if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
+         // If within threshold range, quality decays based on absolute difference
     double halflife = -1.0 * fabs(args.GetDouble(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
@@ -2115,11 +2115,12 @@ double cTaskLib::Task_Mult(cTaskContext& ctx) const
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
-
-  int diff = abs((input_buffer[0] * input_buffer[0]) - test_output);
+  
+  int diff = INT_MAX;
 
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
+      if (i == j) continue;
       int cur_diff = abs((input_buffer[i] * input_buffer[j]) - test_output);
       if (cur_diff < diff) diff = cur_diff;
     }
@@ -2127,8 +2128,8 @@ double cTaskLib::Task_Mult(cTaskContext& ctx) const
   
   int threshold = args.GetInt(0);
   
-  if (threshold < 0 || diff <= abs(threshold)) { // Negative threshold == infinite
-                                                 // If within threshold range, quality decays based on absolute difference
+  if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
+                                            // If within threshold range, quality decays based on absolute difference
     double halflife = -1.0 * fabs(args.GetDouble(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
@@ -2171,8 +2172,8 @@ double cTaskLib::Task_Div(cTaskContext& ctx) const
   
   int threshold = args.GetInt(0);
   
-  if (threshold < 0 || diff <= abs(threshold)) { // Negative threshold == infinite
-                                                 // If within threshold range, quality decays based on absolute difference
+  if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
+                                            // If within threshold range, quality decays based on absolute difference
     double halflife = -1.0 * fabs(args.GetDouble(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
@@ -2203,7 +2204,7 @@ double cTaskLib::Task_Log(cTaskContext& ctx) const
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
   
-  int diff = abs(static_cast<int>(log(static_cast<double>(abs(input_buffer[0] ? input_buffer[0] : 1)))) - test_output);
+  int diff = INT_MAX;
   
   for (int i = 0; i < input_size; i ++) {
     int cur_diff = abs(static_cast<int>(log(static_cast<double>(abs(input_buffer[i] ? input_buffer[i] : 1)))) - test_output);
@@ -2212,8 +2213,8 @@ double cTaskLib::Task_Log(cTaskContext& ctx) const
   
   int threshold = args.GetInt(0);
   
-  if (threshold < 0 || diff <= abs(threshold)) { // Negative threshold == infinite
-                                                 // If within threshold range, quality decays based on absolute difference
+  if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
+                                            // If within threshold range, quality decays based on absolute difference
     double halflife = -1.0 * fabs(args.GetDouble(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
@@ -2245,7 +2246,7 @@ double cTaskLib::Task_Log2(cTaskContext& ctx) const
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
   
-  int diff = abs(static_cast<int>(log2(static_cast<double>(abs(input_buffer[0] ? input_buffer[0] : 1)))) - test_output);
+  int diff = INT_MAX;
   
   for (int i = 0; i < input_size; i ++) {
     int cur_diff = abs(static_cast<int>(log2(static_cast<double>(abs(input_buffer[i] ? input_buffer[i] : 1)))) - test_output);
@@ -2254,8 +2255,8 @@ double cTaskLib::Task_Log2(cTaskContext& ctx) const
   
   int threshold = args.GetInt(0);
   
-  if (threshold < 0 || diff <= abs(threshold)) { // Negative threshold == infinite
-                                                 // If within threshold range, quality decays based on absolute difference
+  if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
+                                            // If within threshold range, quality decays based on absolute difference
     double halflife = -1.0 * fabs(args.GetDouble(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
@@ -2287,7 +2288,7 @@ double cTaskLib::Task_Log10(cTaskContext& ctx) const
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
   
-  int diff = abs(static_cast<int>(log10(static_cast<double>(abs(input_buffer[0] ? input_buffer[0] : 1)))) - test_output);
+  int diff = INT_MAX;
   
   for (int i = 0; i < input_size; i ++) {
     int cur_diff = abs(static_cast<int>(log10(static_cast<double>(abs(input_buffer[i] ? input_buffer[i] : 1)))) - test_output);
@@ -2296,8 +2297,8 @@ double cTaskLib::Task_Log10(cTaskContext& ctx) const
   
   int threshold = args.GetInt(0);
   
-  if (threshold < 0 || diff <= abs(threshold)) { // Negative threshold == infinite
-                                                 // If within threshold range, quality decays based on absolute difference
+  if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
+                                            // If within threshold range, quality decays based on absolute difference
     double halflife = -1.0 * fabs(args.GetDouble(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
@@ -2329,7 +2330,7 @@ double cTaskLib::Task_Sqrt(cTaskContext& ctx) const
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
   
-  int diff = abs(static_cast<int>(sqrt(static_cast<double>(abs(input_buffer[0])))) - test_output);
+  int diff = INT_MAX;
   
   for (int i = 0; i < input_size; i ++) {
     int cur_diff = abs(static_cast<int>(sqrt(static_cast<double>(abs(input_buffer[i])))) - test_output);
@@ -2338,8 +2339,8 @@ double cTaskLib::Task_Sqrt(cTaskContext& ctx) const
   
   int threshold = args.GetInt(0);
   
-  if (threshold < 0 || diff <= abs(threshold)) { // Negative threshold == infinite
-                                                 // If within threshold range, quality decays based on absolute difference
+  if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
+                                            // If within threshold range, quality decays based on absolute difference
     double halflife = -1.0 * fabs(args.GetDouble(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
@@ -2371,7 +2372,7 @@ double cTaskLib::Task_Sine(cTaskContext& ctx) const
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
   
-  int diff = abs(static_cast<int>(sinf(static_cast<float>(input_buffer[0]) / fCastPrecision) * fCastPrecision) - test_output);
+  int diff = INT_MAX;
   
   for (int i = 0; i < input_size; i ++) {
     int cur_diff = abs(static_cast<int>(sinf(static_cast<float>(input_buffer[i]) / fCastPrecision) * fCastPrecision) - test_output);
@@ -2380,8 +2381,8 @@ double cTaskLib::Task_Sine(cTaskContext& ctx) const
   
   int threshold = args.GetInt(0);
   
-  if (threshold < 0 || diff <= abs(threshold)) { // Negative threshold == infinite
-                                                 // If within threshold range, quality decays based on absolute difference
+  if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
+                                            // If within threshold range, quality decays based on absolute difference
     double halflife = -1.0 * fabs(args.GetDouble(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
@@ -2412,7 +2413,7 @@ double cTaskLib::Task_Cosine(cTaskContext& ctx) const
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
   
-  int diff = abs(static_cast<int>(cosf(static_cast<float>(input_buffer[0]) / fCastPrecision) * fCastPrecision) - test_output);
+  int diff = INT_MAX;
   
   for (int i = 0; i < input_size; i ++) {
     int cur_diff = abs(static_cast<int>(cosf(static_cast<float>(input_buffer[i]) / fCastPrecision) * fCastPrecision) - test_output);
@@ -2421,8 +2422,8 @@ double cTaskLib::Task_Cosine(cTaskContext& ctx) const
   
   int threshold = args.GetInt(0);
   
-  if (threshold < 0 || diff <= abs(threshold)) { // Negative threshold == infinite
-                                                 // If within threshold range, quality decays based on absolute difference
+  if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
+                                            // If within threshold range, quality decays based on absolute difference
     double halflife = -1.0 * fabs(args.GetDouble(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
@@ -2453,7 +2454,7 @@ double cTaskLib::Task_Tangent(cTaskContext& ctx) const
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
   
-  int diff = abs(static_cast<int>(tanf(static_cast<float>(input_buffer[0]) / fCastPrecision) * fCastPrecision) - test_output);
+  int diff = INT_MAX;
   
   for (int i = 0; i < input_size; i ++) {
     int cur_diff = abs(static_cast<int>(tanf(static_cast<float>(input_buffer[i]) / fCastPrecision) * fCastPrecision) - test_output);
@@ -2462,8 +2463,8 @@ double cTaskLib::Task_Tangent(cTaskContext& ctx) const
   
   int threshold = args.GetInt(0);
   
-  if (threshold < 0 || diff <= abs(threshold)) { // Negative threshold == infinite
-                                                 // If within threshold range, quality decays based on absolute difference
+  if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
+                                            // If within threshold range, quality decays based on absolute difference
     double halflife = -1.0 * fabs(args.GetDouble(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
