@@ -2367,13 +2367,13 @@ double cTaskLib::Task_Sine(cTaskContext& ctx) const
   const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
   
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
-  const int test_output = ctx.GetOutputBuffer()[0];
+  const long test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
   
-  int diff = INT_MAX;
+  long diff = (INT_MAX + 1) * 2;
   
   for (int i = 0; i < input_size; i ++) {
-    int cur_diff = abs(static_cast<int>(sin(static_cast<double>(input_buffer[i]) / dCastPrecision) * dCastPrecision) - test_output);
+    long cur_diff = labs(long(sin(double(input_buffer[i]) / dCastPrecision) * dCastPrecision) - test_output);
     if (cur_diff < diff) diff = cur_diff;
   }
   
@@ -2408,13 +2408,13 @@ double cTaskLib::Task_Cosine(cTaskContext& ctx) const
   const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
   
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
-  const int test_output = ctx.GetOutputBuffer()[0];
+  const long test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
   
-  int diff = INT_MAX;
+  long diff = (INT_MAX + 1) * 2;
   
   for (int i = 0; i < input_size; i ++) {
-    int cur_diff = abs(static_cast<int>(cos(static_cast<double>(input_buffer[i]) / dCastPrecision) * dCastPrecision) - test_output);
+    long cur_diff = labs(long(cos(double(input_buffer[i]) / dCastPrecision) * dCastPrecision) - test_output);
     if (cur_diff < diff) diff = cur_diff;
   }
   
