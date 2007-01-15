@@ -247,8 +247,6 @@ private:  // Direct task related methods
   double Task_Sine(cTaskContext& ctx) const;
   void Load_Cosine(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
   double Task_Cosine(cTaskContext& ctx) const;
-  void Load_Tangent(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
-  double Task_Tangent(cTaskContext& ctx) const;
 
 
   // Communication Tasks

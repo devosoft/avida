@@ -20,7 +20,7 @@
 #include <limits.h>
 
 
-static const float fCastPrecision = 10000.0f;
+static const double dCastPrecision = 100000.0;
 
 
 cTaskLib::~cTaskLib()
@@ -340,8 +340,6 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
     Load_Sine(name, info, envreqs, errors);
   else if (name == "cosine")
     Load_Cosine(name, info, envreqs, errors);
-  else if (name == "tangent")
-    Load_Tangent(name, info, envreqs, errors);
 
   
   // Communication Tasks
@@ -2375,7 +2373,7 @@ double cTaskLib::Task_Sine(cTaskContext& ctx) const
   int diff = INT_MAX;
   
   for (int i = 0; i < input_size; i ++) {
-    int cur_diff = abs(static_cast<int>(sinf(static_cast<float>(input_buffer[i]) / fCastPrecision) * fCastPrecision) - test_output);
+    int cur_diff = abs(static_cast<int>(sin(static_cast<double>(input_buffer[i]) / dCastPrecision) * dCastPrecision) - test_output);
     if (cur_diff < diff) diff = cur_diff;
   }
   
@@ -2416,7 +2414,7 @@ double cTaskLib::Task_Cosine(cTaskContext& ctx) const
   int diff = INT_MAX;
   
   for (int i = 0; i < input_size; i ++) {
-    int cur_diff = abs(static_cast<int>(cosf(static_cast<float>(input_buffer[i]) / fCastPrecision) * fCastPrecision) - test_output);
+    int cur_diff = abs(static_cast<int>(cos(static_cast<double>(input_buffer[i]) / dCastPrecision) * dCastPrecision) - test_output);
     if (cur_diff < diff) diff = cur_diff;
   }
   
@@ -2430,48 +2428,6 @@ double cTaskLib::Task_Cosine(cTaskContext& ctx) const
   
   return quality;
 }
-
-
-void cTaskLib::Load_Tangent(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
-{
-  cArgSchema schema;
-  
-  // Integer Arguments
-  schema.AddEntry("threshold", 0, -1);
-  // Double Arguments
-  schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
-  
-  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
-  if (args) NewTask(name, "Tangent", &cTaskLib::Task_Tangent, 0, args);
-}
-
-double cTaskLib::Task_Tangent(cTaskContext& ctx) const
-{
-  double quality = 0.0;
-  const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
-  
-  const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
-  const int test_output = ctx.GetOutputBuffer()[0];
-  const int input_size = input_buffer.GetNumStored();
-  
-  int diff = INT_MAX;
-  
-  for (int i = 0; i < input_size; i ++) {
-    int cur_diff = abs(static_cast<int>(tanf(static_cast<float>(input_buffer[i]) / fCastPrecision) * fCastPrecision) - test_output);
-    if (cur_diff < diff) diff = cur_diff;
-  }
-  
-  int threshold = args.GetInt(0);
-  
-  if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
-                                            // If within threshold range, quality decays based on absolute difference
-    double halflife = -1.0 * fabs(args.GetDouble(0));
-    quality = pow(2.0, static_cast<double>(diff) / halflife);
-  }
-  
-  return quality;
-}
-
 
 
 
