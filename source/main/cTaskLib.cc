@@ -2114,7 +2114,7 @@ double cTaskLib::Task_Mult(cTaskContext& ctx) const
   const long long test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
   
-  long long diff = (INT_MAX + 1) * 2;
+  long long diff = ((long long)INT_MAX + 1) * 2;
 
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
@@ -2158,11 +2158,11 @@ double cTaskLib::Task_Div(cTaskContext& ctx) const
   const long long test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
   
-  long long diff = (INT_MAX + 1) * 2;
+  long long diff = ((long long)INT_MAX + 1) * 2;
   
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
-      if (input_buffer[j] == 0) continue;
+      if (i == j || input_buffer[j] == 0) continue;
       long long cur_diff = labs((long long)(input_buffer[i] / input_buffer[j]) - test_output);
       if (cur_diff < diff) diff = cur_diff;
     }
@@ -2202,7 +2202,7 @@ double cTaskLib::Task_Log(cTaskContext& ctx) const
   const long long test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
   
-  long long diff = (INT_MAX + 1) * 2;
+  long long diff = ((long long)INT_MAX + 1) * 2;
   
   for (int i = 0; i < input_size; i ++) {
     long long cur_diff = labs((long long)(log(fabs(double(input_buffer[i] ? input_buffer[i] : 1)))) - test_output);
@@ -2244,7 +2244,7 @@ double cTaskLib::Task_Log2(cTaskContext& ctx) const
   const long long test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
   
-  long long diff = (INT_MAX + 1) * 2;
+  long long diff = ((long long)INT_MAX + 1) * 2;
   
   for (int i = 0; i < input_size; i ++) {
     long long cur_diff = labs((long long)(log2(fabs(double(input_buffer[i] ? input_buffer[i] : 1)))) - test_output);
@@ -2286,7 +2286,7 @@ double cTaskLib::Task_Log10(cTaskContext& ctx) const
   const long long test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
   
-  long long diff = (INT_MAX + 1) * 2;
+  long long diff = ((long long)INT_MAX + 1) * 2;
   
   for (int i = 0; i < input_size; i ++) {
     long long cur_diff = labs((long long)(log10(fabs(double(input_buffer[i] ? input_buffer[i] : 1)))) - test_output);
@@ -2328,7 +2328,7 @@ double cTaskLib::Task_Sqrt(cTaskContext& ctx) const
   const long long test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
   
-  long long diff = (INT_MAX + 1) * 2;
+  long long diff = ((long long)INT_MAX + 1) * 2;
   
   for (int i = 0; i < input_size; i ++) {
     long long cur_diff = labs((long long)(sqrt(fabs(double(input_buffer[i])))) - test_output);
@@ -2370,7 +2370,7 @@ double cTaskLib::Task_Sine(cTaskContext& ctx) const
   const long long test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
   
-  long long diff = (INT_MAX + 1) * 2;
+  long long diff = ((long long)INT_MAX + 1) * 2;
   
   for (int i = 0; i < input_size; i ++) {
     long long cur_diff = labs((long long)(sin(double(input_buffer[i]) / dCastPrecision) * dCastPrecision) - test_output);
@@ -2411,7 +2411,7 @@ double cTaskLib::Task_Cosine(cTaskContext& ctx) const
   const long long test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
   
-  long long diff = (INT_MAX + 1) * 2;
+  long long diff = ((long long)INT_MAX + 1) * 2;
   
   for (int i = 0; i < input_size; i ++) {
     long long cur_diff = labs((long long)(cos(double(input_buffer[i]) / dCastPrecision) * dCastPrecision) - test_output);
