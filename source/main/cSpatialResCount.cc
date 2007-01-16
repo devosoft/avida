@@ -379,7 +379,7 @@ void cSpatialResCount::Sink(double decay) const {
 
 void cSpatialResCount::CellOutflow() const {
 
-  double  deltaamount;
+  double deltaamount = 0.0;
 
   for (int i=0; i < cell_list_ptr->GetSize(); i++) {
     const int cell_id = (*cell_list_ptr)[i].GetId();

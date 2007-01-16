@@ -7973,7 +7973,7 @@ bool cAnalyze::Send(const cString &text_input)
     cString cur_input(text_input);
     cString command = cur_input.PopWord();
     
-    cAnalyzeCommand* cur_command;
+    cAnalyzeCommand* cur_command = NULL;
     cAnalyzeCommandDefBase* command_def = FindAnalyzeCommandDef(command);
     if (command == "") {
       // Don't worry about blank lines...

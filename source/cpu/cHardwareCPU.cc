@@ -2564,6 +2564,7 @@ bool cHardwareCPU::Inst_Transposon(cAvidaContext& ctx)
 {
   ReadLabel();
   //organism->GetPhenotype().ActivateTransposon(GetLabel());
+  return true;
 }
 
 void cHardwareCPU::Divide_DoTransposons(cAvidaContext& ctx)
