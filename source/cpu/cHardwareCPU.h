@@ -67,6 +67,7 @@ public:
 protected:
   // --------  Structure Constants  --------
   static const int NUM_REGISTERS = 3;
+  static const int NUM_HEADS = nHardware::NUM_HEADS >= NUM_REGISTERS ? nHardware::NUM_HEADS : NUM_REGISTERS;
   enum tRegisters { REG_AX = 0, REG_BX, REG_CX, REG_DX, REG_EX, REG_FX };
   static const int NUM_NOPS = 3;
   
@@ -78,7 +79,7 @@ protected:
     
   public:
     int reg[NUM_REGISTERS];
-    cHeadCPU heads[nHardware::NUM_HEADS >= NUM_REGISTERS ? nHardware::NUM_HEADS : NUM_REGISTERS];
+    cHeadCPU heads[NUM_HEADS];
     cCPUStack stack;
     unsigned char cur_stack;              // 0 = local stack, 1 = global stack.
     unsigned char cur_head;
@@ -215,7 +216,7 @@ public:
   cHeadCPU& GetHead(int head_id) { return m_threads[m_cur_thread].heads[head_id];}
   const cHeadCPU& GetHead(int head_id, int thread) const { return m_threads[thread].heads[head_id]; }
   cHeadCPU& GetHead(int head_id, int thread) { return m_threads[thread].heads[head_id];}
-  int GetNumHeads() const { return nHardware::NUM_HEADS; }
+  int GetNumHeads() const { return NUM_HEADS; }
   
   const cHeadCPU& IP() const { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
   cHeadCPU& IP() { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }

@@ -450,7 +450,7 @@ void cHardwareCPU::cLocalThread::operator=(const cLocalThread& in_thread)
 {
   m_id = in_thread.m_id;
   for (int i = 0; i < NUM_REGISTERS; i++) reg[i] = in_thread.reg[i];
-  for (int i = 0; i < nHardware::NUM_HEADS; i++) heads[i] = in_thread.heads[i];
+  for (int i = 0; i < NUM_HEADS; i++) heads[i] = in_thread.heads[i];
   stack = in_thread.stack;
 }
 
@@ -459,7 +459,7 @@ void cHardwareCPU::cLocalThread::Reset(cHardwareBase* in_hardware, int in_id)
   m_id = in_id;
   
   for (int i = 0; i < NUM_REGISTERS; i++) reg[i] = 0;
-  for (int i = 0; i < nHardware::NUM_HEADS; i++) heads[i].Reset(in_hardware);
+  for (int i = 0; i < NUM_HEADS; i++) heads[i].Reset(in_hardware);
   
   stack.Clear();
   cur_stack = 0;
@@ -953,7 +953,7 @@ void cHardwareCPU::InjectCode(const cGenome & inject_code, const int line_num)
   organism->GetPhenotype().IsModified() = true;
   
   // Adjust all of the heads to take into account the new mem size.  
-  for (int i = 0; i < nHardware::NUM_HEADS; i++) {    
+  for (int i = 0; i < NUM_HEADS; i++) {    
     if (GetHead(i).GetPosition() > line_num) GetHead(i).Jump(inject_size);
   }
 }
@@ -972,7 +972,7 @@ void cHardwareCPU::ReadInst(const int in_inst)
 void cHardwareCPU::AdjustHeads()
 {
   for (int i = 0; i < GetNumThreads(); i++) {
-    for (int j = 0; j < nHardware::NUM_HEADS; j++) {
+    for (int j = 0; j < NUM_HEADS; j++) {
       m_threads[i].heads[j].Adjust();
     }
   }
@@ -1100,7 +1100,7 @@ inline int cHardwareCPU::FindModifiedPreviousRegister(int default_register)
 
 inline int cHardwareCPU::FindModifiedHead(int default_head)
 {
-  assert(default_head < nHardware::NUM_HEADS); // Head ID too high.
+  assert(default_head < NUM_HEADS); // Head ID too high.
   
   if (m_inst_set->IsNop(IP().GetNextInst())) {
     IP().Advance();
