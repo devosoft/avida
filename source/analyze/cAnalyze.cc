@@ -40,6 +40,8 @@
 #include "cInstUtil.h"
 #include "cLandscape.h"
 #include "cPhenotype.h"
+#include "cProbSchedule.h"
+#include "cSchedule.h"
 #include "cSpecies.h"
 #include "cStringIterator.h"
 #include "tArgDataEntry.h"
@@ -7174,6 +7176,142 @@ void cAnalyze::CommandInteractive(cString cur_string)
 }
 
 
+/*
+kgn@FIXME
+Must categorize COMPETE command.
+*/
+/* Arguments to COMPETE: */
+/*
+  batch_size : size of target batch
+  from_id
+  to_id=current
+*/
+void cAnalyze::BatchCompete(cString cur_string)
+{
+  if (cur_string.GetSize() == 0) {
+    cerr << "Compete Error: Must include target batch size!" << endl;
+    if (exit_on_error) exit(1);
+  }
+  int batch_size = cur_string.PopWord().AsInt();
+  
+  if (cur_string.GetSize() == 0) {
+    cerr << "Compete Error: Must include from ID!" << endl;
+    if (exit_on_error) exit(1);
+  }
+  int batch_from = cur_string.PopWord().AsInt();
+  
+  int batch_to = cur_batch;
+  if (cur_string.GetSize() > 0) batch_to = cur_string.PopWord().AsInt();
+  
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    cout << "Compete from batch " << batch_from << " to batch " << batch_to << "." << endl;
+  }
+  
+  /* Get iterator into "from" batch. */ 
+  tListIterator<cAnalyzeGenotype> batch_it(batch[batch_from].List());
+  /* Get size of "from" batch. */
+  const int parent_batch_size = batch[batch_from].List().GetSize();
+
+  /* Create scheduler. */
+  cSchedule* schedule = new cProbSchedule(
+    parent_batch_size,
+    m_world->GetRandom().GetInt(0x7FFFFFFF)
+  );
+
+  /* Initialize scheduler with fitness values per-organism. */
+  tArray<cAnalyzeGenotype *> genotype_array(parent_batch_size);
+  tArray<cCPUMemory> offspring_genome_array(parent_batch_size);
+  tArray<cMerit> fitness_array(parent_batch_size);
+  cAnalyzeGenotype * genotype = NULL;
+
+  cTestCPU *testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  cCPUTestInfo *test_info = new cCPUTestInfo();
+
+  /*
+  kgn@FIXME
+  This should be settable by an optional argument.
+  */
+  test_info->UseRandomInputs(true); 
+  
+  int array_pos = 0;
+  while ((genotype = batch_it.Next()) != NULL) {
+    genotype_array[array_pos] = genotype;
+    genotype->Recalculate(m_world->GetDefaultContext(), testcpu, NULL, test_info);
+    if(genotype->GetViable()){
+      /*
+      kgn@FIXME
+      HACK : multiplication by 1000 because merits less than 1 are truncated to zero.
+      */
+      fitness_array[array_pos] = genotype->GetFitness() * 1000.;
+      offspring_genome_array[array_pos] = test_info->GetTestOrganism(0)->ChildGenome();
+    } else {
+      fitness_array[array_pos] = 0.0;
+    }
+    schedule->Adjust(array_pos, fitness_array[array_pos]);
+    array_pos++;
+  }
+
+  /* Use scheduler to sample organisms in "from" batch. */
+  for(int i=0; i<batch_size; /* don't increment i yet */){
+    /* Sample an organism. */
+    array_pos = schedule->GetNextID();
+    if(array_pos < 0){
+      cout << "Warning: No organisms in origin batch have positive fitness, cannot sample to destination batch." << endl; 
+      break;
+    }
+    genotype = genotype_array[array_pos];
+
+    double copy_mut_prob = m_world->GetConfig().COPY_MUT_PROB.Get();
+    double ins_mut_prob = m_world->GetConfig().DIVIDE_INS_PROB.Get();
+    double del_mut_prob = m_world->GetConfig().DIVIDE_DEL_PROB.Get();
+    int ins_line = -1;
+    int del_line = -1;
+
+    cCPUMemory child_genome = offspring_genome_array[array_pos];
+
+    if (copy_mut_prob > 0.0) {
+      for (int n = 0; n < child_genome.GetSize(); n++) {
+        if (m_world->GetRandom().P(copy_mut_prob)) {
+          child_genome[n] = inst_set.GetRandomInst(m_ctx);
+        }
+      }
+    }
+    
+    /* Perform an Insertion if it has one. */
+    if (m_world->GetRandom().P(ins_mut_prob)) {
+      ins_line = m_world->GetRandom().GetInt(child_genome.GetSize() + 1);
+      child_genome.Insert(ins_line, inst_set.GetRandomInst(m_ctx));
+    }
+    
+    /* Perform a Deletion if it has one. */
+    if (m_world->GetRandom().P(del_mut_prob)) {
+      del_line = m_world->GetRandom().GetInt(child_genome.GetSize());
+      child_genome.Remove(del_line);
+    }
+
+    /* Create (possibly mutated) offspring. */
+    cAnalyzeGenotype * new_genotype = new cAnalyzeGenotype(
+      m_world,
+      child_genome,
+      inst_set
+    );
+    /* Place offspring in "to" batch. */
+    batch[batch_to].List().PushRear(new_genotype);
+    /* Increment and continue. */
+    i++;
+  }
+
+  batch[batch_to].SetLineage(false);
+  batch[batch_to].SetAligned(false);
+
+  if(test_info){ delete test_info; test_info = 0; }
+  if(testcpu){ delete testcpu; testcpu = 0; }
+  if(schedule){ delete schedule; schedule = 0; }
+
+  return;
+}
+
+
 void cAnalyze::FunctionCreate(cString cur_string, tList<cAnalyzeCommand>& clist)
 {
   int num_args = cur_string.CountNumWords();
@@ -7897,6 +8035,9 @@ void cAnalyze::SetupCommandDefLibrary()
   // Flow commands...
   AddLibraryDef("FOREACH", &cAnalyze::CommandForeach);
   AddLibraryDef("FORRANGE", &cAnalyze::CommandForRange);
+
+  // Uncategorized commands...
+  AddLibraryDef("COMPETE", &cAnalyze::BatchCompete);
 }
 
 cAnalyzeCommandDefBase* cAnalyze::FindAnalyzeCommandDef(const cString& name)

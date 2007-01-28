@@ -241,6 +241,9 @@ public:
   void CommandSystem(cString cur_string);
   void CommandInteractive(cString cur_string);
 
+  // Uncategorized...
+  void BatchCompete(cString cur_string);
+
   // Functions...
   void FunctionCreate(cString cur_string, tList<cAnalyzeCommand> & clist);
   // Looks up the resource concentrations that are the closest to the
