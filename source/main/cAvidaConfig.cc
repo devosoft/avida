@@ -15,6 +15,7 @@
 #include "cActionLibrary.h"
 #include "cDriverManager.h"
 #include "cInitFile.h"
+#include "cStringIterator.h"
 #include "tDictionary.h"
 
 tList<cAvidaConfig::cBaseConfigGroup> cAvidaConfig::global_group_list;
@@ -319,8 +320,10 @@ cAvidaConfig* cAvidaConfig::LoadWithArgs(cStringList &argv)
   // Load all of the args into string objects for ease of access.
   int argc = argv.GetSize();
   cString* args = new cString[argc];
-  for (int i = 0; i < argc; i++) {
-    args[i] = argv.Pop();
+  cStringIterator list_it(argv);
+  for (int i = 0; (i < argc) && (list_it.AtEnd() == false); i++) {
+    list_it.Next();
+    args[i] = list_it.Get();
   }
   
   // -config option
