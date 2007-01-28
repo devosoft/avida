@@ -41,6 +41,7 @@
 #include "cLandscape.h"
 #include "cPhenotype.h"
 #include "cSpecies.h"
+#include "cStringIterator.h"
 #include "tArgDataEntry.h"
 #include "tDataEntry.h"
 #include "tDataEntryCommand.h"
@@ -8005,4 +8006,17 @@ bool cAnalyze::Send(const cString &text_input)
     }
 
     return true;
+}
+
+bool cAnalyze::Send(const cStringList &list_input)
+{
+    bool did_succeed = true;
+    cStringIterator list_it(list_input);
+    while ( list_it.AtEnd() == false ) {
+        list_it.Next();
+        if( !Send(list_it.Get()) ) {
+            did_succeed = false;
+        }
+    }
+    return did_succeed;
 }
