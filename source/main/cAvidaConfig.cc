@@ -308,7 +308,7 @@ void cAvidaConfig::GenerateOverides()
   }  
 }
 
-cAvidaConfig* cAvidaConfig::LoadWithCmdLineArgs(int argc, char * argv[])
+cAvidaConfig* cAvidaConfig::LoadWithArgs(cStringList &argv)
 {
   cString config_filename = "avida.cfg";
   bool crash_if_not_found = false;
@@ -317,8 +317,11 @@ cAvidaConfig* cAvidaConfig::LoadWithCmdLineArgs(int argc, char * argv[])
   int arg_num = 1;              // Argument number being looked at.
   
   // Load all of the args into string objects for ease of access.
+  int argc = argv.GetSize();
   cString* args = new cString[argc];
-  for (int i = 0; i < argc; i++) args[i] = argv[i];
+  for (int i = 0; i < argc; i++) {
+    args[i] = argv.Pop();
+  }
   
   // -config option
   if (argc > 1 && (args[1] == "-c" || args[1] == "-config")) {
@@ -431,8 +434,8 @@ cAvidaConfig* cAvidaConfig::LoadWithCmdLineArgs(int argc, char * argv[])
       cerr << "Error: -c[onfig] option must be listed first." << endl;
       exit(0);
     } else {
-      cerr << "Error: Unknown Option '" << argv[arg_num] << "'" << endl
-      << "Type: \"" << argv[0] << " -h\" for a full option list." << endl;
+      cerr << "Error: Unknown Option '" << args[arg_num] << "'" << endl
+      << "Type: \"" << args[0] << " -h\" for a full option list." << endl;
       exit(0);
     }
     
@@ -459,6 +462,14 @@ cAvidaConfig* cAvidaConfig::LoadWithCmdLineArgs(int argc, char * argv[])
   delete [] args;
   
   return cfg;
+}
+cAvidaConfig* cAvidaConfig::LoadWithCmdLineArgs(int argc, char * argv[])
+{
+  cStringList sl;
+  for(int i=0; i<argc; i++){
+    sl.PushRear(argv[i]);
+  }
+  return LoadWithArgs(sl);
 }
 
 bool cAvidaConfig::Get(const cString& entry, cString& ret) const

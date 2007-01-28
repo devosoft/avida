@@ -20,6 +20,7 @@
 #include <iostream>
 
 #include "cString.h"
+#include "cStringList.h"
 #include "cStringUtil.h"
 #include "tList.h"
 
@@ -163,6 +164,7 @@ public:
   cAvidaConfig() { group_list.Transfer(global_group_list); }  
   ~cAvidaConfig() { ; }
 
+  static cAvidaConfig* LoadWithArgs(cStringList &args);
   static cAvidaConfig* LoadWithCmdLineArgs(int argc, char* argv[]);
   
 #ifdef OVERRIDE_CONFIG
