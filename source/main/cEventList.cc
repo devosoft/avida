@@ -68,18 +68,23 @@ bool cEventList::AddEvent(eTriggerType trigger, double start, double interval,
   return false;
 }
 
-void cEventList::LoadEventFile(const cString& filename)
+bool cEventList::LoadEventFile(const cString& filename)
 {
   cInitFile event_file(filename);
   
+  if (!event_file.IsOpen()) return false;
+
   // Load in the proper event list and set it up.
   event_file.Load();
   event_file.Compress();
+  event_file.Close();
   
   // Loop through the line_list and change the lines to events.
   for (int line_id = 0; line_id < event_file.GetNumLines(); line_id++) {
     AddEventFileFormat(event_file.GetLine(line_id));
   }
+  
+  return true;
 }
 
 

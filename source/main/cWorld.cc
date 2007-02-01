@@ -69,8 +69,8 @@ void cWorld::Setup()
   m_env = new cEnvironment(this);
   
   // Initialize the default environment...
-  if (m_env->Load(m_conf->ENVIRONMENT_FILE.Get()) == false) {
-    cerr << "Unable to load environment... aborting!" << endl;
+  if (!m_env->Load(m_conf->ENVIRONMENT_FILE.Get())) {
+    cerr << "Error: Unable to load environment" << endl;
     ExitAvida(-1);
   }
   
@@ -89,7 +89,10 @@ void cWorld::Setup()
   
   // Setup Event List
   m_event_list = new cEventList(this);
-  m_event_list->LoadEventFile(m_conf->EVENT_FILE.Get());
+  if (!m_event_list->LoadEventFile(m_conf->EVENT_FILE.Get())) {
+    cerr << "Error: Unable to load events" << endl;
+    ExitAvida(-1);
+  }
   
   
   const bool revert_fatal = m_conf->REVERT_FATAL.Get() > 0.0;

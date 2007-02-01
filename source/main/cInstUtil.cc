@@ -26,11 +26,21 @@ using namespace std;
 
 cGenome cInstUtil::LoadGenome(const cString& filename, const cInstSet& inst_set)
 {
-    cInitFile input_file(filename);
-  if (!input_file.IsOpen()) {
-    cerr << "Cannot open file: " << filename << endl;
-    return cGenome(0);
+  cGenome new_genome(0);
+  if (!LoadGenome(filename, inst_set, new_genome)) {
+    cerr << "Error: Unable to load genome" << endl;
+    exit(1);
   }
+  return new_genome;
+}
+
+bool cInstUtil::LoadGenome(const cString& filename, const cInstSet& inst_set, cGenome& out_genome)
+{
+  cInitFile input_file(filename);
+  bool success = true;
+
+  if (!input_file.IsOpen()) return false;
+  
   input_file.Load();
   input_file.Compress();
   input_file.Close();
@@ -44,18 +54,17 @@ cGenome cInstUtil::LoadGenome(const cString& filename, const cInstSet& inst_set)
 
     if (new_genome[line_num] == cInstSet::GetInstError()) {
       // You're using the wrong instruction set!  YOU FOOL!
-      cerr << "Cannot load organism '" << filename << "'" << endl
-	   << "       Unknown line: " << cur_line
-	   << " (best match is '" << inst_set.FindBestMatch(cur_line) << "')"
-	   << endl;
-      exit(1);
+      if (success) {
+        cerr << "Error: Cannot load organism '" << filename << "'" << endl;
+        success = false;
+      }
+      cerr << "       Unknown line: " << cur_line << " (best match is '" << inst_set.FindBestMatch(cur_line) << "')" << endl;
     }
   }
 
-  if(new_genome.GetSize()==0)
-    cerr << "Warning: Genome size is 0!" << endl;
-
-  return new_genome;
+  if (new_genome.GetSize() == 0) cerr << "Warning: Genome size is 0!" << endl;
+  if (success) out_genome = new_genome;
+  return success;
 }
 
 cGenome cInstUtil::LoadInternalGenome(istream& fp, const cInstSet& inst_set)

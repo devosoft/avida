@@ -34,6 +34,7 @@ public:
   // the only thing in the file unless 'Internal' is in the function name
   // (Internal genomes must begin with a number that indicates genome length)
 
+  static bool LoadGenome(const cString &filename, const cInstSet &inst_set, cGenome& out_genome);
   static cGenome LoadGenome(const cString &filename, const cInstSet &inst_set);
   static cGenome LoadInternalGenome(std::istream & fp, const cInstSet &inst_set);
   static void SaveGenome(std::ostream& fp, const cInstSet & inst_set,

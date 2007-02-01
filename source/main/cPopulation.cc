@@ -160,9 +160,20 @@ cPopulation::cPopulation(cWorld* world)
   
   // Load a clone if one is provided, otherwise setup start organism.
   if (m_world->GetConfig().CLONE_FILE.Get() == "-" || m_world->GetConfig().CLONE_FILE.Get() == "") {
-    cGenome start_org = cInstUtil::LoadGenome(m_world->GetConfig().START_CREATURE.Get(), world->GetHardwareManager().GetInstSet());
-    if (start_org.GetSize() != 0) Inject(start_org);
-    else cerr << "Warning: Zero length start organism, not injecting into initial population." << endl;
+    cGenome start_org(0);
+    const cString& filename = m_world->GetConfig().START_CREATURE.Get();
+    
+    if (filename != "-" && filename != "") {
+      if (!cInstUtil::LoadGenome(filename, world->GetHardwareManager().GetInstSet(), start_org)) {
+        cerr << "Error: Unable to load start creature" << endl;
+        exit(-1);
+      }
+      
+      if (start_org.GetSize() != 0) Inject(start_org);
+      else cerr << "Warning: Zero length start organism, not injecting into initial population." << endl;
+    } else {
+      cerr << "Warning: No start organism specified." << endl;
+    }
   } else {
     ifstream fp(m_world->GetConfig().CLONE_FILE.Get());
     LoadClone(fp);

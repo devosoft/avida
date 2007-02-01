@@ -43,7 +43,7 @@ bool cFile::Open(cString _fname, ios::openmode flags)
     else if (err_id == ENOENT) error_desc = "File or path not found";
 
     // Print the error.
-    cerr << "Unable to open file '" << _fname << "' : " << error_desc << endl;
+    cerr << "Error: Unable to open file '" << _fname << "' : " << error_desc << endl;
     return false;
   }
 
