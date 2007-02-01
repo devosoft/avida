@@ -35,95 +35,145 @@
 
 using namespace std;
 
+std::vector<std::pair<int, std::vector<double> > > * cTestCPU::s_resources = NULL;
+
 cTestCPU::cTestCPU(cWorld* world)
 {
   m_world = world;
   InitResources();
 }  
  
-void cTestCPU::InitResources()
+void cTestCPU::InitResources(int res_method, std::vector<std::pair<int, std::vector<double> > > * res, int update, int time_spent_offset)
 {  
-   // Setup the resources...
-  // unless another 'set' method is called, they default to zero
-  m_res_method = RES_STATIC;
-
-  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
-  assert(resource_lib.GetSize() >= 0);
-
-  resource_count.SetSize(resource_lib.GetSize());
-  d_resources.ResizeClear(resource_lib.GetSize());
-  for(int i=0; i<resource_lib.GetSize(); i++) {
-    d_resources[i] = 0.0;
+  m_res_method = (eTestCPUResourceMethod)res_method;
+  // Make sure it's valid
+  if(res_method < 0 ||  res_method >= RES_LAST) {
+    m_res_method = RES_INITIAL;
   }
-
-  resource_count.ResizeSpatialGrids(1, 1);
-
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource* res = resource_lib.GetResource(i);
-    const double decay = 1.0 - res->GetOutflow();
-    resource_count.Setup(i, res->GetName(), res->GetInitial(), 
-                           res->GetInflow(), decay,
-                           res->GetGeometry(), res->GetXDiffuse(),
-                           res->GetXGravity(), res->GetYDiffuse(), 
-                           res->GetYGravity(), res->GetInflowX1(), 
-                           res->GetInflowX2(), res->GetInflowY1(), 
-                           res->GetInflowY2(), res->GetOutflowX1(), 
-                           res->GetOutflowX2(), res->GetOutflowY1(), 
-                           res->GetOutflowY2(), res->GetCellListPtr(),
-                           m_world->GetVerbosity() );
-  }
-
-}
-
-void cTestCPU::SetResourcesFromArray(const tArray<double> &resources)
-{
-  // Set STATIC resources according to the input array
-  m_res_method = RES_STATIC;
   
-  for(int i = 0; i < d_resources.GetSize(); i++) {
-    if(i >= resources.GetSize()) {
-      d_resources[i] = 0.0;
-    } else {
-      d_resources[i] = resources[i];
-    }
-  }
-}
-
-
-void cTestCPU::SetResourcesFromCell(int cell_x, int cell_y)
-{
-  // Set DYNAMIC resources according to the input array
-  m_res_method = RES_DYNAMIC;
-
   // Setup the resources...
+  m_res = res;
+  m_res_time_spent_offset = time_spent_offset;
+  m_res_update = update;
+
+  // Adjust updates if time_spent_offset is greater than a time slice
+  int ave_time_slice = m_world->GetConfig().AVE_TIME_SLICE.Get();
+  m_res_update += m_res_time_spent_offset / ave_time_slice;
+  m_res_time_spent_offset %= ave_time_slice;
+  assert(m_res_time_spent_offset >= 0);
+  
+  // If they didn't send anything (usually during an avida run as opposed to analyze mode),
+  // then we set up a static variable (or just point to it) that reflects the initial conditions of the run
+  // from the environment file.  (JEB -- This code moved from cAnalyze::cAnalyze).
+  if (m_res_method == RES_INITIAL)
+  {
+    // Initialize the time oriented resource list to be just the initial
+    // concentrations of the resources in the environment.  This will only
+    // be changed if LOAD_RESOURCES analyze command is called.  If there are
+    // no resources in the environment or there is no environment, the list
+    // is empty then the all resources will default to 0.0
+    if (!s_resources)
+    {
+      s_resources = new std::vector<std::pair<int, std::vector<double> > >;
+      const cResourceLib &resource_lib = m_world->GetEnvironment().GetResourceLib();
+      if(resource_lib.GetSize() > 0) 
+      {
+        vector<double> r;
+        for(int i=0; i<resource_lib.GetSize(); i++) 
+        {
+          cResource *resource = resource_lib.GetResource(i);
+          assert(resource);
+          r.push_back(resource->GetInitial());
+        }
+        s_resources->push_back(make_pair(0, r));
+      }
+    }
+    m_res = s_resources;
+  }
+  assert(m_res != NULL);
+  
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   assert(resource_lib.GetSize() >= 0);
-
-  // Make a parallel world that consists of one cell
-  for (int i = 0; i < resource_lib.GetSize(); i++) {
-    cResource* res = resource_lib.GetResource(i);
-    const double decay = 1.0 - res->GetOutflow();
+  
+  // Set the resource count to zero by default
+  m_resource_count.SetSize(resource_lib.GetSize());
+  for(int i=0; i<resource_lib.GetSize(); i++) 
+  {     
+     m_resource_count.Set(i, 0.0);
+  }
     
-    // Set up the resource. 
-    // (1) Diffusion and gravity don't make sense in a one-cell world.
-    // (2) We offset all of the X, Y coords so this cell is at 0,0 (the only valid cell in the world)
-    resource_count.Setup(i, res->GetName(), res->GetInitial(), 
-                           res->GetInflow(), decay,
-                           res->GetGeometry(), 0.0 /*res->GetXDiffuse()*/,
-                           0.0 /*res->GetXGravity()*/, 0.0 /*res->GetYDiffuse()*/, 
-                           0.0 /*res->GetYGravity()*/, res->GetInflowX1() - cell_x, 
-                           res->GetInflowX2() - cell_x, res->GetInflowY1() - cell_y, 
-                           res->GetInflowY2() - cell_y, res->GetOutflowX1() - cell_x, 
-                           res->GetOutflowX2() - cell_x, res->GetOutflowY1() - cell_y, 
-                           res->GetOutflowY2() - cell_y, res->GetCellListPtr(),
-                           m_world->GetVerbosity() );
+  SetResourceUpdate(m_res_update, true);
+  // Round down to the closest update to choose how to initializae resources
+}
+
+void cTestCPU::SetResourceUpdate(int update, bool round_to_closest)
+{
+  assert(m_res != NULL);
+
+  m_res_update = update;
+
+  int which = -1;
+  if (round_to_closest)
+  {
+    // Assuming resource vector is sorted by update, front to back
+    
+    /*
+    if(update <= (*m_res)[0].first) {
+      which = 0;
+    } else if(update >= (*m_res).back().first) {
+      which = m_res->size() - 1;
+    } else {
+      // Find the update that is closest to the born update
+      for(unsigned int i=0; i<(*m_res).size()-1; i++) {
+        if(update >= (*m_res)[i+1].first) { continue; }
+        if(update - (*m_res)[i].first <=
+           (*m_res)[i+1].first - update) {
+          which = i;
+        } else {
+          which = i + 1;
+        }
+        break;
+      */
+      // Find the update that is closest to the born update, round down instead @JEB
+      which = 0;
+      while ( which < (int)m_res->size() )
+      {
+        if ( (*m_res)[which].first > update ) break;
+        which++;
+      }
+      if (which > 0) which--;
+ // }
+    assert(which >= 0);
+  }
+  else // Only find exact update matches
+  {
+    for(unsigned int i=0; i<m_res->size(); i++)
+    {
+      if (update == (*m_res)[i].first)
+      {
+        which = i;
+        break;
+      }
+    }
+    if (which < 0) return; // Not found (do nothing)
+  }
+  
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  for(int i=0; i<resource_lib.GetSize(); i++) 
+  {
+    if(i >= (int)(*m_res)[which].second.size()) {
+      m_resource_count.Set(i, 0.0);
+    } else {
+      double temp = (*m_res)[which].second[i];
+      m_resource_count.Set(i, (*m_res)[which].second[i]);
+    }
   }
 }
 
 void cTestCPU::ModifyResources(const tArray<double>& res_change)
 {
-  //We only let the testCPU modify the resources if we are using DYNAMIC ones.
-  if (m_res_method == RES_DYNAMIC) resource_count.Modify(res_change);
+  //We only let the testCPU modify the resources if we are using a DEPLETABLE options. @JEB
+  if (m_res_method >= RES_UPDATED_DEPLETABLE) m_resource_count.Modify(res_change);
 }
 
 
@@ -136,6 +186,7 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
 
   // Determine how long this organism should be tested for...
   int time_allocated = m_world->GetConfig().TEST_CPU_TIME_MOD.Get() * organism.GetGenome().GetSize();
+  time_allocated += m_res_time_spent_offset; // If the resource offset has us starting at a different time, adjust @JEB
 
   // Prepare the inputs...
   cur_input = 0;
@@ -143,15 +194,42 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
 
   // Determine if we're tracing and what we need to print.
   cHardwareTracer* tracer = test_info.GetTraceExecution() ? (test_info.GetTracer()) : NULL;
+  std::ostream * tracerStream = NULL;
+  if (tracer != NULL) tracerStream = tracer->GetStream();
 
-  int time_used = 0;
+  int time_used = m_res_time_spent_offset; // Note: this is zero by default if no resources being used @JEB
+  int ave_time_slice = m_world->GetConfig().AVE_TIME_SLICE.Get();
+  
   organism.GetHardware().SetTrace(tracer);
   while (time_used < time_allocated && organism.GetHardware().GetMemory().GetSize() &&
          organism.GetPhenotype().GetNumDivides() == 0)
   {
     time_used++;
-    organism.GetHardware().SingleProcess(ctx);
+    
     // @CAO Need to watch out for parasites.
+    
+    // Assume an update is based on the average time slice for updating test cpu resources @JEB
+    if ((m_res_method >= RES_UPDATED_DEPLETABLE) && (time_used % ave_time_slice == 0))
+    {
+      SetResourceUpdate(m_res_update+1);
+    }
+    
+    // Add extra info to trace files so that we can watch resource changes. 
+    // This is a clumsy way to insert it in the trace file, but works for my purposes @JEB
+    if ( (m_res_method >= RES_UPDATED_DEPLETABLE) && (tracerStream != NULL) ) 
+    {
+      const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+      assert(resource_lib.GetSize() >= 0);
+      *tracerStream << "Resources:";
+      // Print out resources
+      for(int i=0; i<resource_lib.GetSize(); i++) 
+      {     
+         *tracerStream << " " << m_resource_count.Get(i);
+      }
+      *tracerStream << endl;
+     }
+     
+     organism.GetHardware().SingleProcess(ctx);
   }
   organism.GetHardware().SetTrace(NULL);
 

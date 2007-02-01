@@ -381,6 +381,10 @@ private:
   bool Inst_InjectThread(cAvidaContext& ctx);
   bool Inst_Transposon(cAvidaContext& ctx);
   bool Inst_Repro(cAvidaContext& ctx);
+  bool Inst_IORepro(cAvidaContext& ctx);
+  bool Inst_PutRepro(cAvidaContext& ctx);
+  bool Inst_PutClearRepro(cAvidaContext& ctx);
+
   bool Inst_SpawnDeme(cAvidaContext& ctx);
   bool Inst_Kazi(cAvidaContext& ctx);
   bool Inst_Kazi5(cAvidaContext& ctx);
@@ -391,6 +395,7 @@ private:
   bool Inst_TaskStackGet(cAvidaContext& ctx);
   bool Inst_TaskStackLoad(cAvidaContext& ctx);
   bool Inst_TaskPut(cAvidaContext& ctx);
+  bool Inst_TaskPutClearInput(cAvidaContext& ctx);  
   bool Inst_TaskPutBonusCost2(cAvidaContext& ctx);  
   bool Inst_TaskPutMeritCost2(cAvidaContext& ctx); 
   bool Inst_TaskIO(cAvidaContext& ctx);
@@ -401,6 +406,7 @@ private:
   bool Inst_Send(cAvidaContext& ctx);
   bool Inst_Receive(cAvidaContext& ctx);
   bool Inst_SenseLog2(cAvidaContext& ctx);
+  bool Inst_SenseUnit(cAvidaContext& ctx);
   bool Inst_SenseMult100(cAvidaContext& ctx);
   bool DoSense(cAvidaContext& ctx, int conversion_method, double base);
 

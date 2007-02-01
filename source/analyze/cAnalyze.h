@@ -92,6 +92,8 @@ public:
   // This is the storage for the resource information from resource.dat.  It 
   // is a pair of the update and a vector of the resource concentrations
   std::vector<std::pair<int, std::vector<double> > > resources;
+  int m_resource_time_spent_offset; // The amount to offset the time spent when 
+                                    // beginning, using resources that change
 
   int interactive_depth;  // How nested are we if in interactive mode?
 

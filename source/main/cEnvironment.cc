@@ -195,8 +195,12 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc)
         return false;
       new_process->SetDetectionError(var_value.AsDouble());
     }
-	else if (var_name == "string") {
-		new_process->SetMatchString(var_value);
+    else if (var_name == "clearsinput") {
+      if (!AssertInputInt(var_value, "clearsinput", var_type)) return false;
+      new_process->SetClearsInput( (bool)var_value.AsInt() );
+    }
+    else if (var_name == "string") {
+      new_process->SetMatchString(var_value);
 	}
     else {
       cerr << "Error: Unknown process variable '" << var_name
@@ -822,10 +826,17 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
     
     // Mark this reaction as occuring...
     result.MarkReaction(cur_reaction->GetID());
+    
+    // If the a process has marked to clear the input queue...
+    if (result.GetClearInput())
+    {
+      break; //no other tasks should be allowed to complete
+    }
   }  
   
   return result.GetActive();
 }
+
 
 
 bool cEnvironment::TestRequisites(const tList<cReactionRequisite>& req_list,
@@ -978,6 +989,13 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     }
     
     result.Lethal(cur_process->GetLethal());
+    
+    // If the reaction clears the input queue...
+    if (cur_process->GetClearsInput())
+    {
+      result.SetClearInput(true);
+      //break; //should other processes depending on that task be allowed to complete?
+    }
   }
 }
 

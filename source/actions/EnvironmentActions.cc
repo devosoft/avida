@@ -139,6 +139,7 @@ private:
   tArray<int> m_cell_list;
   cString m_res_name;
   double m_res_count;
+  int m_res_id;
   
 public:
   cActionSetCellResource(cWorld* world, const cString& args) : cAction(world, args), m_cell_list(0), m_res_name(""), m_res_count(0.0)
@@ -151,13 +152,17 @@ public:
     }
     if (largs.GetSize()) m_res_name = largs.PopWord();
     if (largs.GetSize()) m_res_count = largs.PopWord().AsDouble();
+    
+    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+    assert(res);
+    m_res_id = res->GetID(); // Save the id so we don't have to do many string conversions
   }
 
   static const cString GetDescription() { return "Arguments: <int cell_id> <string res_name> <double res_count>"; }
 
   void Process(cAvidaContext& ctx)
   {
-    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_id);
     for(int i=0; i<m_cell_list.GetSize(); i++)
     {
       int m_cell_id = m_cell_list[i];

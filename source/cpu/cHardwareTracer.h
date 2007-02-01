@@ -21,6 +21,7 @@ public:
   virtual ~cHardwareTracer() { ; }
   virtual void TraceHardware(cHardwareBase&, bool bonus = false) = 0;
   virtual void TraceTestCPU(int time_used, int time_allocated, const cOrganism& organism)= 0;
+  virtual std::ostream * GetStream() { return NULL; }
 };
 
 #endif

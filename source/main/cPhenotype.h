@@ -71,14 +71,15 @@ private:
   bool initialized;
 
   // 1. These are values calculated at the last divide (of self or offspring)
-  cMerit merit;          // Relative speed of CPU
-  int genome_length;     // Number of instructions in genome.
-  int copied_size;       // Instructions copied into genome.
-  int executed_size;     // Instructions executed from genome.
-  int gestation_time;    // CPU cycles to produce offspring (or be produced)
-  int gestation_start;   // Total instructions executed at last divide.
-  double fitness;        // Relative efective replication rate...
-  double div_type;	     // Type of the divide command used
+  cMerit merit;             // Relative speed of CPU
+  int genome_length;        // Number of instructions in genome.
+  int copied_size;          // Instructions copied into genome.
+  int executed_size;        // Instructions executed from genome.
+  int gestation_time;       // CPU cycles to produce offspring (or be produced),
+                            // including additional time costs of some instructions.
+  int gestation_start;      // Total instructions executed at last divide.
+  double fitness;           // Relative efective replication rate...
+  double div_type;          // Type of the divide command used
 
   // 2. These are "in progress" variables, updated as the organism operates
   double cur_bonus;               // Current Bonus
@@ -108,7 +109,8 @@ private:
   // 4. Records from this organisms life...
   int num_divides;       // Total successful divides organism has produced.
   int generation;        // Number of birth events to original ancestor.
-  int time_used;         // Total CPU cycles consumed.
+  int cpu_cycles_used;   // Total CPU cycles consumed. @JEB
+  int time_used;         // Total CPU cycles consumed, including additional time costs of some instructions.
   int age;               // Number of updates organism has survived for.
   cString fault_desc;    // A description of the most recent error.
   double neutral_metric; // Undergoes drift (gausian 0,1) per generation
@@ -172,7 +174,7 @@ public:
   bool TestInput(tBuffer<int>& inputs, tBuffer<int>& outputs);
   bool TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
                   const tArray<double>& res_in, tArray<double>& res_change,
-		  tArray<int>& insts_triggered);
+                  tArray<int>& insts_triggered, bool* clear_input);
 
   // State saving and loading, and printing...
   bool SaveState(std::ofstream& fp);
@@ -225,6 +227,7 @@ public:
 
   int GetNumDivides() const { assert(initialized == true); return num_divides;}
   int GetGeneration() const { assert(initialized == true); return generation; }
+  int GetCPUCyclesUsed() const { assert(initialized == true); return cpu_cycles_used; }
   int GetTimeUsed()   const { assert(initialized == true); return time_used; }
   int GetAge()        const { assert(initialized == true); return age; }
   const cString& GetFault() const { assert(initialized == true); return fault_desc; }
@@ -279,6 +282,7 @@ public:
   void ActivateTransposon(cCodeLabel & in_label) { assert(initialized == true); active_transposons.Push(in_label); }
 
   void IncAge()      { assert(initialized == true); age++; }
+  void IncCPUCyclesUsed() { assert(initialized == true); cpu_cycles_used++; }
   void IncTimeUsed(int i=1) { assert(initialized == true); time_used+=i; }
   void IncErrors()   { assert(initialized == true); cur_num_errors++; }
   void IncDonates()   { assert(initialized == true); cur_num_donates++; }

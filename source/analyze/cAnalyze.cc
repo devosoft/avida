@@ -88,9 +88,9 @@ cAnalyze::cAnalyze(cWorld* world)
   
   // Initialize the time oriented resource list to be just the initial
   // concentrations of the resources in the environment.  This will only
-  // be changed if LOAD_RESOURCES analyze command is called.  If there is
+  // be changed if LOAD_RESOURCES analyze command is called.  If there are
   // no resources in the environment or there is no environment, the list
-  // is empty and will cause an assert to be thrown in FindResource function.
+  // is empty then the all resources will default to 0.0
   const cResourceLib &resource_lib = m_world->GetEnvironment().GetResourceLib();
   if(resource_lib.GetSize() > 0) {
     vector<double> r;
@@ -101,7 +101,7 @@ cAnalyze::cAnalyze(cWorld* world)
     }
     resources.push_back(make_pair(0, r));
   }
-  // @DMB -  FillResources(0);
+  m_resource_time_spent_offset = 0;
 
   m_testcpu = m_world->GetHardwareManager().CreateTestCPU();
 }
@@ -395,7 +395,7 @@ void cAnalyze::LoadSequence(cString cur_string)
 void cAnalyze::LoadDominant(cString cur_string)
 {
   (void) cur_string;
-  cerr << "Warning: \"LOAD_DOMINANT\" not implmented yet!"<<endl;
+  cerr << "Warning: \"LOAD_DOMINANT\" not implemented yet!"<<endl;
 }
 
 // Clears the current time oriented list of resources and loads in a new one
@@ -409,6 +409,9 @@ void cAnalyze::LoadResources(cString cur_string)
   cString filename = "resource.dat";
   if(words >= 1) {
     filename = cur_string.PopWord();
+  }
+  if(words >= 2) {
+    m_resource_time_spent_offset = cur_string.PopWord().AsInt();
   }
   
   cout << "Loading Resources from: " << filename << endl;
@@ -456,45 +459,6 @@ void cAnalyze::LoadResources(cString cur_string)
   resourceFile.close();
   
   return;
-}
-
-
-// Looks up the resource concentrations that are the closest to the
-// given update and then fill in those concentrations into the environment.
-void cAnalyze::FillResources(cTestCPU* testcpu, int update)
-{
-  // There must be some resources for at least one update
-  //assert(!resources.empty());
-  if(resources.empty()) { return; }
-  
-  int which = -1;
-  // Assuming resource vector is sorted by update, front to back
-  if(update <= resources[0].first) {
-    which = 0;
-  } else if(update >= resources.back().first) {
-    which = resources.size() - 1;
-  } else {
-    // Find the update that is closest to the born update
-    for(unsigned int i=0; i<resources.size()-1; i++) {
-      if(update > resources[i+1].first) { continue; }
-      if(update - resources[i].first <=
-         resources[i+1].first - update) {
-        which = i;
-      } else {
-        which = i + 1;
-      }
-      break;
-    }
-  }
-  if(which < 0) { assert(0); }
-  
-  
-  tArray<double> temp(resources[which].second.size());
-  for(unsigned int i=0; i<resources[which].second.size(); i++) {
-    temp[i] = resources[which].second[i];
-  }
-
-  testcpu->SetResourcesFromArray(temp);
 }
 
 double cAnalyze::AnalyzeEntropy(cAnalyzeGenotype * genotype, double mu) 
@@ -1657,10 +1621,7 @@ void cAnalyze::CommandTrace(cString cur_string)
   int update = -1;
   if(words >= 2) {
     useResources = cur_string.PopWord().AsInt();
-    // All invalid values are considered false
-    if(useResources != 0 && useResources != 1) {
-      useResources = 0;
-    }
+    // All invalid values are considered false (testcpu->InitResources handles)
   }
   if (words >= 3) {
     update = cur_string.PopWord().AsInt();
@@ -1674,10 +1635,7 @@ void cAnalyze::CommandTrace(cString cur_string)
   }
   
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();  
-  
-  if (useResources && update > -1) {
-    FillResources(testcpu, update);
-  }
+  testcpu->InitResources(useResources, &resources, update, m_resource_time_spent_offset);
   
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype * genotype = NULL;
@@ -2686,7 +2644,9 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
   ///////////////////////
   // Create Test CPU
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
-  FillResources(testcpu, update);
+  // No choice of use_resources for this analyze command...
+  testcpu->InitResources(cTestCPU::RES_CONSTANT, &resources, update, m_resource_time_spent_offset);
+
   
   ///////////////////////////////////////////////////////////////////////
   // Choose the first n most abundant genotypes and put them in community
@@ -3254,9 +3214,9 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
   ///////////////////////
   // Backup test CPU data
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
-  FillResources(testcpu, update);
-  
-  
+  // No choice of use_resources for this analyze command...
+  testcpu->InitResources(cTestCPU::RES_CONSTANT, &resources, update, m_resource_time_spent_offset);
+
   vector<cAnalyzeGenotype *> community;
   cAnalyzeGenotype * genotype = NULL;
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
@@ -6635,10 +6595,7 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
   // resource usage flag is an optional arguement, but is always the 3rd arg
   if(words >= 3) {
     useResources = cur_string.PopWord().AsInt();
-    // All non-zero values are considered false
-    if(useResources != 0 && useResources != 1) {
-      useResources = 0;
-    }
+    // All non-zero values are considered false (Handled by testcpu->InitResources)
   }
   
   // Batch frequency begins with the first organism, but then skips that 
@@ -6681,10 +6638,8 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
     lineage_fp << genotype->GetID() << " ";
     
     int updateBorn = -1;
-    if(useResources) {
-      updateBorn = genotype->GetUpdateBorn();
-      FillResources(testcpu, updateBorn);
-    }
+    updateBorn = genotype->GetUpdateBorn();
+    testcpu->InitResources(useResources, &resources, updateBorn, m_resource_time_spent_offset);
     
     // Calculate the stats for the genotype we're working with ...
     genotype->Recalculate(m_ctx, testcpu);
@@ -7040,10 +6995,7 @@ void cAnalyze::BatchRecalculate(cString cur_string)
   int update = -1;
   if(words >= 1) {
     useResources = cur_string.PopWord().AsInt();
-    // All non-zero values are considered false
-    if(useResources != 0 && useResources != 1) {
-      useResources = 0;
-    }
+    // All non-zero values are considered false (handled by testcpu->InitResources)
   }
   if (words >= 2) {
     update = cur_string.PopWord().AsInt();
@@ -7071,20 +7023,12 @@ void cAnalyze::BatchRecalculate(cString cur_string)
     << "parent and ancestor distances may not be correct" << endl;
   }
   
-  if (useResources && update > -1) {
-    FillResources(testcpu, update);
-  }
-  
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype * genotype = NULL;
   cAnalyzeGenotype * last_genotype = NULL;
   while ((genotype = batch_it.Next()) != NULL) {
-    // If use resources, load proper resource according to update_born
-    if(useResources && update == -1) {
-      int updateBorn = -1;
-      updateBorn = genotype->GetUpdateBorn();
-      FillResources(testcpu, updateBorn);
-    }
+    // Load proper resources according to update_born
+    testcpu->InitResources(useResources, &resources, update, m_resource_time_spent_offset);
     
     // If the previous genotype was the parent of this one, pass in a pointer
     // to it for improved recalculate (such as distance to parent, etc.)

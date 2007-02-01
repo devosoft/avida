@@ -66,6 +66,7 @@ bool cPhenotype::OK()
   assert(last_fitness >= 0.0);
   assert(num_divides >= 0);
   assert(generation >= 0);
+  assert(cpu_cycles_used >= 0);  
   assert(time_used >= 0);
   assert(age >= 0);
   assert(child_copied_size >= 0);
@@ -131,6 +132,7 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
   num_divides     = 0;
   generation      = parent_phenotype.generation;
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() != GENERATION_INC_BOTH) generation++;
+  cpu_cycles_used = 0;
   time_used       = 0;
   age             = 0;
   fault_desc      = "";
@@ -212,6 +214,7 @@ void cPhenotype::SetupInject(int _length)
   // Setup other miscellaneous values...
   num_divides     = 0;
   generation      = 0;
+  cpu_cycles_used = 0;
   time_used       = 0;
   age             = 0;
   fault_desc      = "";
@@ -335,6 +338,7 @@ void cPhenotype::DivideReset(int _length)
   // a second child on the divide.
   if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
     gestation_start = 0;
+    cpu_cycles_used = 0;
     time_used = 0;
     neutral_metric += m_world->GetRandom().GetRandNormal();
   }
@@ -484,6 +488,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   num_divides     = 0;
   generation      = clone_phenotype.generation;
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() != GENERATION_INC_BOTH) generation++;
+  cpu_cycles_used = 0;
   time_used       = 0;
   age             = 0;
   fault_desc      = "";
@@ -531,9 +536,11 @@ bool cPhenotype::TestInput(tBuffer<int>& inputs, tBuffer<int>& outputs)
 
 bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
 			    const tArray<double>& res_in, tArray<double>& res_change,
-			    tArray<int>& insts_triggered)
+			    tArray<int>& insts_triggered, bool* clear_input)
 {
   assert(initialized == true);
+  assert(clear_input!= NULL);
+  *clear_input = false; // set default in case we bail in the middle
   
   taskctx.SetTaskStates(&m_task_states);
 
@@ -583,6 +590,8 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   //Kill any cells that did lethal reactions
   to_die = result.GetLethal();
 
+  *clear_input = result.GetClearInput();
+  
   return true;
 }
 
@@ -633,6 +642,7 @@ bool cPhenotype::SaveState(ofstream& fp)
 
   fp << num_divides         << " ";
   fp << generation          << " ";
+  fp << cpu_cycles_used     << " ";
   fp << time_used           << " ";
   fp << age                 << " ";
   fp << neutral_metric      << " ";
@@ -709,6 +719,7 @@ bool cPhenotype::LoadState(ifstream & fp)
 
   fp >> num_divides;
   fp >> generation;
+  fp >> cpu_cycles_used;
   fp >> time_used;
   fp >> age;
   fp >> neutral_metric;

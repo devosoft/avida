@@ -181,7 +181,7 @@ public:
   // --------  Input and Output Methods  --------
   void DoInput(const int value);
   void DoOutput(cAvidaContext& ctx, const int value, const bool on_divide = false);
-
+  void ClearInput() { m_input_buf.Clear(); }
 
   // --------  Divide Methods  --------
   bool Divide_CheckViable();

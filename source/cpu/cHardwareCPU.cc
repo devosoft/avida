@@ -218,6 +218,7 @@ cInstLibCPU *cHardwareCPU::initInstLib(void)
     cInstEntryCPU("stk-get",   &cHardwareCPU::Inst_TaskStackGet),
     cInstEntryCPU("stk-load",  &cHardwareCPU::Inst_TaskStackLoad),
     cInstEntryCPU("put",       &cHardwareCPU::Inst_TaskPut),
+    cInstEntryCPU("put-clear", &cHardwareCPU::Inst_TaskPutClearInput),    
     cInstEntryCPU("put-bcost2", &cHardwareCPU::Inst_TaskPutBonusCost2),
     cInstEntryCPU("put-mcost2", &cHardwareCPU::Inst_TaskPutMeritCost2),
     cInstEntryCPU("IO",        &cHardwareCPU::Inst_TaskIO, true,
@@ -231,6 +232,7 @@ cInstLibCPU *cHardwareCPU::initInstLib(void)
     cInstEntryCPU("send",      &cHardwareCPU::Inst_Send),
     cInstEntryCPU("receive",   &cHardwareCPU::Inst_Receive),
     cInstEntryCPU("sense",     &cHardwareCPU::Inst_SenseLog2),
+    cInstEntryCPU("sense-unit",     &cHardwareCPU::Inst_SenseUnit),
     cInstEntryCPU("sense-m100",     &cHardwareCPU::Inst_SenseMult100),
     
     cInstEntryCPU("donate-rnd",  &cHardwareCPU::Inst_DonateRandom),
@@ -354,6 +356,10 @@ cInstLibCPU *cHardwareCPU::initInstLib(void)
     cInstEntryCPU("repro-X",    &cHardwareCPU::Inst_Repro),
     cInstEntryCPU("repro-Y",    &cHardwareCPU::Inst_Repro),
     cInstEntryCPU("repro-Z",    &cHardwareCPU::Inst_Repro),
+
+    cInstEntryCPU("IO-repro",   &cHardwareCPU::Inst_IORepro),
+    cInstEntryCPU("put-repro",  &cHardwareCPU::Inst_PutRepro),
+    cInstEntryCPU("putc-repro", &cHardwareCPU::Inst_PutClearRepro),
 
     cInstEntryCPU("spawn-deme", &cHardwareCPU::Inst_SpawnDeme),
     
@@ -480,6 +486,8 @@ void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
   
   cPhenotype & phenotype = organism->GetPhenotype();
   phenotype.IncTimeUsed();
+  phenotype.IncCPUCyclesUsed();
+
   const int num_threads = GetNumThreads();
   
   // If we have threads turned on and we executed each thread in a single
@@ -640,11 +648,19 @@ bool cHardwareCPU::OK()
 
 void cHardwareCPU::PrintStatus(ostream& fp)
 {
-  fp << organism->GetPhenotype().GetTimeUsed() << " " << "IP:" << IP().GetPosition() << "    ";
+  fp << organism->GetPhenotype().GetCPUCyclesUsed() << " ";
+  fp << "IP:" << IP().GetPosition() << "    ";
   
   for (int i = 0; i < NUM_REGISTERS; i++) {
     fp << static_cast<char>('A' + i) << "X:" << GetRegister(i) << " ";
     fp << setbase(16) << "[0x" << GetRegister(i) << "]  " << setbase(10);
+  }
+  
+  // Add some extra information if additional time costs are used for instructions,
+  // leave this out if there are no differences to keep it cleaner
+  if ( organism->GetPhenotype().GetTimeUsed() != organism->GetPhenotype().GetCPUCyclesUsed() )
+  {
+    fp << "  AgedTime:" << organism->GetPhenotype().GetTimeUsed();
   }
   fp << endl;
   
@@ -2668,6 +2684,33 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareCPU::Inst_IORepro(cAvidaContext& ctx)
+{
+  // Do normal IO
+  Inst_TaskIO(ctx);
+  
+  // Immediately attempt a repro
+  return Inst_Repro(ctx);
+}
+
+bool cHardwareCPU::Inst_PutRepro(cAvidaContext& ctx)
+{
+  // Do normal IO
+  Inst_TaskPut(ctx);
+  
+  // Immediately attempt a repro
+  return Inst_Repro(ctx);
+}
+
+bool cHardwareCPU::Inst_PutClearRepro(cAvidaContext& ctx)
+{
+  // Do normal IO
+  Inst_TaskPutClearInput(ctx);
+  
+  // Immediately attempt a repro
+  return Inst_Repro(ctx);
+}
+
 
 bool cHardwareCPU::Inst_SpawnDeme(cAvidaContext& ctx)
 {
@@ -2853,6 +2896,13 @@ bool cHardwareCPU::Inst_TaskPut(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareCPU::Inst_TaskPutClearInput(cAvidaContext& ctx)
+{
+  bool return_value = Inst_TaskPut(ctx);
+  organism->ClearInput();
+  return return_value;
+}
+
 bool cHardwareCPU::Inst_TaskPutBonusCost2(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_BX);
@@ -2987,6 +3037,11 @@ bool cHardwareCPU::Inst_Receive(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_SenseLog2(cAvidaContext& ctx)
 {
   return DoSense(ctx, 0, 2);
+}
+
+bool cHardwareCPU::Inst_SenseUnit(cAvidaContext& ctx)
+{
+  return DoSense(ctx, 1, 1);
 }
 
 bool cHardwareCPU::Inst_SenseMult100(cAvidaContext& ctx)

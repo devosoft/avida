@@ -25,6 +25,7 @@ cReactionResult::cReactionResult(const int num_resources,
   , insts_triggered(0)
   , lethal(false)
   , active_reaction(false)
+  , clear_input(false)
 {
 }
 

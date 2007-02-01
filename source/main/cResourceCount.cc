@@ -133,7 +133,7 @@ void cResourceCount::SetSize(int num_resources)
   resource_count.SetAll(0.0);
   decay_rate.SetAll(0.0);
   inflow_rate.SetAll(0.0);
-  decay_precalc.SetAll(0.0);
+  decay_precalc.SetAll(1.0); // This is 1-inflow, so there should be no inflow by default, JEB
   inflow_precalc.SetAll(0.0);
   geometry.SetAll(nGeometry::GLOBAL);
   curr_grid_res_cnt.SetAll(0.0);

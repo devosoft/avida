@@ -33,6 +33,7 @@ public:
 
   virtual void TraceHardware(cHardwareBase& hardware, bool bonus);
   virtual void TraceTestCPU(int time_used, int time_allocated, const cOrganism& organism);
+  virtual std::ostream * GetStream() { return &m_trace_fp; }  
 };
 
 

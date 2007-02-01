@@ -12,6 +12,7 @@
 #define cTestCPU_h
 
 #include <fstream>
+#include <vector>
 
 #ifndef tArray_h
 #include "tArray.h"
@@ -35,6 +36,15 @@ class cWorld;
 
 class cTestCPU
 {
+public:
+  enum eTestCPUResourceMethod { RES_INITIAL = 0, RES_CONSTANT, RES_UPDATED_DEPLETABLE, RES_DYNAMIC, RES_LAST };  
+  // Modes for how the test CPU handles resources:
+  // OFF - all resources are at zero. (OLD: use_resources = 0)
+  // CONSTANT - resources stay constant at input values for the specified update. (OLD: use_resources = 1)
+  // UPDATED_DEPLETABLE - resources change every update according to resource data file (assuming an update
+  //    is an average time slice). The organism also depletes these resources when using them.
+  // DYNAMIC - UPDATED_DEPLETABLE + resources inflow/outflow (NOT IMPLEMENTED YET!)
+
 private:
   cWorld* m_world;
   tArray<int> input_array;
@@ -42,13 +52,17 @@ private:
   int cur_input;
   int cur_receive;  
 
-  enum tTestCPUResourceMethod { RES_STATIC = 0, RES_DYNAMIC };  
-  tTestCPUResourceMethod m_res_method;
-  cResourceCount resource_count;
-  tArray<double> d_resources;
+  eTestCPUResourceMethod m_res_method;
+  std::vector<std::pair<int, std::vector<double> > > * m_res;
+  int m_res_time_spent_offset;
+  int m_res_update;
+  cResourceCount m_resource_count;
 
   bool ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int cur_depth);
   bool TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome, int cur_depth);
+
+  // one copy of resources initialized from environment file
+  static std::vector<std::pair<int, std::vector<double> > > * s_resources;
 
   cTestCPU(); // @not_implemented
   cTestCPU(const cTestCPU&); // @not_implemented
@@ -71,11 +85,10 @@ public:
   inline int GetReceiveValue();
   inline const tArray<double>& GetResources();  
   inline void SetResource(int id, double new_level);
-  void InitResources();
-  void SetResourcesFromArray(const tArray<double> &resources);
-  void SetResourcesFromCell(int cell_x, int cell_y);
+  void InitResources(int res_method = RES_INITIAL, std::vector<std::pair<int, std::vector<double> > > * res = NULL, int update = 0, int time_spent_offset = 0);
+  void SetResourceUpdate(int update, bool round_to_closest = false);
   void ModifyResources(const tArray<double>& res_change);
-  cResourceCount& GetResourceCount() { return resource_count; }
+  cResourceCount& GetResourceCount() { return m_resource_count; }
 };
 
 #ifdef ENABLE_UNIT_TESTS
@@ -113,14 +126,12 @@ inline int cTestCPU::GetReceiveValue()
 
 inline const tArray<double>& cTestCPU::GetResources()
 {
-  if(m_res_method == RES_STATIC) return d_resources;
-  
-  return resource_count.GetResources();
+    return m_resource_count.GetResources();
 }
 
 inline void cTestCPU::SetResource(int id, double new_level)
 {
-  resource_count.Set(id, new_level);
+  m_resource_count.Set(id, new_level);
 }
 
 #endif

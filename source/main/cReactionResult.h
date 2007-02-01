@@ -28,6 +28,7 @@ private:
   tArray<int> insts_triggered;
   bool lethal;
   bool active_reaction;
+  bool clear_input;
 
 
   inline void ActivateReaction();
@@ -52,11 +53,14 @@ public:
   void AddBonus(double value);
   void MultBonus(double value);
   void AddInst(int id);
+  
+  void SetClearInput(bool _in) { clear_input = _in; }
 
   double GetConsumed(int id);
   double GetProduced(int id);
   double GetDetected(int id);
-  bool GetLethal();
+  bool GetLethal();  
+  bool GetClearInput() { return clear_input; }
   bool ReactionTriggered(int id);
   bool TaskDone(int id);
   double TaskQuality(int id);
