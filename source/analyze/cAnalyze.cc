@@ -7019,7 +7019,7 @@ void cAnalyze::BatchRecalculate(cString cur_string)
   } else cout << "Running through test CPUs..." << endl;
   
   if (m_world->GetVerbosity() >= VERBOSE_ON && batch[cur_batch].IsLineage() == false) {
-    cerr << "  Warning: batch may not be a linege; "
+    cerr << "  Warning: batch may not be a lineage; "
     << "parent and ancestor distances may not be correct" << endl;
   }
   

@@ -91,7 +91,7 @@ instruction preceeding it (by changing the <a href="glossary/help.CPU.html">CPU<
 component that it affects; see also
 <a href="glossary/help.Nop-Register-Notation.html">nop-register</a>  notation and
 <a href="glossary/help.Nop-Head-Notation.html">nop-head</a>  notation) or act as part
-of a <a href="glossary/help.Template.html">template</a>  to denote positions in the
+of a <a href="glossary/help.Label.html">label</a>  to denote positions in the
 <a href="glossary/help.Genome.html">genome</a>.
 
 
@@ -99,7 +99,7 @@ of a <a href="glossary/help.Template.html">template</a>  to denote positions in 
 
 This instruction compares the
 <a href="glossary/help.Nop-Register-Notation.html">?BX?</a>  register to its
-<a href="glossary/help.Complement-Template.html">complement</a>. If they are not
+<a href="glossary/help.Complement-Label.html">complement</a>. If they are not
 equal, the next instruction (after a modifying
 <a href="glossary/help.nop-instructions.html">no-operation</a>  instruction, if one is
 present) is executed. If they are equal, that next instruction is skipped.
@@ -108,7 +108,7 @@ present) is executed. If they are equal, that next instruction is skipped.
 <h3>(e) <code>if-less</code></h3>
 
 This instruction compares the <a href="glossary/help.Nop-Register-Notation.html">?BX?</a>
-register to its <a href="glossary/help.Complement-Template.html">complement</a>. If ?BX?
+register to its <a href="glossary/help.Complement-Label.html">complement</a>. If ?BX?
 is the lesser of the pair, the next instruction (after a modifying
 <a href="glossary/help.nop-instructions.html">no-operation</a>  instruction, if one is
 present) is executed. If it is greater or equal, then that next instruction is skipped.
@@ -140,7 +140,7 @@ will always use the active one.
 
 This instruction swaps the contents of the
 <a href="glossary/help.Nop-Register-Notation.html">?BX?</a>  register with its
-<a href="glossary/help.Complement-Template.html">complement</a>.
+<a href="glossary/help.Complement-Label.html">complement</a>.
 
 
 <h3>(j) <code>shift-r</code></h3>
@@ -224,14 +224,14 @@ instead.
 
 <h3>(u) <code>h-search</code></h3>
 
-This instruction will read in the <a href="glossary/help.Template.html">template</a>
+This instruction will read in the <a href="glossary/help.Label.html">label</a>
 the follows it, and find the location of a
-<a href="glossary/help.Complement-Template.html">complement</a> template in the code.
+<a href="glossary/help.Complement-Label.html">complement</a> label in the code.
 The BX <a href="glossary/help.Registers.html">register</a> will be set to the distance
 to the complement from the current position of the
 <a href="glossary/help.Heads.html">instruction-pointer</a>, and the CX register will
-be set to the size of the template. The <a href="glossary/help.Heads.html">flow-head</a>
-will also be placed at the beginning of the complement template. If no template follows,
+be set to the size of the label. The <a href="glossary/help.Heads.html">flow-head</a>
+will also be placed at the beginning of the complement label. If no label follows,
 both BX and CX will be set to zero, and the flow-head will be placed on the instruction
 immediatly following the h-search.
 
@@ -260,9 +260,9 @@ This instruction will copy the position of the
 
 <h3>(y) <code>if-label</code></h3>
 
-This instruction reads in the <a href="glossary/help.Template.html">template</a> that
-follows it, and tests if its <a href="glossary/help.Complement-Template.html">complement</a>
-template was the most recent series of instructions copied. If so, it executed the next
+This instruction reads in the <a href="glossary/help.Label.html">label</a> that
+follows it, and tests if its <a href="glossary/help.Complement-Label.html">complement</a>
+label was the most recent series of instructions copied. If so, it executed the next
 instruction, otherwise it skips it. This instruction is commonly used for an organism to
 determine when it has finished producing its offspring.
 
@@ -280,26 +280,26 @@ This instruction moves the <a href="glossary/help.Heads.html">flow-head</a> to t
 
 These instructions act siminar to <code>push</code> and <code>pop</code> above,
 but instead of working with registers, the place the position of the 
-?IP? on the stack, or put the ?IP? at the position taken from the stack
-(respectively).
+<a href="glossary/help.Nop-Head-Notation.html">?IP?</a> on the stack, or put 
+the ?IP? at the position taken from the stack (respectively).
 
 <h3><code>inject</code></h3>
 
 This instruction acts similar to <code>divide</code>, but instead of splitting
 off an offspring, it will remove the section of code between the read and
 write heads, and attempt to inject it into the neighbor that the organism
-is facing.  The template following this instruction will be used; if an
+is facing.  The label following this instruction will be used; if an
 <em>exact</em> match is found (with no extre nops in it) in the target organism,
-the injected code will be placed immediately after that template.  Otherwise
+the injected code will be placed immediately after that label.  Otherwise
 the command fails, and the code intended for injection is instead discarded.
 
 <h3><code>rotate-l</code> and <code>rotate-r</code></h3>
 
-These instructions rotate the facing of an organism.  If no teplate follows,
+These instructions rotate the facing of an organism.  If no label follows,
 the organism will turn one cell in the appropriate direction (left or right).
-If a template is present, it will keep turning in that direction until either
+If a label is present, it will keep turning in that direction until either
 it has made a full 360 degree turn, or else it finds an organism that
-possesses the complement template.
+possesses the complement label.
 
 <h3><code>div-asex</code></h3>
 Same as h-divide (added for symetry with the divide-sex). 
@@ -319,7 +319,7 @@ no recombination here, but each genome must wait in the birth chamber until
 another one arrives before they are both placed into the population. 
 
 <h3><code>die</code></h3>
-When executed, kills the organism, with the probability set by DIE_PROB in genesis. 
+When executed, kills the organism. 
 
 <hr />
 <p><a href="index.html">Return to the Index</a></p>
