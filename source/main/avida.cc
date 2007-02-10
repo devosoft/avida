@@ -52,9 +52,6 @@ cString getAvidaVersion()
 #if SMT_FULLY_ASSOCIATIVE
   version += " smt_fa";
 #endif
-#if CLASSIC_FULLY_ASSOCIATIVE
-  version += " c_fa";
-#endif
 #ifdef ENABLE_UNIT_TESTS
   version += " ut";
 #endif
