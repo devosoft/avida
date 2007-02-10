@@ -68,10 +68,10 @@ public:
 
 protected:
   // --------  Structure Constants  --------
-  static const int NUM_REGISTERS = 4;
+  static const int NUM_REGISTERS = 5;
   static const int NUM_HEADS = nHardware::NUM_HEADS >= NUM_REGISTERS ? nHardware::NUM_HEADS : NUM_REGISTERS;
   enum tRegisters { REG_AX = 0, REG_BX, REG_CX, REG_DX, REG_EX, REG_FX };
-  static const int NUM_NOPS = 4;
+  static const int NUM_NOPS = 5;
   
   // --------  Data Structures  --------
   struct cLocalThread
