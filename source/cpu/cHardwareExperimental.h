@@ -499,18 +499,6 @@ private:
 };
 
 
-#ifdef ENABLE_UNIT_TESTS
-namespace nHardwareCPU {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
-
 inline bool cHardwareExperimental::ThreadSelect(const int thread_num)
 {
   if (thread_num >= 0 && thread_num < m_threads.GetSize()) {
