@@ -10,6 +10,7 @@
 #include "cHardwareManager.h"
 
 #include "cHardwareCPU.h"
+#include "cHardwareExperimental.h"
 #include "cHardwareSMT.h"
 #include "cHardwareTransSMT.h"
 #include "cInitFile.h"
@@ -42,6 +43,10 @@ void cHardwareManager::LoadInstSet(cString filename)
 		case HARDWARE_TYPE_CPU_TRANSSMT:
       m_inst_set.SetInstLib(cHardwareTransSMT::GetInstLib());
 			default_filename = cHardwareTransSMT::GetDefaultInstFilename();
+			break;
+		case HARDWARE_TYPE_CPU_EXPERIMENTAL:
+      m_inst_set.SetInstLib(cHardwareExperimental::GetInstLib());
+			default_filename = cHardwareExperimental::GetDefaultInstFilename();
 			break;
 		default:
 			default_filename = "unknown";
@@ -120,6 +125,8 @@ cHardwareBase* cHardwareManager::Create(cOrganism* in_org)
       return new cHardwareSMT(m_world, in_org, &m_inst_set);
     case HARDWARE_TYPE_CPU_TRANSSMT:
       return new cHardwareTransSMT(m_world, in_org, &m_inst_set);
+    case HARDWARE_TYPE_CPU_EXPERIMENTAL:
+      return new cHardwareExperimental(m_world, in_org, &m_inst_set);
     default:
       return NULL;
   }

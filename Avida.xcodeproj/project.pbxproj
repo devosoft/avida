@@ -207,6 +207,9 @@
 		70B08B9308FB2E6B00FC65FE /* cWeightedIndex.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B08B9108FB2E6B00FC65FE /* cWeightedIndex.cc */; };
 		70B08B9408FB2E6B00FC65FE /* cTools.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B08B9008FB2E6B00FC65FE /* cTools.cc */; };
 		70B08B9508FB2E6B00FC65FE /* cWeightedIndex.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B08B9108FB2E6B00FC65FE /* cWeightedIndex.cc */; };
+		70B1A6500B7E237F00067486 /* cHardwareExperimental.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B1A64F0B7E237F00067486 /* cHardwareExperimental.cc */; };
+		70B1A6510B7E237F00067486 /* cHardwareExperimental.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B1A64F0B7E237F00067486 /* cHardwareExperimental.cc */; };
+		70B1A6520B7E237F00067486 /* cHardwareExperimental.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B1A64F0B7E237F00067486 /* cHardwareExperimental.cc */; };
 		70BCB22E0AB7B23D003FF331 /* cArgContainer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70BCB21C0AB7ADA6003FF331 /* cArgContainer.cc */; };
 		70BCB2350AB7B26B003FF331 /* cArgContainer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70BCB21C0AB7ADA6003FF331 /* cArgContainer.cc */; };
 		70C054ED0A4F6FD2002703C1 /* PopulationActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C054C90A4F6E19002703C1 /* PopulationActions.cc */; };
@@ -380,23 +383,6 @@
 			script = "flex -+ -o${DERIVED_FILES_DIR}/${INPUT_FILE_BASE}.cc ${INPUT_FILE_PATH}";
 		};
 /* End PBXBuildRule section */
-
-/* Begin PBXBuildStyle section */
-		156428B60AD599A7000248FB /* Development */ = {
-			isa = PBXBuildStyle;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-			};
-			name = Development;
-		};
-		156428B70AD599A7000248FB /* Deployment */ = {
-			isa = PBXBuildStyle;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-			};
-			name = Deployment;
-		};
-/* End PBXBuildStyle section */
 
 /* Begin PBXContainerItemProxy section */
 		70DCF67509D4E10500924128 /* PBXContainerItemProxy */ = {
@@ -791,6 +777,8 @@
 		70B08B8F08FB2E5500FC65FE /* tVector.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tVector.h; sourceTree = "<group>"; };
 		70B08B9008FB2E6B00FC65FE /* cTools.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTools.cc; sourceTree = "<group>"; };
 		70B08B9108FB2E6B00FC65FE /* cWeightedIndex.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cWeightedIndex.cc; sourceTree = "<group>"; };
+		70B1A64F0B7E237F00067486 /* cHardwareExperimental.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareExperimental.cc; sourceTree = "<group>"; };
+		70B1A6530B7E238F00067486 /* cHardwareExperimental.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareExperimental.h; sourceTree = "<group>"; };
 		70B3984E0947B29D0018F09D /* tManagedPointerArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tManagedPointerArray.h; sourceTree = "<group>"; };
 		70BCB21B0AB7ADA6003FF331 /* cArgContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cArgContainer.h; sourceTree = "<group>"; };
 		70BCB21C0AB7ADA6003FF331 /* cArgContainer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cArgContainer.cc; sourceTree = "<group>"; };
@@ -1388,6 +1376,8 @@
 		DCC30F7C0762539D008F7A48 /* cpu */ = {
 			isa = PBXGroup;
 			children = (
+				70B1A6530B7E238F00067486 /* cHardwareExperimental.h */,
+				70B1A64F0B7E237F00067486 /* cHardwareExperimental.cc */,
 				7049F2D70A66859300640512 /* cHardwareTransSMT.cc */,
 				7049F2D80A66859300640512 /* cHardwareTransSMT.h */,
 				70C054F70A4F703D002703C1 /* SConscript */,
@@ -1850,12 +1840,6 @@
 		DCC30C4D0762532C008F7A48 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 702442D70859E0B00059BD9B /* Build configuration list for PBXProject "Avida" */;
-			buildSettings = {
-			};
-			buildStyles = (
-				156428B60AD599A7000248FB /* Development */,
-				156428B70AD599A7000248FB /* Deployment */,
-			);
 			hasScannedForEncodings = 0;
 			mainGroup = DCC30C490762532C008F7A48;
 			productRefGroup = DCC3164E07626CF3008F7A48 /* Products */;
@@ -2038,6 +2022,7 @@
 				7099EF530B2FBC85001269F6 /* cAnalyzeView.cc in Sources */,
 				7099EF560B2FBC86001269F6 /* cTextViewerAnalyzeDriver.cc in Sources */,
 				7099EF580B2FBC86001269F6 /* cTextViewerDriver_Base.cc in Sources */,
+				70B1A6520B7E237F00067486 /* cHardwareExperimental.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2168,6 +2153,7 @@
 				703D4D6F0ABA374A0032C8A0 /* cArgSchema.cc in Sources */,
 				703D4E2E0ABCAC4A0032C8A0 /* cArgContainer.cc in Sources */,
 				109746410AE9606E00929ED6 /* cDeme.cc in Sources */,
+				70B1A6510B7E237F00067486 /* cHardwareExperimental.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2279,6 +2265,7 @@
 				70BCB22E0AB7B23D003FF331 /* cArgContainer.cc in Sources */,
 				703D4D6E0ABA374A0032C8A0 /* cArgSchema.cc in Sources */,
 				1097463F0AE9606E00929ED6 /* cDeme.cc in Sources */,
+				70B1A6500B7E237F00067486 /* cHardwareExperimental.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
