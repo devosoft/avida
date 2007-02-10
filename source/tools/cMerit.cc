@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "merit.cc" prior to 12/7/05.
- *  Copyright 2005-2006 Michigan State University. All rights reserved.
+ *  Copyright 1999-2007 Michigan State University. All rights reserved.
  *  Copyright 1993-2001 California Institute of Technology
  *
  */

@@ -1,5 +1,5 @@
 ##############################################################################
-## Copyright (C) 1999-2006 Michigan State University                        ##
+## Copyright (C) 1999-1999-2007 Michigan State University                        ##
 ## Based on work Copyright (C) 1993-2003 California Institute of Technology ##
 ##                                                                          ##
 ## Read the COPYING and README files, or contact 'avida@alife.org',         ##
