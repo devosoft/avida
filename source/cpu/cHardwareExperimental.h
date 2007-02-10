@@ -174,16 +174,10 @@ protected:
   int GetCopiedSize(const int parent_size, const int child_size);
   
   bool Divide_Main(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1);
-  bool Divide_MainRS(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1); //AWC 06/29/06
-  bool Divide_Main1RS(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1); //AWC 07/28/06
-  bool Divide_Main2RS(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1); //AWC 07/28/06
 
   void Divide_DoTransposons(cAvidaContext& ctx);
   
   void InjectCode(const cGenome& injection, const int line_num);
-  
-  bool HeadCopy_ErrorCorrect(cAvidaContext& ctx, double reduction);
-  bool Inst_HeadDivideMut(cAvidaContext& ctx, double mut_multiplier = 1);
   
   void ReadInst(const int in_inst);
 
@@ -271,86 +265,21 @@ private:
   // ---------- Instruction Library -----------
 
   // Flow Control
-  bool Inst_If0(cAvidaContext& ctx);
-  bool Inst_IfEqu(cAvidaContext& ctx);
-  bool Inst_IfNot0(cAvidaContext& ctx);
   bool Inst_IfNEqu(cAvidaContext& ctx);
-  bool Inst_IfGr0(cAvidaContext& ctx);
-  bool Inst_IfGr(cAvidaContext& ctx);
-  bool Inst_IfGrEqu0(cAvidaContext& ctx);
-  bool Inst_IfGrEqu(cAvidaContext& ctx);
-  bool Inst_IfLess0(cAvidaContext& ctx);
   bool Inst_IfLess(cAvidaContext& ctx);
-  bool Inst_IfLsEqu0(cAvidaContext& ctx);
-  bool Inst_IfLsEqu(cAvidaContext& ctx);
-  bool Inst_IfBit1(cAvidaContext& ctx);
-  bool Inst_IfANotEqB(cAvidaContext& ctx);
-  bool Inst_IfBNotEqC(cAvidaContext& ctx);
-  bool Inst_IfANotEqC(cAvidaContext& ctx);
-
-  bool Inst_JumpF(cAvidaContext& ctx);
-  bool Inst_JumpB(cAvidaContext& ctx);
-  bool Inst_Call(cAvidaContext& ctx);
-  bool Inst_Return(cAvidaContext& ctx);
-  
-  bool Inst_Throw(cAvidaContext& ctx);
-  bool Inst_ThrowIf0(cAvidaContext& ctx);
-  bool Inst_ThrowIfNot0(cAvidaContext& ctx);  
-  bool Inst_Catch(cAvidaContext& ctx) { ReadLabel(); return true; };
- 
-  bool Inst_Goto(cAvidaContext& ctx);
-  bool Inst_GotoIf0(cAvidaContext& ctx);
-  bool Inst_GotoIfNot0(cAvidaContext& ctx);  
   bool Inst_Label(cAvidaContext& ctx) { ReadLabel(); return true; };
     
   // Stack and Register Operations
   bool Inst_Pop(cAvidaContext& ctx);
   bool Inst_Push(cAvidaContext& ctx);
-  bool Inst_HeadPop(cAvidaContext& ctx);
-  bool Inst_HeadPush(cAvidaContext& ctx);
-
-  bool Inst_PopA(cAvidaContext& ctx);
-  bool Inst_PopB(cAvidaContext& ctx);
-  bool Inst_PopC(cAvidaContext& ctx);
-  bool Inst_PushA(cAvidaContext& ctx);
-  bool Inst_PushB(cAvidaContext& ctx);
-  bool Inst_PushC(cAvidaContext& ctx);
-
   bool Inst_SwitchStack(cAvidaContext& ctx);
-  bool Inst_FlipStack(cAvidaContext& ctx);
   bool Inst_Swap(cAvidaContext& ctx);
-  bool Inst_SwapAB(cAvidaContext& ctx);
-  bool Inst_SwapBC(cAvidaContext& ctx);
-  bool Inst_SwapAC(cAvidaContext& ctx);
-  bool Inst_CopyReg(cAvidaContext& ctx);
-  bool Inst_CopyRegAB(cAvidaContext& ctx);
-  bool Inst_CopyRegAC(cAvidaContext& ctx);
-  bool Inst_CopyRegBA(cAvidaContext& ctx);
-  bool Inst_CopyRegBC(cAvidaContext& ctx);
-  bool Inst_CopyRegCA(cAvidaContext& ctx);
-  bool Inst_CopyRegCB(cAvidaContext& ctx);
-  bool Inst_Reset(cAvidaContext& ctx);
 
   // Single-Argument Math
   bool Inst_ShiftR(cAvidaContext& ctx);
   bool Inst_ShiftL(cAvidaContext& ctx);
-  bool Inst_Bit1(cAvidaContext& ctx);
-  bool Inst_SetNum(cAvidaContext& ctx);
-  bool Inst_ValGrey(cAvidaContext& ctx);
-  bool Inst_ValDir(cAvidaContext& ctx);
-  bool Inst_ValAddP(cAvidaContext& ctx);
-  bool Inst_ValFib(cAvidaContext& ctx);
-  bool Inst_ValPolyC(cAvidaContext& ctx);
   bool Inst_Inc(cAvidaContext& ctx);
   bool Inst_Dec(cAvidaContext& ctx);
-  bool Inst_Zero(cAvidaContext& ctx);
-  bool Inst_Not(cAvidaContext& ctx);
-  bool Inst_Neg(cAvidaContext& ctx);
-  bool Inst_Square(cAvidaContext& ctx);
-  bool Inst_Sqrt(cAvidaContext& ctx);
-  bool Inst_Log(cAvidaContext& ctx);
-  bool Inst_Log10(cAvidaContext& ctx);
-  bool Inst_Minus17(cAvidaContext& ctx);
 
   // Double Argument Math
   bool Inst_Add(cAvidaContext& ctx);
@@ -359,143 +288,22 @@ private:
   bool Inst_Div(cAvidaContext& ctx);
   bool Inst_Mod(cAvidaContext& ctx);
   bool Inst_Nand(cAvidaContext& ctx);
-  bool Inst_Nor(cAvidaContext& ctx);
-  bool Inst_And(cAvidaContext& ctx);
-  bool Inst_Order(cAvidaContext& ctx);
-  bool Inst_Xor(cAvidaContext& ctx);
-
-  // Biological
-  bool Inst_Copy(cAvidaContext& ctx);
-  bool Inst_ReadInst(cAvidaContext& ctx);
-  bool Inst_WriteInst(cAvidaContext& ctx);
-  bool Inst_StackReadInst(cAvidaContext& ctx);
-  bool Inst_StackWriteInst(cAvidaContext& ctx);
-  bool Inst_Compare(cAvidaContext& ctx);
-  bool Inst_IfNCpy(cAvidaContext& ctx);
-  bool Inst_Allocate(cAvidaContext& ctx);
-  bool Inst_Divide(cAvidaContext& ctx);
-  bool Inst_DivideRS(cAvidaContext& ctx); // AWC 06/29/06
-  bool Inst_CAlloc(cAvidaContext& ctx);
-  bool Inst_CDivide(cAvidaContext& ctx);
-  bool Inst_MaxAlloc(cAvidaContext& ctx);
-  bool Inst_Inject(cAvidaContext& ctx);
-  bool Inst_InjectRand(cAvidaContext& ctx);
-  bool Inst_InjectThread(cAvidaContext& ctx);
-  bool Inst_Transposon(cAvidaContext& ctx);
-  bool Inst_Repro(cAvidaContext& ctx);
-  bool Inst_IORepro(cAvidaContext& ctx);
-  bool Inst_PutRepro(cAvidaContext& ctx);
-  bool Inst_PutClearRepro(cAvidaContext& ctx);
-
-  bool Inst_SpawnDeme(cAvidaContext& ctx);
-  bool Inst_Kazi(cAvidaContext& ctx);
-  bool Inst_Kazi5(cAvidaContext& ctx);
-  bool Inst_Die(cAvidaContext& ctx);
 
   // I/O and Sensory
-  bool Inst_TaskGet(cAvidaContext& ctx);
-  bool Inst_TaskStackGet(cAvidaContext& ctx);
-  bool Inst_TaskStackLoad(cAvidaContext& ctx);
-  bool Inst_TaskPut(cAvidaContext& ctx);
-  bool Inst_TaskPutClearInput(cAvidaContext& ctx);  
-  bool Inst_TaskPutBonusCost2(cAvidaContext& ctx);  
-  bool Inst_TaskPutMeritCost2(cAvidaContext& ctx); 
   bool Inst_TaskIO(cAvidaContext& ctx);
-  bool Inst_TaskIO_Feedback(cAvidaContext& ctx);
-  bool Inst_MatchStrings(cAvidaContext& ctx);
-  bool Inst_Sell(cAvidaContext& ctx);
-  bool Inst_Buy(cAvidaContext& ctx);
-  bool Inst_Send(cAvidaContext& ctx);
-  bool Inst_Receive(cAvidaContext& ctx);
-  bool Inst_SenseLog2(cAvidaContext& ctx);
-  bool Inst_SenseUnit(cAvidaContext& ctx);
-  bool Inst_SenseMult100(cAvidaContext& ctx);
-  bool DoSense(cAvidaContext& ctx, int conversion_method, double base);
-
-  void DoDonate(cOrganism * to_org);
-  bool Inst_DonateRandom(cAvidaContext& ctx);
-  bool Inst_DonateKin(cAvidaContext& ctx);
-  bool Inst_DonateEditDist(cAvidaContext& ctx);
-  bool Inst_DonateNULL(cAvidaContext& ctx);
-
-  bool Inst_SearchF(cAvidaContext& ctx);
-  bool Inst_SearchB(cAvidaContext& ctx);
-  bool Inst_MemSize(cAvidaContext& ctx);
-
-  // Environment
-
-  bool Inst_RotateL(cAvidaContext& ctx);
-  bool Inst_RotateR(cAvidaContext& ctx);
-  bool Inst_SetCopyMut(cAvidaContext& ctx);
-  bool Inst_ModCopyMut(cAvidaContext& ctx);
-
-  // Multi-threading...
-
-  bool Inst_ForkThread(cAvidaContext& ctx);
-  bool Inst_KillThread(cAvidaContext& ctx);
-  bool Inst_ThreadID(cAvidaContext& ctx);
 
   // Head-based instructions...
-
-  bool Inst_SetHead(cAvidaContext& ctx);
-  bool Inst_AdvanceHead(cAvidaContext& ctx);
+  bool Inst_MaxAlloc(cAvidaContext& ctx);
   bool Inst_MoveHead(cAvidaContext& ctx);
   bool Inst_JumpHead(cAvidaContext& ctx);
   bool Inst_GetHead(cAvidaContext& ctx);
   bool Inst_IfLabel(cAvidaContext& ctx);
-  bool Inst_IfLabel2(cAvidaContext& ctx);
   bool Inst_HeadDivide(cAvidaContext& ctx);
-  bool Inst_HeadDivideRS(cAvidaContext& ctx); //AWC 06/29/06
-  bool Inst_HeadDivide1RS(cAvidaContext& ctx); //AWC 07/28/06
-  bool Inst_HeadDivide2RS(cAvidaContext& ctx); //AWC 08/29/06
   bool Inst_HeadRead(cAvidaContext& ctx);
   bool Inst_HeadWrite(cAvidaContext& ctx);
   bool Inst_HeadCopy(cAvidaContext& ctx);
   bool Inst_HeadSearch(cAvidaContext& ctx);
   bool Inst_SetFlow(cAvidaContext& ctx);
-
-  bool Inst_HeadCopy2(cAvidaContext& ctx);
-  bool Inst_HeadCopy3(cAvidaContext& ctx);
-  bool Inst_HeadCopy4(cAvidaContext& ctx);
-  bool Inst_HeadCopy5(cAvidaContext& ctx);
-  bool Inst_HeadCopy6(cAvidaContext& ctx);
-  bool Inst_HeadCopy7(cAvidaContext& ctx);
-  bool Inst_HeadCopy8(cAvidaContext& ctx);
-  bool Inst_HeadCopy9(cAvidaContext& ctx);
-  bool Inst_HeadCopy10(cAvidaContext& ctx);
-
-  bool Inst_HeadDivideSex(cAvidaContext& ctx);
-  bool Inst_HeadDivideAsex(cAvidaContext& ctx);
-  bool Inst_HeadDivideAsexWait(cAvidaContext& ctx);
-  bool Inst_HeadDivideMateSelect(cAvidaContext& ctx);
-
-  bool Inst_HeadDivide1(cAvidaContext& ctx);
-  bool Inst_HeadDivide2(cAvidaContext& ctx);
-  bool Inst_HeadDivide3(cAvidaContext& ctx);
-  bool Inst_HeadDivide4(cAvidaContext& ctx);
-  bool Inst_HeadDivide5(cAvidaContext& ctx);
-  bool Inst_HeadDivide6(cAvidaContext& ctx);
-  bool Inst_HeadDivide7(cAvidaContext& ctx);
-  bool Inst_HeadDivide8(cAvidaContext& ctx);
-  bool Inst_HeadDivide9(cAvidaContext& ctx);
-  bool Inst_HeadDivide10(cAvidaContext& ctx);
-  bool Inst_HeadDivide16(cAvidaContext& ctx);
-  bool Inst_HeadDivide32(cAvidaContext& ctx);
-  bool Inst_HeadDivide50(cAvidaContext& ctx);
-  bool Inst_HeadDivide100(cAvidaContext& ctx);
-  bool Inst_HeadDivide500(cAvidaContext& ctx);
-  bool Inst_HeadDivide1000(cAvidaContext& ctx);
-  bool Inst_HeadDivide5000(cAvidaContext& ctx);
-  bool Inst_HeadDivide10000(cAvidaContext& ctx);
-  bool Inst_HeadDivide50000(cAvidaContext& ctx);
-  bool Inst_HeadDivide0_5(cAvidaContext& ctx);
-  bool Inst_HeadDivide0_1(cAvidaContext& ctx);
-  bool Inst_HeadDivide0_05(cAvidaContext& ctx);
-  bool Inst_HeadDivide0_01(cAvidaContext& ctx);
-  bool Inst_HeadDivide0_001(cAvidaContext& ctx);
-
-  //// Placebo ////
-  bool Inst_Skip(cAvidaContext& ctx);
 };
 
 

@@ -210,6 +210,7 @@
 		70B1A6500B7E237F00067486 /* cHardwareExperimental.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B1A64F0B7E237F00067486 /* cHardwareExperimental.cc */; };
 		70B1A6510B7E237F00067486 /* cHardwareExperimental.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B1A64F0B7E237F00067486 /* cHardwareExperimental.cc */; };
 		70B1A6520B7E237F00067486 /* cHardwareExperimental.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B1A64F0B7E237F00067486 /* cHardwareExperimental.cc */; };
+		70B1A7430B7E3FFD00067486 /* instset-experimental.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70B1A7420B7E3FFD00067486 /* instset-experimental.cfg */; };
 		70BCB22E0AB7B23D003FF331 /* cArgContainer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70BCB21C0AB7ADA6003FF331 /* cArgContainer.cc */; };
 		70BCB2350AB7B26B003FF331 /* cArgContainer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70BCB21C0AB7ADA6003FF331 /* cArgContainer.cc */; };
 		70C054ED0A4F6FD2002703C1 /* PopulationActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C054C90A4F6E19002703C1 /* PopulationActions.cc */; };
@@ -424,6 +425,7 @@
 				7049F3710A66AD7E00640512 /* default-sex-classic.org in CopyFiles */,
 				7049F3720A66AD7E00640512 /* default-smt.org in CopyFiles */,
 				7049F3730A66AD7E00640512 /* default-transsmt.org in CopyFiles */,
+				70B1A7430B7E3FFD00067486 /* instset-experimental.cfg in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -779,6 +781,7 @@
 		70B08B9108FB2E6B00FC65FE /* cWeightedIndex.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cWeightedIndex.cc; sourceTree = "<group>"; };
 		70B1A64F0B7E237F00067486 /* cHardwareExperimental.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareExperimental.cc; sourceTree = "<group>"; };
 		70B1A6530B7E238F00067486 /* cHardwareExperimental.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareExperimental.h; sourceTree = "<group>"; };
+		70B1A7420B7E3FFD00067486 /* instset-experimental.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "instset-experimental.cfg"; sourceTree = "<group>"; };
 		70B3984E0947B29D0018F09D /* tManagedPointerArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tManagedPointerArray.h; sourceTree = "<group>"; };
 		70BCB21B0AB7ADA6003FF331 /* cArgContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cArgContainer.h; sourceTree = "<group>"; };
 		70BCB21C0AB7ADA6003FF331 /* cArgContainer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cArgContainer.cc; sourceTree = "<group>"; };
@@ -1067,6 +1070,7 @@
 		707AF2D209EE8501001AEA89 /* Support */ = {
 			isa = PBXGroup;
 			children = (
+				70B1A7420B7E3FFD00067486 /* instset-experimental.cfg */,
 				7049F36C0A66AD7E00640512 /* default-classic.org */,
 				7049F36D0A66AD7E00640512 /* default-sex-classic.org */,
 				7049F36E0A66AD7E00640512 /* default-smt.org */,
