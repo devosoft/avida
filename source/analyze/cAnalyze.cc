@@ -445,18 +445,18 @@ void cAnalyze::LoadResources(cString cur_string)
   // Process the resource.dat, currently assuming this is the only possible
   // input file
   ifstream resourceFile(filename, ios::in);
-  assert(resourceFile);
+  assert(resourceFile.good());
   
   // Read in each line of the resource file and process it
   char line[2048];
   while(!resourceFile.eof()) {
     resourceFile.getline(line, 2047);
-    if(line[0] == '\0') { continue; }
-    
+        
     // Get rid of the whitespace at the beginning of the stream, then 
     // see if the line begins with a #, if so move on to the next line.
     stringstream ss;
-    ss << line; ss >> ws; if(ss.peek() == '#') { continue; }
+    ss << line; ss >> ws; 
+    if( (ss.peek() == '#') || (!ss.good()) ) { continue; }
     
     // Read the update number from the stream
     int update;
@@ -4281,7 +4281,9 @@ void cAnalyze::CommandMapTasks(cString cur_string)
   cStringList arg_list(cur_string);
   
   cout << "Found " << arg_list.GetSize() << " args." << endl;
-  
+
+  int useResources = 0;
+
   // Check for some command specific variables.
   if (arg_list.PopString("0") != "") print_mode = 0;
   if (arg_list.PopString("1") != "") print_mode = 1;
@@ -4289,7 +4291,11 @@ void cAnalyze::CommandMapTasks(cString cur_string)
   if (arg_list.PopString("html") != "") file_type = FILE_TYPE_HTML;
   if (arg_list.PopString("link_maps") != "") link_maps = true;
   if (arg_list.PopString("link_insts") != "") link_insts = true;
-  
+  if (arg_list.PopString("use_resources=2") != "") 
+  {
+    useResources = 2;
+  }
+    
   cout << "There are " << arg_list.GetSize() << " column args." << endl;
   
   LoadGenotypeDataList(arg_list, output_list);
@@ -4355,8 +4361,9 @@ void cAnalyze::CommandMapTasks(cString cur_string)
     }
     
     // Calculate the stats for the genotype we're working with...
+    m_testcpu->InitResources(useResources, &resources);
     genotype->Recalculate(m_ctx, m_testcpu);
-    
+
     // Headers...
     if (file_type == FILE_TYPE_TEXT) {
       fp << "-1 "  << batch[cur_batch].Name() << " "
@@ -4474,6 +4481,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       
       mod_genome[line_num] = null_inst;
       cAnalyzeGenotype test_genotype(m_world, mod_genome, map_inst_set);
+      m_testcpu->InitResources(useResources, &resources);
       test_genotype.Recalculate(m_ctx, m_testcpu);
       
       if (file_type == FILE_TYPE_HTML) fp << "<tr><td align=right>";
@@ -4498,6 +4506,10 @@ void cAnalyze::CommandMapTasks(cString cur_string)
         data_command->SetTarget(&test_genotype);
         test_genotype.SetSpecialArgs(data_command->GetArgs());
         int compare = data_command->Compare(genotype);
+        
+        // BUG! Either of the next two conditional print commands can
+        // cause landscaping to be triggered in a context that causes a crash, 
+        // notably, if you don't provide any column parameters to MapTasks.. @JEB
         if (file_type == FILE_TYPE_HTML) {
           data_command->HTMLPrint(fp, compare,
                                   !(data_command->HasArg("blank")));
@@ -7801,11 +7813,22 @@ void cAnalyze::SetupGenotypeDataList()
   genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, cString>
                               ("sequence",    "Genome Sequence",
                                &cAnalyzeGenotype::GetSequence, &cAnalyzeGenotype::SetSequence, 
-                               &cAnalyzeGenotype::CompareNULL, "(N/A)", ""));
+                               &cAnalyzeGenotype::CompareNULL, "(N/A)", ""));                            
   genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, const cString &>
                               ("alignment",   "Aligned Sequence",
                                &cAnalyzeGenotype::GetAlignedSequence,
                                &cAnalyzeGenotype::SetAlignedSequence,
+                               &cAnalyzeGenotype::CompareNULL, "(N/A)", ""));
+  
+  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, cString>
+                              ("executed_flags",    "Executed Flags",
+                               &cAnalyzeGenotype::GetExecutedFlags,
+                               (void (cAnalyzeGenotype::*)(cString)) NULL,
+                               &cAnalyzeGenotype::CompareNULL, "(N/A)", ""));
+  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, cString>
+                              ("alignment_executed_flags",    "Alignment Executed Flags",
+                               &cAnalyzeGenotype::GetAlignmentExecutedFlags,
+                               (void (cAnalyzeGenotype::*)(cString)) NULL,
                                &cAnalyzeGenotype::CompareNULL, "(N/A)", ""));
   
   genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, cString>

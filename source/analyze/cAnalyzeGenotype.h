@@ -31,6 +31,9 @@
 #ifndef functions_h
 #include "functions.h"
 #endif
+#ifndef cCPUMemory_h
+#include "cCPUMemory.h"
+#endif
 #ifndef cGenome_h
 #include "cGenome.h"
 #endif
@@ -124,7 +127,7 @@ private:
   int errors;
   double div_type;
   int mate_id;
-
+  cString executed_flags; // converted into a string
   tArray<int> task_counts;
 
   // Group 3 : Stats requiring parental genotype (Also from test CPUs)
@@ -211,7 +214,7 @@ public:
 
   // Set...
   void SetSequence(cString _sequence);
-  
+  void SetExecutedFlags(cCPUMemory & cpu_memory);
   void SetName(const cString & _name) { name = _name; }
   void SetAlignedSequence(const cString & _seq) { aligned_sequence = _seq; }
   void SetTag(const cString & _tag) { tag = _tag; }
@@ -251,6 +254,8 @@ public:
   const cGenome & GetGenome() const { return genome; }
   const cString & GetName() const { return name; }
   const cString & GetAlignedSequence() const { return aligned_sequence; }
+  cString GetExecutedFlags() const { return executed_flags; }
+  cString GetAlignmentExecutedFlags() const;
   const cString & GetTag() const { return tag; }
 
   bool GetViable() const { return viable; }

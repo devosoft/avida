@@ -27,6 +27,7 @@
 
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
+#include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cInstSet.h"
 #include "cOrganism.h"
@@ -387,6 +388,8 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cTestCPU* testcpu, cAnaly
   cOrganism* test_organism = test_info->GetTestOrganism();
   cPhenotype& test_phenotype = test_organism->GetPhenotype();
 
+  SetExecutedFlags(test_organism->GetHardware().GetMemory());
+
   length = test_organism->GetGenome().GetSize();
   copy_length = test_phenotype.GetCopiedSize();
   exe_length = test_phenotype.GetExecutedSize();
@@ -426,6 +429,32 @@ void cAnalyzeGenotype::SetSequence(cString _sequence)
 {
   cGenome new_genome(_sequence);
   genome = new_genome;
+}
+
+void cAnalyzeGenotype::SetExecutedFlags(cCPUMemory & cpu_memory)
+{
+  cString new_executed_flags;
+  for (int i=0; i<cpu_memory.GetSize(); i++)
+  {
+    new_executed_flags += (cpu_memory.FlagExecuted(i)) ? "+" : "-";
+  }
+  executed_flags = new_executed_flags;
+}
+
+
+cString cAnalyzeGenotype::GetAlignmentExecutedFlags() const
+{
+  // Make this on the fly from executed flags
+  // and the genome sequence, inserting gaps...
+  cString aligned_executed_flags = GetExecutedFlags();
+  cString aligned_seq = GetAlignedSequence();
+
+  for (int i=0; i<aligned_seq.GetSize(); i++)
+  {
+    if (aligned_seq[i] == '_') aligned_executed_flags.Insert("_", i);
+  }
+
+  return aligned_executed_flags;
 }
 
 int cAnalyzeGenotype::GetKO_DeadCount() const
