@@ -88,6 +88,19 @@ FIXME : switch back to private.
 //private:
 public:
   int cur_batch;
+
+  /*
+  FIXME : refactor "temporary_next_id". @kgn
+  - Added as a quick way to provide unique serial ids, per organism, in COMPETE
+    command. @kgn
+  */
+  int temporary_next_id;
+  int temporary_next_update;
+  void SetTempNextUpdate(int next){ temporary_next_update = next; }
+  void SetTempNextID(int next){ temporary_next_id = next; }
+  int GetTempNextUpdate(){ return temporary_next_update; }
+  int GetTempNextID(){ return temporary_next_id; }
+
   cGenotypeBatch batch[MAX_BATCHES];
   tList<cAnalyzeCommand> command_list;
   tList<cAnalyzeFunction> function_list;

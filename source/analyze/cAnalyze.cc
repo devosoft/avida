@@ -84,6 +84,13 @@ using namespace std;
 
 cAnalyze::cAnalyze(cWorld* world)
 : cur_batch(0)
+/*
+FIXME : refactor "temporary_next_id". @kgn
+- Added as a quick way to provide unique serial ids, per organism, in COMPETE
+  command. @kgn
+*/
+, temporary_next_id(0)
+, temporary_next_update(0)
 , variables(26)
 , local_variables(26)
 , arg_variables(26)
@@ -137,6 +144,10 @@ void cAnalyze::RunFile(cString filename)
   m_ctx.SetAnalyzeMode();
 
   cInitFile analyze_file(filename);
+  if (!analyze_file.IsOpen()) {
+    cerr << "Error: Cannot load file: \"" << filename << "\"." << endl;
+    if (exit_on_error) exit(1);
+  }
   analyze_file.Load();
   analyze_file.Compress();
   analyze_file.Close();
@@ -7144,6 +7155,7 @@ Must categorize COMPETE command.
   batch_size : size of target batch
   from_id
   to_id=current
+  initial_next_id=-1
 */
 void cAnalyze::BatchCompete(cString cur_string)
 {
@@ -7162,8 +7174,25 @@ void cAnalyze::BatchCompete(cString cur_string)
   int batch_to = cur_batch;
   if (cur_string.GetSize() > 0) batch_to = cur_string.PopWord().AsInt();
   
+  int initial_next_id = -1;
+  if (cur_string.GetSize() > 0) {
+    initial_next_id = cur_string.PopWord().AsInt();
+  }
+  if (0 <= initial_next_id) {
+    SetTempNextID(initial_next_id);
+  }
+  
+  int initial_next_update = -1;
+  if (cur_string.GetSize() > 0) {
+    initial_next_update = cur_string.PopWord().AsInt();
+  }
+  if (0 <= initial_next_update) {
+    SetTempNextUpdate(initial_next_update);
+  }
+  
   if (m_world->GetVerbosity() >= VERBOSE_ON) {
-    cout << "Compete from batch " << batch_from << " to batch " << batch_to << "." << endl;
+    cout << "Compete " << batch_size << " organisms from batch " << batch_from << " to batch " << batch_to << ";" << endl;
+    cout << "assigning new IDs starting with " << GetTempNextID() << "." << endl;
   }
   
   /* Get iterator into "from" batch. */ 
@@ -7199,9 +7228,16 @@ void cAnalyze::BatchCompete(cString cur_string)
     if(genotype->GetViable()){
       /*
       kgn@FIXME
-      HACK : multiplication by 1000 because merits less than 1 are truncated to zero.
+      - HACK : multiplication by 1000 because merits less than 1 are truncated
+        to zero.
       */
       fitness_array[array_pos] = genotype->GetFitness() * 1000.;
+      /*
+      kgn@FIXME
+      - Need to note somewhere that we are using first descendent of the
+        parent, if the parent is viable, so that genome of first descendent may
+        differ from that of parent.
+      */
       offspring_genome_array[array_pos] = test_info->GetTestOrganism(0)->ChildGenome();
     } else {
       fitness_array[array_pos] = 0.0;
@@ -7254,11 +7290,24 @@ void cAnalyze::BatchCompete(cString cur_string)
       child_genome,
       inst_set
     );
+
+    int parent_id = genotype->GetID();
+    int child_id = GetTempNextID();
+    SetTempNextID(child_id + 1);
+    cString child_name = cStringUtil::Stringf("org-%d", child_id);
+
+    new_genotype->SetParentID(parent_id);
+    new_genotype->SetID(child_id);
+    new_genotype->SetName(child_name);
+    new_genotype->SetUpdateBorn(GetTempNextUpdate());
+
     /* Place offspring in "to" batch. */
     batch[batch_to].List().PushRear(new_genotype);
     /* Increment and continue. */
     i++;
   }
+
+  SetTempNextUpdate(GetTempNextUpdate() + 1);
 
   batch[batch_to].SetLineage(false);
   batch[batch_to].SetAligned(false);
