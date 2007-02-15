@@ -52,7 +52,6 @@
 #include "cHelpManager.h"
 #include "cInitFile.h"
 #include "cInstSet.h"
-#include "cInstUtil.h"
 #include "cLandscape.h"
 #include "cPhenotype.h"
 #include "cProbSchedule.h"
@@ -170,7 +169,7 @@ void cAnalyze::LoadOrganism(cString cur_string)
   cout << "Loading: " << filename << '\n';
   
   // Setup the genome...
-  cGenome genome( cInstUtil::LoadGenome(filename, inst_set) );
+  cGenome genome( cGenomeUtil::LoadGenome(filename, inst_set) );
   
   // Construct the new genotype..
   cAnalyzeGenotype * genotype = new cAnalyzeGenotype(m_world, genome, inst_set);

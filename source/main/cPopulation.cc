@@ -39,7 +39,6 @@
 #include "cHardwareManager.h"
 #include "cInitFile.h"
 #include "cInjectGenotype.h"
-#include "cInstUtil.h"
 #include "cIntegratedSchedule.h"
 #include "cLineage.h"
 #include "cOrganism.h"
@@ -179,7 +178,7 @@ cPopulation::cPopulation(cWorld* world)
     const cString& filename = m_world->GetConfig().START_CREATURE.Get();
     
     if (filename != "-" && filename != "") {
-      if (!cInstUtil::LoadGenome(filename, world->GetHardwareManager().GetInstSet(), start_org)) {
+      if (!cGenomeUtil::LoadGenome(filename, world->GetHardwareManager().GetInstSet(), start_org)) {
         cerr << "Error: Unable to load start creature" << endl;
         exit(-1);
       }
@@ -373,7 +372,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
   return parent_alive;
 }
 
-bool cPopulation::ActivateParasite(cOrganism& parent, const cGenome& injected_code)
+bool cPopulation::ActivateParasite(cOrganism& parent, const cCodeLabel& label, const cGenome& injected_code)
 {
   assert(&parent != NULL);
   
@@ -397,7 +396,7 @@ bool cPopulation::ActivateParasite(cOrganism& parent, const cGenome& injected_co
   if (child_cpu.GetNumThreads() == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
   
   
-  if (target_organism->InjectHost(parent_cpu.GetLabel(), injected_code)) {
+  if (target_organism->InjectHost(label, injected_code)) {
     cInjectGenotype* child_genotype = parent_genotype;
     
     // If the parent genotype is not correct for the child, adjust it.

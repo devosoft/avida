@@ -30,7 +30,9 @@
 #include "cGenome.h"
 #endif
 
+class cAvidaContext;
 class cInstruction;
+class cInstSet;
 
 class cGenomeUtil
 {
@@ -56,6 +58,20 @@ public:
   static cGenome Crop(const cGenome& genome, int start, int end);
   static cGenome Cut(const cGenome& genome, int start, int end);
   static cGenome Join(const cGenome& genome1, const cGenome& genome2);
+
+  // ========= Genome-File Interaction =========
+  // Saving and loading of files.  These functions assume that the genome is
+  // the only thing in the file unless 'Internal' is in the function name
+  // (Internal genomes must begin with a number that indicates genome length)
+  
+  static bool LoadGenome(const cString& filename, const cInstSet& inst_set, cGenome& out_genome);
+  static cGenome LoadGenome(const cString& filename, const cInstSet& inst_set);
+  static cGenome LoadInternalGenome(std::istream& fp, const cInstSet& inst_set);
+  static void SaveGenome(std::ostream& fp, const cInstSet& inst_set, const cGenome& gen);
+  static void SaveInternalGenome(std::ostream& fp, const cInstSet& inst_set, const cGenome& gen);
+  
+  // ========= Genome Construction =========
+  static cGenome RandomGenome(cAvidaContext& ctx, int length, const cInstSet& inst_set);
 };
 
 

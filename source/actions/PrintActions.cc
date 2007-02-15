@@ -37,7 +37,6 @@
 #include "cHistogram.h"
 #include "cInjectGenotype.h"
 #include "cInstSet.h"
-#include "cInstUtil.h"
 #include "cOrganism.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
@@ -708,7 +707,7 @@ public:
       creature_file = largs.PopWord();
     else
       creature_file = m_world->GetConfig().START_CREATURE.Get();
-    m_reference = cInstUtil::LoadGenome(creature_file, world->GetHardwareManager().GetInstSet());
+    m_reference = cGenomeUtil::LoadGenome(creature_file, world->GetHardwareManager().GetInstSet());
     
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
@@ -815,7 +814,7 @@ public:
     int sum_num_organisms = 0;
     
     // load the reference genome
-    cGenome reference_genome(cInstUtil::LoadGenome(m_creature, m_world->GetHardwareManager().GetInstSet()));    
+    cGenome reference_genome(cGenomeUtil::LoadGenome(m_creature, m_world->GetHardwareManager().GetInstSet()));    
     
     // cycle over all genotypes
     cGenotype* cur_genotype = m_world->GetClassificationManager().GetBestGenotype();

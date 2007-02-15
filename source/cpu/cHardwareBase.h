@@ -120,11 +120,6 @@ public:
   cHeadCPU FindLabelFull(const cCodeLabel& label);
   
   
-  // --------  Label Manipulation  -------
-  virtual const cCodeLabel& GetLabel() const = 0;
-  virtual cCodeLabel& GetLabel() = 0;
-  
-  
   // --------  Memory Manipulation  --------
   virtual const cCPUMemory& GetMemory() const = 0;
   virtual cCPUMemory& GetMemory() = 0;

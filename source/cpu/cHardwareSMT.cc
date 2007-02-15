@@ -674,7 +674,7 @@ bool cHardwareSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier)
   Inject_DoMutations(ctx, mut_multiplier, injected_code);
 	
   bool inject_signal = false;
-  if (injected_code.GetSize() > 0) inject_signal = organism->InjectParasite(injected_code);
+  if (injected_code.GetSize() > 0) inject_signal = organism->InjectParasite(GetLabel(), injected_code);
 	
   // reset the memory space that was injected
   m_mem_array[mem_space_used] = cGenome("a"); 

@@ -148,7 +148,7 @@ public:
 
   // Activate the offspring of an organism in the population
   bool ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, cOrganism& parent_organism);
-  bool ActivateParasite(cOrganism& parent, const cGenome& injected_code);
+  bool ActivateParasite(cOrganism& parent, const cCodeLabel& label, const cGenome& injected_code);
   
   // Inject an organism from the outside world.
   void Inject(const cGenome& genome, int cell_id = -1, double merit = -1, int lineage_label = 0,

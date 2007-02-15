@@ -44,6 +44,7 @@
 #include "cTestCPU.h"
 #include "cWorldDriver.h"
 #include "cWorld.h"
+#include "tInstLibEntry.h"
 
 #include <limits.h>
 #include <fstream>
@@ -70,102 +71,58 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     cNOPEntry("nop-F", REG_FX)
   };
   
-  struct cInstEntry { 
-    const cString name;
-    const tMethod function;
-    const bool is_default;
-    const cString desc;
-    
-    cInstEntry(const cString & _name, tMethod _fun,
-                  bool _def=false, const cString & _desc="")
-      : name(_name), function(_fun), is_default(_def), desc(_desc) {}
-  };
-  static const cInstEntry s_f_array[] = {
+  static const tInstLibEntry<tMethod> s_f_array[] = {
     /*
      Note: all entries of cNOPEntryCPU s_n_array must have corresponding
-     in the same order in cInstEntry s_f_array, and these entries must
+     in the same order in tInstLibEntry<tMethod> s_f_array, and these entries must
      be the first elements of s_f_array.
      */
-    cInstEntry("nop-A",     &cHardwareExperimental::Inst_Nop, true,
-                  "No-operation instruction; modifies other instructions"),
-    cInstEntry("nop-B",     &cHardwareExperimental::Inst_Nop, true,
-                  "No-operation instruction; modifies other instructions"),
-    cInstEntry("nop-C",     &cHardwareExperimental::Inst_Nop, true,
-                  "No-operation instruction; modifies other instructions"),
-    cInstEntry("nop-D",     &cHardwareExperimental::Inst_Nop, true,
-                  "No-operation instruction; modifies other instructions"),
-    cInstEntry("nop-E",     &cHardwareExperimental::Inst_Nop, true,
-                  "No-operation instruction; modifies other instructions"),
-    cInstEntry("nop-F",     &cHardwareExperimental::Inst_Nop, true,
-                  "No-operation instruction; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-A", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT & nInstFlag::NOP), "No-operation instruction; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-B", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT & nInstFlag::NOP), "No-operation instruction; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-C", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT & nInstFlag::NOP), "No-operation instruction; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-D", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT & nInstFlag::NOP), "No-operation instruction; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-E", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT & nInstFlag::NOP), "No-operation instruction; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-F", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT & nInstFlag::NOP), "No-operation instruction; modifies other instructions"),
     
-    cInstEntry("NULL",      &cHardwareExperimental::Inst_Nop, false,
-                  "True no-operation instruction: does nothing"),
-    cInstEntry("nop-X",     &cHardwareExperimental::Inst_Nop, false,
-                  "True no-operation instruction: does nothing"),
+    tInstLibEntry<tMethod>("NULL", &cHardwareExperimental::Inst_Nop, 0, "True no-operation instruction: does nothing"),
+    tInstLibEntry<tMethod>("nop-X", &cHardwareExperimental::Inst_Nop, 0, "True no-operation instruction: does nothing"),
 
-    cInstEntry("if-n-equ",  &cHardwareExperimental::Inst_IfNEqu, true,
-                  "Execute next instruction if ?BX?!=?CX?, else skip it"),
-    cInstEntry("if-less",   &cHardwareExperimental::Inst_IfLess, true,
-                  "Execute next instruction if ?BX? < ?CX?, else skip it"),
+    tInstLibEntry<tMethod>("if-n-equ", &cHardwareExperimental::Inst_IfNEqu, nInstFlag::DEFAULT, "Execute next instruction if ?BX?!=?CX?, else skip it"),
+    tInstLibEntry<tMethod>("if-less", &cHardwareExperimental::Inst_IfLess, nInstFlag::DEFAULT, "Execute next instruction if ?BX? < ?CX?, else skip it"),
     
+    tInstLibEntry<tMethod>("label", &cHardwareExperimental::Inst_Label),
+    
+    tInstLibEntry<tMethod>("pop", &cHardwareExperimental::Inst_Pop, nInstFlag::DEFAULT, "Remove top number from stack and place into ?BX?"),
+    tInstLibEntry<tMethod>("push", &cHardwareExperimental::Inst_Push, nInstFlag::DEFAULT, "Copy number from ?BX? and place it into the stack"),
+    tInstLibEntry<tMethod>("swap-stk", &cHardwareExperimental::Inst_SwitchStack, nInstFlag::DEFAULT, "Toggle which stack is currently being used"),
+    tInstLibEntry<tMethod>("swap", &cHardwareExperimental::Inst_Swap, nInstFlag::DEFAULT, "Swap the contents of ?BX? with ?CX?"),
+    
+    tInstLibEntry<tMethod>("shift-r", &cHardwareExperimental::Inst_ShiftR, nInstFlag::DEFAULT, "Shift bits in ?BX? right by one (divide by two)"),
+    tInstLibEntry<tMethod>("shift-l", &cHardwareExperimental::Inst_ShiftL, nInstFlag::DEFAULT, "Shift bits in ?BX? left by one (multiply by two)"),
+    tInstLibEntry<tMethod>("inc", &cHardwareExperimental::Inst_Inc, nInstFlag::DEFAULT, "Increment ?BX? by one"),
+    tInstLibEntry<tMethod>("dec", &cHardwareExperimental::Inst_Dec, nInstFlag::DEFAULT, "Decrement ?BX? by one"),
 
-    cInstEntry("label",     &cHardwareExperimental::Inst_Label),
+    tInstLibEntry<tMethod>("add", &cHardwareExperimental::Inst_Add, nInstFlag::DEFAULT, "Add BX to CX and place the result in ?BX?"),
+    tInstLibEntry<tMethod>("sub", &cHardwareExperimental::Inst_Sub, nInstFlag::DEFAULT, "Subtract CX from BX and place the result in ?BX?"),
+    tInstLibEntry<tMethod>("mult", &cHardwareExperimental::Inst_Mult, 0, "Multiple BX by CX and place the result in ?BX?"),
+    tInstLibEntry<tMethod>("div", &cHardwareExperimental::Inst_Div, 0, "Divide BX by CX and place the result in ?BX?"),
+    tInstLibEntry<tMethod>("mod", &cHardwareExperimental::Inst_Mod),
+    tInstLibEntry<tMethod>("nand", &cHardwareExperimental::Inst_Nand, nInstFlag::DEFAULT, "Nand BX by CX and place the result in ?BX?"),
     
-    cInstEntry("pop",       &cHardwareExperimental::Inst_Pop, true,
-                  "Remove top number from stack and place into ?BX?"),
-    cInstEntry("push",      &cHardwareExperimental::Inst_Push, true,
-                  "Copy number from ?BX? and place it into the stack"),
-    cInstEntry("swap-stk",  &cHardwareExperimental::Inst_SwitchStack, true,
-                  "Toggle which stack is currently being used"),
-    cInstEntry("swap",      &cHardwareExperimental::Inst_Swap, true,
-                  "Swap the contents of ?BX? with ?CX?"),
-    
-    cInstEntry("shift-r",   &cHardwareExperimental::Inst_ShiftR, true,
-                  "Shift bits in ?BX? right by one (divide by two)"),
-    cInstEntry("shift-l",   &cHardwareExperimental::Inst_ShiftL, true,
-                  "Shift bits in ?BX? left by one (multiply by two)"),
-    cInstEntry("inc",       &cHardwareExperimental::Inst_Inc, true,
-                  "Increment ?BX? by one"),
-    cInstEntry("dec",       &cHardwareExperimental::Inst_Dec, true,
-                  "Decrement ?BX? by one"),
-
-    cInstEntry("add",       &cHardwareExperimental::Inst_Add, true,
-                  "Add BX to CX and place the result in ?BX?"),
-    cInstEntry("sub",       &cHardwareExperimental::Inst_Sub, true,
-                  "Subtract CX from BX and place the result in ?BX?"),
-    cInstEntry("mult",      &cHardwareExperimental::Inst_Mult, false,
-                  "Multiple BX by CX and place the result in ?BX?"),
-    cInstEntry("div",       &cHardwareExperimental::Inst_Div, false,
-                  "Divide BX by CX and place the result in ?BX?"),
-    cInstEntry("mod",       &cHardwareExperimental::Inst_Mod),
-    cInstEntry("nand",      &cHardwareExperimental::Inst_Nand, true,
-                  "Nand BX by CX and place the result in ?BX?"),
-    
-    cInstEntry("IO",        &cHardwareExperimental::Inst_TaskIO, true,
-                  "Output ?BX?, and input new number back into ?BX?"),
+    tInstLibEntry<tMethod>("IO", &cHardwareExperimental::Inst_TaskIO, nInstFlag::DEFAULT, "Output ?BX?, and input new number back into ?BX?"),
     
     // Head-based instructions
-    cInstEntry("h-alloc",   &cHardwareExperimental::Inst_MaxAlloc, true,
-                  "Allocate maximum allowed space"),
-    cInstEntry("h-divide",  &cHardwareExperimental::Inst_HeadDivide, true,
-                  "Divide code between read and write heads."),
-    cInstEntry("h-read",    &cHardwareExperimental::Inst_HeadRead),
-    cInstEntry("h-write",   &cHardwareExperimental::Inst_HeadWrite),
-    cInstEntry("h-copy",    &cHardwareExperimental::Inst_HeadCopy, true,
-                  "Copy from read-head to write-head; advance both"),
-    cInstEntry("h-search",  &cHardwareExperimental::Inst_HeadSearch, true,
-                  "Find complement template and make with flow head"),
-    cInstEntry("mov-head",  &cHardwareExperimental::Inst_MoveHead, true,
-                  "Move head ?IP? to the flow head"),
-    cInstEntry("jmp-head",  &cHardwareExperimental::Inst_JumpHead, true,
-                  "Move head ?IP? by amount in CX register; CX = old pos."),
-    cInstEntry("get-head",  &cHardwareExperimental::Inst_GetHead, true,
-                  "Copy the position of the ?IP? head into CX"),
-    cInstEntry("if-label",  &cHardwareExperimental::Inst_IfLabel, true,
-                  "Execute next if we copied complement of attached label"),
-    cInstEntry("set-flow",  &cHardwareExperimental::Inst_SetFlow, true,
-                  "Set flow-head to position in ?CX?"),
+    tInstLibEntry<tMethod>("h-alloc", &cHardwareExperimental::Inst_MaxAlloc, nInstFlag::DEFAULT, "Allocate maximum allowed space"),
+    tInstLibEntry<tMethod>("h-divide", &cHardwareExperimental::Inst_HeadDivide, nInstFlag::DEFAULT, "Divide code between read and write heads."),
+    tInstLibEntry<tMethod>("h-read", &cHardwareExperimental::Inst_HeadRead),
+    tInstLibEntry<tMethod>("h-write", &cHardwareExperimental::Inst_HeadWrite),
+    tInstLibEntry<tMethod>("h-copy", &cHardwareExperimental::Inst_HeadCopy, nInstFlag::DEFAULT, "Copy from read-head to write-head; advance both"),
+    tInstLibEntry<tMethod>("h-search", &cHardwareExperimental::Inst_HeadSearch, nInstFlag::DEFAULT, "Find complement template and make with flow head"),
+    tInstLibEntry<tMethod>("mov-head", &cHardwareExperimental::Inst_MoveHead, nInstFlag::DEFAULT, "Move head ?IP? to the flow head"),
+    tInstLibEntry<tMethod>("jmp-head", &cHardwareExperimental::Inst_JumpHead, nInstFlag::DEFAULT, "Move head ?IP? by amount in CX register; CX = old pos."),
+    tInstLibEntry<tMethod>("get-head", &cHardwareExperimental::Inst_GetHead, nInstFlag::DEFAULT, "Copy the position of the ?IP? head into CX"),
+    tInstLibEntry<tMethod>("if-label", &cHardwareExperimental::Inst_IfLabel, nInstFlag::DEFAULT, "Execute next if we copied complement of attached label"),
+    tInstLibEntry<tMethod>("set-flow", &cHardwareExperimental::Inst_SetFlow, nInstFlag::DEFAULT, "Set flow-head to position in ?CX?"),
   };
   
   const int n_size = sizeof(s_n_array)/sizeof(cNOPEntry);
@@ -177,7 +134,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     nop_mods[i] = s_n_array[i].nop_mod;
   }
   
-  const int f_size = sizeof(s_f_array)/sizeof(cInstEntry);
+  const int f_size = sizeof(s_f_array)/sizeof(tInstLibEntry<tMethod>);
   static cString f_names[f_size];
   static tMethod functions[f_size];
   for (int i = 0; i < f_size; i++){

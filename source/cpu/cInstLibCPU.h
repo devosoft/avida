@@ -92,8 +92,8 @@ public:
     }
     return cInstLibCPU::GetInstError();
   }
-  const cInstruction & GetInstDefault(){ return inst_default; }
-  const cInstruction & GetInstError(){ return inst_error; }
+  const cInstruction GetInstDefault(){ return inst_default; }
+  const cInstruction GetInstError(){ return inst_error; }
 };
 
 

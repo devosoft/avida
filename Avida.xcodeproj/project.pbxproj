@@ -93,6 +93,9 @@
 		705ACD630A1403A5002D5BA0 /* PrintActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705ACD4D0A13FED4002D5BA0 /* PrintActions.cc */; };
 		705ACD640A1403AA002D5BA0 /* PrintActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705ACD4D0A13FED4002D5BA0 /* PrintActions.cc */; };
 		70658C5A085DF67D00486BED /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
+		706C6FFF0B83F265003174C1 /* cInstSet.cc in Sources */ = {isa = PBXBuildFile; fileRef = 706C6FFE0B83F265003174C1 /* cInstSet.cc */; };
+		706C70000B83F265003174C1 /* cInstSet.cc in Sources */ = {isa = PBXBuildFile; fileRef = 706C6FFE0B83F265003174C1 /* cInstSet.cc */; };
+		706C70010B83F265003174C1 /* cInstSet.cc in Sources */ = {isa = PBXBuildFile; fileRef = 706C6FFE0B83F265003174C1 /* cInstSet.cc */; };
 		7073165D097C6C8F00815164 /* cParser.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7073165B097C6C8F00815164 /* cParser.cc */; };
 		70731665097C6DF500815164 /* cASLibrary.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70731663097C6DF500815164 /* cASLibrary.cc */; };
 		7073166B097C6E0C00815164 /* cASSymbol.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70731669097C6E0C00815164 /* cASSymbol.cc */; };
@@ -245,14 +248,10 @@
 		70CA6EC408DB7F8200068AC2 /* cGenome.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB408DB7F8200068AC2 /* cGenome.cc */; };
 		70CA6EC508DB7F8200068AC2 /* cGenomeUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB508DB7F8200068AC2 /* cGenomeUtil.cc */; };
 		70CA6ECF08DB7F8200068AC2 /* cInstruction.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EBF08DB7F8200068AC2 /* cInstruction.cc */; };
-		70CA6ED008DB7F8200068AC2 /* cInstSet.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EC008DB7F8200068AC2 /* cInstSet.cc */; };
-		70CA6ED108DB7F8200068AC2 /* cInstUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EC108DB7F8200068AC2 /* cInstUtil.cc */; };
 		70CA6ED208DB7F8200068AC2 /* cFitnessMatrix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB208DB7F8200068AC2 /* cFitnessMatrix.cc */; };
 		70CA6ED408DB7F8200068AC2 /* cGenome.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB408DB7F8200068AC2 /* cGenome.cc */; };
 		70CA6ED508DB7F8200068AC2 /* cGenomeUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB508DB7F8200068AC2 /* cGenomeUtil.cc */; };
 		70CA6EDF08DB7F8200068AC2 /* cInstruction.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EBF08DB7F8200068AC2 /* cInstruction.cc */; };
-		70CA6EE008DB7F8200068AC2 /* cInstSet.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EC008DB7F8200068AC2 /* cInstSet.cc */; };
-		70CA6EE108DB7F8200068AC2 /* cInstUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EC108DB7F8200068AC2 /* cInstUtil.cc */; };
 		70DCAC7A097AF731002F8733 /* cBarScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC59097AF730002F8733 /* cBarScreen.cc */; };
 		70DCAC7D097AF731002F8733 /* cEnvironmentScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC5C097AF730002F8733 /* cEnvironmentScreen.cc */; };
 		70DCAC7F097AF731002F8733 /* cHistScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC5E097AF730002F8733 /* cHistScreen.cc */; };
@@ -289,8 +288,6 @@
 		70DCACB9097AF7CC002F8733 /* cGenome.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB408DB7F8200068AC2 /* cGenome.cc */; };
 		70DCACBA097AF7CC002F8733 /* cGenomeUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB508DB7F8200068AC2 /* cGenomeUtil.cc */; };
 		70DCACBB097AF7CC002F8733 /* cInstruction.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EBF08DB7F8200068AC2 /* cInstruction.cc */; };
-		70DCACBC097AF7CC002F8733 /* cInstSet.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EC008DB7F8200068AC2 /* cInstSet.cc */; };
-		70DCACBD097AF7CC002F8733 /* cInstUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EC108DB7F8200068AC2 /* cInstUtil.cc */; };
 		70DCACBE097AF7CC002F8733 /* cLandscape.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865108F4974300FC65FE /* cLandscape.cc */; };
 		70DCACBF097AF7CC002F8733 /* cLocalMutations.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865408F4974300FC65FE /* cLocalMutations.cc */; };
 		70DCACC0097AF7CC002F8733 /* cMutationLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0865608F4974300FC65FE /* cMutationLib.cc */; };
@@ -552,6 +549,11 @@
 		705ACD4C0A13FED4002D5BA0 /* PrintActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrintActions.h; sourceTree = "<group>"; };
 		705ACD4D0A13FED4002D5BA0 /* PrintActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PrintActions.cc; sourceTree = "<group>"; };
 		70658C59085DF67D00486BED /* libncurses.5.4.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libncurses.5.4.dylib; path = /usr/lib/libncurses.5.4.dylib; sourceTree = "<absolute>"; };
+		706C6F480B83E69D003174C1 /* cSaleItem.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cSaleItem.h; sourceTree = "<group>"; };
+		706C6FD40B83EF96003174C1 /* cInstLibBase.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInstLibBase.h; sourceTree = "<group>"; };
+		706C6FFD0B83F254003174C1 /* cInstSet.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInstSet.h; sourceTree = "<group>"; };
+		706C6FFE0B83F265003174C1 /* cInstSet.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cInstSet.cc; sourceTree = "<group>"; };
+		706C703E0B83FB95003174C1 /* tInstLibEntry.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tInstLibEntry.h; sourceTree = "<group>"; };
 		706D30CC0852328F00D7DC8F /* tInstLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tInstLib.h; sourceTree = "<group>"; };
 		7073165A097C6C8F00815164 /* cParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cParser.h; sourceTree = "<group>"; };
 		7073165B097C6C8F00815164 /* cParser.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cParser.cc; sourceTree = "<group>"; };
@@ -827,15 +829,10 @@
 		70CA6EB408DB7F8200068AC2 /* cGenome.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cGenome.cc; sourceTree = "<group>"; };
 		70CA6EB508DB7F8200068AC2 /* cGenomeUtil.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cGenomeUtil.cc; sourceTree = "<group>"; };
 		70CA6EBF08DB7F8200068AC2 /* cInstruction.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cInstruction.cc; sourceTree = "<group>"; };
-		70CA6EC008DB7F8200068AC2 /* cInstSet.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cInstSet.cc; sourceTree = "<group>"; };
-		70CA6EC108DB7F8200068AC2 /* cInstUtil.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cInstUtil.cc; sourceTree = "<group>"; };
 		70CA6EE208DB7F9E00068AC2 /* cFitnessMatrix.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cFitnessMatrix.h; sourceTree = "<group>"; };
 		70CA6EE408DB7F9E00068AC2 /* cGenome.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenome.h; sourceTree = "<group>"; };
 		70CA6EE608DB7F9E00068AC2 /* cGenomeUtil.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenomeUtil.h; sourceTree = "<group>"; };
-		70CA6EF108DB7F9E00068AC2 /* cInstLibBase.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInstLibBase.h; sourceTree = "<group>"; };
 		70CA6EF208DB7F9E00068AC2 /* cInstruction.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInstruction.h; sourceTree = "<group>"; };
-		70CA6EF308DB7F9E00068AC2 /* cInstSet.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInstSet.h; sourceTree = "<group>"; };
-		70CA6EF408DB7F9E00068AC2 /* cInstUtil.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInstUtil.h; sourceTree = "<group>"; };
 		70DA5E9D09DA1A8D00FFF42B /* cOrgSeqMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgSeqMessage.h; sourceTree = "<group>"; };
 		70DCAC57097AF730002F8733 /* main.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = main.cc; sourceTree = "<group>"; };
 		70DCAC59097AF730002F8733 /* cBarScreen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cBarScreen.cc; sourceTree = "<group>"; };
@@ -1384,6 +1381,10 @@
 		DCC30F7C0762539D008F7A48 /* cpu */ = {
 			isa = PBXGroup;
 			children = (
+				706C703E0B83FB95003174C1 /* tInstLibEntry.h */,
+				706C6FFE0B83F265003174C1 /* cInstSet.cc */,
+				706C6FFD0B83F254003174C1 /* cInstSet.h */,
+				706C6FD40B83EF96003174C1 /* cInstLibBase.h */,
 				70B1A6530B7E238F00067486 /* cHardwareExperimental.h */,
 				70B1A64F0B7E237F00067486 /* cHardwareExperimental.cc */,
 				7049F2D70A66859300640512 /* cHardwareTransSMT.cc */,
@@ -1426,6 +1427,7 @@
 		DCC310040762539D008F7A48 /* main */ = {
 			isa = PBXGroup;
 			children = (
+				706C6F480B83E69D003174C1 /* cSaleItem.h */,
 				708BF3010AB65DD300A923BF /* cEventList.h */,
 				708BF2FD0AB65DC700A923BF /* cEventList.cc */,
 				703CA36F0A5072B700AB4DB4 /* SConscript */,
@@ -1445,13 +1447,8 @@
 				70CA6EE408DB7F9E00068AC2 /* cGenome.h */,
 				70CA6EB508DB7F8200068AC2 /* cGenomeUtil.cc */,
 				70CA6EE608DB7F9E00068AC2 /* cGenomeUtil.h */,
-				70CA6EF108DB7F9E00068AC2 /* cInstLibBase.h */,
 				70CA6EBF08DB7F8200068AC2 /* cInstruction.cc */,
 				70CA6EF208DB7F9E00068AC2 /* cInstruction.h */,
-				70CA6EC008DB7F8200068AC2 /* cInstSet.cc */,
-				70CA6EF308DB7F9E00068AC2 /* cInstSet.h */,
-				70CA6EC108DB7F8200068AC2 /* cInstUtil.cc */,
-				70CA6EF408DB7F9E00068AC2 /* cInstUtil.h */,
 				70B0865108F4974300FC65FE /* cLandscape.cc */,
 				70B0864808F4972600FC65FE /* cLandscape.h */,
 				70B0865408F4974300FC65FE /* cLocalMutations.cc */,
@@ -1926,8 +1923,6 @@
 				70CA6ED408DB7F8200068AC2 /* cGenome.cc in Sources */,
 				70CA6ED508DB7F8200068AC2 /* cGenomeUtil.cc in Sources */,
 				70CA6EDF08DB7F8200068AC2 /* cInstruction.cc in Sources */,
-				70CA6EE008DB7F8200068AC2 /* cInstSet.cc in Sources */,
-				70CA6EE108DB7F8200068AC2 /* cInstUtil.cc in Sources */,
 				70B0866108F4974300FC65FE /* cLandscape.cc in Sources */,
 				70B0866408F4974300FC65FE /* cLocalMutations.cc in Sources */,
 				70B0866608F4974300FC65FE /* cMutationLib.cc in Sources */,
@@ -2031,6 +2026,7 @@
 				7099EF560B2FBC86001269F6 /* cTextViewerAnalyzeDriver.cc in Sources */,
 				7099EF580B2FBC86001269F6 /* cTextViewerDriver_Base.cc in Sources */,
 				70B1A6520B7E237F00067486 /* cHardwareExperimental.cc in Sources */,
+				706C70010B83F265003174C1 /* cInstSet.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2068,8 +2064,6 @@
 				70DCACB9097AF7CC002F8733 /* cGenome.cc in Sources */,
 				70DCACBA097AF7CC002F8733 /* cGenomeUtil.cc in Sources */,
 				70DCACBB097AF7CC002F8733 /* cInstruction.cc in Sources */,
-				70DCACBC097AF7CC002F8733 /* cInstSet.cc in Sources */,
-				70DCACBD097AF7CC002F8733 /* cInstUtil.cc in Sources */,
 				70DCACBE097AF7CC002F8733 /* cLandscape.cc in Sources */,
 				70DCACBF097AF7CC002F8733 /* cLocalMutations.cc in Sources */,
 				70DCACC0097AF7CC002F8733 /* cMutationLib.cc in Sources */,
@@ -2162,6 +2156,7 @@
 				703D4E2E0ABCAC4A0032C8A0 /* cArgContainer.cc in Sources */,
 				109746410AE9606E00929ED6 /* cDeme.cc in Sources */,
 				70B1A6510B7E237F00067486 /* cHardwareExperimental.cc in Sources */,
+				706C70000B83F265003174C1 /* cInstSet.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2186,8 +2181,6 @@
 				70CA6EC408DB7F8200068AC2 /* cGenome.cc in Sources */,
 				70CA6EC508DB7F8200068AC2 /* cGenomeUtil.cc in Sources */,
 				70CA6ECF08DB7F8200068AC2 /* cInstruction.cc in Sources */,
-				70CA6ED008DB7F8200068AC2 /* cInstSet.cc in Sources */,
-				70CA6ED108DB7F8200068AC2 /* cInstUtil.cc in Sources */,
 				70B0865908F4974300FC65FE /* cLandscape.cc in Sources */,
 				70B0865C08F4974300FC65FE /* cLocalMutations.cc in Sources */,
 				70B0865E08F4974300FC65FE /* cMutationLib.cc in Sources */,
@@ -2274,6 +2267,7 @@
 				703D4D6E0ABA374A0032C8A0 /* cArgSchema.cc in Sources */,
 				1097463F0AE9606E00929ED6 /* cDeme.cc in Sources */,
 				70B1A6500B7E237F00067486 /* cHardwareExperimental.cc in Sources */,
+				706C6FFF0B83F265003174C1 /* cInstSet.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

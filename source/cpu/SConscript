@@ -17,7 +17,9 @@ incs = [
   'cHardwareTracer.h',
   'cHardwareTrans.h',
   'cHeadCPU.h',
+  'cInstLibBase.h',
   'cInstLibCPU.h',
+  'cInstSet.h',
   'cTestCPU.h',
   'cTestCPUInterface.h',
   'nHardware.h',
@@ -38,6 +40,7 @@ srcs = [
   'cHardwareStatusPrinter.cc',
   'cHardwareTransSMT.cc',
   'cHeadCPU.cc',
+  'cInstSet.cc',
   'cTestCPU.cc',
   'cTestCPUInterface.cc',
 ]

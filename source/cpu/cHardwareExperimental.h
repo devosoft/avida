@@ -160,6 +160,8 @@ protected:
   
   
   // --------  Label Manipulation  -------
+  const cCodeLabel& GetLabel() const { return m_threads[m_cur_thread].next_label; }
+  cCodeLabel& GetLabel() { return m_threads[m_cur_thread].next_label; }
   void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
   cHeadCPU FindLabel(int direction);
   int FindLabel_Forward(const cCodeLabel & search_label, const cGenome& search_genome, int pos);
@@ -233,11 +235,6 @@ public:
   cHeadCPU& IP() { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
   const cHeadCPU& IP(int thread) const { return m_threads[thread].heads[nHardware::HEAD_IP]; }
   cHeadCPU& IP(int thread) { return m_threads[thread].heads[nHardware::HEAD_IP]; }
-  
-  
-  // --------  Label Manipulation  -------
-  const cCodeLabel& GetLabel() const { return m_threads[m_cur_thread].next_label; }
-  cCodeLabel& GetLabel() { return m_threads[m_cur_thread].next_label; }
   
   
   // --------  Memory Manipulation  --------

@@ -29,13 +29,13 @@
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
 #include "functions.h"
+#include "cGenomeUtil.h"
 #include "cGenotype.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cHardwareStatusPrinter.h"
 #include "cInjectGenotype.h"
 #include "cInstSet.h"
-#include "cInstUtil.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
 #include "cTestCPUInterface.h"
@@ -452,7 +452,7 @@ void cTestCPU::PrintGenome(cAvidaContext& ctx, const cGenome& genome, cString fi
   df.Endl();
   
   // Display the genome
-  cInstUtil::SaveGenome(df.GetOFStream(), test_info.GetTestOrganism()->GetHardware().GetInstSet(), genome);
+  cGenomeUtil::SaveGenome(df.GetOFStream(), test_info.GetTestOrganism()->GetHardware().GetInstSet(), genome);
   
   m_world->GetDataFileManager().Remove(filename);
 }
@@ -493,7 +493,7 @@ void cTestCPU::PrintInjectGenome(cAvidaContext& ctx, cInjectGenotype* inject_gen
   fp << endl;
   
   // Display the genome
-  cInstUtil::SaveGenome(fp, test_info.GetTestOrganism()->GetHardware().GetInstSet(), genome);
+  cGenomeUtil::SaveGenome(fp, test_info.GetTestOrganism()->GetHardware().GetInstSet(), genome);
   
   m_world->GetDataFileManager().Remove(filename);
 }

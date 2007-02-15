@@ -11,8 +11,6 @@ SET(libmain_a_SOURCES
   cGenome.cc
   cGenomeUtil.cc
   cInstruction.cc
-  cInstSet.cc
-  cInstUtil.cc
   cLandscape.cc
   cLocalMutations.cc
   cMutationLib.cc

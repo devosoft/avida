@@ -28,8 +28,8 @@
 #include "cActionLibrary.h"
 #include "cCodeLabel.h"
 #include "cGenome.h"
+#include "cGenomeUtil.h"
 #include "cHardwareManager.h"
-#include "cInstUtil.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cStats.h"
@@ -78,7 +78,7 @@ public:
 
   void Process(cAvidaContext& ctx)
   {
-    cGenome genome = cInstUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
+    cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
     m_world->GetPopulation().Inject(genome, m_cell_id, m_merit, m_lineage_label, m_neutral_metric);
   }
 };
@@ -122,7 +122,7 @@ public:
 
   void Process(cAvidaContext& ctx)
   {
-    cGenome genome = cInstUtil::RandomGenome(ctx, m_length, m_world->GetHardwareManager().GetInstSet());
+    cGenome genome = cGenomeUtil::RandomGenome(ctx, m_length, m_world->GetHardwareManager().GetInstSet());
     m_world->GetPopulation().Inject(genome, m_cell_id, m_merit, m_lineage_label, m_neutral_metric);
   }
 };
@@ -166,7 +166,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cGenome genome = cInstUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
+    cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++)
       m_world->GetPopulation().Inject(genome, i, m_merit, m_lineage_label, m_neutral_metric);
   }
@@ -223,7 +223,7 @@ public:
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
       m_world->GetDriver().NotifyWarning("InjectRange has invalid range!");
     } else {
-      cGenome genome = cInstUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
+      cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().Inject(genome, i, m_merit, m_lineage_label, m_neutral_metric);
       }
@@ -330,7 +330,7 @@ public:
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
       m_world->GetDriver().NotifyWarning("InjectParasite has invalid range!");
     } else {
-      cGenome genome = cInstUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
+      cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().InjectParasite(m_label, genome, i);
       }
@@ -396,8 +396,8 @@ public:
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
       m_world->GetDriver().NotifyWarning("InjectParasitePair has invalid range!");
     } else {
-      cGenome genome = cInstUtil::LoadGenome(m_filename_genome, m_world->GetHardwareManager().GetInstSet());
-      cGenome parasite = cInstUtil::LoadGenome(m_filename_parasite, m_world->GetHardwareManager().GetInstSet());
+      cGenome genome = cGenomeUtil::LoadGenome(m_filename_genome, m_world->GetHardwareManager().GetInstSet());
+      cGenome parasite = cGenomeUtil::LoadGenome(m_filename_parasite, m_world->GetHardwareManager().GetInstSet());
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().Inject(genome, i, m_merit, m_lineage_label, m_neutral_metric);
         m_world->GetPopulation().InjectParasite(m_label, parasite, i);

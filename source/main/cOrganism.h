@@ -215,7 +215,7 @@ public:
 
   
   // --------  Parasite Interactions  --------
-  bool InjectParasite(const cGenome& genome);
+  bool InjectParasite(const cCodeLabel& label, const cGenome& genome);
   bool InjectHost(const cCodeLabel& in_label, const cGenome& genome);
   void AddParasite(cInjectGenotype* cur) { m_parasites.Push(cur); }
   cInjectGenotype& GetParasite(int x) { return *m_parasites[x]; }

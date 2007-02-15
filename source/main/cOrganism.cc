@@ -36,7 +36,6 @@
 #include "cHardwareManager.h"
 #include "cInjectGenotype.h"
 #include "cInstSet.h"
-#include "cInstUtil.h"
 #include "cOrgSinkMessage.h"
 #include "cStringUtil.h"
 #include "cTaskContext.h"
@@ -398,10 +397,10 @@ void cOrganism::NetReset()
 }
 
 
-bool cOrganism::InjectParasite(const cGenome& injected_code)
+bool cOrganism::InjectParasite(const cCodeLabel& label, const cGenome& injected_code)
 {
   assert(m_interface);
-  return m_interface->InjectParasite(this, injected_code);
+  return m_interface->InjectParasite(this, label, injected_code);
 }
 
 bool cOrganism::InjectHost(const cCodeLabel& label, const cGenome& injected_code)
