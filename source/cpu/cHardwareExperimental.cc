@@ -458,7 +458,7 @@ void cHardwareExperimental::PrintStatus(ostream& fp)
   // leave this out if there are no differences to keep it cleaner
   if ( organism->GetPhenotype().GetTimeUsed() != organism->GetPhenotype().GetCPUCyclesUsed() )
   {
-    fp << "  AgedTime:" << organism->GetPhenotype().GetTimeUsed();
+    fp << "  EnergyUsed:" << organism->GetPhenotype().GetTimeUsed();
   }
   fp << endl;
   

@@ -53,6 +53,7 @@ public:
   void Rotate(int direction = 1);
   void Breakpoint() { ; }
   int GetInputAt(int& input_pointer);
+  void ResetInputs(cAvidaContext& ctx);
   int Debug();
   const tArray<double>& GetResources();
   void UpdateResources(const tArray<double>& res_change);

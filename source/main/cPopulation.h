@@ -94,7 +94,7 @@ private:
   tList<cPopulationCell> reaper_queue; // Death order in some mass-action runs
 
   // Default organism setups...
-  cEnvironment & environment;          // Physics & Chemestry description
+  cEnvironment & environment;          // Physics & Chemistry description
 
   // Other data...
   int world_x;                         // Structured population width.
@@ -112,6 +112,7 @@ private:
   cPopulationCell& PositionChild(cPopulationCell& parent_cell, bool parent_ok = true);
   void PositionAge(cPopulationCell& parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
   void PositionMerit(cPopulationCell & parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
+  void PositionEnergyUsed(cPopulationCell & parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
   void FindEmptyCell(tList<cPopulationCell>& cell_list, tList<cPopulationCell>& found_list);
 
   // Update statistics collecting...
@@ -123,7 +124,7 @@ private:
 
   /**
    * Attention: InjectGenotype does *not* add the genotype to the archive.
-   * It assumes thats where you got the genotype from.
+   * It assumes that's where you got the genotype from.
    **/
   void InjectGenotype(int cell_id, cGenotype* genotype);
   void InjectGenome(int cell_id, const cGenome& genome, int lineage_label);

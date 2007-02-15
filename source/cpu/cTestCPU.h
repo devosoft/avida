@@ -66,6 +66,7 @@ private:
   tArray<int> receive_array;
   int cur_input;
   int cur_receive;  
+  bool m_use_random_inputs;
 
   eTestCPUResourceMethod m_res_method;
   std::vector<std::pair<int, std::vector<double> > > * m_res;
@@ -97,6 +98,8 @@ public:
 
   inline int GetInput();
   inline int GetInputAt(int & input_pointer);
+  void ResetInputs(cAvidaContext& ctx);
+
   inline int GetReceiveValue();
   inline const tArray<double>& GetResources();  
   inline void SetResource(int id, double new_level);

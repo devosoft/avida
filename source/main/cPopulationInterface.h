@@ -62,6 +62,7 @@ public:
   void Rotate(int direction = 1);
   void Breakpoint() { m_world->GetDriver().SignalBreakpoint(); }
   int GetInputAt(int& input_pointer);
+  void ResetInputs(cAvidaContext& ctx);
   int Debug();
   const tArray<double>& GetResources();
   void UpdateResources(const tArray<double>& res_change);

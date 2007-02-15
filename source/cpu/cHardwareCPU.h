@@ -397,8 +397,9 @@ private:
   bool Inst_Transposon(cAvidaContext& ctx);
   bool Inst_Repro(cAvidaContext& ctx);
   bool Inst_IORepro(cAvidaContext& ctx);
-  bool Inst_PutRepro(cAvidaContext& ctx);
-  bool Inst_PutClearRepro(cAvidaContext& ctx);
+  bool Inst_TaskPutRepro(cAvidaContext& ctx);
+  bool Inst_TaskPutClearInputRepro(cAvidaContext& ctx);
+  bool Inst_TaskPutResetInputsRepro(cAvidaContext& ctx);
 
   bool Inst_SpawnDeme(cAvidaContext& ctx);
   bool Inst_Kazi(cAvidaContext& ctx);
@@ -411,6 +412,7 @@ private:
   bool Inst_TaskStackLoad(cAvidaContext& ctx);
   bool Inst_TaskPut(cAvidaContext& ctx);
   bool Inst_TaskPutClearInput(cAvidaContext& ctx);  
+  bool Inst_TaskPutResetInputs(cAvidaContext& ctx);  
   bool Inst_TaskPutBonusCost2(cAvidaContext& ctx);  
   bool Inst_TaskPutMeritCost2(cAvidaContext& ctx); 
   bool Inst_TaskIO(cAvidaContext& ctx);

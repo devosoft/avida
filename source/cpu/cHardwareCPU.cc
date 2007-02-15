@@ -233,7 +233,8 @@ cInstLibCPU *cHardwareCPU::initInstLib(void)
     cInstEntryCPU("stk-get",   &cHardwareCPU::Inst_TaskStackGet),
     cInstEntryCPU("stk-load",  &cHardwareCPU::Inst_TaskStackLoad),
     cInstEntryCPU("put",       &cHardwareCPU::Inst_TaskPut),
-    cInstEntryCPU("put-clear", &cHardwareCPU::Inst_TaskPutClearInput),    
+    cInstEntryCPU("put-clear", &cHardwareCPU::Inst_TaskPutClearInput), 
+    cInstEntryCPU("put-reset", &cHardwareCPU::Inst_TaskPutResetInputs), 
     cInstEntryCPU("put-bcost2", &cHardwareCPU::Inst_TaskPutBonusCost2),
     cInstEntryCPU("put-mcost2", &cHardwareCPU::Inst_TaskPutMeritCost2),
     cInstEntryCPU("IO",        &cHardwareCPU::Inst_TaskIO, true,
@@ -373,8 +374,9 @@ cInstLibCPU *cHardwareCPU::initInstLib(void)
     cInstEntryCPU("repro-Z",    &cHardwareCPU::Inst_Repro),
 
     cInstEntryCPU("IO-repro",   &cHardwareCPU::Inst_IORepro),
-    cInstEntryCPU("put-repro",  &cHardwareCPU::Inst_PutRepro),
-    cInstEntryCPU("putc-repro", &cHardwareCPU::Inst_PutClearRepro),
+    cInstEntryCPU("put-repro",  &cHardwareCPU::Inst_TaskPutRepro),
+    cInstEntryCPU("putc-repro", &cHardwareCPU::Inst_TaskPutClearInputRepro),
+    cInstEntryCPU("metabolize", &cHardwareCPU::Inst_TaskPutResetInputsRepro),        
 
     cInstEntryCPU("spawn-deme", &cHardwareCPU::Inst_SpawnDeme),
     
@@ -675,7 +677,7 @@ void cHardwareCPU::PrintStatus(ostream& fp)
   // leave this out if there are no differences to keep it cleaner
   if ( organism->GetPhenotype().GetTimeUsed() != organism->GetPhenotype().GetCPUCyclesUsed() )
   {
-    fp << "  AgedTime:" << organism->GetPhenotype().GetTimeUsed();
+    fp << "  EnergyUsed:" << organism->GetPhenotype().GetTimeUsed();
   }
   fp << endl;
   
@@ -2557,7 +2559,7 @@ bool cHardwareCPU::Inst_IORepro(cAvidaContext& ctx)
   return Inst_Repro(ctx);
 }
 
-bool cHardwareCPU::Inst_PutRepro(cAvidaContext& ctx)
+bool cHardwareCPU::Inst_TaskPutRepro(cAvidaContext& ctx)
 {
   // Do normal IO
   Inst_TaskPut(ctx);
@@ -2566,7 +2568,7 @@ bool cHardwareCPU::Inst_PutRepro(cAvidaContext& ctx)
   return Inst_Repro(ctx);
 }
 
-bool cHardwareCPU::Inst_PutClearRepro(cAvidaContext& ctx)
+bool cHardwareCPU::Inst_TaskPutClearInputRepro(cAvidaContext& ctx)
 {
   // Do normal IO
   Inst_TaskPutClearInput(ctx);
@@ -2575,6 +2577,17 @@ bool cHardwareCPU::Inst_PutClearRepro(cAvidaContext& ctx)
   return Inst_Repro(ctx);
 }
 
+bool cHardwareCPU::Inst_TaskPutResetInputsRepro(cAvidaContext& ctx)
+{
+  // Do normal IO
+  bool return_value = Inst_TaskPutResetInputs(ctx);
+  
+  // Immediately attempt a repro
+  Inst_Repro(ctx);
+
+  // return value of put since successful repro would wipe state anyway
+  return return_value; 
+}
 
 bool cHardwareCPU::Inst_SpawnDeme(cAvidaContext& ctx)
 {
@@ -2764,6 +2777,13 @@ bool cHardwareCPU::Inst_TaskPutClearInput(cAvidaContext& ctx)
 {
   bool return_value = Inst_TaskPut(ctx);
   organism->ClearInput();
+  return return_value;
+}
+
+bool cHardwareCPU::Inst_TaskPutResetInputs(cAvidaContext& ctx)
+{
+  bool return_value = Inst_TaskPut(ctx);          // Do a normal put
+  organism->GetOrgInterface().ResetInputs(ctx);   // Now re-randomize the inputs this organism sees
   return return_value;
 }
 

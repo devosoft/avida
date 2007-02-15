@@ -55,6 +55,11 @@ int cTestCPUInterface::GetInputAt(int& input_pointer)
   return m_testcpu->GetInputAt(input_pointer);
 }
 
+void cTestCPUInterface::ResetInputs(cAvidaContext& ctx)
+{ 
+  m_testcpu->ResetInputs(ctx); 
+}
+
 int cTestCPUInterface::Debug()
 {
   return -1;

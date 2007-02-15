@@ -80,6 +80,11 @@ int cPopulationInterface::GetInputAt(int& input_pointer)
   return cell.GetInputAt(input_pointer);
 }
 
+void cPopulationInterface::ResetInputs(cAvidaContext& ctx) 
+{ 
+  m_world->GetPopulation().GetCell(m_cell_id).ResetInputs(ctx); 
+}
+
 int cPopulationInterface::Debug()
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);

@@ -80,6 +80,7 @@ public:
   int GetInput(int);
   int GetInputAt(int & input_pointer);
   int GetInputSize() { return input_array.GetSize(); }
+  void ResetInputs(cAvidaContext& ctx);
 
   int GetID() const { return cell_id; }
   int GetDemeID() const { return deme_id; }

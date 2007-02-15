@@ -28,6 +28,9 @@
 #include "nHardware.h"
 #include "cOrganism.h"
 #include "cTools.h"
+#include "cTools.h"
+#include "cWorld.h"
+#include "cEnvironment.h"
 
 using namespace std;
 
@@ -114,6 +117,12 @@ int cPopulationCell::GetInput(int id)
   assert(id >= 0 && id < input_array.GetSize());
   return input_array[id];
 }
+
+void cPopulationCell::ResetInputs(cAvidaContext& ctx) 
+{ 
+  m_world->GetEnvironment().SetupInputs(ctx, input_array); 
+}
+
 
 void cPopulationCell::InsertOrganism(cOrganism & new_org)
 {
