@@ -29,42 +29,38 @@
 #include "cHardwareSMT.h"
 #include "cHardwareTransSMT.h"
 #include "cInitFile.h"
-#include "cInstLibCPU.h"
 #include "cInstSet.h"
 #include "cWorld.h"
 #include "cWorldDriver.h"
 #include "tDictionary.h"
 
 cHardwareManager::cHardwareManager(cWorld* world)
-: m_world(world), m_inst_set(world), m_type(world->GetConfig().HARDWARE_TYPE.Get()) /*, m_testres(world) */
+: m_world(world), m_type(world->GetConfig().HARDWARE_TYPE.Get()) /*, m_testres(world) */
 {
-  LoadInstSet(world->GetConfig().INST_SET.Get());
-}
+  cString filename = world->GetConfig().INST_SET.Get();
 
-void cHardwareManager::LoadInstSet(cString filename)
-{
   // Setup the instruction library and collect the default filename
   cString default_filename;
 	switch (m_type)
 	{
 		case HARDWARE_TYPE_CPU_ORIGINAL:
-      m_inst_set.SetInstLib(cHardwareCPU::GetInstLib());
+      m_inst_set = new cInstSet(world, cHardwareCPU::GetInstLib());
 			default_filename = cHardwareCPU::GetDefaultInstFilename();
 			break;
 		case HARDWARE_TYPE_CPU_SMT:
-      m_inst_set.SetInstLib(cHardwareSMT::GetInstLib());
+      m_inst_set = new cInstSet(world, cHardwareSMT::GetInstLib());
 			default_filename = cHardwareSMT::GetDefaultInstFilename();
 			break;
 		case HARDWARE_TYPE_CPU_TRANSSMT:
-      m_inst_set.SetInstLib(cHardwareTransSMT::GetInstLib());
+      m_inst_set = new cInstSet(world, cHardwareTransSMT::GetInstLib());
 			default_filename = cHardwareTransSMT::GetDefaultInstFilename();
 			break;
 		case HARDWARE_TYPE_CPU_EXPERIMENTAL:
-      m_inst_set.SetInstLib(cHardwareExperimental::GetInstLib());
+      m_inst_set = new cInstSet(world, cHardwareExperimental::GetInstLib());
 			default_filename = cHardwareExperimental::GetDefaultInstFilename();
 			break;
 		default:
-			default_filename = "unknown";
+      m_world->GetDriver().RaiseFatalException(1, "Unknown/Unsupported HARDWARE_TYPE specified");
   }
   
   if (filename == "" || filename == "-") {
@@ -82,12 +78,12 @@ void cHardwareManager::LoadInstSet(cString filename)
   file.Compress();
   
   tDictionary<int> nop_dict;
-  for(int i = 0; i < m_inst_set.GetInstLib()->GetNumNops(); i++)
-    nop_dict.Add(m_inst_set.GetInstLib()->GetNopName(i), i);
+  for(int i = 0; i < m_inst_set->GetInstLib()->GetNumNops(); i++)
+    nop_dict.Add(m_inst_set->GetInstLib()->GetNopName(i), i);
   
   tDictionary<int> inst_dict;
-  for(int i = 0; i < m_inst_set.GetInstLib()->GetSize(); i++)
-    inst_dict.Add(m_inst_set.GetInstLib()->GetName(i), i);
+  for(int i = 0; i < m_inst_set->GetInstLib()->GetSize(); i++)
+    inst_dict.Add(m_inst_set->GetInstLib()->GetName(i), i);
   
   for (int line_id = 0; line_id < file.GetNumLines(); line_id++) {
     cString cur_line = file.GetLine(line_id);
@@ -111,14 +107,14 @@ void cHardwareManager::LoadInstSet(cString filename)
     // First, determine if it is a nop...
     int nop_mod = -1;
     if(nop_dict.Find(inst_name, nop_mod) == true) {
-      m_inst_set.AddNop(nop_mod, redundancy, ft_cost, cost, prob_fail, addl_time_cost);
+      m_inst_set->AddNop(nop_mod, redundancy, ft_cost, cost, prob_fail, addl_time_cost);
       continue;
     }
     
     // Otherwise, it had better be in the main dictionary...
     int fun_id = -1;
     if(inst_dict.Find(inst_name, fun_id) == true){
-      m_inst_set.AddInst(fun_id, redundancy, ft_cost, cost, prob_fail, addl_time_cost);
+      m_inst_set->AddInst(fun_id, redundancy, ft_cost, cost, prob_fail, addl_time_cost);
       continue;
     }
     
@@ -135,13 +131,13 @@ cHardwareBase* cHardwareManager::Create(cOrganism* in_org)
   switch (m_type)
   {
     case HARDWARE_TYPE_CPU_ORIGINAL:
-      return new cHardwareCPU(m_world, in_org, &m_inst_set);
+      return new cHardwareCPU(m_world, in_org, m_inst_set);
     case HARDWARE_TYPE_CPU_SMT:
-      return new cHardwareSMT(m_world, in_org, &m_inst_set);
+      return new cHardwareSMT(m_world, in_org, m_inst_set);
     case HARDWARE_TYPE_CPU_TRANSSMT:
-      return new cHardwareTransSMT(m_world, in_org, &m_inst_set);
+      return new cHardwareTransSMT(m_world, in_org, m_inst_set);
     case HARDWARE_TYPE_CPU_EXPERIMENTAL:
-      return new cHardwareExperimental(m_world, in_org, &m_inst_set);
+      return new cHardwareExperimental(m_world, in_org, m_inst_set);
     default:
       return NULL;
   }

@@ -32,12 +32,6 @@
 using namespace std;
 
 
-// Initialize static variables
-const cInstruction cInstSet::inst_default(0);
-cInstruction cInstSet::inst_default2(0);
-cInstruction cInstSet::inst_error2(255);
-
-
 bool cInstSet::OK() const
 {
   assert(m_lib_name_map.GetSize() < 256);

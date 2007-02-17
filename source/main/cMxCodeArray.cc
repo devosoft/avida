@@ -200,11 +200,8 @@ void cMxCodeArray::Reset()
  **/
 void cMxCodeArray::Clear()
 {
-  int i;
-  for (i = 0; i < size; i++)
-    {
-      data[i] = cInstSet::GetInstDefault();
-    }
+  cInstruction def = m_world->GetHardwareManager().GetInstSet().GetInstDefault();
+  for (int i = 0; i < size; i++) data[i] = def;
 }
 
 /**

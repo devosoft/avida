@@ -27,12 +27,14 @@
 
 #include "cDataFile.h"
 #include "cEnvironment.h"
-#include "functions.h"
+#include "cHardwareManager.h"
+#include "cInstSet.h"
 #include "cStringUtil.h"
-#include "tDataEntry.h"
 #include "cWorld.h"
 #include "cWorldDriver.h"
-#include "cHardwareManager.h"
+#include "tDataEntry.h"
+
+#include "functions.h"
 
 #include <float.h>
 #include <math.h>

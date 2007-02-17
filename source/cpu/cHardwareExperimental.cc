@@ -33,7 +33,6 @@
 #include "cGenotype.h"
 #include "cHardwareManager.h"
 #include "cHardwareTracer.h"
-#include "cInstLibCPU.h"
 #include "cInstSet.h"
 #include "cMutation.h"
 #include "cMutationLib.h"

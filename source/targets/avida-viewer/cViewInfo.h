@@ -64,7 +64,6 @@ private:
 
   // Instruction Libraries.
   cInstSet const * saved_inst_set;
-  cInstSet alt_inst_set;
 
   // Symbol information
   cGenotype * genotype_chart[NUM_SYMBOLS];

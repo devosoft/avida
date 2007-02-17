@@ -27,6 +27,7 @@
 
 #include "cEnvironment.h"
 #include "cHardwareManager.h"
+#include "cInstSet.h"
 #include "cReactionResult.h"
 #include "cTaskState.h"
 #include "cTools.h"

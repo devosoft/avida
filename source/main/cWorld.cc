@@ -30,6 +30,7 @@
 #include "cEnvironment.h"
 #include "cEventList.h"
 #include "cHardwareManager.h"
+#include "cInstSet.h"
 #include "cPopulation.h"
 #include "cStats.h"
 #include "cTestCPU.h"

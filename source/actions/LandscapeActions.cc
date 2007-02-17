@@ -33,6 +33,7 @@
 #include "cGenotype.h"
 #include "cGenotypeBatch.h"
 #include "cHardwareManager.h"
+#include "cInstSet.h"
 #include "cLandscape.h"
 #include "cMutationalNeighborhood.h"
 #include "cMutationalNeighborhoodResults.h"

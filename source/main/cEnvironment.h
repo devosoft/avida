@@ -26,9 +26,6 @@
 #ifndef cEnvironment_h
 #define cEnvironment_h
 
-#ifndef cInstSet_h
-#include "cInstSet.h"
-#endif
 #ifndef cMutationLib_h
 #include "cMutationLib.h"
 #endif
@@ -83,7 +80,6 @@ private:
   cReactionLib reaction_lib;
   cMutationLib mutation_lib;
   cTaskLib m_tasklib;
-  cInstSet inst_set;
   cMutationRates mut_rates;
 
   int m_input_size;
@@ -155,13 +151,9 @@ public:
   bool SetReactionInst(const cString& name, cString inst_name);
 };
 
-inline cEnvironment::cEnvironment(cWorld* world)
-  : m_world(world)
-  , m_tasklib(world)
-  , inst_set(world)
-  , m_input_size(INPUT_SIZE_DEFAULT)
-  , m_output_size(OUTPUT_SIZE_DEFAULT)
-  , m_true_rand(false)
+
+inline cEnvironment::cEnvironment(cWorld* world) : m_world(world) , m_tasklib(world),
+  m_input_size(INPUT_SIZE_DEFAULT), m_output_size(OUTPUT_SIZE_DEFAULT), m_true_rand(false)
 {
   mut_rates.Setup(world);
 }

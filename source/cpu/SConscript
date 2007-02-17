@@ -18,7 +18,6 @@ incs = [
   'cHardwareTrans.h',
   'cHeadCPU.h',
   'cInstLibBase.h',
-  'cInstLibCPU.h',
   'cInstSet.h',
   'cTestCPU.h',
   'cTestCPUInterface.h',

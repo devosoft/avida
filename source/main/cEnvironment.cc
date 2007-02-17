@@ -29,6 +29,7 @@
 #include "cEnvReqs.h"
 #include "cHardwareManager.h"
 #include "cInitFile.h"
+#include "cInstSet.h"
 #include "nMutation.h"
 #include "cRandom.h"
 #include "cReaction.h"

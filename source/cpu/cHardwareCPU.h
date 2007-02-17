@@ -29,14 +29,8 @@
 #include <iomanip>
 #include <vector>
 
-#ifndef defs_h
-#include "defs.h"
-#endif
 #ifndef cCodeLabel_h
 #include "cCodeLabel.h"
-#endif
-#ifndef nHardware_h
-#include "nHardware.h"
 #endif
 #ifndef cHeadCPU_h
 #include "cHeadCPU.h"
@@ -53,11 +47,21 @@
 #ifndef cString_h
 #include "cString.h"
 #endif
+#ifndef cStats_h
+#include "cStats.h"
+#endif
 #ifndef tArray_h
 #include "tArray.h"
 #endif
-#ifndef cStats_h
-#include "cStats.h"
+#ifndef tInstLib_h
+#include "tInstLib.h"
+#endif
+
+#ifndef defs_h
+#include "defs.h"
+#endif
+#ifndef nHardware_h
+#include "nHardware.h"
 #endif
 
 /**
@@ -69,15 +73,15 @@
 
 class cInjectGenotype;
 class cInstLibBase;
-class cInstLibCPU;
 class cInstSet;
 class cMutation;
 class cOrganism;
 
+
 class cHardwareCPU : public cHardwareBase
 {
 public:
-  typedef bool (cHardwareCPU::*tHardwareCPUMethod)(cAvidaContext& ctx);
+  typedef bool (cHardwareCPU::*tMethod)(cAvidaContext& ctx);
 
 protected:
   // --------  Structure Constants  --------
@@ -115,12 +119,12 @@ protected:
 
     
   // --------  Static Variables  --------
-  static cInstLibCPU* s_inst_slib;
-  static cInstLibCPU* initInstLib(void);
+  static tInstLib<tMethod>* s_inst_slib;
+  static tInstLib<tMethod>* initInstLib(void);
 
 
   // --------  Member Variables  --------
-  tHardwareCPUMethod* m_functions;
+  tMethod* m_functions;
 
   cCPUMemory m_memory;          // Memory...
   cCPUStack m_global_stack;     // A stack that all threads share.
@@ -209,7 +213,7 @@ public:
   cHardwareCPU(cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
   explicit cHardwareCPU(const cHardwareCPU&);
   ~cHardwareCPU() { ; }
-  static cInstLibCPU* GetInstLib() { return s_inst_slib; }
+  static tInstLib<tMethod>* GetInstLib() { return s_inst_slib; }
   static cString GetDefaultInstFilename() { return "instset-classic.cfg"; }
 
   void Reset();

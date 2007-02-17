@@ -58,7 +58,7 @@ class cInstSet
 {
 public:
   cWorld* m_world;
-  cInstLibBase *m_inst_lib;
+  cInstLibBase* m_inst_lib;
   class cInstEntry {
   public:
     int lib_fun_id;
@@ -73,15 +73,14 @@ public:
   tArray<int> m_mutation_chart;     // ID's represented by redundancy values.
 
   // Static components...
-  static cInstruction inst_error2;
-  static cInstruction inst_default2;
-  static const cInstruction inst_default;
-  
+  cInstruction m_inst_error;
+  cInstruction m_inst_default;
   
   cInstSet(); // @not_implemented
 
 public:
-  inline cInstSet(cWorld* world) : m_world(world) { ; }
+  inline cInstSet(cWorld* world, cInstLibBase* inst_lib) : m_world(world), m_inst_lib(inst_lib),
+    m_inst_error(inst_lib->GetInstError()), m_inst_default(inst_lib->GetInstDefault()) { ; }
   inline cInstSet(const cInstSet& is);
   inline ~cInstSet() { ; }
 
@@ -120,20 +119,13 @@ public:
 
   // accessors for instruction library
   cInstLibBase* GetInstLib() { return m_inst_lib; }
-  void SetInstLib(cInstLibBase* inst_lib)
-  {
-    m_inst_lib = inst_lib;
-    inst_error2 = inst_lib->GetInstError();
-    inst_default2 = inst_lib->GetInstDefault();
-  }
 
   inline cInstruction GetInst(const cString& in_name) const;
   cString FindBestMatch(const cString& in_name) const;
   bool InstInSet(const cString& in_name) const;
 
-  // Static methods..
-  static const cInstruction& GetInstDefault() { return inst_default2; }
-  static const cInstruction & GetInstError() { return inst_error2; }
+  const cInstruction& GetInstDefault() const { return m_inst_default; }
+  const cInstruction& GetInstError() const { return m_inst_error; }
 };
 
 

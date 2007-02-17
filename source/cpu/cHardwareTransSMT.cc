@@ -36,6 +36,7 @@
 #include "cRandom.h"
 #include "cTestCPU.h"
 #include "cWorld.h"
+#include "tInstLibEntry.h"
 
 #include "functions.h"
 #include "nMutation.h"
@@ -60,61 +61,56 @@ tInstLib<cHardwareTransSMT::tMethod>* cHardwareTransSMT::initInstLib(void)
     cNOPEntry("Nop-D", STACK_DX),
   };
 	
-  struct cInstEntry {
-    cInstEntry(const cString &name, tMethod function):name(name), function(function){}
-    cString name;
-    tMethod function;
-  };
-  static const cInstEntry s_f_array[] = {
-    cInstEntry("Nop-A", &cHardwareTransSMT::Inst_Nop), // 1
-    cInstEntry("Nop-B", &cHardwareTransSMT::Inst_Nop), // 2
-    cInstEntry("Nop-C", &cHardwareTransSMT::Inst_Nop), // 3
-    cInstEntry("Nop-D", &cHardwareTransSMT::Inst_Nop), // 4
-    cInstEntry("Nop-X", &cHardwareTransSMT::Inst_Nop), // 5
-    cInstEntry("Val-Shift-R", &cHardwareTransSMT::Inst_ShiftR), // 6
-    cInstEntry("Val-Shift-L", &cHardwareTransSMT::Inst_ShiftL), // 7
-    cInstEntry("Val-Nand", &cHardwareTransSMT::Inst_Val_Nand), // 8
-    cInstEntry("Val-Add", &cHardwareTransSMT::Inst_Val_Add), // 9
-    cInstEntry("Val-Sub", &cHardwareTransSMT::Inst_Val_Sub), // 10
-    cInstEntry("Val-Mult", &cHardwareTransSMT::Inst_Val_Mult), // 11
-    cInstEntry("Val-Div", &cHardwareTransSMT::Inst_Val_Div), // 12
-    cInstEntry("Val-Mod", &cHardwareTransSMT::Inst_Val_Mod), // 13
-    cInstEntry("Val-Inc", &cHardwareTransSMT::Inst_Val_Inc), // 14
-    cInstEntry("Val-Dec", &cHardwareTransSMT::Inst_Val_Dec), // 15
-    cInstEntry("SetMemory", &cHardwareTransSMT::Inst_SetMemory), // 16
-    cInstEntry("Divide", &cHardwareTransSMT::Inst_Divide), // 17
-    cInstEntry("Inst-Read", &cHardwareTransSMT::Inst_HeadRead), // 18
-    cInstEntry("Inst-Write", &cHardwareTransSMT::Inst_HeadWrite), // 19
-    cInstEntry("If-Equal", &cHardwareTransSMT::Inst_IfEqual), // 20
-    cInstEntry("If-Not-Equal", &cHardwareTransSMT::Inst_IfNotEqual), // 21
-    cInstEntry("If-Less", &cHardwareTransSMT::Inst_IfLess), // 22
-    cInstEntry("If-Greater", &cHardwareTransSMT::Inst_IfGreater), // 23
-    cInstEntry("Head-Push", &cHardwareTransSMT::Inst_HeadPush), // 24
-    cInstEntry("Head-Pop", &cHardwareTransSMT::Inst_HeadPop), // 25
-    cInstEntry("Head-Move", &cHardwareTransSMT::Inst_HeadMove), // 26
-    cInstEntry("Search", &cHardwareTransSMT::Inst_Search), // 27
-    cInstEntry("Push-Next", &cHardwareTransSMT::Inst_PushNext), // 28
-    cInstEntry("Push-Prev", &cHardwareTransSMT::Inst_PushPrevious), // 29
-    cInstEntry("Push-Comp", &cHardwareTransSMT::Inst_PushComplement), // 30
-    cInstEntry("Val-Delete", &cHardwareTransSMT::Inst_ValDelete), // 31
-    cInstEntry("Val-Copy", &cHardwareTransSMT::Inst_ValCopy), // 32
-    cInstEntry("IO", &cHardwareTransSMT::Inst_IO), // 33
-    cInstEntry("Thread-Create", &cHardwareTransSMT::Inst_ThreadCreate), // 34
-    cInstEntry("Thread-Cancel", &cHardwareTransSMT::Inst_ThreadCancel), // 35
-    cInstEntry("Thread-Kill", &cHardwareTransSMT::Inst_ThreadKill), // 36
-    cInstEntry("Inject", &cHardwareTransSMT::Inst_Inject), // 37
-    cInstEntry("Apoptosis", &cHardwareTransSMT::Inst_Apoptosis), // 38
-    cInstEntry("Net-Get", &cHardwareTransSMT::Inst_NetGet), // 39
-    cInstEntry("Net-Send", &cHardwareTransSMT::Inst_NetSend), // 40
-    cInstEntry("Net-Receive", &cHardwareTransSMT::Inst_NetReceive), // 41
-    cInstEntry("Net-Last", &cHardwareTransSMT::Inst_NetLast), // 42
-    cInstEntry("Rotate-Left", &cHardwareTransSMT::Inst_RotateLeft), // 43
-    cInstEntry("Rotate-Right", &cHardwareTransSMT::Inst_RotateRight), // 44
-    cInstEntry("Call-Flow", &cHardwareTransSMT::Inst_CallFlow), // 44
-    cInstEntry("Call-Label", &cHardwareTransSMT::Inst_CallLabel), // 44
-    cInstEntry("Return", &cHardwareTransSMT::Inst_Return), // 44
+  static const tInstLibEntry<tMethod> s_f_array[] = {
+    tInstLibEntry<tMethod>("Nop-A", &cHardwareTransSMT::Inst_Nop), // 1
+    tInstLibEntry<tMethod>("Nop-B", &cHardwareTransSMT::Inst_Nop), // 2
+    tInstLibEntry<tMethod>("Nop-C", &cHardwareTransSMT::Inst_Nop), // 3
+    tInstLibEntry<tMethod>("Nop-D", &cHardwareTransSMT::Inst_Nop), // 4
+    tInstLibEntry<tMethod>("Nop-X", &cHardwareTransSMT::Inst_Nop), // 5
+    tInstLibEntry<tMethod>("Val-Shift-R", &cHardwareTransSMT::Inst_ShiftR), // 6
+    tInstLibEntry<tMethod>("Val-Shift-L", &cHardwareTransSMT::Inst_ShiftL), // 7
+    tInstLibEntry<tMethod>("Val-Nand", &cHardwareTransSMT::Inst_Val_Nand), // 8
+    tInstLibEntry<tMethod>("Val-Add", &cHardwareTransSMT::Inst_Val_Add), // 9
+    tInstLibEntry<tMethod>("Val-Sub", &cHardwareTransSMT::Inst_Val_Sub), // 10
+    tInstLibEntry<tMethod>("Val-Mult", &cHardwareTransSMT::Inst_Val_Mult), // 11
+    tInstLibEntry<tMethod>("Val-Div", &cHardwareTransSMT::Inst_Val_Div), // 12
+    tInstLibEntry<tMethod>("Val-Mod", &cHardwareTransSMT::Inst_Val_Mod), // 13
+    tInstLibEntry<tMethod>("Val-Inc", &cHardwareTransSMT::Inst_Val_Inc), // 14
+    tInstLibEntry<tMethod>("Val-Dec", &cHardwareTransSMT::Inst_Val_Dec), // 15
+    tInstLibEntry<tMethod>("SetMemory", &cHardwareTransSMT::Inst_SetMemory), // 16
+    tInstLibEntry<tMethod>("Divide", &cHardwareTransSMT::Inst_Divide), // 17
+    tInstLibEntry<tMethod>("Inst-Read", &cHardwareTransSMT::Inst_HeadRead), // 18
+    tInstLibEntry<tMethod>("Inst-Write", &cHardwareTransSMT::Inst_HeadWrite), // 19
+    tInstLibEntry<tMethod>("If-Equal", &cHardwareTransSMT::Inst_IfEqual), // 20
+    tInstLibEntry<tMethod>("If-Not-Equal", &cHardwareTransSMT::Inst_IfNotEqual), // 21
+    tInstLibEntry<tMethod>("If-Less", &cHardwareTransSMT::Inst_IfLess), // 22
+    tInstLibEntry<tMethod>("If-Greater", &cHardwareTransSMT::Inst_IfGreater), // 23
+    tInstLibEntry<tMethod>("Head-Push", &cHardwareTransSMT::Inst_HeadPush), // 24
+    tInstLibEntry<tMethod>("Head-Pop", &cHardwareTransSMT::Inst_HeadPop), // 25
+    tInstLibEntry<tMethod>("Head-Move", &cHardwareTransSMT::Inst_HeadMove), // 26
+    tInstLibEntry<tMethod>("Search", &cHardwareTransSMT::Inst_Search), // 27
+    tInstLibEntry<tMethod>("Push-Next", &cHardwareTransSMT::Inst_PushNext), // 28
+    tInstLibEntry<tMethod>("Push-Prev", &cHardwareTransSMT::Inst_PushPrevious), // 29
+    tInstLibEntry<tMethod>("Push-Comp", &cHardwareTransSMT::Inst_PushComplement), // 30
+    tInstLibEntry<tMethod>("Val-Delete", &cHardwareTransSMT::Inst_ValDelete), // 31
+    tInstLibEntry<tMethod>("Val-Copy", &cHardwareTransSMT::Inst_ValCopy), // 32
+    tInstLibEntry<tMethod>("IO", &cHardwareTransSMT::Inst_IO), // 33
+    tInstLibEntry<tMethod>("Thread-Create", &cHardwareTransSMT::Inst_ThreadCreate), // 34
+    tInstLibEntry<tMethod>("Thread-Cancel", &cHardwareTransSMT::Inst_ThreadCancel), // 35
+    tInstLibEntry<tMethod>("Thread-Kill", &cHardwareTransSMT::Inst_ThreadKill), // 36
+    tInstLibEntry<tMethod>("Inject", &cHardwareTransSMT::Inst_Inject), // 37
+    tInstLibEntry<tMethod>("Apoptosis", &cHardwareTransSMT::Inst_Apoptosis), // 38
+    tInstLibEntry<tMethod>("Net-Get", &cHardwareTransSMT::Inst_NetGet), // 39
+    tInstLibEntry<tMethod>("Net-Send", &cHardwareTransSMT::Inst_NetSend), // 40
+    tInstLibEntry<tMethod>("Net-Receive", &cHardwareTransSMT::Inst_NetReceive), // 41
+    tInstLibEntry<tMethod>("Net-Last", &cHardwareTransSMT::Inst_NetLast), // 42
+    tInstLibEntry<tMethod>("Rotate-Left", &cHardwareTransSMT::Inst_RotateLeft), // 43
+    tInstLibEntry<tMethod>("Rotate-Right", &cHardwareTransSMT::Inst_RotateRight), // 44
+    tInstLibEntry<tMethod>("Call-Flow", &cHardwareTransSMT::Inst_CallFlow), // 44
+    tInstLibEntry<tMethod>("Call-Label", &cHardwareTransSMT::Inst_CallLabel), // 44
+    tInstLibEntry<tMethod>("Return", &cHardwareTransSMT::Inst_Return), // 44
     
-    cInstEntry("NULL", &cHardwareTransSMT::Inst_Nop) // Last Instruction Always NULL
+    tInstLibEntry<tMethod>("NULL", &cHardwareTransSMT::Inst_Nop) // Last Instruction Always NULL
   };
 	
   const int n_size = sizeof(s_n_array)/sizeof(cNOPEntry);
@@ -126,7 +122,7 @@ tInstLib<cHardwareTransSMT::tMethod>* cHardwareTransSMT::initInstLib(void)
     nop_mods[i] = s_n_array[i].nop_mod;
   }
 	
-  const int f_size = sizeof(s_f_array)/sizeof(cInstEntry);
+  const int f_size = sizeof(s_f_array)/sizeof(tInstLibEntry<tMethod>);
   static cString f_names[f_size];
   static tMethod functions[f_size];
   for (int i = 0; i < f_size; i++){

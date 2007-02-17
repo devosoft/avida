@@ -262,7 +262,7 @@ bool cGenomeUtil::LoadGenome(const cString& filename, const cInstSet& inst_set, 
     cString cur_line = input_file.GetLine(line_num);
     new_genome[line_num] = inst_set.GetInst(cur_line);
     
-    if (new_genome[line_num] == cInstSet::GetInstError()) {
+    if (new_genome[line_num] == inst_set.GetInstError()) {
       // You're using the wrong instruction set!  YOU FOOL!
       if (success) {
         cerr << "Error: Cannot load organism '" << filename << "'" << endl;
@@ -294,7 +294,7 @@ cGenome cGenomeUtil::LoadInternalGenome(istream& fp, const cInstSet& inst_set)
     fp >> cur_line;
     new_genome[line_num] = inst_set.GetInst(cur_line);
     
-    if (new_genome[line_num] == cInstSet::GetInstError()) {
+    if (new_genome[line_num] == inst_set.GetInstError()) {
       // You're using the wrong instruction set!  YOU FOOL!
       cerr << "Cannot load creature from stream:" << endl
       << "       Unknown line: " << cur_line << endl;

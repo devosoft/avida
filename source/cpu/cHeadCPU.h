@@ -162,7 +162,7 @@ inline bool cHeadCPU::operator==(const cHeadCPU& in_cpu_head) const
 
 inline const cInstruction& cHeadCPU::GetNextInst() const
 {
-  return (AtEnd()) ? cInstSet::GetInstError() : GetMemory()[m_position + 1];
+  return (AtEnd()) ? m_hardware->GetInstSet().GetInstError() : GetMemory()[m_position + 1];
 }
 
 
