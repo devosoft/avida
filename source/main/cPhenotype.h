@@ -274,6 +274,7 @@ public:
   ////////////////////  Accessors -- Modifying  ///////////////////
   void SetMerit(const cMerit& in_merit) { merit = in_merit; }
   void SetGestationTime(int in_time) { gestation_time = in_time; }
+  void SetTimeUsed(int in_time) { time_used = in_time; }
   void SetFault(const cString& in_fault) { fault_desc = in_fault; }
   void SetNeutralMetric(double _in){ neutral_metric = _in; }
   void SetLifeFitness(double _in){ life_fitness = _in; }

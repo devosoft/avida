@@ -188,7 +188,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("stk-load", &cHardwareCPU::Inst_TaskStackLoad),
     tInstLibEntry<tMethod>("put", &cHardwareCPU::Inst_TaskPut),
     tInstLibEntry<tMethod>("put-clear", &cHardwareCPU::Inst_TaskPutClearInput), 
-    tInstLibEntry<tMethod>("put-reset", &cHardwareCPU::Inst_TaskPutResetInputs), 
+    tInstLibEntry<tMethod>("put-reset", &cHardwareCPU::Inst_TaskPutResetInputs),
     tInstLibEntry<tMethod>("put-bcost2", &cHardwareCPU::Inst_TaskPutBonusCost2),
     tInstLibEntry<tMethod>("put-mcost2", &cHardwareCPU::Inst_TaskPutMeritCost2),
     tInstLibEntry<tMethod>("IO", &cHardwareCPU::Inst_TaskIO, nInstFlag::DEFAULT, "Output ?BX?, and input new number back into ?BX?"),
@@ -212,6 +212,9 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     
     tInstLibEntry<tMethod>("set-cmut", &cHardwareCPU::Inst_SetCopyMut),
     tInstLibEntry<tMethod>("mod-cmut", &cHardwareCPU::Inst_ModCopyMut),
+
+    // Energy instruction
+    tInstLibEntry<tMethod>("recover", &cHardwareCPU::Inst_ZeroEnergyUsed),
     
     // Threading instructions
     tInstLibEntry<tMethod>("fork-th", &cHardwareCPU::Inst_ForkThread),
@@ -2720,6 +2723,8 @@ bool cHardwareCPU::Inst_TaskPutResetInputs(cAvidaContext& ctx)
 {
   bool return_value = Inst_TaskPut(ctx);          // Do a normal put
   organism->GetOrgInterface().ResetInputs(ctx);   // Now re-randomize the inputs this organism sees
+  organism->ClearInput();                         // Also clear their input buffers, or they can still claim
+                                                  // rewards for numbers no longer in their environment!
   return return_value;
 }
 
@@ -3219,6 +3224,14 @@ bool cHardwareCPU::Inst_ModCopyMut(cAvidaContext& ctx)
   return true;
 }
 
+// Energy use
+
+bool cHardwareCPU::Inst_ZeroEnergyUsed(cAvidaContext& ctx)
+{
+  // Typically, this instruction should be triggered by a REACTION
+  organism->GetPhenotype().SetTimeUsed(0); 
+  return true;  
+}
 
 // Multi-threading.
 

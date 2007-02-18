@@ -413,7 +413,7 @@ private:
   bool Inst_TaskStackLoad(cAvidaContext& ctx);
   bool Inst_TaskPut(cAvidaContext& ctx);
   bool Inst_TaskPutClearInput(cAvidaContext& ctx);  
-  bool Inst_TaskPutResetInputs(cAvidaContext& ctx);  
+  bool Inst_TaskPutResetInputs(cAvidaContext& ctx);
   bool Inst_TaskPutBonusCost2(cAvidaContext& ctx);  
   bool Inst_TaskPutMeritCost2(cAvidaContext& ctx); 
   bool Inst_TaskIO(cAvidaContext& ctx);
@@ -444,6 +444,10 @@ private:
   bool Inst_RotateR(cAvidaContext& ctx);
   bool Inst_SetCopyMut(cAvidaContext& ctx);
   bool Inst_ModCopyMut(cAvidaContext& ctx);
+
+  // Energy use
+  
+  bool Inst_ZeroEnergyUsed(cAvidaContext& ctx); 
 
   // Multi-threading...
 

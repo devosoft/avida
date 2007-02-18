@@ -83,15 +83,14 @@ void cWorld::Setup()
   
   m_class_mgr = new cClassificationManager(this);
   m_env = new cEnvironment(this);
+  m_hw_mgr = new cHardwareManager(this);
   
   // Initialize the default environment...
+  // This must be after the HardwareManager in case REACTIONS that trigger instructions are used.
   if (!m_env->Load(m_conf->ENVIRONMENT_FILE.Get())) {
     cerr << "Error: Unable to load environment" << endl;
     ExitAvida(-1);
   }
-  
-  m_hw_mgr = new cHardwareManager(this);
-  
   
   // Setup Stats Object
   m_stats = new cStats(this);
