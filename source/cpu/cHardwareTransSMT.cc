@@ -26,7 +26,7 @@
 
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
-#include "cInstLibBase.h"
+#include "cInstLib.h"
 #include "cInstSet.h"
 #include "cHardwareTracer.h"
 #include "cMutation.h"
@@ -62,10 +62,10 @@ tInstLib<cHardwareTransSMT::tMethod>* cHardwareTransSMT::initInstLib(void)
   };
 	
   static const tInstLibEntry<tMethod> s_f_array[] = {
-    tInstLibEntry<tMethod>("Nop-A", &cHardwareTransSMT::Inst_Nop), // 1
-    tInstLibEntry<tMethod>("Nop-B", &cHardwareTransSMT::Inst_Nop), // 2
-    tInstLibEntry<tMethod>("Nop-C", &cHardwareTransSMT::Inst_Nop), // 3
-    tInstLibEntry<tMethod>("Nop-D", &cHardwareTransSMT::Inst_Nop), // 4
+    tInstLibEntry<tMethod>("Nop-A", &cHardwareTransSMT::Inst_Nop, nInstFlag::NOP), // 1
+    tInstLibEntry<tMethod>("Nop-B", &cHardwareTransSMT::Inst_Nop, nInstFlag::NOP), // 2
+    tInstLibEntry<tMethod>("Nop-C", &cHardwareTransSMT::Inst_Nop, nInstFlag::NOP), // 3
+    tInstLibEntry<tMethod>("Nop-D", &cHardwareTransSMT::Inst_Nop, nInstFlag::NOP), // 4
     tInstLibEntry<tMethod>("Nop-X", &cHardwareTransSMT::Inst_Nop), // 5
     tInstLibEntry<tMethod>("Val-Shift-R", &cHardwareTransSMT::Inst_ShiftR), // 6
     tInstLibEntry<tMethod>("Val-Shift-L", &cHardwareTransSMT::Inst_ShiftL), // 7
@@ -123,20 +123,13 @@ tInstLib<cHardwareTransSMT::tMethod>* cHardwareTransSMT::initInstLib(void)
   }
 	
   const int f_size = sizeof(s_f_array)/sizeof(tInstLibEntry<tMethod>);
-  static cString f_names[f_size];
   static tMethod functions[f_size];
-  for (int i = 0; i < f_size; i++){
-    f_names[i] = s_f_array[i].name;
-    functions[i] = s_f_array[i].function;
-  }
+  for (int i = 0; i < f_size; i++) functions[i] = s_f_array[i].GetFunction();
 	
 	const cInstruction error(255);
 	const cInstruction def(0);
 	
-  tInstLib<cHardwareTransSMT::tMethod>* inst_lib =
-    new tInstLib<cHardwareTransSMT::tMethod>(n_size, f_size, n_names, f_names, nop_mods, functions, error, def);
-	
-  return inst_lib;
+  return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, error, def);
 }
 
 cHardwareTransSMT::cHardwareTransSMT(cWorld* world, cOrganism* in_organism, cInstSet* in_m_inst_set)

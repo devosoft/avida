@@ -76,12 +76,12 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
      in the same order in tInstLibEntry<tMethod> s_f_array, and these entries must
      be the first elements of s_f_array.
      */
-    tInstLibEntry<tMethod>("nop-A", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT & nInstFlag::NOP), "No-operation instruction; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-B", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT & nInstFlag::NOP), "No-operation instruction; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-C", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT & nInstFlag::NOP), "No-operation instruction; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-D", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT & nInstFlag::NOP), "No-operation instruction; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-E", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT & nInstFlag::NOP), "No-operation instruction; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-F", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT & nInstFlag::NOP), "No-operation instruction; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-A", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT | nInstFlag::NOP), "No-operation instruction; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-B", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT | nInstFlag::NOP), "No-operation instruction; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-C", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT | nInstFlag::NOP), "No-operation instruction; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-D", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT | nInstFlag::NOP), "No-operation instruction; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-E", &cHardwareExperimental::Inst_Nop, 0, "No-operation instruction; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-F", &cHardwareExperimental::Inst_Nop, 0, "No-operation instruction; modifies other instructions"),
     
     tInstLibEntry<tMethod>("NULL", &cHardwareExperimental::Inst_Nop, 0, "True no-operation instruction: does nothing"),
     tInstLibEntry<tMethod>("nop-X", &cHardwareExperimental::Inst_Nop, 0, "True no-operation instruction: does nothing"),
@@ -134,17 +134,13 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
   }
   
   const int f_size = sizeof(s_f_array)/sizeof(tInstLibEntry<tMethod>);
-  static cString f_names[f_size];
   static tMethod functions[f_size];
-  for (int i = 0; i < f_size; i++){
-    f_names[i] = s_f_array[i].name;
-    functions[i] = s_f_array[i].function;
-  }
+  for (int i = 0; i < f_size; i++) functions[i] = s_f_array[i].GetFunction();
 
 	const cInstruction error(255);
 	const cInstruction def(0);
   
-  return new tInstLib<cHardwareExperimental::tMethod>(n_size, f_size, n_names, f_names, nop_mods, functions, error, def);
+  return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, error, def);
 }
 
 cHardwareExperimental::cHardwareExperimental(cWorld* world, cOrganism* in_organism, cInstSet* in_m_inst_set)

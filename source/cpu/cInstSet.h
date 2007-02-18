@@ -37,8 +37,8 @@
 #ifndef cInstruction_h
 #include "cInstruction.h"
 #endif
-#ifndef cInstLibBase_h
-#include "cInstLibBase.h"
+#ifndef cInstLib_h
+#include "cInstLib.h"
 #endif
 
 using namespace std;
@@ -58,7 +58,7 @@ class cInstSet
 {
 public:
   cWorld* m_world;
-  cInstLibBase* m_inst_lib;
+  cInstLib* m_inst_lib;
   class cInstEntry {
   public:
     int lib_fun_id;
@@ -79,7 +79,7 @@ public:
   cInstSet(); // @not_implemented
 
 public:
-  inline cInstSet(cWorld* world, cInstLibBase* inst_lib) : m_world(world), m_inst_lib(inst_lib),
+  inline cInstSet(cWorld* world, cInstLib* inst_lib) : m_world(world), m_inst_lib(inst_lib),
     m_inst_error(inst_lib->GetInstError()), m_inst_default(inst_lib->GetInstDefault()) { ; }
   inline cInstSet(const cInstSet& is);
   inline ~cInstSet() { ; }
@@ -118,7 +118,7 @@ public:
   int AddNop(int lib_nopmod_id, int redundancy = 1, int ft_cost = 0, int cost = 0, double prob_fail = 0.0, int addl_time_cost = 0);
 
   // accessors for instruction library
-  cInstLibBase* GetInstLib() { return m_inst_lib; }
+  cInstLib* GetInstLib() { return m_inst_lib; }
 
   inline cInstruction GetInst(const cString& in_name) const;
   cString FindBestMatch(const cString& in_name) const;

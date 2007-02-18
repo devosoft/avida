@@ -91,7 +91,7 @@ public:
   
   // This function has no direct implementation in tHashTable
   // Grabs key/value lists, and processes the keys.
-  cString NearMatch(const cString name) {
+  cString NearMatch(const cString name) const {
     tList<cString> keys;
     tList<T> values;
     m_hash.AsLists(keys, values);

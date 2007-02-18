@@ -108,7 +108,7 @@ protected:
     
 
   // --------  Member Variables  --------
-  tMethod* m_functions;
+  const tMethod* m_functions;
 
   // Stacks
   cCPUStack m_global_stacks[NUM_GLOBAL_STACKS];
@@ -206,7 +206,7 @@ protected:
 public:
   cHardwareTransSMT(cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
   ~cHardwareTransSMT() { ; }
-  static cInstLibBase* GetInstLib() { return s_inst_slib; }
+  static cInstLib* GetInstLib() { return s_inst_slib; }
   static cString GetDefaultInstFilename() { return "instset-transsmt.cfg"; }
 	
   void Reset();

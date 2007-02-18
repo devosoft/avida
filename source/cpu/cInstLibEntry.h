@@ -2,7 +2,7 @@
  *  cInstLibEntry.h
  *  Avida
  *
- *  Created by David Bryson on 2/14/07.
+ *  Created by David on 2/17/07.
  *  Copyright 2007 Michigan State University. All rights reserved.
  *
  *
@@ -22,27 +22,36 @@
  *
  */
 
-#ifndef tInstLibEntry_h
-#define tInstLibEntry_h
-
 #ifndef cInstLibEntry_h
-#include "cInstLibEntry.h"
-#endif
+#define cInstLibEntry_h
 
 
-template <class FUN> class tInstLibEntry : public cInstLibEntry
+namespace nInstFlag {
+  const unsigned int DEFAULT = 0x1;
+  const unsigned int NOP = 0x2;
+  const unsigned int LABEL = 0x4;
+}
+
+class cInstLibEntry
 {
 private:
-  const FUN m_function;
-
-  tInstLibEntry(); // @not_implemented
+  const cString m_name;
+  const unsigned int m_flags;
+  const cString m_desc;
+  
+  cInstLibEntry(); // @not_implemented
   
 public:
-  tInstLibEntry(const cString& name, FUN function, unsigned int flags = 0, const cString& desc = "")
-    : cInstLibEntry(name, flags, desc), m_function(function) { ; }
-  
-  const FUN GetFunction() const { return m_function; }
-};
+  cInstLibEntry(const cString& name, unsigned int flags, const cString& desc) : m_name(name), m_flags(flags), m_desc(desc) { ; }
 
+  const cString& GetName() const { return m_name; }
+  const cString& GetDescription() const { return m_desc; }
+  
+  unsigned int GetFlags() const { return m_flags; }
+  bool IsDefault() const { return (m_flags & nInstFlag::DEFAULT); }
+  bool IsNop() const { return (m_flags & nInstFlag::NOP); }
+  bool IsLabel() const { return (m_flags & nInstFlag::LABEL); }
+  
+};
 
 #endif

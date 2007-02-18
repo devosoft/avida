@@ -72,7 +72,7 @@
  **/
 
 class cInjectGenotype;
-class cInstLibBase;
+class cInstLib;
 class cInstSet;
 class cMutation;
 class cOrganism;
@@ -124,7 +124,7 @@ protected:
 
 
   // --------  Member Variables  --------
-  tMethod* m_functions;
+  const tMethod* m_functions;
 
   cCPUMemory m_memory;          // Memory...
   cCPUStack m_global_stack;     // A stack that all threads share.

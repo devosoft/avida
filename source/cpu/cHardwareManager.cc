@@ -77,14 +77,7 @@ cHardwareManager::cHardwareManager(cWorld* world)
   file.Load();
   file.Compress();
   
-  tDictionary<int> nop_dict;
-  for(int i = 0; i < m_inst_set->GetInstLib()->GetNumNops(); i++)
-    nop_dict.Add(m_inst_set->GetInstLib()->GetNopName(i), i);
-  
-  tDictionary<int> inst_dict;
-  for(int i = 0; i < m_inst_set->GetInstLib()->GetSize(); i++)
-    inst_dict.Add(m_inst_set->GetInstLib()->GetName(i), i);
-  
+  const cInstLib& inst_lib = *m_inst_set->GetInstLib();
   for (int line_id = 0; line_id < file.GetNumLines(); line_id++) {
     cString cur_line = file.GetLine(line_id);
     cString inst_name = cur_line.PopWord();
@@ -105,22 +98,20 @@ cHardwareManager::cHardwareManager(cWorld* world)
     
     // Otherwise, this instruction will be in the set.
     // First, determine if it is a nop...
-    int nop_mod = -1;
-    if(nop_dict.Find(inst_name, nop_mod) == true) {
-      m_inst_set->AddNop(nop_mod, redundancy, ft_cost, cost, prob_fail, addl_time_cost);
-      continue;
+    int inst_idx = inst_lib.GetIndex(inst_name);
+    
+    if (inst_idx == -1) {
+      // Oh oh!  Didn't find an instruction!
+      cString errorstr("Could not find instruction '");
+      errorstr += inst_name + "'\n        (Best match = '" + inst_lib.GetNearMatch(inst_name) + "').";
+      m_world->GetDriver().RaiseFatalException(1, errorstr);
     }
     
-    // Otherwise, it had better be in the main dictionary...
-    int fun_id = -1;
-    if(inst_dict.Find(inst_name, fun_id) == true){
-      m_inst_set->AddInst(fun_id, redundancy, ft_cost, cost, prob_fail, addl_time_cost);
-      continue;
+    if (inst_lib[inst_idx].IsNop()) {
+      m_inst_set->AddNop(inst_idx, redundancy, ft_cost, cost, prob_fail, addl_time_cost);
+    } else {
+      m_inst_set->AddInst(inst_idx, redundancy, ft_cost, cost, prob_fail, addl_time_cost);
     }
-    
-    // Oh oh!  Didn't find an instruction!
-    m_world->GetDriver().RaiseFatalException(1, cString("Could not find instruction '") + inst_name +
-                                             "'\n       (Best match = '" + inst_dict.NearMatch(inst_name) + "').");
   }
 }
 

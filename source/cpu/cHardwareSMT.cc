@@ -26,7 +26,7 @@
 
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
-#include "cInstLibBase.h"
+#include "cInstLib.h"
 #include "cInstSet.h"
 #include "cHardwareTracer.h"
 #include "cMutation.h"
@@ -62,10 +62,10 @@ tInstLib<cHardwareSMT::tMethod>* cHardwareSMT::initInstLib(void)
   };
 	
   static const tInstLibEntry<tMethod> s_f_array[] = {
-    tInstLibEntry<tMethod>("Nop-A", &cHardwareSMT::Inst_Nop),
-    tInstLibEntry<tMethod>("Nop-B", &cHardwareSMT::Inst_Nop),
-    tInstLibEntry<tMethod>("Nop-C", &cHardwareSMT::Inst_Nop),
-    tInstLibEntry<tMethod>("Nop-D", &cHardwareSMT::Inst_Nop),
+    tInstLibEntry<tMethod>("Nop-A", &cHardwareSMT::Inst_Nop, nInstFlag::NOP),
+    tInstLibEntry<tMethod>("Nop-B", &cHardwareSMT::Inst_Nop, nInstFlag::NOP),
+    tInstLibEntry<tMethod>("Nop-C", &cHardwareSMT::Inst_Nop, nInstFlag::NOP),
+    tInstLibEntry<tMethod>("Nop-D", &cHardwareSMT::Inst_Nop, nInstFlag::NOP),
     tInstLibEntry<tMethod>("Alt", &cHardwareSMT::Inst_Alt),
     tInstLibEntry<tMethod>("Val-Shift", &cHardwareSMT::Inst_ValShift),
     tInstLibEntry<tMethod>("Val-Nand", &cHardwareSMT::Inst_ValNand),
@@ -124,20 +124,13 @@ tInstLib<cHardwareSMT::tMethod>* cHardwareSMT::initInstLib(void)
   }
 	
   const int f_size = sizeof(s_f_array)/sizeof(tInstLibEntry<tMethod>);
-  static cString f_names[f_size];
   static tMethod functions[f_size];
-  for (int i = 0; i < f_size; i++){
-    f_names[i] = s_f_array[i].name;
-    functions[i] = s_f_array[i].function;
-  }
+  for (int i = 0; i < f_size; i++) functions[i] = s_f_array[i].GetFunction();
 	
 	const cInstruction error(255);
 	const cInstruction def(0);
 	
-  tInstLib<cHardwareSMT::tMethod>* inst_lib =
-    new tInstLib<cHardwareSMT::tMethod>(n_size, f_size, n_names, f_names, nop_mods, functions, error, def);
-	
-  return inst_lib;
+  return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, error, def);
 }
 
 cHardwareSMT::cHardwareSMT(cWorld* world, cOrganism* in_organism, cInstSet* in_m_inst_set)
