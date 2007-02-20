@@ -437,250 +437,49 @@ void cHardwareExperimental::PrintStatus(ostream& fp)
 
 
 
-/////////////////////////////////////////////////////////////////////////
-// Method: cHardwareExperimental::FindLabel(direction)
-//
-// Search in 'direction' (+ or - 1) from the instruction pointer for the
-// compliment of the label in 'next_label' and return a pointer to the
-// results.  If direction is 0, search from the beginning of the genome.
-//
-/////////////////////////////////////////////////////////////////////////
-
-cHeadCPU cHardwareExperimental::FindLabel(int direction)
+cHeadCPU cHardwareExperimental::FindLabelStart()
 {
-  cHeadCPU & inst_ptr = IP();
-  
-  // Start up a search head at the position of the instruction pointer.
-  cHeadCPU search_head(inst_ptr);
-  cCodeLabel & search_label = GetLabel();
+  cHeadCPU& ip = IP();
+  const cCodeLabel& search_label = GetLabel();
   
   // Make sure the label is of size > 0.
-  
-  if (search_label.GetSize() == 0) {
-    return inst_ptr;
-  }
-  
-  // Call special functions depending on if jump is forwards or backwards.
-  int found_pos = 0;
-  if( direction < 0 ) {
-    found_pos = FindLabel_Backward(search_label, inst_ptr.GetMemory(),
-                                   inst_ptr.GetPosition() - search_label.GetSize());
-  }
-  
-  // Jump forward.
-  else if (direction > 0) {
-    found_pos = FindLabel_Forward(search_label, inst_ptr.GetMemory(),
-                                  inst_ptr.GetPosition());
-  }
-  
-  // Jump forward from the very beginning.
-  else {
-    found_pos = FindLabel_Forward(search_label, inst_ptr.GetMemory(), 0);
-  }
-  
-  // Return the last line of the found label, if it was found.
-  if (found_pos >= 0) search_head.Set(found_pos - 1);
-  
-  // Return the found position (still at start point if not found).
-  return search_head;
-}
+  if (search_label.GetSize() == 0) return ip;
 
-
-// Search forwards for search_label from _after_ position pos in the
-// memory.  Return the first line _after_ the the found label.  It is okay
-// to find search label's match inside another label.
-
-int cHardwareExperimental::FindLabel_Forward(const cCodeLabel & search_label,
-                                    const cGenome & search_genome, int pos)
-{
-  assert (pos < search_genome.GetSize() && pos >= 0);
+  const cGenome& memory = ip.GetMemory();
+  int start = ip.GetPosition();
+  int pos = 0;
   
-  int search_start = pos;
-  int label_size = search_label.GetSize();
-  bool found_label = false;
-  
-  // Move off the template we are on.
-  pos += label_size;
-  
-  // Search until we find the complement or exit the memory.
-  while (pos < search_genome.GetSize()) {
-    
-    // If we are within a label, rewind to the beginning of it and see if
-    // it has the proper sub-label that we're looking for.
-    
-    if (m_inst_set->IsNop(search_genome[pos])) {
-      // Find the start and end of the label we're in the middle of.
-      
-      int start_pos = pos;
-      int end_pos = pos + 1;
-      while (start_pos > search_start &&
-             m_inst_set->IsNop( search_genome[start_pos - 1] )) {
-        start_pos--;
-      }
-      while (end_pos < search_genome.GetSize() &&
-             m_inst_set->IsNop( search_genome[end_pos] )) {
-        end_pos++;
-      }
-      int test_size = end_pos - start_pos;
-      
-      // See if this label has the proper sub-label within it.
-      int max_offset = test_size - label_size + 1;
-      int offset = start_pos;
-      for (offset = start_pos; offset < start_pos + max_offset; offset++) {
-        
-        // Test the number of matches for this offset.
-        int matches;
-        for (matches = 0; matches < label_size; matches++) {
-          if (search_label[matches] !=
-              m_inst_set->GetNopMod( search_genome[offset + matches] )) {
-            break;
-          }
-        }
-        
-        // If we have found it, break out of this loop!
-        if (matches == label_size) {
-          found_label = true;
-          break;
-        }
-      }
-      
-      // If we've found the complement label, set the position to the end of
-      // the label we found it in, and break out.
-      
-      if (found_label == true) {
-        // pos = end_pos;
-        pos = label_size + offset;
-        break;
-      }
-      
-      // We haven't found it; jump pos to just after the current label being
-      // checked.
-      pos = end_pos;
+  while (pos < memory.GetSize()) {
+    if (pos == start) { // skip past initiating instruction and label argument
+      pos += search_label.GetSize() + 1;
+      continue;
     }
     
-    // Jump up a block to the next possible point to find a label,
-    pos += label_size;
-  }
-  
-  // If the label was not found return a -1.
-  if (found_label == false) pos = -1;
-  
-  return pos;
-}
-
-// Search backwards for search_label from _before_ position pos in the
-// memory.  Return the first line _after_ the the found label.  It is okay
-// to find search label's match inside another label.
-
-int cHardwareExperimental::FindLabel_Backward(const cCodeLabel & search_label,
-                                     const cGenome & search_genome, int pos)
-{
-  assert (pos < search_genome.GetSize());
-  
-  int search_start = pos;
-  int label_size = search_label.GetSize();
-  bool found_label = false;
-  
-  // Move off the template we are on.
-  pos -= label_size;
-  
-  // Search until we find the complement or exit the memory.
-  while (pos >= 0) {
-    // If we are within a label, rewind to the beginning of it and see if
-    // it has the proper sub-label that we're looking for.
-    
-    if (m_inst_set->IsNop( search_genome[pos] )) {
-      // Find the start and end of the label we're in the middle of.
+    if (m_inst_set->IsLabel(memory[pos])) { // starting label found
+      int label = pos;
+      pos++;
       
-      int start_pos = pos;
-      int end_pos = pos + 1;
-      while (start_pos > 0 && m_inst_set->IsNop(search_genome[start_pos - 1])) {
-        start_pos--;
-      }
-      while (end_pos < search_start &&
-             m_inst_set->IsNop(search_genome[end_pos])) {
-        end_pos++;
-      }
-      int test_size = end_pos - start_pos;
-      
-      // See if this label has the proper sub-label within it.
-      int max_offset = test_size - label_size + 1;
-      for (int offset = start_pos; offset < start_pos + max_offset; offset++) {
-        
-        // Test the number of matches for this offset.
-        int matches;
-        for (matches = 0; matches < label_size; matches++) {
-          if (search_label[matches] !=
-              m_inst_set->GetNopMod(search_genome[offset + matches])) {
-            break;
-          }
-        }
-        
-        // If we have found it, break out of this loop!
-        if (matches == label_size) {
-          found_label = true;
-          break;
-        }
+      // Check for direct matched label pattern
+      int size_matched = 0;
+      while (size_matched < search_label.GetSize() && pos < memory.GetSize()) {
+        if (!m_inst_set->IsNop(memory[pos]) || !search_label[size_matched] != m_inst_set->GetNopMod(memory[pos])) break;
+        size_matched++;
+        pos++;
       }
       
-      // If we've found the complement label, set the position to the end of
-      // the label we found it in, and break out.
-      
-      if (found_label == true) {
-        pos = end_pos;
-        break;
+      // Check that the label matches and has examined the full sequence of nops following the 'label' instruction
+      if (size_matched == search_label.GetSize() && (pos == memory.GetSize() || !m_inst_set->IsNop(memory[pos]))) {
+        // Return Head pointed at last NOP of label sequence
+        return cHeadCPU(this, pos - 1, ip.GetMemSpace());
       }
       
-      // We haven't found it; jump pos to just before the current label
-      // being checked.
-      pos = start_pos - 1;
+      continue; 
     }
-    
-    // Jump up a block to the next possible point to find a label,
-    pos -= label_size;
+    pos++;
   }
-  
-  // If the label was not found return a -1.
-  if (found_label == false) pos = -1;
-  
-  return pos;
-}
-
-// Search for 'in_label' anywhere in the hardware.
-cHeadCPU cHardwareExperimental::FindLabel(const cCodeLabel & in_label, int direction)
-{
-  assert (in_label.GetSize() > 0);
-  
-  // IDEALY:
-  // Keep making jumps (in the proper direction) equal to the label
-  // length.  If we are inside of a label, check its size, and see if
-  // any of the sub-labels match properly.
-  // FOR NOW:
-  // Get something which works, no matter how inefficient!!!
-  
-  cHeadCPU temp_head(this);
-  
-  while (temp_head.InMemory()) {
-    // IDEALY: Analyze the label we are in; see if the one we are looking
-    // for could be a sub-label of it.  Skip past it if not.
-    
-    int i;
-    for (i = 0; i < in_label.GetSize(); i++) {
-      if (!m_inst_set->IsNop(temp_head.GetInst()) ||
-          in_label[i] != m_inst_set->GetNopMod(temp_head.GetInst())) {
-        break;
-      }
-    }
-    if (i == GetLabel().GetSize()) {
-      temp_head.AbsJump(i - 1);
-      return temp_head;
-    }
-    
-    temp_head.AbsJump(direction);     // IDEALY: MAKE LARGER JUMPS
-  }
-  
-  temp_head.AbsSet(-1);
-  return temp_head;
+         
+  // Return start point if not found
+  return ip;
 }
 
 
@@ -1326,7 +1125,7 @@ bool cHardwareExperimental::Inst_HeadSearch(cAvidaContext& ctx)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
-  cHeadCPU found_pos = FindLabel(0);
+  cHeadCPU found_pos = FindLabelStart();
   const int search_size = found_pos.GetPosition() - IP().GetPosition();
   GetRegister(REG_BX) = search_size;
   GetRegister(REG_CX) = GetLabel().GetSize();
