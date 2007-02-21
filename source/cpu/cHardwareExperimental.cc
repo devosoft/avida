@@ -89,7 +89,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("if-n-equ", &cHardwareExperimental::Inst_IfNEqu, nInstFlag::DEFAULT, "Execute next instruction if ?BX?!=?CX?, else skip it"),
     tInstLibEntry<tMethod>("if-less", &cHardwareExperimental::Inst_IfLess, nInstFlag::DEFAULT, "Execute next instruction if ?BX? < ?CX?, else skip it"),
     
-    tInstLibEntry<tMethod>("label", &cHardwareExperimental::Inst_Label),
+    tInstLibEntry<tMethod>("label", &cHardwareExperimental::Inst_Label, (nInstFlag::DEFAULT | nInstFlag::LABEL)),
     
     tInstLibEntry<tMethod>("pop", &cHardwareExperimental::Inst_Pop, nInstFlag::DEFAULT, "Remove top number from stack and place into ?BX?"),
     tInstLibEntry<tMethod>("push", &cHardwareExperimental::Inst_Push, nInstFlag::DEFAULT, "Copy number from ?BX? and place it into the stack"),
@@ -450,25 +450,21 @@ cHeadCPU cHardwareExperimental::FindLabelStart()
   int pos = 0;
   
   while (pos < memory.GetSize()) {
-    if (pos == start) { // skip past initiating instruction and label argument
-      pos += search_label.GetSize() + 1;
-      continue;
-    }
-    
     if (m_inst_set->IsLabel(memory[pos])) { // starting label found
-      int label = pos;
       pos++;
       
-      // Check for direct matched label pattern
+      // Check for direct matched label pattern, can be substring of 'label'ed target
+      // - must match all NOPs in search_label
+      // - extra NOPs in 'label'ed target are ignored
       int size_matched = 0;
       while (size_matched < search_label.GetSize() && pos < memory.GetSize()) {
-        if (!m_inst_set->IsNop(memory[pos]) || !search_label[size_matched] != m_inst_set->GetNopMod(memory[pos])) break;
+        if (!m_inst_set->IsNop(memory[pos]) || search_label[size_matched] != m_inst_set->GetNopMod(memory[pos])) break;
         size_matched++;
         pos++;
       }
       
       // Check that the label matches and has examined the full sequence of nops following the 'label' instruction
-      if (size_matched == search_label.GetSize() && (pos == memory.GetSize() || !m_inst_set->IsNop(memory[pos]))) {
+      if (size_matched == search_label.GetSize()) {
         // Return Head pointed at last NOP of label sequence
         return cHeadCPU(this, pos - 1, ip.GetMemSpace());
       }
@@ -526,10 +522,14 @@ void cHardwareExperimental::InjectCode(const cGenome & inject_code, const int li
 
 void cHardwareExperimental::ReadInst(const int in_inst)
 {
-  if (m_inst_set->IsNop( cInstruction(in_inst) )) {
+  if (m_inst_set->IsLabel(cInstruction(in_inst))) {
+    GetReadLabel().Clear();
+    ReadingLabel() = true;
+  } else if (ReadingLabel() && m_inst_set->IsNop(cInstruction(in_inst))) {
     GetReadLabel().AddNop(in_inst);
   } else {
     GetReadLabel().Clear();
+    ReadingLabel() = false;
   }
 }
 
@@ -845,6 +845,13 @@ bool cHardwareExperimental::Inst_IfLess(cAvidaContext& ctx)       // Execute nex
   if (GetRegister(op1) >=  GetRegister(op2))  IP().Advance();
   return true;
 }
+
+bool cHardwareExperimental::Inst_Label(cAvidaContext& ctx)
+{
+  ReadLabel();
+  return true;
+};
+
 
 bool cHardwareExperimental::Inst_Pop(cAvidaContext& ctx)
 {

@@ -112,7 +112,7 @@ public:
 
   // Instruction Analysis.
   int IsNop(const cInstruction& inst) const { return (inst.GetOp() < m_lib_nopmod_map.GetSize()); }
-  int IsLabel(const cInstruction& inst) const { return m_inst_lib->Get(inst.GetOp()).IsLabel(); }
+  int IsLabel(const cInstruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).IsLabel(); }
 
   // Insertion of new instructions...
   int AddInst(int lib_fun_id, int redundancy = 1, int ft_cost = 0, int cost = 0, double prob_fail = 0.0, int addl_time_cost = 0);

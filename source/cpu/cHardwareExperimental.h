@@ -101,9 +101,9 @@ protected:
     unsigned char cur_stack;              // 0 = local stack, 1 = global stack.
     unsigned char cur_head;
     
+    bool reading;
     cCodeLabel read_label;
-    cCodeLabel next_label;
-    
+    cCodeLabel next_label;    
     
     cLocalThread(cHardwareBase* in_hardware = NULL, int in_id = -1) { Reset(in_hardware, in_id); }
     ~cLocalThread() { ; }
@@ -164,6 +164,7 @@ protected:
   cCodeLabel& GetLabel() { return m_threads[m_cur_thread].next_label; }
   void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
   cHeadCPU FindLabelStart();
+  bool& ReadingLabel() { return m_threads[m_cur_thread].reading; }
   const cCodeLabel& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
   cCodeLabel& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
   
@@ -276,7 +277,7 @@ private:
   // Flow Control
   bool Inst_IfNEqu(cAvidaContext& ctx);
   bool Inst_IfLess(cAvidaContext& ctx);
-  bool Inst_Label(cAvidaContext& ctx) { ReadLabel(); return true; };
+  bool Inst_Label(cAvidaContext& ctx);
     
   // Stack and Register Operations
   bool Inst_Pop(cAvidaContext& ctx);

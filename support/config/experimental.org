@@ -86,7 +86,6 @@ nop-C      #
 nop-C      #
 nop-C      #
 nop-C      #
-nop-C      #
 h-search   # Mark the beginning of the copy loop
 h-copy     # Do the copy
 if-label   # If we're done copying....
@@ -96,5 +95,6 @@ h-divide   #    ...divide!
 mov-head   # Otherwise, loop back to the beginning of the copy loop.
 nop-A      #
 add        # neutral separator (terminates mov-head)
+label
 nop-A      # End Label
 nop-B      #
