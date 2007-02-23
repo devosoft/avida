@@ -62,7 +62,6 @@
 		704ADBC60A6EEFC300666970 /* DriverActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704ADBC40A6EEFC300666970 /* DriverActions.cc */; };
 		704ADBC80A6EEFC300666970 /* DriverActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704ADBC40A6EEFC300666970 /* DriverActions.cc */; };
 		704ADBF90A6EF3A300666970 /* DriverActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704ADBC40A6EEFC300666970 /* DriverActions.cc */; };
-		705260BC0B87A7DB0007426F /* cInstLibEntry.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 705260BB0B87A7DB0007426F /* cInstLibEntry.h */; };
 		7053324C0929764C006BD186 /* cSpecies.cc in Sources */ = {isa = PBXBuildFile; fileRef = 705332480929764A006BD186 /* cSpecies.cc */; };
 		7053324D0929764E006BD186 /* cSpeciesQueue.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7053324A0929764A006BD186 /* cSpeciesQueue.cc */; };
 		7053336D092A3DF9006BD186 /* cInjectGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70533364092A3DF4006BD186 /* cInjectGenotype.cc */; };
@@ -426,7 +425,6 @@
 				7049F3730A66AD7E00640512 /* default-transsmt.org in CopyFiles */,
 				70B1A7430B7E3FFD00067486 /* instset-experimental.cfg in CopyFiles */,
 				70B1A75A0B7E431F00067486 /* experimental.org in CopyFiles */,
-				705260BC0B87A7DB0007426F /* cInstLibEntry.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

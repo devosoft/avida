@@ -42,22 +42,25 @@
 
 cWorld::~cWorld()
 {
-  if (m_data_mgr) { m_data_mgr->FlushAll(); }
+  // m_actlib is not owned by cWorld, DO NOT DELETE
   
+  // These must be deleted first
+  delete m_analyze; m_analyze = NULL;
   delete m_pop; m_pop = NULL;
   
-  // m_actlib is not owned by cWorld, DO NOT DELETE
-  delete m_analyze; m_analyze = NULL;
-  delete m_conf; m_conf = NULL;
-  delete m_data_mgr; m_data_mgr = NULL;
+  delete m_class_mgr; m_class_mgr = NULL;
   delete m_env; m_env = NULL;
   delete m_event_list; m_event_list = NULL;
-  
-  // must occur *after* m_pop is deleted. @kgn
   delete m_hw_mgr; m_hw_mgr = NULL;
-  delete m_class_mgr; m_class_mgr = NULL;
   delete m_stats; m_stats = NULL;
-  
+
+  // Delete after all classes that may be logging items
+  if (m_data_mgr) { m_data_mgr->FlushAll(); }
+  delete m_data_mgr; m_data_mgr = NULL;
+
+  // Delete Last
+  delete m_conf; m_conf = NULL;
+
   // cleanup driver object, if needed
   if (m_own_driver) { delete m_driver; m_driver = NULL; }
 }
