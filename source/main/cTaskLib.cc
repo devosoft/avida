@@ -388,8 +388,8 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
 void cTaskLib::NewTask(const cString& name, const cString& desc, tTaskTest task_fun, int reqs,
                        cArgContainer* args)
 {
-  if (reqs & REQ_NEIGHBOR_INPUT == true) use_neighbor_input = true;
-  if (reqs & REQ_NEIGHBOR_OUTPUT == true) use_neighbor_output = true;
+  if (reqs & REQ_NEIGHBOR_INPUT) use_neighbor_input = true;
+  if (reqs & REQ_NEIGHBOR_OUTPUT) use_neighbor_output = true;
   
   const int id = task_array.GetSize();
   task_array.Resize(id + 1);
