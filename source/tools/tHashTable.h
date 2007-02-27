@@ -144,7 +144,9 @@ private:
   // order alignments.
   int HashKey(const void* const& key) const
   {
-    return abs(((int)key >> 2) % table_size);
+    // Cast/Dereference of key as an int* tells the compiler that we really want
+    // to truncate the value to an integer, even if a pointer is larger.
+    return abs((*((int*)&key) >> 2) % table_size);
   }
   
   // HASH_TYPE = cString

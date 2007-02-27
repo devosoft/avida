@@ -34,6 +34,11 @@
 #include <math.h>
 #include <limits.h>
 
+// Various workarounds for Visual Studio shortcomings
+#ifdef WIN32
+# define llabs(x) _abs64(x)
+# define log2(x) (log(x)/log(2.0))
+#endif
 
 static const double dCastPrecision = 100000.0;
 
@@ -1913,7 +1918,7 @@ double cTaskLib::Task_MatchNumber(cTaskContext& ctx) const
   double quality = 0.0;
   const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
 
-  long long diff = ::llabs((long long)args.GetInt(0) - ctx.GetOutputBuffer()[0]);
+  long long diff = llabs((long long)args.GetInt(0) - ctx.GetOutputBuffer()[0]);
   int threshold = args.GetInt(1);
     
   if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
@@ -1997,7 +2002,7 @@ double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
   // - count number of actual entries
   // - count moves required
   // - update valmap, tracking observed inputs
-  int sorted[size];
+  tArray<int> sorted(size);
   const bool ascending = (args.GetInt(1) >= 0);
   int count = 1;
 
@@ -2134,7 +2139,7 @@ double cTaskLib::Task_Mult(cTaskContext& ctx) const
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
       if (i == j) continue;
-      long long cur_diff = ::llabs((long long)(input_buffer[i] * input_buffer[j]) - test_output);
+      long long cur_diff = llabs((long long)(input_buffer[i] * input_buffer[j]) - test_output);
       if (cur_diff < diff) diff = cur_diff;
     }
   }
@@ -2178,7 +2183,7 @@ double cTaskLib::Task_Div(cTaskContext& ctx) const
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
       if (i == j || input_buffer[j] == 0) continue;
-      long long cur_diff = ::llabs((long long)(input_buffer[i] / input_buffer[j]) - test_output);
+      long long cur_diff = llabs((long long)(input_buffer[i] / input_buffer[j]) - test_output);
       if (cur_diff < diff) diff = cur_diff;
     }
   }
@@ -2220,7 +2225,7 @@ double cTaskLib::Task_Log(cTaskContext& ctx) const
   long long diff = ((long long)INT_MAX + 1) * 2;
   
   for (int i = 0; i < input_size; i ++) {
-    long long cur_diff = ::llabs((long long)(log(fabs(double(input_buffer[i] ? input_buffer[i] : 1)))) - test_output);
+    long long cur_diff = llabs((long long)(log(fabs(double(input_buffer[i] ? input_buffer[i] : 1)))) - test_output);
     if (cur_diff < diff) diff = cur_diff;
   }
   
@@ -2262,7 +2267,7 @@ double cTaskLib::Task_Log2(cTaskContext& ctx) const
   long long diff = ((long long)INT_MAX + 1) * 2;
   
   for (int i = 0; i < input_size; i ++) {
-    long long cur_diff = ::llabs((long long)(log2(fabs(double(input_buffer[i] ? input_buffer[i] : 1)))) - test_output);
+    long long cur_diff = llabs((long long)(log2(fabs(double(input_buffer[i] ? input_buffer[i] : 1)))) - test_output);
     if (cur_diff < diff) diff = cur_diff;
   }
   
@@ -2304,7 +2309,7 @@ double cTaskLib::Task_Log10(cTaskContext& ctx) const
   long long diff = ((long long)INT_MAX + 1) * 2;
   
   for (int i = 0; i < input_size; i ++) {
-    long long cur_diff = ::llabs((long long)(log10(fabs(double(input_buffer[i] ? input_buffer[i] : 1)))) - test_output);
+    long long cur_diff = llabs((long long)(log10(fabs(double(input_buffer[i] ? input_buffer[i] : 1)))) - test_output);
     if (cur_diff < diff) diff = cur_diff;
   }
   
@@ -2346,7 +2351,7 @@ double cTaskLib::Task_Sqrt(cTaskContext& ctx) const
   long long diff = ((long long)INT_MAX + 1) * 2;
   
   for (int i = 0; i < input_size; i ++) {
-    long long cur_diff = ::llabs((long long)(sqrt(fabs(double(input_buffer[i])))) - test_output);
+    long long cur_diff = llabs((long long)(sqrt(fabs(double(input_buffer[i])))) - test_output);
     if (cur_diff < diff) diff = cur_diff;
   }
   

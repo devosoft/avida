@@ -22,6 +22,14 @@
 #include "cPopulationCell.h"
 #include "cOrganism.h"
 
+#ifdef WIN32
+#include <process.h>
+#define kill(x,y) exit(0)
+#else
+#include <unistd.h>
+#endif
+#include <signal.h>
+
 using namespace std;
 
 void cAnalyzeScreen::Notify(const cString & in_string)
