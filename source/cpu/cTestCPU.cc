@@ -179,7 +179,7 @@ void cTestCPU::SetResourceUpdate(int update, bool round_to_closest)
     if(i >= (int)(*m_res)[which].second.size()) {
       m_resource_count.Set(i, 0.0);
     } else {
-      double temp = (*m_res)[which].second[i];
+      // @DMB - unused - double temp = (*m_res)[which].second[i];
       m_resource_count.Set(i, (*m_res)[which].second[i]);
     }
   }

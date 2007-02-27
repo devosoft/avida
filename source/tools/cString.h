@@ -2,7 +2,7 @@
  *  cString.h
  *  Avida
  *
- *  Called "string.hh" prior to 12/7/05.
+ *  Called "cstringh" prior to 12/7/05.
  *  Copyright 1999-2007 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
@@ -26,11 +26,11 @@
 #ifndef cString_h
 #define cString_h
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <iostream>
 #include <string>
-#include <string.h>
-#include <assert.h>
+#include <cstring>
+#include <cassert>
 
 #if USE_tMemTrack
 # ifndef tMemTrack_h

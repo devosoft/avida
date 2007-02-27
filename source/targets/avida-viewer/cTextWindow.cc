@@ -7,7 +7,7 @@
 
 #include "cTextWindow.h"
 
-#include <stdlib.h>
+#include <cstdlib>
 
 using namespace std;
 

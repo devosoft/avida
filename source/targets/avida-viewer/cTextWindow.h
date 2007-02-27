@@ -20,7 +20,7 @@
 #include "cBaseTextWindow.h"
 #endif
 
-#include <signal.h>
+#include <csignal>
 #include <cstdarg>
 
 // All colors are defines except black on black:

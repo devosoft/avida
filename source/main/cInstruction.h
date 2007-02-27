@@ -26,7 +26,7 @@
 #ifndef cInstruction_h
 #define cInstruction_h
 
-#include <assert.h>
+#include <cassert>
 
 #ifndef defs_h
 #include "defs.h"

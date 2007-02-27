@@ -27,9 +27,9 @@
 #define cMerit_h
 
 #include <iostream>
-#include <math.h>
-#include <limits.h>
-#include <assert.h>
+#include <cmath>
+#include <climits>
+#include <cassert>
 
 class cMerit
 {

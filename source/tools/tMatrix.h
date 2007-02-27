@@ -63,7 +63,7 @@
 #include "tArray.h"
 #endif
 
-#include <assert.h>
+#include <cassert>
 
 /**
  * This class provides a matrix template.

@@ -269,9 +269,6 @@
 		70DCAC9A097AF754002F8733 /* cTextViewerDriver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC6D097AF730002F8733 /* cTextViewerDriver.cc */; };
 		70DCAC9C097AF7C0002F8733 /* primitive.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC9B097AF7C0002F8733 /* primitive.cc */; };
 		70DCACA0097AF7CC002F8733 /* avida.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3109C0762539E008F7A48 /* avida.cc */; };
-		70DCACA1097AF7CC002F8733 /* trio.c in Sources */ = {isa = PBXBuildFile; fileRef = DCC3146D076253A1008F7A48 /* trio.c */; };
-		70DCACA2097AF7CC002F8733 /* trionan.c in Sources */ = {isa = PBXBuildFile; fileRef = DCC31471076253A1008F7A48 /* trionan.c */; };
-		70DCACA3097AF7CC002F8733 /* triostr.c in Sources */ = {isa = PBXBuildFile; fileRef = DCC31474076253A1008F7A48 /* triostr.c */; };
 		70DCACA4097AF7CC002F8733 /* cCodeLabel.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF4608C393BA00F50912 /* cCodeLabel.cc */; };
 		70DCACA5097AF7CC002F8733 /* cCPUMemory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF5808C3948C00F50912 /* cCPUMemory.cc */; };
 		70DCACA6097AF7CC002F8733 /* cCPUStack.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF6108C3954700F50912 /* cCPUStack.cc */; };
@@ -487,7 +484,6 @@
 		703CA3720A50735B00AB4DB4 /* SConscript */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConscript; sourceTree = "<group>"; };
 		703CA3730A50737700AB4DB4 /* SConscript */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConscript; sourceTree = "<group>"; };
 		703CA3740A50739600AB4DB4 /* SConscript */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConscript; sourceTree = "<group>"; };
-		703CA3750A5073BA00AB4DB4 /* SConscript */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConscript; sourceTree = "<group>"; };
 		703CA3760A5073CD00AB4DB4 /* SConscript */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConscript; sourceTree = "<group>"; };
 		703CA3770A50740300AB4DB4 /* SConscript */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConscript; sourceTree = "<group>"; };
 		703CA3780A50749F00AB4DB4 /* SConstruct */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConstruct; sourceTree = "<group>"; };
@@ -903,39 +899,6 @@
 		DCC3109C0762539E008F7A48 /* avida.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = avida.cc; sourceTree = "<group>"; };
 		DCC310A90762539E008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		DCC31345076253A0008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		DCC3143B076253A1008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		DCC3143C076253A1008F7A48 /* compare.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = compare.c; sourceTree = "<group>"; };
-		DCC3144A076253A1008F7A48 /* doc.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = doc.h; sourceTree = "<group>"; };
-		DCC3144B076253A1008F7A48 /* doc_dynamic.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = doc_dynamic.h; sourceTree = "<group>"; };
-		DCC3144C076253A1008F7A48 /* doc_printf.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = doc_printf.h; sourceTree = "<group>"; };
-		DCC3144D076253A1008F7A48 /* doc_register.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = doc_register.h; sourceTree = "<group>"; };
-		DCC3144E076253A1008F7A48 /* doc_scanf.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = doc_scanf.h; sourceTree = "<group>"; };
-		DCC3144F076253A1008F7A48 /* doc_static.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = doc_static.h; sourceTree = "<group>"; };
-		DCC31450076253A1008F7A48 /* footer.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; path = footer.html; sourceTree = "<group>"; };
-		DCC31451076253A1008F7A48 /* header.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; path = header.html; sourceTree = "<group>"; };
-		DCC31452076253A1008F7A48 /* trio.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = trio.cfg; sourceTree = "<group>"; };
-		DCC31453076253A1008F7A48 /* trio.css */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = trio.css; sourceTree = "<group>"; };
-		DCC31454076253A1008F7A48 /* example.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = example.c; sourceTree = "<group>"; };
-		DCC31461076253A1008F7A48 /* group___dynamic_strings.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; path = group___dynamic_strings.html; sourceTree = "<group>"; };
-		DCC31462076253A1008F7A48 /* group___printf.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; path = group___printf.html; sourceTree = "<group>"; };
-		DCC31463076253A1008F7A48 /* group___scanf.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; path = group___scanf.html; sourceTree = "<group>"; };
-		DCC31464076253A1008F7A48 /* group___special_quantities.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; path = group___special_quantities.html; sourceTree = "<group>"; };
-		DCC31465076253A1008F7A48 /* group___static_strings.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; path = group___static_strings.html; sourceTree = "<group>"; };
-		DCC31466076253A1008F7A48 /* group___user_defined.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; path = group___user_defined.html; sourceTree = "<group>"; };
-		DCC31467076253A1008F7A48 /* index.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
-		DCC31468076253A1008F7A48 /* modules.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html; path = modules.html; sourceTree = "<group>"; };
-		DCC31469076253A1008F7A48 /* trio.css */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = trio.css; sourceTree = "<group>"; };
-		DCC3146B076253A1008F7A48 /* regression.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = regression.c; sourceTree = "<group>"; };
-		DCC3146C076253A1008F7A48 /* strio.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = strio.h; sourceTree = "<group>"; };
-		DCC3146D076253A1008F7A48 /* trio.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = trio.c; sourceTree = "<group>"; };
-		DCC3146E076253A1008F7A48 /* trio.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = trio.h; sourceTree = "<group>"; };
-		DCC3146F076253A1008F7A48 /* trio.pri */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = trio.pri; sourceTree = "<group>"; };
-		DCC31470076253A1008F7A48 /* triodef.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = triodef.h; sourceTree = "<group>"; };
-		DCC31471076253A1008F7A48 /* trionan.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = trionan.c; sourceTree = "<group>"; };
-		DCC31472076253A1008F7A48 /* trionan.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = trionan.h; sourceTree = "<group>"; };
-		DCC31473076253A1008F7A48 /* triop.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = triop.h; sourceTree = "<group>"; };
-		DCC31474076253A1008F7A48 /* triostr.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = triostr.c; sourceTree = "<group>"; };
-		DCC31475076253A1008F7A48 /* triostr.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = triostr.h; sourceTree = "<group>"; };
 		DCC31547076253A4008F7A48 /* cCycleCheck.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCycleCheck.cc; sourceTree = "<group>"; };
 		DCC3154A076253A4008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		DCC31585076253A4008F7A48 /* recursive_tests_decl_hdrs.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = recursive_tests_decl_hdrs.hh; sourceTree = "<group>"; };
@@ -947,7 +910,6 @@
 		DCC315AE076253A5008F7A48 /* tUnitTestSuiteRecurser.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = tUnitTestSuiteRecurser.hh; sourceTree = "<group>"; };
 		DCC315B0076253A5008F7A48 /* tVerifierSuite.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = tVerifierSuite.hh; sourceTree = "<group>"; };
 		DCC315B1076253A5008F7A48 /* tVerifierSuiteRecurser.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = tVerifierSuiteRecurser.hh; sourceTree = "<group>"; };
-		DCC315B5076253A5008F7A48 /* win32_mkdir_hack.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = win32_mkdir_hack.hh; sourceTree = "<group>"; };
 		DCC315C1076253A5008F7A48 /* hist_map.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = hist_map.cc; sourceTree = "<group>"; };
 		DCC315C2076253A5008F7A48 /* hist_map2.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = hist_map2.cc; sourceTree = "<group>"; };
 		DCC315C3076253A5008F7A48 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
@@ -1517,66 +1479,8 @@
 			children = (
 				DCC31345076253A0008F7A48 /* CMakeLists.txt */,
 				703CA3740A50739600AB4DB4 /* SConscript */,
-				DCC31429076253A1008F7A48 /* trio */,
 			);
 			path = "third-party";
-			sourceTree = "<group>";
-		};
-		DCC31429076253A1008F7A48 /* trio */ = {
-			isa = PBXGroup;
-			children = (
-				703CA3750A5073BA00AB4DB4 /* SConscript */,
-				DCC3143B076253A1008F7A48 /* CMakeLists.txt */,
-				DCC3143C076253A1008F7A48 /* compare.c */,
-				DCC3143D076253A1008F7A48 /* doc */,
-				DCC31454076253A1008F7A48 /* example.c */,
-				DCC31455076253A1008F7A48 /* html */,
-				DCC3146B076253A1008F7A48 /* regression.c */,
-				DCC3146C076253A1008F7A48 /* strio.h */,
-				DCC3146D076253A1008F7A48 /* trio.c */,
-				DCC3146E076253A1008F7A48 /* trio.h */,
-				DCC3146F076253A1008F7A48 /* trio.pri */,
-				DCC31470076253A1008F7A48 /* triodef.h */,
-				DCC31471076253A1008F7A48 /* trionan.c */,
-				DCC31472076253A1008F7A48 /* trionan.h */,
-				DCC31473076253A1008F7A48 /* triop.h */,
-				DCC31474076253A1008F7A48 /* triostr.c */,
-				DCC31475076253A1008F7A48 /* triostr.h */,
-			);
-			path = trio;
-			sourceTree = "<group>";
-		};
-		DCC3143D076253A1008F7A48 /* doc */ = {
-			isa = PBXGroup;
-			children = (
-				DCC3144A076253A1008F7A48 /* doc.h */,
-				DCC3144B076253A1008F7A48 /* doc_dynamic.h */,
-				DCC3144C076253A1008F7A48 /* doc_printf.h */,
-				DCC3144D076253A1008F7A48 /* doc_register.h */,
-				DCC3144E076253A1008F7A48 /* doc_scanf.h */,
-				DCC3144F076253A1008F7A48 /* doc_static.h */,
-				DCC31450076253A1008F7A48 /* footer.html */,
-				DCC31451076253A1008F7A48 /* header.html */,
-				DCC31452076253A1008F7A48 /* trio.cfg */,
-				DCC31453076253A1008F7A48 /* trio.css */,
-			);
-			path = doc;
-			sourceTree = "<group>";
-		};
-		DCC31455076253A1008F7A48 /* html */ = {
-			isa = PBXGroup;
-			children = (
-				DCC31461076253A1008F7A48 /* group___dynamic_strings.html */,
-				DCC31462076253A1008F7A48 /* group___printf.html */,
-				DCC31463076253A1008F7A48 /* group___scanf.html */,
-				DCC31464076253A1008F7A48 /* group___special_quantities.html */,
-				DCC31465076253A1008F7A48 /* group___static_strings.html */,
-				DCC31466076253A1008F7A48 /* group___user_defined.html */,
-				DCC31467076253A1008F7A48 /* index.html */,
-				DCC31468076253A1008F7A48 /* modules.html */,
-				DCC31469076253A1008F7A48 /* trio.css */,
-			);
-			path = html;
 			sourceTree = "<group>";
 		};
 		DCC314D8076253A2008F7A48 /* tools */ = {
@@ -1686,7 +1590,6 @@
 				DCC315AE076253A5008F7A48 /* tUnitTestSuiteRecurser.hh */,
 				DCC315B0076253A5008F7A48 /* tVerifierSuite.hh */,
 				DCC315B1076253A5008F7A48 /* tVerifierSuiteRecurser.hh */,
-				DCC315B5076253A5008F7A48 /* win32_mkdir_hack.hh */,
 				700E28CF0859FFD700CF158A /* tObjectFactory.h */,
 				70B3984E0947B29D0018F09D /* tManagedPointerArray.h */,
 				7054A11E09A7BEFC00038658 /* cThread.h */,
@@ -2045,9 +1948,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				70DCACA0097AF7CC002F8733 /* avida.cc in Sources */,
-				70DCACA1097AF7CC002F8733 /* trio.c in Sources */,
-				70DCACA2097AF7CC002F8733 /* trionan.c in Sources */,
-				70DCACA3097AF7CC002F8733 /* triostr.c in Sources */,
 				70DCACA4097AF7CC002F8733 /* cCodeLabel.cc in Sources */,
 				70DCACA5097AF7CC002F8733 /* cCPUMemory.cc in Sources */,
 				70DCACA6097AF7CC002F8733 /* cCPUStack.cc in Sources */,

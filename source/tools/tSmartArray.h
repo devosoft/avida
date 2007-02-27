@@ -35,7 +35,7 @@
 #include "tArray.h"
 #endif
 
-#include <assert.h>
+#include <cassert>
 
 // "I am so smart..."
 static const int SMRT_INCREASE_MINIMUM = 10;

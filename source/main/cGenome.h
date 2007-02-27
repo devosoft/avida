@@ -26,7 +26,7 @@
 #ifndef cGenome_h
 #define cGenome_h
 
-#include <assert.h>
+#include <cassert>
 
 #ifndef cInstruction_h
 #include "cInstruction.h"

@@ -26,11 +26,8 @@
 #ifndef cHistogram_h
 #define cHistogram_h
 
+#include <cmath>
 #include <iostream>
-
-extern "C" {
-#include <math.h>
-}
 
 
 class cHistogram {

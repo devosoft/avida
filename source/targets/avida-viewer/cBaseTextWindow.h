@@ -8,7 +8,7 @@
 #ifndef cBaseTextWindow_h
 #define cBaseTextWindow_h
 
-#include <assert.h>
+#include <cassert>
 
 #ifndef cTools_h
 #include "cTools.h"

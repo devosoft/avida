@@ -26,7 +26,7 @@
 #ifndef cRunningAverage_h
 #define cRunningAverage_h
 
-#include <math.h>
+#include <cmath>
 
 class cRunningAverage
 {

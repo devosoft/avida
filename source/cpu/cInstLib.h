@@ -53,6 +53,7 @@ protected:
 public:
   cInstLib(int size, const cInstruction inst_error, const cInstruction inst_default)
     : m_size(size), m_inst_error(inst_error), m_inst_default(inst_default) { ; }
+  virtual ~cInstLib() { ; }
 
   inline int GetSize() const { return m_size; }
 

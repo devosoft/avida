@@ -27,10 +27,7 @@
 
 #include "functions.h"
 
-extern "C" {
-#include <stdio.h>
-}
-
+#include <cstdio>
 #include <iostream>
 
 using namespace std;

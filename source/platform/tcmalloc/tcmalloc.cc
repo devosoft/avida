@@ -88,15 +88,15 @@
 #include "tcmalloc-config.h"
 
 #include <new>
-#include <stdio.h>
+#include <cstdio>
 #include <stddef.h>
 #include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 #include <pthread.h>
 #include <unistd.h>
-#include <errno.h>
-#include <stdarg.h>
+#include <cerrno>
+#include <cstdarg>
 
 #include "tcmalloc-logging.h"
 #include "spinlock.h"

@@ -29,7 +29,7 @@
 #include "cOrganism.h"
 #include "cPhenotype.h"
 
-#include <assert.h>
+#include <cassert>
 
 cCPUTestInfo::cCPUTestInfo(int max_tests)
   : generation_tests(max_tests)  // These vars not reset on Clear()

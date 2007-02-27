@@ -13,9 +13,9 @@
 #include "cTools.h"
 
 #ifdef WIN32
-#include <direct.h>
+# include <direct.h>
 #else
-#include <unistd.h>
+# include <unistd.h>
 #endif
 
 #define MAXIMUM_DIRECTORY_LENGTH 2048

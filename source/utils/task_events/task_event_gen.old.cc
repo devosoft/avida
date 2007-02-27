@@ -1,4 +1,4 @@
-#include <iostream.h>
+#include <iostream>
 
 #include "../../tools/tArray.h"
 #include "../../tools/cFile.h"

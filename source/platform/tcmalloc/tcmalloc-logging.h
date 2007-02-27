@@ -60,8 +60,8 @@
 #define TCMALLOC_INTERNAL_LOGGING_H__
 
 #include "tcmalloc-config.h"
-#include <stdarg.h>
-#include <stdlib.h>
+#include <cstdarg>
+#include <cstdlib>
 #include <unistd.h>
 
 //-------------------------------------------------------------------

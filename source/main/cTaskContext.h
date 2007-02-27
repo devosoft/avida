@@ -84,12 +84,12 @@ public:
   inline const tBuffer<int>& GetOutputBuffer() { return m_output_buffer; }
   inline const tList<tBuffer<int> >& GetNeighborhoodInputBuffers() { return m_other_input_buffers; }
   inline const tList<tBuffer<int> >& GetNeighborhoodOutputBuffers() { return m_other_output_buffers; }
-  inline bool NetIsValid() { return m_net_valid; }
-  inline int GetNetCompleted() { return m_net_completed; }
+  inline bool NetIsValid() const { return m_net_valid; }
+  inline int GetNetCompleted() const { return m_net_completed; }
   inline tBuffer<int>* GetReceivedMessages() { return m_received_messages; }
-  inline int GetLogicId() { return m_logic_id; }
+  inline int GetLogicId() const { return m_logic_id; }
   inline void SetLogicId(int v) { m_logic_id = v; }
-  inline bool GetOnDivide() { return m_on_divide; }
+  inline bool GetOnDivide() const { return m_on_divide; }
   
   inline void SetTaskEntry(cTaskEntry* in_entry) { m_task_entry = in_entry; }
   inline cTaskEntry* GetTaskEntry() { return m_task_entry; }

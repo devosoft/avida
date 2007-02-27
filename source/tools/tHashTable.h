@@ -74,7 +74,7 @@
 #include "tList.h"
 #endif
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #if USE_tMemTrack
 # ifndef tMemTrack_h

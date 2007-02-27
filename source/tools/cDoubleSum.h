@@ -26,8 +26,8 @@
 #ifndef cDoubleSum_h
 #define cDoubleSum_h
 
-#include <math.h>
-#include <limits.h>
+#include <cmath>
+#include <climits>
 
 class cDoubleSum {
 private:

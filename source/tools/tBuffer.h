@@ -39,7 +39,7 @@
 #include "tArray.h"
 #endif
 
-#include <assert.h>
+#include <cassert>
 #include <iostream>
 
 

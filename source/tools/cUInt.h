@@ -26,7 +26,7 @@
 #ifndef cUInt_h
 #define cUInt_h
 
-#include <stdio.h>
+#include <cstdio>
 
 // Should this just use a long?  For testing only...
 #define LONG_C_UINT

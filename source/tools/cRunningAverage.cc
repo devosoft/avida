@@ -25,7 +25,7 @@
 
 #include "cRunningAverage.h"
 
-#include <assert.h>
+#include <cassert>
 
 
 cRunningAverage::cRunningAverage( int window_size ) : 

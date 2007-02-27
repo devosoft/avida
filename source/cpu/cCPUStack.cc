@@ -25,7 +25,7 @@
 
 #include "cCPUStack.h"
 
-#include <assert.h>
+#include <cassert>
 #include "cString.h"
 
 using namespace std;

@@ -45,7 +45,7 @@
 #include "cWorld.h"
 #include "tInstLibEntry.h"
 
-#include <limits.h>
+#include <climits>
 #include <fstream>
 
 using namespace std;
@@ -1789,7 +1789,6 @@ bool cHardwareCPU::Inst_Goto(cAvidaContext& ctx)
       int label_pos = search_head.GetPosition();
       search_head++;
       int size_matched = 0;
-      bool match = true;
       while ( size_matched < GetLabel().GetSize() )
       {
         if ( !m_inst_set->IsNop(search_head.GetInst()) ) break;

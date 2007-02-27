@@ -25,12 +25,9 @@
 
 #include "cFile.h"
 
+#include <cerrno>   // needed for FOPEN error constants (MSVC)
+#include <cstdlib>
 #include <iostream>
-
-extern "C" {
-#include <stdlib.h>
-#include <errno.h>   // needed for FOPEN error constants (MSVC)
-}
 
 using namespace std;
 

@@ -26,7 +26,7 @@
 #ifndef cStats_h
 #define cStats_h
 
-#include <assert.h>
+#include <cassert>
 #include <fstream>
 #include <iostream>
 

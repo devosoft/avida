@@ -56,9 +56,9 @@
 // ---
 // Sanjay Ghemawat <opensource@google.com>
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdarg>
+#include <cstring>
 
 int TCMallocDebug::level;
 

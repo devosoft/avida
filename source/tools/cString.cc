@@ -25,10 +25,8 @@
 
 #include "cString.h"
 
-extern "C"{
-#include <stdio.h>
-#include <stdarg.h>
-}
+#include <cstdarg>
+#include <cstdio>
 
 
 using namespace std;

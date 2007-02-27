@@ -35,7 +35,7 @@
 #include "tArray.h"
 #endif
 
-#include <assert.h>
+#include <cassert>
 
 template <class T> class tManagedPointerArray
 {  

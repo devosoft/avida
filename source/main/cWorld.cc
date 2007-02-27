@@ -37,7 +37,7 @@
 #include "cTools.h"
 #include "cFallbackWorldDriver.h"
 
-#include <assert.h>
+#include <cassert>
 
 
 cWorld::~cWorld()

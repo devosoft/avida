@@ -27,7 +27,7 @@
 
 #include "cInjectGenotype.h"
 
-#include <assert.h>
+#include <cassert>
 
 
 cInjectGenotypeQueue::cInjectGenotypeQueue()

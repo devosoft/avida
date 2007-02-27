@@ -36,8 +36,8 @@
 
 #include "functions.h"
 
-#include <float.h>
-#include <math.h>
+#include <cfloat>
+#include <cmath>
 
 
 cStats::cStats(cWorld* world)

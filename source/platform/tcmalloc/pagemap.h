@@ -79,7 +79,7 @@
 #include <sys/types.h>
 #endif
 
-#include <string.h>
+#include <cstring>
 
 // Single-level array
 template <int BITS>

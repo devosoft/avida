@@ -34,7 +34,7 @@
 #include "cStats.h"
 #include "cTestCPU.h"
 
-#include <assert.h>
+#include <cassert>
 
 #ifndef NULL
 #define NULL 0

@@ -28,8 +28,8 @@
 #include "cAvidaDriver.h"
 #include "cWorldDriver.h"
 
-#include <assert.h>
-#include <stdlib.h>
+#include <cassert>
+#include <cstdlib>
 
 
 cDriverManager* cDriverManager::m_dm = NULL;

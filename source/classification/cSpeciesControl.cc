@@ -32,7 +32,7 @@
 #include "cStats.h"
 #include "cWorld.h"
 
-#include <assert.h>
+#include <cassert>
 
 void cSpeciesControl::Remove(cSpecies & in_species)
 {

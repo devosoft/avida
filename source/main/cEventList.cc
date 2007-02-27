@@ -32,7 +32,7 @@
 #include "cString.h"
 #include "cWorld.h"
 
-#include <float.h>           // for DBL_MIN
+#include <cfloat>           // for DBL_MIN
 #include <iostream>
 
 using namespace std;

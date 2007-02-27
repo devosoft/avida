@@ -29,9 +29,6 @@
 #define VERSION "2.7.0"
 #define VERSION_TAG "Jedi Knight"
 
-// -= Various view modes
-// #define VIEW_ANSI
-
 
 // -= Configurable Features
 #ifndef BREAKPOINTS
@@ -56,44 +53,15 @@
 // #define SPECIES_TEST
 
 
-// -= Compiler Compatability Stuff
-#define LONGINT long int
-
-
-////// Don't change anything below this line. /////
-
-#ifdef VIEW_ANSI
-#define PLATFORM_WINDOWS     // enable to compile for Win32 console
-#define MSVC_COMPILER        // enable to compile with Microsoft VC++
-#endif
-
 // Finally, if we have turned off Assertions, define NDEBUG
 #ifndef DEBUG
-#ifndef NDEBUG
-#define NDEBUG
-#endif
-#endif
-
-#ifdef PLATFORM_WINDOWS
- #ifdef UINT // Some modules will not compile w/out this (e.g. b_struct2)
- #undef UNIT
- #endif
-
- #include <windows.h>	// Defines, prototypes, etc. for
-#endif
-
-#ifdef MSVC_COMPILER
- #ifdef  _DEBUG         // VC++ debug define
- #define DEBUG
- #endif
-
- #ifndef _WINDEF_
- #include <string.h>
- #endif
+# ifndef NDEBUG
+#  define NDEBUG
+# endif
 #endif
 
 #ifndef NULL
- #define NULL 0
+# define NULL 0
 #endif
 
 const int MIN_CREATURE_SIZE = 8;

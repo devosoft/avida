@@ -30,7 +30,7 @@
 #include "cInstruction.h"
 #include "cStringUtil.h"
 
-#include <assert.h>
+#include <cassert>
 
 
 void cHeadCPU::Adjust()

@@ -27,9 +27,7 @@
 
 #include "nGeometry.h"
 
-extern "C" {
-#include <math.h>
-}
+#include <cmath>
 
 using namespace std;
 

@@ -17,9 +17,9 @@
 # endif
 #endif
 
-#include <time.h>
-#include <limits.h>
-#include <math.h>
+#include <ctime>
+#include <climits>
+#include <cmath>
 #include <pthread.h>
 
 /**

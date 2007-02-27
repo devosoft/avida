@@ -45,7 +45,7 @@
 #endif
 
 
-#include <assert.h>
+#include <cassert>
 
 class cActionLibrary;
 class cAnalyze;

@@ -37,7 +37,7 @@
 #include "cView.h"
 #include "cWorld.h"
 
-#include <stdlib.h>
+#include <cstdlib>
 
 using namespace std;
 

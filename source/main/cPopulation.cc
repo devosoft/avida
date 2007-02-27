@@ -56,9 +56,9 @@
 #include <algorithm>
 #include <set>
 
-#include <float.h>
-#include <math.h>
-#include <limits.h>
+#include <cfloat>
+#include <cmath>
+#include <climits>
 
 using namespace std;
 

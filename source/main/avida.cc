@@ -32,8 +32,8 @@
 #endif
 
 #include <iostream>
-#include <signal.h>
-#include <stdio.h>
+#include <csignal>
+#include <cstdio>
 
 using namespace std;
 

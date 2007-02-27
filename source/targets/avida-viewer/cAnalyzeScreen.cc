@@ -22,13 +22,14 @@
 #include "cPopulationCell.h"
 #include "cOrganism.h"
 
+#include <csignal>
+
 #ifdef WIN32
-#include <process.h>
-#define kill(x,y) exit(0)
+# include <process.h>
+# define kill(x,y) exit(0)
 #else
-#include <unistd.h>
+# include <unistd.h>
 #endif
-#include <signal.h>
 
 using namespace std;
 

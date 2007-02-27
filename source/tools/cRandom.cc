@@ -13,9 +13,9 @@
 #include "tArray.h"
 
 #ifdef WIN32
-#include <process.h>
+# include <process.h>
 #else
-#include <unistd.h>
+# include <unistd.h>
 #endif
 
 

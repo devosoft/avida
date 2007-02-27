@@ -26,8 +26,8 @@
 #ifndef cIntSum_h
 #define cIntSum_h
 
-#include <math.h>
-#include <limits.h>
+#include <cmath>
+#include <climits>
 
 class cIntSum
 {

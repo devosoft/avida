@@ -109,7 +109,7 @@ public:
 
     // Draw tabs...
     int offset = 2;
-    int active_offset;
+    int active_offset = 0;
     for (int tab_id = 0; tab_id < tabname_array.GetSize(); tab_id++) {
       const cString & cur_name = tabname_array[tab_id];
       const int tab_width = cur_name.GetSize() + 4;

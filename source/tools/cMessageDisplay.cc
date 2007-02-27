@@ -24,9 +24,9 @@
 
 #include "cMessageDisplay_headers.h"
 
-#include <limits.h>
-#include <stdio.h>
-#include <stdarg.h>
+#include <climits>
+#include <cstdio>
+#include <cstdarg>
 #include "../third-party/trio/trio.h"
 #include <iostream>
 

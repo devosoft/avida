@@ -4,14 +4,6 @@ Import('environment')
 misc = ['SConscript']
 
 incs = [
-  'recursive_tests_decl_hdrs.hh',
-  'recursive_tests_defn_hdrs.hh',
-  'recursive_tests_macros.hh',
-  'tUnitTestSuite.hh',
-  'tUnitTestSuiteRecurser.hh',
-  'tVerifierSuite.hh',
-  'tVerifierSuiteRecurser.hh',
-  'win32_mkdir_hack.hh',
   'cArgContainer.h',
   'cArgSchema.h',
   'cBlockStruct.h',
@@ -63,6 +55,9 @@ incs = [
   'cVerifierSuiteRecurser.h',
   'cWeightedIndex.h',
   'functions.h',
+  'recursive_tests_decl_hdrs.hh',
+  'recursive_tests_defn_hdrs.hh',
+  'recursive_tests_macros.hh',
   'tArgDataEntry.h',
   'tArray.h',
   'tBuffer.h',
@@ -78,7 +73,11 @@ incs = [
   'tMemTrack.h',
   'tObjectFactory.h',
   'tSmartArray.h',
+  'tUnitTestSuite.hh',
+  'tUnitTestSuiteRecurser.hh',
   'tVector.h',
+  'tVerifierSuite.hh',
+  'tVerifierSuiteRecurser.hh',
 ]
 
 srcs = [

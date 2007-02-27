@@ -68,14 +68,11 @@
 #include "tHashTable.h"
 #include "cWorld.h"
 #include "cWorldDriver.h"
-#ifdef WIN32
-#  include "win32_mkdir_hack.hh"
-#endif
 
 #include "defs.h"
 
+#include <cerrno>
 extern "C" {
-#include <errno.h>
 #include <sys/stat.h>
 }
 

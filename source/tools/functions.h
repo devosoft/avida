@@ -27,9 +27,9 @@
 #define functions_h
 
 #include <iostream>
-#include <math.h>
-#include <stdio.h>
-#include <assert.h>
+#include <cmath>
+#include <cstdio>
+#include <cassert>
 
 #ifndef tArray_h
 #include "tArray.h"

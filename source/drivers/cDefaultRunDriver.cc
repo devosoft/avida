@@ -37,7 +37,7 @@
 #include "cString.h"
 #include "cWorld.h"
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <iostream>
 #include <iomanip>
 

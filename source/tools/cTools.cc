@@ -11,9 +11,9 @@
 #include "cTools.h"
 
 #include <iostream>
-#include <errno.h>
+#include <cerrno>
 #include <sys/stat.h>
-#include <stdio.h>
+#include <cstdio>
 
 #include "cString.h"
 
@@ -22,6 +22,22 @@
 #  include "win32_mkdir_hack.hh"
 # endif
 #endif
+
+
+// mkdir undefined in win32
+#ifdef WIN32
+# include <direct.h>
+# ifndef ACCESSPERMS
+#  define ACCESSPERMS 0
+# endif
+# ifndef mkdir
+#  define mkdir(path, ignored_mode) _mkdir(path)
+# endif
+# ifndef mode_t
+#  define mode_t unsigned int
+# endif
+#endif
+
 
 using namespace std;
 

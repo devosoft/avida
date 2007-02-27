@@ -59,7 +59,7 @@
 
 #include "tcmalloc-config.h"
 
-#include <time.h>       /* For nanosleep() */
+#include <ctime>       /* For nanosleep() */
 #include <sched.h>      /* For sched_yield() */
 
 #if HAVE(STDINT_H)
@@ -70,7 +70,7 @@
 #include <sys/types.h>
 #endif
 
-#include <stdlib.h>     /* for abort() */
+#include <cstdlib>     /* for abort() */
 
 #if (PLATFORM(X86) || PLATFORM(PPC)) && COMPILER(GCC)
 static void TCMalloc_SlowLock(volatile unsigned int* lockword);

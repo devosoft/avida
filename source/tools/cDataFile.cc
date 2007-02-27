@@ -27,10 +27,8 @@
 
 #include "cStringUtil.h"
 
-extern "C" {
-#include <stdio.h>
-#include <time.h>
-}
+#include <cstdio>
+#include <ctime>
 
 using namespace std;
 

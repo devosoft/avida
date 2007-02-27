@@ -45,7 +45,7 @@
 #include "cWorld.h"
 #include "tInstLibEntry.h"
 
-#include <limits.h>
+#include <climits>
 #include <fstream>
 
 using namespace std;
@@ -446,7 +446,6 @@ cHeadCPU cHardwareExperimental::FindLabelStart()
   if (search_label.GetSize() == 0) return ip;
 
   const cGenome& memory = ip.GetMemory();
-  int start = ip.GetPosition();
   int pos = 0;
   
   while (pos < memory.GetSize()) {
