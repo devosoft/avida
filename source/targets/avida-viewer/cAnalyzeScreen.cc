@@ -26,7 +26,7 @@
 
 #ifdef WIN32
 # include <process.h>
-# define kill(x,y) exit(0)
+# define kill(x, y)
 #else
 # include <unistd.h>
 #endif

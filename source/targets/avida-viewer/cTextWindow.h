@@ -69,8 +69,15 @@ public:
 
   // These function return the number of characters wide or high
   // (respectively) that the screen is.
+#ifdef WIN32
+  // Windows returns the screen width and height
+  inline int Width() { return win_id->_maxx; }
+  inline int Height() { return win_id->_maxy; }
+#else
+  // Elsewhere returns the max x and y coordinates, like expected
   inline int Width() { return win_id->_maxx + 1; }
   inline int Height() { return win_id->_maxy + 1; }
+#endif
 
   // Clear the screen and redraw all text on it.
   inline void RedrawMain() { touchwin(win_id); wrefresh(win_id); }

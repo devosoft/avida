@@ -17,12 +17,6 @@
 
 #include "cString.h"
 
-#ifdef WIN32
-# ifndef WIN32_MKDIR_HACK_HH
-#  include "win32_mkdir_hack.hh"
-# endif
-#endif
-
 
 // mkdir undefined in win32
 #ifdef WIN32
