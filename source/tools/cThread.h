@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 2/18/06.
- *  Copyright 1999-2007 Michigan State University. All rights reserved.
+ *  Copyright 2006-2007 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -25,19 +25,25 @@
 #ifndef cThread_h
 #define cThread_h
 
-#ifndef NULL
-#define NULL 0
+#ifndef cMutex_h
+#include "cMutex.h"
 #endif
 
+
+#if AVIDA_PLATFORM(THREADS) && AVIDA_PLATFORM(UNIX)
+
+// Use POSIX Threads
 #include <pthread.h>
 
 class cThread
 {
 protected:
   pthread_t m_thread;
-  pthread_mutex_t m_mutex;
+  cMutex m_mutex;
   bool m_running;
 
+  void Stop();
+  
   virtual void Run() = 0;
   
   static void* EntryPoint(void* arg);
@@ -46,24 +52,61 @@ protected:
   cThread& operator=(const cThread&); // @not_implemented
 
 public:
-  cThread() : m_running(false) { pthread_mutex_init(&m_mutex, NULL); }
+  cThread() : m_running(false) { ; }
   virtual ~cThread();
   
-  int Start();
-  void Stop();
+  bool Start();
   void Join();
 };
 
+#elif AVIDA_PLATFORM(THREADS) && AVIDA_PLATFORM(WINDOWS)
 
-#ifdef ENABLE_UNIT_TESTS
-namespace nThread {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
+// Use Windows Threading
+#include <windows.h>
+
+class cThread
+{
+protected:
+  HANDLE m_thread;
+  cMutex m_mutex;
+  
+  void Stop();
+
+  virtual void Run() = 0;
+  
+  static unsigned int __stdcall EntryPoint(void* arg);
+  
+  cThread(const cThread&); // @not_implemented
+  cThread& operator=(const cThread&); // @not_implemented
+  
+public:
+  cThread() : m_thread(0) { ; }
+  virtual ~cThread();
+  
+  bool Start();
+  void Join();
+};
+
+#else
+
+// Disable Threading
+class cThread
+{
+protected:
+  virtual void Run() = 0;
+  
+  cThread(const cThread&); // @not_implemented
+  cThread& operator=(const cThread&); // @not_implemented
+  
+public:
+  inline cThread() { ; }
+  virtual ~cThread() { ; }
+  
+  inline bool Start() { Run(); return true; }
+  inline void Join() { ; }
+};
+
+#endif
+
 
 #endif

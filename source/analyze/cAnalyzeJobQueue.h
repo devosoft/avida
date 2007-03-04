@@ -28,17 +28,21 @@
 #ifndef cAnalyzeJob
 #include "cAnalyzeJob.h"
 #endif
+#ifndef cConditionVariable_h
+#include "cConditionVariable.h"
+#endif
+#ifndef cMutex_h
+#include "cMutex.h"
+#endif
+#ifndef cRandom_h
+#include "cRandom.h"
+#endif
 #ifndef tArray_h
 #include "tArray.h"
 #endif
 #ifndef tList_h
 #include "tList.h"
 #endif
-#ifndef cRandom_h
-#include "cRandom.h"
-#endif
-
-#include <pthread.h>
 
 class cAnalyzeJobWorker;
 class cWorld;
@@ -57,11 +61,11 @@ private:
   tList<cAnalyzeJob> m_queue;
   int m_last_jobid;
   cRandomMT* m_rng_pool[MT_RANDOM_POOL_SIZE];
-  pthread_mutex_t m_mutex;
-  pthread_cond_t m_cond;
-  pthread_cond_t m_term_cond;
+  cMutex m_mutex;
+  cConditionVariable m_cond;
+  cConditionVariable m_term_cond;
   
-  volatile int m_jobs;      // count of waiting jobs, used in pthread_cond constructs
+  volatile int m_jobs;      // count of waiting jobs, used in condition variable constructs
   volatile int m_pending;   // count of currently executing jobs
   
   tArray<cAnalyzeJobWorker*> m_workers;

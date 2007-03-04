@@ -22,9 +22,11 @@
 #include "cPopulationCell.h"
 #include "cOrganism.h"
 
+#include "platform.h"
+
 #include <csignal>
 
-#ifdef WIN32
+#if AVIDA_PLATFORM(WINDOWS)
 # include <process.h>
 # define kill(x, y)
 #else

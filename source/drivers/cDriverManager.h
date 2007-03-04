@@ -28,8 +28,9 @@
 #ifndef tList_h
 #include "tList.h"
 #endif
-
-#include <pthread.h>
+#ifndef cMutex_h
+#include "cMutex.h"
+#endif
 
 class cActionLibrary;
 class cAvidaDriver;
@@ -44,7 +45,7 @@ private:
   tList<cAvidaDriver> m_adrvs;
   tList<cWorldDriver> m_wdrvs;
   
-  pthread_mutex_t m_mutex;
+  cMutex m_mutex;
   cActionLibrary* m_actlib;
   
   cDriverManager();

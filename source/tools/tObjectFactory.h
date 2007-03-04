@@ -25,6 +25,9 @@
 #ifndef tObjectFactory_h
 #define tObjectFactory_h
 
+#ifndef cMutex_h
+#include "cMutex.h"
+#endif
 #ifndef tDictionary_h
 #include "tDictionary.h"
 #endif
@@ -34,8 +37,6 @@
 #ifndef tList_h
 #include "tList.h"
 #endif
-
-#include <pthread.h>
 
 class cString;
 
@@ -76,43 +77,38 @@ protected:
   typedef BaseType (*CreateObjectFunction)();
   
   tDictionary<CreateObjectFunction> m_create_funcs;
-  mutable pthread_mutex_t m_mutex;
+  mutable cMutex m_mutex;
   
 public:
-  tObjectFactory() { pthread_mutex_init(&m_mutex, NULL); }
-  virtual ~tObjectFactory() { pthread_mutex_destroy(&m_mutex); }
+  tObjectFactory() { ; }
+  virtual ~tObjectFactory() { ; }
 
   template<typename ClassType> bool Register(const cString& key)
   {
+    cMutexAutoLock lock(m_mutex);
     CreateObjectFunction func;
-    pthread_mutex_lock(&m_mutex);
     if (m_create_funcs.Find(key, func)) {
-      pthread_mutex_unlock(&m_mutex);
       return false;
     }
     
     m_create_funcs.Add(key, &nObjectFactory::createObject<BaseType, ClassType>);
-    pthread_mutex_unlock(&m_mutex);
     return true;
   }
   
   bool Unregister(const cString& key)
   {
-    pthread_mutex_lock(&m_mutex);
+    cMutexAutoLock lock(m_mutex);
     CreateObjectFunction func = m_create_funcs.Remove(key);
-    pthread_mutex_unlock(&m_mutex);
     return (func != NULL);
   }
   
   virtual BaseType Create(const cString& key)
   {
     CreateObjectFunction func;
-    pthread_mutex_lock(&m_mutex);
+    cMutexAutoLock lock(m_mutex);
     if (m_create_funcs.Find(key, func)) {
-      pthread_mutex_unlock(&m_mutex);
       return func();
     }
-    pthread_mutex_unlock(&m_mutex);
     return NULL;
   }
   
@@ -120,8 +116,7 @@ public:
   {
     tList<cString> names;
     tList<CreateObjectFunction> funcs;
-    
-    pthread_mutex_lock(&m_mutex);
+    cMutexAutoLock lock(m_mutex);
     
     m_create_funcs.AsLists(names, funcs);
     objects.Resize(names.GetSize());
@@ -132,15 +127,12 @@ public:
       m_create_funcs.Find(*names_it.Get(), func);
       objects[i] = func();
     }
-
-    pthread_mutex_unlock(&m_mutex);
   }
   
   bool Supports(const cString& key) const
   {
-    pthread_mutex_lock(&m_mutex);
+    cMutexAutoLock lock(m_mutex);
     bool supports = m_create_funcs.HasEntry(key);
-    pthread_mutex_unlock(&m_mutex);
     return supports;
   }
 };
@@ -152,51 +144,45 @@ protected:
   typedef BaseType (*CreateObjectFunction)(Arg1Type);
   
   tDictionary<CreateObjectFunction> m_create_funcs;
-  mutable pthread_mutex_t m_mutex;
+  mutable cMutex m_mutex;
   
 public:
-  tObjectFactory() { pthread_mutex_init(&m_mutex, NULL); }
-  virtual ~tObjectFactory() { pthread_mutex_destroy(&m_mutex); }
+  tObjectFactory() { ; }
+  virtual ~tObjectFactory() { ; }
   
   template<typename ClassType> bool Register(const cString& key)
   {
     CreateObjectFunction func;
-    pthread_mutex_lock(&m_mutex);
+    cMutexAutoLock lock(m_mutex);
     if (m_create_funcs.Find(key, func)) {
-      pthread_mutex_unlock(&m_mutex);
       return false;
     }
     
     m_create_funcs.Add(key, &nObjectFactory::createObject<BaseType, ClassType, Arg1Type>);
-    pthread_mutex_unlock(&m_mutex);
     return true;
   }
   
   bool Unregister(const cString& key)
   {
-    pthread_mutex_lock(&m_mutex);
+    cMutexAutoLock lock(m_mutex);
     CreateObjectFunction func = m_create_funcs.Remove(key);
-    pthread_mutex_unlock(&m_mutex);
     return (func != NULL);
   }
   
   virtual BaseType Create(const cString& key, Arg1Type arg1)
   {
     CreateObjectFunction func;
-    pthread_mutex_lock(&m_mutex);
+    cMutexAutoLock lock(m_mutex);
     if (m_create_funcs.Find(key, func)) {
-      pthread_mutex_unlock(&m_mutex);
       return func(arg1);
     }
-    pthread_mutex_unlock(&m_mutex);
     return NULL;
   }
 
   bool Supports(const cString& key) const
   {
-    pthread_mutex_lock(&m_mutex);
+    cMutexAutoLock lock(m_mutex);
     bool supports = m_create_funcs.HasEntry(key);
-    pthread_mutex_unlock(&m_mutex);
     return supports;
   }
 };
@@ -208,51 +194,45 @@ protected:
   typedef BaseType (*CreateObjectFunction)(Arg1Type, Arg2Type);
   
   tDictionary<CreateObjectFunction> m_create_funcs;
-  mutable pthread_mutex_t m_mutex;
+  mutable cMutex m_mutex;
   
 public:
-  tObjectFactory() { pthread_mutex_init(&m_mutex, NULL); }
-  virtual ~tObjectFactory() { pthread_mutex_destroy(&m_mutex); }
+  tObjectFactory() { ; }
+  virtual ~tObjectFactory() { ; }
   
   template<typename ClassType> bool Register(const cString& key)
   {
     CreateObjectFunction func;
-    pthread_mutex_lock(&m_mutex);
+    cMutexAutoLock lock(m_mutex);
     if (m_create_funcs.Find(key, func)) {
-      pthread_mutex_unlock(&m_mutex);
       return false;
     }
     
     m_create_funcs.Add(key, &nObjectFactory::createObject<BaseType, ClassType, Arg1Type, Arg2Type>);
-    pthread_mutex_unlock(&m_mutex);
     return true;
   }
   
   bool Unregister(const cString& key)
   {
-    pthread_mutex_lock(&m_mutex);
+    cMutexAutoLock lock(m_mutex);
     CreateObjectFunction func = m_create_funcs.Remove(key);
-    pthread_mutex_unlock(&m_mutex);
     return (func != NULL);
   }
   
   virtual BaseType Create(const cString& key, Arg1Type arg1, Arg2Type arg2)
   {
     CreateObjectFunction func;
-    pthread_mutex_lock(&m_mutex);
+    cMutexAutoLock lock(m_mutex);
     if (m_create_funcs.Find(key, func)) {
-      pthread_mutex_unlock(&m_mutex);
       return func(arg1, arg2);
     }
-    pthread_mutex_unlock(&m_mutex);
     return NULL;
   }
 
   bool Supports(const cString& key) const
   {
-    pthread_mutex_lock(&m_mutex);
+    cMutexAutoLock lock(m_mutex);
     bool supports = m_create_funcs.HasEntry(key);
-    pthread_mutex_unlock(&m_mutex);
     return supports;
   }
 };
@@ -264,51 +244,45 @@ protected:
   typedef BaseType (*CreateObjectFunction)(Arg1Type, Arg2Type, Arg3Type);
   
   tDictionary<CreateObjectFunction> m_create_funcs;
-  mutable pthread_mutex_t m_mutex;
+  mutable cMutex m_mutex;
   
 public:
-  tObjectFactory() { pthread_mutex_init(&m_mutex, NULL); }
-  virtual ~tObjectFactory() { pthread_mutex_destroy(&m_mutex); }
+  tObjectFactory() { ; }
+  virtual ~tObjectFactory() { ; }
   
   template<typename ClassType> bool Register(const cString& key)
   {
     CreateObjectFunction func;
-    pthread_mutex_lock(&m_mutex);
+    cMutexAutoLock lock(m_mutex);
     if (m_create_funcs.Find(key, func)) {
-      pthread_mutex_unlock(&m_mutex);
       return false;
     }
     
     m_create_funcs.Add(key, &nObjectFactory::createObject<BaseType, ClassType, Arg1Type, Arg2Type, Arg3Type>);
-    pthread_mutex_unlock(&m_mutex);
     return true;
   }
   
   bool Unregister(const cString& key)
   {
-    pthread_mutex_lock(&m_mutex);
+    cMutexAutoLock lock(m_mutex);
     CreateObjectFunction func = m_create_funcs.Remove(key);
-    pthread_mutex_unlock(&m_mutex);
     return (func != NULL);
   }
   
   virtual BaseType Create(const cString& key, Arg1Type arg1, Arg2Type arg2, Arg3Type arg3)
   {
     CreateObjectFunction func;
-    pthread_mutex_lock(&m_mutex);
+    cMutexAutoLock lock(m_mutex);
     if (m_create_funcs.Find(key, func)) {
-      pthread_mutex_unlock(&m_mutex);
       return func(arg1, arg2, arg3);
     }
-    pthread_mutex_unlock(&m_mutex);
     return NULL;
   }
 
   bool Supports(const cString& key) const
   {
-    pthread_mutex_lock(&m_mutex);
+    cMutexAutoLock lock(m_mutex);
     bool supports = m_create_funcs.HasEntry(key);
-    pthread_mutex_unlock(&m_mutex);
     return supports;
   }
 };

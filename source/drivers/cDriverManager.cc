@@ -36,7 +36,6 @@ cDriverManager* cDriverManager::m_dm = NULL;
 
 cDriverManager::cDriverManager()
 {
-  pthread_mutex_init(&m_mutex, NULL);
   m_actlib = cActionLibrary::ConstructDefaultActionLibrary();
 }
 
@@ -53,8 +52,6 @@ cDriverManager::~cDriverManager()
   }
   
   delete m_actlib;
-  
-  pthread_mutex_destroy(&m_mutex);
 }
 
 void cDriverManager::Initialize()
@@ -76,33 +73,33 @@ void cDriverManager::Destroy()
 void cDriverManager::Register(cAvidaDriver* drv)
 {
   assert(m_dm);
-  pthread_mutex_lock(&m_dm->m_mutex);
+  m_dm->m_mutex.Lock();
   m_dm->m_adrvs.Push(drv);
-  pthread_mutex_unlock(&m_dm->m_mutex);
+  m_dm->m_mutex.Unlock();
 }
 
 void cDriverManager::Register(cWorldDriver* drv)
 {
   assert(m_dm);
-  pthread_mutex_lock(&m_dm->m_mutex);
+  m_dm->m_mutex.Lock();
   m_dm->m_wdrvs.Push(drv);
-  pthread_mutex_unlock(&m_dm->m_mutex);
+  m_dm->m_mutex.Unlock();
 }
 
 void cDriverManager::Unregister(cAvidaDriver* drv)
 {
   assert(m_dm);
-  pthread_mutex_lock(&m_dm->m_mutex);
+  m_dm->m_mutex.Lock();
   m_dm->m_adrvs.Remove(drv);
-  pthread_mutex_unlock(&m_dm->m_mutex);
+  m_dm->m_mutex.Unlock();
 }
 
 void cDriverManager::Unregister(cWorldDriver* drv)
 {
   assert(m_dm);
-  pthread_mutex_lock(&m_dm->m_mutex);
+  m_dm->m_mutex.Lock();
   m_dm->m_wdrvs.Remove(drv);
-  pthread_mutex_unlock(&m_dm->m_mutex);
+  m_dm->m_mutex.Unlock();
 }
 
 cActionLibrary* cDriverManager::GetActionLibrary()

@@ -10,9 +10,10 @@
 
 #include "cRandom.h"
 
+#include "platform.h"
 #include "tArray.h"
 
-#ifdef WIN32
+#if AVIDA_PLATFORM(WINDOWS)
 # include <process.h>
 #else
 # include <unistd.h>
@@ -71,9 +72,8 @@ void cRandom::ResetSeed(const int in_seed)
 
 void cRandomMT::ResetSeed(const int in_seed)
 {
-  pthread_mutex_lock(&m_mutex);
+  cMutexAutoLock lock(m_mutex);
   cRandom::ResetSeed(in_seed);
-  pthread_mutex_unlock(&m_mutex);
 }
 
 
@@ -130,9 +130,8 @@ unsigned int cRandom::Get()
 
 unsigned int cRandomMT::Get()
 {
-  pthread_mutex_lock(&m_mutex);
+  cMutexAutoLock lock(m_mutex);
   unsigned int value = cRandom::Get();
-  pthread_mutex_unlock(&m_mutex);
   return value;
 }
 
@@ -161,14 +160,14 @@ double cRandomMT::GetRandNormal()
   // Using Rejection Method and saving of initial exponential random variable
   double expRV2;
   
-  pthread_mutex_lock(&m_mutex);
+  m_mutex.Lock();
   while (1) {
     expRV2 = -log(cRandom::Get() * _RAND_FAC);
     expRV -= (expRV2-1)*(expRV2-1)/2;
     if (expRV > 0) break;
     expRV = -log(cRandom::Get() * _RAND_FAC);
   }
-  pthread_mutex_unlock(&m_mutex);
+  m_mutex.Unlock();
   
   if (P(.5)) 
     return expRV2;

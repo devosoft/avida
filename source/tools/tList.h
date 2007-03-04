@@ -32,6 +32,11 @@
 # endif
 #endif
 
+#ifndef platform_h
+#include "platform.h"
+#endif
+
+
 #ifndef NULL
 #define NULL 0
 #endif
@@ -47,7 +52,7 @@ public:
   
 // @DMB - Visual Studio doesn't like usage of 'this' in initializers 
 //        and throws a lot of useless warnings. 
-#ifdef WIN32 
+#if AVIDA_PLATFORM(WINDOWS) 
   tListNode() : data(NULL) { next = this; prev = this; } 
 #else 
   tListNode() : data(NULL), next(this), prev(this) { ; } 

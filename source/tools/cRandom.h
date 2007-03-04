@@ -11,6 +11,10 @@
 #ifndef cRandom_h
 #define cRandom_h
 
+#ifndef cMutex_h
+#include "cMutex.h"
+#endif
+
 #if USE_tMemTrack
 # ifndef tMemTrack_h
 #  include "tMemTrack.h"
@@ -20,7 +24,6 @@
 #include <ctime>
 #include <climits>
 #include <cmath>
-#include <pthread.h>
 
 /**
  * A versatile and fast pseudo random number generator.
@@ -244,13 +247,13 @@ namespace nRandom {
 class cRandomMT : public cRandom
 {
 private:
-  pthread_mutex_t m_mutex;
+  cMutex m_mutex;
   
   unsigned int Get();
 
 public:
-  cRandomMT(const int in_seed = -1) : cRandom(in_seed) { pthread_mutex_init(&m_mutex, NULL); }
-  ~cRandomMT() { pthread_mutex_destroy(&m_mutex); }
+  cRandomMT(const int in_seed = -1) : cRandom(in_seed) { ; }
+  ~cRandomMT() { ; }
 
   void ResetSeed(const int in_seed);
 

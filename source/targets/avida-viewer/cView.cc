@@ -29,10 +29,12 @@
 #include "cEnvironmentScreen.h"
 #include "cAnalyzeScreen.h"
 
+#include "platform.h"
+
 #include <csignal>
 #include <fstream>
 
-#ifdef WIN32
+#if AVIDA_PLATFORM(WINDOWS)
 # include <process.h>
 # define kill(x, y)
 #else

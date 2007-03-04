@@ -36,33 +36,31 @@ void cAnalyzeJobWorker::Run()
   cAnalyzeJob* job = NULL;
   
   while (1) {
-    pthread_mutex_lock(&m_queue->m_mutex);
+    m_queue->m_mutex.Lock();
     while (m_queue->m_jobs == 0) {
-      pthread_cond_wait(&m_queue->m_cond, &m_queue->m_mutex);
+      m_queue->m_cond.Wait(m_queue->m_mutex);
     }
     job = m_queue->m_queue.Pop();
     m_queue->m_jobs--;
     m_queue->m_pending++; 
-    pthread_mutex_unlock(&m_queue->m_mutex);
+    m_queue->m_mutex.Unlock();
     
     if (job) {
       // Set RNG from the waiting pool and execute the job
       ctx.SetRandom(m_queue->GetRandom(job->GetID()));
       job->Run(ctx);
       delete job;
-      pthread_mutex_lock(&m_queue->m_mutex);
+      m_queue->m_mutex.Lock();
       int pending = --m_queue->m_pending;
-      pthread_mutex_unlock(&m_queue->m_mutex);
-      if (!pending) pthread_cond_signal(&m_queue->m_term_cond);
+      m_queue->m_mutex.Unlock();
+      if (!pending) m_queue->m_term_cond.Signal();
     } else {
       // Terminate worker on NULL job receipt
-      pthread_mutex_lock(&m_queue->m_mutex);
+      m_queue->m_mutex.Lock();
       int pending = --m_queue->m_pending;
-      pthread_mutex_unlock(&m_queue->m_mutex);
-      if (!pending) pthread_cond_signal(&m_queue->m_term_cond);
+      m_queue->m_mutex.Unlock();
+      if (!pending) m_queue->m_term_cond.Signal();
       break;
     }
   }
-  
-  pthread_exit(NULL);
 }

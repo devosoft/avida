@@ -44,10 +44,10 @@ using namespace std;
 
 void cMutationalNeighborhood::Process(cAvidaContext& ctx)
 {
-  pthread_mutex_lock(&m_mutex);
+  m_mutex.Lock();
   if (m_initialized) {
     int cur_site = m_cur_site++;
-    pthread_mutex_unlock(&m_mutex);
+    m_mutex.Unlock();
 
     if (cur_site < m_base_genome.GetSize()) {
       // Create test infrastructure
@@ -77,9 +77,9 @@ void cMutationalNeighborhood::Process(cAvidaContext& ctx)
     return;
   }
   
-  pthread_mutex_lock(&m_mutex);
+  m_mutex.Lock();
   if (++m_completed == m_base_genome.GetSize()) ProcessComplete(ctx); 
-  pthread_mutex_unlock(&m_mutex);
+  m_mutex.Unlock();
 }
 
 
@@ -115,7 +115,7 @@ void cMutationalNeighborhood::ProcessInitialize(cAvidaContext& ctx)
   
   // Unlock internal mutex (was locked on Process() entrance)
   //  - will allow workers to begin processing if job queue already active
-  pthread_mutex_unlock(&m_mutex);
+  m_mutex.Unlock();
   
   // Load enough jobs to process all sites
   cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();

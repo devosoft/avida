@@ -114,7 +114,7 @@ public:
   cWorld* m_world;
   cInstSet& inst_set;
   cTestCPU* m_testcpu;
-  cAvidaContext m_ctx;
+  cAvidaContext& m_ctx;
   cAnalyzeJobQueue m_jobqueue;
 
   // This is the storage for the resource information from resource.dat.  It 

@@ -19,6 +19,9 @@
 #ifndef cBaseTextWindow_h
 #include "cBaseTextWindow.h"
 #endif
+#ifndef platform_h
+#include "platform.h"
+#endif
 
 #include <csignal>
 #include <cstdarg>
@@ -69,7 +72,7 @@ public:
 
   // These function return the number of characters wide or high
   // (respectively) that the screen is.
-#ifdef WIN32
+#if AVIDA_PLATFROM(WINDOWS)
   // Windows returns the screen width and height
   inline int Width() { return win_id->_maxx; }
   inline int Height() { return win_id->_maxy; }

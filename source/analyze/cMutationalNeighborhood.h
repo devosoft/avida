@@ -28,6 +28,9 @@
 #ifndef cGenome_h
 #include "cGenome.h"
 #endif
+#ifndef cMutex_h
+#include "cMutex.h"
+#endif
 #ifndef cString_h
 #include "cString.h"
 #endif
@@ -62,7 +65,7 @@ private:
   // Internal state information
   // --------------------------------------------------------------------------
   pthread_rwlock_t m_rwlock;
-  pthread_mutex_t m_mutex;
+  cMutex m_mutex;
   
   bool m_initialized;
   int m_cur_site;
@@ -189,7 +192,6 @@ public:
   : m_world(world), m_initialized(false), m_inst_set(inst_set), m_target(target), m_base_genome(genome)
   {
     pthread_rwlock_init(&m_rwlock, NULL);
-    pthread_mutex_init(&m_mutex, NULL);
     
     // Acquire write lock, to prevent any Results instances before computing
     pthread_rwlock_wrlock(&m_rwlock);
@@ -197,7 +199,6 @@ public:
   ~cMutationalNeighborhood()
   {
     pthread_rwlock_destroy(&m_rwlock);
-    pthread_mutex_destroy(&m_mutex);
   }
   
   void Process(cAvidaContext& ctx);

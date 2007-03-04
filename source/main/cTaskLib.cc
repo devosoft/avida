@@ -30,12 +30,14 @@
 #include "tHashTable.h"
 #include "cTaskState.h"
 
+#include "platform.h"
+
 #include <cstdlib>
 #include <cmath>
 #include <climits>
 
 // Various workarounds for Visual Studio shortcomings
-#ifdef WIN32
+#if AVIDA_PLATFORM(WINDOWS)
 # define llabs(x) _abs64(x)
 # define log2(x) (log(x)/log(2.0))
 #endif

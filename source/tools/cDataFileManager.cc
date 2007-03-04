@@ -11,8 +11,9 @@
 #include "cDataFileManager.h"
 
 #include "cTools.h"
+#include "platform.h"
 
-#ifdef WIN32
+#if AVIDA_PLATFORM(WINDOWS)
 # include <direct.h>
 #else
 # include <unistd.h>

@@ -16,10 +16,11 @@
 #include <cstdio>
 
 #include "cString.h"
+#include "platform.h"
 
 
-// mkdir undefined in win32
-#ifdef WIN32
+// mkdir undefined in ms windows
+#if AVIDA_PLATFORM(WINDOWS)
 # include <direct.h>
 # ifndef ACCESSPERMS
 #  define ACCESSPERMS 0
