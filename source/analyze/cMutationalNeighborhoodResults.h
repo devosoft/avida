@@ -41,16 +41,16 @@ private:
 public:
   cMutationalNeighborhoodResults(cMutationalNeighborhood& src) : m_src(src)
   {
-    pthread_rwlock_rdlock(&m_src.m_rwlock);
+    m_src.m_rwlock.ReadLock();
   }
   cMutationalNeighborhoodResults(cMutationalNeighborhood* src) : m_src(*src)
   {
-    pthread_rwlock_rdlock(&m_src.m_rwlock);
+    m_src.m_rwlock.ReadLock();
   }
   
   ~cMutationalNeighborhoodResults()
   {
-    pthread_rwlock_unlock(&m_src.m_rwlock);
+    m_src.m_rwlock.ReadUnlock();
   }
   
   inline void PrintStats(cDataFile& df, int update = -1) const { m_src.PrintStats(df, update); }

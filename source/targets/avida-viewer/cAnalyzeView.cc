@@ -25,7 +25,7 @@
 
 using namespace std;
 
-cTextWindow * cAnalyzeView::base_window = NULL;
+cTextWindow* cAnalyzeView::base_window = NULL;
 cBarScreen* cAnalyzeView::bar_screen = NULL;
 
 

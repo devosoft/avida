@@ -8,17 +8,16 @@
 #ifndef cAnalyzeScreen_h
 #define cAnalyzeScreen_h
 
+#ifndef cScreen_h
+#include "cScreen.h"
+#endif
+#ifndef cStringList_h
+#include "cStringList.h"
+#endif
 #ifndef cTabBox_h
 #include "cTabBox.h"
 #endif
 
-#ifndef cStringList_h
-#include "cStringList.h"
-#endif
-
-#ifndef cScreen_h
-#include "cScreen.h"
-#endif
 
 class cAnalyzeCommand;
 class cWorld;
@@ -64,7 +63,7 @@ public:
   cAnalyzeScreen(cWorld* world, int y_size, int x_size, int y_start, int x_start, cViewInfo& in_info)
     : cScreen(y_size, x_size, y_start, x_start, in_info)
     , m_world(world)
-    , tab_box(this, 0, 0, Height() - 1, Width())
+	, tab_box(this, 0, 0, Height() - 1, Width())
     , rollback_line(0)
     , cursor_pos(0)
     , nest_depth(0)

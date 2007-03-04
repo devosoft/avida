@@ -25,7 +25,8 @@
 #ifndef platform_h
 #define platform_h
 
-#define AVIDA_PLATFORM(PROP) (defined(AVIDA_PLATFORM_##PROP) && AVIDA_PLATFORM_##PROP)
+// spaces between defined's parentheses and contained value are required by Visual Studio's preprocessor
+#define AVIDA_PLATFORM(PROP) (defined( AVIDA_PLATFORM_ ## PROP ) && AVIDA_PLATFORM_##PROP)
 
 #if defined(WIN32) || defined(_WIN32)
 # define AVIDA_PLATFORM_WINDOWS 1
@@ -34,6 +35,8 @@
 # else
 #  define AVIDA_PLATFORM_THREADS 0
 # endif
+  // Disable warning C4355: 'this' : used in base member initializer list
+# pragma warning( disable : 4355 )
 #endif
 
 #if defined(__APPLE__) || defined(unix) || defined(__unix) || defined(__unix__) || defined (__NetBSD__) || defined(_AIX)

@@ -379,7 +379,7 @@ void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
     delete pend;
   }
   
-  pthread_rwlock_unlock(&m_rwlock);
+  m_rwlock.WriteUnlock();
 }
 
 

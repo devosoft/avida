@@ -72,7 +72,7 @@ public:
 
   // These function return the number of characters wide or high
   // (respectively) that the screen is.
-#if AVIDA_PLATFROM(WINDOWS)
+#if AVIDA_PLATFORM(WINDOWS)
   // Windows returns the screen width and height
   inline int Width() { return win_id->_maxx; }
   inline int Height() { return win_id->_maxy; }

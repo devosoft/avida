@@ -39,8 +39,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)source\tools&quot;;&quot;$(ProjectDir)source\targets\avida-viewer&quot;;&quot;$(ProjectDir)source\platform\msvc2005&quot;;&quot;$(ProjectDir)source\platform\msvc2005\pdcurses&quot;;&quot;$(ProjectDir)source\platform\win32-pthread&quot;;&quot;$(ProjectDir)source\main&quot;;&quot;$(ProjectDir)source\drivers&quot;;&quot;$(ProjectDir)source\cpu&quot;;&quot;$(ProjectDir)source\classification&quot;;&quot;$(ProjectDir)source\analyze&quot;;&quot;$(ProjectDir)source\actions&quot;;&quot;$(ProjectDir)source&quot;"
-				PreprocessorDefinitions="NOMACROS;DEBUG;WINDOWS;WIN32;_WINDOWS"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)source\tools&quot;;&quot;$(ProjectDir)source\targets\avida-viewer&quot;;&quot;$(ProjectDir)source\platform\msvc2005&quot;;&quot;$(ProjectDir)source\platform\msvc2005\pdcurses&quot;;&quot;$(ProjectDir)source\main&quot;;&quot;$(ProjectDir)source\drivers&quot;;&quot;$(ProjectDir)source\cpu&quot;;&quot;$(ProjectDir)source\classification&quot;;&quot;$(ProjectDir)source\analyze&quot;;&quot;$(ProjectDir)source\actions&quot;;&quot;$(ProjectDir)source&quot;"
+				PreprocessorDefinitions="NOMACROS;DEBUG;WIN32;_WIN32"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -121,8 +121,8 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)source\tools&quot;;&quot;$(ProjectDir)source\targets\avida-viewer&quot;;&quot;$(ProjectDir)source\platform\msvc2005&quot;;&quot;$(ProjectDir)source\platform\msvc2005\pdcurses&quot;;&quot;$(ProjectDir)source\platform\win32-pthread&quot;;&quot;$(ProjectDir)source\main&quot;;&quot;$(ProjectDir)source\drivers&quot;;&quot;$(ProjectDir)source\cpu&quot;;&quot;$(ProjectDir)source\classification&quot;;&quot;$(ProjectDir)source\analyze&quot;;&quot;$(ProjectDir)source\actions&quot;;&quot;$(ProjectDir)source&quot;"
-				PreprocessorDefinitions="NOMACROS;NDEBUG;WINDOWS;WIN32;_WINDOWS"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)source\tools&quot;;&quot;$(ProjectDir)source\targets\avida-viewer&quot;;&quot;$(ProjectDir)source\platform\msvc2005&quot;;&quot;$(ProjectDir)source\platform\msvc2005\pdcurses&quot;;&quot;$(ProjectDir)source\main&quot;;&quot;$(ProjectDir)source\drivers&quot;;&quot;$(ProjectDir)source\cpu&quot;;&quot;$(ProjectDir)source\classification&quot;;&quot;$(ProjectDir)source\analyze&quot;;&quot;$(ProjectDir)source\actions&quot;;&quot;$(ProjectDir)source&quot;"
+				PreprocessorDefinitions="NOMACROS;NDEBUG;WIN32;_WIN32"
 				ExceptionHandling="1"
 				RuntimeLibrary="0"
 				BufferSecurityCheck="false"
@@ -302,6 +302,10 @@
 			</File>
 			<File
 				RelativePath=".\source\cpu\cCodeLabel.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\tools\cConditionVariable.h"
 				>
 			</File>
 			<File
@@ -601,6 +605,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\tools\cMutex.h"
+				>
+			</File>
+			<File
 				RelativePath=".\source\main\cMxCodeArray.h"
 				>
 			</File>
@@ -690,6 +698,10 @@
 			</File>
 			<File
 				RelativePath=".\source\tools\cRunningAverage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\tools\cRWLock.h"
 				>
 			</File>
 			<File
@@ -897,15 +909,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\tools\platform.h"
+				>
+			</File>
+			<File
 				RelativePath=".\source\actions\PopulationActions.h"
 				>
 			</File>
 			<File
 				RelativePath=".\source\actions\PrintActions.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\platform\win32-pthread\pthread.h"
 				>
 			</File>
 			<File

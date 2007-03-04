@@ -31,6 +31,9 @@
 #ifndef cMutex_h
 #include "cMutex.h"
 #endif
+#ifndef cRWLock_h
+#include "cRWLock.h"
+#endif
 #ifndef cString_h
 #include "cString.h"
 #endif
@@ -43,8 +46,6 @@
 #ifndef tMatrix_h
 #include "tMatrix.h"
 #endif
-
-#include <pthread.h>
 
 class cAvidaContext;
 class cCPUTestInfo;
@@ -64,7 +65,7 @@ private:
   
   // Internal state information
   // --------------------------------------------------------------------------
-  pthread_rwlock_t m_rwlock;
+  cRWLock m_rwlock;
   cMutex m_mutex;
   
   bool m_initialized;
@@ -191,15 +192,10 @@ public:
   cMutationalNeighborhood(cWorld* world, const cGenome& genome, const cInstSet& inst_set, int target)
   : m_world(world), m_initialized(false), m_inst_set(inst_set), m_target(target), m_base_genome(genome)
   {
-    pthread_rwlock_init(&m_rwlock, NULL);
-    
     // Acquire write lock, to prevent any Results instances before computing
-    pthread_rwlock_wrlock(&m_rwlock);
+	m_rwlock.WriteLock();
   }
-  ~cMutationalNeighborhood()
-  {
-    pthread_rwlock_destroy(&m_rwlock);
-  }
+  ~cMutationalNeighborhood() { ; }
   
   void Process(cAvidaContext& ctx);
 
