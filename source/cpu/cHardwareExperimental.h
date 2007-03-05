@@ -163,7 +163,8 @@ protected:
   const cCodeLabel& GetLabel() const { return m_threads[m_cur_thread].next_label; }
   cCodeLabel& GetLabel() { return m_threads[m_cur_thread].next_label; }
   void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
-  cHeadCPU FindLabelStart();
+  cHeadCPU FindLabelStart(bool mark_executed);
+  cHeadCPU FindLabelForward(bool mark_executed);
   bool& ReadingLabel() { return m_threads[m_cur_thread].reading; }
   const cCodeLabel& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
   cCodeLabel& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
@@ -314,6 +315,7 @@ private:
   bool Inst_HeadCopy(cAvidaContext& ctx);
   bool Inst_HeadSearch(cAvidaContext& ctx);
   bool Inst_SetFlow(cAvidaContext& ctx);
+  bool Inst_Goto(cAvidaContext& ctx);
 };
 
 

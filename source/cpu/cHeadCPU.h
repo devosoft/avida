@@ -85,7 +85,6 @@ public:
   
   inline void Advance() { m_position++; Adjust(); }
   inline void Retreat() { m_position--; Adjust(); }
-  cHeadCPU FindLabel(const cCodeLabel& label, int direction = 1);
 
   inline const cInstruction& GetInst() const { return GetMemory()[m_position]; }
   inline const cInstruction& GetInst(int offset) const { return GetMemory()[m_position + offset]; }

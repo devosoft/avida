@@ -76,12 +76,10 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
      in the same order in tInstLibEntry<tMethod> s_f_array, and these entries must
      be the first elements of s_f_array.
      */
-    tInstLibEntry<tMethod>("nop-A", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT | nInstFlag::NOP), "No-operation instruction; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-B", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT | nInstFlag::NOP), "No-operation instruction; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-C", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT | nInstFlag::NOP), "No-operation instruction; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-D", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT | nInstFlag::NOP), "No-operation instruction; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-E", &cHardwareExperimental::Inst_Nop, 0, "No-operation instruction; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-F", &cHardwareExperimental::Inst_Nop, 0, "No-operation instruction; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-A", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT | nInstFlag::NOP), "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-B", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT | nInstFlag::NOP), "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-C", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT | nInstFlag::NOP), "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-D", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT | nInstFlag::NOP), "No-operation; modifies other instructions"),
     
     tInstLibEntry<tMethod>("NULL", &cHardwareExperimental::Inst_Nop, 0, "True no-operation instruction: does nothing"),
     tInstLibEntry<tMethod>("nop-X", &cHardwareExperimental::Inst_Nop, 0, "True no-operation instruction: does nothing"),
@@ -122,6 +120,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("get-head", &cHardwareExperimental::Inst_GetHead, nInstFlag::DEFAULT, "Copy the position of the ?IP? head into CX"),
     tInstLibEntry<tMethod>("if-label", &cHardwareExperimental::Inst_IfLabel, nInstFlag::DEFAULT, "Execute next if we copied complement of attached label"),
     tInstLibEntry<tMethod>("set-flow", &cHardwareExperimental::Inst_SetFlow, nInstFlag::DEFAULT, "Set flow-head to position in ?CX?"),
+    tInstLibEntry<tMethod>("goto", &cHardwareExperimental::Inst_Goto, 0, "Move IP to labeled position matching the label that follows")
   };
   
   const int n_size = sizeof(s_n_array)/sizeof(cNOPEntry);
@@ -437,7 +436,7 @@ void cHardwareExperimental::PrintStatus(ostream& fp)
 
 
 
-cHeadCPU cHardwareExperimental::FindLabelStart()
+cHeadCPU cHardwareExperimental::FindLabelStart(bool mark_executed)
 {
   cHeadCPU& ip = IP();
   const cCodeLabel& search_label = GetLabel();
@@ -445,7 +444,7 @@ cHeadCPU cHardwareExperimental::FindLabelStart()
   // Make sure the label is of size > 0.
   if (search_label.GetSize() == 0) return ip;
 
-  const cGenome& memory = ip.GetMemory();
+  cCPUMemory& memory = ip.GetMemory();
   int pos = 0;
   
   while (pos < memory.GetSize()) {
@@ -465,6 +464,12 @@ cHeadCPU cHardwareExperimental::FindLabelStart()
       // Check that the label matches and has examined the full sequence of nops following the 'label' instruction
       if (size_matched == search_label.GetSize()) {
         // Return Head pointed at last NOP of label sequence
+        if (mark_executed) {
+          size_matched++; // Increment size matched so that it includes the label instruction
+          const int start = pos - size_matched;
+          const int max = m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get() + 1; // Max label + 1 for the label instruction itself
+          for (int i = 0; i < size_matched && i < max; i++) memory.SetFlagExecuted(start + i);
+        }
         return cHeadCPU(this, pos - 1, ip.GetMemSpace());
       }
       
@@ -473,6 +478,57 @@ cHeadCPU cHardwareExperimental::FindLabelStart()
     pos++;
   }
          
+  // Return start point if not found
+  return ip;
+}
+
+
+cHeadCPU cHardwareExperimental::FindLabelForward(bool mark_executed)
+{
+  cHeadCPU& ip = IP();
+  const cCodeLabel& search_label = GetLabel();
+  
+  // Make sure the label is of size > 0.
+  if (search_label.GetSize() == 0) return ip;
+  
+  cHeadCPU pos(ip);
+  pos++;
+  
+  while (pos.GetPosition() != ip.GetPosition()) {
+    if (m_inst_set->IsLabel(pos.GetInst())) { // starting label found
+      const int label_start = pos.GetPosition();
+      pos++;
+      
+      // Check for direct matched label pattern, can be substring of 'label'ed target
+      // - must match all NOPs in search_label
+      // - extra NOPs in 'label'ed target are ignored
+      int size_matched = 0;
+      while (size_matched < search_label.GetSize() && pos.GetPosition() != ip.GetPosition()) {
+        if (!m_inst_set->IsNop(pos.GetInst()) || search_label[size_matched] != m_inst_set->GetNopMod(pos.GetInst())) break;
+        size_matched++;
+        pos++;
+      }
+      
+      // Check that the label matches and has examined the full sequence of nops following the 'label' instruction
+      if (size_matched == search_label.GetSize()) {
+        pos--;
+        const int found_pos = pos.GetPosition();
+
+        if (mark_executed) {
+          pos.Set(label_start);
+          const int max = m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get() + 1; // Max label + 1 for the label instruction itself
+          for (int i = 0; i < max; i++) pos.SetFlagExecuted();          
+        }
+
+        // Return Head pointed at last NOP of label sequence
+        return cHeadCPU(this, found_pos, ip.GetMemSpace());
+      }
+      
+      continue; 
+    }
+    pos++;
+  }
+  
   // Return start point if not found
   return ip;
 }
@@ -1131,19 +1187,27 @@ bool cHardwareExperimental::Inst_HeadSearch(cAvidaContext& ctx)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
-  cHeadCPU found_pos = FindLabelStart();
+  cHeadCPU found_pos = FindLabelStart(true);
   const int search_size = found_pos.GetPosition() - IP().GetPosition();
   GetRegister(REG_BX) = search_size;
   GetRegister(REG_CX) = GetLabel().GetSize();
   GetHead(nHardware::HEAD_FLOW).Set(found_pos);
   GetHead(nHardware::HEAD_FLOW).Advance();
-  return true; 
+  return true;
 }
 
 bool cHardwareExperimental::Inst_SetFlow(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_CX);
   GetHead(nHardware::HEAD_FLOW).Set(GetRegister(reg_used));
-return true; 
+  return true; 
 }
 
+bool cHardwareExperimental::Inst_Goto(cAvidaContext& ctx)
+{
+  ReadLabel();
+  GetLabel().Rotate(1, NUM_NOPS);
+  cHeadCPU found_pos = FindLabelForward(true);
+  IP().Set(found_pos);
+  return true;
+}
