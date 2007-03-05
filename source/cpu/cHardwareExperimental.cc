@@ -120,7 +120,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("get-head", &cHardwareExperimental::Inst_GetHead, nInstFlag::DEFAULT, "Copy the position of the ?IP? head into CX"),
     tInstLibEntry<tMethod>("if-label", &cHardwareExperimental::Inst_IfLabel, nInstFlag::DEFAULT, "Execute next if we copied complement of attached label"),
     tInstLibEntry<tMethod>("set-flow", &cHardwareExperimental::Inst_SetFlow, nInstFlag::DEFAULT, "Set flow-head to position in ?CX?"),
-    tInstLibEntry<tMethod>("goto", &cHardwareExperimental::Inst_Goto, 0, "Move IP to labeled position matching the label that follows")
+    tInstLibEntry<tMethod>("goto", &cHardwareExperimental::Inst_Goto, nInstFlag::DEFAULT, "Move IP to labeled position matching the label that follows")
   };
   
   const int n_size = sizeof(s_n_array)/sizeof(cNOPEntry);
