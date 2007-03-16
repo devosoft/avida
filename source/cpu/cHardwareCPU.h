@@ -397,9 +397,7 @@ private:
   bool Inst_InjectThread(cAvidaContext& ctx);
   bool Inst_Transposon(cAvidaContext& ctx);
   bool Inst_Repro(cAvidaContext& ctx);
-  bool Inst_IORepro(cAvidaContext& ctx);
   bool Inst_TaskPutRepro(cAvidaContext& ctx);
-  bool Inst_TaskPutClearInputRepro(cAvidaContext& ctx);
   bool Inst_TaskPutResetInputsRepro(cAvidaContext& ctx);
 
   bool Inst_SpawnDeme(cAvidaContext& ctx);
@@ -409,13 +407,11 @@ private:
 
   // I/O and Sensory
   bool Inst_TaskGet(cAvidaContext& ctx);
+  bool Inst_TaskGet2(cAvidaContext& ctx);
   bool Inst_TaskStackGet(cAvidaContext& ctx);
   bool Inst_TaskStackLoad(cAvidaContext& ctx);
   bool Inst_TaskPut(cAvidaContext& ctx);
-  bool Inst_TaskPutClearInput(cAvidaContext& ctx);  
   bool Inst_TaskPutResetInputs(cAvidaContext& ctx);
-  bool Inst_TaskPutBonusCost2(cAvidaContext& ctx);  
-  bool Inst_TaskPutMeritCost2(cAvidaContext& ctx); 
   bool Inst_TaskIO(cAvidaContext& ctx);
   bool Inst_TaskIO_Feedback(cAvidaContext& ctx);
   bool Inst_MatchStrings(cAvidaContext& ctx);

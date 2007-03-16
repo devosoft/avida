@@ -38,13 +38,12 @@ private:
   tArray<bool> tasks_done;
   tArray<double> tasks_quality;
   tArray<bool> reactions_triggered;
+  tArray<double> reaction_add_bonus; 
   double bonus_add;
   double bonus_mult;
   tArray<int> insts_triggered;
   bool lethal;
   bool active_reaction;
-  bool clear_input;
-
 
   inline void ActivateReaction();
   
@@ -65,21 +64,20 @@ public:
   void MarkTask(int id, const double quality=1);
 
   void MarkReaction(int id);
-  void AddBonus(double value);
+  void AddBonus(double value, int id);
   void MultBonus(double value);
+  
   void AddInst(int id);
   
-  void SetClearInput(bool _in) { clear_input = _in; }
-
   double GetConsumed(int id);
   double GetProduced(int id);
   double GetDetected(int id);
   bool GetLethal();  
-  bool GetClearInput() { return clear_input; }
   bool ReactionTriggered(int id);
   bool TaskDone(int id);
   double TaskQuality(int id);
   double GetAddBonus() { return bonus_add; }
+  double GetReactionAddBonus(const int i) { return reaction_add_bonus[i]; }
   double GetMultBonus() { return bonus_mult; }
   tArray<int>& GetInstArray() { return insts_triggered; }
 };

@@ -136,6 +136,9 @@ cStats::cStats(cWorld* world)
 
   reaction_count.Resize( m_world->GetNumReactions() );
   reaction_count.SetAll(0);
+  
+  reaction_add_reward.Resize( m_world->GetNumReactions() );
+  reaction_add_reward.SetAll(0);
 
   resource_count.Resize( m_world->GetNumResources() );
   resource_count.SetAll(0);
@@ -289,6 +292,11 @@ void cStats::ZeroTasks()
   }
 }
 
+void cStats::ZeroRewards()
+{
+  reaction_add_reward.SetAll(0);
+}
+
 
 #if INSTRUCTION_COUNT
 void cStats::ZeroInst()
@@ -430,6 +438,8 @@ void cStats::ProcessUpdate()
 
   sense_last_count.SetAll(0);
   sense_last_exe_count.SetAll(0);
+
+  reaction_add_reward.SetAll(0);
 
   dom_merit = 0;
   dom_gestation = 0.0;
@@ -753,6 +763,23 @@ void cStats::PrintReactionData(const cString& filename)
   }
   df.Endl();
 }
+
+void cStats::PrintReactionRewardData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+
+  df.WriteComment("Avida reaction data");
+  df.WriteTimeStamp();
+  df.WriteComment("First column gives the current update, all further columns give the add bonus reward");
+  df.WriteComment("currently living organisms have garnered from each reaction.");
+
+  df.Write(m_update,   "Update");
+  for (int i = 0; i < reaction_count.GetSize(); i++) {
+    df.Write(reaction_add_reward[i], reaction_names[i] );
+  }
+  df.Endl();
+}
+
 
 void cStats::PrintResourceData(const cString& filename)
 {

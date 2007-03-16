@@ -6,11 +6,11 @@
 
 =head1 NAME
 
-trace_movie.perl
+trace_movie.pl
 
 =head1 SYNOPSIS
 
-Usage: trace_movie.perl -i trace_file -o matlab_input_file
+Usage: trace_movie.pl -i org_file -t trace_file -o output_file [-m -f 10000]
 
 Create an image or a folder of images of organism instruction execution.
 
@@ -115,7 +115,7 @@ while (<TRACE>)
 		$t->{CX}->{'hex'} = $8;
 		
 		$t->{'aged_time'} = $t->{'time'};
-		if ( $_ =~ m/AgedTime:(\d+)/ )
+		if ( $_ =~ m/EnergyUsed:(\d+)/ )
 		{
 			$t->{'aged_time'} = $1;
 		}
@@ -288,6 +288,7 @@ our $inst_use_nops = {
 	'throwif!=0' => $max_label_size,
 	'catch' => $max_label_size,
 	'sense-m100' => $max_label_size,
+	'sense-unit' => $max_label_size,
 };
 
 our @execution_flare_colors = (

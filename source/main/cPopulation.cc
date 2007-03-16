@@ -309,7 +309,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
   // Loop through choosing the later placement of each child in the population.
   bool parent_alive = true;  // Will the parent live through this process?
   for (int i = 0; i < child_array.GetSize(); i++) {
-    target_cells[i] = PositionChild(parent_cell).GetID();
+    target_cells[i] = PositionChild(parent_cell, m_world->GetConfig().ALLOW_PARENT.Get()).GetID();
     
     // If we replaced the parent, make a note of this.
     if (target_cells[i] == parent_cell.GetID()) parent_alive = false;      
@@ -1427,8 +1427,8 @@ void cPopulation::UpdateOrganismStats()
   stats.SumExeSize().Clear();
   stats.SumMemSize().Clear();
   
-  
   stats.ZeroTasks();
+  stats.ZeroRewards();
   
 #if INSTRUCTION_COUNT
   stats.ZeroInst();
@@ -1514,6 +1514,11 @@ void cPopulation::UpdateOrganismStats()
         stats.AddLastTaskQuality(j, phenotype.GetLastTaskQuality()[j]);
         stats.IncTaskExeCount(j, phenotype.GetLastTaskCount()[j]);
       } 
+    }
+    
+    // Record what add bonuses this organism garnered for different reactions    
+    for (int j = 0; j < m_world->GetNumReactions(); j++) {
+      stats.AddLastReactionAddReward(j, phenotype.GetLastReactionAddReward()[j]);    
     }
     
     // Test what resource combinations this creature has sensed

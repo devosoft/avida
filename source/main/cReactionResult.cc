@@ -35,12 +35,12 @@ cReactionResult::cReactionResult(const int num_resources,
   , tasks_done(num_tasks)
   , tasks_quality(num_tasks)
   , reactions_triggered(num_reactions)
+  , reaction_add_bonus(num_reactions)
   , bonus_add(0.0)
   , bonus_mult(1.0)
   , insts_triggered(0)
   , lethal(false)
   , active_reaction(false)
-  , clear_input(false)
 {
 }
 
@@ -56,6 +56,7 @@ void cReactionResult::ActivateReaction()
   tasks_done.SetAll(false);
   tasks_quality.SetAll(0.0);
   reactions_triggered.SetAll(false);
+  reaction_add_bonus.SetAll(0.0);
 
   // And finally note that this is indeed already active.
   active_reaction = true;
@@ -103,10 +104,11 @@ void cReactionResult::MarkReaction(int id)
 }
 
 
-void cReactionResult::AddBonus(double value)
+void cReactionResult::AddBonus(double value, int id)
 {
   ActivateReaction();
   bonus_add += value;
+  reaction_add_bonus[id] += value;
 }
 
 

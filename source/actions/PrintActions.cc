@@ -60,26 +60,27 @@ public:                                                                         
   void Process(cAvidaContext& ctx) { m_world->GetStats().METHOD(m_filename); }            /* 12 */ \
 }                                                                                         /* 13 */ \
 
-STATS_OUT_FILE(PrintAverageData,       average.dat         );
-STATS_OUT_FILE(PrintErrorData,         error.dat           );
-STATS_OUT_FILE(PrintVarianceData,      variance.dat        );
-STATS_OUT_FILE(PrintDominantData,      dominant.dat        );
-STATS_OUT_FILE(PrintStatsData,         stats.dat           );
-STATS_OUT_FILE(PrintCountData,         count.dat           );
-STATS_OUT_FILE(PrintTotalsData,        totals.dat          );
-STATS_OUT_FILE(PrintTasksData,         tasks.dat           );
-STATS_OUT_FILE(PrintTasksExeData,      tasks_exe.dat       );
-STATS_OUT_FILE(PrintTasksQualData,     tasks_quality.dat   );
-STATS_OUT_FILE(PrintResourceData,      resource.dat        );
-STATS_OUT_FILE(PrintTimeData,          time.dat            );
-STATS_OUT_FILE(PrintMutationRateData,  mutation_rates.dat  );
-STATS_OUT_FILE(PrintDivideMutData,     divide_mut.dat      );
-STATS_OUT_FILE(PrintDominantParaData,  parasite.dat        );
-STATS_OUT_FILE(PrintInstructionData,   instruction.dat     );
-STATS_OUT_FILE(PrintGenotypeMap,       genotype_map.m      );
-STATS_OUT_FILE(PrintMarketData,        market.dat          );
-STATS_OUT_FILE(PrintSenseData,         sense.dat           );
-STATS_OUT_FILE(PrintSenseExeData,      sense_exe.dat       );
+STATS_OUT_FILE(PrintAverageData,            average.dat         );
+STATS_OUT_FILE(PrintErrorData,              error.dat           );
+STATS_OUT_FILE(PrintVarianceData,           variance.dat        );
+STATS_OUT_FILE(PrintDominantData,           dominant.dat        );
+STATS_OUT_FILE(PrintStatsData,              stats.dat           );
+STATS_OUT_FILE(PrintCountData,              count.dat           );
+STATS_OUT_FILE(PrintTotalsData,             totals.dat          );
+STATS_OUT_FILE(PrintTasksData,              tasks.dat           );
+STATS_OUT_FILE(PrintTasksExeData,           tasks_exe.dat       );
+STATS_OUT_FILE(PrintTasksQualData,          tasks_quality.dat   );
+STATS_OUT_FILE(PrintResourceData,           resource.dat        );
+STATS_OUT_FILE(PrintReactionRewardData,     reaction_reward.dat );
+STATS_OUT_FILE(PrintTimeData,               time.dat            );
+STATS_OUT_FILE(PrintMutationRateData,       mutation_rates.dat  );
+STATS_OUT_FILE(PrintDivideMutData,          divide_mut.dat      );
+STATS_OUT_FILE(PrintDominantParaData,       parasite.dat        );
+STATS_OUT_FILE(PrintInstructionData,        instruction.dat     );
+STATS_OUT_FILE(PrintGenotypeMap,            genotype_map.m      );
+STATS_OUT_FILE(PrintMarketData,             market.dat          );
+STATS_OUT_FILE(PrintSenseData,              sense.dat           );
+STATS_OUT_FILE(PrintSenseExeData,           sense_exe.dat       );
 
 
 #define POP_OUT_FILE(METHOD, DEFAULT)                                                     /*  1 */ \
@@ -1494,6 +1495,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintTasksExeData>("PrintTasksExeData");
   action_lib->Register<cActionPrintTasksQualData>("PrintTasksQualData");
   action_lib->Register<cActionPrintResourceData>("PrintResourceData");
+  action_lib->Register<cActionPrintReactionRewardData>("PrintReactionRewardData");
   action_lib->Register<cActionPrintTimeData>("PrintTimeData");
   action_lib->Register<cActionPrintMutationRateData>("PrintMutationRateData");
   action_lib->Register<cActionPrintDivideMutData>("PrintDivideMutData");

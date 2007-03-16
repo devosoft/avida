@@ -184,13 +184,11 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("mem-size", &cHardwareCPU::Inst_MemSize),
     
     tInstLibEntry<tMethod>("get", &cHardwareCPU::Inst_TaskGet),
+    tInstLibEntry<tMethod>("get-2", &cHardwareCPU::Inst_TaskGet2),
     tInstLibEntry<tMethod>("stk-get", &cHardwareCPU::Inst_TaskStackGet),
     tInstLibEntry<tMethod>("stk-load", &cHardwareCPU::Inst_TaskStackLoad),
     tInstLibEntry<tMethod>("put", &cHardwareCPU::Inst_TaskPut),
-    tInstLibEntry<tMethod>("put-clear", &cHardwareCPU::Inst_TaskPutClearInput), 
     tInstLibEntry<tMethod>("put-reset", &cHardwareCPU::Inst_TaskPutResetInputs),
-    tInstLibEntry<tMethod>("put-bcost2", &cHardwareCPU::Inst_TaskPutBonusCost2),
-    tInstLibEntry<tMethod>("put-mcost2", &cHardwareCPU::Inst_TaskPutMeritCost2),
     tInstLibEntry<tMethod>("IO", &cHardwareCPU::Inst_TaskIO, nInstFlag::DEFAULT, "Output ?BX?, and input new number back into ?BX?"),
     tInstLibEntry<tMethod>("IO-Feedback", &cHardwareCPU::Inst_TaskIO_Feedback, 0, "Output ?BX?, and input new number back into ?BX?,  and push 1,0,  or -1 onto stack1 if merit increased, stayed the same, or decreased"),
     tInstLibEntry<tMethod>("match-strings", &cHardwareCPU::Inst_MatchStrings),
@@ -314,9 +312,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("repro-Y", &cHardwareCPU::Inst_Repro),
     tInstLibEntry<tMethod>("repro-Z", &cHardwareCPU::Inst_Repro),
 
-    tInstLibEntry<tMethod>("IO-repro", &cHardwareCPU::Inst_IORepro),
     tInstLibEntry<tMethod>("put-repro", &cHardwareCPU::Inst_TaskPutRepro),
-    tInstLibEntry<tMethod>("putc-repro", &cHardwareCPU::Inst_TaskPutClearInputRepro),
     tInstLibEntry<tMethod>("metabolize", &cHardwareCPU::Inst_TaskPutResetInputsRepro),        
 
     tInstLibEntry<tMethod>("spawn-deme", &cHardwareCPU::Inst_SpawnDeme),
@@ -2439,8 +2435,7 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   child_genome = GetMemory();
   organism->GetPhenotype().SetLinesCopied(GetMemory().GetSize());
 
-  // JEB Hack
-  // Make sure that an organism has accumulated any required bonus
+  // @JEB - Make sure that an organism has accumulated any required bonus
   const int bonus_required = m_world->GetConfig().REQUIRED_BONUS.Get();
   if (organism->GetPhenotype().GetCurBonus() < bonus_required) {
     return false; //  (divide fails)
@@ -2488,28 +2483,15 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareCPU::Inst_IORepro(cAvidaContext& ctx)
-{
-  // Do normal IO
-  Inst_TaskIO(ctx);
-  
-  // Immediately attempt a repro
-  return Inst_Repro(ctx);
-}
-
 bool cHardwareCPU::Inst_TaskPutRepro(cAvidaContext& ctx)
 {
-  // Do normal IO
-  Inst_TaskPut(ctx);
+  // Do normal IO, but don't zero register
+  //Inst_TaskPut(ctx);
   
-  // Immediately attempt a repro
-  return Inst_Repro(ctx);
-}
-
-bool cHardwareCPU::Inst_TaskPutClearInputRepro(cAvidaContext& ctx)
-{
-  // Do normal IO
-  Inst_TaskPutClearInput(ctx);
+  const int reg_used = FindModifiedRegister(REG_BX);
+  const int value = GetRegister(reg_used);
+ // GetRegister(reg_used) = 0;
+  organism->DoOutput(ctx, value);
   
   // Immediately attempt a repro
   return Inst_Repro(ctx);
@@ -2686,6 +2668,33 @@ bool cHardwareCPU::Inst_TaskGet(cAvidaContext& ctx)
   return true;
 }
 
+
+// @JEB - this instruction does more than two "gets" together
+// it also (1) resets the inputs and (2) resets an organisms task counts
+bool cHardwareCPU::Inst_TaskGet2(cAvidaContext& ctx)
+{
+  // Randomize the inputs so they can't save numbers
+  organism->GetOrgInterface().ResetInputs(ctx);   // Now re-randomize the inputs this organism sees
+  organism->ClearInput();                         // Also clear their input buffers, or they can still claim
+                                                  // rewards for numbers no longer in their environment!
+
+  const int reg_used_1 = FindModifiedRegister(REG_BX);
+  const int reg_used_2 = FindNextRegister(reg_used_1);
+  
+  const int value1 = organism->GetNextInput();
+  GetRegister(reg_used_1) = value1;
+  organism->DoInput(value1);
+  
+  const int value2 = organism->GetNextInput();
+  GetRegister(reg_used_2) = value2;
+  organism->DoInput(value2);
+  
+  // Clear the task number
+  organism->GetPhenotype().ClearEffTaskCount();
+  
+  return true;
+}
+
 bool cHardwareCPU::Inst_TaskStackGet(cAvidaContext& ctx)
 {
   const int value = organism->GetNextInput();
@@ -2711,13 +2720,6 @@ bool cHardwareCPU::Inst_TaskPut(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareCPU::Inst_TaskPutClearInput(cAvidaContext& ctx)
-{
-  bool return_value = Inst_TaskPut(ctx);
-  organism->ClearInput();
-  return return_value;
-}
-
 bool cHardwareCPU::Inst_TaskPutResetInputs(cAvidaContext& ctx)
 {
   bool return_value = Inst_TaskPut(ctx);          // Do a normal put
@@ -2725,38 +2727,6 @@ bool cHardwareCPU::Inst_TaskPutResetInputs(cAvidaContext& ctx)
   organism->ClearInput();                         // Also clear their input buffers, or they can still claim
                                                   // rewards for numbers no longer in their environment!
   return return_value;
-}
-
-bool cHardwareCPU::Inst_TaskPutBonusCost2(cAvidaContext& ctx)
-{
-  const int reg_used = FindModifiedRegister(REG_BX);
-  const int value = GetRegister(reg_used);
-  GetRegister(reg_used) = 0;
-  organism->DoOutput(ctx, value);
-  double new_bonus = organism->GetPhenotype().GetCurBonus();
-  new_bonus *= 0.5;
-//if (new_bonus < 1) new_bonus = 1;
-  organism->GetPhenotype().SetCurBonus(new_bonus);
-  return true;
-}
-
-bool cHardwareCPU::Inst_TaskPutMeritCost2(cAvidaContext& ctx)
-{
-  // Normal put code
-  const int reg_used = FindModifiedRegister(REG_BX);
-  const int value = GetRegister(reg_used);
-  GetRegister(reg_used) = 0;
-  organism->DoOutput(ctx, value);
-  
-  // Immediately half the merit of the current organism, never going below 1
-  double new_merit = organism->GetPhenotype().GetMerit().GetDouble();
-  new_merit /= 2;
-  if (new_merit < 1) new_merit = 1;
-  
-  // Immediately re-initialize the time-slice for this organism.  
-  organism->UpdateMerit(new_merit);
-  
-  return true;
 }
 
 bool cHardwareCPU::Inst_TaskIO(cAvidaContext& ctx)

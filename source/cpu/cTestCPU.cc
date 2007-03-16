@@ -246,6 +246,23 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
      
      organism.GetHardware().SingleProcess(ctx);
   }
+  
+  
+  // Output final resource information @JEB
+  if ( (m_res_method >= RES_UPDATED_DEPLETABLE) && (tracerStream != NULL) ) 
+  {
+    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    assert(resource_lib.GetSize() >= 0);
+    *tracerStream << "Resources:";
+    // Print out resources
+    for(int i=0; i<resource_lib.GetSize(); i++) 
+    {     
+       *tracerStream << " " << m_resource_count.Get(i);
+    }
+    *tracerStream << endl;
+   }
+
+  
   organism.GetHardware().SetTrace(NULL);
 
   // Print out some final info in trace...

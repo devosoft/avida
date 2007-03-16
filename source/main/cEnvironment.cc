@@ -211,10 +211,6 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc)
         return false;
       new_process->SetDetectionError(var_value.AsDouble());
     }
-    else if (var_name == "clearsinput") {
-      if (!AssertInputInt(var_value, "clearsinput", var_type)) return false;
-      new_process->SetClearsInput( (bool)var_value.AsInt() );
-    }
     else if (var_name == "string") {
       new_process->SetMatchString(var_value);
 	}
@@ -833,21 +829,14 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
     // If this task wasn't performed, move on to the next one.
     if (task_quality == 0.0) continue;
     
-    
     // Mark this task as performed...
     result.MarkTask(task_id, task_quality);
 
     // And lets process it!
-    DoProcesses(ctx, cur_reaction->GetProcesses(), resource_count, task_quality, task_cnt, result);
+    DoProcesses(ctx, cur_reaction->GetProcesses(), resource_count, task_quality, task_cnt, i, result);
     
     // Mark this reaction as occuring...
     result.MarkReaction(cur_reaction->GetID());
-    
-    // If the a process has marked to clear the input queue...
-    if (result.GetClearInput())
-    {
-      break; //no other tasks should be allowed to complete
-    }
   }  
   
   return result.GetActive();
@@ -916,7 +905,7 @@ bool cEnvironment::TestRequisites(const tList<cReactionRequisite>& req_list,
 
 void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>& process_list,
                                const tArray<double>& resource_count, const double task_quality,
-                               const int task_count, cReactionResult& result) const
+                               const int task_count, const int reaction_id, cReactionResult& result) const
 {
   const int num_process = process_list.GetSize();
   
@@ -961,7 +950,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     
     switch (cur_process->GetType()) {
       case nReaction::PROCTYPE_ADD:
-        result.AddBonus(bonus);
+        result.AddBonus(bonus, reaction_id);
         break;
       case nReaction::PROCTYPE_MULT:
         result.MultBonus(bonus);
@@ -970,7 +959,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
         result.MultBonus( pow(2.0, bonus) );
         break;
       case nReaction::PROCTYPE_LIN:
-        result.AddBonus( bonus * task_count);
+        result.AddBonus( bonus * task_count, reaction_id);
         break;
       default:
         assert(false);  // Should not get here!
@@ -1004,15 +993,8 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       result.AddInst(inst_id);
     }
     
-    result.Lethal(cur_process->GetLethal());
-    
-    // If the reaction clears the input queue...
-    if (cur_process->GetClearsInput())
-    {
-      result.SetClearInput(true);
-      //break; //should other processes depending on that task be allowed to complete?
+    result.Lethal(cur_process->GetLethal());    
     }
-  }
 }
 
 double cEnvironment::GetReactionValue(int& reaction_id)

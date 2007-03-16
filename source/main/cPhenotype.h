@@ -93,7 +93,7 @@ private:
   int gestation_time;       // CPU cycles to produce offspring (or be produced),
                             // including additional time costs of some instructions.
   int gestation_start;      // Total instructions executed at last divide.
-  double fitness;           // Relative efective replication rate...
+  double fitness;           // Relative effective replication rate...
   double div_type;          // Type of the divide command used
 
   // 2. These are "in progress" variables, updated as the organism operates
@@ -101,10 +101,12 @@ private:
   int cur_num_errors;             // Total instructions executed illeagally.
   int cur_num_donates;            // Number of donations so far
   tArray<int> cur_task_count;     // Total times each task was performed
+  tArray<int> eff_task_count;     // Total times each task was performed (resetable during the life of the organism)
   tArray<double> cur_task_quality;	  // Average (total?) quality with which each task was performed
-  tArray<int> cur_reaction_count; // Total times each reaction was triggered.
+  tArray<int> cur_reaction_count; // Total times each reaction was triggered.  
+  tArray<double> cur_reaction_add_reward; // Bonus change from triggering each reaction.
   tArray<int> cur_inst_count;	    // Intsruction exection counter
-  tArray<int> cur_sense_count;     // Total times resource combinations have been sensed; JEB 10-22-06 
+  tArray<int> cur_sense_count;     // Total times resource combinations have been sensed; @JEB 
   tArray<double> sensed_resources; // Resources of which the organism is explictly aware
   tArray<cCodeLabel> active_transposons; // Transposons that are active
   tHashTable<void*, cTaskState*> m_task_states;
@@ -117,8 +119,9 @@ private:
   tArray<int> last_task_count;
   tArray<double> last_task_quality;
   tArray<int> last_reaction_count;
+  tArray<double> last_reaction_add_reward; 
   tArray<int> last_inst_count;	  // Instruction exection counter
-  tArray<int> last_sense_count;   // Total times resource combinations have been sensed; JEB 10-22-06 
+  tArray<int> last_sense_count;   // Total times resource combinations have been sensed; @JEB 
   double last_fitness;            // Used to determine sterilization.
 
   // 4. Records from this organisms life...
@@ -189,7 +192,7 @@ public:
   bool TestInput(tBuffer<int>& inputs, tBuffer<int>& outputs);
   bool TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
                   const tArray<double>& res_in, tArray<double>& res_change,
-                  tArray<int>& insts_triggered, bool* clear_input);
+                  tArray<int>& insts_triggered);
 
   // State saving and loading, and printing...
   bool SaveState(std::ofstream& fp);
@@ -221,6 +224,7 @@ public:
   int GetCurNumErrors() const { assert(initialized == true); return cur_num_errors; }
   int GetCurNumDonates() const { assert(initialized == true); return cur_num_donates; }
   const tArray<int>& GetCurTaskCount() const { assert(initialized == true); return cur_task_count; }
+  void ClearEffTaskCount() { assert(initialized == true); eff_task_count.SetAll(0); }
   const tArray<double> & GetCurTaskQuality() const { assert(initialized == true); return cur_task_quality; }
   const tArray<int>& GetCurReactionCount() const { assert(initialized == true); return cur_reaction_count;}
   const tArray<int>& GetCurInstCount() const { assert(initialized == true); return cur_inst_count; }
@@ -236,6 +240,7 @@ public:
   const tArray<int>& GetLastTaskCount() const { assert(initialized == true); return last_task_count; }
   const tArray<double>& GetLastTaskQuality() const { assert(initialized == true); return last_task_quality; }
   const tArray<int>& GetLastReactionCount() const { assert(initialized == true); return last_reaction_count; }
+  const tArray<double>& GetLastReactionAddReward() const { assert(initialized == true); return last_reaction_add_reward; }
   const tArray<int>& GetLastInstCount() const { assert(initialized == true); return last_inst_count; }
   const tArray<int>& GetLastSenseCount() const { assert(initialized == true); return last_sense_count; }
   double GetLastFitness() const { assert(initialized == true); return last_fitness; }

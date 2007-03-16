@@ -42,12 +42,15 @@ cPhenotype::cPhenotype(cWorld* world)
   : m_world(world)
   , initialized(false)
   , cur_task_count(m_world->GetEnvironment().GetNumTasks())
-  , cur_task_quality(m_world->GetEnvironment().GetNumTasks())
+  , eff_task_count(m_world->GetEnvironment().GetNumTasks())
+  , cur_task_quality(m_world->GetEnvironment().GetNumTasks())  
   , cur_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
+  , cur_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())
   , cur_inst_count(world->GetHardwareManager().GetInstSet().GetSize())
   , cur_sense_count(m_world->GetStats().GetSenseSize())
   , sensed_resources(m_world->GetEnvironment().GetResourceLib().GetSize())
   , last_task_count(m_world->GetEnvironment().GetNumTasks())
+  , last_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())  
   , last_task_quality(m_world->GetEnvironment().GetNumTasks())
   , last_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
   , last_inst_count(world->GetHardwareManager().GetInstSet().GetSize())
@@ -124,25 +127,27 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
   cur_num_errors  = 0;
   cur_num_donates  = 0;
   cur_task_count.SetAll(0);
+  eff_task_count.SetAll(0);
   cur_task_quality.SetAll(0);
   cur_reaction_count.SetAll(0);
+  cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
   cur_sense_count.SetAll(0);  
   for (int j = 0; j < sensed_resources.GetSize(); j++)
 	      sensed_resources[j] =  parent_phenotype.sensed_resources[j];
 
   // Copy last values from parent
-  last_merit_base     = parent_phenotype.last_merit_base;
-  last_bonus          = parent_phenotype.last_bonus;
-  last_num_errors     = parent_phenotype.last_num_errors;
-  last_num_donates    = parent_phenotype.last_num_donates;
-  last_task_count     = parent_phenotype.last_task_count;
-  last_task_quality   = parent_phenotype.last_task_quality;
-  last_reaction_count = parent_phenotype.last_reaction_count;
-  last_inst_count     = parent_phenotype.last_inst_count;
-  last_sense_count    = parent_phenotype.last_sense_count;
-  last_fitness        = last_merit_base * last_bonus / gestation_time;
-
+  last_merit_base           = parent_phenotype.last_merit_base;
+  last_bonus                = parent_phenotype.last_bonus;
+  last_num_errors           = parent_phenotype.last_num_errors;
+  last_num_donates          = parent_phenotype.last_num_donates;
+  last_task_count           = parent_phenotype.last_task_count;
+  last_task_quality         = parent_phenotype.last_task_quality;
+  last_reaction_count       = parent_phenotype.last_reaction_count;
+  last_reaction_add_reward  = parent_phenotype.last_reaction_add_reward;
+  last_inst_count           = parent_phenotype.last_inst_count;
+  last_sense_count          = parent_phenotype.last_sense_count;
+  last_fitness              = last_merit_base * last_bonus / gestation_time;
 
   // Setup other miscellaneous values...
   num_divides     = 0;
@@ -211,8 +216,10 @@ void cPhenotype::SetupInject(int _length)
   cur_num_errors  = 0;
   cur_num_donates  = 0;
   cur_task_count.SetAll(0);
+  eff_task_count.SetAll(0);
   cur_task_quality.SetAll(0);
   cur_reaction_count.SetAll(0);
+  cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
   sensed_resources.SetAll(0);
   cur_sense_count.SetAll(0);
@@ -225,6 +232,7 @@ void cPhenotype::SetupInject(int _length)
   last_task_count.SetAll(0);
   last_task_quality.SetAll(0);
   last_reaction_count.SetAll(0);
+  last_reaction_add_reward.SetAll(0);
   last_sense_count.SetAll(0);
 
   // Setup other miscellaneous values...
@@ -297,23 +305,26 @@ void cPhenotype::DivideReset(int _length)
   fitness         = merit.GetDouble() / gestation_time;
 
   // Lock in cur values as last values.
-  last_merit_base     = cur_merit_base;
-  last_bonus          = cur_bonus;
-  last_num_errors     = cur_num_errors;
-  last_num_donates    = cur_num_donates;
-  last_task_count     = cur_task_count;
-  last_task_quality   = cur_task_quality;
-  last_reaction_count = cur_reaction_count;
-  last_inst_count     = cur_inst_count;
-  last_sense_count    = cur_sense_count;
+  last_merit_base           = cur_merit_base;
+  last_bonus                = cur_bonus;
+  last_num_errors           = cur_num_errors;
+  last_num_donates          = cur_num_donates;
+  last_task_count           = cur_task_count;
+  last_task_quality         = cur_task_quality;
+  last_reaction_count       = cur_reaction_count;
+  last_reaction_add_reward  = cur_reaction_add_reward;
+  last_inst_count           = cur_inst_count;
+  last_sense_count          = cur_sense_count;
 
   // Reset cur values.
   cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
   cur_num_errors  = 0;
   cur_num_donates  = 0;
   cur_task_count.SetAll(0);
+  eff_task_count.SetAll(0);
   cur_task_quality.SetAll(0);
   cur_reaction_count.SetAll(0);
+  cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
   cur_sense_count.SetAll(0);
 
@@ -393,23 +404,26 @@ void cPhenotype::TestDivideReset(int _length)
   (void) div_type; 				// Unchanged
 
   // Lock in cur values as last values.
-  last_merit_base     = cur_merit_base;
-  last_bonus          = cur_bonus;
-  last_num_errors     = cur_num_errors;
-  last_num_donates    = cur_num_donates;
-  last_task_count     = cur_task_count;
-  last_task_quality   = cur_task_quality;
-  last_reaction_count = cur_reaction_count;
-  last_inst_count     = cur_inst_count;
-  last_sense_count    = cur_sense_count;  
+  last_merit_base           = cur_merit_base;
+  last_bonus                = cur_bonus;
+  last_num_errors           = cur_num_errors;
+  last_num_donates          = cur_num_donates;
+  last_task_count           = cur_task_count;
+  last_task_quality         = cur_task_quality;
+  last_reaction_count       = cur_reaction_count;
+  last_reaction_add_reward  = cur_reaction_add_reward;
+  last_inst_count           = cur_inst_count;
+  last_sense_count          = cur_sense_count;  
 
   // Reset cur values.
   cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
   cur_num_errors  = 0;
   cur_num_donates  = 0;
   cur_task_count.SetAll(0);
+  eff_task_count.SetAll(0);
   cur_task_quality.SetAll(0);
   cur_reaction_count.SetAll(0);
+  cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
   cur_sense_count.SetAll(0); 
   sensed_resources.SetAll(-1.0);
@@ -482,7 +496,9 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   cur_num_errors  = 0;
   cur_num_donates  = 0;
   cur_task_count.SetAll(0);
+  eff_task_count.SetAll(0);
   cur_reaction_count.SetAll(0);
+  cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
   cur_sense_count.SetAll(0);  
   for (int j = 0; j < sensed_resources.GetSize(); j++)
@@ -490,15 +506,16 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
 
 
   // Copy last values from parent
-  last_merit_base     = clone_phenotype.last_merit_base;
-  last_bonus          = clone_phenotype.last_bonus;
-  last_num_errors     = clone_phenotype.last_num_errors;
-  last_num_donates    = clone_phenotype.last_num_donates;
-  last_task_count     = clone_phenotype.last_task_count;
-  last_reaction_count = clone_phenotype.last_reaction_count;
-  last_inst_count     = clone_phenotype.last_inst_count;
-  last_sense_count    = clone_phenotype.last_sense_count;  
-  last_fitness        = last_merit_base * last_bonus / gestation_time;
+  last_merit_base          = clone_phenotype.last_merit_base;
+  last_bonus               = clone_phenotype.last_bonus;
+  last_num_errors          = clone_phenotype.last_num_errors;
+  last_num_donates         = clone_phenotype.last_num_donates;
+  last_task_count          = clone_phenotype.last_task_count;
+  last_reaction_count      = clone_phenotype.last_reaction_count;
+  last_reaction_add_reward = clone_phenotype.last_reaction_add_reward;
+  last_inst_count          = clone_phenotype.last_inst_count;
+  last_sense_count         = clone_phenotype.last_sense_count;  
+  last_fitness             = last_merit_base * last_bonus / gestation_time;
 
   // Setup other miscellaneous values...
   num_divides     = 0;
@@ -552,12 +569,9 @@ bool cPhenotype::TestInput(tBuffer<int>& inputs, tBuffer<int>& outputs)
 
 bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
 			    const tArray<double>& res_in, tArray<double>& res_change,
-			    tArray<int>& insts_triggered, bool* clear_input)
+			    tArray<int>& insts_triggered)
 {
   assert(initialized == true);
-  assert(clear_input!= NULL);
-  *clear_input = false; // set default in case we bail in the middle
-  
   taskctx.SetTaskStates(&m_task_states);
 
   const cEnvironment& env = m_world->GetEnvironment();
@@ -568,7 +582,7 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   cReactionResult result(num_resources, num_tasks, num_reactions);
 			
   // Run everything through the environment.
-  bool found = env.TestOutput(ctx, result, taskctx, cur_task_count, cur_reaction_count, res_in);
+  bool found = env.TestOutput(ctx, result, taskctx, eff_task_count, cur_reaction_count, res_in);
 
   // If nothing was found, stop here.
   if (found == false) {
@@ -579,11 +593,16 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   // Update the phenotype with the results...
   // Start with updating task and reaction counters
   for (int i = 0; i < num_tasks; i++) {
-    if (result.TaskDone(i) == true) cur_task_count[i]++;
+    if (result.TaskDone(i) == true) 
+    {
+      cur_task_count[i]++;
+      eff_task_count[i]++;
+    }
     if (result.TaskQuality(i) > 0) cur_task_quality[i]+= result.TaskQuality(i);
   }
   for (int i = 0; i < num_reactions; i++) {
     if (result.ReactionTriggered(i) == true) cur_reaction_count[i]++;
+    cur_reaction_add_reward[i] += result.GetReactionAddBonus(i);
   }
 
   // Update the merit bonus
@@ -605,8 +624,6 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
 
   //Kill any cells that did lethal reactions
   to_die = result.GetLethal();
-
-  *clear_input = result.GetClearInput();
   
   return true;
 }

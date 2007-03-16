@@ -104,7 +104,7 @@ private:
 
   bool TestRequisites(const tList<cReactionRequisite>& req_list, int task_count, const tArray<int>& reaction_count, const bool on_divide = false) const;
   void DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>& process_list, const tArray<double>& resource_count,
-                   const double task_quality, const int task_count, cReactionResult& result) const;
+                   const double task_quality, const int task_count, const int reaction_id, cReactionResult& result) const;
 
   cEnvironment(); // @not_implemented
   cEnvironment(const cEnvironment&); // @not_implemented

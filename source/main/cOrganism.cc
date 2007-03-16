@@ -206,7 +206,7 @@ void cOrganism::DoOutput(cAvidaContext& ctx, const int value, const bool on_divi
   if (!m_world->GetConfig().SAVE_RECEIVED.Get()) received_messages_point = NULL;
   
   cTaskContext taskctx(m_interface, m_input_buf, m_output_buf, other_input_list, other_output_list, net_valid, 0, on_divide, received_messages_point);
-  m_phenotype.TestOutput(ctx, taskctx, resource_count, res_change, insts_triggered, &  clear_input);
+  m_phenotype.TestOutput(ctx, taskctx, resource_count, res_change, insts_triggered);
   m_interface->UpdateResources(res_change);
 
   for (int i = 0; i < insts_triggered.GetSize(); i++) {
@@ -371,16 +371,14 @@ bool cOrganism::NetRemoteValidate(cAvidaContext& ctx, int value)
     bool clear_input;
 
     cTaskContext taskctx(m_interface, m_input_buf, m_output_buf, other_input_list, other_output_list, false, completed);
-    m_phenotype.TestOutput(ctx, taskctx, resource_count, res_change, insts_triggered, &clear_input);
+    m_phenotype.TestOutput(ctx, taskctx, resource_count, res_change, insts_triggered);
     m_interface->UpdateResources(res_change);
     
     for (int i = 0; i < insts_triggered.GetSize(); i++) {
       const int cur_inst = insts_triggered[i];
       m_hardware->ProcessBonusInst(ctx, cInstruction(cur_inst) );
     }
-    
-    if (clear_input) m_input_buf.Clear();
-  }
+}
   
   return true;
 }

@@ -218,6 +218,7 @@ private:
   tArray<int> task_exe_count;
 
   tArray<double> reaction_count;
+  tArray<double> reaction_add_reward;
   tArray<double> resource_count;
   tArray<int> resource_geometry;
   tArray< tArray<double> > spatial_res_count;
@@ -456,6 +457,9 @@ public:
     { sense_last_exe_count[res_comb_index]+= count; }
     
   void SetReactions(const tArray<double> &_in) { reaction_count = _in; }
+  void AddLastReactionAddReward(int _id, double _reward) { reaction_add_reward[_id] += _reward; }
+  void ZeroRewards();
+  
   void SetResources(const tArray<double> &_in) { resource_count = _in; }
   void SetResourcesGeometry(const tArray<int> &_in) { resource_geometry = _in;}
   void SetSpatialRes(const tArray< tArray<double> > &_in) { 
@@ -587,6 +591,7 @@ public:
   void PrintTasksExeData(const cString& filename);
   void PrintTasksQualData(const cString& filename);
   void PrintReactionData(const cString& filename);
+  void PrintReactionRewardData(const cString& filename);
   void PrintResourceData(const cString& filename);
   void PrintSpatialResData(const cString& filename, int i);
   void PrintTimeData(const cString& filename);
