@@ -20,12 +20,14 @@ Revised 2006-09-03 DMB
 <h1>List of Actions</h1>
 </div>
 
+<a name="ActionCategories"><h2>Action Categories</h2></a>
 <p>
 There is a large library of actions available for scheduling as events.
 Additionally, all of these actions can be used within analyze scripts.
 Below you will find a listing of the high level groupings of these
 actions, along with detailed sections for each them.
 </p>
+
 
 <dl>
 <dt><a href="#PrintActions">Print</a></dt>
@@ -42,6 +44,9 @@ actions, along with detailed sections for each them.
 <dd>Actions that allow user to control program execution, including experiment termination.</dd>
 </dl>
 
+<p>
+For a brief overview of writing a new action, please see <a href="#CreateAction">Creating an Action</a> below.
+</p>
 
 <p>&nbsp;</p>
 <h2>Alphabetical Listing of Available Actions</h2>
@@ -1172,6 +1177,45 @@ These actions control the driver object responsible for executing the current ru
   </p>
 </li>
 </ul>
+
+
+<p>&nbsp;</p>
+<h2><a name="CreateAction">Creating an Action</a></h2>
+
+<p>
+The action source code is contained in the source/action directory.  
+Each of the individual <a href="#ActionCategories">action categories</a> has its own source code files (e.g. Landcape Actions are located in the LandscapeActions files).
+</p>
+<p>Each action is derrived from the cAction class.  Briefly, to get an action to work you must create a child class that has a Process and GetDescription function defined as well as a constructor.  You must also register this new class with the action library.</p>
+<p>So, with that quick review of what must be done, here is a step by step guide to creating an action:
+<ol>
+	<li>Identify which of the action categories your action should be assigned to.  There are six different action categories described <a href="#ActionCategories">above</a>.  Each category has a similar means of creating a new action, but do note that some action commands are generated via macros defined at the top of the files.  For instance, in the PrintActions file, you will notice a number of STATS_OUT_FILE macros being used to generate rather repetitively coded standard output files.&nbsp;</p></li>
+	<li><p>Create a new class in the file that follows proper naming conventions.  Any class should begin with "cAction" and be followed by the name of the action command you will register with the library.  For instance, if we were to create a new command "MyAction", we'd name the class cActionMyAction.  Below is a stub for this new action class:</p>
+			<p>
+			<pre>
+class cActionMyAction : public cAction
+{
+	private:
+		// Private data members for this action
+	public:
+		cActionMyAction(cWorld* world, const cString& args) : cAction(world, args) { ; }
+		
+		static const cString GetDescription() { return "Arguments: My Arguments"; }
+		
+		void Process(cAvidaContext& ctx)
+		{
+			//Perform whatever processing is needed when the action is triggered.
+		}
+};
+</pre></p>
+
+	<li><p>Define the private data members, constructor, description string in GetDescription, and the Process function.  Any arguments that you specify after the action name in the events configuration will be passed to your new class via the args argument in the constructor.</p></li>
+	<li><p>Register the new action with the action library.  At the bottom of each action definitions file, there are the commands that register the individual actions with the action library.  To register our example action "MyAction", we'd write<p>
+<p><pre>action_lib->Register<cActionMyAction>("MyAction");</pre><p>
+	<li><p>Test your action.</p></li>
+</ol>
+</p>
+
 
 
 <hr />

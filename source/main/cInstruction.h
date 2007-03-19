@@ -61,6 +61,8 @@ public:
   // Some extra methods to convert too and from alpha-numeric symbols...
   char GetSymbol() const;
   void SetSymbol(char symbol);
+	
+	static int ConvertSymbol(const char symbol);
 };
 
 

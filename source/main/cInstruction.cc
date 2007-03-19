@@ -43,3 +43,12 @@ void cInstruction::SetSymbol(char symbol)
   else m_operand = 254;
 }
 
+int cInstruction::ConvertSymbol(char symbol)
+{
+	int retval;
+	if (symbol >= 'a' && symbol <= 'z') retval = symbol - 'a';
+  else if (symbol >= 'A' && symbol <= 'Z') retval = symbol - 'A' + 26;
+  else if (symbol >= '0' && symbol <= '9') retval = symbol - '0' + 52;
+  else retval = 254;
+	return retval;
+}
