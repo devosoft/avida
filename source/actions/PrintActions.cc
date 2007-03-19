@@ -26,6 +26,8 @@
 
 #include "cAction.h"
 #include "cActionLibrary.h"
+#include "cAnalyze.h"
+#include "cAnalyzeGenotype.h"
 #include "cClassificationManager.h"
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
@@ -44,6 +46,9 @@
 #include "cStats.h"
 #include "cWorld.h"
 #include "cWorldDriver.h"
+#include "tVector.h"
+#include <cmath>
+#include <cerrno>
 
 
 #define STATS_OUT_FILE(METHOD, DEFAULT)                                                   /*  1 */ \
@@ -676,6 +681,265 @@ public:
       tdf.Endl();
     }
   }
+};
+
+
+/*
+ @MRR March 2007
+ This function prints out fitness data. The main point is that it
+ calculates the average fitness from info from the testCPU + the actual
+ merit of the organisms, and assigns zero fitness to those organisms
+ that will never reproduce.
+ 
+ The function also determines the maximum fitness genotype, and can
+ produce fitness histograms.
+ 
+ This version of the DetailedFitnessData prints the information as a log histogram.
+ 
+ Parameters:
+ filename   (cString)     Where the fitness histogram should be written.
+ fit_mode   (cString)     Either {Current, Actual, TestCPU}, where
+															   Current is the current value in the grid.  [Default]
+                                 Actual uses the current merit, but the true gestation time.
+                                 TestCPU determined.
+ hist_fmin  (double)      The minimum fitness value for the fitness histogram.  [Default: -3]
+ hist_fmax  (double)      The maximum fitness value for the fitness histogram.  [Default: 12]
+ hist_fstep (double)      The width of the individual bins in the histogram.    [Default: 0.5]
+ */
+class cActionPrintLogFitnessHistogram : public cAction
+{
+private:
+
+  double m_hist_fmin;
+  double m_hist_fstep;
+	double m_hist_fmax;
+	string m_mode;
+  cString m_filename;
+	
+public:
+		cActionPrintLogFitnessHistogram(cWorld* world, const cString& args)
+    : cAction(world, args)
+	{
+			cString largs(args);
+		  m_filename   = (largs.GetSize()) ? largs.PopWord()           : "fitness_log_hist.dat";
+			m_mode       = (largs.GetSize()) ? largs.PopWord().ToUpper() : "CURRENT";
+			m_hist_fmin  = (largs.GetSize()) ? largs.PopWord().AsDouble(): -3.0;
+			m_hist_fstep = (largs.GetSize()) ? largs.PopWord().AsDouble(): 0.5;
+			m_hist_fmax  = (largs.GetSize()) ? largs.PopWord().AsDouble(): 12;
+	}
+  
+  static const cString GetDescription() { return  "Parameters:\n\tfilename   (cString) [fitness_log_hist.dat]    Where the fitness histogram should be written.\n\tfit_mode   (cString)     Either {Current, Actual, TestCPU}, where\n\t\t Current is the current value in the grid.  [Default]\n\tActual uses the current merit, but the true gestation time.\n\tTestCPU determined.\n\thist_fmin  (double)      The minimum fitness value for the fitness histogram.  [Default: -3]\n\thist_fmax  (double)      The maximum fitness value for the fitness histogram.  [Default: 12]\n\thist_fstep (double)      The width of the individual bins in the histogram.    [Default: 0.5]\n\n";}
+  
+  void Process(cAvidaContext& ctx)
+  {
+		
+		//Verify input parameters
+		if ( (m_mode != "ACTUAL" && m_mode != "CURRENT" && m_mode != "TESTCPU") ||
+				m_hist_fmin > m_hist_fmax)
+		{
+			cerr << "cActionPrintFitnessHistogram: Please check arguments.  Abort.\n";
+			cerr << "Parameters: " << m_filename << ", " << m_mode << ", " << m_hist_fmin << ":" << m_hist_fstep << ":" << m_hist_fmax << endl;
+			return;
+		}
+		
+		//Gather data objects
+    cPopulation& pop        = m_world->GetPopulation();
+    const int    update     = m_world->GetStats().GetUpdate();
+    const double generation = m_world->GetStats().SumGeneration().Average();
+    
+    //Set up histogram; extra columns prepended (non-viable, < m_hist_fmin) and appended ( > f_hist_fmax)
+		//If the bin size is not a multiple of the step size, the last bin is expanded to make it a multiple.
+		//All bins are [min, max)
+    tArray<int> histogram;
+		int num_bins = static_cast<int>(ceil( (m_hist_fmax - m_hist_fmin) / m_hist_fstep)) + 3;
+		m_hist_fmax  = m_hist_fmin + (num_bins - 3) * m_hist_fstep;
+		histogram.Resize(num_bins, 0);
+		
+    
+    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+		
+    for (int i = 0; i < pop.GetSize(); i++)
+		{
+      if (pop.GetCell(i).IsOccupied() == false) continue;  //Skip unoccupied cells
+      
+      cOrganism* organism = pop.GetCell(i).GetOrganism();
+      cGenotype* genotype = organism->GetGenotype();
+      
+      cCPUTestInfo test_info;
+      testcpu->TestGenome(ctx, test_info, genotype->GetGenome());
+			
+      // We calculate the fitness based on the current merit,
+      // but with the true gestation time. Also, we set the fitness
+      // to zero if the creature is not viable.
+      const double fitness = (m_mode == "CURRENT") ? organism->GetPhenotype().GetFitness() :
+				                     (m_mode == "ACUTAL")  ? 
+																((test_info.IsViable()) ? 
+																 organism->GetPhenotype().GetMerit().CalcFitness(test_info.GetTestPhenotype().GetGestationTime()) : 0.0) :
+				                     test_info.GetColonyFitness();
+		
+			//Update the histogram
+			const double log_fitness = log10(fitness);
+			
+			int update_bin = (errno == ERANGE) ? 0 :       //If we have a log of zero, this will be true.
+				static_cast<int>((log_fitness - m_hist_fmin) / m_hist_fstep);
+			if (update_bin < 0)
+				update_bin = 1;
+			else if (update_bin >= num_bins - 3)
+				update_bin = num_bins - 1;
+			else
+				update_bin = update_bin + 2;
+		
+			histogram[update_bin]++;
+		}
+			
+		delete testcpu;
+    
+		//Output histogram
+		cDataFile& hdf = m_world->GetDataFile(m_filename);
+		hdf.Write(update, "Update");
+		hdf.Write(generation, "Generation");
+		
+		for (int k = 0; k < histogram.GetSize(); k++)
+		{ 
+			if (k == 0)
+				hdf.Write(histogram[k], "Inviable");
+			else if (k == 1)
+				hdf.Write(histogram[k], cString("< ") + cStringUtil::Convert(m_hist_fmin));
+			else if (k < histogram.GetSize() - 1)
+				hdf.Write(histogram[k], cString("(") + cStringUtil::Convert(m_hist_fmin+m_hist_fstep*(k-2)) 
+																+ cString(", ") + cStringUtil::Convert(m_hist_fmin+m_hist_fstep*(k-1)) +
+																+ cString("]"));
+			else
+				hdf.Write(histogram[k], cString("> ") + cStringUtil::Convert(m_hist_fmax));
+		}
+		hdf.Endl();
+	}
+};
+
+
+
+/*
+ @MRR March 2007
+ This function will take the initial genotype for each organism in the
+ population/batch, align them, and calculate the per-site entropy of the
+ aligned sequences.  Please note that there may be a variable number
+ of columns in each line if the runs are not fixed length.  The site
+ entropy will be measured in mers, normalized by the instruction set size.
+ This is a population/batch measure of entropy, not a mutation-selection balance
+ measure.  
+*/
+class cActionPrintGenomicSiteEntropy : public cAction
+{
+	private:
+		cString m_filename;
+		bool    m_use_gap;
+	
+	public:
+		cActionPrintGenomicSiteEntropy(cWorld* world, const cString& args) : cAction(world, args)
+		{
+			cString largs = args;
+			m_filename = (largs.GetSize()) ? largs.PopWord() : "GenomicSiteEntropy.dat";
+		}
+
+		static const cString GetDescription() { return "Arguments: [filename = \"GenomicSiteEntropyData\"] [use_gap = false]";}
+		
+		void Process(cAvidaContext& ctx)
+		{
+			
+			const int        update     = m_world->GetStats().GetUpdate();
+			const double     generation = m_world->GetStats().SumGeneration().Average();
+			const int        num_insts  = m_world->GetNumInstructions();
+			tArray<cString> aligned;  //This will hold all of our aligned sequences
+			
+			if (ctx.GetAnalyzeMode()) //We're in analyze mode, so process the current batch
+			{
+				cAnalyze& analyze = m_world->GetAnalyze();  
+				if (!analyze.GetCurrentBatch().IsAligned()) analyze.CommandAlign(""); //Let analyze take charge of aligning this batch
+				tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
+				cAnalyzeGenotype* genotype = NULL;
+				while(genotype = batch_it.Next())
+				{
+					aligned.Push(genotype->GetAlignedSequence());
+				}
+			}
+			else //We're not in analyze mode, process the population
+			{
+				cPopulation& pop = m_world->GetPopulation();
+				for (int i = 0; i < pop.GetSize(); i++)
+				{
+					if (pop.GetCell(i).IsOccupied() == false) continue;  //Skip unoccupied cells
+					aligned.Push(pop.GetCell(i).GetOrganism()->GetGenome().AsString());
+				}
+				AlignStringArray(aligned);  //Align our population genomes
+			}
+			
+			//With all sequences aligned and stored, we can proceed to calculate per-site entropies
+			if (!aligned.GetSize())
+			{
+				m_world->GetDriver().NotifyComment("cActionPrintGenomicSiteEntropy: No sequences available.  Abort.");
+				return;
+			}
+			
+			const int gen_size = aligned[0].GetSize();
+			tArray<double> site_entropy(gen_size, 0.0);
+			tArray<int> inst_count( (m_use_gap) ? num_insts + 1 : num_insts, 0);  //Add an extra place if we're using gaps
+			for (int pos = 0; pos < gen_size; pos++)
+			{
+				inst_count.SetAll(0);  //Reset the counter for each aligned position
+				int total_count = 0;
+				for (int seq = 0; seq < aligned.GetSize(); seq++)
+				{
+					char ch = aligned[seq][pos];
+					if (ch == '_' && !m_use_gap) continue;                  //Skip gaps when applicable
+					else if (ch == '_') site_entropy[num_insts]++;          //Update gap count at end
+					else inst_count[ cInstruction::ConvertSymbol(ch) ]++;   //Update true instruction count
+					total_count++;
+				}
+				for (int c = 0; c < inst_count.GetSize(); c++)
+				{
+					double p = (inst_count[c] > 0) ? inst_count[c] / static_cast<double>(total_count) : 0.0;
+					site_entropy[pos] += (p > 0.0) ? - p * log(p) / log(inst_count.GetSize()) : 0.0;
+				}
+			}
+		}
+	
+	
+	private:
+		void AlignStringArray(tArray<cString>& unaligned)  //Taken from cAnalyze::CommandAnalyze
+		{
+			// Create an array of all the sequences we need to align.
+			const int num_sequences = unaligned.GetSize();
+			
+			// Move through each sequence an update it.
+			cString diff_info;
+			for (int i = 1; i < num_sequences; i++) {
+				// Track of the number of insertions and deletions to shift properly.
+				int num_ins = 0;
+				int num_del = 0;
+				
+				// Compare each string to the previous.
+				cStringUtil::EditDistance(unaligned[i], unaligned[i-1], diff_info, '_');
+				while (diff_info.GetSize() != 0) {
+					cString cur_mut = diff_info.Pop(',');
+					const char mut_type = cur_mut[0];
+					cur_mut.ClipFront(1); cur_mut.ClipEnd(1);
+					int position = cur_mut.AsInt();
+					if (mut_type == 'M') continue;   // Nothing to do with Mutations
+					
+					if (mut_type == 'I') {           // Handle insertions
+						for (int j = 0; j < i; j++)    // Loop back and insert an '_' into all previous sequences
+								unaligned[j].Insert('_', position + num_del);
+						num_ins++;
+					}
+					
+					else if (mut_type == 'D'){      // Handle Deletions
+						// Insert '_' into the current sequence at the point of deletions.
+						unaligned[i].Insert("_", position + num_ins);
+						num_del++;
+					}
+				}
+			}
+		}
 };
 
 
@@ -1523,6 +1787,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDominantGenotype>("PrintDominantGenotype");
   action_lib->Register<cActionPrintDominantParasiteGenotype>("PrintDominantParasiteGenotype");
   action_lib->Register<cActionPrintDetailedFitnessData>("PrintDetailedFitnessData");
+	action_lib->Register<cActionPrintLogFitnessHistogram>("PrintLogFitnessHistogram");
   action_lib->Register<cActionPrintGeneticDistanceData>("PrintGeneticDistanceData");
   action_lib->Register<cActionPrintPopulationDistanceData>("PrintPopulationDistanceData");
   action_lib->Register<cActionPrintDebug>("PrintDebug");
@@ -1534,6 +1799,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintViableTasksData>("PrintViableTasksData");
   action_lib->Register<cActionPrintTreeDepths>("PrintTreeDepths");
   
+	action_lib->Register<cActionPrintGenomicSiteEntropy>("PrintGenomicSiteEntropy");
+	
   // Grid Information Dumps
   action_lib->Register<cActionDumpMemory>("DumpMemory");
   action_lib->Register<cActionDumpFitnessGrid>("DumpFitnessGrid");
