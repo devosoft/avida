@@ -881,8 +881,11 @@ class cActionPrintGenomicSiteEntropy : public cAction
 			}
 			
 			const int gen_size = aligned[0].GetSize();
-			tArray<double> site_entropy(gen_size, 0.0);
-			tArray<int> inst_count( (m_use_gap) ? num_insts + 1 : num_insts, 0);  //Add an extra place if we're using gaps
+			tArray<double> site_entropy(gen_size);
+			site_entropy.SetAll(0.0);
+			
+			tArray<int> inst_count( (m_use_gap) ? num_insts + 1 : num_insts);  //Add an extra place if we're using gaps
+			inst_count.SetAll(0);
 			for (int pos = 0; pos < gen_size; pos++)
 			{
 				inst_count.SetAll(0);  //Reset the counter for each aligned position
