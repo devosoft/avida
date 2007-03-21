@@ -345,6 +345,9 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   else if (name == "fibonacci_seq")
     Load_FibonacciSequence(name, info, envreqs, errors);
 
+   // Optimization Tasks
+  if (name == "optimize")
+	  Load_Optimize(name, info, envreqs, errors);
 
   if (name == "mult")
     Load_Mult(name, info, envreqs, errors);
@@ -2111,7 +2114,82 @@ double cTaskLib::Task_FibonacciSequence(cTaskContext& ctx) const
   return 0.0;
 }
 
+void cTaskLib::Load_Optimize(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+{
+	cArgSchema schema;
 
+	// Integer Arguments
+	schema.AddEntry("function", 0, cArgSchema::SCHEMA_INT);
+
+	cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
+	if (args) 
+	{
+		switch (args->GetInt(0))
+		{
+		case 1:
+			envreqs.SetMinOutputs(1);
+		case 2:
+			envreqs.SetMinOutputs(2);
+		case 3:
+			envreqs.SetMinOutputs(2);
+		};
+
+		NewTask(name, "Optimize", &cTaskLib::Task_Optimize, 0, args);
+	}
+}
+
+double cTaskLib::Task_Optimize(cTaskContext& ctx) const
+{
+	// if the org hasn't output yet enough numbers, just return without completing any tasks
+	if (ctx.GetOutputBuffer().GetNumStored() < ctx.GetOutputBuffer().GetCapacity()) 
+		return 0;
+
+	double quality = 0.0;
+
+	// which function are we currently checking?
+	const int function = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+	
+	// always need x, at least for now, turn it into a double between 0 and 1
+	unsigned outy, outx = ctx.GetOutputBuffer()[0];
+	double y, x = (double)outx / 0xffffffff;
+	
+	switch(function)
+	{
+	case 1:
+		quality = 1 - x;
+		break;
+
+	case 2:
+		// for F2 need y as well
+		outy = ctx.GetOutputBuffer()[1];
+		y = (double)outy / 0xffff;
+		quality = 1 - ((1+y)*(1-sqrt(x/(1+y))))/2.0;	// F2
+		break;
+
+	case 3:
+		// for F3 need y as well
+		outy = ctx.GetOutputBuffer()[1];
+		y = (double)outy / 0xffff;
+		quality = 1 - ((1+y)*(1-pow(x/(1+y),2)))/2.0;	// F3
+		break;
+
+	default:
+		quality = .001;
+	}
+
+	// because want org to only have 1 shot to use outputs for all functions at once, even if they
+	// output numbers that give a quality of 0 on a function, still want to mark it as completed
+	// so give it a very low quality instead of 0 (if using limited resources they still will get
+	// no reward because set the minimum consumed to max*.001, meaning even if they get the max
+	// possible fraction they'll be below minimum allowed consumed and will consume nothing
+	
+	if (quality < .001)
+		return .001;
+	else
+		return quality;
+	
+	return 0;
+}
 
 void cTaskLib::Load_Mult(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
 {

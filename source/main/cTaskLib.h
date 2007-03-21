@@ -246,6 +246,10 @@ private:  // Direct task related methods
   void Load_FibonacciSequence(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
   double Task_FibonacciSequence(cTaskContext& ctx) const;
   
+   // Optimization Tasks
+  void Load_Optimize(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
+  double Task_Optimize(cTaskContext& ctx) const;
+
   void Load_Mult(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
   double Task_Mult(cTaskContext& ctx) const;
   void Load_Div(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
