@@ -1709,6 +1709,27 @@ void cAnalyze::CommandPrintTasks(cString cur_string)
   }
 }
 
+void cAnalyze::CommandPrintTasksQuality(cString cur_string)
+{
+  if (m_world->GetVerbosity() >= VERBOSE_ON) cout << "Printing task qualities in batch " << cur_batch << endl;
+  else cout << "Printing task qualities..." << endl;
+  
+  // Load in the variables...
+  cString filename("tasksquality.dat");
+  if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
+  
+  ofstream& fp = m_world->GetDataFileOFStream(filename);
+  
+  // Loop through all of the genotypes in this batch...
+  tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+  cAnalyzeGenotype * genotype = NULL;
+  while ((genotype = batch_it.Next()) != NULL) {
+    fp << genotype->GetID() << " ";
+    genotype->PrintTasksQuality(fp);
+    fp << endl;
+  }
+}
+
 void cAnalyze::CommandDetail(cString cur_string)
 {
   if (m_world->GetVerbosity() >= VERBOSE_ON) cout << "Detailing batch " << cur_batch << endl;
@@ -7981,6 +8002,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("PRINT", &cAnalyze::CommandPrint);
   AddLibraryDef("TRACE", &cAnalyze::CommandTrace);
   AddLibraryDef("PRINT_TASKS", &cAnalyze::CommandPrintTasks);
+  AddLibraryDef("PRINT_TASKS_QUALITY", &cAnalyze::CommandPrintTasksQuality);
   AddLibraryDef("DETAIL", &cAnalyze::CommandDetail);
   AddLibraryDef("DETAIL_TIMELINE", &cAnalyze::CommandDetailTimeline);
   AddLibraryDef("DETAIL_BATCHES", &cAnalyze::CommandDetailBatches);

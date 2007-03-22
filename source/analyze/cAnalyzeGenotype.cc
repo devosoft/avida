@@ -64,6 +64,7 @@ cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, cString symbol_string, cInstSe
   , fitness(0.0)
   , errors(0)
   , task_counts(0)
+  , task_qualities(0)
   , fitness_ratio(0.0)
   , efficiency_ratio(0.0)
   , comp_merit_ratio(0.0)
@@ -109,6 +110,7 @@ cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, const cGenome& _genome, cInstS
   , fitness(0.0)
   , errors(0)
   , task_counts(0)
+  , task_qualities(0)
   , fitness_ratio(0.0)
   , efficiency_ratio(0.0)
   , comp_merit_ratio(0.0)
@@ -144,6 +146,7 @@ cAnalyzeGenotype::cAnalyzeGenotype(const cAnalyzeGenotype& _gen)
   , fitness(_gen.fitness)
   , errors(_gen.errors)
   , task_counts(_gen.task_counts)
+  , task_qualities(_gen.task_qualities)
   , fitness_ratio(_gen.fitness_ratio)
   , efficiency_ratio(_gen.efficiency_ratio)
   , comp_merit_ratio(_gen.comp_merit_ratio)
@@ -400,6 +403,7 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cTestCPU* testcpu, cAnaly
   div_type = test_phenotype.GetDivType();
   mate_id = test_phenotype.MateSelectID();
   task_counts = test_phenotype.GetLastTaskCount();
+  task_qualities = test_phenotype.GetLastTaskQuality();
 
   // Setup a new parent stats if we have a parent to work with.
   if (parent_genotype != NULL) {
@@ -422,6 +426,15 @@ void cAnalyzeGenotype::PrintTasks(ofstream& fp, int min_task, int max_task)
 
   for (int i = min_task; i < max_task; i++) {
     fp << task_counts[i] << " ";
+  }
+}
+
+void cAnalyzeGenotype::PrintTasksQuality(ofstream& fp, int min_task, int max_task)
+{
+  if (max_task == -1) max_task = task_counts.GetSize();
+
+  for (int i = min_task; i < max_task; i++) {
+    fp << task_qualities[i] << " ";
   }
 }
 

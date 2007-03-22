@@ -129,6 +129,7 @@ private:
   int mate_id;
   cString executed_flags; // converted into a string
   tArray<int> task_counts;
+  tArray<double> task_qualities;
 
   // Group 3 : Stats requiring parental genotype (Also from test CPUs)
   double fitness_ratio;
@@ -210,6 +211,7 @@ public:
 
   void Recalculate(cAvidaContext& ctx, cTestCPU* testcpu, cAnalyzeGenotype* parent_genotype = NULL, cCPUTestInfo* test_info = NULL);
   void PrintTasks(std::ofstream& fp, int min_task = 0, int max_task = -1);
+  void PrintTasksQuality(std::ofstream& fp, int min_task = 0, int max_task = -1);
   void CalcLandscape(cAvidaContext& ctx);
 
   // Set...
@@ -329,6 +331,14 @@ public:
   }
   const tArray<int> & GetTaskCounts() const {
     return task_counts;
+  }
+
+  double GetTaskQuality(int task_id) const {
+	  if (task_id >= task_counts.GetSize()) return 0;
+	  return task_qualities[task_id];
+  }
+  const tArray<double> & GetTaskQualities() const {
+	  return task_qualities;
   }
 
   // Comparisons...  Compares a genotype to the "previous" one, which is

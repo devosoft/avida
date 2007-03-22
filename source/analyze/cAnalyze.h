@@ -198,6 +198,7 @@ public:
   void CommandTrace(cString cur_string);
   void CommandTraceWithResources(cString cur_string);
   void CommandPrintTasks(cString cur_string);
+  void CommandPrintTasksQuality(cString cur_string);
   void CommandDetail(cString cur_string);
   void CommandDetailTimeline(cString cur_string);
   void CommandDetailBatches(cString cur_string);
