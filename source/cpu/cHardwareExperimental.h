@@ -304,7 +304,7 @@ private:
   bool Inst_TaskIO(cAvidaContext& ctx);
 
   // Head-based instructions...
-  bool Inst_MaxAlloc(cAvidaContext& ctx);
+  bool Inst_HeadAlloc(cAvidaContext& ctx);
   bool Inst_MoveHead(cAvidaContext& ctx);
   bool Inst_JumpHead(cAvidaContext& ctx);
   bool Inst_GetHead(cAvidaContext& ctx);

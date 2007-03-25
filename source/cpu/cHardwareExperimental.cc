@@ -109,15 +109,15 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("IO", &cHardwareExperimental::Inst_TaskIO, nInstFlag::DEFAULT, "Output ?BX?, and input new number back into ?BX?"),
     
     // Head-based instructions
-    tInstLibEntry<tMethod>("h-alloc", &cHardwareExperimental::Inst_MaxAlloc, nInstFlag::DEFAULT, "Allocate maximum allowed space"),
+    tInstLibEntry<tMethod>("h-alloc", &cHardwareExperimental::Inst_HeadAlloc, nInstFlag::DEFAULT, "Allocate maximum allowed space"),
     tInstLibEntry<tMethod>("h-divide", &cHardwareExperimental::Inst_HeadDivide, nInstFlag::DEFAULT, "Divide code between read and write heads."),
     tInstLibEntry<tMethod>("h-read", &cHardwareExperimental::Inst_HeadRead),
     tInstLibEntry<tMethod>("h-write", &cHardwareExperimental::Inst_HeadWrite),
     tInstLibEntry<tMethod>("h-copy", &cHardwareExperimental::Inst_HeadCopy, nInstFlag::DEFAULT, "Copy from read-head to write-head; advance both"),
     tInstLibEntry<tMethod>("h-search", &cHardwareExperimental::Inst_HeadSearch, nInstFlag::DEFAULT, "Find complement template and make with flow head"),
     tInstLibEntry<tMethod>("mov-head", &cHardwareExperimental::Inst_MoveHead, nInstFlag::DEFAULT, "Move head ?IP? to the flow head"),
-    tInstLibEntry<tMethod>("jmp-head", &cHardwareExperimental::Inst_JumpHead, nInstFlag::DEFAULT, "Move head ?IP? by amount in CX register; CX = old pos."),
-    tInstLibEntry<tMethod>("get-head", &cHardwareExperimental::Inst_GetHead, nInstFlag::DEFAULT, "Copy the position of the ?IP? head into CX"),
+    tInstLibEntry<tMethod>("jmp-head", &cHardwareExperimental::Inst_JumpHead, nInstFlag::DEFAULT, "Move head ?Flow? by amount in ?CX? register"),
+    tInstLibEntry<tMethod>("get-head", &cHardwareExperimental::Inst_GetHead, nInstFlag::DEFAULT, "Copy the position of the ?IP? head into ?CX?"),
     tInstLibEntry<tMethod>("if-label", &cHardwareExperimental::Inst_IfLabel, nInstFlag::DEFAULT, "Execute next if we copied complement of attached label"),
     tInstLibEntry<tMethod>("set-flow", &cHardwareExperimental::Inst_SetFlow, nInstFlag::DEFAULT, "Set flow-head to position in ?CX?"),
     tInstLibEntry<tMethod>("goto", &cHardwareExperimental::Inst_Goto, nInstFlag::DEFAULT, "Move IP to labeled position matching the label that follows")
@@ -1033,7 +1033,7 @@ bool cHardwareExperimental::Inst_Nand(cAvidaContext& ctx)
 
 
 
-bool cHardwareExperimental::Inst_MaxAlloc(cAvidaContext& ctx)   // Allocate maximal more
+bool cHardwareExperimental::Inst_HeadAlloc(cAvidaContext& ctx)   // Allocate maximal more
 {
   const int dst = FindModifiedRegister(REG_AX);
   const int cur_size = GetMemory().GetSize();
@@ -1073,18 +1073,18 @@ bool cHardwareExperimental::Inst_MoveHead(cAvidaContext& ctx)
 
 bool cHardwareExperimental::Inst_JumpHead(cAvidaContext& ctx)
 {
-  const int head_used = FindModifiedHead(nHardware::HEAD_IP);
-  GetHead(head_used).Jump(GetRegister(REG_CX) );
-  // JEB - probably shouldn't advance inst ptr after jumping here?
-  // Any negative number jumps to the beginning of the genome (pos 0)
-  // and then we immediately advance past that first instruction.
+  const int head_used = FindModifiedHead(nHardware::HEAD_FLOW);
+  const int reg = FindModifiedRegister(REG_CX);
+  GetHead(head_used).Jump(GetRegister(reg));
+  if (head_used == nHardware::HEAD_IP) m_advance_ip = false;
   return true;
 }
 
 bool cHardwareExperimental::Inst_GetHead(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
-  GetRegister(REG_CX) = GetHead(head_used).GetPosition();
+  const int reg = FindModifiedRegister(REG_CX);
+  GetRegister(reg) = GetHead(head_used).GetPosition();
   return true;
 }
 
