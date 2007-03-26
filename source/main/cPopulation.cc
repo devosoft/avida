@@ -1945,15 +1945,13 @@ bool cPopulation::LoadDumpFile(cString filename, int update)
         current_cell += 1;
       }
     }
-    cout << (*it).id_num << " "
-    << (*it).parent_id << " "
-    << (*it).genotype->GetParentID() << " "
-    << (*it).genotype->GetNumOffspringGenotypes() << " "
-    << (*it).num_cpus << " "
-    << (*it).genotype->GetNumOrganisms() << endl;
-    if (soup_full){
-      cout << "cPopulation::LoadDumpFile: You are trying to load more organisms than there is space!" << endl;
-      cout << "cPopulation::LoadDumpFile: Remaining organisms are ignored." << endl;
+
+// @DMB - This seems to be debugging output...
+//    cout << (*it).id_num << " " << (*it).parent_id << " " << (*it).genotype->GetParentID() << " "
+//         << (*it).genotype->GetNumOffspringGenotypes() << " " << (*it).num_cpus << " " << (*it).genotype->GetNumOrganisms() << endl;
+    
+    if (soup_full) {
+      cout << "Warning: Too many organisms in population file, remainder ignored" << endl;
       break;
     }
   }
