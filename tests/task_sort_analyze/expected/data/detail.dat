@@ -1,0 +1,17 @@
+#filetype genotype_data
+#format length viable copy_length exe_length merit comp_merit gest_time efficiency fitness task.0 task.0 
+
+# Legend:
+# 1: Genome Length
+# 2: Is Viable (0/1)
+# 3: Copied Length
+# 4: Executed Length
+# 5: Merit
+# 6: Computational Merit
+# 7: Gestation Time
+# 8: Rep. Efficiency
+# 9: Fitness
+# 10: Sort Inputs
+# 11: Sort Inputs
+
+121 1 121 81 82944 1024 1295 0.0625483 64.0494 1 1 

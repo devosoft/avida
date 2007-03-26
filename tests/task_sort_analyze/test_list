@@ -1,0 +1,11 @@
+[main]
+args = -a
+
+[consistency]
+enabled = yes
+long = no
+
+[performance]
+enabled = no
+long = no
+
