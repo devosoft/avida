@@ -20,7 +20,7 @@ public:
   static char GetBreedSymbol(    const cPopulationCell & cell );
   static char GetParasiteSymbol( const cPopulationCell & cell );
   static char GetMutSymbol(      const cPopulationCell & cell );
-  static char GetThreadSymbol(const cPopulationCell & cell);
+  static char GetThreadSymbol(   const cPopulationCell & cell );
   static char GetLineageSymbol(  const cPopulationCell & cell );
 };
 

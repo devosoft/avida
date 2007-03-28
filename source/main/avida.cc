@@ -82,17 +82,18 @@ void printVersionBanner()
   // output copyright message
   cout << "----------------------------------------------------------------------" << endl;
   cout << getAvidaVersion() << endl << endl;
-  cout << "by Charles Ofria" << endl << endl;
-  cout << "Lead Developers: David Bryson (Avida) and Kaben Nanlohy (Avida-ED)" << endl << endl;
-  cout << "Portions by Brian Baer, Jeffrey Barrick, Benjamin Beckmann, Jeffrey Clune," << endl
-       << "Travis Collier, Art Covert, Evan Dorn, Sherri Goings, George Hagstrom," << endl
-       << "Dehua Hang, Wei Huang, David Knoester, Dusan Misevic, Elizabeth Ostrowski," << endl
-       << "Matthew Rupp, Jason Stredwick, Bess Walker, Claus Wilke, and Larry Wisne" << endl << endl;
 
-  cout << "With design help from Christoph Adami, C. Titus Brown, Timothy Cooper," << endl
-       << "Santiago Elena, Richard Lenski, Philip McKinley, Robert Pennock, Thomas" << endl
-       << "Schmidt, Robert Schwartz, Eric Torng, Jialan Wang, Daniel Weise, and Gabriel" << endl
-       << "Yedid" << endl;
+  cout << "by Charles Ofria" << endl << endl;
+
+  cout << "Lead Developers: David Bryson (Avida) and Kaben Nanlohy (Avida-ED)" << endl << endl;
+
+  cout << "Active contributors include:  Christoph Adami, Brian Baer, Jeffrey Barrick," << endl
+       << "Benjamin Beckmann, Jeffrey Clune, Art Covert, Santiago Elena, Sherri Goings," << endl
+       << "Heather Goldsby, David Knoester, Richard Lenski, Philip McKinley," << endl
+       << "Dusan Misevic, Elizabeth Ostrowski, Robert Pennock, Matthew Rupp, Eric Torng," << endl
+       << "Bess Walker, and Gabriel Yedid" << endl << endl;
+
+  cout << "For a more complete list of contributors, see the CONTRIBUTORS file." << endl;
 
   cout << endl;
 
