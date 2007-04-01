@@ -6,6 +6,7 @@ SET(libcpu_a_SOURCES
   cHardwareBase.cc
   cHardwareCPU.cc
   cHardwareExperimental.cc
+  cHardwareGX.cc
   cHardwareManager.cc
   cHardwareSMT.cc
   cHardwareStatusPrinter.cc
