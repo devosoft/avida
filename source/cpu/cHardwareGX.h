@@ -486,7 +486,7 @@ private:
 
 
 #ifdef ENABLE_UNIT_TESTS
-namespace nHardwareCPU {
+namespace nHardwareGX {
   /**
    * Run unit tests
    *
