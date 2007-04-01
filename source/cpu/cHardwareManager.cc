@@ -28,6 +28,7 @@
 #include "cHardwareExperimental.h"
 #include "cHardwareSMT.h"
 #include "cHardwareTransSMT.h"
+#include "cHardwareGX.h"
 #include "cInitFile.h"
 #include "cInstSet.h"
 #include "cWorld.h"
@@ -59,6 +60,10 @@ cHardwareManager::cHardwareManager(cWorld* world)
       m_inst_set = new cInstSet(world, cHardwareExperimental::GetInstLib());
 			default_filename = cHardwareExperimental::GetDefaultInstFilename();
 			break;
+    case HARDWARE_TYPE_CPU_GX:
+      m_inst_set = new cInstSet(world, cHardwareGX::GetInstLib());
+			default_filename = cHardwareGX::GetDefaultInstFilename();
+			break;      
 		default:
       m_world->GetDriver().RaiseFatalException(1, "Unknown/Unsupported HARDWARE_TYPE specified");
   }
@@ -129,6 +134,8 @@ cHardwareBase* cHardwareManager::Create(cOrganism* in_org)
       return new cHardwareTransSMT(m_world, in_org, m_inst_set);
     case HARDWARE_TYPE_CPU_EXPERIMENTAL:
       return new cHardwareExperimental(m_world, in_org, m_inst_set);
+    case HARDWARE_TYPE_CPU_GX:
+      return new cHardwareGX(m_world, in_org, m_inst_set);
     default:
       return NULL;
   }
