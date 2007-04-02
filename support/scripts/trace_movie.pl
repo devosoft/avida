@@ -66,7 +66,7 @@ use Getopt::Long;
 use Pod::Usage;
 my ($help, $man);
 my $frame_limit = 1000;
-my ($input, $output, $trace, $movie);
+my ($input, $output, $trace, $movie, $collapse_frames);
 #pod2usage(1) if (scalar @ARGV == 0);
 GetOptions(
 	'help|?' => \$help, 'man' => \$man,
@@ -74,11 +74,12 @@ GetOptions(
 	'trace|t=s' => \$trace,
 	'output|o=s' => \$output,
 	'movie|m' => \$movie,
-	'frame-limit|f=s' => \$frame_limit
+	'frame-limit|f=s' => \$frame_limit,
+	'collapse|c' => \$collapse_frames,
 ) or pod2usage(2);
 pod2usage(1) if $help;
 pod2usage(-exitstatus => 0, -verbose => 2) if $man;
-pod2usage(1) if (!defined $output or !defined $input);
+pod2usage(1) if (!defined $output or !defined $input or !defined $trace);
 
 #Other options
 my $each_execution_once = 1;
@@ -86,12 +87,16 @@ my $each_execution_once = 1;
 my $data;
 
 #Load the genome from the .org file
-open ORGANISM, "$input";
+open ORGANISM, "$input" or die "Could not open organism file: $input";
 our @inst = <ORGANISM>;
 close ORGANISM;
 chomp @inst;
 @inst = grep !/^#/, @inst; #comments
 @inst = grep $_, @inst; #blank lines
+foreach my $inst (@inst)
+{
+	$inst =~ s/\s*#.*$//;
+}
 #print +(join "\n", @org_lines) . "\n";
 
 #Load the trace from the .org file
@@ -140,7 +145,7 @@ while (<TRACE>)
 		#The next line is merit/bonus/tasks
 		$on_line = <TRACE>;
 		chomp $on_line;
-		$on_line =~ m/Bonus:\s*(\d+)\s*Errors:\s*(\d+)\s*Donates:\s*(\d+)/;
+		$on_line =~ m/Bonus:\s*(\S+)\s*Errors:\s*(\d+)\s*Donates:\s*(\d+)/;
 		$t->{bonus} = $1;
 		$t->{donates} = $3;
 		
@@ -178,6 +183,18 @@ while (<TRACE>)
 			@{$t->{resources}} = @{$t->{resources}} = split /\s+/, $cur_resource_line;
 		}
 		#print Dumper($t);
+		
+		#Check to see if the last fram added was at the same location		
+		if ($collapse_frames && $trace[$#trace])
+		{
+		  	#print $trace[$#trace]->{'inst'} . " " . $t->{'inst'} . "\n";
+		  	if ($trace[$#trace]->{'inst'} == $t->{'inst'})
+			{
+				pop @trace;
+				#print "removed down to: " . scalar @trace . "\n";
+			}
+		}
+		
 		push @trace, $t;
 	}
 	if ($_ =~ s/^Resources: //)
@@ -249,19 +266,24 @@ $colors->{purple} = $img->colorAllocate(137,30,246);
 
 
 our $inst_to_style = {
-	'nop-A'   => { 'c' => 'red',     's' => 'circle' },
-	'nop-B'   => { 'c' => 'green',   's' => 'circle' },
-	'nop-C'   => { 'c' => 'blue',    's' => 'circle' },
-	'sense'   => { 'c' => 'blue',    's' => 'triangle' },
-	'goto'    => { 'c' => 'green',   's' => 'square' },
-	'label'   => { 'c' => 'red',     's' => 'square' },
-	'throw'   => { 'c' => 'green',   's' => 'square' },
-	'catch'   => { 'c' => 'red',     's' => 'square' },
-	'nand'    => { 'c' => 'orange',  's' => 'square' },
-	'get'     => { 'c' => 'magenta', 's' => 'square' },
-	'put'     => { 'c' => 'cyan',    's' => 'square' },
-	'repro'   => { 'c' => 'purple',  's' => 'square' },
-    'default' => { 'c' => 'black',   's' => 'square' }
+	'nop-A'   		=> { 'c' => 'red',     's' => 'circle' },
+	'nop-B'   		=> { 'c' => 'green',   's' => 'circle' },
+	'nop-C'   		=> { 'c' => 'blue',    's' => 'circle' },
+	'sense'   		=> { 'c' => 'blue',    's' => 'triangle' },
+	'goto'    		=> { 'c' => 'green',   's' => 'square' },
+	'label'   		=> { 'c' => 'red',     's' => 'square' },
+	'throw'   		=> { 'c' => 'green',   's' => 'square' },
+	'catch'   		=> { 'c' => 'red',     's' => 'square' },
+	'promoter'   	=> { 'c' => 'green',   's' => 'square' },
+	'terminate'  	=> { 'c' => 'red',     's' => 'square' },	
+	'up-reg'     	=> { 'c' => 'green',   's' => 'triangle' },
+	'down-reg'   	=> { 'c' => 'red',     's' => 'triangle' },	
+	'nand'       	=> { 'c' => 'orange',  's' => 'square' },
+	'get'        	=> { 'c' => 'magenta', 's' => 'square' },
+	'put'        	=> { 'c' => 'cyan',    's' => 'square' },
+	'metabolize' 	=> { 'c' => 'cyan',    's' => 'square' },	
+	'repro'   		=> { 'c' => 'purple',  's' => 'square' },
+    'default' 		=> { 'c' => 'black',   's' => 'square' }
 };
 
 our $max_label_size = 8;
@@ -429,7 +451,7 @@ foreach (my $i=0; $i < scalar @trace; $i++)
 			print Dumper($trace[$i]->{tasks}, $trace[$i-1]->{tasks});
 		}
 		$text_color = ($i==0 or $trace[$i]->{tasks}->[$b] == $trace[$i-1]->{tasks}->[$b]) ? $colors->{black} : $colors->{red};
-		$img->string(gdMediumBoldFont,250 + 50 * $b,$text_y + 54,"$trace[$i]->{tasks}->[$b]",$text_color);
+		$img->string(gdMediumBoldFont,250 + 60 * $b,$text_y + 54,"$trace[$i]->{tasks}->[$b]",$text_color);
 	}
 
 	#$img->string(gdMediumBoldFont,3,$text_y + 72,"Effective Time:",$colors->{black});
@@ -445,7 +467,7 @@ foreach (my $i=0; $i < scalar @trace; $i++)
 				print Dumper($trace[$i]->{resources}, $trace[$i-1]->{resources});
 			}
 			$text_color = ($i==0 or $trace[$i]->{resources}->[$b] == $trace[$i-1]->{resources}->[$b]) ? $colors->{black} : $colors->{red};
-			$img->string(gdMediumBoldFont,250 + 50 * $b,$text_y + 72,"$trace[$i]->{resources}->[$b]",$text_color);
+			$img->string(gdMediumBoldFont,250 + 60 * $b,$text_y + 72, sprintf("%.2e",$trace[$i]->{resources}->[$b]) ,$text_color);
 		}
 	}
 			
