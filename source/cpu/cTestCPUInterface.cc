@@ -31,7 +31,7 @@
 
 bool cTestCPUInterface::Divide(cAvidaContext& ctx, cOrganism* parent, cGenome& child_genome)
 {
-  parent->GetPhenotype().TestDivideReset(parent->GetGenome().GetSize());
+  parent->GetPhenotype().TestDivideReset(parent->GetGenome());
   // @CAO in the future, we probably want to pass this child the test_cpu!
   return true;
 }

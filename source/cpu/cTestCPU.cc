@@ -342,7 +342,7 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info,
   test_info.org_array[cur_depth] = new cOrganism(m_world, ctx, genome);
   cOrganism & organism = *( test_info.org_array[cur_depth] );
   organism.SetOrgInterface(new cTestCPUInterface(this));
-  organism.GetPhenotype().SetupInject(genome.GetSize());
+  organism.GetPhenotype().SetupInject(genome);
 
   // Run the current organism.
   ProcessGestation(ctx, test_info, cur_depth);

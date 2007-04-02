@@ -455,7 +455,6 @@ void cOrganism::PrintStatus(ostream& fp, const cString& next_name)
   for (int i = 0; i < m_output_buf.GetNumStored(); i++) fp << " 0x" << setw(8) << m_output_buf[i];
   fp << endl;
   
-  
   fp << setfill(' ') << setbase(10);
     
   fp << "---------------------------" << endl;

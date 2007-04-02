@@ -33,6 +33,7 @@
 #include "cDataFile.h"
 #include "cEnvironment.h"
 #include "functions.h"
+#include "cGenome.h"
 #include "cGenomeUtil.h"
 #include "cGenotype.h"
 #include "cHardwareBase.h"
@@ -291,10 +292,10 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
   tArray<cMerit> merit_array;
   
   // Update the parent's phenotype.
-  // This needs to be done before the parent goes into the brith chamber
+  // This needs to be done before the parent goes into the birth chamber
   // or the merit doesn't get passed onto the child correctly
   cPhenotype& parent_phenotype = parent_organism.GetPhenotype();
-  parent_phenotype.DivideReset(parent_organism.GetGenome().GetSize());
+  parent_phenotype.DivideReset(parent_organism.GetGenome());
   
   birth_chamber.SubmitOffspring(ctx, child_genome, parent_organism, child_array, merit_array);
   
@@ -328,8 +329,8 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
     }
     
     // Update the phenotypes of each child....
-    const int child_length = child_array[i]->GetGenome().GetSize();
-    child_array[i]->GetPhenotype().SetupOffspring(parent_phenotype,child_length);
+    const cGenome & child_genome = child_array[i]->GetGenome();
+    child_array[i]->GetPhenotype().SetupOffspring(parent_phenotype,child_genome);
     
     child_array[i]->GetPhenotype().SetMerit(merit_array[i]);
     
@@ -2211,7 +2212,7 @@ void cPopulation::InjectGenotype(int cell_id, cGenotype *new_genotype)
   
   // Setup the phenotype...
   cPhenotype & phenotype = new_organism->GetPhenotype();
-  phenotype.SetupInject(new_genotype->GetLength());
+  phenotype.SetupInject(new_genotype->GetGenome());
   phenotype.SetMerit( cMerit(new_genotype->GetTestMerit(ctx)) );
   
   // @CAO are these really needed?

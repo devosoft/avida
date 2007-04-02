@@ -104,13 +104,15 @@ bool cPhenotype::OK()
  **/
 
 void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
-				int _length)
+				const cGenome & _genome)
 {
   // Copy divide values from parent, which should already be setup.
   merit           = parent_phenotype.merit;
-  genome_length   = _length;
+  genome_length   = _genome.GetSize();
   copied_size     = parent_phenotype.child_copied_size;
   executed_size   = parent_phenotype.executed_size;
+  assert (executed_size > 0);
+  
   gestation_time  = parent_phenotype.gestation_time;
   gestation_start = 0;
   fitness         = parent_phenotype.fitness;
@@ -135,7 +137,8 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
   cur_sense_count.SetAll(0);  
   for (int j = 0; j < sensed_resources.GetSize(); j++)
 	      sensed_resources[j] =  parent_phenotype.sensed_resources[j];
-
+  SetupPromoterWeights(_genome, true);
+  
   // Copy last values from parent
   last_merit_base           = parent_phenotype.last_merit_base;
   last_bonus                = parent_phenotype.last_bonus;
@@ -199,13 +202,13 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
  *     - This is the first method run on an otherwise freshly built phenotype.
  **/
 
-void cPhenotype::SetupInject(int _length)
+void cPhenotype::SetupInject(const cGenome & _genome)
 {
   // Setup reasonable initial values injected organism...
-  merit           = _length;
-  genome_length   = _length;
-  copied_size     = _length;
-  executed_size   = _length;
+  genome_length   = _genome.GetSize();
+  merit           = genome_length;
+  copied_size     = genome_length;
+  executed_size   = genome_length;
   gestation_time  = 0;
   gestation_start = 0;
   fitness         = 0;
@@ -223,9 +226,10 @@ void cPhenotype::SetupInject(int _length)
   cur_inst_count.SetAll(0);
   sensed_resources.SetAll(0);
   cur_sense_count.SetAll(0);
-
+  SetupPromoterWeights(_genome, true);
+  
   // Copy last values from parent
-  last_merit_base = _length;
+  last_merit_base = genome_length;
   last_bonus      = 1;
   last_num_errors = 0;
   last_num_donates = 0;
@@ -279,7 +283,7 @@ void cPhenotype::SetupInject(int _length)
  * This function is run whenever an organism executes a successful divide.
  **/
 
-void cPhenotype::DivideReset(int _length)
+void cPhenotype::DivideReset(const cGenome & _genome)
 {
   assert(time_used > 0);
   assert(initialized == true);
@@ -297,7 +301,7 @@ void cPhenotype::DivideReset(int _length)
     merit = cur_merit_base * cur_bonus;
   }
   
-  genome_length   = _length;
+  genome_length   = _genome.GetSize();
   (void) copied_size;          // Unchanged
   (void) executed_size;        // Unchanged
   gestation_time  = time_used - gestation_start;
@@ -368,6 +372,7 @@ void cPhenotype::DivideReset(int _length)
     cpu_cycles_used = 0;
     time_used = 0;
     neutral_metric += m_world->GetRandom().GetRandNormal();
+    SetupPromoterWeights(_genome, true);
   }
 
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() == GENERATION_INC_BOTH) generation++;
@@ -386,7 +391,7 @@ void cPhenotype::DivideReset(int _length)
  * and copied size in its merit.
  **/
 
-void cPhenotype::TestDivideReset(int _length)
+void cPhenotype::TestDivideReset(const cGenome & _genome)
 {
   assert(time_used > 0);
   assert(initialized == true);
@@ -395,7 +400,7 @@ void cPhenotype::TestDivideReset(int _length)
   int cur_merit_base = CalcSizeMerit();
   merit           = cur_merit_base * cur_bonus;
 
-  genome_length   = _length;
+  genome_length   = _genome.GetSize();
   (void) copied_size;                            // Unchanged
   (void) executed_size;                          // Unchanged
   gestation_time  = time_used - gestation_start;
@@ -427,7 +432,8 @@ void cPhenotype::TestDivideReset(int _length)
   cur_inst_count.SetAll(0);
   cur_sense_count.SetAll(0); 
   sensed_resources.SetAll(-1.0);
-
+  SetupPromoterWeights(_genome, true);
+  
   // Setup other miscellaneous values...
   num_divides++;
   generation++;
@@ -484,6 +490,10 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   gestation_start = 0;
   fitness         = clone_phenotype.fitness;
   div_type        = clone_phenotype.div_type;
+  cur_promoter_weights = clone_phenotype.cur_promoter_weights; // @JEB Not correct if clone is not of fresh phenotype 
+  base_promoter_weights = clone_phenotype.base_promoter_weights; // @JEB Not correct if clone is not of fresh phenotype 
+  promoter_repression = clone_phenotype.promoter_repression; // @JEB Not correct if clone is not of fresh phenotype 
+  promoter_activation = clone_phenotype.promoter_activation; // @JEB Not correct if clone is not of fresh phenotype 
 
   assert(genome_length > 0);
   assert(copied_size > 0);
@@ -503,7 +513,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   cur_sense_count.SetAll(0);  
   for (int j = 0; j < sensed_resources.GetSize(); j++)
 	      sensed_resources[j] =  clone_phenotype.sensed_resources[j];
-
+  //SetupPromoterWeights(_genome); Do we reset here?
 
   // Copy last values from parent
   last_merit_base          = clone_phenotype.last_merit_base;
@@ -794,6 +804,17 @@ void cPhenotype::PrintStatus(ostream& fp) const
   for (int i = 0; i < cur_task_count.GetSize(); i++)
     fp << " " << cur_task_count[i] << " (" << cur_task_quality[i] << ")";
   fp << endl;
+  
+  if (m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1)
+  {
+    fp << "Promoters:     ";
+    for (int i=0; i<cur_promoter_weights.GetSize(); i++)
+    {
+      if (cur_promoter_weights[i] != m_world->GetConfig().PROMOTER_BG_STRENGTH.Get()) fp << i << " (" << cur_promoter_weights[i] << ") ";
+    }
+    fp << endl;
+  }
+
 }
 
 int cPhenotype::CalcSizeMerit() const
@@ -832,4 +853,61 @@ int cPhenotype::CalcSizeMerit() const
   }
 
   return out_size;
+} 
+
+void cPhenotype::SetupPromoterWeights(const cGenome & _genome, const bool clear)
+{
+  if (!m_world->GetConfig().PROMOTERS_ENABLED.Get()) return;
+
+  // Ideally, this wouldn't be hard-coded
+  static cInstruction promoter_inst = m_world->GetHardwareManager().GetInstSet().GetInst(cStringUtil::Stringf("promoter"));
+
+  int old_size = base_promoter_weights.GetSize();
+  cur_promoter_weights.Resize(_genome.GetSize());
+  base_promoter_weights.Resize(_genome.GetSize());
+  promoter_repression.Resize(_genome.GetSize());
+  promoter_activation.Resize(_genome.GetSize());
+
+  // Only change new regions of the genome (that might have been allocated since this was last called)
+  for ( int i = (clear ? 0 : old_size); i<_genome.GetSize(); i++)
+  {
+    base_promoter_weights[i] = 1;
+    promoter_repression[i] = 1;
+    promoter_activation[i] = 1;
+
+    // Now change the weights at instructions that are not promoters if called for
+    if ( _genome[i] != promoter_inst)
+    {
+      base_promoter_weights[i] *= m_world->GetConfig().PROMOTER_BG_STRENGTH.Get(); 
+    }
+    cur_promoter_weights[i] = base_promoter_weights[i];
+  }
 }
+
+void cPhenotype::DecayAllPromoterRegulation()
+{
+  for ( int i=0; i<cur_promoter_weights.GetSize(); i++)
+  {
+    promoter_activation[i] *= (1 - m_world->GetConfig().REGULATION_DECAY_FRAC.Get());
+    promoter_repression[i] *= (1 - m_world->GetConfig().REGULATION_DECAY_FRAC.Get());
+    cur_promoter_weights[i] = base_promoter_weights[i] * promoter_activation[i] / promoter_repression[i];
+  }
+}
+
+void cPhenotype::RegulatePromoter(const int i, const bool up )
+{
+  // Make sure we were initialized
+  assert ( (promoter_activation.GetSize() > 0) && (promoter_activation.GetSize() > 0) );
+  
+  if (up) {
+    promoter_activation[i] += m_world->GetConfig().REGULATION_STRENGTH.Get(); 
+    promoter_activation[i] *= (1 - m_world->GetConfig().REGULATION_DECAY_FRAC.Get());
+  }
+  else {
+    promoter_repression[i] += m_world->GetConfig().REGULATION_STRENGTH.Get(); 
+    promoter_repression[i] *= (1 - m_world->GetConfig().REGULATION_DECAY_FRAC.Get());
+  }
+  
+ cur_promoter_weights[i] = base_promoter_weights[i] * promoter_activation[i] / promoter_repression[i];
+}
+
