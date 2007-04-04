@@ -3590,13 +3590,13 @@ bool cHardwareCPU::Inst_SetFlow(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_CX);
   GetHead(nHardware::HEAD_FLOW).Set(GetRegister(reg_used));
-return true; 
+  return true; 
 }
 
 //// Promoter Model ////
 
 // Starting at the current position reads a promoter pattern
-bool cHardwareCPU::GetPromoterPattern(tArray<int>& promoter)
+void cHardwareCPU::GetPromoterPattern(tArray<int>& promoter)
 {
   // For now a constant that defines behavior
   const int max_size = 6;
@@ -3609,18 +3609,13 @@ bool cHardwareCPU::GetPromoterPattern(tArray<int>& promoter)
     count++;
     inst_ptr++;
     promoter.Push(inst_ptr.GetInst().GetOp());
-    // If this is the first line of the template, mark it executed.
-    //if (GetLabel().GetSize() <=	m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get()) {
-    //  inst_ptr->SetFlagExecuted();
-    //}
   }
-
 }
 
 
 // Adjust the weight at promoter positions that match the downstream pattern
 // allowing wildcards and matching of instructions
-bool cHardwareCPU::RegulatePromoter(cAvidaContext& ctx, bool up)
+void cHardwareCPU::RegulatePromoter(cAvidaContext& ctx, bool up)
 {
   static cInstruction promoter_inst = GetInstSet().GetInst(cStringUtil::Stringf("promoter"));
 
@@ -3629,7 +3624,7 @@ bool cHardwareCPU::RegulatePromoter(cAvidaContext& ctx, bool up)
 
   tArray<int> promoter;
   GetPromoterPattern(promoter);
-  if (promoter.GetSize() == 0) return true;
+  if (promoter.GetSize() == 0) return;
 
   // nop-A is a wildcard of length 1
   // nop-B is a wildcard of length 1
@@ -3678,7 +3673,7 @@ bool cHardwareCPU::RegulatePromoter(cAvidaContext& ctx, bool up)
 }
 
 // Adjust the weight at promoter positions that match the downstream nop pattern
-bool cHardwareCPU::RegulatePromoterNop(cAvidaContext& ctx, bool up)
+void cHardwareCPU::RegulatePromoterNop(cAvidaContext& ctx, bool up)
 {
   static cInstruction promoter_inst = GetInstSet().GetInst(cStringUtil::Stringf("promoter"));
 
@@ -3688,7 +3683,7 @@ bool cHardwareCPU::RegulatePromoterNop(cAvidaContext& ctx, bool up)
   ReadLabel();
   
   // Don't allow zero-length label matches. These are too powerful.
-  if (GetLabel().GetSize() == 0) return true;
+  if (GetLabel().GetSize() == 0) return;
  
   cHeadCPU search_head(IP());
   do {

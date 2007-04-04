@@ -512,13 +512,13 @@ private:
   bool Inst_HeadDivide0_001(cAvidaContext& ctx);
 
   //// Promoter Model ////
-  bool GetPromoterPattern(tArray<int>& promoter);
-  bool RegulatePromoter(cAvidaContext& ctx, bool up);
-  bool Inst_UpRegulatePromoter(cAvidaContext& ctx) { RegulatePromoter(ctx, true); }
-  bool Inst_DownRegulatePromoter(cAvidaContext& ctx) { RegulatePromoter(ctx, false); }
-  bool RegulatePromoterNop(cAvidaContext& ctx, bool up);
-  bool Inst_UpRegulatePromoterNop(cAvidaContext& ctx) { RegulatePromoterNop(ctx, true); }
-  bool Inst_DownRegulatePromoterNop(cAvidaContext& ctx) { RegulatePromoterNop(ctx, false); }  
+  void GetPromoterPattern(tArray<int>& promoter);
+  void RegulatePromoter(cAvidaContext& ctx, bool up);
+  bool Inst_UpRegulatePromoter(cAvidaContext& ctx) { RegulatePromoter(ctx, true); return true; }
+  bool Inst_DownRegulatePromoter(cAvidaContext& ctx) { RegulatePromoter(ctx, false); return true; }
+  void RegulatePromoterNop(cAvidaContext& ctx, bool up);
+  bool Inst_UpRegulatePromoterNop(cAvidaContext& ctx) { RegulatePromoterNop(ctx, true); return true; }
+  bool Inst_DownRegulatePromoterNop(cAvidaContext& ctx) { RegulatePromoterNop(ctx, false); return true; }  
   bool Inst_UpRegulatePromoterNopDecay(cAvidaContext& ctx);
   bool Inst_DownRegulatePromoterNopDecay(cAvidaContext& ctx);
   bool Inst_Terminate(cAvidaContext& ctx);
