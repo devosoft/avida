@@ -51,7 +51,7 @@ import xml.dom.minidom
 
 # Global Constants
 # ---------------------------------------------------------------------------------------------------------------------------
-TESTRUNNER_VERSION = "1.0"
+TESTRUNNER_VERSION = "1.1"
 TESTRUNNER_COPYRIGHT = "2007"
 
 TRUE_STRINGS = ("y","Y","yes","Yes","true","True","1")
@@ -133,6 +133,9 @@ Usage: %(_testrunner_name)s [options] [testname ...]
     --reset-perf-base
       Reset performance test baseline results.  Old baseline results are
       saved in the 'perf' directory.
+
+    --show-diff
+      Show full file diff for failed consistency tests.
 
     --skip-tests
       Do not run tests. Only generate new results, where applicable.
@@ -402,12 +405,16 @@ class cTest:
           differ = difflib.Differ()
           elines = getStrippedLines(path)
           tlines = getStrippedLines(expectstruct[key][0])
-          diff = list(differ.compare(elines, tlines))
+          diff = list(differ.compare(tlines, elines))
 
           match = True
           for line in diff:
             if line[0] != ' ':
               expectstruct[key][2] = cTest.DONOTMATCH
+              if settings.has_key("show-diff"):
+                expectstruct[key][2] += "\n\n"
+                for l in diff: expectstruct[key][2] += l
+                expectstruct[key][2] += "\n"
               match = False
               break
           
@@ -865,8 +872,8 @@ def main(argv):
   try:
     opts, args = getopt.getopt(argv[1:], "fhj:lm:ps:v", \
       ["builddir=", "disable-svn", "force-perf", "help", "list-tests", "long-tests", "mode=", "reset-perf-base", \
-       "run-perf-tests", "skip-tests", "svnmetadir=", "svn=", "svnversion=", "testdir=", "verbose", "version", \
-       "-testrunner-name="])
+       "run-perf-tests", "show-diff", "skip-tests", "svnmetadir=", "svn=", "svnversion=", "testdir=", "verbose", \
+       "version", "-testrunner-name="])
   except getopt.GetoptError:
     usage()
     return -1
@@ -903,6 +910,8 @@ def main(argv):
       settings["reset-perf-base"] = ""
     elif opt in ("-p", "--run-perf-tests"):
       opt_runperf = True
+    elif opt == "--show-diff":
+      settings["show-diff"] = ""
     elif opt == "--skip-tests":
       settings["skip-tests"] = ""
     elif opt == "--svnmetadir":
