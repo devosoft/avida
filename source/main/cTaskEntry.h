@@ -64,7 +64,7 @@ public:
   const tTaskTest GetTestFun() const { return m_test_fun; }
   
   bool HasArguments() const { return (m_args != NULL); }
-  const cArgContainer& GetArguments() const { return *m_args; }
+  cArgContainer& GetArguments() const { return *m_args; }
 };
 
 

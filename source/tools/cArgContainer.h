@@ -43,11 +43,6 @@ private:
   tArray<int> m_ints;
   tArray<double> m_doubles;
   tArray<cString> m_strings;
-  
-
-  inline void SetInt(int i, int v);
-  inline void SetDouble(int i, double v);
-  inline void SetString(int i, const cString& v);
 
   
   cArgContainer() { ; }
@@ -60,6 +55,10 @@ public:
   inline int GetInt(int i) const { return m_ints[i]; }
   inline double GetDouble(int i) const { return m_doubles[i]; }
   inline const cString& GetString(int i) const { return m_strings[i]; }
+
+  inline void SetInt(int i, int v);
+  inline void SetDouble(int i, double v);
+  inline void SetString(int i, const cString& v);  
 };
 
 

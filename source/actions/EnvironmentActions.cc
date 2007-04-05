@@ -266,6 +266,98 @@ public:
 };
 
 
+class cActionSetTaskArgInt : public cAction
+{
+private:
+  int m_task;
+  int m_arg;
+  int m_value;
+  
+public:
+  cActionSetTaskArgInt(cWorld* world, const cString& args) : cAction(world, args), m_task(0), m_arg(0), m_value(0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_task = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_arg = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_value = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: <int task> <int arg> <int value>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cEnvironment& env = m_world->GetEnvironment();
+    if (m_task >= 0 && m_task < env.GetNumTasks()) {
+      env.GetTask(m_task).GetArguments().SetInt(m_arg, m_value);
+    } else {
+      m_world->GetDriver().RaiseFatalException(-2,"Task specified in SetTaskArgInt action does not exist");
+    }
+  }
+};
+
+
+class cActionSetTaskArgDouble : public cAction
+{
+private:
+  int m_task;
+  int m_arg;
+  double m_value;
+  
+public:
+  cActionSetTaskArgDouble(cWorld* world, const cString& args) : cAction(world, args), m_task(0), m_arg(0), m_value(0.0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_task = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_arg = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_value = largs.PopWord().AsDouble();
+  }
+  
+  static const cString GetDescription() { return "Arguments: <int task> <int arg> <double value>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cEnvironment& env = m_world->GetEnvironment();
+    if (m_task >= 0 && m_task < env.GetNumTasks()) {
+      env.GetTask(m_task).GetArguments().SetDouble(m_arg, m_value);
+    } else {
+      m_world->GetDriver().RaiseFatalException(-2,"Task specified in SetTaskArgDouble action does not exist");
+    }
+  }
+};
+
+
+class cActionSetTaskArgString : public cAction
+{
+private:
+  int m_task;
+  int m_arg;
+  cString m_value;
+  
+public:
+  cActionSetTaskArgString(cWorld* world, const cString& args) : cAction(world, args), m_task(0), m_arg(0), m_value("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_task = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_arg = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_value = largs;
+  }
+  
+  static const cString GetDescription() { return "Arguments: <int task> <int arg> <string value>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cEnvironment& env = m_world->GetEnvironment();
+    if (m_task >= 0 && m_task < env.GetNumTasks()) {
+      env.GetTask(m_task).GetArguments().SetString(m_arg, m_value);
+    } else {
+      m_world->GetDriver().RaiseFatalException(-2,"Task specified in SetTaskArgString action does not exist");
+    }
+  }
+};
+
+
+
+
 
 void RegisterEnvironmentActions(cActionLibrary* action_lib)
 {
@@ -278,6 +370,10 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetReactionValue>("SetReactionValue");
   action_lib->Register<cActionSetReactionValueMult>("SetReactionValueMult");
   action_lib->Register<cActionSetReactionInst>("SetReactionInst");
+
+  action_lib->Register<cActionSetTaskArgInt>("SetTaskArgInt");
+  action_lib->Register<cActionSetTaskArgDouble>("SetTaskArgDouble");
+  action_lib->Register<cActionSetTaskArgString>("SetTaskArgString");
 
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
   action_lib->Register<cActionInjectResource>("inject_resource");
