@@ -4567,6 +4567,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
     
     delete [] col_pass_count;
     delete [] col_fail_count;
+    m_world->GetDataFileManager().Remove(filename);  // Close the data file object
   }
 }
 
