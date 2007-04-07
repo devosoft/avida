@@ -50,7 +50,7 @@ class cActionLibrary
 private:
   typedef const cString (*ClassDescFunction)();
   
-  tObjectFactory<cAction* (cWorld*, const cString&)> m_factory;
+  tObjectFactoryNoCase<cAction* (cWorld*, const cString&)> m_factory;
   tDictionary<ClassDescFunction> m_desc_funcs;
 
 public:

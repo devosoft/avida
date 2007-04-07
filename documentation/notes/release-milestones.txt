@@ -4,6 +4,7 @@ Feature Key:
 - Planned feature, to be implemented
 + Feature currently in development
 * Feature completed, ready for release
+? Planned feature, but possibly delayed to next milestone
 
 
 Visualized development/support timeline (* current):
@@ -42,20 +43,23 @@ Currently at 2.6.0
 
 Version 2.7 - development - Target: July 2007      - Status: Active Development
 
-+ Transition all applicable output files to cDataFile objects, as opposed to raw ostream
-+ Serialization
-- environment named regions
-- Topology manager
-- Schedulable object framework (organism threads scheduled rather than organisms, events, etc.) 
-- Energy model
-+ AvidaScript (AS) lexer
-- AS Parser
-- AS specific executable - 'avida-s'
-- Implement threaded driver, multiple executing worlds via 'avida-s'
-- Win32 Pthreads wrapper library
 + Consistency test support
-- Make it easier to generate new tails
-- Support under SCons
+  * simplify development
+  * automatic expected results
+  + performance tests
++ Consistency test coverage
+  + mid-run (* classic, - transsmt)
+  + analyze mode
++ Transition all applicable output files to cDataFile objects, as opposed to raw ostream
++ Energy model
++ AvidaScript
+  + lexer
+  - parser
+  - threaded driver, multiple executing worlds via 'avida-s'
+- Topology manager
+  - environment named regions
+? Schedulable object framework (organism threads scheduled rather than organisms, events, etc.) 
+? Serialization
 - Update documentation
 - Code release cleanup
 
