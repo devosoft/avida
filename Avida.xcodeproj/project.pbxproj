@@ -365,6 +365,7 @@
 		70F7DE6C09296615009E311D /* cGenotypeControl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70F7DE6809296613009E311D /* cGenotypeControl.cc */; };
 		70F7DE6D09296616009E311D /* cSpeciesControl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70F7DE6A09296613009E311D /* cSpeciesControl.cc */; };
 		70F7DE7409296794009E311D /* cGenotype_BirthData.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70F7DE700929678E009E311D /* cGenotype_BirthData.cc */; };
+		70FC02800BC835E700991121 /* cHardwareGX.cc in Sources */ = {isa = PBXBuildFile; fileRef = 423335880BC067E3000DF681 /* cHardwareGX.cc */; };
 		DCC3166107628531008F7A48 /* avida.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3109C0762539E008F7A48 /* avida.cc */; };
 		E626209E0A372C2A00C07685 /* SaveLoadActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708051A80A1F65FE00CBB8B6 /* SaveLoadActions.cc */; };
 /* End PBXBuildFile section */
@@ -2072,6 +2073,7 @@
 				109746410AE9606E00929ED6 /* cDeme.cc in Sources */,
 				70B1A6510B7E237F00067486 /* cHardwareExperimental.cc in Sources */,
 				706C70000B83F265003174C1 /* cInstSet.cc in Sources */,
+				70FC02800BC835E700991121 /* cHardwareGX.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,5 +1,0 @@
-SUBDIRS(
-  dule
-  goingssh
-)
-

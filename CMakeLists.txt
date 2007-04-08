@@ -182,37 +182,6 @@ OPTION(AVD_PRIMITIVE
   "Enable building interfaceless Avida (fastest version)."
   ON
 )
-IF(AVD_PRIMITIVE)
-# By default, compile all unit tests of primitive Avida classes.  Tests
-	# are run via 'make test' under unix.
-	OPTION(AVD_CONSISTENCY_TEST_PRIMITIVE
-		"Enable primitive consistency test suites."
-		ON
-	)
-	IF(AVD_CONSISTENCY_TEST_PRIMITIVE)
-		IF(EXISTS ${PROJECT_SOURCE_DIR}/consistencytests)
-			SET(_AvidaExePath
-				"${PROJECT_BINARY_DIR}/bin/avida"
-				CACHE FILEPATH
-				"Where can the Avida executable 'avida' be found ?"
-				FORCE
-			)
-			ENABLE_TESTING()
-			SET(AVD_CONSISTENCY_CHECK_PRIMITIVE
-				ON CACHE INTERNAL
-				"Tell the consistencytests project to enable primitive consistency test suites."
-				FORCE
-			)
-		ELSE(EXISTS ${PROJECT_SOURCE_DIR}/consistencytests)
-			MESSAGE(SEND_ERROR
-				"The option AVD_CONSISTENCY_TEST_PRIMITIVE is enabled but I can't find the consistency test suites. They should be in the subdirectory ${PROJECT_SOURCE_DIR}/consistencytests"
-			)
-		ENDIF(EXISTS ${PROJECT_SOURCE_DIR}/consistencytests)
-		IF(AVD_CONSISTENCY_CHECK_PRIMITIVE)
-			SUBDIRS(consistencytests)
-		ENDIF(AVD_CONSISTENCY_CHECK_PRIMITIVE)
-	ENDIF(AVD_CONSISTENCY_TEST_PRIMITIVE)
-ENDIF(AVD_PRIMITIVE)
 
 OPTION(AVD_GUI_PYQT
 	"Enable the PyQt GUI interface. (EXPERIMENTAL)"

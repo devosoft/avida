@@ -34,6 +34,7 @@
 import ConfigParser
 import difflib
 import dircache
+import fnmatch
 import getopt
 import os
 import popen2
@@ -51,7 +52,7 @@ import xml.dom.minidom
 
 # Global Constants
 # ---------------------------------------------------------------------------------------------------------------------------
-TESTRUNNER_VERSION = "1.1"
+TESTRUNNER_VERSION = "1.2"
 TESTRUNNER_COPYRIGHT = "2007"
 
 TRUE_STRINGS = ("y","Y","yes","Yes","true","True","1")
@@ -67,7 +68,6 @@ PERF_BASE = "baseline"
 
 # Global Variables
 # ---------------------------------------------------------------------------------------------------------------------------
-cfg = None      # ConfigParser.ConfigParser
 settings = {}   # {string:string}
 tmpdir = None   # string
 
@@ -91,13 +91,11 @@ def usage():
   usagestr = """
 Usage: %(_testrunner_name)s [options] [testname ...]
 
-  Runs the specified tests.  If no tests are specified all available tests will
-  be run and new expected results generated, where applicable.
+  Runs the specified tests.  Test names can be unix-style globbing patterns.
+  If no tests are specified all available tests will be run and new expected
+  results generated, where applicable.
 
   Options:
-    -h | --help
-      Display this message
-    
     --builddir=dir [%(builddir)s]
       Set the path to the build directory.
     
@@ -107,6 +105,12 @@ Usage: %(_testrunner_name)s [options] [testname ...]
     -f | --force-perf
       Force active tests to be treated as peformance tests, regardless of
       individual test configuration.
+    
+    -h | --help
+      Display this message
+      
+    --help-test-cfg
+      Display a sample test configuration file
     
     -j number [%(cpus)d]
       Set the number of concurrent tests to run. i.e. - the number of CPUs
@@ -162,6 +166,44 @@ Usage: %(_testrunner_name)s [options] [testname ...]
 # } // End of usage()
 
 
+# void sample_test_list() {
+def sample_test_list():
+  global settings, TEST_LIST
+  test_list = ";--- Begin Test Configuration File (%s) ---" % TEST_LIST
+  test_list += """
+[main]
+args =                   ; Command line arguments to pass to the application
+app = %(app)s            ; Application path to test
+nonzeroexit = disallow   ; Exit code handling (disallow, allow, or require)
+                         ;  disallow - treat non-zero exit codes as failures
+                         ;  allow - all exit codes are acceptable
+                         ;  require - treat zero exit codes as failures, useful
+                         ;            for creating tests for app error checking
+createdby =              ; Who created the test
+email =                  ; Email address for the test's creator
+
+[consistency]
+enabled = yes            ; Is this test a consistency test?
+long = no                ; Is this test a long test?
+
+[performance]
+enabled = no             ; Is this test a performance test?
+long = no                ; Is this test a long test?
+
+; The following variables can be used in constructing setting values by calling
+; them with %(variable_name)s.  For example see 'app' above.
+;
+"""
+  sk = settings.keys()
+  sk.sort()
+  for set in sk:
+    if set[0] != "_":
+      test_list += "; %s \n" % set
+  test_list += ";--- End Test Configuration File ---"
+  print test_list
+# } // End of sample_test_list()
+
+
 
 # void version() {
 def version():
@@ -206,7 +248,7 @@ class cTest:
     self.name = name
     self.tdir = tdir
     
-    if os.path.exists(os.path.join(tdir, settings["svnmetadir"])) and not settings.has_key("disable-svn"): self.usesvn = True
+    if os.path.exists(os.path.join(tdir, settings["svnmetadir"])) and not settings.has_key("_disable_svn"): self.usesvn = True
     else: self.usesvn = False
 
     if settings.has_key("skip-tests"): self.skip = True
@@ -224,7 +266,7 @@ class cTest:
       self.has_perf_base = True
     else: self.has_perf_base = False
     
-    if self.has_perf_base and settings.has_key("reset-perf-base"):
+    if self.has_perf_base and settings.has_key("_reset_perf_base"):
       try:
         rev = "exported"
         if self.usesvn:
@@ -240,7 +282,16 @@ class cTest:
       except (IOError, OSError, shutil.Error): pass
 
     
+    # Load the App for the test and check that it exists
     self.app = self.getSetting("main", "app")
+    self.app = os.path.abspath(self.app)
+    if not os.path.exists(self.app):
+      print "Error: Application (%s) not found" % self.app
+      sys.exit(-1)
+    if not os.path.isfile(self.app):
+      print "Error: Application (%s) is not a file" % self.app
+      sys.exit(-1)
+    
     self.args = self.getConfig("main", "args", "")
     
     if self.getConfig("consistency", "enabled", "yes") in TRUE_STRINGS: self.consistency_enabled = True
@@ -340,22 +391,24 @@ class cTest:
     
     # Process output from app
     # Note: must at least swallow app output so that the process output buffer does not fill and block execution
-    if settings.has_key("verbose"): print
+    if settings.has_key("_verbose"): print
     for line in p.fromchild:
-      if settings.has_key("verbose"):
+      if settings.has_key("_verbose"):
         sys.stdout.write("%s output: %s" % (self.name, line))
         sys.stdout.flush()
     
     self.exitcode = p.wait()
     
 
-    # Non-zero exit code indicates failure, set so and return
-    if self.exitcode != 0:
-      self.success = False
-      try:
-        shutil.rmtree(rundir, True) # Clean up test directory
-      except (IOError, OSError): pass
-      return
+    # Check exit code, depending on mode setting
+    nz = self.getConfig("main", "nonzeroexit", "disallow")
+    if (nz == "disallow" and self.exitcode != 0) or (nz == "require" and self.exitcode == 0):
+        self.success = False
+        try:
+          shutil.rmtree(rundir, True) # Clean up test directory
+        except (IOError, OSError): pass
+        return
+      
       
 
     # Build dictionary of config structure
@@ -473,16 +526,17 @@ class cTest:
     
     # Process output from app
     # Note: must at least swallow app output so that the process output buffer does not fill and block execution
-    if settings.has_key("verbose"): print
+    if settings.has_key("_verbose"): print
     for line in p.fromchild:
-      if settings.has_key("verbose"):
+      if settings.has_key("_verbose"):
         sys.stdout.write("%s output: %s" % (self.name, line))
         sys.stdout.flush()
     
     exitcode = p.wait()
 
-    # Non-zero exit code indicates failure, set so and return
-    if exitcode != 0:
+    # Check exit code
+    nz = self.getConfig("main", "nonzeroexit", "disallow")
+    if (nz == "disallow" and exitcode != 0) or (nz == "require" and exitcode == 0):
       try:
         shutil.rmtree(rundir, True) # Clean up test directory
       except (IOError, OSError): pass
@@ -492,26 +546,22 @@ class cTest:
     
     
     # Run test X times, take min value
-    times = []
+    r_times = []
+    t_times = []
     for i in range(settings["perf_repeat"]):
+      t_start = time.time()
       res_start = resource.getrusage(resource.RUSAGE_CHILDREN)
       
       # Run test app, capturing output and exitcode
       p = popen2.Popen4("cd %s; %s %s" % (rundir, self.app, self.args))
-      
-    # Process output from app
-    # Note: must at least swallow app output so that the process output buffer does not fill and block execution
-    if settings.has_key("verbose"): print
-    for line in p.fromchild:
-      if settings.has_key("verbose"):
-        sys.stdout.write("%s output: %s" % (self.name, line))
-        sys.stdout.flush()
-      
+      for line in p.fromchild: pass      
       exitcode = p.wait()
+      
       res_end = resource.getrusage(resource.RUSAGE_CHILDREN)
+      t_end = time.time()
   
-      # Non-zero exit code indicates failure, set so and return
-      if exitcode != 0:
+      # Check exit code
+      if (nz == "disallow" and exitcode != 0) or (nz == "require" and exitcode == 0):
         try:
           shutil.rmtree(rundir, True) # Clean up test directory
         except (IOError, OSError): pass
@@ -519,26 +569,34 @@ class cTest:
         self.presult = "test app returned non-zero exit code"
         return
       
-      times.append(res_end.ru_utime - res_start.ru_utime)
+      r_times.append(res_end.ru_utime - res_start.ru_utime)
+      t_times.append(t_end - t_start)
       
     
     # Load baseline results
-    baseline = 0.0
+    r_base = 0.0
+    t_base = 0.0
     basepath = os.path.join(perfdir, PERF_BASE)
     if self.has_perf_base:
       try:
         fp = open(basepath, "r")
         line = fp.readline()
-        baseline = float(line.split(',')[0].strip())
+        vals = line.split(',')
+        r_base = float(vals[0].strip())
+        t_base = float(vals[4].strip())
         fp.close()
       except (IOError):
         self.has_perf_base = False
     
 
-    tmin = min(times)
-    tmax = max(times)
-    tave = sum(times) / len(times)
-    tmed = med(times)
+    r_min = min(r_times)
+    r_max = max(r_times)
+    r_ave = sum(r_times) / len(r_times)
+    r_med = med(r_times)
+    t_min = min(t_times)
+    t_max = max(t_times)
+    t_ave = sum(t_times) / len(t_times)
+    t_med = med(t_times)
     
     # If no baseline results exist, write out results
     if not self.has_perf_base:
@@ -554,7 +612,7 @@ class cTest:
           return
           
         fp = open(basepath, "w")
-        fp.write("%f,%f,%f,%f\n" % (tmin, tmax, tave, tmed))
+        fp.write("%f,%f,%f,%f,%f,%f,%f,%f\n" % (r_min, r_max, r_ave, r_med, t_min, t_max, t_ave, t_med))
         fp.flush()
         fp.close()
       except (IOError):
@@ -568,18 +626,24 @@ class cTest:
       try:
         shutil.rmtree(rundir, True) # Clean up test directory
       except (IOError, OSError): pass
-      self.presult = "new baseline - min: %3.4f max: %3.4f ave: %3.4f med: %3.4f" % (tmin, tmax, tave, tmed)
+      self.presult = "new baseline - wall time: %3.4f user time: %3.4f" % (t_min, r_min)
       return
       
     # Compare results with baseline
-    margin = settings["perf_margin"] * baseline
-    umargin = baseline + margin
-    lmargin = baseline - margin
+    r_margin = settings["perf_user_margin"] * r_base
+    r_umargin = r_base + r_margin
+    r_lmargin = r_base - r_margin
+    t_margin = settings["perf_wall_margin"] * t_base
+    t_umargin = t_base + t_margin
+    t_lmargin = t_base - t_margin
     
-    if tmin > umargin:
+    
+    if r_min > r_umargin or t_min > t_umargin:
       self.psuccess = False
-      self.presult = "failed - base: %3.4f test: %3.4f" % (baseline, tmin)
-    elif tmin < lmargin:
+      self.presult = "failed"
+      if t_min > t_umargin: self.presult += " - wall = b: %3.4f t: %3.4f" % (t_base, t_min)
+      if r_min > r_umargin: self.presult += " - user = b: %3.4f t: %3.4f" % (r_base, r_min)
+    elif r_min < r_lmargin or t_min < t_lmargin:
       # new baseline, move old baseline and write out new results
       try:
         rev = "exported"
@@ -594,17 +658,19 @@ class cTest:
         shutil.move(basepath, os.path.join(perfdir, oname))
         
         fp = open(basepath, "w")
-        fp.write("%f,%f,%f,%f\n" % (tmin, tmax, tave, tmed))
+        fp.write("%f,%f,%f,%f,%f,%f,%f,%f\n" % (r_min, r_max, r_ave, r_med, t_min, t_max, t_ave, t_med))
         fp.flush()
         fp.close()
       except (IOError, OSError, shutil.Error):
         try:
           shutil.rmtree(rundir, True) # Clean up test directory
         except (IOError, OSError): pass
-        self.presult = "exceeded - base: %3.4f test: %3.4f - failed to update" % (baseline, tmin)
+        print "Warning: error updating '%s' performance baseline" % self.name
         return
-
-      self.presult = "exceeded - base: %3.4f test: %3.4f - updated baseline" % (baseline, tmin)
+        
+      self.presult = "exceeded"
+      if t_min < t_lmargin: self.presult += " - wall = b: %3.4f t: %3.4f" % (t_base, t_min)
+      if r_min < r_lmargin: self.presult += " - user = b: %3.4f t: %3.4f" % (r_base, r_min)
     
     # Clean up test directory
     try:
@@ -771,7 +837,7 @@ def runConsistencyTests(alltests, dolongtests):
     else: fail += 1
 
   svndir = os.path.join(tmpdir, "_svn_tests")
-  if os.path.exists(svndir) and not settings.has_key("disable-svn"):
+  if os.path.exists(svndir) and not settings.has_key("_disable_svn"):
     print "\nAdding new expected results to the repository..."
     svn = settings["svn"]
     ecode = os.spawnlp(os.P_WAIT, svn, svn, "commit", svndir, "-m", "Adding new expected results.")
@@ -829,7 +895,7 @@ def runPerformanceTests(alltests, dolongtests, force):
 
 # int main(string[] argv) {
 def main(argv):
-  global cfg, settings, tmpdir, CONFIGDIR
+  global settings, tmpdir, CONFIGDIR
 
   scriptdir = os.path.abspath(os.path.dirname(argv[0]))
   
@@ -843,7 +909,7 @@ def main(argv):
   # string getConfig(string sect, string opt, string default) {
   def getConfig(sect, opt, default):
     try:
-      global cfg, settings
+      global settings
       val = cfg.get(sect, opt, False, settings)
       return val
     except:
@@ -854,6 +920,7 @@ def main(argv):
   # Setup Global Settings
   #  - settings that begin with an underscore (i.e. _testrunner_name) are for internal use and are not intended for
   #    use as variables in test_list configuration files
+  settings["app"] = "" # App is defined later, since values like builddir can be modified by cmdline settings
   settings["builddir"] = getConfig("testrunner", "builddir", "build")
   settings["mode"] = getConfig("testrunner", "mode", "local")
   settings["svn"] = getConfig("testrunner", "svn", "svn")
@@ -863,7 +930,8 @@ def main(argv):
 
   settings["_testrunner_name"] = "testrunner.py"
   
-  settings["perf_margin"] = float(getConfig("performance","maring",.05))
+  settings["perf_user_margin"] = float(getConfig("performance","usermargin",.05))
+  settings["perf_wall_margin"] = float(getConfig("performance","wallmargin",.05))
   settings["perf_repeat"] = int(getConfig("performance","repeat",5))
 
   settings["cpus"] = 1
@@ -871,9 +939,9 @@ def main(argv):
   # Process Command Line Arguments
   try:
     opts, args = getopt.getopt(argv[1:], "fhj:lm:ps:v", \
-      ["builddir=", "disable-svn", "force-perf", "help", "list-tests", "long-tests", "mode=", "reset-perf-base", \
-       "run-perf-tests", "show-diff", "skip-tests", "svnmetadir=", "svn=", "svnversion=", "testdir=", "verbose", \
-       "version", "-testrunner-name="])
+      ["builddir=", "disable-svn", "force-perf", "help", "help-test-cfg", "list-tests", "long-tests", "mode=", \
+       "reset-perf-base", "run-perf-tests", "show-diff", "skip-tests", "svnmetadir=", "svn=", "svnversion=", "testdir=", \
+       "verbose", "version", "-testrunner-name="])
   except getopt.GetoptError:
     usage()
     return -1
@@ -884,6 +952,7 @@ def main(argv):
   opt_long = False
   opt_runperf = False
   opt_showhelp = False
+  opt_showtestcfg = False
   opt_showversion = False
   
   # Process Supplied Options
@@ -892,12 +961,14 @@ def main(argv):
       opt_showhelp = True
     elif opt == "--builddir":
       settings["builddir"] = arg
+    elif opt == "--help-test-cfg":
+      opt_showtestcfg = True
     elif opt == "-j":
       cpus = int(arg)
       if cpus < 1: cpus = 1
       settings["cpus"] = cpus
     elif opt == "--disable-svn":
-      settings["disable-svn"] = ""
+      settings["_disable_svn"] = ""
     elif opt in ("-f", "--force-perf"):
       opt_forceperf = True
     elif opt in ("-l", "--list-tests"):
@@ -907,7 +978,7 @@ def main(argv):
     elif opt in ("-m", "--mode"):
       settings["mode"] = arg
     elif opt == "--reset-perf-base":
-      settings["reset-perf-base"] = ""
+      settings["_reset_perf_base"] = ""
     elif opt in ("-p", "--run-perf-tests"):
       opt_runperf = True
     elif opt == "--show-diff":
@@ -923,48 +994,58 @@ def main(argv):
     elif opt == "--testdir":
       settings["testdir"] = arg
     elif opt in ("-v", "--verbose"):
-      settings["verbose"] = ""
+      settings["_verbose"] = ""
     elif opt == "--version":
       opt_showversion = True
     elif opt == "---testrunner-name":
       settings["_testrunner_name"] = arg
       
   # Show help or version and exit, if requested to do so
-  if opt_showhelp:
-    usage()
+  if opt_showhelp or opt_showtestcfg or opt_showversion:
+    if opt_showversion: version()
+    if opt_showhelp: usage()
+    if opt_showtestcfg: sample_test_list()
     return 0
-  elif opt_showversion:
-    version()
-    return 0
-  
-  
-  # Load the app to test, check for its existance
-  app = getConfig("main", "app", "")
-  if app == "":
-    print "Warning: No default test app configured"
-  else:
-    app = os.path.abspath(app)
-    if not os.path.exists(app) and not os.path.isfile(app):
-      print "Error: invalid test app"
-      return -1
-  settings['app'] = app
   
 
+  # Get the path to the test directory
   testdir = os.path.abspath(getConfig("main", "testdir", "."))  
   settings["testdir"] = testdir
 
+
+  # Re-read Configuration File with filled settings
+  cfg = ConfigParser.ConfigParser(settings)
+  cfg.read([os.path.join(scriptdir, "testrunner.cfg")])
+
+
+  # Load the default app to test
+  try:
+    settings["app"] = cfg.get("main", "app")
+  except:
+    print "Warning: No default app configured"
+  
   
   # Load in all tests
   print "Reading Test Configurations..."
   tests = []
   
-  dlist = args
-  if len(dlist) == 0: dlist = dircache.listdir(testdir)
+  prefix_filter = ["."]
+  dlist = []
+  if len(args) != 0:
+    for d in dircache.listdir(testdir):
+      for a in args:
+        if fnmatch.fnmatch(d, a):
+          dlist.append(d)
+          break
+    
+  else:
+    dlist = dircache.listdir(testdir)
+    prefix_filter.append("_")
   
   dircache.annotate(testdir, dlist)
   for d in dlist:
     # Directories with preceeding underscore or period are ignored, as are files
-    if d[0] == "_" or d[0] == "." or d[len(d) - 1] != "/": continue
+    if d[0] in prefix_filter or d[len(d) - 1] != "/": continue
     
     name = d[:len(d) - 1]
     curtdir = os.path.join(testdir, name)

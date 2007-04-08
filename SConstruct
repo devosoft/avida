@@ -87,12 +87,6 @@ environment.SConscript('source/SConscript',
 )
 environment.SConscript('support/config/SConscript')
 
-# XXX beginnings of consistency tests. @kgn
-environment.SConscript('consistencytests/SConscript',
-  build_dir = 'consistencytest_output',
-  duplicate = 0,
-)
-
 # XXX beginnings of 'extras'. @kgn
 if environment.subst('$extrasDir') not in ['None', 'none', '']:
   environment.SConscript(
