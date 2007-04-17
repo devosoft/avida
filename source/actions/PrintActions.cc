@@ -1839,6 +1839,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpMemory>("DumpMemory");
   action_lib->Register<cActionDumpFitnessGrid>("DumpFitnessGrid");
   action_lib->Register<cActionDumpGenotypeIDGrid>("DumpGenotypeIDGrid");
+  action_lib->Register<cActionDumpPhenotypeIDGrid>("DumpPhenotypeIDGrid");
   action_lib->Register<cActionDumpLineageGrid>("DumpLineageGrid");
   action_lib->Register<cActionDumpTaskGrid>("DumpTaskGrid");
   action_lib->Register<cActionDumpDonorGrid>("DumpDonorGrid");
