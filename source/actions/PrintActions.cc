@@ -857,7 +857,7 @@ class cActionPrintGenomicSiteEntropy : public cAction
 				if (!analyze.GetCurrentBatch().IsAligned()) analyze.CommandAlign(""); //Let analyze take charge of aligning this batch
 				tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
 				cAnalyzeGenotype* genotype = NULL;
-				while(genotype = batch_it.Next())
+				while((genotype = batch_it.Next()))
 				{
 					aligned.Push(genotype->GetAlignedSequence());
 				}
@@ -1549,6 +1549,37 @@ public:
 };
 
 
+class cActionDumpPhenotypeIDGrid : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpPhenotypeIDGrid(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_phenotype_id.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
+      for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
+        cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
+        int id = (cell.IsOccupied()) ? cell.GetOrganism()->GetPhenotype().CalcID() : -1;
+        fp << id << " ";
+      }
+      fp << endl;
+    }
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
+
 class cActionDumpLineageGrid : public cAction
 {
 private:
@@ -1866,6 +1897,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpMemory>("dump_memory");
   action_lib->Register<cActionDumpFitnessGrid>("dump_fitness_grid");
   action_lib->Register<cActionDumpGenotypeIDGrid>("dump_genotype_grid");
+  action_lib->Register<cActionDumpPhenotypeIDGrid>("dump_phenotype_grid");
   action_lib->Register<cActionDumpLineageGrid>("dump_lineage_grid");
   action_lib->Register<cActionDumpTaskGrid>("dump_task_grid");
   action_lib->Register<cActionDumpDonorGrid>("dump_donor_grid");

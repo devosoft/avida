@@ -216,6 +216,13 @@ public:
     const double cur_fitness = merit_base * cur_bonus / time_used;
     return cur_fitness / last_fitness;
   }
+  int CalcID() const {
+    int phen_id = 0;
+    for (int i = 0; i < last_task_count.GetSize(); i++) {
+      if (last_task_count[i] > 0) phen_id += (1 << i);
+    }
+    return phen_id;
+  }
 
   /////////////////////  Accessors -- Retrieving  ////////////////////
   const cMerit & GetMerit() const { assert(initialized == true); return merit; }

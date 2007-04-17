@@ -31,6 +31,7 @@ int main(int argc, char * argv[])
   AddSetting("step", 100, "Number of updates to skip between frames.");
   AddSetting("stop", 10000, "Last update to frame (inclusive)");
   AddSetting("seed", 1, "Random number seed");
+  AddSetting("type", 0, "Type of files to load (0=genotype, 1=phenotype)");
   AddSetting("num_demes", 0, "How many demes in the population (0=none)");
   AddSetting("num_colors", 65, "Number of colors in map (Use 43 for bright colors)");
   AddSetting("threshold1", 10, "Abundance threshold for color shift.");
@@ -95,12 +96,13 @@ int main(int argc, char * argv[])
   
   // Load in the status of all arguments.
   int UD_start, UD_step, UD_stop, seed, num_demes;
-  int num_colors, threshold1, threshold2;
+  int num_colors, threshold1, threshold2, type=0;
 
   value_dict.Find("start", UD_start);
   value_dict.Find("step", UD_step);
   value_dict.Find("stop", UD_stop);
   value_dict.Find("seed", seed);
+  value_dict.Find("type", type);
   value_dict.Find("num_demes", num_demes);
   value_dict.Find("num_colors", num_colors);
   value_dict.Find("threshold1", threshold1);
@@ -114,7 +116,8 @@ int main(int argc, char * argv[])
 
   // Load in the first file to get some basic information about the grids.
   cString filename;
-  filename.Set("grid_genotype_id.%d.dat", (UD_step + UD_start));
+  if (type == 0) filename.Set("grid_genotype_id.%d.dat", (UD_step + UD_start));
+  else filename.Set("grid_phenotype_id.%d.dat", (UD_step + UD_start));
   cInitFile file1(filename);
   file1.Load();
   file1.Close();
@@ -147,7 +150,7 @@ int main(int argc, char * argv[])
   // Loop through all files, loading them in.
   int update = UD_start;
   int max_id = -1;
-  const int file_step = num_files / 50;
+  const int file_step = (num_files > 50) ? num_files / 50 : 1;
   cerr << "LOADING FILES....................................." << endl;
   for (int file_id = 0; file_id < num_files; file_id++) {
     // Keep a status bar printing on the screen.
@@ -158,7 +161,8 @@ int main(int argc, char * argv[])
 
     // Generate the filename...
     update += UD_step;
-    filename.Set("grid_genotype_id.%d.dat", update);
+    if (type == 0) filename.Set("grid_genotype_id.%d.dat", update);
+    else filename.Set("grid_phenotype_id.%d.dat", update);
     
     cInitFile file(filename);
     file.Load();
