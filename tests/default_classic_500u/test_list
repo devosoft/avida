@@ -1,6 +1,7 @@
 ;--- Begin Test Configuration File (test_list) ---
 [main]
-args = -s 100            ; Command line arguments to pass to the application
+; Command line arguments to pass to the application
+args = 
 app = %(app)s            ; Application path to test
 nonzeroexit = disallow   ; Exit code handling (disallow, allow, or require)
                          ;  disallow - treat non-zero exit codes as failures
@@ -12,11 +13,11 @@ email = brysonda@egr.msu.edu ; Email address for the test's creator
 
 [consistency]
 enabled = yes            ; Is this test a consistency test?
-long = no                ; Is this test a long test?
+long = yes               ; Is this test a long test?
 
 [performance]
 enabled = yes            ; Is this test a performance test?
-long = no                ; Is this test a long test?
+long = yes               ; Is this test a long test?
 
 ; The following variables can be used in constructing setting values by calling
 ; them with %(variable_name)s.  For example see 'app' above.
