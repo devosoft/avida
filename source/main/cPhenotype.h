@@ -91,6 +91,7 @@ private:
   // 1. These are values calculated at the last divide (of self or offspring)
   cMerit merit;             // Relative speed of CPU
   int genome_length;        // Number of instructions in genome.
+  int bonus_instruction_count; // Number of times MERIT_BONUS_INT is in genome.
   int copied_size;          // Instructions copied into genome.
   int executed_size;        // Instructions executed from genome.
   int gestation_time;       // CPU cycles to produce offspring (or be produced),
@@ -227,6 +228,8 @@ public:
   double GetDivType() const { assert(initialized == true); return div_type; }
 
   double GetCurBonus() const { assert(initialized == true); return cur_bonus; }
+  int    GetCurBonusInstCount() const { assert(bonus_instruction_count >= 0); return bonus_instruction_count; }
+
   double GetCurMeritBase() const { assert(initialized == true); return CalcSizeMerit(); }
   bool GetToDie() const { assert(initialized == true); return to_die; }
   bool GetToDelete() const { assert(initialized == true); return to_delete; }
@@ -244,6 +247,7 @@ public:
 
   double GetLastMeritBase() const { assert(initialized == true); return last_merit_base; }
   double GetLastBonus() const { assert(initialized == true); return last_bonus; }
+
   const double GetLastMerit() const { assert(initialized == true); return last_merit_base*last_bonus; }
   int GetLastNumErrors() const { assert(initialized == true); return last_num_errors; }
   int GetLastNumDonates() const { assert(initialized == true); return last_num_donates; }
@@ -306,6 +310,7 @@ public:
   void SetIsReceiver() { is_receiver = true; } 
   
   void SetCurBonus(double _bonus) { cur_bonus = _bonus; }
+  void SetCurBonusInstCount(int _num_bonus_inst) {bonus_instruction_count = _num_bonus_inst;}
 
   void IncCurInstCount(int _inst_num)  { assert(initialized == true); cur_inst_count[_inst_num]++; } 
   void DecCurInstCount(int _inst_num)  { assert(initialized == true); cur_inst_count[_inst_num]--; } 

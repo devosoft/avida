@@ -384,4 +384,5 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetReactionValue>("set_reaction_value");
   action_lib->Register<cActionSetReactionValueMult>("set_reaction_value_mult");
   action_lib->Register<cActionSetReactionInst>("set_reaction_inst");
+  
 }

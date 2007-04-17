@@ -475,6 +475,26 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   // Statistics...
   m_world->GetStats().RecordBirth(target_cell.GetID(), in_genotype->GetID(),
                                   in_organism->GetPhenotype().ParentTrue());
+                                  
+  //count how many times MERIT_BONUS_INST (rewarded instruction) is in the genome
+  //only relevant if merit is proportional to # times MERIT_BONUS_INST is in the genome
+  int rewarded_instruction = m_world->GetConfig().MERIT_BONUS_INST.Get();
+  int num_rewarded_instructions = 0;
+  int genome_length = in_organism->GetGenome().GetSize();
+
+  if(rewarded_instruction == -1){
+    //no key instruction, so no bonus 
+    in_organism->GetPhenotype().SetCurBonusInstCount(0);
+    }
+  else{
+    for(int i = 1; i <= genome_length; i++){
+      if(in_organism->GetGenome()[i-1].GetOp() == rewarded_instruction){
+          num_rewarded_instructions++;
+      }  
+    } 
+     in_organism->GetPhenotype().SetCurBonusInstCount(num_rewarded_instructions);
+  }
+  
 }
 
 void cPopulation::KillOrganism(cPopulationCell& in_cell)

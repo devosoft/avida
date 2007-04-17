@@ -438,6 +438,32 @@ public:
   }
 };
 
+/*
+ In avida.cfg, when BASE_MERIT_METHOD is set to 6 (Merit prop. to num times MERIT_BONUS_INST is in genome), 
+ the merit is incremented by MERIT_BONUS_EFFECT if MERIT_BONUS_EFFECT is positive and decremented by
+ MERIT_BONUS_EFFECT if it is negative. For positive values the counting starts at 1, for negative values it starts
+ at genome length. This event toggles MERIT_BONUS_EFFECT from positive to negative. This creates an extremely simple
+ counting-ones type of dynamic environment.  
+*/
+class cActionToggleRewardInstruction : public cAction
+{
+private:
+  double m_killprob;
+public:
+  cActionToggleRewardInstruction(cWorld* world, const cString& args) : cAction(world, args), m_killprob(0.9)
+  {
+    //pass
+    //@JMC: m_killprob is meme that hitchiked when I used gabe's event as an example. need to clean it up. 
+  }
+  
+  static const cString GetDescription() { return "Arguments: [double probability=0.9]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetConfig().MERIT_BONUS_EFFECT.Set(-1* m_world->GetConfig().MERIT_BONUS_EFFECT.Get());
+  }
+};
+
 
 /*
  Randomly removes a certain proportion of the population.
@@ -1293,6 +1319,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionInjectParasitePair>("InjectParasitePair");
 
   action_lib->Register<cActionKillProb>("KillProb");
+  action_lib->Register<cActionToggleRewardInstruction>("ToggleRewardInstruction");
   action_lib->Register<cActionKillProb>("KillRate");
   action_lib->Register<cActionKillRectangle>("KillRectangle");
   action_lib->Register<cActionSerialTransfer>("SerialTransfer");
