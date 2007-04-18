@@ -100,7 +100,7 @@ private:
 
 
   void BuildFitnessChart(cAvidaContext& ctx, cTestCPU* testcpu);
-  void ProcessGenome(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& in_genome);
+  double ProcessGenome(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& in_genome);
   void ProcessBase(cAvidaContext& ctx, cTestCPU* testcpu);
   void Process_Body(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& cur_genome, int cur_distance, int start_line);
 
@@ -122,6 +122,7 @@ public:
   void ProcessInsert(cAvidaContext& ctx);
   void PredictWProcess(cAvidaContext& ctx, cDataFile& df, int update = -1);
   void PredictNuProcess(cAvidaContext& ctx, cDataFile& df, int update = -1);
+  void ProcessDump(cAvidaContext& ctx, cDataFile& df);
   
   inline void SetDistance(int in_distance) { distance = in_distance; }
   inline void SetTrials(int in_trials) { trials = in_trials; }

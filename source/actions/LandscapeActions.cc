@@ -276,6 +276,84 @@ public:
 };
 
 
+class cActionDumpLandscape : public cAction  // @not_parallelized
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpLandscape(cWorld* world, const cString& args)
+  : cAction(world, args), m_filename("land-dump.dat")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  
+  static const cString GetDescription()
+  {
+    return "Arguments: [string filename='land-dump.dat']";
+  }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
+    cDataFile& sdf = m_world->GetDataFile(m_filename);
+    
+    if (ctx.GetAnalyzeMode()) {
+      if (m_world->GetVerbosity() >= VERBOSE_ON) {
+        cString msg("Dumping Landscape of batch ");
+        msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
+        m_world->GetDriver().NotifyComment(msg);
+      } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
+        m_world->GetDriver().NotifyComment("Dumping Landscape...");
+      }
+      
+      tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
+      cAnalyzeGenotype* genotype = NULL;
+      while ((genotype = batch_it.Next())) {        
+        // Create datafile for genotype landscape (${name}.land)
+        cString gfn(genotype->GetName());
+        gfn += ".land";
+        cDataFile& gdf = m_world->GetDataFile(gfn);
+        
+        // Create the landscape object and process the dump
+        cLandscape land(m_world, genotype->GetGenome(), inst_set);
+        land.ProcessDump(ctx, gdf);
+        land.PrintStats(sdf, -1);
+        
+        // Remove the completed datafile
+        m_world->GetDataFileManager().Remove(gfn);
+      }
+      
+      // Batch complete, close overall landscape stats file as well
+      m_world->GetDataFileManager().Remove(m_filename);
+
+    } else {
+    
+      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
+        m_world->GetDriver().NotifyComment("Dumping Landscape...");
+      
+      // Get the current best genotype
+      const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
+
+      // Create datafile for genotype landscape (best-${update}.land)
+      cString gfn("best-");
+      gfn += m_world->GetStats().GetUpdate();
+      gfn += ".land";
+      cDataFile& gdf = m_world->GetDataFile(gfn);
+
+      // Create the landscape object and process the dump
+      cLandscape land(m_world, best_genome, inst_set);
+      land.ProcessDump(ctx, gdf);
+      land.PrintStats(sdf, m_world->GetStats().GetUpdate());
+
+      // Remove the completed datafile
+      m_world->GetDataFileManager().Remove(gfn);
+    }
+  }
+};
+
+
 class cActionDeletionLandscape : public cAction  // @parallelized
 {
 private:
@@ -1002,6 +1080,7 @@ void RegisterLandscapeActions(cActionLibrary* action_lib)
   action_lib->Register<cActionAnalyzeLandscape>("AnalyzeLandscape");
   action_lib->Register<cActionPrecalcLandscape>("PrecalcLandscape");
   action_lib->Register<cActionFullLandscape>("FullLandscape");
+  action_lib->Register<cActionDumpLandscape>("DumpLandscape");
   action_lib->Register<cActionDeletionLandscape>("DeletionLandscape");
   action_lib->Register<cActionInsertionLandscape>("InsertionLandscape");
   action_lib->Register<cActionPredictWLandscape>("PredictWLandscape");

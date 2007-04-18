@@ -94,7 +94,7 @@ void cLandscape::Reset(const cGenome & in_genome)
   m_num_found = 0;
 }
 
-void cLandscape::ProcessGenome(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& in_genome)
+double cLandscape::ProcessGenome(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& in_genome)
 {
   testcpu->TestGenome(ctx, test_info, in_genome);
   
@@ -118,6 +118,8 @@ void cLandscape::ProcessGenome(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& i
       peak_genome = in_genome;
     }
   }
+  
+  return test_fitness;
 }
 
 void cLandscape::ProcessBase(cAvidaContext& ctx, cTestCPU* testcpu)
@@ -197,6 +199,48 @@ void cLandscape::Process_Body(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& cu
   }
   
 }
+
+
+
+void cLandscape::ProcessDump(cAvidaContext& ctx, cDataFile& df)
+{
+  df.WriteComment("Detailed dump of the per-site, per-instruction fitness");
+  df.WriteComment("values for the entire single-step landscape.");
+  
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  
+  // Get the info about the base creature.
+  ProcessBase(ctx, testcpu);
+  const int max_line = base_genome.GetSize();
+  const int inst_size = inst_set.GetSize();
+  
+  cGenome mod_genome(base_genome);
+  
+  // Loop through all the lines of genome, testing trying all combinations.
+  for (int line_num = 0; line_num < max_line; line_num++) {
+    int cur_inst = base_genome[line_num].GetOp();
+    df.Write(cur_inst, "Original Instruction");
+
+    // Loop through all instructions...
+    double fitness = 0.0;
+    for (int inst_num = 0; inst_num < inst_size; inst_num++) {
+      if (cur_inst == inst_num) {
+        fitness = base_fitness;
+      } else {
+        mod_genome[line_num].SetOp(inst_num);
+        fitness = ProcessGenome(ctx, testcpu, mod_genome);
+      }
+      df.Write(fitness, "Mutation Fitness (instruction = column_number - 2)");
+    }
+
+    df.Endl();
+    mod_genome[line_num].SetOp(cur_inst);
+  }
+  
+  delete testcpu;
+}
+
+
 
 void cLandscape::ProcessDelete(cAvidaContext& ctx)
 {
