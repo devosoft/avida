@@ -169,10 +169,15 @@ void cHardwareTransSMT::Reset()
   const int num_inst_cost = m_inst_set->GetSize();
   inst_cost.Resize(num_inst_cost);
   inst_ft_cost.Resize(num_inst_cost);
+  m_has_costs = false;
+  m_has_ft_costs = false;
 	
   for (int i = 0; i < num_inst_cost; i++) {
     inst_cost[i] = m_inst_set->GetCost(cInstruction(i));
+    if (!m_has_costs && inst_cost[i]) m_has_costs = true;
+    
     inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+    if (!m_has_ft_costs && inst_ft_cost[i]) m_has_ft_costs = true;
   }
 #endif	
   
@@ -256,23 +261,23 @@ bool cHardwareTransSMT::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstru
   assert(cur_inst.GetOp() < inst_cost.GetSize());
 	
   // If first time cost hasn't been paid off...
-  if ( inst_ft_cost[cur_inst.GetOp()] > 0 ) {
+  if (m_has_ft_costs && inst_ft_cost[cur_inst.GetOp()] > 0) {
     inst_ft_cost[cur_inst.GetOp()]--;       // dec cost
     return false;
   }
 	
   // Next, look at the per use cost
-  if ( m_inst_set->GetCost(cur_inst) > 0 ) {
-    if ( inst_cost[cur_inst.GetOp()] > 1 ){  // if isn't paid off (>1)
-      inst_cost[cur_inst.GetOp()]--;         // dec cost
+  if (m_has_costs && m_inst_set->GetCost(cur_inst) > 0) {
+    if (inst_cost[cur_inst.GetOp()] > 1) {  // if isn't paid off (>1)
+      inst_cost[cur_inst.GetOp()]--;        // dec cost
       return false;
-    } else {                                 // else, reset cost array
+    } else {                                // else, reset cost array
       inst_cost[cur_inst.GetOp()] = m_inst_set->GetCost(cur_inst);
     }
   }
 	
   // Prob of exec
-  if ( m_inst_set->GetProbFail(cur_inst) > 0.0 ){
+  if (m_inst_set->GetProbFail(cur_inst) > 0.0) {
     return !( ctx.GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
   }
 #endif

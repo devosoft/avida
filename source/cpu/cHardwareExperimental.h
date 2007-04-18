@@ -140,6 +140,8 @@ protected:
 #if INSTRUCTION_COSTS
   tArray<int> inst_cost;
   tArray<int> inst_ft_cost;
+  bool m_has_costs;
+  bool m_has_ft_costs;
 #endif
   
   
