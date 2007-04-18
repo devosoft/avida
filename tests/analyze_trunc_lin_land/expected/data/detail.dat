@@ -1,0 +1,116 @@
+#filetype genotype_data
+#format id depth length update_born fitness num_cpus task.0 task.1 task.2 task.3 task.4 task.5 task.6 task.7 task.8 frac_pos frac_neg frac_neut frac_dead land_fitness sequence 
+
+# Legend:
+# 1: Genotype ID
+# 2: Tree Depth
+# 3: Genome Length
+# 4: Update Born
+# 5: Fitness
+# 6: Number of CPUs
+# 7: Not
+# 8: Nand
+# 9: And
+# 10: OrNot
+# 11: Or
+# 12: AndNot
+# 13: Nor
+# 14: Xor
+# 15: Equals
+# 16: Fraction Mutations Beneficial
+# 17: Fraction Mutations Detrimental
+# 18: Fraction Mutations Neutral
+# 19: Fraction Mutations Lethal
+# 20: Average Lanscape Fitness
+# 21: Genome Sequence
+
+1 0 50 -1 0.248677 0 0 0 0 0 0 0 0 0 0 0.4656 0.0456 0.1528 0.336 0.164196 rucavccccccccccccccccccccccccccccccccccccutycasvab 
+76 1 50 63 0.25 0 0 0 0 0 0 0 0 0 0 0.4128 0.0392 0.18 0.368 0.157645 rucavccccccccccccccccccvcccccccccccccccccutycasvab 
+1439 2 50 138 0.251337 0 0 0 0 0 0 0 0 0 0 0.3752 0.0456 0.2112 0.368 0.158582 rucavccccccccccccccccccvcccjcccccccccccccutycasvab 
+3340 3 50 175 0.252688 0 0 0 0 0 0 0 0 0 0 0.3352 0.0576 0.2432 0.364 0.160512 rucavccccccccccccccccccvcccjcccccccicccccutycasvab 
+9103 4 49 236 0.258242 0 0 0 0 0 0 0 0 0 0 0.284898 0.0938776 0.282449 0.338776 0.170514 ruzavccccccccccccdccccvcccjcccccccicccccutycasvab 
+9965 5 49 243 0.258242 0 0 0 0 0 0 0 0 0 0 0.272653 0.0734694 0.310204 0.343673 0.169377 ruzavcccccccccccqdccccvcccjcccccccicccccutycasvab 
+11563 6 49 254 0.259669 0 0 0 0 0 0 0 0 0 0 0.235918 0.0816327 0.337959 0.34449 0.170104 ruzavcccncccccccqdccccvcccjcccccccicccccutycasvab 
+12430 7 49 260 0.259669 0 0 0 0 0 0 0 0 0 0 0.240816 0.0710204 0.325714 0.362449 0.165486 ruzavcccncccccccqvccccvcccjcccccccicccccutycasvab 
+30411 8 48 379 0.258427 0 0 0 0 0 0 0 0 0 0 0.279167 0.0708333 0.311667 0.338333 0.170908 ruzavcccncccccccqvcccccccjcccccccicccccutycasvab 
+40487 9 48 446 0.259887 0 0 0 0 0 0 0 0 0 0 0.254167 0.0908333 0.318333 0.336667 0.172258 ruzavcccncccccccqvcccccccjcccccccicfcccutycasvab 
+46101 10 48 483 0.261364 0 0 0 0 0 0 0 0 0 0 0.221667 0.124167 0.305833 0.348333 0.169872 ruzavcqcncccccccqvcccccccjcccccccicfcccutycasvab 
+48881 11 48 501 0.258621 0 0 0 0 0 0 0 0 0 0 0.220833 0.1275 0.3 0.351667 0.167816 ruzaqcqcncceccccqvcccccccjcccccccicfcccutycasvab 
+52670 12 48 526 0.258621 0 0 0 0 0 0 0 0 0 0 0.203333 0.124167 0.311667 0.360833 0.165402 ruzaqcqcncceccccqvcccccczjcccccccicfcccutycasvab 
+62956 13 49 594 0.258427 0 0 0 0 0 0 0 0 0 0 0.223673 0.100408 0.316735 0.359184 0.171738 ruzaqcqcpncceccccqvcccccczjcccccccicfcccutycasvab 
+64119 14 49 602 0.258427 0 0 0 0 0 0 0 0 0 0 0.240816 0.103673 0.305306 0.350204 0.174049 ruzaqcqcpncceccccqvccccccajcccccccicfcccutycasvab 
+74269 15 50 668 0.262295 0 0 0 0 0 0 0 0 0 0 0.1992 0.1312 0.3264 0.3432 0.176088 ruzaqcqacpncceccccqvccccccajcccccccicfcccutycasvab 
+83901 16 51 729 0.263441 0 0 0 0 0 0 0 0 0 0 0.17098 0.135686 0.355294 0.338039 0.178045 ruzaqcqacpncceccccqvccccccajccdcccccicfcccutycasvab 
+88820 17 51 759 0.263441 0 0 0 0 0 0 0 0 0 0 0.17098 0.145098 0.346667 0.337255 0.178216 ruzaqcqacpncceccccqvccccccajckdcccccicfcccutycasvab 
+91692 18 51 777 0.263441 0 0 0 0 0 0 0 0 0 0 0.169412 0.145882 0.345882 0.338824 0.177798 ruzaqcqacpncceccccqvcccbccajckdcccccicfcccutycasvab 
+96661 19 52 808 0.263441 0 0 0 0 0 0 0 0 0 0 0.166923 0.136923 0.355385 0.340769 0.177234 ruzaqcqacpncceccccqvcccbccajckdcccccicfcccutycasvabk 
+97676 20 52 814 0.263158 0 0 0 0 0 0 0 0 0 0 0.166923 0.136923 0.355385 0.340769 0.177234 kruzaqcqacpncceccccqvcccbccajckdcccccicfcccutycasvab 
+99751 21 52 826 0.26455 0 0 0 0 0 0 0 0 0 0 0.153077 0.169231 0.337692 0.34 0.178315 kruzaqcqacpncceccccqvcccbccajckdcccccicfcncutycasvab 
+103591 22 52 850 0.518519 0 0 1 0 0 0 0 0 0 0 0.167692 0.246154 0.25 0.336154 0.312038 kruzaqcqhcpncceccccqvcccbccajckdcacccicfcncutycasvab 
+105596 23 52 862 0.518519 0 0 1 0 0 0 0 0 0 0 0.167692 0.246154 0.25 0.336154 0.312038 yruzaqcqhcpncceccccqvcccbccajckdcacccicfcncutycasvab 
+113795 24 52 910 0.515789 0 0 1 0 0 0 0 0 0 0 0.186923 0.230769 0.245385 0.336923 0.310087 yruzaqcqhcpncceccccqvcccbccacckdcacccicfcncutycasvab 
+118863 25 52 940 0.518519 0 0 1 0 0 0 0 0 0 0 0.17 0.242308 0.252308 0.335385 0.332428 yruzaqcqhcpncceccccqvcccbccaqckdcacccicfcncutycasvab 
+127393 26 52 989 4.17021 0 0 1 0 0 0 1 0 0 0 0.100769 0.349231 0.214615 0.335385 1.80987 yruzaqcqhcpnccecclcqvcccbccaqckdcacccicfcncutycasvab 
+128623 27 51 996 4.17391 0 0 1 0 0 0 1 0 0 0 0.101961 0.356863 0.2 0.341176 1.76733 yruzaqcqhcpnccecclcqvcccbccaqcdcacccicfcncutycasvab 
+128971 28 51 998 4.17391 0 0 1 0 0 0 1 0 0 0 0.108235 0.350588 0.2 0.341176 1.79047 yruzaqcqhapnccecclcqvcccbccaqcdcacccicfcncutycasvab 
+130809 29 50 1009 4.26667 0 0 1 0 0 0 1 0 0 0 0.1072 0.3536 0.192 0.3472 1.79665 yruzaqcqhapnccecclcqvcccbccaqcdcacccicfcncutycsvab 
+131184 30 49 1011 4.26667 0 0 1 0 0 0 1 0 0 0 0.108571 0.356735 0.178776 0.355918 1.74712 yruzaqcqhapnccecclcqvcccbccaqcdcacccicfcncutycsva 
+131442 31 50 1013 4.26087 0 0 1 0 0 0 1 0 0 0 0.1088 0.3536 0.1904 0.3472 1.79669 zyruzaqcqhapnccecclcqvcccbccaqcdcacccicfcncutycsva 
+132188 32 51 1017 4.25532 0 0 1 0 0 0 1 0 0 0 0.107451 0.343529 0.204706 0.344314 1.82724 zyruzaqcqhapnccecclcqvcccbccaqcdcacccikcfcncutycsva 
+132474 33 51 1019 4.2328 0 0 1 0 0 0 1 0 0 0 0.110588 0.322353 0.221176 0.345882 1.81164 zyruzaqcqhapnccecclcqvcccbccaqcdcacccikmfcncutycsva 
+132883 34 51 1021 4.30108 0 0 1 0 0 0 1 0 0 0 0.0972549 0.353725 0.216471 0.332549 1.89618 zyruzaqcqhapnccecclcqvcccbccaqcdctcccikmfcncutycsva 
+133545 35 51 1026 4.27807 0 0 1 0 0 0 1 0 0 0 0.110588 0.333333 0.223529 0.332549 1.88688 zyruzaqcqhapnccecclcqvcccbccaqcdctcccikmfcrcutycsva 
+134058 36 50 1029 4.28415 0 0 1 0 0 0 1 0 0 0 0.1024 0.3376 0.224 0.336 1.86726 zyruzaqcqhapnccecclcqvcccccaqcdctcccikmfcrcutycsva 
+136018 37 50 1041 4.28415 0 0 1 0 0 0 1 0 0 0 0.1024 0.336 0.224 0.3376 1.87662 zyruzaqcqhapnccecblcqvcccccaqcdctcccikmfcrcutycsva 
+137304 38 50 1050 4.28415 0 0 1 0 0 0 1 0 0 0 0.0888 0.3368 0.2376 0.3368 1.87967 zyruzaqcqhapnccecblcqvcccccaqcdctcccikmfcrqutycsva 
+141732 39 49 1078 4.33149 0 0 1 0 0 0 1 0 0 0 0.082449 0.339592 0.230204 0.347755 1.83951 zyruzaqcqhapncccblcqvcccccaqcdctcccikmfcrqutycsva 
+146189 40 49 1108 4.30769 0 0 1 0 0 0 1 0 0 0 0.0840816 0.317551 0.24898 0.349388 1.82324 zyruzaqcqhapncccblcqvcccccaqcdmtcccikmfcrqutycsva 
+147598 41 49 1117 4.30769 0 0 1 0 0 0 1 0 0 0 0.084898 0.316735 0.249796 0.348571 1.83736 zyruzaqcqhapncccblcqvcccccaqcdmtcccikpfcrqutycsva 
+148604 42 50 1124 4.30108 0 0 1 0 0 0 1 0 0 0 0.0832 0.3176 0.2592 0.34 1.87349 zyruzaqcgqhapncccblcqvcccccaqcdmtcccikpfcrqutycsva 
+154936 43 50 1167 4.30108 0 0 1 0 0 0 1 0 0 0 0.0912 0.316 0.2528 0.34 2.01822 zyruzaqcgqhapncccblcqvcccccaqcdptcccikpfcrqutycsva 
+159171 44 49 1196 4.30769 0 0 1 0 0 0 1 0 0 0 0.0881633 0.306122 0.253878 0.351837 2.00144 zyruzaqcgqhapncccblcqvccccaqcdptcccikpfcrqutycsva 
+161913 45 49 1214 4.30769 0 0 1 0 0 0 1 0 0 0 0.0881633 0.305306 0.253878 0.352653 2.0012 zyruzaqcgqhapncacblcqvccccaqcdptcccikpfcrqutycsva 
+170492 46 49 1272 4.30769 0 0 1 0 0 0 1 0 0 0 0.0865306 0.305306 0.253061 0.355102 1.99061 yyruzaqcgqhapncacblcqvccccaqcdptcccikpfcrqutycsva 
+182404 47 48 1353 4.31461 0 0 1 0 0 0 1 0 0 0 0.0883333 0.309167 0.241667 0.360833 1.95905 yyrzaqcgqhapncacblcqvccccaqcdptcccikpfcrqutycsva 
+195115 48 47 1440 17.2874 0 0 1 0 1 0 1 0 0 0 0.0493617 0.44 0.148936 0.361702 4.95561 yyrzaqcgqhapncacblcqvcccaqcdptccciipfcrqutycsva 
+197567 49 47 1456 17.2874 0 0 1 0 1 0 1 0 0 0 0.0493617 0.44 0.148936 0.361702 4.95561 yyrzaqcgqhapncacblcqvcacaqcdptccciipfcrqutycsva 
+206316 50 47 1515 17.2874 0 0 1 0 1 0 1 0 0 0 0.0519149 0.44 0.147234 0.360851 4.98081 yyrzaqcgqhapncacblcqvcacaqcdptccccipfcrqutycsva 
+211659 51 47 1551 17.2874 0 0 1 0 1 0 1 0 0 0 0.0519149 0.443404 0.14383 0.360851 4.94728 yyrzaqcgqhapncacblcqvcacaqcdptccccypfcrqutycsva 
+221393 52 46 1617 17.3176 0 0 1 0 1 0 1 0 0 0 0.0486957 0.437391 0.142609 0.371304 4.83631 yyrzaqcgqhapncacblcqvcacaqcdptcccypfcrqutycsva 
+230674 53 47 1679 17.2874 0 0 1 0 1 0 1 0 0 0 0.0553191 0.434894 0.147234 0.362553 5.11046 yyrzaqcgpqhapncacblcqvcacaqcdptcccypfcrqutycsva 
+231144 54 48 1682 17.3559 0 0 1 0 1 0 1 0 0 0 0.0383333 0.4325 0.164167 0.365 5.1692 yyrzaqcgpqhbapncacblcqvcacaqcdptcccypfcrqutycsva 
+234176 55 48 1702 17.3559 0 0 1 0 1 0 1 0 0 0 0.0383333 0.4325 0.164167 0.365 5.16917 yyrzaqcgpqhbapncacblcqvcacaqcsptcccypfcrqutycsva 
+237110 56 48 1721 34.7119 0 1 1 0 1 0 1 0 0 0 0.0308333 0.466667 0.1375 0.365 9.43225 yyrzaqcppqhbapncacblcqvcacaqcsptcccypfcrqutycsva 
+239965 57 48 1740 34.7119 0 1 1 0 1 0 1 0 0 0 0.0275 0.465 0.140833 0.366667 9.50953 yyrzaqcppqhbapncasblcqvcacaqcsptcccypfcrqutycsva 
+248586 58 47 1798 34.7746 0 1 1 0 1 0 1 0 0 0 0.0280851 0.469787 0.13617 0.365957 9.35371 yyrzaqcppqhbapncablcqvcacaqcsptcccypfcrqutycsva 
+254752 59 47 1838 34.9767 0 1 1 0 1 0 1 0 0 0 0.0229787 0.471489 0.138723 0.366809 9.90631 yyrzaqcppqhbapncqblcqvcacaqcsptcccypfcrqutycsva 
+255093 60 47 1840 34.9767 0 1 1 0 1 0 1 0 0 0 0.0238298 0.462128 0.147234 0.366809 10.152 yyrzaqcppqhbapncqblcqvcacaqcsptcccypbcrqutycsva 
+255897 61 48 1845 34.9091 0 1 1 0 1 0 1 0 0 0 0.0233333 0.459167 0.149167 0.368333 10.0822 yyrzaqcppqhbapncqblcpqvcacaqcsptcccypbcrqutycsva 
+272738 62 48 1956 34.9091 0 1 1 0 1 0 1 0 0 0 0.025 0.459167 0.15 0.365833 10.1698 gyrzaqcppqhbapncqblcpqvcacaqcsptcccypbcrqutycsva 
+274427 63 48 1967 34.0347 0 1 1 0 1 0 1 0 0 0 0.0516667 0.438333 0.145833 0.364167 10.4686 gyrzaqcppqhbapncqblcpqvcacaqcsptyccypbcrqutycsva 
+278015 64 48 1991 34.2326 0 1 1 0 1 0 1 0 0 0 0.0716667 0.348333 0.218333 0.361667 14.035 gyrzaqcppqqbapncqblcpqvcacaqcsptyccypbcrqutycsva 
+281213 65 48 2012 34.2326 0 1 1 0 1 0 1 0 0 0 0.0491667 0.440833 0.1475 0.3625 11.1653 gyrzaqcppqqbapncqblchqvcacaqcsptyccypbcrqutycsva 
+294581 66 48 2100 136.93 0 1 1 1 1 0 1 0 0 0 0.0475 0.478333 0.1125 0.361667 36.0156 gyrzaqcppqqbapncqblcoqvcacaqcsptyccypbcrqutycsva 
+303683 67 48 2159 142.884 0 1 1 1 1 0 1 0 0 0 0.0133333 0.506667 0.114167 0.365833 34.6836 gyrzaqcppqqbapncqblcoqvcacaqcsptytcypbcrqutycsva 
+306700 68 49 2179 142.545 0 1 1 1 1 0 1 0 0 0 0.0130612 0.506122 0.118367 0.362449 35.2738 gyrzaqcppqqbadpncqblcoqvcacaqcsptytcypbcrqutycsva 
+315602 69 49 2237 142.545 0 1 1 1 1 0 1 0 0 0 0.0130612 0.503673 0.12 0.363265 35.3446 gyrzaqcppqqbadpncqblcoqvcacaqcsptitcypbcrqutycsva 
+325375 70 50 2301 196.923 0 1 1 1 1 0 1 0 0 0 0.0048 0.4768 0.1272 0.3912 45.1373 gyrzaqcppqqbadpncqblcoqvcacaqcsptitcypbcrquttycsva 
+335755 71 50 2369 196.923 0 1 1 1 1 0 1 0 0 0 0.0048 0.4768 0.1272 0.3912 45.1373 gnrzaqcppqqbadpncqblcoqvcacaqcsptitcypbcrquttycsva 
+356505 72 51 2502 208.896 0 1 1 1 1 0 1 0 0 0 0.0188235 0 0 0.981176 2.9405 gnrzaqcppqqbadpncqblcoqvcacaqcsptitcypbcrqutttycsva 
+358902 73 56 2517 208.896 0 1 1 1 1 0 1 0 0 0 0.0135714 0.462857 0.186429 0.337143 67.1142 gnrzaqcppqqbadpncqblcoqvcacaqcsptitcypbcrqutttycsvagnrza 
+386331 74 56 2684 208.896 0 1 1 1 1 0 1 0 0 0 0.0135714 0.462857 0.185714 0.337857 66.9647 cnrzaqcppqqbadpncqblcoqvcacaqcsptitcypbcrqutttycsvagnrza 
+387338 75 56 2690 208.896 0 1 1 1 1 0 1 0 0 0 0.0135714 0.462857 0.185714 0.337857 66.9647 cnrzaqcppqqbadpncqblcoqvcacaqcsptitcypbcrqutttycsvagnrga 
+388509 76 55 2697 224.561 0 1 1 1 1 0 1 0 0 0 0.0749091 0 0 0.925091 8.30851 cnrzaqcppqqbadpncqblcoqvcacaqcspttcypbcrqutttycsvagnrga 
+391534 77 50 2714 224.561 0 1 1 1 1 0 1 0 0 0 0.0144 0.4896 0.1232 0.3728 56.1588 cnrzaqcppqqbadpncqblcoqvcacaqcspttcypbcrqutttycsva 
+407248 78 50 2802 224.561 0 1 1 1 1 0 1 0 0 0 0.0184 0.488 0.1208 0.3728 56.4463 cnrzaqcppqqbadpncqblcoqvcacaqcspttcbpbcrqutttycsva 
+466439 79 49 3098 224 0 1 1 1 1 0 1 0 0 0 0.00979592 0.512653 0.108571 0.36898 55.3282 cnrzaqcppqqbadpncqblcoqvcacaqcsptcbpbcrqutttycsva 
+507438 80 49 3282 224 0 1 1 1 1 0 1 0 0 0 0.0106122 0.516735 0.122449 0.350204 59.1679 rnrzaqcppqqbadpncqblcoqvcacaqcsptcbpbcrqutttycsva 
+509312 81 49 3291 224 0 1 1 1 1 0 1 0 0 0 0.0106122 0.524082 0.114286 0.35102 59.1019 rnrzaqcppqqbadpncqblcoqvcacaqcsptcbpxcrqutttycsva 
+548207 82 49 3463 220.771 0 1 1 1 1 0 1 0 0 0 0.042449 0.482449 0.117551 0.357551 61.1259 rnrzaqcppqqbadpncqblcoqvcecaqcsptcbpycrqutttycsva 
+567984 83 49 3550 220.771 0 1 1 1 1 0 1 0 0 0 0.042449 0.482449 0.117551 0.357551 61.1271 rnrzaqcppqqbadpncqblcoqvcecaqcgptcbpycrqutttycsva 
+610470 84 49 3731 221.405 0 1 1 1 1 0 1 0 0 0 0.0310204 0.490612 0.119184 0.359184 59.9379 rnrzaqcppqqbadpncqblcoqvcecaqcgptcbpscrqutttycsva 
+630395 85 49 3815 223.418 0 1 1 1 1 0 1 0 0 0 0.00734694 0.531429 0.120816 0.340408 58.3129 rnrzaqcppqqbadpncqblcoqvcecpqcgptcbpfcrqutttycsva 
+666667 86 49 3967 223.418 0 1 1 1 1 0 1 0 0 0 0.00571429 0.529796 0.109388 0.355102 55.3828 snrzaqcppqqbadpncqblcoqvcecpqcgptcbpfcrqutttycsva 
+674188 87 49 3998 223.418 0 1 1 1 1 0 1 0 0 0 0.00571429 0.529796 0.109388 0.355102 55.3828 snrzaqcppqqbadpncqblcoqvcecpqcgptcbpfcsqutttycsva 
+755542 88 49 4339 223.418 0 1 1 1 1 0 1 0 0 0 0.00571429 0.526531 0.112653 0.355102 55.7475 sirzaqcppqqbadpncqblcoqvcecpqcgptcbpfcsqutttycsva 
+774824 89 49 4418 893.673 0 1 1 1 0 0 1 1 0 0 0.00653061 0.559184 0.0791837 0.355102 170.629 sirzaqcppqqbadpncqblcoqvcecpqcgptcbpfcoqutttycsva 
