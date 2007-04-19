@@ -286,7 +286,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     
     // High-level instructions
     tInstLibEntry<tMethod>("repro", &cHardwareCPU::Inst_Repro),
-    tInstLibEntry<tMethod>("  ", &cHardwareCPU::Inst_Repro),
+    tInstLibEntry<tMethod>("repro-A", &cHardwareCPU::Inst_Repro),
     tInstLibEntry<tMethod>("repro-B", &cHardwareCPU::Inst_Repro),
     tInstLibEntry<tMethod>("repro-C", &cHardwareCPU::Inst_Repro),
     tInstLibEntry<tMethod>("repro-D", &cHardwareCPU::Inst_Repro),
