@@ -2221,7 +2221,6 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
 	 else
 		 return quality;
 
-	
 	return 0;
 }
 
