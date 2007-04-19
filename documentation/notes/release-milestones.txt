@@ -14,8 +14,8 @@ Visualized development/support timeline (* current):
               --2.3--
                      --2.4-------------
                        --2.5--
-                              --2.6----------------------
-                                *-2.7--
+                              --2.6-------------
+                                --2.7*-
                                        --2.8----------------------
                                          --2.9--
                                                 --3.0-------------
@@ -43,27 +43,40 @@ Currently at 2.6.0
 
 Version 2.7 - development - Target: July 2007      - Status: Active Development
 
+Dave B:
 + Consistency test support
   * simplify development
   * automatic expected results
-  + performance tests
+  * performance tests
+  - documentation
 + Consistency test coverage
-  + mid-run (* classic, - transsmt)
+  + mid-run (* classic, * transsmt)
   + analyze mode
 + Transition all applicable output files to cDataFile objects, as opposed to raw ostream
-+ Energy model
 + AvidaScript
   + lexer
-  - parser
+  + parser
   - threaded driver, multiple executing worlds via 'avida-s'
++ Cleanup Landscaping tools
+
+Ben:
++ Energy model
+
+Dave K:
 - Topology manager
-  - environment named regions
-? Schedulable object framework (organism threads scheduled rather than organisms, events, etc.) 
-? Serialization
+  + environment named regions
+? Group/Deme Framework
+
+Ofria:
+- Core GUI framework
+
+Art:
++ his damn research
+
+All:
 - Update documentation
 - Code release cleanup
 
-**** NOTE: Backwards compatibility breaks at this point ****
 
 
 Version 2.8 - stable      - Target: < Mid 2008     - Status: Planned, pending version 2.7 completion
@@ -77,9 +90,11 @@ Version 2.9 - development - Target: July 2008      - Status: Planned
 - Remove Analyze Mode
 - Merged 'avida' and 'avida-s' functionality
 - New Mutation framework
-- Core GUI framework
 - Basic OS X native GUI
 - Update documentation
+- Error reporting, input validation
+- Schedulable object framework (organism threads scheduled rather than organisms, events, etc.) 
+- Serialization
 - Code release cleanup
 
 **** NOTE: Backwards compatibility breaks at this point ****
