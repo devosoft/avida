@@ -204,7 +204,10 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("donate-kin", &cHardwareCPU::Inst_DonateKin),
     tInstLibEntry<tMethod>("donate-edt", &cHardwareCPU::Inst_DonateEditDist),
     tInstLibEntry<tMethod>("donate-NUL", &cHardwareCPU::Inst_DonateNULL),
-    
+
+	tInstLibEntry<tMethod>("IObuf-add1", &cHardwareCPU::Inst_IOBufAdd1),
+    tInstLibEntry<tMethod>("IObuf-add0", &cHardwareCPU::Inst_IOBufAdd0),
+
     tInstLibEntry<tMethod>("rotate-l", &cHardwareCPU::Inst_RotateL),
     tInstLibEntry<tMethod>("rotate-r", &cHardwareCPU::Inst_RotateR),
     
@@ -3167,6 +3170,16 @@ bool cHardwareCPU::Inst_MemSize(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareCPU::Inst_IOBufAdd1(cAvidaContext& ctx)
+{ 
+	organism->AddOutput(1);
+	return true;
+}
+bool cHardwareCPU::Inst_IOBufAdd0(cAvidaContext& ctx)
+{ 
+	organism->AddOutput(0);
+	return true; 
+}
 
 bool cHardwareCPU::Inst_RotateL(cAvidaContext& ctx)
 {

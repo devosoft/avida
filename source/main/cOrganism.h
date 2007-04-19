@@ -197,6 +197,7 @@ public:
   void DoInput(const int value);
   void DoOutput(cAvidaContext& ctx, const int value, const bool on_divide = false);
   void ClearInput() { m_input_buf.Clear(); }
+  void AddOutput(int val) { m_output_buf.Add(val); }
 
   // --------  Divide Methods  --------
   bool Divide_CheckViable();

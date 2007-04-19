@@ -886,12 +886,11 @@ bool cEnvironment::TestRequisites(const tList<cReactionRequisite>& req_list,
     
     // Have all task counts been met?
     if (task_count < cur_req->GetMinTaskCount()) continue;
-    
-    // Have divide task reqs been met?
-    // If div_type is 0 we only check on IO, if 1 we only check on divide,
-    // if 2 we check always
     if (task_count >= cur_req->GetMaxTaskCount()) continue;
 
+	// Have divide task reqs been met?
+    // If div_type is 0 we only check on IO, if 1 we only check on divide,
+    // if 2 we check always
     int div_type = cur_req->GetDivideOnly();
     if (div_type == 1 && !on_divide) continue;
     if (div_type == 0 && on_divide) continue;

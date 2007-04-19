@@ -2120,19 +2120,34 @@ void cTaskLib::Load_Optimize(const cString& name, const cString& argstr, cEnvReq
 
 	// Integer Arguments
 	schema.AddEntry("function", 0, cArgSchema::SCHEMA_INT);
+	schema.AddEntry("binary", 1, 0);
+	schema.AddEntry("varlength", 2, 8);
+	// Double Arguments
+	schema.AddEntry("max_Fx", 0, 1.0);
+	schema.AddEntry("min_Fx", 1, 0.0);
+
 
 	cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
 	if (args) 
 	{
-		switch (args->GetInt(0))
+		if (args->GetInt(1))
 		{
-		case 1:
-			envreqs.SetMinOutputs(1);
-		case 2:
-			envreqs.SetMinOutputs(2);
-		case 3:
-			envreqs.SetMinOutputs(2);
-		};
+			envreqs.SetMinOutputs(args->GetInt(2)*2);
+		}
+		else 
+		{
+			// once have ability to change args should in each of these cases change the max/min
+			// to the appropriate defaults for this function
+			switch (args->GetInt(0))
+			{
+			case 1:
+				envreqs.SetMinOutputs(1);
+			case 2:
+				envreqs.SetMinOutputs(2);
+			case 3:
+				envreqs.SetMinOutputs(2);
+			};
+		}
 
 		NewTask(name, "Optimize", &cTaskLib::Task_Optimize, 0, args);
 	}
@@ -2148,45 +2163,64 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
 
 	// which function are we currently checking?
 	const int function = ctx.GetTaskEntry()->GetArguments().GetInt(0);
-	
-	// always need x, at least for now, turn it into a double between 0 and 1
-	unsigned outy, outx = ctx.GetOutputBuffer()[0];
-	double y, x = (double)outx / 0xffffffff;
-	
-	switch(function)
-	{
-	case 1:
-		quality = 1 - x;
-		break;
 
-	case 2:
-		// for F2 need y as well
-		outy = ctx.GetOutputBuffer()[1];
-		y = (double)outy / 0xffff;
-		quality = 1 - ((1+y)*(1-sqrt(x/(1+y))))/2.0;	// F2
-		break;
+	 // always get x&y, at least for now, turn it into a double between 0 and 1
+	double y, x;
 
-	case 3:
-		// for F3 need y as well
-		outy = ctx.GetOutputBuffer()[1];
-		y = (double)outy / 0xffff;
-		quality = 1 - ((1+y)*(1-pow(x/(1+y),2)))/2.0;	// F3
-		break;
+	 const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
+	 if (args.GetInt(1))
+	 {
+		int len = args.GetInt(2);
+		int tempX = 0, tempY=0;
+		for (int i=len-1; i>=0; i--)
+		{
+			tempX += ctx.GetOutputBuffer()[i+len]*pow(2.0,(len-1)-i);
+			tempY += ctx.GetOutputBuffer()[i]*pow(2.0,(len-1)-i);
+		}
+		x = (double)tempX/(pow(2.0,len)-1);
+		y = (double)tempY/(pow(2.0,len)-1);
+	 }
+	 else
+	 {
+		x = (double)ctx.GetOutputBuffer()[0] / 0xffffffff;
+		y = (double)ctx.GetOutputBuffer()[1] / 0xffffffff;	
+	 }
 
-	default:
-		quality = .001;
-	}
+	 switch(function)
+	 {
+	 case 1:
+		 quality = 1 - x;
+		 break;
 
-	// because want org to only have 1 shot to use outputs for all functions at once, even if they
-	// output numbers that give a quality of 0 on a function, still want to mark it as completed
-	// so give it a very low quality instead of 0 (if using limited resources they still will get
-	// no reward because set the minimum consumed to max*.001, meaning even if they get the max
-	// possible fraction they'll be below minimum allowed consumed and will consume nothing
-	
-	if (quality < .001)
-		return .001;
-	else
-		return quality;
+	 case 2:
+		 quality = 1 - ((1+y)*(1-sqrt(x/(1+y))))/2.0;	// F2
+		 break;
+
+	 case 3:
+		 quality = 1 - ((1+y)*(1-pow(x/(1+y),2)))/2.0;	// F3
+		 break;
+
+	 case 4:
+		 quality = 1 - (( (1+y)*(1 - sqrt(x/(1+y)) - (x/(1+y))*sin(3.14159*x*10) ) +.76) / 2.76);
+		 break;
+
+	 default:
+		 quality = .001;
+	 }
+
+	 // because want org to only have 1 shot to use outputs for all functions at once, even if they
+	 // output numbers that give a quality of 0 on a function, still want to mark it as completed
+	 // so give it a very low quality instead of 0 (if using limited resources they still will get
+	 // no reward because set the minimum consumed to max*.001, meaning even if they get the max
+	 // possible fraction they'll be below minimum allowed consumed and will consume nothing
+
+	 if (quality > 1)
+		 cout << "\n\nquality > 1, wtf?!\n\n";
+	 if (quality < .001)
+		 return .001;
+	 else
+		 return quality;
+
 	
 	return 0;
 }

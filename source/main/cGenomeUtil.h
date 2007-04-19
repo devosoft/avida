@@ -72,6 +72,7 @@ public:
   
   // ========= Genome Construction =========
   static cGenome RandomGenome(cAvidaContext& ctx, int length, const cInstSet& inst_set);
+  static cGenome RandomGenomeWithoutZeroRedundantsPlusRepro(cAvidaContext& ctx, int length, const cInstSet& inst_set);
 };
 
 

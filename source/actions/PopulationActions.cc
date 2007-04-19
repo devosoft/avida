@@ -129,6 +129,50 @@ public:
 
 
 /*
+ Injects randomly generated genomes into the entire population, plus a repro inst on the end,
+ with the caveat that any instructions set to 0 probability of mutating into the genome 
+ are not included.
+ 
+ Parameters:
+   length (integer) [required]
+     Number of instructions in the randomly generated genome (actual length will be +1 with repro).
+   merit (double) default: -1
+     The initial merit of the organism. If set to -1, this is ignored.
+   lineage label (integer) default: 0
+     An integer that marks all descendants of this organism.
+   neutral metric (double) default: 0
+     A double value that randomly drifts over time.
+*/
+class cActionInjectAllRandomRepro : public cAction
+{
+private:
+  int m_length;
+  double m_merit;
+  int m_lineage_label;
+  double m_neutral_metric;
+public:
+  cActionInjectAllRandomRepro(cWorld* world, const cString& args) : cAction(world, args), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  {
+    cString largs(args);
+    m_length = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+  }
+  
+  static const cString GetDescription() { return "Arguments: <int length> [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+
+  void Process(cAvidaContext& ctx)
+  {
+	  for (int i = 0; i < m_world->GetPopulation().GetSize(); i++)
+	  {
+		  cGenome genome = cGenomeUtil::RandomGenomeWithoutZeroRedundantsPlusRepro(ctx, m_length, m_world->GetHardwareManager().GetInstSet());
+		  m_world->GetPopulation().Inject(genome, i, m_merit, m_lineage_label, m_neutral_metric);
+	  }
+  }
+};
+
+/*
  Injects identical organisms into all cells of the population.
  
  Parameters:
@@ -1305,7 +1349,21 @@ public:
   }
 };
 
+class cActionSetOptimizeMinMax : public cAction
+{
 
+public:
+  cActionSetOptimizeMinMax(cWorld* world, const cString& args) : cAction(world, args) { ; }
+
+  static const cString GetDescription() { return "No Arguments"; }
+
+  void Process(cAvidaContext& ctx)
+  {
+    for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
+      m_world->GetPopulation().GetCell(i).GetOrganism();
+    }
+  }
+};
 
 void RegisterPopulationActions(cActionLibrary* action_lib)
 {
@@ -1345,6 +1403,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
   action_lib->Register<cActionInject>("inject");
   action_lib->Register<cActionInjectRandom>("inject_random");
+  action_lib->Register<cActionInjectAllRandomRepro>("inject_all_random_repro");
   action_lib->Register<cActionInjectAll>("inject_all");
   action_lib->Register<cActionInjectRange>("inject_range");
   action_lib->Register<cActionInject>("inject_sequence");
@@ -1368,4 +1427,6 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
 
   action_lib->Register<cActionConnectCells>("connect_cells");
   action_lib->Register<cActionDisconnectCells>("disconnect_cells");
+
+  action_lib->Register<cActionSetOptimizeMinMax>("SetOptimizeMinMax");
 }

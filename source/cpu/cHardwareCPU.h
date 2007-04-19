@@ -437,6 +437,9 @@ private:
   bool Inst_SearchB(cAvidaContext& ctx);
   bool Inst_MemSize(cAvidaContext& ctx);
 
+  bool Inst_IOBufAdd1(cAvidaContext& ctx);
+  bool Inst_IOBufAdd0(cAvidaContext& ctx);
+
   // Environment
 
   bool Inst_RotateL(cAvidaContext& ctx);
