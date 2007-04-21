@@ -849,11 +849,10 @@ int cPhenotype::CalcSizeMerit() const
   case BASE_MERIT_NUM_BONUS_INST:
     if(m_world->GetConfig().FITNESS_VALLEY.Get()){
       if (bonus_instruction_count >= m_world->GetConfig().FITNESS_VALLEY_START.Get() && 
-          bonus_instruction_count <= m_world->GetConfig().FITNESS_VALLEY_START.Get()){
+          bonus_instruction_count <= m_world->GetConfig().FITNESS_VALLEY_STOP.Get()){
          out_size = 1;
          break;
-           }
-            
+      }            
     }
     if (m_world->GetConfig().MERIT_BONUS_EFFECT.Get()>0) {out_size = 1 + bonus_instruction_count;}
     else if (m_world->GetConfig().MERIT_BONUS_EFFECT.Get()<0) {out_size = genome_length - (bonus_instruction_count -1);}
