@@ -277,6 +277,9 @@ public:
   CONFIG_ADD_VAR(MERIT_DEFAULT_BONUS, int, 0, "Scale the merit of an offspring by the default bonus\nrather than the accumulated bonus of the parent?"); 
   CONFIG_ADD_VAR(MERIT_BONUS_INST, int, 0, "in BASE_MERIT_METHOD 6, this sets which instruction counts (-1=none, 0= 1st in INST_SET.)"); 
   CONFIG_ADD_VAR(MERIT_BONUS_EFFECT, int, 0, "in BASE_MERIT_METHOD 6, this sets how much merit is earned per INST (-1=penalty, 0= no effect.)"); 
+  CONFIG_ADD_VAR(FITNESS_VALLEY, int, 0, "in BASE_MERIT_METHOD 6, this creates valleys from FITNESS_VALLEY_START to FITNESS_VALLEY_STOP (0= off, 1=on)"); 
+  CONFIG_ADD_VAR(FITNESS_VALLEY_START, int, 0, "if FITNESS_VALLEY =1, orgs with num_key_instructions from FITNESS_VALLEY_START to FITNESS_VALLEY_STOP get fitness 1 (lowest)"); 
+  CONFIG_ADD_VAR(FITNESS_VALLEY_STOP, int, 0, "if FITNESS_VALLEY =1, orgs with num_key_instructions from FITNESS_VALLEY_START to FITNESS_VALLEY_STOP get fitness 1 (lowest)"); 
   CONFIG_ADD_VAR(MAX_CPU_THREADS, int, 1, "Number of Threads a CPU can spawn");
   CONFIG_ADD_VAR(THREAD_SLICING_METHOD, int, 0, "Formula for and organism's thread slicing\n  (num_threads-1) * THREAD_SLICING_METHOD + 1\n0 = One thread executed per time slice.\n1 = All threads executed each time slice.\n");
   CONFIG_ADD_VAR(MAX_LABEL_EXE_SIZE, int, 1, "Max nops marked as executed when labels are used");

@@ -492,12 +492,11 @@ public:
 class cActionToggleRewardInstruction : public cAction
 {
 private:
-  double m_killprob;
 public:
-  cActionToggleRewardInstruction(cWorld* world, const cString& args) : cAction(world, args), m_killprob(0.9)
+  cActionToggleRewardInstruction(cWorld* world, const cString& args) : cAction(world, args) 
   {
     //pass
-    //@JMC: m_killprob is meme that hitchiked when I used gabe's event as an example. need to clean it up. 
+    //@JMC: m_killprob (and other code) is a meme that hitchiked when I used gabe's event as an example. need to clean it up. 
   }
   
   static const cString GetDescription() { return "Arguments: [double probability=0.9]"; }
@@ -505,6 +504,36 @@ public:
   void Process(cAvidaContext& ctx)
   {
     m_world->GetConfig().MERIT_BONUS_EFFECT.Set(-1* m_world->GetConfig().MERIT_BONUS_EFFECT.Get());
+  }
+};
+
+/*
+ In avida.cfg, when BASE_MERIT_METHOD is set to 6 (Merit prop. to num times MERIT_BONUS_INST is in genome), 
+ the merit is incremented by MERIT_BONUS_EFFECT if MERIT_BONUS_EFFECT is positive and decremented by
+ MERIT_BONUS_EFFECT if it is negative. For positive values the counting starts at 1, for negative values it starts
+ at genome length. This event addes fitness valleys to this extremely simple counting-ones type of dynamic environment.
+ Orgs that have #_merit_bonus_inst_in_genome >=FITNESS_VALLEY_START && <= FITNESS_VALLEY_STOP will have a fitness of one (the lowest).
+ Example.   FITNESS_VALLEY_START = 5, FITNESS_VALLEY_STOP = 7. orgs with 5, 6, or 7 MERIT_BONUS_INST in their genome have fitness = 1.
+ Specifically, this event creates these valleys or takes them away. 
+*/
+
+class cActionToggleFitnessValley : public cAction
+{
+private:
+public:
+  cActionToggleFitnessValley(cWorld* world, const cString& args) : cAction(world, args) 
+  {
+    //pass
+    //@JMC: m_killprob (and other code) is a meme that hitchiked when I used gabe's event as an example. need to clean it up. 
+  }
+  
+  static const cString GetDescription() { return "Arguments: [double probability=0.9]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    if(m_world->GetConfig().FITNESS_VALLEY.Get()) {m_world->GetConfig().FITNESS_VALLEY.Set(0);}
+    else{m_world->GetConfig().FITNESS_VALLEY.Set(1);}
+//    m_world->GetConfig().FITNESS_VALLEY.Set(-1* m_world->GetConfig().FITNESS_VALLEY.Get());
   }
 };
 
@@ -1378,6 +1407,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
 
   action_lib->Register<cActionKillProb>("KillProb");
   action_lib->Register<cActionToggleRewardInstruction>("ToggleRewardInstruction");
+  action_lib->Register<cActionToggleFitnessValley>("ToggleFitnessValley");
   action_lib->Register<cActionKillProb>("KillRate");
   action_lib->Register<cActionKillRectangle>("KillRectangle");
   action_lib->Register<cActionSerialTransfer>("SerialTransfer");
