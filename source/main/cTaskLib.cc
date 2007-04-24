@@ -2123,8 +2123,9 @@ void cTaskLib::Load_Optimize(const cString& name, const cString& argstr, cEnvReq
 	schema.AddEntry("binary", 1, 0);
 	schema.AddEntry("varlength", 2, 8);
 	// Double Arguments
-	schema.AddEntry("max_Fx", 0, 1.0);
-	schema.AddEntry("min_Fx", 1, 0.0);
+	schema.AddEntry("basepow", 0, 2.0);
+	schema.AddEntry("max_Fx", 1, 1.0);
+	schema.AddEntry("min_Fx", 2, 0.0);
 
 
 	cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
@@ -2171,14 +2172,16 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
 	 if (args.GetInt(1))
 	 {
 		int len = args.GetInt(2);
-		int tempX = 0, tempY=0;
+		double base_pow = args.GetDouble(0);
+		double tempX = 0, tempY=0, tot=0;
 		for (int i=len-1; i>=0; i--)
 		{
-			tempX += ctx.GetOutputBuffer()[i+len]*pow(2.0,(len-1)-i);
-			tempY += ctx.GetOutputBuffer()[i]*pow(2.0,(len-1)-i);
+			tempX += ctx.GetOutputBuffer()[i+len]*pow(base_pow,(len-1)-i);
+			tempY += ctx.GetOutputBuffer()[i]*pow(base_pow,(len-1)-i);
+			tot += pow(base_pow,i);
 		}
-		x = (double)tempX/(pow(2.0,len)-1);
-		y = (double)tempY/(pow(2.0,len)-1);
+		x = (double)tempX/tot;
+		y = (double)tempY/tot;
 	 }
 	 else
 	 {
