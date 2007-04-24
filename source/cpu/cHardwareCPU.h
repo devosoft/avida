@@ -523,9 +523,10 @@ private:
   bool Inst_DownRegulatePromoter(cAvidaContext& ctx) { RegulatePromoter(ctx, false); return true; }
   void RegulatePromoterNop(cAvidaContext& ctx, bool up);
   bool Inst_UpRegulatePromoterNop(cAvidaContext& ctx) { RegulatePromoterNop(ctx, true); return true; }
-  bool Inst_DownRegulatePromoterNop(cAvidaContext& ctx) { RegulatePromoterNop(ctx, false); return true; }  
-  bool Inst_UpRegulatePromoterNopDecay(cAvidaContext& ctx);
-  bool Inst_DownRegulatePromoterNopDecay(cAvidaContext& ctx);
+  bool Inst_DownRegulatePromoterNop(cAvidaContext& ctx) { RegulatePromoterNop(ctx, false); return true; }
+  void RegulatePromoterNopIfGT0(cAvidaContext& ctx, bool up); 
+  bool Inst_UpRegulatePromoterNopIfGT0(cAvidaContext& ctx) { RegulatePromoterNopIfGT0(ctx, true); return true; }
+  bool Inst_DownRegulatePromoterNopIfGT0(cAvidaContext& ctx) { RegulatePromoterNopIfGT0(ctx, false); return true; } 
   bool Inst_Terminate(cAvidaContext& ctx);
   bool Inst_Promoter(cAvidaContext& ctx);
   bool Inst_DecayRegulation(cAvidaContext& ctx);

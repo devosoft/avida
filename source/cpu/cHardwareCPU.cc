@@ -196,9 +196,9 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("buy", &cHardwareCPU::Inst_Buy),
     tInstLibEntry<tMethod>("send", &cHardwareCPU::Inst_Send),
     tInstLibEntry<tMethod>("receive", &cHardwareCPU::Inst_Receive),
-    tInstLibEntry<tMethod>("sense", &cHardwareCPU::Inst_SenseLog2),
-    tInstLibEntry<tMethod>("sense-unit", &cHardwareCPU::Inst_SenseUnit),
-    tInstLibEntry<tMethod>("sense-m100", &cHardwareCPU::Inst_SenseMult100),
+    tInstLibEntry<tMethod>("sense", &cHardwareCPU::Inst_SenseLog2),           // If you add more sense instructions
+    tInstLibEntry<tMethod>("sense-unit", &cHardwareCPU::Inst_SenseUnit),      // and want to keep stats, also add
+    tInstLibEntry<tMethod>("sense-m100", &cHardwareCPU::Inst_SenseMult100),   // the names to cStats::cStats() @JEB
     
     tInstLibEntry<tMethod>("donate-rnd", &cHardwareCPU::Inst_DonateRandom),
     tInstLibEntry<tMethod>("donate-kin", &cHardwareCPU::Inst_DonateKin),
@@ -331,6 +331,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("down-reg-*", &cHardwareCPU::Inst_DownRegulatePromoter),
     tInstLibEntry<tMethod>("up-reg", &cHardwareCPU::Inst_UpRegulatePromoterNop),
     tInstLibEntry<tMethod>("down-reg", &cHardwareCPU::Inst_DownRegulatePromoterNop),
+    tInstLibEntry<tMethod>("up-reg>0", &cHardwareCPU::Inst_UpRegulatePromoterNopIfGT0),
+    tInstLibEntry<tMethod>("down-reg>0", &cHardwareCPU::Inst_DownRegulatePromoterNopIfGT0),
     tInstLibEntry<tMethod>("terminate", &cHardwareCPU::Inst_Terminate),
     tInstLibEntry<tMethod>("promoter", &cHardwareCPU::Inst_Promoter),
     tInstLibEntry<tMethod>("decay-reg", &cHardwareCPU::Inst_DecayRegulation),
@@ -459,10 +461,10 @@ void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
   
   cPhenotype & phenotype = organism->GetPhenotype();
   
-  //First instruction - check whether we should be starting at a promoter.
-  if (phenotype.GetTimeUsed() == 0)
+  if (m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1) 
   {
-    if (m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1) Inst_Terminate(m_world->GetDefaultContext());
+    //First instruction - check whether we should be starting at a promoter.
+    if (phenotype.GetTimeUsed() == 0) Inst_Terminate(m_world->GetDefaultContext());
   }
   
   phenotype.IncTimeUsed();
@@ -479,14 +481,6 @@ num_threads : 1;
     // Setup the hardware for the next instruction to be executed.
     ThreadNext();
     
-    // In the promoter model, there may be a chance of termination
-    // that causes execution to start at a new instruction
-    const double processivity = m_world->GetConfig().PROMOTER_PROCESSIVITY.Get();
-    if (processivity < 1)
-    {
-      if ( ctx.GetRandom().P(1-processivity) ) Inst_Terminate(ctx);
-    }
-    
     m_advance_ip = true;
     IP().Adjust();
     
@@ -499,6 +493,9 @@ num_threads : 1;
     // Print the status of this CPU at each step...
     if (m_tracer != NULL) m_tracer->TraceHardware(*this);
     
+    // For tracing when termination occurs...
+    if (m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1) organism->GetPhenotype().SetTerminated(false);
+
     // Find the instruction to be executed
     const cInstruction& cur_inst = IP().GetInst();
     
@@ -526,7 +523,25 @@ num_threads : 1;
       
       // Pay the additional death_cost of the instruction now
       phenotype.IncTimeUsed(addl_time_cost);
+      
+      // In the promoter model, there may be a chance of termination
+      // that causes execution to start at a new instruction (per instruction executed)
+      if ( m_world->GetConfig().PROMOTERS_ENABLED.Get() )
+      {
+        const double processivity = m_world->GetConfig().PROMOTER_PROCESSIVITY_INST.Get();
+        if ( ctx.GetRandom().P(1-processivity) ) Inst_Terminate(ctx);
+      }
     } // if exec
+    
+    // In the promoter model, there may be a chance of termination
+    // that causes execution to start at a new instruction (per cpu cycle executed)
+    // @JEB - since processivities usually v. close to 1 it doesn't
+    // improve speed much to combine with "per instruction" block
+    if ( m_world->GetConfig().PROMOTERS_ENABLED.Get() )
+    {
+      const double processivity = m_world->GetConfig().PROMOTER_PROCESSIVITY.Get();
+      if ( ctx.GetRandom().P(1-processivity) ) Inst_Terminate(ctx);
+    }
     
   } // Previous was executed once for each thread...
   
@@ -2954,16 +2969,16 @@ bool cHardwareCPU::DoSense(cAvidaContext& ctx, int conversion_method, double bas
   // Otherwise sum all valid resources that it might refer to
   // (this will only be ONE if the label was of the maximum length).
   int resource_result = 0;
+  double dresource_result = 0;
   for (int i = start_index; i <= end_index; i++)
   {
     // if it's a valid resource
     if (i < res_count.GetSize())
     {
-      if (conversion_method == 0) // Log2
+      if (conversion_method == 0) // Log
       {
-        // (alternately you could assign min_int for zero resources, but
-        // that would cause wierdness when adding sense values together)
-        if (res_count[i] > 0) resource_result += (int)(log(res_count[i])/log(base));
+        // for log, add together and then take log
+        dresource_result += (double) res_count[i];
       }
       else if (conversion_method == 1) // Addition of multiplied resource amount
       {
@@ -2972,6 +2987,15 @@ bool cHardwareCPU::DoSense(cAvidaContext& ctx, int conversion_method, double bas
         resource_result = (INT_MAX - resource_result <= add_amount) ? INT_MAX : resource_result + add_amount;
       }
     } 
+  }
+  
+  // Take the log after adding resource amounts together!
+  // Otherwise 
+  if (conversion_method == 0) // Log2
+  {
+    // You really shouldn't be using the log method if you can get to zero resources
+    assert(dresource_result != 0);
+    resource_result = (int)(log(dresource_result)/log(base));
   }
     
   //Dump this value into an arbitrary register: BX
@@ -3681,22 +3705,14 @@ void cHardwareCPU::RegulatePromoter(cAvidaContext& ctx, bool up)
     }
     search_head++;
   }
-  
-  // Debugging code
-  /*
-  tArray<double> w = organism->GetPhenotype().GetPromoterWeights();
-  cerr << "Promoter Weights..." << endl;
-  for (int i = 0; i < w.GetSize(); i++) {
-    cerr << i << " " << w[i] << endl;
-  }
-  */
 }
 
 // Adjust the weight at promoter positions that match the downstream nop pattern
 void cHardwareCPU::RegulatePromoterNop(cAvidaContext& ctx, bool up)
 {
   static cInstruction promoter_inst = GetInstSet().GetInst(cStringUtil::Stringf("promoter"));
-
+  const int max_distance_to_promoter = 10;
+  
   // Look for the label directly (no complement)
   // Save the position before the label, so we don't count it as a regulatory site
   int start_pos = IP().GetPosition(); 
@@ -3723,12 +3739,11 @@ void cHardwareCPU::RegulatePromoterNop(cAvidaContext& ctx, bool up)
     if (i == GetLabel().GetSize())
     {
       cHeadCPU change_head(match_head);
-      for (int j=0; j < 5; j++)
+      for (int j=0; j < max_distance_to_promoter; j++)
       {
         change_head++;
         if (change_head.GetInst() == promoter_inst) {
          
-          
           if (change_head.GetPosition() < organism->GetPhenotype().GetCurPromoterWeights().GetSize())
           {
             organism->GetPhenotype().RegulatePromoter(change_head.GetPosition(), up);
@@ -3736,8 +3751,8 @@ void cHardwareCPU::RegulatePromoterNop(cAvidaContext& ctx, bool up)
           /*
           else
           {
-            // I can't seem to get resizing promoter arrays on allocate to work
-            // promoter weights still get unsynched from the genome size somewhere.
+            // I can't seem to get resizing promoter arrays on memory allocation to work.
+            // Promoter weights still get unsynched from the genome size somewhere. @JEB
             cout << change_head.GetPosition() << endl;
             cout << organism->GetPhenotype().GetCurPromoterWeights().GetSize() << endl;
             cout << GetMemory().GetSize() << endl;
@@ -3748,17 +3763,15 @@ void cHardwareCPU::RegulatePromoterNop(cAvidaContext& ctx, bool up)
       }
     }
   } while ( start_pos != search_head.GetPosition() );
-  
-  // Debugging code
-  /*
-  tArray<double> w = organism->GetPhenotype().GetPromoterWeights();
-  cerr << "Promoter Weights..." << endl;
-  for (int i = 0; i < w.GetSize(); i++) {
-    cerr << i << " " << w[i] << endl;
-  }
-  */
 }
 
+// Adjust the weight at promoter positions that match the downstream nop pattern
+void cHardwareCPU::RegulatePromoterNopIfGT0(cAvidaContext& ctx, bool up)
+{
+  // whether we do regulation is related to BX
+  double reg = (double) GetRegister(REG_BX);
+  if (reg > 0) RegulatePromoterNop(ctx, up);
+}
 
 // Move execution to a new promoter
 bool cHardwareCPU::Inst_Terminate(cAvidaContext& ctx)
@@ -3772,6 +3785,7 @@ bool cHardwareCPU::Inst_Terminate(cAvidaContext& ctx)
 
   // We want to execute the promoter that we land on.
   m_advance_ip = false;
+  organism->GetPhenotype().SetTerminated(true);
   
   //organism->ClearInput();
   

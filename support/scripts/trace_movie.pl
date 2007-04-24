@@ -66,7 +66,7 @@ use Getopt::Long;
 use Pod::Usage;
 my ($help, $man);
 my $frame_limit = 1000;
-my ($input, $output, $trace, $movie, $collapse_frames);
+my ($input, $output, $trace, $movie, $collapse_frames, $gray_unvisited_instructions);
 #pod2usage(1) if (scalar @ARGV == 0);
 GetOptions(
 	'help|?' => \$help, 'man' => \$man,
@@ -76,6 +76,7 @@ GetOptions(
 	'movie|m' => \$movie,
 	'frame-limit|f=s' => \$frame_limit,
 	'collapse|c' => \$collapse_frames,
+	'gray|g' => \$gray_unvisited_instructions,
 ) or pod2usage(2);
 pod2usage(1) if $help;
 pod2usage(-exitstatus => 0, -verbose => 2) if $man;
@@ -162,8 +163,21 @@ while (<TRACE>)
 		
 		#print "$original_line\n" if (scalar @{$t->{tasks}} != 9);
 		
+		#optional lines are inserted here 
+		
 		#Next line is blank
 		$on_line = <TRACE>;
+		chomp $on_line;
+		while ($on_line)
+		{
+			if ($on_line =~ m/Terminated!/)
+			{
+				$t->{terminated} = 1;
+			}
+			
+			$on_line = <TRACE>;
+			chomp $on_line;
+		}
 
 		#Next line is Input (env)
 		#Next line is Input (buf)
@@ -184,7 +198,7 @@ while (<TRACE>)
 		}
 		#print Dumper($t);
 		
-		#Check to see if the last fram added was at the same location		
+		#Check to see if the last frame added was at the same location		
 		if ($collapse_frames && $trace[$#trace])
 		{
 		  	#print $trace[$#trace]->{'inst'} . " " . $t->{'inst'} . "\n";
@@ -311,6 +325,8 @@ our $inst_use_nops = {
 	'catch' => $max_label_size,
 	'sense-m100' => $max_label_size,
 	'sense-unit' => $max_label_size,
+	'up-reg' => $max_label_size,
+	'down-reg' => $max_label_size,
 };
 
 our @execution_flare_colors = (
@@ -340,14 +356,15 @@ our @execution_flare_colors = (
 
 #print Dumper($colors);
 
+#Draw a connecting line, vertically centered
+$img->line($inst_space_x,$inst_y + $inst_size_y / 2 ,(scalar @inst - 1) * ($inst_size_x + $inst_space_x), $inst_y + $inst_size_y / 2,$colors->{gray});
+
 #Draw grayed out instructions for each box
 for (my $i=0; $i< scalar @inst; $i++)
 {
-	draw_instruction($i, $colors->{gray});
+	draw_instruction( $i, ($gray_unvisited_instructions ? $colors->{gray} : undef) );
 }
 
-#Draw a connecting line, vertically centered
-$img->line($inst_space_x,$inst_y + $inst_size_y / 2 ,(scalar @inst - 1) * ($inst_size_x + $inst_space_x), $inst_y + $inst_size_y / 2,$colors->{gray});
 
 #Draw ALL nops in default colors
 #foreach (my $i=0; $i < scalar @inst; $i++)
@@ -359,13 +376,15 @@ $drawn_connections = {};
 $arc_height = $arc_height_initial;
 our @arc_memory;
 
-
 my $frame;
 #Now draw arrows showing execution
 foreach (my $i=0; $i < scalar @trace; $i++)
 {
-	#Now draw over instructions that were used in their default colors
-	draw_instruction($trace[$i]->{inst});
+	#Now draw over instructions that were used in their real colors, if gray background
+	if ($gray_unvisited_instructions)
+	{
+		draw_instruction($trace[$i]->{inst});
+	}
 	
 	#Include nops as long as we find them and are within the limits of what the inst uses
 	my @nop_list;
@@ -384,9 +403,12 @@ foreach (my $i=0; $i < scalar @trace; $i++)
 	$frame++;
 	die "Exceeded frame limit (-f)." if ($movie && ($frame > $frame_limit));
 	
-	if ($i!=0 and $trace[$i]->{inst} != $trace[$i-1]->{inst})
+	if ($trace[$i]->{inst} != $trace[$i-1]->{inst})
 	{	
-		my $key = "$trace[$i-1]->{inst}_$trace[$i]->{inst}";
+		my $new_arc = { '1' => $trace[$i]->{inst}, '2' => $trace[$i]->{inst} };
+		$new_arc->{1} = $trace[$i-1]->{inst} if ( ($i!=0) && (!$trace[$i]->{terminated}) );
+		
+		my $key = "$new_arc->{1}_$new_arc->{2}";
 		
 		#Increment the arc_height if drawing multiple connections of does not exist
 
@@ -403,8 +425,8 @@ foreach (my $i=0; $i < scalar @trace; $i++)
 			$arc_height += $arc_height_increment;
 			$drawn_connections->{$key} = $arc_height;
 		}
-		
-		my $new_arc = { 'h'=> $drawn_connections->{$key}, '1' => $trace[$i-1]->{inst}, '2' => $trace[$i]->{inst} };
+		$new_arc->{'h'} = $drawn_connections->{$key};
+				
 		unshift @arc_memory, $new_arc;
 		#remove last arc
 		pop @arc_memory if (scalar @arc_memory > scalar @execution_flare_colors);

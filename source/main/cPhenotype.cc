@@ -55,6 +55,7 @@ cPhenotype::cPhenotype(cWorld* world)
   , last_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
   , last_inst_count(world->GetHardwareManager().GetInstSet().GetSize())
   , last_sense_count(m_world->GetStats().GetSenseSize())
+  , promoter_last_inst_terminated(false) 
 {
 }
 
@@ -813,6 +814,15 @@ void cPhenotype::PrintStatus(ostream& fp) const
       if (cur_promoter_weights[i] != m_world->GetConfig().PROMOTER_BG_STRENGTH.Get()) fp << i << " (" << cur_promoter_weights[i] << ") ";
     }
     fp << endl;
+    
+    if (promoter_last_inst_terminated)
+    {
+      fp << "Terminated!" << endl;
+    }
+    else
+    {
+      fp << "No termination..." << endl;
+    }
   }
 
 }
@@ -884,8 +894,8 @@ void cPhenotype::SetupPromoterWeights(const cGenome & _genome, const bool clear)
   for ( int i = (clear ? 0 : old_size); i<_genome.GetSize(); i++)
   {
     base_promoter_weights[i] = 1;
-    promoter_repression[i] = 1;
-    promoter_activation[i] = 1;
+    promoter_repression[i] = 0;
+    promoter_activation[i] = 0;
 
     // Now change the weights at instructions that are not promoters if called for
     if ( _genome[i] != promoter_inst)
@@ -902,7 +912,8 @@ void cPhenotype::DecayAllPromoterRegulation()
   {
     promoter_activation[i] *= (1 - m_world->GetConfig().REGULATION_DECAY_FRAC.Get());
     promoter_repression[i] *= (1 - m_world->GetConfig().REGULATION_DECAY_FRAC.Get());
-    cur_promoter_weights[i] = base_promoter_weights[i] * promoter_activation[i] / promoter_repression[i];
+    cur_promoter_weights[i] = base_promoter_weights[i] * exp((1+promoter_activation[i])*log(2)) / exp((1+promoter_repression[i])*log(2));
+
   }
 }
 
@@ -912,14 +923,14 @@ void cPhenotype::RegulatePromoter(const int i, const bool up )
   assert ( (promoter_activation.GetSize() > 0) && (promoter_activation.GetSize() > 0) );
   
   if (up) {
-    promoter_activation[i] += m_world->GetConfig().REGULATION_STRENGTH.Get(); 
     promoter_activation[i] *= (1 - m_world->GetConfig().REGULATION_DECAY_FRAC.Get());
+    promoter_activation[i] += m_world->GetConfig().REGULATION_STRENGTH.Get(); 
   }
   else {
-    promoter_repression[i] += m_world->GetConfig().REGULATION_STRENGTH.Get(); 
     promoter_repression[i] *= (1 - m_world->GetConfig().REGULATION_DECAY_FRAC.Get());
+    promoter_repression[i] += m_world->GetConfig().REGULATION_STRENGTH.Get(); 
   }
   
- cur_promoter_weights[i] = base_promoter_weights[i] * promoter_activation[i] / promoter_repression[i];
+  cur_promoter_weights[i] = base_promoter_weights[i] * exp((1+promoter_activation[i])*log(2)) / exp((1+promoter_repression[i])*log(2));
 }
 

@@ -117,6 +117,7 @@ private:
   tArray<double> cur_promoter_weights;        // Current of starting execution from each position, adjusted for regulation; @JEB 
   tArray<double> promoter_activation;         // Amount of positive regulation in play at each site; @JEB 
   tArray<double> promoter_repression;         // Amount of negative regulation in play at each site; @JEB 
+  bool promoter_last_inst_terminated;         // Did terminatin occur when executing the last instruction
   
   tHashTable<void*, cTaskState*> m_task_states;
 
@@ -326,6 +327,7 @@ public:
   void SetupPromoterWeights(const cGenome & _genome, const bool clear = false);
   void DecayAllPromoterRegulation();
   void RegulatePromoter(const int i, const bool up );
+  void SetTerminated(bool _in) { promoter_last_inst_terminated = _in; }
   
   void IncAge()      { assert(initialized == true); age++; }
   void IncCPUCyclesUsed() { assert(initialized == true); cpu_cycles_used++; }

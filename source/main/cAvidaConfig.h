@@ -291,10 +291,11 @@ public:
   
   CONFIG_ADD_GROUP(PROMOTER_GROUP, "Promoters");
   CONFIG_ADD_VAR(PROMOTERS_ENABLED, int, 0, "Use the promoter/terminator execution scheme.\nCertain instructions must also be included.");
-  CONFIG_ADD_VAR(PROMOTER_PROCESSIVITY, double, 1.0, "Chance of not terminating before executing each instruction.");
+  CONFIG_ADD_VAR(PROMOTER_PROCESSIVITY, double, 1.0, "Chance of not terminating after each cpu cycle.");
+  CONFIG_ADD_VAR(PROMOTER_PROCESSIVITY_INST, double, 1.0, "Chance of not terminating after each instruction.");
   CONFIG_ADD_VAR(PROMOTER_BG_STRENGTH, double, 0, "Probability of positions that are not promoter\ninstructions initiating execution (promoters are 1).");
   CONFIG_ADD_VAR(REGULATION_STRENGTH, double, 1, "Strength added or subtracted to a promoter by regulation.");
-  CONFIG_ADD_VAR(REGULATION_DECAY_FRAC, double, 0.1, "Fraction of regulation that decays away. \n(Max regulation = REGULATION_STRENGTH / REGULATION_DECAY_FRAC)");
+  CONFIG_ADD_VAR(REGULATION_DECAY_FRAC, double, 0.1, "Fraction of regulation that decays away. \nMax regulation = 2^(REGULATION_STRENGTH/REGULATION_DECAY_FRAC)");
 
   CONFIG_ADD_GROUP(GENEOLOGY_GROUP, "Geneology");
   CONFIG_ADD_VAR(TRACK_MAIN_LINEAGE, int, 1, "Keep all ancestors of the active population?\n0=no, 1=yes, 2=yes,w/sexual population");

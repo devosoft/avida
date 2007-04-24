@@ -368,7 +368,6 @@ bool cOrganism::NetRemoteValidate(cAvidaContext& ctx, int value)
     m_output_buf.Add(value);
     tArray<double> res_change(resource_count.GetSize());
     tArray<int> insts_triggered;
-    bool clear_input;
 
     cTaskContext taskctx(m_interface, m_input_buf, m_output_buf, other_input_list, other_output_list, false, completed);
     m_phenotype.TestOutput(ctx, taskctx, resource_count, res_change, insts_triggered);
