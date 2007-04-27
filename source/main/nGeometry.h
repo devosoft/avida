@@ -29,7 +29,8 @@ namespace nGeometry {
   enum {
     GLOBAL = 0,
     GRID,
-    TORUS
+    TORUS,
+    CLIQUE
   };
 }
 

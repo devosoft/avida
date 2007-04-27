@@ -194,10 +194,10 @@ public:
   CONFIG_ADD_GROUP(ARCH_GROUP, "Architecture Variables");
   CONFIG_ADD_VAR(WORLD_X, int, 60, "Width of the Avida world");
   CONFIG_ADD_VAR(WORLD_Y, int, 60, "Height of the Avida world");
-  CONFIG_ADD_VAR(WORLD_GEOMETRY, int, 2, "1 = Bounded Grid\n2 = Torus");
+  CONFIG_ADD_VAR(WORLD_GEOMETRY, int, 2, "1 = Bounded Grid\n2 = Torus\n3 = Clique");
   CONFIG_ADD_VAR(NUM_DEMES, int, 0, "Number of independed groups in the population; 0=off");
   CONFIG_ADD_VAR(RANDOM_SEED, int, 0, "Random number seed (0 for based on time)");
-  CONFIG_ADD_VAR(HARDWARE_TYPE, int, 0, "0 = Original CPUs\n1 = New SMT CPUs\n2 = Transitional SMT");
+  CONFIG_ADD_VAR(HARDWARE_TYPE, int, 0, "0 = Original CPUs\n1 = New SMT CPUs\n2 = Transitional SMT\n3 = Experimental CPU\n4 = Gene Expression CPU");
   
   CONFIG_ADD_GROUP(CONFIG_FILE_GROUP, "Configuration Files");
   CONFIG_ADD_VAR(DATA_DIR, cString, "data", "Directory in which config files are found");

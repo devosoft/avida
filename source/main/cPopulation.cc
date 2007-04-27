@@ -50,6 +50,7 @@
 #include "cSaleItem.h"
 #include "cSpecies.h"
 #include "cStats.h"
+#include "cTopology.h"
 #include "cWorld.h"
 
 #include <fstream>
@@ -76,84 +77,96 @@ cPopulation::cPopulation(cWorld* world)
   // Avida specific information.
   world_x = world->GetConfig().WORLD_X.Get();
   world_y = world->GetConfig().WORLD_Y.Get();
-  int geometry = world->GetConfig().WORLD_GEOMETRY.Get();
-  const int num_cells = world_x * world_y;
+	int num_demes = m_world->GetConfig().NUM_DEMES.Get();
+	const int num_cells = world_x * world_y;
+  const int geometry = world->GetConfig().WORLD_GEOMETRY.Get();
+	const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
   
   // Print out world details
   if (world->GetVerbosity() > VERBOSE_NORMAL) {
     cout << "Building world " << world_x << "x" << world_y << " = " << num_cells << " organisms." << endl;
-    if (geometry == nGeometry::GRID) {
-      cout << "Geometry: Bounded grid" << endl;
-    } else if (geometry == nGeometry::TORUS) {
-      cout << "Geometry: Torus" << endl;
-    } else {
-      cout << "Geometry: Unknown" << endl;
-    }
-    cout << endl;
-  }
-  
-  cell_array.Resize(num_cells);
-  resource_count.ResizeSpatialGrids(world_x, world_y);
-  market.Resize(MARKET_SIZE);
-  
-  for (int cell_id = 0; cell_id < num_cells; cell_id++) {
-    int x = cell_id % world_x;
-    int y = cell_id / world_x;
-    cell_array[cell_id].Setup(world, cell_id, environment.GetMutRates());
-    
-    // If we're working with a bounded grid, we need to take care of it.
-    bool bottom_flag = true;
-    bool top_flag = true;
-    bool right_flag = true;
-    bool left_flag = true;
-    
-    if (geometry == nGeometry::GRID) {
-      if (y == 0)  bottom_flag = false;
-      if (y == world_y-1)  top_flag = false;
-      if (x == 0) left_flag = false;
-      if (x == world_x-1) right_flag = false;
-    }
-    
-    // Setup the connection list for each cell. (Clockwise from -1 to 1)
-    
-    tList<cPopulationCell> & conn_list=cell_array[cell_id].ConnectionList();
-    if (bottom_flag && left_flag) {
-      conn_list.Push(&(cell_array[GridNeighbor(cell_id,world_x,world_y, -1, -1)]));
-    }
-    if (bottom_flag) {
-      conn_list.Push(&(cell_array[GridNeighbor(cell_id,world_x,world_y,  0, -1)]));
-    }
-    if (bottom_flag && right_flag) {
-      conn_list.Push(&(cell_array[GridNeighbor(cell_id,world_x,world_y, +1, -1)]));
-    }
-    if (right_flag) {
-      conn_list.Push(&(cell_array[GridNeighbor(cell_id,world_x,world_y, +1,  0)]));
-    }
-    if (top_flag && right_flag) {
-      conn_list.Push(&(cell_array[GridNeighbor(cell_id,world_x,world_y, +1, +1)]));
-    }
-    if (top_flag) {
-      conn_list.Push(&(cell_array[GridNeighbor(cell_id,world_x,world_y,  0, +1)]));
-    }
-    if (top_flag && left_flag) {
-      conn_list.Push(&(cell_array[GridNeighbor(cell_id,world_x,world_y, -1, +1)]));
-    }
-    if (left_flag) {
-      conn_list.Push(&(cell_array[GridNeighbor(cell_id,world_x,world_y, -1,  0)]));
-    }
-    
-    // Setup the reaper queue...
-    if (world->GetConfig().BIRTH_METHOD.Get() == POSITION_CHILD_FULL_SOUP_ELDEST) {
-      reaper_queue.Push(&(cell_array[cell_id]));
+    switch(geometry) {
+      case nGeometry::GRID: { cout << "Geometry: Bounded grid" << endl;	break; }
+			case nGeometry::TORUS: { cout << "Geometry: Torus" << endl; break;	}
+			case nGeometry::CLIQUE: { cout << "Geometry: Clique" << endl; break; }
+			default: {
+        cout << "Unknown geometry!" << endl;
+        assert(false);
+      }        
     }
   }
+  
+  // Error checking for demes vs. non-demes setup.
+	if(num_demes > 0) {
+		assert(birth_method != POSITION_CHILD_FULL_SOUP_ELDEST);
+		assert(birth_method != POSITION_CHILD_FULL_SOUP_ELDEST);
+	} else {
+		assert(birth_method != POSITION_CHILD_DEME_RANDOM);
+		num_demes = 1; // One population == one deme.
+	}
+	
+  // Allocate the cells, resources, and market.
+	cell_array.Resize(num_cells);
+	resource_count.ResizeSpatialGrids(world_x, world_y);
+	market.Resize(MARKET_SIZE);
+	
+  // Setup the cells.  Do things that are not dependent upon topology here.
+	for(int i=0; i<num_cells; ++i) {
+		cell_array[i].Setup(world, i, environment.GetMutRates());
+    // Setup the reaper queue.
+		if (world->GetConfig().BIRTH_METHOD.Get() == POSITION_CHILD_FULL_SOUP_ELDEST) {
+			reaper_queue.Push(&(cell_array[i]));
+		}
+	}                         
+
+	// What are the sizes of the demes that we're creating?
+	const int deme_size_x = world_x;
+	const int deme_size_y = world_y / num_demes;
+	const int deme_size = deme_size_x * deme_size_y;
+	deme_array.Resize(num_demes);
+	
+  // Setup the deme structures.
+	tArray<int> deme_cells(deme_size);
+	for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+		for (int offset = 0; offset < deme_size; offset++) {
+			int cell_id = deme_id * deme_size + offset;
+			deme_cells[offset] = cell_id;
+			cell_array[cell_id].SetDemeID(deme_id);
+		}
+		deme_array[deme_id].Setup(deme_cells, deme_size_x);
+	}
+  
+  // Setup the topology.
+  // What we're doing here is chopping the cell_array up into num_demes pieces.
+  // Note that having 0 demes (one population) is the same as having 1 deme.  Then
+  // we send the cells that comprise each deme into the topology builder.
+	for(int i=0; i<num_cells; i+=deme_size) {
+		switch(geometry) {
+      // We're cheating here; we're using the random access nature of an iterator
+      // to index beyond the end of the cell_array.
+			case nGeometry::GRID: {
+				build_grid(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], 
+                   deme_size_x, deme_size_y);
+				break;
+			}
+			case nGeometry::TORUS: {
+				build_torus(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], 
+                    deme_size_x, deme_size_y);
+				break;
+			}
+			case nGeometry::CLIQUE: {
+				build_clique(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], 
+                     deme_size_x, deme_size_y);
+				break;
+			}
+			default: {
+				assert(false);
+			}
+		}
+	}
+  
   
   BuildTimeSlicer(0);
-  
-  if (SetupDemes() == false) {
-    cerr << "Error: Failed to setup demes.  Exiting..." << endl;
-    exit(1);
-  }
   
   // Setup the resources...
   const cResourceLib & resource_lib = environment.GetResourceLib();
@@ -202,84 +215,6 @@ cPopulation::~cPopulation()
   delete schedule;
 }
 
-
-// This method configures demes in the population.  Demes are subgroups of
-// organisms evolved together and used in group selection experiments.
-
-bool cPopulation::SetupDemes()
-{
-  const int num_demes = m_world->GetConfig().NUM_DEMES.Get();
-  const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
-  
-  // If we are not using demes, stop here.
-  if (num_demes == 0) {
-    if (birth_method == POSITION_CHILD_DEME_RANDOM) {
-      cerr << "Using position method that requires demes, but demes are off."
-      << endl;
-      return false;
-    }
-    return true;
-  }
-  
-  deme_array.Resize(num_demes);
-  
-  // Check to make sure all other settings are reasonable to have demes.
-  // ...make sure populaiton can be divided up evenly.
-  if (world_y % num_demes != 0) {
-    cerr << "World Y size of " << world_y
-    << " cannot be divided into " << num_demes << " demes." << endl;
-    return false;
-  }
-  
-  // ...make sure we are using a legal birth method.
-  if (birth_method == POSITION_CHILD_FULL_SOUP_ELDEST ||
-      birth_method == POSITION_CHILD_FULL_SOUP_RANDOM) {
-    cerr << "Illegal birth method " << birth_method << " for use with demes." << endl;
-    return false;
-  }
-  
-  const int deme_size_x = world_x;
-  const int deme_size_y = world_y / num_demes;
-  const int deme_size = deme_size_x * deme_size_y;
-  
-  
-  // Setup the deme structures.
-  tArray<int> deme_cells(deme_size);
-  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
-    for (int offset = 0; offset < deme_size; offset++) {
-      int cell_id = deme_id * deme_size + offset;
-      deme_cells[offset] = cell_id;
-      cell_array[cell_id].SetDemeID(deme_id);
-    }
-    deme_array[deme_id].Setup(deme_cells);
-  }
-  
-  
-  // Build walls in the population.
-  for (int row_id = 0; row_id < world_y; row_id += deme_size_y) {
-    // Loop through all of the cols and make the cut on each...
-    for (int col_id = 0; col_id < world_x; col_id++) {
-      int idA = row_id * world_x + col_id;
-      int idB  = GridNeighbor(idA, world_x, world_y,  0, -1);
-      int idA0 = GridNeighbor(idA, world_x, world_y, -1,  0);
-      int idA1 = GridNeighbor(idA, world_x, world_y,  1,  0);
-      int idB0 = GridNeighbor(idA, world_x, world_y, -1, -1);
-      int idB1 = GridNeighbor(idA, world_x, world_y,  1, -1);
-      cPopulationCell & cellA = GetCell(idA);
-      cPopulationCell & cellB = GetCell(idB);
-      tList<cPopulationCell> & cellA_list = cellA.ConnectionList();
-      tList<cPopulationCell> & cellB_list = cellB.ConnectionList();
-      cellA_list.Remove(&GetCell(idB));
-      cellA_list.Remove(&GetCell(idB0));
-      cellA_list.Remove(&GetCell(idB1));
-      cellB_list.Remove(&GetCell(idA));
-      cellB_list.Remove(&GetCell(idA0));
-      cellB_list.Remove(&GetCell(idA1));
-    }
-  }
-  
-  return true;
-}
 
 // Activate the child, given information from the parent.
 // Return true if parent lives through this process.

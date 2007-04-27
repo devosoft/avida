@@ -10,6 +10,7 @@
 		1097463F0AE9606E00929ED6 /* cDeme.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1097463D0AE9606E00929ED6 /* cDeme.cc */; };
 		109746410AE9606E00929ED6 /* cDeme.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1097463D0AE9606E00929ED6 /* cDeme.cc */; };
 		109746430AE9606E00929ED6 /* cDeme.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1097463D0AE9606E00929ED6 /* cDeme.cc */; };
+		4201F39B0BE187F6006279B9 /* cTopology.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4201F39A0BE187F6006279B9 /* cTopology.h */; };
 		4233358A0BC067E3000DF681 /* cHardwareGX.cc in Sources */ = {isa = PBXBuildFile; fileRef = 423335880BC067E3000DF681 /* cHardwareGX.cc */; };
 		4233358B0BC067E3000DF681 /* cHardwareGX.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 423335890BC067E3000DF681 /* cHardwareGX.h */; };
 		7005A70409BA0FA90007E16E /* cTestCPUInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */; };
@@ -426,6 +427,7 @@
 				70B1A7430B7E3FFD00067486 /* instset-experimental.cfg in CopyFiles */,
 				70B1A75A0B7E431F00067486 /* experimental.org in CopyFiles */,
 				4233358B0BC067E3000DF681 /* cHardwareGX.h in CopyFiles */,
+				4201F39B0BE187F6006279B9 /* cTopology.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -444,6 +446,7 @@
 /* Begin PBXFileReference section */
 		1097463D0AE9606E00929ED6 /* cDeme.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDeme.cc; sourceTree = "<group>"; };
 		1097463E0AE9606E00929ED6 /* cDeme.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cDeme.h; sourceTree = "<group>"; };
+		4201F39A0BE187F6006279B9 /* cTopology.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTopology.h; sourceTree = "<group>"; };
 		423335880BC067E3000DF681 /* cHardwareGX.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareGX.cc; sourceTree = "<group>"; };
 		423335890BC067E3000DF681 /* cHardwareGX.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareGX.h; sourceTree = "<group>"; };
 		7005A70109BA0FA90007E16E /* cTestCPUInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cTestCPUInterface.h; sourceTree = "<group>"; };
@@ -1520,6 +1523,7 @@
 				70B08B8D08FB2E5500FC65FE /* tMatrix.h */,
 				70B08B8E08FB2E5500FC65FE /* tMemTrack.h */,
 				70B08B8F08FB2E5500FC65FE /* tVector.h */,
+				4201F39A0BE187F6006279B9 /* cTopology.h */,
 				70B0891608F7630100FC65FE /* cHelpAlias.cc */,
 				70B0891708F7630100FC65FE /* cHelpManager.cc */,
 				70B0891808F7630100FC65FE /* cHelpType.cc */,

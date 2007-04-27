@@ -143,9 +143,6 @@ public:
   cPopulation(cWorld* world);
   ~cPopulation();
 
-  // Extra Setup...
-  bool SetupDemes();
-
   // Activate the offspring of an organism in the population
   bool ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, cOrganism& parent_organism);
   bool ActivateParasite(cOrganism& parent, const cCodeLabel& label, const cGenome& injected_code);

@@ -1,0 +1,26 @@
+# Generic Statistics Data
+# Thu Apr 26 22:14:51 2007
+#  1: update
+#  2: average inferiority (energy)
+#  3: ave probability of any mutations in genome
+#  4: probability of any mutations in dom genome
+#  5: log(average fidelity)
+#  6: log(dominant fidelity)
+#  7: change in number of genotypes
+#  8: genotypic entropy
+#  9: species entropy
+# 10: depth of most reacent coalescence
+# 11: Total number of resamplings this generation
+# 12: Total number of organisms that failed to resample this generation
+
+0 0.000000 0.097500 0.562358 0.102587 0.826353 1 0.000000 0.000000 0 0 0 
+10 0 0.0975 0.562358 0.102587 0.826353 0 0 0 0 0 0 
+20 0 0.562358 0.562358 0.826353 0.826353 0 0 0 0 0 0 
+30 0 0.562358 0.562358 0.826353 0.826353 0 0.562335 0 0 0 0 
+40 -0.000644122 0.562358 0.562358 0.826353 0.826353 0 0.735622 0 0 0 0 
+50 -0.000644122 0.562358 0.562358 0.826353 0.826353 0 0.735622 0 0 0 0 
+60 -0.000515331 0.562569 0.562358 0.826836 0.826353 0 1.5066 0 0 0 0 
+70 0.00450629 0.562584 0.562358 0.82687 0.826353 0 2.01969 0 0 0 0 
+80 0.0167849 0.562293 0.562358 0.826206 0.826353 1 2.69996 0 0 0 0 
+90 0.0150247 0.562411 0.562358 0.826476 0.826353 2 2.82388 0 0 0 0 
+100 0.0108628 0.562524 0.562358 0.826734 0.826353 0 3.34771 0 0 0 0 

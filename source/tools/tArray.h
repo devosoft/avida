@@ -48,12 +48,27 @@ private:
   int m_size; // Number of Elements
 
 public:
+  typedef T* iterator; //!< STL-compatible iterator.
+  typedef const T* const_iterator; //!< STL-compatible const_iterator.
+
   explicit tArray(const int size = 0) : m_data(NULL), m_size(0) { ResizeClear(size); }
   //explicit tArray(const int size = 0, const T& init_val) : m_data(NULL), m_size(0) { Resize(size, init_val); }
 	tArray(const tArray& rhs) : m_data(NULL), m_size(0) { this->operator=(rhs); }
 
   ~tArray() { delete [] m_data; }
-
+  
+  //! Returns an iterator to the beginning of the tArray.
+  inline iterator begin() { return m_data; }
+  
+  //! Returns an iterator just past the end of the tArray.
+  inline iterator end() { return m_data + m_size; }
+  
+  //! Returns a const_iterator to the beginning of the tArray.
+  inline const_iterator begin() const { return m_data; }
+  
+  //! Returns a const_iterator just past the end of the tArray.
+  inline const_iterator end() const { return m_data + m_size; }  
+  
   tArray& operator=(const tArray& rhs) {
     if (m_size != rhs.GetSize())  ResizeClear(rhs.GetSize());
     for(int i = 0; i < m_size; i++) m_data[i] = rhs[i];
