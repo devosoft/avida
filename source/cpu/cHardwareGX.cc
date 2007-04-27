@@ -90,8 +90,6 @@ tInstLib<cHardwareGX::tMethod>* cHardwareGX::initInstLib(void)
     tInstLibEntry<tMethod>("if-A!=C", &cHardwareGX::Inst_IfANotEqC),
     tInstLibEntry<tMethod>("if-bit-1", &cHardwareGX::Inst_IfBit1),
     
-    tInstLibEntry<tMethod>("jump-f", &cHardwareGX::Inst_JumpF),
-    tInstLibEntry<tMethod>("jump-b", &cHardwareGX::Inst_JumpB),
     tInstLibEntry<tMethod>("call", &cHardwareGX::Inst_Call),
     tInstLibEntry<tMethod>("return", &cHardwareGX::Inst_Return),
 
@@ -166,13 +164,9 @@ tInstLib<cHardwareGX::tMethod>* cHardwareGX::initInstLib(void)
     tInstLibEntry<tMethod>("compare", &cHardwareGX::Inst_Compare),
     tInstLibEntry<tMethod>("if-n-cpy", &cHardwareGX::Inst_IfNCpy),
     tInstLibEntry<tMethod>("allocate", &cHardwareGX::Inst_Allocate),
-    tInstLibEntry<tMethod>("divide", &cHardwareGX::Inst_Divide),
-    tInstLibEntry<tMethod>("divideRS", &cHardwareGX::Inst_DivideRS),
     tInstLibEntry<tMethod>("c-alloc", &cHardwareGX::Inst_CAlloc),
-    tInstLibEntry<tMethod>("c-divide", &cHardwareGX::Inst_CDivide),
     tInstLibEntry<tMethod>("inject", &cHardwareGX::Inst_Inject),
     tInstLibEntry<tMethod>("inject-r", &cHardwareGX::Inst_InjectRand),
-    tInstLibEntry<tMethod>("transposon", &cHardwareGX::Inst_Transposon),
     tInstLibEntry<tMethod>("search-f", &cHardwareGX::Inst_SearchF),
     tInstLibEntry<tMethod>("search-b", &cHardwareGX::Inst_SearchB),
     tInstLibEntry<tMethod>("mem-size", &cHardwareGX::Inst_MemSize),
@@ -207,25 +201,16 @@ tInstLib<cHardwareGX::tMethod>* cHardwareGX::initInstLib(void)
 
     // Energy instruction
     tInstLibEntry<tMethod>("recover", &cHardwareGX::Inst_ZeroEnergyUsed),
-    
-    // Threading instructions
-    tInstLibEntry<tMethod>("fork-th", &cHardwareGX::Inst_ForkThread),
-    tInstLibEntry<tMethod>("kill-th", &cHardwareGX::Inst_KillThread),
-    tInstLibEntry<tMethod>("id-th", &cHardwareGX::Inst_ThreadID),
-    
+        
     // Head-based instructions
     tInstLibEntry<tMethod>("h-alloc", &cHardwareGX::Inst_MaxAlloc, nInstFlag::DEFAULT, "Allocate maximum allowed space"),
     tInstLibEntry<tMethod>("h-divide", &cHardwareGX::Inst_HeadDivide, nInstFlag::DEFAULT, "Divide code between read and write heads."),
-    tInstLibEntry<tMethod>("h-divide1RS", &cHardwareGX::Inst_HeadDivide1RS, 0, "Divide code between read and write heads, at most one mutation on divide, resample if reverted."),
-    tInstLibEntry<tMethod>("h-divide2RS", &cHardwareGX::Inst_HeadDivide2RS, 0, "Divide code between read and write heads, at most two mutations on divide, resample if reverted."),
-    tInstLibEntry<tMethod>("h-divideRS", &cHardwareGX::Inst_HeadDivideRS, 0, "Divide code between read and write heads, resample if reverted."),
     tInstLibEntry<tMethod>("h-read", &cHardwareGX::Inst_HeadRead),
     tInstLibEntry<tMethod>("h-write", &cHardwareGX::Inst_HeadWrite),
     tInstLibEntry<tMethod>("h-copy", &cHardwareGX::Inst_HeadCopy, nInstFlag::DEFAULT, "Copy from read-head to write-head; advance both"),
     tInstLibEntry<tMethod>("h-search", &cHardwareGX::Inst_HeadSearch, nInstFlag::DEFAULT, "Find complement template and make with flow head"),
     tInstLibEntry<tMethod>("h-push", &cHardwareGX::Inst_HeadPush),
     tInstLibEntry<tMethod>("h-pop", &cHardwareGX::Inst_HeadPop),
-    tInstLibEntry<tMethod>("set-head", &cHardwareGX::Inst_SetHead),
     tInstLibEntry<tMethod>("adv-head", &cHardwareGX::Inst_AdvanceHead),
     tInstLibEntry<tMethod>("mov-head", &cHardwareGX::Inst_MoveHead, nInstFlag::DEFAULT, "Move head ?IP? to the flow head"),
     tInstLibEntry<tMethod>("jmp-head", &cHardwareGX::Inst_JumpHead, nInstFlag::DEFAULT, "Move head ?IP? by amount in CX register; CX = old pos."),
@@ -243,72 +228,7 @@ tInstLib<cHardwareGX::tMethod>* cHardwareGX::initInstLib(void)
     tInstLibEntry<tMethod>("h-copy8", &cHardwareGX::Inst_HeadCopy8),
     tInstLibEntry<tMethod>("h-copy9", &cHardwareGX::Inst_HeadCopy9),
     tInstLibEntry<tMethod>("h-copy10", &cHardwareGX::Inst_HeadCopy10),
-    
-    tInstLibEntry<tMethod>("divide-sex", &cHardwareGX::Inst_HeadDivideSex),
-    tInstLibEntry<tMethod>("divide-asex", &cHardwareGX::Inst_HeadDivideAsex),
-    
-    tInstLibEntry<tMethod>("div-sex", &cHardwareGX::Inst_HeadDivideSex),
-    tInstLibEntry<tMethod>("div-asex", &cHardwareGX::Inst_HeadDivideAsex),
-    tInstLibEntry<tMethod>("div-asex-w", &cHardwareGX::Inst_HeadDivideAsexWait),
-    tInstLibEntry<tMethod>("div-sex-MS", &cHardwareGX::Inst_HeadDivideMateSelect),
-    
-    tInstLibEntry<tMethod>("h-divide1", &cHardwareGX::Inst_HeadDivide1),
-    tInstLibEntry<tMethod>("h-divide2", &cHardwareGX::Inst_HeadDivide2),
-    tInstLibEntry<tMethod>("h-divide3", &cHardwareGX::Inst_HeadDivide3),
-    tInstLibEntry<tMethod>("h-divide4", &cHardwareGX::Inst_HeadDivide4),
-    tInstLibEntry<tMethod>("h-divide5", &cHardwareGX::Inst_HeadDivide5),
-    tInstLibEntry<tMethod>("h-divide6", &cHardwareGX::Inst_HeadDivide6),
-    tInstLibEntry<tMethod>("h-divide7", &cHardwareGX::Inst_HeadDivide7),
-    tInstLibEntry<tMethod>("h-divide8", &cHardwareGX::Inst_HeadDivide8),
-    tInstLibEntry<tMethod>("h-divide9", &cHardwareGX::Inst_HeadDivide9),
-    tInstLibEntry<tMethod>("h-divide10", &cHardwareGX::Inst_HeadDivide10),
-    tInstLibEntry<tMethod>("h-divide16", &cHardwareGX::Inst_HeadDivide16),
-    tInstLibEntry<tMethod>("h-divide32", &cHardwareGX::Inst_HeadDivide32),
-    tInstLibEntry<tMethod>("h-divide50", &cHardwareGX::Inst_HeadDivide50),
-    tInstLibEntry<tMethod>("h-divide100", &cHardwareGX::Inst_HeadDivide100),
-    tInstLibEntry<tMethod>("h-divide500", &cHardwareGX::Inst_HeadDivide500),
-    tInstLibEntry<tMethod>("h-divide1000", &cHardwareGX::Inst_HeadDivide1000),
-    tInstLibEntry<tMethod>("h-divide5000", &cHardwareGX::Inst_HeadDivide5000),
-    tInstLibEntry<tMethod>("h-divide10000", &cHardwareGX::Inst_HeadDivide10000),
-    tInstLibEntry<tMethod>("h-divide50000", &cHardwareGX::Inst_HeadDivide50000),
-    tInstLibEntry<tMethod>("h-divide0.5", &cHardwareGX::Inst_HeadDivide0_5),
-    tInstLibEntry<tMethod>("h-divide0.1", &cHardwareGX::Inst_HeadDivide0_1),
-    tInstLibEntry<tMethod>("h-divide0.05", &cHardwareGX::Inst_HeadDivide0_05),
-    tInstLibEntry<tMethod>("h-divide0.01", &cHardwareGX::Inst_HeadDivide0_01),
-    tInstLibEntry<tMethod>("h-divide0.001", &cHardwareGX::Inst_HeadDivide0_001),
-    
-    // High-level instructions
-    tInstLibEntry<tMethod>("repro", &cHardwareGX::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-A", &cHardwareGX::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-B", &cHardwareGX::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-C", &cHardwareGX::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-D", &cHardwareGX::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-E", &cHardwareGX::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-F", &cHardwareGX::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-G", &cHardwareGX::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-H", &cHardwareGX::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-I", &cHardwareGX::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-J", &cHardwareGX::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-K", &cHardwareGX::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-L", &cHardwareGX::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-M", &cHardwareGX::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-N", &cHardwareGX::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-O", &cHardwareGX::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-P", &cHardwareGX::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-Q", &cHardwareGX::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-R", &cHardwareGX::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-S", &cHardwareGX::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-T", &cHardwareGX::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-U", &cHardwareGX::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-V", &cHardwareGX::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-W", &cHardwareGX::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-X", &cHardwareGX::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-Y", &cHardwareGX::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-Z", &cHardwareGX::Inst_Repro),
-
-    tInstLibEntry<tMethod>("put-repro", &cHardwareGX::Inst_TaskPutRepro),
-    tInstLibEntry<tMethod>("metabolize", &cHardwareGX::Inst_TaskPutResetInputsRepro),        
-
+        
     tInstLibEntry<tMethod>("spawn-deme", &cHardwareGX::Inst_SpawnDeme),
     
     // Suicide
@@ -339,48 +259,42 @@ tInstLib<cHardwareGX::tMethod>* cHardwareGX::initInstLib(void)
   return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, error, def);
 }
 
+
+/*! Construct a cHardwareGX instance from the passed-in cOrganism.  This amounts to
+creating an initial cProgramid from in_organism's genome.
+*/
 cHardwareGX::cHardwareGX(cWorld* world, cOrganism* in_organism, cInstSet* in_m_inst_set)
 : cHardwareBase(world, in_organism, in_m_inst_set)
 {
-  /* FIXME:  reorganize storage of m_functions.  -- kgn */
   m_functions = s_inst_slib->GetFunctions();
-  /**/
-  m_memory = in_organism->GetGenome();  // Initialize memory...
+  m_programids.push_back(programid_ptr(new cProgramid(in_organism->GetGenome(), this)));
+  m_current = m_programids.back();
   Reset();                            // Setup the rest of the hardware...
 }
 
 
-cHardwareGX::cHardwareGX(const cHardwareGX &hardware_cpu)
-: cHardwareBase(hardware_cpu.m_world, hardware_cpu.organism, hardware_cpu.m_inst_set)
-, m_functions(hardware_cpu.m_functions)
-, m_memory(hardware_cpu.m_memory)
-, m_global_stack(hardware_cpu.m_global_stack)
-, m_threads(hardware_cpu.m_threads)
-, m_thread_id_chart(hardware_cpu.m_thread_id_chart)
-, m_cur_thread(hardware_cpu.m_cur_thread)
-, m_mal_active(hardware_cpu.m_mal_active)
-, m_advance_ip(hardware_cpu.m_advance_ip)
-, m_executedmatchstrings(hardware_cpu.m_executedmatchstrings)
-#if INSTRUCTION_COSTS
-, inst_cost(hardware_cpu.inst_cost)
-, inst_ft_cost(hardware_cpu.inst_ft_cost)
-#endif
+/*! Destructor; delete all programids. */
+cHardwareGX::~cHardwareGX() 
 {
-}
+  for(programid_list::iterator i=m_programids.begin(); i!=m_programids.end(); ++i) {
+    delete *i;
+  }
+}  
 
 
+/*! Reset this cHardwareGX to a known state.  Removes all the cProgramids, creates
+a new cProgramid from the germ.
+*/
 void cHardwareGX::Reset()
 {
-  m_global_stack.Clear();
+  for(programid_list::iterator i=m_programids.begin(); i!=m_programids.end(); ++i) {
+    delete *i;
+  }
   
-  // We want to reset to have a single thread.
-  m_threads.Resize(1);
-  
-  // Reset that single thread.
-  m_threads[0].Reset(this, 0);
-  m_thread_id_chart = 1; // Mark only the first thread as taken...
-  m_cur_thread = 0;
-  
+  m_programids.clear();
+  m_programids.push_back(programid_ptr(new cProgramid(organism->GetGenome(), this)));
+  m_current = m_programids.back();
+
   m_mal_active = false;
   m_executedmatchstrings = false;
   
@@ -398,104 +312,131 @@ void cHardwareGX::Reset()
   
 }
 
-void cHardwareGX::cLocalThread::operator=(const cLocalThread& in_thread)
-{
-  m_id = in_thread.m_id;
-  for (int i = 0; i < NUM_REGISTERS; i++) reg[i] = in_thread.reg[i];
-  for (int i = 0; i < NUM_HEADS; i++) heads[i] = in_thread.heads[i];
-  stack = in_thread.stack;
-}
-
-void cHardwareGX::cLocalThread::Reset(cHardwareBase* in_hardware, int in_id)
-{
-  m_id = in_id;
-  
-  for (int i = 0; i < NUM_REGISTERS; i++) reg[i] = 0;
-  for (int i = 0; i < NUM_HEADS; i++) heads[i].Reset(in_hardware);
-  
-  stack.Clear();
-  cur_stack = 0;
-  cur_head = nHardware::HEAD_IP;
-  read_label.Clear();
-  next_label.Clear();
-}
+//void cHardwareGX::cLocalThread::operator=(const cLocalThread& in_thread)
+//{
+//  m_id = in_thread.m_id;
+//  for (int i = 0; i < NUM_REGISTERS; i++) reg[i] = in_thread.reg[i];
+//  for (int i = 0; i < NUM_HEADS; i++) heads[i] = in_thread.heads[i];
+//  stack = in_thread.stack;
+//}
+//
+//void cHardwareGX::cLocalThread::Reset(cHardwareBase* in_hardware, int in_id)
+//{
+//  m_id = in_id;
+//  
+//  for (int i = 0; i < NUM_REGISTERS; i++) reg[i] = 0;
+//  for (int i = 0; i < NUM_HEADS; i++) heads[i].Reset(in_hardware);
+//  
+//  stack.Clear();
+//  cur_stack = 0;
+//  cur_head = nHardware::HEAD_IP;
+//  read_label.Clear();
+//  next_label.Clear();
+//}
 
 
 
 // This function processes the very next command in the genome, and is made
 // to be as optimized as possible.  This is the heart of avida.
-
+/*! In cHardwareGX, SingleProcess is something of a misnomer.  Each time this method
+  is called, each cProgramid executes a single instruction.
+  */
 void cHardwareGX::SingleProcess(cAvidaContext& ctx)
 {
-  // Mark this organism as running...
+  cPhenotype& phenotype = organism->GetPhenotype();
+
   organism->SetRunning(true);
-  
-  cPhenotype & phenotype = organism->GetPhenotype();
   phenotype.IncTimeUsed();
-  phenotype.IncCPUCyclesUsed();
 
-  const int num_threads = GetNumThreads();
-  
-  // If we have threads turned on and we executed each thread in a single
-  // timestep, adjust the number of instructions executed accordingly.
-  const int num_inst_exec = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1) ?
-num_threads : 1;
-  
-  for (int i = 0; i < num_inst_exec; i++) {
-    // Setup the hardware for the next instruction to be executed.
-    ThreadNext();
-    m_advance_ip = true;
-    IP().Adjust();
+  for(programid_list::iterator i=m_programids.begin(); i!=m_programids.end(); ++i) {
+    // Set the currently-executing cProgramid.
+    m_current = *i;
     
-#if BREAKPOINTS
-    if (IP().FlagBreakpoint()) {
-      organism->DoBreakpoint();
-    }
-#endif
-    
-    // Print the status of this CPU at each step...
-    if (m_tracer != NULL) m_tracer->TraceHardware(*this);
-    
-    // Find the instruction to be executed
+    // Find the instruction to be executed.
     const cInstruction& cur_inst = IP().GetInst();
-    
-    // Test if costs have been paid and it is okay to execute this now...
-    bool exec = SingleProcess_PayCosts(ctx, cur_inst);
 
-    // Now execute the instruction...
-    if (exec == true) {
-      // NOTE: This call based on the cur_inst must occur prior to instruction
-      //       execution, because this instruction reference may be invalid after
-      //       certain classes of instructions (namely divide instructions) @DMB
-      const int addl_time_cost = m_inst_set->GetAddlTimeCost(cur_inst);
-
-      // Prob of exec (moved from SingleProcess_PayCosts so that we advance IP after a fail)
-      if ( m_inst_set->GetProbFail(cur_inst) > 0.0 ) 
-      {
-        exec = !( ctx.GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
-      }
-      
-      if (exec == true) SingleProcess_ExecuteInst(ctx, cur_inst);
-      
-      // Some instruction (such as jump) may turn m_advance_ip off.  Usually
-      // we now want to move to the next instruction in the memory.
-      if (m_advance_ip == true) IP().Advance();
-      
-      // Pay the additional death_cost of the instruction now
-      phenotype.IncTimeUsed(addl_time_cost);
-    } // if exec
+    m_advance_ip = true;
+    SingleProcess_ExecuteInst(ctx, cur_inst);
+    if (m_advance_ip == true) {
+      IP().Advance();
+    }
     
-  } // Previous was executed once for each thread...
-  
-  // Kill creatures who have reached their max num of instructions executed
+    // Update phenotype.
+    phenotype.IncCPUCyclesUsed();  
+  }
+
+  // Kill creatures who have reached their max num of instructions executed.
   const int max_executed = organism->GetMaxExecuted();
   if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed)
       || phenotype.GetToDie() == true) {
     organism->Die();
-  }
+  }  
   
   organism->SetRunning(false);
 }
+
+//  const int num_threads = GetNumThreads();
+//  
+//  // If we have threads turned on and we executed each thread in a single
+//  // timestep, adjust the number of instructions executed accordingly.
+//  const int num_inst_exec = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1) ?
+//num_threads : 1;
+//  
+//  for (int i = 0; i < num_inst_exec; i++) {
+//    // Setup the hardware for the next instruction to be executed.
+//    ThreadNext();
+//    m_advance_ip = true;
+//    IP().Adjust();
+//    
+//#if BREAKPOINTS
+//    if (IP().FlagBreakpoint()) {
+//      organism->DoBreakpoint();
+//    }
+//#endif
+//    
+//    // Print the status of this CPU at each step...
+//    if (m_tracer != NULL) m_tracer->TraceHardware(*this);
+//    
+//    // Find the instruction to be executed
+//    const cInstruction& cur_inst = IP().GetInst();
+//    
+//    // Test if costs have been paid and it is okay to execute this now...
+//    bool exec = SingleProcess_PayCosts(ctx, cur_inst);
+//
+//    // Now execute the instruction...
+//    if (exec == true) {
+//      // NOTE: This call based on the cur_inst must occur prior to instruction
+//      //       execution, because this instruction reference may be invalid after
+//      //       certain classes of instructions (namely divide instructions) @DMB
+//      const int addl_time_cost = m_inst_set->GetAddlTimeCost(cur_inst);
+//
+//      // Prob of exec (moved from SingleProcess_PayCosts so that we advance IP after a fail)
+//      if ( m_inst_set->GetProbFail(cur_inst) > 0.0 ) 
+//      {
+//        exec = !( ctx.GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
+//      }
+//      
+//      if (exec == true) SingleProcess_ExecuteInst(ctx, cur_inst);
+//      
+//      // Some instruction (such as jump) may turn m_advance_ip off.  Usually
+//      // we now want to move to the next instruction in the memory.
+//      if (m_advance_ip == true) IP().Advance();
+//      
+//      // Pay the additional death_cost of the instruction now
+//      phenotype.IncTimeUsed(addl_time_cost);
+//    } // if exec
+//    
+//  } // Previous was executed once for each thread...
+//  
+//  // Kill creatures who have reached their max num of instructions executed
+//  const int max_executed = organism->GetMaxExecuted();
+//  if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed)
+//      || phenotype.GetToDie() == true) {
+//    organism->Die();
+//  }
+//  
+//  organism->SetRunning(false);
+//}
 
 
 // This method will test to see if all costs have been paid associated
@@ -581,17 +522,15 @@ void cHardwareGX::ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst)
 bool cHardwareGX::OK()
 {
   bool result = true;
-  
-  if (!m_memory.OK()) result = false;
-  
-  for (int i = 0; i < GetNumThreads(); i++) {
-    if (m_threads[i].stack.OK() == false) result = false;
-    if (m_threads[i].next_label.OK() == false) result = false;
+  for(programid_list::iterator i=m_programids.begin(); i!=m_programids.end() && result; ++i) {
+    result = result && (*i)->m_memory.OK() && (*i)->m_stack.OK() && (*i)->m_nextLabel.OK();
   }
-  
   return result;
 }
 
+
+/*! \todo Revisit.
+*/
 void cHardwareGX::PrintStatus(ostream& fp)
 {
   fp << organism->GetPhenotype().GetCPUCyclesUsed() << " ";
@@ -615,13 +554,16 @@ void cHardwareGX::PrintStatus(ostream& fp)
     << "F-Head:" << GetHead(nHardware::HEAD_FLOW).GetPosition()   << "  "
     << "RL:" << GetReadLabel().AsString() << "   "
     << endl;
-    
-  int number_of_stacks = GetNumStacks();
-  for (int stack_id = 0; stack_id < number_of_stacks; stack_id++) {
-    fp << ((m_threads[m_cur_thread].cur_stack == stack_id) ? '*' : ' ') << " Stack " << stack_id << ":" << setbase(16) << setfill('0');
-    for (int i = 0; i < nHardware::STACK_SIZE; i++) fp << " Ox" << setw(8) << GetStack(i, stack_id, 0);
-    fp << setfill(' ') << setbase(10) << endl;
-  }
+
+// This will have to be revisited soon.
+//  int number_of_stacks = GetNumStacks();
+//  for (int stack_id = 0; stack_id < number_of_stacks; stack_id++) {
+//    fp << ((m_threads[m_cur_thread].cur_stack == stack_id) ? '*' : ' ') << " Stack " 
+//          << stack_id << ":" << setbase(16) << setfill('0');
+//    for (int i = 0; i < nHardware::STACK_SIZE; i++) 
+//      fp << " Ox" << setw(8) << GetStack(i, stack_id, 0);
+//    fp << setfill(' ') << setbase(10) << endl;
+//  }
   
   fp << "  Mem (" << GetMemory().GetSize() << "):"
 		  << "  " << GetMemory().AsString()
@@ -880,44 +822,30 @@ cHeadCPU cHardwareGX::FindLabel(const cCodeLabel & in_label, int direction)
 }
 
 
+/*! Inject a genome fragment into this CPU.  This works a little differently in
+cHardwareGX, in that we don't insert a genome fragment into a preexisting genome,
+but instead ust create a new cProgramid with the genome-to-be-injected.
+*/
 bool cHardwareGX::InjectHost(const cCodeLabel & in_label, const cGenome & injection)
 {
-  // Make sure the genome will be below max size after injection.
-  
-  const int new_size = injection.GetSize() + GetMemory().GetSize();
-  if (new_size > MAX_CREATURE_SIZE) return false; // (inject fails)
-  
-  const int inject_line = FindLabelFull(in_label).GetPosition();
-  
-  // Abort if no compliment is found.
-  if (inject_line == -1) return false; // (inject fails)
-  
-  // Inject the code!
-  InjectCode(injection, inject_line+1);
-  
-  return true; // (inject succeeds!)
+  InjectCode(injection, -1);
+  return true;
 }
 
+
+/*! Inject a genome fragment into this CPU.  This works differently in 
+cHardwareGX -- We just insert a new cProgramid.
+*/
 void cHardwareGX::InjectCode(const cGenome & inject_code, const int line_num)
 {
-  assert(line_num >= 0);
-  assert(line_num <= m_memory.GetSize());
-  assert(m_memory.GetSize() + inject_code.GetSize() < MAX_CREATURE_SIZE);
-  
-  // Inject the new code.
-  const int inject_size = inject_code.GetSize();
-  m_memory.Insert(line_num, inject_code);
+  m_programids.push_back(programid_ptr(new cProgramid(inject_code, this)));
+  programid_ptr injected = m_programids.back();
   
   // Set instruction flags on the injected code
-  for (int i = line_num; i < line_num + inject_size; i++) {
-    m_memory.SetFlagInjected(i);
+  for(int i=0; i<injected->m_memory.GetSize(); ++i) {
+    injected->m_memory.SetFlagInjected(i);
   }
   organism->GetPhenotype().IsModified() = true;
-  
-  // Adjust all of the heads to take into account the new mem size.  
-  for (int i = 0; i < NUM_HEADS; i++) {    
-    if (GetHead(i).GetPosition() > line_num) GetHead(i).Jump(inject_size);
-  }
 }
 
 
@@ -933,11 +861,11 @@ void cHardwareGX::ReadInst(const int in_inst)
 
 void cHardwareGX::AdjustHeads()
 {
-  for (int i = 0; i < GetNumThreads(); i++) {
-    for (int j = 0; j < NUM_HEADS; j++) {
-      m_threads[i].heads[j].Adjust();
-    }
-  }
+//  for (int i = 0; i < GetNumThreads(); i++) {
+//    for (int j = 0; j < NUM_HEADS; j++) {
+//      m_threads[i].heads[j].Adjust();
+//    }
+//  }
 }
 
 
@@ -967,53 +895,53 @@ void cHardwareGX::ReadLabel(int max_size)
 }
 
 
-bool cHardwareGX::ForkThread()
-{
-  const int num_threads = GetNumThreads();
-  if (num_threads == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
-  
-  // Make room for the new thread.
-  m_threads.Resize(num_threads + 1);
-  
-  // Initialize the new thread to the same values as the current one.
-  m_threads[num_threads] = m_threads[m_cur_thread];
-  
-  // Find the first free bit in m_thread_id_chart to determine the new
-  // thread id.
-  int new_id = 0;
-  while ( (m_thread_id_chart >> new_id) & 1 == 1) new_id++;
-  m_threads[num_threads].SetID(new_id);
-  m_thread_id_chart |= (1 << new_id);
-  
-  return true;
-}
-
-
-bool cHardwareGX::KillThread()
-{
-  // Make sure that there is always at least one thread...
-  if (GetNumThreads() == 1) return false;
-  
-  // Note the current thread and set the current back one.
-  const int kill_thread = m_cur_thread;
-  ThreadPrev();
-  
-  // Turn off this bit in the m_thread_id_chart...
-  m_thread_id_chart ^= 1 << m_threads[kill_thread].GetID();
-  
-  // Copy the last thread into the kill position
-  const int last_thread = GetNumThreads() - 1;
-  if (last_thread != kill_thread) {
-    m_threads[kill_thread] = m_threads[last_thread];
-  }
-  
-  // Kill the thread!
-  m_threads.Resize(GetNumThreads() - 1);
-  
-  if (m_cur_thread > kill_thread) m_cur_thread--;
-  
-  return true;
-}
+//bool cHardwareGX::ForkThread()
+//{
+//  const int num_threads = GetNumThreads();
+//  if (num_threads == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
+//  
+//  // Make room for the new thread.
+//  m_threads.Resize(num_threads + 1);
+//  
+//  // Initialize the new thread to the same values as the current one.
+//  m_threads[num_threads] = m_threads[m_cur_thread];
+//  
+//  // Find the first free bit in m_thread_id_chart to determine the new
+//  // thread id.
+//  int new_id = 0;
+//  while ( (m_thread_id_chart >> new_id) & 1 == 1) new_id++;
+//  m_threads[num_threads].SetID(new_id);
+//  m_thread_id_chart |= (1 << new_id);
+//  
+//  return true;
+//}
+//
+//
+//bool cHardwareGX::KillThread()
+//{
+//  // Make sure that there is always at least one thread...
+//  if (GetNumThreads() == 1) return false;
+//  
+//  // Note the current thread and set the current back one.
+//  const int kill_thread = m_cur_thread;
+//  ThreadPrev();
+//  
+//  // Turn off this bit in the m_thread_id_chart...
+//  m_thread_id_chart ^= 1 << m_threads[kill_thread].GetID();
+//  
+//  // Copy the last thread into the kill position
+//  const int last_thread = GetNumThreads() - 1;
+//  if (last_thread != kill_thread) {
+//    m_threads[kill_thread] = m_threads[last_thread];
+//  }
+//  
+//  // Kill the thread!
+//  m_threads.Resize(GetNumThreads() - 1);
+//  
+//  if (m_cur_thread > kill_thread) m_cur_thread--;
+//  
+//  return true;
+//}
 
 ////////////////////////////
 //  Instruction Helpers...
@@ -1173,323 +1101,63 @@ int cHardwareGX::GetCopiedSize(const int parent_size, const int child_size)
 }  
 
 
-bool cHardwareGX::Divide_Main(cAvidaContext& ctx, const int div_point,
-                               const int extra_lines, double mut_multiplier)
-{
-  const int child_size = GetMemory().GetSize() - div_point - extra_lines;
-  
-  // Make sure this divide will produce a viable offspring.
-  const bool viable = Divide_CheckViable(ctx, div_point, child_size);
-  if (viable == false) return false;
-  
-  // Since the divide will now succeed, set up the information to be sent
-  // to the new organism
-  cGenome & child_genome = organism->ChildGenome();
-  child_genome = cGenomeUtil::Crop(m_memory, div_point, div_point+child_size);
-  
-  // Cut off everything in this memory past the divide point.
-  GetMemory().Resize(div_point);
-  
-  // Handle Divide Mutations...
-  Divide_DoMutations(ctx, mut_multiplier);
-  
-  // Many tests will require us to run the offspring through a test CPU;
-  // this is, for example, to see if mutations need to be reverted or if
-  // lineages need to be updated.
-  Divide_TestFitnessMeasures(ctx);
-  
-#if INSTRUCTION_COSTS
-  // reset first time instruction costs
-  for (int i = 0; i < inst_ft_cost.GetSize(); i++) {
-    inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
-  }
-#endif
-  
-  m_mal_active = false;
-  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
-    m_advance_ip = false;
-  }
-  
-  // Activate the child
-  bool parent_alive = organism->ActivateDivide(ctx);
-
-  // Do more work if the parent lives through the birth of the offspring
-  if (parent_alive) {
-    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
-  }
-  
-  return true;
-}
-
-/*
-  Almost the same as Divide_Main, but resamples reverted offspring.
-
-  RESAMPLING ONLY WORKS CORRECTLY WHEN ALL MUTIONS OCCUR ON DIVIDE!!
-
-  AWC - 06/29/06
+/*! Divide works a little differently in cHardwareGX than in other CPUs.  First,
+the cProgramid directly builds its offspring (rather than attaching its genome), so
+we don't need to do any genome splitting.  This also enables the offspring to be
+active during replication.  Second, we have to divvy up the other cProgramid objects 
+between the parent and offspring.  We also have to be careful to make sure that
+we have two genomes!
 */
-bool cHardwareGX::Divide_MainRS(cAvidaContext& ctx, const int div_point,
-                               const int extra_lines, double mut_multiplier)
+bool cHardwareGX::Divide_Main(cAvidaContext& ctx)
 {
-
-  //cStats stats = m_world->GetStats();
-  const int child_size = GetMemory().GetSize() - div_point - extra_lines;
   
-  // Make sure this divide will produce a viable offspring.
-  const bool viable = Divide_CheckViable(ctx, div_point, child_size);
-  if (viable == false) return false;
+//  if(m_current->TriggerReplication()) {
+//  } else {
+//  }
+//  
   
-  // Since the divide will now succeed, set up the information to be sent
-  // to the new organism
-  cGenome & child_genome = organism->ChildGenome();
-  child_genome = cGenomeUtil::Crop(m_memory, div_point, div_point+child_size);
-  
-  // Cut off everything in this memory past the divide point.
-  GetMemory().Resize(div_point);
-  
-  unsigned 
-    totalMutations = 0,
-    mutations = 0;
-    //RScount = 0;
-
-
-  bool
-    fitTest = false;
-
-  // Handle Divide Mutations...
-  /*
-    Do mutations until one of these conditions are satisified:
-     we have resampled X times
-     we have an offspring with the same number of muations as the first offspring
-      that is not reverted
-     the parent is steralized (usually means an implicit mutation)
-  */
-  for(unsigned i = 0; i <= 100; i++){
-    if(i == 0){
-      mutations = totalMutations = Divide_DoMutations(ctx, mut_multiplier);
-    }
-    else{
-      mutations = Divide_DoMutations(ctx, mut_multiplier);
-      m_world->GetStats().IncResamplings();
-    }
-
-    fitTest = Divide_TestFitnessMeasures(ctx);
-    
-    if(!fitTest && mutations >= totalMutations) break;
-
-  } 
-  // think about making this mutations == totalMuations - though this may be too hard...
-  /*
-  if(RScount > 2)
-    cerr << "Resampled " << RScount << endl;
-  */
-  //org could not be resampled beneath the hard cap -- it is then steraalized
-  if(fitTest/*RScount == 11*/) {
-    organism->GetPhenotype().ChildFertile() = false;
-    m_world->GetStats().IncFailedResamplings();
-  }
-
-#if INSTRUCTION_COSTS
-  // reset first time instruction costs
-  for (int i = 0; i < inst_ft_cost.GetSize(); i++) {
-    inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
-  }
-#endif
-  
-  m_mal_active = false;
-  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
-    m_advance_ip = false;
-  }
-  
-  // Activate the child, and do more work if the parent lives through the
-  // birth.
-  bool parent_alive = organism->ActivateDivide(ctx);
-  if (parent_alive) {
-    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
-  }
-  
-  return true;
-}
-
-/*
-  Almost the same as Divide_Main, but only allows for one mutation 
-    on divde and resamples reverted offspring.
-
-  RESAMPLING ONLY WORKS CORRECTLY WHEN ALL MUTIONS OCCUR ON DIVIDE!!
-
-  AWC - 07/28/06
-*/
-bool cHardwareGX::Divide_Main1RS(cAvidaContext& ctx, const int div_point,
-                               const int extra_lines, double mut_multiplier)
-{
-
-  //cStats stats = m_world->GetStats();
-  const int child_size = GetMemory().GetSize() - div_point - extra_lines;
-  
-  // Make sure this divide will produce a viable offspring.
-  const bool viable = Divide_CheckViable(ctx, div_point, child_size);
-  if (viable == false) return false;
-  
-  // Since the divide will now succeed, set up the information to be sent
-  // to the new organism
-  cGenome & child_genome = organism->ChildGenome();
-  child_genome = cGenomeUtil::Crop(m_memory, div_point, div_point+child_size);
-  
-  // Cut off everything in this memory past the divide point.
-  GetMemory().Resize(div_point);
-  
-  unsigned 
-    totalMutations = 0,
-    mutations = 0;
-  //    RScount = 0;
-
-  bool
-    fitTest = false;
-
-
-  // Handle Divide Mutations...
-  /*
-    Do mutations until one of these conditions are satisified:
-     we have resampled X times
-     we have an offspring with the same number of muations as the first offspring
-      that is not reverted
-     the parent is steralized (usually means an implicit mutation)
-  */
-  for(unsigned i = 0; i < 100; i++){
-    if(!i){
-      mutations = totalMutations = Divide_DoMutations(ctx, mut_multiplier,1);
-    }
-    else{
-      mutations = Divide_DoExactMutations(ctx, mut_multiplier,1);
-      m_world->GetStats().IncResamplings();
-    }
-
-    fitTest = Divide_TestFitnessMeasures(ctx);
-    //if(mutations > 1 ) cerr << "Too Many mutations!!!!!!!!!!!!!!!" << endl;
-    if(!fitTest && mutations >= totalMutations) break;
-
-  } 
-  // think about making this mutations == totalMuations - though this may be too hard...
-  /*
-  if(RScount > 2)
-    cerr << "Resampled " << RScount << endl;
-  */
-  //org could not be resampled beneath the hard cap -- it is then steraalized
-  if(fitTest/*RScount == 11*/) {
-    organism->GetPhenotype().ChildFertile() = false;
-    m_world->GetStats().IncFailedResamplings();
-  }
-
-#if INSTRUCTION_COSTS
-  // reset first time instruction costs
-  for (int i = 0; i < inst_ft_cost.GetSize(); i++) {
-    inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
-  }
-#endif
-  
-  m_mal_active = false;
-  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
-    m_advance_ip = false;
-  }
-  
-  // Activate the child, and do more work if the parent lives through the
-  // birth.
-  bool parent_alive = organism->ActivateDivide(ctx);
-  if (parent_alive) {
-    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
-  }
-  
-  return true;
-}
-
-/*
-  Almost the same as Divide_Main, but only allows for one mutation 
-    on divde and resamples reverted offspring.
-
-  RESAMPLING ONLY WORKS CORRECTLY WHEN ALL MUTIONS OCCUR ON DIVIDE!!
-
-  AWC - 07/28/06
-*/
-bool cHardwareGX::Divide_Main2RS(cAvidaContext& ctx, const int div_point,
-                               const int extra_lines, double mut_multiplier)
-{
-
-  //cStats stats = m_world->GetStats();
-  const int child_size = GetMemory().GetSize() - div_point - extra_lines;
-  
-  // Make sure this divide will produce a viable offspring.
-  const bool viable = Divide_CheckViable(ctx, div_point, child_size);
-  if (viable == false) return false;
-  
-  // Since the divide will now succeed, set up the information to be sent
-  // to the new organism
-  cGenome & child_genome = organism->ChildGenome();
-  child_genome = cGenomeUtil::Crop(m_memory, div_point, div_point+child_size);
-  
-  // Cut off everything in this memory past the divide point.
-  GetMemory().Resize(div_point);
-  
-  unsigned 
-    totalMutations = 0,
-    mutations = 0;
-  //    RScount = 0;
-
-  bool
-    fitTest = false;
-
-
-  // Handle Divide Mutations...
-  /*
-    Do mutations until one of these conditions are satisified:
-     we have resampled X times
-     we have an offspring with the same number of muations as the first offspring
-      that is not reverted
-     the parent is steralized (usually means an implicit mutation)
-  */
-  for(unsigned i = 0; i < 100; i++){
-    if(!i){
-      mutations = totalMutations = Divide_DoMutations(ctx, mut_multiplier,2);
-    }
-    else{
-      Divide_DoExactMutations(ctx, mut_multiplier,mutations);
-      m_world->GetStats().IncResamplings();
-    }
-
-    fitTest = Divide_TestFitnessMeasures(ctx);
-    //if(mutations > 1 ) cerr << "Too Many mutations!!!!!!!!!!!!!!!" << endl;
-    if(!fitTest && mutations >= totalMutations) break;
-
-  } 
-  // think about making this mutations == totalMuations - though this may be too hard...
-  /*
-  if(RScount > 2)
-    cerr << "Resampled " << RScount << endl;
-  */
-  //org could not be resampled beneath the hard cap -- it is then steraalized
-  if(fitTest/*RScount == 11*/) {
-    organism->GetPhenotype().ChildFertile() = false;
-    m_world->GetStats().IncFailedResamplings();
-  }
-
-#if INSTRUCTION_COSTS
-  // reset first time instruction costs
-  for (int i = 0; i < inst_ft_cost.GetSize(); i++) {
-    inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
-  }
-#endif
-  
-  m_mal_active = false;
-  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
-    m_advance_ip = false;
-  }
-  
-  // Activate the child, and do more work if the parent lives through the
-  // birth.
-  bool parent_alive = organism->ActivateDivide(ctx);
-  if (parent_alive) {
-    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
-  }
-  
+//  const int child_size = GetMemory().GetSize() - div_point - extra_lines;
+//  
+//  // Make sure this divide will produce a viable offspring.
+//  const bool viable = Divide_CheckViable(ctx, div_point, child_size);
+//  if (viable == false) return false;
+//  
+//  // Since the divide will now succeed, set up the information to be sent
+//  // to the new organism
+//  cGenome & child_genome = organism->ChildGenome();
+//  child_genome = cGenomeUtil::Crop(m_memory, div_point, div_point+child_size);
+//  
+//  // Cut off everything in this memory past the divide point.
+//  GetMemory().Resize(div_point);
+//  
+//  // Handle Divide Mutations...
+//  Divide_DoMutations(ctx, mut_multiplier);
+//  
+//  // Many tests will require us to run the offspring through a test CPU;
+//  // this is, for example, to see if mutations need to be reverted or if
+//  // lineages need to be updated.
+//  Divide_TestFitnessMeasures(ctx);
+//  
+//#if INSTRUCTION_COSTS
+//  // reset first time instruction costs
+//  for (int i = 0; i < inst_ft_cost.GetSize(); i++) {
+//    inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+//  }
+//#endif
+//  
+//  m_mal_active = false;
+//  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
+//    m_advance_ip = false;
+//  }
+//  
+//  // Activate the child
+//  bool parent_alive = organism->ActivateDivide(ctx);
+//
+//  // Do more work if the parent lives through the birth of the offspring
+//  if (parent_alive) {
+//    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
+//  }
+//  
   return true;
 }
 
@@ -1613,54 +1281,6 @@ bool cHardwareGX::Inst_IfANotEqC(cAvidaContext& ctx)     // Execute next if AX !
   return true;
 }
 
-bool cHardwareGX::Inst_JumpF(cAvidaContext& ctx)
-{
-  ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
-  
-  // If there is no label, jump BX steps.
-  if (GetLabel().GetSize() == 0) {
-    GetActiveHead().Jump(GetRegister(REG_BX));
-    return true;
-  }
-  
-  // Otherwise, try to jump to the complement label.
-  const cHeadCPU jump_location(FindLabel(1));
-  if ( jump_location.GetPosition() != -1 ) {
-    GetActiveHead().Set(jump_location);
-    return true;
-  }
-  
-  // If complement label was not found; record an error.
-  organism->Fault(FAULT_LOC_JUMP, FAULT_TYPE_ERROR,
-                  "jump-f: No complement label");
-  return false;
-}
-
-
-bool cHardwareGX::Inst_JumpB(cAvidaContext& ctx)
-{
-  ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
-  
-  // If there is no label, jump BX steps.
-  if (GetLabel().GetSize() == 0) {
-    GetActiveHead().Jump(GetRegister(REG_BX));
-    return true;
-  }
-  
-  // otherwise jump to the complement label.
-  const cHeadCPU jump_location(FindLabel(-1));
-  if ( jump_location.GetPosition() != -1 ) {
-    GetActiveHead().Set(jump_location);
-    return true;
-  }
-  
-  // If complement label was not found; record an error.
-  organism->Fault(FAULT_LOC_JUMP, FAULT_TYPE_ERROR,
-                  "jump-b: No complement label");
-  return false;
-}
 
 bool cHardwareGX::Inst_Call(cAvidaContext& ctx)
 {
@@ -2327,31 +1947,6 @@ bool cHardwareGX::Inst_Allocate(cAvidaContext& ctx)   // Allocate bx more space.
   } else return false;
 }
 
-bool cHardwareGX::Inst_Divide(cAvidaContext& ctx)  
-{ 
-  const int src = REG_AX;
-  return Divide_Main(ctx, GetRegister(src));    
-}
-
-/*
-  Divide with resampling -- Same as regular divide but on reversions will be 
-  resampled after they are reverted.
-
-  AWC 06/29/06
-
- */
-
-bool cHardwareGX::Inst_DivideRS(cAvidaContext& ctx)  
-{ 
-  const int src = REG_AX;
-  return Divide_MainRS(ctx, GetRegister(src));    
-}
-
-
-bool cHardwareGX::Inst_CDivide(cAvidaContext& ctx) 
-{ 
-  return Divide_Main(ctx, GetMemory().GetSize() / 2);   
-}
 
 bool cHardwareGX::Inst_CAlloc(cAvidaContext& ctx)  
 { 
@@ -2370,138 +1965,6 @@ bool cHardwareGX::Inst_MaxAlloc(cAvidaContext& ctx)   // Allocate maximal more
   } else return false;
 }
 
-bool cHardwareGX::Inst_Transposon(cAvidaContext& ctx)
-{
-  ReadLabel();
-  //organism->GetPhenotype().ActivateTransposon(GetLabel());
-  return true;
-}
-
-void cHardwareGX::Divide_DoTransposons(cAvidaContext& ctx)
-{
-  // This only works if 'transposon' is in the current instruction set
-  static bool transposon_in_use = GetInstSet().InstInSet(cStringUtil::Stringf("transposon"));
-  if (!transposon_in_use) return;
-  
-  static cInstruction transposon_inst = GetInstSet().GetInst(cStringUtil::Stringf("transposon"));
-  cCPUMemory& child_genome = organism->ChildGenome();
-
-  // Count the number of transposons that are marked as executed
-  int tr_count = 0;
-  for (int i=0; i < child_genome.GetSize(); i++) 
-  {
-    if (child_genome.FlagExecuted(i) && (child_genome[i] == transposon_inst)) tr_count++;
-  }
-  
-  for (int i=0; i < tr_count; i++) 
-  {
-    if (ctx.GetRandom().P(0.01))
-    {
-      const unsigned int mut_line = ctx.GetRandom().GetUInt(child_genome.GetSize() + 1);
-      child_genome.Insert(mut_line, transposon_inst);
-    }
-  }
-  
-  
-/*
-  const tArray<cCodeLabel> tr = organism->GetPhenotype().GetActiveTransposons();
-  cCPUMemory& child_genome = organism->ChildGenome();
-  
-  for (int i=0; i < tr.GetSize(); i++) 
-  {
-    if (ctx.GetRandom().P(0.1))
-    {
-      const unsigned int mut_line = ctx.GetRandom().GetUInt(child_genome.GetSize() + 1);
-      child_genome.Insert(mut_line, transposon_inst);
-    }
-  }
-*/  
-}
-
-bool cHardwareGX::Inst_Repro(cAvidaContext& ctx)
-{
-  // const bool viable = Divide_CheckViable(ctx, div_point, child_size);
-  // these checks should be done, but currently they make some assumptions
-  // that crash when evaluating this kind of organism -- JEB
-
-  // Setup child
-  cCPUMemory& child_genome = organism->ChildGenome();
-  child_genome = GetMemory();
-  organism->GetPhenotype().SetLinesCopied(GetMemory().GetSize());
-
-  // @JEB - Make sure that an organism has accumulated any required bonus
-  const int bonus_required = m_world->GetConfig().REQUIRED_BONUS.Get();
-  if (organism->GetPhenotype().GetCurBonus() < bonus_required) {
-    return false; //  (divide fails)
-  }
-  
-  int lines_executed = 0;
-  for ( int i = 0; i < GetMemory().GetSize(); i++ ) {
-    if ( GetMemory().FlagExecuted(i)) lines_executed++;
-  }
-  organism->GetPhenotype().SetLinesExecuted(lines_executed);
-  
-  // Do transposon movement and copying before other mutations
-  Divide_DoTransposons(ctx);
-  
-  // Perform Copy Mutations...
-  if (organism->GetCopyMutProb() > 0) { // Skip this if no mutations....
-    for (int i = 0; i < GetMemory().GetSize(); i++) {
-      if (organism->TestCopyMut(ctx)) {
-        child_genome[i] = m_inst_set->GetRandomInst(ctx);
-        //organism->GetPhenotype().IsMutated() = true;
-      }
-    }
-  }
-  Divide_DoMutations(ctx);
-  
-  // Many tests will require us to run the offspring through a test CPU;
-  // this is, for example, to see if mutations need to be reverted or if
-  // lineages need to be updated.
-  Divide_TestFitnessMeasures(ctx);
-  
-#if INSTRUCTION_COSTS
-  // reset first time instruction costs
-  for (int i = 0; i < inst_ft_cost.GetSize(); i++) {
-    inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
-  }
-#endif
-  
-  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) m_advance_ip = false;
-  
-  organism->ActivateDivide(ctx);
-  
-  //Reset the parent
-  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
-
-  return true;
-}
-
-bool cHardwareGX::Inst_TaskPutRepro(cAvidaContext& ctx)
-{
-  // Do normal IO, but don't zero register
-  //Inst_TaskPut(ctx);
-  
-  const int reg_used = FindModifiedRegister(REG_BX);
-  const int value = GetRegister(reg_used);
- // GetRegister(reg_used) = 0;
-  organism->DoOutput(ctx, value);
-  
-  // Immediately attempt a repro
-  return Inst_Repro(ctx);
-}
-
-bool cHardwareGX::Inst_TaskPutResetInputsRepro(cAvidaContext& ctx)
-{
-  // Do normal IO
-  bool return_value = Inst_TaskPutResetInputs(ctx);
-  
-  // Immediately attempt a repro
-  Inst_Repro(ctx);
-
-  // return value of put since successful repro would wipe state anyway
-  return return_value; 
-}
 
 bool cHardwareGX::Inst_SpawnDeme(cAvidaContext& ctx)
 {
@@ -2598,60 +2061,6 @@ bool cHardwareGX::Inst_InjectRand(cAvidaContext& ctx)
   return true;
 }
 
-// The inject instruction can be used instead of a divide command, paired
-// with an allocate.  Note that for an inject to work, one needs to have a
-// broad range for sizes allowed to be allocated.
-//
-// This command will cut out from read-head to write-head.
-// It will then look at the template that follows the command and inject it
-// into the complement template found in a neighboring organism.
-
-bool cHardwareGX::Inst_InjectThread(cAvidaContext& ctx)
-{
-  AdjustHeads();
-  const int start_pos = GetHead(nHardware::HEAD_READ).GetPosition();
-  const int end_pos = GetHead(nHardware::HEAD_WRITE).GetPosition();
-  const int inject_size = end_pos - start_pos;
-  
-  // Make sure the creature will still be above the minimum size,
-  if (inject_size <= 0) {
-    organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: no code to inject");
-    return false; // (inject fails)
-  }
-  if (start_pos < MIN_CREATURE_SIZE) {
-    organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: new size too small");
-    return false; // (inject fails)
-  }
-  
-  // Since its legal to cut out the injected piece, do so.
-  cGenome inject_code( cGenomeUtil::Crop(GetMemory(), start_pos, end_pos) );
-  GetMemory().Remove(start_pos, inject_size);
-  
-  // If we don't have a host, stop here.
-  cOrganism * host_organism = organism->GetNeighbor();
-  if (host_organism == NULL) return false;
-  
-  // Scan for the label to match...
-  ReadLabel();
-  
-  // If there is no label, abort.
-  if (GetLabel().GetSize() == 0) {
-    organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: label required");
-    return false; // (inject fails)
-  }
-  
-  // Search for the label in the host...
-  GetLabel().Rotate(1, NUM_NOPS);
-  
-  if (host_organism->GetHardware().InjectHost(GetLabel(), inject_code)) {
-    if (ForkThread()) organism->GetPhenotype().IsMultiThread() = true;
-  }
-  
-  // Set the relevent flags.
-  organism->GetPhenotype().IsModifier() = true;
-  
-  return true;
-}
 
 bool cHardwareGX::Inst_TaskGet(cAvidaContext& ctx)
 {
@@ -3196,38 +2605,15 @@ bool cHardwareGX::Inst_ZeroEnergyUsed(cAvidaContext& ctx)
   return true;  
 }
 
-// Multi-threading.
-
-bool cHardwareGX::Inst_ForkThread(cAvidaContext& ctx)
-{
-  IP().Advance();
-  if (!ForkThread()) organism->Fault(FAULT_LOC_THREAD_FORK, FAULT_TYPE_FORK_TH);
-  return true;
-}
-
-bool cHardwareGX::Inst_KillThread(cAvidaContext& ctx)
-{
-  if (!KillThread()) organism->Fault(FAULT_LOC_THREAD_KILL, FAULT_TYPE_KILL_TH);
-  else m_advance_ip = false;
-  return true;
-}
-
-bool cHardwareGX::Inst_ThreadID(cAvidaContext& ctx)
-{
-  const int reg_used = FindModifiedRegister(REG_BX);
-  GetRegister(reg_used) = GetCurThreadID();
-  return true;
-}
-
 
 // Head-based instructions
 
-bool cHardwareGX::Inst_SetHead(cAvidaContext& ctx)
-{
-  const int head_used = FindModifiedHead(nHardware::HEAD_IP);
-  m_threads[m_cur_thread].cur_head = static_cast<unsigned char>(head_used);
-  return true;
-}
+//bool cHardwareGX::Inst_SetHead(cAvidaContext& ctx)
+//{
+//  const int head_used = FindModifiedHead(nHardware::HEAD_IP);
+//  m_threads[m_cur_thread].cur_head = static_cast<unsigned char>(head_used);
+//  return true;
+//}
 
 bool cHardwareGX::Inst_AdvanceHead(cAvidaContext& ctx)
 {
@@ -3283,135 +2669,12 @@ bool cHardwareGX::Inst_IfLabel2(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareGX::Inst_HeadDivideMut(cAvidaContext& ctx, double mut_multiplier)
-{
-  AdjustHeads();
-  const int divide_pos = GetHead(nHardware::HEAD_READ).GetPosition();
-  int child_end =  GetHead(nHardware::HEAD_WRITE).GetPosition();
-  if (child_end == 0) child_end = GetMemory().GetSize();
-  const int extra_lines = GetMemory().GetSize() - child_end;
-  bool ret_val = Divide_Main(ctx, divide_pos, extra_lines, mut_multiplier);
-  // Re-adjust heads.
-  AdjustHeads();
-  return ret_val; 
-}
 
 bool cHardwareGX::Inst_HeadDivide(cAvidaContext& ctx)
 {
-  return Inst_HeadDivideMut(ctx, 1);
-  
+  return Divide_Main(ctx);
 }
 
-/*
-  Resample Divide -- AWC 06/29/06
-*/
-
-bool cHardwareGX::Inst_HeadDivideRS(cAvidaContext& ctx)
-{
-  AdjustHeads();
-  const int divide_pos = GetHead(nHardware::HEAD_READ).GetPosition();
-  int child_end =  GetHead(nHardware::HEAD_WRITE).GetPosition();
-  if (child_end == 0) child_end = GetMemory().GetSize();
-  const int extra_lines = GetMemory().GetSize() - child_end;
-  bool ret_val = Divide_MainRS(ctx, divide_pos, extra_lines, 1);
-  // Re-adjust heads.
-  AdjustHeads();
-  return ret_val; 
-}
-
-/*
-  Resample Divide -- single mut on divide-- AWC 07/28/06
-*/
-
-bool cHardwareGX::Inst_HeadDivide1RS(cAvidaContext& ctx)
-{
-  AdjustHeads();
-  const int divide_pos = GetHead(nHardware::HEAD_READ).GetPosition();
-  int child_end =  GetHead(nHardware::HEAD_WRITE).GetPosition();
-  if (child_end == 0) child_end = GetMemory().GetSize();
-  const int extra_lines = GetMemory().GetSize() - child_end;
-  bool ret_val = Divide_Main1RS(ctx, divide_pos, extra_lines, 1);
-  // Re-adjust heads.
-  AdjustHeads();
-  return ret_val; 
-}
-
-/*
-  Resample Divide -- double mut on divide-- AWC 08/29/06
-*/
-
-bool cHardwareGX::Inst_HeadDivide2RS(cAvidaContext& ctx)
-{
-  AdjustHeads();
-  const int divide_pos = GetHead(nHardware::HEAD_READ).GetPosition();
-  int child_end =  GetHead(nHardware::HEAD_WRITE).GetPosition();
-  if (child_end == 0) child_end = GetMemory().GetSize();
-  const int extra_lines = GetMemory().GetSize() - child_end;
-  bool ret_val = Divide_Main2RS(ctx, divide_pos, extra_lines, 1);
-  // Re-adjust heads.
-  AdjustHeads();
-  return ret_val; 
-}
-
-
-bool cHardwareGX::Inst_HeadDivideSex(cAvidaContext& ctx)  
-{ 
-  organism->GetPhenotype().SetDivideSex(true);
-  organism->GetPhenotype().SetCrossNum(1);
-  return Inst_HeadDivide(ctx); 
-}
-
-bool cHardwareGX::Inst_HeadDivideAsex(cAvidaContext& ctx)  
-{ 
-  organism->GetPhenotype().SetDivideSex(false);
-  organism->GetPhenotype().SetCrossNum(0);
-  return Inst_HeadDivide(ctx); 
-}
-
-bool cHardwareGX::Inst_HeadDivideAsexWait(cAvidaContext& ctx)  
-{ 
-  organism->GetPhenotype().SetDivideSex(true);
-  organism->GetPhenotype().SetCrossNum(0);
-  return Inst_HeadDivide(ctx); 
-}
-
-bool cHardwareGX::Inst_HeadDivideMateSelect(cAvidaContext& ctx)  
-{ 
-  // Take the label that follows this divide and use it as the ID for which
-  // other organisms this one is willing to mate with.
-  ReadLabel();
-  organism->GetPhenotype().SetMateSelectID( GetLabel().AsInt(NUM_NOPS) );
-  
-  // Proceed as normal with the rest of mate selection.
-  organism->GetPhenotype().SetDivideSex(true);
-  organism->GetPhenotype().SetCrossNum(1);
-  return Inst_HeadDivide(ctx); 
-}
-
-bool cHardwareGX::Inst_HeadDivide1(cAvidaContext& ctx)  { return Inst_HeadDivideMut(ctx, 1); }
-bool cHardwareGX::Inst_HeadDivide2(cAvidaContext& ctx)  { return Inst_HeadDivideMut(ctx, 2); }
-bool cHardwareGX::Inst_HeadDivide3(cAvidaContext& ctx)  { return Inst_HeadDivideMut(ctx, 3); }
-bool cHardwareGX::Inst_HeadDivide4(cAvidaContext& ctx)  { return Inst_HeadDivideMut(ctx, 4); }
-bool cHardwareGX::Inst_HeadDivide5(cAvidaContext& ctx)  { return Inst_HeadDivideMut(ctx, 5); }
-bool cHardwareGX::Inst_HeadDivide6(cAvidaContext& ctx)  { return Inst_HeadDivideMut(ctx, 6); }
-bool cHardwareGX::Inst_HeadDivide7(cAvidaContext& ctx)  { return Inst_HeadDivideMut(ctx, 7); }
-bool cHardwareGX::Inst_HeadDivide8(cAvidaContext& ctx)  { return Inst_HeadDivideMut(ctx, 8); }
-bool cHardwareGX::Inst_HeadDivide9(cAvidaContext& ctx)  { return Inst_HeadDivideMut(ctx, 9); }
-bool cHardwareGX::Inst_HeadDivide10(cAvidaContext& ctx)  { return Inst_HeadDivideMut(ctx, 10); }
-bool cHardwareGX::Inst_HeadDivide16(cAvidaContext& ctx)  { return Inst_HeadDivideMut(ctx, 16); }
-bool cHardwareGX::Inst_HeadDivide32(cAvidaContext& ctx)  { return Inst_HeadDivideMut(ctx, 32); }
-bool cHardwareGX::Inst_HeadDivide50(cAvidaContext& ctx)  { return Inst_HeadDivideMut(ctx, 50); }
-bool cHardwareGX::Inst_HeadDivide100(cAvidaContext& ctx)  { return Inst_HeadDivideMut(ctx, 100); }
-bool cHardwareGX::Inst_HeadDivide500(cAvidaContext& ctx)  { return Inst_HeadDivideMut(ctx, 500); }
-bool cHardwareGX::Inst_HeadDivide1000(cAvidaContext& ctx)  { return Inst_HeadDivideMut(ctx, 1000); }
-bool cHardwareGX::Inst_HeadDivide5000(cAvidaContext& ctx)  { return Inst_HeadDivideMut(ctx, 5000); }
-bool cHardwareGX::Inst_HeadDivide10000(cAvidaContext& ctx)  { return Inst_HeadDivideMut(ctx, 10000); }
-bool cHardwareGX::Inst_HeadDivide50000(cAvidaContext& ctx)  { return Inst_HeadDivideMut(ctx, 50000); }
-bool cHardwareGX::Inst_HeadDivide0_5(cAvidaContext& ctx)  { return Inst_HeadDivideMut(ctx, 0.5); }
-bool cHardwareGX::Inst_HeadDivide0_1(cAvidaContext& ctx)  { return Inst_HeadDivideMut(ctx, 0.1); }
-bool cHardwareGX::Inst_HeadDivide0_05(cAvidaContext& ctx)  { return Inst_HeadDivideMut(ctx, 0.05); }
-bool cHardwareGX::Inst_HeadDivide0_01(cAvidaContext& ctx)  { return Inst_HeadDivideMut(ctx, 0.01); }
-bool cHardwareGX::Inst_HeadDivide0_001(cAvidaContext& ctx)  { return Inst_HeadDivideMut(ctx, 0.001); }
 
 bool cHardwareGX::Inst_HeadRead(cAvidaContext& ctx)
 {
@@ -3554,3 +2817,96 @@ bool cHardwareGX::Inst_Skip(cAvidaContext& ctx)
   return true;
 }
 
+
+/*! This instruction reads the trailing label and tries to match it against other 
+programids in the CPU.  Note: labels that follow a match instruction in the 
+programid to be matched against are *ignored*.  Note that match should be a
+'free' instruction, that is, it should not cost anything to execute.
+
+\todo Determine if Inst_Match should wait for a match, as opposed to letting the
+cProgramid continue.  This seems like a good idea...
+
+\todo Have to determine the correct placement of the heads on Bind.  If we're not
+careful, we'll allow two RNAPs to bind to each other and start copying each other's
+genome.  Probably a bad idea.
+*/
+bool cHardwareGX::Inst_Match(cAvidaContext& ctx) {
+  // Get the label that we're trying to match.
+  ReadLabel();
+
+  // Now, select another programid to match against.  To start with, let's 
+  // look at all our programids and pick the first one that matches.  This will
+  // need to be revisited.
+  for(programid_list::iterator i=m_programids.begin(); i!=m_programids.end(); ++i) {
+    std::pair<bool, cMatchSite> match = (*i)->Matches(GetLabel());
+    
+    if(match.first == true) {
+      // Ok, it matched.  Bind the current programid to the matched site.
+      // For right now, we only support read-head binding.
+      m_current->Bind(nHardware::HEAD_READ, match.second);
+      
+      // And we're done.
+      return true;
+    }
+  }
+  
+  // If nothing matched, we're done; but the instruction didn't really work.
+  return false;
+}
+
+
+/*! This instruction runs asynchronously compared to the rest of the cProgramid,
+and it is exectued ONLY when a cProgramid disassociates from another.  cProgramids
+are not required to have this instruction in their genome.
+
+IF a cProgramid disassociates AND it has this instruction, then its HEAD_IP is
+updated to point to this instruction.
+
+\todo What if a cProgramid has multiple Inst_OnDisassociates?
+*/
+bool cHardwareGX::Inst_OnDisassociate(cAvidaContext& ctx) {
+  return false;
+}
+
+
+/*! Construct this cProgramid, and initialize hardware resources.
+*/
+cHardwareGX::cProgramid::cProgramid(const cGenome& genome, cHardwareBase* cpu) 
+: m_offspring(0)
+, m_memory(genome) {
+  for(int i=0; i<NUM_HEADS; ++i) {
+    m_heads[i].Reset(cpu);
+  }
+}
+
+
+/*! This method attempts to match this cProgramid with the passed-in label.  If the
+match is succesful, it returns true and a cMatchSite object that may be used to bind
+to the programid.  If the match is unsuccessful, it return false and the cMatchSite
+object points to null.
+
+A "successful" match is one where this cProgramid has a series of NOPs that are similar
+to the the passed-in label.  A number of configuration options (will eventually)
+control how precisely the NOPs must be related (e.g., exact, all-but-one, etc.).
+*/
+std::pair<bool, cHardwareGX::cMatchSite> cHardwareGX::cProgramid::Matches(const cCodeLabel& label) {
+  return std::make_pair(false, cMatchSite());
+}
+
+
+/*! Bind attaches parts of this cProgramid to the cProgramid specified in the
+passed-in cMatchSite.  Currently, we only support binding the read head to a
+location in the genome of the other cProgramid, but this will be extended later.
+*/
+void cHardwareGX::cProgramid::Bind(nHardware::tHeads head, cMatchSite& site) {
+}
+
+
+/*! Disassociate is called when this cProgramids's read head traverses over the
+complement of the label that was used to Bind this cProgramid to another.  When
+called, Disassociate removes this cProgramid's read head from the bound cProgramid,
+searches for an Inst_OnDisassociate in its own genome, and, if found, updates this
+cProgramid's IP to point to it.
+*/
+void cHardwareGX::cProgramid::Disassociate() {
+}

@@ -2,6 +2,25 @@
  *  cHardwareGX.h
  *  Avida
  *
+ * cHardwareGX enables gene expression as follows:
+ * 1) Unlike cHardware{CPU,SMT,TransSMT}, the genome is not directly 
+ *    executed by this organism.  Instead, cHardwareGX enables portions of the
+ *    genome to be transcribed into "programids," which are able to execute
+ *    independently.
+ * 2) The interaction between programids within cHardwareGX is based on
+ *    pattern-matching different genome fragments.  Each programid is able to
+ *    specify a "match" that will be probabilistically compared against other
+ *    programids.  When (if) a match is found, those two programids "bind"
+ *    together.  Different actions may be taken on bind, depending on the 
+ *    type of match performed.
+ *
+ * \todo cHardwareGX is really not a new CPU architecture, but rather a way for
+ *  CPUs to interact.  It's much easier, however, to start off by implementing a 
+ *  new CPU, so that's what we're doing.  Eventually we'll need to revisit this.
+ *
+ * \todo There should be better ways for promoter regions to work.  Right now,
+ *  we stop at the first one encountered.
+ *
  *  Copyright 1999-2007 Michigan State University. All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or
@@ -24,6 +43,7 @@
 
 #include <iomanip>
 #include <vector>
+#include <utility>
 #include "cCodeLabel.h"
 #include "cHeadCPU.h"
 #include "cCPUMemory.h"
@@ -51,57 +71,71 @@ class cOrganism;
 class cHardwareGX : public cHardwareBase
 {
 public:
-  typedef bool (cHardwareGX::*tMethod)(cAvidaContext& ctx);
+  typedef bool (cHardwareGX::*tMethod)(cAvidaContext& ctx); //!< Instruction type.
 
-protected:
-  // --------  Structure Constants  --------
-  static const int NUM_REGISTERS = 3;
+  static const int NUM_REGISTERS = 3; //!< Number of registers each cProgramid has.
+  //! Number of heads each cProgramid has.
   static const int NUM_HEADS = nHardware::NUM_HEADS >= NUM_REGISTERS ? nHardware::NUM_HEADS : NUM_REGISTERS;
-  enum tRegisters { REG_AX = 0, REG_BX, REG_CX, REG_DX, REG_EX, REG_FX };
-  static const int NUM_NOPS = 3;
+  static const int NUM_NOPS = 3; //!< Number of NOPS that cHardwareGX supports.
+
+  //! Enums for the different supported registers.
+  enum tRegisters { REG_AX=0, REG_BX, REG_CX };
   
-  // --------  Data Structures  --------
-  struct cLocalThread
-  {
-  private:
-    int m_id;
-    
-  public:
-    int reg[NUM_REGISTERS];
-    cHeadCPU heads[NUM_HEADS];
-    cCPUStack stack;
-    unsigned char cur_stack;              // 0 = local stack, 1 = global stack.
-    unsigned char cur_head;
-    
-    cCodeLabel read_label;
-    cCodeLabel next_label;
-    
-    
-    cLocalThread(cHardwareBase* in_hardware = NULL, int in_id = -1) { Reset(in_hardware, in_id); }
-    ~cLocalThread() { ; }
-    
-    void operator=(const cLocalThread& in_thread);
-    
-    void Reset(cHardwareBase* in_hardware, int in_id);
-    int GetID() const { return m_id; }
-    void SetID(int in_id) { m_id = in_id; }
+  struct cProgramid; // pre-declaration.
+  typedef cProgramid* programid_ptr; //!< It would be nice to change this to boost::shared_ptr.
+  typedef std::vector<programid_ptr> programid_list; //!< Type for the list of cProgramids.
+  
+  //! cMatchSite holds a couple useful pointers for cProgramid::Match, Bind.  
+  struct cMatchSite {
+    cMatchSite() : m_programid(0), m_site(0) { }
+    cProgramid* m_programid; //!< The programid matched against; 0 if not matched.
+    cInstruction* m_site; //!< Location in the cProgramid where a match occurred; 0 if not matched.
+    cCodeLabel m_label; //!< The label that was matched against.
   };
-
+  
+  /*! cProgramid is the "heart" of the gene expression hardware.  It encapsulates
+    the genome fragment that is used by both active and passive elements within
+    this organism, and enables these fragments to match against, and bind to, each
+    other depending on their particular instruction sequence.
     
-  // --------  Static Variables  --------
-  static tInstLib<tMethod>* s_inst_slib;
-  static tInstLib<tMethod>* initInstLib(void);
+    It is similar in spirit to a thread, but has certain operational characteristics
+    that make it unique (e.g., matching, disassociation, and a self-contained genome
+    fragment).
+    
+    \todo Need to rework cHeadCPU to not need a pointer to cHardwareBase.
+    */
+  struct cProgramid {
+    //! Constructs a cProgramid from a genome and CPU.
+    cProgramid(const cGenome& genome, cHardwareBase* cpu);
+    //! Returns whether and where this cProgramid matches the passed-in label.
+    std::pair<bool, cMatchSite> Matches(const cCodeLabel& label);
+    //! Binds one of this cProgramid's heads to the passed-in match site.
+    void Bind(nHardware::tHeads head, cMatchSite& site);
+    //! Called when this cProgramid "falls off" the cProgramid it is bound to.
+    void Disassociate();
+    
+    programid_ptr m_offspring; //!< An offspring of this cProgramid; may be null.
+    cCodeLabel m_terminator; //!< The label that this cProgramid must traverse to disassociate.
+    cCodeLabel m_readLabel; //!< ?
+    cCodeLabel m_nextLabel; //!< ?
+    cCPUMemory m_memory; //!< This cProgramid's genome fragment.
+    cCPUStack m_stack; //!< This cProgramid's stack (no global stack).
+    cHeadCPU m_heads[NUM_HEADS]; //!< This cProgramid's heads.
+    int m_regs[NUM_REGISTERS]; //!< This cProgramid's registers.
+  };
+  
 
+  
+protected:
+  static tInstLib<tMethod>* initInstLib(void); //!< Initialize the instruction library.
+  static tInstLib<tMethod>* s_inst_slib; //!< Instruction library (method pointers for all instructions).
 
+  programid_list m_programids; //!< The list of cProgramids.
+  programid_ptr m_current; //!< The currently-executing cProgramid.
+
+  
   // --------  Member Variables  --------
   const tMethod* m_functions;
-
-  cCPUMemory m_memory;          // Memory...
-  cCPUStack m_global_stack;     // A stack that all threads share.
-
-  tArray<cLocalThread> m_threads;
-  int m_thread_id_chart;
-  int m_cur_thread;
 
   // Flags...
   bool m_mal_active;         // Has an allocate occured since last divide?
@@ -119,35 +153,26 @@ protected:
   bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst);
   
   // --------  Stack Manipulation...  --------
-  inline void StackPush(int value);
-  inline int StackPop();
-  inline void StackFlip();
-  inline void StackClear();
-  inline void SwitchStack();
-  
+  inline void StackPush(int value) { m_current->m_stack.Push(value); }
+  inline int StackPop() { return m_current->m_stack.Pop(); }
+  inline void StackFlip() { m_current->m_stack.Flip(); }
+  inline void StackClear() { m_current->m_stack.Clear(); }
+  inline void SwitchStack() { }
   
   // --------  Head Manipulation (including IP)  --------
-  cHeadCPU& GetActiveHead() { return m_threads[m_cur_thread].heads[m_threads[m_cur_thread].cur_head]; }
   void AdjustHeads();
   
-  
   // --------  Label Manipulation  -------
-  const cCodeLabel& GetLabel() const { return m_threads[m_cur_thread].next_label; }
-  cCodeLabel& GetLabel() { return m_threads[m_cur_thread].next_label; }
+  const cCodeLabel& GetLabel() const { return m_current->m_nextLabel; }
+  cCodeLabel& GetLabel() { return m_current->m_nextLabel; }
   void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
   cHeadCPU FindLabel(int direction);
   int FindLabel_Forward(const cCodeLabel & search_label, const cGenome& search_genome, int pos);
   int FindLabel_Backward(const cCodeLabel & search_label, const cGenome& search_genome, int pos);
   cHeadCPU FindLabel(const cCodeLabel & in_label, int direction);
-  const cCodeLabel& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
-  cCodeLabel& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
-  
-  
-  // --------  Thread Manipulation  -------
-  bool ForkThread(); // Adds a new thread based off of m_cur_thread.
-  bool KillThread(); // Kill the current thread!
-  
-  
+  const cCodeLabel& GetReadLabel() const { return m_current->m_readLabel; }
+  cCodeLabel& GetReadLabel() { return m_current->m_readLabel; }
+
   // ---------- Instruction Helpers -----------
   int FindModifiedRegister(int default_register);
   int FindModifiedNextRegister(int default_register);
@@ -161,28 +186,16 @@ protected:
   bool Allocate_Main(cAvidaContext& ctx, const int allocated_size);
   
   int GetCopiedSize(const int parent_size, const int child_size);
-  
-  bool Divide_Main(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1);
-  bool Divide_MainRS(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1); //AWC 06/29/06
-  bool Divide_Main1RS(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1); //AWC 07/28/06
-  bool Divide_Main2RS(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1); //AWC 07/28/06
-
-  void Divide_DoTransposons(cAvidaContext& ctx);
-  
+  bool Divide_Main(cAvidaContext& ctx);
   void InjectCode(const cGenome& injection, const int line_num);
-  
   bool HeadCopy_ErrorCorrect(cAvidaContext& ctx, double reduction);
-  bool Inst_HeadDivideMut(cAvidaContext& ctx, double mut_multiplier = 1);
-  
   void ReadInst(const int in_inst);
 
-  
-  cHardwareGX& operator=(const cHardwareGX&); // @not_implemented
-
 public:
+  //! Main constructor for cHardwareGX; called from cHardwareManager for every(?) organism.
   cHardwareGX(cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
-  explicit cHardwareGX(const cHardwareGX&);
-  ~cHardwareGX() { ; }
+  virtual ~cHardwareGX(); //!< Destructor; removes all cProgramids.
+    
   static tInstLib<tMethod>* GetInstLib() { return s_inst_slib; }
   static cString GetDefaultInstFilename() { return "instset-gx.cfg"; }
 
@@ -198,60 +211,54 @@ public:
 
 
   // --------  Stack Manipulation...  --------
-  inline int GetStack(int depth=0, int stack_id=-1, int in_thread=-1) const;
+  inline int GetStack(int depth=0, int stack_id=-1, int in_thread=-1) const { return m_current->m_stack.Get(depth); }
   inline int GetNumStacks() const { return 2; }
-
-
+  
   // --------  Head Manipulation (including IP)  --------
-  const cHeadCPU& GetHead(int head_id) const { return m_threads[m_cur_thread].heads[head_id]; }
-  cHeadCPU& GetHead(int head_id) { return m_threads[m_cur_thread].heads[head_id];}
-  const cHeadCPU& GetHead(int head_id, int thread) const { return m_threads[thread].heads[head_id]; }
-  cHeadCPU& GetHead(int head_id, int thread) { return m_threads[thread].heads[head_id];}
+  const cHeadCPU& GetHead(int head_id) const { return m_current->m_heads[head_id]; }
+  cHeadCPU& GetHead(int head_id) { return m_current->m_heads[head_id];}
+  const cHeadCPU& GetHead(int head_id, int thread) const { return m_current->m_heads[head_id]; }
+  cHeadCPU& GetHead(int head_id, int thread) { return m_current->m_heads[head_id];}
   int GetNumHeads() const { return NUM_HEADS; }
   
-  const cHeadCPU& IP() const { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
-  cHeadCPU& IP() { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
-  const cHeadCPU& IP(int thread) const { return m_threads[thread].heads[nHardware::HEAD_IP]; }
-  cHeadCPU& IP(int thread) { return m_threads[thread].heads[nHardware::HEAD_IP]; }
+  const cHeadCPU& IP() const { return m_current->m_heads[nHardware::HEAD_IP]; }
+  cHeadCPU& IP() { return m_current->m_heads[nHardware::HEAD_IP]; }
+  const cHeadCPU& IP(int thread) const { return m_current->m_heads[nHardware::HEAD_IP]; }
+  cHeadCPU& IP(int thread) { return m_current->m_heads[nHardware::HEAD_IP]; }
   
   
   // --------  Memory Manipulation  --------
-  const cCPUMemory& GetMemory() const { return m_memory; }
-  cCPUMemory& GetMemory() { return m_memory; }
-  const cCPUMemory& GetMemory(int value) const { return m_memory; }
-  cCPUMemory& GetMemory(int value) { return m_memory; }
+  const cCPUMemory& GetMemory() const { return m_current->m_memory; }
+  cCPUMemory& GetMemory() { return m_current->m_memory; }
+  const cCPUMemory& GetMemory(int value) const { return m_current->m_memory; }
+  cCPUMemory& GetMemory(int value) { return m_current->m_memory; }
   int GetNumMemSpaces() const { return 1; }
   
   
   // --------  Register Manipulation  --------
-  const int GetRegister(int reg_id) const { return m_threads[m_cur_thread].reg[reg_id]; }
-  int& GetRegister(int reg_id) { return m_threads[m_cur_thread].reg[reg_id]; }
-  int GetNumRegisters() const { return NUM_REGISTERS; }
-
+  const int GetRegister(int reg_id) const { return m_current->m_regs[reg_id]; }
+  int& GetRegister(int reg_id) { return m_current->m_regs[reg_id]; }
+  int GetNumRegisters() const { return NUM_REGISTERS; }  
   
-  // --------  Thread Manipulation  --------
-  bool ThreadSelect(const int thread_num);
-  bool ThreadSelect(const cCodeLabel& in_label) { return false; } // Labeled threads not supported
-  inline void ThreadPrev(); // Shift the current thread in use.
-  inline void ThreadNext();
-  cInjectGenotype* ThreadGetOwner() { return NULL; } // @DMB - cHardwareGX does not really implement cInjectGenotype yet
-  void ThreadSetOwner(cInjectGenotype* in_genotype) { return; }
+  // --------  Thread Manipuluation --------
+  /* cHardwareGX does not support threads (at least, not as in other CPUs). */
+  virtual bool ThreadSelect(const int thread_id) { return false; }
+  virtual bool ThreadSelect(const cCodeLabel& in_label) { return false; }
+  virtual void ThreadPrev() { }
+  virtual void ThreadNext() { }
+  virtual cInjectGenotype* ThreadGetOwner() { return 0; }
+  virtual void ThreadSetOwner(cInjectGenotype* in_genotype) { }
   
-  int GetNumThreads() const     { return m_threads.GetSize(); }
-  int GetCurThread() const      { return m_cur_thread; }
-  int GetCurThreadID() const    { return m_threads[m_cur_thread].GetID(); }
+  virtual int GetNumThreads() const { return -1; }
+  virtual int GetCurThread() const { return -1; }
+  virtual int GetCurThreadID() const { return -1; }
   
-  
-  // --------  Parasite Stuff  --------
   bool InjectHost(const cCodeLabel& in_label, const cGenome& injection);
-
-  
-  // Non-Standard Methods
-  
-  int GetActiveStack() const { return m_threads[m_cur_thread].cur_stack; }
-  bool GetMalActive() const   { return m_mal_active; }
   
 private:
+  cHardwareGX& operator=(const cHardwareGX&); //!< Not implemented.
+  cHardwareGX(const cHardwareGX&); //!< Not implemented.
+  
   // ---------- Instruction Library -----------
 
   // Flow Control
@@ -272,8 +279,8 @@ private:
   bool Inst_IfBNotEqC(cAvidaContext& ctx);
   bool Inst_IfANotEqC(cAvidaContext& ctx);
 
-  bool Inst_JumpF(cAvidaContext& ctx);
-  bool Inst_JumpB(cAvidaContext& ctx);
+//  bool Inst_JumpF(cAvidaContext& ctx);
+//  bool Inst_JumpB(cAvidaContext& ctx);
   bool Inst_Call(cAvidaContext& ctx);
   bool Inst_Return(cAvidaContext& ctx);
   
@@ -357,18 +364,10 @@ private:
   bool Inst_Compare(cAvidaContext& ctx);
   bool Inst_IfNCpy(cAvidaContext& ctx);
   bool Inst_Allocate(cAvidaContext& ctx);
-  bool Inst_Divide(cAvidaContext& ctx);
-  bool Inst_DivideRS(cAvidaContext& ctx); // AWC 06/29/06
   bool Inst_CAlloc(cAvidaContext& ctx);
-  bool Inst_CDivide(cAvidaContext& ctx);
   bool Inst_MaxAlloc(cAvidaContext& ctx);
   bool Inst_Inject(cAvidaContext& ctx);
   bool Inst_InjectRand(cAvidaContext& ctx);
-  bool Inst_InjectThread(cAvidaContext& ctx);
-  bool Inst_Transposon(cAvidaContext& ctx);
-  bool Inst_Repro(cAvidaContext& ctx);
-  bool Inst_TaskPutRepro(cAvidaContext& ctx);
-  bool Inst_TaskPutResetInputsRepro(cAvidaContext& ctx);
 
   bool Inst_SpawnDeme(cAvidaContext& ctx);
   bool Inst_Kazi(cAvidaContext& ctx);
@@ -405,25 +404,15 @@ private:
   bool Inst_MemSize(cAvidaContext& ctx);
 
   // Environment
-
   bool Inst_RotateL(cAvidaContext& ctx);
   bool Inst_RotateR(cAvidaContext& ctx);
   bool Inst_SetCopyMut(cAvidaContext& ctx);
   bool Inst_ModCopyMut(cAvidaContext& ctx);
 
   // Energy use
-  
   bool Inst_ZeroEnergyUsed(cAvidaContext& ctx); 
 
-  // Multi-threading...
-
-  bool Inst_ForkThread(cAvidaContext& ctx);
-  bool Inst_KillThread(cAvidaContext& ctx);
-  bool Inst_ThreadID(cAvidaContext& ctx);
-
   // Head-based instructions...
-
-  bool Inst_SetHead(cAvidaContext& ctx);
   bool Inst_AdvanceHead(cAvidaContext& ctx);
   bool Inst_MoveHead(cAvidaContext& ctx);
   bool Inst_JumpHead(cAvidaContext& ctx);
@@ -431,9 +420,6 @@ private:
   bool Inst_IfLabel(cAvidaContext& ctx);
   bool Inst_IfLabel2(cAvidaContext& ctx);
   bool Inst_HeadDivide(cAvidaContext& ctx);
-  bool Inst_HeadDivideRS(cAvidaContext& ctx); //AWC 06/29/06
-  bool Inst_HeadDivide1RS(cAvidaContext& ctx); //AWC 07/28/06
-  bool Inst_HeadDivide2RS(cAvidaContext& ctx); //AWC 08/29/06
   bool Inst_HeadRead(cAvidaContext& ctx);
   bool Inst_HeadWrite(cAvidaContext& ctx);
   bool Inst_HeadCopy(cAvidaContext& ctx);
@@ -450,38 +436,12 @@ private:
   bool Inst_HeadCopy9(cAvidaContext& ctx);
   bool Inst_HeadCopy10(cAvidaContext& ctx);
 
-  bool Inst_HeadDivideSex(cAvidaContext& ctx);
-  bool Inst_HeadDivideAsex(cAvidaContext& ctx);
-  bool Inst_HeadDivideAsexWait(cAvidaContext& ctx);
-  bool Inst_HeadDivideMateSelect(cAvidaContext& ctx);
-
-  bool Inst_HeadDivide1(cAvidaContext& ctx);
-  bool Inst_HeadDivide2(cAvidaContext& ctx);
-  bool Inst_HeadDivide3(cAvidaContext& ctx);
-  bool Inst_HeadDivide4(cAvidaContext& ctx);
-  bool Inst_HeadDivide5(cAvidaContext& ctx);
-  bool Inst_HeadDivide6(cAvidaContext& ctx);
-  bool Inst_HeadDivide7(cAvidaContext& ctx);
-  bool Inst_HeadDivide8(cAvidaContext& ctx);
-  bool Inst_HeadDivide9(cAvidaContext& ctx);
-  bool Inst_HeadDivide10(cAvidaContext& ctx);
-  bool Inst_HeadDivide16(cAvidaContext& ctx);
-  bool Inst_HeadDivide32(cAvidaContext& ctx);
-  bool Inst_HeadDivide50(cAvidaContext& ctx);
-  bool Inst_HeadDivide100(cAvidaContext& ctx);
-  bool Inst_HeadDivide500(cAvidaContext& ctx);
-  bool Inst_HeadDivide1000(cAvidaContext& ctx);
-  bool Inst_HeadDivide5000(cAvidaContext& ctx);
-  bool Inst_HeadDivide10000(cAvidaContext& ctx);
-  bool Inst_HeadDivide50000(cAvidaContext& ctx);
-  bool Inst_HeadDivide0_5(cAvidaContext& ctx);
-  bool Inst_HeadDivide0_1(cAvidaContext& ctx);
-  bool Inst_HeadDivide0_05(cAvidaContext& ctx);
-  bool Inst_HeadDivide0_01(cAvidaContext& ctx);
-  bool Inst_HeadDivide0_001(cAvidaContext& ctx);
-
   //// Placebo ////
   bool Inst_Skip(cAvidaContext& ctx);
+  
+  // -= Gene expression instructions =-
+  bool Inst_Match(cAvidaContext& ctx); //!< Attempt to match the currently executing cProgramid against other cProgramids.
+  bool Inst_OnDisassociate(cAvidaContext& ctx); //!< Called automatically when a cProgramid disassociates.
 };
 
 
@@ -494,89 +454,6 @@ namespace nHardwareGX {
    **/
   void UnitTests(bool full = false);
 }
-#endif  
-
-
-inline bool cHardwareGX::ThreadSelect(const int thread_num)
-{
-  if (thread_num >= 0 && thread_num < m_threads.GetSize()) {
-    m_cur_thread = thread_num;
-    return true;
-  }
-  
-  return false;
-}
-
-inline void cHardwareGX::ThreadNext()
-{
-  m_cur_thread++;
-  if (m_cur_thread >= GetNumThreads()) m_cur_thread = 0;
-}
-
-inline void cHardwareGX::ThreadPrev()
-{
-  if (m_cur_thread == 0) m_cur_thread = GetNumThreads() - 1;
-  else m_cur_thread--;
-}
-
-inline void cHardwareGX::StackPush(int value)
-{
-  if (m_threads[m_cur_thread].cur_stack == 0) {
-    m_threads[m_cur_thread].stack.Push(value);
-  } else {
-    m_global_stack.Push(value);
-  }
-}
-
-inline int cHardwareGX::StackPop()
-{
-  int pop_value;
-
-  if (m_threads[m_cur_thread].cur_stack == 0) {
-    pop_value = m_threads[m_cur_thread].stack.Pop();
-  } else {
-    pop_value = m_global_stack.Pop();
-  }
-
-  return pop_value;
-}
-
-inline void cHardwareGX::StackFlip()
-{
-  if (m_threads[m_cur_thread].cur_stack == 0) {
-    m_threads[m_cur_thread].stack.Flip();
-  } else {
-    m_global_stack.Flip();
-  }
-}
-
-inline int cHardwareGX::GetStack(int depth, int stack_id, int in_thread) const
-{
-  int value = 0;
-
-  if(in_thread >= m_threads.GetSize() || in_thread < 0) in_thread = m_cur_thread;
-
-  if (stack_id == -1) stack_id = m_threads[in_thread].cur_stack;
-
-  if (stack_id == 0) value = m_threads[in_thread].stack.Get(depth);
-  else if (stack_id == 1) value = m_global_stack.Get(depth);
-
-  return value;
-}
-
-inline void cHardwareGX::StackClear()
-{
-  if (m_threads[m_cur_thread].cur_stack == 0) {
-    m_threads[m_cur_thread].stack.Clear();
-  } else {
-    m_global_stack.Clear();
-  }
-}
-
-inline void cHardwareGX::SwitchStack()
-{
-  m_threads[m_cur_thread].cur_stack++;
-  if (m_threads[m_cur_thread].cur_stack > 1) m_threads[m_cur_thread].cur_stack = 0;
-}
+#endif
 
 #endif

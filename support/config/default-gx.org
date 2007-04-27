@@ -1,0 +1,20 @@
+nop-A		# Origin of replication.
+nop-B		# Beginning of RNAP.
+match		# Attempt to match against a nop-B.
+  nop-B
+h-copy		# Copy from read-head to write-head (requires a match).
+on-da		# When the complement of nop-B is reached...
+  sever		# Sever the link between RNAP and it's transcription target.
+nop-C		# End of RNAP.
+nop-C		# ...
+nop-B		# Beginning of DNAP.
+match		# Attempt to match against a nop-A/nop-B.
+  nop-A
+  nop-B
+h-copy		# Copy from read-head to write-head (requires a match).
+on-da		# When the complement of nop-A/nop-B is reached...
+  h-divide	# Divide!
+nop-C		# End of DNAP.
+nop-C		# ...
+nop-B		# Replication terminator.
+nop-C

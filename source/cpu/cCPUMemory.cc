@@ -39,6 +39,7 @@ cCPUMemory::cCPUMemory(const cCPUMemory& in_memory)
   }
 }
 
+
 void cCPUMemory::SloppyResize(int new_size)
 {
   assert(new_size > 0);

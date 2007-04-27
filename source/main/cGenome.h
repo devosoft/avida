@@ -43,7 +43,6 @@
  * a genome should not be modified; only the corresponding memory should be,
  * before creating the genome.  Keeping genome light-weight...
  **/
-
 class cGenome
 {
 protected:
@@ -51,11 +50,15 @@ protected:
   int active_size;
 
 public:
+  //! Default constructor.
   cGenome() { ; }
-  explicit cGenome(int _size);
-  cGenome(const cGenome& in_genome);
-  cGenome(const cString& in_string);
-  virtual ~cGenome();
+  explicit cGenome(int _size); //! Constructor that builds a 'blank' cGenome of the specified size.
+  cGenome(const cGenome& in_genome); //! Copy constructor.
+  cGenome(const cString& in_string); //! Constructor that builds a cGenome from a string.  
+  //! Constructor that takes a range of instructions from which to build a new cGenome.
+  cGenome(cInstruction* begin, cInstruction* end);
+  
+  virtual ~cGenome(); //! Virtual destructor; there are subclasses.
 
   virtual void operator=(const cGenome& other_genome);
   virtual bool operator==(const cGenome& other_genome) const;

@@ -52,6 +52,22 @@ cGenome::cGenome(const cString & in_string)
   }
 }
 
+
+/*! This constructor is used to build a new cGenome from a range of instructions.
+It expects STL semantics for an iterator range.  We're avoiding templating this
+(for now).  Refactor if a new range type is needed.
+
+\todo Just as an aside, it looks like Push continually reallocs memory in tArray.
+*/
+cGenome::cGenome(cInstruction* begin, cInstruction* end)
+: active_size(0)
+{
+  for(cInstruction* i=begin; i!=end; ++i,++active_size) {
+    genome.Push(*i);
+  }
+}
+
+
 cGenome::~cGenome()
 {
 }

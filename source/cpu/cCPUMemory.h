@@ -59,6 +59,8 @@ public:
   cCPUMemory(const cCPUMemory& in_memory);
   cCPUMemory(const cGenome& in_genome) : cGenome(in_genome), flag_array(in_genome.GetSize()) { ; }
   cCPUMemory(const cString& in_string) : cGenome(in_string), flag_array(in_string.GetSize()) { ; }
+  //! Construct a cCPUMemory object from a cInstruction range.
+  cCPUMemory(cInstruction* begin, cInstruction* end) : cGenome(begin, end), flag_array(GetSize()) { }
   ~cCPUMemory() { ; }
 
   void operator=(const cCPUMemory& other_memory);
