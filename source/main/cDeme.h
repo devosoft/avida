@@ -42,7 +42,7 @@ public:
   int GetCellID(int pos) const { return cell_ids[pos]; }
   int GetCellID(int x, int y) const;
   //! Returns an (x,y) pair for the position of the passed-in cell ID.
-  std::pair<int, int> cDeme::GetCellPosition(int cellid) const;
+  std::pair<int, int> GetCellPosition(int cellid) const;
 
   int GetWidth() const { return width; }
   int GetHeight() const { return cell_ids.GetSize() / width; }
