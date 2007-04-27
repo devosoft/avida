@@ -20,19 +20,22 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-
 #include "cDeme.h"
 
+
 cDeme::cDeme()
-  : width(0)
-  , birth_count(0)
-  , org_count(0)
+: width(0)
+, birth_count(0)
+, org_count(0)
+, _age(0)
 {
 }
+
 
 cDeme::~cDeme()
 {
 }
+
 
 void cDeme::Setup(const tArray<int> & in_cells, int in_width)
 {
@@ -45,6 +48,7 @@ void cDeme::Setup(const tArray<int> & in_cells, int in_width)
   if (width < 1) width = cell_ids.GetSize();
 }
 
+
 int cDeme::GetCellID(int x, int y) const
 {
   assert(x >= 0 && x < GetWidth());
@@ -54,3 +58,31 @@ int cDeme::GetCellID(int x, int y) const
   return cell_ids[pos];
 }
 
+
+/*! Note that for this method to work, we blatantly assume that IDs are in
+monotonically increasing order!! */
+std::pair<int, int> cDeme::GetCellPosition(int cellid) const 
+{
+	assert(cell_ids.GetSize()>0);
+  assert(GetWidth() > 0);
+	cellid -= cell_ids[0];
+	return std::make_pair(cellid % GetWidth(), cellid / GetWidth());
+}
+
+
+void cDeme::Reset() 
+{
+  birth_count = 0; 
+  _age = 0;
+}
+
+
+/*! Replacing this deme's germline has the effect of changing the deme's lineage.
+There's still some work to do here; the lineage labels of the Genomes in the germline
+are all messed up.
+
+\todo Fix lineage labels in germlines.
+*/
+void cDeme::ReplaceGermline(const cGermline& germline) {
+	_germline = germline;
+}

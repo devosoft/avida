@@ -1,0 +1,46 @@
+#filetype genotype_data
+#format id parent_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence
+
+#  1: ID
+#  2: parent ID
+#  3: parent distance
+#  4: number of orgranisms currently alive
+#  5: total number of organisms that ever existed
+#  6: length of genome
+#  7: merit
+#  8: gestation time
+#  9: fitness
+# 10: update born
+# 11: update deactivated
+# 12: depth in phylogentic tree
+# 13: genome of organism
+
+108 12 1 0 6 100 97 387 0.250646 27 79 2 rucavcccccccccccccccccccccccccccccccccccccccccccccjccccccccmcccccccccccccccccccccccccccccccutycasvab 
+344 108 1 0 1 100 0 0 0 65 79 3 rucavcccccccccccccccccccccccccccccccccccccccccccccjcccccccfmcccccccccccccccccccccccccccccccutycasvab 
+162 1 2 0 3 100 49 341 0.143695 28 79 1 rucavccccccccccccccxcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutyhasvab 
+2 1 1 0 21 99 96 385 0.249351 12 79 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+194 1 2 0 5 100 97 387 0.250646 38 79 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccqcccccccccccccccccccdcccccccccccccutycasvab 
+285 194 1 0 3 100 87 377 0.230769 53 79 2 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccycccccccccccccccccccdcccccccccccccutycasvab 
+290 109 2 0 2 100 97 387 0.250646 53 79 2 rucavccccccccccceccccccccccccccccccccccccccccccbcccccccccccccccccqcccccccccccccccccccccccccutycasvab 
+13 1 2 0 10 100 97 387 0.250646 13 79 1 rucavcccccccccqcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccclcccccccccccutycasvab 
+296 116 1 0 1 101 98 390 0.251282 54 79 2 rucavcccccccccccclcccccccccccccccccccccccccccccxcccccccccccccccccccccwccccccccccccccccccccccutycasvab 
+116 1 2 0 3 101 98 391 0.250639 27 79 1 rucavcccccccccccclcccccccccccccccccccccccccccccxccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+36 1 1 0 6 100 97 388 0.25 14 79 1 rucavccccccccccccccccccccccicccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+30 1 2 0 6 100 97 388 0.25 14 79 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccvcccccccccccccccccccccccccccrcutycasvab 
+46 1 2 0 3 100 39 327 0.119266 14 79 1 rucavcccccccyccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutynasvab 
+183 1 1 0 4 100 97 388 0.25 38 79 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccclcutycasvab 
+126 1 1 0 7 100 97 389 0.249357 27 79 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbccccccccccutycasvab 
+343 266 2 0 1 101 0 0 0 65 79 3 rucavcccclccccccccccccccvcccccccccccccccccccccccccccccccccqcccccccccccccccccccdcccccccccccvcutycasvab 
+266 194 1 0 1 100 97 386 0.251295 52 79 2 rucavcccclcccccccccccccccccccccccccccccccccccccccccccccccqcccccccccccccccccccdcccccccccccccutycasvab 
+39 1 4 0 6 100 97 387 0.250646 14 79 1 rucavcccccccccccccckccccscccccccccccbccccccccccccccccccccccccccpcccccccccccccccccccccccccccutycasvab 
+264 220 1 0 2 100 97 387 0.250646 52 79 4 rucavccccccccccccccccccccccaccccccccccccccccccccccccccicccccccccccccccccccccckccccccccccgrcutycasvab 
+220 136 1 0 3 100 97 388 0.25 39 79 3 rucavccccccccccccccccccccccaccccccccccccccccccccccccccccccccccccccccccccccccckccccccccccgrcutycasvab 
+166 25 2 0 7 99 86 374 0.229947 29 79 2 rucavccccccccccccccccccccccccccccccccccccccccyccccccccccccccccccccchccccccccccccccccccccccutycasvab 
+329 1 1 0 1 100 0 0 0 65 79 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccpcccccccccccccccccccccutycasvab 
+52 1 1 0 1 100 0 0 0 15 39 1 rucavcccccccccccccccccccccccccccccccccccccccccdccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+20 1 2 0 1 100 97 387 0.250646 13 39 1 rucavcccccccccccccccccccccccgcccccccccccccccccccccccccccccccccccccccccccccccccccccwccccccccutycasvab 
+23 1 1 0 1 100 0 0 0 13 39 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccrcutycasvab 
+136 23 2 0 1 100 0 0 0 27 39 2 rucavccccccccccccccccccccccaccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccgrcutycasvab 
+12 1 1 0 1 100 0 0 0 13 39 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccmcccccccccccccccccccccccccccccccutycasvab 
+6 1 1 0 1 100 0 0 0 13 39 1 rucavccccccccccccccccccccccccwcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+25 1 1 0 1 100 0 0 0 13 39 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccchccccccccccccccccccccccutycasvab 

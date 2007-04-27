@@ -20,27 +20,18 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-
-// DESCRIPTION:
-// Demes are groups of cells in the population that are somehow bound togehter
-// as a unit.  The deme object is used from withing cPopulation to manage these
-// groups.
-
 #ifndef cDeme_h
 #define cDeme_h
 
-#ifndef tArray_h
+#include "cGermline.h"
 #include "tArray.h"
-#endif
 
 
+
+/*! Demes are groups of cells in the population that are somehow bound together
+as a unit.  The deme object is used from within cPopulation to manage these 
+groups. */
 class cDeme {
-private:
-  tArray<int> cell_ids;
-  int width;        // How wide is the deme?
-  int birth_count;  // How many organisms have been born into deme since reset?
-  int org_count;    // How many organisms are currently in the deme?
-
 public:
   cDeme();
   ~cDeme();
@@ -50,11 +41,13 @@ public:
   int GetSize() const { return cell_ids.GetSize(); }
   int GetCellID(int pos) const { return cell_ids[pos]; }
   int GetCellID(int x, int y) const;
+  //! Returns an (x,y) pair for the position of the passed-in cell ID.
+  std::pair<int, int> cDeme::GetCellPosition(int cellid) const;
 
   int GetWidth() const { return width; }
   int GetHeight() const { return cell_ids.GetSize() / width; }
 
-  void Reset() { birth_count = 0; }
+  void Reset();
   int GetBirthCount() const { return birth_count; }
   void IncBirthCount() { birth_count++; }
 
@@ -64,6 +57,28 @@ public:
 
   bool IsEmpty() const { return org_count == 0; }
   bool IsFull() const { return org_count == cell_ids.GetSize(); }
+  
+  // -= Germline =-
+  //! Returns this deme's germline.
+  cGermline& GetGermline() { return _germline; }
+  //! Replaces this deme's germline.
+  void ReplaceGermline(const cGermline& germline);
+  
+  // -= Update support =-
+  //! Called once, at the end of every update.
+  void ProcessUpdate() { ++_age; }
+  /*! Returns the age of this deme, updates.  Age is defined as the number of 
+    updates since the last time Reset() was called. */
+  int GetAge() const { return _age; }
+  
+private:
+  tArray<int> cell_ids;
+  int width; //!< Width of this deme.
+  int birth_count; //!< Number of organisms that have been born into this deme since reset.
+  int org_count; //!< Number of organisms are currently in this deme.
+  int _age; //!< Age of this deme, in updates.
+  
+  cGermline _germline; //!< The germline for this deme, if used.
 };
 
 #endif

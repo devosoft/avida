@@ -190,6 +190,7 @@ public:
   int GetWorldX() { return world_x; }
   int GetWorldY() { return world_y; }
   int GetNumDemes() { return deme_array.GetSize(); }
+  cDeme& GetDeme(int i) { return deme_array[i]; }
 
   cPopulationCell& GetCell(int in_num);
   const tArray<double>& GetResources() const { return resource_count.GetResources(); }

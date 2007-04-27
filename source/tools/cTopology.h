@@ -7,7 +7,8 @@ This file contains templated algorithms that create a particular cell
 topology out of a given range of cells.  In every case, the range of cells is 
 specified by a begin/end iterator pair.
 */
-
+#ifndef _C_TOPOLOGY_H_
+#define _C_TOPOLOGY_H_
 
 /*! Builds a torus topology out of the cells betwen the iterators.
 In a torus, each cell is connected to up to 8 neighbors (including diagonals), 
@@ -86,3 +87,5 @@ void build_clique(InputIterator begin, InputIterator end, unsigned int rowSize, 
     }
   }
 }
+
+#endif

@@ -1,0 +1,111 @@
+#filetype genotype_data
+#format id parent_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence
+
+#  1: ID
+#  2: parent ID
+#  3: parent distance
+#  4: number of orgranisms currently alive
+#  5: total number of organisms that ever existed
+#  6: length of genome
+#  7: merit
+#  8: gestation time
+#  9: fitness
+# 10: update born
+# 11: update deactivated
+# 12: depth in phylogentic tree
+# 13: genome of organism
+
+1 -1 -1 72 551 100 97 389 0.249357 -1 -1 0 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+590 -1 -1 4 4 100 87 377 0.230769 79 -1 0 rucavccccccccccccccccccccccccccccccccccccccccccdccccccccccccccccccccccccccyccccccccccccccccutycasvab 
+623 -1 -1 4 4 100 97 388 0.25 79 -1 0 rucavccccccccccccmcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+620 -1 -1 3 3 100 97 388 0.25 79 -1 0 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccqcccccccutycasvab 
+571 -1 -1 2 2 100 0 0 0 79 -1 0 ruyavcccccccccccccsccccccccccccccccccccccccccccccccccccccccccccccccccccpcccccccccccccccccccutycasvab 
+613 -1 -1 2 2 100 0 0 0 79 -1 0 rucavcccccccccccccccccccccccccccccccccccccccccccccccbcccccccccccccccccccccccccccoccccccccccutycasvab 
+577 -1 -1 2 3 100 0 0 0 79 -1 0 rucavccccccccccccccccccccccccccccccccccccpcccccccscccccccccccccccccccccccccccccccccccccccccutycasvab 
+584 -1 -1 2 2 100 0 0 0 79 -1 0 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccczcccccctccutycasvab 
+585 -1 -1 2 2 100 0 0 0 79 -1 0 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccczcrcccctccutycasvab 
+598 -1 -1 2 2 100 0 0 0 79 -1 0 rucavccccccccccccccccccqccccccccccccccccccccccccccccccccccccccccccccccccccccccccczcccccccccutycasvab 
+604 -1 -1 2 2 100 0 0 0 79 -1 0 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccfccccccccccccccccccccccutycasvab 
+612 -1 -1 2 2 100 0 0 0 79 -1 0 rucavccccccccccccccccccccccoccccccccccccccccccccccccccccccccccccccccccccccccccccccccmbcccccutycasvab 
+611 -1 -1 2 2 100 0 0 0 79 -1 0 rucavccccccccccccccccccccccoccccccccccccccccccccccccccccccccccccccccccccccccccccccccmccccccutycasvab 
+605 -1 -1 2 2 100 0 0 0 79 -1 0 rucavcccccccccccccccccbcccccccccccccccccccccccccccccccccccccccccccccfccccccucccccccccccccccutycasvab 
+603 -1 -1 2 2 100 0 0 0 79 -1 0 rucavcccccccccccccccccccccccaccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+609 -1 -1 2 2 100 0 0 0 79 -1 0 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccocccccutycasvab 
+587 -1 -1 2 2 100 0 0 0 79 -1 0 rucavccccccccccccdcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+591 -1 -1 2 2 100 0 0 0 79 -1 0 rucavccccccccccccccccccccccccccccccccccccycccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+615 -1 -1 2 2 100 0 0 0 79 -1 0 rucavccccccccccccucccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+573 -1 -1 1 1 100 0 0 0 79 -1 0 rucavcccccccccccccccuccccccccccccccccncccccccccccccccccccdcccccccccccccccccccccccccccccccccutycasvab 
+574 -1 -1 1 1 100 0 0 0 79 -1 0 rucavccccccccccccccccccccccccccccccccccccccccccccccecccccccccccccccccccccccccciccccccccccccutycasvab 
+575 -1 -1 1 1 100 0 0 0 79 -1 0 rucavccccccccccccccccccccqcccccccccccccccccccccccccecccccccccccccccccccccccccciccccccccccccutycasvab 
+579 -1 -1 1 1 100 0 0 0 79 -1 0 hucavcccccccccccccccccccccccxccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+580 -1 -1 1 1 100 0 0 0 79 -1 0 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccncccccccccccutycasvab 
+581 -1 -1 1 1 100 0 0 0 79 -1 0 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccclcccccccccccccccccccccccccccccutycasvab 
+583 -1 -1 1 1 100 0 0 0 79 -1 0 rucabcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccclcccccutycasvab 
+588 -1 -1 1 1 100 0 0 0 79 -1 0 rucavccccccccccccdcccjcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccstycasvab 
+589 -1 -1 1 1 100 0 0 0 79 -1 0 rucavcccwccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+592 -1 -1 1 1 100 0 0 0 79 -1 0 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccciccccccccccccccccccccutycasvab 
+593 -1 -1 1 1 100 0 0 0 79 -1 0 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccciccccccccccccclccccccutycasvab 
+594 -1 -1 1 1 100 0 0 0 79 -1 0 rucavccccccccccccccccccccccccccchccccccccccccccccccccccccccccccccccccccccccccccccccccccckccutycasveb 
+597 -1 -1 1 1 100 0 0 0 79 -1 0 rupavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+602 -1 -1 1 1 100 0 0 0 79 -1 0 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccdccccxcccccccccccccccccccccccutycasvab 
+586 -1 -1 1 2 100 0 0 0 79 -1 0 rucavccccccccccccccgccccgccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+606 -1 -1 1 1 100 0 0 0 79 -1 0 rucavcccccccccccccccccccccccccccccccccccczcccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+607 -1 -1 1 1 100 0 0 0 79 -1 0 rqcavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+608 -1 -1 1 1 100 0 0 0 79 -1 0 rucavccccccccccccccccccccccccccccccccccccccccccccccbcccccccccccccccccccccccccccccccccccccccutycasvab 
+610 -1 -1 1 1 100 0 0 0 79 -1 0 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccocccccutybasvab 
+617 -1 -1 1 1 100 0 0 0 79 -1 0 rucavcccccnccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+256 -1 -1 1 4 100 0 0 0 39 -1 0 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycaswab 
+619 -1 -1 1 1 100 0 0 0 79 -1 0 rucavcccccccccccccccccccccccccccccccccccccctcccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+621 -1 -1 1 1 100 0 0 0 79 -1 0 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccncccccccccccccccccccccccccccccutycasvab 
+614 -1 -1 1 2 100 0 0 0 79 -1 0 rxcavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+622 -1 -1 1 1 100 0 0 0 79 -1 0 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvtb 
+624 586 1 1 1 100 0 0 0 91 -1 1 rucavccccccccccccccgccycgccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+625 1 1 1 1 100 0 0 0 91 -1 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccchcccccccutycasvab 
+626 581 1 1 1 100 0 0 0 92 -1 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccclcccccccccccccccccucccccccccccutycasvab 
+627 608 1 1 1 100 0 0 0 92 -1 1 rucavccccccccccccccccccccccccccccccccccccccccccccccbcccccccccccccccccccccccccccccccccccccccueycasvab 
+628 1 2 1 1 99 0 0 0 92 -1 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbccccutycasvab 
+629 1 2 1 1 100 0 0 0 92 -1 1 rucavccccckccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasval 
+630 1 1 1 1 100 0 0 0 92 -1 1 rucavcccccccccccccccccccgccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+631 606 1 1 1 100 0 0 0 92 -1 1 rucavcccccccccccccccccccccccccccccccccccczccccccccccccccccccccccchcccccccccccccccccccccccccutycasvab 
+632 1 3 1 1 99 0 0 0 92 -1 1 rucavccccccccdccccccvcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+633 1 1 1 1 101 0 0 0 92 -1 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccfccccccccccccccccccccccutycasvab 
+634 580 1 1 1 100 0 0 0 92 -1 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccncccccccccccutylasvab 
+635 1 1 1 1 100 0 0 0 92 -1 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccvccccccccccccccccutycasvab 
+636 587 1 1 1 99 0 0 0 92 -1 1 rucavccccccccccccdccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+637 1 2 1 1 100 0 0 0 92 -1 1 rucavccczccccccccccccccccccccccccccccccccccccqcccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+638 1 1 1 1 100 0 0 0 92 -1 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccclccccccccccccccccccccccutycasvab 
+639 1 1 1 1 100 0 0 0 92 -1 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccaccccccccccccccccccutycasvab 
+640 1 1 1 1 101 0 0 0 92 -1 1 rucavccccccccccccccccccccccccccccccccccccccccclcccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+641 1 1 1 1 100 0 0 0 92 -1 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccdccccccccccccccccccutycasvab 
+642 1 1 1 1 100 0 0 0 92 -1 1 rucavcccccccccccccccccccccccccccccccctcccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+643 1 2 1 1 101 0 0 0 92 -1 1 rucavccccccccccchcccccccccccccccccccccccccccccccccccccccccccccccccccccccpcccccccccccccccccccutycasvab 
+644 574 1 1 1 100 0 0 0 92 -1 1 rucavcccccccccccccccccccccccccccccctcccccccccccccccecccccccccccccccccccccccccciccccccccccccutycasvab 
+645 617 1 1 1 100 0 0 0 92 -1 1 rucavcccccnccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbcccccutycasvab 
+646 1 1 1 1 100 0 0 0 92 -1 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccwccccccccccccccccccccccccccccutycasvab 
+647 621 4 1 1 99 0 0 0 92 -1 1 rucavcccccccccccccccccccccccccccccgccccccccccccccccccccscccccnccccccccccccccyccccccccccccccutycasva 
+648 1 1 1 1 100 0 0 0 93 -1 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccpcccccccccccccccccutycasvab 
+649 575 2 1 1 100 0 0 0 93 -1 1 zucavccccccccccccccccccccqcccccccccccccccccccccccccecccccccccccciccccccccccccciccccccccccccutycasvab 
+650 1 2 1 1 100 0 0 0 93 -1 1 rucavcccccccccccccucccccccccccccccccccbccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+651 620 1 1 1 101 0 0 0 93 -1 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccqcccccccutycasvab 
+652 1 1 1 1 100 0 0 0 93 -1 1 rucavccccbcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+653 1 1 1 1 100 0 0 0 93 -1 1 rucavccccccccccccccccccccccccccccjcccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+654 1 1 1 1 100 0 0 0 93 -1 1 rucavcccccccccccccccccccccccccccccckcccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+655 1 2 1 1 100 0 0 0 93 -1 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccclcccccccccccccccccccccctccutycasvab 
+656 619 1 1 1 100 0 0 0 93 -1 1 rucavccccccccccccccccccpccccccccccccccccccctcccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+657 1 1 1 1 100 0 0 0 93 -1 1 rucavccccccccccccccdcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+658 1 1 1 1 100 0 0 0 93 -1 1 rucavccccicccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+659 1 2 1 1 100 0 0 0 93 -1 1 rucavcccccccccccrccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccdcutycasvab 
+660 1 3 1 1 100 0 0 0 93 -1 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccocccccmccccccccccccccccccutyccsvab 
+661 1 1 1 1 101 0 0 0 93 -1 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccdccutycasvab 
+662 602 1 1 1 100 0 0 0 93 -1 1 rucadcccccccccccccccccccccccccccccccccccccccccccccccccccccccccdccccxcccccccccccccccccccccccutycasvab 
+663 1 1 1 1 100 0 0 0 93 -1 1 rucavcccccccccccccccccccccccccccccccccccccccccccuccccccccccccccccccccccccccccccccccccccccccutycasvab 
+664 1 3 1 1 100 0 0 0 93 -1 1 rucavcpcccccccccjccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutkcasvab 
+665 592 2 1 1 100 0 0 0 93 -1 1 rucavcccccccccccccccccccoccccccccccccfcccccccccccccccccccccccccccccccciccccccccccccccccccccutycasvab 
+666 593 1 1 1 100 0 0 0 93 -1 1 rucafccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccciccccccccccccclccccccutycasvab 
+667 1 2 1 1 100 0 0 0 93 -1 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccclcccccccccccccccccccccccccccccccutycajvab 
+668 589 4 1 1 102 0 0 0 93 -1 1 aarucavccuwccccccccccccccccpcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+669 573 1 1 1 100 0 0 0 94 -1 1 rucavcccccccccccccccuccccccccccccccccncccccccccccccccccccdcccccccccccccccccccccccciccccccccutycasvab 
+670 1 1 1 1 100 0 0 0 94 -1 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccvccccccccccccccccccccutycasvab 
+671 1 1 1 1 100 0 0 0 94 -1 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycayvab 
+672 1 1 1 1 100 0 0 0 94 -1 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccxccccutycasvab 
+673 1 2 1 1 100 0 0 0 94 -1 1 kucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccoccccccccccutycasvab 

@@ -452,6 +452,55 @@ public:
 };
 
 
+
+/*! Injects an organism into all demes in the population. 
+
+Parameters:
+filename (string):
+The filename of the genotype to load. If this is left empty, or the keyword
+"START_CREATURE" is given, than the genotype specified in the genesis
+file under "START_CREATURE" is used.
+cell ID (integer) default: 0
+  The grid-point into which the organism should be placed.
+  merit (double) default: -1
+    The initial merit of the organism. If set to -1, this is ignored.
+    lineage label (integer) default: 0
+      An integer that marks all descendants of this organism.
+      neutral metric (double) default: 0
+        A double value that randomly drifts over time.
+        */
+class cActionInjectDemes : public cAction
+{
+private:
+	cString m_filename;
+	double m_merit;
+	int m_lineage_label;
+	double m_neutral_metric;
+public:
+		cActionInjectDemes(cWorld* world, const cString& args) : cAction(world, args), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+	{
+			cString largs(args);
+			if (!largs.GetSize()) m_filename = "START_CREATURE"; else m_filename = largs.PopWord();
+			if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
+			if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
+			if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+			if (m_filename == "START_CREATURE") m_filename = m_world->GetConfig().START_CREATURE.Get();
+	}
+	
+	static const cString GetDescription() { return "Arguments: [string fname=\"START_CREATURE\"] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+	
+	void Process(cAvidaContext& ctx)
+	{
+		cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
+		for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+			m_world->GetPopulation().Inject(genome,
+                                      m_world->GetPopulation().GetDeme(i).GetCellID(0),
+                                      m_merit, m_lineage_label, m_neutral_metric);
+		}
+	}
+};
+
+
 /*
  Randomly removes a certain proportion of the population.
  
@@ -951,10 +1000,11 @@ public:
     cString largs(args);
     cString in_trigger("full_deme");
     if (largs.GetSize()) in_trigger = largs.PopWord();
-
+    
     if (in_trigger == "all") m_rep_trigger = 0;
     else if (in_trigger == "full_deme") m_rep_trigger = 1;
     else if (in_trigger == "corners") m_rep_trigger = 2;
+    else if (in_trigger == "deme-age") m_rep_trigger = 3;
     else {
       cString err("Unknown replication trigger '");
       err += in_trigger;
@@ -1401,6 +1451,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionInjectAll>("InjectAll");
   action_lib->Register<cActionInjectRange>("InjectRange");
   action_lib->Register<cActionInjectSequence>("InjectSequence");
+  action_lib->Register<cActionInjectDemes>("InjectDemes");
 
   action_lib->Register<cActionInjectParasite>("InjectParasite");
   action_lib->Register<cActionInjectParasitePair>("InjectParasitePair");
