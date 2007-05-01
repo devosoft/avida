@@ -10,6 +10,8 @@ specified by a begin/end iterator pair.
 #ifndef _C_TOPOLOGY_H_
 #define _C_TOPOLOGY_H_
 
+#include "functions.h"
+
 /*! Builds a torus topology out of the cells betwen the iterators.
 In a torus, each cell is connected to up to 8 neighbors (including diagonals), 
 and connections DO wrap around the logical edges of the torus.
@@ -85,6 +87,23 @@ void build_clique(InputIterator begin, InputIterator end, unsigned int rowSize, 
         i->ConnectionList().Push(j);
       }
     }
+  }
+}
+
+
+/*! Builds a hexagonal grid topology out of the cells between the iterators.  In
+a hex grid, each cell has at most 6 neighbors, and connections do not wrap around
+edges.
+*/
+template< typename InputIterator >
+void build_hex(InputIterator begin, InputIterator end, unsigned int rowSize, unsigned int colSize) {
+  // Start with a grid:
+  build_grid(begin, end, rowSize, colSize);
+  int offset = begin->GetID();  
+  // ... and remove connections to the NE,SW:
+  for(InputIterator i=begin; i!=end; ++i) {
+    i->ConnectionList().Remove(&begin[GridNeighbor(i->GetID()-offset, colSize, rowSize, 1, -1)]);
+    i->ConnectionList().Remove(&begin[GridNeighbor(i->GetID()-offset, colSize, rowSize, -1, 1)]);
   }
 }
 

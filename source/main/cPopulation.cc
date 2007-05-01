@@ -91,6 +91,7 @@ cPopulation::cPopulation(cWorld* world)
       case nGeometry::GRID: { cout << "Geometry: Bounded grid" << endl;	break; }
 			case nGeometry::TORUS: { cout << "Geometry: Torus" << endl; break;	}
 			case nGeometry::CLIQUE: { cout << "Geometry: Clique" << endl; break; }
+      case nGeometry::HEX: { cout << "Geometry: Hex" << endl; break; }
 			default: {
         cout << "Unknown geometry!" << endl;
         assert(false);
@@ -111,7 +112,7 @@ cPopulation::cPopulation(cWorld* world)
 	cell_array.Resize(num_cells);
 	resource_count.ResizeSpatialGrids(world_x, world_y);
 	market.Resize(MARKET_SIZE);
-	
+  
   // Setup the cells.  Do things that are not dependent upon topology here.
 	for(int i=0; i<num_cells; ++i) {
 		cell_array[i].Setup(world, i, environment.GetMutRates());
@@ -159,6 +160,11 @@ cPopulation::cPopulation(cWorld* world)
 			case nGeometry::CLIQUE: {
 				build_clique(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], 
                      deme_size_x, deme_size_y);
+				break;
+			}
+      case nGeometry::HEX: {
+				build_hex(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], 
+                  deme_size_x, deme_size_y);
 				break;
 			}
 			default: {

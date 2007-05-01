@@ -30,7 +30,8 @@ namespace nGeometry {
     GLOBAL = 0,
     GRID,
     TORUS,
-    CLIQUE
+    CLIQUE,
+    HEX
   };
 }
 
