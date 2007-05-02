@@ -52,7 +52,7 @@ import xml.dom.minidom
 
 # Global Constants
 # ---------------------------------------------------------------------------------------------------------------------------
-TESTRUNNER_VERSION = "1.2"
+TESTRUNNER_VERSION = "1.3b"
 TESTRUNNER_COPYRIGHT = "2007"
 
 TRUE_STRINGS = ("y","Y","yes","Yes","true","True","1")
@@ -521,31 +521,8 @@ class cTest:
       except (IOError, OSError): pass
     
     
-    # Run warm up
-    p = popen2.Popen4("cd %s; %s %s" % (rundir, self.app, self.args))
-    
-    # Process output from app
-    # Note: must at least swallow app output so that the process output buffer does not fill and block execution
-    if settings.has_key("_verbose"): print
-    for line in p.fromchild:
-      if settings.has_key("_verbose"):
-        sys.stdout.write("%s output: %s" % (self.name, line))
-        sys.stdout.flush()
-    
-    exitcode = p.wait()
-
-    # Check exit code
-    nz = self.getConfig("main", "nonzeroexit", "disallow")
-    if (nz == "disallow" and exitcode != 0) or (nz == "require" and exitcode == 0):
-      try:
-        shutil.rmtree(rundir, True) # Clean up test directory
-      except (IOError, OSError): pass
-      self.psuccess = False
-      self.presult = "test app returned non-zero exit code"
-      return
-    
-    
     # Run test X times, take min value
+    nz = self.getConfig("main", "nonzeroexit", "disallow")
     r_times = []
     t_times = []
     for i in range(settings["perf_repeat"]):
@@ -633,16 +610,17 @@ class cTest:
     r_margin = settings["perf_user_margin"] * r_base
     r_umargin = r_base + r_margin
     r_lmargin = r_base - r_margin
+    r_ratio = r_min / r_base
+
     t_margin = settings["perf_wall_margin"] * t_base
     t_umargin = t_base + t_margin
     t_lmargin = t_base - t_margin
+    t_ratio = t_min / t_base
     
     
     if r_min > r_umargin or t_min > t_umargin:
       self.psuccess = False
       self.presult = "failed"
-      if t_min > t_umargin: self.presult += " - wall = b: %3.4f t: %3.4f" % (t_base, t_min)
-      if r_min > r_umargin: self.presult += " - user = b: %3.4f t: %3.4f" % (r_base, r_min)
     elif r_min < r_lmargin or t_min < t_lmargin:
       # new baseline, move old baseline and write out new results
       try:
@@ -662,15 +640,12 @@ class cTest:
         fp.flush()
         fp.close()
       except (IOError, OSError, shutil.Error):
-        try:
-          shutil.rmtree(rundir, True) # Clean up test directory
-        except (IOError, OSError): pass
         print "Warning: error updating '%s' performance baseline" % self.name
-        return
-        
       self.presult = "exceeded"
-      if t_min < t_lmargin: self.presult += " - wall = b: %3.4f t: %3.4f" % (t_base, t_min)
-      if r_min < r_lmargin: self.presult += " - user = b: %3.4f t: %3.4f" % (r_base, r_min)
+
+    # Print output on all tests
+    self.presult += "\n - wall: %2.2f  base = %3.4f  test = %3.4f" % (t_ratio, t_base, t_min)
+    self.presult += "\n - user: %2.2f  base = %3.4f  test = %3.4f" % (r_ratio, r_base, r_min)
     
     # Clean up test directory
     try:
