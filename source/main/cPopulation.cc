@@ -1643,7 +1643,7 @@ void cPopulation::UpdateGenotypeStats()
     //   to the output stage, but behavior is dependent on compiler used and optimization
     //   level.  For consistent output, ensures that 0.0 is returned.
     const double p = ((double) abundance) / (double) num_organisms;
-    const double partial_ent = (p == 1.0) ? 0.0 : -(p * Log(p)); 
+    const double partial_ent = (abundance == num_organisms) ? 0.0 : -(p * Log(p)); 
     entropy += partial_ent;
     
     // Do any special calculations for threshold genotypes.
@@ -1698,7 +1698,7 @@ void cPopulation::UpdateSpeciesStats()
     //   level.  For consistent output, ensures that 0.0 is returned.
     if (abundance > 0) {
       double p = ((double) abundance) / (double) num_organisms;
-      double partial_ent = (p == 1.0) ? 0.0 : -(p * Log(p));
+      double partial_ent = (abundance == num_organisms) ? 0.0 : -(p * Log(p));
       species_entropy += partial_ent;
     }
     
