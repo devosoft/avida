@@ -11,12 +11,6 @@
 		109746410AE9606E00929ED6 /* cDeme.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1097463D0AE9606E00929ED6 /* cDeme.cc */; };
 		109746430AE9606E00929ED6 /* cDeme.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1097463D0AE9606E00929ED6 /* cDeme.cc */; };
 		4233358A0BC067E3000DF681 /* cHardwareGX.cc in Sources */ = {isa = PBXBuildFile; fileRef = 423335880BC067E3000DF681 /* cHardwareGX.cc */; };
-		427E798D0BE6A2E80083B133 /* cCliqueTopology.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42829ADB0BE631A500F6BF8F /* cCliqueTopology.cc */; };
-		427E798E0BE6A2EB0083B133 /* cGridTopology.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42829AE00BE631A500F6BF8F /* cGridTopology.cc */; };
-		427E798F0BE6A2EC0083B133 /* cHexTopology.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42829AE20BE631A500F6BF8F /* cHexTopology.cc */; };
-		427E79900BE6A2EE0083B133 /* cTorusTopology.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42829AE40BE631A500F6BF8F /* cTorusTopology.cc */; };
-		427E79910BE6A2EF0083B133 /* iTopology.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42829AE60BE631A500F6BF8F /* iTopology.cc */; };
-		427E79C40BE6A7D40083B133 /* CMakeLists.txt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 427E79C30BE6A7D40083B133 /* CMakeLists.txt */; };
 		7005A70409BA0FA90007E16E /* cTestCPUInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */; };
 		7005A70609BA0FA90007E16E /* cTestCPUInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */; };
 		7005A70809BA0FA90007E16E /* cTestCPUInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */; };
@@ -430,7 +424,6 @@
 				7049F3730A66AD7E00640512 /* default-transsmt.org in CopyFiles */,
 				70B1A7430B7E3FFD00067486 /* instset-experimental.cfg in CopyFiles */,
 				70B1A75A0B7E431F00067486 /* experimental.org in CopyFiles */,
-				427E79C40BE6A7D40083B133 /* CMakeLists.txt in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -453,18 +446,6 @@
 		423335880BC067E3000DF681 /* cHardwareGX.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareGX.cc; sourceTree = "<group>"; };
 		423335890BC067E3000DF681 /* cHardwareGX.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareGX.h; sourceTree = "<group>"; };
 		42490EFE0BE2472800318058 /* cGermline.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGermline.h; sourceTree = "<group>"; };
-		427E79C30BE6A7D40083B133 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		42829ADB0BE631A500F6BF8F /* cCliqueTopology.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCliqueTopology.cc; sourceTree = "<group>"; };
-		42829ADC0BE631A500F6BF8F /* cCliqueTopology.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCliqueTopology.h; sourceTree = "<group>"; };
-		42829ADF0BE631A500F6BF8F /* cDiscreteTopology.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cDiscreteTopology.h; sourceTree = "<group>"; };
-		42829AE00BE631A500F6BF8F /* cGridTopology.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cGridTopology.cc; sourceTree = "<group>"; };
-		42829AE10BE631A500F6BF8F /* cGridTopology.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGridTopology.h; sourceTree = "<group>"; };
-		42829AE20BE631A500F6BF8F /* cHexTopology.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHexTopology.cc; sourceTree = "<group>"; };
-		42829AE30BE631A500F6BF8F /* cHexTopology.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHexTopology.h; sourceTree = "<group>"; };
-		42829AE40BE631A500F6BF8F /* cTorusTopology.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTorusTopology.cc; sourceTree = "<group>"; };
-		42829AE50BE631A500F6BF8F /* cTorusTopology.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTorusTopology.h; sourceTree = "<group>"; };
-		42829AE60BE631A500F6BF8F /* iTopology.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = iTopology.cc; sourceTree = "<group>"; };
-		42829AE70BE631A500F6BF8F /* iTopology.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = iTopology.h; sourceTree = "<group>"; };
 		7005A70109BA0FA90007E16E /* cTestCPUInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cTestCPUInterface.h; sourceTree = "<group>"; };
 		7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cTestCPUInterface.cc; sourceTree = "<group>"; };
 		7005A70909BA0FBE0007E16E /* cOrgInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgInterface.h; sourceTree = "<group>"; };
@@ -985,25 +966,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		42829ADA0BE631A500F6BF8F /* topology */ = {
-			isa = PBXGroup;
-			children = (
-				42829ADB0BE631A500F6BF8F /* cCliqueTopology.cc */,
-				42829ADC0BE631A500F6BF8F /* cCliqueTopology.h */,
-				42829ADF0BE631A500F6BF8F /* cDiscreteTopology.h */,
-				42829AE00BE631A500F6BF8F /* cGridTopology.cc */,
-				42829AE10BE631A500F6BF8F /* cGridTopology.h */,
-				42829AE20BE631A500F6BF8F /* cHexTopology.cc */,
-				42829AE30BE631A500F6BF8F /* cHexTopology.h */,
-				42829AE40BE631A500F6BF8F /* cTorusTopology.cc */,
-				42829AE50BE631A500F6BF8F /* cTorusTopology.h */,
-				42829AE60BE631A500F6BF8F /* iTopology.cc */,
-				42829AE70BE631A500F6BF8F /* iTopology.h */,
-				427E79C30BE6A7D40083B133 /* CMakeLists.txt */,
-			);
-			path = topology;
-			sourceTree = "<group>";
-		};
 		701D9115094B770B008B845F /* drivers */ = {
 			isa = PBXGroup;
 			children = (
@@ -1368,7 +1330,6 @@
 		DCC30C670762539A008F7A48 /* Main Source */ = {
 			isa = PBXGroup;
 			children = (
-				42829ADA0BE631A500F6BF8F /* topology */,
 				707AEEEE09E80699001AEA89 /* actions */,
 				70422A1B091B141000A5E67F /* analyze */,
 				70F7D8C8092546DC009E311D /* classification */,
@@ -2227,11 +2188,6 @@
 				70B1A6500B7E237F00067486 /* cHardwareExperimental.cc in Sources */,
 				706C6FFF0B83F265003174C1 /* cInstSet.cc in Sources */,
 				4233358A0BC067E3000DF681 /* cHardwareGX.cc in Sources */,
-				427E798D0BE6A2E80083B133 /* cCliqueTopology.cc in Sources */,
-				427E798E0BE6A2EB0083B133 /* cGridTopology.cc in Sources */,
-				427E798F0BE6A2EC0083B133 /* cHexTopology.cc in Sources */,
-				427E79900BE6A2EE0083B133 /* cTorusTopology.cc in Sources */,
-				427E79910BE6A2EF0083B133 /* iTopology.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
