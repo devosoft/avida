@@ -97,6 +97,7 @@
 		706C6FFF0B83F265003174C1 /* cInstSet.cc in Sources */ = {isa = PBXBuildFile; fileRef = 706C6FFE0B83F265003174C1 /* cInstSet.cc */; };
 		706C70000B83F265003174C1 /* cInstSet.cc in Sources */ = {isa = PBXBuildFile; fileRef = 706C6FFE0B83F265003174C1 /* cInstSet.cc */; };
 		706C70010B83F265003174C1 /* cInstSet.cc in Sources */ = {isa = PBXBuildFile; fileRef = 706C6FFE0B83F265003174C1 /* cInstSet.cc */; };
+		707045F00BCEA0D9000F9B9A /* cHardwareGX.cc in Sources */ = {isa = PBXBuildFile; fileRef = 423335880BC067E3000DF681 /* cHardwareGX.cc */; };
 		7073165D097C6C8F00815164 /* cParser.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7073165B097C6C8F00815164 /* cParser.cc */; };
 		70731665097C6DF500815164 /* cASLibrary.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70731663097C6DF500815164 /* cASLibrary.cc */; };
 		7073166B097C6E0C00815164 /* cASSymbol.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70731669097C6E0C00815164 /* cASSymbol.cc */; };
@@ -216,6 +217,8 @@
 		70B1A6520B7E237F00067486 /* cHardwareExperimental.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B1A64F0B7E237F00067486 /* cHardwareExperimental.cc */; };
 		70B1A7430B7E3FFD00067486 /* instset-experimental.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70B1A7420B7E3FFD00067486 /* instset-experimental.cfg */; };
 		70B1A75A0B7E431F00067486 /* experimental.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70B1A7590B7E431F00067486 /* experimental.org */; };
+		70B6514F0BEA6FCC002472ED /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701EF27E0BEA5D2300DAE168 /* main.cc */; };
+		70B651B70BEA9AEC002472ED /* unit-tests in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70B6514C0BEA6FAD002472ED /* unit-tests */; };
 		70BCB22E0AB7B23D003FF331 /* cArgContainer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70BCB21C0AB7ADA6003FF331 /* cArgContainer.cc */; };
 		70BCB2350AB7B26B003FF331 /* cArgContainer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70BCB21C0AB7ADA6003FF331 /* cArgContainer.cc */; };
 		70C054ED0A4F6FD2002703C1 /* PopulationActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C054C90A4F6E19002703C1 /* PopulationActions.cc */; };
@@ -427,6 +430,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		70B651B50BEA9AC2002472ED /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = work;
+			dstSubfolderSpec = 16;
+			files = (
+				70B651B70BEA9AEC002472ED /* unit-tests in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		70DCAD08097AF7CC002F8733 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -472,6 +485,7 @@
 		701D9382094CBA69008B845F /* cDriverManager.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDriverManager.cc; sourceTree = "<group>"; };
 		701D93E6094CBF71008B845F /* cDefaultAnalyzeDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDefaultAnalyzeDriver.h; sourceTree = "<group>"; };
 		701D93E7094CBF71008B845F /* cDefaultAnalyzeDriver.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDefaultAnalyzeDriver.cc; sourceTree = "<group>"; };
+		701EF27E0BEA5D2300DAE168 /* main.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = main.cc; sourceTree = "<group>"; };
 		7027621909D73E5900741717 /* cOrgSourceMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgSourceMessage.h; sourceTree = "<group>"; };
 		7027621A09D73E7700741717 /* cOrgSinkMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgSinkMessage.h; sourceTree = "<group>"; };
 		702D4EF508DA5328007BA469 /* cEnvironment.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cEnvironment.h; sourceTree = "<group>"; };
@@ -787,6 +801,7 @@
 		70B1A7420B7E3FFD00067486 /* instset-experimental.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "instset-experimental.cfg"; sourceTree = "<group>"; };
 		70B1A7590B7E431F00067486 /* experimental.org */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = experimental.org; sourceTree = "<group>"; };
 		70B3984E0947B29D0018F09D /* tManagedPointerArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tManagedPointerArray.h; sourceTree = "<group>"; };
+		70B6514C0BEA6FAD002472ED /* unit-tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = "unit-tests"; path = "build/Development/unit-tests"; sourceTree = "<group>"; };
 		70BCB21B0AB7ADA6003FF331 /* cArgContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cArgContainer.h; sourceTree = "<group>"; };
 		70BCB21C0AB7ADA6003FF331 /* cArgContainer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cArgContainer.cc; sourceTree = "<group>"; };
 		70BCB2470AB7B634003FF331 /* cArgSchema.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cArgSchema.h; sourceTree = "<group>"; };
@@ -910,7 +925,7 @@
 		DCC315CE076253A5008F7A48 /* environment.rotate */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.rotate; sourceTree = "<group>"; };
 		DCC315D0076253A5008F7A48 /* task_event_gen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = task_event_gen.cc; sourceTree = "<group>"; };
 		DCC315D1076253A5008F7A48 /* task_event_gen.old.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = task_event_gen.old.cc; sourceTree = "<group>"; };
-		DCC3164D07626CF3008F7A48 /* avida */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "compiled.mach-o.executable"; path = avida; sourceTree = BUILT_PRODUCTS_DIR; };
+		DCC3164D07626CF3008F7A48 /* avida */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = avida; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -923,6 +938,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		70AA941709D486AE006A24C8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		70B6514A0BEA6FAD002472ED /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -963,6 +985,14 @@
 				701D93E7094CBF71008B845F /* cDefaultAnalyzeDriver.cc */,
 			);
 			path = drivers;
+			sourceTree = "<group>";
+		};
+		701EF27D0BEA5D2300DAE168 /* unit-tests */ = {
+			isa = PBXGroup;
+			children = (
+				701EF27E0BEA5D2300DAE168 /* main.cc */,
+			);
+			path = "unit-tests";
 			sourceTree = "<group>";
 		};
 		70422A1B091B141000A5E67F /* analyze */ = {
@@ -1131,6 +1161,7 @@
 				70DCAC55097AF730002F8733 /* avida */,
 				70DCAC56097AF730002F8733 /* avida-s */,
 				70DCAC58097AF730002F8733 /* avida-viewer */,
+				701EF27D0BEA5D2300DAE168 /* unit-tests */,
 				703CA3710A50734500AB4DB4 /* SConscript */,
 			);
 			path = targets;
@@ -1616,6 +1647,7 @@
 				700E2B83085DE50C00CF158A /* avida-viewer */,
 				70DCAD1C097AF7CC002F8733 /* avida-s */,
 				70AA941909D486AE006A24C8 /* libtcmalloc.a */,
+				70B6514C0BEA6FAD002472ED /* unit-tests */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1667,6 +1699,23 @@
 			productName = tcmalloc;
 			productReference = 70AA941909D486AE006A24C8 /* libtcmalloc.a */;
 			productType = "com.apple.product-type.library.static";
+		};
+		70B6514B0BEA6FAD002472ED /* unit-tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 70B651570BEA700B002472ED /* Build configuration list for PBXNativeTarget "unit-tests" */;
+			buildPhases = (
+				70B651490BEA6FAD002472ED /* Sources */,
+				70B6514A0BEA6FAD002472ED /* Frameworks */,
+				70B651B50BEA9AC2002472ED /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "unit-tests";
+			productName = "unit-tests";
+			productReference = 70B6514C0BEA6FAD002472ED /* unit-tests */;
+			productType = "com.apple.product-type.tool";
 		};
 		70DCAC9D097AF7CC002F8733 /* avida-s */ = {
 			isa = PBXNativeTarget;
@@ -1721,6 +1770,7 @@
 				70DCAC9D097AF7CC002F8733 /* avida-s */,
 				700E2AF3085DE50C00CF158A /* avida-viewer */,
 				70AA941809D486AE006A24C8 /* tcmalloc */,
+				70B6514B0BEA6FAD002472ED /* unit-tests */,
 			);
 		};
 /* End PBXProject section */
@@ -1894,6 +1944,7 @@
 				7099EF580B2FBC86001269F6 /* cTextViewerDriver_Base.cc in Sources */,
 				70B1A6520B7E237F00067486 /* cHardwareExperimental.cc in Sources */,
 				706C70010B83F265003174C1 /* cInstSet.cc in Sources */,
+				707045F00BCEA0D9000F9B9A /* cHardwareGX.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1904,6 +1955,14 @@
 				70AA941A09D486CA006A24C8 /* system-alloc.cc in Sources */,
 				70AA941B09D486CB006A24C8 /* tcmalloc-logging.cc in Sources */,
 				70AA941C09D486CD006A24C8 /* tcmalloc.cc in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		70B651490BEA6FAD002472ED /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				70B6514F0BEA6FCC002472ED /* main.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2428,6 +2487,70 @@
 			};
 			name = Profile;
 		};
+		70B651580BEA700B002472ED /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = "$(HOME)/bin";
+				PREBINDING = NO;
+				PRODUCT_NAME = "unit-tests";
+				ZERO_LINK = YES;
+			};
+			name = Development;
+		};
+		70B651590BEA700B002472ED /* Deployment-G4 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = "$(HOME)/bin";
+				PREBINDING = NO;
+				PRODUCT_NAME = "unit-tests";
+				ZERO_LINK = YES;
+			};
+			name = "Deployment-G4";
+		};
+		70B6515A0BEA700B002472ED /* Deployment-G5 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = "$(HOME)/bin";
+				PREBINDING = NO;
+				PRODUCT_NAME = "unit-tests";
+				ZERO_LINK = YES;
+			};
+			name = "Deployment-G5";
+		};
+		70B6515B0BEA700B002472ED /* Deployment-Universal */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = "$(HOME)/bin";
+				PREBINDING = NO;
+				PRODUCT_NAME = "unit-tests";
+				ZERO_LINK = YES;
+			};
+			name = "Deployment-Universal";
+		};
+		70B6515C0BEA700B002472ED /* Profile */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = "$(HOME)/bin";
+				PREBINDING = NO;
+				PRODUCT_NAME = "unit-tests";
+				ZERO_LINK = YES;
+			};
+			name = Profile;
+		};
 		70DCAD18097AF7CC002F8733 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2591,6 +2714,18 @@
 				70AA942809D48715006A24C8 /* Deployment-G5 */,
 				E62620990A372B9900C07685 /* Deployment-Universal */,
 				70AA942909D48715006A24C8 /* Profile */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = "Deployment-G4";
+		};
+		70B651570BEA700B002472ED /* Build configuration list for PBXNativeTarget "unit-tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				70B651580BEA700B002472ED /* Development */,
+				70B651590BEA700B002472ED /* Deployment-G4 */,
+				70B6515A0BEA700B002472ED /* Deployment-G5 */,
+				70B6515B0BEA700B002472ED /* Deployment-Universal */,
+				70B6515C0BEA700B002472ED /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = "Deployment-G4";

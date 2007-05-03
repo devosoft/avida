@@ -379,6 +379,19 @@ IF(AVD_TASK_EVENT_GEN)
 ENDIF(AVD_TASK_EVENT_GEN)
 
 
+OPTION(AVD_UNIT_TESTS
+  "Enable the unit-tests executable.  Running this target will test various low level functionality."
+  OFF
+)
+IF(AVD_UNIT_TESTS)
+  SET(UNIT_TESTS_DIR source/targets/unit-tests)
+  SET(UNIT_TESTS_SOURCES
+    ${UNIT_TESTS_DIR}/main.cc
+  )
+  ADD_EXECUTABLE(unit-tests ${UNIT_TESTS_SOURCES})
+  INSTALL_TARGETS(/work unit-tests)
+ENDIF(AVD_UNIT_TESTS)
+
 
 # Default Configuration Files
 # - Installed into the work directory alongside selected targets
@@ -455,20 +468,20 @@ ENDIF(AVD_PY_BINDINGS)
 
 # By default, compile all unit tests of primitive Avida classes.  Tests
 # are run via 'make test' under unix.
-OPTION(AVD_UNIT_TESTS
+OPTION(AVD_CMAKE_UNIT_TESTS
   "Enable building primitive unit test suites."
   OFF
 )
-IF(AVD_UNIT_TESTS)
+IF(AVD_CMAKE_UNIT_TESTS)
   SET(UNIT_TESTS TRUE)
   INCLUDE (${CMAKE_ROOT}/Modules/Dart.cmake)
   ADD_DEFINITIONS(-DENABLE_UNIT_TESTS)
   ADD_DEFINITIONS(-DUSE_tMemTrack=1)
   ENABLE_TESTING()
-ELSE(AVD_UNIT_TESTS)
+ELSE(AVD_CMAKE_UNIT_TESTS)
   REMOVE_DEFINITIONS(-DENABLE_UNIT_TESTS)
   REMOVE_DEFINITIONS(-DUSE_tMemTrack=1)
-ENDIF(AVD_UNIT_TESTS)
+ENDIF(AVD_CMAKE_UNIT_TESTS)
 
 
 IF(BUILD_AvidaSupportLibs)
