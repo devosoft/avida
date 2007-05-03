@@ -1,17 +1,10 @@
-
-# This section introduces the Avida project to CMake.  In this file, it
-# must be between the configuration options above (otherwise it
-# overrides their defaults) and the configuration options, cmake module
-# includes, and convenience variables below (otherwise some variables
-# can't be properly defined because PROJECT_SOURCE_DIR and
-# PROJECT_BUILD_DIR aren't yet defined).
-
 PROJECT(AVIDA)
 
-# The following three variables must be after the PROJECT statement, otherwise newer versions of cmake
-# will (correctly) use an empty value of PROJECT_BINARY_DIR, since the project didn't exist yet.
+# The following three variables must be after the PROJECT statement, otherwise
+# newer versions of cmake will (correctly) use an empty value of
+# PROJECT_BINARY_DIR, since the project didn't exist yet.
 
-# Default location for installed software / configs / docs is the build directory.
+# Default location for installed software/configs/ docs is the build directory.
 SET(CMAKE_INSTALL_PREFIX
   "${PROJECT_BINARY_DIR}"
   CACHE PATH
@@ -34,15 +27,11 @@ SET(LIBRARY_OUTPUT_PATH
 
 
 
-# This section defines default builtin configure options.
-
+# This section defines default builtin compiler options
+# ------------------------------------------------------------------------------
 IF(UNIX)
-
-  IF(APPLE)
-    SET(COMPILER_WARNING_FLAGS "-Wall -Wno-long-double -Wno-long-long")
-  ELSE(APPLE)
-    SET(COMPILER_WARNING_FLAGS "-Wall -Wno-long-long")
-  ENDIF(APPLE)
+  SET(COMPILER_WARNING_FLAGS "-Wextra -Wno-four-char-constants -Wno-unknown-pragmas -Wconversion -Wno-trigraphs")
+  SET(COMPILER_OPTIMIZATION_FLAGS "-ffast-math -fno-rtti -funroll-loops -fstrict-aliasing -ftree-vectorize -fvisibility-inlines-hidden")
 
   # Four types of c++ compilations:
   # - debug (Debug)
@@ -53,39 +42,16 @@ IF(UNIX)
     "-g ${COMPILER_WARNING_FLAGS} -DDEBUG"
     CACHE STRING "Flags used by the compiler during debug builds." FORCE)
   SET(CMAKE_CXX_FLAGS_MINSIZEREL
-    "-Os -DNDEBUG"
+    "-Os ${COMPILER_WARNING_FLAGS} -DNDEBUG"
     CACHE STRING "Flags used by the compiler during release minsize builds." FORCE)
   SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO
-    "-O2 -ffast-math -g ${COMPILER_WARNING_FLAGS} -DDEBUG"
+    "-O2 -g ${COMPILER_OPTIMIZATION_FLAGS} ${COMPILER_WARNING_FLAGS} -DDEBUG"
     CACHE STRING "Flags used by the compiler during release builds." FORCE)
   SET(CMAKE_CXX_FLAGS_RELEASE
-    "-O3 -ffast-math -DNDEBUG"
+    "-O3 ${COMPILER_OPTIMIZATION_FLAGS} ${COMPILER_WARNING_FLAGS} -DNDEBUG"
     CACHE STRING "Flags used by the compiler during release builds." FORCE)
-
-  # Four types of c compilations:
-  # - debug (Debug)
-  # - minimum-size release (MinSizeRel)
-  # - release (Release)
-  # - release with debug info (RelWithDebInfo)
-  SET(CMAKE_C_FLAGS_DEBUG
-    "-g ${COMPILER_WARNING_FLAGS} -DDEBUG"
-    CACHE STRING "Flags used by the compiler during debug builds." FORCE)
-  SET(CMAKE_C_FLAGS_MINSIZEREL
-    "-Os -DNDEBUG"
-    CACHE STRING "Flags used by the compiler during release minsize builds." FORCE)
-  SET(CMAKE_C_FLAGS_RELEASE
-    "-O3 -ffast-math -DNDEBUG"
-    CACHE STRING "Flags used by the compiler during release builds." FORCE)
-  SET(CMAKE_C_FLAGS_RELWITHDEBINFO
-    "-O2 -ffast-math -g ${COMPILER_WARNING_FLAGS} -DDEBUG"
-    CACHE STRING "Flags used by the compiler during release builds." FORCE)
-
-  # By default, show all build commands.
-  SET(CMAKE_VERBOSE_MAKEFILE TRUE CACHE BOOL
-    "If this value is on, makefiles will be generated without the .SILENT directive, and all commands will be echoed to the console during the make.  This is useful for debugging only.")
 ENDIF(UNIX)
 
-SET(CMAKE_SKIP_RPATH TRUE CACHE INTERNAL "Fix Library Path Issues?")
 
 # Default build mode compiles c++ and c code with debug info and no
 # optimizations.
@@ -93,31 +59,361 @@ IF(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE
     Release
     CACHE STRING
-    "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel."
+    "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel."
     FORCE
   )
 ENDIF(NOT CMAKE_BUILD_TYPE)
 
 
+
+# Build Instructions for the Avida Core functionality
+# - Below are groups of sources, based on directory.  Each appends the source
+# - files to the master AVIDA_CORE_SOURCES list that is used to build a
+# - static library that is linked into relevant targets.
+# ------------------------------------------------------------------------------
+SET(AVIDA_CORE_SOURCES)
+SET(ALL_INC_DIRS
+  ${PROJECT_SOURCE_DIR}/source
+)
+
+
+# The actions directory
+SET(ACTIONS_DIR ${PROJECT_SOURCE_DIR}/source/actions)
+SET(ACTIONS_SOURCES
+  ${ACTIONS_DIR}/cActionLibrary.cc
+  ${ACTIONS_DIR}/DriverActions.cc
+  ${ACTIONS_DIR}/EnvironmentActions.cc
+  ${ACTIONS_DIR}/LandscapeActions.cc
+  ${ACTIONS_DIR}/PopulationActions.cc
+  ${ACTIONS_DIR}/PrintActions.cc
+  ${ACTIONS_DIR}/SaveLoadActions.cc
+)
+SOURCE_GROUP(actions FILES ${ACTIONS_SOURCES})
+LIST(APPEND AVIDA_CORE_SOURCES ${ACTIONS_SOURCES})
+LIST(APPEND ALL_INC_DIRS ${ACTIONS_DIR})
+
+
+# The analyze directory
+SET(ANALYZE_DIR ${PROJECT_SOURCE_DIR}/source/analyze)
+SET(ANALYZE_SOURCES
+  ${ANALYZE_DIR}/cAnalyze.cc
+  ${ANALYZE_DIR}/cAnalyzeGenotype.cc
+  ${ANALYZE_DIR}/cAnalyzeJobQueue.cc
+  ${ANALYZE_DIR}/cAnalyzeJobWorker.cc
+  ${ANALYZE_DIR}/cMutationalNeighborhood.cc
+)
+SOURCE_GROUP(analyze FILES ${ANALYZE_SOURCES})
+LIST(APPEND AVIDA_CORE_SOURCES ${ANALYZE_SOURCES})
+LIST(APPEND ALL_INC_DIRS ${ANALYZE_DIR})
+
+
+# The classification directory
+SET(CLASSIFICATION_DIR ${PROJECT_SOURCE_DIR}/source/classification)
+SET(CLASSIFICATION_SOURCES
+  ${CLASSIFICATION_DIR}/cClassificationManager.cc
+  ${CLASSIFICATION_DIR}/cGenotype.cc
+  ${CLASSIFICATION_DIR}/cGenotype_BirthData.cc
+  ${CLASSIFICATION_DIR}/cGenotypeControl.cc
+  ${CLASSIFICATION_DIR}/cInjectGenotype.cc
+  ${CLASSIFICATION_DIR}/cInjectGenotypeControl.cc
+  ${CLASSIFICATION_DIR}/cInjectGenotypeQueue.cc
+  ${CLASSIFICATION_DIR}/cLineage.cc
+  ${CLASSIFICATION_DIR}/cSpecies.cc
+  ${CLASSIFICATION_DIR}/cSpeciesControl.cc
+  ${CLASSIFICATION_DIR}/cSpeciesQueue.cc
+)
+SOURCE_GROUP(classification FILES ${CLASSIFICATION_SOURCES})
+LIST(APPEND AVIDA_CORE_SOURCES ${CLASSIFICATION_SOURCES})
+LIST(APPEND ALL_INC_DIRS ${CLASSIFICATION_DIR})
+
+
+# The cpu directory
+SET(CPU_DIR ${PROJECT_SOURCE_DIR}/source/cpu)
+SET(CPU_SOURCES
+  ${CPU_DIR}/cCodeLabel.cc
+  ${CPU_DIR}/cCPUMemory.cc
+  ${CPU_DIR}/cCPUStack.cc
+  ${CPU_DIR}/cCPUTestInfo.cc
+  ${CPU_DIR}/cHardwareBase.cc
+  ${CPU_DIR}/cHardwareCPU.cc
+  ${CPU_DIR}/cHardwareExperimental.cc
+  ${CPU_DIR}/cHardwareGX.cc
+  ${CPU_DIR}/cHardwareManager.cc
+  ${CPU_DIR}/cHardwareSMT.cc
+  ${CPU_DIR}/cHardwareStatusPrinter.cc
+  ${CPU_DIR}/cHardwareTransSMT.cc
+  ${CPU_DIR}/cHeadCPU.cc
+  ${CPU_DIR}/cInstSet.cc
+  ${CPU_DIR}/cTestCPU.cc
+  ${CPU_DIR}/cTestCPUInterface.cc
+)
+SOURCE_GROUP(cpu FILES ${CPU_SOURCES})
+LIST(APPEND AVIDA_CORE_SOURCES ${CPU_SOURCES})
+LIST(APPEND ALL_INC_DIRS ${CPU_DIR})
+
+
+# The drivers directory
+SET(DRIVERS_DIR ${PROJECT_SOURCE_DIR}/source/drivers)
+SET(DRIVERS_SOURCES
+  ${DRIVERS_DIR}/cDefaultAnalyzeDriver.cc
+  ${DRIVERS_DIR}/cDefaultRunDriver.cc
+  ${DRIVERS_DIR}/cDriverManager.cc
+  ${DRIVERS_DIR}/cFallbackWorldDriver.cc
+)
+SOURCE_GROUP(drivers FILES ${DRIVERS_SOURCES})
+LIST(APPEND AVIDA_CORE_SOURCES ${DRIVERS_SOURCES})
+LIST(APPEND ALL_INC_DIRS ${DRIVERS_DIR})
+
+
+# The main directory
+SET(MAIN_DIR ${PROJECT_SOURCE_DIR}/source/main)
+SET(MAIN_SOURCES
+  ${MAIN_DIR}/avida.cc
+  ${MAIN_DIR}/cAvidaConfig.cc
+  ${MAIN_DIR}/cBirthChamber.cc
+  ${MAIN_DIR}/cDeme.cc
+  ${MAIN_DIR}/cEnvironment.cc
+  ${MAIN_DIR}/cEventList.cc
+  ${MAIN_DIR}/cFitnessMatrix.cc
+  ${MAIN_DIR}/cGenome.cc
+  ${MAIN_DIR}/cGenomeUtil.cc
+  ${MAIN_DIR}/cInstruction.cc
+  ${MAIN_DIR}/cLandscape.cc
+  ${MAIN_DIR}/cLocalMutations.cc
+  ${MAIN_DIR}/cMutationLib.cc
+  ${MAIN_DIR}/cMutationRates.cc
+  ${MAIN_DIR}/cMxCodeArray.cc
+  ${MAIN_DIR}/cOrganism.cc
+  ${MAIN_DIR}/cPhenotype.cc
+  ${MAIN_DIR}/cPopulation.cc
+  ${MAIN_DIR}/cPopulationCell.cc
+  ${MAIN_DIR}/cPopulationInterface.cc
+  ${MAIN_DIR}/cReaction.cc
+  ${MAIN_DIR}/cReactionLib.cc
+  ${MAIN_DIR}/cReactionResult.cc
+  ${MAIN_DIR}/cResource.cc
+  ${MAIN_DIR}/cResourceCount.cc
+  ${MAIN_DIR}/cResourceLib.cc
+  ${MAIN_DIR}/cSpatialCountElem.cc
+  ${MAIN_DIR}/cSpatialResCount.cc
+  ${MAIN_DIR}/cStats.cc
+  ${MAIN_DIR}/cTaskLib.cc
+  ${MAIN_DIR}/cWorld.cc
+)
+SOURCE_GROUP(main FILES ${MAIN_SOURCES})
+LIST(APPEND AVIDA_CORE_SOURCES ${MAIN_SOURCES})
+LIST(APPEND ALL_INC_DIRS ${MAIN_DIR})
+
+
+# The tools directory
+SET(TOOLS_DIR ${PROJECT_SOURCE_DIR}/source/tools)
+SET(TOOLS_SOURCES
+  ${TOOLS_DIR}/cArgContainer.cc
+  ${TOOLS_DIR}/cArgSchema.cc
+  ${TOOLS_DIR}/cChangeList.cc
+  ${TOOLS_DIR}/cConstSchedule.cc
+  ${TOOLS_DIR}/cDataEntry.cc
+  ${TOOLS_DIR}/cDataFile.cc
+  ${TOOLS_DIR}/cDataFileManager.cc
+  ${TOOLS_DIR}/cDataManager_Base.cc
+  ${TOOLS_DIR}/cDefaultMessageDisplay.cc
+  ${TOOLS_DIR}/cDoubleSum.cc
+  ${TOOLS_DIR}/cFile.cc
+  ${TOOLS_DIR}/cHelpAlias.cc
+  ${TOOLS_DIR}/cHelpManager.cc
+  ${TOOLS_DIR}/cHelpType.cc
+  ${TOOLS_DIR}/cHistogram.cc
+  ${TOOLS_DIR}/cInitFile.cc
+  ${TOOLS_DIR}/cIntSum.cc
+  ${TOOLS_DIR}/cIntegratedSchedule.cc
+  ${TOOLS_DIR}/cIntegratedScheduleNode.cc
+  ${TOOLS_DIR}/cMerit.cc
+  ${TOOLS_DIR}/cProbSchedule.cc
+  ${TOOLS_DIR}/cRandom.cc
+  ${TOOLS_DIR}/cRunningAverage.cc
+  ${TOOLS_DIR}/cSchedule.cc
+  ${TOOLS_DIR}/cString.cc
+  ${TOOLS_DIR}/cStringIterator.cc
+  ${TOOLS_DIR}/cStringList.cc
+  ${TOOLS_DIR}/cStringUtil.cc
+  ${TOOLS_DIR}/cThread.cc
+  ${TOOLS_DIR}/cTools.cc
+  ${TOOLS_DIR}/cWeightedIndex.cc
+)
+SOURCE_GROUP(tools FILES ${TOOLS_SOURCES})
+LIST(APPEND AVIDA_CORE_SOURCES ${TOOLS_SOURCES})
+LIST(APPEND ALL_INC_DIRS ${TOOLS_DIR})
+
+
+# Create the static library from the master source list
+INCLUDE_DIRECTORIES(${ALL_INC_DIRS})
+ADD_LIBRARY(avidacore ${AVIDA_CORE_SOURCES})
+
+
+
+# Build Instructions for the TCMalloc library
+# ------------------------------------------------------------------------------
 IF(UNIX)
   SET(AVD_ENABLE_TCMALLOC TRUE)
 ELSE(UNIX)
   SET(AVD_ENABLE_TCMALLOC FALSE)
 ENDIF(UNIX)
-
-IF(EXISTS ${PROJECT_SOURCE_DIR}/source/archive)
-  OPTION(AVD_SERIALIZATION
-    "Enable boost serialization support"
-    OFF
+IF(AVD_ENABLE_TCMALLOC)
+  SET(TCMALLOC_DIR source/platform/tcmalloc)
+  SET(TCMALLOC_SOURCES
+    ${TCMALLOC_DIR}/system-alloc.cc
+    ${TCMALLOC_DIR}/tcmalloc-logging.cc
+    ${TCMALLOC_DIR}/tcmalloc.cc
   )
-ELSE(EXISTS ${PROJECT_SOURCE_DIR}/source/archive)
-  SET(AVD_SERIALIZATION FALSE)
-ENDIF(EXISTS ${PROJECT_SOURCE_DIR}/source/archive)
-IF(AVD_SERIALIZATION)
-  ADD_DEFINITIONS(-DENABLE_SERIALIZATION=1)
-ELSE(AVD_SERIALIZATION)
-  REMOVE_DEFINITIONS(-DENABLE_SERIALIZATION=1)
-ENDIF(AVD_SERIALIZATION)
+  ADD_LIBRARY(tcmalloc ${TCMALLOC_SOURCES})
+ENDIF(AVD_ENABLE_TCMALLOC)
+
+
+
+# Target Processing
+# - For each enabled target, process its build instructions.  Must occur after
+# - avidacore has been defined.
+# ------------------------------------------------------------------------------
+OPTION(AVD_CMDLINE
+  "Enable building standard command line Avida (fastest version)."
+  ON
+)
+IF(AVD_CMDLINE)
+  SET(AVIDA_CMDLINE_DIR source/targets/avida)
+  SET(AVIDA_CMDLINE_SOURCES ${AVIDA_CMDLINE_DIR}/primitive.cc)
+  SOURCE_GROUP(target\\avida FILES ${AVIDA_CMDLINE_SOURCES})
+  ADD_EXECUTABLE(avida ${AVIDA_CMDLINE_SOURCES})
+
+  SET(AVIDA_CMDLINE_LIBS avidacore)  
+  IF(NOT MSVC)
+    LIST(APPEND AVIDA_CMDLINE_LIBS pthread)
+  ENDIF(NOT MSVC)
+  IF(AVD_ENABLE_TCMALLOC)
+    LIST(APPEND AVIDA_CMDLINE_LIBS tcmalloc)
+  ENDIF(AVD_ENABLE_TCMALLOC)  
+  TARGET_LINK_LIBRARIES(avida ${AVIDA_CMDLINE_LIBS})
+  
+  INSTALL_TARGETS(/work avida)
+ENDIF(AVD_CMDLINE)
+
+
+# By default, build the console interface to Avida.
+OPTION(AVD_GUI_NCURSES
+  "Enable building Avida console interface."
+  OFF
+)
+# Make sure requisites are present for build of console interface.  Give
+# user feedback if they're missing.
+IF(AVD_GUI_NCURSES)
+  # Locate the ncurses screen handling package (for Avida's console
+  # interface) and the Qt graphics API (for Avida's graphic interface).
+  INCLUDE(${PROJECT_SOURCE_DIR}/CMakeModules/FindNcurses.cmake)
+  IF(NOT NCURSES_INCLUDE_PATH)
+    MESSAGE("Unable to locate header files for the ncurses CRT screen handling package.  Please set the advanced variable NCURSES_INCLUDE_PATH to their location.")
+  ENDIF(NOT NCURSES_INCLUDE_PATH)
+  IF(NOT NCURSES_LIBRARY)
+    MESSAGE("Unable to locate 'libncurses'.  Please set the advanced variable NCURSES_LIBRARY to its location.")
+  ENDIF(NOT NCURSES_LIBRARY)
+
+  IF(NCURSES_LIBRARY AND NCURSES_INCLUDE_PATH)
+
+    INCLUDE_DIRECTORIES(${NCURSES_INCLUDE_PATH})
+    
+    SET(AVIDA_VIEWER_DIR source/targets/avida-viewer)
+    SET(AVIDA_VIEWER_SOURCES
+      ${AVIDA_VIEWER_DIR}/cAnalyzeScreen.cc
+      ${AVIDA_VIEWER_DIR}/cAnalyzeView.cc
+      ${AVIDA_VIEWER_DIR}/cBarScreen.cc
+      ${AVIDA_VIEWER_DIR}/cEnvironmentScreen.cc
+      ${AVIDA_VIEWER_DIR}/cHistScreen.cc
+      ${AVIDA_VIEWER_DIR}/cMapScreen.cc
+      ${AVIDA_VIEWER_DIR}/cMenuWindow.cc
+      ${AVIDA_VIEWER_DIR}/cOptionsScreen.cc
+      ${AVIDA_VIEWER_DIR}/cScreen.cc
+      ${AVIDA_VIEWER_DIR}/cStatsScreen.cc
+      ${AVIDA_VIEWER_DIR}/cSymbolUtil.cc
+      ${AVIDA_VIEWER_DIR}/cTextViewerAnalyzeDriver.cc
+      ${AVIDA_VIEWER_DIR}/cTextViewerDriver.cc
+      ${AVIDA_VIEWER_DIR}/cTextViewerDriver_Base.cc
+      ${AVIDA_VIEWER_DIR}/cTextWindow.cc
+      ${AVIDA_VIEWER_DIR}/cView.cc
+      ${AVIDA_VIEWER_DIR}/cViewInfo.cc
+      ${AVIDA_VIEWER_DIR}/cZoomScreen.cc
+      ${AVIDA_VIEWER_DIR}/viewer.cc
+    )
+    SOURCE_GROUP(targets\\avida-viewer FILES ${AVIDA_VIEWER_SOURCES})
+    ADD_EXECUTABLE(avida-viewer ${AVIDA_VIEWER_SOURCES})
+    
+    SET(AVIDA_VIEWER_LIBS avidacore ${NCURSES_LIBRARY})
+    IF(NOT MSVC)
+      LIST(APPEND AVIDA_VIEWER_LIBS pthread)
+    ENDIF(NOT MSVC)
+    IF(AVD_ENABLE_TCMALLOC)
+      LIST(APPEND AVIDA_VIEWER_LIBS tcmalloc)
+    ENDIF(AVD_ENABLE_TCMALLOC)
+    TARGET_LINK_LIBRARIES(avida-viewer ${AVIDA_VIEWER_LIBS})
+    
+    INSTALL_TARGETS(/work avida-viewer)
+
+  ENDIF(NCURSES_LIBRARY AND NCURSES_INCLUDE_PATH)
+ENDIF(AVD_GUI_NCURSES)
+
+
+OPTION(AVD_TASK_EVENT_GEN
+  "Enable building the task_event_gen utility"
+  OFF
+)
+IF(AVD_TASK_EVENT_GEN)
+  SET(UTILS_DIR source/utils)
+  SET(TASK_EVENT_GEN_SOURCES
+    ${TOOLS_DIR}/cFile.cc
+    ${TOOLS_DIR}/cRandom.cc
+    ${TOOLS_DIR}/cString.cc
+    ${TOOLS_DIR}/cInitFIle.cc
+    ${TOOLS_DIR}/cStringIterator.cc
+    ${TOOLS_DIR}/cStringList.cc
+    ${UTILS_DIR}/task_events/task_event_gen.cc
+  )
+  ADD_EXECUTABLE(task_event_gen ${TASK_EVENT_GEN_SOURCES})
+  INSTALL_TARGETS(/work task_event_gen)
+ENDIF(AVD_TASK_EVENT_GEN)
+
+
+
+# Default Configuration Files
+# - Installed into the work directory alongside selected targets
+# ------------------------------------------------------------------------------
+SET(CFG_FILES_DIR support/config)
+SET(CFG_FILES
+  ${CFG_FILES_DIR}/analyze.cfg
+  ${CFG_FILES_DIR}/avida.cfg
+  ${CFG_FILES_DIR}/environment.cfg
+  ${CFG_FILES_DIR}/events.cfg
+  ${CFG_FILES_DIR}/instset-classic.cfg
+  ${CFG_FILES_DIR}/instset-sex-classic.cfg
+  ${CFG_FILES_DIR}/instset-smt.cfg
+  ${CFG_FILES_DIR}/instset-transsmt.cfg
+  ${CFG_FILES_DIR}/default-classic.org
+  ${CFG_FILES_DIR}/default-sex-classic.org
+  ${CFG_FILES_DIR}/default-smt.org
+  ${CFG_FILES_DIR}/default-transsmt.org 
+)
+INSTALL_FILES(/work FILES ${CFG_FILES})
+
+
+
+# Avida-ED Related
+# ------------------------------------------------------------------------------
+
+OPTION(AVD_GUI_PYQT
+	"Enable the PyQt GUI interface. (EXPERIMENTAL)"
+	OFF
+)
+IF(AVD_GUI_PYQT)
+	SET(AVD_PY_BINDINGS ON CACHE BOOL "Avida Python Bindings MUST be built for the PyQt GUI." FORCE)
+  FIND_PROGRAM(PYUIC pyuic DOC "Path to pyuic.  Used to compile python files from .ui files.")
+ENDIF(AVD_GUI_PYQT)
+
 
 # Experimental Boost.Python interface to avida is disabled by default.
 OPTION(AVD_PY_BINDINGS
@@ -151,51 +447,10 @@ IF(AVD_PY_BINDINGS)
     DOC "gccxml must be in the search path specified by your PATH environment variable in order for pyste to operate"
   )
   SET(UNIT_TESTS TRUE)
+
+  ADD_SUBDIRECTORY(source/bindings)
+  ADD_SUBDIRECTORY(source/python)
 ENDIF(AVD_PY_BINDINGS)
-
-
-# By default, build the console interface to Avida.
-OPTION(AVD_GUI_NCURSES
-  "Enable building Avida console interface."
-  OFF
-)
-# Make sure requisites are present for build of console interface.  Give
-# user feedback if they're missing.
-IF(AVD_GUI_NCURSES)
-  # Locate the ncurses screen handling package (for Avida's console
-  # interface) and the Qt graphics API (for Avida's graphic interface).
-  INCLUDE(${PROJECT_SOURCE_DIR}/CMakeModules/FindNcurses.cmake)
-  IF(NOT NCURSES_INCLUDE_PATH)
-    MESSAGE(
-      "Building Avida's console interface requires header files for the ncurses CRT screen handling package.  I can't find those header files.  If you know that the headers are installed, set the advanced variable NCURSES_INCLUDE_PATH to their include directory."
-    )
-  ENDIF(NOT NCURSES_INCLUDE_PATH)
-  IF(NOT NCURSES_LIBRARY)
-    MESSAGE(
-      "Building Avida's console interface requires the ncurses library 'libncurses', which I can't find.  If you know that the library is installed, set the advanced variable NCURSES_LIBRARY to its location."
-    )
-  ENDIF(NOT NCURSES_LIBRARY)
-ENDIF(AVD_GUI_NCURSES)
-
-# By default, build the primitive version of Avida.
-OPTION(AVD_PRIMITIVE
-  "Enable building interfaceless Avida (fastest version)."
-  ON
-)
-
-OPTION(AVD_GUI_PYQT
-	"Enable the PyQt GUI interface. (EXPERIMENTAL)"
-	OFF
-)
-IF(AVD_GUI_PYQT)
-	SET(AVD_PY_BINDINGS ON CACHE BOOL "Avida Python Bindings MUST be built for the PyQt GUI." FORCE)
-  FIND_PROGRAM(PYUIC pyuic DOC "Path to pyuic.  Used to compile python files from .ui files.")
-ENDIF(AVD_GUI_PYQT)
-
-OPTION(AVD_TASK_EVENT_GEN
-  "Enable building the task_event_gen utility"
-  OFF
-)
 
 
 # By default, compile all unit tests of primitive Avida classes.  Tests
@@ -215,71 +470,9 @@ ELSE(AVD_UNIT_TESTS)
   REMOVE_DEFINITIONS(-DUSE_tMemTrack=1)
 ENDIF(AVD_UNIT_TESTS)
 
-IF(MSVC)
-  INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/source/platform/win32-pthread)
-ENDIF(MSVC)
 
-# This section defines convenience variables.  They're available to
-# CMakeList.txt files in all subdirectories beneath the directory
-# containing this file..
-
-# Shortcuts to the source subdirectories.
-SET(THIRDPARTY_SRC_DIR ${PROJECT_SOURCE_DIR}/source/third-party)
-SET(TOOLS_SRC_DIR ${PROJECT_SOURCE_DIR}/source/tools)
-SET(ACTIONS_SRC_DIR ${PROJECT_SOURCE_DIR}/source/actions)
-SET(ANALYZE_SRC_DIR ${PROJECT_SOURCE_DIR}/source/analyze)
-SET(ARCHIVE_SRC_DIR ${PROJECT_SOURCE_DIR}/source/archive)
-SET(BOOST_SRC_DIR ${PROJECT_SOURCE_DIR}/source/third-party/boost)
-SET(CLASSIFICATION_SRC_DIR ${PROJECT_SOURCE_DIR}/source/classification)
-SET(CPU_SRC_DIR ${PROJECT_SOURCE_DIR}/source/cpu)
-SET(DRIVERS_SRC_DIR ${PROJECT_SOURCE_DIR}/source/drivers)
-SET(EVENT_SRC_DIR ${PROJECT_SOURCE_DIR}/source/event)
-SET(MAIN_SRC_DIR ${PROJECT_SOURCE_DIR}/source/main)
-
-# Shortcuts to the build subdirectories.
-SET(THIRDPARTY_BLD_DIR ${PROJECT_BINARY_DIR}/source/third-party)
-SET(TOOLS_BLD_DIR ${PROJECT_BINARY_DIR}/source/tools)
-SET(ACTIONS_BLD_DIR ${PROJECT_BINARY_DIR}/source/actions)
-SET(ANALYZE_BLD_DIR ${PROJECT_BINARY_DIR}/source/analyze)
-SET(ARCHIVE_BLD_DIR ${PROJECT_BINARY_DIR}/source/archive)
-SET(BOOST_SERIALIZATION_BLD_DIR ${PROJECT_BINARY_DIR}/source/third-party/boost/serialization)
-SET(CLASSSIFICATION_BLD_DIR ${PROJECT_BINARY_DIR}/source/classification)
-SET(CPU_BLD_DIR ${PROJECT_BINARY_DIR}/source/cpu)
-SET(DRIVERS_BLD_DIR ${PROJECT_BINARY_DIR}/source/drivers)
-SET(EVENT_BLD_DIR ${PROJECT_BINARY_DIR}/source/event)
-SET(MAIN_BLD_DIR ${PROJECT_BINARY_DIR}/source/main)
-
-# A list of all source subdirectories (convenient for naming
-# include-directories).
-SET(ALL_INC_DIRS
-  ${TOOLS_SRC_DIR}
-  ${ACTIONS_SRC_DIR}
-  ${ANALYZE_SRC_DIR}
-  ${ARCHIVE_SRC_DIR}
-  ${BOOST_SRC_DIR}
-  ${CLASSIFICATION_SRC_DIR}
-  ${CPU_SRC_DIR}
-  ${DRIVERS_SRC_DIR}
-  ${EVENT_SRC_DIR}
-  ${EVENT_BLD_DIR}
-  ${MAIN_SRC_DIR}
-  ${PROJECT_SOURCE_DIR}/source
-)
-
-# A list of all build subdirectories (convenient for naming
-# link-subdirecties).
-SET(ALL_LIB_DIRS
-  ${TOOLS_BLD_DIR}
-  ${ACTIONS_BLD_DIR}
-  ${ANALYZE_BLD_DIR}
-  ${ARCHIVE_BLD_DIR}
-  ${BOOST_SERIALIZATION_BLD_DIR}
-  ${CLASSIFICATION_BLD_DIR}
-  ${CPU_BLD_DIR}
-  ${DRIVERS_BLD_DIR}
-  ${EVENT_BLD_DIR}
-  ${MAIN_BLD_DIR}
-  ${LIBRARY_OUTPUT_PATH}
-)
-
-SUBDIRS(source support)
+IF(BUILD_AvidaSupportLibs)
+  IF(EXISTS source/third-party/AvidaSupportLibs/CMakeLists.txt)
+    ADD_SUBDIRECTORY(source/third-party/AvidaSupportLibs)
+  ENDIF(EXISTS source/third-party/AvidaSupportLibs/CMakeLists.txt)
+ENDIF(BUILD_AvidaSupportLibs)

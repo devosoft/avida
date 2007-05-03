@@ -1,11 +1,11 @@
 #include <iostream>
 
-#include "../../tools/tArray.h"
-#include "../../tools/cFile.h"
-#include "../../tools/cRandom.h"
-#include "../../tools/cString.h"
-#include "../../tools/cInitFile.h"
-#include "../../tools/cStringList.h"
+#include "tArray.h"
+#include "cFile.h"
+#include "cRandom.h"
+#include "cString.h"
+#include "cInitFile.h"
+#include "cStringList.h"
 
 using namespace std;
 

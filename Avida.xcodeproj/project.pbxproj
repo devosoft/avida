@@ -455,8 +455,6 @@
 		7009E0C50B9A2FAC00070F8F /* cRWLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cRWLock.h; sourceTree = "<group>"; };
 		700AE91B09DB65F200A073FD /* cTaskContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cTaskContext.h; sourceTree = "<group>"; };
 		700E11BC0A0815B600B604CD /* cDataEntry.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDataEntry.cc; sourceTree = "<group>"; };
-		700E12610A097A0800B604CD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		700E12630A097A1700B604CD /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		700E28CF0859FFD700CF158A /* tObjectFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tObjectFactory.h; sourceTree = "<group>"; };
 		700E2B83085DE50C00CF158A /* avida-viewer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "avida-viewer"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7013845F09028B3E0087ED2E /* cAvidaConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaConfig.h; sourceTree = "<group>"; };
@@ -474,7 +472,6 @@
 		701D9382094CBA69008B845F /* cDriverManager.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDriverManager.cc; sourceTree = "<group>"; };
 		701D93E6094CBF71008B845F /* cDefaultAnalyzeDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDefaultAnalyzeDriver.h; sourceTree = "<group>"; };
 		701D93E7094CBF71008B845F /* cDefaultAnalyzeDriver.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDefaultAnalyzeDriver.cc; sourceTree = "<group>"; };
-		701D941C094CC5F1008B845F /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		7027621909D73E5900741717 /* cOrgSourceMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgSourceMessage.h; sourceTree = "<group>"; };
 		7027621A09D73E7700741717 /* cOrgSinkMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgSinkMessage.h; sourceTree = "<group>"; };
 		702D4EF508DA5328007BA469 /* cEnvironment.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cEnvironment.h; sourceTree = "<group>"; };
@@ -493,7 +490,6 @@
 		703CA3710A50734500AB4DB4 /* SConscript */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConscript; sourceTree = "<group>"; };
 		703CA3720A50735B00AB4DB4 /* SConscript */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConscript; sourceTree = "<group>"; };
 		703CA3730A50737700AB4DB4 /* SConscript */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConscript; sourceTree = "<group>"; };
-		703CA3740A50739600AB4DB4 /* SConscript */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConscript; sourceTree = "<group>"; };
 		703CA3760A5073CD00AB4DB4 /* SConscript */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConscript; sourceTree = "<group>"; };
 		703CA3770A50740300AB4DB4 /* SConscript */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConscript; sourceTree = "<group>"; };
 		703CA3780A50749F00AB4DB4 /* SConstruct */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SConstruct; sourceTree = "<group>"; };
@@ -508,7 +504,6 @@
 		70422A23091B141000A5E67F /* cAnalyzeFunction.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAnalyzeFunction.h; sourceTree = "<group>"; };
 		70422A24091B141000A5E67F /* cAnalyzeGenotype.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeGenotype.cc; sourceTree = "<group>"; };
 		70422A25091B141000A5E67F /* cAnalyzeGenotype.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAnalyzeGenotype.h; sourceTree = "<group>"; };
-		70422A44091B1B8500A5E67F /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		7049F2D70A66859300640512 /* cHardwareTransSMT.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareTransSMT.cc; sourceTree = "<group>"; };
 		7049F2D80A66859300640512 /* cHardwareTransSMT.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareTransSMT.h; sourceTree = "<group>"; };
 		7049F3520A66A8F500640512 /* instset-classic.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "instset-classic.cfg"; sourceTree = "<group>"; };
@@ -541,7 +536,6 @@
 		7053336C092A3DF4006BD186 /* nInjectGenotype.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = nInjectGenotype.h; sourceTree = "<group>"; };
 		705333E5092A4B7C006BD186 /* cLineage.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cLineage.cc; sourceTree = "<group>"; };
 		705333E6092A4B7C006BD186 /* cLineage.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cLineage.h; sourceTree = "<group>"; };
-		7053345E092A4D88006BD186 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		7054A11E09A7BEFC00038658 /* cThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cThread.h; sourceTree = "<group>"; };
 		7054A11F09A7BEFC00038658 /* cThread.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cThread.cc; sourceTree = "<group>"; };
 		7054A16E09A8014600038658 /* cAnalyzeJobQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAnalyzeJobQueue.h; sourceTree = "<group>"; };
@@ -574,10 +568,8 @@
 		707AEF8C09EA8B2D001AEA89 /* cAnalyzeCommandAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAnalyzeCommandAction.h; sourceTree = "<group>"; };
 		707AF04409EAB529001AEA89 /* LandscapeActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandscapeActions.h; sourceTree = "<group>"; };
 		707AF04509EAB529001AEA89 /* LandscapeActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeActions.cc; sourceTree = "<group>"; };
-		707AF0F809EACC5E001AEA89 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		707AF2D309EE8501001AEA89 /* analyze.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = analyze.cfg; sourceTree = "<group>"; };
 		707AF2D509EE8501001AEA89 /* avida.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = avida.cfg; sourceTree = "<group>"; };
-		707AF2D609EE8501001AEA89 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		707AF2D709EE8501001AEA89 /* environment.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.cfg; sourceTree = "<group>"; };
 		707AF2D809EE8501001AEA89 /* events.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = events.cfg; sourceTree = "<group>"; };
 		707AF2DE09EE8501001AEA89 /* environment.2paths */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.2paths; sourceTree = "<group>"; };
@@ -848,7 +840,6 @@
 		70DCAC5D097AF730002F8733 /* cEnvironmentScreen.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cEnvironmentScreen.h; sourceTree = "<group>"; };
 		70DCAC5E097AF730002F8733 /* cHistScreen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHistScreen.cc; sourceTree = "<group>"; };
 		70DCAC5F097AF730002F8733 /* cHistScreen.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHistScreen.h; sourceTree = "<group>"; };
-		70DCAC60097AF730002F8733 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		70DCAC61097AF730002F8733 /* cMapScreen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cMapScreen.cc; sourceTree = "<group>"; };
 		70DCAC62097AF730002F8733 /* cMapScreen.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMapScreen.h; sourceTree = "<group>"; };
 		70DCAC63097AF730002F8733 /* cMenuWindow.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cMenuWindow.cc; sourceTree = "<group>"; };
@@ -879,8 +870,6 @@
 		70DCAD20097AF81A002F8733 /* cLexer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cLexer.h; sourceTree = "<group>"; };
 		70DCAD21097AF81A002F8733 /* cLexer.l */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.lex; path = cLexer.l; sourceTree = "<group>"; };
 		70DCAD22097AF81A002F8733 /* FlexLexer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = FlexLexer.h; sourceTree = "<group>"; };
-		70DCAD37097AF972002F8733 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		70DCAD39097AF985002F8733 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		70DCF50109CFB0B400924128 /* system-alloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "system-alloc.h"; sourceTree = "<group>"; };
 		70DCF50209CFB0B400924128 /* system-alloc.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "system-alloc.cc"; sourceTree = "<group>"; };
 		70DCF52809CFB93200924128 /* spinlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spinlock.h; sourceTree = "<group>"; };
@@ -903,19 +892,12 @@
 		70F7DE730929678E009E311D /* cGenotype_TestData.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenotype_TestData.h; sourceTree = "<group>"; };
 		70F7DE76092967A8009E311D /* cGenotypeBatch.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenotypeBatch.h; sourceTree = "<group>"; };
 		70FB86A908BFAFEC00BDF589 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		DCC30F7B0762539D008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		DCC30FA90762539D008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		DCC30FCF0762539D008F7A48 /* Doxyfile */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = Doxyfile; sourceTree = "<group>"; };
 		DCC3109C0762539E008F7A48 /* avida.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = avida.cc; sourceTree = "<group>"; };
-		DCC310A90762539E008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		DCC31345076253A0008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		DCC31547076253A4008F7A48 /* cCycleCheck.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCycleCheck.cc; sourceTree = "<group>"; };
-		DCC3154A076253A4008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		DCC31585076253A4008F7A48 /* recursive_tests_decl_hdrs.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = recursive_tests_decl_hdrs.hh; sourceTree = "<group>"; };
 		DCC31586076253A4008F7A48 /* recursive_tests_defn_hdrs.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = recursive_tests_defn_hdrs.hh; sourceTree = "<group>"; };
 		DCC31587076253A4008F7A48 /* recursive_tests_macros.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = recursive_tests_macros.hh; sourceTree = "<group>"; };
-		DCC315A5076253A4008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		DCC315A6076253A4008F7A48 /* UnitTest_recursive_tests.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = UnitTest_recursive_tests.cc; sourceTree = "<group>"; };
 		DCC315AD076253A5008F7A48 /* tUnitTestSuite.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = tUnitTestSuite.hh; sourceTree = "<group>"; };
 		DCC315AE076253A5008F7A48 /* tUnitTestSuiteRecurser.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = tUnitTestSuiteRecurser.hh; sourceTree = "<group>"; };
 		DCC315B0076253A5008F7A48 /* tVerifierSuite.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; path = tVerifierSuite.hh; sourceTree = "<group>"; };
@@ -926,10 +908,9 @@
 		DCC315C4076253A5008F7A48 /* matlabify.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = matlabify.cc; sourceTree = "<group>"; };
 		DCC315CD076253A5008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		DCC315CE076253A5008F7A48 /* environment.rotate */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.rotate; sourceTree = "<group>"; };
-		DCC315CF076253A5008F7A48 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		DCC315D0076253A5008F7A48 /* task_event_gen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = task_event_gen.cc; sourceTree = "<group>"; };
 		DCC315D1076253A5008F7A48 /* task_event_gen.old.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = task_event_gen.old.cc; sourceTree = "<group>"; };
-		DCC3164D07626CF3008F7A48 /* avida */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = avida; sourceTree = BUILT_PRODUCTS_DIR; };
+		DCC3164D07626CF3008F7A48 /* avida */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "compiled.mach-o.executable"; path = avida; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -980,7 +961,6 @@
 				701D930C094CAD6B008B845F /* cDefaultRunDriver.cc */,
 				701D93E6094CBF71008B845F /* cDefaultAnalyzeDriver.h */,
 				701D93E7094CBF71008B845F /* cDefaultAnalyzeDriver.cc */,
-				701D941C094CC5F1008B845F /* CMakeLists.txt */,
 			);
 			path = drivers;
 			sourceTree = "<group>";
@@ -993,7 +973,6 @@
 				709D924A0A5D94FD00D6A163 /* cMutationalNeighborhoodResults.h */,
 				70C054F50A4F701B002703C1 /* SConscript */,
 				70F7DE76092967A8009E311D /* cGenotypeBatch.h */,
-				70422A44091B1B8500A5E67F /* CMakeLists.txt */,
 				70422A1C091B141000A5E67F /* cAnalyze.cc */,
 				70422A1D091B141000A5E67F /* cAnalyze.h */,
 				70422A1E091B141000A5E67F /* cAnalyzeCommand.h */,
@@ -1019,7 +998,6 @@
 			isa = PBXGroup;
 			children = (
 				70C054F10A4F6FF1002703C1 /* SConscript */,
-				707AF0F809EACC5E001AEA89 /* CMakeLists.txt */,
 				707AEEEF09E80725001AEA89 /* cAction.h */,
 				707AEEFE09E83381001AEA89 /* cActionLibrary.h */,
 				707AF04409EAB529001AEA89 /* LandscapeActions.h */,
@@ -1050,7 +1028,6 @@
 				7049F36F0A66AD7E00640512 /* default-transsmt.org */,
 				707AF2D309EE8501001AEA89 /* analyze.cfg */,
 				707AF2D509EE8501001AEA89 /* avida.cfg */,
-				707AF2D609EE8501001AEA89 /* CMakeLists.txt */,
 				707AF2D709EE8501001AEA89 /* environment.cfg */,
 				707AF2D809EE8501001AEA89 /* events.cfg */,
 				7049F3520A66A8F500640512 /* instset-classic.cfg */,
@@ -1154,7 +1131,6 @@
 				70DCAC55097AF730002F8733 /* avida */,
 				70DCAC56097AF730002F8733 /* avida-s */,
 				70DCAC58097AF730002F8733 /* avida-viewer */,
-				70DCAD37097AF972002F8733 /* CMakeLists.txt */,
 				703CA3710A50734500AB4DB4 /* SConscript */,
 			);
 			path = targets;
@@ -1165,7 +1141,6 @@
 			children = (
 				703CA3720A50735B00AB4DB4 /* SConscript */,
 				70DCAC9B097AF7C0002F8733 /* primitive.cc */,
-				70DCAD39097AF985002F8733 /* CMakeLists.txt */,
 			);
 			path = avida;
 			sourceTree = "<group>";
@@ -1199,7 +1174,6 @@
 				70DCAC5D097AF730002F8733 /* cEnvironmentScreen.h */,
 				70DCAC5E097AF730002F8733 /* cHistScreen.cc */,
 				70DCAC5F097AF730002F8733 /* cHistScreen.h */,
-				70DCAC60097AF730002F8733 /* CMakeLists.txt */,
 				70DCAC61097AF730002F8733 /* cMapScreen.cc */,
 				70DCAC62097AF730002F8733 /* cMapScreen.h */,
 				70DCAC63097AF730002F8733 /* cMenuWindow.cc */,
@@ -1253,7 +1227,6 @@
 			isa = PBXGroup;
 			children = (
 				703CA3700A5072E600AB4DB4 /* SConscript */,
-				700E12610A097A0800B604CD /* CMakeLists.txt */,
 				70DCF50009CF823500924128 /* tcmalloc */,
 			);
 			path = platform;
@@ -1262,7 +1235,6 @@
 		70DCF50009CF823500924128 /* tcmalloc */ = {
 			isa = PBXGroup;
 			children = (
-				700E12630A097A1700B604CD /* CMakeLists.txt */,
 				70DCF57F09CFBD3D00924128 /* tcmalloc-logging.cc */,
 				70DCF58009CFBD3D00924128 /* tcmalloc-logging.h */,
 				70DCF50109CFB0B400924128 /* system-alloc.h */,
@@ -1308,7 +1280,6 @@
 				70F7DC9F09293E6F009E311D /* cGenotype.h */,
 				70F7DAEF09290468009E311D /* cClassificationManager.h */,
 				70F7DAF009290468009E311D /* cClassificationManager.cc */,
-				7053345E092A4D88006BD186 /* CMakeLists.txt */,
 			);
 			path = classification;
 			sourceTree = "<group>";
@@ -1339,9 +1310,7 @@
 				70DCF4FF09CF81E400924128 /* platform */,
 				70DCAD1E097AF81A002F8733 /* script */,
 				70DCAC54097AF730002F8733 /* targets */,
-				DCC31340076253A0008F7A48 /* third-party */,
 				DCC314D8076253A2008F7A48 /* tools */,
-				DCC30F7B0762539D008F7A48 /* CMakeLists.txt */,
 				701384A10902A16F0087ED2E /* defs.h */,
 				DCC30FCF0762539D008F7A48 /* Doxyfile */,
 				703CA3770A50740300AB4DB4 /* SConscript */,
@@ -1390,7 +1359,6 @@
 				70C1F0A808C3FF1800F50912 /* nHardware.h */,
 				70C1EF6708C395D300F50912 /* sCPUStats.h */,
 				706D30CC0852328F00D7DC8F /* tInstLib.h */,
-				DCC30FA90762539D008F7A48 /* CMakeLists.txt */,
 				7005A70109BA0FA90007E16E /* cTestCPUInterface.h */,
 				7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */,
 				705260BB0B87A7DB0007426F /* cInstLibEntry.h */,
@@ -1474,7 +1442,6 @@
 				70B0875A08F5EC8900FC65FE /* nGeometry.h */,
 				70B0867208F499C100FC65FE /* nMutation.h */,
 				70B0875C08F5ECBC00FC65FE /* nReaction.h */,
-				DCC310A90762539E008F7A48 /* CMakeLists.txt */,
 				7005A70909BA0FBE0007E16E /* cOrgInterface.h */,
 				701D51CB09C645F50009B4F8 /* cAvidaContext.h */,
 				7027621909D73E5900741717 /* cOrgSourceMessage.h */,
@@ -1485,15 +1452,6 @@
 				70166B8D0B519CFE009533A5 /* cTaskState.h */,
 			);
 			path = main;
-			sourceTree = "<group>";
-		};
-		DCC31340076253A0008F7A48 /* third-party */ = {
-			isa = PBXGroup;
-			children = (
-				DCC31345076253A0008F7A48 /* CMakeLists.txt */,
-				703CA3740A50739600AB4DB4 /* SConscript */,
-			);
-			path = "third-party";
 			sourceTree = "<group>";
 		};
 		DCC314D8076253A2008F7A48 /* tools */ = {
@@ -1595,11 +1553,9 @@
 				70B087DD08F5F4A900FC65FE /* cID.h */,
 				70B087DE08F5F4A900FC65FE /* cVerifierSuiteRecurser.h */,
 				DCC31547076253A4008F7A48 /* cCycleCheck.cc */,
-				DCC3154A076253A4008F7A48 /* CMakeLists.txt */,
 				DCC31585076253A4008F7A48 /* recursive_tests_decl_hdrs.hh */,
 				DCC31586076253A4008F7A48 /* recursive_tests_defn_hdrs.hh */,
 				DCC31587076253A4008F7A48 /* recursive_tests_macros.hh */,
-				DCC315A0076253A4008F7A48 /* tests */,
 				DCC315AD076253A5008F7A48 /* tUnitTestSuite.hh */,
 				DCC315AE076253A5008F7A48 /* tUnitTestSuiteRecurser.hh */,
 				DCC315B0076253A5008F7A48 /* tVerifierSuite.hh */,
@@ -1619,15 +1575,6 @@
 				7009E0C50B9A2FAC00070F8F /* cRWLock.h */,
 			);
 			path = tools;
-			sourceTree = "<group>";
-		};
-		DCC315A0076253A4008F7A48 /* tests */ = {
-			isa = PBXGroup;
-			children = (
-				DCC315A5076253A4008F7A48 /* CMakeLists.txt */,
-				DCC315A6076253A4008F7A48 /* UnitTest_recursive_tests.cc */,
-			);
-			path = tests;
 			sourceTree = "<group>";
 		};
 		DCC315B6076253A5008F7A48 /* Utilities */ = {
@@ -1656,7 +1603,6 @@
 			children = (
 				DCC315CD076253A5008F7A48 /* CMakeLists.txt */,
 				DCC315CE076253A5008F7A48 /* environment.rotate */,
-				DCC315CF076253A5008F7A48 /* Makefile */,
 				DCC315D0076253A5008F7A48 /* task_event_gen.cc */,
 				DCC315D1076253A5008F7A48 /* task_event_gen.old.cc */,
 			);
