@@ -30,7 +30,7 @@ SET(LIBRARY_OUTPUT_PATH
 # This section defines default builtin compiler options
 # ------------------------------------------------------------------------------
 IF(UNIX)
-  SET(COMPILER_WARNING_FLAGS "-Wextra -Wno-four-char-constants -Wno-unknown-pragmas -Wconversion -Wno-trigraphs")
+  SET(COMPILER_WARNING_FLAGS "-Wextra -Wno-unknown-pragmas -Wconversion -Wno-trigraphs")
   SET(COMPILER_OPTIMIZATION_FLAGS "-ffast-math -fno-rtti -funroll-loops -fstrict-aliasing -ftree-vectorize -fvisibility-inlines-hidden")
 
   # Four types of c++ compilations:
