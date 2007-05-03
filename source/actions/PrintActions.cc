@@ -901,7 +901,7 @@ class cActionPrintGenomicSiteEntropy : public cAction
 				for (int c = 0; c < inst_count.GetSize(); c++)
 				{
 					double p = (inst_count[c] > 0) ? inst_count[c] / static_cast<double>(total_count) : 0.0;
-					site_entropy[pos] += (p > 0.0) ? - p * log(p) / log(inst_count.GetSize()) : 0.0;
+					site_entropy[pos] += (p > 0.0) ? - p * log(p) / log(static_cast<double>(inst_count.GetSize())) : 0.0;
 				}
 			}
 		}
