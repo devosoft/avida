@@ -92,6 +92,8 @@ public:
 
   bool TestPointMut(cAvidaContext& ctx) const { return ctx.GetRandom().P(exec.point_mut_prob); }
   bool TestCopyMut(cAvidaContext& ctx) const { return ctx.GetRandom().P(copy.mut_prob); }
+  bool TestIns(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.ins_prob); }
+  bool TestDel(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.del_prob); }
   bool TestDivideMut(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_mut_prob); }
   bool TestDivideIns(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_ins_prob); }
   bool TestDivideDel(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_del_prob); }

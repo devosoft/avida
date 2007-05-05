@@ -19,7 +19,11 @@
  *  new CPU, so that's what we're doing.  Eventually we'll need to revisit this.
  *
  * \todo There should be better ways for promoter regions to work.  Right now,
- *  we stop at the first one encountered.
+ * look for exact matches only and they have equal probabilities @JEB
+ *
+ * \todo We need to abstract cOrganism and derive a new class
+ * that can accommodate multiple genome fragments.
+ *
  *
  *  Copyright 1999-2007 Michigan State University. All rights reserved.
  *
@@ -66,7 +70,8 @@ class cOrganism;
 
 /*! Each organism may have a cHardwareGX structure that keeps track of the 
 * current status of simulated hardware.  This particular CPU architecture is
-* designed to explore the evolution of gene expression.
+* designed to explore the evolution of gene expression and also the effect
+* of having persistent "protein-like" pieces of code that continually execute in parallel.
 */
 class cHardwareGX : public cHardwareBase
 {
@@ -77,6 +82,14 @@ public:
   //! Number of heads each cProgramid has.
   static const int NUM_HEADS = nHardware::NUM_HEADS >= NUM_REGISTERS ? nHardware::NUM_HEADS : NUM_REGISTERS;
   static const int NUM_NOPS = 3; //!< Number of NOPS that cHardwareGX supports.
+
+  //!< \todo JEB Make these config options
+  static const unsigned int MAX_PROGRAMIDS = 128; //!< Number of cProgramids that an organism can allocate.
+  static const int PROGRAMID_REPLACEMENT_METHOD = 1;
+   //!< Controls what happens when we try to allocate a new cProgramid, but are up against the limit
+  // 0 = Fail if no programids available
+  // 1 = Replace the programid that has completed the most instructions
+  static const int MAX_PROGRAMID_AGE = 2000; // Number of inst a cProgramid executes before ceasing to exist
 
   //! Enums for the different supported registers.
   enum tRegisters { REG_AX=0, REG_BX, REG_CX };
@@ -89,8 +102,23 @@ public:
   struct cMatchSite {
     cMatchSite() : m_programid(0), m_site(0) { }
     cProgramid* m_programid; //!< The programid matched against; 0 if not matched.
-    cInstruction* m_site; //!< Location in the cProgramid where a match occurred; 0 if not matched.
+    int m_site; //!< Location in the cProgramid where a match occurred; 0 if not matched.
     cCodeLabel m_label; //!< The label that was matched against.
+  };
+
+  /*! cHeadProgramid is just cHeadCPU with a link back to the programid
+  so that we can tell when a head is on the programid that owns it.
+  */
+  class cHeadProgramid : public cHeadCPU 
+  {
+  private:
+    cProgramid* m_programid;
+  public:
+    cHeadProgramid() : cHeadCPU(), m_programid(NULL) {  }
+    ~cHeadProgramid() { ; }
+      
+    void SetProgramid(cProgramid* _programid) { m_programid = _programid; }
+    cProgramid* GetProgramid() { return m_programid; }
   };
   
   /*! cProgramid is the "heart" of the gene expression hardware.  It encapsulates
@@ -104,27 +132,76 @@ public:
     
     \todo Need to rework cHeadCPU to not need a pointer to cHardwareBase.
     */
-  struct cProgramid {
+    
+  class cProgramid {
+  public:
     //! Constructs a cProgramid from a genome and CPU.
-    cProgramid(const cGenome& genome, cHardwareBase* cpu);
+    cProgramid(const cGenome& genome, cHardwareGX* hardware);
     //! Returns whether and where this cProgramid matches the passed-in label.
-    std::pair<bool, cMatchSite> Matches(const cCodeLabel& label);
+    std::vector<cHardwareGX::cMatchSite> Sites(const cCodeLabel& label);
     //! Binds one of this cProgramid's heads to the passed-in match site.
     void Bind(nHardware::tHeads head, cMatchSite& site);
     //! Called when this cProgramid "falls off" the cProgramid it is bound to.
     void Disassociate();
     
-    programid_ptr m_offspring; //!< An offspring of this cProgramid; may be null.
-    cCodeLabel m_terminator; //!< The label that this cProgramid must traverse to disassociate.
+    // Programids keep a count of the total number
+    // of READ + WRITE heads of other programids that 
+    // have been placed on them. They only execute
+    // if free of other heads and also initialized as executable.
+    void RemoveContactingHead(cHeadProgramid& head) { 
+      if ( head.GetProgramid()->GetID() == m_id) return;       
+      m_contacting_heads--; 
+      assert(m_contacting_heads >= 0); 
+    }
+    void AddContactingHead(cHeadProgramid& head) { 
+      if (head.GetProgramid()->GetID() == m_id) return; 
+      m_contacting_heads++; 
+    }
+    void ResetHeads() {
+        for(int i=0; i<NUM_HEADS; ++i) {
+        m_heads[i].SetProgramid(this);
+        m_heads[i].Reset(m_gx_hardware, m_id);
+      }
+    }
+    
+    // Accessors
+    bool GetExecutable() { return m_executable && (m_contacting_heads == 0); }
+    bool GetBindable() { return m_bindable; }
+    bool GetReadable() { return m_readable; }
+    int  GetID() { return m_id; }
+    int  GetCPUCyclesUsed() { return m_cpu_cycles_used; }
+
+    // Assignment
+    void SetExecutable(bool _executable) { m_executable = _executable; }
+    void SetBindable(bool _bindable) { m_bindable = _bindable; }
+    void SetReadable(bool _readable) { m_readable = _readable; }
+
+    void IncCPUCyclesUsed() { m_cpu_cycles_used++; }
+
+    cHardwareGX* m_gx_hardware;  //!< Back reference
+    int m_id; //!< Each programid is cross-referenced to a memory space. 
+              // The index in cHardwareGX::m_programids and cHeadCPU::GetMemSpace() must match up.
+              // A programid also needs to be kept aware of its current index.
+              
+    int m_contacting_heads; //!< The number of read/write heads on this programid from other programids. 
+    bool m_executable;  //!< Is this programid ever executable? Currently, a programid with head from another cProgramid on it is also stopped. 
+    bool m_bindable; //!< Is this programid bindable, i.e. can other programids put their read heads on it?
+    bool m_readable; //!< Is this programid readable?
+    int m_cpu_cycles_used; //!< Number of cpu cycles this programid has used.
+
+    bool m_copying_site; //! Are we in the middle of copying a "site" (which could cause termination)
+    cCodeLabel m_copying_label; //! The current site label that we are copying
+    cCodeLabel m_terminator_label; //!< The label that this cProgramid must traverse to disassociate.
+
+    // Core variables maintained from previous incarnation as a thread
     cCodeLabel m_readLabel; //!< ?
     cCodeLabel m_nextLabel; //!< ?
     cCPUMemory m_memory; //!< This cProgramid's genome fragment.
     cCPUStack m_stack; //!< This cProgramid's stack (no global stack).
-    cHeadCPU m_heads[NUM_HEADS]; //!< This cProgramid's heads.
+    cHeadProgramid m_heads[NUM_HEADS]; //!< This cProgramid's heads.
     int m_regs[NUM_REGISTERS]; //!< This cProgramid's registers.
+    
   };
-  
-
   
 protected:
   static tInstLib<tMethod>* initInstLib(void); //!< Initialize the instruction library.
@@ -132,7 +209,6 @@ protected:
 
   programid_list m_programids; //!< The list of cProgramids.
   programid_ptr m_current; //!< The currently-executing cProgramid.
-
   
   // --------  Member Variables  --------
   const tMethod* m_functions;
@@ -141,6 +217,7 @@ protected:
   bool m_mal_active;         // Has an allocate occured since last divide?
   bool m_advance_ip;         // Should the IP advance after this instruction?
   bool m_executedmatchstrings;	// Have we already executed the match strings instruction?
+  bool m_just_divided; // Did we just divide (in which case end execution of programids until next cycle).
 
   // Instruction costs...
 #if INSTRUCTION_COSTS
@@ -215,10 +292,10 @@ public:
   inline int GetNumStacks() const { return 2; }
   
   // --------  Head Manipulation (including IP)  --------
-  const cHeadCPU& GetHead(int head_id) const { return m_current->m_heads[head_id]; }
-  cHeadCPU& GetHead(int head_id) { return m_current->m_heads[head_id];}
-  const cHeadCPU& GetHead(int head_id, int thread) const { return m_current->m_heads[head_id]; }
-  cHeadCPU& GetHead(int head_id, int thread) { return m_current->m_heads[head_id];}
+  const cHeadProgramid& GetHead(int head_id) const { return m_current->m_heads[head_id]; }
+  cHeadProgramid& GetHead(int head_id) { return m_current->m_heads[head_id];}
+  const cHeadProgramid& GetHead(int head_id, int thread) const { return m_current->m_heads[head_id]; }
+  cHeadProgramid& GetHead(int head_id, int thread) { return m_current->m_heads[head_id];}
   int GetNumHeads() const { return NUM_HEADS; }
   
   const cHeadCPU& IP() const { return m_current->m_heads[nHardware::HEAD_IP]; }
@@ -228,11 +305,14 @@ public:
   
   
   // --------  Memory Manipulation  --------
+  //<! Each programid counts as a memory space.
+  // Heads from one programid can end up on another,
+  // so be careful to fix these when changing the programid list.
   const cCPUMemory& GetMemory() const { return m_current->m_memory; }
   cCPUMemory& GetMemory() { return m_current->m_memory; }
-  const cCPUMemory& GetMemory(int value) const { return m_current->m_memory; }
-  cCPUMemory& GetMemory(int value) { return m_current->m_memory; }
-  int GetNumMemSpaces() const { return 1; }
+  const cCPUMemory& GetMemory(int value) const { return m_programids[value]->m_memory; }
+  cCPUMemory& GetMemory(int value) { return m_programids[value]->m_memory; }
+  int GetNumMemSpaces() const { return m_programids.size(); }
   
   
   // --------  Register Manipulation  --------
@@ -440,8 +520,20 @@ private:
   bool Inst_Skip(cAvidaContext& ctx);
   
   // -= Gene expression instructions =-
-  bool Inst_Match(cAvidaContext& ctx); //!< Attempt to match the currently executing cProgramid against other cProgramids.
-  bool Inst_OnDisassociate(cAvidaContext& ctx); //!< Called automatically when a cProgramid disassociates.
+  bool Inst_NewProgramid(cAvidaContext& ctx, bool executable, bool bindable, bool readable); //!< Allocate a new programid and place the write head there.
+  bool Inst_NewExecutableProgramid(cAvidaContext& ctx) { return Inst_NewProgramid(ctx, true, false, false); } //!< Allocate a "protein". Cannot be bound or read.
+  bool Inst_NewGenomeProgramid(cAvidaContext& ctx) { return Inst_NewProgramid(ctx, false, true, true); } //!< Allocate a "genomic" fragment. Cannot execute.
+  
+  bool Inst_Site(cAvidaContext& ctx); //!< A binding site (execution simply advances past label)
+  bool Inst_Bind(cAvidaContext& ctx); //!< Attempt to match the currently executing cProgramid against other cProgramids.
+  bool Inst_IfBind(cAvidaContext& ctx); //!< Attempt to match the currently executing cProgramid against other cProgramids. Execute next inst if successful.
+  bool Inst_NumSites(cAvidaContext& ctx); //!< Count the number of corresponding binding sites
+  bool Inst_ProgramidCopy(cAvidaContext& ctx); //!< Like h-copy, but fails if read/write heads not on other programids and will not write over
+  bool Inst_ProgramidDivide(cAvidaContext& ctx); //!< Like h-divide, 
+  
+  //!< Add/Remove a new programid to/from the list and give it the proper index within the list so we keep track of memory spaces...
+  void AddProgramid(cProgramid* programid);
+  void RemoveProgramid(unsigned int remove_index);  
 };
 
 

@@ -237,7 +237,27 @@ tInstLib<cHardwareGX::tMethod>* cHardwareGX::initInstLib(void)
     tInstLibEntry<tMethod>("die", &cHardwareGX::Inst_Die),
 	    
     // Placebo instructions
-    tInstLibEntry<tMethod>("skip", &cHardwareGX::Inst_Skip)
+    tInstLibEntry<tMethod>("skip", &cHardwareGX::Inst_Skip),
+    
+    // Gene Expression Instructions
+    tInstLibEntry<tMethod>("p-alloc", &cHardwareGX::Inst_NewExecutableProgramid),
+    tInstLibEntry<tMethod>("g-alloc", &cHardwareGX::Inst_NewGenomeProgramid),
+    tInstLibEntry<tMethod>("p-copy", &cHardwareGX::Inst_ProgramidCopy),
+    tInstLibEntry<tMethod>("p-divide", &cHardwareGX::Inst_ProgramidDivide),
+    
+    tInstLibEntry<tMethod>("site", &cHardwareGX::Inst_Site),
+    tInstLibEntry<tMethod>("bind", &cHardwareGX::Inst_Bind),
+    tInstLibEntry<tMethod>("if-bind", &cHardwareGX::Inst_IfBind),
+    tInstLibEntry<tMethod>("num-sites", &cHardwareGX::Inst_NumSites),
+
+    // These are dummy instructions used for making mutiple programids
+    // look like one genome (for purposes of passing to offspring and printing).
+    // They need to be included but should have ZERO probabilities!!!
+    tInstLibEntry<tMethod>("PROGRAMID", &cHardwareGX::Inst_Nop),
+    tInstLibEntry<tMethod>("READABLE", &cHardwareGX::Inst_Nop),
+    tInstLibEntry<tMethod>("BINDABLE", &cHardwareGX::Inst_Nop),
+    tInstLibEntry<tMethod>("EXECUTABLE", &cHardwareGX::Inst_Nop)
+    
   };
   
   const int n_size = sizeof(s_n_array)/sizeof(cNOPEntryCPU);
@@ -267,9 +287,7 @@ cHardwareGX::cHardwareGX(cWorld* world, cOrganism* in_organism, cInstSet* in_m_i
 : cHardwareBase(world, in_organism, in_m_inst_set)
 {
   m_functions = s_inst_slib->GetFunctions();
-  m_programids.push_back(programid_ptr(new cProgramid(in_organism->GetGenome(), this)));
-  m_current = m_programids.back();
-  Reset();                            // Setup the rest of the hardware...
+  Reset();   // Setup the rest of the hardware...also creates initial programid(s) from genome
 }
 
 
@@ -282,17 +300,67 @@ cHardwareGX::~cHardwareGX()
 }  
 
 
-/*! Reset this cHardwareGX to a known state.  Removes all the cProgramids, creates
-a new cProgramid from the germ.
+/*! Reset this cHardwareGX to a known state.  Removes all the cProgramids, 
+creates new cProgramids from the germ.
 */
 void cHardwareGX::Reset()
 {
   for(programid_list::iterator i=m_programids.begin(); i!=m_programids.end(); ++i) {
     delete *i;
   }
+  m_programids.clear();  
+  cGenome g = organism->GetGenome();  
+  cCPUMemory new_memory;
+  programid_ptr cur_programid = NULL;
+  for(int i=0; i < g.GetSize(); i++)
+  {
+    if (g[i] == GetInstSet().GetInst("PROGRAMID"))
+    {
+      // Set the genome of prev programid if there is one...
+      if (cur_programid) 
+      {
+        // The memory is one too long at this point
+        if (new_memory.GetSize() > 1)  new_memory.Resize(new_memory.GetSize()-1);
+        cur_programid->m_memory = new_memory; 
+      }
+      new_memory.Reset(1);
+      
+      // Create new programid
+      cur_programid = new cProgramid(new_memory, this);
+      AddProgramid(cur_programid);
+    }
+    else if (g[i] == GetInstSet().GetInst("EXECUTABLE"))
+    {
+      assert(cur_programid);
+      cur_programid->SetExecutable(true);
+    }
+    else if (g[i] == GetInstSet().GetInst("BINDABLE"))
+    {
+      assert(cur_programid);
+      cur_programid->SetBindable(true);
+    }
+    else if (g[i] == GetInstSet().GetInst("READABLE"))
+    {
+      assert(cur_programid);
+      cur_programid->SetReadable(true);
+    }
+    else
+    {
+      // Copy instruction to end
+      new_memory[new_memory.GetSize()-1] = g[i];
+      
+      // And add one space to grow on 
+      // (easier this way b/c memory not allowed to have zero length)
+      new_memory.Resize(new_memory.GetSize()+1);
+    }
+  }  
+  // Set the genome of prev programid if there is one...
+  if (cur_programid) 
+  {
+    if (new_memory.GetSize() > 1)  new_memory.Resize(new_memory.GetSize()-1);
+    cur_programid->m_memory = new_memory; 
+  }
   
-  m_programids.clear();
-  m_programids.push_back(programid_ptr(new cProgramid(organism->GetGenome(), this)));
   m_current = m_programids.back();
 
   m_mal_active = false;
@@ -346,24 +414,62 @@ void cHardwareGX::SingleProcess(cAvidaContext& ctx)
   cPhenotype& phenotype = organism->GetPhenotype();
 
   organism->SetRunning(true);
+  m_just_divided = false;
   phenotype.IncTimeUsed();
 
-  for(programid_list::iterator i=m_programids.begin(); i!=m_programids.end(); ++i) {
-    // Set the currently-executing cProgramid.
-    m_current = *i;
-    
-    // Find the instruction to be executed.
-    const cInstruction& cur_inst = IP().GetInst();
+  // Execute one CPU cycle for each programid
+  // Later we may want to add rudimentary within-organism scheduling
+  // The iterator arrangement can cause problems if we change the 
+  
+  // Save the size as executing instructions can change how many programids there are
+  int num_programids = m_programids.size();
+  for (int i=0; i<num_programids; i++)
+  {
+    m_current = m_programids[i];
 
-    m_advance_ip = true;
-    SingleProcess_ExecuteInst(ctx, cur_inst);
-    if (m_advance_ip == true) {
-      IP().Advance();
+    // Print the status of this CPU at each step...
+    if (m_tracer != NULL) m_tracer->TraceHardware(*this);
+  
+    if ( m_current->GetExecutable() ) 
+    {
+      // Set the currently-executing cProgramid.
+      
+      // Find the instruction to be executed.
+      const cInstruction& cur_inst = IP().GetInst();
+
+      m_advance_ip = true;
+      SingleProcess_ExecuteInst(ctx, cur_inst);
+      
+      // Break out if we just divided b/c the number of programids 
+      // will have changed and it won't be obvious how to continue
+      if (m_just_divided) break;
+      
+      if (m_advance_ip == true) {
+        IP().Advance();
+      }
+      
+      // Update this programid stat
+      m_current->IncCPUCyclesUsed();  
     }
-    
-    // Update phenotype.
-    phenotype.IncCPUCyclesUsed();  
   }
+  
+  // Kill old programids -- doone outside of last loop b/c it messes with indices
+  unsigned int on_p = 0;
+  while (on_p < m_programids.size()) 
+  {
+    m_current = m_programids[on_p];
+    if (m_current->GetCPUCyclesUsed() > MAX_PROGRAMID_AGE)
+    {
+      RemoveProgramid(on_p);
+    }
+    else
+    {
+      on_p++;
+    }
+  }
+  
+  // Update phenotype. Note the difference between these cpu cycles and the per-programid ones...
+  phenotype.IncCPUCyclesUsed(); 
 
   // Kill creatures who have reached their max num of instructions executed.
   const int max_executed = organism->GetMaxExecuted();
@@ -533,19 +639,21 @@ bool cHardwareGX::OK()
 */
 void cHardwareGX::PrintStatus(ostream& fp)
 {
+  //\todo clean up references
+  
+  // Extra information about this programid
+  fp << "ID:" << m_current->GetID() << "   ";
+  if (m_current->GetExecutable()) fp << " EXECUTABLE";
+  if (m_current->GetBindable()) fp << " BINDABLE";
+  if (m_current->GetReadable()) fp << " READABLE";
+  fp << endl;
+
   fp << organism->GetPhenotype().GetCPUCyclesUsed() << " ";
   fp << "IP:" << IP().GetPosition() << "    ";
   
   for (int i = 0; i < NUM_REGISTERS; i++) {
     fp << static_cast<char>('A' + i) << "X:" << GetRegister(i) << " ";
     fp << setbase(16) << "[0x" << GetRegister(i) << "]  " << setbase(10);
-  }
-  
-  // Add some extra information if additional time costs are used for instructions,
-  // leave this out if there are no differences to keep it cleaner
-  if ( organism->GetPhenotype().GetTimeUsed() != organism->GetPhenotype().GetCPUCyclesUsed() )
-  {
-    fp << "  EnergyUsed:" << organism->GetPhenotype().GetTimeUsed();
   }
   fp << endl;
   
@@ -564,14 +672,12 @@ void cHardwareGX::PrintStatus(ostream& fp)
 //      fp << " Ox" << setw(8) << GetStack(i, stack_id, 0);
 //    fp << setfill(' ') << setbase(10) << endl;
 //  }
-  
+
   fp << "  Mem (" << GetMemory().GetSize() << "):"
-		  << "  " << GetMemory().AsString()
-		  << endl;
+      << "  " << GetMemory().AsString()
+      << endl;
   fp.flush();
 }
-
-
 
 
 
@@ -2818,6 +2924,65 @@ bool cHardwareGX::Inst_Skip(cAvidaContext& ctx)
 }
 
 
+/*! This instruction allocates a new programid with a zero length genome
+and moves the read head of the current programid to it.
+*/
+bool cHardwareGX::Inst_NewProgramid(cAvidaContext& ctx, bool executable, bool bindable, bool readable)
+{
+  // Do some maintenance on the programid where the write head was previously.
+  // (1) Adjust the number of heads on it; this could make it executable!
+  // (2) \toto Delete if it has no instructions or is below a certain size?
+  m_programids[GetHead(nHardware::HEAD_WRITE).GetMemSpace()]->RemoveContactingHead( GetHead(nHardware::HEAD_WRITE) );
+  GetHead(nHardware::HEAD_WRITE).Set(0, m_current->m_id); // Immediately set the write head back to itself
+  
+  // If we've reached the programid limit, then deal with that
+  if (m_programids.size() >= MAX_PROGRAMIDS)
+  {
+    //Decide on a programid to destroy, currently highest number of cpu cycles executed
+    //\todo more methods of choosing..
+  
+    if (PROGRAMID_REPLACEMENT_METHOD == 0) // Don't replace
+    {
+      return false;
+    }
+    else if (PROGRAMID_REPLACEMENT_METHOD == 0) // Replace Oldest programid
+    {
+      int destroy_index = -1;
+      int max_cpu_cycles_used = -1;
+      for (unsigned int i=0; i<m_programids.size(); i++)
+      {
+        if (m_programids[i]->GetCPUCyclesUsed() > max_cpu_cycles_used)
+        {
+          max_cpu_cycles_used = m_programids[i]->GetCPUCyclesUsed();
+          destroy_index = i;
+        }
+      }
+      RemoveProgramid(destroy_index);
+    }
+  }
+  
+  // Create the new programid and add it to the list
+  cGenome new_genome(1);
+  cProgramid * new_programid = new cProgramid(new_genome, this);
+  new_programid->m_executable = executable;
+  new_programid->m_bindable = bindable;
+  new_programid->m_readable = readable;
+  AddProgramid(new_programid);
+  
+  // Set the write head to the newly allocated programid
+  new_programid->AddContactingHead(GetHead(nHardware::HEAD_WRITE));
+  GetHead(nHardware::HEAD_WRITE).Set(0, new_programid->GetID());
+  
+  return true;
+}
+
+bool cHardwareGX::Inst_Site(cAvidaContext& ctx)
+{
+  // Do nothing except move past the label
+  ReadLabel();
+  return true;
+}
+
 /*! This instruction reads the trailing label and tries to match it against other 
 programids in the CPU.  Note: labels that follow a match instruction in the 
 programid to be matched against are *ignored*.  Note that match should be a
@@ -2828,54 +2993,376 @@ cProgramid continue.  This seems like a good idea...
 
 \todo Have to determine the correct placement of the heads on Bind.  If we're not
 careful, we'll allow two RNAPs to bind to each other and start copying each other's
-genome.  Probably a bad idea.
+genome.  Probably a bad idea. @JEB Well, at least those selfish solutions would die.
+Temp Soln @JEB -- added a flag to programids so that only certain programids are bindable
 */
-bool cHardwareGX::Inst_Match(cAvidaContext& ctx) {
+bool cHardwareGX::Inst_Bind(cAvidaContext& ctx) 
+{
   // Get the label that we're trying to match.
+  // Do this first to advance IP past it.
   ReadLabel();
+
+  // Binding fails if we are already bound!
+  cHeadProgramid& read = GetHead(nHardware::HEAD_READ);
+  if (read.GetMemSpace() != m_current->GetID()) return false;
 
   // Now, select another programid to match against.  To start with, let's 
   // look at all our programids and pick the first one that matches.  This will
-  // need to be revisited.
+  // need to be revisited. For now, can only bind to first programid = "genome".
+  
+  // Go through all *other* programids looking for matches 
+  std::vector<cMatchSite> all_matches;
   for(programid_list::iterator i=m_programids.begin(); i!=m_programids.end(); ++i) {
-    std::pair<bool, cMatchSite> match = (*i)->Matches(GetLabel());
+    if (*i != m_current) {
+      std::vector<cMatchSite> matches = (*i)->Sites(GetLabel());
+      // @JEB There has to be a better way to concatenate vectors?
+      for (unsigned int i=0; i<matches.size(); i++) {
+        all_matches.push_back(matches[i]);
+      }
+    }
+  }  
+  
+  // The instruction failed if there were no matches
+  if(all_matches.size() == 0) return false;
+  
+  // Otherwise set the read head to a random match
+  unsigned int c = ctx.GetRandom().GetUInt(all_matches.size());
+  
+  // Ok, it matched.  Bind the current programid to the matched site.
+  // For right now, we only support read-head binding.
+  // Complement the label!
+  m_current->Bind(nHardware::HEAD_READ, all_matches[c]);
+  
+  //@JEB, just using location of read head to indicate binding for now...
+  m_programids[read.GetMemSpace()]->RemoveContactingHead(read);
+  all_matches[c].m_programid->AddContactingHead(read);
+  read.Set(all_matches[c].m_site, all_matches[c].m_programid->m_id);
+
+  // And we're done.
+  return true;
+}
+
+bool cHardwareGX::Inst_IfBind(cAvidaContext& ctx) 
+{
+  // Normal Bind
+  bool ret = Inst_Bind(ctx);
+  
+  //Skip the next instruction if binding was not successful
+  if (!ret) IP().Advance();
+  
+  return ret;
+}
+
+/*! This instruction puts the total number of binding sites found in BX 
+Currently it is used to keep track of whether genome division has completed.*/
+bool cHardwareGX::Inst_NumSites(cAvidaContext& ctx)
+{
+  // Get the label that we're trying to match.
+  ReadLabel();
+
+  // Go through all *other* programids counting matches 
+  int num_sites = 0;
+  for(programid_list::iterator i=m_programids.begin(); i!=m_programids.end(); ++i) {
+    if (*i != m_current) {
+      std::vector<cMatchSite> matches = (*i)->Sites(GetLabel());
+      // @JEB There has to be a better way to concatenate vectors?
+      num_sites += matches.size();
+    }
+  }  
+  
+  GetRegister(REG_BX) = num_sites;
+  return true;
+}
+
+/*! This instruction is like h-copy, except:
+(1) It does nothing if the read and write head are not on OTHER programids
+(2) It dissociates the read head if it encounters the complement of the label that was used in the
+    match instruction that put the read head on its current target
     
-    if(match.first == true) {
-      // Ok, it matched.  Bind the current programid to the matched site.
-      // For right now, we only support read-head binding.
-      m_current->Bind(nHardware::HEAD_READ, match.second);
+    \todo Implement indel mutations.
+*/
+bool cHardwareGX::Inst_ProgramidCopy(cAvidaContext& ctx)
+{
+  static cInstruction site_inst = GetInstSet().GetInst(cStringUtil::Stringf("site"));
+
+  cHeadProgramid& write = GetHead(nHardware::HEAD_WRITE);
+  cHeadProgramid& read = GetHead(nHardware::HEAD_READ);
+  
+  // Don't copy if this programid's write or read head is on itself
+  if (read.GetMemSpace() == m_current->GetID())  return false;
+  if (write.GetMemSpace() == m_current->GetID()) return false;
+  
+  // Don't copy if the target is not readable
+  if (!m_programids[read.GetMemSpace()]->GetReadable())  return false;
+
+  // Dissociate if we have just completed copying a terminator sites
+  
+  // Keep track of whether the last non-NOP we copied was a site
+  if (!GetInstSet().IsNop(read.GetInst()))
+  {
+    m_current->m_copying_site = (read.GetInst() == site_inst);
+    m_current->m_copying_label.Clear();
+  }
+  else // It was a NOP
+  {
+    m_current->m_copying_label.AddNop( GetInstSet().GetNopMod( read.GetInst()) );
+  }
+  
+  // Allocate space  for one additional instruction if the write head is at the end
+  // Otherwise the write head will improperly 
+  if ( write.GetMemory().GetSize() == write.GetPosition() + 1)
+  {
+    write.GetMemory().Resize( write.GetMemory().GetSize() + 1 );
+  }
+  
+  // \todo The timing of deletion, change, insertion mutation checks matters
+  // I'm not sure this is right @JEB
+  
+  // Did a deletion occur?
+  //organism.MutationRates().Get
+  
+  // Normal h-copy
+  bool ret = Inst_HeadCopy(ctx);
+
+  // Did an insertion occur?
+  //organism.MutationRates().Get
+ 
+  // Peek at the next inst to see if it is a NOP
+  // If it isn't, then we can compare the label and possibly fall off
+  if ( m_current->m_copying_site )
+  {
+    if ( (!GetInstSet().IsNop(read.GetInst()) && (m_current->m_terminator_label == m_current->m_copying_label) ) )
+    {
+      // Move read head off of old target and back to itself
+      read.GetProgramid()->RemoveContactingHead(read);
+      read.Set(0, m_current->m_id);
       
-      // And we're done.
-      return true;
+      //Shrink the programid we were on by one inst
+      if (write.GetMemory().GetSize()>1)
+      {
+        write.GetMemory().Resize( write.GetMemory().GetSize() - 1 );
+      }
+      
+      // \to do, we would apply insertion/deletion on divide instructions here
+      // if we want them to happen for each new programid that is produced
+      //  // Handle Divide Mutations...
+      
+      // This would be equivalent to
+      // Divide_DoMutations(ctx, mut_multiplier);
+      // But that operates on m_child_genome, currently
+      
+      return false;
+    }
+  }
+   
+  return ret;
+}
+
+/*! This instruction creates a new organism by randomly dividing the programids with
+the daughter cell. Currently we convert all the genomes back into one list with pseudo-instructions
+telling us where new programids start and some of their properties. This is pretty inefficient.
+*/
+
+bool cHardwareGX::Inst_ProgramidDivide(cAvidaContext& ctx)
+{
+  //\to do, uh implement
+  
+  //  const int child_size = GetMemory().GetSize() - div_point - extra_lines;
+//  
+//  // Make sure this divide will produce a viable offspring.
+//  const bool viable = Divide_CheckViable(ctx, div_point, child_size);
+//  if (viable == false) return false;
+//  
+//  
+//  // Handle Divide Mutations...
+//  Divide_DoMutations(ctx, mut_multiplier);
+//  
+//  // Many tests will require us to run the offspring through a test CPU;
+//  // this is, for example, to see if mutations need to be reverted or if
+//  // lineages need to be updated.
+//  Divide_TestFitnessMeasures(ctx);
+//  
+//#if INSTRUCTION_COSTS
+//  // reset first time instruction costs
+//  for (int i = 0; i < inst_ft_cost.GetSize(); i++) {
+//    inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+//  }
+//#endif
+//  
+
+  //This stuff is usually set by Divide_CheckViable, leaving it zero causes problems
+  cPhenotype& phenotype = organism->GetPhenotype();
+  phenotype.SetLinesExecuted(1);
+  phenotype.SetLinesCopied(1);
+
+  // Split up each programid (randomly for now)
+  // and parse it back into the linear genome format for the child...
+  cCPUMemory & child_genome = organism->ChildGenome();
+
+  child_genome.Reset(1);
+  
+  programid_list programids_left;
+  int num_child_programids = 0;
+  for (unsigned int i=0; i< m_programids.size(); i++)
+  {
+    programid_ptr p = m_programids[i];
+    if ( ctx.GetRandom().GetUInt(2) == 0)
+    {
+      num_child_programids++;
+      // Ok, child gets this programid
+      
+      // First header information
+      child_genome[child_genome.GetSize()-1] = GetInstSet().GetInst("PROGRAMID");
+      child_genome.Resize(child_genome.GetSize() + 1);
+      
+      if (p->GetExecutable())
+      {
+        child_genome[child_genome.GetSize()-1] = GetInstSet().GetInst("EXECUTABLE");
+        child_genome.Resize(child_genome.GetSize() + 1);
+      }
+      
+      if (p->GetBindable())
+      {
+        child_genome[child_genome.GetSize()-1]= GetInstSet().GetInst("BINDABLE");
+        child_genome.Resize(child_genome.GetSize() + 1);
+      }
+
+      if (p->GetReadable())
+      {
+        child_genome[child_genome.GetSize()-1]= GetInstSet().GetInst("READABLE");
+        child_genome.Resize(child_genome.GetSize() + 1);
+      }
+            
+      // Finally, copy the programid
+      int start_copy = child_genome.GetSize()-1;
+      child_genome.Resize(child_genome.GetSize() + p->m_memory.GetSize());
+      
+      for (int j=0; j<p->m_memory.GetSize(); j++)
+      {
+        child_genome[start_copy+j] = (p->m_memory)[j];
+      }
+      
+      //Clean up
+      delete p;
+    }
+    else
+    {
+      programids_left.push_back(p);
     }
   }
   
-  // If nothing matched, we're done; but the instruction didn't really work.
-  return false;
+  // Err, we didn't distribute any programids, error!
+  if (num_child_programids == 0)
+  {
+    return false;
+  }
+  
+  // Shrink the one to grow on part
+  if (child_genome.GetSize() > 1) child_genome.Resize(child_genome.GetSize() - 1);
+
+  // Move over remaining programids
+  m_programids.clear();
+  // We also have to fix their internal IDs to go along with the memory spaces
+  // this is done by re-adding them
+  for (unsigned int i=0; i< programids_left.size(); i++)
+  {
+    AddProgramid(programids_left[i]);
+    // This resets the heads...
+  }
+  
+  // Activate the child
+  bool parent_alive = organism->ActivateDivide(ctx);
+
+  // Do more work if the parent lives through the birth of the offspring
+//  if (parent_alive) {
+//    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
+//  } 
+  
+  m_just_divided = true;
+  return true;
 }
 
+void cHardwareGX::AddProgramid(cProgramid* programid) 
+{ 
+  // Take care of some housekeeping for new programids
+  programid->m_id = m_programids.size();
+  programid->ResetHeads();
+  programid->m_contacting_heads = 0;
 
-/*! This instruction runs asynchronously compared to the rest of the cProgramid,
-and it is exectued ONLY when a cProgramid disassociates from another.  cProgramids
-are not required to have this instruction in their genome.
-
-IF a cProgramid disassociates AND it has this instruction, then its HEAD_IP is
-updated to point to this instruction.
-
-\todo What if a cProgramid has multiple Inst_OnDisassociates?
-*/
-bool cHardwareGX::Inst_OnDisassociate(cAvidaContext& ctx) {
-  return false;
+   // Ok, now you can go on the list... 
+  m_programids.push_back(programid); 
 }
 
+void cHardwareGX::RemoveProgramid(unsigned int remove_index) 
+{
+  //assert (remove_index != -1);
+  
+  // First update the contacting head count for any cProgramids the heads 
+  // of the programid to be removed might have been on
+  
+  programid_ptr save_current = m_current;
+  m_current = m_programids[remove_index];
+  m_programids[GetHead(nHardware::HEAD_READ).GetMemSpace()]->RemoveContactingHead( GetHead(nHardware::HEAD_READ) );
+  m_programids[GetHead(nHardware::HEAD_WRITE).GetMemSpace()]->RemoveContactingHead( GetHead(nHardware::HEAD_WRITE) );
+
+  // Update the programid list
+  // Well, lets just re-add every one except for this one for now
+  // \todo make more efficient, I don't know how to use std::vector ;-) @JEB
+
+  programid_list temp(m_programids);
+  m_programids.clear();
+
+  for (unsigned int i=0; i< temp.size(); i++)
+  {
+    if (i == remove_index)
+    {
+      delete temp[i];
+    }
+    else
+    {
+      temp[i]->m_id = m_programids.size();
+      m_programids.push_back(temp[i]); 
+    }
+  }
+  
+  // We also need to make sure heads are on the correct memory
+  // spaces, since that indexing changes with the programid list
+  for (unsigned int i=0; i< m_programids.size(); i++)
+  {
+    programid_ptr p = m_programids[i];
+    for(int j=0; j<NUM_HEADS; j++) 
+    {
+      // We removed the thing they were writing from or reading to
+      // For now, just put the write head back on themselves (inactivating further copies)
+      // Might want to also reset the read head..
+      if (p->m_heads[j].GetMemSpace() == (signed int)remove_index)
+      {
+        p->m_heads[j].Set(0, p->m_id);
+      }
+      else if (p->m_heads[j].GetMemSpace() > (signed int)remove_index)
+      {
+        p->m_heads[j].Set(p->m_heads[j].GetPosition(), p->m_heads[j].GetMemSpace() - 1);
+      }
+      
+    }
+  }
+  
+  // Restore current programid
+  m_current = save_current;
+}
 
 /*! Construct this cProgramid, and initialize hardware resources.
 */
-cHardwareGX::cProgramid::cProgramid(const cGenome& genome, cHardwareBase* cpu) 
-: m_offspring(0)
-, m_memory(genome) {
+cHardwareGX::cProgramid::cProgramid(const cGenome& genome, cHardwareGX* hardware)
+: m_memory(genome)
+, m_executable(false)
+, m_bindable(false)
+, m_copying_site(false)
+, m_cpu_cycles_used(0)
+, m_gx_hardware(hardware)
+{
   for(int i=0; i<NUM_HEADS; ++i) {
-    m_heads[i].Reset(cpu);
+    m_heads[i].Reset(hardware);
   }
 }
 
@@ -2889,8 +3376,94 @@ A "successful" match is one where this cProgramid has a series of NOPs that are 
 to the the passed-in label.  A number of configuration options (will eventually)
 control how precisely the NOPs must be related (e.g., exact, all-but-one, etc.).
 */
-std::pair<bool, cHardwareGX::cMatchSite> cHardwareGX::cProgramid::Matches(const cCodeLabel& label) {
-  return std::make_pair(false, cMatchSite());
+std::vector<cHardwareGX::cMatchSite> cHardwareGX::cProgramid::Sites(const cCodeLabel& label) 
+{
+  std::vector<cHardwareGX::cMatchSite> matches;
+  if (!m_bindable) return matches;
+  
+  /* This code is for finding  straight NOP matches(untested, though)
+  // For now find all exact matches.
+  int pos = m_gx_cpu->FindLabel_Forward(label, m_memory, 0);
+  while (pos != -1) 
+    cMatchSite * match = new cMatchSite();
+    match->m_programid = this;
+    match->m_site = pos;
+    match->m_label = label;
+    matches.push_back(*match);
+    pos = m_gx_cpu->FindLabel_Forward(label, m_memory, 0);
+  }
+  return matches;
+  */
+  
+  static cInstruction site_inst = m_gx_hardware->GetInstSet().GetInst(cStringUtil::Stringf("site"));
+  
+  // Create a new search head at the beginning of our memory space
+  // \to do doesn't properly find wrap-around matches overlapping the origin of the memory
+  
+  
+  //Find the first non-NOP and start there (this allows ups to wrap around correctly)
+  cHeadCPU search_head(m_gx_hardware, 0, m_id);
+  int first_non_nop = -1;
+  do {
+    if ( !m_gx_hardware->m_inst_set->IsNop(search_head.GetInst()) )
+    {
+      first_non_nop = search_head.GetPosition();
+      break;
+    }
+    search_head++;
+  } while (search_head.GetPosition() != 0);
+  
+  // This genome is all NOPs...
+  if (first_non_nop == -1) return matches;
+  
+  //keep track of the first time we find a non-NOP instruction (finish when we reach it a second time)
+  int site_pos = -1;
+  cCodeLabel site_label;
+  
+  // Start at this instruction
+  search_head.Set(first_non_nop, m_id);
+  do {
+  
+    if (search_head.GetInst() == site_inst)
+    {
+      site_pos = search_head.GetPosition();
+      site_label.Clear();
+    }
+    else if ( m_gx_hardware->m_inst_set->IsNop(search_head.GetInst()) && (site_pos != -1) )
+    {
+      // Add NOPs to the current label
+      site_label.AddNop( m_gx_hardware->m_inst_set->GetNopMod( search_head.GetInst() ) );
+    }
+    else // Any other non-NOP instruction means to stop looking for terminator matches
+    {
+      site_pos = -1;
+    }
+     
+    // Is the next inst a NOP?
+    // If not, then check our current label for termination
+    if (site_pos != -1)
+    {
+      int old_pos = search_head.GetPosition();
+      search_head++;
+      if ( !m_gx_hardware->m_inst_set->IsNop( search_head.GetInst()) )
+      {
+        if ( site_label == label )
+        {
+          cMatchSite * match = new cMatchSite();
+          match->m_programid = this;
+          match->m_site = site_pos; // We return is exactly on the site
+          match->m_label = site_label;
+          matches.push_back(*match);
+        }
+      }
+      
+      // Grrr. Heads don't wrap backwards properly!~! Can't just search_head--; No idea why.
+      search_head.Set(old_pos, m_id);
+    }
+    
+    search_head++;
+  } while ( search_head.GetPosition() != first_non_nop ); // back at the beginning 
+
 }
 
 
@@ -2899,6 +3472,9 @@ passed-in cMatchSite.  Currently, we only support binding the read head to a
 location in the genome of the other cProgramid, but this will be extended later.
 */
 void cHardwareGX::cProgramid::Bind(nHardware::tHeads head, cMatchSite& site) {
+  // We set the terminator site label to the complement of the one that was bound.
+  m_terminator_label = site.m_label;
+  m_terminator_label.Rotate(1, NUM_NOPS);
 }
 
 
@@ -2907,6 +3483,10 @@ complement of the label that was used to Bind this cProgramid to another.  When
 called, Disassociate removes this cProgramid's read head from the bound cProgramid,
 searches for an Inst_OnDisassociate in its own genome, and, if found, updates this
 cProgramid's IP to point to it.
+
+@JEB -- I changed the concept of dissociate, so that it is now part of p-copy...
 */
 void cHardwareGX::cProgramid::Disassociate() {
 }
+
+

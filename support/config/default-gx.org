@@ -1,20 +1,94 @@
-nop-A		# Origin of replication.
-nop-B		# Beginning of RNAP.
-match		# Attempt to match against a nop-B.
+PROGRAMID
+READABLE
+BINDABLE
+site #Origin of replication
+nop-A
+nop-B
+site #Label and empty space
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+site #Start RNAP
+nop-B
+  if-bind #Move read head to site with matching label
+  nop-B    
+  p-alloc  #If there was a match, then allocate another *executable* programid
+  p-copy   #Copy the next instruction
+site 
+nop-C #End of RNAP
+site #Label and empty space
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+site #Start DNAP
+nop-B
+  num-sites #Count the number of programids with this label
   nop-B
-h-copy		# Copy from read-head to write-head (requires a match).
-on-da		# When the complement of nop-B is reached...
-  sever		# Sever the link between RNAP and it's transcription target.
-nop-C		# End of RNAP.
-nop-C		# ...
-nop-B		# Beginning of DNAP.
-match		# Attempt to match against a nop-A/nop-B.
+  nop-C
+  swap     #Store this in CX
+  label
+  nop-A
+  if-bind #Move read head to matching site
   nop-A
   nop-B
-h-copy		# Copy from read-head to write-head (requires a match).
-on-da		# When the complement of nop-A/nop-B is reached...
-  h-divide	# Divide!
-nop-C		# End of DNAP.
-nop-C		# ...
-nop-B		# Replication terminator.
+  g-alloc   #If there was a match, then allocate another *genome* programid
+  num-sites #Count the number of programids with this label
+  nop-B
+  nop-C
+  p-copy    #Copy the next instruction
+  if-n-equ   #If we just finished a new one
+  p-divide
+  goto
+  nop-A
+site 
+nop-C #End of DNAP
+site #Label and empty space
 nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+site
+nop-B
+nop-C
+PROGRAMID # This is the initial RNAP molecule
+EXECUTABLE
+  site 
+  nop-B
+  if-bind #Move read head to site with matching label
+  nop-B    
+  p-alloc  #If there was a match, then allocate another *executable* programid
+  p-copy   #Copy the next instruction
+  site 
+  nop-C #End of RNAP
