@@ -801,7 +801,7 @@
 		70B1A7420B7E3FFD00067486 /* instset-experimental.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "instset-experimental.cfg"; sourceTree = "<group>"; };
 		70B1A7590B7E431F00067486 /* experimental.org */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = experimental.org; sourceTree = "<group>"; };
 		70B3984E0947B29D0018F09D /* tManagedPointerArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tManagedPointerArray.h; sourceTree = "<group>"; };
-		70B6514C0BEA6FAD002472ED /* unit-tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = "unit-tests"; path = "build/Development/unit-tests"; sourceTree = "<group>"; };
+		70B6514C0BEA6FAD002472ED /* unit-tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "unit-tests"; sourceTree = BUILT_PRODUCTS_DIR; };
 		70BCB21B0AB7ADA6003FF331 /* cArgContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cArgContainer.h; sourceTree = "<group>"; };
 		70BCB21C0AB7ADA6003FF331 /* cArgContainer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cArgContainer.cc; sourceTree = "<group>"; };
 		70BCB2470AB7B634003FF331 /* cArgSchema.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cArgSchema.h; sourceTree = "<group>"; };

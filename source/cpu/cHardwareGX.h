@@ -47,6 +47,7 @@
 
 #include <iomanip>
 #include <vector>
+#include <list>
 #include <utility>
 #include "cCodeLabel.h"
 #include "cHeadCPU.h"
@@ -84,12 +85,14 @@ public:
   static const int NUM_NOPS = 3; //!< Number of NOPS that cHardwareGX supports.
 
   //!< \todo JEB Make these config options
-  static const unsigned int MAX_PROGRAMIDS = 128; //!< Number of cProgramids that an organism can allocate.
-  static const int PROGRAMID_REPLACEMENT_METHOD = 1;
+  static const unsigned int MAX_PROGRAMIDS = 32; //!< Number of cProgramids that an organism can allocate.
+  static const int PROGRAMID_REPLACEMENT_METHOD = 0;
    //!< Controls what happens when we try to allocate a new cProgramid, but are up against the limit
   // 0 = Fail if no programids available
   // 1 = Replace the programid that has completed the most instructions
   static const int MAX_PROGRAMID_AGE = 2000; // Number of inst a cProgramid executes before ceasing to exist
+
+  unsigned int m_last_unique_id_assigned; // Counter so programids can be assigned unique IDs for tracking
 
   //! Enums for the different supported registers.
   enum tRegisters { REG_AX=0, REG_BX, REG_CX };
@@ -132,7 +135,6 @@ public:
     
     \todo Need to rework cHeadCPU to not need a pointer to cHardwareBase.
     */
-    
   class cProgramid {
   public:
     //! Constructs a cProgramid from a genome and CPU.
@@ -165,11 +167,13 @@ public:
     }
     
     // Accessors
-    bool GetExecutable() { return m_executable && (m_contacting_heads == 0); }
+    bool GetExecute() { return m_executable && (m_contacting_heads == 0); }
+    bool GetExecutable() { return m_executable; }
     bool GetBindable() { return m_bindable; }
     bool GetReadable() { return m_readable; }
     int  GetID() { return m_id; }
     int  GetCPUCyclesUsed() { return m_cpu_cycles_used; }
+    const cCPUMemory& GetMemory() const { return m_memory; }
 
     // Assignment
     void SetExecutable(bool _executable) { m_executable = _executable; }
@@ -182,6 +186,7 @@ public:
     int m_id; //!< Each programid is cross-referenced to a memory space. 
               // The index in cHardwareGX::m_programids and cHeadCPU::GetMemSpace() must match up.
               // A programid also needs to be kept aware of its current index.
+    int m_unique_id; // ID unique to this programid (per hardware)          
               
     int m_contacting_heads; //!< The number of read/write heads on this programid from other programids. 
     bool m_executable;  //!< Is this programid ever executable? Currently, a programid with head from another cProgramid on it is also stopped. 
@@ -532,7 +537,7 @@ private:
   bool Inst_ProgramidDivide(cAvidaContext& ctx); //!< Like h-divide, 
   
   //!< Add/Remove a new programid to/from the list and give it the proper index within the list so we keep track of memory spaces...
-  void AddProgramid(cProgramid* programid);
+  void AddProgramid(programid_ptr programid);
   void RemoveProgramid(unsigned int remove_index);  
 };
 
