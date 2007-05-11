@@ -235,25 +235,25 @@ protected:
   bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst);
   
   // --------  Stack Manipulation...  --------
-  inline void StackPush(int value) { m_current->m_stack.Push(value); }
-  inline int StackPop() { return m_current->m_stack.Pop(); }
-  inline void StackFlip() { m_current->m_stack.Flip(); }
-  inline void StackClear() { m_current->m_stack.Clear(); }
+  inline void StackPush(int value) { assert(m_current); m_current->m_stack.Push(value); }
+  inline int StackPop() { assert(m_current); return m_current->m_stack.Pop(); }
+  inline void StackFlip() { assert(m_current); m_current->m_stack.Flip(); }
+  inline void StackClear() { assert(m_current); m_current->m_stack.Clear(); }
   inline void SwitchStack() { }
   
   // --------  Head Manipulation (including IP)  --------
   void AdjustHeads();
   
   // --------  Label Manipulation  -------
-  const cCodeLabel& GetLabel() const { return m_current->m_nextLabel; }
-  cCodeLabel& GetLabel() { return m_current->m_nextLabel; }
+  const cCodeLabel& GetLabel() const { assert(m_current); return m_current->m_nextLabel; }
+  cCodeLabel& GetLabel() { assert(m_current); return m_current->m_nextLabel; }
   void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
   cHeadCPU FindLabel(int direction);
   int FindLabel_Forward(const cCodeLabel & search_label, const cGenome& search_genome, int pos);
   int FindLabel_Backward(const cCodeLabel & search_label, const cGenome& search_genome, int pos);
   cHeadCPU FindLabel(const cCodeLabel & in_label, int direction);
-  const cCodeLabel& GetReadLabel() const { return m_current->m_readLabel; }
-  cCodeLabel& GetReadLabel() { return m_current->m_readLabel; }
+  const cCodeLabel& GetReadLabel() const { assert(m_current); return m_current->m_readLabel; }
+  cCodeLabel& GetReadLabel() { assert(m_current); return m_current->m_readLabel; }
 
   // ---------- Instruction Helpers -----------
   int FindModifiedRegister(int default_register);
@@ -293,36 +293,36 @@ public:
 
 
   // --------  Stack Manipulation...  --------
-  inline int GetStack(int depth=0, int stack_id=-1, int in_thread=-1) const { return m_current->m_stack.Get(depth); }
+  inline int GetStack(int depth=0, int stack_id=-1, int in_thread=-1) const { assert(m_current); return m_current->m_stack.Get(depth); }
   inline int GetNumStacks() const { return 2; }
   
   // --------  Head Manipulation (including IP)  --------
-  const cHeadProgramid& GetHead(int head_id) const { return m_current->m_heads[head_id]; }
-  cHeadProgramid& GetHead(int head_id) { return m_current->m_heads[head_id];}
-  const cHeadProgramid& GetHead(int head_id, int thread) const { return m_current->m_heads[head_id]; }
-  cHeadProgramid& GetHead(int head_id, int thread) { return m_current->m_heads[head_id];}
+  const cHeadProgramid& GetHead(int head_id) const { assert(m_current); return m_current->m_heads[head_id]; }
+  cHeadProgramid& GetHead(int head_id) { assert(m_current); return m_current->m_heads[head_id];}
+  const cHeadProgramid& GetHead(int head_id, int thread) const { assert(m_current); return m_current->m_heads[head_id]; }
+  cHeadProgramid& GetHead(int head_id, int thread) { assert(m_current); return m_current->m_heads[head_id];}
   int GetNumHeads() const { return NUM_HEADS; }
   
-  const cHeadCPU& IP() const { return m_current->m_heads[nHardware::HEAD_IP]; }
-  cHeadCPU& IP() { return m_current->m_heads[nHardware::HEAD_IP]; }
-  const cHeadCPU& IP(int thread) const { return m_current->m_heads[nHardware::HEAD_IP]; }
-  cHeadCPU& IP(int thread) { return m_current->m_heads[nHardware::HEAD_IP]; }
+  const cHeadCPU& IP() const { assert(m_current); return m_current->m_heads[nHardware::HEAD_IP]; }
+  cHeadCPU& IP() { assert(m_current); return m_current->m_heads[nHardware::HEAD_IP]; }
+  const cHeadCPU& IP(int thread) const { assert(m_current); return m_current->m_heads[nHardware::HEAD_IP]; }
+  cHeadCPU& IP(int thread) { assert(m_current); return m_current->m_heads[nHardware::HEAD_IP]; }
   
   
   // --------  Memory Manipulation  --------
   //<! Each programid counts as a memory space.
   // Heads from one programid can end up on another,
   // so be careful to fix these when changing the programid list.
-  const cCPUMemory& GetMemory() const { return m_current->m_memory; }
-  cCPUMemory& GetMemory() { return m_current->m_memory; }
+  const cCPUMemory& GetMemory() const { assert(m_current); return m_current->m_memory; }
+  cCPUMemory& GetMemory() { assert(m_current); return m_current->m_memory; }
   const cCPUMemory& GetMemory(int value) const { return m_programids[value]->m_memory; }
   cCPUMemory& GetMemory(int value) { return m_programids[value]->m_memory; }
   int GetNumMemSpaces() const { return m_programids.size(); }
   
   
   // --------  Register Manipulation  --------
-  const int GetRegister(int reg_id) const { return m_current->m_regs[reg_id]; }
-  int& GetRegister(int reg_id) { return m_current->m_regs[reg_id]; }
+  const int GetRegister(int reg_id) const { assert(m_current); return m_current->m_regs[reg_id]; }
+  int& GetRegister(int reg_id) { assert(m_current); return m_current->m_regs[reg_id]; }
   int GetNumRegisters() const { return NUM_REGISTERS; }  
   
   // --------  Thread Manipuluation --------
