@@ -60,7 +60,7 @@ public:
   cCPUMemory(const cGenome& in_genome) : cGenome(in_genome), flag_array(in_genome.GetSize()) { ; }
   cCPUMemory(const cString& in_string) : cGenome(in_string), flag_array(in_string.GetSize()) { ; }
   //! Construct a cCPUMemory object from a cInstruction range.
-  cCPUMemory(cInstruction* begin, cInstruction* end) : cGenome(begin, end), flag_array(GetSize()) { }
+  cCPUMemory(cInstruction* begin, cInstruction* end) : cGenome(begin, end), flag_array(GetSize()) { ClearFlags(); }
   ~cCPUMemory() { ; }
 
   void operator=(const cCPUMemory& other_memory);
@@ -103,6 +103,8 @@ public:
 	void ClearFlagCopyMut(int pos)    { flag_array[pos] &= ~MASK_COPYMUT;  }
   void ClearFlagInjected(int pos)   { flag_array[pos] &= ~MASK_INJECTED; }
     
+  void Append(const cInstruction& in_inst) { Insert(GetSize(), in_inst); }
+  void Append(const cGenome& in_genome) { Insert(GetSize(), in_genome); }
   void Insert(int pos, const cInstruction& in_inst);
   void Insert(int pos, const cGenome& in_genome);
   void Remove(int pos, int num_insts=1);

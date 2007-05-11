@@ -150,17 +150,19 @@ public:
     // of READ + WRITE heads of other programids that 
     // have been placed on them. They only execute
     // if free of other heads and also initialized as executable.
-    void RemoveContactingHead(cHeadProgramid& head) { 
-      if ( head.GetProgramid()->GetID() == m_id) return;       
+    void RemoveContactingHead(cHeadProgramid& head) {
+      if(head.GetProgramid()->GetID() == m_id) return;
+      assert(m_contacting_heads > 0);
       m_contacting_heads--; 
-      assert(m_contacting_heads >= 0); 
     }
+    
     void AddContactingHead(cHeadProgramid& head) { 
-      if (head.GetProgramid()->GetID() == m_id) return; 
+      if(head.GetProgramid()->GetID() == m_id) return; 
       m_contacting_heads++; 
     }
+    
     void ResetHeads() {
-        for(int i=0; i<NUM_HEADS; ++i) {
+      for(int i=0; i<NUM_HEADS; ++i) {
         m_heads[i].SetProgramid(this);
         m_heads[i].Reset(m_gx_hardware, m_id);
       }
@@ -173,8 +175,16 @@ public:
     bool GetReadable() { return m_readable; }
     int  GetID() { return m_id; }
     int  GetCPUCyclesUsed() { return m_cpu_cycles_used; }
-    const cCPUMemory& GetMemory() const { return m_memory; }
+    cInstruction GetInst(cString inst) { assert(m_gx_hardware); return m_gx_hardware->GetInstSet().GetInst(inst); }
 
+    const cCPUMemory& GetMemory() const { return m_memory; }
+    
+    //! Append this programid's genome to the passed-in genome in linear format (includes tags).
+    void AppendLinearGenome(cCPUMemory& genome);
+
+    //! Print this programid's genome, in linear format.
+    void PrintGenome(std::ostream& out);
+    
     // Assignment
     void SetExecutable(bool _executable) { m_executable = _executable; }
     void SetBindable(bool _bindable) { m_bindable = _bindable; }
@@ -205,7 +215,6 @@ public:
     cCPUStack m_stack; //!< This cProgramid's stack (no global stack).
     cHeadProgramid m_heads[NUM_HEADS]; //!< This cProgramid's heads.
     int m_regs[NUM_REGISTERS]; //!< This cProgramid's registers.
-    
   };
   
 protected:
