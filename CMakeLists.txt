@@ -30,13 +30,13 @@ SET(LIBRARY_OUTPUT_PATH
 # This section defines default builtin compiler options
 # ------------------------------------------------------------------------------
 IF(UNIX)
-  IF (CMAKE_CXX_COMPILER MATCHES ".*pathcc.*")
-    SET(COMPILER_WARNING_FLAGS "-Wextra -Wno-unknown-pragmas -Wconversion -Wno-trigraphs")
-    SET(COMPILER_OPTIMIZATION_FLAGS "-ffast-math -fno-rtti -funroll-loops -fstrict-aliasing")
-  ELSE (CMAKE_CXX_COMPILER MATCHES ".*pathcc.*")
+  IF (CMAKE_CXX_COMPILER MATCHES ".*pathCC.*")
+    SET(COMPILER_WARNING_FLAGS "")
+    SET(COMPILER_OPTIMIZATION_FLAGS "-ffast-math -fno-rtti -funroll-loops -fstrict-aliasing -OPT:Olimit=0")
+  ELSE (CMAKE_CXX_COMPILER MATCHES ".*pathCC.*")
     SET(COMPILER_WARNING_FLAGS "-Wextra -Wno-unknown-pragmas -Wconversion -Wno-trigraphs")
     SET(COMPILER_OPTIMIZATION_FLAGS "-ffast-math -fno-rtti -funroll-loops -fstrict-aliasing -ftree-vectorize -fvisibility-inlines-hidden")
-  ENDIF (CMAKE_CXX_COMPILER MATCHES ".*pathcc.*")
+  ENDIF (CMAKE_CXX_COMPILER MATCHES ".*pathCC.*")
 
   # Four types of c++ compilations:
   # - debug (Debug)
