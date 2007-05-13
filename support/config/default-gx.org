@@ -1,10 +1,10 @@
 PROGRAMID
 READABLE
 BINDABLE
-site #Origin of replication
+site	# Origin of replication
 nop-A
 nop-B
-site #Label and empty space
+site	# Label and empty space
 nop-C
 nop-C
 nop-C
@@ -15,19 +15,15 @@ nop-C
 nop-C
 nop-C
 nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-site #Start RNAP
+site	# Start RNAP
 nop-B
-  if-bind #Move read head to site with matching label
+if-bind	# Move read head to site with matching label
   nop-B    
-  p-alloc  #If there was a match, then allocate another *executable* programid
-  p-copy   #Copy the next instruction
+  p-alloc # If there was a match, then allocate another *executable* programid
+p-copy	# Copy the next instruction
 site 
-nop-C #End of RNAP
-site #Label and empty space
+nop-C	# End of RNAP
+site	# Label and empty space
 nop-C
 nop-C
 nop-C
@@ -38,37 +34,36 @@ nop-C
 nop-C
 nop-C
 nop-C
-nop-C
-nop-C
-nop-C
-nop-C
-site #Start DNAP
+site	# Start DNAP
 nop-B
-  num-sites #Count the number of programids with this label
-  nop-B
-  nop-C
-  swap     #Store this in CX
-  label
-  nop-A
-  if-bind #Move read head to matching site
+if-bind	# Move read head to matching site
   nop-A
   nop-B
-  g-alloc   #If there was a match, then allocate another *genome* programid
-  num-sites #Count the number of programids with this label
-  nop-B
-  nop-C
-  p-copy    #Copy the next instruction
-  if-n-equ   #If we just finished a new one
-  p-divide
-  goto
-  nop-A
+  g-alloc # If there was a match, then allocate another *genome* programid
+p-copy	# Copy the next instruction
 site 
-nop-C #End of DNAP
-site #Label and empty space
+nop-C	# End of DNAP
+site	# Site and empty space
 nop-C
 nop-C
 nop-C
 nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+site
+nop-B	# P2?  This programid is responsible for locating two genomes,
+bind2	# and then triggering the divide process.
+nop-B
+nop-C
+if-not-0
+  p-divide
+site
+nop-C	# End of P2.
+site	# Site and empty space.
 nop-C
 nop-C
 nop-C
@@ -84,11 +79,11 @@ nop-B
 nop-C
 PROGRAMID # This is the initial RNAP molecule
 EXECUTABLE
-  site 
-  nop-B
-  if-bind #Move read head to site with matching label
+site 
+nop-B
+if-bind	# Move read head to site with matching label
   nop-B    
-  p-alloc  #If there was a match, then allocate another *executable* programid
-  p-copy   #Copy the next instruction
-  site 
-  nop-C #End of RNAP
+  p-alloc # If there was a match, then allocate another *executable* programid
+p-copy	# Copy the next instruction
+site 
+nop-C

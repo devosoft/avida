@@ -143,8 +143,8 @@ public:
     std::vector<cHardwareGX::cMatchSite> Sites(const cCodeLabel& label);
     //! Binds one of this cProgramid's heads to the passed-in match site.
     void Bind(nHardware::tHeads head, cMatchSite& site);
-    //! Called when this cProgramid "falls off" the cProgramid it is bound to.
-    void Disassociate();
+    //! Detaches this cProgramid's heads from bound cProgramids.
+    void Detach();
     
     // Programids keep a count of the total number
     // of READ + WRITE heads of other programids that 
@@ -175,6 +175,7 @@ public:
     bool GetReadable() { return m_readable; }
     int  GetID() { return m_id; }
     int  GetCPUCyclesUsed() { return m_cpu_cycles_used; }
+    void ResetCPUCyclesUsed() { m_cpu_cycles_used = 0; }
     cInstruction GetInst(cString inst) { assert(m_gx_hardware); return m_gx_hardware->GetInstSet().GetInst(inst); }
 
     const cCPUMemory& GetMemory() const { return m_memory; }
@@ -185,13 +186,15 @@ public:
     //! Print this programid's genome, in linear format.
     void PrintGenome(std::ostream& out);
     
+    cHeadProgramid& GetHead(int head_id) { return m_heads[head_id]; }
+    
     // Assignment
     void SetExecutable(bool _executable) { m_executable = _executable; }
     void SetBindable(bool _bindable) { m_bindable = _bindable; }
     void SetReadable(bool _readable) { m_readable = _readable; }
 
     void IncCPUCyclesUsed() { m_cpu_cycles_used++; }
-
+    
     cHardwareGX* m_gx_hardware;  //!< Back reference
     int m_id; //!< Each programid is cross-referenced to a memory space. 
               // The index in cHardwareGX::m_programids and cHeadCPU::GetMemSpace() must match up.
@@ -540,6 +543,7 @@ private:
   
   bool Inst_Site(cAvidaContext& ctx); //!< A binding site (execution simply advances past label)
   bool Inst_Bind(cAvidaContext& ctx); //!< Attempt to match the currently executing cProgramid against other cProgramids.
+  bool Inst_Bind2(cAvidaContext& ctx); //!< Attempt to locate two programids with the same site.
   bool Inst_IfBind(cAvidaContext& ctx); //!< Attempt to match the currently executing cProgramid against other cProgramids. Execute next inst if successful.
   bool Inst_NumSites(cAvidaContext& ctx); //!< Count the number of corresponding binding sites
   bool Inst_ProgramidCopy(cAvidaContext& ctx); //!< Like h-copy, but fails if read/write heads not on other programids and will not write over

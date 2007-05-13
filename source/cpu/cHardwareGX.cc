@@ -253,6 +253,7 @@ tInstLib<cHardwareGX::tMethod>* cHardwareGX::initInstLib(void)
     
     tInstLibEntry<tMethod>("site", &cHardwareGX::Inst_Site),
     tInstLibEntry<tMethod>("bind", &cHardwareGX::Inst_Bind),
+    tInstLibEntry<tMethod>("bind2", &cHardwareGX::Inst_Bind2),
     tInstLibEntry<tMethod>("if-bind", &cHardwareGX::Inst_IfBind),
     tInstLibEntry<tMethod>("num-sites", &cHardwareGX::Inst_NumSites),
 
@@ -2874,7 +2875,7 @@ bool cHardwareGX::Inst_Skip(cAvidaContext& ctx)
 
 
 /*! This instruction allocates a new programid with a zero length genome
-and moves the read head of the current programid to it.
+and moves the write head of the current programid to it.
 */
 bool cHardwareGX::Inst_NewProgramid(cAvidaContext& ctx, bool executable, bool bindable, bool readable)
 {
@@ -2976,19 +2977,71 @@ bool cHardwareGX::Inst_Bind(cAvidaContext& ctx)
   unsigned int c = ctx.GetRandom().GetUInt(all_matches.size());
   
   // Ok, it matched.  Bind the current programid to the matched site.
-  // For right now, we only support read-head binding.
-  // Complement the label!
   m_current->Bind(nHardware::HEAD_READ, all_matches[c]);
-  
-  //@JEB, just using location of read head to indicate binding for now...
-  assert(read.GetMemSpace()==m_current->m_id);
-  m_programids[read.GetMemSpace()]->RemoveContactingHead(read);  
-  all_matches[c].m_programid->AddContactingHead(read);
-  read.Set(all_matches[c].m_site, all_matches[c].m_programid->m_id);
 
   // And we're done.
   return true;
 }
+
+
+/*! This instruction attempts to locate two programids that have the same site.
+If two such programids are found, BX is set to 2, otherwise BX is set to 0.
+
+This instruction is well-suited for finding two genomes.  For example, the following
+instruction sequence may be used to locate two genomes with an origin of replication,
+and if found, trigger a cell division:
+bind2
+nop-B
+nop-C
+if-not-0
+p-divide
+*/
+bool cHardwareGX::Inst_Bind2(cAvidaContext& ctx)
+{
+  // Get the label we're searching for.
+  ReadLabel();
+  
+  // Search for matches to this label.
+  std::vector<cMatchSite> bindable;
+  for(programid_list::iterator i=m_programids.begin(); i!=m_programids.end(); ++i) {
+    if(*i != m_current) {
+      std::vector<cMatchSite> matches = (*i)->Sites(GetLabel());
+      // Now, we only want one match from each programid; we'll take a random one.
+      if(matches.size()>0) {
+        bindable.push_back(matches[ctx.GetRandom().GetInt(matches.size())]);
+      }
+    }
+  }
+  
+  // Select two of the matches at random.
+  if(bindable.size()>=2) {
+    int first = ctx.GetRandom().GetInt(bindable.size());
+    int second = ctx.GetRandom().GetInt(bindable.size());
+    while(first == second) { second = ctx.GetRandom().GetUInt(bindable.size()); }
+    assert(bindable[first].m_programid->GetID() != bindable[second].m_programid->GetID());
+    assert(bindable[first].m_programid->GetBindable());
+    assert(bindable[second].m_programid->GetBindable());
+    assert(bindable[first].m_programid->GetReadable());
+    assert(bindable[second].m_programid->GetReadable());
+
+    // If the caller is already bound to other programids, detach.
+    m_current->Detach();
+    
+    // And attach this programid's read and write heads to the indexed organisms.
+    // It *is* possible that the caller could do "bad things" now.
+    m_current->Bind(nHardware::HEAD_READ, bindable[first]);
+    m_current->Bind(nHardware::HEAD_WRITE, bindable[second]);
+
+    // Finally, set BX to indicate that bind2 worked, and return.
+    GetRegister(REG_BX) = 2;
+    return true;
+  }
+  
+  // Bind2 didn't work.
+  GetRegister(REG_BX) = 0;
+  return false;
+}
+
 
 bool cHardwareGX::Inst_IfBind(cAvidaContext& ctx) 
 {
@@ -3020,6 +3073,7 @@ bool cHardwareGX::Inst_NumSites(cAvidaContext& ctx)
   return true;
 }
 
+
 /*! This instruction is like h-copy, except:
 (1) It does nothing if the read and write head are not on OTHER programids
 (2) It dissociates the read head if it encounters the complement of the label that was used in the
@@ -3036,9 +3090,16 @@ bool cHardwareGX::Inst_ProgramidCopy(cAvidaContext& ctx)
   if(read.GetMemSpace() == m_current->GetID()) return false;
   if(write.GetMemSpace() == m_current->GetID()) return false;
   
-  // Don't copy if the target is not readable
+  // Don't copy if the source is not readable
   if(!m_programids[read.GetMemSpace()]->GetReadable()) return false;
 
+  // If a copy is mutated in after a bind2, then the read head could be at the 
+  // end of a genome.  The copy fails, and we should probably break the bind, too.
+  if(read.GetPosition() >= read.GetMemory().GetSize()) {
+    m_current->Detach();
+    return false;
+  }
+  
   // Keep track of whether the last non-NOP we copied was a site
   if(GetInstSet().IsNop(read.GetInst())) {
     m_current->m_copying_label.AddNop(GetInstSet().GetNopMod(read.GetInst()));
@@ -3070,10 +3131,9 @@ bool cHardwareGX::Inst_ProgramidCopy(cAvidaContext& ctx)
   }
   
   // Peek at the next inst to see if it is a NOP
-  // If it isn't, then we can compare the label and possibly fall off
+  // If it isn't, then we can compare the label and possibly fall off  
   if(m_current->m_copying_site) {
-    if((!GetInstSet().IsNop(read.GetInst()) && (m_current->m_terminator_label == m_current->m_copying_label) ) )
-    {
+    if((!GetInstSet().IsNop(read.GetInst()) && (m_current->m_terminator_label == m_current->m_copying_label))) {
       // Move read head off of old target and back to itself
       read.GetProgramid()->RemoveContactingHead(read);
       read.Set(0, m_current->m_id);
@@ -3121,6 +3181,10 @@ bool cHardwareGX::Inst_ProgramidDivide(cAvidaContext& ctx)
   // It should never be the case that the read and write heads are on the same programid.
   assert(read.GetMemSpace() != write.GetMemSpace());
   
+  // If we're not bound to two bindable programids, this instruction fails.
+  if(!m_programids[read.GetMemSpace()]->GetBindable()) return false;
+  if(!m_programids[write.GetMemSpace()]->GetBindable()) return false;
+  
   // Now, let's keep track of two different lists of programids, one for the parent,
   // and one for the offspring.
   programid_list parent;
@@ -3128,14 +3192,28 @@ bool cHardwareGX::Inst_ProgramidDivide(cAvidaContext& ctx)
   // We're also going to do all our work on a temporary list, so that we can fail
   // without affecting the state of the caller.
   programid_list all(m_programids);
+  // This is a list of fragments, to be deleted once we've passed the viability check.
+  programid_list fragments;
 
   // The currently executing programid called the divide instruction.  The caller
   // is (hopefully) a DNA polymerase, therefore it knows which genome fragments go where.
   parent.push_back(m_programids[read.GetMemSpace()]); // The parent's genome.
   all[read.GetMemSpace()] = 0;
   offspring.push_back(m_programids[write.GetMemSpace()]); // The offspring's genome.
-  offspring.back()->SetBindable(true);
+  //offspring.back()->SetBindable(true);
   all[write.GetMemSpace()] = 0;
+  
+  // Locate and remove all incomplete genomes, identified by programids that have
+  // write heads on them.
+  for(programid_list::iterator i=all.begin(); i!=all.end(); ++i) {
+    // Does this programid currently have it's write head somewhere?
+    if((*i != 0) && ((*i)->GetHead(nHardware::HEAD_WRITE).GetMemSpace() != (*i)->GetID())) {
+      // Yes - It is likely an incomplete genome fragment, so don't
+      // allow it to propagate.
+      fragments.push_back(all[(*i)->GetHead(nHardware::HEAD_WRITE).GetMemSpace()]);
+      all[(*i)->GetHead(nHardware::HEAD_WRITE).GetMemSpace()] = 0;
+    }
+  }
   
   // Divvy up the programids.
   for(programid_list::iterator i=all.begin(); i!=all.end(); ++i) {
@@ -3202,6 +3280,11 @@ bool cHardwareGX::Inst_ProgramidDivide(cAvidaContext& ctx)
     AddProgramid(*i);
     (*i)->PrintGenome(std::cout);
   }  
+  
+  // And delete the fragments.
+  for(programid_list::iterator i=fragments.begin(); i!=fragments.end(); ++i) {
+    delete *i;
+  }
     
   // Activate the child
   bool parent_alive = organism->ActivateDivide(ctx);
@@ -3217,6 +3300,7 @@ void cHardwareGX::AddProgramid(programid_ptr programid)
 { 
   programid->m_id = m_programids.size();
   programid->ResetHeads();
+//  programid->ResetCPUCyclesUsed();
   programid->m_contacting_heads = 0;
   m_programids.push_back(programid);   
 }
@@ -3232,8 +3316,9 @@ void cHardwareGX::RemoveProgramid(unsigned int remove_index)
   
   // First update the contacting head count for any cProgramids the heads 
   // of the programid to be removed might have been on
-  m_programids[GetHead(nHardware::HEAD_READ).GetMemSpace()]->RemoveContactingHead(GetHead(nHardware::HEAD_READ));
-  m_programids[GetHead(nHardware::HEAD_WRITE).GetMemSpace()]->RemoveContactingHead(GetHead(nHardware::HEAD_WRITE));
+  m_current->Detach();
+//  m_programids[GetHead(nHardware::HEAD_READ).GetMemSpace()]->RemoveContactingHead(GetHead(nHardware::HEAD_READ));
+//  m_programids[GetHead(nHardware::HEAD_WRITE).GetMemSpace()]->RemoveContactingHead(GetHead(nHardware::HEAD_WRITE));
 
   // Update the programid list
   delete *(m_programids.begin()+remove_index);
@@ -3427,16 +3512,28 @@ void cHardwareGX::cProgramid::Bind(nHardware::tHeads head, cMatchSite& site) {
   // We set the terminator site label to the complement of the one that was bound.
   m_terminator_label = site.m_label;
   m_terminator_label.Rotate(1, NUM_NOPS);
+  
+  // Set the head.
+  if(GetHead(head).GetMemSpace() != GetID()) {
+    // Head is somewhere else; remove it
+    m_gx_hardware->m_programids[GetHead(head).GetMemSpace()]->RemoveContactingHead(GetHead(head));
+  }
+  
+  // Now attach it to the passed-in match site
+  m_gx_hardware->m_programids[site.m_programid->GetID()]->AddContactingHead(GetHead(head));
+  GetHead(head).Set(site.m_site, site.m_programid->GetID());
 }
 
 
-/*! Disassociate is called when this cProgramids's read head traverses over the
-complement of the label that was used to Bind this cProgramid to another.  When
-called, Disassociate removes this cProgramid's read head from the bound cProgramid,
-searches for an Inst_OnDisassociate in its own genome, and, if found, updates this
-cProgramid's IP to point to it.
-
-@JEB -- I changed the concept of dissociate, so that it is now part of p-copy...
+/*! This method detaches the caller's heads from programids that it is connected
+to.  It also updates the head contact counts.
 */
-void cHardwareGX::cProgramid::Disassociate() {
+void cHardwareGX::cProgramid::Detach() {
+  int head = GetHead(nHardware::HEAD_WRITE).GetMemSpace();
+  m_gx_hardware->m_programids[head]->RemoveContactingHead(GetHead(nHardware::HEAD_WRITE));
+  GetHead(nHardware::HEAD_WRITE).Set(0, GetID());
+  
+  head = GetHead(nHardware::HEAD_READ).GetMemSpace();
+  m_gx_hardware->m_programids[head]->RemoveContactingHead(GetHead(nHardware::HEAD_READ));
+  GetHead(nHardware::HEAD_READ).Set(0, GetID());
 }
