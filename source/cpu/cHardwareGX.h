@@ -545,6 +545,7 @@ private:
   bool Inst_Bind(cAvidaContext& ctx); //!< Attempt to match the currently executing cProgramid against other cProgramids.
   bool Inst_Bind2(cAvidaContext& ctx); //!< Attempt to locate two programids with the same site.
   bool Inst_IfBind(cAvidaContext& ctx); //!< Attempt to match the currently executing cProgramid against other cProgramids. Execute next inst if successful.
+  bool Inst_IfBind2(cAvidaContext& ctx); //!< Attempt to match and bind two programids.
   bool Inst_NumSites(cAvidaContext& ctx); //!< Count the number of corresponding binding sites
   bool Inst_ProgramidCopy(cAvidaContext& ctx); //!< Like h-copy, but fails if read/write heads not on other programids and will not write over
   bool Inst_ProgramidDivide(cAvidaContext& ctx); //!< Like h-divide, 

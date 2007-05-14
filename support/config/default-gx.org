@@ -55,14 +55,13 @@ nop-C
 nop-C
 nop-C
 site
-nop-B	# P2?  This programid is responsible for locating two genomes,
-bind2	# and then triggering the divide process.
-nop-B
-nop-C
-if-n-equ
+nop-B	# Cell-cycle programid.  This programid is responsible for
+if-bind2 # locating two genomes and then triggering the divide process.
+  nop-B
+  nop-C
   p-divide
 site
-nop-C	# End of P2.
+nop-C	# End of cell-cycle programid..
 site	# Site and empty space.
 nop-C
 nop-C

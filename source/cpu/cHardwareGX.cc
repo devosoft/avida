@@ -255,6 +255,7 @@ tInstLib<cHardwareGX::tMethod>* cHardwareGX::initInstLib(void)
     tInstLibEntry<tMethod>("bind", &cHardwareGX::Inst_Bind),
     tInstLibEntry<tMethod>("bind2", &cHardwareGX::Inst_Bind2),
     tInstLibEntry<tMethod>("if-bind", &cHardwareGX::Inst_IfBind),
+    tInstLibEntry<tMethod>("if-bind2", &cHardwareGX::Inst_IfBind2),
     tInstLibEntry<tMethod>("num-sites", &cHardwareGX::Inst_NumSites),
 
     // These are dummy instructions used for making mutiple programids
@@ -385,6 +386,10 @@ void cHardwareGX::SingleProcess(cAvidaContext& ctx)
     if (m_tracer != NULL) m_tracer->TraceHardware(*this);
     
     if(m_current->GetExecute()) {
+      // In case the IP is modified by this instruction, make sure that it wraps 
+      // around to the beginning of the genome.
+      IP().Adjust();
+      
       // Find the instruction to be executed.
       const cInstruction& cur_inst = IP().GetInst();
       
@@ -2959,12 +2964,14 @@ bool cHardwareGX::Inst_Bind(cAvidaContext& ctx)
   // Binding fails if we are already bound!
   cHeadProgramid& read = GetHead(nHardware::HEAD_READ);
   if(read.GetMemSpace() != m_current->GetID()) return false;
+  cHeadProgramid& write = GetHead(nHardware::HEAD_WRITE);
 
   // Now, select another programid to match against.
   // Go through all *other* programids looking for matches 
   std::vector<cMatchSite> all_matches;
   for(programid_list::iterator i=m_programids.begin(); i!=m_programids.end(); ++i) {
-    if(*i != m_current) {
+    // Don't bind to ourself, or to whatever programid our write head is attached to.
+    if((*i != m_current) && ((*i)->GetID() != write.GetMemSpace())) {
       std::vector<cMatchSite> matches = (*i)->Sites(GetLabel());
       all_matches.insert(all_matches.end(), matches.begin(), matches.end());
     }
@@ -2976,7 +2983,7 @@ bool cHardwareGX::Inst_Bind(cAvidaContext& ctx)
   // Otherwise set the read head to a random match
   unsigned int c = ctx.GetRandom().GetUInt(all_matches.size());
   
-  // Ok, it matched.  Bind the current programid to the matched site.
+  // Ok, it matched.  Bind the current programid's read head to the matched site.
   m_current->Bind(nHardware::HEAD_READ, all_matches[c]);
 
   // And we're done.
@@ -3053,6 +3060,19 @@ bool cHardwareGX::Inst_IfBind(cAvidaContext& ctx)
   
   return ret;
 }
+
+
+bool cHardwareGX::Inst_IfBind2(cAvidaContext& ctx)
+{
+  // Normal Bind2
+  bool ret = Inst_Bind2(ctx);
+  
+  //Skip the next instruction if binding was not successful
+  if (!ret) IP().Advance();
+  
+  return ret;
+}
+
 
 /*! This instruction puts the total number of binding sites found in BX 
 Currently it is used to keep track of whether genome division has completed.*/
@@ -3179,7 +3199,7 @@ bool cHardwareGX::Inst_ProgramidDivide(cAvidaContext& ctx)
   if(write.GetMemSpace() == m_current->GetID()) return false;
 
   // It should never be the case that the read and write heads are on the same programid.
-  //assert(read.GetMemSpace() != write.GetMemSpace());
+  assert(read.GetMemSpace() != write.GetMemSpace());
   // Actually, it can happen with bind2 @JEB
   
   // If the read and write heads are on the same programid, then fail
