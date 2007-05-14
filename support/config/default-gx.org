@@ -59,7 +59,7 @@ nop-B	# P2?  This programid is responsible for locating two genomes,
 bind2	# and then triggering the divide process.
 nop-B
 nop-C
-if-not-0
+if-n-equ
   p-divide
 site
 nop-C	# End of P2.

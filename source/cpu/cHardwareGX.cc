@@ -3078,13 +3078,12 @@ bool cHardwareGX::Inst_NumSites(cAvidaContext& ctx)
 (1) It does nothing if the read and write head are not on OTHER programids
 (2) It dissociates the read head if it encounters the complement of the label that was used in the
     match instruction that put the read head on its current target
-    
-    \todo Implement indel mutations.
 */
 bool cHardwareGX::Inst_ProgramidCopy(cAvidaContext& ctx)
 {
   cHeadProgramid& write = GetHead(nHardware::HEAD_WRITE);
   cHeadProgramid& read = GetHead(nHardware::HEAD_READ);
+  read.Adjust(); // Strange things can happen (like we're reading from a programid that was being written).
   
   // Don't copy if this programid's write or read head is on itself
   if(read.GetMemSpace() == m_current->GetID()) return false;
@@ -3152,7 +3151,7 @@ bool cHardwareGX::Inst_ProgramidCopy(cAvidaContext& ctx)
       // Divide_DoMutations(ctx, mut_multiplier);
       // But that operates on m_child_genome, currently
       
-      return false;
+      return true;
     }
   }
    
@@ -3178,8 +3177,13 @@ bool cHardwareGX::Inst_ProgramidDivide(cAvidaContext& ctx)
   // If either of these heads are on m_current, this instruction fails.
   if(read.GetMemSpace() == m_current->GetID()) return false;
   if(write.GetMemSpace() == m_current->GetID()) return false;
+
   // It should never be the case that the read and write heads are on the same programid.
-  assert(read.GetMemSpace() != write.GetMemSpace());
+  //assert(read.GetMemSpace() != write.GetMemSpace());
+  // Actually, it can happen with bind2 @JEB
+  
+  // If the read and write heads are on the same programid, then fail
+  if (read.GetMemSpace() == write.GetMemSpace()) return false;
   
   // If we're not bound to two bindable programids, this instruction fails.
   if(!m_programids[read.GetMemSpace()]->GetBindable()) return false;
@@ -3227,7 +3231,7 @@ bool cHardwareGX::Inst_ProgramidDivide(cAvidaContext& ctx)
       }
     }
   }
-  
+    
   ///// Failure conditions (custom divide_check_viable)
   // It is possible that the divide kills the child and the parent
   // Each must have genomic programids of some minimum length
@@ -3265,20 +3269,20 @@ bool cHardwareGX::Inst_ProgramidDivide(cAvidaContext& ctx)
   // offspring's programids from m_programids.
   cCPUMemory& child_genome = organism->ChildGenome();
   child_genome.Resize(1);
-  std::cout << "-=OFFSPRING=-" << endl;
+  if (m_world->GetVerbosity() >= VERBOSE_DETAILS) std::cout << "-=OFFSPRING=-" << endl;
   for(programid_list::iterator i=offspring.begin(); i!=offspring.end(); ++i) {
     (*i)->AppendLinearGenome(child_genome);
-    (*i)->PrintGenome(std::cout);
+    if (m_world->GetVerbosity() >= VERBOSE_DETAILS) (*i)->PrintGenome(std::cout);
     delete *i;
     *i = 0;
   }
   
   // Now clean up the parent.
   m_programids.clear();
-  std::cout << "-=PARENT=-" << endl;
+  if (m_world->GetVerbosity() >= VERBOSE_DETAILS) std::cout << "-=PARENT=-" << endl;
   for(programid_list::iterator i=parent.begin(); i!=parent.end(); ++i) {
     AddProgramid(*i);
-    (*i)->PrintGenome(std::cout);
+    if (m_world->GetVerbosity() >= VERBOSE_DETAILS) (*i)->PrintGenome(std::cout);
   }  
   
   // And delete the fragments.
