@@ -27,6 +27,7 @@
 #define cLineage_h
 
 #include <map>
+#include "tArray.h"
 
 class cAvidaContext;
 class cGenotype;
@@ -150,6 +151,8 @@ public:
    * the creation of this lineage
    **/
   double GetLineageStat2 () const { return m_lineage_stat2; }
+	
+	tArray<const cGenotype*> cLineage::GetCurrentGenotypes(cAvidaContext& ctx) const;
 };
 
 

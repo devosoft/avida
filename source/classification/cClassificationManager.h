@@ -27,6 +27,7 @@
 #define cClassificationManager_h
 
 #include <list>
+#include <set>
 
 #ifndef defs_h
 #include "defs.h"
@@ -96,6 +97,9 @@ private:
   cLineage* m_max_fitness_lineage; // lineage with the single highest fitness
   cLineage* m_dominant_lineage; // the lineage with the largest number of creatures.
   int m_lineage_next_id;
+	
+	// CClade @MRR
+	std::set<int>  m_cclade_ids;
   
   
   // Private Helper Functions
@@ -206,7 +210,10 @@ public:
   void PrintLineageTotals(const cString& filename, bool verbose=false);
   void PrintLineageCurCounts(const cString& filename);
   
-
+	// Coalescence Clade
+	void LoadCCladeFounders(const cString& filename);
+	bool IsCCladeFounder(const int id) const;
+	
   // Utility Functions
   bool SaveClone(std::ofstream& fp);
   bool LoadClone(std::ifstream & fp);

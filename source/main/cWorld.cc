@@ -112,6 +112,9 @@ void cWorld::Setup()
     ExitAvida(-1);
   }
   
+	// @MRR CClade Tracking
+	if (m_conf->TRACK_CCLADES.Get() > 0)
+		m_class_mgr->LoadCCladeFounders(m_conf->TRACK_CCLADES_IDS.Get());
   
   const bool revert_fatal = m_conf->REVERT_FATAL.Get() > 0.0;
   const bool revert_neg = m_conf->REVERT_DETRIMENTAL.Get() > 0.0;

@@ -95,8 +95,9 @@ protected:
   int m_id;                               // unique id for each org, is just the number it was born
   int m_lineage_label;                    // a lineages tag; inherited unchanged in offspring
   cLineage* m_lineage;                    // A lineage descriptor... (different from label)
-
-  // Other stats
+	int cclade_id;				                  // @MRR Coalescence clade information (set in cPopulation)
+ 
+	// Other stats
   cCPUMemory m_child_genome; // Child genome, while under construction.
   sCPUStats m_cpu_stats;     // Info for statistics
 
@@ -160,6 +161,10 @@ public:
   void SetLineage(cLineage* in_lineage) { m_lineage = in_lineage; }
   cLineage* GetLineage() const { return m_lineage; }
   
+	void SetCCladeLabel( int in_label ) { cclade_id = in_label; };  //@MRR
+	int  GetCCladeLabel() const { return cclade_id; }
+	
+	
   int GetMaxExecuted() const { return m_max_executed; }
   
   cCPUMemory& ChildGenome() { return m_child_genome; }

@@ -280,6 +280,10 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
     // Do lineage tracking for the new organisms.
     LineageSetupOrganism(child_array[i], parent_organism.GetLineage(),
                          parent_organism.GetLineageLabel(), parent_genotype);
+		
+		// @MRR Do coalescence clade set up for new organisms.
+		CCladeSetupOrganism(child_array[i], parent_organism.GetCCladeLabel());
+		
     
   }
   
@@ -1290,6 +1294,24 @@ void cPopulation::LineageSetupOrganism(cOrganism* organism, cLineage* lin, int l
   
   organism->SetLineageLabel( lin_label );
   organism->SetLineage( lin );
+}
+
+
+/**
+This function will set up coalescence clade information.  If this feature is activated in the configuration,
+ a list of coalescence ids must be read in initially.  These are furnished by doing an initial run with the
+ same seed and setup and retrieving information from the final dominant lineage and coalescence points.
+ @MRR May 2007
+ **/
+void cPopulation::CCladeSetupOrganism(cOrganism* organism, int parent_cclade_id)
+{
+		int clade_id = -1;  //Default if this isn't being used;
+		if (m_world->GetConfig().TRACK_CCLADES.Get() > 0)
+		{
+			clade_id = (m_world->GetClassificationManager().IsCCladeFounder(organism->GetID())) ?
+			organism->GetID() : parent_cclade_id;
+		}
+		organism->SetCCladeLabel(clade_id);
 }
 
 

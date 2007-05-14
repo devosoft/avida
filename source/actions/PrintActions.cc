@@ -685,6 +685,92 @@ public:
 
 
 /*
+ This function requires that TRACK_CCLADES be enabled and avida is
+ not in analyze mode.
+ 
+ Parameters
+	filename (cString)
+ Where the clade information should be stored.
+ 
+ Please note the structure to this file is not a matrix.
+ Each line is formatted as follows: 
+ update number_cclades ccladeID0 ccladeID0_count ccladeID1 
+ 
+ @MRR May 2007
+ */
+class cActionPrintCCladeCounts : public cAction
+{
+private:
+		cString filename;
+		bool first_time;
+		
+public:
+			cActionPrintCCladeCounts(cWorld* world, const cString& args)
+			: cAction(world, args)
+		{
+				cString largs(args);
+				filename = (!largs.GetSize()) ? "cclade_count.dat" : largs.PopWord();
+				first_time = true;
+		}
+		
+		static const cString GetDescription() { return "Arguments: [filename = \"cclade_count.dat\"]"; }
+		
+		void Process(cAvidaContext& ctx)
+		{
+			//Handle possible errors
+			if (ctx.GetAnalyzeMode())
+				m_world->GetDriver().RaiseFatalException(1, "PrintCCladeCount requires avida to be in run mode.");
+			
+			if (m_world->GetConfig().TRACK_CCLADES.Get() == 0)
+				m_world->GetDriver().RaiseFatalException(1, "PrintCCladeCount requires coalescence clade tracking to be enabled.");
+			
+			
+			tHashTable<int, int> cclade_count;  //A count for each clade in the population
+			set<int>             clade_ids;
+			
+			cPopulation& pop = m_world->GetPopulation();
+			const int update = m_world->GetStats().GetUpdate();
+			
+			//For each organism in the population, find what coalescence clade it belongs to and count
+			for (int k = 0; k < pop.GetSize(); k++)
+			{
+				if (!pop.GetCell(k).IsOccupied())
+					continue;
+				int cclade_id = pop.GetCell(k).GetOrganism()->GetCCladeLabel();
+				int count = 0;
+				if (!cclade_count.Find(cclade_id,count))
+					clade_ids.insert(cclade_id);
+				cclade_count.SetValue(cclade_id, ++count);
+			}
+			
+			ofstream& fp = m_world->GetDataFileManager().GetOFStream(filename);
+			if (!fp.is_open())
+				m_world->GetDriver().RaiseFatalException(1, "PrintCCladeCount: Unable to open output file.");
+			if (first_time)
+			{
+				fp << "# Each line is formatted as follows:" << endl;
+				fp << "#   update number_cclades ccladeID0 ccladeID0_count ccladeID1" << endl;
+				fp << endl;
+				first_time = false;
+			}
+			fp << update <<  " "
+				<< clade_ids.size() << " ";
+			
+			set<int>::iterator sit = clade_ids.begin();
+			while(sit != clade_ids.end())
+			{
+				int count = 0;
+				cclade_count.Find(*sit, count);
+				fp << *sit << " " << count << " ";
+				sit++;
+			}
+			fp << endl;
+			
+		}
+};
+
+
+/*
  @MRR March 2007
  This function prints out fitness data. The main point is that it
  calculates the average fitness from info from the testCPU + the actual
@@ -1808,6 +1894,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintPhenotypeData>("PrintPhenotypeData");
   action_lib->Register<cActionPrintPhenotypeStatus>("PrintPhenotypeStatus");
   action_lib->Register<cActionPrintDemeStats>("PrintDemeStats");
+	action_lib->Register<cActionPrintCCladeCounts>("PrintCCladeCounts");
+
   
   // Processed Data
   action_lib->Register<cActionPrintData>("PrintData");

@@ -1260,6 +1260,28 @@ void cClassificationManager::PrintLineageCurCounts(const cString & filename)
   fp << endl;
 }
 
+//@MRR Coalescence Clades
+void cClassificationManager::LoadCCladeFounders(const cString& filename)
+{
+	ifstream fin(filename);
+	if (!fin.is_open())
+		m_world->GetDriver().RaiseFatalException(1, "Unable to open coalescence clade ids.");
+	int id;
+	fin >> id;
+	while(!fin.eof())
+	{
+		m_cclade_ids.insert(id);
+		fin >> id;
+	}
+	fin.close();
+}
+
+bool cClassificationManager::IsCCladeFounder(const int id) const
+{
+	set<int>::const_iterator it = m_cclade_ids.find(id);
+	return (it == m_cclade_ids.end()) ? false : true;
+}
+
 
 unsigned int cClassificationManager::FindCRC(const cGenome & in_genome) const
 {
