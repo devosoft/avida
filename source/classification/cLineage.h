@@ -152,7 +152,7 @@ public:
    **/
   double GetLineageStat2 () const { return m_lineage_stat2; }
 	
-	tArray<const cGenotype*> cLineage::GetCurrentGenotypes(cAvidaContext& ctx) const;
+	tArray<const cGenotype*> GetCurrentGenotypes(cAvidaContext& ctx) const;
 };
 
 
