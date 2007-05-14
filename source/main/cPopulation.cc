@@ -281,10 +281,8 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
     LineageSetupOrganism(child_array[i], parent_organism.GetLineage(),
                          parent_organism.GetLineageLabel(), parent_genotype);
 		
-		// @MRR Do coalescence clade set up for new organisms.
-		CCladeSetupOrganism(child_array[i], parent_organism.GetCCladeLabel());
-		
-    
+		//By default, store the parent cclade, this may get modified in ActivateOrgansim (@MRR)
+		child_array[i]->SetCCladeLabel(parent_organism.GetCCladeLabel());
   }
   
   
@@ -397,6 +395,8 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   environment.SetupInputs(ctx, target_cell.input_array);
   
   // Update the archive...
+	
+	
   in_genotype->AddOrganism();
   
   if (old_genotype != NULL) {
@@ -422,7 +422,10 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   // Statistics...
   m_world->GetStats().RecordBirth(target_cell.GetID(), in_genotype->GetID(),
                                   in_organism->GetPhenotype().ParentTrue());
-                                  
+	
+	// @MRR Do coalescence clade set up for new organisms.
+	CCladeSetupOrganism(in_organism ); 
+	
   //count how many times MERIT_BONUS_INST (rewarded instruction) is in the genome
   //only relevant if merit is proportional to # times MERIT_BONUS_INST is in the genome
   int rewarded_instruction = m_world->GetConfig().MERIT_BONUS_INST.Get();
@@ -1299,19 +1302,26 @@ void cPopulation::LineageSetupOrganism(cOrganism* organism, cLineage* lin, int l
 
 /**
 This function will set up coalescence clade information.  If this feature is activated in the configuration,
- a list of coalescence ids must be read in initially.  These are furnished by doing an initial run with the
- same seed and setup and retrieving information from the final dominant lineage and coalescence points.
+ a list of coalescence genotype ids must be read in initially.  These are furnished by doing an initial run 
+ with the same seed and setup and retrieving information from the final dominant lineage and coalescence points.
+ 
+ The value is either (by default) inherited from the parent or the organism's genotypeID if it is known
+ to be a coalescence id.
+ 
+ Defaulting is established in Inject or ActivateOffspring methods of this class.
+ 
  @MRR May 2007
  **/
-void cPopulation::CCladeSetupOrganism(cOrganism* organism, int parent_cclade_id)
+void cPopulation::CCladeSetupOrganism(cOrganism* organism)
 {
-		int clade_id = -1;  //Default if this isn't being used;
+		int gen_id = organism->GetGenotype()->GetID();	
 		if (m_world->GetConfig().TRACK_CCLADES.Get() > 0)
 		{
-			clade_id = (m_world->GetClassificationManager().IsCCladeFounder(organism->GetID())) ?
-			organism->GetID() : parent_cclade_id;
+			if (m_world->GetClassificationManager().IsCCladeFounder(gen_id))
+			{	
+				organism->SetCCladeLabel(gen_id);
+			}
 		}
-		organism->SetCCladeLabel(clade_id);
 }
 
 
@@ -2274,6 +2284,9 @@ void cPopulation::InjectGenotype(int cell_id, cGenotype *new_genotype)
   cAvidaContext& ctx = m_world->GetDefaultContext();
   
   cOrganism* new_organism = new cOrganism(m_world, ctx, new_genotype->GetGenome());
+	
+	//Coalescense Clade Setup
+	new_organism->SetCCladeLabel(-1);  
   
   // Set the genotype...
   new_organism->SetGenotype(new_genotype);

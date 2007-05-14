@@ -149,6 +149,7 @@ void cLineage::CalcCurrentFitness(cAvidaContext& ctx) const
   m_ave_fitness_changed = false;
 }
 
+
 tArray<const cGenotype*> cLineage::GetCurrentGenotypes(cAvidaContext& ctx) const
 {
 	tArray<const cGenotype*> genotypes;
@@ -157,4 +158,3 @@ tArray<const cGenotype*> cLineage::GetCurrentGenotypes(cAvidaContext& ctx) const
 		genotypes.Push(it->first);
 	return genotypes;
 }
-
