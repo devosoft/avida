@@ -2207,6 +2207,26 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
 		 quality = 1 - (( (1+y)*(1 - sqrt(x/(1+y)) - (x/(1+y))*sin(3.14159*x*10) ) +.76) / 2.76);
 		 break;
 
+	 case 5:
+	   x = x*-2.0;
+	   quality = 1 - (x*x+y*y)/5.0;
+	   break;
+
+	 case 6:
+	   x = x*-2.0;
+	   quality = 1 - ((x+2)*(x+2) + y*y)/5.0;
+	   break;
+
+	 case 7:
+	   x = x*4.0;
+	   quality = 1 - (sqrt(x)+y)/3.0;
+	   break;
+
+	 case 8:
+	   x = x*4.0;
+	   quality = 1 - (sqrt(4-x) + y)/3.0;
+	   break;
+
 	 default:
 		 quality = .001;
 	 }
