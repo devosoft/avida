@@ -1,0 +1,52 @@
+#filetype genotype_data
+#format id parent_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence
+
+#  1: ID
+#  2: parent ID
+#  3: parent distance
+#  4: number of orgranisms currently alive
+#  5: total number of organisms that ever existed
+#  6: length of genome
+#  7: merit
+#  8: gestation time
+#  9: fitness
+# 10: update born
+# 11: update deactivated
+# 12: depth in phylogentic tree
+# 13: genome of organism
+
+656 595 1 38 214 41 2.01256e+16 41 4.90868e+14 83 -1 6 abaabbbabbaabbbabbaaabbbaaaaaaabaaaaaaaac 
+501 460 1 30 428 41 1.38324e+16 41 3.37376e+14 55 -1 4 abaabbbabbaabbbabbaaabbbabaaaaababaaaaaac 
+605 401 1 28 290 41 1.43903e+16 41 3.50983e+14 74 -1 3 abaabbbabbbabbbabbaaabbbabaaaabbaaaaaaaac 
+618 501 1 21 188 41 1.62701e+16 41 3.96831e+14 77 -1 5 abaabbbabbaabbbabbaaabbbabaaaaaaabaaaaaac 
+530 311 1 17 441 41 1.28769e+16 41 3.14071e+14 60 -1 4 abaabbbaabbabbbabbaabbbbabaaaabbbaaaaaaac 
+699 656 1 15 63 41 1.88109e+16 41 4.58804e+14 90 -1 7 abaabbbabbaabbbabbaaabbbbaaaaaabaaaaaaaac 
+660 643 1 12 90 41 1.68144e+16 41 4.10108e+14 84 -1 5 abaabbbabababbbabbaaabababaaaabbaaaaaaaac 
+401 258 1 7 523 41 1.42292e+16 41 3.47054e+14 37 -1 2 abaabbbabbbabbbabbaaabbbabaaaabbbaaaaaaac 
+595 501 1 7 130 41 1.36944e+16 41 3.34009e+14 72 -1 5 abaabbbabbaabbbabbaaabbbaaaaaaababaaaaaac 
+626 460 1 4 39 41 1.32331e+16 41 3.22759e+14 78 -1 4 abaabbaabbbabbbabbaaabbbabaaaaababaaaaaac 
+460 338 1 4 571 41 1.3972e+16 41 3.4078e+14 49 -1 3 abaabbbabbbabbbabbaaabbbabaaaaababaaaaaac 
+338 258 1 4 613 41 1.48908e+16 41 3.63189e+14 24 -1 2 abaabbbabbbabbbabbaaabbbabaaaabbabaaaaaac 
+670 605 1 4 22 41 1.5405e+16 41 3.75732e+14 85 -1 4 abaabbbabbbabbbabbaaaabbabaaaabbaaaaaaaac 
+703 605 1 3 19 41 1.64934e+16 41 4.02279e+14 91 -1 4 abaabbbabbbabbbabbaaabbbabaaaaabaaaaaaaac 
+727 660 1 3 5 41 1.06673e+16 41 2.60177e+14 96 -1 6 abaabbbabababbbabbaaabababaaaabbabaaaaaac 
+719 656 1 3 12 41 1.74324e+16 41 4.25181e+14 95 -1 7 abaabbaabbaabbbabbaaabbbaaaaaaabaaaaaaaac 
+647 619 1 3 19 41 8.08695e+15 41 1.97243e+14 82 -1 5 abaabbbbbbbabbbabbaaabbbabaabaabbaaaaaaac 
+735 656 1 2 2 41 0 0 0 98 -1 7 abaabbbabbaabbbabbaaabbbaaaaaaabaaaabaaac 
+678 460 1 2 7 41 9.15926e+15 41 2.23397e+14 86 -1 4 abaabbbabbbabbbabbaaabbbabaaabababaaaaaac 
+741 703 1 2 2 41 0 0 0 99 -1 5 abaabbbabbbabbbabbaaabababaaaaabaaaaaaaac 
+704 401 1 2 6 41 8.72843e+15 41 2.12888e+14 91 -1 3 abbabbbabbbabbbabbaaabbbabaaaabbbaaaaaaac 
+725 605 1 1 4 41 1.37389e+16 41 3.35095e+14 96 -1 4 abaabbbabbbabbbabbaaabbaabaaaabbaaaaaaaac 
+724 656 1 1 1 41 0 0 0 96 -1 7 abaabbbabbaabbbabbaaabbbaaaaaaabaaaaaaaab 
+686 666 1 1 3 41 2.63418e+15 41 6.42483e+13 87 -1 6 abbabbbabbaabbbabbbaabbbabaaaaababaaaaaac 
+740 401 1 1 1 41 0 0 0 99 -1 3 abaabbbabbbabbbabbaaabbbabaababbbaaaaaaac 
+743 732 1 1 1 41 0 0 0 100 -1 5 abaabbbabbbabbbabbaaabbbababbabbaaaaaaaac 
+732 605 1 1 3 41 1.36065e+16 41 3.31866e+14 97 -1 4 abaabbbabbbabbbabbaaabbbabaababbaaaaaaaac 
+745 401 1 1 1 41 0 0 0 100 -1 3 abaabbbabbbabbbaabaaabbbabaaaabbbaaaaaaac 
+746 656 1 1 1 41 0 0 0 100 -1 7 abaabbbabbaabbaabbaaabbbaaaaaaabaaaaaaaac 
+726 605 1 1 4 41 1.40479e+16 41 3.42632e+14 96 -1 4 aaaabbbabbbabbbabbaaabbbabaaaabbaaaaaaaac 
+747 656 1 1 1 41 0 0 0 100 -1 7 abaabbbabbaabbbabbaaabbbaabaaaabaaaaaaaac 
+497 401 1 1 108 41 9.88684e+15 41 2.41142e+14 54 -1 3 abaabbbbbbbabbbabbaaabbbabaaaabbbaaaaaaac 
+730 660 1 1 3 41 8.35178e+15 41 2.03702e+14 96 -1 6 abaabbbabababbbabbaaabababaaaabbaabaaaaac 
+621 401 1 1 10 41 3.83569e+15 41 9.35533e+13 77 -1 3 abaabbbabbbabbaabbaaabbbabaaaabbbaaaaaaac 
+748 618 1 1 1 41 0 0 0 100 -1 6 abaabbbabbaabbbabbaaabbbabaaaaaaabaaaabac 

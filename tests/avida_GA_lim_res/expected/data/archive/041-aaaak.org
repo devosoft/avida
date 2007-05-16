@@ -1,0 +1,72 @@
+# Wed May 16 17:28:45 2007
+# Filename........: archive/041-aaaak.org
+# Update Output...: 10
+# Is Viable.......: 1
+# Repro Cycle Size: 0
+# Depth to Viable.: 0
+# Update Created..: -1
+# Genotype ID.....: 25
+# Parent Gen ID...: -1
+# Tree Depth......: 0
+# Parent Distance.: -1
+# 
+# Generation: 0
+# Merit...........: 100.000000
+# Gestation Time..: 41
+# Fitness.........: 2.439024
+# Errors..........: 0
+# Genome Size.....: 41
+# Copied Size.....: 41
+# Executed Size...: 41
+# Offspring.......: SELF
+# 
+# Tasks Performed:
+# optimize 1 (0.469876)
+# optimize 1 (0.434191)
+# optimize 1 (0.757954)
+# optimize 1 (0.818469)
+# optimize 1 (0.707339)
+# optimize 1 (0.537822)
+
+
+IObuf-add0
+IObuf-add1
+IObuf-add0
+IObuf-add0
+IObuf-add1
+IObuf-add1
+IObuf-add1
+IObuf-add0
+IObuf-add1
+IObuf-add1
+IObuf-add1
+IObuf-add0
+IObuf-add1
+IObuf-add1
+IObuf-add1
+IObuf-add0
+IObuf-add1
+IObuf-add1
+IObuf-add0
+IObuf-add0
+IObuf-add0
+IObuf-add1
+IObuf-add1
+IObuf-add1
+IObuf-add0
+IObuf-add1
+IObuf-add0
+IObuf-add0
+IObuf-add0
+IObuf-add0
+IObuf-add1
+IObuf-add1
+IObuf-add1
+IObuf-add1
+IObuf-add0
+IObuf-add1
+IObuf-add0
+IObuf-add0
+IObuf-add0
+IObuf-add0
+repro

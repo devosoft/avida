@@ -1,0 +1,19 @@
+# Avida tasks data
+# Wed May 16 17:29:00 2007
+# First column gives the current update, next columns give the number
+# of organisms that have the particular task as a component of their merit
+#  1: Update
+#  2: Optimize
+#  3: Optimize
+
+0 0 0 
+10 225 225 
+20 225 225 
+30 225 225 
+40 225 225 
+50 225 225 
+60 225 225 
+70 225 225 
+80 225 225 
+90 225 225 
+100 225 225 

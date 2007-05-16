@@ -1,0 +1,151 @@
+#filetype genotype_data
+#format id parent_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence
+
+#  1: ID
+#  2: parent ID
+#  3: parent distance
+#  4: number of orgranisms currently alive
+#  5: total number of organisms that ever existed
+#  6: length of genome
+#  7: merit
+#  8: gestation time
+#  9: fitness
+# 10: update born
+# 11: update deactivated
+# 12: depth in phylogentic tree
+# 13: genome of organism
+
+1 -1 -1 9 506 103 114.565 237 0.483397 -1 -1 0 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+142 1 1 6 12 103 111.143 237 0.468957 17 -1 1 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrcgdcxaxopejkflfknyqcfiutttycasvab 
+725 374 1 6 6 103 136.853 235 0.582353 81 -1 4 ruzavcqoagnqmbdbuyxactttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrcgdcdaxopejkflfonyqcdiutttycasvab 
+551 485 1 4 5 103 119.295 238 0.501239 60 -1 2 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomihbtergalasplougeitstltrcgdcxaxopejkflfonygcfiutttycasvab 
+550 285 1 4 9 103 115.051 235 0.489578 60 -1 2 ruzavcqoagnqmadnuyxbctttmhbeumblbeidulcnrqfaomimbtergalasplougeitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+711 348 1 4 5 103 116.526 236 0.493754 78 -1 3 rwzavcqoagnqmbdnuyxbctttmhbuumblceidulcnrqfaomimbtergaxasplougeitstltrcgdcxaxlpejkflfonyecfiutttycasvab 
+578 15 1 4 6 103 133.663 317 0.421649 64 -1 2 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrcgdcxaxopejkflionyqcfiutptycasvab 
+593 528 2 4 6 103 127.007 238 0.533643 66 -1 3 ruzavcqoagnqmbdnuyxbctttmhbeumklceidulcnrqfaomimbtergalasplougeitsthtrcgdcxaxopejkflponyqafiutttycasvab 
+116 1 2 4 14 103 120.853 238 0.507784 16 -1 1 ruzavcqoagnqmbdnuyxbctttmhbeumblceidugcnrqfaomimbtergalasplougjitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+458 40 1 4 5 103 116.452 237 0.49136 50 -1 2 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitqtltrcgdcxaxopejkflfonyqcdiutttycasvab 
+744 1 1 3 4 103 119.8 237 0.505486 83 -1 1 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalamplougeitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+697 478 1 3 4 103 111.768 237 0.471594 76 -1 3 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougehtstrtrcgdcxaxopeukflfonyqcfiutttycasvab 
+271 1 1 3 11 103 116.178 238 0.488142 31 -1 1 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrcgdmxaxopejkflfonyqcfiutttycasvab 
+297 1 3 3 8 103 117.992 236 0.499968 33 -1 1 ruzavcqoagnqmbdnuyxbctttmhbeumblneidulcnrqfaomimbtergalasplougeitstltacgdcxaxopejkfljonyqcfiutttycasvab 
+669 608 2 3 6 103 138.65 238 0.582563 75 -1 2 ruzavcqoagnqmbdnuyxbctttphbeumnlceidulcnrqfaomimbtergalasplougeitstltrcgcwxaxopejeflfonyqcfiutttycasvab 
+723 659 2 3 4 103 147.054 238 0.617875 81 -1 6 ruzavcqoafnqmbdnuyxfctttmhbeumblceidulcprqfaomimbtergalzxploujeitstltgcgdzxaxnpeikflfonyqcfiutttycasvab 
+605 116 1 3 7 103 118.448 238 0.49768 67 -1 2 ruzavcqoagnqmbdnuyxbctttmhbeumblceidugcnrqfaomimbtergalasplougjitstltrcgdcxaoopejkflfonyqcfiutttycasvab 
+738 310 2 3 4 103 119.44 237.667 0.502535 83 -1 2 ruzavcqoagnqmbdnuyxuctttmhbeumblceidulcnrqfaomkmbtergalasplougeitstltrcgdcbaxopejkflfonyqcfiutttycasvab 
+647 552 2 3 4 103 146.191 315 0.4641 71 -1 3 ruzavcqoagnbmbdnuyxbctttmobhumblceidulcnrqfcomimbtergalasplougeitstltrcgdcxaxopejkflfonyqcfiutgtycasvab 
+294 40 1 3 10 103 124.007 236 0.525454 33 -1 2 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrcgdcdaxopejkflfonyqcdiutttycasvab 
+462 409 1 3 6 103 112.258 237 0.473663 51 -1 2 ruzavcqoagnqmbdnuyxbctttmhweumblceidulcnrqfaomimbtergalasilougeitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+590 263 1 3 5 103 137.488 238 0.577681 65 -1 2 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergasasplougeitstltrcgdcxaxopejkflfonyqafiutttycasvab 
+682 369 1 2 5 103 116.386 235 0.49526 75 -1 3 ruzavcqoagnqmbdnuyxbctttmxbeumblceidulcnrqfaomimbtergalasploujeitstltrcgdcxaxdpezkflfonyqcfautttycasvab 
+193 13 1 2 7 103 131.492 238 0.552488 23 -1 2 ruzavcqoagnqmbdnuyxbctttmhbeupblceidulcnrqfqomimbtergalasplougeitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+753 1 1 2 2 103 0 0 0 84 -1 1 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomiwbtergalasplougeitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+182 100 1 2 7 103 121.645 238 0.511115 19 -1 2 ruzavcqoafnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalaxplougeitstltrsgdzxaxopejkflfonyqcfiutttycasvab 
+761 596 2 2 2 103 0 0 0 84 -1 6 ruzavcqoafnqmbdnuyxbctttfhbeumblceidulcnrqfaomimbteygalaxplouzeitstltgcgdzxaxnpejkflfonyqcfiutttycasvab 
+775 555 1 2 2 102 0 0 0 85 -1 3 ruzavcqoagnqmbdouyxbctttmhbeumblceidulcnrufaomimbtergalaspuouguitstlrcgdcxaxopejkflfonyqcfiutttycasvab 
+767 701 2 2 2 103 0 0 0 85 -1 3 ruzavcqoagnqmbdnuyxbjtttmhzeumblneidulcnbqfaomimbtergalasplougeitstltacgdcxaxopejkfljonyqcfiutttycasvab 
+567 431 2 2 4 102 109.868 234 0.469521 61 -1 3 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnwqfaomimbtergalaspzougeitsltrcgccxaxopejkflfonyqcfiutttycasvab 
+777 604 2 2 2 103 0 0 0 85 -1 4 ruzavcqoagnqmbdnuyxbctttmhbeumblceidflmnrquaomimftergalasplougevtstltrcgdcxaxopejkflfonyqcfiutjtycasvab 
+376 233 1 2 7 103 134.209 236 0.568682 42 -1 4 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnyqfaomimbtergclasplougeitstltrcgdcxaxdpnzkflmonyqcfautttycasvab 
+727 193 3 2 3 103 147.412 237 0.621993 82 -1 3 ruzavcqoagnqmbdnuyxbctttmhbeupblceidulcnrqfqomimbtebgalasplsugeitstltrcgdcxaxopejkflfsnyqcfiutttycasvab 
+730 374 1 2 3 103 143.541 235 0.610813 82 -1 4 ruzavcqoagnqmbdbuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrcgdcdaxopejkflfgnyqcdiutttycasvab 
+369 77 1 2 6 103 125.453 236 0.531582 42 -1 2 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalasploujeitstltrcgdcxaxdpezkflfonyqcfautttycasvab 
+799 458 1 2 2 103 0 0 0 91 -1 3 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitqtltrcgdccaxopejkflfonyqcdiutttycasvab 
+673 613 2 2 3 103 130.223 238 0.547155 75 -1 2 ruzavcqoagnqmbdnuyxbctttmhbeumblceidurcnrqfaomdmbtergalasplouglitstltrcgdcxaxopelkflfonyqcfiutttycasvab 
+692 508 1 2 4 103 118.265 237 0.49901 76 -1 3 ruzavcqoagnlmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrzgdcxaxopejkflfonyqcdiutttycasvab 
+800 550 2 2 2 103 0 0 0 91 -1 3 ruzavcqoagnqmadnuyxbctttmhbeumblbjidulcnrqfaomimbtergalasplougeitstltrcgdcxaxoeejkflfonyqcfiutttycasvab 
+706 567 3 2 4 101 117.663 233 0.504993 77 -1 4 ruzavcqoagnembdnuyxbctttmhbeumblceidulcnwqfaomimbtergalasgzougeisltrcgccxaxopejkflfonyqcfiutttycasvab 
+659 519 3 2 4 103 143.457 238 0.602759 73 -1 5 ruzavcqoafnqmbdnuyxbctttmhbeumblceidulcprqfaomimbtergalzxplouleitstltgcgdzxaxnpeikflfonyqcfiutttycasvab 
+765 182 1 2 3 103 111.253 237 0.469421 84 -1 3 ruzavcqoafnqmbdnuyxbctttmhbeumblceidulcnrqfaimimbtergalaxplougeitstltrsgdzxaxopejkflfonyqcfiutttycasvab 
+585 378 2 2 7 103 131.806 237 0.556143 65 -1 2 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulenrqfaoiimbtrrgalasplougeitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+617 1 2 2 4 103 111.482 236 0.472382 67 -1 1 ruzavcqoagnqmbdnuyxbqtttmhbeumblceidulcnrqfaomimbtergelasplougeitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+783 653 1 2 3 103 114.368 236 0.484611 86 -1 7 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnyqfaomimbtergclasplouqeitstltrjmdcxaxdpnzkflmonyqcfautttycasvab 
+808 1 1 2 2 103 0 0 0 92 -1 1 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrqgdcxaxopejkflfonyqcfiutttycasvab 
+806 40 1 2 2 103 0 0 0 92 -1 2 ruzavcqoagnqmbdnuyxbctttmhbeumblceidufcnrqfaomimbtergalasplougeitstltrcgdcxaxopejkflfonyqcdiutttycasvab 
+40 1 1 2 14 103 119.088 237 0.50248 8 -1 1 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrcgdcxaxopejkflfonyqcdiutttycasvab 
+728 552 2 2 3 103 144.724 316 0.457988 82 -1 3 ruzavcqoagnqmbdnuyxbytttmobhumblceidulcnrqfaomimbtergalasplougeitltltrcgdcxaxopejkflfonyqcfiutgtycasvab 
+693 142 1 2 4 103 108.497 234 0.463664 76 -1 2 ruzavcqoagnqmbdnbyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrcgdcxaxopejkflfknyqcfiutttycasvab 
+757 555 1 1 2 102 0 0 0 84 -1 3 ruzavcqoagnqmbdouyxbctttmhbeumblceidulcnrufaomimbtfrgalaspuougeitstlrcgdcxaxopejkflfonyqcfiutttycasvab 
+241 1 1 1 1 103 0 0 0 26 -1 1 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqtaomimbtergalasplougeitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+359 1 1 1 1 103 0 0 0 41 -1 1 cuzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+364 58 1 1 1 103 0 0 0 41 -1 2 ruzuvcqoagnqmudnuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+401 223 2 1 1 104 0 0 0 43 -1 2 ruzavcqoagnfqmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalaspkougeitstltrcgdcxrxopejkflfonyqcfiutttycasvab 
+434 178 2 1 1 103 0 0 0 48 -1 2 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnuqfaomimbtergalasplougectstltrcgdcxaxopejkflfonvqcfiutttycasvab 
+517 94 1 1 1 104 0 0 0 57 -1 2 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulynrqfaomimbtergalaspeougeitstltrcgdcxaxoqpejkflfonyqcfiutttycasvab 
+531 263 1 1 1 103 0 0 0 59 -1 2 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrcgdcxaxopejkflfonyqafiuttttcasvab 
+552 422 2 1 1 103 137.49 316 0.435094 60 -1 2 ruzavcqoagnqmbdnuyxbctttmobhumblceidulcnrqfaomimbtergalasplougeitstltrcgdcxaxopejkflfonyqcfiutgtycasvab 
+563 282 1 1 1 104 0 0 0 60 -1 2 ruzavcqoagnqmbdnulyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrcgdcxadopejkflfonyqcfiutttycasvab 
+568 1 1 1 1 103 0 0 0 62 -1 1 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbdergalasplougeitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+575 178 2 1 1 102 0 0 0 64 -1 2 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnuqfaomimbtergalasplougeitstltrcgdcxaxopejkzlfnyqcfiutttycasvab 
+629 399 2 1 1 103 0 0 0 68 -1 2 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrufaomimbtergalasplougeitstltrcgdcxaxopejkflfwnyqcfiutttyfasvab 
+630 1 1 1 1 103 0 0 0 68 -1 1 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalaspltugeitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+640 241 92 1 1 103 0 0 0 69 -1 2 alasplougeitstltrcgdcnaxopejkflfonyqcfiutttycesvabruzavcqoannqmbdnuyxbctttmhbjuvblceidulcnrqtfomimbteqg 
+654 615 90 1 1 103 0 0 0 73 -1 4 rgalasplougeitstrtrcgdcxaxopeukflfonyqcfiuttttcasvabruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbte 
+656 55 3 1 1 102 0 0 0 73 -1 2 rbzavcqoagnqmbdnusxbctttmhbeumblceidulcnsqfagmimbtergalaplougeitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+666 604 1 1 1 104 0 0 0 74 -1 4 ruzavcqoagnqmbdwnuyxbctttmhbeumblceidflmnrqfaomimbtergalasplougevtstltrcgdcxaxopejkflfonyqcfiutjtycasvab 
+689 567 1 1 1 102 0 0 0 75 -1 4 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnwqfaomimblergalaspzougeitsltrcgccxaxopejkflfonyqcfiutttycasvab 
+705 1 1 1 1 103 116.674 236 0.494383 77 -1 1 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrcgdcxaxoiejkflfonyqcfiutttycasvab 
+708 646 1 1 1 102 0 0 0 77 -1 6 ruzavcqoagnqmbdnuyxbctttmhbeumblcwidulcnyqfaamimbtergclasplougeitstltrcgdcxaxdpnzkflmnuwcfautttycasvab 
+310 1 1 1 3 103 114.48 237 0.483038 34 -1 1 ruzavcqoagnqmbdnuyxuctttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+714 590 1 1 1 103 0 0 0 80 -1 3 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaotimbtergasasplougeitstltrcgdcxaxopejkflfonyqafiutttycasvab 
+715 367 2 1 1 103 0 0 0 80 -1 2 ruzavcqoagnqmbdnuyxcctttmhbeumblceidulcnrqfaomimbtergalastlougeitstltrcgdzxaxopejkflfonyqcfiutttycasvab 
+717 55 1 1 1 102 0 0 0 80 -1 2 ruzavcqoagnqmdnusxbctttmhbeumblceidulcnrqfagmimbtergalasplougeitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+719 376 1 1 1 103 0 0 0 81 -1 5 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnyqfaomimbtergclasplougeixstltrcgdcxaxdpnzkflmonyqcfautttycasvab 
+726 294 1 1 1 103 0 0 0 81 -1 3 ruzavcqoagnqmbdnuyxbctttmhbeumblceiduvcnrqfaomimbtergalasplougeitstltrcgdcdaxopejkflfonyqcdiutttycasvab 
+734 608 1 1 1 103 0 0 0 82 -1 2 ruzavcqoagnqmbdnuyxbctttphbeumblceidulcnrqfaomimbtergalasplougeitstltrcgdwxaxopejeflfonyqcfiutttycbsvab 
+735 1 1 1 1 103 0 0 0 82 -1 1 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrcgdcxaxopejkflfonwqcfiutttycasvab 
+739 458 1 1 1 103 0 0 0 83 -1 3 ruzavcqoagnqmbdnuyxbcttlmhbeumblceidulcnrqfaomimbtergalasplougeitqtltrcgdcxaxopejkflfonyqcdiutttycasvab 
+747 1 2 1 1 104 0 0 0 84 -1 1 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrcgdcxaxopedjkflfonyqcfiutttycssvab 
+748 40 2 1 1 103 0 0 0 84 -1 2 ruhavcqoagnqmbdnuyxbctttmheeumblceidulcnrqfaomimbtergalasplougeitstltrcgdcxaxopejkflfonyqcdiutttycasvab 
+55 1 2 1 11 103 127.899 237 0.539657 8 -1 1 ruzavcqoagnqmbdnusxbctttmhbeumblceidulcnrqfagmimbtergalasplougeitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+759 1 2 1 1 103 0 0 0 84 -1 1 ruzavcqoagnqmbdnuyxbctttmhbeumblceidmlcnrqfaomimbtergalasplougeitstltrcgdcxaxopejkflfonyqcfiutttyeasvab 
+762 352 1 1 1 103 0 0 0 84 -1 3 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbnergalasplougeitstltrcgdqxaxopejkflfonyqcfiutptycasvab 
+768 712 2 1 1 103 0 0 0 85 -1 3 ruzavcqoagnqmbdnusxbctttmhbeumblceidulcnrqfggmimbtlrgalasplougeitstltrcgtcxaxopejkflfonhqcfiutttycasvab 
+774 282 1 1 1 103 0 0 0 85 -1 2 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitsqltrcgdcxadopejkflfonyqcfiutttycasvab 
+776 271 1 1 1 103 0 0 0 85 -1 2 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrcgdmxaxopejkflfonyqcfiutttycpsvab 
+781 422 1 1 1 103 0 0 0 85 -1 2 ruzavcqoagnqmbdnuyxbctutmobsumblceidulcnrqfaomimbtergalasplougeitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+782 565 1 1 1 104 0 0 0 86 -1 2 ruzavcqoagnqbbdnuyxbctttmhbeumblceiduxlcnrqfaomimbtergalasplougeitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+565 1 1 1 2 103 120.046 237 0.506523 61 -1 1 ruzavcqoagnqbbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+793 552 1 1 1 103 0 0 0 90 -1 3 ruzavcqoagnqmbdnuyxbctttmobhumblceidulcnrqfaomimttergalasplougeitstltrcgdcxaxopejkflfonyqcfiutgtycasvab 
+797 679 2 1 1 103 0 0 0 91 -1 4 ruzbvcqoqgnqmbdnuyxbctttmhbeumblceidulcnrqfaomymbtergalasplougeitstltrcgdcxaxopejkflfoncscfsutttycasvab 
+798 712 1 1 1 103 0 0 0 91 -1 3 ruzaccqoagnqmbdnusxbctttmhbeumblceidulcnrqfggmimbtergalasplougeitstltrcgdcxaxopejkflfonhqcfiutttycasvab 
+804 55 3 1 1 103 0 0 0 92 -1 2 ruzavcqoagnqmbdnusxbctttmvbeumblceidulcnrqfagmimbtergalaspvougeitstltrlgdcxaxopejkflfonyqcfiutttycasvab 
+807 776 92 1 1 103 0 0 0 92 -1 3 galasplougeitstltrcgdmxaxopejkflfonyqcfiutttycpsvabruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbter 
+809 661 1 1 1 103 0 0 0 92 -1 6 ruzavcqoagnqmbdnuyxbctttmhbeumbrcwidalcnrqfoxmimbtrrgalasplougeitstltrcgdcxaxopejkflfonyqcfiufttycasvab 
+810 605 1 1 1 103 0 0 0 92 -1 3 ruzamcqoagnqmbdnuyxbctttmhbeumblceidugcnrqfaomimbtergalasplougjitstltrcgdcxaoopejkflfonyqcfiutttycasvab 
+811 116 1 1 1 103 0 0 0 92 -1 2 ruzavcqoagnqmbdnuyxbctttmhbeumblceidugcnrqfaomiybtergalasplougjitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+812 759 54 1 1 103 0 0 0 92 -1 2 xopejkflfonyqcfiutttyeasvabruzavcqoagnqmbdnuyxbctttmhbeumblceidmlcnrqfaomimbtergalasplougeitstltrcgdcxa 
+814 555 1 1 1 102 0 0 0 93 -1 3 ruzavcqoagnqmbdouyxbctttmhbeumblceidulcnrufaomimbturgalaspuougeitstlrcgdcxaxopejkflfonyqcfiutttycasvab 
+815 1 1 1 1 103 0 0 0 93 -1 1 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcbrqfaomimbtergalasplougeitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+555 399 3 1 3 102 110.196 235 0.468919 60 -1 2 ruzavcqoagnqmbdouyxbctttmhbeumblceidulcnrufaomimbtergalaspuougeitstlrcgdcxaxopejkflfonyqcfiutttycasvab 
+817 40 1 1 1 103 0 0 0 93 -1 2 ruzavcqoagnqmbdnuyxbctttmhbeumbrceidulcnrqfaomimbtergalasplougeitstltrcgdcxaxopejkflfonyqcdiutttycasvab 
+819 565 1 1 1 103 0 0 0 93 -1 2 ruzavcqoagnqbddnuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+820 701 2 1 1 103 0 0 0 93 -1 3 ruzavcqoagnqmbdnuyxbctttmhbeumblneidulcfbqfaomimhtergalasplougeitstltacgdcxaxopejkfljonyqcfiutttycasvab 
+821 619 2 1 1 103 0 0 0 93 -1 5 ruzavcyoagnqmbcnuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrhgdexaxopejsflfonyqifeuttttcasvab 
+822 282 2 1 1 103 0 0 0 94 -1 2 ruzavcqoagnqmbdnuyxbctttmhbeumblceieulcnrqtaomimbtergalasplougeitstltrcgdcxadopejkflfonyqcfiutttycasvab 
+823 271 2 1 1 103 0 0 0 94 -1 2 ruzavcqoagnqmldnuyxbctttmhbeumblceifulcnrqfaomimbtergalasplougeitstltrcgdmxaxopejkflfonyqcfiutttycasvab 
+653 592 1 1 3 103 132.42 236 0.5611 73 -1 6 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnyqfaomimbtergclasplouqeitstltrcmdcxaxdpnzkflmonyqcfautttycasvab 
+824 193 1 1 1 103 0 0 0 95 -1 3 ruzavcqoagnqmbdnuyxbctttmhbeupblceidulcnrqfqoximbtergalasplougeitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+825 567 2 1 1 102 0 0 0 95 -1 4 ruzavcqoagnqmbdnuyxbctttmhbeumbeceidulcnwqfaomimbpergalaspzougeitsltrcgccxaxopejkflfonyqcfiutttycasvab 
+787 1 1 1 2 103 0 0 0 86 -1 1 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrcgdcxaxupejkflfonyqcfiutttycasvab 
+827 708 92 1 1 103 0 0 0 96 -1 7 gclasplougfitstltrcgdcxaxdpnzkflmnuwcfauttvtpcasvabruzavcqoagnqmbdnuyxbctttmhbeumblcwidplcnytfaamimbter 
+828 604 2 1 1 103 0 0 0 96 -1 4 ruzavcqoagnqmbdnuyxbctttmhbeumblceidflmnrqfaomimbtargalasplougevtstltrcgdcxaxopejkflfonyqcfiutytycasvab 
+608 1 3 1 3 103 129.581 238 0.54446 67 -1 1 ruzavcqoagnqmbdnuyxbctttphbeumblceidulcnrqfaomimbtergalasplougeitstltrcgdwxaxopejeflfonyqcfiutttycasvab 
+830 821 91 1 1 103 0 0 0 99 -1 6 rgalasplougeitstltrhgdexaxopejsflfonyqifeuttttcasvabruzavcyoagnqmbcnuyxbctttmhbeumblceidulcnrqfaomimbte 
+831 116 1 1 1 103 0 0 0 99 -1 2 ruzavcqoagnqmbmnuyxbctttmhbeumblceidugcnrqfaomimbtergalasplougjitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+832 1 1 1 1 103 0 0 0 99 -1 1 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrwfaomimbtergalasplougeitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+833 552 2 1 1 103 0 0 0 99 -1 3 rutavcqoagnqmbdnuyxbctttmobhumblceidulcnrqfaomimbtergalasplougeitstltrcgdcxaxopejkflfonyqcfihtgtycasvab 
+792 285 1 1 2 103 0 0 0 90 -1 2 ruzavcqoagnqmadnuyxbctttmhbeumblceidulcnrqfaomimbtergalasplouxeitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+513 233 1 1 7 103 136.304 236 0.577558 57 -1 4 ruzavcqoagnqmbdzuyxbctttmhbeumblceidulcnrqfaomimbtergclasplougeitstltrcgdcxaxdpnzkflmonyqcfautttycasvab 
+834 679 1 1 1 103 0 0 0 100 -1 4 ruzavcqoqgnqmbdnuyxbctttmhbeumblceidulcnrqfaomymbtergalasplougeitstltrcgdcxaxopejkflqoncscfiutttycasvab 
+752 1 1 1 2 103 0 0 0 84 -1 1 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrcgdcxaxopejkflfonyqcfiuttjycasvab 
+835 1 1 1 1 103 0 0 0 100 -1 1 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrcgdcxaxopejkflfonyqcfiutttycasrab 
+837 310 1 1 1 103 0 0 0 100 -1 2 ruzavcqoagnqmbdnuyxuctttmhbeumblceidulcnrbfaomimbtergalasplougeitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+805 310 2 1 2 103 0 0 0 92 -1 2 ruzavcqoagnqmbdnuyxuctttmhbeumblceidulrnrqfaomimbtergalasplougeitstltrcgdcxaxopejkflfoniqcfiutttycasvab 
+789 544 1 1 2 103 0 0 0 87 -1 2 ruzavcqoagnjmbdnuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrcgdcxaxopejkflfonyqcfiututycasvab 
+786 567 1 1 2 102 0 0 0 86 -1 4 ruzavcqoagnqmbdnuyxbctttmhbkumblceidulcnwqfaomimbtergalaspzougeitsltrcgccxaxopejkflfonyqcfiutttycasvab 
+802 578 1 1 2 103 0 0 0 92 -1 3 ruzavcqoagnqmbdnuyxbctttmhbeumblceiduscnrqfaomimbtergalasplougeitstltrcgdcxaxopejkflionyqcfiutptycasvab 
+838 653 1 1 1 103 0 0 0 100 -1 7 ruzavcqoagnqmbdnuyxbctttmhbeumblceidulcnyqfaomimbtergclasplouqektstltrcmdcxaxdpnzkflmonyqcfautttycasvab 
+732 116 1 1 3 103 143.137 238 0.601414 82 -1 2 ruzavcqoagnqmbdnuyxbctttmhbeumblceidugcnrqfaomimbtergalasplougjitstltrygdcxaxopejkflfonyqcfiutttycasvab 
+839 55 1 1 1 103 0 0 0 100 -1 2 ruzavcqoagnqmbdnusxbctttmhbeumblceidulcjrqfagmimbtergalasplougeitstltrcgdcxaxopejkflfonyqcfiutttycasvab 
+374 294 1 1 6 103 116.894 235 0.497422 42 -1 3 ruzavcqoagnqmbdbuyxbctttmhbeumblceidulcnrqfaomimbtergalasplougeitstltrcgdcdaxopejkflfonyqcdiutttycasvab 
