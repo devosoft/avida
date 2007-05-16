@@ -1,24 +1,19 @@
-
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Avida", "Avida.vcproj", "{E1C1D683-833F-40D9-A952-CEC54FE40EFC}"
-EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer", "Installer\Installer.vdproj", "{9E776A2E-5D27-4900-9856-F5AF0C8FC84A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Avida", "Avida.vcproj", "{0A7F34A9-645B-11B1-871E-B8C06AED84B3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Win32 = Debug|Win32
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E1C1D683-833F-40D9-A952-CEC54FE40EFC}.Debug|Win32.ActiveCfg = Debug|Win32
-		{E1C1D683-833F-40D9-A952-CEC54FE40EFC}.Debug|Win32.Build.0 = Debug|Win32
-		{E1C1D683-833F-40D9-A952-CEC54FE40EFC}.Release|Win32.ActiveCfg = Release|Win32
-		{E1C1D683-833F-40D9-A952-CEC54FE40EFC}.Release|Win32.Build.0 = Release|Win32
-		{9E776A2E-5D27-4900-9856-F5AF0C8FC84A}.Debug|Win32.ActiveCfg = Debug
-		{9E776A2E-5D27-4900-9856-F5AF0C8FC84A}.Release|Win32.ActiveCfg = Release
+		{0A7F34A9-645B-11B1-871E-B8C06AED84B3}.Release|Win32.ActiveCfg = Release|Win32
+		{0A7F34A9-645B-11B1-871E-B8C06AED84B3}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
+fXEAVQdSZWxlYXNlcQEoY1NDb25zLlRvb2wubXN2cwpDb25maWcKcQJvcQN9cQQoVQhwbGF0Zm9y
+bXEFVQVXaW4zMnEGVQd2YXJpYW50cQdoAXVicy4=
+

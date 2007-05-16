@@ -1,182 +1,38 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="Avida"
-	ProjectGUID="{E1C1D683-833F-40D9-A952-CEC54FE40EFC}"
+	ProjectGUID="{0A7F34A9-645B-11B1-871E-B8C06AED84B3}"
+	SccProjectName=""
+	SccLocalPath=""
 	RootNamespace="Avida"
-	Keyword="Win32Proj"
-	>
+	Keyword="MakeFileProj">
 	<Platforms>
 		<Platform
-			Name="Win32"
-		/>
+			Name="Win32"/>
 	</Platforms>
 	<ToolFiles>
 	</ToolFiles>
 	<Configurations>
 		<Configuration
-			Name="Debug|Win32"
-			OutputDirectory="Debug"
-			IntermediateDirectory="Debug"
-			ConfigurationType="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)source\tools&quot;;&quot;$(ProjectDir)source\targets\avida-viewer&quot;;&quot;$(ProjectDir)source\platform\msvc2005&quot;;&quot;$(ProjectDir)source\platform\msvc2005\pdcurses&quot;;&quot;$(ProjectDir)source\main&quot;;&quot;$(ProjectDir)source\drivers&quot;;&quot;$(ProjectDir)source\cpu&quot;;&quot;$(ProjectDir)source\classification&quot;;&quot;$(ProjectDir)source\analyze&quot;;&quot;$(ProjectDir)source\actions&quot;;&quot;$(ProjectDir)source&quot;"
-				PreprocessorDefinitions="NOMACROS;DEBUG;WIN32;_WIN32"
-				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
-				UsePrecompiledHeader="0"
-				WarningLevel="2"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="4"
-				ForcedIncludeFiles=""
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="2"
-				IgnoreDefaultLibraryNames="LIBCMT"
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="Release"
-			IntermediateDirectory="Release"
-			ConfigurationType="1"
+			ConfigurationType="0"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
 			>
 			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="3"
-				InlineFunctionExpansion="2"
-				EnableIntrinsicFunctions="true"
-				FavorSizeOrSpeed="1"
-				OmitFramePointers="true"
-				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)source\tools&quot;;&quot;$(ProjectDir)source\targets\avida-viewer&quot;;&quot;$(ProjectDir)source\platform\msvc2005&quot;;&quot;$(ProjectDir)source\platform\msvc2005\pdcurses&quot;;&quot;$(ProjectDir)source\main&quot;;&quot;$(ProjectDir)source\drivers&quot;;&quot;$(ProjectDir)source\cpu&quot;;&quot;$(ProjectDir)source\classification&quot;;&quot;$(ProjectDir)source\analyze&quot;;&quot;$(ProjectDir)source\actions&quot;;&quot;$(ProjectDir)source&quot;"
-				PreprocessorDefinitions="NOMACROS;NDEBUG;WIN32;_WIN32"
-				ExceptionHandling="1"
-				RuntimeLibrary="0"
-				BufferSecurityCheck="false"
-				EnableEnhancedInstructionSet="1"
-				FloatingPointModel="2"
-				UsePrecompiledHeader="0"
-				WarningLevel="2"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="3"
-				ForcedIncludeFiles=""
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				Version="2.6.2"
-				LinkIncremental="1"
-				GenerateDebugInformation="false"
-				SubSystem="1"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				LinkTimeCodeGeneration="1"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
+				Name="VCNMakeTool"
+				BuildCommandLine="echo Starting SCons &amp;&amp; &quot;C:\Program Files\Python2-5\python.exe&quot; &quot;C:\Documents and Settings\sherri\My Documents\Research\avidaDevel\BuildAvida.py&quot; -C &quot;C:\Documents and Settings\sherri\My Documents\Research\avidaDevel&quot; -f &quot;SConstruct&quot; C:\Documents and Settings\sherri\My Documents\Research\avidaDevel\build-Release-MemTrack\targets\avida\avida.exe"
+				ReBuildCommandLine="echo Starting SCons &amp;&amp; &quot;C:\Program Files\Python2-5\python.exe&quot; &quot;C:\Documents and Settings\sherri\My Documents\Research\avidaDevel\BuildAvida.py&quot; -C &quot;C:\Documents and Settings\sherri\My Documents\Research\avidaDevel&quot; -f &quot;SConstruct&quot; C:\Documents and Settings\sherri\My Documents\Research\avidaDevel\build-Release-MemTrack\targets\avida\avida.exe"
+				CleanCommandLine="echo Starting SCons &amp;&amp; &quot;C:\Program Files\Python2-5\python.exe&quot; &quot;C:\Documents and Settings\sherri\My Documents\Research\avidaDevel\BuildAvida.py&quot; -C &quot;C:\Documents and Settings\sherri\My Documents\Research\avidaDevel&quot; -f &quot;SConstruct&quot; -c C:\Documents and Settings\sherri\My Documents\Research\avidaDevel\build-Release-MemTrack\targets\avida\avida.exe"
+				Output="C:\Documents and Settings\sherri\My Documents\Research\avidaDevel\build-Release-MemTrack\targets\avida\avida.exe"
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
 			/>
 		</Configuration>
 	</Configurations>
@@ -185,1355 +41,1239 @@
 	<Files>
 		<Filter
 			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
-			>
+			Filter="h;hpp;hxx;hm;inl">
+			<Filter
+				Name="actions"
+				Filter="">
 			<File
-				RelativePath=".\source\main\avida.h"
-				>
+				RelativePath="source\actions\cAction.h">
 			</File>
 			<File
-				RelativePath=".\source\actions\cAction.h"
-				>
+				RelativePath="source\actions\cActionLibrary.h">
 			</File>
 			<File
-				RelativePath=".\source\actions\cActionLibrary.h"
-				>
+				RelativePath="source\actions\DriverActions.h">
 			</File>
 			<File
-				RelativePath=".\source\analyze\cAnalyze.h"
-				>
+				RelativePath="source\actions\EnvironmentActions.h">
 			</File>
 			<File
-				RelativePath=".\source\analyze\cAnalyzeCommand.h"
-				>
+				RelativePath="source\actions\LandscapeActions.h">
 			</File>
 			<File
-				RelativePath=".\source\analyze\cAnalyzeCommandAction.h"
-				>
+				RelativePath="source\actions\PopulationActions.h">
 			</File>
 			<File
-				RelativePath=".\source\analyze\cAnalyzeCommandDef.h"
-				>
+				RelativePath="source\actions\PrintActions.h">
 			</File>
 			<File
-				RelativePath=".\source\analyze\cAnalyzeCommandDefBase.h"
-				>
+				RelativePath="source\actions\SaveLoadActions.h">
 			</File>
+			</Filter>
+			<Filter
+				Name="analyze"
+				Filter="">
 			<File
-				RelativePath=".\source\analyze\cAnalyzeFlowCommand.h"
-				>
+				RelativePath="source\analyze\cAnalyze.h">
 			</File>
 			<File
-				RelativePath=".\source\analyze\cAnalyzeFlowCommandDef.h"
-				>
+				RelativePath="source\analyze\cAnalyzeCommand.h">
 			</File>
 			<File
-				RelativePath=".\source\analyze\cAnalyzeFunction.h"
-				>
+				RelativePath="source\analyze\cAnalyzeCommandAction.h">
 			</File>
 			<File
-				RelativePath=".\source\analyze\cAnalyzeGenotype.h"
-				>
+				RelativePath="source\analyze\cAnalyzeCommandDef.h">
 			</File>
 			<File
-				RelativePath=".\source\analyze\cAnalyzeJob.h"
-				>
+				RelativePath="source\analyze\cAnalyzeCommandDefBase.h">
 			</File>
 			<File
-				RelativePath=".\source\analyze\cAnalyzeJobQueue.h"
-				>
+				RelativePath="source\analyze\cAnalyzeFlowCommand.h">
 			</File>
 			<File
-				RelativePath=".\source\analyze\cAnalyzeJobWorker.h"
-				>
+				RelativePath="source\analyze\cAnalyzeFlowCommandDef.h">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cAnalyzeScreen.h"
-				>
+				RelativePath="source\analyze\cAnalyzeFunction.h">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cAnalyzeView.h"
-				>
+				RelativePath="source\analyze\cAnalyzeGenotype.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cArgContainer.h"
-				>
+				RelativePath="source\analyze\cAnalyzeJob.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cArgSchema.h"
-				>
+				RelativePath="source\analyze\cAnalyzeJobQueue.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cAvidaConfig.h"
-				>
+				RelativePath="source\analyze\cAnalyzeJobWorker.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cAvidaContext.h"
-				>
+				RelativePath="source\analyze\cGenotypeBatch.h">
 			</File>
 			<File
-				RelativePath=".\source\drivers\cAvidaDriver.h"
-				>
+				RelativePath="source\analyze\cMutationalNeighborhood.h">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cBarScreen.h"
-				>
+				RelativePath="source\analyze\cMutationalNeighborhoodResults.h">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cBaseTextWindow.h"
-				>
+				RelativePath="source\analyze\tAnalyzeJob.h">
 			</File>
+			</Filter>
+			<Filter
+				Name="classification"
+				Filter="">
 			<File
-				RelativePath=".\source\main\cBirthChamber.h"
-				>
+				RelativePath="source\classification\cClassificationManager.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cBlockStruct.h"
-				>
+				RelativePath="source\classification\cGenotype.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cChangeList.h"
-				>
+				RelativePath="source\classification\cGenotype_BirthData.h">
 			</File>
 			<File
-				RelativePath=".\source\classification\cClassificationManager.h"
-				>
+				RelativePath="source\classification\cGenotype_TestData.h">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cCodeLabel.h"
-				>
+				RelativePath="source\classification\cGenotypeControl.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cConditionVariable.h"
-				>
+				RelativePath="source\classification\cInjectGenotype.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cConstSchedule.h"
-				>
+				RelativePath="source\classification\cInjectGenotype_BirthData.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cCountTracker.h"
-				>
+				RelativePath="source\classification\cInjectGenotypeControl.h">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cCPUMemory.h"
-				>
+				RelativePath="source\classification\cInjectGenotypeElement.h">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cCPUStack.h"
-				>
+				RelativePath="source\classification\cInjectGenotypeQueue.h">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cCPUTestInfo.h"
-				>
+				RelativePath="source\classification\cLineage.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cCycleCheck.h"
-				>
+				RelativePath="source\classification\cSpecies.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cDataEntry.h"
-				>
+				RelativePath="source\classification\cSpeciesControl.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cDataFile.h"
-				>
+				RelativePath="source\classification\cSpeciesQueue.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cDataFileManager.h"
-				>
+				RelativePath="source\classification\nGenotype.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cDataManager_Base.h"
-				>
+				RelativePath="source\classification\nInjectGenotype.h">
 			</File>
 			<File
-				RelativePath=".\source\drivers\cDefaultAnalyzeDriver.h"
-				>
+				RelativePath="source\classification\nSpecies.h">
 			</File>
+			</Filter>
+			<Filter
+				Name="cpu"
+				Filter="">
 			<File
-				RelativePath=".\source\tools\cDefaultMessageDisplay.h"
-				>
+				RelativePath="source\cpu\cCodeLabel.h">
 			</File>
 			<File
-				RelativePath=".\source\drivers\cDefaultRunDriver.h"
-				>
+				RelativePath="source\cpu\cCPUMemory.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cDeme.h"
-				>
+				RelativePath="source\cpu\cCPUStack.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cDoubleSum.h"
-				>
+				RelativePath="source\cpu\cCPUTestInfo.h">
 			</File>
 			<File
-				RelativePath=".\source\drivers\cDriverManager.h"
-				>
+				RelativePath="source\cpu\cHardwareBase.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cEnvironment.h"
-				>
+				RelativePath="source\cpu\cHardwareCPU.h">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cEnvironmentScreen.h"
-				>
+				RelativePath="source\cpu\cHardwareExperimental.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cEnvReqs.h"
-				>
+				RelativePath="source\cpu\cHardwareGX.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cEventList.h"
-				>
+				RelativePath="source\cpu\cHardwareManager.h">
 			</File>
 			<File
-				RelativePath=".\source\drivers\cFallbackWorldDriver.h"
-				>
+				RelativePath="source\cpu\cHardwareSMT.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cFile.h"
-				>
+				RelativePath="source\cpu\cHardwareStatusPrinter.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cFitnessMatrix.h"
-				>
+				RelativePath="source\cpu\cHardwareTracer.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cFixedBlock.h"
-				>
+				RelativePath="source\cpu\cHardwareTrans.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cFixedCoords.h"
-				>
+				RelativePath="source\cpu\cHeadCPU.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cGenome.h"
-				>
+				RelativePath="source\cpu\cInstLib.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cGenomeUtil.h"
-				>
+				RelativePath="source\cpu\cInstSet.h">
 			</File>
 			<File
-				RelativePath=".\source\classification\cGenotype.h"
-				>
+				RelativePath="source\cpu\cTestCPU.h">
 			</File>
 			<File
-				RelativePath=".\source\classification\cGenotype_BirthData.h"
-				>
+				RelativePath="source\cpu\cTestCPUInterface.h">
 			</File>
 			<File
-				RelativePath=".\source\classification\cGenotype_TestData.h"
-				>
+				RelativePath="source\cpu\nHardware.h">
 			</File>
 			<File
-				RelativePath=".\source\analyze\cGenotypeBatch.h"
-				>
+				RelativePath="source\cpu\sCPUStats.h">
 			</File>
 			<File
-				RelativePath=".\source\classification\cGenotypeControl.h"
-				>
+				RelativePath="source\cpu\tInstLib.h">
 			</File>
+			</Filter>
+			<Filter
+				Name="drivers"
+				Filter="">
 			<File
-				RelativePath=".\source\cpu\cHardwareBase.h"
-				>
+				RelativePath="source\drivers\cAvidaDriver.h">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cHardwareCPU.h"
-				>
+				RelativePath="source\drivers\cDefaultAnalyzeDriver.h">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cHardwareExperimental.h"
-				>
+				RelativePath="source\drivers\cDefaultRunDriver.h">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cHardwareManager.h"
-				>
+				RelativePath="source\drivers\cDriverManager.h">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cHardwareSMT.h"
-				>
+				RelativePath="source\drivers\cFallbackWorldDriver.h">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cHardwareStatusPrinter.h"
-				>
+				RelativePath="source\drivers\cWorldDriver.h">
 			</File>
+			</Filter>
+			<Filter
+				Name="main"
+				Filter="">
 			<File
-				RelativePath=".\source\cpu\cHardwareTracer.h"
-				>
+				RelativePath="source\main\avida.h">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cHardwareTransSMT.h"
-				>
+				RelativePath="source\main\cAvidaConfig.h">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cHeadCPU.h"
-				>
+				RelativePath="source\main\cAvidaContext.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cHelpAlias.h"
-				>
+				RelativePath="source\main\cBirthChamber.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cHelpEntry.h"
-				>
+				RelativePath="source\main\cDeme.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cHelpFullEntry.h"
-				>
+				RelativePath="source\main\cEnvironment.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cHelpManager.h"
-				>
+				RelativePath="source\main\cEventList.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cHelpType.h"
-				>
+				RelativePath="source\main\cFitnessMatrix.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cHistogram.h"
-				>
+				RelativePath="source\main\cGenome.h">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cHistScreen.h"
-				>
+				RelativePath="source\main\cGenomeUtil.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cID.h"
-				>
+				RelativePath="source\main\cInstruction.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cIndexedBlockStruct.h"
-				>
+				RelativePath="source\main\cLandscape.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cInitFile.h"
-				>
+				RelativePath="source\main\cLocalMutations.h">
 			</File>
 			<File
-				RelativePath=".\source\classification\cInjectGenotype.h"
-				>
+				RelativePath="source\main\cMutation.h">
 			</File>
 			<File
-				RelativePath=".\source\classification\cInjectGenotype_BirthData.h"
-				>
+				RelativePath="source\main\cMutationLib.h">
 			</File>
 			<File
-				RelativePath=".\source\classification\cInjectGenotypeControl.h"
-				>
+				RelativePath="source\main\cMutationRates.h">
 			</File>
 			<File
-				RelativePath=".\source\classification\cInjectGenotypeElement.h"
-				>
+				RelativePath="source\main\cMxCodeArray.h">
 			</File>
 			<File
-				RelativePath=".\source\classification\cInjectGenotypeQueue.h"
-				>
+				RelativePath="source\main\cOrganism.h">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cInstLib.h"
-				>
+				RelativePath="source\main\cOrgInterface.h">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cInstLibEntry.h"
-				>
+				RelativePath="source\main\cOrgSeqMessage.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cInstruction.h"
-				>
+				RelativePath="source\main\cOrgSinkMessage.h">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cInstSet.h"
-				>
+				RelativePath="source\main\cOrgSourceMessage.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cIntegratedSchedule.h"
-				>
+				RelativePath="source\main\cPhenotype.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cIntegratedScheduleNode.h"
-				>
+				RelativePath="source\main\cPopulation.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cIntSum.h"
-				>
+				RelativePath="source\main\cPopulationCell.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cLandscape.h"
-				>
+				RelativePath="source\main\cPopulationInterface.h">
 			</File>
 			<File
-				RelativePath=".\source\classification\cLineage.h"
-				>
+				RelativePath="source\main\cReaction.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cLocalMutations.h"
-				>
+				RelativePath="source\main\cReactionLib.h">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cMapScreen.h"
-				>
+				RelativePath="source\main\cReactionProcess.h">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cMenuWindow.h"
-				>
+				RelativePath="source\main\cReactionRequisite.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cMerit.h"
-				>
+				RelativePath="source\main\cReactionResult.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cMutation.h"
-				>
+				RelativePath="source\main\cResource.h">
 			</File>
 			<File
-				RelativePath=".\source\analyze\cMutationalNeighborhood.h"
-				>
+				RelativePath="source\main\cResourceCount.h">
 			</File>
 			<File
-				RelativePath=".\source\analyze\cMutationalNeighborhoodResults.h"
-				>
+				RelativePath="source\main\cResourceLib.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cMutationLib.h"
-				>
+				RelativePath="source\main\cSpatialCountElem.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cMutationRates.h"
-				>
+				RelativePath="source\main\cSpatialResCount.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cMutex.h"
-				>
+				RelativePath="source\main\cStats.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cMxCodeArray.h"
-				>
+				RelativePath="source\main\cTaskContext.h">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cOptionsScreen.h"
-				>
+				RelativePath="source\main\cTaskEntry.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cOrganism.h"
-				>
+				RelativePath="source\main\cTaskLib.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cOrgInterface.h"
-				>
+				RelativePath="source\main\cTaskState.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cOrgSeqMessage.h"
-				>
+				RelativePath="source\main\cWorld.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cOrgSinkMessage.h"
-				>
+				RelativePath="source\main\MyCodeArrayLessThan.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cOrgSourceMessage.h"
-				>
+				RelativePath="source\main\nGeometry.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cPhenotype.h"
-				>
+				RelativePath="source\main\nMutation.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cPopulation.h"
-				>
+				RelativePath="source\main\nReaction.h">
 			</File>
+			</Filter>
+			<Filter
+				Name="tools"
+				Filter="">
 			<File
-				RelativePath=".\source\main\cPopulationCell.h"
-				>
+				RelativePath="source\tools\cArgContainer.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cPopulationInterface.h"
-				>
+				RelativePath="source\tools\cArgSchema.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cProbSchedule.h"
-				>
+				RelativePath="source\tools\cBlockStruct.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cRandom.h"
-				>
+				RelativePath="source\tools\cChangeList.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cReaction.h"
-				>
+				RelativePath="source\tools\cConstSchedule.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cReactionLib.h"
-				>
+				RelativePath="source\tools\cCountTracker.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cReactionProcess.h"
-				>
+				RelativePath="source\tools\cCycleCheck.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cReactionRequisite.h"
-				>
+				RelativePath="source\tools\cDataEntry.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cReactionResult.h"
-				>
+				RelativePath="source\tools\cDataFile.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cRefBlock.h"
-				>
+				RelativePath="source\tools\cDataFileManager.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cResource.h"
-				>
+				RelativePath="source\tools\cDataManager_Base.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cResourceCount.h"
-				>
+				RelativePath="source\tools\cDefaultMessageDisplay.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cResourceLib.h"
-				>
+				RelativePath="source\tools\cDoubleSum.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cRunningAverage.h"
-				>
+				RelativePath="source\tools\cFile.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cRWLock.h"
-				>
+				RelativePath="source\tools\cFixedBlock.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cSaleItem.h"
-				>
+				RelativePath="source\tools\cFixedCoords.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cScaledBlock.h"
-				>
+				RelativePath="source\tools\cGenesis.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cSchedule.h"
-				>
+				RelativePath="source\tools\cHelpAlias.h">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cScreen.h"
-				>
+				RelativePath="source\tools\cHelpEntry.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cSpatialCountElem.h"
-				>
+				RelativePath="source\tools\cHelpFullEntry.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cSpatialResCount.h"
-				>
+				RelativePath="source\tools\cHelpManager.h">
 			</File>
 			<File
-				RelativePath=".\source\classification\cSpecies.h"
-				>
+				RelativePath="source\tools\cHelpType.h">
 			</File>
 			<File
-				RelativePath=".\source\classification\cSpeciesControl.h"
-				>
+				RelativePath="source\tools\cHistogram.h">
 			</File>
 			<File
-				RelativePath=".\source\classification\cSpeciesQueue.h"
-				>
+				RelativePath="source\tools\cID.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cStats.h"
-				>
+				RelativePath="source\tools\cIndexedBlockStruct.h">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cStatsScreen.h"
-				>
+				RelativePath="source\tools\cInitFile.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cString.h"
-				>
+				RelativePath="source\tools\cIntegratedSchedule.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cStringIterator.h"
-				>
+				RelativePath="source\tools\cIntegratedScheduleNode.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cStringList.h"
-				>
+				RelativePath="source\tools\cIntSum.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cStringUtil.h"
-				>
+				RelativePath="source\tools\cMerit.h">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cSymbolUtil.h"
-				>
+				RelativePath="source\tools\cMessageClass.h">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cTabBox.h"
-				>
+				RelativePath="source\tools\cMessageClosure.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cTaskContext.h"
-				>
+				RelativePath="source\tools\cMessageDisplay.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cTaskEntry.h"
-				>
+				RelativePath="source\tools\cMessageDisplay_headers.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cTaskLib.h"
-				>
+				RelativePath="source\tools\cMessageType.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cTaskState.h"
-				>
+				RelativePath="source\tools\cProbSchedule.h">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cTestCPU.h"
-				>
+				RelativePath="source\tools\cRandom.h">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cTestCPUInterface.h"
-				>
+				RelativePath="source\tools\cRefBlock.h">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cTextViewerAnalyzeDriver.h"
-				>
+				RelativePath="source\tools\cRunningAverage.h">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cTextViewerDriver.h"
-				>
+				RelativePath="source\tools\cScaledBlock.h">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cTextViewerDriver_Base.h"
-				>
+				RelativePath="source\tools\cSchedule.h">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cTextWindow.h"
-				>
+				RelativePath="source\tools\cString.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cThread.h"
-				>
+				RelativePath="source\tools\cStringIterator.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cTools.h"
-				>
+				RelativePath="source\tools\cStringList.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cUInt.h"
-				>
+				RelativePath="source\tools\cStringUtil.h">
 			</File>
 			<File
-				RelativePath=".\source\platform\msvc2005\pdcurses\curses.h"
-				>
+				RelativePath="source\tools\cThread.h">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cView.h"
-				>
+				RelativePath="source\tools\cTools.h">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cView_Base.h"
-				>
+				RelativePath="source\tools\cUInt.h">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cViewInfo.h"
-				>
+				RelativePath="source\tools\cVerifierSuiteRecurser.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\cWeightedIndex.h"
-				>
+				RelativePath="source\tools\cWeightedIndex.h">
 			</File>
 			<File
-				RelativePath=".\source\main\cWorld.h"
-				>
+				RelativePath="source\tools\functions.h">
 			</File>
 			<File
-				RelativePath=".\source\drivers\cWorldDriver.h"
-				>
+				RelativePath="source\tools\recursive_tests_decl_hdrs.hh">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cZoomScreen.h"
-				>
+				RelativePath="source\tools\recursive_tests_defn_hdrs.hh">
 			</File>
 			<File
-				RelativePath=".\source\defs.h"
-				>
+				RelativePath="source\tools\recursive_tests_macros.hh">
 			</File>
 			<File
-				RelativePath=".\source\actions\DriverActions.h"
-				>
+				RelativePath="source\tools\tArgDataEntry.h">
 			</File>
 			<File
-				RelativePath=".\source\actions\EnvironmentActions.h"
-				>
+				RelativePath="source\tools\tArray.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\functions.h"
-				>
+				RelativePath="source\tools\tBuffer.h">
 			</File>
 			<File
-				RelativePath=".\source\actions\LandscapeActions.h"
-				>
+				RelativePath="source\tools\tDataEntry.h">
 			</File>
 			<File
-				RelativePath=".\source\main\MyCodeArrayLessThan.h"
-				>
+				RelativePath="source\tools\tDataEntryBase.h">
 			</File>
 			<File
-				RelativePath=".\source\classification\nGenotype.h"
-				>
+				RelativePath="source\tools\tDataEntryCommand.h">
 			</File>
 			<File
-				RelativePath=".\source\main\nGeometry.h"
-				>
+				RelativePath="source\tools\tDataManager.h">
 			</File>
 			<File
-				RelativePath=".\source\cpu\nHardware.h"
-				>
+				RelativePath="source\tools\tDictionary.h">
 			</File>
 			<File
-				RelativePath=".\source\classification\nInjectGenotype.h"
-				>
+				RelativePath="source\tools\tHashTable.h">
 			</File>
 			<File
-				RelativePath=".\source\main\nMutation.h"
-				>
+				RelativePath="source\tools\tList.h">
 			</File>
 			<File
-				RelativePath=".\source\main\nReaction.h"
-				>
+				RelativePath="source\tools\tManagedPointerArray.h">
 			</File>
 			<File
-				RelativePath=".\source\classification\nSpecies.h"
-				>
+				RelativePath="source\tools\tMatrix.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\platform.h"
-				>
+				RelativePath="source\tools\tMemTrack.h">
 			</File>
 			<File
-				RelativePath=".\source\actions\PopulationActions.h"
-				>
+				RelativePath="source\tools\tObjectFactory.h">
 			</File>
 			<File
-				RelativePath=".\source\actions\PrintActions.h"
-				>
+				RelativePath="source\tools\tSmartArray.h">
 			</File>
 			<File
-				RelativePath=".\source\actions\SaveLoadActions.h"
-				>
+				RelativePath="source\tools\tUnitTestSuite.hh">
 			</File>
 			<File
-				RelativePath=".\source\cpu\sCPUStats.h"
-				>
+				RelativePath="source\tools\tUnitTestSuiteRecurser.hh">
 			</File>
 			<File
-				RelativePath=".\source\analyze\tAnalyzeJob.h"
-				>
+				RelativePath="source\tools\tVector.h">
 			</File>
 			<File
-				RelativePath=".\source\tools\tArgDataEntry.h"
-				>
+				RelativePath="source\tools\tVerifierSuite.hh">
 			</File>
 			<File
-				RelativePath=".\source\tools\tArray.h"
-				>
+				RelativePath="source\tools\tVerifierSuiteRecurser.hh">
 			</File>
+			</Filter>
 			<File
-				RelativePath=".\source\tools\tBuffer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\tDataEntry.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\tDataEntryBase.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\tDataEntryCommand.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\tDataManager.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\tDictionary.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\tHashTable.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\cpu\tInstLib.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\cpu\tInstLibEntry.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\tList.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\tManagedPointerArray.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\tMatrix.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\tMemTrack.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\tObjectFactory.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\tSmartArray.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\tVector.h"
-				>
+				RelativePath="source\defs.h">
 			</File>
 		</Filter>
 		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
-			>
+			Name="Other Files"
+			Filter="">
+			<Filter
+				Name="actions"
+				Filter="">
+			<File
+				RelativePath="source\actions\SConscript">
+			</File>
+			</Filter>
+			<Filter
+				Name="analyze"
+				Filter="">
+			<File
+				RelativePath="source\analyze\SConscript">
+			</File>
+			</Filter>
+			<Filter
+				Name="classification"
+				Filter="">
+			<File
+				RelativePath="source\classification\SConscript">
+			</File>
+			</Filter>
+			<Filter
+				Name="cpu"
+				Filter="">
+			<File
+				RelativePath="source\cpu\SConscript">
+			</File>
+			</Filter>
+			<Filter
+				Name="drivers"
+				Filter="">
+			<File
+				RelativePath="source\drivers\SConscript">
+			</File>
+			</Filter>
+			<Filter
+				Name="main"
+				Filter="">
+			<File
+				RelativePath="source\main\SConscript">
+			</File>
+			</Filter>
+			<Filter
+				Name="targets"
+				Filter="">
+			<Filter
+				Name="avida"
+				Filter="">
+			<File
+				RelativePath="source\targets\avida\SConscript">
+			</File>
+			</Filter>
+			<File
+				RelativePath="source\targets\SConscript">
+			</File>
+			</Filter>
+			<Filter
+				Name="tools"
+				Filter="">
+			<File
+				RelativePath="source\tools\SConscript">
+			</File>
+			</Filter>
+			<File
+				RelativePath="source\SConscript">
+			</File>
 		</Filter>
 		<Filter
 			Name="Source Files"
-			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
-			>
+			Filter="cpp;c;cxx;l;y;def;odl;idl;hpj;bat">
+			<Filter
+				Name="actions"
+				Filter="">
 			<File
-				RelativePath=".\source\main\avida.cc"
-				>
+				RelativePath="source\actions\cActionLibrary.cc">
 			</File>
 			<File
-				RelativePath=".\source\actions\cActionLibrary.cc"
-				>
+				RelativePath="source\actions\DriverActions.cc">
 			</File>
 			<File
-				RelativePath=".\source\analyze\cAnalyze.cc"
-				>
+				RelativePath="source\actions\EnvironmentActions.cc">
 			</File>
 			<File
-				RelativePath=".\source\analyze\cAnalyzeGenotype.cc"
-				>
+				RelativePath="source\actions\LandscapeActions.cc">
 			</File>
 			<File
-				RelativePath=".\source\analyze\cAnalyzeJobQueue.cc"
-				>
+				RelativePath="source\actions\PopulationActions.cc">
 			</File>
 			<File
-				RelativePath=".\source\analyze\cAnalyzeJobWorker.cc"
-				>
+				RelativePath="source\actions\PrintActions.cc">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cAnalyzeScreen.cc"
-				>
+				RelativePath="source\actions\SaveLoadActions.cc">
 			</File>
+			</Filter>
+			<Filter
+				Name="analyze"
+				Filter="">
 			<File
-				RelativePath=".\source\targets\avida-viewer\cAnalyzeView.cc"
-				>
+				RelativePath="source\analyze\cAnalyze.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cArgContainer.cc"
-				>
+				RelativePath="source\analyze\cAnalyzeGenotype.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cArgSchema.cc"
-				>
+				RelativePath="source\analyze\cAnalyzeJobQueue.cc">
 			</File>
 			<File
-				RelativePath=".\source\main\cAvidaConfig.cc"
-				>
+				RelativePath="source\analyze\cAnalyzeJobWorker.cc">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cBarScreen.cc"
-				>
+				RelativePath="source\analyze\cMutationalNeighborhood.cc">
 			</File>
+			</Filter>
+			<Filter
+				Name="classification"
+				Filter="">
 			<File
-				RelativePath=".\source\main\cBirthChamber.cc"
-				>
+				RelativePath="source\classification\cClassificationManager.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cBlockStruct.cc"
-				>
+				RelativePath="source\classification\cGenotype.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cChangeList.cc"
-				>
+				RelativePath="source\classification\cGenotype_BirthData.cc">
 			</File>
 			<File
-				RelativePath=".\source\classification\cClassificationManager.cc"
-				>
+				RelativePath="source\classification\cGenotypeControl.cc">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cCodeLabel.cc"
-				>
+				RelativePath="source\classification\cInjectGenotype.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cConstSchedule.cc"
-				>
+				RelativePath="source\classification\cInjectGenotypeControl.cc">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cCPUMemory.cc"
-				>
+				RelativePath="source\classification\cInjectGenotypeQueue.cc">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cCPUStack.cc"
-				>
+				RelativePath="source\classification\cLineage.cc">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cCPUTestInfo.cc"
-				>
+				RelativePath="source\classification\cSpecies.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cCycleCheck.cc"
-				>
+				RelativePath="source\classification\cSpeciesControl.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cDataEntry.cc"
-				>
+				RelativePath="source\classification\cSpeciesQueue.cc">
 			</File>
+			</Filter>
+			<Filter
+				Name="cpu"
+				Filter="">
 			<File
-				RelativePath=".\source\tools\cDataFile.cc"
-				>
+				RelativePath="source\cpu\cCodeLabel.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cDataFileManager.cc"
-				>
+				RelativePath="source\cpu\cCPUMemory.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cDataManager_Base.cc"
-				>
+				RelativePath="source\cpu\cCPUStack.cc">
 			</File>
 			<File
-				RelativePath=".\source\drivers\cDefaultAnalyzeDriver.cc"
-				>
+				RelativePath="source\cpu\cCPUTestInfo.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cDefaultMessageDisplay.cc"
-				>
+				RelativePath="source\cpu\cHardwareBase.cc">
 			</File>
 			<File
-				RelativePath=".\source\drivers\cDefaultRunDriver.cc"
-				>
+				RelativePath="source\cpu\cHardwareCPU.cc">
 			</File>
 			<File
-				RelativePath=".\source\main\cDeme.cc"
-				>
+				RelativePath="source\cpu\cHardwareExperimental.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cDoubleSum.cc"
-				>
+				RelativePath="source\cpu\cHardwareGX.cc">
 			</File>
 			<File
-				RelativePath=".\source\drivers\cDriverManager.cc"
-				>
+				RelativePath="source\cpu\cHardwareManager.cc">
 			</File>
 			<File
-				RelativePath=".\source\main\cEnvironment.cc"
-				>
+				RelativePath="source\cpu\cHardwareSMT.cc">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cEnvironmentScreen.cc"
-				>
+				RelativePath="source\cpu\cHardwareStatusPrinter.cc">
 			</File>
 			<File
-				RelativePath=".\source\main\cEventList.cc"
-				>
+				RelativePath="source\cpu\cHardwareTransSMT.cc">
 			</File>
 			<File
-				RelativePath=".\source\drivers\cFallbackWorldDriver.cc"
-				>
+				RelativePath="source\cpu\cHeadCPU.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cFile.cc"
-				>
+				RelativePath="source\cpu\cInstSet.cc">
 			</File>
 			<File
-				RelativePath=".\source\main\cFitnessMatrix.cc"
-				>
+				RelativePath="source\cpu\cTestCPU.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cFixedBlock.cc"
-				>
+				RelativePath="source\cpu\cTestCPUInterface.cc">
 			</File>
+			</Filter>
+			<Filter
+				Name="drivers"
+				Filter="">
 			<File
-				RelativePath=".\source\tools\cFixedCoords.cc"
-				>
+				RelativePath="source\drivers\cDefaultAnalyzeDriver.cc">
 			</File>
 			<File
-				RelativePath=".\source\main\cGenome.cc"
-				>
+				RelativePath="source\drivers\cDefaultRunDriver.cc">
 			</File>
 			<File
-				RelativePath=".\source\main\cGenomeUtil.cc"
-				>
+				RelativePath="source\drivers\cDriverManager.cc">
 			</File>
 			<File
-				RelativePath=".\source\classification\cGenotype.cc"
-				>
+				RelativePath="source\drivers\cFallbackWorldDriver.cc">
 			</File>
+			</Filter>
+			<Filter
+				Name="main"
+				Filter="">
 			<File
-				RelativePath=".\source\classification\cGenotype_BirthData.cc"
-				>
+				RelativePath="source\main\avida.cc">
 			</File>
 			<File
-				RelativePath=".\source\classification\cGenotypeControl.cc"
-				>
+				RelativePath="source\main\cAvidaConfig.cc">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cHardwareBase.cc"
-				>
+				RelativePath="source\main\cBirthChamber.cc">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cHardwareCPU.cc"
-				>
+				RelativePath="source\main\cDeme.cc">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cHardwareExperimental.cc"
-				>
+				RelativePath="source\main\cEnvironment.cc">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cHardwareManager.cc"
-				>
+				RelativePath="source\main\cEventList.cc">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cHardwareSMT.cc"
-				>
+				RelativePath="source\main\cFitnessMatrix.cc">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cHardwareStatusPrinter.cc"
-				>
+				RelativePath="source\main\cGenome.cc">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cHardwareTransSMT.cc"
-				>
+				RelativePath="source\main\cGenomeUtil.cc">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cHeadCPU.cc"
-				>
+				RelativePath="source\main\cInstruction.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cHelpAlias.cc"
-				>
+				RelativePath="source\main\cLandscape.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cHelpManager.cc"
-				>
+				RelativePath="source\main\cLocalMutations.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cHelpType.cc"
-				>
+				RelativePath="source\main\cMutationLib.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cHistogram.cc"
-				>
+				RelativePath="source\main\cMutationRates.cc">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cHistScreen.cc"
-				>
+				RelativePath="source\main\cMxCodeArray.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cIndexedBlockStruct.cc"
-				>
+				RelativePath="source\main\cOrganism.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cInitFile.cc"
-				>
+				RelativePath="source\main\cPhenotype.cc">
 			</File>
 			<File
-				RelativePath=".\source\classification\cInjectGenotype.cc"
-				>
+				RelativePath="source\main\cPopulation.cc">
 			</File>
 			<File
-				RelativePath=".\source\classification\cInjectGenotypeControl.cc"
-				>
+				RelativePath="source\main\cPopulationCell.cc">
 			</File>
 			<File
-				RelativePath=".\source\classification\cInjectGenotypeQueue.cc"
-				>
+				RelativePath="source\main\cPopulationInterface.cc">
 			</File>
 			<File
-				RelativePath=".\source\main\cInstruction.cc"
-				>
+				RelativePath="source\main\cReaction.cc">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cInstSet.cc"
-				>
+				RelativePath="source\main\cReactionLib.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cIntegratedSchedule.cc"
-				>
+				RelativePath="source\main\cReactionResult.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cIntegratedScheduleNode.cc"
-				>
+				RelativePath="source\main\cResource.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cIntSum.cc"
-				>
+				RelativePath="source\main\cResourceCount.cc">
 			</File>
 			<File
-				RelativePath=".\source\main\cLandscape.cc"
-				>
+				RelativePath="source\main\cResourceLib.cc">
 			</File>
 			<File
-				RelativePath=".\source\classification\cLineage.cc"
-				>
+				RelativePath="source\main\cSpatialCountElem.cc">
 			</File>
 			<File
-				RelativePath=".\source\main\cLocalMutations.cc"
-				>
+				RelativePath="source\main\cSpatialResCount.cc">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cMapScreen.cc"
-				>
+				RelativePath="source\main\cStats.cc">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cMenuWindow.cc"
-				>
+				RelativePath="source\main\cTaskLib.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cMerit.cc"
-				>
+				RelativePath="source\main\cWorld.cc">
 			</File>
+			</Filter>
+			<Filter
+				Name="targets"
+				Filter="">
+			<Filter
+				Name="avida"
+				Filter="">
 			<File
-				RelativePath=".\source\analyze\cMutationalNeighborhood.cc"
-				>
+				RelativePath="source\targets\avida\primitive.cc">
 			</File>
+			</Filter>
+			</Filter>
+			<Filter
+				Name="tools"
+				Filter="">
 			<File
-				RelativePath=".\source\main\cMutationLib.cc"
-				>
+				RelativePath="source\tools\cArgContainer.cc">
 			</File>
 			<File
-				RelativePath=".\source\main\cMutationRates.cc"
-				>
+				RelativePath="source\tools\cArgSchema.cc">
 			</File>
 			<File
-				RelativePath=".\source\main\cMxCodeArray.cc"
-				>
+				RelativePath="source\tools\cChangeList.cc">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cOptionsScreen.cc"
-				>
+				RelativePath="source\tools\cConstSchedule.cc">
 			</File>
 			<File
-				RelativePath=".\source\main\cOrganism.cc"
-				>
+				RelativePath="source\tools\cCycleCheck.cc">
 			</File>
 			<File
-				RelativePath=".\source\main\cPhenotype.cc"
-				>
+				RelativePath="source\tools\cDataEntry.cc">
 			</File>
 			<File
-				RelativePath=".\source\main\cPopulation.cc"
-				>
+				RelativePath="source\tools\cDataFile.cc">
 			</File>
 			<File
-				RelativePath=".\source\main\cPopulationCell.cc"
-				>
+				RelativePath="source\tools\cDataFileManager.cc">
 			</File>
 			<File
-				RelativePath=".\source\main\cPopulationInterface.cc"
-				>
+				RelativePath="source\tools\cDataManager_Base.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cProbSchedule.cc"
-				>
+				RelativePath="source\tools\cDefaultMessageDisplay.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cRandom.cc"
-				>
+				RelativePath="source\tools\cDoubleSum.cc">
 			</File>
 			<File
-				RelativePath=".\source\main\cReaction.cc"
-				>
+				RelativePath="source\tools\cFile.cc">
 			</File>
 			<File
-				RelativePath=".\source\main\cReactionLib.cc"
-				>
+				RelativePath="source\tools\cFixedCoords.cc">
 			</File>
 			<File
-				RelativePath=".\source\main\cReactionResult.cc"
-				>
+				RelativePath="source\tools\cHelpAlias.cc">
 			</File>
 			<File
-				RelativePath=".\source\main\cResource.cc"
-				>
+				RelativePath="source\tools\cHelpManager.cc">
 			</File>
 			<File
-				RelativePath=".\source\main\cResourceCount.cc"
-				>
+				RelativePath="source\tools\cHelpType.cc">
 			</File>
 			<File
-				RelativePath=".\source\main\cResourceLib.cc"
-				>
+				RelativePath="source\tools\cHistogram.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cRunningAverage.cc"
-				>
+				RelativePath="source\tools\cIndexedBlockStruct.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cSchedule.cc"
-				>
+				RelativePath="source\tools\cInitFile.cc">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cScreen.cc"
-				>
+				RelativePath="source\tools\cIntegratedSchedule.cc">
 			</File>
 			<File
-				RelativePath=".\source\main\cSpatialCountElem.cc"
-				>
+				RelativePath="source\tools\cIntegratedScheduleNode.cc">
 			</File>
 			<File
-				RelativePath=".\source\main\cSpatialResCount.cc"
-				>
+				RelativePath="source\tools\cIntSum.cc">
 			</File>
 			<File
-				RelativePath=".\source\classification\cSpecies.cc"
-				>
+				RelativePath="source\tools\cMerit.cc">
 			</File>
 			<File
-				RelativePath=".\source\classification\cSpeciesControl.cc"
-				>
+				RelativePath="source\tools\cMessageDisplay.cc">
 			</File>
 			<File
-				RelativePath=".\source\classification\cSpeciesQueue.cc"
-				>
+				RelativePath="source\tools\cProbSchedule.cc">
 			</File>
 			<File
-				RelativePath=".\source\main\cStats.cc"
-				>
+				RelativePath="source\tools\cRandom.cc">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cStatsScreen.cc"
-				>
+				RelativePath="source\tools\cRunningAverage.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cString.cc"
-				>
+				RelativePath="source\tools\cSchedule.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cStringIterator.cc"
-				>
+				RelativePath="source\tools\cString.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cStringList.cc"
-				>
+				RelativePath="source\tools\cStringIterator.cc">
 			</File>
 			<File
-				RelativePath=".\source\tools\cStringUtil.cc"
-				>
+				RelativePath="source\tools\cStringList.cc">
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cSymbolUtil.cc"
-				>
+				RelativePath="source\tools\cStringUtil.cc">
 			</File>
 			<File
-				RelativePath=".\source\main\cTaskLib.cc"
-				>
+				RelativePath="source\tools\cThread.cc">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cTestCPU.cc"
-				>
+				RelativePath="source\tools\cTools.cc">
 			</File>
 			<File
-				RelativePath=".\source\cpu\cTestCPUInterface.cc"
-				>
+				RelativePath="source\tools\cWeightedIndex.cc">
 			</File>
-			<File
-				RelativePath=".\source\targets\avida-viewer\cTextViewerAnalyzeDriver.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\source\targets\avida-viewer\cTextViewerDriver.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\source\targets\avida-viewer\cTextViewerDriver_Base.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\source\targets\avida-viewer\cTextWindow.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\cThread.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\cTools.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\source\targets\avida-viewer\cView.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\source\targets\avida-viewer\cViewInfo.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\cWeightedIndex.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\source\main\cWorld.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\source\targets\avida-viewer\cZoomScreen.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\source\actions\DriverActions.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\source\actions\EnvironmentActions.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\source\actions\LandscapeActions.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\source\actions\PopulationActions.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\source\actions\PrintActions.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\source\actions\SaveLoadActions.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\source\targets\avida-viewer\viewer.cc"
-				>
-			</File>
+			</Filter>
 		</Filter>
 		<File
-			RelativePath=".\source\platform\msvc2005\pdcurses\pdcurses.lib"
-			>
+			RelativePath="SConstruct">
 		</File>
 	</Files>
 	<Globals>
 	</Globals>
 </VisualStudioProject>
+<!-- SCons Data:
+fXEAVQdSZWxlYXNlcQEoY1NDb25zLlRvb2wubXN2cwpDb25maWcKcQJvcQN9cQQoVQd2YXJpYW50
+cQVoAVUHY21kYXJnc3EGVQBxB1UIcGxhdGZvcm1xCFUFV2luMzJxCVUHcnVuZmlsZXEKVXBDOlxE
+b2N1bWVudHMgYW5kIFNldHRpbmdzXHNoZXJyaVxNeSBEb2N1bWVudHNcUmVzZWFyY2hcYXZpZGFE
+ZXZlbFxidWlsZC1SZWxlYXNlLU1lbVRyYWNrXHRhcmdldHNcYXZpZGFcYXZpZGEuZXhlcQtVC2J1
+aWxkdGFyZ2V0cQxoC1UGb3V0ZGlycQ1oB3Vicy4=
+
+fXEAKFULT3RoZXIgRmlsZXNxAV1xAihVGXNvdXJjZVxhY3Rpb25zXFNDb25zY3JpcHRxA1UZc291
+cmNlXGFuYWx5emVcU0NvbnNjcmlwdHEEVSBzb3VyY2VcY2xhc3NpZmljYXRpb25cU0NvbnNjcmlw
+dHEFVRVzb3VyY2VcY3B1XFNDb25zY3JpcHRxBlUZc291cmNlXGRyaXZlcnNcU0NvbnNjcmlwdHEH
+VRZzb3VyY2VcbWFpblxTQ29uc2NyaXB0cQhVEXNvdXJjZVxTQ29uc2NyaXB0cQlVH3NvdXJjZVx0
+YXJnZXRzXGF2aWRhXFNDb25zY3JpcHRxClUZc291cmNlXHRhcmdldHNcU0NvbnNjcmlwdHELVRdz
+b3VyY2VcdG9vbHNcU0NvbnNjcmlwdHEMZVUNTG9jYWwgSGVhZGVyc3ENXXEOVQxIZWFkZXIgRmls
+ZXNxD11xEChVGHNvdXJjZVxhY3Rpb25zXGNBY3Rpb24uaHERVR9zb3VyY2VcYWN0aW9uc1xjQWN0
+aW9uTGlicmFyeS5ocRJVHnNvdXJjZVxhY3Rpb25zXERyaXZlckFjdGlvbnMuaHETVSNzb3VyY2Vc
+YWN0aW9uc1xFbnZpcm9ubWVudEFjdGlvbnMuaHEUVSFzb3VyY2VcYWN0aW9uc1xMYW5kc2NhcGVB
+Y3Rpb25zLmhxFVUic291cmNlXGFjdGlvbnNcUG9wdWxhdGlvbkFjdGlvbnMuaHEWVR1zb3VyY2Vc
+YWN0aW9uc1xQcmludEFjdGlvbnMuaHEXVSBzb3VyY2VcYWN0aW9uc1xTYXZlTG9hZEFjdGlvbnMu
+aHEYVRlzb3VyY2VcYW5hbHl6ZVxjQW5hbHl6ZS5ocRlVIHNvdXJjZVxhbmFseXplXGNBbmFseXpl
+Q29tbWFuZC5ocRpVJnNvdXJjZVxhbmFseXplXGNBbmFseXplQ29tbWFuZEFjdGlvbi5ocRtVI3Nv
+dXJjZVxhbmFseXplXGNBbmFseXplQ29tbWFuZERlZi5ocRxVJ3NvdXJjZVxhbmFseXplXGNBbmFs
+eXplQ29tbWFuZERlZkJhc2UuaHEdVSRzb3VyY2VcYW5hbHl6ZVxjQW5hbHl6ZUZsb3dDb21tYW5k
+LmhxHlUnc291cmNlXGFuYWx5emVcY0FuYWx5emVGbG93Q29tbWFuZERlZi5ocR9VIXNvdXJjZVxh
+bmFseXplXGNBbmFseXplRnVuY3Rpb24uaHEgVSFzb3VyY2VcYW5hbHl6ZVxjQW5hbHl6ZUdlbm90
+eXBlLmhxIVUcc291cmNlXGFuYWx5emVcY0FuYWx5emVKb2IuaHEiVSFzb3VyY2VcYW5hbHl6ZVxj
+QW5hbHl6ZUpvYlF1ZXVlLmhxI1Uic291cmNlXGFuYWx5emVcY0FuYWx5emVKb2JXb3JrZXIuaHEk
+VR9zb3VyY2VcYW5hbHl6ZVxjR2Vub3R5cGVCYXRjaC5ocSVVKHNvdXJjZVxhbmFseXplXGNNdXRh
+dGlvbmFsTmVpZ2hib3Job29kLmhxJlUvc291cmNlXGFuYWx5emVcY011dGF0aW9uYWxOZWlnaGJv
+cmhvb2RSZXN1bHRzLmhxJ1Ucc291cmNlXGFuYWx5emVcdEFuYWx5emVKb2IuaHEoVS5zb3VyY2Vc
+Y2xhc3NpZmljYXRpb25cY0NsYXNzaWZpY2F0aW9uTWFuYWdlci5ocSlVIXNvdXJjZVxjbGFzc2lm
+aWNhdGlvblxjR2Vub3R5cGUuaHEqVStzb3VyY2VcY2xhc3NpZmljYXRpb25cY0dlbm90eXBlX0Jp
+cnRoRGF0YS5ocStVKnNvdXJjZVxjbGFzc2lmaWNhdGlvblxjR2Vub3R5cGVfVGVzdERhdGEuaHEs
+VShzb3VyY2VcY2xhc3NpZmljYXRpb25cY0dlbm90eXBlQ29udHJvbC5ocS1VJ3NvdXJjZVxjbGFz
+c2lmaWNhdGlvblxjSW5qZWN0R2Vub3R5cGUuaHEuVTFzb3VyY2VcY2xhc3NpZmljYXRpb25cY0lu
+amVjdEdlbm90eXBlX0JpcnRoRGF0YS5ocS9VLnNvdXJjZVxjbGFzc2lmaWNhdGlvblxjSW5qZWN0
+R2Vub3R5cGVDb250cm9sLmhxMFUuc291cmNlXGNsYXNzaWZpY2F0aW9uXGNJbmplY3RHZW5vdHlw
+ZUVsZW1lbnQuaHExVSxzb3VyY2VcY2xhc3NpZmljYXRpb25cY0luamVjdEdlbm90eXBlUXVldWUu
+aHEyVSBzb3VyY2VcY2xhc3NpZmljYXRpb25cY0xpbmVhZ2UuaHEzVSBzb3VyY2VcY2xhc3NpZmlj
+YXRpb25cY1NwZWNpZXMuaHE0VSdzb3VyY2VcY2xhc3NpZmljYXRpb25cY1NwZWNpZXNDb250cm9s
+LmhxNVUlc291cmNlXGNsYXNzaWZpY2F0aW9uXGNTcGVjaWVzUXVldWUuaHE2VSFzb3VyY2VcY2xh
+c3NpZmljYXRpb25cbkdlbm90eXBlLmhxN1Unc291cmNlXGNsYXNzaWZpY2F0aW9uXG5JbmplY3RH
+ZW5vdHlwZS5ocThVIHNvdXJjZVxjbGFzc2lmaWNhdGlvblxuU3BlY2llcy5ocTlVF3NvdXJjZVxj
+cHVcY0NvZGVMYWJlbC5ocTpVF3NvdXJjZVxjcHVcY0NQVU1lbW9yeS5ocTtVFnNvdXJjZVxjcHVc
+Y0NQVVN0YWNrLmhxPFUZc291cmNlXGNwdVxjQ1BVVGVzdEluZm8uaHE9VRpzb3VyY2VcY3B1XGNI
+YXJkd2FyZUJhc2UuaHE+VRlzb3VyY2VcY3B1XGNIYXJkd2FyZUNQVS5ocT9VInNvdXJjZVxjcHVc
+Y0hhcmR3YXJlRXhwZXJpbWVudGFsLmhxQFUYc291cmNlXGNwdVxjSGFyZHdhcmVHWC5ocUFVHXNv
+dXJjZVxjcHVcY0hhcmR3YXJlTWFuYWdlci5ocUJVGXNvdXJjZVxjcHVcY0hhcmR3YXJlU01ULmhx
+Q1Ujc291cmNlXGNwdVxjSGFyZHdhcmVTdGF0dXNQcmludGVyLmhxRFUcc291cmNlXGNwdVxjSGFy
+ZHdhcmVUcmFjZXIuaHFFVRtzb3VyY2VcY3B1XGNIYXJkd2FyZVRyYW5zLmhxRlUVc291cmNlXGNw
+dVxjSGVhZENQVS5ocUdVFXNvdXJjZVxjcHVcY0luc3RMaWIuaHFIVRVzb3VyY2VcY3B1XGNJbnN0
+U2V0LmhxSVUVc291cmNlXGNwdVxjVGVzdENQVS5ocUpVHnNvdXJjZVxjcHVcY1Rlc3RDUFVJbnRl
+cmZhY2UuaHFLVRZzb3VyY2VcY3B1XG5IYXJkd2FyZS5ocUxVFnNvdXJjZVxjcHVcc0NQVVN0YXRz
+LmhxTVUVc291cmNlXGNwdVx0SW5zdExpYi5ocU5VDXNvdXJjZVxkZWZzLmhxT1Udc291cmNlXGRy
+aXZlcnNcY0F2aWRhRHJpdmVyLmhxUFUmc291cmNlXGRyaXZlcnNcY0RlZmF1bHRBbmFseXplRHJp
+dmVyLmhxUVUic291cmNlXGRyaXZlcnNcY0RlZmF1bHRSdW5Ecml2ZXIuaHFSVR9zb3VyY2VcZHJp
+dmVyc1xjRHJpdmVyTWFuYWdlci5ocVNVJXNvdXJjZVxkcml2ZXJzXGNGYWxsYmFja1dvcmxkRHJp
+dmVyLmhxVFUdc291cmNlXGRyaXZlcnNcY1dvcmxkRHJpdmVyLmhxVVUTc291cmNlXG1haW5cYXZp
+ZGEuaHFWVRpzb3VyY2VcbWFpblxjQXZpZGFDb25maWcuaHFXVRtzb3VyY2VcbWFpblxjQXZpZGFD
+b250ZXh0LmhxWFUbc291cmNlXG1haW5cY0JpcnRoQ2hhbWJlci5ocVlVE3NvdXJjZVxtYWluXGNE
+ZW1lLmhxWlUac291cmNlXG1haW5cY0Vudmlyb25tZW50LmhxW1UYc291cmNlXG1haW5cY0V2ZW50
+TGlzdC5ocVxVHHNvdXJjZVxtYWluXGNGaXRuZXNzTWF0cml4LmhxXVUVc291cmNlXG1haW5cY0dl
+bm9tZS5ocV5VGXNvdXJjZVxtYWluXGNHZW5vbWVVdGlsLmhxX1Uac291cmNlXG1haW5cY0luc3Ry
+dWN0aW9uLmhxYFUYc291cmNlXG1haW5cY0xhbmRzY2FwZS5ocWFVHXNvdXJjZVxtYWluXGNMb2Nh
+bE11dGF0aW9ucy5ocWJVF3NvdXJjZVxtYWluXGNNdXRhdGlvbi5ocWNVGnNvdXJjZVxtYWluXGNN
+dXRhdGlvbkxpYi5ocWRVHHNvdXJjZVxtYWluXGNNdXRhdGlvblJhdGVzLmhxZVUac291cmNlXG1h
+aW5cY014Q29kZUFycmF5LmhxZlUXc291cmNlXG1haW5cY09yZ2FuaXNtLmhxZ1Ubc291cmNlXG1h
+aW5cY09yZ0ludGVyZmFjZS5ocWhVHHNvdXJjZVxtYWluXGNPcmdTZXFNZXNzYWdlLmhxaVUdc291
+cmNlXG1haW5cY09yZ1NpbmtNZXNzYWdlLmhxalUfc291cmNlXG1haW5cY09yZ1NvdXJjZU1lc3Nh
+Z2UuaHFrVRhzb3VyY2VcbWFpblxjUGhlbm90eXBlLmhxbFUZc291cmNlXG1haW5cY1BvcHVsYXRp
+b24uaHFtVR1zb3VyY2VcbWFpblxjUG9wdWxhdGlvbkNlbGwuaHFuVSJzb3VyY2VcbWFpblxjUG9w
+dWxhdGlvbkludGVyZmFjZS5ocW9VF3NvdXJjZVxtYWluXGNSZWFjdGlvbi5ocXBVGnNvdXJjZVxt
+YWluXGNSZWFjdGlvbkxpYi5ocXFVHnNvdXJjZVxtYWluXGNSZWFjdGlvblByb2Nlc3MuaHFyVSBz
+b3VyY2VcbWFpblxjUmVhY3Rpb25SZXF1aXNpdGUuaHFzVR1zb3VyY2VcbWFpblxjUmVhY3Rpb25S
+ZXN1bHQuaHF0VRdzb3VyY2VcbWFpblxjUmVzb3VyY2UuaHF1VRxzb3VyY2VcbWFpblxjUmVzb3Vy
+Y2VDb3VudC5ocXZVGnNvdXJjZVxtYWluXGNSZXNvdXJjZUxpYi5ocXdVH3NvdXJjZVxtYWluXGNT
+cGF0aWFsQ291bnRFbGVtLmhxeFUec291cmNlXG1haW5cY1NwYXRpYWxSZXNDb3VudC5ocXlVFHNv
+dXJjZVxtYWluXGNTdGF0cy5ocXpVGnNvdXJjZVxtYWluXGNUYXNrQ29udGV4dC5ocXtVGHNvdXJj
+ZVxtYWluXGNUYXNrRW50cnkuaHF8VRZzb3VyY2VcbWFpblxjVGFza0xpYi5ocX1VGHNvdXJjZVxt
+YWluXGNUYXNrU3RhdGUuaHF+VRRzb3VyY2VcbWFpblxjV29ybGQuaHF/VSFzb3VyY2VcbWFpblxN
+eUNvZGVBcnJheUxlc3NUaGFuLmhxgFUXc291cmNlXG1haW5cbkdlb21ldHJ5LmhxgVUXc291cmNl
+XG1haW5cbk11dGF0aW9uLmhxglUXc291cmNlXG1haW5cblJlYWN0aW9uLmhxg1Ucc291cmNlXHRv
+b2xzXGNBcmdDb250YWluZXIuaHGEVRlzb3VyY2VcdG9vbHNcY0FyZ1NjaGVtYS5ocYVVG3NvdXJj
+ZVx0b29sc1xjQmxvY2tTdHJ1Y3QuaHGGVRpzb3VyY2VcdG9vbHNcY0NoYW5nZUxpc3QuaHGHVR1z
+b3VyY2VcdG9vbHNcY0NvbnN0U2NoZWR1bGUuaHGIVRxzb3VyY2VcdG9vbHNcY0NvdW50VHJhY2tl
+ci5ocYlVGnNvdXJjZVx0b29sc1xjQ3ljbGVDaGVjay5ocYpVGXNvdXJjZVx0b29sc1xjRGF0YUVu
+dHJ5Lmhxi1UYc291cmNlXHRvb2xzXGNEYXRhRmlsZS5ocYxVH3NvdXJjZVx0b29sc1xjRGF0YUZp
+bGVNYW5hZ2VyLmhxjVUgc291cmNlXHRvb2xzXGNEYXRhTWFuYWdlcl9CYXNlLmhxjlUlc291cmNl
+XHRvb2xzXGNEZWZhdWx0TWVzc2FnZURpc3BsYXkuaHGPVRlzb3VyY2VcdG9vbHNcY0RvdWJsZVN1
+bS5ocZBVFHNvdXJjZVx0b29sc1xjRmlsZS5ocZFVGnNvdXJjZVx0b29sc1xjRml4ZWRCbG9jay5o
+cZJVG3NvdXJjZVx0b29sc1xjRml4ZWRDb29yZHMuaHGTVRdzb3VyY2VcdG9vbHNcY0dlbmVzaXMu
+aHGUVRlzb3VyY2VcdG9vbHNcY0hlbHBBbGlhcy5ocZVVGXNvdXJjZVx0b29sc1xjSGVscEVudHJ5
+LmhxllUdc291cmNlXHRvb2xzXGNIZWxwRnVsbEVudHJ5Lmhxl1Ubc291cmNlXHRvb2xzXGNIZWxw
+TWFuYWdlci5ocZhVGHNvdXJjZVx0b29sc1xjSGVscFR5cGUuaHGZVRlzb3VyY2VcdG9vbHNcY0hp
+c3RvZ3JhbS5ocZpVEnNvdXJjZVx0b29sc1xjSUQuaHGbVSJzb3VyY2VcdG9vbHNcY0luZGV4ZWRC
+bG9ja1N0cnVjdC5ocZxVGHNvdXJjZVx0b29sc1xjSW5pdEZpbGUuaHGdVSJzb3VyY2VcdG9vbHNc
+Y0ludGVncmF0ZWRTY2hlZHVsZS5ocZ5VJnNvdXJjZVx0b29sc1xjSW50ZWdyYXRlZFNjaGVkdWxl
+Tm9kZS5ocZ9VFnNvdXJjZVx0b29sc1xjSW50U3VtLmhxoFUVc291cmNlXHRvb2xzXGNNZXJpdC5o
+caFVHHNvdXJjZVx0b29sc1xjTWVzc2FnZUNsYXNzLmhxolUec291cmNlXHRvb2xzXGNNZXNzYWdl
+Q2xvc3VyZS5ocaNVHnNvdXJjZVx0b29sc1xjTWVzc2FnZURpc3BsYXkuaHGkVSZzb3VyY2VcdG9v
+bHNcY01lc3NhZ2VEaXNwbGF5X2hlYWRlcnMuaHGlVRtzb3VyY2VcdG9vbHNcY01lc3NhZ2VUeXBl
+LmhxplUcc291cmNlXHRvb2xzXGNQcm9iU2NoZWR1bGUuaHGnVRZzb3VyY2VcdG9vbHNcY1JhbmRv
+bS5ocahVGHNvdXJjZVx0b29sc1xjUmVmQmxvY2suaHGpVR5zb3VyY2VcdG9vbHNcY1J1bm5pbmdB
+dmVyYWdlLmhxqlUbc291cmNlXHRvb2xzXGNTY2FsZWRCbG9jay5ocatVGHNvdXJjZVx0b29sc1xj
+U2NoZWR1bGUuaHGsVRZzb3VyY2VcdG9vbHNcY1N0cmluZy5oca1VHnNvdXJjZVx0b29sc1xjU3Ry
+aW5nSXRlcmF0b3IuaHGuVRpzb3VyY2VcdG9vbHNcY1N0cmluZ0xpc3QuaHGvVRpzb3VyY2VcdG9v
+bHNcY1N0cmluZ1V0aWwuaHGwVRZzb3VyY2VcdG9vbHNcY1RocmVhZC5ocbFVFXNvdXJjZVx0b29s
+c1xjVG9vbHMuaHGyVRRzb3VyY2VcdG9vbHNcY1VJbnQuaHGzVSVzb3VyY2VcdG9vbHNcY1Zlcmlm
+aWVyU3VpdGVSZWN1cnNlci5ocbRVHXNvdXJjZVx0b29sc1xjV2VpZ2h0ZWRJbmRleC5ocbVVGHNv
+dXJjZVx0b29sc1xmdW5jdGlvbnMuaHG2VSlzb3VyY2VcdG9vbHNccmVjdXJzaXZlX3Rlc3RzX2Rl
+Y2xfaGRycy5oaHG3VSlzb3VyY2VcdG9vbHNccmVjdXJzaXZlX3Rlc3RzX2RlZm5faGRycy5oaHG4
+VSZzb3VyY2VcdG9vbHNccmVjdXJzaXZlX3Rlc3RzX21hY3Jvcy5oaHG5VRxzb3VyY2VcdG9vbHNc
+dEFyZ0RhdGFFbnRyeS5ocbpVFXNvdXJjZVx0b29sc1x0QXJyYXkuaHG7VRZzb3VyY2VcdG9vbHNc
+dEJ1ZmZlci5ocbxVGXNvdXJjZVx0b29sc1x0RGF0YUVudHJ5LmhxvVUdc291cmNlXHRvb2xzXHRE
+YXRhRW50cnlCYXNlLmhxvlUgc291cmNlXHRvb2xzXHREYXRhRW50cnlDb21tYW5kLmhxv1Ubc291
+cmNlXHRvb2xzXHREYXRhTWFuYWdlci5occBVGnNvdXJjZVx0b29sc1x0RGljdGlvbmFyeS5occFV
+GXNvdXJjZVx0b29sc1x0SGFzaFRhYmxlLmhxwlUUc291cmNlXHRvb2xzXHRMaXN0Lmhxw1Ujc291
+cmNlXHRvb2xzXHRNYW5hZ2VkUG9pbnRlckFycmF5LmhxxFUWc291cmNlXHRvb2xzXHRNYXRyaXgu
+aHHFVRhzb3VyY2VcdG9vbHNcdE1lbVRyYWNrLmhxxlUdc291cmNlXHRvb2xzXHRPYmplY3RGYWN0
+b3J5Lmhxx1Uac291cmNlXHRvb2xzXHRTbWFydEFycmF5LmhxyFUec291cmNlXHRvb2xzXHRVbml0
+VGVzdFN1aXRlLmhocclVJnNvdXJjZVx0b29sc1x0VW5pdFRlc3RTdWl0ZVJlY3Vyc2VyLmhoccpV
+FnNvdXJjZVx0b29sc1x0VmVjdG9yLmhxy1Uec291cmNlXHRvb2xzXHRWZXJpZmllclN1aXRlLmho
+ccxVJnNvdXJjZVx0b29sc1x0VmVyaWZpZXJTdWl0ZVJlY3Vyc2VyLmhocc1lVQxTb3VyY2UgRmls
+ZXNxzl1xzyhVIHNvdXJjZVxhY3Rpb25zXGNBY3Rpb25MaWJyYXJ5LmNjcdBVH3NvdXJjZVxhY3Rp
+b25zXERyaXZlckFjdGlvbnMuY2Nx0VUkc291cmNlXGFjdGlvbnNcRW52aXJvbm1lbnRBY3Rpb25z
+LmNjcdJVInNvdXJjZVxhY3Rpb25zXExhbmRzY2FwZUFjdGlvbnMuY2Nx01Ujc291cmNlXGFjdGlv
+bnNcUG9wdWxhdGlvbkFjdGlvbnMuY2Nx1FUec291cmNlXGFjdGlvbnNcUHJpbnRBY3Rpb25zLmNj
+cdVVIXNvdXJjZVxhY3Rpb25zXFNhdmVMb2FkQWN0aW9ucy5jY3HWVRpzb3VyY2VcYW5hbHl6ZVxj
+QW5hbHl6ZS5jY3HXVSJzb3VyY2VcYW5hbHl6ZVxjQW5hbHl6ZUdlbm90eXBlLmNjcdhVInNvdXJj
+ZVxhbmFseXplXGNBbmFseXplSm9iUXVldWUuY2Nx2VUjc291cmNlXGFuYWx5emVcY0FuYWx5emVK
+b2JXb3JrZXIuY2Nx2lUpc291cmNlXGFuYWx5emVcY011dGF0aW9uYWxOZWlnaGJvcmhvb2QuY2Nx
+21Uvc291cmNlXGNsYXNzaWZpY2F0aW9uXGNDbGFzc2lmaWNhdGlvbk1hbmFnZXIuY2Nx3FUic291
+cmNlXGNsYXNzaWZpY2F0aW9uXGNHZW5vdHlwZS5jY3HdVSxzb3VyY2VcY2xhc3NpZmljYXRpb25c
+Y0dlbm90eXBlX0JpcnRoRGF0YS5jY3HeVSlzb3VyY2VcY2xhc3NpZmljYXRpb25cY0dlbm90eXBl
+Q29udHJvbC5jY3HfVShzb3VyY2VcY2xhc3NpZmljYXRpb25cY0luamVjdEdlbm90eXBlLmNjceBV
+L3NvdXJjZVxjbGFzc2lmaWNhdGlvblxjSW5qZWN0R2Vub3R5cGVDb250cm9sLmNjceFVLXNvdXJj
+ZVxjbGFzc2lmaWNhdGlvblxjSW5qZWN0R2Vub3R5cGVRdWV1ZS5jY3HiVSFzb3VyY2VcY2xhc3Np
+ZmljYXRpb25cY0xpbmVhZ2UuY2Nx41Uhc291cmNlXGNsYXNzaWZpY2F0aW9uXGNTcGVjaWVzLmNj
+ceRVKHNvdXJjZVxjbGFzc2lmaWNhdGlvblxjU3BlY2llc0NvbnRyb2wuY2Nx5VUmc291cmNlXGNs
+YXNzaWZpY2F0aW9uXGNTcGVjaWVzUXVldWUuY2Nx5lUYc291cmNlXGNwdVxjQ29kZUxhYmVsLmNj
+cedVGHNvdXJjZVxjcHVcY0NQVU1lbW9yeS5jY3HoVRdzb3VyY2VcY3B1XGNDUFVTdGFjay5jY3Hp
+VRpzb3VyY2VcY3B1XGNDUFVUZXN0SW5mby5jY3HqVRtzb3VyY2VcY3B1XGNIYXJkd2FyZUJhc2Uu
+Y2Nx61Uac291cmNlXGNwdVxjSGFyZHdhcmVDUFUuY2Nx7FUjc291cmNlXGNwdVxjSGFyZHdhcmVF
+eHBlcmltZW50YWwuY2Nx7VUZc291cmNlXGNwdVxjSGFyZHdhcmVHWC5jY3HuVR5zb3VyY2VcY3B1
+XGNIYXJkd2FyZU1hbmFnZXIuY2Nx71Uac291cmNlXGNwdVxjSGFyZHdhcmVTTVQuY2Nx8FUkc291
+cmNlXGNwdVxjSGFyZHdhcmVTdGF0dXNQcmludGVyLmNjcfFVH3NvdXJjZVxjcHVcY0hhcmR3YXJl
+VHJhbnNTTVQuY2Nx8lUWc291cmNlXGNwdVxjSGVhZENQVS5jY3HzVRZzb3VyY2VcY3B1XGNJbnN0
+U2V0LmNjcfRVFnNvdXJjZVxjcHVcY1Rlc3RDUFUuY2Nx9VUfc291cmNlXGNwdVxjVGVzdENQVUlu
+dGVyZmFjZS5jY3H2VSdzb3VyY2VcZHJpdmVyc1xjRGVmYXVsdEFuYWx5emVEcml2ZXIuY2Nx91Uj
+c291cmNlXGRyaXZlcnNcY0RlZmF1bHRSdW5Ecml2ZXIuY2Nx+FUgc291cmNlXGRyaXZlcnNcY0Ry
+aXZlck1hbmFnZXIuY2Nx+VUmc291cmNlXGRyaXZlcnNcY0ZhbGxiYWNrV29ybGREcml2ZXIuY2Nx
++lUUc291cmNlXG1haW5cYXZpZGEuY2Nx+1Ubc291cmNlXG1haW5cY0F2aWRhQ29uZmlnLmNjcfxV
+HHNvdXJjZVxtYWluXGNCaXJ0aENoYW1iZXIuY2Nx/VUUc291cmNlXG1haW5cY0RlbWUuY2Nx/lUb
+c291cmNlXG1haW5cY0Vudmlyb25tZW50LmNjcf9VGXNvdXJjZVxtYWluXGNFdmVudExpc3QuY2Ny
+AAEAAFUdc291cmNlXG1haW5cY0ZpdG5lc3NNYXRyaXguY2NyAQEAAFUWc291cmNlXG1haW5cY0dl
+bm9tZS5jY3ICAQAAVRpzb3VyY2VcbWFpblxjR2Vub21lVXRpbC5jY3IDAQAAVRtzb3VyY2VcbWFp
+blxjSW5zdHJ1Y3Rpb24uY2NyBAEAAFUZc291cmNlXG1haW5cY0xhbmRzY2FwZS5jY3IFAQAAVR5z
+b3VyY2VcbWFpblxjTG9jYWxNdXRhdGlvbnMuY2NyBgEAAFUbc291cmNlXG1haW5cY011dGF0aW9u
+TGliLmNjcgcBAABVHXNvdXJjZVxtYWluXGNNdXRhdGlvblJhdGVzLmNjcggBAABVG3NvdXJjZVxt
+YWluXGNNeENvZGVBcnJheS5jY3IJAQAAVRhzb3VyY2VcbWFpblxjT3JnYW5pc20uY2NyCgEAAFUZ
+c291cmNlXG1haW5cY1BoZW5vdHlwZS5jY3ILAQAAVRpzb3VyY2VcbWFpblxjUG9wdWxhdGlvbi5j
+Y3IMAQAAVR5zb3VyY2VcbWFpblxjUG9wdWxhdGlvbkNlbGwuY2NyDQEAAFUjc291cmNlXG1haW5c
+Y1BvcHVsYXRpb25JbnRlcmZhY2UuY2NyDgEAAFUYc291cmNlXG1haW5cY1JlYWN0aW9uLmNjcg8B
+AABVG3NvdXJjZVxtYWluXGNSZWFjdGlvbkxpYi5jY3IQAQAAVR5zb3VyY2VcbWFpblxjUmVhY3Rp
+b25SZXN1bHQuY2NyEQEAAFUYc291cmNlXG1haW5cY1Jlc291cmNlLmNjchIBAABVHXNvdXJjZVxt
+YWluXGNSZXNvdXJjZUNvdW50LmNjchMBAABVG3NvdXJjZVxtYWluXGNSZXNvdXJjZUxpYi5jY3IU
+AQAAVSBzb3VyY2VcbWFpblxjU3BhdGlhbENvdW50RWxlbS5jY3IVAQAAVR9zb3VyY2VcbWFpblxj
+U3BhdGlhbFJlc0NvdW50LmNjchYBAABVFXNvdXJjZVxtYWluXGNTdGF0cy5jY3IXAQAAVRdzb3Vy
+Y2VcbWFpblxjVGFza0xpYi5jY3IYAQAAVRVzb3VyY2VcbWFpblxjV29ybGQuY2NyGQEAAFUhc291
+cmNlXHRhcmdldHNcYXZpZGFccHJpbWl0aXZlLmNjchoBAABVHXNvdXJjZVx0b29sc1xjQXJnQ29u
+dGFpbmVyLmNjchsBAABVGnNvdXJjZVx0b29sc1xjQXJnU2NoZW1hLmNjchwBAABVG3NvdXJjZVx0
+b29sc1xjQ2hhbmdlTGlzdC5jY3IdAQAAVR5zb3VyY2VcdG9vbHNcY0NvbnN0U2NoZWR1bGUuY2Ny
+HgEAAFUbc291cmNlXHRvb2xzXGNDeWNsZUNoZWNrLmNjch8BAABVGnNvdXJjZVx0b29sc1xjRGF0
+YUVudHJ5LmNjciABAABVGXNvdXJjZVx0b29sc1xjRGF0YUZpbGUuY2NyIQEAAFUgc291cmNlXHRv
+b2xzXGNEYXRhRmlsZU1hbmFnZXIuY2NyIgEAAFUhc291cmNlXHRvb2xzXGNEYXRhTWFuYWdlcl9C
+YXNlLmNjciMBAABVJnNvdXJjZVx0b29sc1xjRGVmYXVsdE1lc3NhZ2VEaXNwbGF5LmNjciQBAABV
+GnNvdXJjZVx0b29sc1xjRG91YmxlU3VtLmNjciUBAABVFXNvdXJjZVx0b29sc1xjRmlsZS5jY3Im
+AQAAVRxzb3VyY2VcdG9vbHNcY0ZpeGVkQ29vcmRzLmNjcicBAABVGnNvdXJjZVx0b29sc1xjSGVs
+cEFsaWFzLmNjcigBAABVHHNvdXJjZVx0b29sc1xjSGVscE1hbmFnZXIuY2NyKQEAAFUZc291cmNl
+XHRvb2xzXGNIZWxwVHlwZS5jY3IqAQAAVRpzb3VyY2VcdG9vbHNcY0hpc3RvZ3JhbS5jY3IrAQAA
+VSNzb3VyY2VcdG9vbHNcY0luZGV4ZWRCbG9ja1N0cnVjdC5jY3IsAQAAVRlzb3VyY2VcdG9vbHNc
+Y0luaXRGaWxlLmNjci0BAABVI3NvdXJjZVx0b29sc1xjSW50ZWdyYXRlZFNjaGVkdWxlLmNjci4B
+AABVJ3NvdXJjZVx0b29sc1xjSW50ZWdyYXRlZFNjaGVkdWxlTm9kZS5jY3IvAQAAVRdzb3VyY2Vc
+dG9vbHNcY0ludFN1bS5jY3IwAQAAVRZzb3VyY2VcdG9vbHNcY01lcml0LmNjcjEBAABVH3NvdXJj
+ZVx0b29sc1xjTWVzc2FnZURpc3BsYXkuY2NyMgEAAFUdc291cmNlXHRvb2xzXGNQcm9iU2NoZWR1
+bGUuY2NyMwEAAFUXc291cmNlXHRvb2xzXGNSYW5kb20uY2NyNAEAAFUfc291cmNlXHRvb2xzXGNS
+dW5uaW5nQXZlcmFnZS5jY3I1AQAAVRlzb3VyY2VcdG9vbHNcY1NjaGVkdWxlLmNjcjYBAABVF3Nv
+dXJjZVx0b29sc1xjU3RyaW5nLmNjcjcBAABVH3NvdXJjZVx0b29sc1xjU3RyaW5nSXRlcmF0b3Iu
+Y2NyOAEAAFUbc291cmNlXHRvb2xzXGNTdHJpbmdMaXN0LmNjcjkBAABVG3NvdXJjZVx0b29sc1xj
+U3RyaW5nVXRpbC5jY3I6AQAAVRdzb3VyY2VcdG9vbHNcY1RocmVhZC5jY3I7AQAAVRZzb3VyY2Vc
+dG9vbHNcY1Rvb2xzLmNjcjwBAABVHnNvdXJjZVx0b29sc1xjV2VpZ2h0ZWRJbmRleC5jY3I9AQAA
+ZVUOUmVzb3VyY2UgRmlsZXNyPgEAAF1yPwEAAHUu
+-->

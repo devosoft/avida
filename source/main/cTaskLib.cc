@@ -2238,7 +2238,7 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
 	 // possible fraction they'll be below minimum allowed consumed and will consume nothing
 
 	 if (quality > 1)
-		 cout << "\n\nquality > 1, wtf?!\n\n";
+		 cout << "\n\nquality > 1!\n\n";
 	 if (quality < .001)
 		 return .001;
 	 else

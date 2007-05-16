@@ -1,0 +1,130 @@
+# Thu Mar 22 20:46:24 2007
+# Filename........: archive/103-aacrp.org
+# Update Output...: 20000
+# Is Viable.......: 1
+# Repro Cycle Size: 0
+# Depth to Viable.: 0
+# Update Created..: 10008
+# Genotype ID.....: 854126
+# Parent Gen ID...: 846720
+# Tree Depth......: 229
+# Parent Distance.: 4
+# 
+# Generation: 0
+# Merit...........: 100.000000
+# Gestation Time..: 237
+# Fitness.........: 0.421941
+# Errors..........: 5
+# Genome Size.....: 103
+# Copied Size.....: 103
+# Executed Size...: 100
+# Offspring.......: SELF
+# 
+# Tasks Performed:
+# optimize 1 (0.941115)
+# optimize 1 (0.470749)
+
+
+h-alloc
+h-search
+set-flow
+nop-A
+mov-head
+nop-C
+IO
+sub
+nop-A
+push
+add
+IO
+dec
+nop-B
+if-n-equ
+add
+h-search
+if-label
+get-head
+nop-B
+nop-C
+h-copy
+h-copy
+h-copy
+dec
+swap-stk
+nop-B
+if-less
+h-search
+dec
+nop-B
+inc
+nop-C
+if-less
+swap
+if-n-equ
+h-search
+inc
+nop-C
+add
+h-alloc
+IO
+pop
+nop-A
+sub
+dec
+swap
+dec
+nop-B
+h-copy
+if-less
+h-alloc
+push
+nop-A
+inc
+nop-A
+h-divide
+nand
+inc
+sub
+h-search
+push
+if-less
+swap
+h-copy
+h-divide
+h-copy
+inc
+h-copy
+h-alloc
+nop-C
+push
+if-n-equ
+nop-C
+get-head
+nop-A
+get-head
+sub
+nand
+if-less
+shift-r
+shift-l
+pop
+inc
+pop
+sub
+add
+if-label
+IO
+nop-C
+pop
+swap
+h-search
+h-copy
+h-copy
+h-copy
+if-label
+nop-C
+nop-A
+h-divide
+mov-head
+nop-A
+nop-B
