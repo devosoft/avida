@@ -542,13 +542,9 @@ class cActionToggleRewardInstruction : public cAction
 {
 private:
 public:
-  cActionToggleRewardInstruction(cWorld* world, const cString& args) : cAction(world, args) 
-  {
-    //pass
-    //@JMC: m_killprob (and other code) is a meme that hitchiked when I used gabe's event as an example. need to clean it up. 
-  }
+  cActionToggleRewardInstruction(cWorld* world, const cString& args) : cAction(world, args) {}
   
-  static const cString GetDescription() { return "Arguments: [double probability=0.9]"; }
+  static const cString GetDescription() { return "No Arguments"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -570,19 +566,14 @@ class cActionToggleFitnessValley : public cAction
 {
 private:
 public:
-  cActionToggleFitnessValley(cWorld* world, const cString& args) : cAction(world, args) 
-  {
-    //pass
-    //@JMC: m_killprob (and other code) is a meme that hitchiked when I used gabe's event as an example. need to clean it up. 
-  }
+  cActionToggleFitnessValley(cWorld* world, const cString& args) : cAction(world, args) {}
   
-  static const cString GetDescription() { return "Arguments: [double probability=0.9]"; }
+  static const cString GetDescription() { return "No Arguments"; }
   
   void Process(cAvidaContext& ctx)
   {
     if(m_world->GetConfig().FITNESS_VALLEY.Get()) {m_world->GetConfig().FITNESS_VALLEY.Set(0);}
     else{m_world->GetConfig().FITNESS_VALLEY.Set(1);}
-//    m_world->GetConfig().FITNESS_VALLEY.Set(-1* m_world->GetConfig().FITNESS_VALLEY.Get());
   }
 };
 
