@@ -35,6 +35,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <climits>
+#include <iomanip>
 
 // Various workarounds for Visual Studio shortcomings
 #if AVIDA_PLATFORM(WINDOWS)
@@ -347,7 +348,7 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
 
    // Optimization Tasks
   if (name == "optimize")
-	  Load_Optimize(name, info, envreqs, errors);
+    Load_Optimize(name, info, envreqs, errors);
 
   if (name == "mult")
     Load_Mult(name, info, envreqs, errors);
@@ -371,13 +372,13 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   if (name == "comm_echo")
     NewTask(name, "Echo of Neighbor's Input", &cTaskLib::Task_CommEcho, REQ_NEIGHBOR_INPUT);
   else if (name == "comm_not")
-	  NewTask(name, "Not of Neighbor's Input", &cTaskLib::Task_CommNot, REQ_NEIGHBOR_INPUT);
+    NewTask(name, "Not of Neighbor's Input", &cTaskLib::Task_CommNot, REQ_NEIGHBOR_INPUT);
 
   // Network Tasks
   if (name == "net_send")
-	  NewTask(name, "Successfully Sent Network Message", &cTaskLib::Task_NetSend);
+    NewTask(name, "Successfully Sent Network Message", &cTaskLib::Task_NetSend);
   else if (name == "net_receive")
-	  NewTask(name, "Successfully Received Network Message", &cTaskLib::Task_NetReceive);
+    NewTask(name, "Successfully Received Network Message", &cTaskLib::Task_NetReceive);
   
   
   
@@ -1844,62 +1845,62 @@ void cTaskLib::Load_MatchStr(const cString& name, const cString& argstr, cEnvReq
 
 double cTaskLib::Task_MatchStr(cTaskContext& ctx) const
 {
-	tBuffer<int> temp_buf(ctx.GetOutputBuffer());
-	//	if (temp_buf[0] != 357913941) return 0;
+  tBuffer<int> temp_buf(ctx.GetOutputBuffer());
+  //  if (temp_buf[0] != 357913941) return 0;
 
-	//	temp_buf.Pop(); // pop the signal value off of the buffer
+  //  temp_buf.Pop(); // pop the signal value off of the buffer
 
-	const cString& string_to_match = ctx.GetTaskEntry()->GetArguments().GetString(0);
-	int string_index;
-	int num_matched = 0;
-	int test_output;
+  const cString& string_to_match = ctx.GetTaskEntry()->GetArguments().GetString(0);
+  int string_index;
+  int num_matched = 0;
+  int test_output;
   int max_num_matched = 0;
 
-	if (temp_buf.GetNumStored() > 0) {
-		test_output = temp_buf[0];
-	
-		for (int j = 0; j < string_to_match.GetSize(); j++) {	
-			string_index = string_to_match.GetSize() - j - 1; // start with last char in string
-			int k = 1 << j;
-			if ((string_to_match[string_index] == '0' && !(test_output & k)) ||
+  if (temp_buf.GetNumStored() > 0) {
+    test_output = temp_buf[0];
+  
+    for (int j = 0; j < string_to_match.GetSize(); j++) {  
+      string_index = string_to_match.GetSize() - j - 1; // start with last char in string
+      int k = 1 << j;
+      if ((string_to_match[string_index] == '0' && !(test_output & k)) ||
           (string_to_match[string_index] == '1' && (test_output & k))) num_matched++;
-		}
-		max_num_matched = num_matched;
-	}
+    }
+    max_num_matched = num_matched;
+  }
 
-	bool used_received = false;
-	if (ctx.GetReceivedMessages()) {
-		tBuffer<int> received(*(ctx.GetReceivedMessages()));
-		for (int i = 0; i < received.GetNumStored(); i++) {
-			test_output = received[i];
-			num_matched = 0;
-			
+  bool used_received = false;
+  if (ctx.GetReceivedMessages()) {
+    tBuffer<int> received(*(ctx.GetReceivedMessages()));
+    for (int i = 0; i < received.GetNumStored(); i++) {
+      test_output = received[i];
+      num_matched = 0;
+      
       for (int j = 0; j < string_to_match.GetSize(); j++) {
-				string_index = string_to_match.GetSize() - j - 1; // start with last char in string
-				int k = 1 << j;
-				if ((string_to_match[string_index]=='0' && !(test_output & k)) ||
+        string_index = string_to_match.GetSize() - j - 1; // start with last char in string
+        int k = 1 << j;
+        if ((string_to_match[string_index]=='0' && !(test_output & k)) ||
             (string_to_match[string_index]=='1' && (test_output & k))) num_matched++;
-			}
-			
+      }
+      
       if (num_matched > max_num_matched) {
-				max_num_matched = num_matched;
-				used_received = true;
-			}
-		}
-	}
+        max_num_matched = num_matched;
+        used_received = true;
+      }
+    }
+  }
 
-	double bonus = 0.0;
-	// return value between 0 & 1 representing the percentage of string that was matched
-	double base_bonus = static_cast<double>(max_num_matched) * 2.0 / static_cast<double>(string_to_match.GetSize()) - 1;
-	
-	if (base_bonus > 0.0) {
-		bonus = pow(base_bonus, 2);
-		if (used_received)
+  double bonus = 0.0;
+  // return value between 0 & 1 representing the percentage of string that was matched
+  double base_bonus = static_cast<double>(max_num_matched) * 2.0 / static_cast<double>(string_to_match.GetSize()) - 1;
+  
+  if (base_bonus > 0.0) {
+    bonus = pow(base_bonus, 2);
+    if (used_received)
       m_world->GetStats().AddMarketItemUsed();
-		else
-			m_world->GetStats().AddMarketOwnItemUsed();
-	}
-	return bonus;
+    else
+      m_world->GetStats().AddMarketOwnItemUsed();
+  }
+  return bonus;
 }
 
 
@@ -2116,135 +2117,130 @@ double cTaskLib::Task_FibonacciSequence(cTaskContext& ctx) const
 
 void cTaskLib::Load_Optimize(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
 {
-	cArgSchema schema;
+  cArgSchema schema;
 
-	// Integer Arguments
-	schema.AddEntry("function", 0, cArgSchema::SCHEMA_INT);
-	schema.AddEntry("binary", 1, 0);
-	schema.AddEntry("varlength", 2, 8);
-	// Double Arguments
-	schema.AddEntry("basepow", 0, 2.0);
-	schema.AddEntry("max_Fx", 1, 1.0);
-	schema.AddEntry("min_Fx", 2, 0.0);
+  // Integer Arguments
+  schema.AddEntry("function", 0, cArgSchema::SCHEMA_INT);
+  schema.AddEntry("binary", 1, 0);
+  schema.AddEntry("varlength", 2, 8);
+  // Double Arguments
+  schema.AddEntry("basepow", 0, 2.0);
+  schema.AddEntry("max_Fx", 1, 1.0);
+  schema.AddEntry("min_Fx", 2, 0.0);
 
 
-	cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
-	if (args) 
-	{
-		if (args->GetInt(1))
-		{
-			envreqs.SetMinOutputs(args->GetInt(2)*2);
-		}
-		else 
-		{
-			// once have ability to change args should in each of these cases change the max/min
-			// to the appropriate defaults for this function
-			switch (args->GetInt(0))
-			{
-			case 1:
-				envreqs.SetMinOutputs(1);
-			case 2:
-				envreqs.SetMinOutputs(2);
-			case 3:
-				envreqs.SetMinOutputs(2);
-			};
-		}
+  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
+  if (args) 
+  {
+    if (args->GetInt(1))
+    {
+      envreqs.SetMinOutputs(args->GetInt(2)*2);
+    }
+    else 
+    {
+      // once have ability to change args should in each of these cases change the max/min
+      // to the appropriate defaults for this function
+      switch (args->GetInt(0))
+      {
+      case 1:
+        envreqs.SetMinOutputs(1);
+      case 2:
+        envreqs.SetMinOutputs(2);
+      case 3:
+        envreqs.SetMinOutputs(2);
+      };
+    }
 
-		NewTask(name, "Optimize", &cTaskLib::Task_Optimize, 0, args);
-	}
+    NewTask(name, "Optimize", &cTaskLib::Task_Optimize, 0, args);
+  }
 }
 
 double cTaskLib::Task_Optimize(cTaskContext& ctx) const
 {
-	// if the org hasn't output yet enough numbers, just return without completing any tasks
-	if (ctx.GetOutputBuffer().GetNumStored() < ctx.GetOutputBuffer().GetCapacity()) 
-		return 0;
+  // if the org hasn't output yet enough numbers, just return without completing any tasks
+  if (ctx.GetOutputBuffer().GetNumStored() < ctx.GetOutputBuffer().GetCapacity()) return 0;
 
-	double quality = 0.0;
+  double quality = 0.0;
 
-	// which function are we currently checking?
-	const int function = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  // which function are we currently checking?
+  const int function = ctx.GetTaskEntry()->GetArguments().GetInt(0);
 
-	 // always get x&y, at least for now, turn it into a double between 0 and 1
-	double y, x;
+   // always get x&y, at least for now, turn it into a double between 0 and 1
+  double y, x;
 
-	 const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
-	 if (args.GetInt(1))
-	 {
-		int len = args.GetInt(2);
-		double base_pow = args.GetDouble(0);
-		double tempX = 0, tempY=0, tot=0;
-		for (int i=len-1; i>=0; i--)
-		{
-			tempX += ctx.GetOutputBuffer()[i+len]*pow(base_pow,(len-1)-i);
-			tempY += ctx.GetOutputBuffer()[i]*pow(base_pow,(len-1)-i);
-			tot += pow(base_pow,i);
-		}
-		x = (double)tempX/tot;
-		y = (double)tempY/tot;
-	 }
-	 else
-	 {
-		x = (double)ctx.GetOutputBuffer()[0] / 0xffffffff;
-		y = (double)ctx.GetOutputBuffer()[1] / 0xffffffff;	
-	 }
+  const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
+  if (args.GetInt(1)) {
+    int len = args.GetInt(2);
+    double base_pow = args.GetDouble(0);
+    double tempX = 0, tempY = 0, tot = 0;
+    for (int i = len - 1; i >= 0; i--) {
+      tempX += ctx.GetOutputBuffer()[i + len] * pow(base_pow, (len - 1) - i);
+      tempY += ctx.GetOutputBuffer()[i] * pow(base_pow, (len - 1) - i);
+      tot += pow(base_pow, double(i));
+    }
+    x = tempX / tot;
+    y = tempY / tot;
+  } else {
+    x = double(ctx.GetOutputBuffer()[0]) / 0xffffffff;
+    y = double(ctx.GetOutputBuffer()[1]) / 0xffffffff;
+  }
 
-	 switch(function)
-	 {
-	 case 1:
-		 quality = 1 - x;
-		 break;
+  switch(function) {
+    case 1:
+      quality = 1.0 - x;
+      break;
 
-	 case 2:
-		 quality = 1 - ((1+y)*(1-sqrt(x/(1+y))))/2.0;	// F2
-		 break;
+    case 2:
+      quality = 1.0 - ((1.0 + y) * (1.0 - sqrt(x / (1.0 + y)))) / 2.0;  // F2
+      break;
 
-	 case 3:
-		 quality = 1 - ((1+y)*(1-pow(x/(1+y),2)))/2.0;	// F3
-		 break;
+    case 3:
+      quality = 1.0 - ((1.0 + y) * (1.0 - pow(x / (1.0 + y), 2.0))) / 2.0;  // F3
+      break;
 
-	 case 4:
-		 quality = 1 - (( (1+y)*(1 - sqrt(x/(1+y)) - (x/(1+y))*sin(3.14159*x*10) ) +.76) / 2.76);
-		 break;
+    case 4:
+      quality = 1.0 - (((1.0 + y) * (1.0 - sqrt(x / (1.0 + y)) - (x / (1.0 + y)) * sin(3.14159 * x * 10.0)) + .76) / 2.76);
+      break;
 
-	 case 5:
-	   x = x*-2.0;
-	   quality = 1 - (x*x+y*y)/5.0;
-	   break;
+    case 5:
+      x = x * -2.0;
+      quality = 1 - (x * x + y * y) / 5.0;
+      break;
 
-	 case 6:
-	   x = x*-2.0;
-	   quality = 1 - ((x+2)*(x+2) + y*y)/5.0;
-	   break;
+    case 6:
+      x = x * -2.0;
+      quality = 1 - ((x + 2.0) * (x + 2.0) + y * y) / 5.0;
+      break;
 
-	 case 7:
-	   x = x*4.0;
-	   quality = 1 - (sqrt(x)+y)/3.0;
-	   break;
+    case 7:
+      x = x * 4.0;
+      quality = 1 - (sqrt(x) + y) / 3.0;
+      break;
 
-	 case 8:
-	   x = x*4.0;
-	   quality = 1 - (sqrt(4-x) + y)/3.0;
-	   break;
+    case 8:
+      x = x * 4.0;
+      quality = 1 - (sqrt(4.0 - x) + y) / 3.0;
+      break;
 
-	 default:
-		 quality = .001;
-	 }
+    default:
+      quality = .001;
+  }
+  
+  // because want org to only have 1 shot to use outputs for all functions at once, even if they
+  // output numbers that give a quality of 0 on a function, still want to mark it as completed
+  // so give it a very low quality instead of 0 (if using limited resources they still will get
+  // no reward because set the minimum consumed to max*.001, meaning even if they get the max
+  // possible fraction they'll be below minimum allowed consumed and will consume nothing
 
-	 // because want org to only have 1 shot to use outputs for all functions at once, even if they
-	 // output numbers that give a quality of 0 on a function, still want to mark it as completed
-	 // so give it a very low quality instead of 0 (if using limited resources they still will get
-	 // no reward because set the minimum consumed to max*.001, meaning even if they get the max
-	 // possible fraction they'll be below minimum allowed consumed and will consume nothing
+  if (quality > 1)
+    cout << "\n\nquality > 1!\n\n";
+  
+  if (quality < .001)
+    return .001;
+  else
+    return quality;
 
-	 if (quality > 1)
-		 cout << "\n\nquality > 1!\n\n";
-	 if (quality < .001)
-		 return .001;
-	 else
-		 return quality;
-
-	return 0;
+  return 0;
 }
 
 void cTaskLib::Load_Mult(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)

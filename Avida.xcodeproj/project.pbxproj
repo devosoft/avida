@@ -614,6 +614,7 @@
 		707CE51D0A9E49A50022D19C /* config.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = config.html; sourceTree = "<group>"; };
 		707CE7490AA333060022D19C /* actions.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = actions.html; sourceTree = "<group>"; };
 		707CE7500AA334120022D19C /* analyze.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = analyze.html; sourceTree = "<group>"; };
+		707D71280C00B9B300DD4D49 /* FloatingPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FloatingPoint.h; sourceTree = "<group>"; };
 		708051A70A1F65FE00CBB8B6 /* SaveLoadActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SaveLoadActions.h; sourceTree = "<group>"; };
 		708051A80A1F65FE00CBB8B6 /* SaveLoadActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SaveLoadActions.cc; sourceTree = "<group>"; };
 		708051BA0A1F66B400CBB8B6 /* cActionLibrary.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cActionLibrary.cc; sourceTree = "<group>"; };
@@ -1257,8 +1258,9 @@
 		70DCF4FF09CF81E400924128 /* platform */ = {
 			isa = PBXGroup;
 			children = (
-				703CA3700A5072E600AB4DB4 /* SConscript */,
 				70DCF50009CF823500924128 /* tcmalloc */,
+				703CA3700A5072E600AB4DB4 /* SConscript */,
+				707D71280C00B9B300DD4D49 /* FloatingPoint.h */,
 			);
 			path = platform;
 			sourceTree = "<group>";

@@ -30,10 +30,14 @@
 #include "cDriverManager.h"
 #include "cWorld.h"
 
+#include "FloatingPoint.h"
+
 using namespace std;
 
 int main(int argc, char * argv[])
 {
+  SetupFloatingPointEnvironment();
+  
   // Catch Interrupt making sure to close appropriately
   signal(SIGINT, ExitAvida);
 
