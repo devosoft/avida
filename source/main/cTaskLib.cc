@@ -2181,8 +2181,8 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
     x = tempX / tot;
     y = tempY / tot;
   } else {
-    x = double(ctx.GetOutputBuffer()[0]) / 0xffffffff;
-    y = double(ctx.GetOutputBuffer()[1]) / 0xffffffff;
+    x = abs(double(ctx.GetOutputBuffer()[0]) / 0xffffffff);
+    y = abs(double(ctx.GetOutputBuffer()[1]) / 0xffffffff);
   }
 
   switch(function) {
