@@ -1,0 +1,19 @@
+# Avida resource data
+# Mon May 21 08:20:36 2007
+# First column gives the current update, all further columns give the quantity
+# of the particular resource at that update.
+#  1: Update
+#  2: resOPT1
+#  3: resOPT4
+
+0 3.917505 3.948369 
+10 3.33605 4.45993 
+20 7.15147 9.17182 
+30 3.67512 8.13949 
+40 4.62582 9.80376 
+50 1.07531 3.69987 
+60 1.43009 3.30298 
+70 3.44213 6.03719 
+80 4.53221 8.61038 
+90 6.43574 11.6146 
+100 1.98373 6.06549 
