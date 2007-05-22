@@ -1,0 +1,25 @@
+#filetype genotype_data
+#format id parent_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence
+
+#  1: ID
+#  2: parent ID
+#  3: parent distance
+#  4: number of orgranisms currently alive
+#  5: total number of organisms that ever existed
+#  6: length of genome
+#  7: merit
+#  8: gestation time
+#  9: fitness
+# 10: update born
+# 11: update deactivated
+# 12: depth in phylogentic tree
+# 13: genome of organism
+
+300 295 1 0 1077 41 1.58028e+16 41 3.85434e+14 14 99 3 ababbbbabbbabbbabbaaabbbabaaaaabbbaaaaaac 
+707 411 1 0 1 41 0 0 0 88 89 5 ababbbbabababbbaabaaabbbabaaaaabbbaaaaaac 
+585 336 1 0 26 41 1.25995e+16 41 3.07304e+14 69 87 5 ababbbaabbbabbbabbaabbbbabaaaaabbbaaaaaac 
+340 320 1 0 146 41 1.82083e+16 41 4.44105e+14 23 85 5 ababbababbbabbbabbaaabbbbbaaaaabbbaaaaaac 
+637 584 1 0 1 41 0 0 0 77 78 6 aaabbbbabababbbabbaaabbbabaaaaabbaaaaaaac 
+25 -1 -1 0 1249 41 7.18932e+14 41 1.75349e+13 -1 49 0 abaabbbabbbabbbabbaaabbbabaaaabbbbabaaaac 
+261 25 1 0 168 41 3.15334e+15 41 7.69106e+13 7 42 1 abaabbbabbbabbbabbaaabbbabaaaaabbbabaaaac 
+295 261 1 0 18 41 3.55851e+15 41 8.67929e+13 13 31 2 ababbbbabbbabbbabbaaabbbabaaaaabbbabaaaac 
