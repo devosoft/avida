@@ -197,6 +197,10 @@ tInstLib<cHardwareGX::tMethod>* cHardwareGX::initInstLib(void)
     tInstLibEntry<tMethod>("donate-rnd", &cHardwareGX::Inst_DonateRandom),
     tInstLibEntry<tMethod>("donate-kin", &cHardwareGX::Inst_DonateKin),
     tInstLibEntry<tMethod>("donate-edt", &cHardwareGX::Inst_DonateEditDist),
+    tInstLibEntry<tMethod>("donate-gbg",  &cHardwareGX::Inst_DonateGreenBeardGene),
+    tInstLibEntry<tMethod>("donate-tgb",  &cHardwareGX::Inst_DonateTrueGreenBeard),
+    tInstLibEntry<tMethod>("donate-threshgb",  &cHardwareGX::Inst_DonateThreshGreenBeard),
+    tInstLibEntry<tMethod>("donate-quantagb",  &cHardwareGX::Inst_DonateQuantaThreshGreenBeard),
     tInstLibEntry<tMethod>("donate-NUL", &cHardwareGX::Inst_DonateNULL),
     
     tInstLibEntry<tMethod>("rotate-l", &cHardwareGX::Inst_RotateL),
@@ -2410,14 +2414,14 @@ bool cHardwareGX::DoSense(cAvidaContext& ctx, int conversion_method, double base
 void cHardwareGX::DoDonate(cOrganism* to_org)
 {
   assert(to_org != NULL);
-  
-  const double merit_given = m_world->GetConfig().DONATE_SIZE.Get();
-  const double merit_received =
-    merit_given * m_world->GetConfig().DONATE_MULT.Get();
-  
+
+  const double merit_given = m_world->GetConfig().MERIT_GIVEN.Get();
+  const double merit_received = m_world->GetConfig().MERIT_RECEIVED.Get();
+
   double cur_merit = organism->GetPhenotype().GetMerit().GetDouble();
-  cur_merit -= merit_given; 
-  
+  cur_merit -= merit_given;
+  if(cur_merit < 0) cur_merit=0; 
+
   // Plug the current merit back into this organism and notify the scheduler.
   organism->UpdateMerit(cur_merit);
   
@@ -2429,11 +2433,14 @@ void cHardwareGX::DoDonate(cOrganism* to_org)
 
 bool cHardwareGX::Inst_DonateRandom(cAvidaContext& ctx)
 {
-  organism->GetPhenotype().IncDonates();
+  
   if (organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
     return false;
   }
-  
+
+  organism->GetPhenotype().IncDonates();
+  organism->GetPhenotype().SetIsDonorRand();
+
   // Turn to a random neighbor, get it, and turn back...
   int neighbor_id = ctx.GetRandom().GetInt(organism->GetNeighborhoodSize());
   for (int i = 0; i < neighbor_id; i++) organism->Rotate(1);
@@ -2441,19 +2448,35 @@ bool cHardwareGX::Inst_DonateRandom(cAvidaContext& ctx)
   for (int i = 0; i < neighbor_id; i++) organism->Rotate(-1);
   
   // Donate only if we have found a neighbor.
-  if (neighbor != NULL) DoDonate(neighbor);
-  
+  if (neighbor != NULL) {
+    DoDonate(neighbor);
+    
+    //print out how often random donations go to kin
+    /*
+    static ofstream kinDistanceFile("kinDistance.dat");
+    kinDistanceFile << (genotype->GetPhyloDistance(neighbor->GetGenotype())<=1) << " ";
+    kinDistanceFile << (genotype->GetPhyloDistance(neighbor->GetGenotype())<=2) << " ";
+    kinDistanceFile << (genotype->GetPhyloDistance(neighbor->GetGenotype())<=3) << " ";
+    kinDistanceFile << genotype->GetPhyloDistance(neighbor->GetGenotype());
+    kinDistanceFile << endl; 
+    */
+    neighbor->GetPhenotype().SetIsReceiverRand();
+  }
+
   return true;
 }
 
 
 bool cHardwareGX::Inst_DonateKin(cAvidaContext& ctx)
 {
-  organism->GetPhenotype().IncDonates();
   if (organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
     return false;
   }
   
+  organism->GetPhenotype().IncDonates();
+  organism->GetPhenotype().SetIsDonorKin();
+
+
   // Find the target as the first Kin found in the neighborhood.
   const int num_neighbors = organism->GetNeighborhoodSize();
   
@@ -2485,17 +2508,21 @@ bool cHardwareGX::Inst_DonateKin(cAvidaContext& ctx)
   for (int i = 0; i < neighbor_id; i++) organism->Rotate(-1);
   
   // Donate only if we have found a close enough relative...
-  if (neighbor != NULL)  DoDonate(neighbor);
-  
+  if (neighbor != NULL){
+    DoDonate(neighbor);
+    neighbor->GetPhenotype().SetIsReceiverKin();
+  }
   return true;
 }
 
 bool cHardwareGX::Inst_DonateEditDist(cAvidaContext& ctx)
 {
-  organism->GetPhenotype().IncDonates();
   if (organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
     return false;
   }
+
+  organism->GetPhenotype().IncDonates();
+  organism->GetPhenotype().SetIsDonorEdit();
   
   // Find the target as the first Kin found in the neighborhood.
   const int num_neighbors = organism->GetNeighborhoodSize();
@@ -2531,23 +2558,350 @@ bool cHardwareGX::Inst_DonateEditDist(cAvidaContext& ctx)
   for (int i = 0; i < neighbor_id; i++) organism->Rotate(-1);
   
   // Donate only if we have found a close enough relative...
-  if (neighbor != NULL)  DoDonate(neighbor);
+  if (neighbor != NULL){
+    DoDonate(neighbor);
+    neighbor->GetPhenotype().SetIsReceiverEdit();
+  }
+  return true;
+}
+
+bool cHardwareGX::Inst_DonateGreenBeardGene(cAvidaContext& ctx)
+{
+  //this donates to organisms that have this instruction anywhere
+  //in their genome (see Dawkins 1976, The Selfish Gene, for 
+  //the history of the theory and the name 'green beard'
+  cPhenotype & phenotype = organism->GetPhenotype();
+
+  if (organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
+    return false;
+  }
+
+  phenotype.IncDonates();
+  phenotype.SetIsDonorGbg();
+
+  // Find the target as the first match found in the neighborhood.
+
+  //get the neighborhood size
+  const int num_neighbors = organism->GetNeighborhoodSize();
+
+  // Turn to face a random neighbor
+  int neighbor_id = ctx.GetRandom().GetInt(num_neighbors);
+  for (int i = 0; i < neighbor_id; i++) organism->Rotate(1);
+  cOrganism * neighbor = organism->GetNeighbor();
+
+  int max_id = neighbor_id + num_neighbors;
+ 
+  //we have not found a match yet
+  bool found = false;
+
+  // rotate through orgs in neighborhood  
+  while (neighbor_id < max_id) {
+      neighbor = organism->GetNeighbor();
+
+      //if neighbor exists, do they have the green beard gene?
+      if (neighbor != NULL) {
+          const cGenome & neighbor_genome = neighbor->GetGenome();
+
+          // for each instruction in the genome...
+          for(int i=0;i<neighbor_genome.GetSize();i++){
+
+            // ...see if it is donate-gbg
+            if (neighbor_genome[i] == IP().GetInst()) {
+              found = true;
+              break;
+            }
+	    
+          }
+      }
+      
+      // stop searching through the neighbors if we already found one
+      if (found == true);{
+    	break;
+      }
+  
+      organism->Rotate(1);
+      neighbor_id++;
+  }
+
+    if (found == false) neighbor = NULL;
+
+  // Put the facing back where it was.
+  for (int i = 0; i < neighbor_id; i++) organism->Rotate(-1);
+
+  // Donate only if we have found a close enough relative...
+  if (neighbor != NULL) {
+    DoDonate(neighbor);
+    neighbor->GetPhenotype().SetIsReceiverGbg();
+  }
   
   return true;
+  
+}
+
+bool cHardwareGX::Inst_DonateTrueGreenBeard(cAvidaContext& ctx)
+{
+  //this donates to organisms that have this instruction anywhere
+  //in their genome AND their parents excuted it
+  //(see Dawkins 1976, The Selfish Gene, for 
+  //the history of the theory and the name 'green beard'
+  //  cout << "i am about to donate to a green beard" << endl;
+  cPhenotype & phenotype = organism->GetPhenotype();
+
+  if (organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
+    return false;
+  }
+
+  phenotype.IncDonates();
+  phenotype.SetIsDonorTrueGb();
+
+  // Find the target as the first match found in the neighborhood.
+
+  //get the neighborhood size
+  const int num_neighbors = organism->GetNeighborhoodSize();
+
+  // Turn to face a random neighbor
+  int neighbor_id = ctx.GetRandom().GetInt(num_neighbors);
+  for (int i = 0; i < neighbor_id; i++) organism->Rotate(1);
+  cOrganism * neighbor = organism->GetNeighbor();
+
+  int max_id = neighbor_id + num_neighbors;
+ 
+  //we have not found a match yet
+  bool found = false;
+
+  // rotate through orgs in neighborhood  
+  while (neighbor_id < max_id) {
+      neighbor = organism->GetNeighbor();
+      //if neighbor exists, AND if their parent attempted to donate,
+      if (neighbor != NULL && neighbor->GetPhenotype().IsDonorTrueGbLast()) {
+          const cGenome & neighbor_genome = neighbor->GetGenome();
+
+          // for each instruction in the genome...
+          for(int i=0;i<neighbor_genome.GetSize();i++){
+
+            // ...see if it is donate-tgb, if so, we found a target
+            if (neighbor_genome[i] == IP().GetInst()) {
+              found = true;
+              break;
+            }
+	    
+          }
+      }
+      
+      // stop searching through the neighbors if we already found one
+      if (found == true);{
+    	break;
+      }
+  
+      organism->Rotate(1);
+      neighbor_id++;
+  }
+
+    if (found == false) neighbor = NULL;
+
+  // Put the facing back where it was.
+  for (int i = 0; i < neighbor_id; i++) organism->Rotate(-1);
+
+  // Donate only if we have found a close enough relative...
+  if (neighbor != NULL) {
+    DoDonate(neighbor);
+    neighbor->GetPhenotype().SetIsReceiverTrueGb();
+  }
+
+  
+  return true;
+  
+}
+
+bool cHardwareGX::Inst_DonateThreshGreenBeard(cAvidaContext& ctx)
+{
+  //this donates to organisms that have this instruction anywhere
+  //in their genome AND their parents excuted it >=THRESHOLD number of times
+  //(see Dawkins 1976, The Selfish Gene, for 
+  //the history of the theory and the name 'green beard'
+  //  cout << "i am about to donate to a green beard" << endl;
+  cPhenotype & phenotype = organism->GetPhenotype();
+
+  if (organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
+    return false;
+  }
+
+
+  phenotype.IncDonates();
+  phenotype.SetIsDonorThreshGb();
+  phenotype.IncNumThreshGbDonations();
+
+  // Find the target as the first match found in the neighborhood.
+
+  //get the neighborhood size
+  const int num_neighbors = organism->GetNeighborhoodSize();
+
+  // Turn to face a random neighbor
+  int neighbor_id = ctx.GetRandom().GetInt(num_neighbors);
+  for (int i = 0; i < neighbor_id; i++) organism->Rotate(1);
+  cOrganism * neighbor = organism->GetNeighbor();
+
+  int max_id = neighbor_id + num_neighbors;
+ 
+  //we have not found a match yet
+  bool found = false;
+
+  // rotate through orgs in neighborhood  
+  while (neighbor_id < max_id) {
+      neighbor = organism->GetNeighbor();
+      //if neighbor exists, AND if their parent attempted to donate >= threshhold,
+      if (neighbor != NULL && neighbor->GetPhenotype().GetNumThreshGbDonationsLast()>= m_world->GetConfig().MIN_GB_DONATE_THRESHOLD.Get() ) {
+          const cGenome & neighbor_genome = neighbor->GetGenome();
+
+          // for each instruction in the genome...
+          for(int i=0;i<neighbor_genome.GetSize();i++){
+
+	         // ...see if it is donate-threshgb, if so, we found a target
+            if (neighbor_genome[i] == IP().GetInst()) {
+              found = true;
+              break;
+            }
+	    
+          }
+      }
+      
+      // stop searching through the neighbors if we already found one
+      if (found == true);{
+    	break;
+      }
+  
+      organism->Rotate(1);
+      neighbor_id++;
+  }
+
+    if (found == false) neighbor = NULL;
+
+  // Put the facing back where it was.
+  for (int i = 0; i < neighbor_id; i++) organism->Rotate(-1);
+
+  // Donate only if we have found a close enough relative...
+  if (neighbor != NULL) {
+    DoDonate(neighbor);
+    neighbor->GetPhenotype().SetIsReceiverThreshGb();
+    // cout << "************ neighbor->GetPhenotype().GetNumThreshGbDonationsLast() is " << neighbor->GetPhenotype().GetNumThreshGbDonationsLast() << endl;
+    
+  }
+
+  return true;
+  
+}
+
+
+bool cHardwareGX::Inst_DonateQuantaThreshGreenBeard(cAvidaContext& ctx)
+{
+  // this donates to organisms that have this instruction anywhere
+  // in their genome AND their parents excuted it more than a
+  // THRESHOLD number of times where that threshold depend on the
+  // number of times the individual's parents attempted to donate
+  // using this instruction.  The threshold levels are multiples of
+  // the quanta value set in genesis, and the highest level that
+  // the donor qualifies for is the one used.
+
+  // (see Dawkins 1976, The Selfish Gene, for 
+  // the history of the theory and the name 'green beard'
+  //  cout << "i am about to donate to a green beard" << endl;
+  cPhenotype & phenotype = organism->GetPhenotype();
+
+  if (phenotype.GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
+    return false;
+  }
+
+  phenotype.IncDonates();
+  phenotype.SetIsDonorQuantaThreshGb();
+  phenotype.IncNumQuantaThreshGbDonations();
+  //cout << endl << "quanta_threshgb attempt.. " ;
+
+
+  // Find the target as the first match found in the neighborhood.
+
+  //get the neighborhood size
+  const int num_neighbors = organism->GetNeighborhoodSize();
+
+  // Turn to face a random neighbor
+  int neighbor_id = ctx.GetRandom().GetInt(num_neighbors);
+  for (int i = 0; i < neighbor_id; i++) organism->Rotate(1);
+  cOrganism * neighbor = organism->GetNeighbor();
+
+  int max_id = neighbor_id + num_neighbors;
+ 
+  //we have not found a match yet
+  bool found = false;
+
+  // Get the quanta (step size) between threshold levels.
+  const int donate_quanta = m_world->GetConfig().DONATE_THRESH_QUANTA.Get();
+  
+  // Calculate what quanta level we should be at for this individual.  We do a
+  // math trick to make sure its the next lowest event multiple of donate_quanta.
+  const int quanta_donate_thresh =
+    (phenotype.GetNumQuantaThreshGbDonationsLast() / donate_quanta) * donate_quanta;
+  //cout << " phenotype.GetNumQuantaThreshGbDonationsLast() is " << phenotype.GetNumQuantaThreshGbDonationsLast();
+  //cout << " quanta thresh=  " << quanta_donate_thresh;
+  // rotate through orgs in neighborhood  
+  while (neighbor_id < max_id) {
+      neighbor = organism->GetNeighbor();
+      //if neighbor exists, AND if their parent attempted to donate >= threshhold,
+      if (neighbor != NULL &&
+	  neighbor->GetPhenotype().GetNumQuantaThreshGbDonationsLast() >= quanta_donate_thresh) {
+
+          const cGenome & neighbor_genome = neighbor->GetGenome();
+
+          // for each instruction in the genome...
+          for(int i=0;i<neighbor_genome.GetSize();i++){
+
+	         // ...see if it is donate-quantagb, if so, we found a target
+            if (neighbor_genome[i] == IP().GetInst()) {
+              found = true;
+              break;
+            }
+	    
+          }
+      }
+      
+      // stop searching through the neighbors if we already found one
+      if (found == true);{
+    	break;
+      }
+  
+      organism->Rotate(1);
+      neighbor_id++;
+  }
+
+    if (found == false) neighbor = NULL;
+
+  // Put the facing back where it was.
+  for (int i = 0; i < neighbor_id; i++) organism->Rotate(-1);
+
+  // Donate only if we have found a close enough relative...
+  if (neighbor != NULL) {
+    DoDonate(neighbor);
+    neighbor->GetPhenotype().SetIsReceiverQuantaThreshGb();
+    //cout << " ************ neighbor->GetPhenotype().GetNumQuantaThreshGbDonationsLast() is " << neighbor->GetPhenotype().GetNumQuantaThreshGbDonationsLast();
+    
+  }
+
+  return true;
+  
 }
 
 
 bool cHardwareGX::Inst_DonateNULL(cAvidaContext& ctx)
 {
-  organism->GetPhenotype().IncDonates();
   if (organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
     return false;
   }
+
+  organism->GetPhenotype().IncDonates();
+  organism->GetPhenotype().SetIsDonorNull();
   
   // This is a fake donate command that causes the organism to lose merit,
   // but no one else to gain any.
   
-  const double merit_given = m_world->GetConfig().DONATE_SIZE.Get();
+  const double merit_given = m_world->GetConfig().MERIT_GIVEN.Get();
   double cur_merit = organism->GetPhenotype().GetMerit().GetDouble();
   cur_merit -= merit_given;
   

@@ -431,6 +431,10 @@ private:
   bool Inst_DonateRandom(cAvidaContext& ctx);
   bool Inst_DonateKin(cAvidaContext& ctx);
   bool Inst_DonateEditDist(cAvidaContext& ctx);
+  bool Inst_DonateGreenBeardGene(cAvidaContext& ctx);
+  bool Inst_DonateTrueGreenBeard(cAvidaContext& ctx);
+  bool Inst_DonateThreshGreenBeard(cAvidaContext& ctx);
+  bool Inst_DonateQuantaThreshGreenBeard(cAvidaContext& ctx);
   bool Inst_DonateNULL(cAvidaContext& ctx);
 
   bool Inst_SearchF(cAvidaContext& ctx);

@@ -168,6 +168,10 @@ public:
   void SpawnDeme(int deme1_id, int deme2_id=-1);
   void PrintDemeStats();
 
+  // Print donation stats
+  void PrintDonationStats();
+
+
   // Process a single organism one instruction...
   int ScheduleOrganism();          // Determine next organism to be processed.
   void ProcessStep(cAvidaContext& ctx, double step_size, int cell_id);

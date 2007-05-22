@@ -153,9 +153,42 @@ private:
   bool to_delete;        // Should this organism be deleted when finished?
   bool is_injected;      // Was this organism injected into the population?
   bool is_parasite;      // Has this organism ever executed outside code?
-  bool is_donor_cur;     // Has this organism ever donated merit?  
-  bool is_donor_last;    // Did this organism's parent ever donate merit? 
+  bool is_donor_cur;     // Has this organism attempted to donate merit?  
+  bool is_donor_last;    // Did this organism's parent attempt to donate merit? 
+  bool is_donor_rand;    // Has this organism attempted a random donation?
+  bool is_donor_rand_last; // Did this org's parent attempt to donate randomly
+  bool is_donor_null;    // Has this organism attempted a null donation?
+  bool is_donor_null_last;// Did this org's parent attempt a null donation?
+  bool is_donor_kin;     // Has this organism kin_donated?
+  bool is_donor_kin_last;// Did this org's parent kin_donate?
+  bool is_donor_edit;    // Has this organism edit_donated?
+  bool is_donor_edit_last; // Did this org's parent edit_donate?
+  bool is_donor_gbg;     //  Has this organism gbg_donated (green beard gene)?
+  bool is_donor_gbg_last;// Did this org's parent gbg_donate?
+  bool is_donor_truegb;  // Has this organism truegb_donated (true green beard)? 
+  bool is_donor_truegb_last;// Did this org's parent truegb_donate? 
+  bool is_donor_threshgb;  // Has this organism threshgb_donated (true green beard)? 
+  bool is_donor_threshgb_last;// Did this org's parent threshgbg_donate? 
+  bool is_donor_quanta_threshgb;  // Has this organism quanta_threshgb_donated (true green beard)? 
+  bool is_donor_quanta_threshgb_last;// Did this org's parent quanta_threshgbg_donate? 
+  int num_thresh_gb_donations;  // Num times this organism threshgb_donated (thresh green beard)? 
+  int num_thresh_gb_donations_last; // Num times this org's parent thresh_donated? 
+  int num_quanta_thresh_gb_donations;  // Num times this organism threshgb_donated (thresh green beard)? 
+  int num_quanta_thresh_gb_donations_last; // Num times this org's parent thresh_donated? 
   bool is_receiver;      // Has this organism ever received merit donation?
+  bool is_receiver_last;      // Did this organism's parent receive a merit donation?
+  bool is_receiver_rand; // Has this organism ever received random merit donation?
+  bool is_receiver_kin;  // Has this organism ever received kin merit donation?
+  bool is_receiver_kin_last;  // Did this organism's parent receive a kin merit donation?
+  bool is_receiver_edit; // Has this organism ever received edit donation?
+  bool is_receiver_edit_last; // Did this organism's parent receive an edit donation?
+  bool is_receiver_gbg;  // Has this organism ever received gbg donation?
+  bool is_receiver_truegb;// Has this organism ever received truegb donation?
+  bool is_receiver_truegb_last;// Did this organism's parent receive a truegb donation?
+  bool is_receiver_threshgb;// Has this organism ever received a threshgb donation?
+  bool is_receiver_threshgb_last;// Did this organism's parent receive a threshgb donation?
+  bool is_receiver_quanta_threshgb;// Has this organism ever received a quanta_threshgb donation?
+  bool is_receiver_quanta_threshgb_last;// Did this organism's parent receive a quanta_threshgb donation?
   bool is_modifier;      // Has this organism modified another?
   bool is_modified;      // Has this organism been modified by another?
   bool is_fertile;       // Do we allow this organisms to produce offspring?
@@ -264,7 +297,7 @@ public:
   int GetLastNumDonates() const { assert(initialized == true); return last_num_donates; }
   const tArray<int>& GetLastTaskCount() const { assert(initialized == true); return last_task_count; }
   const tArray<double>& GetLastTaskQuality() const { assert(initialized == true); return last_task_quality; }
-  const tArray<double>& GetLastTaskValue() const { assert(intialized == true); return last_task_value; }
+  const tArray<double>& GetLastTaskValue() const { assert(initialized == true); return last_task_value; }
   const tArray<int>& GetLastReactionCount() const { assert(initialized == true); return last_reaction_count; }
   const tArray<double>& GetLastReactionAddReward() const { assert(initialized == true); return last_reaction_add_reward; }
   const tArray<int>& GetLastInstCount() const { assert(initialized == true); return last_inst_count; }
@@ -279,12 +312,44 @@ public:
   const cString& GetFault() const { assert(initialized == true); return fault_desc; }
   double GetNeutralMetric() const { assert(initialized == true); return neutral_metric; }
   double GetLifeFitness() const { assert(initialized == true); return life_fitness; }
+  int  GetNumThreshGbDonations() const { assert(initialized == true); return num_thresh_gb_donations; }
+  int  GetNumThreshGbDonationsLast() const { assert(initialized == true); return num_thresh_gb_donations_last; }
+  int  GetNumQuantaThreshGbDonations() const { assert(initialized == true); return num_quanta_thresh_gb_donations; }
+  int  GetNumQuantaThreshGbDonationsLast() const { assert(initialized == true); return num_quanta_thresh_gb_donations_last; }
+
 
   bool IsInjected() const { assert(initialized == true); return is_injected; }
   bool IsParasite() const { assert(initialized == true); return is_parasite; }
   bool IsDonorCur() const { assert(initialized == true); return is_donor_cur; }
   bool IsDonorLast() const { assert(initialized == true); return is_donor_last; }
+  bool IsDonorRand() const { assert(initialized == true); return is_donor_rand; }
+  bool IsDonorRandLast() const { assert(initialized == true); return is_donor_rand_last; }
+  bool IsDonorKin() const { assert(initialized == true); return is_donor_kin; }
+  bool IsDonorKinLast() const { assert(initialized == true); return is_donor_kin_last; }
+  bool IsDonorEdit() const { assert(initialized == true); return is_donor_edit; }
+  bool IsDonorEditLast() const { assert(initialized == true); return is_donor_edit_last; }
+  bool IsDonorGbg() const { assert(initialized == true); return is_donor_gbg; }
+  bool IsDonorGbgLast() const { assert(initialized == true); return is_donor_gbg_last; }
+  bool IsDonorTrueGb() const { assert(initialized == true); return is_donor_truegb; }
+  bool IsDonorTrueGbLast() const { assert(initialized == true); return is_donor_truegb_last; }
+  bool IsDonorThreshGb() const { assert(initialized == true); return is_donor_threshgb; }
+  bool IsDonorThreshGbLast() const { assert(initialized == true); return is_donor_threshgb_last; }
+  bool IsDonorQuantaThreshGb() const { assert(initialized == true); return is_donor_quanta_threshgb; }
+  bool IsDonorQuantaThreshGbLast() const { assert(initialized == true); return is_donor_quanta_threshgb_last; }
   bool IsReceiver() const { assert(initialized == true); return is_receiver; }
+  bool IsReceiverLast() const { assert(initialized == true); return is_receiver_last; }
+  bool IsReceiverRand() const { assert(initialized == true); return is_receiver_rand; }
+  bool IsReceiverKin() const { assert(initialized == true); return is_receiver_kin; }
+  bool IsReceiverKinLast() const { assert(initialized == true); return is_receiver_kin_last; }
+  bool IsReceiverEdit() const { assert(initialized == true); return is_receiver_edit; }
+  bool IsReceiverEditLast() const { assert(initialized == true); return is_receiver_edit_last; }
+  bool IsReceiverGbg() const { assert(initialized == true); return is_receiver_gbg; }
+  bool IsReceiverTrueGb() const { assert(initialized == true); return is_receiver_truegb; }
+  bool IsReceiverTrueGbLast() const { assert(initialized == true); return is_receiver_truegb_last; }
+  bool IsReceiverThreshGb() const { assert(initialized == true); return is_receiver_threshgb; }
+  bool IsReceiverThreshGbLast() const { assert(initialized == true); return is_receiver_threshgb_last; }
+  bool IsReceiverQuantaThreshGb() const { assert(initialized == true); return is_receiver_quanta_threshgb; }
+  bool IsReceiverQuantaThreshGbLast() const { assert(initialized == true); return is_receiver_quanta_threshgb_last; }
   bool IsModifier() const { assert(initialized == true); return is_modifier; }
   bool IsModified() const { assert(initialized == true); return is_modified; }
   bool IsFertile() const  { assert(initialized == true); return is_fertile; }
@@ -319,7 +384,22 @@ public:
   void SetToDelete() { to_delete = true; }
 
   void SetIsDonorCur() { is_donor_cur = true; } 
+  void SetIsDonorRand() { SetIsDonorCur(); is_donor_rand = true; }
+  void SetIsDonorKin() { SetIsDonorCur(); is_donor_kin = true; }
+  void SetIsDonorNull() { SetIsDonorCur(); is_donor_null = true; }
+  void SetIsDonorEdit() { SetIsDonorCur(); is_donor_edit = true; }
+  void SetIsDonorGbg() { SetIsDonorCur(); is_donor_gbg = true; }
+  void SetIsDonorTrueGb() { SetIsDonorCur(); is_donor_truegb = true; }
+  void SetIsDonorThreshGb() { SetIsDonorCur(); is_donor_threshgb = true; }
+  void SetIsDonorQuantaThreshGb() { SetIsDonorCur(); is_donor_quanta_threshgb = true; }
   void SetIsReceiver() { is_receiver = true; } 
+  void SetIsReceiverRand() { SetIsReceiver(); is_receiver_rand = true; } 
+  void SetIsReceiverKin() { SetIsReceiver(); is_receiver_kin = true; } 
+  void SetIsReceiverEdit() { SetIsReceiver(); is_receiver_edit = true; } 
+  void SetIsReceiverGbg() { SetIsReceiver(); is_receiver_gbg = true; } 
+  void SetIsReceiverTrueGb() { SetIsReceiver(); is_receiver_truegb = true; } 
+  void SetIsReceiverThreshGb() { SetIsReceiver(); is_receiver_threshgb = true; } 
+  void SetIsReceiverQuantaThreshGb() { SetIsReceiver(); is_receiver_quanta_threshgb = true; } 
   
   void SetCurBonus(double _bonus) { cur_bonus = _bonus; }
   void SetCurBonusInstCount(int _num_bonus_inst) {bonus_instruction_count = _num_bonus_inst;}
@@ -332,7 +412,10 @@ public:
   void DecayAllPromoterRegulation();
   void RegulatePromoter(const int i, const bool up );
   void SetTerminated(bool _in) { promoter_last_inst_terminated = _in; }
-  
+
+  void IncNumThreshGbDonations() { assert(initialized == true); num_thresh_gb_donations++; }
+  void IncNumQuantaThreshGbDonations() { assert(initialized == true); num_quanta_thresh_gb_donations++; }
+
   void IncAge()      { assert(initialized == true); age++; }
   void IncCPUCyclesUsed() { assert(initialized == true); cpu_cycles_used++; }
   void IncTimeUsed(int i=1) { assert(initialized == true); time_used+=i; }
