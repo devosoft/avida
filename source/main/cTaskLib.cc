@@ -2125,8 +2125,8 @@ void cTaskLib::Load_Optimize(const cString& name, const cString& argstr, cEnvReq
   schema.AddEntry("varlength", 2, 8);
   // Double Arguments
   schema.AddEntry("basepow", 0, 2.0);
-  schema.AddEntry("max_Fx", 1, 1.0);
-  schema.AddEntry("min_Fx", 2, 0.0);
+  schema.AddEntry("maxFx", 1, 1.0);
+  schema.AddEntry("minFx", 2, 0.0);
 
 
   cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
@@ -2166,7 +2166,7 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
   const int function = ctx.GetTaskEntry()->GetArguments().GetInt(0);
 
    // always get x&y, at least for now, turn it into a double between 0 and 1
-  double y, x;
+  double y, x, Fx;
 
   const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
   if (args.GetInt(1)) {
@@ -2187,44 +2187,46 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
 
   switch(function) {
     case 1:
-      quality = 1.0 - x;
+	  Fx = x;		// F1
       break;
 
     case 2:
-      quality = 1.0 - ((1.0 + y) * (1.0 - sqrt(x / (1.0 + y)))) / 2.0;  // F2
+      Fx = (1.0 + y) * (1.0 - sqrt(x / (1.0 + y)));   // F2
       break;
 
     case 3:
-      quality = 1.0 - ((1.0 + y) * (1.0 - pow(x / (1.0 + y), 2.0))) / 2.0;  // F3
+      Fx = (1.0 + y) * (1.0 - pow(x / (1.0 + y), 2.0));  // F3
       break;
 
     case 4:
-      quality = 1.0 - (((1.0 + y) * (1.0 - sqrt(x / (1.0 + y)) - (x / (1.0 + y)) * sin(3.14159 * x * 10.0)) + .76) / 2.76);
-      break;
+      Fx = (1.0 + y) * (1.0 - sqrt(x / (1.0 + y)) - (x / (1.0 + y)) * sin(3.14159 * x * 10.0));
+	  break;
 
     case 5:
       x = x * -2.0;
-      quality = 1 - (x * x + y * y) / 5.0;
+      Fx = x*x + y*y;
       break;
 
     case 6:
       x = x * -2.0;
-      quality = 1 - ((x + 2.0) * (x + 2.0) + y * y) / 5.0;
+      Fx = (x + 2.0)*(x + 2.0) + y*y;
       break;
 
     case 7:
       x = x * 4.0;
-      quality = 1 - (sqrt(x) + y) / 3.0;
+      Fx = sqrt(x) + y;
       break;
 
     case 8:
       x = x * 4.0;
-      quality = 1 - (sqrt(4.0 - x) + y) / 3.0;
+      Fx = sqrt(4.0 - x) + y;
       break;
 
     default:
       quality = .001;
   }
+  ctx.SetTaskValue(Fx);
+  quality = (args.GetDouble(1) - Fx + .001) / (args.GetDouble(1) - args.GetDouble(2) + .001);
   
   // because want org to only have 1 shot to use outputs for all functions at once, even if they
   // output numbers that give a quality of 0 on a function, still want to mark it as completed

@@ -55,7 +55,11 @@ private:
   tBuffer<int>* m_received_messages;
   int m_logic_id;
   bool m_on_divide;
-  
+
+  // for optimize tasks actual value of function org is outputting, for all others nothing
+  // implemented for now...
+  double m_task_value;	
+
   cTaskEntry* m_task_entry;
   tHashTable<void*, cTaskState*>* m_task_states;
 
@@ -77,6 +81,7 @@ public:
     , m_task_entry(NULL)
     , m_task_states(NULL)
   {
+	  m_task_value = 0;
   }
   
   inline int GetInputAt(int index) { return m_interface->GetInputAt(index); }
@@ -90,6 +95,8 @@ public:
   inline int GetLogicId() const { return m_logic_id; }
   inline void SetLogicId(int v) { m_logic_id = v; }
   inline bool GetOnDivide() const { return m_on_divide; }
+  inline void SetTaskValue(double v) { m_task_value = v; }
+  inline double GetTaskValue() { return m_task_value; }
   
   inline void SetTaskEntry(cTaskEntry* in_entry) { m_task_entry = in_entry; }
   inline cTaskEntry* GetTaskEntry() { return m_task_entry; }

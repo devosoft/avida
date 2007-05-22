@@ -107,6 +107,7 @@ private:
   tArray<int> cur_task_count;                 // Total times each task was performed
   tArray<int> eff_task_count;                 // Total times each task was performed (resetable during the life of the organism)
   tArray<double> cur_task_quality;            // Average (total?) quality with which each task was performed
+  tArray<double> cur_task_value;			  // Value with which this phenotype performs task
   tArray<int> cur_reaction_count;             // Total times each reaction was triggered.  
   tArray<double> cur_reaction_add_reward;     // Bonus change from triggering each reaction.
   tArray<int> cur_inst_count;                 // Instruction exection counter
@@ -129,6 +130,7 @@ private:
   int last_num_donates;
   tArray<int> last_task_count;
   tArray<double> last_task_quality;
+  tArray<double> last_task_value;
   tArray<int> last_reaction_count;
   tArray<double> last_reaction_add_reward; 
   tArray<int> last_inst_count;	  // Instruction exection counter
@@ -246,6 +248,7 @@ public:
   const tArray<int>& GetCurTaskCount() const { assert(initialized == true); return cur_task_count; }
   void ClearEffTaskCount() { assert(initialized == true); eff_task_count.SetAll(0); }
   const tArray<double> & GetCurTaskQuality() const { assert(initialized == true); return cur_task_quality; }
+  const tArray<double> & GetCurTaskValue() const { assert(initialized == true); return cur_task_value; }
   const tArray<int>& GetCurReactionCount() const { assert(initialized == true); return cur_reaction_count;}
   const tArray<int>& GetCurInstCount() const { assert(initialized == true); return cur_inst_count; }
   const tArray<int>& GetCurSenseCount() const { assert(initialized == true); return cur_sense_count; }
@@ -261,6 +264,7 @@ public:
   int GetLastNumDonates() const { assert(initialized == true); return last_num_donates; }
   const tArray<int>& GetLastTaskCount() const { assert(initialized == true); return last_task_count; }
   const tArray<double>& GetLastTaskQuality() const { assert(initialized == true); return last_task_quality; }
+  const tArray<double>& GetLastTaskValue() const { assert(intialized == true); return last_task_value; }
   const tArray<int>& GetLastReactionCount() const { assert(initialized == true); return last_reaction_count; }
   const tArray<double>& GetLastReactionAddReward() const { assert(initialized == true); return last_reaction_add_reward; }
   const tArray<int>& GetLastInstCount() const { assert(initialized == true); return last_inst_count; }

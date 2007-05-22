@@ -37,6 +37,7 @@ private:
   tArray<double> resources_detected;  //Initialize to -1.0
   tArray<bool> tasks_done;
   tArray<double> tasks_quality;
+  tArray<double> tasks_value;
   tArray<bool> reactions_triggered;
   tArray<double> reaction_add_bonus; 
   double bonus_add;
@@ -61,7 +62,7 @@ public:
   void Produce(int id, double num);
   void Detect(int id, double num);
   void Lethal(bool flag);
-  void MarkTask(int id, const double quality=1);
+  void MarkTask(int id, const double quality=1, const double value=0);
 
   void MarkReaction(int id);
   void AddBonus(double value, int id);
@@ -76,6 +77,7 @@ public:
   bool ReactionTriggered(int id);
   bool TaskDone(int id);
   double TaskQuality(int id);
+  double TaskValue(int id);
   double GetAddBonus() { return bonus_add; }
   double GetReactionAddBonus(const int i) { return reaction_add_bonus[i]; }
   double GetMultBonus() { return bonus_mult; }

@@ -34,6 +34,7 @@
 #include "cPopulationCell.h"
 #include "cStats.h"
 #include "cWorld.h"
+#include "cOrganism.h"
 
 
 /*
@@ -1430,7 +1431,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
-      m_world->GetPopulation().GetCell(i).GetOrganism();
+      (m_world->GetPopulation().GetCell(i).GetOrganism())->GetPhenotype();
     }
   }
 };

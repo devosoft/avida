@@ -34,6 +34,7 @@ cReactionResult::cReactionResult(const int num_resources,
   , resources_detected(num_resources)
   , tasks_done(num_tasks)
   , tasks_quality(num_tasks)
+  , tasks_value(num_tasks)
   , reactions_triggered(num_reactions)
   , reaction_add_bonus(num_reactions)
   , bonus_add(0.0)
@@ -55,6 +56,7 @@ void cReactionResult::ActivateReaction()
   resources_detected.SetAll(-1.0);
   tasks_done.SetAll(false);
   tasks_quality.SetAll(0.0);
+  tasks_value.SetAll(0.0);
   reactions_triggered.SetAll(false);
   reaction_add_bonus.SetAll(0.0);
 
@@ -89,11 +91,12 @@ void cReactionResult::Lethal(bool flag)
  lethal = flag;
 }
 
-void cReactionResult::MarkTask(int id, const double quality)
+void cReactionResult::MarkTask(int id, const double quality, const double value)
 {
   ActivateReaction();
   tasks_done[id] = true;
   tasks_quality[id] = quality;
+  tasks_value[id] = value;
 }
 
 
@@ -164,5 +167,11 @@ double cReactionResult::TaskQuality(int id)
 {
 	if (GetActive() == false) return 0;
 	return tasks_quality[id];
+}
+
+double cReactionResult::TaskValue(int id)
+{
+	if (GetActive() == false) return 0;
+	return tasks_value[id];
 }
 

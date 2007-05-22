@@ -825,12 +825,13 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
     }
 
     const double task_quality = m_tasklib.TestOutput(taskctx);
+	
 
     // If this task wasn't performed, move on to the next one.
     if (task_quality == 0.0) continue;
     
     // Mark this task as performed...
-    result.MarkTask(task_id, task_quality);
+    result.MarkTask(task_id, task_quality, taskctx.GetTaskValue());
 
     // And lets process it!
     DoProcesses(ctx, cur_reaction->GetProcesses(), resource_count, task_quality, task_cnt, i, result);

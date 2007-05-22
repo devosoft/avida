@@ -44,6 +44,7 @@ cPhenotype::cPhenotype(cWorld* world)
   , cur_task_count(m_world->GetEnvironment().GetNumTasks())
   , eff_task_count(m_world->GetEnvironment().GetNumTasks())
   , cur_task_quality(m_world->GetEnvironment().GetNumTasks())  
+  , cur_task_value(m_world->GetEnvironment().GetNumTasks())  
   , cur_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
   , cur_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())
   , cur_inst_count(world->GetHardwareManager().GetInstSet().GetSize())
@@ -52,6 +53,7 @@ cPhenotype::cPhenotype(cWorld* world)
   , last_task_count(m_world->GetEnvironment().GetNumTasks())
   , last_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())  
   , last_task_quality(m_world->GetEnvironment().GetNumTasks())
+  , last_task_value(m_world->GetEnvironment().GetNumTasks())
   , last_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
   , last_inst_count(world->GetHardwareManager().GetInstSet().GetSize())
   , last_sense_count(m_world->GetStats().GetSenseSize())
@@ -132,6 +134,7 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
   cur_task_count.SetAll(0);
   eff_task_count.SetAll(0);
   cur_task_quality.SetAll(0);
+  cur_task_value.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
@@ -147,6 +150,7 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
   last_num_donates          = parent_phenotype.last_num_donates;
   last_task_count           = parent_phenotype.last_task_count;
   last_task_quality         = parent_phenotype.last_task_quality;
+  last_task_value			= parent_phenotype.last_task_value;
   last_reaction_count       = parent_phenotype.last_reaction_count;
   last_reaction_add_reward  = parent_phenotype.last_reaction_add_reward;
   last_inst_count           = parent_phenotype.last_inst_count;
@@ -222,6 +226,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   cur_task_count.SetAll(0);
   eff_task_count.SetAll(0);
   cur_task_quality.SetAll(0);
+  cur_task_value.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
@@ -236,6 +241,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   last_num_donates = 0;
   last_task_count.SetAll(0);
   last_task_quality.SetAll(0);
+  last_task_value.SetAll(0);
   last_reaction_count.SetAll(0);
   last_reaction_add_reward.SetAll(0);
   last_sense_count.SetAll(0);
@@ -316,6 +322,7 @@ void cPhenotype::DivideReset(const cGenome & _genome)
   last_num_donates          = cur_num_donates;
   last_task_count           = cur_task_count;
   last_task_quality         = cur_task_quality;
+  last_task_value			= cur_task_value;
   last_reaction_count       = cur_reaction_count;
   last_reaction_add_reward  = cur_reaction_add_reward;
   last_inst_count           = cur_inst_count;
@@ -328,6 +335,7 @@ void cPhenotype::DivideReset(const cGenome & _genome)
   cur_task_count.SetAll(0);
   eff_task_count.SetAll(0);
   cur_task_quality.SetAll(0);
+  cur_task_value.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
@@ -416,6 +424,7 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   last_num_donates          = cur_num_donates;
   last_task_count           = cur_task_count;
   last_task_quality         = cur_task_quality;
+  last_task_value			= cur_task_value;
   last_reaction_count       = cur_reaction_count;
   last_reaction_add_reward  = cur_reaction_add_reward;
   last_inst_count           = cur_inst_count;
@@ -428,6 +437,7 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   cur_task_count.SetAll(0);
   eff_task_count.SetAll(0);
   cur_task_quality.SetAll(0);
+  cur_task_value.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
@@ -610,6 +620,7 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
       eff_task_count[i]++;
     }
     if (result.TaskQuality(i) > 0) cur_task_quality[i]+= result.TaskQuality(i);
+	cur_task_value[i] = result.TaskValue(i);
   }
   for (int i = 0; i < num_reactions; i++) {
     if (result.ReactionTriggered(i) == true) cur_reaction_count[i]++;
