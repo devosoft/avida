@@ -2226,7 +2226,7 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
       quality = .001;
   }
   ctx.SetTaskValue(Fx);
-  quality = (args.GetDouble(1) - Fx + .001) / (args.GetDouble(1) - args.GetDouble(2) + .001);
+  quality = (args.GetDouble(1) - Fx+.001) / (args.GetDouble(1) - args.GetDouble(2)+.001);
   
   // because want org to only have 1 shot to use outputs for all functions at once, even if they
   // output numbers that give a quality of 0 on a function, still want to mark it as completed
