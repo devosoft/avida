@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
@@ -39,7 +39,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)source\tools&quot;;&quot;$(ProjectDir)source\targets\avida-viewer&quot;;&quot;$(ProjectDir)source\platform\msvc2005&quot;;&quot;$(ProjectDir)source\platform\msvc2005\pdcurses&quot;;&quot;$(ProjectDir)source\main&quot;;&quot;$(ProjectDir)source\drivers&quot;;&quot;$(ProjectDir)source\cpu&quot;;&quot;$(ProjectDir)source\classification&quot;;&quot;$(ProjectDir)source\analyze&quot;;&quot;$(ProjectDir)source\actions&quot;;&quot;$(ProjectDir)source&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)source\tools&quot;;&quot;$(ProjectDir)source\targets\avida-viewer&quot;;&quot;$(ProjectDir)source\platform\msvc2005&quot;;&quot;$(ProjectDir)source\platform\msvc2005\pdcurses&quot;;&quot;$(ProjectDir)source\main&quot;;&quot;$(ProjectDir)source\drivers&quot;;&quot;$(ProjectDir)source\cpu&quot;;&quot;$(ProjectDir)source\classification&quot;;&quot;$(ProjectDir)source\analyze&quot;;&quot;$(ProjectDir)source\actions&quot;;&quot;$(ProjectDir)source&quot;;&quot;$(ProjectDir)source\platform&quot;"
 				PreprocessorDefinitions="NOMACROS;DEBUG;WIN32;_WIN32"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -121,7 +121,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)source\tools&quot;;&quot;$(ProjectDir)source\targets\avida-viewer&quot;;&quot;$(ProjectDir)source\platform\msvc2005&quot;;&quot;$(ProjectDir)source\platform\msvc2005\pdcurses&quot;;&quot;$(ProjectDir)source\main&quot;;&quot;$(ProjectDir)source\drivers&quot;;&quot;$(ProjectDir)source\cpu&quot;;&quot;$(ProjectDir)source\classification&quot;;&quot;$(ProjectDir)source\analyze&quot;;&quot;$(ProjectDir)source\actions&quot;;&quot;$(ProjectDir)source&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)source\tools&quot;;&quot;$(ProjectDir)source\targets\avida-viewer&quot;;&quot;$(ProjectDir)source\platform\msvc2005&quot;;&quot;$(ProjectDir)source\platform\msvc2005\pdcurses&quot;;&quot;$(ProjectDir)source\main&quot;;&quot;$(ProjectDir)source\drivers&quot;;&quot;$(ProjectDir)source\cpu&quot;;&quot;$(ProjectDir)source\classification&quot;;&quot;$(ProjectDir)source\analyze&quot;;&quot;$(ProjectDir)source\actions&quot;;&quot;$(ProjectDir)source&quot;;&quot;$(ProjectDir)source\platform&quot;"
 				PreprocessorDefinitions="NOMACROS;NDEBUG;WIN32;_WIN32"
 				ExceptionHandling="1"
 				RuntimeLibrary="0"
@@ -446,6 +446,14 @@
 			</File>
 			<File
 				RelativePath=".\source\cpu\cHardwareExperimental.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\cpu\cHardwareGX.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\source\cpu\cHardwareGX.h"
 				>
 			</File>
 			<File
@@ -866,6 +874,10 @@
 			</File>
 			<File
 				RelativePath=".\source\actions\EnvironmentActions.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\platform\FloatingPoint.h"
 				>
 			</File>
 			<File

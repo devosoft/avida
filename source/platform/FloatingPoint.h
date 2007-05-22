@@ -17,7 +17,11 @@
 #ifdef FPE_X86
 void set_fpu (unsigned int mode)
 { 
+#ifdef WIN32
+	__asm fldcw mode;
+#else
   asm("fldcw %0" : : "m" (*&mode));
+#endif
 }
 #endif
 
