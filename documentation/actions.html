@@ -1210,8 +1210,9 @@ class cActionMyAction : public cAction
 </pre></p>
 
 	<li><p>Define the private data members, constructor, description string in GetDescription, and the Process function.  Any arguments that you specify after the action name in the events configuration will be passed to your new class via the args argument in the constructor.</p></li>
-	<li><p>Register the new action with the action library.  At the bottom of each action definitions file, there are the commands that register the individual actions with the action library.  To register our example action "MyAction", we'd write<p>
-<p><pre>action_lib->Register<cActionMyAction>("MyAction");</pre><p>
+	<li><p>Register the new action with the action library.  At the bottom of each action definitions file, there are the commands that register the individual actions with the action library.  In the PrintActions.cc file, for instance, this function is called RegisterPrintActions.
+	<p>  To register our example action "MyAction", we'd write:<p>
+<p><pre>action_lib->Register&lt;cActionMyAction&gt;("MyAction");</pre><p>
 	<li><p>Test your action.</p></li>
 </ol>
 </p>

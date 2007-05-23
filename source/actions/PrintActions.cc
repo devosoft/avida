@@ -49,6 +49,7 @@
 #include "tVector.h"
 #include <cmath>
 #include <cerrno>
+#include <map>
 
 
 #define STATS_OUT_FILE(METHOD, DEFAULT)                                                   /*  1 */ \
@@ -771,7 +772,7 @@ public:
 
 
 /*
- @MRR March 2007
+ @MRR May 2007 [UNTESTED]
  This function prints out fitness data. The main point is that it
  calculates the average fitness from info from the testCPU + the actual
  merit of the organisms, and assigns zero fitness to those organisms
@@ -782,12 +783,15 @@ public:
  
  This version of the DetailedFitnessData prints the information as a log histogram.
  
+ THIS FUNCTION CONTAINS STATIC METHODS USED IN OTHER PRINT ACTION CLASSES.
+ MOVEMENT OF THIS FUNCTION TO A LOWER POINT IN THE FILE MAY CAUSE CONFLICTS.
+ 
  Parameters:
  filename   (cString)     Where the fitness histogram should be written.
  fit_mode   (cString)     Either {Current, Actual, TestCPU}, where
-															   Current is the current value in the grid.  [Default]
-                                 Actual uses the current merit, but the true gestation time.
-                                 TestCPU determined.
+ Current is the current value in the grid.  [Default]
+ Actual uses the current merit, but the true gestation time.
+ TestCPU determined.
  hist_fmin  (double)      The minimum fitness value for the fitness histogram.  [Default: -3]
  hist_fmax  (double)      The maximum fitness value for the fitness histogram.  [Default: 12]
  hist_fstep (double)      The width of the individual bins in the histogram.    [Default: 0.5]
@@ -795,11 +799,11 @@ public:
 class cActionPrintLogFitnessHistogram : public cAction
 {
 private:
-
+	
   double m_hist_fmin;
   double m_hist_fstep;
 	double m_hist_fmax;
-	string m_mode;
+	cString m_mode;
   cString m_filename;
 	
 public:
@@ -814,14 +818,93 @@ public:
 			m_hist_fmax  = (largs.GetSize()) ? largs.PopWord().AsDouble(): 12;
 	}
   
-  static const cString GetDescription() { return  "Parameters:\n\tfilename   (cString) [fitness_log_hist.dat]    Where the fitness histogram should be written.\n\tfit_mode   (cString)     Either {Current, Actual, TestCPU}, where\n\t\t Current is the current value in the grid.  [Default]\n\tActual uses the current merit, but the true gestation time.\n\tTestCPU determined.\n\thist_fmin  (double)      The minimum fitness value for the fitness histogram.  [Default: -3]\n\thist_fmax  (double)      The maximum fitness value for the fitness histogram.  [Default: 12]\n\thist_fstep (double)      The width of the individual bins in the histogram.    [Default: 0.5]\n\n";}
+  static const cString GetDescription() { return  "Parameters: <filename> <mode> <min> <step> <max>";}
   
+	//Given a min:step:max and bin number, return a string reprsenting the range of fitness values.
+	//This function may be called from other classes.
+	static cString GetHistogramBinLabel(int k, double min, double step, double max)
+	{
+		int num_bins = static_cast<int>(ceil( (max - min) / step)) + 3;
+		cString retval; 
+		
+		if (k == 0)
+			retval = "Inviable";
+		else if (k == 1)
+			retval = cString("[<") + cStringUtil::Convert(min) + ", " + cStringUtil::Convert(min) + cString(")");
+		else if (k < num_bins - 1)
+			retval = cString("(") + cStringUtil::Convert(min+step*(k-2)) 
+				+ cString(", ") + cStringUtil::Convert(min+step*(k-1)) +
+				+ cString("]");
+		else
+			retval = cString("[>") + cStringUtil::Convert(max) + cString("]");
+		return retval;
+	}
+	
+		
+	//This function may get called by outside classes to generate a histogram of log10 fitnesses;
+	//max may be updated by this function if the range is not evenly divisible by the step
+	static tArray<int> MakeHistogram(const tArray<cOrganism*>& orgs, const tArray<cGenotype*>& gens, 
+																	 double min, double step, double& max, const cString& mode, cWorld* world,
+																	 cAvidaContext& ctx)
+	{
+		//Set up histogram; extra columns prepended (non-viable, < m_hist_fmin) and appended ( > f_hist_fmax)
+		//If the bin size is not a multiple of the step size, the last bin is expanded to make it a multiple.
+		//All bins are [min, max)
+    tArray<int> histogram;
+		int num_bins = static_cast<int>(ceil( (max - min) / step)) + 3;
+		max  = min + (num_bins - 3) * step;
+		histogram.Resize(num_bins, 0);
+		cTestCPU* testcpu = world->GetHardwareManager().CreateTestCPU();
+		
+		
+		// We calculate the fitness based on the current merit,
+		// but with the true gestation time. Also, we set the fitness
+		// to zero if the creature is not viable.
+		tArray<cGenotype*>::const_iterator git;
+		tArray<cOrganism*>::const_iterator oit;
+		for (git = gens.begin(), oit = orgs.begin(); git != gens.end(); git++, oit++){
+			cCPUTestInfo test_info;
+			double fitness = 0.0;
+			if (mode == "TEST_CPU" || mode == "ACTUAL"){
+				testcpu->TestGenome(ctx, test_info, (*git)->GetGenome());
+			}
+			
+			if (mode == "TEST_CPU"){
+				fitness = test_info.GetColonyFitness();
+			}
+			else if (mode == "CURRENT"){
+				fitness = (*oit)->GetPhenotype().GetFitness();
+			}
+			else if (mode == "ACTUAL"){
+				fitness = (test_info.IsViable()) ? 
+				(*oit)->GetPhenotype().GetMerit().CalcFitness(test_info.GetTestPhenotype().GetGestationTime()) : 0.0;
+			}
+			else
+				world->GetDriver().RaiseFatalException(1, "PrintLogFitnessHistogram::MakeHistogram: Invalid fitness mode requested.");
+			
+			//Update the histogram
+			const double log_fitness = log10(fitness);
+			int update_bin = (errno == ERANGE) ? 0 :       //If we have a log of zero, this will be true.
+				static_cast<int>((log_fitness - min) / step);
+			
+			if (update_bin < 0)  //Non-zero bins
+				update_bin = 1;    //Below range
+			else if (update_bin >= num_bins - 3)
+				update_bin = num_bins - 1;  //Above range
+			else
+				update_bin = update_bin + 2;  //Within range
+			
+			histogram[update_bin]++;
+		}
+		delete testcpu;
+		return histogram;
+	}
+	
   void Process(cAvidaContext& ctx)
   {
-		
 		//Verify input parameters
 		if ( (m_mode != "ACTUAL" && m_mode != "CURRENT" && m_mode != "TESTCPU") ||
-				m_hist_fmin > m_hist_fmax)
+				 m_hist_fmin > m_hist_fmax)
 		{
 			cerr << "cActionPrintFitnessHistogram: Please check arguments.  Abort.\n";
 			cerr << "Parameters: " << m_filename << ", " << m_mode << ", " << m_hist_fmin << ":" << m_hist_fstep << ":" << m_hist_fmax << endl;
@@ -832,72 +915,28 @@ public:
     cPopulation& pop        = m_world->GetPopulation();
     const int    update     = m_world->GetStats().GetUpdate();
     const double generation = m_world->GetStats().SumGeneration().Average();
-    
-    //Set up histogram; extra columns prepended (non-viable, < m_hist_fmin) and appended ( > f_hist_fmax)
-		//If the bin size is not a multiple of the step size, the last bin is expanded to make it a multiple.
-		//All bins are [min, max)
-    tArray<int> histogram;
-		int num_bins = static_cast<int>(ceil( (m_hist_fmax - m_hist_fmin) / m_hist_fstep)) + 3;
-		m_hist_fmax  = m_hist_fmin + (num_bins - 3) * m_hist_fstep;
-		histogram.Resize(num_bins, 0);
-		
-    
-    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+		tArray<cOrganism*> orgs;
+		tArray<cGenotype*> gens;
 		
     for (int i = 0; i < pop.GetSize(); i++)
 		{
       if (pop.GetCell(i).IsOccupied() == false) continue;  //Skip unoccupied cells
-      
       cOrganism* organism = pop.GetCell(i).GetOrganism();
       cGenotype* genotype = organism->GetGenotype();
-      
-      cCPUTestInfo test_info;
-      testcpu->TestGenome(ctx, test_info, genotype->GetGenome());
-			
-      // We calculate the fitness based on the current merit,
-      // but with the true gestation time. Also, we set the fitness
-      // to zero if the creature is not viable.
-      const double fitness = (m_mode == "CURRENT") ? organism->GetPhenotype().GetFitness() :
-				                     (m_mode == "ACUTAL")  ? 
-																((test_info.IsViable()) ? 
-																 organism->GetPhenotype().GetMerit().CalcFitness(test_info.GetTestPhenotype().GetGestationTime()) : 0.0) :
-				                     test_info.GetColonyFitness();
-		
-			//Update the histogram
-			const double log_fitness = log10(fitness);
-			
-			int update_bin = (errno == ERANGE) ? 0 :       //If we have a log of zero, this will be true.
-				static_cast<int>((log_fitness - m_hist_fmin) / m_hist_fstep);
-			if (update_bin < 0)
-				update_bin = 1;
-			else if (update_bin >= num_bins - 3)
-				update_bin = num_bins - 1;
-			else
-				update_bin = update_bin + 2;
-		
-			histogram[update_bin]++;
+			orgs.Push(organism);
+			gens.Push(genotype);
 		}
-			
-		delete testcpu;
-    
+		
+		tArray<int> histogram = MakeHistogram(orgs, gens, m_hist_fmin, m_hist_fstep, m_hist_fstep, m_mode, m_world, ctx);
+		
+		
 		//Output histogram
 		cDataFile& hdf = m_world->GetDataFile(m_filename);
 		hdf.Write(update, "Update");
 		hdf.Write(generation, "Generation");
 		
 		for (int k = 0; k < histogram.GetSize(); k++)
-		{ 
-			if (k == 0)
-				hdf.Write(histogram[k], "Inviable");
-			else if (k == 1)
-				hdf.Write(histogram[k], cString("< ") + cStringUtil::Convert(m_hist_fmin));
-			else if (k < histogram.GetSize() - 1)
-				hdf.Write(histogram[k], cString("(") + cStringUtil::Convert(m_hist_fmin+m_hist_fstep*(k-2)) 
-																+ cString(", ") + cStringUtil::Convert(m_hist_fmin+m_hist_fstep*(k-1)) +
-																+ cString("]"));
-			else
-				hdf.Write(histogram[k], cString("> ") + cStringUtil::Convert(m_hist_fmax));
-		}
+			hdf.Write(histogram[k], GetHistogramBinLabel(k, m_hist_fmin, m_hist_fstep, m_hist_fmax));
 		hdf.Endl();
 	}
 };
@@ -905,7 +944,386 @@ public:
 
 
 /*
- @MRR March 2007
+ @MRR May 2007  [INCOMPLETE]
+ 
+ This function requires Avida be in run mode.
+ 
+ This function will print histograms of the relative fitness of
+ organisms as compared to the parent.
+
+ STATIC METHODS IN THIS CLASS ARE CALLED BY OTHER ACTIONS.
+ MOVING THIS CLASS MAY BREAK DEPENDENCIES.
+ 
+ Parameters:
+ filename	(cString)				Name of the output file
+ fit_mode (cString)				Either {Current, Actual, TestCPU}, where
+															 Current is the current value in the grid. [Default]
+															 Actual uses the current merit, but the true gestation time.
+															 that have reproduced.
+															 TestCPU determined.
+ hist_fmin  (double)      The minimum fitness value for the fitness histogram.  [Default: 0.50]
+ hist_fmax  (double)      The maximum fitness value for the fitness histogram.  [Default: 0.02]
+ hist_fstep (double)      The width of the individual bins in the histogram.    [Default: 1.50]
+ 
+ The file will be formatted:
+	<update>  [ <min, min, min+step, ..., max-step, max, >max], each bin [min,max)
+*/
+class cActionPrintRelativeFitnessHistogram : public cAction
+{
+private:
+	double m_hist_fmin;
+	double m_hist_fstep;
+	double m_hist_fmax;
+	cString m_mode;
+	cString m_filename;
+	bool    first_run;
+	
+public:
+	cActionPrintRelativeFitnessHistogram(cWorld* world, const cString& args) : cAction(world, args) 
+	{ 
+		cString largs(args);
+		m_filename   = (largs.GetSize()) ? largs.PopWord()           : "rel_fitness.dat";
+		m_mode       = (largs.GetSize()) ? largs.PopWord().ToUpper() : "CURRENT";
+		m_hist_fmin  = (largs.GetSize()) ? largs.PopWord().AsDouble(): 0;
+		m_hist_fstep = (largs.GetSize()) ? largs.PopWord().AsDouble(): 0.1;
+		m_hist_fmax  = (largs.GetSize()) ? largs.PopWord().AsDouble(): 2;
+	}
+	
+	static const cString GetDescription() { return "Arguments: [filename] [fit_mode] [hist_min] [hist_step] [hist_max]"; }
+	
+	
+	static cString GetHistogramBinLabel(int k, double min, double step, double max)
+	{
+		int num_bins = static_cast<int>(ceil( (max - min) / step)) + 2;
+		cString retval; 
+		
+		if (k == 0)
+			retval = "Inviable";
+		else if (k == 1)
+			retval = cString("[<") + cStringUtil::Convert(min) + ", " + cStringUtil::Convert(min) + cString(")");
+		else if (k < num_bins - 1)
+			retval = cString("(") + cStringUtil::Convert(min+step*(k-2)) 
+				+ cString(", ") + cStringUtil::Convert(min+step*(k-1)) +
+				+ cString("]");
+		else
+			retval = cString("[>") + cStringUtil::Convert(max) + cString("]");
+		
+		return retval;
+	}
+	
+		static tArray<int> MakeHistogram(const tArray<cOrganism*>& orgs, const tArray<cGenotype*>& gens, 
+																		 double min, double step, double& max, const cString& mode, cWorld* world,
+																		 cAvidaContext& ctx)
+	{
+			//Set up histogram; extra columns prepended (non-viable, < m_hist_fmin) and appended ( > f_hist_fmax)
+			//If the bin size is not a multiple of the step size, the last bin is expanded to make it a multiple.
+			//All bins are [min, max)
+			tArray<int> histogram;
+			int num_bins = static_cast<int>(ceil( (max - min) / step)) + 3;
+			max  = min + (num_bins - 3) * step;
+			histogram.Resize(num_bins, 0);
+			cTestCPU* testcpu = world->GetHardwareManager().CreateTestCPU();
+			
+			
+			// We calculate the fitness based on the current merit,
+			// but with the true gestation time. Also, we set the fitness
+			// to zero if the creature is not viable.
+			tArray<cGenotype*>::const_iterator git;
+			tArray<cOrganism*>::const_iterator oit;
+			for (git = gens.begin(), oit = orgs.begin(); git != gens.end(); git++, oit++){
+				cCPUTestInfo test_info;
+				double fitness = 0.0;
+				double parent_fitness = (*git)->GetParentGenotype()->GetFitness();
+				if (mode == "TEST_CPU" || mode == "ACTUAL"){
+					testcpu->TestGenome(ctx, test_info, (*git)->GetGenome());
+				}
+				
+				if (mode == "TEST_CPU"){
+					fitness = test_info.GetColonyFitness();
+				}
+				else if (mode == "CURRENT"){
+					fitness = (*oit)->GetPhenotype().GetFitness();
+				}
+				else if (mode == "ACTUAL"){
+					fitness = (test_info.IsViable()) ? 
+					(*oit)->GetPhenotype().GetMerit().CalcFitness(test_info.GetTestPhenotype().GetGestationTime()) : 0.0;
+				}
+				else
+					world->GetDriver().RaiseFatalException(1, "MakeHistogram: Invalid fitness mode requested.");
+				
+				//Update the histogram
+				if (parent_fitness <= 0.0)
+					world->GetDriver().RaiseFatalException(1, "PrintRelativeFitness::MakeHistogram: Parent fitness is zero.");
+				
+				double rfitness = fitness/parent_fitness;
+				int update_bin = (rfitness == 0) ? 0 :       
+					static_cast<int>( ((fitness/parent_fitness) - min) / step);
+				
+				if (update_bin < 0  && fitness > 0)  //Non-zero bins
+					update_bin = 1;    //Below range
+				else if (update_bin >= num_bins - 3)
+					update_bin = num_bins - 1;  //Above range
+				else
+					update_bin = update_bin + 2;  //Within range
+				
+				histogram[update_bin]++;
+			}
+			delete testcpu;
+			return histogram;
+	}
+	
+	
+	
+	void Process(cAvidaContext& ctx)
+	{
+		//Handle possible errors
+		if (ctx.GetAnalyzeMode())
+			m_world->GetDriver().RaiseFatalException(1, "PrintRelativeFitnessHistogram requires avida to be in run mode.");
+	}
+};
+
+
+
+/*
+ @MRR May 2007 [UNTESTED]
+ This function requires CCLADE_TRACKING to be enabled and avida
+ operating non-analyze mode.
+ 
+ This function will print histograms of log10 fitness of each of the
+ tagged clades.
+ 
+ Parameters:
+ filename	(cString)				Name of the output file
+ fit_mode (cString)				Either {Current, Actual, ActualRepro, TestCPU}, where
+																Current is the current value in the grid. [Default]
+																Actual uses the current merit, but the true gestation time.
+																CurrentRepro is the same as current, but counts only those orgs
+                                              that have reproduced.
+																TestCPU determined.
+ hist_fmin  (double)      The minimum fitness value for the fitness histogram.  [Default: -3]
+ hist_fmax  (double)      The maximum fitness value for the fitness histogram.  [Default: 12]
+ hist_fstep (double)      The width of the individual bins in the histogram.    [Default: 0.5]
+
+ The file will be formatted:
+	<update> <cclade_count> <cclade_id> [...] <cclade_id> [...] ...
+	where [...] will be [ <min, min, min+step, ..., max-step, max, > max], each bin (min,max]
+ */
+class cActionPrintCCladeFitnessHistogram : public cAction
+{
+	private:
+		double m_hist_fmin;
+		double m_hist_fstep;
+		double m_hist_fmax;
+		cString m_mode;
+		cString m_filename;
+		bool    first_run;
+		
+	public:
+		cActionPrintCCladeFitnessHistogram(cWorld* world, const cString& args) : cAction(world, args)
+		{
+			cString largs(args);
+		  m_filename   = (largs.GetSize()) ? largs.PopWord()           : "cclade_fitness.dat";
+			m_mode       = (largs.GetSize()) ? largs.PopWord().ToUpper() : "CURRENT";
+			m_hist_fmin  = (largs.GetSize()) ? largs.PopWord().AsDouble(): -3.0;
+			m_hist_fstep = (largs.GetSize()) ? largs.PopWord().AsDouble(): 0.5;
+			m_hist_fmax  = (largs.GetSize()) ? largs.PopWord().AsDouble(): 12;
+			first_run = true; 
+		}
+		
+		static const cString GetDescription() { return "Arguments: [filename] [fit_mode] [hist_min] [hist_step] [hist_max]"; }
+		
+		void Process(cAvidaContext& ctx)
+		{
+			//Handle possible errors
+			if (ctx.GetAnalyzeMode())
+				m_world->GetDriver().RaiseFatalException(1, "PrintCCladeFitnessHistogram requires avida to be in run mode.");
+			
+			if (m_world->GetConfig().TRACK_CCLADES.Get() == 0)
+				m_world->GetDriver().RaiseFatalException(1, "PrintCCladeFitnessHistogram requires coalescence clade tracking to be enabled.");				
+			
+			//Verify input parameters
+			if ( (m_mode != "ACTUAL" && m_mode != "CURRENT" && m_mode != "TESTCPU") ||
+					 m_hist_fmin > m_hist_fmax)
+				m_world->GetDriver().RaiseFatalException(1, "PrintCCladeFitnessHistogram: Check parameters.");
+			
+			//Gather data objects
+			cPopulation& pop        = m_world->GetPopulation();
+			const int    update     = m_world->GetStats().GetUpdate();
+			const double generation = m_world->GetStats().SumGeneration().Average();
+			map< int, tArray<cOrganism*> > org_map;  //Map of ccladeID to array of organism IDs
+			map< int, tArray<cGenotype*> > gen_map;  //Map of ccladeID to array of genotype IDs 
+			
+			//Collect clade information
+			for (int i = 0; i < pop.GetSize(); i++){
+				if (pop.GetCell(i).IsOccupied() == false) continue;  //Skip unoccupied cells
+				cOrganism* organism = pop.GetCell(i).GetOrganism();
+				cGenotype* genotype = organism->GetGenotype();
+				int cladeID = organism->GetCCladeLabel();
+				
+				map< int, tArray<cOrganism*> >::iterator oit = org_map.find(cladeID);
+				map< int, tArray<cGenotype*> >::iterator git = gen_map.find(cladeID);
+				if (oit == org_map.end()){ //The clade is new
+					org_map[cladeID] = tArray<cOrganism*>(1, organism);
+					gen_map[cladeID] = tArray<cGenotype*>(1, genotype);
+				}
+				else{  //The clade is known
+					oit->second.Push(organism);
+					git->second.Push(genotype);
+				}
+			}
+			
+			//Create and print the histograms; this calls a static method in another action
+			ofstream& fp = m_world->GetDataFileManager().GetOFStream(m_filename);
+			if (!fp.is_open())
+				m_world->GetDriver().RaiseFatalException(1, "PrintCCladeFitnessHistogram: Unable to open output file.");
+			map< int, tArray<cOrganism*> >::iterator oit = org_map.begin();
+			map< int, tArray<cGenotype*> >::iterator git = gen_map.begin();
+			for(; oit != org_map.end(); oit++, git++){
+				tArray<int> hist = cActionPrintLogFitnessHistogram::MakeHistogram( (oit->second), (git->second),
+																																				m_hist_fmin, m_hist_fstep, m_hist_fmax,
+																																				m_mode, m_world, ctx );
+				if (first_run){  //Print header information if first time through
+					first_run = false;
+					fp << "# PrintCCladeFitnessHistogram" << endl << "# Bins: ";
+					for (int k = 0; k < hist.GetSize(); k++)
+						fp << " " <<  cActionPrintLogFitnessHistogram::GetHistogramBinLabel(k, m_hist_fmin, m_hist_fstep, m_hist_fmax);
+					fp << endl << endl;
+				}
+				if (oit == org_map.begin()) //Print update and clade count if first clade
+					fp << update << " " << org_map.size();
+				fp << oit->first << " [";
+				for (int k = 0; k < hist.GetSize(); k++)
+					fp << " " << hist[k];
+				fp << " ]" << endl;
+			}
+		}
+};
+
+
+ 
+/*
+ @MRR May 2007  [INCOMPLETE]
+ This function requires CCLADE_TRACKING to be enabled and Avida
+ operating non-analyze mode.
+ 
+ This function will print histograms of the relative fitness of
+ clade members as compared to the parent.
+ 
+ Parameters:
+ filename	(cString)				Name of the output file
+ fit_mode (cString)				Either {Current, Actual, ActualRepro, TestCPU}, where
+															 Current is the current value in the grid. [Default]
+															 Actual uses the current merit, but the true gestation time.
+															 CurrentRepro is the same as current, but counts only those orgs
+															 that have reproduced.
+															 TestCPU determined.
+ hist_fmin  (double)      The minimum fitness value for the fitness histogram.  [Default: 0.50]
+ hist_fmax  (double)      The maximum fitness value for the fitness histogram.  [Default: 0.02]
+ hist_fstep (double)      The width of the individual bins in the histogram.    [Default: 1.50]
+ 
+ The file will be formatted:
+	<update> <cclade_count> <cclade_id> [...] <cclade_id> [...] ...
+	where [...] will be [ <min, min, min+step, ..., max-step, max, >max], each bin [min,max}
+ */
+class cActionPrintCCladeRelativeFitnessHistogram : public cAction
+{
+private:
+	double m_hist_fmin;
+  double m_hist_fstep;
+	double m_hist_fmax;
+	cString m_mode;
+  cString m_filename;
+	bool first_run;
+		
+public:
+	cActionPrintCCladeRelativeFitnessHistogram(cWorld* world, const cString& args) : cAction(world, args) 
+	{
+		cString largs(args);
+		m_filename   = (largs.GetSize()) ? largs.PopWord()           : "cclade_rel_fitness.dat";
+		m_mode       = (largs.GetSize()) ? largs.PopWord().ToUpper() : "CURRENT";
+		m_hist_fmin  = (largs.GetSize()) ? largs.PopWord().AsDouble(): 0;
+		m_hist_fstep = (largs.GetSize()) ? largs.PopWord().AsDouble(): 0.2;
+		m_hist_fmax  = (largs.GetSize()) ? largs.PopWord().AsDouble(): 2.0;
+		first_run = true;
+	}
+	
+	static const cString GetDescription() { return "Arguments: [filename] [fit_mode] [hist_min] [hist_step] [hist_max]"; }
+	
+	void Process(cAvidaContext& ctx)
+	{
+		//Handle possible errors
+		if (ctx.GetAnalyzeMode())
+			m_world->GetDriver().RaiseFatalException(1, "PrintCCladeRelativeFitnessHistogram requires avida to be in run mode.");
+		
+		if (m_world->GetConfig().TRACK_CCLADES.Get() == 0)
+			m_world->GetDriver().RaiseFatalException(1, "PrintCCladeRelativeFitnessHistogram requires coalescence clade tracking to be enabled.");
+		
+		//Verify input parameters
+		if ( (m_mode != "ACTUAL" && m_mode != "CURRENT" && m_mode != "TESTCPU") ||
+				 m_hist_fmin > m_hist_fmax)
+			m_world->GetDriver().RaiseFatalException(1, "PrintCCladeRelativeFitness: check parameters");
+		
+		///Gather data objects
+		cPopulation& pop        = m_world->GetPopulation();
+		const int    update     = m_world->GetStats().GetUpdate();
+		const double generation = m_world->GetStats().SumGeneration().Average();
+		map< int, tArray<cOrganism*> > org_map;  //Map of ccladeID to array of organism IDs
+		map< int, tArray<cGenotype*> > gen_map;  //Map of ccladeID to array of genotype IDs 
+		
+		//Collect clade information
+		for (int i = 0; i < pop.GetSize(); i++){
+			if (pop.GetCell(i).IsOccupied() == false) continue;  //Skip unoccupied cells
+			cOrganism* organism = pop.GetCell(i).GetOrganism();
+			cGenotype* genotype = organism->GetGenotype();
+			int cladeID = organism->GetCCladeLabel();
+			
+			map< int, tArray<cOrganism*> >::iterator oit = org_map.find(cladeID);
+			map< int, tArray<cGenotype*> >::iterator git = gen_map.find(cladeID);
+			if (oit == org_map.end()){ //The clade is new
+				org_map[cladeID] = tArray<cOrganism*>(1, organism);
+				gen_map[cladeID] = tArray<cGenotype*>(1, genotype);
+			}
+			else{  //The clade is known
+				oit->second.Push(organism);
+				git->second.Push(genotype);
+			}
+		}
+		
+		//Create and print the histograms; this calls a static method in another action
+		ofstream& fp = m_world->GetDataFileManager().GetOFStream(m_filename);
+		if (!fp.is_open())
+			m_world->GetDriver().RaiseFatalException(1, "PrintCCladeRelativeFitnessHistogram: Unable to open output file.");
+		map< int, tArray<cOrganism*> >::iterator oit = org_map.begin();
+		map< int, tArray<cGenotype*> >::iterator git = gen_map.begin();
+		for(; oit != org_map.end(); oit++, git++){
+			tArray<int> hist = cActionPrintRelativeFitnessHistogram::MakeHistogram( (oit->second), (git->second),
+																																				 m_hist_fmin, m_hist_fstep, m_hist_fmax,
+																																				 m_mode, m_world, ctx );
+			if (first_run){  //Print header information if first time through
+				first_run = false;
+				fp << "# PrintCCladeFitnessHistogram" << endl << "# Bins: ";
+				for (int k = 0; k < hist.GetSize(); k++)
+					fp << " " <<  cActionPrintRelativeFitnessHistogram::GetHistogramBinLabel(k, m_hist_fmin, m_hist_fstep, m_hist_fmax);
+				fp << endl << endl;
+			}
+			if (oit == org_map.begin()) //Print update and clade count if first clade
+				fp << update << " " << org_map.size();
+			fp << oit->first << " [";
+			for (int k = 0; k < hist.GetSize(); k++)
+				fp << " " << hist[k];
+			fp << " ]" << endl;
+		}
+		
+	}
+};
+
+
+
+
+
+
+/*
+ @MRR March 2007 [UNTESTED]
  This function will take the initial genotype for each organism in the
  population/batch, align them, and calculate the per-site entropy of the
  aligned sequences.  Please note that there may be a variable number
@@ -921,17 +1339,14 @@ class cActionPrintGenomicSiteEntropy : public cAction
 		bool    m_use_gap;
 	
 	public:
-		cActionPrintGenomicSiteEntropy(cWorld* world, const cString& args) : cAction(world, args)
-		{
+		cActionPrintGenomicSiteEntropy(cWorld* world, const cString& args) : cAction(world, args){
 			cString largs = args;
 			m_filename = (largs.GetSize()) ? largs.PopWord() : "GenomicSiteEntropy.dat";
 		}
 
 		static const cString GetDescription() { return "Arguments: [filename = \"GenomicSiteEntropyData\"] [use_gap = false]";}
 		
-		void Process(cAvidaContext& ctx)
-		{
-			
+		void Process(cAvidaContext& ctx){
 			const int        update     = m_world->GetStats().GetUpdate();
 			const double     generation = m_world->GetStats().SumGeneration().Average();
 			const int        num_insts  = m_world->GetNumInstructions();
@@ -1894,8 +2309,12 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintPhenotypeData>("PrintPhenotypeData");
   action_lib->Register<cActionPrintPhenotypeStatus>("PrintPhenotypeStatus");
   action_lib->Register<cActionPrintDemeStats>("PrintDemeStats");
+	
+	//Coalescence Clade Actions
 	action_lib->Register<cActionPrintCCladeCounts>("PrintCCladeCounts");
-
+  action_lib->Register<cActionPrintCCladeFitnessHistogram>("PrintCCladeFitnessHistogram");
+	action_lib->Register<cActionPrintCCladeRelativeFitnessHistogram>("PrintCCladeRelativeFitnessHistogram");
+	
   
   // Processed Data
   action_lib->Register<cActionPrintData>("PrintData");
@@ -1910,6 +2329,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDominantParasiteGenotype>("PrintDominantParasiteGenotype");
   action_lib->Register<cActionPrintDetailedFitnessData>("PrintDetailedFitnessData");
 	action_lib->Register<cActionPrintLogFitnessHistogram>("PrintLogFitnessHistogram");
+	action_lib->Register<cActionPrintRelativeFitnessHistogram>("PrintRelativeFitnessHistogram");
   action_lib->Register<cActionPrintGeneticDistanceData>("PrintGeneticDistanceData");
   action_lib->Register<cActionPrintPopulationDistanceData>("PrintPopulationDistanceData");
   action_lib->Register<cActionPrintDebug>("PrintDebug");
