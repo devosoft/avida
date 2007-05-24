@@ -60,7 +60,7 @@
 #include "tInstLib.h"
 #include "defs.h"
 #include "nHardware.h"
-
+#include "tBuffer.h"
 
 class cInjectGenotype;
 class cInstLib;
@@ -218,6 +218,9 @@ public:
     cCPUStack m_stack; //!< This cProgramid's stack (no global stack).
     cHeadProgramid m_heads[NUM_HEADS]; //!< This cProgramid's heads.
     int m_regs[NUM_REGISTERS]; //!< This cProgramid's registers.
+    
+    tBuffer<int> m_inputBuffer; //!< This programid's input buffer.
+    tBuffer<int> m_outputBuffer; //!< This programid's output buffer.
   };
   
 protected:

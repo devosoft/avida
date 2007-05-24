@@ -154,18 +154,35 @@ int cOrganism::BuyValue(const int label, const int buy_price)
 
 void cOrganism::DoInput(const int value)
 {
-  m_input_buf.Add(value);
-  m_phenotype.TestInput(m_input_buf, m_output_buf);
+  DoInput(m_input_buf, m_output_buf, value);
 }
+
+
+void cOrganism::DoInput(tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const int value)
+{
+  input_buffer.Add(value);
+  m_phenotype.TestInput(input_buffer, output_buffer);
+}
+
+
 
 void cOrganism::DoOutput(cAvidaContext& ctx, const int value, const bool on_divide)
 {
-  assert(m_interface);
-  const tArray<double> & resource_count = m_interface->GetResources();
+  DoOutput(ctx, m_input_buf, m_output_buf, value, on_divide);
+}
 
+
+void cOrganism::DoOutput(cAvidaContext& ctx, 
+                         tBuffer<int>& input_buffer, 
+                         tBuffer<int>& output_buffer,
+                         const int value,
+                         const bool on_divide)
+{
+  const tArray<double> & resource_count = m_interface->GetResources();
+  
   tList<tBuffer<int> > other_input_list;
   tList<tBuffer<int> > other_output_list;
-
+  
   // If tasks require us to consider neighbor inputs, collect them...
   if (m_world->GetEnvironment().UseNeighborInput()) {
     const int num_neighbors = m_interface->GetNumNeighbors();
@@ -173,11 +190,11 @@ void cOrganism::DoOutput(cAvidaContext& ctx, const int value, const bool on_divi
       m_interface->Rotate();
       cOrganism * cur_neighbor = m_interface->GetNeighbor();
       if (cur_neighbor == NULL) continue;
-
+      
       other_input_list.Push( &(cur_neighbor->m_input_buf) );
     }
   }
-
+  
   // If tasks require us to consider neighbor outputs, collect them...
   if (m_world->GetEnvironment().UseNeighborOutput()) {
     const int num_neighbors = m_interface->GetNumNeighbors();
@@ -185,36 +202,37 @@ void cOrganism::DoOutput(cAvidaContext& ctx, const int value, const bool on_divi
       m_interface->Rotate();
       cOrganism * cur_neighbor = m_interface->GetNeighbor();
       if (cur_neighbor == NULL) continue;
-
+      
       other_output_list.Push( &(cur_neighbor->m_output_buf) );
     }
   }
   
   bool net_valid = false;
   if (m_net) net_valid = NetValidate(ctx, value);
-
+  
   // Do the testing of tasks performed...
-
+  
   // if on IO add value to m_output_buf, if on divide don't need to
-  if (!on_divide) m_output_buf.Add(value);
+  if(!on_divide) output_buffer.Add(value);
   
   tArray<double> res_change(resource_count.GetSize());
   tArray<int> insts_triggered;
   bool clear_input = false;
-
+  
   tBuffer<int>* received_messages_point = &m_received_messages;
   if (!m_world->GetConfig().SAVE_RECEIVED.Get()) received_messages_point = NULL;
   
-  cTaskContext taskctx(m_interface, m_input_buf, m_output_buf, other_input_list, other_output_list, net_valid, 0, on_divide, received_messages_point);
+  cTaskContext taskctx(m_interface, input_buffer, output_buffer, other_input_list, 
+                       other_output_list, net_valid, 0, on_divide, received_messages_point);
   m_phenotype.TestOutput(ctx, taskctx, resource_count, res_change, insts_triggered);
   m_interface->UpdateResources(res_change);
-
+  
   for (int i = 0; i < insts_triggered.GetSize(); i++) {
     const int cur_inst = insts_triggered[i];
     m_hardware->ProcessBonusInst(ctx, cInstruction(cur_inst));
   }
   
-  if (clear_input) m_input_buf.Clear();
+  if(clear_input) input_buffer.Clear();  
 }
 
 

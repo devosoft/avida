@@ -200,7 +200,10 @@ public:
 
   // --------  Input and Output Methods  --------
   void DoInput(const int value);
+  void DoInput(tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const int value);
   void DoOutput(cAvidaContext& ctx, const int value, const bool on_divide = false);
+  void DoOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, 
+                tBuffer<int>& output_buffer, const int value, const bool on_divide=false);
   void ClearInput() { m_input_buf.Clear(); }
   void AddOutput(int val) { m_output_buf.Add(val); }
 

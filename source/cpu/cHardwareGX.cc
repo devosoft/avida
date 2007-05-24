@@ -25,6 +25,7 @@
 #include "cHardwareGX.h"
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
+#include "cEnvironment.h"
 #include "functions.h"
 #include "cGenomeUtil.h"
 #include "cGenotype.h"
@@ -2143,7 +2144,8 @@ bool cHardwareGX::Inst_TaskGet2(cAvidaContext& ctx)
 {
   // Randomize the inputs so they can't save numbers
   organism->GetOrgInterface().ResetInputs(ctx);   // Now re-randomize the inputs this organism sees
-  organism->ClearInput();                         // Also clear their input buffers, or they can still claim
+  m_current->m_inputBuffer.Clear();
+  //organism->ClearInput();                         // Also clear their input buffers, or they can still claim
                                                   // rewards for numbers no longer in their environment!
 
   const int reg_used_1 = FindModifiedRegister(REG_BX);
@@ -2192,7 +2194,8 @@ bool cHardwareGX::Inst_TaskPutResetInputs(cAvidaContext& ctx)
 {
   bool return_value = Inst_TaskPut(ctx);          // Do a normal put
   organism->GetOrgInterface().ResetInputs(ctx);   // Now re-randomize the inputs this organism sees
-  organism->ClearInput();                         // Also clear their input buffers, or they can still claim
+  m_current->m_inputBuffer.Clear();
+  //organism->ClearInput();                         // Also clear their input buffers, or they can still claim
                                                   // rewards for numbers no longer in their environment!
   return return_value;
 }
@@ -2203,7 +2206,7 @@ bool cHardwareGX::Inst_TaskIO(cAvidaContext& ctx)
   
   // Do the "put" component
   const int value_out = GetRegister(reg_used);
-  organism->DoOutput(ctx, value_out);  // Check for tasks completed.
+  organism->DoOutput(ctx, m_current->m_inputBuffer, m_current->m_outputBuffer, value_out);  // Check for tasks completed.
   
   // Do the "get" component
   const int value_in = organism->GetNextInput();
@@ -2221,32 +2224,25 @@ bool cHardwareGX::Inst_TaskIO_Feedback(cAvidaContext& ctx)
   
   // Do the "put" component
   const int value_out = GetRegister(reg_used);
-  organism->DoOutput(ctx, value_out);  // Check for tasks completed.
-
+  organism->DoOutput(ctx, m_current->m_inputBuffer, m_current->m_outputBuffer, value_out);  // Check for tasks completed.
+  
   //check cur_merit after the output
   double postOutputBonus = organism->GetPhenotype().GetCurBonus(); 
   
-  
   //push the effect of the IO on merit (+,0,-) to the active stack
-
   if (preOutputBonus > postOutputBonus){
     StackPush(-1);
-    }
+  }
   else if (preOutputBonus == postOutputBonus){
     StackPush(0);
-    }
+  }
   else if (preOutputBonus < postOutputBonus){
     StackPush(1);
-    }
+  }
   else {
     assert(0);
     //Bollocks. There was an error.
-    }
-
-
-  
-
-
+  }
   
   // Do the "get" component
   const int value_in = organism->GetNextInput();
@@ -3742,6 +3738,8 @@ cHardwareGX::cProgramid::cProgramid(const cGenome& genome, cHardwareGX* hardware
 , m_cpu_cycles_used(0)
 , m_gx_hardware(hardware)
 , m_unique_id(hardware->m_last_unique_id_assigned++)
+, m_inputBuffer(m_gx_hardware->m_world->GetEnvironment().GetInputSize())
+, m_outputBuffer(m_gx_hardware->m_world->GetEnvironment().GetOutputSize())
 {
   assert(m_gx_hardware!=0);
   for(int i=0; i<NUM_HEADS; ++i) {
