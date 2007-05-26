@@ -1705,8 +1705,8 @@ void cPopulation::UpdateOrganismStats()
     }
     
     // Increment the counts for all qualities the organism has...
+    num_parasites += organism->GetNumParasites();
     if (phenotype.ParentTrue()) num_breed_true++;
-    if (phenotype.IsParasite()) num_parasites++;
     if (phenotype.GetNumDivides() == 0) num_no_birth++;
     if (phenotype.IsMultiThread()) num_multi_thread++;
     else num_single_thread++;

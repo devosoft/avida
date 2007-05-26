@@ -88,7 +88,7 @@ char cSymbolUtil::GetParasiteSymbol(const cPopulationCell & cell)
   if (cell.IsOccupied() == false) return ' ';
   const cOrganism & organism = *(cell.GetOrganism());
 
-  if (organism.GetPhenotype().IsParasite() == true) return '*';
+  if (organism.GetNumParasites()) return '*';
   return '-';
 }
 

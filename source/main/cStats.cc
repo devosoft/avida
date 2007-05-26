@@ -627,7 +627,7 @@ void cStats::PrintDominantData(const cString& filename)
   df.Endl();
 }
 
-void cStats::PrintDominantParaData(const cString& filename)
+void cStats::PrintParasiteData(const cString& filename)
 {
   cDataFile& df = m_world->GetDataFile(filename);
 
@@ -635,6 +635,7 @@ void cStats::PrintDominantParaData(const cString& filename)
   df.WriteTimeStamp();
 
   df.Write(m_update, "Update");
+  df.Write(num_parasites, "Number of Extant Parasites");
   df.Write(dom_inj_size, "Size of Dominant Parasite Genotype");
   df.Write(dom_inj_abundance, "Abundance of Dominant Parasite Genotype");
   df.Write(dom_inj_genotype_id, "Genotype ID of Dominant Parasite Genotype");
@@ -689,7 +690,6 @@ void cStats::PrintCountData(const cString& filename)
   df.Write(num_deaths,             "number of deaths in this update");
   df.Write(num_breed_true,         "number of breed true");
   df.Write(num_breed_true_creatures, "number of breed true organisms?");
-  //df.Write(num_parasites,            "number of parasites");
   df.Write(num_no_birth_creatures,   "number of no-birth organisms");
   df.Write(num_single_thread_creatures, "number of single-threaded organisms");
   df.Write(num_multi_thread_creatures, "number of multi-threaded organisms");

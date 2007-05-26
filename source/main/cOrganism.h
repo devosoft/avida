@@ -228,7 +228,7 @@ public:
   bool InjectHost(const cCodeLabel& in_label, const cGenome& genome);
   void AddParasite(cInjectGenotype* cur) { m_parasites.Push(cur); }
   cInjectGenotype& GetParasite(int x) { return *m_parasites[x]; }
-  int GetNumParasites() { return m_parasites.GetSize(); }
+  int GetNumParasites() const { return m_parasites.GetSize(); }
   void ClearParasites() { m_parasites.Resize(0); }
 		      
 

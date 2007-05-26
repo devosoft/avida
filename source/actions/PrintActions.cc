@@ -81,7 +81,7 @@ STATS_OUT_FILE(PrintReactionRewardData,     reaction_reward.dat );
 STATS_OUT_FILE(PrintTimeData,               time.dat            );
 STATS_OUT_FILE(PrintMutationRateData,       mutation_rates.dat  );
 STATS_OUT_FILE(PrintDivideMutData,          divide_mut.dat      );
-STATS_OUT_FILE(PrintDominantParaData,       parasite.dat        );
+STATS_OUT_FILE(PrintParasiteData,           parasite.dat        );
 STATS_OUT_FILE(PrintInstructionData,        instruction.dat     );
 STATS_OUT_FILE(PrintGenotypeMap,            genotype_map.m      );
 STATS_OUT_FILE(PrintMarketData,             market.dat          );
@@ -2311,7 +2311,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintTimeData>("PrintTimeData");
   action_lib->Register<cActionPrintMutationRateData>("PrintMutationRateData");
   action_lib->Register<cActionPrintDivideMutData>("PrintDivideMutData");
-  action_lib->Register<cActionPrintDominantParaData>("PrintDominantParaData");
+  action_lib->Register<cActionPrintParasiteData>("PrintParasiteData");
   action_lib->Register<cActionPrintInstructionData>("PrintInstructionData");
   action_lib->Register<cActionPrintGenotypeMap>("PrintGenotypeMap");
   action_lib->Register<cActionPrintMarketData>("PrintMarketData");
@@ -2386,7 +2386,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintTimeData>("print_time_data");
   action_lib->Register<cActionPrintMutationRateData>("print_mutation_rate_data");
   action_lib->Register<cActionPrintDivideMutData>("print_divide_mut_data");
-  action_lib->Register<cActionPrintDominantParaData>("print_dom_parasite_data");
   action_lib->Register<cActionPrintInstructionData>("print_instruction_data");
   action_lib->Register<cActionPrintGenotypeMap>("print_genotype_map");
   action_lib->Register<cActionPrintMarketData>("print_market_data");

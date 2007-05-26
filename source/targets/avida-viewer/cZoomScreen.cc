@@ -408,7 +408,8 @@ void cZoomScreen::UpdateStats(cHardwareBase& hardware)
       info.GetActiveCell()->IsOccupied() == false) return;
   
   cGenotype* genotype = info.GetActiveGenotype();
-  cPhenotype& phenotype = info.GetActiveCell()->GetOrganism()->GetPhenotype();
+  cOrganism* organism = info.GetActiveCell()->GetOrganism();
+  cPhenotype& phenotype = organism->GetPhenotype();
   
   SetBoldColor(COLOR_CYAN);
   
@@ -454,7 +455,7 @@ void cZoomScreen::UpdateStats(cHardwareBase& hardware)
   else SetColor(COLOR_CYAN);
   Print(CPU_FLAGS_Y + 3, CPU_FLAGS_X + 1, "Injected");
   
-  if (phenotype.IsParasite()) SetBoldColor(COLOR_CYAN);
+  if (organism->GetNumParasites()) SetBoldColor(COLOR_CYAN);
   else SetColor(COLOR_CYAN);
   Print(CPU_FLAGS_Y + 4, CPU_FLAGS_X + 1, "Parasite");
   
@@ -467,11 +468,12 @@ void cZoomScreen::UpdateStats(cHardwareBase& hardware)
   Print(CPU_FLAGS_Y + 6, CPU_FLAGS_X + 1, "Modified");
   
   SetColor(COLOR_WHITE);
-  
-  if (info.GetPauseLevel() && info.GetActiveCell() && phenotype.IsParasite()) {
-    if (parasite_zoom == true) Print(17, 12, "[X] Host Code    ");
-    else Print(17, 12, "[X] Parasite Code");
-  }
+
+//  @DMB - This needs to be reworked for current parasite implementation
+//  if (info.GetPauseLevel() && info.GetActiveCell() && phenotype.IsParasite()) {
+//    if (parasite_zoom == true) Print(17, 12, "[X] Host Code    ");
+//    else Print(17, 12, "[X] Parasite Code");
+//  }
   
   // Place the task information onto the screen.
   SetColor(COLOR_CYAN);

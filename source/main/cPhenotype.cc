@@ -175,7 +175,6 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
 
   // Setup flags...
   is_injected   = false;
-  is_parasite   = false;
   is_donor_cur  = false;
   is_donor_last = parent_phenotype.is_donor_last;
   is_donor_rand = false;
@@ -297,7 +296,6 @@ void cPhenotype::SetupInject(const cGenome & _genome)
 
   // Setup flags...
   is_injected   = true;
-  is_parasite   = false;
   is_donor_last = false;
   is_donor_cur  = false;
   is_donor_rand = false;
@@ -425,7 +423,6 @@ void cPhenotype::DivideReset(const cGenome & _genome)
 
   // Leave flags alone...
   (void) is_injected;
-  (void) is_parasite;
   is_donor_last = is_donor_cur;
   is_donor_cur = false;
   is_donor_rand_last = is_donor_rand;
@@ -563,7 +560,6 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
 
   // Leave flags alone...
   (void) is_injected;
-  (void) is_parasite;
   is_donor_last = is_donor_cur;
   is_donor_cur = false;
   is_donor_rand_last = is_donor_rand;
@@ -692,7 +688,6 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
 
   // Setup flags...
   is_injected   = false;
-  is_parasite   = false;
   is_donor_last = clone_phenotype.is_donor_last;
   is_donor_cur  = clone_phenotype.is_donor_cur;
   is_receiver = false;
@@ -875,7 +870,6 @@ bool cPhenotype::SaveState(ofstream& fp)
   fp << life_fitness        << " ";
 
   fp << is_injected         << " ";
-  fp << is_parasite         << " ";
   fp << is_donor_last       << " ";
   fp << is_donor_cur        << " ";
   fp << is_donor_rand_last       << " ";
@@ -985,7 +979,6 @@ bool cPhenotype::LoadState(ifstream & fp)
   fp >> life_fitness;
 
   fp >> is_injected;
-  fp >> is_parasite;
   fp >> is_donor_last;
   fp >> is_donor_cur;
   fp >> is_donor_rand_last;

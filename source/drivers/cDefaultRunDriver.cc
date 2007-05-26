@@ -121,7 +121,8 @@ void cDefaultRunDriver::Run()
         << "Gen: " << setw(9) << setprecision(7) << stats.SumGeneration().Average() << "  "
         << "Fit: " << setw(9) << setprecision(7) << stats.GetAveFitness() << "  "
         << "Orgs: " << setw(6) << population.GetNumOrganisms() << "  "
-        << "Thrd: " << stats.GetNumThreads()
+        << "Thrd: " << setw(6) << stats.GetNumThreads() << "  "
+        << "Para: " << stats.GetNumParasites()
         << endl;
     }
     

@@ -586,7 +586,7 @@ public:
   void PrintErrorData(const cString& filename);
   void PrintVarianceData(const cString& filename);
   void PrintDominantData(const cString& filename);
-  void PrintDominantParaData(const cString& filename);
+  void PrintParasiteData(const cString& filename);
   void PrintStatsData(const cString& filename);
   void PrintCountData(const cString& filename);
   void PrintTotalsData(const cString& filename);

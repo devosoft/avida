@@ -152,7 +152,6 @@ private:
   bool to_die;		 // Has organism has triggered something fatal?
   bool to_delete;        // Should this organism be deleted when finished?
   bool is_injected;      // Was this organism injected into the population?
-  bool is_parasite;      // Has this organism ever executed outside code?
   bool is_donor_cur;     // Has this organism attempted to donate merit?  
   bool is_donor_last;    // Did this organism's parent attempt to donate merit? 
   bool is_donor_rand;    // Has this organism attempted a random donation?
@@ -319,7 +318,6 @@ public:
 
 
   bool IsInjected() const { assert(initialized == true); return is_injected; }
-  bool IsParasite() const { assert(initialized == true); return is_parasite; }
   bool IsDonorCur() const { assert(initialized == true); return is_donor_cur; }
   bool IsDonorLast() const { assert(initialized == true); return is_donor_last; }
   bool IsDonorRand() const { assert(initialized == true); return is_donor_rand; }
@@ -423,7 +421,6 @@ public:
   void IncDonates()   { assert(initialized == true); cur_num_donates++; }
   void IncSenseCount(const int i) { assert(initialized == true); cur_sense_count[i]++; }  
   bool& IsInjected() { assert(initialized == true); return is_injected; }
-  bool& IsParasite() { assert(initialized == true); return is_parasite; }
   bool& IsModifier() { assert(initialized == true); return is_modifier; }
   bool& IsModified() { assert(initialized == true); return is_modified; }
   bool& IsFertile()  { assert(initialized == true); return is_fertile; }
