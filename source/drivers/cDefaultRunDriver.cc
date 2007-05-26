@@ -120,7 +120,8 @@ void cDefaultRunDriver::Run()
       cout << "UD: " << setw(6) << stats.GetUpdate() << "  "
         << "Gen: " << setw(9) << setprecision(7) << stats.SumGeneration().Average() << "  "
         << "Fit: " << setw(9) << setprecision(7) << stats.GetAveFitness() << "  "
-        << "Size: " << population.GetNumOrganisms()
+        << "Orgs: " << setw(6) << population.GetNumOrganisms() << "  "
+        << "Thrd: " << stats.GetNumThreads()
         << endl;
     }
     

@@ -195,6 +195,7 @@ private:
   int num_no_birth_creatures;
   int num_single_thread_creatures;
   int num_multi_thread_creatures;
+  int m_num_threads;
   int num_modified;
 
   int num_genotypes_last;
@@ -336,6 +337,7 @@ public:
   inline void SetNumNoBirthCreatures(int in_num_no_birth_creatures);
   inline void SetNumSingleThreadCreatures(int in_num_single_thread_creatures);
   inline void SetNumMultiThreadCreatures(int in_num_multi_thread_creatures);
+  inline void SetNumThreads(int in_num_threads) { m_num_threads = in_num_threads; }
   inline void SetNumModified(int in_num_modified);
 
   void SetMaxFitness(double in_max_fitness) { max_fitness = in_max_fitness; }
@@ -496,6 +498,7 @@ public:
   int GetNumNoBirthCreatures() const{ return num_no_birth_creatures; }
   int GetNumSingleThreadCreatures() const { return num_single_thread_creatures; }
   int GetNumMultiThreadCreatures() const { return num_multi_thread_creatures; }
+  int GetNumThreads() const { return m_num_threads; }
   int GetNumModified() const { return num_modified;}
 
   int GetTotCreatures() const       { return tot_organisms; }

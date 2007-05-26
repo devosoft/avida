@@ -1614,6 +1614,7 @@ void cPopulation::UpdateOrganismStats()
   int num_no_birth = 0;
   int num_multi_thread = 0;
   int num_single_thread = 0;
+  int num_threads = 0;
   int num_modified = 0;
   
   // Maximums...
@@ -1706,16 +1707,15 @@ void cPopulation::UpdateOrganismStats()
     // Increment the counts for all qualities the organism has...
     if (phenotype.ParentTrue()) num_breed_true++;
     if (phenotype.IsParasite()) num_parasites++;
-    if( phenotype.GetNumDivides() == 0 ) num_no_birth++;
-    if(phenotype.IsMultiThread()) num_multi_thread++;
+    if (phenotype.GetNumDivides() == 0) num_no_birth++;
+    if (phenotype.IsMultiThread()) num_multi_thread++;
     else num_single_thread++;
+    
     if(phenotype.IsModified()) num_modified++;    
     
-    // Hardware specific collections...
-    if (organism->GetHardware().GetType() == HARDWARE_TYPE_CPU_ORIGINAL) {
-      cHardwareBase & hardware = organism->GetHardware();
-      stats.SumMemSize().Add(hardware.GetMemory().GetSize());
-    }
+    cHardwareBase& hardware = organism->GetHardware();
+    stats.SumMemSize().Add(hardware.GetMemory().GetSize());
+    num_threads += hardware.GetNumThreads();
     
     // Increment the age of this organism.
     organism->GetPhenotype().IncAge();
@@ -1726,6 +1726,7 @@ void cPopulation::UpdateOrganismStats()
   stats.SetNumParasites(num_parasites);
   stats.SetNumSingleThreadCreatures(num_single_thread);
   stats.SetNumMultiThreadCreatures(num_multi_thread);
+  stats.SetNumThreads(num_threads);
   stats.SetNumModified(num_modified);
   
   stats.SetMaxMerit(max_merit.GetDouble());
