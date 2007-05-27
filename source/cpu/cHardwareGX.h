@@ -68,6 +68,12 @@ class cInstSet;
 class cMutation;
 class cOrganism;
 
+/* The big TODO list
+
+1. Create a cGXOrganism class and remove all of the psudo-genome nonsense.
+   This will fix the artifact that programid ages get reset in the daughter.
+
+*/
 
 /*! Each organism may have a cHardwareGX structure that keeps track of the 
 * current status of simulated hardware.  This particular CPU architecture is
@@ -86,11 +92,14 @@ public:
 
   //!< \todo JEB Make these config options
   static const unsigned int MAX_PROGRAMIDS = 32; //!< Number of cProgramids that an organism can allocate.
+  static const int MAX_PROGRAMID_TOTAL_LENGTH = 1000; // New programids cannot be created if above this cumulative length.
   static const int PROGRAMID_REPLACEMENT_METHOD = 0;
    //!< Controls what happens when we try to allocate a new cProgramid, but are up against the limit
   // 0 = Fail if no programids available
   // 1 = Replace the programid that has completed the most instructions
   static const int MAX_PROGRAMID_AGE = 2000; // Number of inst a cProgramid executes before ceasing to exist
+  static const double EXECUTABLE_COPY_PROCESSIVITY;
+  static const double READABLE_COPY_PROCESSIVITY;
 
   unsigned int m_last_unique_id_assigned; // Counter so programids can be assigned unique IDs for tracking
 
@@ -238,6 +247,8 @@ protected:
   bool m_advance_ip;         // Should the IP advance after this instruction?
   bool m_executedmatchstrings;	// Have we already executed the match strings instruction?
   bool m_just_divided; // Did we just divide (in which case end execution of programids until next cycle).
+  bool m_reset_inputs; // Flag to make it easy for instructions to reset all inputs (force task modularity).
+  bool m_reset_heads;  // Flas to make it easy for instructions to reset heads back (force task modularity).
 
   // Instruction costs...
 #if INSTRUCTION_COSTS
@@ -556,6 +567,8 @@ private:
   bool Inst_NumSites(cAvidaContext& ctx); //!< Count the number of corresponding binding sites
   bool Inst_ProgramidCopy(cAvidaContext& ctx); //!< Like h-copy, but fails if read/write heads not on other programids and will not write over
   bool Inst_ProgramidDivide(cAvidaContext& ctx); //!< Like h-divide, 
+  bool Inst_ProgramidGet(cAvidaContext& ctx); //!< Like get with head resets.
+  bool Inst_ProgramidPut(cAvidaContext& ctx); //!< Like put with head and input resets.
   
   //!< Add/Remove a new programid to/from the list and give it the proper index within the list so we keep track of memory spaces...
   void AddProgramid(programid_ptr programid);

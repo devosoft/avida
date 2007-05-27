@@ -53,6 +53,8 @@ struct delete_functor {
 
 
 tInstLib<cHardwareGX::tMethod>* cHardwareGX::s_inst_slib = cHardwareGX::initInstLib();
+const double cHardwareGX::EXECUTABLE_COPY_PROCESSIVITY = 0.97;
+const double cHardwareGX::READABLE_COPY_PROCESSIVITY = 1.0;
 
 tInstLib<cHardwareGX::tMethod>* cHardwareGX::initInstLib(void)
 {
@@ -262,6 +264,9 @@ tInstLib<cHardwareGX::tMethod>* cHardwareGX::initInstLib(void)
     tInstLibEntry<tMethod>("if-bind", &cHardwareGX::Inst_IfBind),
     tInstLibEntry<tMethod>("if-bind2", &cHardwareGX::Inst_IfBind2),
     tInstLibEntry<tMethod>("num-sites", &cHardwareGX::Inst_NumSites),
+    
+    tInstLibEntry<tMethod>("p-get", &cHardwareGX::Inst_ProgramidGet),
+    tInstLibEntry<tMethod>("p-put", &cHardwareGX::Inst_ProgramidPut),
 
     // These are dummy instructions used for making mutiple programids
     // look like one genome (for purposes of passing to offspring and printing).
@@ -399,13 +404,34 @@ void cHardwareGX::SingleProcess(cAvidaContext& ctx)
       const cInstruction& cur_inst = IP().GetInst();
       
       m_advance_ip = true;
+      m_reset_inputs = false;
+      m_reset_heads = false;
       SingleProcess_ExecuteInst(ctx, cur_inst);
       
       // Break out if we just divided b/c the number of programids 
       // will have changed and it won't be obvious how to continue
       if (m_just_divided) break;
+      
       if (m_advance_ip == true) { 
         IP().Advance();
+      }
+      
+      if (m_reset_inputs) {
+        // Re-randomize the inputs
+        organism->GetOrgInterface().ResetInputs(ctx); 
+        // And clear the current input buffer
+        m_current->m_inputBuffer.Clear();     
+      }
+     
+      if (m_reset_heads)
+      {
+        // Set the read and write heads back to ourself
+        cHeadProgramid& write = GetHead(nHardware::HEAD_WRITE);
+        cHeadProgramid& read = GetHead(nHardware::HEAD_READ);      
+        read.GetProgramid()->RemoveContactingHead(read);
+        read.Set(0, m_current->m_id);     
+        write.GetProgramid()->RemoveContactingHead(write);
+        write.Set(0, m_current->m_id);                                      
       }
       
       // Update this programid stat
@@ -2194,8 +2220,7 @@ bool cHardwareGX::Inst_TaskPutResetInputs(cAvidaContext& ctx)
 {
   bool return_value = Inst_TaskPut(ctx);          // Do a normal put
   organism->GetOrgInterface().ResetInputs(ctx);   // Now re-randomize the inputs this organism sees
-  m_current->m_inputBuffer.Clear();
-  //organism->ClearInput();                         // Also clear their input buffers, or they can still claim
+  m_current->m_inputBuffer.Clear();               // Also clear their input buffers, or they can still claim
                                                   // rewards for numbers no longer in their environment!
   return return_value;
 }
@@ -3234,6 +3259,8 @@ and moves the write head of the current programid to it.
 */
 bool cHardwareGX::Inst_NewProgramid(cAvidaContext& ctx, bool executable, bool bindable, bool readable)
 {
+  m_reset_inputs = true;
+
   // Do some maintenance on the programid where the write head was previously.
   // (1) Adjust the number of heads on it; this could make it executable!
   // (2) \todo Delete if it has no instructions or is below a certain size?
@@ -3241,8 +3268,19 @@ bool cHardwareGX::Inst_NewProgramid(cAvidaContext& ctx, bool executable, bool bi
   m_programids[write_head_contacted]->RemoveContactingHead(GetHead(nHardware::HEAD_WRITE));
   GetHead(nHardware::HEAD_WRITE).Set(0, m_current->m_id); // Immediately set the write head back to itself
   
-  // If we've reached the programid limit, then deal with that
-  if(m_programids.size() >= MAX_PROGRAMIDS) {
+  // If we've reached a programid limit, then deal with that
+  
+  // \todo Keep track of total programid length as it is allocated
+  // rather than adding it back up every time we hit this code
+  // Technically, this currently counts incorrectly (depending on your POV) because
+  // p-copy leaves a blank instruction in the spot where it is going to write next.
+  int used_length = 0;
+  for (unsigned int i=0; i<m_programids.size(); i++) {
+    used_length += m_programids[i]->GetMemory().GetSize();
+  }
+
+  if ( (m_programids.size() >= MAX_PROGRAMIDS) || (used_length > MAX_PROGRAMID_TOTAL_LENGTH) ) {
+  
     //Decide on a programid to destroy, currently highest number of cpu cycles executed
     //\todo more methods of choosing..
   
@@ -3307,6 +3345,8 @@ Temp Soln @JEB -- added a flag to programids so that only certain programids are
 */
 bool cHardwareGX::Inst_Bind(cAvidaContext& ctx) 
 {
+  m_reset_inputs = true;
+
   // Get the label that we're trying to match.
   // Do this first to advance IP past it.
   ReadLabel();
@@ -3355,6 +3395,8 @@ p-divide
 */
 bool cHardwareGX::Inst_Bind2(cAvidaContext& ctx)
 {
+  m_reset_inputs = true;
+
   // Get the label we're searching for.
   ReadLabel();
   
@@ -3451,6 +3493,8 @@ bool cHardwareGX::Inst_NumSites(cAvidaContext& ctx)
 */
 bool cHardwareGX::Inst_ProgramidCopy(cAvidaContext& ctx)
 {
+  m_reset_inputs = true;
+
   cHeadProgramid& write = GetHead(nHardware::HEAD_WRITE);
   cHeadProgramid& read = GetHead(nHardware::HEAD_READ);
   read.Adjust(); // Strange things can happen (like we're reading from a programid that was being written).
@@ -3478,7 +3522,6 @@ bool cHardwareGX::Inst_ProgramidCopy(cAvidaContext& ctx)
   }
   
   // Allocate space for one additional instruction if the write head is at the end
-  // Otherwise the write head will improperly 
   if(write.GetMemory().GetSize() == write.GetPosition() + 1) {
     write.GetMemory().Resize(write.GetMemory().GetSize() + 1);
   }
@@ -3498,6 +3541,20 @@ bool cHardwareGX::Inst_ProgramidCopy(cAvidaContext& ctx)
     // Advance the write head;
     write++;
   }
+  
+  // "Jump" Mutations
+  
+  if ( ctx.GetRandom().P(0.0000) )
+  {
+    // Set the read head to a random position
+    int new_read_pos = ctx.GetRandom().GetInt(read.GetMemory().GetSize());
+    read.Set(new_read_pos, read.GetMemSpace());
+  
+    // Reset any start/end labels that we might have been copying.
+    m_current->m_copying_site = false;
+    m_current->m_copying_label.Clear();
+  }
+  
   
   // Peek at the next inst to see if it is a NOP
   // If it isn't, then we can compare the label and possibly fall off  
@@ -3524,7 +3581,12 @@ bool cHardwareGX::Inst_ProgramidCopy(cAvidaContext& ctx)
       return true;
     }
   }
-   
+  
+  // Check our processivity - read and write heads fall off with some probability
+  // What kind of programid are we writing?
+  double terminate_p =  1 - ((m_programids[read.GetMemSpace()]->GetReadable()) ? READABLE_COPY_PROCESSIVITY : EXECUTABLE_COPY_PROCESSIVITY);
+  if ( ctx.GetRandom().P(terminate_p) ) m_reset_heads = true;
+  
   return true;
 }
 
@@ -3535,6 +3597,9 @@ telling us where new programids start and some of their properties. This is pret
 */
 bool cHardwareGX::Inst_ProgramidDivide(cAvidaContext& ctx)
 {
+  // Even if unsuccessful, we reset task inputs
+  m_reset_inputs = true;
+
   //This stuff is usually set by Divide_CheckViable, leaving it zero causes problems
   cPhenotype& phenotype = organism->GetPhenotype();
   organism->GetPhenotype().SetLinesExecuted(1);
@@ -3615,7 +3680,7 @@ bool cHardwareGX::Inst_ProgramidDivide(cAvidaContext& ctx)
   bool daughter_has_executable = false;
   bool daughter_has_bindable = false;
   
-  // Calculate these conditions.
+  // Calculate these conditions for offspring.
   for(programid_list::iterator i=offspring.begin(); i!=offspring.end(); ++i) {
     ++num_daughter_programids;
     if((*i)->GetReadable()) {
@@ -3626,11 +3691,33 @@ bool cHardwareGX::Inst_ProgramidDivide(cAvidaContext& ctx)
   }
   assert(daughter_has_bindable); // We know this should be there...
   
+  int num_mother_programids = 0;
+  int mother_genome_length = 0;
+  bool mother_has_executable = false;
+  bool mother_has_bindable = false;
+  
+  // Calculate these conditions for parent.
+  for(programid_list::iterator i=parent.begin(); i!=parent.end(); ++i) {
+    ++num_mother_programids;
+    if((*i)->GetReadable()) {
+      mother_genome_length += (*i)->GetMemory().GetSize();
+    }
+    mother_has_executable = mother_has_executable || (*i)->GetExecutable();
+    mother_has_bindable = mother_has_bindable || (*i)->GetBindable();
+  }
+  assert(mother_has_bindable); // We know this should be there...
+  
   // And check them.  Note that if this check fails, we have *not* modified the
   // state of the calling programid.
   if((num_daughter_programids == 0) 
      || (!daughter_has_executable) 
      || (daughter_genome_length < 50)) { 
+    // \todo link to original genome length
+    return false;
+  }
+  if((num_mother_programids == 0) 
+     || (!mother_has_executable) 
+     || (mother_genome_length < 50)) { 
     // \todo link to original genome length
     return false;
   }
@@ -3666,6 +3753,19 @@ bool cHardwareGX::Inst_ProgramidDivide(cAvidaContext& ctx)
   // Mother viability checks could go here.  
   m_just_divided = true;
   return true;
+}
+
+bool cHardwareGX::Inst_ProgramidGet(cAvidaContext& ctx)
+{
+  m_reset_heads = true;
+  return Inst_TaskGet(ctx);
+}
+
+bool cHardwareGX::Inst_ProgramidPut(cAvidaContext& ctx)
+{
+  m_reset_inputs = true;
+  m_reset_heads = true;
+  return Inst_TaskPut(ctx);
 }
 
 
