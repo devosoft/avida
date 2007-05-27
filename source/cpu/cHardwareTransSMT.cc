@@ -181,6 +181,7 @@ void cHardwareTransSMT::Reset()
   }
 #endif	
   
+  organism->ClearParasites();
   organism->NetReset();
 }
 
@@ -660,7 +661,6 @@ bool cHardwareTransSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier
     return false; // (inject fails)
   }
   if (end_pos < MIN_INJECT_SIZE) {
-    m_mem_array[mem_space_used] = cGenome("a"); 
     organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: new size too small");
     return false; // (inject fails)
   }  
@@ -676,8 +676,10 @@ bool cHardwareTransSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier
   // reset the memory space that was injected
   m_mem_array[mem_space_used] = cGenome("a"); 
 	
-  for (int x = 0; x < nHardware::NUM_HEADS; x++) GetHead(x).Reset(this, IP().GetMemSpace());
-  for (int x = 0; x < NUM_LOCAL_STACKS; x++) Stack(x).Clear();
+  if (m_world->GetConfig().INJECT_METHOD.Get() == INJECT_METHOD_SPLIT) {
+    for (int x = 0; x < nHardware::NUM_HEADS; x++) GetHead(x).Reset(this, IP().GetMemSpace());
+    for (int x = 0; x < NUM_LOCAL_STACKS; x++) Stack(x).Clear();
+  }
   
   AdvanceIP() = false;
   
@@ -982,34 +984,26 @@ bool cHardwareTransSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
   //reset the memory of the memory space that has been divided off
   m_mem_array[mem_space_used] = cGenome("a"); 
 	
-  // 3 Division Methods:
-  // 1) DIVIDE_METHOD_OFFSPRING - Create a child, leave parent state untouched.
-  // 2) DIVIDE_METHOD_SPLIT - Create a child, completely reset state of parent.
-  // 3) DIVIDE_METHOD_BIRTH - Create a child, reset state of parent's current thread.
-  const int div_method = m_world->GetConfig().DIVIDE_METHOD.Get();
-  if (parent_alive && !(div_method == DIVIDE_METHOD_OFFSPRING))
-	{
-		
-		if (div_method == DIVIDE_METHOD_SPLIT)
-		{
-			//this will wipe out all parasites on a divide.
-			Reset();
-			
-		}
-		else if (div_method == DIVIDE_METHOD_BIRTH)
-		{
-			if((!organism->GetPhenotype().IsModified() && GetNumThreads() > 1) || GetNumThreads() > 2) {
-	      ThreadKill(m_cur_thread);
-	    } else {
-        //this will reset the current thread's heads and stacks.  It will 
-        //not touch any other threads or memory spaces (ie: parasites)
-	      for(int x = 0; x < nHardware::NUM_HEADS; x++) {
-					GetHead(x).Reset(this, 0);
-				}
-	      for(int x = 0; x < NUM_LOCAL_STACKS; x++) {
-					Stack(x).Clear();
-				}
-	    }
+  // Division Methods:
+  // 0 - DIVIDE_METHOD_OFFSPRING - Create a child, leave parent state untouched.
+  // 1 - DIVIDE_METHOD_SPLIT - Create a child, completely reset state of parent.
+  // 2 - DIVIDE_METHOD_BIRTH - Create a child, reset state of parent's current thread.
+  
+  if (parent_alive) { // If the parent is no longer alive, all of this is moot
+    switch (m_world->GetConfig().DIVIDE_METHOD.Get()) {
+      case DIVIDE_METHOD_SPLIT:
+        Reset();  // This will wipe out all parasites on a divide.
+        break;
+      
+      case DIVIDE_METHOD_BIRTH:
+        // Reset only the calling thread's state
+        for(int x = 0; x < nHardware::NUM_HEADS; x++) GetHead(x).Reset(this, 0);
+        for(int x = 0; x < NUM_LOCAL_STACKS; x++) Stack(x).Clear();
+        break;
+      
+      case DIVIDE_METHOD_OFFSPRING:
+      default:
+        break;
 		}
 		AdvanceIP() = false;
 	}

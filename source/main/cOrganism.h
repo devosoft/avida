@@ -229,7 +229,7 @@ public:
   void AddParasite(cInjectGenotype* cur) { m_parasites.Push(cur); }
   cInjectGenotype& GetParasite(int x) { return *m_parasites[x]; }
   int GetNumParasites() const { return m_parasites.GetSize(); }
-  void ClearParasites() { m_parasites.Resize(0); }
+  void ClearParasites();
 		      
 
   // --------  Support Methods  --------

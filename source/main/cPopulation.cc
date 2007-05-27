@@ -480,9 +480,7 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell)
   }
   genotype->RemoveOrganism();
   
-  for (int i = 0; i < organism->GetNumParasites(); i++) {
-    organism->GetParasite(i).RemoveParasite();
-  }
+  organism->ClearParasites();
   
   // And clear it!
   in_cell.RemoveOrganism();

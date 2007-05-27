@@ -423,6 +423,12 @@ bool cOrganism::InjectHost(const cCodeLabel& label, const cGenome& injected_code
   return m_hardware->InjectHost(label, injected_code);
 }
 
+void cOrganism::ClearParasites()
+{
+  for (int i = 0; i < m_parasites.GetSize(); i++) m_parasites[i]->RemoveParasite();
+  m_parasites.Resize(0);
+}
+
 
 double cOrganism::CalcMeritRatio()
 {
