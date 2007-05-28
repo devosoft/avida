@@ -2166,7 +2166,7 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
   const int function = ctx.GetTaskEntry()->GetArguments().GetInt(0);
 
    // always get x&y, at least for now, turn it into a double between 0 and 1
-  double y, x, Fx;
+  double y, x, Fx = 0.0;
 
   const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
   if (args.GetInt(1)) {

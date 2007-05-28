@@ -47,7 +47,11 @@ cString getAvidaVersion()
 #endif
   version += " (";
   version += VERSION_TAG;
-  version += ")";
+  version += ") ";
+  
+#ifdef COMPILE_ARCH
+  version += COMPILE_ARCH " ";
+#endif
 
 #ifdef DEBUG
   version += " debug";
@@ -80,12 +84,12 @@ cString getAvidaVersion()
 void printVersionBanner()
 {
   // output copyright message
-  cout << "----------------------------------------------------------------------" << endl;
-  cout << getAvidaVersion() << endl << endl;
 
+  cout << getAvidaVersion() << endl << endl;
+  cout << "----------------------------------------------------------------------" << endl;
   cout << "by Charles Ofria" << endl << endl;
 
-  cout << "Lead Developers: David Bryson (Avida) and Kaben Nanlohy (Avida-ED)" << endl << endl;
+  cout << "Lead Developers: David M. Bryson (Avida) and Kaben Nanlohy (Avida-ED)" << endl << endl;
 
   cout << "Active contributors include:  Christoph Adami, Brian Baer, Jeffrey Barrick," << endl
        << "Benjamin Beckmann, Jeffrey Clune, Art Covert, Santiago Elena, Sherri Goings," << endl
