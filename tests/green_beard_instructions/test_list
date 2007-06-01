@@ -1,8 +1,7 @@
 ;--- Begin Test Configuration File (test_list) ---
 [main]
 args = -s 1 -set INST_SET inst_set.SexDonateGbthreshEdtKinRndNopx -set BIRTH_METHOD 0 -set MERIT_GIVEN 5 -set MERIT_RECEIVED 50 -set MAX_DONATE_KIN_DIST 1 -set MAX_DONATE_EDIT_DIST 15 -set MIN_GB_DONATE_THRESHOLD 1 -set MAX_DONATES 100 -set ENVIRONMENT_FILE envZeroResources.cfg -set START_CREATURE organism.sexDefault -set EVENT_FILE eventsFullPopTest.cfg -set WORLD_X 20 -set WORLD_Y 20
-
-	                 ; Command line arguments to pass to the application
+; Command line arguments to pass to the application
 app = %(app)s            ; Application path to test
 nonzeroexit = disallow   ; Exit code handling (disallow, allow, or require)
                          ;  disallow - treat non-zero exit codes as failures
