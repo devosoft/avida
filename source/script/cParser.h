@@ -27,6 +27,9 @@
 
 #include <iostream>
 
+#ifndef ASTree_h
+#include "ASTree.h"
+#endif
 #ifndef cASLibrary_h
 #include "cASLibrary.h"
 #endif
@@ -40,32 +43,26 @@
 #include "cSymbolTable.h"
 #endif
 
+class cFile;
+
 
 class cParser
 {
 private:
   cASLibrary* m_library;
   cLexer* m_lexer;
-  cSymbolTable* m_symtbl;
+  cASTNode* m_tree;
+  
+  bool m_success;
   
   cParser();
   
 public:
-  cParser(cASLibrary* library) : m_library(library), m_symtbl(NULL) { ; }
+  cParser(cASLibrary* library) : m_library(library), m_success(true) { ; }
   
-  cScriptObject* Parse(std::istream* input);
+  bool Parse(cFile& input);
+  
+  void Accept(cASTVisitor& visitor);
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nParser {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 #endif

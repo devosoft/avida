@@ -1,7 +1,8 @@
 ;--- Begin Test Configuration File (test_list) ---
 [main]
-args = -a                ; Command line arguments to pass to the application
-app = %(app)s            ; Application path to test
+; Command line arguments to pass to the application
+args = -a
+app = %(defailt_app)s
 nonzeroexit = disallow   ; Exit code handling (disallow, allow, or require)
                          ;  disallow - treat non-zero exit codes as failures
                          ;  allow - all exit codes are acceptable

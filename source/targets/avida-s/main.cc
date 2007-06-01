@@ -1,6 +1,6 @@
 /*
  *  main.cc
- *  avida_test_language
+ *  Avida
  *
  *  Created by David on 1/13/06.
  *  Copyright 1999-2007 Michigan State University. All rights reserved.
@@ -23,6 +23,7 @@
  */
 
 #include "cASLibrary.h"
+#include "cFile.h"
 #include "cParser.h"
 
 #include <iostream>
@@ -32,7 +33,9 @@ int main (int argc, char * const argv[])
 {
   cASLibrary* lib = new cASLibrary;
   cParser* parser = new cParser(lib);
-  parser->Parse(&std::cin);
+  
+  cFile file;
+  if (file.Open("main.asl")) parser->Parse(file);
   
   return 0;
 }

@@ -90,6 +90,10 @@ public:
    **/
   bool Open(cString _filename, std::ios::openmode mode=(std::ios::in));
   
+  // Access to the underlying implmentation
+  std::fstream* GetFileStream() { return &fp; }
+  
+  
   /**
    * Close the currently open file.
    **/

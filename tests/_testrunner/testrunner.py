@@ -52,7 +52,7 @@ import xml.dom.minidom
 
 # Global Constants
 # ---------------------------------------------------------------------------------------------------------------------------
-TESTRUNNER_VERSION = "1.4"
+TESTRUNNER_VERSION = "1.4b"
 TESTRUNNER_COPYRIGHT = "2007"
 
 TRUE_STRINGS = ("y","Y","yes","Yes","true","True","1")
@@ -172,8 +172,10 @@ def sample_test_list():
   test_list = ";--- Begin Test Configuration File (%s) ---" % TEST_LIST
   test_list += """
 [main]
-args =                   ; Command line arguments to pass to the application
-app = %(app)s            ; Application path to test
+; Command line arguments to pass to the application
+args =                   
+
+app = %(default_app)s            ; Application path to test
 nonzeroexit = disallow   ; Exit code handling (disallow, allow, or require)
                          ;  disallow - treat non-zero exit codes as failures
                          ;  allow - all exit codes are acceptable
@@ -283,7 +285,10 @@ class cTest:
 
     
     # Load the App for the test and check that it exists
-    self.app = self.getSetting("main", "app")
+    try:
+      self.app = self.cfg.get('main', 'app', False, settings)
+    except:
+      self.app = settings['default_app']
     self.app = os.path.abspath(self.app)
     if not os.path.exists(self.app):
       print "Error: Application (%s) not found" % self.app
@@ -321,17 +326,6 @@ class cTest:
   
 
 
-  # string cTest::getSetting(string sect, string opt) {
-  def getSetting(self, sect, opt):
-    global settings
-    try:
-      return self.cfg.get(sect, opt, False, settings)
-    except:
-      return settings[opt]
-  # } // End of cTest::getSetting()
-  
-  
-  
   # bool cTest::isConsistencyTest() {
   def isConsistencyTest(self): return self.consistency_enabled
   # } // End of isConsistencyTest()
@@ -896,7 +890,7 @@ def main(argv):
   # Setup Global Settings
   #  - settings that begin with an underscore (i.e. _testrunner_name) are for internal use and are not intended for
   #    use as variables in test_list configuration files
-  settings["app"] = "" # App is defined later, since values like builddir can be modified by cmdline settings
+  settings["default_app"] = "" # App is defined later, since values like builddir can be modified by cmdline settings
   settings["builddir"] = getConfig("testrunner", "builddir", "build")
   settings["mode"] = getConfig("testrunner", "mode", "local")
   settings["svn"] = getConfig("testrunner", "svn", "svn")
@@ -996,7 +990,7 @@ def main(argv):
 
   # Load the default app to test
   try:
-    settings["app"] = cfg.get("main", "app")
+    settings["default_app"] = cfg.get("main", "app")
   except:
     print "Warning: No default app configured"
   

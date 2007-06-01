@@ -25,8 +25,13 @@
 #include "cParser.h"
 
 #include "AvidaScript.h"
+#include "cFile.h"
 
 /*
+ The following represents the grammar for AvidaScript in BNF, adjusted so that it is compatible with recursive descent
+ parsing (to be) implemented by cParser.
+ 
+ 
  script: statement_list
  
  statement_list: statement statement_list
@@ -138,11 +143,17 @@
  declare_function: REF CMD_FUNCTION type_any ID PREC_OPEN var_declare_list PREC_CLOSE ENDL
  define_function: CMD_FUNCTION type_any ID PREC_OPEN var_declare_list PREC_CLOSE ENDL statement_list CMD_ENDFUNCTION
  
+ 
+ @TODO - return
+ @TODO - array definitions
+ @TODO - suppress
+ @TODO - ARR_OPEN ARR_CLOSE as block open/close.  
+ @TODO - function variant with block rather than endfunction.
  */
 
-cScriptObject* cParser::Parse(std::istream* input)
+bool cParser::Parse(cFile& input)
 {
-  m_lexer = new cLexer(input);
+  m_lexer = new cLexer(input.GetFileStream());
   
   int tok = m_lexer->yylex();
   while (tok) {
@@ -152,5 +163,11 @@ cScriptObject* cParser::Parse(std::istream* input)
   
   delete m_lexer;
   
-  return NULL;
+  return m_success;
+}
+
+
+void cParser::Accept(cASTVisitor& visitor)
+{
+  
 }
