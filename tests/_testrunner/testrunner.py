@@ -52,7 +52,7 @@ import xml.dom.minidom
 
 # Global Constants
 # ---------------------------------------------------------------------------------------------------------------------------
-TESTRUNNER_VERSION = "1.3b"
+TESTRUNNER_VERSION = "1.4"
 TESTRUNNER_COPYRIGHT = "2007"
 
 TRUE_STRINGS = ("y","Y","yes","Yes","true","True","1")
@@ -732,7 +732,8 @@ class cTest:
     else:
       print "failed\n"
       if self.exitcode != 0:
-        print "exit code: %d" % self.exitcode
+        print "exit code: %d" % os.WEXITSTATUS(self.exitcode)
+        print "term signal: %d" % os.WTERMSIG(self.exitcode)
       else:
         print "output variance(s):"
         for err in self.errors: print err
