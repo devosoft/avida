@@ -135,10 +135,10 @@ cStats::cStats(cWorld* world)
   task_exe_count.SetAll(0);
 
 #if INSTRUCTION_COUNT
-  sum_exe_inst_array.Resize( m_world->GetNumInstructions() );
+  sum_exe_inst_array.Resize(m_world->GetNumInstructions());
   ZeroInst();
 #endif
-  inst_names.Resize( m_world->GetNumInstructions() );
+  inst_names.Resize(m_world->GetNumInstructions());
 
   reaction_count.Resize( m_world->GetNumReactions() );
   reaction_count.SetAll(0);
@@ -322,7 +322,7 @@ void cStats::ZeroRewards()
 #if INSTRUCTION_COUNT
 void cStats::ZeroInst()
 {
-  for( int i=0; i < sum_exe_inst_array.GetSize(); i++ ){
+  for (int i = 0; i < sum_exe_inst_array.GetSize(); i++) {
     sum_exe_inst_array[i].Clear();
   }
 }
@@ -920,10 +920,11 @@ void cStats::PrintInstructionData(const cString& filename)
   df.WriteComment("Avida instruction execution data");
   df.WriteTimeStamp();
 
-#if INSTRUCTION_COUNT
   df.Write(m_update, "Update");
-  for( int i=0; i < sum_exe_inst_array.GetSize(); i++ ){
-    df.Write((int) sum_exe_inst_array[i].Sum(), inst_names[i]);
+
+#if INSTRUCTION_COUNT
+  for (int i = 0; i < sum_exe_inst_array.GetSize(); i++) {
+    df.Write(sum_exe_inst_array[i].Sum(), inst_names[i]);
   }
 #else // INSTRUCTION_COUNT undefined
   m_world->GetDriver().RaiseException("Warning: Instruction Counts not compiled in");

@@ -61,6 +61,16 @@ void cDataFile::Write(int i, const char* descr)
 }
 
 
+void cDataFile::Write(long i, const char* descr)
+{
+  if (!m_descr_written) {
+    m_data += cStringUtil::Stringf("%i ", i);
+    WriteColumnDesc(descr);
+  } else
+    m_fp << i << " ";
+}
+
+
 void cDataFile::Write(const char* data_str, const char* descr)
 {
   if (!m_descr_written) {

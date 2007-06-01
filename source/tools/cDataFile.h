@@ -107,9 +107,11 @@ public:
 
   void Write(double x, const char* descr);
   void Write(int i, const char* descr);
+  void Write(long i, const char* descr);
   void Write(const char* data_str, const char* descr);
   inline void WriteAnonymous(double x) { m_fp << x << " "; }
   inline void WriteAnonymous(int i) { m_fp << i << " "; }
+  inline void WriteAnonymous(long i) { m_fp << i << " "; }
   inline void WriteAnonymous(const char* data_str) { m_fp << data_str << " "; }
   void WriteBlockElement(double x, int element, int x_size);
   void WriteBlockElement(int i, int element, int x_size);

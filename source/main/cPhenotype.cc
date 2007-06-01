@@ -277,6 +277,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   last_task_value.SetAll(0);
   last_reaction_count.SetAll(0);
   last_reaction_add_reward.SetAll(0);
+  last_inst_count.SetAll(0);
   last_sense_count.SetAll(0);
 
   // Setup other miscellaneous values...
