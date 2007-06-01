@@ -772,7 +772,7 @@ public:
 
 
 /*
- @MRR May 2007 [UNTESTED]
+ @MRR May 2007 [BETA]
  This function prints out fitness data. The main point is that it
  calculates the average fitness from info from the testCPU + the actual
  merit of the organisms, and assigns zero fitness to those organisms
@@ -927,7 +927,7 @@ public:
 			gens.Push(genotype);
 		}
 		
-		tArray<int> histogram = MakeHistogram(orgs, gens, m_hist_fmin, m_hist_fstep, m_hist_fstep, m_mode, m_world, ctx);
+		tArray<int> histogram = MakeHistogram(orgs, gens, m_hist_fmin, m_hist_fstep, m_hist_fmax, m_mode, m_world, ctx);
 		
 		
 		//Output histogram
@@ -944,7 +944,7 @@ public:
 
 
 /*
- @MRR May 2007  [INCOMPLETE]
+ @MRR May 2007  [BETA]
  
  This function requires Avida be in run mode.
  
@@ -982,7 +982,7 @@ public:
 	cActionPrintRelativeFitnessHistogram(cWorld* world, const cString& args) : cAction(world, args) 
 	{ 
 		cString largs(args);
-		m_filename   = (largs.GetSize()) ? largs.PopWord()           : "rel_fitness.dat";
+		m_filename   = (largs.GetSize()) ? largs.PopWord()           : "rel_fitness_hist.dat";
 		m_mode       = (largs.GetSize()) ? largs.PopWord().ToUpper() : "CURRENT";
 		m_hist_fmin  = (largs.GetSize()) ? largs.PopWord().AsDouble(): 0;
 		m_hist_fstep = (largs.GetSize()) ? largs.PopWord().AsDouble(): 0.1;
@@ -1033,7 +1033,7 @@ public:
 			for (git = gens.begin(), oit = orgs.begin(); git != gens.end(); git++, oit++){
 				cCPUTestInfo test_info;
 				double fitness = 0.0;
-				double parent_fitness = (*git)->GetParentGenotype()->GetFitness();
+				double parent_fitness = ( (*git)->GetParentID() > 0) ? (*git)->GetParentGenotype()->GetFitness() : 1.0;
 				if (mode == "TEST_CPU" || mode == "ACTUAL"){
 					testcpu->TestGenome(ctx, test_info, (*git)->GetGenome());
 				}
@@ -1053,7 +1053,7 @@ public:
 				
 				//Update the histogram
 				if (parent_fitness <= 0.0)
-					world->GetDriver().RaiseFatalException(1, "PrintRelativeFitness::MakeHistogram: Parent fitness is zero.");
+					world->GetDriver().RaiseFatalException(1, cString("PrintRelativeFitness::MakeHistogram: Parent fitness is zero.") + cStringUtil::Convert((*git)->GetParentID()) + cString(":") + cStringUtil::Convert( (*git)->GetParentGenotype()->GetMerit() ));
 				
 				double rfitness = fitness/parent_fitness;
 				int update_bin = (rfitness == 0) ? 0 :       
@@ -1079,13 +1079,41 @@ public:
 		//Handle possible errors
 		if (ctx.GetAnalyzeMode())
 			m_world->GetDriver().RaiseFatalException(1, "PrintRelativeFitnessHistogram requires avida to be in run mode.");
+	
+		//Gather data objects
+		cPopulation& pop        = m_world->GetPopulation();
+		const int    update     = m_world->GetStats().GetUpdate();
+		const double generation = m_world->GetStats().SumGeneration().Average();
+		tArray<cOrganism*> orgs;
+		tArray<cGenotype*> gens;
+		
+		for (int i = 0; i < pop.GetSize(); i++)
+		{
+			if (pop.GetCell(i).IsOccupied() == false) continue;  //Skip unoccupied cells
+			cOrganism* organism = pop.GetCell(i).GetOrganism();
+			cGenotype* genotype = organism->GetGenotype();
+			orgs.Push(organism);
+			gens.Push(genotype);
+		}
+		
+		tArray<int> histogram = MakeHistogram(orgs, gens, m_hist_fmin, m_hist_fstep, m_hist_fmax, m_mode, m_world, ctx);
+		
+		
+		//Output histogram
+		cDataFile& hdf = m_world->GetDataFile(m_filename);
+		hdf.Write(update, "Update");
+		hdf.Write(generation, "Generation");
+		
+		for (int k = 0; k < histogram.GetSize(); k++)
+			hdf.Write(histogram[k], GetHistogramBinLabel(k, m_hist_fmin, m_hist_fstep, m_hist_fmax));
+		hdf.Endl();
 	}
 };
 
 
 
 /*
- @MRR May 2007 [UNTESTED]
+ @MRR May 2007 [BETA]
  This function requires CCLADE_TRACKING to be enabled and avida
  operating non-analyze mode.
  
@@ -1122,7 +1150,7 @@ class cActionPrintCCladeFitnessHistogram : public cAction
 		cActionPrintCCladeFitnessHistogram(cWorld* world, const cString& args) : cAction(world, args)
 		{
 			cString largs(args);
-		  m_filename   = (largs.GetSize()) ? largs.PopWord()           : "cclade_fitness.dat";
+		  m_filename   = (largs.GetSize()) ? largs.PopWord()           : "cclade_fitness_hist.dat";
 			m_mode       = (largs.GetSize()) ? largs.PopWord().ToUpper() : "CURRENT";
 			m_hist_fmin  = (largs.GetSize()) ? largs.PopWord().AsDouble(): -3.0;
 			m_hist_fstep = (largs.GetSize()) ? largs.PopWord().AsDouble(): 0.5;
@@ -1179,9 +1207,8 @@ class cActionPrintCCladeFitnessHistogram : public cAction
 			map< int, tArray<cOrganism*> >::iterator oit = org_map.begin();
 			map< int, tArray<cGenotype*> >::iterator git = gen_map.begin();
 			for(; oit != org_map.end(); oit++, git++){
-				tArray<int> hist = cActionPrintLogFitnessHistogram::MakeHistogram( (oit->second), (git->second),
-																																				m_hist_fmin, m_hist_fstep, m_hist_fmax,
-																																				m_mode, m_world, ctx );
+				tArray<int> hist = 
+					cActionPrintLogFitnessHistogram::MakeHistogram( (oit->second), (git->second),m_hist_fmin, m_hist_fstep, m_hist_fmax, m_mode, m_world, ctx );
 				if (first_run){  //Print header information if first time through
 					first_run = false;
 					fp << "# PrintCCladeFitnessHistogram" << endl << "# Bins: ";
@@ -1202,7 +1229,7 @@ class cActionPrintCCladeFitnessHistogram : public cAction
 
  
 /*
- @MRR May 2007  [INCOMPLETE]
+ @MRR May 2007  [BETA]
  This function requires CCLADE_TRACKING to be enabled and Avida
  operating non-analyze mode.
  
@@ -1239,7 +1266,7 @@ public:
 	cActionPrintCCladeRelativeFitnessHistogram(cWorld* world, const cString& args) : cAction(world, args) 
 	{
 		cString largs(args);
-		m_filename   = (largs.GetSize()) ? largs.PopWord()           : "cclade_rel_fitness.dat";
+		m_filename   = (largs.GetSize()) ? largs.PopWord()           : "cclade_rel_fitness_hist.dat";
 		m_mode       = (largs.GetSize()) ? largs.PopWord().ToUpper() : "CURRENT";
 		m_hist_fmin  = (largs.GetSize()) ? largs.PopWord().AsDouble(): 0;
 		m_hist_fstep = (largs.GetSize()) ? largs.PopWord().AsDouble(): 0.2;
@@ -1344,7 +1371,7 @@ class cActionPrintGenomicSiteEntropy : public cAction
 			m_filename = (largs.GetSize()) ? largs.PopWord() : "GenomicSiteEntropy.dat";
 		}
 
-		static const cString GetDescription() { return "Arguments: [filename = \"GenomicSiteEntropyData\"] [use_gap = false]";}
+		static const cString GetDescription() { return "Arguments: [filename = \"GenomicSiteEntropyData.datcd \"] [use_gap = false]";}
 		
 		void Process(cAvidaContext& ctx){
 			const int        update     = m_world->GetStats().GetUpdate();

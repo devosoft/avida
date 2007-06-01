@@ -27,7 +27,6 @@
 #define cGenotype_h
 
 #include <fstream>
-
 #ifndef cDoubleSum_h
 #include "cDoubleSum.h"
 #endif

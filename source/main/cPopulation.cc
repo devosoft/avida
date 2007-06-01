@@ -300,12 +300,14 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
     }
   }
   
+  double old_fitness = parent_genotype->GetFitness();
   // Do any statistics on the parent that just gave birth...
   parent_genotype->AddGestationTime( parent_phenotype.GetGestationTime() );
   parent_genotype->AddFitness(       parent_phenotype.GetFitness()       );
   parent_genotype->AddMerit(         parent_phenotype.GetMerit()         );
   parent_genotype->AddCopiedSize(    parent_phenotype.GetCopiedSize()    );
   parent_genotype->AddExecutedSize(  parent_phenotype.GetExecutedSize()  );
+  
   
   // Place all of the offspring...
   for (int i = 0; i < child_array.GetSize(); i++) {

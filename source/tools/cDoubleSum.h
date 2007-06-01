@@ -54,7 +54,7 @@ public:
   double S3()           const { return s3; }
   double S4()           const { return s4; }
 
-  double Average() const { return ( n >1 ) ? (s1/n) : 0; }
+  double Average() const { return ( n > 0 ) ? (s1/n) : 0; }
 
   double Variance() const { return ( n > 1 ) ?
       (s2 - s1*s1/n) / (n-1) : INF_ERR; }
