@@ -1,0 +1,39 @@
+#filetype genotype_data
+#format id parent_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence
+
+#  1: ID
+#  2: parent ID
+#  3: parent distance
+#  4: number of orgranisms currently alive
+#  5: total number of organisms that ever existed
+#  6: length of genome
+#  7: merit
+#  8: gestation time
+#  9: fitness
+# 10: update born
+# 11: update deactivated
+# 12: depth in phylogentic tree
+# 13: genome of organism
+
+758 3 1 0 1 100 97 388 0.25 63 100 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccciccccccccccccccccccyxCcauzab 
+1007 852 1 0 1 100 97 384 0.252604 88 100 4 rycazccccccccctccccccccczccxcccccpcccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 
+725 7 1 0 2 100 97 388 0.25 63 91 2 rycazcccccccccccscccccccccccccccccchcccccccccccccDcccccccccccccccccccccccccccccccccccccccccyxCcatzab 
+949 3 1 0 1 100 97 389 0.249357 77 90 1 rycazcccccccccccccccwccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 
+748 488 2 0 2 100 97 386 0.251295 63 90 2 rycazcccccccccccccccecccpccccccccccccccccccccccccccccccccccccccccccjcccccccccccccccccccccccyxCcatzab 
+797 3 1 0 2 100 97 389 0.249357 64 90 1 rycazccccccccacccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 
+588 200 1 0 10 100 97 385 0.251948 39 90 2 rycazccccccccccccccccccccccxcccccpcccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 
+366 2 1 0 12 100 97 389 0.249357 26 90 1 rycazcccccccccccccccccccccccccrccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 
+855 773 1 0 1 100 97 387 0.250646 75 89 4 rycazcccccccccccccccccccccccccrccccuccccchcclcccccpccccccccccccccccccctccccccccccccccccccccyxCcatzab 
+284 2 1 0 13 100 97 389 0.249357 26 89 1 rycazcccccccccccccccccccrccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 
+781 2 1 0 1 100 97 388 0.25 63 89 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccqcccccccccccccccccccccccyxCcatzab 
+935 570 1 0 1 100 97 387 0.250646 76 89 4 rycazcccccccccccccccccccccccccccrcccccdcccccccccccccccccccccccccccccccaccccccccpcccccccccccyxCcatzab 
+909 509 1 0 1 100 97 383 0.253264 76 89 3 rycazcccccccccgcccccccccccccccccccccccccccccccccgcccccccccccccccccccccccjcccccccccccxccccccyxCcatzab 
+826 2 2 0 1 100 87 377 0.230769 64 88 1 rycazccccccccccccccccccccccccdccccccccccccccCccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 
+814 2 1 0 1 100 97 388 0.25 64 87 1 rycazccccccccccccccccccccicccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 
+70 2 1 0 12 100 97 386 0.251295 13 86 1 rycazccccccccccxcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 
+834 570 2 0 1 100 97 385 0.251948 64 77 4 rycazccccccccccccckcccccccccccccrcccccdcccccccccccccpccccccccccccccccccccccccccpcccccccccccyxCcatzab 
+726 284 1 0 1 100 97 389 0.249357 63 75 2 rycazcccccccccccccccccccrcccccccccccccccccccccccccccccccccccbccccccccccccccccccccccccccccccyxCcatzab 
+312 2 2 0 1 100 97 385 0.251948 26 40 1 rycazcccccccccgcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccxccccccyxCcatzab 
+6 2 3 0 1 100 95 385 0.246753 12 39 1 rycazccccccccccccccccccqccccccccccccccccccccccccccccccCccwcccccccccccccccccccccccccccccccccyxCcatzab 
+150 2 1 0 1 100 97 389 0.249357 14 39 1 rycazcccccccccccccccccccccccccccrccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 
+167 3 1 0 1 100 97 388 0.25 14 38 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccczcccccccccccccccccccccccccyxCcauzab 
