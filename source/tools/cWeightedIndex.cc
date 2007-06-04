@@ -46,6 +46,8 @@ cWeightedIndex::~cWeightedIndex()
 void cWeightedIndex::AdjustSubtree(int id, double weight_change)
 {
   subtree_weight[id] += weight_change;
+  if(subtree_weight[id] < 0.0001)  //bb: added to catch round off error
+    subtree_weight[id] = 0.0;
   if (id != 0) {
     AdjustSubtree(GetParent(id), weight_change);
   }

@@ -115,6 +115,7 @@ protected:
 
   int m_max_executed;      // Max number of instruction executed before death.  
   bool m_is_running;       // Does this organism have the CPU?
+  bool m_is_sleeping;      // Is this organisms sleeping?
   
   class cNetSupport
   {
@@ -172,6 +173,9 @@ public:
 
   void SetRunning(bool in_running) { m_is_running = in_running; }
   bool IsRunning() { return m_is_running; }
+
+  void SetSleeping(bool in_sleeping) { m_is_sleeping = in_sleeping; }
+  bool IsSleeping() { return m_is_sleeping; }
   
   
   // --------  cOrgInterface Methods  --------

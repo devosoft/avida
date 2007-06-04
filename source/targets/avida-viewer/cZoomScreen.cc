@@ -99,11 +99,13 @@ void cZoomScreen::DrawStats()
   
   Print(5, 0, "Fitness...:");
   Print(6, 0, "Gestation.:");
-  Print(7, 0, "CPU Speed.:");
-  Print(8, 0, "Cur Merit.:");
-  Print(9, 0, "GenomeSize:");
-  Print(10, 0, "Mem Size..:");
-  Print(11, 0, "Faults....:");
+  Print(7, 0, "Cur Energy:");
+  Print(8, 0, "Str Energy:");
+  Print(9, 0, "CPU Speed.:");
+  Print(10, 0, "Cur Merit.:");
+  Print(11, 0, "GenomeSize:");
+  Print(12, 0, "Mem Size..:");
+  Print(13, 0, "Faults....:");
   
   Print(1,  27, "Location..:");
   
@@ -237,7 +239,7 @@ void cZoomScreen::DrawCPU_Original()
   Print(13, 52, "Location.....:");
   Print(14, 52, "Genotype ID..:");
   Print(15, 52, "Genotype Name:");
-  
+  Print(16, 52, "Cur Energy...:");  
   Print(17, 52, "Faults.......:");
   Print(18, 52, "Offspring....:");
   Print(19, 52, "Thread.......:");
@@ -426,12 +428,14 @@ void cZoomScreen::UpdateStats(cHardwareBase& hardware)
   
   PrintDouble(5, 14, phenotype.GetFitness());
   Print(6, 15, "%6d ", phenotype.GetGestationTime());
-  PrintDouble(7, 14, phenotype.GetMerit().GetDouble());
-  PrintDouble(8, 14, cur_merit.GetDouble());
-  Print(9, 15, "%6d ", genotype ? genotype->GetLength() : 0);
-  Print(10, 15, "%6d ", hardware.GetMemory().GetSize());
+  PrintDouble(7, 14, phenotype.GetStoredEnergy());
+  PrintDouble(8, 14, phenotype.GetEnergyBonus());
+  PrintDouble(9, 14, phenotype.GetMerit().GetDouble());
+  PrintDouble(10, 14, cur_merit.GetDouble());
+  Print(11, 15, "%6d ", genotype ? genotype->GetLength() : 0);
+  Print(12, 15, "%6d ", hardware.GetMemory().GetSize());
   
-  Print(11, 15, "%6d ", phenotype.GetCurNumErrors());
+  Print(13, 15, "%6d ", phenotype.GetCurNumErrors());
   
   Print(4, 39, "%9d ", phenotype.GetGeneration());
   Print(5, 39, "%9d ", phenotype.GetAge());
@@ -601,12 +605,15 @@ void cZoomScreen::UpdateCPU(cHardwareBase& hardware)
   
   Print(14, 69, "%10d", info.GetActiveGenotypeID());
   Print(15, 69, "%10s", static_cast<const char*>(info.GetActiveName()));
-  
+
   cPhenotype& phenotype = info.GetActiveCell()->GetOrganism()->GetPhenotype();
-  Print(17, 69, "%10d", phenotype.GetCurNumErrors());
-  Print(18, 69, "%10d", phenotype.GetNumDivides());
-  if (info.GetThreadLock() != -1) Print(19, 67, "LOCKED");
-  else Print(19, 67, "      ");
+  PrintDouble(16, 69, phenotype.GetStoredEnergy());
+  PrintDouble(17, 69, phenotype.GetEnergyBonus());
+
+  Print(18, 69, "%10d", phenotype.GetCurNumErrors());
+  Print(19, 69, "%10d", phenotype.GetNumDivides());
+  if (info.GetThreadLock() != -1) Print(20, 67, "LOCKED");
+  else Print(20, 67, "      ");
   
   if(info.GetConfig().HARDWARE_TYPE.Get() == HARDWARE_TYPE_CPU_ORIGINAL)
     UpdateCPU_Original(hardware);

@@ -46,6 +46,9 @@
 #ifndef tHashTable_h
 #include "tHashTable.h"
 #endif
+#ifndef cWorld_h
+#include "cWorld.h"
+#endif
 
 
 /*************************************************************************
@@ -80,7 +83,7 @@ template <class T> class tBuffer;
 template <class T> class tList;
 class cTaskContext;
 class cTaskState;
-class cWorld;
+//class cWorld;
 
 class cPhenotype
 {
@@ -90,6 +93,8 @@ private:
 
   // 1. These are values calculated at the last divide (of self or offspring)
   cMerit merit;             // Relative speed of CPU
+  double energy_store;      // Amount of energy.  Determines relative speed of CPU when turned on.
+  double energy_tobe_applied; //Energy that has not yet been added to energy store.
   int genome_length;        // Number of instructions in genome.
   int bonus_instruction_count; // Number of times MERIT_BONUS_INT is in genome.
   int copied_size;          // Instructions copied into genome.
@@ -102,6 +107,7 @@ private:
 
   // 2. These are "in progress" variables, updated as the organism operates
   double cur_bonus;                           // Current Bonus
+  double cur_energy_bonus;                    // Current energy bonus
   int cur_num_errors;                         // Total instructions executed illeagally.
   int cur_num_donates;                        // Number of donations so far
   tArray<int> cur_task_count;                 // Total times each task was performed
@@ -120,12 +126,14 @@ private:
   tArray<double> promoter_repression;         // Amount of negative regulation in play at each site; @JEB 
   bool promoter_last_inst_terminated;         // Did terminatin occur when executing the last instruction
   
+
   tHashTable<void*, cTaskState*> m_task_states;
 
   
   // 3. These mark the status of "in progess" variables at the last divide.
   double last_merit_base;         // Either constant or based on genome length.
   double last_bonus;
+  double last_energy_bonus;
   int last_num_errors;
   int last_num_donates;
   tArray<int> last_task_count;
@@ -273,6 +281,9 @@ public:
   int    GetCurBonusInstCount() const { assert(bonus_instruction_count >= 0); return bonus_instruction_count; }
 
   double GetCurMeritBase() const { assert(initialized == true); return CalcSizeMerit(); }
+  double GetStoredEnergy() const { assert(initialized == true); return energy_store; }
+  double GetEnergyBonus() const { assert(initialized == true); return cur_energy_bonus; }
+  
   bool GetToDie() const { assert(initialized == true); return to_die; }
   bool GetToDelete() const { assert(initialized == true); return to_delete; }
   int GetCurNumErrors() const { assert(initialized == true); return cur_num_errors; }
@@ -367,6 +378,8 @@ public:
 
   ////////////////////  Accessors -- Modifying  ///////////////////
   void SetMerit(const cMerit& in_merit) { merit = in_merit; }
+  void ReduceEnergy(const double cost) { energy_store -= min(cost, (double) m_world->GetConfig().ENERGY_CAP.Get()); }
+  void SetEnergy(const double value) { energy_store = value; } //min(value, (double) m_world->GetConfig().ENERGY_CAP.Get()); }
   void SetGestationTime(int in_time) { gestation_time = in_time; }
   void SetTimeUsed(int in_time) { time_used = in_time; }
   void SetFault(const cString& in_fault) { fault_desc = in_fault; }
@@ -434,6 +447,9 @@ public:
   int& CrossNum()     { assert(initialized == true); return cross_num; }
   bool& ChildFertile() { assert(initialized == true); return child_fertile; }
   bool& IsMultiThread() { assert(initialized == true); return is_multi_thread; }
+  
+  void RefreshEnergy();
+  double ApplyToEnergyStore();
 };
 
 

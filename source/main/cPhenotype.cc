@@ -111,6 +111,8 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
 {
   // Copy divide values from parent, which should already be setup.
   merit           = parent_phenotype.merit;
+  energy_store    = min(energy_store, (double) m_world->GetConfig().ENERGY_CAP.Get());
+  energy_tobe_applied = 0.0;
   genome_length   = _genome.GetSize();
   copied_size     = parent_phenotype.child_copied_size;
   executed_size   = parent_phenotype.executed_size;
@@ -247,6 +249,8 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   merit           = genome_length;
   copied_size     = genome_length;
   executed_size   = genome_length;
+  energy_store    = min(m_world->GetConfig().ENERGY_GIVEN_ON_INJECT.Get(), m_world->GetConfig().ENERGY_CAP.Get());
+  energy_tobe_applied = 0.0;
   gestation_time  = 0;
   gestation_start = 0;
   fitness         = 0;
@@ -375,6 +379,9 @@ void cPhenotype::DivideReset(const cGenome & _genome)
     merit = cur_merit_base * cur_bonus;
   }
   
+  // update energy store
+  energy_store += cur_energy_bonus;
+  
   genome_length   = _genome.GetSize();
   (void) copied_size;          // Unchanged
   (void) executed_size;        // Unchanged
@@ -385,6 +392,7 @@ void cPhenotype::DivideReset(const cGenome & _genome)
   // Lock in cur values as last values.
   last_merit_base           = cur_merit_base;
   last_bonus                = cur_bonus;
+//TODO?  last_energy         = cur_energy_bonus;
   last_num_errors           = cur_num_errors;
   last_num_donates          = cur_num_donates;
   last_task_count           = cur_task_count;
@@ -397,6 +405,7 @@ void cPhenotype::DivideReset(const cGenome & _genome)
 
   // Reset cur values.
   cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
+  cur_energy_bonus = 0.0;
   cur_num_errors  = 0;
   cur_num_donates  = 0;
   cur_task_count.SetAll(0);
@@ -797,7 +806,10 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   // Update the merit bonus
   cur_bonus *= result.GetMultBonus();
   cur_bonus += result.GetAddBonus();
-
+  
+  // Update the energy bonus
+  cur_energy_bonus += result.GetAddEnergy();
+  
   // Denote consumed resources...
   for (int i = 0; i < res_in.GetSize(); i++) {
     res_change[i] = result.GetProduced(i) - result.GetConsumed(i);
@@ -1148,6 +1160,29 @@ void cPhenotype::SetupPromoterWeights(const cGenome & _genome, const bool clear)
   }
 }
 
+/**
+Credit organism with energy reward, but only update energy store if APPLY_ENERGY_METHOD = "no task completion" (1)
+ */
+void cPhenotype::RefreshEnergy() {
+  if(cur_energy_bonus > 0) {
+    if(m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 0 || m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 2) {
+      energy_tobe_applied += cur_energy_bonus;
+    } else if(m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 1) {
+      energy_store += cur_energy_bonus;
+    } else {
+      cerr<< "Unknown APPLY_ENERGY_METHOD value " << m_world->GetConfig().APPLY_ENERGY_METHOD.Get();
+      exit(-1);
+    }
+    cur_energy_bonus = 0;
+  }
+}
+
+double cPhenotype::ApplyToEnergyStore() {
+  energy_store += energy_tobe_applied;
+  energy_tobe_applied = 0.0;
+  return min(100 * energy_store / (m_world->GetConfig().NUM_INST_EXC_BEFORE_0_ENERGY.Get()), (double) m_world->GetConfig().ENERGY_CAP.Get());
+}
+
 void cPhenotype::DecayAllPromoterRegulation()
 {
   for ( int i=0; i<cur_promoter_weights.GetSize(); i++)
@@ -1175,4 +1210,3 @@ void cPhenotype::RegulatePromoter(const int i, const bool up )
   
   cur_promoter_weights[i] = base_promoter_weights[i] * exp((1+promoter_activation[i])*log(2.0)) / exp((1+promoter_repression[i])*log(2.0));
 }
-

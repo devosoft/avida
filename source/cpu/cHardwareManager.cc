@@ -89,6 +89,7 @@ cHardwareManager::cHardwareManager(cWorld* world)
     int redundancy = cur_line.PopWord().AsInt();
     int cost = cur_line.PopWord().AsInt();
     int ft_cost = cur_line.PopWord().AsInt();
+    int energy_cost = cur_line.PopWord().AsInt();
     double prob_fail = cur_line.PopWord().AsDouble();
     int addl_time_cost = cur_line.PopWord().AsInt();
 
@@ -113,9 +114,9 @@ cHardwareManager::cHardwareManager(cWorld* world)
     }
     
     if (inst_lib[inst_idx].IsNop()) {
-      m_inst_set->AddNop(inst_idx, redundancy, ft_cost, cost, prob_fail, addl_time_cost);
+      m_inst_set->AddNop(inst_idx, redundancy, ft_cost, cost, energy_cost, prob_fail, addl_time_cost);
     } else {
-      m_inst_set->AddInst(inst_idx, redundancy, ft_cost, cost, prob_fail, addl_time_cost);
+      m_inst_set->AddInst(inst_idx, redundancy, ft_cost, cost, energy_cost, prob_fail, addl_time_cost);
     }
   }
 }

@@ -58,7 +58,7 @@ cInstruction cInstSet::GetRandomInst(cAvidaContext& ctx) const
   return cInstruction(inst_op);
 }
 
-int cInstSet::AddInst(int lib_fun_id, int redundancy, int ft_cost, int cost, double prob_fail, int addl_time_cost)
+int cInstSet::AddInst(int lib_fun_id, int redundancy, int ft_cost, int cost, int energy_cost, double prob_fail, int addl_time_cost)
 {
   const int inst_id = m_lib_name_map.GetSize();
 
@@ -72,6 +72,7 @@ int cInstSet::AddInst(int lib_fun_id, int redundancy, int ft_cost, int cost, dou
   m_lib_name_map[inst_id].redundancy = redundancy;
   m_lib_name_map[inst_id].cost = cost;
   m_lib_name_map[inst_id].ft_cost = ft_cost;
+  m_lib_name_map[inst_id].energy_cost = energy_cost;
   m_lib_name_map[inst_id].prob_fail = prob_fail;
   m_lib_name_map[inst_id].addl_time_cost = addl_time_cost;
 
@@ -80,16 +81,17 @@ int cInstSet::AddInst(int lib_fun_id, int redundancy, int ft_cost, int cost, dou
   for (int i = 0; i < redundancy; i++) {
     m_mutation_chart[total_redundancy + i] = inst_id;
   }
+  total_energy_cost += energy_cost;
 
   return inst_id;
 }
 
-int cInstSet::AddNop(int lib_nopmod_id, int redundancy, int ft_cost, int cost, double prob_fail, int addl_time_cost)
+int cInstSet::AddNop(int lib_nopmod_id, int redundancy, int ft_cost, int cost, int energy_cost, double prob_fail, int addl_time_cost)
 {
   // Assert nops are at the _beginning_ of an inst_set.
   assert(m_lib_name_map.GetSize() == m_lib_nopmod_map.GetSize());
 
-  const int inst_id = AddInst(lib_nopmod_id, redundancy, ft_cost, cost, prob_fail, addl_time_cost);
+  const int inst_id = AddInst(lib_nopmod_id, redundancy, ft_cost, cost, energy_cost, prob_fail, addl_time_cost);
 
   m_lib_nopmod_map.Resize(inst_id + 1);
   m_lib_nopmod_map[inst_id] = lib_nopmod_id;

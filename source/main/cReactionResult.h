@@ -40,6 +40,7 @@ private:
   tArray<double> tasks_value;
   tArray<bool> reactions_triggered;
   tArray<double> reaction_add_bonus; 
+  double energy_add;
   double bonus_add;
   double bonus_mult;
   tArray<int> insts_triggered;
@@ -65,6 +66,7 @@ public:
   void MarkTask(int id, const double quality=1, const double value=0);
 
   void MarkReaction(int id);
+  void AddEnergy(double value);
   void AddBonus(double value, int id);
   void MultBonus(double value);
   
@@ -78,6 +80,7 @@ public:
   bool TaskDone(int id);
   double TaskQuality(int id);
   double TaskValue(int id);
+  double GetAddEnergy() { return energy_add; }
   double GetAddBonus() { return bonus_add; }
   double GetReactionAddBonus(const int i) { return reaction_add_bonus[i]; }
   double GetMultBonus() { return bonus_mult; }

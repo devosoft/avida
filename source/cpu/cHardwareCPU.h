@@ -142,8 +142,10 @@ protected:
 #if INSTRUCTION_COSTS
   tArray<int> inst_cost;
   tArray<int> inst_ft_cost;
+  tArray<int> inst_energy_cost;
   bool m_has_costs;
   bool m_has_ft_costs;
+  bool m_has_energy_costs;
 #endif
   
   
@@ -519,6 +521,9 @@ private:
   bool Inst_HeadDivide0_05(cAvidaContext& ctx);
   bool Inst_HeadDivide0_01(cAvidaContext& ctx);
   bool Inst_HeadDivide0_001(cAvidaContext& ctx);
+
+  bool Inst_Sleep(cAvidaContext& ctx);
+  bool Inst_GetUpdate(cAvidaContext& ctx);
 
   //// Promoter Model ////
   void GetPromoterPattern(tArray<int>& promoter);

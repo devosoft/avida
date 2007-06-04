@@ -59,7 +59,6 @@
 #include <vector>
 #include <algorithm>
 #include <set>
-
 #include <cfloat>
 #include <cmath>
 #include <climits>
@@ -75,6 +74,7 @@ cPopulation::cPopulation(cWorld* world)
 , environment(world->GetEnvironment())
 , num_organisms(0)
 , sync_events(false)
+, numAsleep(0)
 {
   // Avida specific information.
   world_x = world->GetConfig().WORLD_X.Get();
@@ -84,6 +84,12 @@ cPopulation::cPopulation(cWorld* world)
   const int geometry = world->GetConfig().WORLD_GEOMETRY.Get();
 	const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
   
+  if(m_world->GetConfig().ENERGY_CAP.Get() == -1)
+    m_world->GetConfig().ENERGY_CAP.Set(INT_MAX);
+  
+  if(m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1)  {
+    sleep_log = new tVector<pair<int,int> >[world_x*world_y];
+  }
   // Print out world details
   if (world->GetVerbosity() > VERBOSE_NORMAL) {
     cout << "Building world " << world_x << "x" << world_y << " = " << num_cells << " organisms." << endl;
@@ -234,6 +240,11 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
   tArray<cOrganism*> child_array;
   tArray<cMerit> merit_array;
   
+  //for energy model
+/*  double init_energy_given = m_world->GetConfig().ENERGY_GIVEN_AT_BIRTH.Get();
+  int inst_2_exc = m_world->GetConfig().NUM_INST_EXC_BEFORE_0_ENERGY.Get();
+*/
+  
   // Update the parent's phenotype.
   // This needs to be done before the parent goes into the birth chamber
   // or the merit doesn't get passed onto the child correctly
@@ -274,7 +285,6 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
     // Update the phenotypes of each child....
     const cGenome & child_genome = child_array[i]->GetGenome();
     child_array[i]->GetPhenotype().SetupOffspring(parent_phenotype,child_genome);
-    
     child_array[i]->GetPhenotype().SetMerit(merit_array[i]);
     
     // Do lineage tracking for the new organisms.
@@ -284,8 +294,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
 		//By default, store the parent cclade, this may get modified in ActivateOrgansim (@MRR)
 		child_array[i]->SetCCladeLabel(parent_organism.GetCCladeLabel());
   }
-  
-  
+    
   // If we're not about to kill the parent, do some extra work on it.
   if (parent_alive == true) {
     schedule->Adjust(parent_cell.GetID(), parent_phenotype.GetMerit());
@@ -458,6 +467,22 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell)
   cOrganism* organism = in_cell.GetOrganism();
   cGenotype* genotype = organism->GetGenotype();
   m_world->GetStats().RecordDeath();
+  
+  int cellID = in_cell.GetID();
+
+  if(GetCell(cellID).GetOrganism()->IsSleeping()) {
+    GetCell(cellID).GetOrganism()->SetSleeping(false);
+    decNumAsleep();
+  }
+  if(m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1) {
+    if(sleep_log[cellID].Size() > 0) {
+      pair<int,int> p = sleep_log[cellID][sleep_log[cellID].Size()-1];
+      if(p.second == -1) {
+        AddEndSleep(cellID,m_world->GetStats().GetUpdate());
+      }
+    }
+  }
+  
   
   tList<tListNode<cSaleItem> >* sold_items = organism->GetSoldItems();
   if (sold_items)
@@ -2200,7 +2225,7 @@ void cPopulation::Inject(const cGenome & genome, int cell_id, double merit, int 
   InjectGenome(cell_id, genome, lineage_label);
   cPhenotype& phenotype = GetCell(cell_id).GetOrganism()->GetPhenotype();
   phenotype.SetNeutralMetric(neutral);
-  
+    
   if (merit > 0) phenotype.SetMerit(cMerit(merit));
   schedule->Adjust(cell_id, phenotype.GetMerit());
   
@@ -2397,8 +2422,17 @@ void cPopulation::InjectGenotype(int cell_id, cGenotype *new_genotype)
   
   // Setup the phenotype...
   cPhenotype & phenotype = new_organism->GetPhenotype();
-  phenotype.SetupInject(new_genotype->GetGenome());
+  phenotype.SetupInject(new_genotype->GetGenome());  //TODO  sets merit to lenght of genotype
+  
+  if(m_world->GetConfig().ENERGY_ENABLED.Get()) {
+    double initial_energy = min(m_world->GetConfig().ENERGY_GIVEN_ON_INJECT.Get(), m_world->GetConfig().ENERGY_CAP.Get());
+    phenotype.SetEnergy(initial_energy);
+  }
+  // BB - Don't need to fix metabolic rate here, only on birth
+
   phenotype.SetMerit( cMerit(new_genotype->GetTestMerit(ctx)) );
+  
+  cerr<<"initial energy: " << phenotype.GetStoredEnergy() <<endl<<"initial Merit: "<<phenotype.GetMerit().GetDouble()<<endl;
   
   // @CAO are these really needed?
   phenotype.SetLinesCopied( new_genotype->GetTestCopiedSize(ctx) );
@@ -2590,7 +2624,7 @@ bool cPopulation::UpdateMerit(int cell_id, double new_merit)
   if (new_merit <= old_merit) {
 	  phenotype.SetIsDonorCur(); }  
   else  { phenotype.SetIsReceiver(); } 
-  
+  std::cerr<<"[cPopulation::UpdateMerit] phenotype.GetMerit() = "<<phenotype.GetMerit()<< " new_merit = " << new_merit << std::endl; 
   schedule->Adjust(cell_id, phenotype.GetMerit());
   
   return true;
@@ -2601,4 +2635,14 @@ void cPopulation::SetChangeList(cChangeList *change_list){
 }
 cChangeList *cPopulation::GetChangeList(){
   return schedule->GetChangeList();
+}
+
+void cPopulation::AddBeginSleep(int cellID, int start_time) {
+  sleep_log[cellID].Add(make_pair(start_time,-1));
+}
+  
+void cPopulation::AddEndSleep(int cellID, int end_time) {
+  pair<int,int> p = sleep_log[cellID][sleep_log[cellID].Size()-1];
+  sleep_log[cellID].RemoveAt(sleep_log[cellID].Size()-1);
+  sleep_log[cellID].Add(make_pair(p.first, end_time));
 }

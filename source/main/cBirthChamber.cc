@@ -150,7 +150,46 @@ bool cBirthChamber::DoAsexBirth(cAvidaContext& ctx, const cGenome& child_genome,
   child_array.Resize(1);
   child_array[0] = new cOrganism(m_world, ctx, child_genome);
   merit_array.Resize(1);
-  merit_array[0] = parent.GetPhenotype().GetMerit();
+  
+  if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
+    // energy model config variables
+    double energy_given_at_birth = m_world->GetConfig().ENERGY_GIVEN_AT_BIRTH.Get();
+    double frac_parent_energy_given_at_birth = m_world->GetConfig().FRAC_PARENT_ENERGY_GIVEN_AT_BIRTH.Get();
+    double frac_energy_decay_at_birth = m_world->GetConfig().FRAC_ENERGY_DECAY_AT_BIRTH.Get();
+    int inst_2_exc = m_world->GetConfig().NUM_INST_EXC_BEFORE_0_ENERGY.Get();
+    double energy_cap = (double) m_world->GetConfig().ENERGY_CAP.Get();
+  
+    // apply energy if APPLY_ENERGY_METHOD is set to "on divide" (0)
+    if(m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 0) {
+      parent.GetPhenotype().RefreshEnergy();
+      parent.GetPhenotype().ApplyToEnergyStore();
+    }
+    
+    // decay of energy in parent
+    parent.GetPhenotype().ReduceEnergy(parent.GetPhenotype().GetStoredEnergy() * frac_energy_decay_at_birth);
+
+    // calculate energy to be given to child
+    double child_energy = min(parent.GetPhenotype().GetStoredEnergy() * frac_parent_energy_given_at_birth + energy_given_at_birth, energy_cap);
+        
+    // adjust energy in parent
+    parent.GetPhenotype().ReduceEnergy(child_energy - energy_given_at_birth);
+
+    // set child energy & merit
+    child_array[0]->GetPhenotype().SetEnergy(child_energy);
+    merit_array[0] = 100 * child_energy / (inst_2_exc);
+    
+
+    cMerit parentMerit = cMerit(min(100 * (parent.GetPhenotype().GetStoredEnergy() + energy_given_at_birth)/(inst_2_exc), energy_cap));
+    parent.GetPhenotype().SetMerit(parentMerit);
+
+    if(m_world->GetConfig().ENERGY_VERBOSE.Get()) {
+      cerr<<"child merit: "<<merit_array[0]<<endl<<"child energy: "<< child_energy <<endl
+          <<"parent merit: "<<parent.GetPhenotype().GetMerit()<<endl<<"parent energy: "<< parent.GetPhenotype().GetStoredEnergy() <<endl;
+    }
+  } else {
+    merit_array[0] = parent.GetPhenotype().GetMerit();
+  }
+  
 
   // Setup the genotype for the child
   cGenotype * child_genotype = parent.GetGenotype();

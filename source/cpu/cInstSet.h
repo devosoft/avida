@@ -65,6 +65,7 @@ public:
     int redundancy;           // Weight in instruction set (not impl.)
     int cost;                 // additional time spent to exectute inst.
     int ft_cost;              // time spent first time exec (in add to cost)
+    int energy_cost;          // energy required to execute.
     double prob_fail;         // probability of failing to execute inst
     int addl_time_cost;       // additional time added to age for executing instruction
   };
@@ -75,12 +76,14 @@ public:
   // Static components...
   cInstruction m_inst_error;
   cInstruction m_inst_default;
+
+  double total_energy_cost; // summation of energy costs of each instruction
   
   cInstSet(); // @not_implemented
 
 public:
   inline cInstSet(cWorld* world, cInstLib* inst_lib) : m_world(world), m_inst_lib(inst_lib),
-    m_inst_error(inst_lib->GetInstError()), m_inst_default(inst_lib->GetInstDefault()) { ; }
+    m_inst_error(inst_lib->GetInstError()), m_inst_default(inst_lib->GetInstDefault()), total_energy_cost(0) { ; }
   inline cInstSet(const cInstSet& is);
   inline ~cInstSet() { ; }
 
@@ -93,10 +96,12 @@ public:
   const cString& GetName(const cInstruction& inst) const { return GetName(inst.GetOp()); }
   int GetCost(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].cost; }
   int GetFTCost(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].ft_cost; }
+  int GetEnergyCost(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].energy_cost; }
   int GetAddlTimeCost(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].addl_time_cost; }
   double GetProbFail(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].prob_fail; }
   int GetRedundancy(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].redundancy; }
   int GetLibFunctionIndex(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].lib_fun_id; }
+//  double GetAvgEnergyCostPerInst() const { return total_energy_cost/m_lib_name_map.GetSize(); }
 
   int GetNopMod(const cInstruction& inst) const
   {
@@ -115,8 +120,8 @@ public:
   int IsLabel(const cInstruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).IsLabel(); }
 
   // Insertion of new instructions...
-  int AddInst(int lib_fun_id, int redundancy = 1, int ft_cost = 0, int cost = 0, double prob_fail = 0.0, int addl_time_cost = 0);
-  int AddNop(int lib_nopmod_id, int redundancy = 1, int ft_cost = 0, int cost = 0, double prob_fail = 0.0, int addl_time_cost = 0);
+  int AddInst(int lib_fun_id, int redundancy = 1, int ft_cost = 0, int cost = 0, int energy_cost = 0, double prob_fail = 0.0, int addl_time_cost = 0);
+  int AddNop(int lib_nopmod_id, int redundancy = 1, int ft_cost = 0, int cost = 0, int energy_cost = 0, double prob_fail = 0.0, int addl_time_cost = 0);
 
   // accessors for instruction library
   cInstLib* GetInstLib() { return m_inst_lib; }

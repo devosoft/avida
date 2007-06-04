@@ -55,6 +55,9 @@
 #ifndef tList_h
 #include "tList.h"
 #endif
+#ifndef tVector_h
+#include "tVector.h"
+#endif
 
 #if USE_tMemTrack
 # ifndef tMemTrack_h
@@ -62,6 +65,7 @@
 # endif
 #endif
 
+#include "cInstSet.h"
 
 class cAvidaContext;
 class cCodeLabel;
@@ -90,6 +94,9 @@ private:
   cBirthChamber birth_chamber;         // Global birth chamber.
   tArray<tList<cSaleItem> > market;   // list of lists of items for sale, each list goes with 1 label
 
+  tVector<pair<int,int> > *sleep_log;
+  int numAsleep;
+  
   // Data Tracking...
   tList<cPopulationCell> reaper_queue; // Death order in some mass-action runs
 
@@ -221,6 +228,15 @@ public:
 
   void SetChangeList(cChangeList* change_list);
   cChangeList* GetChangeList();
+  
+  void AddBeginSleep(int cellID, int start_time);
+  void AddEndSleep(int cellID, int end_time);
+ 
+  tVector<pair<int,int> > getCellSleepLog(int i) { return sleep_log[i]; }
+  
+  int getNumAsleep() { return numAsleep; }
+  void incNumAsleep() { numAsleep++; }
+  void decNumAsleep() { numAsleep--; }
 };
 
 

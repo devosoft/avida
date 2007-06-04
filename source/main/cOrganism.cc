@@ -37,6 +37,7 @@
 #include "cInjectGenotype.h"
 #include "cInstSet.h"
 #include "cOrgSinkMessage.h"
+#include "cPopulation.h"
 #include "cStringUtil.h"
 #include "cTaskContext.h"
 #include "cTools.h"
@@ -224,7 +225,16 @@ void cOrganism::DoOutput(cAvidaContext& ctx,
   
   cTaskContext taskctx(m_interface, input_buffer, output_buffer, other_input_list, 
                        other_output_list, net_valid, 0, on_divide, received_messages_point);
-  m_phenotype.TestOutput(ctx, taskctx, resource_count, res_change, insts_triggered);
+  bool task_completed = m_phenotype.TestOutput(ctx, taskctx, resource_count, res_change, insts_triggered);
+  
+  if(m_world->GetConfig().ENERGY_ENABLED.Get() && m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 1 && task_completed) {
+    m_phenotype.RefreshEnergy();
+    double newMerit = m_phenotype.ApplyToEnergyStore();
+    if(newMerit != -1) {
+      m_interface->UpdateMerit(newMerit);
+    }
+  }
+
   m_interface->UpdateResources(res_change);
   
   for (int i = 0; i < insts_triggered.GetSize(); i++) {

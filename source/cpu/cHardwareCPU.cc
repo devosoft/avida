@@ -39,6 +39,8 @@
 #include "nMutation.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
+#include "cPopulation.h"
+#include "cPopulationCell.h"
 #include "cStringUtil.h"
 #include "cTestCPU.h"
 #include "cWorldDriver.h"
@@ -330,6 +332,15 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("kazi5", &cHardwareCPU::Inst_Kazi5),
     tInstLibEntry<tMethod>("die", &cHardwareCPU::Inst_Die),
 
+    // Sleep and time
+    tInstLibEntry<tMethod>("sleep", &cHardwareCPU::Inst_Sleep),
+    tInstLibEntry<tMethod>("sleep1", &cHardwareCPU::Inst_Sleep),
+    tInstLibEntry<tMethod>("sleep2", &cHardwareCPU::Inst_Sleep),
+    tInstLibEntry<tMethod>("sleep3", &cHardwareCPU::Inst_Sleep),
+    tInstLibEntry<tMethod>("sleep4", &cHardwareCPU::Inst_Sleep),
+    tInstLibEntry<tMethod>("time", &cHardwareCPU::Inst_GetUpdate),
+    
+
     // Promoter Model
     tInstLibEntry<tMethod>("up-reg-*", &cHardwareCPU::Inst_UpRegulatePromoter),
     tInstLibEntry<tMethod>("down-reg-*", &cHardwareCPU::Inst_DownRegulatePromoter),
@@ -390,8 +401,10 @@ cHardwareCPU::cHardwareCPU(const cHardwareCPU &hardware_cpu)
 #if INSTRUCTION_COSTS
 , inst_cost(hardware_cpu.inst_cost)
 , inst_ft_cost(hardware_cpu.inst_ft_cost)
+, inst_energy_cost(hardware_cpu.inst_energy_cost)
 , m_has_costs(hardware_cpu.m_has_costs)
 , m_has_ft_costs(hardware_cpu.m_has_ft_costs)
+  // TODO - m_has_energy_costs
 #endif
 {
 }
@@ -417,8 +430,10 @@ void cHardwareCPU::Reset()
   const int num_inst_cost = m_inst_set->GetSize();
   inst_cost.Resize(num_inst_cost);
   inst_ft_cost.Resize(num_inst_cost);
+  inst_energy_cost.Resize(num_inst_cost);
   m_has_costs = false;
   m_has_ft_costs = false;
+  // TODO - m_has_energy_costs
   
   for (int i = 0; i < num_inst_cost; i++) {
     inst_cost[i] = m_inst_set->GetCost(cInstruction(i));
@@ -426,6 +441,9 @@ void cHardwareCPU::Reset()
     
     inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
     if (!m_has_ft_costs && inst_ft_cost[i]) m_has_ft_costs = true;
+
+    inst_energy_cost[i] = m_inst_set->GetEnergyCost(cInstruction(i));    
+    // TODO - m_has_energy_costs  if()
   }
 #endif 
   
@@ -568,6 +586,35 @@ bool cHardwareCPU::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction
 #if INSTRUCTION_COSTS
   assert(cur_inst.GetOp() < inst_cost.GetSize());
   
+  // check avaliable energy first
+  double energy_req = inst_energy_cost[cur_inst.GetOp()] * (organism->GetPhenotype().GetMerit().GetDouble() / 100.0); //compensate by factor of 100
+
+  if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1 && energy_req > 0.0) {
+    if(organism->GetPhenotype().GetStoredEnergy() >= energy_req) {
+      inst_energy_cost[cur_inst.GetOp()] = 0;
+      //subtract energy used from current org energy.
+      organism->GetPhenotype().ReduceEnergy(energy_req);  
+    
+    
+    // tracking sleeping organisms
+  cString instName = m_world->GetHardwareManager().GetInstSet().GetName(cur_inst);
+  int cellID = organism->GetCellID();
+  if( instName == cString("sleep") || instName == cString("sleep1") || instName == cString("sleep2") ||
+      instName == cString("sleep3") || instName == cString("sleep4")) {
+    cPopulation& pop = m_world->GetPopulation();
+    if(m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1) {
+      pop.AddBeginSleep(cellID,m_world->GetStats().GetUpdate());
+    }
+    pop.GetCell(cellID).GetOrganism()->SetSleeping(true);
+    pop.incNumAsleep();    //TODO - Fix me:  this functions get called repeatedly
+  }
+    
+    } else {
+      // not enough energy
+      return false;
+    }
+  }
+    
   // If first time cost hasn't been paid off...
   if (m_has_ft_costs && inst_ft_cost[cur_inst.GetOp()] > 0) {
     inst_ft_cost[cur_inst.GetOp()]--;       // dec cost
@@ -584,6 +631,7 @@ bool cHardwareCPU::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction
     }
   }
   
+  inst_energy_cost[cur_inst.GetOp()] = m_inst_set->GetEnergyCost(cur_inst); //reset instruction energy cost
 #endif
   return true;
 }
@@ -599,7 +647,7 @@ bool cHardwareCPU::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruct
   // If there is an execution error, execute a random instruction.
   if (organism->TestExeErr()) actual_inst = m_inst_set->GetRandomInst(ctx);
 #endif /* EXECUTION_ERRORS */
-  
+    
   // Get a pointer to the corresponding method...
   int inst_idx = m_inst_set->GetLibFunctionIndex(actual_inst);
   
@@ -3991,6 +4039,33 @@ bool cHardwareCPU::Inst_SetFlow(cAvidaContext& ctx)
   return true; 
 }
 
+bool cHardwareCPU::Inst_Sleep(cAvidaContext& ctx) {
+  cPopulation& pop = m_world->GetPopulation();
+  if(m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1) {
+    pop.AddEndSleep(organism->GetCellID(), m_world->GetStats().GetUpdate());
+  }
+  int cellID = organism->GetCellID();
+  pop.GetCell(cellID).GetOrganism()->SetSleeping(false);  //this instruction get executed at the end of a sleep cycle
+  pop.decNumAsleep();
+  if(m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 2) {
+    organism->GetPhenotype().RefreshEnergy();
+    double newMerit = organism->GetPhenotype().ApplyToEnergyStore();
+    if(newMerit != -1) {
+      std::cerr.precision(20);
+      std::cerr<<"[cHardwareCPU::Inst_Sleep] newMerit = "<< newMerit <<std::endl;
+      organism->GetOrgInterface().UpdateMerit(newMerit);
+    }
+  }
+  return true;
+}
+
+bool cHardwareCPU::Inst_GetUpdate(cAvidaContext& ctx) {
+  const int reg_used = FindModifiedRegister(REG_BX);
+  GetRegister(reg_used) = m_world->GetStats().GetUpdate();
+  return true;
+}
+
+
 //// Promoter Model ////
 
 // Starting at the current position reads a promoter pattern
@@ -4189,6 +4264,7 @@ bool cHardwareCPU::Inst_DecayRegulation(cAvidaContext& ctx)
   organism->GetPhenotype().DecayAllPromoterRegulation();
   return true;
 }
+
 
 //// Placebo insts ////
 bool cHardwareCPU::Inst_Skip(cAvidaContext& ctx)

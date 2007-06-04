@@ -155,6 +155,7 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc)
       else if (var_value=="mult") new_process->SetType(nReaction::PROCTYPE_MULT);
       else if (var_value=="pow") new_process->SetType(nReaction::PROCTYPE_POW);
       else if (var_value=="lin") new_process->SetType(nReaction::PROCTYPE_LIN);
+      else if (var_value=="energy") new_process->SetType(nReaction::PROCTYPE_ENERGY);
       else {
         cerr << "Unknown reaction process type '" << var_value
         << "' found in '" << reaction->GetName() << "'." << endl;
@@ -961,6 +962,10 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       case nReaction::PROCTYPE_LIN:
         result.AddBonus( bonus * task_count, reaction_id);
         break;
+      case nReaction::PROCTYPE_ENERGY:
+        result.AddEnergy(bonus);
+        break;
+        
       default:
         assert(false);  // Should not get here!
         break;

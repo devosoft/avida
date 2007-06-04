@@ -247,7 +247,7 @@ public:
   CONFIG_ADD_VAR(REQUIRED_TASK, int, -1, "Task ID required for successful divide.");
   CONFIG_ADD_VAR(IMMUNITY_TASK, int, -1, "Task providing immunity from the required task.");
   CONFIG_ADD_VAR(REQUIRED_REACTION, int, -1, "Reaction ID required for successful divide.");
-  CONFIG_ADD_VAR(REQUIRED_BONUS, int, 0, "The bonus that an organism must accumulate to divide."); 
+  CONFIG_ADD_VAR(REQUIRED_BONUS, int, 0, "The bonus that an organism must accumulate to divide.");  
  
   CONFIG_ADD_GROUP(MUTATION_GROUP, "Mutations");
   CONFIG_ADD_VAR(POINT_MUT_PROB, double, 0.0, "Mutation rate (per-location per update)");
@@ -347,11 +347,23 @@ public:
   CONFIG_ADD_VAR(MT_CONCURRENCY, int, 1, "Number of concurrent analyze threads");
   CONFIG_ADD_VAR(ANALYZE_OPTION_1, cString, "", "String variable accessible from analysis scripts");
   CONFIG_ADD_VAR(ANALYZE_OPTION_2, cString, "", "String variable accessible from analysis scripts");
+  
+  CONFIG_ADD_GROUP(ENERGY_GROUP, "Energy Settings");
+  CONFIG_ADD_VAR(ENERGY_ENABLED, bool, 0, "Enable Energy Model. 0/1 (off/on)");
+  CONFIG_ADD_VAR(ENERGY_GIVEN_ON_INJECT, int, 0, "Energy given to organism upon injection.");
+  CONFIG_ADD_VAR(ENERGY_GIVEN_AT_BIRTH, int, 0, "Energy given to offspring upon birth.");
+  CONFIG_ADD_VAR(FRAC_PARENT_ENERGY_GIVEN_AT_BIRTH, double, 0.5, "Fraction of perent's energy given to offspring.");
+  CONFIG_ADD_VAR(FRAC_ENERGY_DECAY_AT_BIRTH, double, 0.0, "Fraction of energy lost due to decay during reproduction.");
+  CONFIG_ADD_VAR(NUM_INST_EXC_BEFORE_0_ENERGY, int, 0, "Number of instructions executed before energy is exhausted.");
+  CONFIG_ADD_VAR(ENERGY_CAP, int, -1, "Maximun amount of energy that can be stored in an organism.  -1 means the cap is set to Max Int");  // TODO - is this done?
+  CONFIG_ADD_VAR(APPLY_ENERGY_METHOD, int, 0, "When should rewarded energy be applied to current energy?\n0 = on divide\n1 = on completion of task\n2 = on sleep");  
+  CONFIG_ADD_VAR(ENERGY_VERBOSE, bool, 0, "Print energy and merit values. 0/1 (off/on)");
+  CONFIG_ADD_VAR(LOG_SLEEP_TIMES, bool, 0, "Log sleep start and end times. 0/1 (off/on)\nWARNING: may use lots of memory.");
+//  CONFIG_ADD_VAR(FIX_METABOLIC_RATE, bool, 0, "When activated the metabolic rate of all orgiansims are equal. 0/1 (off/on)"); // TODO - check for correctness
 
-		CONFIG_ADD_GROUP(SECOND_PASS_GROUP, "Tracking metrics known after the running experiment previously");
-	CONFIG_ADD_VAR(TRACK_CCLADES, int, 0, "Enable tracking of coalescence clades");
-	CONFIG_ADD_VAR(TRACK_CCLADES_IDS, cString, "coalescence.ids", "File storing coalescence IDs");
-	
+  CONFIG_ADD_GROUP(SECOND_PASS_GROUP, "Tracking metrics known after the running experiment previously");
+  CONFIG_ADD_VAR(TRACK_CCLADES, int, 0, "Enable tracking of coalescence clades");
+  CONFIG_ADD_VAR(TRACK_CCLADES_IDS, cString, "coalescence.ids", "File storing coalescence IDs");
 #endif
   
   void Load(const cString& filename, const bool& crash_if_not_found);

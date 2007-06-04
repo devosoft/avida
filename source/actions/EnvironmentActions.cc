@@ -22,6 +22,7 @@
  *
  */
 
+#include "math.h"
 #include "EnvironmentActions.h"
 
 #include "cAction.h"
@@ -265,7 +266,6 @@ public:
   }
 };
 
-
 class cActionSetTaskArgInt : public cAction
 {
 private:
@@ -295,6 +295,106 @@ public:
   }
 };
 
+/**
+Sets resource availiblity to periodic
+ */
+class cActionSetPeriodicResource : public cAction
+{
+private:
+  cString m_res_name;
+  double m_res_count;
+  double amplitude;
+  double frequency;
+  double phaseShift;
+  double initY;
+
+public:
+  cActionSetPeriodicResource(cWorld* world, const cString& args): cAction(world, args), m_res_name(""), amplitude(1.0),
+                                                                  frequency(1.0), phaseShift(0.0), initY(0.0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_res_name = largs.PopWord();
+    if (largs.GetSize()) amplitude = largs.PopWord().AsDouble();
+    if (largs.GetSize()) frequency = largs.PopWord().AsDouble();
+    if (largs.GetSize()) phaseShift = largs.PopWord().AsDouble();
+    if (largs.GetSize()) initY = largs.PopWord().AsDouble();
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string reaction_name> <string amplitude> <string pi/frequence> <phaseShift*pi> <string initial_Y>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    int time = m_world->GetStats().GetUpdate();
+    m_res_count = (amplitude * sin(M_PI/frequency * time - phaseShift * M_PI) + initY) / 2;
+    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+    if (res != NULL) m_world->GetPopulation().SetResource(res->GetID(), m_res_count);
+
+  }
+};
+
+
+/**
+Sets energy model config value NumInstBefore0Energy 
+ */
+
+class cActionSetNumInstBefore0Energy : public cAction
+{
+private:
+  int newValue;
+
+public:
+  cActionSetNumInstBefore0Energy(cWorld* world, const cString& args) : cAction(world, args), newValue(0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) newValue = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: <int new_value>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetConfig().NUM_INST_EXC_BEFORE_0_ENERGY.Set(newValue);
+  }
+};
+
+/*
+class cActionSetDoublePeriodicResource : public cAction
+{
+private:
+  cString m_res_name;
+  double m_res_count;
+  double amplitude;
+  double frequency;
+  double phaseShift;
+  double initY;
+
+public:
+  cActionSetDoublePeriodicResource(cWorld* world, const cString& args): cAction(world, args), m_res_name(""), amplitude(1.0),
+                                                                  frequency(1.0), phaseShift(0.0), initY(0.0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_res_name = largs.PopWord();
+    if (largs.GetSize()) amplitude = largs.PopWord().AsDouble();
+    if (largs.GetSize()) frequency = largs.PopWord().AsDouble();
+    if (largs.GetSize()) phaseShift = largs.PopWord().AsDouble();
+    if (largs.GetSize()) initY = largs.PopWord().AsDouble();
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string reaction_name> <string amplitude> <string pi/frequence> <phaseShift*pi> <string initial_Y>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    int time = m_world->GetStats().GetUpdate();
+    m_res_count = ampliture*(sin(pi/frequency1*x-pi*phaseShift1)+1+cos(pi/frequency2*x-pi*phaseShift1)+1)/4;
+    
+    std::cout << "Update " << time << " Y = " << m_res_count << std::endl;
+//    std::cout << m_res_count <<" = " << amplitude <<" * sin("<<frequency <<" * " << time <<" - "<< phaseShift<<") + "<<initY<<std::endl;
+    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+    if (res != NULL) m_world->GetPopulation().SetResource(res->GetID(), m_res_count);
+
+  }
+};
+*/
 
 class cActionSetTaskArgDouble : public cAction
 {
@@ -355,21 +455,20 @@ public:
   }
 };
 
-
-
-
-
 void RegisterEnvironmentActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionInjectResource>("InjectResource");
   action_lib->Register<cActionInjectScaledResource>("InjectScaledResource");
   action_lib->Register<cActionOutflowScaledResource>("OutflowScaledResource");
   action_lib->Register<cActionSetResource>("SetResource");
-  action_lib->Register<cActionSetCellResource>("SetCellResource");
+  action_lib->Register<cActionSetCellResource>("SetCellResource");  
 
   action_lib->Register<cActionSetReactionValue>("SetReactionValue");
   action_lib->Register<cActionSetReactionValueMult>("SetReactionValueMult");
   action_lib->Register<cActionSetReactionInst>("SetReactionInst");
+
+  action_lib->Register<cActionSetPeriodicResource>("SetPeriodicResource");
+  action_lib->Register<cActionSetNumInstBefore0Energy>("SetNumInstBefore0Energy");
 
   action_lib->Register<cActionSetTaskArgInt>("SetTaskArgInt");
   action_lib->Register<cActionSetTaskArgDouble>("SetTaskArgDouble");

@@ -37,6 +37,7 @@ cReactionResult::cReactionResult(const int num_resources,
   , tasks_value(num_tasks)
   , reactions_triggered(num_reactions)
   , reaction_add_bonus(num_reactions)
+  , energy_add(0.0)
   , bonus_add(0.0)
   , bonus_mult(1.0)
   , insts_triggered(0)
@@ -106,6 +107,11 @@ void cReactionResult::MarkReaction(int id)
   reactions_triggered[id] = true;
 }
 
+void cReactionResult::AddEnergy(double value)
+{
+  ActivateReaction();
+  energy_add += value;
+}
 
 void cReactionResult::AddBonus(double value, int id)
 {
