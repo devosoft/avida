@@ -457,10 +457,15 @@ void cHardwareGX::SingleProcess(cAvidaContext& ctx)
 
   // Kill creatures who have reached their max num of instructions executed.
   const int max_executed = organism->GetMaxExecuted();
-  if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed)
+  if((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed)
       || phenotype.GetToDie() == true) {
     organism->Die();
-  }  
+  }
+  
+  // Kill organisms that have no active programids.
+  if(m_programids.size() == 0) {
+    organism->Die();
+  }
   
   organism->SetRunning(false);
 }
@@ -3498,6 +3503,7 @@ bool cHardwareGX::Inst_ProgramidCopy(cAvidaContext& ctx)
   cHeadProgramid& write = GetHead(nHardware::HEAD_WRITE);
   cHeadProgramid& read = GetHead(nHardware::HEAD_READ);
   read.Adjust(); // Strange things can happen (like we're reading from a programid that was being written).
+  write.Adjust(); // Always adjust if the memory spaces themselves are accessed.
   
   // Don't copy if this programid's write or read head is on itself
   if(read.GetMemSpace() == m_current->GetID()) return false;
