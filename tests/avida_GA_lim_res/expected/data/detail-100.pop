@@ -1,0 +1,51 @@
+#filetype genotype_data
+#format id parent_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence
+
+#  1: ID
+#  2: parent ID
+#  3: parent distance
+#  4: number of orgranisms currently alive
+#  5: total number of organisms that ever existed
+#  6: length of genome
+#  7: merit
+#  8: gestation time
+#  9: fitness
+# 10: update born
+# 11: update deactivated
+# 12: depth in phylogentic tree
+# 13: genome of organism
+
+530 411 1 35 386 41 1.79447e+16 41 4.37677e+14 58 -1 5 ababbbbabababbbabbaaabbbabaaaaababaaaaaac 
+548 300 1 25 470 41 1.44725e+16 41 3.52988e+14 61 -1 4 ababbbbabbbabbbabbaaabbbabaaaaababaaaaaac 
+584 411 1 23 279 41 1.89747e+16 41 4.62797e+14 68 -1 5 ababbbbabababbbabbaaabbbabaaaaabbaaaaaaac 
+643 637 1 16 195 41 1.72216e+16 41 4.2004e+14 78 -1 7 aaaabbbabababbbabbaaabbbabaaaaabbaaaaaaac 
+663 548 1 12 62 41 1.24445e+16 41 3.03524e+14 81 -1 5 ababbbbabbbabbbabbaaaabbabaaaaababaaaaaac 
+709 584 1 10 38 41 1.45042e+16 41 3.53762e+14 88 -1 6 ababbbbabababbbabbaaabbbabaaababbaaaaaaac 
+573 300 1 10 101 41 1.20358e+16 41 2.93557e+14 65 -1 4 ababbbbabbaabbbabbaaabbbabaaaaabbbaaaaaac 
+572 300 1 9 240 41 1.56443e+16 41 3.81568e+14 65 -1 4 ababbbbabbbabbbabbaaabbbabaaaaabbaaaaaaac 
+691 530 1 8 48 41 1.594e+16 41 3.88781e+14 85 -1 6 abbbbbbabababbbabbaaabbbabaaaaababaaaaaac 
+730 584 1 7 13 41 1.41875e+16 41 3.46036e+14 93 -1 6 ababbbbabababbbabbaaabbbabaabaabbaaaaaaac 
+320 300 1 7 780 41 1.73076e+16 41 4.22135e+14 20 -1 4 ababbababbbabbbabbaaabbbabaaaaabbbaaaaaac 
+563 411 1 7 150 41 1.35914e+16 41 3.31497e+14 64 -1 5 ababbbbabababbbabbaaabbaabaaaaabbbaaaaaac 
+681 585 1 7 71 41 1.56907e+16 41 3.82701e+14 83 -1 6 ababbbaabbbabbbabbaabbbbabaaaaabbaaaaaaac 
+714 663 1 7 37 41 1.68979e+16 41 4.12144e+14 89 -1 6 ababbbbabbaabbbabbaaaabbabaaaaababaaaaaac 
+705 572 1 7 34 41 1.60782e+16 41 3.92151e+14 87 -1 5 ababbbaabbbabbbabbaaabbbabaaaaabbaaaaaaac 
+661 530 1 4 45 41 1.62781e+16 41 3.97027e+14 81 -1 6 ababbbbabababbbabbaaaabbabaaaaababaaaaaac 
+411 300 1 4 793 41 1.89893e+16 41 4.63154e+14 36 -1 4 ababbbbabababbbabbaaabbbabaaaaabbbaaaaaac 
+750 643 1 4 6 41 1.9022e+16 41 4.63951e+14 98 -1 8 aaaabbbabababbbabbaaabbbabaaaaabaaaaaaaac 
+741 530 1 4 4 41 7.62549e+15 41 1.85987e+14 96 -1 6 ababbbbabababbbabbaaabbbabaaaaabababaaaac 
+336 300 1 2 457 41 1.52469e+16 41 3.71877e+14 23 -1 4 ababbbbabbbabbbabbaabbbbabaaaaabbbaaaaaac 
+747 530 1 2 3 41 8.68943e+15 41 2.11937e+14 97 -1 6 ababbbbabababbbabbaaabbbabaaaaababbaaaaac 
+701 643 1 2 19 41 1.38716e+16 41 3.38332e+14 87 -1 8 aaaabbbabababbbabbaaabbbabaaababbaaaaaaac 
+752 584 1 2 3 41 1.47679e+16 41 3.60193e+14 98 -1 6 ababbbbabaaabbbabbaaabbbabaaaaabbaaaaaaac 
+716 707 1 1 1 41 1.93822e+16 41 4.72737e+14 89 -1 6 ababbbaabababbbaabaaabbbabaaaaabbbaaaaaac 
+748 584 1 1 2 41 3.36356e+15 41 8.2038e+13 97 -1 6 ababbbbabababbbabbaaabbbabaaaaabbaaaaabac 
+751 572 1 1 2 41 9.02241e+15 41 2.20059e+14 98 -1 5 ababbbbabbbabbbabbaaabababaaaaabbaaaaaaac 
+756 681 1 1 1 41 1.58413e+16 41 3.86373e+14 99 -1 7 ababbbaabbbabbbabbaabbbbabaabaabbaaaaaaac 
+753 530 1 1 2 41 4.23962e+15 41 1.03405e+14 98 -1 6 ababbbbabababbbabbaaabbbabaaaaababaabaaac 
+757 709 1 1 1 41 1.44206e+16 41 3.51722e+14 100 -1 7 ababbbbabababbbabbaaabababaaababbaaaaaaac 
+755 530 1 1 2 41 1.04623e+16 41 2.55179e+14 99 -1 6 ababbbbabababbbabbaaabbbababaaababaaaaaac 
+758 530 1 1 1 41 1.79474e+16 41 4.37741e+14 100 -1 6 bbabbbbabababbbabbaaabbbabaaaaababaaaaaac 
+759 691 1 1 1 41 1.61397e+16 41 3.9365e+14 100 -1 7 abbbbbbabababbbabbaaabbbbbaaaaababaaaaaac 
+367 340 1 1 118 41 1.57824e+16 41 3.84936e+14 28 -1 6 ababbababbbabbbabbaaabbbbbbaaaabbbaaaaaac 
+760 681 1 1 1 41 1.56033e+16 41 3.80568e+14 100 -1 7 ababbbaabbbabbbabbaabbbbababaaabbaaaaaaac 
