@@ -43,6 +43,9 @@ protected:
   int inext;
   int inextp;
   int ma[56];
+#ifdef DEBUG_CRANDOM
+  long m_call_count;
+#endif
   
   // Constants ////////////////////////////////////////////////////////////////
   // Statistical Approximation
@@ -76,6 +79,11 @@ public:
    **/
   cRandom(const int in_seed = -1);
   virtual ~cRandom() { ; }
+
+  
+#ifdef DEBUG_CRANDOM
+  inline long GetCallCount() { return m_call_count; }
+#endif
   
   /**
    * @return The seed that was actually used to start the random sequence.

@@ -40,6 +40,9 @@ const double cRandom::_RAND_uP_FAC = (_RAND_MBIG/1000000);
 
 cRandom::cRandom(const int in_seed)
 : seed(0), original_seed(0), inext(0), inextp(0), expRV(0)
+#ifdef DEBUG_CRANDOM
+, m_call_count(0)
+#endif
 {
   for (int i = 0; i < 56; ++i) {
     ma[i] = 0;
@@ -118,6 +121,9 @@ void cRandom::init()
 
 unsigned int cRandom::Get()
 {
+#ifdef DEBUG_CRANDOM
+  m_call_count++;
+#endif
   if (++inext == 56) inext = 0;
   if (++inextp == 56) inextp = 0;
   assert(inext < 56);
