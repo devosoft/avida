@@ -25,9 +25,6 @@
 
 #include "cGenotype_BirthData.h"
 
-#include "defs.h"
-
-
 cGenotype_BirthData::cGenotype_BirthData(int in_update_born)
   : update_born(in_update_born)
   , parent_distance(-1)

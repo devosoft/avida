@@ -85,12 +85,9 @@ void cGenotypeControl::Insert(cGenotype & in_genotype, cGenotype * prev_genotype
 
 void cGenotypeControl::Remove(cGenotype & in_genotype)
 {
-  if (size == 1) {
-    best = NULL;
-  }
-  if (&in_genotype == best) {
-    best = best->GetNext();
-  }
+  if (size == 1) best = NULL;
+  if (&in_genotype == best) best = best->GetNext();
+  if (&in_genotype == coalescent) coalescent = NULL;
 
   in_genotype.GetNext()->SetPrev(in_genotype.GetPrev());
   in_genotype.GetPrev()->SetNext(in_genotype.GetNext());
@@ -140,9 +137,7 @@ int cGenotypeControl::UpdateCoalescent()
   // Test to see if any updating needs to be done...
   // Don't update active coalescent genotype, or if there is more than
   // one offspring.
-  if (coalescent != NULL &&
-      (coalescent->GetNumOrganisms() > 0 ||
-       coalescent->GetNumOffspringGenotypes() > 1)) {
+  if (coalescent != NULL && (coalescent->GetNumOrganisms() > 0 || coalescent->GetNumOffspringGenotypes() > 1)) {
     return coalescent->GetDepth();
   }
 
@@ -150,14 +145,13 @@ int cGenotypeControl::UpdateCoalescent()
   if (best == NULL) return -1;
 
   // Find the new point...
-  cGenotype * test_gen = best;
-  cGenotype * found_gen = best;
-  cGenotype * parent_gen = best->GetParentGenotype();
+  cGenotype* test_gen = best;
+  cGenotype* found_gen = best;
+  cGenotype* parent_gen = best->GetParentGenotype();
 
   while (parent_gen != NULL) {
     // See if this genotype should be the new found genotype...
-    if (test_gen->GetNumOrganisms() > 0 ||
-	test_gen->GetNumOffspringGenotypes() > 1) {
+    if (test_gen->GetNumOrganisms() > 0 || test_gen->GetNumOffspringGenotypes() > 1) {
       found_gen = test_gen;
     }
 

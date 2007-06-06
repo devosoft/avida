@@ -2432,7 +2432,8 @@ void cPopulation::InjectGenotype(int cell_id, cGenotype *new_genotype)
 
   phenotype.SetMerit( cMerit(new_genotype->GetTestMerit(ctx)) );
   
-  cerr<<"initial energy: " << phenotype.GetStoredEnergy() <<endl<<"initial Merit: "<<phenotype.GetMerit().GetDouble()<<endl;
+  // @DMB - this appears to be debugging output
+  //cerr<<"initial energy: " << phenotype.GetStoredEnergy() <<endl<<"initial Merit: "<<phenotype.GetMerit().GetDouble()<<endl;
   
   // @CAO are these really needed?
   phenotype.SetLinesCopied( new_genotype->GetTestCopiedSize(ctx) );
