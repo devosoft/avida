@@ -1758,7 +1758,8 @@ void cAnalyze::CommandDetail(cString cur_string)
     ofstream& fp = m_world->GetDataFileOFStream(filename);
     CommandDetail_Header(fp, file_type, output_it);
     CommandDetail_Body(fp, file_type, output_it);
-  }
+		fp.close();
+	}
   
   // And clean up...
   while (output_list.GetSize() != 0) delete output_list.Pop();
