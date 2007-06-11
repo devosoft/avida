@@ -1436,6 +1436,42 @@ public:
   }
 };
 
+
+class cActionSwapCells : public cAction
+{
+private:
+  int id1;
+  int id2;
+
+public:
+  cActionSwapCells(cWorld* world, const cString& args) : cAction(world, args), id1(-1), id2(-1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) id1 = largs.PopWord().AsInt();
+    if (largs.GetSize()) id2 = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: <int cell_id1> <int cell_id2>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    const int num_cells = m_world->GetPopulation().GetSize();
+    if (id1 < 0 || id1 >= num_cells ||
+	id2 < 0 || id2 >= num_cells) {
+      m_world->GetDriver().RaiseException("SwapCells cell ID out of range");
+      return;
+    }
+    if (id1 == id2) {
+      m_world->GetDriver().NotifyWarning("SwapCells cell IDs identical");
+    }
+
+    cPopulationCell& cell1 = m_world->GetPopulation().GetCell(id1);
+    cPopulationCell& cell2 = m_world->GetPopulation().GetCell(id2);
+    m_world->GetPopulation().SwapCells(cell1, cell2);
+  }
+};
+
+
 void RegisterPopulationActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionInject>("Inject");
@@ -1472,6 +1508,8 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
 
   action_lib->Register<cActionConnectCells>("ConnectCells");
   action_lib->Register<cActionDisconnectCells>("DisconnectCells");
+  action_lib->Register<cActionSetOptimizeMinMax>("SetOptimizeMinMax");
+  action_lib->Register<cActionSwapCells>("SwapCells");
 
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
   action_lib->Register<cActionInject>("inject");
@@ -1500,6 +1538,5 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
 
   action_lib->Register<cActionConnectCells>("connect_cells");
   action_lib->Register<cActionDisconnectCells>("disconnect_cells");
-
-  action_lib->Register<cActionSetOptimizeMinMax>("SetOptimizeMinMax");
+  action_lib->Register<cActionSwapCells>("swap_cells");
 }

@@ -162,9 +162,12 @@ public:
   
   // Deactivate an organism in the population (required for deactivations)
   void KillOrganism(cPopulationCell& in_cell);
+
+  // Specialized functionality
   void Kaboom(cPopulationCell& in_cell, int distance=0);
   void AddSellValue(const int data, const int label, const int sell_price, const int org_id, const int cell_id);
   int BuyValue(const int label, const int buy_price, const int cell_id);
+  void SwapCells(cPopulationCell & cell1, cPopulationCell & cell2);
 
   // Deme-related methods
   void CompeteDemes(int competition_type);

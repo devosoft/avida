@@ -393,7 +393,7 @@ cAvidaConfig* cAvidaConfig::LoadWithArgs(cStringList &argv)
 	   << "  -h[elp]               Help on options (this listing)"<<endl
 	   << "  -i[nteractive]        Run analyze mode interactively" << endl
 	   << "  -l[oad] <filename>    Load a clone file" << endl
-	   << "  -r[eview]             Review analyze.cfg settings." << endl
+	   << "  -r[eview]             Review avida.cfg settings." << endl
 	   << "  -s[eed] <value>       Set random seed to <value>" << endl
 	   << "  -set <name> <value>   Overide values in avida.cfg" << endl
 	   << "  -v[ersion]            Prints the version number" << endl

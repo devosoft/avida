@@ -61,6 +61,7 @@ private:
 
   int id_num;
   char symbol;
+  int map_id;
 
   mutable cGenotype_TestData test_data;
   cGenotype_BirthData birth_data;
@@ -137,6 +138,7 @@ public:
   void SetNext(cGenotype* in_next) { next = in_next; }
   void SetPrev(cGenotype* in_prev) { prev = in_prev; }
   void SetSymbol(char in_symbol) { symbol = in_symbol; }
+  void SetMapID(int in_id) { map_id = in_id; }
   inline void SetThreshold();
   void IncDeferAdjust() { defer_adjust++; }
   void DecDeferAdjust() { defer_adjust--; assert(defer_adjust >= 0); }
@@ -218,6 +220,7 @@ public:
   bool GetThreshold() const     { return flag_threshold; }
   int GetID() const             { return id_num; }
   char GetSymbol() const        { return symbol; }
+  int GetMapID() const          { return map_id; }
 
   // Calculate a crude phylogentic distance based off of tracking parents
   // and grand-parents, including sexual tracking.
@@ -261,6 +264,7 @@ inline void cGenotype::SetThreshold()
 {
   flag_threshold = true;
   if (symbol == '.') symbol = '+';
+  if (map_id == 0) map_id = 1;
 }
 
 inline void cGenotype::SetBreedStats(cGenotype & daughter)

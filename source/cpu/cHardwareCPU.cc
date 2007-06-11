@@ -483,8 +483,7 @@ void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
   
   cPhenotype & phenotype = organism->GetPhenotype();
   
-  if (m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1) 
-  {
+  if (m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1) {
     //First instruction - check whether we should be starting at a promoter.
     if (phenotype.GetTimeUsed() == 0) Inst_Terminate(m_world->GetDefaultContext());
   }
@@ -496,8 +495,7 @@ void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
   
   // If we have threads turned on and we executed each thread in a single
   // timestep, adjust the number of instructions executed accordingly.
-  const int num_inst_exec = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1) ?
-num_threads : 1;
+  const int num_inst_exec = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1) ? num_threads : 1;
   
   for (int i = 0; i < num_inst_exec; i++) {
     // Setup the hardware for the next instruction to be executed.
@@ -532,8 +530,7 @@ num_threads : 1;
       const int addl_time_cost = m_inst_set->GetAddlTimeCost(cur_inst);
 
       // Prob of exec (moved from SingleProcess_PayCosts so that we advance IP after a fail)
-      if ( m_inst_set->GetProbFail(cur_inst) > 0.0 ) 
-      {
+      if ( m_inst_set->GetProbFail(cur_inst) > 0.0 ) {
         exec = !( ctx.GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
       }
       
@@ -548,8 +545,7 @@ num_threads : 1;
       
       // In the promoter model, there may be a chance of termination
       // that causes execution to start at a new instruction (per instruction executed)
-      if ( m_world->GetConfig().PROMOTERS_ENABLED.Get() )
-      {
+      if ( m_world->GetConfig().PROMOTERS_ENABLED.Get() ) {
         const double processivity = m_world->GetConfig().PROMOTER_PROCESSIVITY_INST.Get();
         if ( ctx.GetRandom().P(1-processivity) ) Inst_Terminate(ctx);
       }
@@ -662,9 +658,11 @@ bool cHardwareCPU::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruct
 	
   // And execute it.
   const bool exec_success = (this->*(m_functions[inst_idx]))(ctx);
-	
+
+  // NOTE: Organism may be dead now if instruction executed killed it (such as some divides, "die", or "kazi")
+
 #if INSTRUCTION_COUNT
-  // decrement if the instruction was not executed successfully
+  // Decrement if the instruction was not executed successfully.
   if (exec_success == false) {
     organism->GetPhenotype().DecCurInstCount(actual_inst.GetOp());
   }

@@ -642,6 +642,26 @@ int cPopulation::BuyValue(const int label, const int buy_price, const int cell_i
 	return receive_value;
 }
 
+void cPopulation::SwapCells(cPopulationCell & cell1, cPopulationCell & cell2)
+{
+  cOrganism * org1 = cell1.RemoveOrganism();
+  cOrganism * org2 = cell2.RemoveOrganism();
+  if (org2 != NULL) {
+    cell1.InsertOrganism(*org2);
+    schedule->Adjust(cell1.GetID(), org2->GetPhenotype().GetMerit());
+  } else {
+    schedule->Adjust(cell1.GetID(), cMerit(0));
+  }
+
+  if (org1 != NULL) {
+    cell2.InsertOrganism(*org1);
+    schedule->Adjust(cell2.GetID(), org1->GetPhenotype().GetMerit());
+  } else {
+    schedule->Adjust(cell2.GetID(), cMerit(0));
+  }
+}
+
+
 // CompeteDemes  probabilistically copies demes into the next generation
 // based on their fitness. How deme fitness is estimated is specified by 
 // competition_type input argument as:
