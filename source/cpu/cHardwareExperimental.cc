@@ -1080,7 +1080,7 @@ bool cHardwareExperimental::Inst_MoveHead(cAvidaContext& ctx)
 
 bool cHardwareExperimental::Inst_JumpHead(cAvidaContext& ctx)
 {
-  const int head_used = FindModifiedHead(nHardware::HEAD_FLOW);
+  const int head_used = FindModifiedHead(nHardware::HEAD_IP);
   const int reg = FindModifiedRegister(REG_CX);
   GetHead(head_used).Jump(GetRegister(reg));
   if (head_used == nHardware::HEAD_IP) m_advance_ip = false;
