@@ -50,14 +50,14 @@ cPhenotype::cPhenotype(cWorld* world)
   , cur_inst_count(world->GetHardwareManager().GetInstSet().GetSize())
   , cur_sense_count(m_world->GetStats().GetSenseSize())
   , sensed_resources(m_world->GetEnvironment().GetResourceLib().GetSize())
+  , promoter_last_inst_terminated(false) 
   , last_task_count(m_world->GetEnvironment().GetNumTasks())
-  , last_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())  
   , last_task_quality(m_world->GetEnvironment().GetNumTasks())
   , last_task_value(m_world->GetEnvironment().GetNumTasks())
   , last_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
+  , last_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())  
   , last_inst_count(world->GetHardwareManager().GetInstSet().GetSize())
   , last_sense_count(m_world->GetStats().GetSenseSize())
-  , promoter_last_inst_terminated(false) 
 {
 }
 

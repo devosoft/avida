@@ -25,6 +25,8 @@
 #include <climits>
 #include <cmath>
 
+#define DEBUG_CRANDOM
+
 /**
  * A versatile and fast pseudo random number generator.
  **/
@@ -43,6 +45,10 @@ protected:
   int inext;
   int inextp;
   int ma[56];
+
+  // Members & functions for stat functions
+  double expRV; // Exponential Random Variable for the randNormal function
+
 #ifdef DEBUG_CRANDOM
   long m_call_count;
 #endif
@@ -50,8 +56,7 @@ protected:
   // Constants ////////////////////////////////////////////////////////////////
   // Statistical Approximation
   static const unsigned int _BINOMIAL_TO_NORMAL;  //if < n*p*(1-p)
-  static const unsigned int _BINOMIAL_TO_POISSON; //if < n && !Normal approx
-                                                  // Engine
+  static const unsigned int _BINOMIAL_TO_POISSON; //if < n && !Normal approx Engine
   static const unsigned int _RAND_MBIG;
   static const unsigned int _RAND_MSEED;
   // Number Generation
@@ -59,8 +64,6 @@ protected:
   static const double _RAND_mP_FAC;
   static const double _RAND_uP_FAC;
   
-  // Members & functions for stat functions
-  double expRV; // Exponential Random Variable for the randNormal function
   
   
   // Internal functions

@@ -131,7 +131,7 @@ public:
   }
 
   void RemoveAt(int idx) {
-    int i, j;
+    int i;
     if(idx >= 0 && idx < Size()) {
       T *newdata = new T[Capacity()];
       for(i = 0; i < idx; i++) {

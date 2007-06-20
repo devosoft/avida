@@ -1177,7 +1177,6 @@ class cActionPrintCCladeFitnessHistogram : public cAction
 			//Gather data objects
 			cPopulation& pop        = m_world->GetPopulation();
 			const int    update     = m_world->GetStats().GetUpdate();
-			const double generation = m_world->GetStats().SumGeneration().Average();
 			map< int, tArray<cOrganism*> > org_map;  //Map of ccladeID to array of organism IDs
 			map< int, tArray<cGenotype*> > gen_map;  //Map of ccladeID to array of genotype IDs 
 			
@@ -1293,7 +1292,6 @@ public:
 		///Gather data objects
 		cPopulation& pop        = m_world->GetPopulation();
 		const int    update     = m_world->GetStats().GetUpdate();
-		const double generation = m_world->GetStats().SumGeneration().Average();
 		map< int, tArray<cOrganism*> > org_map;  //Map of ccladeID to array of organism IDs
 		map< int, tArray<cGenotype*> > gen_map;  //Map of ccladeID to array of genotype IDs 
 		
@@ -1374,8 +1372,6 @@ class cActionPrintGenomicSiteEntropy : public cAction
 		static const cString GetDescription() { return "Arguments: [filename = \"GenomicSiteEntropyData.datcd \"] [use_gap = false]";}
 		
 		void Process(cAvidaContext& ctx){
-			const int        update     = m_world->GetStats().GetUpdate();
-			const double     generation = m_world->GetStats().SumGeneration().Average();
 			const int        num_insts  = m_world->GetNumInstructions();
 			tArray<cString> aligned;  //This will hold all of our aligned sequences
 			

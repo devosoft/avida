@@ -71,10 +71,10 @@ cPopulation::cPopulation(cWorld* world)
 , schedule(NULL)
 , resource_count(world->GetEnvironment().GetResourceLib().GetSize())
 , birth_chamber(world)
+, numAsleep(0)
 , environment(world->GetEnvironment())
 , num_organisms(0)
 , sync_events(false)
-, numAsleep(0)
 {
   // Avida specific information.
   world_x = world->GetConfig().WORLD_X.Get();
@@ -82,7 +82,6 @@ cPopulation::cPopulation(cWorld* world)
 	int num_demes = m_world->GetConfig().NUM_DEMES.Get();
 	const int num_cells = world_x * world_y;
   const int geometry = world->GetConfig().WORLD_GEOMETRY.Get();
-	const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
   
   if(m_world->GetConfig().ENERGY_CAP.Get() == -1)
     m_world->GetConfig().ENERGY_CAP.Set(INT_MAX);
@@ -106,6 +105,9 @@ cPopulation::cPopulation(cWorld* world)
   }
   
   // Error checking for demes vs. non-demes setup.
+#ifdef DEBUG
+  const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
+#endif
 	if(num_demes > 0) {
 		assert(birth_method != POSITION_CHILD_FULL_SOUP_ELDEST);
 		assert(birth_method != POSITION_CHILD_FULL_SOUP_ELDEST);
@@ -309,7 +311,6 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
     }
   }
   
-  double old_fitness = parent_genotype->GetFitness();
   // Do any statistics on the parent that just gave birth...
   parent_genotype->AddGestationTime( parent_phenotype.GetGestationTime() );
   parent_genotype->AddFitness(       parent_phenotype.GetFitness()       );
@@ -903,7 +904,6 @@ void cPopulation::ReplicateDemes(int rep_trigger)
   
   // Determine which demes should be replicated.
   const int num_demes = GetNumDemes();
-  cRandom & random = m_world->GetRandom();
   
   // Loop through all candidate demes...
 	for (int deme_id = 0; deme_id < num_demes; deme_id++) {

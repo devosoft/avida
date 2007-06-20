@@ -173,6 +173,7 @@
 		7049F3710A66AD7E00640512 /* default-sex-classic.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F36D0A66AD7E00640512 /* default-sex-classic.org */; };
 		7049F3720A66AD7E00640512 /* default-smt.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F36E0A66AD7E00640512 /* default-smt.org */; };
 		7049F3730A66AD7E00640512 /* default-transsmt.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F36F0A66AD7E00640512 /* default-transsmt.org */; };
+		704C21DC0C28C3980038F1A5 /* libtcmalloc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70AA941909D486AE006A24C8 /* libtcmalloc.a */; };
 		70658C5A085DF67D00486BED /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
 		70AA941A09D486CA006A24C8 /* system-alloc.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCF50209CFB0B400924128 /* system-alloc.cc */; };
 		70AA941B09D486CB006A24C8 /* tcmalloc-logging.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCF57F09CFBD3D00924128 /* tcmalloc-logging.cc */; };
@@ -182,7 +183,6 @@
 		70B6514F0BEA6FCC002472ED /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701EF27E0BEA5D2300DAE168 /* main.cc */; };
 		70B651B70BEA9AEC002472ED /* unit-tests in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70B6514C0BEA6FAD002472ED /* unit-tests */; };
 		70DCAC9C097AF7C0002F8733 /* primitive.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC9B097AF7C0002F8733 /* primitive.cc */; };
-		70DCF66C09D4DE6500924128 /* libtcmalloc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70AA941909D486AE006A24C8 /* libtcmalloc.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -338,7 +338,7 @@
 		700AE91B09DB65F200A073FD /* cTaskContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cTaskContext.h; sourceTree = "<group>"; };
 		700E11BC0A0815B600B604CD /* cDataEntry.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDataEntry.cc; sourceTree = "<group>"; };
 		700E28CF0859FFD700CF158A /* tObjectFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tObjectFactory.h; sourceTree = "<group>"; };
-		700E2B83085DE50C00CF158A /* avida-viewer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "avida-viewer"; sourceTree = BUILT_PRODUCTS_DIR; };
+		700E2B83085DE50C00CF158A /* avida-viewer */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "compiled.mach-o.executable"; path = "avida-viewer"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7013845F09028B3E0087ED2E /* cAvidaConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaConfig.h; sourceTree = "<group>"; };
 		7013846009028B3E0087ED2E /* cAvidaConfig.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cAvidaConfig.cc; sourceTree = "<group>"; };
 		701384A10902A16F0087ED2E /* defs.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = defs.h; sourceTree = "<group>"; };
@@ -844,8 +844,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				70DCF66C09D4DE6500924128 /* libtcmalloc.a in Frameworks */,
 				7023ECA80C0A437200362B9C /* libavida-core.a in Frameworks */,
+				704C21DC0C28C3980038F1A5 /* libtcmalloc.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2081,7 +2081,9 @@
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				PREBINDING = NO;
 				WARNING_CFLAGS = (
+					"-Wall",
 					"-Wextra",
+					"-Wno-unused-parameter",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
 					"-Wconversion",
@@ -2107,7 +2109,7 @@
 				GCC_STRICT_ALIASING = YES;
 				GCC_UNROLL_LOOPS = YES;
 				PER_ARCH_CFLAGS_i386 = "-DCOMPILE_ARCH=\\\"Intel\\\"";
-				PER_ARCH_CFLAGS_ppc = "-DCOMPILE_ARCH=\\\"G4-G5\\\" -falign-loops-max-skip=15 -falign-jumps-max-skip=15 -falign-loops=16 -falign-jumps=16 -falign-functions=16 -ftree-loop-linear -fsched-interblock -fgcse-sm";
+				PER_ARCH_CFLAGS_ppc = "-DCOMPILE_ARCH=\\\"G4-G5\\\" -mno-fused-madd -falign-loops-max-skip=15 -falign-jumps-max-skip=15 -falign-loops=16 -falign-jumps=16 -falign-functions=16 -ftree-loop-linear -fsched-interblock -fgcse-sm";
 				SEPARATE_STRIP = YES;
 				WARNING_CFLAGS = (
 					"-Wextra",
@@ -2241,6 +2243,7 @@
 				OTHER_CFLAGS = (
 					"$(OTHER_CFLAGS_QUOTED_1)",
 					"-mpowerpc-gpopt",
+					"-mno-fused-madd",
 					"-falign-loops-max-skip=15",
 					"-falign-jumps-max-skip=15",
 					"-falign-loops=16",
@@ -2280,12 +2283,17 @@
 				);
 				GCC_STRICT_ALIASING = YES;
 				GCC_UNROLL_LOOPS = YES;
-				OTHER_CFLAGS = "-falign-loops=16";
+				OTHER_CFLAGS = (
+					"-mno-fused-madd",
+					"-falign-loops=16",
+				);
 				PER_ARCH_CFLAGS_i386 = "-DCOMPILE_ARCH=\\\"Intel\\\"";
 				PER_ARCH_CFLAGS_ppc = "-DCOMPILE_ARCH=\\\"G4-G5\\\"";
 				PREBINDING = NO;
 				WARNING_CFLAGS = (
+					"-Wall",
 					"-Wextra",
+					"-Wno-unused-parameter",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
 					"-Wconversion",
@@ -2461,7 +2469,7 @@
 				GCC_STRICT_ALIASING = YES;
 				GCC_UNROLL_LOOPS = YES;
 				PER_ARCH_CFLAGS_i386 = "-DCOMPILE_ARCH=\\\"Intel\\\"";
-				PER_ARCH_CFLAGS_ppc = "-DCOMPILE_ARCH=\\\"G4-G5\\\" -mpowerpc-gpopt -falign-loops-max-skip=15 -falign-jumps-max-skip=15 -falign-loops=16 -falign-jumps=16 -falign-functions=16 -ftree-loop-linear -fsched-interblock -fgcse-sm";
+				PER_ARCH_CFLAGS_ppc = "-DCOMPILE_ARCH=\\\"G4-G5\\\" -mpowerpc-gpopt -mno-fused-madd -falign-loops-max-skip=15 -falign-jumps-max-skip=15 -falign-loops=16 -falign-jumps=16 -falign-functions=16 -ftree-loop-linear -fsched-interblock -fgcse-sm";
 				PREBINDING = NO;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				SEPARATE_STRIP = YES;
