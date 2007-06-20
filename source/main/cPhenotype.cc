@@ -131,6 +131,7 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
 
   // Initialize current values, as neeeded.
   cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
+  cur_energy_bonus = 0.0;
   cur_num_errors  = 0;
   cur_num_donates  = 0;
   cur_task_count.SetAll(0);
@@ -258,6 +259,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
 
   // Initialize current values, as neeeded.
   cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
+  cur_energy_bonus = 0.0;
   cur_num_errors  = 0;
   cur_num_donates  = 0;
   cur_task_count.SetAll(0);
