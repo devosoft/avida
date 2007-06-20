@@ -25,8 +25,6 @@
 #include <climits>
 #include <cmath>
 
-#define DEBUG_CRANDOM
-
 /**
  * A versatile and fast pseudo random number generator.
  **/
