@@ -38,6 +38,15 @@ IF(UNIX)
     SET(COMPILER_OPTIMIZATION_FLAGS "-ffast-math -fno-rtti -funroll-loops -fstrict-aliasing -ftree-vectorize -fvisibility-inlines-hidden")
   ENDIF (CMAKE_CXX_COMPILER MATCHES ".*pathCC.*")
 
+  INCLUDE(CheckCSourceCompiles)
+  SET(CMAKE_REQUIRED_FLAGS "-mno-fused-madd")
+  CHECK_C_SOURCE_COMPILES("int main() { return 0; }" HAVE_FUSED_MADD)
+  SET(CMAKE_REQUIRED_FLAGS "")
+
+  IF(HAVE_FUSED_MADD)
+    SET(COMPILER_OPTIMIZATION_FLAGS "-mno-fused-madd ${COMPILER_OPTIMIZATION_FLAGS}")
+  ENDIF(HAVE_FUSED_MADD)
+
   # Four types of c++ compilations:
   # - debug (Debug)
   # - minimum-size release (MinSizeRel)
