@@ -68,13 +68,6 @@ class cInstSet;
 class cMutation;
 class cOrganism;
 
-/* The big TODO list
-
-1. Create a cGXOrganism class and remove all of the psudo-genome nonsense.
-   This will fix the artifact that programid ages get reset in the daughter.
-
-*/
-
 /*! Each organism may have a cHardwareGX structure that keeps track of the 
 * current status of simulated hardware.  This particular CPU architecture is
 * designed to explore the evolution of gene expression and also the effect
@@ -89,19 +82,19 @@ public:
   //! Number of heads each cProgramid has.
   static const int NUM_HEADS = nHardware::NUM_HEADS >= NUM_REGISTERS ? nHardware::NUM_HEADS : NUM_REGISTERS;
   static const int NUM_NOPS = 3; //!< Number of NOPS that cHardwareGX supports.
+    
+  // GX "options" that haven't graduated to the Config File
+  
+  // "Normal" Model
 
-  //!< \todo JEB Make these config options
-  static const unsigned int MAX_PROGRAMIDS = 32; //!< Number of cProgramids that an organism can allocate.
-  static const int MAX_PROGRAMID_TOTAL_LENGTH = 1000; // New programids cannot be created if above this cumulative length.
   static const int PROGRAMID_REPLACEMENT_METHOD = 0;
    //!< Controls what happens when we try to allocate a new cProgramid, but are up against the limit
-  // 0 = Fail if no programids available
-  // 1 = Replace the programid that has completed the most instructions
-  static const int MAX_PROGRAMID_AGE = 2000; // Number of inst a cProgramid executes before ceasing to exist
-  static const double EXECUTABLE_COPY_PROCESSIVITY;
-  static const double READABLE_COPY_PROCESSIVITY;
-
-  unsigned int m_last_unique_id_assigned; // Counter so programids can be assigned unique IDs for tracking
+    // 0 = Fail if no programids available
+    // 1 = Replace the programid that has used the most cpu cycles
+  static const double EXECUTABLE_COPY_PROCESSIVITY; // Set to 1.0 by default
+  static const double READABLE_COPY_PROCESSIVITY;   // Set to 1.0 by default
+  
+  unsigned int m_last_unique_id_assigned; // Counter: so programids can be assigned unique IDs for tracking
 
   //! Enums for the different supported registers.
   enum tRegisters { REG_AX=0, REG_BX, REG_CX };
@@ -126,7 +119,7 @@ public:
   private:
     cProgramid* m_programid;
   public:
-    cHeadProgramid() : cHeadCPU(), m_programid(NULL) {  }
+    cHeadProgramid(cHardwareBase* hw = NULL, int pos = 0, int ms = 0) : cHeadCPU(hw, pos, ms) , m_programid(NULL) {  };
     ~cHeadProgramid() { ; }
       
     void SetProgramid(cProgramid* _programid) { m_programid = _programid; }
@@ -148,6 +141,8 @@ public:
   public:
     //! Constructs a cProgramid from a genome and CPU.
     cProgramid(const cGenome& genome, cHardwareGX* hardware);
+    ~cProgramid() {}
+    
     //! Returns whether and where this cProgramid matches the passed-in label.
     std::vector<cHardwareGX::cMatchSite> Sites(const cCodeLabel& label);
     //! Binds one of this cProgramid's heads to the passed-in match site.
@@ -170,12 +165,8 @@ public:
       m_contacting_heads++; 
     }
     
-    void ResetHeads() {
-      for(int i=0; i<NUM_HEADS; ++i) {
-        m_heads[i].SetProgramid(this);
-        m_heads[i].Reset(m_gx_hardware, m_id);
-      }
-    }
+    void ResetHeads();    
+    void Reset();
     
     // Accessors
     bool GetExecute() { return m_executable && (m_contacting_heads == 0); }
@@ -183,6 +174,8 @@ public:
     bool GetBindable() { return m_bindable; }
     bool GetReadable() { return m_readable; }
     int  GetID() { return m_id; }
+    tBuffer<int>& GetInputBuf() { return m_input_buf; }
+    tBuffer<int>& GetOutputBuf() { return m_output_buf; }
     int  GetCPUCyclesUsed() { return m_cpu_cycles_used; }
     void ResetCPUCyclesUsed() { m_cpu_cycles_used = 0; }
     cInstruction GetInst(cString inst) { assert(m_gx_hardware); return m_gx_hardware->GetInstSet().GetInst(inst); }
@@ -214,6 +207,7 @@ public:
     bool m_executable;  //!< Is this programid ever executable? Currently, a programid with head from another cProgramid on it is also stopped. 
     bool m_bindable; //!< Is this programid bindable, i.e. can other programids put their read heads on it?
     bool m_readable; //!< Is this programid readable?
+    bool m_marked_for_death; //!< Is this programid marked for deletion?
     int m_cpu_cycles_used; //!< Number of cpu cycles this programid has used.
 
     bool m_copying_site; //! Are we in the middle of copying a "site" (which could cause termination)
@@ -221,15 +215,17 @@ public:
     cCodeLabel m_terminator_label; //!< The label that this cProgramid must traverse to disassociate.
 
     // Core variables maintained from previous incarnation as a thread
-    cCodeLabel m_readLabel; //!< ?
-    cCodeLabel m_nextLabel; //!< ?
+    cCodeLabel m_read_label; //!< ?
+    cCodeLabel m_next_label; //!< ?
     cCPUMemory m_memory; //!< This cProgramid's genome fragment.
     cCPUStack m_stack; //!< This cProgramid's stack (no global stack).
     cHeadProgramid m_heads[NUM_HEADS]; //!< This cProgramid's heads.
     int m_regs[NUM_REGISTERS]; //!< This cProgramid's registers.
     
-    tBuffer<int> m_inputBuffer; //!< This programid's input buffer.
-    tBuffer<int> m_outputBuffer; //!< This programid's output buffer.
+    int m_input_pointer;
+    tBuffer<int> m_input_buf; //!< This programid's input buffer.
+    tBuffer<int> m_output_buf; //!< This programid's output buffer.
+
   };
   
 protected:
@@ -238,6 +234,13 @@ protected:
 
   programid_list m_programids; //!< The list of cProgramids.
   programid_ptr m_current; //!< The currently-executing cProgramid.
+  
+  // Implicit RNAP Model only
+  cHeadProgramid m_promoter_update_head; //Promoter position that last executable programid was created from.
+  tArray<double> m_promoter_states;
+  tArray<double> m_promoter_rates;
+  double m_recycle_state;
+  double m_promoter_sum;
   
   // --------  Member Variables  --------
   const tMethod* m_functions;
@@ -271,15 +274,15 @@ protected:
   void AdjustHeads();
   
   // --------  Label Manipulation  -------
-  const cCodeLabel& GetLabel() const { assert(m_current); return m_current->m_nextLabel; }
-  cCodeLabel& GetLabel() { assert(m_current); return m_current->m_nextLabel; }
+  const cCodeLabel& GetLabel() const { assert(m_current); return m_current->m_next_label; }
+  cCodeLabel& GetLabel() { assert(m_current); return m_current->m_next_label; }
   void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
   cHeadCPU FindLabel(int direction);
   int FindLabel_Forward(const cCodeLabel & search_label, const cGenome& search_genome, int pos);
   int FindLabel_Backward(const cCodeLabel & search_label, const cGenome& search_genome, int pos);
   cHeadCPU FindLabel(const cCodeLabel & in_label, int direction);
-  const cCodeLabel& GetReadLabel() const { assert(m_current); return m_current->m_readLabel; }
-  cCodeLabel& GetReadLabel() { assert(m_current); return m_current->m_readLabel; }
+  const cCodeLabel& GetReadLabel() const { assert(m_current); return m_current->m_read_label; }
+  cCodeLabel& GetReadLabel() { assert(m_current); return m_current->m_read_label; }
 
   // ---------- Instruction Helpers -----------
   int FindModifiedRegister(int default_register);
@@ -293,6 +296,7 @@ protected:
   bool Allocate_Default(const int new_size);
   bool Allocate_Main(cAvidaContext& ctx, const int allocated_size);
   
+  int GetExecutedSize(const int parent_size);
   int GetCopiedSize(const int parent_size, const int child_size);
   bool Divide_Main(cAvidaContext& ctx);
   void InjectCode(const cGenome& injection, const int line_num);
@@ -300,7 +304,7 @@ protected:
   void ReadInst(const int in_inst);
 
 public:
-  //! Main constructor for cHardwareGX; called from cHardwareManager for every(?) organism.
+  //! Main constructor for cHardwareGX; called from cHardwareManager for every organism.
   cHardwareGX(cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
   virtual ~cHardwareGX(); //!< Destructor; removes all cProgramids.
     
@@ -316,7 +320,6 @@ public:
   int GetType() const { return HARDWARE_TYPE_CPU_GX; }  
   bool OK();
   void PrintStatus(std::ostream& fp);
-
 
   // --------  Stack Manipulation...  --------
   inline int GetStack(int depth=0, int stack_id=-1, int in_thread=-1) const { assert(m_current); return m_current->m_stack.Get(depth); }
@@ -363,9 +366,14 @@ public:
   virtual int GetNumThreads() const { return -1; }
   virtual int GetCurThread() const { return -1; }
   virtual int GetCurThreadID() const { return -1; }
-  
+ 
+   // --------  Parasite Stuff  --------
   bool InjectHost(const cCodeLabel& in_label, const cGenome& injection);
-  
+
+  // --------  Input/Output Buffers  --------
+  virtual tBuffer<int>& GetInputBuf() { return m_current->GetInputBuf(); }
+  virtual tBuffer<int>& GetOutputBuf() { return m_current->GetOutputBuf(); }
+
 private:
   cHardwareGX& operator=(const cHardwareGX&); //!< Not implemented.
   cHardwareGX(const cHardwareGX&); //!< Not implemented.
@@ -479,6 +487,8 @@ private:
   bool Inst_MaxAlloc(cAvidaContext& ctx);
   bool Inst_Inject(cAvidaContext& ctx);
   bool Inst_InjectRand(cAvidaContext& ctx);
+  
+  bool Inst_Repro(cAvidaContext& ctx);
 
   bool Inst_SpawnDeme(cAvidaContext& ctx);
   bool Inst_Kazi(cAvidaContext& ctx);
@@ -567,12 +577,21 @@ private:
   bool Inst_NumSites(cAvidaContext& ctx); //!< Count the number of corresponding binding sites
   bool Inst_ProgramidCopy(cAvidaContext& ctx); //!< Like h-copy, but fails if read/write heads not on other programids and will not write over
   bool Inst_ProgramidDivide(cAvidaContext& ctx); //!< Like h-divide, 
-  bool Inst_ProgramidGet(cAvidaContext& ctx); //!< Like get with head resets.
-  bool Inst_ProgramidPut(cAvidaContext& ctx); //!< Like put with head and input resets.
+  bool Inst_ProgramidImplicitAllocate(cAvidaContext& ctx);
+  bool Inst_ProgramidImplicitDivide(cAvidaContext& ctx);
+  bool Inst_EndProgramidExecution(cAvidaContext& ctx);
   
+  bool Inst_Promoter(cAvidaContext& ctx);
+  bool Inst_Terminator(cAvidaContext& ctx);
+  bool Inst_HeadRegulate(cAvidaContext& ctx);
+
   //!< Add/Remove a new programid to/from the list and give it the proper index within the list so we keep track of memory spaces...
   void AddProgramid(programid_ptr programid);
-  void RemoveProgramid(unsigned int remove_index);  
+  void RemoveProgramid(unsigned int remove_index);
+  
+  // Create executable programids in the implicit GX model
+  void ProcessImplicitGeneExpression(int in_limit = -1);  
+  
 };
 
 

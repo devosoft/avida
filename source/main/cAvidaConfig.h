@@ -206,8 +206,6 @@ public:
   CONFIG_ADD_VAR(ENVIRONMENT_FILE, cString, "environment.cfg", "File that describes the environment");
   CONFIG_ADD_VAR(START_CREATURE, cString, "default-classic.org", "Organism to seed the soup");
   
-  
-  // Deme & germline group.
   CONFIG_ADD_GROUP(DEME_GROUP, "Demes and Germlines");
   CONFIG_ADD_VAR(NUM_DEMES, int, 1, "Number of independent groups in the population.");
   CONFIG_ADD_VAR(DEMES_USE_GERMLINE, int, 0, "Whether demes use a distinct germline; 0=off");
@@ -216,7 +214,6 @@ public:
   CONFIG_ADD_VAR(GERMLINE_REPLACES_SOURCE, int, 0, "Whether the source germline is updated\non replication; 0=no.");
   CONFIG_ADD_VAR(GERMLINE_RANDOM_PLACEMENT, int, 0, "Whether the seed for a germline is placed\n randomly within the deme; 0=no.");
   CONFIG_ADD_VAR(MAX_DEME_AGE, int, 500, "The maximum age of a deme (in updates) to be\nused for age-based replication (default=500).");  
-  
   
   CONFIG_ADD_GROUP(REPRODUCTION_GROUP, "Birth and Death");
   CONFIG_ADD_VAR(BIRTH_METHOD, int, 0, "Which organism should be replaced on birth?\n0 = Random organism in neighborhood\n1 = Oldest in neighborhood\n2 = Largest Age/Merit in neighborhood\n3 = None (use only empty cells in neighborhood)\n4 = Random from population (Mass Action)\n5 = Oldest in entire population\n6 = Random within deme\n7 = Organism faced by parent\n8 = Next grid cell (id+1)\n9 = Largest energy used in entire population\n10 = Largest energy used in neighborhood");
@@ -303,14 +300,6 @@ public:
   CONFIG_ADD_VAR(DONATE_THRESH_QUANTA, int, 10, "The size of steps between quanta donate thresholds");
   CONFIG_ADD_VAR(MAX_DONATES, int, 1000000, "Limit on number of donates organisms are allowed.");
   CONFIG_ADD_VAR(PRECALC_MERIT, int, 0, "Pre-calculate merit at birth (unlimited resources only).");
-	
-  CONFIG_ADD_GROUP(PROMOTER_GROUP, "Promoters");
-  CONFIG_ADD_VAR(PROMOTERS_ENABLED, int, 0, "Use the promoter/terminator execution scheme.\nCertain instructions must also be included.");
-  CONFIG_ADD_VAR(PROMOTER_PROCESSIVITY, double, 1.0, "Chance of not terminating after each cpu cycle.");
-  CONFIG_ADD_VAR(PROMOTER_PROCESSIVITY_INST, double, 1.0, "Chance of not terminating after each instruction.");
-  CONFIG_ADD_VAR(PROMOTER_BG_STRENGTH, double, 0, "Probability of positions that are not promoter\ninstructions initiating execution (promoters are 1).");
-  CONFIG_ADD_VAR(REGULATION_STRENGTH, double, 1, "Strength added or subtracted to a promoter by regulation.");
-  CONFIG_ADD_VAR(REGULATION_DECAY_FRAC, double, 0.1, "Fraction of regulation that decays away. \nMax regulation = 2^(REGULATION_STRENGTH/REGULATION_DECAY_FRAC)");
 
   CONFIG_ADD_GROUP(GENEOLOGY_GROUP, "Geneology");
   CONFIG_ADD_VAR(TRACK_MAIN_LINEAGE, int, 1, "Keep all ancestors of the active population?\n0=no, 1=yes, 2=yes,w/sexual population");
@@ -356,7 +345,7 @@ public:
   CONFIG_ADD_VAR(FRAC_PARENT_ENERGY_GIVEN_AT_BIRTH, double, 0.5, "Fraction of perent's energy given to offspring.");
   CONFIG_ADD_VAR(FRAC_ENERGY_DECAY_AT_BIRTH, double, 0.0, "Fraction of energy lost due to decay during reproduction.");
   CONFIG_ADD_VAR(NUM_INST_EXC_BEFORE_0_ENERGY, int, 0, "Number of instructions executed before energy is exhausted.");
-  CONFIG_ADD_VAR(ENERGY_CAP, int, -1, "Maximun amount of energy that can be stored in an organism.  -1 means the cap is set to Max Int");  // TODO - is this done?
+  CONFIG_ADD_VAR(ENERGY_CAP, int, -1, "Maximum amount of energy that can be stored in an organism.  -1 means the cap is set to Max Int");  // TODO - is this done?
   CONFIG_ADD_VAR(APPLY_ENERGY_METHOD, int, 0, "When should rewarded energy be applied to current energy?\n0 = on divide\n1 = on completion of task\n2 = on sleep");  
   CONFIG_ADD_VAR(ENERGY_VERBOSE, bool, 0, "Print energy and merit values. 0/1 (off/on)");
   CONFIG_ADD_VAR(LOG_SLEEP_TIMES, bool, 0, "Log sleep start and end times. 0/1 (off/on)\nWARNING: may use lots of memory.");
@@ -365,6 +354,27 @@ public:
   CONFIG_ADD_GROUP(SECOND_PASS_GROUP, "Tracking metrics known after the running experiment previously");
   CONFIG_ADD_VAR(TRACK_CCLADES, int, 0, "Enable tracking of coalescence clades");
   CONFIG_ADD_VAR(TRACK_CCLADES_IDS, cString, "coalescence.ids", "File storing coalescence IDs");
+  
+  CONFIG_ADD_GROUP(GX_GROUP, "Gene Expression CPU Settings");
+  CONFIG_ADD_VAR(MAX_PROGRAMIDS, int, 16, "Maximum number of programids an organism can create.");
+  CONFIG_ADD_VAR(MAX_PROGRAMID_AGE, int, 2000, "Max number of CPU cycles a programid executes before it is removed.");
+  CONFIG_ADD_VAR(IMPLICIT_GENE_EXPRESSION, int, 0, "Create executable programids from the genome without explicit allocation and copying?");
+  CONFIG_ADD_VAR(IMPLICIT_BG_PROMOTER_RATE, double, 0.0, "Relative rate of non-promoter sites creating programids.");
+  CONFIG_ADD_VAR(IMPLICIT_TURNOVER_RATE, double, 0.0, "Number of programids recycled per CPU cycle. 0 = OFF");
+  CONFIG_ADD_VAR(IMPLICIT_MAX_PROGRAMID_LENGTH, int, 0, "Creation of an executable programid terminates after this many instructions. 0 = disabled");
+  CONFIG_ADD_VAR(IMPLICIT_REPRO_TIME, int, 0, "Implicitly call the repro instruction after completing this many cpu cycles. 0 = disabled."); // TODO - implmement for all hardware types and move to Reproduction Group 
+  CONFIG_ADD_VAR(DIVIDE_SLIP_PROB, double, 0.0, ""); // TODO - implmement for all hardware types and move to Reproduction Group 
+
+//  CONFIG_ADD_VAR(CLEAR_ON_OUTPUT, int, 0, "Reset input buffer every time output called?"); @JEB Not fully implemented
+
+  CONFIG_ADD_GROUP(PROMOTER_GROUP, "Promoters");
+  CONFIG_ADD_VAR(PROMOTERS_ENABLED, int, 0, "Use the promoter/terminator execution scheme.\nCertain instructions must also be included.");
+  CONFIG_ADD_VAR(PROMOTER_PROCESSIVITY, double, 1.0, "Chance of not terminating after each cpu cycle.");
+  CONFIG_ADD_VAR(PROMOTER_PROCESSIVITY_INST, double, 1.0, "Chance of not terminating after each instruction.");
+  CONFIG_ADD_VAR(PROMOTER_BG_STRENGTH, double, 0, "Probability of positions that are not promoter\ninstructions initiating execution (promoters are 1).");
+  CONFIG_ADD_VAR(REGULATION_STRENGTH, double, 1, "Strength added or subtracted to a promoter by regulation.");
+  CONFIG_ADD_VAR(REGULATION_DECAY_FRAC, double, 0.1, "Fraction of regulation that decays away. \nMax regulation = 2^(REGULATION_STRENGTH/REGULATION_DECAY_FRAC)");
+
 #endif
   
   void Load(const cString& filename, const bool& crash_if_not_found);

@@ -84,7 +84,7 @@ class cOrganism
 {
 protected:
   cWorld* m_world;
-  cHardwareBase* m_hardware;              // The actual machinary running this organism.
+  cHardwareBase* m_hardware;              // The actual machinery running this organism.
   cGenotype* m_genotype;                  // Information about organisms with this genome.
   cPhenotype m_phenotype;                 // Descriptive attributes of organism.
   const cGenome m_initial_genome;         // Initial genome; can never be changed!
@@ -185,6 +185,9 @@ public:
   void Rotate(int direction) { m_interface->Rotate(direction); }
   void DoBreakpoint() { m_interface->Breakpoint(); }
   int GetNextInput() { return m_interface->GetInputAt(m_input_pointer); }
+  int GetNextInput(int& in_input_pointer) { return m_interface->GetInputAt(in_input_pointer); } //@JEB alternate for GX
+  tBuffer<int>& GetInputBuf() { return m_input_buf; }
+  tBuffer<int>& GetOutputBuf() { return m_output_buf; }
   void Die() { m_interface->Die(); }
   void Kaboom(int dist) { m_interface->Kaboom(dist);}
   void SpawnDeme() { m_interface->SpawnDeme(); }

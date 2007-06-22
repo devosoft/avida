@@ -218,7 +218,6 @@ void cOrganism::DoOutput(cAvidaContext& ctx,
   
   tArray<double> res_change(resource_count.GetSize());
   tArray<int> insts_triggered;
-  bool clear_input = false;
   
   tBuffer<int>* received_messages_point = &m_received_messages;
   if (!m_world->GetConfig().SAVE_RECEIVED.Get()) received_messages_point = NULL;
@@ -236,13 +235,14 @@ void cOrganism::DoOutput(cAvidaContext& ctx,
   }
 
   m_interface->UpdateResources(res_change);
-  
+
+  //if(m_world->GetConfig().CLEAR_ON_OUTPUT.Get()) input_buffer.Clear();  @JEB Not fully implemented 
+
   for (int i = 0; i < insts_triggered.GetSize(); i++) {
     const int cur_inst = insts_triggered[i];
     m_hardware->ProcessBonusInst(ctx, cInstruction(cur_inst));
   }
   
-  if(clear_input) input_buffer.Clear();  
 }
 
 
@@ -481,11 +481,11 @@ void cOrganism::PrintStatus(ostream& fp, const cString& next_name)
   fp << endl;
   
   fp << "Input (buf):";
-  for (int i = 0; i < m_input_buf.GetNumStored(); i++) fp << " 0x" << setw(8) << m_input_buf[i];
+  for (int i = 0; i < m_hardware->GetInputBuf().GetNumStored(); i++) fp << " 0x" << setw(8) << m_hardware->GetInputBuf()[i];
   fp << endl;
 
   fp << "Output:     ";
-  for (int i = 0; i < m_output_buf.GetNumStored(); i++) fp << " 0x" << setw(8) << m_output_buf[i];
+  for (int i = 0; i < m_hardware->GetOutputBuf().GetNumStored(); i++) fp << " 0x" << setw(8) << m_hardware->GetOutputBuf()[i];
   fp << endl;
   
   fp << setfill(' ') << setbase(10);

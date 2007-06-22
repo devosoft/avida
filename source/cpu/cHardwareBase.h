@@ -29,6 +29,10 @@
 #include <cassert>
 #include <iostream>
 
+#ifndef tBuffer_h
+#include "tBuffer.h"
+#endif
+
 using namespace std;
 
 class cAvidaContext;
@@ -155,7 +159,10 @@ public:
   virtual int PointMutate(cAvidaContext& ctx, const double mut_rate);
   virtual bool TriggerMutations(cAvidaContext& ctx, int trigger);
   virtual bool TriggerMutations(cAvidaContext& ctx, int trigger, cHeadCPU& cur_head);
-  
+
+  // --------  Input/Output Buffers  --------
+  virtual tBuffer<int>& GetInputBuf();
+  virtual tBuffer<int>& GetOutputBuf();
   
 protected:
   // --------  No-Operation Instruction --------

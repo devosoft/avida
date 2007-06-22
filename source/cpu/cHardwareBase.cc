@@ -659,6 +659,16 @@ cHeadCPU cHardwareBase::FindLabelFull(const cCodeLabel& label)
   return temp_head;
 }
 
+tBuffer<int>& cHardwareBase::GetInputBuf() 
+{ 
+  return organism->GetInputBuf();
+}
+
+tBuffer<int>& cHardwareBase::GetOutputBuf() 
+{ 
+  return organism->GetOutputBuf(); 
+}
+
 
 bool cHardwareBase::Inst_Nop(cAvidaContext& ctx)          // Do Nothing.
 {
