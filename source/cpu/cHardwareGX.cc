@@ -2120,20 +2120,6 @@ bool cHardwareGX::Inst_Repro(cAvidaContext& ctx)
   child_genome = organism->GetGenome();
   organism->GetPhenotype().SetLinesCopied(GetMemory().GetSize());
   
-  // SLIPPAGE MUTATIONS
-  if ( ctx.GetRandom().P(m_world->GetConfig().DIVIDE_SLIP_PROB.Get()) )
-  {
-    int from = ctx.GetRandom().GetInt(organism->GetGenome().GetSize());
-    int to = ctx.GetRandom().GetInt(organism->GetGenome().GetSize());
-
-    //Resize child genome
-    child_genome.Resize( child_genome.GetSize() + (from-to) );
-    for (int i=0; i < organism->GetGenome().GetSize() - to; i++) 
-    {
-      child_genome[from+i] = (organism->GetGenome())[to+i];
-    }
-  }
-  
   Divide_DoMutations(ctx);
     
   bool viable = Divide_CheckViable(ctx, organism->GetGenome().GetSize(), child_genome.GetSize());

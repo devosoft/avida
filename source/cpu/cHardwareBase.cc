@@ -130,7 +130,7 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
 
 /*
   Return the number of mutations that occur on divide.  AWC 06/29/06
-  Limit the number of mutations that occur to be less than or equat to maxmut (defaults to INT_MAX)
+  Limit the number of mutations that occur to be less than or equal to maxmut (defaults to INT_MAX)
 */
 unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier, const int maxmut)
 {
@@ -140,7 +140,34 @@ unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multip
   cCPUMemory& child_genome = organism->ChildGenome();
   
   organism->GetPhenotype().SetDivType(mut_multiplier);
-  
+
+  // @JEB Slip Mutations
+  // As if the read head jumped from one random position of the child
+  // to another random position and continued reading to the end.
+  // This can cause large deletions or tandem duplications.
+  // Unlucky organisms might exceed the allowed length (randomly) if these mutations occur.
+  // Limited to once per divide and NOT COUNTED.
+  if ( organism->TestDivideSlip(ctx) )
+  {
+    cGenome child_copy = cGenome(child_genome);
+    int from = ctx.GetRandom().GetInt(child_copy.GetSize());
+    int to = ctx.GetRandom().GetInt(child_copy.GetSize());
+
+    //Resize child genome
+    child_genome.Resize( child_genome.GetSize() + (from-to) );
+    for (int i=0; i < child_copy.GetSize() - to; i++) 
+    {
+      child_genome[from+i] = child_copy[to+i];
+    }
+    
+    if (m_world->GetVerbosity() >= VERBOSE_DETAILS) 
+    {
+      cout << "SLIP MUTATION from " << from << " to " << to << endl;
+      cout << "Parent: " << child_copy.AsString()   << endl;
+      cout << "Child : " << child_genome.AsString() << endl;
+    }
+  }
+
   // Divide Mutations
   if (organism->TestDivideMut(ctx) && totalMutations < maxmut) {
     const unsigned int mut_line = ctx.GetRandom().GetUInt(child_genome.GetSize());
@@ -241,7 +268,6 @@ unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multip
       }
     }
   }
-  
   
   // Count up mutated lines
   for (int i = 0; i < GetMemory().GetSize(); i++) {
@@ -394,7 +420,7 @@ unsigned cHardwareBase::Divide_DoExactMutations(cAvidaContext& ctx, double mut_m
 
 // test whether the offspring creature contains an advantageous mutation.
 /*
-  Return true iff only a reversion is performed -- returns false is steralized regardless of weather or 
+  Return true iff only a reversion is performed -- returns false is sterilized regardless of whether or 
   not a reversion is performed.  AWC 06/29/06
 */
 bool cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)

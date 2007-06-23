@@ -60,6 +60,7 @@ private:
     double divide_mut_prob;     // Max one per divide
     double divide_ins_prob;     // Max one per divide
     double divide_del_prob;     // Max one per divide
+    double divide_slip_prob;     // Max one per divide
     double parent_mut_prob;
   };
   sDivideMuts divide;
@@ -97,6 +98,7 @@ public:
   bool TestDivideMut(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_mut_prob); }
   bool TestDivideIns(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_ins_prob); }
   bool TestDivideDel(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_del_prob); }
+  bool TestDivideSlip(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_slip_prob); }
   bool TestParentMut(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.parent_mut_prob); }
   double DoMetaCopyMut(cAvidaContext& ctx) {
     if (ctx.GetRandom().P(meta.copy_mut_prob) == false) return 1.0;
