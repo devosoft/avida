@@ -59,6 +59,7 @@ public:
   bool Divide(cAvidaContext& ctx, cOrganism* parent, cGenome& child_genome);
   cOrganism* GetNeighbor();
   int GetNumNeighbors();
+  int GetFacing(); // Returns the facing of this organism.
   void Rotate(int direction = 1);
   void Breakpoint() { m_world->GetDriver().SignalBreakpoint(); }
   int GetInputAt(int& input_pointer);

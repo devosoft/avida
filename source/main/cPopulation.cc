@@ -123,7 +123,7 @@ cPopulation::cPopulation(cWorld* world)
   
   // Setup the cells.  Do things that are not dependent upon topology here.
 	for(int i=0; i<num_cells; ++i) {
-		cell_array[i].Setup(world, i, environment.GetMutRates());
+		cell_array[i].Setup(world, i, environment.GetMutRates(), i%world_x, i/world_x);
     // Setup the reaper queue.
 		if (world->GetConfig().BIRTH_METHOD.Get() == POSITION_CHILD_FULL_SOUP_ELDEST) {
 			reaper_queue.Push(&(cell_array[i]));

@@ -450,6 +450,7 @@ private:
 
   bool Inst_RotateL(cAvidaContext& ctx);
   bool Inst_RotateR(cAvidaContext& ctx);
+  bool Inst_RotateLabel(cAvidaContext& ctx);
   bool Inst_SetCopyMut(cAvidaContext& ctx);
   bool Inst_ModCopyMut(cAvidaContext& ctx);
 

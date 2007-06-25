@@ -64,6 +64,13 @@ int cPopulationInterface::GetNumNeighbors()
   return cell.ConnectionList().GetSize();
 }
 
+int cPopulationInterface::GetFacing()
+{
+	cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
+	assert(cell.IsOccupied());
+	return cell.GetFacing();
+}
+
 void cPopulationInterface::Rotate(int direction)
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);

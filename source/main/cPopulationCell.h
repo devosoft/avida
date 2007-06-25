@@ -57,6 +57,9 @@ private:
   int deme_id;           // ID of the deme that this cell is part of.
   int organism_count;    // Total number of orgs to ever inhabit this cell.
 
+  //location in population
+  int m_x; //!< The x-coordinate of the position of this cell in the environment.
+  int m_y; //!< The y-coordinate of the position of this cell in the environment.
 
   void InsertOrganism(cOrganism & new_org);
   cOrganism* RemoveOrganism();
@@ -68,13 +71,15 @@ public:
 
   void operator=(const cPopulationCell& in_cell);
 
-  void Setup(cWorld* world, int in_id, const cMutationRates & in_rates);
+  void Setup(cWorld* world, int in_id, const cMutationRates & in_rates, int x, int y);
   void SetDemeID(int in_id) { deme_id = in_id; }
   void Rotate(cPopulationCell & new_facing);
 
   cOrganism* GetOrganism() const { return organism; }
   tList<cPopulationCell> & ConnectionList() { return connection_list; }
   cPopulationCell & GetCellFaced() { return *(connection_list.GetFirst()); }
+  int GetFacing();  // Returns the facing of this cell.
+  void GetPosition(int& x, int& y) { x = m_x; y = m_y; } // Retrieves the position (x,y) coordinates of this cell.
   const cMutationRates & MutationRates() const { return *mutation_rates; }
   cMutationRates & MutationRates() { return *mutation_rates; }
   int GetInput(int);

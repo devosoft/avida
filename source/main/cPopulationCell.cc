@@ -78,10 +78,12 @@ void cPopulationCell::operator=(const cPopulationCell& in_cell)
   }
 }
 
-void cPopulationCell::Setup(cWorld* world, int in_id, const cMutationRates& in_rates)
+void cPopulationCell::Setup(cWorld* world, int in_id, const cMutationRates& in_rates, int x, int y)
 {
   m_world = world;
   cell_id = in_id;
+  m_x = x;
+  m_y = y;
   deme_id = -1;
   
   if (mutation_rates == NULL)
@@ -105,6 +107,51 @@ void cPopulationCell::Rotate(cPopulationCell & new_facing)
   }
 }
 
+/*! These values are chosen so as to make loops on the facing 'easy'.
+111 = NE
+101 = E
+100 = SE
+000 = S
+001 = SW
+011 = W
+010 = NW
+110 = N
+
+Facing is determined by the relative positions of this cell and the cell that 
+is currently faced. Note that we cannot differentiate between directions on a 2x2 
+torus.
+*/
+int cPopulationCell::GetFacing()
+{
+  // This whole function is a hack.
+	cPopulationCell* faced = ConnectionList().GetFirst();
+	
+        int x=0,y=0,lr=0,du=0;
+	faced->GetPosition(x,y);
+  
+	if((x==m_x-1) || (x>m_x+1))
+		lr = -1; //left
+	else if((x==m_x+1) || (x<m_x-1))
+		lr = 1; //right
+	
+	if((y==m_y-1) || (y>m_y+1))
+		du = -1; //down
+	else if((y==m_y+1) || (y<m_y-1))
+		du = 1; //up
+  
+	// This is hackish.
+        // If you change these return values then the directional send tasks, like sent-north, need to be updated.
+	if(lr==0 && du==-1) return 0; //S
+	if(lr==-1 && du==-1) return 1; //SW
+	if(lr==-1 && du==0) return 3; //W
+	if(lr==-1 && du==1) return 2; //NW
+	if(lr==0 && du==1) return 6; //N
+	if(lr==1 && du==1) return 7; //NE
+	if(lr==1 && du==0) return 5; //E
+	if(lr==1 && du==-1) return 4; //SE
+  
+	assert(false);
+}
 
 int cPopulationCell::GetInputAt(int & input_pointer)
 {

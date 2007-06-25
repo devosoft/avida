@@ -216,6 +216,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
 
     tInstLibEntry<tMethod>("rotate-l", &cHardwareCPU::Inst_RotateL),
     tInstLibEntry<tMethod>("rotate-r", &cHardwareCPU::Inst_RotateR),
+    tInstLibEntry<tMethod>("rotate-label", &cHardwareCPU::Inst_RotateLabel),
+
     
     tInstLibEntry<tMethod>("set-cmut", &cHardwareCPU::Inst_SetCopyMut),
     tInstLibEntry<tMethod>("mod-cmut", &cHardwareCPU::Inst_ModCopyMut),
@@ -3656,6 +3658,31 @@ bool cHardwareCPU::Inst_RotateR(cAvidaContext& ctx)
     if (neighbor != NULL && neighbor->GetHardware().FindLabelFull(GetLabel()).InMemory()) return true;
     
     // Otherwise keep rotating...
+    organism->Rotate(1);
+  }
+  return true;
+}
+
+/**
+  Rotate to facing specified by following label
+*/
+bool cHardwareCPU::Inst_RotateLabel(cAvidaContext& ctx)
+{
+  int standardNeighborhoodSize, actualNeighborhoodSize, newFacing, currentFacing;
+  actualNeighborhoodSize = organism->GetNeighborhoodSize();
+  
+  ReadLabel();
+  if(m_world->GetConfig().WORLD_GEOMETRY.Get() == nGeometry::TORUS || m_world->GetConfig().WORLD_GEOMETRY.Get() == nGeometry::GRID)
+    standardNeighborhoodSize = 8;
+  else {
+    exit(-1);
+  }
+  newFacing = GetLabel().AsIntGreyCode(NUM_NOPS) % standardNeighborhoodSize;
+  
+  for(int i = 0; i < actualNeighborhoodSize; i++) {
+    currentFacing = organism->GetFacing();
+    if(newFacing == currentFacing)
+      break;
     organism->Rotate(1);
   }
   return true;

@@ -68,6 +68,7 @@ public:
   bool InjectParasite(cOrganism* parent, const cCodeLabel& label, const cGenome& injected_code);
   bool UpdateMerit(double new_merit);
   bool TestOnDivide() { return false; }
+  int GetFacing() { return 0; }
 };
 
 

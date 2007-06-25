@@ -182,6 +182,7 @@ public:
   cHardwareBase& GetHardware() { return *m_hardware; }
   cOrganism* GetNeighbor() { return m_interface->GetNeighbor(); }
   int GetNeighborhoodSize() { return m_interface->GetNumNeighbors(); }
+  int GetFacing() { assert(m_interface); return m_interface->GetFacing(); }  // Returns the facing of this organism.
   void Rotate(int direction) { m_interface->Rotate(direction); }
   void DoBreakpoint() { m_interface->Breakpoint(); }
   int GetNextInput() { return m_interface->GetInputAt(m_input_pointer); }
