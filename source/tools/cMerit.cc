@@ -10,8 +10,6 @@
 
 #include "cMerit.h"
 
-#include <cmath>
-
 using namespace std;
 
 
@@ -32,7 +30,7 @@ void cMerit::UpdateValue(double in_value)
 
   value = in_value;
 
-  double mant = frexp(round(value), &bits);
+  double mant = frexp(value, &bits);
 
   if (bits > max_bits)
     offset = bits - max_bits;
