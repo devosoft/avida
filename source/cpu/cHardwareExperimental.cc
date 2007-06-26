@@ -226,6 +226,8 @@ void cHardwareExperimental::cLocalThread::Reset(cHardwareBase* in_hardware, int 
   stack.Clear();
   cur_stack = 0;
   cur_head = nHardware::HEAD_IP;
+  
+  reading = false;
   read_label.Clear();
   next_label.Clear();
 }
