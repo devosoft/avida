@@ -252,6 +252,13 @@ public:
 //    void SetFracNeut(double in_frac);
 //    void SetFracPos(double in_frac);
 
+  // A set of NULL accessors to simplyfy automated accesses.
+  void SetNULL(int dummy) { (void) dummy; }
+  void SetNULL(char dummy) { (void) dummy; }
+  void SetNULL(double dummy) { (void) dummy; }
+  void SetNULL(const cString & dummy) { (void) dummy; }
+  void SetNULL(cString dummy) { (void) dummy; }
+
   // Accessors...
   const cGenome & GetGenome() const { return genome; }
   const cString & GetName() const { return name; }

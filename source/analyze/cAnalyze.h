@@ -38,6 +38,9 @@
 #ifndef cGenotypeBatch_h
 #include "cGenotypeBatch.h"
 #endif
+#ifndef cFlexVar_h
+#include "cFlexVar.h"
+#endif
 #ifndef cRandom_h
 #include "cRandom.h"
 #endif

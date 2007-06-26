@@ -7707,163 +7707,77 @@ void cAnalyze::ProcessCommands(tList<cAnalyzeCommand>& clist)
   }
 }
 
+// A basic macro to link a keyword to a description and Get and Set methods in cAnalyzeGenotype.
+#define ADD_GDATA(TYPE, KEYWORD, DESC, GET, SET, COMP, NSTR, HSTR)                                         \
+{                                                                                                          \
+  cString nstr_str(#NSTR), hstr_str(#HSTR);                                                                \
+  cString null_str = "0";                                                                                  \
+  if (nstr_str != "0") null_str = NSTR;                                                                    \
+  cString html_str = "align=center";                                                                       \
+  if (hstr_str != "0") html_str = HSTR;                                                                    \
+                                                                                                           \
+  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, TYPE>                                       \
+    (KEYWORD, DESC, &cAnalyzeGenotype::GET, &cAnalyzeGenotype::SET, &cAnalyzeGenotype::COMP, null_str, html_str)); \
+}
+
+
 void cAnalyze::SetupGenotypeDataList()
 {
   if (genotype_data_list.GetSize() != 0) return; // List already setup.
   
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, bool>
-                              ("viable",      "Is Viable (0/1)", &cAnalyzeGenotype::GetViable,
-                               &cAnalyzeGenotype::SetViable));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, int>
-                              ("id",          "Genotype ID",       &cAnalyzeGenotype::GetID,
-                               &cAnalyzeGenotype::SetID));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, const cString &>
-                              ("tag",         "Genotype Tag",    &cAnalyzeGenotype::GetTag,
-                               &cAnalyzeGenotype::SetTag,
-                               &cAnalyzeGenotype::CompareNULL, "(none)", ""));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, int>
-                              ("parent_id",   "Parent ID",       &cAnalyzeGenotype::GetParentID,
-                               &cAnalyzeGenotype::SetParentID));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, int>
-                              ("parent2_id",  "Second Parent ID (for sexual genotypes)",
-                               &cAnalyzeGenotype::GetParent2ID, &cAnalyzeGenotype::SetParent2ID));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, int>
-                              ("parent_dist", "Parent Distance", &cAnalyzeGenotype::GetParentDist,
-                               &cAnalyzeGenotype::SetParentDist));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, int>
-                              ("ancestor_dist","Ancestor Distance",&cAnalyzeGenotype::GetAncestorDist,
-                               &cAnalyzeGenotype::SetAncestorDist));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, int>
-                              ("lineage", "Unique Lineage Label",&cAnalyzeGenotype::GetLineageLabel,
-                               &cAnalyzeGenotype::SetLineageLabel));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, int>
-                              ("num_cpus",    "Number of CPUs",  &cAnalyzeGenotype::GetNumCPUs,
-                               &cAnalyzeGenotype::SetNumCPUs));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, int>
-                              ("total_cpus",  "Total CPUs Ever", &cAnalyzeGenotype::GetTotalCPUs,
-                               &cAnalyzeGenotype::SetTotalCPUs));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, int>
-                              ("length",      "Genome Length",   &cAnalyzeGenotype::GetLength,
-                               &cAnalyzeGenotype::SetLength, &cAnalyzeGenotype::CompareLength));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, int>
-                              ("copy_length", "Copied Length",   &cAnalyzeGenotype::GetCopyLength,
-                               &cAnalyzeGenotype::SetCopyLength));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, int>
-                              ("exe_length",  "Executed Length", &cAnalyzeGenotype::GetExeLength,
-                               &cAnalyzeGenotype::SetExeLength));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, double>
-                              ("merit",       "Merit",           &cAnalyzeGenotype::GetMerit,
-                               &cAnalyzeGenotype::SetMerit, &cAnalyzeGenotype::CompareMerit));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, double>
-                              ("comp_merit",  "Computational Merit", &cAnalyzeGenotype::GetCompMerit,
-                               (void (cAnalyzeGenotype::*)(double)) NULL, &cAnalyzeGenotype::CompareCompMerit));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, double>
-                              ("comp_merit_ratio", "Computational Merit Ratio",
-                               &cAnalyzeGenotype::GetCompMeritRatio,
-                               (void (cAnalyzeGenotype::*)(double)) NULL,
-                               &cAnalyzeGenotype::CompareCompMerit));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, int>
-                              ("gest_time",   "Gestation Time",  &cAnalyzeGenotype::GetGestTime,
-                               &cAnalyzeGenotype::SetGestTime,
-                               &cAnalyzeGenotype::CompareGestTime, "Inf."));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, double>
-                              ("efficiency",  "Rep. Efficiency", &cAnalyzeGenotype::GetEfficiency,
-                               (void (cAnalyzeGenotype::*)(double)) NULL,
-                               &cAnalyzeGenotype::CompareEfficiency));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, double>
-                              ("efficiency_ratio", "Rep. Efficiency Ratio",
-                               &cAnalyzeGenotype::GetEfficiencyRatio,
-                               (void (cAnalyzeGenotype::*)(double)) NULL,
-                               &cAnalyzeGenotype::CompareEfficiency));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, double>
-                              ("fitness",     "Fitness",         &cAnalyzeGenotype::GetFitness,
-                               &cAnalyzeGenotype::SetFitness, &cAnalyzeGenotype::CompareFitness));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, double>
-                              ("div_type",     "Divide Type",    &cAnalyzeGenotype::GetDivType,
-                               &cAnalyzeGenotype::SetDivType));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, int>
-                              ("mate_id",     "Mate Selection ID Number",  &cAnalyzeGenotype::GetMateID,
-                               &cAnalyzeGenotype::SetMateID));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, double>
-                              ("fitness_ratio", "Fitness Ratio", &cAnalyzeGenotype::GetFitnessRatio,
-                               (void (cAnalyzeGenotype::*)(double)) NULL,
-                               &cAnalyzeGenotype::CompareFitness));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, int>
-                              ("update_born", "Update Born",     &cAnalyzeGenotype::GetUpdateBorn,
-                               &cAnalyzeGenotype::SetUpdateBorn));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, int>
-                              ("update_dead", "Update Dead",     &cAnalyzeGenotype::GetUpdateDead,
-                               &cAnalyzeGenotype::SetUpdateDead));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, int>
-                              ("depth",       "Tree Depth",      &cAnalyzeGenotype::GetDepth,
-                               &cAnalyzeGenotype::SetDepth));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, double>
-                              ("frac_dead",   "Fraction Mutations Lethal",
-                               &cAnalyzeGenotype::GetFracDead,
-                               (void (cAnalyzeGenotype::*)(double)) NULL));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, double>
-                              ("frac_neg",   "Fraction Mutations Detrimental",
-                               &cAnalyzeGenotype::GetFracNeg,
-                               (void (cAnalyzeGenotype::*)(double)) NULL));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, double>
-                              ("frac_neut",   "Fraction Mutations Neutral",
-                               &cAnalyzeGenotype::GetFracNeut,
-                               (void (cAnalyzeGenotype::*)(double)) NULL));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, double>
-                              ("frac_pos",   "Fraction Mutations Beneficial",
-                               &cAnalyzeGenotype::GetFracPos,
-                               (void (cAnalyzeGenotype::*)(double)) NULL));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, double>
-                              ("complexity",   "Basic Complexity (all neutral/beneficial muts are equal)",
-                               &cAnalyzeGenotype::GetComplexity,
-                               (void (cAnalyzeGenotype::*)(double)) NULL));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, double>
-                              ("land_fitness",   "Average Lanscape Fitness",
-                               &cAnalyzeGenotype::GetLandscapeFitness,
-                               (void (cAnalyzeGenotype::*)(double)) NULL));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, const cString &>
-                              ("parent_muts", "Mutations from Parent",
-                               &cAnalyzeGenotype::GetParentMuts, &cAnalyzeGenotype::SetParentMuts,
-                               &cAnalyzeGenotype::CompareNULL, "(none)", ""));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, const cString &>
-                              ("task_order", "Task Performance Order",
-                               &cAnalyzeGenotype::GetTaskOrder, &cAnalyzeGenotype::SetTaskOrder,
-                               &cAnalyzeGenotype::CompareNULL, "(none)", ""));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, cString>
-                              ("sequence",    "Genome Sequence",
-                               &cAnalyzeGenotype::GetSequence, &cAnalyzeGenotype::SetSequence, 
-                               &cAnalyzeGenotype::CompareNULL, "(N/A)", ""));                            
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, const cString &>
-                              ("alignment",   "Aligned Sequence",
-                               &cAnalyzeGenotype::GetAlignedSequence,
-                               &cAnalyzeGenotype::SetAlignedSequence,
-                               &cAnalyzeGenotype::CompareNULL, "(N/A)", ""));
+  // To add a new keyword connected to a stat in cAnalyzeGenotype, you need to connect all of the pieces here.
+  // The ADD_GDATA macro takes eight arguments:
+  //  type              : The type of the variables being linked in.
+  //  keyword           : The short word used to reference this variable from analyze mode.
+  //  description       : A slightly fuller description of what this variable is; used in data legends.
+  //  "get" accessor    : The accessor method to retrieve the value of this variable from cAnalyzeGenotype
+  //  "set" accessor    : The method to set this variable in cAnalyzeGenotype (use SetNULL if none exists).
+  //  comparison method : A method that will take two genotypes and compare this value bewtween them (or CompareNULL)
+  //  null keyword      : A string to represent what should be printed if this stat is zero. (0 for default)
+  //  html flags        : A string to be included in the <td> when stat is printed in HTML table (0 for "align=center")
+
+  ADD_GDATA(bool, "viable", "Is Viable (0/1)", GetViable, SetViable, CompareNULL, 0, 0);
+  ADD_GDATA(int, "id", "Genotype ID", GetID, SetID, CompareNULL, 0, 0);
+  ADD_GDATA(const cString &, "tag", "Genotype Tag", GetTag, SetTag, CompareNULL, "(none)", "");
+  ADD_GDATA(int, "parent_id", "Parent ID", GetParentID, SetParentID, CompareNULL, 0, 0);
+  ADD_GDATA(int, "parent2_id",  "Second Parent ID (sexual genotypes)", GetParent2ID, SetParent2ID, CompareNULL, 0, 0);
+  ADD_GDATA(int, "parent_dist", "Parent Distance", GetParentDist, SetParentDist, CompareNULL, 0, 0);
+  ADD_GDATA(int, "ancestor_dist","Ancestor Distance", GetAncestorDist, SetAncestorDist, CompareNULL, 0, 0);
+  ADD_GDATA(int, "lineage", "Unique Lineage Label", GetLineageLabel, SetLineageLabel, CompareNULL, 0, 0);
+  ADD_GDATA(int, "num_cpus",    "Number of CPUs", GetNumCPUs, SetNumCPUs, CompareNULL, 0, 0);
+  ADD_GDATA(int, "total_cpus",  "Total CPUs Ever", GetTotalCPUs, SetTotalCPUs, CompareNULL, 0, 0);
+  ADD_GDATA(int, "length", "Genome Length", GetLength, SetLength, CompareLength, 0, 0);
+  ADD_GDATA(int, "copy_length", "Copied Length", GetCopyLength, SetCopyLength, CompareNULL, 0, 0);
+  ADD_GDATA(int, "exe_length",  "Executed Length", GetExeLength, SetExeLength, CompareNULL, 0, 0);
+  ADD_GDATA(double, "merit", "Merit", GetMerit, SetMerit, CompareMerit, 0, 0);
+  ADD_GDATA(double, "comp_merit", "Computational Merit", GetCompMerit, SetNULL, CompareCompMerit, 0, 0);
+  ADD_GDATA(double, "comp_merit_ratio", "Computational Merit Ratio", GetCompMeritRatio, SetNULL, CompareCompMerit, 0, 0);
+  ADD_GDATA(int, "gest_time", "Gestation Time", GetGestTime, SetGestTime, CompareGestTime, "Inf", "align=center");
+  ADD_GDATA(double, "efficiency", "Rep. Efficiency", GetEfficiency, SetNULL, CompareEfficiency, 0, 0);
+  ADD_GDATA(double, "efficiency_ratio", "Rep. Efficiency Ratio", GetEfficiencyRatio, SetNULL, CompareEfficiency, 0, 0);
+  ADD_GDATA(double, "fitness", "Fitness", GetFitness, SetFitness, CompareFitness, 0, 0);
+  ADD_GDATA(double, "div_type",     "Divide Type", GetDivType, SetDivType, CompareNULL, 0, 0);
+  ADD_GDATA(int, "mate_id",     "Mate Selection ID Number", GetMateID, SetMateID, CompareNULL, 0, 0);
+  ADD_GDATA(double, "fitness_ratio", "Fitness Ratio", GetFitnessRatio, SetNULL, CompareFitness, 0, 0);
+  ADD_GDATA(int, "update_born", "Update Born", GetUpdateBorn, SetUpdateBorn, CompareNULL, 0, 0);
+  ADD_GDATA(int, "update_dead", "Update Dead", GetUpdateDead, SetUpdateDead, CompareNULL, 0, 0);
+  ADD_GDATA(int, "depth",       "Tree Depth", GetDepth, SetDepth, CompareNULL, 0, 0);
+  ADD_GDATA(double, "frac_dead", "Fraction Mutations Lethal", GetFracDead, SetNULL, CompareNULL, 0, 0);
+  ADD_GDATA(double, "frac_neg", "Fraction Mutations Detrimental", GetFracNeg, SetNULL, CompareNULL, 0, 0);
+  ADD_GDATA(double, "frac_neut", "Fraction Mutations Neutral", GetFracNeut, SetNULL, CompareNULL, 0, 0);
+  ADD_GDATA(double, "frac_pos", "Fraction Mutations Beneficial", GetFracPos, SetNULL, CompareNULL, 0, 0);
+  ADD_GDATA(double, "complexity", "Basic Complexity (all neutral/beneficial muts are equal)", GetComplexity, SetNULL, CompareNULL, 0, 0);
+  ADD_GDATA(double, "land_fitness", "Average Lanscape Fitness", GetLandscapeFitness, SetNULL, CompareNULL, 0, 0);
+  ADD_GDATA(const cString &, "parent_muts", "Mutations from Parent", GetParentMuts, SetParentMuts, CompareNULL, "(none)", "");
+  ADD_GDATA(const cString &, "task_order", "Task Performance Order", GetTaskOrder, SetTaskOrder, CompareNULL, "(none)", "");
+  ADD_GDATA(cString, "sequence", "Genome Sequence", GetSequence, SetSequence, CompareNULL, "(N/A)", "");
+  ADD_GDATA(const cString &, "alignment", "Aligned Sequence", GetAlignedSequence, SetAlignedSequence, CompareNULL, "(N/A)", "");
   
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, cString>
-                              ("executed_flags",    "Executed Flags",
-                               &cAnalyzeGenotype::GetExecutedFlags,
-                               (void (cAnalyzeGenotype::*)(cString)) NULL,
-                               &cAnalyzeGenotype::CompareNULL, "(N/A)", ""));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, cString>
-                              ("alignment_executed_flags",    "Alignment Executed Flags",
-                               &cAnalyzeGenotype::GetAlignmentExecutedFlags,
-                               (void (cAnalyzeGenotype::*)(cString)) NULL,
-                               &cAnalyzeGenotype::CompareNULL, "(N/A)", ""));
-  
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, cString>
-                              ("task_list",    "List of all tasks performed",
-                               &cAnalyzeGenotype::GetTaskList,
-                               (void (cAnalyzeGenotype::*)(cString)) NULL,
-                               &cAnalyzeGenotype::CompareNULL, "(N/A)", ""));
-  
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, cString>
-                              ("link.tasksites", "Phenotype Map", &cAnalyzeGenotype::GetMapLink,
-                               (void (cAnalyzeGenotype::*)(cString)) NULL));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, cString>
-                              ("html.sequence",  "Genome Sequence",
-                               &cAnalyzeGenotype::GetHTMLSequence,
-                               (void (cAnalyzeGenotype::*)(cString)) NULL,
-                               &cAnalyzeGenotype::CompareNULL, "(N/A)", ""));
+  ADD_GDATA(cString, "executed_flags", "Executed Flags", GetExecutedFlags, SetNULL, CompareNULL, "(N/A)", "");
+  ADD_GDATA(cString, "alignment_executed_flags", "Alignment Executed Flags", GetAlignmentExecutedFlags, SetNULL, CompareNULL, "(N/A)", "");
+  ADD_GDATA(cString, "task_list", "List of all tasks performed", GetTaskList, SetNULL, CompareNULL, "(N/A)", "");
+  ADD_GDATA(cString, "link.tasksites", "Phenotype Map", GetMapLink, SetNULL, CompareNULL, 0, 0);
+  ADD_GDATA(cString, "html.sequence", "Genome Sequence", GetHTMLSequence, SetNULL, CompareNULL, "(N/A)", "");
   
   const cEnvironment& environment = m_world->GetEnvironment();
   for (int i = 0; i < environment.GetNumTasks(); i++) {
@@ -7878,22 +7792,11 @@ void cAnalyze::SetupGenotypeDataList()
   // "population_data_list", but for the moment we're going to put them
   // here so that we only need to worry about a single system to load and
   // save genotype information.
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, int>
-                              ("update",       "Update Output",
-                               &cAnalyzeGenotype::GetUpdateDead, &cAnalyzeGenotype::SetUpdateDead));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, int>
-                              ("dom_num_cpus", "Number of Dominant Organisms",
-                               &cAnalyzeGenotype::GetNumCPUs, &cAnalyzeGenotype::SetNumCPUs));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, int>
-                              ("dom_depth",    "Tree Depth of Dominant Genotype",
-                               &cAnalyzeGenotype::GetDepth, &cAnalyzeGenotype::SetDepth));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, int>
-                              ("dom_id",       "Dominant Genotype ID",
-                               &cAnalyzeGenotype::GetID, &cAnalyzeGenotype::SetID));
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, cString>
-                              ("dom_sequence", "Dominant Genotype Sequence",
-                               &cAnalyzeGenotype::GetSequence, &cAnalyzeGenotype::SetSequence, 
-                               &cAnalyzeGenotype::CompareNULL, "(N/A)", ""));
+  ADD_GDATA(int, "update",       "Update Output", GetUpdateDead, SetUpdateDead, CompareNULL, 0, 0);
+  ADD_GDATA(int, "dom_num_cpus", "Number of Dominant Organisms", GetNumCPUs, SetNumCPUs, CompareNULL, 0, 0);
+  ADD_GDATA(int, "dom_depth",    "Tree Depth of Dominant Genotype", GetDepth, SetDepth, CompareNULL, 0, 0);
+  ADD_GDATA(int, "dom_id",       "Dominant Genotype ID", GetID, SetID, CompareNULL, 0, 0);
+  ADD_GDATA(cString, "dom_sequence", "Dominant Genotype Sequence", GetSequence, SetSequence, CompareNULL, "(N/A)", "");
 }
 
 
