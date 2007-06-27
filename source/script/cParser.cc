@@ -37,22 +37,37 @@
  statement_list: statement statement_list
                |
  
- statement: expr ENDL
-          | var_declare ENDL
-          | if_block
-          | while_block
-          | foreach_block
-          | declare_function
-          | define_function
-          | ENDL
+ statement: assign_expr lineterm
+          | expr lineterm
+          | var_declare lineterm
+          | loose_block
+          | if_block lineterm
+          | while_block lineterm
+          | foreach_block lineterm
+          | declare_function lineterm
+          | define_function lineterm
+          | return_stmt lineterm
+          | lineterm
   
- type_any: TYPE_BOOL | TYPE_CHAR | TYPE_FLOAT | TYPE_INT | TYPE_VOID
+ lineterm: SUPRESS | ENDL
  
- expr: p0_expr expr_1
+ type_any: TYPE_ARRAY | TYPE_CHAR | TYPE_FLOAT | TYPE_INT | TYPE_MATRIX | TYPE_STRING | TYPE_VOID
+ 
+ assign_expr: assign_dest ASSIGN expr
+            | assign_dest ASSIGN array_inline
+ 
+ array_inline: ARR_OPEN argument_list ARR_CLOSE
+ 
+ assign_dest: ID
+            | REF ARR_OPEN id_list ARR_CLOSE
 
- expr_1: ASSIGN p0_expr expr_1
-      |
+ id_list: ID id_list_1
  
+ id_list_1: COMMA ID id_list_1
+          |
+ 
+ 
+ expr: p0_expr 
  
  p0_expr: p1_expr p0_expr_1
  
@@ -121,16 +136,22 @@
  argument_list_2: COMMA expr argument_list_2
                 |
 
- if_block: CMD_IF PREC_OPEN expr PREC_CLOSE ENDL statement_list CMD_ENDIF ENDL
-         | CMD_IF PREC_OPEN expr PREC_CLOSE ENDL statement_list CMD_ELSE statement_list CMD_ENDIF ENDL
+ loose_block: ARR_OPEN statement_list ARR_CLOSE
  
- while_block: CMD_WHILE PREC_OPEN expr PREC_CLOSE ENDL statement_list CMD_ENDWHILE ENDL
+ if_block: CMD_IF PREC_OPEN expr PREC_CLOSE lineterm statement_list CMD_ENDIF
+         | CMD_IF PREC_OPEN expr PREC_CLOSE lineterm statement_list CMD_ELSE lineterm statement_list CMD_ENDIF
  
- foreach_block: CMD_FOREACH REF ID PREC_OPEN expr PREC_CLOSE ENDL statement_list CMD_ENDFOREACH ENDL
-              | CMD_FOREACH type_any ID PREC_OPEN expr PREC_CLOSE ENDL statement_list CMD_ENDFOREACH ENDL
+ while_block: CMD_WHILE PREC_OPEN expr PREC_CLOSE lineterm statement_list CMD_ENDWHILE
+            | CMD_WHILE PREC_OPEN expr PREC_CLOSE loose_block
+ 
+ foreach_block: CMD_FOREACH REF ID PREC_OPEN expr PREC_CLOSE lineterm statement_list CMD_ENDFOREACH
+              | CMD_FOREACH type_any ID PREC_OPEN expr PREC_CLOSE lineterm statement_list CMD_ENDFOREACH
+              | CMD_FOREACH REF ID PREC_OPEN expr PREC_CLOSE loose_block
+              | CMD_FOREACH type_any ID PREC_OPEN expr PREC_CLOSE loose_block
 
  var_declare: type_any ID
             | type_any ID ASSIGN expr
+            | type_any ID ASSIGN array_inline
  
  var_declare_list: var_declare_list_1
                  |
@@ -140,15 +161,12 @@
  var_declare_list_2: COMMA var_declare var_declare_list_2
                    | 
  
- declare_function: REF CMD_FUNCTION type_any ID PREC_OPEN var_declare_list PREC_CLOSE ENDL
- define_function: CMD_FUNCTION type_any ID PREC_OPEN var_declare_list PREC_CLOSE ENDL statement_list CMD_ENDFUNCTION
+ declare_function: REF CMD_FUNCTION type_any ID PREC_OPEN var_declare_list PREC_CLOSE
+ define_function: CMD_FUNCTION type_any ID PREC_OPEN var_declare_list PREC_CLOSE lineterm statement_list CMD_ENDFUNCTION
+                | CMD_FUNCTION type_any ID PREC_OPEN var_declare_list PREC_CLOSE loose_block
  
+ return_stmt: CMD_RETURN expr
  
- @TODO - return
- @TODO - array definitions
- @TODO - suppress
- @TODO - ARR_OPEN ARR_CLOSE as block open/close.  
- @TODO - function variant with block rather than endfunction.
  */
 
 bool cParser::Parse(cFile& input)

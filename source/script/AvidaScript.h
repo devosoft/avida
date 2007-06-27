@@ -66,10 +66,12 @@ enum eASTokens {
   ARR_RANGE,
   ARR_EXPAN,
   
-  TYPE_BOOL,
+  TYPE_ARRAY,
   TYPE_CHAR,
   TYPE_FLOAT,
   TYPE_INT,
+  TYPE_MATRIX,
+  TYPE_STRING,
   TYPE_VOID,
   
   CMD_IF,
@@ -84,6 +86,8 @@ enum eASTokens {
   
   CMD_FUNCTION,
   CMD_ENDFUNCTION,
+  
+  CMD_RETURN,
   
   ID,
   

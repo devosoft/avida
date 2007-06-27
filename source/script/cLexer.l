@@ -81,10 +81,12 @@
 :           return ARR_RANGE;
 \^          return ARR_EXPAN;
 
-bool        return TYPE_BOOL;     // Built-in Types
+array       return TYPE_ARRAY;    // Built-in Types
 char        return TYPE_CHAR;
 float       return TYPE_FLOAT;
 int         return TYPE_INT;
+matrix      return TYPE_MATRIX;
+string      return TYPE_STRING;
 void        return TYPE_VOID;
 
 if          return CMD_IF;        // If Blocks
@@ -99,6 +101,8 @@ endforeach  return CMD_ENDFOREACH;
 
 function    return CMD_FUNCTION;  // Function Blocks
 endfunction return CMD_ENDFUNCTION;
+
+return      return CMD_RETURN;
 
 ([a-zA-Z]|_+[a-zA-Z])[a-zA-Z0-9_]*  return ID;      // Identifiers
   
