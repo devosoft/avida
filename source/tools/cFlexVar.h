@@ -23,13 +23,13 @@ private:
     cFlexVar_Base() { ; }
     virtual ~cFlexVar_Base() { ; }
 
-    virtual int AsInt() = 0;
-    virtual char AsChar() = 0;
-    virtual double AsDouble() = 0;
-    virtual void SetString(cString & in_str) = 0;
-    cString AsString() { cString out_str; SetString(out_str); return out_str; }
+    virtual int AsInt() const = 0;
+    virtual char AsChar() const = 0;
+    virtual double AsDouble() const = 0;
+    virtual void SetString(cString & in_str) const = 0;
+    cString AsString() const { cString out_str; SetString(out_str); return out_str; }
     
-    virtual eFlexType GetType() { return TYPE_NONE; }
+    virtual eFlexType GetType() const { return TYPE_NONE; }
   };
   
   class cFlexVar_Int : public cFlexVar_Base {
@@ -39,12 +39,12 @@ private:
     cFlexVar_Int(int in_val) : value(in_val) { ; }
     ~cFlexVar_Int() { ; }
 
-    int AsInt() { return value; }
-    char AsChar() { return (char) value; }
-    double AsDouble() { return (double) value; }
-    void SetString(cString & in_str) { in_str.Set("%d", value); }
+    int AsInt() const { return value; }
+    char AsChar() const { return (char) value; }
+    double AsDouble() const { return (double) value; }
+    void SetString(cString & in_str) const { in_str.Set("%d", value); }
 
-    eFlexType GetType() { return TYPE_INT; }
+    eFlexType GetType() const { return TYPE_INT; }
   };
 
   class cFlexVar_Char : public cFlexVar_Base {
@@ -54,12 +54,12 @@ private:
     cFlexVar_Char(char in_val) : value(in_val) { ; }
     ~cFlexVar_Char() { ; }
 
-    int AsInt() { return (int) value; }
-    char AsChar() { return value; }
-    double AsDouble() { return (double) value; }
-    void SetString(cString & in_str) { in_str.Set("%c", value); }
+    int AsInt() const { return (int) value; }
+    char AsChar() const { return value; }
+    double AsDouble() const { return (double) value; }
+    void SetString(cString & in_str) const { in_str.Set("%c", value); }
 
-    eFlexType GetType() { return TYPE_CHAR; }
+    eFlexType GetType() const { return TYPE_CHAR; }
   };
 
   class cFlexVar_Double : public cFlexVar_Base {
@@ -69,12 +69,12 @@ private:
     cFlexVar_Double(double in_val) : value(in_val) { ; }
     ~cFlexVar_Double() { ; }
 
-    int AsInt() { return (int) value; }
-    char AsChar() { return (char) value; }
-    double AsDouble() { return value; }
-    void SetString(cString & in_str) { in_str.Set("%f", value); }
+    int AsInt() const { return (int) value; }
+    char AsChar() const { return (char) value; }
+    double AsDouble() const { return value; }
+    void SetString(cString & in_str) const { in_str.Set("%f", value); }
 
-    eFlexType GetType() { return TYPE_DOUBLE; }
+    eFlexType GetType() const { return TYPE_DOUBLE; }
   };
 
   class cFlexVar_String : public cFlexVar_Base {
@@ -84,29 +84,37 @@ private:
     cFlexVar_String(const cString & in_val) : value(in_val) { ; }
     ~cFlexVar_String() { ; }
 
-    int AsInt() { return value.AsInt(); }
-    char AsChar() { return value[0]; }
-    double AsDouble() { return value.AsDouble(); }
-    void SetString(cString & in_str) { in_str = value; }
+    int AsInt() const { return value.AsInt(); }
+    char AsChar() const { return value[0]; }
+    double AsDouble() const { return value.AsDouble(); }
+    void SetString(cString & in_str) const { in_str = value; }
 
-    eFlexType GetType() { return TYPE_STRING; }
+    eFlexType GetType() const { return TYPE_STRING; }
   };
 
   cFlexVar_Base * var;
 
 public:
+  cFlexVar(const cFlexVar & in_var) : var(NULL) {
+    const eFlexType type = in_var.GetType();
+    if (type == TYPE_INT) var = new cFlexVar_Int( in_var.AsInt() );
+    else if (type == TYPE_CHAR) var = new cFlexVar_Char( in_var.AsChar() );
+    else if (type == TYPE_DOUBLE) var = new cFlexVar_Double( in_var.AsDouble() );
+    else if (type == TYPE_STRING) var = new cFlexVar_String( in_var.AsString() );
+  }
   cFlexVar(int in_value) : var(new cFlexVar_Int(in_value)) { ; }
   cFlexVar(char in_value) : var(new cFlexVar_Char(in_value)) { ; }
   cFlexVar(double in_value) : var(new cFlexVar_Double(in_value)) { ; }
   cFlexVar(const cString & in_value) : var(new cFlexVar_String(in_value)) { ; }
+  ~cFlexVar() { delete var; }
   
-  int AsInt() { return var->AsInt(); }
-  char AsChar() { return var->AsChar(); }
-  double AsDouble() { return var->AsDouble(); }
-  cString AsString() { return var->AsString(); }
-  void SetString(cString & in_str) { var->SetString(in_str); }
+  int AsInt() const { return var->AsInt(); }
+  char AsChar() const { return var->AsChar(); }
+  double AsDouble() const { return var->AsDouble(); }
+  cString AsString() const { return var->AsString(); }
+  void SetString(cString & in_str) const { var->SetString(in_str); }
   
-  eFlexType GetType() { return var->GetType(); }
+  eFlexType GetType() const { return var->GetType(); }
 };
 
 #endif

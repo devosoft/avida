@@ -374,6 +374,18 @@ public:
   CONFIG_ADD_VAR(REGULATION_STRENGTH, double, 1, "Strength added or subtracted to a promoter by regulation.");
   CONFIG_ADD_VAR(REGULATION_DECAY_FRAC, double, 0.1, "Fraction of regulation that decays away. \nMax regulation = 2^(REGULATION_STRENGTH/REGULATION_DECAY_FRAC)");
 
+  CONFIG_ADD_GROUP(COLORS_GROUP, "Output colors for when data files are printed in HTML mode.\nThere are two sets of these; the first are for lineages,\nand the second are for mutation tests.");
+  CONFIG_ADD_VAR(COLOR_CHANGE, cString, "CCCCFF", "Color to flag stat that has changed since parent.");
+  CONFIG_ADD_VAR(COLOR_NEG2, cString, "FF0000", "Color to flag stat that is significantly worse than parent.");
+  CONFIG_ADD_VAR(COLOR_NEG1, cString, "FFCCCC", "Color to flag stat that is minorly worse than parent.");
+  CONFIG_ADD_VAR(COLOR_POS1, cString, "CCFFCC", "Color to flag stat that is minorly better than parent.");
+  CONFIG_ADD_VAR(COLOR_POS2, cString, "00FF00", "Color to flag stat that is significantly better than parent.");
+
+  CONFIG_ADD_VAR(COLOR_MUT_POS,    cString, "00FF00", "Color to flag stat that has changed since parent.");
+  CONFIG_ADD_VAR(COLOR_MUT_NEUT,   cString, "FFFFFF", "Color to flag stat that has changed since parent.");
+  CONFIG_ADD_VAR(COLOR_MUT_NEG,    cString, "FFFF00", "Color to flag stat that has changed since parent.");
+  CONFIG_ADD_VAR(COLOR_MUT_LETHAL, cString, "FF0000", "Color to flag stat that has changed since parent.");
+
 #endif
   
   void Load(const cString& filename, const bool& crash_if_not_found);

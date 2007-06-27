@@ -28,9 +28,14 @@
 
 #include <iostream>
 
+#ifndef cFlexVar_h
+#define "cFlexVar.h"
+#endif
+
 #ifndef cStringList_h
 #include "cStringList.h"
 #endif
+
 #ifndef tDataEntryBase_h
 #include "tDataEntryBase.h"
 #endif
@@ -53,15 +58,13 @@ public:
   const cString & GetName() const { return data_entry->GetName(); }
   const cString & GetDesc() const { return data_entry->GetDesc(); }
   const cString & GetNull() const { return data_entry->GetNull(); }
-  const cString & GetHtmlCellFlags() const
-    { return data_entry->GetHtmlCellFlags(); }
+  const cString & GetHtmlCellFlags() const { return data_entry->GetHtmlCellFlags(); }
+  cFlexVar GetValue() const { return data_entry->Get(); }
 
   void SetTarget(T * _target) { data_entry->SetTarget(_target); }
   bool Print(std::ostream& fp) const { return data_entry->Print(fp); }
   int Compare(T * other) const { return data_entry->Compare(other); }
   bool SetValue(const cString & value) { return data_entry->Set(value); }
-  void HTMLPrint(std::ostream& fp, int compare=0, bool print_text=true)
-    { data_entry->HTMLPrint(fp, compare, print_text); }
 };
 
 #endif

@@ -32,6 +32,11 @@
 #ifndef cDataEntry_h
 #include "cDataEntry.h"
 #endif
+
+#ifndef cFlexVar_h
+#include "cFlexVar.h"
+#endif
+
 #if USE_tMemTrack
 # ifndef tMemTrack_h
 #  include "tMemTrack.h"
@@ -57,28 +62,7 @@ public:
   virtual bool Print(std::ostream& fp) const { (void) fp;  return false; }
   virtual int Compare(T * other) const { (void) other; return 0; }
   virtual bool Set(const cString & value) { (void) value; return false; }
-
-  void HTMLPrint(std::ostream& fp, int compare=0, bool print_text=true) {
-    fp << "<td " << GetHtmlCellFlags() << " ";
-    if (compare == -2) {
-      fp << "bgcolor=\"#FF0000\">";
-      if (print_text == true) fp << GetNull() << " ";
-      else fp << "&nbsp; ";
-      return;
-    }
-
-    if (compare == -1)     fp << "bgcolor=\"#FFCCCC\">";
-    else if (compare == 0) fp << ">";
-    else if (compare == 1) fp << "bgcolor=\"#CCFFCC\">";
-    else if (compare == 2) fp << "bgcolor=\"#00FF00\">";
-    else {
-      std::cerr << "Error! Illegal case in Compare:" << compare << std::endl;
-      exit(0);
-    }
-
-    if (print_text == true) fp << *this << " ";
-    else fp << "&nbsp; ";
-  }
+  virtual cFlexVar Get() const { return cFlexVar(0); }
 
   cString AsString() {
     std::stringstream tmp_stream;

@@ -28,15 +28,22 @@
 
 #include <iostream>
 
+#ifndef cFlexVar_h
+#include "cFlexVar.h"
+#endif
+
 #ifndef cString_h
 #include "cString.h"
 #endif
+
 #ifndef cStringUtil_h
 #include "cStringUtil.h"
 #endif
+
 #ifndef tDataEntryBase_h
 #include "tDataEntryBase.h"
 #endif
+
 #if USE_tMemTrack
 # ifndef tMemTrack_h
 #  include "tMemTrack.h"
@@ -74,11 +81,16 @@ public:
   int Compare(T * other) const {
     return (DataCompare)?((this->target->*DataCompare)(other)):(0);
   }
+
   bool Set(const cString & value) {
     OUT new_value(0);
     if (DataSet == 0) return false;
     (this->target->*DataSet)( cStringUtil::Convert(value, new_value) );
     return true;
+  }
+
+  cFlexVar Get() {
+    return cFlexVar( (this->target->*DataRetrieval)() );
   }
 };
 

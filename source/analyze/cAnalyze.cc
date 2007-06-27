@@ -1052,6 +1052,7 @@ void cAnalyze::FindOrganism(cString cur_string)
   // At least one argument is rquired.
   if (cur_string.GetSize() == 0) {
     cerr << "Error: At least one argument is required in FIND_ORGANISM." << endl;
+    cerr << " (perhaps you want FIND_GENOTYPE?)" << endl;
     return;
   }
   
@@ -1896,7 +1897,7 @@ void cAnalyze::CommandDetail_Body(ostream& fp, int format_type,
           prev_genotype->SetSpecialArgs(data_command->GetArgs());
           compare = data_command->Compare(prev_genotype);
         }
-        data_command->HTMLPrint(fp, compare);
+	HTMLPrintStat(data_command, fp, compare);
       }
       else {  // if (format_type == FILE_TYPE_TEXT) {
         fp << data_command->GetEntry() << " ";
@@ -1914,8 +1915,7 @@ void cAnalyze::CommandDetail_Body(ostream& fp, int format_type,
       }
     }
     else {
-      // Always moveon if we're not basing this on time, or if we've run out
-      // of genotypes.
+      // Always moveon if we're not basing this on time, or if we've run out of genotypes.
       prev_genotype = cur_genotype;
       cur_genotype = next_genotype;
       next_genotype = batch_it.Next();
@@ -1928,7 +1928,7 @@ void cAnalyze::CommandDetail_Body(ostream& fp, int format_type,
     fp << "</table>" << endl
     << "</center>" << endl;
   }
-  }
+}
 
 void cAnalyze::CommandDetailAverage_Body(ostream& fp, int nucoutputs,
                                          tListIterator< tDataEntryCommand<cAnalyzeGenotype> > & output_it)
@@ -2085,7 +2085,7 @@ void cAnalyze::CommandDetailBatches(cString cur_string)
       cur_command->SetTarget(genotype);
       genotype->SetSpecialArgs(cur_command->GetArgs());
       if (file_type == FILE_TYPE_HTML) {
-        cur_command->HTMLPrint(fp, 0);
+	HTMLPrintStat(cur_command, fp);
       }
       else {  // if (file_type == FILE_TYPE_TEXT) {
         fp << cur_command->GetEntry() << " ";
@@ -4309,10 +4309,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
   if (arg_list.PopString("html") != "") file_type = FILE_TYPE_HTML;
   if (arg_list.PopString("link_maps") != "") link_maps = true;
   if (arg_list.PopString("link_insts") != "") link_insts = true;
-  if (arg_list.PopString("use_resources=2") != "") 
-  {
-    useResources = 2;
-  }
+  if (arg_list.PopString("use_resources=2") != "") useResources = 2;
     
   cout << "There are " << arg_list.GetSize() << " column args." << endl;
   
@@ -4454,9 +4451,9 @@ void cAnalyze::CommandMapTasks(cString cur_string)
         data_command->SetTarget(genotype);
         genotype->SetSpecialArgs(data_command->GetArgs());
         if (data_command->Compare(&null_genotype) > 0) {
-          fp << "<th bgcolor=\"#00FF00\">";
+          fp << "<th bgcolor=\"#" << m_world->GetConfig().COLOR_MUT_POS.Get() << "\">";
         }
-        else  fp << "<th bgcolor=\"#FF0000\">";
+        else  fp << "<th bgcolor=\"#" << m_world->GetConfig().COLOR_MUT_LETHAL.Get() << "\">";
         
         if (data_command->HasArg("blank") == true) fp << "&nbsp;" << " ";
         else fp << data_command->GetEntry() << " ";
@@ -4529,8 +4526,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
         // cause landscaping to be triggered in a context that causes a crash, 
         // notably, if you don't provide any column parameters to MapTasks.. @JEB
         if (file_type == FILE_TYPE_HTML) {
-          data_command->HTMLPrint(fp, compare,
-                                  !(data_command->HasArg("blank")));
+	  HTMLPrintStat(data_command, fp, compare, !(data_command->HasArg("blank")));
         } 
         else fp << data_command->GetEntry() << " ";
         
@@ -4552,10 +4548,10 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       
       for (int i = 0; i < num_cols; i++) {
         if (col_pass_count[i] > 0) {
-          fp << "<th bgcolor=\"#00FF00\">" << col_pass_count[i];
+          fp << "<th bgcolor=\"#" << m_world->GetConfig().COLOR_MUT_POS.Get() << "\">" << col_pass_count[i];
         }
         else if (col_fail_count[i] > 0) {
-          fp << "<th bgcolor=\"#FF0000\">" << col_fail_count[i];
+          fp << "<th bgcolor=\"#" << m_world->GetConfig().COLOR_MUT_LETHAL.Get() << "\">" << col_fail_count[i];
         }
         else fp << "<th>0";
       }
@@ -5261,19 +5257,19 @@ void cAnalyze::CommandMapMutations(cString cur_string)
           if (test_fitness == 1.0) {           // Neutral Mutation...
             row_neut++;
             total_neut++;
-            if (file_type == FILE_TYPE_HTML) color_string = "#FFFFFF";
+            if (file_type == FILE_TYPE_HTML) color_string = m_world->GetConfig().COLOR_MUT_NEUT.Get();
           } else if (test_fitness == 0.0) {    // Lethal Mutation...
             row_dead++;
             total_dead++;
-            if (file_type == FILE_TYPE_HTML) color_string = "#FF0000";
+            if (file_type == FILE_TYPE_HTML) color_string = m_world->GetConfig().COLOR_MUT_LETHAL.Get();
           } else if (test_fitness < 1.0) {     // Detrimental Mutation...
             row_neg++;
             total_neg++;
-            if (file_type == FILE_TYPE_HTML) color_string = "#FFFF00";
+            if (file_type == FILE_TYPE_HTML) color_string = m_world->GetConfig().COLOR_MUT_NEG.Get();
           } else {                             // Beneficial Mutation...
             row_pos++;
             total_pos++;
-            if (file_type == FILE_TYPE_HTML) color_string = "#00FF00";
+            if (file_type == FILE_TYPE_HTML) color_string = m_world->GetConfig().COLOR_MUT_POS.Get();
           }
           
           // Write out this cell...
@@ -5293,10 +5289,10 @@ void cAnalyze::CommandMapMutations(cString cur_string)
       
       // Categorize this mutation if its in HTML mode (color only)...
       if (file_type == FILE_TYPE_HTML) {
-        if (test_fitness == 1.0) color_string = "#FFFFFF";
-        else if (test_fitness == 0.0) color_string = "#FF0000";
-        else if (test_fitness < 1.0) color_string = "#FFFF00";
-        else color_string = "#00FF00";
+        if (test_fitness == 1.0) color_string =  m_world->GetConfig().COLOR_MUT_NEUT.Get();
+        else if (test_fitness == 0.0) color_string = m_world->GetConfig().COLOR_MUT_LETHAL.Get();
+        else if (test_fitness < 1.0) color_string = m_world->GetConfig().COLOR_MUT_NEG.Get();
+        else color_string = m_world->GetConfig().COLOR_MUT_POS.Get();
         
         fp << "<th bgcolor=\"" << color_string << "\">";
       }
@@ -5304,16 +5300,16 @@ void cAnalyze::CommandMapMutations(cString cur_string)
       fp << test_fitness << " ";
       
       // Fraction Columns...
-      if (file_type == FILE_TYPE_HTML) fp << "<th bgcolor=\"#FF0000\">";
+      if (file_type == FILE_TYPE_HTML) fp << "<th bgcolor=\"#" << m_world->GetConfig().COLOR_MUT_LETHAL.Get() << "\">";
       fp << (double) row_dead / (double) (num_insts-1) << " ";
       
-      if (file_type == FILE_TYPE_HTML) fp << "<th bgcolor=\"#FFFF00\">";
+      if (file_type == FILE_TYPE_HTML) fp << "<th bgcolor=\"#" << m_world->GetConfig().COLOR_MUT_NEG.Get() << "\">";
       fp << (double) row_neg / (double) (num_insts-1) << " ";
       
-      if (file_type == FILE_TYPE_HTML) fp << "<th bgcolor=\"#FFFFFF\">";
+      if (file_type == FILE_TYPE_HTML) fp << "<th bgcolor=\"#" << m_world->GetConfig().COLOR_MUT_NEUT.Get() << "\">";
       fp << (double) row_neut / (double) (num_insts-1) << " ";
       
-      if (file_type == FILE_TYPE_HTML) fp << "<th bgcolor=\"#00FF00\">";
+      if (file_type == FILE_TYPE_HTML) fp << "<th bgcolor=\"#" << m_world->GetConfig().COLOR_MUT_POS.Get() << "\">";
       fp << (double) row_pos / (double) (num_insts-1) << " ";
       
       
@@ -6447,10 +6443,10 @@ void cAnalyze::AnalyzeInstructions(cString cur_string)
     fp << "<tr><th>Average <th>" << total_length / num_genomes << " ";
     for (int i = 0; i < num_insts; i++) {
       double inst_freq = total_freq[i] / num_genomes;
-      if (inst_freq == 0.0) fp << "<td bgcolor=\"FF0000\">";
-      else if (inst_freq < min_freq) fp << "<td bgcolor=\"FFFF00\">";
-      else if (inst_freq < max_freq) fp << "<td bgcolor=\"0000FF\">";
-      else fp << "<td bgcolor=\"00FF00\">";
+      if (inst_freq == 0.0) fp << "<td bgcolor=\"#" << m_world->GetConfig().COLOR_MUT_LETHAL.Get() << "\">";
+      else if (inst_freq < min_freq) fp << "<td bgcolor=\"#" << m_world->GetConfig().COLOR_MUT_NEG.Get() << "\">";
+      else if (inst_freq < max_freq) fp << "<td bgcolor=\"#" << m_world->GetConfig().COLOR_MUT_NEUT.Get() << "\">";
+      else fp << "<td bgcolor=\"#" << m_world->GetConfig().COLOR_MUT_POS.Get() << "\">";
       fp << cStringUtil::Stringf("%04.3f", inst_freq) << " ";
     }
     fp << "</tr>" << endl
@@ -7163,6 +7159,11 @@ void cAnalyze::IncludeFile(cString cur_string)
 
 void cAnalyze::CommandSystem(cString cur_string)
 {
+  if (cur_string.GetSize() == 0) {
+    cerr << "Error: Keyword \"system\" must be followed by command to run." << endl;
+    if (exit_on_error) exit(1);
+  }
+
   cout << "Running System Command: " << cur_string << endl;
   
   system(cur_string);
@@ -7704,8 +7705,40 @@ void cAnalyze::ProcessCommands(tList<cAnalyzeCommand>& clist)
       cerr << "Error: Unknown analysis keyword '" << command << "'." << endl;
       if (exit_on_error) exit(1);
     }    
+   }
+ }
+
+
+ // const cFlexVar & stat, std::ostream& fp, int compare=0, const cString & null_keyword="0",
+ // 		     const cString & html_cell_flags="align=center", bool print_text=true);
+
+ void cAnalyze::HTMLPrintStat(tDataEntryCommand<cAnalyzeGenotype> * command, std::ostream& fp,
+			      int compare, bool print_text)
+{
+  fp << "<td " << command->GetHtmlCellFlags() << " ";
+  if (compare == -2) {
+    fp << "bgcolor=\"#" << m_world->GetConfig().COLOR_NEG2.Get() << "\">";
+    if (print_text == true) fp << command->GetNull() << " ";
+    else fp << "&nbsp; ";
+    return;
   }
+  
+  if (compare == -1)     fp << "bgcolor=\"#" << m_world->GetConfig().COLOR_NEG1.Get() << "\">";
+  else if (compare == 0) fp << ">";
+  else if (compare == 1) fp << "bgcolor=\"#" << m_world->GetConfig().COLOR_POS1.Get() << "\">";
+  else if (compare == 2) fp << "bgcolor=\"#" << m_world->GetConfig().COLOR_POS2.Get() << "\">";
+  else {
+    std::cerr << "Error! Illegal case in Compare:" << compare << std::endl;
+    exit(0);
+  }
+  
+  if (print_text == true) fp << command->GetValue().AsString() << " ";
+  else fp << "&nbsp; ";
+  
 }
+
+
+
 
 // A basic macro to link a keyword to a description and Get and Set methods in cAnalyzeGenotype.
 #define ADD_GDATA(TYPE, KEYWORD, DESC, GET, SET, COMP, NSTR, HSTR)                                         \

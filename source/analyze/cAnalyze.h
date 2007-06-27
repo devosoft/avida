@@ -145,6 +145,10 @@ public:
   void PreProcessArgs(cString & args);
   void ProcessCommands(tList<cAnalyzeCommand> & clist);
 
+  void HTMLPrintStat(tDataEntryCommand<cAnalyzeGenotype> * command, std::ostream& fp, int compare=0,
+		     bool print_text=true);
+
+  // Deal with genotype data list (linking keywords to stats)
   void SetupGenotypeDataList();	
   void LoadGenotypeDataList(cStringList arg_list,
 	    tList< tDataEntryCommand<cAnalyzeGenotype> > & output_list);
