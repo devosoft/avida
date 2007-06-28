@@ -543,23 +543,28 @@ from the input file to be loaded in) are:
 <tr>
   <td width="33%"><strong>id</strong> (Genome ID)</td>
   <td width="33%"><strong>parent_id</strong> (Parent ID)</td>
-  <td width="33%"><strong>num_cpus</strong> (Number of CPUs)</td>
+  <td width="33%"><strong>parent2_id</strong> (Second Parent ID 
+  	(sexual genotypes))</td>
 </tr>
 <tr>
+  <td width="33%"><strong>num_cpus</strong> (Number of CPUs)</td>
   <td><strong>total_cpus</strong> (Total CPUs Ever)</td>
   <td><strong>length</strong> (Genome Length)</td>
-  <td><strong>update_born</strong> (Update Born)</td>
 </tr>
 <tr>
+  <td><strong>update_born</strong> (Update Born)</td>
   <td><strong>update_dead</strong> (Update Dead)</td>
   <td><strong>depth</strong> (Tree Depth)</td>
+</tr>
+<tr>
   <td><strong>sequence</strong> (Genome Sequence)</td>
+  <td><strong>task_list</strong> (List of all tasks performed)</td>
 </tr>
 </table>
 </div>
 
 <p>
-After a RECALCULATE, the additional formats become available:
+After a RECALCULATE, these additional formats become available:
 </p>
 
 <div align="center">
@@ -580,6 +585,12 @@ After a RECALCULATE, the additional formats become available:
   <td><strong>div_type</strong> (Divide type used; 1 is default)</td>
 </tr>
 <tr>
+  <td><strong>mate_id</strong> (Mate Selection ID Number 
+  	(sexual genotypes))</td>
+  <td><strong>executed_flags</strong> (Executed Flags)</td>
+	<td><strong>task_order</strong> (Task Performance Order)</td>
+</tr>
+<tr>
   <td><strong>task.n</strong> (# of times task number n is done)</td>
   <td><strong>task.n:binary</strong> (is task n done, 0/1)</td>
 </tr>
@@ -596,14 +607,17 @@ additional formats:
 <table width="95%">
 <tr>
   <td width="50%"><strong>parent_dist</strong> (Parent Distance)</td>
+  <td width="50%"><strong>ancestor_dist</strong> (Ancestor Distance)</td>
+</tr>
+<tr>
   <td width="50%"><strong>comp_merit_ratio</strong>, (Computational Merit Ratio with parent)</td>
-</tr>
-<tr>
   <td><strong>efficiency_ratio</strong> (Replication Efficiency Ratio with parent)</td>
-  <td><strong>fitness_ratio</strong> (Fitness Ratio with parent)</td>
 </tr>
 <tr>
+  <td><strong>fitness_ratio</strong> (Fitness Ratio with parent)</td>
   <td><strong>parent_muts</strong> (Mutations from Parent)</td>
+</tr>
+<tr>
   <td><strong>html.sequence</strong> (Genome Sequence in Color; html format)</td>
 </tr>
 </table>
@@ -617,6 +631,31 @@ If an ALIGN is run, one additional format is available:
 <table width="95%">
 <tr>
   <td><strong>alignment</strong> (Aligned Sequence)</td>
+</tr>
+</table>
+</div>
+
+<p>
+If a RECALCULATE was done before the ALIGN, the following format is available:
+</p>
+
+<div align="center">
+<table width="95%">
+<tr>
+  <td><strong>alignment_executed_flags</strong> (Alignment Executed Flags)</td>
+</tr>
+</table>
+</div>
+
+<p>
+If tags have been applied to genotypes in analyze mode, an additional format 
+is available:
+</p>
+
+<div align="center">
+<table width="95%">
+<tr>
+  <td><strong>tag</strong> (Genotype Tag)</td>
 </tr>
 </table>
 </div>
