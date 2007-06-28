@@ -80,6 +80,9 @@
 \}          return ARR_CLOSE;
 :           return ARR_RANGE;
 \^          return ARR_EXPAN;
+\.\.        return ARR_WILD;
+
+\?          return MAT_MODIFY;    // Matrix Modifier
 
 array       return TYPE_ARRAY;    // Built-in Types
 char        return TYPE_CHAR;

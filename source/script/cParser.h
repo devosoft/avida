@@ -52,17 +52,36 @@ private:
   cASLibrary* m_library;
   cLexer* m_lexer;
   cASTNode* m_tree;
-  
+
+  bool m_eof;
   bool m_success;
+  
+  int m_cur_tok;
   
   cParser();
   
 public:
-  cParser(cASLibrary* library) : m_library(library), m_success(true) { ; }
+  cParser(cASLibrary* library) : m_library(library), m_eof(false), m_success(true), m_cur_tok(0) { ; }
   
   bool Parse(cFile& input);
   
   void Accept(cASTVisitor& visitor);
+  
+  
+private:
+  inline int currentToken() { return m_cur_tok; }
+  inline int nextToken();
+  
+  cASTNode* parseStatementList();
+  cASTNode* parseLooseBlock();
 };
+
+
+inline int cParser::nextToken()
+{
+  m_cur_tok = m_lexer->yylex();
+  return m_cur_tok;
+}
+
 
 #endif

@@ -65,6 +65,9 @@ enum eASTokens {
   ARR_CLOSE,
   ARR_RANGE,
   ARR_EXPAN,
+  ARR_WILD,
+  
+  MAT_MODIFY,
   
   TYPE_ARRAY,
   TYPE_CHAR,
