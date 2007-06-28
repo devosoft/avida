@@ -30,6 +30,19 @@ private:
     cString AsString() const { cString out_str; SetString(out_str); return out_str; }
     
     virtual eFlexType GetType() const { return TYPE_NONE; }
+
+#define ABSTRACT_FLEX_VAR_BASE_OP(OP, RETURN_TYPE)                         \
+    virtual RETURN_TYPE operator OP (int in_var) const = 0;                \
+    virtual RETURN_TYPE operator OP (char in_var) const = 0;               \
+    virtual RETURN_TYPE operator OP (double in_var) const = 0;             \
+    virtual RETURN_TYPE operator OP (const cString & in_var) const = 0;
+
+    ABSTRACT_FLEX_VAR_BASE_OP(==, bool)
+    ABSTRACT_FLEX_VAR_BASE_OP(!=, bool)
+    ABSTRACT_FLEX_VAR_BASE_OP(<, bool)
+    ABSTRACT_FLEX_VAR_BASE_OP(>, bool)
+    ABSTRACT_FLEX_VAR_BASE_OP(<=, bool)
+    ABSTRACT_FLEX_VAR_BASE_OP(>=, bool)
   };
   
   class cFlexVar_Int : public cFlexVar_Base {
@@ -45,6 +58,19 @@ private:
     void SetString(cString & in_str) const { in_str.Set("%d", value); }
 
     eFlexType GetType() const { return TYPE_INT; }
+
+#define CREATE_FLEX_VAR_INT_MATH_OP(OP, RETURN_TYPE)                                                         \
+    RETURN_TYPE operator OP (int in_var) const { return value OP in_var; }                                   \
+    RETURN_TYPE operator OP (char in_var) const { return value OP (int) in_var; }                            \
+    RETURN_TYPE operator OP (double in_var) const { return ((double) value) OP in_var; }                     \
+    RETURN_TYPE operator OP (const cString & in_var) const { return ((double) value) OP in_var.AsDouble(); }
+
+    CREATE_FLEX_VAR_INT_MATH_OP(==, bool);
+    CREATE_FLEX_VAR_INT_MATH_OP(!=, bool);
+    CREATE_FLEX_VAR_INT_MATH_OP(<, bool);
+    CREATE_FLEX_VAR_INT_MATH_OP(>, bool);
+    CREATE_FLEX_VAR_INT_MATH_OP(<=, bool);
+    CREATE_FLEX_VAR_INT_MATH_OP(>=, bool);
   };
 
   class cFlexVar_Char : public cFlexVar_Base {
@@ -60,6 +86,19 @@ private:
     void SetString(cString & in_str) const { in_str.Set("%c", value); }
 
     eFlexType GetType() const { return TYPE_CHAR; }
+
+#define CREATE_FLEX_VAR_CHAR_MATH_OP(OP, RETURN_TYPE)                                             \
+    RETURN_TYPE operator OP (int in_var) const { return ((int) value) OP in_var; }                \
+    RETURN_TYPE operator OP (char in_var) const { return value OP in_var; }                       \
+    RETURN_TYPE operator OP (double in_var) const { return ((double) value) OP in_var; }          \
+    RETURN_TYPE operator OP (const cString & in_var) const { return cString(&value, 1) OP in_var; }
+
+    CREATE_FLEX_VAR_CHAR_MATH_OP(==, bool);
+    CREATE_FLEX_VAR_CHAR_MATH_OP(!=, bool);
+    CREATE_FLEX_VAR_CHAR_MATH_OP(<, bool);
+    CREATE_FLEX_VAR_CHAR_MATH_OP(>, bool);
+    CREATE_FLEX_VAR_CHAR_MATH_OP(<=, bool);
+    CREATE_FLEX_VAR_CHAR_MATH_OP(>=, bool);
   };
 
   class cFlexVar_Double : public cFlexVar_Base {
@@ -75,6 +114,19 @@ private:
     void SetString(cString & in_str) const { in_str.Set("%f", value); }
 
     eFlexType GetType() const { return TYPE_DOUBLE; }
+
+#define CREATE_FLEX_VAR_DOUBLE_MATH_OP(OP, RETURN_TYPE)                                           \
+    RETURN_TYPE operator OP (int in_var) const { return value OP (double) in_var; }               \
+    RETURN_TYPE operator OP (char in_var) const { return value OP (double) in_var; }              \
+    RETURN_TYPE operator OP (double in_var) const { return value OP in_var; }                     \
+    RETURN_TYPE operator OP (const cString & in_var) const { return value OP in_var.AsDouble(); }
+
+    CREATE_FLEX_VAR_DOUBLE_MATH_OP(==, bool);
+    CREATE_FLEX_VAR_DOUBLE_MATH_OP(!=, bool);
+    CREATE_FLEX_VAR_DOUBLE_MATH_OP(<, bool);
+    CREATE_FLEX_VAR_DOUBLE_MATH_OP(>, bool);
+    CREATE_FLEX_VAR_DOUBLE_MATH_OP(<=, bool);
+    CREATE_FLEX_VAR_DOUBLE_MATH_OP(>=, bool);
   };
 
   class cFlexVar_String : public cFlexVar_Base {
@@ -90,31 +142,84 @@ private:
     void SetString(cString & in_str) const { in_str = value; }
 
     eFlexType GetType() const { return TYPE_STRING; }
+
+#define CREATE_FLEX_VAR_STRING_MATH_OP(OP, RETURN_TYPE)                                           \
+    RETURN_TYPE operator OP (int in_var) const { return value.AsDouble() OP (double) in_var; }    \
+    RETURN_TYPE operator OP (char in_var) const { return value OP cString(&in_var, 1); }              \
+    RETURN_TYPE operator OP (double in_var) const { return value.AsDouble() OP in_var; }          \
+    RETURN_TYPE operator OP (const cString & in_var) const { return value OP in_var; }
+
+    CREATE_FLEX_VAR_STRING_MATH_OP(==, bool);
+    CREATE_FLEX_VAR_STRING_MATH_OP(!=, bool);
+    CREATE_FLEX_VAR_STRING_MATH_OP(<, bool);
+    CREATE_FLEX_VAR_STRING_MATH_OP(>, bool);
+    CREATE_FLEX_VAR_STRING_MATH_OP(<=, bool);
+    CREATE_FLEX_VAR_STRING_MATH_OP(>=, bool);
   };
 
   cFlexVar_Base * var;
 
 public:
+  // Setup constructors to be able to build this variable from whatever input we need.
   cFlexVar(const cFlexVar & in_var) : var(NULL) {
-    const eFlexType type = in_var.GetType();
-    if (type == TYPE_INT) var = new cFlexVar_Int( in_var.AsInt() );
-    else if (type == TYPE_CHAR) var = new cFlexVar_Char( in_var.AsChar() );
-    else if (type == TYPE_DOUBLE) var = new cFlexVar_Double( in_var.AsDouble() );
-    else if (type == TYPE_STRING) var = new cFlexVar_String( in_var.AsString() );
+    if (in_var.GetType() == TYPE_INT) var = new cFlexVar_Int( in_var.AsInt() );
+    else if (in_var.GetType() == TYPE_CHAR) var = new cFlexVar_Char( in_var.AsChar() );
+    else if (in_var.GetType() == TYPE_DOUBLE) var = new cFlexVar_Double( in_var.AsDouble() );
+    else if (in_var.GetType() == TYPE_STRING) var = new cFlexVar_String( in_var.AsString() );
   }
-  cFlexVar(int in_value) : var(new cFlexVar_Int(in_value)) { ; }
+  cFlexVar(int in_value = 0) : var(new cFlexVar_Int(in_value)) { ; }
   cFlexVar(char in_value) : var(new cFlexVar_Char(in_value)) { ; }
   cFlexVar(double in_value) : var(new cFlexVar_Double(in_value)) { ; }
   cFlexVar(const cString & in_value) : var(new cFlexVar_String(in_value)) { ; }
   ~cFlexVar() { delete var; }
-  
+
+  // Setup accessors to get this variable as any type we might need.
   int AsInt() const { return var->AsInt(); }
   char AsChar() const { return var->AsChar(); }
   double AsDouble() const { return var->AsDouble(); }
   cString AsString() const { return var->AsString(); }
   void SetString(cString & in_str) const { var->SetString(in_str); }
   
+  // Setup an accessor to determine the native type of this variable.
   eFlexType GetType() const { return var->GetType(); }
+
+  // Setup assignment operators...
+  cFlexVar & operator=(const cFlexVar & in_var) {
+    delete var;
+    if (in_var.GetType() == TYPE_INT) var = new cFlexVar_Int( in_var.AsInt() );
+    else if (in_var.GetType() == TYPE_CHAR) var = new cFlexVar_Char( in_var.AsChar() );
+    else if (in_var.GetType() == TYPE_DOUBLE) var = new cFlexVar_Double( in_var.AsDouble() );
+    else if (in_var.GetType() == TYPE_STRING) var = new cFlexVar_String( in_var.AsString() );
+    return *this;
+  }
+  cFlexVar & operator=(int in_value)             { delete var; var = new cFlexVar_Int(in_value);    return *this; }
+  cFlexVar & operator=(char in_value)            { delete var; var = new cFlexVar_Char(in_value);   return *this; }
+  cFlexVar & operator=(double in_value)          { delete var; var = new cFlexVar_Double(in_value); return *this; }
+  cFlexVar & operator=(const cString & in_value) { delete var; var = new cFlexVar_String(in_value); return *this; }
+  cFlexVar & operator=(char * in_value)          { delete var; var = new cFlexVar_String(in_value); return *this; }
+
+  // The following macro will forward all of the commands with the associated operator to the internal class.
+#define FORWARD_FLEX_VAR_OP(OP, RETURN_TYPE)                                             \
+  RETURN_TYPE operator OP(int in_var) const { return (*var) OP in_var; }                 \
+  RETURN_TYPE operator OP(char in_var) const { return (*var) OP in_var; }                \
+  RETURN_TYPE operator OP(double in_var) const { return (*var) OP in_var; }              \
+  RETURN_TYPE operator OP(const cString & in_var) const { return (*var) OP in_var; }     \
+  RETURN_TYPE operator OP(const cFlexVar & in_var) const {                               \
+    const eFlexType type = in_var.GetType();                                             \
+    if (type == TYPE_INT) return (*var) OP in_var.AsInt();                               \
+    else if (type == TYPE_CHAR) return (*var) OP in_var.AsChar();                        \
+    else if (type == TYPE_DOUBLE) return (*var) OP in_var.AsDouble();                    \
+    else /* if (type == TYPE_STRING) */ return (*var) OP in_var.AsString();              \
+  }
+
+  FORWARD_FLEX_VAR_OP(==, bool)
+  FORWARD_FLEX_VAR_OP(!=, bool)
+  FORWARD_FLEX_VAR_OP(<, bool)
+  FORWARD_FLEX_VAR_OP(>, bool)
+  FORWARD_FLEX_VAR_OP(<=, bool)
+  FORWARD_FLEX_VAR_OP(>=, bool)
+  
 };
+
 
 #endif

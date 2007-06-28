@@ -275,6 +275,7 @@ public:
   void BatchRename(cString cur_string);
   void PrintStatus(cString cur_string);
   void PrintDebug(cString cur_string);
+  void PrintTestInfo(cString cur_string);
   void IncludeFile(cString cur_string);
   void CommandSystem(cString cur_string);
   void CommandInteractive(cString cur_string);

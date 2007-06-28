@@ -152,6 +152,12 @@ public:
     assert( in != NULL );     // NULL input string
     assert( value != NULL );  // Memory Allocation Error: Out of Memory
   }
+  cString(const char* in = "", int in_size) : value(new cStringData(in_size, in))
+  {
+    assert(in_size >= 0);
+    assert( in != NULL );     // NULL input string
+    assert( value != NULL );  // Memory Allocation Error: Out of Memory
+  }
   explicit cString(const int size) : value(new cStringData(size))
   {
     assert( value != NULL );    // Memory Allocation Error: Out of Memory

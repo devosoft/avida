@@ -141,16 +141,29 @@ void cAnalyze::RunFile(cString filename)
 
   cInitFile analyze_file(filename);
   if (!analyze_file.IsOpen()) {
-    cerr << "Error: Cannot load file: \"" << filename << "\"." << endl;
-    if (exit_on_error) exit(1);
+    cerr << "Warning: Cannot load file: \"" << filename << "\"." << endl
+	 << "...creating it..." << endl;
+    ofstream fp(filename);
+    fp << "################################################################################################" << endl
+       << "# This file is used to setup avida when it is in analysis-only mode, which can be triggered by"   << endl
+       << "# running \"avida -a\"."                                                                          << endl
+       << "# "                                                                                               << endl
+       << "# Please see the documentation in doc/analyze_mode.html for information on how to use analyze"    << endl
+       << "# mode, or the file doc/analyze_samples.html for guidelines on writing programs."                 << endl
+       << "################################################################################################" << endl
+       << endl; 
+    fp.close();
+    //if (exit_on_error) exit(1);
   }
-  analyze_file.Load();
-  analyze_file.Compress();
-  analyze_file.Close();
-  
-  LoadCommandList(analyze_file, command_list);
-  ProcessCommands(command_list);
-  
+  else {
+    analyze_file.Load();
+    analyze_file.Compress();
+    analyze_file.Close();
+    
+    LoadCommandList(analyze_file, command_list);
+    ProcessCommands(command_list);
+  }
+
   if (!saved_analyze) m_ctx.ClearAnalyzeMode();
 }
 
@@ -7141,6 +7154,40 @@ void cAnalyze::PrintDebug(cString cur_string)
   cout << "::: " << cur_string << '\n';
 }
 
+void cAnalyze::PrintTestInfo(cString cur_string)
+{
+  cFlexVar var1(1), var2(2.0), var3('3'), var4("four");
+  cFlexVar var5(9), var6(9.0), var7('9'), var8("9");
+
+  tArray<cFlexVar> vars(10);
+  vars[0] = "Testing";
+  vars[1] = 1;
+  vars[2] = 2.0;
+  vars[3] = '3';
+  vars[4] = "four";
+  vars[5] = 9;
+  vars[6] = 9.0;
+  vars[7] = '9';
+  vars[8] = "9";
+
+  cout << "AsString:  ";
+  for (int i = 0; i < 10; i++) cout << i << ":" << vars[i].AsString() << " ";
+  cout << endl;
+
+  cout << "AsInt:  ";
+  for (int i = 0; i < 10; i++) cout << i << ":" << vars[i].AsInt() << " ";
+  cout << endl;
+
+  for (int i = 0; i < 10; i++) {
+    for (int j = i+1; j < 10; j++) {
+      cout << "     vars[" << i << "] <= vars[" << j << "] ?  " << (vars[i] <= vars[j]);
+      cout << "     vars[" << j << "] <= vars[" << i << "] ?  " << (vars[j] <= vars[i]);
+      cout << endl;
+    }
+  }
+
+}
+
 void cAnalyze::IncludeFile(cString cur_string)
 {
   while (cur_string.GetSize() > 0) {
@@ -8009,13 +8056,14 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("RECALCULATE", &cAnalyze::BatchRecalculate);
   AddLibraryDef("RENAME", &cAnalyze::BatchRename);
   AddLibraryDef("STATUS", &cAnalyze::PrintStatus);
-  AddLibraryDef("DEBUG", &cAnalyze::PrintDebug);
   AddLibraryDef("ECHO", &cAnalyze::PrintDebug);
+  AddLibraryDef("DEBUG", &cAnalyze::PrintDebug);
+  AddLibraryDef("TEST", &cAnalyze::PrintTestInfo);
   AddLibraryDef("INCLUDE", &cAnalyze::IncludeFile);
   AddLibraryDef("RUN", &cAnalyze::IncludeFile);
   AddLibraryDef("SYSTEM", &cAnalyze::CommandSystem);
   AddLibraryDef("INTERACTIVE", &cAnalyze::CommandInteractive);
-  
+ 
   // Functions...
   AddLibraryDef("FUNCTION", &cAnalyze::FunctionCreate);
   
