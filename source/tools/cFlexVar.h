@@ -18,6 +18,8 @@ public:
   };
   
 private:
+  ////////////////////////////////////////////////////////////
+  // Base class for the internal type system....
   class cFlexVar_Base {
   public:
     cFlexVar_Base() { ; }
@@ -45,6 +47,8 @@ private:
     ABSTRACT_FLEX_VAR_BASE_OP(>=, bool)
   };
   
+  ////////////////////////////////////////////////////////////
+  // Internal class for managing int type......
   class cFlexVar_Int : public cFlexVar_Base {
   private:
     int value;
@@ -72,6 +76,10 @@ private:
     CREATE_FLEX_VAR_INT_MATH_OP(<=, bool);
     CREATE_FLEX_VAR_INT_MATH_OP(>=, bool);
   };
+
+
+  ////////////////////////////////////////////////////////////
+  // Internal class for managing char type......
 
   class cFlexVar_Char : public cFlexVar_Base {
   private:
@@ -101,6 +109,10 @@ private:
     CREATE_FLEX_VAR_CHAR_MATH_OP(>=, bool);
   };
 
+
+  ////////////////////////////////////////////////////////////
+  // Internal class for managing double type......
+
   class cFlexVar_Double : public cFlexVar_Base {
   private:
     double value;
@@ -128,6 +140,10 @@ private:
     CREATE_FLEX_VAR_DOUBLE_MATH_OP(<=, bool);
     CREATE_FLEX_VAR_DOUBLE_MATH_OP(>=, bool);
   };
+
+
+  ////////////////////////////////////////////////////////////
+  // Internal class for managing cString type......
 
   class cFlexVar_String : public cFlexVar_Base {
   private:
@@ -173,16 +189,22 @@ public:
   cFlexVar(const cString & in_value) : var(new cFlexVar_String(in_value)) { ; }
   ~cFlexVar() { delete var; }
 
+  // Setup an accessor to determine the native type of this variable.
+  eFlexType GetType() const { return var->GetType(); }
+
   // Setup accessors to get this variable as any type we might need.
   int AsInt() const { return var->AsInt(); }
   char AsChar() const { return var->AsChar(); }
   double AsDouble() const { return var->AsDouble(); }
   cString AsString() const { return var->AsString(); }
   void SetString(cString & in_str) const { var->SetString(in_str); }
-  
-  // Setup an accessor to determine the native type of this variable.
-  eFlexType GetType() const { return var->GetType(); }
 
+  // Setup a way to convert the native types
+  int MakeInt() { int val = AsInt(); delete var; var = new cFlexVar_Int(val); return val; }
+  char MakeChar() { char val = AsChar(); delete var; var = new cFlexVar_Char(val); return val; }
+  double MakeDouble() { double val = AsDouble(); delete var; var = new cFlexVar_Double(val); return val; }
+  cString MakeString() { cString val = AsString(); delete var; var = new cFlexVar_String(val); return val; }
+  
   // Setup assignment operators...
   cFlexVar & operator=(const cFlexVar & in_var) {
     delete var;

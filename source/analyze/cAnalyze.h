@@ -132,6 +132,26 @@ public:
 
   cRandom random;
 
+  // These are a set of constants used to determine what type of comparisons should be done between an
+  // organism and its parent to determine how it should be colored
+  enum eFlexCompareTypes {
+    FLEX_COMPARE_NONE  = 0,  // No comparisons should be done at all.
+    FLEX_COMPARE_DIFF  = 1,  // Only track if a stat has changed, don't worry about direction.
+    FLEX_COMPARE_MAX   = 2,  // Color higher values as beneficial, lower as harmful.
+    FLEX_COMPARE_MIN   = 3,  // Color lower values as beneficial, higher as harmful.
+    FLEX_COMPARE_DIFF2 = 4,  // Same as FLEX_COMPARE_DIFF, but 0 indicates trait is off.
+    FLEX_COMPARE_MAX2  = 5,  // Same as FLEX_COMPARE_MAX, and 0 indicates trait is off.
+    FLEX_COMPARE_MIN2  = 6   // Same as FLEX_COMPARE_MIN, BUT 0 still indicates off.
+  };
+
+  enum eFlexCompareResults {
+    COMPARE_RESULT_OFF  = -2, // Has turned off since parent.
+    COMPARE_RESULT_NEG  = -1, // Has gotten worse since parent.
+    COMPARE_RESULT_SAME =  0, // No difference since parent.
+    COMPARE_RESULT_POS  =  1, // Has improved since parent.
+    COMPARE_RESULT_ON   =  2, // Has turned on since parent.
+    COMPARE_RESULT_DIFF =  3  // Is different from parent (non qualtity).
+  };
 
   // Pop specific types of arguments from an arg list.
   cString PopDirectory(cString & in_string, const cString & default_dir);
@@ -145,8 +165,10 @@ public:
   void PreProcessArgs(cString & args);
   void ProcessCommands(tList<cAnalyzeCommand> & clist);
 
+  // Helper functions for printing to HTML files...
   void HTMLPrintStat(tDataEntryCommand<cAnalyzeGenotype> * command, std::ostream& fp, int compare=0,
 		     bool print_text=true);
+  int CompareFlexStat(const cFlexVar & org_stat, const cFlexVar & parent_stat, int compare_type=FLEX_COMPARE_MAX);
 
   // Deal with genotype data list (linking keywords to stats)
   void SetupGenotypeDataList();	

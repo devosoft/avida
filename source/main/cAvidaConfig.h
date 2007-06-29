@@ -375,7 +375,8 @@ public:
   CONFIG_ADD_VAR(REGULATION_DECAY_FRAC, double, 0.1, "Fraction of regulation that decays away. \nMax regulation = 2^(REGULATION_STRENGTH/REGULATION_DECAY_FRAC)");
 
   CONFIG_ADD_GROUP(COLORS_GROUP, "Output colors for when data files are printed in HTML mode.\nThere are two sets of these; the first are for lineages,\nand the second are for mutation tests.");
-  CONFIG_ADD_VAR(COLOR_CHANGE, cString, "CCCCFF", "Color to flag stat that has changed since parent.");
+  CONFIG_ADD_VAR(COLOR_DIFF, cString, "CCCCFF", "Color to flag stat that has changed since parent.");
+  CONFIG_ADD_VAR(COLOR_SAME, cString, "FFFFFF", "Color to flag stat that has NOT changed since parent.");
   CONFIG_ADD_VAR(COLOR_NEG2, cString, "FF0000", "Color to flag stat that is significantly worse than parent.");
   CONFIG_ADD_VAR(COLOR_NEG1, cString, "FFCCCC", "Color to flag stat that is minorly worse than parent.");
   CONFIG_ADD_VAR(COLOR_POS1, cString, "CCFFCC", "Color to flag stat that is minorly better than parent.");

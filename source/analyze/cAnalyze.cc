@@ -7756,24 +7756,24 @@ void cAnalyze::ProcessCommands(tList<cAnalyzeCommand>& clist)
  }
 
 
- // const cFlexVar & stat, std::ostream& fp, int compare=0, const cString & null_keyword="0",
- // 		     const cString & html_cell_flags="align=center", bool print_text=true);
-
+// The following function will print a cell in a table with a background color based on a comparison
+// with its parent (the result of which is passed in as the 'compare' argument.
  void cAnalyze::HTMLPrintStat(tDataEntryCommand<cAnalyzeGenotype> * command, std::ostream& fp,
 			      int compare, bool print_text)
 {
   fp << "<td " << command->GetHtmlCellFlags() << " ";
-  if (compare == -2) {
+  if (compare == COMPARE_RESULT_OFF) {
     fp << "bgcolor=\"#" << m_world->GetConfig().COLOR_NEG2.Get() << "\">";
     if (print_text == true) fp << command->GetNull() << " ";
     else fp << "&nbsp; ";
     return;
   }
   
-  if (compare == -1)     fp << "bgcolor=\"#" << m_world->GetConfig().COLOR_NEG1.Get() << "\">";
-  else if (compare == 0) fp << ">";
-  else if (compare == 1) fp << "bgcolor=\"#" << m_world->GetConfig().COLOR_POS1.Get() << "\">";
-  else if (compare == 2) fp << "bgcolor=\"#" << m_world->GetConfig().COLOR_POS2.Get() << "\">";
+  if (compare == COMPARE_RESULT_NEG)       fp << "bgcolor=\"#" << m_world->GetConfig().COLOR_NEG1.Get() << "\">";
+  else if (compare == COMPARE_RESULT_SAME) fp << "bgcolor=\"#" << m_world->GetConfig().COLOR_SAME.Get() << "\">";
+  else if (compare == COMPARE_RESULT_POS)  fp << "bgcolor=\"#" << m_world->GetConfig().COLOR_POS1.Get() << "\">";
+  else if (compare == COMPARE_RESULT_ON)   fp << "bgcolor=\"#" << m_world->GetConfig().COLOR_POS2.Get() << "\">";
+  else if (compare == COMPARE_RESULT_DIFF) fp << "bgcolor=\"#" << m_world->GetConfig().COLOR_DIFF.Get() << "\">";
   else {
     std::cerr << "Error! Illegal case in Compare:" << compare << std::endl;
     exit(0);
@@ -7784,6 +7784,48 @@ void cAnalyze::ProcessCommands(tList<cAnalyzeCommand>& clist)
   
 }
 
+int cAnalyze::CompareFlexStat(const cFlexVar & org_stat, const cFlexVar & parent_stat, int compare_type)
+{
+  // If no comparisons need be done, return zero and stop here.
+  if (compare_type == FLEX_COMPARE_NONE) {
+    return COMPARE_RESULT_SAME;
+  }
+
+  // In all cases, if the stats are the same, we should return this and stop.
+  if (org_stat == parent_stat) return COMPARE_RESULT_SAME;
+
+  // If we made it this far and all we care about is if they differ, return that they do.
+  if (compare_type == FLEX_COMPARE_DIFF) return COMPARE_RESULT_DIFF;
+
+  // If zero is not special we can calculate our result.
+  if (compare_type == FLEX_COMPARE_MAX) {     // Color higher values as beneficial, lower as harmful.
+    if (org_stat > parent_stat) return COMPARE_RESULT_POS;
+    return COMPARE_RESULT_NEG;
+  }
+  if (compare_type == FLEX_COMPARE_MIN) {     // Color lower values as beneficial, higher as harmful.
+    if (org_stat > parent_stat) return COMPARE_RESULT_NEG;
+    return COMPARE_RESULT_POS;
+  }
+
+
+  // If we made it this far, it means that zero has a special status.
+  if (org_stat == 0) return COMPARE_RESULT_OFF;
+  if (parent_stat == 0) return COMPARE_RESULT_ON;
+
+
+  // No zeros are involved, so we can go back to basic checks...
+  if (compare_type == FLEX_COMPARE_DIFF2) return COMPARE_RESULT_DIFF;
+
+  if (compare_type == FLEX_COMPARE_MAX2) {     // Color higher values as beneficial, lower as harmful.
+    if (org_stat > parent_stat) return COMPARE_RESULT_POS;
+    return COMPARE_RESULT_NEG;
+  }
+  if (compare_type == FLEX_COMPARE_MIN2) {     // Color lower values as beneficial, higher as harmful.
+    if (org_stat > parent_stat) return COMPARE_RESULT_NEG;
+    return COMPARE_RESULT_POS;
+  }
+
+}
 
 
 
