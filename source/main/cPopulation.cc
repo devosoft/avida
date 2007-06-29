@@ -54,6 +54,8 @@
 #include "cTopology.h"
 #include "cWorld.h"
 #include "cTopology.h"
+#include "cTestCPU.h"
+#include "cCPUTestInfo.h"
 
 #include <fstream>
 #include <vector>
@@ -299,7 +301,20 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
     
   // If we're not about to kill the parent, do some extra work on it.
   if (parent_alive == true) {
-    schedule->Adjust(parent_cell.GetID(), parent_phenotype.GetMerit());
+		
+		// Reset inputs and re-calculate merit if required
+		if (m_world->GetConfig().RESET_INPUTS_ON_DIVIDE.Get() > 0){
+			environment.SetupInputs(ctx, parent_cell.input_array);
+			if (m_world->GetConfig().PRECALC_MERIT.Get() > 0){
+				cCPUTestInfo test_info;
+				cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU();
+				test_info.UseManualInputs(parent_cell.input_array);                               // Test using what the environment will be
+				test_cpu->TestGenome(ctx, test_info, parent_organism.GetHardware().GetMemory()); // Use the true genome
+				parent_phenotype.SetMerit(test_info.GetTestPhenotype().GetMerit());    // Update merit
+				delete test_cpu;
+			}
+		}
+		schedule->Adjust(parent_cell.GetID(), parent_phenotype.GetMerit());
     
     // In a local run, face the child toward the parent. 
     const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
@@ -406,6 +421,16 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   // Setup the inputs in the target cell.
   environment.SetupInputs(ctx, target_cell.input_array);
   
+	
+	// Precalculate the merit if requested
+	if (m_world->GetConfig().PRECALC_MERIT.Get() > 0){
+		cCPUTestInfo test_info;
+		cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU();
+		test_info.UseManualInputs(target_cell.input_array);                            // Test using what the environment will be
+		test_cpu->TestGenome(ctx, test_info, in_organism->GetHardware().GetMemory());  // Use the true genome
+		in_organism->GetPhenotype().SetMerit(test_info.GetTestPhenotype().GetMerit()); // Update merit
+		delete test_cpu;
+	}
   // Update the archive...
 	
 	

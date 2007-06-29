@@ -67,7 +67,8 @@ private:
   int cur_input;
   int cur_receive;  
   bool m_use_random_inputs;
-
+  bool m_use_manual_inputs;
+	
   eTestCPUResourceMethod m_res_method;
   std::vector<std::pair<int, std::vector<double> > > * m_res;
   int m_res_time_spent_offset;

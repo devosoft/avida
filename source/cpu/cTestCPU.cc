@@ -56,6 +56,7 @@ cTestCPU::cTestCPU(cWorld* world)
 {
   m_world = world;
   InitResources();
+	m_use_manual_inputs = false;
 }  
  
 void cTestCPU::InitResources(int res_method, std::vector<std::pair<int, std::vector<double> > > * res, int update, int time_spent_offset)
@@ -320,8 +321,11 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info,
 
   // Input sizes can vary based on environment settings, must at least initialize
   m_use_random_inputs = test_info.GetUseRandomInputs(); // save this value in case ResetInputs is used.
-  m_world->GetEnvironment().SetupInputs(ctx, input_array, m_use_random_inputs);
-  
+  if (!test_info.GetUseManualInputs())
+		m_world->GetEnvironment().SetupInputs(ctx, input_array, m_use_random_inputs);
+  else
+		input_array = test_info.manual_inputs;
+	
   receive_array.Resize(3);
   if (test_info.GetUseRandomInputs()) {
     receive_array[0] = (15 << 24) + ctx.GetRandom().GetUInt(1 << 24);  // 00001111
@@ -333,6 +337,9 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info,
     receive_array[2] = 0x5562eb41;  // 01010101 01100010 11101011 01000001
   }
   
+	if (cur_depth == 0)
+		test_info.used_inputs = input_array;
+	
   if (cur_depth > test_info.max_depth) test_info.max_depth = cur_depth;
 
   // Setup the organism we're working with now.
@@ -518,6 +525,7 @@ void cTestCPU::PrintInjectGenome(cAvidaContext& ctx, cInjectGenotype* inject_gen
 
 void cTestCPU::ResetInputs(cAvidaContext& ctx) 
 { 
-  m_world->GetEnvironment().SetupInputs(ctx, input_array, m_use_random_inputs);
+	if (!m_use_manual_inputs)
+		m_world->GetEnvironment().SetupInputs(ctx, input_array, m_use_random_inputs);
 }
 

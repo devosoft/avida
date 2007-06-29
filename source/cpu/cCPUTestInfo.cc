@@ -36,6 +36,7 @@ cCPUTestInfo::cCPUTestInfo(int max_tests)
   , trace_execution(false)
   , trace_task_order(false)
   , use_random_inputs(false)
+  , use_manual_inputs(false)
   , m_tracer(NULL)
   , org_array(max_tests)
 {
