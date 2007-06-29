@@ -50,6 +50,8 @@ private:
   bool trace_execution;       // Should we trace this CPU?
   bool trace_task_order;      // Should we keep track of ordering of tasks?
   bool use_random_inputs;     // Should we give the organism random inputs?
+	bool use_manual_inputs;     // Do we have inputs that we must use?
+	tArray<int> manual_inputs;  //   if so, use these.
   cHardwareTracer* m_tracer;
 
   // Outputs...
@@ -58,6 +60,7 @@ private:
   int depth_found;        // Depth actually found (often same as max_depth)
   int max_cycle;          // Longest cycle found.
   int cycle_to;           // Cycle path of the last genotype.
+	tArray<int> used_inputs; //Depth 0 inputs
 
   tArray<cOrganism*> org_array;
 
@@ -73,7 +76,9 @@ public:
  
   // Input Setup
   void TraceTaskOrder(bool _trace=true) { trace_task_order = _trace; }
-  void UseRandomInputs(bool _rand=true) { use_random_inputs = _rand; }
+  void UseRandomInputs(bool _rand=true) { use_random_inputs = _rand; use_manual_inputs = false; }
+	void UseManualInputs(tArray<int> inputs) {use_manual_inputs = true; use_random_inputs = false; manual_inputs = inputs;}
+	void ResetInputMode() {use_manual_inputs = false; use_random_inputs = false;}
   void SetTraceExecution(cHardwareTracer *tracer = NULL);
 
   // Input Accessors
@@ -81,6 +86,8 @@ public:
   bool GetTraceTaskOrder() const { return trace_task_order; }
   bool GetUseRandomInputs() const { return use_random_inputs; }
   bool GetTraceExecution() const { return trace_execution; }
+	bool GetUseManualInputs() const { return use_manual_inputs; }
+	tArray<int> GetTestCPUInputs() const { return used_inputs; }
   cHardwareTracer *GetTracer() { return m_tracer; }
 
 
