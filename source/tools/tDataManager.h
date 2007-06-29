@@ -58,11 +58,11 @@ public:
   template<class OUT> bool Add(const cString & name,  const cString & desc,
 			       OUT (T::*_funR)() const,
 			       void (T::*_funS)(OUT _val) = NULL,
-			       int (T::*_funC)(T * _o) const = NULL,
+			       int compare = 0,
 			       const cString & null="0",
 			       const cString & html_cell="align=center") {
     tDataEntryBase<T> * new_entry =
-     new tDataEntry<T, OUT> (name, desc, _funR, _funS, _funC, null, html_cell);
+     new tDataEntry<T, OUT> (name, desc, _funR, _funS, compare, null, html_cell);
     new_entry->SetTarget(target);
     entry_dict.Add(name, new_entry);
     return true;
@@ -71,7 +71,7 @@ public:
   bool Print(const cString & name, std::ostream& fp) {
     tDataEntryBase<T> * cur_entry = NULL;
     if (entry_dict.Find(name, cur_entry) == false) return false;
-    cur_entry->Print(fp);
+    fp << cur_entry->Get();
     return true;
   }
 

@@ -51,19 +51,19 @@ public:
   tDataEntryCommand(tDataEntryBase<T> * _entry, const cString & _args="")
     : data_entry(_entry), args(_args, ':') { ; }
   
-  tDataEntryBase<T> & GetEntry() { return *data_entry; }
   const cStringList & GetArgs() const { return args; }
   bool HasArg(const cString & test_arg) { return args.HasString(test_arg); }
 
   const cString & GetName() const { return data_entry->GetName(); }
   const cString & GetDesc() const { return data_entry->GetDesc(); }
+  int GetCompareType() const { return data_entry->GetCompareType(); }
   const cString & GetNull() const { return data_entry->GetNull(); }
   const cString & GetHtmlCellFlags() const { return data_entry->GetHtmlCellFlags(); }
-  cFlexVar GetValue() const { return data_entry->Get(); }
-
+  cFlexVar GetValue() const { assert(data_entry != NULL); return data_entry->Get(); }
+  cFlexVar GetValue(const T * temp_target) const { return data_entry->Get(temp_target); }
+  
   void SetTarget(T * _target) { data_entry->SetTarget(_target); }
-  bool Print(std::ostream& fp) const { return data_entry->Print(fp); }
-  int Compare(T * other) const { return data_entry->Compare(other); }
+  //  int Compare(T * other) const { return data_entry->Compare(other); }
   bool SetValue(const cString & value) { return data_entry->Set(value); }
 };
 

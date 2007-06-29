@@ -52,25 +52,15 @@ template <class T> class tDataEntryBase : public cDataEntry {
 protected:
   T * target;
 public:
-  tDataEntryBase(const cString & _name, const cString & _desc,
+  tDataEntryBase(const cString & _name, const cString & _desc, int _compare_type,
 		 const cString & _null="0",
 		 const cString & _html_cell="align=center")
-    : cDataEntry(_name, _desc, _null, _html_cell), target(NULL) { ; }
+    : cDataEntry(_name, _desc, _compare_type, _null, _html_cell), target(NULL) { ; }
   
   void SetTarget(T * _target) { target = _target; }
-
-  virtual bool Print(std::ostream& fp) const { (void) fp;  return false; }
-  virtual int Compare(T * other) const { (void) other; return 0; }
   virtual bool Set(const cString & value) { (void) value; return false; }
-  virtual cFlexVar Get() const { return cFlexVar(0); }
-
-  cString AsString() {
-    std::stringstream tmp_stream;
-    tmp_stream << *this;
-    cString out_str;
-    tmp_stream >> out_str;
-    return out_str;
-  }
+  virtual cFlexVar Get() const = 0;
+  virtual cFlexVar Get(const T * tmp_target) const = 0;
 };
 
 #endif

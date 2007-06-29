@@ -38,27 +38,23 @@ template <class T, class OUT, class ARG> class tArgDataEntry
   : public tDataEntryBase<T> {
 protected:
   OUT (T::*DataRetrieval)(ARG) const;
-  int (T::*DataCompare)(T*,ARG) const;
   ARG arg;
 public:
   tArgDataEntry(const cString & _name, const cString & _desc,
 		OUT (T::*_funR)(ARG) const, ARG _arg,
-		//int (T::*_funC)(T * _o, ARG _i) const = &T::CompareArgNULL,
-		int (T::*_funC)(T * _o, ARG _i) const = 0,
+		int _compare_type=0,
 		const cString & _null="0",
 		const cString & _html_cell="align=center")
-    : tDataEntryBase<T>(_name, _desc, _null, _html_cell),
-      DataRetrieval(_funR), DataCompare(_funC), arg(_arg) { ; }
+    : tDataEntryBase<T>(_name, _desc, _compare_type, _null, _html_cell),
+      DataRetrieval(_funR), arg(_arg) { ; }
 
-  bool Print(std::ostream& fp) const {
-    if (this->target == NULL) return false;
-    fp << (this->target->*DataRetrieval)(arg);
-    return true;
+  cFlexVar Get() const {
+    assert(this->target != NULL);
+    return cFlexVar( (this->target->*DataRetrieval)(arg) );
   }
-
-  //int Compare(T * other) const { return (target->*DataCompare)(other, arg); }
-  int Compare(T * other) const {
-    return (DataCompare)?((this->target->*DataCompare)(other, arg)):(0);
+  cFlexVar Get(const T * tmp_target) const {
+    assert(tmp_target != NULL);
+    return cFlexVar( (tmp_target->*DataRetrieval)(arg) );
   }
 };
 

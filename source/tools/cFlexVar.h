@@ -32,6 +32,7 @@ private:
     cString AsString() const { cString out_str; SetString(out_str); return out_str; }
     
     virtual eFlexType GetType() const { return TYPE_NONE; }
+    virtual void Print(std::ostream& out) const = 0;
 
 #define ABSTRACT_FLEX_VAR_BASE_OP(OP, RETURN_TYPE)                         \
     virtual RETURN_TYPE operator OP (int in_var) const = 0;                \
@@ -62,6 +63,7 @@ private:
     void SetString(cString & in_str) const { in_str.Set("%d", value); }
 
     eFlexType GetType() const { return TYPE_INT; }
+    void Print(std::ostream& out) const { out << value; }
 
 #define CREATE_FLEX_VAR_INT_MATH_OP(OP, RETURN_TYPE)                                                         \
     RETURN_TYPE operator OP (int in_var) const { return value OP in_var; }                                   \
@@ -94,6 +96,7 @@ private:
     void SetString(cString & in_str) const { in_str.Set("%c", value); }
 
     eFlexType GetType() const { return TYPE_CHAR; }
+    void Print(std::ostream& out) const { out << value; }
 
 #define CREATE_FLEX_VAR_CHAR_MATH_OP(OP, RETURN_TYPE)                                             \
     RETURN_TYPE operator OP (int in_var) const { return ((int) value) OP in_var; }                \
@@ -126,6 +129,7 @@ private:
     void SetString(cString & in_str) const { in_str.Set("%f", value); }
 
     eFlexType GetType() const { return TYPE_DOUBLE; }
+    void Print(std::ostream& out) const { out << value; }
 
 #define CREATE_FLEX_VAR_DOUBLE_MATH_OP(OP, RETURN_TYPE)                                           \
     RETURN_TYPE operator OP (int in_var) const { return value OP (double) in_var; }               \
@@ -158,6 +162,7 @@ private:
     void SetString(cString & in_str) const { in_str = value; }
 
     eFlexType GetType() const { return TYPE_STRING; }
+    void Print(std::ostream& out) const { out << value; }
 
 #define CREATE_FLEX_VAR_STRING_MATH_OP(OP, RETURN_TYPE)                                           \
     RETURN_TYPE operator OP (int in_var) const { return value.AsDouble() OP (double) in_var; }    \
@@ -191,6 +196,8 @@ public:
 
   // Setup an accessor to determine the native type of this variable.
   eFlexType GetType() const { return var->GetType(); }
+  void Print(std::ostream& out) const { var->Print(out); }
+
 
   // Setup accessors to get this variable as any type we might need.
   int AsInt() const { return var->AsInt(); }
@@ -242,6 +249,12 @@ public:
   FORWARD_FLEX_VAR_OP(>=, bool)
   
 };
+
+inline std::ostream& operator << (std::ostream& out, const cFlexVar & entry)
+{
+  entry.Print(out);
+  return out;
+}
 
 
 #endif

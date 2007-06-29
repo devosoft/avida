@@ -1892,7 +1892,6 @@ void cAnalyze::CommandDetail_Body(ostream& fp, int format_type,
            << endl;
     }
     output_it.Reset();
-    tDataEntryCommand<cAnalyzeGenotype> * data_command = NULL;
     if (format_type == FILE_TYPE_HTML) {
       fp << "<tr>";
       if (time_step > 0) fp << "<td>" << cur_time << " ";
@@ -1901,21 +1900,25 @@ void cAnalyze::CommandDetail_Body(ostream& fp, int format_type,
       fp << cur_time << " ";
     }
     
+    tDataEntryCommand<cAnalyzeGenotype> * data_command = NULL;
     while ((data_command = output_it.Next()) != NULL) {
-      data_command->SetTarget(cur_genotype);
       cur_genotype->SetSpecialArgs(data_command->GetArgs());
+      data_command->SetTarget(cur_genotype);
+      cFlexVar cur_value = data_command->GetValue(cur_genotype);
       if (format_type == FILE_TYPE_HTML) {
         int compare = 0;
         if (prev_genotype) {
           prev_genotype->SetSpecialArgs(data_command->GetArgs());
-          compare = data_command->Compare(prev_genotype);
+	  cFlexVar prev_value = data_command->GetValue(prev_genotype);
+	  int compare_type = data_command->GetCompareType();
+	  compare = CompareFlexStat(cur_value, prev_value, compare_type);
         }
 	HTMLPrintStat(data_command, fp, compare);
       }
       else {  // if (format_type == FILE_TYPE_TEXT) {
-        fp << data_command->GetEntry() << " ";
+        fp << data_command->GetValue() << " ";
       }
-      }
+    }
     if (format_type == FILE_TYPE_HTML) fp << "</tr>";
     fp << endl;
     
@@ -1963,7 +1966,7 @@ void cAnalyze::CommandDetailAverage_Body(ostream& fp, int nucoutputs,
       data_command->SetTarget(cur_genotype);
       cur_genotype->SetSpecialArgs(data_command->GetArgs());
       for (int j = 0; j < cur_genotype->GetNumCPUs(); j++) { 
-        output_counts[count].Add((double) data_command->GetEntry().AsString().AsDouble()); 
+        output_counts[count].Add( data_command->GetValue().AsDouble() );
       } 	
       count++;
     }
@@ -2101,7 +2104,7 @@ void cAnalyze::CommandDetailBatches(cString cur_string)
 	HTMLPrintStat(cur_command, fp);
       }
       else {  // if (file_type == FILE_TYPE_TEXT) {
-        fp << cur_command->GetEntry() << " ";
+        fp << cur_command->GetValue() << " ";
       }
       }
     if (file_type == FILE_TYPE_HTML) fp << "</tr>";
@@ -2266,9 +2269,9 @@ void cAnalyze::CommandDetailIndex(cString cur_string)
       if (file_type == FILE_TYPE_HTML) {
         fp << "<td align=center><a href=\""
         << data_entry->GetName() << "." << batch_name << ".png\">"
-        << *data_entry << "</a> ";
+        << data_entry->Get(genotype) << "</a> ";
       } else {  // if (file_type == FILE_TYPE_TEXT) {
-        fp << *data_entry << " ";
+        fp << data_entry->Get(genotype) << " ";
       }
     }
     if (file_type == FILE_TYPE_HTML) fp << "</tr>";
@@ -2385,7 +2388,7 @@ void cAnalyze::CommandHistogram_Body(ostream& fp, int format_type,
     cAnalyzeGenotype * cur_genotype;
     while ((cur_genotype = batch_it.Next()) != NULL) {
       data_command->SetTarget(cur_genotype);
-      const cString cur_name(data_command->GetEntry().AsString());
+      const cString cur_name(data_command->GetValue().AsString());
       int count = 0;
       count_dict.Find(cur_name, count);
       count += cur_genotype->GetNumCPUs();
@@ -4400,7 +4403,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       tDataEntryCommand<cAnalyzeGenotype> * data_command = NULL;
       while ((data_command = output_it.Next()) != NULL) {
         data_command->SetTarget(genotype);
-        fp << data_command->GetEntry() << " ";
+        fp << data_command->GetValue() << " ";
       }
       fp << endl;
       
@@ -4463,13 +4466,16 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       while ((data_command = output_it.Next()) != NULL) {
         data_command->SetTarget(genotype);
         genotype->SetSpecialArgs(data_command->GetArgs());
-        if (data_command->Compare(&null_genotype) > 0) {
+	const cFlexVar cur_value = data_command->GetValue();
+	const cFlexVar null_value = data_command->GetValue(&null_genotype);
+	int compare = CompareFlexStat(cur_value, null_value, data_command->GetCompareType()); 
+        if (compare > 0) {
           fp << "<th bgcolor=\"#" << m_world->GetConfig().COLOR_MUT_POS.Get() << "\">";
         }
         else  fp << "<th bgcolor=\"#" << m_world->GetConfig().COLOR_MUT_LETHAL.Get() << "\">";
         
         if (data_command->HasArg("blank") == true) fp << "&nbsp;" << " ";
-        else fp << data_command->GetEntry() << " ";
+        else fp << cur_value << " ";
       }
       fp << "</tr>" << endl;
     }
@@ -4533,7 +4539,8 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       while ((data_command = output_it.Next()) != NULL) {
         data_command->SetTarget(&test_genotype);
         test_genotype.SetSpecialArgs(data_command->GetArgs());
-        int compare = data_command->Compare(genotype);
+	const cFlexVar test_value = data_command->GetValue();
+        int compare = CompareFlexStat(test_value, data_command->GetValue(genotype), data_command->GetCompareType());
         
         // BUG! Either of the next two conditional print commands can
         // cause landscaping to be triggered in a context that causes a crash, 
@@ -4541,7 +4548,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
         if (file_type == FILE_TYPE_HTML) {
 	  HTMLPrintStat(data_command, fp, compare, !(data_command->HasArg("blank")));
         } 
-        else fp << data_command->GetEntry() << " ";
+        else fp << test_value << " ";
         
         if (compare == -2) col_fail_count[cur_col]++;
         else if (compare == 2) col_pass_count[cur_col]++;
@@ -4780,12 +4787,15 @@ void cAnalyze::CommandAverageModularity(cString cur_string)
           while ((data_command = output_it.Next()) != NULL) {
             data_command->SetTarget(&test_genotype);
             test_genotype.SetSpecialArgs(data_command->GetArgs());
+	    const cFlexVar test_value = data_command->GetValue();
+
             // This is done so that under 'binary' option it marks
             // the task as being influenced by the mutation iff
             // it is completely knocked out, not just decreased
             genotype->SetSpecialArgs(data_command->GetArgs());
             
-            int compare = data_command->Compare(genotype);
+	    int compare_type = data_command->GetCompareType();
+            int compare = CompareFlexStat(test_value, data_command->GetValue(genotype), compare_type);
             
             // If knocking out an instruction stops the expression of a
             // particular task, mark that in the modularity matrix
@@ -5012,7 +5022,10 @@ void cAnalyze::CommandAnalyzeModularity(cString cur_string)
       while ((data_command = output_it.Next()) != NULL) {
         data_command->SetTarget(&test_genotype);
         test_genotype.SetSpecialArgs(data_command->GetArgs());
-        int compare = data_command->Compare(genotype);
+	const cFlexVar test_value = data_command->GetValue();
+
+	int compare_type = data_command->GetCompareType();
+        int compare = CompareFlexStat(test_value, data_command->GetValue(genotype), compare_type);
 
         // If knocking out the instruction turns off this trait, mark it in
         // the modularity matrix.  Only check if the test_genotype replicates,
@@ -7779,7 +7792,7 @@ void cAnalyze::ProcessCommands(tList<cAnalyzeCommand>& clist)
     exit(0);
   }
   
-  if (print_text == true) fp << command->GetValue().AsString() << " ";
+  if (print_text == true) fp << command->GetValue() << " ";
   else fp << "&nbsp; ";
   
 }
@@ -7839,7 +7852,7 @@ int cAnalyze::CompareFlexStat(const cFlexVar & org_stat, const cFlexVar & parent
   if (hstr_str != "0") html_str = HSTR;                                                                    \
                                                                                                            \
   genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, TYPE>                                       \
-    (KEYWORD, DESC, &cAnalyzeGenotype::GET, &cAnalyzeGenotype::SET, &cAnalyzeGenotype::COMP, null_str, html_str)); \
+    (KEYWORD, DESC, &cAnalyzeGenotype::GET, &cAnalyzeGenotype::SET, COMP, null_str, html_str)); \
 }
 
 
@@ -7858,48 +7871,58 @@ void cAnalyze::SetupGenotypeDataList()
   //  null keyword      : A string to represent what should be printed if this stat is zero. (0 for default)
   //  html flags        : A string to be included in the <td> when stat is printed in HTML table (0 for "align=center")
 
-  ADD_GDATA(bool, "viable", "Is Viable (0/1)", GetViable, SetViable, CompareNULL, 0, 0);
-  ADD_GDATA(int, "id", "Genotype ID", GetID, SetID, CompareNULL, 0, 0);
-  ADD_GDATA(const cString &, "tag", "Genotype Tag", GetTag, SetTag, CompareNULL, "(none)", "");
-  ADD_GDATA(int, "parent_id", "Parent ID", GetParentID, SetParentID, CompareNULL, 0, 0);
-  ADD_GDATA(int, "parent2_id",  "Second Parent ID (sexual genotypes)", GetParent2ID, SetParent2ID, CompareNULL, 0, 0);
-  ADD_GDATA(int, "parent_dist", "Parent Distance", GetParentDist, SetParentDist, CompareNULL, 0, 0);
-  ADD_GDATA(int, "ancestor_dist","Ancestor Distance", GetAncestorDist, SetAncestorDist, CompareNULL, 0, 0);
-  ADD_GDATA(int, "lineage", "Unique Lineage Label", GetLineageLabel, SetLineageLabel, CompareNULL, 0, 0);
-  ADD_GDATA(int, "num_cpus",    "Number of CPUs", GetNumCPUs, SetNumCPUs, CompareNULL, 0, 0);
-  ADD_GDATA(int, "total_cpus",  "Total CPUs Ever", GetTotalCPUs, SetTotalCPUs, CompareNULL, 0, 0);
-  ADD_GDATA(int, "length", "Genome Length", GetLength, SetLength, CompareLength, 0, 0);
-  ADD_GDATA(int, "copy_length", "Copied Length", GetCopyLength, SetCopyLength, CompareNULL, 0, 0);
-  ADD_GDATA(int, "exe_length",  "Executed Length", GetExeLength, SetExeLength, CompareNULL, 0, 0);
-  ADD_GDATA(double, "merit", "Merit", GetMerit, SetMerit, CompareMerit, 0, 0);
-  ADD_GDATA(double, "comp_merit", "Computational Merit", GetCompMerit, SetNULL, CompareCompMerit, 0, 0);
-  ADD_GDATA(double, "comp_merit_ratio", "Computational Merit Ratio", GetCompMeritRatio, SetNULL, CompareCompMerit, 0, 0);
-  ADD_GDATA(int, "gest_time", "Gestation Time", GetGestTime, SetGestTime, CompareGestTime, "Inf", "align=center");
-  ADD_GDATA(double, "efficiency", "Rep. Efficiency", GetEfficiency, SetNULL, CompareEfficiency, 0, 0);
-  ADD_GDATA(double, "efficiency_ratio", "Rep. Efficiency Ratio", GetEfficiencyRatio, SetNULL, CompareEfficiency, 0, 0);
-  ADD_GDATA(double, "fitness", "Fitness", GetFitness, SetFitness, CompareFitness, 0, 0);
-  ADD_GDATA(double, "div_type",     "Divide Type", GetDivType, SetDivType, CompareNULL, 0, 0);
-  ADD_GDATA(int, "mate_id",     "Mate Selection ID Number", GetMateID, SetMateID, CompareNULL, 0, 0);
-  ADD_GDATA(double, "fitness_ratio", "Fitness Ratio", GetFitnessRatio, SetNULL, CompareFitness, 0, 0);
-  ADD_GDATA(int, "update_born", "Update Born", GetUpdateBorn, SetUpdateBorn, CompareNULL, 0, 0);
-  ADD_GDATA(int, "update_dead", "Update Dead", GetUpdateDead, SetUpdateDead, CompareNULL, 0, 0);
-  ADD_GDATA(int, "depth",       "Tree Depth", GetDepth, SetDepth, CompareNULL, 0, 0);
-  ADD_GDATA(double, "frac_dead", "Fraction Mutations Lethal", GetFracDead, SetNULL, CompareNULL, 0, 0);
-  ADD_GDATA(double, "frac_neg", "Fraction Mutations Detrimental", GetFracNeg, SetNULL, CompareNULL, 0, 0);
-  ADD_GDATA(double, "frac_neut", "Fraction Mutations Neutral", GetFracNeut, SetNULL, CompareNULL, 0, 0);
-  ADD_GDATA(double, "frac_pos", "Fraction Mutations Beneficial", GetFracPos, SetNULL, CompareNULL, 0, 0);
-  ADD_GDATA(double, "complexity", "Basic Complexity (all neutral/beneficial muts are equal)", GetComplexity, SetNULL, CompareNULL, 0, 0);
-  ADD_GDATA(double, "land_fitness", "Average Lanscape Fitness", GetLandscapeFitness, SetNULL, CompareNULL, 0, 0);
-  ADD_GDATA(const cString &, "parent_muts", "Mutations from Parent", GetParentMuts, SetParentMuts, CompareNULL, "(none)", "");
-  ADD_GDATA(const cString &, "task_order", "Task Performance Order", GetTaskOrder, SetTaskOrder, CompareNULL, "(none)", "");
-  ADD_GDATA(cString, "sequence", "Genome Sequence", GetSequence, SetSequence, CompareNULL, "(N/A)", "");
-  ADD_GDATA(const cString &, "alignment", "Aligned Sequence", GetAlignedSequence, SetAlignedSequence, CompareNULL, "(N/A)", "");
+  // As a reminder about the compare types:
+  //   FLEX_COMPARE_NONE   = 0  -- No comparisons should be done at all.
+  //   FLEX_COMPARE_DIFF   = 1  -- Only track if a stat has changed, don't worry about direction.
+  //   FLEX_COMPARE_MAX    = 2  -- Color higher values as beneficial, lower as harmful.
+  //   FLEX_COMPARE_MIN    = 3  -- Color lower values as beneficial, higher as harmful.
+  //   FLEX_COMPARE_DIFF2  = 4  -- Same as FLEX_COMPARE_DIFF, but 0 indicates trait is off.
+  //   FLEX_COMPARE_MAX2   = 5  -- Same as FLEX_COMPARE_MAX, and 0 indicates trait is off.
+  //   FLEX_COMPARE_MIN2   = 6  -- Same as FLEX_COMPARE_MIN, BUT 0 still indicates off.
+
+  ADD_GDATA(bool,   "viable",       "Is Viable (0/1)",               GetViable,         SetViable,     0, 0, 0);
+  ADD_GDATA(int,    "id",           "Genotype ID",                   GetID,             SetID,         0, 0, 0);
+  ADD_GDATA(const cString &, "tag", "Genotype Tag",                  GetTag,            SetTag,        0, "(none)","");
+  ADD_GDATA(int,    "parent_id",    "Parent ID",                     GetParentID,       SetParentID,   0, 0, 0);
+  ADD_GDATA(int,    "parent2_id",   "Second Parent ID (sexual orgs)",GetParent2ID,      SetParent2ID,  0, 0, 0);
+  ADD_GDATA(int,    "parent_dist",  "Parent Distance",               GetParentDist,     SetParentDist, 0, 0, 0);
+  ADD_GDATA(int,    "ancestor_dist","Ancestor Distance",             GetAncestorDist,   SetAncestorDist, 0, 0, 0);
+  ADD_GDATA(int,    "lineage",      "Unique Lineage Label",          GetLineageLabel,   SetLineageLabel, 0, 0, 0);
+  ADD_GDATA(int,    "num_cpus",     "Number of CPUs",                GetNumCPUs,        SetNumCPUs,    0, 0, 0);
+  ADD_GDATA(int,    "total_cpus",   "Total CPUs Ever",               GetTotalCPUs,      SetTotalCPUs,  0, 0, 0);
+  ADD_GDATA(int,    "length",       "Genome Length",                 GetLength,         SetLength,     4, 0, 0);
+  ADD_GDATA(int,    "copy_length",  "Copied Length",                 GetCopyLength,     SetCopyLength, 0, 0, 0);
+  ADD_GDATA(int,    "exe_length",   "Executed Length",               GetExeLength,      SetExeLength,  0, 0, 0);
+  ADD_GDATA(double, "merit",        "Merit",                         GetMerit,          SetMerit,      5, 0, 0);
+  ADD_GDATA(double, "comp_merit",   "Computational Merit",           GetCompMerit,      SetNULL,       5, 0, 0);
+  ADD_GDATA(double, "comp_merit_ratio", "Computational Merit Ratio", GetCompMeritRatio, SetNULL,       5, 0, 0);
+  ADD_GDATA(int,    "gest_time",    "Gestation Time",                GetGestTime,       SetGestTime,   6, "Inf", 0);
+  ADD_GDATA(double, "efficiency",   "Rep. Efficiency",               GetEfficiency,     SetNULL,       5, 0, 0);
+  ADD_GDATA(double, "efficiency_ratio", "Rep. Efficiency Ratio",     GetEfficiencyRatio,SetNULL,       5, 0, 0);
+  ADD_GDATA(double, "fitness",      "Fitness",                       GetFitness,        SetFitness,    5, 0, 0);
+  ADD_GDATA(double, "div_type",     "Divide Type",                   GetDivType,        SetDivType,    0, 0, 0);
+  ADD_GDATA(int,    "mate_id",      "Mate Selection ID Number",      GetMateID,         SetMateID,     0, 0, 0);
+  ADD_GDATA(double, "fitness_ratio","Fitness Ratio",                 GetFitnessRatio,   SetNULL,       5, 0, 0);
+  ADD_GDATA(int,    "update_born",  "Update Born",                   GetUpdateBorn,     SetUpdateBorn, 0, 0, 0);
+  ADD_GDATA(int,    "update_dead",  "Update Dead",                   GetUpdateDead,     SetUpdateDead, 0, 0, 0);
+  ADD_GDATA(int,    "depth",        "Tree Depth",                    GetDepth,          SetDepth,      0, 0, 0);
+  ADD_GDATA(double, "frac_dead",    "Fraction Mutations Lethal",     GetFracDead,       SetNULL,       0, 0, 0);
+  ADD_GDATA(double, "frac_neg",     "Fraction Mutations Detrimental",GetFracNeg,        SetNULL,       0, 0, 0);
+  ADD_GDATA(double, "frac_neut",    "Fraction Mutations Neutral",    GetFracNeut,       SetNULL,       0, 0, 0);
+  ADD_GDATA(double, "frac_pos",     "Fraction Mutations Beneficial", GetFracPos,        SetNULL,       0, 0, 0);
+  ADD_GDATA(double, "complexity",   "Basic Complexity (beneficial muts are neutral)", GetComplexity, SetNULL, 0, 0, 0);
+  ADD_GDATA(double, "land_fitness", "Average Lanscape Fitness",      GetLandscapeFitness, SetNULL,     0, 0, 0);
+
+  ADD_GDATA(const cString &, "parent_muts", "Mutations from Parent", GetParentMuts,   SetParentMuts, 0, "(none)", "");
+  ADD_GDATA(const cString &, "task_order", "Task Performance Order", GetTaskOrder,    SetTaskOrder,  0, "(none)", "");
+  ADD_GDATA(cString, "sequence",    "Genome Sequence",               GetSequence,     SetSequence,   0, "(N/A)", "");
+  ADD_GDATA(const cString &, "alignment", "Aligned Sequence",        GetAlignedSequence, SetAlignedSequence, 0, "(N/A)", "");
   
-  ADD_GDATA(cString, "executed_flags", "Executed Flags", GetExecutedFlags, SetNULL, CompareNULL, "(N/A)", "");
-  ADD_GDATA(cString, "alignment_executed_flags", "Alignment Executed Flags", GetAlignmentExecutedFlags, SetNULL, CompareNULL, "(N/A)", "");
-  ADD_GDATA(cString, "task_list", "List of all tasks performed", GetTaskList, SetNULL, CompareNULL, "(N/A)", "");
-  ADD_GDATA(cString, "link.tasksites", "Phenotype Map", GetMapLink, SetNULL, CompareNULL, 0, 0);
-  ADD_GDATA(cString, "html.sequence", "Genome Sequence", GetHTMLSequence, SetNULL, CompareNULL, "(N/A)", "");
+  ADD_GDATA(cString, "executed_flags", "Executed Flags",             GetExecutedFlags, SetNULL, 0, "(N/A)", "");
+  ADD_GDATA(cString, "alignment_executed_flags", "Alignment Executed Flags", GetAlignmentExecutedFlags, SetNULL, 0, "(N/A)", "");
+  ADD_GDATA(cString, "task_list", "List of all tasks performed",     GetTaskList,     SetNULL, 0, "(N/A)", "");
+  ADD_GDATA(cString, "link.tasksites", "Phenotype Map",              GetMapLink,      SetNULL, 0, 0,       0);
+  ADD_GDATA(cString, "html.sequence",  "Genome Sequence",            GetHTMLSequence, SetNULL, 0, "(N/A)", "");
   
   const cEnvironment& environment = m_world->GetEnvironment();
   for (int i = 0; i < environment.GetNumTasks(); i++) {
@@ -7907,18 +7930,18 @@ void cAnalyze::SetupGenotypeDataList()
     t_name.Set("task.%d", i);
     t_desc = environment.GetTask(i).GetDesc();
     genotype_data_list.PushRear(new tArgDataEntry<cAnalyzeGenotype, int, int>
-                                (t_name, t_desc, &cAnalyzeGenotype::GetTaskCount, i, &cAnalyzeGenotype::CompareTaskCount));
+                                (t_name, t_desc, &cAnalyzeGenotype::GetTaskCount, i, 5));
   }
   
   // The remaining values should actually go in a seperate list called
   // "population_data_list", but for the moment we're going to put them
   // here so that we only need to worry about a single system to load and
   // save genotype information.
-  ADD_GDATA(int, "update",       "Update Output", GetUpdateDead, SetUpdateDead, CompareNULL, 0, 0);
-  ADD_GDATA(int, "dom_num_cpus", "Number of Dominant Organisms", GetNumCPUs, SetNumCPUs, CompareNULL, 0, 0);
-  ADD_GDATA(int, "dom_depth",    "Tree Depth of Dominant Genotype", GetDepth, SetDepth, CompareNULL, 0, 0);
-  ADD_GDATA(int, "dom_id",       "Dominant Genotype ID", GetID, SetID, CompareNULL, 0, 0);
-  ADD_GDATA(cString, "dom_sequence", "Dominant Genotype Sequence", GetSequence, SetSequence, CompareNULL, "(N/A)", "");
+  ADD_GDATA(int, "update",       "Update Output",                   GetUpdateDead, SetUpdateDead, 0, 0, 0);
+  ADD_GDATA(int, "dom_num_cpus", "Number of Dominant Organisms",    GetNumCPUs,    SetNumCPUs,    0, 0, 0);
+  ADD_GDATA(int, "dom_depth",    "Tree Depth of Dominant Genotype", GetDepth,      SetDepth,      0, 0, 0);
+  ADD_GDATA(int, "dom_id",       "Dominant Genotype ID",            GetID,         SetID,         0, 0, 0);
+  ADD_GDATA(cString, "dom_sequence", "Dominant Genotype Sequence",  GetSequence,   SetSequence,   0, "(N/A)", "");
 }
 
 
