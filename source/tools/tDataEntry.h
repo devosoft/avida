@@ -89,7 +89,7 @@ public:
     return true;
   }
 
-  cFlexVar Get() {
+  cFlexVar Get() const {
     return cFlexVar( (this->target->*DataRetrieval)() );
   }
 };
