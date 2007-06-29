@@ -3,6 +3,6 @@
 mkdir -p cbuild
 cd cbuild
 cmake "$@" ../
-make -j 3
+make -j 
 make install
 
