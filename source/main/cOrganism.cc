@@ -533,14 +533,6 @@ bool cOrganism::Divide_CheckViable()
     return false; //  (divide fails)
   }
   
-  // Make sure that an organism has accumulated any required bonus
-  const int bonus_required = m_world->GetConfig().REQUIRED_BONUS.Get();
-  if (m_phenotype.GetCurBonus() < bonus_required) {
-    Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
-          cStringUtil::Stringf("Lacks required bonus to divide (has %d, needs %d)", m_phenotype.GetCurBonus(), bonus_required));
-    return false; //  (divide fails)
-  }
-
   // Make sure the parent is fertile
   if ( m_phenotype.IsFertile() == false ) {
     Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR, "Infertile organism");

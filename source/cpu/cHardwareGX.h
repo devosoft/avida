@@ -150,6 +150,9 @@ public:
     //! Detaches this cProgramid's heads from bound cProgramids.
     void Detach();
     
+    //! Removes regulation in implicit GX mode
+    void RemoveRegulation();
+    
     // Programids keep a count of the total number
     // of READ + WRITE heads of other programids that 
     // have been placed on them. They only execute
@@ -238,7 +241,9 @@ protected:
   // Implicit RNAP Model only
   cHeadProgramid m_promoter_update_head; //Promoter position that last executable programid was created from.
   tArray<double> m_promoter_states;
-  tArray<double> m_promoter_rates;
+  tArray<double> m_promoter_rates; // CURRENT promoter rates. Regulation on top of default.
+  tArray<double> m_promoter_default_rates; // Rates sans regulation
+  tArray<int> m_promoter_occupied_sites; // Whether the site is blocked by a currently bound regulatory protein.
   double m_recycle_state;
   double m_promoter_sum;
   
@@ -583,7 +588,8 @@ private:
   
   bool Inst_Promoter(cAvidaContext& ctx);
   bool Inst_Terminator(cAvidaContext& ctx);
-  bool Inst_HeadRegulate(cAvidaContext& ctx);
+  bool Inst_HeadActivate(cAvidaContext& ctx);
+  bool Inst_HeadRepress(cAvidaContext& ctx);
 
   //!< Add/Remove a new programid to/from the list and give it the proper index within the list so we keep track of memory spaces...
   void AddProgramid(programid_ptr programid);
@@ -591,7 +597,8 @@ private:
   
   // Create executable programids in the implicit GX model
   void ProcessImplicitGeneExpression(int in_limit = -1);  
-  
+  void AdjustPromoterRates(); //Call after a change to occupied array to correctly update rates.
+  int FindRegulatoryMatch(const cCodeLabel& label);
 };
 
 

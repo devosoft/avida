@@ -252,6 +252,7 @@ void cHardwareSMT::SingleProcess(cAvidaContext& ctx)
   }
   
   organism->SetRunning(false);
+  CheckImplicitRepro(ctx);
 }
 
 

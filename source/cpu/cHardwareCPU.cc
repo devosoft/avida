@@ -573,6 +573,7 @@ void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
   }
   
   organism->SetRunning(false);
+  CheckImplicitRepro(ctx);
 }
 
 
@@ -2553,12 +2554,6 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   child_genome = GetMemory();
   organism->GetPhenotype().SetLinesCopied(GetMemory().GetSize());
 
-  // @JEB - Make sure that an organism has accumulated any required bonus
-  const int bonus_required = m_world->GetConfig().REQUIRED_BONUS.Get();
-  if (organism->GetPhenotype().GetCurBonus() < bonus_required) {
-    return false; //  (divide fails)
-  }
-  
   int lines_executed = 0;
   for ( int i = 0; i < GetMemory().GetSize(); i++ ) {
     if ( GetMemory().FlagExecuted(i)) lines_executed++;

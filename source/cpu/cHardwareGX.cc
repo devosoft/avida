@@ -271,7 +271,8 @@ tInstLib<cHardwareGX::tMethod>* cHardwareGX::initInstLib(void)
 
     tInstLibEntry<tMethod>("promoter", &cHardwareGX::Inst_Promoter),
     tInstLibEntry<tMethod>("terminator", &cHardwareGX::Inst_Terminator),
-    tInstLibEntry<tMethod>("regulate", &cHardwareGX::Inst_HeadRegulate),
+    tInstLibEntry<tMethod>("h-repress", &cHardwareGX::Inst_HeadRepress),
+    tInstLibEntry<tMethod>("h-activate", &cHardwareGX::Inst_HeadActivate),
     tInstLibEntry<tMethod>("end", &cHardwareGX::Inst_EndProgramidExecution),
 
     // These are dummy instructions used for making mutiple programids
@@ -374,20 +375,23 @@ void cHardwareGX::Reset()
     AddProgramid(p);
   
     // Initialize the promoter state and rates
-    m_promoter_sum = 0.0; // We need to make sure that at least one position has a non-zero rate 
     m_promoter_update_head.Reset(this,0);
     m_promoter_update_head.Set(0);
-    m_promoter_rates.ResizeClear( organism->GetGenome().GetSize() );
+    m_promoter_default_rates.ResizeClear( organism->GetGenome().GetSize() );
+    m_promoter_rates.ResizeClear( organism->GetGenome().GetSize() ); // Initialized in UpdatePromoterRates()
     m_promoter_states.ResizeClear( organism->GetGenome().GetSize() );
+    m_promoter_occupied_sites.ResizeClear( organism->GetGenome().GetSize() );
     
     cInstruction promoter_inst = GetInstSet().GetInst(cStringUtil::Stringf("promoter"));
     do {
-      m_promoter_rates[m_promoter_update_head.GetPosition()] = 
+      m_promoter_default_rates[m_promoter_update_head.GetPosition()] = 
         (m_promoter_update_head.GetInst() == promoter_inst) ? 1 : m_world->GetConfig().IMPLICIT_BG_PROMOTER_RATE.Get();
-      m_promoter_sum += m_promoter_rates[m_promoter_update_head.GetPosition()];
       m_promoter_states[m_promoter_update_head.GetPosition()] = 0.0;
+      m_promoter_occupied_sites[m_promoter_update_head.GetPosition()] = 0;
       m_promoter_update_head++;
     } while (m_promoter_update_head.GetPosition() != 0);
+    
+    AdjustPromoterRates();
     
     // \todo implement different initial conditions for created executable programids
     ProcessImplicitGeneExpression(); 
@@ -476,7 +480,7 @@ void cHardwareGX::SingleProcess(cAvidaContext& ctx)
   // Now kill old programids.
   unsigned int on_p = 0;
   while(on_p < m_programids.size()) {
-    if( (m_programids[on_p]->GetCPUCyclesUsed() > m_world->GetConfig().MAX_PROGRAMID_AGE.Get())
+    if(  ((m_world->GetConfig().MAX_PROGRAMID_AGE.Get() > 0) && (m_programids[on_p]->GetCPUCyclesUsed() > m_world->GetConfig().MAX_PROGRAMID_AGE.Get()) )
       || m_programids[on_p]->m_marked_for_death) {
       RemoveProgramid(on_p);
     } else {
@@ -502,12 +506,7 @@ void cHardwareGX::SingleProcess(cAvidaContext& ctx)
   }
   
   organism->SetRunning(false);
-  
-  //Implicit Divide (for organisms that divide every so often with repro)
-  if (m_world->GetConfig().IMPLICIT_REPRO_TIME.Get() && (phenotype.GetCPUCyclesUsed() >= m_world->GetConfig().IMPLICIT_REPRO_TIME.Get()))
-  {
-    Inst_Repro(ctx);
-  }
+  CheckImplicitRepro(ctx);
 }
 
 //  const int num_threads = GetNumThreads();
@@ -1242,16 +1241,16 @@ int cHardwareGX::GetExecutedSize(const int parent_size)
 
 int cHardwareGX::GetCopiedSize(const int parent_size, const int child_size)
 {
-  if (m_world->GetConfig().IMPLICIT_REPRO_TIME.Get()) return parent_size;
+  return parent_size;
 
-  int copied_size = 0;
-  //@JEB - we care about how much has been copied by the current programid
-  // parent_size and child_size are not relevant!
-  const cCPUMemory& memory = m_programids[GetHead(nHardware::HEAD_WRITE).GetMemSpace()]->GetMemory();
-  for (int i = 0; i < memory.GetSize(); i++) {
-    if (memory.FlagCopied(i)) copied_size++;
-  }
-  return copied_size;
+  //@JEB - this is used in a division test. Not clear how to translate to GX for now.
+
+  //int copied_size = 0;
+  //const cCPUMemory& memory = m_programids[GetHead(nHardware::HEAD_WRITE).GetMemSpace()]->GetMemory();
+  //for (int i = 0; i < memory.GetSize(); i++) {
+  //  if (memory.FlagCopied(i)) copied_size++;
+  //}
+  //return copied_size;
 }  
 
 
@@ -2118,7 +2117,7 @@ bool cHardwareGX::Inst_Repro(cAvidaContext& ctx)
   // Setup child
   cCPUMemory& child_genome = organism->ChildGenome();
   child_genome = organism->GetGenome();
-  organism->GetPhenotype().SetLinesCopied(GetMemory().GetSize());
+  organism->GetPhenotype().SetLinesCopied(organism->GetGenome().GetSize());
   
   Divide_DoMutations(ctx);
     
@@ -3992,13 +3991,94 @@ bool cHardwareGX::Inst_Terminator(cAvidaContext& ctx)
 
 /*
 Place the write head of this programid on the next available match
-in the genome. Update promoter rates.
+in the genome. Upgrade to promoter rate at the final position of the label.
 */
-bool cHardwareGX::Inst_HeadRegulate(cAvidaContext& ctx)
+bool cHardwareGX::Inst_HeadActivate(cAvidaContext& ctx)
 {
+  // Remove current regulation first
+  m_current->RemoveRegulation();
+
+  // Find next best match.
+  ReadLabel();
+
+  int match_pos = FindRegulatoryMatch( GetLabel() );
+  if (match_pos == -1) return false;
+
+  GetHead(nHardware::HEAD_WRITE).Set(match_pos, 0); // Used to track regulation
+  GetHead(nHardware::HEAD_FLOW).Set(match_pos+GetLabel().GetSize(), 0); // Used to track regulation
+
+  int regulatory_footprint = 5;  // Positions ahead and behind label that it covers
+  match_pos = (match_pos - regulatory_footprint + m_programids[0]->GetMemory().GetSize() ) %  m_programids[0]->GetMemory().GetSize();
+  
+  cHeadProgramid h(this);
+  h.Set(match_pos, 0);
+  for (int i=0; i < 2*regulatory_footprint + GetLabel().GetSize(); i++)
+  {
+    m_promoter_occupied_sites[h.GetPosition()] = -1; // Repress overlap    
+    // Except where we create a new promoter that starts expression right after the matched label
+    if (i == regulatory_footprint + GetLabel().GetSize() - 1)
+    {
+          m_promoter_occupied_sites[h.GetPosition()] = +1;
+    }
+    
+    h++;    
+  }
+  
+  AdjustPromoterRates();
+  
+  if (m_world->GetVerbosity() >= VERBOSE_DETAILS) 
+	{
+    cout << "Activate: position " << match_pos << " length " << 2*regulatory_footprint + GetLabel().GetSize() << endl;
+    for (int i=0; i < m_programids[0]->GetMemory().GetSize(); i++)
+    {
+      cout << i << " " << m_promoter_rates[i] << " " << m_promoter_default_rates[i] << " " << m_promoter_occupied_sites[i] << endl;
+    }
+  }
   return true;
 }
 
+/*
+Place the write head of this programid on the next available match
+in the genome. Downgrade promoter rates to background for 5 instructions on each side.
+*/
+bool cHardwareGX::Inst_HeadRepress(cAvidaContext& ctx)
+{
+  // Remove current regulation first
+  m_current->RemoveRegulation();
+
+  // Find next best match.
+  ReadLabel();
+
+  int match_pos = FindRegulatoryMatch( GetLabel() );
+  if (match_pos == -1) return false;
+
+  GetHead(nHardware::HEAD_WRITE).Set(match_pos, 0); // Used to track regulation
+  GetHead(nHardware::HEAD_FLOW).Set(match_pos+GetLabel().GetSize(), 0); // Used to track regulation
+  
+  int regulatory_footprint = 5;  // Positions ahead and behind label that it covers
+  match_pos = (match_pos - regulatory_footprint + m_programids[0]->GetMemory().GetSize() ) %  m_programids[0]->GetMemory().GetSize();
+  
+  cHeadProgramid h(this);
+  h.Set(match_pos, 0);
+  for (int i=0; i < 2*regulatory_footprint + GetLabel().GetSize(); i++)
+  {
+    m_promoter_occupied_sites[h.GetPosition()] = -1;
+    h++;
+  }
+  
+  AdjustPromoterRates();
+  
+   if (m_world->GetVerbosity() >= VERBOSE_DETAILS) 
+	{
+    cout << "Repress: position " << match_pos << " length " << 2*regulatory_footprint + GetLabel().GetSize() << endl;
+    for (int i=0; i < m_programids[0]->GetMemory().GetSize(); i++)
+    {
+      cout << i << " " << m_promoter_rates[i] << " " <<m_promoter_default_rates[i] << " " << m_promoter_occupied_sites[i] << endl;
+    }
+  }
+
+  return true;
+}
 
 //! Adds a new programid to the current cHardwareGX.
 void cHardwareGX::AddProgramid(programid_ptr programid) 
@@ -4014,9 +4094,12 @@ void cHardwareGX::AddProgramid(programid_ptr programid)
 void cHardwareGX::RemoveProgramid(unsigned int remove_index) 
 {
   assert(remove_index<m_programids.size());
-  
+     
   programid_ptr save=m_current;  
   m_current = m_programids[remove_index];
+  
+  // Remove regulation if in implicit GX mode
+  if (m_world->GetConfig().IMPLICIT_GENE_EXPRESSION.Get() == 1) m_current->RemoveRegulation();
 
   if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
   {
@@ -4062,10 +4145,13 @@ void cHardwareGX::RemoveProgramid(unsigned int remove_index)
   }
   
   // Finally, also delete whatever programid our write head contacted (if not ourself!)
-  if(write_head_contacted != remove_index) {
-    RemoveProgramid( (write_head_contacted > remove_index) ? write_head_contacted - 1 : write_head_contacted);
+  // DON'T DO THIS in implicit mode, sine the write head means something different (regulation)
+  if (m_world->GetConfig().IMPLICIT_GENE_EXPRESSION.Get() == 0)
+  {
+    if(write_head_contacted != remove_index) {
+      RemoveProgramid( (write_head_contacted > remove_index) ? write_head_contacted - 1 : write_head_contacted);
+    }
   }
-
   m_current = save;
 }
 
@@ -4111,7 +4197,7 @@ void cHardwareGX::ProcessImplicitGeneExpression(int in_limit)
     AddProgramid(new_programid);
     
     cHeadProgramid read_head(m_promoter_update_head);
-    read_head++; //Don't copy the promoter instruction itself
+    read_head++; //Don't copy the promoter instruction itself (we start after that position)
     cHeadProgramid write_head(this, 0, new_programid->GetID());
     int copied = 0;
     cInstruction inst;
@@ -4142,6 +4228,80 @@ void cHardwareGX::ProcessImplicitGeneExpression(int in_limit)
 
   m_promoter_update_head++;
   
+}
+
+
+void cHardwareGX::AdjustPromoterRates() 
+{
+  cHeadProgramid h(this);
+  h.Set(0,0);
+  
+  m_promoter_sum = 0.0;
+  
+  do {
+    switch (m_promoter_occupied_sites[h.GetPosition()])
+    {
+      case +1: // Activated
+      m_promoter_rates[h.GetPosition()] = 1;
+      break;
+      case 0:
+      m_promoter_rates[h.GetPosition()] = m_promoter_default_rates[h.GetPosition()];
+      break;
+      case -1: // Repressed
+      m_promoter_rates[h.GetPosition()] = m_world->GetConfig().IMPLICIT_BG_PROMOTER_RATE.Get();
+      break;
+      default: //Error
+      assert(1);
+   }   
+    
+    m_promoter_sum += m_promoter_rates[h.GetPosition()];
+    h++;
+	  
+  } while (h.GetPosition() != 0);
+
+}
+
+int cHardwareGX::FindRegulatoryMatch(const cCodeLabel& label)
+{
+  // Examine number of sites matched by overlaying input label and this space in genome
+  // Skip a site if it is already occupied by a regulator.
+  cHeadProgramid h;
+  h.Reset(this,0);
+  
+  int best_site = -1; // No match found
+  int best_site_matched_positions = 0;
+  do {
+    int matched_positions = 0;
+    cHeadProgramid m(h);
+    for (int i=0; i<label.GetSize(); i++)
+    {
+      // Don't allow a site that overlaps current regulation
+      if (m_promoter_occupied_sites[i] != 0)
+      {
+        matched_positions = 0;
+        break;
+      }
+      
+      if ((m_inst_set->IsNop(m.GetInst())) && (label[i] == m_inst_set->GetNopMod( m.GetInst() )))
+      {
+        matched_positions++;
+      }
+      m++;
+    }
+    
+    // Keep new bests
+    if (matched_positions > best_site_matched_positions)
+    {
+      best_site = h.GetPosition();
+      best_site_matched_positions = matched_positions;
+      // If we find an exact match, we can bail early
+      if (best_site_matched_positions == label.GetSize()) return best_site;
+    }
+    
+    h++;
+  } while (h.GetPosition() != 0);  
+  
+  return best_site; 
 }
 
 /*! Construct this cProgramid, and initialize hardware resources.
@@ -4353,4 +4513,38 @@ void cHardwareGX::cProgramid::Detach() {
   head = GetHead(nHardware::HEAD_READ).GetMemSpace();
   m_gx_hardware->m_programids[head]->RemoveContactingHead(GetHead(nHardware::HEAD_READ));
   GetHead(nHardware::HEAD_READ).Set(0, GetID());
+}
+
+/* End current regulation in implicit GX mode
+*/
+void cHardwareGX::cProgramid::RemoveRegulation()
+{
+  if (GetHead(nHardware::HEAD_WRITE).GetMemSpace() != 0) return;
+  int _pos = GetHead(nHardware::HEAD_WRITE).GetPosition();
+  
+  // Slow but reliable to cycling way of calculating size
+  cHeadProgramid t(GetHead(nHardware::HEAD_WRITE));
+  int _label_size = 0;
+  while (t.GetPosition() != GetHead(nHardware::HEAD_FLOW).GetPosition())
+  {
+    _label_size++;
+    t++;
+  }
+  
+  //Reset heads
+  GetHead(nHardware::HEAD_WRITE).Set(0, m_id);
+  GetHead(nHardware::HEAD_FLOW).Set(0, m_id);
+
+  int regulatory_footprint = 5;  // Positions ahead and behind label that it covers
+  int match_pos = (_pos - regulatory_footprint + m_gx_hardware->m_programids[0]->GetMemory().GetSize() ) %  m_gx_hardware->m_programids[0]->GetMemory().GetSize();
+  
+  cHeadProgramid h(m_gx_hardware);
+  h.Set(match_pos, 0);
+  for (int i=0; i < 2*regulatory_footprint + _label_size; i++)
+  {
+    m_gx_hardware->m_promoter_occupied_sites[h.GetPosition()] = 0; //Zero regulation
+  }
+  h++;    
+  
+  m_gx_hardware->AdjustPromoterRates();
 }

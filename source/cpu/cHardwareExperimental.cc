@@ -307,6 +307,7 @@ num_threads : 1;
   }
   
   organism->SetRunning(false);
+  CheckImplicitRepro(ctx);
 }
 
 

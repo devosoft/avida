@@ -167,6 +167,10 @@ public:
 protected:
   // --------  No-Operation Instruction --------
   bool Inst_Nop(cAvidaContext& ctx);  // A no-operation instruction that does nothing! 
+  
+  // -------- Implicit Repro Check/Instruction -------- @JEB
+  void CheckImplicitRepro(cAvidaContext& ctx);
+  virtual bool Inst_Repro(cAvidaContext& ctx);
 };
 
 

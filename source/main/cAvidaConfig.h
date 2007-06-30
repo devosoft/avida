@@ -245,8 +245,9 @@ public:
   CONFIG_ADD_VAR(REQUIRED_TASK, int, -1, "Task ID required for successful divide.");
   CONFIG_ADD_VAR(IMMUNITY_TASK, int, -1, "Task providing immunity from the required task.");
   CONFIG_ADD_VAR(REQUIRED_REACTION, int, -1, "Reaction ID required for successful divide.");
-  CONFIG_ADD_VAR(REQUIRED_BONUS, int, 0, "The bonus that an organism must accumulate to divide.");  
- 
+  CONFIG_ADD_VAR(IMPLICIT_REPRO_BONUS, int, 0, "Immediately call Inst_Repro to divide when upon achieving this bonus. 0 = OFF");  
+  CONFIG_ADD_VAR(IMPLICIT_REPRO_TIME, int, 0, "Immediately call Inst_Repro after this many cpu cycles. 0 = OFF");  
+
   CONFIG_ADD_GROUP(MUTATION_GROUP, "Mutations");
   CONFIG_ADD_VAR(POINT_MUT_PROB, double, 0.0, "Mutation rate (per-location per update)");
   CONFIG_ADD_VAR(COPY_MUT_PROB, double, 0.0075, "Mutation rate (per copy)");
@@ -364,7 +365,6 @@ public:
   CONFIG_ADD_VAR(IMPLICIT_BG_PROMOTER_RATE, double, 0.0, "Relative rate of non-promoter sites creating programids.");
   CONFIG_ADD_VAR(IMPLICIT_TURNOVER_RATE, double, 0.0, "Number of programids recycled per CPU cycle. 0 = OFF");
   CONFIG_ADD_VAR(IMPLICIT_MAX_PROGRAMID_LENGTH, int, 0, "Creation of an executable programid terminates after this many instructions. 0 = disabled");
-  CONFIG_ADD_VAR(IMPLICIT_REPRO_TIME, int, 0, "Implicitly call the repro instruction after completing this many cpu cycles. 0 = disabled."); // TODO - implmement for all hardware types and move to Reproduction Group 
 //  CONFIG_ADD_VAR(CLEAR_ON_OUTPUT, int, 0, "Reset input buffer every time output called?"); @JEB Not fully implemented
 
   CONFIG_ADD_GROUP(PROMOTER_GROUP, "Promoters");
