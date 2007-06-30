@@ -337,7 +337,7 @@ public:
   CONFIG_ADD_VAR(SELL_PRICE, int, 0, "price offered by organisms attempting to sell");
   
   CONFIG_ADD_GROUP(ANALYZE_GROUP, "Analysis Settings");
-  CONFIG_ADD_VAR(MT_CONCURRENCY, int, 1, "Number of concurrent analyze threads");
+  CONFIG_ADD_VAR(MAX_CONCURRENCY, int, -1, "Maximum number of analyze threads, -1 == use all available.");
   CONFIG_ADD_VAR(ANALYZE_OPTION_1, cString, "", "String variable accessible from analysis scripts");
   CONFIG_ADD_VAR(ANALYZE_OPTION_2, cString, "", "String variable accessible from analysis scripts");
   

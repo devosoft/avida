@@ -57,7 +57,7 @@ void cRandom::ResetSeed(const int in_seed)
   
   if (in_seed <= 0) {
     int seed_time = (int) time(NULL);
-#ifdef MSVC_COMPILER
+#if AVIDA_PLATFORM(WINDOWS)
     int seed_pid = (int) _getpid(); 
 #else
     int seed_pid = (int) getpid(); 

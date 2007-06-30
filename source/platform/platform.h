@@ -44,6 +44,10 @@
 # define AVIDA_PLATFORM_THREADS 1
 #endif
 
+#if defined(__APPLE__)
+# define AVIDA_PLATFORM_APPLE 1
+#endif
+
 
 #ifdef DEBUG
 # include <cstdlib>

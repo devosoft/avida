@@ -21,30 +21,22 @@
  *
  */
 
-#include <csignal>
-
 #include "avida.h"
 #include "cAvidaConfig.h"
 #include "cDefaultAnalyzeDriver.h"
 #include "cDefaultRunDriver.h"
-#include "cDriverManager.h"
 #include "cWorld.h"
-
-#include "FloatingPoint.h"
+#include "PlatformExpert.h"
 
 using namespace std;
 
+
 int main(int argc, char * argv[])
 {
-  SetupFloatingPointEnvironment();
+  PlatformExpert::Initialize();
   
-  // Catch Interrupt making sure to close appropriately
-  signal(SIGINT, ExitAvida);
-
   printVersionBanner();
-  
-  cDriverManager::Initialize();
-  
+
   // Initialize the configuration data...
   cWorld* world = new cWorld(cAvidaConfig::LoadWithCmdLineArgs(argc, argv));
   cAvidaDriver* driver = NULL;
@@ -61,4 +53,6 @@ int main(int argc, char * argv[])
 
   // Exit Nicely
   ExitAvida(0);
+  
+  return 0;
 }

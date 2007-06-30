@@ -85,8 +85,8 @@ public:
   void Unlock()
   {
     ASSERT_MSG(m_locked, "mutex not locked");
-    PTHREAD_MUTEX_CHKRTN(pthread_mutex_unlock(&m_mutex));
     m_locked = false;
+    PTHREAD_MUTEX_CHKRTN(pthread_mutex_unlock(&m_mutex));
   }
 #else
   inline void Unlock() { PTHREAD_MUTEX_CHKRTN(pthread_mutex_unlock(&m_mutex)); }
@@ -138,8 +138,8 @@ public:
   void Unlock()
   {
     ASSERT_MSG(m_locked, "mutex not locked");
-    LeaveCriticalSection(&m_mutex);
     m_locked = false;
+    LeaveCriticalSection(&m_mutex);
   }
 #else
   inline void Unlock() { LeaveCriticalSection(&m_mutex); }

@@ -221,6 +221,11 @@ LIST(APPEND ALL_INC_DIRS ${MAIN_DIR})
 
 # The platform directory
 SET(PLATFORM_DIR ${PROJECT_SOURCE_DIR}/source/platform)
+SET(PLATFORM_SOURCES
+  ${PLATFORM_DIR}/cThread.cc
+  ${PLATFORM_DIR}/PlatformExpert.cc
+)
+LIST(APPEND AVIDA_CORE_SOURCES ${PLATFORM_SOURCES})
 LIST(APPEND ALL_INC_DIRS ${PLATFORM_DIR})
 
 
@@ -255,7 +260,6 @@ SET(TOOLS_SOURCES
   ${TOOLS_DIR}/cStringIterator.cc
   ${TOOLS_DIR}/cStringList.cc
   ${TOOLS_DIR}/cStringUtil.cc
-  ${TOOLS_DIR}/cThread.cc
   ${TOOLS_DIR}/cTools.cc
   ${TOOLS_DIR}/cWeightedIndex.cc
 )

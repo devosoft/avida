@@ -22,20 +22,24 @@
  *
  */
 
+#include "avida.h"
 #include "cASLibrary.h"
 #include "cFile.h"
 #include "cParser.h"
-
-#include <iostream>
+#include "PlatformExpert.h"
 
 
 int main (int argc, char * const argv[])
 {
+  PlatformExpert::Initialize();
+
   cASLibrary* lib = new cASLibrary;
   cParser* parser = new cParser(lib);
   
   cFile file;
   if (file.Open("main.asl")) parser->Parse(file);
+  
+  ExitAvida(0);
   
   return 0;
 }

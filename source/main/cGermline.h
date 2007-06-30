@@ -1,19 +1,48 @@
-#ifndef _C_GERMLINE_H_
-#define _C_GERMLINE_H_
+/*
+ *  cGermline.h
+ *  Avida
+ *
+ *  Copyright 2007 Michigan State University. All rights reserved.
+ *
+ *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation; version 2
+ *  of the License.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ */
+
+#ifndef cGermline_h
+#define cGermline_h
 
 #include <vector>
 
 #include "cGenome.h"
 
 
-class cGermline {
-public:
-	cGenome& GetLatest() { return _germline.back(); }
-	void Add(const cGenome& genome) { _germline.push_back(genome); }
-	unsigned int Size() const { return _germline.size(); }
-
+class cGermline
+{
 protected:
-	std::vector<cGenome> _germline;
+	std::vector<cGenome> m_germline;
+
+  cGermline(const cGermline&); // @not_implmented
+  
+  
+public:
+  cGermline() { ; }
+    
+	cGenome& GetLatest() { return m_germline.back(); }
+	void Add(const cGenome& genome) { m_germline.push_back(genome); }
+	unsigned int Size() const { return m_germline.size(); }
 };
 
 #endif

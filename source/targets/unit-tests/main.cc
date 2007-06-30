@@ -41,6 +41,7 @@ protected:
 
 public:
   cUnitTest() : m_total(0), m_failed(0) { ; }
+  virtual ~cUnitTest();
 
   virtual const char* GetUnitName() = 0;
   

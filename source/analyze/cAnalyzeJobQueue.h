@@ -48,8 +48,8 @@ class cAnalyzeJobWorker;
 class cWorld;
 
 
-const int MT_RANDOM_POOL_SIZE = 16;
-const int MT_RANDOM_INDEX_MASK = 0xF;
+const int MT_RANDOM_POOL_SIZE = 128;
+const int MT_RANDOM_INDEX_MASK = 0x7F;
 
 
 class cAnalyzeJobQueue

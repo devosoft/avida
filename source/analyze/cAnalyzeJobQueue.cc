@@ -27,14 +27,17 @@
 #include "cAnalyzeJobWorker.h"
 #include "cWorld.h"
 #include "cWorldDriver.h"
-
+#include "PlatformExpert.h"
 
 #include "defs.h"
 
 
 cAnalyzeJobQueue::cAnalyzeJobQueue(cWorld* world)
-: m_world(world), m_last_jobid(0), m_jobs(0), m_pending(0), m_workers(world->GetConfig().MT_CONCURRENCY.Get())
+: m_world(world), m_last_jobid(0), m_jobs(0), m_pending(0), m_workers(PlatformExpert::AvailableCPUs())
 {
+  const int max_workers = world->GetConfig().MAX_CONCURRENCY.Get();
+  if (max_workers > 0 && max_workers < m_workers.GetSize()) m_workers.Resize(max_workers);
+  
   for (int i = 0; i < MT_RANDOM_POOL_SIZE; i++) {
     m_rng_pool[i] = new cRandomMT(world->GetRandom().GetInt(0x7FFFFFFF));
   }

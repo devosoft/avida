@@ -20,21 +20,8 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+
 #include "cDeme.h"
-
-
-cDeme::cDeme()
-: width(0)
-, birth_count(0)
-, org_count(0)
-, _age(0)
-{
-}
-
-
-cDeme::~cDeme()
-{
-}
 
 
 void cDeme::Setup(const tArray<int> & in_cells, int in_width)
