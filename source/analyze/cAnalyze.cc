@@ -1021,6 +1021,82 @@ void cAnalyze::LoadFile(cString cur_string)
 
 //////////////// Reduction....
 
+void cAnalyze::CommandFilter(cString cur_string)
+{
+  // First three arguments are: setting, relation, comparison
+  // Fourth argument is optional batch.
+
+  const int num_args = cur_string.CountNumWords();
+  cString stat_name = cur_string.PopWord();
+  cString relation = cur_string.PopWord();
+  cString test_value = cur_string.PopWord();
+
+  // Get the dynamic command to look up the stat we need.
+  tDataEntryCommand<cAnalyzeGenotype> * stat_command = GetGenotypeDataCommand(stat_name);
+
+
+  // Check for various possible errors before moving on...
+  bool error_found = false;
+  if (num_args < 3 || num_args > 4) {
+    cerr << "Error: Incorrect argument count." << endl;
+    error_found = true;
+  }
+
+  if (stat_command == NULL) {
+    cerr << "Error: Unknown stat '" << stat_name << "'" << endl;
+    error_found = true;
+  }
+  
+  // Check relationship types.  rel_ok[0] = less_ok; rel_ok[1] = same_ok; rel_ok[2] = gtr_ok
+  tArray<bool> rel_ok(3, false);
+  if (relation == "==")      {                    rel_ok[1] = true;                    }
+  else if (relation == "!=") { rel_ok[0] = true;                     rel_ok[2] = true; }
+  else if (relation == "<")  { rel_ok[0] = true;                                       }
+  else if (relation == ">")  {                                       rel_ok[2] = true; }
+  else if (relation == "<=") { rel_ok[0] = true;  rel_ok[1] = true;                    }
+  else if (relation == ">=") {                    rel_ok[1] = true;  rel_ok[2] = true; }
+  else {
+    cerr << "Error: Unknown relation '" << relation << "'" << endl;
+    error_found = true;
+  }
+      
+  if (error_found == true) {
+    cerr << "Format: FILTER [stat] [relation] [value] [batch=current]" << endl;
+    cerr << "Example: FILTER fitness >= 10.0" << endl;
+    if (exit_on_error) exit(1);
+    if (stat_command != NULL) delete stat_command;
+    return;
+  }
+
+
+  // If we made it this far, we're going ahead with the command...
+
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    cout << "Filtering batch " << cur_batch << " to genotypes where "
+	 << stat_name << " " << relation << " " << test_value << endl;
+  }
+  
+
+  // Loop through the genotypes and remove the entries that don't match.
+  tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+  cAnalyzeGenotype * cur_genotype = NULL;
+  while ((cur_genotype = batch_it.Next()) != NULL) {
+    const cFlexVar value = stat_command->GetValue(cur_genotype);
+    int compare = 1 + CompareFlexStat(value, test_value);
+
+    // Check if we should eliminate this genotype...
+    if (rel_ok[compare] == false) {
+      delete batch_it.Remove();
+    }
+  }
+  delete stat_command;
+
+
+  // Adjust the flags on this batch
+  batch[cur_batch].SetLineage(false);
+  batch[cur_batch].SetAligned(false);
+}
+
 void cAnalyze::FindGenotype(cString cur_string)
 {
   // If no arguments are passed in, just find max num_cpus.
@@ -1913,7 +1989,7 @@ void cAnalyze::CommandDetail_Body(ostream& fp, int format_type,
 	  int compare_type = data_command->GetCompareType();
 	  compare = CompareFlexStat(cur_value, prev_value, compare_type);
         }
-	HTMLPrintStat(data_command, fp, compare);
+	HTMLPrintStat(cur_value, fp, compare, data_command->GetHtmlCellFlags(), data_command->GetNull());
       }
       else {  // if (format_type == FILE_TYPE_TEXT) {
         fp << data_command->GetValue() << " ";
@@ -2101,7 +2177,7 @@ void cAnalyze::CommandDetailBatches(cString cur_string)
       cur_command->SetTarget(genotype);
       genotype->SetSpecialArgs(cur_command->GetArgs());
       if (file_type == FILE_TYPE_HTML) {
-	HTMLPrintStat(cur_command, fp);
+	HTMLPrintStat(cur_command->GetValue(), fp, 0, cur_command->GetHtmlCellFlags(), cur_command->GetNull());
       }
       else {  // if (file_type == FILE_TYPE_TEXT) {
         fp << cur_command->GetValue() << " ";
@@ -2128,8 +2204,7 @@ void cAnalyze::CommandDetailIndex(cString cur_string)
   
   // A filename and min and max batches must be included.
   if (cur_string.CountNumWords() < 3) {
-    cerr << "Error: must include filename, and min and max batch numbers."
-    << endl;
+    cerr << "Error: must include filename, and min and max batch numbers." << endl;
     if (exit_on_error) exit(1);
   }
   
@@ -4546,7 +4621,8 @@ void cAnalyze::CommandMapTasks(cString cur_string)
         // cause landscaping to be triggered in a context that causes a crash, 
         // notably, if you don't provide any column parameters to MapTasks.. @JEB
         if (file_type == FILE_TYPE_HTML) {
-	  HTMLPrintStat(data_command, fp, compare, !(data_command->HasArg("blank")));
+	  HTMLPrintStat(test_value, fp, compare, data_command->GetHtmlCellFlags(), data_command->GetNull(),
+			!(data_command->HasArg("blank")));
         } 
         else fp << test_value << " ";
         
@@ -7770,14 +7846,18 @@ void cAnalyze::ProcessCommands(tList<cAnalyzeCommand>& clist)
 
 
 // The following function will print a cell in a table with a background color based on a comparison
-// with its parent (the result of which is passed in as the 'compare' argument.
- void cAnalyze::HTMLPrintStat(tDataEntryCommand<cAnalyzeGenotype> * command, std::ostream& fp,
-			      int compare, bool print_text)
+// with its parent (the result of which is passed in as the 'compare' argument).  The cell_flags argument
+// includes any other information you want in the <td> tag; 'null_text' is the text you want to replace a
+// zero with (sometime "none" or "N/A"); and 'print_text' is a bool asking if the text should be included at
+// all, or just the background color.
+
+void cAnalyze::HTMLPrintStat(const cFlexVar & value, std::ostream& fp, int compare,
+			     const cString & cell_flags, const cString & null_text, bool print_text)
 {
-  fp << "<td " << command->GetHtmlCellFlags() << " ";
+  fp << "<td " << cell_flags << " ";
   if (compare == COMPARE_RESULT_OFF) {
     fp << "bgcolor=\"#" << m_world->GetConfig().COLOR_NEG2.Get() << "\">";
-    if (print_text == true) fp << command->GetNull() << " ";
+    if (print_text == true) fp << null_text << " ";
     else fp << "&nbsp; ";
     return;
   }
@@ -7792,7 +7872,7 @@ void cAnalyze::ProcessCommands(tList<cAnalyzeCommand>& clist)
     exit(0);
   }
   
-  if (print_text == true) fp << command->GetValue() << " ";
+  if (print_text == true) fp << value << " ";
   else fp << "&nbsp; ";
   
 }
@@ -7945,13 +8025,36 @@ void cAnalyze::SetupGenotypeDataList()
 }
 
 
+// Find a data entry bassed on a keywrod.
+tDataEntryCommand<cAnalyzeGenotype> * cAnalyze::GetGenotypeDataCommand(const cString & stat_entry) 
+{
+  // Make sure we have all of the possibilities loaded...
+  SetupGenotypeDataList();
+  
+  // Get the name from the beginning of the entry; everything else is arguments.
+  cString arg_list = stat_entry;
+  cString stat_name = arg_list.Pop(':');
+
+  // Create an iterator to scan the genotype data list for the current entry.
+  tListIterator< tDataEntryBase<cAnalyzeGenotype> > genotype_data_it(genotype_data_list);
+      
+  while (genotype_data_it.Next() != (void *) NULL) {
+    if (genotype_data_it.Get()->GetName() == stat_name) {
+      return new tDataEntryCommand<cAnalyzeGenotype>(genotype_data_it.Get(), arg_list);
+    }
+  }
+ 
+  return NULL;
+}
+
+
 // Pass in the arguments for a command and fill out the entries in list
 // format....
 
 void cAnalyze::LoadGenotypeDataList(cStringList arg_list,
                                     tList< tDataEntryCommand<cAnalyzeGenotype> > & output_list)
 {
-  // For the moment, just put everything into the output list.
+  // Make sure we have all of the possibilities loaded...
   SetupGenotypeDataList();
   
   // If no args were given, load all of the stats.
@@ -8038,6 +8141,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("LOAD", &cAnalyze::LoadFile);
   
   // Reduction commands...
+  AddLibraryDef("FILTER", &cAnalyze::CommandFilter);
   AddLibraryDef("FIND_GENOTYPE", &cAnalyze::FindGenotype);
   AddLibraryDef("FIND_ORGANISM", &cAnalyze::FindOrganism);
   AddLibraryDef("FIND_LINEAGE", &cAnalyze::FindLineage);
@@ -8046,7 +8150,8 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("SAMPLE_ORGANISMS", &cAnalyze::SampleOrganisms);
   AddLibraryDef("SAMPLE_GENOTYPES", &cAnalyze::SampleGenotypes);
   AddLibraryDef("KEEP_TOP", &cAnalyze::KeepTopGenotypes);
-  AddLibraryDef("TRUNCATELINEAGE", &cAnalyze::TruncateLineage);
+  AddLibraryDef("TRUNCATELINEAGE", &cAnalyze::TruncateLineage); // Depricate!
+  AddLibraryDef("TRUNCATE_LINEAGE", &cAnalyze::TruncateLineage);
   
   // Direct output commands...
   AddLibraryDef("PRINT", &cAnalyze::CommandPrint);

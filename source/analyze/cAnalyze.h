@@ -166,18 +166,17 @@ public:
   void ProcessCommands(tList<cAnalyzeCommand> & clist);
 
   // Helper functions for printing to HTML files...
-  void HTMLPrintStat(tDataEntryCommand<cAnalyzeGenotype> * command, std::ostream& fp, int compare=0,
-		     bool print_text=true);
+  void HTMLPrintStat(const cFlexVar & value, std::ostream& fp, int compare=0,
+		     const cString & cell_flags="align=center", const cString & null_text="0", bool print_text=true);
   int CompareFlexStat(const cFlexVar & org_stat, const cFlexVar & parent_stat, int compare_type=FLEX_COMPARE_MAX);
 
   // Deal with genotype data list (linking keywords to stats)
   void SetupGenotypeDataList();	
-  void LoadGenotypeDataList(cStringList arg_list,
-	    tList< tDataEntryCommand<cAnalyzeGenotype> > & output_list);
+  tDataEntryCommand<cAnalyzeGenotype> * GetGenotypeDataCommand(const cString & stat_entry);
+  void LoadGenotypeDataList(cStringList arg_list, tList< tDataEntryCommand<cAnalyzeGenotype> > & output_list);
 		      
   void AddLibraryDef(const cString & name, void (cAnalyze::*_fun)(cString));
-  void AddLibraryDef(const cString & name,
-	     void (cAnalyze::*_fun)(cString, tList<cAnalyzeCommand> &));
+  void AddLibraryDef(const cString & name, void (cAnalyze::*_fun)(cString, tList<cAnalyzeCommand> &));
   cAnalyzeCommandDefBase * FindAnalyzeCommandDef(const cString & name);
   void SetupCommandDefLibrary();
   bool FunctionRun(const cString & fun_name, cString args);
@@ -212,6 +211,7 @@ public:
   void LoadFile(cString cur_string);
 
   // Reduction
+  void CommandFilter(cString cur_string);
   void FindGenotype(cString cur_string);
   void FindOrganism(cString cur_string);
   void FindLineage(cString cur_string);

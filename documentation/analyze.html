@@ -209,6 +209,14 @@ to only include those genotypes that are needed.
   each trace as they would experience during an actual Avida run. By default, 
   the same inputs are provided every time to organisms in analysis mode.
 </dd>
+<dt><strong>FILTER [<span class="cmdarg">stat</span>] [<span class="cmdarg">relation</span>] [<span class="cmdarg">test_value</span>] [<span class="cmdargopt">batch=current</span>]</strong></dt>
+<dd>
+    Perform the given test on all genotypes and Remove all those that do not pass.  Stat indicates which
+    metric you want to compare, relation is the test to perform (==, !=, &lt;, &gt;, &lt;=, or &gt;=), and
+    test_value is the value to compare it to.  For example <br>
+    <tt>FILTER fitness >= 1.5</tt><br>
+    will save only those genotypes with a fitness greater than or equal to 1.5.
+</dd>
 <dt><strong>FIND_GENOTYPE [<span class="cmdargopt">type='num_cpus' ...</span>]</strong></dt>
 <dd>
   Remove all genotypes but the one selected.  Type indicates which

@@ -63,7 +63,6 @@ public:
   cFlexVar GetValue(const T * temp_target) const { return data_entry->Get(temp_target); }
   
   void SetTarget(T * _target) { data_entry->SetTarget(_target); }
-  //  int Compare(T * other) const { return data_entry->Compare(other); }
   bool SetValue(const cString & value) { return data_entry->Set(value); }
 };
 

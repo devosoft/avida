@@ -472,7 +472,7 @@ private:
 
 
 // This is an extended version of tList that contains extra functions to
-// allow method pointer associated with the object type being listed.
+// allow method pointers associated with the object type being listed.
 template <class T> class tListPlus : public tList<T> {
 #if USE_tMemTrack
   tMemTrack<tListPlus<T> > mt;
