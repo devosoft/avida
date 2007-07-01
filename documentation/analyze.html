@@ -6,7 +6,7 @@
 <body>
 
 <div class="revision">
-Revised 2006-09-03 DMB
+Revised 2007-07-01 CAO
 </div>
 
 <p><a href="index.html">Return to the Index</a></p>
@@ -214,8 +214,9 @@ to only include those genotypes that are needed.
     Perform the given test on all genotypes and Remove all those that do not pass.  Stat indicates which
     metric you want to compare, relation is the test to perform (==, !=, &lt;, &gt;, &lt;=, or &gt;=), and
     test_value is the value to compare it to.  For example <br>
-    <tt>FILTER fitness >= 1.5</tt><br>
-    will save only those genotypes with a fitness greater than or equal to 1.5.
+    &nbsp;&nbsp;<kbd>FILTER fitness >= 1.5</kbd><br>
+    will save only those genotypes with a fitness greater than or equal to 1.5.  Set the section on
+    <a href="#GENOTYPE_STATS">Genotype Statistics</a> for more information on what keywords can be used here.
 </dd>
 <dt><strong>FIND_GENOTYPE [<span class="cmdargopt">type='num_cpus' ...</span>]</strong></dt>
 <dd>
@@ -334,7 +335,7 @@ save information generated in analyze mode.
   format indicates the layout of columns in the file.  If the filename
   specified ends in <kbd>.html</kbd>, html formatting will be used instead of
   plain text.  For the format, see the section on
-  <a href="#OUTPUT_FORMATS">Output Formats</a> below.
+  <a href="#GENOTYPE_STATS">Genotype Statistics</a> below.
 </dd>
 <dt><strong>
   DETAIL_TIMELINE [<span class="cmdargopt">file='detail_timeline.dat'</span>] 
@@ -397,12 +398,11 @@ the data and output the results.
 	[<span class="cmdargopt">flags ...</span>] [<span class="cmdargopt">format ...</span>]
 </strong></dt>
 <dd>
-  Construct a genotype-phenotype array for each genotype in the
-  current batch.  The format is the list of stats that you want
-  to include as columns in the array.  Additionally you can have
-  special format flags; the possible flags are 'html' to print output
-  in HTML format, and 'link_maps' to create html links between
-  consecutive genotypes in a lineage.
+    Construct a genotype-phenotype array for each genotype in the current batch.  The format is
+    the list of stats that you want to include as columns in the array
+    (see <a href="#GENOTYPE_STATS">Genotype Statistics</a> for more info).  Additionally you can have
+    special format flags; the possible flags are 'html' to print output in HTML format, and
+    'link_maps' to create html links between consecutive genotypes in a lineage.
 </dd>
 <dt><strong>
   MAP_MUTATIONS [<span class="cmdargopt">dir="mutations/"</span>]
@@ -534,13 +534,14 @@ specified in the environment configuration file.
 
 
 <p>&nbsp;</p>
-<h2><a name="OUTPUT_FORMATS">Output Formats</a></h2>
+<h2><a name="GENOTYPE_STATS">Genotype Statistics</a></h2>
 
 <p>
-Several commands (such as DETAIL and MAP) require format parameters
-to specify what genotypic features should be output.  Before the
-such commands are used, other collection functions may need to be
-run.
+    Avida analyze mode recognizes several keywords that correspond to information about genotypes.
+    Several commands (such as DETAIL and MAP) require the use of these as format parameters
+    to specify what genotypic features should be output.  Others (such as FILTER) use them to identify
+    specific genotypes that possess certain qualities.  Before these commands are used, other
+    processing functions may need to be run.
 </p>
 <p>
 Allowable formats after a normal load (assuming these values were available
@@ -551,8 +552,7 @@ from the input file to be loaded in) are:
 <tr>
   <td width="33%"><strong>id</strong> (Genome ID)</td>
   <td width="33%"><strong>parent_id</strong> (Parent ID)</td>
-  <td width="33%"><strong>parent2_id</strong> (Second Parent ID 
-  	(sexual genotypes))</td>
+  <td width="33%"><strong>parent2_id</strong> (Second Parent ID in sexual genotypes)</td>
 </tr>
 <tr>
   <td width="33%"><strong>num_cpus</strong> (Number of CPUs)</td>
