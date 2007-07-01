@@ -27,6 +27,9 @@
 
 #include <iostream>
 
+#ifndef AvidaScript_h
+#include "AvidaScript.h"
+#endif
 #ifndef ASTree_h
 #include "ASTree.h"
 #endif
@@ -72,8 +75,22 @@ private:
   inline int currentToken() { return m_cur_tok; }
   inline int nextToken();
   
-  cASTNode* parseStatementList();
+  cASTNode* parseArrayUnpack();
+  cASTNode* parseForeachStatement();
+  cASTNode* parseFunctionDeclare();
+  cASTNode* parseFunctionDefine();
+  cASTNode* parseIDStatement();
+  cASTNode* parseIfStatement();
   cASTNode* parseLooseBlock();
+  cASTNode* parseRefStatement();
+  cASTNode* parseReturnStatement();
+  cASTNode* parseStatementList();
+  cASTNode* parseVarDeclare();
+  cASTNode* parseWhileStatement();
+  
+  bool checkLineTerm(cASTNode* node);
+  
+  void reportError(ASParseError_t err, const int line);
 };
 
 

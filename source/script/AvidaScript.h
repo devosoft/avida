@@ -26,7 +26,7 @@
 #define AvidaScript_h
 
 enum eASTokens {
-  SUPRESS = 1,
+  SUPPRESS = 1,
   ENDL,
   COMMA,
   
@@ -101,5 +101,12 @@ enum eASTokens {
   
   ERR
 };
+
+typedef enum eASParseErrors {
+  UNEXPECTED_TOKEN,
+  UNTERMINATED_EXPR,
+  INTERNAL,
+  UNKNOWN
+} ASParseError_t;
 
 #endif

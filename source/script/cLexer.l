@@ -41,7 +41,7 @@
 [ \t]+      /* ignore whitespace */
 
 
-;           return SUPRESS;       // End-of-line
+;           return SUPPRESS;       // End-of-line
 \n          return ENDL;
 ,           return COMMA;
 

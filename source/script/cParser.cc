@@ -49,7 +49,7 @@
           | return_stmt lineterm
           | lineterm
   
- lineterm: SUPRESS | ENDL
+ lineterm: SUPPRESS | ENDL
  
  type_def: TYPE_ARRAY | TYPE_CHAR | TYPE_FLOAT | TYPE_INT | TYPE_MATRIX | TYPE_STRING | REF ID
  type_any: type_def | TYPE_VOID
@@ -140,7 +140,7 @@
  call_trgt: ID call_value
 
  call_value: DOT ID call_value
-           | PREC_OPEN call_trgt PREC_CLOSE call_sub_idx DOT ID call_value
+           | PREC_OPEN argument_list PREC_CLOSE call_sub_idx DOT ID call_value
            | IDX_OPEN expr IDX_CLOSE call_sub_idx DOT ID call_value
            | 
  
@@ -190,6 +190,8 @@
 
  */
 
+#define PARSE_ERROR(x) reportError(x, __LINE__);
+
 bool cParser::Parse(cFile& input)
 {
   m_lexer = new cLexer(input.GetFileStream());
@@ -204,40 +206,111 @@ void cParser::Accept(cASTVisitor& visitor)
   
 }
 
+cASTNode* cParser::parseArrayUnpack()
+{
+  return NULL;
+}
+
+cASTNode* cParser::parseForeachStatement()
+{
+  return NULL;
+}
+
+cASTNode* cParser::parseFunctionDeclare()
+{
+  return NULL;
+}
+
+cASTNode* cParser::parseFunctionDefine()
+{
+  return NULL;
+}
+
+cASTNode* cParser::parseIfStatement()
+{
+  return NULL;
+}
+
+cASTNode* cParser::parseIDStatement()
+{
+  return NULL;
+}
+
+cASTNode* cParser::parseLooseBlock()
+{
+  cASTNode* sl = parseStatementList();
+  if (currentToken() != ARR_CLOSE) {
+    PARSE_ERROR(UNEXPECTED_TOKEN);
+  }
+  return sl;
+}
+
+cASTNode* cParser::parseRefStatement()
+{
+  cASTNode* rs = NULL;
+  
+  switch (nextToken()) {
+    case ARR_OPEN:
+      parseArrayUnpack();
+      break;
+    case ID:
+      parseVarDeclare();
+      break;
+    case CMD_FUNCTION:
+      parseFunctionDeclare();
+      break;
+    default:
+      PARSE_ERROR(UNEXPECTED_TOKEN);
+  }
+  
+  return rs;
+}
+
+cASTNode* cParser::parseReturnStatement()
+{
+  return NULL;
+}
 
 cASTNode* cParser::parseStatementList()
 {
   cASTNode* sl = NULL;
-  
+
+#define CHECK_LINETERM() { if (!checkLineTerm(sl)) return sl; }
   while (nextToken()) {
     switch (currentToken()) {
       case ARR_OPEN:
         parseLooseBlock();
+        CHECK_LINETERM();
         break;
       case CMD_IF:
-        
+        parseIfStatement();
+        CHECK_LINETERM();
         break;
       case CMD_FOREACH:
-        
+        parseForeachStatement();
+        CHECK_LINETERM();
         break;
       case CMD_FUNCTION:
-        
+        parseFunctionDefine();
+        CHECK_LINETERM();
         break;
       case CMD_RETURN:
-
+        parseReturnStatement();
+        CHECK_LINETERM();
         break;
       case CMD_WHILE:
-        
+        parseWhileStatement();
+        CHECK_LINETERM();
         break;
       case ENDL:
         break;
       case ID:
-        
+        parseIDStatement();
         break;
       case REF:
-        
+        parseRefStatement();
         break;
-      case SUPRESS:
+      case SUPPRESS:
         break;
       case TYPE_ARRAY:
       case TYPE_CHAR:
@@ -245,20 +318,62 @@ cASTNode* cParser::parseStatementList()
       case TYPE_INT:
       case TYPE_MATRIX:
       case TYPE_STRING:
-        
+        parseVarDeclare();
+        CHECK_LINETERM();
         break;
-      
+        
       default:
         return sl;
     }
   }
+#undef CHECK_LINETERM()
   
   if (!currentToken()) m_eof = true;
   return sl;
 }
 
-cASTNode* cParser::parseLooseBlock()
+cASTNode* cParser::parseVarDeclare()
 {
   return NULL;
 }
 
+cASTNode* cParser::parseWhileStatement()
+{
+  return NULL;
+}
+
+
+bool cParser::checkLineTerm(cASTNode* node)
+{
+  if (currentToken() == SUPPRESS) {
+    // @todo - mark output as suppressed
+    return true;
+  } else if (currentToken() == ENDL) {
+    return true;
+  }
+  
+  PARSE_ERROR(UNTERMINATED_EXPR);
+  return false;
+}
+
+
+void cParser::reportError(ASParseError_t err, const int line)
+{
+  m_success = false;
+
+  std::cerr << "error: ";
+
+  switch (err) {
+    case UNEXPECTED_TOKEN:
+      std::cerr << "unexpected token '" << currentToken() << "'." << std::endl;
+      break;
+    case UNTERMINATED_EXPR:
+      std::cerr << "unterminated expression'" << currentToken() << "'." << std::endl;
+      break;      
+    case INTERNAL:
+      std::cerr << "internal parser error at cParser.cc:" << line << std::endl;
+    case UNKNOWN:
+    default:
+      std::cerr << "parse error" << std::endl;
+  }
+}
