@@ -61,10 +61,12 @@ private:
   
   int m_cur_tok;
   
+  bool m_err_eof;
+  
   cParser();
   
 public:
-  cParser(cASLibrary* library) : m_library(library), m_eof(false), m_success(true), m_cur_tok(0) { ; }
+  cParser(cASLibrary* library) : m_library(library), m_eof(false), m_success(true), m_cur_tok(0), m_err_eof(false) { ; }
   
   bool Parse(cFile& input);
   
@@ -76,6 +78,9 @@ private:
   inline int nextToken();
   
   cASTNode* parseArrayUnpack();
+  cASTNode* parseAssignment();
+  cASTNode* parseCallExpression();
+  cASTNode* parseExpression();
   cASTNode* parseForeachStatement();
   cASTNode* parseFunctionDeclare();
   cASTNode* parseFunctionDefine();

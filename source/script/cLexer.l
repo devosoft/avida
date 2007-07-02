@@ -115,7 +115,7 @@ return      return CMD_RETURN;
 \"([^"\\\n]|\\\"|\\\\|\\.)*\"       return STRING;
 \'([^'\\\n]|\\\'|\\\\)\'            return CHAR;
 
-.           return ERR;           // Unrecognized Tokens
+.           return UNKNOWN;           // Unrecognized Tokens
 
 
 
