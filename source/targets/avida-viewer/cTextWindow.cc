@@ -126,9 +126,9 @@ void StartProg()
 
 void EndProg(int ignore)
 {
-  signal(SIGINT, SIG_IGN);          // Ignore all future interupts.
-  mvcur(0, COLS - 1, LINES -1, 0);  // Move curser to the lower left.
-  endwin();                         // Restore terminal mode.
+  signal(SIGINT, SIG_IGN);           // Ignore all future interupts.
+  mvcur(0, COLS - 1, LINES - 1, 0);  // Move curser to the lower left.
+  endwin();                          // Restore terminal mode.
 
   printf ("Exit Code: %d\n", ignore);
 

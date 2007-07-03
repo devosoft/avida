@@ -1,0 +1,20 @@
+= Controllers =
+cCoreView_Info : contains all of the basic information that is shared among the view modes, and info about the 
+	current viewer hooked up to Avida.
+
+	- Which view modes are actively associated with this information?
+	- Which population are they hooked up to?
+	- What is the world shape and size?
+	- How many distinct colors does the viewer have to work with?
+	- What pause level are we at?
+
+cCoreView_Base : A generic base class for all of the view modes.
+
+= Modes =
+cCoreView_Analyze     : Manages analyze mode
+cCoreView_Config      : Handles the interface to the configuration files.
+cCoreView_Environment : Manages all of the information about the environment for the current population.
+cCoreView_Hist        : Maintains histograms about various stats for the current population.
+cCoreView_Map         : Manages all of the information for a single map screen.
+cCoreView_Stats       : Deals with the interface to the cStats object with info about the current population.
+cCoreView_Zoom        : Focuses on a single organism and manages information about it and its genotype.
