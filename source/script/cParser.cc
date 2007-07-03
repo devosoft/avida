@@ -159,7 +159,9 @@
  loose_block: ARR_OPEN statement_list ARR_CLOSE
  
  if_block: CMD_IF PREC_OPEN expr PREC_CLOSE lineterm statement_list CMD_ENDIF
-         | CMD_IF PREC_OPEN expr PREC_CLOSE lineterm statement_list CMD_ELSE statement_list CMD_ENDIF
+         | CMD_IF PREC_OPEN expr PREC_CLOSE lineterm statement_list CMD_ELSE lineterm statement_list CMD_ENDIF
+         | CMD_IF PREC_OPEN expr PREC_CLOSE loose_block CMD_ENDIF
+         | CMD_IF PREC_OPEN expr PREC_CLOSE loose_block CMD_ELSE loose_block CMD_ENDIF
  
  while_block: CMD_WHILE PREC_OPEN expr PREC_CLOSE lineterm statement_list CMD_ENDWHILE
             | CMD_WHILE PREC_OPEN expr PREC_CLOSE loose_block
@@ -169,7 +171,6 @@
 
  var_declare: type_def ID
             | type_def ID ASSIGN expr
-            | type_def ID PREC_OPEN expr PREC_CLOSE
             | type_def ID PREC_OPEN argument_list PREC_CLOSE
  
  var_declare_list: var_declare_list_1
@@ -191,6 +192,17 @@
 #define PARSE_ERROR(x) reportError(AS_PARSE_ERR_ ## x, __LINE__);
 #define PARSE_UNEXPECT() { if (currentToken()) { PARSE_ERROR(UNEXPECTED_TOKEN); } else { PARSE_ERROR(EOF); } }
 
+
+cParser::cParser(cASLibrary* library)
+: m_library(library)
+, m_eof(false)
+, m_success(true)
+, m_cur_tok(INVALID)
+, m_next_tok(INVALID)
+, m_err_eof(false)
+{
+}
+
 bool cParser::Parse(cFile& input)
 {
   m_lexer = new cLexer(input.GetFileStream());
@@ -204,6 +216,18 @@ void cParser::Accept(cASTVisitor& visitor)
 {
   
 }
+
+ASToken_t cParser::nextToken()
+{
+  if (m_next_tok != INVALID) { 
+    m_cur_tok = m_next_tok;
+    m_next_tok = INVALID;
+  } else {
+    m_cur_tok = (ASToken_t)m_lexer->yylex();
+  }
+  return m_cur_tok;
+}
+
 
 cASTNode* cParser::parseArrayUnpack()
 {
@@ -236,6 +260,18 @@ cASTNode* cParser::parseArrayUnpack()
   return au;
 }
 
+cASTNode* cParser::parseArgumentList()
+{
+  cASTNode* al = NULL;
+  
+  parseExpression();
+  while (currentToken() == COMMA) {
+    parseExpression();
+  }
+  
+  return al;
+}
+
 cASTNode* cParser::parseAssignment()
 {
   cASTNode* an = NULL;
@@ -250,6 +286,24 @@ cASTNode* cParser::parseCallExpression()
 {
   // @todo
   return NULL;
+}
+
+cASTNode* cParser::parseCodeBlock(bool& loose)
+{
+  cASTNode* cb = NULL;
+
+  nextToken();
+  if (currentToken() == ARR_OPEN) {
+    loose = true;
+    cb = parseLooseBlock();
+  } else if (currentToken() == SUPPRESS || currentToken() == ENDL) {
+    cb = parseStatementList();
+  } else {
+    PARSE_UNEXPECT();
+    return cb;
+  }
+  
+  return cb;  
 }
 
 cASTNode* cParser::parseExpression()
@@ -295,39 +349,109 @@ cASTNode* cParser::parseForeachStatement()
     return fs;
   }
   
-  nextToken();
-  if (currentToken() == ARR_OPEN) {
-    parseLooseBlock();
-  } else if (currentToken() == SUPPRESS || currentToken() == ENDL) {
-    parseStatementList();
-    if (currentToken() != CMD_ENDFOREACH) {
-      PARSE_UNEXPECT();
-      return fs;
-    }
-  } else {
-    PARSE_UNEXPECT();
-    return fs;
-  }
+  bool loose = false;
+  parseCodeBlock(loose);
+  if (!loose && currentToken() != CMD_ENDFOREACH) PARSE_UNEXPECT();
   
   return fs;
 }
 
-cASTNode* cParser::parseFunctionDeclare()
-{
-  // @todo
-  return NULL;
-}
-
 cASTNode* cParser::parseFunctionDefine()
 {
-  // @todo
-  return NULL;
+  cASTNode* fd = parseFunctionHeader(false);
+  
+  bool loose = false;
+  parseCodeBlock(loose);
+  if (!loose && currentToken() != CMD_ENDFUNCTION) {
+    PARSE_UNEXPECT();
+    return fd;
+  }
+  
+  return fd;
+}
+
+cASTNode* cParser::parseFunctionHeader(bool declare)
+{
+  cASTNode* fd = NULL;
+  
+  switch (nextToken()) {
+    case TYPE_ARRAY:
+    case TYPE_CHAR:
+    case TYPE_FLOAT:
+    case TYPE_INT:
+    case TYPE_MATRIX:
+    case TYPE_STRING:
+    case TYPE_VOID:
+      break;
+    case ID:
+      if (peekToken() != REF) {
+        nextToken();
+        PARSE_UNEXPECT();
+        return fd;
+      }
+      break;
+      
+    default:
+      PARSE_UNEXPECT();
+      return fd;
+  }
+  
+  if (nextToken() != ID) {
+    PARSE_UNEXPECT();
+    return fd;
+  }
+  
+  if (nextToken() != PREC_OPEN) {
+    PARSE_UNEXPECT();
+    return fd;
+  }
+  
+  nextToken();
+  if (declare) {
+    parseVarDeclareList();
+  } else {
+    parseArgumentList();
+  }
+  
+  if (nextToken() != PREC_CLOSE) {
+    PARSE_UNEXPECT();
+    return fd;    
+  }
+  
+  return fd;
 }
 
 cASTNode* cParser::parseIfStatement()
 {
-  // @todo
-  return NULL;
+  cASTNode* is = NULL;
+  
+  if (nextToken() != PREC_OPEN) {
+    PARSE_UNEXPECT();
+    return is;
+  }
+  
+  nextToken();
+  parseExpression();
+  
+  if (currentToken() != PREC_CLOSE) {
+    PARSE_UNEXPECT();
+    return is;
+  }
+  
+  bool loose = false;
+  parseCodeBlock(loose);
+  if (currentToken() == CMD_ELSE) {
+    parseCodeBlock(loose);
+    if (!loose && currentToken() != CMD_ENDIF) {
+      PARSE_UNEXPECT();
+      return is;
+    }
+  } else if (!loose && currentToken() != CMD_ENDIF) {
+    PARSE_UNEXPECT();
+    return is;
+  }
+  
+  return is;
 }
 
 cASTNode* cParser::parseIDStatement()
@@ -374,7 +498,7 @@ cASTNode* cParser::parseRefStatement()
       parseArrayUnpack();
       break;
     case CMD_FUNCTION:
-      parseFunctionDeclare();
+      parseFunctionHeader();
       break;
     default:
       PARSE_UNEXPECT();
@@ -432,6 +556,7 @@ cASTNode* cParser::parseStatementList()
         break;
       case REF:
         parseRefStatement();
+        CHECK_LINETERM();
         break;
       case SUPPRESS:
         break;
@@ -457,19 +582,97 @@ cASTNode* cParser::parseStatementList()
 
 cASTNode* cParser::parseVarDeclare()
 {
-  // @todo
-  return NULL;
+  cASTNode* vd = NULL;
+  
+  switch (currentToken()) {
+    case TYPE_ARRAY:
+    case TYPE_CHAR:
+    case TYPE_FLOAT:
+    case TYPE_INT:
+    case TYPE_MATRIX:
+    case TYPE_STRING:
+      break;
+    case ID:
+      if (nextToken() != REF) {
+        PARSE_UNEXPECT();
+        return vd;
+      }
+      break;
+      
+    default:
+      PARSE_UNEXPECT();
+      return vd;
+  }
+  
+  if (nextToken() != ID) {
+    PARSE_UNEXPECT();
+    return vd;
+  }
+  
+  switch (nextToken()) {
+    case ASSIGN:
+      nextToken();
+      parseExpression();
+      break;
+    case PREC_OPEN:
+      nextToken();
+      parseArgumentList();
+      if (currentToken() != PREC_CLOSE) {
+        PARSE_UNEXPECT();
+        return vd;
+      }
+      break;
+      
+    default:
+      break;
+  }
+  
+  return vd;
+}
+
+cASTNode* cParser::parseVarDeclareList()
+{
+  cASTNode* vl = NULL;
+  
+  parseVarDeclare();
+  while (currentToken() == COMMA) {
+    parseVarDeclare();
+  }
+  
+  return vl;
 }
 
 cASTNode* cParser::parseWhileStatement()
 {
-  // @todo
-  return NULL;
+  cASTNode* ws = NULL;
+  
+  if (nextToken() != PREC_OPEN) {
+    PARSE_UNEXPECT();
+    return ws;
+  }
+  
+  nextToken();
+  parseExpression();
+  
+  if (currentToken() != PREC_CLOSE) {
+    PARSE_UNEXPECT();
+    return ws;
+  }
+  
+  bool loose = false;
+  parseCodeBlock(loose);
+  if (!loose && currentToken() != CMD_ENDWHILE) {
+    PARSE_UNEXPECT();
+    return ws;
+  }
+  
+  return ws;
 }
 
 
 bool cParser::checkLineTerm(cASTNode* node)
 {
+  nextToken();
   if (currentToken() == SUPPRESS) {
     // @todo - mark output as suppressed
     return true;

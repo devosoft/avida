@@ -25,7 +25,7 @@
 #ifndef AvidaScript_h
 #define AvidaScript_h
 
-enum eASTokens {
+typedef enum eASTokens {
   SUPPRESS = 1,
   ENDL,
   COMMA,
@@ -99,8 +99,9 @@ enum eASTokens {
   STRING,
   CHAR,
   
-  UNKNOWN
-};
+  UNKNOWN,
+  INVALID
+} ASToken_t;
 
 typedef enum eASParseErrors {
   AS_PARSE_ERR_UNEXPECTED_TOKEN,

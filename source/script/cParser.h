@@ -59,31 +59,38 @@ private:
   bool m_eof;
   bool m_success;
   
-  int m_cur_tok;
+  ASToken_t m_cur_tok;
+  ASToken_t m_next_tok;
   
   bool m_err_eof;
   
-  cParser();
+  
+  cParser(); // @not_implemented
+  cParser(const cParser&); // @not_implemented
+  cParser& operator=(const cParser&); // @not_implemented
+  
   
 public:
-  cParser(cASLibrary* library) : m_library(library), m_eof(false), m_success(true), m_cur_tok(0), m_err_eof(false) { ; }
+  cParser(cASLibrary* library);
   
   bool Parse(cFile& input);
-  
   void Accept(cASTVisitor& visitor);
   
   
 private:
-  inline int currentToken() { return m_cur_tok; }
-  inline int nextToken();
+  inline ASToken_t currentToken() { return m_cur_tok; }
+  ASToken_t nextToken();
+  inline ASToken_t peekToken();
   
+  cASTNode* parseArgumentList();
   cASTNode* parseArrayUnpack();
   cASTNode* parseAssignment();
   cASTNode* parseCallExpression();
+  cASTNode* parseCodeBlock(bool& loose);
   cASTNode* parseExpression();
   cASTNode* parseForeachStatement();
-  cASTNode* parseFunctionDeclare();
   cASTNode* parseFunctionDefine();
+  cASTNode* parseFunctionHeader(bool declare = true);
   cASTNode* parseIDStatement();
   cASTNode* parseIfStatement();
   cASTNode* parseLooseBlock();
@@ -91,6 +98,7 @@ private:
   cASTNode* parseReturnStatement();
   cASTNode* parseStatementList();
   cASTNode* parseVarDeclare();
+  cASTNode* parseVarDeclareList();
   cASTNode* parseWhileStatement();
   
   bool checkLineTerm(cASTNode* node);
@@ -99,10 +107,10 @@ private:
 };
 
 
-inline int cParser::nextToken()
+inline ASToken_t cParser::peekToken()
 {
-  m_cur_tok = m_lexer->yylex();
-  return m_cur_tok;
+  if (m_next_tok == INVALID) m_next_tok = (ASToken_t)m_lexer->yylex();
+  return m_next_tok;
 }
 
 
