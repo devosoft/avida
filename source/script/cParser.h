@@ -93,6 +93,7 @@ private:
   cASTNode* parseFunctionHeader(bool declare = true);
   cASTNode* parseIDStatement();
   cASTNode* parseIfStatement();
+  cASTNode* parseIndexExpression();
   cASTNode* parseLooseBlock();
   cASTNode* parseRefStatement();
   cASTNode* parseReturnStatement();

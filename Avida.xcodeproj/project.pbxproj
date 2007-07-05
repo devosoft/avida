@@ -208,14 +208,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 7023EC320C0A426900362B9C /* avida-core */;
+			remoteGlobalIDString = 7023EC320C0A426900362B9C;
 			remoteInfo = "avida-core";
 		};
 		56F555DC0C3B370100E2E929 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 70AA941809D486AE006A24C8 /* tcmalloc */;
+			remoteGlobalIDString = 70AA941809D486AE006A24C8;
 			remoteInfo = tcmalloc;
 		};
 		7023ECA60C0A436000362B9C /* PBXContainerItemProxy */ = {
@@ -350,7 +350,7 @@
 		565121C60C3B055F009CBD3F /* cCoreView_Info.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCoreView_Info.cc; sourceTree = "<group>"; };
 		565121C70C3B055F009CBD3F /* cCoreView_Info.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCoreView_Info.h; sourceTree = "<group>"; };
 		565121C80C3B055F009CBD3F /* LAYOUT */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = LAYOUT; sourceTree = "<group>"; };
-		56F555D00C3B364E00E2E929 /* New Text Viewer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = "New Text Viewer"; path = "build/Development/New Text Viewer"; sourceTree = "<group>"; };
+		56F555D00C3B364E00E2E929 /* New Text Viewer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "New Text Viewer"; sourceTree = BUILT_PRODUCTS_DIR; };
 		56F555DF0C3B402A00E2E929 /* cDriver_TextViewer.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDriver_TextViewer.cc; sourceTree = "<group>"; };
 		56F555E00C3B402A00E2E929 /* cDriver_TextViewer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cDriver_TextViewer.h; sourceTree = "<group>"; };
 		56F555E10C3B402A00E2E929 /* cTextViewerManager.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTextViewerManager.cc; sourceTree = "<group>"; };

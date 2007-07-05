@@ -284,8 +284,49 @@ cASTNode* cParser::parseAssignment()
 
 cASTNode* cParser::parseCallExpression()
 {
-  // @todo
-  return NULL;
+  cASTNode* ce = NULL;
+  
+  bool eoe = false;
+  while (!eoe) {
+    switch (currentToken()) {
+      case DOT:
+        if (nextToken() != ID) {
+          PARSE_UNEXPECT();
+          return ce;
+        }
+        break;
+      case PREC_OPEN:
+        nextToken();
+        parseArgumentList();
+        if (nextToken() != PREC_CLOSE) {
+          PARSE_UNEXPECT();
+          return ce;   
+        }
+        switch (nextToken()) {
+          case IDX_OPEN:
+            while (currentToken() == IDX_OPEN) {
+              parseIndexExpression();
+            }
+            break;
+          case DOT:
+            continue;
+
+          default:
+            eoe = true;
+        }
+        break;
+      case IDX_OPEN:
+        while (currentToken() == IDX_OPEN) {
+          parseIndexExpression();
+        }
+
+      default:
+        PARSE_UNEXPECT();
+        return ce;
+    }
+  }
+    
+  return ce;
 }
 
 cASTNode* cParser::parseCodeBlock(bool& loose)
@@ -421,6 +462,31 @@ cASTNode* cParser::parseFunctionHeader(bool declare)
   return fd;
 }
 
+cASTNode* cParser::parseIDStatement()
+{
+  cASTNode* is = NULL;
+  
+  switch (nextToken()) {
+    case ASSIGN:
+      parseAssignment();
+      break;
+    case DOT:
+    case IDX_OPEN:
+    case PREC_OPEN:
+      parseCallExpression();
+      break;
+    case REF:
+      parseVarDeclare();
+      break;
+      
+    default:
+      PARSE_UNEXPECT();
+      break;
+  }      
+  
+  return is;
+}
+
 cASTNode* cParser::parseIfStatement()
 {
   cASTNode* is = NULL;
@@ -454,29 +520,10 @@ cASTNode* cParser::parseIfStatement()
   return is;
 }
 
-cASTNode* cParser::parseIDStatement()
+cASTNode* cParser::parseIndexExpression()
 {
-  cASTNode* is = NULL;
-  
-  switch (nextToken()) {
-    case ASSIGN:
-      parseAssignment();
-      break;
-    case DOT:
-    case IDX_OPEN:
-    case PREC_OPEN:
-      parseCallExpression();
-      break;
-    case REF:
-      parseVarDeclare();
-      break;
-      
-    default:
-      PARSE_UNEXPECT();
-      break;
-  }      
-      
-  return is;
+  // @todo
+  return NULL;
 }
 
 cASTNode* cParser::parseLooseBlock()
