@@ -8015,6 +8015,14 @@ void cAnalyze::SetupGenotypeDataList()
                                 (t_name, t_desc, &cAnalyzeGenotype::GetTaskCount, i, 5));
   }
   
+  for (int i = 0; i < environment.GetInputSize(); i++){
+    cString t_name, t_desc;
+    t_name.Set("env_input.%d", i);
+    t_desc.Set("env_input.%d", i);
+    genotype_data_list.PushRear(new tArgDataEntry<cAnalyzeGenotype, int, int>
+                                (t_name, t_desc, &cAnalyzeGenotype::GetEnvInput, i, 0));
+  }
+  
   // The remaining values should actually go in a seperate list called
   // "population_data_list", but for the moment we're going to put them
   // here so that we only need to worry about a single system to load and

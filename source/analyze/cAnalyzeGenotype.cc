@@ -391,6 +391,7 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cTestCPU* testcpu, cAnaly
   cOrganism* test_organism = test_info->GetTestOrganism();
   cPhenotype& test_phenotype = test_organism->GetPhenotype();
 
+  m_env_inputs = test_info->GetTestCPUInputs();
   SetExecutedFlags(test_organism->GetHardware().GetMemory());
 
   length = test_organism->GetGenome().GetSize();

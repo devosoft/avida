@@ -142,8 +142,8 @@ public:
   cReactionLib& GetReactionLib() { return reaction_lib; }
   cMutationRates& GetMutRates() { return mut_rates; }
   
-  int GetInputSize() { return m_input_size; }
-  int GetOutputSize() { return m_output_size; }
+  int GetInputSize()  const { return m_input_size; };
+  int GetOutputSize() const { return m_output_size; };
 
   double GetReactionValue(int& reaction_id);
   bool SetReactionValue(cAvidaContext& ctx, const cString& name, double value);
