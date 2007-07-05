@@ -47,7 +47,7 @@ class cWorld;
 class cDriver_TextViewer : public cAvidaDriver, public cWorldDriver {
 private:
   cWorld* m_world;
-  cCoreView_Info info;
+  cCoreView_Info m_info;
 
   bool m_done;                 // This is set to true when run should finish.
 
@@ -69,8 +69,12 @@ public:
   void RaiseFatalException(int exit_code, const cString& in_string);
   
   // Notifications
+  void NotifyUpdate();
   void NotifyComment(const cString& in_string);
   void NotifyWarning(const cString& in_string);
+  void NotifyError(const cString& in_string);
+  void NotifyOutput(const cString& in_string);
+  void Notify(const cString& in_string);
 
   // Tests
   bool IsInteractive() { return true; }

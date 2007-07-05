@@ -7918,6 +7918,8 @@ int cAnalyze::CompareFlexStat(const cFlexVar & org_stat, const cFlexVar & parent
     return COMPARE_RESULT_POS;
   }
 
+  assert(false);  // One of the other options should have been chosen.
+  return 0;
 }
 
 

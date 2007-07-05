@@ -23,6 +23,9 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		56F555E50C3B402A00E2E929 /* cDriver_TextViewer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 56F555DF0C3B402A00E2E929 /* cDriver_TextViewer.cc */; };
+		56F555E60C3B402A00E2E929 /* cTextViewerManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 56F555E10C3B402A00E2E929 /* cTextViewerManager.cc */; };
+		56F555E70C3B402A00E2E929 /* viewer-text.cc in Sources */ = {isa = PBXBuildFile; fileRef = 56F555E40C3B402A00E2E929 /* viewer-text.cc */; };
 		700E2996085A1F6000CF158A /* avida in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3164D07626CF3008F7A48 /* avida */; };
 		700E2B87085DE54400CF158A /* avida-viewer in CopyFiles */ = {isa = PBXBuildFile; fileRef = 700E2B83085DE50C00CF158A /* avida-viewer */; };
 		7023EC3A0C0A431B00362B9C /* avida.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3109C0762539E008F7A48 /* avida.cc */; };
@@ -201,6 +204,20 @@
 /* End PBXBuildRule section */
 
 /* Begin PBXContainerItemProxy section */
+		56F555DA0C3B36FC00E2E929 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7023EC320C0A426900362B9C /* avida-core */;
+			remoteInfo = "avida-core";
+		};
+		56F555DC0C3B370100E2E929 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 70AA941809D486AE006A24C8 /* tcmalloc */;
+			remoteInfo = tcmalloc;
+		};
 		7023ECA60C0A436000362B9C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
@@ -330,6 +347,16 @@
 		423335880BC067E3000DF681 /* cHardwareGX.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareGX.cc; sourceTree = "<group>"; };
 		423335890BC067E3000DF681 /* cHardwareGX.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareGX.h; sourceTree = "<group>"; };
 		42490EFE0BE2472800318058 /* cGermline.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGermline.h; sourceTree = "<group>"; };
+		565121C60C3B055F009CBD3F /* cCoreView_Info.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCoreView_Info.cc; sourceTree = "<group>"; };
+		565121C70C3B055F009CBD3F /* cCoreView_Info.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCoreView_Info.h; sourceTree = "<group>"; };
+		565121C80C3B055F009CBD3F /* LAYOUT */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = LAYOUT; sourceTree = "<group>"; };
+		56F555D00C3B364E00E2E929 /* New Text Viewer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = "New Text Viewer"; path = "build/Development/New Text Viewer"; sourceTree = "<group>"; };
+		56F555DF0C3B402A00E2E929 /* cDriver_TextViewer.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDriver_TextViewer.cc; sourceTree = "<group>"; };
+		56F555E00C3B402A00E2E929 /* cDriver_TextViewer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cDriver_TextViewer.h; sourceTree = "<group>"; };
+		56F555E10C3B402A00E2E929 /* cTextViewerManager.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTextViewerManager.cc; sourceTree = "<group>"; };
+		56F555E20C3B402A00E2E929 /* cTextViewerManager.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTextViewerManager.h; sourceTree = "<group>"; };
+		56F555E30C3B402A00E2E929 /* LAYOUT */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = LAYOUT; sourceTree = "<group>"; };
+		56F555E40C3B402A00E2E929 /* viewer-text.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = "viewer-text.cc"; sourceTree = "<group>"; };
 		7005A70109BA0FA90007E16E /* cTestCPUInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cTestCPUInterface.h; sourceTree = "<group>"; };
 		7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cTestCPUInterface.cc; sourceTree = "<group>"; };
 		7005A70909BA0FBE0007E16E /* cOrgInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgInterface.h; sourceTree = "<group>"; };
@@ -793,6 +820,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		56F555CE0C3B364E00E2E929 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		700E2B6C085DE50C00CF158A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -845,6 +879,30 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		565121C50C3B055F009CBD3F /* viewer-core */ = {
+			isa = PBXGroup;
+			children = (
+				565121C60C3B055F009CBD3F /* cCoreView_Info.cc */,
+				565121C70C3B055F009CBD3F /* cCoreView_Info.h */,
+				565121C80C3B055F009CBD3F /* LAYOUT */,
+			);
+			path = "viewer-core";
+			sourceTree = "<group>";
+		};
+		56F555DE0C3B402A00E2E929 /* viewer-text */ = {
+			isa = PBXGroup;
+			children = (
+				56F555DF0C3B402A00E2E929 /* cDriver_TextViewer.cc */,
+				56F555E00C3B402A00E2E929 /* cDriver_TextViewer.h */,
+				56F555E10C3B402A00E2E929 /* cTextViewerManager.cc */,
+				56F555E20C3B402A00E2E929 /* cTextViewerManager.h */,
+				56F555E30C3B402A00E2E929 /* LAYOUT */,
+				56F555E40C3B402A00E2E929 /* viewer-text.cc */,
+			);
+			name = "viewer-text";
+			path = "source/targets/viewer-text";
+			sourceTree = "<group>";
+		};
 		701D9115094B770B008B845F /* drivers */ = {
 			isa = PBXGroup;
 			children = (
@@ -1196,6 +1254,7 @@
 		DCC30C490762532C008F7A48 = {
 			isa = PBXGroup;
 			children = (
+				56F555DE0C3B402A00E2E929 /* viewer-text */,
 				DCC30C670762539A008F7A48 /* Main Source */,
 				70920C1A0A9CCE2C00757CDB /* Documentation */,
 				707AF2D209EE8501001AEA89 /* Support */,
@@ -1209,6 +1268,7 @@
 		DCC30C670762539A008F7A48 /* Main Source */ = {
 			isa = PBXGroup;
 			children = (
+				565121C50C3B055F009CBD3F /* viewer-core */,
 				707AEEEE09E80699001AEA89 /* actions */,
 				70422A1B091B141000A5E67F /* analyze */,
 				70F7D8C8092546DC009E311D /* classification */,
@@ -1517,6 +1577,7 @@
 				70AA941909D486AE006A24C8 /* libtcmalloc.a */,
 				70B6514C0BEA6FAD002472ED /* unit-tests */,
 				7023EC330C0A426900362B9C /* libavida-core.a */,
+				56F555D00C3B364E00E2E929 /* New Text Viewer */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1541,6 +1602,24 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		56F555CF0C3B364E00E2E929 /* New Text Viewer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 56F555D40C3B36AD00E2E929 /* Build configuration list for PBXNativeTarget "New Text Viewer" */;
+			buildPhases = (
+				56F555CD0C3B364E00E2E929 /* Sources */,
+				56F555CE0C3B364E00E2E929 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				56F555DB0C3B36FC00E2E929 /* PBXTargetDependency */,
+				56F555DD0C3B370100E2E929 /* PBXTargetDependency */,
+			);
+			name = "New Text Viewer";
+			productName = "New Text Viewer";
+			productReference = 56F555D00C3B364E00E2E929 /* New Text Viewer */;
+			productType = "com.apple.product-type.tool";
+		};
 		700E2AF3085DE50C00CF158A /* avida-viewer */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 700E2B7E085DE50C00CF158A /* Build configuration list for PBXNativeTarget "avida-viewer" */;
@@ -1669,6 +1748,7 @@
 				7023EC320C0A426900362B9C /* avida-core */,
 				70AA941809D486AE006A24C8 /* tcmalloc */,
 				70B6514B0BEA6FAD002472ED /* unit-tests */,
+				56F555CF0C3B364E00E2E929 /* New Text Viewer */,
 			);
 		};
 /* End PBXProject section */
@@ -1690,6 +1770,16 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		56F555CD0C3B364E00E2E929 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				56F555E50C3B402A00E2E929 /* cDriver_TextViewer.cc in Sources */,
+				56F555E60C3B402A00E2E929 /* cTextViewerManager.cc in Sources */,
+				56F555E70C3B402A00E2E929 /* viewer-text.cc in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		700E2AF4085DE50C00CF158A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1872,6 +1962,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		56F555DB0C3B36FC00E2E929 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7023EC320C0A426900362B9C /* avida-core */;
+			targetProxy = 56F555DA0C3B36FC00E2E929 /* PBXContainerItemProxy */;
+		};
+		56F555DD0C3B370100E2E929 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 70AA941809D486AE006A24C8 /* tcmalloc */;
+			targetProxy = 56F555DC0C3B370100E2E929 /* PBXContainerItemProxy */;
+		};
 		7023ECA70C0A436000362B9C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 7023EC320C0A426900362B9C /* avida-core */;
@@ -1920,6 +2020,72 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		56F555D50C3B36AD00E2E929 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = "$(HOME)/bin";
+				PREBINDING = NO;
+				PRODUCT_NAME = "New Text Viewer";
+				ZERO_LINK = YES;
+			};
+			name = Development;
+		};
+		56F555D60C3B36AD00E2E929 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = "$(HOME)/bin";
+				PREBINDING = NO;
+				PRODUCT_NAME = "New Text Viewer";
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
+		56F555D70C3B36AD00E2E929 /* Deployment-G5 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = "$(HOME)/bin";
+				PREBINDING = NO;
+				PRODUCT_NAME = "New Text Viewer";
+				ZERO_LINK = YES;
+			};
+			name = "Deployment-G5";
+		};
+		56F555D80C3B36AD00E2E929 /* Deployment-Universal */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = "$(HOME)/bin";
+				PREBINDING = NO;
+				PRODUCT_NAME = "New Text Viewer";
+				ZERO_LINK = YES;
+			};
+			name = "Deployment-Universal";
+		};
+		56F555D90C3B36AD00E2E929 /* Profile */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = "$(HOME)/bin";
+				PREBINDING = NO;
+				PRODUCT_NAME = "New Text Viewer";
+				ZERO_LINK = YES;
+			};
+			name = Profile;
+		};
 		700E2B7F085DE50C00CF158A /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2471,6 +2637,18 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		56F555D40C3B36AD00E2E929 /* Build configuration list for PBXNativeTarget "New Text Viewer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				56F555D50C3B36AD00E2E929 /* Development */,
+				56F555D60C3B36AD00E2E929 /* Deployment */,
+				56F555D70C3B36AD00E2E929 /* Deployment-G5 */,
+				56F555D80C3B36AD00E2E929 /* Deployment-Universal */,
+				56F555D90C3B36AD00E2E929 /* Profile */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Deployment;
+		};
 		700E2B7E085DE50C00CF158A /* Build configuration list for PBXNativeTarget "avida-viewer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

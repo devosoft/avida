@@ -44,13 +44,12 @@
 
 using namespace std;
 
-
 cDriver_TextViewer::cDriver_TextViewer(cWorld* world)
-  : m_world(world), m_done(false)
+  : m_world(world), m_info(m_world->GetPopulation(), 12), m_done(false)
 {
   // Setup the initial view mode (loaded from avida.cfg)
-  SetViewMode(world->GetConfig().VIEW_MODE.Get());
-
+//  SetViewMode(world->GetConfig().VIEW_MODE.Get());
+    
   cDriverManager::Register(static_cast<cAvidaDriver*>(this));
   world->SetDriver(this);
 }
@@ -106,18 +105,18 @@ void cDriver_TextViewer::Run()
     
 
     // Are we stepping through an organism?
-    if (m_view.GetStepOrganism() != -1) {  // Yes we are!
+    if (m_info.GetStepOrganism() != -1) {  // Yes we are!
                                             // Keep the viewer informed about the organism we are stepping through...
       for (int i = 0; i < UD_size; i++) {
         const int next_id = population.ScheduleOrganism();
-        if (next_id == m_view.GetStepOrganism()) {
-          m_view.NotifyUpdate();
-          m_view.NewUpdate();
+        if (next_id == m_info.GetStepOrganism()) {
+          NotifyUpdate();
+//          m_view.NewUpdate();
           
           // This is needed to have the top bar drawn properly; I'm not sure why...
           static bool first_update = true;
           if (first_update) {
-            m_view.Refresh();
+//            Refresh();
             first_update = false;
           }
         }
@@ -134,14 +133,14 @@ void cDriver_TextViewer::Run()
     
     
     // Setup the viewer for the new update.
-    if (m_view.GetStepOrganism() == -1) {
-      m_view.NotifyUpdate();
-      m_view.NewUpdate();
+    if (m_info.GetStepOrganism() == -1) {
+      NotifyUpdate();
+//      NewUpdate();
       
       // This is needed to have the top bar drawn properly; I'm not sure why...
       static bool first_update = true;
       if (first_update) {
-        m_view.Refresh();
+//        Refresh();
         first_update = false;
       }
     }
@@ -164,68 +163,86 @@ void cDriver_TextViewer::Run()
 
 void cDriver_TextViewer::SignalBreakpoint()
 {
-  m_view.DoBreakpoint();
+//  m_view.DoBreakpoint();
 }
 
 
 void cDriver_TextViewer::Flush()
 {
-  // @CAO -- this is currently inefficient!
-
-  // Pull everything from the streams and put it into strings.
-  cString out_string(out_stream.str().c_str());
-  cString err_string(err_stream.str().c_str());
-
-  // Clear the streams.
-  out_stream.str("");
-  err_stream.str("");
-
-  // Split it into lines.
-  cStringList out_list(out_string, '\n');
-  cStringList err_list(err_string, '\n');
-  const int new_line_count = out_list.GetSize() + err_list.GetSize();
-
+  cStringList & out_list = m_info.GetOutList();
+  cStringList & err_list = m_info.GetErrList();
+  
   // And notify the output...
   while (out_list.GetSize() > 0) {
-    m_view.NotifyOutput(out_list.Pop());
+    NotifyOutput(out_list.Pop());
   }
 
   while (err_list.GetSize() > 0) {
     cString cur_string(err_list.Pop());
-    cur_string.Insert("! ");
-    m_view.NotifyOutput(cur_string);
+    // cur_string.Insert("! ");
+    NotifyWarning(cur_string);
   }
-
-  if (new_line_count > 0) m_view.NotifyOutput("");
 }
 
 
 bool cDriver_TextViewer::ProcessKeypress(int keypress)
 {
-  return m_view.ProcessKeypress(keypress);
+//  return m_view.ProcessKeypress(keypress);
+  return false;
 }
 
 
 void cDriver_TextViewer::RaiseException(const cString& in_string)
 {
-  m_view.NotifyError(in_string);
+  NotifyWarning(in_string);
 }
 
 void cDriver_TextViewer::RaiseFatalException(int exit_code, const cString& in_string)
 {
-  m_view.NotifyError(in_string);
+  NotifyError(in_string);
   exit(exit_code);
+}
+
+void cDriver_TextViewer::NotifyUpdate()
+{
+  // @CAO What should happen on an update?
+  // Update bar at top of screen
+  // Update current view
+  // Check for Inputs...
 }
 
 void cDriver_TextViewer::NotifyComment(const cString& in_string)
 {
-  m_view.NotifyComment(in_string);
+  // @CAO Do anything special if we know its just a normal comment?
+  Notify(in_string);
 }
 
 void cDriver_TextViewer::NotifyWarning(const cString& in_string)
 {
-  m_view.NotifyWarning(in_string);
+  cString out_string(in_string);
+  out_string.Insert("Warning: ");
+  Notify(out_string);
 }
+
+void cDriver_TextViewer::NotifyError(const cString& in_string)
+{
+  cString out_string(in_string);
+  out_string.Insert("Error: ");
+  Notify(out_string);
+  ExitTextViewer(1);
+}
+
+void cDriver_TextViewer::NotifyOutput(const cString& in_string)
+{
+  // @CAO Do anything special if we know its from cout/cerr?
+  Notify(in_string);
+}
+
+void cDriver_TextViewer::Notify(const cString& in_string)
+{
+  // @CAO We need to display this!
+}
+
 
 
 void ExitTextViewer(int exit_code)
