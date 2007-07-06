@@ -19,12 +19,12 @@ protected:
   cPopulation & m_population;
 
   // Setup streams to capture stdin and stdout so we can control them as needed.
-  std::stringstream out_stream;
-  std::stringstream err_stream;
+  std::stringstream m_cout_stream;
+  std::stringstream m_cerr_stream;
   
   // And string lists to convert outputs to for easier management.
-  cStringList cout_list;
-  cStringList cerr_list;
+  cStringList m_cout_list;
+  cStringList m_cerr_list;
 
   // Constant Inforation setup by specific viewer.
   const int m_total_colors;
@@ -32,11 +32,13 @@ protected:
 
   // Variable information, changing modes based on user input.
   int m_pause_level;
-  int m_step_organism;
+  int m_step_organism_id;
+  int m_step_organism_thread;
+  int m_view_mode;
 
   // Helper Methods
-  void FlushOut();  // Move stored cout to string list 'out_list'
-  void FlushErr();  // Move stored cerr to string list 'err_list'
+  void FlushOut();  // Move stored cout to string list 'cout_list'
+  void FlushErr();  // Move stored cerr to string list 'cerr_list'
   
 public:
   // Constant Information across all viewers.
@@ -51,14 +53,23 @@ public:
 
   // Accessors for variable information
   int GetPauseLevel() const { return m_pause_level; }
-  int GetStepOrganism() const { return m_step_organism; }
+  int GetStepOrganism() const { return m_step_organism_id; }
+  int GetStepThread() const { return m_step_organism_thread; }
+  int GetViewMode() const { return m_view_mode; }
 
   void SetPauseLevel(int in_level) { m_pause_level = in_level; }
-  void SetStepOrganism(int in_id) { m_step_organism = in_id; }
+  void SetStepOrganism(int in_id) { m_step_organism_id = in_id; }
+  void SetStepThread(int in_thread) { m_step_organism_thread = in_thread; }
+  void SetViewMode(int in_mode) { m_view_mode = in_mode; }
 
   // Special accessors...
-  cStringList & GetOutList() { FlushOut(); return cout_list; }
-  cStringList & GetErrList() { FlushErr(); return cerr_list; }
+  cStringList & GetOutList() { FlushOut(); return m_cout_list; }
+  cStringList & GetErrList() { FlushErr(); return m_cerr_list; }
+
+  // Other functions...
+  void EnterStepMode(int org_id);
+  void ExitStepMode();
+  bool TogglePause();
 };
 
 #endif

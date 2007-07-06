@@ -24,7 +24,6 @@
 
 /* Begin PBXBuildFile section */
 		56F555E50C3B402A00E2E929 /* cDriver_TextViewer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 56F555DF0C3B402A00E2E929 /* cDriver_TextViewer.cc */; };
-		56F555E60C3B402A00E2E929 /* cTextViewerManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 56F555E10C3B402A00E2E929 /* cTextViewerManager.cc */; };
 		56F555E70C3B402A00E2E929 /* viewer-text.cc in Sources */ = {isa = PBXBuildFile; fileRef = 56F555E40C3B402A00E2E929 /* viewer-text.cc */; };
 		700E2996085A1F6000CF158A /* avida in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3164D07626CF3008F7A48 /* avida */; };
 		700E2B87085DE54400CF158A /* avida-viewer in CopyFiles */ = {isa = PBXBuildFile; fileRef = 700E2B83085DE50C00CF158A /* avida-viewer */; };
@@ -1777,7 +1776,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				56F555E50C3B402A00E2E929 /* cDriver_TextViewer.cc in Sources */,
-				56F555E60C3B402A00E2E929 /* cTextViewerManager.cc in Sources */,
 				56F555E70C3B402A00E2E929 /* viewer-text.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

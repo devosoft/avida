@@ -48,10 +48,32 @@ cDriver_TextViewer::cDriver_TextViewer(cWorld* world)
   : m_world(world), m_info(m_world->GetPopulation(), 12), m_done(false)
 {
   // Setup the initial view mode (loaded from avida.cfg)
-//  SetViewMode(world->GetConfig().VIEW_MODE.Get());
+  m_info.SetViewMode(world->GetConfig().VIEW_MODE.Get());
     
   cDriverManager::Register(static_cast<cAvidaDriver*>(this));
   world->SetDriver(this);
+
+  // Setup NCURSES...
+  initscr();                // Set up the terminal for curses.
+  //  cbreak();                 // Don't buffer input.
+  raw();                    // Don't even buffer escape characters!
+  noecho();                 // Don't echo keypresses to the screen.
+  nonl();                   // No new line with CR (when echo is on)
+
+  keypad(stdscr, 1);        // Allows the keypad to be used.
+  nodelay(stdscr, 1);       // Don't wait for input if no key is pressed.
+
+  // Setup colors
+
+  if (has_colors()) start_color();
+  init_pair(COLOR_WHITE,   COLOR_WHITE,   COLOR_BLACK);
+  init_pair(COLOR_GREEN,   COLOR_GREEN,   COLOR_BLACK);
+  init_pair(COLOR_RED,     COLOR_RED,     COLOR_BLACK);
+  init_pair(COLOR_BLUE,    COLOR_BLUE,    COLOR_BLACK);
+  init_pair(COLOR_CYAN,    COLOR_CYAN,    COLOR_BLACK);
+  init_pair(COLOR_YELLOW,  COLOR_YELLOW,  COLOR_BLACK);
+  init_pair(COLOR_MAGENTA, COLOR_MAGENTA, COLOR_BLACK);
+  init_pair(COLOR_OFF,     COLOR_BLACK,   COLOR_BLACK);
 }
 
 cDriver_TextViewer::~cDriver_TextViewer()
@@ -65,6 +87,8 @@ cDriver_TextViewer::~cDriver_TextViewer()
 
 void cDriver_TextViewer::Run()
 {
+  clog << "Ping!" << endl;
+
   cClassificationManager& classmgr = m_world->GetClassificationManager();
   cPopulation& population = m_world->GetPopulation();
   cStats& stats = m_world->GetStats();
@@ -80,7 +104,7 @@ void cDriver_TextViewer::Run()
     }
     
     m_world->GetEvents(ctx);
-    if (m_done == true) break;
+    if (m_done == true) break;  // Stop here if told to do so by an event.
     
     // Increment the Update.
     stats.IncCurrentUpdate();
@@ -187,8 +211,118 @@ void cDriver_TextViewer::Flush()
 
 bool cDriver_TextViewer::ProcessKeypress(int keypress)
 {
-//  return m_view.ProcessKeypress(keypress);
-  return false;
+  bool unknown = false;
+
+  switch (keypress) {
+//   case 'a':
+//   case 'A':
+//     ChangeCurScreen(analyze_screen);
+//     break;
+  case 'b':
+  case 'B':
+//    ChangeCurScreen(NULL);
+    break;
+//   case 'C':
+//   case 'c':
+//     NavigateMapWindow();
+//     // Now we need to restore the proper window mode (already cleared)
+//     ChangeCurScreen(cur_screen);
+//     break;
+//   case 'e':
+//   case 'E':
+//     ChangeCurScreen(environment_screen);
+//     break;
+//   case 'h':
+//   case 'H':
+//     ChangeCurScreen(hist_screen);
+//     break;
+//   case 'm':
+//   case 'M':
+//     ChangeCurScreen(map_screen);
+//     break;
+//   case 'n':
+//   case 'N':
+//     if (info.GetPauseLevel() == PAUSE_ON) {
+//       info.SetPauseLevel(PAUSE_ADVANCE_UPDATE);
+//       // parasite_zoom = false; // if executing, show code that is running
+//       info.GetActiveCell()->GetOrganism()->GetPhenotype().SetFault("");
+//       nodelay(stdscr, true); // Don't delay for input; get to processing.
+//     }
+//     if (cur_screen) cur_screen->AdvanceUpdate();
+//     break;
+//   case 'o':
+//   case 'O':
+//     ChangeCurScreen(options_screen);
+//     break;
+  case 'p':
+  case 'P':
+    if (m_info.TogglePause() == true) {
+      nodelay(stdscr, false); // Wait for input if pause is on...
+    } else {
+      nodelay(stdscr, true); // Don't delay if pause is off.
+    }
+
+    // Redraw the screen to account for the toggled pause.
+//    if (cur_screen) cur_screen->Draw();
+
+    break;
+  case 'q':
+//    if (!Confirm("Are you sure you want to quit?")) break;
+  case 'Q':      // Note: Capital 'Q' quits w/o confirming.
+    // clear the windows before we go.  Do bar window last to end at top.
+//     base_window->Redraw();
+//     bar_screen->Clear();
+//     bar_screen->Refresh();
+    ExitTextViewer(0);  // This implementation calls exit(), blowing us clean away
+    break;
+//   case 's':
+//   case 'S':
+//     ChangeCurScreen(stats_screen);
+//     break;
+//   case 'W':
+//   case 'w':
+//     CloneSoup();
+//     break;
+//   case 'X':
+//   case 'x':
+//     ExtractCreature();
+//     break;
+//   case 'z':
+//   case 'Z':
+//     ChangeCurScreen(zoom_screen);
+//     break;
+  case 3: // CTRL-C...
+    exit(0);
+    break;
+  case 12: // CTRL-L...
+//    Refresh();
+    break;
+  case 26: // CTRL-Z
+    kill(getpid(), SIGTSTP);
+    break;
+//   case '*':   // Test Key!!!
+//     if (true) {
+//       Confirm("Starting Tests.");
+//       cMenuWindow menu(50);
+//       char message[40];
+//       for (int j = 0; j < 50; j++) {
+// 	sprintf(message, "Line %d", j);
+// 	menu.AddOption(j, message);
+//       }
+//       menu.SetActive(3);
+//       menu.Activate(base_window);
+//       Redraw();
+//     }
+//     break;
+  case ERR:
+    break;
+  default:
+    clog << "Unknown Key!" << endl;
+    unknown = true;
+    break;
+  }
+
+  return !unknown;
 }
 
 
@@ -205,10 +339,40 @@ void cDriver_TextViewer::RaiseFatalException(int exit_code, const cString& in_st
 
 void cDriver_TextViewer::NotifyUpdate()
 {
-  // @CAO What should happen on an update?
-  // Update bar at top of screen
-  // Update current view
-  // Check for Inputs...
+  // @CAO What else should happen on an update?
+  // - Update bar at top of screen
+  // - Update current view
+  // - Check for Inputs...
+
+  const int update = m_world->GetStats().GetUpdate();
+  if (update % 10 == 0) clog << update << endl;
+
+  const int pause_level = m_info.GetPauseLevel();
+
+  // If we are stepping in some way, we've come to a stop, so revert to a normal pause.
+  if (pause_level == cCoreView_Info::PAUSE_ADVANCE_INST) {
+    m_info.ExitStepMode();
+  }
+
+  if (pause_level == cCoreView_Info::PAUSE_ADVANCE_UPDATE ||
+      pause_level == cCoreView_Info::PAUSE_ADVANCE_DIVIDE) {
+    m_info.SetPauseLevel(cCoreView_Info::PAUSE_ON);
+  }
+
+  // If we are paused at all, delay doing anything else until we recieve user input.
+  if (pause_level != cCoreView_Info::PAUSE_OFF) nodelay(stdscr, false);
+
+  // If there is any input in the buffer, process all of it.
+  int cur_char = ERR;
+  while ((cur_char = GetKeypress()) != ERR || m_info.GetPauseLevel() == cCoreView_Info::PAUSE_ON) {
+    bool found_keypress = ProcessKeypress(cur_char);
+
+    // If we couldn't manage the keypress here, check the current screen.
+//    if (found_keypress == false && cur_screen) cur_screen->DoInput(cur_char);
+  }
+
+  nodelay(stdscr, true);
+
 }
 
 void cDriver_TextViewer::NotifyComment(const cString& in_string)

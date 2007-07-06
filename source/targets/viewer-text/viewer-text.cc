@@ -49,13 +49,13 @@ int main(int argc, char * argv[])
   // Test to see if we should be in analyze mode only...
   if (world->GetConfig().ANALYZE_MODE.Get() > 0); // @CAO Do something here...
 
+  cout << "We Made IT!  Now we stop." << endl;
+
   driver = new cDriver_TextViewer(world);
 
-  cout << "We Made IT!  Now we stop." << endl;
-  exit(0);
+  cout << "And a bit more for the console to swallow..." << endl;
 
-  cout << endl;
-  
+
   driver->Run();
   
   // Exit Nicely

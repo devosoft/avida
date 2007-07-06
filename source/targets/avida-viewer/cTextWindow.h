@@ -26,7 +26,7 @@
 #include <csignal>
 #include <cstdarg>
 
-// All colors are defines except black on black:
+// All colors are defined except black on black:
 #define COLOR_OFF    8
 
 // Define special characters

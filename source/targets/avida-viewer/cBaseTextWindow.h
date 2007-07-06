@@ -14,29 +14,11 @@
 #include "cTools.h"
 #endif
 
+#ifndef cCoords_h
+#include "cCoords.h"
+#endif
+
 #define MAX_SUB_WINDOWS 4
-
-class cCoords {
-private:
-  int x;
-  int y;
-public:
-  cCoords(int _x, int _y) { x = _x, y = _y; }
-  cCoords(const cCoords & _coords) { x = _coords.x, y = _coords.y; }
-  ~cCoords() { ; }
-
-  void Translate(int _x, int _y) { x += _x, y += _y; }
-
-  void operator=(const cCoords & _coords) { x = _coords.x, y = _coords.y; }
-  int operator==(const cCoords & _c) { return (x == _c.x && y == _c.y); }
-  int operator!=(const cCoords & _c) { return !operator==(_c); }
-
-  int GetX() { return x; }
-  int GetY() { return y; }
-
-  void Set(int _x, int _y) { x = _x; y = _y; }
-};
-
 
 #ifdef ENABLE_UNIT_TESTS
 namespace nBaseTextWindow {

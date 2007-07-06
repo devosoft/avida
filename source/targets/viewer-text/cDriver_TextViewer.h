@@ -38,6 +38,10 @@
 #include "cWorldDriver.h"
 #endif
 
+#ifndef ncurses_defs_h
+#include "ncurses-defs.h"
+#endif
+
 #include <sstream>
 #include <iostream>
 
@@ -62,11 +66,17 @@ public:
   void SignalBreakpoint();
   void SetDone() { m_done = true; }
 
+  // IO
   void Flush();
+  int GetKeypress() { return getch(); }
   bool ProcessKeypress(int keypress);
   
   void RaiseException(const cString& in_string);
   void RaiseFatalException(int exit_code, const cString& in_string);
+
+  // Screen manipulations...
+  void Refresh();      // Update any changes to the screen...
+  void Redraw();       // Clear the screen and redraw its contents.
   
   // Notifications
   void NotifyUpdate();
@@ -75,6 +85,8 @@ public:
   void NotifyError(const cString& in_string);
   void NotifyOutput(const cString& in_string);
   void Notify(const cString& in_string);
+
+  int Confirm(const cString& in_string) { ; } // @CAO Do this...
 
   // Tests
   bool IsInteractive() { return true; }
