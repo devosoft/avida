@@ -119,6 +119,7 @@
         | OP_SUB expr
  
  p6_expr_1: DOT ID id_expr p6_expr_1
+          | IDX_OPEN expr IDX_CLOSE
           |
   
  value: FLOAT
@@ -130,8 +131,7 @@
       | ARR_OPEN argument_list ARR_CLOSE
       | MAT_MODIFY ARR_OPEN argument_list ARR_CLOSE
  
- id_expr: IDX_OPEN expr IDX_CLOSE
-        | PREC_OPEN argument_list PREC_CLOSE
+ id_expr: PREC_OPEN argument_list PREC_CLOSE
         |
  
 
@@ -189,7 +189,7 @@
 
  */
 
-#define PARSE_ERROR(x) reportError(AS_PARSE_ERR_ ## x, __LINE__);
+#define PARSE_ERROR(x) reportError(AS_PARSE_ERR_ ## x, __LINE__)
 #define PARSE_UNEXPECT() { if (currentToken()) { PARSE_ERROR(UNEXPECTED_TOKEN); } else { PARSE_ERROR(EOF); } }
 
 
@@ -349,10 +349,254 @@ cASTNode* cParser::parseCodeBlock(bool& loose)
 
 cASTNode* cParser::parseExpression()
 {
+  cASTNode* expr = NULL;
   
-  // @todo
-  return NULL;
+  expr = parseExprP0();
+  if (!expr) {
+    if (currentToken())
+      PARSE_ERROR(NULL_EXPR);
+    else
+      PARSE_ERROR(EOF);
+  }
+  
+  return expr;
 }
+
+cASTNode* cParser::parseExprP0()
+{
+  cASTNode* l = parseExprP1();
+  cASTNode* r = NULL;
+  
+  while(true) {
+    switch (currentToken()) {
+      case ARR_RANGE:
+      case ARR_EXPAN:
+        nextToken();
+        r = parseExprP1();
+        // set l == new expr
+        break;
+        
+      default:
+        return l;
+    }
+  }
+  
+  return l;
+}
+
+cASTNode* cParser::parseExprP1()
+{
+  cASTNode* l = parseExprP2();
+  cASTNode* r = NULL;
+  
+  while(true) {
+    switch (currentToken()) {
+      case OP_LOGIC_AND:
+      case OP_LOGIC_OR:
+        nextToken();
+        r = parseExprP2();
+        // set l == new expr
+        break;
+        
+      default:
+        return l;
+    }
+  }
+  
+  return l;
+}
+
+cASTNode* cParser::parseExprP2()
+{
+  cASTNode* l = parseExprP3();
+  cASTNode* r = NULL;
+  
+  while(true) {
+    switch (currentToken()) {
+      case OP_BIT_AND:
+      case OP_BIT_OR:
+        nextToken();
+        r = parseExprP3();
+        // set l == new expr
+        break;
+        
+      default:
+        return l;
+    }
+  }
+  
+  return l;
+}
+
+cASTNode* cParser::parseExprP3()
+{
+  cASTNode* l = parseExprP4();
+  cASTNode* r = NULL;
+  
+  while(true) {
+    switch (currentToken()) {
+      case OP_EQ:
+      case OP_LE:
+      case OP_GE:
+      case OP_LT:
+      case OP_GT:
+      case OP_NEQ:
+        nextToken();
+        r = parseExprP4();
+        // set l == new expr
+        break;
+        
+      default:
+        return l;
+    }
+  }
+  
+  return l;
+}
+
+cASTNode* cParser::parseExprP4()
+{
+  cASTNode* l = parseExprP5();
+  cASTNode* r = NULL;
+  
+  while(true) {
+    switch (currentToken()) {
+      case OP_ADD:
+      case OP_SUB:
+        nextToken();
+        r = parseExprP5();
+        // set l == new expr
+        break;
+        
+      default:
+        return l;
+    }
+  }
+  
+  return l;
+}
+
+cASTNode* cParser::parseExprP5()
+{
+  cASTNode* l = parseExprP6();
+  cASTNode* r = NULL;
+  
+  while(true) {
+    switch (currentToken()) {
+      case OP_MUL:
+      case OP_DIV:
+      case OP_MOD:
+        nextToken();
+        r = parseExprP6();
+        // set l == new expr
+        break;
+        
+      default:
+        return l;
+    }
+  }
+  
+  return l;
+}
+
+cASTNode* cParser::parseExprP6()
+{
+  cASTNode* expr = NULL;
+  
+  switch (currentToken()) {
+    case FLOAT:
+    case INT:
+    case CHAR:
+      // @todo - expr = ;
+      break;
+    case STRING:
+      // @todo - expr = ;
+      break;
+    case ID:
+      if (peekToken() == PREC_OPEN) {
+        nextToken();
+        nextToken();
+        parseArgumentList();
+        if (currentToken() != PREC_CLOSE) {
+          PARSE_UNEXPECT();
+          return expr;
+        }
+        // @todo - expr = ;
+      } else {
+        // @todo - expr = ;
+      }
+      break;
+    case PREC_OPEN:
+      nextToken();
+      expr = parseExpression();
+      if (currentToken() != PREC_CLOSE) {
+        PARSE_UNEXPECT();
+        return expr;
+      }
+      break;
+    case MAT_MODIFY:
+      if (nextToken() != ARR_OPEN) {
+        PARSE_UNEXPECT();
+        return expr;
+      }
+    case ARR_OPEN:
+      nextToken();
+      parseArgumentList();
+      if (currentToken() != ARR_CLOSE) {
+        PARSE_UNEXPECT();
+        return expr;
+      }
+      break;
+      
+    case OP_BIT_NOT:
+    case OP_LOGIC_NOT:
+    case OP_SUB:
+      expr = parseExpression();
+      nextToken();
+      return expr;
+      
+    default:
+      break;
+  }
+
+  if (expr) expr = parseExprP6_Index(expr);
+  return expr;
+}
+
+cASTNode* cParser::parseExprP6_Index(cASTNode* l)
+{
+  while (currentToken() == DOT || currentToken() == IDX_OPEN) {
+    if (currentToken() == DOT) {
+      if (nextToken() != ID) {
+        PARSE_UNEXPECT();
+        return l;
+      }
+      if (peekToken() == PREC_OPEN) {
+        nextToken();
+        nextToken();
+        parseArgumentList();
+        if (currentToken() != PREC_CLOSE) {
+          PARSE_UNEXPECT();
+          return l;
+        }
+        // @todo
+      } else {
+        // @todo
+      }
+    } else { // IDX_OPEN:
+      nextToken();
+      parseExpression();
+      if (currentToken() != IDX_CLOSE) {
+        PARSE_UNEXPECT();
+        return l;
+      }
+      // @todo
+    }
+  }
+  
+  return l;
+}
+
 
 cASTNode* cParser::parseForeachStatement()
 {
@@ -753,6 +997,8 @@ void cParser::reportError(ASParseError_t err, const int line)
     case AS_PARSE_ERR_UNTERMINATED_EXPR:
       std::cerr << "unterminated expression'" << currentToken() << "'." << std::endl;
       break;
+    case AS_PARSE_ERR_NULL_EXPR:
+      std::cerr << "expected expression, found '" << currentToken() << "'." << std::endl;
     case AS_PARSE_ERR_EOF:
       if (!m_err_eof) {
         std::cerr << "unexpected end of file" << std::endl;

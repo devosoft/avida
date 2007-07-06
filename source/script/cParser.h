@@ -88,6 +88,14 @@ private:
   cASTNode* parseCallExpression();
   cASTNode* parseCodeBlock(bool& loose);
   cASTNode* parseExpression();
+  cASTNode* parseExprP0();
+  cASTNode* parseExprP1();
+  cASTNode* parseExprP2();
+  cASTNode* parseExprP3();
+  cASTNode* parseExprP4();
+  cASTNode* parseExprP5();
+  cASTNode* parseExprP6();
+  cASTNode* parseExprP6_Index(cASTNode* l);
   cASTNode* parseForeachStatement();
   cASTNode* parseFunctionDefine();
   cASTNode* parseFunctionHeader(bool declare = true);
