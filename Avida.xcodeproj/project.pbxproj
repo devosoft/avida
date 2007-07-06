@@ -187,6 +187,7 @@
 		70B1A75A0B7E431F00067486 /* experimental.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70B1A7590B7E431F00067486 /* experimental.org */; };
 		70B6514F0BEA6FCC002472ED /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701EF27E0BEA5D2300DAE168 /* main.cc */; };
 		70B651B70BEA9AEC002472ED /* unit-tests in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70B6514C0BEA6FAD002472ED /* unit-tests */; };
+		70D046610C32EA90000614E7 /* cBirthChamber.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 702D4F3908DA61E2007BA469 /* cBirthChamber.h */; };
 		70DCAC9C097AF7C0002F8733 /* primitive.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC9B097AF7C0002F8733 /* primitive.cc */; };
 /* End PBXBuildFile section */
 
@@ -315,6 +316,7 @@
 				7049F3730A66AD7E00640512 /* default-transsmt.org in CopyFiles */,
 				70B1A7430B7E3FFD00067486 /* instset-experimental.cfg in CopyFiles */,
 				70B1A75A0B7E431F00067486 /* experimental.org in CopyFiles */,
+				70D046610C32EA90000614E7 /* cBirthChamber.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

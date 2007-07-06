@@ -69,7 +69,7 @@
  
  expr: p0_expr 
  
- p0_expr: p1_expr p6_expr_1
+ p0_expr: p1_expr p0_expr_1
  
  p0_expr_1: ARR_RANGE p1_expr p0_expr_1
           | ARR_EXPAN p1_expr p0_expr_1
@@ -95,7 +95,7 @@
           | OP_GE p4_expr p3_expr_1
           | OP_LT p4_expr p3_expr_1
           | OP_GT p4_expr p3_expr_1
-          | OP_NEQ p4_expr p4_expr_1
+          | OP_NEQ p4_expr p3_expr_1
           |
  
  
@@ -304,9 +304,9 @@ cASTNode* cParser::parseCallExpression()
         }
         switch (nextToken()) {
           case IDX_OPEN:
-            while (currentToken() == IDX_OPEN) {
+            do {
               parseIndexExpression();
-            }
+            } while (nextToken() == IDX_OPEN);
             break;
           case DOT:
             continue;
@@ -316,9 +316,9 @@ cASTNode* cParser::parseCallExpression()
         }
         break;
       case IDX_OPEN:
-        while (currentToken() == IDX_OPEN) {
+        do {
           parseIndexExpression();
-        }
+        } while (nextToken() == IDX_OPEN);
 
       default:
         PARSE_UNEXPECT();
@@ -349,6 +349,7 @@ cASTNode* cParser::parseCodeBlock(bool& loose)
 
 cASTNode* cParser::parseExpression()
 {
+  
   // @todo
   return NULL;
 }
@@ -522,8 +523,15 @@ cASTNode* cParser::parseIfStatement()
 
 cASTNode* cParser::parseIndexExpression()
 {
-  // @todo
-  return NULL;
+  cASTNode* ie = NULL;
+  
+  nextToken();
+  parseExpression();
+  if (currentToken() != IDX_CLOSE) {
+    PARSE_UNEXPECT();
+  }
+  
+  return ie;
 }
 
 cASTNode* cParser::parseLooseBlock()
