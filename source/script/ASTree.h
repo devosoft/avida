@@ -25,36 +25,85 @@
 #ifndef ASTree_h
 #define ASTree_h
 
-enum eASTNodeType
-{
-  N_STMT_LIST,
-  N_EXPR,
-  N_VAR_DECL,
-  N_IF_BLOCK,
-  N_WHILE_BLOCK,
-  N_FOREACH_BLOCK,
-  N_FUNC,
-  N_RETURN,
-  N_BLOCK,
-  
-  N_ERROR
-};
+#ifndef AvidaScript_h
+#include "AvidaScript.h"
+#endif
+#ifndef defs_h
+#include "defs.h"
+#endif
+
 
 class cASTVisitor;
 
+
 class cASTNode
 {
-public:
-  eASTNodeType type;
-  
+private:
+  cASTNode(const cASTNode&); // @not_implemented
+  cASTNode& operator=(const cASTNode&); // @not_implmented
+
+protected:
   cASTNode() { ; }
+
+public:
   virtual ~cASTNode() { ; }
   
   virtual void Accept(cASTVisitor& visitor) = 0;
 };
 
 
+class cASTExpressionUnary : public cASTNode
+{
+private:
+  ASToken_t m_op;
+  cASTNode* m_expr;
+  
+public:
+  cASTExpressionUnary(ASToken_t op) : m_op(op), m_expr(NULL) { ; }
+  
+  void SetExpression(cASTNode* expr) { m_expr = expr; }
+  
+  void Accept(cASTVisitor& visitor);
+};
 
+class cASTExpressionBinary : public cASTNode
+{
+private:
+  ASToken_t m_op;
+  cASTNode* m_left;
+  cASTNode* m_right;
+  
+public:
+  cASTExpressionBinary(ASToken_t op) : m_op(op), m_left(NULL), m_right(NULL) { ; }
+  
+  void SetLeft(cASTNode* left) { m_left = left; }
+  void SetRight(cASTNode* right) { m_right = right; }
+  
+  void Accept(cASTVisitor& visitor);
+};
+
+
+class cASTLiteral : public cASTNode
+{
+private:
+  ASToken_t m_type;
+  
+public:
+  cASTLiteral(ASToken_t t) : m_type(t) { ; }
+    
+  void Accept(cASTVisitor& visitor);
+};
+
+
+class cASTFunctionCall : public cASTNode
+{
+private:
+  
+public:
+  cASTFunctionCall() { ; }
+  
+  void Accept(cASTVisitor& visitor);
+};
 
 
 #endif

@@ -24,3 +24,24 @@
 
 #include "ASTree.h"
 
+
+void cASTExpressionUnary::Accept(cASTVisitor& visitor)
+{
+  
+}
+
+void cASTExpressionBinary::Accept(cASTVisitor& visitor)
+{
+  
+}
+
+void cASTLiteral::Accept(cASTVisitor& visitor)
+{
+  
+}
+
+void cASTFunctionCall::Accept(cASTVisitor& visitor)
+{
+  
+}
+

@@ -507,10 +507,8 @@ cASTNode* cParser::parseExprP6()
     case FLOAT:
     case INT:
     case CHAR:
-      // @todo - expr = ;
-      break;
     case STRING:
-      // @todo - expr = ;
+      expr = new cASTLiteral(currentToken());
       break;
     case ID:
       if (peekToken() == PREC_OPEN) {
