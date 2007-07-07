@@ -39,14 +39,21 @@
 
 #include "cDriverManager.h"
 #include "cTextViewerManager.h"
+#include "cTextWindow.h"
 
 #include <cstdlib>
 
 using namespace std;
 
 cDriver_TextViewer::cDriver_TextViewer(cWorld* world)
-  : m_world(world), m_info(m_world->GetPopulation(), 12), m_done(false)
+  : m_world(world)
+  , m_info(m_world->GetPopulation(), 12)
+  , m_main_window(NULL, m_info)
+  , m_bar_window(&m_main_window, m_info)
+  , m_done(false)
 {
+  m_info.fp << "::cDriver_TextViewer()" << endl; // DEBUG!!!!!!!!!
+
   // Setup the initial view mode (loaded from avida.cfg)
   m_info.SetViewMode(world->GetConfig().VIEW_MODE.Get());
     
@@ -54,14 +61,14 @@ cDriver_TextViewer::cDriver_TextViewer(cWorld* world)
   world->SetDriver(this);
 
   // Setup NCURSES...
-  initscr();                // Set up the terminal for curses.
-  //  cbreak();                 // Don't buffer input.
-  raw();                    // Don't even buffer escape characters!
-  noecho();                 // Don't echo keypresses to the screen.
-  nonl();                   // No new line with CR (when echo is on)
+  initscr();            // Set up the terminal for curses.
+  //  cbreak();             // Don't buffer input.
+  raw();                // Don't even buffer escape characters!
+  noecho();             // Don't echo keypresses to the screen.
+  nonl();               // No new line with CR (when echo is on)
 
-  keypad(stdscr, 1);        // Allows the keypad to be used.
-  nodelay(stdscr, 1);       // Don't wait for input if no key is pressed.
+  keypad(stdscr, 1);    // Allows the keypad to be used.
+  NoDelay();            // Don't wait for input if no key is pressed.
 
   // Setup colors
 
@@ -74,10 +81,37 @@ cDriver_TextViewer::cDriver_TextViewer(cWorld* world)
   init_pair(COLOR_YELLOW,  COLOR_YELLOW,  COLOR_BLACK);
   init_pair(COLOR_MAGENTA, COLOR_MAGENTA, COLOR_BLACK);
   init_pair(COLOR_OFF,     COLOR_BLACK,   COLOR_BLACK);
+
+  // Build the main body of this window.
+  m_main_window.Construct(0,0,3,0);
+  m_info.fp << "Base Width = " << m_main_window.GetWidth()
+	    << "   Height = " << m_main_window.GetHeight()
+	    << endl;
+  m_bar_window.Construct(3,0,0,0);
+  m_info.fp << "Bar Width = " << m_bar_window.GetWidth()
+	    << "   Height = " << m_bar_window.GetHeight()
+	    << endl;
+
+  m_bar_window.Box();
+  m_main_window.SetBoldColor(COLOR_WHITE);
+  m_main_window.Box(5, 5, 30, 30);
+  m_main_window.Print(10, 10, "This is a test!");
+  m_main_window.Refresh();
+
+  int tmp = 5;
+  for (int i = 0; i < 1000000000; i++) tmp = tmp + 2;
+
+  //  NoDelay(false);
+  m_bar_window.Redraw();
+  getch();
+
+  exit(0);
 }
 
 cDriver_TextViewer::~cDriver_TextViewer()
 {
+  m_info.fp << "::~cDriver_TextViewer()" << endl; // DEBUG!!!!!!!!!
+
   cDriverManager::Unregister(static_cast<cAvidaDriver*>(this));
   delete m_world;
     
@@ -87,7 +121,7 @@ cDriver_TextViewer::~cDriver_TextViewer()
 
 void cDriver_TextViewer::Run()
 {
-  clog << "Ping!" << endl;
+  m_info.fp << "::Run()" << endl; // DEBUG!!!!!!!!!
 
   cClassificationManager& classmgr = m_world->GetClassificationManager();
   cPopulation& population = m_world->GetPopulation();
@@ -140,7 +174,7 @@ void cDriver_TextViewer::Run()
           // This is needed to have the top bar drawn properly; I'm not sure why...
           static bool first_update = true;
           if (first_update) {
-//            Refresh();
+            m_main_window.Refresh();
             first_update = false;
           }
         }
@@ -164,7 +198,7 @@ void cDriver_TextViewer::Run()
       // This is needed to have the top bar drawn properly; I'm not sure why...
       static bool first_update = true;
       if (first_update) {
-//        Refresh();
+        m_main_window.Refresh();
         first_update = false;
       }
     }
@@ -193,6 +227,8 @@ void cDriver_TextViewer::SignalBreakpoint()
 
 void cDriver_TextViewer::Flush()
 {
+  m_info.fp << "::Flush()" << endl; // DEBUG!!!!!!!!!
+
   cStringList & out_list = m_info.GetOutList();
   cStringList & err_list = m_info.GetErrList();
   
@@ -211,6 +247,8 @@ void cDriver_TextViewer::Flush()
 
 bool cDriver_TextViewer::ProcessKeypress(int keypress)
 {
+  m_info.fp << "::ProcessKeypress()" << endl; // DEBUG!!!!!!!!!
+
   bool unknown = false;
 
   switch (keypress) {
@@ -270,9 +308,10 @@ bool cDriver_TextViewer::ProcessKeypress(int keypress)
 //    if (!Confirm("Are you sure you want to quit?")) break;
   case 'Q':      // Note: Capital 'Q' quits w/o confirming.
     // clear the windows before we go.  Do bar window last to end at top.
-//     base_window->Redraw();
-//     bar_screen->Clear();
-//     bar_screen->Refresh();
+    m_main_window.Clear();
+    m_main_window.Redraw();
+    m_bar_window.Clear();
+    m_bar_window.Redraw();
     ExitTextViewer(0);  // This implementation calls exit(), blowing us clean away
     break;
 //   case 's':
@@ -295,7 +334,7 @@ bool cDriver_TextViewer::ProcessKeypress(int keypress)
     exit(0);
     break;
   case 12: // CTRL-L...
-//    Refresh();
+    m_main_window.Refresh();
     break;
   case 26: // CTRL-Z
     kill(getpid(), SIGTSTP);
@@ -310,7 +349,7 @@ bool cDriver_TextViewer::ProcessKeypress(int keypress)
 // 	menu.AddOption(j, message);
 //       }
 //       menu.SetActive(3);
-//       menu.Activate(base_window);
+//       menu.Activate(main_window);
 //       Redraw();
 //     }
 //     break;
@@ -339,13 +378,17 @@ void cDriver_TextViewer::RaiseFatalException(int exit_code, const cString& in_st
 
 void cDriver_TextViewer::NotifyUpdate()
 {
+  m_info.fp << "::NotifyUpdate()" << endl; // DEBUG!!!!!!!!!
+
   // @CAO What else should happen on an update?
   // - Update bar at top of screen
   // - Update current view
   // - Check for Inputs...
 
-  const int update = m_world->GetStats().GetUpdate();
-  if (update % 10 == 0) clog << update << endl;
+//   const int update = m_world->GetStats().GetUpdate();
+//   if (update % 10 == 0) clog << update << endl;
+
+  m_main_window.Refresh();
 
   const int pause_level = m_info.GetPauseLevel();
 
@@ -369,6 +412,7 @@ void cDriver_TextViewer::NotifyUpdate()
 
     // If we couldn't manage the keypress here, check the current screen.
 //    if (found_keypress == false && cur_screen) cur_screen->DoInput(cur_char);
+    m_main_window.Refresh();
   }
 
   nodelay(stdscr, true);
@@ -404,6 +448,7 @@ void cDriver_TextViewer::NotifyOutput(const cString& in_string)
 
 void cDriver_TextViewer::Notify(const cString& in_string)
 {
+  m_info.fp << "::Notify()" << endl; // DEBUG!!!!!!!!!
   // @CAO We need to display this!
 }
 
@@ -412,8 +457,8 @@ void cDriver_TextViewer::Notify(const cString& in_string)
 void ExitTextViewer(int exit_code)
 {
   signal(SIGINT, SIG_IGN);           // Ignore all future interupts.
-//  mvcur(0, COLS - 1, LINES - 1, 0);  // Move curser to the lower left.
-//  endwin();                          // Restore terminal mode.
+  mvcur(0, COLS - 1, LINES - 1, 0);  // Move curser to the lower left.
+  endwin();                          // Restore terminal mode.
 
   printf ("Exit Code: %d\n", exit_code);
 

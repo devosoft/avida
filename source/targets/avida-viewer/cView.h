@@ -97,6 +97,8 @@ public:
 
   // Methods called by sub-windows.
   void Redraw();
+
+  void TestDEBUG();
 };
 
 

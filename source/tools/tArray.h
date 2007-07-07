@@ -140,10 +140,12 @@ public:
     return m_data[index];
   }    
 
-  void Push(const T& value)
+  int Push(const T& value)
   {
+    const int new_pos = m_size;
     Resize(m_size + 1);
-    m_data[m_size - 1] = value;
+    m_data[new_pos] = value;
+    return new_pos;
   }
 
   void SetAll(const T& value)

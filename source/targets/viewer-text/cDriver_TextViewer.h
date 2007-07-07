@@ -33,6 +33,9 @@
 #include "cCoreView_Info.h"
 #endif
  
+#ifndef cTextWindow_h
+#include "cTextWindow.h"
+#endif
 
 #ifndef cWorldDriver_h
 #include "cWorldDriver.h"
@@ -44,18 +47,21 @@
 
 #include <sstream>
 #include <iostream>
+#include <fstream>
 
 class cWorld;
 
+using namespace std;
 
 class cDriver_TextViewer : public cAvidaDriver, public cWorldDriver {
 private:
   cWorld* m_world;
   cCoreView_Info m_info;
+  cTextWindow m_main_window;
+  cTextWindow m_bar_window;
 
-  bool m_done;                 // This is set to true when run should finish.
+  bool m_done;           // This is set to true when run should finish.
 
-  cDriver_TextViewer();  // Intentionally not implemented
 public:
   cDriver_TextViewer(cWorld* world);
   ~cDriver_TextViewer();
@@ -68,16 +74,13 @@ public:
 
   // IO
   void Flush();
-  int GetKeypress() { return getch(); }
+  int GetKeypress() { m_info.fp << "GK" << endl; return getch(); }
   bool ProcessKeypress(int keypress);
-  
+  void NoDelay(bool _nd=true) { m_info.fp << "ND" << endl; nodelay(stdscr, _nd); }  // Don't wait for input if no key is pressed.
+
   void RaiseException(const cString& in_string);
   void RaiseFatalException(int exit_code, const cString& in_string);
 
-  // Screen manipulations...
-  void Refresh();      // Update any changes to the screen...
-  void Redraw();       // Clear the screen and redraw its contents.
-  
   // Notifications
   void NotifyUpdate();
   void NotifyComment(const cString& in_string);

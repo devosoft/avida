@@ -7,6 +7,7 @@ cCoreView_Info::cCoreView_Info(cPopulation & in_pop, int in_total_colors)
   , m_pause_level(PAUSE_OFF)
   , m_step_organism_id(-1)
   , m_step_organism_thread(-1)
+  , fp("debug.dat")
 {
   // Redirect standard output...
   std::cout.rdbuf(m_cout_stream.rdbuf());

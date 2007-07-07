@@ -9,6 +9,10 @@
 #undef OK
 #endif
 
+#ifndef platform_h
+#include "platform.h"
+#endif
+
 // All colors are defined except black on black:
 #define COLOR_OFF    8
 

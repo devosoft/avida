@@ -128,12 +128,10 @@ void cTextViewerDriver::Run()
     // end of update stats...
     population.CalcUpdateStats();
     
-    
     // Setup the viewer for the new update.
     if (m_view->GetStepOrganism() == -1) {
-      m_view->NotifyUpdate();
       m_view->NewUpdate();
-      
+ 
       // This is needed to have the top bar drawn properly; I'm not sure why...
       static bool first_update = true;
       if (first_update) {

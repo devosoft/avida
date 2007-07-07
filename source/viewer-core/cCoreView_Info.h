@@ -7,12 +7,14 @@
 
 #include <iostream>
 #include <sstream>
+#include <fstream>
 
 #include "cStringList.h"
 #include "tList.h"
 
 class cPopulation;
-class cCoreView_Base;
+
+using namespace std;
 
 class cCoreView_Info {
 protected:
@@ -43,6 +45,7 @@ protected:
 public:
   // Constant Information across all viewers.
   enum ePause { PAUSE_ON, PAUSE_OFF, PAUSE_ADVANCE_INST, PAUSE_ADVANCE_UPDATE, PAUSE_ADVANCE_DIVIDE };
+  ofstream fp; // DEBUG!!!!
 
 public:
   cCoreView_Info(cPopulation & in_pop, int in_total_colors);
