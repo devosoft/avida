@@ -74,22 +74,25 @@ public:
 
   // IO
   void Flush();
-  int GetKeypress() { m_info.fp << "GK" << endl; return getch(); }
+  int GetKeypress() { return getch(); }
   bool ProcessKeypress(int keypress);
-  void NoDelay(bool _nd=true) { m_info.fp << "ND" << endl; nodelay(stdscr, _nd); }  // Don't wait for input if no key is pressed.
+  void NoDelay(bool _nd=true) { nodelay(stdscr, _nd); }  // Don't wait for input if no key is pressed.
 
   void RaiseException(const cString& in_string);
   void RaiseFatalException(int exit_code, const cString& in_string);
 
+  // Drawing and interaction.
+  void Draw();
+  void DoUpdate();
+
   // Notifications
-  void NotifyUpdate();
   void NotifyComment(const cString& in_string);
   void NotifyWarning(const cString& in_string);
   void NotifyError(const cString& in_string);
   void NotifyOutput(const cString& in_string);
   void Notify(const cString& in_string);
 
-  int Confirm(const cString& in_string) { ; } // @CAO Do this...
+  int Confirm(const cString& in_string);
 
   // Tests
   bool IsInteractive() { return true; }

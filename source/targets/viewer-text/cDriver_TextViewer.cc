@@ -49,11 +49,9 @@ cDriver_TextViewer::cDriver_TextViewer(cWorld* world)
   : m_world(world)
   , m_info(m_world->GetPopulation(), 12)
   , m_main_window(NULL, m_info)
-  , m_bar_window(&m_main_window, m_info)
+  , m_bar_window(NULL, m_info)
   , m_done(false)
 {
-  m_info.fp << "::cDriver_TextViewer()" << endl; // DEBUG!!!!!!!!!
-
   // Setup the initial view mode (loaded from avida.cfg)
   m_info.SetViewMode(world->GetConfig().VIEW_MODE.Get());
     
@@ -84,34 +82,23 @@ cDriver_TextViewer::cDriver_TextViewer(cWorld* world)
 
   // Build the main body of this window.
   m_main_window.Construct(0,0,3,0);
-  m_info.fp << "Base Width = " << m_main_window.GetWidth()
-	    << "   Height = " << m_main_window.GetHeight()
-	    << endl;
   m_bar_window.Construct(3,0,0,0);
-  m_info.fp << "Bar Width = " << m_bar_window.GetWidth()
-	    << "   Height = " << m_bar_window.GetHeight()
-	    << endl;
 
-  m_bar_window.Box();
+  Draw();
   m_main_window.SetBoldColor(COLOR_WHITE);
-  m_main_window.Box(5, 5, 30, 30);
   m_main_window.Print(10, 10, "This is a test!");
-  m_main_window.Refresh();
-
-  int tmp = 5;
-  for (int i = 0; i < 1000000000; i++) tmp = tmp + 2;
 
   //  NoDelay(false);
+  wrefresh(stdscr);
   m_bar_window.Redraw();
-  getch();
+  m_main_window.Redraw();
 
-  exit(0);
+//   getch();
+//   exit(0);
 }
 
 cDriver_TextViewer::~cDriver_TextViewer()
 {
-  m_info.fp << "::~cDriver_TextViewer()" << endl; // DEBUG!!!!!!!!!
-
   cDriverManager::Unregister(static_cast<cAvidaDriver*>(this));
   delete m_world;
     
@@ -121,8 +108,6 @@ cDriver_TextViewer::~cDriver_TextViewer()
 
 void cDriver_TextViewer::Run()
 {
-  m_info.fp << "::Run()" << endl; // DEBUG!!!!!!!!!
-
   cClassificationManager& classmgr = m_world->GetClassificationManager();
   cPopulation& population = m_world->GetPopulation();
   cStats& stats = m_world->GetStats();
@@ -168,7 +153,7 @@ void cDriver_TextViewer::Run()
       for (int i = 0; i < UD_size; i++) {
         const int next_id = population.ScheduleOrganism();
         if (next_id == m_info.GetStepOrganism()) {
-          NotifyUpdate();
+          DoUpdate();
 //          m_view.NewUpdate();
           
           // This is needed to have the top bar drawn properly; I'm not sure why...
@@ -192,7 +177,7 @@ void cDriver_TextViewer::Run()
     
     // Setup the viewer for the new update.
     if (m_info.GetStepOrganism() == -1) {
-      NotifyUpdate();
+      DoUpdate();
 //      NewUpdate();
       
       // This is needed to have the top bar drawn properly; I'm not sure why...
@@ -227,8 +212,6 @@ void cDriver_TextViewer::SignalBreakpoint()
 
 void cDriver_TextViewer::Flush()
 {
-  m_info.fp << "::Flush()" << endl; // DEBUG!!!!!!!!!
-
   cStringList & out_list = m_info.GetOutList();
   cStringList & err_list = m_info.GetErrList();
   
@@ -247,8 +230,6 @@ void cDriver_TextViewer::Flush()
 
 bool cDriver_TextViewer::ProcessKeypress(int keypress)
 {
-  m_info.fp << "::ProcessKeypress()" << endl; // DEBUG!!!!!!!!!
-
   bool unknown = false;
 
   switch (keypress) {
@@ -305,14 +286,14 @@ bool cDriver_TextViewer::ProcessKeypress(int keypress)
 
     break;
   case 'q':
-//    if (!Confirm("Are you sure you want to quit?")) break;
+    if (!Confirm("Are you sure you want to quit?")) break;
   case 'Q':      // Note: Capital 'Q' quits w/o confirming.
     // clear the windows before we go.  Do bar window last to end at top.
     m_main_window.Clear();
     m_main_window.Redraw();
     m_bar_window.Clear();
     m_bar_window.Redraw();
-    ExitTextViewer(0);  // This implementation calls exit(), blowing us clean away
+    ExitTextViewer(0);
     break;
 //   case 's':
 //   case 'S':
@@ -334,25 +315,14 @@ bool cDriver_TextViewer::ProcessKeypress(int keypress)
     exit(0);
     break;
   case 12: // CTRL-L...
-    m_main_window.Refresh();
+    wclear(stdscr);
+    wrefresh(stdscr);
+    m_bar_window.Redraw();
+    m_main_window.Redraw();
     break;
   case 26: // CTRL-Z
     kill(getpid(), SIGTSTP);
     break;
-//   case '*':   // Test Key!!!
-//     if (true) {
-//       Confirm("Starting Tests.");
-//       cMenuWindow menu(50);
-//       char message[40];
-//       for (int j = 0; j < 50; j++) {
-// 	sprintf(message, "Line %d", j);
-// 	menu.AddOption(j, message);
-//       }
-//       menu.SetActive(3);
-//       menu.Activate(main_window);
-//       Redraw();
-//     }
-//     break;
   case ERR:
     break;
   default:
@@ -376,10 +346,42 @@ void cDriver_TextViewer::RaiseFatalException(int exit_code, const cString& in_st
   exit(exit_code);
 }
 
-void cDriver_TextViewer::NotifyUpdate()
-{
-  m_info.fp << "::NotifyUpdate()" << endl; // DEBUG!!!!!!!!!
 
+void cDriver_TextViewer::Draw()
+{
+  m_bar_window.SetBoldColor(COLOR_WHITE);
+
+  m_bar_window.Box();
+  m_bar_window.VLine(18);
+  m_bar_window.VLine(-11);
+  
+  m_bar_window.Print(1, -8, "Avida");
+  m_bar_window.Print(1, 2, "Update:");
+
+  const int max_x = m_bar_window.GetWidth() - 19;
+  int cur_x = 21;
+
+  // Include options in their general order of importance.
+  cur_x = m_bar_window.PrintMenuBarOption("[M]ap ", max_x, cur_x);
+  cur_x = m_bar_window.PrintMenuBarOption("[S]tats", max_x, cur_x);
+  // cur_x = m_bar_window.PrintMenuBarOption("[A]nalyze", max_x, cur_x);
+  cur_x = m_bar_window.PrintMenuBarOption("[Z]oom", max_x, cur_x);
+  cur_x = m_bar_window.PrintMenuBarOption("[O]ptions", max_x, cur_x);
+  cur_x = m_bar_window.PrintMenuBarOption("[H]ist", max_x, cur_x);
+  cur_x = m_bar_window.PrintMenuBarOption("[E]nv ", max_x, cur_x);
+  cur_x = m_bar_window.PrintMenuBarOption("[P]ause", max_x, cur_x);
+  cur_x = m_bar_window.PrintMenuBarOption("[B]lank", max_x, cur_x);
+  cur_x = m_bar_window.PrintMenuBarOption("[C]hoose CPU", max_x, cur_x);
+
+  // Always place Quit as the last option.
+  cur_x = m_bar_window.PrintMenuBarOption("[Q]uit", max_x+8, cur_x);
+
+  m_bar_window.Refresh();
+}
+
+
+void cDriver_TextViewer::DoUpdate()
+{
   // @CAO What else should happen on an update?
   // - Update bar at top of screen
   // - Update current view
@@ -387,7 +389,12 @@ void cDriver_TextViewer::NotifyUpdate()
 
 //   const int update = m_world->GetStats().GetUpdate();
 //   if (update % 10 == 0) clog << update << endl;
+  
+  m_bar_window.SetBoldColor(COLOR_WHITE);
+  m_bar_window.Print(1, 11, "%d", m_world->GetStats().GetUpdate());
+  m_bar_window.SetColor(COLOR_WHITE);
 
+  m_bar_window.Refresh();
   m_main_window.Refresh();
 
   const int pause_level = m_info.GetPauseLevel();
@@ -448,8 +455,57 @@ void cDriver_TextViewer::NotifyOutput(const cString& in_string)
 
 void cDriver_TextViewer::Notify(const cString& in_string)
 {
-  m_info.fp << "::Notify()" << endl; // DEBUG!!!!!!!!!
   // @CAO We need to display this!
+}
+
+
+int cDriver_TextViewer::Confirm(const cString & message)
+{
+  const int mess_length = message.GetSize();
+
+  // Create a confirm window, and draw it on the screen.
+
+  const int conf_width = mess_length + 10;
+  const int conf_x = (m_main_window.GetWidth() - conf_width) / 2;
+  cTextWindow conf_win(NULL, m_info, 3, conf_width, 10, conf_x);
+  conf_win.Box();
+  conf_win.SetBoldColor(COLOR_WHITE);
+  conf_win.Print(1, 2, "%s (y/n)", static_cast<const char*>(message));
+  conf_win.SetBoldColor(COLOR_CYAN);
+  conf_win.Print(1, mess_length + 4, 'y');
+  conf_win.Print(1, mess_length + 6, 'n');
+  conf_win.SetColor(COLOR_WHITE);
+  conf_win.Refresh();
+
+  // Wait for the results.
+  bool finished = false;
+  bool result = false;
+  int cur_char;
+
+  while (finished == false) {
+    cur_char = GetKeypress();
+    switch (cur_char) {
+    case 'q':
+    case 'Q':
+    case 'n':
+    case 'N':
+    case ' ':
+    case '\n':
+    case '\r':
+      finished = true;
+      result = false;
+      break;
+    case 'y':
+    case 'Y':
+      finished = true;
+      result = true;
+      break;
+    }
+  }
+
+  // Redraw the screen, and return the results.
+  m_main_window.Redraw();
+  return result;
 }
 
 

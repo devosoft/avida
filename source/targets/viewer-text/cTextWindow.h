@@ -25,6 +25,10 @@
 #ifndef cTextWindow_h
 #define cTextWindow_h
 
+#ifndef cString_h
+#include "cString.h"
+#endif
+
 #ifndef tArray_h
 #include "tArray.h"
 #endif
@@ -92,6 +96,9 @@ public:
   void Print(const char * fmt, ...);
   void Print(int in_y, int in_x, const char * fmt, ...);
   void PrintBinary(int in_y, int in_x, unsigned int value);
+  void PrintDouble(int in_y, int in_x, double value);
+  void PrintOption(int in_y, int in_x, const cString & option);
+  int PrintMenuBarOption(const cString & option, int max_x, int cur_x);
 
 
   // ------ Drawing & Erasing ------

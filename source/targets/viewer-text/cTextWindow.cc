@@ -34,7 +34,6 @@ using namespace std;
 cTextWindow::cTextWindow(cTextWindow * parent, cCoreView_Info & info)
   : m_win_id(NULL), m_parent_window(parent), m_info(info)
 {
-  m_info.fp << "cTW::cTextWindow -- Base constructor for " << this << endl; // DEBUG!!!!!
 }
 
 
@@ -43,9 +42,6 @@ cTextWindow::cTextWindow(cTextWindow * parent, cCoreView_Info & info, int y_size
 {
   // Build this window.
   m_win_id = newwin(y_size, x_size, y_start, x_start);
-
-  m_info.fp << "cTW::cTextWindow -- Full constructor for " << this << "; id=" << m_win_id << endl; // DEBUG!!!!!
-
 
   // If a parent was given, register with it.
   if (m_parent_window != NULL) m_parent_window->AddSubWindow(this);
@@ -57,8 +53,6 @@ cTextWindow::cTextWindow(cTextWindow * parent, cCoreView_Info & info, int y_size
 
 cTextWindow::~cTextWindow()
 {
-  m_info.fp << "cTW::~cTextWindow -- Destructor for " << this << endl; // DEBUG!!!!!
-
   // Delete all sub-windows...
   for (int i = 0; i < m_sub_windows.GetSize(); i++) {
     if (m_sub_windows[i]) delete m_sub_windows[i];
@@ -76,8 +70,6 @@ void cTextWindow::Construct(int y_size, int x_size, int y_start, int x_start)
   
   m_win_id = newwin(y_size, x_size, y_start, x_start);
 
-  m_info.fp << "cTW::Construct() for " << this << "; new id = " << m_win_id << endl; // DEBUG!!!!!
-
   // If a parent was given, register with it.
   if (m_parent_window != NULL) m_parent_window->AddSubWindow(this);
   keypad(m_win_id, 1);        // Allows the keypad to be used.
@@ -88,8 +80,6 @@ void cTextWindow::Construct(int y_size, int x_size, int y_start, int x_start)
 int cTextWindow::AddSubWindow(cTextWindow * in_window)
 {
   assert(in_window != NULL);
-
-  m_info.fp << "cTW::AddSubWindow(" << in_window << ") for " << this << endl; // DEBUG!!!!!
 
   // Scan existing array for open spots...
   for (int i = 0; i < m_sub_windows.GetSize(); i++) {
@@ -121,8 +111,6 @@ void cTextWindow::CloseSubWindow(int id)
 
 void cTextWindow::Refresh()
 {
-  m_info.fp << "cTW::Refresh() for " << this << endl; // DEBUG!!!!!
-
   RefreshSelf();
   for (int i = 0; i < m_sub_windows.GetSize(); i++) {
     if (m_sub_windows[i]) m_sub_windows[i]->Refresh();
@@ -132,8 +120,6 @@ void cTextWindow::Refresh()
 
 void cTextWindow::Redraw()
 {
-  m_info.fp << "cTW::Redraw() for " << this << endl; // DEBUG!!!!!
-
   RedrawSelf();
   for (int i = 0; i < m_sub_windows.GetSize(); i++) {
     if (m_sub_windows[i]) m_sub_windows[i]->Redraw();
@@ -142,8 +128,6 @@ void cTextWindow::Redraw()
 
 void cTextWindow::Clear()
 {
-  m_info.fp << "cTW::Clear() for " << this << endl; // DEBUG!!!!!
-
   ClearMain();
   for (int i = 0; i < m_sub_windows.GetSize(); i++) {
     if (m_sub_windows[i]) m_sub_windows[i]->Clear();
@@ -165,6 +149,9 @@ void cTextWindow::Print(const char * fmt, ...)
 
 void cTextWindow::Print(int in_y, int in_x, const char * fmt, ...)
 {
+  if (in_x < 0) in_x = GetWidth() + in_x;
+  if (in_y < 0) in_y = GetHeight() + in_y;
+
   va_list argp;
   char buf[BUFSIZ];
   
@@ -173,23 +160,75 @@ void cTextWindow::Print(int in_y, int in_x, const char * fmt, ...)
   va_end(argp);
   wmove(m_win_id, in_y, in_x);
   waddstr(m_win_id, buf);
-
-  m_info.fp << "cTW::Print(" << buf << ") for " << this << endl; // DEBUG!!!!!
 }
 
 
 void cTextWindow::PrintBinary(int in_y, int in_x, unsigned int value)
 {
+  if (in_x < 0) in_x = GetWidth() + in_x;
+  if (in_y < 0) in_y = GetHeight() + in_y;
+
   for (int i = 0; i < 32; i++) {
     if ((value >> i) & 1) Print(in_y, in_x+31-i, '1');
     else Print(in_y, in_x+31-i, '0');
   }
 }
 
+
+void cTextWindow::PrintDouble(int in_y, int in_x, double in_value)
+{
+  if (in_x < 0) in_x = GetWidth() + in_x;
+  if (in_y < 0) in_y = GetHeight() + in_y;
+
+  // If we have an integer, just include one zero at the end.
+  int int_value = (int) in_value;
+  if (in_value == ((double) int_value)) Print(in_y, in_x, "%5.1f", in_value);
+
+  // Otherwise give as many decimal places as we can...
+  else if (in_value < 10.0)       Print(in_y, in_x, "%1.5f", in_value);
+  else if (in_value < 100.0)      Print(in_y, in_x, "%2.4f", in_value);
+  else if (in_value < 1000.0)     Print(in_y, in_x, "%3.3f", in_value);
+  else if (in_value < 10000.0)    Print(in_y, in_x, "%4.2f", in_value);
+  else if (in_value < 100000.0)   Print(in_y, in_x, "%5.1f", in_value);
+  else if (in_value < 10000000.0) Print(in_y, in_x, "%7d", int_value);
+
+  // And if its too big, use scientific notation.
+  else Print(in_y, in_x, "%7.1e", in_value);
+}
+
+
+void cTextWindow::PrintOption(int in_y, int in_x, const cString & option)
+{
+  if (in_x < 0) in_x = GetWidth() + in_x;
+  if (in_y < 0) in_y = GetHeight() + in_y;
+
+  // Print the main option...
+  SetBoldColor(COLOR_WHITE);
+  Print(in_y, in_x, option);
+
+  // Highlight the keypress...
+  SetBoldColor(COLOR_YELLOW);
+  bool highlight = false;
+  for (int i = 0; i < option.GetSize(); i++) {
+    if (option[i] == '[') { highlight = true; continue; }
+    if (option[i] == ']') { highlight = false; continue; }
+    if (highlight == true) Print(in_y, in_x+i, option[i]);
+  }
+}
+
+
+int cTextWindow::PrintMenuBarOption(const cString & option, int max_x, int cur_x)
+{
+  // If there isn't enough room for this option, don't print it; just return cur position.
+  if (cur_x + option.GetSize() >= max_x) return cur_x;
+
+  PrintOption(1, cur_x, option);
+  return cur_x+option.GetSize()+1;
+}
+
+
 void cTextWindow::Box(int y, int x, int h, int w)
 {
-  m_info.fp << "cTW::Box(inputs!!) for " << this << endl; // DEBUG!!!!!
-
   int i;
   for (i = 1; i < h - 1; i++) {
     mvwaddch(m_win_id, i + y, x, ACS_VLINE);
@@ -207,6 +246,8 @@ void cTextWindow::Box(int y, int x, int h, int w)
 
 void cTextWindow::VLine(int in_x)
 {
+  if (in_x < 0) in_x = GetWidth() + in_x;
+
   mvwaddch(m_win_id, 0, in_x, ACS_TTEE);
   mvwaddch(m_win_id, GetHeight() - 1, in_x, ACS_BTEE);
   for (int i = 1; i < GetHeight() - 1; i++) {
@@ -216,6 +257,9 @@ void cTextWindow::VLine(int in_x)
 
 void cTextWindow::VLine(int in_x, int start_y, int length)
 {
+  if (in_x < 0) in_x = GetWidth() + in_x;
+  if (start_y < 0) start_y = GetHeight() + start_y;
+
   mvwaddch(m_win_id, start_y, in_x, ACS_TTEE);
   mvwaddch(m_win_id, start_y + length - 1, in_x, ACS_BTEE);
   for (int i = 1; i < length - 1; i++) {
@@ -225,6 +269,8 @@ void cTextWindow::VLine(int in_x, int start_y, int length)
 
 void cTextWindow::HLine(int in_y)
 {
+  if (in_y < 0) in_y = GetHeight() + in_y;
+
   mvwaddch(m_win_id, in_y, 0, ACS_LTEE);
   mvwaddch(m_win_id, in_y, GetWidth() - 1, ACS_RTEE);
   for (int i = 1; i < GetWidth() - 1; i++) {
@@ -234,6 +280,9 @@ void cTextWindow::HLine(int in_y)
 
 void cTextWindow::HLine(int in_y, int start_x, int length)
 {
+  if (in_y < 0) in_y = GetHeight() + in_y;
+  if (start_x < 0) start_x = GetWidth() + start_x;
+
   mvwaddch(m_win_id, in_y, start_x, ACS_LTEE);
   mvwaddch(m_win_id, in_y, start_x + length - 1, ACS_RTEE);
   for (int i = 1; i < length - 1; i++) {
