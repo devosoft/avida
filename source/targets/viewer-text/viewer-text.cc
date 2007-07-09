@@ -1,5 +1,5 @@
 /*
- *  viewer.cc
+ *  viewer-text.cc
  *  Avida
  *
  *  Created by Charles on 7/1/07
@@ -49,13 +49,8 @@ int main(int argc, char * argv[])
   // Test to see if we should be in analyze mode only...
   if (world->GetConfig().ANALYZE_MODE.Get() > 0); // @CAO Do something here...
 
-  cout << "We Made IT!  Now we stop." << endl;
-
+  // And run the driver!
   driver = new cDriver_TextViewer(world);
-
-  cout << "And a bit more for the console to swallow..." << endl;
-
-
   driver->Run();
   
   // Exit Nicely

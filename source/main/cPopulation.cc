@@ -81,12 +81,13 @@ cPopulation::cPopulation(cWorld* world)
   // Avida specific information.
   world_x = world->GetConfig().WORLD_X.Get();
   world_y = world->GetConfig().WORLD_Y.Get();
-	int num_demes = m_world->GetConfig().NUM_DEMES.Get();
-	const int num_cells = world_x * world_y;
+  int num_demes = m_world->GetConfig().NUM_DEMES.Get();
+  const int num_cells = world_x * world_y;
   const int geometry = world->GetConfig().WORLD_GEOMETRY.Get();
   
-  if(m_world->GetConfig().ENERGY_CAP.Get() == -1)
+  if(m_world->GetConfig().ENERGY_CAP.Get() == -1) {
     m_world->GetConfig().ENERGY_CAP.Set(INT_MAX);
+  }
   
   if(m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1)  {
     sleep_log = new tVector<pair<int,int> >[world_x*world_y];
@@ -95,14 +96,13 @@ cPopulation::cPopulation(cWorld* world)
   if (world->GetVerbosity() > VERBOSE_NORMAL) {
     cout << "Building world " << world_x << "x" << world_y << " = " << num_cells << " organisms." << endl;
     switch(geometry) {
-      case nGeometry::GRID: { cout << "Geometry: Bounded grid" << endl;	break; }
-			case nGeometry::TORUS: { cout << "Geometry: Torus" << endl; break;	}
-			case nGeometry::CLIQUE: { cout << "Geometry: Clique" << endl; break; }
-      case nGeometry::HEX: { cout << "Geometry: Hex" << endl; break; }
-			default: {
-        cout << "Unknown geometry!" << endl;
-        assert(false);
-      }        
+    case nGeometry::GRID: { cout << "Geometry: Bounded grid" << endl; break; }
+    case nGeometry::TORUS: { cout << "Geometry: Torus" << endl; break; }
+    case nGeometry::CLIQUE: { cout << "Geometry: Clique" << endl; break; }
+    case nGeometry::HEX: { cout << "Geometry: Hex" << endl; break; }
+    default:
+      cout << "Unknown geometry!" << endl;
+      assert(false);
     }
   }
   
@@ -110,80 +110,69 @@ cPopulation::cPopulation(cWorld* world)
 #ifdef DEBUG
   const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
 #endif
-	if(num_demes > 0) {
-		assert(birth_method != POSITION_CHILD_FULL_SOUP_ELDEST);
-		assert(birth_method != POSITION_CHILD_FULL_SOUP_ELDEST);
-	} else {
-		assert(birth_method != POSITION_CHILD_DEME_RANDOM);
-		num_demes = 1; // One population == one deme.
-	}
-	
+  if(num_demes > 0) {
+    assert(birth_method != POSITION_CHILD_FULL_SOUP_ELDEST);
+  } else {
+    assert(birth_method != POSITION_CHILD_DEME_RANDOM);
+    num_demes = 1; // One population == one deme.
+  }
+  
   // Allocate the cells, resources, and market.
-	cell_array.Resize(num_cells);
-	resource_count.ResizeSpatialGrids(world_x, world_y);
-	market.Resize(MARKET_SIZE);
+  cell_array.Resize(num_cells);
+  resource_count.ResizeSpatialGrids(world_x, world_y);
+  market.Resize(MARKET_SIZE);
   
   // Setup the cells.  Do things that are not dependent upon topology here.
-	for(int i=0; i<num_cells; ++i) {
-		cell_array[i].Setup(world, i, environment.GetMutRates(), i%world_x, i/world_x);
+  for(int i=0; i<num_cells; ++i) {
+    cell_array[i].Setup(world, i, environment.GetMutRates(), i%world_x, i/world_x);
     // Setup the reaper queue.
-		if (world->GetConfig().BIRTH_METHOD.Get() == POSITION_CHILD_FULL_SOUP_ELDEST) {
-			reaper_queue.Push(&(cell_array[i]));
-		}
-	}                         
-
-	// What are the sizes of the demes that we're creating?
-	const int deme_size_x = world_x;
-	const int deme_size_y = world_y / num_demes;
-	const int deme_size = deme_size_x * deme_size_y;
-	deme_array.Resize(num_demes);
-	
+    if (world->GetConfig().BIRTH_METHOD.Get() == POSITION_CHILD_FULL_SOUP_ELDEST) {
+      reaper_queue.Push(&(cell_array[i]));
+    }
+  }                         
+  
+  // What are the sizes of the demes that we're creating?
+  const int deme_size_x = world_x;
+  const int deme_size_y = world_y / num_demes;
+  const int deme_size = deme_size_x * deme_size_y;
+  deme_array.Resize(num_demes);
+  
   // Setup the deme structures.
-	tArray<int> deme_cells(deme_size);
-	for (int deme_id = 0; deme_id < num_demes; deme_id++) {
-		for (int offset = 0; offset < deme_size; offset++) {
-			int cell_id = deme_id * deme_size + offset;
-			deme_cells[offset] = cell_id;
-			cell_array[cell_id].SetDemeID(deme_id);
-		}
-		deme_array[deme_id].Setup(deme_cells, deme_size_x);
-	}
+  tArray<int> deme_cells(deme_size);
+  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+    for (int offset = 0; offset < deme_size; offset++) {
+      int cell_id = deme_id * deme_size + offset;
+      deme_cells[offset] = cell_id;
+      cell_array[cell_id].SetDemeID(deme_id);
+    }
+    deme_array[deme_id].Setup(deme_cells, deme_size_x);
+  }
   
   // Setup the topology.
   // What we're doing here is chopping the cell_array up into num_demes pieces.
   // Note that having 0 demes (one population) is the same as having 1 deme.  Then
   // we send the cells that comprise each deme into the topology builder.
-	for(int i=0; i<num_cells; i+=deme_size) {
-		switch(geometry) {
-      // We're cheating here; we're using the random access nature of an iterator
-      // to index beyond the end of the cell_array.
-			case nGeometry::GRID: {
-				build_grid(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], 
-                   deme_size_x, deme_size_y);
-				break;
-			}
-			case nGeometry::TORUS: {
-				build_torus(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], 
-                    deme_size_x, deme_size_y);
-				break;
-			}
-			case nGeometry::CLIQUE: {
-				build_clique(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], 
-                     deme_size_x, deme_size_y);
-				break;
-			}
-      case nGeometry::HEX: {
-				build_hex(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], 
-                  deme_size_x, deme_size_y);
-				break;
-			}
-			default: {
-				assert(false);
-			}
-		}
-	}
-  
-  
+  for(int i=0; i<num_cells; i+=deme_size) {
+    // We're cheating here; we're using the random access nature of an iterator
+    // to index beyond the end of the cell_array.
+    switch(geometry) {
+    case nGeometry::GRID:
+      build_grid(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], deme_size_x, deme_size_y);
+      break;
+    case nGeometry::TORUS:
+      build_torus(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], deme_size_x, deme_size_y);
+      break;
+    case nGeometry::CLIQUE:
+      build_clique(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], deme_size_x, deme_size_y);
+      break;
+    case nGeometry::HEX:
+      build_hex(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], deme_size_x, deme_size_y);
+      break;
+    default:
+      assert(false);
+    }
+  }
+	
   BuildTimeSlicer(0);
   
   // Setup the resources...

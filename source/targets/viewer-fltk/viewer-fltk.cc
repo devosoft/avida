@@ -1,8 +1,8 @@
 /*
- *  viewer.cc
+ *  viewer-fltk.cc
  *  Avida
  *
- *  Created by Charles on 7/1/07
+ *  Created by Charles on 7/8/07
  *  Copyright 1999-2007 Michigan State University. All rights reserved.
  *
  *
@@ -49,13 +49,8 @@ int main(int argc, char * argv[])
   // Test to see if we should be in analyze mode only...
   if (world->GetConfig().ANALYZE_MODE.Get() > 0); // @CAO Do something here...
 
-  cout << "We Made IT!  Now we stop." << endl;
-
-  driver = new cDriver_TextViewer(world);
-
-  cout << "And a bit more for the console to swallow..." << endl;
-
-
+  // Turn control over to the driver!
+  driver = new cDriver_FLTKViewer(world);
   driver->Run();
   
   // Exit Nicely

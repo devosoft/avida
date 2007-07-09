@@ -138,7 +138,7 @@ private:
   void InjectClone(int cell_id, cOrganism& orig_org);
 
   void LineageSetupOrganism(cOrganism* organism, cLineage* lineage, int lin_label, cGenotype* parent_genotype = NULL);
-	void CCladeSetupOrganism(cOrganism* organism); 
+  void CCladeSetupOrganism(cOrganism* organism); 
 	
   // Must be called to activate *any* organism in the population.
   void ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell);
