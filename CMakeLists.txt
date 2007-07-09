@@ -478,9 +478,7 @@ IF(AVD_GUI_PROTO_FLTK)
     
     SET(AVIDA_FLTK_VIEWER_DIR source/targets/viewer-fltk)
     SET(AVIDA_FLTK_VIEWER_SOURCES
-#      ${AVIDA_FLTK_VIEWER_DIR}/cFltkViewerAnalyzeDriver.cc
-#      ${AVIDA_FLTK_VIEWER_DIR}/cFltkViewerDriver.cc
-#      ${AVIDA_FLTK_VIEWER_DIR}/cFltkViewerDriver_Base.cc
+      ${AVIDA_FLTK_VIEWER_DIR}/cDriver_FltkViewer.cc
       ${AVIDA_FLTK_VIEWER_DIR}/viewer-fltk.cc
     )
     SOURCE_GROUP(targets\\viewer-fltk FILES ${AVIDA_FLTK_VIEWER_SOURCES})

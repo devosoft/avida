@@ -30,7 +30,7 @@
 #include "PlatformExpert.h"
 #include "cWorld.h"
 
-#include "cDriver_TextViewer.h"
+#include "cDriver_FLTKViewer.h"
 
 
 using namespace std;
