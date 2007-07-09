@@ -759,7 +759,7 @@ void cEnvironment::SetupInputs(cAvidaContext& ctx, tArray<int>& input_array, boo
   if (random) {
     if (m_true_rand) {
       for (int i = 0; i < m_input_size; i++) {
-        input_array[i] = ctx.GetRandom().GetUInt(1 << 31);
+        input_array[i] = ctx.GetRandom().GetUInt((unsigned int) 1 << 31);
       }
     } else {
       // Set the top 8 bits of the input buffer...
@@ -826,6 +826,7 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
     }
 
     const double task_quality = m_tasklib.TestOutput(taskctx);
+    assert(task_quality >= 0.0);
 	
 
     // If this task wasn't performed, move on to the next one.
@@ -928,8 +929,11 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       // Otherwise we're using a finite resource
       const int res_id = in_resource->GetID();
       
+      assert(resource_count[res_id] >= 0);
+      assert(result.GetConsumed(res_id) >= 0);
       consumed = resource_count[res_id] - result.GetConsumed(res_id);
       consumed *= cur_process->GetMaxFraction();
+      assert(consumed >= 0.0);
       
       // Make sure we're not above the maximum consumption.
       if (consumed > max_consumed) consumed = max_consumed;

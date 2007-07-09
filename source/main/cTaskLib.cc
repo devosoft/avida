@@ -2127,7 +2127,8 @@ void cTaskLib::Load_Optimize(const cString& name, const cString& argstr, cEnvReq
   schema.AddEntry("basepow", 0, 2.0);
   schema.AddEntry("maxFx", 1, 1.0);
   schema.AddEntry("minFx", 2, 0.0);
-
+  schema.AddEntry("thresh", 3, -1.0);
+  schema.AddEntry("threshMax", 4, -1.0);
 
   cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
   if (args) 
@@ -2181,9 +2182,17 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
     x = tempX / tot;
     y = tempY / tot;
   } else {
-    x = abs(double(ctx.GetOutputBuffer()[0]) / 0xffffffff);
-    y = abs(double(ctx.GetOutputBuffer()[1]) / 0xffffffff);
+    x = double(ctx.GetOutputBuffer()[0]) / 0xffffffff;
+    y = double(ctx.GetOutputBuffer()[1]) / 0xffffffff;
   }
+  if (x < 0)
+    x = 0;
+  else if (x > 1)
+    x = 1;
+  if (y < 0)
+    y = 0;
+  else if (y > 1)
+    y = 1;
 
   switch(function) {
     case 1:
@@ -2226,8 +2235,35 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
       quality = .001;
   }
   ctx.SetTaskValue(Fx);
-  quality = (args.GetDouble(1) - Fx+.001) / (args.GetDouble(1) - args.GetDouble(2)+.001);
-  
+  if (args.GetDouble(3) < 0.0)
+  {
+    double q1 = (args.GetDouble(1) - Fx+.001);
+    double q2 = (args.GetDouble(1) - args.GetDouble(2)+.001);
+    assert(q1 > 0.0);
+    assert(q2 > 0.0);
+    quality = q1 / q2;
+  } else {
+    if (args.GetDouble(4) < 0.0)
+    {
+      if (Fx <= (args.GetDouble(1) - args.GetDouble(2))*args.GetDouble(3) + args.GetDouble(2))
+      {
+	quality = 1.0;
+      }
+      else
+      {
+	quality = 0.0;
+      }
+    }
+    else
+    {
+      if ( (Fx >= (args.GetDouble(1) - args.GetDouble(2))*args.GetDouble(3) + args.GetDouble(2))
+	   && (Fx <= (args.GetDouble(1) - args.GetDouble(2))*args.GetDouble(4) + args.GetDouble(2)) )
+	quality = 1.0;
+      else
+	quality = 0.0;
+    }
+  }
+
   // because want org to only have 1 shot to use outputs for all functions at once, even if they
   // output numbers that give a quality of 0 on a function, still want to mark it as completed
   // so give it a very low quality instead of 0 (if using limited resources they still will get
@@ -2235,14 +2271,11 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
   // possible fraction they'll be below minimum allowed consumed and will consume nothing
 
   if (quality > 1)
-    cout << "\n\nquality > 1!\n\n";
+    cout << "\n\nquality > 1!  quality= " << quality << "  Fx= " << Fx << endl;
   
-  if (quality < .001)
-    return .001;
-  else
-    return quality;
+  if (quality < 0.001) return .001;
 
-  return 0;
+  return quality;
 }
 
 void cTaskLib::Load_Mult(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)

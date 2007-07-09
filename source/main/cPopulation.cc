@@ -1633,21 +1633,18 @@ void cPopulation::ProcessStep(cAvidaContext& ctx, double step_size, int cell_id)
 {
   assert(step_size > 0.0);
   assert(cell_id < cell_array.GetSize());
-  
   // If cell_id is negative, no cell could be found -- stop here.
   if (cell_id < 0) return;
-  
   cPopulationCell& cell = GetCell(cell_id);
   assert(cell.IsOccupied()); // Unoccupied cell getting processor time!
-  
   cOrganism* cur_org = cell.GetOrganism();
   cur_org->GetHardware().SingleProcess(ctx);
   if (cur_org->GetPhenotype().GetToDelete() == true) {
     delete cur_org;
   }
-  m_world->GetStats().IncExecuted();
-  resource_count.Update(step_size);
-}
+   m_world->GetStats().IncExecuted();
+ resource_count.Update(step_size);
+ }
 
 
 void cPopulation::UpdateOrganismStats()
