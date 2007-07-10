@@ -65,6 +65,7 @@ environment.Append(
     '#/source/main',
     #'#/source/third-party/boost',
     '#/source/tools',
+    '#/source/platform',
   ],
   LIBPATH = [
     '#$buildDir/actions',
@@ -77,6 +78,7 @@ environment.Append(
     '#$buildDir/main',
     #'#$buildDir/third-party/boost/serialization',
     '#$buildDir/tools',
+    '#$buildDir/platform',
   ],
 )
 

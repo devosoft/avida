@@ -1,7 +1,26 @@
-
 Import('environment')
+
+misc = ['SConscript']
+
+incs = [
+	'cThread.h',
+	'PlatformExpert.h'
+]
+
+srcs = [
+	'cThread.cc',
+	'PlatformExpert.cc'
+]
     
 if environment['enableTCMalloc'] in ('True', '1', 1):
   environment.SConscript('tcmalloc/SConscript')
+
+environment.Library('platform', srcs) 
+
+environment.AppendUnique(
+  avida_msvs_project_srcs = [File(src).srcnode().path for src in srcs],
+  avida_msvs_project_incs = [File(src).srcnode().path for src in incs],
+  avida_msvs_project_misc = [File(src).srcnode().path for src in misc],
+)
   
 # vim: set ft=python:

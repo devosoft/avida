@@ -21,6 +21,7 @@ libs = [
     #'archive',
     #'boost_serialization',
     'main',
+    'platform',
   ]
 if environment['PLATFORM'] not in ('win32'):
   libs = libs + ['pthread']
