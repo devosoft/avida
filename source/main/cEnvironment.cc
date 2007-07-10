@@ -787,6 +787,17 @@ void cEnvironment::SetupInputs(cAvidaContext& ctx, tArray<int>& input_array, boo
 }
 
 
+void cEnvironment::SwapInputs(cAvidaContext& ctx, tArray<int>& src_input_array, tArray<int>& dest_input_array) const
+{
+  tArray<int>& tmp_input_array = dest_input_array;
+
+  // Just swap the pointers around.  
+  dest_input_array = src_input_array;
+  src_input_array = tmp_input_array;
+  
+}
+
+
 bool cEnvironment::TestInput(cReactionResult& result, const tBuffer<int>& inputs,
                              const tBuffer<int>& outputs, const tArray<double>& resource_count) const
 {

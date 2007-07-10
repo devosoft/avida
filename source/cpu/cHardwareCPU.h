@@ -453,6 +453,9 @@ private:
   bool Inst_RotateLabel(cAvidaContext& ctx);
   bool Inst_SetCopyMut(cAvidaContext& ctx);
   bool Inst_ModCopyMut(cAvidaContext& ctx);
+  // @WRE additions for movement
+  bool Inst_Tumble(cAvidaContext& ctx);
+  bool Inst_Move(cAvidaContext& ctx);
 
   // Energy use
   

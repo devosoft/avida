@@ -221,6 +221,9 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     
     tInstLibEntry<tMethod>("set-cmut", &cHardwareCPU::Inst_SetCopyMut),
     tInstLibEntry<tMethod>("mod-cmut", &cHardwareCPU::Inst_ModCopyMut),
+    // @WRE additions for movement
+    tInstLibEntry<tMethod>("tumble", &cHardwareCPU::Inst_Tumble),
+    tInstLibEntry<tMethod>("move", &cHardwareCPU::Inst_Move),
 
     // Energy instruction
     tInstLibEntry<tMethod>("recover", &cHardwareCPU::Inst_ZeroEnergyUsed),
@@ -3697,6 +3700,55 @@ bool cHardwareCPU::Inst_ModCopyMut(cAvidaContext& ctx)
   const double new_mut_rate = organism->GetCopyMutProb() + static_cast<double>(GetRegister(reg_used)) / 10000.0;
   if (new_mut_rate > 0.0) organism->SetCopyMutProb(new_mut_rate);
   return true;
+}
+
+// @WRE addition for movement
+// Tumble sets the organism and cell to a new random facing
+// 
+bool cHardwareCPU::Inst_Tumble(cAvidaContext& ctx)
+{
+  // Code taken from Inst_Inject
+  //cout << "Tumble: start" << endl;
+  const int num_neighbors = organism->GetNeighborhoodSize();
+  //cout << "Tumble: size = " << num_neighbors << endl;
+  organism->Rotate(ctx.GetRandom().GetUInt(num_neighbors));
+  return true;
+}
+
+// @WRE addition for movement
+// Move uses the cPopulation::SwapCells method to move an organism to a different cell
+// and the cPopulation::MoveOrganisms helper function to clean up after a move
+// The cell selected as a destination is the one faced
+bool cHardwareCPU::Inst_Move(cAvidaContext& ctx)
+{
+  // Declarations
+  int fromcellID, destcellID; //, actualNeighborhoodSize, fromFacing, destFacing, currentFacing;
+
+  // Get population
+  cPopulation& pop = m_world->GetPopulation();
+
+  // Get stepsize. Currently, all moves are one cell regardless of stepsize.
+  // This could be changed in the future.
+  const int stepsize = m_world->GetConfig().BIOMIMETIC_MOVEMENT_STEP.Get();
+  
+  // Code
+  if (0 < stepsize) {
+    // Current cell
+    fromcellID = organism->GetCellID();
+    // With sanity check
+    if (-1  == fromcellID) return false;
+    // Destination cell
+    destcellID = pop.GetCell(fromcellID).GetCellFaced().GetID();
+    // Actually perform the move using SwapCells
+    //cout << "SwapCells: " << fromcellID << " to " << destcellID << endl;
+    pop.SwapCells(pop.GetCell(fromcellID),pop.GetCell(destcellID));
+    // Swap inputs and facings between cells using helper function
+    pop.MoveOrganisms(ctx, pop.GetCell(fromcellID), pop.GetCell(destcellID));
+
+    return true;
+  } else {
+    return false;
+  }
 }
 
 // Energy use

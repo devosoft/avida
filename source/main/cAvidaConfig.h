@@ -352,12 +352,12 @@ public:
   CONFIG_ADD_VAR(APPLY_ENERGY_METHOD, int, 0, "When should rewarded energy be applied to current energy?\n0 = on divide\n1 = on completion of task\n2 = on sleep");  
   CONFIG_ADD_VAR(ENERGY_VERBOSE, bool, 0, "Print energy and merit values. 0/1 (off/on)");
   CONFIG_ADD_VAR(LOG_SLEEP_TIMES, bool, 0, "Log sleep start and end times. 0/1 (off/on)\nWARNING: may use lots of memory.");
-//  CONFIG_ADD_VAR(FIX_METABOLIC_RATE, bool, 0, "When activated the metabolic rate of all orgiansims are equal. 0/1 (off/on)"); // TODO - check for correctness
+  //  CONFIG_ADD_VAR(FIX_METABOLIC_RATE, bool, 0, "When activated the metabolic rate of all orgiansims are equal. 0/1 (off/on)"); // TODO - check for correctness
 
   CONFIG_ADD_GROUP(SECOND_PASS_GROUP, "Tracking metrics known after the running experiment previously");
   CONFIG_ADD_VAR(TRACK_CCLADES, int, 0, "Enable tracking of coalescence clades");
   CONFIG_ADD_VAR(TRACK_CCLADES_IDS, cString, "coalescence.ids", "File storing coalescence IDs");
-  
+
   CONFIG_ADD_GROUP(GX_GROUP, "Gene Expression CPU Settings");
   CONFIG_ADD_VAR(MAX_PROGRAMIDS, int, 16, "Maximum number of programids an organism can create.");
   CONFIG_ADD_VAR(MAX_PROGRAMID_AGE, int, 2000, "Max number of CPU cycles a programid executes before it is removed.");
@@ -365,7 +365,7 @@ public:
   CONFIG_ADD_VAR(IMPLICIT_BG_PROMOTER_RATE, double, 0.0, "Relative rate of non-promoter sites creating programids.");
   CONFIG_ADD_VAR(IMPLICIT_TURNOVER_RATE, double, 0.0, "Number of programids recycled per CPU cycle. 0 = OFF");
   CONFIG_ADD_VAR(IMPLICIT_MAX_PROGRAMID_LENGTH, int, 0, "Creation of an executable programid terminates after this many instructions. 0 = disabled");
-//  CONFIG_ADD_VAR(CLEAR_ON_OUTPUT, int, 0, "Reset input buffer every time output called?"); @JEB Not fully implemented
+  //  CONFIG_ADD_VAR(CLEAR_ON_OUTPUT, int, 0, "Reset input buffer every time output called?"); @JEB Not fully implemented
 
   CONFIG_ADD_GROUP(PROMOTER_GROUP, "Promoters");
   CONFIG_ADD_VAR(PROMOTERS_ENABLED, int, 0, "Use the promoter/terminator execution scheme.\nCertain instructions must also be included.");
@@ -388,6 +388,12 @@ public:
   CONFIG_ADD_VAR(COLOR_MUT_NEG,    cString, "FFFF00", "Color to flag stat that has changed since parent.");
   CONFIG_ADD_VAR(COLOR_MUT_LETHAL, cString, "FF0000", "Color to flag stat that has changed since parent.");
 
+  // @WRE: Additions for approaching various features of biological organisms
+  CONFIG_ADD_GROUP(BIOMIMETIC_GROUP, "Biomimetic Features Settings");
+  CONFIG_ADD_VAR(BIOMIMETIC_REFRACTORY_PERIOD, double, 0.0, "Number of updates affected by refractory period");
+  CONFIG_ADD_VAR(BIOMIMETIC_MOVEMENT_STEP, int, 0, "Number of cells to move Avidian on move instruction");
+  CONFIG_ADD_VAR(BIOMIMETIC_K, int, 0, "Carrying capacity in number of organisms");
+  
 #endif
   
   void Load(const cString& filename, const bool& crash_if_not_found);

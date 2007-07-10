@@ -39,8 +39,14 @@
 
 cBirthChamber::cBirthChamber(cWorld* world) : m_world(world)
 {
-  const int num_orgs = m_world->GetConfig().WORLD_X.Get() * m_world->GetConfig().WORLD_Y.Get();
   const int num_demes = m_world->GetConfig().NUM_DEMES.Get(); 
+  int num_orgs;
+
+  num_orgs = m_world->GetConfig().BIOMIMETIC_K.Get();
+  if (0 >= num_orgs) {
+    num_orgs = m_world->GetConfig().WORLD_X.Get() * m_world->GetConfig().WORLD_Y.Get();
+  }
+
   local_wait_entry.Resize(num_orgs);
   deme_wait_entry.Resize(num_demes);
 }

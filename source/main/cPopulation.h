@@ -162,6 +162,10 @@ public:
   
   // Deactivate an organism in the population (required for deactivations)
   void KillOrganism(cPopulationCell& in_cell);
+  
+  // @WRE 2007/07/05 Helper function to take care of side effects of Avidian 
+  // movement that cannot be directly handled in cHardwareCPU.cc
+  void MoveOrganisms(cAvidaContext& ctx, cPopulationCell& src_cell, cPopulationCell& dest_cell);
 
   // Specialized functionality
   void Kaboom(cPopulationCell& in_cell, int distance=0);

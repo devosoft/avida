@@ -473,6 +473,95 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   
 }
 
+// @WRE 2007/07/05 Helper function to take care of side effects of Avidian 
+// movement that cannot be directly handled in cHardwareCPU.cc
+void cPopulation::MoveOrganisms(cAvidaContext& ctx, cPopulationCell& src_cell, cPopulationCell& dest_cell)
+{
+  // Declarations
+  int actualNeighborhoodSize, fromFacing, destFacing, newFacing, success;
+#ifdef DEBBUG
+  int sID, dID, xx1, yy1, xx2, yy2;
+#endif
+
+  // Swap inputs between cells to fix bus error when Avidian moves into an unoccupied cell
+  environment.SwapInputs(ctx, src_cell.input_array, dest_cell.input_array);
+  
+  // Find neighborhood size for facing 
+  if (NULL != dest_cell.GetOrganism()) {
+    actualNeighborhoodSize = dest_cell.GetOrganism()->GetNeighborhoodSize();
+  } else {
+    if (NULL != src_cell.GetOrganism()) {
+      actualNeighborhoodSize = src_cell.GetOrganism()->GetNeighborhoodSize();
+    } else {
+      // Punt
+      actualNeighborhoodSize = 8;
+    }
+  }
+ 
+  // Swap cell facings between cells, so that if movement is directed, it continues to be associated with
+  // the same organism
+  // Determine absolute facing for each cell
+  fromFacing = src_cell.GetFacing();
+  destFacing = dest_cell.GetFacing();
+
+  // Set facing in source cell
+  success = 0;
+  newFacing = destFacing;
+  for(int i = 0; i < actualNeighborhoodSize; i++) {
+    if (src_cell.GetFacing() != newFacing) {
+      src_cell.ConnectionList().CircNext();
+      //cout << "MO: src_cell facing not yet at " << newFacing << endl;
+    } else {
+      //cout << "MO: src_cell facing successfully set to " << newFacing << endl;
+      success = 1;
+      break;
+    }
+  }
+#ifdef DEBUG
+  if (!success) {
+    sID = src_cell.GetID();
+    dID = dest_cell.GetID();
+    src_cell.GetPosition(xx1,yy1);
+    dest_cell.GetPosition(xx2,yy2);
+    //Conditional for examining only neighbor move without swap in facing
+    //if (1 == abs(xx2-xx1)+abs(yy2-yy1)) {
+    cout << "MO: src: " << sID << "@ (" << xx1 << "," << yy1 << ") dest: " << dID << "@ (" << xx2 << "," << yy2 << "), FAILED to set src_cell facing to " << newFacing << endl;
+    for (int j=0; j < actualNeighborhoodSize; j++) {
+      src_cell.ConnectionList().CircNext();
+      src_cell.GetCellFaced().GetPosition(xx2,yy2);
+      cout << "connlist for " << sID << ": facing " << src_cell.GetFacing() << " -> (" << xx2 << "," << yy2 << ")" << endl;
+    }
+    //}
+  }
+#endif 
+
+  // Set facing in destinatiion cell
+  success = 0;
+  newFacing = fromFacing;
+  for(int i = 0; i < actualNeighborhoodSize; i++) {
+    if (dest_cell.GetFacing() != newFacing) {
+      dest_cell.ConnectionList().CircNext();
+      // cout << "MO: dest_cell facing not yet at " << newFacing << endl;
+    } else {
+      // cout << "MO: dest_cell facing successfully set to " << newFacing << endl;
+      success = 1;
+      break;
+    }
+  }
+#ifdef DEBUG
+  if (!success) {
+    sID = src_cell.GetID();
+    dID = dest_cell.GetID();
+    src_cell.GetPosition(xx1,yy1);
+    dest_cell.GetPosition(xx2,yy2);
+    if (1 == abs(xx2-xx1)+abs(yy2-yy1)) {
+      cout << "MO: src: " << sID << "@ (" << xx1 << "," << yy1 << ") dest: " << dID << "@ (" << xx2 << "," << yy2 << "), FAILED to set dest_cell facing to " << newFacing << endl;
+    }
+  }
+#endif
+  
+}
+
 void cPopulation::KillOrganism(cPopulationCell& in_cell)
 {
   // do we actually have something to kill?
@@ -659,23 +748,33 @@ int cPopulation::BuyValue(const int label, const int buy_price, const int cell_i
 
 void cPopulation::SwapCells(cPopulationCell & cell1, cPopulationCell & cell2)
 {
+  // Sanity checks: Don't process if the cells are the same and 
+  // don't bother trying to move when given a cell that isn't there
+  //cout << "SwapCells: testing if cell1 and cell2 are non-null" << endl;
+  //if (!(NULL != cell1) || !(NULL != cell2)) return;
+  if ((&cell1 == NULL) || (&cell2 == NULL)) return;
+  //cout << "SwapCells: testing if cell1 and cell2 are different" << endl;  
+  if (cell1.GetID() == cell2.GetID()) return;
+  // Clear current contents of cells
+  //cout << "SwapCells: clearing cell contents" << endl;
   cOrganism * org1 = cell1.RemoveOrganism();
   cOrganism * org2 = cell2.RemoveOrganism();
+  //cout << "SwapCells: organism 2 is non-null, fix up source cell" << endl;
   if (org2 != NULL) {
     cell1.InsertOrganism(*org2);
     schedule->Adjust(cell1.GetID(), org2->GetPhenotype().GetMerit());
   } else {
     schedule->Adjust(cell1.GetID(), cMerit(0));
   }
-
+  //cout << "SwapCells: organism 1 is non-null, fix up dest cell" << endl;
   if (org1 != NULL) {
     cell2.InsertOrganism(*org1);
     schedule->Adjust(cell2.GetID(), org1->GetPhenotype().GetMerit());
   } else {
     schedule->Adjust(cell2.GetID(), cMerit(0));
   }
+  //cout << "SwapCells: Done." << endl;
 }
-
 
 // CompeteDemes  probabilistically copies demes into the next generation
 // based on their fitness. How deme fitness is estimated is specified by 
@@ -1638,6 +1737,12 @@ void cPopulation::ProcessStep(cAvidaContext& ctx, double step_size, int cell_id)
 
 void cPopulation::UpdateOrganismStats()
 {
+  // Carrying capacity @WRE 04-20-07
+  // Check for positive non-zero carrying capacity and apply it
+  if (0 < m_world->GetConfig().BIOMIMETIC_K.Get()) {
+    SerialTransfer(m_world->GetConfig().BIOMIMETIC_K.Get(),true);
+  }
+
   // Loop through all the cells getting stats and doing calculations
   // which must be done on a creature by creature basis.
   

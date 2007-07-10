@@ -49,6 +49,7 @@ cPhenotype::cPhenotype(cWorld* world)
   , cur_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())
   , cur_inst_count(world->GetHardwareManager().GetInstSet().GetSize())
   , cur_sense_count(m_world->GetStats().GetSenseSize())
+  , cur_task_time(m_world->GetEnvironment().GetNumTasks())   // Added for tracking time; WRE 03-18-07
   , sensed_resources(m_world->GetEnvironment().GetResourceLib().GetSize())
   , promoter_last_inst_terminated(false) 
   , last_task_count(m_world->GetEnvironment().GetNumTasks())
@@ -142,6 +143,7 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
   cur_sense_count.SetAll(0);  
+  cur_task_time.SetAll(0.0);  // Added for time tracking; WRE 03-18-07
   for (int j = 0; j < sensed_resources.GetSize(); j++)
 	      sensed_resources[j] =  parent_phenotype.sensed_resources[j];
   SetupPromoterWeights(_genome, true);
@@ -271,6 +273,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   cur_inst_count.SetAll(0);
   sensed_resources.SetAll(0);
   cur_sense_count.SetAll(0);
+  cur_task_time.SetAll(0.0);
   SetupPromoterWeights(_genome, true);
   
   // Copy last values from parent
@@ -418,6 +421,7 @@ void cPhenotype::DivideReset(const cGenome & _genome)
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
   cur_sense_count.SetAll(0);
+  cur_task_time.SetAll(0.0);
 
   // Setup other miscellaneous values...
   num_divides++;
@@ -553,6 +557,7 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
   cur_sense_count.SetAll(0); 
+  cur_task_time.SetAll(0.0);
   sensed_resources.SetAll(-1.0);
   SetupPromoterWeights(_genome, true);
   
@@ -666,6 +671,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
   cur_sense_count.SetAll(0);  
+  cur_task_time.SetAll(0.0);
   for (int j = 0; j < sensed_resources.GetSize(); j++)
 	      sensed_resources[j] =  clone_phenotype.sensed_resources[j];
   //SetupPromoterWeights(_genome); Do we reset here?
@@ -778,6 +784,11 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   const int num_tasks = env.GetNumTasks();
   const int num_reactions = env.GetReactionLib().GetSize();
 
+  // For refractory period @WRE 03-20-07
+  const int cur_update_time = m_world->GetStats().GetUpdate();
+  const double biomimetic_refractory_period = m_world->GetConfig().BIOMIMETIC_REFRACTORY_PERIOD.Get();
+  double refract_factor;
+
   cReactionResult result(num_resources, num_tasks, num_reactions);
 			
   // Run everything through the environment.
@@ -792,14 +803,25 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   // Update the phenotype with the results...
   // Start with updating task and reaction counters
   for (int i = 0; i < num_tasks; i++) {
+    // Calculate refractory period factor @WRE
+    // Modify TaskQuality amount based on refractory period
+    // Logistic equation using refractory period
+    // in update units from configuration file.  @WRE 03-20-07, 04-17-07
+    if (0.0 == biomimetic_refractory_period) {
+      refract_factor = 1.0;
+    } else {
+      refract_factor = 1.0 - (1.0 / (1.0 + exp((cur_update_time - cur_task_time[i])-biomimetic_refractory_period*0.5)));
+    }
     if (result.TaskDone(i) == true) 
     {
       cur_task_count[i]++;
       eff_task_count[i]++;
     }
-    if (result.TaskQuality(i) > 0) cur_task_quality[i]+= result.TaskQuality(i);
-	cur_task_value[i] = result.TaskValue(i);
+    if (result.TaskQuality(i) > 0) cur_task_quality[i]+= result.TaskQuality(i) * refract_factor;
+    cur_task_value[i] = result.TaskValue(i);
+    cur_task_time[i] = cur_update_time; // Find out time from context
   }
+
   for (int i = 0; i < num_reactions; i++) {
     if (result.ReactionTriggered(i) == true) cur_reaction_count[i]++;
     cur_reaction_add_reward[i] += result.GetReactionAddBonus(i);

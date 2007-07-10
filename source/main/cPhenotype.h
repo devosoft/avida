@@ -119,6 +119,7 @@ private:
   tArray<int> cur_inst_count;                 // Instruction exection counter
   tArray<int> cur_sense_count;                // Total times resource combinations have been sensed; @JEB 
   tArray<double> sensed_resources;            // Resources which the organism has sensed; @JEB 
+  tArray<double> cur_task_time;    // Time at which each task was last performed; WRE 03-18-07
   tArray<cCodeLabel> active_transposons;      // Transposons that are active; @JEB
   tArray<double> base_promoter_weights;       // Baseline chance of starting execution from each position; @JEB 
   tArray<double> cur_promoter_weights;        // Current of starting execution from each position, adjusted for regulation; @JEB 
