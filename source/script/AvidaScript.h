@@ -30,46 +30,46 @@ typedef enum eASTokens {
   ENDL,
   COMMA,
   
-  OP_BIT_NOT,
+  OP_BIT_NOT, // 4
   OP_BIT_AND,
   OP_BIT_OR,
   
-  OP_LOGIC_NOT,
+  OP_LOGIC_NOT, // 7
   OP_LOGIC_AND,
   OP_LOGIC_OR,
   
-  OP_ADD,
+  OP_ADD, // 10
   OP_SUB,
   OP_MUL,
   OP_DIV,
   OP_MOD,
   
-  DOT,
+  DOT, // 15
   ASSIGN,
   REF,
   
-  OP_EQ,
+  OP_EQ, // 18
   OP_LE,
   OP_GE,
   OP_LT,
   OP_GT,
   OP_NEQ,
   
-  PREC_OPEN,
+  PREC_OPEN, // 24
   PREC_CLOSE,
   
-  IDX_OPEN,
+  IDX_OPEN, // 26
   IDX_CLOSE,
   
-  ARR_OPEN,
+  ARR_OPEN, // 28
   ARR_CLOSE,
   ARR_RANGE,
   ARR_EXPAN,
   ARR_WILD,
   
-  MAT_MODIFY,
+  MAT_MODIFY, // 33
   
-  TYPE_ARRAY,
+  TYPE_ARRAY, // 34
   TYPE_CHAR,
   TYPE_FLOAT,
   TYPE_INT,
@@ -77,29 +77,29 @@ typedef enum eASTokens {
   TYPE_STRING,
   TYPE_VOID,
   
-  CMD_IF,
+  CMD_IF, // 41
   CMD_ELSE,
   CMD_ENDIF,
   
-  CMD_WHILE,
+  CMD_WHILE, // 44
   CMD_ENDWHILE,
   
-  CMD_FOREACH,
+  CMD_FOREACH, // 46
   CMD_ENDFOREACH,
   
-  CMD_FUNCTION,
+  CMD_FUNCTION, // 48
   CMD_ENDFUNCTION,
   
-  CMD_RETURN,
+  CMD_RETURN, // 50
   
-  ID,
+  ID, // 51
   
-  FLOAT,
+  FLOAT, // 52
   INT,
   STRING,
   CHAR,
   
-  UNKNOWN,
+  UNKNOWN, // 56
   INVALID
 } ASToken_t;
 
@@ -108,6 +108,7 @@ typedef enum eASParseErrors {
   AS_PARSE_ERR_UNTERMINATED_EXPR,
   AS_PARSE_ERR_NULL_EXPR,
   AS_PARSE_ERR_EOF,
+  AS_PARSE_ERR_EMPTY,
   AS_PARSE_ERR_INTERNAL,
   AS_PARSE_ERR_UNKNOWN
 } ASParseError_t;

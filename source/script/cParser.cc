@@ -189,28 +189,48 @@
 
  */
 
+
+#define PARSE_DEBUG(x) { std::cerr << x << std::endl; }
+#define PARSE_TRACE(x) { std::cerr << "trace: " << x << std::endl; }
+
 #define PARSE_ERROR(x) reportError(AS_PARSE_ERR_ ## x, __LINE__)
 #define PARSE_UNEXPECT() { if (currentToken()) { PARSE_ERROR(UNEXPECTED_TOKEN); } else { PARSE_ERROR(EOF); } }
 
 
 cParser::cParser(cASLibrary* library)
 : m_library(library)
+, m_filename("(unknown)")
 , m_eof(false)
 , m_success(true)
 , m_cur_tok(INVALID)
 , m_next_tok(INVALID)
+, m_cur_text(NULL)
 , m_err_eof(false)
 {
 }
 
 bool cParser::Parse(cFile& input)
 {
+  m_filename = input.GetFilename();
   m_lexer = new cLexer(input.GetFileStream());
-  parseStatementList();
+  
+  m_tree = parseStatementList();
+
+  if (!m_eof) PARSE_UNEXPECT();
+  //if (!m_tree) PARSE_ERROR(EMPTY); @todo - statement list doesn't actually return anything yet
+
   delete m_lexer;
+  m_lexer = NULL;
   
   return m_success;
 }
+
+cParser::~cParser()
+{
+  delete m_tree;
+  delete m_lexer;
+}
+
 
 void cParser::Accept(cASTVisitor& visitor)
 {
@@ -225,12 +245,32 @@ ASToken_t cParser::nextToken()
   } else {
     m_cur_tok = (ASToken_t)m_lexer->yylex();
   }
+  delete m_cur_text;
+  m_cur_text = NULL;
+  PARSE_DEBUG("nextToken: " << m_cur_tok);
   return m_cur_tok;
+}
+
+ASToken_t cParser::peekToken()
+{
+  if (m_next_tok == INVALID) {
+    delete m_cur_text;
+    m_cur_text = new cString(m_lexer->YYText());
+    m_next_tok = (ASToken_t)m_lexer->yylex();
+  }
+  return m_next_tok;
+}
+
+const cString& cParser::currentText()
+{
+  if (!m_cur_text) m_cur_text = new cString(m_lexer->YYText());
+  return *m_cur_text;
 }
 
 
 cASTNode* cParser::parseArrayUnpack()
 {
+  PARSE_TRACE("parseArrayUnpack");
   cASTNode* au = NULL;
   
   if (nextToken() != ID) {
@@ -262,6 +302,7 @@ cASTNode* cParser::parseArrayUnpack()
 
 cASTNode* cParser::parseArgumentList()
 {
+  PARSE_TRACE("parseArgumentList");
   cASTNode* al = NULL;
   
   parseExpression();
@@ -274,6 +315,7 @@ cASTNode* cParser::parseArgumentList()
 
 cASTNode* cParser::parseAssignment()
 {
+  PARSE_TRACE("parseAssignment");
   cASTNode* an = NULL;
   
   nextToken();
@@ -284,6 +326,7 @@ cASTNode* cParser::parseAssignment()
 
 cASTNode* cParser::parseCallExpression()
 {
+  PARSE_TRACE("parseCallExpression");
   cASTNode* ce = NULL;
   
   bool eoe = false;
@@ -296,9 +339,8 @@ cASTNode* cParser::parseCallExpression()
         }
         break;
       case PREC_OPEN:
-        nextToken();
-        parseArgumentList();
-        if (nextToken() != PREC_CLOSE) {
+        if (nextToken() != PREC_CLOSE) parseArgumentList();
+        if (currentToken() != PREC_CLOSE) {
           PARSE_UNEXPECT();
           return ce;   
         }
@@ -331,6 +373,7 @@ cASTNode* cParser::parseCallExpression()
 
 cASTNode* cParser::parseCodeBlock(bool& loose)
 {
+  PARSE_TRACE("parseCodeBlock");
   cASTNode* cb = NULL;
 
   nextToken();
@@ -349,6 +392,7 @@ cASTNode* cParser::parseCodeBlock(bool& loose)
 
 cASTNode* cParser::parseExpression()
 {
+  PARSE_TRACE("parseExpression");
   cASTNode* expr = NULL;
   
   expr = parseExprP0();
@@ -364,6 +408,7 @@ cASTNode* cParser::parseExpression()
 
 cASTNode* cParser::parseExprP0()
 {
+  PARSE_TRACE("parseExprP0");
   cASTNode* l = parseExprP1();
   cASTNode* r = NULL;
   
@@ -374,6 +419,7 @@ cASTNode* cParser::parseExprP0()
         ASToken_t op = currentToken();
         nextToken();
         r = parseExprP1();
+        if (!r) PARSE_ERROR(NULL_EXPR);
         l = new cASTExpressionBinary(op, l, r);
         break;
         
@@ -387,6 +433,7 @@ cASTNode* cParser::parseExprP0()
 
 cASTNode* cParser::parseExprP1()
 {
+  PARSE_TRACE("parseExprP1");
   cASTNode* l = parseExprP2();
   cASTNode* r = NULL;
   
@@ -397,6 +444,7 @@ cASTNode* cParser::parseExprP1()
         ASToken_t op = currentToken();
         nextToken();
         r = parseExprP2();
+        if (!r) PARSE_ERROR(NULL_EXPR);
         l = new cASTExpressionBinary(op, l, r);
         break;
         
@@ -410,6 +458,7 @@ cASTNode* cParser::parseExprP1()
 
 cASTNode* cParser::parseExprP2()
 {
+  PARSE_TRACE("parseExprP2");
   cASTNode* l = parseExprP3();
   cASTNode* r = NULL;
   
@@ -420,6 +469,7 @@ cASTNode* cParser::parseExprP2()
         ASToken_t op = currentToken();
         nextToken();
         r = parseExprP3();
+        if (!r) PARSE_ERROR(NULL_EXPR);
         l = new cASTExpressionBinary(op, l, r);
         break;
         
@@ -433,6 +483,7 @@ cASTNode* cParser::parseExprP2()
 
 cASTNode* cParser::parseExprP3()
 {
+  PARSE_TRACE("parseExprP3");
   cASTNode* l = parseExprP4();
   cASTNode* r = NULL;
   
@@ -447,6 +498,7 @@ cASTNode* cParser::parseExprP3()
         ASToken_t op = currentToken();
         nextToken();
         r = parseExprP4();
+        if (!r) PARSE_ERROR(NULL_EXPR);
         l = new cASTExpressionBinary(op, l, r);
         break;
         
@@ -460,6 +512,7 @@ cASTNode* cParser::parseExprP3()
 
 cASTNode* cParser::parseExprP4()
 {
+  PARSE_TRACE("parseExprP4");
   cASTNode* l = parseExprP5();
   cASTNode* r = NULL;
   
@@ -470,6 +523,7 @@ cASTNode* cParser::parseExprP4()
         ASToken_t op = currentToken();
         nextToken();
         r = parseExprP5();
+        if (!r) PARSE_ERROR(NULL_EXPR);
         l = new cASTExpressionBinary(op, l, r);
         break;
         
@@ -483,6 +537,7 @@ cASTNode* cParser::parseExprP4()
 
 cASTNode* cParser::parseExprP5()
 {
+  PARSE_TRACE("parseExprP5");
   cASTNode* l = parseExprP6();
   cASTNode* r = NULL;
   
@@ -494,6 +549,7 @@ cASTNode* cParser::parseExprP5()
         ASToken_t op = currentToken();
         nextToken();
         r = parseExprP6();
+        if (!r) PARSE_ERROR(NULL_EXPR);
         l = new cASTExpressionBinary(op, l, r);
         break;
         
@@ -507,6 +563,7 @@ cASTNode* cParser::parseExprP5()
 
 cASTNode* cParser::parseExprP6()
 {
+  PARSE_TRACE("parseExprP6");
   cASTNode* expr = NULL;
   
   switch (currentToken()) {
@@ -519,8 +576,7 @@ cASTNode* cParser::parseExprP6()
     case ID:
       if (peekToken() == PREC_OPEN) {
         nextToken();
-        nextToken();
-        parseArgumentList();
+        if (nextToken() != PREC_CLOSE) parseArgumentList();
         if (currentToken() != PREC_CLOSE) {
           PARSE_UNEXPECT();
           return expr;
@@ -533,6 +589,7 @@ cASTNode* cParser::parseExprP6()
     case PREC_OPEN:
       nextToken();
       expr = parseExpression();
+      if (!expr) PARSE_ERROR(NULL_EXPR);
       if (currentToken() != PREC_CLOSE) {
         PARSE_UNEXPECT();
         return expr;
@@ -544,8 +601,7 @@ cASTNode* cParser::parseExprP6()
         return expr;
       }
     case ARR_OPEN:
-      nextToken();
-      parseArgumentList();
+      if (nextToken() != ARR_CLOSE) parseArgumentList();
       if (currentToken() != ARR_CLOSE) {
         PARSE_UNEXPECT();
         return expr;
@@ -557,6 +613,7 @@ cASTNode* cParser::parseExprP6()
     case OP_SUB:
       ASToken_t op = currentToken();
       expr = new cASTExpressionUnary(op, parseExpression());
+      if (!expr) PARSE_ERROR(NULL_EXPR);
       nextToken();
       return expr;
       
@@ -564,12 +621,14 @@ cASTNode* cParser::parseExprP6()
       break;
   }
 
+  nextToken();
   if (expr) expr = parseExprP6_Index(expr);
   return expr;
 }
 
 cASTNode* cParser::parseExprP6_Index(cASTNode* l)
 {
+  PARSE_TRACE("parseExprP6_Index");
   while (currentToken() == DOT || currentToken() == IDX_OPEN) {
     if (currentToken() == DOT) {
       if (nextToken() != ID) {
@@ -578,8 +637,7 @@ cASTNode* cParser::parseExprP6_Index(cASTNode* l)
       }
       if (peekToken() == PREC_OPEN) {
         nextToken();
-        nextToken();
-        parseArgumentList();
+        if (nextToken() != PREC_CLOSE) parseArgumentList();
         if (currentToken() != PREC_CLOSE) {
           PARSE_UNEXPECT();
           return l;
@@ -605,6 +663,7 @@ cASTNode* cParser::parseExprP6_Index(cASTNode* l)
 
 cASTNode* cParser::parseForeachStatement()
 {
+  PARSE_TRACE("parseForeachStatement");
   cASTNode* fs = NULL;
   
   switch (nextToken()) {
@@ -649,6 +708,7 @@ cASTNode* cParser::parseForeachStatement()
 
 cASTNode* cParser::parseFunctionDefine()
 {
+  PARSE_TRACE("parseFunctionDefine");
   cASTNode* fd = parseFunctionHeader(false);
   
   bool loose = false;
@@ -663,6 +723,7 @@ cASTNode* cParser::parseFunctionDefine()
 
 cASTNode* cParser::parseFunctionHeader(bool declare)
 {
+  PARSE_TRACE("parseFunctionHeader");
   cASTNode* fd = NULL;
   
   switch (nextToken()) {
@@ -697,14 +758,15 @@ cASTNode* cParser::parseFunctionHeader(bool declare)
     return fd;
   }
   
-  nextToken();
-  if (declare) {
-    parseVarDeclareList();
-  } else {
-    parseArgumentList();
+  if (nextToken() != PREC_CLOSE) {
+    if (declare) {
+      parseVarDeclareList();
+    } else {
+      parseArgumentList();
+    }
   }
   
-  if (nextToken() != PREC_CLOSE) {
+  if (currentToken() != PREC_CLOSE) {
     PARSE_UNEXPECT();
     return fd;    
   }
@@ -714,6 +776,7 @@ cASTNode* cParser::parseFunctionHeader(bool declare)
 
 cASTNode* cParser::parseIDStatement()
 {
+  PARSE_TRACE("parseIDStatement");
   cASTNode* is = NULL;
   
   switch (nextToken()) {
@@ -739,6 +802,7 @@ cASTNode* cParser::parseIDStatement()
 
 cASTNode* cParser::parseIfStatement()
 {
+  PARSE_TRACE("parseIfStatement");
   cASTNode* is = NULL;
   
   if (nextToken() != PREC_OPEN) {
@@ -772,6 +836,7 @@ cASTNode* cParser::parseIfStatement()
 
 cASTNode* cParser::parseIndexExpression()
 {
+  PARSE_TRACE("parseIndexExpression");
   cASTNode* ie = NULL;
   
   nextToken();
@@ -785,6 +850,7 @@ cASTNode* cParser::parseIndexExpression()
 
 cASTNode* cParser::parseLooseBlock()
 {
+  PARSE_TRACE("parseLooseBlock");
   nextToken();
   cASTNode* sl = parseStatementList();
   if (currentToken() != ARR_CLOSE) {
@@ -795,6 +861,7 @@ cASTNode* cParser::parseLooseBlock()
 
 cASTNode* cParser::parseRefStatement()
 {
+  PARSE_TRACE("parseRefStatement");
   cASTNode* rs = NULL;
 
   switch (nextToken()) {
@@ -813,6 +880,7 @@ cASTNode* cParser::parseRefStatement()
 
 cASTNode* cParser::parseReturnStatement()
 {
+  PARSE_TRACE("parseReturnStatement");
   cASTNode* rs = NULL;
   
   nextToken();
@@ -823,6 +891,7 @@ cASTNode* cParser::parseReturnStatement()
 
 cASTNode* cParser::parseStatementList()
 {
+  PARSE_TRACE("parseStatementList");
   cASTNode* sl = NULL;
 
 #define CHECK_LINETERM() { if (!checkLineTerm(sl)) return sl; }
@@ -886,6 +955,7 @@ cASTNode* cParser::parseStatementList()
 
 cASTNode* cParser::parseVarDeclare()
 {
+  PARSE_TRACE("parseVarDeclare");
   cASTNode* vd = NULL;
   
   switch (currentToken()) {
@@ -919,8 +989,7 @@ cASTNode* cParser::parseVarDeclare()
       parseExpression();
       break;
     case PREC_OPEN:
-      nextToken();
-      parseArgumentList();
+      if (nextToken() != PREC_CLOSE) parseArgumentList();
       if (currentToken() != PREC_CLOSE) {
         PARSE_UNEXPECT();
         return vd;
@@ -936,6 +1005,7 @@ cASTNode* cParser::parseVarDeclare()
 
 cASTNode* cParser::parseVarDeclareList()
 {
+  PARSE_TRACE("parseVarDeclareList");
   cASTNode* vl = NULL;
   
   parseVarDeclare();
@@ -948,7 +1018,8 @@ cASTNode* cParser::parseVarDeclareList()
 
 cASTNode* cParser::parseWhileStatement()
 {
-  cASTNode* ws = NULL;
+  PARSE_TRACE("parseWhileStatement");
+ cASTNode* ws = NULL;
   
   if (nextToken() != PREC_OPEN) {
     PARSE_UNEXPECT();
@@ -976,7 +1047,7 @@ cASTNode* cParser::parseWhileStatement()
 
 bool cParser::checkLineTerm(cASTNode* node)
 {
-  nextToken();
+  PARSE_TRACE("checkLineTerm");
   if (currentToken() == SUPPRESS) {
     // @todo - mark output as suppressed
     return true;
@@ -993,22 +1064,31 @@ void cParser::reportError(ASParseError_t err, const int line)
 {
   m_success = false;
 
-  std::cerr << "error: ";
+  std::cerr << m_filename << ":";
+  
+  int lineno = m_lexer ? m_lexer->lineno() : 0;
+  if (lineno) std::cerr << lineno;
+  else std::cerr << "?";
+  
+  std::cerr << ": error: ";
 
   switch (err) {
     case AS_PARSE_ERR_UNEXPECTED_TOKEN:
-      std::cerr << "unexpected token '" << currentToken() << "'." << std::endl;
+      std::cerr << "unexpected token '" << currentText() << "'." << std::endl;
       break;
     case AS_PARSE_ERR_UNTERMINATED_EXPR:
-      std::cerr << "unterminated expression'" << currentToken() << "'." << std::endl;
+      std::cerr << "unterminated expression." << std::endl;
       break;
     case AS_PARSE_ERR_NULL_EXPR:
-      std::cerr << "expected expression, found '" << currentToken() << "'." << std::endl;
+      std::cerr << "expected expression, found '" << currentText() << "'." << std::endl;
     case AS_PARSE_ERR_EOF:
       if (!m_err_eof) {
         std::cerr << "unexpected end of file" << std::endl;
         m_err_eof = true;
       }
+      break;
+    case AS_PARSE_ERR_EMPTY:
+      std::cerr << "empty script, no valid statements found" << std::endl;
       break;
     case AS_PARSE_ERR_INTERNAL:
       std::cerr << "internal parser error at cParser.cc:" << line << std::endl;

@@ -28,6 +28,8 @@
 #include "cParser.h"
 #include "PlatformExpert.h"
 
+#include <iostream>
+
 
 int main (int argc, char * const argv[])
 {
@@ -37,9 +39,17 @@ int main (int argc, char * const argv[])
   cParser* parser = new cParser(lib);
   
   cFile file;
-  if (file.Open("main.asl")) parser->Parse(file);
+  if (file.Open("main.asl")) {
+    if (parser->Parse(file)) {
+      std::cout << "Parse Successful" << std::endl;
+      ExitAvida(0);
+    } else {
+      std::cout << "Parse Failed" << std::endl;
+      ExitAvida(1);
+    }
+  } else {
+    std::cerr << "error: unable to open script" << std::endl;
+  }
   
-  ExitAvida(0);
-  
-  return 0;
+  return -1;
 }

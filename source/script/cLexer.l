@@ -33,11 +33,12 @@
 
 %option c++
 %option noyywrap
+%option yylineno
 
 %%
 
 #.*\n       /* ignore comments */
-\/\/        /* ignore comments */
+\/\/.*\n    /* ignore comments */
 [ \t]+      /* ignore whitespace */
 
 

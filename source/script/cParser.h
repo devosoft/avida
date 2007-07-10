@@ -53,6 +53,9 @@ class cParser
 {
 private:
   cASLibrary* m_library;
+  
+  cString m_filename;
+  
   cLexer* m_lexer;
   cASTNode* m_tree;
 
@@ -61,6 +64,7 @@ private:
   
   ASToken_t m_cur_tok;
   ASToken_t m_next_tok;
+  cString* m_cur_text;
   
   bool m_err_eof;
   
@@ -72,6 +76,7 @@ private:
   
 public:
   cParser(cASLibrary* library);
+  ~cParser();
   
   bool Parse(cFile& input);
   void Accept(cASTVisitor& visitor);
@@ -80,7 +85,9 @@ public:
 private:
   inline ASToken_t currentToken() { return m_cur_tok; }
   ASToken_t nextToken();
-  inline ASToken_t peekToken();
+  ASToken_t peekToken();
+  
+  const cString& currentText();
   
   cASTNode* parseArgumentList();
   cASTNode* parseArrayUnpack();
@@ -114,13 +121,6 @@ private:
   
   void reportError(ASParseError_t err, const int line);
 };
-
-
-inline ASToken_t cParser::peekToken()
-{
-  if (m_next_tok == INVALID) m_next_tok = (ASToken_t)m_lexer->yylex();
-  return m_next_tok;
-}
 
 
 #endif
