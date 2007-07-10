@@ -517,7 +517,8 @@ void cPopulation::MoveOrganisms(cAvidaContext& ctx, cPopulationCell& src_cell, c
       break;
     }
   }
-#ifdef DEBUG
+// @DMB this doesn't compile properly -- #ifdef DEBUG
+#if 0
   if (!success) {
     sID = src_cell.GetID();
     dID = dest_cell.GetID();
@@ -548,7 +549,8 @@ void cPopulation::MoveOrganisms(cAvidaContext& ctx, cPopulationCell& src_cell, c
       break;
     }
   }
-#ifdef DEBUG
+// @DMB this doesn't compile properly -- #ifdef DEBUG
+#if 0
   if (!success) {
     sID = src_cell.GetID();
     dID = dest_cell.GetID();
