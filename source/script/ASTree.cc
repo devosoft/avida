@@ -45,3 +45,8 @@ void cASTFunctionCall::Accept(cASTVisitor& visitor)
   
 }
 
+void cASTVariableReference::Accept(cASTVisitor& visitor)
+{
+  
+}
+

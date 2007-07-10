@@ -59,7 +59,8 @@ private:
   cASTNode* m_expr;
   
 public:
-  cASTExpressionUnary(ASToken_t op) : m_op(op), m_expr(NULL) { ; }
+  cASTExpressionUnary(ASToken_t op, cASTNode* e) : m_op(op), m_expr(e) { ; }
+  ~cASTExpressionUnary() { delete m_expr; }
   
   void SetExpression(cASTNode* expr) { m_expr = expr; }
   
@@ -74,7 +75,8 @@ private:
   cASTNode* m_right;
   
 public:
-  cASTExpressionBinary(ASToken_t op) : m_op(op), m_left(NULL), m_right(NULL) { ; }
+  cASTExpressionBinary(ASToken_t op, cASTNode* l, cASTNode* r) : m_op(op), m_left(l), m_right(r) { ; }
+  ~cASTExpressionBinary() { delete m_left; delete m_right; }
   
   void SetLeft(cASTNode* left) { m_left = left; }
   void SetRight(cASTNode* right) { m_right = right; }
@@ -101,6 +103,17 @@ private:
   
 public:
   cASTFunctionCall() { ; }
+  
+  void Accept(cASTVisitor& visitor);
+};
+
+
+class cASTVariableReference : public cASTNode
+{
+private:
+  
+public:
+  cASTVariableReference() { ; }
   
   void Accept(cASTVisitor& visitor);
 };

@@ -371,9 +371,10 @@ cASTNode* cParser::parseExprP0()
     switch (currentToken()) {
       case ARR_RANGE:
       case ARR_EXPAN:
+        ASToken_t op = currentToken();
         nextToken();
         r = parseExprP1();
-        // set l == new expr
+        l = new cASTExpressionBinary(op, l, r);
         break;
         
       default:
@@ -393,9 +394,10 @@ cASTNode* cParser::parseExprP1()
     switch (currentToken()) {
       case OP_LOGIC_AND:
       case OP_LOGIC_OR:
+        ASToken_t op = currentToken();
         nextToken();
         r = parseExprP2();
-        // set l == new expr
+        l = new cASTExpressionBinary(op, l, r);
         break;
         
       default:
@@ -415,9 +417,10 @@ cASTNode* cParser::parseExprP2()
     switch (currentToken()) {
       case OP_BIT_AND:
       case OP_BIT_OR:
+        ASToken_t op = currentToken();
         nextToken();
         r = parseExprP3();
-        // set l == new expr
+        l = new cASTExpressionBinary(op, l, r);
         break;
         
       default:
@@ -441,9 +444,10 @@ cASTNode* cParser::parseExprP3()
       case OP_LT:
       case OP_GT:
       case OP_NEQ:
+        ASToken_t op = currentToken();
         nextToken();
         r = parseExprP4();
-        // set l == new expr
+        l = new cASTExpressionBinary(op, l, r);
         break;
         
       default:
@@ -463,9 +467,10 @@ cASTNode* cParser::parseExprP4()
     switch (currentToken()) {
       case OP_ADD:
       case OP_SUB:
+        ASToken_t op = currentToken();
         nextToken();
         r = parseExprP5();
-        // set l == new expr
+        l = new cASTExpressionBinary(op, l, r);
         break;
         
       default:
@@ -486,9 +491,10 @@ cASTNode* cParser::parseExprP5()
       case OP_MUL:
       case OP_DIV:
       case OP_MOD:
+        ASToken_t op = currentToken();
         nextToken();
         r = parseExprP6();
-        // set l == new expr
+        l = new cASTExpressionBinary(op, l, r);
         break;
         
       default:
@@ -519,9 +525,9 @@ cASTNode* cParser::parseExprP6()
           PARSE_UNEXPECT();
           return expr;
         }
-        // @todo - expr = ;
+        expr = new cASTFunctionCall(); // @todo
       } else {
-        // @todo - expr = ;
+        expr = new cASTVariableReference(); // @todo
       }
       break;
     case PREC_OPEN:
@@ -549,7 +555,8 @@ cASTNode* cParser::parseExprP6()
     case OP_BIT_NOT:
     case OP_LOGIC_NOT:
     case OP_SUB:
-      expr = parseExpression();
+      ASToken_t op = currentToken();
+      expr = new cASTExpressionUnary(op, parseExpression());
       nextToken();
       return expr;
       
