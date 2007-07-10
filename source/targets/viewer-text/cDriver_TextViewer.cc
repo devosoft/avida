@@ -415,8 +415,9 @@ void cDriver_TextViewer::DoUpdate()
   // If there is any input in the buffer, process all of it.
   int cur_char = ERR;
   while ((cur_char = GetKeypress()) != ERR || m_info.GetPauseLevel() == cCoreView_Info::PAUSE_ON) {
-    bool found_keypress = ProcessKeypress(cur_char);
+    ProcessKeypress(cur_char);
 
+    //bool found_keypress = ProcessKeypress(cur_char);
     // If we couldn't manage the keypress here, check the current screen.
 //    if (found_keypress == false && cur_screen) cur_screen->DoInput(cur_char);
     m_main_window.Refresh();

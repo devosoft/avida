@@ -794,6 +794,7 @@
 		70DCF57409CFBCA500924128 /* tcmalloc-platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tcmalloc-platform.h"; sourceTree = "<group>"; };
 		70DCF57F09CFBD3D00924128 /* tcmalloc-logging.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = "tcmalloc-logging.cc"; sourceTree = "<group>"; };
 		70DCF58009CFBD3D00924128 /* tcmalloc-logging.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = "tcmalloc-logging.h"; sourceTree = "<group>"; };
+		70E130BF0C442B2900CE9249 /* cCoords.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCoords.h; sourceTree = "<group>"; };
 		70F7DAEF09290468009E311D /* cClassificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cClassificationManager.h; sourceTree = "<group>"; };
 		70F7DAF009290468009E311D /* cClassificationManager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cClassificationManager.cc; sourceTree = "<group>"; };
 		70F7DC9E09293E6F009E311D /* cGenotype.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cGenotype.cc; sourceTree = "<group>"; };
@@ -825,7 +826,7 @@
 		DCC315CE076253A5008F7A48 /* environment.rotate */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.rotate; sourceTree = "<group>"; };
 		DCC315D0076253A5008F7A48 /* task_event_gen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = task_event_gen.cc; sourceTree = "<group>"; };
 		DCC315D1076253A5008F7A48 /* task_event_gen.old.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = task_event_gen.old.cc; sourceTree = "<group>"; };
-		DCC3164D07626CF3008F7A48 /* avida */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "compiled.mach-o.executable"; path = avida; sourceTree = BUILT_PRODUCTS_DIR; };
+		DCC3164D07626CF3008F7A48 /* avida */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = avida; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1436,6 +1437,7 @@
 		DCC314D8076253A2008F7A48 /* tools */ = {
 			isa = PBXGroup;
 			children = (
+				70E130BF0C442B2900CE9249 /* cCoords.h */,
 				704368F50C32E6AB00A05ABA /* cFlexVar.h */,
 				7057886F0A21FE8D00E85D8E /* cFixedBlock.cc */,
 				705788700A21FE8D00E85D8E /* cFixedCoords.cc */,

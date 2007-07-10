@@ -3842,7 +3842,7 @@ bool cHardwareGX::Inst_ProgramidDivide(cAvidaContext& ctx)
   }
     
   // Activate the child
-  bool parent_alive = organism->ActivateDivide(ctx);
+  organism->ActivateDivide(ctx);
 
   // Mother viability checks could go here.  
   m_just_divided = true;

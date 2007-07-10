@@ -49,8 +49,8 @@ cPhenotype::cPhenotype(cWorld* world)
   , cur_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())
   , cur_inst_count(world->GetHardwareManager().GetInstSet().GetSize())
   , cur_sense_count(m_world->GetStats().GetSenseSize())
-  , cur_task_time(m_world->GetEnvironment().GetNumTasks())   // Added for tracking time; WRE 03-18-07
   , sensed_resources(m_world->GetEnvironment().GetResourceLib().GetSize())
+  , cur_task_time(m_world->GetEnvironment().GetNumTasks())   // Added for tracking time; WRE 03-18-07
   , promoter_last_inst_terminated(false) 
   , last_task_count(m_world->GetEnvironment().GetNumTasks())
   , last_task_quality(m_world->GetEnvironment().GetNumTasks())
