@@ -3,22 +3,30 @@ Avida 2.7
 Digital Evolution Laboratory at Michigan State University
 
 
-REQUIREMENTS
+I.   REQUIREMENTS
+II.  GETTING STARTED
+III. CMAKE CONFIGURATION OPTIONS
+IV.  CONFIGURING THE CMAKE BUILD
+V.   RUNNING CONSISTENCY TESTS
+VI.  DOCUMENTATION
+
+
+
+I. REQUIREMENTS
 ----------------------------------------------------------------------
 
-In order to build Avida, you must have CMake 2.x installed.
-CMake 2.x is available from http://www.cmake.org
+In order to build Avida, you must have CMake 2.4.x or greater
+installed. CMake is available from http://www.cmake.org
 
 NCurses, in order to build the console viewer.
 
-OR
+Python 2.3 or greater to run consistency tests.
 
-In Mac OS X, an Xcode project has been provided for building the
-console only version of Avida, as well as the NCurses viewer.
-Xcode 2.1 or greater is required.
+On Mac OS X, a separate Xcode project is available. Xcode 2.1 or
+greater is required (2.4 or greater recommended).
 
 
-GETTING STARTED
+II. GETTING STARTED
 ----------------------------------------------------------------------
 
 To compile and install Avida, all you have to do is run:
@@ -31,33 +39,28 @@ See below how to change that.
 
 OR 
 
-In Mac OS X's Xcode, select the appropriate build style for the CPU
-type within your Mac (G4, G5, or Intel).  Click the 'Build' button on
+In Mac OS X's Xcode, select the Deployment for an optimized build
+configured for your CPU platform.  Click the 'Build' button on
 the project window.  The compiled binary and starting config files
 will be copied (by default) into:
-${PROJECT_DIR}/build/Deployment-{selected processor type}/work
+${PROJECT_DIR}/build/Deployment/work
 
 
-CMAKE CONFIGURATION OPTIONS
+III. CMAKE CONFIGURATION OPTIONS
 ----------------------------------------------------------------------
 
 Here are the main options available when configuring and building
 Avida with cmake :
 
-AVD_CONSISTENCY_TEST_PRIMITIVE
- -  This is a BOOL, either ON or OFF, to enable primitive consistency
-    test suites.
- OFF by default.
+AVD_CMDLINE
+This is a BOOL, either ON or OFF, to enable building interfaceless
+Avida (fastest version).
+ON by default.
 
 AVD_GUI_NCURSES
  -  This is a BOOL, either ON or OFF, to enable building Avida console
     interface.
  ON by default.
-
-AVD_PRIMITIVE
-This is a BOOL, either ON or OFF, to enable building interfaceless
-Avida (fastest version).
-ON by default.
 
 AVD_UNIT_TESTS
  -  This is a BOOL, either ON or OFF, to enable building primitive
@@ -72,7 +75,7 @@ CMAKE_BUILD_TYPE
 
 
 
-CONFIGURING THE CMAKE BUILD
+IV. CONFIGURING THE CMAKE BUILD
 ----------------------------------------------------------------------
 
 There are three ways by which you can set the various options.
@@ -96,13 +99,41 @@ configuration options with the following syntax:
 
 To completely specify each of the above Avida options, cd into your
 build directory and type something like :
-$ cmake -DAVD_CONSISTENCY_TEST_PRIMITIVE:BOOL=OFF \
-  -DAVD_GUI_NCURSES:BOOL=ON \
-  -DAVD_PRIMITIVE:BOOL=ON \
+$ cmake -DAVD_GUI_NCURSES:BOOL=ON \
+  -DAVD_CMDLINE:BOOL=ON \
   -DAVD_UNIT_TESTS:BOOL=OFF \
   -DCMAKE_BUILD_TYPE:STRING=Release \
   path-to-source-directory
 
 
+V. RUNNING CONSISTENCY TESTS
+----------------------------------------------------------------------
 
-Revised 2006-08-22 DMB
+With Avida built and 'installed' using CMake (the default for the
+'build_avida' script), simply execute the 'run_tests' script:
+
+$ ./run_tests
+
+
+For a list of useful options accepted by the TestRunner script, supply
+the -h option on the command line:
+
+$ ./run_tests -h
+
+
+The 'builddir' option will be particularly for Xcode users.  This
+option will allow the tests to be run on Xcode products without having
+to move the files to where the CMake outputs are placed by default.
+For example, the default Deployment build can be tested as follows:
+
+$ ./run_tests --builddir=build/Deployment/
+
+
+VI. DOCUMENTATION
+----------------------------------------------------------------------
+
+Helpful usage and code documentation can be found in the HTML files in
+the 'documentation' directory.  See index.html.
+
+
+Revised 2007-07-10 DMB

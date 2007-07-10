@@ -1,79 +1,30 @@
 The Avida Digital Life Platform
 --------------------------------------------------------------------------------
+by Charles Ofria
 
-This material was originally written and compiled by Charles Ofria from
-1993-2002 primarily at the California Institute of Technology and Michigan State
-University.
+Lead Developers: David Bryson (Avida) and Kaben Nanlohy (Avida-ED)
 
-The following presents, in alphabetical order, a listing of many authors
-responsible for Avida's development.  A best effort has been made to include
-many of the contributors, however this list should in no way be interpreted as
-comprehensive.
+Portions by Brian Baer, Jeffrey Barrick, Benjamin Beckmann, Jeffrey Clune,
+Travis Collier, Art Covert, Evan Dorn, Sherri Goings, Heather Goldsby,
+George Hagstrom, Dehua Hang, Wei Huang, David Knoester, Dusan Misevic,
+Elizabeth Ostrowski, Matthew Rupp, Jason Stredwick, Michael Vo, Bess Walker,
+Claus Wilke, and Larry Wisne
+
+With design help from Christoph Adami, C. Titus Brown, Timothy Cooper,
+Santiago Elena, Richard Lenski, Philip McKinley, Robert Pennock, Thomas
+Schmidt, Robert Schwartz, Eric Torng, Jialan Wang, Daniel Weise, and Gabriel
+Yedid
+
+Copyright (C) 1999-2007 Michigan State University.
+Copyright (C) 1993-2003 California Institute of Technology.
 
 
-Author  <email>
-  - Institution, Contributing Years
---------------------------------------------------------------------------------
-Chris Adami
-  - California Institute of Technology 
-
-Dennis Adler
-  - Microsoft
-
-Brian Baer
-  - Michigan State University
-
-C. Titus Brown
-  - California Institute of Technology
-
-David Michael Bryson  <brysonda at msu.edu>
-  - Michigan State University, 2004 - present
-
-Jeff Clune
-  - Michigan State University
-
-Travis Collier
-  - California Institute of Technology
-
-Arthur Covert
-  - Michigan State University, 2004 - present
-
-Joshua Gerrish
-  - Michigan State University, 2005 - present
-
-Sherri Goings				
-  - Michigan State University
-
-Wei Huang
-  - Michigan State University, - 2005
-
-Dusan Misevic
-  - Michigan State University
-  - California Institute of Technology
-
-Kaben Nanlohy
-  - Michigan State University
-
-Charles Ofria
-  - Michigan State University, 1999 - present
-  - California Institute of Technology, 1993 - 1998
-
-Matthew Rupp
-  - Michigan State University
-
-Jason Stredwick
-  - Michigan State University, - 2006
-
-Claus O. Wilke
-  - California Institute of Technology
-
-Larry Wisne
-  - Stanford University
-
+This project has been funded by the National Science Foundation, DARPA, 
+the Templeton Foundation, and Microsoft Corp.
 
 Portions of the design were supported by NSF grant #PHY91-15574, NSF grant
 #DEB-9981397, a Caltech divisional fellowship, the 1993 Caltech SURF program,
 and the 1993 SUNY Stony Brook URECA program.
 
 
-Revised 2006-05-18 DMB
+Revised 2007-07-10 DMB
