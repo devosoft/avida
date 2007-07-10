@@ -38,6 +38,8 @@
 #include "cWorld.h"
 
 #include "cDriverManager.h"
+#include "cFLTKWindow.h"
+#include "cFLTKBox.h"
 
 #include <cstdlib>
 
@@ -48,10 +50,22 @@
 
 using namespace std;
 
+cGUIWindow * cDriver_FLTKViewer::BuildWindow(int width, int height, const cString & name)
+{
+  return new cFLTKWindow(width, height, name);
+}
+
+cGUIBox * cDriver_FLTKViewer::BuildBox(cGUIContainer * container, int x, int y,
+				       int width, int height, const cString & name)
+{
+  cGUIBox * box = new cFLTKBox(x, y, width, height, name);
+  container->Add(box);
+  return box;
+}
+
+
 cDriver_FLTKViewer::cDriver_FLTKViewer(cWorld* world)
-  : m_world(world)
-  , m_info(m_world->GetPopulation(), 12)
-  , m_done(false)
+  : cGUIDriver(world)
 {
   // Setup the initial view mode (loaded from avida.cfg)
   m_info.SetViewMode(world->GetConfig().VIEW_MODE.Get());
@@ -59,28 +73,27 @@ cDriver_FLTKViewer::cDriver_FLTKViewer(cWorld* world)
   cDriverManager::Register(static_cast<cAvidaDriver*>(this));
   world->SetDriver(this);
 
-  Fl_Window *window = new Fl_Window(300,180);
-  Fl_Box *box = new Fl_Box(20,40,260,100,"Avida!");
+  LaunchViewer();
 
-  box->box(FL_UP_BOX);
-  box->labelsize(36);
-  box->labelfont(FL_BOLD+FL_ITALIC);
-  box->labeltype(FL_SHADOW_LABEL);
-  window->end();
+//   Fl_Box *box = new Fl_Box(20,40,260,100,"Avida!");
+//   box->box(FL_UP_BOX);
+//   box->labelsize(36);
+//   box->labelfont(FL_BOLD+FL_ITALIC);
+//   box->labeltype(FL_SHADOW_LABEL);
 
-  int argc = 1;
-  char * progname = "Avida";
-  char ** argv = &progname;
+//   int argc = 1;
+//   char * progname = "Avida";
+//   char ** argv = &progname;
 
-  window->show(argc, argv);
-  bool error = Fl::run();
-  (void) error;
+//   window->show(argc, argv);
+
+//   bool error = Fl::run();
+//   (void) error;
 }
 
 cDriver_FLTKViewer::~cDriver_FLTKViewer()
 {
   cDriverManager::Unregister(static_cast<cAvidaDriver*>(this));
-  delete m_world;
     
   ExitFLTKViewer(0);
 }
@@ -315,6 +328,13 @@ void cDriver_FLTKViewer::Draw()
 
 void cDriver_FLTKViewer::DoUpdate()
 {
+  bool error = Fl::check();
+  cString update_string;
+  update_string.Set("Update: %d", m_world->GetStats().GetUpdate());
+  m_update_box->SetName(update_string);
+  m_update_box->Refresh();
+  
+
   const int pause_level = m_info.GetPauseLevel();
 
   // If we are stepping in some way, we've come to a stop, so revert to a normal pause.

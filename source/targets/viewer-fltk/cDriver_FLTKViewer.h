@@ -37,20 +37,24 @@
 #include "cWorldDriver.h"
 #endif
 
+#ifndef cGUIDriver_h
+#include "cGUIDriver.h"
+#endif
+
 #include <sstream>
 #include <iostream>
 #include <fstream>
 
 class cWorld;
+class cGUIContainer;
 
 using namespace std;
 
-class cDriver_FLTKViewer : public cAvidaDriver, public cWorldDriver {
+class cDriver_FLTKViewer : public cAvidaDriver, public cWorldDriver,  public cGUIDriver {
 private:
-  cWorld* m_world;
-  cCoreView_Info m_info;
-
-  bool m_done;           // This is set to true when run should finish.
+  // Overloaded methods from cGUIDriver...
+  cGUIWindow * BuildWindow(int width, int height, const cString & name);
+  cGUIBox * BuildBox(cGUIContainer * container, int x, int y, int width, int height, const cString & name);
 
 public:
   cDriver_FLTKViewer(cWorld* world);

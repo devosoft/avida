@@ -1,5 +1,5 @@
 /*
- *  cGUICanvas.h
+ *  cGUIBox.h
  *  Avida
  *
  *  Created by Charles on 7-9-07
@@ -22,25 +22,28 @@
  *
  */
 
-// This is a base class for GUI widgets that can be drawn on.
+// This is a base class for all GUI widgets that act as boxs.
 
-#ifndef cGUICanvas_h
-#define cGUICanvas_h
+#ifndef cGUIBox_h
+#define cGUIBox_h
 
 #include "cGUIWidget.h"
 
-class cGUICanvas : public cGUIWidget {
-protected:
+class cGUIBox : public cGUIWidget {
 public:
-  cGUICanvas() { ; }
-  cGUICanvas(int x, int y, width=0, height=0, name="") : cGUIWidget(x, y, width, height, name) { ; }
-  virtual ~cGUICanvas() { ; }
+  enum eBoxType { BOX_NONE, BOX_FLAT, BOX_RAISED, BOX_LOWERED, BOX_FRAME, BOX_RAISED_FRAME, BOX_LOWERED_FRAME };
 
-  virtual void DrawLine(int x1, int y1, int x2, int y2) = 0;
-  virtual void DrawBox(int x1, int y1, int _w, int _h, bool fill=false) = 0;
-  virtual void DrawCircle(int _x, int _y, int _, bool fill=false) = 0;
+protected:
+  eBoxType m_type;    // What type of box is this?
 
-  virtual void SetColor(cColor color) = 0;
+public:
+  cGUIBox(int x, int y, int width, int height, const cString & name="")
+    : cGUIWidget(x, y, width, height, name)
+    , m_type(BOX_NONE) { ; }
+  virtual ~cGUIBox() { ; }
+
+  int GetType() const { return m_type; }
+  virtual void SetType(int in_type) { m_type = (eBoxType) in_type; }
 };
 
 #endif

@@ -1,5 +1,5 @@
 /*
- *  cGUICanvas.h
+ *  cFLTKWindow.h
  *  Avida
  *
  *  Created by Charles on 7-9-07
@@ -22,25 +22,37 @@
  *
  */
 
-// This is a base class for GUI widgets that can be drawn on.
+// This is a base class for the main GUI windows...
 
-#ifndef cGUICanvas_h
-#define cGUICanvas_h
+#ifndef cFLTKWindow_h
+#define cFLTKWindow_h
 
-#include "cGUIWidget.h"
+#include "cGUIWindow.h"
 
-class cGUICanvas : public cGUIWidget {
+#include <FL/Fl_Window.H>
+
+class cFLTKWindow : public cGUIWindow {
 protected:
+  Fl_Window * m_window;
+  
 public:
-  cGUICanvas() { ; }
-  cGUICanvas(int x, int y, width=0, height=0, name="") : cGUIWidget(x, y, width, height, name) { ; }
-  virtual ~cGUICanvas() { ; }
+  cFLTKWindow() { ; }
+  cFLTKWindow(int width, int height, const cString & name="")
+    : cGUIWindow(width, height, name)
+  {
+    m_window = new Fl_Window(width, height);
+  }
+  ~cFLTKWindow() { delete m_window; }
 
-  virtual void DrawLine(int x1, int y1, int x2, int y2) = 0;
-  virtual void DrawBox(int x1, int y1, int _w, int _h, bool fill=false) = 0;
-  virtual void DrawCircle(int _x, int _y, int _, bool fill=false) = 0;
+  void SetSizeRange(int min_x, int min_y, int max_x=0, int max_y=0) {
+    m_window->size_range(min_x, min_y, max_x, max_y);
+  }
 
-  virtual void SetColor(cColor color) = 0;
+  void Finalize() { 
+    m_window->end();
+    m_window->show();
+  }
+  void Update() { ; }
 };
 
 #endif

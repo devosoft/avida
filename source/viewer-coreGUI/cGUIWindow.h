@@ -1,5 +1,5 @@
 /*
- *  cGUICanvas.h
+ *  cGUIWindow.h
  *  Avida
  *
  *  Created by Charles on 7-9-07
@@ -22,25 +22,26 @@
  *
  */
 
-// This is a base class for GUI widgets that can be drawn on.
+// This is a base class for the main GUI windows...
 
-#ifndef cGUICanvas_h
-#define cGUICanvas_h
+#ifndef cGUIWindow_h
+#define cGUIWindow_h
 
-#include "cGUIWidget.h"
+#include "cGUIContainer.h"
 
-class cGUICanvas : public cGUIWidget {
+class cGUIEvent;
+
+class cGUIWindow : public cGUIContainer {
 protected:
 public:
-  cGUICanvas() { ; }
-  cGUICanvas(int x, int y, width=0, height=0, name="") : cGUIWidget(x, y, width, height, name) { ; }
-  virtual ~cGUICanvas() { ; }
+  cGUIWindow() { ; }
+  cGUIWindow(int width, int height, const cString & name="") : cGUIContainer(0, 0, width, height, name) { ; }
+  virtual ~cGUIWindow() { ; }
 
-  virtual void DrawLine(int x1, int y1, int x2, int y2) = 0;
-  virtual void DrawBox(int x1, int y1, int _w, int _h, bool fill=false) = 0;
-  virtual void DrawCircle(int _x, int _y, int _, bool fill=false) = 0;
+  virtual void SetSizeRange(int min_x, int min_y, int max_x=0, int max_y=0) = 0;
 
-  virtual void SetColor(cColor color) = 0;
+  virtual void Finalize() = 0;
+  virtual void Update() = 0;
 };
 
 #endif

@@ -29,7 +29,11 @@
 
 #include "cString.h"
 
+class cGUIContainer;
+class cGUIEvent;
+
 class cGUIWidget {
+  friend class cGUIContainer;
 protected:
   cString m_name;
   int m_x;
@@ -37,14 +41,29 @@ protected:
   int m_width;
   int m_height;
 
+  int m_font_size;
 public:
-  cGUIWidget() : m_x(0), m_y(0), m_width(0), m_height(0) { ; }
-  cGUIWidget(int x, int y, width=0, height=0, name="")
-    : m_name(name), m_x(x), m_y(y), m_width(width), m_height(height) { ; }
+  cGUIWidget() : m_x(0), m_y(0), m_width(0), m_height(0), m_font_size(20) { ; }
+  cGUIWidget(int x, int y, int width=0, int height=0, const cString & name="")
+    : m_name(name), m_x(x), m_y(y), m_width(width), m_height(height), m_font_size(20) { ; }
   virtual ~cGUIWidget() { ; }
 
   // This method should be run when the widget is setup and its time to build it.
-  virtual void Create() = 0;
+  virtual void Create() { ; }
+
+  // This method should deal with GUI events.
+  virtual bool Handle(cGUIEvent & event) { (void) event; return false; }
+
+  const cString & GetName() { return m_name; }
+  int GetX() const { return m_x; }
+  int GetY() const { return m_y; }
+  int GetWidth() const { return m_width; }
+  int GetHeight() const { return m_height; }
+  
+  void SetName(const cString & _name) { m_name = _name; }
+  void SetFontSize(int _size) { m_font_size = _size; }
+
+  virtual void Refresh() { ; }
 };
 
 #endif

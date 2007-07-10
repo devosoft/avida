@@ -1,5 +1,5 @@
 /*
- *  cGUICanvas.h
+ *  cGUIDriver.cc
  *  Avida
  *
  *  Created by Charles on 7-9-07
@@ -22,25 +22,47 @@
  *
  */
 
-// This is a base class for GUI widgets that can be drawn on.
+#include "cGUIDriver.h"
 
-#ifndef cGUICanvas_h
-#define cGUICanvas_h
+#include "cWorld.h"
 
-#include "cGUIWidget.h"
+#include "cGUIBox.h"
+#include "cGUIWindow.h"
 
-class cGUICanvas : public cGUIWidget {
-protected:
-public:
-  cGUICanvas() { ; }
-  cGUICanvas(int x, int y, width=0, height=0, name="") : cGUIWidget(x, y, width, height, name) { ; }
-  virtual ~cGUICanvas() { ; }
+cGUIDriver::cGUIDriver(cWorld* world)
+  : m_world(world)
+  , m_info(world->GetPopulation(), 12)
+  , m_done(false)
+  , m_main_window(NULL)
+  , m_update_box(NULL)
+{
+}
 
-  virtual void DrawLine(int x1, int y1, int x2, int y2) = 0;
-  virtual void DrawBox(int x1, int y1, int _w, int _h, bool fill=false) = 0;
-  virtual void DrawCircle(int _x, int _y, int _, bool fill=false) = 0;
 
-  virtual void SetColor(cColor color) = 0;
-};
+cGUIDriver::~cGUIDriver()
+{
+  if (m_main_window != NULL) delete m_main_window;
 
-#endif
+  delete m_world;
+}
+
+
+bool cGUIDriver::LaunchViewer()
+{
+  m_main_window = BuildWindow(800, 600, "Avida Viewer");
+  m_main_window->SetSizeRange(800, 600);
+
+  m_update_box = BuildBox(m_main_window, 10, 10, 200, 50, "Update: 0");
+  m_update_box->SetType(cGUIBox::BOX_FLAT);
+  m_update_box->SetFontSize(30);
+  m_update_box->Refresh();
+
+  m_main_window->Finalize();
+
+  return true;
+}
+
+
+bool cGUIDriver::UpdateViewer()
+{
+}

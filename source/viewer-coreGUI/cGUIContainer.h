@@ -40,19 +40,20 @@ protected:
 
 public:
   cGUIContainer() { ; }
-  cGUIContainer(int x, int y, width=0, height=0, name="") : cGUIWidget(x, y, width, height, name) { ; }
+  cGUIContainer(int x, int y, int width=0, int height=0, const cString & name="")
+    : cGUIWidget(x, y, width, height, name) { ; }
   virtual ~cGUIContainer() { ; }
 
   // This method should be run when the widget is setup and its time to build it and everything it contains.
   virtual void Create() {
     CreateSelf();
     for (int i = 0; i < widget_array.GetSize(); i++) {
-      widget_array[i].Create();
+      widget_array[i]->Create();
     }
   }
 
   void Add(cGUIWidget * in_widget) { widget_array.Push(in_widget); }
-  void Add(cGUIWidget * in_widget, int x, int y, int width, int height, int name="") {
+  void Add(cGUIWidget * in_widget, int x, int y, int width, int height, const cString & name="") {
     in_widget->m_x = x;
     in_widget->m_y = y;
     in_widget->m_width = width;
