@@ -28,8 +28,14 @@
 #ifndef AvidaScript_h
 #include "AvidaScript.h"
 #endif
+#ifndef cString_h
+#include "cString.h"
+#endif
 #ifndef defs_h
 #include "defs.h"
+#endif
+#ifndef tList_h
+#include "tList.h"
 #endif
 
 
@@ -67,9 +73,13 @@ public:
 class cASTAssignment : public cASTNode
 {
 private:
+  cString m_var;
+  cASTNode* m_expr;
   
 public:
-  cASTAssignment() { ; }
+  cASTAssignment(const cString& var) : m_var(var), m_expr(NULL) { ; }
+  
+  void SetExpression(cASTNode* expr) { delete m_expr; m_expr = expr; }
   
   void Accept(cASTVisitor& visitor);
 };
@@ -81,9 +91,13 @@ public:
 class cASTStatementList : public cASTNode
 {
 private:
+  tList<cASTNode> m_nodes;
   
 public:
   cASTStatementList() { ; }
+  ~cASTStatementList();
+  
+  void AddNode(cASTNode* n) { m_nodes.PushRear(n); }
   
   void Accept(cASTVisitor& visitor);
 };
@@ -144,9 +158,14 @@ public:
 class cASTVariableDefinition : public cASTNode
 {
 private:
+  ASType_t m_type;
+  cString m_var;
+  cASTNode* m_assign;
   
 public:
-  cASTVariableDefinition() { ; }
+  cASTVariableDefinition(ASType_t type, const cString& var) : m_type(type), m_var(var), m_assign(NULL) { ; }
+  
+  void SetAssignment(cASTNode* assign) { delete m_assign; m_assign = assign; }
   
   void Accept(cASTVisitor& visitor);
 };

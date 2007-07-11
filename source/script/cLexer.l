@@ -42,81 +42,81 @@
 [ \t]+      /* ignore whitespace */
 
 
-;           return SUPPRESS;       // End-of-line
-\n          return ENDL;
-,           return COMMA;
+;           return AS_TOKEN_SUPPRESS;       // End-of-line
+\n          return AS_TOKEN_ENDL;
+,           return AS_TOKEN_COMMA;
 
-~           return OP_BIT_NOT;    // Bitwise Operators
-&           return OP_BIT_AND;
-\|          return OP_BIT_OR;
+~           return AS_TOKEN_OP_BIT_NOT;    // Bitwise Operators
+&           return AS_TOKEN_OP_BIT_AND;
+\|          return AS_TOKEN_OP_BIT_OR;
 
-!           return OP_LOGIC_NOT;  // Logic Operators
-&&          return OP_LOGIC_AND;
-\|\|        return OP_LOGIC_OR;
+!           return AS_TOKEN_OP_LOGIC_NOT;  // Logic Operators
+&&          return AS_TOKEN_OP_LOGIC_AND;
+\|\|        return AS_TOKEN_OP_LOGIC_OR;
 
-\+          return OP_ADD;        // Arithmetic Operators
--           return OP_SUB;
-\*          return OP_MUL;
-\/          return OP_DIV;
-%           return OP_MOD;
+\+          return AS_TOKEN_OP_ADD;        // Arithmetic Operators
+-           return AS_TOKEN_OP_SUB;
+\*          return AS_TOKEN_OP_MUL;
+\/          return AS_TOKEN_OP_DIV;
+%           return AS_TOKEN_OP_MOD;
 
-\.          return DOT;
-=           return ASSIGN;        // Assignment
-@           return REF;
+\.          return AS_TOKEN_DOT;
+=           return AS_TOKEN_ASSIGN;        // Assignment
+@           return AS_TOKEN_REF;
 
-==          return OP_EQ;         // Relational Operators
-\<=         return OP_LE;
-\>=         return OP_GE;
-\<          return OP_LT;
-\>          return OP_GT;
-!=          return OP_NEQ;
+==          return AS_TOKEN_OP_EQ;         // Relational Operators
+\<=         return AS_TOKEN_OP_LE;
+\>=         return AS_TOKEN_OP_GE;
+\<          return AS_TOKEN_OP_LT;
+\>          return AS_TOKEN_OP_GT;
+!=          return AS_TOKEN_OP_NEQ;
 
-\(          return PREC_OPEN;     // Precedence Grouping
-\)          return PREC_CLOSE;
+\(          return AS_TOKEN_PREC_OPEN;     // Precedence Grouping
+\)          return AS_TOKEN_PREC_CLOSE;
 
-\[          return IDX_OPEN;      // Index Grouping
-\]          return IDX_CLOSE;
+\[          return AS_TOKEN_IDX_OPEN;      // Index Grouping
+\]          return AS_TOKEN_IDX_CLOSE;
 
-\{          return ARR_OPEN;      // Array Definition Grouping
-\}          return ARR_CLOSE;
-:           return ARR_RANGE;
-\^          return ARR_EXPAN;
-\.\.        return ARR_WILD;
+\{          return AS_TOKEN_ARR_OPEN;      // Array Definition Grouping
+\}          return AS_TOKEN_ARR_CLOSE;
+:           return AS_TOKEN_ARR_RANGE;
+\^          return AS_TOKEN_ARR_EXPAN;
+\.\.        return AS_TOKEN_ARR_WILD;
 
-\?          return MAT_MODIFY;    // Matrix Modifier
+\?          return AS_TOKEN_MAT_MODIFY;    // Matrix Modifier
 
-array       return TYPE_ARRAY;    // Built-in Types
-char        return TYPE_CHAR;
-float       return TYPE_FLOAT;
-int         return TYPE_INT;
-matrix      return TYPE_MATRIX;
-string      return TYPE_STRING;
-void        return TYPE_VOID;
+array       return AS_TOKEN_TYPE_ARRAY;    // Built-in Types
+char        return AS_TOKEN_TYPE_CHAR;
+float       return AS_TOKEN_TYPE_FLOAT;
+int         return AS_TOKEN_TYPE_INT;
+matrix      return AS_TOKEN_TYPE_MATRIX;
+string      return AS_TOKEN_TYPE_STRING;
+void        return AS_TOKEN_TYPE_VOID;
 
-if          return CMD_IF;        // If Blocks
-else        return CMD_ELSE;
-endif       return CMD_ENDIF;
+if          return AS_TOKEN_CMD_IF;        // If Blocks
+else        return AS_TOKEN_CMD_ELSE;
+endif       return AS_TOKEN_CMD_ENDIF;
 
-while       return CMD_WHILE;     // While Blocks
-endwhile    return CMD_ENDWHILE;
+while       return AS_TOKEN_CMD_WHILE;     // While Blocks
+endwhile    return AS_TOKEN_CMD_ENDWHILE;
 
-foreach     return CMD_FOREACH;   // Foreach Blocks
-endforeach  return CMD_ENDFOREACH;
+foreach     return AS_TOKEN_CMD_FOREACH;   // Foreach Blocks
+endforeach  return AS_TOKEN_CMD_ENDFOREACH;
 
-function    return CMD_FUNCTION;  // Function Blocks
-endfunction return CMD_ENDFUNCTION;
+function    return AS_TOKEN_CMD_FUNCTION;  // Function Blocks
+endfunction return AS_TOKEN_CMD_ENDFUNCTION;
 
-return      return CMD_RETURN;
+return      return AS_TOKEN_CMD_RETURN;
 
-([a-zA-Z]|_+[a-zA-Z])[a-zA-Z0-9_]*  return ID;      // Identifiers
+([a-zA-Z]|_+[a-zA-Z])[a-zA-Z0-9_]*  return AS_TOKEN_ID;      // Identifiers
   
-[0-9]*\.[0-9]+([eE][-+]?[0-9]+)?    return FLOAT;   // Literal Values
-[0-9]+                              return INT;
-\"\"                                return STRING;
-\"([^"\\\n]|\\\"|\\\\|\\.)*\"       return STRING;
-\'([^'\\\n]|\\\'|\\\\)\'            return CHAR;
+[0-9]*\.[0-9]+([eE][-+]?[0-9]+)?    return AS_TOKEN_FLOAT;   // Literal Values
+[0-9]+                              return AS_TOKEN_INT;
+\"\"                                return AS_TOKEN_STRING;
+\"([^"\\\n]|\\\"|\\\\|\\.)*\"       return AS_TOKEN_STRING;
+\'([^'\\\n]|\\\'|\\\\)\'            return AS_TOKEN_CHAR;
 
-.           return UNKNOWN;           // Unrecognized Tokens
+.           return AS_TOKEN_UNKNOWN;           // Unrecognized Tokens
 
 
 

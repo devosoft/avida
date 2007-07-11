@@ -196,14 +196,16 @@
 #define PARSE_ERROR(x) reportError(AS_PARSE_ERR_ ## x, __LINE__)
 #define PARSE_UNEXPECT() { if (currentToken()) { PARSE_ERROR(UNEXPECTED_TOKEN); } else { PARSE_ERROR(EOF); } }
 
+#define TOKEN(x) AS_TOKEN_ ## x
+
 
 cParser::cParser(cASLibrary* library)
 : m_library(library)
 , m_filename("(unknown)")
 , m_eof(false)
 , m_success(true)
-, m_cur_tok(INVALID)
-, m_next_tok(INVALID)
+, m_cur_tok(TOKEN(INVALID))
+, m_next_tok(TOKEN(INVALID))
 , m_cur_text(NULL)
 , m_err_eof(false)
 {
@@ -239,9 +241,9 @@ void cParser::Accept(cASTVisitor& visitor)
 
 ASToken_t cParser::nextToken()
 {
-  if (m_next_tok != INVALID) { 
+  if (m_next_tok != TOKEN(INVALID)) { 
     m_cur_tok = m_next_tok;
-    m_next_tok = INVALID;
+    m_next_tok = TOKEN(INVALID);
   } else {
     m_cur_tok = (ASToken_t)m_lexer->yylex();
   }
@@ -253,7 +255,7 @@ ASToken_t cParser::nextToken()
 
 ASToken_t cParser::peekToken()
 {
-  if (m_next_tok == INVALID) {
+  if (m_next_tok == TOKEN(INVALID)) {
     delete m_cur_text;
     m_cur_text = new cString(m_lexer->YYText());
     m_next_tok = (ASToken_t)m_lexer->yylex();
@@ -273,23 +275,23 @@ cASTNode* cParser::parseArrayUnpack()
   PARSE_TRACE("parseArrayUnpack");
   cASTNode* au = NULL;
   
-  if (nextToken() != ID) {
+  if (nextToken() != TOKEN(ID)) {
     PARSE_ERROR(UNEXPECTED_TOKEN);
     return au;
   }
   
   while (nextToken()) {
-    if (currentToken() == COMMA) {
+    if (currentToken() == TOKEN(COMMA)) {
       nextToken();
-      if (currentToken() == ID) {
+      if (currentToken() == TOKEN(ID)) {
         continue;
-      } else if (currentToken() == ARR_WILD) {
+      } else if (currentToken() == TOKEN(ARR_WILD)) {
         break;
       } else {
         PARSE_ERROR(UNEXPECTED_TOKEN);
         break;
       }
-    } else if (currentToken() == ARR_WILD) {
+    } else if (currentToken() == TOKEN(ARR_WILD)) {
       break;
     } else {
       PARSE_UNEXPECT();
@@ -306,7 +308,7 @@ cASTNode* cParser::parseArgumentList()
   cASTNode* al = NULL;
   
   parseExpression();
-  while (currentToken() == COMMA) {
+  while (currentToken() == TOKEN(COMMA)) {
     parseExpression();
   }
   
@@ -316,11 +318,12 @@ cASTNode* cParser::parseArgumentList()
 cASTNode* cParser::parseAssignment()
 {
   PARSE_TRACE("parseAssignment");
-  cASTNode* an = NULL;
+  cASTAssignment* an = new cASTAssignment(currentText());
   
   nextToken();
-  parseExpression();
-  
+  cASTNode* expr = parseExpression();
+  an->SetExpression(expr);
+
   return an;
 }
 
@@ -329,38 +332,40 @@ cASTNode* cParser::parseCallExpression()
   PARSE_TRACE("parseCallExpression");
   cASTNode* ce = NULL;
   
+  nextToken();
+  
   bool eoe = false;
   while (!eoe) {
     switch (currentToken()) {
-      case DOT:
-        if (nextToken() != ID) {
+      case TOKEN(DOT):
+        if (nextToken() != TOKEN(ID)) {
           PARSE_UNEXPECT();
           return ce;
         }
         break;
-      case PREC_OPEN:
-        if (nextToken() != PREC_CLOSE) parseArgumentList();
-        if (currentToken() != PREC_CLOSE) {
+      case TOKEN(PREC_OPEN):
+        if (nextToken() != TOKEN(PREC_CLOSE)) parseArgumentList();
+        if (currentToken() != TOKEN(PREC_CLOSE)) {
           PARSE_UNEXPECT();
           return ce;   
         }
         switch (nextToken()) {
-          case IDX_OPEN:
+          case TOKEN(IDX_OPEN):
             do {
               parseIndexExpression();
-            } while (nextToken() == IDX_OPEN);
+            } while (nextToken() == TOKEN(IDX_OPEN));
             break;
-          case DOT:
+          case TOKEN(DOT):
             continue;
 
           default:
             eoe = true;
         }
         break;
-      case IDX_OPEN:
+      case TOKEN(IDX_OPEN):
         do {
           parseIndexExpression();
-        } while (nextToken() == IDX_OPEN);
+        } while (nextToken() == TOKEN(IDX_OPEN));
 
       default:
         PARSE_UNEXPECT();
@@ -377,10 +382,10 @@ cASTNode* cParser::parseCodeBlock(bool& loose)
   cASTNode* cb = NULL;
 
   nextToken();
-  if (currentToken() == ARR_OPEN) {
+  if (currentToken() == TOKEN(ARR_OPEN)) {
     loose = true;
     cb = parseLooseBlock();
-  } else if (currentToken() == SUPPRESS || currentToken() == ENDL) {
+  } else if (currentToken() == TOKEN(SUPPRESS) || currentToken() == TOKEN(ENDL)) {
     cb = parseStatementList();
   } else {
     PARSE_UNEXPECT();
@@ -414,8 +419,8 @@ cASTNode* cParser::parseExprP0()
   
   while(true) {
     switch (currentToken()) {
-      case ARR_RANGE:
-      case ARR_EXPAN:
+      case TOKEN(ARR_RANGE):
+      case TOKEN(ARR_EXPAN):
         ASToken_t op = currentToken();
         nextToken();
         r = parseExprP1();
@@ -439,8 +444,8 @@ cASTNode* cParser::parseExprP1()
   
   while(true) {
     switch (currentToken()) {
-      case OP_LOGIC_AND:
-      case OP_LOGIC_OR:
+      case TOKEN(OP_LOGIC_AND):
+      case TOKEN(OP_LOGIC_OR):
         ASToken_t op = currentToken();
         nextToken();
         r = parseExprP2();
@@ -464,8 +469,8 @@ cASTNode* cParser::parseExprP2()
   
   while(true) {
     switch (currentToken()) {
-      case OP_BIT_AND:
-      case OP_BIT_OR:
+      case TOKEN(OP_BIT_AND):
+      case TOKEN(OP_BIT_OR):
         ASToken_t op = currentToken();
         nextToken();
         r = parseExprP3();
@@ -489,12 +494,12 @@ cASTNode* cParser::parseExprP3()
   
   while(true) {
     switch (currentToken()) {
-      case OP_EQ:
-      case OP_LE:
-      case OP_GE:
-      case OP_LT:
-      case OP_GT:
-      case OP_NEQ:
+      case TOKEN(OP_EQ):
+      case TOKEN(OP_LE):
+      case TOKEN(OP_GE):
+      case TOKEN(OP_LT):
+      case TOKEN(OP_GT):
+      case TOKEN(OP_NEQ):
         ASToken_t op = currentToken();
         nextToken();
         r = parseExprP4();
@@ -518,8 +523,8 @@ cASTNode* cParser::parseExprP4()
   
   while(true) {
     switch (currentToken()) {
-      case OP_ADD:
-      case OP_SUB:
+      case TOKEN(OP_ADD):
+      case TOKEN(OP_SUB):
         ASToken_t op = currentToken();
         nextToken();
         r = parseExprP5();
@@ -543,9 +548,9 @@ cASTNode* cParser::parseExprP5()
   
   while(true) {
     switch (currentToken()) {
-      case OP_MUL:
-      case OP_DIV:
-      case OP_MOD:
+      case TOKEN(OP_MUL):
+      case TOKEN(OP_DIV):
+      case TOKEN(OP_MOD):
         ASToken_t op = currentToken();
         nextToken();
         r = parseExprP6();
@@ -567,17 +572,17 @@ cASTNode* cParser::parseExprP6()
   cASTNode* expr = NULL;
   
   switch (currentToken()) {
-    case FLOAT:
-    case INT:
-    case CHAR:
-    case STRING:
+    case TOKEN(FLOAT):
+    case TOKEN(INT):
+    case TOKEN(CHAR):
+    case TOKEN(STRING):
       expr = new cASTLiteral(currentToken());
       break;
-    case ID:
-      if (peekToken() == PREC_OPEN) {
+    case TOKEN(ID):
+      if (peekToken() == TOKEN(PREC_OPEN)) {
         nextToken();
-        if (nextToken() != PREC_CLOSE) parseArgumentList();
-        if (currentToken() != PREC_CLOSE) {
+        if (nextToken() != TOKEN(PREC_CLOSE)) parseArgumentList();
+        if (currentToken() != TOKEN(PREC_CLOSE)) {
           PARSE_UNEXPECT();
           return expr;
         }
@@ -586,31 +591,31 @@ cASTNode* cParser::parseExprP6()
         expr = new cASTVariableReference(); // @todo
       }
       break;
-    case PREC_OPEN:
+    case TOKEN(PREC_OPEN):
       nextToken();
       expr = parseExpression();
       if (!expr) PARSE_ERROR(NULL_EXPR);
-      if (currentToken() != PREC_CLOSE) {
+      if (currentToken() != TOKEN(PREC_CLOSE)) {
         PARSE_UNEXPECT();
         return expr;
       }
       break;
-    case MAT_MODIFY:
-      if (nextToken() != ARR_OPEN) {
+    case TOKEN(MAT_MODIFY):
+      if (nextToken() != TOKEN(ARR_OPEN)) {
         PARSE_UNEXPECT();
         return expr;
       }
-    case ARR_OPEN:
-      if (nextToken() != ARR_CLOSE) parseArgumentList();
-      if (currentToken() != ARR_CLOSE) {
+    case TOKEN(ARR_OPEN):
+      if (nextToken() != TOKEN(ARR_CLOSE)) parseArgumentList();
+      if (currentToken() != TOKEN(ARR_CLOSE)) {
         PARSE_UNEXPECT();
         return expr;
       }
       break;
       
-    case OP_BIT_NOT:
-    case OP_LOGIC_NOT:
-    case OP_SUB:
+    case TOKEN(OP_BIT_NOT):
+    case TOKEN(OP_LOGIC_NOT):
+    case TOKEN(OP_SUB):
       ASToken_t op = currentToken();
       expr = new cASTExpressionUnary(op, parseExpression());
       if (!expr) PARSE_ERROR(NULL_EXPR);
@@ -629,16 +634,16 @@ cASTNode* cParser::parseExprP6()
 cASTNode* cParser::parseExprP6_Index(cASTNode* l)
 {
   PARSE_TRACE("parseExprP6_Index");
-  while (currentToken() == DOT || currentToken() == IDX_OPEN) {
-    if (currentToken() == DOT) {
-      if (nextToken() != ID) {
+  while (currentToken() == TOKEN(DOT) || currentToken() == TOKEN(IDX_OPEN)) {
+    if (currentToken() == TOKEN(DOT)) {
+      if (nextToken() != TOKEN(ID)) {
         PARSE_UNEXPECT();
         return l;
       }
-      if (peekToken() == PREC_OPEN) {
+      if (peekToken() == TOKEN(PREC_OPEN)) {
         nextToken();
-        if (nextToken() != PREC_CLOSE) parseArgumentList();
-        if (currentToken() != PREC_CLOSE) {
+        if (nextToken() != TOKEN(PREC_CLOSE)) parseArgumentList();
+        if (currentToken() != TOKEN(PREC_CLOSE)) {
           PARSE_UNEXPECT();
           return l;
         }
@@ -649,7 +654,7 @@ cASTNode* cParser::parseExprP6_Index(cASTNode* l)
     } else { // IDX_OPEN:
       nextToken();
       parseExpression();
-      if (currentToken() != IDX_CLOSE) {
+      if (currentToken() != TOKEN(IDX_CLOSE)) {
         PARSE_UNEXPECT();
         return l;
       }
@@ -667,15 +672,15 @@ cASTNode* cParser::parseForeachStatement()
   cASTNode* fs = NULL;
   
   switch (nextToken()) {
-    case TYPE_ARRAY:
-    case TYPE_CHAR:
-    case TYPE_FLOAT:
-    case TYPE_INT:
-    case TYPE_MATRIX:
-    case TYPE_STRING:
+    case TOKEN(TYPE_ARRAY):
+    case TOKEN(TYPE_CHAR):
+    case TOKEN(TYPE_FLOAT):
+    case TOKEN(TYPE_INT):
+    case TOKEN(TYPE_MATRIX):
+    case TOKEN(TYPE_STRING):
       break;
-    case ID:
-      if (nextToken() != REF) {
+    case TOKEN(ID):
+      if (nextToken() != TOKEN(REF)) {
         PARSE_UNEXPECT();
         return fs;
       }
@@ -686,7 +691,7 @@ cASTNode* cParser::parseForeachStatement()
       return fs;
   }
   
-  if (nextToken() != PREC_OPEN) {
+  if (nextToken() != TOKEN(PREC_OPEN)) {
     PARSE_UNEXPECT();
     return fs;
   }
@@ -694,14 +699,14 @@ cASTNode* cParser::parseForeachStatement()
   nextToken();
   parseExpression();
   
-  if (currentToken() != PREC_CLOSE) {
+  if (currentToken() != TOKEN(PREC_CLOSE)) {
     PARSE_UNEXPECT();
     return fs;
   }
   
   bool loose = false;
   parseCodeBlock(loose);
-  if (!loose && currentToken() != CMD_ENDFOREACH) PARSE_UNEXPECT();
+  if (!loose && currentToken() != TOKEN(CMD_ENDFOREACH)) PARSE_UNEXPECT();
   
   return fs;
 }
@@ -713,7 +718,7 @@ cASTNode* cParser::parseFunctionDefine()
   
   bool loose = false;
   parseCodeBlock(loose);
-  if (!loose && currentToken() != CMD_ENDFUNCTION) {
+  if (!loose && currentToken() != TOKEN(CMD_ENDFUNCTION)) {
     PARSE_UNEXPECT();
     return fd;
   }
@@ -727,16 +732,16 @@ cASTNode* cParser::parseFunctionHeader(bool declare)
   cASTNode* fd = NULL;
   
   switch (nextToken()) {
-    case TYPE_ARRAY:
-    case TYPE_CHAR:
-    case TYPE_FLOAT:
-    case TYPE_INT:
-    case TYPE_MATRIX:
-    case TYPE_STRING:
-    case TYPE_VOID:
+    case TOKEN(TYPE_ARRAY):
+    case TOKEN(TYPE_CHAR):
+    case TOKEN(TYPE_FLOAT):
+    case TOKEN(TYPE_INT):
+    case TOKEN(TYPE_MATRIX):
+    case TOKEN(TYPE_STRING):
+    case TOKEN(TYPE_VOID):
       break;
-    case ID:
-      if (peekToken() != REF) {
+    case TOKEN(ID):
+      if (peekToken() != TOKEN(REF)) {
         nextToken();
         PARSE_UNEXPECT();
         return fd;
@@ -748,17 +753,17 @@ cASTNode* cParser::parseFunctionHeader(bool declare)
       return fd;
   }
   
-  if (nextToken() != ID) {
+  if (nextToken() != TOKEN(ID)) {
     PARSE_UNEXPECT();
     return fd;
   }
   
-  if (nextToken() != PREC_OPEN) {
+  if (nextToken() != TOKEN(PREC_OPEN)) {
     PARSE_UNEXPECT();
     return fd;
   }
   
-  if (nextToken() != PREC_CLOSE) {
+  if (nextToken() != TOKEN(PREC_CLOSE)) {
     if (declare) {
       parseVarDeclareList();
     } else {
@@ -766,7 +771,7 @@ cASTNode* cParser::parseFunctionHeader(bool declare)
     }
   }
   
-  if (currentToken() != PREC_CLOSE) {
+  if (currentToken() != TOKEN(PREC_CLOSE)) {
     PARSE_UNEXPECT();
     return fd;    
   }
@@ -779,17 +784,17 @@ cASTNode* cParser::parseIDStatement()
   PARSE_TRACE("parseIDStatement");
   cASTNode* is = NULL;
   
-  switch (nextToken()) {
-    case ASSIGN:
-      parseAssignment();
+  switch (peekToken()) {
+    case TOKEN(ASSIGN):
+      is = parseAssignment();
       break;
-    case DOT:
-    case IDX_OPEN:
-    case PREC_OPEN:
-      parseCallExpression();
+    case TOKEN(DOT):
+    case TOKEN(IDX_OPEN):
+    case TOKEN(PREC_OPEN):
+      is = parseCallExpression();
       break;
-    case REF:
-      parseVarDeclare();
+    case TOKEN(REF):
+      is = parseVarDeclare();
       break;
       
     default:
@@ -805,7 +810,7 @@ cASTNode* cParser::parseIfStatement()
   PARSE_TRACE("parseIfStatement");
   cASTNode* is = NULL;
   
-  if (nextToken() != PREC_OPEN) {
+  if (nextToken() != TOKEN(PREC_OPEN)) {
     PARSE_UNEXPECT();
     return is;
   }
@@ -813,20 +818,20 @@ cASTNode* cParser::parseIfStatement()
   nextToken();
   parseExpression();
   
-  if (currentToken() != PREC_CLOSE) {
+  if (currentToken() != TOKEN(PREC_CLOSE)) {
     PARSE_UNEXPECT();
     return is;
   }
   
   bool loose = false;
   parseCodeBlock(loose);
-  if (currentToken() == CMD_ELSE) {
+  if (currentToken() == TOKEN(CMD_ELSE)) {
     parseCodeBlock(loose);
-    if (!loose && currentToken() != CMD_ENDIF) {
+    if (!loose && currentToken() != TOKEN(CMD_ENDIF)) {
       PARSE_UNEXPECT();
       return is;
     }
-  } else if (!loose && currentToken() != CMD_ENDIF) {
+  } else if (!loose && currentToken() != TOKEN(CMD_ENDIF)) {
     PARSE_UNEXPECT();
     return is;
   }
@@ -841,7 +846,7 @@ cASTNode* cParser::parseIndexExpression()
   
   nextToken();
   parseExpression();
-  if (currentToken() != IDX_CLOSE) {
+  if (currentToken() != TOKEN(IDX_CLOSE)) {
     PARSE_UNEXPECT();
   }
   
@@ -853,7 +858,7 @@ cASTNode* cParser::parseLooseBlock()
   PARSE_TRACE("parseLooseBlock");
   nextToken();
   cASTNode* sl = parseStatementList();
-  if (currentToken() != ARR_CLOSE) {
+  if (currentToken() != TOKEN(ARR_CLOSE)) {
     PARSE_UNEXPECT();
   }
   return sl;
@@ -865,10 +870,10 @@ cASTNode* cParser::parseRefStatement()
   cASTNode* rs = NULL;
 
   switch (nextToken()) {
-    case ARR_OPEN:
+    case TOKEN(ARR_OPEN):
       parseArrayUnpack();
       break;
-    case CMD_FUNCTION:
+    case TOKEN(CMD_FUNCTION):
       parseFunctionHeader();
       break;
     default:
@@ -889,88 +894,100 @@ cASTNode* cParser::parseReturnStatement()
   return rs;
 }
 
+
+#define CHECK_LINETERM() { if (!checkLineTerm(sl)) return sl; }
 cASTNode* cParser::parseStatementList()
 {
   PARSE_TRACE("parseStatementList");
-  cASTNode* sl = NULL;
+  cASTStatementList* sl = new cASTStatementList();
+  
+  cASTNode* node = NULL;
 
-#define CHECK_LINETERM() { if (!checkLineTerm(sl)) return sl; }
   while (nextToken()) {
     switch (currentToken()) {
-      case ARR_OPEN:
-        parseLooseBlock();
+      case TOKEN(ARR_OPEN):
+        node = parseLooseBlock();
         CHECK_LINETERM();
         break;
-      case CMD_IF:
-        parseIfStatement();
+      case TOKEN(CMD_IF):
+        node = parseIfStatement();
         CHECK_LINETERM();
         break;
-      case CMD_FOREACH:
-        parseForeachStatement();
+      case TOKEN(CMD_FOREACH):
+        node = parseForeachStatement();
         CHECK_LINETERM();
         break;
-      case CMD_FUNCTION:
-        parseFunctionDefine();
+      case TOKEN(CMD_FUNCTION):
+        node = parseFunctionDefine();
         CHECK_LINETERM();
         break;
-      case CMD_RETURN:
-        parseReturnStatement();
+      case TOKEN(CMD_RETURN):
+        node = parseReturnStatement();
         CHECK_LINETERM();
         break;
-      case CMD_WHILE:
-        parseWhileStatement();
+      case TOKEN(CMD_WHILE):
+        node = parseWhileStatement();
         CHECK_LINETERM();
         break;
-      case ENDL:
-        break;
-      case ID:
-        parseIDStatement();
+      case TOKEN(ENDL):
+        continue;
+      case TOKEN(ID):
+        node = parseIDStatement();
         CHECK_LINETERM();
         break;
-      case REF:
-        parseRefStatement();
+      case TOKEN(REF):
+        node = parseRefStatement();
         CHECK_LINETERM();
         break;
-      case SUPPRESS:
-        break;
-      case TYPE_ARRAY:
-      case TYPE_CHAR:
-      case TYPE_FLOAT:
-      case TYPE_INT:
-      case TYPE_MATRIX:
-      case TYPE_STRING:
-        parseVarDeclare();
+      case TOKEN(SUPPRESS):
+        continue;
+      case TOKEN(TYPE_ARRAY):
+      case TOKEN(TYPE_CHAR):
+      case TOKEN(TYPE_FLOAT):
+      case TOKEN(TYPE_INT):
+      case TOKEN(TYPE_MATRIX):
+      case TOKEN(TYPE_STRING):
+        node = parseVarDeclare();
         CHECK_LINETERM();
         break;
         
       default:
         return sl;
     }
+    
+    if (node == NULL) {
+      // Some error has occured, so terminate early
+      if (m_success) PARSE_ERROR(INTERNAL); // Should not receive a null response without an error flag
+      break;
+    }
+    sl->AddNode(node);
   }
-#undef CHECK_LINETERM()
   
   if (!currentToken()) m_eof = true;
   return sl;
 }
+#undef CHECK_LINETERM()
+
 
 cASTNode* cParser::parseVarDeclare()
 {
   PARSE_TRACE("parseVarDeclare");
-  cASTNode* vd = NULL;
+  cASTVariableDefinition* vd = NULL;
   
+  ASType_t vtype = AS_TYPE_INVALID;
   switch (currentToken()) {
-    case TYPE_ARRAY:
-    case TYPE_CHAR:
-    case TYPE_FLOAT:
-    case TYPE_INT:
-    case TYPE_MATRIX:
-    case TYPE_STRING:
-      break;
-    case ID:
-      if (nextToken() != REF) {
+    case TOKEN(TYPE_ARRAY):  vtype = AS_TYPE_ARRAY;  break;
+    case TOKEN(TYPE_CHAR):   vtype = AS_TYPE_CHAR;   break;
+    case TOKEN(TYPE_FLOAT):  vtype = AS_TYPE_FLOAT;  break;
+    case TOKEN(TYPE_INT):    vtype = AS_TYPE_INT;    break;
+    case TOKEN(TYPE_MATRIX): vtype = AS_TYPE_MATRIX; break;
+    case TOKEN(TYPE_STRING): vtype = AS_TYPE_STRING; break;
+    case TOKEN(ID):
+      if (nextToken() != TOKEN(REF)) {
         PARSE_UNEXPECT();
         return vd;
       }
+      vtype = AS_TYPE_OBJECT_REF;
       break;
       
     default:
@@ -978,19 +995,23 @@ cASTNode* cParser::parseVarDeclare()
       return vd;
   }
   
-  if (nextToken() != ID) {
+  if (nextToken() != TOKEN(ID)) {
     PARSE_UNEXPECT();
     return vd;
   }
   
+  vd = new cASTVariableDefinition(vtype, currentText());
+  
   switch (nextToken()) {
-    case ASSIGN:
+    case TOKEN(ASSIGN):
       nextToken();
-      parseExpression();
+      cASTNode* expr = parseExpression();
+      vd->SetAssignment(expr);
       break;
-    case PREC_OPEN:
-      if (nextToken() != PREC_CLOSE) parseArgumentList();
-      if (currentToken() != PREC_CLOSE) {
+    case TOKEN(PREC_OPEN):
+      // @todo - array/matrix size declaration
+      if (nextToken() != TOKEN(PREC_CLOSE)) parseArgumentList();
+      if (currentToken() != TOKEN(PREC_CLOSE)) {
         PARSE_UNEXPECT();
         return vd;
       }
@@ -1009,7 +1030,7 @@ cASTNode* cParser::parseVarDeclareList()
   cASTNode* vl = NULL;
   
   parseVarDeclare();
-  while (currentToken() == COMMA) {
+  while (currentToken() == TOKEN(COMMA)) {
     parseVarDeclare();
   }
   
@@ -1019,9 +1040,9 @@ cASTNode* cParser::parseVarDeclareList()
 cASTNode* cParser::parseWhileStatement()
 {
   PARSE_TRACE("parseWhileStatement");
- cASTNode* ws = NULL;
+  cASTNode* ws = NULL;
   
-  if (nextToken() != PREC_OPEN) {
+  if (nextToken() != TOKEN(PREC_OPEN)) {
     PARSE_UNEXPECT();
     return ws;
   }
@@ -1029,14 +1050,14 @@ cASTNode* cParser::parseWhileStatement()
   nextToken();
   parseExpression();
   
-  if (currentToken() != PREC_CLOSE) {
+  if (currentToken() != TOKEN(PREC_CLOSE)) {
     PARSE_UNEXPECT();
     return ws;
   }
   
   bool loose = false;
   parseCodeBlock(loose);
-  if (!loose && currentToken() != CMD_ENDWHILE) {
+  if (!loose && currentToken() != TOKEN(CMD_ENDWHILE)) {
     PARSE_UNEXPECT();
     return ws;
   }
@@ -1048,10 +1069,10 @@ cASTNode* cParser::parseWhileStatement()
 bool cParser::checkLineTerm(cASTNode* node)
 {
   PARSE_TRACE("checkLineTerm");
-  if (currentToken() == SUPPRESS) {
+  if (currentToken() == TOKEN(SUPPRESS)) {
     // @todo - mark output as suppressed
     return true;
-  } else if (currentToken() == ENDL) {
+  } else if (currentToken() == TOKEN(ENDL)) {
     return true;
   }
   
@@ -1097,3 +1118,11 @@ void cParser::reportError(ASParseError_t err, const int line)
       std::cerr << "parse error" << std::endl;
   }
 }
+
+#undef PARSE_DEBUG()
+#undef PARSE_TRACE()
+
+#undef PARSE_ERROR()
+#undef PARSE_UNEXPECT()
+
+#undef TOKEN()
