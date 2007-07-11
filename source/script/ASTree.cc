@@ -24,29 +24,23 @@
 
 #include "ASTree.h"
 
+#include "cASTVisitor.h"
 
-void cASTExpressionUnary::Accept(cASTVisitor& visitor)
-{
-  
-}
 
-void cASTExpressionBinary::Accept(cASTVisitor& visitor)
-{
-  
-}
+void cASTAssignment::Accept(cASTVisitor& visitor) { visitor.visitAssignment(*this); }
 
-void cASTLiteral::Accept(cASTVisitor& visitor)
-{
-  
-}
+void cASTStatementList::Accept(cASTVisitor& visitor) { visitor.visitStatementList(*this); }
 
-void cASTFunctionCall::Accept(cASTVisitor& visitor)
-{
-  
-}
+void cASTForeachBlock::Accept(cASTVisitor& visitor) { visitor.visitForeachBlock(*this); }
+void cASTIfBlock::Accept(cASTVisitor& visitor) { visitor.visitIfBlock(*this); }
+void cASTWhileBlock::Accept(cASTVisitor& visitor) { visitor.visitWhileBlock(*this); }
 
-void cASTVariableReference::Accept(cASTVisitor& visitor)
-{
-  
-}
+void cASTFunctionDefinition::Accept(cASTVisitor& visitor) { visitor.visitFunctionDefinition(*this); }
+void cASTVariableDefinition::Accept(cASTVisitor& visitor) { visitor.visitVariableDefinition(*this); }
 
+void cASTExpressionBinary::Accept(cASTVisitor& visitor) { visitor.visitExpressionBinary(*this); }
+void cASTExpressionUnary::Accept(cASTVisitor& visitor) { visitor.visitExpressionUnary(*this); }
+
+void cASTFunctionCall::Accept(cASTVisitor& visitor) { visitor.visitFunctionCall(*this); }
+void cASTLiteral::Accept(cASTVisitor& visitor) { visitor.visitLiteral(*this); }
+void cASTVariableReference::Accept(cASTVisitor& visitor) { visitor.visitVariableReference(*this); }

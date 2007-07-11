@@ -36,6 +36,11 @@
 class cASTVisitor;
 
 
+// -- Abstract Syntax Tree Base Class
+// ---------------------------------------------------------------------------------------------------------------------
+
+
+//! Abstract base class for all AvidaScript abstract syntax tree nodes
 class cASTNode
 {
 private:
@@ -52,20 +57,104 @@ public:
 };
 
 
-class cASTExpressionUnary : public cASTNode
+
+// -- Concrete Abstract Syntax Tree Nodes
+// ---------------------------------------------------------------------------------------------------------------------
+
+
+// --------  Assignment Nodes  --------
+
+class cASTAssignment : public cASTNode
 {
 private:
-  ASToken_t m_op;
-  cASTNode* m_expr;
   
 public:
-  cASTExpressionUnary(ASToken_t op, cASTNode* e) : m_op(op), m_expr(e) { ; }
-  ~cASTExpressionUnary() { delete m_expr; }
-  
-  void SetExpression(cASTNode* expr) { m_expr = expr; }
+  cASTAssignment() { ; }
   
   void Accept(cASTVisitor& visitor);
 };
+
+
+
+// --------  Block Nodes  --------
+
+class cASTStatementList : public cASTNode
+{
+private:
+  
+public:
+  cASTStatementList() { ; }
+  
+  void Accept(cASTVisitor& visitor);
+};
+
+
+
+
+// --------  Conditional Block Nodes  --------
+
+class cASTForeachBlock : public cASTNode
+{
+private:
+  
+public:
+  cASTForeachBlock() { ; }
+  
+  void Accept(cASTVisitor& visitor);
+};
+
+
+class cASTIfBlock : public cASTNode
+{
+private:
+  
+public:
+  cASTIfBlock() { ; }
+  
+  void Accept(cASTVisitor& visitor);
+};
+
+
+class cASTWhileBlock : public cASTNode
+{
+private:
+  
+public:
+  cASTWhileBlock() { ; }
+  
+  void Accept(cASTVisitor& visitor);
+};
+
+
+
+
+// --------  Definition Nodes  --------
+
+class cASTFunctionDefinition : public cASTNode
+{
+private:
+  
+public:
+  cASTFunctionDefinition() { ; }
+  
+  void Accept(cASTVisitor& visitor);
+};
+
+
+class cASTVariableDefinition : public cASTNode
+{
+private:
+  
+public:
+  cASTVariableDefinition() { ; }
+  
+  void Accept(cASTVisitor& visitor);
+};
+
+
+
+
+// --------  Expression Operation Nodes  --------
 
 class cASTExpressionBinary : public cASTNode
 {
@@ -85,17 +174,24 @@ public:
 };
 
 
-class cASTLiteral : public cASTNode
+class cASTExpressionUnary : public cASTNode
 {
 private:
-  ASToken_t m_type;
+  ASToken_t m_op;
+  cASTNode* m_expr;
   
 public:
-  cASTLiteral(ASToken_t t) : m_type(t) { ; }
-    
+  cASTExpressionUnary(ASToken_t op, cASTNode* e) : m_op(op), m_expr(e) { ; }
+  ~cASTExpressionUnary() { delete m_expr; }
+  
+  void SetExpression(cASTNode* expr) { m_expr = expr; }
+  
   void Accept(cASTVisitor& visitor);
 };
 
+
+
+// --------  Expression Value Nodes  --------
 
 class cASTFunctionCall : public cASTNode
 {
@@ -103,6 +199,18 @@ private:
   
 public:
   cASTFunctionCall() { ; }
+  
+  void Accept(cASTVisitor& visitor);
+};
+
+
+class cASTLiteral : public cASTNode
+{
+private:
+  ASToken_t m_type;
+  
+public:
+  cASTLiteral(ASToken_t t) : m_type(t) { ; }
   
   void Accept(cASTVisitor& visitor);
 };

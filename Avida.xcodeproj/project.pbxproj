@@ -795,6 +795,7 @@
 		70DCF57F09CFBD3D00924128 /* tcmalloc-logging.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = "tcmalloc-logging.cc"; sourceTree = "<group>"; };
 		70DCF58009CFBD3D00924128 /* tcmalloc-logging.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = "tcmalloc-logging.h"; sourceTree = "<group>"; };
 		70E130BF0C442B2900CE9249 /* cCoords.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCoords.h; sourceTree = "<group>"; };
+		70E130E30C4551E900CE9249 /* cASTVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASTVisitor.h; sourceTree = "<group>"; };
 		70F7DAEF09290468009E311D /* cClassificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cClassificationManager.h; sourceTree = "<group>"; };
 		70F7DAF009290468009E311D /* cClassificationManager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cClassificationManager.cc; sourceTree = "<group>"; };
 		70F7DC9E09293E6F009E311D /* cGenotype.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cGenotype.cc; sourceTree = "<group>"; };
@@ -1195,6 +1196,7 @@
 				702F52A80992F8F600B2B507 /* cSymbolTable.cc */,
 				702F52DE0992FD8000B2B507 /* cScriptObject.h */,
 				702F52DF0992FD8000B2B507 /* cScriptObject.cc */,
+				70E130E30C4551E900CE9249 /* cASTVisitor.h */,
 			);
 			path = script;
 			sourceTree = "<group>";
