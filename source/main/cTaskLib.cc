@@ -2248,6 +2248,24 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
       Fx = sqrt(4.0 - vars[0]) + vars[1];
       break;
 
+    case 9:
+    {
+      double sum = 0;
+      for (int i=1; i<5; i++)
+	sum += vars[i]/4.0;
+      Fx = (1.0 + 9*sum) * (1.0 - sqrt(vars[0] / (1.0 + 9*sum)));
+      break;
+    }
+
+    case 10:
+    {
+      double sum = 0;
+      for (int i=1; i<5; i++)
+	sum += vars[i]/4.0;
+      Fx = (1.0 + sum) * (1.0 - pow(vars[0] / (1.0 + sum), 2.0));
+      break;
+    }
+
     default:
       quality = .001;
   }
