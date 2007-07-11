@@ -1,3 +1,4 @@
+
 /*
  *  cTaskLib.cc
  *  Avida
@@ -2123,6 +2124,7 @@ void cTaskLib::Load_Optimize(const cString& name, const cString& argstr, cEnvReq
   schema.AddEntry("function", 0, cArgSchema::SCHEMA_INT);
   schema.AddEntry("binary", 1, 0);
   schema.AddEntry("varlength", 2, 8);
+  schema.AddEntry("numvars", 3, 2);
   // Double Arguments
   schema.AddEntry("basepow", 0, 2.0);
   schema.AddEntry("maxFx", 1, 1.0);
@@ -2162,78 +2164,94 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
   if (ctx.GetOutputBuffer().GetNumStored() < ctx.GetOutputBuffer().GetCapacity()) return 0;
 
   double quality = 0.0;
+  const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
 
   // which function are we currently checking?
-  const int function = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  const int function = args.GetInt(0);
 
-   // always get x&y, at least for now, turn it into a double between 0 and 1
-  double y, x, Fx = 0.0;
+   // get however many variables need, turn them into doubles between 0 and 1
+   tArray<double> vars;
+   vars.Resize(args.GetInt(3));
 
-  const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
-  if (args.GetInt(1)) {
+   double Fx = 0.0;
+   
+  if (args.GetInt(1)) 
+  {
     int len = args.GetInt(2);
     double base_pow = args.GetDouble(0);
-    double tempX = 0, tempY = 0, tot = 0;
-    for (int i = len - 1; i >= 0; i--) {
-      tempX += ctx.GetOutputBuffer()[i + len] * pow(base_pow, (len - 1) - i);
-      tempY += ctx.GetOutputBuffer()[i] * pow(base_pow, (len - 1) - i);
-      tot += pow(base_pow, double(i));
-    }
-    x = tempX / tot;
-    y = tempY / tot;
-  } else {
-    x = double(ctx.GetOutputBuffer()[0]) / 0xffffffff;
-    y = double(ctx.GetOutputBuffer()[1]) / 0xffffffff;
+
+	tArray<double> tempVars;
+	tempVars.Resize(args.GetInt(3));
+	for (int i=0; i<args.GetInt(3); i++)
+		tempVars[i] = 0;
+    
+	double tot = 0;
+	for (int i = len - 1; i >= 0; i--) 
+	{
+		for (int j=0; j<args.GetInt(3); j++)
+		{
+			tempVars[j] += ctx.GetOutputBuffer()[i + len*(args.GetInt(3)-j-1)] * pow(base_pow, (len - 1) - i);
+		}
+		tot += pow(base_pow, double(i));
+	}
+	for (int i=0; i<args.GetInt(3); i++)
+		vars[i] = tempVars[i] / tot;
+  } 
+  else 
+  {
+	  for (int j=0; j<args.GetInt(3); j++)
+		  vars[j] = double(ctx.GetOutputBuffer()[j]) / 0xffffffff;
   }
-  if (x < 0)
-    x = 0;
-  else if (x > 1)
-    x = 1;
-  if (y < 0)
-    y = 0;
-  else if (y > 1)
-    y = 1;
+  
+  for (int j=0; j<args.GetInt(3); j++)
+  {
+	  if (vars[j] < 0)
+		  vars[j] = 0;
+	  else if (vars[j] > 1)
+		  vars[j] = 1;
+  }
 
   switch(function) {
     case 1:
-	  Fx = x;		// F1
+	  Fx = vars[0];		// F1
       break;
 
     case 2:
-      Fx = (1.0 + y) * (1.0 - sqrt(x / (1.0 + y)));   // F2
+      Fx = (1.0 + vars[1]) * (1.0 - sqrt(vars[0] / (1.0 + vars[1])));   // F2
       break;
 
     case 3:
-      Fx = (1.0 + y) * (1.0 - pow(x / (1.0 + y), 2.0));  // F3
+      Fx = (1.0 + vars[1]) * (1.0 - pow(vars[0] / (1.0 + vars[1]), 2.0));  // F3
       break;
 
     case 4:
-      Fx = (1.0 + y) * (1.0 - sqrt(x / (1.0 + y)) - (x / (1.0 + y)) * sin(3.14159 * x * 10.0));
+      Fx = (1.0 + vars[1]) * (1.0 - sqrt(vars[0] / (1.0 + vars[1])) - (vars[0] / (1.0 + vars[1])) * sin(3.14159 * vars[0] * 10.0));
 	  break;
 
     case 5:
-      x = x * -2.0;
-      Fx = x*x + y*y;
+      vars[0] = vars[0] * -2.0;
+      Fx = vars[0]*vars[0] + vars[1]*vars[1];
       break;
 
     case 6:
-      x = x * -2.0;
-      Fx = (x + 2.0)*(x + 2.0) + y*y;
+      vars[0] = vars[0] * -2.0;
+      Fx = (vars[0] + 2.0)*(vars[0] + 2.0) + vars[1]*vars[1];
       break;
 
     case 7:
-      x = x * 4.0;
-      Fx = sqrt(x) + y;
+      vars[0] = vars[0] * 4.0;
+      Fx = sqrt(vars[0]) + vars[1];
       break;
 
     case 8:
-      x = x * 4.0;
-      Fx = sqrt(4.0 - x) + y;
+      vars[0] = vars[0] * 4.0;
+      Fx = sqrt(4.0 - vars[0]) + vars[1];
       break;
 
     default:
       quality = .001;
   }
+
   ctx.SetTaskValue(Fx);
   if (args.GetDouble(3) < 0.0)
   {
@@ -2247,21 +2265,21 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
     {
       if (Fx <= (args.GetDouble(1) - args.GetDouble(2))*args.GetDouble(3) + args.GetDouble(2))
       {
-	quality = 1.0;
+		  quality = 1.0;
       }
       else
       {
-	quality = 0.0;
+		  quality = 0.0;
       }
     }
     else
     {
-      if ( (Fx >= (args.GetDouble(1) - args.GetDouble(2))*args.GetDouble(3) + args.GetDouble(2))
-	   && (Fx <= (args.GetDouble(1) - args.GetDouble(2))*args.GetDouble(4) + args.GetDouble(2)) )
-	quality = 1.0;
-      else
-	quality = 0.0;
-    }
+		if ( (Fx >= (args.GetDouble(1) - args.GetDouble(2))*args.GetDouble(3) + args.GetDouble(2))
+			&& (Fx <= (args.GetDouble(1) - args.GetDouble(2))*args.GetDouble(4) + args.GetDouble(2)) )
+			quality = 1.0;
+		else
+			quality = 0.0;
+	}
   }
 
   // because want org to only have 1 shot to use outputs for all functions at once, even if they
