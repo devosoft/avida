@@ -79,7 +79,7 @@ public:
   ~cParser();
   
   bool Parse(cFile& input);
-  void Accept(cASTVisitor& visitor);
+  inline void Accept(cASTVisitor& visitor) { if (m_tree) m_tree->Accept(visitor); }
   
   
 private:

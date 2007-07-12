@@ -78,8 +78,12 @@ private:
   
 public:
   cASTAssignment(const cString& var) : m_var(var), m_expr(NULL) { ; }
+  ~cASTAssignment() { delete m_expr; }
   
-  void SetExpression(cASTNode* expr) { delete m_expr; m_expr = expr; }
+  inline const cString& GetVariable() { return m_var; }
+  
+  inline void SetExpression(cASTNode* expr) { delete m_expr; m_expr = expr; }
+  inline cASTNode* GetExpression() { return m_expr; }
   
   void Accept(cASTVisitor& visitor);
 };
@@ -97,7 +101,8 @@ public:
   cASTStatementList() { ; }
   ~cASTStatementList();
   
-  void AddNode(cASTNode* n) { m_nodes.PushRear(n); }
+  inline void AddNode(cASTNode* n) { m_nodes.PushRear(n); }
+  inline tListIterator<cASTNode> Iterator() { return tListIterator<cASTNode>(m_nodes); }
   
   void Accept(cASTVisitor& visitor);
 };
@@ -164,8 +169,12 @@ private:
   
 public:
   cASTVariableDefinition(ASType_t type, const cString& var) : m_type(type), m_var(var), m_assign(NULL) { ; }
+  ~cASTVariableDefinition() { delete m_assign; }
   
-  void SetAssignment(cASTNode* assign) { delete m_assign; m_assign = assign; }
+  inline ASType_t GetType() { return m_type; }
+  inline const cString& GetVariable() { return m_var; }
+  inline void SetAssignmentExpression(cASTNode* assign) { delete m_assign; m_assign = assign; }
+  inline cASTNode* GetAssignmentExpression() { return m_assign; }
   
   void Accept(cASTVisitor& visitor);
 };
@@ -186,8 +195,11 @@ public:
   cASTExpressionBinary(ASToken_t op, cASTNode* l, cASTNode* r) : m_op(op), m_left(l), m_right(r) { ; }
   ~cASTExpressionBinary() { delete m_left; delete m_right; }
   
-  void SetLeft(cASTNode* left) { m_left = left; }
-  void SetRight(cASTNode* right) { m_right = right; }
+  inline ASToken_t GetOperator() { return m_op; }
+  inline void SetLeft(cASTNode* left) { m_left = left; }
+  inline cASTNode* GetLeft() { return m_left; }
+  inline void SetRight(cASTNode* right) { m_right = right; }
+  inline cASTNode* GetRight() { return m_right; }
   
   void Accept(cASTVisitor& visitor);
 };
@@ -202,8 +214,10 @@ private:
 public:
   cASTExpressionUnary(ASToken_t op, cASTNode* e) : m_op(op), m_expr(e) { ; }
   ~cASTExpressionUnary() { delete m_expr; }
-  
-  void SetExpression(cASTNode* expr) { m_expr = expr; }
+
+  inline ASToken_t GetOperator() { return m_op; }
+  inline void SetExpression(cASTNode* expr) { m_expr = expr; }
+  inline cASTNode* GetExpression() { return m_expr; }
   
   void Accept(cASTVisitor& visitor);
 };
@@ -226,10 +240,32 @@ public:
 class cASTLiteral : public cASTNode
 {
 private:
-  ASToken_t m_type;
+  ASType_t m_type;
+  cString m_value;
   
 public:
-  cASTLiteral(ASToken_t t) : m_type(t) { ; }
+  cASTLiteral(ASType_t t, const cString& v) : m_type(t), m_value(v) { ; }
+  
+  inline ASType_t GetType() { return m_type; }
+  inline const cString& GetValue() { return m_value; }
+  
+  void Accept(cASTVisitor& visitor);
+};
+
+
+class cASTLiteralArray : public cASTNode
+{
+private:
+  ASType_t m_type;
+  cASTNode* m_value;
+  
+public:
+  cASTLiteralArray(ASType_t t, cASTNode* v) : m_type(t), m_value(v) { ; }
+  ~cASTLiteralArray() { delete m_value; }
+  
+  
+  inline ASType_t GetType() { return m_type; }
+  inline cASTNode* GetValue() { return m_value; }
   
   void Accept(cASTVisitor& visitor);
 };

@@ -234,10 +234,6 @@ cParser::~cParser()
 }
 
 
-void cParser::Accept(cASTVisitor& visitor)
-{
-  
-}
 
 ASToken_t cParser::nextToken()
 {
@@ -573,10 +569,16 @@ cASTNode* cParser::parseExprP6()
   
   switch (currentToken()) {
     case TOKEN(FLOAT):
+      expr = new cASTLiteral(AS_TYPE_FLOAT, currentText());
+      break;
     case TOKEN(INT):
+      expr = new cASTLiteral(AS_TYPE_INT, currentText());
+      break;
     case TOKEN(CHAR):
+      expr = new cASTLiteral(AS_TYPE_CHAR, currentText());
+      break;
     case TOKEN(STRING):
-      expr = new cASTLiteral(currentToken());
+      expr = new cASTLiteral(AS_TYPE_STRING, currentText());
       break;
     case TOKEN(ID):
       if (peekToken() == TOKEN(PREC_OPEN)) {
@@ -611,6 +613,7 @@ cASTNode* cParser::parseExprP6()
         PARSE_UNEXPECT();
         return expr;
       }
+      // @todo - return literal array
       break;
       
     case TOKEN(OP_BIT_NOT):
@@ -1006,7 +1009,7 @@ cASTNode* cParser::parseVarDeclare()
     case TOKEN(ASSIGN):
       nextToken();
       cASTNode* expr = parseExpression();
-      vd->SetAssignment(expr);
+      vd->SetAssignmentExpression(expr);
       break;
     case TOKEN(PREC_OPEN):
       // @todo - array/matrix size declaration

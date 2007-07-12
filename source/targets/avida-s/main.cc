@@ -24,6 +24,7 @@
 
 #include "avida.h"
 #include "cASLibrary.h"
+#include "cASTDumpVisitor.h"
 #include "cFile.h"
 #include "cParser.h"
 #include "PlatformExpert.h"
@@ -41,7 +42,12 @@ int main (int argc, char * const argv[])
   cFile file;
   if (file.Open("main.asl")) {
     if (parser->Parse(file)) {
-      std::cout << "Parse Successful" << std::endl;
+      std::cout << "Parse Successful\n" << std::endl;
+
+      cASTDumpVisitor visitor;
+      parser->Accept(visitor);
+      
+      std::cout << std::endl;
       ExitAvida(0);
     } else {
       std::cout << "Parse Failed" << std::endl;

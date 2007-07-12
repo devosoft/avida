@@ -43,6 +43,7 @@ void cASTExpressionUnary::Accept(cASTVisitor& visitor) { visitor.visitExpression
 
 void cASTFunctionCall::Accept(cASTVisitor& visitor) { visitor.visitFunctionCall(*this); }
 void cASTLiteral::Accept(cASTVisitor& visitor) { visitor.visitLiteral(*this); }
+void cASTLiteralArray::Accept(cASTVisitor& visitor) { visitor.visitLiteralArray(*this); }
 void cASTVariableReference::Accept(cASTVisitor& visitor) { visitor.visitVariableReference(*this); }
 
 

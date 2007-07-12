@@ -193,6 +193,7 @@
 		70B651B70BEA9AEC002472ED /* unit-tests in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70B6514C0BEA6FAD002472ED /* unit-tests */; };
 		70D046610C32EA90000614E7 /* cBirthChamber.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 702D4F3908DA61E2007BA469 /* cBirthChamber.h */; };
 		70DCAC9C097AF7C0002F8733 /* primitive.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC9B097AF7C0002F8733 /* primitive.cc */; };
+		70F9FC100C469DD70083B788 /* cASTDumpVisitor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70F9FC0F0C469DC10083B788 /* cASTDumpVisitor.cc */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -808,6 +809,8 @@
 		70F7DE710929678E009E311D /* cGenotype_BirthData.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenotype_BirthData.h; sourceTree = "<group>"; };
 		70F7DE730929678E009E311D /* cGenotype_TestData.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenotype_TestData.h; sourceTree = "<group>"; };
 		70F7DE76092967A8009E311D /* cGenotypeBatch.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenotypeBatch.h; sourceTree = "<group>"; };
+		70F9FC0E0C469DC10083B788 /* cASTDumpVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASTDumpVisitor.h; sourceTree = "<group>"; };
+		70F9FC0F0C469DC10083B788 /* cASTDumpVisitor.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cASTDumpVisitor.cc; sourceTree = "<group>"; };
 		70FB86A908BFAFEC00BDF589 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		DCC30FCF0762539D008F7A48 /* Doxyfile */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = Doxyfile; sourceTree = "<group>"; };
 		DCC3109C0762539E008F7A48 /* avida.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = avida.cc; sourceTree = "<group>"; };
@@ -1197,6 +1200,8 @@
 				702F52DE0992FD8000B2B507 /* cScriptObject.h */,
 				702F52DF0992FD8000B2B507 /* cScriptObject.cc */,
 				70E130E30C4551E900CE9249 /* cASTVisitor.h */,
+				70F9FC0E0C469DC10083B788 /* cASTDumpVisitor.h */,
+				70F9FC0F0C469DC10083B788 /* cASTDumpVisitor.cc */,
 			);
 			path = script;
 			sourceTree = "<group>";
@@ -1967,6 +1972,7 @@
 				7023ECDC0C0A44CC00362B9C /* cScriptObject.cc in Sources */,
 				7023ECDD0C0A44CE00362B9C /* cSymbolTable.cc in Sources */,
 				704368D60C31991500A05ABA /* ASTree.cc in Sources */,
+				70F9FC100C469DD70083B788 /* cASTDumpVisitor.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
