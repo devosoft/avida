@@ -37,9 +37,9 @@
 #include "cWorldDriver.h"
 #endif
 
-#ifndef cGUIDriver_h
-#include "cGUIDriver.h"
-#endif
+#include "cFLTKBox.h"
+#include "cFLTKWindow.h"
+#include "tFLTKButton.h"
 
 #include <sstream>
 #include <iostream>
@@ -50,11 +50,22 @@ class cGUIContainer;
 
 using namespace std;
 
-class cDriver_FLTKViewer : public cAvidaDriver, public cWorldDriver,  public cGUIDriver {
+class cDriver_FLTKViewer : public cAvidaDriver, public cWorldDriver {
 private:
-  // Overloaded methods from cGUIDriver...
-  cGUIWindow * BuildWindow(int width, int height, const cString & name);
-  cGUIBox * BuildBox(cGUIContainer * container, int x, int y, int width, int height, const cString & name);
+  cWorld * m_world;
+  cCoreView_Info m_info;
+
+  bool m_done;              // This is set to true when run should finish.
+
+  // Graphics components...
+  cFLTKWindow m_main_window;
+
+  cFLTKBox m_menu_box;
+  cFLTKBox m_body_box;
+  cFLTKBox m_update_box;
+  cFLTKBox m_title_box;
+
+  tFLTKButton<cDriver_FLTKViewer> m_quit_button;
 
 public:
   cDriver_FLTKViewer(cWorld* world);
@@ -89,6 +100,9 @@ public:
 
   // Tests
   bool IsInteractive() { return true; }
+
+  // Button Callbacks...
+  void ButtonCallback_Quit(double ignore);
 };
 
 

@@ -40,32 +40,27 @@
 #include "cDriverManager.h"
 #include "cFLTKWindow.h"
 #include "cFLTKBox.h"
+#include "tFLTKButton.h"
 
 #include <cstdlib>
 
 #include <FL/Fl.H>
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Box.H>
+// #include <FL/Fl_Window.H>
+// #include <FL/Fl_Box.H>
 
 
 using namespace std;
 
-cGUIWindow * cDriver_FLTKViewer::BuildWindow(int width, int height, const cString & name)
-{
-  return new cFLTKWindow(width, height, name);
-}
-
-cGUIBox * cDriver_FLTKViewer::BuildBox(cGUIContainer * container, int x, int y,
-				       int width, int height, const cString & name)
-{
-  cGUIBox * box = new cFLTKBox(x, y, width, height, name);
-  container->Add(box);
-  return box;
-}
-
-
 cDriver_FLTKViewer::cDriver_FLTKViewer(cWorld* world)
-  : cGUIDriver(world)
+  : m_world(world)
+  , m_info(world->GetPopulation(), 12)
+  , m_done(false)
+  , m_main_window(800, 600, "Avida")
+  , m_menu_box(m_main_window, 0, 0, 800, 50)
+  , m_body_box(m_main_window, 0, 50, 800, 550)
+  , m_update_box(m_main_window, 0, 0, 200, 50, "Update 0")
+  , m_title_box(m_main_window, 600, 0, 200, 50, "Avida")
+  , m_quit_button(m_main_window, 200, 0, 200, 50, "Quit")
 {
   // Setup the initial view mode (loaded from avida.cfg)
   m_info.SetViewMode(world->GetConfig().VIEW_MODE.Get());
@@ -73,27 +68,31 @@ cDriver_FLTKViewer::cDriver_FLTKViewer(cWorld* world)
   cDriverManager::Register(static_cast<cAvidaDriver*>(this));
   world->SetDriver(this);
 
-  LaunchViewer();
+  m_main_window.SetSizeRange(800, 600);
 
-//   Fl_Box *box = new Fl_Box(20,40,260,100,"Avida!");
-//   box->box(FL_UP_BOX);
-//   box->labelsize(36);
-//   box->labelfont(FL_BOLD+FL_ITALIC);
-//   box->labeltype(FL_SHADOW_LABEL);
+  m_menu_box.SetType(cGUIBox::BOX_RAISED_FRAME);
+  m_menu_box.Refresh();
 
-//   int argc = 1;
-//   char * progname = "Avida";
-//   char ** argv = &progname;
+  m_update_box.SetType(cGUIBox::BOX_RAISED);
+  m_update_box.SetFontSize(30);
+  m_update_box.Refresh();
+ 
+  m_title_box.SetType(cGUIBox::BOX_RAISED);
+  m_title_box.SetFontSize(30);
+  m_title_box.Refresh();
 
-//   window->show(argc, argv);
+  m_main_window.Resizable(m_body_box);
 
-//   bool error = Fl::run();
-//   (void) error;
+  m_quit_button.SetCallback(this, &cDriver_FLTKViewer::ButtonCallback_Quit);
+
+  m_main_window.Finalize();
 }
+
 
 cDriver_FLTKViewer::~cDriver_FLTKViewer()
 {
   cDriverManager::Unregister(static_cast<cAvidaDriver*>(this));
+  delete m_world;
     
   ExitFLTKViewer(0);
 }
@@ -329,10 +328,11 @@ void cDriver_FLTKViewer::Draw()
 void cDriver_FLTKViewer::DoUpdate()
 {
   bool error = Fl::check();
+
   cString update_string;
   update_string.Set("Update: %d", m_world->GetStats().GetUpdate());
-  m_update_box->SetName(update_string);
-  m_update_box->Refresh();
+  m_update_box.SetName(update_string);
+  m_update_box.Refresh();
   
 
   const int pause_level = m_info.GetPauseLevel();
@@ -402,6 +402,12 @@ int cDriver_FLTKViewer::Confirm(const cString & message)
   return 0;
 }
 
+
+void cDriver_FLTKViewer::ButtonCallback_Quit(double ignore)
+{
+  (void) ignore;
+  exit(0);
+}
 
 
 void ExitFLTKViewer(int exit_code)

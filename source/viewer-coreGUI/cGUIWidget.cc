@@ -1,5 +1,5 @@
 /*
- *  cGUIDriver.cc
+ *  cGUIWidget.cc
  *  Avida
  *
  *  Created by Charles on 7-9-07
@@ -22,47 +22,21 @@
  *
  */
 
-#include "cGUIDriver.h"
+#include "cGUIWidget.h"
+#include "cGUIContainer.h"
 
-#include "cWorld.h"
-
-#include "cGUIBox.h"
-#include "cGUIWindow.h"
-
-cGUIDriver::cGUIDriver(cWorld* world)
-  : m_world(world)
-  , m_info(world->GetPopulation(), 12)
-  , m_done(false)
-  , m_main_window(NULL)
-  , m_update_box(NULL)
+cGUIWidget::cGUIWidget()
+  : m_parent(NULL), m_x(0), m_y(0), m_width(0), m_height(0), m_font_size(20)
 {
 }
 
-
-cGUIDriver::~cGUIDriver()
+cGUIWidget::cGUIWidget(int x, int y, int width, int height, const cString & name)
+    : m_parent(NULL), m_name(name), m_x(x), m_y(y), m_width(width), m_height(height), m_font_size(20)
 {
-  if (m_main_window != NULL) delete m_main_window;
-
-  delete m_world;
 }
 
-
-bool cGUIDriver::LaunchViewer()
+cGUIWidget::cGUIWidget(cGUIContainer & parent, int x, int y, int width, int height, const cString & name)
+  : m_parent(&parent), m_name(name), m_x(x), m_y(y), m_width(width), m_height(height), m_font_size(20)
 {
-  m_main_window = BuildWindow(800, 600, "Avida Viewer");
-  m_main_window->SetSizeRange(800, 600);
-
-  m_update_box = BuildBox(m_main_window, 10, 10, 200, 50, "Update: 0");
-  m_update_box->SetType(cGUIBox::BOX_FLAT);
-  m_update_box->SetFontSize(30);
-  m_update_box->Refresh();
-
-  m_main_window->Finalize();
-
-  return true;
-}
-
-
-bool cGUIDriver::UpdateViewer()
-{
+  parent.Add(this);
 }

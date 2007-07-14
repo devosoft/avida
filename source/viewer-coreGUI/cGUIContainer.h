@@ -42,6 +42,8 @@ public:
   cGUIContainer() { ; }
   cGUIContainer(int x, int y, int width=0, int height=0, const cString & name="")
     : cGUIWidget(x, y, width, height, name) { ; }
+  cGUIContainer(cGUIContainer & parent, int x, int y, int width=0, int height=0, const cString & name="")
+    : cGUIWidget(parent, x, y, width, height, name) { ; }
   virtual ~cGUIContainer() { ; }
 
   // This method should be run when the widget is setup and its time to build it and everything it contains.

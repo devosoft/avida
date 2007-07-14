@@ -27,26 +27,30 @@
 #ifndef tGUIButton_h
 #define tGUIButton_h
 
-#include "cGUIWidget.h"
+#include "cGUIButton.h"
 
 template <class T> class tGUIButton : public cGUIButton {
 protected:
   T * m_target;
-  void (T::*m_press_callback)(double);
-  void (T::*m_release_callback)(double);
+  void (T::*m_callback)(double);
+  double m_arg;
 
 public:
-  tGUIButton(int x, int y, width, height, name="") : cGUIButton(x, y, width, height, name) { ; }
+  tGUIButton(cGUIContainer & parent, int x, int y, int width, int height, const cString & name="")
+    : cGUIButton(parent, x, y, width, height, name), m_target(NULL), m_callback(NULL), m_arg(0.0) { ; }
   virtual ~tGUIButton() { ; }
 
   T & GetTarget() { return *m_target; }
+  double GetArg() { return m_arg; }
 
-  void SetTarget(T & _target) { m_target = _target; }
-  void SetPressCallback(void (T::*cb_fun)(double)) { m_press_callback = cb_fun; }
-  void SetReleaseCallback(void (T::*cb_fun)(double)) { m_release_callback = cb_fun; }
+  void SetCallback(T * target, void (T::*cb_fun)(double), double arg=0.0) {
+    m_target = target;
+    m_callback = cb_fun;
+    m_arg = arg;
+  }
 
-  virtual void DoPress(double value=1.0) { if (m_press_callback != NULL) (m_target->*(m_press_callback))(value); }
-  virtual void DoRelease(double value=0.0) { if (m_release_callback != NULL) (m_target->*(m_release_callback))(value); }
+  virtual void Press() { if (m_callback != NULL) (m_target->*(m_callback))(m_arg); }
+  virtual void Press(double arg) { if (m_callback != NULL) (m_target->*(m_callback))(arg); }
 };
 
 #endif

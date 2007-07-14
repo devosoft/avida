@@ -31,6 +31,8 @@
 
 #include <FL/Fl_Window.H>
 
+#include "cFLTKBox.h"
+
 class cFLTKWindow : public cGUIWindow {
 protected:
   Fl_Window * m_window;
@@ -53,6 +55,12 @@ public:
     m_window->show();
   }
   void Update() { ; }
+
+  void Resizable(cFLTKBox & box) {
+    m_window->resizable(box.GetFLTKPtr());
+  }
+
+  Fl_Window * GetFLTKPtr() { return m_window; }
 };
 
 #endif

@@ -1,5 +1,5 @@
 /*
- *  cGUIButton.h
+ *  fltk_defs.cc
  *  Avida
  *
  *  Created by Charles on 7-9-07
@@ -22,32 +22,11 @@
  *
  */
 
-// This is a base class for all GUI widgets that act as buttons.
+#include "fltk-defs.h"
 
-#ifndef cGUIButton_h
-#define cGUIButton_h
+#include "cGUIButton.h"
 
-#include "cGUIWidget.h"
-
-class cGUIButton : public cGUIWidget {
-public:
-  enum eButtonType { BUTTON_NORMAL, BUTTON_TOGGLE, BUTTON_RADIO, BUTTON_LIGHT,
-		     BUTTON_RADIO_LIGHT, BUTTON_RETURN, BUTTON_REPEAT };
-
-protected:
-  int m_type;    // What type of button is this?
-  int m_binding; // What keypress is this button bound to?
-
-public:
-  cGUIButton(cGUIContainer & parent, int x, int y, int width, int height, const cString & name="")
-    : cGUIWidget(parent, x, y, width, height, name) { ; }
-  virtual ~cGUIButton() { ; }
-
-  virtual void Press() = 0;
-  virtual void BindKey(int key) = 0;
-
-  int GetType() const { return m_type; }
-  int GetBinding() const { return m_binding; }
-};
-
-#endif
+void GenericButtonCallback(void *, cGUIButton * button)
+{
+  button->Press();
+}

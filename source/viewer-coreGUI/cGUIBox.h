@@ -37,8 +37,8 @@ protected:
   eBoxType m_type;    // What type of box is this?
 
 public:
-  cGUIBox(int x, int y, int width, int height, const cString & name="")
-    : cGUIWidget(x, y, width, height, name)
+  cGUIBox(cGUIContainer & parent, int x, int y, int width, int height, const cString & name="")
+    : cGUIWidget(parent, x, y, width, height, name)
     , m_type(BOX_NONE) { ; }
   virtual ~cGUIBox() { ; }
 

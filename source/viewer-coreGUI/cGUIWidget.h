@@ -35,6 +35,7 @@ class cGUIEvent;
 class cGUIWidget {
   friend class cGUIContainer;
 protected:
+  cGUIContainer * m_parent;
   cString m_name;
   int m_x;
   int m_y;
@@ -43,9 +44,9 @@ protected:
 
   int m_font_size;
 public:
-  cGUIWidget() : m_x(0), m_y(0), m_width(0), m_height(0), m_font_size(20) { ; }
-  cGUIWidget(int x, int y, int width=0, int height=0, const cString & name="")
-    : m_name(name), m_x(x), m_y(y), m_width(width), m_height(height), m_font_size(20) { ; }
+  cGUIWidget();
+  cGUIWidget(int x, int y, int width=0, int height=0, const cString & name="");
+  cGUIWidget(cGUIContainer & parent, int x, int y, int width=0, int height=0, const cString & name="");
   virtual ~cGUIWidget() { ; }
 
   // This method should be run when the widget is setup and its time to build it.
@@ -54,6 +55,7 @@ public:
   // This method should deal with GUI events.
   virtual bool Handle(cGUIEvent & event) { (void) event; return false; }
 
+  cGUIContainer * GetParent() { return m_parent; }
   const cString & GetName() { return m_name; }
   int GetX() const { return m_x; }
   int GetY() const { return m_y; }

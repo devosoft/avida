@@ -36,8 +36,8 @@ protected:
   Fl_Box * m_box;
   
 public:
-  cFLTKBox(int x, int y, int width, int height, const cString & name="")
-    : cGUIBox(x, y, width, height, name)
+  cFLTKBox(cGUIContainer & parent, int x, int y, int width, int height, const cString & name="")
+    : cGUIBox(parent, x, y, width, height, name)
   {
     m_box = new Fl_Box(x, y, width, height, name);
   }
@@ -60,6 +60,8 @@ public:
     m_box->labelsize(m_font_size);
     m_box->redraw();
   }
+
+  Fl_Box * GetFLTKPtr() { return m_box; }
 };
 
 #endif
