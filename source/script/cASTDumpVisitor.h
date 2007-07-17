@@ -40,6 +40,7 @@ public:
   
   void visitAssignment(cASTAssignment&);
   
+  void visitReturnStatement(cASTReturnStatement&);
   void visitStatementList(cASTStatementList&);
   
   void visitForeachBlock(cASTForeachBlock&);

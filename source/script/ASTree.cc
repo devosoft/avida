@@ -29,6 +29,7 @@
 
 void cASTAssignment::Accept(cASTVisitor& visitor) { visitor.visitAssignment(*this); }
 
+void cASTReturnStatement::Accept(cASTVisitor& visitor) { visitor.visitReturnStatement(*this); }
 void cASTStatementList::Accept(cASTVisitor& visitor) { visitor.visitStatementList(*this); }
 
 void cASTForeachBlock::Accept(cASTVisitor& visitor) { visitor.visitForeachBlock(*this); }

@@ -590,7 +590,7 @@ cASTNode* cParser::parseExprP6()
         }
         expr = new cASTFunctionCall(); // @todo
       } else {
-        expr = new cASTVariableReference(); // @todo
+        expr = new cASTVariableReference(currentText());
       }
       break;
     case TOKEN(PREC_OPEN):
@@ -889,10 +889,9 @@ cASTNode* cParser::parseRefStatement()
 cASTNode* cParser::parseReturnStatement()
 {
   PARSE_TRACE("parseReturnStatement");
-  cASTNode* rs = NULL;
   
   nextToken();
-  parseExpression();
+  cASTNode* rs = new cASTReturnStatement(parseExpression());
   
   return rs;
 }

@@ -94,6 +94,18 @@ void cASTDumpVisitor::visitAssignment(cASTAssignment& node)
   m_depth--;
 }
 
+
+void cASTDumpVisitor::visitReturnStatement(cASTReturnStatement& node)
+{
+  indent();
+  cout << "return:" << endl;
+  
+  m_depth++;
+  node.GetExpression()->Accept(*this);
+  m_depth--;  
+}
+
+
 void cASTDumpVisitor::visitStatementList(cASTStatementList& node)
 {
   tListIterator<cASTNode> it(node.Iterator());
@@ -205,5 +217,6 @@ void cASTDumpVisitor::visitLiteralArray(cASTLiteralArray& node)
 
 void cASTDumpVisitor::visitVariableReference(cASTVariableReference& node)
 {
-  
+  indent();
+  cout << node.GetName() << endl;
 }

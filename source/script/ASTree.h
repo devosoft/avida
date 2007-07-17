@@ -92,6 +92,21 @@ public:
 
 // --------  Block Nodes  --------
 
+class cASTReturnStatement : public cASTNode
+{
+private:
+  cASTNode* m_expr;
+  
+public:
+  cASTReturnStatement(cASTNode* expr) : m_expr(expr) { ; }
+  ~cASTReturnStatement() { delete m_expr; }
+
+  inline cASTNode* GetExpression() { return m_expr; }
+  
+  void Accept(cASTVisitor& visitor);
+};
+
+
 class cASTStatementList : public cASTNode
 {
 private:
@@ -274,9 +289,12 @@ public:
 class cASTVariableReference : public cASTNode
 {
 private:
+  cString m_name;
   
 public:
-  cASTVariableReference() { ; }
+  cASTVariableReference(const char* name) : m_name(name) { ; }
+  
+  inline const cString& GetName() { return m_name; }
   
   void Accept(cASTVisitor& visitor);
 };

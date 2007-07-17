@@ -39,6 +39,7 @@ public:
   
   virtual void visitAssignment(cASTAssignment&) = 0;
   
+  virtual void visitReturnStatement(cASTReturnStatement&) = 0;
   virtual void visitStatementList(cASTStatementList&) = 0;
   
   virtual void visitForeachBlock(cASTForeachBlock&) = 0;
