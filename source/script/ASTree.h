@@ -167,9 +167,23 @@ public:
 class cASTFunctionDefinition : public cASTNode
 {
 private:
+  ASType_t m_type;
+  cString m_name;
+  cASTNode* m_args;
+  cASTNode* m_code;
   
 public:
-  cASTFunctionDefinition() { ; }
+  cASTFunctionDefinition(ASType_t type, const cString& name, cASTNode* args)
+    : m_type(type), m_name(name), m_args(args), m_code(NULL) { ; }
+  
+  inline ASType_t GetType() { return m_type; }
+  inline const cString& GetName() { return m_name; }
+  inline cASTNode* GetArguments() { return m_args; }
+  
+  inline void SetCode(cASTNode* code) { m_code = code; }
+  inline cASTNode* GetCode() { return m_code; }
+  
+  inline bool IsDefinition() { return (m_code); }
   
   void Accept(cASTVisitor& visitor);
 };
@@ -292,7 +306,7 @@ private:
   cString m_name;
   
 public:
-  cASTVariableReference(const char* name) : m_name(name) { ; }
+  cASTVariableReference(const cString& name) : m_name(name) { ; }
   
   inline const cString& GetName() { return m_name; }
   

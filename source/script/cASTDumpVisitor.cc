@@ -144,7 +144,15 @@ void cASTDumpVisitor::visitWhileBlock(cASTWhileBlock& node)
 
 void cASTDumpVisitor::visitFunctionDefinition(cASTFunctionDefinition& node)
 {
+  indent();
+  cout << (node.IsDefinition() ? "":"@") << "function: " << mapType(node.GetType()) << " " << node.GetName() << "(";
   
+  cout << ")" << endl;
+  if (node.IsDefinition()) {
+    m_depth++;
+    node.GetCode()->Accept(*this);
+    m_depth--;
+  }
 }
 
 

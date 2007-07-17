@@ -219,7 +219,7 @@ bool cParser::Parse(cFile& input)
   m_tree = parseStatementList();
 
   if (!m_eof) PARSE_UNEXPECT();
-  //if (!m_tree) PARSE_ERROR(EMPTY); @todo - statement list doesn't actually return anything yet
+  if (!m_tree) PARSE_ERROR(EMPTY);
 
   delete m_lexer;
   m_lexer = NULL;
@@ -377,7 +377,6 @@ cASTNode* cParser::parseCodeBlock(bool& loose)
   PARSE_TRACE("parseCodeBlock");
   cASTNode* cb = NULL;
 
-  nextToken();
   if (currentToken() == TOKEN(ARR_OPEN)) {
     loose = true;
     cb = parseLooseBlock();
@@ -717,69 +716,74 @@ cASTNode* cParser::parseForeachStatement()
 cASTNode* cParser::parseFunctionDefine()
 {
   PARSE_TRACE("parseFunctionDefine");
-  cASTNode* fd = parseFunctionHeader(false);
+  cASTFunctionDefinition* fd = parseFunctionHeader(false);
   
   bool loose = false;
-  parseCodeBlock(loose);
+  fd->SetCode(parseCodeBlock(loose));
   if (!loose && currentToken() != TOKEN(CMD_ENDFUNCTION)) {
     PARSE_UNEXPECT();
     return fd;
   }
-  
+
+  nextToken();
   return fd;
 }
 
-cASTNode* cParser::parseFunctionHeader(bool declare)
+cASTFunctionDefinition* cParser::parseFunctionHeader(bool declare)
 {
   PARSE_TRACE("parseFunctionHeader");
-  cASTNode* fd = NULL;
   
+  ASType_t type = AS_TYPE_INVALID;
   switch (nextToken()) {
-    case TOKEN(TYPE_ARRAY):
-    case TOKEN(TYPE_CHAR):
-    case TOKEN(TYPE_FLOAT):
-    case TOKEN(TYPE_INT):
-    case TOKEN(TYPE_MATRIX):
-    case TOKEN(TYPE_STRING):
-    case TOKEN(TYPE_VOID):
-      break;
+    case TOKEN(TYPE_ARRAY):  type = AS_TYPE_ARRAY;  break;
+    case TOKEN(TYPE_CHAR):   type = AS_TYPE_CHAR;   break;
+    case TOKEN(TYPE_FLOAT):  type = AS_TYPE_FLOAT;  break;
+    case TOKEN(TYPE_INT):    type = AS_TYPE_INT;    break;
+    case TOKEN(TYPE_MATRIX): type = AS_TYPE_MATRIX; break;
+    case TOKEN(TYPE_STRING): type = AS_TYPE_STRING; break;
+    case TOKEN(TYPE_VOID):   type = AS_TYPE_VOID;   break;
     case TOKEN(ID):
       if (peekToken() != TOKEN(REF)) {
         nextToken();
         PARSE_UNEXPECT();
-        return fd;
+        return NULL;
       }
+      type = AS_TYPE_OBJECT_REF;
       break;
       
     default:
       PARSE_UNEXPECT();
-      return fd;
+      return NULL;
   }
   
   if (nextToken() != TOKEN(ID)) {
     PARSE_UNEXPECT();
-    return fd;
+    return NULL;
   }
+  cString name(currentText());
   
   if (nextToken() != TOKEN(PREC_OPEN)) {
     PARSE_UNEXPECT();
-    return fd;
+    return NULL;
   }
   
+  cASTNode* args = NULL;
   if (nextToken() != TOKEN(PREC_CLOSE)) {
     if (declare) {
-      parseVarDeclareList();
+      args = parseVarDeclareList();
     } else {
-      parseArgumentList();
+      args = parseArgumentList();
     }
   }
   
   if (currentToken() != TOKEN(PREC_CLOSE)) {
     PARSE_UNEXPECT();
-    return fd;    
+    return NULL;    
   }
   
-  return fd;
+  nextToken();
+  
+  return new cASTFunctionDefinition(type, name, args);
 }
 
 cASTNode* cParser::parseIDStatement()
@@ -874,10 +878,10 @@ cASTNode* cParser::parseRefStatement()
 
   switch (nextToken()) {
     case TOKEN(ARR_OPEN):
-      parseArrayUnpack();
+      rs = parseArrayUnpack();
       break;
     case TOKEN(CMD_FUNCTION):
-      parseFunctionHeader();
+      rs = parseFunctionHeader();
       break;
     default:
       PARSE_UNEXPECT();
@@ -1085,6 +1089,8 @@ bool cParser::checkLineTerm(cASTNode* node)
 
 void cParser::reportError(ASParseError_t err, const int line)
 {
+#define ERR_ENDL "  (cParser.cc:" << line << ")" << std::endl
+  
   m_success = false;
 
   std::cerr << m_filename << ":";
@@ -1097,21 +1103,21 @@ void cParser::reportError(ASParseError_t err, const int line)
 
   switch (err) {
     case AS_PARSE_ERR_UNEXPECTED_TOKEN:
-      std::cerr << "unexpected token '" << currentText() << "'." << std::endl;
+      std::cerr << "unexpected token '" << currentText() << "'" << ERR_ENDL;
       break;
     case AS_PARSE_ERR_UNTERMINATED_EXPR:
-      std::cerr << "unterminated expression." << std::endl;
+      std::cerr << "unterminated expression" << ERR_ENDL;
       break;
     case AS_PARSE_ERR_NULL_EXPR:
-      std::cerr << "expected expression, found '" << currentText() << "'." << std::endl;
+      std::cerr << "expected expression, found '" << currentText() << "'" << ERR_ENDL;
     case AS_PARSE_ERR_EOF:
       if (!m_err_eof) {
-        std::cerr << "unexpected end of file" << std::endl;
+        std::cerr << "unexpected end of file" << ERR_ENDL;
         m_err_eof = true;
       }
       break;
     case AS_PARSE_ERR_EMPTY:
-      std::cerr << "empty script, no valid statements found" << std::endl;
+      std::cerr << "empty script, no valid statements found" << ERR_ENDL;
       break;
     case AS_PARSE_ERR_INTERNAL:
       std::cerr << "internal parser error at cParser.cc:" << line << std::endl;
@@ -1119,6 +1125,8 @@ void cParser::reportError(ASParseError_t err, const int line)
     default:
       std::cerr << "parse error" << std::endl;
   }
+
+#undef ERR_ENDL
 }
 
 #undef PARSE_DEBUG()

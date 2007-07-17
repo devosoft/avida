@@ -105,7 +105,7 @@ private:
   cASTNode* parseExprP6_Index(cASTNode* l);
   cASTNode* parseForeachStatement();
   cASTNode* parseFunctionDefine();
-  cASTNode* parseFunctionHeader(bool declare = true);
+  cASTFunctionDefinition* parseFunctionHeader(bool declare = true);
   cASTNode* parseIDStatement();
   cASTNode* parseIfStatement();
   cASTNode* parseIndexExpression();
