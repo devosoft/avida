@@ -712,6 +712,7 @@ cASTNode* cParser::parseForeachStatement()
   bool loose = false;
   parseCodeBlock(loose);
   if (!loose && currentToken() != TOKEN(CMD_ENDFOREACH)) PARSE_UNEXPECT();
+  if (!loose) nextToken();
   
   return fs;
 }
@@ -727,8 +728,8 @@ cASTNode* cParser::parseFunctionDefine()
     PARSE_UNEXPECT();
     return fd;
   }
+  if (!loose) nextToken();
 
-  nextToken();
   return fd;
 }
 
@@ -818,32 +819,39 @@ cASTNode* cParser::parseIDStatement()
 cASTNode* cParser::parseIfStatement()
 {
   PARSE_TRACE("parseIfStatement");
-  cASTNode* is = NULL;
   
   if (nextToken() != TOKEN(PREC_OPEN)) {
     PARSE_UNEXPECT();
-    return is;
+    return NULL;
   }
   
   nextToken();
-  parseExpression();
+  tAutoRelease<cASTNode> cond(parseExpression());
   
   if (currentToken() != TOKEN(PREC_CLOSE)) {
     PARSE_UNEXPECT();
-    return is;
+    return NULL;
   }
+  nextToken();
   
   bool loose = false;
-  parseCodeBlock(loose);
+  cASTIfBlock* is = new cASTIfBlock(cond.Release(), parseCodeBlock(loose));
+
   if (currentToken() == TOKEN(CMD_ELSE)) {
-    parseCodeBlock(loose);
+    nextToken(); // consume 'else'
+    loose = false;
+    tAutoRelease<cASTNode> code(parseCodeBlock(loose));
     if (!loose && currentToken() != TOKEN(CMD_ENDIF)) {
       PARSE_UNEXPECT();
       return is;
     }
+    if (!loose) nextToken();
+    is->SetElseCode(code.Release());
   } else if (!loose && currentToken() != TOKEN(CMD_ENDIF)) {
     PARSE_UNEXPECT();
     return is;
+  } else if (!loose) {
+    nextToken(); // consume 'endif'
   }
   
   return is;
@@ -871,6 +879,7 @@ cASTNode* cParser::parseLooseBlock()
   if (currentToken() != TOKEN(ARR_CLOSE)) {
     PARSE_UNEXPECT();
   }
+  nextToken();
   return sl;
 }
 
@@ -1070,7 +1079,7 @@ cASTNode* cParser::parseWhileStatement()
     PARSE_UNEXPECT();
     return NULL;
   }
-  nextToken();
+  if (!loose) nextToken();
   
   return new cASTWhileBlock(cond.Release(), code.Release());
 }

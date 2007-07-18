@@ -141,9 +141,20 @@ public:
 class cASTIfBlock : public cASTNode
 {
 private:
+  cASTNode* m_expr;
+  cASTNode* m_code;
+  cASTNode* m_else;
   
 public:
-  cASTIfBlock() { ; }
+  cASTIfBlock(cASTNode* expr, cASTNode* code) : m_expr(expr), m_code(code), m_else(NULL) { ; }
+  ~cASTIfBlock() { delete m_expr; delete m_code; delete m_else; }
+  
+  inline cASTNode* GetCondition() { return m_expr; }
+  inline cASTNode* GetCode() { return m_code; }
+  inline void SetElseCode(cASTNode* code) { m_else = code; }
+  inline cASTNode* GetElseCode() { return m_else; }
+  
+  inline bool HasElse() const { return (m_else); }
   
   void Accept(cASTVisitor& visitor);
 };
@@ -157,6 +168,7 @@ private:
   
 public:
   cASTWhileBlock(cASTNode* expr, cASTNode* code) : m_expr(expr), m_code(code) { ; }
+  ~cASTWhileBlock() { delete m_expr; delete m_code; }
   
   inline cASTNode* GetCondition() { return m_expr; }
   inline cASTNode* GetCode() { return m_code; }

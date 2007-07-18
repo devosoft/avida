@@ -132,6 +132,34 @@ void cASTDumpVisitor::visitForeachBlock(cASTForeachBlock& node)
 
 void cASTDumpVisitor::visitIfBlock(cASTIfBlock& node)
 {
+  indent();
+  cout << "if:" << endl;
+  
+  m_depth++;
+  indent();
+  cout << "condition:" << endl;
+  
+  m_depth++;
+  node.GetCondition()->Accept(*this);
+  m_depth--;
+  
+  indent();
+  cout << "do:" << endl;
+  
+  m_depth++;
+  node.GetCode()->Accept(*this);
+  m_depth--;
+  
+  if (node.HasElse()) {
+    indent();
+    cout << "else:" << endl;
+    
+    m_depth++;
+    node.GetElseCode()->Accept(*this);
+    m_depth--;
+  }
+  
+  m_depth--;
   
 }
 
