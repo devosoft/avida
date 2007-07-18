@@ -36,7 +36,7 @@ private:
   int m_depth;
   
 public:
-  cASTDumpVisitor() : m_depth(0) { ; }
+  cASTDumpVisitor();
   
   void visitAssignment(cASTAssignment&);
   

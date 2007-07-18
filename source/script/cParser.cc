@@ -26,6 +26,7 @@
 
 #include "AvidaScript.h"
 #include "cFile.h"
+#include "tAutoRelease.h"
 
 /*
  The following represents the grammar for AvidaScript in BNF, adjusted so that it is compatible with recursive descent
@@ -316,6 +317,8 @@ cASTNode* cParser::parseAssignment()
   PARSE_TRACE("parseAssignment");
   cASTAssignment* an = new cASTAssignment(currentText());
   
+  nextToken(); // consume '='
+
   nextToken();
   cASTNode* expr = parseExpression();
   an->SetExpression(expr);
@@ -767,7 +770,7 @@ cASTFunctionDefinition* cParser::parseFunctionHeader(bool declare)
     return NULL;
   }
   
-  cASTNode* args = NULL;
+  tAutoRelease<cASTNode> args;
   if (nextToken() != TOKEN(PREC_CLOSE)) {
     if (declare) {
       args = parseVarDeclareList();
@@ -783,7 +786,7 @@ cASTFunctionDefinition* cParser::parseFunctionHeader(bool declare)
   
   nextToken();
   
-  return new cASTFunctionDefinition(type, name, args);
+  return new cASTFunctionDefinition(type, name, args.Release());
 }
 
 cASTNode* cParser::parseIDStatement()
@@ -1046,29 +1049,30 @@ cASTNode* cParser::parseVarDeclareList()
 cASTNode* cParser::parseWhileStatement()
 {
   PARSE_TRACE("parseWhileStatement");
-  cASTNode* ws = NULL;
   
   if (nextToken() != TOKEN(PREC_OPEN)) {
     PARSE_UNEXPECT();
-    return ws;
+    return NULL;
   }
   
   nextToken();
-  parseExpression();
+  tAutoRelease<cASTNode> cond(parseExpression());
   
   if (currentToken() != TOKEN(PREC_CLOSE)) {
     PARSE_UNEXPECT();
-    return ws;
+    return NULL;
   }
+  nextToken();
   
   bool loose = false;
-  parseCodeBlock(loose);
+  tAutoRelease<cASTNode> code(parseCodeBlock(loose));
   if (!loose && currentToken() != TOKEN(CMD_ENDWHILE)) {
     PARSE_UNEXPECT();
-    return ws;
+    return NULL;
   }
+  nextToken();
   
-  return ws;
+  return new cASTWhileBlock(cond.Release(), code.Release());
 }
 
 
@@ -1110,6 +1114,7 @@ void cParser::reportError(ASParseError_t err, const int line)
       break;
     case AS_PARSE_ERR_NULL_EXPR:
       std::cerr << "expected expression, found '" << currentText() << "'" << ERR_ENDL;
+      break;
     case AS_PARSE_ERR_EOF:
       if (!m_err_eof) {
         std::cerr << "unexpected end of file" << ERR_ENDL;

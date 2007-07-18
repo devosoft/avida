@@ -152,9 +152,14 @@ public:
 class cASTWhileBlock : public cASTNode
 {
 private:
+  cASTNode* m_expr;
+  cASTNode* m_code;
   
 public:
-  cASTWhileBlock() { ; }
+  cASTWhileBlock(cASTNode* expr, cASTNode* code) : m_expr(expr), m_code(code) { ; }
+  
+  inline cASTNode* GetCondition() { return m_expr; }
+  inline cASTNode* GetCode() { return m_code; }
   
   void Accept(cASTVisitor& visitor);
 };

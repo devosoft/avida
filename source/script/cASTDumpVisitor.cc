@@ -29,6 +29,12 @@
 using namespace std;
 
 
+cASTDumpVisitor::cASTDumpVisitor() : m_depth(0)
+{
+  cout << "main:" << endl;
+  m_depth++;
+}
+
 inline void cASTDumpVisitor::indent()
 {
   for (int i = 0; i < m_depth; i++) cout << "  ";
@@ -110,15 +116,10 @@ void cASTDumpVisitor::visitStatementList(cASTStatementList& node)
 {
   tListIterator<cASTNode> it(node.Iterator());
   
-  indent();
-  cout << "stmtlist:" << endl;
-
-  m_depth++;
   cASTNode* stmt = NULL;
   while ((stmt = it.Next())) {
     stmt->Accept(*this);
   }
-  m_depth--;
 }
 
 
@@ -137,7 +138,25 @@ void cASTDumpVisitor::visitIfBlock(cASTIfBlock& node)
 
 void cASTDumpVisitor::visitWhileBlock(cASTWhileBlock& node)
 {
+  indent();
+  cout << "while:" << endl;
   
+  m_depth++;
+  indent();
+  cout << "condition:" << endl;
+  
+  m_depth++;
+  node.GetCondition()->Accept(*this);
+  m_depth--;
+  
+  indent();
+  cout << "do:" << endl;
+  
+  m_depth++;
+  node.GetCode()->Accept(*this);
+  m_depth--;
+  
+  m_depth--;
 }
 
 
