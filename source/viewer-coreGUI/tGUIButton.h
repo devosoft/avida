@@ -36,8 +36,13 @@ protected:
   double m_arg;
 
 public:
-  tGUIButton(cGUIContainer & parent, int x, int y, int width, int height, const cString & name="")
-    : cGUIButton(parent, x, y, width, height, name), m_target(NULL), m_callback(NULL), m_arg(0.0) { ; }
+  tGUIButton(cGUIContainer & parent, int x, int y, int width, int height, const cString & name="",
+	     cGUIButton::eButtonType type=cGUIButton::BUTTON_NORMAL)
+    : cGUIButton(parent, x, y, width, height, name, type)
+    , m_target(NULL)
+    , m_callback(NULL)
+    , m_arg(0.0)
+  { ; }
   virtual ~tGUIButton() { ; }
 
   T & GetTarget() { return *m_target; }

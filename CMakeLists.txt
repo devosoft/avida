@@ -505,6 +505,10 @@ IF(AVD_GUI_PROTO_FLTK)
     TARGET_LINK_LIBRARIES(avida-fltkview ${AVIDA_FLTK_VIEWER_LIBS})
     SET_TARGET_PROPERTIES(avida-fltkview PROPERTIES LINK_FLAGS ${FLTK_PLATFORM_DEPENDENT_LIBS})
 
+    IF(APPLE AND NOT FLTK_APPLE_X11)
+       SET( LINK_FLAGS_avida_fltkview ${LINK_FLAGS} "-framework Carbon -framework Cocoa -framework ApplicationServices -lz")
+    ENDIF(APPLE AND NOT FLTK_APPLE_X11)
+
     INSTALL_TARGETS(/work avida-fltkview)
 
   ENDIF(FLTK_BASE_LIBRARY AND FLTK_INCLUDE_PATH)

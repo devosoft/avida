@@ -66,6 +66,7 @@ private:
   cFLTKBox m_title_box;
 
   tFLTKButton<cDriver_FLTKViewer> m_quit_button;
+  tFLTKButton<cDriver_FLTKViewer> m_pause_button;
 
 public:
   cDriver_FLTKViewer(cWorld* world);
@@ -103,6 +104,7 @@ public:
 
   // Button Callbacks...
   void ButtonCallback_Quit(double ignore);
+  void ButtonCallback_Pause(double ignore);
 };
 
 

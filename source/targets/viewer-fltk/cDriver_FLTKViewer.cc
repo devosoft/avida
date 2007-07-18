@@ -51,16 +51,24 @@
 
 using namespace std;
 
+#define FLTK_MAINWIN_WIDTH  800
+#define FLTK_MAINWIN_HEIGHT 600
+#define FLTK_MENUBAR_HEIGHT 35
+#define FLTK_BODY_HEIGHT (FLTK_MAINWIN_HEIGHT - FLTK_MENUBAR_HEIGHT)
+
+#define FLTK_MENU_FONT_SIZE 20
+
 cDriver_FLTKViewer::cDriver_FLTKViewer(cWorld* world)
   : m_world(world)
   , m_info(world->GetPopulation(), 12)
   , m_done(false)
-  , m_main_window(800, 600, "Avida")
-  , m_menu_box(m_main_window, 0, 0, 800, 50)
-  , m_body_box(m_main_window, 0, 50, 800, 550)
-  , m_update_box(m_main_window, 0, 0, 200, 50, "Update 0")
-  , m_title_box(m_main_window, 600, 0, 200, 50, "Avida")
-  , m_quit_button(m_main_window, 200, 0, 200, 50, "Quit")
+  , m_main_window(FLTK_MAINWIN_WIDTH, FLTK_MAINWIN_HEIGHT, "Avida")
+  , m_menu_box(m_main_window, 0, 0, FLTK_MAINWIN_WIDTH, FLTK_MENUBAR_HEIGHT)
+  , m_body_box(m_main_window, 0, FLTK_MENUBAR_HEIGHT, FLTK_MAINWIN_WIDTH, FLTK_BODY_HEIGHT)
+  , m_update_box(m_main_window, 0, 0, 200, FLTK_MENUBAR_HEIGHT, "Update 0")
+  , m_title_box(m_main_window, 600, 0, 200, FLTK_MENUBAR_HEIGHT, "Avida")
+  , m_quit_button(m_main_window, 200, 0, 200, FLTK_MENUBAR_HEIGHT, "Quit")
+  , m_pause_button(m_main_window, 400, 0, 200, FLTK_MENUBAR_HEIGHT, "Pause", cGUIButton::BUTTON_LIGHT)
 {
   // Setup the initial view mode (loaded from avida.cfg)
   m_info.SetViewMode(world->GetConfig().VIEW_MODE.Get());
@@ -68,22 +76,28 @@ cDriver_FLTKViewer::cDriver_FLTKViewer(cWorld* world)
   cDriverManager::Register(static_cast<cAvidaDriver*>(this));
   world->SetDriver(this);
 
-  m_main_window.SetSizeRange(800, 600);
+  m_main_window.SetSizeRange(FLTK_MAINWIN_WIDTH, FLTK_MAINWIN_HEIGHT);
 
   m_menu_box.SetType(cGUIBox::BOX_RAISED_FRAME);
   m_menu_box.Refresh();
 
   m_update_box.SetType(cGUIBox::BOX_RAISED);
-  m_update_box.SetFontSize(30);
+  m_update_box.SetFontSize(FLTK_MENU_FONT_SIZE);
   m_update_box.Refresh();
  
   m_title_box.SetType(cGUIBox::BOX_RAISED);
-  m_title_box.SetFontSize(30);
+  m_title_box.SetFontSize(FLTK_MENU_FONT_SIZE);
   m_title_box.Refresh();
 
   m_main_window.Resizable(m_body_box);
 
   m_quit_button.SetCallback(this, &cDriver_FLTKViewer::ButtonCallback_Quit);
+  m_quit_button.SetFontSize(FLTK_MENU_FONT_SIZE);
+  m_quit_button.Refresh();
+
+  m_pause_button.SetCallback(this, &cDriver_FLTKViewer::ButtonCallback_Pause);
+  m_pause_button.SetFontSize(FLTK_MENU_FONT_SIZE);
+  m_pause_button.Refresh();
 
   m_main_window.Finalize();
 }
@@ -347,20 +361,11 @@ void cDriver_FLTKViewer::DoUpdate()
     m_info.SetPauseLevel(cCoreView_Info::PAUSE_ON);
   }
 
-//   // If we are paused at all, delay doing anything else until we recieve user input.
-//   if (pause_level != cCoreView_Info::PAUSE_OFF) nodelay(stdscr, false);
-
-  // If there is any input in the buffer, process all of it.
+  // If we are paused, keep checking the interface until we are done.
   int cur_char = 0;
-  while ((cur_char = GetKeypress()) != 0 || m_info.GetPauseLevel() == cCoreView_Info::PAUSE_ON) {
-    bool found_keypress = ProcessKeypress(cur_char);
-
-    // If we couldn't manage the keypress here, check the current screen.
-//    if (found_keypress == false && cur_screen) cur_screen->DoInput(cur_char);
+  while (m_info.GetPauseLevel() == cCoreView_Info::PAUSE_ON) {
+    error = Fl::check();
   }
-
-//   nodelay(stdscr, true);
-
 }
 
 void cDriver_FLTKViewer::NotifyComment(const cString& in_string)
@@ -408,6 +413,13 @@ void cDriver_FLTKViewer::ButtonCallback_Quit(double ignore)
   (void) ignore;
   exit(0);
 }
+
+void cDriver_FLTKViewer::ButtonCallback_Pause(double ignore)
+{
+  m_info.TogglePause();
+}
+
+
 
 
 void ExitFLTKViewer(int exit_code)

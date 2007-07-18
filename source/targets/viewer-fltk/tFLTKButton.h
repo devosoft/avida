@@ -31,16 +31,27 @@
 #include "fltk-defs.h"
 
 #include "FL/Fl_Button.H"
+#include "FL/Fl_Light_Button.H"
 
 template <class T> class tFLTKButton : public tGUIButton<T> {
 protected:
   Fl_Button * m_button;
 
 public:
-  tFLTKButton(cGUIContainer & parent, int x, int y, int width, int height, const cString & name="")
-    : tGUIButton<T>(parent, x, y, width, height, name)
+  tFLTKButton(cGUIContainer & parent, int x, int y, int width, int height, const cString & name="",
+	      cGUIButton::eButtonType type=cGUIButton::BUTTON_NORMAL)
+    : tGUIButton<T>(parent, x, y, width, height, name, type)
   {
-    m_button = new Fl_Button(x, y, width, height, name);
+    if (type == cGUIButton::BUTTON_NORMAL) {
+      m_button = new Fl_Button(x, y, width, height, name);
+    }
+    else if (type == cGUIButton::BUTTON_LIGHT) {
+      m_button = new Fl_Light_Button(x, y, width, height, name);
+    }
+    else {
+      assert(false); // Unknown button type!
+    }
+
     m_button->callback((Fl_Callback*) GenericButtonCallback, (void*)(this));
   }
   ~tFLTKButton() { delete m_button; }

@@ -39,8 +39,9 @@ protected:
   int m_binding; // What keypress is this button bound to?
 
 public:
-  cGUIButton(cGUIContainer & parent, int x, int y, int width, int height, const cString & name="")
-    : cGUIWidget(parent, x, y, width, height, name) { ; }
+  cGUIButton(cGUIContainer & parent, int x, int y, int width, int height, const cString & name="",
+	     eButtonType type=BUTTON_NORMAL)
+    : cGUIWidget(parent, x, y, width, height, name), m_type(type) { ; }
   virtual ~cGUIButton() { ; }
 
   virtual void Press() = 0;
