@@ -67,6 +67,27 @@ public:
 // -- Concrete Abstract Syntax Tree Nodes
 // ---------------------------------------------------------------------------------------------------------------------
 
+class cASTAssignment;
+
+class cASTReturnStatement;
+class cASTStatementList;
+
+class cASTForeachBlock;
+class cASTIfBlock;
+class cASTWhileBlock;
+
+class cASTFunctionDefinition;
+class cASTVariableDefinition;
+
+class cASTExpressionBinary;
+class cASTExpressionUnary;
+
+class cASTFunctionCall;
+class cASTLiteral;
+class cASTLiteralArray;
+class cASTVariableReference;
+
+
 
 // --------  Assignment Nodes  --------
 
@@ -130,9 +151,16 @@ public:
 class cASTForeachBlock : public cASTNode
 {
 private:
+  cASTVariableDefinition* m_var;
+  cASTNode* m_expr;
+  cASTNode* m_code;
   
 public:
-  cASTForeachBlock() { ; }
+  cASTForeachBlock(cASTVariableDefinition* v, cASTNode* e, cASTNode* c) : m_var(v), m_expr(e), m_code(c) { ; }
+  
+  inline cASTVariableDefinition* GetVariable() { return m_var; }
+  inline cASTNode* GetValues() { return m_expr; }
+  inline cASTNode* GetCode() { return m_code; }
   
   void Accept(cASTVisitor& visitor);
 };

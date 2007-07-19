@@ -126,7 +126,26 @@ void cASTDumpVisitor::visitStatementList(cASTStatementList& node)
 
 void cASTDumpVisitor::visitForeachBlock(cASTForeachBlock& node)
 {
+  indent();
+  cout << "foreach:" << endl;
   
+  m_depth++;
+  node.GetVariable()->Accept(*this);
+  
+  indent();
+  cout << "values:" << endl;
+  m_depth++;
+  node.GetValues()->Accept(*this);
+  
+  m_depth--;
+  indent();
+  cout << "code:" << endl;
+
+  m_depth++;
+  node.GetCode()->Accept(*this);
+  m_depth--;
+  
+  m_depth--;
 }
 
 

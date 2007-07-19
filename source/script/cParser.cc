@@ -674,47 +674,57 @@ cASTNode* cParser::parseExprP6_Index(cASTNode* l)
 cASTNode* cParser::parseForeachStatement()
 {
   PARSE_TRACE("parseForeachStatement");
-  cASTNode* fs = NULL;
   
+  ASType_t type = AS_TYPE_INVALID;
   switch (nextToken()) {
-    case TOKEN(TYPE_ARRAY):
-    case TOKEN(TYPE_CHAR):
-    case TOKEN(TYPE_FLOAT):
-    case TOKEN(TYPE_INT):
-    case TOKEN(TYPE_MATRIX):
-    case TOKEN(TYPE_STRING):
-      break;
+    case TOKEN(TYPE_ARRAY):  type = AS_TYPE_ARRAY;  break;
+    case TOKEN(TYPE_CHAR):   type = AS_TYPE_CHAR;   break;
+    case TOKEN(TYPE_FLOAT):  type = AS_TYPE_FLOAT;  break;
+    case TOKEN(TYPE_INT):    type = AS_TYPE_INT;    break;
+    case TOKEN(TYPE_MATRIX): type = AS_TYPE_MATRIX; break;
+    case TOKEN(TYPE_STRING): type = AS_TYPE_STRING; break;
+    case TOKEN(TYPE_VOID):   type = AS_TYPE_VOID;   break;
     case TOKEN(ID):
-      if (nextToken() != TOKEN(REF)) {
+      if (peekToken() != TOKEN(REF)) {
+        nextToken();
         PARSE_UNEXPECT();
-        return fs;
+        return NULL;
       }
+      type = AS_TYPE_OBJECT_REF;
       break;
       
     default:
       PARSE_UNEXPECT();
-      return fs;
+      return NULL;
   }
+  
+  if (nextToken() != TOKEN(ID)) {
+    PARSE_UNEXPECT();
+    return NULL;
+  }
+  
+  tAutoRelease<cASTVariableDefinition> var(new cASTVariableDefinition(type, currentText()));
   
   if (nextToken() != TOKEN(PREC_OPEN)) {
     PARSE_UNEXPECT();
-    return fs;
-  }
+    return NULL;
+  }  
+  nextToken(); // consume '('
   
-  nextToken();
-  parseExpression();
+  tAutoRelease<cASTNode> expr(parseExpression());
   
   if (currentToken() != TOKEN(PREC_CLOSE)) {
     PARSE_UNEXPECT();
-    return fs;
+    return NULL;
   }
+  nextToken(); // consume ')'
   
   bool loose = false;
-  parseCodeBlock(loose);
+  tAutoRelease<cASTNode> code(parseCodeBlock(loose));
   if (!loose && currentToken() != TOKEN(CMD_ENDFOREACH)) PARSE_UNEXPECT();
-  if (!loose) nextToken();
+  if (!loose) nextToken(); // consume 'endforeach'
   
-  return fs;
+  return new cASTForeachBlock(var.Release(), expr.Release(), code.Release());
 }
 
 cASTNode* cParser::parseFunctionDefine()
