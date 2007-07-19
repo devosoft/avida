@@ -37,7 +37,7 @@ class cRandom
   tMemTrack<cRandom> mt;
 #endif
 protected:
-  // Internal memebers
+  // Internal members
   int seed;
   int original_seed;
   int inext;

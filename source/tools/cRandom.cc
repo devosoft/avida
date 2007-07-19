@@ -236,7 +236,7 @@ bool cRandom::Choose(int num_in, tArray<int>& out_array)
 
   int choice_num = 0;
   // @CAO this could be done a lot faster when choose size is close to
-  // full size.  However we need to rememebr to watch out for larger num_in
+  // full size.  However we need to remember to watch out for larger num_in
   while (choice_num < out_array.GetSize()) {
     int next = static_cast<int>(GetUInt(num_in));
 

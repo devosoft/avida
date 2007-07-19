@@ -343,8 +343,8 @@ perform (including resources used and the results of using them), and
 requisites on when they can occur.
 </p>
 
-<h3>REACTION Command</h3>
-  <pre>REACTION  reaction_name  task  [process:...]  [requisite:...]</pre>
+<h3><A NAME = "REACTION">REACTION Command</A></h3>
+  <pre>REACTION  reaction_name  task[:argument:...]  [process:...]  [requisite:...]</pre>
 <blockquote>
   <p>
   Where <code>reaction_name</code> is a unique name for a reaction.
@@ -353,18 +353,22 @@ requisites on when they can occur.
   Where <code>task</code> is the name of the task that must be be performed to
   trigger the reaction.  A list of common tasks is listed in Table 3.
   </P>
+  <P>
+  Where <code>argument</code> is a list of specific arguments needed by the
+  particular task.
+  </P>
   Where <code>process</code> is a colon delimited list of information about how
   resources are consumed/produced.  Process settings are described in Table 4.
   </P>
   <p>
   Where <code>requisite</code> is a colon delimited list describing when 
   reactions can be triggered.  Requisite settings are described in Table 5.
-  <p>
-  Each reaction must have a task that triggers it.  Currently, eighty tasks
-  have been implemented, as summarized in the following table (in approximate
-  order of complexity):
-  </p>
 </blockquote>
+<p>
+Each reaction must have a task that triggers it.  Currently, eighty tasks
+have been implemented, as summarized in the following table (in approximate
+order of complexity):
+</p>
 
 <div align="center">
 <p>&nbsp;</p>
@@ -788,7 +792,7 @@ possible tasks listed above is:
 <h3>SET_ACTIVE Command</h3>
 <p>
 Allows user to activate or deactivate a reaction. If this command is not 
-used all reactionsare active.
+used all reactions are active.
 </p>
 <pre>
   <a name="SET_ACTIVE">SET_ACTIVE</a> type name new_status(default=true)
@@ -806,6 +810,7 @@ used all reactionsare active.
   deactivate).
 </Blockquote>
 <p>
+<H3>MUTATION Command</H3>
 O.K. I don't know what the following commands does, but it is in the code:
 </P>
 <pre>

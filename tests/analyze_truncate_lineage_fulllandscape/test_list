@@ -13,7 +13,7 @@ email = brysonda@egr.msu.edu ; Email address for the test's creator
 
 [consistency]
 enabled = yes            ; Is this test a consistency test?
-long = no                ; Is this test a long test?
+long = yes               ; Is this test a long test?
 
 [performance]
 enabled = yes            ; Is this test a performance test?

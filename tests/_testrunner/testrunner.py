@@ -788,7 +788,7 @@ def runConsistencyTests(alltests, dolongtests):
 
     sem.acquire()
     ti += 1
-    sys.stdout.write("\rPerforming Test:  % 4d of %d" % (ti, len(tests)))
+    sys.stdout.write("\rPerforming Test:  %4d of %d -- %-45s " % (ti, len(tests), test.name[:45]))
     sys.stdout.flush()
     tthread = threading.Thread(target=runTestWrapper, args=(test, sem))
     tthread.start()

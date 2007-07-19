@@ -18,10 +18,14 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *  along with this program; if not, write to the Free Software Foundation,
+ *  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
+
+/*!  *  Routines to read the environment files that contains information
+about resources and reactions (which allow rewards or punishments
+to organisms doing certain tasks).  */
 
 #include "cEnvironment.h"
 
@@ -408,11 +412,17 @@ bool cEnvironment::LoadResource(cString desc)
 
 bool cEnvironment::LoadCell(cString desc)
 
-/* Routine to read in spatial resources loaded in one cell at a time */
+/*****************************************************************************
+  Routine to read in spatial resources loaded in one cell at a time. Syntax:
+
+   CELL resource_name:cell_list[:options]
+
+   where options are initial, inflow and outflow
+*****************************************************************************/
 
 {
   if (desc.GetSize() == 0) {
-    cerr << "Warning: Resource line with no resources listed." << endl;
+    cerr << "Warning: CELL line with no resources listed." << endl;
     return false;
   }
   
