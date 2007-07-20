@@ -78,6 +78,7 @@ private:
   double xgravity;
   double ydiffuse;
   double ygravity;
+  bool deme_resource;
   tArray<cCellResource> cell_list;
  
   
@@ -105,6 +106,7 @@ public:
   double GetXGravity() const { return xgravity; }
   double GetYDiffuse() const { return ydiffuse; }
   double GetYGravity() const { return ygravity; }
+  bool GetDemeResource() const { return deme_resource; }
   tArray<cCellResource> *GetCellListPtr() { return &cell_list; }
 
 
@@ -124,6 +126,7 @@ public:
   void SetXGravity(double _xgravity) { xgravity = _xgravity; }
   void SetYDiffuse(double _ydiffuse) { ydiffuse = _ydiffuse; }
   void SetYGravity(double _ygravity) { ygravity = _ygravity; }
+  bool SetDemeResource(cString _deme_resource);
   void AddCellResource(cCellResource new_cell) { cell_list.Push(new_cell); }
 };
 

@@ -177,20 +177,24 @@ cPopulation::cPopulation(cWorld* world)
   
   // Setup the resources...
   const cResourceLib & resource_lib = environment.GetResourceLib();
+  int global_res_index = -1;
   for (int i = 0; i < resource_lib.GetSize(); i++) {
     cResource * res = resource_lib.GetResource(i);
-    const double decay = 1.0 - res->GetOutflow();
-    resource_count.Setup(i, res->GetName(), res->GetInitial(), 
-                         res->GetInflow(), decay,
-                         res->GetGeometry(), res->GetXDiffuse(),
-                         res->GetXGravity(), res->GetYDiffuse(), 
-                         res->GetYGravity(), res->GetInflowX1(), 
-                         res->GetInflowX2(), res->GetInflowY1(), 
-                         res->GetInflowY2(), res->GetOutflowX1(), 
-                         res->GetOutflowX2(), res->GetOutflowY1(), 
-                         res->GetOutflowY2(), res->GetCellListPtr(),
-                         world->GetVerbosity() );
-    m_world->GetStats().SetResourceName(i, res->GetName());
+    if (!res->GetDemeResource()) {
+      global_res_index++;
+      const double decay = 1.0 - res->GetOutflow();
+      resource_count.Setup(global_res_index, res->GetName(), res->GetInitial(), 
+                           res->GetInflow(), decay,
+                           res->GetGeometry(), res->GetXDiffuse(),
+                           res->GetXGravity(), res->GetYDiffuse(), 
+                           res->GetYGravity(), res->GetInflowX1(), 
+                           res->GetInflowX2(), res->GetInflowY1(), 
+                           res->GetInflowY2(), res->GetOutflowX1(), 
+                           res->GetOutflowX2(), res->GetOutflowY1(), 
+                           res->GetOutflowY2(), res->GetCellListPtr(),
+                           world->GetVerbosity() );
+      m_world->GetStats().SetResourceName(global_res_index, res->GetName());
+    }
   }
   
   // Load a clone if one is provided, otherwise setup start organism.

@@ -26,6 +26,8 @@
 
 #include "cGermline.h"
 #include "tArray.h"
+#include "cResourceCount.h"
+#include "cStringList.h"
 
 
 /*! Demes are groups of cells in the population that are somehow bound together
@@ -44,6 +46,9 @@ private:
   cGermline _germline; //!< The germline for this deme, if used.
 
   cDeme(const cDeme&); // @not_implemented
+  
+  cResourceCount deme_resource_count; //!< Resources available to the deme
+  cStringList deme_resource_names; //!< Name of resources used by this deme
 
   
 public:

@@ -18,8 +18,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *  along with this program; if not, write to the Free Software Foundation, 
+ *  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
 
@@ -65,10 +65,14 @@ cResource::cResource(const cString & _name, int _id)
   , xgravity(0.0)
   , ydiffuse(1.0)
   , ygravity(0.0)
+  , deme_resource(false)
 {
 }
 
 bool cResource::SetGeometry(cString _geometry)
+
+/* Set the geometry for the resource */
+
 {
      _geometry.ToLower();
      if (_geometry == "global") {
@@ -83,4 +87,21 @@ bool cResource::SetGeometry(cString _geometry)
      } else {
           return false;
      }
+}
+
+bool cResource::SetDemeResource(cString _deme_resource)
+
+/* Set if the resource is going to be accessable by demes */
+
+{
+  _deme_resource.ToLower();
+  if ((_deme_resource == "false") || (_deme_resource = "0")) {
+    deme_resource = false;
+    return(true);
+  } else if ((_deme_resource == "true") || (_deme_resource = "1")) {
+    deme_resource = true;
+    return(true);
+  } else {
+    return false;
+  }
 }

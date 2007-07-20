@@ -382,6 +382,13 @@ bool cEnvironment::LoadResource(cString desc)
         if (!AssertInputDouble(var_value, "ygravity", var_type)) return false;
         new_resource->SetYGravity( var_value.AsDouble() );
       }
+      else if (var_name == "deme") {
+        if (!new_resource->SetDemeResource( var_value )) {
+          cerr << "Error: In " << var_type << "," << var_value <<
+          " must be true or false" << endl;
+          return false;
+        }
+      }
       else {
         cerr << "Error: Unknown variable '" << var_name
         << "' in resource '" << name << "'" << endl;
@@ -452,6 +459,7 @@ bool cEnvironment::LoadCell(cString desc)
       this_resource->SetXGravity(0.0);
       this_resource->SetYDiffuse(0.0);
       this_resource->SetYGravity(0.0);
+      this_resource->SetDemeResource("false");
     } else {
       this_resource = resource_lib.GetResource(name);
     }
