@@ -154,7 +154,7 @@ public:
   };
 
   // Pop specific types of arguments from an arg list.
-  cString PopDirectory(cString & in_string, const cString & default_dir);
+  cString PopDirectory(cString  in_string, const cString default_dir);
   int PopBatch(const cString & in_string);
   cAnalyzeGenotype * PopGenotype(cString gen_desc, int batch_id=-1);
   cString & GetVariable(const cString & varname);

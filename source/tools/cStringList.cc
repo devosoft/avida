@@ -86,3 +86,16 @@ cString cStringList::PopString(const cString & test_string)
   }
   return "";
 }
+
+int cStringList::LocateString(const cString & test_string) const
+{
+  tConstListIterator<cString> string_it(string_list);
+  int pos = -1;  // @MRR ugly
+  const cString * cur_string = NULL;
+  while ((cur_string = string_it.Next()) != NULL) {
+    ++pos;
+    if (test_string == *cur_string) 
+      return pos;
+  }
+  return -1;
+}

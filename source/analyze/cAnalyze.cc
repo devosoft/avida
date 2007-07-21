@@ -81,10 +81,10 @@ using namespace std;
 cAnalyze::cAnalyze(cWorld* world)
 : cur_batch(0)
 /*
-FIXME : refactor "temporary_next_id". @kgn
-- Added as a quick way to provide unique serial ids, per organism, in COMPETE
-  command. @kgn
-*/
+ FIXME : refactor "temporary_next_id". @kgn
+ - Added as a quick way to provide unique serial ids, per organism, in COMPETE
+ command. @kgn
+ */
 , temporary_next_id(0)
 , temporary_next_update(0)
 , variables(26)
@@ -120,7 +120,7 @@ FIXME : refactor "temporary_next_id". @kgn
     resources.push_back(make_pair(0, r));
   }
   m_resource_time_spent_offset = 0;
-
+  
   m_testcpu = m_world->GetHardwareManager().CreateTestCPU();
 }
 
@@ -138,20 +138,20 @@ void cAnalyze::RunFile(cString filename)
 {
   bool saved_analyze = m_ctx.GetAnalyzeMode();
   m_ctx.SetAnalyzeMode();
-
+  
   cInitFile analyze_file(filename);
   if (!analyze_file.IsOpen()) {
     cerr << "Warning: Cannot load file: \"" << filename << "\"." << endl
-	 << "...creating it..." << endl;
+    << "...creating it..." << endl;
     ofstream fp(filename);
     fp << "################################################################################################" << endl
-       << "# This file is used to setup avida when it is in analysis-only mode, which can be triggered by"   << endl
-       << "# running \"avida -a\"."                                                                          << endl
-       << "# "                                                                                               << endl
-       << "# Please see the documentation in doc/analyze_mode.html for information on how to use analyze"    << endl
-       << "# mode, or the file doc/analyze_samples.html for guidelines on writing programs."                 << endl
-       << "################################################################################################" << endl
-       << endl; 
+      << "# This file is used to setup avida when it is in analysis-only mode, which can be triggered by"   << endl
+      << "# running \"avida -a\"."                                                                          << endl
+      << "# "                                                                                               << endl
+      << "# Please see the documentation in doc/analyze_mode.html for information on how to use analyze"    << endl
+      << "# mode, or the file doc/analyze_samples.html for guidelines on writing programs."                 << endl
+      << "################################################################################################" << endl
+      << endl; 
     fp.close();
     //if (exit_on_error) exit(1);
   }
@@ -163,7 +163,7 @@ void cAnalyze::RunFile(cString filename)
     LoadCommandList(analyze_file, command_list);
     ProcessCommands(command_list);
   }
-
+  
   if (!saved_analyze) m_ctx.ClearAnalyzeMode();
 }
 
@@ -327,9 +327,9 @@ void cAnalyze::LoadMultiDetail(cString cur_string)
   
   if (m_world->GetVerbosity() >= VERBOSE_ON) {
     cout << "Loading in " << num_steps
-	 << " detail files from update " << start_UD
-	 << " to update " << stop_UD
-	 << endl;
+    << " detail files from update " << start_UD
+    << " to update " << stop_UD
+    << endl;
   } else {
     cout << "Running LOAD_MULTI_DETAIL" << endl;
   }
@@ -460,7 +460,7 @@ void cAnalyze::LoadResources(cString cur_string)
   char line[2048];
   while(!resourceFile.eof()) {
     resourceFile.getline(line, 2047);
-        
+    
     // Get rid of the whitespace at the beginning of the stream, then 
     // see if the line begins with a #, if so move on to the next line.
     stringstream ss;
@@ -580,16 +580,16 @@ tMatrix< double > cAnalyze::AnalyzeEntropyPairs(cAnalyzeGenotype * genotype, dou
 {
   
   double entropy = 0.0;
-
+  
   genotype->Recalculate(m_ctx, m_testcpu);
-
-   // Calculate the stats for the genotype we're working with ...
+  
+  // Calculate the stats for the genotype we're working with ...
   const int num_insts = inst_set.GetSize();
   const int num_lines = genotype->GetLength();
   const cGenome & base_genome = genotype->GetGenome();
   cGenome mod_genome(base_genome);
   double base_fitness = genotype->GetFitness();
-
+  
   cout << num_lines << endl;
   tMatrix< double > pairwiseEntropy(num_lines, num_lines);
   for (int i=0; i<num_lines; i++)
@@ -597,14 +597,14 @@ tMatrix< double > cAnalyze::AnalyzeEntropyPairs(cAnalyzeGenotype * genotype, dou
       pairwiseEntropy[i][j] = 0.0;
   
   cout << pairwiseEntropy.GetNumRows() << endl;
-
+  
   // If the fitness is 0, return empty matrix
   
   if (genotype->GetFitness() == 0) {
     return pairwiseEntropy;
   }
-
-
+  
+  
   tMatrix< double >  test_fitness(num_insts,num_insts);
   tMatrix< double >  prob(num_insts,num_insts);
   
@@ -612,85 +612,85 @@ tMatrix< double > cAnalyze::AnalyzeEntropyPairs(cAnalyzeGenotype * genotype, dou
   //stored by that site alone
   for (int line_1 = 0; line_1 < num_lines; line_1++){ 
     for (int line_2 = line_1; line_2 < num_lines; line_2++) { 
-
+      
       cerr << "[ " << line_1 << ", " << line_2 << " ]" << endl;
-
+      
       int cur_inst_1 = base_genome[line_1].GetOp(); 
       int cur_inst_2 = base_genome[line_2].GetOp();
       
       // Test fitness of each mutant.
       for (int mod_inst_1 = 0; mod_inst_1 < num_insts; mod_inst_1++){
-	for (int mod_inst_2 = 0; mod_inst_2 < num_insts; mod_inst_2++) {
-	  mod_genome[line_1].SetOp(mod_inst_1);
-	  mod_genome[line_2].SetOp(mod_inst_2);
-	  cAnalyzeGenotype test_genotype(m_world, mod_genome, inst_set);
-	  test_genotype.Recalculate(m_ctx, m_testcpu);
-	  // Adjust fitness ...
-	  if (test_genotype.GetFitness() <= base_fitness) {
-	    test_fitness[mod_inst_1][mod_inst_2] = test_genotype.GetFitness();
-	  } else {
-	    test_fitness[mod_inst_1][mod_inst_2] = base_fitness;
-	  }
-	}
+        for (int mod_inst_2 = 0; mod_inst_2 < num_insts; mod_inst_2++) {
+          mod_genome[line_1].SetOp(mod_inst_1);
+          mod_genome[line_2].SetOp(mod_inst_2);
+          cAnalyzeGenotype test_genotype(m_world, mod_genome, inst_set);
+          test_genotype.Recalculate(m_ctx, m_testcpu);
+          // Adjust fitness ...
+          if (test_genotype.GetFitness() <= base_fitness) {
+            test_fitness[mod_inst_1][mod_inst_2] = test_genotype.GetFitness();
+          } else {
+            test_fitness[mod_inst_1][mod_inst_2] = base_fitness;
+          }
+        }
       }
-	
-	// Calculate probabilities at mut-sel balance
-	double w_bar = 1;
-	
-	// Normalize fitness values
-	double maxFitness = 0.0;
-	for(int i=0; i<num_insts; i++) {
-	  for (int j = 0; j < num_insts; j++){
-	    if(test_fitness[i][j] > maxFitness) {
-	      maxFitness = test_fitness[i][j];
-	    }
-	  }
-	}
-	
-	
-	for(int i=0; i<num_insts; i++) {
-	  for (int j=0; j<num_insts; j++){
-	    test_fitness[i][j] /= maxFitness;
-	  }
-	}
-	
-
-	while(1) {
-	  double sum = 0.0;
-	  for (int mod_inst_1 = 0; mod_inst_1 < num_insts; mod_inst_1++) {
-	    for (int mod_inst_2 = 0; mod_inst_2 < num_insts; mod_inst_2++){
-	      
-	      prob[mod_inst_1][mod_inst_2] = 
-		(mu * w_bar) / 
-		               ((double)num_insts * 
-		               (w_bar + test_fitness[mod_inst_1][mod_inst_2] 
-				* mu  - test_fitness[mod_inst_1][mod_inst_2]));
-	      sum = sum + prob[mod_inst_1][mod_inst_2];
-	    }
-	  }
-	  if ((sum-1.0)*(sum-1.0) <= 0.0001) 
-	    break;
-	  else
-	    w_bar = w_bar - 0.000001;
-	}
-    
-	// Calculate entropy ...
-	double this_entropy = 0.0;
-	for (int i = 0; i < num_insts; i++){
-	  for (int j = 0; j < num_insts; j++) {
-	    this_entropy += prob[i][j] * 
-	                    log((double) 1.0/prob[i][j]) / log ((double) num_insts);
-	  }
-	}
-	entropy += this_entropy;
-	pairwiseEntropy[line_1][line_2] = this_entropy;
-
-	// Reset the mod_genome back to the original sequence.
-	mod_genome[line_1].SetOp(cur_inst_1);
-	mod_genome[line_2].SetOp(cur_inst_2);
-	
-      }  
-    }  //End Loops
+      
+      // Calculate probabilities at mut-sel balance
+      double w_bar = 1;
+      
+      // Normalize fitness values
+      double maxFitness = 0.0;
+      for(int i=0; i<num_insts; i++) {
+        for (int j = 0; j < num_insts; j++){
+          if(test_fitness[i][j] > maxFitness) {
+            maxFitness = test_fitness[i][j];
+          }
+        }
+      }
+      
+      
+      for(int i=0; i<num_insts; i++) {
+        for (int j=0; j<num_insts; j++){
+          test_fitness[i][j] /= maxFitness;
+        }
+      }
+      
+      
+      while(1) {
+        double sum = 0.0;
+        for (int mod_inst_1 = 0; mod_inst_1 < num_insts; mod_inst_1++) {
+          for (int mod_inst_2 = 0; mod_inst_2 < num_insts; mod_inst_2++){
+            
+            prob[mod_inst_1][mod_inst_2] = 
+            (mu * w_bar) / 
+            ((double)num_insts * 
+             (w_bar + test_fitness[mod_inst_1][mod_inst_2] 
+              * mu  - test_fitness[mod_inst_1][mod_inst_2]));
+            sum = sum + prob[mod_inst_1][mod_inst_2];
+          }
+        }
+        if ((sum-1.0)*(sum-1.0) <= 0.0001) 
+          break;
+        else
+          w_bar = w_bar - 0.000001;
+      }
+      
+      // Calculate entropy ...
+      double this_entropy = 0.0;
+      for (int i = 0; i < num_insts; i++){
+        for (int j = 0; j < num_insts; j++) {
+          this_entropy += prob[i][j] * 
+          log((double) 1.0/prob[i][j]) / log ((double) num_insts);
+        }
+      }
+      entropy += this_entropy;
+      pairwiseEntropy[line_1][line_2] = this_entropy;
+      
+      // Reset the mod_genome back to the original sequence.
+      mod_genome[line_1].SetOp(cur_inst_1);
+      mod_genome[line_2].SetOp(cur_inst_2);
+      
+    }  
+  }  //End Loops
   return pairwiseEntropy;
 }
 
@@ -1025,23 +1025,23 @@ void cAnalyze::CommandFilter(cString cur_string)
 {
   // First three arguments are: setting, relation, comparison
   // Fourth argument is optional batch.
-
+  
   const int num_args = cur_string.CountNumWords();
   cString stat_name = cur_string.PopWord();
   cString relation = cur_string.PopWord();
   cString test_value = cur_string.PopWord();
-
+  
   // Get the dynamic command to look up the stat we need.
   tDataEntryCommand<cAnalyzeGenotype> * stat_command = GetGenotypeDataCommand(stat_name);
-
-
+  
+  
   // Check for various possible errors before moving on...
   bool error_found = false;
   if (num_args < 3 || num_args > 4) {
     cerr << "Error: Incorrect argument count." << endl;
     error_found = true;
   }
-
+  
   if (stat_command == NULL) {
     cerr << "Error: Unknown stat '" << stat_name << "'" << endl;
     error_found = true;
@@ -1059,7 +1059,7 @@ void cAnalyze::CommandFilter(cString cur_string)
     cerr << "Error: Unknown relation '" << relation << "'" << endl;
     error_found = true;
   }
-      
+  
   if (error_found == true) {
     cerr << "Format: FILTER [stat] [relation] [value] [batch=current]" << endl;
     cerr << "Example: FILTER fitness >= 10.0" << endl;
@@ -1067,31 +1067,31 @@ void cAnalyze::CommandFilter(cString cur_string)
     if (stat_command != NULL) delete stat_command;
     return;
   }
-
-
+  
+  
   // If we made it this far, we're going ahead with the command...
-
+  
   if (m_world->GetVerbosity() >= VERBOSE_ON) {
     cout << "Filtering batch " << cur_batch << " to genotypes where "
-	 << stat_name << " " << relation << " " << test_value << endl;
+    << stat_name << " " << relation << " " << test_value << endl;
   }
   
-
+  
   // Loop through the genotypes and remove the entries that don't match.
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype * cur_genotype = NULL;
   while ((cur_genotype = batch_it.Next()) != NULL) {
     const cFlexVar value = stat_command->GetValue(cur_genotype);
     int compare = 1 + CompareFlexStat(value, test_value);
-
+    
     // Check if we should eliminate this genotype...
     if (rel_ok[compare] == false) {
       delete batch_it.Remove();
     }
   }
   delete stat_command;
-
-
+  
+  
   // Adjust the flags on this batch
   batch[cur_batch].SetLineage(false);
   batch[cur_batch].SetAligned(false);
@@ -1665,13 +1665,13 @@ void cAnalyze::TruncateLineage(cString cur_string)
   if (cur_string.GetSize()) lin_type = cur_string.PopWord();
   FindLineage(lin_type);
   BatchRecalculate("");
-
+  
   if (type == "task") {
     if (m_world->GetVerbosity() >= VERBOSE_ON)
       cout << "Truncating batch " << cur_batch << " based on task " << arg_i << " emergence..." << endl;
     else 
       cout << "Truncating lineage..." << endl;
-
+    
     bool found = false;
     tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
     cAnalyzeGenotype* genotype = NULL;
@@ -1719,46 +1719,49 @@ void cAnalyze::CommandPrint(cString cur_string)
 
 void cAnalyze::CommandTrace(cString cur_string)
 {
-  if (m_world->GetVerbosity() >= VERBOSE_ON) cout << "Tracing batch " << cur_batch << endl;
-  else cout << "Tracing organisms..." << endl;
+  cString msg;
+  tArray<int> manual_inputs;
   
-  int words = cur_string.CountNumWords();
+  // Process our arguments; manual inputs must be the last arguments
+
+  cString directory      = PopDirectory(cur_string.PopWord(), cString("archive/"));           // #1
+  int use_resources      = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : 0;         // #2
+  int update             = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : -1;        // #3
+  bool use_random_inputs = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() == 1: false; // #4
+  bool use_manual_inputs = false;                                                             // #5+
   
-  cString dir = cur_string.PopWord();
-  cString defaultDirectory = "archive/";
-  cString directory = PopDirectory(dir, defaultDirectory);
-  
-  int useResources = 0;
-  int useRandomInputs = 0;
-  int update = -1;
-  if(words >= 2) {
-    useResources = cur_string.PopWord().AsInt();
-    // All invalid values are considered false (testcpu->InitResources handles)
-  }
-  if (words >= 3) {
-    update = cur_string.PopWord().AsInt();
-  }
-  if (words >= 4) {
-    useRandomInputs = cur_string.PopWord().AsInt();
-    // All invalid values are considered false
-    if(useRandomInputs != 0 && useRandomInputs != 1) {
-      useRandomInputs = 0;
+  //Manual inputs will override random input request
+  if (cur_string.CountNumWords() > 0){
+    if (cur_string.CountNumWords() == m_world->GetEnvironment().GetInputSize()){
+      manual_inputs.Resize(m_world->GetEnvironment().GetInputSize());
+      use_random_inputs = false;
+      use_manual_inputs = true;
+      for (int k = 0; cur_string.GetSize(); k++)
+        manual_inputs[k] = cur_string.PopWord().AsInt();
+    } else if (m_world->GetVerbosity() >= VERBOSE_ON){
+      msg.Set("Invalid number of environment inputs requested for recalculation: %d specified, %d required.", 
+              cur_string.CountNumWords(), m_world->GetEnvironment().GetInputSize());
+      m_world->GetDriver().NotifyWarning(msg);
     }
   }
   
+  if (m_world->GetVerbosity() >= VERBOSE_ON) 
+    msg.Set("Tracing batch %d", cur_batch);
+  else 
+    msg.Set("Tracing organisms.");
+  m_world->GetDriver().NotifyComment(msg);
+  
+  
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();  
-  testcpu->InitResources(useResources, &resources, update, m_resource_time_spent_offset);
+  testcpu->InitResources(use_resources, &resources, update, m_resource_time_spent_offset);
   
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype * genotype = NULL;
   while ((genotype = batch_it.Next()) != NULL) {
-    cString filename(directory);
-    filename += genotype->GetName();
-    filename += ".trace";
+    cString filename = directory + genotype->GetName() + cString(".trace");
     
-    if (genotype->GetGenome().GetSize() == 0) {
+    if (genotype->GetGenome().GetSize() == 0)
       break;
-    }
     
     // Build the hardware status printer for tracing.
     ofstream& trace_fp = m_world->GetDataFileOFStream(filename);
@@ -1767,9 +1770,16 @@ void cAnalyze::CommandTrace(cString cur_string)
     // Build the test info for printing.
     cCPUTestInfo test_info;
     test_info.SetTraceExecution(&trace_printer);
-    test_info.UseRandomInputs(useRandomInputs==1); 
+    if (use_manual_inputs)
+      test_info.UseManualInputs(manual_inputs);
+    else
+      test_info.UseRandomInputs(use_random_inputs); 
     
-    if (m_world->GetVerbosity() >= VERBOSE_ON) cout << "  Tracing: " << filename << endl;
+    if (m_world->GetVerbosity() >= VERBOSE_ON){
+      msg = cString("Tracing ") + filename;
+      m_world->GetDriver().NotifyComment(msg);
+    }
+    
     testcpu->TestGenome(m_ctx, test_info, genotype->GetGenome());
     
     m_world->GetDataFileManager().Remove(filename);
@@ -1777,6 +1787,7 @@ void cAnalyze::CommandTrace(cString cur_string)
   
   delete testcpu;
 }
+
 
 void cAnalyze::CommandPrintTasks(cString cur_string)
 {
@@ -1964,8 +1975,8 @@ void cAnalyze::CommandDetail_Body(ostream& fp, int format_type,
   while (cur_genotype != NULL && cur_time <= max_time) {
     if (m_world->GetVerbosity() >= VERBOSE_DETAILS) {
       cout << "Detailing genotype " << cur_genotype->GetID()
-           << " at depth " << cur_genotype->GetDepth()
-           << endl;
+      << " at depth " << cur_genotype->GetDepth()
+      << endl;
     }
     output_it.Reset();
     if (format_type == FILE_TYPE_HTML) {
@@ -1985,16 +1996,16 @@ void cAnalyze::CommandDetail_Body(ostream& fp, int format_type,
         int compare = 0;
         if (prev_genotype) {
           prev_genotype->SetSpecialArgs(data_command->GetArgs());
-	  cFlexVar prev_value = data_command->GetValue(prev_genotype);
-	  int compare_type = data_command->GetCompareType();
-	  compare = CompareFlexStat(cur_value, prev_value, compare_type);
+          cFlexVar prev_value = data_command->GetValue(prev_genotype);
+          int compare_type = data_command->GetCompareType();
+          compare = CompareFlexStat(cur_value, prev_value, compare_type);
         }
-	HTMLPrintStat(cur_value, fp, compare, data_command->GetHtmlCellFlags(), data_command->GetNull());
+        HTMLPrintStat(cur_value, fp, compare, data_command->GetHtmlCellFlags(), data_command->GetNull());
       }
       else {  // if (format_type == FILE_TYPE_TEXT) {
         fp << data_command->GetValue() << " ";
       }
-    }
+      }
     if (format_type == FILE_TYPE_HTML) fp << "</tr>";
     fp << endl;
     
@@ -2020,7 +2031,7 @@ void cAnalyze::CommandDetail_Body(ostream& fp, int format_type,
     fp << "</table>" << endl
     << "</center>" << endl;
   }
-}
+  }
 
 void cAnalyze::CommandDetailAverage_Body(ostream& fp, int nucoutputs,
                                          tListIterator< tDataEntryCommand<cAnalyzeGenotype> > & output_it)
@@ -2177,7 +2188,7 @@ void cAnalyze::CommandDetailBatches(cString cur_string)
       cur_command->SetTarget(genotype);
       genotype->SetSpecialArgs(cur_command->GetArgs());
       if (file_type == FILE_TYPE_HTML) {
-	HTMLPrintStat(cur_command->GetValue(), fp, 0, cur_command->GetHtmlCellFlags(), cur_command->GetNull());
+        HTMLPrintStat(cur_command->GetValue(), fp, 0, cur_command->GetHtmlCellFlags(), cur_command->GetNull());
       }
       else {  // if (file_type == FILE_TYPE_TEXT) {
         fp << cur_command->GetValue() << " ";
@@ -2348,17 +2359,17 @@ void cAnalyze::CommandDetailIndex(cString cur_string)
       } else {  // if (file_type == FILE_TYPE_TEXT) {
         fp << data_entry->Get(genotype) << " ";
       }
-    }
+      }
     if (file_type == FILE_TYPE_HTML) fp << "</tr>";
     fp << endl;
-  }
+    }
   
   // If in HTML mode, we need to end the file...
   if (file_type == FILE_TYPE_HTML) {
     fp << "</table>" << endl
     << "</center>" << endl;
   }
-}
+  }
 
 void cAnalyze::CommandHistogram(cString cur_string)
 {
@@ -2781,7 +2792,7 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
   // No choice of use_resources for this analyze command...
   testcpu->InitResources(cTestCPU::RES_CONSTANT, &resources, update, m_resource_time_spent_offset);
-
+  
   
   ///////////////////////////////////////////////////////////////////////
   // Choose the first n most abundant genotypes and put them in community
@@ -3211,7 +3222,7 @@ void cAnalyze::CommandPrintTreeStats(cString cur_string)
   cString filename("tree_stats.dat");
   if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
   
-
+  
   cAnalyzeGenotype * genotype = NULL;
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   const int num_gens = batch[cur_batch].List().GetSize();
@@ -3233,7 +3244,7 @@ void cAnalyze::CommandPrintTreeStats(cString cur_string)
     birth_array[array_pos] = genotype->GetUpdateBorn();
     array_pos++;
   }
-
+  
   // Now collect information about the offspring of each individual.
   tArray<int> ppos_array(num_gens), offspring_count(num_gens);
   offspring_count.SetAll(0);
@@ -3248,7 +3259,7 @@ void cAnalyze::CommandPrintTreeStats(cString cur_string)
     ppos_array[pos] = parent_pos;
     offspring_count[parent_pos]++;
   }
-
+  
   // For each genotype, figure out how far back you need to go to get to a
   // branch point.
   tArray<int> branch_dist_array(num_gens);
@@ -3265,41 +3276,41 @@ void cAnalyze::CommandPrintTreeStats(cString cur_string)
       int parent_pos = ppos_array[pos];
       if (parent_pos == -1) branch_dist_array[pos] = 0;  // Org is root.
       else if (offspring_count[parent_pos] > 1) {        // Parent is branch.
-	branch_dist_array[pos] = 1;
-	branch_pos_array[pos] = parent_pos;
+        branch_dist_array[pos] = 1;
+        branch_pos_array[pos] = parent_pos;
       }
       else if (branch_dist_array[parent_pos] > -1) {     // Parent calculated.
-	branch_dist_array[pos] = branch_dist_array[parent_pos]+1;
-	branch_pos_array[pos] = branch_pos_array[parent_pos];
+        branch_dist_array[pos] = branch_dist_array[parent_pos]+1;
+        branch_pos_array[pos] = branch_pos_array[parent_pos];
       }
       // Otherwise, we are not yet ready to calculate this entry.
     }
     loop_count++;
   }
-
+  
   
   // Cumulative Stemminess
   for (int pos = 0; pos < num_gens; pos++) {
     // We're only interested in internal n-furcating nodes.
     if (pid_array[pos] == -1) continue;  // Don't want root.
     if (offspring_count[pos] <= 1) continue; // No leaves or nonfurcating nodes
-
+    
     // @CAO Find distance to all children.
     // @CAO Find distance to parent branch.
     // @CAO DO math.
   }
-
-
+  
+  
   cout << "LOOP COUNT:" << loop_count << endl;
   for (int i = 0; i < num_gens; i++) {
     int branch_pos = branch_pos_array[i];
     int branch_id = (branch_pos == -1) ? -1 : id_array[branch_pos];
     cout << i << " "
-	 << id_array[i] << " "
-	 << offspring_count[i] << " "
-	 << branch_dist_array[i] << " "
-	 << branch_id << " "
-	 << endl;
+      << id_array[i] << " "
+      << offspring_count[i] << " "
+      << branch_dist_array[i] << " "
+      << branch_id << " "
+      << endl;
   }
 }
 
@@ -3351,7 +3362,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
   // No choice of use_resources for this analyze command...
   testcpu->InitResources(cTestCPU::RES_CONSTANT, &resources, update, m_resource_time_spent_offset);
-
+  
   vector<cAnalyzeGenotype *> community;
   cAnalyzeGenotype * genotype = NULL;
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
@@ -3631,7 +3642,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
     given_genotypes.push_back(genotype);
   }
   
-
+  
   delete testcpu;
   
   m_world->GetDataFileManager().Remove(filename);
@@ -3661,47 +3672,47 @@ void cAnalyze::CommandPairwiseEntropy(cString cur_string)
     cout << "Finding pairwise entropy..." << endl;
   
   cout << "@MRR-> This command is being tested!" << endl;
-
+  
   cString directory = PopDirectory(cur_string, "pairwise_data/");
   if (m_world->GetVerbosity() >= VERBOSE_ON)
     cout << "\tUsing directory: " << directory << endl;
   double mu = cur_string.PopWord().AsDouble();
   if (m_world->GetVerbosity() >= VERBOSE_ON)
     cout << "\tUsing mu=" << mu << endl;
-
+  
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype * genotype = batch_it.Next();
-
+  
   cout << genotype->GetName() << endl;
-
+  
   while(genotype != NULL)
   { 
     cString genName = genotype->GetName();
-
+    
     if (m_world->GetVerbosity() >= VERBOSE_ON)
       cout << "\t...on genotype " << genName << endl;
-
+    
     cString filename;
     filename.Set("%spairdata.%s.dat", static_cast<const char*>(directory),
-		 static_cast<const char*>(genName));
-
+                 static_cast<const char*>(genName));
+    
     // @DMB -- ofstream& fp = m_world->GetDataFileOFStream(filename);
-
+    
     if (m_world->GetVerbosity() >= VERBOSE_ON)
-	cout << "\t\t...with filename:  " << filename << endl;
-
+      cout << "\t\t...with filename:  " << filename << endl;
+    
     cout << "# Pairwise Entropy Information" << endl;
-
+    
     tMatrix<double> pairdata = AnalyzeEntropyPairs(genotype, mu);
-
+    
     cout << pairdata.GetNumRows() << endl;
-
+    
     for (int i=0;  i < pairdata.GetNumRows(); i++){
       for (int j=0; j < pairdata.GetNumCols(); j++)
-	cout << pairdata[i][j] << " ";
+        cout << pairdata[i][j] << " ";
       cout << endl;
     }
-     m_world->GetDataFileManager().Remove(filename);
+    m_world->GetDataFileManager().Remove(filename);
     genotype = batch_it.Next();
   }
 }
@@ -4027,7 +4038,7 @@ void cAnalyze::AnalyzeComplexityDelta(cString cur_string)
     
     // Calculate the complexities....
     double complexity_change = end_complexity - start_complexity;
-
+    
     // Loop through each line and determine if each line contributes to
     int total_info_new = 0;    // Site didn't encode info, but now does.
     int total_info_shift = 0;  // Shift in which tasks this site codes for.
@@ -4037,13 +4048,13 @@ void cAnalyze::AnalyzeComplexityDelta(cString cur_string)
     int total_info_plost = 0;  // Site reduced tasks it encodes for.
     int total_info_kept = 0;   // Site still codes for sames tasks as before
     int total_info_lack = 0;   // Site never codes for any tasks.
- 
+    
     const int num_tasks = start_task_counts.GetSize();
     tArray<int> mut_effects(num_tasks);
     for (int i = 0; i < num_tasks; i++) {
       mut_effects[i] = end_task_counts[i] - start_task_counts[i];
     }
-
+    
     int end_line = 0;
     for (int start_line = 0; start_line < start_length; start_line++) {
       if (start_line == del_line) {
@@ -4054,26 +4065,26 @@ void cAnalyze::AnalyzeComplexityDelta(cString cur_string)
       if (start_line == ins_line) {
         // This position had an insertion.  Deal with it and then skip it.
         end_line++;
-
+        
         // No "continue" here.  With the updated end_line we can move on.
       }
-
+      
       // If we made it this far, the start_line and end_line should be aligned.
       int info_maintained_count = 0;
       int info_gained_count = 0;
       int info_lost_count = 0;
-
+      
       for (int cur_task = 0; cur_task < num_tasks; cur_task++) {
         // At the organism level, the mutation may have caused four options
         // for this task  (A) Was never present, (B) Was present and still is,
         // (C) Was not present, but is now, or (D) Was present, but was lost.
-
+        
         // Case A:
         if (start_task_counts[cur_task]==0 && end_task_counts[cur_task]==0) {
           // This task was never done.  Keep looping.
           continue;
         }
-
+        
         // Case B:
         if (start_task_counts[cur_task] == end_task_counts[cur_task]) {
           // The task hasn't changed.  Has its encoding?
@@ -4089,13 +4100,13 @@ void cAnalyze::AnalyzeComplexityDelta(cString cur_string)
             // end_count is unchanged by knocking out this line.
             KO_end = false;
           }
-
+          
           if (KO_start == true && KO_end == true) info_maintained_count++;
           if (KO_start == true && KO_end == false) info_lost_count++;
           if (KO_start == false && KO_end == true) info_gained_count++;
           continue;
         }
-
+        
         // Case C:
         if (start_task_counts[cur_task] < end_task_counts[cur_task]) {
           // Task was GAINED...  Is this site important?
@@ -4105,7 +4116,7 @@ void cAnalyze::AnalyzeComplexityDelta(cString cur_string)
           }
           continue;
         }
-
+        
         // Case D:
         if (start_task_counts[cur_task] > end_task_counts[cur_task]) {
           // The task was LOST...  Was this site important?
@@ -4116,14 +4127,14 @@ void cAnalyze::AnalyzeComplexityDelta(cString cur_string)
           continue;
         }
       }
-
+      
       // We now have counts and know how often this site was responsible for
       // a task gain, a task loss, or a task being maintained.
-
+      
       bool has_keep = info_maintained_count > 0;
       bool has_loss = info_lost_count > 0;
       bool has_gain = info_gained_count > 0;      
-
+      
       if      ( !has_loss  &&  !has_gain  &&  !has_keep ) total_info_lack++;
       else if ( !has_loss  &&  !has_gain  &&   has_keep ) total_info_kept++;
       else if ( !has_loss  &&   has_gain  &&  !has_keep ) total_info_new++;
@@ -4132,17 +4143,17 @@ void cAnalyze::AnalyzeComplexityDelta(cString cur_string)
       else if (  has_loss  &&  !has_gain  &&   has_keep ) total_info_plost++;
       else if (  has_loss  &&   has_gain  &&  !has_keep ) total_info_shift++;
       else if (  has_loss  &&   has_gain  &&   has_keep ) total_info_pshift++;
-
+      
       end_line++;
     }
-
-
+    
+    
     // Output the results.
     df.Write(num_mutations, "Number of mutational differences between original organism and mutant.");
     df.Write(complexity_change, "Complexity difference between original organism and mutant.");
     df.Write(start_complexity, "Total complexity of initial organism.");
     df.Write(end_complexity, "Total complexity of mutant.");
-
+    
     // Broken down complexity info
     df.Write(total_info_lack, "Num sites with no info at all.");
     df.Write(total_info_kept, "Num sites with info, but no change.");
@@ -4152,16 +4163,16 @@ void cAnalyze::AnalyzeComplexityDelta(cString cur_string)
     df.Write(total_info_plost, "Num sites with parital lost info.");
     df.Write(total_info_shift, "Num sites with shift in info.");
     df.Write(total_info_pshift, "Num sites with partial shift in info.");
-
+    
     // Start and End task counts...
     for (int i = 0; i < start_task_counts.GetSize(); i++) {
       df.Write(start_task_counts[i], cStringUtil::Stringf("Start task %d", i));
     }
-
+    
     for (int i = 0; i < end_task_counts.GetSize(); i++) {
       df.Write(end_task_counts[i], cStringUtil::Stringf("End task %d", i));
     }
-
+    
     df.Write(start_fitness, "Fitness of initial organism.");
     df.Write(end_fitness, "Fitness of mutant.");
     df.Write(start_length, "Length of initial organism.");
@@ -4252,7 +4263,7 @@ void cAnalyze::AnalyzeKnockouts(cString cur_string)
       // Reset the mod_genome back to the original sequence.
       mod_genome[line_num].SetOp(cur_inst);
     }
-  
+    
     tArray<int> ko_pair_effect(ko_effect);
     if (max_knockouts > 1) {
       for (int line1 = 0; line1 < max_line; line1++) {
@@ -4372,12 +4383,15 @@ void cAnalyze::CommandFitnessMatrix(cString cur_string)
 
 void cAnalyze::CommandMapTasks(cString cur_string)
 {
-  cout << "Constructing genotype-phenotype maps..." << endl;
+  cString msg;  //Use if to construct any messages to send to driver
   
-  // Load in the variables...
-  cString directory = PopDirectory(cur_string, "phenotype/");
-  int print_mode = 0;   // 0=Normal, 1=Boolean results
-  int file_type = FILE_TYPE_TEXT;
+  m_world->GetDriver().NotifyComment("Constructing genotype-phenotype maps");
+  
+  // Load in the variables / default them
+  cString directory         = PopDirectory(cur_string.PopWord(), "phenotype/");
+  int     print_mode        = 0;   // 0=Normal, 1=Boolean results
+  int     file_type         = FILE_TYPE_TEXT;
+  bool    use_manual_inputs = false;  // Should we use manual inputs?
   
   // HTML special flags...
   bool link_maps = false;  // Should muliple maps be linked together?
@@ -4386,29 +4400,45 @@ void cAnalyze::CommandMapTasks(cString cur_string)
   // Collect any other format information needed...
   tList< tDataEntryCommand<cAnalyzeGenotype> > output_list;
   tListIterator< tDataEntryCommand<cAnalyzeGenotype> > output_it(output_list);
+  tArray<int> manual_inputs;
   
   cStringList arg_list(cur_string);
   
-  cout << "Found " << arg_list.GetSize() << " args." << endl;
-
-  int useResources = 0;
-
-  // Check for some command specific variables.
-  if (arg_list.PopString("0") != "") print_mode = 0;
-  if (arg_list.PopString("1") != "") print_mode = 1;
-  if (arg_list.PopString("text") != "") file_type = FILE_TYPE_TEXT;
-  if (arg_list.PopString("html") != "") file_type = FILE_TYPE_HTML;
-  if (arg_list.PopString("link_maps") != "") link_maps = true;
-  if (arg_list.PopString("link_insts") != "") link_insts = true;
-  if (arg_list.PopString("use_resources=2") != "") useResources = 2;
-    
-  cout << "There are " << arg_list.GetSize() << " column args." << endl;
+  msg.Set("Found %d args.", arg_list.GetSize());
+  m_world->GetDriver().NotifyComment(msg);
+  
+  int use_resources = 0;
+  
+  // Check for some command specific variables, removing them from the list if found.
+  if (arg_list.PopString("0") != "")                 print_mode = 0;
+  if (arg_list.PopString("1") != "")                 print_mode = 1;
+  if (arg_list.PopString("text") != "")              file_type = FILE_TYPE_TEXT;
+  if (arg_list.PopString("html") != "")              file_type = FILE_TYPE_HTML;
+  if (arg_list.PopString("link_maps") != "")         link_maps = true;
+  if (arg_list.PopString("link_insts") != "")        link_insts = true;
+  if (arg_list.PopString("use_resources=2") != "")   use_resources = 2;
+  if (arg_list.HasString("use_manual_inputs"))       use_manual_inputs = true;
+  
+  if (use_manual_inputs){
+    int pos = arg_list.LocateString("use_manual_inputs");
+    arg_list.PopString("use_manual_inputs");
+    manual_inputs.Resize(m_world->GetEnvironment().GetInputSize());
+    if (arg_list.GetSize() >= pos + m_world->GetEnvironment().GetInputSize())
+      for (int k = 0; k < m_world->GetEnvironment().GetInputSize(); k++)
+        manual_inputs[k] = arg_list.PopString(arg_list.GetLine(pos)).AsInt();  
+    else
+      m_world->GetDriver().RaiseFatalException(1, "CommandMapTask: Invalid use of use_manual_inputs");
+  }
+  
+  msg.Set("There are %d column args.", arg_list.GetSize());
+  m_world->GetDriver().NotifyComment(msg);
   
   LoadGenotypeDataList(arg_list, output_list);
   
-  cout << "Args are loaded." << endl;
+  m_world->GetDriver().NotifyComment("Args are loaded.");
   
   const int num_cols = output_list.GetSize();
+  
   
   // Give some information in verbose mode.
   if (m_world->GetVerbosity() >= VERBOSE_ON) {
@@ -4429,7 +4459,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       cout << output_it.Get()->GetName() << " ";
     }
     cout << endl;
-    }
+  }
   
   
   ///////////////////////////////////////////////////////
@@ -4467,9 +4497,14 @@ void cAnalyze::CommandMapTasks(cString cur_string)
     }
     
     // Calculate the stats for the genotype we're working with...
-    m_testcpu->InitResources(useResources, &resources);
-    genotype->Recalculate(m_ctx, m_testcpu);
-
+    cTestCPU* test_cpu = new cTestCPU(m_world);
+    test_cpu->InitResources(use_resources, &resources);
+    cCPUTestInfo test_info;
+    if (use_manual_inputs)
+      test_info.UseManualInputs(manual_inputs);
+    
+    genotype->Recalculate(m_ctx, test_cpu, NULL, &test_info);
+    
     // Headers...
     if (file_type == FILE_TYPE_TEXT) {
       fp << "-1 "  << batch[cur_batch].Name() << " "
@@ -4541,9 +4576,9 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       while ((data_command = output_it.Next()) != NULL) {
         data_command->SetTarget(genotype);
         genotype->SetSpecialArgs(data_command->GetArgs());
-	const cFlexVar cur_value = data_command->GetValue();
-	const cFlexVar null_value = data_command->GetValue(&null_genotype);
-	int compare = CompareFlexStat(cur_value, null_value, data_command->GetCompareType()); 
+        const cFlexVar cur_value = data_command->GetValue();
+        const cFlexVar null_value = data_command->GetValue(&null_genotype);
+        int compare = CompareFlexStat(cur_value, null_value, data_command->GetCompareType()); 
         if (compare > 0) {
           fp << "<th bgcolor=\"#" << m_world->GetConfig().COLOR_MUT_POS.Get() << "\">";
         }
@@ -4590,8 +4625,10 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       
       mod_genome[line_num] = null_inst;
       cAnalyzeGenotype test_genotype(m_world, mod_genome, map_inst_set);
-      m_testcpu->InitResources(useResources, &resources);
-      test_genotype.Recalculate(m_ctx, m_testcpu);
+      test_cpu->InitResources(use_resources, &resources);
+      
+      
+      test_genotype.Recalculate(m_ctx, m_testcpu, NULL, &test_info);
       
       if (file_type == FILE_TYPE_HTML) fp << "<tr><td align=right>";
       fp << (line_num + 1) << " ";
@@ -4614,15 +4651,15 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       while ((data_command = output_it.Next()) != NULL) {
         data_command->SetTarget(&test_genotype);
         test_genotype.SetSpecialArgs(data_command->GetArgs());
-	const cFlexVar test_value = data_command->GetValue();
+        const cFlexVar test_value = data_command->GetValue();
         int compare = CompareFlexStat(test_value, data_command->GetValue(genotype), data_command->GetCompareType());
         
         // BUG! Either of the next two conditional print commands can
         // cause landscaping to be triggered in a context that causes a crash, 
         // notably, if you don't provide any column parameters to MapTasks.. @JEB
         if (file_type == FILE_TYPE_HTML) {
-	  HTMLPrintStat(test_value, fp, compare, data_command->GetHtmlCellFlags(), data_command->GetNull(),
-			!(data_command->HasArg("blank")));
+          HTMLPrintStat(test_value, fp, compare, data_command->GetHtmlCellFlags(), data_command->GetNull(),
+                        !(data_command->HasArg("blank")));
         } 
         else fp << test_value << " ";
         
@@ -4661,8 +4698,8 @@ void cAnalyze::CommandMapTasks(cString cur_string)
     delete [] col_pass_count;
     delete [] col_fail_count;
     m_world->GetDataFileManager().Remove(filename);  // Close the data file object
-  }
-}
+    }
+    }
 
 void cAnalyze::CommandAverageModularity(cString cur_string)
 {
@@ -4863,14 +4900,14 @@ void cAnalyze::CommandAverageModularity(cString cur_string)
           while ((data_command = output_it.Next()) != NULL) {
             data_command->SetTarget(&test_genotype);
             test_genotype.SetSpecialArgs(data_command->GetArgs());
-	    const cFlexVar test_value = data_command->GetValue();
-
+            const cFlexVar test_value = data_command->GetValue();
+            
             // This is done so that under 'binary' option it marks
             // the task as being influenced by the mutation iff
             // it is completely knocked out, not just decreased
             genotype->SetSpecialArgs(data_command->GetArgs());
             
-	    int compare_type = data_command->GetCompareType();
+            int compare_type = data_command->GetCompareType();
             int compare = CompareFlexStat(test_value, data_command->GetValue(genotype), compare_type);
             
             // If knocking out an instruction stops the expression of a
@@ -5039,33 +5076,33 @@ void cAnalyze::CommandAnalyzeModularity(cString cur_string)
 {
   cString filename("analyze_modularity.dat");
   if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
-
+  
   cDataFile & df = m_world->GetDataFile(filename);
   df.WriteComment( "Modularity Analysis" );
   df.WriteTimeStamp();
-
+  
   // Determine which phenotypic traits we're working with
   tList< tDataEntryCommand<cAnalyzeGenotype> > output_list;
   tListIterator< tDataEntryCommand<cAnalyzeGenotype> > output_it(output_list);
   cStringList arg_list(cur_string);
   LoadGenotypeDataList(arg_list, output_list);
   const int num_traits = output_list.GetSize();
-
+  
   // Setup the map_inst_set with the NULL instruction
   cInstSet map_inst_set(inst_set);
-
+  
   // Locate the NULL instruction in the library
   const cInstruction lib_null = map_inst_set.GetInstLib()->GetInst("NULL");
   if (lib_null == map_inst_set.GetInstLib()->GetInstError()) {
     cerr << "Internal ERROR: Instruction 'NULL' not found." << endl;
     if (exit_on_error) exit(1);
   }
-
+  
   // Add mapping to located instruction.
   map_inst_set.AddInst(lib_null.GetOp());
   const cInstruction null_inst = map_inst_set.GetInst("NULL");
-
-
+  
+  
   // Loop through all genotypes in this batch.
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype * genotype = NULL;
@@ -5074,23 +5111,23 @@ void cAnalyze::CommandAnalyzeModularity(cString cur_string)
     const cGenome & base_genome = genotype->GetGenome();
     cGenome mod_genome(base_genome);
     genotype->Recalculate(m_ctx, m_testcpu);
-
+    
     tMatrix<bool> task_matrix(num_traits, base_length);
     tArray<int> num_inst(num_traits);  // Number of instructions for each task
     tArray<int> num_task(base_length); // Number of traits at each locus
     task_matrix.SetAll(false);
     num_inst.SetAll(0);
     num_task.SetAll(0);
-
+    
     // Loop through all lines in this genome
     for (int line_num = 0; line_num < base_length; line_num++) {
       int cur_inst = base_genome[line_num].GetOp();
-
+      
       // Determine what happens to this genotype when this line is knocked out
       mod_genome[line_num] = null_inst;
       cAnalyzeGenotype test_genotype(m_world, mod_genome, map_inst_set);
       test_genotype.Recalculate(m_ctx, m_testcpu);
-
+      
       // Loop through the individual traits
       output_it.Reset();
       tDataEntryCommand<cAnalyzeGenotype> * data_command = NULL;
@@ -5098,11 +5135,11 @@ void cAnalyze::CommandAnalyzeModularity(cString cur_string)
       while ((data_command = output_it.Next()) != NULL) {
         data_command->SetTarget(&test_genotype);
         test_genotype.SetSpecialArgs(data_command->GetArgs());
-	const cFlexVar test_value = data_command->GetValue();
-
-	int compare_type = data_command->GetCompareType();
+        const cFlexVar test_value = data_command->GetValue();
+        
+        int compare_type = data_command->GetCompareType();
         int compare = CompareFlexStat(test_value, data_command->GetValue(genotype), compare_type);
-
+        
         // If knocking out the instruction turns off this trait, mark it in
         // the modularity matrix.  Only check if the test_genotype replicates,
         // i.e. if its fitness is not zeros
@@ -5116,71 +5153,71 @@ void cAnalyze::CommandAnalyzeModularity(cString cur_string)
         }
         cur_trait++;
       }
-
+      
       // Reset the mod_genome back to the original sequence.
       mod_genome[line_num].SetOp(cur_inst);
     } // end of genotype-phenotype mapping for a single organism
-
+    
     
     // --== PHYSICAL MODULARITY ==--
-
+    
     double ave_dist = 0.0;  // Average distance between sites in traits.
-
+    
     // Loop through each task to calculate its physical modularity
     int trait_count = 0; // Count active traits...
     int site_count = 0;  // Count total sites for all traits...
     for (int cur_trait = 0; cur_trait < num_traits; cur_trait++) {
       //       cout << "Trait " << cur_trait << ", coded for by "
       //         << num_inst[cur_trait] << " instructions." << endl;
-
+      
       // Ignore traits not coded for in this genome...
       if (num_inst[cur_trait] == 0) continue;
-
+      
       // Keep track of how many traits we're examining...
       trait_count++;
-
+      
       double trait_dist = 0.0;  // Total distance between sites in this trait.
       int num_samples = 0;      // Count samples we take for this trait.
-
+      
       // Compare all pairs of positions.
       for (int pos1 = 0; pos1 < base_length; pos1++) {
         if (task_matrix(cur_trait, pos1) == false) continue;
         site_count++;
         for (int pos2 = pos1+1; pos2 < base_length; pos2++) {
           if (task_matrix(cur_trait, pos2) == false) continue;
-
+          
           // We'll only make it this far if both positions code for the trait.
           num_samples++;
-
+          
           // Calculate the distance...
           int cur_dist = pos2 - pos1;
-
+          
           // Remember to consider that the genome is circular.
           if (2*cur_dist > base_length) cur_dist = base_length - cur_dist;
-
-	  //        cout << "Pos " << pos1 << " and " << pos2 << "; distance="
-	  //             << cur_dist << endl;
-
+          
+          //        cout << "Pos " << pos1 << " and " << pos2 << "; distance="
+          //             << cur_dist << endl;
+          
           // And add it into the total for this trait.
           trait_dist += cur_dist;
         }
       }
- 
+      
       // Assert that we found the correct number of samples.
       //assert(num_samples = num_inst(cur_trait) * (num_inst(cur_trait)-1) / 2);
-
+      
       // Now that we have all of the distances for this trait, divide by the
       // number of samples and add it to the average.
       ave_dist += trait_dist / num_samples;
     }
-
-
+    
+    
     // Now that we've summed up all of the average distances for this
     // genotype, calculate the physical modularity.
-
+    
     double PM = 1.0 - (ave_dist / (double) (base_length * trait_count));
     double ave_sites = ((double) site_count) / (double) trait_count;
-
+    
     // Write the restults to file...
     df.Write(PM,          "Physical Modularity");
     df.Write(trait_count, "Number of traits used in calculation");
@@ -5189,7 +5226,7 @@ void cAnalyze::CommandAnalyzeModularity(cString cur_string)
     df.Write(ave_dist,    "Average Distance between trait sites");
     df.Endl();
   }
-
+  
   // @CAO CONTINUE HERE
 }
 
@@ -6329,7 +6366,7 @@ void cAnalyze::AnalyzeMuts(cString cur_string)
     }
     
     cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
-
+    
     // Loop through all of the combos...
     const int combo_step = total_combos / 79;
     for (int combo_id = 0; combo_id < total_combos; combo_id++) {
@@ -6676,7 +6713,7 @@ void cAnalyze::AnalyzeMutationTraceback(cString cur_string)
   ofstream& fp = m_world->GetDataFileOFStream(filename);
   
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
-
+  
   // Loop through all of the genotypes again, testing mutation reversions.
   cAnalyzeGenotype * prev_genotype = batch_it.Next();
   while ((genotype = batch_it.Next()) != NULL) {
@@ -6898,7 +6935,7 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
   }
   
   m_world->GetDataFileManager().Remove(lineage_filename);
-
+  
   delete testcpu;
 }
 
@@ -6955,21 +6992,21 @@ void cAnalyze::AnalyzePopComplexity(cString cur_string)
     genotype = batch_it.Next();
   }
 
-  // Calculate complexity
-  for (int line_num = 0; line_num < seq_length; line_num ++) {
-    double entropy = 0.0;
-    for (int inst_num = 0; inst_num < num_insts; inst_num ++) {
-      if (inst_stat(line_num, inst_num) == 0) continue;
-      float prob = (float) (inst_stat(line_num, inst_num)) / (float) (actural_samples);
-      entropy += prob * log((double) 1.0/prob) / log((double) num_insts);
-    }
-    double complexity = 1 - entropy;
-    fp << complexity << " ";
+// Calculate complexity
+for (int line_num = 0; line_num < seq_length; line_num ++) {
+  double entropy = 0.0;
+  for (int inst_num = 0; inst_num < num_insts; inst_num ++) {
+    if (inst_stat(line_num, inst_num) == 0) continue;
+    float prob = (float) (inst_stat(line_num, inst_num)) / (float) (actural_samples);
+    entropy += prob * log((double) 1.0/prob) / log((double) num_insts);
   }
-  fp << endl;
+  double complexity = 1 - entropy;
+  fp << complexity << " ";
+}
+fp << endl;
 
-  m_world->GetDataFileManager().Remove(filename);
-  return;
+m_world->GetDataFileManager().Remove(filename);
+return;
 }
 
 
@@ -7024,7 +7061,7 @@ void cAnalyze::ConfigGet(cString cur_string)
   }
   
   cString& cur_variable = GetVariable(var);
-
+  
   // Get Config Variable
   if (!m_world->GetConfig().Get(cvar, cur_variable)) {
     cerr << "Error: Configuration Variable '" << var << "' was not found." << endl;
@@ -7144,38 +7181,49 @@ void cAnalyze::BatchDuplicate(cString cur_string)
 
 void cAnalyze::BatchRecalculate(cString cur_string)
 {
-  int words = cur_string.CountNumWords();
-  int useResources = 0;
-  int useRandomInputs = 0;
-  int update = -1;
-  if(words >= 1) {
-    useResources = cur_string.PopWord().AsInt();
-    // All non-zero values are considered false (handled by testcpu->InitResources)
-  }
-  if (words >= 2) {
-    update = cur_string.PopWord().AsInt();
-  }
-  if (words >= 3) {
-    useRandomInputs = cur_string.PopWord().AsInt();
-    // All invalid values are considered false
-    if(useRandomInputs != 0 && useRandomInputs != 1) {
-      useRandomInputs = 0;
+  tArray<int> manual_inputs;  // Used only if manual inputs are specified
+  cString msg;                // Holds any information we may want to send the driver to display
+  
+  int use_resources      = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : 0;
+  int update             = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : -1;
+  bool use_random_inputs = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() == 1: false;
+  bool use_manual_inputs = false;
+  
+  //Manual inputs will override random input request and must be the last arguments.
+  if (cur_string.CountNumWords() > 0){
+    if (cur_string.CountNumWords() == m_world->GetEnvironment().GetInputSize()){
+      manual_inputs.Resize(m_world->GetEnvironment().GetInputSize());
+      use_random_inputs = false;
+      use_manual_inputs = true;
+      for (int k = 0; cur_string.GetSize(); k++)
+        manual_inputs[k] = cur_string.PopWord().AsInt();
+    } else if (m_world->GetVerbosity() >= VERBOSE_ON){
+      msg.Set("Invalid number of environment inputs requested for recalculation: %d specified, %d required.", 
+              cur_string.CountNumWords(), m_world->GetEnvironment().GetInputSize());
+      m_world->GetDriver().NotifyWarning(msg);
     }
   }
-
+  
   
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
   
   cCPUTestInfo *test_info = new cCPUTestInfo();
-  test_info->UseRandomInputs(useRandomInputs==1); 
+  if (use_manual_inputs)
+    test_info->UseManualInputs(manual_inputs);
+  else
+    test_info->UseRandomInputs(use_random_inputs); 
   
   if (m_world->GetVerbosity() >= VERBOSE_ON) {
-    cout << "Running batch " << cur_batch << " through test CPUs..." << endl;
-  } else cout << "Running through test CPUs..." << endl;
+    msg.Set("Running batch %d through test CPUs...", cur_batch);
+    m_world->GetDriver().NotifyComment(msg);
+  } else{ 
+    msg.Set("Running through test CPUs...");
+    m_world->GetDriver().NotifyComment(msg);
+  }
   
   if (m_world->GetVerbosity() >= VERBOSE_ON && batch[cur_batch].IsLineage() == false) {
-    cerr << "  Warning: batch may not be a lineage; "
-    << "parent and ancestor distances may not be correct" << endl;
+    msg.Set("Batch may not be a lineage; parent and ancestor distances may not be correct"); 
+    m_world->GetDriver().NotifyWarning(msg);
   }
   
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
@@ -7183,7 +7231,7 @@ void cAnalyze::BatchRecalculate(cString cur_string)
   cAnalyzeGenotype * last_genotype = NULL;
   while ((genotype = batch_it.Next()) != NULL) {
     // Load proper resources according to update_born
-    testcpu->InitResources(useResources, &resources, update, m_resource_time_spent_offset);
+    testcpu->InitResources(use_resources, &resources, update, m_resource_time_spent_offset);
     
     // If the previous genotype was the parent of this one, pass in a pointer
     // to it for improved recalculate (such as distance to parent, etc.)
@@ -7247,7 +7295,7 @@ void cAnalyze::PrintTestInfo(cString cur_string)
 {
   cFlexVar var1(1), var2(2.0), var3('3'), var4("four");
   cFlexVar var5(9), var6(9.0), var7('9'), var8("9");
-
+  
   tArray<cFlexVar> vars(10);
   vars[0] = "Testing";
   vars[1] = 1;
@@ -7258,15 +7306,15 @@ void cAnalyze::PrintTestInfo(cString cur_string)
   vars[6] = 9.0;
   vars[7] = '9';
   vars[8] = "9";
-
+  
   cout << "AsString:  ";
   for (int i = 0; i < 10; i++) cout << i << ":" << vars[i].AsString() << " ";
   cout << endl;
-
+  
   cout << "AsInt:  ";
   for (int i = 0; i < 10; i++) cout << i << ":" << vars[i].AsInt() << " ";
   cout << endl;
-
+  
   for (int i = 0; i < 10; i++) {
     for (int j = i+1; j < 10; j++) {
       cout << "     vars[" << i << "] <= vars[" << j << "] ?  " << (vars[i] <= vars[j]);
@@ -7274,7 +7322,7 @@ void cAnalyze::PrintTestInfo(cString cur_string)
       cout << endl;
     }
   }
-
+  
 }
 
 void cAnalyze::IncludeFile(cString cur_string)
@@ -7299,7 +7347,7 @@ void cAnalyze::CommandSystem(cString cur_string)
     cerr << "Error: Keyword \"system\" must be followed by command to run." << endl;
     if (exit_on_error) exit(1);
   }
-
+  
   cout << "Running System Command: " << cur_string << endl;
   
   system(cur_string);
@@ -7315,16 +7363,16 @@ void cAnalyze::CommandInteractive(cString cur_string)
 
 
 /*
-kgn@FIXME
-Must categorize COMPETE command.
-*/
+ kgn@FIXME
+ Must categorize COMPETE command.
+ */
 /* Arguments to COMPETE: */
 /*
-  batch_size : size of target batch
-  from_id
-  to_id=current
-  initial_next_id=-1
-*/
+ batch_size : size of target batch
+ from_id
+ to_id=current
+ initial_next_id=-1
+ */
 void cAnalyze::BatchCompete(cString cur_string)
 {
   if (cur_string.GetSize() == 0) {
@@ -7367,26 +7415,26 @@ void cAnalyze::BatchCompete(cString cur_string)
   tListIterator<cAnalyzeGenotype> batch_it(batch[batch_from].List());
   /* Get size of "from" batch. */
   const int parent_batch_size = batch[batch_from].List().GetSize();
-
+  
   /* Create scheduler. */
   cSchedule* schedule = new cProbSchedule(
-    parent_batch_size,
-    m_world->GetRandom().GetInt(0x7FFFFFFF)
-  );
-
+                                          parent_batch_size,
+                                          m_world->GetRandom().GetInt(0x7FFFFFFF)
+                                          );
+  
   /* Initialize scheduler with fitness values per-organism. */
   tArray<cAnalyzeGenotype *> genotype_array(parent_batch_size);
   tArray<cCPUMemory> offspring_genome_array(parent_batch_size);
   tArray<cMerit> fitness_array(parent_batch_size);
   cAnalyzeGenotype * genotype = NULL;
-
+  
   cTestCPU *testcpu = m_world->GetHardwareManager().CreateTestCPU();
   cCPUTestInfo *test_info = new cCPUTestInfo();
-
+  
   /*
-  kgn@FIXME
-  This should be settable by an optional argument.
-  */
+   kgn@FIXME
+   This should be settable by an optional argument.
+   */
   test_info->UseRandomInputs(true); 
   
   int array_pos = 0;
@@ -7395,17 +7443,17 @@ void cAnalyze::BatchCompete(cString cur_string)
     genotype->Recalculate(m_world->GetDefaultContext(), testcpu, NULL, test_info);
     if(genotype->GetViable()){
       /*
-      kgn@FIXME
-      - HACK : multiplication by 1000 because merits less than 1 are truncated
-        to zero.
-      */
+       kgn@FIXME
+       - HACK : multiplication by 1000 because merits less than 1 are truncated
+       to zero.
+       */
       fitness_array[array_pos] = genotype->GetFitness() * 1000.;
       /*
-      kgn@FIXME
-      - Need to note somewhere that we are using first descendent of the
-        parent, if the parent is viable, so that genome of first descendent may
-        differ from that of parent.
-      */
+       kgn@FIXME
+       - Need to note somewhere that we are using first descendent of the
+       parent, if the parent is viable, so that genome of first descendent may
+       differ from that of parent.
+       */
       offspring_genome_array[array_pos] = test_info->GetTestOrganism(0)->ChildGenome();
     } else {
       fitness_array[array_pos] = 0.0;
@@ -7413,7 +7461,7 @@ void cAnalyze::BatchCompete(cString cur_string)
     schedule->Adjust(array_pos, fitness_array[array_pos]);
     array_pos++;
   }
-
+  
   /* Use scheduler to sample organisms in "from" batch. */
   for(int i=0; i<batch_size; /* don't increment i yet */){
     /* Sample an organism. */
@@ -7423,15 +7471,15 @@ void cAnalyze::BatchCompete(cString cur_string)
       break;
     }
     genotype = genotype_array[array_pos];
-
+    
     double copy_mut_prob = m_world->GetConfig().COPY_MUT_PROB.Get();
     double ins_mut_prob = m_world->GetConfig().DIVIDE_INS_PROB.Get();
     double del_mut_prob = m_world->GetConfig().DIVIDE_DEL_PROB.Get();
     int ins_line = -1;
     int del_line = -1;
-
+    
     cCPUMemory child_genome = offspring_genome_array[array_pos];
-
+    
     if (copy_mut_prob > 0.0) {
       for (int n = 0; n < child_genome.GetSize(); n++) {
         if (m_world->GetRandom().P(copy_mut_prob)) {
@@ -7451,39 +7499,39 @@ void cAnalyze::BatchCompete(cString cur_string)
       del_line = m_world->GetRandom().GetInt(child_genome.GetSize());
       child_genome.Remove(del_line);
     }
-
+    
     /* Create (possibly mutated) offspring. */
     cAnalyzeGenotype * new_genotype = new cAnalyzeGenotype(
-      m_world,
-      child_genome,
-      inst_set
-    );
-
+                                                           m_world,
+                                                           child_genome,
+                                                           inst_set
+                                                           );
+    
     int parent_id = genotype->GetID();
     int child_id = GetTempNextID();
     SetTempNextID(child_id + 1);
     cString child_name = cStringUtil::Stringf("org-%d", child_id);
-
+    
     new_genotype->SetParentID(parent_id);
     new_genotype->SetID(child_id);
     new_genotype->SetName(child_name);
     new_genotype->SetUpdateBorn(GetTempNextUpdate());
-
+    
     /* Place offspring in "to" batch. */
     batch[batch_to].List().PushRear(new_genotype);
     /* Increment and continue. */
     i++;
   }
-
+  
   SetTempNextUpdate(GetTempNextUpdate() + 1);
-
+  
   batch[batch_to].SetLineage(false);
   batch[batch_to].SetAligned(false);
-
+  
   if(test_info){ delete test_info; test_info = 0; }
   if(testcpu){ delete testcpu; testcpu = 0; }
   if(schedule){ delete schedule; schedule = 0; }
-
+  
   return;
 }
 
@@ -7649,7 +7697,7 @@ void cAnalyze::CommandForRange(cString cur_string,
 
 ///////////////////  Private Methods ///////////////////////////
 
-cString cAnalyze::PopDirectory(cString& in_string, const cString& default_dir)
+cString cAnalyze::PopDirectory(cString in_string, const cString default_dir)
 {
   // Determing the directory name
   cString directory(default_dir);
@@ -7768,7 +7816,7 @@ void cAnalyze::InteractiveLoadCommandList(tList<cAnalyzeCommand> & clist)
     
     cAnalyzeCommand * cur_command;
     cAnalyzeCommandDefBase * command_def = FindAnalyzeCommandDef(command);
-
+    
     if (command == "END") {
       // We are done with this section of code; break out...
       break;
@@ -7841,8 +7889,8 @@ void cAnalyze::ProcessCommands(tList<cAnalyzeCommand>& clist)
       cerr << "Error: Unknown analysis keyword '" << command << "'." << endl;
       if (exit_on_error) exit(1);
     }    
-   }
- }
+  }
+}
 
 
 // The following function will print a cell in a table with a background color based on a comparison
@@ -7852,7 +7900,7 @@ void cAnalyze::ProcessCommands(tList<cAnalyzeCommand>& clist)
 // all, or just the background color.
 
 void cAnalyze::HTMLPrintStat(const cFlexVar & value, std::ostream& fp, int compare,
-			     const cString & cell_flags, const cString & null_text, bool print_text)
+                             const cString & cell_flags, const cString & null_text, bool print_text)
 {
   fp << "<td " << cell_flags << " ";
   if (compare == COMPARE_RESULT_OFF) {
@@ -7883,13 +7931,13 @@ int cAnalyze::CompareFlexStat(const cFlexVar & org_stat, const cFlexVar & parent
   if (compare_type == FLEX_COMPARE_NONE) {
     return COMPARE_RESULT_SAME;
   }
-
+  
   // In all cases, if the stats are the same, we should return this and stop.
   if (org_stat == parent_stat) return COMPARE_RESULT_SAME;
-
+  
   // If we made it this far and all we care about is if they differ, return that they do.
   if (compare_type == FLEX_COMPARE_DIFF) return COMPARE_RESULT_DIFF;
-
+  
   // If zero is not special we can calculate our result.
   if (compare_type == FLEX_COMPARE_MAX) {     // Color higher values as beneficial, lower as harmful.
     if (org_stat > parent_stat) return COMPARE_RESULT_POS;
@@ -7899,16 +7947,16 @@ int cAnalyze::CompareFlexStat(const cFlexVar & org_stat, const cFlexVar & parent
     if (org_stat > parent_stat) return COMPARE_RESULT_NEG;
     return COMPARE_RESULT_POS;
   }
-
-
+  
+  
   // If we made it this far, it means that zero has a special status.
   if (org_stat == 0) return COMPARE_RESULT_OFF;
   if (parent_stat == 0) return COMPARE_RESULT_ON;
-
-
+  
+  
   // No zeros are involved, so we can go back to basic checks...
   if (compare_type == FLEX_COMPARE_DIFF2) return COMPARE_RESULT_DIFF;
-
+  
   if (compare_type == FLEX_COMPARE_MAX2) {     // Color higher values as beneficial, lower as harmful.
     if (org_stat > parent_stat) return COMPARE_RESULT_POS;
     return COMPARE_RESULT_NEG;
@@ -7917,7 +7965,7 @@ int cAnalyze::CompareFlexStat(const cFlexVar & org_stat, const cFlexVar & parent
     if (org_stat > parent_stat) return COMPARE_RESULT_NEG;
     return COMPARE_RESULT_POS;
   }
-
+  
   assert(false);  // One of the other options should have been chosen.
   return 0;
 }
@@ -7928,13 +7976,13 @@ int cAnalyze::CompareFlexStat(const cFlexVar & org_stat, const cFlexVar & parent
 #define ADD_GDATA(TYPE, KEYWORD, DESC, GET, SET, COMP, NSTR, HSTR)                                         \
 {                                                                                                          \
   cString nstr_str(#NSTR), hstr_str(#HSTR);                                                                \
-  cString null_str = "0";                                                                                  \
-  if (nstr_str != "0") null_str = NSTR;                                                                    \
-  cString html_str = "align=center";                                                                       \
-  if (hstr_str != "0") html_str = HSTR;                                                                    \
-                                                                                                           \
-  genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, TYPE>                                       \
-    (KEYWORD, DESC, &cAnalyzeGenotype::GET, &cAnalyzeGenotype::SET, COMP, null_str, html_str)); \
+    cString null_str = "0";                                                                                  \
+      if (nstr_str != "0") null_str = NSTR;                                                                    \
+        cString html_str = "align=center";                                                                       \
+          if (hstr_str != "0") html_str = HSTR;                                                                    \
+            \
+            genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, TYPE>                                       \
+                                        (KEYWORD, DESC, &cAnalyzeGenotype::GET, &cAnalyzeGenotype::SET, COMP, null_str, html_str)); \
 }
 
 
@@ -7952,7 +8000,7 @@ void cAnalyze::SetupGenotypeDataList()
   //  comparison method : A method that will take two genotypes and compare this value bewtween them (or CompareNULL)
   //  null keyword      : A string to represent what should be printed if this stat is zero. (0 for default)
   //  html flags        : A string to be included in the <td> when stat is printed in HTML table (0 for "align=center")
-
+  
   // As a reminder about the compare types:
   //   FLEX_COMPARE_NONE   = 0  -- No comparisons should be done at all.
   //   FLEX_COMPARE_DIFF   = 1  -- Only track if a stat has changed, don't worry about direction.
@@ -7961,8 +8009,8 @@ void cAnalyze::SetupGenotypeDataList()
   //   FLEX_COMPARE_DIFF2  = 4  -- Same as FLEX_COMPARE_DIFF, but 0 indicates trait is off.
   //   FLEX_COMPARE_MAX2   = 5  -- Same as FLEX_COMPARE_MAX, and 0 indicates trait is off.
   //   FLEX_COMPARE_MIN2   = 6  -- Same as FLEX_COMPARE_MIN, BUT 0 still indicates off.
-
-  ADD_GDATA(bool,   "viable",       "Is Viable (0/1)",               GetViable,         SetViable,     0, 0, 0);
+  
+  ADD_GDATA(bool,   "viable",       "Is Viable (0/1)",               GetViable,         SetViable,     5, 0, 0);
   ADD_GDATA(int,    "id",           "Genotype ID",                   GetID,             SetID,         0, 0, 0);
   ADD_GDATA(const cString &, "tag", "Genotype Tag",                  GetTag,            SetTag,        0, "(none)","");
   ADD_GDATA(int,    "parent_id",    "Parent ID",                     GetParentID,       SetParentID,   0, 0, 0);
@@ -7994,7 +8042,7 @@ void cAnalyze::SetupGenotypeDataList()
   ADD_GDATA(double, "frac_pos",     "Fraction Mutations Beneficial", GetFracPos,        SetNULL,       0, 0, 0);
   ADD_GDATA(double, "complexity",   "Basic Complexity (beneficial muts are neutral)", GetComplexity, SetNULL, 0, 0, 0);
   ADD_GDATA(double, "land_fitness", "Average Lanscape Fitness",      GetLandscapeFitness, SetNULL,     0, 0, 0);
-
+  
   ADD_GDATA(const cString &, "parent_muts", "Mutations from Parent", GetParentMuts,   SetParentMuts, 0, "(none)", "");
   ADD_GDATA(const cString &, "task_order", "Task Performance Order", GetTaskOrder,    SetTaskOrder,  0, "(none)", "");
   ADD_GDATA(cString, "sequence",    "Genome Sequence",               GetSequence,     SetSequence,   0, "(N/A)", "");
@@ -8044,16 +8092,16 @@ tDataEntryCommand<cAnalyzeGenotype> * cAnalyze::GetGenotypeDataCommand(const cSt
   // Get the name from the beginning of the entry; everything else is arguments.
   cString arg_list = stat_entry;
   cString stat_name = arg_list.Pop(':');
-
+  
   // Create an iterator to scan the genotype data list for the current entry.
   tListIterator< tDataEntryBase<cAnalyzeGenotype> > genotype_data_it(genotype_data_list);
-      
+  
   while (genotype_data_it.Next() != (void *) NULL) {
     if (genotype_data_it.Get()->GetName() == stat_name) {
       return new tDataEntryCommand<cAnalyzeGenotype>(genotype_data_it.Get(), arg_list);
     }
   }
- 
+  
   return NULL;
 }
 
@@ -8243,14 +8291,14 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("RUN", &cAnalyze::IncludeFile);
   AddLibraryDef("SYSTEM", &cAnalyze::CommandSystem);
   AddLibraryDef("INTERACTIVE", &cAnalyze::CommandInteractive);
- 
+  
   // Functions...
   AddLibraryDef("FUNCTION", &cAnalyze::FunctionCreate);
   
   // Flow commands...
   AddLibraryDef("FOREACH", &cAnalyze::CommandForeach);
   AddLibraryDef("FORRANGE", &cAnalyze::CommandForRange);
-
+  
   // Uncategorized commands...
   AddLibraryDef("COMPETE", &cAnalyze::BatchCompete);
 }
@@ -8327,52 +8375,52 @@ void cAnalyze::RunInteractive()
 
 bool cAnalyze::Send(const cString &text_input)
 {
-    cString cur_input(text_input);
-    cString command = cur_input.PopWord();
-    
-    cAnalyzeCommand* cur_command = NULL;
-    cAnalyzeCommandDefBase* command_def = FindAnalyzeCommandDef(command);
-    if (command == "") {
-      // Don't worry about blank lines...
-      ;
-    } else if (command_def != NULL && command_def->IsFlowCommand() == true) {
-      // This code has a body to it... fill it out!
-      cur_command = new cAnalyzeFlowCommand(command, cur_input);
-      InteractiveLoadCommandList(*(cur_command->GetCommandList()));
-    } else {
-      // This is a normal command...
-      cur_command = new cAnalyzeCommand(command, cur_input);
-    }
-    
-    cString args = cur_command->GetArgs();
-    PreProcessArgs(args);
-    
-    cAnalyzeCommandDefBase* command_fun = FindAnalyzeCommandDef(command);
-    
-    // First check for built-in functions...
-    if (command_fun != NULL) command_fun->Run(this, args, *cur_command);
-    
-    // Then for user defined functions
-    else if (FunctionRun(command, args) == true) { }
-    
-    // Otherwise, give an error.
-    else {
-      cerr << "Error: Unknown command '" << command << "'." << endl;
-      return false;
-    }
-
-    return true;
+  cString cur_input(text_input);
+  cString command = cur_input.PopWord();
+  
+  cAnalyzeCommand* cur_command = NULL;
+  cAnalyzeCommandDefBase* command_def = FindAnalyzeCommandDef(command);
+  if (command == "") {
+    // Don't worry about blank lines...
+    ;
+  } else if (command_def != NULL && command_def->IsFlowCommand() == true) {
+    // This code has a body to it... fill it out!
+    cur_command = new cAnalyzeFlowCommand(command, cur_input);
+    InteractiveLoadCommandList(*(cur_command->GetCommandList()));
+  } else {
+    // This is a normal command...
+    cur_command = new cAnalyzeCommand(command, cur_input);
+  }
+  
+  cString args = cur_command->GetArgs();
+  PreProcessArgs(args);
+  
+  cAnalyzeCommandDefBase* command_fun = FindAnalyzeCommandDef(command);
+  
+  // First check for built-in functions...
+  if (command_fun != NULL) command_fun->Run(this, args, *cur_command);
+  
+  // Then for user defined functions
+  else if (FunctionRun(command, args) == true) { }
+  
+  // Otherwise, give an error.
+  else {
+    cerr << "Error: Unknown command '" << command << "'." << endl;
+    return false;
+  }
+  
+  return true;
 }
 
 bool cAnalyze::Send(const cStringList &list_input)
 {
-    bool did_succeed = true;
-    cStringIterator list_it(list_input);
-    while ( list_it.AtEnd() == false ) {
-        list_it.Next();
-        if( !Send(list_it.Get()) ) {
-            did_succeed = false;
-        }
+  bool did_succeed = true;
+  cStringIterator list_it(list_input);
+  while ( list_it.AtEnd() == false ) {
+    list_it.Next();
+    if( !Send(list_it.Get()) ) {
+      did_succeed = false;
     }
-    return did_succeed;
+  }
+  return did_succeed;
 }
