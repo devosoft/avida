@@ -236,12 +236,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
   
   tArray<cOrganism*> child_array;
   tArray<cMerit> merit_array;
-  
-  //for energy model
-/*  double init_energy_given = m_world->GetConfig().ENERGY_GIVEN_AT_BIRTH.Get();
-  int inst_2_exc = m_world->GetConfig().NUM_INST_EXC_BEFORE_0_ENERGY.Get();
-*/
-  
+    
   // Update the parent's phenotype.
   // This needs to be done before the parent goes into the birth chamber
   // or the merit doesn't get passed onto the child correctly
@@ -414,19 +409,19 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   // Setup the inputs in the target cell.
   environment.SetupInputs(ctx, target_cell.input_array);
   
-	
-	// Precalculate the merit if requested
-	if (m_world->GetConfig().PRECALC_MERIT.Get() > 0){
-		cCPUTestInfo test_info;
-		cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU();
-		test_info.UseManualInputs(target_cell.input_array);                            // Test using what the environment will be
-		test_cpu->TestGenome(ctx, test_info, in_organism->GetHardware().GetMemory());  // Use the true genome
-		in_organism->GetPhenotype().SetMerit(test_info.GetTestPhenotype().GetMerit()); // Update merit
-		delete test_cpu;
-	}
+  
+  // Precalculate the merit if requested
+  if (m_world->GetConfig().PRECALC_MERIT.Get() > 0){
+    cCPUTestInfo test_info;
+    cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU();
+    test_info.UseManualInputs(target_cell.input_array);                            // Test using what the environment will be
+    test_cpu->TestGenome(ctx, test_info, in_organism->GetHardware().GetMemory());  // Use the true genome
+    in_organism->GetPhenotype().SetMerit(test_info.GetTestPhenotype().GetMerit()); // Update merit
+    delete test_cpu;
+  }
   // Update the archive...
-	
-	
+  
+  
   in_genotype->AddOrganism();
   
   if (old_genotype != NULL) {
@@ -452,27 +447,27 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   // Statistics...
   m_world->GetStats().RecordBirth(target_cell.GetID(), in_genotype->GetID(),
                                   in_organism->GetPhenotype().ParentTrue());
-	
-	// @MRR Do coalescence clade set up for new organisms.
-	CCladeSetupOrganism(in_organism ); 
-	
+  
+  // @MRR Do coalescence clade set up for new organisms.
+  CCladeSetupOrganism(in_organism ); 
+  
   //count how many times MERIT_BONUS_INST (rewarded instruction) is in the genome
   //only relevant if merit is proportional to # times MERIT_BONUS_INST is in the genome
   int rewarded_instruction = m_world->GetConfig().MERIT_BONUS_INST.Get();
   int num_rewarded_instructions = 0;
   int genome_length = in_organism->GetGenome().GetSize();
-
+  
   if(rewarded_instruction == -1){
     //no key instruction, so no bonus 
     in_organism->GetPhenotype().SetCurBonusInstCount(0);
-    }
+  }
   else{
     for(int i = 1; i <= genome_length; i++){
       if(in_organism->GetGenome()[i-1].GetOp() == rewarded_instruction){
-          num_rewarded_instructions++;
+        num_rewarded_instructions++;
       }  
     } 
-     in_organism->GetPhenotype().SetCurBonusInstCount(num_rewarded_instructions);
+    in_organism->GetPhenotype().SetCurBonusInstCount(num_rewarded_instructions);
   }
   
 }

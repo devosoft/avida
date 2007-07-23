@@ -169,17 +169,22 @@ void cHardwareTransSMT::Reset()
   const int num_inst_cost = m_inst_set->GetSize();
   inst_cost.Resize(num_inst_cost);
   inst_ft_cost.Resize(num_inst_cost);
+  inst_energy_cost.Resize(num_inst_cost);
   m_has_costs = false;
   m_has_ft_costs = false;
-	
+  m_has_energy_costs = false;
+  
   for (int i = 0; i < num_inst_cost; i++) {
     inst_cost[i] = m_inst_set->GetCost(cInstruction(i));
     if (!m_has_costs && inst_cost[i]) m_has_costs = true;
     
     inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
     if (!m_has_ft_costs && inst_ft_cost[i]) m_has_ft_costs = true;
+
+    inst_energy_cost[i] = m_inst_set->GetEnergyCost(cInstruction(i));    
+    if(!m_has_energy_costs && inst_energy_cost[i]) m_has_energy_costs = true;
   }
-#endif	
+#endif
   
   organism->ClearParasites();
   organism->NetReset();
@@ -230,11 +235,16 @@ void cHardwareTransSMT::SingleProcess(cAvidaContext& ctx)
     const cInstruction& cur_inst = IP().GetInst();
 		
     // Test if costs have been paid and it is okay to execute this now...
-    const bool exec = SingleProcess_PayCosts(ctx, cur_inst);
+    bool exec = SingleProcess_PayCosts(ctx, cur_inst);
 		
     // Now execute the instruction...
     if (exec == true) {
-      SingleProcess_ExecuteInst(ctx, cur_inst);
+      // Prob of exec (moved from SingleProcess_PayCosts so that we advance IP after a fail)
+      if ( m_inst_set->GetProbFail(cur_inst) > 0.0 ) {
+        exec = !( ctx.GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
+      }
+      
+      if (exec == true) SingleProcess_ExecuteInst(ctx, cur_inst);
 			
       // Some instruction (such as jump) may turn advance_ip off.  Ususally
       // we now want to move to the next instruction in the memory.
@@ -251,39 +261,6 @@ void cHardwareTransSMT::SingleProcess(cAvidaContext& ctx)
   
   organism->SetRunning(false);
   CheckImplicitRepro(ctx);
-}
-
-
-// This method will test to see if all costs have been paid associated
-// with executing an instruction and only return true when that instruction
-// should proceed.
-bool cHardwareTransSMT::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
-{
-#if INSTRUCTION_COSTS
-  assert(cur_inst.GetOp() < inst_cost.GetSize());
-	
-  // If first time cost hasn't been paid off...
-  if (m_has_ft_costs && inst_ft_cost[cur_inst.GetOp()] > 0) {
-    inst_ft_cost[cur_inst.GetOp()]--;       // dec cost
-    return false;
-  }
-	
-  // Next, look at the per use cost
-  if (m_has_costs && m_inst_set->GetCost(cur_inst) > 0) {
-    if (inst_cost[cur_inst.GetOp()] > 1) {  // if isn't paid off (>1)
-      inst_cost[cur_inst.GetOp()]--;        // dec cost
-      return false;
-    } else {                                // else, reset cost array
-      inst_cost[cur_inst.GetOp()] = m_inst_set->GetCost(cur_inst);
-    }
-  }
-	
-  // Prob of exec
-  if (m_inst_set->GetProbFail(cur_inst) > 0.0) {
-    return !( ctx.GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
-  }
-#endif
-  return true;
 }
 
 // This method will handle the actual execution of an instruction

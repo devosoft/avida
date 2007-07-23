@@ -121,19 +121,8 @@ protected:
   tManagedPointerArray<cLocalThread> m_threads;
   tHashTable<int, int> m_thread_lbls;
   int m_cur_thread;
-	
-  // Instruction costs...
-#if INSTRUCTION_COSTS
-  tArray<int> inst_cost;
-  tArray<int> inst_ft_cost;
-  bool m_has_costs;
-  bool m_has_ft_costs;
-#endif
-  
   int m_cur_child;
 
-  
-  bool SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst);
   bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst);
   	
 

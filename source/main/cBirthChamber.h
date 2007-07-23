@@ -54,6 +54,7 @@ private:
   class cBirthEntry {
   public:
     cCPUMemory genome;
+    double energy4Offspring;
     cMerit merit;
     cGenotype * parent_genotype;
     int update_in;  // Update entry was created; Set to -1 if entry is empty.

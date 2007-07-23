@@ -259,14 +259,6 @@ protected:
   bool m_reset_inputs; // Flag to make it easy for instructions to reset all inputs (force task modularity).
   bool m_reset_heads;  // Flas to make it easy for instructions to reset heads back (force task modularity).
 
-  // Instruction costs...
-#if INSTRUCTION_COSTS
-  tArray<int> inst_cost;
-  tArray<int> inst_ft_cost;
-#endif
-  
-  
-  bool SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst);
   bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst);
   
   // --------  Stack Manipulation...  --------

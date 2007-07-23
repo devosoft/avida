@@ -136,16 +136,6 @@ protected:
   bool m_advance_ip;         // Should the IP advance after this instruction?
   bool m_executedmatchstrings;	// Have we already executed the match strings instruction?
 
-  // Instruction costs...
-#if INSTRUCTION_COSTS
-  tArray<int> inst_cost;
-  tArray<int> inst_ft_cost;
-  bool m_has_costs;
-  bool m_has_ft_costs;
-#endif
-  
-  
-  bool SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst);
   bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst);
   
   // --------  Stack Manipulation...  --------

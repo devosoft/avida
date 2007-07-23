@@ -158,44 +158,15 @@ bool cBirthChamber::DoAsexBirth(cAvidaContext& ctx, const cGenome& child_genome,
   merit_array.Resize(1);
   
   if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
-    // energy model config variables
-    double energy_given_at_birth = m_world->GetConfig().ENERGY_GIVEN_AT_BIRTH.Get();
-    double frac_parent_energy_given_at_birth = m_world->GetConfig().FRAC_PARENT_ENERGY_GIVEN_AT_BIRTH.Get();
-    double frac_energy_decay_at_birth = m_world->GetConfig().FRAC_ENERGY_DECAY_AT_BIRTH.Get();
-    int inst_2_exc = m_world->GetConfig().NUM_INST_EXC_BEFORE_0_ENERGY.Get();
-    double energy_cap = (double) m_world->GetConfig().ENERGY_CAP.Get();
-  
-    // apply energy if APPLY_ENERGY_METHOD is set to "on divide" (0)
-    if(m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 0) {
-      parent.GetPhenotype().RefreshEnergy();
-      parent.GetPhenotype().ApplyToEnergyStore();
-    }
-    
-    // decay of energy in parent
-    parent.GetPhenotype().ReduceEnergy(parent.GetPhenotype().GetStoredEnergy() * frac_energy_decay_at_birth);
-
     // calculate energy to be given to child
-    double child_energy = min(parent.GetPhenotype().GetStoredEnergy() * frac_parent_energy_given_at_birth + energy_given_at_birth, energy_cap);
+    double child_energy = parent.GetPhenotype().ExtractParentEnergy();
         
-    // adjust energy in parent
-    parent.GetPhenotype().ReduceEnergy(child_energy - energy_given_at_birth);
-
     // set child energy & merit
     child_array[0]->GetPhenotype().SetEnergy(child_energy);
-    merit_array[0] = 100 * child_energy / (inst_2_exc);
-    
-
-    cMerit parentMerit = cMerit(min(100 * (parent.GetPhenotype().GetStoredEnergy() + energy_given_at_birth)/(inst_2_exc), energy_cap));
-    parent.GetPhenotype().SetMerit(parentMerit);
-
-    if(m_world->GetConfig().ENERGY_VERBOSE.Get()) {
-      cerr<<"child merit: "<<merit_array[0]<<endl<<"child energy: "<< child_energy <<endl
-          <<"parent merit: "<<parent.GetPhenotype().GetMerit()<<endl<<"parent energy: "<< parent.GetPhenotype().GetStoredEnergy() <<endl;
-    }
+    merit_array[0] = cMerit::EnergyToMerit(child_array[0]->GetPhenotype().GetStoredEnergy(), m_world);
   } else {
     merit_array[0] = parent.GetPhenotype().GetMerit();
   }
-  
 
   // Setup the genotype for the child
   cGenotype * child_genotype = parent.GetGenotype();
@@ -257,7 +228,12 @@ cBirthChamber::cBirthEntry* cBirthChamber::FindSexSizeWaiting(const cGenome& chi
     cGenotype * parent_genotype = parent.GetGenotype();
     parent_genotype->IncDeferAdjust();
     size_wait_entry[child_length].genome = child_genome;
-    size_wait_entry[child_length].merit = parent.GetPhenotype().GetMerit();
+    if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
+      size_wait_entry[child_length].energy4Offspring = parent.GetPhenotype().ExtractParentEnergy();
+      size_wait_entry[child_length].merit.EnergyToMerit(size_wait_entry[child_length].energy4Offspring, m_world);
+    } else {
+      size_wait_entry[child_length].merit = parent.GetPhenotype().GetMerit();
+    }
     size_wait_entry[child_length].parent_genotype = parent_genotype;
     size_wait_entry[child_length].update_in = m_world->GetStats().GetUpdate();
     return NULL; 				
@@ -281,7 +257,12 @@ cBirthChamber::cBirthEntry* cBirthChamber::FindSexMateSelectWaiting(const cGenom
     cGenotype * parent_genotype = parent.GetGenotype();
     parent_genotype->IncDeferAdjust();
     mate_select_wait_entry[mate_id].genome = child_genome;
-    mate_select_wait_entry[mate_id].merit = parent.GetPhenotype().GetMerit();
+    if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
+      mate_select_wait_entry[mate_id].energy4Offspring = parent.GetPhenotype().ExtractParentEnergy();
+      mate_select_wait_entry[mate_id].merit.EnergyToMerit(mate_select_wait_entry[mate_id].energy4Offspring, m_world);
+    } else {
+      mate_select_wait_entry[mate_id].merit = parent.GetPhenotype().GetMerit();
+    }
     mate_select_wait_entry[mate_id].parent_genotype = parent_genotype;
     mate_select_wait_entry[mate_id].update_in = m_world->GetStats().GetUpdate();
     return NULL;
@@ -304,7 +285,12 @@ cBirthChamber::cBirthEntry* cBirthChamber::FindSexLocalWaiting(cAvidaContext& ct
     cGenotype * parent_genotype = parent.GetGenotype();
     parent_genotype->IncDeferAdjust();
     local_wait_entry[parent_id].genome = child_genome;
-    local_wait_entry[parent_id].merit = parent.GetPhenotype().GetMerit();
+    if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
+      local_wait_entry[parent_id].energy4Offspring = parent.GetPhenotype().ExtractParentEnergy();
+      local_wait_entry[parent_id].merit.EnergyToMerit(local_wait_entry[parent_id].energy4Offspring, m_world);
+    } else {
+      local_wait_entry[parent_id].merit = parent.GetPhenotype().GetMerit();
+    }
     local_wait_entry[parent_id].parent_genotype = parent_genotype;
     local_wait_entry[parent_id].update_in = m_world->GetStats().GetUpdate();
     return NULL; 				
@@ -330,7 +316,12 @@ cBirthChamber::cBirthEntry* cBirthChamber::FindSexDemeWaiting(const cGenome& chi
     cGenotype * parent_genotype = parent.GetGenotype();
     parent_genotype->IncDeferAdjust();
     deme_wait_entry[parent_deme].genome = child_genome;
-    deme_wait_entry[parent_deme].merit = parent.GetPhenotype().GetMerit();
+    if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
+      deme_wait_entry[parent_deme].energy4Offspring = parent.GetPhenotype().ExtractParentEnergy();
+      deme_wait_entry[parent_deme].merit.EnergyToMerit(deme_wait_entry[parent_deme].energy4Offspring, m_world);
+    } else {
+      deme_wait_entry[parent_deme].merit = parent.GetPhenotype().GetMerit();
+    }
     deme_wait_entry[parent_deme].parent_genotype = parent_genotype;
     deme_wait_entry[parent_deme].update_in = m_world->GetStats().GetUpdate();
     return NULL; 				
@@ -347,8 +338,13 @@ cBirthChamber::cBirthEntry* cBirthChamber::FindSexGlobalWaiting(const cGenome& c
   if ( EvaluateEntry(global_wait_entry) == false ) {
     cGenotype * parent_genotype = parent.GetGenotype();
     parent_genotype->IncDeferAdjust();
-    global_wait_entry.genome = child_genome; 
-    global_wait_entry.merit = parent.GetPhenotype().GetMerit();
+    global_wait_entry.genome = child_genome;
+    if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
+      global_wait_entry.energy4Offspring = parent.GetPhenotype().ExtractParentEnergy();
+      global_wait_entry.merit.EnergyToMerit(global_wait_entry.energy4Offspring, m_world);
+    } else {
+      global_wait_entry.merit = parent.GetPhenotype().GetMerit();
+    }
     global_wait_entry.parent_genotype = parent_genotype;
     global_wait_entry.update_in = m_world->GetStats().GetUpdate();
     return NULL;
@@ -584,9 +580,16 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx,
   // If we made it this far, RECOMBINATION will happen!
   cCPUMemory genome0 = old_entry->genome;
   cCPUMemory genome1 = child_genome;
-  double merit0 = old_entry->merit.GetDouble();
-  double merit1 = parent_phenotype.GetMerit().GetDouble();
+  double meritOrEnergy0;
+  double meritOrEnergy1;
 
+  if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
+    meritOrEnergy0 = old_entry->energy4Offspring;
+    meritOrEnergy1 = parent_phenotype.ExtractParentEnergy();
+  } else {
+    meritOrEnergy0 = old_entry->merit.GetDouble();
+    meritOrEnergy1 = parent_phenotype.GetMerit().GetDouble();
+  }
 
   // Check the modular recombination settings.  There are three variables:
   //  1: How many modules?  (0 = non-modular)
@@ -599,22 +602,22 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx,
 
   // If we are NOT modular...
   if (num_modules == 0) {
-    DoBasicRecombination(ctx, genome0, genome1, merit0, merit1);
+    DoBasicRecombination(ctx, genome0, genome1, meritOrEnergy0, meritOrEnergy1);
   }
 
   // If we ARE modular, and continuous...
   else if (continuous_regions == 1) {
-    DoModularContRecombination(ctx, genome0, genome1, merit0, merit1);
+    DoModularContRecombination(ctx, genome0, genome1, meritOrEnergy0, meritOrEnergy1);
   }
 
   // If we are NOT continuous, but NO shuffling...
   else if (shuffle_regions == 0) {
-    DoModularNonContRecombination(ctx, genome0, genome1, merit0, merit1);
+    DoModularNonContRecombination(ctx, genome0, genome1, meritOrEnergy0, meritOrEnergy1);
   }
 
   // If there IS shuffling (NON-continuous required)
   else {
-    DoModularShuffleRecombination(ctx, genome0, genome1, merit0, merit1);
+    DoModularShuffleRecombination(ctx, genome0, genome1, meritOrEnergy0, meritOrEnergy1);
   }
 
   // Should there be a 2-fold cost to sex?
@@ -629,10 +632,17 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx,
     child_array[0] = new cOrganism(m_world, ctx, genome0);
     child_array[1] = new cOrganism(m_world, ctx, genome1);
     
+    if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
+      child_array[0]->GetPhenotype().SetEnergy(meritOrEnergy0);
+      child_array[1]->GetPhenotype().SetEnergy(meritOrEnergy1);
+      meritOrEnergy0 = cMerit::EnergyToMerit(child_array[0]->GetPhenotype().GetStoredEnergy(), m_world);
+      meritOrEnergy1 = cMerit::EnergyToMerit(child_array[1]->GetPhenotype().GetStoredEnergy(), m_world);
+    }
+    
     merit_array.Resize(2);
-    merit_array[0] = merit0;
-    merit_array[1] = merit1;
-
+    merit_array[0] = meritOrEnergy0;
+    merit_array[1] = meritOrEnergy1;
+    
     // Setup the genotypes for both children...
     SetupGenotypeInfo(child_array[0], parent0_genotype, parent1_genotype);
     SetupGenotypeInfo(child_array[1], parent1_genotype, parent0_genotype);
@@ -644,14 +654,22 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx,
 
     if (ctx.GetRandom().GetDouble() < 0.5) {
       child_array[0] = new cOrganism(m_world, ctx, genome0);
-      merit_array[0] = merit0;
+      if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
+        child_array[0]->GetPhenotype().SetEnergy(meritOrEnergy0);
+        meritOrEnergy0 = cMerit::EnergyToMerit(child_array[0]->GetPhenotype().GetStoredEnergy(), m_world);
+      }
+      merit_array[0] = meritOrEnergy0;
 
       // Setup the genotype for the child...
       SetupGenotypeInfo(child_array[0], parent0_genotype, parent1_genotype);
     } 
     else {
       child_array[0] = new cOrganism(m_world, ctx, genome1);
-      merit_array[0] = merit1;
+      if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
+        child_array[0]->GetPhenotype().SetEnergy(meritOrEnergy1);
+        meritOrEnergy1 = cMerit::EnergyToMerit(child_array[1]->GetPhenotype().GetStoredEnergy(), m_world);
+      }
+      merit_array[0] = meritOrEnergy1;
 
       // Setup the genotype for the child...
       SetupGenotypeInfo(child_array[0], parent1_genotype, parent0_genotype);
@@ -665,4 +683,3 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx,
 
   return true;
 }
-

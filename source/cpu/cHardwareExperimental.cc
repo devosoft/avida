@@ -164,13 +164,15 @@ cHardwareExperimental::cHardwareExperimental(const cHardwareExperimental &hardwa
 , m_mal_active(hardware_cpu.m_mal_active)
 , m_advance_ip(hardware_cpu.m_advance_ip)
 , m_executedmatchstrings(hardware_cpu.m_executedmatchstrings)
-#if INSTRUCTION_COSTS
-, inst_cost(hardware_cpu.inst_cost)
-, inst_ft_cost(hardware_cpu.inst_ft_cost)
-, m_has_costs(hardware_cpu.m_has_costs)
-, m_has_ft_costs(hardware_cpu.m_has_ft_costs)
-#endif
 {
+#if INSTRUCTION_COSTS
+  inst_cost = hardware_cpu.inst_cost;
+  inst_ft_cost = hardware_cpu.inst_ft_cost;
+  inst_energy_cost = hardware_cpu.inst_energy_cost;
+  m_has_costs = hardware_cpu.m_has_costs;
+  m_has_ft_costs = hardware_cpu.m_has_ft_costs;
+  m_has_energy_costs = hardware_cpu.m_has_energy_costs;
+#endif
 }
 
 
@@ -194,8 +196,10 @@ void cHardwareExperimental::Reset()
   const int num_inst_cost = m_inst_set->GetSize();
   inst_cost.Resize(num_inst_cost);
   inst_ft_cost.Resize(num_inst_cost);
+  inst_energy_cost.Resize(num_inst_cost);
   m_has_costs = false;
   m_has_ft_costs = false;
+  m_has_energy_costs = false;
   
   for (int i = 0; i < num_inst_cost; i++) {
     inst_cost[i] = m_inst_set->GetCost(cInstruction(i));
@@ -203,9 +207,11 @@ void cHardwareExperimental::Reset()
     
     inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
     if (!m_has_ft_costs && inst_ft_cost[i]) m_has_ft_costs = true;
+
+    inst_energy_cost[i] = m_inst_set->GetEnergyCost(cInstruction(i));    
+    if(!m_has_energy_costs && inst_energy_cost[i]) m_has_energy_costs = true;
   }
 #endif 
-  
 }
 
 void cHardwareExperimental::cLocalThread::operator=(const cLocalThread& in_thread)
@@ -308,35 +314,6 @@ num_threads : 1;
   
   organism->SetRunning(false);
   CheckImplicitRepro(ctx);
-}
-
-
-// This method will test to see if all costs have been paid associated
-// with executing an instruction and only return true when that instruction
-// should proceed.
-bool cHardwareExperimental::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
-{
-#if INSTRUCTION_COSTS
-  assert(cur_inst.GetOp() < inst_cost.GetSize());
-  
-  // If first time cost hasn't been paid off...
-  if (m_has_ft_costs && inst_ft_cost[cur_inst.GetOp()] > 0) {
-    inst_ft_cost[cur_inst.GetOp()]--;       // dec cost
-    return false;
-  }
-  
-  // Next, look at the per use cost
-  if (m_has_costs && m_inst_set->GetCost(cur_inst) > 0) {
-    if (inst_cost[cur_inst.GetOp()] > 1) {  // if isn't paid off (>1)
-      inst_cost[cur_inst.GetOp()]--;        // dec cost
-      return false;
-    } else {                                // else, reset cost array
-      inst_cost[cur_inst.GetOp()] = m_inst_set->GetCost(cur_inst);
-    }
-  }
-  
-#endif
-  return true;
 }
 
 // This method will handle the actuall execution of an instruction

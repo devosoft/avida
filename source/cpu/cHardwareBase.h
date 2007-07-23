@@ -58,6 +58,16 @@ protected:
   cInstSet* m_inst_set;      // Instruction set being used.
   cHardwareTracer* m_tracer; // Set this if you want execution traced.
 
+  // Instruction costs...
+//#if INSTRUCTION_COSTS
+  tArray<int> inst_cost;
+  tArray<int> inst_ft_cost;
+  tArray<int> inst_energy_cost;
+  bool m_has_costs;
+  bool m_has_ft_costs;
+  bool m_has_energy_costs;
+//#endif
+
   virtual int GetExecutedSize(const int parent_size);
   virtual int GetCopiedSize(const int parent_size, const int child_size) = 0;  
   
@@ -94,6 +104,7 @@ public:
   // --------  Core Functionality  --------
   virtual void Reset() = 0;
   virtual void SingleProcess(cAvidaContext& ctx) = 0;
+  virtual bool SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst);  //should be protected
   virtual void ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst) = 0;
   
   

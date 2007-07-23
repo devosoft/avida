@@ -31,6 +31,8 @@
 #include <climits>
 #include <cassert>
 
+class cWorld;
+
 class cMerit
 {
 protected:
@@ -93,6 +95,8 @@ public:
 
   double CalcFitness(int gestation_time) const {
     return ( gestation_time != 0 ) ? value / ((double) gestation_time) : 0; }
+
+  static double EnergyToMerit(const double orgEnergy, cWorld* m_world);
 
   std::ostream& BinaryPrint(std::ostream& os = std::cout) const ;
 };

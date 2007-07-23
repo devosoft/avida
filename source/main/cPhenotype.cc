@@ -384,8 +384,8 @@ void cPhenotype::DivideReset(const cGenome & _genome)
     merit = cur_merit_base * cur_bonus;
   }
   
-  // update energy store
-  energy_store += cur_energy_bonus;
+  //BB:TODO update energy store
+  SetEnergy(energy_store + cur_energy_bonus);
   
   genome_length   = _genome.GetSize();
   (void) copied_size;          // Unchanged
@@ -1184,15 +1184,23 @@ void cPhenotype::SetupPromoterWeights(const cGenome & _genome, const bool clear)
   }
 }
 
+void cPhenotype::ReduceEnergy(const double cost) {
+  SetEnergy(energy_store - cost);
+}
+
+void cPhenotype::SetEnergy(const double value) {
+  energy_store = max(0.0, min(value, (double) m_world->GetConfig().ENERGY_CAP.Get()));
+}
+
 /**
-Credit organism with energy reward, but only update energy store if APPLY_ENERGY_METHOD = "no task completion" (1)
+Credit organism with energy reward, but only update energy store if APPLY_ENERGY_METHOD = "on task completion" (1)
  */
 void cPhenotype::RefreshEnergy() {
   if(cur_energy_bonus > 0) {
     if(m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 0 || m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 2) {
       energy_tobe_applied += cur_energy_bonus;
     } else if(m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 1) {
-      energy_store += cur_energy_bonus;
+      SetEnergy(energy_store + cur_energy_bonus);  //TODO: use SetEnergy
     } else {
       cerr<< "Unknown APPLY_ENERGY_METHOD value " << m_world->GetConfig().APPLY_ENERGY_METHOD.Get();
       exit(-1);
@@ -1201,10 +1209,9 @@ void cPhenotype::RefreshEnergy() {
   }
 }
 
-double cPhenotype::ApplyToEnergyStore() {
-  energy_store += energy_tobe_applied;
+void cPhenotype::ApplyToEnergyStore() {
+  SetEnergy(energy_store + energy_tobe_applied);
   energy_tobe_applied = 0.0;
-  return min(100 * energy_store / (m_world->GetConfig().NUM_INST_EXC_BEFORE_0_ENERGY.Get()), (double) m_world->GetConfig().ENERGY_CAP.Get());
 }
 
 void cPhenotype::DecayAllPromoterRegulation()
@@ -1216,6 +1223,40 @@ void cPhenotype::DecayAllPromoterRegulation()
     cur_promoter_weights[i] = base_promoter_weights[i] * exp((1+promoter_activation[i])*log(2.0)) / exp((1+promoter_repression[i])*log(2.0));
 
   }
+}
+
+double cPhenotype::ExtractParentEnergy() {
+  assert(m_world->GetConfig().ENERGY_ENABLED.Get() > 0);
+  // energy model config variables
+  double energy_given_at_birth = m_world->GetConfig().ENERGY_GIVEN_AT_BIRTH.Get();
+  double frac_parent_energy_given_at_birth = m_world->GetConfig().FRAC_PARENT_ENERGY_GIVEN_AT_BIRTH.Get();
+  double frac_energy_decay_at_birth = m_world->GetConfig().FRAC_ENERGY_DECAY_AT_BIRTH.Get();
+  double energy_cap = (double) m_world->GetConfig().ENERGY_CAP.Get();
+  
+  // apply energy if APPLY_ENERGY_METHOD is set to "on divide" (0)
+  if(m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 0) {
+    RefreshEnergy();
+    ApplyToEnergyStore();
+  }
+  
+  // decay of energy in parent
+  ReduceEnergy(GetStoredEnergy() * frac_energy_decay_at_birth);
+  
+  // calculate energy to be given to child
+  double child_energy = min(GetStoredEnergy() * frac_parent_energy_given_at_birth + energy_given_at_birth, energy_cap);
+  
+  // adjust energy in parent
+  ReduceEnergy(child_energy - 2*energy_given_at_birth); // 2*energy_given_at_birth: 1 in child_energy & 1 for parent
+    
+  //TODO: add energy_given_at_birth to Stored_energy
+  cMerit parentMerit = cMerit(min(cMerit::EnergyToMerit(GetStoredEnergy(), m_world), energy_cap));
+  SetMerit(parentMerit);
+  
+/*  if(m_world->GetConfig().ENERGY_VERBOSE.Get()) {
+    cerr<<"child merit: "<<merit_array[0]<<endl<<"child energy: "<< child_energy <<endl
+    <<"parent merit: "<<GetMerit()<<endl<<"parent energy: "<< GetStoredEnergy() <<endl;
+  }*/
+  return child_energy;
 }
 
 void cPhenotype::RegulatePromoter(const int i, const bool up )

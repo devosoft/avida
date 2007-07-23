@@ -36,7 +36,10 @@
 #include "nMutation.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
+#include "cPopulation.h"
+#include "cPopulationCell.h"
 #include "cRandom.h"
+#include "cStats.h"
 #include "cTestCPU.h"
 #include "cWorld.h"
 #include "cWorldDriver.h"
@@ -717,4 +720,59 @@ bool cHardwareBase::Inst_Repro(cAvidaContext& ctx)
   cout << "This hardware type does not have a =repro= instruction. IMPLICIT_REPRO conditions cannot be used!" << endl;
   assert(1);
   return false;
+}
+
+// This method will test to see if all costs have been paid associated
+// with executing an instruction and only return true when that instruction
+// should proceed.
+bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
+{
+#if INSTRUCTION_COSTS
+  assert(cur_inst.GetOp() < inst_cost.GetSize());
+  
+  // check avaliable energy first
+  double energy_req = inst_energy_cost[cur_inst.GetOp()] * (organism->GetPhenotype().GetMerit().GetDouble() / 100.0); //compensate by factor of 100
+  
+  if(m_world->GetConfig().ENERGY_ENABLED.Get() > 0 && energy_req > 0.0) {
+    if(organism->GetPhenotype().GetStoredEnergy() >= energy_req) {
+      inst_energy_cost[cur_inst.GetOp()] = 0;
+      //subtract energy used from current org energy.
+      organism->GetPhenotype().ReduceEnergy(energy_req);  
+      
+      // tracking sleeping organisms
+      cString instName = m_world->GetHardwareManager().GetInstSet().GetName(cur_inst);
+      int cellID = organism->GetCellID();
+      if( instName == cString("sleep") || instName == cString("sleep1") || instName == cString("sleep2") ||
+          instName == cString("sleep3") || instName == cString("sleep4")) {
+        cPopulation& pop = m_world->GetPopulation();
+        if(m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1) {
+          pop.AddBeginSleep(cellID,m_world->GetStats().GetUpdate());
+        }
+        pop.GetCell(cellID).GetOrganism()->SetSleeping(true);
+        pop.incNumAsleep();
+      }
+    } else { // not enough energy
+      return false;
+    }
+  }
+  
+  // If first time cost hasn't been paid off...
+  if (m_has_ft_costs && inst_ft_cost[cur_inst.GetOp()] > 0) {
+    inst_ft_cost[cur_inst.GetOp()]--;       // dec cost
+    return false;
+  }
+  
+  // Next, look at the per use cost
+  if (m_has_costs && m_inst_set->GetCost(cur_inst) > 0) {
+    if (inst_cost[cur_inst.GetOp()] > 1) {  // if isn't paid off (>1)
+      inst_cost[cur_inst.GetOp()]--;        // dec cost
+      return false;
+    } else {                                // else, reset cost array
+      inst_cost[cur_inst.GetOp()] = m_inst_set->GetCost(cur_inst);
+    }
+  }
+  
+  inst_energy_cost[cur_inst.GetOp()] = m_inst_set->GetEnergyCost(cur_inst); //reset instruction energy cost
+#endif
+  return true;
 }

@@ -198,7 +198,11 @@ void cResourceCount::Setup(int id, cString name, double initial, double inflow,
     geo_name = "GRID";
   } else if (in_geometry == nGeometry::TORUS) {
     geo_name = "TORUS";
+  } else {
+    cerr << "[cResourceCount::Setup] Unknown resource geometry " << in_geometry << ".  Exiting.";
+    exit(2);
   }
+
 
   /* If the verbose flag is set print out information about resources */
 

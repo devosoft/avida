@@ -407,10 +407,20 @@ void cHardwareGX::Reset()
   const int num_inst_cost = m_inst_set->GetSize();
   inst_cost.Resize(num_inst_cost);
   inst_ft_cost.Resize(num_inst_cost);
+  inst_energy_cost.Resize(num_inst_cost);
+  m_has_costs = false;
+  m_has_ft_costs = false;
+  m_has_energy_costs = false;
   
   for (int i = 0; i < num_inst_cost; i++) {
     inst_cost[i] = m_inst_set->GetCost(cInstruction(i));
+    if (!m_has_costs && inst_cost[i]) m_has_costs = true;
+    
     inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+    if (!m_has_ft_costs && inst_ft_cost[i]) m_has_ft_costs = true;
+
+    inst_energy_cost[i] = m_inst_set->GetEnergyCost(cInstruction(i));    
+    if(!m_has_energy_costs && inst_energy_cost[i]) m_has_energy_costs = true;
   }
 #endif
 }
@@ -572,36 +582,6 @@ void cHardwareGX::SingleProcess(cAvidaContext& ctx)
 //  
 //  organism->SetRunning(false);
 //}
-
-
-// This method will test to see if all costs have been paid associated
-// with executing an instruction and only return true when that instruction
-// should proceed.
-bool cHardwareGX::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
-{
-#if INSTRUCTION_COSTS
-  assert(cur_inst.GetOp() < inst_cost.GetSize());
-  
-  // If first time cost hasn't been paid off...
-  if ( inst_ft_cost[cur_inst.GetOp()] > 0 ) {
-    inst_ft_cost[cur_inst.GetOp()]--;       // dec cost
-    return false;
-  }
-  
-  // Next, look at the per use cost
-  if ( m_inst_set->GetCost(cur_inst) > 0 ) {
-    if ( inst_cost[cur_inst.GetOp()] > 1 ){  // if isn't paid off (>1)
-      inst_cost[cur_inst.GetOp()]--;         // dec cost
-      return false;
-    } else {                                 // else, reset cost array
-      inst_cost[cur_inst.GetOp()] = m_inst_set->GetCost(cur_inst);
-    }
-  }
-  
-#endif
-  return true;
-}
-
 
 /*! This method executes one instruction for one programid. */
 bool cHardwareGX::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst) 

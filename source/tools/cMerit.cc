@@ -9,6 +9,7 @@
  */
 
 #include "cMerit.h"
+#include "cWorld.h"
 
 using namespace std;
 
@@ -71,7 +72,11 @@ bool cMerit::OK() const
            test_value >= value / (1 + 1 / UINT_MAX)));
 }
 
-
+double cMerit::EnergyToMerit(const double orgEnergy, cWorld* m_world) {
+  assert(m_world->GetConfig().ENERGY_ENABLED.Get() == 1);
+  int inst_2_exc = m_world->GetConfig().NUM_INST_EXC_BEFORE_0_ENERGY.Get();
+  return 100 * orgEnergy / (inst_2_exc);
+}
 
 ostream& operator<<(ostream& os, const cMerit& merit)
 {

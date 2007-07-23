@@ -372,15 +372,15 @@ public:
   bool CopyTrue() const   { assert(initialized == true); return copy_true; }
   bool DivideSex() const  { assert(initialized == true); return divide_sex; }
   int MateSelectID() const { assert(initialized == true); return mate_select_id; }
-  int  CrossNum() const  { assert(initialized == true); return cross_num; }
-  bool  ChildFertile() const { assert(initialized == true); return child_fertile;}
+  int CrossNum() const  { assert(initialized == true); return cross_num; }
+  bool ChildFertile() const { assert(initialized == true); return child_fertile;}
   int GetChildCopiedSize() const { assert(initialized == true); return child_copied_size; }
 
 
   ////////////////////  Accessors -- Modifying  ///////////////////
   void SetMerit(const cMerit& in_merit) { merit = in_merit; }
-  void ReduceEnergy(const double cost) { energy_store -= min(cost, (double) m_world->GetConfig().ENERGY_CAP.Get()); }
-  void SetEnergy(const double value) { energy_store = value; } //min(value, (double) m_world->GetConfig().ENERGY_CAP.Get()); }
+  void ReduceEnergy(const double cost);
+  void SetEnergy(const double value);
   void SetGestationTime(int in_time) { gestation_time = in_time; }
   void SetTimeUsed(int in_time) { time_used = in_time; }
   void SetFault(const cString& in_fault) { fault_desc = in_fault; }
@@ -450,7 +450,8 @@ public:
   bool& IsMultiThread() { assert(initialized == true); return is_multi_thread; }
   
   void RefreshEnergy();
-  double ApplyToEnergyStore();
+  void ApplyToEnergyStore();
+  double ExtractParentEnergy();
 };
 
 

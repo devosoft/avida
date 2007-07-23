@@ -403,15 +403,16 @@ cHardwareCPU::cHardwareCPU(const cHardwareCPU &hardware_cpu)
 , m_mal_active(hardware_cpu.m_mal_active)
 , m_advance_ip(hardware_cpu.m_advance_ip)
 , m_executedmatchstrings(hardware_cpu.m_executedmatchstrings)
-#if INSTRUCTION_COSTS
-, inst_cost(hardware_cpu.inst_cost)
-, inst_ft_cost(hardware_cpu.inst_ft_cost)
-, inst_energy_cost(hardware_cpu.inst_energy_cost)
-, m_has_costs(hardware_cpu.m_has_costs)
-, m_has_ft_costs(hardware_cpu.m_has_ft_costs)
-  // TODO - m_has_energy_costs
-#endif
 {
+#if INSTRUCTION_COSTS
+  inst_cost = hardware_cpu.inst_cost;
+  inst_ft_cost = hardware_cpu.inst_ft_cost;
+  inst_energy_cost = hardware_cpu.inst_energy_cost;
+  m_has_costs = hardware_cpu.m_has_costs;
+  m_has_ft_costs = hardware_cpu.m_has_ft_costs;
+  m_has_energy_costs = hardware_cpu.m_has_energy_costs;
+#endif
+
 }
 
 
@@ -438,7 +439,7 @@ void cHardwareCPU::Reset()
   inst_energy_cost.Resize(num_inst_cost);
   m_has_costs = false;
   m_has_ft_costs = false;
-  // TODO - m_has_energy_costs
+  m_has_energy_costs = false;
   
   for (int i = 0; i < num_inst_cost; i++) {
     inst_cost[i] = m_inst_set->GetCost(cInstruction(i));
@@ -448,10 +449,9 @@ void cHardwareCPU::Reset()
     if (!m_has_ft_costs && inst_ft_cost[i]) m_has_ft_costs = true;
 
     inst_energy_cost[i] = m_inst_set->GetEnergyCost(cInstruction(i));    
-    // TODO - m_has_energy_costs  if()
+    if(!m_has_energy_costs && inst_energy_cost[i]) m_has_energy_costs = true;
   }
-#endif 
-  
+#endif   
 }
 
 void cHardwareCPU::cLocalThread::operator=(const cLocalThread& in_thread)
@@ -577,65 +577,6 @@ void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
   
   organism->SetRunning(false);
   CheckImplicitRepro(ctx);
-}
-
-
-// This method will test to see if all costs have been paid associated
-// with executing an instruction and only return true when that instruction
-// should proceed.
-bool cHardwareCPU::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
-{
-#if INSTRUCTION_COSTS
-  assert(cur_inst.GetOp() < inst_cost.GetSize());
-  
-  // check avaliable energy first
-  double energy_req = inst_energy_cost[cur_inst.GetOp()] * (organism->GetPhenotype().GetMerit().GetDouble() / 100.0); //compensate by factor of 100
-
-  if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1 && energy_req > 0.0) {
-    if(organism->GetPhenotype().GetStoredEnergy() >= energy_req) {
-      inst_energy_cost[cur_inst.GetOp()] = 0;
-      //subtract energy used from current org energy.
-      organism->GetPhenotype().ReduceEnergy(energy_req);  
-    
-    
-    // tracking sleeping organisms
-  cString instName = m_world->GetHardwareManager().GetInstSet().GetName(cur_inst);
-  int cellID = organism->GetCellID();
-  if( instName == cString("sleep") || instName == cString("sleep1") || instName == cString("sleep2") ||
-      instName == cString("sleep3") || instName == cString("sleep4")) {
-    cPopulation& pop = m_world->GetPopulation();
-    if(m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1) {
-      pop.AddBeginSleep(cellID,m_world->GetStats().GetUpdate());
-    }
-    pop.GetCell(cellID).GetOrganism()->SetSleeping(true);
-    pop.incNumAsleep();    //TODO - Fix me:  this functions get called repeatedly
-  }
-    
-    } else {
-      // not enough energy
-      return false;
-    }
-  }
-    
-  // If first time cost hasn't been paid off...
-  if (m_has_ft_costs && inst_ft_cost[cur_inst.GetOp()] > 0) {
-    inst_ft_cost[cur_inst.GetOp()]--;       // dec cost
-    return false;
-  }
-  
-  // Next, look at the per use cost
-  if (m_has_costs && m_inst_set->GetCost(cur_inst) > 0) {
-    if (inst_cost[cur_inst.GetOp()] > 1) {  // if isn't paid off (>1)
-      inst_cost[cur_inst.GetOp()]--;        // dec cost
-      return false;
-    } else {                                // else, reset cost array
-      inst_cost[cur_inst.GetOp()] = m_inst_set->GetCost(cur_inst);
-    }
-  }
-  
-  inst_energy_cost[cur_inst.GetOp()] = m_inst_set->GetEnergyCost(cur_inst); //reset instruction energy cost
-#endif
-  return true;
 }
 
 // This method will handle the actual execution of an instruction
@@ -4121,12 +4062,8 @@ bool cHardwareCPU::Inst_Sleep(cAvidaContext& ctx) {
   pop.decNumAsleep();
   if(m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 2) {
     organism->GetPhenotype().RefreshEnergy();
-    double newMerit = organism->GetPhenotype().ApplyToEnergyStore();
-    if(newMerit != -1) {
-      std::cerr.precision(20);
-      std::cerr<<"[cHardwareCPU::Inst_Sleep] newMerit = "<< newMerit <<std::endl;
-      organism->GetOrgInterface().UpdateMerit(newMerit);
-    }
+    organism->GetPhenotype().ApplyToEnergyStore();
+    pop.UpdateMerit(organism->GetCellID(), cMerit::EnergyToMerit(organism->GetPhenotype().GetStoredEnergy(), m_world));
   }
   return true;
 }
