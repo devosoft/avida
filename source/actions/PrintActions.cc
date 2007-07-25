@@ -866,6 +866,7 @@ public:
 			cCPUTestInfo test_info;
 			double fitness = 0.0;
 			if (mode == "TEST_CPU" || mode == "ACTUAL"){
+        test_info.UseManualInputs( (*oit)->GetOrgInterface().GetInputs() );
 				testcpu->TestGenome(ctx, test_info, (*git)->GetGenome());
 			}
 			
@@ -881,19 +882,26 @@ public:
 			}
 			else
 				world->GetDriver().RaiseFatalException(1, "PrintLogFitnessHistogram::MakeHistogram: Invalid fitness mode requested.");
-			
+	   
 			//Update the histogram
-			const double log_fitness = log10(fitness);
-			int update_bin = (errno == ERANGE) ? 0 :       //If we have a log of zero, this will be true.
-				static_cast<int>((log_fitness - min) / step);
+			int update_bin = (fitness == 0) ? 0 :    
+				static_cast<int>((log10(fitness) - min) / step);
 			
-			if (update_bin < 0)  //Non-zero bins
-				update_bin = 1;    //Below range
-			else if (update_bin >= num_bins - 3)
-				update_bin = num_bins - 1;  //Above range
-			else
-				update_bin = update_bin + 2;  //Within range
-			
+      // Bin 0   Inviable
+      //     1   Below Range
+      //     2   [min, min+step)
+      // #bin-1  [max-step, max)
+      // num_bin Above Range
+      
+      if (fitness == 0)
+        update_bin = 0;
+      else if (log10(fitness) < min)
+        update_bin = 1;
+      else if (log10(fitness) > max)
+        update_bin = num_bins - 1;
+      else
+        update_bin = static_cast<int>(log10(fitness) - min / step) + 2;
+       
 			histogram[update_bin]++;
 		}
 		delete testcpu;
@@ -910,6 +918,8 @@ public:
 			cerr << "Parameters: " << m_filename << ", " << m_mode << ", " << m_hist_fmin << ":" << m_hist_fstep << ":" << m_hist_fmax << endl;
 			return;
 		}
+    cerr << "Parameters: " << m_filename << ", " << m_mode << ", " << m_hist_fmin << ":" << m_hist_fstep << ":" << m_hist_fmax << endl;
+    
 		
 		//Gather data objects
     cPopulation& pop        = m_world->GetPopulation();
@@ -1035,6 +1045,7 @@ public:
 				double fitness = 0.0;
 				double parent_fitness = ( (*git)->GetParentID() > 0) ? (*git)->GetParentGenotype()->GetFitness() : 1.0;
 				if (mode == "TEST_CPU" || mode == "ACTUAL"){
+          test_info.UseManualInputs( (*oit)->GetOrgInterface().GetInputs() );  
 					testcpu->TestGenome(ctx, test_info, (*git)->GetGenome());
 				}
 				
@@ -1053,18 +1064,19 @@ public:
 				
 				//Update the histogram
 				if (parent_fitness <= 0.0)
-					world->GetDriver().RaiseFatalException(1, cString("PrintRelativeFitness::MakeHistogram: Parent fitness is zero.") + cStringUtil::Convert((*git)->GetParentID()) + cString(":") + cStringUtil::Convert( (*git)->GetParentGenotype()->GetMerit() ));
+					world->GetDriver().RaiseFatalException(1, cString("PrintRelativeFitness::MakeHistogram reports a parent fitness is zero.") + cStringUtil::Convert((*git)->GetParentID()) + cString(":") + cStringUtil::Convert( (*git)->GetParentGenotype()->GetMerit() ));
 				
-				double rfitness = fitness/parent_fitness;
-				int update_bin = (rfitness == 0) ? 0 :       
-					static_cast<int>( ((fitness/parent_fitness) - min) / step);
-				
-				if (update_bin < 0  && fitness > 0)  //Non-zero bins
-					update_bin = 1;    //Below range
-				else if (update_bin >= num_bins - 3)
-					update_bin = num_bins - 1;  //Above range
-				else
-					update_bin = update_bin + 2;  //Within range
+        int update_bin = 0;
+        double rfitness = fitness/parent_fitness;				
+        
+        if (fitness == 0.0)
+          update_bin = 0;
+        else if (rfitness < min)
+          update_bin = 1;
+        else if (rfitness > max)
+          update_bin = num_bins - 1;
+        else
+          update_bin = static_cast<int>( ((fitness/parent_fitness) - min) / step) + 2;
 				
 				histogram[update_bin]++;
 			}
@@ -1216,12 +1228,13 @@ class cActionPrintCCladeFitnessHistogram : public cAction
 					fp << endl << endl;
 				}
 				if (oit == org_map.begin()) //Print update and clade count if first clade
-					fp << update << " " << org_map.size();
+					fp << update << " " << org_map.size() << " ";
 				fp << oit->first << " [";
 				for (int k = 0; k < hist.GetSize(); k++)
 					fp << " " << hist[k];
-				fp << " ]" << endl;
+				fp << " ] ";
 			}
+      fp << endl;
 		}
 };
 
@@ -1332,12 +1345,13 @@ public:
 				fp << endl << endl;
 			}
 			if (oit == org_map.begin()) //Print update and clade count if first clade
-				fp << update << " " << org_map.size();
+				fp << update << " " << org_map.size() << " ";
 			fp << oit->first << " [";
 			for (int k = 0; k < hist.GetSize(); k++)
 				fp << " " << hist[k];
-			fp << " ]" << endl;
+			fp << " ] ";
 		}
+    fp << endl;
 		
 	}
 };
