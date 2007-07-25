@@ -291,14 +291,19 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
   if (parent_alive == true) {
 		
 		// Reset inputs and re-calculate merit if required
-		if (m_world->GetConfig().RESET_INPUTS_ON_DIVIDE.Get() > 0){
+    if (m_world->GetConfig().RESET_INPUTS_ON_DIVIDE.Get() > 0){
 			environment.SetupInputs(ctx, parent_cell.input_array);
-			if (m_world->GetConfig().PRECALC_MERIT.Get() > 0){
+      int pc_phenotype = m_world->GetConfig().PRECALC_PHENOTYPE.Get();
+			if (pc_phenotype){
 				cCPUTestInfo test_info;
 				cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU();
 				test_info.UseManualInputs(parent_cell.input_array);                               // Test using what the environment will be
 				test_cpu->TestGenome(ctx, test_info, parent_organism.GetHardware().GetMemory()); // Use the true genome
-				parent_phenotype.SetMerit(test_info.GetTestPhenotype().GetMerit());    // Update merit
+				if (pc_phenotype & 1)  // If we must update the merit
+          parent_phenotype.SetMerit(test_info.GetTestPhenotype().GetMerit());
+        if (pc_phenotype & 2)  // If we must update the gestation time
+          parent_phenotype.SetGestationTime(test_info.GetTestPhenotype().GetGestationTime());
+        parent_phenotype.SetFitness(parent_phenotype.GetMerit().CalcFitness(parent_phenotype.GetGestationTime())); //Update fitness
 				delete test_cpu;
 			}
 		}
@@ -410,13 +415,19 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   environment.SetupInputs(ctx, target_cell.input_array);
   
   
-  // Precalculate the merit if requested
-  if (m_world->GetConfig().PRECALC_MERIT.Get() > 0){
+  // Precalculate the phenotype if requested
+  int pc_phenotype = m_world->GetConfig().PRECALC_PHENOTYPE.Get();
+  if (pc_phenotype){
     cCPUTestInfo test_info;
     cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU();
     test_info.UseManualInputs(target_cell.input_array);                            // Test using what the environment will be
     test_cpu->TestGenome(ctx, test_info, in_organism->GetHardware().GetMemory());  // Use the true genome
-    in_organism->GetPhenotype().SetMerit(test_info.GetTestPhenotype().GetMerit()); // Update merit
+    
+    if (pc_phenotype & 1)
+      in_organism->GetPhenotype().SetMerit(test_info.GetTestPhenotype().GetMerit()); 
+    if (pc_phenotype & 2)
+      in_organism->GetPhenotype().SetGestationTime(test_info.GetTestPhenotype().GetGestationTime());
+    in_organism->GetPhenotype().SetFitness(in_organism->GetPhenotype().GetMerit().CalcFitness(in_organism->GetPhenotype().GetGestationTime()));
     delete test_cpu;
   }
   // Update the archive...

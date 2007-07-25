@@ -379,6 +379,7 @@ public:
 
   ////////////////////  Accessors -- Modifying  ///////////////////
   void SetMerit(const cMerit& in_merit) { merit = in_merit; }
+  void SetFitness(const double in_fit) { fitness = in_fit; }
   void ReduceEnergy(const double cost);
   void SetEnergy(const double value);
   void SetGestationTime(int in_time) { gestation_time = in_time; }

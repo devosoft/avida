@@ -54,6 +54,7 @@ public:
   void Breakpoint() { ; }
   int GetInputAt(int& input_pointer);
   void ResetInputs(cAvidaContext& ctx);
+  tArray<int> GetInputs();
   int Debug();
   const tArray<double>& GetResources();
   void UpdateResources(const tArray<double>& res_change);

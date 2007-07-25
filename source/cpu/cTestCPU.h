@@ -99,6 +99,7 @@ public:
 
   inline int GetInput();
   inline int GetInputAt(int & input_pointer);
+  tArray<int> GetInputs() {return input_array;}
   void ResetInputs(cAvidaContext& ctx);
 
   inline int GetReceiveValue();

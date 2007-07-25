@@ -83,6 +83,7 @@ public:
   const cMutationRates & MutationRates() const { return *mutation_rates; }
   cMutationRates & MutationRates() { return *mutation_rates; }
   int GetInput(int);
+  tArray<int> GetInputs() {return input_array;}
   int GetInputAt(int & input_pointer);
   int GetInputSize() { return input_array.GetSize(); }
   void ResetInputs(cAvidaContext& ctx);

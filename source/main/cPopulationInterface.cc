@@ -92,6 +92,11 @@ void cPopulationInterface::ResetInputs(cAvidaContext& ctx)
   m_world->GetPopulation().GetCell(m_cell_id).ResetInputs(ctx); 
 }
 
+tArray<int> cPopulationInterface::GetInputs()
+{
+  return m_world->GetPopulation().GetCell(m_cell_id).GetInputs();
+}
+
 int cPopulationInterface::Debug()
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
