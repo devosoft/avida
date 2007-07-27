@@ -55,13 +55,23 @@ void cMutationalNeighborhood::Process(cAvidaContext& ctx)
       cCPUTestInfo test_info;
       
       // Setup One Step Data
-      sStep& odata = m_onestep_point[cur_site];
-      odata.peak_fitness = m_base_fitness;
-      odata.peak_genome = m_base_genome;
-      odata.site_count.Resize(m_base_genome.GetSize(), 0);
+      sStep& opdata = m_onestep_point[cur_site];
+      opdata.peak_fitness = m_base_fitness;
+      opdata.peak_genome = m_base_genome;
+      opdata.site_count.Resize(m_base_genome.GetSize(), 0);
 
+      sStep& oidata = m_onestep_insert[cur_site];
+      oidata.peak_fitness = m_base_fitness;
+      oidata.peak_genome = m_base_genome;
+      oidata.site_count.Resize(m_base_genome.GetSize() + 1, 0);
+
+      sStep& oddata = m_onestep_delete[cur_site];
+      oddata.peak_fitness = m_base_fitness;
+      oddata.peak_genome = m_base_genome;
+      oddata.site_count.Resize(m_base_genome.GetSize(), 0);
+      
       // Setup Data Used in Two Step
-      sStep& tdata = m_twostep[cur_site];
+      sStep& tdata = m_twostep_point[cur_site];
       tdata.peak_fitness = m_base_fitness;
       tdata.peak_genome = m_base_genome;
       tdata.site_count.Resize(m_base_genome.GetSize(), 0);
@@ -114,7 +124,7 @@ void cMutationalNeighborhood::ProcessInitialize(cAvidaContext& ctx)
   m_onestep_point.ResizeClear(m_base_genome.GetSize());
   m_onestep_insert.ResizeClear(m_base_genome.GetSize() + 1);
   m_onestep_delete.ResizeClear(m_base_genome.GetSize());
-  m_twostep.ResizeClear(m_base_genome.GetSize());
+  m_twostep_point.ResizeClear(m_base_genome.GetSize());
   m_fitness_point.ResizeClear(m_base_genome.GetSize(), m_inst_set.GetSize());
   m_fitness_insert.ResizeClear(m_base_genome.GetSize() + 1, m_inst_set.GetSize());
   m_fitness_delete.ResizeClear(m_base_genome.GetSize());
@@ -251,7 +261,7 @@ void cMutationalNeighborhood::ProcessTwoStepPoint(cAvidaContext& ctx, cTestCPU* 
                                                   int cur_site, cGenome& mod_genome)
 {
   const int inst_size = m_inst_set.GetSize();
-  sStep& tdata = m_twostep[cur_site];
+  sStep& tdata = m_twostep_point[cur_site];
 
   // Loop through remaining lines of genome, testing trying all combinations.
   for (int line_num = cur_site + 1; line_num < m_base_genome.GetSize(); line_num++) {
@@ -375,84 +385,63 @@ void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
   
   
   // Initialize values
-  m_t_total = 0;
-  m_t_total_sqr_fitness = 0.0;
-  m_t_pos = 0;
-  m_t_neg = 0;
-  m_t_neut = 0;
-  m_t_dead = 0;
-  m_t_size_pos = 0.0;
-  m_t_size_neg = 0.0;
-  m_t_peak_fitness = m_base_fitness;
-  m_t_peak_genome = m_base_genome;  
-  m_t_site_count.Resize(m_base_genome.GetSize(), 0);
-  m_t_total_entropy = 0;
-  m_t_task_target = 0;
-  m_t_task_target_pos = 0;
-  m_t_task_target_neg = 0;
-  m_t_task_target_neut = 0;
-  m_t_task_target_dead = 0;
-  m_t_task_total = 0;
-  m_t_task_knockout = 0;
-  m_t_task_size_target = 0.0;
-  m_t_task_size_target_pos = 0.0;
-  m_t_task_size_target_neg = 0.0;
-  m_t_task_size_total = 0.0;
-  m_t_task_size_knockout = 0.0;
+  m_tp.peak_fitness = m_base_fitness;
+  m_tp.peak_genome = m_base_genome;  
+  m_tp.site_count.Resize(m_base_genome.GetSize(), 0);
   
-  for (int i = 0; i < m_twostep.GetSize(); i++) {
-    sStep& tdata = m_twostep[i];
-    m_t_total += tdata.total;
-    m_t_total_fitness += tdata.total_fitness;
-    m_t_total_sqr_fitness += tdata.total_sqr_fitness;
-    m_t_pos += tdata.pos;
-    m_t_neg += tdata.neg;
-    m_t_neut += tdata.neut;
-    m_t_dead += tdata.dead;
-    m_t_size_pos += tdata.size_pos; 
-    m_t_size_neg += tdata.size_neg; 
+  for (int i = 0; i < m_twostep_point.GetSize(); i++) {
+    sStep& tdata = m_twostep_point[i];
+    m_tp.total += tdata.total;
+    m_tp.total_fitness += tdata.total_fitness;
+    m_tp.total_sqr_fitness += tdata.total_sqr_fitness;
+    m_tp.pos += tdata.pos;
+    m_tp.neg += tdata.neg;
+    m_tp.neut += tdata.neut;
+    m_tp.dead += tdata.dead;
+    m_tp.size_pos += tdata.size_pos; 
+    m_tp.size_neg += tdata.size_neg; 
   
-    if (tdata.peak_fitness > m_t_peak_fitness) {
-      m_t_peak_genome = tdata.peak_genome;
-      m_t_peak_fitness = tdata.peak_fitness;
+    if (tdata.peak_fitness > m_tp.peak_fitness) {
+      m_tp.peak_genome = tdata.peak_genome;
+      m_tp.peak_fitness = tdata.peak_fitness;
     }
   
   
-    for (int j = 0; j < m_t_site_count.GetSize(); j++) {
-      m_t_site_count[j] += tdata.site_count[j];
+    for (int j = 0; j < m_tp.site_count.GetSize(); j++) {
+      m_tp.site_count[j] += tdata.site_count[j];
     }
       
-    m_t_task_target += tdata.task_target;
-    m_t_task_total += tdata.task_total;
-    m_t_task_knockout += tdata.task_knockout;
+    m_tp.task_target += tdata.task_target;
+    m_tp.task_total += tdata.task_total;
+    m_tp.task_knockout += tdata.task_knockout;
     
-    m_t_task_size_target += tdata.task_size_target;
-    m_t_task_size_total += tdata.task_size_total;
-    m_t_task_size_knockout += tdata.task_size_knockout;
+    m_tp.task_size_target += tdata.task_size_target;
+    m_tp.task_size_total += tdata.task_size_total;
+    m_tp.task_size_knockout += tdata.task_size_knockout;
   }
 
   const double max_ent = log(static_cast<double>(m_inst_set.GetSize()));
   for (int i = 0; i < m_base_genome.GetSize(); i++) {
     // Per-site entropy is the log of the number of legal states for that
     // site.  Add one to account for the unmutated state.
-    m_t_total_entropy += log(static_cast<double>(m_t_site_count[i] + 1)) / max_ent;
+    m_tp.total_entropy += log(static_cast<double>(m_tp.site_count[i] + 1)) / max_ent;
   }
-  m_t_complexity = m_base_genome.GetSize() - m_t_total_entropy;
+  m_tp.complexity = m_base_genome.GetSize() - m_tp.total_entropy;
 
   sPendingTarget* pend = NULL;
   while ((pend = m_pending.Pop())) {
     double fitness = m_fitness_point[pend->site][pend->inst];
     
     if (fitness == 0.0) {
-      m_t_task_target_dead++;
+      m_tp.task_target_dead++;
     } else if (fitness < m_neut_min) {
-      m_t_task_target_neg++;
-      m_t_task_size_target_neg += fitness;
+      m_tp.task_target_neg++;
+      m_tp.task_size_target_neg += fitness;
     } else if (fitness <= m_neut_max) {
-      m_t_task_target_neut++;
+      m_tp.task_target_neut++;
     } else {
-      m_t_task_target_pos++;
-      m_t_task_size_target_pos += fitness;
+      m_tp.task_target_pos++;
+      m_tp.task_size_target_pos += fitness;
     }
     
     delete pend;
