@@ -93,10 +93,15 @@ private:
     int task_target;
     int task_total;
     int task_knockout;
+    
+    double task_size_target;
+    double task_size_total;
+    double task_size_knockout;
 
     
     sStep() : total(0), total_fitness(0.0), total_sqr_fitness(0.0), peak_fitness(0.0), pos(0), neg(0), neut(0), dead(0),
-      size_pos(0.0), size_neg(0.0), task_target(0), task_total(0), task_knockout(0) { ; }
+      size_pos(0.0), size_neg(0.0), task_target(0), task_total(0), task_knockout(0), task_size_target(0.0),
+      task_size_total(0.0), task_size_knockout(0.0) { ; }
   };
   tArray<sStep> m_onestep;
   tArray<sStep> m_twostep;
@@ -149,6 +154,10 @@ private:
   int m_o_task_total;
   int m_o_task_knockout;
   
+  double m_o_task_size_target;
+  double m_o_task_size_total;
+  double m_o_task_size_knockout;
+  
   // Aggregated Two Step Data
   // --------------------------------------------------------------------------
   int m_t_total;
@@ -178,10 +187,21 @@ private:
   int m_t_task_total;
   int m_t_task_knockout;
 
+  double m_t_task_size_target;
+  double m_t_task_size_target_pos;
+  double m_t_task_size_target_neg;
+  double m_t_task_size_total;
+  double m_t_task_size_knockout;
+  
 
   void ProcessInitialize(cAvidaContext& ctx);
-  void ProcessOneStep(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site);
-  void ProcessTwoStep(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
+  void ProcessOneStepPoint(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site);
+  void ProcessTwoStepPoint(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
+//  void ProcessOneStepInsert(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site);
+//  void ProcessTwoStepInsert(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
+//  void ProcessOneStepDelete(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site);
+//  void ProcessTwoStepDelete(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
+//  void ProcessInDelPointCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
   void ProcessComplete(cAvidaContext& ctx);
   
   cMutationalNeighborhood(); // @not_implemented
@@ -222,10 +242,10 @@ private:
   inline const cGenome& GetSinglePeakGenome() const { return m_o_peak_genome; }
   inline double GetSinglePeakFitness() const { return m_o_peak_fitness; }
   
-  inline double GetSingleProbBeneficial()  const { return static_cast<double>(m_o_pos) / m_o_total; }
-  inline double GetSingleProbDeleterious()  const { return static_cast<double>(m_o_neg) / m_o_total; }
-  inline double GetSingleProbNeutral() const { return static_cast<double>(m_o_neut) / m_o_total; }
-  inline double GetSingleProbLethal() const { return static_cast<double>(m_o_dead) / m_o_total; }
+  inline double GetSingleProbBeneficial()  const { return double(m_o_pos) / m_o_total; }
+  inline double GetSingleProbDeleterious()  const { return double(m_o_neg) / m_o_total; }
+  inline double GetSingleProbNeutral() const { return double(m_o_neut) / m_o_total; }
+  inline double GetSingleProbLethal() const { return double(m_o_dead) / m_o_total; }
   inline double GetSingleAverageSizeBeneficial() const { if (m_o_pos == 0) return 0.0; else return m_o_size_pos / m_o_pos; }
   inline double GetSingleAverageSizeDeleterious() const { if (m_o_neg == 0) return 0.0; else return m_o_size_neg / m_o_neg; }
   
@@ -233,11 +253,23 @@ private:
   inline double GetSingleComplexity() const { return m_o_complexity; }
 
   inline int GetSingleTargetTask() const { return m_o_task_target; }
-  inline double GetSingleProbTargetTask() const { return static_cast<double>(m_o_task_target) / m_o_total; }
+  inline double GetSingleProbTargetTask() const { return double(m_o_task_target) / m_o_total; }
+  inline double GetSingleAverageSizeTargetTask() const
+  {
+    if (m_o_task_target == 0) return 0.0; else return double(m_o_task_size_target) / m_o_task_target;
+  }
   inline int GetSingleTask() const { return m_o_task_total; }
-  inline double GetSingleProbTask() const { return static_cast<double>(m_o_task_total) / m_o_total; }
+  inline double GetSingleProbTask() const { return double(m_o_task_total) / m_o_total; }
+  inline double GetSingleAverageSizeTask() const
+  {
+    if (m_o_task_total == 0) return 0.0; else return double(m_o_task_size_total) / m_o_task_total;
+  }
   inline int GetSingleKnockout() const { return m_o_task_knockout; }
-  inline double GetSingleProbKnockout() const { return static_cast<double>(m_o_task_knockout) / m_o_total; }
+  inline double GetSingleProbKnockout() const { return double(m_o_task_knockout) / m_o_total; }
+  inline double GetSingleAverageSizeKnockout() const
+  {
+    if (m_o_task_knockout == 0) return 0.0; else return double(m_o_task_size_knockout) / m_o_task_knockout;
+  }
   
 
   inline int GetDoubleTotal() const { return m_t_total; }
@@ -247,10 +279,10 @@ private:
   inline const cGenome& GetDoublePeakGenome() const { return m_t_peak_genome; }
   inline double GetDoublePeakFitness() const { return m_t_peak_fitness; }
   
-  inline double GetDoubleProbBeneficial()  const { return static_cast<double>(m_t_pos) / m_t_total; }
-  inline double GetDoubleProbDeleterious()  const { return static_cast<double>(m_t_neg) / m_t_total; }
-  inline double GetDoubleProbNeutral() const { return static_cast<double>(m_t_neut) / m_t_total; }
-  inline double GetDoubleProbLethal() const { return static_cast<double>(m_t_dead) / m_t_total; }
+  inline double GetDoubleProbBeneficial()  const { return double(m_t_pos) / m_t_total; }
+  inline double GetDoubleProbDeleterious()  const { return double(m_t_neg) / m_t_total; }
+  inline double GetDoubleProbNeutral() const { return double(m_t_neut) / m_t_total; }
+  inline double GetDoubleProbLethal() const { return double(m_t_dead) / m_t_total; }
   inline double GetDoubleAverageSizeBeneficial() const { if (m_t_pos == 0) return 0.0; else return m_t_size_pos / m_t_pos; }
   inline double GetDoubleAverageSizeDeleterious() const { if (m_t_neg == 0) return 0.0; else return m_t_size_neg / m_t_neg; }
   
@@ -258,31 +290,51 @@ private:
   inline double GetDoubleComplexity() const { return m_t_complexity; }
 
   inline int GetDoubleTargetTask() const { return m_t_task_target; }
-  inline double GetDoubleProbTargetTask() const { return static_cast<double>(m_t_task_target) / m_t_total; }
+  inline double GetDoubleProbTargetTask() const { return double(m_t_task_target) / m_t_total; }
+  inline double GetDoubleAverageSizeTargetTask() const
+  {
+    if (m_t_task_target == 0) return 0.0; else return double(m_t_task_size_target) / m_t_task_target;
+  }
   inline int GetDoubleTargetTaskBeneficial() const { return m_t_task_target_pos; }
   inline double GetDoubleProbTargetTaskBeneficial() const
   {
-    if (m_t_task_target == 0) return 0.0; else return static_cast<double>(m_t_task_target_pos) / (2 * m_t_task_target);
+    if (m_t_task_target == 0) return 0.0; else return double(m_t_task_target_pos) / (2 * m_t_task_target);
+  }
+  inline double GetDoubleAverageSizeTargetTaskBeneficial() const
+  {
+    if (m_t_task_target == 0) return 0.0; else return double(m_t_task_size_target_pos) / (2 * m_t_task_target);
   }
   inline int GetDoubleTargetTaskDeleterious() const { return m_t_task_target_neg; }
   inline double GetDoubleProbTargetTaskDeleterious() const
   {
-    if (m_t_task_target == 0) return 0.0; else return static_cast<double>(m_t_task_target_neg) / (2 * m_t_task_target);
+    if (m_t_task_target == 0) return 0.0; else return double(m_t_task_target_neg) / (2 * m_t_task_target);
+  }
+  inline double GetDoubleAverageSizeTargetTaskDeleterious() const
+  {
+    if (m_t_task_target == 0) return 0.0; else return double(m_t_task_size_target_neg) / (2 * m_t_task_target);
   }
   inline int GetDoubleTargetTaskNeutral() const { return m_t_task_target_neut; }
   inline double GetDoubleProbTargetTaskNeutral() const
   {
-    if (m_t_task_target == 0) return 0.0; else return static_cast<double>(m_t_task_target_neut) / (2 * m_t_task_target);
+    if (m_t_task_target == 0) return 0.0; else return double(m_t_task_target_neut) / (2 * m_t_task_target);
   }
   inline int GetDoubleTargetTaskLethal() const { return m_t_task_target_dead; }
   inline double GetDoubleProbTargetTaskLethal() const
   {
-    if (m_t_task_target == 0) return 0.0; else return static_cast<double>(m_t_task_target_dead) / (2 * m_t_task_target);
+    if (m_t_task_target == 0) return 0.0; else return double(m_t_task_target_dead) / (2 * m_t_task_target);
   }
   inline int GetDoubleTask() const { return m_t_task_total; }
-  inline double GetDoubleProbTask() const { return static_cast<double>(m_t_task_total) / m_t_total; }
+  inline double GetDoubleProbTask() const { return double(m_t_task_total) / m_t_total; }
+  inline double GetDoubleAverageSizeTask() const
+  {
+    if (m_t_task_total == 0) return 0.0; else return double(m_t_task_size_total) / m_t_task_total;
+  }
   inline int GetDoubleKnockout() const { return m_t_task_knockout; }
-  inline double GetDoubleProbKnockout() const { return static_cast<double>(m_t_task_knockout) / m_t_total; }
+  inline double GetDoubleProbKnockout() const { return double(m_t_task_knockout) / m_t_total; }
+  inline double GetDoubleAverageSizeKnockout() const
+  {
+    if (m_t_task_knockout == 0) return 0.0; else return double(m_t_task_size_knockout) / m_t_task_knockout;
+  }
 };
 
 

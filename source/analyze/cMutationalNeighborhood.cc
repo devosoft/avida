@@ -67,7 +67,7 @@ void cMutationalNeighborhood::Process(cAvidaContext& ctx)
       tdata.site_count.Resize(m_base_genome.GetSize(), 0);
 
       // Do the processing, starting with One Step
-      ProcessOneStep(ctx, testcpu, test_info, cur_site);
+      ProcessOneStepPoint(ctx, testcpu, test_info, cur_site);
 
       // Cleanup
       delete testcpu;
@@ -126,7 +126,7 @@ void cMutationalNeighborhood::ProcessInitialize(cAvidaContext& ctx)
 }
 
 
-void cMutationalNeighborhood::ProcessOneStep(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site)
+void cMutationalNeighborhood::ProcessOneStepPoint(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site)
 {
   const int inst_size = m_inst_set.GetSize();
   sStep& odata = m_onestep[cur_site];
@@ -179,16 +179,26 @@ void cMutationalNeighborhood::ProcessOneStep(cAvidaContext& ctx, cTestCPU* testc
         if (m_base_tasks[i] && !cur_tasks[i]) knockout = true;
         else if (!m_base_tasks[i] && cur_tasks[i]) anytask = true;
       }
-      if (knockout) odata.task_knockout++;
-      if (anytask) odata.task_total++;
-      if (m_base_tasks.GetSize() && !m_base_tasks[m_target] && cur_tasks[m_target]) odata.task_target++;
+      if (knockout) {
+        odata.task_knockout++;
+        odata.task_size_knockout += test_fitness;
+      }
+      if (anytask) {
+        odata.task_total++;
+        odata.task_size_total += test_fitness;
+      }
+      if (m_base_tasks.GetSize() && !m_base_tasks[m_target] && cur_tasks[m_target]) {
+        odata.task_target++;
+        odata.task_size_target += test_fitness;
+      }
     }
 
-    ProcessTwoStep(ctx, testcpu, test_info, cur_site, mod_genome);
+    ProcessTwoStepPoint(ctx, testcpu, test_info, cur_site, mod_genome);
   }
 }
 
-void cMutationalNeighborhood::ProcessTwoStep(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome)
+void cMutationalNeighborhood::ProcessTwoStepPoint(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info,
+                                                  int cur_site, cGenome& mod_genome)
 {
   const int inst_size = m_inst_set.GetSize();
   sStep& tdata = m_twostep[cur_site];
@@ -235,11 +245,19 @@ void cMutationalNeighborhood::ProcessTwoStep(cAvidaContext& ctx, cTestCPU* testc
           if (m_base_tasks[i] && !cur_tasks[i]) knockout = true;
           else if (!m_base_tasks[i] && cur_tasks[i]) anytask = true;
         }
-        if (knockout) tdata.task_knockout++;
-        if (anytask) tdata.task_total++;
+        if (knockout) {
+          tdata.task_knockout++;
+          tdata.task_size_knockout += test_fitness;
+        }
+        if (anytask) {
+          tdata.task_total++;
+          tdata.task_size_total += test_fitness;
+        }
         if (m_base_tasks.GetSize() && !m_base_tasks[m_target] && cur_tasks[m_target]) {
           tdata.task_target++;
-          // Push both instructions as possible first mutations, for post determination of relative fitness
+          tdata.task_size_target += test_fitness;
+          
+          // Push both instructions as possible first mutations, for post determination of first step fitness effect
           m_pending.Push(new sPendingTarget(cur_site, mod_genome[cur_site].GetOp()));
           m_pending.Push(new sPendingTarget(line_num, inst_num));
         }
@@ -270,6 +288,9 @@ void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
   m_o_task_target = 0;
   m_o_task_total = 0;
   m_o_task_knockout = 0;
+  m_o_task_size_target = 0.0;
+  m_o_task_size_total = 0.0;
+  m_o_task_size_knockout = 0.0;
 
   for (int i = 0; i < m_onestep.GetSize(); i++) {
     sStep& odata = m_onestep[i];
@@ -296,6 +317,10 @@ void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
     m_o_task_target += odata.task_target;
     m_o_task_total += odata.task_total;
     m_o_task_knockout += odata.task_knockout;
+
+    m_o_task_size_target += odata.task_size_target;
+    m_o_task_size_total += odata.task_size_total;
+    m_o_task_size_knockout += odata.task_size_knockout;
   }
   
   const double max_ent = log(static_cast<double>(m_inst_set.GetSize()));
@@ -327,6 +352,11 @@ void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
   m_t_task_target_dead = 0;
   m_t_task_total = 0;
   m_t_task_knockout = 0;
+  m_t_task_size_target = 0.0;
+  m_t_task_size_target_pos = 0.0;
+  m_t_task_size_target_neg = 0.0;
+  m_t_task_size_total = 0.0;
+  m_t_task_size_knockout = 0.0;
   
   for (int i = 0; i < m_twostep.GetSize(); i++) {
     sStep& tdata = m_twostep[i];
@@ -353,6 +383,10 @@ void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
     m_t_task_target += tdata.task_target;
     m_t_task_total += tdata.task_total;
     m_t_task_knockout += tdata.task_knockout;
+    
+    m_t_task_size_target += tdata.task_size_target;
+    m_t_task_size_total += tdata.task_size_total;
+    m_t_task_size_knockout += tdata.task_size_knockout;
   }
 
   for (int i = 0; i < m_base_genome.GetSize(); i++) {
@@ -362,19 +396,21 @@ void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
   }
   m_t_complexity = m_base_genome.GetSize() - m_t_total_entropy;
 
-  // @TODO - Do post relative fitness determination for target task counts
   sPendingTarget* pend = NULL;
   while ((pend = m_pending.Pop())) {
     double fitness = m_fitness[pend->site][pend->inst];
     
-    if (fitness == 0.0)
+    if (fitness == 0.0) {
       m_t_task_target_dead++;
-    else if (fitness < m_neut_min)
+    } else if (fitness < m_neut_min) {
       m_t_task_target_neg++;
-    else if (fitness <= m_neut_max)
+      m_t_task_size_target_neg += fitness;
+    } else if (fitness <= m_neut_max) {
       m_t_task_target_neut++;
-    else
+    } else {
       m_t_task_target_pos++;
+      m_t_task_size_target_pos += fitness;
+    }
     
     delete pend;
   }
@@ -409,10 +445,13 @@ void cMutationalNeighborhood::PrintStats(cDataFile& df, int update) const
   df.Write(GetSingleComplexity(), "One Step Total Complexity");
   df.Write(GetSingleTargetTask(), "One Step Confers Target Task");
   df.Write(GetSingleProbTargetTask(), "One Step Probability Confers Target Task");
+  df.Write(GetSingleAverageSizeTargetTask(), "One Step Average Size of Target Task Conferral");
   df.Write(GetSingleTask(), "One Step Confers Any Task");
   df.Write(GetSingleProbTask(), "One Step Probability Confers Any Task");
+  df.Write(GetSingleAverageSizeTask(), "One Step Average Size of Any Task Conferral");
   df.Write(GetSingleKnockout(), "One Step Knockout Task");
   df.Write(GetSingleProbKnockout(), "One Step Probability Knockout Task");
+  df.Write(GetSingleAverageSizeKnockout(), "One Step Average Size of Task Knockout");
 
   df.Write(GetDoubleTotal(), "Total Two Step Mutants");
   df.Write(GetDoubleProbBeneficial(), "Two Step Probability Beneficial");
@@ -428,18 +467,23 @@ void cMutationalNeighborhood::PrintStats(cDataFile& df, int update) const
   df.Write(GetDoubleComplexity(), "Two Step Total Complexity");
   df.Write(GetDoubleTargetTask(), "Two Step Confers Target Task");
   df.Write(GetDoubleProbTargetTask(), "Two Step Probability Confers Target Task");
+  df.Write(GetDoubleAverageSizeTargetTask(), "Two Step Average Size of Target Task Conferral");
   df.Write(GetDoubleTargetTaskBeneficial(), "Two Step Confers Target - Previous Beneficial");
   df.Write(GetDoubleProbTargetTaskBeneficial(), "Two Step Prob. Confers Target - Previous Beneficial");
+  df.Write(GetDoubleAverageSizeTargetTaskBeneficial(), "Two Step Ave. Size of Previous Beneficial in Target Conferral");
   df.Write(GetDoubleTargetTaskDeleterious(), "Two Step Confers Target - Previous Deleterious");
   df.Write(GetDoubleProbTargetTaskDeleterious(), "Two Step Prob. Confers Target - Previous Deleterious");
+  df.Write(GetDoubleAverageSizeTargetTaskDeleterious(), "Two Step Ave. Size of Previous Deleterious in Target Conferral");
   df.Write(GetDoubleTargetTaskNeutral(), "Two Step Confers Target - Previous Neutral");
   df.Write(GetDoubleProbTargetTaskNeutral(), "Two Step Prob. Confers Target - Previous Neutral");
   df.Write(GetDoubleTargetTaskLethal(), "Two Step Confers Target - Previous Lethal");
   df.Write(GetDoubleProbTargetTaskLethal(), "Two Step Prob. Confers Target - Previous Lethal");
   df.Write(GetDoubleTask(), "Two Step Confers Any Task");
   df.Write(GetDoubleProbTask(), "Two Step Probability Confers Any Task");
+  df.Write(GetDoubleAverageSizeTask(), "Two Step Average Size of Any Task Conferral");
   df.Write(GetDoubleKnockout(), "Two Step Knockout Task");
   df.Write(GetDoubleProbKnockout(), "Two Step Probability Knockout Task");
+  df.Write(GetDoubleAverageSizeKnockout(), "Two Step Average Size of Task Knockout");
   
   df.Endl();
 }
