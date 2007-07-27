@@ -282,7 +282,7 @@ public:
   int    GetCurBonusInstCount() const { assert(bonus_instruction_count >= 0); return bonus_instruction_count; }
 
   double GetCurMeritBase() const { assert(initialized == true); return CalcSizeMerit(); }
-  double GetStoredEnergy() const { assert(initialized == true); return energy_store; }
+  double GetStoredEnergy() const { return energy_store; }
   double GetEnergyBonus() const { assert(initialized == true); return cur_energy_bonus; }
   
   bool GetToDie() const { assert(initialized == true); return to_die; }
