@@ -108,7 +108,9 @@ private:
   tArray<sStep> m_onestep_delete;
   tArray<sStep> m_twostep;
 
-  tMatrix<double> m_fitness;
+  tMatrix<double> m_fitness_point;
+  tMatrix<double> m_fitness_insert;
+  tArray<double> m_fitness_delete;
   
   struct sPendingTarget
   {
@@ -168,8 +170,13 @@ private:
       dead(0), size_pos(0.0), size_neg(0.0), total_entropy(0.0), complexity(0.0), task_target(0), task_total(0),
       task_knockout(0), task_size_target(0.0), task_size_total(0.0), task_size_knockout(0.0) { ; }
   };
-  
-  sOneStepAggregate m_op;
+
+  sOneStepAggregate m_op; // One Step Point Mutants
+  sOneStepAggregate m_oi; // One Step Insert Mutants
+  sOneStepAggregate m_od; // One Step Delete Mutants
+
+  sOneStepAggregate m_ot; // One Step Total
+
   
   
   // Aggregated Two Step Data
@@ -209,13 +216,18 @@ private:
   
 
   void ProcessInitialize(cAvidaContext& ctx);
+  
   void ProcessOneStepPoint(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site);
+  void ProcessOneStepInsert(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site);
+  void ProcessOneStepDelete(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site);
+  double ProcessOneStepGenome(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, const cGenome& mod_genome,
+                              sStep& odata, int cur_site);
+  
   void ProcessTwoStepPoint(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
-//  void ProcessOneStepInsert(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site);
-//  void ProcessTwoStepInsert(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
-//  void ProcessOneStepDelete(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site);
+  //  void ProcessTwoStepInsert(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
 //  void ProcessTwoStepDelete(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
 //  void ProcessInDelPointCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
+
   void ProcessComplete(cAvidaContext& ctx);
   
   void AggregateOneStep(tArray<sStep>& steps, sOneStepAggregate osa);
@@ -251,43 +263,164 @@ private:
     if (m_base_tasks.GetSize()) return m_base_tasks[m_target]; else return false;
   }
 
-  inline int GetSingleTotal() const { return m_op.total; }
   
-  inline double GetSingleAverageFitness() const { return m_op.total_fitness / m_op.total; }
-  inline double GetSingleAverageSqrFitness() const { return m_op.total_sqr_fitness / m_op.total; }
-  inline const cGenome& GetSinglePeakGenome() const { return m_op.peak_genome; }
-  inline double GetSinglePeakFitness() const { return m_op.peak_fitness; }
   
-  inline double GetSingleProbBeneficial()  const { return double(m_op.pos) / m_op.total; }
-  inline double GetSingleProbDeleterious()  const { return double(m_op.neg) / m_op.total; }
-  inline double GetSingleProbNeutral() const { return double(m_op.neut) / m_op.total; }
-  inline double GetSingleProbLethal() const { return double(m_op.dead) / m_op.total; }
-  inline double GetSingleAverageSizeBeneficial() const { if (m_op.pos == 0) return 0.0; else return m_op.size_pos / m_op.pos; }
-  inline double GetSingleAverageSizeDeleterious() const { if (m_op.neg == 0) return 0.0; else return m_op.size_neg / m_op.neg; }
+  inline int Get1SAggregateTotal() const { return m_ot.total; }
   
-  inline double GetSingleTotalEntropy() const { return m_op.total_entropy; }
-  inline double GetSingleComplexity() const { return m_op.complexity; }
+  inline double Get1SAggregateAverageFitness() const { return m_ot.total_fitness / m_ot.total; }
+  inline double Get1SAggregateAverageSqrFitness() const { return m_ot.total_sqr_fitness / m_ot.total; }
+  inline const cGenome& Get1SAggregatePeakGenome() const { return m_ot.peak_genome; }
+  inline double Get1SAggregatePeakFitness() const { return m_ot.peak_fitness; }
+  
+  inline double Get1SAggregateProbBeneficial()  const { return double(m_ot.pos) / m_ot.total; }
+  inline double Get1SAggregateProbDeleterious()  const { return double(m_ot.neg) / m_ot.total; }
+  inline double Get1SAggregateProbNeutral() const { return double(m_ot.neut) / m_ot.total; }
+  inline double Get1SAggregateProbLethal() const { return double(m_ot.dead) / m_ot.total; }
+  inline double Get1SAggregateAverageSizeBeneficial() const { if (m_ot.pos == 0) return 0.0; else return m_ot.size_pos / m_ot.pos; }
+  inline double Get1SAggregateAverageSizeDeleterious() const { if (m_ot.neg == 0) return 0.0; else return m_ot.size_neg / m_ot.neg; }
+  
+  //inline double Get1SAggregateTotalEntropy() const { return m_ot.total_entropy; }
+  //inline double Get1SAggregateComplexity() const { return m_ot.complexity; }
+  
+  inline int Get1SAggregateTargetTask() const { return m_ot.task_target; }
+  inline double Get1SAggregateProbTargetTask() const { return double(m_ot.task_target) / m_ot.total; }
+  inline double Get1SAggregateAverageSizeTargetTask() const
+  {
+    if (m_ot.task_target == 0) return 0.0; else return double(m_ot.task_size_target) / m_ot.task_target;
+  }
+  inline int Get1SAggregateTask() const { return m_ot.task_total; }
+  inline double Get1SAggregateProbTask() const { return double(m_ot.task_total) / m_ot.total; }
+  inline double Get1SAggregateAverageSizeTask() const
+  {
+    if (m_ot.task_total == 0) return 0.0; else return double(m_ot.task_size_total) / m_ot.task_total;
+  }
+  inline int Get1SAggregateKnockout() const { return m_ot.task_knockout; }
+  inline double Get1SAggregateProbKnockout() const { return double(m_ot.task_knockout) / m_ot.total; }
+  inline double Get1SAggregateAverageSizeKnockout() const
+  {
+    if (m_ot.task_knockout == 0) return 0.0; else return double(m_ot.task_size_knockout) / m_ot.task_knockout;
+  }
+  
+  
+  
+  
+  inline int Get1SPointTotal() const { return m_op.total; }
+  
+  inline double Get1SPointAverageFitness() const { return m_op.total_fitness / m_op.total; }
+  inline double Get1SPointAverageSqrFitness() const { return m_op.total_sqr_fitness / m_op.total; }
+  inline const cGenome& Get1SPointPeakGenome() const { return m_op.peak_genome; }
+  inline double Get1SPointPeakFitness() const { return m_op.peak_fitness; }
+  
+  inline double Get1SPointProbBeneficial()  const { return double(m_op.pos) / m_op.total; }
+  inline double Get1SPointProbDeleterious()  const { return double(m_op.neg) / m_op.total; }
+  inline double Get1SPointProbNeutral() const { return double(m_op.neut) / m_op.total; }
+  inline double Get1SPointProbLethal() const { return double(m_op.dead) / m_op.total; }
+  inline double Get1SPointAverageSizeBeneficial() const { if (m_op.pos == 0) return 0.0; else return m_op.size_pos / m_op.pos; }
+  inline double Get1SPointAverageSizeDeleterious() const { if (m_op.neg == 0) return 0.0; else return m_op.size_neg / m_op.neg; }
+  
+  inline double Get1SPointTotalEntropy() const { return m_op.total_entropy; }
+  inline double Get1SPointComplexity() const { return m_op.complexity; }
 
-  inline int GetSingleTargetTask() const { return m_op.task_target; }
-  inline double GetSingleProbTargetTask() const { return double(m_op.task_target) / m_op.total; }
-  inline double GetSingleAverageSizeTargetTask() const
+  inline int Get1SPointTargetTask() const { return m_op.task_target; }
+  inline double Get1SPointProbTargetTask() const { return double(m_op.task_target) / m_op.total; }
+  inline double Get1SPointAverageSizeTargetTask() const
   {
     if (m_op.task_target == 0) return 0.0; else return double(m_op.task_size_target) / m_op.task_target;
   }
-  inline int GetSingleTask() const { return m_op.task_total; }
-  inline double GetSingleProbTask() const { return double(m_op.task_total) / m_op.total; }
-  inline double GetSingleAverageSizeTask() const
+  inline int Get1SPointTask() const { return m_op.task_total; }
+  inline double Get1SPointProbTask() const { return double(m_op.task_total) / m_op.total; }
+  inline double Get1SPointAverageSizeTask() const
   {
     if (m_op.task_total == 0) return 0.0; else return double(m_op.task_size_total) / m_op.task_total;
   }
-  inline int GetSingleKnockout() const { return m_op.task_knockout; }
-  inline double GetSingleProbKnockout() const { return double(m_op.task_knockout) / m_op.total; }
-  inline double GetSingleAverageSizeKnockout() const
+  inline int Get1SPointKnockout() const { return m_op.task_knockout; }
+  inline double Get1SPointProbKnockout() const { return double(m_op.task_knockout) / m_op.total; }
+  inline double Get1SPointAverageSizeKnockout() const
   {
     if (m_op.task_knockout == 0) return 0.0; else return double(m_op.task_size_knockout) / m_op.task_knockout;
   }
   
 
+  
+  
+  inline int Get1SInsertTotal() const { return m_oi.total; }
+  
+  inline double Get1SInsertAverageFitness() const { return m_oi.total_fitness / m_oi.total; }
+  inline double Get1SInsertAverageSqrFitness() const { return m_oi.total_sqr_fitness / m_oi.total; }
+  inline const cGenome& Get1SInsertPeakGenome() const { return m_oi.peak_genome; }
+  inline double Get1SInsertPeakFitness() const { return m_oi.peak_fitness; }
+  
+  inline double Get1SInsertProbBeneficial()  const { return double(m_oi.pos) / m_oi.total; }
+  inline double Get1SInsertProbDeleterious()  const { return double(m_oi.neg) / m_oi.total; }
+  inline double Get1SInsertProbNeutral() const { return double(m_oi.neut) / m_oi.total; }
+  inline double Get1SInsertProbLethal() const { return double(m_oi.dead) / m_oi.total; }
+  inline double Get1SInsertAverageSizeBeneficial() const { if (m_oi.pos == 0) return 0.0; else return m_oi.size_pos / m_oi.pos; }
+  inline double Get1SInsertAverageSizeDeleterious() const { if (m_oi.neg == 0) return 0.0; else return m_oi.size_neg / m_oi.neg; }
+  
+  inline double Get1SInsertTotalEntropy() const { return m_oi.total_entropy; }
+  inline double Get1SInsertComplexity() const { return m_oi.complexity; }
+  
+  inline int Get1SInsertTargetTask() const { return m_oi.task_target; }
+  inline double Get1SInsertProbTargetTask() const { return double(m_oi.task_target) / m_oi.total; }
+  inline double Get1SInsertAverageSizeTargetTask() const
+  {
+    if (m_oi.task_target == 0) return 0.0; else return double(m_oi.task_size_target) / m_oi.task_target;
+  }
+  inline int Get1SInsertTask() const { return m_oi.task_total; }
+  inline double Get1SInsertProbTask() const { return double(m_oi.task_total) / m_oi.total; }
+  inline double Get1SInsertAverageSizeTask() const
+  {
+    if (m_oi.task_total == 0) return 0.0; else return double(m_oi.task_size_total) / m_oi.task_total;
+  }
+  inline int Get1SInsertKnockout() const { return m_oi.task_knockout; }
+  inline double Get1SInsertProbKnockout() const { return double(m_oi.task_knockout) / m_oi.total; }
+  inline double Get1SInsertAverageSizeKnockout() const
+  {
+    if (m_oi.task_knockout == 0) return 0.0; else return double(m_oi.task_size_knockout) / m_oi.task_knockout;
+  }
+  
+  
+  
+  
+  inline int Get1SDeleteTotal() const { return m_od.total; }
+  
+  inline double Get1SDeleteAverageFitness() const { return m_od.total_fitness / m_od.total; }
+  inline double Get1SDeleteAverageSqrFitness() const { return m_od.total_sqr_fitness / m_od.total; }
+  inline const cGenome& Get1SDeletePeakGenome() const { return m_od.peak_genome; }
+  inline double Get1SDeletePeakFitness() const { return m_od.peak_fitness; }
+  
+  inline double Get1SDeleteProbBeneficial()  const { return double(m_od.pos) / m_od.total; }
+  inline double Get1SDeleteProbDeleterious()  const { return double(m_od.neg) / m_od.total; }
+  inline double Get1SDeleteProbNeutral() const { return double(m_od.neut) / m_od.total; }
+  inline double Get1SDeleteProbLethal() const { return double(m_od.dead) / m_od.total; }
+  inline double Get1SDeleteAverageSizeBeneficial() const { if (m_od.pos == 0) return 0.0; else return m_od.size_pos / m_od.pos; }
+  inline double Get1SDeleteAverageSizeDeleterious() const { if (m_od.neg == 0) return 0.0; else return m_od.size_neg / m_od.neg; }
+  
+  inline double Get1SDeleteTotalEntropy() const { return m_od.total_entropy; }
+  inline double Get1SDeleteComplexity() const { return m_od.complexity; }
+  
+  inline int Get1SDeleteTargetTask() const { return m_od.task_target; }
+  inline double Get1SDeleteProbTargetTask() const { return double(m_od.task_target) / m_od.total; }
+  inline double Get1SDeleteAverageSizeTargetTask() const
+  {
+    if (m_od.task_target == 0) return 0.0; else return double(m_od.task_size_target) / m_od.task_target;
+  }
+  inline int Get1SDeleteTask() const { return m_od.task_total; }
+  inline double Get1SDeleteProbTask() const { return double(m_od.task_total) / m_od.total; }
+  inline double Get1SDeleteAverageSizeTask() const
+  {
+    if (m_od.task_total == 0) return 0.0; else return double(m_od.task_size_total) / m_od.task_total;
+  }
+  inline int Get1SDeleteKnockout() const { return m_od.task_knockout; }
+  inline double Get1SDeleteProbKnockout() const { return double(m_od.task_knockout) / m_od.total; }
+  inline double Get1SDeleteAverageSizeKnockout() const
+  {
+    if (m_od.task_knockout == 0) return 0.0; else return double(m_od.task_size_knockout) / m_od.task_knockout;
+  }
+  
+  
+  
+  
   inline int GetDoubleTotal() const { return m_t_total; }
   
   inline double GetDoubleAverageFitness() const { return m_t_total_fitness / m_t_total; }
