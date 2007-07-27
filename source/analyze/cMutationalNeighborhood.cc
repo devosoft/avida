@@ -55,7 +55,7 @@ void cMutationalNeighborhood::Process(cAvidaContext& ctx)
       cCPUTestInfo test_info;
       
       // Setup One Step Data
-      sStep& odata = m_onestep[cur_site];
+      sStep& odata = m_onestep_point[cur_site];
       odata.peak_fitness = m_base_fitness;
       odata.peak_genome = m_base_genome;
       odata.site_count.Resize(m_base_genome.GetSize(), 0);
@@ -105,7 +105,7 @@ void cMutationalNeighborhood::ProcessInitialize(cAvidaContext& ctx)
   delete testcpu;
 
   // Setup state to begin processing
-  m_onestep.ResizeClear(m_base_genome.GetSize());
+  m_onestep_point.ResizeClear(m_base_genome.GetSize());
   m_twostep.ResizeClear(m_base_genome.GetSize());
   m_fitness.ResizeClear(m_base_genome.GetSize(), m_inst_set.GetSize());
   
@@ -129,7 +129,7 @@ void cMutationalNeighborhood::ProcessInitialize(cAvidaContext& ctx)
 void cMutationalNeighborhood::ProcessOneStepPoint(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site)
 {
   const int inst_size = m_inst_set.GetSize();
-  sStep& odata = m_onestep[cur_site];
+  sStep& odata = m_onestep_point[cur_site];
   
   cGenome mod_genome(m_base_genome);
   
@@ -272,65 +272,7 @@ void cMutationalNeighborhood::ProcessTwoStepPoint(cAvidaContext& ctx, cTestCPU* 
 
 void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
 {
-  // Initialize values
-  m_o_total = 0;
-  m_o_total_sqr_fitness = 0.0;
-  m_o_pos = 0;
-  m_o_neg = 0;
-  m_o_neut = 0;
-  m_o_dead = 0;
-  m_o_size_pos = 0.0;
-  m_o_size_neg = 0.0;
-  m_o_peak_fitness = m_base_fitness;
-  m_o_peak_genome = m_base_genome;  
-  m_o_site_count.Resize(m_base_genome.GetSize(), 0);
-  m_o_total_entropy = 0;
-  m_o_task_target = 0;
-  m_o_task_total = 0;
-  m_o_task_knockout = 0;
-  m_o_task_size_target = 0.0;
-  m_o_task_size_total = 0.0;
-  m_o_task_size_knockout = 0.0;
-
-  for (int i = 0; i < m_onestep.GetSize(); i++) {
-    sStep& odata = m_onestep[i];
-    m_o_total += odata.total;
-    m_o_total_fitness += odata.total_fitness;
-    m_o_total_sqr_fitness += odata.total_sqr_fitness;
-    m_o_pos += odata.pos;
-    m_o_neg += odata.neg;
-    m_o_neut += odata.neut;
-    m_o_dead += odata.dead;
-    m_o_size_pos += odata.size_pos; 
-    m_o_size_neg += odata.size_neg; 
-  
-    if (odata.peak_fitness > m_o_peak_fitness) {
-      m_o_peak_genome = odata.peak_genome;
-      m_o_peak_fitness = odata.peak_fitness;
-    }
-  
-  
-    for (int j = 0; j < m_o_site_count.GetSize(); j++) {
-      m_o_site_count[j] += odata.site_count[j];
-    }
-      
-    m_o_task_target += odata.task_target;
-    m_o_task_total += odata.task_total;
-    m_o_task_knockout += odata.task_knockout;
-
-    m_o_task_size_target += odata.task_size_target;
-    m_o_task_size_total += odata.task_size_total;
-    m_o_task_size_knockout += odata.task_size_knockout;
-  }
-  
-  const double max_ent = log(static_cast<double>(m_inst_set.GetSize()));
-  for (int i = 0; i < m_base_genome.GetSize(); i++) {
-    // Per-site entropy is the log of the number of legal states for that
-    // site.  Add one to account for the unmutated state.
-    m_o_total_entropy += log(static_cast<double>(m_o_site_count[i] + 1)) / max_ent;
-  }
-  m_o_complexity = m_base_genome.GetSize() - m_o_total_entropy;
-  
+  AggregateOneStep(m_onestep_point, m_op);
   
   // Initialize values
   m_t_total = 0;
@@ -389,6 +331,7 @@ void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
     m_t_task_size_knockout += tdata.task_size_knockout;
   }
 
+  const double max_ent = log(static_cast<double>(m_inst_set.GetSize()));
   for (int i = 0; i < m_base_genome.GetSize(); i++) {
     // Per-site entropy is the log of the number of legal states for that
     // site.  Add one to account for the unmutated state.
@@ -416,6 +359,53 @@ void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
   }
   
   m_rwlock.WriteUnlock();
+}
+
+void cMutationalNeighborhood::AggregateOneStep(tArray<sStep>& steps, sOneStepAggregate osa)
+{
+  // Initialize values
+  osa.peak_fitness = m_base_fitness;
+  osa.peak_genome = m_base_genome;  
+  osa.site_count.Resize(m_base_genome.GetSize(), 0);
+  
+  for (int i = 0; i < steps.GetSize(); i++) {
+    sStep& odata = steps[i];
+    osa.total += odata.total;
+    osa.total_fitness += odata.total_fitness;
+    osa.total_sqr_fitness += odata.total_sqr_fitness;
+    osa.pos += odata.pos;
+    osa.neg += odata.neg;
+    osa.neut += odata.neut;
+    osa.dead += odata.dead;
+    osa.size_pos += odata.size_pos; 
+    osa.size_neg += odata.size_neg; 
+    
+    if (odata.peak_fitness > osa.peak_fitness) {
+      osa.peak_genome = odata.peak_genome;
+      osa.peak_fitness = odata.peak_fitness;
+    }
+    
+    
+    for (int j = 0; j < osa.site_count.GetSize(); j++) {
+      osa.site_count[j] += odata.site_count[j];
+    }
+    
+    osa.task_target += odata.task_target;
+    osa.task_total += odata.task_total;
+    osa.task_knockout += odata.task_knockout;
+    
+    osa.task_size_target += odata.task_size_target;
+    osa.task_size_total += odata.task_size_total;
+    osa.task_size_knockout += odata.task_size_knockout;
+  }
+  
+  const double max_ent = log(static_cast<double>(m_inst_set.GetSize()));
+  for (int i = 0; i < m_base_genome.GetSize(); i++) {
+    // Per-site entropy is the log of the number of legal states for that
+    // site.  Add one to account for the unmutated state.
+    osa.total_entropy += log(static_cast<double>(osa.site_count[i] + 1)) / max_ent;
+  }
+  osa.complexity = m_base_genome.GetSize() - osa.total_entropy;
 }
 
 
