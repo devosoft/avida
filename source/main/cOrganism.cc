@@ -234,7 +234,7 @@ void cOrganism::DoOutput(cAvidaContext& ctx,
       m_interface->UpdateMerit(newMerit);
     }
   }
-
+ 
   m_interface->UpdateResources(res_change);
 
   //if(m_world->GetConfig().CLEAR_ON_OUTPUT.Get()) input_buffer.Clear();  @JEB Not fully implemented 

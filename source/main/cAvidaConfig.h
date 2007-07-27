@@ -189,7 +189,7 @@ public:
   CONFIG_ADD_VAR(ANALYZE_MODE, int, 0, "0 = Disabled\n1 = Enabled\n2 = Interactive");
   CONFIG_ADD_VAR(VIEW_MODE, int, 1, "Initial viewer screen");
   CONFIG_ADD_VAR(CLONE_FILE, cString, "-", "Clone file to load");
-  CONFIG_ADD_VAR(VERBOSITY, int, 1, "Control output verbosity");
+  CONFIG_ADD_VAR(VERBOSITY, int, 1, "0 = No output at all\n1=Normal output\n2 = Verbose output, detailing progress\n3 = High level of details, as available\n4 = Print Debug Information, as applicable");
   
   CONFIG_ADD_GROUP(ARCH_GROUP, "Architecture Variables");
   CONFIG_ADD_VAR(WORLD_X, int, 60, "Width of the Avida world");

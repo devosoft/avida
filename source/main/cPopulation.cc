@@ -180,6 +180,9 @@ cPopulation::cPopulation(cWorld* world)
   int global_res_index = -1;
   for (int i = 0; i < resource_lib.GetSize(); i++) {
     cResource * res = resource_lib.GetResource(i);
+
+    // If the resource is not a deme resource set it up
+
     if (!res->GetDemeResource()) {
       global_res_index++;
       const double decay = 1.0 - res->GetOutflow();

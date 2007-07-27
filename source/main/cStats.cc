@@ -818,10 +818,21 @@ void cStats::PrintResourceData(const cString& filename)
   df.WriteComment("of the particular resource at that update.");
 
   df.Write(m_update,   "Update");
+  
+  // Check for spatial resources if they exist total up the resource in each 
+  // cell and print that total.  Also call the routine to print the individual
+  // maps for each spatial resource 
+  
   for (int i = 0; i < resource_count.GetSize(); i++) {
-    df.Write(resource_count[i], resource_names[i] );
     if (resource_geometry[i] != nGeometry::GLOBAL) {
+      double sum_spa_resource = 0;
+      for (int j = 0; j < spatial_res_count[i].GetSize(); j++) {
+         sum_spa_resource += spatial_res_count[i][j];
+      }
+      df.Write(sum_spa_resource, resource_names[i] );
       PrintSpatialResData(filename, i);
+    } else {
+      df.Write(resource_count[i], resource_names[i] );
     }
   }
   df.Endl();
@@ -830,7 +841,7 @@ void cStats::PrintResourceData(const cString& filename)
 void cStats::PrintSpatialResData(const cString& filename, int i)
 {
 
-  // Write spatial data to a file that can easily be read into Matlab
+  // Write spatial resource data to a file that can easily be read into Matlab
 
   cString tmpfilename = "resource_";
   tmpfilename +=  resource_names[i] + ".m";

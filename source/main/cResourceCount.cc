@@ -203,7 +203,6 @@ void cResourceCount::Setup(int id, cString name, double initial, double inflow,
     exit(2);
   }
 
-
   /* If the verbose flag is set print out information about resources */
 
   if (verbosity_level > VERBOSE_NORMAL) {
@@ -232,9 +231,16 @@ void cResourceCount::Setup(int id, cString name, double initial, double inflow,
     }   
   }
 
-  resource_count[id] = initial;
-  spatial_resource_count[id].RateAll
+  /* recource_count gets only the values for global resources */
+
+  if (in_geometry == nGeometry::GLOBAL) {
+    resource_count[id] = initial;
+    spatial_resource_count[id].RateAll(0);
+  } else {
+    resource_count[id] = 0;
+    spatial_resource_count[id].RateAll
                               (initial/spatial_resource_count[id].GetSize());
+  }
   spatial_resource_count[id].StateAll();  
   decay_rate[id] = decay;
   inflow_rate[id] = inflow;
@@ -357,6 +363,7 @@ void cResourceCount::ModifyCell(const tArray<double> & res_change, int cell_id)
          the organism demand to work immediately on the state of the resource */ 
     
       spatial_resource_count[i].State(cell_id);
+      // cout << "BDB in cResourceCount::ModifyCell id = " << i << " cell = " << cell_id << " amount[41] = " << spatial_resource_count[i].GetAmount(41) << endl;
     }
   }
 }
@@ -418,7 +425,7 @@ void cResourceCount::DoUpdates() const
         }
         spatial_resource_count[i].FlowAll();
         spatial_resource_count[i].StateAll();
-        resource_count[i] = spatial_resource_count[i].SumAll();
+        // BDB: resource_count[i] = spatial_resource_count[i].SumAll();
       }
     }
   }
