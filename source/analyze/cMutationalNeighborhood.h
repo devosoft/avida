@@ -144,6 +144,8 @@ private:
   struct sTwoStep : public sStep
   {
     tList<sPendingTarget> pending;
+    
+    sTwoStep() : sStep() { ; }
   };  
   tArray<sTwoStep> m_twostep_point;
   tArray<sTwoStep> m_twostep_insert;
@@ -204,50 +206,25 @@ private:
   
   // Aggregated Two Step Data
   // -----------------------------------------------------------------------------------------------------------------------
-  struct sTwoStepAggregate
+  struct sTwoStepAggregate : public sOneStepAggregate
   {
-    int total;
-
-    double total_fitness;
-    double total_sqr_fitness;
-    cGenome peak_genome;
-    double peak_fitness;
-    
-    int pos;
-    int neg;
-    int neut;
-    int dead;
-    double size_pos; 
-    double size_neg; 
-    
-    tArray<int> site_count;
-    
-    double total_entropy;
-    double complexity;
-
-    int task_target;
     int task_target_pos;
     int task_target_neg;
     int task_target_neut;
     int task_target_dead;
-    int task_total;
-    int task_knockout;
 
-    double task_size_target;
     double task_size_target_pos;
     double task_size_target_neg;
-    double task_size_total;
-    double task_size_knockout;
     
-    sTwoStepAggregate() : total(0), total_fitness(0.0), total_sqr_fitness(0.0), peak_fitness(0.0), pos(0), neg(0), neut(0),
-      dead(0), size_pos(0.0), size_neg(0.0), total_entropy(0.0), complexity(0.0), task_target(0), task_total(0),
-      task_knockout(0), task_size_target(0.0), task_size_target_pos(0.0), task_size_target_neg(0.0), task_size_total(0.0),
-      task_size_knockout(0.0) { ; }
+    sTwoStepAggregate() : sOneStepAggregate(), task_target_pos(0), task_target_neg(0), task_target_neut(0),
+      task_target_dead(0), task_size_target_pos(0.0), task_size_target_neg(0.0) { ; }
   };
   
   sTwoStepAggregate m_tp;
   sTwoStepAggregate m_ti;
   sTwoStepAggregate m_td;
+  
+  sTwoStepAggregate m_tt;
 
   
   
@@ -279,17 +256,17 @@ private:
   void ProcessOneStepDelete(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site);
   double ProcessOneStepGenome(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, const cGenome& mod_genome,
                               sStep& odata, int cur_site);
-  
+  void AggregateOneStep(tArray<sStep>& steps, sOneStepAggregate osa);
+
   void ProcessTwoStepPoint(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
   void ProcessTwoStepInsert(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cCPUMemory& mod_genome);
   void ProcessTwoStepDelete(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cCPUMemory& mod_genome);
   //  void ProcessInDelPointCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
   double ProcessTwoStepGenome(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, const cGenome& mod_genome,
                               sTwoStep& tdata, int cur_site, int oth_site);
+  void AggregateTwoStep(tArray<sTwoStep>& steps, sTwoStepAggregate osa);
   
   void ProcessComplete(cAvidaContext& ctx);
-  
-  void AggregateOneStep(tArray<sStep>& steps, sOneStepAggregate osa);
   
   
   

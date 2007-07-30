@@ -70,12 +70,24 @@ void cMutationalNeighborhood::Process(cAvidaContext& ctx)
       oddata.peak_genome = m_base_genome;
       oddata.site_count.Resize(m_base_genome.GetSize(), 0);
       
+      
       // Setup Data Used in Two Step
-      sStep& tdata = m_twostep_point[cur_site];
-      tdata.peak_fitness = m_base_fitness;
-      tdata.peak_genome = m_base_genome;
-      tdata.site_count.Resize(m_base_genome.GetSize(), 0);
+      sStep& tpdata = m_twostep_point[cur_site];
+      tpdata.peak_fitness = m_base_fitness;
+      tpdata.peak_genome = m_base_genome;
+      tpdata.site_count.Resize(m_base_genome.GetSize(), 0);
 
+      sStep& tidata = m_twostep_insert[cur_site];
+      tidata.peak_fitness = m_base_fitness;
+      tidata.peak_genome = m_base_genome;
+      tidata.site_count.Resize(m_base_genome.GetSize() + 2, 0);
+
+      sStep& tddata = m_twostep_delete[cur_site];
+      tddata.peak_fitness = m_base_fitness;
+      tddata.peak_genome = m_base_genome;
+      tddata.site_count.Resize(m_base_genome.GetSize(), 0);
+
+      
       // Do the processing, starting with One Step
       ProcessOneStepPoint(ctx, testcpu, test_info, cur_site);
       ProcessOneStepInsert(ctx, testcpu, test_info, cur_site);
@@ -429,69 +441,62 @@ void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
 
   
   
-  // Initialize values
-  sPendingTarget* pend = NULL;
-  
   m_tp.peak_fitness = m_base_fitness;
   m_tp.peak_genome = m_base_genome;  
   m_tp.site_count.Resize(m_base_genome.GetSize(), 0);
+  AggregateTwoStep(m_twostep_point, m_tp);
   
-  for (int i = 0; i < m_twostep_point.GetSize(); i++) {
-    sTwoStep& tdata = m_twostep_point[i];
-    m_tp.total += tdata.total;
-    m_tp.total_fitness += tdata.total_fitness;
-    m_tp.total_sqr_fitness += tdata.total_sqr_fitness;
-    m_tp.pos += tdata.pos;
-    m_tp.neg += tdata.neg;
-    m_tp.neut += tdata.neut;
-    m_tp.dead += tdata.dead;
-    m_tp.size_pos += tdata.size_pos; 
-    m_tp.size_neg += tdata.size_neg; 
+  m_ti.peak_fitness = m_base_fitness;
+  m_ti.peak_genome = m_base_genome;  
+  m_ti.site_count.Resize(m_base_genome.GetSize() + 2, 0);
+  AggregateTwoStep(m_twostep_insert, m_ti);
   
-    if (tdata.peak_fitness > m_tp.peak_fitness) {
-      m_tp.peak_genome = tdata.peak_genome;
-      m_tp.peak_fitness = tdata.peak_fitness;
-    }
-  
-  
-    for (int j = 0; j < m_tp.site_count.GetSize(); j++) {
-      m_tp.site_count[j] += tdata.site_count[j];
-    }
-      
-    m_tp.task_target += tdata.task_target;
-    m_tp.task_total += tdata.task_total;
-    m_tp.task_knockout += tdata.task_knockout;
-    
-    m_tp.task_size_target += tdata.task_size_target;
-    m_tp.task_size_total += tdata.task_size_total;
-    m_tp.task_size_knockout += tdata.task_size_knockout;
+  m_td.peak_fitness = m_base_fitness;
+  m_td.peak_genome = m_base_genome;  
+  m_td.site_count.Resize(m_base_genome.GetSize(), 0);
+  AggregateTwoStep(m_twostep_delete, m_td);
 
-    while ((pend = tdata.pending.Pop())) {
-      double fitness = m_fitness_point[pend->site][pend->inst];
-      
-      if (fitness == 0.0) {
-        m_tp.task_target_dead++;
-      } else if (fitness < m_neut_min) {
-        m_tp.task_target_neg++;
-        m_tp.task_size_target_neg += fitness;
-      } else if (fitness <= m_neut_max) {
-        m_tp.task_target_neut++;
-      } else {
-        m_tp.task_target_pos++;
-        m_tp.task_size_target_pos += fitness;
-      }
-      
-      delete pend;
-    }
+  
+  // Collect totals across all two step mutants
+  m_tt.total = m_tp.total + m_ti.total + m_td.total;
+  m_tt.total_fitness = m_tp.total_fitness + m_ti.total_fitness + m_td.total_fitness;
+  m_tt.total_sqr_fitness = m_tp.total_sqr_fitness + m_ti.total_sqr_fitness + m_td.total_sqr_fitness;
+  
+  if (m_tp.peak_fitness >= m_ti.peak_fitness && m_tp.peak_fitness >= m_td.peak_fitness) {
+    m_tt.peak_fitness = m_tp.peak_fitness;
+    m_tt.peak_genome = m_tp.peak_genome;
+  } else if (m_ti.peak_fitness >= m_td.peak_fitness) {
+    m_tt.peak_fitness = m_ti.peak_fitness;
+    m_tt.peak_genome = m_ti.peak_genome;
+  } else {
+    m_tt.peak_fitness = m_td.peak_fitness;
+    m_tt.peak_genome = m_td.peak_genome;
   }
-
-  const double max_ent = log(static_cast<double>(m_inst_set.GetSize()));
-  for (int i = 0; i < m_base_genome.GetSize(); i++) {
-    // Per-site entropy is the log of the number of legal states for that
-    // site.  Add one to account for the unmutated state.
-    m_tp.total_entropy += log(static_cast<double>(m_tp.site_count[i] + 1)) / max_ent;
-  }
-  m_tp.complexity = m_base_genome.GetSize() - m_tp.total_entropy;
+  
+  m_tt.pos = m_tp.pos + m_ti.pos + m_td.pos;
+  m_tt.neg = m_tp.neg + m_ti.neg + m_td.neg;
+  m_tt.neut = m_tp.neut + m_ti.neut + m_td.neut;
+  m_tt.dead = m_tp.dead + m_ti.dead + m_td.dead;
+  m_tt.size_pos = m_tp.size_pos + m_ti.size_pos + m_td.size_pos;
+  m_tt.size_neg = m_tp.size_neg + m_ti.size_neg + m_td.size_neg;
+  
+  // @TODO - total_entropy/complexity across all mutation classes?
+  
+  m_tt.task_target = m_tp.task_target + m_ti.task_target + m_td.task_target;
+  m_tt.task_target_pos = m_tp.task_target_pos + m_ti.task_target_pos + m_td.task_target_pos;
+  m_tt.task_target_neg = m_tp.task_target_neg + m_ti.task_target_neg + m_td.task_target_neg;
+  m_tt.task_target_neut = m_tp.task_target_neut + m_ti.task_target_neut + m_td.task_target_neut;
+  m_tt.task_target_dead = m_tp.task_target_dead + m_ti.task_target_dead + m_td.task_target_dead;
+  m_tt.task_total = m_tp.task_total + m_ti.task_total + m_td.task_total;
+  m_tt.task_knockout = m_tp.task_knockout + m_ti.task_knockout + m_td.task_knockout;
+  
+  m_tt.task_size_target = m_tp.task_size_target + m_ti.task_size_target + m_td.task_size_target;
+  m_tt.task_size_target_pos = m_tp.task_size_target_pos + m_ti.task_size_target_pos + m_td.task_size_target_pos;
+  m_tt.task_size_target_neg = m_tp.task_size_target_neg + m_ti.task_size_target_neg + m_td.task_size_target_neg;
+  m_tt.task_size_total = m_tp.task_size_total + m_ti.task_size_total + m_td.task_size_total;
+  m_tt.task_size_knockout = m_tp.task_size_knockout + m_ti.task_size_knockout + m_td.task_size_knockout;
+  
+  
 
   m_rwlock.WriteUnlock();
 }
@@ -536,6 +541,70 @@ void cMutationalNeighborhood::AggregateOneStep(tArray<sStep>& steps, sOneStepAgg
     osa.total_entropy += log(static_cast<double>(osa.site_count[i] + 1)) / max_ent;
   }
   osa.complexity = m_base_genome.GetSize() - osa.total_entropy;
+}
+
+
+void cMutationalNeighborhood::AggregateTwoStep(tArray<sTwoStep>& steps, sTwoStepAggregate tsa)
+{
+  sPendingTarget* pend = NULL;
+
+  for (int i = 0; i < steps.GetSize(); i++) {
+    sTwoStep& tdata = steps[i];
+    tsa.total += tdata.total;
+    tsa.total_fitness += tdata.total_fitness;
+    tsa.total_sqr_fitness += tdata.total_sqr_fitness;
+    tsa.pos += tdata.pos;
+    tsa.neg += tdata.neg;
+    tsa.neut += tdata.neut;
+    tsa.dead += tdata.dead;
+    tsa.size_pos += tdata.size_pos; 
+    tsa.size_neg += tdata.size_neg; 
+    
+    if (tdata.peak_fitness > tsa.peak_fitness) {
+      tsa.peak_genome = tdata.peak_genome;
+      tsa.peak_fitness = tdata.peak_fitness;
+    }
+    
+    
+    for (int j = 0; j < tsa.site_count.GetSize(); j++) {
+      tsa.site_count[j] += tdata.site_count[j];
+    }
+    
+    tsa.task_target += tdata.task_target;
+    tsa.task_total += tdata.task_total;
+    tsa.task_knockout += tdata.task_knockout;
+    
+    tsa.task_size_target += tdata.task_size_target;
+    tsa.task_size_total += tdata.task_size_total;
+    tsa.task_size_knockout += tdata.task_size_knockout;
+    
+    while ((pend = tdata.pending.Pop())) {
+      double fitness = m_fitness_point[pend->site][pend->inst];
+      
+      if (fitness == 0.0) {
+        tsa.task_target_dead++;
+      } else if (fitness < m_neut_min) {
+        tsa.task_target_neg++;
+        tsa.task_size_target_neg += fitness;
+      } else if (fitness <= m_neut_max) {
+        tsa.task_target_neut++;
+      } else {
+        tsa.task_target_pos++;
+        tsa.task_size_target_pos += fitness;
+      }
+      
+      delete pend;
+    }
+  }
+  
+  const double max_ent = log(static_cast<double>(m_inst_set.GetSize()));
+  for (int i = 0; i < m_base_genome.GetSize(); i++) {
+    // Per-site entropy is the log of the number of legal states for that
+    // site.  Add one to account for the unmutated state.
+    tsa.total_entropy += log(static_cast<double>(tsa.site_count[i] + 1)) / max_ent;
+  }
+  tsa.complexity = m_base_genome.GetSize() - tsa.total_entropy;
+  
 }
 
 
