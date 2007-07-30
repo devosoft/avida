@@ -177,7 +177,7 @@ void cMutationalNeighborhood::ProcessInitialize(cAvidaContext& ctx)
   m_onestep_delete.ResizeClear(m_base_genome.GetSize());
   
   m_twostep_point.ResizeClear(m_base_genome.GetSize());
-  m_twostep_insert.ResizeClear(m_base_genome.GetSize() + 2);
+  m_twostep_insert.ResizeClear(m_base_genome.GetSize() + 1);
   m_twostep_delete.ResizeClear(m_base_genome.GetSize());
   
   m_insert_point.ResizeClear(m_base_genome.GetSize() + 1);
@@ -667,12 +667,28 @@ void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
   m_tt.task_size_knockout = m_tp.task_size_knockout + m_ti.task_size_knockout + m_td.task_size_knockout
                             + m_tip.task_size_knockout + m_tid.task_size_knockout + m_tdp.task_size_knockout;
   
-  
-
+  // Unlock data for reading
   m_rwlock.WriteUnlock();
+  
+  // Cleanup state information
+  m_onestep_point.Resize(0);
+  m_onestep_insert.Resize(0);
+  m_onestep_delete.Resize(0);
+  
+  m_twostep_point.Resize(0);
+  m_twostep_insert.Resize(0);
+  m_twostep_delete.Resize(0);
+  
+  m_insert_point.Resize(0);
+  m_insert_delete.Resize(0);
+  m_delete_point.Resize(0);
+  
+  m_fitness_point.Resize(0, 0);
+  m_fitness_insert.Resize(0, 0);
+  m_fitness_delete.Resize(0, 0);
 }
 
-void cMutationalNeighborhood::AggregateOneStep(tArray<sStep>& steps, sOneStepAggregate osa)
+void cMutationalNeighborhood::AggregateOneStep(tArray<sStep>& steps, sOneStepAggregate& osa)
 {
   for (int i = 0; i < steps.GetSize(); i++) {
     sStep& odata = steps[i];
@@ -715,7 +731,7 @@ void cMutationalNeighborhood::AggregateOneStep(tArray<sStep>& steps, sOneStepAgg
 }
 
 
-void cMutationalNeighborhood::AggregateTwoStep(tArray<sTwoStep>& steps, sTwoStepAggregate tsa)
+void cMutationalNeighborhood::AggregateTwoStep(tArray<sTwoStep>& steps, sTwoStepAggregate& tsa)
 {
   sPendFit* pend = NULL;
 

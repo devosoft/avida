@@ -142,7 +142,7 @@ private:
     int inst;
     
     sPendFit(tMatrix<double>& in_fmat, int in_site, int in_inst) : fmat(in_fmat), site(in_site), inst(in_inst) { ; }
-    sPendFit(const sPendFit& in_pf) : fmat(in_pf.fmat), site(in_pf.site), inst(in_pf.site) { ; }
+    sPendFit(const sPendFit& in_pf) : fmat(in_pf.fmat), site(in_pf.site), inst(in_pf.inst) { ; }
     
     inline double GetFitness() { return fmat[site][inst]; }
   };
@@ -269,7 +269,7 @@ private:
   void ProcessOneStepDelete(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site);
   double ProcessOneStepGenome(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, const cGenome& mod_genome,
                               sStep& odata, int cur_site);
-  void AggregateOneStep(tArray<sStep>& steps, sOneStepAggregate osa);
+  void AggregateOneStep(tArray<sStep>& steps, sOneStepAggregate& osa);
 
   void ProcessTwoStepPoint(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
   void ProcessTwoStepInsert(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cCPUMemory& mod_genome);
@@ -279,7 +279,7 @@ private:
   void ProcessDeletePointCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
   double ProcessTwoStepGenome(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, const cGenome& mod_genome,
                               sTwoStep& tdata, const sPendFit& cur, const sPendFit& oth);
-  void AggregateTwoStep(tArray<sTwoStep>& steps, sTwoStepAggregate osa);
+  void AggregateTwoStep(tArray<sTwoStep>& steps, sTwoStepAggregate& osa);
   
   void ProcessComplete(cAvidaContext& ctx);
   
