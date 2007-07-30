@@ -93,25 +93,48 @@ void cMutationalNeighborhood::Process(cAvidaContext& ctx)
       tipdata.peak_genome = m_base_genome;
       tipdata.site_count.Resize(m_base_genome.GetSize() + 1, 0);
       
-      sStep& tdpdata = m_insert_delete[cur_site];
+      sStep& tiddata = m_insert_delete[cur_site];
+      tiddata.peak_fitness = m_base_fitness;
+      tiddata.peak_genome = m_base_genome;
+      tiddata.site_count.Resize(m_base_genome.GetSize() + 1, 0);
+      
+      sStep& tdpdata = m_delete_point[cur_site];
       tdpdata.peak_fitness = m_base_fitness;
       tdpdata.peak_genome = m_base_genome;
-      tdpdata.site_count.Resize(m_base_genome.GetSize() + 1, 0);
-      
-      sStep& tdidata = m_delete_point[cur_site];
-      tdidata.peak_fitness = m_base_fitness;
-      tdidata.peak_genome = m_base_genome;
-      tdidata.site_count.Resize(m_base_genome.GetSize(), 0);
+      tdpdata.site_count.Resize(m_base_genome.GetSize(), 0);
       
       
       // Do the processing, starting with One Step
       ProcessOneStepPoint(ctx, testcpu, test_info, cur_site);
       ProcessOneStepInsert(ctx, testcpu, test_info, cur_site);
-      if (cur_site == (m_base_genome.GetSize() - 1)) {
-        // Process the hanging insertion on the last cycle through
-        ProcessOneStepInsert(ctx, testcpu, test_info, cur_site + 1); 
-      }
       ProcessOneStepDelete(ctx, testcpu, test_info, cur_site);
+
+      // Process the hanging insertion on the first cycle through (to balance execution time)
+      if (cur_site == 0) {
+        cur_site = m_base_genome.GetSize();
+        
+        sStep& oidata2 = m_onestep_insert[cur_site];
+        oidata2.peak_fitness = m_base_fitness;
+        oidata2.peak_genome = m_base_genome;
+        oidata2.site_count.Resize(m_base_genome.GetSize() + 1, 0);
+        
+        sStep& tidata2 = m_twostep_insert[cur_site];
+        tidata2.peak_fitness = m_base_fitness;
+        tidata2.peak_genome = m_base_genome;
+        tidata2.site_count.Resize(m_base_genome.GetSize() + 2, 0);
+        
+        sStep& tipdata2 = m_insert_point[cur_site];
+        tipdata2.peak_fitness = m_base_fitness;
+        tipdata2.peak_genome = m_base_genome;
+        tipdata2.site_count.Resize(m_base_genome.GetSize() + 1, 0);
+        
+        sStep& tiddata2 = m_insert_delete[cur_site];
+        tiddata2.peak_fitness = m_base_fitness;
+        tiddata2.peak_genome = m_base_genome;
+        tiddata2.site_count.Resize(m_base_genome.GetSize() + 1, 0);
+        
+        ProcessOneStepInsert(ctx, testcpu, test_info, cur_site); 
+      }
 
       // Cleanup
       delete testcpu;
@@ -163,7 +186,7 @@ void cMutationalNeighborhood::ProcessInitialize(cAvidaContext& ctx)
   
   m_fitness_point.ResizeClear(m_base_genome.GetSize(), m_inst_set.GetSize());
   m_fitness_insert.ResizeClear(m_base_genome.GetSize() + 1, m_inst_set.GetSize());
-  m_fitness_delete.ResizeClear(m_base_genome.GetSize(), 0);
+  m_fitness_delete.ResizeClear(m_base_genome.GetSize(), 1);
   
   m_cur_site = 0;
   m_completed = 0;
