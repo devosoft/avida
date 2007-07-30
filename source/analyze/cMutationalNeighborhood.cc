@@ -152,7 +152,15 @@ void cMutationalNeighborhood::ProcessInitialize(cAvidaContext& ctx)
   m_onestep_point.ResizeClear(m_base_genome.GetSize());
   m_onestep_insert.ResizeClear(m_base_genome.GetSize() + 1);
   m_onestep_delete.ResizeClear(m_base_genome.GetSize());
+  
   m_twostep_point.ResizeClear(m_base_genome.GetSize());
+  m_twostep_insert.ResizeClear(m_base_genome.GetSize() + 2);
+  m_twostep_delete.ResizeClear(m_base_genome.GetSize());
+  
+  m_insert_point.ResizeClear(m_base_genome.GetSize() + 1);
+  m_insert_delete.ResizeClear(m_base_genome.GetSize() + 1);
+  m_delete_point.ResizeClear(m_base_genome.GetSize());
+  
   m_fitness_point.ResizeClear(m_base_genome.GetSize(), m_inst_set.GetSize());
   m_fitness_insert.ResizeClear(m_base_genome.GetSize() + 1, m_inst_set.GetSize());
   m_fitness_delete.ResizeClear(m_base_genome.GetSize());
