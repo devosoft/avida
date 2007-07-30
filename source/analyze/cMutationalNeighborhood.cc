@@ -183,7 +183,7 @@ void cMutationalNeighborhood::ProcessOneStepInsert(cAvidaContext& ctx, cTestCPU*
     mod_genome[cur_site].SetOp(inst_num);
     m_fitness_insert[cur_site][inst_num] = ProcessOneStepGenome(ctx, testcpu, test_info, mod_genome, odata, cur_site);
     
-    //ProcessTwoStepPoint(ctx, testcpu, test_info, cur_site, mod_genome);
+    ProcessTwoStepInsert(ctx, testcpu, test_info, cur_site, mod_genome);
   }  
 }
 
@@ -195,7 +195,7 @@ void cMutationalNeighborhood::ProcessOneStepDelete(cAvidaContext& ctx, cTestCPU*
   cCPUMemory mod_genome(m_base_genome);
   mod_genome.Remove(cur_site);
   m_fitness_delete[cur_site] = ProcessOneStepGenome(ctx, testcpu, test_info, mod_genome, odata, cur_site);
-  //ProcessTwoStepPoint(ctx, testcpu, test_info, cur_site, mod_genome);
+  ProcessTwoStepDelete(ctx, testcpu, test_info, cur_site, mod_genome);
 }
 
 
@@ -276,6 +276,42 @@ void cMutationalNeighborhood::ProcessTwoStepPoint(cAvidaContext& ctx, cTestCPU* 
     }
     
     mod_genome[line_num].SetOp(cur_inst);
+  }
+}
+
+
+void cMutationalNeighborhood::ProcessTwoStepInsert(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info,
+                                                   int cur_site, cCPUMemory& mod_genome)
+{
+  const int inst_size = m_inst_set.GetSize();
+  const int mod_size = mod_genome.GetSize();
+  sTwoStep& tdata = m_twostep_insert[cur_site];
+  
+  // Loop through all instructions...
+  for (int line_num = cur_site + 1; line_num <= mod_size; line_num++) {
+    mod_genome.Insert(line_num, cInstruction(0));
+    
+    for (int inst_num = 0; inst_num < inst_size; inst_num++) {
+      mod_genome[cur_site].SetOp(inst_num);
+      ProcessTwoStepGenome(ctx, testcpu, test_info, mod_genome, tdata, line_num, cur_site);
+    }
+    mod_genome.Remove(line_num);
+  }
+}
+
+
+void cMutationalNeighborhood::ProcessTwoStepDelete(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info,
+                                                   int cur_site, cCPUMemory& mod_genome)
+{
+  const int mod_size = mod_genome.GetSize();
+  sTwoStep& tdata = m_twostep_delete[cur_site];
+  
+  // Loop through all instructions...
+  for (int line_num = cur_site; line_num < mod_size; line_num++) {
+    int cur_inst = mod_genome[line_num].GetOp();
+    mod_genome.Remove(line_num);
+    ProcessTwoStepGenome(ctx, testcpu, test_info, mod_genome, tdata, line_num, cur_site);
+    mod_genome.Insert(line_num, cInstruction(cur_inst));
   }
 }
 

@@ -48,6 +48,7 @@
 #endif
 
 class cAvidaContext;
+class cCPUMemory;
 class cCPUTestInfo;
 class cDataFile;
 class cInstSet;
@@ -64,7 +65,7 @@ private:
   cWorld* m_world;
   
   // Internal state information
-  // --------------------------------------------------------------------------
+  // -----------------------------------------------------------------------------------------------------------------------
   cRWLock m_rwlock;
   cMutex m_mutex;
   
@@ -72,6 +73,25 @@ private:
   int m_cur_site;
   int m_completed;
   
+  const cInstSet& m_inst_set;  
+  int m_target;
+  
+  
+  
+  // Base data
+  // -----------------------------------------------------------------------------------------------------------------------
+  cGenome m_base_genome;
+  double m_base_fitness;
+  double m_base_merit;
+  double m_base_gestation;
+  tArray<int> m_base_tasks;
+  double m_neut_min;  // These two variables are a range around the base
+  double m_neut_max;  //   fitness to be counted as neutral mutations.
+  
+  
+
+  // One Step Per-Site Data
+  // -----------------------------------------------------------------------------------------------------------------------
   struct sStep
   {
     int total;
@@ -107,13 +127,20 @@ private:
   tArray<sStep> m_onestep_insert;
   tArray<sStep> m_onestep_delete;
   
+
+  // Two Step Per-Site Data
+  // -----------------------------------------------------------------------------------------------------------------------
+  
+  // Based on sStep, the sTwoStep data structure adds a pending list to calculate fitness effects based single step
+  // fitness values that may not have been calculated yet.  A pending list must be maintained for each site, as a
+  // list in the main class would be subject to a race condition should two separate threads try to write to it
+  // simultaneously.
   struct sPendingTarget
   {
     int site;
     int inst;
     sPendingTarget(int in_site, int in_inst) : site(in_site), inst(in_inst) { ; }
   };
-
   struct sTwoStep : public sStep
   {
     tList<sPendingTarget> pending;
@@ -122,27 +149,17 @@ private:
   tArray<sTwoStep> m_twostep_insert;
   tArray<sTwoStep> m_twostep_delete;
 
+
+  // One Step Fitness Data
+  // -----------------------------------------------------------------------------------------------------------------------
   tMatrix<double> m_fitness_point;
   tMatrix<double> m_fitness_insert;
   tArray<double> m_fitness_delete;
-    
-  const cInstSet& m_inst_set;  
-  int m_target;
   
-  
-  // Base data
-  // --------------------------------------------------------------------------
-  cGenome m_base_genome;
-  double m_base_fitness;
-  double m_base_merit;
-  double m_base_gestation;
-  tArray<int> m_base_tasks;
-  double m_neut_min;  // These two variables are a range around the base
-  double m_neut_max;  //   fitness to be counted as neutral mutations.
-  
-  
+
+
   // Aggregated One Step Data
-  // --------------------------------------------------------------------------
+  // -----------------------------------------------------------------------------------------------------------------------
   struct sOneStepAggregate
   {
     int total;
@@ -186,7 +203,7 @@ private:
   
   
   // Aggregated Two Step Data
-  // --------------------------------------------------------------------------
+  // -----------------------------------------------------------------------------------------------------------------------
   struct sTwoStepAggregate
   {
     int total;
@@ -234,6 +251,27 @@ private:
 
   
   
+  cMutationalNeighborhood(); // @not_implemented
+  cMutationalNeighborhood(const cMutationalNeighborhood&); // @not_implemented
+  cMutationalNeighborhood& operator=(const cMutationalNeighborhood&); // @not_implemented
+  
+public:
+  // Public Methods - Instantiate and Process Only.   All results must be read with a cMutationalNeighborhood object.
+  // -----------------------------------------------------------------------------------------------------------------------
+  cMutationalNeighborhood(cWorld* world, const cGenome& genome, const cInstSet& inst_set, int target)
+    : m_world(world), m_initialized(false), m_inst_set(inst_set), m_target(target), m_base_genome(genome)
+  {
+    // Acquire write lock, to prevent any cMutationalNeighborhoodResults instances before computing
+    m_rwlock.WriteLock();
+  }
+  ~cMutationalNeighborhood() { ; }
+  
+  void Process(cAvidaContext& ctx);
+
+
+private:
+  // Internal Calculation Methods
+  // -----------------------------------------------------------------------------------------------------------------------
   void ProcessInitialize(cAvidaContext& ctx);
   
   void ProcessOneStepPoint(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site);
@@ -243,35 +281,20 @@ private:
                               sStep& odata, int cur_site);
   
   void ProcessTwoStepPoint(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
-  //  void ProcessTwoStepInsert(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
-//  void ProcessTwoStepDelete(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
-//  void ProcessInDelPointCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
+  void ProcessTwoStepInsert(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cCPUMemory& mod_genome);
+  void ProcessTwoStepDelete(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cCPUMemory& mod_genome);
+  //  void ProcessInDelPointCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
   double ProcessTwoStepGenome(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, const cGenome& mod_genome,
                               sTwoStep& tdata, int cur_site, int oth_site);
-  
   
   void ProcessComplete(cAvidaContext& ctx);
   
   void AggregateOneStep(tArray<sStep>& steps, sOneStepAggregate osa);
   
-  cMutationalNeighborhood(); // @not_implemented
-  cMutationalNeighborhood(const cMutationalNeighborhood&); // @not_implemented
-  cMutationalNeighborhood& operator=(const cMutationalNeighborhood&); // @not_implemented
   
-public:
-  cMutationalNeighborhood(cWorld* world, const cGenome& genome, const cInstSet& inst_set, int target)
-  : m_world(world), m_initialized(false), m_inst_set(inst_set), m_target(target), m_base_genome(genome)
-  {
-    // Acquire write lock, to prevent any Results instances before computing
-	m_rwlock.WriteLock();
-  }
-  ~cMutationalNeighborhood() { ; }
   
-  void Process(cAvidaContext& ctx);
-
-  
-// These methods can only be accessed via a cMutationalNeighborhoodResults object
-private:
+  // cMutationalNeighborhoodResults Backing Methods
+  // -----------------------------------------------------------------------------------------------------------------------
   void PrintStats(cDataFile& df, int update = -1) const;
   
   inline int GetTargetTask() const { return m_target; }
@@ -508,16 +531,5 @@ private:
   }
 };
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nMutationalNeighborhood {
-  /**
-  * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 #endif
