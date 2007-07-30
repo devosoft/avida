@@ -349,6 +349,129 @@ public:
   inline int Get2SDeleteKnockout() const { return m_src.Get2SDeleteKnockout(); }
   inline double Get2SDeleteProbKnockout() const { return m_src.Get2SDeleteProbKnockout(); }
   inline double Get2SDeleteAverageSizeKnockout() const { return m_src.Get2SDeleteAverageSizeKnockout(); }
+
+
+
+
+
+  inline int GetInsPntTotal() const { return m_src.GetInsPntTotal(); }
+  
+  inline double GetInsPntAverageFitness() const { return m_src.GetInsPntAverageFitness(); }
+  inline double GetInsPntAverageSqrFitness() const { return m_src.GetInsPntAverageSqrFitness(); }
+  inline const cGenome& GetInsPntPeakGenome() const { return m_src.GetInsPntPeakGenome(); }
+  inline double GetInsPntPeakFitness() const { return m_src.GetInsPntPeakFitness(); }
+  
+  inline double GetInsPntProbBeneficial() const { return m_src.GetInsPntProbBeneficial(); }
+  inline double GetInsPntProbDeleterious() const { return m_src.GetInsPntProbDeleterious(); }
+  inline double GetInsPntProbNeutral() const { return m_src.GetInsPntProbNeutral(); }
+  inline double GetInsPntProbLethal() const { return m_src.GetInsPntProbLethal(); }
+  inline double GetInsPntAverageSizeBeneficial() const { return m_src.GetInsPntAverageSizeBeneficial(); }
+  inline double GetInsPntAverageSizeDeleterious() const { return m_src.GetInsPntAverageSizeDeleterious(); }
+  
+  inline double GetInsPntTotalEntropy() const { return m_src.GetInsPntTotalEntropy(); }
+  inline double GetInsPntComplexity() const { return m_src.GetInsPntComplexity(); }
+  
+  inline int GetInsPntTargetTask() const { return m_src.GetInsPntTargetTask(); }
+  inline double GetInsPntProbTargetTask() const { return m_src.GetInsPntProbTargetTask(); }
+  inline double GetInsPntAverageSizeTargetTask() const { return m_src.GetInsPntAverageSizeTargetTask(); }
+  inline int GetInsPntTargetTaskBeneficial() const { return m_src.GetInsPntTargetTaskBeneficial(); }
+  inline double GetInsPntProbTargetTaskBeneficial() const { return m_src.GetInsPntProbTargetTaskBeneficial(); }
+  inline double GetInsPntAverageSizeTargetTaskBeneficial() const { return m_src.GetInsPntAverageSizeTargetTaskBeneficial(); }
+  inline int GetInsPntTargetTaskDeleterious() const { return m_src.GetInsPntTargetTaskDeleterious(); }
+  inline double GetInsPntProbTargetTaskDeleterious() const { return m_src.GetInsPntProbTargetTaskDeleterious(); }
+  inline double GetInsPntAverageSizeTargetTaskDeleterious() const { return m_src.GetInsPntAverageSizeTargetTaskDeleterious(); }
+  inline int GetInsPntTargetTaskNeutral() const { return m_src.GetInsPntTargetTaskNeutral(); }
+  inline double GetInsPntProbTargetTaskNeutral() const { return m_src.GetInsPntProbTargetTaskNeutral(); }
+  inline int GetInsPntTargetTaskLethal() const { return m_src.GetInsPntTargetTaskLethal(); }
+  inline double GetInsPntProbTargetTaskLethal() const { return m_src.GetInsPntProbTargetTaskLethal(); }
+  inline int GetInsPntTask() const { return m_src.GetInsPntTask(); }
+  inline double GetInsPntProbTask() const { return m_src.GetInsPntProbTask(); }
+  inline double GetInsPntAverageSizeTask() const { return m_src.GetInsPntAverageSizeTask(); }
+  inline int GetInsPntKnockout() const { return m_src.GetInsPntKnockout(); }
+  inline double GetInsPntProbKnockout() const { return m_src.GetInsPntProbKnockout(); }
+  inline double GetInsPntAverageSizeKnockout() const { return m_src.GetInsPntAverageSizeKnockout(); }
+
+
+
+
+
+  inline int GetInsDelTotal() const { return m_src.GetInsDelTotal(); }
+  
+  inline double GetInsDelAverageFitness() const { return m_src.GetInsDelAverageFitness(); }
+  inline double GetInsDelAverageSqrFitness() const { return m_src.GetInsDelAverageSqrFitness(); }
+  inline const cGenome& GetInsDelPeakGenome() const { return m_src.GetInsDelPeakGenome(); }
+  inline double GetInsDelPeakFitness() const { return m_src.GetInsDelPeakFitness(); }
+  
+  inline double GetInsDelProbBeneficial() const { return m_src.GetInsDelProbBeneficial(); }
+  inline double GetInsDelProbDeleterious() const { return m_src.GetInsDelProbDeleterious(); }
+  inline double GetInsDelProbNeutral() const { return m_src.GetInsDelProbNeutral(); }
+  inline double GetInsDelProbLethal() const { return m_src.GetInsDelProbLethal(); }
+  inline double GetInsDelAverageSizeBeneficial() const { return m_src.GetInsDelAverageSizeBeneficial(); }
+  inline double GetInsDelAverageSizeDeleterious() const { return m_src.GetInsDelAverageSizeDeleterious(); }
+  
+  inline double GetInsDelTotalEntropy() const { return m_src.GetInsDelTotalEntropy(); }
+  inline double GetInsDelComplexity() const { return m_src.GetInsDelComplexity(); }
+  
+  inline int GetInsDelTargetTask() const { return m_src.GetInsDelTargetTask(); }
+  inline double GetInsDelProbTargetTask() const { return m_src.GetInsDelProbTargetTask(); }
+  inline double GetInsDelAverageSizeTargetTask() const { return m_src.GetInsDelAverageSizeTargetTask(); }
+  inline int GetInsDelTargetTaskBeneficial() const { return m_src.GetInsDelTargetTaskBeneficial(); }
+  inline double GetInsDelProbTargetTaskBeneficial() const { return m_src.GetInsDelProbTargetTaskBeneficial(); }
+  inline double GetInsDelAverageSizeTargetTaskBeneficial() const { return m_src.GetInsDelAverageSizeTargetTaskBeneficial(); }
+  inline int GetInsDelTargetTaskDeleterious() const { return m_src.GetInsDelTargetTaskDeleterious(); }
+  inline double GetInsDelProbTargetTaskDeleterious() const { return m_src.GetInsDelProbTargetTaskDeleterious(); }
+  inline double GetInsDelAverageSizeTargetTaskDeleterious() const { return m_src.GetInsDelAverageSizeTargetTaskDeleterious(); }
+  inline int GetInsDelTargetTaskNeutral() const { return m_src.GetInsDelTargetTaskNeutral(); }
+  inline double GetInsDelProbTargetTaskNeutral() const { return m_src.GetInsDelProbTargetTaskNeutral(); }
+  inline int GetInsDelTargetTaskLethal() const { return m_src.GetInsDelTargetTaskLethal(); }
+  inline double GetInsDelProbTargetTaskLethal() const { return m_src.GetInsDelProbTargetTaskLethal(); }
+  inline int GetInsDelTask() const { return m_src.GetInsDelTask(); }
+  inline double GetInsDelProbTask() const { return m_src.GetInsDelProbTask(); }
+  inline double GetInsDelAverageSizeTask() const { return m_src.GetInsDelAverageSizeTask(); }
+  inline int GetInsDelKnockout() const { return m_src.GetInsDelKnockout(); }
+  inline double GetInsDelProbKnockout() const { return m_src.GetInsDelProbKnockout(); }
+  inline double GetInsDelAverageSizeKnockout() const { return m_src.GetInsDelAverageSizeKnockout(); }
+
+
+
+
+
+  inline int GetDelPntTotal() const { return m_src.GetDelPntTotal(); }
+  
+  inline double GetDelPntAverageFitness() const { return m_src.GetDelPntAverageFitness(); }
+  inline double GetDelPntAverageSqrFitness() const { return m_src.GetDelPntAverageSqrFitness(); }
+  inline const cGenome& GetDelPntPeakGenome() const { return m_src.GetDelPntPeakGenome(); }
+  inline double GetDelPntPeakFitness() const { return m_src.GetDelPntPeakFitness(); }
+  
+  inline double GetDelPntProbBeneficial() const { return m_src.GetDelPntProbBeneficial(); }
+  inline double GetDelPntProbDeleterious() const { return m_src.GetDelPntProbDeleterious(); }
+  inline double GetDelPntProbNeutral() const { return m_src.GetDelPntProbNeutral(); }
+  inline double GetDelPntProbLethal() const { return m_src.GetDelPntProbLethal(); }
+  inline double GetDelPntAverageSizeBeneficial() const { return m_src.GetDelPntAverageSizeBeneficial(); }
+  inline double GetDelPntAverageSizeDeleterious() const { return m_src.GetDelPntAverageSizeDeleterious(); }
+  
+  inline double GetDelPntTotalEntropy() const { return m_src.GetDelPntTotalEntropy(); }
+  inline double GetDelPntComplexity() const { return m_src.GetDelPntComplexity(); }
+  
+  inline int GetDelPntTargetTask() const { return m_src.GetDelPntTargetTask(); }
+  inline double GetDelPntProbTargetTask() const { return m_src.GetDelPntProbTargetTask(); }
+  inline double GetDelPntAverageSizeTargetTask() const { return m_src.GetDelPntAverageSizeTargetTask(); }
+  inline int GetDelPntTargetTaskBeneficial() const { return m_src.GetDelPntTargetTaskBeneficial(); }
+  inline double GetDelPntProbTargetTaskBeneficial() const { return m_src.GetDelPntProbTargetTaskBeneficial(); }
+  inline double GetDelPntAverageSizeTargetTaskBeneficial() const { return m_src.GetDelPntAverageSizeTargetTaskBeneficial(); }
+  inline int GetDelPntTargetTaskDeleterious() const { return m_src.GetDelPntTargetTaskDeleterious(); }
+  inline double GetDelPntProbTargetTaskDeleterious() const { return m_src.GetDelPntProbTargetTaskDeleterious(); }
+  inline double GetDelPntAverageSizeTargetTaskDeleterious() const { return m_src.GetDelPntAverageSizeTargetTaskDeleterious(); }
+  inline int GetDelPntTargetTaskNeutral() const { return m_src.GetDelPntTargetTaskNeutral(); }
+  inline double GetDelPntProbTargetTaskNeutral() const { return m_src.GetDelPntProbTargetTaskNeutral(); }
+  inline int GetDelPntTargetTaskLethal() const { return m_src.GetDelPntTargetTaskLethal(); }
+  inline double GetDelPntProbTargetTaskLethal() const { return m_src.GetDelPntProbTargetTaskLethal(); }
+  inline int GetDelPntTask() const { return m_src.GetDelPntTask(); }
+  inline double GetDelPntProbTask() const { return m_src.GetDelPntProbTask(); }
+  inline double GetDelPntAverageSizeTask() const { return m_src.GetDelPntAverageSizeTask(); }
+  inline int GetDelPntKnockout() const { return m_src.GetDelPntKnockout(); }
+  inline double GetDelPntProbKnockout() const { return m_src.GetDelPntProbKnockout(); }
+  inline double GetDelPntAverageSizeKnockout() const { return m_src.GetDelPntAverageSizeKnockout(); }
 };
 
 #endif

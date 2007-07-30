@@ -88,6 +88,22 @@ void cMutationalNeighborhood::Process(cAvidaContext& ctx)
       tddata.site_count.Resize(m_base_genome.GetSize(), 0);
 
       
+      sStep& tipdata = m_insert_point[cur_site];
+      tipdata.peak_fitness = m_base_fitness;
+      tipdata.peak_genome = m_base_genome;
+      tipdata.site_count.Resize(m_base_genome.GetSize() + 1, 0);
+      
+      sStep& tdpdata = m_insert_delete[cur_site];
+      tdpdata.peak_fitness = m_base_fitness;
+      tdpdata.peak_genome = m_base_genome;
+      tdpdata.site_count.Resize(m_base_genome.GetSize() + 1, 0);
+      
+      sStep& tdidata = m_delete_point[cur_site];
+      tdidata.peak_fitness = m_base_fitness;
+      tdidata.peak_genome = m_base_genome;
+      tdidata.site_count.Resize(m_base_genome.GetSize(), 0);
+      
+      
       // Do the processing, starting with One Step
       ProcessOneStepPoint(ctx, testcpu, test_info, cur_site);
       ProcessOneStepInsert(ctx, testcpu, test_info, cur_site);
@@ -196,6 +212,8 @@ void cMutationalNeighborhood::ProcessOneStepInsert(cAvidaContext& ctx, cTestCPU*
     m_fitness_insert[cur_site][inst_num] = ProcessOneStepGenome(ctx, testcpu, test_info, mod_genome, odata, cur_site);
     
     ProcessTwoStepInsert(ctx, testcpu, test_info, cur_site, mod_genome);
+    ProcessInsertPointCombo(ctx, testcpu, test_info, cur_site, mod_genome);
+    ProcessInsertDeleteCombo(ctx, testcpu, test_info, cur_site, mod_genome);
   }  
 }
 
@@ -208,6 +226,7 @@ void cMutationalNeighborhood::ProcessOneStepDelete(cAvidaContext& ctx, cTestCPU*
   mod_genome.Remove(cur_site);
   m_fitness_delete[cur_site] = ProcessOneStepGenome(ctx, testcpu, test_info, mod_genome, odata, cur_site);
   ProcessTwoStepDelete(ctx, testcpu, test_info, cur_site, mod_genome);
+  ProcessDeletePointCombo(ctx, testcpu, test_info, cur_site, mod_genome);
 }
 
 
@@ -322,8 +341,73 @@ void cMutationalNeighborhood::ProcessTwoStepDelete(cAvidaContext& ctx, cTestCPU*
   for (int line_num = cur_site; line_num < mod_size; line_num++) {
     int cur_inst = mod_genome[line_num].GetOp();
     mod_genome.Remove(line_num);
+    ProcessTwoStepGenome(ctx, testcpu, test_info, mod_genome, tdata, line_num + 1, cur_site);
+    mod_genome.Insert(line_num, cInstruction(cur_inst));
+  }
+}
+
+
+void cMutationalNeighborhood::ProcessInsertPointCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info,
+                                                      int cur_site, cGenome& mod_genome)
+{
+  const int inst_size = m_inst_set.GetSize();
+  sTwoStep& tdata = m_insert_point[cur_site];
+  
+  // Loop through all lines of genome, testing trying all combinations.
+  for (int line_num = 0; line_num < mod_genome.GetSize(); line_num++) {
+    if (line_num == cur_site) continue; // Skip the site of the insertion
+    
+    int cur_inst = mod_genome[line_num].GetOp();
+    
+    // Loop through all instructions...
+    for (int inst_num = 0; inst_num < inst_size; inst_num++) {
+      if (cur_inst == inst_num) continue;
+      
+      mod_genome[line_num].SetOp(inst_num);
+      ProcessTwoStepGenome(ctx, testcpu, test_info, mod_genome, tdata, line_num, cur_site);
+    }
+    
+    mod_genome[line_num].SetOp(cur_inst);
+  }
+}
+
+
+void cMutationalNeighborhood::ProcessInsertDeleteCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info,
+                                                       int cur_site, cCPUMemory& mod_genome)
+{
+  sTwoStep& tdata = m_insert_delete[cur_site];
+  
+  // Loop through all lines of genome, testing trying all combinations.
+  for (int line_num = 0; line_num < mod_genome.GetSize(); line_num++) {
+    if (line_num == cur_site) continue; // Skip the site of the insertion
+
+    int cur_inst = mod_genome[line_num].GetOp();
+    mod_genome.Remove(line_num);
     ProcessTwoStepGenome(ctx, testcpu, test_info, mod_genome, tdata, line_num, cur_site);
     mod_genome.Insert(line_num, cInstruction(cur_inst));
+  }
+}
+
+
+void cMutationalNeighborhood::ProcessDeletePointCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info,
+                                                      int cur_site, cGenome& mod_genome)
+{
+  const int inst_size = m_inst_set.GetSize();
+  sTwoStep& tdata = m_delete_point[cur_site];
+  
+  // Loop through all lines of genome, testing trying all combinations.
+  for (int line_num = 0; line_num < mod_genome.GetSize(); line_num++) {
+    int cur_inst = mod_genome[line_num].GetOp();
+    
+    // Loop through all instructions...
+    for (int inst_num = 0; inst_num < inst_size; inst_num++) {
+      if (cur_inst == inst_num) continue;
+      
+      mod_genome[line_num].SetOp(inst_num);
+      ProcessTwoStepGenome(ctx, testcpu, test_info, mod_genome, tdata, line_num, cur_site);
+    }
+    
+    mod_genome[line_num].SetOp(cur_inst);
   }
 }
 
@@ -442,59 +526,105 @@ void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
   
   
   m_tp.peak_fitness = m_base_fitness;
-  m_tp.peak_genome = m_base_genome;  
+  m_tp.peak_genome = m_base_genome;
   m_tp.site_count.Resize(m_base_genome.GetSize(), 0);
   AggregateTwoStep(m_twostep_point, m_tp);
   
   m_ti.peak_fitness = m_base_fitness;
-  m_ti.peak_genome = m_base_genome;  
+  m_ti.peak_genome = m_base_genome;
   m_ti.site_count.Resize(m_base_genome.GetSize() + 2, 0);
   AggregateTwoStep(m_twostep_insert, m_ti);
   
   m_td.peak_fitness = m_base_fitness;
-  m_td.peak_genome = m_base_genome;  
+  m_td.peak_genome = m_base_genome;
   m_td.site_count.Resize(m_base_genome.GetSize(), 0);
   AggregateTwoStep(m_twostep_delete, m_td);
 
+
+  m_tip.peak_fitness = m_base_fitness;
+  m_tip.peak_genome = m_base_genome;
+  m_tip.site_count.Resize(m_base_genome.GetSize() + 1, 0);
+  AggregateTwoStep(m_insert_point, m_tip);
+  
+  m_tid.peak_fitness = m_base_fitness;
+  m_tid.peak_genome = m_base_genome;
+  m_tid.site_count.Resize(m_base_genome.GetSize() + 1, 0);
+  AggregateTwoStep(m_insert_delete, m_tid);
+  
+  m_tdp.peak_fitness = m_base_fitness;
+  m_tdp.peak_genome = m_base_genome;
+  m_tdp.site_count.Resize(m_base_genome.GetSize(), 0);
+  AggregateTwoStep(m_delete_point, m_tdp);
+  
   
   // Collect totals across all two step mutants
-  m_tt.total = m_tp.total + m_ti.total + m_td.total;
-  m_tt.total_fitness = m_tp.total_fitness + m_ti.total_fitness + m_td.total_fitness;
-  m_tt.total_sqr_fitness = m_tp.total_sqr_fitness + m_ti.total_sqr_fitness + m_td.total_sqr_fitness;
+  m_tt.total = m_tp.total + m_ti.total + m_td.total + m_tip.total + m_tid.total + m_tdp.total;
+  m_tt.total_fitness = m_tp.total_fitness + m_ti.total_fitness + m_td.total_fitness
+                       + m_tip.total_fitness + m_tid.total_fitness + m_tdp.total_fitness;
+  m_tt.total_sqr_fitness = m_tp.total_sqr_fitness + m_ti.total_sqr_fitness + m_td.total_sqr_fitness
+                           + m_tip.total_sqr_fitness + m_tid.total_sqr_fitness + m_tdp.total_sqr_fitness;
   
-  if (m_tp.peak_fitness >= m_ti.peak_fitness && m_tp.peak_fitness >= m_td.peak_fitness) {
+  const double pftp = m_tp.peak_fitness;
+  const double pfti = m_ti.peak_fitness;
+  const double pftd = m_td.peak_fitness;
+  const double pftip = m_tip.peak_fitness;
+  const double pftid = m_tid.peak_fitness;
+  const double pftdp = m_tdp.peak_fitness;
+  
+  if (pftp >= pfti && pftp >= pftd && pftp >= pftip && pftp >= pftid && pftp >= pftdp) {
     m_tt.peak_fitness = m_tp.peak_fitness;
     m_tt.peak_genome = m_tp.peak_genome;
-  } else if (m_ti.peak_fitness >= m_td.peak_fitness) {
+  } else if (pfti >= pftd && pfti >= pftip && pfti >= pftid && pfti >= pftdp) {
     m_tt.peak_fitness = m_ti.peak_fitness;
     m_tt.peak_genome = m_ti.peak_genome;
-  } else {
+  } else if (pftd >= pftip && pftd >= pftid && pftd >= pftdp) {
     m_tt.peak_fitness = m_td.peak_fitness;
     m_tt.peak_genome = m_td.peak_genome;
+  } else if (pftip >= pftid && pftip >= pftdp) {
+    m_tt.peak_fitness = m_tip.peak_fitness;
+    m_tt.peak_genome = m_tip.peak_genome;
+  } else if (pftid >= pftdp) {
+    m_tt.peak_fitness = m_tid.peak_fitness;
+    m_tt.peak_genome = m_tid.peak_genome;
+  } else {
+    m_tt.peak_fitness = m_tdp.peak_fitness;
+    m_tt.peak_genome = m_tdp.peak_genome;
   }
   
-  m_tt.pos = m_tp.pos + m_ti.pos + m_td.pos;
-  m_tt.neg = m_tp.neg + m_ti.neg + m_td.neg;
-  m_tt.neut = m_tp.neut + m_ti.neut + m_td.neut;
-  m_tt.dead = m_tp.dead + m_ti.dead + m_td.dead;
-  m_tt.size_pos = m_tp.size_pos + m_ti.size_pos + m_td.size_pos;
-  m_tt.size_neg = m_tp.size_neg + m_ti.size_neg + m_td.size_neg;
+  m_tt.pos = m_tp.pos + m_ti.pos + m_td.pos + m_tip.pos + m_tid.pos + m_tdp.pos;
+  m_tt.neg = m_tp.neg + m_ti.neg + m_td.neg + m_tip.neg + m_tid.neg + m_tdp.neg;
+  m_tt.neut = m_tp.neut + m_ti.neut + m_td.neut + m_tip.neut + m_tid.neut + m_tdp.neut;
+  m_tt.dead = m_tp.dead + m_ti.dead + m_td.dead + m_tip.dead + m_tid.dead + m_tdp.dead;
+  m_tt.size_pos = m_tp.size_pos + m_ti.size_pos + m_td.size_pos + m_tip.size_pos + m_tid.size_pos + m_tdp.size_pos;
+  m_tt.size_neg = m_tp.size_neg + m_ti.size_neg + m_td.size_neg + m_tip.size_neg + m_tid.size_neg + m_tdp.size_neg;
   
   // @TODO - total_entropy/complexity across all mutation classes?
   
-  m_tt.task_target = m_tp.task_target + m_ti.task_target + m_td.task_target;
-  m_tt.task_target_pos = m_tp.task_target_pos + m_ti.task_target_pos + m_td.task_target_pos;
-  m_tt.task_target_neg = m_tp.task_target_neg + m_ti.task_target_neg + m_td.task_target_neg;
-  m_tt.task_target_neut = m_tp.task_target_neut + m_ti.task_target_neut + m_td.task_target_neut;
-  m_tt.task_target_dead = m_tp.task_target_dead + m_ti.task_target_dead + m_td.task_target_dead;
-  m_tt.task_total = m_tp.task_total + m_ti.task_total + m_td.task_total;
-  m_tt.task_knockout = m_tp.task_knockout + m_ti.task_knockout + m_td.task_knockout;
+  m_tt.task_target = m_tp.task_target + m_ti.task_target + m_td.task_target
+                     + m_tip.task_target + m_tid.task_target + m_tdp.task_target;
+  m_tt.task_target_pos = m_tp.task_target_pos + m_ti.task_target_pos + m_td.task_target_pos
+                         + m_tip.task_target_pos + m_tid.task_target_pos + m_tdp.task_target_pos;
+  m_tt.task_target_neg = m_tp.task_target_neg + m_ti.task_target_neg + m_td.task_target_neg
+                         + m_tip.task_target_neg + m_tid.task_target_neg + m_tdp.task_target_neg;
+  m_tt.task_target_neut = m_tp.task_target_neut + m_ti.task_target_neut + m_td.task_target_neut
+                          + m_tip.task_target_neut + m_tid.task_target_neut + m_tdp.task_target_neut;
+  m_tt.task_target_dead = m_tp.task_target_dead + m_ti.task_target_dead + m_td.task_target_dead
+                          + m_tip.task_target_dead + m_tid.task_target_dead + m_tdp.task_target_dead;
+  m_tt.task_total = m_tp.task_total + m_ti.task_total + m_td.task_total
+                    + m_tip.task_total + m_tid.task_total + m_tdp.task_total;
+  m_tt.task_knockout = m_tp.task_knockout + m_ti.task_knockout + m_td.task_knockout
+                       + m_tip.task_knockout + m_tid.task_knockout + m_tdp.task_knockout;
   
-  m_tt.task_size_target = m_tp.task_size_target + m_ti.task_size_target + m_td.task_size_target;
-  m_tt.task_size_target_pos = m_tp.task_size_target_pos + m_ti.task_size_target_pos + m_td.task_size_target_pos;
-  m_tt.task_size_target_neg = m_tp.task_size_target_neg + m_ti.task_size_target_neg + m_td.task_size_target_neg;
-  m_tt.task_size_total = m_tp.task_size_total + m_ti.task_size_total + m_td.task_size_total;
-  m_tt.task_size_knockout = m_tp.task_size_knockout + m_ti.task_size_knockout + m_td.task_size_knockout;
+  m_tt.task_size_target = m_tp.task_size_target + m_ti.task_size_target + m_td.task_size_target
+                          + m_tip.task_size_target + m_tid.task_size_target + m_tdp.task_size_target;
+  m_tt.task_size_target_pos = m_tp.task_size_target_pos + m_ti.task_size_target_pos + m_td.task_size_target_pos
+                              + m_tip.task_size_target_pos + m_tid.task_size_target_pos + m_tdp.task_size_target_pos;
+  m_tt.task_size_target_neg = m_tp.task_size_target_neg + m_ti.task_size_target_neg + m_td.task_size_target_neg
+                              + m_tip.task_size_target_neg + m_tid.task_size_target_neg + m_tdp.task_size_target_neg;
+  m_tt.task_size_total = m_tp.task_size_total + m_ti.task_size_total + m_td.task_size_total
+                         + m_tip.task_size_total + m_tid.task_size_total + m_tdp.task_size_total;
+  m_tt.task_size_knockout = m_tp.task_size_knockout + m_ti.task_size_knockout + m_td.task_size_knockout
+                            + m_tip.task_size_knockout + m_tid.task_size_knockout + m_tdp.task_size_knockout;
   
   
 
@@ -835,6 +965,102 @@ void cMutationalNeighborhood::PrintStats(cDataFile& df, int update) const
   df.Write(Get2SDeleteKnockout(), "2-Step Delete Knockout Task");
   df.Write(Get2SDeleteProbKnockout(), "2-Step Delete Probability Knockout Task");
   df.Write(Get2SDeleteAverageSizeKnockout(), "2-Step Delete Average Size of Task Knockout");
+  
+  df.Write(GetInsPntTotal(), "Total Insert/Point Mutants");
+  df.Write(GetInsPntProbBeneficial(), "Insert/Point Probability Beneficial");
+  df.Write(GetInsPntProbDeleterious(), "Insert/Point Probability Deleterious");
+  df.Write(GetInsPntProbNeutral(), "Insert/Point Probability Neutral");
+  df.Write(GetInsPntProbLethal(), "Insert/Point Probability Lethal");
+  df.Write(GetInsPntAverageSizeBeneficial(), "Insert/Point Average Beneficial Size");
+  df.Write(GetInsPntAverageSizeDeleterious(), "Insert/Point Average Deleterious Size");
+  df.Write(GetInsPntPeakFitness(), "Insert/Point Peak Fitness");
+  df.Write(GetInsPntAverageFitness(), "Insert/Point Average Fitness");
+  df.Write(GetInsPntAverageSqrFitness(), "Insert/Point Average Square Fitness");
+  df.Write(GetInsPntTotalEntropy(), "Insert/Point Total Entropy");
+  df.Write(GetInsPntComplexity(), "Insert/Point Total Complexity");
+  df.Write(GetInsPntTargetTask(), "Insert/Point Confers Target Task");
+  df.Write(GetInsPntProbTargetTask(), "Insert/Point Probability Confers Target Task");
+  df.Write(GetInsPntAverageSizeTargetTask(), "Insert/Point Average Size of Target Task Conferral");
+  df.Write(GetInsPntTargetTaskBeneficial(), "Insert/Point Confers Target - Previous Beneficial");
+  df.Write(GetInsPntProbTargetTaskBeneficial(), "Insert/Point Prob. Confers Target - Previous Beneficial");
+  df.Write(GetInsPntAverageSizeTargetTaskBeneficial(), "Insert/Point Ave. Size of Previous Beneficial in Target Conferral");
+  df.Write(GetInsPntTargetTaskDeleterious(), "Insert/Point Confers Target - Previous Deleterious");
+  df.Write(GetInsPntProbTargetTaskDeleterious(), "Insert/Point Prob. Confers Target - Previous Deleterious");
+  df.Write(GetInsPntAverageSizeTargetTaskDeleterious(), "Insert/Point Ave. Size of Previous Deleterious in Target Conferral");
+  df.Write(GetInsPntTargetTaskNeutral(), "Insert/Point Confers Target - Previous Neutral");
+  df.Write(GetInsPntProbTargetTaskNeutral(), "Insert/Point Prob. Confers Target - Previous Neutral");
+  df.Write(GetInsPntTargetTaskLethal(), "Insert/Point Confers Target - Previous Lethal");
+  df.Write(GetInsPntProbTargetTaskLethal(), "Insert/Point Prob. Confers Target - Previous Lethal");
+  df.Write(GetInsPntTask(), "Insert/Point Confers Any Task");
+  df.Write(GetInsPntProbTask(), "Insert/Point Probability Confers Any Task");
+  df.Write(GetInsPntAverageSizeTask(), "Insert/Point Average Size of Any Task Conferral");
+  df.Write(GetInsPntKnockout(), "Insert/Point Knockout Task");
+  df.Write(GetInsPntProbKnockout(), "Insert/Point Probability Knockout Task");
+  df.Write(GetInsPntAverageSizeKnockout(), "Insert/Point Average Size of Task Knockout");
+  
+  df.Write(GetInsDelTotal(), "Total Insert/Delete Mutants");
+  df.Write(GetInsDelProbBeneficial(), "Insert/Delete Probability Beneficial");
+  df.Write(GetInsDelProbDeleterious(), "Insert/Delete Probability Deleterious");
+  df.Write(GetInsDelProbNeutral(), "Insert/Delete Probability Neutral");
+  df.Write(GetInsDelProbLethal(), "Insert/Delete Probability Lethal");
+  df.Write(GetInsDelAverageSizeBeneficial(), "Insert/Delete Average Beneficial Size");
+  df.Write(GetInsDelAverageSizeDeleterious(), "Insert/Delete Average Deleterious Size");
+  df.Write(GetInsDelPeakFitness(), "Insert/Delete Peak Fitness");
+  df.Write(GetInsDelAverageFitness(), "Insert/Delete Average Fitness");
+  df.Write(GetInsDelAverageSqrFitness(), "Insert/Delete Average Square Fitness");
+  df.Write(GetInsDelTotalEntropy(), "Insert/Delete Total Entropy");
+  df.Write(GetInsDelComplexity(), "Insert/Delete Total Complexity");
+  df.Write(GetInsDelTargetTask(), "Insert/Delete Confers Target Task");
+  df.Write(GetInsDelProbTargetTask(), "Insert/Delete Probability Confers Target Task");
+  df.Write(GetInsDelAverageSizeTargetTask(), "Insert/Delete Average Size of Target Task Conferral");
+  df.Write(GetInsDelTargetTaskBeneficial(), "Insert/Delete Confers Target - Previous Beneficial");
+  df.Write(GetInsDelProbTargetTaskBeneficial(), "Insert/Delete Prob. Confers Target - Previous Beneficial");
+  df.Write(GetInsDelAverageSizeTargetTaskBeneficial(), "Insert/Delete Ave. Size of Previous Beneficial in Target Conferral");
+  df.Write(GetInsDelTargetTaskDeleterious(), "Insert/Delete Confers Target - Previous Deleterious");
+  df.Write(GetInsDelProbTargetTaskDeleterious(), "Insert/Delete Prob. Confers Target - Previous Deleterious");
+  df.Write(GetInsDelAverageSizeTargetTaskDeleterious(), "Insert/Delete Ave. Size of Previous Deleterious in Target Conferral");
+  df.Write(GetInsDelTargetTaskNeutral(), "Insert/Delete Confers Target - Previous Neutral");
+  df.Write(GetInsDelProbTargetTaskNeutral(), "Insert/Delete Prob. Confers Target - Previous Neutral");
+  df.Write(GetInsDelTargetTaskLethal(), "Insert/Delete Confers Target - Previous Lethal");
+  df.Write(GetInsDelProbTargetTaskLethal(), "Insert/Delete Prob. Confers Target - Previous Lethal");
+  df.Write(GetInsDelTask(), "Insert/Delete Confers Any Task");
+  df.Write(GetInsDelProbTask(), "Insert/Delete Probability Confers Any Task");
+  df.Write(GetInsDelAverageSizeTask(), "Insert/Delete Average Size of Any Task Conferral");
+  df.Write(GetInsDelKnockout(), "Insert/Delete Knockout Task");
+  df.Write(GetInsDelProbKnockout(), "Insert/Delete Probability Knockout Task");
+  df.Write(GetInsDelAverageSizeKnockout(), "Insert/Delete Average Size of Task Knockout");
+  
+  df.Write(GetDelPntTotal(), "Total Delete/Point Mutants");
+  df.Write(GetDelPntProbBeneficial(), "Delete/Point Probability Beneficial");
+  df.Write(GetDelPntProbDeleterious(), "Delete/Point Probability Deleterious");
+  df.Write(GetDelPntProbNeutral(), "Delete/Point Probability Neutral");
+  df.Write(GetDelPntProbLethal(), "Delete/Point Probability Lethal");
+  df.Write(GetDelPntAverageSizeBeneficial(), "Delete/Point Average Beneficial Size");
+  df.Write(GetDelPntAverageSizeDeleterious(), "Delete/Point Average Deleterious Size");
+  df.Write(GetDelPntPeakFitness(), "Delete/Point Peak Fitness");
+  df.Write(GetDelPntAverageFitness(), "Delete/Point Average Fitness");
+  df.Write(GetDelPntAverageSqrFitness(), "Delete/Point Average Square Fitness");
+  df.Write(GetDelPntTotalEntropy(), "Delete/Point Total Entropy");
+  df.Write(GetDelPntComplexity(), "Delete/Point Total Complexity");
+  df.Write(GetDelPntTargetTask(), "Delete/Point Confers Target Task");
+  df.Write(GetDelPntProbTargetTask(), "Delete/Point Probability Confers Target Task");
+  df.Write(GetDelPntAverageSizeTargetTask(), "Delete/Point Average Size of Target Task Conferral");
+  df.Write(GetDelPntTargetTaskBeneficial(), "Delete/Point Confers Target - Previous Beneficial");
+  df.Write(GetDelPntProbTargetTaskBeneficial(), "Delete/Point Prob. Confers Target - Previous Beneficial");
+  df.Write(GetDelPntAverageSizeTargetTaskBeneficial(), "Delete/Point Ave. Size of Previous Beneficial in Target Conferral");
+  df.Write(GetDelPntTargetTaskDeleterious(), "Delete/Point Confers Target - Previous Deleterious");
+  df.Write(GetDelPntProbTargetTaskDeleterious(), "Delete/Point Prob. Confers Target - Previous Deleterious");
+  df.Write(GetDelPntAverageSizeTargetTaskDeleterious(), "Delete/Point Ave. Size of Previous Deleterious in Target Conferral");
+  df.Write(GetDelPntTargetTaskNeutral(), "Delete/Point Confers Target - Previous Neutral");
+  df.Write(GetDelPntProbTargetTaskNeutral(), "Delete/Point Prob. Confers Target - Previous Neutral");
+  df.Write(GetDelPntTargetTaskLethal(), "Delete/Point Confers Target - Previous Lethal");
+  df.Write(GetDelPntProbTargetTaskLethal(), "Delete/Point Prob. Confers Target - Previous Lethal");
+  df.Write(GetDelPntTask(), "Delete/Point Confers Any Task");
+  df.Write(GetDelPntProbTask(), "Delete/Point Probability Confers Any Task");
+  df.Write(GetDelPntAverageSizeTask(), "Delete/Point Average Size of Any Task Conferral");
+  df.Write(GetDelPntKnockout(), "Delete/Point Knockout Task");
+  df.Write(GetDelPntProbKnockout(), "Delete/Point Probability Knockout Task");
+  df.Write(GetDelPntAverageSizeKnockout(), "Delete/Point Average Size of Task Knockout");
   
   df.Endl();
 }

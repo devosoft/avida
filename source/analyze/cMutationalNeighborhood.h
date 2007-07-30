@@ -151,6 +151,10 @@ private:
   tArray<sTwoStep> m_twostep_insert;
   tArray<sTwoStep> m_twostep_delete;
 
+  tArray<sTwoStep> m_insert_point;
+  tArray<sTwoStep> m_insert_delete;
+  tArray<sTwoStep> m_delete_point;
+
 
   // One Step Fitness Data
   // -----------------------------------------------------------------------------------------------------------------------
@@ -220,11 +224,15 @@ private:
       task_target_dead(0), task_size_target_pos(0.0), task_size_target_neg(0.0) { ; }
   };
   
-  sTwoStepAggregate m_tp;
-  sTwoStepAggregate m_ti;
-  sTwoStepAggregate m_td;
+  sTwoStepAggregate m_tp;   // Two Step Point Mutants
+  sTwoStepAggregate m_ti;   // Two Step Insert Mutants
+  sTwoStepAggregate m_td;   // Two Step Delete Mutants
   
-  sTwoStepAggregate m_tt;
+  sTwoStepAggregate m_tip;  // Two Step Insert/Point Combo Mutants
+  sTwoStepAggregate m_tid;  // Two Step Insert/Delete Combo Mutants
+  sTwoStepAggregate m_tdp;  // Two Step Delete/Point Combo Mutants
+  
+  sTwoStepAggregate m_tt;   // Two Step Total
 
   
   
@@ -261,7 +269,9 @@ private:
   void ProcessTwoStepPoint(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
   void ProcessTwoStepInsert(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cCPUMemory& mod_genome);
   void ProcessTwoStepDelete(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cCPUMemory& mod_genome);
-  //  void ProcessInDelPointCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
+  void ProcessInsertPointCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
+  void ProcessInsertDeleteCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cCPUMemory& mod_genome);
+  void ProcessDeletePointCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
   double ProcessTwoStepGenome(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, const cGenome& mod_genome,
                               sTwoStep& tdata, int cur_site, int oth_site);
   void AggregateTwoStep(tArray<sTwoStep>& steps, sTwoStepAggregate osa);
@@ -705,6 +715,207 @@ private:
   inline double Get2SDeleteAverageSizeKnockout() const
   {
     if (m_td.task_knockout == 0) return 0.0; else return double(m_td.task_size_knockout) / m_td.task_knockout;
+  }
+
+
+
+
+  inline int GetInsPntTotal() const { return m_tip.total; }
+  
+  inline double GetInsPntAverageFitness() const { return m_tip.total_fitness / m_tip.total; }
+  inline double GetInsPntAverageSqrFitness() const { return m_tip.total_sqr_fitness / m_tip.total; }
+  inline const cGenome& GetInsPntPeakGenome() const { return m_tip.peak_genome; }
+  inline double GetInsPntPeakFitness() const { return m_tip.peak_fitness; }
+  
+  inline double GetInsPntProbBeneficial()  const { return double(m_tip.pos) / m_tip.total; }
+  inline double GetInsPntProbDeleterious()  const { return double(m_tip.neg) / m_tip.total; }
+  inline double GetInsPntProbNeutral() const { return double(m_tip.neut) / m_tip.total; }
+  inline double GetInsPntProbLethal() const { return double(m_tip.dead) / m_tip.total; }
+  inline double GetInsPntAverageSizeBeneficial() const { if (m_tip.pos == 0) return 0.0; else return m_tip.size_pos / m_tip.pos; }
+  inline double GetInsPntAverageSizeDeleterious() const { if (m_tip.neg == 0) return 0.0; else return m_tip.size_neg / m_tip.neg; }
+  
+  inline double GetInsPntTotalEntropy() const { return m_tip.total_entropy; }
+  inline double GetInsPntComplexity() const { return m_tip.complexity; }
+  
+  inline int GetInsPntTargetTask() const { return m_tip.task_target; }
+  inline double GetInsPntProbTargetTask() const { return double(m_tip.task_target) / m_tip.total; }
+  inline double GetInsPntAverageSizeTargetTask() const
+  {
+    if (m_tip.task_target == 0) return 0.0; else return double(m_tip.task_size_target) / m_tip.task_target;
+  }
+  inline int GetInsPntTargetTaskBeneficial() const { return m_tip.task_target_pos; }
+  inline double GetInsPntProbTargetTaskBeneficial() const
+  {
+    if (m_tip.task_target == 0) return 0.0; else return double(m_tip.task_target_pos) / (2 * m_tip.task_target);
+  }
+  inline double GetInsPntAverageSizeTargetTaskBeneficial() const
+  {
+    if (m_tip.task_target == 0) return 0.0; else return double(m_tip.task_size_target_pos) / (2 * m_tip.task_target);
+  }
+  inline int GetInsPntTargetTaskDeleterious() const { return m_tip.task_target_neg; }
+  inline double GetInsPntProbTargetTaskDeleterious() const
+  {
+    if (m_tip.task_target == 0) return 0.0; else return double(m_tip.task_target_neg) / (2 * m_tip.task_target);
+  }
+  inline double GetInsPntAverageSizeTargetTaskDeleterious() const
+  {
+    if (m_tip.task_target == 0) return 0.0; else return double(m_tip.task_size_target_neg) / (2 * m_tip.task_target);
+  }
+  inline int GetInsPntTargetTaskNeutral() const { return m_tip.task_target_neut; }
+  inline double GetInsPntProbTargetTaskNeutral() const
+  {
+    if (m_tip.task_target == 0) return 0.0; else return double(m_tip.task_target_neut) / (2 * m_tip.task_target);
+  }
+  inline int GetInsPntTargetTaskLethal() const { return m_tip.task_target_dead; }
+  inline double GetInsPntProbTargetTaskLethal() const
+  {
+    if (m_tip.task_target == 0) return 0.0; else return double(m_tip.task_target_dead) / (2 * m_tip.task_target);
+  }
+  inline int GetInsPntTask() const { return m_tip.task_total; }
+  inline double GetInsPntProbTask() const { return double(m_tip.task_total) / m_tip.total; }
+  inline double GetInsPntAverageSizeTask() const
+  {
+    if (m_tip.task_total == 0) return 0.0; else return double(m_tip.task_size_total) / m_tip.task_total;
+  }
+  inline int GetInsPntKnockout() const { return m_tip.task_knockout; }
+  inline double GetInsPntProbKnockout() const { return double(m_tip.task_knockout) / m_tip.total; }
+  inline double GetInsPntAverageSizeKnockout() const
+  {
+    if (m_tip.task_knockout == 0) return 0.0; else return double(m_tip.task_size_knockout) / m_tip.task_knockout;
+  }
+
+
+
+
+  inline int GetInsDelTotal() const { return m_tid.total; }
+  
+  inline double GetInsDelAverageFitness() const { return m_tid.total_fitness / m_tid.total; }
+  inline double GetInsDelAverageSqrFitness() const { return m_tid.total_sqr_fitness / m_tid.total; }
+  inline const cGenome& GetInsDelPeakGenome() const { return m_tid.peak_genome; }
+  inline double GetInsDelPeakFitness() const { return m_tid.peak_fitness; }
+  
+  inline double GetInsDelProbBeneficial()  const { return double(m_tid.pos) / m_tid.total; }
+  inline double GetInsDelProbDeleterious()  const { return double(m_tid.neg) / m_tid.total; }
+  inline double GetInsDelProbNeutral() const { return double(m_tid.neut) / m_tid.total; }
+  inline double GetInsDelProbLethal() const { return double(m_tid.dead) / m_tid.total; }
+  inline double GetInsDelAverageSizeBeneficial() const { if (m_tid.pos == 0) return 0.0; else return m_tid.size_pos / m_tid.pos; }
+  inline double GetInsDelAverageSizeDeleterious() const { if (m_tid.neg == 0) return 0.0; else return m_tid.size_neg / m_tid.neg; }
+  
+  inline double GetInsDelTotalEntropy() const { return m_tid.total_entropy; }
+  inline double GetInsDelComplexity() const { return m_tid.complexity; }
+  
+  inline int GetInsDelTargetTask() const { return m_tid.task_target; }
+  inline double GetInsDelProbTargetTask() const { return double(m_tid.task_target) / m_tid.total; }
+  inline double GetInsDelAverageSizeTargetTask() const
+  {
+    if (m_tid.task_target == 0) return 0.0; else return double(m_tid.task_size_target) / m_tid.task_target;
+  }
+  inline int GetInsDelTargetTaskBeneficial() const { return m_tid.task_target_pos; }
+  inline double GetInsDelProbTargetTaskBeneficial() const
+  {
+    if (m_tid.task_target == 0) return 0.0; else return double(m_tid.task_target_pos) / (2 * m_tid.task_target);
+  }
+  inline double GetInsDelAverageSizeTargetTaskBeneficial() const
+  {
+    if (m_tid.task_target == 0) return 0.0; else return double(m_tid.task_size_target_pos) / (2 * m_tid.task_target);
+  }
+  inline int GetInsDelTargetTaskDeleterious() const { return m_tid.task_target_neg; }
+  inline double GetInsDelProbTargetTaskDeleterious() const
+  {
+    if (m_tid.task_target == 0) return 0.0; else return double(m_tid.task_target_neg) / (2 * m_tid.task_target);
+  }
+  inline double GetInsDelAverageSizeTargetTaskDeleterious() const
+  {
+    if (m_tid.task_target == 0) return 0.0; else return double(m_tid.task_size_target_neg) / (2 * m_tid.task_target);
+  }
+  inline int GetInsDelTargetTaskNeutral() const { return m_tid.task_target_neut; }
+  inline double GetInsDelProbTargetTaskNeutral() const
+  {
+    if (m_tid.task_target == 0) return 0.0; else return double(m_tid.task_target_neut) / (2 * m_tid.task_target);
+  }
+  inline int GetInsDelTargetTaskLethal() const { return m_tid.task_target_dead; }
+  inline double GetInsDelProbTargetTaskLethal() const
+  {
+    if (m_tid.task_target == 0) return 0.0; else return double(m_tid.task_target_dead) / (2 * m_tid.task_target);
+  }
+  inline int GetInsDelTask() const { return m_tid.task_total; }
+  inline double GetInsDelProbTask() const { return double(m_tid.task_total) / m_tid.total; }
+  inline double GetInsDelAverageSizeTask() const
+  {
+    if (m_tid.task_total == 0) return 0.0; else return double(m_tid.task_size_total) / m_tid.task_total;
+  }
+  inline int GetInsDelKnockout() const { return m_tid.task_knockout; }
+  inline double GetInsDelProbKnockout() const { return double(m_tid.task_knockout) / m_tid.total; }
+  inline double GetInsDelAverageSizeKnockout() const
+  {
+    if (m_tid.task_knockout == 0) return 0.0; else return double(m_tid.task_size_knockout) / m_tid.task_knockout;
+  }
+
+
+
+
+  inline int GetDelPntTotal() const { return m_tdp.total; }
+  
+  inline double GetDelPntAverageFitness() const { return m_tdp.total_fitness / m_tdp.total; }
+  inline double GetDelPntAverageSqrFitness() const { return m_tdp.total_sqr_fitness / m_tdp.total; }
+  inline const cGenome& GetDelPntPeakGenome() const { return m_tdp.peak_genome; }
+  inline double GetDelPntPeakFitness() const { return m_tdp.peak_fitness; }
+  
+  inline double GetDelPntProbBeneficial()  const { return double(m_tdp.pos) / m_tdp.total; }
+  inline double GetDelPntProbDeleterious()  const { return double(m_tdp.neg) / m_tdp.total; }
+  inline double GetDelPntProbNeutral() const { return double(m_tdp.neut) / m_tdp.total; }
+  inline double GetDelPntProbLethal() const { return double(m_tdp.dead) / m_tdp.total; }
+  inline double GetDelPntAverageSizeBeneficial() const { if (m_tdp.pos == 0) return 0.0; else return m_tdp.size_pos / m_tdp.pos; }
+  inline double GetDelPntAverageSizeDeleterious() const { if (m_tdp.neg == 0) return 0.0; else return m_tdp.size_neg / m_tdp.neg; }
+  
+  inline double GetDelPntTotalEntropy() const { return m_tdp.total_entropy; }
+  inline double GetDelPntComplexity() const { return m_tdp.complexity; }
+  
+  inline int GetDelPntTargetTask() const { return m_tdp.task_target; }
+  inline double GetDelPntProbTargetTask() const { return double(m_tdp.task_target) / m_tdp.total; }
+  inline double GetDelPntAverageSizeTargetTask() const
+  {
+    if (m_tdp.task_target == 0) return 0.0; else return double(m_tdp.task_size_target) / m_tdp.task_target;
+  }
+  inline int GetDelPntTargetTaskBeneficial() const { return m_tdp.task_target_pos; }
+  inline double GetDelPntProbTargetTaskBeneficial() const
+  {
+    if (m_tdp.task_target == 0) return 0.0; else return double(m_tdp.task_target_pos) / (2 * m_tdp.task_target);
+  }
+  inline double GetDelPntAverageSizeTargetTaskBeneficial() const
+  {
+    if (m_tdp.task_target == 0) return 0.0; else return double(m_tdp.task_size_target_pos) / (2 * m_tdp.task_target);
+  }
+  inline int GetDelPntTargetTaskDeleterious() const { return m_tdp.task_target_neg; }
+  inline double GetDelPntProbTargetTaskDeleterious() const
+  {
+    if (m_tdp.task_target == 0) return 0.0; else return double(m_tdp.task_target_neg) / (2 * m_tdp.task_target);
+  }
+  inline double GetDelPntAverageSizeTargetTaskDeleterious() const
+  {
+    if (m_tdp.task_target == 0) return 0.0; else return double(m_tdp.task_size_target_neg) / (2 * m_tdp.task_target);
+  }
+  inline int GetDelPntTargetTaskNeutral() const { return m_tdp.task_target_neut; }
+  inline double GetDelPntProbTargetTaskNeutral() const
+  {
+    if (m_tdp.task_target == 0) return 0.0; else return double(m_tdp.task_target_neut) / (2 * m_tdp.task_target);
+  }
+  inline int GetDelPntTargetTaskLethal() const { return m_tdp.task_target_dead; }
+  inline double GetDelPntProbTargetTaskLethal() const
+  {
+    if (m_tdp.task_target == 0) return 0.0; else return double(m_tdp.task_target_dead) / (2 * m_tdp.task_target);
+  }
+  inline int GetDelPntTask() const { return m_tdp.task_total; }
+  inline double GetDelPntProbTask() const { return double(m_tdp.task_total) / m_tdp.total; }
+  inline double GetDelPntAverageSizeTask() const
+  {
+    if (m_tdp.task_total == 0) return 0.0; else return double(m_tdp.task_size_total) / m_tdp.task_total;
+  }
+  inline int GetDelPntKnockout() const { return m_tdp.task_knockout; }
+  inline double GetDelPntProbKnockout() const { return double(m_tdp.task_knockout) / m_tdp.total; }
+  inline double GetDelPntAverageSizeKnockout() const
+  {
+    if (m_tdp.task_knockout == 0) return 0.0; else return double(m_tdp.task_size_knockout) / m_tdp.task_knockout;
   }
 };
 
