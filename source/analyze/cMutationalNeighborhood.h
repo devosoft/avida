@@ -135,15 +135,20 @@ private:
   // fitness values that may not have been calculated yet.  A pending list must be maintained for each site, as a
   // list in the main class would be subject to a race condition should two separate threads try to write to it
   // simultaneously.
-  struct sPendingTarget
+  struct sPendFit
   {
+    tMatrix<double>& fmat;
     int site;
     int inst;
-    sPendingTarget(int in_site, int in_inst) : site(in_site), inst(in_inst) { ; }
+    
+    sPendFit(tMatrix<double>& in_fmat, int in_site, int in_inst) : fmat(in_fmat), site(in_site), inst(in_inst) { ; }
+    sPendFit(const sPendFit& in_pf) : fmat(in_pf.fmat), site(in_pf.site), inst(in_pf.site) { ; }
+    
+    inline double GetFitness() { return fmat[site][inst]; }
   };
   struct sTwoStep : public sStep
   {
-    tList<sPendingTarget> pending;
+    tList<sPendFit> pending;
     
     sTwoStep() : sStep() { ; }
   };  
@@ -160,7 +165,7 @@ private:
   // -----------------------------------------------------------------------------------------------------------------------
   tMatrix<double> m_fitness_point;
   tMatrix<double> m_fitness_insert;
-  tArray<double> m_fitness_delete;
+  tMatrix<double> m_fitness_delete;
   
 
 
@@ -273,7 +278,7 @@ private:
   void ProcessInsertDeleteCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cCPUMemory& mod_genome);
   void ProcessDeletePointCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
   double ProcessTwoStepGenome(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, const cGenome& mod_genome,
-                              sTwoStep& tdata, int cur_site, int oth_site);
+                              sTwoStep& tdata, const sPendFit& cur, const sPendFit& oth);
   void AggregateTwoStep(tArray<sTwoStep>& steps, sTwoStepAggregate osa);
   
   void ProcessComplete(cAvidaContext& ctx);
