@@ -261,7 +261,7 @@ void cMutationalNeighborhood::ProcessTwoStepPoint(cAvidaContext& ctx, cTestCPU* 
                                                   int cur_site, cGenome& mod_genome)
 {
   const int inst_size = m_inst_set.GetSize();
-  sStep& tdata = m_twostep_point[cur_site];
+  sTwoStep& tdata = m_twostep_point[cur_site];
 
   // Loop through remaining lines of genome, testing trying all combinations.
   for (int line_num = cur_site + 1; line_num < m_base_genome.GetSize(); line_num++) {
@@ -272,63 +272,72 @@ void cMutationalNeighborhood::ProcessTwoStepPoint(cAvidaContext& ctx, cTestCPU* 
       if (cur_inst == inst_num) continue;
       
       mod_genome[line_num].SetOp(inst_num);
-      testcpu->TestGenome(ctx, test_info, mod_genome);
-      
-      double test_fitness = test_info.GetColonyFitness();
-      
-      tdata.total_fitness += test_fitness;
-      tdata.total_sqr_fitness += test_fitness * test_fitness;
-      tdata.total++;
-      if (test_fitness == 0.0) {
-        tdata.dead++;
-      } else if (test_fitness < m_neut_min) {
-        tdata.neg++;
-        tdata.size_neg += test_fitness;
-      } else if (test_fitness <= m_neut_max) {
-        tdata.neut++;
-      } else {
-        tdata.pos++;
-        tdata.size_pos += test_fitness;
-        if (test_fitness > tdata.peak_fitness) {
-          tdata.peak_fitness = test_fitness;
-          tdata.peak_genome = mod_genome;
-        }
-      }
-      
-      if (test_fitness >= m_neut_min) tdata.site_count[line_num]++;
-      
-      if (test_fitness != 0.0) { // Only count tasks if the organism is alive
-        const tArray<int>& cur_tasks = test_info.GetColonyOrganism()->GetPhenotype().GetLastTaskCount();    
-        bool knockout = false;
-        bool anytask = false;
-        for (int i = 0; i < m_base_tasks.GetSize(); i++) {
-          if (m_base_tasks[i] && !cur_tasks[i]) knockout = true;
-          else if (!m_base_tasks[i] && cur_tasks[i]) anytask = true;
-        }
-        if (knockout) {
-          tdata.task_knockout++;
-          tdata.task_size_knockout += test_fitness;
-        }
-        if (anytask) {
-          tdata.task_total++;
-          tdata.task_size_total += test_fitness;
-        }
-        if (m_base_tasks.GetSize() && !m_base_tasks[m_target] && cur_tasks[m_target]) {
-          tdata.task_target++;
-          tdata.task_size_target += test_fitness;
-          
-          // Push both instructions as possible first mutations, for post determination of first step fitness effect
-          m_pending.Push(new sPendingTarget(cur_site, mod_genome[cur_site].GetOp()));
-          m_pending.Push(new sPendingTarget(line_num, inst_num));
-        }
-      }
-      
+      ProcessTwoStepGenome(ctx, testcpu, test_info, mod_genome, tdata, line_num, cur_site);
     }
     
     mod_genome[line_num].SetOp(cur_inst);
   }
 }
 
+
+double cMutationalNeighborhood::ProcessTwoStepGenome(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info,
+                                                     const cGenome& mod_genome, sTwoStep& tdata, int cur_site, int oth_site)
+{
+  // Run the modified genome through the Test CPU
+  testcpu->TestGenome(ctx, test_info, mod_genome);
+  
+  // Collect the calculated fitness
+  double test_fitness = test_info.GetColonyFitness();
+  
+  tdata.total_fitness += test_fitness;
+  tdata.total_sqr_fitness += test_fitness * test_fitness;
+  tdata.total++;
+  if (test_fitness == 0.0) {
+    tdata.dead++;
+  } else if (test_fitness < m_neut_min) {
+    tdata.neg++;
+    tdata.size_neg += test_fitness;
+  } else if (test_fitness <= m_neut_max) {
+    tdata.neut++;
+  } else {
+    tdata.pos++;
+    tdata.size_pos += test_fitness;
+    if (test_fitness > tdata.peak_fitness) {
+      tdata.peak_fitness = test_fitness;
+      tdata.peak_genome = mod_genome;
+    }
+  }
+  
+  if (test_fitness >= m_neut_min) tdata.site_count[cur_site]++;
+  
+  if (test_fitness != 0.0) { // Only count tasks if the organism is alive
+    const tArray<int>& cur_tasks = test_info.GetColonyOrganism()->GetPhenotype().GetLastTaskCount();    
+    bool knockout = false;
+    bool anytask = false;
+    for (int i = 0; i < m_base_tasks.GetSize(); i++) {
+      if (m_base_tasks[i] && !cur_tasks[i]) knockout = true;
+      else if (!m_base_tasks[i] && cur_tasks[i]) anytask = true;
+    }
+    if (knockout) {
+      tdata.task_knockout++;
+      tdata.task_size_knockout += test_fitness;
+    }
+    if (anytask) {
+      tdata.task_total++;
+      tdata.task_size_total += test_fitness;
+    }
+    if (m_base_tasks.GetSize() && !m_base_tasks[m_target] && cur_tasks[m_target]) {
+      tdata.task_target++;
+      tdata.task_size_target += test_fitness;
+      
+      // Push both instructions as possible first mutations, for post determination of first step fitness effect
+      tdata.pending.Push(new sPendingTarget(oth_site, mod_genome[oth_site].GetOp()));
+      tdata.pending.Push(new sPendingTarget(cur_site, mod_genome[cur_site].GetOp()));
+    }
+  }
+  
+  return test_fitness;
+}
 
 void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
 {
@@ -385,12 +394,14 @@ void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
   
   
   // Initialize values
+  sPendingTarget* pend = NULL;
+  
   m_tp.peak_fitness = m_base_fitness;
   m_tp.peak_genome = m_base_genome;  
   m_tp.site_count.Resize(m_base_genome.GetSize(), 0);
   
   for (int i = 0; i < m_twostep_point.GetSize(); i++) {
-    sStep& tdata = m_twostep_point[i];
+    sTwoStep& tdata = m_twostep_point[i];
     m_tp.total += tdata.total;
     m_tp.total_fitness += tdata.total_fitness;
     m_tp.total_sqr_fitness += tdata.total_sqr_fitness;
@@ -418,6 +429,24 @@ void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
     m_tp.task_size_target += tdata.task_size_target;
     m_tp.task_size_total += tdata.task_size_total;
     m_tp.task_size_knockout += tdata.task_size_knockout;
+
+    while ((pend = tdata.pending.Pop())) {
+      double fitness = m_fitness_point[pend->site][pend->inst];
+      
+      if (fitness == 0.0) {
+        m_tp.task_target_dead++;
+      } else if (fitness < m_neut_min) {
+        m_tp.task_target_neg++;
+        m_tp.task_size_target_neg += fitness;
+      } else if (fitness <= m_neut_max) {
+        m_tp.task_target_neut++;
+      } else {
+        m_tp.task_target_pos++;
+        m_tp.task_size_target_pos += fitness;
+      }
+      
+      delete pend;
+    }
   }
 
   const double max_ent = log(static_cast<double>(m_inst_set.GetSize()));
@@ -428,25 +457,6 @@ void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
   }
   m_tp.complexity = m_base_genome.GetSize() - m_tp.total_entropy;
 
-  sPendingTarget* pend = NULL;
-  while ((pend = m_pending.Pop())) {
-    double fitness = m_fitness_point[pend->site][pend->inst];
-    
-    if (fitness == 0.0) {
-      m_tp.task_target_dead++;
-    } else if (fitness < m_neut_min) {
-      m_tp.task_target_neg++;
-      m_tp.task_size_target_neg += fitness;
-    } else if (fitness <= m_neut_max) {
-      m_tp.task_target_neut++;
-    } else {
-      m_tp.task_target_pos++;
-      m_tp.task_size_target_pos += fitness;
-    }
-    
-    delete pend;
-  }
-  
   m_rwlock.WriteUnlock();
 }
 
