@@ -392,6 +392,7 @@ private:
   bool Inst_Repro(cAvidaContext& ctx);
   bool Inst_TaskPutRepro(cAvidaContext& ctx);
   bool Inst_TaskPutResetInputsRepro(cAvidaContext& ctx);
+  bool Inst_Sterilize(cAvidaContext& ctx);
 
   bool Inst_SpawnDeme(cAvidaContext& ctx);
   bool Inst_Kazi(cAvidaContext& ctx);

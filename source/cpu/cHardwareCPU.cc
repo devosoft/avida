@@ -2582,6 +2582,7 @@ bool cHardwareCPU::Inst_Kazi(cAvidaContext& ctx)
   return true;
 }
 
+                   
 bool cHardwareCPU::Inst_Sterilize(cAvidaContext& ctx)
 {
   organism->GetPhenotype().IsFertile() = false;
