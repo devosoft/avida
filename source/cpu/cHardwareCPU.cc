@@ -330,6 +330,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("put-repro", &cHardwareCPU::Inst_TaskPutRepro),
     tInstLibEntry<tMethod>("metabolize", &cHardwareCPU::Inst_TaskPutResetInputsRepro),        
 
+    tInstLibEntry<tMethod>("sterilize", &cHardwareCPU::Inst_Sterilize),
+    
     tInstLibEntry<tMethod>("spawn-deme", &cHardwareCPU::Inst_SpawnDeme),
     
     // Suicide
@@ -2577,6 +2579,12 @@ bool cHardwareCPU::Inst_Kazi(cAvidaContext& ctx)
   const int reg_used = FindModifiedRegister(REG_AX);
   double percentProb = ((double) (GetRegister(reg_used) % 100)) / 100.0;
   if ( ctx.GetRandom().P(percentProb) ) organism->Kaboom(0);
+  return true;
+}
+
+bool cHardwareCPU::Inst_Sterilize(cAvidaContext& ctx)
+{
+  organism->GetPhenotype().IsFertile() = false;
   return true;
 }
 
