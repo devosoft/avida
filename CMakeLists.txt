@@ -219,6 +219,8 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cMxCodeArray.cc
   ${MAIN_DIR}/cOrganism.cc
   ${MAIN_DIR}/cPhenotype.cc
+  ${MAIN_DIR}/cPhenPlastGenotype.cc
+  ${MAIN_DIR}/cPlasticPhenotype.cc
   ${MAIN_DIR}/cPopulation.cc
   ${MAIN_DIR}/cPopulationCell.cc
   ${MAIN_DIR}/cPopulationInterface.cc

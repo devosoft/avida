@@ -250,6 +250,7 @@ public:
   void CommandMapMutations(cString cur_string);
   void CommandMapDepth(cString cur_string);
   void CommandPairwiseEntropy(cString cur_string);
+  void CommandAnalyzePlasticity(cString cur_string);
 
   // Population Comparison Commands...
   void CommandHamming(cString cur_string);

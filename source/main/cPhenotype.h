@@ -217,8 +217,10 @@ private:
 
 
   cPhenotype(); // @not_implemented
-  cPhenotype(const cPhenotype&); // @not_implemented
-  cPhenotype& operator=(const cPhenotype&); // @not_implemented
+  
+protected:
+  cPhenotype(const cPhenotype&); 
+  cPhenotype& operator=(const cPhenotype&); 
   
 public:
   cPhenotype(cWorld* world);
@@ -453,6 +455,17 @@ public:
   void RefreshEnergy();
   void ApplyToEnergyStore();
   double ExtractParentEnergy();
+  
+  bool operator<(const cPhenotype& rhs) const;
+  bool operator>(const cPhenotype& rhs) const;
+  bool operator==(const cPhenotype& rhs) const;
+  bool operator!=(const cPhenotype& rhs) const; 
+  
+  struct lt_phenotype{
+    bool operator()(const cPhenotype* lhs, const cPhenotype* rhs)
+      {return *lhs < *rhs;}   // operator< in cPhenotype
+  };
+  
 };
 
 

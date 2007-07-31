@@ -32,6 +32,7 @@
 #include "cTaskState.h"
 #include "cTools.h"
 #include "cWorld.h"
+#include "tList.h"
 
 #include <fstream>
 
@@ -68,6 +69,155 @@ cPhenotype::~cPhenotype()
   tArray<cTaskState*> task_states(0);
   m_task_states.GetValues(task_states);
   for (int i = 0; i < task_states.GetSize(); i++) delete task_states[i];
+}
+
+
+cPhenotype::cPhenotype(const cPhenotype& in_phen)
+{
+  *this = in_phen;
+}
+
+
+cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
+{
+  
+  m_world                  = in_phen.m_world;
+  initialized              = in_phen.initialized;
+  
+  
+  // 1. These are values calculated at the last divide (of self or offspring)
+  merit                    = in_phen.merit;             
+  energy_store             = in_phen.energy_store;    
+  energy_tobe_applied      = in_phen.energy_tobe_applied; 
+  genome_length            = in_phen.genome_length;        
+  bonus_instruction_count  = in_phen.bonus_instruction_count; 
+  copied_size              = in_phen.copied_size;          
+  executed_size            = in_phen.executed_size;       
+  gestation_time           = in_phen.gestation_time;       
+                  
+  gestation_start          = in_phen.gestation_start;     
+  fitness                  = in_phen.fitness;           
+  div_type                 = in_phen.div_type;          
+  
+  // 2. These are "in progress" variables, updated as the organism operates
+  cur_bonus                = in_phen.cur_bonus;                           
+  cur_energy_bonus         = in_phen.cur_energy_bonus;                   
+  cur_num_errors           = in_phen.cur_num_errors;                         
+  cur_num_donates          = in_phen.cur_num_donates;                       
+  cur_task_count           = in_phen.cur_task_count;                
+  eff_task_count           = in_phen.eff_task_count;                 
+  cur_task_quality         = in_phen.cur_task_quality;           
+  cur_task_value           = in_phen.cur_task_value;			 
+  cur_reaction_count       = in_phen.cur_reaction_count;            
+  cur_reaction_add_reward  = in_phen.cur_reaction_add_reward;     
+  cur_inst_count           = in_phen.cur_inst_count;                 
+  cur_sense_count          = in_phen.cur_sense_count;                 
+  sensed_resources         = in_phen.sensed_resources;            
+  cur_task_time            = in_phen.cur_task_time;   
+  active_transposons       = in_phen.active_transposons;   
+  base_promoter_weights    = in_phen.base_promoter_weights;      
+  cur_promoter_weights     = in_phen.cur_promoter_weights;        
+  promoter_activation      = in_phen.promoter_activation;         
+  promoter_repression      = in_phen.promoter_repression;        
+  promoter_last_inst_terminated = in_phen.promoter_last_inst_terminated;        
+  
+  // Dynamically allocated m_task_states requires special handling
+  tList<cTaskState*> hash_values;
+  tList<void*>       hash_keys;
+  in_phen.m_task_states.AsLists(hash_keys, hash_values);
+  tListIterator<cTaskState*> vit(hash_values);
+  tListIterator<void*>       kit(hash_keys);
+  while(vit.Next() && kit.Next())
+  {
+    cTaskState* new_ts = new cTaskState(**(vit.Get()));
+    m_task_states.Add(*(kit.Get()), new_ts);
+  }
+  
+  // 3. These mark the status of "in progess" variables at the last divide.
+  last_merit_base          = in_phen.last_merit_base;       
+  last_bonus               = in_phen.last_bonus;
+  last_energy_bonus        = in_phen.last_energy_bonus; 
+  last_num_errors          = in_phen.last_num_errors; 
+  last_num_donates         = in_phen.last_num_donates;
+  last_task_count          = in_phen.last_task_count;
+  last_task_quality        = in_phen.last_task_quality;
+  last_task_value          = in_phen.last_task_value;
+  last_reaction_count      = in_phen.last_reaction_count;
+  last_reaction_add_reward = in_phen.last_reaction_add_reward; 
+  last_inst_count          = in_phen.last_inst_count;	  
+  last_sense_count         = in_phen.last_sense_count;   
+  last_fitness             = in_phen.last_fitness;            
+  
+  // 4. Records from this organisms life...
+  num_divides              = in_phen.num_divides;      
+  generation               = in_phen.generation;        
+  cpu_cycles_used          = in_phen.cpu_cycles_used;   
+  time_used                = in_phen.time_used;         
+  age                      = in_phen.age;               
+  fault_desc               = in_phen.fault_desc;    
+  neutral_metric           = in_phen.neutral_metric; 
+  life_fitness             = in_phen.life_fitness; 	
+                        
+  
+  // 5. Status Flags...  (updated at each divide)
+  to_die                  = in_phen.to_die;		 
+  to_delete               = in_phen.to_delete;        
+  is_injected             = in_phen.is_injected;      
+  is_donor_cur            = in_phen.is_donor_cur;     
+  is_donor_last           = in_phen.is_donor_last;     
+  is_donor_rand           = in_phen.is_donor_rand;    
+  is_donor_rand_last      = in_phen.is_donor_rand_last;
+  is_donor_null           = in_phen.is_donor_null;    
+  is_donor_null_last      = in_phen.is_donor_null_last;
+  is_donor_kin            = in_phen.is_donor_kin;    
+  is_donor_kin_last       = in_phen.is_donor_kin_last;
+  is_donor_edit           = in_phen.is_donor_edit;   
+  is_donor_edit_last      = in_phen.is_donor_edit_last; 
+  is_donor_gbg            = in_phen.is_donor_gbg;     
+  is_donor_gbg_last       = in_phen.is_donor_gbg_last;
+  is_donor_truegb         = in_phen.is_donor_truegb; 
+  is_donor_truegb_last    = in_phen.is_donor_truegb_last;
+  is_donor_threshgb       = in_phen.is_donor_threshgb;  
+  is_donor_threshgb_last  = in_phen.is_donor_threshgb_last;
+  is_donor_quanta_threshgb        = in_phen.is_donor_quanta_threshgb;  
+  is_donor_quanta_threshgb_last   = in_phen.is_donor_quanta_threshgb_last;
+  num_thresh_gb_donations         = in_phen.num_thresh_gb_donations;  
+  num_thresh_gb_donations_last    = in_phen.num_thresh_gb_donations_last;  
+  num_quanta_thresh_gb_donations = in_phen.num_quanta_thresh_gb_donations;
+  num_quanta_thresh_gb_donations_last = in_phen.num_quanta_thresh_gb_donations_last;
+  is_receiver             = in_phen.is_receiver;   
+  is_receiver_last        = in_phen.is_receiver_last;      
+  is_receiver_rand        = in_phen.is_receiver_rand;
+  is_receiver_kin         = in_phen.is_receiver_kin; 
+  is_receiver_kin_last    = in_phen.is_receiver_kin_last; 
+  is_receiver_edit        = in_phen.is_receiver_edit; 
+  is_receiver_edit_last   = in_phen.is_receiver_edit_last; 
+  is_receiver_gbg         = in_phen.is_receiver_gbg; 
+  is_receiver_truegb      = in_phen.is_receiver_truegb;
+  is_receiver_truegb_last = in_phen.is_receiver_truegb_last;
+  is_receiver_threshgb    = in_phen.is_receiver_threshgb;
+  is_receiver_threshgb_last    = in_phen.is_receiver_threshgb_last;
+  is_receiver_quanta_threshgb  = in_phen.is_receiver_quanta_threshgb;
+  is_receiver_quanta_threshgb_last = in_phen.is_receiver_quanta_threshgb_last;
+  is_modifier             = in_phen.is_modifier;      
+  is_modified             = in_phen.is_modified;      
+  is_fertile              = in_phen.is_fertile;      
+  is_mutated              = in_phen.is_mutated;       
+  is_multi_thread         = in_phen.is_multi_thread; 
+  parent_true             = in_phen.parent_true;     
+  parent_sex              = in_phen.parent_sex;      
+  parent_cross_num        = in_phen.parent_cross_num; 
+
+  // 6. Child information...
+  copy_true               = in_phen.copy_true;       
+  divide_sex              = in_phen.divide_sex;       
+  mate_select_id          = in_phen.mate_select_id;    
+  cross_num               = in_phen.cross_num;     
+  child_fertile           = in_phen.child_fertile;  
+  last_child_fertile      = in_phen.last_child_fertile; 
+  child_copied_size       = in_phen.child_copied_size;
+         
+  return *this;
 }
 
 bool cPhenotype::OK()
@@ -1274,4 +1424,63 @@ void cPhenotype::RegulatePromoter(const int i, const bool up )
   }
   
   cur_promoter_weights[i] = base_promoter_weights[i] * exp((1+promoter_activation[i])*log(2.0)) / exp((1+promoter_repression[i])*log(2.0));
+}
+
+
+// C O M P A R I S O N    O P E R A T O R S
+
+bool cPhenotype::operator<(const cPhenotype&  rhs) const
+{
+  if (this->GetMerit() < rhs.GetMerit())
+    return true;
+  
+  if ( this->GetGestationTime() < rhs.GetGestationTime() )
+    return true;
+  
+  tArray<int> lhsTasks = this->GetCurTaskCount();
+  tArray<int> rhsTasks = rhs.GetCurTaskCount();
+  for (int k = 0; k < lhsTasks.GetSize(); k++)
+    if (lhsTasks[k] < rhsTasks[k])
+      return true;
+  
+  return false;
+}
+
+bool cPhenotype::operator==(const cPhenotype& rhs) const
+{
+  if (this->GetMerit() != rhs.GetMerit())
+    return false;
+  
+  if ( this->GetGestationTime() != rhs.GetGestationTime() )
+    return false;
+  
+  tArray<int> lhsTasks = this->GetCurTaskCount();
+  tArray<int> rhsTasks = rhs.GetCurTaskCount();
+  for (int k = 0; k < lhsTasks.GetSize(); k++)
+    if (lhsTasks[k] != rhsTasks[k])
+      return false;
+  
+  return true;
+}
+
+bool cPhenotype::operator!=(const cPhenotype& rhs) const
+{
+  return !(*this == rhs);
+}
+
+bool cPhenotype::operator>(const cPhenotype&  rhs) const
+{
+  if (this->GetMerit() > rhs.GetMerit())
+    return true;
+  
+  if ( this->GetGestationTime() > rhs.GetGestationTime() )
+    return true;
+  
+  tArray<int> lhsTasks = this->GetCurTaskCount();
+  tArray<int> rhsTasks = rhs.GetCurTaskCount();
+  for (int k = 0; k < lhsTasks.GetSize(); k++)
+    if (lhsTasks[k] > rhsTasks[k])
+      return true;
+  
+  return false;
 }
