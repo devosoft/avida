@@ -2168,6 +2168,7 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
   // if the org hasn't output yet enough numbers, just return without completing any tasks
   if (ctx.GetOutputBuffer().GetNumStored() < ctx.GetOutputBuffer().GetCapacity()) return 0;
 
+
   double quality = 0.0;
   const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
 
@@ -2201,6 +2202,7 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
 	}
 	for (int i=0; i<args.GetInt(3); i++)
 		vars[i] = tempVars[i] / tot;
+	//	cout << "x: " << vars[0] << " ";
   } 
   else 
   {
@@ -2219,7 +2221,8 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
   switch(function) {
     case 1:
 	  Fx = vars[0];		// F1
-      break;
+	  //	  cout << "Fx1: " << Fx << " ";
+	  break;
 
     case 2:
       Fx = (1.0 + vars[1]) * (1.0 - sqrt(vars[0] / (1.0 + vars[1])));   // F2
@@ -2256,9 +2259,11 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
     case 9:
     {
       double sum = 0;
+      //      cout << "9x: " << vars[0] << " ";
       for (int i=1; i<5; i++)
-			sum += vars[i]/4.0;
-      Fx = (1.0 + 9*sum) * (1.0 - sqrt(vars[0] / (1.0 + 9*sum)));
+	sum += vars[i]/4.0;
+      double Gx = 1+9*sum;
+      Fx = Gx * (1.0 - sqrt(vars[0]/Gx));
       break;
     }
 
@@ -2267,7 +2272,18 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
       double sum = 0;
       for (int i=1; i<5; i++)
 	sum += vars[i]/4.0;
-      Fx = (1.0 + sum) * (1.0 - pow(vars[0] / (1.0 + sum), 2.0));
+      double Gx = 1+9*sum;
+      Fx = Gx * (1.0 - pow(vars[0]/Gx, 2.0));
+      break;
+    }
+
+    case 11:
+    {
+      double sum = 0;
+      for (int i=1; i<5; i++)
+	sum += vars[i]/4.0;
+      double Gx = 1+9*sum;
+      Fx = Gx * (1 - sqrt(vars[0]/Gx) - (vars[0]/Gx)*(sin(3.14159*vars[0]*10)));
       break;
     }
 
