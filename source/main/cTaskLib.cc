@@ -2260,8 +2260,8 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
     {
       double sum = 0;
       //      cout << "9x: " << vars[0] << " ";
-      for (int i=1; i<5; i++)
-	sum += vars[i]/4.0;
+      for (int i=1; i<args.GetInt(3); i++)
+		  sum += vars[i]/double(args.GetInt(3)-1);
       double Gx = 1+9*sum;
       Fx = Gx * (1.0 - sqrt(vars[0]/Gx));
       break;
@@ -2270,8 +2270,8 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
     case 10:
     {
       double sum = 0;
-      for (int i=1; i<5; i++)
-	sum += vars[i]/4.0;
+      for (int i=1; i<args.GetInt(3); i++)
+		  sum += vars[i]/double(args.GetInt(3)-1);
       double Gx = 1+9*sum;
       Fx = Gx * (1.0 - pow(vars[0]/Gx, 2.0));
       break;
@@ -2280,8 +2280,8 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
     case 11:
     {
       double sum = 0;
-      for (int i=1; i<5; i++)
-	sum += vars[i]/4.0;
+      for (int i=1; i<args.GetInt(3); i++)
+		  sum += vars[i]/double(args.GetInt(3)-1);
       double Gx = 1+9*sum;
       Fx = Gx * (1 - sqrt(vars[0]/Gx) - (vars[0]/Gx)*(sin(3.14159*vars[0]*10)));
       break;
