@@ -462,7 +462,7 @@ public:
   bool operator!=(const cPhenotype& rhs) const; 
   
   struct lt_phenotype{
-    bool operator()(const cPhenotype* lhs, const cPhenotype* rhs)
+    bool operator()(const cPhenotype* lhs, const cPhenotype* rhs) const
       {return *lhs < *rhs;}   // operator< in cPhenotype
   };
   
