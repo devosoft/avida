@@ -22,6 +22,7 @@
  */
 
 #include "cDeme.h"
+#include "cResource.h"
 
 
 void cDeme::Setup(const tArray<int> & in_cells, int in_width)
@@ -61,8 +62,8 @@ void cDeme::Reset()
 {
   birth_count = 0; 
   _age = 0;
+  deme_resource_count.ReinitializeResources();
 }
-
 
 /*! Replacing this deme's germline has the effect of changing the deme's lineage.
 There's still some work to do here; the lineage labels of the Genomes in the germline
@@ -72,4 +73,26 @@ are all messed up.
 */
 void cDeme::ReplaceGermline(const cGermline& germline) {
 	_germline = germline;
+}
+
+void cDeme::ModifyDemeResCount(const tArray<double> & res_change, const int absolute_cell_id) {
+  // find relative cell_id in deme resource count
+  const int relative_cell_id = absolute_cell_id % GetSize();  //assumes all demes are the same size
+  deme_resource_count.ModifyCell(res_change, relative_cell_id);
+}
+
+void cDeme::SetupDemeRes(int id, cResource * res, int verbosity) {
+  const double decay = 1.0 - res->GetOutflow();
+  //addjust the resources cell list pointer here if we want CELL env. commands to be replicated in each deme
+  
+  deme_resource_count.Setup(id, res->GetName(), res->GetInitial(), 
+                           res->GetInflow(), decay,
+                           res->GetGeometry(), res->GetXDiffuse(),
+                           res->GetXGravity(), res->GetYDiffuse(), 
+                           res->GetYGravity(), res->GetInflowX1(), 
+                           res->GetInflowX2(), res->GetInflowY1(), 
+                           res->GetInflowY2(), res->GetOutflowX1(), 
+                           res->GetOutflowX2(), res->GetOutflowY1(), 
+                           res->GetOutflowY2(), res->GetCellListPtr(),
+                           verbosity);
 }

@@ -29,6 +29,7 @@
 #include "cResourceCount.h"
 #include "cStringList.h"
 
+class cResource;
 
 /*! Demes are groups of cells in the population that are somehow bound together
 as a unit.  The deme object is used from within cPopulation to manage these 
@@ -48,11 +49,9 @@ private:
   cDeme(const cDeme&); // @not_implemented
   
   cResourceCount deme_resource_count; //!< Resources available to the deme
-  cStringList deme_resource_names; //!< Name of resources used by this deme
-
   
 public:
-  cDeme() : width(0), birth_count(0), org_count(0), _age(0) { ; }
+  cDeme() : width(0), birth_count(0), org_count(0), _age(0), deme_resource_count(0) { ; }
   ~cDeme() { ; }
 
   void Setup(const tArray<int>& in_cells, int in_width = -1);
@@ -90,7 +89,13 @@ public:
     updates since the last time Reset() was called. */
   int GetAge() const { return _age; }
   
+  const cResourceCount& GetDemeResourceCount() const { return deme_resource_count; }
+  void SetDemeResourceCount(const cResourceCount in_res) { deme_resource_count = in_res; }
+  void ResizeSpatialGrids(const int in_x, const int in_y) { deme_resource_count.ResizeSpatialGrids(in_x, in_y); }
+  void ModifyDemeResCount(const tArray<double> & res_change, const int absolute_cell_id);
+  void SetupDemeRes(int id, cResource * res, int verbosity);
+  void UpdateDemeRes() { deme_resource_count.GetResources(); }
+  void Update(double time_step) { deme_resource_count.Update(time_step); }
 };
 
 #endif
-

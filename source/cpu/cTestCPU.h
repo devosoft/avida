@@ -74,6 +74,7 @@ private:
   int m_res_time_spent_offset;
   int m_res_update;
   cResourceCount m_resource_count;
+  cResourceCount m_deme_resource_count;
 
   bool ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int cur_depth);
   bool TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome, int cur_depth);
@@ -103,7 +104,8 @@ public:
   void ResetInputs(cAvidaContext& ctx);
 
   inline int GetReceiveValue();
-  inline const tArray<double>& GetResources();  
+  inline const tArray<double>& GetResources();
+  inline const tArray<double>& GetDemeResources(int deme_id);
   inline void SetResource(int id, double new_level);
   void InitResources(int res_method = RES_INITIAL, std::vector<std::pair<int, std::vector<double> > > * res = NULL, int update = 0, int time_spent_offset = 0);
   void SetResourceUpdate(int update, bool round_to_closest = false);
@@ -147,6 +149,11 @@ inline int cTestCPU::GetReceiveValue()
 inline const tArray<double>& cTestCPU::GetResources()
 {
     return m_resource_count.GetResources();
+}
+
+inline const tArray<double>& cTestCPU::GetDemeResources(int deme_id)
+{
+    return m_deme_resource_count.GetResources();
 }
 
 inline void cTestCPU::SetResource(int id, double new_level)

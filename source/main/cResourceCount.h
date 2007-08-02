@@ -45,6 +45,8 @@
 class cResourceCount
 {
 private:
+  mutable tArray<cString> resource_name;
+  mutable tArray<double> resource_initial;  // Initial quantity of each resource
   mutable tArray<double> resource_count;  // Current quantity of each resource
   tArray<double> decay_rate;      // Multiplies resource count at each step
   tArray<double> inflow_rate;     // An increment for resource at each step
@@ -54,6 +56,7 @@ private:
   mutable tArray<cSpatialResCount> spatial_resource_count;
   mutable tArray<double> curr_grid_res_cnt;
   mutable tArray< tArray<double> > curr_spatial_res_cnt;
+  int verbosity;
 
   // Setup the update process to use lazy evaluation...
   mutable double update_time;     // Portion of an update compleated...
@@ -94,14 +97,13 @@ public:
   void Modify(int id, double change);
   void ModifyCell(const tArray<double> & res_change, int cell_id);
   void Set(int id, double new_level);
-  double Get(int id) const
-  {
-    assert(id < resource_count.GetSize());
-    return resource_count[id];
-  }
+  double Get(int id) const;
   void ResizeSpatialGrids(int in_x, int in_y);
   cSpatialResCount GetSpatialResource(int id) { return spatial_resource_count[id]; }
+  void ReinitializeResources();
+  cString GetResName(int id) { return resource_name[id]; }
 };
+
 
 
 #ifdef ENABLE_UNIT_TESTS

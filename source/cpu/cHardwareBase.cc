@@ -763,9 +763,9 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
 #if INSTRUCTION_COSTS
   assert(cur_inst.GetOp() < inst_cost.GetSize());
   
-  // check avaliable energy first
+  // TODO:  Get rid of magic number. check avaliable energy first
   double energy_req = inst_energy_cost[cur_inst.GetOp()] * (organism->GetPhenotype().GetMerit().GetDouble() / 100.0); //compensate by factor of 100
-  
+
   if(m_world->GetConfig().ENERGY_ENABLED.Get() > 0 && energy_req > 0.0) {
     if(organism->GetPhenotype().GetStoredEnergy() >= energy_req) {
       inst_energy_cost[cur_inst.GetOp()] = 0;
@@ -782,13 +782,13 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
           pop.AddBeginSleep(cellID,m_world->GetStats().GetUpdate());
         }
         pop.GetCell(cellID).GetOrganism()->SetSleeping(true);
-        pop.incNumAsleep();
+        m_world->GetStats().incNumAsleep(pop.GetCell(cellID).GetDemeID());
       }
     } else { // not enough energy
       return false;
     }
   }
-  
+
   // If first time cost hasn't been paid off...
   if (m_has_ft_costs && inst_ft_cost[cur_inst.GetOp()] > 0) {
     inst_ft_cost[cur_inst.GetOp()]--;       // dec cost

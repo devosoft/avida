@@ -44,17 +44,20 @@ class cPopulationInterface : public cOrgInterface
 private:
   cWorld* m_world;
   int m_cell_id;
+  int m_deme_id;
 
   cPopulationInterface(); // @not_implemented
   cPopulationInterface(const cPopulationInterface&); // @not_implemented
   cPopulationInterface operator=(const cPopulationInterface&); // @not_implemented
   
 public:
-  cPopulationInterface(cWorld* world) : m_world(world), m_cell_id(-1) { ; }
+  cPopulationInterface(cWorld* world) : m_world(world), m_cell_id(-1), m_deme_id(-1) { ; }
   virtual ~cPopulationInterface() { ; }
 
   int GetCellID() { return m_cell_id; }
+  int GetDemeID() { return m_deme_id; }
   void SetCellID(int in_id) { m_cell_id = in_id; }
+  void SetDemeID(int in_id) { m_deme_id = in_id; }
 
   bool Divide(cAvidaContext& ctx, cOrganism* parent, cGenome& child_genome);
   cOrganism* GetNeighbor();
@@ -67,7 +70,9 @@ public:
   tArray<int> GetInputs();
   int Debug();
   const tArray<double>& GetResources();
+  const tArray<double>& GetDemeResources(int deme_id);
   void UpdateResources(const tArray<double>& res_change);
+  void UpdateDemeResources(const tArray<double>& res_change);
   void Die();
   void Kaboom(int distance);
   void SpawnDeme();

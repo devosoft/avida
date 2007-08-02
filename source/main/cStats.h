@@ -249,6 +249,8 @@ private:
   tArray<int> sense_last_exe_count;
   tArray<cString> sense_names;
 
+  tArray<int> numAsleep;
+
   cStats(); // @not_implemented
   cStats(const cStats&); // @not_implemented
   cStats& operator=(const cStats&); // @not_implemented
@@ -572,6 +574,10 @@ public:
 
   int GetNumSenseSlots();
 
+  int getNumAsleep(int demeID) { return numAsleep[demeID]; }
+  void incNumAsleep(int demeID) { numAsleep[demeID]++; }
+  void decNumAsleep(int demeID) { numAsleep[demeID]--; }
+
   // this value gets recorded when a creature with the particular
   // fitness value gets born. It will never change to a smaller value,
   // i.e., when the maximum fitness in the population drops, this value will
@@ -605,7 +611,7 @@ public:
   void PrintMarketData(const cString& filename);
   void PrintSenseData(const cString& filename);
   void PrintSenseExeData(const cString& filename);
-  
+  void PrintSleepData(const cString& filename);
 };
 
 

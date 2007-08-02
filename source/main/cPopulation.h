@@ -95,7 +95,6 @@ private:
   tArray<tList<cSaleItem> > market;   // list of lists of items for sale, each list goes with 1 label
 
   tVector<pair<int,int> > *sleep_log;
-  int numAsleep;
   
   // Data Tracking...
   tList<cPopulationCell> reaper_queue; // Death order in some mass-action runs
@@ -181,7 +180,8 @@ public:
   void CopyDeme(int deme1_id, int deme2_id);
   void SpawnDeme(int deme1_id, int deme2_id=-1);
   void PrintDemeStats();
-
+  void PrintDemeSpatialResData( cResourceCount res, const int i, const int deme_id);
+  
   // Print donation stats
   void PrintDonationStats();
 
@@ -214,11 +214,14 @@ public:
   cPopulationCell& GetCell(int in_num);
   const tArray<double>& GetResources() const { return resource_count.GetResources(); }
   const tArray<double>& GetCellResources(int cell_id) const { return resource_count.GetCellResources(cell_id); }
+  const tArray<double>& GetDemeResources(int deme_id) { return GetDeme(deme_id).GetDemeResourceCount().GetResources(); }
   cBirthChamber& GetBirthChamber(int id) { (void) id; return birth_chamber; }
 
   void UpdateResources(const tArray<double>& res_change);
   void UpdateResource(int id, double change);
   void UpdateCellResources(const tArray<double>& res_change, const int cell_id);
+  void UpdateDemeCellResources(const tArray<double>& res_change, const int cell_id);
+
   void SetResource(int id, double new_level);
   double GetResource(int id) const { return resource_count.Get(id); }
   cResourceCount& GetResourceCount() { return resource_count; }
@@ -240,10 +243,6 @@ public:
   void AddEndSleep(int cellID, int end_time);
  
   tVector<pair<int,int> > getCellSleepLog(int i) { return sleep_log[i]; }
-  
-  int getNumAsleep() { return numAsleep; }
-  void incNumAsleep() { numAsleep++; }
-  void decNumAsleep() { numAsleep--; }
 };
 
 

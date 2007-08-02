@@ -45,7 +45,9 @@ public:
   virtual ~cTestCPUInterface() { ; }
 
   int GetCellID() { return -1; }
+  int GetDemeID() { return -1; }
   void SetCellID(int in_id) { ; }
+  void SetDemeID(int in_id) { ; }
 
   bool Divide(cAvidaContext& ctx, cOrganism* parent, cGenome& child_genome);
   cOrganism* GetNeighbor();
@@ -57,7 +59,9 @@ public:
   tArray<int> GetInputs();
   int Debug();
   const tArray<double>& GetResources();
+  const tArray<double>& GetDemeResources(int deme_id);
   void UpdateResources(const tArray<double>& res_change);
+  void UpdateDemeResources(const tArray<double>& res_change) {;}
   void Die();
   void Kaboom(int distance);
   void SpawnDeme();

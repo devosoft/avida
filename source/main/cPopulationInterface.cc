@@ -109,9 +109,19 @@ const tArray<double> & cPopulationInterface::GetResources()
   return m_world->GetPopulation().GetCellResources(m_cell_id);
 }
 
+const tArray<double> & cPopulationInterface::GetDemeResources(int deme_id)
+{
+  return m_world->GetPopulation().GetDemeResources(deme_id);
+}
+
 void cPopulationInterface::UpdateResources(const tArray<double> & res_change)
 {
   return m_world->GetPopulation().UpdateCellResources(res_change, m_cell_id);
+}
+
+void cPopulationInterface::UpdateDemeResources(const tArray<double> & res_change)
+{
+  return m_world->GetPopulation().UpdateDemeCellResources(res_change, m_cell_id);
 }
 
 void cPopulationInterface::Die()

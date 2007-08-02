@@ -465,7 +465,6 @@ public:
     bool operator()(const cPhenotype* lhs, const cPhenotype* rhs) const
       {return *lhs < *rhs;}   // operator< in cPhenotype
   };
-  
 };
 
 

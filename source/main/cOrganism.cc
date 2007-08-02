@@ -37,6 +37,7 @@
 #include "cInjectGenotype.h"
 #include "cInstSet.h"
 #include "cOrgSinkMessage.h"
+#include "cPopulationCell.h"
 #include "cPopulation.h"
 #include "cStringUtil.h"
 #include "cTaskContext.h"
@@ -67,6 +68,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome
   , m_test_receive_pos(0)
   , m_max_executed(-1)
   , m_is_running(false)
+  , m_is_sleeping(false)
   , m_net(NULL)
 {
   // Initialization of structures...
@@ -179,7 +181,9 @@ void cOrganism::DoOutput(cAvidaContext& ctx,
                          const int value,
                          const bool on_divide)
 {
-  const tArray<double> & resource_count = m_interface->GetResources();
+  const int deme_id = m_interface->GetDemeID();
+  const tArray<double> & global_resource_count = m_interface->GetResources();
+  const tArray<double> & deme_resource_count = m_interface->GetDemeResources(deme_id);
   
   tList<tBuffer<int> > other_input_list;
   tList<tBuffer<int> > other_output_list;
@@ -216,7 +220,8 @@ void cOrganism::DoOutput(cAvidaContext& ctx,
   // if on IO add value to m_output_buf, if on divide don't need to
   if(!on_divide) output_buffer.Add(value);
   
-  tArray<double> res_change(resource_count.GetSize());
+  tArray<double> global_res_change(global_resource_count.GetSize());
+  tArray<double> deme_res_change(deme_resource_count.GetSize());
   tArray<int> insts_triggered;
   
   tBuffer<int>* received_messages_point = &m_received_messages;
@@ -224,8 +229,17 @@ void cOrganism::DoOutput(cAvidaContext& ctx,
   
   cTaskContext taskctx(m_interface, input_buffer, output_buffer, other_input_list, 
                        other_output_list, net_valid, 0, on_divide, received_messages_point);
-  bool task_completed = m_phenotype.TestOutput(ctx, taskctx, resource_count, res_change, insts_triggered);
+                       
+  //combine global and deme resource counts
+  const tArray<double> globalAndDeme_resource_count = global_resource_count + deme_resource_count;
+  tArray<double> globalAndDeme_res_change = global_res_change + deme_res_change;
   
+  bool task_completed = m_phenotype.TestOutput(ctx, taskctx, globalAndDeme_resource_count, globalAndDeme_res_change, insts_triggered);
+  
+  //disassemble global and deme resource counts
+  global_res_change = globalAndDeme_res_change.Subset(0, global_res_change.GetSize());
+  deme_res_change = globalAndDeme_res_change.Subset(global_res_change.GetSize(), globalAndDeme_res_change.GetSize());
+    
   if(m_world->GetConfig().ENERGY_ENABLED.Get() && m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 1 && task_completed) {
     m_phenotype.RefreshEnergy();
     m_phenotype.ApplyToEnergyStore();
@@ -235,7 +249,10 @@ void cOrganism::DoOutput(cAvidaContext& ctx,
     }
   }
  
-  m_interface->UpdateResources(res_change);
+  m_interface->UpdateResources(global_res_change);
+  
+  //update deme resources
+  m_interface->UpdateDemeResources(deme_res_change);  
 
   //if(m_world->GetConfig().CLEAR_ON_OUTPUT.Get()) input_buffer.Clear();  @JEB Not fully implemented 
 
@@ -243,9 +260,7 @@ void cOrganism::DoOutput(cAvidaContext& ctx,
     const int cur_inst = insts_triggered[i];
     m_hardware->ProcessBonusInst(ctx, cInstruction(cur_inst));
   }
-  
 }
-
 
 void cOrganism::NetGet(cAvidaContext& ctx, int& value, int& seq)
 {

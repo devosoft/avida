@@ -29,6 +29,7 @@
 #include "cEnvironment.h"
 #include "cHardwareManager.h"
 #include "cInstSet.h"
+#include "cPopulation.h"
 #include "cStringUtil.h"
 #include "cWorld.h"
 #include "cWorldDriver.h"
@@ -208,6 +209,10 @@ cStats::cStats(cWorld* world)
 
   
   genotype_map.Resize( m_world->GetConfig().WORLD_X.Get() * m_world->GetConfig().WORLD_Y.Get() );
+
+  numAsleep.Resize(m_world->GetConfig().NUM_DEMES.Get());
+  numAsleep.SetAll(0);
+
   SetupPrintDatabase();
 }
 
@@ -1004,6 +1009,20 @@ void cStats::PrintSenseExeData(const cString& filename)
     
   for( int i=0; i < sense_last_exe_count.GetSize(); i++ ){
     df.Write(sense_last_exe_count[i], sense_names[i]);
+  }
+  df.Endl();
+}
+
+void cStats::PrintSleepData(const cString& filename){
+  cDataFile& df = m_world->GetDataFile(filename);
+
+  df.WriteComment( "Number of organisms sleeping\n" );
+  df.WriteComment("total number of organisms sleeping" );
+  
+  df.Write( GetUpdate(), "update" );
+    
+  for( int i=0; i < numAsleep.GetSize(); i++ ){
+    df.Write(numAsleep[i], cStringUtil::Stringf("DemeID %d", i));
   }
   df.Endl();
 }

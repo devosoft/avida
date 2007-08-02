@@ -231,9 +231,11 @@ void cSpatialResCount::SetCellList(tArray<cCellResource> *in_cell_list_ptr) {
 
 /* Set the rate variable for one element using the array index */
 
-void cSpatialResCount::Rate(int x, double ratein) const { 
+void cSpatialResCount::Rate(int x, double ratein) const {
   if (x >= 0 && x < grid.GetSize()) {
     grid[x].Rate(ratein);
+  } else {
+    assert(false); // x not valid id
   }
 }
 
@@ -242,6 +244,8 @@ void cSpatialResCount::Rate(int x, double ratein) const {
 void cSpatialResCount::Rate(int x, int y, double ratein) const { 
   if (x >= 0 && x < world_x && y>= 0 && y < world_y) {
     grid[y * world_x + x].Rate(ratein);
+  } else {
+    assert(false); // x or y not valid id
   }
 }
 
@@ -251,6 +255,8 @@ void cSpatialResCount::Rate(int x, int y, double ratein) const {
 void cSpatialResCount::State(int x) { 
   if (x >= 0 && x < grid.GetSize()) {
     grid[x].State();
+  } else {
+    assert(false); // x not valid id
   }
 }
 
@@ -260,6 +266,8 @@ void cSpatialResCount::State(int x) {
 void cSpatialResCount::State(int x, int y) { 
   if (x >= 0 && x < world_x && y >= 0 && y < world_y) {
     grid[y*world_x + x].State();
+  } else {
+    assert(false); // x or y not valid id
   }
 }
 

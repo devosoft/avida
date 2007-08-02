@@ -89,16 +89,13 @@ bool cResource::SetGeometry(cString _geometry)
      }
 }
 
-bool cResource::SetDemeResource(cString _deme_resource)
-
 /* Set if the resource is going to be accessable by demes */
-
-{
+bool cResource::SetDemeResource(cString _deme_resource) {
   _deme_resource.ToLower();
-  if ((_deme_resource == "false") || (_deme_resource = "0")) {
+  if ((_deme_resource == "false") || (_deme_resource == "0")) {
     deme_resource = false;
     return(true);
-  } else if ((_deme_resource == "true") || (_deme_resource = "1")) {
+  } else if ((_deme_resource == "true") || (_deme_resource == "1")) {
     deme_resource = true;
     return(true);
   } else {

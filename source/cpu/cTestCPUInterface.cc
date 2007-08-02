@@ -75,6 +75,10 @@ const tArray<double>& cTestCPUInterface::GetResources()
   return m_testcpu->GetResources();  
 }
 
+const tArray<double>& cTestCPUInterface::GetDemeResources(int deme_id) {
+  return m_testcpu->GetDemeResources(deme_id);
+}
+
 void cTestCPUInterface::UpdateResources(const tArray<double>& res_change)
 {
    m_testcpu->ModifyResources(res_change);

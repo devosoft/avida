@@ -87,6 +87,7 @@ STATS_OUT_FILE(PrintGenotypeMap,            genotype_map.m      );
 STATS_OUT_FILE(PrintMarketData,             market.dat          );
 STATS_OUT_FILE(PrintSenseData,              sense.dat           );
 STATS_OUT_FILE(PrintSenseExeData,           sense_exe.dat       );
+STATS_OUT_FILE(PrintSleepData,              sleep.dat          );
 
 
 #define POP_OUT_FILE(METHOD, DEFAULT)                                                     /*  1 */ \
@@ -2354,16 +2355,17 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintMarketData>("PrintMarketData");
   action_lib->Register<cActionPrintSenseData>("PrintSenseData");
   action_lib->Register<cActionPrintSenseExeData>("PrintSenseExeData");
+  action_lib->Register<cActionPrintSleepData>("PrintSleepData");
 
   // Population Out Files
   action_lib->Register<cActionPrintPhenotypeData>("PrintPhenotypeData");
   action_lib->Register<cActionPrintPhenotypeStatus>("PrintPhenotypeStatus");
   action_lib->Register<cActionPrintDemeStats>("PrintDemeStats");
 	
-	//Coalescence Clade Actions
-	action_lib->Register<cActionPrintCCladeCounts>("PrintCCladeCounts");
+  //Coalescence Clade Actions
+  action_lib->Register<cActionPrintCCladeCounts>("PrintCCladeCounts");
   action_lib->Register<cActionPrintCCladeFitnessHistogram>("PrintCCladeFitnessHistogram");
-	action_lib->Register<cActionPrintCCladeRelativeFitnessHistogram>("PrintCCladeRelativeFitnessHistogram");
+  action_lib->Register<cActionPrintCCladeRelativeFitnessHistogram>("PrintCCladeRelativeFitnessHistogram");
 	
   
   // Processed Data
@@ -2378,8 +2380,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDominantGenotype>("PrintDominantGenotype");
   action_lib->Register<cActionPrintDominantParasiteGenotype>("PrintDominantParasiteGenotype");
   action_lib->Register<cActionPrintDetailedFitnessData>("PrintDetailedFitnessData");
-	action_lib->Register<cActionPrintLogFitnessHistogram>("PrintLogFitnessHistogram");
-	action_lib->Register<cActionPrintRelativeFitnessHistogram>("PrintRelativeFitnessHistogram");
+  action_lib->Register<cActionPrintLogFitnessHistogram>("PrintLogFitnessHistogram");
+  action_lib->Register<cActionPrintRelativeFitnessHistogram>("PrintRelativeFitnessHistogram");
   action_lib->Register<cActionPrintGeneticDistanceData>("PrintGeneticDistanceData");
   action_lib->Register<cActionPrintPopulationDistanceData>("PrintPopulationDistanceData");
   action_lib->Register<cActionPrintDebug>("PrintDebug");
@@ -2391,7 +2393,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintViableTasksData>("PrintViableTasksData");
   action_lib->Register<cActionPrintTreeDepths>("PrintTreeDepths");
   
-	action_lib->Register<cActionPrintGenomicSiteEntropy>("PrintGenomicSiteEntropy");
+  action_lib->Register<cActionPrintGenomicSiteEntropy>("PrintGenomicSiteEntropy");
 	
   // Grid Information Dumps
   action_lib->Register<cActionDumpMemory>("DumpMemory");

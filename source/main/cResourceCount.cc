@@ -24,6 +24,7 @@
  */
 
 #include "cResourceCount.h"
+#include "cResource.h"
 
 #include "nGeometry.h"
 
@@ -114,6 +115,8 @@ cResourceCount::cResourceCount(const cResourceCount &rc) {
 }
 
 const cResourceCount &cResourceCount::operator=(const cResourceCount &rc) {
+  resource_name = rc.resource_name;
+  resource_initial = rc.resource_initial;
   resource_count = rc.resource_count;
   decay_rate = rc.decay_rate;
   inflow_rate = rc.inflow_rate;
@@ -131,6 +134,8 @@ const cResourceCount &cResourceCount::operator=(const cResourceCount &rc) {
 
 void cResourceCount::SetSize(int num_resources)
 {
+  resource_name.ResizeClear(num_resources);
+  resource_initial.ResizeClear(num_resources);
   resource_count.ResizeClear(num_resources);
   decay_rate.ResizeClear(num_resources);
   inflow_rate.ResizeClear(num_resources);
@@ -143,6 +148,8 @@ void cResourceCount::SetSize(int num_resources)
   curr_grid_res_cnt.ResizeClear(num_resources);
   curr_spatial_res_cnt.ResizeClear(num_resources);
 
+  resource_name.SetAll("");
+  resource_initial.SetAll(0.0);
   resource_count.SetAll(0.0);
   decay_rate.SetAll(0.0);
   inflow_rate.SetAll(0.0);
@@ -150,6 +157,7 @@ void cResourceCount::SetSize(int num_resources)
   inflow_precalc.SetAll(0.0);
   geometry.SetAll(nGeometry::GLOBAL);
   curr_grid_res_cnt.SetAll(0.0);
+  //DO spacial resources need to be set to zero?
 }
 
 cResourceCount::~cResourceCount()
@@ -203,9 +211,10 @@ void cResourceCount::Setup(int id, cString name, double initial, double inflow,
     exit(2);
   }
 
-  /* If the verbose flag is set print out information about resources */
 
-  if (verbosity_level > VERBOSE_NORMAL) {
+  /* If the verbose flag is set print out information about resources */
+  verbosity = verbosity_level;
+  if (verbosity > VERBOSE_NORMAL) {
     cout << "Setting up resource " << name
          << "(" << geo_name 
          << ") with initial quatity=" << initial
@@ -233,6 +242,8 @@ void cResourceCount::Setup(int id, cString name, double initial, double inflow,
 
   /* recource_count gets only the values for global resources */
 
+  resource_name[id] = name;
+  resource_initial[id] = initial;
   if (in_geometry == nGeometry::GLOBAL) {
     resource_count[id] = initial;
     spatial_resource_count[id].RateAll(0);
@@ -368,12 +379,25 @@ void cResourceCount::ModifyCell(const tArray<double> & res_change, int cell_id)
   }
 }
 
+double cResourceCount::Get(int id) const
+{
+  assert(id < resource_count.GetSize());
+  if(geometry[id] == nGeometry::GLOBAL) {
+    return resource_count[id];
+  } //else return spacial resource sum
+  return spatial_resource_count[id].SumAll();
+}
 
 void cResourceCount::Set(int id, double new_level)
 {
   assert(id < resource_count.GetSize());
-
-  resource_count[id] = new_level;
+  if(geometry[id] == nGeometry::GLOBAL) {
+    resource_count[id] = new_level;
+  } else {
+    for(int i = 0; i < spatial_resource_count[id].GetSize(); i++) {
+      spatial_resource_count[id].SetCellAmount(i, new_level/spatial_resource_count[id].GetSize());
+    }
+  }
 }
 
 void cResourceCount::ResizeSpatialGrids(int in_x, int in_y)
@@ -428,5 +452,11 @@ void cResourceCount::DoUpdates() const
         // BDB: resource_count[i] = spatial_resource_count[i].SumAll();
       }
     }
+  }
+}
+
+void cResourceCount::ReinitializeResources(){
+  for(int i = 0; i < resource_name.GetSize(); i++) {
+    Set(i, resource_initial[i]);
   }
 }

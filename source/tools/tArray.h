@@ -75,6 +75,30 @@ public:
     return *this;
   }
 
+  tArray operator+(const tArray in) const {
+    tArray tmp(0);
+    for(int i = 0; i < GetSize(); i++) {
+      tmp.Push(m_data[i]);
+    }
+    
+    for(int i = 0; i < in.GetSize(); i++) {
+      tmp.Push(in[i]);
+    }
+    return tmp;
+  }
+  
+  tArray Subset(int start, int end) {
+    assert(start <= end);
+    assert(0 <= start && start <= GetSize());
+    assert(0 <= end && end <= GetSize());
+    
+    tArray tmp(0);
+    for(int i = start; i < end; i++) {
+      tmp.Push(m_data[i]);
+    }
+    return tmp;
+  }
+  
   bool Good() const { return (m_data != NULL); }
   int GetSize() const { return m_size; }
 

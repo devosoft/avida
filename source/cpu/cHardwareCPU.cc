@@ -4067,8 +4067,8 @@ bool cHardwareCPU::Inst_Sleep(cAvidaContext& ctx) {
     pop.AddEndSleep(organism->GetCellID(), m_world->GetStats().GetUpdate());
   }
   int cellID = organism->GetCellID();
-  pop.GetCell(cellID).GetOrganism()->SetSleeping(false);  //this instruction get executed at the end of a sleep cycle
-  pop.decNumAsleep();
+  organism->SetSleeping(false);  //this instruction get executed at the end of a sleep cycle
+  m_world->GetStats().decNumAsleep(pop.GetCell(cellID).GetDemeID());
   if(m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 2) {
     organism->GetPhenotype().RefreshEnergy();
     organism->GetPhenotype().ApplyToEnergyStore();

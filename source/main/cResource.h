@@ -23,7 +23,7 @@
  *
  */
 
-/*! Classes to held global and local information about a given resource */
+/*! Classes to hold global and local information about a given resource */
 
 #ifndef cResource_h
 #define cResource_h

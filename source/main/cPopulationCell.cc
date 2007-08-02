@@ -183,6 +183,7 @@ void cPopulationCell::InsertOrganism(cOrganism & new_org)
 
   // Adjust the organism's attributes to match this cell.
   organism->GetOrgInterface().SetCellID(cell_id);
+  organism->GetOrgInterface().SetDemeID(deme_id);
 }
 
 cOrganism * cPopulationCell::RemoveOrganism()

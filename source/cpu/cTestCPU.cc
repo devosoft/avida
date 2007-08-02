@@ -61,6 +61,9 @@ cTestCPU::cTestCPU(cWorld* world)
  
 void cTestCPU::InitResources(int res_method, std::vector<std::pair<int, std::vector<double> > > * res, int update, int time_spent_offset)
 {  
+  //FOR DEMES
+  m_deme_resource_count.SetSize(0);
+
   m_res_method = (eTestCPUResourceMethod)res_method;
   // Make sure it's valid
   if(res_method < 0 ||  res_method >= RES_LAST) {

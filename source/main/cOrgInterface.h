@@ -53,7 +53,9 @@ public:
   virtual ~cOrgInterface() { ; }
 
   virtual int GetCellID() = 0;
+  virtual int GetDemeID() = 0;
   virtual void SetCellID(int in_id) = 0;
+  virtual void SetDemeID(int in_id) = 0;
 
   virtual bool Divide(cAvidaContext& ctx, cOrganism* parent, cGenome& child_genome) = 0;
   virtual cOrganism* GetNeighbor() = 0;
@@ -66,7 +68,9 @@ public:
   virtual tArray<int> GetInputs() = 0;
   virtual int Debug() = 0;
   virtual const tArray<double>& GetResources() = 0;
+  virtual const tArray<double>& GetDemeResources(int deme_id) = 0;  
   virtual void UpdateResources(const tArray<double>& res_change) = 0;
+  virtual void UpdateDemeResources(const tArray<double>& res_change) = 0;
   virtual void Die() = 0;
   virtual void Kaboom(int distance) = 0;
   virtual void SpawnDeme() = 0;
