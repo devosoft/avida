@@ -1103,20 +1103,20 @@ bool cHardwareExperimental::Inst_HeadRead(cAvidaContext& ctx)
   
   const int head_id = FindModifiedHead(nHardware::HEAD_READ);
   GetHead(head_id).Adjust();
-  sCPUStats & cpu_stats = organism->CPUStats();
+//  sCPUStats & cpu_stats = organism->CPUStats();
   
   // Mutations only occur on the read, for the moment.
   int read_inst = 0;
   if (organism->TestCopyMut(ctx)) {
     read_inst = m_inst_set->GetRandomInst(ctx).GetOp();
-    cpu_stats.mut_stats.copy_mut_count++;  // @CAO, hope this is good!
+//    cpu_stats.mut_stats.copy_mut_count++;  // @CAO, hope this is good!
   } else {
     read_inst = GetHead(head_id).GetInst().GetOp();
   }
   GetRegister(dst) = read_inst;
   ReadInst(read_inst);
   
-  cpu_stats.mut_stats.copies_exec++;  // @CAO, this too..
+//  cpu_stats.mut_stats.copies_exec++;  // @CAO, this too..
   GetHead(head_id).Advance();
   return true;
 }
@@ -1145,7 +1145,7 @@ bool cHardwareExperimental::Inst_HeadCopy(cAvidaContext& ctx)
   // For the moment, this cannot be nop-modified.
   cHeadCPU& read_head = GetHead(nHardware::HEAD_READ);
   cHeadCPU& write_head = GetHead(nHardware::HEAD_WRITE);
-  sCPUStats& cpu_stats = organism->CPUStats();
+//  sCPUStats& cpu_stats = organism->CPUStats();
   
   read_head.Adjust();
   write_head.Adjust();
@@ -1155,12 +1155,12 @@ bool cHardwareExperimental::Inst_HeadCopy(cAvidaContext& ctx)
   ReadInst(read_inst.GetOp());
   if (organism->TestCopyMut(ctx)) {
     read_inst = m_inst_set->GetRandomInst(ctx);
-    cpu_stats.mut_stats.copy_mut_count++; 
+//    cpu_stats.mut_stats.copy_mut_count++; 
     write_head.SetFlagMutated();
     write_head.SetFlagCopyMut();
   }
   
-  cpu_stats.mut_stats.copies_exec++;
+//  cpu_stats.mut_stats.copies_exec++;
   
   write_head.SetInst(read_inst);
   write_head.SetFlagCopied();  // Set the copied flag...

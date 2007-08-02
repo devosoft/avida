@@ -71,7 +71,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome
 {
   // Initialization of structures...
   m_hardware = m_world->GetHardwareManager().Create(this);
-  m_cpu_stats.Setup();
+//  m_cpu_stats.Setup();
 
   if (m_world->GetConfig().DEATH_METHOD.Get() > DEATH_METHOD_OFF) {
     m_max_executed = m_world->GetConfig().AGE_LIMIT.Get();

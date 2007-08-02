@@ -1190,20 +1190,20 @@ bool cHardwareTransSMT::Inst_HeadRead(cAvidaContext& ctx)
 #endif
   
   GetHead(head_id).Adjust();
-  sCPUStats & cpu_stats = organism->CPUStats();
+//  sCPUStats & cpu_stats = organism->CPUStats();
 	
   // Mutations only occur on the read, for the moment.
   int read_inst = 0;
   if (organism->TestCopyMut(ctx)) {
     read_inst = m_inst_set->GetRandomInst(ctx).GetOp();
-    cpu_stats.mut_stats.copy_mut_count++;  // @CAO, hope this is good!
+//    cpu_stats.mut_stats.copy_mut_count++;  // @CAO, hope this is good!
   } else {
     read_inst = GetHead(head_id).GetInst().GetOp();
   }
   Stack(dst).Push(read_inst);
   ReadInst(read_inst);
 	
-  cpu_stats.mut_stats.copies_exec++;  // @CAO, this too..
+//  cpu_stats.mut_stats.copies_exec++;  // @CAO, this too..
   GetHead(head_id).Advance();
   return true;
 }

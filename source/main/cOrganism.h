@@ -31,9 +31,9 @@
 #ifndef cCPUMemory_h
 #include "cCPUMemory.h"
 #endif
-#ifndef sCPUStats_h
-#include "sCPUStats.h"
-#endif
+//#ifndef sCPUStats_h
+//#include "sCPUStats.h"
+//#endif
 #ifndef cGenome_h
 #include "cGenome.h"
 #endif
@@ -99,7 +99,7 @@ protected:
  
 	// Other stats
   cCPUMemory m_child_genome; // Child genome, while under construction.
-  sCPUStats m_cpu_stats;     // Info for statistics
+//  sCPUStats m_cpu_stats;     // Info for statistics
 
   // Input and Output with the environment
   int m_input_pointer;
@@ -169,7 +169,7 @@ public:
   int GetMaxExecuted() const { return m_max_executed; }
   
   cCPUMemory& ChildGenome() { return m_child_genome; }
-  sCPUStats& CPUStats() { return m_cpu_stats; }
+//  sCPUStats& CPUStats() { return m_cpu_stats; }
 
   void SetRunning(bool in_running) { m_is_running = in_running; }
   bool IsRunning() { return m_is_running; }

@@ -1931,14 +1931,14 @@ bool cHardwareGX::Inst_Copy(cAvidaContext& ctx)
 
   const cHeadCPU from(this, GetRegister(op1));
   cHeadCPU to(this, GetRegister(op2) + GetRegister(op1));
-  sCPUStats& cpu_stats = organism->CPUStats();
+//  sCPUStats& cpu_stats = organism->CPUStats();
   
   if (organism->TestCopyMut(ctx)) {
     to.SetInst(m_inst_set->GetRandomInst(ctx));
     to.SetFlagMutated();  // Mark this instruction as mutated...
     to.SetFlagCopyMut();  // Mark this instruction as copy mut...
                               //organism->GetPhenotype().IsMutated() = true;
-    cpu_stats.mut_stats.copy_mut_count++;
+//    cpu_stats.mut_stats.copy_mut_count++;
   } else {
     to.SetInst(from.GetInst());
     to.ClearFlagMutated();  // UnMark
@@ -1946,7 +1946,7 @@ bool cHardwareGX::Inst_Copy(cAvidaContext& ctx)
   }
   
   to.SetFlagCopied();  // Set the copied flag.
-  cpu_stats.mut_stats.copies_exec++;
+//  cpu_stats.mut_stats.copies_exec++;
   return true;
 }
 
@@ -1971,7 +1971,7 @@ bool cHardwareGX::Inst_WriteInst(cAvidaContext& ctx)
 
   cHeadCPU to(this, GetRegister(op2) + GetRegister(op1));
   const int value = Mod(GetRegister(src), m_inst_set->GetSize());
-  sCPUStats& cpu_stats = organism->CPUStats();
+//  sCPUStats& cpu_stats = organism->CPUStats();
 
   // Change value on a mutation...
   if (organism->TestCopyMut(ctx)) {
@@ -1979,7 +1979,7 @@ bool cHardwareGX::Inst_WriteInst(cAvidaContext& ctx)
     to.SetFlagMutated();      // Mark this instruction as mutated...
     to.SetFlagCopyMut();      // Mark this instruction as copy mut...
                                   //organism->GetPhenotype().IsMutated() = true;
-    cpu_stats.mut_stats.copy_mut_count++;
+//    cpu_stats.mut_stats.copy_mut_count++;
   } else {
     to.SetInst(cInstruction(value));
     to.ClearFlagMutated();     // UnMark
@@ -1987,7 +1987,7 @@ bool cHardwareGX::Inst_WriteInst(cAvidaContext& ctx)
   }
 
   to.SetFlagCopied();  // Set the copied flag.
-  cpu_stats.mut_stats.copies_exec++;
+//  cpu_stats.mut_stats.copies_exec++;
   return true;
 }
 
@@ -2005,7 +2005,7 @@ bool cHardwareGX::Inst_StackWriteInst(cAvidaContext& ctx)
   const int op1 = REG_AX;
   cHeadCPU to(this, GetRegister(op1) + GetRegister(dst));
   const int value = Mod(StackPop(), m_inst_set->GetSize());
-  sCPUStats& cpu_stats = organism->CPUStats();
+//  sCPUStats& cpu_stats = organism->CPUStats();
   
   // Change value on a mutation...
   if (organism->TestCopyMut(ctx)) {
@@ -2013,7 +2013,7 @@ bool cHardwareGX::Inst_StackWriteInst(cAvidaContext& ctx)
     to.SetFlagMutated();      // Mark this instruction as mutated...
     to.SetFlagCopyMut();      // Mark this instruction as copy mut...
                                   //organism->GetPhenotype().IsMutated() = true;
-    cpu_stats.mut_stats.copy_mut_count++;
+//    cpu_stats.mut_stats.copy_mut_count++;
   } else {
     to.SetInst(cInstruction(value));
     to.ClearFlagMutated();     // UnMark
@@ -2021,7 +2021,7 @@ bool cHardwareGX::Inst_StackWriteInst(cAvidaContext& ctx)
   }
   
   to.SetFlagCopied();  // Set the copied flag.
-  cpu_stats.mut_stats.copies_exec++;
+//  cpu_stats.mut_stats.copies_exec++;
   return true;
 }
 
@@ -3195,7 +3195,7 @@ bool cHardwareGX::Inst_HeadRead(cAvidaContext& ctx)
   
   const int head_id = FindModifiedHead(nHardware::HEAD_READ);
   GetHead(head_id).Adjust();
-  sCPUStats & cpu_stats = organism->CPUStats();
+//  sCPUStats & cpu_stats = organism->CPUStats();
   
     // <--- GX addition
   if ( !m_programids[GetHead(head_id).GetMemSpace()]->GetReadable() ) return false;
@@ -3205,14 +3205,14 @@ bool cHardwareGX::Inst_HeadRead(cAvidaContext& ctx)
   int read_inst = 0;
   if (organism->TestCopyMut(ctx)) {
     read_inst = m_inst_set->GetRandomInst(ctx).GetOp();
-    cpu_stats.mut_stats.copy_mut_count++;  // @CAO, hope this is good!
+//    cpu_stats.mut_stats.copy_mut_count++;  // @CAO, hope this is good!
   } else {
     read_inst = GetHead(head_id).GetInst().GetOp();
   }
   GetRegister(dst) = read_inst;
   ReadInst(read_inst);
   
-  cpu_stats.mut_stats.copies_exec++;  // @CAO, this too..
+//  cpu_stats.mut_stats.copies_exec++;  // @CAO, this too..
   GetHead(head_id).Advance();
   return true;
 }
@@ -3245,7 +3245,7 @@ bool cHardwareGX::Inst_HeadCopy(cAvidaContext& ctx)
   // For the moment, this cannot be nop-modified.
   cHeadCPU& read_head = GetHead(nHardware::HEAD_READ);
   cHeadCPU& write_head = GetHead(nHardware::HEAD_WRITE);
-  sCPUStats& cpu_stats = organism->CPUStats();
+//  sCPUStats& cpu_stats = organism->CPUStats();
   
   read_head.Adjust();
   write_head.Adjust();
@@ -3255,12 +3255,12 @@ bool cHardwareGX::Inst_HeadCopy(cAvidaContext& ctx)
   ReadInst(read_inst.GetOp());
   if (organism->TestCopyMut(ctx)) {
     read_inst = m_inst_set->GetRandomInst(ctx);
-    cpu_stats.mut_stats.copy_mut_count++; 
+//    cpu_stats.mut_stats.copy_mut_count++; 
     write_head.SetFlagMutated();
     write_head.SetFlagCopyMut();
   }
   
-  cpu_stats.mut_stats.copies_exec++;
+//  cpu_stats.mut_stats.copies_exec++;
   
   write_head.SetInst(read_inst);
   write_head.SetFlagCopied();  // Set the copied flag...
@@ -3275,7 +3275,7 @@ bool cHardwareGX::HeadCopy_ErrorCorrect(cAvidaContext& ctx, double reduction)
   // For the moment, this cannot be nop-modified.
   cHeadCPU & read_head = GetHead(nHardware::HEAD_READ);
   cHeadCPU & write_head = GetHead(nHardware::HEAD_WRITE);
-  sCPUStats & cpu_stats = organism->CPUStats();
+//  sCPUStats & cpu_stats = organism->CPUStats();
   
   read_head.Adjust();
   write_head.Adjust();
@@ -3285,13 +3285,13 @@ bool cHardwareGX::HeadCopy_ErrorCorrect(cAvidaContext& ctx, double reduction)
   ReadInst(read_inst.GetOp());
   if ( ctx.GetRandom().P(organism->GetCopyMutProb() / reduction) ) {
     read_inst = m_inst_set->GetRandomInst(ctx);
-    cpu_stats.mut_stats.copy_mut_count++; 
+//    cpu_stats.mut_stats.copy_mut_count++; 
     write_head.SetFlagMutated();
     write_head.SetFlagCopyMut();
     //organism->GetPhenotype().IsMutated() = true;
   }
   
-  cpu_stats.mut_stats.copies_exec++;
+//  cpu_stats.mut_stats.copies_exec++;
   
   write_head.SetInst(read_inst);
   write_head.SetFlagCopied();  // Set the copied flag...
