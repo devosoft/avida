@@ -762,30 +762,32 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
 {
 #if INSTRUCTION_COSTS
   assert(cur_inst.GetOp() < inst_cost.GetSize());
-  
-  // TODO:  Get rid of magic number. check avaliable energy first
-  double energy_req = inst_energy_cost[cur_inst.GetOp()] * (organism->GetPhenotype().GetMerit().GetDouble() / 100.0); //compensate by factor of 100
 
-  if(m_world->GetConfig().ENERGY_ENABLED.Get() > 0 && energy_req > 0.0) {
-    if(organism->GetPhenotype().GetStoredEnergy() >= energy_req) {
-      inst_energy_cost[cur_inst.GetOp()] = 0;
-      //subtract energy used from current org energy.
-      organism->GetPhenotype().ReduceEnergy(energy_req);  
-      
-      // tracking sleeping organisms
-      cString instName = m_world->GetHardwareManager().GetInstSet().GetName(cur_inst);
-      int cellID = organism->GetCellID();
-      if( instName == cString("sleep") || instName == cString("sleep1") || instName == cString("sleep2") ||
-          instName == cString("sleep3") || instName == cString("sleep4")) {
-        cPopulation& pop = m_world->GetPopulation();
-        if(m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1) {
-          pop.AddBeginSleep(cellID,m_world->GetStats().GetUpdate());
+  if(m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
+    // TODO:  Get rid of magic number. check avaliable energy first
+    double energy_req = inst_energy_cost[cur_inst.GetOp()] * (organism->GetPhenotype().GetMerit().GetDouble() / 100.0); //compensate by factor of 100
+    
+    if (energy_req > 0.0) { 
+      if (organism->GetPhenotype().GetStoredEnergy() >= energy_req) {
+        inst_energy_cost[cur_inst.GetOp()] = 0;
+        // subtract energy used from current org energy.
+        organism->GetPhenotype().ReduceEnergy(energy_req);  
+        
+        // tracking sleeping organisms
+        cString instName = m_world->GetHardwareManager().GetInstSet().GetName(cur_inst);
+        int cellID = organism->GetCellID();
+        if( instName == cString("sleep") || instName == cString("sleep1") || instName == cString("sleep2") ||
+            instName == cString("sleep3") || instName == cString("sleep4")) {
+          cPopulation& pop = m_world->GetPopulation();
+          if(m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1) {
+            pop.AddBeginSleep(cellID,m_world->GetStats().GetUpdate());
+          }
+          pop.GetCell(cellID).GetOrganism()->SetSleeping(true);
+          m_world->GetStats().incNumAsleep(pop.GetCell(cellID).GetDemeID());
         }
-        pop.GetCell(cellID).GetOrganism()->SetSleeping(true);
-        m_world->GetStats().incNumAsleep(pop.GetCell(cellID).GetDemeID());
+      } else { // not enough energy
+        return false;
       }
-    } else { // not enough energy
-      return false;
     }
   }
 
@@ -805,7 +807,9 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
     }
   }
   
-  inst_energy_cost[cur_inst.GetOp()] = m_inst_set->GetEnergyCost(cur_inst); //reset instruction energy cost
+  if (m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
+    inst_energy_cost[cur_inst.GetOp()] = m_inst_set->GetEnergyCost(cur_inst); // reset instruction energy cost
+  }
 #endif
   return true;
 }
