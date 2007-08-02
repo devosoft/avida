@@ -266,6 +266,7 @@ public:
   double GetInsMutProb() const { return m_mut_rates.GetInsMutProb(); }
   double GetDelMutProb() const { return m_mut_rates.GetDelMutProb(); }
   double GetDivMutProb() const { return m_mut_rates.GetDivMutProb(); }
+  double GetUniformMutProb() const { return m_mut_rates.GetUniformMutProb(); }
   double GetParentMutProb() const { return m_mut_rates.GetParentMutProb();}
 
   double GetInjectInsProb() const { return m_mut_rates.GetInjectInsProb(); }

@@ -259,6 +259,40 @@ unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multip
     }
   }
   
+  
+  
+  // Uniform Mutations on Divide
+  if (organism->GetUniformMutProb() > 0 && totalMutations < maxmut) {
+    int num_mut = ctx.GetRandom().GetRandBinomial(child_genome.GetSize(), 
+                                                  organism->GetUniformMutProb() / mut_multiplier);
+    
+    // If we have lines to mutate...
+    if (num_mut > 0 && totalMutations < maxmut) {
+      int mutrange = (m_inst_set->GetSize() * 2) + 1;
+      for (int i = 0; i < num_mut && totalMutations < maxmut; i++) {
+        int mut = ctx.GetRandom().GetUInt(mutrange);
+        
+        if (mut < m_inst_set->GetSize()) { // point
+          int site = ctx.GetRandom().GetUInt(child_genome.GetSize());
+          child_genome[site] = cInstruction(mut);
+        } else if (mut == m_inst_set->GetSize()) { // delete
+          if (child_genome.GetSize() == MIN_CREATURE_SIZE) continue;
+          int site = ctx.GetRandom().GetUInt(child_genome.GetSize());
+          child_genome.Remove(site);
+        } else { // insert
+          if (child_genome.GetSize() == MAX_CREATURE_SIZE) continue;
+          int site = ctx.GetRandom().GetUInt(child_genome.GetSize() + 1);
+          child_genome.Insert(site, cInstruction(mut - m_inst_set->GetSize() - 1));
+        }
+                                               
+        totalMutations++;
+      }
+    }
+  }
+  
+  
+  
+  
   // Mutations in the parent's genome
   if (organism->GetParentMutProb() > 0 && totalMutations < maxmut) {
     for (int i = 0; i < GetMemory().GetSize(); i++) {

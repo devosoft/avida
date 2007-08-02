@@ -57,6 +57,7 @@ private:
     double ins_prob;        // Per site
     double del_prob;        // Per site
     double mut_prob;        // Per site
+    double uniform_prob;
     double divide_mut_prob;     // Max one per divide
     double divide_ins_prob;     // Max one per divide
     double divide_del_prob;     // Max one per divide
@@ -116,6 +117,7 @@ public:
   double GetInsMutProb() const       { return divide.ins_prob; }
   double GetDelMutProb() const       { return divide.del_prob; }
   double GetDivMutProb() const       { return divide.mut_prob; }
+  double GetUniformMutProb() const   { return divide.uniform_prob; }
   double GetDivideMutProb() const    { return divide.divide_mut_prob; }
   double GetDivideInsProb() const    { return divide.divide_ins_prob; }
   double GetDivideDelProb() const    { return divide.divide_del_prob; }
@@ -131,6 +133,7 @@ public:
   void SetInsMutProb(double in_prob)    { divide.ins_prob        = in_prob; }
   void SetDelMutProb(double in_prob)    { divide.del_prob        = in_prob; }
   void SetDivMutProb(double in_prob)    { divide.mut_prob        = in_prob; }
+  void SetUniformMutProb(double in_prob){ divide.uniform_prob    = in_prob; }
   void SetDivideMutProb(double in_prob) { divide.divide_mut_prob = in_prob; }
   void SetDivideInsProb(double in_prob) { divide.divide_ins_prob = in_prob; }
   void SetDivideDelProb(double in_prob) { divide.divide_del_prob = in_prob; }

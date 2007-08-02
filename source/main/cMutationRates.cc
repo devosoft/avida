@@ -36,6 +36,7 @@ void cMutationRates::Setup(cWorld* world)
   divide.ins_prob = world->GetConfig().INS_MUT_PROB.Get();
   divide.del_prob = world->GetConfig().DEL_MUT_PROB.Get();
   divide.mut_prob = world->GetConfig().DIV_MUT_PROB.Get();
+  divide.uniform_prob = world->GetConfig().UNIFORM_MUT_PROB.Get();
   divide.divide_mut_prob = world->GetConfig().DIVIDE_MUT_PROB.Get();
   divide.divide_ins_prob = world->GetConfig().DIVIDE_INS_PROB.Get();
   divide.divide_del_prob = world->GetConfig().DIVIDE_DEL_PROB.Get();
@@ -55,6 +56,7 @@ void cMutationRates::Clear()
   divide.ins_prob = 0.0;
   divide.del_prob = 0.0;
   divide.mut_prob = 0.0;
+  divide.uniform_prob = 0.0;
   divide.divide_mut_prob = 0.0;
   divide.divide_ins_prob = 0.0;
   divide.divide_del_prob = 0.0;
@@ -74,6 +76,7 @@ void cMutationRates::Copy(const cMutationRates& in_muts)
   divide.ins_prob = in_muts.divide.ins_prob;
   divide.del_prob = in_muts.divide.del_prob;
   divide.mut_prob = in_muts.divide.mut_prob;
+  divide.uniform_prob = in_muts.divide.uniform_prob;
   divide.divide_mut_prob = in_muts.divide.divide_mut_prob;
   divide.divide_ins_prob = in_muts.divide.divide_ins_prob;
   divide.divide_del_prob = in_muts.divide.divide_del_prob;
