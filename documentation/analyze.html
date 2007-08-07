@@ -195,7 +195,7 @@ to only include those genotypes that are needed.
 </p>
 
 <dl>
-<dt><strong>RECALCULATE [<span class="cmdargopt">use_resources=0</span>] [<span class="cmdargopt">update=-1</span>] [<span class="cmdargopt">use_random_inputs=0</span>]</strong></dt>
+<dt><strong>RECALCULATE [<span class="cmdargopt">use_resources=0</span>] [<span class="cmdargopt">update=-1</span>] [<span class="cmdargopt">use_random_inputs=0</span>]  [<span class="cmdargopt">env_input.1 env_input.2 env_input.3</span>]</strong></dt>
 <dd>
   Run all of the genotypes in the current batch through a test CPU
   and record the measurements taken (fitness, gestation time, etc.).
@@ -208,7 +208,31 @@ to only include those genotypes that are needed.
   is set, then organisms will be provided with new, random input strings for 
   each trace as they would experience during an actual Avida run. By default, 
   the same inputs are provided every time to organisms in analysis mode.
+  If additional arguments are specified after use_random_input's value, these
+  integers will be used as environmental inputs for the genotype's test cpu
+  recalculation. Manually specified test cpu inputs must conform to the pseudo-random
+  formatting described in cEnvironment::SetupInputs. Phenotypic plasticity information is not available from the
+  RECALCULATE command; use RECALC with <kbd>num_trials X</kbd>, where X is greater than 1,
+  for phenotypic plasticity statistics.
 </dd>
+<dt><strong>RECALC [<span class="cmdargopt">use_resources</span>] [<span class="cmdargopt">use_random_inputs</span>] [<span class="cmdargopt">update N (N=-1)</span>] [<span class="cmdargopt">use_manual_inputs input.1 input.2 input.3</span>] [<span class="cmdargopt">num_trials T (T=1)</span>]</strong></dt>
+<dd>
+  This command will perform the same operations as RECALCULATE but has a few additional features.
+  Instead of having a specified ordering for inputs to this command, argument order does not matter.
+  To use resources, for instance, use the flag <kbd>use_resources</kbd> following RECALC.  
+  Arguments with parameters must have the values specified immediately after them.  For instance
+  <br>
+  <kbd>&nbsp;&nbsp;&nbsp;RECALC update 10 use_resources use_manual_inputs 256948023 870730840 1441302276</kbd>
+  <br>
+  will set the update to 10, request the use of resources, and test the genotypes using the inputs 256948023, 870730840, and 1441302276. Manually specified environment inputs must conform to the pseudo-random numbers as
+  described in cEnvironment::SetupInputs.
+  Typically, <kbd>use_manual_inputs</kbd> will override <kbd>use_random_inputs</kbd>, however if <kbd>num_trials</kbd> is set to greater than one, manual input specficiation will be overriden
+  and random inputs will be used to gather phenotypic plasticity information that will be available
+  for <a href="#GENOTYPE_STATS">genotype statistics</a> at the bottom of this document.  <i>Please note that phenotypic plasticity
+  analysis perfoemd by using RECALC will reset genotype statistics to the values for the most <b>likely</b> 
+  phenotype.</i>  Implicit phenotypic plasticity analysis (e.g. by not calling RECALC or calling RECALC with <kbd>num_trials 1</kbd>)
+  will not re-evaluate the genotype statistics in this manner and instead rely on the initial values or
+  those values from a single recalculation.
 <dt><strong>FILTER [<span class="cmdarg">stat</span>] [<span class="cmdarg">relation</span>] [<span class="cmdarg">test_value</span>] [<span class="cmdargopt">batch=current</span>]</strong></dt>
 <dd>
     Perform the given test on all genotypes and Remove all those that do not pass.  Stat indicates which
@@ -308,7 +332,7 @@ save information generated in analyze mode.
   the files will be named by the genotype name, with a <kbd>.gen</kbd> appended to 
   them. Specifying the filename is useful when printing a single genotype. 
 </dd>
-<dt><strong>TRACE [<span class="cmdargopt">dir='archive/'</span>] [ <span class="cmdargopt">use_resources=0</span>] [<span class="cmdargopt">update=-1</span>] [ <span class="cmdargopt">use_random_inputs=0</span>]</strong></dt>
+<dt><strong>TRACE [<span class="cmdargopt">dir='archive/'</span>] [ <span class="cmdargopt">use_resources=0</span>] [<span class="cmdargopt">update=-1</span>] [ <span class="cmdargopt">use_random_inputs=0</span>]  [<span class="cmdargopt">env_input.1 env_input.2 env_input.3</span>]</strong></dt>
 <dd>
   Trace all of the genotypes and print a listing of their execution.
   This will show step-by-step the status of all of the CPU components
@@ -320,13 +344,16 @@ save information generated in analyze mode.
   For more information on resources, see the <a href="#USING_RESOURCES">summary</a> below.
   If the use_random_inputs flag is set, then organisms will be provided with new, 
   random input strings for each trace as they would experience during an actual Avida run.  
-  By default, the same inputs are provided every time to organisms in analysis mode.
+  By default, the same inputs are provided every time to organisms in analysis mode.  You can
+  manually specify environmental inputs by setting use_random_inputs to 0 setting env_input.X
+  values.  Manually specified environment inputs must conform to the pseudo-random numbers as
+  described in cEnvironment::SetupInputs.
 </dd>
 <dt><strong>PRINT_TASKS [<span class="cmdargopt">file='tasks.dat'</span>]</strong></dt>
 <dd>
   This will print out the tasks doable by each genotype, one per line
   in the output file specified.  Note that this information must either
-  have been loaded in, or a RECALCULATE must have been run to collect
+  have been loaded in, or a RECALCULATE (or RECALC) must have been run to collect
   it.
 </dd>
 <dt><strong>DETAIL [<span class="cmdargopt">file='detail.dat'</span>] [<span class="cmdargopt">format ...</span>]</strong></dt>
@@ -402,7 +429,11 @@ the data and output the results.
     the list of stats that you want to include as columns in the array
     (see <a href="#GENOTYPE_STATS">Genotype Statistics</a> for more info).  Additionally you can have
     special format flags; the possible flags are 'html' to print output in HTML format, and
-    'link_maps' to create html links between consecutive genotypes in a lineage.
+    'link_maps' to create html links between consecutive genotypes in a lineage. The flag
+    'use_manual_inputs input.1 input.2 input.3' where input.X are integers
+    allow for designated environmental inputs to be used when evaluating the genotype-phenotype mapping.
+    Manually specified environment inputs must conform to the pseudo-random numbers as
+    described in cEnvironment::SetupInputs.
 </dd>
 <dt><strong>
   MAP_MUTATIONS [<span class="cmdargopt">dir="mutations/"</span>]
@@ -508,7 +539,7 @@ not changed.  This was a design decision, but is easily changed.
 <p>
 In analyze, a new data structure was included which contains a time ordered 
 list of resource concentrations.  This list can be used to set up resources 
-from different time points.  By using the update parameter in the RECALCULATE function, 
+from different time points.  By using the update parameter in the RECALCULATE (or RECALC) function, 
 you can use the resource concentrations from a specified time 
 point.  If the LOAD_RESOURCES command is not called, the list defaults to 
 a single entry which is the the initial concentrations of the resources 
@@ -572,7 +603,7 @@ from the input file to be loaded in) are:
 </div>
 
 <p>
-After a RECALCULATE, these additional formats become available:
+After a RECALCULATE (or RECALC), these additional formats become available:
 </p>
 
 <div align="center">
@@ -606,7 +637,7 @@ After a RECALCULATE, these additional formats become available:
 </div>
 
 <p>
-If a FIND_LINEAGE was done before the RECALCULATE, the parent
+If a FIND_LINEAGE was done before the RECALCULATE (or RECALC), the parent
 genotype for each regular genotype will be available, enabling the
 additional formats:
 </p>
@@ -644,7 +675,7 @@ If an ALIGN is run, one additional format is available:
 </div>
 
 <p>
-If a RECALCULATE was done before the ALIGN, the following format is available:
+If a RECALCULATE (or RECALC) was done before the ALIGN, the following format is available:
 </p>
 
 <div align="center">
@@ -669,7 +700,7 @@ is available:
 </div>
     
 <p>
-Finally, there are a handful of commands that will automatically perform
+There are a handful of commands that will automatically perform
 landscapping.  The landscape will only be run once per organism even when
 multiple output variables are used.  For enhanced performance on
 multi-processor/multi-core systems, see the
@@ -693,6 +724,40 @@ multi-processor/multi-core systems, see the
 </table>
 </div>
 
+<p>
+Phenotypic plasticity information is available through a number
+of different commands.  This information will be gathered in one
+of two manners.  If <kbd>RECALC num_trials X</kbd> is called, where X is greater
+than 1, phenotypic plasticity information for each genotype in the
+batch will be collected.  If RECALC is not called or is called with
+with just one trial (the default for RECALC), then using these commands will request 1000
+trials for each genotype to gather plasticity information.  Requesting an analysis
+of phenotypic plasticity in this manner will not re-evaluate other genotype statistics.
+<p>
+<div align="center">
+<table width="95%">
+<tr>
+  <td width="50%"><strong>num_phen</strong> (Number of Phenotypes Identified)</td>
+  <td width="50%"><strong>phen_avg_fitness</strong> (Weighted Average Fitness)</td>
+</tr>
+<tr>
+  <td><strong>num_trials</strong> (Number of Phenotype Tests)</td>
+  <td><strong>phen_entropy</strong> (Phenotypic Entropy [bits])</td>
+</tr>
+<tr>
+  <td><strong>phen_max_fit_freq</strong> (Maximum Fitness Phenotype Frequency)</td>
+  <td><strong>phen_max_fitness</strong> (Maximum Phenotype Fitness)</td>
+</tr>
+<tr>
+  <td><strong>phen_min_fit_freq</strong> (Minimum Fitness Phenotype Frequency)</td>
+  <td><strong>phen_min_fitness</strong> (Minimum Phenotype Fitness)</td>
+</tr>
+<tr>
+  <td><strong>phen_likely_freq</strong> (Most Likely Phenotype Frequency)</td>
+  <td><strong>phen_likely_fitness</strong> (Fitness of the Most Likely Phenotype)</td>
+</tr>
+</table>
+</div>
 
 <h3>Variables</h3>
 
