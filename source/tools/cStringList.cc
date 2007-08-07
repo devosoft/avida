@@ -87,6 +87,14 @@ cString cStringList::PopString(const cString & test_string)
   return "";
 }
 
+cString cStringList::PopLine(int line_num)
+{
+  tListIterator<cString> string_it(string_list);
+  string_it.Next();
+  for (int k = 0; k < line_num && string_it.Next(); k++);
+  return ReturnString(string_list.Remove(string_it));
+}
+
 int cStringList::LocateString(const cString & test_string) const
 {
   tConstListIterator<cString> string_it(string_list);

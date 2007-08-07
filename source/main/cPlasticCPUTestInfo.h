@@ -50,15 +50,9 @@ class cPlasticPhenotype : public cPhenotype{
     int m_num_trials;
     tMatrix<int> m_env_inputs;
     
-    //Information retrieved from test_info not available in phenotype
-    cString m_executed_flags;
-    int m_viable;
-    
-    void SetExecutedFlags(cCPUTestInfo& test_info);
-    
   public:
       cPlasticPhenotype(cCPUTestInfo& test_info, int num_trials) : 
-      cPhenotype(test_info.GetTestPhenotype()), m_num_observations(0), m_num_trials(num_trials) { assert(m_num_trials > 0); }
+      cPhenotype(test_info.GetTestPhenotype()), m_num_observations(1), m_num_trials(num_trials) { assert(m_num_trials > 0); }
     
     ~cPlasticPhenotype() { ; }
     
@@ -67,12 +61,11 @@ class cPlasticPhenotype : public cPhenotype{
     bool AddObservation(  cCPUTestInfo& test_info );
     
     //Accessors
-    int GetNumObservations()      const { return m_num_observations; }
-    int GetNumTrials()            const { return m_num_trials; }
-    double GetFrequency()         const { return static_cast<double>(m_num_observations) / m_num_trials; }
+    int GetNumObservations() const { return m_num_observations; }
+    int GetNumTrials()       const { return m_num_trials; }
+    double GetFrequency()    const { return static_cast<double>(m_num_observations) / m_num_trials; }
     tMatrix<int> GetEnvInputs()   const { return m_env_inputs; }
-    int IsViable()               const { return m_viable; }
-    cString GetExecutedFlags()    const { return m_executed_flags; }
+    
   
 
 };

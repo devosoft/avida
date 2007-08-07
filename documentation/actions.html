@@ -88,11 +88,11 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <br /><a href="#JoinGridRow">JoinGridRow</a>
       <br /><a href="#KillProb">KillProb</a>
       <br /><a href="#KillRate">KillRate</a>
+      <br /><a href="#KillRectangle">KillRectangle</a>
+      <br /><a href="#LoadClone">LoadClone</a>
     </td>
     <td>
-      <a href="#KillRectangle">KillRectangle</a>
-      <br /><a href="#LoadClone">LoadClone</a>
-      <br /><a href="#LoadPopulation">LoadPopulation</a>
+      <a href="#LoadPopulation">LoadPopulation</a>
       <br /><a href="#ModMutProb">ModMutProb</a>
       <br /><a href="#OutflowScaledResource">OutflowScaledResource</a>
       <br /><a href="#PairTestLandscape">PairTestLandscape</a>
@@ -100,6 +100,9 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <br /><a href="#PredictNuLandscape">PredictNuLandscape</a>
       <br /><a href="#PredictWLandscape">PredictWLandscape</a>
       <br /><a href="#PrintAverageData">PrintAverageData</a>
+      <br /><a href="#PrintCCladeCounts">PrintCCladeCounts</a>
+      <br /><a href="#PrintCCladeFitnessHistogram">PrintCCladeFitnessHistogram</a>
+      <br /><a href="#PrintCCladeRelativeFitnessHistogram">PrintCCladeRelativeFitnessHistogram</a>
       <br /><a href="#PrintCountData">PrintCountData</a>
       <br /><a href="#PrintData">PrintData</a>
       <br /><a href="#PrintDebug">PrintDebug</a>
@@ -113,6 +116,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <br /><a href="#PrintDominantParasiteGenotype">PrintDominantParasiteGenotype</a>
       <br /><a href="#PrintErrorData">PrintErrorData</a>
       <br /><a href="#PrintGeneticDistanceData">PrintGeneticDistanceData</a>
+      <br /><a href="#PrintGenomicSiteEntropy">PrintGenomicSiteEntropy</a>
       <br /><a href="#PrintGenotypeAbundanceHistogram">PrintGenotypeAbundanceHistogram</a>
       <br /><a href="#PrintGenotypeMap">PrintGenotypeMap</a>
       <br /><a href="#PrintGenotypes">PrintGenotypes</a>
@@ -120,12 +124,14 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <br /><a href="#PrintInstructionData">PrintInstructionData</a>
       <br /><a href="#PrintLineageCounts">PrintLineageCounts</a>
       <br /><a href="#PrintLineageTotals">PrintLineageTotals</a>
+      <br /><a href="#PrintLogFitnessHistogram">PrintLogFitnessHistogram</a>
       <br /><a href="#PrintMutationRateData">PrintMutationRateData</a>
       <br /><a href="#PrintPhenotypeData">PrintPhenotypeData</a>
-      <br /><a href="#PrintPhenotypeStatus">PrintPhenotypeStatus</a>
     </td>
     <td>
-      <a href="#PrintPopulationDistanceData">PrintPopulationDistanceData</a>
+      <a href="#PrintPhenotypeStatus">PrintPhenotypeStatus</a>
+      <br /><a href="#PrintPopulationDistanceData">PrintPopulationDistanceData</a>
+      <br /><a href="#PrintRelativeFitnessHistogram">PrintRelativeFitnessHistogram</a>
       <br /><a href="#PrintResourceData">PrintResourceData</a>
       <br /><a href="#PrintSpeciesAbundanceData">PrintSpeciesAbundanceData</a>
       <br /><a href="#PrintStatsData">PrintStatsData</a>
@@ -182,6 +188,59 @@ a single, complete file for each trigger.
   Print all of the population averages the specified file.
   </p>
 </li>
+<li>
+  <strong><a name="PrintCCladeCounts">PrintCCladeCounts</a></strong>
+  [<span class="cmdarg">string filename="cclade_count.dat"</span>]
+  <p>
+    Print a count of the number of oraganisms belonging to a each coalescence clade currently in the population.
+    <br />This action will only work in run mode.
+    <br />This action will require TRACK_CCLADE to be enabled.
+  </p>
+</li>
+
+<li>
+  <strong><a name="PrintCCladeFitnessHistogram">PrintCCladeFitnessHistogram</a></strong>
+  [<span class="cmdarg">string filename="cclade_fitness_hist.dat"</span>]
+  [<span class="cmdarg">string mode="CURRENT"</span>] 
+  [<span class="cmdarg">double lower_bound=-3.0</span>] 
+  [<span class="cmdarg">double step=0.5</span>] 
+  [<span class="cmdarg">double upper_bound=12.0</span>]
+  <p>
+    Print a histogram of fitnesses for each coalescence clade in the population.
+    <br />This action will only work in run mode.
+    <br />This action will rerequire TRACK_CCLADE to be enabled.
+    <br/>
+    <kbd>mode</kbd> may be {<kbd>CURRENT, ACTUAL, TESTCPU</kbd>}, where
+      <br/>&nbsp; &nbsp; &nbsp;<kbd>CURRENT</kbd> uses the current phenotype value of fitness</li>
+      <br/>&nbsp; &nbsp; &nbsp;<kbd>ACTUAL</kbd> uses the current merit and the true gestation time (via test cpu calculation)</li>
+      <br/>&nbsp; &nbsp; &nbsp;<kbd>TESTCPU</kbd> uses the test cpu measurement.</li>
+      <br />
+    <kbd>lower_bound, step, upper_bound</kbd> are log10 values for the individual histogram bins.</kbd>
+  </p>
+</li>
+
+<li>
+  <strong><a name="PrintCCladeRelativeFitnessHistogram">PrintCCladeRelativeFitnessHistogram</a></strong>
+  [<span class="cmdarg">string filename="cclade_rel_fitness_histogram.dat"</span>]
+  [<span class="cmdarg">string mode="CURRENT"</span>] 
+  [<span class="cmdarg">double lower_bound=0.0</span>] 
+  [<span class="cmdarg">double step=0.1</span>] 
+  [<span class="cmdarg">double upper_bound=2.0</span>]
+  <p>
+    Print a histogram of parent-relative fitness ratios for each coalescence clade in the population.
+    <br />This action will only work in run mode.
+    <br />This action will rerequire TRACK_CCLADE to be enabled.
+    <br/>
+    <kbd>mode</kbd> may be {<kbd>CURRENT, ACTUAL, TESTCPU</kbd>}, where
+      <br/>&nbsp; &nbsp; &nbsp;<kbd>CURRENT</kbd> uses the current phenotype value of fitness</li>
+      <br/>&nbsp; &nbsp; &nbsp;<kbd>ACTUAL</kbd> uses the current merit and the true gestation time (via test cpu calculation)</li>
+      <br/>&nbsp; &nbsp; &nbsp;<kbd>TESTCPU</kbd> uses the test cpu measurement.</li>
+      <br />
+    <kbd>lower_bound, step, upper_bound</kbd> are values for the individual histogram bins.</kbd>
+  </p>
+</li>
+
+
 <li>
   <strong><a name="PrintErrorData">PrintErrorData</a></strong>
   [<span class="cmdarg">string filename='error.dat'</span>]
@@ -447,6 +506,62 @@ a single, complete file for each trigger.
   <p>
   </p>
 </li>
+
+
+<li>
+  <strong><a name="PrintLogFitnessHistogram">PrintLogFitnessHistogram</a></strong>
+  [<span class="cmdarg">string filename="fitness_log_hist.dat"</span>]
+  [<span class="cmdarg">string mode="CURRENT"</span>] 
+  [<span class="cmdarg">double lower_bound=-3.0</span>] 
+  [<span class="cmdarg">double step=0.5</span>] 
+  [<span class="cmdarg">double upper_bound=12.0</span>]
+  <p>
+    Print a histogram of organism fitnesses in the current population.
+    <br />This action will only work in run mode.
+    <br/>
+    <kbd>mode</kbd> may be {<kbd>CURRENT, ACTUAL, TESTCPU</kbd>}, where
+      <br/>&nbsp; &nbsp; &nbsp;<kbd>CURRENT</kbd> uses the current phenotype value of fitness</li>
+      <br/>&nbsp; &nbsp; &nbsp;<kbd>ACTUAL</kbd> uses the current merit and the true gestation time (via test cpu calculation)</li>
+      <br/>&nbsp; &nbsp; &nbsp;<kbd>TESTCPU</kbd> uses the test cpu measurement.</li>
+      <br />
+    <kbd>lower_bound, step, upper_bound</kbd> are log10 values for the individual histogram bins.</kbd>
+  </p>
+</li>
+
+<li>
+  <strong><a name="PrintRelativeFitnessHistogram">PrintRelativeFitnessHistogram</a></strong>
+  [<span class="cmdarg">string filename="rel_fitness_histogram.dat"</span>]
+  [<span class="cmdarg">string mode="CURRENT"</span>] 
+  [<span class="cmdarg">double lower_bound=0.0</span>] 
+  [<span class="cmdarg">double step=0.1</span>] 
+  [<span class="cmdarg">double upper_bound=2.0</span>]
+  <p>
+    Print a histogram of parent-relative fitness ratios for each coalescence clade in the population.
+    <br />This action will only work in run mode.
+    <br/>
+    <kbd>mode</kbd> may be {<kbd>CURRENT, ACTUAL, TESTCPU</kbd>}, where
+      <br/>&nbsp; &nbsp; &nbsp;<kbd>CURRENT</kbd> uses the current phenotype value of fitness</li>
+      <br/>&nbsp; &nbsp; &nbsp;<kbd>ACTUAL</kbd> uses the current merit and the true gestation time (via test cpu calculation)</li>
+      <br/>&nbsp; &nbsp; &nbsp;<kbd>TESTCPU</kbd> uses the test cpu measurement.</li>
+      <br />
+    <kbd>lower_bound, step, upper_bound</kbd> are values for the individual histogram bins.</kbd>
+  </p>
+</li>
+
+<li>
+  <strong><a name="PrintGenomicSiteEntropy">PrintGenomicSiteEntropy</a></strong>
+  [<span class="cmdarg">string filename="GenomicSiteEntropy.dat"</span>]
+  <p>
+   This function will take the initial genotype for each organism in the
+   population/batch, align them, and calculate the per-site entropy of the
+   aligned sequences.  Please note that there may be a variable number
+   of columns in each line if the runs are not fixed length.  The site
+   entropy will be measured in mers, normalized by the instruction set size.
+   This is a population/batch measure of entropy, not a mutation-selection balance
+   measure.  
+  </p>
+</li>
+
 <li>
   <strong><a name="PrintGeneticDistanceData">PrintGeneticDistanceData</a></strong>
   [<span class="cmdarg">string ref_creature_file='START_CREATURE'</span>]

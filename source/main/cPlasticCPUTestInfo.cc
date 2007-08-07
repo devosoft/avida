@@ -23,36 +23,34 @@
  */
 
 #include "cPlasticPhenotype.h"
-#include "cCPUMemory.h"
-#include "cOrganism.h"
-#include "cHardwareBase.h"
+
+
+bool cPlasticPhenotype::AddObservation( const cPhenotype& in_phen, const tArray<int>& env_inputs )
+{
+  if (in_phen == *this){
+    if (m_num_observations == 0)
+      m_env_inputs.Resize(1, env_inputs.GetSize());
+    else
+      m_env_inputs.Resize(m_env_inputs.GetNumRows()+1, env_inputs.GetSize());
+    m_env_inputs[m_env_inputs.GetNumRows()-1] = env_inputs;
+    m_num_observations++;
+    return true;
+  }
+  return false;  //Wrong phenotype
+}
 
 bool cPlasticPhenotype::AddObservation( cCPUTestInfo& test_info )
 {
   tArray<int> env_inputs = test_info.GetTestCPUInputs();
   cPhenotype& test_phenotype = test_info.GetTestPhenotype();
   if (test_phenotype == *this ){
-    if (m_num_observations == 0){
+    if (m_num_observations == 0)
       m_env_inputs.Resize(1, env_inputs.GetSize());
-      SetExecutedFlags(test_info);
-      m_viable = test_info.IsViable();
-    } else
+    else
       m_env_inputs.Resize(m_env_inputs.GetNumRows()+1, env_inputs.GetSize());
     m_env_inputs[m_env_inputs.GetNumRows()-1] = env_inputs;
     m_num_observations++;
     return true;
   }
   return false; //Wrong phenotype
-}
-
-
-void cPlasticPhenotype::SetExecutedFlags(cCPUTestInfo& test_info)
-{
-  cCPUMemory& cpu_memory = test_info.GetTestOrganism()->GetHardware().GetMemory();
-  cString new_executed_flags;
-  for (int i=0; i<cpu_memory.GetSize(); i++)
-  {
-    new_executed_flags += (cpu_memory.FlagExecuted(i)) ? "+" : "-";
-  }
-  m_executed_flags = new_executed_flags;
 }

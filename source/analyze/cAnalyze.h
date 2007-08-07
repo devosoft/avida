@@ -295,6 +295,7 @@ public:
   void BatchPurge(cString cur_string);
   void BatchDuplicate(cString cur_string);
   void BatchRecalculate(cString cur_string);
+  void BatchRecalculateWithArgs(cString cur_string);
   void BatchRename(cString cur_string);
   void PrintStatus(cString cur_string);
   void PrintDebug(cString cur_string);

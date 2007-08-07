@@ -40,6 +40,9 @@
 #ifndef cLandscape_h
 #include "cLandscape.h"
 #endif
+#ifndef cPhenPlastGenotype_h
+#include "cPhenPlastGenotype.h"
+#endif
 #ifndef cString_h
 #include "cString.h"
 #endif
@@ -185,6 +188,23 @@ private:
   // Group 5 : More complex stats (obtained indvidually, through tests)
   cString task_order;
 
+  
+  // Group 6: Phenotypic Plasticity
+  class cAnalyzePhenPlast{
+  public:
+      int     m_recalculate_trials;  
+      int     m_num_phenotypes;
+      double  m_min_fitness;
+      double  m_max_fitness;
+      double  m_avg_fitness;
+      double  m_likely_fitness;
+      double  m_phenotypic_entropy;
+      double  m_likely_frequency;
+      double  m_min_fit_frequency;
+      double  m_max_fit_frequency;
+  };
+  mutable cAnalyzePhenPlast* m_phenplast_stats;
+  
   cStringList special_args; // These are args placed after a ':' in details...
 
   int NumCompare(double new_val, double old_val) const {
@@ -199,6 +219,9 @@ private:
   int CalcMaxGestation() const;
   void CalcKnockouts(bool check_pairs = false, bool check_chart = false) const;
   void CheckLand() const;
+  void CheckPhenPlast() const;
+  void SummarizePhenotypicPlasticity(const cPhenPlastGenotype& pp) const;
+
 
 
 public:
@@ -210,14 +233,13 @@ public:
   const cStringList & GetSpecialArgs() { return special_args; }
   void SetSpecialArgs(const cStringList & _args) { special_args = _args; }
 
-  void Recalculate(cAvidaContext& ctx, cTestCPU* testcpu, cAnalyzeGenotype* parent_genotype = NULL, cCPUTestInfo* test_info = NULL);
+  void Recalculate(cAvidaContext& ctx, cTestCPU* testcpu, cAnalyzeGenotype* parent_genotype = NULL, cCPUTestInfo* test_info = NULL, int num_trials = 1);
   void PrintTasks(std::ofstream& fp, int min_task = 0, int max_task = -1);
   void PrintTasksQuality(std::ofstream& fp, int min_task = 0, int max_task = -1);
   void CalcLandscape(cAvidaContext& ctx);
 
   // Set...
   void SetSequence(cString _sequence);
-  void SetExecutedFlags(cCPUMemory & cpu_memory);
   void SetName(const cString & _name) { name = _name; }
   void SetAlignedSequence(const cString & _seq) { aligned_sequence = _seq; }
   void SetTag(const cString & _tag) { tag = _tag; }
@@ -317,6 +339,20 @@ public:
   double GetComplexity() const { CheckLand(); return m_land->GetComplexity(); }
   double GetLandscapeFitness() const { CheckLand(); return m_land->GetAveFitness(); }
 
+  
+  // Phenotypic Plasticity accessors
+  int    GetNumPhenotypes()     const { CheckPhenPlast(); return m_phenplast_stats->m_num_phenotypes; }
+  double GetPhenotypicEntropy() const { CheckPhenPlast(); return m_phenplast_stats->m_phenotypic_entropy; }
+  double GetMaximumFitness()    const { CheckPhenPlast(); return m_phenplast_stats->m_max_fitness; }
+  double GetMaximumFitnessFrequency() const {CheckPhenPlast(); return m_phenplast_stats->m_min_fit_frequency;}
+  double GetMinimumFitness()    const { CheckPhenPlast(); return m_phenplast_stats->m_min_fitness; }
+  double GetMinimumFitnessFrequency() const {CheckPhenPlast(); return m_phenplast_stats->m_min_fit_frequency;}
+  double GetAverageFitness()    const { CheckPhenPlast(); return m_phenplast_stats->m_avg_fitness; }
+  double GetLikelyFrequency()  const { CheckPhenPlast(); return m_phenplast_stats->m_likely_frequency; }
+  double GetLikelyFitness()     const { CheckPhenPlast(); return m_phenplast_stats->m_likely_fitness; }
+  int    GetNumTrials()         const { CheckPhenPlast(); return m_phenplast_stats->m_recalculate_trials; }
+  
+  
   double GetFitnessRatio() const { return fitness_ratio; }
   double GetEfficiencyRatio() const { return efficiency_ratio; }
   double GetCompMeritRatio() const { return comp_merit_ratio; }

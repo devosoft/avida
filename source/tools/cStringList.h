@@ -69,6 +69,7 @@ public:
 
   bool HasString(const cString & test_string) const;
   cString PopString(const cString & test_string);
+  cString PopLine(int);
   int LocateString(const cString& test_string) const;
   
   void Push(const cString & _in) { string_list.Push(new cString(_in));}

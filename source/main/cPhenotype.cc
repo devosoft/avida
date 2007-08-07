@@ -1437,8 +1437,8 @@ bool cPhenotype::operator<(const cPhenotype&  rhs) const
   if ( this->GetGestationTime() < rhs.GetGestationTime() )
     return true;
   
-  tArray<int> lhsTasks = this->GetCurTaskCount();
-  tArray<int> rhsTasks = rhs.GetCurTaskCount();
+  tArray<int> lhsTasks = this->GetLastTaskCount();
+  tArray<int> rhsTasks = rhs.GetLastTaskCount();
   for (int k = 0; k < lhsTasks.GetSize(); k++)
     if (lhsTasks[k] < rhsTasks[k])
       return true;
@@ -1454,8 +1454,8 @@ bool cPhenotype::operator==(const cPhenotype& rhs) const
   if ( this->GetGestationTime() != rhs.GetGestationTime() )
     return false;
   
-  tArray<int> lhsTasks = this->GetCurTaskCount();
-  tArray<int> rhsTasks = rhs.GetCurTaskCount();
+  tArray<int> lhsTasks = this->GetLastTaskCount();
+  tArray<int> rhsTasks = rhs.GetLastTaskCount();
   for (int k = 0; k < lhsTasks.GetSize(); k++)
     if (lhsTasks[k] != rhsTasks[k])
       return false;
@@ -1476,8 +1476,8 @@ bool cPhenotype::operator>(const cPhenotype&  rhs) const
   if ( this->GetGestationTime() > rhs.GetGestationTime() )
     return true;
   
-  tArray<int> lhsTasks = this->GetCurTaskCount();
-  tArray<int> rhsTasks = rhs.GetCurTaskCount();
+  tArray<int> lhsTasks = this->GetLastTaskCount();
+  tArray<int> rhsTasks = rhs.GetLastTaskCount();
   for (int k = 0; k < lhsTasks.GetSize(); k++)
     if (lhsTasks[k] > rhsTasks[k])
       return true;

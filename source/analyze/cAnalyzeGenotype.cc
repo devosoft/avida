@@ -32,12 +32,15 @@
 #include "cInstSet.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
+#include "cPhenPlastGenotype.h"
+#include "cPlasticPhenotype.h"
 #include "cTestCPU.h"
 #include "cEnvironment.h"
 #include "cHardwareManager.h"
 #include "cWorld.h"
 #include "cWorldDriver.h"
 
+#include <cmath>
 using namespace std;
 
 cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, cString symbol_string, cInstSet& in_inst_set)
@@ -73,7 +76,9 @@ cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, cString symbol_string, cInstSe
   , parent_muts("")
   , knockout_stats(NULL)
   , m_land(NULL)
+  , m_phenplast_stats(NULL)
 {
+    
   // Make sure that the sequences jive with the inst_set
   for (int i = 0; i < genome.GetSize(); i++) {
     if (genome[i].GetOp() >= inst_set.GetSize()) {
@@ -119,7 +124,8 @@ cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, const cGenome& _genome, cInstS
   , parent_muts("")
   , knockout_stats(NULL)
   , m_land(NULL)
-{
+  , m_phenplast_stats(NULL){
+  
 }
 
 cAnalyzeGenotype::cAnalyzeGenotype(const cAnalyzeGenotype& _gen)
@@ -155,16 +161,22 @@ cAnalyzeGenotype::cAnalyzeGenotype(const cAnalyzeGenotype& _gen)
   , parent_muts(_gen.parent_muts)
   , knockout_stats(NULL)
   , m_land(NULL)
+  , m_phenplast_stats(NULL)
 {
   if (_gen.knockout_stats != NULL) {
     knockout_stats = new cAnalyzeKnockouts;
     *knockout_stats = *(_gen.knockout_stats);
+  }
+  if (_gen.m_phenplast_stats != NULL){
+    m_phenplast_stats = new cAnalyzePhenPlast;
+    *m_phenplast_stats = *(_gen.m_phenplast_stats);
   }
 }
 
 cAnalyzeGenotype::~cAnalyzeGenotype()
 {
   if (knockout_stats != NULL) delete knockout_stats;
+  if (m_phenplast_stats != NULL) delete m_phenplast_stats;
   Unlink();
 }
 
@@ -350,6 +362,31 @@ void cAnalyzeGenotype::CheckLand() const
   }
 }
 
+void cAnalyzeGenotype::CheckPhenPlast() const
+{
+  // Implicit genotype recalculation if required
+  if (m_phenplast_stats == NULL){
+    cPhenPlastGenotype pp(genome, 1000, m_world, m_world->GetDefaultContext());
+    SummarizePhenotypicPlasticity(pp);
+  }
+}
+
+void cAnalyzeGenotype::SummarizePhenotypicPlasticity(const cPhenPlastGenotype& pp) const
+{
+
+  if (m_phenplast_stats == NULL)
+    m_phenplast_stats = new cAnalyzePhenPlast;
+  m_phenplast_stats->m_recalculate_trials = pp.GetNumTrials();
+  m_phenplast_stats->m_max_fitness = pp.GetMaximumFitness();
+  m_phenplast_stats->m_avg_fitness = pp.GetAverageFitness();
+  m_phenplast_stats->m_min_fitness = pp.GetMinimumFitness();
+  m_phenplast_stats->m_phenotypic_entropy = pp.GetPhenotypicEntropy();
+  m_phenplast_stats->m_likely_frequency  = pp.GetMaximumFrequency();
+  m_phenplast_stats->m_max_fit_frequency = pp.GetMaximumFitnessFrequency();
+  m_phenplast_stats->m_min_fit_frequency = pp.GetMinimumFitnessFrequency();
+  m_phenplast_stats->m_likely_fitness = pp.GetLikelyFitness();
+  m_phenplast_stats->m_num_phenotypes = pp.GetNumPhenotypes();
+}
 
 void cAnalyzeGenotype::CalcLandscape(cAvidaContext& ctx)
 {
@@ -358,9 +395,8 @@ void cAnalyzeGenotype::CalcLandscape(cAvidaContext& ctx)
   m_land->Process(ctx);
 }
 
-void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cTestCPU* testcpu, cAnalyzeGenotype* parent_genotype, cCPUTestInfo* test_info)
+void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cTestCPU* testcpu, cAnalyzeGenotype* parent_genotype, cCPUTestInfo* test_info, int num_trials)
 {
-    // Build the test info for printing.
   
   //Allocate our own test info if it wasn't provided
   cCPUTestInfo* temp_test_info = NULL;
@@ -369,52 +405,51 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cTestCPU* testcpu, cAnaly
       temp_test_info = new cCPUTestInfo();
       test_info = temp_test_info;
   }
-  
-  //cCPUTestInfo test_info;
-  // test_info.TraceTaskOrder();
 
   // @DMB - This does some 'interesting' things with the instruction set
-  
   // Use the inst lib for this genotype... and syncrhonize environment
   
   // Backup old instruction set, update with new
   cInstSet env_inst_set_backup = m_world->GetHardwareManager().GetInstSet();
   m_world->GetHardwareManager().GetInstSet() = inst_set;
 
-  testcpu->TestGenome(ctx, *test_info, genome);
-  
+  // Handling recalculation here
+  cPhenPlastGenotype recalc_data(genome, num_trials, *test_info, m_world, ctx);
+ 
   // Restore the instruction set
   m_world->GetHardwareManager().GetInstSet() = env_inst_set_backup;
-
-  viable = test_info->IsViable();
-
-  cOrganism* test_organism = test_info->GetTestOrganism();
-  cPhenotype& test_phenotype = test_organism->GetPhenotype();
-
-  m_env_inputs = test_info->GetTestCPUInputs();
-  SetExecutedFlags(test_organism->GetHardware().GetMemory());
-
-  length = test_organism->GetGenome().GetSize();
-  copy_length = test_phenotype.GetCopiedSize();
-  exe_length = test_phenotype.GetExecutedSize();
-  merit = test_phenotype.GetMerit().GetDouble();
-  gest_time = test_phenotype.GetGestationTime();
-  fitness = test_phenotype.GetFitness();
-  errors = test_phenotype.GetLastNumErrors();
-  div_type = test_phenotype.GetDivType();
-  mate_id = test_phenotype.MateSelectID();
-  task_counts = test_phenotype.GetLastTaskCount();
-  task_qualities = test_phenotype.GetLastTaskQuality();
-
+  
+  // The most likely phenotype will be assigned to the phenotype stats
+  const cPlasticPhenotype likely_phenotype = recalc_data.GetMostLikelyPhenotype();
+  
+  viable         = likely_phenotype.IsViable();
+  m_env_inputs   = likely_phenotype.GetEnvInputs()[0];
+  executed_flags = likely_phenotype.GetExecutedFlags();
+  length         = likely_phenotype.GetGenomeLength();
+  copy_length    = likely_phenotype.GetCopiedSize();
+  exe_length     = likely_phenotype.GetExecutedSize();
+  merit          = likely_phenotype.GetMerit().GetDouble();
+  gest_time      = likely_phenotype.GetGestationTime();
+  fitness        = likely_phenotype.GetFitness();
+  errors         = likely_phenotype.GetLastNumErrors();
+  div_type       = likely_phenotype.GetDivType();
+  mate_id        = likely_phenotype.MateSelectID();
+  task_counts    = likely_phenotype.GetLastTaskCount();
+  task_qualities = likely_phenotype.GetLastTaskQuality();
+  
   // Setup a new parent stats if we have a parent to work with.
   if (parent_genotype != NULL) {
     fitness_ratio = GetFitness() / parent_genotype->GetFitness();
     efficiency_ratio = GetEfficiency() / parent_genotype->GetEfficiency();
     comp_merit_ratio = GetCompMerit() / parent_genotype->GetCompMerit();
     parent_dist = cStringUtil::EditDistance(genome.AsString(),
-		    parent_genotype->GetGenome().AsString(), parent_muts);
+        parent_genotype->GetGenome().AsString(), parent_muts);
     ancestor_dist = parent_genotype->GetAncestorDist() + parent_dist;
   }
+
+  // Summarize plasticity information if multiple recalculations performed
+  if (num_trials > 1)
+    SummarizePhenotypicPlasticity(recalc_data);
   
   //Deallocate if we created
   if (temp_test_info) delete temp_test_info;
@@ -443,16 +478,6 @@ void cAnalyzeGenotype::SetSequence(cString _sequence)
 {
   cGenome new_genome(_sequence);
   genome = new_genome;
-}
-
-void cAnalyzeGenotype::SetExecutedFlags(cCPUMemory & cpu_memory)
-{
-  cString new_executed_flags;
-  for (int i=0; i<cpu_memory.GetSize(); i++)
-  {
-    new_executed_flags += (cpu_memory.FlagExecuted(i)) ? "+" : "-";
-  }
-  executed_flags = new_executed_flags;
 }
 
 

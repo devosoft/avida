@@ -1135,11 +1135,9 @@ public:
  
  Parameters:
  filename	(cString)				Name of the output file
- fit_mode (cString)				Either {Current, Actual, ActualRepro, TestCPU}, where
+ fit_mode (cString)				Either {Current, Actual, TestCPU}, where
 																Current is the current value in the grid. [Default]
 																Actual uses the current merit, but the true gestation time.
-																CurrentRepro is the same as current, but counts only those orgs
-                                              that have reproduced.
 																TestCPU determined.
  hist_fmin  (double)      The minimum fitness value for the fitness histogram.  [Default: -3]
  hist_fmax  (double)      The maximum fitness value for the fitness histogram.  [Default: 12]
@@ -1384,7 +1382,7 @@ class cActionPrintGenomicSiteEntropy : public cAction
 			m_filename = (largs.GetSize()) ? largs.PopWord() : "GenomicSiteEntropy.dat";
 		}
 
-		static const cString GetDescription() { return "Arguments: [filename = \"GenomicSiteEntropyData.datcd \"] [use_gap = false]";}
+		static const cString GetDescription() { return "Arguments: [filename = \"GenomicSiteEntropyData.datcd \"]";}
 		
 		void Process(cAvidaContext& ctx){
 			const int        num_insts  = m_world->GetNumInstructions();

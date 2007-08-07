@@ -1747,6 +1747,7 @@ void cAnalyze::CommandTrace(cString cur_string)
     }
   }
   
+  
   if (m_world->GetVerbosity() >= VERBOSE_ON) 
     msg.Set("Tracing batch %d", cur_batch);
   else 
@@ -4425,9 +4426,9 @@ void cAnalyze::CommandMapTasks(cString cur_string)
     int pos = arg_list.LocateString("use_manual_inputs");
     arg_list.PopString("use_manual_inputs");
     manual_inputs.Resize(m_world->GetEnvironment().GetInputSize());
-    if (arg_list.GetSize() >= pos + m_world->GetEnvironment().GetInputSize())
+    if (arg_list.GetSize() >= pos + m_world->GetEnvironment().GetInputSize() - 1)
       for (int k = 0; k < m_world->GetEnvironment().GetInputSize(); k++)
-        manual_inputs[k] = arg_list.PopString(arg_list.GetLine(pos)).AsInt();  
+        manual_inputs[k] = arg_list.PopLine(pos).AsInt();  
     else
       m_world->GetDriver().RaiseFatalException(1, "CommandMapTask: Invalid use of use_manual_inputs");
   }
@@ -7269,6 +7270,100 @@ void cAnalyze::BatchRecalculate(cString cur_string)
   return;
 }
 
+
+void cAnalyze::BatchRecalculateWithArgs(cString cur_string)
+{
+  // RECALC <use_resources> <random_inputs> <manual_inputs in.1 in.2 in.3> <update N> <num_trials X>
+
+  tArray<int> manual_inputs;  // Used only if manual inputs are specified
+  cString msg;                // Holds any information we may want to send the driver to display
+  
+  // Defaults
+  bool use_resources     = false;
+  int  update            = -1;
+  bool use_random_inputs = false;
+  bool use_manual_inputs = false;
+  int  num_trials        = 1;
+  
+  // Handle our recalculate arguments
+  // Really, we should have a generalized tokenizer handle this
+  cStringList args(cur_string);
+  int pos = -1;
+  if (args.PopString("use_resources") != "")      use_resources     = true;
+  if (args.PopString("use_random_inputs") != "")  use_random_inputs = true;
+  if ( (pos = args.LocateString("use_manual_inputs") ) != -1){
+    use_manual_inputs = true;
+    args.PopString("use_manual_inputs");
+    int num = m_world->GetEnvironment().GetInputSize();
+    manual_inputs.Resize(num);
+    if (args.GetSize() >= pos + num - 2) 
+      for (int k = 0; k < num; k++)
+        manual_inputs[k] = args.PopLine(pos).AsInt();  
+    else
+      m_world->GetDriver().RaiseFatalException(1, "RecalculateWithArgs: Invalid use of use_manual_inputs");
+  }
+  if ( (pos = args.LocateString("update")) != -1 ){
+    args.PopString("update");
+    if (args.GetSize() >= pos - 1){
+      update = args.PopLine(pos).AsInt();
+    } else
+       m_world->GetDriver().RaiseFatalException(1, "RecalculateWithArgs: Invalid use of update (did you specify a value?)");
+  }
+  if ( (pos = args.LocateString("num_trials")) != -1){
+    args.PopString("num_trials");
+    if (args.GetSize() >= pos - 1)
+      num_trials = args.PopLine(pos).AsInt();
+    else
+      m_world->GetDriver().RaiseFatalException(1, "RecalculateWithArgs: Invalid use of num_trials (did you specify a value?)");
+  }
+  
+  if (use_manual_inputs)
+    use_random_inputs = false;
+  
+  cTestCPU*     test_cpu = m_world->GetHardwareManager().CreateTestCPU();
+  cCPUTestInfo *test_info = new cCPUTestInfo();
+  if (use_manual_inputs)
+    test_info->UseManualInputs(manual_inputs);
+  else
+    test_info->UseRandomInputs(use_random_inputs); 
+  
+  // Notifications
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    msg.Set("Running batch %d through test CPUs...", cur_batch);
+    m_world->GetDriver().NotifyComment(msg);
+  } else{ 
+    msg.Set("Running through test CPUs...");
+    m_world->GetDriver().NotifyComment(msg);
+  }
+  if (m_world->GetVerbosity() >= VERBOSE_ON && batch[cur_batch].IsLineage() == false) {
+    msg.Set("Batch may not be a lineage; parent and ancestor distances may not be correct"); 
+    m_world->GetDriver().NotifyWarning(msg);
+  }
+  
+  tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+  cAnalyzeGenotype * genotype = NULL;
+  cAnalyzeGenotype * last_genotype = NULL;
+  while ((genotype = batch_it.Next()) != NULL) {
+    // Load proper resources according to update_born
+    test_cpu->InitResources(use_resources, &resources, update, m_resource_time_spent_offset);
+    
+    // If the previous genotype was the parent of this one, pass in a pointer
+    // to it for improved recalculate (such as distance to parent, etc.)
+    if (last_genotype != NULL && genotype->GetParentID() == last_genotype->GetID()) {
+      genotype->Recalculate(m_ctx, test_cpu, last_genotype, test_info, num_trials);
+    } else {
+      genotype->Recalculate(m_ctx, test_cpu, NULL, test_info, num_trials);
+    }
+    last_genotype = genotype;
+  }
+  
+  delete test_info;
+  delete test_cpu;
+  
+  return;
+}
+
+
 void cAnalyze::BatchRename(cString cur_string)
 {
   if (m_world->GetVerbosity() <= VERBOSE_NORMAL) cout << "Renaming organisms..." << endl;
@@ -8063,6 +8158,17 @@ void cAnalyze::SetupGenotypeDataList()
   ADD_GDATA(double, "complexity",   "Basic Complexity (beneficial muts are neutral)", GetComplexity, SetNULL, 0, 0, 0);
   ADD_GDATA(double, "land_fitness", "Average Lanscape Fitness",      GetLandscapeFitness, SetNULL,     0, 0, 0);
   
+  ADD_GDATA(int,    "num_phen",           "Number of Plastic Phenotypes",          GetNumPhenotypes,          SetNULL, 0, 0, 0);
+  ADD_GDATA(int,    "num_trials",         "Number of Recalculation Trials",        GetNumTrials,              SetNULL, 0, 0, 0);
+  ADD_GDATA(double, "phen_entropy",       "Phenotpyic Entropy",                    GetPhenotypicEntropy,      SetNULL, 0, 0, 0);
+  ADD_GDATA(double, "phen_max_fitness",   "Phen Plast Maximum Fitness",            GetMaximumFitness,         SetNULL, 0, 0, 0);
+  ADD_GDATA(double, "phen_max_fit_freq",  "Phen Plast Maximum Fitness Frequency",  GetMaximumFitnessFrequency,SetNULL, 0, 0, 0);
+  ADD_GDATA(double, "phen_min_fitness",   "Phen Plast Minimum Fitness",            GetMinimumFitness,         SetNULL, 0, 0, 0);
+  ADD_GDATA(double, "phen_min_freq",      "Phen Plast Minimum Fitness Frequency",  GetMinimumFitnessFrequency,SetNULL, 0, 0, 0);
+  ADD_GDATA(double, "phen_avg_fitness",   "Phen Plast Wtd Avg Fitness",            GetAverageFitness,         SetNULL, 0, 0, 0);
+  ADD_GDATA(double, "phen_likely_freq",   "Freq of Most Likely Phenotype",         GetLikelyFrequency,        SetNULL, 0, 0, 0);
+  ADD_GDATA(double, "phen_likely_fitness","Fitness of Most Likely Phenotype",      GetLikelyFitness,          SetNULL, 0, 0, 0);
+  
   ADD_GDATA(const cString &, "parent_muts", "Mutations from Parent", GetParentMuts,   SetParentMuts, 0, "(none)", "");
   ADD_GDATA(const cString &, "task_order", "Task Performance Order", GetTaskOrder,    SetTaskOrder,  0, "(none)", "");
   ADD_GDATA(cString, "sequence",    "Genome Sequence",               GetSequence,     SetSequence,   0, "(N/A)", "");
@@ -8306,6 +8412,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("PURGE_BATCH", &cAnalyze::BatchPurge);
   AddLibraryDef("DUPLICATE", &cAnalyze::BatchDuplicate);
   AddLibraryDef("RECALCULATE", &cAnalyze::BatchRecalculate);
+  AddLibraryDef("RECALC", &cAnalyze::BatchRecalculateWithArgs);
   AddLibraryDef("RENAME", &cAnalyze::BatchRename);
   AddLibraryDef("STATUS", &cAnalyze::PrintStatus);
   AddLibraryDef("ECHO", &cAnalyze::PrintDebug);
