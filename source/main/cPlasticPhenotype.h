@@ -58,7 +58,8 @@ class cPlasticPhenotype : public cPhenotype{
     
   public:
       cPlasticPhenotype(cCPUTestInfo& test_info, int num_trials) : 
-      cPhenotype(test_info.GetTestPhenotype()), m_num_observations(0), m_num_trials(num_trials) { assert(m_num_trials > 0); }
+        cPhenotype(test_info.GetTestPhenotype()), m_num_observations(0), m_num_trials(num_trials) 
+        { assert(m_num_trials > 0); AddObservation(test_info);}
     
     ~cPlasticPhenotype() { ; }
     
