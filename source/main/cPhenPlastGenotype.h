@@ -89,9 +89,9 @@ class cPhenPlastGenotype
     double GetMaximumFrequency() const  { return m_max_freq; }
     double GetMaximumFitnessFrequency() const {return m_max_fit_freq;}
     double GetMinimumFitnessFrequency() const {return m_min_fit_freq;}
-    const cPlasticPhenotype& GetPlasticPhenotype(int num) const;
-    const cPlasticPhenotype& GetMostLikelyPhenotype() const;
-    const cPlasticPhenotype& GetHighestFitnessPhenotype() const;
+    const cPlasticPhenotype* GetPlasticPhenotype(int num) const;
+    const cPlasticPhenotype* GetMostLikelyPhenotype() const;
+    const cPlasticPhenotype* GetHighestFitnessPhenotype() const;
     
     
 };

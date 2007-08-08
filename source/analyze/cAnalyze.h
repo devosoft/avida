@@ -221,6 +221,7 @@ public:
   void SampleGenotypes(cString cur_string);
   void KeepTopGenotypes(cString cur_string);
   void TruncateLineage(cString cur_string);
+  
 
   // Direct Output Commands...
   void CommandPrint(cString cur_string);
@@ -250,8 +251,7 @@ public:
   void CommandMapMutations(cString cur_string);
   void CommandMapDepth(cString cur_string);
   void CommandPairwiseEntropy(cString cur_string);
-  void CommandAnalyzePlasticity(cString cur_string);
-
+ 
   // Population Comparison Commands...
   void CommandHamming(cString cur_string);
   void CommandLevenstein(cString cur_string);

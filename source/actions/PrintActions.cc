@@ -40,6 +40,8 @@
 #include "cInjectGenotype.h"
 #include "cInstSet.h"
 #include "cOrganism.h"
+#include "cPhenPlastGenotype.h"
+#include "cPlasticPhenotype.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cSpecies.h"
@@ -1483,6 +1485,99 @@ class cActionPrintGenomicSiteEntropy : public cAction
 };
 
 
+
+/*
+ This function will go through all genotypes in the population/batch and
+ allow you to retrieve information about the different plastic phenotypes.
+ Arguments:
+    filename    name of output file in analyze mode; root of filename in
+                run mode (-update.dat appeneded in run mode).
+                [default: phenpalst-update.dat in run-mode, phenplast.dat in analyze]
+    trials      number of test_cpu recalculations for each genotype [default: 1000]
+*/
+class cActionPrintPhenotypicPlasticity : public cAction
+{
+  private:
+    cString m_filename;
+    int     m_num_trials;
+  
+  private:
+    void PrintHeader(ofstream& fot)
+    {
+      fot << "# Phenotypic Plasticity" << endl
+          << "# Format: " << endl
+          << "# genotype id" << endl
+          << "# parent genotype id" << endl
+          << "# phenotypic varient number" << endl
+          << "# varient frequency" << endl
+          << "# fitness" << endl
+          << "# merit" << endl
+          << "# gestation time" << endl;
+      for (int k = 0; k < m_world->GetEnvironment().GetNumTasks(); k++)
+        fot << "# task." << k << endl;
+      fot << endl;
+    }
+    
+    void PrintPPG(ofstream& fot, const cPhenPlastGenotype* ppgen, int id, int pid)
+    {
+      
+      for (int k = 0; k < ppgen->GetNumPhenotypes(); k++){
+        const cPlasticPhenotype* pp = ppgen->GetPlasticPhenotype(k);
+        fot << id << " "
+            << pid << " "
+            << k << " "
+            << pp->GetFrequency() << " "
+            << pp->GetFitness() << " "
+            << pp->GetMerit() << " "
+            << pp->GetGestationTime() << " ";
+        tArray<int> tasks = pp->GetLastTaskCount();
+        for (int t = 0; t < tasks.GetSize(); t++)
+          fot << tasks[t] << " ";
+        fot << endl;
+      }
+    }
+    
+  public:
+  cActionPrintPhenotypicPlasticity(cWorld* world, const cString& args)
+      : cAction(world,  args)
+    {
+        cString largs(args);
+        m_filename = (largs.GetSize()) ? largs.PopWord() : "phenplast";
+        m_num_trials = (largs.GetSize()) ? largs.PopWord().AsInt() : 1000;
+    }
+    
+    static const cString GetDescription() { return "Arguments: [string filename='phenplast'] [int num_trials=1000]"; };
+    
+    void Process(cAvidaContext& ctx)
+    {
+      if (ctx.GetAnalyzeMode()){ // Analyze mode
+        cString this_path = m_filename;
+        ofstream& fot = m_world->GetDataFileOFStream(this_path);
+        PrintHeader(fot);
+        tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
+				cAnalyzeGenotype* genotype = NULL;
+				while((genotype = batch_it.Next())){
+					const cPhenPlastGenotype* ppgen = new cPhenPlastGenotype(genotype->GetGenome(), m_num_trials, m_world, ctx);
+          PrintPPG(fot, ppgen, genotype->GetID(), genotype->GetParentID());
+          delete ppgen;
+				}
+        m_world->GetDataFileManager().Remove(this_path);
+      } else{  // Run mode
+        cString this_path = m_filename + "-" + cStringUtil::Convert(m_world->GetStats().GetUpdate()) + ".dat";
+        ofstream& fot = m_world->GetDataFileOFStream(this_path);
+        PrintHeader(fot);
+        cGenotype* genotype = m_world->GetClassificationManager().GetBestGenotype();
+        for (int k = 0; k < m_world->GetClassificationManager().GetGenotypeCount(); k++){
+          const cPhenPlastGenotype* ppgen = new cPhenPlastGenotype(genotype->GetGenome(), m_num_trials, m_world, ctx);
+          PrintPPG(fot, ppgen, genotype->GetID(), genotype->GetParentID());
+          delete ppgen;
+          genotype = genotype->GetNext();
+        }
+        m_world->GetDataFileManager().Remove(this_path);
+      }
+    }
+};
+
 /*
  This function goes through all genotypes currently present in the soup,
  and writes into an output file the average Hamming distance between the
@@ -2385,7 +2480,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDebug>("PrintDebug");
 
   action_lib->Register<cActionPrintGenotypes>("PrintGenotypes");
-
+  action_lib->Register<cActionPrintPhenotypicPlasticity>("PrintPhenotypicPlasticity");
+  
   action_lib->Register<cActionTestDominant>("TestDominant");
   action_lib->Register<cActionPrintTaskSnapshot>("PrintTaskSnapshot");
   action_lib->Register<cActionPrintViableTasksData>("PrintViableTasksData");

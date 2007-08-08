@@ -7034,22 +7034,6 @@ void cAnalyze::CommandHelpfile(cString cur_string)
 }
 
 
-void cAnalyze::CommandAnalyzePlasticity(cString cur_string)
-{
-  tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
-  cAnalyzeGenotype* genotype;
-  while ( (genotype = batch_it.Next()) != NULL ){
-    cerr << "Using Genome: " << genotype->GetGenome().AsString() << endl;
-    cPhenPlastGenotype PPG(genotype->GetGenome(), 1000, m_world, m_ctx);
-    cerr << "There are " << PPG.GetNumPhenotypes() << " phenotype(s) for this genome.\n";
-    for (int k = 0; k < PPG.GetNumPhenotypes(); k++)
-      cerr << "\t Phenotype " << k << " has fitness " << PPG.GetPlasticPhenotype(k).GetFitness() 
-           << " with frequency " << PPG.GetPlasticPhenotype(k).GetFrequency() <<  endl;
-    cerr << endl;
-  }
-  cerr << "here" << endl;
-  
-}
 
 
 //////////////// Control...
@@ -8369,7 +8353,6 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("ANALYZE_POP_COMPLEXITY", &cAnalyze::AnalyzePopComplexity);
   AddLibraryDef("MAP_DEPTH", &cAnalyze::CommandMapDepth);
   // (Untested) AddLibraryDef("PAIRWISE_ENTROPY", &cAnalyze::CommandPairwiseEntropy); 
-  AddLibraryDef("ANALYZE_PLASTICITY", &cAnalyze::CommandAnalyzePlasticity); 
   
   // Population comparison commands...
   AddLibraryDef("HAMMING", &cAnalyze::CommandHamming);

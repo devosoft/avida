@@ -103,15 +103,15 @@ void cPhenPlastGenotype::Process(cCPUTestInfo& test_info, cWorld* world, cAvidaC
 }
 
 
-const cPlasticPhenotype& cPhenPlastGenotype::GetPlasticPhenotype(int num) const
+const cPlasticPhenotype* cPhenPlastGenotype::GetPlasticPhenotype(int num) const
 {
   assert(num >= 0 && num < (int) m_unique.size() && m_unique.size() > 0);
   UniquePhenotypes::const_iterator it = m_unique.begin();
   for (int k = 0; k < num; k++, it++);
-  return *static_cast<cPlasticPhenotype*>(*it);
+  return static_cast<cPlasticPhenotype*>(*it);
 }
 
-const cPlasticPhenotype& cPhenPlastGenotype::GetMostLikelyPhenotype() const
+const cPlasticPhenotype* cPhenPlastGenotype::GetMostLikelyPhenotype() const
 {
   assert(m_unique.size() > 0);
   UniquePhenotypes::const_iterator it = m_unique.begin();
@@ -120,10 +120,10 @@ const cPlasticPhenotype& cPhenPlastGenotype::GetMostLikelyPhenotype() const
     if ( static_cast<cPlasticPhenotype*>(*it)->GetFrequency() > 
          static_cast<cPlasticPhenotype*>(*ret_it)->GetFrequency() )
       ret_it = it;
-  return *static_cast<cPlasticPhenotype*>(*ret_it);
+  return static_cast<cPlasticPhenotype*>(*ret_it);
 }
 
-const cPlasticPhenotype& cPhenPlastGenotype::GetHighestFitnessPhenotype() const
+const cPlasticPhenotype* cPhenPlastGenotype::GetHighestFitnessPhenotype() const
 {
   assert(m_unique.size() > 0);
   UniquePhenotypes::const_iterator it = m_unique.begin();
@@ -132,5 +132,5 @@ const cPlasticPhenotype& cPhenPlastGenotype::GetHighestFitnessPhenotype() const
     if ( static_cast<cPlasticPhenotype*>(*it)->GetFitness() > 
          static_cast<cPlasticPhenotype*>(*ret_it)->GetFitness() )
       ret_it = it;
-  return *static_cast<cPlasticPhenotype*>(*ret_it);
+  return static_cast<cPlasticPhenotype*>(*ret_it);
 }

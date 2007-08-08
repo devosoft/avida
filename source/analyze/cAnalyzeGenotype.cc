@@ -420,22 +420,22 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cTestCPU* testcpu, cAnaly
   m_world->GetHardwareManager().GetInstSet() = env_inst_set_backup;
   
   // The most likely phenotype will be assigned to the phenotype stats
-  const cPlasticPhenotype likely_phenotype = recalc_data.GetMostLikelyPhenotype();
+  const cPlasticPhenotype* likely_phenotype = recalc_data.GetMostLikelyPhenotype();
   
-  viable         = likely_phenotype.IsViable();
-  m_env_inputs   = likely_phenotype.GetEnvInputs()[0];
-  executed_flags = likely_phenotype.GetExecutedFlags();
-  length         = likely_phenotype.GetGenomeLength();
-  copy_length    = likely_phenotype.GetCopiedSize();
-  exe_length     = likely_phenotype.GetExecutedSize();
-  merit          = likely_phenotype.GetMerit().GetDouble();
-  gest_time      = likely_phenotype.GetGestationTime();
-  fitness        = likely_phenotype.GetFitness();
-  errors         = likely_phenotype.GetLastNumErrors();
-  div_type       = likely_phenotype.GetDivType();
-  mate_id        = likely_phenotype.MateSelectID();
-  task_counts    = likely_phenotype.GetLastTaskCount();
-  task_qualities = likely_phenotype.GetLastTaskQuality();
+  viable         = likely_phenotype->IsViable();
+  m_env_inputs   = likely_phenotype->GetEnvInputs()[0];
+  executed_flags = likely_phenotype->GetExecutedFlags();
+  length         = likely_phenotype->GetGenomeLength();
+  copy_length    = likely_phenotype->GetCopiedSize();
+  exe_length     = likely_phenotype->GetExecutedSize();
+  merit          = likely_phenotype->GetMerit().GetDouble();
+  gest_time      = likely_phenotype->GetGestationTime();
+  fitness        = likely_phenotype->GetFitness();
+  errors         = likely_phenotype->GetLastNumErrors();
+  div_type       = likely_phenotype->GetDivType();
+  mate_id        = likely_phenotype->MateSelectID();
+  task_counts    = likely_phenotype->GetLastTaskCount();
+  task_qualities = likely_phenotype->GetLastTaskQuality();
   
   // Setup a new parent stats if we have a parent to work with.
   if (parent_genotype != NULL) {

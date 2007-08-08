@@ -130,6 +130,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
     </td>
     <td>
       <a href="#PrintPhenotypeStatus">PrintPhenotypeStatus</a>
+      <br /><a href="#PrintPhenotypicPlasticity">PrintPhenotypicPlasticity</a>
       <br /><a href="#PrintPopulationDistanceData">PrintPopulationDistanceData</a>
       <br /><a href="#PrintRelativeFitnessHistogram">PrintRelativeFitnessHistogram</a>
       <br /><a href="#PrintResourceData">PrintResourceData</a>
@@ -562,6 +563,18 @@ a single, complete file for each trigger.
   </p>
 </li>
 
+<li>
+  <strong><a name="PrintPhenotypicPlasticity">PrintPhenotypicPlasticity</a></strong>
+  [<span class="cmdarg">string filename="phenplast.dat | phenplast-Update.dat"</span>] [<span class="cmdarg">int num_trials</span>]
+  <p>
+  This function will provided detailed information about the phenotypic varients
+  of the current population/batch.  If this command is executed in run mode, the
+  <kbd>filename</kbd> will be appeneded with <kbd>-Update.dat</kbd> where <kbd>Update</kbd>
+  is the current update.  In analyze mode, the default file is merely </kbd>phenplast.dat</kbd>.
+  The output file contains the following: id, parent_id, phenotypic_varient_number, frequency, fitness, merit, 
+  gestation_time, and task counts for each phenotypic variant of each genotype.
+  </p>
+</li>
 <li>
   <strong><a name="PrintGeneticDistanceData">PrintGeneticDistanceData</a></strong>
   [<span class="cmdarg">string ref_creature_file='START_CREATURE'</span>]
