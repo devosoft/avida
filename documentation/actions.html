@@ -565,14 +565,15 @@ a single, complete file for each trigger.
 
 <li>
   <strong><a name="PrintPhenotypicPlasticity">PrintPhenotypicPlasticity</a></strong>
-  [<span class="cmdarg">string filename="phenplast.dat | phenplast-Update.dat"</span>] [<span class="cmdarg">int num_trials</span>]
+  [<span class="cmdarg">string filename="phenplast.dat | phenplast-Update.dat"</span>] [<span class="cmdarg">int num_trials=1000</span>]
   <p>
   This function will provided detailed information about the phenotypic varients
-  of the current population/batch.  If this command is executed in run mode, the
+  of the current population/batch by running each genome through a test cpu <kbd>num_trials</kbd> times.
+  If this command is executed in run mode, the
   <kbd>filename</kbd> will be appeneded with <kbd>-Update.dat</kbd> where <kbd>Update</kbd>
   is the current update.  In analyze mode, the default file is merely </kbd>phenplast.dat</kbd>.
   The output file contains the following: id, parent_id, phenotypic_varient_number, frequency, fitness, merit, 
-  gestation_time, and task counts for each phenotypic variant of each genotype.
+  gestation_time, and task counts for each phenotypic variant of each genotype.  
   </p>
 </li>
 <li>
