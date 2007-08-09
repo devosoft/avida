@@ -1006,11 +1006,13 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
         result.AddEnergy(bonus);
         break;
       case nReaction::PROCTYPE_ENZYME: //@JEB
-        const int res_id = in_resource->GetID();
-        assert(cur_process->GetMaxFraction() != 0);
-        assert(resource_count[res_id] != 0);
-        double reward = cur_process->GetValue() * resource_count[res_id] / (resource_count[res_id] + cur_process->GetMaxFraction());
-        result.AddBonus( reward , reaction_id);
+        {
+	  const int res_id = in_resource->GetID();
+          assert(cur_process->GetMaxFraction() != 0);
+          assert(resource_count[res_id] != 0);
+          double reward = cur_process->GetValue() * resource_count[res_id] / (resource_count[res_id] + cur_process->GetMaxFraction());
+          result.AddBonus( reward , reaction_id);
+        }
         break;
           
       default:
