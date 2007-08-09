@@ -135,6 +135,7 @@ private:
   void InjectGenotype(int cell_id, cGenotype* genotype);
   void InjectGenome(int cell_id, const cGenome& genome, int lineage_label);
   void InjectClone(int cell_id, cOrganism& orig_org);
+  void InjectChild(int cell_id, cOrganism& orig_org);
 
   void LineageSetupOrganism(cOrganism* organism, cLineage* lineage, int lin_label, cGenotype* parent_genotype = NULL);
   void CCladeSetupOrganism(cOrganism* organism); 
@@ -243,6 +244,10 @@ public:
   void AddEndSleep(int cellID, int end_time);
  
   tVector<pair<int,int> > getCellSleepLog(int i) { return sleep_log[i]; }
+
+  // Trials and genetic algorithm @JEB
+  void NewTrial();
+  void CompeteOrganisms(int competition_type, int parents_survive, double scaled_time, int dynamic_scaling);
 };
 
 

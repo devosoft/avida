@@ -31,7 +31,8 @@ namespace nReaction {
     PROCTYPE_MULT,
     PROCTYPE_POW,
     PROCTYPE_LIN,
-    PROCTYPE_ENERGY
+    PROCTYPE_ENERGY,
+    PROCTYPE_ENZYME
   };
 }
 

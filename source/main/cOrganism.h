@@ -248,6 +248,7 @@ public:
   void PrintFinalStatus(std::ostream& fp, int time_used, int time_allocated) const;
   void Fault(int fault_loc, int fault_type, cString fault_desc="");
 
+  void NewTrial();
 
   // --------  Mutation Rate Convenience Methods  --------
   bool TestCopyMut(cAvidaContext& ctx) const { return m_mut_rates.TestCopyMut(ctx); }

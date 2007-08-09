@@ -2727,6 +2727,65 @@ void cPopulation::InjectClone(int cell_id, cOrganism& orig_org)
   ActivateOrganism(ctx, new_organism, cell_array[cell_id]);
 }
 
+// This function injects the child genome of an organism into the population at cell_id.
+// Takes care of divide mutations.
+void cPopulation::InjectChild(int cell_id, cOrganism& orig_org)
+{
+  assert(cell_id >= 0 && cell_id < cell_array.GetSize());
+  
+  cAvidaContext& ctx = m_world->GetDefaultContext();
+  
+  // Do mutations on the child genome, but restore it to its current state afterward.
+  cGenome save_child = orig_org.ChildGenome();
+  orig_org.GetHardware().Divide_DoMutations(ctx);
+  
+  tArray<cOrganism*> child_array;
+  tArray<cMerit> merit_array;
+  birth_chamber.SubmitOffspring(ctx, orig_org.ChildGenome(), orig_org, child_array, merit_array);
+    //@JEB may want to force asex for an injected child, sex will mess up CompeteOrganisms
+  assert(child_array.GetSize() == 1);
+  cOrganism * new_organism = child_array[0];
+  orig_org.ChildGenome() = save_child;
+  
+  // Set the genotype...
+  //new_organism->SetGenotype(orig_org.GetGenotype());
+
+  // Setup the phenotype...
+  orig_org.GetPhenotype().SetLinesCopied(new_organism->ChildGenome().GetSize());
+  new_organism->GetPhenotype().SetMerit(merit_array[0]);
+  new_organism->GetPhenotype().SetupOffspring(orig_org.GetPhenotype(), new_organism->GetGenome());
+  
+  // Do lineage tracking for the new organisms.
+  LineageSetupOrganism(new_organism, orig_org.GetLineage(),
+                       orig_org.GetLineageLabel(), orig_org.GetGenotype());
+		
+  //By default, store the parent cclade, this may get modified in ActivateOrgansim (@MRR)
+  new_organism->SetCCladeLabel(orig_org.GetCCladeLabel());
+  
+  // Prep the cell..
+  if (m_world->GetConfig().BIRTH_METHOD.Get() == POSITION_CHILD_FULL_SOUP_ELDEST &&
+      cell_array[cell_id].IsOccupied() == true) {
+    // Have to manually take this cell out of the reaper Queue.
+    reaper_queue.Remove( &(cell_array[cell_id]) );
+  }
+  
+  // Setup the mutation rate based on the population cell...
+  const int mut_source = m_world->GetConfig().MUT_RATE_SOURCE.Get();
+  if (mut_source == 1) {
+    // Update the mutation rates of each child from the environment....
+    new_organism->MutationRates().Copy(cell_array[cell_id].MutationRates());
+  } else {
+    // Update the mutation rates of each child from its parent.
+    new_organism->MutationRates().Copy(orig_org.MutationRates());
+  }
+  
+  // Activate the organism in the population...
+//  cGenotype* child_genotype = new_organism->GetGenotype();
+//  child_genotype->DecDeferAdjust();
+//  m_world->GetClassificationManager().AdjustGenotype(*child_genotype);
+  ActivateOrganism(ctx, new_organism, cell_array[cell_id]);
+}
+
 
 void cPopulation::InjectGenome(int cell_id, const cGenome& genome, int lineage_label)
 {
@@ -2877,4 +2936,275 @@ void cPopulation::AddEndSleep(int cellID, int end_time) {
   pair<int,int> p = sleep_log[cellID][sleep_log[cellID].Size()-1];
   sleep_log[cellID].RemoveAt(sleep_log[cellID].Size()-1);
   sleep_log[cellID].Add(make_pair(p.first, end_time));
+}
+
+// Starts a new trial for each organism in the population
+void cPopulation::NewTrial()
+{
+  for (int i=0; i< GetSize(); i++)
+  {
+    if (GetCell(i).IsOccupied())
+    {
+      GetCell(i).GetOrganism()->NewTrial();
+      GetCell(i).GetOrganism()->GetHardware().Reset();
+    }
+  }
+  
+  //Recalculate the stats immediately, so that if they are printed before a new update 
+  //is processed, they accurately reflect this trial only...
+  cStats& stats = m_world->GetStats();
+  stats.ProcessUpdate();
+  CalcUpdateStats();
+}
+
+/*
+  CompeteOrganisms
+  
+   parents_survive => for any organism represented by >=1 child, the first created is the parent (has no mutations)
+   dynamic_scaling => rescale the time interval such that the geometric mean of the highest fitness versus lower fitnesses
+                      equals a time of 1 unit
+*/
+
+void cPopulation::CompeteOrganisms(int competition_type, int parents_survive, double scaled_time, int dynamic_scaling)
+{
+  cout << "==Compete Organisms==" << endl;
+  double total_fitness = 0;
+  int num_cells = GetSize();
+  tArray<double> org_fitness(num_cells); 
+
+  double lowest_fitness = -1.0;
+  double highest_fitness = -1.0;
+  double lowest_fitness_copied = -1.0;
+  double highest_fitness_copied = -1.0;
+  int different_orgs_copied = 0;
+  int num_competed_orgs = 0;
+
+  int num_trials = 0;
+  
+  // How many trials were there?
+  for (int i = 0; i < num_cells; i++) 
+  {
+    if (GetCell(i).IsOccupied())
+    { 
+      cPhenotype& p = GetCell(i).GetOrganism()->GetPhenotype();
+      num_trials = p.GetTrialFitnesses().GetSize();
+      break;
+    }
+  }
+  tArray<double> min_trial_fitnesses(num_trials);
+  tArray<double> max_trial_fitnesses(num_trials);
+  tArray<double> bonus_sums(num_trials);
+  bonus_sums.SetAll(0);
+  double max_bonus_sum = -1;
+
+  bool init = false;
+  // What is the min and max fitness in each trial
+  for (int i = 0; i < num_cells; i++) 
+  {
+    if (GetCell(i).IsOccupied())
+    {
+      cPhenotype& p = GetCell(i).GetOrganism()->GetPhenotype();
+      tArray<double> trial_fitnesses = p.GetTrialFitnesses();
+      for (int t=0; t < trial_fitnesses.GetSize(); t++) 
+      { 
+        if ((!init) || (min_trial_fitnesses[t] > trial_fitnesses[t])) min_trial_fitnesses[t] = trial_fitnesses[t];
+        if ((!init) || (max_trial_fitnesses[t] < trial_fitnesses[t])) max_trial_fitnesses[t] = trial_fitnesses[t];
+      }
+      init = true;
+    }
+  }  
+  
+  
+  for (int t=0; t < min_trial_fitnesses.GetSize(); t++) 
+  {
+    cout << "Trial #" << t << " Min Fitness = " << min_trial_fitnesses[t] << " Max Fitness = " << max_trial_fitnesses[t] << endl;
+    //cout << "Bonus sum = " << bonus_sums[t] << endl;
+  }
+  
+  bool using_trials = true;
+  for (int i = 0; i < num_cells; i++) 
+  {
+    if (GetCell(i).IsOccupied())
+    {
+      num_competed_orgs++;
+      double fitness = 0.0;
+      cPhenotype& p = GetCell(i).GetOrganism()->GetPhenotype();
+      //Don't need to reset trial_fitnesses because we will call cPhenotype::OffspringReset on the entire pop
+      tArray<double> trial_fitnesses = p.GetTrialFitnesses();
+      tArray<int> trial_times_used = p.GetTrialTimesUsed();
+
+      //If there are no trial fitnesses...use the actual fitness.
+      if (trial_fitnesses.GetSize() == 0)
+      {
+        using_trials = false;
+        trial_fitnesses.Push(p.GetFitness());
+      }
+      switch (competition_type)
+      {
+        //Arithmetic Mean
+        case 0:
+        fitness = 0;
+        for (int t=0; t < trial_fitnesses.GetSize(); t++) 
+        { 
+          fitness+=trial_fitnesses[t]; 
+        }
+        fitness /= trial_fitnesses.GetSize();
+        break;
+      
+        //Product        
+        case 1:
+        fitness = 1.0;
+        for (int t=0; t < trial_fitnesses.GetSize(); t++) 
+        { 
+          fitness*=trial_fitnesses[t]; 
+        }
+        break;
+      
+        //Geometric Mean        
+        case 2:
+        fitness = 1;
+        for (int t=0; t < trial_fitnesses.GetSize(); t++) 
+        { 
+          fitness*=trial_fitnesses[t]; 
+        }
+        fitness = exp( (1/trial_fitnesses.GetSize()) * log(fitness) );
+        break;
+                         
+        default:
+        cout << "Unknown CompeteOrganisms method!" << endl;
+        exit(1);
+      }
+      if (m_world->GetVerbosity() >= VERBOSE_DETAILS) cout << "Trial fitness in cell " << i << " = " << fitness << endl;
+      //-->Note: Setting fitness here will not print out the value of the last trial's fitness because the makeup of the population is going to change anyway.
+      //It will be printed out correctly only if NewTrial and PrintAverages are called on the same update, before CompeteDemes.
+      //p.SetCurBonus( fitness *  (p.GetTimeUsed() - p.GetGestationStart()) / p.GetCurMeritBase() ); //Indirectly set fitness over all trials...??
+     // p.SetCurBonus( trial_fitnesses[trial_fitnesses.GetSize()-1] *  (p.GetTimeUsed() - p.GetGestationStart()) / p.CalcSizeMerit() ); //Or to last trial
+
+      org_fitness[i] = fitness;
+      total_fitness += fitness;
+      
+      if ((highest_fitness == -1.0) || (fitness > highest_fitness)) highest_fitness = fitness;
+      if ((lowest_fitness == -1.0) || (fitness < lowest_fitness)) lowest_fitness = fitness;
+    } // end if occupied
+  }
+  
+  //Rescale by the geometric mean of the difference from the top score and the median
+  if ( dynamic_scaling )
+  {
+    int num_org_not_max = 0;
+    double dynamic_factor = 0;
+    for (int i = 0; i < num_cells; i++) 
+    {
+      if (GetCell(i).IsOccupied())
+      {
+          if (org_fitness[i] != highest_fitness)
+          {
+            num_org_not_max++;
+            dynamic_factor += log(highest_fitness - org_fitness[i]);
+            //cout << "Time scaling factor " << time_scaling_factor << endl;
+          }
+      }
+    }
+    if (num_org_not_max > 0) scaled_time *= exp ( -(1.0/num_org_not_max) * dynamic_factor );
+  }
+  
+  cout << "Competition time " << scaled_time << " units" << endl;
+  total_fitness = 0;
+  for (int i = 0; i < num_cells; i++) 
+  {
+    if (GetCell(i).IsOccupied())
+    {
+        double fitness = exp(log(2) * scaled_time *  (org_fitness[i] - highest_fitness));
+        org_fitness[i] = fitness;
+        total_fitness += fitness;
+    }
+  }
+  
+   // Pick which orgs should be in the next generation. (Filling all cells)
+  tArray<int> new_orgs(num_cells);
+  for (int i = 0; i < num_cells; i++) {
+    double birth_choice = (double) m_world->GetRandom().GetDouble(total_fitness);
+    double test_total = 0;
+    for (int test_org = 0; test_org < num_cells; test_org++) {
+      test_total += org_fitness[test_org];
+      if (birth_choice < test_total) {
+        new_orgs[i] = test_org;
+        if (m_world->GetVerbosity() >= VERBOSE_DETAILS) cout << "Propagating from cell " << test_org << " to " << i << endl;
+        if ((highest_fitness_copied == -1.0) || (org_fitness[test_org] > highest_fitness_copied)) highest_fitness_copied = org_fitness[test_org];
+        if ((lowest_fitness_copied == -1.0) || (org_fitness[test_org] < lowest_fitness_copied)) lowest_fitness_copied = org_fitness[test_org];
+        break;
+      }
+    }
+  }
+  
+  // Track how many of each org we should have.
+  tArray<int> org_count(num_cells);
+  org_count.SetAll(0);
+  for (int i = 0; i < num_cells; i++) {
+    org_count[new_orgs[i]]++;
+  }
+  
+  // Reset organism phenotypes that have successfully divided! Must do before injecting children.
+  // -- but not the full reset if we are using trials, the trial reset should already cover things like task counts, etc.
+  // calling that twice would erase this information before it could potentially be output between NewTrial and CompeteOrganisms events.
+  for (int i = 0; i < num_cells; i++) {
+    if (org_count[i] > 0) {
+      different_orgs_copied++;
+      cPhenotype& p = GetCell(i).GetOrganism()->GetPhenotype();
+      if (using_trials)
+      {
+        p.TrialDivideReset( GetCell(i).GetOrganism()->GetGenome() );
+      }
+      else //trials not used
+      {
+        //TrialReset has never been called so we need the entire routine to make "last" of "cur" stats.
+        p.DivideReset( GetCell(i).GetOrganism()->GetGenome() );
+      }
+    }
+  }
+  
+  tArray<bool> is_init(num_cells); 
+  is_init.SetAll(false);
+  
+  // Copy orgs until all org counts are 1.
+  while (true) {
+    // Find the next org to copy...
+    int from_cell_id, to_cell_id;
+    for (from_cell_id = 0; from_cell_id < num_cells; from_cell_id++) {
+      if (org_count[from_cell_id] > 1) break;
+    }
+    
+    // Stop If we didn't find another org to copy
+    if (from_cell_id == num_cells) break;
+    
+    for (to_cell_id = 0; to_cell_id < num_cells; to_cell_id++) {
+      if (org_count[to_cell_id] == 0) break;
+    }
+    
+    // We now have both a from and a to org....
+    org_count[from_cell_id]--;
+    org_count[to_cell_id]++;
+    
+    cOrganism * organism = GetCell(from_cell_id).GetOrganism();
+    organism->ChildGenome() = organism->GetGenome();
+    InjectChild( to_cell_id, *organism );    
+    
+    is_init[to_cell_id] = true;
+  }
+
+  if (!parents_survive)
+  {
+    // Now create children from remaining cells into themselves
+    for (int cell_id = 0; cell_id < num_cells; cell_id++) {
+      if (is_init[cell_id] == true) continue;
+      cOrganism * organism = GetCell(cell_id).GetOrganism();
+      organism->ChildGenome() = organism->GetGenome();
+      InjectChild( cell_id, *organism ); 
+    }
+  }
+  
+  cout << "Competed: Min fitness = " << lowest_fitness << ", Max fitness = " << highest_fitness << endl;
+  cout << "Copied  : Min fitness = " << lowest_fitness_copied << ", Max fitness = " << highest_fitness_copied << " (scaled to Max = 1.0)" << endl;
+  cout << "Copied  : Different organisms = " << different_orgs_copied << endl;
+
 }

@@ -1091,6 +1091,49 @@ public:
 };
 
 
+class cActionNewTrial : public cAction
+{
+private:
+public:
+  cActionNewTrial(cWorld* world, const cString& args) : cAction(world, args)
+  {
+    cString largs(args);
+  }
+  
+  static const cString GetDescription() { return "No Arguments"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().NewTrial();
+  }
+};
+
+class cActionCompeteOrganisms : public cAction
+{
+private:
+  int m_type;
+  int m_parents_survive;
+  double m_scaled_time;
+  int m_dynamic_scaling;
+public:
+  cActionCompeteOrganisms(cWorld* world, const cString& args) : cAction(world, args), m_type(0), m_parents_survive(0), m_scaled_time(1.0), m_dynamic_scaling(0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_type = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_parents_survive = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_scaled_time = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_dynamic_scaling = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [int type=0] [int parents_survive=0] [double scaled_time=1.0] [int dynamic_scaling=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().CompeteOrganisms(m_type, m_parents_survive, m_scaled_time, m_dynamic_scaling);
+  }
+};
+
+
 /*
  Remove the connections between cells along a column in an avida grid.
  
@@ -1501,6 +1544,9 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionResetDemes>("ResetDemes");
   action_lib->Register<cActionCopyDeme>("CopyDeme");
   
+  action_lib->Register<cActionNewTrial>("NewTrial");
+  action_lib->Register<cActionCompeteOrganisms>("CompeteOrganisms");
+  
   action_lib->Register<cActionSeverGridCol>("SeverGridCol");
   action_lib->Register<cActionSeverGridRow>("SeverGridRow");
   action_lib->Register<cActionJoinGridCol>("JoinGridCol");
@@ -1530,6 +1576,9 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionReplicateDemes>("replicate_demes");
   action_lib->Register<cActionResetDemes>("reset_demes");
   action_lib->Register<cActionCopyDeme>("copy_deme");
+  
+  action_lib->Register<cActionCompeteDemes>("new_trial");
+  action_lib->Register<cActionCompeteDemes>("compete_organisms");
   
   action_lib->Register<cActionSeverGridCol>("sever_grid_col");
   action_lib->Register<cActionSeverGridRow>("sever_grid_row");

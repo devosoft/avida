@@ -187,6 +187,7 @@ tInstLib<cHardwareGX::tMethod>* cHardwareGX::initInstLib(void)
     tInstLibEntry<tMethod>("put", &cHardwareGX::Inst_TaskPut),
     tInstLibEntry<tMethod>("put-reset", &cHardwareGX::Inst_TaskPutResetInputs),
     tInstLibEntry<tMethod>("IO", &cHardwareGX::Inst_TaskIO, nInstFlag::DEFAULT, "Output ?BX?, and input new number back into ?BX?"),
+    tInstLibEntry<tMethod>("IO-decay", &cHardwareGX::Inst_TaskIO_DecayBonus),
     tInstLibEntry<tMethod>("IO-Feedback", &cHardwareGX::Inst_TaskIO_Feedback, 0, "Output ?BX?, and input new number back into ?BX?,  and push 1,0,  or -1 onto stack1 if merit increased, stayed the same, or decreased"),
     tInstLibEntry<tMethod>("match-strings", &cHardwareGX::Inst_MatchStrings),
     tInstLibEntry<tMethod>("sell", &cHardwareGX::Inst_Sell),
@@ -395,7 +396,8 @@ void cHardwareGX::Reset()
     AdjustPromoterRates();
     
     // \todo implement different initial conditions for created executable programids
-    ProcessImplicitGeneExpression(); 
+    m_promoter_update_head.Set(organism->GetGenome().GetSize() - 1); //So that ++ moves it to position zero
+    ProcessImplicitGeneExpression(1); 
   }
   
   m_current = m_programids.back();
@@ -436,12 +438,20 @@ void cHardwareGX::SingleProcess(cAvidaContext& ctx)
   if ( m_world->GetConfig().IMPLICIT_GENE_EXPRESSION.Get() )
   {
     m_recycle_state += (double)m_world->GetConfig().IMPLICIT_TURNOVER_RATE.Get();
+    int num_programids = m_programids.size();
     while (m_recycle_state >= 1.0)
     {
-      if (m_programids.size() > 1) RemoveProgramid(1);
+      if (m_programids.size() > (unsigned int)m_world->GetConfig().MAX_PROGRAMIDS.Get()) 
+      {
+        RemoveProgramid(1);
+      }
+      else
+      {
+        num_programids++;
+      }
       m_recycle_state -= 1.0;
     }
-    ProcessImplicitGeneExpression();
+    ProcessImplicitGeneExpression(num_programids);
   }
     
   organism->SetRunning(true);
@@ -2317,6 +2327,13 @@ bool cHardwareGX::Inst_TaskIO(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareGX::Inst_TaskIO_DecayBonus(cAvidaContext& ctx)
+{
+  (void) Inst_TaskIO(ctx);  
+  organism->GetPhenotype().SetCurBonus(organism->GetPhenotype().GetCurBonus() * 0.99);
+  return true;
+}
+
 bool cHardwareGX::Inst_TaskIO_Feedback(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_BX);
@@ -3981,6 +3998,7 @@ bool cHardwareGX::Inst_HeadActivate(cAvidaContext& ctx)
 
   // Find next best match.
   ReadLabel();
+  GetLabel().Rotate(1, NUM_NOPS);
 
   int match_pos = FindRegulatoryMatch( GetLabel() );
   if (match_pos == -1) return false;
@@ -4029,6 +4047,7 @@ bool cHardwareGX::Inst_HeadRepress(cAvidaContext& ctx)
 
   // Find next best match.
   ReadLabel();
+  GetLabel().Rotate(1, NUM_NOPS);
 
   int match_pos = FindRegulatoryMatch( GetLabel() );
   if (match_pos == -1) return false;
@@ -4145,7 +4164,8 @@ void cHardwareGX::ProcessImplicitGeneExpression(int in_limit)
   static cInstruction terminator_inst = GetInstSet().GetInst(cStringUtil::Stringf("terminator"));
 
   if (in_limit == -1 ) in_limit = m_world->GetConfig().MAX_PROGRAMIDS.Get();
-  
+  if (in_limit > m_world->GetConfig().MAX_PROGRAMIDS.Get()) in_limit = m_world->GetConfig().MAX_PROGRAMIDS.Get();
+
   // Create executable programids up to the limit
   const int genome_size = m_programids[m_promoter_update_head.GetMemSpace()]->GetMemory().GetSize();
   const int inc = Min(genome_size, m_world->GetConfig().IMPLICIT_MAX_PROGRAMID_LENGTH.Get());
@@ -4154,10 +4174,12 @@ void cHardwareGX::ProcessImplicitGeneExpression(int in_limit)
   {
     // Update promoter states according to rates until one fires
     
-    while ( m_promoter_states[m_promoter_update_head.GetPosition()] < 1.0)
-    {
-      m_promoter_states[m_promoter_update_head.GetPosition()] += m_promoter_rates[m_promoter_update_head.GetPosition()];
-
+    do  {
+      // This way goes straight through the genome
+      m_promoter_update_head++;
+      
+      // This way goes interspersed through the genome -- Add as a config option @JEB
+      /*
       int new_pos = m_promoter_update_head.GetPosition();
       new_pos += inc;
       if ( new_pos >= genome_size )
@@ -4165,10 +4187,15 @@ void cHardwareGX::ProcessImplicitGeneExpression(int in_limit)
         new_pos++;
         new_pos %= inc;
       }
+      */
       
-      assert((new_pos >= 0) && (new_pos < genome_size));
-      m_promoter_update_head.Set(new_pos);
-    }
+      m_promoter_states[m_promoter_update_head.GetPosition()] += m_promoter_rates[m_promoter_update_head.GetPosition()];
+      if ( (m_world->GetVerbosity() >= VERBOSE_DETAILS) && (m_promoter_states[m_promoter_update_head.GetPosition()] > 0) )
+      {
+        cout << "Promoter position " <<  m_promoter_update_head.GetPosition() << " value " << m_promoter_states[m_promoter_update_head.GetPosition()] << endl;
+      }
+    } while (m_promoter_states[m_promoter_update_head.GetPosition()] < 1.0);
+    
     m_promoter_states[m_promoter_update_head.GetPosition()] -= 1.0;
     
     // Create new programid
@@ -4205,10 +4232,9 @@ void cHardwareGX::ProcessImplicitGeneExpression(int in_limit)
       cout << "New programid created. Start position = " << new_programid->GetHead(nHardware::HEAD_READ).GetPosition();
       cout << " length = " <<  new_programid->m_memory.GetSize() << endl;
     }
+    
+    m_promoter_update_head++; //move on to the next position
   }
-
-  m_promoter_update_head++;
-  
 }
 
 
@@ -4257,7 +4283,7 @@ int cHardwareGX::FindRegulatoryMatch(const cCodeLabel& label)
     for (int i=0; i<label.GetSize(); i++)
     {
       // Don't allow a site that overlaps current regulation
-      if (m_promoter_occupied_sites[i] != 0)
+      if (m_promoter_occupied_sites[m.GetPosition()] != 0)
       {
         matched_positions = 0;
         break;
@@ -4524,8 +4550,8 @@ void cHardwareGX::cProgramid::RemoveRegulation()
   for (int i=0; i < 2*regulatory_footprint + _label_size; i++)
   {
     m_gx_hardware->m_promoter_occupied_sites[h.GetPosition()] = 0; //Zero regulation
-  }
-  h++;    
+    h++;   
+  } 
   
   m_gx_hardware->AdjustPromoterRates();
 }

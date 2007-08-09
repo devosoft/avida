@@ -552,6 +552,9 @@ Default values are in brackets:
     <br /><em>pow</em>: Multiply the current merit by 2<sup>bonus</sup>.
        this is effectively multiplicative, but positive bonuses are
        always beneficial, and negative bonuses are harmful.
+    <br /><em>enzyme</em>: Add bonus * resource / (resource + frac) to the current merit.
+    	This is gives a Michaelis-Menten enzyme type reward where bonus is the K<sub>cat</sub>
+    	and frac is the K<sub>m</sub>. Does not work with unlimited resources.
   </td>
   <td>add</td>
 </tr>
@@ -600,6 +603,13 @@ Default values are in brackets:
   <td class="resall">lethal</td>
   <td>Whether the cell dies after performing the process</td>
   <td>0</td>
+</tr>
+<tr>
+  <td class="resall">depletable</td>
+  <td>
+    Whether this resource is consumed by reactions.
+  </td>
+  <td>true</td>
 </tr>
 </table>
 <p>&nbsp;</p>

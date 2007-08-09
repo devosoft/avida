@@ -740,8 +740,9 @@ bool cHardwareBase::Inst_Nop(cAvidaContext& ctx)          // Do Nothing.
 // @JEB Check implicit repro conditions -- meant to be called at the end of SingleProcess
 void cHardwareBase::CheckImplicitRepro(cAvidaContext& ctx)         
 {  
-  if( (m_world->GetConfig().IMPLICIT_REPRO_TIME.Get() && (organism->GetPhenotype().GetCPUCyclesUsed() >= m_world->GetConfig().IMPLICIT_REPRO_TIME.Get()))
-      || (m_world->GetConfig().IMPLICIT_REPRO_BONUS.Get() && (organism->GetPhenotype().GetCurBonus() >= m_world->GetConfig().IMPLICIT_REPRO_BONUS.Get())) )
+  if( (m_world->GetConfig().IMPLICIT_REPRO_TIME.Get() && (organism->GetPhenotype().GetTimeUsed() >= m_world->GetConfig().IMPLICIT_REPRO_TIME.Get()))
+   || (m_world->GetConfig().IMPLICIT_REPRO_CPU_CYCLES.Get() && (organism->GetPhenotype().GetCurBonus() >= m_world->GetConfig().IMPLICIT_REPRO_CPU_CYCLES.Get()))
+   || (m_world->GetConfig().IMPLICIT_REPRO_BONUS.Get() && (organism->GetPhenotype().GetCPUCyclesUsed() >= m_world->GetConfig().IMPLICIT_REPRO_BONUS.Get())) )
   {
     Inst_Repro(ctx);
   }
@@ -751,7 +752,7 @@ void cHardwareBase::CheckImplicitRepro(cAvidaContext& ctx)
 bool cHardwareBase::Inst_Repro(cAvidaContext& ctx) 
 {
   cout << "This hardware type does not have a =repro= instruction. IMPLICIT_REPRO conditions cannot be used!" << endl;
-  assert(1);
+  exit(1);
   return false;
 }
 

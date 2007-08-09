@@ -113,7 +113,7 @@ private:
   tArray<int> cur_task_count;                 // Total times each task was performed
   tArray<int> eff_task_count;                 // Total times each task was performed (resetable during the life of the organism)
   tArray<double> cur_task_quality;            // Average (total?) quality with which each task was performed
-  tArray<double> cur_task_value;			  // Value with which this phenotype performs task
+  tArray<double> cur_task_value;              // Value with which this phenotype performs task
   tArray<int> cur_reaction_count;             // Total times each reaction was triggered.  
   tArray<double> cur_reaction_add_reward;     // Bonus change from triggering each reaction.
   tArray<int> cur_inst_count;                 // Instruction exection counter
@@ -125,11 +125,13 @@ private:
   tArray<double> cur_promoter_weights;        // Current of starting execution from each position, adjusted for regulation; @JEB 
   tArray<double> promoter_activation;         // Amount of positive regulation in play at each site; @JEB 
   tArray<double> promoter_repression;         // Amount of negative regulation in play at each site; @JEB 
-  bool promoter_last_inst_terminated;         // Did terminatin occur when executing the last instruction
-  
-
+  bool promoter_last_inst_terminated;         // Did termination occur when executing the last instruction; @JEB
   tHashTable<void*, cTaskState*> m_task_states;
-
+  tArray<double> cur_trial_fitnesses;         // Fitnesses of various trials.; @JEB
+  tArray<double> cur_trial_bonuses;           // Bonuses of various trials.; @JEB
+  tArray<int> cur_trial_times_used;        // Time used in of various trials.; @JEB
+  int trial_time_used;                        // like time_used, but reset every trial; @JEB
+  int trial_cpu_cycles_used;                  // like cpu_cycles_used, but reset every trial; @JEB
   
   // 3. These mark the status of "in progess" variables at the last divide.
   double last_merit_base;         // Either constant or based on genome length.
@@ -145,6 +147,7 @@ private:
   tArray<int> last_inst_count;	  // Instruction exection counter
   tArray<int> last_sense_count;   // Total times resource combinations have been sensed; @JEB 
   double last_fitness;            // Used to determine sterilization.
+  int last_cpu_cycles_used;
 
   // 4. Records from this organisms life...
   int num_divides;       // Total successful divides organism has produced.
@@ -257,6 +260,8 @@ public:
 
   // Some useful methods...
   int CalcSizeMerit() const;
+  double CalcFitness(double _merit_base, double _bonus, int _gestation_time, int _cpu_cycles) const;
+
   double CalcFitnessRatio() {
     const int merit_base = CalcSizeMerit();
     const double cur_fitness = merit_base * cur_bonus / time_used;
@@ -301,6 +306,12 @@ public:
   double GetSensedResource(int _in) { assert(initialized == true); return sensed_resources[_in]; }
   const tArray<cCodeLabel>& GetActiveTransposons() { assert(initialized == true); return active_transposons; }
   const tArray<double>& GetCurPromoterWeights() { assert(initialized == true); return cur_promoter_weights; }
+  
+  void  NewTrial(); //Save the current fitness, and reset the bonus. @JEB
+  void  TrialDivideReset(const cGenome & _genome); //Subset of resets specific to division not done by NewTrial. @JEB
+  const tArray<double>& GetTrialFitnesses() { return cur_trial_fitnesses; }; //Return list of trial fitnesses. @JEB
+  const tArray<double>& GetTrialBonuses() { return cur_trial_bonuses; }; //Return list of trial bonuses. @JEB
+  const tArray<int>& GetTrialTimesUsed() { return cur_trial_times_used; }; //Return list of trial times used. @JEB
 
   double GetLastMeritBase() const { assert(initialized == true); return last_merit_base; }
   double GetLastBonus() const { assert(initialized == true); return last_bonus; }
@@ -432,8 +443,8 @@ public:
   void IncNumQuantaThreshGbDonations() { assert(initialized == true); num_quanta_thresh_gb_donations++; }
 
   void IncAge()      { assert(initialized == true); age++; }
-  void IncCPUCyclesUsed() { assert(initialized == true); cpu_cycles_used++; }
-  void IncTimeUsed(int i=1) { assert(initialized == true); time_used+=i; }
+  void IncCPUCyclesUsed() { assert(initialized == true); cpu_cycles_used++; trial_cpu_cycles_used++; }
+  void IncTimeUsed(int i=1) { assert(initialized == true); time_used+=i; trial_time_used+=i; }
   void IncErrors()   { assert(initialized == true); cur_num_errors++; }
   void IncDonates()   { assert(initialized == true); cur_num_donates++; }
   void IncSenseCount(const int i) { assert(initialized == true); cur_sense_count[i]++; }  

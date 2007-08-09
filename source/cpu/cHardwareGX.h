@@ -501,6 +501,7 @@ private:
   bool Inst_TaskPut(cAvidaContext& ctx);
   bool Inst_TaskPutResetInputs(cAvidaContext& ctx);
   bool Inst_TaskIO(cAvidaContext& ctx);
+  bool Inst_TaskIO_DecayBonus(cAvidaContext& ctx);
   bool Inst_TaskIO_Feedback(cAvidaContext& ctx);
   bool Inst_MatchStrings(cAvidaContext& ctx);
   bool Inst_Sell(cAvidaContext& ctx);

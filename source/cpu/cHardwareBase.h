@@ -72,7 +72,9 @@ protected:
   virtual int GetCopiedSize(const int parent_size, const int child_size) = 0;  
   
   bool Divide_CheckViable(cAvidaContext& ctx, const int parent_size, const int child_size);
+public:  //@JEB
   unsigned Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier = 1.0, const int maxmut = INT_MAX);
+protected:
   unsigned Divide_DoExactMutations(cAvidaContext& ctx, double mut_multiplier = 1.0, const int pointmut = INT_MAX);
   bool Divide_TestFitnessMeasures(cAvidaContext& ctx);
   

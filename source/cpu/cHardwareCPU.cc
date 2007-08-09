@@ -193,6 +193,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("put-reset", &cHardwareCPU::Inst_TaskPutResetInputs),
     tInstLibEntry<tMethod>("IO", &cHardwareCPU::Inst_TaskIO, nInstFlag::DEFAULT, "Output ?BX?, and input new number back into ?BX?"),
     tInstLibEntry<tMethod>("IO-Feedback", &cHardwareCPU::Inst_TaskIO_Feedback, 0, "Output ?BX?, and input new number back into ?BX?,  and push 1,0,  or -1 onto stack1 if merit increased, stayed the same, or decreased"),
+    tInstLibEntry<tMethod>("IO-bc-0.001", &cHardwareCPU::Inst_TaskIO_BonusCost_0_001),
     tInstLibEntry<tMethod>("match-strings", &cHardwareCPU::Inst_MatchStrings),
     tInstLibEntry<tMethod>("sell", &cHardwareCPU::Inst_Sell),
     tInstLibEntry<tMethod>("buy", &cHardwareCPU::Inst_Buy),
@@ -211,25 +212,24 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("donate-quantagb",  &cHardwareCPU::Inst_DonateQuantaThreshGreenBeard),
     tInstLibEntry<tMethod>("donate-NUL", &cHardwareCPU::Inst_DonateNULL),
 
-	tInstLibEntry<tMethod>("IObuf-add1", &cHardwareCPU::Inst_IOBufAdd1),
+    tInstLibEntry<tMethod>("IObuf-add1", &cHardwareCPU::Inst_IOBufAdd1),
     tInstLibEntry<tMethod>("IObuf-add0", &cHardwareCPU::Inst_IOBufAdd0),
 
     tInstLibEntry<tMethod>("rotate-l", &cHardwareCPU::Inst_RotateL),
     tInstLibEntry<tMethod>("rotate-r", &cHardwareCPU::Inst_RotateR),
     tInstLibEntry<tMethod>("rotate-label", &cHardwareCPU::Inst_RotateLabel),
-
     
     tInstLibEntry<tMethod>("set-cmut", &cHardwareCPU::Inst_SetCopyMut),
     tInstLibEntry<tMethod>("mod-cmut", &cHardwareCPU::Inst_ModCopyMut),
     // @WRE additions for movement
     tInstLibEntry<tMethod>("tumble", &cHardwareCPU::Inst_Tumble),
     tInstLibEntry<tMethod>("move", &cHardwareCPU::Inst_Move),
-
-    // Energy instruction
-    tInstLibEntry<tMethod>("recover", &cHardwareCPU::Inst_ZeroEnergyUsed),
     
     // Threading instructions
     tInstLibEntry<tMethod>("fork-th", &cHardwareCPU::Inst_ForkThread),
+    tInstLibEntry<tMethod>("forkl", &cHardwareCPU::Inst_ForkThreadLabel),
+    tInstLibEntry<tMethod>("forkl!=0", &cHardwareCPU::Inst_ForkThreadLabelIfNot0),
+    tInstLibEntry<tMethod>("forkl=0", &cHardwareCPU::Inst_ForkThreadLabelIf0),
     tInstLibEntry<tMethod>("kill-th", &cHardwareCPU::Inst_KillThread),
     tInstLibEntry<tMethod>("id-th", &cHardwareCPU::Inst_ThreadID),
     
@@ -492,11 +492,11 @@ void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
   
   if (m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1) {
     //First instruction - check whether we should be starting at a promoter.
-    if (phenotype.GetTimeUsed() == 0) Inst_Terminate(m_world->GetDefaultContext());
+    if (phenotype.GetCPUCyclesUsed() == 0) Inst_Terminate(m_world->GetDefaultContext());
   }
   
-  phenotype.IncTimeUsed();
   phenotype.IncCPUCyclesUsed();
+  if (!m_world->GetConfig().NO_CPU_CYCLE_TIME.Get()) phenotype.IncTimeUsed();
 
   const int num_threads = GetNumThreads();
   
@@ -534,7 +534,7 @@ void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
       // NOTE: This call based on the cur_inst must occur prior to instruction
       //       execution, because this instruction reference may be invalid after
       //       certain classes of instructions (namely divide instructions) @DMB
-      const int addl_time_cost = m_inst_set->GetAddlTimeCost(cur_inst);
+      const int time_cost = m_inst_set->GetAddlTimeCost(cur_inst);
 
       // Prob of exec (moved from SingleProcess_PayCosts so that we advance IP after a fail)
       if ( m_inst_set->GetProbFail(cur_inst) > 0.0 ) {
@@ -547,8 +547,8 @@ void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
       // we now want to move to the next instruction in the memory.
       if (m_advance_ip == true) IP().Advance();
       
-      // Pay the additional death_cost of the instruction now
-      phenotype.IncTimeUsed(addl_time_cost);
+      // Pay the time cost of the instruction now
+      phenotype.IncTimeUsed(time_cost);
       
       // In the promoter model, there may be a chance of termination
       // that causes execution to start at a new instruction (per instruction executed)
@@ -2809,6 +2809,17 @@ bool cHardwareCPU::Inst_TaskIO(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareCPU::Inst_TaskIO_BonusCost(cAvidaContext& ctx, double bonus_cost)
+{
+  // Levy the cost
+  double new_bonus = organism->GetPhenotype().GetCurBonus() * (1 - bonus_cost);
+  if (new_bonus < 0) new_bonus = 0;
+  //keep the bonus positive or zero
+  organism->GetPhenotype().SetCurBonus(new_bonus);
+  
+  return Inst_TaskIO(ctx);
+}
+
 bool cHardwareCPU::Inst_TaskIO_Feedback(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_BX);
@@ -2910,11 +2921,11 @@ bool cHardwareCPU::Inst_SenseMult100(cAvidaContext& ctx)
 
 bool cHardwareCPU::DoSense(cAvidaContext& ctx, int conversion_method, double base)
 {
-  // Returns the log2 amount of a resource or resources 
+  // Returns the amount of a resource or resources 
   // specified by modifying NOPs into register BX
   const tArray<double> & res_count = organism->GetOrgInterface().GetResources();
 
-  // Arbitrarily set to BX since the conditionals use this directly.
+  // Arbitrarily set to BX since the conditional instructions use this directly.
   int reg_to_set = REG_BX;
 
   // There are no resources, return
@@ -2943,7 +2954,7 @@ bool cHardwareCPU::DoSense(cAvidaContext& ctx, int conversion_method, double bas
   // because their mapping to resources will be disrupted
   
   // Attempt to read a label with this maximum length
-  cHardwareCPU::ReadLabel(max_label_length);
+  ReadLabel(max_label_length);
   
   // Find the length of the label that we actually obtained (max is max_reg_needed)
   int real_label_length = GetLabel().GetSize();
@@ -3701,15 +3712,6 @@ bool cHardwareCPU::Inst_Move(cAvidaContext& ctx)
   }
 }
 
-// Energy use
-
-bool cHardwareCPU::Inst_ZeroEnergyUsed(cAvidaContext& ctx)
-{
-  // Typically, this instruction should be triggered by a REACTION
-  organism->GetPhenotype().SetTimeUsed(0); 
-  return true;  
-}
-
 // Multi-threading.
 
 bool cHardwareCPU::Inst_ForkThread(cAvidaContext& ctx)
@@ -3717,6 +3719,49 @@ bool cHardwareCPU::Inst_ForkThread(cAvidaContext& ctx)
   IP().Advance();
   if (!ForkThread()) organism->Fault(FAULT_LOC_THREAD_FORK, FAULT_TYPE_FORK_TH);
   return true;
+}
+
+bool cHardwareCPU::Inst_ForkThreadLabel(cAvidaContext& ctx)
+{
+  ReadLabel();
+  GetLabel().Rotate(1, NUM_NOPS);
+  
+  // If there is no label, then do normal fork behavior
+  if (GetLabel().GetSize() == 0)
+  {
+    return Inst_ForkThread(ctx);
+  }
+  
+  cHeadCPU searchHead = FindLabel(+1);
+  if ( searchHead.GetPosition() != IP().GetPosition() )
+  {
+    int save_pos = IP().GetPosition();
+    IP().Set(searchHead.GetPosition() + 1);
+    if (!ForkThread()) organism->Fault(FAULT_LOC_THREAD_FORK, FAULT_TYPE_FORK_TH);
+    IP().Set( save_pos );
+  }
+  
+  return true;
+}
+
+bool cHardwareCPU::Inst_ForkThreadLabelIfNot0(cAvidaContext& ctx)
+{
+  if (GetRegister(REG_BX) == 0) 
+  {
+    ReadLabel();
+    return false;
+  }
+  return Inst_ForkThreadLabel(ctx);
+}
+
+bool cHardwareCPU::Inst_ForkThreadLabelIf0(cAvidaContext& ctx)
+{
+  if (GetRegister(REG_BX) != 0)
+  {
+    ReadLabel();
+    return false;
+  }
+  return Inst_ForkThreadLabel(ctx);
 }
 
 bool cHardwareCPU::Inst_KillThread(cAvidaContext& ctx)

@@ -249,8 +249,8 @@ void cHardwareExperimental::SingleProcess(cAvidaContext& ctx)
   organism->SetRunning(true);
   
   cPhenotype & phenotype = organism->GetPhenotype();
-  phenotype.IncTimeUsed();
   phenotype.IncCPUCyclesUsed();
+  if (!m_world->GetConfig().NO_CPU_CYCLE_TIME.Get()) phenotype.IncTimeUsed();
 
   const int num_threads = GetNumThreads();
   

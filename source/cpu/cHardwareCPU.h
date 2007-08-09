@@ -408,6 +408,8 @@ private:
   bool Inst_TaskPutResetInputs(cAvidaContext& ctx);
   bool Inst_TaskIO(cAvidaContext& ctx);
   bool Inst_TaskIO_Feedback(cAvidaContext& ctx);
+  bool Inst_TaskIO_BonusCost(cAvidaContext& ctx, double bonus_cost);
+  bool Inst_TaskIO_BonusCost_0_001(cAvidaContext& ctx) { return Inst_TaskIO_BonusCost(ctx, 0.001); };
   bool Inst_MatchStrings(cAvidaContext& ctx);
   bool Inst_Sell(cAvidaContext& ctx);
   bool Inst_Buy(cAvidaContext& ctx);
@@ -446,13 +448,12 @@ private:
   bool Inst_Tumble(cAvidaContext& ctx);
   bool Inst_Move(cAvidaContext& ctx);
 
-  // Energy use
-  
-  bool Inst_ZeroEnergyUsed(cAvidaContext& ctx); 
-
   // Multi-threading...
 
   bool Inst_ForkThread(cAvidaContext& ctx);
+  bool Inst_ForkThreadLabel(cAvidaContext& ctx);
+  bool Inst_ForkThreadLabelIf0(cAvidaContext& ctx);
+  bool Inst_ForkThreadLabelIfNot0(cAvidaContext& ctx);
   bool Inst_KillThread(cAvidaContext& ctx);
   bool Inst_ThreadID(cAvidaContext& ctx);
 

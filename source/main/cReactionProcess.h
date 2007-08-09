@@ -55,6 +55,9 @@ private:
   bool lethal;		 // Lethality of reaction
   cString match_string;	 // Bit string to match if this is a match string reaction
   int inst_id;           // Instruction to be triggered if reaction successful.
+  bool depletable;       // Does completing consume resource?
+                         // (This is not quite redundant with an infinite resource
+                         // because it allows the resource level to be sensed @JEB)
 
   // Resource detection
   cResource * detect;    // Resource Measured
@@ -77,6 +80,7 @@ public:
     , conversion(1.0)
     , lethal(0)
     , inst_id(-1)
+    , depletable(true)
     , detect(NULL)
     , detection_threshold(0.0)
     , detection_error(0.0)
@@ -93,6 +97,7 @@ public:
   cResource* GetProduct() const { return product; }
   double GetConversion() const { return conversion; }
   int GetInstID() const { return inst_id; }
+  bool GetDepletable() const { return depletable; }
   bool GetLethal() const { return lethal; }
   cResource* GetDetect() const { return detect; }
   double GetDetectionThreshold() const { return detection_threshold; }
@@ -108,6 +113,7 @@ public:
   void SetProduct(cResource* _in) { product = _in; }
   void SetConversion(double _in) { conversion = _in; }
   void SetInstID(int _in) { inst_id = _in; }
+  void SetDepletable(bool _in) { depletable = _in; }
   void SetLethal(int _in) { lethal = _in; }
   void SetDetect(cResource* _in) { detect = _in; }
   void SetDetectionThreshold(double _in) { detection_threshold = _in; }

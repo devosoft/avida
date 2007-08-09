@@ -160,6 +160,7 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc)
       else if (var_value=="pow") new_process->SetType(nReaction::PROCTYPE_POW);
       else if (var_value=="lin") new_process->SetType(nReaction::PROCTYPE_LIN);
       else if (var_value=="energy") new_process->SetType(nReaction::PROCTYPE_ENERGY);
+      else if (var_value=="enzyme") new_process->SetType(nReaction::PROCTYPE_ENZYME);
       else {
         cerr << "Unknown reaction process type '" << var_value
         << "' found in '" << reaction->GetName() << "'." << endl;
@@ -218,7 +219,13 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc)
     }
     else if (var_name == "string") {
       new_process->SetMatchString(var_value);
-	}
+    }
+    else if (var_name == "depletable") {
+    if (!AssertInputBool(var_value, "depletable", var_type))
+        return false;
+    new_process->SetDepletable(var_value.AsInt());  
+    }
+
     else {
       cerr << "Error: Unknown process variable '" << var_name
       << "' in reaction '" << reaction->GetName() << "'" << endl;
@@ -955,7 +962,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       // Test if infinite resource
       consumed = max_consumed * task_quality;
     } else {
-      // Otherwise we're using a finite resource
+      // Otherwise we're using a finite resource      
       const int res_id = in_resource->GetID();
       
       assert(resource_count[res_id] >= 0);
@@ -976,7 +983,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       if (consumed == 0.0) continue;
       
       // Mark in the results the resource consumed.
-      result.Consume(res_id, consumed);
+      if (cur_process->GetDepletable()) result.Consume(res_id, consumed);
     }
     
     // Calculate the bonus
@@ -998,7 +1005,14 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       case nReaction::PROCTYPE_ENERGY:
         result.AddEnergy(bonus);
         break;
-        
+      case nReaction::PROCTYPE_ENZYME: //@JEB
+        const int res_id = in_resource->GetID();
+        assert(cur_process->GetMaxFraction() != 0);
+        assert(resource_count[res_id] != 0);
+        double reward = cur_process->GetValue() * resource_count[res_id] / (resource_count[res_id] + cur_process->GetMaxFraction());
+        result.AddBonus( reward , reaction_id);
+        break;
+          
       default:
         assert(false);  // Should not get here!
         break;

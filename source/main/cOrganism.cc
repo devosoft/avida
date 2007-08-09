@@ -598,3 +598,12 @@ void cOrganism::Fault(int fault_loc, int fault_type, cString fault_desc)
 
   m_phenotype.IncErrors();
 }
+
+void cOrganism::NewTrial()
+{
+  //More should be reset here... @JEB
+  GetPhenotype().NewTrial();
+  m_input_pointer = 0;
+  m_input_buf.Clear();
+  m_output_buf.Clear();
+}
