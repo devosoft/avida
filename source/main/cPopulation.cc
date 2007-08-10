@@ -2995,8 +2995,7 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive, do
   tArray<double> max_trial_fitnesses(num_trials);
   tArray<double> bonus_sums(num_trials);
   bonus_sums.SetAll(0);
-  double max_bonus_sum = -1;
-
+  
   bool init = false;
   // What is the min and max fitness in each trial
   for (int i = 0; i < num_cells; i++) 
@@ -3068,6 +3067,15 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive, do
           fitness*=trial_fitnesses[t]; 
         }
         fitness = exp( (1/trial_fitnesses.GetSize()) * log(fitness) );
+        break;
+        
+        //Addition of normalized values
+        case 3:
+        fitness = 0;
+        for (int t=0; t < trial_fitnesses.GetSize(); t++) 
+        { 
+          if (max_trial_fitnesses[t] > 0) fitness+=trial_fitnesses[t] / max_trial_fitnesses[t]; 
+        }
         break;
                          
         default:
