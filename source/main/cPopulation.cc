@@ -3122,7 +3122,7 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive, do
   {
     if (GetCell(i).IsOccupied())
     {
-        double fitness = exp(log(2) * scaled_time *  (org_fitness[i] - highest_fitness));
+        double fitness = exp(log(2.0) * scaled_time *  (org_fitness[i] - highest_fitness));
         org_fitness[i] = fitness;
         total_fitness += fitness;
     }

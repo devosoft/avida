@@ -96,7 +96,7 @@ void cPhenPlastGenotype::Process(cCPUTestInfo& test_info, cWorld* world, cAvidaC
       m_likely_fitness = fit;
     }
     m_avg_fitness += freq * fit;
-    m_phenotypic_entropy -= freq * log(freq) / log(2);
+    m_phenotypic_entropy -= freq * log(freq) / log(2.0);
     ++uit;
   }
   delete test_cpu;
