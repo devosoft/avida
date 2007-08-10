@@ -153,8 +153,10 @@ unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multip
   if ( organism->TestDivideSlip(ctx) )
   {
     cGenome child_copy = cGenome(child_genome);
+    
+    //All combinations except beginning to past end allowed
     int from = ctx.GetRandom().GetInt(child_copy.GetSize()+1);
-    int to = ctx.GetRandom().GetInt(child_copy.GetSize()+1);
+    int to = (from == 0) ? ctx.GetRandom().GetInt(child_copy.GetSize()) : ctx.GetRandom().GetInt(child_copy.GetSize()+1);
     
     //Resize child genome
     int insertion_length = (from-to);
