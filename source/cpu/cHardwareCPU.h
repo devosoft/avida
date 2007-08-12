@@ -138,6 +138,12 @@ protected:
   bool m_advance_ip;         // Should the IP advance after this instruction?
   bool m_executedmatchstrings;	// Have we already executed the match strings instruction?
   
+  // Promoter model
+  int promoter_search_pos;      //site to begin looking for the next active promoter from
+  int promoter_inst_executed;   //num inst executed since last termination
+  tArray<int> promoter_pos;     //positions with promoter instructions
+  tArray<bool> promoter_active; //whether each promoter is active (same size as promoter_pos)
+  
   bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst);
   
   // --------  Stack Manipulation...  --------
@@ -520,6 +526,7 @@ private:
   bool Inst_GetUpdate(cAvidaContext& ctx);
 
   //// Promoter Model ////
+  
   void GetPromoterPattern(tArray<int>& promoter);
   void RegulatePromoter(cAvidaContext& ctx, bool up);
   bool Inst_UpRegulatePromoter(cAvidaContext& ctx) { RegulatePromoter(ctx, true); return true; }

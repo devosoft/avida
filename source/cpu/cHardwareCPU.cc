@@ -454,6 +454,24 @@ void cHardwareCPU::Reset()
     if(!m_has_energy_costs && inst_energy_cost[i]) m_has_energy_costs = true;
   }
 #endif   
+
+  if (m_world->GetConfig().PROMOTERS_ENABLED.Get())
+  {
+    // Ideally, this wouldn't be hard-coded
+    cInstruction promoter_inst = m_world->GetHardwareManager().GetInstSet().GetInst(cStringUtil::Stringf("promoter"));
+    promoter_search_pos = 0;
+    promoter_inst_executed = 0;
+    promoter_pos.Resize(0);
+    promoter_active.Resize(0);
+    for (int i=0; i<GetMemory().GetSize(); i++)
+    {
+      if ( (GetMemory())[i] == promoter_inst)
+      {
+        promoter_pos.Push(i);
+        promoter_active.Push(true);
+      }
+    }
+  }
 }
 
 void cHardwareCPU::cLocalThread::operator=(const cLocalThread& in_thread)
@@ -485,6 +503,8 @@ void cHardwareCPU::cLocalThread::Reset(cHardwareBase* in_hardware, int in_id)
 
 void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
 {
+  int last_IP_pos = IP().GetPosition();
+
   // Mark this organism as running...
   organism->SetRunning(true);
   
@@ -541,6 +561,11 @@ void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
         exec = !( ctx.GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
       }
       
+      //Add to the promoter inst executed count before executing the inst (in case it is a terminator)
+      if (m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1) {
+        promoter_inst_executed++;
+      }
+
       if (exec == true) SingleProcess_ExecuteInst(ctx, cur_inst);
       
       // Some instruction (such as jump) may turn m_advance_ip off.  Usually
@@ -552,20 +577,24 @@ void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
       
       // In the promoter model, there may be a chance of termination
       // that causes execution to start at a new instruction (per instruction executed)
-      if ( m_world->GetConfig().PROMOTERS_ENABLED.Get() ) {
+      if ( m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1 ) {
         const double processivity = m_world->GetConfig().PROMOTER_PROCESSIVITY_INST.Get();
         if ( ctx.GetRandom().P(1-processivity) ) Inst_Terminate(ctx);
       }
+      
     } // if exec
     
     // In the promoter model, there may be a chance of termination
     // that causes execution to start at a new instruction (per cpu cycle executed)
     // @JEB - since processivities usually v. close to 1 it doesn't
     // improve speed much to combine with "per instruction" block
-    if ( m_world->GetConfig().PROMOTERS_ENABLED.Get() )
+    if ( m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1 )
     {
       const double processivity = m_world->GetConfig().PROMOTER_PROCESSIVITY.Get();
-      if ( ctx.GetRandom().P(1-processivity) ) Inst_Terminate(ctx);
+      if ( ctx.GetRandom().P(1-processivity) ) 
+        Inst_Terminate(ctx);
+      if ( m_world->GetConfig().PROMOTER_MAX_INST.Get() && (promoter_inst_executed >= m_world->GetConfig().PROMOTER_MAX_INST.Get()) ) 
+        Inst_Terminate(ctx);
     }
     
   } // Previous was executed once for each thread...
@@ -578,7 +607,7 @@ void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
   }
   
   organism->SetRunning(false);
-  CheckImplicitRepro(ctx);
+  CheckImplicitRepro(ctx, last_IP_pos > IP().GetPosition());
 }
 
 // This method will handle the actual execution of an instruction
@@ -683,6 +712,16 @@ void cHardwareCPU::PrintStatus(ostream& fp)
   fp << "  Mem (" << GetMemory().GetSize() << "):"
 		  << "  " << GetMemory().AsString()
 		  << endl;
+      
+  if (m_world->GetConfig().PROMOTERS_ENABLED.Get())
+  {
+    fp << "Promoters:";
+    for (int i=0; i<promoter_pos.GetSize(); i++)
+    {
+      fp << " " << promoter_pos[i] << "-" << promoter_active[i]; 
+    }
+    fp << endl;
+  }    
   fp.flush();
 }
 
@@ -1249,7 +1288,7 @@ bool cHardwareCPU::Divide_Main(cAvidaContext& ctx, const int div_point,
   
   // Handle Divide Mutations...
   Divide_DoMutations(ctx, mut_multiplier);
-  
+
   // Many tests will require us to run the offspring through a test CPU;
   // this is, for example, to see if mutations need to be reverted or if
   // lineages need to be updated.
@@ -2495,6 +2534,8 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   // these checks should be done, but currently they make some assumptions
   // that crash when evaluating this kind of organism -- JEB
 
+  if (organism->GetPhenotype().GetCurBonus() < m_world->GetConfig().REQUIRED_BONUS.Get()) return false;
+  
   // Setup child
   cCPUMemory& child_genome = organism->ChildGenome();
   child_genome = GetMemory();
@@ -2534,11 +2575,12 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   
   if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) m_advance_ip = false;
   
-  organism->ActivateDivide(ctx);
+  const bool parent_alive = organism->ActivateDivide(ctx);
   
   //Reset the parent
-  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
-
+  if (parent_alive) {
+    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
+  }
   return true;
 }
 
@@ -4036,12 +4078,17 @@ bool cHardwareCPU::Inst_HeadCopy(cAvidaContext& ctx)
   }
   
 //  cpu_stats.mut_stats.copies_exec++;
-  
   write_head.SetInst(read_inst);
   write_head.SetFlagCopied();  // Set the copied flag...
   
   read_head.Advance();
   write_head.Advance();
+  
+  //Slip mutations
+   if (organism->TestCopySlip(ctx)) {
+    read_head.Set(ctx.GetRandom().GetInt(organism->GetGenome().GetSize()));
+  }
+  
   return true;
 }
 
@@ -4202,6 +4249,53 @@ void cHardwareCPU::RegulatePromoter(cAvidaContext& ctx, bool up)
 // Adjust the weight at promoter positions that match the downstream nop pattern
 void cHardwareCPU::RegulatePromoterNop(cAvidaContext& ctx, bool up)
 {
+  const int max_distance_to_promoter = 10;
+  
+  // Look for the label directly (no complement)
+  // Save the position before the label, so we don't count it as a regulatory site
+  int start_pos = IP().GetPosition(); 
+  ReadLabel();
+  
+  // Don't allow zero-length label matches. These are too powerful.
+  if (GetLabel().GetSize() == 0) return;
+ 
+  cHeadCPU search_head(IP());
+  do {
+    search_head++;
+    cHeadCPU match_head(search_head);
+
+    // See whether a matching label is here
+    int i;
+    for (i=0; i < GetLabel().GetSize(); i++)
+    {
+      match_head++;
+      if ( !m_inst_set->IsNop(match_head.GetInst() ) 
+        || (GetLabel()[i] != m_inst_set->GetNopMod( match_head.GetInst())) ) break;
+    }
+  
+    // Matching label found
+    if (i == GetLabel().GetSize())
+    {
+      //Check eack promoter
+      int start_pos = match_head.GetPosition();
+      int end_pos = start_pos + max_distance_to_promoter;
+      int circle_end = end_pos % GetMemory().GetSize(); //annoying circular genomes
+
+      for (int j=0; j<promoter_pos.GetSize(); j++)
+      {
+        if ( (promoter_pos[j] >= start_pos) && (promoter_pos[j] < end_pos) ) promoter_active[j] = up;
+        if ( (circle_end != end_pos) &&  (promoter_pos[j] >= 0) && (promoter_pos[j] < circle_end) ) promoter_active[j] = up;
+
+      }
+    }
+  } while ( start_pos != search_head.GetPosition() );
+}
+
+
+/* Alternate version, cleanup later @JEB
+// Adjust the weight at promoter positions that match the downstream nop pattern
+void cHardwareCPU::RegulatePromoterNop(cAvidaContext& ctx, bool up)
+{
   static cInstruction promoter_inst = GetInstSet().GetInst(cStringUtil::Stringf("promoter"));
   const int max_distance_to_promoter = 10;
   
@@ -4240,22 +4334,21 @@ void cHardwareCPU::RegulatePromoterNop(cAvidaContext& ctx, bool up)
           {
             organism->GetPhenotype().RegulatePromoter(change_head.GetPosition(), up);
           }
-          /*
           else
           {
             // I can't seem to get resizing promoter arrays on memory allocation to work.
             // Promoter weights still get unsynched from the genome size somewhere. @JEB
-            cout << change_head.GetPosition() << endl;
-            cout << organism->GetPhenotype().GetCurPromoterWeights().GetSize() << endl;
-            cout << GetMemory().GetSize() << endl;
-            cout << GetMemory().AsString() << endl;
+            //cout << change_head.GetPosition() << endl;
+            //cout << organism->GetPhenotype().GetCurPromoterWeights().GetSize() << endl;
+            //cout << GetMemory().GetSize() << endl;
+            //cout << GetMemory().AsString() << endl;
           }
-          */
         }
       }
     }
   } while ( start_pos != search_head.GetPosition() );
 }
+*/
 
 // Adjust the weight at promoter positions that match the downstream nop pattern
 void cHardwareCPU::RegulatePromoterNopIfGT0(cAvidaContext& ctx, bool up)
@@ -4265,6 +4358,48 @@ void cHardwareCPU::RegulatePromoterNopIfGT0(cAvidaContext& ctx, bool up)
   if (reg > 0) RegulatePromoterNop(ctx, up);
 }
 
+// Move execution to a new promoter
+bool cHardwareCPU::Inst_Terminate(cAvidaContext& ctx)
+{
+  // Reset the CPU, clearing everything except R/W head positions.
+  const int write_head_pos = GetHead(nHardware::HEAD_WRITE).GetPosition();
+  const int read_head_pos = GetHead(nHardware::HEAD_READ).GetPosition();
+  m_threads[m_cur_thread].Reset(this, m_threads[m_cur_thread].GetID());
+  GetHead(nHardware::HEAD_WRITE).Set(write_head_pos);
+  GetHead(nHardware::HEAD_READ).Set(read_head_pos);
+
+  // We want to execute the promoter that we land on.
+  promoter_inst_executed = 0;
+  m_advance_ip = false;
+  organism->GetPhenotype().SetTerminated(true);
+  
+  //organism->ClearInput();
+  
+  // Find the next active promoter
+  int started_search_pos = promoter_search_pos;
+  
+  while (promoter_pos.GetSize() > 0) // conditional infinite loop, breaks out
+  {
+    promoter_search_pos++;
+    promoter_search_pos %= promoter_active.GetSize();
+    if (promoter_active[promoter_search_pos]) break;
+    if (started_search_pos == promoter_search_pos) break;
+  } 
+  
+  //Can't find a promoter -- start at the beginning of the genome (or die! or sleep!)
+  if ((promoter_pos.GetSize() == 0) || ((promoter_search_pos == started_search_pos) && (!promoter_active[promoter_search_pos])))
+  {
+    IP().Set(0);
+  }
+  else
+  {
+    IP().Set(promoter_pos[promoter_search_pos]);
+  }
+  
+  return true;
+}
+
+/* Older version... @JEB
 // Move execution to a new promoter
 bool cHardwareCPU::Inst_Terminate(cAvidaContext& ctx)
 {
@@ -4287,7 +4422,6 @@ bool cHardwareCPU::Inst_Terminate(cAvidaContext& ctx)
   for (int i = 0; i < w.GetSize(); i++) {
     total_weight += w[i];
   }
- 
    
   // If there is no weight (for example if there are no promoters)
   // then randomly choose a starting position
@@ -4314,6 +4448,7 @@ bool cHardwareCPU::Inst_Terminate(cAvidaContext& ctx)
   }  
   return true;
 }
+*/
 
 bool cHardwareCPU::Inst_Promoter(cAvidaContext& ctx)
 {

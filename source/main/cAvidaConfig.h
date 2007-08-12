@@ -245,13 +245,16 @@ public:
   CONFIG_ADD_VAR(REQUIRED_TASK, int, -1, "Task ID required for successful divide.");
   CONFIG_ADD_VAR(IMMUNITY_TASK, int, -1, "Task providing immunity from the required task.");
   CONFIG_ADD_VAR(REQUIRED_REACTION, int, -1, "Reaction ID required for successful divide.");
+  CONFIG_ADD_VAR(REQUIRED_BONUS, double, 0.0, "Required bonus to divide.");
   CONFIG_ADD_VAR(IMPLICIT_REPRO_BONUS, int, 0, "Call Inst_Repro to divide upon achieving this bonus. 0 = OFF");  
   CONFIG_ADD_VAR(IMPLICIT_REPRO_CPU_CYCLES, int, 0, "Call Inst_Repro after this many cpu cycles. 0 = OFF");  
   CONFIG_ADD_VAR(IMPLICIT_REPRO_TIME, int, 0, "Call Inst_Repro after this time used. 0 = OFF");  
+  CONFIG_ADD_VAR(IMPLICIT_REPRO_END, int, 0, "Call Inst_Repro after executing the last instruction in the genome.");  
 
   CONFIG_ADD_GROUP(MUTATION_GROUP, "Mutations");
   CONFIG_ADD_VAR(POINT_MUT_PROB, double, 0.0, "Mutation rate (per-location per update)");
   CONFIG_ADD_VAR(COPY_MUT_PROB, double, 0.0075, "Mutation rate (per copy)");
+  CONFIG_ADD_VAR(COPY_SLIP_PROB, double, 0.0, "Slip rate (per copy)");
   CONFIG_ADD_VAR(INS_MUT_PROB, double, 0.0, "Insertion rate (per site, applied on divide)");
   CONFIG_ADD_VAR(DEL_MUT_PROB, double, 0.0, "Deletion rate (per site, applied on divide)");
   CONFIG_ADD_VAR(DIV_MUT_PROB, double, 0.0, "Mutation rate (per site, applied on divide)");
@@ -375,6 +378,7 @@ public:
 
   CONFIG_ADD_GROUP(PROMOTER_GROUP, "Promoters");
   CONFIG_ADD_VAR(PROMOTERS_ENABLED, int, 0, "Use the promoter/terminator execution scheme.\nCertain instructions must also be included.");
+  CONFIG_ADD_VAR(PROMOTER_MAX_INST, int, 20, "Maximum number of instructions to execute before terminating.");
   CONFIG_ADD_VAR(PROMOTER_PROCESSIVITY, double, 1.0, "Chance of not terminating after each cpu cycle.");
   CONFIG_ADD_VAR(PROMOTER_PROCESSIVITY_INST, double, 1.0, "Chance of not terminating after each instruction.");
   CONFIG_ADD_VAR(PROMOTER_BG_STRENGTH, double, 0, "Probability of positions that are not promoter\ninstructions initiating execution (promoters are 1).");

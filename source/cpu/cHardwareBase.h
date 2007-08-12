@@ -182,7 +182,7 @@ protected:
   bool Inst_Nop(cAvidaContext& ctx);  // A no-operation instruction that does nothing! 
   
   // -------- Implicit Repro Check/Instruction -------- @JEB
-  void CheckImplicitRepro(cAvidaContext& ctx);
+  void CheckImplicitRepro(cAvidaContext& ctx, bool exec_last_inst = false);
   virtual bool Inst_Repro(cAvidaContext& ctx);
 };
 

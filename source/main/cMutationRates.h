@@ -49,6 +49,7 @@ private:
   // ...during an instruction copy...
   struct sCopyMuts {
     double mut_prob;
+    double slip_prob;
   };
   sCopyMuts copy;
 
@@ -96,6 +97,7 @@ public:
   bool TestCopyMut(cAvidaContext& ctx) const { return ctx.GetRandom().P(copy.mut_prob); }
   bool TestCopyIns(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.ins_prob); }
   bool TestCopyDel(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.del_prob); }
+  bool TestCopySlip(cAvidaContext& ctx) const { return (copy.slip_prob == 0.0) ? 0 : ctx.GetRandom().P(copy.slip_prob); }
   bool TestDivideMut(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_mut_prob); }
   bool TestDivideIns(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_ins_prob); }
   bool TestDivideDel(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_del_prob); }

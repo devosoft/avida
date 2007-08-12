@@ -418,8 +418,10 @@ bool cPopulation::ActivateParasite(cOrganism& parent, const cCodeLabel& label, c
 void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell)
 {
   assert(in_organism != NULL);
-  assert(in_organism->GetGenome().GetSize() > 1);
-  
+  assert(in_organism->GetGenome().GetSize() >= 1);
+//  assert(in_organism->GetGenome().GetSize() >= 1);
+
+
   in_organism->SetOrgInterface(new cPopulationInterface(m_world));
   
   // If the organism does not have a genotype, give it one!  No parent

@@ -541,7 +541,9 @@ bool cOrganism::Divide_CheckViable()
       return false; //  (divide fails)
     } 
   }
-
+  
+  if (GetPhenotype().GetCurBonus() < m_world->GetConfig().REQUIRED_BONUS.Get()) return false;
+  
   const int required_reaction = m_world->GetConfig().REQUIRED_REACTION.Get();
   if (required_reaction != -1 && m_phenotype.GetCurTaskCount()[required_reaction] == 0) {
     Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,

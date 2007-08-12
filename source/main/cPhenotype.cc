@@ -297,7 +297,7 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
   cur_task_time.SetAll(0.0);  // Added for time tracking; WRE 03-18-07
   for (int j = 0; j < sensed_resources.GetSize(); j++)
 	      sensed_resources[j] =  parent_phenotype.sensed_resources[j];
-  SetupPromoterWeights(_genome, true);
+  //SetupPromoterWeights(_genome, true);
   cur_trial_fitnesses.Resize(0); 
   cur_trial_bonuses.Resize(0); 
   cur_trial_times_used.Resize(0); 
@@ -431,7 +431,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   sensed_resources.SetAll(0);
   cur_sense_count.SetAll(0);
   cur_task_time.SetAll(0.0);
-  SetupPromoterWeights(_genome, true);
+  //SetupPromoterWeights(_genome, true);
   cur_trial_fitnesses.Resize(0);
   cur_trial_bonuses.Resize(0); 
   cur_trial_times_used.Resize(0); 
@@ -661,7 +661,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
     cpu_cycles_used = 0;
     time_used = 0;
     neutral_metric += m_world->GetRandom().GetRandNormal();
-    SetupPromoterWeights(_genome, true);
+    //SetupPromoterWeights(_genome, true);
   }
 
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() == GENERATION_INC_BOTH) generation++;
@@ -725,7 +725,7 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   cur_sense_count.SetAll(0); 
   cur_task_time.SetAll(0.0);
   sensed_resources.SetAll(-1.0);
-  SetupPromoterWeights(_genome, true);
+ //SetupPromoterWeights(_genome, true);
   cur_trial_fitnesses.Resize(0); 
   cur_trial_bonuses.Resize(0); 
   cur_trial_times_used.Resize(0); 
@@ -1666,7 +1666,7 @@ void cPhenotype::TrialDivideReset(const cGenome & _genome)
     cpu_cycles_used = 0;
     time_used = 0;
     neutral_metric += m_world->GetRandom().GetRandNormal();
-    SetupPromoterWeights(_genome, true);
+    //SetupPromoterWeights(_genome, true);
   }
 
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() == GENERATION_INC_BOTH) generation++;
