@@ -7013,6 +7013,157 @@ return;
 }
 
 
+
+/* MRR
+ * August 2007
+ * This function will go through the lineage, align the genotypes, and
+ * preform mutation reversion a specified number of descendents ahead
+ * assuming they keep within a certain alignment distance (specified as well).
+ * The output will give fitness information for the mutation-reverted genotypes
+ * as described below.
+*/
+void cAnalyze::MutationRevert(cString cur_string)
+{
+  
+  //This function takes in three parameters, all defaulted:
+  cString filename("XXX.dat");   //The name of the output file
+  int      max_dist      = -1;    //The maximum edit distance allowed in the search
+  int	   max_depth     = 5;     //The maximum depth forward one wishes to search
+  
+  if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
+  if (cur_string.GetSize() != 0) max_dist = cur_string.PopWord().AsInt();
+  if (cur_string.GetSize() != 0) max_depth = cur_string.PopWord().AsInt();
+  
+	//Warning notifications
+  if (!batch[cur_batch].IsLineage())
+  {
+		cout << "Error: This command requires a lineage.  Skipping." << endl;
+		return;
+  }
+  
+	
+	//Request a file
+	ofstream& FOT = m_world->GetDataFileOFStream(filename);
+	/*
+   FOT output per line
+   ID
+   FITNESS
+   BIRTH
+   DISTANCE
+   PID
+   P_FITNESS
+   P_BIRTH
+			@ea depth past
+   CHILDX_ID
+   CHILDX_BIRTH
+   CHILDX_FITNESS
+   CHILDX_DISTANCE
+   CHILDX_FITNESS_SANS_MUT
+   */
+	
+	
+  //Align the batch... we're going to keep the fitnesses intact from the runs
+	CommandAlign("");
+  
+	//Our edit distance is already stored in the historical dump.
+	
+	//Test hardware
+	cTestCPU*     test_cpu  = m_world->GetHardwareManager().CreateTestCPU();
+	cCPUTestInfo* test_info = new cCPUTestInfo();
+	test_info->UseRandomInputs(true); 
+  
+	tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+  cAnalyzeGenotype* parent_genotype = batch_it.Next();
+	cAnalyzeGenotype* other_genotype  = NULL;
+	cAnalyzeGenotype* genotype        = NULL;
+	
+  while( (genotype = batch_it.Next()) != NULL && parent_genotype != NULL)
+  {
+		if (true)
+		{
+			FOT << genotype->GetID()			<< " "
+          << genotype->GetFitness()		<< " "
+          << genotype->GetUpdateBorn() << " "
+          << genotype->GetParentDist() << " "
+          << parent_genotype->GetID()				<< " "
+          << parent_genotype->GetFitness()		<< " "
+          << parent_genotype->GetUpdateBorn()	<< " ";
+          
+			int cum_dist = 0;
+			cString str_parent = parent_genotype->GetSequence();
+			cString str_other  = "";
+			cString str_align_parent = parent_genotype->GetAlignedSequence();
+			cString str_align_other  = genotype->GetAlignedSequence();
+			cString reversion  = ""; //Reversion mask
+			
+			//Find what changes to revert
+			for (int k = 0; k < str_align_parent.GetSize(); k++)
+			{
+				char p = str_align_parent[k];
+				char c = str_align_other[k];
+				if (p == c)
+					reversion += " ";	//Nothing
+				else if (p == '_' && c != '_')
+					reversion += "+";	//Insertion
+				else if (p != '_' && c == '_')
+					reversion += "-";  //Deletion
+				else
+					reversion += p;			//Point Mutation
+			}
+			
+			tListIterator<cAnalyzeGenotype> next_it(batch_it);
+			for (int i = 0; i < max_depth; i++)
+			{
+				if ( (other_genotype = next_it.Next()) != NULL && 
+             (cum_dist <= max_dist || max_dist == -1) )
+				{
+					cum_dist += other_genotype->GetParentDist();
+					if (cum_dist > max_dist && max_dist != -1)
+						break;
+					str_other = other_genotype->GetSequence();
+					str_align_other = other_genotype->GetAlignedSequence();
+					
+					//Revert "background" to parental form
+					cString reverted = "";
+					for (int k = 0; k < reversion.GetSize(); k++)
+					{
+						if (reversion[k] == '+')       continue;  //Insertion, so skip
+						else if (reversion[k] == '-')  reverted += str_align_parent[k]; //Add del
+						else if (reversion[k] != ' ')       reverted += reversion[k];        //Revert mut
+						else if (str_align_other[k] != '_') reverted += str_align_other[k];  //Keep current
+					}
+					
+					cAnalyzeGenotype new_genotype(m_world, reverted, inst_set);  //Get likely fitness
+					new_genotype.Recalculate(m_ctx, test_cpu, NULL, test_info, 50);
+					
+					
+          FOT << other_genotype->GetID()			<< " "
+            << other_genotype->GetFitness()		<< " "
+            << other_genotype->GetUpdateBorn() << " "
+            << cum_dist                        << " "
+            << new_genotype.GetFitness()       << " ";
+				}
+				else
+				{
+					FOT << -1 << " "
+          << -1 << " "
+          << -1 << " "
+          << -1 << " "
+          << -1 << " ";
+				}
+			}
+			FOT << endl;
+		}
+		parent_genotype = genotype;
+  }
+  
+  //Clean up
+	delete test_cpu;
+	delete test_info;
+	
+  return;
+}
+
 void cAnalyze::EnvironmentSetup(cString cur_string)
 {
   cout << "Running environment command: " << endl << "  " << cur_string << endl;  
@@ -8363,6 +8514,7 @@ void cAnalyze::SetupCommandDefLibrary()
   // Lineage analysis commands...
   AddLibraryDef("ALIGN", &cAnalyze::CommandAlign);
   AddLibraryDef("ANALYZE_NEWINFO", &cAnalyze::AnalyzeNewInfo);
+  AddLibraryDef("MUTATION_REVERT", &cAnalyze::MutationRevert);
   
   // Build input files for avida...
   AddLibraryDef("WRITE_CLONE", &cAnalyze::WriteClone);
