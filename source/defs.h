@@ -158,7 +158,7 @@ enum eBASE_MERIT
   BASE_MERIT_NUM_BONUS_INST
 };
 
-typedef enum eVerbosity {
+enum eVerbosity {
   VERBOSE_SILENT = 0,   // No output at all
   VERBOSE_NORMAL,       // Notification at start of commands.
   VERBOSE_ON,           // Verbose output, detailing progress

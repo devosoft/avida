@@ -71,12 +71,12 @@ public:
   void Rate(int x, int y, double ratein) const;
   void State(int x);
   void State(int x, int y);
-  const double GetAmount(int x) const;
-  const double GetAmount(int x, int y) const;
+  double GetAmount(int x) const;
+  double GetAmount(int x, int y) const;
   void RateAll(double ratein);
   void StateAll();
   void FlowAll();
-  const double SumAll() const;
+  double SumAll() const;
   void Source(double amount) const;
   void CellInflow() const;
   void Sink(double percent) const;

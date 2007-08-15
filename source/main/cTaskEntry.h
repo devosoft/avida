@@ -60,8 +60,8 @@ public:
 
   const cString& GetName() const { return m_name; }
   const cString& GetDesc() const { return m_desc; }
-  const int GetID() const { return m_id; }
-  const tTaskTest GetTestFun() const { return m_test_fun; }
+  int GetID() const { return m_id; }
+  tTaskTest GetTestFun() const { return m_test_fun; }
   
   bool HasArguments() const { return (m_args != NULL); }
   cArgContainer& GetArguments() const { return *m_args; }

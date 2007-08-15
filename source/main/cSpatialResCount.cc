@@ -273,7 +273,7 @@ void cSpatialResCount::State(int x, int y) {
 
 /* Get the state of one element using the array index */
 
-const double cSpatialResCount::GetAmount(int x) const { 
+double cSpatialResCount::GetAmount(int x) const { 
   if (x >= 0 && x < grid.GetSize()) {
     return grid[x].GetAmount(); 
   } else {
@@ -283,7 +283,7 @@ const double cSpatialResCount::GetAmount(int x) const {
 
 /* Get the state of one element using the the x,y coordinate */
 
-const double cSpatialResCount::GetAmount(int x, int y) const { 
+double cSpatialResCount::GetAmount(int x, int y) const { 
   if (x >= 0 && x < world_x && y >= 0 && y < world_y) {
     return grid[y*world_x + x].GetAmount(); 
   } else {
@@ -337,7 +337,7 @@ void cSpatialResCount::FlowAll() {
 
 /* Total up all the resources in each cell */
 
-const double cSpatialResCount::SumAll() const{
+double cSpatialResCount::SumAll() const{
 
   int i;
   double sum = 0.0;

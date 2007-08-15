@@ -43,7 +43,7 @@ public:
   
   void Rate(double ratein) const { delta += ratein; }
   void State() { amount += delta; delta = 0.0; }
-  const double GetAmount() const { return amount; }
+  double GetAmount() const { return amount; }
   void SetAmount(double res) const { amount = res; }
   void SetPtr(int innum, int inelempt, int inxdist, int  inydist, double indist);
   int GetElemPtr(int innum) { return elempt[innum]; }

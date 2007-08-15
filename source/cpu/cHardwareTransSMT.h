@@ -237,7 +237,7 @@ public:
   
   
   // --------  Register Manipulation  --------
-  const int GetRegister(int reg_id) const { return Stack(reg_id).Peek(); }
+  int GetRegister(int reg_id) const { return Stack(reg_id).Peek(); }
   int& GetRegister(int reg_id) { return Stack(reg_id).Peek(); }
   int GetNumRegisters() const { return NUM_STACKS; }
   

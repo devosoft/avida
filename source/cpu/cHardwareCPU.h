@@ -252,7 +252,7 @@ public:
   
   
   // --------  Register Manipulation  --------
-  const int GetRegister(int reg_id) const { return m_threads[m_cur_thread].reg[reg_id]; }
+  int GetRegister(int reg_id) const { return m_threads[m_cur_thread].reg[reg_id]; }
   int& GetRegister(int reg_id) { return m_threads[m_cur_thread].reg[reg_id]; }
   int GetNumRegisters() const { return NUM_REGISTERS; }
 

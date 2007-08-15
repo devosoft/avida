@@ -48,7 +48,7 @@ public:
   inline void Push(int value);
   inline int Pop();
   inline int& Peek() { return stack[stack_pointer]; }
-  inline const int Peek() const { return stack[stack_pointer]; }
+  inline int Peek() const { return stack[stack_pointer]; }
   inline int Get(int depth=0) const;
   inline void Clear();
   inline int Top();

@@ -348,7 +348,7 @@ public:
   
   
   // --------  Register Manipulation  --------
-  const int GetRegister(int reg_id) const { assert(m_current); return m_current->m_regs[reg_id]; }
+  int GetRegister(int reg_id) const { assert(m_current); return m_current->m_regs[reg_id]; }
   int& GetRegister(int reg_id) { assert(m_current); return m_current->m_regs[reg_id]; }
   int GetNumRegisters() const { return NUM_REGISTERS; }  
   
