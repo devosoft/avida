@@ -457,7 +457,7 @@ void cHardwareCPU::Reset()
 
   if (m_world->GetConfig().PROMOTERS_ENABLED.Get())
   {
-    // Ideally, this wouldn't be hard-coded
+    // Ideally, this shouldn't be hard-coded
     cInstruction promoter_inst = m_world->GetHardwareManager().GetInstSet().GetInst(cStringUtil::Stringf("promoter"));
     promoter_search_pos = 0;
     promoter_inst_executed = 0;
@@ -718,9 +718,10 @@ void cHardwareCPU::PrintStatus(ostream& fp)
     fp << "Promoters:";
     for (int i=0; i<promoter_pos.GetSize(); i++)
     {
-      fp << " " << promoter_pos[i] << "-" << promoter_active[i]; 
+      fp << " " << promoter_pos[i] << "-" << (promoter_active[i] ? "on" : "off"); 
     }
     fp << endl;
+    fp << "Instructions executed past promoter: " << promoter_inst_executed << endl;
   }    
   fp.flush();
 }
@@ -4249,22 +4250,24 @@ void cHardwareCPU::RegulatePromoter(cAvidaContext& ctx, bool up)
 // Adjust the weight at promoter positions that match the downstream nop pattern
 void cHardwareCPU::RegulatePromoterNop(cAvidaContext& ctx, bool up)
 {
-  const int max_distance_to_promoter = 10;
+  const int max_distance_to_promoter = 3;
   
   // Look for the label directly (no complement)
   // Save the position before the label, so we don't count it as a regulatory site
   int start_pos = IP().GetPosition(); 
   ReadLabel();
   
-  // Don't allow zero-length label matches. These are too powerful.
+  // Don't allow zero-length label matches.
   if (GetLabel().GetSize() == 0) return;
- 
+  
   cHeadCPU search_head(IP());
   do {
+    //Find the next nop
     search_head++;
+    
     cHeadCPU match_head(search_head);
 
-    // See whether a matching label is here
+    // See whether a matching label is here (Note: we count sub-labels as valid matches)
     int i;
     for (i=0; i < GetLabel().GetSize(); i++)
     {
@@ -4273,10 +4276,10 @@ void cHardwareCPU::RegulatePromoterNop(cAvidaContext& ctx, bool up)
         || (GetLabel()[i] != m_inst_set->GetNopMod( match_head.GetInst())) ) break;
     }
   
-    // Matching label found
+    // Matching label found (next inst must not be a nop)
     if (i == GetLabel().GetSize())
     {
-      //Check eack promoter
+      //Check each promoter
       int start_pos = match_head.GetPosition();
       int end_pos = start_pos + max_distance_to_promoter;
       int circle_end = end_pos % GetMemory().GetSize(); //annoying circular genomes
@@ -4373,7 +4376,10 @@ bool cHardwareCPU::Inst_Terminate(cAvidaContext& ctx)
   m_advance_ip = false;
   organism->GetPhenotype().SetTerminated(true);
   
-  //organism->ClearInput();
+  //Setting this makes it harder to do things. You have to be modular.
+  organism->GetOrgInterface().ResetInputs(ctx);   // Re-randomize the inputs this organism sees
+  organism->ClearInput();                         // Also clear their input buffers, or they can still claim
+                                                  // rewards for numbers no longer in their environment!
   
   // Find the next active promoter
   int started_search_pos = promoter_search_pos;
