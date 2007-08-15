@@ -142,7 +142,7 @@ void cAnalyze::RunFile(cString filename)
   m_ctx.SetAnalyzeMode();
   
   cInitFile analyze_file(filename);
-  if (!analyze_file.IsOpen()) {
+  if (!analyze_file.WasOpened()) {
     cerr << "Warning: Cannot load file: \"" << filename << "\"." << endl
     << "...creating it..." << endl;
     ofstream fp(filename);
@@ -158,10 +158,6 @@ void cAnalyze::RunFile(cString filename)
     //if (exit_on_error) exit(1);
   }
   else {
-    analyze_file.Load();
-    analyze_file.Compress();
-    analyze_file.Close();
-    
     LoadCommandList(analyze_file, command_list);
     ProcessCommands(command_list);
   }
@@ -209,13 +205,10 @@ void cAnalyze::LoadBasicDump(cString cur_string)
   cout << "Loading: " << filename << '\n';
   
   cInitFile input_file(filename);
-  if (!input_file.IsOpen()) {
+  if (!input_file.WasOpened()) {
     cerr << "Error: Cannot load file: \"" << filename << "\"." << endl;
     if (exit_on_error) exit(1);
   }
-  input_file.Load();
-  input_file.Compress();
-  input_file.Close();
   
   // Setup the genome...
   
@@ -251,13 +244,10 @@ void cAnalyze::LoadDetailDump(cString cur_string)
   cout << "Loading: " << filename << '\n';
   
   cInitFile input_file(filename);
-  if (!input_file.IsOpen()) {
+  if (!input_file.WasOpened()) {
     cerr << "Error: Cannot load file: \"" << filename << "\"." << endl;
     if (exit_on_error) exit(1);
   }
-  input_file.Load();
-  input_file.Compress();
-  input_file.Close();
   
   // Setup the genome...
   
@@ -344,13 +334,10 @@ void cAnalyze::LoadMultiDetail(cString cur_string)
       << endl;
     
     cInitFile input_file(filename);
-    if (!input_file.IsOpen()) {
+    if (!input_file.WasOpened()) {
       cerr << "Error: Cannot load file: \"" << filename << "\"." << endl;
       if (exit_on_error) exit(1);
     }
-    input_file.Load();
-    input_file.Compress();
-    input_file.Close();
     
     // Setup the genome...
     
@@ -955,15 +942,9 @@ void cAnalyze::LoadFile(cString cur_string)
   cout << "Loading: " << filename << endl;
   
   cInitFile input_file(filename);
-  if (!input_file.IsOpen()) {
+  if (!input_file.WasOpened()) {
     cerr << "Error: Cannot load file: \"" << filename << "\"." << endl;
     if (exit_on_error) exit(1);
-  }
-  input_file.Load();
-  input_file.ReadHeader();
-  input_file.Compress();
-  if (input_file.Close() == false) {
-    cerr << "Error: Failed to Close file!" << endl;
   }
   
   const cString filetype = input_file.GetFiletype();
@@ -7581,9 +7562,6 @@ void cAnalyze::IncludeFile(cString cur_string)
     cString filename = cur_string.PopWord();
     
     cInitFile include_file(filename);
-    include_file.Load();
-    include_file.Compress();
-    include_file.Close();
     
     tList<cAnalyzeCommand> include_list;
     LoadCommandList(include_file, include_list);
@@ -8027,8 +8005,8 @@ cString& cAnalyze::GetVariable(const cString & var)
 
 void cAnalyze::LoadCommandList(cInitFile& init_file, tList<cAnalyzeCommand>& clist)
 {
-  while (init_file.GetLineNum() < init_file.GetNumLines()) {
-    cString cur_string = init_file.GetNextLine();
+  for (int i = 0; i < init_file.GetNumLines(); i++) {
+    cString cur_string = init_file.GetLine(i);
     cString command = cur_string.PopWord();
     
     cAnalyzeCommand* cur_command;

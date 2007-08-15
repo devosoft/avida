@@ -249,11 +249,7 @@ bool cGenomeUtil::LoadGenome(const cString& filename, const cInstSet& inst_set, 
   cInitFile input_file(filename);
   bool success = true;
   
-  if (!input_file.IsOpen()) return false;
-  
-  input_file.Load();
-  input_file.Compress();
-  input_file.Close();
+  if (!input_file.WasOpened()) return false;
   
   // Setup the code array...
   cGenome new_genome(input_file.GetNumLines());

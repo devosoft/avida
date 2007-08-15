@@ -81,12 +81,9 @@ cHardwareManager::cHardwareManager(cWorld* world)
   
   cInitFile file(filename);
   
-  if (file.IsOpen() == false) {
+  if (file.WasOpened() == false) {
     m_world->GetDriver().RaiseFatalException(1, cString("Could not open instruction set '") + filename + "'.");
   }
-  
-  file.Load();
-  file.Compress();
   
   const cInstLib& inst_lib = *m_inst_set->GetInstLib();
   for (int line_id = 0; line_id < file.GetNumLines(); line_id++) {

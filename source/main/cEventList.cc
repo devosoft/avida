@@ -87,13 +87,8 @@ bool cEventList::LoadEventFile(const cString& filename)
 {
   cInitFile event_file(filename);
   
-  if (!event_file.IsOpen()) return false;
+  if (!event_file.WasOpened()) return false;
 
-  // Load in the proper event list and set it up.
-  event_file.Load();
-  event_file.Compress();
-  event_file.Close();
-  
   // Loop through the line_list and change the lines to events.
   for (int line_id = 0; line_id < event_file.GetNumLines(); line_id++) {
     AddEventFileFormat(event_file.GetLine(line_id));

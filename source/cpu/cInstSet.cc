@@ -148,13 +148,9 @@ void cInstSet::LoadFromFile(const cString& filename)
   
   
   cInitFile file(filename);
-  if (!file.Good()) {
+  if (!file.WasOpened()) {
     m_world->GetDriver().RaiseFatalException(1, cString("Unable to load instruction set '") + filename + "'.");
   }
-  
-  file.Load();
-  file.Close();
-  file.Compress();
   
   tList<cString> errors;
   bool success = true;

@@ -55,9 +55,6 @@ cHelpType* cHelpManager::GetType(const cString type_name)
 void cHelpManager::LoadFile(const cString & filename)
 {
   cInitFile help_file(filename);
-  help_file.Load();
-  help_file.Compress();
-  help_file.Close();
 
   cHelpType * type = NULL;
   cString keyword;

@@ -25,111 +25,105 @@
 
 #include "cInitFile.h"
 
+#include "cFile.h"
 #include "cStringIterator.h"
+
 
 using namespace std;
 
 
-void cInitFile::Load()
+cInitFile::cInitFile(const cString& filename) : m_filename(filename), m_ftype("unknown")
 {
-  if (!IsOpen()) return;   // The file must be opened!
-  cStringList line_list;   // Create a list to load all of the lines into.
-
-  cString buf;
-  ReadLine(buf);
-
-  // If this file doesn't work properly, return!
-  if ( Eof() && !buf.GetSize() ) return;
-
-  line_list.PushRear(buf);
-
-  ReadLine(buf);
-  while( !Eof() || buf.GetSize() ){
-    line_list.PushRear(buf);
-    ReadLine(buf);
-  }
-
-  // Copy all of the lines into the line array.
-  const int file_size = line_list.GetSize();
-  line_array.Resize(file_size);
-
-  for (int i = 0; i < file_size; i++) {
-    line_array[i].line = line_list.Pop();
-    line_array[i].line_num = i;
-    line_array[i].used = false;
-  }
+  tSmartArray<sLine*> lines;
+  m_opened = LoadFile(filename, lines);
+  PostProcess(lines);
 }
 
-void cInitFile::LoadStream(istream & in_stream)
+cInitFile::cInitFile(istream& in_stream) : m_filename("(stream)"), m_ftype("unknown")
 {
   if (in_stream.good() == false) {
     cerr << "Bad stream sent to cInitFile::LoadStream()" << endl;
+    m_opened = false;
     return;
   }
-
-  cStringList line_list;   // Create a list to load all of the lines into.
-
+  
+  tSmartArray<sLine*> lines;
+  
   char cur_line[MAX_STRING_LENGTH];
   in_stream.getline(cur_line, MAX_STRING_LENGTH);
-
-  // If this file doesn't work properly, return.
-  if( !in_stream && !strlen(cur_line) )  return;
-
-  in_stream.getline(cur_line, MAX_STRING_LENGTH);
-  while ( in_stream ) {
-    line_list.PushRear(cur_line);
-    in_stream.getline(cur_line, MAX_STRING_LENGTH);
-  }
-
-  // Copy all of the lines into the line array.
-  const int file_size = line_list.GetSize();
-  line_array.Resize(file_size);
-
-  for (int i = 0; i < file_size; i++) {
-    line_array[i].line = line_list.Pop();
-    line_array[i].line_num = i;
-    line_array[i].used = false;
-  }
-}
-
-
-void cInitFile::Save(const cString & in_filename)
-{
-  cString save_filename(GetFilename());
-  if (in_filename != "") save_filename = in_filename;
   
-  ofstream fp_save(save_filename);
+  // If this file doesn't work properly, return.
+  if (!in_stream && !strlen(cur_line)) {
+    m_opened = false;
+    return;
+  }
+  
+  int linenum = 1;
+  while (in_stream) {
+    if (cur_line[0] == '#' && cur_line[1] == '!') ProcessCommand(cur_line, lines);
+    else lines.Push(new sLine(cur_line, "(stream)", linenum));
+    
+    in_stream.getline(cur_line, MAX_STRING_LENGTH);
+    linenum++;
+  }
+  
+  PostProcess(lines);
+}
 
-  // Go through the lines saving them...
-  for (int i = 0; i < line_array.GetSize(); i++) {
-    fp_save << line_array[i].line << endl;
+
+bool cInitFile::LoadFile(const cString& filename, tSmartArray<sLine*>& lines)
+{
+  cFile file(filename);
+  if (!file.IsOpen()) return false;   // The file must be opened!
+  
+  cStringList line_list;   // Create a list to load all of the lines into.
+
+  int linenum = 0;
+  cString buf;
+  while (!file.Eof() && file.ReadLine(buf)) {
+    linenum++;
+
+    if (buf.GetSize() > 1 && buf[0] == '#' && buf[1] == '!') ProcessCommand(buf, lines);
+    else lines.Push(new sLine(buf, filename, linenum));
+  }
+  file.Close();
+  
+  if (linenum == 0) return false; // @DMB - should this be the case?
+  
+  return true;
+}
+
+
+void cInitFile::ProcessCommand(cString cmdstr, tSmartArray<sLine*>& lines)
+{
+  cString cmd = cmdstr.PopWord();
+  
+  if (cmd == "#!include") {
+    LoadFile(cmdstr.PopWord(), lines); // @TODO - report error
+  }
+}
+
+
+void cInitFile::PostProcess(tSmartArray<sLine*>& lines)
+{
+  if (lines.GetSize() >= 2) {
+    cString type_line = lines[0]->line;
+    cString format_line = lines[1]->line;
+    
+    if (type_line.PopWord() == "#filetype") m_ftype = type_line.PopWord();
+    if (format_line.PopWord() == "#format") m_format.Load(format_line);
   }
 
-  fp_save.close();
-}
-
-
-void cInitFile::ReadHeader()
-{
-  cString type_line = GetLine(0);
-  cString format_line = GetLine(1);
-
-  if (type_line.PopWord() == "#filetype") filetype = type_line.PopWord();
-  if (format_line.PopWord() == "#format") file_format.Load(format_line);
-}
-
-
-void cInitFile::Compress()
-{
+  
   // We're going to handle this compression in multiple passes to make it
   // clean and easy.
 
-  const int num_lines = line_array.GetSize();
+  const int num_lines = lines.GetSize();
 
   // PASS 1: Remove all comments -- everything after a '#' sign -- and
   // compress all whitespace into a single space.
   for (int i = 0; i < num_lines; i++) {
-    cString & cur_line = line_array[i].line;
+    cString& cur_line = lines[i]->line;
 
     // Remove all characters past a comment mark and reduce whitespace.
     int comment_pos = cur_line.Find('#');
@@ -145,15 +139,14 @@ void cInitFile::Compress()
   for (int i = 0; i < num_lines; i++) {
     // If the current line is a continuation, append it to the previous line.
     if (continued == true) {
-      line_array[prev_line_id].line += line_array[i].line;
-      line_array[i].line = "";
+      lines[prev_line_id]->line += lines[i]->line;
+      lines[i]->line = "";
     }
     else prev_line_id = i;
 
     // See if the prev_line is continued, and if it is, take care of it.
-    cString & prev_line = line_array[prev_line_id].line;
-    if (prev_line.GetSize() > 0 &&
-	prev_line[prev_line.GetSize() - 1] == '\\') {
+    cString& prev_line = lines[prev_line_id]->line;
+    if (prev_line.GetSize() > 0 && prev_line[prev_line.GetSize() - 1] == '\\') {
       prev_line.ClipEnd(1);  // Remove continuation mark.
       continued = true;
     }
@@ -165,59 +158,58 @@ void cInitFile::Compress()
   int next_id = 0;
   for (int i = 0; i < num_lines; i++) {
     // If we should keep this line, compact it.
-    if (line_array[i].line.GetSize() > 0) {
-      if (next_id != i) line_array[next_id] = line_array[i];
+    if (lines[i]->line.GetSize() > 0) {
+      if (next_id != i) {
+        delete lines[next_id];
+        lines[next_id] = lines[i];
+        lines[i] = NULL;
+      }
       next_id++;
     }
   }
 
-  // Clip any extra lines at the end of the array.
-
-  line_array.Resize(next_id);
-
-  // Move the active line back to the beginning to avoid confusion.
-  active_line = 0;
+  // Resize the internal line structure and move the line structs to it
+  m_lines.Resize(next_id);
+  for (int i = 0; i < next_id; i++) m_lines[i] = lines[i];
 }
 
 
-void cInitFile::AddLine(cString & in_string)
+void cInitFile::Save(const cString& in_filename)
 {
-  extra_lines.Push(in_string);
+  cString save_filename(in_filename);
+  if (save_filename != "") save_filename = m_filename;
+  
+  ofstream fp_save(save_filename);
+  
+  // Go through the lines saving them...
+  for (int i = 0; i < m_lines.GetSize(); i++) {
+    fp_save << m_lines[i]->line << endl;
+  }
+  
+  fp_save.close();
 }
+
+
 
 cString cInitFile::GetLine(int line_num)
 {
-  if (line_num < 0 || line_num >= line_array.GetSize()) return "";
-  return line_array[line_num].line;
+  if (line_num < 0 || line_num >= m_lines.GetSize()) return "";
+  return m_lines[line_num]->line;
 }
 
 
-bool cInitFile::Find(cString & in_string, const cString & keyword,
-		     int col) const
+bool cInitFile::Find(cString& in_string, const cString& keyword, int col) const
 {
   bool found = false;
 
   // Loop through all of the lines looking for this keyword.  Start with
   // the actual file...
-  for (int line_id = 0; line_id < line_array.GetSize(); line_id++) {
-    cString cur_string = line_array[line_id].line;
+  for (int line_id = 0; line_id < m_lines.GetSize(); line_id++) {
+    cString cur_string = m_lines[line_id]->line;
 
     // If we found the keyword, return it and stop.    
     if (cur_string.GetWord(col) == keyword) {
-      line_array[line_id].used = true;
-      in_string = cur_string;
-      found = true;
-    }
-  }
-
-  // Next, look through any extra lines appended to the file.
-  cStringIterator list_it(extra_lines);
-  while ( list_it.AtEnd() == false ) {
-    list_it.Next();
-    cString cur_string = list_it.Get();
-
-    // If we found the keyword, return it and stop.
-    if (cur_string.GetWord(col) == keyword) {
+      m_lines[line_id]->used = true;
       in_string = cur_string;
       found = true;
     }
@@ -227,7 +219,7 @@ bool cInitFile::Find(cString & in_string, const cString & keyword,
 }
 
 
-cString cInitFile::ReadString(const cString & name, cString def) const
+cString cInitFile::ReadString(const cString& name, cString def) const
 {
   // See if we definately can't find the keyword.
   if (name == "") return def;
@@ -235,10 +227,7 @@ cString cInitFile::ReadString(const cString & name, cString def) const
   // Search for the keyword.
   cString cur_line;
   if (Find(cur_line, name, 0) == false) {
-    if (verbose == true) {
-      cerr << "Warning: " << name << " not in \"" << GetFilename()
-	   << "\", defaulting to: " << def <<endl;
-    }
+    cerr << "Warning: " << name << " not in '" << m_filename << "', defaulting to: " << def << endl;
     return def;
   }
 
@@ -252,13 +241,13 @@ bool cInitFile::WarnUnused() const
 {
   bool found = false;
 
-  for (int i = 0; i < line_array.GetSize(); i++) {
-    if (line_array[i].used == false) {
+  for (int i = 0; i < m_lines.GetSize(); i++) {
+    if (m_lines[i]->used == false) {
       if (found == false) {
         found = true;
-        cerr << "Warning: unknown lines in input file '" << filename << "':" << endl;
+        cerr << "Warning: unknown lines in input file '" << m_filename << "'" << endl;
       }
-      cerr << " " << line_array[i].line_num + 1 << ": " << line_array[i].line << endl;
+      cerr << "    " << m_lines[i]->file << ":" << m_lines[i]->line_num << ": " << m_lines[i]->line << endl;
     }
   }
   

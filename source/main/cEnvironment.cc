@@ -749,14 +749,10 @@ bool cEnvironment::LoadLine(cString line)
 bool cEnvironment::Load(const cString& filename)
 {
   cInitFile infile(filename);
-  if (infile.Good() == false) {
+  if (!infile.WasOpened()) {
     cerr << "Error: Failed to load environment '" << filename << "'." << endl;
     return false;
   }
-  
-  infile.Load();
-  infile.Close();
-  infile.Compress();
   
   for (int line_id = 0; line_id < infile.GetNumLines(); line_id++) {
     // Load the next line from the file.

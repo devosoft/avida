@@ -58,7 +58,7 @@ void cAvidaConfig::Load(const cString & filename,
   // Load the contents from the file.
   cInitFile init_file(filename);
   
-  if (!init_file.IsOpen()) {
+  if (!init_file.WasOpened()) {
     if (crash_if_not_found) {
       // exit the program if the requested configuration file is not found
       cerr << "Warning: Unable to find file '" << filename 
@@ -72,17 +72,12 @@ void cAvidaConfig::Load(const cString & filename,
     }
   }
   
-  init_file.Load();
-  init_file.Compress();
-  init_file.Close();
-
   cString version_id = init_file.ReadString("VERSION_ID", "Unknown");
   if (version_id != VERSION) {
     cerr << "Warning: Configuration file version number mismatch." << endl;
     cerr << "         Avida Version: \"" << VERSION << "\".  Config Version: \"" << version_id << "\"" << endl;
   }
   
-  init_file.SetVerbose();  
 
   // Loop through all groups, then all entrys, and try to load each one.
   tListIterator<cBaseConfigGroup> group_it(group_list);

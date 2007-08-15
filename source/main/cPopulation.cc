@@ -2280,13 +2280,10 @@ bool cPopulation::LoadDumpFile(cString filename, int update)
   cout << "Loading: " << filename << endl;
   
   cInitFile input_file(filename);
-  if (!input_file.IsOpen()) {
+  if (!input_file.WasOpened()) {
     cerr << "Error: Cannot load file: \"" << filename << "\"." << endl;
     exit(1);
   }
-  input_file.Load();
-  input_file.Compress();
-  input_file.Close();
   
   // First, we read in all the genotypes and store them in a list
   
