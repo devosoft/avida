@@ -73,6 +73,12 @@ cHardwareManager::cHardwareManager(cWorld* world)
     m_world->GetDriver().NotifyComment(cString("Using default instruction set: ") + filename);
   }
   
+  
+  if (m_world->GetConfig().INST_SET_FORMAT.Get()) {
+    m_inst_set->LoadFromFile(filename);
+    return;
+  }
+  
   cInitFile file(filename);
   
   if (file.IsOpen() == false) {

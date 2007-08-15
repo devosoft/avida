@@ -25,9 +25,13 @@
 
 #include "cInstSet.h"
 
+#include "cArgContainer.h"
+#include "cArgSchema.h"
 #include "cAvidaContext.h"
+#include "cInitFile.h"
 #include "cStringUtil.h"
 #include "cWorld.h"
+#include "cWorldDriver.h"
 
 using namespace std;
 
@@ -128,3 +132,74 @@ bool cInstSet::InstInSet(const cString& in_name) const
   return false;
 }
 
+void cInstSet::LoadFromFile(const cString& filename)
+{
+  cArgSchema schema;
+  
+  // Integer
+  schema.AddEntry("redundancy", 0, 1);
+  schema.AddEntry("cost", 1, 0);
+  schema.AddEntry("initial_cost", 2, 0);
+  schema.AddEntry("energy_cost", 3, 0);
+  schema.AddEntry("addl_time_cost", 4, 0);
+  
+  // Double
+  schema.AddEntry("prob_fail", 0, 0.0);
+  
+  
+  cInitFile file(filename);
+  if (!file.Good()) {
+    m_world->GetDriver().RaiseFatalException(1, cString("Unable to load instruction set '") + filename + "'.");
+  }
+  
+  file.Load();
+  file.Close();
+  file.Compress();
+  
+  tList<cString> errors;
+  bool success = true;
+  for (int line_id = 0; line_id < file.GetNumLines(); line_id++) {
+    cString cur_line = file.GetLine(line_id);
+    
+    cString inst_name = cur_line.PopWord();
+    int inst_idx = m_inst_lib->GetIndex(inst_name);
+    if (inst_idx == -1) {
+      // Oh oh!  Didn't find an instruction!
+      cString* errorstr = new cString("Unknown instruction '");
+      *errorstr += inst_name + "' (Best match = '" + m_inst_lib->GetNearMatch(inst_name) + "').";
+      errors.PushRear(errorstr);
+      success = false;
+      continue;
+    }
+    
+    cArgContainer* args = cArgContainer::Load(cur_line, schema, &errors);
+    if (!args) {
+      success = false;
+      continue;
+    }
+    
+    int redundancy = args->GetInt(0);
+    int cost = args->GetInt(1);
+    int ft_cost = args->GetInt(2);
+    int energy_cost = args->GetInt(3);
+    double prob_fail = args->GetDouble(0);
+    int addl_time_cost = args->GetInt(4);
+    
+    delete args;
+    
+    if ((*m_inst_lib)[inst_idx].IsNop()) {
+      AddNop(inst_idx, redundancy, ft_cost, cost, energy_cost, prob_fail, addl_time_cost);
+    } else {
+      AddInst(inst_idx, redundancy, ft_cost, cost, energy_cost, prob_fail, addl_time_cost);
+    }
+  }
+  
+  if (!success) {
+    cString* errstr = NULL;
+    while ((errstr = errors.Pop())) {
+      m_world->GetDriver().RaiseException(*errstr);
+      delete errstr;
+    }
+    m_world->GetDriver().RaiseFatalException(1,"Failed to load instruction set due to previous errors.");
+  }
+}

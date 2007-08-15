@@ -201,6 +201,7 @@ public:
   CONFIG_ADD_GROUP(CONFIG_FILE_GROUP, "Configuration Files");
   CONFIG_ADD_VAR(DATA_DIR, cString, "data", "Directory in which config files are found");
   CONFIG_ADD_VAR(INST_SET, cString, "-", "File containing instruction set");
+  CONFIG_ADD_VAR(INST_SET_FORMAT, int, 0, "Instruction set file format.\n0 = Default\n1 = New Style");
   CONFIG_ADD_VAR(EVENT_FILE, cString, "events.cfg", "File containing list of events during run");
   CONFIG_ADD_VAR(ANALYZE_FILE, cString, "analyze.cfg", "File used for analysis mode");
   CONFIG_ADD_VAR(ENVIRONMENT_FILE, cString, "environment.cfg", "File that describes the environment");

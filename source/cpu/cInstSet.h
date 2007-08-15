@@ -132,6 +132,8 @@ public:
 
   const cInstruction& GetInstDefault() const { return m_inst_default; }
   const cInstruction& GetInstError() const { return m_inst_error; }
+  
+  void LoadFromFile(const cString& filename);
 };
 
 
