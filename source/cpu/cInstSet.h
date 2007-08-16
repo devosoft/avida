@@ -31,14 +31,17 @@
 #ifndef cString_h
 #include "cString.h"
 #endif
-#ifndef tArray_h
-#include "tArray.h"
+#ifndef cInstLib_h
+#include "cInstLib.h"
 #endif
 #ifndef cInstruction_h
 #include "cInstruction.h"
 #endif
-#ifndef cInstLib_h
-#include "cInstLib.h"
+#ifndef tArray_h
+#include "tArray.h"
+#endif
+#ifndef tSmartArray_h
+#include "tSmartArray.h"
 #endif
 
 using namespace std;
@@ -59,8 +62,8 @@ class cInstSet
 public:
   cWorld* m_world;
   cInstLib* m_inst_lib;
-  class cInstEntry {
-  public:
+  
+  struct sInstEntry {
     int lib_fun_id;
     int redundancy;           // Weight in instruction set (not impl.)
     int cost;                 // additional time spent to exectute inst.
@@ -69,21 +72,15 @@ public:
     double prob_fail;         // probability of failing to execute inst
     int addl_time_cost;       // additional time added to age for executing instruction
   };
-  tArray<cInstEntry> m_lib_name_map;
+  tSmartArray<sInstEntry> m_lib_name_map;
+  
   tArray<int> m_lib_nopmod_map;
   tArray<int> m_mutation_chart;     // ID's represented by redundancy values.
 
-  // Static components...
-  cInstruction m_inst_error;
-  cInstruction m_inst_default;
-
-  double total_energy_cost; // summation of energy costs of each instruction
-  
   cInstSet(); // @not_implemented
 
 public:
-  inline cInstSet(cWorld* world, cInstLib* inst_lib) : m_world(world), m_inst_lib(inst_lib),
-    m_inst_error(inst_lib->GetInstError()), m_inst_default(inst_lib->GetInstDefault()), total_energy_cost(0) { ; }
+  inline cInstSet(cWorld* world, cInstLib* inst_lib) : m_world(world), m_inst_lib(inst_lib) { ; }
   inline cInstSet(const cInstSet& is);
   inline ~cInstSet() { ; }
 
@@ -101,7 +98,6 @@ public:
   double GetProbFail(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].prob_fail; }
   int GetRedundancy(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].redundancy; }
   int GetLibFunctionIndex(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].lib_fun_id; }
-//  double GetAvgEnergyCostPerInst() const { return total_energy_cost/m_lib_name_map.GetSize(); }
 
   int GetNopMod(const cInstruction& inst) const
   {
@@ -120,9 +116,6 @@ public:
   int IsLabel(const cInstruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).IsLabel(); }
 
   // Insertion of new instructions...
-  int AddInst(int lib_fun_id, int redundancy = 1, int ft_cost = 0, int cost = 0, int energy_cost = 0, double prob_fail = 0.0, int addl_time_cost = 0);
-  int AddNop(int lib_nopmod_id, int redundancy = 1, int ft_cost = 0, int cost = 0, int energy_cost = 0, double prob_fail = 0.0, int addl_time_cost = 0);
-  
   cInstruction ActivateNullInst();
 
   // accessors for instruction library
@@ -132,8 +125,8 @@ public:
   cString FindBestMatch(const cString& in_name) const;
   bool InstInSet(const cString& in_name) const;
 
-  cInstruction GetInstDefault() const { return m_inst_default; }
-  cInstruction GetInstError() const { return m_inst_error; }
+  cInstruction GetInstDefault() const { return m_inst_lib->GetInstDefault(); }
+  cInstruction GetInstError() const { return m_inst_lib->GetInstError(); }
   
   void LoadFromFile(const cString& filename);
   void LoadFromLegacyFile(const cString& filename);

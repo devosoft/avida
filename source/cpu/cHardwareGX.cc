@@ -4170,8 +4170,8 @@ void cHardwareGX::ProcessImplicitGeneExpression(int in_limit)
   if (in_limit > m_world->GetConfig().MAX_PROGRAMIDS.Get()) in_limit = m_world->GetConfig().MAX_PROGRAMIDS.Get();
 
   // Create executable programids up to the limit
-  const int genome_size = m_programids[m_promoter_update_head.GetMemSpace()]->GetMemory().GetSize();
-  const int inc = Min(genome_size, m_world->GetConfig().IMPLICIT_MAX_PROGRAMID_LENGTH.Get());
+  //const int genome_size = m_programids[m_promoter_update_head.GetMemSpace()]->GetMemory().GetSize();
+  //const int inc = Min(genome_size, m_world->GetConfig().IMPLICIT_MAX_PROGRAMID_LENGTH.Get());
 
   while ( m_programids.size() < (unsigned int)in_limit )
   {
