@@ -32,6 +32,9 @@
 #ifndef cStringList_h
 #include "cStringList.h"
 #endif
+#ifndef tDictionary_h
+#include "tDictionary.h"
+#endif
 #ifndef tSmartArray_h
 #include "tSmartArray.h"
 #endif
@@ -62,8 +65,11 @@ private:
   tArray<sLine*> m_lines;
   cString m_ftype;
   cStringList m_format;
+  
+  tDictionary<cString> m_mappings;
 
-
+  
+  void InitMappings(const tDictionary<cString>& mappings);
   bool LoadFile(const cString& filename, tSmartArray<sLine*>& lines);
   void ProcessCommand(cString cmdstr, tSmartArray<sLine*>& lines);
   void PostProcess(tSmartArray<sLine*>& lines);
@@ -75,6 +81,7 @@ private:
 
 public:
   cInitFile(const cString& filename);
+  cInitFile(const cString& filename, const tDictionary<cString>& mappings);
   cInitFile(std::istream& in_stream);
   ~cInitFile() { for (int i = 0; i < m_lines.GetSize(); i++) delete m_lines[i]; }
   

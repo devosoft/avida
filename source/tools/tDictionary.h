@@ -57,8 +57,9 @@ template <class T> class tDictionary {
 private:
   tHashTable<cString, T> m_hash;
 
-  // disabled copy constructor.
-  tDictionary(const tDictionary &);
+  tDictionary(const tDictionary&); // @not_implemented
+
+
 public:
   inline tDictionary() { ; }
   inline tDictionary(int in_hash_size) : m_hash(in_hash_size) { ; }
@@ -75,6 +76,7 @@ public:
   inline void AsLists(tList<cString>& name_list, tList<T>& value_list) const {
     m_hash.AsLists(name_list, value_list);
   }
+  inline void GetKeys(tList<cString>& names) const { m_hash.GetKeys(names); }
   
   // This function will take an input string and load its value into the
   // dictionary; it will only work for types that cStringUtil can convert to.

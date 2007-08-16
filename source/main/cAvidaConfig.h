@@ -46,6 +46,8 @@
 #endif
 
 
+template <class T> class tDictionary;
+
 using namespace std;
 
 
@@ -408,6 +410,7 @@ public:
 #endif
   
   void Load(const cString& filename, const bool& crash_if_not_found);
+  void Load(const cString& filename, const tDictionary<cString>& mappings, const bool& crash_if_not_found);
   void Print(const cString& filename);
   void Status();
   void PrintReview();

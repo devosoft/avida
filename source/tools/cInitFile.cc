@@ -39,6 +39,16 @@ cInitFile::cInitFile(const cString& filename) : m_filename(filename), m_ftype("u
   PostProcess(lines);
 }
 
+cInitFile::cInitFile(const cString& filename, const tDictionary<cString>& mappings)
+  : m_filename(filename), m_ftype("unknown")
+{
+  InitMappings(mappings);
+  tSmartArray<sLine*> lines;
+  m_opened = LoadFile(filename, lines);
+  PostProcess(lines);
+}
+
+
 cInitFile::cInitFile(istream& in_stream) : m_filename("(stream)"), m_ftype("unknown")
 {
   if (in_stream.good() == false) {
@@ -71,6 +81,20 @@ cInitFile::cInitFile(istream& in_stream) : m_filename("(stream)"), m_ftype("unkn
 }
 
 
+void cInitFile::InitMappings(const tDictionary<cString>& mappings)
+{
+  tList<cString> names;
+  mappings.GetKeys(names);
+  
+  tListIterator<cString> names_it(names);
+  while (names_it.Next() != NULL) {
+    cString* name = names_it.Get();
+    cString value;
+    if (mappings.Find(*name, value)) m_mappings.Add(*name, value);
+  }
+}
+
+
 bool cInitFile::LoadFile(const cString& filename, tSmartArray<sLine*>& lines)
 {
   cFile file(filename);
@@ -99,7 +123,19 @@ void cInitFile::ProcessCommand(cString cmdstr, tSmartArray<sLine*>& lines)
   cString cmd = cmdstr.PopWord();
   
   if (cmd == "#!include") {
-    LoadFile(cmdstr.PopWord(), lines); // @TODO - report error
+    cString dir = cmdstr.PopWord();
+    if (dir.GetSize() && dir[0] == '$') {
+      dir.ClipFront(1);
+      if (!m_mappings.Find(dir, dir)) {
+        // @TODO - report error
+        return;
+      }
+    }
+    LoadFile(dir, lines); // @TODO - report error
+  } else if (cmd == "#!default") {
+    cString name = cmdstr.PopWord();
+    cmdstr.Trim();
+    if (!m_mappings.HasEntry(name)) m_mappings.Add(name, cmdstr);
   }
 }
 

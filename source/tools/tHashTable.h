@@ -179,11 +179,12 @@ private:
     // No matches found.
     return NULL;
   }
-private:
-    // disabled copy constructor.
-    tHashTable(const tHashTable &);
+
+  tHashTable(const tHashTable &); // @not_implemented
+
+  
 public:
-    tHashTable(int in_table_size=HASH_TABLE_SIZE_DEFAULT)
+  tHashTable(int in_table_size=HASH_TABLE_SIZE_DEFAULT)
     : entry_count(0)
     , table_size(in_table_size)
     , cell_array(in_table_size)
@@ -381,6 +382,14 @@ public:
       value_list.Insert(value_it, &cur_value);
     }
   }
+  
+  
+  void GetKeys(tList<HASH_TYPE>& key_list) const
+  {
+    list_it.Reset();
+    while (list_it.Next() != NULL) key_list.Push(&list_it.Get()->key);
+  }
+  
   
   void GetValues(tList<DATA_TYPE>& value_list) const
   {

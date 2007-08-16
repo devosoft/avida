@@ -52,11 +52,17 @@ cAvidaConfig::cBaseConfigEntry::cBaseConfigEntry(const cString & _name,
   }
 }
 
-void cAvidaConfig::Load(const cString & filename, 
-                        const bool & crash_if_not_found = false)
+void cAvidaConfig::Load(const cString& filename, const bool& crash_if_not_found = false)
+{
+  tDictionary<cString> mappings;
+  Load(filename, mappings, crash_if_not_found);
+}
+
+
+void cAvidaConfig::Load(const cString& filename, const tDictionary<cString>& mappings, const bool& crash_if_not_found = false)
 {
   // Load the contents from the file.
-  cInitFile init_file(filename);
+  cInitFile init_file(filename, mappings);
   
   if (!init_file.WasOpened()) {
     if (crash_if_not_found) {
@@ -319,12 +325,8 @@ void cAvidaConfig::GenerateOverides()
   }  
 }
 
-cAvidaConfig* cAvidaConfig::LoadWithArgs(cStringList &argv)
+cAvidaConfig* cAvidaConfig::LoadWithArgs(cStringList& argv)
 {
-  cString config_filename = "avida.cfg";
-  bool crash_if_not_found = false;
-  tDictionary<cString> sets;
-  
   int arg_num = 1;              // Argument number being looked at.
   
   // Load all of the args into string objects for ease of access.
@@ -336,29 +338,17 @@ cAvidaConfig* cAvidaConfig::LoadWithArgs(cStringList &argv)
     args[i] = list_it.Get();
   }
   
-  // -config option
-  if (argc > 1 && (args[1] == "-c" || args[1] == "-config")) {
-    if (argc < 3) {
-      cerr << "Error: Filename for configuration must be specified." << endl;
-      exit(0);
-    }
-    config_filename = args[2];
-    crash_if_not_found = true;
-    arg_num += 2;
-  } else if (argc > 1 && (args[1] == "-g" || args[1] == "-genesis")) {
-    cerr << "Warning: Use of -g[enesis] deprecated in favor of -c[onfig]." << endl;
-    if (argc < 3) {
-      cerr << "Error: Filename for configuration must be specified." << endl;
-      exit(0);
-    }
-    config_filename = args[2];
-    crash_if_not_found = true;
-    arg_num += 2;
-  }
-  
-  // Create Config object, load with values from configuration file
-  cAvidaConfig* cfg = new cAvidaConfig();
-  cfg->Load(config_filename, crash_if_not_found);
+  cString config_filename = "avida.cfg";
+  bool crash_if_not_found = false;
+  tDictionary<cString> sets;
+  tDictionary<cString> def_mappings;
+
+  bool flag_analyze = false;
+  bool flag_interactive = false;
+  bool flag_load = false;         cString val_load;
+  bool flag_review = false;
+  bool flag_verbosity = false;    int val_verbosity;
+  bool flag_seed = false;         int val_seed = 0;
   
   // Then scan through and process the rest of the args.
   while (arg_num < argc) {
@@ -375,8 +365,7 @@ cAvidaConfig* cAvidaConfig::LoadWithArgs(cStringList &argv)
 
     // Review configuration options, listing those non-default.
     else if (cur_arg == "-review" || cur_arg == "-r") {
-      cfg->PrintReview();
-      exit(0);
+      flag_review = true;
     }
     
     else if (cur_arg == "--help" || cur_arg == "-help" || cur_arg == "-h") {
@@ -384,13 +373,14 @@ cAvidaConfig* cAvidaConfig::LoadWithArgs(cStringList &argv)
 	   << "  -a[nalyze]            Process analyze.cfg instead of normal "
                << "run." << endl
 	   << "  -c[onfig] <filename>  Set config file to be <filename>"<<endl
+     << "  -def <name> <value>   Define config include variables" << endl
 	   << "  -e; -actions          Print a list of all known actions"<< endl
 	   << "  -h[elp]               Help on options (this listing)"<<endl
 	   << "  -i[nteractive]        Run analyze mode interactively" << endl
 	   << "  -l[oad] <filename>    Load a clone file" << endl
 	   << "  -r[eview]             Review avida.cfg settings." << endl
 	   << "  -s[eed] <value>       Set random seed to <value>" << endl
-	   << "  -set <name> <value>   Overide values in avida.cfg" << endl
+	   << "  -set <name> <value>   Override values in avida.cfg" << endl
 	   << "  -v[ersion]            Prints the version number" << endl
 	   << "  -v0 -v1 -v2 -v3 -v4   Set output verbosity to 0..4" << endl
 	   << endl;
@@ -398,37 +388,33 @@ cAvidaConfig* cAvidaConfig::LoadWithArgs(cStringList &argv)
       exit(0);
     }
     else if (cur_arg == "-seed" || cur_arg == "-s") {
-      int in_seed = 0;
       if (arg_num + 1 == argc || args[arg_num + 1][0] == '-') {
         cerr << "Error: Must include a number as the random seed!" << endl;
         exit(0);
       } else {
         arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
-        in_seed = cur_arg.AsInt();
+        val_seed = cur_arg.AsInt();
       }
-      cfg->RANDOM_SEED.Set(in_seed);
+      flag_seed = true;
     } else if (cur_arg == "-analyze" || cur_arg == "-a") {
-      if (cfg->ANALYZE_MODE.Get() < 1) {
-        cfg->ANALYZE_MODE.Set(1);
-      }
+      flag_analyze = true;
     } else if (cur_arg == "-interactive" || cur_arg == "-i") {
-      if (cfg->ANALYZE_MODE.Get() < 2) {
-        cfg->ANALYZE_MODE.Set(2);
-      }
+      flag_interactive = true;
     } else if (cur_arg == "-load" || cur_arg == "-l") {
       if (arg_num + 1 == argc || args[arg_num + 1][0] == '-') {
         cerr << "Error: Must include a filename to load from." << endl;
         exit(0);
       } else {
         arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
-        cfg->CLONE_FILE.Set(cur_arg);
+        val_load = cur_arg;
       }
+      flag_load = true;
     } else if (cur_arg == "-version" || cur_arg == "-v") {
       // We've already showed version info, so just quit.
       exit(0);
     } else if (cur_arg.Substring(0, 2) == "-v") {
-      int level = cur_arg.Substring(2, cur_arg.GetSize() - 2).AsInt();
-      cfg->VERBOSITY.Set(level);
+      val_verbosity = cur_arg.Substring(2, cur_arg.GetSize() - 2).AsInt();
+      flag_verbosity = true;
     } else if (cur_arg == "-set") {
       if (arg_num + 1 == argc || arg_num + 2 == argc) {
         cerr << "'-set' option must be followed by name and value" << endl;
@@ -439,13 +425,24 @@ cAvidaConfig* cAvidaConfig::LoadWithArgs(cStringList &argv)
       arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
       cString value(cur_arg);
       sets.Add(name, value);
+    } else if (cur_arg == "-def") {
+      if (arg_num + 1 == argc || arg_num + 2 == argc) {
+        cerr << "'-def' option must be followed by name and value" << endl;
+        exit(0);
+      }
+      arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
+      cString name(cur_arg);
+      arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
+      cString value(cur_arg);
+      def_mappings.Add(name, value);
     } else if (cur_arg == "-c" || cur_arg == "-config") {
-      cerr << "Error: -c[onfig] option must be listed first." << endl;
-      exit(0);
-    } else if (cur_arg == "-g" || cur_arg == "-genesis") {
-      cerr << "Warning: Use of '-g[enesis]' deprecated in favor or -c[onfig]." << endl;
-      cerr << "Error: -c[onfig] option must be listed first." << endl;
-      exit(0);
+      if (arg_num + 1 == argc || args[arg_num + 1][0] == '-') {
+        cerr << "Error: Filename for configuration must be specified." << endl;
+        exit(0);
+      }
+      arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
+      config_filename = cur_arg;
+      crash_if_not_found = true;
     } else {
       cerr << "Error: Unknown Option '" << args[arg_num] << "'" << endl
       << "Type: \"" << args[0] << " -h\" for a full option list." << endl;
@@ -454,6 +451,18 @@ cAvidaConfig* cAvidaConfig::LoadWithArgs(cStringList &argv)
     
     arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
   }
+  
+  // Create Config object, load with values from configuration file
+  cAvidaConfig* cfg = new cAvidaConfig();
+  cfg->Load(config_filename, def_mappings, crash_if_not_found);
+  
+  
+  if (flag_analyze) if (cfg->ANALYZE_MODE.Get() < 1) cfg->ANALYZE_MODE.Set(1);
+  if (flag_interactive) if (cfg->ANALYZE_MODE.Get() < 2) cfg->ANALYZE_MODE.Set(2);
+  if (flag_load) cfg->CLONE_FILE.Set(val_load);
+  if (flag_seed) cfg->RANDOM_SEED.Set(val_seed);
+  if (flag_verbosity) cfg->VERBOSITY.Set(val_verbosity);
+
   
   // Loop through all groups, then all entries, and try to load each one.
   tListIterator<cBaseConfigGroup> group_it(cfg->group_list);
@@ -471,6 +480,12 @@ cAvidaConfig* cAvidaConfig::LoadWithArgs(cStringList &argv)
       }
     }
   }
+
+  
+  if (flag_review) {
+    cfg->PrintReview();
+    exit(0);
+  }  
   
   delete [] args;
   
