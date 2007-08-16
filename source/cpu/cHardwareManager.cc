@@ -76,52 +76,10 @@ cHardwareManager::cHardwareManager(cWorld* world)
   
   if (m_world->GetConfig().INST_SET_FORMAT.Get()) {
     m_inst_set->LoadFromFile(filename);
-    return;
+  } else {
+    m_inst_set->LoadFromLegacyFile(filename);
   }
   
-  cInitFile file(filename);
-  
-  if (file.WasOpened() == false) {
-    m_world->GetDriver().RaiseFatalException(1, cString("Could not open instruction set '") + filename + "'.");
-  }
-  
-  const cInstLib& inst_lib = *m_inst_set->GetInstLib();
-  for (int line_id = 0; line_id < file.GetNumLines(); line_id++) {
-    cString cur_line = file.GetLine(line_id);
-    cString inst_name = cur_line.PopWord();
-    int redundancy = cur_line.PopWord().AsInt();
-    int cost = cur_line.PopWord().AsInt();
-    int ft_cost = cur_line.PopWord().AsInt();
-    int energy_cost = cur_line.PopWord().AsInt();
-    double prob_fail = cur_line.PopWord().AsDouble();
-    int addl_time_cost = cur_line.PopWord().AsInt();
-
-    // If this instruction has 0 redundancy, we don't want it!
-    if (redundancy < 0) continue;
-    if (redundancy > 256) {
-      cString msg("Max redundancy is 256.  Resetting redundancy of \"");
-      msg += inst_name; msg += "\" from "; msg += redundancy; msg += " to 256.";
-      m_world->GetDriver().NotifyWarning(msg);
-      redundancy = 256;
-    }
-    
-    // Otherwise, this instruction will be in the set.
-    // First, determine if it is a nop...
-    int inst_idx = inst_lib.GetIndex(inst_name);
-    
-    if (inst_idx == -1) {
-      // Oh oh!  Didn't find an instruction!
-      cString errorstr("Could not find instruction '");
-      errorstr += inst_name + "'\n        (Best match = '" + inst_lib.GetNearMatch(inst_name) + "').";
-      m_world->GetDriver().RaiseFatalException(1, errorstr);
-    }
-    
-    if (inst_lib[inst_idx].IsNop()) {
-      m_inst_set->AddNop(inst_idx, redundancy, ft_cost, cost, energy_cost, prob_fail, addl_time_cost);
-    } else {
-      m_inst_set->AddInst(inst_idx, redundancy, ft_cost, cost, energy_cost, prob_fail, addl_time_cost);
-    }
-  }
 }
 
 cHardwareBase* cHardwareManager::Create(cOrganism* in_org)

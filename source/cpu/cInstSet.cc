@@ -62,8 +62,12 @@ cInstruction cInstSet::GetRandomInst(cAvidaContext& ctx) const
   return cInstruction(inst_op);
 }
 
+
 int cInstSet::AddInst(int lib_fun_id, int redundancy, int ft_cost, int cost, int energy_cost, double prob_fail, int addl_time_cost)
 {
+  if (lib_fun_id == m_inst_lib->GetInstNull().GetOp())
+    m_world->GetDriver().RaiseFatalException(1,"Invalid use of NULL instruction");
+  
   const int inst_id = m_lib_name_map.GetSize();
 
   assert(inst_id < 255);
@@ -90,6 +94,7 @@ int cInstSet::AddInst(int lib_fun_id, int redundancy, int ft_cost, int cost, int
   return inst_id;
 }
 
+
 int cInstSet::AddNop(int lib_nopmod_id, int redundancy, int ft_cost, int cost, int energy_cost, double prob_fail, int addl_time_cost)
 {
   // Assert nops are at the _beginning_ of an inst_set.
@@ -102,6 +107,33 @@ int cInstSet::AddNop(int lib_nopmod_id, int redundancy, int ft_cost, int cost, i
 
   return inst_id;
 }
+
+cInstruction cInstSet::ActivateNullInst()
+{  
+  const int inst_id = m_lib_name_map.GetSize();
+  const int null_fun_id = m_inst_lib->GetInstNull().GetOp();
+  
+  assert(inst_id < 255);
+  
+  // Make sure not to activate again if NULL is already active
+  for (int i = 0; i < inst_id; i++) if (m_lib_name_map[i].lib_fun_id == null_fun_id) return cInstruction(i);
+  
+  
+  // Increase the size of the array...
+  m_lib_name_map.Resize(inst_id + 1);
+  
+  // Setup the new function...
+  m_lib_name_map[inst_id].lib_fun_id = null_fun_id;
+  m_lib_name_map[inst_id].redundancy = 0;
+  m_lib_name_map[inst_id].cost = 0;
+  m_lib_name_map[inst_id].ft_cost = 0;
+  m_lib_name_map[inst_id].energy_cost = 0;
+  m_lib_name_map[inst_id].prob_fail = 0.0;
+  m_lib_name_map[inst_id].addl_time_cost = 0;
+  
+  return cInstruction(inst_id);
+}
+
 
 cString cInstSet::FindBestMatch(const cString& in_name) const
 {
@@ -198,4 +230,52 @@ void cInstSet::LoadFromFile(const cString& filename)
     }
     m_world->GetDriver().RaiseFatalException(1,"Failed to load instruction set due to previous errors.");
   }
+}
+
+
+void cInstSet::LoadFromLegacyFile(const cString& filename)
+{
+  cInitFile file(filename);
+  
+  if (file.WasOpened() == false) {
+    m_world->GetDriver().RaiseFatalException(1, cString("Could not open instruction set '") + filename + "'.");
+  }
+  
+  for (int line_id = 0; line_id < file.GetNumLines(); line_id++) {
+    cString cur_line = file.GetLine(line_id);
+    cString inst_name = cur_line.PopWord();
+    int redundancy = cur_line.PopWord().AsInt();
+    int cost = cur_line.PopWord().AsInt();
+    int ft_cost = cur_line.PopWord().AsInt();
+    int energy_cost = cur_line.PopWord().AsInt();
+    double prob_fail = cur_line.PopWord().AsDouble();
+    int addl_time_cost = cur_line.PopWord().AsInt();
+    
+    // If this instruction has 0 redundancy, we don't want it!
+    if (redundancy < 0) continue;
+    if (redundancy > 256) {
+      cString msg("Max redundancy is 256.  Resetting redundancy of \"");
+      msg += inst_name; msg += "\" from "; msg += redundancy; msg += " to 256.";
+      m_world->GetDriver().NotifyWarning(msg);
+      redundancy = 256;
+    }
+    
+    // Otherwise, this instruction will be in the set.
+    // First, determine if it is a nop...
+    int inst_idx = m_inst_lib->GetIndex(inst_name);
+    
+    if (inst_idx == -1) {
+      // Oh oh!  Didn't find an instruction!
+      cString errorstr("Could not find instruction '");
+      errorstr += inst_name + "'\n        (Best match = '" + m_inst_lib->GetNearMatch(inst_name) + "').";
+      m_world->GetDriver().RaiseFatalException(1, errorstr);
+    }
+    
+    if ((*m_inst_lib)[inst_idx].IsNop()) {
+      AddNop(inst_idx, redundancy, ft_cost, cost, energy_cost, prob_fail, addl_time_cost);
+    } else {
+      AddInst(inst_idx, redundancy, ft_cost, cost, energy_cost, prob_fail, addl_time_cost);
+    }
+  }
+  
 }

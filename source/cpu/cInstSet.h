@@ -122,6 +122,8 @@ public:
   // Insertion of new instructions...
   int AddInst(int lib_fun_id, int redundancy = 1, int ft_cost = 0, int cost = 0, int energy_cost = 0, double prob_fail = 0.0, int addl_time_cost = 0);
   int AddNop(int lib_nopmod_id, int redundancy = 1, int ft_cost = 0, int cost = 0, int energy_cost = 0, double prob_fail = 0.0, int addl_time_cost = 0);
+  
+  cInstruction ActivateNullInst();
 
   // accessors for instruction library
   cInstLib* GetInstLib() { return m_inst_lib; }
@@ -130,10 +132,11 @@ public:
   cString FindBestMatch(const cString& in_name) const;
   bool InstInSet(const cString& in_name) const;
 
-  const cInstruction& GetInstDefault() const { return m_inst_default; }
-  const cInstruction& GetInstError() const { return m_inst_error; }
+  cInstruction GetInstDefault() const { return m_inst_default; }
+  cInstruction GetInstError() const { return m_inst_error; }
   
   void LoadFromFile(const cString& filename);
+  void LoadFromLegacyFile(const cString& filename);
 };
 
 

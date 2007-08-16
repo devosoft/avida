@@ -4186,18 +4186,7 @@ void cAnalyze::AnalyzeKnockouts(cString cur_string)
   
   // Setup a NULL instruction in a special inst set.
   cInstSet ko_inst_set(inst_set);
-  // Locate the instruction corresponding to "NULL" in the instruction library.
-  {
-    cInstruction lib_null_inst = ko_inst_set.GetInstLib()->GetInst("NULL");
-    if (lib_null_inst == ko_inst_set.GetInstLib()->GetInstError()) {
-      cout << "<cAnalyze::AnalyzeKnockouts> got error:" << endl
-      << "  instruction 'NULL' not in current hardware type" << endl;
-      if (exit_on_error) exit(1);
-    }
-    // Add mapping to located instruction. 
-    ko_inst_set.AddInst(lib_null_inst.GetOp());
-  }
-  const cInstruction null_inst = ko_inst_set.GetInst("NULL");
+  const cInstruction null_inst = ko_inst_set.ActivateNullInst();
   
   // Loop through all of the genotypes in this batch...
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
@@ -4588,19 +4577,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
     }
     
     cInstSet map_inst_set(inst_set);
-    // Locate instruction corresponding to "NULL" in the instruction library.
-    {
-      const cInstruction inst_lib_null_inst = map_inst_set.GetInstLib()->GetInst("NULL");
-      if(inst_lib_null_inst == map_inst_set.GetInstLib()->GetInstError()){
-        cout << "<cAnalyze::CommandMapTasks> got error:" << endl;
-        cout << " --- instruction \"NULL\" isn't in the instruction library for the" << endl;
-        cout << " --- current hardware type." << endl;
-        if (exit_on_error) exit(1);
-      }
-      // Add mapping to located instruction. 
-      map_inst_set.AddInst(inst_lib_null_inst.GetOp());
-    }
-    const cInstruction null_inst = map_inst_set.GetInst("NULL");
+    const cInstruction null_inst = map_inst_set.ActivateNullInst();
     
     // Loop through all the lines of code, testing the removal of each.
     for (int line_num = 0; line_num < max_line; line_num++) {
@@ -4850,23 +4827,7 @@ void cAnalyze::CommandAverageModularity(cString cur_string)
       double sum_task_overlap = 0;// task overlap for for this geneome
         
         cInstSet map_inst_set(inst_set);
-        
-        // Locate instruction corresponding to "NULL" in the instruction library.
-        {
-          const cInstruction inst_lib_null_inst = map_inst_set.GetInstLib()->GetInst("NULL");
-          if(inst_lib_null_inst == map_inst_set.GetInstLib()->GetInstError()){
-            cout << "<cAnalyze::CommandMapTasks> got error:" << endl;
-            cout << " --- instruction \"NULL\" isn't in the instruction library;" << endl;
-            cout << " --- get somebody to map a function to \"NULL\" in the library." << endl;
-            cout << " --- (probably to class method \"cHardware-of-some-type::initInstLib\"" << endl;
-            cout << " --- in file named \"cpu/hardware-of-some-type.cc\".)" << endl;
-            cout << " --- bailing-out." << endl;
-            if (exit_on_error) exit(1);
-          }
-          // Add mapping to located instruction. 
-          map_inst_set.AddInst(inst_lib_null_inst.GetOp());
-        }
-        const cInstruction null_inst = map_inst_set.GetInst("NULL");
+        const cInstruction null_inst = map_inst_set.ActivateNullInst();
         
         // Loop through all the lines of code, testing the removal of each.
         for (int line_num = 0; line_num < max_line; line_num++) {
@@ -5074,17 +5035,7 @@ void cAnalyze::CommandAnalyzeModularity(cString cur_string)
   
   // Setup the map_inst_set with the NULL instruction
   cInstSet map_inst_set(inst_set);
-  
-  // Locate the NULL instruction in the library
-  const cInstruction lib_null = map_inst_set.GetInstLib()->GetInst("NULL");
-  if (lib_null == map_inst_set.GetInstLib()->GetInstError()) {
-    cerr << "Internal ERROR: Instruction 'NULL' not found." << endl;
-    if (exit_on_error) exit(1);
-  }
-  
-  // Add mapping to located instruction.
-  map_inst_set.AddInst(lib_null.GetOp());
-  const cInstruction null_inst = map_inst_set.GetInst("NULL");
+  const cInstruction null_inst = map_inst_set.ActivateNullInst();
   
   
   // Loop through all genotypes in this batch.
@@ -5324,22 +5275,7 @@ void cAnalyze::CommandMapMutations(cString cur_string)
     
     // Build an empty instruction into the an instruction library.
     cInstSet map_inst_set(inst_set);
-    // Locate instruction corresponding to "NULL" in the instruction library.
-    {
-      const cInstruction inst_lib_null_inst = map_inst_set.GetInstLib()->GetInst("NULL");
-      if (inst_lib_null_inst == map_inst_set.GetInstLib()->GetInstError()){
-        cout << "<cAnalyze::CommandMapMutations> got error:" << endl;
-        cout << " --- instruction \"NULL\" isn't in the instruction library;" << endl;
-        cout << " --- get somebody to map a function to \"NULL\" in the library." << endl;
-        cout << " --- (probably to class method \"cHardware-of-some-type::initInstLib\"" << endl;
-        cout << " --- in file named \"cpu/hardware-of-some-type.cc\".)" << endl;
-        cout << " --- bailing-out." << endl;
-        if (exit_on_error) exit(1);
-      }
-      // Add mapping to located instruction. 
-      map_inst_set.AddInst(inst_lib_null_inst.GetOp());
-    }
-    const cInstruction null_inst = map_inst_set.GetInst("NULL");
+    const cInstruction null_inst = map_inst_set.ActivateNullInst();
     
     cString color_string;  // For coloring cells...
     

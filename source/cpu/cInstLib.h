@@ -47,12 +47,13 @@ protected:
 
   const cInstruction m_inst_error;
   const cInstruction m_inst_default;
+  const cInstruction m_inst_null;
   
   cInstLib(); // @not_implemented
   
 public:
-  cInstLib(int size, const cInstruction inst_error, const cInstruction inst_default)
-    : m_size(size), m_inst_error(inst_error), m_inst_default(inst_default) { ; }
+  cInstLib(int size, const cInstruction inst_error, const cInstruction inst_default, const cInstruction inst_null)
+    : m_size(size), m_inst_error(inst_error), m_inst_default(inst_default), m_inst_null(inst_null) { ; }
   virtual ~cInstLib() { ; }
 
   inline int GetSize() const { return m_size; }
@@ -70,8 +71,9 @@ public:
   
   inline cInstruction GetInst(const cString& name);
 
-  const cInstruction GetInstDefault() const { return m_inst_default; }
   const cInstruction GetInstError() const { return m_inst_error; }
+  const cInstruction GetInstDefault() const { return m_inst_default; }
+  const cInstruction GetInstNull() const { return m_inst_null; }
 };
 
 

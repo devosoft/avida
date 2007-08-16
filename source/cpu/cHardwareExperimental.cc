@@ -138,8 +138,9 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
 
 	const cInstruction error(255);
 	const cInstruction def(0);
+  const cInstruction null_inst(4);
   
-  return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, error, def);
+  return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, error, def, null_inst);
 }
 
 cHardwareExperimental::cHardwareExperimental(cWorld* world, cOrganism* in_organism, cInstSet* in_m_inst_set)

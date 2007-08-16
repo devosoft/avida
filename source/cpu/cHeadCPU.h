@@ -88,7 +88,7 @@ public:
 
   inline const cInstruction& GetInst() const { return GetMemory()[m_position]; }
   inline const cInstruction& GetInst(int offset) const { return GetMemory()[m_position + offset]; }
-  inline const cInstruction& GetNextInst() const;
+  inline cInstruction GetNextInst() const;
 
   inline void SetInst(const cInstruction& value) { GetMemory()[m_position] = value; }
   inline void InsertInst(const cInstruction& inst) { GetMemory().Insert(m_position, inst); }
@@ -159,7 +159,7 @@ inline bool cHeadCPU::operator==(const cHeadCPU& in_cpu_head) const
   (m_mem_space == in_cpu_head.m_mem_space);
 }
 
-inline const cInstruction& cHeadCPU::GetNextInst() const
+inline cInstruction cHeadCPU::GetNextInst() const
 {
   return (AtEnd()) ? m_hardware->GetInstSet().GetInstError() : GetMemory()[m_position + 1];
 }

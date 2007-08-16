@@ -228,16 +228,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
   
   // Setup a NULL instruction in a special inst set.
   cInstSet ko_inst_set(inst_set);
-  // Locate the instruction corresponding to "NULL" in the instruction library.
-  {
-    cInstruction lib_null_inst = ko_inst_set.GetInstLib()->GetInst("NULL");
-    if (lib_null_inst == ko_inst_set.GetInstLib()->GetInstError()) {
-      m_world->GetDriver().RaiseFatalException(1, "instruction 'NULL' not in current hardware type");
-    }
-    // Add mapping to located instruction. 
-    ko_inst_set.AddInst(lib_null_inst.GetOp());
-  }
-  const cInstruction null_inst = ko_inst_set.GetInst("NULL");
+  const cInstruction null_inst = ko_inst_set.ActivateNullInst();
   
   // If we are keeping track of the specific effects on tasks from the
   // knockouts, setup the matrix.

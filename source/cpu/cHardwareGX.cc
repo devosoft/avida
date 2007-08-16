@@ -80,7 +80,6 @@ tInstLib<cHardwareGX::tMethod>* cHardwareGX::initInstLib(void)
     tInstLibEntry<tMethod>("nop-B", &cHardwareGX::Inst_Nop, (nInstFlag::DEFAULT | nInstFlag::NOP), "No-operation instruction; modifies other instructions"),
     tInstLibEntry<tMethod>("nop-C", &cHardwareGX::Inst_Nop, (nInstFlag::DEFAULT | nInstFlag::NOP), "No-operation instruction; modifies other instructions"),
     
-    tInstLibEntry<tMethod>("NULL", &cHardwareGX::Inst_Nop, 0, "True no-operation instruction: does nothing"),
     tInstLibEntry<tMethod>("nop-X", &cHardwareGX::Inst_Nop, 0, "True no-operation instruction: does nothing"),
     tInstLibEntry<tMethod>("if-equ-0", &cHardwareGX::Inst_If0, 0, "Execute next instruction if ?BX?==0, else skip it"),
     tInstLibEntry<tMethod>("if-not-0", &cHardwareGX::Inst_IfNot0, 0, "Execute next instruction if ?BX?!=0, else skip it"),
@@ -284,6 +283,9 @@ tInstLib<cHardwareGX::tMethod>* cHardwareGX::initInstLib(void)
     tInstLibEntry<tMethod>("READABLE", &cHardwareGX::Inst_Nop),
     tInstLibEntry<tMethod>("BINDABLE", &cHardwareGX::Inst_Nop),
     tInstLibEntry<tMethod>("EXECUTABLE", &cHardwareGX::Inst_Nop),
+    
+    // Must always be the last instruction
+    tInstLibEntry<tMethod>("NULL", &cHardwareGX::Inst_Nop, 0, "True no-operation instruction: does nothing"),
   };
   
   const int n_size = sizeof(s_n_array)/sizeof(cNOPEntryCPU);
@@ -301,8 +303,9 @@ tInstLib<cHardwareGX::tMethod>* cHardwareGX::initInstLib(void)
 
 	const cInstruction error(255);
 	const cInstruction def(0);
+  const cInstruction null_inst(f_size - 1);
   
-  return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, error, def);
+  return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, error, def, null_inst);
 }
 
 

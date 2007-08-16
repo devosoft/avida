@@ -129,8 +129,9 @@ tInstLib<cHardwareSMT::tMethod>* cHardwareSMT::initInstLib(void)
 	
 	const cInstruction error(255);
 	const cInstruction def(0);
-	
-  return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, error, def);
+	const cInstruction null_inst(f_size - 1);
+  
+  return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, error, def, null_inst);
 }
 
 cHardwareSMT::cHardwareSMT(cWorld* world, cOrganism* in_organism, cInstSet* in_m_inst_set)
