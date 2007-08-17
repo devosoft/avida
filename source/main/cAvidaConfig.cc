@@ -33,10 +33,12 @@
 #include "cStringIterator.h"
 #include "tDictionary.h"
 
+cMutex cAvidaConfig::global_list_mutex;
 tList<cAvidaConfig::cBaseConfigGroup> cAvidaConfig::global_group_list;
+tList<cAvidaConfig::cBaseConfigCustomFormat> cAvidaConfig::global_format_list;
 
-cAvidaConfig::cBaseConfigEntry::cBaseConfigEntry(const cString & _name,
-  const cString & _type, const cString & _def, const cString & _desc)
+cAvidaConfig::cBaseConfigEntry::cBaseConfigEntry(const cString& _name,
+  const cString& _type, const cString& _def, const cString& _desc)
 : config_name(_name)
 , type(_type)
 , default_value(_def)
@@ -65,9 +67,12 @@ void cAvidaConfig::Load(const cString& filename, const tDictionary<cString>& map
   cInitFile init_file(filename, mappings);
   
   if (!init_file.WasOpened()) {
+    tConstListIterator<cString> err_it(init_file.GetErrors());
+    const cString* errstr = NULL;
+    while ((errstr = err_it.Next())) cerr << "Error: " << *errstr << endl;
     if (crash_if_not_found) {
       // exit the program if the requested configuration file is not found
-      cerr << "Warning: Unable to find file '" << filename 
+      cerr << "Error: Unable to find file '" << filename 
            << "'.  Ending the program." << endl;
       exit(-1);
     } else {
@@ -86,13 +91,13 @@ void cAvidaConfig::Load(const cString& filename, const tDictionary<cString>& map
   
 
   // Loop through all groups, then all entrys, and try to load each one.
-  tListIterator<cBaseConfigGroup> group_it(group_list);
-  cBaseConfigGroup * cur_group;
+  tListIterator<cBaseConfigGroup> group_it(m_group_list);
+  cBaseConfigGroup* cur_group;
   while ((cur_group = group_it.Next()) != NULL) {
     
     // Loop through entries for this group...
     tListIterator<cBaseConfigEntry> entry_it(cur_group->GetEntryList());
-    cBaseConfigEntry * cur_entry;
+    cBaseConfigEntry* cur_entry;
     while ((cur_entry = entry_it.Next()) != NULL) {
       const cString keyword = cur_entry->GetName();
       const cString default_val = cur_entry->GetDefault();
@@ -100,12 +105,42 @@ void cAvidaConfig::Load(const cString& filename, const tDictionary<cString>& map
     }
   }
   
+  
+  // Build dictionary of custom format entries
+  tDictionary<cBaseConfigFormatEntry*> entry_dict;
+  
+  tListIterator<cBaseConfigCustomFormat> format_it(m_format_list);
+  cBaseConfigCustomFormat* cur_format;
+  while ((cur_format = format_it.Next())) {
+    tListIterator<cBaseConfigFormatEntry> entry_it(cur_format->GetEntryList());
+    cBaseConfigFormatEntry* cur_entry;
+    while ((cur_entry = entry_it.Next())) entry_dict.Add(cur_entry->GetName(), cur_entry);
+  }
+  
+  
+  // Pass over the file again, checking for custom format entries
+  for (int line_id = 0; line_id < init_file.GetNumLines(); line_id++) {
+    cString cur_line = init_file.GetLine(line_id);
+    cString keyword = cur_line.PopWord();
+    
+    cBaseConfigFormatEntry* cur_entry;
+    if (entry_dict.Find(keyword, cur_entry)) {
+      cur_entry->LoadString(cur_line);
+      init_file.MarkLineUsed(line_id);
+    }
+  }
+  
   init_file.WarnUnused();
+
+  // Print out the collected warnings and messages
+  tConstListIterator<cString> err_it(init_file.GetErrors());
+  const cString* errstr = NULL;
+  while ((errstr = err_it.Next())) cerr << "Warning: " << *errstr << endl;
 }
 
 /* Routine to create an avida configuration file from internal default values */
 
-void cAvidaConfig::Print(const cString & filename)
+void cAvidaConfig::Print(const cString& filename)
 {
   ofstream fp(filename);
   
@@ -120,7 +155,7 @@ void cAvidaConfig::Print(const cString & filename)
   
   // Loop through the groups, and print out all of the variables.
   
-  tListIterator<cBaseConfigGroup> group_it(group_list);
+  tListIterator<cBaseConfigGroup> group_it(m_group_list);
   cBaseConfigGroup * cur_group;
   while ((cur_group = group_it.Next()) != NULL) {
     // Print out the group name...
@@ -175,9 +210,9 @@ void cAvidaConfig::Print(const cString & filename)
 
 void cAvidaConfig::Status()
 {
-  cout << "Config contains " << group_list.GetSize() << " groups." << endl;
+  cout << "Config contains " << m_group_list.GetSize() << " groups." << endl;
   
-  tListIterator<cBaseConfigGroup> group_it(group_list);
+  tListIterator<cBaseConfigGroup> group_it(m_group_list);
   cBaseConfigGroup * cur_group;
   while ((cur_group = group_it.Next()) != NULL) {
     cout << "Group \"" << cur_group->GetName()
@@ -191,7 +226,7 @@ void cAvidaConfig::PrintReview()
   cout << endl << "Non-Default Settings: " << endl << endl;
 
   // Loop through all possible groups.
-  tListIterator<cBaseConfigGroup> group_it(group_list);
+  tListIterator<cBaseConfigGroup> group_it(m_group_list);
   cBaseConfigGroup * cur_group;
   while ((cur_group = group_it.Next()) != NULL) {
     // Loop through entries for this group...
@@ -234,7 +269,7 @@ void cAvidaConfig::GenerateOverides()
 
   // Loop through all of the groups, printing the classes representing that
   // group followed by the classes representing the individual settings.
-  tListIterator<cBaseConfigGroup> group_it(group_list);
+  tListIterator<cBaseConfigGroup> group_it(m_group_list);
   cBaseConfigGroup * cur_group;
   while ((cur_group = group_it.Next()) != NULL) {
     fp << "/**********************************************" << endl;
@@ -265,9 +300,9 @@ void cAvidaConfig::GenerateOverides()
     tListIterator<cBaseConfigEntry> entry_it(cur_group->GetEntryList());
     cBaseConfigEntry * cur_entry;
     while ((cur_entry = entry_it.Next()) != NULL) {
-      const cString & cur_name = cur_entry->GetName();
-      const cString & cur_default = cur_entry->GetDefault();
-      const cString & cur_type = cur_entry->GetType();
+      const cString& cur_name = cur_entry->GetName();
+      const cString& cur_default = cur_entry->GetDefault();
+      const cString& cur_type = cur_entry->GetType();
       cStringList cur_desc(cur_entry->GetDesc(), '\n');
       fp << "// Entry: " << cur_name << endl;
       fp << "// Description: ";
@@ -281,7 +316,7 @@ void cAvidaConfig::GenerateOverides()
       fp << "private:" << endl;
       fp << "  " << cur_type << " value;" << endl;
       fp << "public:" << endl;
-      fp << "  void LoadString(const cString & str_value) {" << endl;
+      fp << "  void LoadString(const cString& str_value) {" << endl;
       fp << "    value = cStringUtil::Convert(str_value, value);" << endl;
       fp << "  }" << endl;
       fp << "  cEntry_" << cur_name << "() : cBaseConfigEntry(\""
@@ -325,185 +360,11 @@ void cAvidaConfig::GenerateOverides()
   }  
 }
 
-cAvidaConfig* cAvidaConfig::LoadWithArgs(cStringList& argv)
-{
-  int arg_num = 1;              // Argument number being looked at.
-  
-  // Load all of the args into string objects for ease of access.
-  int argc = argv.GetSize();
-  cString* args = new cString[argc];
-  cStringIterator list_it(argv);
-  for (int i = 0; (i < argc) && (list_it.AtEnd() == false); i++) {
-    list_it.Next();
-    args[i] = list_it.Get();
-  }
-  
-  cString config_filename = "avida.cfg";
-  bool crash_if_not_found = false;
-  tDictionary<cString> sets;
-  tDictionary<cString> def_mappings;
-
-  bool flag_analyze = false;
-  bool flag_interactive = false;
-  bool flag_load = false;         cString val_load;
-  bool flag_review = false;
-  bool flag_verbosity = false;    int val_verbosity;
-  bool flag_seed = false;         int val_seed = 0;
-  
-  // Then scan through and process the rest of the args.
-  while (arg_num < argc) {
-    cString cur_arg = args[arg_num];
-    
-    // Test against the possible inputs.
-
-    // Print out a list of all possibel actions (was events).
-    if (cur_arg == "-e" || cur_arg == "-events" || cur_arg == "-actions") {
-      cout << endl << "Supported Actions:" << endl;
-      cout << cDriverManager::GetActionLibrary()->DescribeAll() << endl;
-      exit(0);
-    }
-
-    // Review configuration options, listing those non-default.
-    else if (cur_arg == "-review" || cur_arg == "-r") {
-      flag_review = true;
-    }
-    
-    else if (cur_arg == "--help" || cur_arg == "-help" || cur_arg == "-h") {
-      cout << "Options:"<<endl
-	   << "  -a[nalyze]            Process analyze.cfg instead of normal "
-               << "run." << endl
-	   << "  -c[onfig] <filename>  Set config file to be <filename>"<<endl
-     << "  -def <name> <value>   Define config include variables" << endl
-	   << "  -e; -actions          Print a list of all known actions"<< endl
-	   << "  -h[elp]               Help on options (this listing)"<<endl
-	   << "  -i[nteractive]        Run analyze mode interactively" << endl
-	   << "  -l[oad] <filename>    Load a clone file" << endl
-	   << "  -r[eview]             Review avida.cfg settings." << endl
-	   << "  -s[eed] <value>       Set random seed to <value>" << endl
-	   << "  -set <name> <value>   Override values in avida.cfg" << endl
-	   << "  -v[ersion]            Prints the version number" << endl
-	   << "  -v0 -v1 -v2 -v3 -v4   Set output verbosity to 0..4" << endl
-	   << endl;
-      
-      exit(0);
-    }
-    else if (cur_arg == "-seed" || cur_arg == "-s") {
-      if (arg_num + 1 == argc || args[arg_num + 1][0] == '-') {
-        cerr << "Error: Must include a number as the random seed!" << endl;
-        exit(0);
-      } else {
-        arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
-        val_seed = cur_arg.AsInt();
-      }
-      flag_seed = true;
-    } else if (cur_arg == "-analyze" || cur_arg == "-a") {
-      flag_analyze = true;
-    } else if (cur_arg == "-interactive" || cur_arg == "-i") {
-      flag_interactive = true;
-    } else if (cur_arg == "-load" || cur_arg == "-l") {
-      if (arg_num + 1 == argc || args[arg_num + 1][0] == '-') {
-        cerr << "Error: Must include a filename to load from." << endl;
-        exit(0);
-      } else {
-        arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
-        val_load = cur_arg;
-      }
-      flag_load = true;
-    } else if (cur_arg == "-version" || cur_arg == "-v") {
-      // We've already showed version info, so just quit.
-      exit(0);
-    } else if (cur_arg.Substring(0, 2) == "-v") {
-      val_verbosity = cur_arg.Substring(2, cur_arg.GetSize() - 2).AsInt();
-      flag_verbosity = true;
-    } else if (cur_arg == "-set") {
-      if (arg_num + 1 == argc || arg_num + 2 == argc) {
-        cerr << "'-set' option must be followed by name and value" << endl;
-        exit(0);
-      }
-      arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
-      cString name(cur_arg);
-      arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
-      cString value(cur_arg);
-      sets.Add(name, value);
-    } else if (cur_arg == "-def") {
-      if (arg_num + 1 == argc || arg_num + 2 == argc) {
-        cerr << "'-def' option must be followed by name and value" << endl;
-        exit(0);
-      }
-      arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
-      cString name(cur_arg);
-      arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
-      cString value(cur_arg);
-      def_mappings.Add(name, value);
-    } else if (cur_arg == "-c" || cur_arg == "-config") {
-      if (arg_num + 1 == argc || args[arg_num + 1][0] == '-') {
-        cerr << "Error: Filename for configuration must be specified." << endl;
-        exit(0);
-      }
-      arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
-      config_filename = cur_arg;
-      crash_if_not_found = true;
-    } else {
-      cerr << "Error: Unknown Option '" << args[arg_num] << "'" << endl
-      << "Type: \"" << args[0] << " -h\" for a full option list." << endl;
-      exit(0);
-    }
-    
-    arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
-  }
-  
-  // Create Config object, load with values from configuration file
-  cAvidaConfig* cfg = new cAvidaConfig();
-  cfg->Load(config_filename, def_mappings, crash_if_not_found);
-  
-  
-  if (flag_analyze) if (cfg->ANALYZE_MODE.Get() < 1) cfg->ANALYZE_MODE.Set(1);
-  if (flag_interactive) if (cfg->ANALYZE_MODE.Get() < 2) cfg->ANALYZE_MODE.Set(2);
-  if (flag_load) cfg->CLONE_FILE.Set(val_load);
-  if (flag_seed) cfg->RANDOM_SEED.Set(val_seed);
-  if (flag_verbosity) cfg->VERBOSITY.Set(val_verbosity);
-
-  
-  // Loop through all groups, then all entries, and try to load each one.
-  tListIterator<cBaseConfigGroup> group_it(cfg->group_list);
-  cBaseConfigGroup* cur_group;
-  cString val;
-  while ((cur_group = group_it.Next()) != NULL) {
-    // Loop through entries for this group...
-    tListIterator<cBaseConfigEntry> entry_it(cur_group->GetEntryList());
-    cBaseConfigEntry* cur_entry;
-    while ((cur_entry = entry_it.Next()) != NULL) {
-      if (sets.Find(cur_entry->GetName(), val)) {
-        cur_entry->LoadString(val);
-        if (cfg->VERBOSITY.Get() > VERBOSE_NORMAL)
-          cout << "CmdLine Set: " << cur_entry->GetName() << " " << val << endl;
-      }
-    }
-  }
-
-  
-  if (flag_review) {
-    cfg->PrintReview();
-    exit(0);
-  }  
-  
-  delete [] args;
-  
-  return cfg;
-}
-cAvidaConfig* cAvidaConfig::LoadWithCmdLineArgs(int argc, char * argv[])
-{
-  cStringList sl;
-  for(int i=0; i<argc; i++){
-    sl.PushRear(argv[i]);
-  }
-  return LoadWithArgs(sl);
-}
 
 bool cAvidaConfig::Get(const cString& entry, cString& ret) const
 {
   // Loop through all groups, then all entries, searching for the specified entry.
-  tConstListIterator<cBaseConfigGroup> group_it(group_list);
+  tConstListIterator<cBaseConfigGroup> group_it(m_group_list);
   const cBaseConfigGroup* cur_group;
   while ((cur_group = group_it.Next()) != NULL) {
     // Loop through entries for this group...
@@ -522,7 +383,7 @@ bool cAvidaConfig::Get(const cString& entry, cString& ret) const
 bool cAvidaConfig::Set(const cString& entry, const cString& val)
 {
   // Loop through all groups, then all entries, searching for the specified entry.
-  tListIterator<cBaseConfigGroup> group_it(group_list);
+  tListIterator<cBaseConfigGroup> group_it(m_group_list);
   cBaseConfigGroup* cur_group;
   while ((cur_group = group_it.Next()) != NULL) {
     // Loop through entries for this group...
@@ -535,5 +396,40 @@ bool cAvidaConfig::Set(const cString& entry, const cString& val)
       }
     }
   }
+  tListIterator<cBaseConfigCustomFormat> format_it(m_format_list);
+  cBaseConfigCustomFormat* cur_format;
+  while ((cur_format = format_it.Next())) {
+    tListIterator<cBaseConfigFormatEntry> entry_it(cur_format->GetEntryList());
+    cBaseConfigFormatEntry* cur_entry;
+    while ((cur_entry = entry_it.Next())) {
+      if (cur_entry->GetName() == entry) {
+        cur_entry->LoadString(val);
+        return true;
+      }
+    }
+  }
+  
   return false;
+}
+
+
+void cAvidaConfig::Set(tDictionary<cString>& sets)
+{
+  // Loop through all groups, then all entries, and try to load each one.
+  tListIterator<cBaseConfigGroup> group_it(m_group_list);
+  cBaseConfigGroup* cur_group;
+  cString val;
+  while ((cur_group = group_it.Next()) != NULL) {
+    // Loop through entries for this group...
+    tListIterator<cBaseConfigEntry> entry_it(cur_group->GetEntryList());
+    cBaseConfigEntry* cur_entry;
+    while ((cur_entry = entry_it.Next()) != NULL) {
+      if (sets.Find(cur_entry->GetName(), val)) {
+        cur_entry->LoadString(val);
+        sets.Remove(cur_entry->GetName());
+        if (VERBOSITY.Get() > VERBOSE_NORMAL)
+          cout << "CmdLine Set: " << cur_entry->GetName() << " " << val << endl;
+      }
+    }
+  }
 }

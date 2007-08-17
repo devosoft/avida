@@ -2281,6 +2281,9 @@ bool cPopulation::LoadDumpFile(cString filename, int update)
   
   cInitFile input_file(filename);
   if (!input_file.WasOpened()) {
+    tConstListIterator<cString> err_it(input_file.GetErrors());
+    const cString* errstr = NULL;
+    while ((errstr = err_it.Next())) cerr << "Error: " << *errstr << endl;
     cerr << "Error: Cannot load file: \"" << filename << "\"." << endl;
     exit(1);
   }

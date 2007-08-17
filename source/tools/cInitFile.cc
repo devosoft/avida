@@ -52,7 +52,7 @@ cInitFile::cInitFile(const cString& filename, const tDictionary<cString>& mappin
 cInitFile::cInitFile(istream& in_stream) : m_filename("(stream)"), m_ftype("unknown")
 {
   if (in_stream.good() == false) {
-    cerr << "Bad stream sent to cInitFile::LoadStream()" << endl;
+    m_errors.PushRear(new cString("Bad stream, unable to process."));
     m_opened = false;
     return;
   }
@@ -62,16 +62,12 @@ cInitFile::cInitFile(istream& in_stream) : m_filename("(stream)"), m_ftype("unkn
   char cur_line[MAX_STRING_LENGTH];
   in_stream.getline(cur_line, MAX_STRING_LENGTH);
   
-  // If this file doesn't work properly, return.
-  if (!in_stream && !strlen(cur_line)) {
-    m_opened = false;
-    return;
-  }
+  if (!in_stream && !strlen(cur_line)) return;
   
   int linenum = 1;
   while (in_stream) {
-    if (cur_line[0] == '#' && cur_line[1] == '!') ProcessCommand(cur_line, lines);
-    else lines.Push(new sLine(cur_line, "(stream)", linenum));
+    if (cur_line[0] == '#' && cur_line[1] == '!') ProcessCommand(cur_line, lines, m_filename, linenum);
+    else lines.Push(new sLine(cur_line, m_filename, linenum));
     
     in_stream.getline(cur_line, MAX_STRING_LENGTH);
     linenum++;
@@ -98,7 +94,10 @@ void cInitFile::InitMappings(const tDictionary<cString>& mappings)
 bool cInitFile::LoadFile(const cString& filename, tSmartArray<sLine*>& lines)
 {
   cFile file(filename);
-  if (!file.IsOpen()) return false;   // The file must be opened!
+  if (!file.IsOpen()) {
+    m_errors.PushRear(new cString(cStringUtil::Stringf("Unable to open file '%s'.", (const char*)filename)));
+    return false;   // The file must be opened!
+  }
   
   cStringList line_list;   // Create a list to load all of the lines into.
 
@@ -107,36 +106,34 @@ bool cInitFile::LoadFile(const cString& filename, tSmartArray<sLine*>& lines)
   while (!file.Eof() && file.ReadLine(buf)) {
     linenum++;
 
-    if (buf.GetSize() > 1 && buf[0] == '#' && buf[1] == '!') ProcessCommand(buf, lines);
-    else lines.Push(new sLine(buf, filename, linenum));
+    if (buf.GetSize() > 1 && buf[0] == '#' && buf[1] == '!') {
+      if (!ProcessCommand(buf, lines, filename, linenum)) return false;
+    } else {
+      lines.Push(new sLine(buf, filename, linenum));
+    }
   }
   file.Close();
-  
-  if (linenum == 0) return false; // @DMB - should this be the case?
   
   return true;
 }
 
 
-void cInitFile::ProcessCommand(cString cmdstr, tSmartArray<sLine*>& lines)
+bool cInitFile::ProcessCommand(cString cmdstr, tSmartArray<sLine*>& lines, const cString& filename, int linenum)
 {
   cString cmd = cmdstr.PopWord();
   
   if (cmd == "#!include") {
     cString dir = cmdstr.PopWord();
-    if (dir.GetSize() && dir[0] == '$') {
-      dir.ClipFront(1);
-      if (!m_mappings.Find(dir, dir)) {
-        // @TODO - report error
-        return;
-      }
-    }
-    LoadFile(dir, lines); // @TODO - report error
-  } else if (cmd == "#!default") {
-    cString name = cmdstr.PopWord();
-    cmdstr.Trim();
-    if (!m_mappings.HasEntry(name)) m_mappings.Add(name, cmdstr);
+    cString mapping = cmdstr.PopWord();
+    if (mapping.GetSize()) m_mappings.Find(mapping, dir);
+    bool success = LoadFile(dir, lines);
+    if (!success) m_errors.PushRear(new cString(cStringUtil::Stringf("%f:%d: Unable to process include directive.",
+                                                                     (const char*)filename, linenum)));
+    return success;
   }
+  
+  m_errors.PushRear(new cString("Unrecognized processing directive."));
+  return false;
 }
 
 
@@ -263,7 +260,8 @@ cString cInitFile::ReadString(const cString& name, cString def) const
   // Search for the keyword.
   cString cur_line;
   if (Find(cur_line, name, 0) == false) {
-    cerr << "Warning: " << name << " not in '" << m_filename << "', defaulting to: " << def << endl;
+    m_errors.PushRear(new cString(cStringUtil::Stringf("%s not in '%s', defaulting to: %s",
+                                                       (const char*)name, (const char*)m_filename, (const char*)def)));
     return def;
   }
 
@@ -281,13 +279,13 @@ bool cInitFile::WarnUnused() const
     if (m_lines[i]->used == false) {
       if (found == false) {
         found = true;
-        cerr << "Warning: unknown lines in input file '" << m_filename << "'" << endl;
+        m_errors.PushRear(new cString(cStringUtil::Stringf("Unknown lines in input file '%s'.", (const char*)m_filename)));
       }
-      cerr << "    " << m_lines[i]->file << ":" << m_lines[i]->line_num << ": " << m_lines[i]->line << endl;
+      m_errors.PushRear(new cString(cStringUtil::Stringf("  %s:%d: %s",
+                                                         (const char*)m_lines[i]->file, m_lines[i]->line_num,
+                                                         (const char*)m_lines[i]->line)));
     }
   }
   
-  if (found == true) cerr << endl;
-
   return found;
 }

@@ -750,6 +750,9 @@ bool cEnvironment::Load(const cString& filename)
 {
   cInitFile infile(filename);
   if (!infile.WasOpened()) {
+    tConstListIterator<cString> err_it(infile.GetErrors());
+    const cString* errstr = NULL;
+    while ((errstr = err_it.Next())) cerr << "Error: " << *errstr << endl;
     cerr << "Error: Failed to load environment '" << filename << "'." << endl;
     return false;
   }

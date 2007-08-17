@@ -55,6 +55,7 @@ using namespace std;
  **/
 
 class cAvidaContext;
+class cStringList;
 class cWorld;
 
 class cInstSet
@@ -76,6 +77,9 @@ public:
   
   tArray<int> m_lib_nopmod_map;
   tArray<int> m_mutation_chart;     // ID's represented by redundancy values.
+  
+  
+  void LoadWithStringList(const cStringList& sl);
 
   cInstSet(); // @not_implemented
 
@@ -128,6 +132,7 @@ public:
   cInstruction GetInstDefault() const { return m_inst_lib->GetInstDefault(); }
   cInstruction GetInstError() const { return m_inst_lib->GetInstError(); }
   
+  void LoadFromConfig();
   void LoadFromFile(const cString& filename);
   void LoadFromLegacyFile(const cString& filename);
 };

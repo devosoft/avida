@@ -40,10 +40,13 @@ int main(int argc, char * argv[])
 {
   PlatformExpert::Initialize();
   
-  printVersionBanner();
+  Avida::PrintVersionBanner();
   
   // Initialize the configuration data...
-  cWorld* world = new cWorld(cAvidaConfig::LoadWithCmdLineArgs(argc, argv));
+  cAvidaConfig* cfg = new cAvidaConfig();
+  Avida::ProcessCmdLineArgs(argc, argv, cfg);
+  
+  cWorld* world = new cWorld(cfg);
   cAvidaDriver* driver = NULL;
   
   // Test to see if we should be in analyze mode only...
@@ -54,7 +57,7 @@ int main(int argc, char * argv[])
   driver->Run();
   
   // Exit Nicely
-  ExitAvida(0);
+  Avida::Exit(0);
   
   return 0;
 }

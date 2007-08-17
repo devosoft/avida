@@ -48,10 +48,10 @@ int main (int argc, char * const argv[])
       parser->Accept(visitor);
       
       std::cout << std::endl;
-      ExitAvida(0);
+      Avida::Exit(0);
     } else {
       std::cout << "Parse Failed" << std::endl;
-      ExitAvida(1);
+      Avida::Exit(1);
     }
   } else {
     std::cerr << "error: unable to open script" << std::endl;

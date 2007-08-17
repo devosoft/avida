@@ -293,7 +293,7 @@ public:
     // Determine the bin that we are going to be using.
     const int bin = HashKey(key);
     
-    DATA_TYPE out_data = NULL;
+    DATA_TYPE out_data;
     assert(cell_array[bin] != NULL);
     list_it.Set(cell_array[bin]);
     

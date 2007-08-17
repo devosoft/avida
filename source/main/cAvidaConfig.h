@@ -34,6 +34,7 @@
 
 #include <iostream>
 
+#include "cMutex.h"
 #include "cString.h"
 #include "cStringList.h"
 #include "cStringUtil.h"
@@ -110,6 +111,24 @@ public:                                                                    \
   cGroup_ ## NAME() : cBaseConfigGroup(#NAME, DESC) { ; }                  \
 } NAME                                                                     \
 
+
+
+#define CONFIG_ADD_CUSTOM_FORMAT(NAME, DESC)                               \
+class cCustomFormat_ ## NAME : public cBaseConfigCustomFormat {            \
+public:                                                                    \
+  cCustomFormat_ ## NAME() : cBaseConfigCustomFormat(#NAME, DESC) { ; }    \
+} NAME
+
+
+#define CONFIG_ADD_FORMAT_VAR(NAME, DESC)                                  \
+private:                                                                   \
+  class cFormatEntry_ ## NAME : public cBaseConfigFormatEntry {            \
+  public:                                                                  \
+    cFormatEntry_ ## NAME() : cBaseConfigFormatEntry(#NAME, DESC) { ; }    \
+  } NAME;                                                                  \
+public:                                                                    \
+
+
 class cAvidaConfig {
 #if USE_tMemTrack
   tMemTrack<cAvidaConfig> mt;
@@ -135,8 +154,8 @@ private:
 		     const cString& _def, const cString& _desc);
     virtual ~cBaseConfigEntry() { ; }
     
-    virtual void LoadString(const cString & str_value) = 0;
-    virtual bool EqualsString(const cString & str_value) const = 0;
+    virtual void LoadString(const cString& str_value) = 0;
+    virtual bool EqualsString(const cString& str_value) const = 0;
     
     const cString& GetName() const { return config_name; }
     const cString& GetType() const { return type; }
@@ -147,7 +166,7 @@ private:
     virtual cString AsString() const = 0;
   };
   
-  // The cBaseConfigGroup class is a bass class for objects that collect the
+  // The cBaseConfigGroup class is a base class for objects that collect the
   // configuration entries into logical groups.
   class cBaseConfigGroup {
   private:
@@ -155,7 +174,7 @@ private:
     cString description;
     tList<cBaseConfigEntry> entry_list;
   public:
-      cBaseConfigGroup(const cString& _name, const cString& _desc)
+    cBaseConfigGroup(const cString& _name, const cString& _desc)
       : group_name(_name), description(_desc) { global_group_list.PushRear(this); }
     ~cBaseConfigGroup() { ; }
     
@@ -167,6 +186,55 @@ private:
     void AddEntry(cBaseConfigEntry* _entry) { entry_list.PushRear(_entry); }
   };
   
+  // The cConfigCustomFormat class is a class for objects that collect the custom format configuration entries into
+  // a single named custom format.
+  class cBaseConfigFormatEntry;
+  class cBaseConfigCustomFormat {
+  private:
+    cString m_format_name;
+    cString m_description;
+    tList<cBaseConfigFormatEntry> m_entry_list;
+    cStringList m_value;
+  
+  public:
+    cBaseConfigCustomFormat(const cString& _name, const cString& _desc)
+      : m_format_name(_name), m_description(_desc) { global_format_list.PushRear(this); }
+    ~cBaseConfigCustomFormat() { ; }
+    
+    const cString& GetName() const { return m_format_name; }
+    const cString& GetDesc() const { return m_description; }
+    tList<cBaseConfigFormatEntry>& GetEntryList() { return m_entry_list; }
+    const tList<cBaseConfigFormatEntry>& GetEntryList() const { return m_entry_list; }
+    
+    void AddEntry(cBaseConfigFormatEntry* _entry) { m_entry_list.PushRear(_entry); }
+  
+    const cStringList& Get() const { return m_value; }
+    void Add(const cString& value) { m_value.PushRear(value); }
+  };
+
+  // The cConfigFormatEntry class is a bass class for all configuration entries.
+  // It is used to manage the various types of entries in a dynamic fashion.
+  class cBaseConfigFormatEntry {
+  private:
+    const cString m_name;   // Name of this setting
+    const cString m_description;   // Explaination of the use of this setting
+    cBaseConfigCustomFormat* m_format;
+    
+  public:
+    cBaseConfigFormatEntry(const cString& _name, const cString& _desc)
+      : m_name(_name), m_description(_desc), m_format(global_format_list.GetLast())
+    {
+      m_format->AddEntry(this);
+    }
+    ~cBaseConfigFormatEntry() { ; }
+    
+    void LoadString(const cString& str_value) { cString lname(m_name); m_format->Add(lname + " " + str_value); }
+    
+    const cString& GetName() const { return m_name; }
+    const cString& GetDesc() const { return m_description; }    
+  };
+  
+  
   // We need to keep track of all configuration groups and the entry objects
   // that they contain.  To do this, we create a global list of groups that
   // all groups must register themselves in.  A new entry object will always
@@ -174,19 +242,34 @@ private:
   // things in order.  When all configuration objects are built, we then
   // transfer the list to the local cAvidaConfig object (which occurs in the
   // constructor.)
+  static cMutex global_list_mutex;
   static tList<cBaseConfigGroup> global_group_list;
-  tList<cBaseConfigGroup> group_list;
-  
+  static tList<cBaseConfigCustomFormat> global_format_list;
+  tList<cBaseConfigGroup> m_group_list;
+  tList<cBaseConfigCustomFormat> m_format_list;
+
+
 public:
-  cAvidaConfig() { group_list.Transfer(global_group_list); }  
+  cAvidaConfig()
+  {
+    m_group_list.Transfer(global_group_list);
+    m_format_list.Transfer(global_format_list);
+    global_list_mutex.Unlock();
+  }
   ~cAvidaConfig() { ; }
 
-  static cAvidaConfig* LoadWithArgs(cStringList &args);
-  static cAvidaConfig* LoadWithCmdLineArgs(int argc, char* argv[]);
-  
 #ifdef OVERRIDE_CONFIG
 #include "config_overrides.h"
 #else
+  // Since the global lists are static and shared across all threads, we need to have a lock on a mutex to prevent multiple
+  // concurrent instantiations from messing each other up.  This class should be instantiated first, locking the mutex
+  // that is then unlocked at the completion of the constructor.
+  class cGlobalListLockAcquire
+  {
+  public:
+    cGlobalListLockAcquire() { global_list_mutex.Lock(); }
+  } __ListLock;
+  
   CONFIG_ADD_GROUP(GENERAL_GROUP, "General Settings");
   CONFIG_ADD_VAR(ANALYZE_MODE, int, 0, "0 = Disabled\n1 = Enabled\n2 = Interactive");
   CONFIG_ADD_VAR(VIEW_MODE, int, 1, "Initial viewer screen");
@@ -407,6 +490,10 @@ public:
   CONFIG_ADD_VAR(BIOMIMETIC_MOVEMENT_STEP, int, 0, "Number of cells to move Avidian on move instruction");
   CONFIG_ADD_VAR(BIOMIMETIC_K, int, 0, "Carrying capacity in number of organisms");
   
+  
+  CONFIG_ADD_CUSTOM_FORMAT(INST_SET_NEW, "Instruction Set Definition");
+  CONFIG_ADD_FORMAT_VAR(INST, "Instruction entry in the instruction set");
+  
 #endif
   
   void Load(const cString& filename, const bool& crash_if_not_found);
@@ -415,8 +502,10 @@ public:
   void Status();
   void PrintReview();
   
+  
   bool Get(const cString& entry, cString& ret) const;
   bool Set(const cString& entry, const cString& val);
+  void Set(tDictionary<cString>& sets);
   
   void GenerateOverides();
 };

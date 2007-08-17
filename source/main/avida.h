@@ -26,14 +26,19 @@
 #ifndef avida_h
 #define avida_h
 
+class cAvidaConfig;
 class cString;
 
-cString getAvidaVersion();
-void printVersionBanner();
 
-/**
- * This function properly shuts down the Avida program.
- **/
-void ExitAvida(int exit_code);
+namespace Avida
+{
+  cString GetVersion();
+  void PrintVersionBanner();
+  
+  void ProcessCmdLineArgs(int argc, char* argv[], cAvidaConfig* cfg);
+
+  //! This function properly shuts down the Avida program.
+  void Exit(int exit_code);
+};
 
 #endif

@@ -47,7 +47,7 @@ namespace PlatformExpert
     SetupFloatingPointEnvironment();
     
     // Catch Interrupt making sure to close appropriately
-    signal(SIGINT, ExitAvida);
+    signal(SIGINT, Avida::Exit);
 
     cDriverManager::Initialize();
   }

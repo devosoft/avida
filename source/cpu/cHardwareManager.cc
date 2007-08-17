@@ -75,7 +75,7 @@ cHardwareManager::cHardwareManager(cWorld* world)
   
   
   if (m_world->GetConfig().INST_SET_FORMAT.Get()) {
-    m_inst_set->LoadFromFile(filename);
+    m_inst_set->LoadFromConfig();
   } else {
     m_inst_set->LoadFromLegacyFile(filename);
   }

@@ -122,6 +122,30 @@ bool cInstSet::InstInSet(const cString& in_name) const
 
 void cInstSet::LoadFromFile(const cString& filename)
 {
+  cInitFile file(filename);
+  if (!file.WasOpened()) {
+    tConstListIterator<cString> err_it(file.GetErrors());
+    const cString* errstr = NULL;
+    while ((errstr = err_it.Next())) m_world->GetDriver().RaiseException(*errstr);
+    m_world->GetDriver().RaiseFatalException(1, cString("Unable to load instruction set '") + filename + "'.");
+  }
+   
+  cStringList sl;
+  for (int line_id = 0; line_id < file.GetNumLines(); line_id++) {
+    sl.PushRear(file.GetLine(line_id));
+  }
+  
+  LoadWithStringList(sl);
+}
+
+
+void cInstSet::LoadFromConfig()
+{
+  LoadWithStringList(m_world->GetConfig().INST_SET_NEW.Get());
+}
+
+void cInstSet::LoadWithStringList(const cStringList& sl)
+{
   cArgSchema schema;
   
   // Integer
@@ -135,18 +159,17 @@ void cInstSet::LoadFromFile(const cString& filename)
   schema.AddEntry("prob_fail", 0, 0.0);
   
   
-  cInitFile file(filename);
-  if (!file.WasOpened()) {
-    m_world->GetDriver().RaiseFatalException(1, cString("Unable to load instruction set '") + filename + "'.");
-  }
-  
   tList<cString> errors;
   bool success = true;
-  for (int line_id = 0; line_id < file.GetNumLines(); line_id++) {
-    cString cur_line = file.GetLine(line_id);
+  for (int line_id = 0; line_id < sl.GetSize(); line_id++) {
+    cString cur_line = sl.GetLine(line_id);
+    
+    // Look for the INST keyword at the beginning of each line, and ignore if not found.
+    cString inst_name = cur_line.PopWord();
+    if (inst_name != "INST") continue;
     
     // Lookup the instruction name in the library
-    cString inst_name = cur_line.PopWord();
+    inst_name = cur_line.PopWord();
     int fun_id = m_inst_lib->GetIndex(inst_name);
     if (fun_id == -1) {
       // Oh oh!  Didn't find an instruction!
@@ -243,6 +266,9 @@ void cInstSet::LoadFromLegacyFile(const cString& filename)
   cInitFile file(filename);
   
   if (file.WasOpened() == false) {
+    tConstListIterator<cString> err_it(file.GetErrors());
+    const cString* errstr = NULL;
+    while ((errstr = err_it.Next())) m_world->GetDriver().RaiseException(*errstr);
     m_world->GetDriver().RaiseFatalException(1, cString("Could not open instruction set '") + filename + "'.");
   }
   

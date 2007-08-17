@@ -143,6 +143,9 @@ void cAnalyze::RunFile(cString filename)
   
   cInitFile analyze_file(filename);
   if (!analyze_file.WasOpened()) {
+    tConstListIterator<cString> err_it(analyze_file.GetErrors());
+    const cString* errstr = NULL;
+    while ((errstr = err_it.Next())) cerr << "Error: " << *errstr << endl;
     cerr << "Warning: Cannot load file: \"" << filename << "\"." << endl
     << "...creating it..." << endl;
     ofstream fp(filename);
@@ -206,6 +209,9 @@ void cAnalyze::LoadBasicDump(cString cur_string)
   
   cInitFile input_file(filename);
   if (!input_file.WasOpened()) {
+    tConstListIterator<cString> err_it(input_file.GetErrors());
+    const cString* errstr = NULL;
+    while ((errstr = err_it.Next())) cerr << "Error: " << *errstr << endl;
     cerr << "Error: Cannot load file: \"" << filename << "\"." << endl;
     if (exit_on_error) exit(1);
   }
@@ -245,6 +251,9 @@ void cAnalyze::LoadDetailDump(cString cur_string)
   
   cInitFile input_file(filename);
   if (!input_file.WasOpened()) {
+    tConstListIterator<cString> err_it(input_file.GetErrors());
+    const cString* errstr = NULL;
+    while ((errstr = err_it.Next())) cerr << "Error: " << *errstr << endl;
     cerr << "Error: Cannot load file: \"" << filename << "\"." << endl;
     if (exit_on_error) exit(1);
   }
@@ -335,6 +344,9 @@ void cAnalyze::LoadMultiDetail(cString cur_string)
     
     cInitFile input_file(filename);
     if (!input_file.WasOpened()) {
+      tConstListIterator<cString> err_it(input_file.GetErrors());
+      const cString* errstr = NULL;
+      while ((errstr = err_it.Next())) cerr << "Error: " << *errstr << endl;
       cerr << "Error: Cannot load file: \"" << filename << "\"." << endl;
       if (exit_on_error) exit(1);
     }
@@ -943,6 +955,9 @@ void cAnalyze::LoadFile(cString cur_string)
   
   cInitFile input_file(filename);
   if (!input_file.WasOpened()) {
+    tConstListIterator<cString> err_it(input_file.GetErrors());
+    const cString* errstr = NULL;
+    while ((errstr = err_it.Next())) cerr << "Error: " << *errstr << endl;
     cerr << "Error: Cannot load file: \"" << filename << "\"." << endl;
     if (exit_on_error) exit(1);
   }

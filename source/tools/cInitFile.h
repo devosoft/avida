@@ -35,6 +35,9 @@
 #ifndef tDictionary_h
 #include "tDictionary.h"
 #endif
+#ifndef tList_h
+#include "tList.h"
+#endif
 #ifndef tSmartArray_h
 #include "tSmartArray.h"
 #endif
@@ -51,6 +54,7 @@ class cInitFile
 private:
   cString m_filename;
   bool m_opened;
+  mutable tList<cString> m_errors;
   
   struct sLine {
     cString line;
@@ -71,7 +75,7 @@ private:
   
   void InitMappings(const tDictionary<cString>& mappings);
   bool LoadFile(const cString& filename, tSmartArray<sLine*>& lines);
-  void ProcessCommand(cString cmdstr, tSmartArray<sLine*>& lines);
+  bool ProcessCommand(cString cmdstr, tSmartArray<sLine*>& lines, const cString& filename, int linenum);
   void PostProcess(tSmartArray<sLine*>& lines);
 
   
@@ -83,9 +87,15 @@ public:
   cInitFile(const cString& filename);
   cInitFile(const cString& filename, const tDictionary<cString>& mappings);
   cInitFile(std::istream& in_stream);
-  ~cInitFile() { for (int i = 0; i < m_lines.GetSize(); i++) delete m_lines[i]; }
+  ~cInitFile()
+  {
+    for (int i = 0; i < m_lines.GetSize(); i++) delete m_lines[i];
+    cString* errstr = NULL;
+    while ((errstr = m_errors.Pop())) delete errstr;
+  }
   
   bool WasOpened() const { return m_opened; }
+  const tList<cString>& GetErrors() const { return m_errors; }
   
   void Save(const cString& in_filename = "");
   
@@ -130,6 +140,8 @@ public:
    * keywords that are not understood by the program.
    **/
   bool WarnUnused() const;
+
+  void MarkLineUsed(int line_id) { m_lines[line_id]->used = true; }
 
   int GetNumLines() const { return m_lines.GetSize(); }
 
