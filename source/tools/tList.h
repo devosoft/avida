@@ -94,6 +94,7 @@ private:
 public:
     explicit tListIterator(tList<T> & _list);
   explicit tListIterator(tList<T> & _list, tListNode<T> * start_node);
+  explicit tListIterator(tListIterator<T>& _tli);
   ~tListIterator();
   
   void Set(tListNode<T> * in_node) { node = in_node; }
@@ -560,6 +561,14 @@ template <class T> tListIterator<T>::tListIterator(tList<T> & _list,
 {
   list.AddIterator(this);
 }
+
+template <class T> tListIterator<T>::tListIterator(tListIterator<T> & _tli)
+:list(_tli.list), node(_tli.node)
+{
+	list.AddIterator(this);
+}
+
+
 
 template <class T> tListIterator<T>::~tListIterator()
 {

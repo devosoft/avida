@@ -7014,13 +7014,13 @@ void cAnalyze::MutationRevert(cString cur_string)
 		if (true)
 		{
 			FOT << genotype->GetID()			<< " "
-          << genotype->GetFitness()		<< " "
-          << genotype->GetUpdateBorn() << " "
-          << genotype->GetParentDist() << " "
-          << parent_genotype->GetID()				<< " "
-          << parent_genotype->GetFitness()		<< " "
-          << parent_genotype->GetUpdateBorn()	<< " ";
-          
+      << genotype->GetFitness()		<< " "
+      << genotype->GetUpdateBorn() << " "
+      << genotype->GetParentDist() << " "
+      << parent_genotype->GetID()				<< " "
+      << parent_genotype->GetFitness()		<< " "
+      << parent_genotype->GetUpdateBorn()	<< " ";
+      
 			int cum_dist = 0;
 			cString str_parent = parent_genotype->GetSequence();
 			cString str_other  = "";
