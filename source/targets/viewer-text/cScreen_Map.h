@@ -1,8 +1,8 @@
 /*
- *  fltk_defs.cc
+ *  cScreen_Map.h
  *  Avida
  *
- *  Created by Charles on 7-9-07
+ *  Created by Charles on 7-1-07
  *  Copyright 1999-2007 Michigan State University. All rights reserved.
  *
  *
@@ -22,17 +22,29 @@
  *
  */
 
-#include "fltk-defs.h"
+#ifndef cScreen_Map_h
+#define cScreen_Map_h
 
-#include "cGUIButton.h"
-#include "cGUIMenuItem.h"
+#ifndef cCoreView_Map_h
+#include "cCoreView_Map.h"
+#endif
 
-void GenericButtonCallback(void *, cGUIButton * button)
-{
-  button->Press();
-}
+#ifndef cTextScreen_h
+#include "cTextScreen.h"
+#endif
 
-void GenericMenuCallback(void *, cGUIMenuItem * menu_item)
-{
-  menu_item->Trigger();
-}
+class cScreen_Map : public cTextScreen {
+private:
+  cCoreView_Map m_map_info;
+
+  void SetGenotypeColor(int color_id);
+public:
+  cScreen_Map(cCoreView_Info & info, cTextWindow & window);
+  ~cScreen_Map();
+
+  void Draw();
+  void Update();
+  bool DoInput(int input);
+};
+
+#endif

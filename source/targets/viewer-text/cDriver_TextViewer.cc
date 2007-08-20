@@ -38,7 +38,6 @@
 #include "cWorld.h"
 
 #include "cDriverManager.h"
-#include "cTextViewerManager.h"
 #include "cTextWindow.h"
 
 #include <cstdlib>
@@ -47,9 +46,11 @@ using namespace std;
 
 cDriver_TextViewer::cDriver_TextViewer(cWorld* world)
   : m_world(world)
-  , m_info(m_world->GetPopulation(), 12)
+  , m_info(m_world, 12)
   , m_main_window(NULL, m_info)
   , m_bar_window(NULL, m_info)
+  , m_screen_map(m_info, m_main_window)
+  , m_cur_screen(NULL)
   , m_done(false)
 {
   // Setup the initial view mode (loaded from avida.cfg)
@@ -92,9 +93,6 @@ cDriver_TextViewer::cDriver_TextViewer(cWorld* world)
   wrefresh(stdscr);
   m_bar_window.Redraw();
   m_main_window.Redraw();
-
-//   getch();
-//   exit(0);
 }
 
 cDriver_TextViewer::~cDriver_TextViewer()
@@ -154,7 +152,6 @@ void cDriver_TextViewer::Run()
         const int next_id = population.ScheduleOrganism();
         if (next_id == m_info.GetStepOrganism()) {
           DoUpdate();
-//          m_view.NewUpdate();
           
           // This is needed to have the top bar drawn properly; I'm not sure why...
           static bool first_update = true;
@@ -178,7 +175,6 @@ void cDriver_TextViewer::Run()
     // Setup the viewer for the new update.
     if (m_info.GetStepOrganism() == -1) {
       DoUpdate();
-//      NewUpdate();
       
       // This is needed to have the top bar drawn properly; I'm not sure why...
       static bool first_update = true;
@@ -239,14 +235,8 @@ bool cDriver_TextViewer::ProcessKeypress(int keypress)
 //     break;
   case 'b':
   case 'B':
-//    ChangeCurScreen(NULL);
+    ChangeCurScreen(NULL);
     break;
-//   case 'C':
-//   case 'c':
-//     NavigateMapWindow();
-//     // Now we need to restore the proper window mode (already cleared)
-//     ChangeCurScreen(cur_screen);
-//     break;
 //   case 'e':
 //   case 'E':
 //     ChangeCurScreen(environment_screen);
@@ -255,10 +245,10 @@ bool cDriver_TextViewer::ProcessKeypress(int keypress)
 //   case 'H':
 //     ChangeCurScreen(hist_screen);
 //     break;
-//   case 'm':
-//   case 'M':
-//     ChangeCurScreen(map_screen);
-//     break;
+  case 'm':
+  case 'M':
+    ChangeCurScreen(&m_screen_map);
+    break;
 //   case 'n':
 //   case 'N':
 //     if (info.GetPauseLevel() == PAUSE_ON) {
@@ -389,12 +379,16 @@ void cDriver_TextViewer::DoUpdate()
 
 //   const int update = m_world->GetStats().GetUpdate();
 //   if (update % 10 == 0) clog << update << endl;
+
+  m_info.SetupUpdate();
   
   m_bar_window.SetBoldColor(COLOR_WHITE);
   m_bar_window.Print(1, 11, "%d", m_world->GetStats().GetUpdate());
   m_bar_window.SetColor(COLOR_WHITE);
 
   m_bar_window.Refresh();
+
+  if (m_cur_screen != NULL) m_cur_screen->Update();
   m_main_window.Refresh();
 
   const int pause_level = m_info.GetPauseLevel();
@@ -509,6 +503,13 @@ int cDriver_TextViewer::Confirm(const cString & message)
   return result;
 }
 
+
+void cDriver_TextViewer::ChangeCurScreen(cTextScreen * new_screen)
+{
+  m_main_window.Clear();                       // Make sure contents of previous screen are cleared.
+  if (new_screen != NULL) new_screen->Draw();  // Draw new information on this screen.
+  m_cur_screen = new_screen;                   // Keep note of the current screen.
+}
 
 
 void ExitTextViewer(int exit_code)

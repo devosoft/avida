@@ -1,5 +1,5 @@
 /*
- *  tFLTKButton.h
+ *  tFLTKMenu.h
  *  Avida
  *
  *  Created by Charles on 7-9-07
@@ -22,39 +22,36 @@
  *
  */
 
-// This is a class to manage the FLTK GUI buttons...
+// This is a class to manage the FLTK GUI menus...
 
-#ifndef tFLTKButton_h
-#define tFLTKButton_h
+#ifndef tFLTKMenu_h
+#define tFLTKMenu_h
 
-#include "tGUIButton.h"
+#include "tGUIMenu.h"
 #include "fltk-defs.h"
 
-#include "FL/Fl_Button.H"
-#include "FL/Fl_Light_Button.H"
+#include "FL/Fl_Choice.H"
 
-template <class T> class tFLTKButton : public tGUIButton<T> {
+template <class T> class tFLTKMenu : public tGUIMenu<T, int> {
 protected:
-  Fl_Button * m_button;
+  Fl_Choice * m_menu;
+
+  void SetupOption(int opt_id) {
+    tGUIMenuItem<T,int> * menu_item = tGUIMenu<T,int>::m_menu_options[opt_id];
+    m_menu->add(menu_item->GetName(), 0, (Fl_Callback*) GenericMenuCallback, menu_item);
+  }
 
 public:
-  tFLTKButton(cGUIContainer & parent, int x, int y, int width, int height, const cString & name="",
-	      cGUIButton::eButtonType type=cGUIButton::BUTTON_NORMAL)
-    : tGUIButton<T>(parent, x, y, width, height, name, type)
+  tFLTKMenu(cGUIContainer & parent, int x, int y, int width, int height, const cString & name="")
+    : tGUIMenu<T, int>(parent, x, y, width, height, name)
+    , m_menu(new Fl_Choice(x, y, width, height, name))
   {
-    if (type == cGUIButton::BUTTON_NORMAL) {
-      m_button = new Fl_Button(x, y, width, height, name);
-    }
-    else if (type == cGUIButton::BUTTON_LIGHT) {
-      m_button = new Fl_Light_Button(x, y, width, height, name);
-    }
-    else {
-      assert(false); // Unknown button type!
-    }
-
-    m_button->callback((Fl_Callback*) GenericButtonCallback, (void*)(this));
+    m_menu = new Fl_Choice(x, y, width, height, name);
+    // m_menu->callback((Fl_Callback*) GenericMenuCallback, (void*)(this));
   }
-  ~tFLTKButton() { delete m_button; }
+  ~tFLTKMenu() { delete m_menu; }
+
+  void SetActive(int id) { m_menu->value(id); }
 
   void BindKey(int key) { (void) key; }
 };

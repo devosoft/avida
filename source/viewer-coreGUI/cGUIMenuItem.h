@@ -1,5 +1,5 @@
 /*
- *  fltk_defs.cc
+ *  cGUIMenuItem.h
  *  Avida
  *
  *  Created by Charles on 7-9-07
@@ -22,17 +22,23 @@
  *
  */
 
-#include "fltk-defs.h"
+// A base clasee for single menu items in the GUI.
 
-#include "cGUIButton.h"
-#include "cGUIMenuItem.h"
+#ifndef cGUIMenuItem_h
+#define cGUIMenuItem_h
 
-void GenericButtonCallback(void *, cGUIButton * button)
-{
-  button->Press();
-}
+class cGUIMenuItem {
+protected:
+  cString m_name;
 
-void GenericMenuCallback(void *, cGUIMenuItem * menu_item)
-{
-  menu_item->Trigger();
-}
+public:
+  cGUIMenuItem(const cString & name="") : m_name(name) { ; }
+  virtual ~cGUIMenuItem() { ; }
+  
+  const cString & GetName() const { return m_name; }
+  void SetName(const cString & name) { m_name = name; }
+
+  virtual void Trigger() = 0;
+};
+
+#endif

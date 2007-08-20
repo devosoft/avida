@@ -32,6 +32,10 @@
 #ifndef cCoreView_Info_h
 #include "cCoreView_Info.h"
 #endif
+
+#ifndef cScreen_Map_h
+#include "cScreen_Map.h"
+#endif
  
 #ifndef cTextWindow_h
 #include "cTextWindow.h"
@@ -60,8 +64,13 @@ private:
   cTextWindow m_main_window;
   cTextWindow m_bar_window;
 
+  cScreen_Map m_screen_map;
+
+  cTextScreen * m_cur_screen;
+
   bool m_done;           // This is set to true when run should finish.
 
+  void ChangeCurScreen(cTextScreen * new_screen);
 public:
   cDriver_TextViewer(cWorld* world);
   ~cDriver_TextViewer();

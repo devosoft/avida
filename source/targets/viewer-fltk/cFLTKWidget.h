@@ -1,5 +1,5 @@
 /*
- *  fltk_defs.cc
+ *  cFLTKWidget.h
  *  Avida
  *
  *  Created by Charles on 7-9-07
@@ -22,17 +22,40 @@
  *
  */
 
-#include "fltk-defs.h"
+// This is a base class for all FLTK widgets
 
-#include "cGUIButton.h"
-#include "cGUIMenuItem.h"
+#ifndef cFLTKWidget_h
+#define cFLTKWidget_h
 
-void GenericButtonCallback(void *, cGUIButton * button)
-{
-  button->Press();
-}
+#include "cColor.h"
+#include "cGUIWidget.h"
 
-void GenericMenuCallback(void *, cGUIMenuItem * menu_item)
-{
-  menu_item->Trigger();
-}
+#include <FL/Fl_Widget.H>
+#include <FL/fl_draw.H>
+
+class cFLTKWidget {
+protected:
+  Fl_Widget * m_widget;
+  cGUIWidget * m_gui_widget;
+
+public:
+  cFLTKWidget(cGUIWidget * gui_widget) : m_widget(NULL), m_gui_widget(gui_widget) { ; }
+  ~cFLTKWidget() { ; }
+
+  void SetWidget(Fl_Widget * widget) { m_widget = widget; }
+
+  void SetBackgroundColor(const cColor & color) {
+    assert(m_widget != NULL);
+    fl_color(color.Red(), color.Green(), color.Blue());
+    m_widget->color(fl_color());
+  }
+
+  void Refresh() {
+    m_widget->copy_label(m_gui_widget->GetName());
+    m_widget->labelsize(m_gui_widget->GetFontSize());
+    m_widget->redraw();
+  }
+
+};
+
+#endif

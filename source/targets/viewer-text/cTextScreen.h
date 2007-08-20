@@ -1,8 +1,8 @@
 /*
- *  fltk_defs.cc
+ *  cTextScreen.h
  *  Avida
  *
- *  Created by Charles on 7-9-07
+ *  Created by Charles on 7-1-07
  *  Copyright 1999-2007 Michigan State University. All rights reserved.
  *
  *
@@ -22,17 +22,29 @@
  *
  */
 
-#include "fltk-defs.h"
+#ifndef cTextScreen_h
+#define cTextScreen_h
 
-#include "cGUIButton.h"
-#include "cGUIMenuItem.h"
+#ifndef cCoreView_Info_h
+#include "cCoreView_Info.h"
+#endif
 
-void GenericButtonCallback(void *, cGUIButton * button)
-{
-  button->Press();
-}
+#ifndef cTextWindow_h
+#include "cTextWindow.h"
+#endif
 
-void GenericMenuCallback(void *, cGUIMenuItem * menu_item)
-{
-  menu_item->Trigger();
-}
+class cTextScreen  {
+protected:
+  cCoreView_Info & m_info;
+  cTextWindow & m_window;
+
+public:
+  cTextScreen(cCoreView_Info & info, cTextWindow & window) : m_info(info), m_window(window) { ; }
+  virtual ~cTextScreen() { ; }
+
+  virtual void Draw() = 0;
+  virtual void Update() = 0;
+  virtual bool DoInput(int input) = 0;
+};
+
+#endif

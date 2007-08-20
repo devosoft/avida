@@ -45,9 +45,6 @@
 #include <cstdlib>
 
 #include <FL/Fl.H>
-// #include <FL/Fl_Window.H>
-// #include <FL/Fl_Box.H>
-
 
 using namespace std;
 
@@ -60,15 +57,18 @@ using namespace std;
 
 cDriver_FLTKViewer::cDriver_FLTKViewer(cWorld* world)
   : m_world(world)
-  , m_info(world->GetPopulation(), 12)
+  , m_info(world, 18)
   , m_done(false)
   , m_main_window(FLTK_MAINWIN_WIDTH, FLTK_MAINWIN_HEIGHT, "Avida")
-  , m_menu_box(m_main_window, 0, 0, FLTK_MAINWIN_WIDTH, FLTK_MENUBAR_HEIGHT)
   , m_body_box(m_main_window, 0, FLTK_MENUBAR_HEIGHT, FLTK_MAINWIN_WIDTH, FLTK_BODY_HEIGHT)
   , m_update_box(m_main_window, 0, 0, 200, FLTK_MENUBAR_HEIGHT, "Update 0")
   , m_title_box(m_main_window, 600, 0, 200, FLTK_MENUBAR_HEIGHT, "Avida")
-  , m_quit_button(m_main_window, 200, 0, 200, FLTK_MENUBAR_HEIGHT, "Quit")
-  , m_pause_button(m_main_window, 400, 0, 200, FLTK_MENUBAR_HEIGHT, "Pause", cGUIButton::BUTTON_LIGHT)
+  , m_grid_view(m_info, m_main_window, 10, FLTK_MENUBAR_HEIGHT+10, FLTK_MAINWIN_WIDTH-20, FLTK_BODY_HEIGHT-60)
+  , m_grid_view_menu(m_main_window,    50, FLTK_MAINWIN_HEIGHT-45, 80, 30, "View:")
+  , m_grid_tags_menu(m_main_window,   180, FLTK_MAINWIN_HEIGHT-45, 80, 30, "Tags:")
+  , m_grid_symbol_menu(m_main_window, 310, FLTK_MAINWIN_HEIGHT-45, 80, 30, "Shape:")
+  , m_pause_button(m_main_window, 600, FLTK_MAINWIN_HEIGHT - 45, 80, 30, "Pause", cGUIButton::BUTTON_LIGHT)
+  , m_quit_button(m_main_window,  700, FLTK_MAINWIN_HEIGHT - 45, 80, 30, "&Quit")
 {
   // Setup the initial view mode (loaded from avida.cfg)
   m_info.SetViewMode(world->GetConfig().VIEW_MODE.Get());
@@ -77,27 +77,36 @@ cDriver_FLTKViewer::cDriver_FLTKViewer(cWorld* world)
   world->SetDriver(this);
 
   m_main_window.SetSizeRange(FLTK_MAINWIN_WIDTH, FLTK_MAINWIN_HEIGHT);
+  m_main_window.SetBackgroundColor(cColor(0xDD, 0xDD, 0xFF));
+  m_main_window.Resizable(m_body_box);
 
-  m_menu_box.SetType(cGUIBox::BOX_RAISED_FRAME);
-  m_menu_box.Refresh();
-
-  m_update_box.SetType(cGUIBox::BOX_RAISED);
+  m_update_box.SetType(cGUIBox::BOX_NONE);
   m_update_box.SetFontSize(FLTK_MENU_FONT_SIZE);
   m_update_box.Refresh();
  
-  m_title_box.SetType(cGUIBox::BOX_RAISED);
+  m_title_box.SetType(cGUIBox::BOX_NONE);
   m_title_box.SetFontSize(FLTK_MENU_FONT_SIZE);
   m_title_box.Refresh();
 
-  m_main_window.Resizable(m_body_box);
-
-  m_quit_button.SetCallback(this, &cDriver_FLTKViewer::ButtonCallback_Quit);
-  m_quit_button.SetFontSize(FLTK_MENU_FONT_SIZE);
-  m_quit_button.Refresh();
+  cCoreView_Map & map_info = m_grid_view.GetMapInfo();
+  int num_modes = map_info.GetNumModes();
+  for (int i = 0; i < num_modes; i++) {
+    const cString & cur_name = map_info.GetModeName(i);
+    const int cur_type = map_info.GetModeType(i);
+    if (cur_type == cCoreView_Map::VIEW_COLOR) {
+      m_grid_view_menu.AddOption(cur_name, this, &cDriver_FLTKViewer::MenuCallback_View, i);
+    } else if (cur_type == cCoreView_Map::VIEW_TAGS) {
+      m_grid_tags_menu.AddOption(cur_name, this, &cDriver_FLTKViewer::MenuCallback_View, i);
+    } else if (cur_type == cCoreView_Map::VIEW_SYMBOLS) {
+      m_grid_symbol_menu.AddOption(cur_name, this, &cDriver_FLTKViewer::MenuCallback_View, i);
+    }
+  }
+  m_grid_view_menu.SetActive(0);
+  m_grid_tags_menu.SetActive(0);
+  m_grid_symbol_menu.SetActive(0);
 
   m_pause_button.SetCallback(this, &cDriver_FLTKViewer::ButtonCallback_Pause);
-  m_pause_button.SetFontSize(FLTK_MENU_FONT_SIZE);
-  m_pause_button.Refresh();
+  m_quit_button.SetCallback(this, &cDriver_FLTKViewer::ButtonCallback_Quit);
 
   m_main_window.Finalize();
 }
@@ -343,11 +352,14 @@ void cDriver_FLTKViewer::DoUpdate()
 {
   bool error = Fl::check();
 
+  m_info.SetupUpdate();
+
   cString update_string;
   update_string.Set("Update: %d", m_world->GetStats().GetUpdate());
   m_update_box.SetName(update_string);
   m_update_box.Refresh();
   
+  m_grid_view.Redraw();
 
   const int pause_level = m_info.GetPauseLevel();
 
@@ -419,6 +431,11 @@ void cDriver_FLTKViewer::ButtonCallback_Pause(double ignore)
   m_info.TogglePause();
 }
 
+
+void cDriver_FLTKViewer::MenuCallback_View(int new_mode)
+{
+  m_grid_view.GetMapInfo().SetMode(new_mode);
+}
 
 
 

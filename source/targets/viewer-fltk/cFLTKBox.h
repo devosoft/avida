@@ -27,19 +27,23 @@
 #ifndef cFLTKBox_h
 #define cFLTKBox_h
 
+#include "cColor.h"
 #include "cGUIBox.h"
+#include "cFLTKWidget.h"
 
 #include <FL/Fl_Box.H>
 
-class cFLTKBox : public cGUIBox {
+class cFLTKBox : public cGUIBox, public cFLTKWidget {
 protected:
   Fl_Box * m_box;
   
 public:
   cFLTKBox(cGUIContainer & parent, int x, int y, int width, int height, const cString & name="")
     : cGUIBox(parent, x, y, width, height, name)
+    , cFLTKWidget(this)
   {
     m_box = new Fl_Box(x, y, width, height, name);
+    SetWidget(m_box);
   }
   ~cFLTKBox() { delete m_box; }
 
@@ -52,13 +56,6 @@ public:
     else if (m_type == BOX_FRAME) m_box->box(FL_BORDER_FRAME);
     else if (m_type == BOX_RAISED_FRAME) m_box->box(FL_UP_FRAME);
     else if (m_type == BOX_LOWERED_FRAME) m_box->box(FL_DOWN_FRAME);
-  }
-  
-
-  void Refresh() {
-    m_box->copy_label(m_name);
-    m_box->labelsize(m_font_size);
-    m_box->redraw();
   }
 
   Fl_Box * GetFLTKPtr() { return m_box; }

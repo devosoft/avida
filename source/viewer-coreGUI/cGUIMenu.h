@@ -1,5 +1,5 @@
 /*
- *  fltk_defs.cc
+ *  cGUIMenu.h
  *  Avida
  *
  *  Created by Charles on 7-9-07
@@ -22,17 +22,29 @@
  *
  */
 
-#include "fltk-defs.h"
+// A base clasee for menus in the GUI.
 
-#include "cGUIButton.h"
-#include "cGUIMenuItem.h"
+#ifndef cGUIMenu_h
+#define cGUIMenu_h
 
-void GenericButtonCallback(void *, cGUIButton * button)
-{
-  button->Press();
-}
+#include "cGUIWidget.h"
 
-void GenericMenuCallback(void *, cGUIMenuItem * menu_item)
-{
-  menu_item->Trigger();
-}
+class cGUIMenuItem;
+
+class cGUIMenu : public cGUIWidget {
+protected:
+
+public:
+  cGUIMenu(cGUIContainer & parent, int x, int y, int width, int height, const cString & name="")
+    : cGUIWidget(parent, x, y, width, height, name) { ; }
+
+  virtual ~cGUIMenu() { ; }
+  
+  virtual int GetSize() = 0;
+  virtual const cString & GetName(int id) const = 0;
+  virtual const cGUIMenuItem & GetOption(int id) const = 0;
+
+  virtual void Trigger(int id) = 0;
+};
+
+#endif

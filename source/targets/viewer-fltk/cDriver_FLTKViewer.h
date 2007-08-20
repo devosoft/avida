@@ -38,8 +38,10 @@
 #endif
 
 #include "cFLTKBox.h"
+#include "cFLTKGridView.h"
 #include "cFLTKWindow.h"
 #include "tFLTKButton.h"
+#include "tFLTKMenu.h"
 
 #include <sstream>
 #include <iostream>
@@ -60,14 +62,18 @@ private:
   // Graphics components...
   cFLTKWindow m_main_window;
 
-  cFLTKBox m_menu_box;
+  //  cFLTKBox m_menu_box;
   cFLTKBox m_body_box;
+
   cFLTKBox m_update_box;
   cFLTKBox m_title_box;
 
-  tFLTKButton<cDriver_FLTKViewer> m_quit_button;
+  cFLTKGridView m_grid_view;
+  tFLTKMenu<cDriver_FLTKViewer> m_grid_view_menu;
+  tFLTKMenu<cDriver_FLTKViewer> m_grid_tags_menu;
+  tFLTKMenu<cDriver_FLTKViewer> m_grid_symbol_menu;
   tFLTKButton<cDriver_FLTKViewer> m_pause_button;
-
+  tFLTKButton<cDriver_FLTKViewer> m_quit_button;
 public:
   cDriver_FLTKViewer(cWorld* world);
   ~cDriver_FLTKViewer();
@@ -105,6 +111,9 @@ public:
   // Button Callbacks...
   void ButtonCallback_Quit(double ignore);
   void ButtonCallback_Pause(double ignore);
+
+  // Menu Callbacks
+  void MenuCallback_View(int new_mode);
 };
 
 

@@ -33,16 +33,17 @@
 
 #include "cFLTKBox.h"
 
-class cFLTKWindow : public cGUIWindow {
+class cFLTKWindow : public cGUIWindow, public cFLTKWidget {
 protected:
   Fl_Window * m_window;
   
 public:
-  cFLTKWindow() { ; }
   cFLTKWindow(int width, int height, const cString & name="")
     : cGUIWindow(width, height, name)
+    , cFLTKWidget(this)
   {
     m_window = new Fl_Window(width, height);
+    SetWidget(m_window);
   }
   ~cFLTKWindow() { delete m_window; }
 

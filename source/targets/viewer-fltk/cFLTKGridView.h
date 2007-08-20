@@ -1,5 +1,5 @@
 /*
- *  fltk_defs.cc
+ *  cFLTKGridView.h
  *  Avida
  *
  *  Created by Charles on 7-9-07
@@ -22,17 +22,38 @@
  *
  */
 
-#include "fltk-defs.h"
+// This is a class for managing Avida grids in the viewer.
 
-#include "cGUIButton.h"
-#include "cGUIMenuItem.h"
+#ifndef cFLTKGridView_h
+#define cFLTKGridView_h
 
-void GenericButtonCallback(void *, cGUIButton * button)
-{
-  button->Press();
-}
+#ifndef cFLTKBaseDraw_h
+#include "cFLTKBaseDraw.h"
+#endif
 
-void GenericMenuCallback(void *, cGUIMenuItem * menu_item)
-{
-  menu_item->Trigger();
-}
+#ifndef cCoreView_Map_h
+#include "cCoreView_Map.h"
+#endif
+
+class cFLTKGridView : public cFLTKBaseDraw {
+private:
+  cCoreView_Info & m_info;
+  cCoreView_Map m_map_info;
+
+  void SetGenotypeColor(int color_id);
+public:
+  cFLTKGridView(cCoreView_Info & info, cGUIContainer & parent,
+		int x, int y, int w, int h, const cString & name="")
+    : cFLTKBaseDraw(parent, x, y, w, h, name), m_info(info), m_map_info(info) { ; }
+  ~cFLTKGridView() { ; }
+
+  cCoreView_Map & GetMapInfo() { return m_map_info; }
+
+  void Draw();
+
+  int Handle(int event) {
+    return 0;
+  }
+};
+
+#endif

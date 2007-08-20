@@ -1,5 +1,5 @@
 /*
- *  tGUIButton.h
+ *  tGUIMenuItem.h
  *  Avida
  *
  *  Created by Charles on 7-9-07
@@ -22,40 +22,40 @@
  *
  */
 
-// This is a second-level base class/template for all GUI widgets that act as buttons.
+// A single item from a menu that should be able to handle what happens when it is chosen.
 
-#ifndef tGUIButton_h
-#define tGUIButton_h
+#ifndef tGUIMenuItem_h
+#define tGUIMenuItem_h
 
-#include "cGUIButton.h"
+#include "cGUIMenuItem.h"
 
-template <class T> class tGUIButton : public cGUIButton {
+template <class T, class ARG> class tGUIMenuItem : public cGUIMenuItem {
+public:
+  typedef void (T::*yCallback)(ARG);
+
 protected:
   T * m_target;
-  void (T::*m_callback)(double);
-  double m_arg;
+  yCallback m_callback;
+  ARG m_arg;
 
 public:
-  tGUIButton(cGUIContainer & parent, int x, int y, int width, int height, const cString & name="",
-	     cGUIButton::eButtonType type=cGUIButton::BUTTON_NORMAL)
-    : cGUIButton(parent, x, y, width, height, name, type)
-    , m_target(NULL)
-    , m_callback(NULL)
-    , m_arg(0.0)
-  { ; }
-  virtual ~tGUIButton() { ; }
+  tGUIMenuItem() : m_target(NULL), m_callback(NULL), m_arg(-1.0) { ; }
+  tGUIMenuItem(const cString & name, T * target, void (T::*cb_fun)(ARG), ARG arg=0.0)
+    : cGUIMenuItem(name), m_target(target), m_callback(cb_fun), m_arg(arg) { ; }
 
   T & GetTarget() { return *m_target; }
-  double GetArg() { return m_arg; }
+  const T & GetTarget() const { return *m_target; }
+  yCallback GetCallback() const { return m_callback; }
+  ARG GetArg() const { return m_arg; }
 
-  void SetCallback(T * target, void (T::*cb_fun)(double), double arg=0.0) {
+  void SetCallback(T * target, void (T::*cb_fun)(ARG), ARG arg=0.0) {
     m_target = target;
     m_callback = cb_fun;
     m_arg = arg;
   }
 
-  virtual void Press() { if (m_callback != NULL) (m_target->*(m_callback))(m_arg); }
-  virtual void Press(double arg) { if (m_callback != NULL) (m_target->*(m_callback))(arg); }
+  virtual void Trigger() { if (m_callback != NULL) (m_target->*(m_callback))(m_arg); }
+  virtual void Trigger(ARG arg) { if (m_callback != NULL) (m_target->*(m_callback))(arg); }
 };
 
 #endif

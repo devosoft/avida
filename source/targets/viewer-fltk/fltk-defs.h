@@ -28,7 +28,9 @@
 #define fltk_defs_h
 
 class cGUIButton;
+class cGUIMenuItem;
 
 void GenericButtonCallback(void *, cGUIButton * button);
+void GenericMenuCallback(void *, cGUIMenuItem * menu_item);
 
 #endif

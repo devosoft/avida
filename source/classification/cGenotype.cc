@@ -46,7 +46,7 @@ cGenotype::cGenotype(cWorld* world, int in_update_born, int in_id)
   , defer_adjust(0)
   , id_num(in_id)
   , symbol(0)
-  , map_id(-1)
+  , map_color_id(-2)
   , birth_data(in_update_born)
   , num_organisms(0)
   , last_num_organisms(0)
@@ -63,7 +63,7 @@ cGenotype::~cGenotype()
   // Reset some of the variables to make sure program will crash if a deleted
   // cell is read!
   symbol = '!';
-  map_id = -1;
+  map_color_id = -5;
 
   num_organisms = -1;
   total_organisms = -1;

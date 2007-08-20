@@ -61,11 +61,11 @@ public:
   int GetY() const { return m_y; }
   int GetWidth() const { return m_width; }
   int GetHeight() const { return m_height; }
+  int GetFontSize() const { return m_font_size; }
   
   void SetName(const cString & _name) { m_name = _name; }
   void SetFontSize(int _size) { m_font_size = _size; }
-
-  virtual void Refresh() { ; }
+  void Resize(int new_w, int new_h) { m_width = new_w; m_height = new_h; }
 };
 
 #endif
