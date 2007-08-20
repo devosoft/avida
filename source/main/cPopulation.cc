@@ -118,7 +118,7 @@ cPopulation::cPopulation(cWorld* world)
   }
   
   // Allocate the cells, resources, and market.
-  cell_array.Resize(num_cells);
+  cell_array.ResizeClear(num_cells);
 //  resource_count.ResizeSpatialGrids(world_x, world_y);
   market.Resize(MARKET_SIZE);
   
@@ -326,12 +326,12 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
 		
 		// Reset inputs and re-calculate merit if required
     if (m_world->GetConfig().RESET_INPUTS_ON_DIVIDE.Get() > 0){
-			environment.SetupInputs(ctx, parent_cell.input_array);
+			environment.SetupInputs(ctx, parent_cell.m_inputs);
       int pc_phenotype = m_world->GetConfig().PRECALC_PHENOTYPE.Get();
 			if (pc_phenotype){
 				cCPUTestInfo test_info;
 				cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU();
-				test_info.UseManualInputs(parent_cell.input_array);                               // Test using what the environment will be
+				test_info.UseManualInputs(parent_cell.GetInputs()); // Test using what the environment will be
 				test_cpu->TestGenome(ctx, test_info, parent_organism.GetHardware().GetMemory()); // Use the true genome
 				if (pc_phenotype & 1)  // If we must update the merit
           parent_phenotype.SetMerit(test_info.GetTestPhenotype().GetMerit());
@@ -387,7 +387,7 @@ bool cPopulation::ActivateParasite(cOrganism& parent, const cCodeLabel& label, c
   
   int num_neighbors = parent.GetNeighborhoodSize();
   cOrganism* target_organism = 
-    parent_cell.connection_list.GetPos(m_world->GetRandom().GetUInt(num_neighbors))->GetOrganism();
+    parent_cell.ConnectionList().GetPos(m_world->GetRandom().GetUInt(num_neighbors))->GetOrganism();
   
   if (target_organism == NULL) return false;
   
@@ -445,17 +445,17 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   
   // Update the contents of the target cell.
   KillOrganism(target_cell);
-  target_cell.InsertOrganism(*in_organism);
+  target_cell.InsertOrganism(in_organism);
   
   // Setup the inputs in the target cell.
-  environment.SetupInputs(ctx, target_cell.input_array);
+  environment.SetupInputs(ctx, target_cell.m_inputs);
     
   // Precalculate the phenotype if requested
   int pc_phenotype = m_world->GetConfig().PRECALC_PHENOTYPE.Get();
   if (pc_phenotype){
     cCPUTestInfo test_info;
     cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU();
-    test_info.UseManualInputs(target_cell.input_array);                            // Test using what the environment will be
+    test_info.UseManualInputs(target_cell.GetInputs()); // Test using what the environment will be
     test_cpu->TestGenome(ctx, test_info, in_organism->GetHardware().GetMemory());  // Use the true genome
     
     if (pc_phenotype & 1)
@@ -528,7 +528,7 @@ void cPopulation::MoveOrganisms(cAvidaContext& ctx, cPopulationCell& src_cell, c
 #endif
 
   // Swap inputs between cells to fix bus error when Avidian moves into an unoccupied cell
-  environment.SwapInputs(ctx, src_cell.input_array, dest_cell.input_array);
+  environment.SwapInputs(ctx, src_cell.m_inputs, dest_cell.m_inputs);
   
   // Find neighborhood size for facing 
   if (NULL != dest_cell.GetOrganism()) {
@@ -807,14 +807,14 @@ void cPopulation::SwapCells(cPopulationCell & cell1, cPopulationCell & cell2)
   cOrganism * org2 = cell2.RemoveOrganism();
   //cout << "SwapCells: organism 2 is non-null, fix up source cell" << endl;
   if (org2 != NULL) {
-    cell1.InsertOrganism(*org2);
+    cell1.InsertOrganism(org2);
     schedule->Adjust(cell1.GetID(), org2->GetPhenotype().GetMerit());
   } else {
     schedule->Adjust(cell1.GetID(), cMerit(0));
   }
   //cout << "SwapCells: organism 1 is non-null, fix up dest cell" << endl;
   if (org1 != NULL) {
-    cell2.InsertOrganism(*org1);
+    cell2.InsertOrganism(org1);
     schedule->Adjust(cell2.GetID(), org1->GetPhenotype().GetMerit());
   } else {
     schedule->Adjust(cell2.GetID(), cMerit(0));
@@ -2419,7 +2419,6 @@ bool cPopulation::OK()
   
   // Next check organisms...
   for (int i = 0; i < cell_array.GetSize(); i++) {
-    if (cell_array[i].OK() == false) return false;
     assert(cell_array[i].GetID() == i);
   }
   

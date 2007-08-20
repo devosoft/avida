@@ -65,7 +65,7 @@ public:
   virtual void Breakpoint() = 0;
   virtual int GetInputAt(int& input_pointer) = 0;
   virtual void ResetInputs(cAvidaContext& ctx) = 0;
-  virtual tArray<int> GetInputs() = 0;
+  virtual const tArray<int>& GetInputs() const = 0;
   virtual int Debug() = 0;
   virtual const tArray<double>& GetResources() = 0;
   virtual const tArray<double>& GetDemeResources(int deme_id) = 0;  

@@ -67,7 +67,7 @@ public:
   void Breakpoint() { m_world->GetDriver().SignalBreakpoint(); }
   int GetInputAt(int& input_pointer);
   void ResetInputs(cAvidaContext& ctx);
-  tArray<int> GetInputs();
+  const tArray<int>& GetInputs() const;
   int Debug();
   const tArray<double>& GetResources();
   const tArray<double>& GetDemeResources(int deme_id);

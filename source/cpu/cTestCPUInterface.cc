@@ -60,7 +60,7 @@ void cTestCPUInterface::ResetInputs(cAvidaContext& ctx)
   m_testcpu->ResetInputs(ctx); 
 }
 
-tArray<int> cTestCPUInterface::GetInputs()
+const tArray<int>& cTestCPUInterface::GetInputs() const
 {
   return m_testcpu->GetInputs();
 }

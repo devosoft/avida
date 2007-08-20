@@ -562,8 +562,8 @@ template <class T> tListIterator<T>::tListIterator(tList<T> & _list,
   list.AddIterator(this);
 }
 
-template <class T> tListIterator<T>::tListIterator(tListIterator<T> & _tli)
-:list(_tli.list), node(_tli.node)
+template <class T> tListIterator<T>::tListIterator(tListIterator<T>& _tli)
+: tBaseIterator<T>(), list(_tli.list), node(_tli.node)
 {
 	list.AddIterator(this);
 }

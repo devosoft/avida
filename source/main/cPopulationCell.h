@@ -46,67 +46,74 @@ class cWorld;
 class cPopulationCell
 {
   friend class cPopulation;
+
 private:
   cWorld* m_world;
-  cOrganism* organism;                    // The occupent of this cell.
-  tList<cPopulationCell> connection_list;  // A list of neighboring cells.
-  cMutationRates* mutation_rates;           // Mutation rates at this cell.
-  tArray<int> input_array;                 // Environmental Inputs...
+  cOrganism* m_organism;                    // The occupent of this cell.
+  tList<cPopulationCell> m_connections;  // A list of neighboring cells.
+  cMutationRates* m_mut_rates;           // Mutation rates at this cell.
+  tArray<int> m_inputs;                 // Environmental Inputs...
 
-  int cell_id;           // Unique id for position of cell in population.
-  int deme_id;           // ID of the deme that this cell is part of.
-  int organism_count;    // Total number of orgs to ever inhabit this cell.
+  int m_cell_id;           // Unique id for position of cell in population.
+  int m_deme_id;           // ID of the deme that this cell is part of.
+  int m_organism_count;    // Total number of orgs to ever inhabit this cell.
 
-  //location in population
+  // location in population
   int m_x; //!< The x-coordinate of the position of this cell in the environment.
   int m_y; //!< The y-coordinate of the position of this cell in the environment.
 
-  void InsertOrganism(cOrganism & new_org);
-  cOrganism* RemoveOrganism();
+  
+  void InsertOrganism(cOrganism* new_org);
+  inline cOrganism* RemoveOrganism();
 
+  
 public:
-  cPopulationCell();
+  cPopulationCell() : m_world(NULL), m_organism(NULL), m_mut_rates(NULL), m_organism_count(0) { ; }
   cPopulationCell(const cPopulationCell& in_cell);
-  ~cPopulationCell() { ; }
+  ~cPopulationCell() { delete m_mut_rates; }
 
   void operator=(const cPopulationCell& in_cell);
 
-  void Setup(cWorld* world, int in_id, const cMutationRates & in_rates, int x, int y);
-  void SetDemeID(int in_id) { deme_id = in_id; }
-  void Rotate(cPopulationCell & new_facing);
+  void Setup(cWorld* world, int in_id, const cMutationRates& in_rates, int x, int y);
+  void SetDemeID(int in_id) { m_deme_id = in_id; }
+  void Rotate(cPopulationCell& new_facing);
 
-  cOrganism* GetOrganism() const { return organism; }
-  tList<cPopulationCell> & ConnectionList() { return connection_list; }
-  cPopulationCell & GetCellFaced() { return *(connection_list.GetFirst()); }
+  inline cOrganism* GetOrganism() const { return m_organism; }
+  inline tList<cPopulationCell>& ConnectionList() { return m_connections; }
+  inline cPopulationCell& GetCellFaced() { return *(m_connections.GetFirst()); }
   int GetFacing();  // Returns the facing of this cell.
-  void GetPosition(int& x, int& y) { x = m_x; y = m_y; } // Retrieves the position (x,y) coordinates of this cell.
-  const cMutationRates & MutationRates() const { return *mutation_rates; }
-  cMutationRates & MutationRates() { return *mutation_rates; }
-  int GetInput(int);
-  tArray<int> GetInputs() {return input_array;}
-  int GetInputAt(int & input_pointer);
-  int GetInputSize() { return input_array.GetSize(); }
+  inline void GetPosition(int& x, int& y) { x = m_x; y = m_y; } // Retrieves the position (x,y) coordinates of this cell.
+  inline const cMutationRates& MutationRates() const { assert(m_mut_rates); return *m_mut_rates; }
+  inline cMutationRates& MutationRates() { assert(m_mut_rates); return *m_mut_rates; }
+  
+  inline int GetInput(int) const { return m_inputs[m_cell_id]; }
+  inline const tArray<int>& GetInputs() const { return m_inputs; }
+  inline int GetInputAt(int& input_pointer);
+  inline int GetInputSize() { return m_inputs.GetSize(); }
   void ResetInputs(cAvidaContext& ctx);
 
-  int GetID() const { return cell_id; }
-  int GetDemeID() const { return deme_id; }
-  int GetOrganismCount() const { return organism_count; }
+  inline int GetID() const { return m_cell_id; }
+  inline int GetDemeID() const { return m_deme_id; }
+  inline int GetOrganismCount() const { return m_organism_count; }
 
-  bool IsOccupied() const { return organism != NULL; }
-
-  bool OK();
+  inline bool IsOccupied() const { return m_organism != NULL; }
 };
 
 
-#ifdef ENABLE_UNIT_TESTS
-namespace nPopulationCell {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
+inline cOrganism* cPopulationCell::RemoveOrganism()
+{
+  cOrganism* out_organism = m_organism;
+  m_organism = NULL;
+  return out_organism;
 }
-#endif  
+
+
+inline int cPopulationCell::GetInputAt(int& input_pointer)
+{
+  input_pointer %= m_inputs.GetSize();
+  return m_inputs[input_pointer++];
+}
+
+
 
 #endif

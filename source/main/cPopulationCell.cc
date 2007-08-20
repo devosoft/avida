@@ -35,74 +35,69 @@
 using namespace std;
 
 
-cPopulationCell::cPopulationCell()
-  : m_world(NULL)
-  , organism(NULL)
-  , mutation_rates(NULL)
-  , organism_count(0)
-{
-}
-
 cPopulationCell::cPopulationCell(const cPopulationCell& in_cell)
   : m_world(in_cell.m_world)
-  , organism(in_cell.organism)
-  , input_array(in_cell.input_array)
-  , cell_id(in_cell.cell_id)
-  , deme_id(in_cell.deme_id)
-  , organism_count(in_cell.organism_count)
+  , m_organism(in_cell.m_organism)
+  , m_inputs(in_cell.m_inputs)
+  , m_cell_id(in_cell.m_cell_id)
+  , m_deme_id(in_cell.m_deme_id)
+  , m_organism_count(in_cell.m_organism_count)
 {
-  mutation_rates = new cMutationRates(*in_cell.mutation_rates);
-  tConstListIterator<cPopulationCell> conn_it(in_cell.connection_list);
+  // Copy the mutation rates into a new structure
+  m_mut_rates = new cMutationRates(*in_cell.m_mut_rates);
+
+  // Copy the connection list
+  tConstListIterator<cPopulationCell> conn_it(in_cell.m_connections);
   cPopulationCell* test_cell;
-  while ( (test_cell = (cPopulationCell*) conn_it.Next()) != NULL) {
-    connection_list.PushRear(test_cell);
-  }
+  while ((test_cell = const_cast<cPopulationCell*>(conn_it.Next()))) m_connections.PushRear(test_cell);
 }
 
 void cPopulationCell::operator=(const cPopulationCell& in_cell)
 {
   m_world = in_cell.m_world;
-  organism = in_cell.organism;
-  input_array = in_cell.input_array;
-  cell_id = in_cell.cell_id;
-  deme_id = in_cell.deme_id;
-  organism_count = in_cell.organism_count;
-  if (mutation_rates == NULL)
-    mutation_rates = new cMutationRates(*in_cell.mutation_rates);
+  m_organism = in_cell.m_organism;
+  m_inputs = in_cell.m_inputs;
+  m_cell_id = in_cell.m_cell_id;
+  m_deme_id = in_cell.m_deme_id;
+  m_organism_count = in_cell.m_organism_count;
+
+  // Copy the mutation rates, constructing the structure as necessary
+  if (m_mut_rates == NULL)
+    m_mut_rates = new cMutationRates(*in_cell.m_mut_rates);
   else
-    mutation_rates->Copy(*in_cell.mutation_rates);
-  tConstListIterator<cPopulationCell> conn_it(in_cell.connection_list);
-  cPopulationCell * test_cell;
-  while ( (test_cell = (cPopulationCell *) conn_it.Next()) != NULL) {
-    connection_list.PushRear(test_cell);
-  }
+    m_mut_rates->Copy(*in_cell.m_mut_rates);
+
+  // Copy the connection list
+  tConstListIterator<cPopulationCell> conn_it(in_cell.m_connections);
+  cPopulationCell* test_cell;
+  while ((test_cell = const_cast<cPopulationCell*>(conn_it.Next()))) m_connections.PushRear(test_cell);
 }
 
 void cPopulationCell::Setup(cWorld* world, int in_id, const cMutationRates& in_rates, int x, int y)
 {
   m_world = world;
-  cell_id = in_id;
+  m_cell_id = in_id;
   m_x = x;
   m_y = y;
-  deme_id = -1;
+  m_deme_id = -1;
   
-  if (mutation_rates == NULL)
-    mutation_rates = new cMutationRates(in_rates);
+  if (m_mut_rates == NULL)
+    m_mut_rates = new cMutationRates(in_rates);
   else
-    mutation_rates->Copy(in_rates);
+    m_mut_rates->Copy(in_rates);
 }
 
-void cPopulationCell::Rotate(cPopulationCell & new_facing)
+void cPopulationCell::Rotate(cPopulationCell& new_facing)
 {
   // @CAO Note, this breaks avida if new_facing is not in connection_list
 
 #ifdef DEBUG
   int scan_count = 0;
 #endif
-  while (connection_list.GetFirst() != &new_facing) {
-    connection_list.CircNext();
+  while (m_connections.GetFirst() != &new_facing) {
+    m_connections.CircNext();
 #ifdef DEBUG
-    assert(++scan_count < connection_list.GetSize());
+    assert(++scan_count < m_connections.GetSize());
 #endif
   }
 }
@@ -150,55 +145,26 @@ int cPopulationCell::GetFacing()
 	if(lr==1 && du==0) return 5; //E
 	if(lr==1 && du==-1) return 4; //SE
   
-	assert(false);
-}
-
-int cPopulationCell::GetInputAt(int & input_pointer)
-{
-  input_pointer %= input_array.GetSize();
-  return input_array[input_pointer++];
-}
-
-int cPopulationCell::GetInput(int id)
-{
-  assert(id >= 0 && id < input_array.GetSize());
-  return input_array[id];
+	assert(false);  
 }
 
 void cPopulationCell::ResetInputs(cAvidaContext& ctx) 
 { 
-  m_world->GetEnvironment().SetupInputs(ctx, input_array); 
+  m_world->GetEnvironment().SetupInputs(ctx, m_inputs); 
 }
 
 
-void cPopulationCell::InsertOrganism(cOrganism & new_org)
+void cPopulationCell::InsertOrganism(cOrganism* new_org)
 {
-  assert(&new_org != NULL);
-  assert(new_org.GetGenotype() != NULL);
-  assert(organism == NULL);
+  assert(new_org != NULL);
+  assert(new_org->GetGenotype() != NULL);
+  assert(m_organism == NULL);
 
   // Adjust this cell's attributes to account for the new organism.
-  organism = &new_org;
-  organism_count++;
+  m_organism = new_org;
+  m_organism_count++;
 
   // Adjust the organism's attributes to match this cell.
-  organism->GetOrgInterface().SetCellID(cell_id);
-  organism->GetOrgInterface().SetDemeID(deme_id);
-}
-
-cOrganism * cPopulationCell::RemoveOrganism()
-{
-  if (organism == NULL) return NULL;   // Nothing to do!
-
-  // For the moment, the cell doesn't keep track of much...
-  cOrganism * out_organism = organism;
-  organism = NULL;
-  return out_organism;
-}
-
-
-bool cPopulationCell::OK()
-{
-  // Nothing for the moment...
-  return true;
+  m_organism->GetOrgInterface().SetCellID(m_cell_id);
+  m_organism->GetOrgInterface().SetDemeID(m_deme_id);
 }
