@@ -49,6 +49,7 @@ private:
   cDeme(const cDeme&); // @not_implemented
   
   cResourceCount deme_resource_count; //!< Resources available to the deme
+  tArray<int> energy_res_ids; //!< IDs of energy resources
   
 public:
   cDeme() : width(0), birth_count(0), org_count(0), _age(0), deme_resource_count(0) { ; }
@@ -93,9 +94,12 @@ public:
   void SetDemeResourceCount(const cResourceCount in_res) { deme_resource_count = in_res; }
   void ResizeSpatialGrids(const int in_x, const int in_y) { deme_resource_count.ResizeSpatialGrids(in_x, in_y); }
   void ModifyDemeResCount(const tArray<double> & res_change, const int absolute_cell_id);
+  double GetAndClearCellEnergy(int absolute_cell_id);
+  void GiveBackCellEnergy(int absolute_cell_id, double value);
   void SetupDemeRes(int id, cResource * res, int verbosity);
   void UpdateDemeRes() { deme_resource_count.GetResources(); }
   void Update(double time_step) { deme_resource_count.Update(time_step); }
+  int GetRelativeCellID(int absolute_cell_id) { return absolute_cell_id % GetSize(); } //!< assumes all demes are the same size
 };
 
 #endif

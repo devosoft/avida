@@ -31,6 +31,8 @@
 #include "cTools.h"
 #include "cWorld.h"
 #include "cEnvironment.h"
+#include "cPopulation.h"
+#include "cDeme.h"
 
 using namespace std;
 
@@ -167,4 +169,45 @@ void cPopulationCell::InsertOrganism(cOrganism* new_org)
   // Adjust the organism's attributes to match this cell.
   m_organism->GetOrgInterface().SetCellID(m_cell_id);
   m_organism->GetOrgInterface().SetDemeID(m_deme_id);
+  
+  if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1 && m_world->GetConfig().FRAC_ENERGY_TRANSFER.Get() > 0.0) {
+    // uptake all the cells energy
+    double uptake_energy = UptakeCellEnergy(1.0);
+    if(uptake_energy != 0.0) {
+      // update energy and merit
+      m_organism->GetPhenotype().ReduceEnergy(-1.0 * uptake_energy);
+      m_organism->GetPhenotype().SetMerit(cMerit(cMerit::EnergyToMerit(m_organism->GetPhenotype().GetStoredEnergy(), m_world) * m_organism->GetPhenotype().GetExecutionRatio()));
+    }
+  }
+}
+
+cOrganism * cPopulationCell::RemoveOrganism()
+{
+  if (m_organism == NULL) return NULL;   // Nothing to do!
+
+  // For the moment, the cell doesn't keep track of much...
+  cOrganism * out_organism = m_organism;
+  if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1 && m_world->GetConfig().FRAC_ENERGY_TRANSFER.Get() > 0.0) {
+    m_world->GetPopulation().GetDeme(m_deme_id).GiveBackCellEnergy(m_cell_id, m_organism->GetPhenotype().GetStoredEnergy() * m_world->GetConfig().FRAC_ENERGY_TRANSFER.Get());
+  }
+  m_organism = NULL;
+  return out_organism;
+}
+
+double cPopulationCell::UptakeCellEnergy(double frac_to_uptake) {
+  assert(0.0 <= frac_to_uptake);
+  assert(frac_to_uptake <= 1.0);
+
+  double cell_energy = m_world->GetPopulation().GetDeme(m_deme_id).GetAndClearCellEnergy(m_cell_id);  
+  double uptakeAmount = cell_energy * frac_to_uptake;
+  cell_energy -= uptakeAmount;
+  m_world->GetPopulation().GetDeme(m_deme_id).GiveBackCellEnergy(m_cell_id, cell_energy);
+  return uptakeAmount;
+}
+
+
+bool cPopulationCell::OK()
+{
+  // Nothing for the moment...
+  return true;
 }

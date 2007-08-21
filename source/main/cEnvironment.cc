@@ -396,6 +396,15 @@ bool cEnvironment::LoadResource(cString desc)
           return false;
         }
       }
+      else if (var_name == "energy") {
+        if (!new_resource->SetEnergyResource( var_value )) {
+          cerr << "Error: In " << var_type << "," << var_value <<
+          " must be true or false" << endl;
+          return false;
+        } else if(m_world->GetConfig().ENERGY_ENABLED.Get() == 0) {
+          cerr <<"Error: Energy resources can not be used without the energy model.\n";
+        }
+      }
       else {
         cerr << "Error: Unknown variable '" << var_name
         << "' in resource '" << name << "'" << endl;

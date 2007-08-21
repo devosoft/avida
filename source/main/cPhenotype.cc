@@ -86,9 +86,10 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   
   
   // 1. These are values calculated at the last divide (of self or offspring)
-  merit                    = in_phen.merit;             
+  merit                    = in_phen.merit;
+  executionRatio          = in_phen.executionRatio;
   energy_store             = in_phen.energy_store;    
-  energy_tobe_applied      = in_phen.energy_tobe_applied; 
+  energy_tobe_applied      = in_phen.energy_tobe_applied;
   genome_length            = in_phen.genome_length;        
   bonus_instruction_count  = in_phen.bonus_instruction_count; 
   copied_size              = in_phen.copied_size;          
@@ -262,6 +263,7 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
 {
   // Copy divide values from parent, which should already be setup.
   merit           = parent_phenotype.merit;
+  executionRatio = 1.0;
   energy_store    = min(energy_store, (double) m_world->GetConfig().ENERGY_CAP.Get());
   energy_tobe_applied = 0.0;
   genome_length   = _genome.GetSize();
@@ -411,6 +413,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   executed_size   = genome_length;
   energy_store    = min(m_world->GetConfig().ENERGY_GIVEN_ON_INJECT.Get(), m_world->GetConfig().ENERGY_CAP.Get());
   energy_tobe_applied = 0.0;
+  executionRatio = 1.0;
   gestation_time  = 0;
   gestation_start = 0;
   fitness         = 0;
@@ -813,6 +816,12 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
 {
   // Copy divide values from parent, which should already be setup.
   merit           = clone_phenotype.merit;
+  
+  energy_store    = clone_phenotype.energy_store;
+  energy_tobe_applied = 0.0;
+  executionRatio = 1.0;
+  
+  executionRatio  = clone_phenotype.executionRatio;
   genome_length   = clone_phenotype.genome_length;
   copied_size     = clone_phenotype.copied_size;
   // copied_size     = clone_phenotype.child_copied_size;
@@ -1373,10 +1382,11 @@ Credit organism with energy reward, but only update energy store if APPLY_ENERGY
  */
 void cPhenotype::RefreshEnergy() {
   if(cur_energy_bonus > 0) {
-    if(m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 0 || m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 2) {
+    if(m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 0 || // on divide
+       m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 2) {  // on sleep
       energy_tobe_applied += cur_energy_bonus;
     } else if(m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 1) {
-      SetEnergy(energy_store + cur_energy_bonus);  //TODO: use SetEnergy
+      SetEnergy(energy_store + cur_energy_bonus);
     } else {
       cerr<< "Unknown APPLY_ENERGY_METHOD value " << m_world->GetConfig().APPLY_ENERGY_METHOD.Get();
       exit(-1);
@@ -1414,7 +1424,7 @@ double cPhenotype::ExtractParentEnergy() {
   ReduceEnergy(child_energy - 2*energy_given_at_birth); // 2*energy_given_at_birth: 1 in child_energy & 1 for parent
     
   //TODO: add energy_given_at_birth to Stored_energy
-  cMerit parentMerit = cMerit(min(cMerit::EnergyToMerit(GetStoredEnergy(), m_world), energy_cap));
+  cMerit parentMerit = cMerit(cMerit::EnergyToMerit(GetStoredEnergy(), m_world) * GetExecutionRatio());
   SetMerit(parentMerit);
   
 /*  if(m_world->GetConfig().ENERGY_VERBOSE.Get()) {

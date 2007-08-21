@@ -473,32 +473,42 @@ cell ID (integer) default: 0
 class cActionInjectDemes : public cAction
 {
 private:
-	cString m_filename;
-	double m_merit;
-	int m_lineage_label;
-	double m_neutral_metric;
+  cString m_filename;
+  double m_merit;
+  int m_lineage_label;
+  double m_neutral_metric;
 public:
-		cActionInjectDemes(cWorld* world, const cString& args) : cAction(world, args), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
-	{
-			cString largs(args);
-			if (!largs.GetSize()) m_filename = "START_CREATURE"; else m_filename = largs.PopWord();
-			if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
-			if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
-			if (m_filename == "START_CREATURE") m_filename = m_world->GetConfig().START_CREATURE.Get();
-	}
-	
-	static const cString GetDescription() { return "Arguments: [string fname=\"START_CREATURE\"] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
-	
-	void Process(cAvidaContext& ctx)
-	{
-		cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
-		for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
-			m_world->GetPopulation().Inject(genome,
-                                      m_world->GetPopulation().GetDeme(i).GetCellID(0),
-                                      m_merit, m_lineage_label, m_neutral_metric);
-		}
-	}
+    cActionInjectDemes(cWorld* world, const cString& args) : cAction(world, args), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  {
+      cString largs(args);
+      if (!largs.GetSize()) m_filename = "START_CREATURE"; else m_filename = largs.PopWord();
+      if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
+      if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
+      if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+      if (m_filename == "START_CREATURE") m_filename = m_world->GetConfig().START_CREATURE.Get();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"START_CREATURE\"] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
+    if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
+      for(int i=1; i<m_world->GetPopulation().GetNumDemes(); ++i) {  // first org has already been injected
+        m_world->GetPopulation().Inject(genome,
+                                        m_world->GetPopulation().GetDeme(i).GetCellID(0),
+                                        m_merit, m_lineage_label, m_neutral_metric);
+      }
+    } else {
+      for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+        // WARNING: initial ancestor has already be injected into the population
+        //           calling this will overwrite it.
+        m_world->GetPopulation().Inject(genome,
+                                        m_world->GetPopulation().GetDeme(i).GetCellID(0),
+                                        m_merit, m_lineage_label, m_neutral_metric);
+      }
+    }
+  }
 };
 
 

@@ -243,7 +243,7 @@ void cOrganism::DoOutput(cAvidaContext& ctx,
   if(m_world->GetConfig().ENERGY_ENABLED.Get() && m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 1 && task_completed) {
     m_phenotype.RefreshEnergy();
     m_phenotype.ApplyToEnergyStore();
-    double newMerit = cMerit::EnergyToMerit(GetPhenotype().GetStoredEnergy(), m_world);
+    double newMerit = cMerit::EnergyToMerit(GetPhenotype().GetStoredEnergy(), m_world) * GetPhenotype().GetExecutionRatio();
     if(newMerit != -1) {
       m_interface->UpdateMerit(newMerit);
     }

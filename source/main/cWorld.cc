@@ -107,6 +107,7 @@ void cWorld::Setup()
 		m_class_mgr->LoadCCladeFounders(m_conf->TRACK_CCLADES_IDS.Get());
   
 	m_pop = new cPopulation(this);
+        m_pop->InitiatePop();
   
   // Setup Event List
   m_event_list = new cEventList(this);

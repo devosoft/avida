@@ -445,6 +445,7 @@ public:
   CONFIG_ADD_VAR(NUM_INST_EXC_BEFORE_0_ENERGY, int, 0, "Number of instructions executed before energy is exhausted.");
   CONFIG_ADD_VAR(ENERGY_CAP, int, -1, "Maximum amount of energy that can be stored in an organism.  -1 means the cap is set to Max Int");  // TODO - is this done?
   CONFIG_ADD_VAR(APPLY_ENERGY_METHOD, int, 0, "When should rewarded energy be applied to current energy?\n0 = on divide\n1 = on completion of task\n2 = on sleep");  
+  CONFIG_ADD_VAR(FRAC_ENERGY_TRANSFER, double, 0.0, "Fraction of replaced organism's energy take by new resident");
 //  CONFIG_ADD_VAR(ENERGY_VERBOSE, bool, 0, "Print energy and merit values. 0/1 (off/on)");
   CONFIG_ADD_VAR(LOG_SLEEP_TIMES, bool, 0, "Log sleep start and end times. 0/1 (off/on)\nWARNING: may use lots of memory.");
   //  CONFIG_ADD_VAR(FIX_METABOLIC_RATE, bool, 0, "When activated the metabolic rate of all orgiansims are equal. 0/1 (off/on)"); // TODO - check for correctness

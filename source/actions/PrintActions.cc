@@ -2365,19 +2365,71 @@ public:
   }
 };
 
-class cActionPrintDemeStats : public cAction
+class cActionPrintDemeAllStats : public cAction
 {
 public:
-  cActionPrintDemeStats(cWorld* world, const cString& args) : cAction(world, args) { ; }
+  cActionPrintDemeAllStats(cWorld* world, const cString& args) : cAction(world, args) { ; }
   
   static const cString GetDescription() { return "No Arguments"; }
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().PrintDemeStats();
+    m_world->GetPopulation().PrintDemeAllStats();
   }
 };
 
+class cActionPrintDemeDonorStats : public cAction
+{
+public:
+  cActionPrintDemeDonorStats(cWorld* world, const cString& args) : cAction(world, args) { ; }
+  
+  static const cString GetDescription() { return "No Arguments"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().PrintDemeDonor();
+  }
+};
+
+
+class cActionPrintDemeSpacialEnergy : public cAction
+{
+public:
+  cActionPrintDemeSpacialEnergy(cWorld* world, const cString& args) : cAction(world, args) { ; }
+  
+  static const cString GetDescription() { return "No Arguments"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().PrintDemeSpatialEnergyData();
+  }
+};
+
+class cActionPrintDemeSpacialSleep : public cAction
+{
+public:
+  cActionPrintDemeSpacialSleep(cWorld* world, const cString& args) : cAction(world, args) { ; }
+  
+  static const cString GetDescription() { return "No Arguments"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().PrintDemeSpatialSleepData();
+  }
+};
+
+class cActionPrintDemeResources : public cAction
+{
+public:
+  cActionPrintDemeResources(cWorld* world, const cString& args) : cAction(world, args) { ; }
+  
+  static const cString GetDescription() { return "No Arguments"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().PrintDemeResource();
+  }
+};
 
 class cActionSetVerbose : public cAction
 {
@@ -2453,8 +2505,15 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   // Population Out Files
   action_lib->Register<cActionPrintPhenotypeData>("PrintPhenotypeData");
   action_lib->Register<cActionPrintPhenotypeStatus>("PrintPhenotypeStatus");
-  action_lib->Register<cActionPrintDemeStats>("PrintDemeStats");
-	
+  
+  // deme output files
+  action_lib->Register<cActionPrintDemeAllStats>("PrintDemeAllStats");
+  action_lib->Register<cActionPrintDemeAllStats>("PrintDemeStats"); //duplicate of previous
+  action_lib->Register<cActionPrintDemeDonorStats>("PrintDemeDonorStats");
+  action_lib->Register<cActionPrintDemeSpacialEnergy>("PrintDemeSpacialEnergyStats");
+  action_lib->Register<cActionPrintDemeSpacialSleep>("PrintDemeSpacialSleepStats");
+  action_lib->Register<cActionPrintDemeResources>("PrintDemeResourceStats");
+
   //Coalescence Clade Actions
   action_lib->Register<cActionPrintCCladeCounts>("PrintCCladeCounts");
   action_lib->Register<cActionPrintCCladeFitnessHistogram>("PrintCCladeFitnessHistogram");
@@ -2526,7 +2585,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintPhenotypeData>("print_number_phenotypes");
   action_lib->Register<cActionPrintPhenotypeStatus>("print_phenotype_status");
   action_lib->Register<cActionPrintDonationStats>("print_donation_stats");
-  action_lib->Register<cActionPrintDemeStats>("print_deme_stats");
+  action_lib->Register<cActionPrintDemeAllStats>("print_deme_stats");
   
   action_lib->Register<cActionPrintData>("print_data");
   action_lib->Register<cActionPrintInstructionAbundanceHistogram>("print_instruction_abundance_histogram");

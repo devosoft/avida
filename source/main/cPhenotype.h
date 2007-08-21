@@ -93,6 +93,7 @@ private:
 
   // 1. These are values calculated at the last divide (of self or offspring)
   cMerit merit;             // Relative speed of CPU
+  double executionRatio;    //  ratio of current execution merit over base execution merit
   double energy_store;      // Amount of energy.  Determines relative speed of CPU when turned on.
   double energy_tobe_applied; //Energy that has not yet been added to energy store.
   int genome_length;        // Number of instructions in genome.
@@ -277,6 +278,7 @@ public:
 
   /////////////////////  Accessors -- Retrieving  ////////////////////
   const cMerit & GetMerit() const { assert(initialized == true); return merit; }
+  double GetExecutionRatio() const { assert(initialized == true); return executionRatio; }
   int GetGenomeLength() const { assert(initialized == true); return genome_length; }
   int GetCopiedSize() const { assert(initialized == true); return copied_size; }
   int GetExecutedSize() const { assert(initialized == true); return executed_size; }
@@ -463,6 +465,8 @@ public:
   bool& ChildFertile() { assert(initialized == true); return child_fertile; }
   bool& IsMultiThread() { assert(initialized == true); return is_multi_thread; }
   
+  void DoubleEnergyUsage() { executionRatio *= 2.0; }
+  void HalfEnergyUsage() { executionRatio *= 0.5; }
   void RefreshEnergy();
   void ApplyToEnergyStore();
   double ExtractParentEnergy();

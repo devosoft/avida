@@ -151,6 +151,8 @@ public:
   cPopulation(cWorld* world);
   ~cPopulation();
 
+  void InitiatePop();
+
   // Activate the offspring of an organism in the population
   bool ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, cOrganism& parent_organism);
   bool ActivateParasite(cOrganism& parent, const cCodeLabel& label, const cGenome& injected_code);
@@ -180,8 +182,23 @@ public:
   void ResetDemes();
   void CopyDeme(int deme1_id, int deme2_id);
   void SpawnDeme(int deme1_id, int deme2_id=-1);
-  void PrintDemeStats();
-  void PrintDemeSpatialResData( cResourceCount res, const int i, const int deme_id);
+
+  // Deme-related stats methods
+  void PrintDemeAllStats();
+  void PrintDemeDonor();
+  void PrintDemeFitness();
+  void PrintDemeGestationTime();
+  void PrintDemeInstructions();
+  void PrintDemeLifeFitness();
+  void PrintDemeMerit();
+  void PrintDemeMutationRate();
+  void PrintDemeReceiver();
+  void PrintDemeResource();
+  void PrintDemeSpatialResData(cResourceCount res, const int i, const int deme_id) const;
+  void PrintDemeSpatialEnergyData() const;
+  void PrintDemeSpatialSleepData() const;
+  void PrintDemeTasks();
+
   
   // Print donation stats
   void PrintDonationStats();

@@ -66,6 +66,7 @@ cResource::cResource(const cString & _name, int _id)
   , ydiffuse(1.0)
   , ygravity(0.0)
   , deme_resource(false)
+  , energy_resource(false)
 {
 }
 
@@ -94,11 +95,23 @@ bool cResource::SetDemeResource(cString _deme_resource) {
   _deme_resource.ToLower();
   if ((_deme_resource == "false") || (_deme_resource == "0")) {
     deme_resource = false;
-    return(true);
+    return true;
   } else if ((_deme_resource == "true") || (_deme_resource == "1")) {
     deme_resource = true;
-    return(true);
-  } else {
-    return false;
+    return true;
   }
+  return false;
+}
+
+/* Set if the resource is a energy resource */
+bool cResource::SetEnergyResource(cString _energy_resource) {
+  _energy_resource.ToLower();
+  if ((_energy_resource == "false") || (_energy_resource == "0")) {
+    energy_resource = false;
+    return true;
+  } else if ((_energy_resource == "true") || (_energy_resource == "1")) {
+    energy_resource = true;
+    return true;
+  }
+  return false;
 }

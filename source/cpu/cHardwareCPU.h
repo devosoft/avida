@@ -427,6 +427,7 @@ private:
   bool DoSense(cAvidaContext& ctx, int conversion_method, double base);
 
   void DoDonate(cOrganism * to_org);
+  void DoEnergyDonate(cOrganism* to_org);
   bool Inst_DonateRandom(cAvidaContext& ctx);
   bool Inst_DonateKin(cAvidaContext& ctx);
   bool Inst_DonateEditDist(cAvidaContext& ctx);
@@ -435,6 +436,7 @@ private:
   bool Inst_DonateThreshGreenBeard(cAvidaContext& ctx);
   bool Inst_DonateQuantaThreshGreenBeard(cAvidaContext& ctx);
   bool Inst_DonateNULL(cAvidaContext& ctx);
+  bool Inst_DonateFacing(cAvidaContext& ctx);
 
   bool Inst_SearchF(cAvidaContext& ctx);
   bool Inst_SearchB(cAvidaContext& ctx);
@@ -447,6 +449,8 @@ private:
 
   bool Inst_RotateL(cAvidaContext& ctx);
   bool Inst_RotateR(cAvidaContext& ctx);
+  bool Inst_RotateLeftOne(cAvidaContext& ctx);
+  bool Inst_RotateRightOne(cAvidaContext& ctx);
   bool Inst_RotateLabel(cAvidaContext& ctx);
   bool Inst_SetCopyMut(cAvidaContext& ctx);
   bool Inst_ModCopyMut(cAvidaContext& ctx);

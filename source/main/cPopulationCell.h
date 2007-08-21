@@ -64,7 +64,7 @@ private:
 
   
   void InsertOrganism(cOrganism* new_org);
-  inline cOrganism* RemoveOrganism();
+  cOrganism* RemoveOrganism();
 
   
 public:
@@ -97,16 +97,11 @@ public:
   inline int GetOrganismCount() const { return m_organism_count; }
 
   inline bool IsOccupied() const { return m_organism != NULL; }
+
+  double UptakeCellEnergy(double frac_to_uptake);
+
+  bool OK();
 };
-
-
-inline cOrganism* cPopulationCell::RemoveOrganism()
-{
-  cOrganism* out_organism = m_organism;
-  m_organism = NULL;
-  return out_organism;
-}
-
 
 inline int cPopulationCell::GetInputAt(int& input_pointer)
 {

@@ -230,13 +230,17 @@ cPopulation::cPopulation(cWorld* world)
     }
   }
 
+}
+
+void cPopulation::InitiatePop() {
+
   // Load a clone if one is provided, otherwise setup start organism.
   if (m_world->GetConfig().CLONE_FILE.Get() == "-" || m_world->GetConfig().CLONE_FILE.Get() == "") {
     cGenome start_org(0);
     const cString& filename = m_world->GetConfig().START_CREATURE.Get();
 
     if (filename != "-" && filename != "") {
-      if (!cGenomeUtil::LoadGenome(filename, world->GetHardwareManager().GetInstSet(), start_org)) {
+      if (!cGenomeUtil::LoadGenome(filename, m_world->GetHardwareManager().GetInstSet(), start_org)) {
         cerr << "Error: Unable to load start creature" << endl;
         exit(-1);
       }
@@ -270,7 +274,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
   
   tArray<cOrganism*> child_array;
   tArray<cMerit> merit_array;
-    
+  
   // Update the parent's phenotype.
   // This needs to be done before the parent goes into the birth chamber
   // or the merit doesn't get passed onto the child correctly
@@ -316,32 +320,32 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
     // Do lineage tracking for the new organisms.
     LineageSetupOrganism(child_array[i], parent_organism.GetLineage(),
                          parent_organism.GetLineageLabel(), parent_genotype);
-		
-		//By default, store the parent cclade, this may get modified in ActivateOrgansim (@MRR)
-		child_array[i]->SetCCladeLabel(parent_organism.GetCCladeLabel());
-  }
     
+    //By default, store the parent cclade, this may get modified in ActivateOrgansim (@MRR)
+    child_array[i]->SetCCladeLabel(parent_organism.GetCCladeLabel());
+  }
+  
   // If we're not about to kill the parent, do some extra work on it.
   if (parent_alive == true) {
-		
-		// Reset inputs and re-calculate merit if required
+    
+    // Reset inputs and re-calculate merit if required
     if (m_world->GetConfig().RESET_INPUTS_ON_DIVIDE.Get() > 0){
-			environment.SetupInputs(ctx, parent_cell.m_inputs);
+      environment.SetupInputs(ctx, parent_cell.m_inputs);
       int pc_phenotype = m_world->GetConfig().PRECALC_PHENOTYPE.Get();
-			if (pc_phenotype){
-				cCPUTestInfo test_info;
-				cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU();
-				test_info.UseManualInputs(parent_cell.GetInputs()); // Test using what the environment will be
-				test_cpu->TestGenome(ctx, test_info, parent_organism.GetHardware().GetMemory()); // Use the true genome
-				if (pc_phenotype & 1)  // If we must update the merit
+      if (pc_phenotype){
+        cCPUTestInfo test_info;
+        cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU();
+        test_info.UseManualInputs(parent_cell.GetInputs()); // Test using what the environment will be
+        test_cpu->TestGenome(ctx, test_info, parent_organism.GetHardware().GetMemory()); // Use the true genome
+        if (pc_phenotype & 1)  // If we must update the merit
           parent_phenotype.SetMerit(test_info.GetTestPhenotype().GetMerit());
         if (pc_phenotype & 2)  // If we must update the gestation time
           parent_phenotype.SetGestationTime(test_info.GetTestPhenotype().GetGestationTime());
         parent_phenotype.SetFitness(parent_phenotype.GetMerit().CalcFitness(parent_phenotype.GetGestationTime())); //Update fitness
-				delete test_cpu;
-			}
-		}
-		schedule->Adjust(parent_cell.GetID(), parent_phenotype.GetMerit());
+        delete test_cpu;
+      }
+    }
+    schedule->Adjust(parent_cell.GetID(), parent_phenotype.GetMerit());
     
     // In a local run, face the child toward the parent. 
     const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
@@ -514,7 +518,6 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
     } 
     in_organism->GetPhenotype().SetCurBonusInstCount(num_rewarded_instructions);
   }
-  
 }
 
 // @WRE 2007/07/05 Helper function to take care of side effects of Avidian 
@@ -1065,12 +1068,12 @@ void cPopulation::ReplicateDemes(int rep_trigger)
   const int num_demes = GetNumDemes();
   
   // Loop through all candidate demes...
-	for (int deme_id = 0; deme_id < num_demes; deme_id++) {
-		cDeme & source_deme = deme_array[deme_id];
-
+  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+    cDeme & source_deme = deme_array[deme_id];
+    
     // Doesn't make sense to try and replicate a deme that *has no organisms*.
     if(source_deme.IsEmpty()) continue;
-
+    
     // Test this deme to determine if it should be replicated.  If not,
     // continue on to the next deme.
     switch (rep_trigger) {
@@ -1087,46 +1090,46 @@ void cPopulation::ReplicateDemes(int rep_trigger)
       case 2: {
         // Replicate all demes with the corners filled in.
         // The first and last IDs represent the two corners.
-				const int id1 = source_deme.GetCellID(0);
-				const int id2 = source_deme.GetCellID(source_deme.GetSize() - 1);
-				if(cell_array[id1].IsOccupied() == false ||
+        const int id1 = source_deme.GetCellID(0);
+        const int id2 = source_deme.GetCellID(source_deme.GetSize() - 1);
+        if(cell_array[id1].IsOccupied() == false ||
            cell_array[id2].IsOccupied() == false) continue;
-				break;
+        break;
       }
-			case 3: {
+      case 3: {
         // Replicate old demes.
         if(source_deme.GetAge() < m_world->GetConfig().MAX_DEME_AGE.Get()) continue;
         break;
       }
-			default: {
-				cerr << "ERROR: Invalid replication trigger " << rep_trigger
-				<< " in cPopulation::ReplicateDemes()" << endl;
+      default: {
+        cerr << "ERROR: Invalid replication trigger " << rep_trigger
+        << " in cPopulation::ReplicateDemes()" << endl;
         assert(false);
       }
     }
     
-		// -- If we made it this far, we should replicate this deme --
-		cRandom& random = m_world->GetRandom();
-		
-		// Choose a random target deme to replicate to, and kill all the organisms
-		// in that deme.
-		int target_id = deme_id;
-		while(target_id == deme_id) {
-			target_id = random.GetUInt(num_demes);
-		}
-		cDeme& target_deme = deme_array[target_id];
-		for (int i=0; i<target_deme.GetSize(); i++) {
-			KillOrganism(cell_array[target_deme.GetCellID(i)]);
-		}
-		
-		// Ok, there are two potential places where the seed for the target deme can
-		// come from.  First, it could be a random organism in the source deme.
-		// Second, it could be an offspring of the source deme's germline, if the config
-		// option DEMES_USE_GERMLINE is set.
-		if(m_world->GetConfig().DEMES_USE_GERMLINE.Get()) {
-			// Get the latest germ from the source deme.
-			cGermline& source_germline = source_deme.GetGermline();
-			cGenome& source_germ = source_germline.GetLatest();
+    // -- If we made it this far, we should replicate this deme --
+    cRandom& random = m_world->GetRandom();
+    
+    // Choose a random target deme to replicate to, and kill all the organisms
+    // in that deme.
+    int target_id = deme_id;
+    while(target_id == deme_id) {
+      target_id = random.GetUInt(num_demes);
+    }
+    cDeme& target_deme = deme_array[target_id];
+    for (int i=0; i<target_deme.GetSize(); i++) {
+      KillOrganism(cell_array[target_deme.GetCellID(i)]);
+    }
+        
+    // Ok, there are two potential places where the seed for the target deme can
+    // come from.  First, it could be a random organism in the source deme.
+    // Second, it could be an offspring of the source deme's germline, if the config
+    // option DEMES_USE_GERMLINE is set.
+    if(m_world->GetConfig().DEMES_USE_GERMLINE.Get()) {
+      // Get the latest germ from the source deme.
+      cGermline& source_germline = source_deme.GetGermline();
+      cGenome& source_germ = source_germline.GetLatest();
       
       // Now create the next germ by manually mutating the source.
       // @refactor (strategy pattern)
@@ -1141,10 +1144,10 @@ void cPopulation::ReplicateDemes(int rep_trigger)
         }
       }
       
-			// Here we're adding the next_germ to the germline(s).  Note the
+      // Here we're adding the next_germ to the germline(s).  Note the
       // config option to determine if we should update the source_germline
       // as well.
-			target_deme.ReplaceGermline(source_germline);
+      target_deme.ReplaceGermline(source_germline);
       cGermline& target_germline = target_deme.GetGermline();
       target_germline.Add(next_germ);
       if(m_world->GetConfig().GERMLINE_REPLACES_SOURCE.Get()) {
@@ -1152,11 +1155,15 @@ void cPopulation::ReplicateDemes(int rep_trigger)
       }
       
       // Kill all the organisms in the source deme.
-			for (int i=0; i<source_deme.GetSize(); i++) {
-				KillOrganism(cell_array[source_deme.GetCellID(i)]);
-			}
-      
-			// Lineage label is wrong here; fix.
+      for (int i=0; i<source_deme.GetSize(); i++) {
+        KillOrganism(cell_array[source_deme.GetCellID(i)]);
+      }
+    
+      // And reset both demes, in case they have any cleanup work to do.
+      source_deme.Reset();
+      target_deme.Reset();
+  
+      // Lineage label is wrong here; fix.
       if(m_world->GetConfig().GERMLINE_RANDOM_PLACEMENT.Get()) {
         InjectGenome(source_deme.GetCellID(m_world->GetRandom().GetInt(0, source_deme.GetSize()-1)),
                      source_germline.GetLatest(), 0);
@@ -1166,46 +1173,65 @@ void cPopulation::ReplicateDemes(int rep_trigger)
         InjectGenome(source_deme.GetCellID(source_deme.GetSize()/2), source_germline.GetLatest(), 0);
         InjectGenome(target_deme.GetCellID(target_deme.GetSize()/2), target_germline.GetLatest(), 0);
       }
-			
-			// Note: not rotating the clones.
-		} else {
-			// Not using germline; choose a random organism from this deme.
-			int cell1_id = -1;
-			while (cell1_id == -1 || cell_array[cell1_id].IsOccupied() == false) {
-				cell1_id = source_deme.GetCellID(random.GetUInt(source_deme.GetSize()));
-			}
-			
-			cOrganism* seed = cell_array[cell1_id].GetOrganism();
-			
-			// And do the replication into the central cell of the target deme...
-			const int cell2_id = target_deme.GetCellID(target_deme.GetWidth()/2, target_deme.GetHeight()/2);
-			InjectClone(cell2_id, *seed);
       
-			// Kill all the organisms in the source deme.
-			seed = 0; // Note that we're killing the organism that seed points to.
-			for (int i=0; i<source_deme.GetSize(); i++) {
-				KillOrganism(cell_array[source_deme.GetCellID(i)]);
-			}
-			
-			// Inject the target offspring back into the source ID.
-			const int cell3_id = source_deme.GetCellID(source_deme.GetWidth()/2, source_deme.GetHeight()/2);
-			InjectClone(cell3_id, *cell_array[cell2_id].GetOrganism());
+      // Note: not rotating the clones.
+    } else {
+      // Not using germline; choose a random organism from this deme.
+      int cell1_id = -1;
+      while (cell1_id == -1 || cell_array[cell1_id].IsOccupied() == false) {
+        cell1_id = source_deme.GetCellID(random.GetUInt(source_deme.GetSize()));
+      }
       
-			// Rotate both injected cells to face northwest.
-      int offset=target_deme.GetCellID(0);
-			cell_array[cell2_id].Rotate(cell_array[GridNeighbor(cell2_id-offset,
-                                                          target_deme.GetWidth(), 
-                                                          target_deme.GetHeight(), -1, -1)+offset]);
-      offset = source_deme.GetCellID(0);
-			cell_array[cell3_id].Rotate(cell_array[GridNeighbor(cell3_id-offset,
-                                                          source_deme.GetWidth(),
-                                                          source_deme.GetHeight(), -1, -1)+offset]);
-		}
-		
-		// And reset both demes, in case they have any cleanup work to do.
-		source_deme.Reset();
-		target_deme.Reset();
-	}
+      if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
+        cOrganism* seed_org = cell_array[cell1_id].GetOrganism();
+        cGenome seed_genome = seed_org->GetGenome();
+        int seed_lineage = seed_org->GetLineageLabel();
+
+        // Kill all the organisms in the source deme.  Orgs. in dest. deme are already killed
+        for (int i=0; i<source_deme.GetSize(); i++) {
+          KillOrganism(cell_array[source_deme.GetCellID(i)]);
+        }
+
+        source_deme.Reset();
+        target_deme.Reset();
+
+        InjectGenome(source_deme.GetCellID(source_deme.GetSize()/2), seed_genome, seed_lineage); // source deme
+        InjectGenome(target_deme.GetCellID(target_deme.GetSize()/2), seed_genome, seed_lineage); // destination deme
+        
+      } else {
+        cOrganism* seed = cell_array[cell1_id].GetOrganism();
+        
+        // And do the replication into the central cell of the target deme...
+        const int cell2_id = target_deme.GetCellID(target_deme.GetWidth()/2, target_deme.GetHeight()/2);
+        InjectClone(cell2_id, *seed);
+        
+        // Kill all the organisms in the source deme.
+        seed = 0; // Note that we're killing the organism that seed points to.
+        for (int i=0; i<source_deme.GetSize(); i++) {
+          KillOrganism(cell_array[source_deme.GetCellID(i)]);
+        }
+        
+        // Inject the target offspring back into the source ID.
+        const int cell3_id = source_deme.GetCellID(source_deme.GetWidth()/2, source_deme.GetHeight()/2);
+        InjectClone(cell3_id, *cell_array[cell2_id].GetOrganism());
+        
+        // Rotate both injected cells to face northwest.
+        int offset=target_deme.GetCellID(0);
+        cell_array[cell2_id].Rotate(cell_array[GridNeighbor(cell2_id-offset,
+                                                            target_deme.GetWidth(), 
+                                                            target_deme.GetHeight(), -1, -1)+offset]);
+        offset = source_deme.GetCellID(0);
+        cell_array[cell3_id].Rotate(cell_array[GridNeighbor(cell3_id-offset,
+                                                            source_deme.GetWidth(),
+                                                            source_deme.GetHeight(), -1, -1)+offset]);
+                                                            
+                                          
+        // This is in the wrong place.  Reset should be done after the demes are cleared and before the org. is injected.
+        source_deme.Reset();
+        target_deme.Reset();
+      }
+    }
+  }
 }
 
 // Loop through all demes to determine if any are ready to be divided.  All
@@ -1457,59 +1483,105 @@ void cPopulation::SpawnDeme(int deme1_id, int deme2_id)
   InjectClone( cell2_id, *(cell_array[cell1_id].GetOrganism()) );    
 }
 
+// Print out all statistics about individual demes
+void cPopulation::PrintDemeAllStats() {
+  PrintDemeFitness();
+  PrintDemeLifeFitness();
+  PrintDemeMerit();
+  PrintDemeGestationTime();
+  PrintDemeTasks();
+  PrintDemeDonor();
+  PrintDemeReceiver();
+  PrintDemeMutationRate();
+  PrintDemeResource();
+  PrintDemeInstructions();
+    
+  if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
+    PrintDemeSpatialEnergyData();
+    PrintDemeSpatialSleepData();
+  }
+}
 
-// Print out statistics about individual demes
-
-void cPopulation::PrintDemeStats()
-{
+void cPopulation::PrintDemeDonor() {
   cStats& stats = m_world->GetStats();
-  
-  cDataFile & df_fit = m_world->GetDataFile("deme_fitness.dat");
-  cDataFile & df_life_fit = m_world->GetDataFile("deme_lifetime_fitness.dat");
-  cDataFile & df_merit = m_world->GetDataFile("deme_merit.dat");
-  cDataFile & df_gest = m_world->GetDataFile("deme_gest_time.dat");
-  cDataFile & df_task = m_world->GetDataFile("deme_task.dat");
-  cDataFile & df_donor = m_world->GetDataFile("deme_donor.dat");
-  cDataFile & df_receiver = m_world->GetDataFile("deme_receiver.dat");
-  cDataFile & df_mut_rates = m_world->GetDataFile("deme_mut_rates.dat");
-  cDataFile & df_resources = m_world->GetDataFile("deme_resources.dat");
-  
-  df_fit.WriteComment("Average fitnesses for each deme in the population");
-  df_life_fit.WriteComment("Average life fitnesses for each deme in the population");
-  df_merit.WriteComment("Average merits for each deme in population");
-  df_gest.WriteComment("Average gestation time for each deme in population");
-  df_task.WriteComment("Num orgs doing each task for each deme in population");
-  df_donor.WriteComment("Num orgs doing doing a donate for each deme in population");
-  df_receiver.WriteComment("Num orgs doing receiving a donate for each deme in population");
-  df_mut_rates.WriteComment("Average mutation rates for organisms in each deme");
-  df_resources.WriteComment("Avida deme resource data");
-  
-  df_fit.WriteTimeStamp();
-  df_life_fit.WriteTimeStamp();
-  df_merit.WriteTimeStamp();
-  df_gest.WriteTimeStamp();
-  df_task.WriteTimeStamp();
-  df_donor.WriteTimeStamp();
-  df_receiver.WriteTimeStamp();
-  df_mut_rates.WriteTimeStamp();
-  df_resources.WriteTimeStamp();
-  
-  df_fit.Write(stats.GetUpdate(), "update");
-  df_life_fit.Write(stats.GetUpdate(), "update");
-  df_merit.Write(stats.GetUpdate(), "update");
-  df_gest.Write(stats.GetUpdate(), "update");
-  df_task.Write(stats.GetUpdate(), "update");
-  df_donor.Write(stats.GetUpdate(), "update");
-  df_receiver.Write(stats.GetUpdate(), "update");
-  df_mut_rates.Write(stats.GetUpdate(), "update");
-  df_resources.Write(stats.GetUpdate(), "update");
-  
-  const int num_inst = m_world->GetNumInstructions();
-  const int num_task = environment.GetNumTasks();
-  
-  cDoubleSum total_mut_rate;
-  
   const int num_demes = deme_array.GetSize();
+  cDataFile & df_donor = m_world->GetDataFile("deme_donor.dat");
+  df_donor.WriteComment("Num orgs doing doing a donate for each deme in population");
+  df_donor.WriteTimeStamp();
+  df_donor.Write(stats.GetUpdate(), "update");
+
+  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+    cString comment;
+    const cDeme & cur_deme = deme_array[deme_id];
+    cDoubleSum single_deme_donor;
+
+    for (int i = 0; i < cur_deme.GetSize(); i++) {
+      int cur_cell = cur_deme.GetCellID(i);
+      if (cell_array[cur_cell].IsOccupied() == false) continue;
+      cPhenotype & phenotype = GetCell(cur_cell).GetOrganism()->GetPhenotype();
+      single_deme_donor.Add(phenotype.IsDonorLast()); 	
+    }
+    comment.Set("Deme %d", deme_id);
+    df_donor.Write(single_deme_donor.Sum(), comment);
+  }
+  df_donor.Endl();
+}
+
+void cPopulation::PrintDemeFitness() {
+  cStats& stats = m_world->GetStats();
+  const int num_demes = deme_array.GetSize();
+  cDataFile & df_fit = m_world->GetDataFile("deme_fitness.dat");
+  df_fit.WriteComment("Average fitnesses for each deme in the population");
+  df_fit.WriteTimeStamp();
+  df_fit.Write(stats.GetUpdate(), "update");
+  
+  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+    cString comment;
+    const cDeme & cur_deme = deme_array[deme_id];
+    cDoubleSum single_deme_fitness;
+
+    for (int i = 0; i < cur_deme.GetSize(); i++) {
+      int cur_cell = cur_deme.GetCellID(i);
+      if (cell_array[cur_cell].IsOccupied() == false) continue;
+      cPhenotype & phenotype = GetCell(cur_cell).GetOrganism()->GetPhenotype();
+      single_deme_fitness.Add(phenotype.GetFitness()); 	
+    }
+    comment.Set("Deme %d", deme_id);
+    df_fit.Write(single_deme_fitness.Ave(), comment);
+  }
+  df_fit.Endl();
+}
+
+void cPopulation::PrintDemeGestationTime() {
+  cStats& stats = m_world->GetStats();
+  const int num_demes = deme_array.GetSize();
+  cDataFile & df_gest = m_world->GetDataFile("deme_gest_time.dat");
+  df_gest.WriteComment("Average gestation time for each deme in population");
+  df_gest.WriteTimeStamp();
+  df_gest.Write(stats.GetUpdate(), "update");
+
+  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+    cString comment;
+    const cDeme & cur_deme = deme_array[deme_id];
+    cDoubleSum single_deme_gest_time;
+
+    for (int i = 0; i < cur_deme.GetSize(); i++) {
+      int cur_cell = cur_deme.GetCellID(i);
+      if (cell_array[cur_cell].IsOccupied() == false) continue;
+      cPhenotype & phenotype = GetCell(cur_cell).GetOrganism()->GetPhenotype();
+      single_deme_gest_time.Add(phenotype.GetGestationTime()); 	
+    }
+    comment.Set("Deme %d", deme_id);
+    df_gest.Write(single_deme_gest_time.Ave(), comment);
+  }
+  df_gest.Endl();
+}
+
+void cPopulation::PrintDemeInstructions() {  
+  cStats& stats = m_world->GetStats();
+  const int num_demes = deme_array.GetSize();
+  const int num_inst = m_world->GetNumInstructions();
+  
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     cString filename;
     filename.Set("deme_instruction-%d.dat", deme_id);
@@ -1520,16 +1592,7 @@ void cPopulation::PrintDemeStats()
     df_inst.WriteComment(comment);
     df_inst.WriteTimeStamp();
     df_inst.Write(stats.GetUpdate(), "update");
-    
-    cDoubleSum single_deme_fitness;
-    cDoubleSum single_deme_life_fitness;
-    cDoubleSum single_deme_merit;
-    cDoubleSum single_deme_gest_time;
-    cDoubleSum single_deme_donor;
-    cDoubleSum single_deme_receiver;
-    cDoubleSum single_deme_mut_rate;
-    
-    tArray<cIntSum> single_deme_task(num_task);
+        
     tArray<cIntSum> single_deme_inst(num_inst);
     
     const cDeme & cur_deme = deme_array[deme_id];
@@ -1537,81 +1600,181 @@ void cPopulation::PrintDemeStats()
       int cur_cell = cur_deme.GetCellID(i);
       if (cell_array[cur_cell].IsOccupied() == false) continue;
       cPhenotype & phenotype = GetCell(cur_cell).GetOrganism()->GetPhenotype();
-      single_deme_fitness.Add(phenotype.GetFitness()); 	
-      single_deme_life_fitness.Add(phenotype.GetLifeFitness()); 	
-      single_deme_merit.Add(phenotype.GetMerit().GetDouble()); 	
-      single_deme_gest_time.Add(phenotype.GetGestationTime()); 	
-      single_deme_donor.Add(phenotype.IsDonorLast()); 	
-      single_deme_receiver.Add(phenotype.IsReceiver()); 	
-      single_deme_mut_rate.Add(GetCell(cur_cell).GetOrganism()->MutationRates().GetCopyMutProb());
       
       for (int j = 0; j < num_inst; j++) {
         single_deme_inst[j].Add(phenotype.GetLastInstCount()[j]);
       } 
-      
-      for (int j = 0; j < num_task; j++) {
-        // only interested in tasks is done once! 
-        if (phenotype.GetLastTaskCount()[j] > 0) {
-          single_deme_task[j].Add(1);
-        }
-      }
-    }
-    
-    comment.Set("Deme %d", deme_id);
-    df_fit.Write(single_deme_fitness.Ave(), comment);
-    df_life_fit.Write(single_deme_life_fitness.Ave(), comment);
-    df_merit.Write(single_deme_merit.Ave(), comment);
-    df_gest.Write(single_deme_gest_time.Ave(), comment);
-    df_donor.Write(single_deme_donor.Sum(), comment);
-    df_receiver.Write(single_deme_receiver.Sum(), comment);
-    df_mut_rates.Write(single_deme_mut_rate.Ave(), comment);
-    
-    total_mut_rate.Add(single_deme_mut_rate.Ave());
-    
-    for (int j = 0; j < num_task; j++) {
-      comment.Set("Deme %d, Task %d", deme_id, j);
-      df_task.Write((int) single_deme_task[j].Sum(), comment);
     }
     
     for (int j = 0; j < num_inst; j++) {
       comment.Set("Inst %d", j);
       df_inst.Write((int) single_deme_inst[j].Sum(), comment);
     }
-    df_inst.Endl();
-    
-    GetDeme(deme_id).UpdateDemeRes();
+    df_inst.Endl();    
+  }
+}
+
+void cPopulation::PrintDemeLifeFitness() {
+  cStats& stats = m_world->GetStats();
+  const int num_demes = deme_array.GetSize();
+  cDataFile & df_life_fit = m_world->GetDataFile("deme_lifetime_fitness.dat");
+  df_life_fit.WriteComment("Average life fitnesses for each deme in the population");
+  df_life_fit.WriteTimeStamp();
+  df_life_fit.Write(stats.GetUpdate(), "update");
+
+  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+    cString comment;
+    const cDeme & cur_deme = deme_array[deme_id];
+    cDoubleSum single_deme_life_fitness;
+
+    for (int i = 0; i < cur_deme.GetSize(); i++) {
+      int cur_cell = cur_deme.GetCellID(i);
+      if (cell_array[cur_cell].IsOccupied() == false) continue;
+      cPhenotype & phenotype = GetCell(cur_cell).GetOrganism()->GetPhenotype();
+      single_deme_life_fitness.Add(phenotype.GetLifeFitness()); 	
+    }
+    comment.Set("Deme %d", deme_id);
+    df_life_fit.Write(single_deme_life_fitness.Ave(), comment);
+  }
+  df_life_fit.Endl();
+}
+
+void cPopulation::PrintDemeMerit() {
+  cStats& stats = m_world->GetStats();
+  const int num_demes = deme_array.GetSize();
+  cDataFile & df_merit = m_world->GetDataFile("deme_merit.dat");
+  df_merit.WriteComment("Average merits for each deme in population");
+  df_merit.WriteTimeStamp();
+  df_merit.Write(stats.GetUpdate(), "update");
+
+  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+    cString comment;
+    const cDeme & cur_deme = deme_array[deme_id];
+    cDoubleSum single_deme_merit;
+
+    for (int i = 0; i < cur_deme.GetSize(); i++) {
+      int cur_cell = cur_deme.GetCellID(i);
+      if (cell_array[cur_cell].IsOccupied() == false) continue;
+      cPhenotype & phenotype = GetCell(cur_cell).GetOrganism()->GetPhenotype();
+      single_deme_merit.Add(phenotype.GetMerit().GetDouble()); 	
+    }
+    comment.Set("Deme %d", deme_id);
+    df_merit.Write(single_deme_merit.Ave(), comment);
+  }
+  df_merit.Endl();
+}
+
+void cPopulation::PrintDemeMutationRate() {
+  cStats& stats = m_world->GetStats();
+  const int num_demes = deme_array.GetSize();
+  cDataFile & df_mut_rates = m_world->GetDataFile("deme_mut_rates.dat");
+  df_mut_rates.WriteComment("Average mutation rates for organisms in each deme");
+  df_mut_rates.WriteTimeStamp();
+  df_mut_rates.Write(stats.GetUpdate(), "update");
+  cDoubleSum total_mut_rate;
+
+  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+    cString comment;
+    const cDeme & cur_deme = deme_array[deme_id];
+    cDoubleSum single_deme_mut_rate;
+
+    for (int i = 0; i < cur_deme.GetSize(); i++) {
+      int cur_cell = cur_deme.GetCellID(i);
+      if (cell_array[cur_cell].IsOccupied() == false) continue;
+      single_deme_mut_rate.Add(GetCell(cur_cell).GetOrganism()->MutationRates().GetCopyMutProb());
+    }
+    comment.Set("Deme %d", deme_id);
+    df_mut_rates.Write(single_deme_mut_rate.Ave(), comment);
+    total_mut_rate.Add(single_deme_mut_rate.Ave());
+  }
+  df_mut_rates.Write(total_mut_rate.Ave(), "Average deme mutation rate averaged across Demes.");
+  df_mut_rates.Endl();
+}
+
+void cPopulation::PrintDemeReceiver() {
+  cStats& stats = m_world->GetStats();
+  const int num_demes = deme_array.GetSize();
+  cDataFile & df_receiver = m_world->GetDataFile("deme_receiver.dat");
+  df_receiver.WriteComment("Num orgs doing receiving a donate for each deme in population");
+  df_receiver.WriteTimeStamp();
+  df_receiver.Write(stats.GetUpdate(), "update");
+
+  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+    cString comment;
+    const cDeme & cur_deme = deme_array[deme_id];
+    cDoubleSum single_deme_receiver;
+
+    for (int i = 0; i < cur_deme.GetSize(); i++) {
+      int cur_cell = cur_deme.GetCellID(i);
+      if (cell_array[cur_cell].IsOccupied() == false) continue;
+      cPhenotype & phenotype = GetCell(cur_cell).GetOrganism()->GetPhenotype();
+      single_deme_receiver.Add(phenotype.IsReceiver()); 	
+    }
+    comment.Set("Deme %d", deme_id);
+    df_receiver.Write(single_deme_receiver.Sum(), comment);
+  }
+    df_receiver.Endl();
+}
+
+void cPopulation::PrintDemeResource() {
+  cStats& stats = m_world->GetStats();
+  const int num_demes = deme_array.GetSize();
+  cDataFile & df_resources = m_world->GetDataFile("deme_resources.dat");
+  df_resources.WriteComment("Avida deme resource data");
+  df_resources.WriteTimeStamp();
+  df_resources.Write(stats.GetUpdate(), "update");
+
+  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+    cDeme & cur_deme = deme_array[deme_id];
+
+    cur_deme.UpdateDemeRes();
     cResourceCount res = GetDeme(deme_id).GetDemeResourceCount();
     for(int j = 0; j < res.GetSize(); j++) {
       const char * tmp = res.GetResName(j);
       df_resources.Write(res.Get(j), cStringUtil::Stringf("Deme %d Resource %s", deme_id, tmp)); //comment);
-      
-      if ((res.GetResourcesGeometry())[j] != nGeometry::GLOBAL) {
+      if((res.GetResourcesGeometry())[j] != nGeometry::GLOBAL) {
         PrintDemeSpatialResData(res, j, deme_id);
       }
     }
-  } 
-  
-  df_mut_rates.Write(total_mut_rate.Ave(), "Average deme mutation rate averaged across Demes.");
-  
-  df_fit.Endl();
-  df_life_fit.Endl();
-  df_merit.Endl();
-  df_gest.Endl();
-  df_task.Endl();
-  df_donor.Endl();
-  df_receiver.Endl();
-  df_mut_rates.Endl();
+  }
   df_resources.Endl();
 }
 
+// Write spatial energy data to a file that can easily be read into Matlab
+void cPopulation::PrintDemeSpatialEnergyData() const {
+  int cellID = 0;
+  int update = m_world->GetStats().GetUpdate();
+  
+  for(int i = 0; i < m_world->GetPopulation().GetNumDemes(); i++) {
+    cString tmpfilename = cStringUtil::Stringf( "deme_%07i_spacial_energy.m", i);  // moved here for easy movie making
+    cDataFile& df = m_world->GetDataFile(tmpfilename);
+    cString UpdateStr = cStringUtil::Stringf( "deme_%07i_energy_%07i = [ ...", i, update );
+    df.WriteRaw(UpdateStr);
+
+    int gridsize = m_world->GetPopulation().GetDeme(i).GetSize();
+    int xsize = m_world->GetConfig().WORLD_X.Get();
+
+    // write grid to file
+    for (int j = 0; j < gridsize; j++) {
+      cPopulationCell& cell = m_world->GetPopulation().GetCell(cellID);
+      if(cell.IsOccupied()) {
+        df.WriteBlockElement(cell.GetOrganism()->GetPhenotype().GetStoredEnergy(), j, xsize);
+      } else {
+        df.WriteBlockElement(0.0, j, xsize);
+      }
+      cellID++;
+    }
+    df.WriteRaw("];");
+    df.Endl();
+  }
+}
+
 // Write spatial data to a file that can easily be read into Matlab
-void cPopulation::PrintDemeSpatialResData( cResourceCount res, const int i, const int deme_id){
+void cPopulation::PrintDemeSpatialResData( cResourceCount res, const int i, const int deme_id) const {
   const char* tmpResName = res.GetResName(i);
-  cString tmpfilename = cStringUtil::Stringf( "deme_spacial_resource_%s_%i.m", tmpResName, deme_id );
-//  tmpfilename +=  res.GetResName(i) + ".m";
+  cString tmpfilename = cStringUtil::Stringf( "deme_spacial_resource_%s.m", tmpResName );
   cDataFile& df = m_world->GetDataFile(tmpfilename);
-  cString UpdateStr = cStringUtil::Stringf( "deme_%07i_", deme_id ) + res.GetResName(i) + 
-                      cStringUtil::Stringf( "_%07i", m_world->GetStats().GetUpdate() ) + " = [ ...";
+  cString UpdateStr = cStringUtil::Stringf( "deme_%07i_%s_%07i = [ ...", deme_id, static_cast<const char*>(res.GetResName(i)), m_world->GetStats().GetUpdate() );
 
   df.WriteRaw(UpdateStr);
 
@@ -1619,21 +1782,79 @@ void cPopulation::PrintDemeSpatialResData( cResourceCount res, const int i, cons
   int gridsize = sp_res.GetSize();
   int xsize = m_world->GetConfig().WORLD_X.Get();
 
-  // write grid to file
-
   for (int j = 0; j < gridsize; j++) {
     df.WriteBlockElement(sp_res.GetAmount(j), j, xsize);
   }
   df.WriteRaw("];");
+  df.Endl();
 }
 
+// Write spatial energy data to a file that can easily be read into Matlab
+void cPopulation::PrintDemeSpatialSleepData() const {
+  int cellID = 0;
+  cString tmpfilename = "deme_spacial_sleep.m";
+  cDataFile& df = m_world->GetDataFile(tmpfilename);
+  int update = m_world->GetStats().GetUpdate();
+  
+  for(int i = 0; i < m_world->GetPopulation().GetNumDemes(); i++) {
+    cString UpdateStr = cStringUtil::Stringf( "deme_%07i_sleep_%07i = [ ...", i, update);
+    df.WriteRaw(UpdateStr);
 
+    int gridsize = m_world->GetPopulation().GetDeme(i).GetSize();
+    int xsize = m_world->GetConfig().WORLD_X.Get();
+
+    // write grid to file
+    for (int j = 0; j < gridsize; j++) {
+      cPopulationCell cell = m_world->GetPopulation().GetCell(cellID);
+      if(cell.IsOccupied()) {
+        df.WriteBlockElement(cell.GetOrganism()->IsSleeping(), j, xsize);
+      } else {
+        df.WriteBlockElement(0.0, j, xsize);
+      }
+      cellID++;
+    }
+    df.WriteRaw("];");
+    df.Endl();
+  }
+}
+
+void cPopulation::PrintDemeTasks() {
+  cStats& stats = m_world->GetStats();
+  const int num_demes = deme_array.GetSize();
+  const int num_task = environment.GetNumTasks();
+  cDataFile & df_task = m_world->GetDataFile("deme_task.dat");
+  df_task.WriteComment("Num orgs doing each task for each deme in population");
+  df_task.WriteTimeStamp();
+  df_task.Write(stats.GetUpdate(), "update");
+
+  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+    cString comment;
+    const cDeme & cur_deme = deme_array[deme_id];
+    tArray<cIntSum> single_deme_task(num_task);
+
+    for (int i = 0; i < cur_deme.GetSize(); i++) {
+      int cur_cell = cur_deme.GetCellID(i);
+      if (cell_array[cur_cell].IsOccupied() == false) continue;
+      cPhenotype & phenotype = GetCell(cur_cell).GetOrganism()->GetPhenotype();
+      for (int j = 0; j < num_task; j++) {
+        // only interested if task is done once! 
+        if (phenotype.GetLastTaskCount()[j] > 0) {
+          single_deme_task[j].Add(1);
+        }
+      }
+    }
+    for (int j = 0; j < num_task; j++) {
+      comment.Set("Deme %d, Task %d", deme_id, j);
+      df_task.Write((int) single_deme_task[j].Sum(), comment);
+    }
+  }
+  df_task.Endl();
+}
 
 /**
 * This function is responsible for adding an organism to a given lineage,
  * and setting the organism's lineage label and the lineage pointer.
  **/
-
 void cPopulation::LineageSetupOrganism(cOrganism* organism, cLineage* lin, int lin_label, cGenotype* parent_genotype)
 {
   // If we have some kind of lineage control, adjust the default values passed in.
@@ -2650,8 +2871,8 @@ void cPopulation::InjectGenotype(int cell_id, cGenotype *new_genotype)
   
   cOrganism* new_organism = new cOrganism(m_world, ctx, new_genotype->GetGenome());
 	
-	//Coalescense Clade Setup
-	new_organism->SetCCladeLabel(-1);  
+  //Coalescense Clade Setup
+  new_organism->SetCCladeLabel(-1);  
   
   // Set the genotype...
   new_organism->SetGenotype(new_genotype);
@@ -2660,14 +2881,12 @@ void cPopulation::InjectGenotype(int cell_id, cGenotype *new_genotype)
   cPhenotype & phenotype = new_organism->GetPhenotype();
   phenotype.SetupInject(new_genotype->GetGenome());  //TODO  sets merit to lenght of genotype
   
-  if(m_world->GetConfig().ENERGY_ENABLED.Get()) {
-    double initial_energy = min(m_world->GetConfig().ENERGY_GIVEN_ON_INJECT.Get(), m_world->GetConfig().ENERGY_CAP.Get());
-    phenotype.SetEnergy(initial_energy);
+  if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
+    phenotype.SetMerit(cMerit(cMerit::EnergyToMerit(phenotype.GetStoredEnergy(), m_world)));
+  } else {
+    phenotype.SetMerit( cMerit(new_genotype->GetTestMerit(ctx)) );
   }
-  // BB - Don't need to fix metabolic rate here, only on birth
-
-  phenotype.SetMerit( cMerit(new_genotype->GetTestMerit(ctx)) );
-    
+  
   // @CAO are these really needed?
   phenotype.SetLinesCopied( new_genotype->GetTestCopiedSize(ctx) );
   phenotype.SetLinesExecuted( new_genotype->GetTestExecutedSize(ctx) );

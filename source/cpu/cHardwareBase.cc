@@ -816,6 +816,17 @@ bool cHardwareBase::Inst_Repro(cAvidaContext& ctx)
   return false;
 }
 
+bool cHardwareBase::Inst_DoubleEnergyUsage(cAvidaContext& ctx) {
+  organism->GetPhenotype().DoubleEnergyUsage();
+  return true;
+}
+
+bool cHardwareBase::Inst_HalfEnergyUsage(cAvidaContext& ctx) {
+  organism->GetPhenotype().HalfEnergyUsage();
+  return true;
+}
+
+
 // This method will test to see if all costs have been paid associated
 // with executing an instruction and only return true when that instruction
 // should proceed.
@@ -827,7 +838,7 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
   if(m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
     // TODO:  Get rid of magic number. check avaliable energy first
     double energy_req = inst_energy_cost[cur_inst.GetOp()] * (organism->GetPhenotype().GetMerit().GetDouble() / 100.0); //compensate by factor of 100
-    
+
     if (energy_req > 0.0) { 
       if (organism->GetPhenotype().GetStoredEnergy() >= energy_req) {
         inst_energy_cost[cur_inst.GetOp()] = 0;

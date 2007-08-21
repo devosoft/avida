@@ -22,6 +22,7 @@
  */
 
 #include "cDeme.h"
+#include "cPopulationCell.h"
 #include "cResource.h"
 
 
@@ -34,6 +35,8 @@ void cDeme::Setup(const tArray<int> & in_cells, int in_width)
   // If width is negative, set it to the full number of cells.
   width = in_width;
   if (width < 1) width = cell_ids.GetSize();
+  
+  // drain spacial energy resources and place energy in cells
 }
 
 
@@ -51,10 +54,10 @@ int cDeme::GetCellID(int x, int y) const
 monotonically increasing order!! */
 std::pair<int, int> cDeme::GetCellPosition(int cellid) const 
 {
-	assert(cell_ids.GetSize()>0);
+  assert(cell_ids.GetSize()>0);
   assert(GetWidth() > 0);
-	cellid -= cell_ids[0];
-	return std::make_pair(cellid % GetWidth(), cellid / GetWidth());
+  cellid -= cell_ids[0];
+  return std::make_pair(cellid % GetWidth(), cellid / GetWidth());
 }
 
 
@@ -62,6 +65,8 @@ void cDeme::Reset()
 {
   birth_count = 0; 
   _age = 0;
+  //clear cell energy
+  
   deme_resource_count.ReinitializeResources();
 }
 
@@ -77,7 +82,7 @@ void cDeme::ReplaceGermline(const cGermline& germline) {
 
 void cDeme::ModifyDemeResCount(const tArray<double> & res_change, const int absolute_cell_id) {
   // find relative cell_id in deme resource count
-  const int relative_cell_id = absolute_cell_id % GetSize();  //assumes all demes are the same size
+  const int relative_cell_id = GetRelativeCellID(absolute_cell_id);
   deme_resource_count.ModifyCell(res_change, relative_cell_id);
 }
 
@@ -95,4 +100,44 @@ void cDeme::SetupDemeRes(int id, cResource * res, int verbosity) {
                            res->GetOutflowX2(), res->GetOutflowY1(), 
                            res->GetOutflowY2(), res->GetCellListPtr(),
                            verbosity);
+                           
+  if(res->GetEnergyResource()) {
+    energy_res_ids.Push(id);
+  }
+}
+
+double cDeme::GetAndClearCellEnergy(int absolute_cell_id) {
+  assert(cell_ids[0] <= absolute_cell_id);
+  assert(absolute_cell_id <= cell_ids[cell_ids.GetSize()-1]);
+
+  double total_energy = 0.0;
+  int relative_cell_id = GetRelativeCellID(absolute_cell_id);
+  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id);
+
+  // sum all energy resources
+  for(int i = 0; i < energy_res_ids.GetSize(); i++) {
+    if(cell_resources[energy_res_ids[i]] > 0.0) {
+      total_energy += cell_resources[energy_res_ids[i]];
+      cell_resources[energy_res_ids[i]] *= -1.0;
+    }
+  }
+  // set energy resources to zero
+  deme_resource_count.ModifyCell(cell_resources, relative_cell_id);
+  return total_energy;
+}
+
+void cDeme::GiveBackCellEnergy(int absolute_cell_id, double value) {
+  assert(cell_ids[0] <= absolute_cell_id);
+  assert(absolute_cell_id <= cell_ids[cell_ids.GetSize()-1]);
+
+  int relative_cell_id = GetRelativeCellID(absolute_cell_id);
+  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id);
+
+  double amount_per_resource = value / energy_res_ids.GetSize();
+  
+  // put back energy resources evenly
+  for(int i = 0; i < energy_res_ids.GetSize(); i++) {
+    cell_resources[energy_res_ids[i]] += amount_per_resource;
+  }
+  deme_resource_count.ModifyCell(cell_resources, relative_cell_id);
 }

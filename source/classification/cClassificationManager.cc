@@ -938,7 +938,7 @@ cLineage* cClassificationManager::AddLineage(double start_fitness, int parent_li
   // when a creature is added to this lineage
   m_lineage_list.push_back(new_lineage);  
   m_world->GetStats().AddLineage();
-  
+
   return new_lineage;
 }
 

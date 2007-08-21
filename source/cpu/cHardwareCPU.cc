@@ -210,12 +210,16 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("donate-threshgb",  &cHardwareCPU::Inst_DonateThreshGreenBeard),
     tInstLibEntry<tMethod>("donate-quantagb",  &cHardwareCPU::Inst_DonateQuantaThreshGreenBeard),
     tInstLibEntry<tMethod>("donate-NUL", &cHardwareCPU::Inst_DonateNULL),
-
+    tInstLibEntry<tMethod>("donate-facing", &cHardwareCPU::Inst_DonateFacing),
+    
     tInstLibEntry<tMethod>("IObuf-add1", &cHardwareCPU::Inst_IOBufAdd1),
     tInstLibEntry<tMethod>("IObuf-add0", &cHardwareCPU::Inst_IOBufAdd0),
 
     tInstLibEntry<tMethod>("rotate-l", &cHardwareCPU::Inst_RotateL),
     tInstLibEntry<tMethod>("rotate-r", &cHardwareCPU::Inst_RotateR),
+    tInstLibEntry<tMethod>("rotate-left-one", &cHardwareCPU::Inst_RotateLeftOne),
+    tInstLibEntry<tMethod>("rotate-right-one", &cHardwareCPU::Inst_RotateRightOne),
+
     tInstLibEntry<tMethod>("rotate-label", &cHardwareCPU::Inst_RotateLabel),
     
     tInstLibEntry<tMethod>("set-cmut", &cHardwareCPU::Inst_SetCopyMut),
@@ -357,6 +361,10 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("terminate", &cHardwareCPU::Inst_Terminate),
     tInstLibEntry<tMethod>("promoter", &cHardwareCPU::Inst_Promoter),
     tInstLibEntry<tMethod>("decay-reg", &cHardwareCPU::Inst_DecayRegulation),
+    
+    // Energy usage
+    tInstLibEntry<tMethod>("double-energy-usage", &cHardwareCPU::Inst_DoubleEnergyUsage),
+    tInstLibEntry<tMethod>("half-energy-usage", &cHardwareCPU::Inst_HalfEnergyUsage),
     
     // Placebo instructions
     tInstLibEntry<tMethod>("skip", &cHardwareCPU::Inst_Skip),
@@ -3093,6 +3101,45 @@ void cHardwareCPU::DoDonate(cOrganism* to_org)
   to_org->UpdateMerit(other_merit);
 }
 
+void cHardwareCPU::DoEnergyDonate(cOrganism* to_org)
+{
+  assert(to_org != NULL);
+
+  const double frac_energy_given = m_world->GetConfig().MERIT_GIVEN.Get();
+
+  double cur_energy = organism->GetPhenotype().GetStoredEnergy();
+  double energy_given = cur_energy * frac_energy_given;
+  
+  //update energy store and merit of donor
+  organism->GetPhenotype().ReduceEnergy(energy_given);
+  double senderMerit = cMerit::EnergyToMerit(organism->GetPhenotype().GetStoredEnergy(), m_world) * organism->GetPhenotype().GetExecutionRatio();
+  organism->UpdateMerit(senderMerit);
+  
+  // update energy store and merit of donee
+  to_org->GetPhenotype().ReduceEnergy(-1.0*energy_given);
+  double receiverMerit = cMerit::EnergyToMerit(to_org->GetPhenotype().GetStoredEnergy(), m_world) * to_org->GetPhenotype().GetExecutionRatio();
+  to_org->UpdateMerit(receiverMerit);
+}
+
+bool cHardwareCPU::Inst_DonateFacing(cAvidaContext& ctx) {
+  if (organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
+    return false;
+  }
+  organism->GetPhenotype().IncDonates();
+  organism->GetPhenotype().SetIsDonorRand();
+
+  // Get faced neighbor
+  cOrganism * neighbor = organism->GetNeighbor();
+  
+  // Donate only if we have found a neighbor.
+  if (neighbor != NULL) {
+    DoEnergyDonate(neighbor);
+    
+    neighbor->GetPhenotype().SetIsReceiver();
+  }
+  return true;
+}
+
 bool cHardwareCPU::Inst_DonateRandom(cAvidaContext& ctx)
 {
   
@@ -3667,6 +3714,18 @@ bool cHardwareCPU::Inst_RotateR(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareCPU::Inst_RotateLeftOne(cAvidaContext& ctx)
+{
+  organism->Rotate(-1);
+  return true;
+}
+
+bool cHardwareCPU::Inst_RotateRightOne(cAvidaContext& ctx)
+{
+  organism->Rotate(1);
+  return true;
+}
+
 /**
   Rotate to facing specified by following label
 */
@@ -4167,7 +4226,8 @@ bool cHardwareCPU::Inst_Sleep(cAvidaContext& ctx) {
   if(m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 2) {
     organism->GetPhenotype().RefreshEnergy();
     organism->GetPhenotype().ApplyToEnergyStore();
-    pop.UpdateMerit(organism->GetCellID(), cMerit::EnergyToMerit(organism->GetPhenotype().GetStoredEnergy(), m_world));
+    double newMerit = cMerit::EnergyToMerit(organism->GetPhenotype().GetStoredEnergy(), m_world) * organism->GetPhenotype().GetExecutionRatio();
+    pop.UpdateMerit(organism->GetCellID(), newMerit);
   }
   return true;
 }

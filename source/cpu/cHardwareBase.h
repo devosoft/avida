@@ -184,6 +184,10 @@ protected:
   // -------- Implicit Repro Check/Instruction -------- @JEB
   void CheckImplicitRepro(cAvidaContext& ctx, bool exec_last_inst = false);
   virtual bool Inst_Repro(cAvidaContext& ctx);
+
+  // --------  Execution Speed Instruction --------
+  bool Inst_DoubleEnergyUsage(cAvidaContext& ctx);
+  bool Inst_HalfEnergyUsage(cAvidaContext& ctx);
 };
 
 

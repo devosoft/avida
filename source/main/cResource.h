@@ -79,6 +79,7 @@ private:
   double ydiffuse;
   double ygravity;
   bool deme_resource;
+  bool energy_resource;  // only implemented for spacial resource
   tArray<cCellResource> cell_list;
  
   
@@ -107,6 +108,7 @@ public:
   double GetYDiffuse() const { return ydiffuse; }
   double GetYGravity() const { return ygravity; }
   bool GetDemeResource() const { return deme_resource; }
+  bool GetEnergyResource() const { return energy_resource; }
   tArray<cCellResource> *GetCellListPtr() { return &cell_list; }
 
 
@@ -127,6 +129,7 @@ public:
   void SetYDiffuse(double _ydiffuse) { ydiffuse = _ydiffuse; }
   void SetYGravity(double _ygravity) { ygravity = _ygravity; }
   bool SetDemeResource(cString _deme_resource);
+  bool SetEnergyResource(cString _energy_resource);
   void AddCellResource(cCellResource new_cell) { cell_list.Push(new_cell); }
 };
 
