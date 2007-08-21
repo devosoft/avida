@@ -42,6 +42,12 @@
 #ifndef cHardwareManager_h
 #include "cHardwareManager.h"
 #endif
+#ifndef cWorld_h
+#include "cWorld.h"
+#endif
+#ifndef cWorldDriver_h
+#include "cWorldDriver.h"
+#endif
 
 class cAvidaContext;
 class cTestCPU;

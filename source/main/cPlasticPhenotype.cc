@@ -42,6 +42,7 @@ bool cPlasticPhenotype::AddObservation( cCPUTestInfo& test_info )
     m_num_observations++;
     return true;
   }
+
   return false; //Wrong phenotype
 }
 

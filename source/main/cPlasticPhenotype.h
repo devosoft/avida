@@ -64,7 +64,6 @@ class cPlasticPhenotype : public cPhenotype{
     ~cPlasticPhenotype() { ; }
     
     //Modifiers
-    bool AddObservation( const cPhenotype& in_phen, const tArray<int>& env_inputs );
     bool AddObservation(  cCPUTestInfo& test_info );
     
     //Accessors
