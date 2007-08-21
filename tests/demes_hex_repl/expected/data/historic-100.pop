@@ -1,0 +1,37 @@
+#filetype genotype_data
+#format id parent_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence
+
+#  1: ID
+#  2: parent ID
+#  3: parent distance
+#  4: number of orgranisms currently alive
+#  5: total number of organisms that ever existed
+#  6: length of genome
+#  7: merit
+#  8: gestation time
+#  9: fitness
+# 10: update born
+# 11: update deactivated
+# 12: depth in phylogentic tree
+# 13: genome of organism
+
+116 42 1 0 7 101 98 391 0.250639 26 79 2 rucavccccccccccccccccccccccccccccccccccdcccccccccccccccccccckcccccccccccccccccccccccccccccccutycasvab 
+18 1 1 0 8 100 97 388 0.25 12 79 1 rucavcdccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+120 1 1 0 6 100 97 389 0.249357 26 79 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbccccccccccccccutycasvab 
+202 14 2 0 4 100 89 379 0.234828 38 79 2 rucavcccccccccccccccccccccccccccccccccccccccccccccscccccccucccccccccoccccccccccccccccccccccutycasvab 
+296 1 1 0 1 100 97 388 0.25 52 79 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccmccccccutycasvab 
+35 1 1 0 22 99 96 385 0.249351 13 79 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+351 129 2 0 1 100 97 389 0.249357 65 79 2 rucavcccccccscccccccccccccccccccccccccccccccccccccccccccascccccccccccccccccccccccccccccccccutycasvab 
+299 1 1 0 1 100 97 388 0.25 52 79 1 rucavcccccccccccccccccccccccccccccccdccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+282 1 1 0 3 100 97 388 0.25 51 79 1 rucavccccccccccccqcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+360 1 3 0 1 100 97 386 0.251295 65 79 1 rucavcncccccccccccccccccccccccccccccccccoccccccccccccccccccccccccccccccccqcccccccccccccccccutycasvab 
+356 1 1 0 1 101 98 392 0.25 65 79 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccdcccccccccccccccccutycasvab 
+411 1 2 0 1 100 49 341 0.143695 67 79 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbcccccccccccccccccccccutyhasvab 
+295 1 2 0 1 100 97 387 0.250646 52 79 1 rucavcccccccccccccccccccccccccccccccccccccccvccccwcccccccccccccccccccccccccccccccccccccccccutycasvab 
+369 295 4 0 1 103 90 388 0.231959 65 79 2 aarucavcccccccccccccccccccccccccccccccccccccccvccccwcccccccchccccccccyccccccccccccccccccccccccutycasvab 
+42 1 1 0 2 101 98 392 0.25 13 39 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccckcccccccccccccccccccccccccccccccutycasvab 
+86 28 1 0 1 100 49 335 0.146269 25 39 2 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccucclcccccccccccutwcasvab 
+28 1 2 0 1 100 96 386 0.248705 13 39 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccucclcccccccccccutycasvab 
+14 1 1 0 2 100 97 388 0.25 12 39 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccoccccccccccccccccccccccutycasvab 
+4 1 2 0 2 100 97 387 0.250646 12 39 1 rucavcccccccccccccccccccccccccccccgccccccccccccccccccccccccccccccccccccccccmcccccccccccccccutycasvab 
+3 1 2 0 2 100 97 387 0.250646 11 39 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccgcccccccccccccccccpccccccccccccccccccccutycasvab 
