@@ -578,7 +578,7 @@ cASTNode* cParser::parseExprP6()
       break;
     case TOKEN(ID):
       if (peekToken() == TOKEN(PREC_OPEN)) {
-        nextToken();
+        nextToken(); // consume id token
         if (nextToken() != TOKEN(PREC_CLOSE)) parseArgumentList();
         if (currentToken() != TOKEN(PREC_CLOSE)) {
           PARSE_UNEXPECT();
@@ -1133,6 +1133,7 @@ void cParser::reportError(ASParseError_t err, const int line)
       break;
     case AS_PARSE_ERR_INTERNAL:
       std::cerr << "internal parser error at cParser.cc:" << line << std::endl;
+      break;
     case AS_PARSE_ERR_UNKNOWN:
     default:
       std::cerr << "parse error" << std::endl;
