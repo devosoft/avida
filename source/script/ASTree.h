@@ -168,20 +168,48 @@ public:
 
 class cASTIfBlock : public cASTNode
 {
+public:
+  class cElseIf
+  {
+    friend class cASTIfBlock;
+  private:
+    cASTNode* m_expr;
+    cASTNode* m_code;
+    
+    cElseIf(cASTNode* expr, cASTNode* code) : m_expr(expr), m_code(code) { ; }
+    
+  public:
+      cASTNode* GetCondition() { return m_expr; }
+    cASTNode* GetCode() { return m_code; }
+  };
+  
 private:
   cASTNode* m_expr;
   cASTNode* m_code;
   cASTNode* m_else;
   
+  tList<cElseIf> m_elifs;
+  
 public:
   cASTIfBlock(cASTNode* expr, cASTNode* code) : m_expr(expr), m_code(code), m_else(NULL) { ; }
-  ~cASTIfBlock() { delete m_expr; delete m_code; delete m_else; }
+  ~cASTIfBlock()
+  {
+    delete m_expr;
+    delete m_code;
+    delete m_else;
+    cElseIf* elif = NULL;
+    while ((elif = m_elifs.Pop())) delete elif;
+  }
+
   
   inline cASTNode* GetCondition() { return m_expr; }
   inline cASTNode* GetCode() { return m_code; }
+  inline void AddElseIf(cASTNode* expr, cASTNode* code) { m_elifs.PushRear(new cElseIf(expr, code)); }
+  inline tListIterator<cElseIf> ElseIfIterator() { return tListIterator<cElseIf>(m_elifs); }
   inline void SetElseCode(cASTNode* code) { m_else = code; }
   inline cASTNode* GetElseCode() { return m_else; }
   
+  inline bool HasElseIfs() const { return (m_elifs.GetSize()); }
   inline bool HasElse() const { return (m_else); }
   
   void Accept(cASTVisitor& visitor);

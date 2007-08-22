@@ -83,7 +83,7 @@ public:
   
   
 private:
-  inline ASToken_t currentToken() { return m_cur_tok; }
+  inline ASToken_t currentToken() const { return m_cur_tok; }
   ASToken_t nextToken();
   ASToken_t peekToken();
   
@@ -93,7 +93,7 @@ private:
   cASTNode* parseArrayUnpack();
   cASTNode* parseAssignment();
   cASTNode* parseCallExpression();
-  cASTNode* parseCodeBlock(bool& loose);
+  cASTNode* parseCodeBlock();
   cASTNode* parseExpression();
   cASTNode* parseExprP0();
   cASTNode* parseExprP1();

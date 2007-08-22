@@ -43,6 +43,9 @@ public:
   inline void Set(T* value) { delete m_value; m_value = value; }
   inline tAutoRelease<T>& operator=(T* value) { delete m_value; m_value = value; return *this; }
   
+  //! Access the contents
+  inline T& operator*() { return *m_value; }
+  
   //! Take control of the contents
   inline T* Release() { T* value = m_value; m_value = NULL; return value; }
 };

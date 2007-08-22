@@ -93,18 +93,12 @@ matrix      return AS_TOKEN_TYPE_MATRIX;
 string      return AS_TOKEN_TYPE_STRING;
 void        return AS_TOKEN_TYPE_VOID;
 
-if          return AS_TOKEN_CMD_IF;        // If Blocks
+if          return AS_TOKEN_CMD_IF;        // Blocks
 else        return AS_TOKEN_CMD_ELSE;
-endif       return AS_TOKEN_CMD_ENDIF;
-
-while       return AS_TOKEN_CMD_WHILE;     // While Blocks
-endwhile    return AS_TOKEN_CMD_ENDWHILE;
-
-foreach     return AS_TOKEN_CMD_FOREACH;   // Foreach Blocks
-endforeach  return AS_TOKEN_CMD_ENDFOREACH;
-
-function    return AS_TOKEN_CMD_FUNCTION;  // Function Blocks
-endfunction return AS_TOKEN_CMD_ENDFUNCTION;
+elseif      return AS_TOKEN_CMD_ELSEIF;
+while       return AS_TOKEN_CMD_WHILE;
+foreach     return AS_TOKEN_CMD_FOREACH;
+function    return AS_TOKEN_CMD_FUNCTION;
 
 return      return AS_TOKEN_CMD_RETURN;
 

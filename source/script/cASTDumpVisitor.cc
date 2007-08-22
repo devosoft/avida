@@ -114,7 +114,7 @@ void cASTDumpVisitor::visitReturnStatement(cASTReturnStatement& node)
 
 void cASTDumpVisitor::visitStatementList(cASTStatementList& node)
 {
-  tListIterator<cASTNode> it(node.Iterator());
+  tListIterator<cASTNode> it = node.Iterator();
   
   cASTNode* stmt = NULL;
   while ((stmt = it.Next())) {
@@ -168,6 +168,32 @@ void cASTDumpVisitor::visitIfBlock(cASTIfBlock& node)
   m_depth++;
   node.GetCode()->Accept(*this);
   m_depth--;
+  
+  if (node.HasElseIfs()) {
+    tListIterator<cASTIfBlock::cElseIf> it = node.ElseIfIterator();
+    cASTIfBlock::cElseIf* elif = NULL;
+    while ((elif = it.Next())) {
+      indent();
+      cout << "elseif:" << endl;
+
+      m_depth++;
+      indent();
+      cout << "condition:" << endl;
+      
+      m_depth++;
+      elif->GetCondition()->Accept(*this);
+      m_depth--;
+      
+      indent();
+      cout << "do:" << endl;
+      
+      m_depth++;
+      elif->GetCode()->Accept(*this);
+      m_depth--;
+      
+      m_depth--;
+    }
+  }
   
   if (node.HasElse()) {
     indent();
