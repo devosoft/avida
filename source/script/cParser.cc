@@ -298,7 +298,7 @@ cASTNode* cParser::parseArgumentList()
 {
   PARSE_TRACE("parseArgumentList");
   cASTNode* al = NULL;
-  
+  // @todo - argument list
   parseExpression();
   while (currentToken() == TOKEN(COMMA)) {
     parseExpression();
@@ -324,7 +324,7 @@ cASTNode* cParser::parseAssignment()
 cASTNode* cParser::parseCallExpression()
 {
   PARSE_TRACE("parseCallExpression");
-  cASTNode* ce = NULL;
+  tAutoRelease<cASTNode> ce(new cASTVariableReference(currentText()));
   
   nextToken();
   
@@ -334,14 +334,16 @@ cASTNode* cParser::parseCallExpression()
       case TOKEN(DOT):
         if (nextToken() != TOKEN(ID)) {
           PARSE_UNEXPECT();
-          return ce;
+          return ce.Release();
         }
         break;
       case TOKEN(PREC_OPEN):
-        if (nextToken() != TOKEN(PREC_CLOSE)) parseArgumentList();
+        cASTFunctionCall* fc = new cASTFunctionCall(ce.Release());
+        ce.Set(fc);
+        if (nextToken() != TOKEN(PREC_CLOSE)) fc->SetArguments(parseArgumentList());
         if (currentToken() != TOKEN(PREC_CLOSE)) {
           PARSE_UNEXPECT();
-          return ce;   
+          return ce.Release();   
         }
         switch (nextToken()) {
           case TOKEN(IDX_OPEN):
@@ -363,11 +365,11 @@ cASTNode* cParser::parseCallExpression()
 
       default:
         PARSE_UNEXPECT();
-        return ce;
+        return ce.Release();
     }
   }
     
-  return ce;
+  return ce.Release();
 }
 
 cASTNode* cParser::parseCodeBlock()
@@ -578,13 +580,15 @@ cASTNode* cParser::parseExprP6()
       break;
     case TOKEN(ID):
       if (peekToken() == TOKEN(PREC_OPEN)) {
+        cASTNode* vr = new cASTVariableReference(currentText());
         nextToken(); // consume id token
-        if (nextToken() != TOKEN(PREC_CLOSE)) parseArgumentList();
+        cASTFunctionCall* fc = new cASTFunctionCall(vr);
+        expr = fc;
+        if (nextToken() != TOKEN(PREC_CLOSE)) fc->SetArguments(parseArgumentList());        
         if (currentToken() != TOKEN(PREC_CLOSE)) {
           PARSE_UNEXPECT();
           return expr;
         }
-        expr = new cASTFunctionCall(); // @todo
       } else {
         expr = new cASTVariableReference(currentText());
       }

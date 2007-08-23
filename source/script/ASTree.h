@@ -331,9 +331,18 @@ public:
 class cASTFunctionCall : public cASTNode
 {
 private:
+  cASTNode* m_target;
+  cASTNode* m_args;
   
 public:
-  cASTFunctionCall() { ; }
+  cASTFunctionCall(cASTNode* target) : m_target(target), m_args(NULL) { ; }
+  ~cASTFunctionCall() { delete m_args; }
+  
+  cASTNode* GetTarget() { return m_target; }
+  void SetArguments(cASTNode* args) { m_args = args; }
+  cASTNode* GetArguments() { return m_args; }
+  
+  bool HasArguments() const { return (m_args); }
   
   void Accept(cASTVisitor& visitor);
 };

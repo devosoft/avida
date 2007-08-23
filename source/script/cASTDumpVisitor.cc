@@ -298,7 +298,27 @@ void cASTDumpVisitor::visitExpressionUnary(cASTExpressionUnary& node)
 
 void cASTDumpVisitor::visitFunctionCall(cASTFunctionCall& node)
 {
+  indent();
+  cout << "call:" << endl;
+  m_depth++;
   
+  indent();
+  cout << "target:" << endl;
+  
+  m_depth++;
+  node.GetTarget()->Accept(*this);
+  m_depth--;
+  
+  if (node.HasArguments()) {
+    indent();
+    cout << "with:" << endl;
+    
+    m_depth++;
+    node.GetArguments()->Accept(*this);
+    m_depth--;
+  }
+  
+  m_depth--;
 }
 
 
