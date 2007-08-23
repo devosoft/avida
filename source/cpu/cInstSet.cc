@@ -158,6 +158,14 @@ void cInstSet::LoadWithStringList(const cStringList& sl)
   // Double
   schema.AddEntry("prob_fail", 0, 0.0);
   
+  // String  
+  schema.AddEntry("inst_code", 0, "");
+  
+  
+  // Ensure that the instruction code length is in the range of bits supported by the int type
+  int inst_code_len = m_world->GetConfig().INST_CODE_LENGTH.Get();
+  if ((unsigned)inst_code_len > (sizeof(int) * 8)) inst_code_len = sizeof(int) * 8;
+  else if (inst_code_len <= 0) inst_code_len = 1;
   
   tList<cString> errors;
   bool success = true;
@@ -194,7 +202,6 @@ void cInstSet::LoadWithStringList(const cStringList& sl)
       continue;
     }
     
-    
     int redundancy = args->GetInt(0);
     if (redundancy < 0) {
       m_world->GetDriver().NotifyWarning(cString("Instruction '") + inst_name + "' has negative redundancy, ignoring.");
@@ -224,6 +231,38 @@ void cInstSet::LoadWithStringList(const cStringList& sl)
     m_lib_name_map[inst_id].energy_cost = args->GetInt(3);
     m_lib_name_map[inst_id].prob_fail = args->GetDouble(0);
     m_lib_name_map[inst_id].addl_time_cost = args->GetInt(4);
+    
+    
+    // Parse the instruction code
+    cString inst_code = args->GetString(0);
+    if (inst_code == "") {
+      switch (m_world->GetConfig().INST_CODE_DEFAULT_TYPE.Get()) {
+        case INST_CODE_ZEROS:
+          m_lib_name_map[inst_id].inst_code = 0;
+          break;
+        case INST_CODE_INSTNUM:
+          m_lib_name_map[inst_id].inst_code = ((~0) >> ((sizeof(int) * 8) - inst_code_len)) & inst_id;
+          break;
+        default:
+          errors.PushRear(new cString("Invalid default instruction code type."));
+          success = false;
+          break;
+      }
+    } else {
+      const int iclidx = inst_code.GetSize() - 1;
+      int inst_code_val = 0;
+      for (int i = 0; i < inst_code_len && i <= iclidx; i++) {
+        inst_code_val <<= 1;
+        if (inst_code[iclidx - i] == '1') inst_code_val |= 1;
+        else if (inst_code[iclidx - i] != '0') {
+          errors.PushRear(new cString("Invalid character in instruction code, must be 0 or 1."));
+          success = false;
+          break;
+        }
+      }
+      
+      m_lib_name_map[inst_id].inst_code = inst_code_val;
+    }
     
 
     // If this is a nop, add it to the proper mappings
@@ -322,6 +361,7 @@ void cInstSet::LoadFromLegacyFile(const cString& filename)
     m_lib_name_map[inst_id].energy_cost = energy_cost;
     m_lib_name_map[inst_id].prob_fail = prob_fail;
     m_lib_name_map[inst_id].addl_time_cost = addl_time_cost;
+    m_lib_name_map[inst_id].inst_code = 0;
     
     const int total_redundancy = m_mutation_chart.GetSize();
     m_mutation_chart.Resize(total_redundancy + redundancy);

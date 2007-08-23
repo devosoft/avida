@@ -158,6 +158,12 @@ enum eBASE_MERIT
   BASE_MERIT_NUM_BONUS_INST
 };
 
+enum eINST_CODE_DEFAULT
+{
+  INST_CODE_ZEROS = 0,
+  INST_CODE_INSTNUM
+};
+
 enum eVerbosity {
   VERBOSE_SILENT = 0,   // No output at all
   VERBOSE_NORMAL,       // Notification at start of commands.
