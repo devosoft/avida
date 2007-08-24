@@ -10,7 +10,7 @@
 
 #include "cRandom.h"
 
-#include "platform.h"
+#include "../platform/platform.h"
 #include "tArray.h"
 
 #if AVIDA_PLATFORM(WINDOWS)

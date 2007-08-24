@@ -12,7 +12,7 @@
 #define cRandom_h
 
 #ifndef cMutex_h
-#include "cMutex.h"
+#include "../platform/cMutex.h"
 #endif
 
 #if USE_tMemTrack

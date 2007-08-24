@@ -119,8 +119,8 @@ int main(int argc, char * argv[])
   if (type == 0) filename.Set("grid_genotype_id.%d.dat", (UD_step + UD_start));
   else filename.Set("grid_phenotype_id.%d.dat", (UD_step + UD_start));
   cInitFile file1(filename);
-  file1.Load();
-  file1.Close();
+  // file1.Load();
+  // file1.Close();
 
   const int height = file1.GetNumLines();
   const int width = file1.GetLine(0).CountNumWords();
@@ -165,18 +165,19 @@ int main(int argc, char * argv[])
     else filename.Set("grid_phenotype_id.%d.dat", update);
     
     cInitFile file(filename);
-    file.Load();
+    // file.Load();
 
     // Load in this file...
     cString cur_line;
+    int cur_line_num = 0;
     for (int pos = 0; pos < num_cells; pos++) {
-      if (cur_line.GetSize() == 0) cur_line = file.GetNextLine();
+      if (cur_line.GetSize() == 0) cur_line = file.GetLine(cur_line_num++);
       const int cur_id = cur_line.PopWord().AsInt();
       if (cur_id > max_id) max_id = cur_id;
       grid_matrix(file_id, pos) = cur_id;
     }
 
-    file.Close();
+    // file.Close();
   }
   cerr << endl << "LOADING COMPLETE" << endl;
   cerr << "Max ID = " << max_id << endl;
