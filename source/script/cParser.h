@@ -117,8 +117,6 @@ private:
   cASTNode* parseVarDeclareList();
   cASTNode* parseWhileStatement();
   
-  bool checkLineTerm(cASTNode* node);
-  
   void reportError(ASParseError_t err, const int line);
 };
 

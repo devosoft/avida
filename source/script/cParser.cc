@@ -763,9 +763,7 @@ cASTNode* cParser::parseIfStatement()
   
   nextToken();
   tAutoRelease<cASTNode> cond(parseExpression());
-  
   if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
-
   nextToken();
   
   tAutoRelease<cASTIfBlock> is(new cASTIfBlock(cond.Release(), parseCodeBlock()));
@@ -773,16 +771,14 @@ cASTNode* cParser::parseIfStatement()
   while (currentToken() == TOKEN(CMD_ELSEIF)) {
     
     if (nextToken() != TOKEN(PREC_OPEN)) PARSE_UNEXPECT();
-    
     nextToken(); // consume '('
+    
     tAutoRelease<cASTNode> elifcond(parseExpression());
     
     if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
-
     nextToken(); // consume ')'
     
     cASTNode* elifcode = parseCodeBlock();
-    
     (*is).AddElseIf(elifcond.Release(), elifcode);
   }
   
@@ -802,7 +798,6 @@ cASTNode* cParser::parseLooseBlock()
   tAutoRelease<cASTNode> sl(parseStatementList());
   
   if (currentToken() != TOKEN(ARR_CLOSE)) PARSE_UNEXPECT();
-
   nextToken(); // consume '}'
 
   return sl.Release();
@@ -826,7 +821,7 @@ cASTNode* cParser::parseReturnStatement()
 {
   PARSE_TRACE("parseReturnStatement");
   
-  nextToken();
+  nextToken(); // consume 'return'
   cASTNode* rs = new cASTReturnStatement(parseExpression());
   
   return rs;
@@ -951,7 +946,8 @@ cASTNode* cParser::parseVarDeclareList()
 {
   PARSE_TRACE("parseVarDeclareList");
   cASTNode* vl = NULL;
-  
+ 
+  // @todo - var decleare list
   parseVarDeclare();
   while (currentToken() == TOKEN(COMMA)) {
     parseVarDeclare();
@@ -968,13 +964,10 @@ cASTNode* cParser::parseWhileStatement()
   
   nextToken();
   tAutoRelease<cASTNode> cond(parseExpression());
-  
   if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
-
   nextToken();
   
   cASTNode* code = parseCodeBlock();
-  
   return new cASTWhileBlock(cond.Release(), code);
 }
 
