@@ -352,15 +352,9 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     
 
     // Promoter Model
-    tInstLibEntry<tMethod>("up-reg-*", &cHardwareCPU::Inst_UpRegulatePromoter),
-    tInstLibEntry<tMethod>("down-reg-*", &cHardwareCPU::Inst_DownRegulatePromoter),
-    tInstLibEntry<tMethod>("up-reg", &cHardwareCPU::Inst_UpRegulatePromoterNop),
-    tInstLibEntry<tMethod>("down-reg", &cHardwareCPU::Inst_DownRegulatePromoterNop),
-    tInstLibEntry<tMethod>("up-reg>0", &cHardwareCPU::Inst_UpRegulatePromoterNopIfGT0),
-    tInstLibEntry<tMethod>("down-reg>0", &cHardwareCPU::Inst_DownRegulatePromoterNopIfGT0),
     tInstLibEntry<tMethod>("terminate", &cHardwareCPU::Inst_Terminate),
     tInstLibEntry<tMethod>("promoter", &cHardwareCPU::Inst_Promoter),
-    tInstLibEntry<tMethod>("decay-reg", &cHardwareCPU::Inst_DecayRegulation),
+    tInstLibEntry<tMethod>("regulate", &cHardwareCPU::Inst_Regulate),
     
     // Energy usage
     tInstLibEntry<tMethod>("double-energy-usage", &cHardwareCPU::Inst_DoubleEnergyUsage),
@@ -550,9 +544,6 @@ void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
     // Print the status of this CPU at each step...
     if (m_tracer != NULL) m_tracer->TraceHardware(*this);
     
-    // For tracing when termination occurs...
-    if (m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1) organism->GetPhenotype().SetTerminated(false);
-
     // Find the instruction to be executed
     const cInstruction& cur_inst = IP().GetInst();
     
@@ -4241,186 +4232,10 @@ bool cHardwareCPU::Inst_GetUpdate(cAvidaContext& ctx) {
 
 //// Promoter Model ////
 
-// Starting at the current position reads a promoter pattern
-void cHardwareCPU::GetPromoterPattern(tArray<int>& promoter)
+bool cHardwareCPU::Inst_Promoter(cAvidaContext& ctx)
 {
-  // For now a constant that defines behavior
-  const int max_size = 6;
-  int count = 0;
-  
-  cHeadCPU& inst_ptr = IP();
-    
-  while ( (inst_ptr.GetNextInst().GetOp() != m_inst_set->GetNumNops() - 1) &&
-         (count < max_size) ) {
-    count++;
-    inst_ptr++;
-    promoter.Push(inst_ptr.GetInst().GetOp());
-  }
-}
-
-
-// Adjust the weight at promoter positions that match the downstream pattern
-// allowing wildcards and matching of instructions
-void cHardwareCPU::RegulatePromoter(cAvidaContext& ctx, bool up)
-{
-  static cInstruction promoter_inst = GetInstSet().GetInst(cStringUtil::Stringf("promoter"));
-
-  // Save the initial site so we don't match our own pattern
-  cHeadCPU inst_ptr(IP());
-
-  tArray<int> promoter;
-  GetPromoterPattern(promoter);
-  if (promoter.GetSize() == 0) return;
-
-  // nop-A is a wildcard of length 1
-  // nop-B is a wildcard of length 1
-  // nop-C (the final nop) terminates the matching pattern, and is not included
-  
-  cHeadCPU search_head(IP());  
-  while (search_head.GetPosition() != inst_ptr.GetPosition()) 
-  {
-    cHeadCPU match_head(search_head);
-    int matched_pos = 0;
-    while (matched_pos < promoter.GetSize())
-    {
-      // Unless the promoter pattern has a nop, we must match the instruction exactly
-      if ( (promoter[matched_pos] > m_inst_set->GetNumNops())
-        && (promoter[matched_pos] != match_head.GetInst().GetOp()) )
-      {
-        break;
-      }
-      matched_pos++;
-      match_head++;
-    }
-    
-    // Successfully matched, change this promoter position weight
-    if (matched_pos == promoter.GetSize())
-    {
-      cHeadCPU change_head(search_head);
-      for (int j=0; j < 5; j++)
-      {
-        change_head++;
-        if (change_head.GetInst() == promoter_inst) {
-          organism->GetPhenotype().RegulatePromoter(change_head.GetPosition(), up);
-        }
-      }
-    }
-    search_head++;
-  }
-}
-
-// Adjust the weight at promoter positions that match the downstream nop pattern
-void cHardwareCPU::RegulatePromoterNop(cAvidaContext& ctx, bool up)
-{
-  const int max_distance_to_promoter = 3;
-  
-  // Look for the label directly (no complement)
-  // Save the position before the label, so we don't count it as a regulatory site
-  int start_pos = IP().GetPosition(); 
-  ReadLabel();
-  
-  // Don't allow zero-length label matches.
-  if (GetLabel().GetSize() == 0) return;
-  
-  cHeadCPU search_head(IP());
-  do {
-    //Find the next nop
-    search_head++;
-    
-    cHeadCPU match_head(search_head);
-
-    // See whether a matching label is here (Note: we count sub-labels as valid matches)
-    int i;
-    for (i=0; i < GetLabel().GetSize(); i++)
-    {
-      match_head++;
-      if ( !m_inst_set->IsNop(match_head.GetInst() ) 
-        || (GetLabel()[i] != m_inst_set->GetNopMod( match_head.GetInst())) ) break;
-    }
-  
-    // Matching label found (next inst must not be a nop)
-    if (i == GetLabel().GetSize())
-    {
-      //Check each promoter
-      int start_pos = match_head.GetPosition();
-      int end_pos = start_pos + max_distance_to_promoter;
-      int circle_end = end_pos % GetMemory().GetSize(); //annoying circular genomes
-
-      for (int j=0; j<promoter_pos.GetSize(); j++)
-      {
-        if ( (promoter_pos[j] >= start_pos) && (promoter_pos[j] < end_pos) ) promoter_active[j] = up;
-        if ( (circle_end != end_pos) &&  (promoter_pos[j] >= 0) && (promoter_pos[j] < circle_end) ) promoter_active[j] = up;
-
-      }
-    }
-  } while ( start_pos != search_head.GetPosition() );
-}
-
-
-/* Alternate version, cleanup later @JEB
-// Adjust the weight at promoter positions that match the downstream nop pattern
-void cHardwareCPU::RegulatePromoterNop(cAvidaContext& ctx, bool up)
-{
-  static cInstruction promoter_inst = GetInstSet().GetInst(cStringUtil::Stringf("promoter"));
-  const int max_distance_to_promoter = 10;
-  
-  // Look for the label directly (no complement)
-  // Save the position before the label, so we don't count it as a regulatory site
-  int start_pos = IP().GetPosition(); 
-  ReadLabel();
-  
-  // Don't allow zero-length label matches. These are too powerful.
-  if (GetLabel().GetSize() == 0) return;
- 
-  cHeadCPU search_head(IP());
-  do {
-    search_head++;
-    cHeadCPU match_head(search_head);
-
-    // See whether a matching label is here
-    int i;
-    for (i=0; i < GetLabel().GetSize(); i++)
-    {
-      match_head++;
-      if ( !m_inst_set->IsNop(match_head.GetInst() ) 
-        || (GetLabel()[i] != m_inst_set->GetNopMod( match_head.GetInst())) ) break;
-    }
-  
-    // Matching label found
-    if (i == GetLabel().GetSize())
-    {
-      cHeadCPU change_head(match_head);
-      for (int j=0; j < max_distance_to_promoter; j++)
-      {
-        change_head++;
-        if (change_head.GetInst() == promoter_inst) {
-         
-          if (change_head.GetPosition() < organism->GetPhenotype().GetCurPromoterWeights().GetSize())
-          {
-            organism->GetPhenotype().RegulatePromoter(change_head.GetPosition(), up);
-          }
-          else
-          {
-            // I can't seem to get resizing promoter arrays on memory allocation to work.
-            // Promoter weights still get unsynched from the genome size somewhere. @JEB
-            //cout << change_head.GetPosition() << endl;
-            //cout << organism->GetPhenotype().GetCurPromoterWeights().GetSize() << endl;
-            //cout << GetMemory().GetSize() << endl;
-            //cout << GetMemory().AsString() << endl;
-          }
-        }
-      }
-    }
-  } while ( start_pos != search_head.GetPosition() );
-}
-*/
-
-// Adjust the weight at promoter positions that match the downstream nop pattern
-void cHardwareCPU::RegulatePromoterNopIfGT0(cAvidaContext& ctx, bool up)
-{
-  // whether we do regulation is related to BX
-  double reg = (double) GetRegister(REG_BX);
-  if (reg > 0) RegulatePromoterNop(ctx, up);
+  // Promoters don't do anything themselves
+  return true;
 }
 
 // Move execution to a new promoter
@@ -4436,7 +4251,6 @@ bool cHardwareCPU::Inst_Terminate(cAvidaContext& ctx)
   // We want to execute the promoter that we land on.
   promoter_inst_executed = 0;
   m_advance_ip = false;
-  organism->GetPhenotype().SetTerminated(true);
   
   //Setting this makes it harder to do things. You have to be modular.
   organism->GetOrgInterface().ResetInputs(ctx);   // Re-randomize the inputs this organism sees
@@ -4467,70 +4281,11 @@ bool cHardwareCPU::Inst_Terminate(cAvidaContext& ctx)
   return true;
 }
 
-/* Older version... @JEB
-// Move execution to a new promoter
-bool cHardwareCPU::Inst_Terminate(cAvidaContext& ctx)
+// To be implemented...
+bool cHardwareCPU::Inst_Regulate(cAvidaContext& ctx)
 {
-  // Reset the CPU, clearing everything except R/W head positions.
-  const int write_head_pos = GetHead(nHardware::HEAD_WRITE).GetPosition();
-  const int read_head_pos = GetHead(nHardware::HEAD_READ).GetPosition();
-  m_threads[m_cur_thread].Reset(this, m_threads[m_cur_thread].GetID());
-  GetHead(nHardware::HEAD_WRITE).Set(write_head_pos);
-  GetHead(nHardware::HEAD_READ).Set(read_head_pos);
-
-  // We want to execute the promoter that we land on.
-  m_advance_ip = false;
-  organism->GetPhenotype().SetTerminated(true);
-  
-  //organism->ClearInput();
-  
-  // Get the promoter weight list
-  double total_weight = 0;
-  tArray<double> w = organism->GetPhenotype().GetCurPromoterWeights();
-  for (int i = 0; i < w.GetSize(); i++) {
-    total_weight += w[i];
-  }
-   
-  // If there is no weight (for example if there are no promoters)
-  // then randomly choose a starting position
-  if (total_weight==0)
-  {
-    // Or we could kill the organism...
-    //organism->Die();
-    //return true;
-    
-    int i = m_world->GetRandom().GetInt(w.GetSize());
-    IP().Set(i);
-    return true;
-  }
-  
-  // Add together all of the promoter weights
-  double promoter_choice = (double) m_world->GetRandom().GetDouble(total_weight);
-  double test_total = 0;
-  for (int i = 0; i < w.GetSize(); i++) {
-    test_total += w[i];
-    if (promoter_choice < test_total) {
-      IP().Set(i);
-      break;
-    }
-  }  
   return true;
 }
-*/
-
-bool cHardwareCPU::Inst_Promoter(cAvidaContext& ctx)
-{
-  // Promoters don't do anything themselves
-  return true;
-}
-
-
-bool cHardwareCPU::Inst_DecayRegulation(cAvidaContext& ctx)
-{
-  organism->GetPhenotype().DecayAllPromoterRegulation();
-  return true;
-}
-
 
 //// Placebo insts ////
 bool cHardwareCPU::Inst_Skip(cAvidaContext& ctx)

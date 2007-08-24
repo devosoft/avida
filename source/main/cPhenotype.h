@@ -121,12 +121,6 @@ private:
   tArray<int> cur_sense_count;                // Total times resource combinations have been sensed; @JEB 
   tArray<double> sensed_resources;            // Resources which the organism has sensed; @JEB 
   tArray<double> cur_task_time;    // Time at which each task was last performed; WRE 03-18-07
-  tArray<cCodeLabel> active_transposons;      // Transposons that are active; @JEB
-  tArray<double> base_promoter_weights;       // Baseline chance of starting execution from each position; @JEB 
-  tArray<double> cur_promoter_weights;        // Current of starting execution from each position, adjusted for regulation; @JEB 
-  tArray<double> promoter_activation;         // Amount of positive regulation in play at each site; @JEB 
-  tArray<double> promoter_repression;         // Amount of negative regulation in play at each site; @JEB 
-  bool promoter_last_inst_terminated;         // Did termination occur when executing the last instruction; @JEB
   tHashTable<void*, cTaskState*> m_task_states;
   tArray<double> cur_trial_fitnesses;         // Fitnesses of various trials.; @JEB
   tArray<double> cur_trial_bonuses;           // Bonuses of various trials.; @JEB
@@ -306,8 +300,6 @@ public:
   const tArray<int>& GetCurInstCount() const { assert(initialized == true); return cur_inst_count; }
   const tArray<int>& GetCurSenseCount() const { assert(initialized == true); return cur_sense_count; }
   double GetSensedResource(int _in) { assert(initialized == true); return sensed_resources[_in]; }
-  const tArray<cCodeLabel>& GetActiveTransposons() { assert(initialized == true); return active_transposons; }
-  const tArray<double>& GetCurPromoterWeights() { assert(initialized == true); return cur_promoter_weights; }
   
   void  NewTrial(); //Save the current fitness, and reset the bonus. @JEB
   void  TrialDivideReset(const cGenome & _genome); //Subset of resets specific to division not done by NewTrial. @JEB
@@ -435,12 +427,6 @@ public:
   void IncCurInstCount(int _inst_num)  { assert(initialized == true); cur_inst_count[_inst_num]++; } 
   void DecCurInstCount(int _inst_num)  { assert(initialized == true); cur_inst_count[_inst_num]--; } 
   
-  void ActivateTransposon(cCodeLabel & in_label) { assert(initialized == true); active_transposons.Push(in_label); }
-  void SetupPromoterWeights(const cGenome & _genome, const bool clear = false);
-  void DecayAllPromoterRegulation();
-  void RegulatePromoter(const int i, const bool up );
-  void SetTerminated(bool _in) { promoter_last_inst_terminated = _in; }
-
   void IncNumThreshGbDonations() { assert(initialized == true); num_thresh_gb_donations++; }
   void IncNumQuantaThreshGbDonations() { assert(initialized == true); num_quanta_thresh_gb_donations++; }
 

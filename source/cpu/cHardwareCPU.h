@@ -530,20 +530,9 @@ private:
   bool Inst_GetUpdate(cAvidaContext& ctx);
 
   //// Promoter Model ////
-  
-  void GetPromoterPattern(tArray<int>& promoter);
-  void RegulatePromoter(cAvidaContext& ctx, bool up);
-  bool Inst_UpRegulatePromoter(cAvidaContext& ctx) { RegulatePromoter(ctx, true); return true; }
-  bool Inst_DownRegulatePromoter(cAvidaContext& ctx) { RegulatePromoter(ctx, false); return true; }
-  void RegulatePromoterNop(cAvidaContext& ctx, bool up);
-  bool Inst_UpRegulatePromoterNop(cAvidaContext& ctx) { RegulatePromoterNop(ctx, true); return true; }
-  bool Inst_DownRegulatePromoterNop(cAvidaContext& ctx) { RegulatePromoterNop(ctx, false); return true; }
-  void RegulatePromoterNopIfGT0(cAvidaContext& ctx, bool up); 
-  bool Inst_UpRegulatePromoterNopIfGT0(cAvidaContext& ctx) { RegulatePromoterNopIfGT0(ctx, true); return true; }
-  bool Inst_DownRegulatePromoterNopIfGT0(cAvidaContext& ctx) { RegulatePromoterNopIfGT0(ctx, false); return true; } 
-  bool Inst_Terminate(cAvidaContext& ctx);
   bool Inst_Promoter(cAvidaContext& ctx);
-  bool Inst_DecayRegulation(cAvidaContext& ctx);
+  bool Inst_Terminate(cAvidaContext& ctx);
+  bool Inst_Regulate(cAvidaContext& ctx);
   
   //// Placebo ////
   bool Inst_Skip(cAvidaContext& ctx);

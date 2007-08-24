@@ -52,7 +52,6 @@ cPhenotype::cPhenotype(cWorld* world)
   , cur_sense_count(m_world->GetStats().GetSenseSize())
   , sensed_resources(m_world->GetEnvironment().GetResourceLib().GetSize())
   , cur_task_time(m_world->GetEnvironment().GetNumTasks())   // Added for tracking time; WRE 03-18-07
-  , promoter_last_inst_terminated(false) 
   , last_task_count(m_world->GetEnvironment().GetNumTasks())
   , last_task_quality(m_world->GetEnvironment().GetNumTasks())
   , last_task_value(m_world->GetEnvironment().GetNumTasks())
@@ -115,12 +114,6 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   cur_sense_count          = in_phen.cur_sense_count;                 
   sensed_resources         = in_phen.sensed_resources;            
   cur_task_time            = in_phen.cur_task_time;   
-  active_transposons       = in_phen.active_transposons;   
-  base_promoter_weights    = in_phen.base_promoter_weights;      
-  cur_promoter_weights     = in_phen.cur_promoter_weights;        
-  promoter_activation      = in_phen.promoter_activation;         
-  promoter_repression      = in_phen.promoter_repression;        
-  promoter_last_inst_terminated = in_phen.promoter_last_inst_terminated;        
   
   // Dynamically allocated m_task_states requires special handling
   tList<cTaskState*> hash_values;
@@ -830,10 +823,6 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   gestation_start = 0;
   fitness         = clone_phenotype.fitness;
   div_type        = clone_phenotype.div_type;
-  cur_promoter_weights = clone_phenotype.cur_promoter_weights; // @JEB Not correct if clone is not of fresh phenotype 
-  base_promoter_weights = clone_phenotype.base_promoter_weights; // @JEB Not correct if clone is not of fresh phenotype 
-  promoter_repression = clone_phenotype.promoter_repression; // @JEB Not correct if clone is not of fresh phenotype 
-  promoter_activation = clone_phenotype.promoter_activation; // @JEB Not correct if clone is not of fresh phenotype 
 
   assert(genome_length > 0);
   assert(copied_size > 0);
@@ -1270,26 +1259,6 @@ void cPhenotype::PrintStatus(ostream& fp) const
   for (int i = 0; i < cur_task_count.GetSize(); i++)
     fp << " " << cur_task_count[i] << " (" << cur_task_quality[i] << ")";
   fp << endl;
-  
-  if (m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1)
-  {
-    fp << "Promoters:     ";
-    for (int i=0; i<cur_promoter_weights.GetSize(); i++)
-    {
-      if (cur_promoter_weights[i] != m_world->GetConfig().PROMOTER_BG_STRENGTH.Get()) fp << i << " (" << cur_promoter_weights[i] << ") ";
-    }
-    fp << endl;
-    
-    if (promoter_last_inst_terminated)
-    {
-      fp << "Terminated!" << endl;
-    }
-    else
-    {
-      fp << "No termination..." << endl;
-    }
-  }
-
 }
 
 int cPhenotype::CalcSizeMerit() const
@@ -1432,64 +1401,6 @@ double cPhenotype::ExtractParentEnergy() {
     <<"parent merit: "<<GetMerit()<<endl<<"parent energy: "<< GetStoredEnergy() <<endl;
   }*/
   return child_energy;
-}
-
-void cPhenotype::SetupPromoterWeights(const cGenome & _genome, const bool clear)
-{
-  if (!m_world->GetConfig().PROMOTERS_ENABLED.Get()) return;
-
-  // Ideally, this wouldn't be hard-coded
-  static cInstruction promoter_inst = m_world->GetHardwareManager().GetInstSet().GetInst(cStringUtil::Stringf("promoter"));
-
-  int old_size = base_promoter_weights.GetSize();
-  cur_promoter_weights.Resize(_genome.GetSize());
-  base_promoter_weights.Resize(_genome.GetSize());
-  promoter_repression.Resize(_genome.GetSize());
-  promoter_activation.Resize(_genome.GetSize());
-
-  // Only change new regions of the genome (that might have been allocated since this was last called)
-  for ( int i = (clear ? 0 : old_size); i<_genome.GetSize(); i++)
-  {
-    base_promoter_weights[i] = 1;
-    promoter_repression[i] = 0;
-    promoter_activation[i] = 0;
-
-    // Now change the weights at instructions that are not promoters if called for
-    if ( _genome[i] != promoter_inst)
-    {
-      base_promoter_weights[i] *= m_world->GetConfig().PROMOTER_BG_STRENGTH.Get(); 
-    }
-    cur_promoter_weights[i] = base_promoter_weights[i];
-  }
-}
-
-
-void cPhenotype::DecayAllPromoterRegulation()
-{
-  for ( int i=0; i<cur_promoter_weights.GetSize(); i++)
-  {
-    promoter_activation[i] *= (1 - m_world->GetConfig().REGULATION_DECAY_FRAC.Get());
-    promoter_repression[i] *= (1 - m_world->GetConfig().REGULATION_DECAY_FRAC.Get());
-    cur_promoter_weights[i] = base_promoter_weights[i] * exp((1+promoter_activation[i])*log(2.0)) / exp((1+promoter_repression[i])*log(2.0));
-
-  }
-}
-
-void cPhenotype::RegulatePromoter(const int i, const bool up )
-{
-  // Make sure we were initialized
-  assert ( (promoter_activation.GetSize() > 0) && (promoter_activation.GetSize() > 0) );
-  
-  if (up) {
-    promoter_activation[i] *= (1 - m_world->GetConfig().REGULATION_DECAY_FRAC.Get());
-    promoter_activation[i] += m_world->GetConfig().REGULATION_STRENGTH.Get(); 
-  }
-  else {
-    promoter_repression[i] *= (1 - m_world->GetConfig().REGULATION_DECAY_FRAC.Get());
-    promoter_repression[i] += m_world->GetConfig().REGULATION_STRENGTH.Get(); 
-  }
-  
-  cur_promoter_weights[i] = base_promoter_weights[i] * exp((1+promoter_activation[i])*log(2.0)) / exp((1+promoter_repression[i])*log(2.0));
 }
 
 // Save the current fitness and reset relevant parts of the phenotype
