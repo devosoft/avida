@@ -38,6 +38,7 @@
 #include "cMutationLib.h"
 #include "nMutation.h"
 #include "cOrganism.h"
+#include "cOrgMessage.h"
 #include "cPhenotype.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
@@ -350,7 +351,6 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("sleep4", &cHardwareCPU::Inst_Sleep),
     tInstLibEntry<tMethod>("time", &cHardwareCPU::Inst_GetUpdate),
     
-
     // Promoter Model
     tInstLibEntry<tMethod>("terminate", &cHardwareCPU::Inst_Terminate),
     tInstLibEntry<tMethod>("promoter", &cHardwareCPU::Inst_Promoter),
@@ -359,6 +359,10 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     // Energy usage
     tInstLibEntry<tMethod>("double-energy-usage", &cHardwareCPU::Inst_DoubleEnergyUsage),
     tInstLibEntry<tMethod>("half-energy-usage", &cHardwareCPU::Inst_HalfEnergyUsage),
+
+    // Messaging
+    tInstLibEntry<tMethod>("send-msg", &cHardwareCPU::Inst_SendMessage),
+    tInstLibEntry<tMethod>("retrieve-msg", &cHardwareCPU::Inst_RetrieveMessage),
     
     // Placebo instructions
     tInstLibEntry<tMethod>("skip", &cHardwareCPU::Inst_Skip),
@@ -4287,10 +4291,47 @@ bool cHardwareCPU::Inst_Regulate(cAvidaContext& ctx)
   return true;
 }
 
+
+/*! Send a message to the organism that is currently faced by this cell,
+where the label field of sent message is from register ?BX?, and the data field
+is from register ~?BX?.
+*/
+bool cHardwareCPU::Inst_SendMessage(cAvidaContext& ctx)
+{
+  const int label_reg = FindModifiedRegister(REG_BX);
+  const int data_reg = FindNextRegister(label_reg);
+  
+  cOrgMessage msg = cOrgMessage(organism);
+  msg.SetLabel(GetRegister(label_reg));
+  msg.SetData(GetRegister(data_reg));
+  return organism->SendMessage(ctx, msg);
+}
+
+
+/*! This method /attempts/ to retrieve a message -- It may not be possible, as in
+the case of an empty receive buffer.
+
+If a message is available, ?BX? is set to the message's label, and ~?BX? is set
+to its data.
+*/
+bool cHardwareCPU::Inst_RetrieveMessage(cAvidaContext& ctx) 
+{
+  const cOrgMessage* msg = organism->RetrieveMessage();
+  if(msg == 0)
+    return false;
+  
+  const int label_reg = FindModifiedRegister(REG_BX);
+  const int data_reg = FindNextRegister(label_reg);
+  
+  GetRegister(label_reg) = msg->GetLabel();
+  GetRegister(data_reg) = msg->GetData();
+  return true;
+}
+
+
 //// Placebo insts ////
 bool cHardwareCPU::Inst_Skip(cAvidaContext& ctx)
 {
   IP().Advance();
   return true;
 }
-

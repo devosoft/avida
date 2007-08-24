@@ -29,6 +29,7 @@
 #include "cHardwareManager.h"
 #include "cOrganism.h"
 #include "cOrgSinkMessage.h"
+#include "cOrgMessage.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cStats.h"
@@ -232,4 +233,22 @@ bool cPopulationInterface::UpdateMerit(double new_merit)
 bool cPopulationInterface::TestOnDivide()
 {
   return m_world->GetTestOnDivide();
+}
+
+
+/*! Send a message to the faced organism, failing if this cell does not have 
+neighbors or if the cell currently faced is not occupied. */
+bool cPopulationInterface::SendMessage(cOrgMessage& msg) {
+  cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
+  assert(cell.IsOccupied()); // This organism; sanity.
+  cPopulationCell* rcell = cell.ConnectionList().GetFirst();
+  assert(rcell != NULL); // Cells should never be null.
+
+  // Fail if the cell we're facing is not occupied.
+  if(!rcell->IsOccupied())
+    return false;
+  cOrganism* recvr = rcell->GetOrganism();
+  assert(recvr != NULL);
+  recvr->ReceiveMessage(msg);
+  return true;
 }

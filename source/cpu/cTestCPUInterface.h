@@ -74,6 +74,7 @@ public:
   bool UpdateMerit(double new_merit);
   bool TestOnDivide() { return false; }
   int GetFacing() { return 0; }
+  bool SendMessage(cOrgMessage& msg) { return false; }
 };
 
 

@@ -38,6 +38,7 @@ class cAvidaContext;
 class cCodeLabel;
 class cGenome;
 class cOrganism;
+class cOrgMessage;
 class cOrgSinkMessage;
 template <class T> class tArray;
 
@@ -82,6 +83,7 @@ public:
   virtual bool InjectParasite(cOrganism* parent, const cCodeLabel& label, const cGenome& injected_code) = 0;
   virtual bool UpdateMerit(double new_merit) = 0;
   virtual bool TestOnDivide() = 0;
+  virtual bool SendMessage(cOrgMessage& msg) = 0;
 };
 
 #endif

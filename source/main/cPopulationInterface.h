@@ -37,6 +37,7 @@
 #endif
 
 class cPopulation;
+class cOrgMessage;
 
 
 class cPopulationInterface : public cOrgInterface
@@ -84,6 +85,8 @@ public:
   bool InjectParasite(cOrganism* parent, const cCodeLabel& label, const cGenome& injected_code);
   bool UpdateMerit(double new_merit);
   bool TestOnDivide();
+  //! Send a message to the faced organism.
+  bool SendMessage(cOrgMessage& msg);
 };
 
 

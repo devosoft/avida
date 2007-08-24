@@ -37,6 +37,9 @@
 #ifndef tHashTable_h
 #include "tHashTable.h"
 #endif
+#ifndef cOrganism_h
+#include "cOrganism.h"
+#endif
 
 class cTaskEntry;
 class cTaskState;
@@ -63,11 +66,13 @@ private:
   cTaskEntry* m_task_entry;
   tHashTable<void*, cTaskState*>* m_task_states;
 
+  cOrganism* m_organism;
+  
 public:
   cTaskContext(cOrgInterface* interface, const tBuffer<int>& inputs, const tBuffer<int>& outputs,
                const tList<tBuffer<int> >& other_inputs, const tList<tBuffer<int> >& other_outputs,
                bool in_net_valid, int in_net_completed, bool in_on_divide = false,
-               tBuffer<int>* in_received_messages = NULL)
+               tBuffer<int>* in_received_messages = NULL, cOrganism* org=0)
     : m_interface(interface)
     , m_input_buffer(inputs)
     , m_output_buffer(outputs)
@@ -80,6 +85,7 @@ public:
     , m_on_divide(in_on_divide)
     , m_task_entry(NULL)
     , m_task_states(NULL)
+    , m_organism(org)
   {
 	  m_task_value = 0;
   }
@@ -102,6 +108,8 @@ public:
   inline cTaskEntry* GetTaskEntry() { return m_task_entry; }
   
   inline void SetTaskStates(tHashTable<void*, cTaskState*>* states) { m_task_states = states; }
+
+  inline cOrganism* GetOrganism() { return m_organism; }
   
   inline cTaskState* GetTaskState()
   {

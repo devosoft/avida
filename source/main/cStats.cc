@@ -34,6 +34,7 @@
 #include "cWorld.h"
 #include "cWorldDriver.h"
 #include "tDataEntry.h"
+#include "cOrgMessage.h"
 
 #include "functions.h"
 
@@ -1025,4 +1026,12 @@ void cStats::PrintSleepData(const cString& filename){
     df.Write(numAsleep[i], cStringUtil::Stringf("DemeID %d", i));
   }
   df.Endl();
+}
+
+
+/*! This method is called whenever an organism successfully sends a message.  Success,
+in this case, means that the message has been delivered to the receive buffer of
+the organism that this message was sent to. */
+void cStats::SentMessage(const cOrgMessage& msg)
+{
 }

@@ -27,6 +27,7 @@
 #define cOrganism_h
 
 #include <iostream>
+#include <vector>
 
 #ifndef cCPUMemory_h
 #include "cCPUMemory.h"
@@ -55,6 +56,9 @@
 #ifndef cOrgSourceMessage_h
 #include "cOrgSourceMessage.h"
 #endif
+#ifndef cOrgMessage_h
+#include "cOrgMessage.h"
+#endif
 #ifndef tArray_h
 #include "tArray.h"
 #endif
@@ -78,6 +82,7 @@ class cInjectGenotype;
 class cLineage;
 class cOrgSinkMessage;
 class cSaleItem;
+
 
 
 class cOrganism
@@ -130,8 +135,7 @@ protected:
     ~cNetSupport();
   };
   cNetSupport* m_net;
-
-
+  
   cOrganism(); // @not_implemented
   cOrganism(const cOrganism&); // @not_implemented
   cOrganism& operator=(const cOrganism&); // @not_implemented
@@ -209,9 +213,22 @@ public:
   // --------  Input and Output Methods  --------
   void DoInput(const int value);
   void DoInput(tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const int value);
-  void DoOutput(cAvidaContext& ctx, const int value, const bool on_divide = false);
+
+  /* These different flavors of DoOutput are "frontends" to the main DoOutput
+  that follows - One DoOutput to rule them all, etc., etc. */
+  //! Check tasks based on the current state of this organism's IO & message buffers.
+  void DoOutput(cAvidaContext& ctx, const bool on_divide=false);
+  //! Add the passed-in value to this organism's output buffer, and check tasks (on_divide=false).
+  void DoOutput(cAvidaContext& ctx, const int value);
+  //! Check tasks based on the passed-in IO buffers and value (on_divide=false).
+  void DoOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const int value);  
+
+protected:
+  /*! The main DoOutput function.  The DoOutputs above all forward to this function. */
   void DoOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, 
-                tBuffer<int>& output_buffer, const int value, const bool on_divide=false);
+                tBuffer<int>& output_buffer, const bool on_divide, const bool net_valid);
+
+public:
   void ClearInput() { m_input_buf.Clear(); }
   void AddOutput(int val) { m_output_buf.Add(val); }
 
@@ -238,7 +255,7 @@ public:
   cInjectGenotype& GetParasite(int x) { return *m_parasites[x]; }
   int GetNumParasites() const { return m_parasites.GetSize(); }
   void ClearParasites();
-		      
+  
 
   // --------  Support Methods  --------
   double GetTestFitness(cAvidaContext& ctx);
@@ -291,6 +308,41 @@ public:
   bool GetSterilizePos() const;
   double GetNeutralMin() const;
   double GetNeutralMax() const;
+
+  // -------- Messaging support --------
+public:
+  typedef std::vector<cOrgMessage> message_list_type; //!< Container-type for cOrgMessages.
+  
+  //! Called when this organism attempts to send a message.
+  bool SendMessage(cAvidaContext& ctx, cOrgMessage& msg);
+  //! Called when this organism has been sent a message.
+  void ReceiveMessage(cOrgMessage& msg);
+  //! Called when this organism attempts to move a received message into its CPU.
+  const cOrgMessage* RetrieveMessage();
+  //! Returns the list of all messsages received by this organism.
+  const message_list_type& GetReceivedMessages() { InitMessaging(); return m_msg->received; }
+  //! Returns the list of all messages sent by this organism.
+  const message_list_type& GetSentMessages() { InitMessaging(); return m_msg->sent; }
+  
+protected:
+  /*! Contains all the different data structures needed to support messaging within
+  cOrganism.  Inspired by cNetSupport (above), the idea is to minimize impact on
+  organisms that DON'T use messaging. */
+  struct cMessagingSupport
+  {
+    cMessagingSupport() : retrieve_index(0) { }
+    message_list_type sent; //!< List of all messages sent by this organism.
+    message_list_type received; //!< List of all messages received by this organism.
+    message_list_type::size_type retrieve_index; //!< Index of next message that can be retrieved.
+  };
+  
+  /*! This member variable is lazily initialized whenever any of the messaging
+  methods are used.  (My kingdom for boost::shared_ptr.) */
+  cMessagingSupport* m_msg;
+  
+  //! Called to check for (and initialize) messaging support within this organism.
+  inline void InitMessaging() { if(!m_msg) m_msg = new cMessagingSupport(); }
+  // -------- End of messaging support --------
 };
 
 

@@ -70,6 +70,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome
   , m_is_running(false)
   , m_is_sleeping(false)
   , m_net(NULL)
+  , m_msg(0)
 {
   // Initialization of structures...
   m_hardware = m_world->GetHardwareManager().Create(this);
@@ -99,6 +100,7 @@ cOrganism::~cOrganism()
   delete m_hardware;
   delete m_interface;
   if (m_net != NULL) delete m_net;
+  if(!m_msg) delete m_msg;
 }
 
 cOrganism::cNetSupport::~cNetSupport()
@@ -168,18 +170,31 @@ void cOrganism::DoInput(tBuffer<int>& input_buffer, tBuffer<int>& output_buffer,
 }
 
 
-
-void cOrganism::DoOutput(cAvidaContext& ctx, const int value, const bool on_divide)
+void cOrganism::DoOutput(cAvidaContext& ctx, const bool on_divide)
 {
-  DoOutput(ctx, m_input_buf, m_output_buf, value, on_divide);
+  DoOutput(ctx, m_input_buf, m_output_buf, on_divide, false);
+}
+
+
+void cOrganism::DoOutput(cAvidaContext& ctx, const int value)
+{
+  m_output_buf.Add(value);
+  DoOutput(ctx, m_input_buf, m_output_buf, false, NetValidate(ctx, value));
+}
+
+
+void cOrganism::DoOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const int value)
+{
+  output_buffer.Add(value);
+  DoOutput(ctx, input_buffer, output_buffer, false, NetValidate(ctx, value));
 }
 
 
 void cOrganism::DoOutput(cAvidaContext& ctx, 
                          tBuffer<int>& input_buffer, 
                          tBuffer<int>& output_buffer,
-                         const int value,
-                         const bool on_divide)
+                         const bool on_divide,
+                         const bool net_valid)
 {
   const int deme_id = m_interface->GetDemeID();
   const tArray<double> & global_resource_count = m_interface->GetResources();
@@ -212,13 +227,7 @@ void cOrganism::DoOutput(cAvidaContext& ctx,
     }
   }
   
-  bool net_valid = false;
-  if (m_net) net_valid = NetValidate(ctx, value);
-  
   // Do the testing of tasks performed...
-  
-  // if on IO add value to m_output_buf, if on divide don't need to
-  if(!on_divide) output_buffer.Add(value);
   
   tArray<double> global_res_change(global_resource_count.GetSize());
   tArray<double> deme_res_change(deme_resource_count.GetSize());
@@ -228,7 +237,7 @@ void cOrganism::DoOutput(cAvidaContext& ctx,
   if (!m_world->GetConfig().SAVE_RECEIVED.Get()) received_messages_point = NULL;
   
   cTaskContext taskctx(m_interface, input_buffer, output_buffer, other_input_list, 
-                       other_output_list, net_valid, 0, on_divide, received_messages_point);
+                       other_output_list, net_valid, 0, on_divide, received_messages_point, this);
                        
   //combine global and deme resource counts
   const tArray<double> globalAndDeme_resource_count = global_resource_count + deme_resource_count;
@@ -340,6 +349,8 @@ bool cOrganism::NetReceive(int& value)
 
 bool cOrganism::NetValidate(cAvidaContext& ctx, int value)
 {
+  if(!m_net) return false;
+
   assert(m_net);
   
   if (0xFFFF0000 & value) return false;
@@ -569,7 +580,7 @@ bool cOrganism::ActivateDivide(cAvidaContext& ctx)
   assert(m_interface);
   // Test tasks one last time before actually dividing, pass true so 
   // know that should only test "divide" tasks here
-  DoOutput(ctx, 0, true);
+  DoOutput(ctx, true);
 
   // Activate the child!  (Keep Last: may kill this organism!)
   return m_interface->Divide(ctx, this, m_child_genome);
@@ -608,4 +619,47 @@ void cOrganism::NewTrial()
   m_input_pointer = 0;
   m_input_buf.Clear();
   m_output_buf.Clear();
+}
+
+
+bool cOrganism::SendMessage(cAvidaContext& ctx, cOrgMessage& msg)
+{
+  assert(m_interface);
+  InitMessaging();
+
+  // If we're able to succesfully send the message...
+  if(m_interface->SendMessage(msg)) {
+    // save it...
+    m_msg->sent.push_back(msg);
+    // stat-tracking...
+    m_world->GetStats().SentMessage(msg);
+    // check to see if we've performed any tasks...
+    DoOutput(ctx);
+    // and set the receiver-pointer of this message to NULL.  We don't want to
+    // walk this list later thinking that the receivers are still around.
+    m_msg->sent.back().SetReceiver(0);
+    return true;
+  }
+  
+  return false;
+}
+
+
+void cOrganism::ReceiveMessage(cOrgMessage& msg)
+{
+  InitMessaging();
+  msg.SetReceiver(this);    
+  m_msg->received.push_back(msg);
+}
+
+
+const cOrgMessage* cOrganism::RetrieveMessage()
+{
+  InitMessaging();
+
+  if(m_msg->retrieve_index < m_msg->received.size()) {
+    return &m_msg->received.at(m_msg->retrieve_index++);
+  }
+  
+  return 0;
 }

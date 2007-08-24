@@ -65,6 +65,7 @@
 class cGenotype;
 class cInjectGenotype;
 class cWorld;
+class cOrgMessage;
 
 class cStats
 {
@@ -612,6 +613,15 @@ public:
   void PrintSenseData(const cString& filename);
   void PrintSenseExeData(const cString& filename);
   void PrintSleepData(const cString& filename);
+  
+  // -------- Messaging support --------
+protected:
+  
+    
+public:
+  //! Called for every message successfully sent anywhere in the population.
+  void SentMessage(const cOrgMessage& msg);
+  // -------- End messaging support --------
 };
 
 

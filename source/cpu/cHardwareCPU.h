@@ -533,6 +533,10 @@ private:
   bool Inst_Promoter(cAvidaContext& ctx);
   bool Inst_Terminate(cAvidaContext& ctx);
   bool Inst_Regulate(cAvidaContext& ctx);
+
+  //// Messaging ////
+  bool Inst_SendMessage(cAvidaContext& ctx);
+  bool Inst_RetrieveMessage(cAvidaContext& ctx);
   
   //// Placebo ////
   bool Inst_Skip(cAvidaContext& ctx);
