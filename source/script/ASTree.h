@@ -82,6 +82,7 @@ class cASTVariableDefinition;
 class cASTExpressionBinary;
 class cASTExpressionUnary;
 
+class cASTArgumentList;
 class cASTFunctionCall;
 class cASTLiteral;
 class cASTLiteralArray;
@@ -328,6 +329,22 @@ public:
 
 // --------  Expression Value Nodes  --------
 
+class cASTArgumentList : public cASTNode
+{
+private:
+  tList<cASTNode> m_nodes;
+  
+public:
+  cASTArgumentList() { ; }
+  ~cASTArgumentList() { ; }
+  
+  inline void AddNode(cASTNode* n) { m_nodes.PushRear(n); }
+  inline tListIterator<cASTNode> Iterator() { return tListIterator<cASTNode>(m_nodes); }
+  
+  void Accept(cASTVisitor& visitor);
+};
+
+
 class cASTFunctionCall : public cASTNode
 {
 private:
@@ -367,16 +384,15 @@ public:
 class cASTLiteralArray : public cASTNode
 {
 private:
-  ASType_t m_type;
   cASTNode* m_value;
+  bool m_is_matrix;
   
 public:
-  cASTLiteralArray(ASType_t t, cASTNode* v) : m_type(t), m_value(v) { ; }
-  ~cASTLiteralArray() { delete m_value; }
+  cASTLiteralArray(cASTNode* v, bool is_mat) : m_value(v), m_is_matrix(is_mat) { ; }
+  ~cASTLiteralArray() { delete m_value; }  
   
-  
-  inline ASType_t GetType() { return m_type; }
   inline cASTNode* GetValue() { return m_value; }
+  inline bool IsMatrix() const { return m_is_matrix; }
   
   void Accept(cASTVisitor& visitor);
 };

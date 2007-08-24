@@ -214,7 +214,7 @@ bool cParser::Parse(cFile& input)
   
   m_tree = parseStatementList();
 
-  if (!m_eof) PARSE_ERROR(UNEXPECTED_TOKEN);
+  if (!m_eof && m_success) PARSE_ERROR(UNEXPECTED_TOKEN);
   if (!m_tree) PARSE_ERROR(EMPTY);
 
   delete m_lexer;
@@ -293,11 +293,12 @@ cASTNode* cParser::parseArrayUnpack()
 cASTNode* cParser::parseArgumentList()
 {
   PARSE_TRACE("parseArgumentList");
-  cASTNode* al = NULL;
-  // @todo - argument list
-  parseExpression();
+  cASTArgumentList* al = new cASTArgumentList();
+
+  al->AddNode(parseExpression());
   while (currentToken() == TOKEN(COMMA)) {
-    parseExpression();
+    nextToken(); // consume ','
+    al->AddNode(parseExpression());
   }
   
   return al;
@@ -544,6 +545,8 @@ cASTNode* cParser::parseExprP6()
   PARSE_TRACE("parseExprP6");
   tAutoRelease<cASTNode> expr;
   
+  bool is_matrix = false;
+  
   switch (currentToken()) {
     case TOKEN(FLOAT):
       expr.Set(new cASTLiteral(AS_TYPE_FLOAT, currentText()));
@@ -577,10 +580,11 @@ cASTNode* cParser::parseExprP6()
       break;
     case TOKEN(MAT_MODIFY):
       if (nextToken() != TOKEN(ARR_OPEN)) PARSE_UNEXPECT();
+      is_matrix = true;
     case TOKEN(ARR_OPEN):
-      if (nextToken() != TOKEN(ARR_CLOSE)) parseArgumentList();
+      if (nextToken() != TOKEN(ARR_CLOSE)) expr.Set(parseArgumentList());
       if (currentToken() != TOKEN(ARR_CLOSE)) PARSE_UNEXPECT();
-      // @todo - return literal array
+      expr.Set(new cASTLiteralArray(expr.Release(), is_matrix));
       break;
       
     case TOKEN(OP_BIT_NOT):
@@ -597,7 +601,7 @@ cASTNode* cParser::parseExprP6()
       return expr.Release();
       
     default:
-      break;
+      return NULL;
   }
 
   nextToken();
@@ -829,49 +833,40 @@ cASTNode* cParser::parseReturnStatement()
 }
 
 
-#define CHECK_LINETERM() { if (!checkLineTerm(sl)) return sl; }
 cASTNode* cParser::parseStatementList()
 {
   PARSE_TRACE("parseStatementList");
-  cASTStatementList* sl = new cASTStatementList();
+  tAutoRelease<cASTStatementList> sl(new cASTStatementList());
   
-  cASTNode* node = NULL;
+  tAutoRelease<cASTNode> node;
 
   while (nextToken()) {
     switch (currentToken()) {
       case TOKEN(ARR_OPEN):
-        node = parseLooseBlock();
-        CHECK_LINETERM();
+        node.Set(parseLooseBlock());
         break;
       case TOKEN(CMD_IF):
-        node = parseIfStatement();
-        CHECK_LINETERM();
+        node.Set(parseIfStatement());
         break;
       case TOKEN(CMD_FOREACH):
-        node = parseForeachStatement();
-        CHECK_LINETERM();
+        node.Set(parseForeachStatement());
         break;
       case TOKEN(CMD_FUNCTION):
-        node = parseFunctionDefine();
-        CHECK_LINETERM();
+        node.Set(parseFunctionDefine());
         break;
       case TOKEN(CMD_RETURN):
-        node = parseReturnStatement();
-        CHECK_LINETERM();
+        node.Set(parseReturnStatement());
         break;
       case TOKEN(CMD_WHILE):
-        node = parseWhileStatement();
-        CHECK_LINETERM();
+        node.Set(parseWhileStatement());
         break;
       case TOKEN(ENDL):
         continue;
       case TOKEN(ID):
-        node = parseIDStatement();
-        CHECK_LINETERM();
+        node.Set(parseIDStatement());
         break;
       case TOKEN(REF):
-        node = parseRefStatement();
-        CHECK_LINETERM();
+        node.Set(parseRefStatement());
         break;
       case TOKEN(SUPPRESS):
         continue;
@@ -881,26 +876,30 @@ cASTNode* cParser::parseStatementList()
       case TOKEN(TYPE_INT):
       case TOKEN(TYPE_MATRIX):
       case TOKEN(TYPE_STRING):
-        node = parseVarDeclare();
-        CHECK_LINETERM();
+        node.Set(parseVarDeclare());
         break;
         
       default:
-        return sl;
+        return sl.Release();
     }
     
-    if (node == NULL) {
+    if (node.IsNull()) {
       // Some error has occured, so terminate early
       if (m_success) PARSE_ERROR(INTERNAL); // Should not receive a null response without an error flag
-      break;
     }
-    sl->AddNode(node);
+    
+    if (currentToken() == TOKEN(SUPPRESS)) {
+      // @todo - mark output as suppressed
+    } else if (currentToken() != TOKEN(ENDL)) {
+      PARSE_ERROR(UNTERMINATED_EXPR);
+    }
+
+    (*sl).AddNode(node.Release());
   }
   
   if (!currentToken()) m_eof = true;
-  return sl;
+  return sl.Release();
 }
-#undef CHECK_LINETERM()
 
 
 cASTNode* cParser::parseVarDeclare()
@@ -977,21 +976,6 @@ cASTNode* cParser::parseWhileStatement()
   cASTNode* code = parseCodeBlock();
   
   return new cASTWhileBlock(cond.Release(), code);
-}
-
-
-bool cParser::checkLineTerm(cASTNode* node)
-{
-  PARSE_TRACE("checkLineTerm");
-  if (currentToken() == TOKEN(SUPPRESS)) {
-    // @todo - mark output as suppressed
-    return true;
-  } else if (currentToken() == TOKEN(ENDL)) {
-    return true;
-  }
-  
-  PARSE_ERROR(UNTERMINATED_EXPR);
-  return false;
 }
 
 

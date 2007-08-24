@@ -297,6 +297,16 @@ void cASTDumpVisitor::visitExpressionUnary(cASTExpressionUnary& node)
 }
 
 
+void cASTDumpVisitor::visitArgumentList(cASTArgumentList& node)
+{
+  m_depth++;
+  
+  tListIterator<cASTNode> it = node.Iterator();
+  cASTNode* val = NULL;
+  while ((val = it.Next())) val->Accept(*this);
+  
+  m_depth--;
+}
 
 void cASTDumpVisitor::visitFunctionCall(cASTFunctionCall& node)
 {
@@ -333,7 +343,16 @@ void cASTDumpVisitor::visitLiteral(cASTLiteral& node)
 
 void cASTDumpVisitor::visitLiteralArray(cASTLiteralArray& node)
 {
-
+  indent();
+  if (node.IsMatrix()) cout << "$";
+  cout << "{" << endl;
+  m_depth++;
+  
+  node.GetValue()->Accept(*this);
+  
+  m_depth--;
+  indent();
+  cout << "}" << endl;
 }
 
 

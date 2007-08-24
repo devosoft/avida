@@ -83,7 +83,7 @@
 \^          return AS_TOKEN_ARR_EXPAN;
 \.\.        return AS_TOKEN_ARR_WILD;
 
-\?          return AS_TOKEN_MAT_MODIFY;    // Matrix Modifier
+\$          return AS_TOKEN_MAT_MODIFY;    // Matrix Modifier
 
 array       return AS_TOKEN_TYPE_ARRAY;    // Built-in Types
 char        return AS_TOKEN_TYPE_CHAR;

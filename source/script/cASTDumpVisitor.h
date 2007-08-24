@@ -53,6 +53,7 @@ public:
   void visitExpressionBinary(cASTExpressionBinary&);
   void visitExpressionUnary(cASTExpressionUnary&);
   
+  void visitArgumentList(cASTArgumentList&);
   void visitFunctionCall(cASTFunctionCall&);
   void visitLiteral(cASTLiteral&);
   void visitLiteralArray(cASTLiteralArray&);
