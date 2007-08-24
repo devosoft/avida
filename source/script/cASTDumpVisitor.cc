@@ -54,6 +54,7 @@ void cASTDumpVisitor::printToken(ASToken_t token)
     case AS_TOKEN_OP_MUL:       cout << '*';  break;
     case AS_TOKEN_OP_DIV:       cout << '/';  break;
     case AS_TOKEN_OP_MOD:       cout << '%';  break;
+    case AS_TOKEN_DOT:          cout << '.';  break;
     case AS_TOKEN_OP_EQ:        cout << "=="; break;
     case AS_TOKEN_OP_LE:        cout << "<="; break;
     case AS_TOKEN_OP_GE:        cout << ">="; break;
@@ -62,6 +63,7 @@ void cASTDumpVisitor::printToken(ASToken_t token)
     case AS_TOKEN_OP_NEQ:       cout << "!="; break;
     case AS_TOKEN_ARR_RANGE:    cout << ':';  break;
     case AS_TOKEN_ARR_EXPAN:    cout << '^';  break;
+    case AS_TOKEN_IDX_OPEN:     cout << "[]"; break;
     default:                    cout << '?';  break;
   }
 }

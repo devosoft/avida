@@ -190,7 +190,7 @@
 #define PARSE_TRACE(x) { std::cerr << "trace: " << x << std::endl; }
 
 #define PARSE_ERROR(x) reportError(AS_PARSE_ERR_ ## x, __LINE__)
-#define PARSE_UNEXPECT() { if (currentToken()) { PARSE_ERROR(UNEXPECTED_TOKEN); } else { PARSE_ERROR(EOF); } }
+#define PARSE_UNEXPECT() { if (currentToken()) { PARSE_ERROR(UNEXPECTED_TOKEN); } else { PARSE_ERROR(EOF); } return NULL; }
 
 #define TOKEN(x) AS_TOKEN_ ## x
 
@@ -214,7 +214,7 @@ bool cParser::Parse(cFile& input)
   
   m_tree = parseStatementList();
 
-  if (!m_eof) PARSE_UNEXPECT();
+  if (!m_eof) PARSE_ERROR(UNEXPECTED_TOKEN);
   if (!m_tree) PARSE_ERROR(EMPTY);
 
   delete m_lexer;
@@ -267,10 +267,7 @@ cASTNode* cParser::parseArrayUnpack()
   PARSE_TRACE("parseArrayUnpack");
   cASTNode* au = NULL;
   
-  if (nextToken() != TOKEN(ID)) {
-    PARSE_ERROR(UNEXPECTED_TOKEN);
-    return au;
-  }
+  if (nextToken() != TOKEN(ID)) PARSE_UNEXPECT();
   
   while (nextToken()) {
     if (currentToken() == TOKEN(COMMA)) {
@@ -287,7 +284,6 @@ cASTNode* cParser::parseArrayUnpack()
       break;
     } else {
       PARSE_UNEXPECT();
-      break;      
     }
   }
 
@@ -321,51 +317,39 @@ cASTNode* cParser::parseAssignment()
   return an;
 }
 
-cASTNode* cParser::parseCallExpression()
+cASTNode* cParser::parseCallExpression(cASTNode* target, bool required)
 {
   PARSE_TRACE("parseCallExpression");
-  tAutoRelease<cASTNode> ce(new cASTVariableReference(currentText()));
-  
-  nextToken();
+  tAutoRelease<cASTNode> ce(target);
   
   bool eoe = false;
   while (!eoe) {
     switch (currentToken()) {
       case TOKEN(DOT):
-        if (nextToken() != TOKEN(ID)) {
-          PARSE_UNEXPECT();
-          return ce.Release();
-        }
+        if (nextToken() != TOKEN(ID)) PARSE_UNEXPECT();
+        ce.Set(new cASTExpressionBinary(TOKEN(DOT), ce.Release(), new cASTVariableReference(currentText())));
+        nextToken(); // consume id
         break;
       case TOKEN(PREC_OPEN):
         cASTFunctionCall* fc = new cASTFunctionCall(ce.Release());
         ce.Set(fc);
         if (nextToken() != TOKEN(PREC_CLOSE)) fc->SetArguments(parseArgumentList());
-        if (currentToken() != TOKEN(PREC_CLOSE)) {
-          PARSE_UNEXPECT();
-          return ce.Release();   
-        }
-        switch (nextToken()) {
-          case TOKEN(IDX_OPEN):
-            do {
-              parseIndexExpression();
-            } while (nextToken() == TOKEN(IDX_OPEN));
-            break;
-          case TOKEN(DOT):
-            continue;
-
-          default:
-            eoe = true;
-        }
+        if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
+        nextToken(); // consume ')'
+        
+        // If the next token is not a continued call expression, then set the end-of-expression flag
+        if (currentToken() != TOKEN(IDX_OPEN) && currentToken() != TOKEN(DOT)) eoe = true;
         break;
       case TOKEN(IDX_OPEN):
         do {
-          parseIndexExpression();
+          nextToken(); // consume '['
+          ce.Set(new cASTExpressionBinary(TOKEN(IDX_OPEN), ce.Release(), parseExpression()));
+          if (currentToken() != TOKEN(IDX_CLOSE)) PARSE_UNEXPECT();
         } while (nextToken() == TOKEN(IDX_OPEN));
-
+        break;
       default:
-        PARSE_UNEXPECT();
-        return ce.Release();
+        if (required) { PARSE_UNEXPECT(); }
+        else eoe = true;
     }
   }
     
@@ -375,18 +359,13 @@ cASTNode* cParser::parseCallExpression()
 cASTNode* cParser::parseCodeBlock()
 {
   PARSE_TRACE("parseCodeBlock");
-  cASTNode* cb = NULL;
 
   // Swallow all newlines and suppress tokens
   while (currentToken() == TOKEN(ENDL) || currentToken() == TOKEN(SUPPRESS)) nextToken();
   
-  if (currentToken() == TOKEN(ARR_OPEN)) {
-    cb = parseLooseBlock();
-  } else {
-    PARSE_UNEXPECT();
-  }
+  if (currentToken() == TOKEN(ARR_OPEN)) return parseLooseBlock();
   
-  return cb;  
+  PARSE_UNEXPECT();
 }
 
 cASTNode* cParser::parseExpression()
@@ -563,56 +542,44 @@ cASTNode* cParser::parseExprP5()
 cASTNode* cParser::parseExprP6()
 {
   PARSE_TRACE("parseExprP6");
-  cASTNode* expr = NULL;
+  tAutoRelease<cASTNode> expr;
   
   switch (currentToken()) {
     case TOKEN(FLOAT):
-      expr = new cASTLiteral(AS_TYPE_FLOAT, currentText());
+      expr.Set(new cASTLiteral(AS_TYPE_FLOAT, currentText()));
       break;
     case TOKEN(INT):
-      expr = new cASTLiteral(AS_TYPE_INT, currentText());
+      expr.Set(new cASTLiteral(AS_TYPE_INT, currentText()));
       break;
     case TOKEN(CHAR):
-      expr = new cASTLiteral(AS_TYPE_CHAR, currentText());
+      expr.Set(new cASTLiteral(AS_TYPE_CHAR, currentText()));
       break;
     case TOKEN(STRING):
-      expr = new cASTLiteral(AS_TYPE_STRING, currentText());
+      expr.Set(new cASTLiteral(AS_TYPE_STRING, currentText()));
       break;
     case TOKEN(ID):
       if (peekToken() == TOKEN(PREC_OPEN)) {
         cASTNode* vr = new cASTVariableReference(currentText());
         nextToken(); // consume id token
         cASTFunctionCall* fc = new cASTFunctionCall(vr);
-        expr = fc;
+        expr.Set(fc);
         if (nextToken() != TOKEN(PREC_CLOSE)) fc->SetArguments(parseArgumentList());        
-        if (currentToken() != TOKEN(PREC_CLOSE)) {
-          PARSE_UNEXPECT();
-          return expr;
-        }
+        if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
       } else {
         expr = new cASTVariableReference(currentText());
       }
       break;
     case TOKEN(PREC_OPEN):
-      nextToken();
-      expr = parseExpression();
-      if (!expr) PARSE_ERROR(NULL_EXPR);
-      if (currentToken() != TOKEN(PREC_CLOSE)) {
-        PARSE_UNEXPECT();
-        return expr;
-      }
+      nextToken(); // consume '('
+      expr.Set(parseExpression());
+      if (expr.IsNull()) PARSE_ERROR(NULL_EXPR);
+      if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
       break;
     case TOKEN(MAT_MODIFY):
-      if (nextToken() != TOKEN(ARR_OPEN)) {
-        PARSE_UNEXPECT();
-        return expr;
-      }
+      if (nextToken() != TOKEN(ARR_OPEN)) PARSE_UNEXPECT();
     case TOKEN(ARR_OPEN):
       if (nextToken() != TOKEN(ARR_CLOSE)) parseArgumentList();
-      if (currentToken() != TOKEN(ARR_CLOSE)) {
-        PARSE_UNEXPECT();
-        return expr;
-      }
+      if (currentToken() != TOKEN(ARR_CLOSE)) PARSE_UNEXPECT();
       // @todo - return literal array
       break;
       
@@ -620,52 +587,23 @@ cASTNode* cParser::parseExprP6()
     case TOKEN(OP_LOGIC_NOT):
     case TOKEN(OP_SUB):
       ASToken_t op = currentToken();
-      expr = new cASTExpressionUnary(op, parseExpression());
-      if (!expr) PARSE_ERROR(NULL_EXPR);
+      cASTNode* r = parseExpression();
+      if (!r) {
+        PARSE_ERROR(NULL_EXPR);
+        return NULL;
+      }
+      expr.Set(new cASTExpressionUnary(op, r));
       nextToken();
-      return expr;
+      return expr.Release();
       
     default:
       break;
   }
 
   nextToken();
-  if (expr) expr = parseExprP6_Index(expr);
-  return expr;
-}
-
-cASTNode* cParser::parseExprP6_Index(cASTNode* l)
-{
-  PARSE_TRACE("parseExprP6_Index");
-  while (currentToken() == TOKEN(DOT) || currentToken() == TOKEN(IDX_OPEN)) {
-    if (currentToken() == TOKEN(DOT)) {
-      if (nextToken() != TOKEN(ID)) {
-        PARSE_UNEXPECT();
-        return l;
-      }
-      if (peekToken() == TOKEN(PREC_OPEN)) {
-        nextToken();
-        if (nextToken() != TOKEN(PREC_CLOSE)) parseArgumentList();
-        if (currentToken() != TOKEN(PREC_CLOSE)) {
-          PARSE_UNEXPECT();
-          return l;
-        }
-        // @todo
-      } else {
-        // @todo
-      }
-    } else { // IDX_OPEN:
-      nextToken();
-      parseExpression();
-      if (currentToken() != TOKEN(IDX_CLOSE)) {
-        PARSE_UNEXPECT();
-        return l;
-      }
-      // @todo
-    }
-  }
+  if (!expr.IsNull()) return parseCallExpression(expr.Release());
   
-  return l;
+  return NULL;
 }
 
 
@@ -792,63 +730,51 @@ cASTFunctionDefinition* cParser::parseFunctionHeader(bool declare)
 cASTNode* cParser::parseIDStatement()
 {
   PARSE_TRACE("parseIDStatement");
-  cASTNode* is = NULL;
   
   switch (peekToken()) {
     case TOKEN(ASSIGN):
-      is = parseAssignment();
+      return parseAssignment();
       break;
     case TOKEN(DOT):
     case TOKEN(IDX_OPEN):
     case TOKEN(PREC_OPEN):
-      is = parseCallExpression();
+      cASTNode* target = new cASTVariableReference(currentText());
+      nextToken(); // consume id
+      return parseCallExpression(target, true);
       break;
     case TOKEN(REF):
-      is = parseVarDeclare();
+      return parseVarDeclare();
       break;
       
     default:
       PARSE_UNEXPECT();
-      break;
-  }      
-  
-  return is;
+  }
 }
 
 cASTNode* cParser::parseIfStatement()
 {
   PARSE_TRACE("parseIfStatement");
   
-  if (nextToken() != TOKEN(PREC_OPEN)) {
-    PARSE_UNEXPECT();
-    return NULL;
-  }
+  if (nextToken() != TOKEN(PREC_OPEN)) PARSE_UNEXPECT();
   
   nextToken();
   tAutoRelease<cASTNode> cond(parseExpression());
   
-  if (currentToken() != TOKEN(PREC_CLOSE)) {
-    PARSE_UNEXPECT();
-    return NULL;
-  }
+  if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
+
   nextToken();
   
   tAutoRelease<cASTIfBlock> is(new cASTIfBlock(cond.Release(), parseCodeBlock()));
 
   while (currentToken() == TOKEN(CMD_ELSEIF)) {
     
-    if (nextToken() != TOKEN(PREC_OPEN)) {
-      PARSE_UNEXPECT();
-      return NULL;
-    }
+    if (nextToken() != TOKEN(PREC_OPEN)) PARSE_UNEXPECT();
     
     nextToken(); // consume '('
     tAutoRelease<cASTNode> elifcond(parseExpression());
     
-    if (currentToken() != TOKEN(PREC_CLOSE)) {
-      PARSE_UNEXPECT();
-      return NULL;
-    }
+    if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
+
     nextToken(); // consume ')'
     
     cASTNode* elifcode = parseCodeBlock();
@@ -865,49 +791,31 @@ cASTNode* cParser::parseIfStatement()
   return is.Release();
 }
 
-cASTNode* cParser::parseIndexExpression()
-{
-  PARSE_TRACE("parseIndexExpression");
-  cASTNode* ie = NULL;
-  
-  nextToken();
-  parseExpression();
-  if (currentToken() != TOKEN(IDX_CLOSE)) {
-    PARSE_UNEXPECT();
-  }
-  
-  return ie;
-}
-
 cASTNode* cParser::parseLooseBlock()
 {
   PARSE_TRACE("parseLooseBlock");
   nextToken();
-  cASTNode* sl = parseStatementList();
-  if (currentToken() != TOKEN(ARR_CLOSE)) {
-    PARSE_UNEXPECT();
-  }
-  nextToken();
-  return sl;
+  tAutoRelease<cASTNode> sl(parseStatementList());
+  
+  if (currentToken() != TOKEN(ARR_CLOSE)) PARSE_UNEXPECT();
+
+  nextToken(); // consume '}'
+
+  return sl.Release();
 }
 
 cASTNode* cParser::parseRefStatement()
 {
   PARSE_TRACE("parseRefStatement");
-  cASTNode* rs = NULL;
 
   switch (nextToken()) {
     case TOKEN(ARR_OPEN):
-      rs = parseArrayUnpack();
-      break;
+      return parseArrayUnpack();
     case TOKEN(CMD_FUNCTION):
-      rs = parseFunctionHeader();
-      break;
+      return parseFunctionHeader();
     default:
       PARSE_UNEXPECT();
   }
-  
-  return rs;
 }
 
 cASTNode* cParser::parseReturnStatement()
@@ -998,7 +906,6 @@ cASTNode* cParser::parseStatementList()
 cASTNode* cParser::parseVarDeclare()
 {
   PARSE_TRACE("parseVarDeclare");
-  cASTVariableDefinition* vd = NULL;
   
   ASType_t vtype = AS_TYPE_INVALID;
   switch (currentToken()) {
@@ -1009,45 +916,36 @@ cASTNode* cParser::parseVarDeclare()
     case TOKEN(TYPE_MATRIX): vtype = AS_TYPE_MATRIX; break;
     case TOKEN(TYPE_STRING): vtype = AS_TYPE_STRING; break;
     case TOKEN(ID):
-      if (nextToken() != TOKEN(REF)) {
-        PARSE_UNEXPECT();
-        return vd;
-      }
+      if (nextToken() != TOKEN(REF)) PARSE_UNEXPECT();
+
       vtype = AS_TYPE_OBJECT_REF;
       break;
       
     default:
       PARSE_UNEXPECT();
-      return vd;
   }
   
-  if (nextToken() != TOKEN(ID)) {
-    PARSE_UNEXPECT();
-    return vd;
-  }
+  if (nextToken() != TOKEN(ID)) PARSE_UNEXPECT();
   
-  vd = new cASTVariableDefinition(vtype, currentText());
+  tAutoRelease<cASTVariableDefinition> vd(new cASTVariableDefinition(vtype, currentText()));
   
   switch (nextToken()) {
     case TOKEN(ASSIGN):
       nextToken();
       cASTNode* expr = parseExpression();
-      vd->SetAssignmentExpression(expr);
+      (*vd).SetAssignmentExpression(expr);
       break;
     case TOKEN(PREC_OPEN):
       // @todo - array/matrix size declaration
       if (nextToken() != TOKEN(PREC_CLOSE)) parseArgumentList();
-      if (currentToken() != TOKEN(PREC_CLOSE)) {
-        PARSE_UNEXPECT();
-        return vd;
-      }
+      if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
       break;
       
     default:
       break;
   }
   
-  return vd;
+  return vd.Release();
 }
 
 cASTNode* cParser::parseVarDeclareList()
@@ -1067,18 +965,13 @@ cASTNode* cParser::parseWhileStatement()
 {
   PARSE_TRACE("parseWhileStatement");
   
-  if (nextToken() != TOKEN(PREC_OPEN)) {
-    PARSE_UNEXPECT();
-    return NULL;
-  }
+  if (nextToken() != TOKEN(PREC_OPEN)) PARSE_UNEXPECT();
   
   nextToken();
   tAutoRelease<cASTNode> cond(parseExpression());
   
-  if (currentToken() != TOKEN(PREC_CLOSE)) {
-    PARSE_UNEXPECT();
-    return NULL;
-  }
+  if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
+
   nextToken();
   
   cASTNode* code = parseCodeBlock();

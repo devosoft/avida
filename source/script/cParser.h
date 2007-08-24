@@ -92,7 +92,7 @@ private:
   cASTNode* parseArgumentList();
   cASTNode* parseArrayUnpack();
   cASTNode* parseAssignment();
-  cASTNode* parseCallExpression();
+  cASTNode* parseCallExpression(cASTNode* target, bool required = false);
   cASTNode* parseCodeBlock();
   cASTNode* parseExpression();
   cASTNode* parseExprP0();
