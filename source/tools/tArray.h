@@ -83,15 +83,14 @@ public:
     return tmp;
   }
   
-  tArray Subset(int start, int end) {
+  inline tArray Subset(int start, int end) const {
     assert(start <= end);
     assert(0 <= start && start <= GetSize());
     assert(0 <= end && end <= GetSize());
     
-    tArray tmp(0);
-    for(int i = start; i < end; i++) {
-      tmp.Push(m_data[i]);
-    }
+    tArray tmp(end - start);
+    for(int i = start; i < end; i++) tmp[i] = m_data[i];
+
     return tmp;
   }
   
