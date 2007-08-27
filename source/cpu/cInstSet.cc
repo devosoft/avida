@@ -249,12 +249,11 @@ void cInstSet::LoadWithStringList(const cStringList& sl)
           break;
       }
     } else {
-      const int iclidx = inst_code.GetSize() - 1;
       int inst_code_val = 0;
-      for (int i = 0; i < inst_code_len && i <= iclidx; i++) {
+      for (int i = 0; i < inst_code_len && i < inst_code.GetSize(); i++) {
         inst_code_val <<= 1;
-        if (inst_code[iclidx - i] == '1') inst_code_val |= 1;
-        else if (inst_code[iclidx - i] != '0') {
+        if (inst_code[i] == '1') inst_code_val |= 1;
+        else if (inst_code[i] != '0') {
           errors.PushRear(new cString("Invalid character in instruction code, must be 0 or 1."));
           success = false;
           break;
