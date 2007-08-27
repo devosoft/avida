@@ -384,3 +384,9 @@ void cASTDumpVisitor::visitVariableReference(cASTVariableReference& node)
   indent();
   cout << node.GetName() << endl;
 }
+
+
+void cASTDumpVisitor::visitUnpackTarget(cASTUnpackTarget& node)
+{
+  // @todo
+}

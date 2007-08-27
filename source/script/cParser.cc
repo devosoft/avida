@@ -265,31 +265,34 @@ const cString& cParser::currentText()
 cASTNode* cParser::parseArrayUnpack()
 {
   PARSE_TRACE("parseArrayUnpack");
-  cASTNode* au = NULL;
-  
-  // @todo - array unpack
   
   if (nextToken() != TOKEN(ID)) PARSE_UNEXPECT();
+
+  tAutoRelease<cASTUnpackTarget> ut(new cASTUnpackTarget());
+  (*ut).AddVar(currentText());
   
   while (nextToken()) {
     if (currentToken() == TOKEN(COMMA)) {
       nextToken();
       if (currentToken() == TOKEN(ID)) {
+        (*ut).AddVar(currentText());
         continue;
       } else if (currentToken() == TOKEN(ARR_WILD)) {
+        (*ut).SetLastWild();
         break;
       } else {
         PARSE_ERROR(UNEXPECTED_TOKEN);
         break;
       }
     } else if (currentToken() == TOKEN(ARR_WILD)) {
+      (*ut).SetLastNamed();
       break;
     } else {
       PARSE_UNEXPECT();
     }
   }
 
-  return au;
+  return ut.Release();
 }
 
 cASTArgumentList* cParser::parseArgumentList()

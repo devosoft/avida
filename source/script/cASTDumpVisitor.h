@@ -59,6 +59,7 @@ public:
   void visitLiteral(cASTLiteral&);
   void visitLiteralArray(cASTLiteralArray&);
   void visitVariableReference(cASTVariableReference&);
+  void visitUnpackTarget(cASTUnpackTarget&);
 
 private:
   inline void indent();

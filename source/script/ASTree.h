@@ -37,6 +37,9 @@
 #ifndef tList_h
 #include "tList.h"
 #endif
+#ifndef tManagedPointerArray_h
+#include "tManagedPointerArray.h"
+#endif
 
 
 class cASTVisitor;
@@ -88,6 +91,7 @@ class cASTFunctionCall;
 class cASTLiteral;
 class cASTLiteralArray;
 class cASTVariableReference;
+class cASTUnpackTarget;
 
 
 
@@ -431,6 +435,29 @@ public:
   cASTVariableReference(const cString& name) : m_name(name) { ; }
   
   inline const cString& GetName() { return m_name; }
+  
+  void Accept(cASTVisitor& visitor);
+};
+
+
+class cASTUnpackTarget : public cASTNode
+{
+private:
+  tManagedPointerArray<cString> m_nodes;
+  bool m_last_wild;
+  bool m_last_named;
+  
+public:
+  cASTUnpackTarget() : m_last_wild(false), m_last_named(false) { ; }
+  ~cASTUnpackTarget() { ; }
+  
+  inline void AddVar(const cString& name) { m_nodes.Push(name); }
+  inline int GetSize() const { return m_nodes.GetSize(); }
+  inline const cString& GetVar(int idx) const { return m_nodes[idx]; }
+  
+  inline void SetLastNamed() { m_last_wild = true; m_last_named = true; }
+  inline void SetLastWild() { m_last_wild = true; m_last_named = false; }
+  
   
   void Accept(cASTVisitor& visitor);
 };

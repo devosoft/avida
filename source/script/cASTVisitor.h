@@ -58,6 +58,7 @@ public:
   virtual void visitLiteral(cASTLiteral&) = 0;
   virtual void visitLiteralArray(cASTLiteralArray&) = 0;
   virtual void visitVariableReference(cASTVariableReference&) = 0;
+  virtual void visitUnpackTarget(cASTUnpackTarget&) = 0;
 };
 
 #endif
