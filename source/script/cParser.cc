@@ -267,6 +267,8 @@ cASTNode* cParser::parseArrayUnpack()
   PARSE_TRACE("parseArrayUnpack");
   cASTNode* au = NULL;
   
+  // @todo - array unpack
+  
   if (nextToken() != TOKEN(ID)) PARSE_UNEXPECT();
   
   while (nextToken()) {
@@ -290,7 +292,7 @@ cASTNode* cParser::parseArrayUnpack()
   return au;
 }
 
-cASTNode* cParser::parseArgumentList()
+cASTArgumentList* cParser::parseArgumentList()
 {
   PARSE_TRACE("parseArgumentList");
   cASTArgumentList* al = new cASTArgumentList();
@@ -911,9 +913,9 @@ cASTVariableDefinition* cParser::parseVariableDefinition()
       (*vd).SetAssignmentExpression(expr);
       break;
     case TOKEN(PREC_OPEN):
-      // @todo - array/matrix size declaration
-      if (nextToken() != TOKEN(PREC_CLOSE)) parseArgumentList();
+      if (nextToken() != TOKEN(PREC_CLOSE)) (*vd).SetDimensions(parseArgumentList());
       if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
+      nextToken(); // consume ')'
       break;
       
     default:

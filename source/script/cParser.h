@@ -89,7 +89,7 @@ private:
   
   const cString& currentText();
   
-  cASTNode* parseArgumentList();
+  cASTArgumentList* parseArgumentList();
   cASTNode* parseArrayUnpack();
   cASTNode* parseAssignment();
   cASTNode* parseCallExpression(cASTNode* target, bool required = false);

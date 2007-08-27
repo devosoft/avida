@@ -68,6 +68,7 @@ public:
 // ---------------------------------------------------------------------------------------------------------------------
 
 class cASTAssignment;
+class cASTArgumentList;
 
 class cASTReturnStatement;
 class cASTStatementList;
@@ -83,7 +84,6 @@ class cASTVariableDefinitionList;
 class cASTExpressionBinary;
 class cASTExpressionUnary;
 
-class cASTArgumentList;
 class cASTFunctionCall;
 class cASTLiteral;
 class cASTLiteralArray;
@@ -110,6 +110,23 @@ public:
   
   void Accept(cASTVisitor& visitor);
 };
+
+
+class cASTArgumentList : public cASTNode
+{
+private:
+  tList<cASTNode> m_nodes;
+  
+public:
+  cASTArgumentList() { ; }
+  ~cASTArgumentList() { ; }
+  
+  inline void AddNode(cASTNode* n) { m_nodes.PushRear(n); }
+  inline tListIterator<cASTNode> Iterator() { return tListIterator<cASTNode>(m_nodes); }
+  
+  void Accept(cASTVisitor& visitor);
+};
+
 
 
 
@@ -270,15 +287,18 @@ private:
   ASType_t m_type;
   cString m_var;
   cASTNode* m_assign;
+  cASTArgumentList* m_dims;
   
 public:
-  cASTVariableDefinition(ASType_t type, const cString& var) : m_type(type), m_var(var), m_assign(NULL) { ; }
-  ~cASTVariableDefinition() { delete m_assign; }
+  cASTVariableDefinition(ASType_t type, const cString& var) : m_type(type), m_var(var), m_assign(NULL), m_dims(NULL) { ; }
+  ~cASTVariableDefinition() { delete m_assign; delete m_dims; }
   
   inline ASType_t GetType() { return m_type; }
   inline const cString& GetVariable() { return m_var; }
   inline void SetAssignmentExpression(cASTNode* assign) { delete m_assign; m_assign = assign; }
   inline cASTNode* GetAssignmentExpression() { return m_assign; }
+  inline void SetDimensions(cASTArgumentList* dims) { delete m_dims; m_dims = dims; }
+  inline cASTArgumentList* GetDimensions() { return m_dims; }
   
   void Accept(cASTVisitor& visitor);
 };
@@ -349,35 +369,19 @@ public:
 
 // --------  Expression Value Nodes  --------
 
-class cASTArgumentList : public cASTNode
-{
-private:
-  tList<cASTNode> m_nodes;
-  
-public:
-  cASTArgumentList() { ; }
-  ~cASTArgumentList() { ; }
-  
-  inline void AddNode(cASTNode* n) { m_nodes.PushRear(n); }
-  inline tListIterator<cASTNode> Iterator() { return tListIterator<cASTNode>(m_nodes); }
-  
-  void Accept(cASTVisitor& visitor);
-};
-
-
 class cASTFunctionCall : public cASTNode
 {
 private:
   cASTNode* m_target;
-  cASTNode* m_args;
+  cASTArgumentList* m_args;
   
 public:
   cASTFunctionCall(cASTNode* target) : m_target(target), m_args(NULL) { ; }
   ~cASTFunctionCall() { delete m_args; }
   
   cASTNode* GetTarget() { return m_target; }
-  void SetArguments(cASTNode* args) { m_args = args; }
-  cASTNode* GetArguments() { return m_args; }
+  void SetArguments(cASTArgumentList* args) { delete m_args; m_args = args; }
+  cASTArgumentList* GetArguments() { return m_args; }
   
   bool HasArguments() const { return (m_args); }
   
