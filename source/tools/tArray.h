@@ -75,15 +75,11 @@ public:
     return *this;
   }
 
-  tArray operator+(const tArray in) const {
-    tArray tmp(0);
-    for(int i = 0; i < GetSize(); i++) {
-      tmp.Push(m_data[i]);
-    }
-    
-    for(int i = 0; i < in.GetSize(); i++) {
-      tmp.Push(in[i]);
-    }
+  inline tArray operator+(const tArray& in_array) const {
+    tArray tmp(m_size + in_array.m_size);
+    for(int i = 0; i < m_size; i++) tmp[i] = m_data[i];
+    for(int i = 0; i < in_array.GetSize(); i++) tmp[i + m_size] = in_array[i];
+
     return tmp;
   }
   
