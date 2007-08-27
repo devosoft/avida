@@ -351,6 +351,7 @@
 		1097463D0AE9606E00929ED6 /* cDeme.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDeme.cc; sourceTree = "<group>"; };
 		1097463E0AE9606E00929ED6 /* cDeme.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cDeme.h; sourceTree = "<group>"; };
 		4201F39A0BE187F6006279B9 /* cTopology.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTopology.h; sourceTree = "<group>"; };
+		422B64520C8305C40012C545 /* cOrgMessagePredicate.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cOrgMessagePredicate.h; sourceTree = "<group>"; };
 		423335880BC067E3000DF681 /* cHardwareGX.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareGX.cc; sourceTree = "<group>"; };
 		423335890BC067E3000DF681 /* cHardwareGX.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareGX.h; sourceTree = "<group>"; };
 		42490EFE0BE2472800318058 /* cGermline.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGermline.h; sourceTree = "<group>"; };
@@ -1399,6 +1400,7 @@
 				70B0868708F49EA800FC65FE /* cOrganism.cc */,
 				70B0868308F49E9700FC65FE /* cOrganism.h */,
 				42777E5B0C7F123600AFA4ED /* cOrgMessage.h */,
+				422B64520C8305C40012C545 /* cOrgMessagePredicate.h */,
 				70B0869C08F49F4800FC65FE /* cPhenotype.cc */,
 				70B0869B08F49F3900FC65FE /* cPhenotype.h */,
 				70B0868908F49EA800FC65FE /* cPopulation.cc */,

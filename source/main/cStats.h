@@ -29,6 +29,7 @@
 #include <cassert>
 #include <fstream>
 #include <iostream>
+#include <vector>
 
 #ifndef defs_h
 #include "defs.h"
@@ -66,6 +67,7 @@ class cGenotype;
 class cInjectGenotype;
 class cWorld;
 class cOrgMessage;
+class cOrgMessagePredicate;
 
 class cStats
 {
@@ -615,13 +617,24 @@ public:
   void PrintSleepData(const cString& filename);
   
   // -------- Messaging support --------
-protected:
-  
-    
 public:
+  //! Type for a list of pointers to message predicates.
+  typedef std::vector<cOrgMessagePredicate*> message_pred_ptr_list;
+  
   //! Called for every message successfully sent anywhere in the population.
   void SentMessage(const cOrgMessage& msg);
+  //! Adds a predicate that will be evaluated for each message.
+  void AddMessagePredicate(cOrgMessagePredicate* predicate);
+  //! Prints information regarding messages that "passed" their predicate.
+  void PrintPredicatedMessages(const cString& filename);
+
+protected:
+  /*! List of all active message predicates.  The idea here is that the predicates,
+  rather than cStats / cOrgMessage / etc., do the tracking of particular messages
+  of interest. */
+  message_pred_ptr_list m_message_predicates;
   // -------- End messaging support --------
+  
 };
 
 

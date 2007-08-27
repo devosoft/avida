@@ -35,6 +35,7 @@
 #include "cWorldDriver.h"
 #include "tDataEntry.h"
 #include "cOrgMessage.h"
+#include "cOrgMessagePredicate.h"
 
 #include "functions.h"
 
@@ -1034,4 +1035,48 @@ in this case, means that the message has been delivered to the receive buffer of
 the organism that this message was sent to. */
 void cStats::SentMessage(const cOrgMessage& msg)
 {
+  // Check to see if this message matches any of our predicates.
+  for(message_pred_ptr_list::iterator i=m_message_predicates.begin(); 
+      i!=m_message_predicates.end(); ++i) {
+    (**i)(msg); // Predicate is responsible for tracking info about messages.
+  }  
+}
+
+
+/*! This method adds a message predicate to the list of all predicates.  Each predicate
+in the list is evaluated for every sent message.
+
+NOTE: cStats does NOT own the predicate pointer!  (It DOES NOT delete them!)
+*/
+void cStats::AddMessagePredicate(cOrgMessagePredicate* predicate)
+{
+  m_message_predicates.push_back(predicate);
+}
+
+
+/*! This method prints information contained within all active message predicates.
+
+about  specific messages that are being tracked.
+The messages that are being tracked are setup by the AddTrackedMessage method below.
+
+The format of this log file is:
+<update> \
+<predicate>:{<cell_id>,...}...
+*/
+void cStats::PrintPredicatedMessages(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  df.WriteColumnDesc("update [update]");
+  df.WriteColumnDesc("predicate:{p_info,...}...");
+  df.FlushComments();
+  
+  df.WriteAnonymous(m_update);
+  std::ofstream& out = df.GetOFStream();
+  for(message_pred_ptr_list::iterator i=m_message_predicates.begin();
+      i!=m_message_predicates.end(); ++i) {
+    (*i)->Print(out);
+    (*i)->Reset();
+    out << " ";
+  }
+  df.Endl();  
 }

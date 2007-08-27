@@ -25,40 +25,27 @@
 #ifndef cOrgMessage_h
 #define cOrgMessage_h
 
-#include <iostream>
-#include <functional>
-#include <set>
-
 class cOrganism;
 
 
-/*!
+/*! This class encapsulates two unsigned integers that are sent as a "message"
+between connected organisms within an Avida population.  The label and data fields
+are these two integers, while the sending and receiving organisms are represented by
+pointers.
+
+\todo Extend to support a varying number of bytes.
 */
 class cOrgMessage
 {
-private:
-  cOrganism* m_pSender;
-  cOrganism* m_pReceiver;
-  unsigned int m_data;
-  unsigned int m_label;
-  
-  cOrgMessage() 
-    : m_pSender(NULL), m_pReceiver(NULL), m_data(0), m_label(0) {
-    }
-  
 public:
-    cOrgMessage(cOrganism* sender)
-    : m_pSender(sender), m_pReceiver(NULL), m_data(0), m_label(0) {
-    }
+  //! Constructor that takes a pointer to the sending organism.
+  cOrgMessage(cOrganism* sender) : m_pSender(sender), m_pReceiver(0), m_data(0), m_label(0) 
+  {
+    assert(m_pSender);
+  }
   
-  explicit cOrgMessage(int data, int label)
-    : m_pSender(NULL), m_pReceiver(NULL), m_data(data), m_label(label) {
-    }
-  
-  static cOrgMessage EmptyMessage() { return cOrgMessage(); }
-  
-  cOrganism* GetSender() { return m_pSender; }
-  cOrganism* GetReceiver() { return m_pReceiver; }
+  cOrganism* GetSender() const { return m_pSender; }
+  cOrganism* GetReceiver() const { return m_pReceiver; }
   void SetReceiver(cOrganism* recvr) { m_pReceiver = recvr; }
   
   unsigned int GetData() const { return m_data; }
@@ -66,51 +53,18 @@ public:
   
   void SetData(unsigned int data) { m_data = data; }
   void SetLabel(unsigned int label) { m_label = label; }
+
+private:
+  //! Default constructor is only used internally, to support message predicates.
+  cOrgMessage() : m_pSender(0), m_pReceiver(0), m_data(0), m_label(0)
+  {
+  }
+  
+  cOrganism* m_pSender;
+  cOrganism* m_pReceiver;
+  unsigned int m_data;
+  unsigned int m_label;
 };
-
-
-///*! \brief An STL-compatible predicate on cOrgMessages.  The intent here is to
-//provide a straightforward way to track arbitrary messages *wherever* they appear
-//in the population.  The most utility can be had from message predicates if they're
-//installed into cStats (since every message goes through cStats). */
-//struct cOrgMessage_Predicate : public std::unary_function<cOrgMessage, bool> 
-//{
-//  virtual ~cOrgMessage_Predicate() { }
-//  virtual bool operator()(cOrgMessage& msg) = 0;
-//  virtual void Print(std::ostream& out) { }
-//  virtual void Reset() { }
-//};
-//
-//
-///*! A predicate that returns true and tracks the sending cell_id for messages
-//that contain the same data field as this predicate was constructed with.
-//*/
-//struct cOrgMessage_PredDataEQU : public cOrgMessage_Predicate 
-//{
-//  cOrgMessage_PredDataEQU(unsigned int data) : m_data(data) { }
-//  
-//  virtual bool operator()(cOrgMessage& msg) {
-//    if(m_data==msg.GetData()) {
-//      m_cell_ids.insert(msg.GetSender()->GetCellID());
-//    }
-//    return true;
-//  }
-//  
-//  virtual void Print(std::ostream& out) { 
-//    out << "data==" << m_data << ":{";
-//    for(std::set<int>::iterator i=m_cell_ids.begin(); i!=m_cell_ids.end(); ++i) {
-//      out << *i << ",";
-//    }
-//    out << "}";
-//  }
-//  
-//  virtual void Reset() { 
-//    m_cell_ids.clear();
-//  }
-//  
-//  unsigned int m_data;
-//  std::set<int> m_cell_ids;
-//};
 
 
 #endif
