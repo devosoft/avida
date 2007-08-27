@@ -667,14 +667,15 @@ cASTNode* cParser::parseForeachStatement()
 cASTNode* cParser::parseFunctionDefine()
 {
   PARSE_TRACE("parseFunctionDefine");
-  cASTFunctionDefinition* fd = parseFunctionHeader(false);
+  cASTFunctionDefinition* fd = parseFunctionHeader();
   
-  fd->SetCode(parseCodeBlock());
+  // If the returned function definition is valid, parse the body
+  if (fd) fd->SetCode(parseCodeBlock());
 
   return fd;
 }
 
-cASTFunctionDefinition* cParser::parseFunctionHeader(bool declare)
+cASTFunctionDefinition* cParser::parseFunctionHeader()
 {
   PARSE_TRACE("parseFunctionHeader");
   
@@ -688,45 +689,25 @@ cASTFunctionDefinition* cParser::parseFunctionHeader(bool declare)
     case TOKEN(TYPE_STRING): type = AS_TYPE_STRING; break;
     case TOKEN(TYPE_VOID):   type = AS_TYPE_VOID;   break;
     case TOKEN(ID):
-      if (peekToken() != TOKEN(REF)) {
-        nextToken();
-        PARSE_UNEXPECT();
-        return NULL;
-      }
+      if (nextToken() != TOKEN(REF)) PARSE_UNEXPECT();
       type = AS_TYPE_OBJECT_REF;
       break;
       
     default:
       PARSE_UNEXPECT();
-      return NULL;
   }
   
   if (nextToken() != TOKEN(ID)) {
     PARSE_UNEXPECT();
-    return NULL;
   }
   cString name(currentText());
   
-  if (nextToken() != TOKEN(PREC_OPEN)) {
-    PARSE_UNEXPECT();
-    return NULL;
-  }
+  if (nextToken() != TOKEN(PREC_OPEN)) PARSE_UNEXPECT();
   
-  tAutoRelease<cASTNode> args;
-  if (nextToken() != TOKEN(PREC_CLOSE)) {
-    if (declare) {
-      args = parseVarDeclareList();
-    } else {
-      args = parseArgumentList();
-    }
-  }
-  
-  if (currentToken() != TOKEN(PREC_CLOSE)) {
-    PARSE_UNEXPECT();
-    return NULL;    
-  }
-  
-  nextToken();
+  tAutoRelease<cASTVariableDefinitionList> args;
+  if (nextToken() != TOKEN(PREC_CLOSE)) args.Set(parseVariableDefinitionList());
+  if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
+  nextToken(); // consume ')'
   
   return new cASTFunctionDefinition(type, name, args.Release());
 }
@@ -747,7 +728,7 @@ cASTNode* cParser::parseIDStatement()
       return parseCallExpression(target, true);
       break;
     case TOKEN(REF):
-      return parseVarDeclare();
+      return parseVariableDefinition();
       break;
       
     default:
@@ -871,7 +852,7 @@ cASTNode* cParser::parseStatementList()
       case TOKEN(TYPE_INT):
       case TOKEN(TYPE_MATRIX):
       case TOKEN(TYPE_STRING):
-        node.Set(parseVarDeclare());
+        node.Set(parseVariableDefinition());
         break;
         
       default:
@@ -897,9 +878,9 @@ cASTNode* cParser::parseStatementList()
 }
 
 
-cASTNode* cParser::parseVarDeclare()
+cASTVariableDefinition* cParser::parseVariableDefinition()
 {
-  PARSE_TRACE("parseVarDeclare");
+  PARSE_TRACE("parseVariableDefinition");
   
   ASType_t vtype = AS_TYPE_INVALID;
   switch (currentToken()) {
@@ -942,18 +923,23 @@ cASTNode* cParser::parseVarDeclare()
   return vd.Release();
 }
 
-cASTNode* cParser::parseVarDeclareList()
+cASTVariableDefinitionList* cParser::parseVariableDefinitionList()
 {
-  PARSE_TRACE("parseVarDeclareList");
-  cASTNode* vl = NULL;
+  PARSE_TRACE("parseVariableDefinitionList");
+  tAutoRelease<cASTVariableDefinitionList> vl(new cASTVariableDefinitionList());
  
-  // @todo - var decleare list
-  parseVarDeclare();
+  cASTVariableDefinition* vd = parseVariableDefinition();
+  if (!vd) return NULL;
+  
+  (*vl).AddNode(vd);
   while (currentToken() == TOKEN(COMMA)) {
-    parseVarDeclare();
+    nextToken(); // consume ','
+    vd = parseVariableDefinition();
+    if (!vd) return NULL;
+    (*vl).AddNode(vd);
   }
   
-  return vl;
+  return vl.Release();
 }
 
 cASTNode* cParser::parseWhileStatement()

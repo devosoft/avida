@@ -105,7 +105,7 @@ private:
   cASTNode* parseExprP6_Index(cASTNode* l);
   cASTNode* parseForeachStatement();
   cASTNode* parseFunctionDefine();
-  cASTFunctionDefinition* parseFunctionHeader(bool declare = true);
+  cASTFunctionDefinition* parseFunctionHeader();
   cASTNode* parseIDStatement();
   cASTNode* parseIfStatement();
   cASTNode* parseIndexExpression();
@@ -113,8 +113,8 @@ private:
   cASTNode* parseRefStatement();
   cASTNode* parseReturnStatement();
   cASTNode* parseStatementList();
-  cASTNode* parseVarDeclare();
-  cASTNode* parseVarDeclareList();
+  cASTVariableDefinition* parseVariableDefinition();
+  cASTVariableDefinitionList* parseVariableDefinitionList();
   cASTNode* parseWhileStatement();
   
   void reportError(ASParseError_t err, const int line);

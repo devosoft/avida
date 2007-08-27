@@ -38,6 +38,7 @@ void cASTWhileBlock::Accept(cASTVisitor& visitor) { visitor.visitWhileBlock(*thi
 
 void cASTFunctionDefinition::Accept(cASTVisitor& visitor) { visitor.visitFunctionDefinition(*this); }
 void cASTVariableDefinition::Accept(cASTVisitor& visitor) { visitor.visitVariableDefinition(*this); }
+void cASTVariableDefinitionList::Accept(cASTVisitor& visitor) { visitor.visitVariableDefinitionList(*this); }
 
 void cASTExpressionBinary::Accept(cASTVisitor& visitor) { visitor.visitExpressionBinary(*this); }
 void cASTExpressionUnary::Accept(cASTVisitor& visitor) { visitor.visitExpressionUnary(*this); }

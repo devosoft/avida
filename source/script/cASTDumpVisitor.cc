@@ -240,13 +240,24 @@ void cASTDumpVisitor::visitFunctionDefinition(cASTFunctionDefinition& node)
 {
   indent();
   cout << (node.IsDefinition() ? "":"@") << "function: " << mapType(node.GetType()) << " " << node.GetName() << "(";
-  
+  if (node.GetArguments()->GetSize()) { 
+    cout << endl;
+    node.GetArguments()->Accept(*this);
+    indent();
+  }
   cout << ")" << endl;
+  
+  indent();
+  cout << "{" << endl;
+  
   if (node.IsDefinition()) {
     m_depth++;
     node.GetCode()->Accept(*this);
     m_depth--;
   }
+
+  indent();
+  cout << "}" << endl;
 }
 
 
@@ -265,6 +276,18 @@ void cASTDumpVisitor::visitVariableDefinition(cASTVariableDefinition& node)
 
     m_depth -= 2;
   }  
+}
+
+
+void cASTDumpVisitor::visitVariableDefinitionList(cASTVariableDefinitionList& node)
+{
+  m_depth++;
+  
+  tListIterator<cASTVariableDefinition> it = node.Iterator();
+  cASTNode* val = NULL;
+  while ((val = it.Next())) val->Accept(*this);
+  
+  m_depth--;
 }
 
 

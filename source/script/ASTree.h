@@ -78,6 +78,7 @@ class cASTWhileBlock;
 
 class cASTFunctionDefinition;
 class cASTVariableDefinition;
+class cASTVariableDefinitionList;
 
 class cASTExpressionBinary;
 class cASTExpressionUnary;
@@ -243,16 +244,16 @@ class cASTFunctionDefinition : public cASTNode
 private:
   ASType_t m_type;
   cString m_name;
-  cASTNode* m_args;
+  cASTVariableDefinitionList* m_args;
   cASTNode* m_code;
   
 public:
-  cASTFunctionDefinition(ASType_t type, const cString& name, cASTNode* args)
+  cASTFunctionDefinition(ASType_t type, const cString& name, cASTVariableDefinitionList* args)
     : m_type(type), m_name(name), m_args(args), m_code(NULL) { ; }
   
   inline ASType_t GetType() { return m_type; }
   inline const cString& GetName() { return m_name; }
-  inline cASTNode* GetArguments() { return m_args; }
+  inline cASTVariableDefinitionList* GetArguments() { return m_args; }
   
   inline void SetCode(cASTNode* code) { m_code = code; }
   inline cASTNode* GetCode() { return m_code; }
@@ -281,6 +282,25 @@ public:
   
   void Accept(cASTVisitor& visitor);
 };
+
+
+class cASTVariableDefinitionList : public cASTNode
+{
+private:
+  tList<cASTVariableDefinition> m_nodes;
+  
+public:
+  cASTVariableDefinitionList() { ; }
+  ~cASTVariableDefinitionList() { ; }
+  
+  inline void AddNode(cASTVariableDefinition* n) { m_nodes.PushRear(n); }
+  inline tListIterator<cASTVariableDefinition> Iterator() { return tListIterator<cASTVariableDefinition>(m_nodes); }
+  
+  inline int GetSize() const { return m_nodes.GetSize(); }
+  
+  void Accept(cASTVisitor& visitor);
+};
+
 
 
 

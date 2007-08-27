@@ -49,6 +49,7 @@ public:
   
   void visitFunctionDefinition(cASTFunctionDefinition&);
   void visitVariableDefinition(cASTVariableDefinition&);
+  void visitVariableDefinitionList(cASTVariableDefinitionList&);
   
   void visitExpressionBinary(cASTExpressionBinary&);
   void visitExpressionUnary(cASTExpressionUnary&);

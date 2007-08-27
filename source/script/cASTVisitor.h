@@ -48,6 +48,7 @@ public:
   
   virtual void visitFunctionDefinition(cASTFunctionDefinition&) = 0;
   virtual void visitVariableDefinition(cASTVariableDefinition&) = 0;
+  virtual void visitVariableDefinitionList(cASTVariableDefinitionList&) = 0;
 
   virtual void visitExpressionBinary(cASTExpressionBinary&) = 0;
   virtual void visitExpressionUnary(cASTExpressionUnary&) = 0;
