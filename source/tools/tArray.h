@@ -88,8 +88,9 @@ public:
     assert(0 <= start && start <= GetSize());
     assert(0 <= end && end <= GetSize());
     
+    const int new_size = end - start;
     tArray tmp(end - start);
-    for(int i = start; i < end; i++) tmp[i] = m_data[i];
+    for(int i = 0; i < new_size; i++) tmp[i] = m_data[i + start];
 
     return tmp;
   }
