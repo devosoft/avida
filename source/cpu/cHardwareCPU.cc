@@ -352,9 +352,10 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("time", &cHardwareCPU::Inst_GetUpdate),
     
     // Promoter Model
-    tInstLibEntry<tMethod>("terminate", &cHardwareCPU::Inst_Terminate),
     tInstLibEntry<tMethod>("promoter", &cHardwareCPU::Inst_Promoter),
+    tInstLibEntry<tMethod>("terminate", &cHardwareCPU::Inst_Terminate),
     tInstLibEntry<tMethod>("regulate", &cHardwareCPU::Inst_Regulate),
+    tInstLibEntry<tMethod>("numberate", &cHardwareCPU::Inst_Numberate),
     
     // Energy usage
     tInstLibEntry<tMethod>("double-energy-usage", &cHardwareCPU::Inst_DoubleEnergyUsage),
@@ -463,20 +464,22 @@ void cHardwareCPU::Reset()
   }
 #endif   
 
+  // Promoter model
   if (m_world->GetConfig().PROMOTERS_ENABLED.Get())
   {
     // Ideally, this shouldn't be hard-coded
     cInstruction promoter_inst = m_world->GetHardwareManager().GetInstSet().GetInst(cStringUtil::Stringf("promoter"));
-    promoter_search_pos = 0;
-    promoter_inst_executed = 0;
-    promoter_pos.Resize(0);
-    promoter_active.Resize(0);
+
+    m_promoter_index = -1; // Meaning the last promoter was nothing
+    m_promoter_offset = 0;
+    m_promoter_regulation = 0;
+    m_promoters.Resize(0);
     for (int i=0; i<GetMemory().GetSize(); i++)
     {
       if ( (GetMemory())[i] == promoter_inst)
       {
-        promoter_pos.Push(i);
-        promoter_active.Push(true);
+        int code = Numberate(i-1, -1);
+        m_promoters.Push( cPromoter(i,code) );
       }
     }
   }
@@ -502,9 +505,10 @@ void cHardwareCPU::cLocalThread::Reset(cHardwareBase* in_hardware, int in_id)
   cur_head = nHardware::HEAD_IP;
   read_label.Clear();
   next_label.Clear();
+  
+  // Promoter model
+  m_promoter_inst_executed = 0;
 }
-
-
 
 // This function processes the very next command in the genome, and is made
 // to be as optimized as possible.  This is the heart of avida.
@@ -512,10 +516,9 @@ void cHardwareCPU::cLocalThread::Reset(cHardwareBase* in_hardware, int in_id)
 void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
 {
   int last_IP_pos = IP().GetPosition();
-
+  
   // Mark this organism as running...
   organism->SetRunning(true);
-  
   cPhenotype & phenotype = organism->GetPhenotype();
   
   if (m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1) {
@@ -523,6 +526,7 @@ void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
     if (phenotype.GetCPUCyclesUsed() == 0) Inst_Terminate(m_world->GetDefaultContext());
   }
   
+  // Count the cpu cycles used
   phenotype.IncCPUCyclesUsed();
   if (!m_world->GetConfig().NO_CPU_CYCLE_TIME.Get()) phenotype.IncTimeUsed();
 
@@ -554,6 +558,14 @@ void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
     // Test if costs have been paid and it is okay to execute this now...
     bool exec = SingleProcess_PayCosts(ctx, cur_inst);
 
+    // If there are no active promoters and a certain mode is set, then don't execute any further instructions
+    if ((m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1) 
+      && (m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() == 2) 
+      && (m_promoter_index == -1) ) 
+    { 
+      exec = false;
+    }
+    
     // Now execute the instruction...
     if (exec == true) {
       // NOTE: This call based on the cur_inst must occur prior to instruction
@@ -568,7 +580,7 @@ void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
       
       //Add to the promoter inst executed count before executing the inst (in case it is a terminator)
       if (m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1) {
-        promoter_inst_executed++;
+        m_threads[m_cur_thread].IncPromoterInstExecuted();
       }
 
       if (exec == true) SingleProcess_ExecuteInst(ctx, cur_inst);
@@ -579,29 +591,19 @@ void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
       
       // Pay the time cost of the instruction now
       phenotype.IncTimeUsed(time_cost);
-      
-      // In the promoter model, there may be a chance of termination
-      // that causes execution to start at a new instruction (per instruction executed)
-      if ( m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1 ) {
-        const double processivity = m_world->GetConfig().PROMOTER_PROCESSIVITY_INST.Get();
-        if ( ctx.GetRandom().P(1-processivity) ) Inst_Terminate(ctx);
+            
+      // In the promoter model, we may force termination after a certain number of inst have been executed
+      if ( m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1 )
+      {
+        const double processivity = m_world->GetConfig().PROMOTER_PROCESSIVITY.Get();
+        if ( ctx.GetRandom().P(1-processivity) ) 
+          Inst_Terminate(ctx);
+        if ( m_world->GetConfig().PROMOTER_INST_MAX.Get() && (m_threads[m_cur_thread].GetPromoterInstExecuted() >= m_world->GetConfig().PROMOTER_INST_MAX.Get()) ) 
+          Inst_Terminate(ctx);
       }
-      
+
     } // if exec
-    
-    // In the promoter model, there may be a chance of termination
-    // that causes execution to start at a new instruction (per cpu cycle executed)
-    // @JEB - since processivities usually v. close to 1 it doesn't
-    // improve speed much to combine with "per instruction" block
-    if ( m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1 )
-    {
-      const double processivity = m_world->GetConfig().PROMOTER_PROCESSIVITY.Get();
-      if ( ctx.GetRandom().P(1-processivity) ) 
-        Inst_Terminate(ctx);
-      if ( m_world->GetConfig().PROMOTER_MAX_INST.Get() && (promoter_inst_executed >= m_world->GetConfig().PROMOTER_MAX_INST.Get()) ) 
-        Inst_Terminate(ctx);
-    }
-    
+        
   } // Previous was executed once for each thread...
   
   // Kill creatures who have reached their max num of instructions executed
@@ -720,13 +722,16 @@ void cHardwareCPU::PrintStatus(ostream& fp)
       
   if (m_world->GetConfig().PROMOTERS_ENABLED.Get())
   {
-    fp << "Promoters:";
-    for (int i=0; i<promoter_pos.GetSize(); i++)
+    fp << "Promoters: index=" << m_promoter_index << " offset=" << m_promoter_offset;
+    fp << " exe_inst=" << m_threads[m_cur_thread].GetPromoterInstExecuted();
+    fp << " regulation=0x" << setbase(16) << setfill('0') << setw(8) << m_promoter_regulation << endl;
+    for (int i=0; i<m_promoters.GetSize(); i++)
     {
-      fp << " " << promoter_pos[i] << "-" << (promoter_active[i] ? "on" : "off"); 
+      fp << setfill(' ') << setbase(10) << i << "(" << m_promoters[i].m_pos << "):";
+      fp << "Ox" << setbase(16) << setfill('0') << setw(8) << (m_promoters[i].m_bit_code ^ m_promoter_regulation) << " "; 
     }
-    fp << endl;
-    fp << "Instructions executed past promoter: " << promoter_inst_executed << endl;
+    fp << endl;    
+    fp << setfill(' ') << setbase(10) << endl;
   }    
   fp.flush();
 }
@@ -4242,53 +4247,185 @@ bool cHardwareCPU::Inst_Promoter(cAvidaContext& ctx)
   return true;
 }
 
-// Move execution to a new promoter
+// Move the instruction ptr to the next active promoter
 bool cHardwareCPU::Inst_Terminate(cAvidaContext& ctx)
 {
-  // Reset the CPU, clearing everything except R/W head positions.
-  const int write_head_pos = GetHead(nHardware::HEAD_WRITE).GetPosition();
-  const int read_head_pos = GetHead(nHardware::HEAD_READ).GetPosition();
-  m_threads[m_cur_thread].Reset(this, m_threads[m_cur_thread].GetID());
-  GetHead(nHardware::HEAD_WRITE).Set(write_head_pos);
-  GetHead(nHardware::HEAD_READ).Set(read_head_pos);
-
-  // We want to execute the promoter that we land on.
-  promoter_inst_executed = 0;
+  // Optionally,
+  // Reset the thread.
+  if (m_world->GetConfig().TERMINATION_RESETS.Get())
+  {
+    //const int write_head_pos = GetHead(nHardware::HEAD_WRITE).GetPosition();
+    //const int read_head_pos = GetHead(nHardware::HEAD_READ).GetPosition();
+    m_threads[m_cur_thread].Reset(this, m_threads[m_cur_thread].GetID());
+    //GetHead(nHardware::HEAD_WRITE).Set(write_head_pos);
+    //GetHead(nHardware::HEAD_READ).Set(read_head_pos);
+    
+    //Setting this makes it harder to do things. You have to be modular.
+    organism->GetOrgInterface().ResetInputs(ctx);   // Re-randomize the inputs this organism sees
+    organism->ClearInput();                         // Also clear their input buffers, or they can still claim
+                                                    // rewards for numbers no longer in their environment!
+  }
+  
+  // Reset our count
+  m_threads[m_cur_thread].ResetPromoterInstExecuted();
   m_advance_ip = false;
+  const int reg_used = REG_BX; // register to put chosen promoter code in, for now always BX
+
+  // Search for an active promoter  
+  int start_offset = m_promoter_offset;
+  int start_index  = m_promoter_index;
   
-  //Setting this makes it harder to do things. You have to be modular.
-  organism->GetOrgInterface().ResetInputs(ctx);   // Re-randomize the inputs this organism sees
-  organism->ClearInput();                         // Also clear their input buffers, or they can still claim
-                                                  // rewards for numbers no longer in their environment!
-  
-  // Find the next active promoter
-  int started_search_pos = promoter_search_pos;
-  
-  while (promoter_pos.GetSize() > 0) // conditional infinite loop, breaks out
+  bool no_promoter_found = true;
+  if ( m_promoters.GetSize() > 0 ) 
   {
-    promoter_search_pos++;
-    promoter_search_pos %= promoter_active.GetSize();
-    if (promoter_active[promoter_search_pos]) break;
-    if (started_search_pos == promoter_search_pos) break;
-  } 
+    while( true )
+    {
+      // If the next promoter is active, then break out
+      NextPromoter();
+      if (IsActivePromoter()) 
+      {
+        no_promoter_found = false;
+        break;
+      }
+      
+      // If we just checked the promoter that we were originally on, then there
+      // are no active promoters.
+      if ( (start_offset == m_promoter_offset) && (start_index == m_promoter_index) ) break;
+
+      // If we originally were not on a promoter, then stop once we check the
+      // first promoter and an offset of zero
+      if (start_index == -1)
+      {
+          start_index = 0;
+      }
+    } 
+  }
   
-  //Can't find a promoter -- start at the beginning of the genome (or die! or sleep!)
-  if ((promoter_pos.GetSize() == 0) || ((promoter_search_pos == started_search_pos) && (!promoter_active[promoter_search_pos])))
+  if (no_promoter_found)
   {
-    IP().Set(0);
+    if ((m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() == 0) || (m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() == 2))
+    {
+      // Set defaults for when no active promoter is found
+      m_promoter_index = -1;
+      IP().Set(0);
+      GetRegister(reg_used) = 0;
+      
+      // @JEB HACK! -- All kinds of bad stuff happens if execution length is zero. For now:
+      if (m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() == 2) GetMemory().SetFlagExecuted(0);
+    }
+    // Death to organisms that refuse to use promoters!
+    else if (m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() == 1)
+    {
+      organism->Die();
+    }
+    else
+    {
+      cout << "Unrecognized NO_ACTIVE_PROMOTER_EFFECT setting: " << m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() << endl;
+    }
   }
   else
   {
-    IP().Set(promoter_pos[promoter_search_pos]);
+    // We found an active match, offset to just after it.
+    // and put its bit code in BX for the organism to have
+      // cHeadCPU will do the mod genome size for us
+    IP().Set(m_promoters[m_promoter_index].m_pos + 1);
+    GetRegister(reg_used) = m_promoters[m_promoter_index].m_bit_code;
   }
-  
   return true;
 }
 
-// To be implemented...
+// Get a new regulation code (which is XOR'ed with promoter codes).
 bool cHardwareCPU::Inst_Regulate(cAvidaContext& ctx)
 {
+  const int reg_used = FindModifiedRegister(REG_BX);
+  m_promoter_regulation = GetRegister(reg_used);
   return true;
+}
+
+// Create a number from inst bit codes
+bool cHardwareCPU::Inst_Numberate(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(REG_BX);
+  
+  // advance the IP now, so that it rests on the beginning of our number
+  IP().Advance();
+  m_advance_ip = false;
+  
+  int num = Numberate(IP().GetPosition(), +1);
+  GetRegister(reg_used) = num;
+  return true;
+}
+
+// Move to the next promoter.
+void cHardwareCPU::NextPromoter()
+{
+  // Move promoter index, rolling over if necessary
+  m_promoter_index++;
+  if (m_promoter_index == m_promoters.GetSize())
+  {
+    m_promoter_index = 0;
+    
+    // Move offset, rolling over when there are not enough bits before we would have to wrap around left
+    m_promoter_offset+=m_world->GetConfig().PROMOTER_EXE_LENGTH.Get();
+    if (m_promoter_offset + m_world->GetConfig().PROMOTER_EXE_LENGTH.Get() >= cHardwareCPU::PROMOTER_CODE_SIZE)
+    {
+      m_promoter_offset = 0;
+    }
+  }
+}
+
+
+// Check whether the current promoter is active.
+bool cHardwareCPU::IsActivePromoter()
+{
+  assert( m_promoters.GetSize() != 0 );
+  int count = 0;
+  unsigned int code = m_promoters[m_promoter_index].m_bit_code ^ m_promoter_regulation;
+  for(int i=0; i<m_world->GetConfig().PROMOTER_EXE_LENGTH.Get(); i++)
+  {
+    int offset = m_promoter_offset + i;
+    offset %= cHardwareCPU::PROMOTER_CODE_SIZE;
+    int state = code >> offset;
+    count += (state & 1);
+  }
+
+  return (count >= m_world->GetConfig().PROMOTER_EXE_THRESHOLD.Get());
+}
+
+// Construct a promoter bit code from instruction bit codes
+int cHardwareCPU::Numberate(int _pos, int _dir)
+{  
+  int code_size = 0;
+  unsigned int code = 0;
+  int j = _pos;
+  j %= GetMemory().GetSize();
+  while (code_size < cHardwareCPU::PROMOTER_CODE_SIZE)
+  {
+    unsigned int inst_code = (unsigned int) GetInstSet().GetInstructionCode( (GetMemory())[j] );
+    // shift bits in, one by one ... excuse the counter pun
+    for (int code_on = 0; (code_size < cHardwareCPU::PROMOTER_CODE_SIZE) && (code_on < m_world->GetConfig().INST_CODE_LENGTH.Get()); code_on++)
+    {
+      if (_dir < 0)
+      {
+        code >>= 1; // shift first so we don't go one too far at the end
+        code += (1 << (cHardwareCPU::PROMOTER_CODE_SIZE - 1)) * (inst_code & 1);
+        inst_code >>= 1; 
+      }
+      else
+      {
+        code <<= 1; // shift first so we don't go one too far at the end;        
+        code += (inst_code >> (m_world->GetConfig().INST_CODE_LENGTH.Get() - 1)) & 1;
+        inst_code <<= 1; 
+      }
+      code_size++;
+    }
+    
+     // move back one inst
+    j += GetMemory().GetSize() + _dir;
+    j %= GetMemory().GetSize();
+
+  }
+  return code;
 }
 
 
@@ -4306,7 +4443,6 @@ bool cHardwareCPU::Inst_SendMessage(cAvidaContext& ctx)
   msg.SetData(GetRegister(data_reg));
   return organism->SendMessage(ctx, msg);
 }
-
 
 /*! This method /attempts/ to retrieve a message -- It may not be possible, as in
 the case of an empty receive buffer.
@@ -4327,7 +4463,6 @@ bool cHardwareCPU::Inst_RetrieveMessage(cAvidaContext& ctx)
   GetRegister(data_reg) = msg->GetData();
   return true;
 }
-
 
 //// Placebo insts ////
 bool cHardwareCPU::Inst_Skip(cAvidaContext& ctx)

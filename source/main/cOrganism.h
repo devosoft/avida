@@ -121,6 +121,7 @@ protected:
   int m_max_executed;      // Max number of instruction executed before death.  
   bool m_is_running;       // Does this organism have the CPU?
   bool m_is_sleeping;      // Is this organisms sleeping?
+  bool m_is_dead;          // Is this organism dead?
   
   class cNetSupport
   {
@@ -181,6 +182,7 @@ public:
   void SetSleeping(bool in_sleeping) { m_is_sleeping = in_sleeping; }
   bool IsSleeping() { return m_is_sleeping; }
   
+  bool IsDead() { return m_is_dead; }
   
   // --------  cOrgInterface Methods  --------
   cHardwareBase& GetHardware() { return *m_hardware; }
@@ -193,7 +195,7 @@ public:
   int GetNextInput(int& in_input_pointer) { return m_interface->GetInputAt(in_input_pointer); } //@JEB alternate for GX
   tBuffer<int>& GetInputBuf() { return m_input_buf; }
   tBuffer<int>& GetOutputBuf() { return m_output_buf; }
-  void Die() { m_interface->Die(); }
+  void Die() { m_interface->Die(); m_is_dead = true; }
   void Kaboom(int dist) { m_interface->Kaboom(dist);}
   void SpawnDeme() { m_interface->SpawnDeme(); }
   int GetCellID() { return m_interface->GetCellID(); }

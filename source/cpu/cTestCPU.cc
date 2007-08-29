@@ -221,7 +221,7 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
   
   organism.GetHardware().SetTrace(tracer);
   while (time_used < time_allocated && organism.GetHardware().GetMemory().GetSize() &&
-         organism.GetPhenotype().GetNumDivides() == 0)
+         organism.GetPhenotype().GetNumDivides() == 0 && !organism.IsDead())
   {
     time_used++;
     

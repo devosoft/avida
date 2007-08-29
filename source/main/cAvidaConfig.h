@@ -465,14 +465,15 @@ public:
 
   CONFIG_ADD_GROUP(PROMOTER_GROUP, "Promoters");
   CONFIG_ADD_VAR(PROMOTERS_ENABLED, int, 0, "Use the promoter/terminator execution scheme.\nCertain instructions must also be included.");
-  CONFIG_ADD_VAR(PROMOTER_MAX_INST, int, 20, "Maximum number of instructions to execute before terminating.");
+  CONFIG_ADD_VAR(PROMOTER_INST_MAX, int, 0, "Maximum number of instructions to execute before terminating. 0 = off");
   CONFIG_ADD_VAR(PROMOTER_PROCESSIVITY, double, 1.0, "Chance of not terminating after each cpu cycle.");
   CONFIG_ADD_VAR(PROMOTER_PROCESSIVITY_INST, double, 1.0, "Chance of not terminating after each instruction.");
-  CONFIG_ADD_VAR(PROMOTER_BG_STRENGTH, double, 0, "Probability of positions that are not promoter\ninstructions initiating execution (promoters are 1).");
-  CONFIG_ADD_VAR(REGULATION_STRENGTH, double, 1, "Strength added or subtracted to a promoter by regulation.");
-  CONFIG_ADD_VAR(REGULATION_DECAY_FRAC, double, 0.1, "Fraction of regulation that decays away. \nMax regulation = 2^(REGULATION_STRENGTH/REGULATION_DECAY_FRAC)");
+  CONFIG_ADD_VAR(TERMINATION_RESETS, int, 0, "Does termination reset the thread's state?");
+  CONFIG_ADD_VAR(NO_ACTIVE_PROMOTER_EFFECT, int, 0, "What happens when there are no active promoters?\n0 = Start execution at the beginning of the genome.\n1 = Kill the organism.\n2 = Stop the organism from executing any further instructions.");
+  CONFIG_ADD_VAR(PROMOTER_EXE_LENGTH, int, 4, "Length of promoter windows used to determine execution.");
+  CONFIG_ADD_VAR(PROMOTER_EXE_THRESHOLD, int, 3, "Minimum number of bits that must be set in a promoter window to allow execution.");
   CONFIG_ADD_VAR(INST_CODE_LENGTH, int, 4, "Instruction binary code length (number of bits)");
-  CONFIG_ADD_VAR(INST_CODE_DEFAULT_TYPE, int, 0, "Default value of instruction binary code value.\n0 = All zeros\n1 = Based of the instruction number");
+  CONFIG_ADD_VAR(INST_CODE_DEFAULT_TYPE, int, 0, "Default value of instruction binary code value.\n0 = All zeros\n1 = Based off the instruction number");
 
   CONFIG_ADD_GROUP(COLORS_GROUP, "Output colors for when data files are printed in HTML mode.\nThere are two sets of these; the first are for lineages,\nand the second are for mutation tests.");
   CONFIG_ADD_VAR(COLOR_DIFF, cString, "CCCCFF", "Color to flag stat that has changed since parent.");

@@ -89,13 +89,14 @@ protected:
   static const int NUM_HEADS = nHardware::NUM_HEADS >= NUM_REGISTERS ? nHardware::NUM_HEADS : NUM_REGISTERS;
   enum tRegisters { REG_AX = 0, REG_BX, REG_CX, REG_DX, REG_EX, REG_FX };
   static const int NUM_NOPS = 3;
+  static const int PROMOTER_CODE_SIZE = sizeof(int) * 8; // Number of bits in promoter codes
   
   // --------  Data Structures  --------
   struct cLocalThread
   {
   private:
     int m_id;
-    
+    int m_promoter_inst_executed;
   public:
     int reg[NUM_REGISTERS];
     cHeadCPU heads[NUM_HEADS];
@@ -115,6 +116,9 @@ protected:
     void Reset(cHardwareBase* in_hardware, int in_id);
     int GetID() const { return m_id; }
     void SetID(int in_id) { m_id = in_id; }
+    int GetPromoterInstExecuted() { return m_promoter_inst_executed; }
+    void IncPromoterInstExecuted() { m_promoter_inst_executed++; }
+    void ResetPromoterInstExecuted() { m_promoter_inst_executed = 0; }
   };
 
     
@@ -137,13 +141,24 @@ protected:
   bool m_mal_active;         // Has an allocate occured since last divide?
   bool m_advance_ip;         // Should the IP advance after this instruction?
   bool m_executedmatchstrings;	// Have we already executed the match strings instruction?
+
+  // <-- Promoter model
+  int m_promoter_index;       //site to begin looking for the next active promoter from
+  int m_promoter_offset;      //bit offset when testing whether a promoter is on
+  int m_promoter_regulation;  //bit code that modifies current execution, via an XOR
   
-  // Promoter model
-  int promoter_search_pos;      //site to begin looking for the next active promoter from
-  int promoter_inst_executed;   //num inst executed since last termination
-  tArray<int> promoter_pos;     //positions with promoter instructions
-  tArray<bool> promoter_active; //whether each promoter is active (same size as promoter_pos)
-  
+  struct cPromoter 
+  {
+  public:
+    int m_pos;      //position within genome
+    int m_bit_code; //bit code of promoter
+  public:
+    cPromoter(int _pos = 0, int _bit_code = 0) { m_pos = _pos; m_bit_code = _bit_code; }
+    ~cPromoter() { ; }
+  };
+  tArray<cPromoter> m_promoters;
+  // Promoter Model -->
+
   bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst);
   
   // --------  Stack Manipulation...  --------
@@ -533,6 +548,12 @@ private:
   bool Inst_Promoter(cAvidaContext& ctx);
   bool Inst_Terminate(cAvidaContext& ctx);
   bool Inst_Regulate(cAvidaContext& ctx);
+  bool Inst_Numberate(cAvidaContext& ctx);
+
+    // Helper functions //
+  bool IsActivePromoter();
+  void NextPromoter();
+  int Numberate(int _pos, int _dir);
 
   //// Messaging ////
   bool Inst_SendMessage(cAvidaContext& ctx);

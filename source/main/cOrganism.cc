@@ -69,6 +69,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome
   , m_max_executed(-1)
   , m_is_running(false)
   , m_is_sleeping(false)
+  , m_is_dead(false)
   , m_net(NULL)
   , m_msg(0)
 {
