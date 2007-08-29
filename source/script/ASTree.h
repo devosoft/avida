@@ -446,18 +446,24 @@ private:
   tManagedPointerArray<cString> m_nodes;
   bool m_last_wild;
   bool m_last_named;
+  cASTNode* m_expr;
   
 public:
-  cASTUnpackTarget() : m_last_wild(false), m_last_named(false) { ; }
-  ~cASTUnpackTarget() { ; }
+  cASTUnpackTarget() : m_last_wild(false), m_last_named(false), m_expr(NULL) { ; }
+  ~cASTUnpackTarget() { delete m_expr; }
   
   inline void AddVar(const cString& name) { m_nodes.Push(name); }
   inline int GetSize() const { return m_nodes.GetSize(); }
   inline const cString& GetVar(int idx) const { return m_nodes[idx]; }
   
+  inline bool IsLastNamed() const { return m_last_named; }
+  inline bool IsLastWild() const { return m_last_wild; }
+  
   inline void SetLastNamed() { m_last_wild = true; m_last_named = true; }
   inline void SetLastWild() { m_last_wild = true; m_last_named = false; }
   
+  cASTNode* GetExpression() const { return m_expr; }
+  void SetExpression(cASTNode* expr) { delete m_expr; m_expr = expr; }
   
   void Accept(cASTVisitor& visitor);
 };

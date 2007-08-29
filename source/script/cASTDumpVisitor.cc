@@ -388,5 +388,38 @@ void cASTDumpVisitor::visitVariableReference(cASTVariableReference& node)
 
 void cASTDumpVisitor::visitUnpackTarget(cASTUnpackTarget& node)
 {
-  // @todo
+  m_depth++;
+  
+  // Array unpack portion
+  indent();
+  cout << "@{";
+  m_depth++;
+  
+  for (int i = 0; i < node.GetSize(); i++) {
+    cout << endl;
+    indent();
+    cout << node.GetVar(i);
+  }
+  if (node.IsLastNamed()) {
+    cout << "..";
+  } else if (node.IsLastWild()) {
+    cout << endl;
+    indent();
+    cout << "..";
+  }
+  cout << endl;
+  m_depth--;
+  indent();
+  cout << "}" << endl;
+  
+  // Equals
+  m_depth--;
+  indent();
+  cout << "=" << endl;
+  m_depth++;
+  
+  // Expression portion
+  node.GetExpression()->Accept(*this);
+  
+  m_depth--;
 }

@@ -291,6 +291,12 @@ cASTNode* cParser::parseArrayUnpack()
       PARSE_UNEXPECT();
     }
   }
+  
+  if (nextToken() != TOKEN(ARR_CLOSE)) PARSE_UNEXPECT();
+  if (nextToken() != TOKEN(ASSIGN)) PARSE_UNEXPECT();
+  nextToken(); // consume '='
+  
+  (*ut).SetExpression(parseExpression());
 
   return ut.Release();
 }
