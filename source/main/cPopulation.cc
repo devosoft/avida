@@ -2033,7 +2033,7 @@ void cPopulation::ProcessStep(cAvidaContext& ctx, double step_size, int cell_id)
   cPopulationCell& cell = GetCell(cell_id);
   assert(cell.IsOccupied()); // Unoccupied cell getting processor time!
   cOrganism* cur_org = cell.GetOrganism();
-  cur_org->GetHardware().SingleProcess(ctx);
+  cell.GetHardware()->SingleProcess(ctx);
   if (cur_org->GetPhenotype().GetToDelete() == true) {
     delete cur_org;
   }

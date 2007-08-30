@@ -519,12 +519,11 @@ void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
   
   // Mark this organism as running...
   organism->SetRunning(true);
-  cPhenotype & phenotype = organism->GetPhenotype();
+  cPhenotype& phenotype = organism->GetPhenotype();
   
-  if (m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1) {
-    //First instruction - check whether we should be starting at a promoter.
-    if (phenotype.GetCPUCyclesUsed() == 0) Inst_Terminate(m_world->GetDefaultContext());
-  }
+  // First instruction - check whether we should be starting at a promoter, when enabled.
+  if (phenotype.GetCPUCyclesUsed() == 0 && m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1)
+    Inst_Terminate(m_world->GetDefaultContext());
   
   // Count the cpu cycles used
   phenotype.IncCPUCyclesUsed();

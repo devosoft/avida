@@ -40,6 +40,7 @@ using namespace std;
 cPopulationCell::cPopulationCell(const cPopulationCell& in_cell)
   : m_world(in_cell.m_world)
   , m_organism(in_cell.m_organism)
+  , m_hardware(in_cell.m_hardware)
   , m_inputs(in_cell.m_inputs)
   , m_cell_id(in_cell.m_cell_id)
   , m_deme_id(in_cell.m_deme_id)
@@ -58,6 +59,7 @@ void cPopulationCell::operator=(const cPopulationCell& in_cell)
 {
   m_world = in_cell.m_world;
   m_organism = in_cell.m_organism;
+  m_hardware = in_cell.m_hardware;
   m_inputs = in_cell.m_inputs;
   m_cell_id = in_cell.m_cell_id;
   m_deme_id = in_cell.m_deme_id;
@@ -164,6 +166,7 @@ void cPopulationCell::InsertOrganism(cOrganism* new_org)
 
   // Adjust this cell's attributes to account for the new organism.
   m_organism = new_org;
+  m_hardware = &new_org->GetHardware();
   m_organism_count++;
 
   // Adjust the organism's attributes to match this cell.
@@ -191,6 +194,7 @@ cOrganism * cPopulationCell::RemoveOrganism()
     m_world->GetPopulation().GetDeme(m_deme_id).GiveBackCellEnergy(m_cell_id, m_organism->GetPhenotype().GetStoredEnergy() * m_world->GetConfig().FRAC_ENERGY_TRANSFER.Get());
   }
   m_organism = NULL;
+  m_hardware = NULL;
   return out_organism;
 }
 

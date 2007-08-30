@@ -204,29 +204,22 @@ void cGenotypeControl::Insert(cGenotype & new_genotype)
 
 bool cGenotypeControl::Adjust(cGenotype & in_genotype)
 {
-  cGenotype * cur_genotype = in_genotype.GetPrev();
+  cGenotype* cur_genotype = in_genotype.GetPrev();
 
   // Check to see if this genotype should be removed completely.
-
-  if (in_genotype.GetNumOrganisms() == 0 &&
-      in_genotype.GetDeferAdjust() == false) {
+  if (in_genotype.GetNumOrganisms() == 0 && in_genotype.GetDeferAdjust() == false) {
     m_world->GetClassificationManager().RemoveGenotype(in_genotype);
     return false;
   }
 
   // Do not adjust the position of this genotype if it was and still is the
   // best genotype, or if it is otherwise in the proper spot...
-
-  if (CheckPos(in_genotype)) {
-    return true;
-  }
+  if (CheckPos(in_genotype)) return true;
 
   // Otherwise, remove it from the queue (for just the moment).
-
   Remove(in_genotype);
 
   // If this genotype is the best, put it there.
-
   if (in_genotype.GetNumOrganisms() > best->GetNumOrganisms()) {
     Insert(in_genotype, best->GetPrev());
     best = &in_genotype;

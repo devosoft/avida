@@ -38,6 +38,7 @@
 #include "tList.h"
 #endif
 
+class cHardwareBase;
 class cPopulation;
 class cOrganism;
 class cPopulationCell;
@@ -50,6 +51,7 @@ class cPopulationCell
 private:
   cWorld* m_world;
   cOrganism* m_organism;                    // The occupent of this cell.
+  cHardwareBase* m_hardware;
   tList<cPopulationCell> m_connections;  // A list of neighboring cells.
   cMutationRates* m_mut_rates;           // Mutation rates at this cell.
   tArray<int> m_inputs;                 // Environmental Inputs...
@@ -68,7 +70,7 @@ private:
 
   
 public:
-  cPopulationCell() : m_world(NULL), m_organism(NULL), m_mut_rates(NULL), m_organism_count(0) { ; }
+  cPopulationCell() : m_world(NULL), m_organism(NULL), m_hardware(NULL), m_mut_rates(NULL), m_organism_count(0) { ; }
   cPopulationCell(const cPopulationCell& in_cell);
   ~cPopulationCell() { delete m_mut_rates; }
 
@@ -79,6 +81,7 @@ public:
   void Rotate(cPopulationCell& new_facing);
 
   inline cOrganism* GetOrganism() const { return m_organism; }
+  inline cHardwareBase* GetHardware() const { return m_hardware; }
   inline tList<cPopulationCell>& ConnectionList() { return m_connections; }
   inline cPopulationCell& GetCellFaced() { return *(m_connections.GetFirst()); }
   int GetFacing();  // Returns the facing of this cell.
