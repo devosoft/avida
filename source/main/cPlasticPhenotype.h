@@ -36,8 +36,8 @@
 #include "cPhenotype.h"
 #endif
 
-#ifndef tMatrix_h
-#include "tMatrix.h"
+#ifndef tArray_h
+#include "tArray.h"
 #endif
 
 
@@ -48,7 +48,7 @@ class cPlasticPhenotype : public cPhenotype{
   private:
     int m_num_observations;
     int m_num_trials;
-    tMatrix<int> m_env_inputs;
+    tArray<int> m_env_inputs;
     
     //Information retrieved from test_info not available in phenotype
     cString m_executed_flags;
@@ -70,7 +70,7 @@ class cPlasticPhenotype : public cPhenotype{
     int GetNumObservations()      const { return m_num_observations; }
     int GetNumTrials()            const { return m_num_trials; }
     double GetFrequency()         const { return static_cast<double>(m_num_observations) / m_num_trials; }
-    tMatrix<int> GetEnvInputs()   const { return m_env_inputs; }
+    tArray<int> GetEnvInputs()   const { return m_env_inputs; }
     int IsViable()               const { return m_viable; }
     cString GetExecutedFlags()    const { return m_executed_flags; }
   

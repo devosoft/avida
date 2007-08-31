@@ -1515,6 +1515,8 @@ class cActionPrintPhenotypicPlasticity : public cAction
           << "# gestation time" << endl;
       for (int k = 0; k < m_world->GetEnvironment().GetNumTasks(); k++)
         fot << "# task." << k << endl;
+      for (int k = 0; k < m_world->GetEnvironment().GetInputSize(); k++)
+        fot << "# env_input." << k << endl;
       fot << endl;
     }
     
@@ -1533,7 +1535,11 @@ class cActionPrintPhenotypicPlasticity : public cAction
         tArray<int> tasks = pp->GetLastTaskCount();
         for (int t = 0; t < tasks.GetSize(); t++)
           fot << tasks[t] << " ";
+        tArray<int> env_inputs = pp->GetEnvInputs();
+        for (int e = 0; e < env_inputs.GetSize(); e++)
+          fot << env_inputs[e] << " ";
         fot << endl;
+        
       }
     }
     

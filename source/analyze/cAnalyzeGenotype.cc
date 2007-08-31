@@ -414,7 +414,7 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cTestCPU* testcpu, cAnaly
   const cPlasticPhenotype* likely_phenotype = recalc_data.GetMostLikelyPhenotype();
   
   viable         = likely_phenotype->IsViable();
-  m_env_inputs   = likely_phenotype->GetEnvInputs()[0];
+  m_env_inputs   = likely_phenotype->GetEnvInputs();
   executed_flags = likely_phenotype->GetExecutedFlags();
   length         = likely_phenotype->GetGenomeLength();
   copy_length    = likely_phenotype->GetCopiedSize();

@@ -29,16 +29,13 @@
 
 bool cPlasticPhenotype::AddObservation( cCPUTestInfo& test_info )
 {
-  tArray<int> env_inputs = test_info.GetTestCPUInputs();
   cPhenotype& test_phenotype = test_info.GetTestPhenotype();
   if (test_phenotype == *this ){
     if (m_num_observations == 0){
-      m_env_inputs.Resize(1, env_inputs.GetSize());
+      m_env_inputs = test_info.GetTestCPUInputs();
       SetExecutedFlags(test_info);
       m_viable = test_info.IsViable();
-    } else
-      m_env_inputs.Resize(m_env_inputs.GetNumRows()+1, env_inputs.GetSize());
-    m_env_inputs[m_env_inputs.GetNumRows()-1] = env_inputs;
+    } 
     m_num_observations++;
     return true;
   }
