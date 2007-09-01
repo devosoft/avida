@@ -1393,7 +1393,7 @@ class cActionPrintGenomicSiteEntropy : public cAction
 			if (ctx.GetAnalyzeMode()) //We're in analyze mode, so process the current batch
 			{
 				cAnalyze& analyze = m_world->GetAnalyze();  
-				if (!analyze.GetCurrentBatch().IsAligned()) analyze.CommandAlign(""); //Let analyze take charge of aligning this batch
+				if (!analyze.GetCurrentBatch().IsAligned()) analyze.AlignCurrentBatch(); //Let analyze take charge of aligning this batch
 				tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
 				cAnalyzeGenotype* genotype = NULL;
 				while((genotype = batch_it.Next()))

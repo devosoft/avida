@@ -7954,9 +7954,9 @@ cString& cAnalyze::GetVariable(const cString & var)
 }
 
 
-void cAnalyze::LoadCommandList(cInitFile& init_file, tList<cAnalyzeCommand>& clist)
+int cAnalyze::LoadCommandList(cInitFile& init_file, tList<cAnalyzeCommand>& clist, int start_at)
 {
-  for (int i = 0; i < init_file.GetNumLines(); i++) {
+  for (int i = start_at; i < init_file.GetNumLines(); i++) {
     cString cur_string = init_file.GetLine(i);
     cString command = cur_string.PopWord();
     
@@ -7969,7 +7969,7 @@ void cAnalyze::LoadCommandList(cInitFile& init_file, tList<cAnalyzeCommand>& cli
     } else if (command_def != NULL && command_def->IsFlowCommand() == true) {
       // This code has a body to it... fill it out!
       cur_command = new cAnalyzeFlowCommand(command, cur_string);
-      LoadCommandList( init_file, *(cur_command->GetCommandList()) );
+      i = LoadCommandList(init_file, *(cur_command->GetCommandList()), i + 1); // Start processing at the next line
     } else {
       // This is a normal command...
       cur_command = new cAnalyzeCommand(command, cur_string);
@@ -7977,6 +7977,8 @@ void cAnalyze::LoadCommandList(cInitFile& init_file, tList<cAnalyzeCommand>& cli
     
     clist.PushRear(cur_command);
   }
+  
+  return init_file.GetNumLines();
 }
 
 void cAnalyze::InteractiveLoadCommandList(tList<cAnalyzeCommand> & clist)

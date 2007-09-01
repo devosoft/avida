@@ -84,12 +84,7 @@ class cAnalyze {
 #if USE_tMemTrack
   tMemTrack<cAnalyze> mt;
 #endif
-/*
-FIXME : switch back to private.
-- switched to public while I brainstorm.  @kgn 06.11.22
-*/
-//private:
-public:
+private:
   int cur_batch;
 
   /*
@@ -153,51 +148,73 @@ public:
     COMPARE_RESULT_DIFF =  3  // Is different from parent (non qualtity).
   };
 
+
+  cAnalyze(); // @not_implemented
+  cAnalyze(const cAnalyze&); // @not_implemented
+  cAnalyze& operator=(const cAnalyze&); // @not_implemented
+
+public:
+  cAnalyze(cWorld* world);
+  ~cAnalyze();
+
+  void RunFile(cString filename);
+  void RunInteractive();
+  bool Send(const cString &text_input);
+  bool Send(const cStringList &list_input);
+  
+  int GetCurrentBatchID() { return cur_batch; }
+  cGenotypeBatch& GetCurrentBatch() { return batch[cur_batch]; }
+  cGenotypeBatch& GetBatch(int id) { assert(id >= 0 && id < MAX_BATCHES); return batch[id]; }
+  cAnalyzeJobQueue& GetJobQueue() { return m_jobqueue; }
+  
+  void AlignCurrentBatch() { CommandAlign(""); }
+
+  
+private:
   // Pop specific types of arguments from an arg list.
   cString PopDirectory(cString  in_string, const cString default_dir);
-  int PopBatch(const cString & in_string);
-  cAnalyzeGenotype * PopGenotype(cString gen_desc, int batch_id=-1);
+  int PopBatch(const cString& in_string);
+  cAnalyzeGenotype* PopGenotype(cString gen_desc, int batch_id = -1);
   cString & GetVariable(const cString & varname);
-
+  
   // Other arg-list methods
-  void LoadCommandList(cInitFile & init_file, tList<cAnalyzeCommand> & clist);
-  void InteractiveLoadCommandList(tList<cAnalyzeCommand> & clist);
-  void PreProcessArgs(cString & args);
-  void ProcessCommands(tList<cAnalyzeCommand> & clist);
-
+  int LoadCommandList(cInitFile& init_file, tList<cAnalyzeCommand>& clist, int start_line = 0);
+  void InteractiveLoadCommandList(tList<cAnalyzeCommand>& clist);
+  void PreProcessArgs(cString& args);
+  void ProcessCommands(tList<cAnalyzeCommand>& clist);
+  
   // Helper functions for printing to HTML files...
-  void HTMLPrintStat(const cFlexVar & value, std::ostream& fp, int compare=0,
-		     const cString & cell_flags="align=center", const cString & null_text="0", bool print_text=true);
-  int CompareFlexStat(const cFlexVar & org_stat, const cFlexVar & parent_stat, int compare_type=FLEX_COMPARE_MAX);
-
+  void HTMLPrintStat(const cFlexVar& value, std::ostream& fp, int compare=0,
+                     const cString& cell_flags="align=center", const cString& null_text = "0", bool print_text = true);
+  int CompareFlexStat(const cFlexVar& org_stat, const cFlexVar& parent_stat, int compare_type = FLEX_COMPARE_MAX);
+  
   // Deal with genotype data list (linking keywords to stats)
   void SetupGenotypeDataList();	
-  tDataEntryCommand<cAnalyzeGenotype> * GetGenotypeDataCommand(const cString & stat_entry);
+  tDataEntryCommand<cAnalyzeGenotype>* GetGenotypeDataCommand(const cString & stat_entry);
   void LoadGenotypeDataList(cStringList arg_list, tList< tDataEntryCommand<cAnalyzeGenotype> > & output_list);
-		      
+  
   void AddLibraryDef(const cString & name, void (cAnalyze::*_fun)(cString));
   void AddLibraryDef(const cString & name, void (cAnalyze::*_fun)(cString, tList<cAnalyzeCommand> &));
-  cAnalyzeCommandDefBase * FindAnalyzeCommandDef(const cString & name);
+  cAnalyzeCommandDefBase* FindAnalyzeCommandDef(const cString& name);
   void SetupCommandDefLibrary();
-  bool FunctionRun(const cString & fun_name, cString args);
-
+  bool FunctionRun(const cString& fun_name, cString args);
+  
   // Batch management...
-  int BatchUtil_GetMaxLength(int batch_id=-1);
-
+  int BatchUtil_GetMaxLength(int batch_id = -1);
+  
   // Comamnd helpers...
   void CommandDetail_Header(std::ostream& fp, int format_type,
-            tListIterator< tDataEntryCommand<cAnalyzeGenotype> > & output_it,
-            int time_step=-1);
+                            tListIterator< tDataEntryCommand<cAnalyzeGenotype> >& output_it, int time_step = -1);
   void CommandDetail_Body(std::ostream& fp, int format_type,
-            tListIterator< tDataEntryCommand<cAnalyzeGenotype> > & output_it,
-            int time_step=-1, int max_time=1);
+                          tListIterator< tDataEntryCommand<cAnalyzeGenotype> > & output_it,
+                          int time_step = -1, int max_time = 1);
   void CommandDetailAverage_Body(std::ostream& fp, int num_arguments,
-            tListIterator< tDataEntryCommand<cAnalyzeGenotype> > & output_it);
+                                 tListIterator< tDataEntryCommand<cAnalyzeGenotype> >& output_it);
   void CommandHistogram_Header(std::ostream& fp, int format_type,
-            tListIterator< tDataEntryCommand<cAnalyzeGenotype> > & output_it);
+                               tListIterator< tDataEntryCommand<cAnalyzeGenotype> >& output_it);
   void CommandHistogram_Body(std::ostream& fp, int format_type,
-            tListIterator< tDataEntryCommand<cAnalyzeGenotype> > & output_it);
-
+                             tListIterator< tDataEntryCommand<cAnalyzeGenotype> >& output_it);
+  
   // Loading methods...
   void LoadOrganism(cString cur_string);
   void LoadBasicDump(cString cur_string);
@@ -209,7 +226,7 @@ public:
   // from a file specified by the user, or resource.dat by default.
   void LoadResources(cString cur_string);
   void LoadFile(cString cur_string);
-
+  
   // Reduction
   void CommandFilter(cString cur_string);
   void FindGenotype(cString cur_string);
@@ -222,7 +239,7 @@ public:
   void KeepTopGenotypes(cString cur_string);
   void TruncateLineage(cString cur_string);
   
-
+  
   // Direct Output Commands...
   void CommandPrint(cString cur_string);
   void CommandTrace(cString cur_string);
@@ -235,14 +252,14 @@ public:
   void CommandDetailAverage(cString cur_string);
   void CommandDetailIndex(cString cur_string);
   void CommandHistogram(cString cur_string);
-
+  
   // Population Analysis Commands...
   void CommandPrintPhenotypes(cString cur_string);
   void CommandPrintDiversity(cString cur_string);
   void CommandPrintTreeStats(cString cur_string);
   void PhyloCommunityComplexity(cString cur_string);
   void AnalyzeCommunityComplexity(cString cur_string);
-
+  
   // Individual Organism Analysis...
   void CommandFitnessMatrix(cString cur_string);
   void CommandMapTasks(cString cur_string);
@@ -251,23 +268,23 @@ public:
   void CommandMapMutations(cString cur_string);
   void CommandMapDepth(cString cur_string);
   void CommandPairwiseEntropy(cString cur_string);
- 
+  
   // Population Comparison Commands...
   void CommandHamming(cString cur_string);
   void CommandLevenstein(cString cur_string);
   void CommandSpecies(cString cur_string);
   void CommandRecombine(cString cur_string);
-
+  
   // Lineage Analysis Commands...
   void CommandAlign(cString cur_string);
   void AnalyzeNewInfo(cString cur_string);  
   void MutationRevert(cString cur_string);
-
+  
   // Build Input Files for Avida
   void WriteClone(cString cur_string);
   void WriteInjectEvents(cString cur_string);
   void WriteCompetition(cString cur_string);
-
+  
   // Automated analysis...
   void AnalyzeMuts(cString cur_string);
   void AnalyzeInstructions(cString cur_string);
@@ -279,13 +296,13 @@ public:
   void AnalyzePopComplexity(cString cur_string);
   void AnalyzeMateSelection(cString cur_string);
   void AnalyzeComplexityDelta(cString cur_string);
-
+  
   // Environment Manipulation
   void EnvironmentSetup(cString cur_string);
-
+  
   // Documentation...
   void CommandHelpfile(cString cur_string);
-
+  
   // Control...
   void VarSet(cString cur_string);
   void ConfigGet(cString cur_string);
@@ -304,55 +321,35 @@ public:
   void IncludeFile(cString cur_string);
   void CommandSystem(cString cur_string);
   void CommandInteractive(cString cur_string);
-
+  
   // Uncategorized...
   void BatchCompete(cString cur_string);
-
+  
   // Functions...
-  void FunctionCreate(cString cur_string, tList<cAnalyzeCommand> & clist);
+  void FunctionCreate(cString cur_string, tList<cAnalyzeCommand>& clist);
+  
   // Looks up the resource concentrations that are the closest to the
   // given update and then fill in those concentrations into the environment.
   void FillResources(cTestCPU* testcpu, int update);
+  
   // Analyze the entropy of genotype under default environment
-  double AnalyzeEntropy(cAnalyzeGenotype * genotype, double mut_rate);
+  double AnalyzeEntropy(cAnalyzeGenotype* genotype, double mut_rate);
+  
   // Analyze the entropy of child given parent and default environment
-  double AnalyzeEntropyGivenParent(cAnalyzeGenotype * genotype, 
-				   cAnalyzeGenotype * parent, 
-				   double mut_rate);
+  double AnalyzeEntropyGivenParent(cAnalyzeGenotype* genotype, cAnalyzeGenotype* parent, double mut_rate);
+  
   // Calculate the increased information in genotype1 comparing to genotype2 
   // line by line. If information in genotype1 is less than that in genotype2 
   // in a line, increasing is 0. Usually this is used for child-parent comparison.
-  double IncreasedInfo(cAnalyzeGenotype * genotype1, 
-		       cAnalyzeGenotype * genotype2, 
-		       double mut_rate);
-
+  double IncreasedInfo(cAnalyzeGenotype* genotype1, cAnalyzeGenotype* genotype2, double mut_rate);
+  
   //Calculate covarying information between pairs of sites
-  tMatrix<double> AnalyzeEntropyPairs(cAnalyzeGenotype * genotype,
-					       double mut_rate);
-
+  tMatrix<double> AnalyzeEntropyPairs(cAnalyzeGenotype* genotype, double mut_rate);
   
+
   // Flow Control...
-  void CommandForeach(cString cur_string, tList<cAnalyzeCommand> & clist);
-  void CommandForRange(cString cur_string, tList<cAnalyzeCommand> & clist);
-
-  cAnalyze(const cAnalyze &); // Intentially not implemented
-
-public:
-  cAnalyze(cWorld* world);
-  ~cAnalyze();
-
-  void RunFile(cString filename);
-  void RunInteractive();
-  bool Send(const cString &text_input);
-  bool Send(const cStringList &list_input);
-  
-  int GetCurrentBatchID() { return cur_batch; }
-  cGenotypeBatch& GetCurrentBatch() { return batch[cur_batch]; }
-  cGenotypeBatch& GetBatch(int id) {
-    assert(id >= 0 && id < MAX_BATCHES);
-    return batch[id];
-  }
-  cAnalyzeJobQueue& GetJobQueue() { return m_jobqueue; }
+  void CommandForeach(cString cur_string, tList<cAnalyzeCommand>& clist);
+  void CommandForRange(cString cur_string, tList<cAnalyzeCommand>& clist);
 };
 
 #endif
