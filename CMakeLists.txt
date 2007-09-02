@@ -112,6 +112,7 @@ SET(ANALYZE_DIR ${PROJECT_SOURCE_DIR}/source/analyze)
 SET(ANALYZE_SOURCES
   ${ANALYZE_DIR}/cAnalyze.cc
   ${ANALYZE_DIR}/cAnalyzeGenotype.cc
+  ${ANALYZE_DIR}/cAnalyzeGenotypeTreeStats.cc
   ${ANALYZE_DIR}/cAnalyzeJobQueue.cc
   ${ANALYZE_DIR}/cAnalyzeJobWorker.cc
   ${ANALYZE_DIR}/cMutationalNeighborhood.cc
