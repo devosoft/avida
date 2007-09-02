@@ -90,6 +90,8 @@ public:
   int InnerNodes(){ return m_inner_nodes; }
   bool ExcludesLeaves(){ return m_should_exclude_leaves; }
 
+  void PrintAGLData(tArray<cAGLData> &agl);
+
   void AnalyzeBatchTree(tList<cAnalyzeGenotype> &genotype_list);
 };
 

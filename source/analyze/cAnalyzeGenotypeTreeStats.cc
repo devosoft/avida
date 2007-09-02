@@ -5,10 +5,37 @@
 #include "tHashTable.h"
 #include "cWorld.h"
 
+
+void cAnalyzeGenotypeTreeStats::PrintAGLData(tArray<cAGLData> &agl){
+  for(int i=0; i < agl.GetSize(); i++){
+    cout << i << ":";
+    cout << " " << agl[i].id;
+    cout << " " << agl[i].pid;
+    cout << " " << agl[i].depth;
+    cout << " " << agl[i].birth;
+    cout << " " << agl[i].ppos;
+    cout << " " << agl[i].offspring_count;
+    cout << " " << agl[i].anc_branch_dist;
+    cout << " " << agl[i].anc_branch_id;
+    cout << " " << agl[i].anc_branch_pos;
+    cout << " " << agl[i].off_branch_dist_acc;
+    cout << " " << agl[i].cumulative_stemminess;
+    cout << " " << agl[i].traversal_visited;
+    for(int j=0; j < agl[i].offspring_positions.GetSize(); j++){
+      cout << " " << agl[i].offspring_positions[j];
+    }
+    cout << endl;
+  }
+}
+
 void cAnalyzeGenotypeTreeStats::AnalyzeBatchTree(tList<cAnalyzeGenotype> &genotype_list){
   cAnalyzeGenotype * genotype = NULL;
   tListIterator<cAnalyzeGenotype> batch_it(genotype_list);
   const int num_gens = genotype_list.GetSize();
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    cout << "Number of genotypes: " << num_gens << endl;
+  }
+
 
   int array_pos = 0;
 
@@ -96,23 +123,44 @@ void cAnalyzeGenotypeTreeStats::AnalyzeBatchTree(tList<cAnalyzeGenotype> &genoty
   found = true;
   loop_count = 0;
   while (found == true) {
+    if (false && m_world->GetVerbosity() >= VERBOSE_ON) {
+      cout << endl << "  wave " << loop_count << "...";
+    }
     found = false;
+
+    int genotypes_already_set = 0;
+    int genotypes_identified_as_root = 0;
+    int genotypes_with_branching_parent = 0;
+    int genotypes_with_calced_parent = 0;
+    int genotypes_not_ready = 0;
+
     for (int pos = 0; pos < num_gens; pos++) {
-      if (m_agl[pos].anc_branch_dist > -1) continue; // continue if its set.
+      if (m_agl[pos].anc_branch_dist > -1){
+        genotypes_already_set++;
+        continue; // continue if its set.
+      }
       found = true;
       int parent_pos = m_agl[pos].ppos;
       if (parent_pos == -1) {
+        genotypes_identified_as_root++;
         m_agl[pos].anc_branch_dist = 0;  // Org is root.
       } else if (m_agl[parent_pos].offspring_count > 1) {        // Parent is branch.
+        genotypes_with_branching_parent++;
         m_agl[pos].anc_branch_dist = 1;
         m_agl[pos].anc_branch_id = m_agl[parent_pos].id;
         m_agl[pos].anc_branch_pos = parent_pos;
       } else if (m_agl[parent_pos].anc_branch_dist > -1) {     // Parent calculated.
+        genotypes_with_calced_parent++;
         m_agl[pos].anc_branch_dist = m_agl[parent_pos].anc_branch_dist + 1;
         m_agl[pos].anc_branch_id = m_agl[parent_pos].anc_branch_id;
         m_agl[pos].anc_branch_pos = m_agl[parent_pos].anc_branch_pos;
+      } else {
+        genotypes_not_ready++;
+        // Otherwise, we are not yet ready to calculate this entry.
       }
-      // Otherwise, we are not yet ready to calculate this entry.
+    }
+    if (false && m_world->GetVerbosity() >= VERBOSE_ON) {
+      cout << " (" << genotypes_already_set << "," << genotypes_identified_as_root << "," << genotypes_with_branching_parent << "," << genotypes_with_calced_parent << "," << genotypes_not_ready << ")" << endl;
     }
     loop_count++;
   }
@@ -126,6 +174,9 @@ void cAnalyzeGenotypeTreeStats::AnalyzeBatchTree(tList<cAnalyzeGenotype> &genoty
     if(m_agl[pos].offspring_count != 1){
       branch_tree_size++;
     }
+  }
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    cout << "Number of n-furcating nodes: " << branch_tree_size << endl;
   }
 
   m_agl2.Resize(branch_tree_size);  // Store agl data for each id.
@@ -181,13 +232,18 @@ void cAnalyzeGenotypeTreeStats::AnalyzeBatchTree(tList<cAnalyzeGenotype> &genoty
     ){
       root = &(m_agl2[pos]);
       /* Sanity check. */
-      if(!( (m_agl2[pos].anc_branch_dist == 0)
-          &&(m_agl2[pos].anc_branch_id == -1)
-          &&(m_agl2[pos].anc_branch_pos == -1)
+      if(
+        !(
+          //(m_agl2[pos].anc_branch_dist == 0) &&
+          (m_agl2[pos].anc_branch_id == -1) &&
+          (m_agl2[pos].anc_branch_pos == -1)
         )
       ){
         if (m_world->GetVerbosity() >= VERBOSE_ON) {
           cerr << "Error: while looking for root of subtree, found inconsistencies - " << endl;
+          cerr << " root ancestor-branch-distance: " << m_agl2[pos].anc_branch_dist << endl;
+          cerr << " root ancestor-branch-id: " << m_agl2[pos].anc_branch_id << endl;
+          cerr << " root ancestor-branch-pos: " << m_agl2[pos].anc_branch_id << endl;
         }
         return;
       }
@@ -298,7 +354,7 @@ void cAnalyzeGenotypeTreeStats::AnalyzeBatchTree(tList<cAnalyzeGenotype> &genoty
   Use to get expected data for making following test.
   */
 
-  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+  if (false && m_world->GetVerbosity() >= VERBOSE_ON) {
     for (int pos = 0; pos < branch_tree_size; pos++){
       cout << "id: " << m_agl2[pos].id;
       cout << " offspring_count: " << m_agl2[pos].offspring_positions.GetSize();
