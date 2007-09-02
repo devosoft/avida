@@ -3,6 +3,7 @@
 
 #include "cAnalyzeGenotype.h"
 #include "tHashTable.h"
+#include "cWorld.h"
 
 void cAnalyzeGenotypeTreeStats::AnalyzeBatchTree(tList<cAnalyzeGenotype> &genotype_list){
   cAnalyzeGenotype * genotype = NULL;
@@ -12,8 +13,12 @@ void cAnalyzeGenotypeTreeStats::AnalyzeBatchTree(tList<cAnalyzeGenotype> &genoty
   int array_pos = 0;
 
   /*
-  Put all of the genotypes in an array for easy reference and collect other information on them as we process them. {{{4
+  Put all of the genotypes in an array for easy reference and collect other
+  information on them as we process them. {{{4
   */
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    cout << "Scanning genotypes..." << endl;
+  }
   tArray<cAnalyzeGenotype *> gen_array(num_gens);
   tHashTable<int, int> id_hash;  // Store array pos for each id.
   tArray<int> id_array(num_gens), pid_array(num_gens);
@@ -54,6 +59,9 @@ void cAnalyzeGenotypeTreeStats::AnalyzeBatchTree(tList<cAnalyzeGenotype> &genoty
   /*
   Link each offspring to its parent. {{{4
   */
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    cout << "Assembling tree..." << endl;
+  }
   for (int pos = 0; pos < num_gens; pos++) {
     //cAnalyzeGenotype * genotype = gen_array[pos];
     cAnalyzeGenotype * genotype = m_agl[pos].genotype;
@@ -71,6 +79,9 @@ void cAnalyzeGenotypeTreeStats::AnalyzeBatchTree(tList<cAnalyzeGenotype> &genoty
   /*
   Count offspring of each parent. {{{4
   */
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    cout << "Loading offspring counts..." << endl;
+  }
   for (int pos = 0; pos < num_gens; pos++) {
     m_agl[pos].offspring_count = m_agl[pos].offspring_positions.GetSize();
   }
@@ -79,6 +90,9 @@ void cAnalyzeGenotypeTreeStats::AnalyzeBatchTree(tList<cAnalyzeGenotype> &genoty
   /*
   For each genotype, figure out how far back you need to go to get to a branch point. {{{4
   */
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    cout << "Finding branch points..." << endl;
+  }
   found = true;
   loop_count = 0;
   while (found == true) {
@@ -103,6 +117,9 @@ void cAnalyzeGenotypeTreeStats::AnalyzeBatchTree(tList<cAnalyzeGenotype> &genoty
     loop_count++;
   }
 
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    cout << "Building n-furcating subtree..." << endl;
+  }
   // compute number of subtree nodes.
   int branch_tree_size = 0;
   for (int pos = 0; pos < num_gens; pos++) {
@@ -146,6 +163,9 @@ void cAnalyzeGenotypeTreeStats::AnalyzeBatchTree(tList<cAnalyzeGenotype> &genoty
   /*
   For DFS of branch tree, locate root. {{{4
   */
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    cout << "Finding root of n-furcating subtree..." << endl;
+  }
   cAGLData *root = 0;
   for (int pos = 0; pos < branch_tree_size; pos++){
     m_agl2[pos].traversal_visited = false;
@@ -166,7 +186,9 @@ void cAnalyzeGenotypeTreeStats::AnalyzeBatchTree(tList<cAnalyzeGenotype> &genoty
           &&(m_agl2[pos].anc_branch_pos == -1)
         )
       ){
-        // FIXME : ERROR("while looking for root of subtree, found inconsistencies -");
+        if (m_world->GetVerbosity() >= VERBOSE_ON) {
+          cerr << "Error: while looking for root of subtree, found inconsistencies - " << endl;
+        }
         return;
       }
     }
@@ -175,6 +197,9 @@ void cAnalyzeGenotypeTreeStats::AnalyzeBatchTree(tList<cAnalyzeGenotype> &genoty
   /*
   DFS of branch tree, to accumulate branch distances. {{{4
   */
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    cout << "Finding root of n-furcating subtree..." << endl;
+  }
   tList<cAGLData> dfs_stack;
   if(0 != root){
     /* DFS. */
@@ -210,13 +235,18 @@ void cAnalyzeGenotypeTreeStats::AnalyzeBatchTree(tList<cAnalyzeGenotype> &genoty
       }
     }
   } else {
-    // FIXME : ERROR("couldn't find root of subtree -");
+    if (m_world->GetVerbosity() >= VERBOSE_ON) {
+      cerr << "Error: couldn't find root of subtree - " << endl;
+    }
     return;
   }
 
   /*
   Compute cumulative stemminesses. {{{4
   */
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    cout << "Computing cumulative stemminesses..." << endl;
+  }
   for (int pos = 0; pos < branch_tree_size; pos++){
     if (0 == m_agl2[pos].anc_branch_dist){
       /* Correct stemminess for root... */
@@ -227,18 +257,22 @@ void cAnalyzeGenotypeTreeStats::AnalyzeBatchTree(tList<cAnalyzeGenotype> &genoty
       m_agl2[pos].cumulative_stemminess = 0.0;
     } else {
       m_agl2[pos].cumulative_stemminess =
+      (
         (double)(m_agl2[pos].anc_branch_dist)
         /
         (
           (double)(m_agl2[pos].off_branch_dist_acc) + (double)(m_agl2[pos].anc_branch_dist)
         )
-        ;
+      );
     }
   }
 
   /*
   Compute average cumulative stemminess. {{{4
   */
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    cout << "Computing average cumulative stemminess..." << endl;
+  }
   m_stemminess_sum = 0.0;
   m_average_stemminess = 0.0;
   m_inner_nodes = 0;
@@ -264,7 +298,7 @@ void cAnalyzeGenotypeTreeStats::AnalyzeBatchTree(tList<cAnalyzeGenotype> &genoty
   Use to get expected data for making following test.
   */
 
-  if (true){
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
     for (int pos = 0; pos < branch_tree_size; pos++){
       cout << "id: " << m_agl2[pos].id;
       cout << " offspring_count: " << m_agl2[pos].offspring_positions.GetSize();

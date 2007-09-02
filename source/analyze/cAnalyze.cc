@@ -3228,7 +3228,7 @@ void cAnalyze::CommandPrintTreeStats(cString cur_string)
   fp << "# 1: Average cumulative stemminess" << endl;
   fp << endl;
   
-  cAnalyzeGenotypeTreeStats agts;
+  cAnalyzeGenotypeTreeStats agts(m_world);
   agts.AnalyzeBatchTree(batch[cur_batch].List());
 
   fp << agts.AverageStemminess();

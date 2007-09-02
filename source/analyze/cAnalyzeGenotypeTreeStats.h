@@ -10,6 +10,7 @@
 
 
 class cAnalyzeGenotype;
+class cWorld;
 
 
 /*
@@ -69,14 +70,17 @@ public:
   int m_inner_nodes;
   bool m_should_exclude_leaves;
 
+  cWorld* m_world;
+
 public:
-  cAnalyzeGenotypeTreeStats()
+  cAnalyzeGenotypeTreeStats(cWorld* world)
   : m_agl(0)
   , m_agl2(0)
   , m_stemminess_sum(0.0)
   , m_average_stemminess(0.0)
   , m_inner_nodes(0)
   , m_should_exclude_leaves(true)
+  , m_world(world)
   {}
 
   tArray<cAGLData> &AGL(){ return m_agl; }
