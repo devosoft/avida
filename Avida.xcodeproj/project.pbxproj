@@ -195,6 +195,7 @@
 		70F9FC100C469DD70083B788 /* cASTDumpVisitor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70F9FC0F0C469DC10083B788 /* cASTDumpVisitor.cc */; };
 		B4FA258A0C5EB65E0086D4B5 /* cPlasticPhenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4FA25810C5EB6510086D4B5 /* cPlasticPhenotype.cc */; };
 		B4FA25A90C5EB7880086D4B5 /* cPhenPlastGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4FA259E0C5EB7600086D4B5 /* cPhenPlastGenotype.cc */; };
+		DCD8AC1F0C8A7C30004CBE6F /* cAnalyzeGenotypeTreeStats.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCA4BEC10C8A758800D81B58 /* cAnalyzeGenotypeTreeStats.cc */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -817,6 +818,8 @@
 		B4FA25810C5EB6510086D4B5 /* cPlasticPhenotype.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cPlasticPhenotype.cc; sourceTree = "<group>"; };
 		B4FA25820C5EB6510086D4B5 /* cPlasticPhenotype.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cPlasticPhenotype.h; sourceTree = "<group>"; };
 		B4FA259E0C5EB7600086D4B5 /* cPhenPlastGenotype.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cPhenPlastGenotype.cc; sourceTree = "<group>"; };
+		DCA4BEC10C8A758800D81B58 /* cAnalyzeGenotypeTreeStats.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeGenotypeTreeStats.cc; sourceTree = "<group>"; };
+		DCA4BEC20C8A758800D81B58 /* cAnalyzeGenotypeTreeStats.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAnalyzeGenotypeTreeStats.h; sourceTree = "<group>"; };
 		DCC30FCF0762539D008F7A48 /* Doxyfile */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = Doxyfile; sourceTree = "<group>"; };
 		DCC3109C0762539E008F7A48 /* avida.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = avida.cc; sourceTree = "<group>"; };
 		DCC31547076253A4008F7A48 /* cCycleCheck.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCycleCheck.cc; sourceTree = "<group>"; };
@@ -953,6 +956,8 @@
 		70422A1B091B141000A5E67F /* analyze */ = {
 			isa = PBXGroup;
 			children = (
+				DCA4BEC10C8A758800D81B58 /* cAnalyzeGenotypeTreeStats.cc */,
+				DCA4BEC20C8A758800D81B58 /* cAnalyzeGenotypeTreeStats.h */,
 				709D924B0A5D950D00D6A163 /* cMutationalNeighborhood.cc */,
 				709D92490A5D94FD00D6A163 /* cMutationalNeighborhood.h */,
 				709D924A0A5D94FD00D6A163 /* cMutationalNeighborhoodResults.h */,
@@ -1844,6 +1849,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DCD8AC1F0C8A7C30004CBE6F /* cAnalyzeGenotypeTreeStats.cc in Sources */,
 				7023EC3A0C0A431B00362B9C /* avida.cc in Sources */,
 				7023EC3B0C0A431B00362B9C /* cActionLibrary.cc in Sources */,
 				7023EC3C0C0A431B00362B9C /* cAnalyze.cc in Sources */,
