@@ -7982,7 +7982,7 @@ int cAnalyze::LoadCommandList(cInitFile& init_file, tList<cAnalyzeCommand>& clis
     
     if (command == "END") {
       // We are done with this section of code; break out...
-      break;
+      return i;
     } else if (command_def != NULL && command_def->IsFlowCommand() == true) {
       // This code has a body to it... fill it out!
       cur_command = new cAnalyzeFlowCommand(command, cur_string);
