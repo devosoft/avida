@@ -94,12 +94,19 @@ void cAnalyzeGenotypeTreeStats::AnalyzeBatchTree(tList<cAnalyzeGenotype> &genoty
     cAnalyzeGenotype * genotype = m_agl[pos].genotype;
     int parent_id = genotype->GetParentID();
     if (-1 != parent_id){
-      id_hash.Find(parent_id, m_agl[pos].ppos);
-      int parent_position = m_agl[pos].ppos;
-      m_agl[parent_position].offspring_positions.Push(pos);
-      /* XXX I think I'll be able to remove this. */
-      cAnalyzeGenotype * parent_genotype = m_agl[parent_position].genotype;
-      genotype->LinkParent(parent_genotype);
+      bool found_parent = id_hash.Find(parent_id, m_agl[pos].ppos);
+      if (found_parent){
+        int parent_position = m_agl[pos].ppos;
+        m_agl[parent_position].offspring_positions.Push(pos);
+        ///* XXX I think I'll be able to remove this. */
+        //cAnalyzeGenotype * parent_genotype = m_agl[parent_position].genotype;
+        //genotype->LinkParent(parent_genotype);
+      } else {
+        if (m_world->GetVerbosity() >= VERBOSE_ON) {
+          cerr << "Error: the parent of a non-root tree node is missing - " << endl;
+        }
+        return;
+      }
     }
   }
 
