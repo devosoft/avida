@@ -171,12 +171,19 @@ void cAnalyzeGenotypeTreeStats::AnalyzeBatchTree(tList<cAnalyzeGenotype> &genoty
   // compute number of subtree nodes.
   int branch_tree_size = 0;
   for (int pos = 0; pos < num_gens; pos++) {
-    if(m_agl[pos].offspring_count != 1){
+    //if(m_agl[pos].offspring_count != 1){
+    if(m_agl[pos].offspring_count > 1){
       branch_tree_size++;
     }
   }
   if (m_world->GetVerbosity() >= VERBOSE_ON) {
     cout << "Number of n-furcating nodes: " << branch_tree_size << endl;
+  }
+  if (branch_tree_size <= 0){
+    if (m_world->GetVerbosity() >= VERBOSE_ON) {
+      cerr << "Error: no branches found in tree - " << endl;
+    }
+    return;
   }
 
   m_agl2.Resize(branch_tree_size);  // Store agl data for each id.
@@ -184,7 +191,8 @@ void cAnalyzeGenotypeTreeStats::AnalyzeBatchTree(tList<cAnalyzeGenotype> &genoty
   int array_pos_2 = 0;
   if (true) for (int pos = 0; pos < num_gens; pos++) {
     int offs_count = m_agl[pos].offspring_count;
-    if (offs_count != 1){
+    //if (offs_count != 1){
+    if (offs_count > 1){
       m_agl2[array_pos_2].id = m_agl[pos].id;
       m_agl2[array_pos_2].pid = m_agl[pos].pid;
       m_agl2[array_pos_2].depth = m_agl[pos].depth;
@@ -254,7 +262,7 @@ void cAnalyzeGenotypeTreeStats::AnalyzeBatchTree(tList<cAnalyzeGenotype> &genoty
   DFS of branch tree, to accumulate branch distances. {{{4
   */
   if (m_world->GetVerbosity() >= VERBOSE_ON) {
-    cout << "Finding root of n-furcating subtree..." << endl;
+    cout << "Accumulating branch distances..." << endl;
   }
   tList<cAGLData> dfs_stack;
   if(0 != root){
