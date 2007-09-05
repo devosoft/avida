@@ -411,6 +411,7 @@ private:
   bool Inst_InjectThread(cAvidaContext& ctx);
   bool Inst_Transposon(cAvidaContext& ctx);
   bool Inst_Repro(cAvidaContext& ctx);
+  bool Inst_ReproSex(cAvidaContext& ctx);
   bool Inst_TaskPutRepro(cAvidaContext& ctx);
   bool Inst_TaskPutResetInputsRepro(cAvidaContext& ctx);
   bool Inst_Sterilize(cAvidaContext& ctx);

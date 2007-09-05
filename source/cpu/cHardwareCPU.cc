@@ -304,6 +304,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     
     // High-level instructions
     tInstLibEntry<tMethod>("repro", &cHardwareCPU::Inst_Repro),
+    tInstLibEntry<tMethod>("repro-sex", &cHardwareCPU::Inst_ReproSex),
     tInstLibEntry<tMethod>("repro-A", &cHardwareCPU::Inst_Repro),
     tInstLibEntry<tMethod>("repro-B", &cHardwareCPU::Inst_Repro),
     tInstLibEntry<tMethod>("repro-C", &cHardwareCPU::Inst_Repro),
@@ -2592,6 +2593,13 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
     if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
   }
   return true;
+}
+
+bool cHardwareCPU::Inst_ReproSex(cAvidaContext& ctx)
+{
+  organism->GetPhenotype().SetDivideSex(true);
+  organism->GetPhenotype().SetCrossNum(1);
+  return Inst_Repro(ctx);
 }
 
 bool cHardwareCPU::Inst_TaskPutRepro(cAvidaContext& ctx)
