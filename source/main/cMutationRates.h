@@ -40,12 +40,6 @@ class cMutationRates
 private:
   // Mutations are divided up by when they occur...
 
-  // ...anytime during execution...
-  struct sExecMuts {
-    double point_mut_prob;
-  };
-  sExecMuts exec;
-
   // ...during an instruction copy...
   struct sCopyMuts {
     double mut_prob;
@@ -93,28 +87,26 @@ public:
   void Clear();
   void Copy(const cMutationRates& in_muts);
 
-  bool TestPointMut(cAvidaContext& ctx) const { return ctx.GetRandom().P(exec.point_mut_prob); }
-  bool TestCopyMut(cAvidaContext& ctx) const { return ctx.GetRandom().P(copy.mut_prob); }
-  bool TestCopyIns(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.ins_prob); }
-  bool TestCopyDel(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.del_prob); }
-  bool TestCopySlip(cAvidaContext& ctx) const { return (copy.slip_prob == 0.0) ? 0 : ctx.GetRandom().P(copy.slip_prob); }
+  // Copy muts should always check if they are 0.0 before consulting the random number generator for performance
+  bool TestCopyMut(cAvidaContext& ctx) const { return (copy.mut_prob == 0.0) ? false : ctx.GetRandom().P(copy.mut_prob); }
+  bool TestCopySlip(cAvidaContext& ctx) const { return (copy.slip_prob == 0.0) ? false : ctx.GetRandom().P(copy.slip_prob); }
+  
+  bool TestInsMut(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.ins_prob); }
+  bool TestDelMut(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.del_prob); }
   bool TestDivideMut(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_mut_prob); }
   bool TestDivideIns(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_ins_prob); }
   bool TestDivideDel(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_del_prob); }
-  bool TestDivideSlip(cAvidaContext& ctx) const { return (divide.divide_slip_prob == 0.0) ? 0 : ctx.GetRandom().P(divide.divide_slip_prob); }
-  //bool TestDivideSlip(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_slip_prob); }
-    // @JEB The conditional just avoids calling for a random number to maintain consistency with past versions.
-    // It can be cleaned up in the future.
+  bool TestDivideSlip(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_slip_prob); }
   bool TestParentMut(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.parent_mut_prob); }
+  
   double DoMetaCopyMut(cAvidaContext& ctx) {
-    if (ctx.GetRandom().P(meta.copy_mut_prob) == false) return 1.0;
+    if (meta.copy_mut_prob == 0.0 || !ctx.GetRandom().P(meta.copy_mut_prob)) return 1.0;
     const double exp = ctx.GetRandom().GetRandNormal() * meta.standard_dev;
     const double change = pow(2.0, exp);
     copy.mut_prob *= change;
     return change;
   }
 
-  double GetPointMutProb() const     { return exec.point_mut_prob; }
   double GetCopyMutProb() const      { return copy.mut_prob; }
   double GetInsMutProb() const       { return divide.ins_prob; }
   double GetDelMutProb() const       { return divide.del_prob; }
@@ -130,7 +122,6 @@ public:
   double GetMetaCopyMutProb() const  { return meta.copy_mut_prob; }
   double GetMetaStandardDev() const  { return meta.standard_dev; }
   
-  void SetPointMutProb(double in_prob)  { exec.point_mut_prob    = in_prob; }
   void SetCopyMutProb(double in_prob)   { copy.mut_prob          = in_prob; }
   void SetInsMutProb(double in_prob)    { divide.ins_prob        = in_prob; }
   void SetDelMutProb(double in_prob)    { divide.del_prob        = in_prob; }

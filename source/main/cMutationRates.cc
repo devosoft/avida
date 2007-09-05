@@ -31,7 +31,6 @@
 
 void cMutationRates::Setup(cWorld* world)
 {
-  exec.point_mut_prob = world->GetConfig().POINT_MUT_PROB.Get();
   copy.mut_prob = world->GetConfig().COPY_MUT_PROB.Get();
   copy.slip_prob = world->GetConfig().COPY_SLIP_PROB.Get();
   divide.ins_prob = world->GetConfig().INS_MUT_PROB.Get();
@@ -52,7 +51,6 @@ void cMutationRates::Setup(cWorld* world)
 
 void cMutationRates::Clear()
 {
-  exec.point_mut_prob = 0.0;
   copy.mut_prob = 0.0;
   copy.slip_prob = 0.0;
   divide.ins_prob = 0.0;
@@ -73,7 +71,6 @@ void cMutationRates::Clear()
 
 void cMutationRates::Copy(const cMutationRates& in_muts)
 {
-  exec.point_mut_prob = in_muts.exec.point_mut_prob;
   copy.mut_prob = in_muts.copy.mut_prob;
   copy.slip_prob = in_muts.copy.slip_prob;
   divide.ins_prob = in_muts.divide.ins_prob;

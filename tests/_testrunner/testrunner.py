@@ -52,7 +52,7 @@ import xml.dom.minidom
 
 # Global Constants
 # ---------------------------------------------------------------------------------------------------------------------------
-TESTRUNNER_VERSION = "1.4c"
+TESTRUNNER_VERSION = "1.5"
 TESTRUNNER_COPYRIGHT = "2007"
 
 TRUE_STRINGS = ("y","Y","yes","Yes","true","True","1")
@@ -111,6 +111,10 @@ Usage: %(_testrunner_name)s [options] [testname ...]
       
     --help-test-cfg
       Display a sample test configuration file
+      
+    --ignore-consistency
+      Ignore consistency tests altogether.  Performance results are not saved.
+      Valid only when used in conjunction with -p or --run-perf-tests.
     
     -j number [%(cpus)d]
       Set the number of concurrent tests to run. i.e. - the number of CPUs
@@ -482,7 +486,7 @@ class cTest:
 
 
   # void cTest::runPerformanceTest() {
-  def runPerformanceTest(self, dolongtest):
+  def runPerformanceTest(self, dolongtest, saveresults):
     global settings, tmpdir, CONFIGDIR, PERFDIR, TRUE_STRINGS, PERF_BASE
     
     if self.has_perf_base and self.skip:
@@ -571,33 +575,37 @@ class cTest:
     
     # If no baseline results exist, write out results
     if not self.has_perf_base:
-      try:
-        if not os.path.exists(perfdir):
-          os.mkdir(perfdir)
-        if not os.path.isdir(perfdir):
+      if saveresults:
+        try:
+          if not os.path.exists(perfdir):
+            os.mkdir(perfdir)
+          if not os.path.isdir(perfdir):
+            try:
+              shutil.rmtree(rundir, True) # Clean up test directory
+            except (IOError, OSError): pass
+            self.psuccess = False
+            self.presult = "unable to write out baseline, file exists"
+            return
+            
+          fp = open(basepath, "w")
+          fp.write("%f,%f,%f,%f,%f,%f,%f,%f\n" % (r_min, r_max, r_ave, r_med, t_min, t_max, t_ave, t_med))
+          fp.flush()
+          fp.close()
+        except (IOError):
           try:
             shutil.rmtree(rundir, True) # Clean up test directory
           except (IOError, OSError): pass
           self.psuccess = False
-          self.presult = "unable to write out baseline, file exists"
+          self.presult = "error occurred writing baseline results"
           return
-          
-        fp = open(basepath, "w")
-        fp.write("%f,%f,%f,%f,%f,%f,%f,%f\n" % (r_min, r_max, r_ave, r_med, t_min, t_max, t_ave, t_med))
-        fp.flush()
-        fp.close()
-      except (IOError):
-        try:
-          shutil.rmtree(rundir, True) # Clean up test directory
-        except (IOError, OSError): pass
-        self.psuccess = False
-        self.presult = "error occurred writing baseline results"
-        return
+        self.presult = "new baseline - wall time: %3.4f user time: %3.4f" % (t_min, r_min)
+      else:
+        self.presult = "*unsaved* baseline - wall time: %3.4f user time: %3.4f" % (t_min, r_min)
+
 
       try:
         shutil.rmtree(rundir, True) # Clean up test directory
       except (IOError, OSError): pass
-      self.presult = "new baseline - wall time: %3.4f user time: %3.4f" % (t_min, r_min)
       return
       
     # Compare results with baseline
@@ -616,25 +624,26 @@ class cTest:
       self.psuccess = False
       self.presult = "failed"
     elif r_min < r_lmargin or t_min < t_lmargin:
-      # new baseline, move old baseline and write out new results
-      try:
-        rev = "exported"
-        if self.usesvn:
-          sverp = os.popen("cd %s; %s" % (self.tdir, settings["svnversion"]))
-          rev = sverp.readline().strip()
-          sverp.close()
-          if rev == "": rev = "exported"
-        
-        oname = "perf-%s-prev-%s" % (time.strftime("%Y-%m-%d-%H.%M.%S"), rev)
-        
-        shutil.move(basepath, os.path.join(perfdir, oname))
-        
-        fp = open(basepath, "w")
-        fp.write("%f,%f,%f,%f,%f,%f,%f,%f\n" % (r_min, r_max, r_ave, r_med, t_min, t_max, t_ave, t_med))
-        fp.flush()
-        fp.close()
-      except (IOError, OSError, shutil.Error):
-        print "Warning: error updating '%s' performance baseline" % self.name
+      if saveresults:
+        # new baseline, move old baseline and write out new results
+        try:
+          rev = "exported"
+          if self.usesvn:
+            sverp = os.popen("cd %s; %s" % (self.tdir, settings["svnversion"]))
+            rev = sverp.readline().strip()
+            sverp.close()
+            if rev == "": rev = "exported"
+          
+          oname = "perf-%s-prev-%s" % (time.strftime("%Y-%m-%d-%H.%M.%S"), rev)
+          
+          shutil.move(basepath, os.path.join(perfdir, oname))
+          
+          fp = open(basepath, "w")
+          fp.write("%f,%f,%f,%f,%f,%f,%f,%f\n" % (r_min, r_max, r_ave, r_med, t_min, t_max, t_ave, t_med))
+          fp.flush()
+          fp.close()
+        except (IOError, OSError, shutil.Error):
+          print "Warning: error updating '%s' performance baseline" % self.name
       self.presult = "exceeded"
 
     # Print output on all tests
@@ -788,7 +797,7 @@ def runConsistencyTests(alltests, dolongtests):
 
     sem.acquire()
     ti += 1
-    sys.stdout.write("\rPerforming Test:  %4d of %d -- %-45s " % (ti, len(tests), test.name[:45]))
+    sys.stdout.write("\rPerforming Test:  % 4d of %d -- %-45s " % (ti, len(tests), test.name[:45]))
     sys.stdout.flush()
     tthread = threading.Thread(target=runTestWrapper, args=(test, sem))
     tthread.start()
@@ -819,7 +828,7 @@ def runConsistencyTests(alltests, dolongtests):
 
 
 # (int, int) runPerformanceTests(cTest[] tests) {
-def runPerformanceTests(alltests, dolongtests, force):
+def runPerformanceTests(alltests, dolongtests, force, saveresults):
   global settings, tmpdir
   
   tests = []
@@ -842,7 +851,7 @@ def runPerformanceTests(alltests, dolongtests, force):
     ti += 1
     sys.stdout.write("\rPerforming Test:  % 4d of %d" % (ti, len(tests)))
     sys.stdout.flush()
-    test.runPerformanceTest(dolongtests)
+    test.runPerformanceTest(dolongtests, saveresults)
   
   sys.stdout.write("\n\n")
   sys.stdout.flush()
@@ -909,15 +918,16 @@ def main(argv):
   # Process Command Line Arguments
   try:
     opts, args = getopt.getopt(argv[1:], "fhj:lm:ps:v", \
-      ["builddir=", "disable-svn", "force-perf", "help", "help-test-cfg", "list-tests", "long-tests", "mode=", \
-       "reset-perf-base", "run-perf-tests", "show-diff", "skip-tests", "svnmetadir=", "svn=", "svnversion=", "testdir=", \
-       "verbose", "version", "-testrunner-name="])
+      ["builddir=", "disable-svn", "force-perf", "help", "help-test-cfg", "ignore-consistency", "list-tests", "long-tests", \
+       "mode=", "reset-perf-base", "run-perf-tests", "show-diff", "skip-tests", "svnmetadir=", "svn=", "svnversion=", \
+       "testdir=", "verbose", "version", "-testrunner-name="])
   except getopt.GetoptError:
     usage()
     return -1
   
   # Define Option Flags
   opt_forceperf = False
+  opt_ignoreconsistency = False
   opt_listtests = False
   opt_long = False
   opt_runperf = False
@@ -941,6 +951,8 @@ def main(argv):
       settings["_disable_svn"] = ""
     elif opt in ("-f", "--force-perf"):
       opt_forceperf = True
+    elif opt == "--ignore-consistency":
+      opt_ignoreconsistency = True
     elif opt in ("-l", "--list-tests"):
       opt_listtests = True
     elif opt == "--long-tests":
@@ -1034,11 +1046,16 @@ def main(argv):
   tmpdir = tempfile.mkdtemp("_testrunner")
 
 
+  success = 0
+  fail = 0
+
   # Run Consistency Tests
-  (success, fail) = runConsistencyTests(tests, opt_long)
+  if (not opt_runperf or not opt_ignoreconsistency):
+    (success, fail) = runConsistencyTests(tests, opt_long)
   
-  if fail == 0 and opt_runperf:
-    (psuccess, pfail) = runPerformanceTests(tests, opt_long, opt_forceperf)
+  # Run Performance Tests
+  if (opt_ignoreconsistency or fail == 0) and opt_runperf:
+    (psuccess, pfail) = runPerformanceTests(tests, opt_long, opt_forceperf, not opt_ignoreconsistency)
     success += psuccess
     fail += pfail
 

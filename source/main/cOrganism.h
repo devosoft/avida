@@ -271,8 +271,8 @@ public:
 
   // --------  Mutation Rate Convenience Methods  --------
   bool TestCopyMut(cAvidaContext& ctx) const { return m_mut_rates.TestCopyMut(ctx); }
-  bool TestCopyIns(cAvidaContext& ctx) const { return m_mut_rates.TestCopyIns(ctx); }
-  bool TestCopyDel(cAvidaContext& ctx) const { return m_mut_rates.TestCopyDel(ctx); }
+  bool TestInsMut(cAvidaContext& ctx) const { return m_mut_rates.TestInsMut(ctx); }
+  bool TestDelMut(cAvidaContext& ctx) const { return m_mut_rates.TestDelMut(ctx); }
   bool TestCopySlip(cAvidaContext& ctx) const { return m_mut_rates.TestCopySlip(ctx); }
   bool TestDivideMut(cAvidaContext& ctx) const { return m_mut_rates.TestDivideMut(ctx); }
   bool TestDivideIns(cAvidaContext& ctx) const { return m_mut_rates.TestDivideIns(ctx); }

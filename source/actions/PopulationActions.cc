@@ -810,7 +810,6 @@ public:
     }
 
     switch (m_mut_type) {
-      case POINT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetPointMutProb(m_prob); break;
       case COPY: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetCopyMutProb(m_prob); break;
       case INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInsMutProb(m_prob); break;
       case DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDelMutProb(m_prob); break;
@@ -918,7 +917,6 @@ public:
     }
     
     switch (m_mut_type) {
-      case POINT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetPointMutProb(prob); break;
       case COPY: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetCopyMutProb(prob); break;
       case INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInsMutProb(prob); break;
       case DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDelMutProb(prob); break;
