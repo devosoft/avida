@@ -2168,7 +2168,6 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
   // if the org hasn't output yet enough numbers, just return without completing any tasks
   if (ctx.GetOutputBuffer().GetNumStored() < ctx.GetOutputBuffer().GetCapacity()) return 0;
 
-
   double quality = 0.0;
   const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
 
@@ -2284,6 +2283,21 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
 		  sum += vars[i]/double(args.GetInt(3)-1);
       double Gx = 1+9*sum;
       Fx = Gx * (1 - sqrt(vars[0]/Gx) - (vars[0]/Gx)*(sin(3.14159*vars[0]*10)));
+      break;
+    }
+
+    case 12:
+    {
+      vars[0] = vars[0]*.9+.1;
+	Fx = vars[0];
+	break;
+    }
+
+    case 13:
+    {
+      vars[0] = vars[0]*.9+.1;
+      vars[1] = vars[1]*5;
+      Fx = (1+vars[1])/vars[0];
       break;
     }
 
