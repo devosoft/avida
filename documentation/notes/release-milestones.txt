@@ -8,101 +8,60 @@ Feature Key:
 
 
 Visualized development/support timeline (* current):
---2.0--
-     --2.1--
-            --2.2----
-              --2.3--
-                     --2.4-------------
-                       --2.5--
-                              --2.6-------------
-                                --2.7*-
-                                       --2.8----------------------
-                                         --2.9--
-                                                --3.0-------------
-+ end of planned timeline, begin future releases +                                                
-                                                  --3.1--
-                                                         --3.2-----------
-                                                           --3.3--
-                                                                  --3.4-----------
-                                                                    --3.5--
-                                                                           --3.6--
+--2.6----
+  --2.7--
+         *-2.8----
+           --2.9--
+                  --3.0----
+                    --3.1--
+                           --3.2----
+                             --3.3--
+                                    --3.4----
+                                      --3.5--
+                                             --3.6----
+                                               --3.7--
+                                                      --3.8----
+                                                        --3.9--
+                                                               --4.0----
 
 
-Version 2.0 - stable      - Status: End of Life
-Version 2.1 - development - Status: Completed
-Version 2.2 - stable      - Status: End of Life
-Version 2.3 - development - Status: Completed
-Version 2.4 - stable      - Status: End of Life
-Version 2.5 - development - Status: Completed
+Version 2.6 - stable      - Status: End of Life
+Version 2.7 - development - Status: Wrapping Up
+Version 2.8 - stable      - Status: Pre-release preparation
 
+Version 2.9 - development - Target: August 2008    - Status: Soon
 
-Version 2.6 - stable      - Target: < Mid 2007     - Status: Active Maintenance
-
-Currently at 2.6.0
-
-
-Version 2.7 - development - Target: July 2007      - Status: Active Development
-
-Dave B:
-+ Consistency test support
-  * simplify development
-  * automatic expected results
-  * performance tests
-  - documentation
-+ Consistency test coverage
-  + mid-run (* classic, * transsmt)
-  + analyze mode
-+ Transition all applicable output files to cDataFile objects, as opposed to raw ostream
-+ AvidaScript
-  + lexer
-  + parser
-  - threaded driver, multiple executing worlds via 'avida-s'
-+ Cleanup Landscaping tools
-
-Ben:
-+ Energy model
+David:
+- Completed AvidaScript
+  - Merged 'avida' and 'avida-s' functionality
+- Cleanup Landscaping tools
++ Error reporting, input validation
 
 Dave K:
 - Topology manager
   + environment named regions
-? Group/Deme Framework
 
-Ofria:
-- Core GUI framework
+Charles:
+- Completed Viewers based on Core Viewer/GUI frameworks
 
-Art:
-+ his damn research
+Bess:
++ Consistency test coverage
+
+Unassigned:
+- New Mutation framework
+- Schedulable object framework (organism threads scheduled rather than organisms, events, etc.) 
+- Serialization
 
 All:
 - Update documentation
 - Code release cleanup
 
 
-
-Version 2.8 - stable      - Target: < Mid 2008     - Status: Planned, pending version 2.7 completion
-
-- Stable maintenance
-
-
-Version 2.9 - development - Target: July 2008      - Status: Planned
-
-- Completed AS language support
-- Remove Analyze Mode
-- Merged 'avida' and 'avida-s' functionality
-- New Mutation framework
-- Basic OS X native GUI
-- Update documentation
-- Error reporting, input validation
-- Schedulable object framework (organism threads scheduled rather than organisms, events, etc.) 
-- Serialization
-- Code release cleanup
-
 **** NOTE: Backwards compatibility breaks at this point ****
 
 
 Version 3.0 - stable      - Target: Ongoing        - Status: Planned, pending version 2.9 completion
 
-- Stable maintenance
-
-
 Version 3.1 - development - Target: tbd            - Status: feature set tdb
+
+- Basic OS X native GUI
