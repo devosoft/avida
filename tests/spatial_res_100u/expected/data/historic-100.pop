@@ -1,0 +1,36 @@
+#filetype genotype_data
+#format id parent_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence
+
+#  1: ID
+#  2: parent ID
+#  3: parent distance
+#  4: number of orgranisms currently alive
+#  5: total number of organisms that ever existed
+#  6: length of genome
+#  7: merit
+#  8: gestation time
+#  9: fitness
+# 10: update born
+# 11: update deactivated
+# 12: depth in phylogentic tree
+# 13: genome of organism
+
+298 2 1 0 4 49 242.858 173.8 1.39743 70 98 1 rucavcqgfcqapqeccthzscpccpqcxaqnccxxbcgdutycasvab 
+397 341 1 0 1 49 1472 177 8.31638 94 97 5 rucavcqgfcqapqccahzscpcccpqcfaqlccxxbcgdutycasvab 
+313 61 1 0 2 50 260.141 178 1.46146 75 95 2 rucavcqgfcqapqeccthzscpqccpqcxaqnccxxxcgdutycasvab 
+314 207 1 0 3 50 376 182 2.06593 75 93 4 rucavcqgfcqjpqqccahzscpcccpqcxaqlccxxbcgdutycasvab 
+207 183 1 0 9 50 367.348 181 2.02955 49 92 3 rucavcqgfcqapqqccahzscpcccpqcxaqlccxxbcgdutycasvab 
+271 2 1 0 2 50 63.5636 177 0.359116 65 91 1 rucavcqbfcqapqeccthzscpcccpqcxaqnccxxbcgdutycasvab 
+339 161 1 0 1 50 376 178 2.11236 81 89 2 rucavcqgfcqazqeccthzscpccgpqcxaqnccxxbcgdutycasvab 
+332 61 1 0 1 50 47 178 0.264045 80 89 2 rucavcqgfcqapqeccthzscpcccpqcxajnccxxxcgdutycasvab 
+345 2 1 0 1 51 265.676 231 1.15011 82 89 1 rucavcqgfcqapqeccthzscpcccpqcxaqnccxxbcgdurtycasvab 
+61 2 1 0 17 50 250.211 177.741 1.40783 14 83 1 rucavcqgfcqapqeccthzscpcccpqcxaqnccxxxcgdutycasvab 
+302 2 1 0 1 51 68.9112 182 0.378633 72 78 1 rucavcqgfcqapqeccthzscpicccpqcxaqnccxxbcgdutycasvab 
+52 2 1 0 7 50 246.007 178 1.38206 12 68 1 rucavcqgfcrapqeccthzscpcccpqcxaqnccxxbcgdutycasvab 
+248 52 1 0 1 50 336.247 177 1.8997 59 67 2 rucavcqgfcrapqeccthzscpcccpqcxaqnccxxbwgdutycasvab 
+64 2 1 0 3 50 242.743 178 1.36373 15 50 1 rucavcqgfcqapqqccthzscpcccpqcxaqnccxxbcgdutycasvab 
+183 64 1 0 1 50 697.075 181 3.85124 44 49 2 rucavcqgfcqapqqccahzscpcccpqcxaqnccxxbcgdutycasvab 
+78 54 1 0 4 50 456.476 177.8 2.56777 19 44 2 rucavcqgfcqapqeccthzscpcccpqcxaqncdxxbcgoutycasvab 
+72 2 1 0 1 50 184 178 1.03371 17 38 1 rucavcqgfcqipqeccthzscpcccpqcxaqnccxxbcgdutycasvab 
+100 72 2 0 1 50 92 126 0.730159 24 30 2 rucavckgfcqipqeccthzscpcccpqcxaqnccxxbcgdutycwsvab 
+54 2 1 0 1 50 201.493 178 1.13199 13 19 1 rucavcqgfcqapqeccthzscpcccpqcxaqncdxxbcgdutycasvab 

@@ -1,0 +1,48 @@
+#filetype genotype_data
+#format id parent_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence
+
+#  1: ID
+#  2: parent ID
+#  3: parent distance
+#  4: number of orgranisms currently alive
+#  5: total number of organisms that ever existed
+#  6: length of genome
+#  7: merit
+#  8: gestation time
+#  9: fitness
+# 10: update born
+# 11: update deactivated
+# 12: depth in phylogentic tree
+# 13: genome of organism
+
+107 104 1 35 161 94 4.84096e+49 94 5.14996e+47 7 -1 2 bbbaaaabbaaaabbbbbabbbaaaabaabbaabaababababbbbabbbbbbbbbbbbabaabbaabaabbbabaaabbbabbbbbbaabaac 
+112 107 1 19 37 94 5.6984e+54 94 6.06212e+52 18 -1 3 bbbaaaabbaaaabbbbbaabbaaaabaabbaabaababababbbbabbbbbbbbbbbbabaabbaabaabbbabaaabbbabbbbbbaabaac 
+104 2 1 11 74 94 5.55734e+31 94 5.91206e+29 5 -1 1 bbbaaaabbaaaabbbbbabbbaaaabaabbaabaabbbababbbbabbbbbbbbbbbbabaabbaabaabbbabaaabbbabbbbbbaabaac 
+2 -1 -1 8 53 94 1.65024e+18 94 1.75557e+16 -1 -1 0 bbbaaaabbaaaabbbbbabbbaaaababbbaabaabbbababbbbabbbbbbbbbbbbabaabbaabaabbbabaaabbbabbbbbbaabaac 
+6 -1 -1 1 1 94 0 0 0 -1 -1 0 abbbaaabbaabbabababaaaaaaabbabaaaaabaaababaaaaaaaaaabababaabbbbbbabbbaaabbaaaaabbbbaaaabbbaabc 
+15 -1 -1 1 1 94 0 0 0 -1 -1 0 abbbbabaabaaabababbbabbaabbaaaaaaababbbaaaababaabbaaaaaaabaaaabbbabbbaaabbababbbbabbaababaabac 
+25 -1 -1 1 1 94 0 0 0 -1 -1 0 bbbbbabaaababbbbbbaababaaababbbbbababbababbbababbbaabaaababaabbbbabbaabbaababaaaaabababaabaaac 
+26 -1 -1 1 1 94 0 0 0 -1 -1 0 abbabbbabbaabbabbbabbaabbaababbbabbabbbabaabaabaabbbaababaabbabbbababbabbbaabaaabbbababbbbaabc 
+27 -1 -1 1 1 94 0 0 0 -1 -1 0 babbaababababbaaaabbbaaaabbabbaabbbaabbabbbababaabaabbbabbbabbbabbabbbaaaabaabbbbabbbbabaabbbc 
+33 -1 -1 1 1 94 0 0 0 -1 -1 0 bbbbbbaaaaababaabbbaaaaabbabbaaaabaababaaaaabababbaaabbbaaabbabbabbbbbaababaaaaababbbbbbbbaabc 
+34 -1 -1 1 1 94 0 0 0 -1 -1 0 bbbbabbaaaabbbaababbabaaaaaabbbbbbabbbbbaabbabbbababbbbbabbbabaabbaabbbbbbbbbbbbbbbbaabbbaabbc 
+35 -1 -1 1 1 94 0 0 0 -1 -1 0 babbbbaaababbababaabaababbbbbabaaaaaaaabbababbabaabababbabababbbbbababbbaaaababbbbaaababbbbabc 
+36 -1 -1 1 1 94 0 0 0 -1 -1 0 aaaaaabaaaabbbbaaababbbaaabbbbabbbabababbbabbbbaababaaabbaabbbbbbbbabababbabaaaababbababbabbbc 
+37 -1 -1 1 1 94 0 0 0 -1 -1 0 bbbaaaaabaaaaababbbaaabaabbbbaabbaabaabbbbbbbbaabbaababbabababbbaabbababbbaaabbabababaabaababc 
+43 -1 -1 1 1 94 0 0 0 -1 -1 0 aaabbaabababbaaabaabbabbbaabaabbbbbbaabbbababbabaaaaaabaababbabbabbaaabbabaaabaabbbbaaaaabbaac 
+44 -1 -1 1 1 94 0 0 0 -1 -1 0 babaabbabaabbbbabbbaabaababbaaabaaabbbaaabbbbaabaaaaabbbaababbbaaaababaabbabbababaababbbbbabbc 
+45 -1 -1 1 1 94 0 0 0 -1 -1 0 bbbabbaaabbaaaaabbabbababababaabbbbbbbabbbabaababaaababaababbabbbababaaabbbaaaaabbbaaaaabababc 
+46 -1 -1 1 1 94 0 0 0 -1 -1 0 bbbbbbbabbbbaabbbaaaaabbbbbbababbbbaabbaaabbbaaaaaaaababbbbaaabbababaabbaaabaababbbbabbaaabbac 
+54 -1 -1 1 1 94 0 0 0 -1 -1 0 babaabaaaabbabbbaabbababbbababbabbbbabbabbaaaabbabbababbaababbabbaabbaaaabbbabaaababbaabababac 
+62 -1 -1 1 1 94 0 0 0 -1 -1 0 baaaaabbbaaabbaaabaabaababbaaaababbabbaabbbaaaabbbbbabbbbbbbbbbbaaaabaabababbabbbbbaaabbbaabac 
+63 -1 -1 1 1 94 0 0 0 -1 -1 0 baaaaabbbabbbabbaabbabbabbabbbabbaaabbbbbaaabbabaaabbabbaabababaabaaaabaabababbbaabbbbbbbabbac 
+64 -1 -1 1 1 94 0 0 0 -1 -1 0 aaaababbbbbaabbabaabaaabababbbbabbbbbaaaaabbbbbbbaabaabbabaaabaababbbbbbaababbbbbbaaababaabaac 
+65 -1 -1 1 1 94 0 0 0 -1 -1 0 babbbbbabbbabbabbabbabaaaaaaababaaaaaabababbaaabbbbaabbbaaabbbbbbabbaabbaaabbabbabbbbbaabbbabc 
+73 -1 -1 1 1 94 0 0 0 -1 -1 0 aaaabbabbbbabbbaaababbbaababababaabbbaababbbabaaaabbaaaabbaabababbaaaaabbabababaaabbabbbaaabac 
+74 -1 -1 1 1 94 0 0 0 -1 -1 0 bbbbaababababbbbaabaababaaabaaabbbaababbabbbababbbbaaabbaaaababaaaabababbbbaaabbaaabbaaaabaaac 
+84 -1 -1 1 1 94 0 0 0 -1 -1 0 aaabbbbbbaaaababbbaaabbbabaaababbaaaaabbaabbbbbababbabbababbbababbaababbbabbaaabbababbbbbaabac 
+95 -1 -1 1 1 94 0 0 0 -1 -1 0 abbababbbbbaabbabbaaabbabbabbbabaaaaabaababbaaababaaabababbaabbbbaabaababaabaaaaabbbaaababbabc 
+96 -1 -1 1 1 94 0 0 0 -1 -1 0 bababbbaaaaaaaaaabaaabbabbbabbabbababaabbbabaaaabbababbbbabbbbaaaaabbabaaaabbaaabbaaababababac 
+102 2 1 1 1 94 9.94396e+13 94 1.05787e+12 4 -1 1 bbbaaaabbaaaabbbbbabbbaaaababbbaabaabbbababbbbabbbbbbbbbbbbabaabbaabaabbbabaaabbbaabbbbbaabaac 
+111 107 1 1 1 94 4.05893e+42 94 4.31802e+40 15 -1 3 bbbaaaabbaaaabbbbbbbbbaaaabaabbaabaababababbbbabbbbbbbbbbbbabaabbaabaabbbabaaabbbabbbbbbaabaac 
+113 112 1 1 1 94 2.70036e+54 94 2.87272e+52 20 -1 4 bbbaaaabbaaaabbbbbaabbaaaabaabbbabaababababbbbabbbbbbbbbbbbabaabbaabaabbbabaaabbbabbbbbbaabaac 

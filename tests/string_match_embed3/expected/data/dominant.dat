@@ -1,0 +1,30 @@
+# Avida Dominant Data
+# Wed Sep  5 15:37:12 2007
+#  1: Update
+#  2: Average Merit of the Dominant Genotype
+#  3: Average Gestation Time of the Dominant Genotype
+#  4: Average Fitness of the Dominant Genotype
+#  5: Repro Rate?
+#  6: Size of Dominant Genotype
+#  7: Copied Size of Dominant Genotype
+#  8: Executed Size of Dominant Genotype
+#  9: Abundance of Dominant Genotype
+# 10: Number of Births
+# 11: Number of Dominant Breed True?
+# 12: Dominant Gene Depth
+# 13: Dominant Breed In
+# 14: Max Fitness?
+# 15: Genotype ID of Dominant Genotype
+# 16: Name of the Dominant Genotype
+
+0 0.000000 0.000000 0.000000 0.000000 91 0.000000 0.000000 1 0 0 0 0 0.000000 1 091-aaaaa 
+10 90.8933 202 0.449967 0.0049505 91 91 89 162 0 0 0 0 0.456241 1 091-aaaaa 
+20 95.2749 202 0.471658 0.0049505 91 91 89 108 17 6 0 0 0.57242 1 091-aaaaa 
+30 99.4925 202 0.492537 0.0049505 91 91 89 81 0 0 0 0 0.631818 1 091-aaaaa 
+40 102.154 202 0.505715 0.0049505 91 91 89 49 18 7 0 0 0.721942 1 091-aaaaa 
+50 103.67 202 0.513216 0.0049505 91 91 89 41 0 0 0 0 0.764212 1 091-aaaaa 
+60 104.942 202 0.519517 0.0049505 91 91 89 29 14 5 0 0 0.825221 1 091-aaaaa 
+70 105.688 202 0.523209 0.0049505 91 91 89 21 0 0 0 0 0.818642 1 091-aaaaa 
+80 106.377 202 0.526618 0.0049505 91 91 89 22 9 3 0 0 0.9733 1 091-aaaaa 
+90 106.945 202 0.529432 0.0049505 91 91 89 14 0 0 0 0 0.962413 1 091-aaaaa 
+100 107.179 202 0.530588 0.0049505 91 91 89 10 3 2 0 0 0.901522 1 091-aaaaa 

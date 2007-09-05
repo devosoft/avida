@@ -1,0 +1,26 @@
+# Avida tasks execution data
+# Wed Sep  5 15:37:10 2007
+# First column gives the current update, all further columns give the number
+# of times the particular task has been executed this update.
+#  1: Update
+#  2: Not
+#  3: Nand
+#  4: And
+#  5: OrNot
+#  6: Or
+#  7: AndNot
+#  8: Nor
+#  9: Xor
+# 10: Equals
+
+0 0 0 0 0 0 0 0 0 0 
+10 4 6 2 4 4 2 4 2 2 
+20 10 13 5 10 10 5 10 3 3 
+30 22 28 10 20 20 10 20 8 8 
+40 46 86 33 44 42 21 42 20 20 
+50 90 140 53 88 79 42 79 37 37 
+60 135 189 68 145 125 64 125 57 57 
+70 166 238 91 211 165 88 161 70 70 
+80 253 346 127 298 198 124 192 98 98 
+90 345 468 174 438 270 186 261 134 134 
+100 438 546 209 512 314 224 304 148 144 

@@ -1,0 +1,19 @@
+# Num orgs doing each task for each deme in population
+# Wed Sep  5 15:37:09 2007
+#  1: update
+#  2: Deme 0, Task 0
+#  3: Deme 0, Task 1
+#  4: Deme 1, Task 0
+#  5: Deme 1, Task 1
+
+0 0 0 0 0 
+10 4 4 0 0 
+20 11 11 0 0 
+30 23 23 0 0 
+40 48 48 0 0 
+50 94 92 0 0 
+60 100 97 0 0 
+70 3 3 2 2 
+80 8 8 5 5 
+90 27 27 17 17 
+100 61 61 48 48 

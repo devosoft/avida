@@ -1,0 +1,119 @@
+#filetype genotype_data
+#format id parent_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence
+
+#  1: ID
+#  2: parent ID
+#  3: parent distance
+#  4: number of orgranisms currently alive
+#  5: total number of organisms that ever existed
+#  6: length of genome
+#  7: merit
+#  8: gestation time
+#  9: fitness
+# 10: update born
+# 11: update deactivated
+# 12: depth in phylogentic tree
+# 13: genome of organism
+
+1 -1 -1 30 446 100 97 389 0.249357 -1 -1 0 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+46 1 1 4 24 99 96 385 0.249351 13 -1 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+346 86 2 4 6 100 97 386 0.251295 54 -1 2 rucavccccccccccccpccdccccccccccccccccccccccccccccccccccicccccccccccccccccccccccccccccccccccutycasvab 
+268 113 1 4 12 100 97 387 0.250646 39 -1 2 rucavccccccccccccccccccccccccccccccccccccccccceccccicccccccccccccccccccccccccccccccccccccccutycasvab 
+274 1 1 3 6 100 97 388 0.25 39 -1 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccfccccccccccutycasvab 
+111 14 2 3 12 100 97 386 0.251295 26 -1 2 rucavcccccccccmccccccccccccccccccccccccccccccccgccccccccccccccaccccccccccccccccicccccccccccutycasvab 
+310 1 1 3 7 100 97 388 0.25 52 -1 1 rucavccccciccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+319 42 1 3 6 100 97 387 0.250646 52 -1 2 rucavccccccccccccccccccccccccccccccccccccccccccccdccccccccdccccccccccccccccccccccccccccccccutycasvab 
+566 418 1 3 4 99 96 383 0.250653 79 -1 2 rucavccmccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccciccccutycasvab 
+183 1 1 3 11 100 97 388 0.25 38 -1 1 rucavccccceccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+531 420 2 3 4 100 97 386 0.251295 78 -1 3 rucavcccccccccccccccccccccccccccccccccccccrcccccccccccclccnicccccfcccccccccccccccccccccccccutycasvab 
+44 1 3 3 8 100 88 377 0.233422 13 -1 1 rucavcccccccccccccccccccjccccccccccccccuccccccccccccccccccccccoccccccccccccccccccccccccccccutycasvab 
+498 402 1 3 4 101 89 380 0.234211 78 -1 3 rucavcccuccccccccccccccccccccccckccccccccccccccccccccqcccccccccccccccccccccccccpccccccccccczutycasvab 
+312 227 3 2 3 100 97 389 0.249357 52 -1 2 rgcavccccccccccccccccccccccccbccccccccccccccccqccccccccccccccccccccccccccccccccccccccccccccztycasvab 
+441 1 2 2 3 100 97 387 0.250646 67 -1 1 rucavcccccccccccccccccccccccccccccccccccccccccccclcccccccccccccccccccccdcccccccccccccccccccutycasvab 
+316 275 2 2 3 103 97 389 0.249357 52 -1 3 aaarugavcccccccccccccjccccccccccccccccccccccchccccccccccccccwcccccccccccccccccccncccccccccccccutycasvab 
+567 275 1 2 4 103 100 398 0.251256 79 -1 3 aaarucavcccccccccccccjccccccccccccccccccccccchccccccccccccccwcccccccccccccccccccncccccccccccccutycasvab 
+485 1 3 2 3 100 97 389 0.249357 77 -1 1 rucavccccccccccccccccccncccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccmcmtycasvab 
+532 111 1 2 3 100 97 386 0.251295 78 -1 3 rucavcccccccccmccccccccccccccccccccccccccccccccgccccccccccccccacccbccccccccccccicccccccccccutycasvab 
+226 1 1 2 5 100 49 288 0.170139 38 -1 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycksvab 
+382 1 2 2 3 99 97 389 0.249357 65 -1 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvwb 
+252 124 1 2 7 101 98 390 0.251282 39 -1 2 rucavccccccccccccccccccchccccccccccaccacccccccccccccpcccccccccccccccccccccccccccczccccccccecutycasvab 
+167 1 3 2 5 100 98 581 0.168675 37 -1 1 rucavcnccccccwcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutlcasvab 
+345 1 1 2 4 100 97 388 0.25 54 -1 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccjcccccccccccccccccccccccccccccccutycasvab 
+295 258 25 2 3 101 97 389 0.249357 49 -1 2 cccccccccccccccccccccccccccccccccccccccccutycgsvabrucavcccccccccccccccxcccccccccccccccccccccccccccccc 
+390 216 3 2 3 102 99 394 0.251269 65 -1 3 aarucavccccccccccccccccccccccccccczccccccccccccccccccccccccccccwcccccccccccccccccccccclccccccutycasvab 
+41 1 2 2 5 100 97 389 0.249357 13 -1 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccicccccccccutycasvag 
+452 56 101 2 3 200 87 375 0.232 68 -1 3 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaarucavciccccccceccccctcccccccccccccccccccccccccccccccccccccwccccccccccccccucccccccccccccccccutycasvab 
+392 21 1 2 4 100 97 384 0.252604 65 -1 2 rucavccccccccccccccccccccccccciccctpcccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+77 1 1 2 11 100 97 388 0.25 25 -1 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccncccccccccccccccccccccccccccutycasvab 
+409 173 1 2 4 100 97 388 0.25 66 -1 2 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccvccccccccccrcccccccccccccutycasvab 
+349 46 1 2 4 99 96 385 0.249351 54 -1 2 rucavccccccccbccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+282 1 2 2 12 99 96 384 0.25 39 -1 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccdcccccccccccccccccccccccccccccccutycasvab 
+369 1 1 2 6 100 97 388 0.25 64 -1 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccclccccccccccccccccccccccccccccccutycasvab 
+333 1 1 2 6 100 97 389 0.249357 53 -1 1 rucavcccccccccccccccccccccccccccccccccccccbccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+356 92 1 2 4 100 97 388 0.25 64 -1 3 rucavccccccccccccccccccccccccccccccccccccccccccccccccfcccccccccccccccccccccccccrcccccccccccutycasvab 
+355 123 3 1 3 100 97 386 0.251295 64 -1 2 rucavcccccccccccccccccecccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccqccutycasvzb 
+448 200 1 1 3 100 97 387 0.250646 67 -1 2 rucavccccccccscccicccccccccccccccccccccccccccccccccccccccccccccccccccccicccccccccccccccccccutycasvab 
+201 1 4 1 5 99 97 389 0.249357 38 -1 1 rucavcccccccccccqcccwccccccccccqccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+574 308 3 1 3 102 99 394 0.251269 79 -1 3 aarucavccccgcccccccccccccccccccbgcccccccccccccccccccwccccccccccccccccccccccccccccccccccccccccutycasvab 
+360 302 3 1 3 100 88 375 0.234667 64 -1 2 rucavcccccccccccccccccccccccckccccccccccccccccccccccxccccccccncucccccccccccwcccccccccccccccutycasvab 
+303 1 2 1 3 101 97 389 0.249357 52 -1 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccuccccccccccccccccccccutycasvcb 
+301 183 1 1 4 100 97 388 0.25 52 -1 2 rucavccccceccccccccccccccccccccccccccccccccccccccchccccccccccccccccccccccccccccccccccccccccutycasvab 
+352 167 101 1 3 198 97 389 0.249357 59 -1 2 baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaarucavcnccccccwcccccccccccccccccccccecccccccccccccccccccccccccccccccccccccccccccccccccccccccutlcasva 
+565 200 3 1 3 101 97 388 0.25 79 -1 2 ruoavccccccccsccciccccccccccccccccccccccccccccgccccccccwccccccccccccccccccccccccccccccccccccutycasvab 
+397 1 2 1 3 100 97 487 0.199179 65 -1 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycascvab 
+123 1 1 1 10 100 97 386 0.251295 26 -1 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccctccutycasvab 
+367 323 2 1 4 100 87 376 0.231383 64 -1 2 rucavccccccccccccccccccyccccccccccccccccccccccccccccpcccccccccccccccccccccpccccccccccccccccutycasvab 
+56 17 2 1 5 100 87 375 0.232 24 -1 2 rucavcicccccccecccccccccccccccccccccccccccccccccccccccccccwccccccccccccccucccccccccccccccccutycasvab 
+511 114 1 1 3 100 97 385 0.251948 78 -1 3 rucavccccccccccccccclcccccccjcccccccccccccccccccccccccccccccvccccccccccccccccccccccicccccccutycasvab 
+612 390 3 1 1 104 99 394 0.251269 91 -1 4 aaaarucavccccccccccccccccccccccccccczccccccccccccccccccccgcccccccwcccccccccccccccccccccclccccccutycasvab 
+613 532 1 1 1 100 97 386 0.251295 91 -1 4 rucavcccccccccmccccccccccccccqcccccccccccccccccgccccccccccccccacccbccccccccccccicccccccccccutycasvab 
+614 310 1 1 1 100 97 388 0.25 91 -1 2 rtcavccccciccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+615 345 2 1 1 100 97 388 0.25 91 -1 2 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccjcccccccccctccccccccccccccccccccutycasvib 
+616 301 1 1 1 100 97 388 0.25 91 -1 3 rucavcccccecccccccccccccccccccuccccccccccccccccccchccccccccccccccccccccccccccccccccccccccccutycasvab 
+617 274 2 1 1 100 97 388 0.25 91 -1 2 rucavccccccccccccccccccccccccccccccccccocccccccccccccccccccccccccccccccmccccccccfccccccccccutycasvab 
+618 1 2 1 1 100 97 389 0.249357 91 -1 1 rucavcccccxccccccccccccccccccccccccccccccccccccccycccccccccccccccccccccccccccccccccccccccccutycasvab 
+619 567 2 1 1 104 99 394 0.251269 91 -1 4 aaaarucavcccccccccccccjcccccccccccccccccccccccqccccccccccccccwcccccccccccccccccccncccccccccccccutycasvab 
+620 1 1 1 1 100 97 389 0.249357 91 -1 1 recavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+621 390 3 1 1 104 99 394 0.251269 91 -1 4 aaaarucavccccccccccccccccccccccccccczccccccccccccccccccccpcccccccwcccccccccccccccccccccclccccccutycasvab 
+622 532 2 1 1 100 97 386 0.251295 91 -1 4 rucavcccccccccmccccccccccccccccccccccccccccccccgccccccccccccccacccbccecccccccccicccccdcccccutycasvab 
+623 252 3 1 1 102 98 390 0.251282 92 -1 3 rucavccccccccccccyccccckwhccccccccccaccacccccccccccccpcccccccccccccccccccccccccccczccccccccecutycasvab 
+624 531 3 1 1 100 97 388 0.25 92 -1 4 rucavccccccccccccccccccccccccvccccccccccccrcrcccccccccclccnicccccfccccccccnccccccccccccccccutycasvab 
+625 46 1 1 1 100 96 385 0.249351 92 -1 2 rucavcccccccccccccccccccccccccccccccccccccccccccccccccczcccccccccccccccccccccccccccccccccccutycasvab 
+626 319 1 1 1 100 97 387 0.250646 92 -1 3 rucavccccccckccccccccccccccccccccccccccccccccccccdccccccccdccccccccccccccccccccccccccccccccutycasvab 
+627 1 1 1 1 100 97 389 0.249357 92 -1 1 rucavccccccccccccccccccccccccccccccwcccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+628 511 1 1 1 100 97 386 0.251295 92 -1 4 rucavccccccccccccccclcccccccjcccccccccccczccccccccccccccccccvccccccccccccccccccccccicccccccutycasvab 
+629 1 2 1 1 100 97 389 0.249357 92 -1 1 rucavcecccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccmccccccccccccccccccutycasvab 
+630 441 3 1 1 99 97 389 0.249357 92 -1 2 rucavccccccccvcccccccccccccclcccccccccccccccccccclcccccccccccccccccccccdcccccccccccccccccccutycsvab 
+631 1 1 1 1 100 97 389 0.249357 92 -1 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccsccccccccccccccccccccccccccccccutycasvab 
+632 1 3 1 1 100 97 389 0.249357 92 -1 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccecccwcccccccccccccccccckccccutycasvab 
+633 111 3 1 1 101 97 386 0.251295 92 -1 3 rucavcccccccccmccccccccccccccccccccccccccccccccgcccccccccccctccacccpcccccjccccccicccccccccccutycasvab 
+634 392 2 1 1 101 97 384 0.252604 92 -1 3 rucavccccccccccccccccccccccccfciccctpcccccccccccccccccccjcccccccccccccccccccccccccccccccccccutycasvab 
+635 1 2 1 1 100 97 389 0.249357 92 -1 1 rucavcccccccccccccccccccccccccccclcccccccccccccccccccclccccccccccccccccccccccccccccccccccccutycasvab 
+636 1 2 1 1 100 97 389 0.249357 92 -1 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccecccccccccccwcccccutycasvab 
+637 183 1 1 1 100 97 388 0.25 92 -1 2 rucavcccccecccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccnccutycasvab 
+638 1 1 1 1 100 97 389 0.249357 92 -1 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycascab 
+639 252 1 1 1 101 98 390 0.251282 92 -1 3 rucavccccccccccccccccccchccccccccccaccwcccccccccccccpcccccccccccccccccccccccccccczccccccccecutycasvab 
+640 441 2 1 1 100 97 387 0.250646 92 -1 2 rucavcccccccccccccccccmcccccccccccccccccccccccccclcccccccccccccccccccccdtccccccccccccccccccutycasvab 
+641 46 3 1 1 99 96 385 0.249351 92 -1 2 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccycxcccccccccccccccccccccccccccccccxtycasvab 
+642 566 1 1 1 99 96 383 0.250653 93 -1 3 rucavccmccccccccccccckccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccciccccutycasvab 
+643 392 1 1 1 100 97 384 0.252604 93 -1 3 qucavccccccccccccccccccccccccciccctpcccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+644 1 3 1 1 100 97 389 0.249357 93 -1 1 rucavcccccccccccccccccccccccccccccccccccccccccxcccccccqccccccccccccccccccccccccccccccccccccutyjasvab 
+645 1 1 1 1 100 97 389 0.249357 93 -1 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutypasvab 
+646 448 1 1 1 100 97 388 0.25 93 -1 3 rucavccjcccccscccicccccccccccccccccccccccccccccccccccccccccccccccccccccicccccccccccccccccccutycasvab 
+647 567 2 1 1 104 100 398 0.251256 93 -1 4 aaaarucavcccccccccccccjccccccccccccccccccccccchccccccccccccccwoccccccccccccccccccncccccccccccccutycasvab 
+648 123 1 1 1 100 97 386 0.251295 93 -1 2 rucavcccccccccccccccccccccaccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccctccutycasvab 
+649 574 2 1 1 104 97 387 0.250646 93 -1 4 aaaarucavccccgcccccccccccccccccccbgcccccccccccccccccccwccccccccccccccccccccccccccccccccccccccccutycasvab 
+650 1 1 1 1 100 97 389 0.249357 93 -1 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccucccccccccccccccccccccccccccccccccccutycasvab 
+651 345 1 1 1 100 97 388 0.25 93 -1 2 rucavccccccccccccccccccccccccccccccccccccccmcccccccccccccccjcccccccccccccccccccccccccccccccutycasvab 
+652 1 2 1 1 101 97 389 0.249357 93 -1 1 rucavckcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccgcccccccccccccutycasvab 
+653 360 11 1 1 110 88 375 0.234667 93 -1 3 aaaaaaaaaarucavccccoccccccccccccccccccckccccccccccccccccccccccxccccccccncucccccccccccwcccccccccccccccutycasvab 
+654 498 2 1 1 101 97 389 0.249357 93 -1 4 rucavcccuccccccccccccccccccccccckccccccccccccccccccccqccccccczcccccccccccccczccpccccccccccczutycasvab 
+655 1 2 1 1 101 97 389 0.249357 93 -1 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccclccccycccccccutycasvab 
+656 44 1 1 1 100 88 377 0.233422 93 -1 2 rucavcccccccccccccccccccjcccccccccyccccuccccccccccccccccccccccoccccccccccccccccccccccccccccutycasvab 
+657 56 101 1 1 200 87 375 0.232 94 -1 3 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaarucavciccccccceccccccccccccccccccccccccjccccccccccccccccccwccccccccccccccucccccccccccccccccutycasvab 
+658 367 3 1 1 100 87 376 0.231383 94 -1 3 rucavccccccccccccccccccyccccccccccccccccccccciccccccpcccccccccccccccccccccpccccccqccccccczcutycasvab 
+659 397 1 1 1 100 97 389 0.249357 96 -1 2 rucavccrccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycascvab 
+660 226 25 1 1 100 49 288 0.170139 97 -1 2 cccccccccccccccccccccccccccccccccccccccccutycksvabruoavccccccccccccccccccccccccccccccccccccccccccccc 
+661 167 101 1 1 198 98 581 0.168675 98 -1 2 baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaarucavcnccccccwcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccclccccutlcasva 
+662 167 100 1 1 198 98 581 0.168675 98 -1 2 baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaarucavcnccccccwcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutlcasva 
+663 226 24 1 1 100 49 288 0.170139 100 -1 2 cccccccccccccccccccccccccccccccccccccccccutycksvabrucavccccccccccccccccccccccccccccccccccccccccccccc 
