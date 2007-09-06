@@ -16,21 +16,19 @@ using namespace std;
 
 void cMerit::UpdateValue(double in_value)
 {
-  const int max_bits = sizeof(unsigned int)*8;
-  static double mult[max_bits];
-  static bool mult_initilalized = false;
+  static const int max_bits = sizeof(unsigned int) * 8;
+  struct sExponentMultiplier
+  {
+    double mult[max_bits + 1];
+    sExponentMultiplier() { for (int i = 0; i <= max_bits; i++) mult[i] = pow(2.0, i - 1); }
+  };
+  static sExponentMultiplier exp;
 
+  
   // Do not allow negative merits. If less than 1, set to 0.
   if (in_value < 1.0) in_value = 0.0;
 
-  // Initilize multipliers only once
-  if (mult_initilalized == false) {
-    mult_initilalized = true;
-    for (int i = 0; i < max_bits; ++i) mult[i] = pow(2.0, i);
-  }
-
   value = in_value;
-
   double mant = frexp(value, &bits);
 
   if (bits > max_bits)
@@ -38,7 +36,7 @@ void cMerit::UpdateValue(double in_value)
   else
     offset = 0;
 
-  base = static_cast<unsigned int>(mant * mult[bits-offset-1] * 2);
+  base = static_cast<unsigned int>(mant * exp.mult[bits - offset] * 2.0);
 }
 
 

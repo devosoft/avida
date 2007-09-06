@@ -98,7 +98,7 @@ public:
 
   static double EnergyToMerit(const double orgEnergy, cWorld* m_world);
 
-  std::ostream& BinaryPrint(std::ostream& os = std::cout) const ;
+  std::ostream& BinaryPrint(std::ostream& os = std::cout) const;
 };
 
 
