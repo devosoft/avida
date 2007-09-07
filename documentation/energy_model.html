@@ -1,0 +1,131 @@
+<html>
+<head>
+  <title>Avida : Energy Model</title>
+	<link rel="stylesheet" type="text/css" href="main.css" />
+</head>
+<body>
+
+<div class="revision">
+Revised 2007-07-07 BEB
+</div>
+
+<p>
+<a href="index.html">Return to the Index</a> &nbsp;|&nbsp;
+<a href="config.html">The Configuration File</a>
+</p>
+<hr />
+
+<div align="center">
+<h1>Energy Model</h1>
+</div>
+
+<a name="Overview"><h2>Overview</h2></a>
+<p>
+The energy model provides an organism with a metabolic rate, which is proportional to its stored energy (shown below).
+
+An organism with a higher metabolic rate will pay more energy to execute instructions than one with a lower rate.
+
+An organism must pay both virtual CPU cycle and energy costs to execute instructions.
+
+As instructions are executed the organism's stored energy level is reduced.  
+
+Energy can be taken up by the organism when it completes a task, among others.
+</p>
+
+<center>
+Metabolic Rate = Stored Energy / <a href="#NUM_INST_EXC_BEFORE_0_ENERGY">NUM_INST_EXC_BEFORE_0_ENERGY</a>
+</center>
+
+<a name="Settings"><h2>Settings</h2></a>
+<p>
+The settings below are defults from <code>avida.cfg</code>
+<pre>
+### ENERGY_GROUP ###
+# Energy Settings
+<a href="#ENERGY_ENABLED">ENERGY_ENABLED</a> 0                       # Enable Energy Model. 0/1 (off/on)
+<a href="#ENERGY_GIVEN_ON_INJECT">ENERGY_GIVEN_ON_INJECT</a> 0               # Energy given to organism upon injection.
+<a href="#ENERGY_GIVEN_AT_BIRTH">ENERGY_GIVEN_AT_BIRTH</a> 0                # Energy given to offspring upon birth.
+<a href="#FRAC_PARENT_ENERGY_GIVEN_AT_BIRTH">FRAC_PARENT_ENERGY_GIVEN_AT_BIRTH</a> 0.5  # Fraction of perent's energy given to offspring.
+<a href="#FRAC_ENERGY_DECAY_AT_BIRTH">FRAC_ENERGY_DECAY_AT_BIRTH</a> 0.0         # Fraction of energy lost due to decay during reproduction.
+<a href="#NUM_INST_EXC_BEFORE_0_ENERGY">NUM_INST_EXC_BEFORE_0_ENERGY</a> 0         # Number of instructions executed before energy is exhausted.
+<a href="#ENERGY_CAP">ENERGY_CAP</a> -1                          # Maximum amount of energy that can be stored in an organism.
+                                       # -1 means the cap is set to Max Int
+<a href="#APPLY_ENERGY_METHOD">APPLY_ENERGY_METHOD</a> 0                  # When should rewarded energy be applied to current energy?
+                                       # 0 = on divide
+                                       # 1 = on completion of task
+                                       # 2 = on sleep
+<a href="#FRAC_ENERGY_TRANSFER">FRAC_ENERGY_TRANSFER</a> 0.0               # Fraction of replaced organism's energy take by new resident
+<a href="#LOG_SLEEP_TIMES">LOG_SLEEP_TIMES</a> 0                      # Log sleep start and end times. 0/1 (off/on)
+                                       # WARNING: may use lots of memory.
+</pre>
+</p>
+
+<a name="Description of Settings"><h2>Description of Settings</h2></a>
+<strong><a name="ENERGY_ENABLED">ENERGY_ENABLED</a></strong>
+<p>
+Flag that disables/enables the us of the energy model.  
+
+0 = off, 1 = on
+</p>
+
+<strong><a name="ENERGY_GIVEN_ON_INJECT">ENERGY_GIVEN_ON_INJECT</a></strong>
+<p>
+How much energy is given to an injected organism.
+
+This number should be large enough to sustain the population until it can gather its own energy through tasks, etc..
+</p>
+
+<strong><a name="ENERGY_GIVEN_AT_BIRTH">ENERGY_GIVEN_AT_BIRTH</a></strong>
+<p>
+How much energy is given to an organism when it is born.
+</p>
+
+<strong><a name="FRAC_PARENT_ENERGY_GIVEN_AT_BIRTH">FRAC_PARENT_ENERGY_GIVEN_AT_BIRTH</a></strong>
+<p>
+Fraction of the parent(s) energy which is taken from the parent and given to the offspring at birth.
+</p>
+
+<strong><a name="FRAC_ENERGY_DECAY_AT_BIRTH">FRAC_ENERGY_DECAY_AT_BIRTH</a></strong>
+<p>
+Fraction of energy that decays on birth.
+</p>
+
+<strong><a name="NUM_INST_EXC_BEFORE_0_ENERGY">NUM_INST_EXC_BEFORE_0_ENERGY</a></strong>
+<p>
+Number of instructions an organism can execute before it runs out of energy assuming no new energy.
+
+Note: if instructions have energy costs > 0 then this options needs to be altered accordingly.
+</p>
+
+<strong><a name="ENERGY_CAP">ENERGY_CAP</a></strong>
+<p>
+Maximum amount of energy that can be stored in an organism.
+</p>
+
+<strong><a name="APPLY_ENERGY_METHOD">APPLY_ENERGY_METHOD</a></strong>
+<p>
+Specifies when newly received energy is applied to the organism energy store and metabolic rate.
+
+Note: the <code>sleep</code> instruction can also be used as an eat instructions if needed.
+</p>
+
+<strong><a name="FRAC_ENERGY_TRANSFER">FRAC_ENERGY_TRANSFER</a></strong>
+<p>
+Fraction of a replaced organism's energy transfered to the replacing organism.
+</p>
+
+<strong><a name="LOG_SLEEP_TIMES">LOG_SLEEP_TIMES</a></strong>
+<p>
+Logs start and end times, in updates, of all executions of the <code>sleep</code> instruction.
+
+Note: can use a lot of memory.
+</p>
+
+<hr />
+<p>
+<a href="index.html">Return to the Index</a> &nbsp;|&nbsp;
+<a href="config.html">The Configuration File</a>
+</p>
+
+</body>
+</html>
