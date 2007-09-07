@@ -441,6 +441,7 @@ private:
   bool Inst_SenseUnit(cAvidaContext& ctx);
   bool Inst_SenseMult100(cAvidaContext& ctx);
   bool DoSense(cAvidaContext& ctx, int conversion_method, double base);
+  bool Inst_CollectCellData(cAvidaContext& ctx);
 
   void DoDonate(cOrganism * to_org);
   void DoEnergyDonate(cOrganism* to_org);
@@ -470,6 +471,8 @@ private:
   bool Inst_RotateLabel(cAvidaContext& ctx);
   bool Inst_SetCopyMut(cAvidaContext& ctx);
   bool Inst_ModCopyMut(cAvidaContext& ctx);
+  bool Inst_GetCellPosition(cAvidaContext& ctx);
+  bool Inst_GetDistanceFromDiagonal(cAvidaContext& ctx);
   // @WRE additions for movement
   bool Inst_Tumble(cAvidaContext& ctx);
   bool Inst_Move(cAvidaContext& ctx);

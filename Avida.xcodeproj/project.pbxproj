@@ -195,6 +195,7 @@
 		70F9FC100C469DD70083B788 /* cASTDumpVisitor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70F9FC0F0C469DC10083B788 /* cASTDumpVisitor.cc */; };
 		B4FA258A0C5EB65E0086D4B5 /* cPlasticPhenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4FA25810C5EB6510086D4B5 /* cPlasticPhenotype.cc */; };
 		B4FA25A90C5EB7880086D4B5 /* cPhenPlastGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4FA259E0C5EB7600086D4B5 /* cPhenPlastGenotype.cc */; };
+		B516AF840C91E2D400023D53 /* cDemeCellEvent.cc in Sources */ = {isa = PBXBuildFile; fileRef = B516AF790C91E24600023D53 /* cDemeCellEvent.cc */; };
 		DCD8AC1F0C8A7C30004CBE6F /* cAnalyzeGenotypeTreeStats.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCA4BEC10C8A758800D81B58 /* cAnalyzeGenotypeTreeStats.cc */; };
 /* End PBXBuildFile section */
 
@@ -210,6 +211,23 @@
 			script = "flex -+ -o${DERIVED_FILES_DIR}/${INPUT_FILE_BASE}.cc ${INPUT_FILE_PATH}";
 		};
 /* End PBXBuildRule section */
+
+/* Begin PBXBuildStyle section */
+		B516AF180C91DC7700023D53 /* Development */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Development;
+		};
+		B516AF190C91DC7700023D53 /* Deployment */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+			};
+			name = Deployment;
+		};
+/* End PBXBuildStyle section */
 
 /* Begin PBXContainerItemProxy section */
 		56F555DA0C3B36FC00E2E929 /* PBXContainerItemProxy */ = {
@@ -818,6 +836,8 @@
 		B4FA25810C5EB6510086D4B5 /* cPlasticPhenotype.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cPlasticPhenotype.cc; sourceTree = "<group>"; };
 		B4FA25820C5EB6510086D4B5 /* cPlasticPhenotype.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cPlasticPhenotype.h; sourceTree = "<group>"; };
 		B4FA259E0C5EB7600086D4B5 /* cPhenPlastGenotype.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cPhenPlastGenotype.cc; sourceTree = "<group>"; };
+		B516AF790C91E24600023D53 /* cDemeCellEvent.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = cDemeCellEvent.cc; path = source/main/cDemeCellEvent.cc; sourceTree = SOURCE_ROOT; };
+		B516AF7A0C91E24600023D53 /* cDemeCellEvent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = cDemeCellEvent.h; path = source/main/cDemeCellEvent.h; sourceTree = SOURCE_ROOT; };
 		DCA4BEC10C8A758800D81B58 /* cAnalyzeGenotypeTreeStats.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeGenotypeTreeStats.cc; sourceTree = "<group>"; };
 		DCA4BEC20C8A758800D81B58 /* cAnalyzeGenotypeTreeStats.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAnalyzeGenotypeTreeStats.h; sourceTree = "<group>"; };
 		DCC30FCF0762539D008F7A48 /* Doxyfile */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = Doxyfile; sourceTree = "<group>"; };
@@ -1336,6 +1356,8 @@
 				70C1EFA308C39F2100F50912 /* cHardwareBase.cc */,
 				70C1EF9E08C39F0E00F50912 /* cHardwareBase.h */,
 				70C1EFA508C39F2100F50912 /* cHardwareCPU.cc */,
+				B516AF790C91E24600023D53 /* cDemeCellEvent.cc */,
+				B516AF7A0C91E24600023D53 /* cDemeCellEvent.h */,
 				70C1EFA008C39F0E00F50912 /* cHardwareCPU.h */,
 				423335880BC067E3000DF681 /* cHardwareGX.cc */,
 				423335890BC067E3000DF681 /* cHardwareGX.h */,
@@ -1774,6 +1796,12 @@
 		DCC30C4D0762532C008F7A48 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 702442D70859E0B00059BD9B /* Build configuration list for PBXProject "Avida" */;
+			buildSettings = {
+			};
+			buildStyles = (
+				B516AF180C91DC7700023D53 /* Development */,
+				B516AF190C91DC7700023D53 /* Deployment */,
+			);
 			hasScannedForEncodings = 0;
 			mainGroup = DCC30C490762532C008F7A48;
 			productRefGroup = DCC3164E07626CF3008F7A48 /* Products */;
@@ -1957,6 +1985,7 @@
 				70436B6C0C36C98900A05ABA /* PlatformExpert.cc in Sources */,
 				B4FA258A0C5EB65E0086D4B5 /* cPlasticPhenotype.cc in Sources */,
 				B4FA25A90C5EB7880086D4B5 /* cPhenPlastGenotype.cc in Sources */,
+				B516AF840C91E2D400023D53 /* cDemeCellEvent.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

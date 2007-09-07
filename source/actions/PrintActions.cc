@@ -2124,6 +2124,95 @@ public:
   }
 };
 
+class cActionDumpEnergyGrid : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpEnergyGrid(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_energy.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    for (int i = 0; i < m_world->GetPopulation().GetWorldY(); i++) {
+      for (int j = 0; j < m_world->GetPopulation().GetWorldX(); j++) {
+        cPopulationCell& cell = m_world->GetPopulation().GetCell(i * m_world->GetPopulation().GetWorldX() + j);
+        double cell_energy = (cell.IsOccupied()) ? cell.GetOrganism()->GetPhenotype().GetStoredEnergy() : 0.0;
+        fp << cell_energy << " ";
+      }
+      fp << endl;
+    }
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
+class cActionDumpExecutionRatioGrid : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpExecutionRatioGrid(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_exe_ratio.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    for (int i = 0; i < m_world->GetPopulation().GetWorldY(); i++) {
+      for (int j = 0; j < m_world->GetPopulation().GetWorldX(); j++) {
+        cPopulationCell& cell = m_world->GetPopulation().GetCell(i * m_world->GetPopulation().GetWorldX() + j);
+        double cell_executionRatio = (cell.IsOccupied()) ? cell.GetOrganism()->GetPhenotype().GetEnergyUsageRatio() : 1.0;
+        fp << cell_executionRatio << " ";
+      }
+      fp << endl;
+    }
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
+class cActionDumpCellDataGrid : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpCellDataGrid(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_cell_data.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    for (int i = 0; i < m_world->GetPopulation().GetWorldY(); i++) {
+      for (int j = 0; j < m_world->GetPopulation().GetWorldX(); j++) {
+        cPopulationCell& cell = m_world->GetPopulation().GetCell(i * m_world->GetPopulation().GetWorldX() + j);
+        double cell_data = cell.GetCellData();
+        fp << cell_data << " ";
+      }
+      fp << endl;
+    }
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
 
 class cActionDumpFitnessGrid : public cAction
 {
@@ -2248,6 +2337,35 @@ public:
   }
 };
 
+class cActionDumpSleepGrid : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpSleepGrid(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_sleep.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    for (int i = 0; i < m_world->GetPopulation().GetWorldY(); i++) {
+      for (int j = 0; j < m_world->GetPopulation().GetWorldX(); j++) {
+        cPopulationCell& cell = m_world->GetPopulation().GetCell(i * m_world->GetPopulation().GetWorldX() + j);
+        double cell_energy = (cell.IsOccupied()) ? cell.GetOrganism()->IsSleeping() : 0.0;
+        fp << cell_energy << " ";
+      }
+      fp << endl;
+    }
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
 
 class cActionDumpTaskGrid : public cAction
 {
@@ -2563,6 +2681,10 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpTaskGrid>("DumpTaskGrid");
   action_lib->Register<cActionDumpDonorGrid>("DumpDonorGrid");
   action_lib->Register<cActionDumpReceiverGrid>("DumpReceiverGrid");
+  action_lib->Register<cActionDumpEnergyGrid>("DumpEnergyGrid");
+  action_lib->Register<cActionDumpExecutionRatioGrid>("DumpExecutionRatioGrid");
+  action_lib->Register<cActionDumpCellDataGrid>("DumpCellDataGrid");
+  action_lib->Register<cActionDumpSleepGrid>("DumpSleepGrid");
   
   // Print Settings
   action_lib->Register<cActionSetVerbose>("SetVerbose");

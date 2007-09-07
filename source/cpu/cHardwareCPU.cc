@@ -50,6 +50,7 @@
 
 #include <climits>
 #include <fstream>
+#include <cmath>
 
 using namespace std;
 
@@ -202,7 +203,9 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("sense", &cHardwareCPU::Inst_SenseLog2),           // If you add more sense instructions
     tInstLibEntry<tMethod>("sense-unit", &cHardwareCPU::Inst_SenseUnit),      // and want to keep stats, also add
     tInstLibEntry<tMethod>("sense-m100", &cHardwareCPU::Inst_SenseMult100),   // the names to cStats::cStats() @JEB
-    
+    // Data collection
+    tInstLibEntry<tMethod>("collect-cell-data", &cHardwareCPU::Inst_CollectCellData),
+
     tInstLibEntry<tMethod>("donate-rnd", &cHardwareCPU::Inst_DonateRandom),
     tInstLibEntry<tMethod>("donate-kin", &cHardwareCPU::Inst_DonateKin),
     tInstLibEntry<tMethod>("donate-edt", &cHardwareCPU::Inst_DonateEditDist),
@@ -220,11 +223,12 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("rotate-r", &cHardwareCPU::Inst_RotateR),
     tInstLibEntry<tMethod>("rotate-left-one", &cHardwareCPU::Inst_RotateLeftOne),
     tInstLibEntry<tMethod>("rotate-right-one", &cHardwareCPU::Inst_RotateRightOne),
-
     tInstLibEntry<tMethod>("rotate-label", &cHardwareCPU::Inst_RotateLabel),
     
     tInstLibEntry<tMethod>("set-cmut", &cHardwareCPU::Inst_SetCopyMut),
     tInstLibEntry<tMethod>("mod-cmut", &cHardwareCPU::Inst_ModCopyMut),
+    tInstLibEntry<tMethod>("get-cell-xy", &cHardwareCPU::Inst_GetCellPosition),
+    tInstLibEntry<tMethod>("dist-from-diag", &cHardwareCPU::Inst_GetDistanceFromDiagonal),
     // @WRE additions for movement
     tInstLibEntry<tMethod>("tumble", &cHardwareCPU::Inst_Tumble),
     tInstLibEntry<tMethod>("move", &cHardwareCPU::Inst_Move),
@@ -355,6 +359,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     // Promoter Model
     tInstLibEntry<tMethod>("promoter", &cHardwareCPU::Inst_Promoter),
     tInstLibEntry<tMethod>("terminate", &cHardwareCPU::Inst_Terminate),
+    tInstLibEntry<tMethod>("promoter", &cHardwareCPU::Inst_Promoter),
+    tInstLibEntry<tMethod>("terminate", &cHardwareCPU::Inst_Terminate),
     tInstLibEntry<tMethod>("regulate", &cHardwareCPU::Inst_Regulate),
     tInstLibEntry<tMethod>("numberate", &cHardwareCPU::Inst_Numberate),
     
@@ -365,7 +371,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     // Messaging
     tInstLibEntry<tMethod>("send-msg", &cHardwareCPU::Inst_SendMessage),
     tInstLibEntry<tMethod>("retrieve-msg", &cHardwareCPU::Inst_RetrieveMessage),
-    
+        
     // Placebo instructions
     tInstLibEntry<tMethod>("skip", &cHardwareCPU::Inst_Skip),
 
@@ -3088,6 +3094,13 @@ bool cHardwareCPU::DoSense(cAvidaContext& ctx, int conversion_method, double bas
   // Note that we are converting <double> resources to <int> register values
 }
 
+bool cHardwareCPU::Inst_CollectCellData(cAvidaContext& ctx) {
+  int cellID = organism->GetCellID();
+  const int out_reg = FindModifiedRegister(REG_BX);
+  GetRegister(out_reg) = m_world->GetPopulation().GetCell(cellID).GetCellData();
+  return true;
+}
+
 void cHardwareCPU::DoDonate(cOrganism* to_org)
 {
   assert(to_org != NULL);
@@ -3119,12 +3132,12 @@ void cHardwareCPU::DoEnergyDonate(cOrganism* to_org)
   
   //update energy store and merit of donor
   organism->GetPhenotype().ReduceEnergy(energy_given);
-  double senderMerit = cMerit::EnergyToMerit(organism->GetPhenotype().GetStoredEnergy(), m_world) * organism->GetPhenotype().GetExecutionRatio();
+  double senderMerit = cMerit::EnergyToMerit(organism->GetPhenotype().GetStoredEnergy()  * organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
   organism->UpdateMerit(senderMerit);
   
   // update energy store and merit of donee
   to_org->GetPhenotype().ReduceEnergy(-1.0*energy_given);
-  double receiverMerit = cMerit::EnergyToMerit(to_org->GetPhenotype().GetStoredEnergy(), m_world) * to_org->GetPhenotype().GetExecutionRatio();
+  double receiverMerit = cMerit::EnergyToMerit(to_org->GetPhenotype().GetStoredEnergy() * to_org->GetPhenotype().GetEnergyUsageRatio(), m_world);
   to_org->UpdateMerit(receiverMerit);
 }
 
@@ -4224,17 +4237,17 @@ bool cHardwareCPU::Inst_SetFlow(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_Sleep(cAvidaContext& ctx) {
   cPopulation& pop = m_world->GetPopulation();
-  if(m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1) {
-    pop.AddEndSleep(organism->GetCellID(), m_world->GetStats().GetUpdate());
-  }
   int cellID = organism->GetCellID();
+  if(m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1) {
+    pop.AddEndSleep(cellID, m_world->GetStats().GetUpdate());
+  }
   organism->SetSleeping(false);  //this instruction get executed at the end of a sleep cycle
   m_world->GetStats().decNumAsleep(pop.GetCell(cellID).GetDemeID());
   if(m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 2) {
     organism->GetPhenotype().RefreshEnergy();
     organism->GetPhenotype().ApplyToEnergyStore();
-    double newMerit = cMerit::EnergyToMerit(organism->GetPhenotype().GetStoredEnergy(), m_world) * organism->GetPhenotype().GetExecutionRatio();
-    pop.UpdateMerit(organism->GetCellID(), newMerit);
+    double newMerit = cMerit::EnergyToMerit(organism->GetPhenotype().GetStoredEnergy() * organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
+    pop.UpdateMerit(cellID, newMerit);
   }
   return true;
 }
@@ -4245,12 +4258,39 @@ bool cHardwareCPU::Inst_GetUpdate(cAvidaContext& ctx) {
   return true;
 }
 
+bool cHardwareCPU::Inst_GetCellPosition(cAvidaContext& ctx) {
+  int absolute_cell_ID = organism->GetCellID();
+  int deme_id = organism->GetOrgInterface().GetDemeID();
+  std::pair<int, int> pos = m_world->GetPopulation().GetDeme(deme_id).GetCellPosition(absolute_cell_ID);  
+  const int xreg = FindModifiedRegister(REG_BX);
+  const int yreg = FindNextRegister(xreg);
+  GetRegister(xreg) = pos.first;
+  GetRegister(yreg) = pos.second;
+  return true;
+}
+
+bool cHardwareCPU::Inst_GetDistanceFromDiagonal(cAvidaContext& ctx) {
+  int absolute_cell_ID = organism->GetOrgInterface().GetCellID();
+  int deme_id = organism->GetOrgInterface().GetDemeID();
+  std::pair<int, int> pos = m_world->GetPopulation().GetDeme(deme_id).GetCellPosition(absolute_cell_ID);  
+  const int reg = FindModifiedRegister(REG_BX);
+  
+  if(pos.first > pos.second) {
+    GetRegister(reg) = (int)ceil((pos.first - pos.second)/2.0);
+  } else {
+    GetRegister(reg) = (int)floor((pos.first - pos.second)/2.0);
+  }
+//  std::cerr<<"x = "<<pos.first<<"  y = "<<pos.second<<"  ans = "<<GetRegister(reg)<<std::endl;
+  return true;
+}
 
 //// Promoter Model ////
 
 bool cHardwareCPU::Inst_Promoter(cAvidaContext& ctx)
 {
   // Promoters don't do anything themselves
+  return true;
+//  std::cerr<<"x = "<<pos.first<<"  y = "<<pos.second<<"  ans = "<<GetRegister(reg)<<std::endl;
   return true;
 }
 
@@ -4434,7 +4474,6 @@ int cHardwareCPU::Numberate(int _pos, int _dir)
   }
   return code;
 }
-
 
 /*! Send a message to the organism that is currently faced by this cell,
 where the label field of sent message is from register ?BX?, and the data field

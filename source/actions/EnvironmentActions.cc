@@ -455,8 +455,40 @@ public:
   }
 };
 
+class cActionDelayedDemeEvent : public cAction
+{
+private:
+  int m_x1, m_y1, m_x2, m_y2; // bounding box of event in deme
+  int m_delay; // deme age when event occurs
+  int m_duration; // length of event; subverted when deme is reset
+  
+public:
+  cActionDelayedDemeEvent(cWorld* world, const cString& args) : cAction(world, args), m_x1(-1), m_y1(-1), m_x2(-1), m_y2(-1), m_delay(-1), m_duration(-1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_x1 = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_y1 = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_x2 = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_y2 = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_delay = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_duration = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: <int x1> <int y1> <int x2> <int y2> <int delay> <int duraion>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cPopulation& pop = m_world->GetPopulation();
+    int numDemes = pop.GetNumDemes();
+    for(int i = 0; i < numDemes; i++) {
+      pop.GetDeme(i).SetCellEvent(m_x1, m_y1, m_x2, m_y2, m_delay, m_duration);
+    }
+  }
+};
+
 void RegisterEnvironmentActions(cActionLibrary* action_lib)
 {
+  action_lib->Register<cActionDelayedDemeEvent>("DelayedDemeEvent");
   action_lib->Register<cActionInjectResource>("InjectResource");
   action_lib->Register<cActionInjectScaledResource>("InjectScaledResource");
   action_lib->Register<cActionOutflowScaledResource>("OutflowScaledResource");

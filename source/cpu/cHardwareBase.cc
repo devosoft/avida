@@ -817,15 +817,17 @@ bool cHardwareBase::Inst_Repro(cAvidaContext& ctx)
 }
 
 bool cHardwareBase::Inst_DoubleEnergyUsage(cAvidaContext& ctx) {
-  organism->GetPhenotype().DoubleEnergyUsage();
-  return true;
+  double energy_req = inst_energy_cost[IP().GetNextInst().GetOp()]
+                        * cMerit::EnergyToMerit(organism->GetPhenotype().GetStoredEnergy() * organism->GetPhenotype().GetEnergyUsageRatio() * 2.0, m_world)
+                        / 100.0; //compensate by factor of 100
+
+  return organism->GetPhenotype().DoubleEnergyUsage(energy_req);
 }
 
 bool cHardwareBase::Inst_HalfEnergyUsage(cAvidaContext& ctx) {
   organism->GetPhenotype().HalfEnergyUsage();
   return true;
 }
-
 
 // This method will test to see if all costs have been paid associated
 // with executing an instruction and only return true when that instruction
@@ -840,6 +842,7 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
     double energy_req = inst_energy_cost[cur_inst.GetOp()] * (organism->GetPhenotype().GetMerit().GetDouble() / 100.0); //compensate by factor of 100
 
     if (energy_req > 0.0) { 
+      int cellID = organism->GetCellID();
       if (organism->GetPhenotype().GetStoredEnergy() >= energy_req) {
         inst_energy_cost[cur_inst.GetOp()] = 0;
         // subtract energy used from current org energy.
@@ -847,7 +850,6 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
         
         // tracking sleeping organisms
         cString instName = m_world->GetHardwareManager().GetInstSet().GetName(cur_inst);
-        int cellID = organism->GetCellID();
         if( instName == cString("sleep") || instName == cString("sleep1") || instName == cString("sleep2") ||
             instName == cString("sleep3") || instName == cString("sleep4")) {
           cPopulation& pop = m_world->GetPopulation();
@@ -857,7 +859,8 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
           pop.GetCell(cellID).GetOrganism()->SetSleeping(true);
           m_world->GetStats().incNumAsleep(pop.GetCell(cellID).GetDemeID());
         }
-      } else { // not enough energy
+      } else {
+        organism->GetPhenotype().SetToDie();
         return false;
       }
     }

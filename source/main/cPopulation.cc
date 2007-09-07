@@ -119,7 +119,6 @@ cPopulation::cPopulation(cWorld* world)
   
   // Allocate the cells, resources, and market.
   cell_array.ResizeClear(num_cells);
-//  resource_count.ResizeSpatialGrids(world_x, world_y);
   market.Resize(MARKET_SIZE);
   
   // Setup the cells.  Do things that are not dependent upon topology here.
@@ -145,7 +144,7 @@ cPopulation::cPopulation(cWorld* world)
       deme_cells[offset] = cell_id;
       cell_array[cell_id].SetDemeID(deme_id);
     }
-    deme_array[deme_id].Setup(deme_cells, deme_size_x);
+    deme_array[deme_id].Setup(deme_cells, deme_size_x, m_world);
   }
   
   // Setup the topology.
@@ -195,11 +194,7 @@ cPopulation::cPopulation(cWorld* world)
   for(int i = 0; i < GetNumDemes(); i++) {
     cResourceCount tmp_deme_res_count(num_deme_res);
     GetDeme(i).SetDemeResourceCount(tmp_deme_res_count);
-    //TODO: make sure grid is the right grid/size
-    //GetDeme(i).GetDemeResourceCount().ResizeSpatialGrids(world_x, world_y);
-
     GetDeme(i).ResizeSpatialGrids(deme_size_x, deme_size_y);
-//    GetDeme(i).GetDemeResourceCount().
   }
 
   for (int i = 0; i < resource_lib.GetSize(); i++) {
@@ -1058,6 +1053,7 @@ There are several bases this can be checked on:
 0: 'all'       - ...all non-empty demes in the population.
 1: 'full_deme' - ...demes that have been filled up.
 2: 'corners'   - ...demes with upper left and lower right corners filled.
+3: 'deme-age'  - ...demes who have reached their maximum age
 */
 
 void cPopulation::ReplicateDemes(int rep_trigger)
@@ -1163,18 +1159,33 @@ void cPopulation::ReplicateDemes(int rep_trigger)
       source_deme.Reset();
       target_deme.Reset();
   
-      // Lineage label is wrong here; fix.
-      if(m_world->GetConfig().GERMLINE_RANDOM_PLACEMENT.Get()) {
-        InjectGenome(source_deme.GetCellID(m_world->GetRandom().GetInt(0, source_deme.GetSize()-1)),
-                     source_germline.GetLatest(), 0);
-        InjectGenome(target_deme.GetCellID(m_world->GetRandom().GetInt(0, target_deme.GetSize()-1)),
-                     target_germline.GetLatest(), 0);
-      } else {
-        InjectGenome(source_deme.GetCellID(source_deme.GetSize()/2), source_germline.GetLatest(), 0);
-        InjectGenome(target_deme.GetCellID(target_deme.GetSize()/2), target_germline.GetLatest(), 0);
-      }
+      int source_deme_inject_cell;
+      int target_deme_inject_cell;
       
-      // Note: not rotating the clones.
+      if(m_world->GetConfig().GERMLINE_RANDOM_PLACEMENT.Get() == 2) {
+        // organism is randomly placed in deme
+        source_deme_inject_cell = source_deme.GetCellID(m_world->GetRandom().GetInt(0, source_deme.GetSize()-1));
+        target_deme_inject_cell = target_deme.GetCellID(m_world->GetRandom().GetInt(0, target_deme.GetSize()-1));
+      } else {
+        // organisms is placed in center of deme
+        source_deme_inject_cell = source_deme.GetCellID(source_deme.GetSize()/2);
+        target_deme_inject_cell = target_deme.GetCellID(target_deme.GetSize()/2);
+      }
+      // Lineage label is wrong here; fix.
+      InjectGenome(source_deme_inject_cell, source_germline.GetLatest(), 0); // source deme
+      InjectGenome(target_deme_inject_cell, target_germline.GetLatest(), 0); // target deme
+      
+      if(m_world->GetConfig().GERMLINE_RANDOM_PLACEMENT.Get() == 1) {
+        // Rotate both injected cells to face northwest.
+        int offset = source_deme.GetCellID(0);
+        cell_array[source_deme_inject_cell].Rotate(cell_array[GridNeighbor(source_deme_inject_cell-offset,
+                                                              source_deme.GetWidth(),
+                                                              source_deme.GetHeight(), -1, -1)+offset]);
+        offset = target_deme.GetCellID(0);
+        cell_array[target_deme_inject_cell].Rotate(cell_array[GridNeighbor(target_deme_inject_cell-offset,
+                                                              target_deme.GetWidth(), 
+                                                              target_deme.GetHeight(), -1, -1)+offset]);
+      }
     } else {
       // Not using germline; choose a random organism from this deme.
       int cell1_id = -1;
@@ -1187,7 +1198,7 @@ void cPopulation::ReplicateDemes(int rep_trigger)
         cGenome seed_genome = seed_org->GetGenome();
         int seed_lineage = seed_org->GetLineageLabel();
 
-        // Kill all the organisms in the source deme.  Orgs. in dest. deme are already killed
+        // Kill all the organisms in the source deme.  Orgs. in target deme have already been killed
         for (int i=0; i<source_deme.GetSize(); i++) {
           KillOrganism(cell_array[source_deme.GetCellID(i)]);
         }
@@ -1195,8 +1206,22 @@ void cPopulation::ReplicateDemes(int rep_trigger)
         source_deme.Reset();
         target_deme.Reset();
 
-        InjectGenome(source_deme.GetCellID(source_deme.GetSize()/2), seed_genome, seed_lineage); // source deme
-        InjectGenome(target_deme.GetCellID(target_deme.GetSize()/2), seed_genome, seed_lineage); // destination deme
+        int source_deme_inject_cell = source_deme.GetCellID(source_deme.GetSize()/2);
+        int target_deme_inject_cell = target_deme.GetCellID(target_deme.GetSize()/2);
+        
+        InjectGenome(source_deme_inject_cell, seed_genome, seed_lineage); // source deme
+        InjectGenome(target_deme_inject_cell, seed_genome, seed_lineage); // target deme
+        
+        // Rotate both injected cells to face northwest.
+        int offset = source_deme.GetCellID(0);
+        cell_array[source_deme_inject_cell].Rotate(cell_array[GridNeighbor(source_deme_inject_cell-offset,
+                                                              source_deme.GetWidth(),
+                                                              source_deme.GetHeight(), -1, -1)+offset]);
+        offset = target_deme.GetCellID(0);
+        cell_array[target_deme_inject_cell].Rotate(cell_array[GridNeighbor(target_deme_inject_cell-offset,
+                                                              target_deme.GetWidth(), 
+                                                              target_deme.GetHeight(), -1, -1)+offset]);
+
         
       } else {
         cOrganism* seed = cell_array[cell1_id].GetOrganism();
@@ -1224,8 +1249,7 @@ void cPopulation::ReplicateDemes(int rep_trigger)
         cell_array[cell3_id].Rotate(cell_array[GridNeighbor(cell3_id-offset,
                                                             source_deme.GetWidth(),
                                                             source_deme.GetHeight(), -1, -1)+offset]);
-                                                            
-                                          
+
         // This is in the wrong place.  Reset should be done after the demes are cleared and before the org. is injected.
         source_deme.Reset();
         target_deme.Reset();

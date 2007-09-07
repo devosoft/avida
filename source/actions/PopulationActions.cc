@@ -988,6 +988,7 @@ public:
     'all'       - ...all non-empty demes in the population.
     'full_deme' - ...demes that have been filled up.
     'corners'   - ...demes with upper left and lower right corners filled.
+    'deme-age'  - ...demes that are a certain age
 */
 
 class cActionReplicateDemes : public cAction

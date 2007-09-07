@@ -22,15 +22,17 @@
  */
 
 #include "cDeme.h"
+#include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cResource.h"
+#include "cWorld.h"
 
-
-void cDeme::Setup(const tArray<int> & in_cells, int in_width)
+void cDeme::Setup(const tArray<int> & in_cells, int in_width, cWorld* world)
 {
   cell_ids = in_cells;
   birth_count = 0;
   org_count = 0;
+  m_world = world;
 
   // If width is negative, set it to the full number of cells.
   width = in_width;
@@ -60,11 +62,36 @@ std::pair<int, int> cDeme::GetCellPosition(int cellid) const
   return std::make_pair(cellid % GetWidth(), cellid / GetWidth());
 }
 
+void cDeme::ProcessUpdate() {
+  for(int i = 0; i < cell_events.GetSize(); i++) {
+    cDemeCellEvent& event = cell_events[i];
+    if(event.GetDelay() == _age) {
+      event.ActivateEvent(m_world); //start event
+      int eventCell = event.GetNextEventCellID();
+      while(eventCell != -1) {
+        // place event ID in cells' data
+        m_world->GetPopulation().GetCell(GetCellID(eventCell)).SetCellData(event.GetEventID());
+        eventCell = event.GetNextEventCellID();
+      }
+    } else if(event.GetDelay()+event.GetDuration() == _age) {
+      int eventCell = event.GetNextEventCellID();
+      while(eventCell != -1) {
+        if(event.GetEventID() == m_world->GetPopulation().GetCell(GetCellID(eventCell)).GetCellData()) { // eventID == CellData
+          //set cell data to 0
+          m_world->GetPopulation().GetCell(GetCellID(eventCell)).SetCellData(0);
+          eventCell = event.GetNextEventCellID();
+        }
+      }
+      event.DeactivateEvent();  //event over
+    }
+  }
+  ++_age;
+}
 
 void cDeme::Reset() 
 {
   birth_count = 0; 
-  _age = 0;
+  _age = 0;  
   //clear cell energy
   
   deme_resource_count.ReinitializeResources();
@@ -140,4 +167,9 @@ void cDeme::GiveBackCellEnergy(int absolute_cell_id, double value) {
     cell_resources[energy_res_ids[i]] += amount_per_resource;
   }
   deme_resource_count.ModifyCell(cell_resources, relative_cell_id);
+}
+
+void cDeme::SetCellEvent(int x1, int y1, int x2, int y2, int delay, int duration) {
+  cDemeCellEvent demeEvent = cDemeCellEvent(x1, y1, x2, y2, delay, duration, width);
+  cell_events.Push(demeEvent);
 }

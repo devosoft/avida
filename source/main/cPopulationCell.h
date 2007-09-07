@@ -59,6 +59,7 @@ private:
   int m_cell_id;           // Unique id for position of cell in population.
   int m_deme_id;           // ID of the deme that this cell is part of.
   int m_organism_count;    // Total number of orgs to ever inhabit this cell.
+  int m_cell_data;         // "data" that is local to the cell and can be retrieaved by the org.
 
   // location in population
   int m_x; //!< The x-coordinate of the position of this cell in the environment.
@@ -98,6 +99,8 @@ public:
   inline int GetID() const { return m_cell_id; }
   inline int GetDemeID() const { return m_deme_id; }
   inline int GetOrganismCount() const { return m_organism_count; }
+  inline int GetCellData() const { return m_cell_data; }
+  void SetCellData(const int data) { m_cell_data = data; }
 
   inline bool IsOccupied() const { return m_organism != NULL; }
 

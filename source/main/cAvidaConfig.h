@@ -298,7 +298,7 @@ public:
   CONFIG_ADD_VAR(DEMES_HAVE_MERIT, int, 0, "Whether demes have merit; 0=no");
   CONFIG_ADD_VAR(GERMLINE_COPY_MUT, double, 0.0075, "Prob. of copy mutations occuring during\ngermline replication.");
   CONFIG_ADD_VAR(GERMLINE_REPLACES_SOURCE, int, 0, "Whether the source germline is updated\non replication; 0=no.");
-  CONFIG_ADD_VAR(GERMLINE_RANDOM_PLACEMENT, int, 0, "Whether the seed for a germline is placed\n randomly within the deme; 0=no.");
+  CONFIG_ADD_VAR(GERMLINE_RANDOM_PLACEMENT, int, 0, "Defines how the seed for a germline is placed\n within the deme;\n0 = organisms is placed in center of deme, no orientation\n1 = organisms is placed in center of deme and oriented\n2 = organism is randomly placed in deme, no orientation");
   CONFIG_ADD_VAR(MAX_DEME_AGE, int, 500, "The maximum age of a deme (in updates) to be\nused for age-based replication (default=500).");  
   
   CONFIG_ADD_GROUP(REPRODUCTION_GROUP, "Birth and Death");

@@ -272,7 +272,7 @@ public:
 
   /////////////////////  Accessors -- Retrieving  ////////////////////
   const cMerit & GetMerit() const { assert(initialized == true); return merit; }
-  double GetExecutionRatio() const { assert(initialized == true); return executionRatio; }
+  double GetEnergyUsageRatio() const { assert(initialized == true); return executionRatio; }
   int GetGenomeLength() const { assert(initialized == true); return genome_length; }
   int GetCopiedSize() const { assert(initialized == true); return copied_size; }
   int GetExecutedSize() const { assert(initialized == true); return executed_size; }
@@ -451,8 +451,8 @@ public:
   bool& ChildFertile() { assert(initialized == true); return child_fertile; }
   bool& IsMultiThread() { assert(initialized == true); return is_multi_thread; }
   
-  void DoubleEnergyUsage() { executionRatio *= 2.0; }
-  void HalfEnergyUsage() { executionRatio *= 0.5; }
+  bool DoubleEnergyUsage(double inst_energy_cost);
+  void HalfEnergyUsage();
   void RefreshEnergy();
   void ApplyToEnergyStore();
   double ExtractParentEnergy();

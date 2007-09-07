@@ -24,12 +24,14 @@
 #ifndef cDeme_h
 #define cDeme_h
 
+#include "cDemeCellEvent.h"
 #include "cGermline.h"
 #include "tArray.h"
 #include "cResourceCount.h"
 #include "cStringList.h"
 
 class cResource;
+class cWorld;
 
 /*! Demes are groups of cells in the population that are somehow bound together
 as a unit.  The deme object is used from within cPopulation to manage these 
@@ -38,6 +40,7 @@ groups. */
 class cDeme
 {
 private:
+  cWorld* m_world;
   tArray<int> cell_ids;
   int width; //!< Width of this deme.
   int birth_count; //!< Number of organisms that have been born into this deme since reset.
@@ -51,11 +54,13 @@ private:
   cResourceCount deme_resource_count; //!< Resources available to the deme
   tArray<int> energy_res_ids; //!< IDs of energy resources
   
+  tArray<cDemeCellEvent> cell_events;
+  
 public:
   cDeme() : width(0), birth_count(0), org_count(0), _age(0), deme_resource_count(0) { ; }
   ~cDeme() { ; }
 
-  void Setup(const tArray<int>& in_cells, int in_width = -1);
+  void Setup(const tArray<int>& in_cells, int in_width = -1, cWorld* world = NULL);
 
   int GetSize() const { return cell_ids.GetSize(); }
   int GetCellID(int pos) const { return cell_ids[pos]; }
@@ -85,7 +90,7 @@ public:
   
   // -= Update support =-
   //! Called once, at the end of every update.
-  void ProcessUpdate() { ++_age; }
+  void ProcessUpdate();
   /*! Returns the age of this deme, updates.  Age is defined as the number of 
     updates since the last time Reset() was called. */
   int GetAge() const { return _age; }
@@ -100,6 +105,8 @@ public:
   void UpdateDemeRes() { deme_resource_count.GetResources(); }
   void Update(double time_step) { deme_resource_count.Update(time_step); }
   int GetRelativeCellID(int absolute_cell_id) { return absolute_cell_id % GetSize(); } //!< assumes all demes are the same size
+
+  void SetCellEvent(int x1, int y1, int x2, int y2, int delay, int duration);
 };
 
 #endif

@@ -45,6 +45,7 @@ cPopulationCell::cPopulationCell(const cPopulationCell& in_cell)
   , m_cell_id(in_cell.m_cell_id)
   , m_deme_id(in_cell.m_deme_id)
   , m_organism_count(in_cell.m_organism_count)
+  , m_cell_data(in_cell.m_cell_data)
 {
   // Copy the mutation rates into a new structure
   m_mut_rates = new cMutationRates(*in_cell.m_mut_rates);
@@ -64,6 +65,7 @@ void cPopulationCell::operator=(const cPopulationCell& in_cell)
   m_cell_id = in_cell.m_cell_id;
   m_deme_id = in_cell.m_deme_id;
   m_organism_count = in_cell.m_organism_count;
+  m_cell_data = in_cell.m_cell_data;
 
   // Copy the mutation rates, constructing the structure as necessary
   if (m_mut_rates == NULL)
@@ -84,6 +86,7 @@ void cPopulationCell::Setup(cWorld* world, int in_id, const cMutationRates& in_r
   m_x = x;
   m_y = y;
   m_deme_id = -1;
+  m_cell_data = 0;
   
   if (m_mut_rates == NULL)
     m_mut_rates = new cMutationRates(in_rates);
@@ -179,7 +182,7 @@ void cPopulationCell::InsertOrganism(cOrganism* new_org)
     if(uptake_energy != 0.0) {
       // update energy and merit
       m_organism->GetPhenotype().ReduceEnergy(-1.0 * uptake_energy);
-      m_organism->GetPhenotype().SetMerit(cMerit(cMerit::EnergyToMerit(m_organism->GetPhenotype().GetStoredEnergy(), m_world) * m_organism->GetPhenotype().GetExecutionRatio()));
+      m_organism->GetPhenotype().SetMerit(cMerit(cMerit::EnergyToMerit(m_organism->GetPhenotype().GetStoredEnergy() * m_organism->GetPhenotype().GetEnergyUsageRatio(), m_world)));
     }
   }
 }

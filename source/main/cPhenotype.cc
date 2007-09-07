@@ -1346,6 +1346,19 @@ void cPhenotype::SetEnergy(const double value) {
   energy_store = max(0.0, min(value, (double) m_world->GetConfig().ENERGY_CAP.Get()));
 }
 
+bool cPhenotype::DoubleEnergyUsage(double energy_req) {
+  if(GetStoredEnergy() < energy_req) {
+    return false;
+  }
+  executionRatio *= 2.0;
+  return true;
+}
+
+void cPhenotype::HalfEnergyUsage() {
+  executionRatio *= 0.5;
+}
+
+
 /**
 Credit organism with energy reward, but only update energy store if APPLY_ENERGY_METHOD = "on task completion" (1)
  */
@@ -1393,13 +1406,9 @@ double cPhenotype::ExtractParentEnergy() {
   ReduceEnergy(child_energy - 2*energy_given_at_birth); // 2*energy_given_at_birth: 1 in child_energy & 1 for parent
     
   //TODO: add energy_given_at_birth to Stored_energy
-  cMerit parentMerit = cMerit(cMerit::EnergyToMerit(GetStoredEnergy(), m_world) * GetExecutionRatio());
+  cMerit parentMerit = cMerit(cMerit::EnergyToMerit(GetStoredEnergy() * GetEnergyUsageRatio(), m_world));
   SetMerit(parentMerit);
   
-/*  if(m_world->GetConfig().ENERGY_VERBOSE.Get()) {
-    cerr<<"child merit: "<<merit_array[0]<<endl<<"child energy: "<< child_energy <<endl
-    <<"parent merit: "<<GetMerit()<<endl<<"parent energy: "<< GetStoredEnergy() <<endl;
-  }*/
   return child_energy;
 }
 
