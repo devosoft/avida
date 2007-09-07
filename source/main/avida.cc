@@ -137,7 +137,7 @@ void ProcessCmdLineArgs(int argc, char* argv[], cAvidaConfig* cfg)
   bool flag_interactive = false;
   bool flag_load = false;         cString val_load;
   bool flag_review = false;
-  bool flag_verbosity = false;    int val_verbosity;
+  bool flag_verbosity = false;    int val_verbosity = 0;
   bool flag_seed = false;         int val_seed = 0;
   
   // Then scan through and process the rest of the args.
