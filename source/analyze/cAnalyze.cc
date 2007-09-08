@@ -2554,7 +2554,16 @@ void cAnalyze::CommandPrintPhenotypes(cString cur_string)
   // Load in the variables...
   cString filename("phenotype.dat");
   if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
-  
+
+  cString flag("");
+  bool print_ttc = false;
+  bool print_ttpc = false;
+  while (cur_string.GetSize() != 0) {
+  	flag = cur_string.PopWord();
+  	if (flag == "total_task_count") print_ttc = true;
+  	else if (flag == "total_task_performance_count") print_ttpc = true;
+  }
+
   // Make sure we have at least one genotype...
   if (batch[cur_batch].List().GetSize() == 0) return;
   
@@ -2565,11 +2574,15 @@ void cAnalyze::CommandPrintPhenotypes(cString cur_string)
   tArray<int> genotype_counts(num_phenotypes);
   tArray<double> total_length(num_phenotypes);
   tArray<double> total_gest(num_phenotypes);
+  tArray<int> total_task_count(num_phenotypes);
+  tArray<int> total_task_performance_count(num_phenotypes);
   
   phenotype_counts.SetAll(0);
   genotype_counts.SetAll(0);
   total_length.SetAll(0.0);
   total_gest.SetAll(0.0);
+  total_task_count.SetAll(0);
+  total_task_performance_count.SetAll(0);
   
   // Loop through all of the genotypes in this batch...
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
@@ -2584,6 +2597,10 @@ void cAnalyze::CommandPrintPhenotypes(cString cur_string)
     genotype_counts[phen_id]++;
     total_length[phen_id] += genotype->GetNumCPUs() * genotype->GetLength();
     total_gest[phen_id] += genotype->GetNumCPUs() * genotype->GetGestTime();
+    for (int i = 0; i < num_tasks; i++) {
+    		total_task_count[phen_id] += ((genotype->GetTaskCount(i) > 0) ? 1 : 0);
+    		total_task_performance_count[phen_id] += genotype->GetTaskCount(i);
+    }
   }
   
   // Print out the results...
@@ -2594,9 +2611,22 @@ void cAnalyze::CommandPrintPhenotypes(cString cur_string)
     << "# 2: Number of genotypes of this phenotye" << endl
     << "# 3: Average Genome Length" << endl
     << "# 4: Average Gestation Time" << endl
-    << "# 5: Viability of Phenotype" << endl
-    << "# 6+: Tasks performed in this phenotype" << endl
-    << endl;
+    << "# 5: Viability of Phenotype" << endl;
+  if (print_ttc && print_ttpc) {
+  	fp << "# 6: Total # of different tasks performed by this phenotype" << endl
+    	<< "# 7: Average # of tasks performed by this phenotype" << endl
+    	<< "# 8+: Tasks performed in this phenotype" << endl;
+  }
+  else if (print_ttc) {
+  	fp << "# 6: Total # of different tasks performed by this phenotype" << endl
+    	<< "# 7+: Tasks performed in this phenotype" << endl;
+  }
+  else if (print_ttpc) {
+  	fp << "# 6: Total # of tasks performed by this phenotype" << endl
+  	  << "# 7+: Tasks performed in this phenotype" << endl;
+  }
+  else { fp << "# 6+: Tasks performed in this phenotype" << endl; }
+  fp << endl;
   
   // @CAO Lets do this inefficiently for the moment, but print out the
   // phenotypes in order.
@@ -2619,6 +2649,10 @@ void cAnalyze::CommandPrintPhenotypes(cString cur_string)
       << total_length[max_position] / phenotype_counts[max_position] << " "
       << total_gest[max_position] / phenotype_counts[max_position] << " "
       << (max_position & 1) << "  ";
+    if (print_ttc) { fp << total_task_count[max_position] / genotype_counts[max_position] << "  "; }
+    if (print_ttpc) { 
+    	fp << total_task_performance_count[max_position] / genotype_counts[max_position] << "  "; 
+    }
     for (int i = 1; i <= num_tasks; i++) {
       if ((max_position >> i) & 1 > 0) fp << "1 ";
       else fp << "0 ";
@@ -8262,6 +8296,10 @@ void cAnalyze::SetupGenotypeDataList()
   ADD_GDATA(cString, "task_list", "List of all tasks performed",     GetTaskList,     SetNULL, 0, "(N/A)", "");
   ADD_GDATA(cString, "link.tasksites", "Phenotype Map",              GetMapLink,      SetNULL, 0, 0,       0);
   ADD_GDATA(cString, "html.sequence",  "Genome Sequence",            GetHTMLSequence, SetNULL, 0, "(N/A)", "");
+  
+  // coarse-grained task stats
+  ADD_GDATA(int, 		"total_task_count","# Different Tasks", 		GetTotalTaskCount, SetNULL, 1, 0, 0);
+  ADD_GDATA(int, 		"total_task_performance_count", "Total Tasks Performed",	GetTotalTaskPerformanceCount, SetNULL, 1, 0, 0);
   
   const cEnvironment& environment = m_world->GetEnvironment();
   for (int i = 0; i < environment.GetNumTasks(); i++) {

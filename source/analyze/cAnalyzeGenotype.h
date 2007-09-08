@@ -376,20 +376,37 @@ public:
   const tArray<int> & GetTaskCounts() const {
     return task_counts;
   }
-  int GetEnvInput(int input_id) const{
-    if (input_id >= m_env_inputs.GetSize()) return 0;
-    return m_env_inputs[input_id];
-  }
-  const tArray<int>& GetEnvInputs() const{
-    return m_env_inputs;
-  }
-
+  
   double GetTaskQuality(int task_id) const {
 	  if (task_id >= task_counts.GetSize()) return 0;
 	  return task_qualities[task_id];
   }
   const tArray<double> & GetTaskQualities() const {
 	  return task_qualities;
+  }
+  
+  // number of different tasks performed
+  int GetTotalTaskCount() const {
+  	int total_task_count = 0;
+  	for(int i = 0; i < task_counts.GetSize(); i++)
+  	{ if (task_counts[i] > 0) total_task_count++; }
+  	return total_task_count;
+  }
+  
+  // total number of tasks performed, including multiple performances
+  int GetTotalTaskPerformanceCount() const {
+  	int total_task_performance_count = 0;
+  	for(int i = 0; i < task_counts.GetSize(); i++)
+  	{ total_task_performance_count += task_counts[i]; }
+  	return total_task_performance_count;
+  }
+  
+  int GetEnvInput(int input_id) const{
+    if (input_id >= m_env_inputs.GetSize()) return 0;
+    return m_env_inputs[input_id];
+  }
+  const tArray<int>& GetEnvInputs() const{
+    return m_env_inputs;
   }
 
   // Comparisons...  Compares a genotype to the "previous" one, which is

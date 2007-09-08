@@ -356,6 +356,14 @@ save information generated in analyze mode.
   have been loaded in, or a RECALCULATE (or RECALC) must have been run to collect
   it.
 </dd>
+<dt><strong>
+	PRINT_PHENOTYPES [<span class="cmdargopt">file='phenotype.dat']
+	[<span class="cmdargopt">total_task_count]
+	[<span class="cmdargopt">total_task_performance_count]
+</strong></dt>
+<dd>
+	Prints phenotypes in the current batch as determined by task-signature.  Default statistics for each phenotype are number of organisms, number of genotypes, average genome length, average gestation time, viability, and tasks performed.  Using the total_task_count and/or total_task_performance_count flags will add that statistic to the output.  (In the case of total_task_performance_count, this will be an average over the members of the phenotype.)
+</dd>
 <dt><strong>DETAIL [<span class="cmdargopt">file='detail.dat'</span>] [<span class="cmdargopt">format ...</span>]</strong></dt>
 <dd>
   Print out all of the stats for each genotype, one per line.  The
@@ -632,6 +640,10 @@ After a RECALCULATE (or RECALC), these additional formats become available:
 <tr>
   <td><strong>task.n</strong> (# of times task number n is done)</td>
   <td><strong>task.n:binary</strong> (is task n done, 0/1)</td>
+  <td><strong>total_task_count</strong> (# of different tasks done)</td>
+</tr>
+<tr>
+	<td><strong>total_task_performance_count</strong> (total # of tasks done)</td>
 </tr>
 </table>
 </div>
