@@ -35,8 +35,9 @@
 
 void cHeadCPU::Adjust()
 {
+  assert(m_mem_space >= 0);
   // Ensure that m_mem_space is valid
-  m_mem_space %= m_hardware->GetNumMemSpaces();
+  if (m_mem_space >= m_hardware->GetNumMemSpaces()) m_mem_space %= m_hardware->GetNumMemSpaces();
   
   const int mem_size = GetMemory().GetSize();
   

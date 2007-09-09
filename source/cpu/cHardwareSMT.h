@@ -358,9 +358,9 @@ inline void cHardwareSMT::ThreadPrev()
 
 inline int cHardwareSMT::GetStack(int depth, int stack_id, int in_thread) const
 {
-  if(stack_id<0 || stack_id > NUM_STACKS) stack_id=0;
+  if (stack_id<0 || stack_id > NUM_STACKS) stack_id=0;
   
-  if(in_thread==-1)
+  if (in_thread==-1)
     in_thread=m_cur_thread;
   
   return Stack(stack_id, in_thread).Get(depth);
@@ -368,8 +368,8 @@ inline int cHardwareSMT::GetStack(int depth, int stack_id, int in_thread) const
 
 inline cCPUStack& cHardwareSMT::Stack(int stack_id)
 {
-  if(stack_id >= NUM_STACKS) stack_id = 0;
-  if(stack_id < NUM_LOCAL_STACKS)
+  if (stack_id >= NUM_STACKS) stack_id = 0;
+  if (stack_id < NUM_LOCAL_STACKS)
     return m_threads[m_cur_thread].local_stacks[stack_id];
   else
     return m_global_stacks[stack_id % NUM_LOCAL_STACKS];
@@ -377,8 +377,8 @@ inline cCPUStack& cHardwareSMT::Stack(int stack_id)
 
 inline const cCPUStack& cHardwareSMT::Stack(int stack_id) const 
 {
-  if(stack_id >= NUM_STACKS) stack_id = 0;
-  if(stack_id < NUM_LOCAL_STACKS)
+  if (stack_id >= NUM_STACKS) stack_id = 0;
+  if (stack_id < NUM_LOCAL_STACKS)
     return m_threads[m_cur_thread].local_stacks[stack_id];
   else
     return m_global_stacks[stack_id % NUM_LOCAL_STACKS];
@@ -386,10 +386,10 @@ inline const cCPUStack& cHardwareSMT::Stack(int stack_id) const
 
 inline cCPUStack& cHardwareSMT::Stack(int stack_id, int in_thread) 
 {
-  if(stack_id >= NUM_STACKS || stack_id < 0) stack_id = 0;
-  if(in_thread >= m_threads.GetSize() || in_thread < 0) in_thread = m_cur_thread;
+  if (stack_id >= NUM_STACKS || stack_id < 0) stack_id = 0;
+  if (in_thread >= m_threads.GetSize() || in_thread < 0) in_thread = m_cur_thread;
 	
-  if(stack_id < NUM_LOCAL_STACKS)
+  if (stack_id < NUM_LOCAL_STACKS)
     return m_threads[in_thread].local_stacks[stack_id];
   else
     return m_global_stacks[stack_id % NUM_LOCAL_STACKS];
@@ -397,10 +397,10 @@ inline cCPUStack& cHardwareSMT::Stack(int stack_id, int in_thread)
 
 inline const cCPUStack& cHardwareSMT::Stack(int stack_id, int in_thread) const 
 {
-  if(stack_id >= NUM_STACKS || stack_id < 0) stack_id = 0;
-  if(in_thread >= m_threads.GetSize() || in_thread < 0) in_thread = m_cur_thread;
+  if (stack_id >= NUM_STACKS || stack_id < 0) stack_id = 0;
+  if (in_thread >= m_threads.GetSize() || in_thread < 0) in_thread = m_cur_thread;
 	
-  if(stack_id < NUM_LOCAL_STACKS)
+  if (stack_id < NUM_LOCAL_STACKS)
     return m_threads[in_thread].local_stacks[stack_id];
   else
     return m_global_stacks[stack_id % NUM_LOCAL_STACKS];
@@ -408,8 +408,8 @@ inline const cCPUStack& cHardwareSMT::Stack(int stack_id, int in_thread) const
 
 inline int cHardwareSMT::NormalizeMemSpace(int mem_space) const
 {
-  if(mem_space >= m_mem_array.GetSize())
-    mem_space %= m_mem_array.GetSize();
+  assert(mem_space >= 0);
+  if (mem_space >= m_mem_array.GetSize()) mem_space %= m_mem_array.GetSize();
   return mem_space;
 }
 
