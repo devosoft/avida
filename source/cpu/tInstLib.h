@@ -47,8 +47,8 @@ private:
 
 public:
   tInstLib(int size, const tInstLibEntry<MethodType>* entries, cString* nopmod_names, const int* nopmods,
-           const MethodType* functions, const cInstruction error, const cInstruction def, const cInstruction null_inst)
-  : cInstLib(size, error, def, null_inst), m_entries(entries), 
+           const MethodType* functions, int def, int null_inst)
+  : cInstLib(size, def, null_inst), m_entries(entries), 
     m_nopmod_names(nopmod_names),
     m_nopmods(nopmods),
     m_functions(functions)

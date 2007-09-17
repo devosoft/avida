@@ -38,7 +38,7 @@ using namespace std;
 
 bool cInstSet::OK() const
 {
-  assert(m_lib_name_map.GetSize() < 256);
+  assert(m_lib_name_map.GetSize() < 255);
   assert(m_lib_nopmod_map.GetSize() < m_lib_name_map.GetSize());
 
   // Make sure that all of the redundancies are represented the appropriate
@@ -67,7 +67,7 @@ cInstruction cInstSet::GetRandomInst(cAvidaContext& ctx) const
 cInstruction cInstSet::ActivateNullInst()
 {  
   const int inst_id = m_lib_name_map.GetSize();
-  const int null_fun_id = m_inst_lib->GetInstNull().GetOp();
+  const int null_fun_id = m_inst_lib->GetInstNull();
   
   assert(inst_id < 255);
   
@@ -196,7 +196,7 @@ void cInstSet::LoadWithStringList(const cStringList& sl)
     }
     
     // Check to make sure we are not inserting the special NULL instruction
-    if (fun_id == m_inst_lib->GetInstNull().GetOp()) {
+    if (fun_id == m_inst_lib->GetInstNull()) {
       errors.PushRear(new cString("Invalid use of NULL instruction"));
       success = false;
       continue;
@@ -342,7 +342,7 @@ void cInstSet::LoadFromLegacyFile(const cString& filename)
 
     
     
-    if (fun_id == m_inst_lib->GetInstNull().GetOp())
+    if (fun_id == m_inst_lib->GetInstNull())
       m_world->GetDriver().RaiseFatalException(1,"Invalid use of NULL instruction");
     
     const int inst_id = m_lib_name_map.GetSize();

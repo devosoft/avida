@@ -392,11 +392,10 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
   static tMethod functions[f_size];
   for (int i = 0; i < f_size; i++) functions[i] = s_f_array[i].GetFunction();
 
-	const cInstruction error(255);
-	const cInstruction def(0);
-  const cInstruction null_inst(f_size - 1);
+	const int def = 0;
+  const int null_inst = f_size - 1;
   
-  return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, error, def, null_inst);
+  return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, def, null_inst);
 }
 
 cHardwareCPU::cHardwareCPU(cWorld* world, cOrganism* in_organism, cInstSet* in_m_inst_set)

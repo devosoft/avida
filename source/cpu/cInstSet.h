@@ -133,8 +133,8 @@ public:
   cString FindBestMatch(const cString& in_name) const;
   bool InstInSet(const cString& in_name) const;
 
-  cInstruction GetInstDefault() const { return m_inst_lib->GetInstDefault(); }
-  cInstruction GetInstError() const { return m_inst_lib->GetInstError(); }
+  cInstruction GetInstDefault() const { return cInstruction(m_inst_lib->GetInstDefault()); }
+  cInstruction GetInstError() const { return cInstruction(255); }
   
   void LoadFromConfig();
   void LoadFromFile(const cString& filename);
@@ -183,12 +183,7 @@ inline cInstruction cInstSet::GetInst(const cString & in_name) const
 
 
   // Adding default answer if nothing is found...
-  /*
-  FIXME:  this return value is supposed to be cInstSet::GetInstError
-  which should be the same as m_inst_lib->GetInstError().
-  -- kgn
-  */
-  return cInstruction(0);
+  return cInstruction(255);
 }
 
 #endif

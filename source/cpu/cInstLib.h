@@ -45,15 +45,14 @@ protected:
   const int m_size;
   tDictionary<int> m_namemap;
 
-  const cInstruction m_inst_error;
-  const cInstruction m_inst_default;
-  const cInstruction m_inst_null;
+  int m_inst_default;
+  int m_inst_null;
   
   cInstLib(); // @not_implemented
   
 public:
-  cInstLib(int size, const cInstruction inst_error, const cInstruction inst_default, const cInstruction inst_null)
-    : m_size(size), m_inst_error(inst_error), m_inst_default(inst_default), m_inst_null(inst_null) { ; }
+  cInstLib(int size, int inst_default, int inst_null)
+    : m_size(size), m_inst_default(inst_default), m_inst_null(inst_null) { ; }
   virtual ~cInstLib() { ; }
 
   inline int GetSize() const { return m_size; }
@@ -69,11 +68,13 @@ public:
   virtual int GetNopMod(const unsigned int id) = 0;
   virtual int GetNopMod(const cInstruction& inst) = 0;
   
-  inline cInstruction GetInst(const cString& name);
 
-  const cInstruction GetInstError() const { return m_inst_error; }
-  const cInstruction GetInstDefault() const { return m_inst_default; }
-  const cInstruction GetInstNull() const { return m_inst_null; }
+  int GetInstDefault() const { return m_inst_default; }
+  int GetInstNull() const { return m_inst_null; }
+
+private:
+    inline cInstruction GetInst(const cString& name);
+
 };
 
 
@@ -88,7 +89,7 @@ inline cInstruction cInstLib::GetInst(const cString& name)
 {
   int idx;
   if (m_namemap.Find(name, idx)) return cInstruction(idx);
-  return m_inst_error;
+  return cInstruction(255);
 }
 
 
