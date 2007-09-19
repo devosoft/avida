@@ -388,6 +388,7 @@ void cAnalyzeGenotype::CalcLandscape(cAvidaContext& ctx)
 
 void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cTestCPU* testcpu, cAnalyzeGenotype* parent_genotype, cCPUTestInfo* test_info, int num_trials)
 {
+  // We are not going to use this testcpu ...
   
   //Allocate our own test info if it wasn't provided
   cCPUTestInfo* temp_test_info = NULL;

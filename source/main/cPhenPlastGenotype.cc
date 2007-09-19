@@ -47,7 +47,7 @@ cPhenPlastGenotype::~cPhenPlastGenotype()
 {
   UniquePhenotypes::iterator it = m_unique.begin();
   while (it != m_unique.end()){
-    delete *it;
+    delete static_cast<cPlasticPhenotype*>(*it);  // Remember to cast back
     ++it;
   }
 }
@@ -71,6 +71,7 @@ void cPhenPlastGenotype::Process(cCPUTestInfo& test_info, cWorld* world, cAvidaC
       }
     }
   }
+  
   // Update statistics
   UniquePhenotypes::iterator uit = m_unique.begin();
   m_max_fitness     =  -1.0;
