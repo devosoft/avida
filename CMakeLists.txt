@@ -35,7 +35,7 @@ IF(UNIX)
     SET(COMPILER_OPTIMIZATION_FLAGS "-ffast-math -fno-rtti -funroll-loops -fstrict-aliasing -OPT:Olimit=0")
   ELSE (CMAKE_CXX_COMPILER MATCHES ".*pathCC.*")
     SET(COMPILER_WARNING_FLAGS "-Wextra -Wno-unknown-pragmas -Wconversion -Wno-trigraphs")
-    SET(COMPILER_OPTIMIZATION_FLAGS "-ffast-math -fno-rtti -funroll-loops -fstrict-aliasing -ftree-vectorize -fvisibility-inlines-hidden")
+    SET(COMPILER_OPTIMIZATION_FLAGS "-ffast-math -fno-rtti -funroll-loops -fstrict-aliasing -ftree-vectorize")
   ENDIF (CMAKE_CXX_COMPILER MATCHES ".*pathCC.*")
 
   INCLUDE(CheckCSourceCompiles)
