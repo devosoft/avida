@@ -81,6 +81,20 @@ bool cReaction::ModifyInst(int inst_id, int process_num)
   return true;
 }
 
+bool cReaction::SetMinTaskCount(int min_count, int requisite_num) 
+{
+  if (requisite_num >= requisite_list.GetSize() || requisite_num < 0) return false;
+  requisite_list.GetPos(requisite_num)->SetMinTaskCount(min_count);
+  return true;
+}
+
+bool cReaction::SetMaxTaskCount(int max_count, int requisite_num) 
+{
+  if (requisite_num >= requisite_list.GetSize() || requisite_num < 0) return false;
+  requisite_list.GetPos(requisite_num)->SetMaxTaskCount(max_count);
+  return true;
+}
+
 
 double cReaction::GetValue(int process_num)
 { 

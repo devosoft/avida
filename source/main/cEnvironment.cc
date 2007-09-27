@@ -1121,3 +1121,33 @@ bool cEnvironment::SetReactionInst(const cString& name, cString inst_name)
   return true;
 }
 
+bool cEnvironment::SetReactionMinTaskCount(const cString& name, int min_count)
+{
+  cReaction* found_reaction = reaction_lib.GetReaction(name);
+  if (found_reaction == NULL) return false;
+  return found_reaction->SetMinTaskCount( min_count );
+}
+
+bool cEnvironment::SetReactionMaxTaskCount(const cString& name, int max_count)
+{
+  cReaction* found_reaction = reaction_lib.GetReaction(name);
+  if (found_reaction == NULL) return false;
+  return found_reaction->SetMaxTaskCount( max_count );
+}
+
+bool cEnvironment::SetResourceInflow(const cString& name, double _inflow )
+{
+  cResource* found_resource = resource_lib.GetResource(name);
+  if (found_resource == NULL) return false;
+  found_resource->SetInflow( _inflow );
+  return true;
+}
+
+bool cEnvironment::SetResourceOutflow(const cString& name, double _outflow )
+{
+  cResource* found_resource = resource_lib.GetResource(name);
+  if (found_resource == NULL) return false;
+  found_resource->SetOutflow( _outflow );
+  return true;
+}
+

@@ -283,6 +283,43 @@ void cResourceCount::Setup(int id, cString name, double initial, double inflow,
   spatial_resource_count[id].SetOutflowY2(in_outflowY2);
 }
 
+int cResourceCount::GetResourceCountID(const cString& res_name)
+{
+    for (int i = 0; i < resource_name.GetSize(); i++) {
+      if (resource_name[i] == res_name) return i;
+    }
+    cerr << "Error: Unknown resource '" << res_name << "'." << endl;
+    return -1;
+}
+
+void cResourceCount::SetInflow(const cString& name, const double _inflow)
+{
+  int id = GetResourceCountID(name);
+  if (id == -1) return;
+
+  inflow_rate[id] = _inflow;
+  double step_inflow = _inflow * UPDATE_STEP;
+  double step_decay = pow(decay_rate[id], UPDATE_STEP);
+
+  inflow_precalc(id, 0) = 0.0;
+  for (int i = 1; i <= PRECALC_DISTANCE; i++) {
+    inflow_precalc(id, i) = inflow_precalc(id, i-1) * step_decay + step_inflow;
+  }
+}
+
+void cResourceCount::SetDecay(const cString& name, const double _decay)
+{
+  int id = GetResourceCountID(name);
+  if (id == -1) return;
+
+  decay_rate[id] = _decay;
+  double step_decay = pow(_decay, UPDATE_STEP);
+  decay_precalc(id, 0) = 1.0;
+  for (int i = 1; i <= PRECALC_DISTANCE; i++) {
+    decay_precalc(id, i)  = decay_precalc(id, i-1) * step_decay;
+  }
+}
+
 void cResourceCount::Update(double in_time) 
 { 
   update_time += in_time;

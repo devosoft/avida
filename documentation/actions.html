@@ -90,11 +90,11 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <br /><a href="#KillRate">KillRate</a>
       <br /><a href="#KillRectangle">KillRectangle</a>
       <br /><a href="#LoadClone">LoadClone</a>
+      <br /><a href="#LoadPopulation">LoadPopulation</a>
+      <br /><a href="#ModMutProb">ModMutProb</a>
     </td>
     <td>
-      <a href="#LoadPopulation">LoadPopulation</a>
-      <br /><a href="#ModMutProb">ModMutProb</a>
-      <br /><a href="#OutflowScaledResource">OutflowScaledResource</a>
+      <a href="#OutflowScaledResource">OutflowScaledResource</a>
       <br /><a href="#PairTestLandscape">PairTestLandscape</a>
       <br /><a href="#PrecalcLandscape">PrecalcLandscape</a>
       <br /><a href="#PredictNuLandscape">PredictNuLandscape</a>
@@ -127,12 +127,12 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <br /><a href="#PrintLogFitnessHistogram">PrintLogFitnessHistogram</a>
       <br /><a href="#PrintMutationRateData">PrintMutationRateData</a>
       <br /><a href="#PrintPhenotypeData">PrintPhenotypeData</a>
-    </td>
-    <td>
-      <a href="#PrintPhenotypeStatus">PrintPhenotypeStatus</a>
+      <br /><a href="#PrintPhenotypeStatus">PrintPhenotypeStatus</a>
       <br /><a href="#PrintPhenotypicPlasticity">PrintPhenotypicPlasticity</a>
       <br /><a href="#PrintPopulationDistanceData">PrintPopulationDistanceData</a>
-      <br /><a href="#PrintRelativeFitnessHistogram">PrintRelativeFitnessHistogram</a>
+    </td>
+    <td>
+	  <a href="#PrintRelativeFitnessHistogram">PrintRelativeFitnessHistogram</a>
       <br /><a href="#PrintResourceData">PrintResourceData</a>
       <br /><a href="#PrintSpeciesAbundanceData">PrintSpeciesAbundanceData</a>
       <br /><a href="#PrintStatsData">PrintStatsData</a>
@@ -156,9 +156,13 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <br /><a href="#SerialTransfer">SerialTransfer</a>
       <br /><a href="#SetMutProb">SetMutProb</a>
       <br /><a href="#SetReactionInst">SetReactionInst</a>
+      <br /><a href="#SetReactionMinTaskCount">SetReactionMinTaskCount</a>
+      <br /><a href="#SetReactionMaxTaskCount">SetReactionMaxTaskCount</a>
       <br /><a href="#SetReactionValue">SetReactionValue</a>
       <br /><a href="#SetReactionValueMult">SetReactionValueMult</a>
       <br /><a href="#SetResource">SetResource</a>
+      <br /><a href="#SetResourceInflow">SetResourceInflow</a>
+      <br /><a href="#SetResourceOutflow">SetResourceOutflow</a>
       <br /><a href="#SetVerbose">SetVerbose</a>
       <br /><a href="#SeverGridCol">SeverGridCol</a>
       <br /><a href="#SeverGridRow">SeverGridRow</a>
@@ -1022,6 +1026,29 @@ and reaction parameters.
 </li>
 
 <li>
+  <strong><a name="SetResourceInflow">SetResourceInflow</a></strong>
+  &lt;<span class="cmdarg">string res_name</span>&gt; &lt;<span class="cmdarg">double inflow</span>&gt;
+  
+  <p>
+  Set the resource inflow to a specific level.
+  <span class="cmdarg">res_name</span> must already exist as
+  a resource in environment file.
+  </p>
+</li>
+
+<li>
+  <strong><a name="SetResourceOutflow">SetResourceOutflow</a></strong>
+  &lt;<span class="cmdarg">string res_name</span>&gt; &lt;<span class="cmdarg">double outflow</span>&gt;
+  
+  <p>
+  Set the resource outflow to a specific level.
+  <span class="cmdarg">res_name</span> must already exist as
+  a resource in environment file.
+  </p>
+</li>
+
+
+<li>
   <strong><a name="SetReactionValue">SetReactionValue</a></strong>
   &lt;<span class="cmdarg">string reaction_name</span>&gt; &lt;<span class="cmdarg">double value</span>&gt;
   
@@ -1032,6 +1059,28 @@ and reaction parameters.
   <span class="cmdarg">value</span> can be negative. 
   </p>
 </li>
+<li>
+  <strong><a name="SetReactionMinTaskCount">SetReactionMinTaskCount</a></strong>
+  &lt;<span class="cmdarg">string reaction_name</span>&gt; &lt;<span class="cmdarg">int task_count</span>&gt;
+  
+  <p>
+  Set the min task count required to trigger a reaction to <span class="cmdarg">task_count</span>.
+  <span class="cmdarg">reaction_name</span> must already 
+  exist in the environment file.
+  </p>
+</li>
+
+<li>
+  <strong><a name="SetReactionMaxTaskCount">SetReactionMaxTaskCount</a></strong>
+  &lt;<span class="cmdarg">string reaction_name</span>&gt; &lt;<span class="cmdarg">int task_count</span>&gt;
+  
+  <p>
+  Set the max task count required to trigger a reaction to <span class="cmdarg">task_count</span>.
+  <span class="cmdarg">reaction_name</span> must already 
+  exist in the environment file.
+  </p>
+</li>
+
 <li>
   <strong><a name="SetReactionValueMult">SetReactionValueMult</a></strong>
   &lt;<span class="cmdarg">string reaction_name</span>&gt; &lt;<span class="cmdarg">double value</span>&gt;

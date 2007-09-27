@@ -266,6 +266,100 @@ public:
   }
 };
 
+class cActionSetReactionMinTaskCount : public cAction
+{
+private:
+  cString m_name;
+  int m_min_count;
+  
+public:
+  cActionSetReactionMinTaskCount(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_min_count(0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_name = largs.PopWord();
+    if (largs.GetSize()) m_min_count = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string reaction_name> <int min_count>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetEnvironment().SetReactionMinTaskCount(m_name, m_min_count);
+  }
+};
+
+class cActionSetReactionMaxTaskCount : public cAction
+{
+private:
+  cString m_name;
+  int m_max_count;
+  
+public:
+  cActionSetReactionMaxTaskCount(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_max_count(0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_name = largs.PopWord();
+    if (largs.GetSize()) m_max_count = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string reaction_name> <int max_count>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetEnvironment().SetReactionMaxTaskCount(m_name, m_max_count);
+  }
+};
+
+class cActionSetResourceInflow : public cAction
+{
+private:
+  cString m_name;
+  double m_inflow;
+  
+public:
+  cActionSetResourceInflow(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_inflow(0.0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_name = largs.PopWord();
+    if (largs.GetSize()) m_inflow = largs.PopWord().AsDouble();
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string resource_name> <int inflow>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetEnvironment().SetResourceInflow(m_name, m_inflow);
+      //This doesn't actually update the rate in the population, so...
+    m_world->GetPopulation().GetResourceCount().SetInflow(m_name, m_inflow);
+  }
+};
+
+class cActionSetResourceOutflow : public cAction
+{
+private:
+  cString m_name;
+  double m_outflow;
+  
+public:
+  cActionSetResourceOutflow(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_outflow(0.0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_name = largs.PopWord();
+    if (largs.GetSize()) m_outflow = largs.PopWord().AsDouble();
+    assert(m_outflow < 1.0);
+    assert(m_outflow > 0.0);
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string resource_name> <int outflow>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetEnvironment().SetResourceOutflow(m_name, m_outflow);
+      //This doesn't actually update the rate in the population, so...
+    m_world->GetPopulation().GetResourceCount().SetDecay(m_name, 1-m_outflow);
+  }
+};
+
 class cActionSetTaskArgInt : public cAction
 {
 private:
@@ -498,6 +592,11 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetReactionValue>("SetReactionValue");
   action_lib->Register<cActionSetReactionValueMult>("SetReactionValueMult");
   action_lib->Register<cActionSetReactionInst>("SetReactionInst");
+  action_lib->Register<cActionSetReactionMinTaskCount>("SetReactionMinTaskCount");
+  action_lib->Register<cActionSetReactionMaxTaskCount>("SetReactionMaxTaskCount");
+
+  action_lib->Register<cActionSetResourceInflow>("SetResourceInflow");
+  action_lib->Register<cActionSetResourceOutflow>("SetResourceOutflow");
 
   action_lib->Register<cActionSetPeriodicResource>("SetPeriodicResource");
   action_lib->Register<cActionSetNumInstBefore0Energy>("SetNumInstBefore0Energy");

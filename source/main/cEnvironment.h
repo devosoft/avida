@@ -155,6 +155,11 @@ public:
   bool SetReactionValue(cAvidaContext& ctx, const cString& name, double value);
   bool SetReactionValueMult(const cString& name, double value_mult);
   bool SetReactionInst(const cString& name, cString inst_name);
+  bool SetReactionMinTaskCount(const cString& name, int min_count);
+  bool SetReactionMaxTaskCount(const cString& name, int max_count);
+  bool SetResourceInflow(const cString& name, double _inflow );
+  bool SetResourceOutflow(const cString& name, double _outflow );
+  
 };
 
 

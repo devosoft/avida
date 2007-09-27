@@ -85,6 +85,11 @@ public:
              int in_outflowX1, int in_outflowX2, int in_outflowY1, 
              int in_outflowY, tArray<cCellResource> *in_cell_list_ptr,
              int verbosity_level);
+             
+  int GetResourceCountID(const cString& res_name);
+  void SetInflow(const cString& name, const double _inflow);
+  void SetDecay(const cString& name, const double _decay);
+  
   void Update(double in_time);
 
   int GetSize(void) const { return resource_count.GetSize(); }
