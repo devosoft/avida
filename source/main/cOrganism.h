@@ -225,6 +225,7 @@ public:
   //! Check tasks based on the passed-in IO buffers and value (on_divide=false).
   void DoOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const int value);  
 
+
 protected:
   /*! The main DoOutput function.  The DoOutputs above all forward to this function. */
   void DoOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, 
@@ -232,6 +233,7 @@ protected:
 
 public:
   void ClearInput() { m_input_buf.Clear(); }
+  void ResetInput() {m_input_pointer = 0; m_input_buf.Clear(); };
   void AddOutput(int val) { m_output_buf.Add(val); }
 
   // --------  Divide Methods  --------

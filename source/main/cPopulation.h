@@ -244,6 +244,8 @@ public:
   double GetResource(int id) const { return resource_count.Get(id); }
   cResourceCount& GetResourceCount() { return resource_count; }
 
+  void ResetInputs(cAvidaContext& ctx);
+
   cEnvironment& GetEnvironment() { return environment; }
   int GetNumOrganisms() { return num_organisms; }
 

@@ -553,6 +553,7 @@ private:
   bool Inst_Terminate(cAvidaContext& ctx);
   bool Inst_Regulate(cAvidaContext& ctx);
   bool Inst_Numberate(cAvidaContext& ctx);
+  bool Inst_BitConsensus(cAvidaContext& ctx);
 
     // Helper functions //
   bool IsActivePromoter();

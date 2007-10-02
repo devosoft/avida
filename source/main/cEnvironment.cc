@@ -789,6 +789,14 @@ void cEnvironment::SetupInputs(cAvidaContext& ctx, tArray<int>& input_array, boo
 {
   input_array.Resize(m_input_size);
   
+  //Specific inputs trump everything
+  if (m_use_specific_inputs)
+  {
+    input_array = m_specific_inputs;
+    return;
+  }
+  
+  
   if (random) {
     if (m_true_rand) {
       for (int i = 0; i < m_input_size; i++) {

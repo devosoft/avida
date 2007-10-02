@@ -331,8 +331,8 @@ public:
    *
    * @return The integer value corresponding to the string.
    **/
-  int AsInt() const { return static_cast<int>(strtol(*this, NULL, 10)); }
-  
+  int AsInt() const { return static_cast<int>(strtol(*this, NULL, 0)); }
+
   /**
    * Convert string to double.
    *

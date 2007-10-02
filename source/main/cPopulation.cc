@@ -2768,6 +2768,19 @@ void cPopulation::SetResource(int id, double new_level)
   resource_count.Set(id, new_level);
 }
 
+void cPopulation::ResetInputs(cAvidaContext& ctx)
+{
+  for (int i=0; i<GetSize(); i++)
+  {
+    cPopulationCell& cell = GetCell(i);
+    cell.ResetInputs(ctx);
+    if (cell.IsOccupied())
+    {
+      cell.GetOrganism()->ResetInput();
+    }
+  }
+}
+
 void cPopulation::BuildTimeSlicer(cChangeList * change_list)
 {
   switch (m_world->GetConfig().SLICING_METHOD.Get()) {

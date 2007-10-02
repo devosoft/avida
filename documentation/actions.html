@@ -130,10 +130,10 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <br /><a href="#PrintPhenotypeStatus">PrintPhenotypeStatus</a>
       <br /><a href="#PrintPhenotypicPlasticity">PrintPhenotypicPlasticity</a>
       <br /><a href="#PrintPopulationDistanceData">PrintPopulationDistanceData</a>
+      <br /><a href="#PrintRelativeFitnessHistogram">PrintRelativeFitnessHistogram</a>
     </td>
     <td>
-	  <a href="#PrintRelativeFitnessHistogram">PrintRelativeFitnessHistogram</a>
-      <br /><a href="#PrintResourceData">PrintResourceData</a>
+      <a href="#PrintResourceData">PrintResourceData</a>
       <br /><a href="#PrintSpeciesAbundanceData">PrintSpeciesAbundanceData</a>
       <br /><a href="#PrintStatsData">PrintStatsData</a>
       <br /><a href="#PrintTasksSnapshot">PrintTasksSnapshot</a>
@@ -154,6 +154,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <br /><a href="#SavePopulation">SavePopulation</a>
       <br /><a href="#SaveSexPopulation">SaveSexPopulation</a>
       <br /><a href="#SerialTransfer">SerialTransfer</a>
+      <br /><a href="#SetEnvironmentInputs">SetEnvironmentInputs</a>
       <br /><a href="#SetMutProb">SetMutProb</a>
       <br /><a href="#SetReactionInst">SetReactionInst</a>
       <br /><a href="#SetReactionMinTaskCount">SetReactionMinTaskCount</a>
@@ -1014,6 +1015,20 @@ and reaction parameters.
   <p>
   </p>
 </li>
+
+<li>
+  <strong><a name="SetEnvironmentInputs">SetEnvironmentInputs</a></strong>
+  &lt;<span class="cmdarg">int input.1</span>&gt; &lt;<span class="cmdarg">int input.2</span>&gt; 
+  &lt;<span class="cmdarg">int input.3</span>&gt;
+  
+  <p>
+  Set the inputs that all organisms get from the environment when doing IO to these specific values. There must 
+  be exactly three inputs, and they must have the usual values for the top 8 "key" bits, i.e. they must be of the form
+  0x0F?????? 0x33?????? 0x55?????? where ? can be replaced with any hexadecimal digit.
+  </p>
+</li>
+
+
 <li>
   <strong><a name="SetResource">SetResource</a></strong>
   &lt;<span class="cmdarg">string res_name</span>&gt; &lt;<span class="cmdarg">double res_count</span>&gt;

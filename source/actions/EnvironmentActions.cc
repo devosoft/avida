@@ -360,6 +360,52 @@ public:
   }
 };
 
+class cActionSetEnvironmentInputs : public cAction
+{
+private:
+  tArray<int> m_inputs;
+  
+public:
+  cActionSetEnvironmentInputs(cWorld* world, const cString& args) : cAction(world, args), m_inputs()
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_inputs.Push(largs.PopWord().AsInt());
+    if (largs.GetSize()) m_inputs.Push(largs.PopWord().AsInt());
+    if (largs.GetSize()) m_inputs.Push(largs.PopWord().AsInt());
+        
+    if ( m_inputs.GetSize() != 3 )
+    {
+      cerr << "Must have exactly 3 inputs for SetEnvironmentInputs action." << endl;
+      exit(1);
+    }
+    
+    if ( (m_inputs[0] >> 24 != 15) || (m_inputs[1] >> 24 != 51) || (m_inputs[2] >> 24 != 85) )
+    {
+      cerr << "Inputs must begin 0F, 33, 55 for SetEnvironmentInputs" << endl;
+      cerr << "They are: " << m_inputs[0] << " " << m_inputs[1] << " " << m_inputs[2] << endl;
+      exit(1);    
+    }
+    
+  }
+  
+  static const cString GetDescription() { return "Arguments: <int input_1> <int input_2> <int input_3> "; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    //First change the environmental inputs
+    cEnvironment& env = m_world->GetEnvironment();
+    env.SetSpecificInputs(m_inputs);
+    
+    //Now immediately change the inputs in each cell and
+    //clear the input array of each organism so changes take effect
+    
+    cPopulation& pop = m_world->GetPopulation();
+    pop.ResetInputs(ctx);
+  }
+};
+
+
+
 class cActionSetTaskArgInt : public cAction
 {
 private:
@@ -597,6 +643,8 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
 
   action_lib->Register<cActionSetResourceInflow>("SetResourceInflow");
   action_lib->Register<cActionSetResourceOutflow>("SetResourceOutflow");
+
+  action_lib->Register<cActionSetEnvironmentInputs>("SetEnvironmentInputs");
 
   action_lib->Register<cActionSetPeriodicResource>("SetPeriodicResource");
   action_lib->Register<cActionSetNumInstBefore0Energy>("SetNumInstBefore0Energy");

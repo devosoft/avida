@@ -363,7 +363,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("terminate", &cHardwareCPU::Inst_Terminate),
     tInstLibEntry<tMethod>("regulate", &cHardwareCPU::Inst_Regulate),
     tInstLibEntry<tMethod>("numberate", &cHardwareCPU::Inst_Numberate),
-    
+    tInstLibEntry<tMethod>("bit-cons", &cHardwareCPU::Inst_BitConsensus),
+
     // Energy usage
     tInstLibEntry<tMethod>("double-energy-usage", &cHardwareCPU::Inst_DoubleEnergyUsage),
     tInstLibEntry<tMethod>("half-energy-usage", &cHardwareCPU::Inst_HalfEnergyUsage),
@@ -4472,6 +4473,27 @@ int cHardwareCPU::Numberate(int _pos, int _dir)
 
   }
   return code;
+}
+
+/*! 
+  Sets BX to 1 if >=50% of the bits in the specified register
+  are 1's and zero otherwise.
+*/
+
+bool cHardwareCPU::Inst_BitConsensus(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(REG_BX);
+  int reg_val = GetRegister(REG_CX);
+  unsigned int bits_on = 0;
+  
+  for (unsigned int i = 0; i < sizeof(int) * 8; i++)
+  {
+    bits_on += (reg_val & 1);
+    reg_val >>= 1;
+  }
+  
+  GetRegister(reg_used) = ( bits_on >= (sizeof(int) * 8)/2 ) ? 1 : 0;
+  return true; 
 }
 
 /*! Send a message to the organism that is currently faced by this cell,
