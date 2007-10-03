@@ -799,6 +799,9 @@ bool cHardwareBase::Inst_Nop(cAvidaContext& ctx)          // Do Nothing.
 // @JEB Check implicit repro conditions -- meant to be called at the end of SingleProcess
 void cHardwareBase::CheckImplicitRepro(cAvidaContext& ctx, bool exec_last_inst)         
 {  
+  //Dividing a dead organism causes all kinds of problems
+  if (organism->IsDead()) return;
+
   if( (m_world->GetConfig().IMPLICIT_REPRO_TIME.Get() && (organism->GetPhenotype().GetTimeUsed() >= m_world->GetConfig().IMPLICIT_REPRO_TIME.Get()))
    || (m_world->GetConfig().IMPLICIT_REPRO_CPU_CYCLES.Get() && (organism->GetPhenotype().GetCPUCyclesUsed() >= m_world->GetConfig().IMPLICIT_REPRO_CPU_CYCLES.Get()))
    || (m_world->GetConfig().IMPLICIT_REPRO_BONUS.Get() && (organism->GetPhenotype().GetCurBonus() >= m_world->GetConfig().IMPLICIT_REPRO_BONUS.Get()))

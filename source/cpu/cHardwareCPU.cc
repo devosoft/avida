@@ -522,6 +522,7 @@ void cHardwareCPU::cLocalThread::Reset(cHardwareBase* in_hardware, int in_id)
 
 void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
 {
+
   int last_IP_pos = IP().GetPosition();
   
   // Mark this organism as running...
@@ -611,7 +612,7 @@ void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
     } // if exec
         
   } // Previous was executed once for each thread...
-  
+
   // Kill creatures who have reached their max num of instructions executed
   const int max_executed = organism->GetMaxExecuted();
   if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed)
@@ -619,8 +620,10 @@ void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
     organism->Die();
   }
   
-  organism->SetRunning(false);
+  // Note: if organism just died, this will NOT let it repro.
   CheckImplicitRepro(ctx, last_IP_pos > IP().GetPosition());
+  
+  organism->SetRunning(false);
 }
 
 // This method will handle the actual execution of an instruction
@@ -2576,6 +2579,7 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
       }
     }
   }
+  
   Divide_DoMutations(ctx);
   
   // Many tests will require us to run the offspring through a test CPU;
@@ -3066,13 +3070,18 @@ bool cHardwareCPU::DoSense(cAvidaContext& ctx, int conversion_method, double bas
     } 
   }
   
-  // Take the log after adding resource amounts together!
-  // Otherwise 
+  // Take the log after adding resource amounts together! This way a zero can be assigned to INT_MIN
   if (conversion_method == 0) // Log2
   {
     // You really shouldn't be using the log method if you can get to zero resources
-    assert(dresource_result != 0);
-    resource_result = (int)(log(dresource_result)/log(base));
+    if(dresource_result == 0.0)
+    {
+      resource_result = INT_MIN;
+    }
+    else
+    {
+      resource_result = (int)(log(dresource_result)/log(base));
+    }
   }
     
   //Dump this value into an arbitrary register: BX
