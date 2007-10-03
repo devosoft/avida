@@ -537,11 +537,9 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   // and it will also be propagated to the child
   const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
   if (merit_default_bonus) {
-    merit = cur_merit_base * m_world->GetConfig().DEFAULT_BONUS.Get();
+    cur_bonus = m_world->GetConfig().DEFAULT_BONUS.Get();
   }
-  else { // Default
-    merit = cur_merit_base * cur_bonus;
-  }
+  merit = cur_merit_base * cur_bonus;
   
   //BB:TODO update energy store
   SetEnergy(energy_store + cur_energy_bonus);
@@ -682,7 +680,11 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
 
   // Update these values as needed...
   int cur_merit_base = CalcSizeMerit();
-  merit           = cur_merit_base * cur_bonus;
+  const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
+  if (merit_default_bonus) {
+    cur_bonus = m_world->GetConfig().DEFAULT_BONUS.Get();
+  }
+  merit = cur_merit_base * cur_bonus;
 
   genome_length   = _genome.GetSize();
   (void) copied_size;                            // Unchanged
@@ -1440,11 +1442,9 @@ void cPhenotype::NewTrial()
   // and it will also be propagated to the child
   int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
   if (merit_default_bonus) {
-    merit = cur_merit_base * m_world->GetConfig().DEFAULT_BONUS.Get();
+    cur_bonus = m_world->GetConfig().DEFAULT_BONUS.Get();
   }
-  else { // Default
-    merit = cur_merit_base * cur_bonus;
-  }
+  merit = cur_merit_base * cur_bonus;
   
   // update energy store
   energy_store += cur_energy_bonus;
@@ -1565,11 +1565,9 @@ void cPhenotype::TrialDivideReset(const cGenome & _genome)
   // and it will also be propagated to the child
   const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
   if (merit_default_bonus) {
-    merit = cur_merit_base * m_world->GetConfig().DEFAULT_BONUS.Get();
+    cur_bonus = m_world->GetConfig().DEFAULT_BONUS.Get();
   }
-  else { // Defaul
-    merit = cur_merit_base * cur_bonus;
-  }
+  merit = cur_merit_base * cur_bonus;
 
   //BB:TODO update energy store
   SetEnergy(energy_store + cur_energy_bonus);

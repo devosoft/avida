@@ -106,16 +106,19 @@ cPopulation::cPopulation(cWorld* world)
     }
   }
   
+  // Invalid settings should be changed to one deme
+  if (num_demes <= 0) {
+    num_demes = 1; // One population == one deme.
+  }
+
   // Error checking for demes vs. non-demes setup.
 #ifdef DEBUG
   const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
-#endif
-  if(num_demes > 0) {
+
+  if(num_demes > 1) {
     assert(birth_method != POSITION_CHILD_FULL_SOUP_ELDEST);
-  } else {
-    assert(birth_method != POSITION_CHILD_DEME_RANDOM);
-    num_demes = 1; // One population == one deme.
   }
+#endif
   
   // Allocate the cells, resources, and market.
   cell_array.ResizeClear(num_cells);
