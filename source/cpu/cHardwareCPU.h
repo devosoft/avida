@@ -89,7 +89,6 @@ protected:
   static const int NUM_HEADS = nHardware::NUM_HEADS >= NUM_REGISTERS ? nHardware::NUM_HEADS : NUM_REGISTERS;
   enum tRegisters { REG_AX = 0, REG_BX, REG_CX, REG_DX, REG_EX, REG_FX };
   static const int NUM_NOPS = 3;
-  static const int PROMOTER_CODE_SIZE = sizeof(int) * 8; // Number of bits in promoter codes
   
   // --------  Data Structures  --------
   struct cLocalThread
@@ -145,15 +144,16 @@ protected:
   // <-- Promoter model
   int m_promoter_index;       //site to begin looking for the next active promoter from
   int m_promoter_offset;      //bit offset when testing whether a promoter is on
-  int m_promoter_regulation;  //bit code that modifies current execution, via an XOR
   
   struct cPromoter 
   {
   public:
     int m_pos;      //position within genome
     int m_bit_code; //bit code of promoter
+    int m_regulation; //bit code of promoter
   public:
-    cPromoter(int _pos = 0, int _bit_code = 0) { m_pos = _pos; m_bit_code = _bit_code; }
+    cPromoter(int _pos = 0, int _bit_code = 0, int _regulation = 0) { m_pos = _pos; m_bit_code = _bit_code; m_regulation = _regulation; }
+    int GetRegulatedBitCode() { return m_bit_code ^ m_regulation; }
     ~cPromoter() { ; }
   };
   tArray<cPromoter> m_promoters;
@@ -552,13 +552,23 @@ private:
   bool Inst_Promoter(cAvidaContext& ctx);
   bool Inst_Terminate(cAvidaContext& ctx);
   bool Inst_Regulate(cAvidaContext& ctx);
-  bool Inst_Numberate(cAvidaContext& ctx);
-  bool Inst_BitConsensus(cAvidaContext& ctx);
+  bool Inst_RegulateSpecificPromoters(cAvidaContext& ctx);
+  bool Inst_SenseRegulate(cAvidaContext& ctx);
+  bool Inst_Numberate(cAvidaContext& ctx) { return Do_Numberate(ctx); };
+  bool Inst_Numberate24(cAvidaContext& ctx) { return Do_Numberate(ctx, 24); };
+  bool Do_Numberate(cAvidaContext& ctx, int num_bits=0);
 
     // Helper functions //
   bool IsActivePromoter();
   void NextPromoter();
-  int Numberate(int _pos, int _dir);
+  int  Numberate(int _pos, int _dir, int _num_bits = 0);
+  
+  
+  //// Bit consensus functions ////
+  bool Inst_BitConsensus(cAvidaContext& ctx);
+  bool Inst_BitConsensus24(cAvidaContext& ctx);
+  bool BitConsensus(cAvidaContext& ctx, const unsigned int num_bits);
+
 
   //// Messaging ////
   bool Inst_SendMessage(cAvidaContext& ctx);
