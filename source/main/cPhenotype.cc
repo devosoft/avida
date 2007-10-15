@@ -537,7 +537,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   // and it will also be propagated to the child
   const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
   if (merit_default_bonus) {
-    cur_bonus = m_world->GetConfig().DEFAULT_BONUS.Get();
+    cur_bonus = merit_default_bonus;
   }
   merit = cur_merit_base * cur_bonus;
   
@@ -682,7 +682,7 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   int cur_merit_base = CalcSizeMerit();
   const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
   if (merit_default_bonus) {
-    cur_bonus = m_world->GetConfig().DEFAULT_BONUS.Get();
+    cur_bonus = merit_default_bonus;
   }
   merit = cur_merit_base * cur_bonus;
 
@@ -1442,7 +1442,7 @@ void cPhenotype::NewTrial()
   // and it will also be propagated to the child
   int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
   if (merit_default_bonus) {
-    cur_bonus = m_world->GetConfig().DEFAULT_BONUS.Get();
+    cur_bonus = merit_default_bonus;
   }
   merit = cur_merit_base * cur_bonus;
   
@@ -1565,7 +1565,7 @@ void cPhenotype::TrialDivideReset(const cGenome & _genome)
   // and it will also be propagated to the child
   const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
   if (merit_default_bonus) {
-    cur_bonus = m_world->GetConfig().DEFAULT_BONUS.Get();
+    cur_bonus = merit_default_bonus;
   }
   merit = cur_merit_base * cur_bonus;
 
