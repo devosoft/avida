@@ -49,15 +49,15 @@ void build_grid(InputIterator begin, InputIterator end, unsigned int x_size, uns
   // And now remove the connections that wrap around.
   for(InputIterator i=begin; i!=end; ++i) {
     int id = i->GetID();
-    unsigned int x = (id-offset) % y_size;
-    unsigned int y = (id-offset) / y_size;
+    unsigned int x = (id-offset) % x_size;
+    unsigned int y = (id-offset) / x_size;
     
     if(x==0) {
       i->ConnectionList().Remove(&begin[GridNeighbor(i->GetID()-offset, x_size, y_size, -1, -1)]);
       i->ConnectionList().Remove(&begin[GridNeighbor(i->GetID()-offset, x_size, y_size, -1, 0)]);
       i->ConnectionList().Remove(&begin[GridNeighbor(i->GetID()-offset, x_size, y_size, -1, 1)]);
     }
-    if(x==(y_size-1)) {
+    if(x==(x_size-1)) {
       i->ConnectionList().Remove(&begin[GridNeighbor(i->GetID()-offset, x_size, y_size, 1, -1)]);
       i->ConnectionList().Remove(&begin[GridNeighbor(i->GetID()-offset, x_size, y_size, 1, 0)]);
       i->ConnectionList().Remove(&begin[GridNeighbor(i->GetID()-offset, x_size, y_size, 1, 1)]);      
@@ -67,7 +67,7 @@ void build_grid(InputIterator begin, InputIterator end, unsigned int x_size, uns
       i->ConnectionList().Remove(&begin[GridNeighbor(i->GetID()-offset, x_size, y_size, 0, -1)]);
       i->ConnectionList().Remove(&begin[GridNeighbor(i->GetID()-offset, x_size, y_size, 1, -1)]);      
     }
-    if(y==(x_size-1)) {
+    if(y==(y_size-1)) {
       i->ConnectionList().Remove(&begin[GridNeighbor(i->GetID()-offset, x_size, y_size, -1, 1)]);
       i->ConnectionList().Remove(&begin[GridNeighbor(i->GetID()-offset, x_size, y_size, 0, 1)]);
       i->ConnectionList().Remove(&begin[GridNeighbor(i->GetID()-offset, x_size, y_size, 1, 1)]);      

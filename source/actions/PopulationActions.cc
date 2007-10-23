@@ -1182,16 +1182,30 @@ public:
       m_world->GetDriver().RaiseException(err);
       return;
     }
+
     // Loop through all of the rows and make the cut on each...
     for (int row_id = m_min; row_id < m_max; row_id++) {
+      //col is always the same -- compute which row to make the cut
       int idA = row_id * world_x + m_id;
       int idB  = GridNeighbor(idA, world_x, world_y, -1,  0);
+
       int idA0 = GridNeighbor(idA, world_x, world_y,  0, -1);
       int idA1 = GridNeighbor(idA, world_x, world_y,  0,  1);
+
       int idB0 = GridNeighbor(idA, world_x, world_y, -1, -1);
       int idB1 = GridNeighbor(idA, world_x, world_y, -1,  1);
+
       cPopulationCell& cellA = m_world->GetPopulation().GetCell(idA);
       cPopulationCell& cellB = m_world->GetPopulation().GetCell(idB);
+
+      #ifdef DEBUG
+      int temp_x = 0, temp_y = 0;
+      cellA.GetPosition(temp_x,temp_y);
+      cerr << "cellA: " << temp_x << " " << temp_y << endl;
+      cellB.GetPosition(temp_x,temp_y);
+      cerr << "cellB: " << temp_x << " " << temp_y << endl;
+      #endif
+
       tList<cPopulationCell>& cellA_list = cellA.ConnectionList();
       tList<cPopulationCell>& cellB_list = cellB.ConnectionList();
       cellA_list.Remove(&m_world->GetPopulation().GetCell(idB));
@@ -1208,7 +1222,7 @@ public:
 ///// sever_grid_row /////
 
 /*
- Remove the connections between cells along a column in an avida grid.
+ Remove the connections between cells along a row in an avida grid.
 
  Arguments:
    row_id:  indicates the number of rows above the cut.
@@ -1246,16 +1260,29 @@ public:
       m_world->GetDriver().RaiseException(err);
       return;
     }
-    // Loop through all of the rows and make the cut on each...
+
+    // Loop through all of the cols and make the cut on each...
     for (int col_id = m_min; col_id < m_max; col_id++) {
-      int idA = col_id * world_y + m_id;
+      //row is always the same -- only the column changes -- could also do this in the loop
+      int idA = m_id * world_x + col_id;
       int idB  = GridNeighbor(idA, world_x, world_y,  0, -1);
+
       int idA0 = GridNeighbor(idA, world_x, world_y, -1,  0);
       int idA1 = GridNeighbor(idA, world_x, world_y,  1,  0);
+
       int idB0 = GridNeighbor(idA, world_x, world_y, -1, -1);
       int idB1 = GridNeighbor(idA, world_x, world_y,  1, -1);
       cPopulationCell& cellA = m_world->GetPopulation().GetCell(idA);
       cPopulationCell& cellB = m_world->GetPopulation().GetCell(idB);
+      
+      #ifdef DEBUG
+      int temp_x = 0, temp_y = 0;
+      cellA.GetPosition(temp_x,temp_y);
+      cerr << "cellA: " << temp_x << " " << temp_y << endl;
+      cellB.GetPosition(temp_x,temp_y);
+      cerr << "cellB: " << temp_x << " " << temp_y << endl;
+      #endif
+
       tList<cPopulationCell>& cellA_list = cellA.ConnectionList();
       tList<cPopulationCell>& cellB_list = cellB.ConnectionList();
       cellA_list.Remove(&m_world->GetPopulation().GetCell(idB));
@@ -1301,6 +1328,7 @@ public:
   {
     const int world_x = m_world->GetPopulation().GetWorldX();
     const int world_y = m_world->GetPopulation().GetWorldY();
+    const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
     if (m_id == -1) m_id = world_x / 2;
     if (m_max == -1) m_max = world_y;
     if (m_id < 0 || m_id >= world_x) {
@@ -1310,22 +1338,35 @@ public:
     }
     // Loop through all of the rows and make the cut on each...
     for (int row_id = m_min; row_id < m_max; row_id++) {
+      //compute which cells to be joined -- grab them from the population
       int idA = row_id * world_x + m_id;
       int idB  = GridNeighbor(idA, world_x, world_y, -1,  0);
       cPopulationCell& cellA = m_world->GetPopulation().GetCell(idA);
       cPopulationCell& cellB = m_world->GetPopulation().GetCell(idB);
-      cPopulationCell& cellA0 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y,  0, -1));
-      cPopulationCell& cellA1 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y,  0,  1));
-      cPopulationCell& cellB0 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y, -1, -1));
-      cPopulationCell& cellB1 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y, -1,  1));
+
+      //grab the cell lists
       tList<cPopulationCell>& cellA_list = cellA.ConnectionList();
       tList<cPopulationCell>& cellB_list = cellB.ConnectionList();
+
+      //these cells are always joined
       if (cellA_list.FindPtr(&cellB)  == NULL) cellA_list.Push(&cellB);
-      if (cellA_list.FindPtr(&cellB0) == NULL) cellA_list.Push(&cellB0);
-      if (cellA_list.FindPtr(&cellB1) == NULL) cellA_list.Push(&cellB1);
       if (cellB_list.FindPtr(&cellA)  == NULL) cellB_list.Push(&cellA);
-      if (cellB_list.FindPtr(&cellA0) == NULL) cellB_list.Push(&cellA0);
-      if (cellB_list.FindPtr(&cellA1) == NULL) cellB_list.Push(&cellA1);
+
+      //make sure we don't break the bounded grid at the top
+      if((nGeometry::GRID == geometry && row_id != 0) || nGeometry::GRID != geometry){
+	cPopulationCell& cellA0 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y,  0, -1));
+	cPopulationCell& cellB0 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y, -1, -1));
+	if (cellA_list.FindPtr(&cellB0) == NULL) cellA_list.Push(&cellB0);
+	if (cellB_list.FindPtr(&cellA0) == NULL) cellB_list.Push(&cellA0);
+      }
+
+      //make sure we don't break the bounded grid at the bottom
+      if((nGeometry::GRID == geometry && row_id != (world_y-1)) || nGeometry::GRID != geometry){
+	cPopulationCell& cellA1 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y,  0,  1));
+	cPopulationCell& cellB1 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y, -1,  1));
+	if (cellA_list.FindPtr(&cellB1) == NULL) cellA_list.Push(&cellB1);
+	if (cellB_list.FindPtr(&cellA1) == NULL) cellB_list.Push(&cellA1);
+      }
     }
   }
 };
@@ -1363,6 +1404,7 @@ public:
   {
     const int world_x = m_world->GetPopulation().GetWorldX();
     const int world_y = m_world->GetPopulation().GetWorldY();
+    const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
     if (m_id == -1) m_id = world_y / 2;
     if (m_max == -1) m_max = world_x;
     if (m_id < 0 || m_id >= world_y) {
@@ -1372,22 +1414,35 @@ public:
     }
     // Loop through all of the rows and make the cut on each...
     for (int col_id = m_min; col_id < m_max; col_id++) {
-      int idA = col_id * world_y + m_id;
+      //compute which cells are beoing joined and grab them
+      int idA = m_id * world_x + col_id;
       int idB  = GridNeighbor(idA, world_x, world_y, 0, -1);
       cPopulationCell& cellA = m_world->GetPopulation().GetCell(idA);
       cPopulationCell& cellB = m_world->GetPopulation().GetCell(idB);
-      cPopulationCell& cellA0 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y, -1,  0));
-      cPopulationCell& cellA1 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y,  1,  0));
-      cPopulationCell& cellB0 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y, -1, -1));
-      cPopulationCell& cellB1 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y,  1, -1));
+
+      //grab the cell lists
       tList<cPopulationCell>& cellA_list = cellA.ConnectionList();
       tList<cPopulationCell>& cellB_list = cellB.ConnectionList();
+
+      //these cells are always joined
       if (cellA_list.FindPtr(&cellB)  == NULL) cellA_list.Push(&cellB);
-      if (cellA_list.FindPtr(&cellB0) == NULL) cellA_list.Push(&cellB0);
-      if (cellA_list.FindPtr(&cellB1) == NULL) cellA_list.Push(&cellB1);
       if (cellB_list.FindPtr(&cellA)  == NULL) cellB_list.Push(&cellA);
-      if (cellB_list.FindPtr(&cellA0) == NULL) cellB_list.Push(&cellA0);
-      if (cellB_list.FindPtr(&cellA1) == NULL) cellB_list.Push(&cellA1);
+
+      //make sure we don't break the bounded grid on the left
+      if((nGeometry::GRID == geometry && col_id != 0) || nGeometry::GRID != geometry){
+	cPopulationCell& cellA0 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y, -1,  0));
+	cPopulationCell& cellB0 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y, -1, -1));
+	if (cellA_list.FindPtr(&cellB0) == NULL) cellA_list.Push(&cellB0);
+	if (cellB_list.FindPtr(&cellA0) == NULL) cellB_list.Push(&cellA0);
+      }
+
+      //make cure we don't break the bounded grid on the right
+      if((nGeometry::GRID == geometry && col_id != (world_x-1)) || nGeometry::GRID != geometry){
+	cPopulationCell& cellA1 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y,  1,  0));
+	cPopulationCell& cellB1 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y,  1, -1));
+	if (cellA_list.FindPtr(&cellB1) == NULL) cellA_list.Push(&cellB1);
+	if (cellB_list.FindPtr(&cellA1) == NULL) cellB_list.Push(&cellA1);
+      }
     }
   }
 };
