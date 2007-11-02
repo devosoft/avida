@@ -4519,8 +4519,11 @@ int cHardwareCPU::Numberate(int _pos, int _dir, int _num_bits)
   assert(_num_bits <= (int)max_bits);
   if (_num_bits == 0) _num_bits = max_bits;
   
-  int j = _pos;
+  // Enforce a boundary, sometimes -1 can be passed for _pos
+  int j = _pos + GetMemory().GetSize();
   j %= GetMemory().GetSize();
+  assert(j >=0);
+  assert(j < GetMemory().GetSize());
   while (code_size < _num_bits)
   {
     unsigned int inst_code = (unsigned int) GetInstSet().GetInstructionCode( (GetMemory())[j] );

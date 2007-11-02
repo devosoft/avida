@@ -38,9 +38,11 @@
 #ifndef cResourceCount_h
 #include "cResourceCount.h"
 #endif
+#ifndef cCPUTestInfo_h
+#include "cCPUTestInfo.h"
+#endif
 
 class cAvidaContext;
-class cCPUTestInfo;
 class cGenome;
 class cGenotype;
 class cInjectGenotype;
@@ -52,13 +54,6 @@ class cWorld;
 class cTestCPU
 {
 public:
-  enum eTestCPUResourceMethod { RES_INITIAL = 0, RES_CONSTANT, RES_UPDATED_DEPLETABLE, RES_DYNAMIC, RES_LAST };  
-  // Modes for how the test CPU handles resources:
-  // OFF - all resources are at zero. (OLD: use_resources = 0)
-  // CONSTANT - resources stay constant at input values for the specified update. (OLD: use_resources = 1)
-  // UPDATED_DEPLETABLE - resources change every update according to resource data file (assuming an update
-  //    is an average time slice). The organism also depletes these resources when using them.
-  // DYNAMIC - UPDATED_DEPLETABLE + resources inflow/outflow (NOT IMPLEMENTED YET!)
 
 private:
   cWorld* m_world;
@@ -68,11 +63,14 @@ private:
   int cur_receive;  
   bool m_use_random_inputs;
   bool m_use_manual_inputs;
-	
+  
+  // Resource settings. Reinitialized from cCPUTestInfo on each test.
   eTestCPUResourceMethod m_res_method;
   std::vector<std::pair<int, std::vector<double> > > * m_res;
-  int m_res_time_spent_offset;
   int m_res_update;
+  int m_res_cpu_cycle_offset;
+
+  // Actual CPU resources.
   cResourceCount m_resource_count;
   cResourceCount m_deme_resource_count;
 
@@ -86,6 +84,11 @@ private:
   cTestCPU(const cTestCPU&); // @not_implemented
   cTestCPU& operator=(const cTestCPU&); // @not_implemented
   
+  // Internal methods for setting up and updating resources
+  void InitResources(int res_method = RES_INITIAL, std::vector<std::pair<int, std::vector<double> > > * res = NULL, int update = 0, int cpu_cycle_offset = 0);
+  void UpdateResources(int cpu_cycles_used);
+  void SetResourceUpdate(int update, bool round_to_closest = false);
+  inline void SetResource(int id, double new_level);
 public:
   cTestCPU(cWorld* world);
   ~cTestCPU() { }
@@ -106,9 +109,8 @@ public:
   inline int GetReceiveValue();
   inline const tArray<double>& GetResources();
   inline const tArray<double>& GetDemeResources(int deme_id);
-  inline void SetResource(int id, double new_level);
-  void InitResources(int res_method = RES_INITIAL, std::vector<std::pair<int, std::vector<double> > > * res = NULL, int update = 0, int time_spent_offset = 0);
-  void SetResourceUpdate(int update, bool round_to_closest = false);
+  
+  // Used by cTestCPUInterface to get/update resources
   void ModifyResources(const tArray<double>& res_change);
   cResourceCount& GetResourceCount() { return m_resource_count; }
 };

@@ -55,11 +55,11 @@ std::vector<std::pair<int, std::vector<double> > > * cTestCPU::s_resources = NUL
 cTestCPU::cTestCPU(cWorld* world)
 {
   m_world = world;
-  InitResources();
 	m_use_manual_inputs = false;
 }  
+
  
-void cTestCPU::InitResources(int res_method, std::vector<std::pair<int, std::vector<double> > > * res, int update, int time_spent_offset)
+void cTestCPU::InitResources(int res_method, std::vector<std::pair<int, std::vector<double> > > * res, int update, int cpu_cycle_offset)
 {  
   //FOR DEMES
   m_deme_resource_count.SetSize(0);
@@ -72,14 +72,14 @@ void cTestCPU::InitResources(int res_method, std::vector<std::pair<int, std::vec
   
   // Setup the resources...
   m_res = res;
-  m_res_time_spent_offset = time_spent_offset;
+  m_res_cpu_cycle_offset = cpu_cycle_offset;
   m_res_update = update;
 
   // Adjust updates if time_spent_offset is greater than a time slice
   int ave_time_slice = m_world->GetConfig().AVE_TIME_SLICE.Get();
-  m_res_update += m_res_time_spent_offset / ave_time_slice;
-  m_res_time_spent_offset %= ave_time_slice;
-  assert(m_res_time_spent_offset >= 0);
+  m_res_update += m_res_cpu_cycle_offset / ave_time_slice;
+  m_res_cpu_cycle_offset %= ave_time_slice;
+  assert(m_res_cpu_cycle_offset >= 0);
   
   // If they didn't send anything (usually during an avida run as opposed to analyze mode),
   // then we set up a static variable (or just point to it) that reflects the initial conditions of the run
@@ -123,6 +123,15 @@ void cTestCPU::InitResources(int res_method, std::vector<std::pair<int, std::vec
     
   SetResourceUpdate(m_res_update, true);
   // Round down to the closest update to choose how to initializae resources
+}
+
+void cTestCPU::UpdateResources(int cpu_cycles_used)
+{
+    int ave_time_slice = m_world->GetConfig().AVE_TIME_SLICE.Get();
+    if ((m_res_method >= RES_UPDATED_DEPLETABLE) && (cpu_cycles_used % ave_time_slice == 0))
+    {
+      SetResourceUpdate(m_res_update+1);
+    }
 }
 
 void cTestCPU::SetResourceUpdate(int update, bool round_to_closest)
@@ -191,7 +200,7 @@ void cTestCPU::SetResourceUpdate(int update, bool round_to_closest)
 
 void cTestCPU::ModifyResources(const tArray<double>& res_change)
 {
-  //We only let the testCPU modify the resources if we are using a DEPLETABLE options. @JEB
+  //We only let the testCPU modify the resources if we are using a DEPLETABLE option. @JEB
   if (m_res_method >= RES_UPDATED_DEPLETABLE) m_resource_count.Modify(res_change);
 }
 
@@ -205,19 +214,22 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
 
   // Determine how long this organism should be tested for...
   int time_allocated = m_world->GetConfig().TEST_CPU_TIME_MOD.Get() * organism.GetGenome().GetSize();
-  time_allocated += m_res_time_spent_offset; // If the resource offset has us starting at a different time, adjust @JEB
+  time_allocated += m_res_cpu_cycle_offset; // If the resource offset has us starting at a different time, adjust @JEB
 
   // Prepare the inputs...
   cur_input = 0;
   cur_receive = 0;
+
+  // Prepare the resources
+  InitResources(test_info.m_res_method, test_info.m_res, test_info.m_res_update, test_info.m_res_cpu_cycle_offset);
 
   // Determine if we're tracing and what we need to print.
   cHardwareTracer* tracer = test_info.GetTraceExecution() ? (test_info.GetTracer()) : NULL;
   std::ostream * tracerStream = NULL;
   if (tracer != NULL) tracerStream = tracer->GetStream();
 
-  int time_used = m_res_time_spent_offset; // Note: this is zero by default if no resources being used @JEB
-  int ave_time_slice = m_world->GetConfig().AVE_TIME_SLICE.Get();
+  // This way of keeping track of time is only used to update resources...
+  int time_used = m_res_cpu_cycle_offset; // Note: the offset is zero by default if no resources being used @JEB
   
   organism.GetHardware().SetTrace(tracer);
   while (time_used < time_allocated && organism.GetHardware().GetMemory().GetSize() &&
@@ -227,11 +239,8 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
     
     // @CAO Need to watch out for parasites.
     
-    // Assume an update is based on the average time slice for updating test cpu resources @JEB
-    if ((m_res_method >= RES_UPDATED_DEPLETABLE) && (time_used % ave_time_slice == 0))
-    {
-      SetResourceUpdate(m_res_update+1);
-    }
+    // Resources will be updates as if each update takes a number of cpu cycles equal to the average time slice
+    UpdateResources(time_used);
     
     // Add extra info to trace files so that we can watch resource changes. 
     // This is a clumsy way to insert it in the trace file, but works for my purposes @JEB

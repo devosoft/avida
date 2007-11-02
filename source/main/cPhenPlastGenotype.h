@@ -62,7 +62,7 @@ class cPhenPlastGenotype
 {
   private:
 
-  typedef set<cPhenotype*, cPhenotype::lt_phenotype  > UniquePhenotypes;  //Actually, these are cPlatsicPhenotypes*
+  typedef set<cPhenotype*, cPhenotype::lt_phenotype  > UniquePhenotypes;  //Actually, these are cPlasticPhenotypes*
   tList<cPlasticPhenotype> m_plastic_phenotypes;  //This will store a list of our unique plastic phenotype pointers  
   cGenome m_genome;
     int m_num_trials;  
@@ -82,7 +82,7 @@ class cPhenPlastGenotype
 
   public:
       cPhenPlastGenotype(const cGenome& in_genome, int num_trials, cWorld* world, cAvidaContext& ctx);
-    cPhenPlastGenotype(const cGenome& in_genome, int num_trails, cCPUTestInfo& test_info, cWorld* world, cAvidaContext& ctx);
+    cPhenPlastGenotype(const cGenome& in_genome, int num_trails, cCPUTestInfo& test_info,  cWorld* world, cAvidaContext& ctx);
     ~cPhenPlastGenotype();
     
     // Accessors

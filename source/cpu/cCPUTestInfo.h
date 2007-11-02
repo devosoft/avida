@@ -26,6 +26,8 @@
 #ifndef cCPUTestInfo_h
 #define cCPUTestInfo_h
 
+#include <vector>
+
 #ifndef nHardware_h
 #include "nHardware.h"
 #endif
@@ -40,6 +42,14 @@ class cHardwareTracer;
 class cOrganism;
 class cPhenotype;
 class cString;
+
+enum eTestCPUResourceMethod { RES_INITIAL = 0, RES_CONSTANT, RES_UPDATED_DEPLETABLE, RES_DYNAMIC, RES_LAST };  
+// Modes for how the test CPU handles resources:
+// OFF - all resources are at zero. (OLD: use_resources = 0)
+// CONSTANT - resources stay constant at input values for the specified update. (OLD: use_resources = 1)
+// UPDATED_DEPLETABLE - resources change every update according to resource data file (assuming an update
+//    is an average time slice). The organism also depletes these resources when using them.
+// DYNAMIC - UPDATED_DEPLETABLE + resources inflow/outflow (NOT IMPLEMENTED YET!)
 
 class cCPUTestInfo
 {
@@ -63,7 +73,12 @@ private:
 	tArray<int> used_inputs; //Depth 0 inputs
 
   tArray<cOrganism*> org_array;
-
+  
+  // Information about how to handle resources
+  eTestCPUResourceMethod m_res_method;
+  std::vector<std::pair<int, std::vector<double> > > * m_res;
+  int m_res_update;
+  int m_res_cpu_cycle_offset;
 
   cCPUTestInfo(const cCPUTestInfo&); // @not_implemented
   cCPUTestInfo& operator=(const cCPUTestInfo&); // @not_implemented
@@ -80,6 +95,9 @@ public:
 	void UseManualInputs(tArray<int> inputs) {use_manual_inputs = true; use_random_inputs = false; manual_inputs = inputs;}
 	void ResetInputMode() {use_manual_inputs = false; use_random_inputs = false;}
   void SetTraceExecution(cHardwareTracer *tracer = NULL);
+  void SetResourceOptions(int res_method = RES_INITIAL, std::vector<std::pair<int, std::vector<double> > > * res = NULL, int update = 0, int cpu_cycle_offset = 0)
+    { m_res_method = (eTestCPUResourceMethod)res_method; m_res = res; m_res_update = update; m_res_cpu_cycle_offset = cpu_cycle_offset; }
+
 
   // Input Accessors
   int GetGenerationTests() const { return generation_tests; }

@@ -213,7 +213,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
   // (This may not have been run already, and cost negligiably more time
   // considering the number of knockouts we need to do.
   cAnalyzeGenotype base_genotype(m_world, genome, inst_set);
-  base_genotype.Recalculate(ctx, testcpu);
+  base_genotype.Recalculate(ctx);
   double base_fitness = base_genotype.GetFitness();
   const tArray<int> base_task_counts( base_genotype.GetTaskCounts() );
   
@@ -245,7 +245,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
     int cur_inst = mod_genome[line_num].GetOp();
     mod_genome[line_num] = null_inst;
     cAnalyzeGenotype ko_genotype(m_world, mod_genome, ko_inst_set);
-    ko_genotype.Recalculate(ctx, testcpu);
+    ko_genotype.Recalculate(ctx);
     if (check_chart == true) {
       const tArray<int> ko_task_counts( ko_genotype.GetTaskCounts() );
       knockout_stats->task_counts[line_num] = ko_task_counts;
@@ -305,7 +305,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
       mod_genome[line1] = null_inst;
       mod_genome[line2] = null_inst;
       cAnalyzeGenotype ko_genotype(m_world, mod_genome, ko_inst_set);
-      ko_genotype.Recalculate(ctx, testcpu);
+      ko_genotype.Recalculate(ctx);
       
       double ko_fitness = ko_genotype.GetFitness();
       
@@ -386,10 +386,8 @@ void cAnalyzeGenotype::CalcLandscape(cAvidaContext& ctx)
   m_land->Process(ctx);
 }
 
-void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cTestCPU* testcpu, cAnalyzeGenotype* parent_genotype, cCPUTestInfo* test_info, int num_trials)
-{
-  // We are not going to use this testcpu ...
-  
+void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info, cAnalyzeGenotype* parent_genotype, int num_trials)
+{  
   //Allocate our own test info if it wasn't provided
   cCPUTestInfo* temp_test_info = NULL;
   if (!test_info)

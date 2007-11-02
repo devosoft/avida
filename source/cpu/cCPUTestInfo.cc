@@ -39,6 +39,10 @@ cCPUTestInfo::cCPUTestInfo(int max_tests)
   , use_manual_inputs(false)
   , m_tracer(NULL)
   , org_array(max_tests)
+  , m_res_method(RES_INITIAL)
+  , m_res(NULL)
+  , m_res_update(0)
+  , m_res_cpu_cycle_offset(0)
 {
   org_array.SetAll(NULL);
   Clear();

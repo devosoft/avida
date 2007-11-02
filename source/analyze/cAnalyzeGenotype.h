@@ -233,7 +233,7 @@ public:
   const cStringList & GetSpecialArgs() { return special_args; }
   void SetSpecialArgs(const cStringList & _args) { special_args = _args; }
 
-  void Recalculate(cAvidaContext& ctx, cTestCPU* testcpu, cAnalyzeGenotype* parent_genotype = NULL, cCPUTestInfo* test_info = NULL, int num_trials = 1);
+  void Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info = NULL, cAnalyzeGenotype* parent_genotype = NULL, int num_trials = 1);
   void PrintTasks(std::ofstream& fp, int min_task = 0, int max_task = -1);
   void PrintTasksQuality(std::ofstream& fp, int min_task = 0, int max_task = -1);
   void CalcLandscape(cAvidaContext& ctx);

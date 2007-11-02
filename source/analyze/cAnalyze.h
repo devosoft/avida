@@ -111,7 +111,6 @@ private:
 
   cWorld* m_world;
   cInstSet& inst_set;
-  cTestCPU* m_testcpu;
   cAvidaContext& m_ctx;
   cAnalyzeJobQueue m_jobqueue;
 
