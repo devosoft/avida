@@ -56,6 +56,7 @@ cTestCPU::cTestCPU(cWorld* world)
 {
   m_world = world;
 	m_use_manual_inputs = false;
+  InitResources();
 }  
 
  
@@ -108,8 +109,8 @@ void cTestCPU::InitResources(int res_method, std::vector<std::pair<int, std::vec
       }
     }
     m_res = s_resources;
+    assert(m_res != NULL);
   }
-  assert(m_res != NULL);
   
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   assert(resource_lib.GetSize() >= 0);
@@ -122,7 +123,7 @@ void cTestCPU::InitResources(int res_method, std::vector<std::pair<int, std::vec
   }
     
   SetResourceUpdate(m_res_update, true);
-  // Round down to the closest update to choose how to initializae resources
+  // Round down to the closest update to choose how to initialize resources
 }
 
 void cTestCPU::UpdateResources(int cpu_cycles_used)
@@ -136,7 +137,8 @@ void cTestCPU::UpdateResources(int cpu_cycles_used)
 
 void cTestCPU::SetResourceUpdate(int update, bool round_to_closest)
 {
-  assert(m_res != NULL);
+  // No resources defined? -- you can't do this!
+  if (!m_res) return;
 
   m_res_update = update;
 
@@ -192,7 +194,6 @@ void cTestCPU::SetResourceUpdate(int update, bool round_to_closest)
     if(i >= (int)(*m_res)[which].second.size()) {
       m_resource_count.Set(i, 0.0);
     } else {
-      // @DMB - unused - double temp = (*m_res)[which].second[i];
       m_resource_count.Set(i, (*m_res)[which].second[i]);
     }
   }
@@ -239,7 +240,7 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
     
     // @CAO Need to watch out for parasites.
     
-    // Resources will be updates as if each update takes a number of cpu cycles equal to the average time slice
+    // Resources will be updated as if each update takes a number of cpu cycles equal to the average time slice
     UpdateResources(time_used);
     
     // Add extra info to trace files so that we can watch resource changes. 
