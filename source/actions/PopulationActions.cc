@@ -151,14 +151,16 @@ private:
   double m_merit;
   int m_lineage_label;
   double m_neutral_metric;
+  int m_sex;
 public:
-  cActionInjectAllRandomRepro(cWorld* world, const cString& args) : cAction(world, args), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  cActionInjectAllRandomRepro(cWorld* world, const cString& args) : cAction(world, args), m_merit(-1), m_lineage_label(0), m_neutral_metric(0), m_sex(0)
   {
     cString largs(args);
     m_length = largs.PopWord().AsInt();
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_sex = largs.PopWord().AsInt();
   }
   
   static const cString GetDescription() { return "Arguments: <int length> [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
@@ -167,8 +169,12 @@ public:
   {
 	  for (int i = 0; i < m_world->GetPopulation().GetSize(); i++)
 	  {
-		  cGenome genome = cGenomeUtil::RandomGenomeWithoutZeroRedundantsPlusRepro(ctx, m_length, m_world->GetHardwareManager().GetInstSet());
-		  m_world->GetPopulation().Inject(genome, i, m_merit, m_lineage_label, m_neutral_metric);
+	    cGenome genome;
+	    if (m_sex)
+	       genome = cGenomeUtil::RandomGenomeWithoutZeroRedundantsPlusReproSex(ctx, m_length, m_world->GetHardwareManager().GetInstSet());
+	    else
+	       genome = cGenomeUtil::RandomGenomeWithoutZeroRedundantsPlusRepro(ctx, m_length, m_world->GetHardwareManager().GetInstSet());
+	    m_world->GetPopulation().Inject(genome, i, m_merit, m_lineage_label, m_neutral_metric);
 	  }
   }
 };

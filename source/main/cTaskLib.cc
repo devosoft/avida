@@ -2301,6 +2301,30 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
       break;
     }
 
+  case 14:
+    {
+      vars[0] = vars[0]*6-3;
+      vars[1] = vars[1]*6-3;
+      Fx = .5*(vars[0]*vars[0]+vars[1]*vars[1]) + sin(vars[0]*vars[0]+vars[1]*vars[1]);
+      break;
+    }
+
+  case 15:
+    {
+      vars[0] = vars[0]*6-3;
+      vars[1] = vars[1]*6-3;
+      Fx = pow((3*vars[0]-2*vars[1]+4),2)/8.0 + pow((vars[0]-vars[1]+1),2)/27.0 + 15;
+      break;
+    }
+
+  case 16:
+    {
+      vars[0] = vars[0]*6-3;
+      vars[1] = vars[1]*6-3;
+      Fx = 1.0/(vars[0]*vars[0]+vars[1]*vars[1]+1) - 1.1*exp(-vars[0]*vars[0]-vars[1]*vars[1]);
+      break;
+    }
+
     default:
       quality = .001;
   }

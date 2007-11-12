@@ -337,4 +337,16 @@ cGenome cGenomeUtil::RandomGenomeWithoutZeroRedundantsPlusRepro(cAvidaContext& c
   return genome;
 }
 
+cGenome cGenomeUtil::RandomGenomeWithoutZeroRedundantsPlusReproSex(cAvidaContext& ctx, int length, const cInstSet& inst_set)
+{
+  cGenome genome(length+1);
+  for (int i = 0; i < length; i++) {
+	  cInstruction inst = inst_set.GetRandomInst(ctx);
+	  while (inst_set.GetRedundancy(inst)==0)
+		  inst = inst_set.GetRandomInst(ctx);
+    genome[i] = inst;
+  }
+  genome[length] = inst_set.GetInst("repro-sex");
+  return genome;
+}
 

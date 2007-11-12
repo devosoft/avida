@@ -438,6 +438,7 @@ cHardwareCPU::cHardwareCPU(const cHardwareCPU &hardware_cpu)
 }
 
 
+
 void cHardwareCPU::Reset()
 {
   m_global_stack.Clear();

@@ -576,7 +576,6 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx,
       ctx.GetRandom().GetDouble() > m_world->GetConfig().RECOMBINATION_PROB.Get()) {
     return DoPairAsexBirth(ctx, *old_entry, child_genome, parent, child_array, merit_array);
   }
-
   // If we made it this far, RECOMBINATION will happen!
   cCPUMemory genome0 = old_entry->genome;
   cCPUMemory genome1 = child_genome;
