@@ -258,6 +258,7 @@ private:
   void CommandPrintTreeStats(cString cur_string);
   void PhyloCommunityComplexity(cString cur_string);
   void AnalyzeCommunityComplexity(cString cur_string);
+  void CommandPrintResourceFitnessMap(cString cur_string);
   
   // Individual Organism Analysis...
   void CommandFitnessMatrix(cString cur_string);

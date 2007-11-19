@@ -58,6 +58,8 @@
 #include "cPhenPlastGenotype.h"
 #include "cPlasticPhenotype.h"
 #include "cProbSchedule.h"
+#include "cReaction.h"
+#include "cReactionProcess.h"
 #include "cSchedule.h"
 #include "cSpecies.h"
 #include "cStringIterator.h"
@@ -440,9 +442,9 @@ void cAnalyze::LoadResources(cString cur_string)
   assert(resourceFile.good());
   
   // Read in each line of the resource file and process it
-  char line[2048];
+  char line[4096];
   while(!resourceFile.eof()) {
-    resourceFile.getline(line, 2047);
+    resourceFile.getline(line, 4095);
     
     // Get rid of the whitespace at the beginning of the stream, then 
     // see if the line begins with a #, if so move on to the next line.
@@ -3674,18 +3676,204 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
   return;
 }
 
+/* prints grid with what the fitness of an org in each range box would be given the resource levels
+	at given update (10000 by default) SLG*/
+void cAnalyze::CommandPrintResourceFitnessMap(cString cur_string)
+{
+  // at what update do we want to use the resource concentrations from?
+  int update = 10000;
+  if (cur_string.GetSize() != 0) update = cur_string.PopWord().AsInt();
+  // what file to write data to
+  cString filename("resourcefitmap.dat");
+  if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
+  ofstream& fp = m_world->GetDataFileOFStream(filename);
 
+  int f1=-1, f2=-1, rangecount[2]={0,0}, threshcount[2]={0,0};
+  double f1Max, f1Min, f2Max, f2Min;
 
+  // first need to find out how many thresh and range resources there are on each function
+  // NOTE! this only works for 2-obj. problems right now!
+  for (int i=0; i<m_world->GetEnvironment().GetReactionLib().GetSize(); i++)
+  {
+	  cReaction* react = m_world->GetEnvironment().GetReactionLib().GetReaction(i);
+	  int fun = react->GetTask()->GetArguments().GetInt(0);
+	  double thresh = react->GetTask()->GetArguments().GetDouble(3);
+	  double threshMax = react->GetTask()->GetArguments().GetDouble(4);
 
+	  if (i==0)
+	  {
+		  f1 = fun;
+		  f1Max = react->GetTask()->GetArguments().GetDouble(1);
+		  f1Min = react->GetTask()->GetArguments().GetDouble(2);
+	  }
+	  
+	     if (fun==f1 && threshMax>0)
+			 rangecount[0]++;
+		 else if (fun==f1 && thresh>0)
+			 threshcount[0]++;
+		 else if (fun!=f1 && threshcount[1]==0 && rangecount[1]==0)
+		 {
+			 f2=fun;
+			 f2Max = react->GetTask()->GetArguments().GetDouble(1);
+			 f2Min = react->GetTask()->GetArguments().GetDouble(2);
+		 }
+		 if (fun==f2 && threshMax>0)
+			 rangecount[1]++;
+		 else if (fun==f2 && thresh>0)
+			 threshcount[1]++;
+	  
+  }
+  int fsize[2];
+  fsize[0] = rangecount[0];
+  if (threshcount[0]>fsize[0])
+	  fsize[0]=threshcount[0];
+  fsize[1]=rangecount[1];
+  if (threshcount[1]>fsize[1])
+	  fsize[1]=threshcount[1];
 
+  double stepsize[2];
+  stepsize[0] = (f1Max-f1Min)/fsize[0];
+  stepsize[1] = (f2Max-f2Min)/fsize[1];
 
+  // this is our grid where we are going to calculate the fitness of an org in each box
+  // given current resource contributions
+  tArray< tArray<double> > fitnesses(fsize[0]+1);
+  for (int i=0; i<fitnesses.GetSize(); i++)
+	  fitnesses[i].Resize(fsize[1]+1,1);
+ 
+  // figure out what index into resources that we loaded goes with update we want
+  int index=-1;
+  for (int i=0; i<resources.size(); i++)
+  {
+	  if (resources.at(i).first == update)
+	  {
+		  index=i;
+		  i=resources.size();
+	  }
+  }
+  if (index<0) cout << "error, never found desired update in resource array!\n";
 
+  //go through each resource in environment
+  for (int i=0; i<m_world->GetEnvironment().GetResourceLib().GetSize(); i++)
+  {
+	  // first have to find reaction that matches this resource, so compare names
+	  cString name = m_world->GetEnvironment().GetResourceLib().GetResource(i)->GetName();
+	  cReaction* react;
+	  for (int j=0; j<m_world->GetEnvironment().GetReactionLib().GetSize(); j++)
+	  {
+		  if (m_world->GetEnvironment().GetReactionLib().GetReaction(j)->GetProcesses().GetPos(0)->GetResource()->GetName()
+			  == name)
+		  {
+			  react = m_world->GetEnvironment().GetReactionLib().GetReaction(j);
+			  j = m_world->GetEnvironment().GetReactionLib().GetSize();
+		  }
+	  }
+	  
+	  // now have proper reaction, pull all the data need from the reaction
+	  double frac = react->GetProcesses().GetPos(0)->GetMaxFraction(); 
+	  double max = react->GetProcesses().GetPos(0)->GetMaxNumber();
+	  double min = react->GetProcesses().GetPos(0)->GetMinNumber();
+	  double value = react->GetValue();
+	  int fun = react->GetTask()->GetArguments().GetInt(0);
+	  if (fun==f1)
+		  fun=0;
+	  else if (fun==f2)
+		  fun=1;
+	  else cout << "function is neither f1 or f2! doh!\n";
+	  double thresh = react->GetTask()->GetArguments().GetDouble(3);
+	  double threshMax = react->GetTask()->GetArguments().GetDouble(4);
+	  double maxFx = react->GetTask()->GetArguments().GetDouble(1);
+      double minFx = react->GetTask()->GetArguments().GetDouble(2);
 
+	  // and pull the concentration of this resource from resource object loaded from resource.dat
+	  double concentration = resources.at(index).second.at(i);
 
+	  // calculate the merit based on this resource concentration, fraction, and value
+	  double mer = concentration * frac * value;
+	  if (mer > max)
+		  mer=max;
+	  else if (mer < min)
+		  mer=0;
+	  double threshMaxAdjusted, threshAdjusted;
+	  // if this is a range reaction, need to update one entire row or column in fitnesses array
+	  if (threshMax>0)
+	  {			
+		  for (int k=0; k<fsize[fun]; k++)
+		  {
+			  // function f1
+			  if (fun==0)
+			  {
+				  threshMaxAdjusted = threshMax*(f1Max-f1Min) + f1Min;
+				  threshAdjusted = thresh*(f1Max-f1Min) + f1Min;
+				  double pos = stepsize[0]*k+f1Min+stepsize[0]/2.0;
+				  if (threshAdjusted <= pos && threshMaxAdjusted >= pos)
+				  {
+					  for (int z=0; z<fsize[1]+1; z++)
+						  fitnesses[k+1][z] *= pow(2,mer);
+				  // actually solutions right at min possible get range above them too
+					  if (k==0)
+						  for (int z=0; z<fsize[1]+1; z++)
+							  fitnesses[0][z] *= pow(2,mer);
+				  }
+			  }
+			  // function f2
+			  else 
+			  {
+				  threshMaxAdjusted = threshMax*(f2Max-f2Min) + f2Min;
+				  threshAdjusted = thresh*(f2Max-f2Min) + f2Min;
+				  double pos = stepsize[1]*k+f1Min+stepsize[1]/2.0;
+				  if (threshAdjusted <= pos && threshMaxAdjusted >= pos)
+				  {
+					  for (int z=0; z<fsize[0]+1; z++)
+						  fitnesses[z][k+1] *= pow(2,mer);
+				  // actually solutions right at min possible get range above them too
+					  if (k==0)
+						  for (int z=0; z<fsize[0]+1; z++)
+							  fitnesses[z][0] *= pow(2,mer);
+				  }
+			  }
+		  }
+	  }
+	  // threshold reaction, need to update all rows or columns above given threshold
+	  else if (thresh>=0)
+	  {
+		  for (int k=0; k<fsize[fun]+1; k++)
+		  {
+			  // function f1
+			  if (fun==0)
+			  {
+			      threshAdjusted = thresh*(f1Max-f1Min) + f1Min;
+			      double pos = stepsize[0]*k+f1Min-stepsize[0]/2.0;
+			      if (threshAdjusted >= pos)
+				{
+				  for (int z=0; z<fsize[1]+1; z++)
+				    {
+				      fitnesses[k][z] *= pow(2,mer);
+				      cout << "k: " << k << "z: " << z << "bonus: " << pow(2,mer) << endl;
+				    }
+				}
+				 
+			  }
+			  // function f2
+			  else 
+			  {				  
+			    threshAdjusted = thresh*(f2Max-f2Min) + f2Min;
+			    double pos = stepsize[1]*k+f1Min-stepsize[1]/2.0;
+			    if (threshAdjusted >= pos)
+			      {
+				for (int z=0; z<fsize[0]+1; z++)
+				  fitnesses[z][k] *= pow(2,mer);
+			      } 
+			  }
+		  }
+	  }
+	  
+  }
+  for (int i=0; i<fitnesses.GetSize(); i++)
+    for (int j=0; j<fitnesses[0].GetSize(); j++)
+      cout << i << j << " " << fitnesses[i][j] << endl;
 
-
-
-
+}
 
 
 //@ MRR @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -8426,6 +8614,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("PRINT_DIVERSITY", &cAnalyze::CommandPrintDiversity);
   AddLibraryDef("PRINT_TREE_STATS", &cAnalyze::CommandPrintTreeStats);
   AddLibraryDef("COMMUNITY_COMPLEXITY", &cAnalyze::AnalyzeCommunityComplexity);
+  AddLibraryDef("PRINT_RESOURCE_FITNESS_MAP", &cAnalyze::CommandPrintResourceFitnessMap);
   
   // Individual organism analysis...
   AddLibraryDef("FITNESS_MATRIX", &cAnalyze::CommandFitnessMatrix);

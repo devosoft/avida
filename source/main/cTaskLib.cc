@@ -2179,11 +2179,50 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
    vars.Resize(args.GetInt(3));
 
    double Fx = 0.0;
-   
-  if (args.GetInt(1)) 
-  {
-    int len = args.GetInt(2);
-    double base_pow = args.GetDouble(0);
+
+   // some of the problems don't need double variables but use the bit string as a bit string
+   if (function==18)
+   {
+     int tot=0;
+     for (int i=0; i<30; i++)
+       tot+= ctx.GetOutputBuffer()[i];
+     Fx = 1+tot;
+   }
+   else if (function==19)
+   {
+     tArray<double> tempVars;
+     tempVars.Resize(args.GetInt(3));
+     for (int i=0; i<args.GetInt(3); i++)
+       tempVars[i]=0;
+     
+     for (int i=0; i<30; i++)
+       tempVars[0]+= ctx.GetOutputBuffer()[i];
+
+     int len = args.GetInt(2);
+     for (int i = len - 1; i >= 0; i--) 
+     {
+	for (int j=1; j<args.GetInt(3); j++)
+	{
+	  tempVars[j-1] += ctx.GetOutputBuffer()[30+i + len*(args.GetInt(3)-j-1)];
+	}
+     }
+
+     int Gx=0;
+     for (int i=1; i<args.GetInt(3); i++)
+     {
+       if (tempVars[i]==5)
+	  Gx += 1;
+       else 
+	 Gx += tempVars[i]+2;
+     }
+     Fx = Gx*(1/(1+tempVars[0]));
+   }
+   else 
+   {
+     if (args.GetInt(1)) 
+     {
+        int len = args.GetInt(2);
+        double base_pow = args.GetDouble(0);
 
 	tArray<double> tempVars;
 	tempVars.Resize(args.GetInt(3));
@@ -2202,22 +2241,22 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
 	for (int i=0; i<args.GetInt(3); i++)
 		vars[i] = tempVars[i] / tot;
 	//	cout << "x: " << vars[0] << " ";
-  } 
-  else 
-  {
+    } 
+    else 
+    {
 	  for (int j=0; j<args.GetInt(3); j++)
 		  vars[j] = double(ctx.GetOutputBuffer()[j]) / 0xffffffff;
-  }
+    }
   
-  for (int j=0; j<args.GetInt(3); j++)
-  {
+    for (int j=0; j<args.GetInt(3); j++)
+    {
 	  if (vars[j] < 0)
 		  vars[j] = 0;
 	  else if (vars[j] > 1)
 		  vars[j] = 1;
-  }
+    }
 
-  switch(function) {
+    switch(function) {
     case 1:
 	  Fx = vars[0];		// F1
 	  //	  cout << "Fx1: " << Fx << " ";
@@ -2280,7 +2319,7 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
     {
       double sum = 0;
       for (int i=1; i<args.GetInt(3); i++)
-		  sum += vars[i]/double(args.GetInt(3)-1);
+	  sum += vars[i]/double(args.GetInt(3)-1);
       double Gx = 1+9*sum;
       Fx = Gx * (1 - sqrt(vars[0]/Gx) - (vars[0]/Gx)*(sin(3.14159*vars[0]*10)));
       break;
@@ -2325,10 +2364,20 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
       break;
     }
 
+    case 17:
+    {
+      double sum = 0;
+      for (int i=1; i<args.GetInt(3); i++)
+	sum += (pow((vars[i]*6-3),2)-10*cos(4*3.14159*(vars[i]*6-3)))/10.0;
+      double Gx = 10+sum;
+      Fx = Gx * (1.0 - sqrt(vars[0]/Gx));
+      break;
+    }
+
     default:
       quality = .001;
-  }
-
+    }
+   }
   ctx.SetTaskValue(Fx);
   if (args.GetDouble(3) < 0.0)
   {
@@ -2337,7 +2386,9 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
     assert(q1 > 0.0);
     assert(q2 > 0.0);
     quality = q1 / q2;
-  } else {
+  } 
+  else 
+  {
     if (args.GetDouble(4) < 0.0)
     {
       if (Fx <= (args.GetDouble(1) - args.GetDouble(2))*args.GetDouble(3) + args.GetDouble(2))
@@ -2356,7 +2407,7 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
 			quality = 1.0;
 		else
 			quality = 0.0;
-	}
+    }
   }
 
   // because want org to only have 1 shot to use outputs for all functions at once, even if they
