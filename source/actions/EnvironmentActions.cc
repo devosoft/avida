@@ -32,6 +32,8 @@
 #include "cResource.h"
 #include "cStats.h"
 #include "cWorld.h"
+#include "cPhenotype.h"
+#include "cPopulationCell.h"
 
 class cActionInjectResource : public cAction
 {
@@ -465,7 +467,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     int time = m_world->GetStats().GetUpdate();
-    m_res_count = (amplitude * sin(M_PI/frequency * time - phaseShift * M_PI) + initY) / 2;
+    m_res_count = (amplitude * sin(3.14159/frequency * time - phaseShift * 3.14159) + initY) / 2;
     cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
     if (res != NULL) m_world->GetPopulation().SetResource(res->GetID(), m_res_count);
 
@@ -595,6 +597,37 @@ public:
   }
 };
 
+class cActionSetOptimizeMinMax : public cAction
+{
+
+public:
+  cActionSetOptimizeMinMax(cWorld* world, const cString& args) : cAction(world, args) { ; }
+
+  static const cString GetDescription() { return "No Arguments"; }
+
+  void Process(cAvidaContext& ctx)
+  {
+	cEnvironment& env = m_world->GetEnvironment();
+    for (int j=0; j<env.GetNumTasks(); j++)
+	{
+		double maxFx=0, minFx=10000;
+		for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) 
+		{
+			 cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
+			if (cell.IsOccupied() == false) continue;
+			const cPhenotype& phen = cell.GetOrganism()->GetPhenotype();
+			double val = phen.GetLastTaskValue()[j];
+			if (val < minFx)
+				minFx = val;
+			if (val > maxFx)
+				maxFx = val;
+		}
+		env.GetTask(j).GetArguments().SetDouble(1,maxFx);
+		env.GetTask(j).GetArguments().SetDouble(2,minFx);
+	}
+  }
+};
+
 class cActionDelayedDemeEvent : public cAction
 {
 private:
@@ -652,6 +685,7 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetTaskArgInt>("SetTaskArgInt");
   action_lib->Register<cActionSetTaskArgDouble>("SetTaskArgDouble");
   action_lib->Register<cActionSetTaskArgString>("SetTaskArgString");
+  action_lib->Register<cActionSetOptimizeMinMax>("SetOptimizeMinMax");
 
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
   action_lib->Register<cActionInjectResource>("inject_resource");

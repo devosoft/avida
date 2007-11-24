@@ -1533,23 +1533,6 @@ public:
   }
 };
 
-class cActionSetOptimizeMinMax : public cAction
-{
-
-public:
-  cActionSetOptimizeMinMax(cWorld* world, const cString& args) : cAction(world, args) { ; }
-
-  static const cString GetDescription() { return "No Arguments"; }
-
-  void Process(cAvidaContext& ctx)
-  {
-    for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
-      (m_world->GetPopulation().GetCell(i).GetOrganism())->GetPhenotype();
-    }
-  }
-};
-
-
 class cActionSwapCells : public cAction
 {
 private:
@@ -1624,7 +1607,6 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
 
   action_lib->Register<cActionConnectCells>("ConnectCells");
   action_lib->Register<cActionDisconnectCells>("DisconnectCells");
-  action_lib->Register<cActionSetOptimizeMinMax>("SetOptimizeMinMax");
   action_lib->Register<cActionSwapCells>("SwapCells");
 
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.

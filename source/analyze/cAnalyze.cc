@@ -3680,6 +3680,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
 	at given update (10000 by default) SLG*/
 void cAnalyze::CommandPrintResourceFitnessMap(cString cur_string)
 {
+  cout << "creating resource fitness map...\n";
   // at what update do we want to use the resource concentrations from?
   int update = 10000;
   if (cur_string.GetSize() != 0) update = cur_string.PopWord().AsInt();
@@ -3690,7 +3691,7 @@ void cAnalyze::CommandPrintResourceFitnessMap(cString cur_string)
 
   int f1=-1, f2=-1, rangecount[2]={0,0}, threshcount[2]={0,0};
   double f1Max, f1Min, f2Max, f2Min;
-
+  
   // first need to find out how many thresh and range resources there are on each function
   // NOTE! this only works for 2-obj. problems right now!
   for (int i=0; i<m_world->GetEnvironment().GetReactionLib().GetSize(); i++)
@@ -3699,7 +3700,6 @@ void cAnalyze::CommandPrintResourceFitnessMap(cString cur_string)
 	  int fun = react->GetTask()->GetArguments().GetInt(0);
 	  double thresh = react->GetTask()->GetArguments().GetDouble(3);
 	  double threshMax = react->GetTask()->GetArguments().GetDouble(4);
-
 	  if (i==0)
 	  {
 		  f1 = fun;
@@ -3709,7 +3709,7 @@ void cAnalyze::CommandPrintResourceFitnessMap(cString cur_string)
 	  
 	     if (fun==f1 && threshMax>0)
 			 rangecount[0]++;
-		 else if (fun==f1 && thresh>0)
+		 else if (fun==f1 && thresh>=0)
 			 threshcount[0]++;
 		 else if (fun!=f1 && threshcount[1]==0 && rangecount[1]==0)
 		 {
@@ -3719,7 +3719,7 @@ void cAnalyze::CommandPrintResourceFitnessMap(cString cur_string)
 		 }
 		 if (fun==f2 && threshMax>0)
 			 rangecount[1]++;
-		 else if (fun==f2 && thresh>0)
+		 else if (fun==f2 && thresh>=0)
 			 threshcount[1]++;
 	  
   }
@@ -3731,17 +3731,18 @@ void cAnalyze::CommandPrintResourceFitnessMap(cString cur_string)
   if (threshcount[1]>fsize[1])
 	  fsize[1]=threshcount[1];
 
+  cout << "f1 size: " << fsize[0] << "  f2 size: " << fsize[1] << endl;
   double stepsize[2];
   stepsize[0] = (f1Max-f1Min)/fsize[0];
   stepsize[1] = (f2Max-f2Min)/fsize[1];
-
+  
   // this is our grid where we are going to calculate the fitness of an org in each box
   // given current resource contributions
   tArray< tArray<double> > fitnesses(fsize[0]+1);
   for (int i=0; i<fitnesses.GetSize(); i++)
 	  fitnesses[i].Resize(fsize[1]+1,1);
- 
-  // figure out what index into resources that we loaded goes with update we want
+  
+   // figure out what index into resources that we loaded goes with update we want
   int index=-1;
   for (int i=0; i<resources.size(); i++)
   {
@@ -3753,10 +3754,11 @@ void cAnalyze::CommandPrintResourceFitnessMap(cString cur_string)
   }
   if (index<0) cout << "error, never found desired update in resource array!\n";
 
-  //go through each resource in environment
+  else cout << "creating map using resources at update: " << update << endl;
+   
   for (int i=0; i<m_world->GetEnvironment().GetResourceLib().GetSize(); i++)
   {
-	  // first have to find reaction that matches this resource, so compare names
+  	  // first have to find reaction that matches this resource, so compare names
 	  cString name = m_world->GetEnvironment().GetResourceLib().GetResource(i)->GetName();
 	  cReaction* react;
 	  for (int j=0; j<m_world->GetEnvironment().GetReactionLib().GetSize(); j++)
@@ -3768,7 +3770,8 @@ void cAnalyze::CommandPrintResourceFitnessMap(cString cur_string)
 			  j = m_world->GetEnvironment().GetReactionLib().GetSize();
 		  }
 	  }
-	  
+	  if (react==NULL)
+	    continue;
 	  // now have proper reaction, pull all the data need from the reaction
 	  double frac = react->GetProcesses().GetPos(0)->GetMaxFraction(); 
 	  double max = react->GetProcesses().GetPos(0)->GetMaxNumber();
@@ -3783,7 +3786,7 @@ void cAnalyze::CommandPrintResourceFitnessMap(cString cur_string)
 	  double thresh = react->GetTask()->GetArguments().GetDouble(3);
 	  double threshMax = react->GetTask()->GetArguments().GetDouble(4);
 	  double maxFx = react->GetTask()->GetArguments().GetDouble(1);
-      double minFx = react->GetTask()->GetArguments().GetDouble(2);
+	  double minFx = react->GetTask()->GetArguments().GetDouble(2);
 
 	  // and pull the concentration of this resource from resource object loaded from resource.dat
 	  double concentration = resources.at(index).second.at(i);
@@ -3849,7 +3852,6 @@ void cAnalyze::CommandPrintResourceFitnessMap(cString cur_string)
 				  for (int z=0; z<fsize[1]+1; z++)
 				    {
 				      fitnesses[k][z] *= pow(2,mer);
-				      cout << "k: " << k << "z: " << z << "bonus: " << pow(2,mer) << endl;
 				    }
 				}
 				 
@@ -3868,11 +3870,14 @@ void cAnalyze::CommandPrintResourceFitnessMap(cString cur_string)
 		  }
 	  }
 	  
+	  }
+   
+  for (int i=fitnesses[0].GetSize()-1; i>=0; i--)
+  {
+    for (int j=0; j<fitnesses.GetSize(); j++)
+	fp << fitnesses[j][i] << " ";
+    fp << endl;
   }
-  for (int i=0; i<fitnesses.GetSize(); i++)
-    for (int j=0; j<fitnesses[0].GetSize(); j++)
-      cout << i << j << " " << fitnesses[i][j] << endl;
-
 }
 
 
