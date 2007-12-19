@@ -55,8 +55,11 @@ public:
   void AnalyzeBatch(tList<cAnalyzeGenotype> &genotype_list);
 };
 
-// Comparison function for heapsort.
+// Comparison functions for heapsort.
 int CompareAGPhyloDepth(const void * _a, const void * _b);
+int CompareAGUpdateBorn(const void * _a, const void * _b);
+// Heapsort functions.
 int HeapSortAGPhyloDepth(tArray<cAnalyzeGenotype *> &gen_array);
+int HeapSortAGUpdateBorn(tArray<cAnalyzeGenotype *> &gen_array);
 
 #endif

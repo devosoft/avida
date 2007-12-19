@@ -29,6 +29,10 @@
 #include "cWorld.h"
 
 #include <math.h>
+#include <iostream>
+
+using namespace std;
+
 
 cAnalyzeTreeStats_Gamma::cAnalyzeTreeStats_Gamma(cWorld* world)
 : m_world(world)
@@ -81,14 +85,19 @@ void cAnalyzeTreeStats_Gamma::FixupInternodeDistances(void){
   /* if we fell off the end of a redundant subsequence, restore the saved redundant g. */
   if(in_redundant_subsequence) {
     m_g[m_gen_array.GetSize()] = saved_g;
-    // saved_g = -1;
-    // in_redundant_subsequence = false;
   }
 }
 void cAnalyzeTreeStats_Gamma::CalculateGamma(void){
   // n: number of leaves, constant for a given tree.
   int n = m_gen_array.GetSize();
   
+  if(n <= 2){
+    if(m_world->GetVerbosity() >= VERBOSE_ON) {
+      cerr << "Error: not enough genotypes in batch to calculate gamma - " << endl;
+    }
+    return;
+  }
+
   int T = 0;
   for(int j = 2; j <= n; j++) { T += j*m_g[j]; }
   
@@ -116,7 +125,7 @@ void cAnalyzeTreeStats_Gamma::AnalyzeBatch(tList<cAnalyzeGenotype> &genotype_lis
 
 
 
-// Comparison function for heapsort.
+// Comparison functions for heapsort.
 int CompareAGPhyloDepth(const void * _a, const void * _b){
   cAnalyzeGenotype a(**((cAnalyzeGenotype**)_a));
   cAnalyzeGenotype b(**((cAnalyzeGenotype**)_b));
@@ -124,14 +133,52 @@ int CompareAGPhyloDepth(const void * _a, const void * _b){
   if(a.GetDepth() < b.GetDepth()){ return -1; }
   return 0;
 }
+int CompareAGUpdateBorn(const void * _a, const void * _b){
+  cAnalyzeGenotype a(**((cAnalyzeGenotype**)_a));
+  cAnalyzeGenotype b(**((cAnalyzeGenotype**)_b));
+  if(a.GetUpdateBorn() > b.GetUpdateBorn()){ return 1; }
+  if(a.GetUpdateBorn() < b.GetUpdateBorn()){ return -1; }
+  return 0;
+}
+
+// Heapsort functions.
 int HeapSortAGPhyloDepth(tArray<cAnalyzeGenotype *> &gen_array){
   const int size = gen_array.GetSize();
   cAnalyzeGenotype *c_gen_array[size];
+  
   /* Copy unsorted array from gen_array into c_gen_array. */
-  for(int i = 0; i < size; i++){ c_gen_array[i] = (gen_array[i]); }
+  for(int i = 0; i < size; i++){
+    c_gen_array[i] = (gen_array[i]);
+  }
+  
   /* Heapsort c_gen_array. */
   int result = heapsort(c_gen_array, size, sizeof(cAnalyzeGenotype*), CompareAGPhyloDepth);
+  
   /* If heapsort returned successfully, copy sorted array from c_gen_array into gen_array. */
-  if(result == 0){ for(int i = 0; i < size; i++){ gen_array[i] = (c_gen_array[i]); } }
+  if(result == 0){
+    for(int i = 0; i < size; i++){
+      gen_array[i] = (c_gen_array[i]);
+    }
+  }
+  return result;
+}  
+int HeapSortAGUpdateBorn(tArray<cAnalyzeGenotype *> &gen_array){
+  const int size = gen_array.GetSize();
+  cAnalyzeGenotype *c_gen_array[size];
+  
+  /* Copy unsorted array from gen_array into c_gen_array. */
+  for(int i = 0; i < size; i++){
+    c_gen_array[i] = (gen_array[i]);
+  }
+  
+  /* Heapsort c_gen_array. */
+  int result = heapsort(c_gen_array, size, sizeof(cAnalyzeGenotype*), CompareAGUpdateBorn);
+  
+  /* If heapsort returned successfully, copy sorted array from c_gen_array into gen_array. */
+  if(result == 0){
+    for(int i = 0; i < size; i++){
+      gen_array[i] = (c_gen_array[i]);
+    }
+  }
   return result;
 }  
