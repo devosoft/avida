@@ -1,12 +1,62 @@
+/*
+ *  cAnalyzeTreeStats_CumulativeStemminess.cc
+ *  Avida@vallista
+ *
+ *  Created by Kaben Nanlohy on 2007.12.03.
+ *  Copyright 1999-2007 Michigan State University. All rights reserved.
+ *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation; version 2
+ *  of the License.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ */
 
-#include "cAnalyzeGenotypeTreeStats.h"
+#include "cAnalyzeTreeStats_CumulativeStemminess.h"
 
 #include "cAnalyzeGenotype.h"
 #include "tHashTable.h"
 #include "cWorld.h"
 
 
-void cAnalyzeGenotypeTreeStats::PrintAGLData(tArray<cAGLData> &agl){
+cAGLData::cAGLData()
+: genotype(0)
+, id(-1)
+, pid(-1)
+, depth(-1)
+, birth(-1)
+, ppos(-1)
+, offspring_count(-1)
+, anc_branch_dist(-1)
+, anc_branch_id(-1)
+, anc_branch_pos(-1)
+, off_branch_dist_acc(-1)
+, cumulative_stemminess(-1.)
+, traversal_visited(false)
+, offspring_positions(0)
+{}
+
+cAnalyzeTreeStats_CumulativeStemminess::cAnalyzeTreeStats_CumulativeStemminess(cWorld* world)
+: m_agl(0)
+, m_agl2(0)
+, m_stemminess_sum(0.0)
+, m_average_stemminess(0.0)
+, m_inner_nodes(0)
+, m_should_exclude_leaves(true)
+, m_world(world)
+{}
+
+
+void cAnalyzeTreeStats_CumulativeStemminess::PrintAGLData(tArray<cAGLData> &agl){
   for(int i=0; i < agl.GetSize(); i++){
     cout << i << ":";
     cout << " " << agl[i].id;
@@ -28,7 +78,7 @@ void cAnalyzeGenotypeTreeStats::PrintAGLData(tArray<cAGLData> &agl){
   }
 }
 
-void cAnalyzeGenotypeTreeStats::AnalyzeBatchTree(tList<cAnalyzeGenotype> &genotype_list){
+void cAnalyzeTreeStats_CumulativeStemminess::AnalyzeBatchTree(tList<cAnalyzeGenotype> &genotype_list){
   cAnalyzeGenotype * genotype = NULL;
   tListIterator<cAnalyzeGenotype> batch_it(genotype_list);
   const int num_gens = genotype_list.GetSize();

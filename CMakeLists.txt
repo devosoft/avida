@@ -121,7 +121,8 @@ SET(ANALYZE_DIR ${PROJECT_SOURCE_DIR}/source/analyze)
 SET(ANALYZE_SOURCES
   ${ANALYZE_DIR}/cAnalyze.cc
   ${ANALYZE_DIR}/cAnalyzeGenotype.cc
-  ${ANALYZE_DIR}/cAnalyzeGenotypeTreeStats.cc
+  ${ANALYZE_DIR}/cAnalyzeTreeStats_CumulativeStemminess.cc
+  ${ANALYZE_DIR}/cAnalyzeTreeStats_Gamma.cc
   ${ANALYZE_DIR}/cAnalyzeJobQueue.cc
   ${ANALYZE_DIR}/cAnalyzeJobWorker.cc
   ${ANALYZE_DIR}/cMutationalNeighborhood.cc
@@ -566,6 +567,65 @@ IF(AVD_UNIT_TESTS)
   INSTALL_TARGETS(/work unit-tests)
 ENDIF(AVD_UNIT_TESTS)
 
+OPTION(AVD_TESTSUITES
+  "Enable the testsuites executable.  Running this target will test various low level functionality."
+  OFF
+)
+IF(AVD_TESTSUITES)
+  SET(TESTSUITES_DIR
+    "${PROJECT_SOURCE_DIR}/../extras/source"
+    CACHE PATH
+    "The path to testsuite files."
+  )
+  IF(EXISTS ${TESTSUITES_DIR})
+    INCLUDE_DIRECTORIES(${TESTSUITES_DIR}/tools)
+    SET(TESTSUITES_TOOL_SOURCES
+      ${TESTSUITES_DIR}/tools/cAnalyzeTestFixture.cpp
+      ${TESTSUITES_DIR}/tools/cConsoleCatcher.cpp
+      ${TESTSUITES_DIR}/tools/cMemTracker.cpp
+      ${TESTSUITES_DIR}/tools/cTestDriver.cpp
+      ${TESTSUITES_DIR}/tools/cTestLib.cpp
+      ${TESTSUITES_DIR}/tools/cTestSettings.cpp
+    )
+    SET(TESTSUITES_SOURCES
+      ${TESTSUITES_DIR}/testsuites/nAGenotype.cpp
+      ${TESTSUITES_DIR}/testsuites/nAnalyze.cpp
+      ${TESTSUITES_DIR}/testsuites/nAnalyzeGenotype.cpp
+      ${TESTSUITES_DIR}/testsuites/nAnalyzeTestFixture.cpp
+      ${TESTSUITES_DIR}/testsuites/nChangeList.cpp
+      ${TESTSUITES_DIR}/testsuites/nConsoleCatcher.cpp
+      ${TESTSUITES_DIR}/testsuites/nDataEntry.cpp
+      ${TESTSUITES_DIR}/testsuites/nDataFile.cpp
+      ${TESTSUITES_DIR}/testsuites/nFile.cpp
+      ${TESTSUITES_DIR}/testsuites/nFixedCoords.cpp
+      ${TESTSUITES_DIR}/testsuites/nInitFile.cpp
+      ${TESTSUITES_DIR}/testsuites/nMemTracker.cpp
+      ${TESTSUITES_DIR}/testsuites/nRandom.cpp
+      ${TESTSUITES_DIR}/testsuites/nString.cpp
+      ${TESTSUITES_DIR}/testsuites/nStringList.cpp
+      ${TESTSUITES_DIR}/testsuites/nTemplate.cpp
+      ${TESTSUITES_DIR}/testsuites/nTestDriver.cpp
+      ${TESTSUITES_DIR}/testsuites/nTestLib.cpp
+      ${TESTSUITES_DIR}/testsuites/nTestSettings.cpp
+      ${TESTSUITES_DIR}/testsuites/nTreeStats.cpp
+    )
+    SET(TESTSUITES_MAIN_SOURCES
+      ${TESTSUITES_DIR}/targets/TestAvida/TestAvida.cpp
+    )
+    ADD_EXECUTABLE(testsuites ${TESTSUITES_TOOL_SOURCES} ${TESTSUITES_SOURCES} ${TESTSUITES_MAIN_SOURCES})
+    INSTALL_TARGETS(/work testsuites)
+
+    SET(TESTSUITES_LIBS avidacore)  
+    IF(NOT MSVC)
+      LIST(APPEND TESTSUITES_LIBS pthread)
+    ENDIF(NOT MSVC)
+    IF(AVD_ENABLE_TCMALLOC)
+      LIST(APPEND TESTSUITES_LIBS tcmalloc)
+    ENDIF(AVD_ENABLE_TCMALLOC)  
+    TARGET_LINK_LIBRARIES(testsuites ${TESTSUITES_LIBS})
+
+  ENDIF(EXISTS ${TESTSUITES_DIR})
+ENDIF(AVD_TESTSUITES)
 
 # Default Configuration Files
 # - Installed into the work directory alongside selected targets
