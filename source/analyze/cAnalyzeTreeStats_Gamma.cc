@@ -53,8 +53,8 @@ void cAnalyzeTreeStats_Gamma::LoadGenotypes(tList<cAnalyzeGenotype> &genotype_li
     array_pos++;
   }
 }
-int cAnalyzeTreeStats_Gamma::HeapSortGenotypes(void){
-  return HeapSortAGPhyloDepth(m_gen_array);
+void cAnalyzeTreeStats_Gamma::QSortGenotypes(void){
+  QSortAGPhyloDepth(m_gen_array);
 }
 void cAnalyzeTreeStats_Gamma::CalculateInternodeDistances(void){
   m_g.Resize(1 + m_gen_array.GetSize());
@@ -118,14 +118,14 @@ double cAnalyzeTreeStats_Gamma::Gamma(void){
 
 void cAnalyzeTreeStats_Gamma::AnalyzeBatch(tList<cAnalyzeGenotype> &genotype_list){
   LoadGenotypes(genotype_list);
-  HeapSortGenotypes();
+  QSortGenotypes();
   CalculateInternodeDistances();
   CalculateGamma();
 }
 
 
 
-// Comparison functions for heapsort.
+// Comparison functions for qsort.
 int CompareAGPhyloDepth(const void * _a, const void * _b){
   cAnalyzeGenotype a(**((cAnalyzeGenotype**)_a));
   cAnalyzeGenotype b(**((cAnalyzeGenotype**)_b));
@@ -141,8 +141,8 @@ int CompareAGUpdateBorn(const void * _a, const void * _b){
   return 0;
 }
 
-// Heapsort functions.
-int HeapSortAGPhyloDepth(tArray<cAnalyzeGenotype *> &gen_array){
+// Quicksort functions.
+void QSortAGPhyloDepth(tArray<cAnalyzeGenotype *> &gen_array){
   const int size = gen_array.GetSize();
   cAnalyzeGenotype *c_gen_array[size];
   
@@ -151,18 +151,15 @@ int HeapSortAGPhyloDepth(tArray<cAnalyzeGenotype *> &gen_array){
     c_gen_array[i] = (gen_array[i]);
   }
   
-  /* Heapsort c_gen_array. */
-  int result = heapsort(c_gen_array, size, sizeof(cAnalyzeGenotype*), CompareAGPhyloDepth);
+  /* Quicksort c_gen_array. */
+  qsort(c_gen_array, size, sizeof(cAnalyzeGenotype*), CompareAGPhyloDepth);
   
-  /* If heapsort returned successfully, copy sorted array from c_gen_array into gen_array. */
-  if(result == 0){
-    for(int i = 0; i < size; i++){
-      gen_array[i] = (c_gen_array[i]);
-    }
+  /* If qsort returned successfully, copy sorted array from c_gen_array into gen_array. */
+  for(int i = 0; i < size; i++){
+    gen_array[i] = (c_gen_array[i]);
   }
-  return result;
 }  
-int HeapSortAGUpdateBorn(tArray<cAnalyzeGenotype *> &gen_array){
+void QSortAGUpdateBorn(tArray<cAnalyzeGenotype *> &gen_array){
   const int size = gen_array.GetSize();
   cAnalyzeGenotype *c_gen_array[size];
   
@@ -171,14 +168,11 @@ int HeapSortAGUpdateBorn(tArray<cAnalyzeGenotype *> &gen_array){
     c_gen_array[i] = (gen_array[i]);
   }
   
-  /* Heapsort c_gen_array. */
-  int result = heapsort(c_gen_array, size, sizeof(cAnalyzeGenotype*), CompareAGUpdateBorn);
+  /* Quicksort c_gen_array. */
+  qsort(c_gen_array, size, sizeof(cAnalyzeGenotype*), CompareAGUpdateBorn);
   
-  /* If heapsort returned successfully, copy sorted array from c_gen_array into gen_array. */
-  if(result == 0){
-    for(int i = 0; i < size; i++){
-      gen_array[i] = (c_gen_array[i]);
-    }
+  /* If qsort returned successfully, copy sorted array from c_gen_array into gen_array. */
+  for(int i = 0; i < size; i++){
+    gen_array[i] = (c_gen_array[i]);
   }
-  return result;
 }  

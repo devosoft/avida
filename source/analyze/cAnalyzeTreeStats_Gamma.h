@@ -44,7 +44,7 @@ public:
   cAnalyzeTreeStats_Gamma(cWorld* world);
   
   void LoadGenotypes(tList<cAnalyzeGenotype> &genotype_list);
-  int HeapSortGenotypes(void);
+  void QSortGenotypes(void);
   void CalculateInternodeDistances(void);
   void FixupInternodeDistances(void);
   void CalculateGamma(void);
@@ -55,11 +55,11 @@ public:
   void AnalyzeBatch(tList<cAnalyzeGenotype> &genotype_list);
 };
 
-// Comparison functions for heapsort.
+// Comparison functions for qsort.
 int CompareAGPhyloDepth(const void * _a, const void * _b);
 int CompareAGUpdateBorn(const void * _a, const void * _b);
-// Heapsort functions.
-int HeapSortAGPhyloDepth(tArray<cAnalyzeGenotype *> &gen_array);
-int HeapSortAGUpdateBorn(tArray<cAnalyzeGenotype *> &gen_array);
+// Quicksort functions.
+void QSortAGPhyloDepth(tArray<cAnalyzeGenotype *> &gen_array);
+void QSortAGUpdateBorn(tArray<cAnalyzeGenotype *> &gen_array);
 
 #endif
