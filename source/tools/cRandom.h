@@ -36,7 +36,9 @@ class cRandom
 #if USE_tMemTrack
   tMemTrack<cRandom> mt;
 #endif
-protected:
+// FIXME@kaben : must switch back to protected. 3 Nov 2007.
+public:
+//protected:
   // Internal members
   int seed;
   int original_seed;
