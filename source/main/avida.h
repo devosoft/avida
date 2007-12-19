@@ -28,13 +28,14 @@
 
 class cAvidaConfig;
 class cString;
-
+class cStringList;
 
 namespace Avida
 {
   cString GetVersion();
   void PrintVersionBanner();
   
+  void ProcessArgs(cStringList &argv, cAvidaConfig* cfg);
   void ProcessCmdLineArgs(int argc, char* argv[], cAvidaConfig* cfg);
 
   //! This function properly shuts down the Avida program.

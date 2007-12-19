@@ -29,6 +29,7 @@
 #include "cAvidaConfig.h"
 #include "cDriverManager.h"
 #include "cString.h"
+#include "cStringIterator.h"
 #include "tDictionary.h"
 
 
@@ -119,14 +120,19 @@ void PrintVersionBanner()
   cout << "----------------------------------------------------------------------" << endl << endl;
 }
 
-
-void ProcessCmdLineArgs(int argc, char* argv[], cAvidaConfig* cfg)
+void ProcessArgs(cStringList &argv, cAvidaConfig* cfg)
 {
+  int argc = argv.GetSize();
   int arg_num = 1;              // Argument number being looked at.
   
   // Load all of the args into string objects for ease of access.
   cString* args = new cString[argc];
-  for (int i = 0; i < argc; i++) args[i] = argv[i];
+  //for (int i = 0; i < argc; i++) args[i] = argv[i];
+  cStringIterator list_it(argv);
+  for (int i = 0; (i < argc) && (list_it.AtEnd() == false); i++) {
+    list_it.Next();
+    args[i] = list_it.Get();
+  }
   
   cString config_filename = "avida.cfg";
   bool crash_if_not_found = false;
@@ -275,6 +281,14 @@ void ProcessCmdLineArgs(int argc, char* argv[], cAvidaConfig* cfg)
   
 }
 
+void ProcessCmdLineArgs(int argc, char* argv[], cAvidaConfig* cfg)
+{
+  cStringList sl;
+  for(int i=0; i<argc; i++){
+    sl.PushRear(argv[i]);
+  }
+  ProcessArgs(sl, cfg);
+}
 
 void Exit(int exit_code)
 {
