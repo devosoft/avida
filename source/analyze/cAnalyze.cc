@@ -7737,7 +7737,7 @@ void cAnalyze::CommandInteractive(cString cur_string)
 
 
 /*
- kgn@FIXME
+ FIXME@kgn
  Must categorize COMPETE command.
  */
 /* Arguments to COMPETE: */
@@ -7805,7 +7805,7 @@ void cAnalyze::BatchCompete(cString cur_string)
   cCPUTestInfo test_info;
   
   /*
-   kgn@FIXME
+   FIXME@kgn
    This should be settable by an optional argument.
    */
   test_info.UseRandomInputs(true); 
@@ -7816,13 +7816,13 @@ void cAnalyze::BatchCompete(cString cur_string)
     genotype->Recalculate(m_world->GetDefaultContext(), &test_info, NULL);
     if(genotype->GetViable()){
       /*
-       kgn@FIXME
+       FIXME@kgn
        - HACK : multiplication by 1000 because merits less than 1 are truncated
        to zero.
        */
       fitness_array[array_pos] = genotype->GetFitness() * 1000.;
       /*
-       kgn@FIXME
+       FIXME@kgn
        - Need to note somewhere that we are using first descendent of the
        parent, if the parent is viable, so that genome of first descendent may
        differ from that of parent.
