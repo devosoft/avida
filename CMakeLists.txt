@@ -572,21 +572,10 @@ OPTION(AVD_TESTSUITES
   OFF
 )
 IF(AVD_TESTSUITES)
-  SET(TESTSUITES_DIR
-    "${PROJECT_SOURCE_DIR}/../extras/source"
-    CACHE PATH
+  SET(TESTSUITES_DIR "${PROJECT_SOURCE_DIR}/../extras/source" CACHE PATH
     "The path to testsuite files."
   )
   IF(EXISTS ${TESTSUITES_DIR})
-    INCLUDE_DIRECTORIES(${TESTSUITES_DIR}/tools)
-    SET(TESTSUITES_TOOL_SOURCES
-      ${TESTSUITES_DIR}/tools/cAnalyzeTestFixture.cpp
-      ${TESTSUITES_DIR}/tools/cConsoleCatcher.cpp
-      ${TESTSUITES_DIR}/tools/cMemTracker.cpp
-      ${TESTSUITES_DIR}/tools/cTestDriver.cpp
-      ${TESTSUITES_DIR}/tools/cTestLib.cpp
-      ${TESTSUITES_DIR}/tools/cTestSettings.cpp
-    )
     SET(TESTSUITES_SOURCES
       ${TESTSUITES_DIR}/testsuites/nAGenotype.cpp
       ${TESTSUITES_DIR}/testsuites/nAnalyze.cpp
@@ -609,9 +598,19 @@ IF(AVD_TESTSUITES)
       ${TESTSUITES_DIR}/testsuites/nTestSettings.cpp
       ${TESTSUITES_DIR}/testsuites/nTreeStats.cpp
     )
+    SET(TESTSUITES_TOOL_SOURCES
+      ${TESTSUITES_DIR}/tools/cAnalyzeTestFixture.cpp
+      ${TESTSUITES_DIR}/tools/cConsoleCatcher.cpp
+      ${TESTSUITES_DIR}/tools/cMemTracker.cpp
+      ${TESTSUITES_DIR}/tools/cTestDriver.cpp
+      ${TESTSUITES_DIR}/tools/cTestLib.cpp
+      ${TESTSUITES_DIR}/tools/cTestSettings.cpp
+    )
     SET(TESTSUITES_MAIN_SOURCES
       ${TESTSUITES_DIR}/targets/TestAvida/TestAvida.cpp
     )
+    INCLUDE_DIRECTORIES(${TESTSUITES_DIR}/tools)
+
     ADD_EXECUTABLE(testsuites ${TESTSUITES_TOOL_SOURCES} ${TESTSUITES_SOURCES} ${TESTSUITES_MAIN_SOURCES})
     INSTALL_TARGETS(/work testsuites)
 
