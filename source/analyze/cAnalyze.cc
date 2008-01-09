@@ -3646,7 +3646,7 @@ void cAnalyze::CommandPrintResourceFitnessMap(cString cur_string)
   ofstream& fp = m_world->GetDataFileOFStream(filename);
 
   int f1=-1, f2=-1, rangecount[2]={0,0}, threshcount[2]={0,0};
-  double f1Max, f1Min, f2Max, f2Min;
+  double f1Max = 0.0, f1Min = 0.0, f2Max = 0.0, f2Min = 0.0;
   
   // first need to find out how many thresh and range resources there are on each function
   // NOTE! this only works for 2-obj. problems right now!
@@ -3700,7 +3700,7 @@ void cAnalyze::CommandPrintResourceFitnessMap(cString cur_string)
   
    // figure out what index into resources that we loaded goes with update we want
   int index=-1;
-  for (int i=0; i<resources.size(); i++)
+  for (unsigned int i = 0; i < resources.size(); i++)
   {
 	  if (resources.at(i).first == update)
 	  {
@@ -3716,11 +3716,10 @@ void cAnalyze::CommandPrintResourceFitnessMap(cString cur_string)
   {
   	  // first have to find reaction that matches this resource, so compare names
 	  cString name = m_world->GetEnvironment().GetResourceLib().GetResource(i)->GetName();
-	  cReaction* react;
+	  cReaction* react = NULL;
 	  for (int j=0; j<m_world->GetEnvironment().GetReactionLib().GetSize(); j++)
 	  {
-		  if (m_world->GetEnvironment().GetReactionLib().GetReaction(j)->GetProcesses().GetPos(0)->GetResource()->GetName()
-			  == name)
+		  if (m_world->GetEnvironment().GetReactionLib().GetReaction(j)->GetProcesses().GetPos(0)->GetResource()->GetName() == name)
 		  {
 			  react = m_world->GetEnvironment().GetReactionLib().GetReaction(j);
 			  j = m_world->GetEnvironment().GetReactionLib().GetSize();
@@ -8339,6 +8338,7 @@ void cAnalyze::SetupGenotypeDataList()
   //   FLEX_COMPARE_MAX2   = 5  -- Same as FLEX_COMPARE_MAX, and 0 indicates trait is off.
   //   FLEX_COMPARE_MIN2   = 6  -- Same as FLEX_COMPARE_MIN, BUT 0 still indicates off.
   
+  ADD_GDATA(const cString&, "name", "Genotype Name",                 GetName,           SetName,       0, 0, 0);
   ADD_GDATA(bool,   "viable",       "Is Viable (0/1)",               GetViable,         SetViable,     5, 0, 0);
   ADD_GDATA(int,    "id",           "Genotype ID",                   GetID,             SetID,         0, 0, 0);
   ADD_GDATA(const cString &, "tag", "Genotype Tag",                  GetTag,            SetTag,        0, "(none)","");

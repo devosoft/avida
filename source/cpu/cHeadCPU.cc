@@ -25,11 +25,6 @@
 
 #include "cHeadCPU.h"
 
-#include "cCodeLabel.h"
-#include "cGenome.h"
-#include "cInstruction.h"
-#include "cStringUtil.h"
-
 #include <cassert>
 
 

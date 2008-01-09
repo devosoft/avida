@@ -74,7 +74,7 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   
   // The following if blocks are grouped based on class of task.  Chaining too
   // many if block causes problems block nesting depth in Visual Studio.net 2003.
-
+  
   if (name == "echo")      NewTask(name, "Echo", &cTaskLib::Task_Echo);
   else if (name == "add")  NewTask(name, "Add",  &cTaskLib::Task_Add);
   else if (name == "sub")  NewTask(name, "Sub",  &cTaskLib::Task_Sub);
@@ -341,16 +341,16 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
     Load_MatchStr(name, info, envreqs, errors);
   else if (name == "match_number")
     Load_MatchNumber(name, info, envreqs, errors);
-
+  
   if (name == "sort_inputs")
     Load_SortInputs(name, info, envreqs, errors);
   else if (name == "fibonacci_seq")
     Load_FibonacciSequence(name, info, envreqs, errors);
-
-   // Optimization Tasks
+  
+  // Optimization Tasks
   if (name == "optimize")
     Load_Optimize(name, info, envreqs, errors);
-
+  
   if (name == "mult")
     Load_Mult(name, info, envreqs, errors);
   else if (name == "div")
@@ -367,14 +367,14 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
     Load_Sine(name, info, envreqs, errors);
   else if (name == "cosine")
     Load_Cosine(name, info, envreqs, errors);
-
+  
   
   // Communication Tasks
   if (name == "comm_echo")
     NewTask(name, "Echo of Neighbor's Input", &cTaskLib::Task_CommEcho, REQ_NEIGHBOR_INPUT);
   else if (name == "comm_not")
     NewTask(name, "Not of Neighbor's Input", &cTaskLib::Task_CommNot, REQ_NEIGHBOR_INPUT);
-
+  
   // Network Tasks
   if (name == "net_send")
     NewTask(name, "Successfully Sent Network Message", &cTaskLib::Task_NetSend);
@@ -442,7 +442,7 @@ void cTaskLib::SetupTests(cTaskContext& ctx) const
     for (int i = 0; i < 3; i++)  logic_pos += (test_inputs[i] & 1) << i;
     
     if ( logic_out[logic_pos] != -1 &&
-         logic_out[logic_pos] != (test_output & 1) ) {
+        logic_out[logic_pos] != (test_output & 1) ) {
       func_OK = false;
       break;
     }
@@ -1848,18 +1848,18 @@ double cTaskLib::Task_MatchStr(cTaskContext& ctx) const
 {
   tBuffer<int> temp_buf(ctx.GetOutputBuffer());
   //  if (temp_buf[0] != 357913941) return 0;
-
+  
   //  temp_buf.Pop(); // pop the signal value off of the buffer
-
+  
   const cString& string_to_match = ctx.GetTaskEntry()->GetArguments().GetString(0);
   int string_index;
   int num_matched = 0;
   int test_output;
   int max_num_matched = 0;
-
+  
   if (temp_buf.GetNumStored() > 0) {
     test_output = temp_buf[0];
-  
+    
     for (int j = 0; j < string_to_match.GetSize(); j++) {  
       string_index = string_to_match.GetSize() - j - 1; // start with last char in string
       int k = 1 << j;
@@ -1868,7 +1868,7 @@ double cTaskLib::Task_MatchStr(cTaskContext& ctx) const
     }
     max_num_matched = num_matched;
   }
-
+  
   bool used_received = false;
   if (ctx.GetReceivedMessages()) {
     tBuffer<int> received(*(ctx.GetReceivedMessages()));
@@ -1889,7 +1889,7 @@ double cTaskLib::Task_MatchStr(cTaskContext& ctx) const
       }
     }
   }
-
+  
   double bonus = 0.0;
   // return value between 0 & 1 representing the percentage of string that was matched
   double base_bonus = static_cast<double>(max_num_matched) * 2.0 / static_cast<double>(string_to_match.GetSize()) - 1;
@@ -1923,16 +1923,16 @@ double cTaskLib::Task_MatchNumber(cTaskContext& ctx) const
 {
   double quality = 0.0;
   const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
-
+  
   long long diff = ::llabs((long long)args.GetInt(0) - ctx.GetOutputBuffer()[0]);
   int threshold = args.GetInt(1);
-    
+  
   if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
-         // If within threshold range, quality decays based on absolute difference
+    // If within threshold range, quality decays based on absolute difference
     double halflife = -1.0 * fabs(args.GetDouble(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
-
+  
   return quality;
 }
 
@@ -1966,7 +1966,7 @@ double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
   
   // if less than half, can't possibly reach threshold
   if (stored <= (size / 2)) return 0.0;
-
+  
   tHashTable<int, int> valmap;
   int score = 0;
   int maxscore = 0;
@@ -1976,7 +1976,7 @@ double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
   
   int span_start = -1;
   int span_end = stored;
-
+  
   if (args.GetInt(2)) { // Contiguous
     // scan for the largest contiguous span
     // - in the event of a tie, keep the first discovered
@@ -1990,7 +1990,7 @@ double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
         }
       }
     }
-
+    
     // no span was found
     if (span_start == -1) return 0.0;    
   } else { // Scattered
@@ -2011,7 +2011,7 @@ double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
   tArray<int> sorted(size);
   const bool ascending = (args.GetInt(1) >= 0);
   int count = 1;
-
+  
   // store first value
   valmap.SetValue(output[span_start], span_start);
   sorted[0] = output[span_start];
@@ -2053,7 +2053,7 @@ double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
   }
   
   double quality = 0.0;
-
+  
   // score of 50% expected with random output
   // - only grant quality when less than 50% maximum moves are required
   if (static_cast<double>(score) / static_cast<double>(maxscore) < 0.5) {
@@ -2068,13 +2068,13 @@ double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
 
 
 class cFibSeqState : public cTaskState
-{
-public:
-  int seq[2];
-  int count;
-  
-  cFibSeqState() : count(0) { seq[0] = 1; seq[1] = 0; }
-};
+  {
+  public:
+    int seq[2];
+    int count;
+    
+    cFibSeqState() : count(0) { seq[0] = 1; seq[1] = 0; }
+  };
 
 void cTaskLib::Load_FibonacciSequence(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
 {
@@ -2086,7 +2086,7 @@ void cTaskLib::Load_FibonacciSequence(const cString& name, const cString& argstr
   schema.AddEntry("penalty", 0, 0.0);
   
   cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
-
+  
   if (args) NewTask(name, "Fibonacci Sequence", &cTaskLib::Task_FibonacciSequence, 0, args);
 }
 
@@ -2098,7 +2098,7 @@ double cTaskLib::Task_FibonacciSequence(cTaskContext& ctx) const
     state = new cFibSeqState();
     ctx.AddTaskState(state);
   }
-
+  
   const int next = state->seq[0] + state->seq[1];
   
   // If output matches next in sequence
@@ -2119,7 +2119,7 @@ double cTaskLib::Task_FibonacciSequence(cTaskContext& ctx) const
 void cTaskLib::Load_Optimize(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
 {
   cArgSchema schema;
-
+  
   // Integer Arguments
   schema.AddEntry("function", 0, cArgSchema::SCHEMA_INT);
   schema.AddEntry("binary", 1, 0);
@@ -2131,7 +2131,7 @@ void cTaskLib::Load_Optimize(const cString& name, const cString& argstr, cEnvReq
   schema.AddEntry("minFx", 2, 0.0);
   schema.AddEntry("thresh", 3, -1.0);
   schema.AddEntry("threshMax", 4, -1.0);
-
+  
   cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
   if (args) 
   {
@@ -2145,20 +2145,20 @@ void cTaskLib::Load_Optimize(const cString& name, const cString& argstr, cEnvReq
       // to the appropriate defaults for this function
       switch (args->GetInt(0))
       {
-      case 1:
-        envreqs.SetMinOutputs(1);
-		break;
-      case 2:
-        envreqs.SetMinOutputs(2);
-		break;
-      case 3:
-        envreqs.SetMinOutputs(2);
-		break;
-	  default:
-		  envreqs.SetMinOutputs(2);
+        case 1:
+          envreqs.SetMinOutputs(1);
+          break;
+        case 2:
+          envreqs.SetMinOutputs(2);
+          break;
+        case 3:
+          envreqs.SetMinOutputs(2);
+          break;
+        default:
+          envreqs.SetMinOutputs(2);
       };
     }
-
+    
     NewTask(name, "Optimize", &cTaskLib::Task_Optimize, 0, args);
   }
 }
@@ -2167,217 +2167,217 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
 {
   // if the org hasn't output yet enough numbers, just return without completing any tasks
   if (ctx.GetOutputBuffer().GetNumStored() < ctx.GetOutputBuffer().GetCapacity()) return 0;
-
+  
   double quality = 0.0;
   const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
-
+  
   // which function are we currently checking?
   const int function = args.GetInt(0);
-
-   // get however many variables need, turn them into doubles between 0 and 1
-   tArray<double> vars;
-   vars.Resize(args.GetInt(3));
-
-   double Fx = 0.0;
-
-   // some of the problems don't need double variables but use the bit string as a bit string
-   if (function==18)
-   {
-     int tot=0;
-     for (int i=0; i<30; i++)
-       tot+= ctx.GetOutputBuffer()[i];
-     Fx = 1+tot;
-   }
-   else if (function==19)
-   {
-     tArray<double> tempVars;
-     tempVars.Resize(args.GetInt(3));
-     for (int i=0; i<args.GetInt(3); i++)
-       tempVars[i]=0;
-     
-     for (int i=0; i<30; i++)
-       tempVars[0]+= ctx.GetOutputBuffer()[i];
-
-     int len = args.GetInt(2);
-     for (int i = len - 1; i >= 0; i--) 
-     {
-	for (int j=1; j<args.GetInt(3); j++)
-	{
-	  tempVars[j-1] += ctx.GetOutputBuffer()[30+i + len*(args.GetInt(3)-j-1)];
-	}
-     }
-
-     int Gx=0;
-     for (int i=1; i<args.GetInt(3); i++)
-     {
-       if (tempVars[i]==5)
-	  Gx += 1;
-       else 
-	 Gx += tempVars[i]+2;
-     }
-     Fx = Gx*(1/(1+tempVars[0]));
-   }
-   else 
-   {
-     if (args.GetInt(1)) 
-     {
-        int len = args.GetInt(2);
-        double base_pow = args.GetDouble(0);
-
-	tArray<double> tempVars;
-	tempVars.Resize(args.GetInt(3));
-	for (int i=0; i<args.GetInt(3); i++)
-		tempVars[i] = 0;
+  
+  // get however many variables need, turn them into doubles between 0 and 1
+  tArray<double> vars;
+  vars.Resize(args.GetInt(3));
+  
+  double Fx = 0.0;
+  
+  // some of the problems don't need double variables but use the bit string as a bit string
+  if (function==18)
+  {
+    int tot=0;
+    for (int i=0; i<30; i++)
+      tot+= ctx.GetOutputBuffer()[i];
+    Fx = 1+tot;
+  }
+  else if (function==19)
+  {
+    tArray<double> tempVars;
+    tempVars.Resize(args.GetInt(3));
+    for (int i=0; i<args.GetInt(3); i++)
+      tempVars[i]=0;
     
-	double tot = 0;
-	for (int i = len - 1; i >= 0; i--) 
-	{
-		for (int j=0; j<args.GetInt(3); j++)
-		{
-			tempVars[j] += ctx.GetOutputBuffer()[i + len*(args.GetInt(3)-j-1)] * pow(base_pow, (len - 1) - i);
-		}
-		tot += pow(base_pow, double(i));
-	}
-	for (int i=0; i<args.GetInt(3); i++)
-		vars[i] = tempVars[i] / tot;
-	//	cout << "x: " << vars[0] << " ";
+    for (int i=0; i<30; i++)
+      tempVars[0]+= ctx.GetOutputBuffer()[i];
+    
+    int len = args.GetInt(2);
+    for (int i = len - 1; i >= 0; i--) 
+    {
+      for (int j=1; j<args.GetInt(3); j++)
+      {
+        tempVars[j-1] += ctx.GetOutputBuffer()[30+i + len*(args.GetInt(3)-j-1)];
+      }
+    }
+    
+    int Gx = 0;
+    for (int i = 1; i < args.GetInt(3); i++)
+    {
+      if (tempVars[i] == 5)
+        Gx += 1;
+      else 
+        Gx += int(tempVars[i]) + 2;
+    }
+    Fx = Gx * (1 / (1 + tempVars[0]));
+  }
+  else 
+  {
+    if (args.GetInt(1)) 
+    {
+      int len = args.GetInt(2);
+      double base_pow = args.GetDouble(0);
+      
+      tArray<double> tempVars;
+      tempVars.Resize(args.GetInt(3));
+      for (int i=0; i<args.GetInt(3); i++)
+        tempVars[i] = 0;
+      
+      double tot = 0;
+      for (int i = len - 1; i >= 0; i--) 
+      {
+        for (int j=0; j<args.GetInt(3); j++)
+        {
+          tempVars[j] += ctx.GetOutputBuffer()[i + len*(args.GetInt(3)-j-1)] * pow(base_pow, (len - 1) - i);
+        }
+        tot += pow(base_pow, double(i));
+      }
+      for (int i=0; i<args.GetInt(3); i++)
+        vars[i] = tempVars[i] / tot;
+      //	cout << "x: " << vars[0] << " ";
     } 
     else 
     {
-	  for (int j=0; j<args.GetInt(3); j++)
-		  vars[j] = double(ctx.GetOutputBuffer()[j]) / 0xffffffff;
+      for (int j=0; j<args.GetInt(3); j++)
+        vars[j] = double(ctx.GetOutputBuffer()[j]) / 0xffffffff;
     }
-  
+    
     for (int j=0; j<args.GetInt(3); j++)
     {
-	  if (vars[j] < 0)
-		  vars[j] = 0;
-	  else if (vars[j] > 1)
-		  vars[j] = 1;
+      if (vars[j] < 0)
+        vars[j] = 0;
+      else if (vars[j] > 1)
+        vars[j] = 1;
     }
-
+    
     switch(function) {
-    case 1:
-	  Fx = vars[0];		// F1
-	  //	  cout << "Fx1: " << Fx << " ";
-	  break;
-
-    case 2:
-      Fx = (1.0 + vars[1]) * (1.0 - sqrt(vars[0] / (1.0 + vars[1])));   // F2
-      break;
-
-    case 3:
-      Fx = (1.0 + vars[1]) * (1.0 - pow(vars[0] / (1.0 + vars[1]), 2.0));  // F3
-      break;
-
-    case 4:
-      Fx = (1.0 + vars[1]) * (1.0 - sqrt(vars[0] / (1.0 + vars[1])) - (vars[0] / (1.0 + vars[1])) * sin(3.14159 * vars[0] * 10.0));
-	  break;
-
-    case 5:
-      vars[0] = vars[0] * -2.0;
-      Fx = vars[0]*vars[0] + vars[1]*vars[1];
-      break;
-
-    case 6:
-      vars[0] = vars[0] * -2.0;
-      Fx = (vars[0] + 2.0)*(vars[0] + 2.0) + vars[1]*vars[1];
-      break;
-
-    case 7:
-      vars[0] = vars[0] * 4.0;
-      Fx = sqrt(vars[0]) + vars[1];
-      break;
-
-    case 8:
-      vars[0] = vars[0] * 4.0;
-      Fx = sqrt(4.0 - vars[0]) + vars[1];
-      break;
-
-    case 9:
-    {
-      double sum = 0;
-      //      cout << "9x: " << vars[0] << " ";
-      for (int i=1; i<args.GetInt(3); i++)
-		  sum += vars[i]/double(args.GetInt(3)-1);
-      double Gx = 1+9*sum;
-      Fx = Gx * (1.0 - sqrt(vars[0]/Gx));
-      break;
+      case 1:
+        Fx = vars[0];		// F1
+        //	  cout << "Fx1: " << Fx << " ";
+        break;
+        
+      case 2:
+        Fx = (1.0 + vars[1]) * (1.0 - sqrt(vars[0] / (1.0 + vars[1])));   // F2
+        break;
+        
+      case 3:
+        Fx = (1.0 + vars[1]) * (1.0 - pow(vars[0] / (1.0 + vars[1]), 2.0));  // F3
+        break;
+        
+      case 4:
+        Fx = (1.0 + vars[1]) * (1.0 - sqrt(vars[0] / (1.0 + vars[1])) - (vars[0] / (1.0 + vars[1])) * sin(3.14159 * vars[0] * 10.0));
+        break;
+        
+      case 5:
+        vars[0] = vars[0] * -2.0;
+        Fx = vars[0]*vars[0] + vars[1]*vars[1];
+        break;
+        
+      case 6:
+        vars[0] = vars[0] * -2.0;
+        Fx = (vars[0] + 2.0)*(vars[0] + 2.0) + vars[1]*vars[1];
+        break;
+        
+      case 7:
+        vars[0] = vars[0] * 4.0;
+        Fx = sqrt(vars[0]) + vars[1];
+        break;
+        
+      case 8:
+        vars[0] = vars[0] * 4.0;
+        Fx = sqrt(4.0 - vars[0]) + vars[1];
+        break;
+        
+      case 9:
+      {
+        double sum = 0;
+        //      cout << "9x: " << vars[0] << " ";
+        for (int i=1; i<args.GetInt(3); i++)
+          sum += vars[i]/double(args.GetInt(3)-1);
+        double Gx = 1+9*sum;
+        Fx = Gx * (1.0 - sqrt(vars[0]/Gx));
+        break;
+      }
+        
+      case 10:
+      {
+        double sum = 0;
+        for (int i=1; i<args.GetInt(3); i++)
+          sum += vars[i]/double(args.GetInt(3)-1);
+        double Gx = 1+9*sum;
+        Fx = Gx * (1.0 - pow(vars[0]/Gx, 2.0));
+        break;
+      }
+        
+      case 11:
+      {
+        double sum = 0;
+        for (int i=1; i<args.GetInt(3); i++)
+          sum += vars[i]/double(args.GetInt(3)-1);
+        double Gx = 1+9*sum;
+        Fx = Gx * (1 - sqrt(vars[0]/Gx) - (vars[0]/Gx)*(sin(3.14159*vars[0]*10)));
+        break;
+      }
+        
+      case 12:
+      {
+        vars[0] = vars[0]*.9+.1;
+        Fx = vars[0];
+        break;
+      }
+        
+      case 13:
+      {
+        vars[0] = vars[0]*.9+.1;
+        vars[1] = vars[1]*5;
+        Fx = (1+vars[1])/vars[0];
+        break;
+      }
+        
+      case 14:
+      {
+        vars[0] = vars[0]*6-3;
+        vars[1] = vars[1]*6-3;
+        Fx = .5*(vars[0]*vars[0]+vars[1]*vars[1]) + sin(vars[0]*vars[0]+vars[1]*vars[1]);
+        break;
+      }
+        
+      case 15:
+      {
+        vars[0] = vars[0]*6-3;
+        vars[1] = vars[1]*6-3;
+        Fx = pow((3*vars[0]-2*vars[1]+4),2)/8.0 + pow((vars[0]-vars[1]+1),2)/27.0 + 15;
+        break;
+      }
+        
+      case 16:
+      {
+        vars[0] = vars[0]*6-3;
+        vars[1] = vars[1]*6-3;
+        Fx = 1.0/(vars[0]*vars[0]+vars[1]*vars[1]+1) - 1.1*exp(-vars[0]*vars[0]-vars[1]*vars[1]);
+        break;
+      }
+        
+      case 17:
+      {
+        double sum = 0;
+        for (int i=1; i<args.GetInt(3); i++)
+          sum += (pow((vars[i]*6-3),2)-10*cos(4*3.14159*(vars[i]*6-3)))/10.0;
+        double Gx = 10+sum;
+        Fx = Gx * (1.0 - sqrt(vars[0]/Gx));
+        break;
+      }
+        
+      default:
+        quality = .001;
     }
-
-    case 10:
-    {
-      double sum = 0;
-      for (int i=1; i<args.GetInt(3); i++)
-		  sum += vars[i]/double(args.GetInt(3)-1);
-      double Gx = 1+9*sum;
-      Fx = Gx * (1.0 - pow(vars[0]/Gx, 2.0));
-      break;
-    }
-
-    case 11:
-    {
-      double sum = 0;
-      for (int i=1; i<args.GetInt(3); i++)
-	  sum += vars[i]/double(args.GetInt(3)-1);
-      double Gx = 1+9*sum;
-      Fx = Gx * (1 - sqrt(vars[0]/Gx) - (vars[0]/Gx)*(sin(3.14159*vars[0]*10)));
-      break;
-    }
-
-    case 12:
-    {
-      vars[0] = vars[0]*.9+.1;
-	Fx = vars[0];
-	break;
-    }
-
-    case 13:
-    {
-      vars[0] = vars[0]*.9+.1;
-      vars[1] = vars[1]*5;
-      Fx = (1+vars[1])/vars[0];
-      break;
-    }
-
-  case 14:
-    {
-      vars[0] = vars[0]*6-3;
-      vars[1] = vars[1]*6-3;
-      Fx = .5*(vars[0]*vars[0]+vars[1]*vars[1]) + sin(vars[0]*vars[0]+vars[1]*vars[1]);
-      break;
-    }
-
-  case 15:
-    {
-      vars[0] = vars[0]*6-3;
-      vars[1] = vars[1]*6-3;
-      Fx = pow((3*vars[0]-2*vars[1]+4),2)/8.0 + pow((vars[0]-vars[1]+1),2)/27.0 + 15;
-      break;
-    }
-
-  case 16:
-    {
-      vars[0] = vars[0]*6-3;
-      vars[1] = vars[1]*6-3;
-      Fx = 1.0/(vars[0]*vars[0]+vars[1]*vars[1]+1) - 1.1*exp(-vars[0]*vars[0]-vars[1]*vars[1]);
-      break;
-    }
-
-    case 17:
-    {
-      double sum = 0;
-      for (int i=1; i<args.GetInt(3); i++)
-	sum += (pow((vars[i]*6-3),2)-10*cos(4*3.14159*(vars[i]*6-3)))/10.0;
-      double Gx = 10+sum;
-      Fx = Gx * (1.0 - sqrt(vars[0]/Gx));
-      break;
-    }
-
-    default:
-      quality = .001;
-    }
-   }
+  }
   ctx.SetTaskValue(Fx);
   if (args.GetDouble(3) < 0.0)
   {
@@ -2393,34 +2393,34 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
     {
       if (Fx <= (args.GetDouble(1) - args.GetDouble(2))*args.GetDouble(3) + args.GetDouble(2))
       {
-		  quality = 1.0;
+        quality = 1.0;
       }
       else
       {
-		  quality = 0.0;
+        quality = 0.0;
       }
     }
     else
     {
-		if ( (Fx >= (args.GetDouble(1) - args.GetDouble(2))*args.GetDouble(3) + args.GetDouble(2))
-			&& (Fx <= (args.GetDouble(1) - args.GetDouble(2))*args.GetDouble(4) + args.GetDouble(2)) )
-			quality = 1.0;
-		else
-			quality = 0.0;
+      if ( (Fx >= (args.GetDouble(1) - args.GetDouble(2))*args.GetDouble(3) + args.GetDouble(2))
+          && (Fx <= (args.GetDouble(1) - args.GetDouble(2))*args.GetDouble(4) + args.GetDouble(2)) )
+        quality = 1.0;
+      else
+        quality = 0.0;
     }
   }
-
+  
   // because want org to only have 1 shot to use outputs for all functions at once, even if they
   // output numbers that give a quality of 0 on a function, still want to mark it as completed
   // so give it a very low quality instead of 0 (if using limited resources they still will get
   // no reward because set the minimum consumed to max*.001, meaning even if they get the max
   // possible fraction they'll be below minimum allowed consumed and will consume nothing
-
+  
   if (quality > 1)
     cout << "\n\nquality > 1!  quality= " << quality << "  Fx= " << Fx << endl;
   
   if (quality < 0.001) return .001;
-
+  
   return quality;
 }
 
@@ -2441,13 +2441,13 @@ double cTaskLib::Task_Mult(cTaskContext& ctx) const
 {
   double quality = 0.0;
   const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
-
+  
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const long long test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
   
   long long diff = ((long long)INT_MAX + 1) * 2;
-
+  
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
       if (i == j) continue;
@@ -2459,7 +2459,7 @@ double cTaskLib::Task_Mult(cTaskContext& ctx) const
   int threshold = args.GetInt(0);
   
   if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
-                                            // If within threshold range, quality decays based on absolute difference
+    // If within threshold range, quality decays based on absolute difference
     double halflife = -1.0 * fabs(args.GetDouble(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
@@ -2503,7 +2503,7 @@ double cTaskLib::Task_Div(cTaskContext& ctx) const
   int threshold = args.GetInt(0);
   
   if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
-                                            // If within threshold range, quality decays based on absolute difference
+    // If within threshold range, quality decays based on absolute difference
     double halflife = -1.0 * fabs(args.GetDouble(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
@@ -2544,7 +2544,7 @@ double cTaskLib::Task_Log(cTaskContext& ctx) const
   int threshold = args.GetInt(0);
   
   if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
-                                            // If within threshold range, quality decays based on absolute difference
+    // If within threshold range, quality decays based on absolute difference
     double halflife = -1.0 * fabs(args.GetDouble(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
@@ -2586,7 +2586,7 @@ double cTaskLib::Task_Log2(cTaskContext& ctx) const
   int threshold = args.GetInt(0);
   
   if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
-                                            // If within threshold range, quality decays based on absolute difference
+    // If within threshold range, quality decays based on absolute difference
     double halflife = -1.0 * fabs(args.GetDouble(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
@@ -2628,7 +2628,7 @@ double cTaskLib::Task_Log10(cTaskContext& ctx) const
   int threshold = args.GetInt(0);
   
   if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
-                                            // If within threshold range, quality decays based on absolute difference
+    // If within threshold range, quality decays based on absolute difference
     double halflife = -1.0 * fabs(args.GetDouble(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
@@ -2670,7 +2670,7 @@ double cTaskLib::Task_Sqrt(cTaskContext& ctx) const
   int threshold = args.GetInt(0);
   
   if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
-                                            // If within threshold range, quality decays based on absolute difference
+    // If within threshold range, quality decays based on absolute difference
     double halflife = -1.0 * fabs(args.GetDouble(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
@@ -2712,7 +2712,7 @@ double cTaskLib::Task_Sine(cTaskContext& ctx) const
   int threshold = args.GetInt(0);
   
   if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
-                                            // If within threshold range, quality decays based on absolute difference
+    // If within threshold range, quality decays based on absolute difference
     double halflife = -1.0 * fabs(args.GetDouble(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
@@ -2753,7 +2753,7 @@ double cTaskLib::Task_Cosine(cTaskContext& ctx) const
   int threshold = args.GetInt(0);
   
   if (threshold < 0 || diff <= threshold) { // Negative threshold == infinite
-                                            // If within threshold range, quality decays based on absolute difference
+    // If within threshold range, quality decays based on absolute difference
     double halflife = -1.0 * fabs(args.GetDouble(0));
     quality = pow(2.0, static_cast<double>(diff) / halflife);
   }
@@ -2768,7 +2768,7 @@ double cTaskLib::Task_Cosine(cTaskContext& ctx) const
 double cTaskLib::Task_CommEcho(cTaskContext& ctx) const
 {
   const int test_output = ctx.GetOutputBuffer()[0];
-
+  
   tConstListIterator<tBuffer<int> > buff_it(ctx.GetNeighborhoodInputBuffers());  
   
   while (buff_it.Next() != NULL) {
@@ -2778,7 +2778,7 @@ double cTaskLib::Task_CommEcho(cTaskContext& ctx) const
       if (test_output == cur_buff[i]) return 1.0;
     }
   }
-
+  
   return 0.0;
 }
 

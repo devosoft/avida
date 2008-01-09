@@ -184,6 +184,8 @@
 		7049F3730A66AD7E00640512 /* default-transsmt.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F36F0A66AD7E00640512 /* default-transsmt.org */; };
 		704C21DC0C28C3980038F1A5 /* libtcmalloc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70AA941909D486AE006A24C8 /* libtcmalloc.a */; };
 		70658C5A085DF67D00486BED /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
+		7076FEB00D347FD000556CAF /* cAnalyzeTreeStats_CumulativeStemminess.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7076FEAE0D347FD000556CAF /* cAnalyzeTreeStats_CumulativeStemminess.cc */; };
+		7076FEB10D347FD000556CAF /* cAnalyzeTreeStats_Gamma.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7076FEAF0D347FD000556CAF /* cAnalyzeTreeStats_Gamma.cc */; };
 		70AA941A09D486CA006A24C8 /* system-alloc.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCF50209CFB0B400924128 /* system-alloc.cc */; };
 		70AA941B09D486CB006A24C8 /* tcmalloc-logging.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCF57F09CFBD3D00924128 /* tcmalloc-logging.cc */; };
 		70AA941C09D486CD006A24C8 /* tcmalloc.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCF56309CFBB9500924128 /* tcmalloc.cc */; };
@@ -196,7 +198,6 @@
 		B4FA258A0C5EB65E0086D4B5 /* cPlasticPhenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4FA25810C5EB6510086D4B5 /* cPlasticPhenotype.cc */; };
 		B4FA25A90C5EB7880086D4B5 /* cPhenPlastGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4FA259E0C5EB7600086D4B5 /* cPhenPlastGenotype.cc */; };
 		B516AF840C91E2D400023D53 /* cDemeCellEvent.cc in Sources */ = {isa = PBXBuildFile; fileRef = B516AF790C91E24600023D53 /* cDemeCellEvent.cc */; };
-		DCD8AC1F0C8A7C30004CBE6F /* cAnalyzeGenotypeTreeStats.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCA4BEC10C8A758800D81B58 /* cAnalyzeGenotypeTreeStats.cc */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -484,6 +485,10 @@
 		70731668097C6E0C00815164 /* cASSymbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASSymbol.h; sourceTree = "<group>"; };
 		70731669097C6E0C00815164 /* cASSymbol.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cASSymbol.cc; sourceTree = "<group>"; };
 		707415C70AA7E4100064A546 /* main.css */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = main.css; sourceTree = "<group>"; };
+		7076FEAE0D347FD000556CAF /* cAnalyzeTreeStats_CumulativeStemminess.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeTreeStats_CumulativeStemminess.cc; sourceTree = "<group>"; };
+		7076FEAF0D347FD000556CAF /* cAnalyzeTreeStats_Gamma.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeTreeStats_Gamma.cc; sourceTree = "<group>"; };
+		7076FEB40D347FEC00556CAF /* cAnalyzeTreeStats_CumulativeStemminess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAnalyzeTreeStats_CumulativeStemminess.h; sourceTree = "<group>"; };
+		7076FEB50D347FEC00556CAF /* cAnalyzeTreeStats_Gamma.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAnalyzeTreeStats_Gamma.h; sourceTree = "<group>"; };
 		707AEEEF09E80725001AEA89 /* cAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAction.h; sourceTree = "<group>"; };
 		707AEEFE09E83381001AEA89 /* cActionLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cActionLibrary.h; sourceTree = "<group>"; };
 		707AEF8C09EA8B2D001AEA89 /* cAnalyzeCommandAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAnalyzeCommandAction.h; sourceTree = "<group>"; };
@@ -821,8 +826,6 @@
 		B4FA259E0C5EB7600086D4B5 /* cPhenPlastGenotype.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cPhenPlastGenotype.cc; sourceTree = "<group>"; };
 		B516AF790C91E24600023D53 /* cDemeCellEvent.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = cDemeCellEvent.cc; path = source/main/cDemeCellEvent.cc; sourceTree = SOURCE_ROOT; };
 		B516AF7A0C91E24600023D53 /* cDemeCellEvent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = cDemeCellEvent.h; path = source/main/cDemeCellEvent.h; sourceTree = SOURCE_ROOT; };
-		DCA4BEC10C8A758800D81B58 /* cAnalyzeGenotypeTreeStats.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeGenotypeTreeStats.cc; sourceTree = "<group>"; };
-		DCA4BEC20C8A758800D81B58 /* cAnalyzeGenotypeTreeStats.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAnalyzeGenotypeTreeStats.h; sourceTree = "<group>"; };
 		DCC30FCF0762539D008F7A48 /* Doxyfile */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = Doxyfile; sourceTree = "<group>"; };
 		DCC3109C0762539E008F7A48 /* avida.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = avida.cc; sourceTree = "<group>"; };
 		DCC31547076253A4008F7A48 /* cCycleCheck.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCycleCheck.cc; sourceTree = "<group>"; };
@@ -959,8 +962,10 @@
 		70422A1B091B141000A5E67F /* analyze */ = {
 			isa = PBXGroup;
 			children = (
-				DCA4BEC10C8A758800D81B58 /* cAnalyzeGenotypeTreeStats.cc */,
-				DCA4BEC20C8A758800D81B58 /* cAnalyzeGenotypeTreeStats.h */,
+				7076FEB40D347FEC00556CAF /* cAnalyzeTreeStats_CumulativeStemminess.h */,
+				7076FEB50D347FEC00556CAF /* cAnalyzeTreeStats_Gamma.h */,
+				7076FEAE0D347FD000556CAF /* cAnalyzeTreeStats_CumulativeStemminess.cc */,
+				7076FEAF0D347FD000556CAF /* cAnalyzeTreeStats_Gamma.cc */,
 				709D924B0A5D950D00D6A163 /* cMutationalNeighborhood.cc */,
 				709D92490A5D94FD00D6A163 /* cMutationalNeighborhood.h */,
 				709D924A0A5D94FD00D6A163 /* cMutationalNeighborhoodResults.h */,
@@ -1778,11 +1783,16 @@
 /* Begin PBXProject section */
 		DCC30C4D0762532C008F7A48 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = NO;
+			};
 			buildConfigurationList = 702442D70859E0B00059BD9B /* Build configuration list for PBXProject "Avida" */;
+			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 0;
 			mainGroup = DCC30C490762532C008F7A48;
 			productRefGroup = DCC3164E07626CF3008F7A48 /* Products */;
 			projectDirPath = "";
+			projectRoot = "";
 			targets = (
 				7023ED520C0A590200362B9C /* full-suite */,
 				DCC3164C07626CF3008F7A48 /* avida */,
@@ -1854,7 +1864,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DCD8AC1F0C8A7C30004CBE6F /* cAnalyzeGenotypeTreeStats.cc in Sources */,
 				7023EC3A0C0A431B00362B9C /* avida.cc in Sources */,
 				7023EC3B0C0A431B00362B9C /* cActionLibrary.cc in Sources */,
 				7023EC3C0C0A431B00362B9C /* cAnalyze.cc in Sources */,
@@ -1963,6 +1972,8 @@
 				B4FA258A0C5EB65E0086D4B5 /* cPlasticPhenotype.cc in Sources */,
 				B4FA25A90C5EB7880086D4B5 /* cPhenPlastGenotype.cc in Sources */,
 				B516AF840C91E2D400023D53 /* cDemeCellEvent.cc in Sources */,
+				7076FEB00D347FD000556CAF /* cAnalyzeTreeStats_CumulativeStemminess.cc in Sources */,
+				7076FEB10D347FD000556CAF /* cAnalyzeTreeStats_Gamma.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2072,66 +2083,35 @@
 		56F555D50C3B36AD00E2E929 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				INSTALL_PATH = "$(HOME)/bin";
-				PREBINDING = NO;
 				PRODUCT_NAME = "avida-text";
-				ZERO_LINK = YES;
 			};
 			name = Development;
 		};
 		56F555D60C3B36AD00E2E929 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				INSTALL_PATH = "$(HOME)/bin";
-				PREBINDING = NO;
 				PRODUCT_NAME = "avida-text";
-				ZERO_LINK = NO;
 			};
 			name = Deployment;
 		};
 		56F555D70C3B36AD00E2E929 /* Deployment-G5 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_MODEL_TUNING = G5;
-				INSTALL_PATH = "$(HOME)/bin";
-				PREBINDING = NO;
 				PRODUCT_NAME = "avida-text";
-				ZERO_LINK = YES;
 			};
 			name = "Deployment-G5";
 		};
 		56F555D80C3B36AD00E2E929 /* Deployment-Universal */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_MODEL_TUNING = G5;
-				INSTALL_PATH = "$(HOME)/bin";
-				PREBINDING = NO;
 				PRODUCT_NAME = "avida-text";
-				ZERO_LINK = YES;
 			};
 			name = "Deployment-Universal";
 		};
 		56F555D90C3B36AD00E2E929 /* Profile */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_MODEL_TUNING = G5;
-				INSTALL_PATH = "$(HOME)/bin";
-				PREBINDING = NO;
 				PRODUCT_NAME = "avida-text";
-				ZERO_LINK = YES;
 			};
 			name = Profile;
 		};
@@ -2145,22 +2125,7 @@
 		700E2B80085DE50C00CF158A /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_AUTO_VECTORIZATION = YES;
-				GCC_DEBUGGING_SYMBOLS = full;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_FAST_MATH = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_CPU = G4;
-				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_PREPROCESSOR_DEFINITIONS = REVISION_SUPPORT;
-				GCC_UNROLL_LOOPS = YES;
 				PRODUCT_NAME = "avida-viewer";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
 			};
 			name = Deployment;
 		};
@@ -2174,6 +2139,7 @@
 		7023EC360C0A42BC00362B9C /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEPLOYMENT_POSTPROCESSING = NO;
 				PRODUCT_NAME = "avida-core";
 			};
 			name = Deployment;
@@ -2202,10 +2168,6 @@
 		7023ED5A0C0A594300362B9C /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
 				PRODUCT_NAME = "full-suite";
 			};
 			name = Development;
@@ -2213,11 +2175,7 @@
 		7023ED5B0C0A594300362B9C /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				PRODUCT_NAME = "full-suite";
-				ZERO_LINK = NO;
 			};
 			name = Deployment;
 		};
@@ -2245,8 +2203,6 @@
 		702442D30859E0B00059BD9B /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_MODEL_CPU = G4;
-				HEADER_SEARCH_PATHS = /usr/local/boost;
 				OTHER_LDFLAGS = (
 					"-multiply_defined",
 					suppress,
@@ -2258,7 +2214,6 @@
 		702442D40859E0B00059BD9B /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_MODEL_CPU = G4;
 				OTHER_LDFLAGS = (
 					"-multiply_defined",
 					suppress,
@@ -2274,11 +2229,13 @@
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_ENABLE_SSE3_EXTENSIONS = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					DEBUG,
 					REVISION_SUPPORT,
 				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				PREBINDING = NO;
 				WARNING_CFLAGS = (
@@ -2302,16 +2259,17 @@
 				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_ENABLE_SSE3_EXTENSIONS = YES;
 				GCC_FAST_MATH = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					NDEBUG,
 					REVISION_SUPPORT,
 				);
 				GCC_STRICT_ALIASING = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_UNROLL_LOOPS = YES;
 				PER_ARCH_CFLAGS_i386 = "-DCOMPILE_ARCH=\\\"Intel\\\"";
 				PER_ARCH_CFLAGS_ppc = "-DCOMPILE_ARCH=\\\"G4-G5\\\" -mno-fused-madd -falign-loops-max-skip=15 -falign-jumps-max-skip=15 -falign-loops=16 -falign-jumps=16 -falign-functions=16 -ftree-loop-linear -fsched-interblock -fgcse-sm";
-				SEPARATE_STRIP = YES;
 				WARNING_CFLAGS = (
 					"-Wextra",
 					"-Wno-four-char-constants",
@@ -2332,6 +2290,7 @@
 		70AA942709D48715006A24C8 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEPLOYMENT_POSTPROCESSING = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				PRODUCT_NAME = tcmalloc;
 			};
@@ -2356,7 +2315,6 @@
 		70B393DC0944CA6F0018F09D /* Deployment-G5 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_MODEL_CPU = G4;
 				OTHER_LDFLAGS = (
 					"-multiply_defined",
 					suppress,
@@ -2368,7 +2326,6 @@
 		70B393DD0944CA6F0018F09D /* Profile */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_MODEL_CPU = G4;
 				OTHER_LDFLAGS = (
 					"-multiply_defined",
 					suppress,
@@ -2380,44 +2337,14 @@
 		70B393DE0944CA6F0018F09D /* Deployment-G5 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_AUTO_VECTORIZATION = YES;
-				GCC_DEBUGGING_SYMBOLS = full;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_FAST_MATH = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_CPU = G4;
-				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_PREPROCESSOR_DEFINITIONS = REVISION_SUPPORT;
-				GCC_UNROLL_LOOPS = YES;
 				PRODUCT_NAME = "avida-viewer";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
 			};
 			name = "Deployment-G5";
 		};
 		70B393DF0944CA6F0018F09D /* Profile */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_AUTO_VECTORIZATION = YES;
-				GCC_DEBUGGING_SYMBOLS = full;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_FAST_MATH = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_CPU = G4;
-				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_PREPROCESSOR_DEFINITIONS = REVISION_SUPPORT;
-				GCC_UNROLL_LOOPS = YES;
 				PRODUCT_NAME = "avida-viewer";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
 			};
 			name = Profile;
 		};
@@ -2432,6 +2359,7 @@
 				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_ENABLE_SSE3_EXTENSIONS = YES;
 				GCC_FAST_MATH = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_MODEL_PPC64 = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 3;
@@ -2440,6 +2368,7 @@
 					REVISION_SUPPORT,
 				);
 				GCC_STRICT_ALIASING = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_UNROLL_LOOPS = YES;
 				OTHER_CFLAGS = (
 					"$(OTHER_CFLAGS_QUOTED_1)",
@@ -2456,7 +2385,6 @@
 				);
 				OTHER_CFLAGS_QUOTED_1 = "-DCOMPILE_ARCH=\\\"G5\\\"";
 				PREBINDING = NO;
-				SEPARATE_STRIP = YES;
 				WARNING_CFLAGS = (
 					"-Wextra",
 					"-Wno-four-char-constants",
@@ -2476,6 +2404,7 @@
 				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_ENABLE_SSE3_EXTENSIONS = YES;
 				GCC_FAST_MATH = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2483,6 +2412,7 @@
 					REVISION_SUPPORT,
 				);
 				GCC_STRICT_ALIASING = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_UNROLL_LOOPS = YES;
 				OTHER_CFLAGS = (
 					"-mno-fused-madd",
@@ -2505,71 +2435,41 @@
 		70B651580BEA700B002472ED /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				INSTALL_PATH = "$(HOME)/bin";
-				PREBINDING = NO;
 				PRODUCT_NAME = "unit-tests";
-				ZERO_LINK = YES;
 			};
 			name = Development;
 		};
 		70B651590BEA700B002472ED /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_MODEL_TUNING = G5;
-				INSTALL_PATH = "$(HOME)/bin";
-				PREBINDING = NO;
 				PRODUCT_NAME = "unit-tests";
-				ZERO_LINK = YES;
 			};
 			name = Deployment;
 		};
 		70B6515A0BEA700B002472ED /* Deployment-G5 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_MODEL_TUNING = G5;
-				INSTALL_PATH = "$(HOME)/bin";
-				PREBINDING = NO;
 				PRODUCT_NAME = "unit-tests";
-				ZERO_LINK = YES;
 			};
 			name = "Deployment-G5";
 		};
 		70B6515B0BEA700B002472ED /* Deployment-Universal */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_MODEL_TUNING = G5;
-				INSTALL_PATH = "$(HOME)/bin";
-				PREBINDING = NO;
 				PRODUCT_NAME = "unit-tests";
-				ZERO_LINK = YES;
 			};
 			name = "Deployment-Universal";
 		};
 		70B6515C0BEA700B002472ED /* Profile */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_MODEL_TUNING = G5;
-				INSTALL_PATH = "$(HOME)/bin";
-				PREBINDING = NO;
 				PRODUCT_NAME = "unit-tests";
-				ZERO_LINK = YES;
 			};
 			name = Profile;
 		};
 		70DCAD18097AF7CC002F8733 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_MODEL_CPU = G4;
 				PRODUCT_NAME = "avida-s";
 			};
 			name = Development;
@@ -2577,7 +2477,6 @@
 		70DCAD19097AF7CC002F8733 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_MODEL_CPU = G4;
 				PRODUCT_NAME = "avida-s";
 			};
 			name = Deployment;
@@ -2585,7 +2484,6 @@
 		70DCAD1A097AF7CC002F8733 /* Deployment-G5 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_MODEL_CPU = G4;
 				PRODUCT_NAME = "avida-s";
 			};
 			name = "Deployment-G5";
@@ -2593,7 +2491,6 @@
 		70DCAD1B097AF7CC002F8733 /* Profile */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_MODEL_CPU = G4;
 				PRODUCT_NAME = "avida-s";
 			};
 			name = Profile;
@@ -2609,7 +2506,6 @@
 		E626209A0A372B9900C07685 /* Deployment-Universal */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_MODEL_CPU = G4;
 				OTHER_LDFLAGS = (
 					"-multiply_defined",
 					suppress,
@@ -2621,7 +2517,6 @@
 		E626209B0A372B9900C07685 /* Deployment-Universal */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_MODEL_CPU = G4;
 				PRODUCT_NAME = "avida-s";
 			};
 			name = "Deployment-Universal";
@@ -2629,22 +2524,7 @@
 		E626209C0A372B9900C07685 /* Deployment-Universal */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_AUTO_VECTORIZATION = YES;
-				GCC_DEBUGGING_SYMBOLS = full;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_FAST_MATH = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_CPU = G4;
-				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_PREPROCESSOR_DEFINITIONS = REVISION_SUPPORT;
-				GCC_UNROLL_LOOPS = YES;
 				PRODUCT_NAME = "avida-viewer";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
 			};
 			name = "Deployment-Universal";
 		};
@@ -2662,18 +2542,19 @@
 				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_ENABLE_SSE3_EXTENSIONS = YES;
 				GCC_FAST_MATH = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					NDEBUG,
 					REVISION_SUPPORT,
 				);
 				GCC_STRICT_ALIASING = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_UNROLL_LOOPS = YES;
 				PER_ARCH_CFLAGS_i386 = "-DCOMPILE_ARCH=\\\"Intel\\\"";
 				PER_ARCH_CFLAGS_ppc = "-DCOMPILE_ARCH=\\\"G4-G5\\\" -mpowerpc-gpopt -mno-fused-madd -falign-loops-max-skip=15 -falign-jumps-max-skip=15 -falign-loops=16 -falign-jumps=16 -falign-functions=16 -ftree-loop-linear -fsched-interblock -fgcse-sm";
 				PREBINDING = NO;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
-				SEPARATE_STRIP = YES;
 				WARNING_CFLAGS = (
 					"-Wextra",
 					"-Wno-four-char-constants",
