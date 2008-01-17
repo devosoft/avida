@@ -30,6 +30,7 @@ namespace nInstFlag {
   const unsigned int DEFAULT = 0x1;
   const unsigned int NOP = 0x2;
   const unsigned int LABEL = 0x4;
+  const unsigned int PROMOTER = 0x8;
 }
 
 class cInstLibEntry

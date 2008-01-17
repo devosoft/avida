@@ -66,8 +66,6 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     cNOPEntry("nop-B", REG_BX),
     cNOPEntry("nop-C", REG_CX),
     cNOPEntry("nop-D", REG_DX),
-    cNOPEntry("nop-E", REG_EX),
-    cNOPEntry("nop-F", REG_FX)
   };
   
   static const tInstLibEntry<tMethod> s_f_array[] = {
@@ -120,8 +118,34 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("get-head", &cHardwareExperimental::Inst_GetHead, nInstFlag::DEFAULT, "Copy the position of the ?IP? head into ?CX?"),
     tInstLibEntry<tMethod>("if-label", &cHardwareExperimental::Inst_IfLabel, nInstFlag::DEFAULT, "Execute next if we copied complement of attached label"),
     tInstLibEntry<tMethod>("set-flow", &cHardwareExperimental::Inst_SetFlow, nInstFlag::DEFAULT, "Set flow-head to position in ?CX?"),
-    tInstLibEntry<tMethod>("goto", &cHardwareExperimental::Inst_Goto, nInstFlag::DEFAULT, "Move IP to labeled position matching the label that follows")
+    tInstLibEntry<tMethod>("goto", &cHardwareExperimental::Inst_Goto, 0, "Move IP to labeled position matching the label that follows"),
+
+    // Goto Variants
+    tInstLibEntry<tMethod>("goto-if=0", &cHardwareExperimental::Inst_GotoIf0),    
+    tInstLibEntry<tMethod>("goto-if!=0", &cHardwareExperimental::Inst_GotoIfNot0),
+    
+    // Throw-Catch Model
+    tInstLibEntry<tMethod>("throw", &cHardwareExperimental::Inst_Throw),
+    tInstLibEntry<tMethod>("throwif=0", &cHardwareExperimental::Inst_ThrowIf0),    
+    tInstLibEntry<tMethod>("throwif!=0", &cHardwareExperimental::Inst_ThrowIfNot0),
+    tInstLibEntry<tMethod>("catch", &cHardwareExperimental::Inst_Label, nInstFlag::LABEL),
+    
+
+    // Promoter Model
+    tInstLibEntry<tMethod>("promoter", &cHardwareExperimental::Inst_Promoter, nInstFlag::PROMOTER),
+    tInstLibEntry<tMethod>("terminate", &cHardwareExperimental::Inst_Terminate),
+    tInstLibEntry<tMethod>("promoter", &cHardwareExperimental::Inst_Promoter),
+    tInstLibEntry<tMethod>("terminate", &cHardwareExperimental::Inst_Terminate),
+    tInstLibEntry<tMethod>("regulate", &cHardwareExperimental::Inst_Regulate),
+    tInstLibEntry<tMethod>("regulate-sp", &cHardwareExperimental::Inst_RegulateSpecificPromoters),
+    tInstLibEntry<tMethod>("s-regulate", &cHardwareExperimental::Inst_SenseRegulate),
+    tInstLibEntry<tMethod>("numberate", &cHardwareExperimental::Inst_Numberate),
+    tInstLibEntry<tMethod>("numberate-24", &cHardwareExperimental::Inst_Numberate24),
+    tInstLibEntry<tMethod>("bit-cons", &cHardwareExperimental::Inst_BitConsensus),
+    tInstLibEntry<tMethod>("bit-cons-24", &cHardwareExperimental::Inst_BitConsensus24)
+    
   };
+  
   
   const int n_size = sizeof(s_n_array)/sizeof(cNOPEntry);
   
@@ -212,6 +236,25 @@ void cHardwareExperimental::Reset()
     if(!m_has_energy_costs && inst_energy_cost[i]) m_has_energy_costs = true;
   }
 #endif 
+
+  // Promoter model
+  if (m_world->GetConfig().PROMOTERS_ENABLED.Get())
+  {
+    // Ideally, this shouldn't be hard-coded
+    cInstruction promoter_inst = m_world->GetHardwareManager().GetInstSet().GetInst(cStringUtil::Stringf("promoter"));
+    
+    m_promoter_index = -1; // Meaning the last promoter was nothing
+    m_promoter_offset = 0;
+    m_promoters.Resize(0);
+    for (int i=0; i<GetMemory().GetSize(); i++)
+    {
+      if ( (GetMemory())[i] == promoter_inst)
+      {
+        int code = Numberate(i-1, -1, m_world->GetConfig().PROMOTER_CODE_SIZE.Get());
+        m_promoters.Push( cPromoter(i,code) );
+      }
+    }
+  }
 }
 
 void cHardwareExperimental::cLocalThread::operator=(const cLocalThread& in_thread)
@@ -236,6 +279,9 @@ void cHardwareExperimental::cLocalThread::Reset(cHardwareBase* in_hardware, int 
   reading = false;
   read_label.Clear();
   next_label.Clear();
+
+  // Promoter model
+  m_promoter_inst_executed = 0;
 }
 
 
@@ -280,6 +326,18 @@ num_threads : 1;
     // Test if costs have been paid and it is okay to execute this now...
     bool exec = SingleProcess_PayCosts(ctx, cur_inst);
 
+    // Constitutive regulation applied here
+    if (m_world->GetConfig().CONSTITUTIVE_REGULATION.Get() == 1) {
+      Inst_SenseRegulate(ctx);
+    }
+    
+    // If there are no active promoters and a certain mode is set, then don't execute any further instructions
+    if ((m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1) 
+        && (m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() == 2) 
+        && (m_promoter_index == -1) ) { 
+      exec = false;
+    }
+    
     // Now execute the instruction...
     if (exec == true) {
       // NOTE: This call based on the cur_inst must occur prior to instruction
@@ -293,6 +351,11 @@ num_threads : 1;
         exec = !( ctx.GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
       }
       
+      //Add to the promoter inst executed count before executing the inst (in case it is a terminator)
+      if (m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1) {
+        m_threads[m_cur_thread].IncPromoterInstExecuted();
+      }
+      
       if (exec == true) SingleProcess_ExecuteInst(ctx, cur_inst);
       
       // Some instruction (such as jump) may turn m_advance_ip off.  Usually
@@ -301,6 +364,17 @@ num_threads : 1;
       
       // Pay the additional death_cost of the instruction now
       phenotype.IncTimeUsed(addl_time_cost);
+
+      // In the promoter model, we may force termination after a certain number of inst have been executed
+      if (m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1)
+      {
+        const double processivity = m_world->GetConfig().PROMOTER_PROCESSIVITY.Get();
+        if (ctx.GetRandom().P(1 - processivity)) Inst_Terminate(ctx);
+        if (m_world->GetConfig().PROMOTER_INST_MAX.Get() &&
+            (m_threads[m_cur_thread].GetPromoterInstExecuted() >= m_world->GetConfig().PROMOTER_INST_MAX.Get())) {
+          Inst_Terminate(ctx);
+        }
+      }
     } // if exec
     
   } // Previous was executed once for each thread...
@@ -416,6 +490,21 @@ void cHardwareExperimental::PrintStatus(ostream& fp)
   fp << "  Mem (" << GetMemory().GetSize() << "):"
 		  << "  " << GetMemory().AsString()
 		  << endl;
+  
+  
+  if (m_world->GetConfig().PROMOTERS_ENABLED.Get())
+  {
+    fp << "Promoters: index=" << m_promoter_index << " offset=" << m_promoter_offset;
+    fp << " exe_inst=" << m_threads[m_cur_thread].GetPromoterInstExecuted();
+    for (int i=0; i<m_promoters.GetSize(); i++)
+    {
+      fp << setfill(' ') << setbase(10) << m_promoters[i].m_pos << ":";
+      fp << "Ox" << setbase(16) << setfill('0') << setw(8) << (m_promoters[i].GetRegulatedBitCode()) << " "; 
+    }
+    fp << endl;    
+    fp << setfill(' ') << setbase(10) << endl;
+  }    
+
   fp.flush();
 }
 
@@ -1198,3 +1287,348 @@ bool cHardwareExperimental::Inst_Goto(cAvidaContext& ctx)
   IP().Set(found_pos);
   return true;
 }
+
+bool cHardwareExperimental::Inst_GotoIfNot0(cAvidaContext& ctx)
+{
+  if (GetRegister(REG_BX) == 0) return true;
+  
+  ReadLabel();
+  GetLabel().Rotate(1, NUM_NOPS);
+  cHeadCPU found_pos = FindLabelForward(true);
+  IP().Set(found_pos);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_GotoIf0(cAvidaContext& ctx)
+{
+  if (GetRegister(REG_BX) != 0) return true;
+  
+  ReadLabel();
+  GetLabel().Rotate(1, NUM_NOPS);
+  cHeadCPU found_pos = FindLabelForward(true);
+  IP().Set(found_pos);
+  return true;
+}
+
+
+bool cHardwareExperimental::Inst_Throw(cAvidaContext& ctx)
+{
+  ReadLabel();
+  cHeadCPU found_pos = FindLabelForward(true);
+  IP().Set(found_pos);
+  return true;
+}
+
+
+bool cHardwareExperimental::Inst_ThrowIfNot0(cAvidaContext& ctx)
+{
+  if (GetRegister(REG_BX) == 0) return true;
+
+  ReadLabel();
+  cHeadCPU found_pos = FindLabelForward(true);
+  IP().Set(found_pos);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_ThrowIf0(cAvidaContext& ctx)
+{
+  if (GetRegister(REG_BX) != 0) return true;
+  
+  ReadLabel();
+  cHeadCPU found_pos = FindLabelForward(true);
+  IP().Set(found_pos);
+  return true;
+}
+
+
+
+// --------  Promoter Model  --------
+
+bool cHardwareExperimental::Inst_Promoter(cAvidaContext& ctx)
+{
+  // Promoters don't do anything themselves
+  return true;
+}
+
+
+// Move the instruction ptr to the next active promoter
+bool cHardwareExperimental::Inst_Terminate(cAvidaContext& ctx)
+{
+  // Optionally,
+  // Reset the thread.
+  if (m_world->GetConfig().TERMINATION_RESETS.Get())
+  {
+    //const int write_head_pos = GetHead(nHardware::HEAD_WRITE).GetPosition();
+    //const int read_head_pos = GetHead(nHardware::HEAD_READ).GetPosition();
+    m_threads[m_cur_thread].Reset(this, m_threads[m_cur_thread].GetID());
+    //GetHead(nHardware::HEAD_WRITE).Set(write_head_pos);
+    //GetHead(nHardware::HEAD_READ).Set(read_head_pos);
+    
+    //Setting this makes it harder to do things. You have to be modular.
+    organism->GetOrgInterface().ResetInputs(ctx);   // Re-randomize the inputs this organism sees
+    organism->ClearInput();                         // Also clear their input buffers, or they can still claim
+                                                    // rewards for numbers no longer in their environment!
+  }
+  
+  // Reset our count
+  m_threads[m_cur_thread].ResetPromoterInstExecuted();
+  m_advance_ip = false;
+  const int reg_used = REG_BX; // register to put chosen promoter code in, for now always BX
+  
+  // Search for an active promoter  
+  int start_offset = m_promoter_offset;
+  int start_index  = m_promoter_index;
+  
+  bool no_promoter_found = true;
+  if ( m_promoters.GetSize() > 0 ) 
+  {
+    while( true )
+    {
+      // If the next promoter is active, then break out
+      NextPromoter();
+      if (IsActivePromoter()) 
+      {
+        no_promoter_found = false;
+        break;
+      }
+      
+      // If we just checked the promoter that we were originally on, then there
+      // are no active promoters.
+      if ( (start_offset == m_promoter_offset) && (start_index == m_promoter_index) ) break;
+      
+      // If we originally were not on a promoter, then stop once we check the
+      // first promoter and an offset of zero
+      if (start_index == -1)
+      {
+        start_index = 0;
+      }
+    } 
+  }
+  
+  if (no_promoter_found)
+  {
+    if ((m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() == 0) || (m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() == 2))
+    {
+      // Set defaults for when no active promoter is found
+      m_promoter_index = -1;
+      IP().Set(0);
+      GetRegister(reg_used) = 0;
+      
+      // @JEB HACK! -- All kinds of bad stuff happens if execution length is zero. For now:
+      if (m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() == 2) GetMemory().SetFlagExecuted(0);
+    }
+    // Death to organisms that refuse to use promoters!
+    else if (m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() == 1)
+    {
+      organism->Die();
+    }
+    else
+    {
+      cout << "Unrecognized NO_ACTIVE_PROMOTER_EFFECT setting: " << m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() << endl;
+    }
+  }
+  else
+  {
+    // We found an active match, offset to just after it.
+    // cHeadCPU will do the mod genome size for us
+    IP().Set(m_promoters[m_promoter_index].m_pos + 1);
+    
+    // Put its bit code in BX for the organism to have if option is set
+    if ( m_world->GetConfig().PROMOTER_TO_REGISTER.Get() )
+    {
+      GetRegister(reg_used) = m_promoters[m_promoter_index].m_bit_code;
+    }
+  }
+  return true;
+}
+
+// Set a new regulation code (which is XOR'ed with ALL promoter codes).
+bool cHardwareExperimental::Inst_Regulate(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(REG_BX);
+  int regulation_code = GetRegister(reg_used);
+  
+  for (int i=0; i< m_promoters.GetSize();i++)
+  {
+    m_promoters[i].m_regulation = regulation_code;
+  }
+  return true;
+}
+
+// Set a new regulation code, but only on a subset of promoters.
+bool cHardwareExperimental::Inst_RegulateSpecificPromoters(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(REG_BX);
+  int regulation_code = GetRegister(reg_used);
+  
+  const int reg_promoter = FindModifiedRegister((reg_used+1) % NUM_REGISTERS);
+  int regulation_promoter = GetRegister(reg_promoter);
+  
+  for (int i=0; i< m_promoters.GetSize();i++)
+  {
+    //Look for consensus bit matches over the length of the promoter code
+    int test_p_code = m_promoters[i].m_bit_code;    
+    int test_r_code = regulation_promoter;
+    int bit_count = 0;
+    for (int j=0; j<m_world->GetConfig().PROMOTER_EXE_LENGTH.Get();j++)
+    {      
+      if ((test_p_code & 1) == (test_r_code & 1)) bit_count++;
+      test_p_code >>= 1;
+      test_r_code >>= 1;
+    }
+    if (bit_count >= m_world->GetConfig().PROMOTER_EXE_LENGTH.Get() / 2)
+    {
+      m_promoters[i].m_regulation = regulation_code;
+    }
+  }
+  return true;
+}
+
+
+bool cHardwareExperimental::Inst_SenseRegulate(cAvidaContext& ctx)
+{
+  unsigned int bits = 0;
+  const tArray<double> & res_count = organism->GetOrgInterface().GetResources();
+  assert (res_count.GetSize() != 0);
+  for (int i=0; i<m_world->GetConfig().PROMOTER_CODE_SIZE.Get(); i++)
+  {
+    int b = i % res_count.GetSize();
+    bits <<= 1;
+    bits += (res_count[b] != 0);
+  }  
+  
+  for (int i=0; i< m_promoters.GetSize();i++)
+  {
+    m_promoters[i].m_regulation = bits;
+  }
+  return true;
+}
+
+// Create a number from inst bit codes
+bool cHardwareExperimental::Do_Numberate(cAvidaContext& ctx, int num_bits)
+{
+  const int reg_used = FindModifiedRegister(REG_BX);
+  
+  // advance the IP now, so that it rests on the beginning of our number
+  IP().Advance();
+  m_advance_ip = false;
+  
+  int num = Numberate(IP().GetPosition(), +1, num_bits);
+  GetRegister(reg_used) = num;
+  return true;
+}
+
+// Move to the next promoter.
+void cHardwareExperimental::NextPromoter()
+{
+  // Move promoter index, rolling over if necessary
+  m_promoter_index++;
+  if (m_promoter_index == m_promoters.GetSize())
+  {
+    m_promoter_index = 0;
+    
+    // Move offset, rolling over when there are not enough bits before we would have to wrap around left
+    m_promoter_offset+=m_world->GetConfig().PROMOTER_EXE_LENGTH.Get();
+    if (m_promoter_offset + m_world->GetConfig().PROMOTER_EXE_LENGTH.Get() >= m_world->GetConfig().PROMOTER_CODE_SIZE.Get())
+    {
+      m_promoter_offset = 0;
+    }
+  }
+}
+
+
+// Check whether the current promoter is active.
+bool cHardwareExperimental::IsActivePromoter()
+{
+  assert( m_promoters.GetSize() != 0 );
+  int count = 0;
+  unsigned int code = m_promoters[m_promoter_index].GetRegulatedBitCode();
+  for(int i=0; i<m_world->GetConfig().PROMOTER_EXE_LENGTH.Get(); i++)
+  {
+    int offset = m_promoter_offset + i;
+    offset %= m_world->GetConfig().PROMOTER_CODE_SIZE.Get();
+    int state = code >> offset;
+    count += (state & 1);
+  }
+  
+  return (count >= m_world->GetConfig().PROMOTER_EXE_THRESHOLD.Get());
+}
+
+// Construct a promoter bit code from instruction bit codes
+int cHardwareExperimental::Numberate(int _pos, int _dir, int _num_bits)
+{  
+  int code_size = 0;
+  unsigned int code = 0;
+  unsigned int max_bits = sizeof(code) * 8;
+  assert(_num_bits <= (int)max_bits);
+  if (_num_bits == 0) _num_bits = max_bits;
+  
+  // Enforce a boundary, sometimes -1 can be passed for _pos
+  int j = _pos + GetMemory().GetSize();
+  j %= GetMemory().GetSize();
+  assert(j >=0);
+  assert(j < GetMemory().GetSize());
+  while (code_size < _num_bits)
+  {
+    unsigned int inst_code = (unsigned int) GetInstSet().GetInstructionCode( (GetMemory())[j] );
+    // shift bits in, one by one ... excuse the counter variable pun
+    for (int code_on = 0; (code_size < _num_bits) && (code_on < m_world->GetConfig().INST_CODE_LENGTH.Get()); code_on++)
+    {
+      if (_dir < 0)
+      {
+        code >>= 1; // shift first so we don't go one too far at the end
+        code += (1 << (_num_bits - 1)) * (inst_code & 1);
+        inst_code >>= 1; 
+      }
+      else
+      {
+        code <<= 1; // shift first so we don't go one too far at the end;        
+        code += (inst_code >> (m_world->GetConfig().INST_CODE_LENGTH.Get() - 1)) & 1;
+        inst_code <<= 1; 
+      }
+      code_size++;
+    }
+    
+    // move back one inst
+    j += GetMemory().GetSize() + _dir;
+    j %= GetMemory().GetSize();
+    
+  }
+  
+  return code;
+}
+
+/*! 
+ Sets BX to 1 if >=50% of the bits in the specified register places
+ are 1's and zero otherwise.
+ */
+
+bool cHardwareExperimental::Inst_BitConsensus(cAvidaContext& ctx)
+{
+  return BitConsensus(ctx, sizeof(int) * 8);
+}
+
+// Looks at only the lower 24 bits
+bool cHardwareExperimental::Inst_BitConsensus24(cAvidaContext& ctx)
+{
+  return BitConsensus(ctx, 24);
+}
+
+bool cHardwareExperimental::BitConsensus(cAvidaContext& ctx, const unsigned int num_bits)
+{
+  assert(num_bits <= sizeof(int) * 8);
+  
+  const int reg_used = FindModifiedRegister(REG_BX);
+  int reg_val = GetRegister(REG_CX);
+  unsigned int bits_on = 0;
+  
+  for (unsigned int i = 0; i < num_bits; i++)
+  {
+    bits_on += (reg_val & 1);
+    reg_val >>= 1;
+  }
+  
+  GetRegister(reg_used) = ( bits_on >= (sizeof(int) * 8)/2 ) ? 1 : 0;
+  return true; 
+}
+

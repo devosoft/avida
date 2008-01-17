@@ -85,7 +85,7 @@ protected:
   // --------  Structure Constants  --------
   static const int NUM_REGISTERS = 4;
   static const int NUM_HEADS = nHardware::NUM_HEADS >= NUM_REGISTERS ? nHardware::NUM_HEADS : NUM_REGISTERS;
-  enum tRegisters { REG_AX = 0, REG_BX, REG_CX, REG_DX, REG_EX, REG_FX };
+  enum tRegisters { REG_AX = 0, REG_BX, REG_CX, REG_DX };
   static const int NUM_NOPS = NUM_REGISTERS;
   
   // --------  Data Structures  --------
@@ -93,6 +93,7 @@ protected:
   {
   private:
     int m_id;
+    int m_promoter_inst_executed;
     
   public:
     int reg[NUM_REGISTERS];
@@ -113,6 +114,10 @@ protected:
     void Reset(cHardwareBase* in_hardware, int in_id);
     int GetID() const { return m_id; }
     void SetID(int in_id) { m_id = in_id; }
+
+    int GetPromoterInstExecuted() { return m_promoter_inst_executed; }
+    void IncPromoterInstExecuted() { m_promoter_inst_executed++; }
+    void ResetPromoterInstExecuted() { m_promoter_inst_executed = 0; }
   };
 
     
@@ -136,6 +141,29 @@ protected:
   bool m_advance_ip;         // Should the IP advance after this instruction?
   bool m_executedmatchstrings;	// Have we already executed the match strings instruction?
 
+
+  
+  // <-- Promoter model
+  int m_promoter_index;       //site to begin looking for the next active promoter from
+  int m_promoter_offset;      //bit offset when testing whether a promoter is on
+  
+  struct cPromoter 
+  {
+  public:
+    int m_pos;      //position within genome
+    int m_bit_code; //bit code of promoter
+    int m_regulation; //bit code of promoter
+
+    cPromoter(int pos = 0, int bc = 0, int reg = 0) : m_pos(pos), m_bit_code(bc), m_regulation(reg) { ; }
+    inline int GetRegulatedBitCode() { return m_bit_code ^ m_regulation; }
+    inline ~cPromoter() { ; }
+  };
+  tArray<cPromoter> m_promoters;
+  // Promoter Model -->
+  
+  
+  
+  
   bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst);
   
   // --------  Stack Manipulation...  --------
@@ -308,6 +336,37 @@ private:
   bool Inst_HeadSearch(cAvidaContext& ctx);
   bool Inst_SetFlow(cAvidaContext& ctx);
   bool Inst_Goto(cAvidaContext& ctx);
+  
+  // Goto Variants
+  bool Inst_GotoIfNot0(cAvidaContext& ctx);
+  bool Inst_GotoIf0(cAvidaContext& ctx);
+  
+  // Throw-Catch Model
+  bool Inst_Throw(cAvidaContext& ctx);
+  bool Inst_ThrowIf0(cAvidaContext& ctx);
+  bool Inst_ThrowIfNot0(cAvidaContext& ctx);
+
+  // Promoter Model
+  bool Inst_Promoter(cAvidaContext& ctx);
+  bool Inst_Terminate(cAvidaContext& ctx);
+  bool Inst_Regulate(cAvidaContext& ctx);
+  bool Inst_RegulateSpecificPromoters(cAvidaContext& ctx);
+  bool Inst_SenseRegulate(cAvidaContext& ctx);
+  bool Inst_Numberate(cAvidaContext& ctx) { return Do_Numberate(ctx); };
+  bool Inst_Numberate24(cAvidaContext& ctx) { return Do_Numberate(ctx, 24); };
+  bool Do_Numberate(cAvidaContext& ctx, int num_bits = 0);
+  
+  // Promoter Helper functions
+  bool IsActivePromoter();
+  void NextPromoter();
+  int  Numberate(int _pos, int _dir, int _num_bits = 0);
+  
+  
+  // Bit consensus functions
+  bool Inst_BitConsensus(cAvidaContext& ctx);
+  bool Inst_BitConsensus24(cAvidaContext& ctx);
+  bool BitConsensus(cAvidaContext& ctx, const unsigned int num_bits);
+  
 };
 
 
