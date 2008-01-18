@@ -52,7 +52,7 @@ public:
   bool IsDefault() const { return (m_flags & nInstFlag::DEFAULT); }
   bool IsNop() const { return (m_flags & nInstFlag::NOP); }
   bool IsLabel() const { return (m_flags & nInstFlag::LABEL); }
-  
+  bool IsPromoter() const { return (m_flags & nInstFlag::PROMOTER); }
 };
 
 #endif

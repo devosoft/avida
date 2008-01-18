@@ -122,6 +122,7 @@ public:
   // Instruction Analysis.
   int IsNop(const cInstruction& inst) const { return (inst.GetOp() < m_lib_nopmod_map.GetSize()); }
   int IsLabel(const cInstruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).IsLabel(); }
+  int IsPromoter(const cInstruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).IsPromoter(); }
 
   // Insertion of new instructions...
   cInstruction ActivateNullInst();
