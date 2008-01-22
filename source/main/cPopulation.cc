@@ -3002,7 +3002,7 @@ void cPopulation::InjectChild(int cell_id, cOrganism& orig_org)
   tArray<cOrganism*> child_array;
   tArray<cMerit> merit_array;
   birth_chamber.SubmitOffspring(ctx, orig_org.ChildGenome(), orig_org, child_array, merit_array);
-    //@JEB may want to force asex for an injected child, sex will mess up CompeteOrganisms
+    //@JEB for now we force asex for an injected child, sex will probably mess up CompeteOrganisms...
   assert(child_array.GetSize() == 1);
   cOrganism * new_organism = child_array[0];
   orig_org.ChildGenome() = save_child;
@@ -3225,7 +3225,7 @@ void cPopulation::NewTrial()
                       equals a time of 1 unit
 */
 
-void cPopulation::CompeteOrganisms(int competition_type, int parents_survive, double scaled_time, int dynamic_scaling)
+void cPopulation::CompeteOrganisms(int competition_type, int parents_survive)
 {
   cout << "==Compete Organisms==" << endl;
   double total_fitness = 0;
@@ -3233,15 +3233,19 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive, do
   tArray<double> org_fitness(num_cells); 
 
   double lowest_fitness = -1.0;
+  double average_fitness = 0;
   double highest_fitness = -1.0;
   double lowest_fitness_copied = -1.0;
+  double average_fitness_copied = 0;
   double highest_fitness_copied = -1.0;
   int different_orgs_copied = 0;
   int num_competed_orgs = 0;
 
   int num_trials = 0;
+  int dynamic_scaling = (competition_type==3);
   
-  // How many trials were there?
+  // How many trials were there? -- same for every organism
+  // we just need to find one...
   for (int i = 0; i < num_cells; i++) 
   {
     if (GetCell(i).IsOccupied())
@@ -3253,30 +3257,37 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive, do
   }
   tArray<double> min_trial_fitnesses(num_trials);
   tArray<double> max_trial_fitnesses(num_trials);
-  tArray<double> bonus_sums(num_trials);
-  bonus_sums.SetAll(0);
-  
+  tArray<double> avg_trial_fitnesses(num_trials);
+  avg_trial_fitnesses.SetAll(0);
+
   bool init = false;
   // What is the min and max fitness in each trial
   for (int i = 0; i < num_cells; i++) 
   {
     if (GetCell(i).IsOccupied())
     {
+      num_competed_orgs++;
       cPhenotype& p = GetCell(i).GetOrganism()->GetPhenotype();
       tArray<double> trial_fitnesses = p.GetTrialFitnesses();
-      for (int t=0; t < trial_fitnesses.GetSize(); t++) 
+      for (int t=0; t < num_trials; t++) 
       { 
         if ((!init) || (min_trial_fitnesses[t] > trial_fitnesses[t])) min_trial_fitnesses[t] = trial_fitnesses[t];
         if ((!init) || (max_trial_fitnesses[t] < trial_fitnesses[t])) max_trial_fitnesses[t] = trial_fitnesses[t];
+        avg_trial_fitnesses[t] += trial_fitnesses[t];
       }
       init = true;
     }
-  }  
+  } 
   
+  //divide averages for each trial
+  for (int t=0; t < num_trials; t++) 
+  {
+    avg_trial_fitnesses[t] /= num_competed_orgs;
+  }
   
   for (int t=0; t < min_trial_fitnesses.GetSize(); t++) 
   {
-    cout << "Trial #" << t << " Min Fitness = " << min_trial_fitnesses[t] << " Max Fitness = " << max_trial_fitnesses[t] << endl;
+    cout << "Trial #" << t << " Min Fitness = " << min_trial_fitnesses[t] << ", Avg fitness = " << avg_trial_fitnesses[t] << " Max Fitness = " << max_trial_fitnesses[t] << endl;
     //cout << "Bonus sum = " << bonus_sums[t] << endl;
   }
   
@@ -3285,12 +3296,10 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive, do
   {
     if (GetCell(i).IsOccupied())
     {
-      num_competed_orgs++;
       double fitness = 0.0;
       cPhenotype& p = GetCell(i).GetOrganism()->GetPhenotype();
       //Don't need to reset trial_fitnesses because we will call cPhenotype::OffspringReset on the entire pop
       tArray<double> trial_fitnesses = p.GetTrialFitnesses();
-      tArray<int> trial_times_used = p.GetTrialTimesUsed();
 
       //If there are no trial fitnesses...use the actual fitness.
       if (trial_fitnesses.GetSize() == 0)
@@ -3300,54 +3309,42 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive, do
       }
       switch (competition_type)
       {
-        //Arithmetic Mean
+        //Geometric Mean        
         case 0:
-        fitness = 0;
-        for (int t=0; t < trial_fitnesses.GetSize(); t++) 
-        { 
-          fitness+=trial_fitnesses[t]; 
-        }
-        fitness /= trial_fitnesses.GetSize();
-        break;
-      
-        //Product        
-        case 1:
+        case 3:
         fitness = 1.0;
         for (int t=0; t < trial_fitnesses.GetSize(); t++) 
         { 
           fitness*=trial_fitnesses[t]; 
         }
-        break;
-      
-        //Geometric Mean        
-        case 2:
-        fitness = 1;
-        for (int t=0; t < trial_fitnesses.GetSize(); t++) 
-        { 
-          fitness*=trial_fitnesses[t]; 
-        }
-        fitness = exp( (1/trial_fitnesses.GetSize()) * log(fitness) );
+        fitness = exp( (1.0/((double)trial_fitnesses.GetSize())) * log(fitness) );
         break;
         
-        //Addition of normalized values
-        case 3:
+        //Geometric Mean of normalized values
+        case 1:
+        fitness = 1.0;        
+        for (int t=0; t < trial_fitnesses.GetSize(); t++) 
+        { 
+           fitness*=trial_fitnesses[t] / max_trial_fitnesses[t]; 
+        }
+        fitness = exp( (1.0/((double)trial_fitnesses.GetSize())) * log(fitness) );
+        break;
+        
+        //Arithmetic Mean
+        case 2:
         fitness = 0;
         for (int t=0; t < trial_fitnesses.GetSize(); t++) 
         { 
-          if (max_trial_fitnesses[t] > 0) fitness+=trial_fitnesses[t] / max_trial_fitnesses[t]; 
+          fitness+=trial_fitnesses[t]; 
         }
+        fitness /= (double)trial_fitnesses.GetSize();
         break;
-                         
+      
         default:
         cout << "Unknown CompeteOrganisms method!" << endl;
         exit(1);
       }
       if (m_world->GetVerbosity() >= VERBOSE_DETAILS) cout << "Trial fitness in cell " << i << " = " << fitness << endl;
-      //-->Note: Setting fitness here will not print out the value of the last trial's fitness because the makeup of the population is going to change anyway.
-      //It will be printed out correctly only if NewTrial and PrintAverages are called on the same update, before CompeteDemes.
-      //p.SetCurBonus( fitness *  (p.GetTimeUsed() - p.GetGestationStart()) / p.GetCurMeritBase() ); //Indirectly set fitness over all trials...??
-     // p.SetCurBonus( trial_fitnesses[trial_fitnesses.GetSize()-1] *  (p.GetTimeUsed() - p.GetGestationStart()) / p.CalcSizeMerit() ); //Or to last trial
-
       org_fitness[i] = fitness;
       total_fitness += fitness;
       
@@ -3355,7 +3352,8 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive, do
       if ((lowest_fitness == -1.0) || (fitness < lowest_fitness)) lowest_fitness = fitness;
     } // end if occupied
   }
-  
+  average_fitness = total_fitness / num_competed_orgs;
+ 
   //Rescale by the geometric mean of the difference from the top score and the median
   if ( dynamic_scaling )
   {
@@ -3373,22 +3371,9 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive, do
           }
       }
     }
-    if (num_org_not_max > 0) scaled_time *= exp ( -(1.0/num_org_not_max) * dynamic_factor );
   }
   
-  cout << "Competition time " << scaled_time << " units" << endl;
-  total_fitness = 0;
-  for (int i = 0; i < num_cells; i++) 
-  {
-    if (GetCell(i).IsOccupied())
-    {
-        double fitness = exp(log(2.0) * scaled_time *  (org_fitness[i] - highest_fitness));
-        org_fitness[i] = fitness;
-        total_fitness += fitness;
-    }
-  }
-  
-   // Pick which orgs should be in the next generation. (Filling all cells)
+  // Pick which orgs should be in the next generation. (Filling all cells)
   tArray<int> new_orgs(num_cells);
   for (int i = 0; i < num_cells; i++) {
     double birth_choice = (double) m_world->GetRandom().GetDouble(total_fitness);
@@ -3400,10 +3385,13 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive, do
         if (m_world->GetVerbosity() >= VERBOSE_DETAILS) cout << "Propagating from cell " << test_org << " to " << i << endl;
         if ((highest_fitness_copied == -1.0) || (org_fitness[test_org] > highest_fitness_copied)) highest_fitness_copied = org_fitness[test_org];
         if ((lowest_fitness_copied == -1.0) || (org_fitness[test_org] < lowest_fitness_copied)) lowest_fitness_copied = org_fitness[test_org];
+        average_fitness_copied += org_fitness[test_org];
         break;
       }
     }
   }
+  // average assumes we fill all cells.
+  average_fitness_copied /= num_cells;
   
   // Track how many of each org we should have.
   tArray<int> org_count(num_cells);
@@ -3416,6 +3404,8 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive, do
   // -- but not the full reset if we are using trials, the trial reset should already cover things like task counts, etc.
   // calling that twice would erase this information before it could potentially be output between NewTrial and CompeteOrganisms events.
   for (int i = 0; i < num_cells; i++) {
+    if (m_world->GetVerbosity() >= VERBOSE_DETAILS) cout << "Cell " << i << " has " << org_count[i] << " copies in the next generation" << endl;  
+
     if (org_count[i] > 0) {
       different_orgs_copied++;
       cPhenotype& p = GetCell(i).GetOrganism()->GetPhenotype();
@@ -3435,27 +3425,32 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive, do
   is_init.SetAll(false);
   
   // Copy orgs until all org counts are 1.
+  int last_from_cell_id = 0;
+  int last_to_cell_id = 0;
   while (true) {
     // Find the next org to copy...
     int from_cell_id, to_cell_id;
-    for (from_cell_id = 0; from_cell_id < num_cells; from_cell_id++) {
+    for (from_cell_id = last_from_cell_id; from_cell_id < num_cells; from_cell_id++) {
       if (org_count[from_cell_id] > 1) break;
     }
+    last_from_cell_id = from_cell_id;
     
-    // Stop If we didn't find another org to copy
+    // Stop if we didn't find another org to copy
     if (from_cell_id == num_cells) break;
     
-    for (to_cell_id = 0; to_cell_id < num_cells; to_cell_id++) {
+    for (to_cell_id = last_to_cell_id; to_cell_id < num_cells; to_cell_id++) {
       if (org_count[to_cell_id] == 0) break;
     }
+    last_to_cell_id = to_cell_id;
     
-    // We now have both a from and a to org....
+    // We now have both a "from" and a "to" org....
     org_count[from_cell_id]--;
     org_count[to_cell_id]++;
     
     cOrganism * organism = GetCell(from_cell_id).GetOrganism();
     organism->ChildGenome() = organism->GetGenome();
-    InjectChild( to_cell_id, *organism );    
+    if (m_world->GetVerbosity() >= VERBOSE_DETAILS) cout << "Injecting Child " << from_cell_id << " to " << to_cell_id << endl;  
+    InjectChild( to_cell_id, *organism );  
     
     is_init[to_cell_id] = true;
   }
@@ -3464,15 +3459,23 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive, do
   {
     // Now create children from remaining cells into themselves
     for (int cell_id = 0; cell_id < num_cells; cell_id++) {
-      if (is_init[cell_id] == true) continue;
-      cOrganism * organism = GetCell(cell_id).GetOrganism();
-      organism->ChildGenome() = organism->GetGenome();
-      InjectChild( cell_id, *organism ); 
+      if (!is_init[cell_id])
+      {
+        cOrganism * organism = GetCell(cell_id).GetOrganism();
+        organism->ChildGenome() = organism->GetGenome();
+        if (m_world->GetVerbosity() >= VERBOSE_DETAILS) cout << "Re-injecting Self " << cell_id << " to " << cell_id << endl;  
+        InjectChild( cell_id, *organism ); 
+      }
     }
   }
   
-  cout << "Competed: Min fitness = " << lowest_fitness << ", Max fitness = " << highest_fitness << endl;
-  cout << "Copied  : Min fitness = " << lowest_fitness_copied << ", Max fitness = " << highest_fitness_copied << " (scaled to Max = 1.0)" << endl;
+  cout << "Competed: Min fitness = " << lowest_fitness << ", Avg fitness = " << average_fitness << " Max fitness = " << highest_fitness << endl;
+  cout << "Copied  : Min fitness = " << lowest_fitness_copied << ", Avg fitness = " << average_fitness_copied << ", Max fitness = " << highest_fitness_copied << endl;
   cout << "Copied  : Different organisms = " << different_orgs_copied << endl;
 
+  // copy stats to cStats, so that these can be remembered and printed
+  m_world->GetStats().SetCompetitionTrialFitnesses(avg_trial_fitnesses);
+  m_world->GetStats().SetCompetitionFitness(average_fitness);
+  m_world->GetStats().SetCompetitionOrgsReplicated(different_orgs_copied);
+  
 }

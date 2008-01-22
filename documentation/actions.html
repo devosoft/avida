@@ -54,10 +54,11 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
 <p>
 <table>
   <tr>
-    <td>
+    <td valign="top">
       <a href="#AnalyzeLandscape">AnalyzeLandscape</a>
       <br /><a href="#AnalyzePopulation">AnalyzePopulation</a>
       <br /><a href="#CompeteDemes">CompeteDemes</a>
+      <br /><a href="#CompeteOrganisms">CompeteOrganisms</a>
       <br /><a href="#ConnectCells">ConnectCells</a>
       <br /><a href="#CopyDeme">CopyDeme</a>
       <br /><a href="#DeletionLandscape">DeletionLandscape</a>
@@ -93,8 +94,9 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <br /><a href="#LoadPopulation">LoadPopulation</a>
       <br /><a href="#ModMutProb">ModMutProb</a>
     </td>
-    <td>
-      <a href="#OutflowScaledResource">OutflowScaledResource</a>
+    <td valign="top">
+      <a href="#NewTrial">NewTrial</a>
+      <br /><a href="#OutflowScaledResource">OutflowScaledResource</a>
       <br /><a href="#PairTestLandscape">PairTestLandscape</a>
       <br /><a href="#PrecalcLandscape">PrecalcLandscape</a>
       <br /><a href="#PredictNuLandscape">PredictNuLandscape</a>
@@ -103,6 +105,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <br /><a href="#PrintCCladeCounts">PrintCCladeCounts</a>
       <br /><a href="#PrintCCladeFitnessHistogram">PrintCCladeFitnessHistogram</a>
       <br /><a href="#PrintCCladeRelativeFitnessHistogram">PrintCCladeRelativeFitnessHistogram</a>
+      <br /><a href="#PrintCompetitionData">PrintCompetitionData</a>
       <br /><a href="#PrintCountData">PrintCountData</a>
       <br /><a href="#PrintData">PrintData</a>
       <br /><a href="#PrintDebug">PrintDebug</a>
@@ -130,10 +133,10 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <br /><a href="#PrintPhenotypeStatus">PrintPhenotypeStatus</a>
       <br /><a href="#PrintPhenotypicPlasticity">PrintPhenotypicPlasticity</a>
       <br /><a href="#PrintPopulationDistanceData">PrintPopulationDistanceData</a>
-      <br /><a href="#PrintRelativeFitnessHistogram">PrintRelativeFitnessHistogram</a>
     </td>
-    <td>
-      <a href="#PrintResourceData">PrintResourceData</a>
+    <td valign="top">
+      <a href="#PrintRelativeFitnessHistogram">PrintRelativeFitnessHistogram</a>
+      <br /><a href="#PrintResourceData">PrintResourceData</a>
       <br /><a href="#PrintSpeciesAbundanceData">PrintSpeciesAbundanceData</a>
       <br /><a href="#PrintStatsData">PrintStatsData</a>
       <br /><a href="#PrintTasksSnapshot">PrintTasksSnapshot</a>
@@ -243,6 +246,15 @@ a single, complete file for each trigger.
       <br/>&nbsp; &nbsp; &nbsp;<kbd>TESTCPU</kbd> uses the test cpu measurement.</li>
       <br />
     <kbd>lower_bound, step, upper_bound</kbd> are values for the individual histogram bins.</kbd>
+  </p>
+</li>
+
+<li>
+  <strong><a name="PrintCompetitionData">PrintCompetitionData</a></strong>
+  [<span class="cmdarg">string filename='competition.dat'</span>]
+  
+  <p>
+  Print out CompeteOrganism statistics. Make the first call after the first set of trials has been completed to get a complete header.
   </p>
 </li>
 
@@ -977,6 +989,33 @@ change the course of the run.  There are a wide variety of these.
   
   <p>
   Disconnects a pair of specified cells.
+  </p>
+</li>
+<li>
+  <strong><a name="NewTrial">NewTrial</a></strong>
+  <p>
+  Immediately calculates the fitness of each organism in the population, saves this value for use with the CompeteOrganisms
+  event, and resets the state of all organisms.
+  </p>
+</li>
+<li>
+  <strong><a name="CompeteOrganisms">CompeteOrganisms</a></strong>
+  &lt;<span class="cmdarg">int competition_type=0</span>&gt; &lt;<span class="cmdarg">int parents_survive=0</span>&gt; 
+  </span>&gt; &lt;<span class="cmdarg">int dynamic_scaling=0</span>&gt;
+  <p>Calculates fitness of each organism in the population and creates a new population of descendants
+  where each organism has a chance of replication proportional to its fitness. Can be used to make Avida 
+  operate without population dynamics and asynchronous replication, i.e. like a genetic algorithm. If NewTrial 
+  events have occurred since the last CompeteOrganisms event, then the average fitness over those trials 
+  will be used.
+  </p>
+ 
+  <code>competition_type</code> controls how the fitnesses of multiple trials determine the overall fitness
+  used for the competition: 0=geometric mean of fitnesses, 1=scaled geometric mean of fitnesses (the greatest fitness
+  of each trial is scaled to 1.0 before taking the geometric mean), 2=arithmetic mean, 3=geometric mean plus 
+  rescales effective fitness values by the geometric mean of the difference from the top score and the median.
+ <p>Setting <code>parents_survive</code> to 1, causes the first copy of an organism that makes it into the new 
+  population to be the original (unmutated) parent organism.
+
   </p>
 </li>
 </ul>

@@ -116,6 +116,8 @@ cStats::cStats(cWorld* world)
   , num_used(0)
   , num_own_used(0)
   , sense_size(0)
+  , avg_competition_fitness(0)
+  , num_orgs_replicated(0)
 {
   const cEnvironment& env = m_world->GetEnvironment();
   const int num_tasks = env.GetNumTasks();
@@ -209,7 +211,6 @@ cStats::cStats(cWorld* world)
   }
   // End sense tracking initialization
 
-  
   genotype_map.Resize( m_world->GetConfig().WORLD_X.Get() * m_world->GetConfig().WORLD_Y.Get() );
 
   numAsleep.Resize(m_world->GetConfig().NUM_DEMES.Get());
@@ -1025,6 +1026,22 @@ void cStats::PrintSleepData(const cString& filename){
     
   for( int i=0; i < numAsleep.GetSize(); i++ ){
     df.Write(numAsleep[i], cStringUtil::Stringf("DemeID %d", i));
+  }
+  df.Endl();
+}
+
+void cStats::PrintCompetitionData(const cString& filename){
+  cDataFile& df = m_world->GetDataFile(filename);
+
+  df.WriteComment( "Competition results\n" );
+  df.WriteComment( "results of the current competitions" );
+  
+  df.Write( GetUpdate(), "update" );
+  df.Write( avg_competition_fitness, "overall competition fitness" );
+  df.Write( num_orgs_replicated, "number of organisms copied" );
+
+  for( int i=0; i < avg_trial_fitnesses.GetSize(); i++ ){
+    df.Write(avg_trial_fitnesses[i], cStringUtil::Stringf("trial.%d fitness", i));
   }
   df.Endl();
 }

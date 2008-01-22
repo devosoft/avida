@@ -1128,23 +1128,19 @@ class cActionCompeteOrganisms : public cAction
 private:
   int m_type;
   int m_parents_survive;
-  double m_scaled_time;
-  int m_dynamic_scaling;
 public:
-  cActionCompeteOrganisms(cWorld* world, const cString& args) : cAction(world, args), m_type(0), m_parents_survive(0), m_scaled_time(1.0), m_dynamic_scaling(0)
+  cActionCompeteOrganisms(cWorld* world, const cString& args) : cAction(world, args), m_type(0), m_parents_survive(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_type = largs.PopWord().AsInt();
     if (largs.GetSize()) m_parents_survive = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_scaled_time = largs.PopWord().AsDouble();
-    if (largs.GetSize()) m_dynamic_scaling = largs.PopWord().AsInt();
   }
   
   static const cString GetDescription() { return "Arguments: [int type=0] [int parents_survive=0] [double scaled_time=1.0] [int dynamic_scaling=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().CompeteOrganisms(m_type, m_parents_survive, m_scaled_time, m_dynamic_scaling);
+    m_world->GetPopulation().CompeteOrganisms(m_type, m_parents_survive);
   }
 };
 

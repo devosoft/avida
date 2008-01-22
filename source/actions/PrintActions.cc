@@ -90,6 +90,7 @@ STATS_OUT_FILE(PrintMarketData,             market.dat          );
 STATS_OUT_FILE(PrintSenseData,              sense.dat           );
 STATS_OUT_FILE(PrintSenseExeData,           sense_exe.dat       );
 STATS_OUT_FILE(PrintSleepData,              sleep.dat          );
+STATS_OUT_FILE(PrintCompetitionData,        competition.dat         );
 
 
 #define POP_OUT_FILE(METHOD, DEFAULT)                                                     /*  1 */ \
@@ -2625,6 +2626,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintSenseData>("PrintSenseData");
   action_lib->Register<cActionPrintSenseExeData>("PrintSenseExeData");
   action_lib->Register<cActionPrintSleepData>("PrintSleepData");
+  action_lib->Register<cActionPrintCompetitionData>("PrintCompetitionData");
 
   // Population Out Files
   action_lib->Register<cActionPrintPhenotypeData>("PrintPhenotypeData");

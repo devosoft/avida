@@ -739,14 +739,13 @@ void cHardwareCPU::PrintStatus(ostream& fp)
       
   if (m_world->GetConfig().PROMOTERS_ENABLED.Get())
   {
-    fp << "Promoters: index=" << m_promoter_index << " offset=" << m_promoter_offset;
+    fp << "  Promoters: index=" << m_promoter_index << " offset=" << m_promoter_offset;
     fp << " exe_inst=" << m_threads[m_cur_thread].GetPromoterInstExecuted();
     for (int i=0; i<m_promoters.GetSize(); i++)
     {
-      fp << setfill(' ') << setbase(10) << m_promoters[i].m_pos << ":";
+      fp << setfill(' ') << setbase(10) << " " << m_promoters[i].m_pos << ":";
       fp << "Ox" << setbase(16) << setfill('0') << setw(8) << (m_promoters[i].GetRegulatedBitCode()) << " "; 
     }
-    fp << endl;    
     fp << setfill(' ') << setbase(10) << endl;
   }    
   fp.flush();

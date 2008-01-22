@@ -266,7 +266,7 @@ public:
 
   // Trials and genetic algorithm @JEB
   void NewTrial();
-  void CompeteOrganisms(int competition_type, int parents_survive, double scaled_time, int dynamic_scaling);
+  void CompeteOrganisms(int competition_type, int parents_survive);
 };
 
 

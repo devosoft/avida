@@ -236,7 +236,6 @@ private:
   int num_resamplings;
   int num_failedResamplings;
   
-  
   // State variables
   int last_update;
 
@@ -251,6 +250,11 @@ private:
   tArray<int> sense_last_count;
   tArray<int> sense_last_exe_count;
   tArray<cString> sense_names;
+
+  // Stats for competitions
+  tArray<double> avg_trial_fitnesses;
+  double avg_competition_fitness;
+  int num_orgs_replicated;
 
   tArray<int> numAsleep;
 
@@ -480,6 +484,10 @@ public:
   void SetReactionName(int id, const cString & name) { reaction_names[id] = name; }
   void SetResourceName(int id, const cString & name) { resource_names[id] = name; }
 
+  void SetCompetitionTrialFitnesses(tArray<double> _in) { avg_trial_fitnesses = _in; }
+  void SetCompetitionFitness(double _in) { avg_competition_fitness = _in; }
+  void SetCompetitionOrgsReplicated(int _in) { num_orgs_replicated = _in; }
+
   //market info
   void AddMarketItemBought() { num_bought++;}
   void AddMarketItemSold() { num_sold++; }
@@ -615,7 +623,8 @@ public:
   void PrintSenseData(const cString& filename);
   void PrintSenseExeData(const cString& filename);
   void PrintSleepData(const cString& filename);
-  
+  void PrintCompetitionData(const cString& filename);
+
   // -------- Messaging support --------
 public:
   //! Type for a list of pointers to message predicates.

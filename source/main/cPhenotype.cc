@@ -1252,7 +1252,7 @@ void cPhenotype::PrintStatus(ostream& fp) const
 {
   fp << "  MeritBase:"
      << CalcSizeMerit()
-     << " Bonus: " << cur_bonus
+     << " Bonus:" << cur_bonus
      << " Errors:" << cur_num_errors
      << " Donates:" << cur_num_donates;
   fp << endl;
