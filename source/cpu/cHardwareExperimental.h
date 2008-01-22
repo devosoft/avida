@@ -94,6 +94,8 @@ protected:
   private:
     int m_id;
     int m_promoter_inst_executed;
+    unsigned int m_execurate;
+    
     
   public:
     int reg[NUM_REGISTERS];
@@ -104,7 +106,7 @@ protected:
     
     bool reading;
     cCodeLabel read_label;
-    cCodeLabel next_label;    
+    cCodeLabel next_label;
     
     cLocalThread(cHardwareBase* in_hardware = NULL, int in_id = -1) { Reset(in_hardware, in_id); }
     ~cLocalThread() { ; }
@@ -112,12 +114,15 @@ protected:
     void operator=(const cLocalThread& in_thread);
     
     void Reset(cHardwareBase* in_hardware, int in_id);
-    int GetID() const { return m_id; }
-    void SetID(int in_id) { m_id = in_id; }
+    inline int GetID() const { return m_id; }
+    inline void SetID(int in_id) { m_id = in_id; }
+    
+    inline unsigned int GetExecurate() const { return m_execurate; }
+    inline void UpdateExecurate(int code_len, unsigned int inst_code) { m_execurate <<= code_len; m_execurate |= inst_code; }      
 
-    int GetPromoterInstExecuted() { return m_promoter_inst_executed; }
-    void IncPromoterInstExecuted() { m_promoter_inst_executed++; }
-    void ResetPromoterInstExecuted() { m_promoter_inst_executed = 0; }
+    inline int GetPromoterInstExecuted() const { return m_promoter_inst_executed; }
+    inline void IncPromoterInstExecuted() { m_promoter_inst_executed++; }
+    inline void ResetPromoterInstExecuted() { m_promoter_inst_executed = 0; }
   };
 
     
@@ -367,6 +372,8 @@ private:
   bool Inst_BitConsensus24(cAvidaContext& ctx);
   bool BitConsensus(cAvidaContext& ctx, const unsigned int num_bits);
   
+  bool Inst_Execurate(cAvidaContext& ctx);
+  bool Inst_Execurate24(cAvidaContext& ctx);
 };
 
 

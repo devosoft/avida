@@ -142,8 +142,9 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("numberate", &cHardwareExperimental::Inst_Numberate),
     tInstLibEntry<tMethod>("numberate-24", &cHardwareExperimental::Inst_Numberate24),
     tInstLibEntry<tMethod>("bit-cons", &cHardwareExperimental::Inst_BitConsensus),
-    tInstLibEntry<tMethod>("bit-cons-24", &cHardwareExperimental::Inst_BitConsensus24)
-    
+    tInstLibEntry<tMethod>("bit-cons-24", &cHardwareExperimental::Inst_BitConsensus24),
+    tInstLibEntry<tMethod>("execurate", &cHardwareExperimental::Inst_Execurate),
+    tInstLibEntry<tMethod>("execurate-24", &cHardwareExperimental::Inst_Execurate24)
   };
   
   
@@ -277,9 +278,9 @@ void cHardwareExperimental::cLocalThread::Reset(cHardwareBase* in_hardware, int 
   next_label.Clear();
 
   // Promoter model
+  m_execurate = 0;
   m_promoter_inst_executed = 0;
 }
-
 
 
 // This function processes the very next command in the genome, and is made
@@ -409,10 +410,15 @@ bool cHardwareExperimental::SingleProcess_ExecuteInst(cAvidaContext& ctx, const 
   // instruction execution count incremeneted
   organism->GetPhenotype().IncCurInstCount(actual_inst.GetOp());
 #endif
-	
+  
   // And execute it.
   const bool exec_success = (this->*(m_functions[inst_idx]))(ctx);
-	
+
+	if (exec_success) {
+    int code_len = m_world->GetConfig().INST_CODE_LENGTH.Get();
+    m_threads[m_cur_thread].UpdateExecurate(code_len, m_inst_set->GetInstructionCode(actual_inst));
+  }
+
 #if INSTRUCTION_COUNT
   // decremenet if the instruction was not executed successfully
   if (exec_success == false) {
@@ -1617,5 +1623,21 @@ bool cHardwareExperimental::BitConsensus(cAvidaContext& ctx, const unsigned int 
   
   GetRegister(reg_used) = ( bits_on >= (sizeof(int) * 8)/2 ) ? 1 : 0;
   return true; 
+}
+
+// Create a number from inst bit codes of the previously executed instructions
+bool cHardwareExperimental::Inst_Execurate(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(REG_BX);
+  GetRegister(reg_used) = m_threads[m_cur_thread].GetExecurate();
+  return true;
+}
+
+// Create a number from inst bit codes of the previously executed instructions, truncated to 24 bits
+bool cHardwareExperimental::Inst_Execurate24(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(REG_BX);
+  GetRegister(reg_used) = (0xFFFFFF & m_threads[m_cur_thread].GetExecurate());
+  return true;
 }
 
