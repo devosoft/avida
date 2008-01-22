@@ -1344,9 +1344,9 @@
 				70C1EFA308C39F2100F50912 /* cHardwareBase.cc */,
 				70C1EF9E08C39F0E00F50912 /* cHardwareBase.h */,
 				70C1EFA508C39F2100F50912 /* cHardwareCPU.cc */,
+				70C1EFA008C39F0E00F50912 /* cHardwareCPU.h */,
 				B516AF790C91E24600023D53 /* cDemeCellEvent.cc */,
 				B516AF7A0C91E24600023D53 /* cDemeCellEvent.h */,
-				70C1EFA008C39F0E00F50912 /* cHardwareCPU.h */,
 				423335880BC067E3000DF681 /* cHardwareGX.cc */,
 				423335890BC067E3000DF681 /* cHardwareGX.h */,
 				70C5BD690905CE5F0028A785 /* cHardwareManager.cc */,
@@ -2511,6 +2511,7 @@
 					suppress,
 				);
 				PRODUCT_NAME = avida;
+				SEPARATE_STRIP = YES;
 			};
 			name = "Deployment-Universal";
 		};
