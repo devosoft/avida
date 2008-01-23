@@ -1324,11 +1324,21 @@ double cPhenotype::CalcFitness(double _merit_base, double _bonus, int _gestation
     out_fitness = _merit_base * _bonus / _gestation_time;
     break;
 
-    case 1: //Activity of one enzyme in pathway altered (with diminishing returns and a cost for each executed instruction)
+    case 1: // Sigmoidal returns (should be used with an additive reward)
+    {
+      assert(_gestation_time > 0);
+      out_fitness = 0;
+      //Note: this operates on accumulated bonus and ignores the default bonus.
+      double converted_bonus = (_bonus - m_world->GetConfig().DEFAULT_BONUS.Get()) * m_world->GetConfig().FITNESS_COEFF_2.Get() / (1 + _bonus * m_world->GetConfig().FITNESS_COEFF_2.Get() ) ;
+      out_fitness = _merit_base * exp(converted_bonus * log(m_world->GetConfig().FITNESS_COEFF_1.Get())) / _gestation_time;
+    }
+    break;
+    
+    case 2: //Activity of one enzyme in pathway altered (with diminishing returns and a cost for each executed instruction)
     {
       out_fitness = 0;
       double net_bonus = _bonus +  - m_world->GetConfig().DEFAULT_BONUS.Get();
-      out_fitness = net_bonus / (net_bonus + 1)* exp (_gestation_time * log(1 - m_world->GetConfig().FITNESS_COEFF.Get())); 
+      out_fitness = net_bonus / (net_bonus + 1)* exp (_gestation_time * log(1 - m_world->GetConfig().FITNESS_COEFF_1.Get())); 
     }
     break;
      
