@@ -2132,6 +2132,7 @@
 		7023EC350C0A42BC00362B9C /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEPLOYMENT_POSTPROCESSING = NO;
 				PRODUCT_NAME = "avida-core";
 			};
 			name = Development;
@@ -2147,6 +2148,7 @@
 		7023EC370C0A42BC00362B9C /* Deployment-G5 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEPLOYMENT_POSTPROCESSING = NO;
 				PRODUCT_NAME = "avida-core";
 			};
 			name = "Deployment-G5";
@@ -2154,6 +2156,7 @@
 		7023EC380C0A42BC00362B9C /* Deployment-Universal */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEPLOYMENT_POSTPROCESSING = NO;
 				PRODUCT_NAME = "avida-core";
 			};
 			name = "Deployment-Universal";
@@ -2161,6 +2164,7 @@
 		7023EC390C0A42BC00362B9C /* Profile */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEPLOYMENT_POSTPROCESSING = NO;
 				PRODUCT_NAME = "avida-core";
 			};
 			name = Profile;
@@ -2225,10 +2229,9 @@
 		702442D80859E0B00059BD9B /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_ALTIVEC_EXTENSIONS = YES;
+				DEBUG_INFORMATION_FORMAT = stabs;
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_ENABLE_CPP_RTTI = NO;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2237,7 +2240,6 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
-				PREBINDING = NO;
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",
@@ -2252,12 +2254,14 @@
 		702442D90859E0B00059BD9B /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEBUG_INFORMATION_FORMAT = stabs;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				GCC_ALTIVEC_EXTENSIONS = YES;
 				GCC_AUTO_VECTORIZATION = YES;
 				GCC_DYNAMIC_NO_PIC = YES;
 				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_ENABLE_SSE3_EXTENSIONS = YES;
+				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
 				GCC_FAST_MATH = YES;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_OPTIMIZATION_LEVEL = 3;
@@ -2269,7 +2273,8 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_UNROLL_LOOPS = YES;
 				PER_ARCH_CFLAGS_i386 = "-DCOMPILE_ARCH=\\\"Intel\\\"";
-				PER_ARCH_CFLAGS_ppc = "-DCOMPILE_ARCH=\\\"G4-G5\\\" -mno-fused-madd -falign-loops-max-skip=15 -falign-jumps-max-skip=15 -falign-loops=16 -falign-jumps=16 -falign-functions=16 -ftree-loop-linear -fsched-interblock -fgcse-sm";
+				PER_ARCH_CFLAGS_ppc = "-DCOMPILE_ARCH=\\\"G4-G5\\\" -mno-fused-madd -falign-loops-max-skip=15 -falign-jumps-max-skip=15 -falign-loops=16 -falign-jumps=16 -falign-functions=16 -ftree-loop-linear -fsched-interblock -fgcse-sm  -fvariable-expansion-in-unroller -fgcse-las -mmultiple -mstring";
+				STRIP_INSTALLED_PRODUCT = NO;
 				WARNING_CFLAGS = (
 					"-Wextra",
 					"-Wno-four-char-constants",
@@ -2282,6 +2287,7 @@
 		70AA942609D48715006A24C8 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEPLOYMENT_POSTPROCESSING = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				PRODUCT_NAME = tcmalloc;
 			};
@@ -2299,6 +2305,7 @@
 		70AA942809D48715006A24C8 /* Deployment-G5 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEPLOYMENT_POSTPROCESSING = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				PRODUCT_NAME = tcmalloc;
 			};
@@ -2307,6 +2314,7 @@
 		70AA942909D48715006A24C8 /* Profile */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEPLOYMENT_POSTPROCESSING = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				PRODUCT_NAME = tcmalloc;
 			};
@@ -2327,6 +2335,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				OTHER_LDFLAGS = (
+					"-all_load",
 					"-multiply_defined",
 					suppress,
 				);
@@ -2352,6 +2361,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = ppc;
+				DEBUG_INFORMATION_FORMAT = stabs;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				GCC_ALTIVEC_EXTENSIONS = YES;
 				GCC_AUTO_VECTORIZATION = YES;
@@ -2385,6 +2395,7 @@
 				);
 				OTHER_CFLAGS_QUOTED_1 = "-DCOMPILE_ARCH=\\\"G5\\\"";
 				PREBINDING = NO;
+				STRIP_INSTALLED_PRODUCT = NO;
 				WARNING_CFLAGS = (
 					"-Wextra",
 					"-Wno-four-char-constants",
@@ -2398,8 +2409,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = stabs;
+				DEPLOYMENT_POSTPROCESSING = NO;
 				GCC_ALTIVEC_EXTENSIONS = YES;
 				GCC_AUTO_VECTORIZATION = YES;
+				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = YES;
 				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_ENABLE_SSE3_EXTENSIONS = YES;
@@ -2414,17 +2428,10 @@
 				GCC_STRICT_ALIASING = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_UNROLL_LOOPS = YES;
-				OTHER_CFLAGS = (
-					"-mno-fused-madd",
-					"-falign-loops=16",
-					"-ftree-loop-linear",
-					"-fvariable-expansion-in-unroller",
-					"-fgcse",
-					"-fgcse-las",
-				);
 				PER_ARCH_CFLAGS_i386 = "-DCOMPILE_ARCH=\\\"Intel\\\"";
-				PER_ARCH_CFLAGS_ppc = "-DCOMPILE_ARCH=\\\"G4-G5\\\" -mmultiple -mstring";
+				PER_ARCH_CFLAGS_ppc = "-DCOMPILE_ARCH=\\\"G5\\\" -mpowerpc-gpopt -mno-fused-madd -falign-loops-max-skip=15 -falign-jumps-max-skip=15 -falign-loops=16 -falign-jumps=16 -falign-functions=16 -ftree-loop-linear -fsched-interblock -fgcse-sm  -fvariable-expansion-in-unroller -fgcse-las -mmultiple -mstring";
 				PREBINDING = NO;
+				STRIP_INSTALLED_PRODUCT = NO;
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",
@@ -2502,6 +2509,7 @@
 		E62620990A372B9900C07685 /* Deployment-Universal */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEPLOYMENT_POSTPROCESSING = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				PRODUCT_NAME = tcmalloc;
 			};
@@ -2515,7 +2523,6 @@
 					suppress,
 				);
 				PRODUCT_NAME = avida;
-				SEPARATE_STRIP = YES;
 			};
 			name = "Deployment-Universal";
 		};
@@ -2540,6 +2547,7 @@
 					ppc,
 					i386,
 				);
+				DEBUG_INFORMATION_FORMAT = stabs;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				GCC_ALTIVEC_EXTENSIONS = YES;
 				GCC_AUTO_VECTORIZATION = YES;
@@ -2557,9 +2565,10 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_UNROLL_LOOPS = YES;
 				PER_ARCH_CFLAGS_i386 = "-DCOMPILE_ARCH=\\\"Intel\\\"";
-				PER_ARCH_CFLAGS_ppc = "-DCOMPILE_ARCH=\\\"G4-G5\\\" -mpowerpc-gpopt -mno-fused-madd -falign-loops-max-skip=15 -falign-jumps-max-skip=15 -falign-loops=16 -falign-jumps=16 -falign-functions=16 -ftree-loop-linear -fsched-interblock -fgcse-sm";
+				PER_ARCH_CFLAGS_ppc = "-DCOMPILE_ARCH=\\\"G4-G5\\\" -mpowerpc-gpopt -mno-fused-madd -falign-loops-max-skip=15 -falign-jumps-max-skip=15 -falign-loops=16 -falign-jumps=16 -falign-functions=16 -ftree-loop-linear -fsched-interblock -fgcse-sm  -fvariable-expansion-in-unroller -fgcse-las -mmultiple -mstring";
 				PREBINDING = NO;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				STRIP_INSTALLED_PRODUCT = NO;
 				WARNING_CFLAGS = (
 					"-Wextra",
 					"-Wno-four-char-constants",
