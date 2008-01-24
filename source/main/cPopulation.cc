@@ -421,8 +421,6 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
 {
   assert(in_organism != NULL);
   assert(in_organism->GetGenome().GetSize() >= 1);
-//  assert(in_organism->GetGenome().GetSize() >= 1);
-
 
   in_organism->SetOrgInterface(new cPopulationInterface(m_world));
   
@@ -2989,38 +2987,27 @@ void cPopulation::InjectClone(int cell_id, cOrganism& orig_org)
 
 // This function injects the child genome of an organism into the population at cell_id.
 // Takes care of divide mutations.
-void cPopulation::InjectChild(int cell_id, cOrganism& orig_org)
+void cPopulation::InjectChild(int cell_id, cOrganism& parent)
 {
   assert(cell_id >= 0 && cell_id < cell_array.GetSize());
   
   cAvidaContext& ctx = m_world->GetDefaultContext();
-  
+      
   // Do mutations on the child genome, but restore it to its current state afterward.
-  cGenome save_child = orig_org.ChildGenome();
-  orig_org.GetHardware().Divide_DoMutations(ctx);
-  
-  tArray<cOrganism*> child_array;
-  tArray<cMerit> merit_array;
-  birth_chamber.SubmitOffspring(ctx, orig_org.ChildGenome(), orig_org, child_array, merit_array);
-    //@JEB for now we force asex for an injected child, sex will probably mess up CompeteOrganisms...
-  assert(child_array.GetSize() == 1);
-  cOrganism * new_organism = child_array[0];
-  orig_org.ChildGenome() = save_child;
-  
-  // Set the genotype...
-  //new_organism->SetGenotype(orig_org.GetGenotype());
+  cGenome save_child = parent.ChildGenome();
+  parent.GetHardware().Divide_DoMutations(ctx);
+  cGenome child_genome = parent.ChildGenome();
+  parent.GetHardware().Divide_TestFitnessMeasures(ctx);
+  parent.ChildGenome() = save_child;
+  cOrganism* new_organism = new cOrganism(m_world, ctx, child_genome);
 
+  // Set the genotype...
+  assert(parent.GetGenotype());  
+  cGenotype* new_genotype = m_world->GetClassificationManager().GetGenotypeInjected(child_genome, parent.GetGenotype()->GetLineageLabel());
+  new_organism->SetGenotype(new_genotype);
+    
   // Setup the phenotype...
-  orig_org.GetPhenotype().SetLinesCopied(new_organism->ChildGenome().GetSize());
-  new_organism->GetPhenotype().SetMerit(merit_array[0]);
-  new_organism->GetPhenotype().SetupOffspring(orig_org.GetPhenotype(), new_organism->GetGenome());
-  
-  // Do lineage tracking for the new organisms.
-  LineageSetupOrganism(new_organism, orig_org.GetLineage(),
-                       orig_org.GetLineageLabel(), orig_org.GetGenotype());
-		
-  //By default, store the parent cclade, this may get modified in ActivateOrgansim (@MRR)
-  new_organism->SetCCladeLabel(orig_org.GetCCladeLabel());
+  new_organism->GetPhenotype().SetupOffspring(parent.GetPhenotype(),child_genome);
   
   // Prep the cell..
   if (m_world->GetConfig().BIRTH_METHOD.Get() == POSITION_CHILD_FULL_SOUP_ELDEST &&
@@ -3036,14 +3023,12 @@ void cPopulation::InjectChild(int cell_id, cOrganism& orig_org)
     new_organism->MutationRates().Copy(cell_array[cell_id].MutationRates());
   } else {
     // Update the mutation rates of each child from its parent.
-    new_organism->MutationRates().Copy(orig_org.MutationRates());
+    new_organism->MutationRates().Copy(parent.MutationRates());
   }
   
   // Activate the organism in the population...
-//  cGenotype* child_genotype = new_organism->GetGenotype();
-//  child_genotype->DecDeferAdjust();
-//  m_world->GetClassificationManager().AdjustGenotype(*child_genotype);
-  ActivateOrganism(ctx, new_organism, cell_array[cell_id]);
+  ActivateOrganism(ctx, new_organism, cell_array[cell_id]);  
+
 }
 
 
@@ -3472,7 +3457,8 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive)
   cout << "Competed: Min fitness = " << lowest_fitness << ", Avg fitness = " << average_fitness << " Max fitness = " << highest_fitness << endl;
   cout << "Copied  : Min fitness = " << lowest_fitness_copied << ", Avg fitness = " << average_fitness_copied << ", Max fitness = " << highest_fitness_copied << endl;
   cout << "Copied  : Different organisms = " << different_orgs_copied << endl;
-
+  if (m_world->GetVerbosity() >= VERBOSE_DETAILS) cout << "Genotype Count: " << m_world->GetClassificationManager().GetGenotypeCount() << endl;
+  
   // copy stats to cStats, so that these can be remembered and printed
   m_world->GetStats().SetCompetitionTrialFitnesses(avg_trial_fitnesses);
   m_world->GetStats().SetCompetitionFitness(average_fitness);

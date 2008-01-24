@@ -4368,9 +4368,6 @@ bool cHardwareCPU::Inst_Terminate(cAvidaContext& ctx)
       m_promoter_index = -1;
       IP().Set(0);
       GetRegister(reg_used) = 0;
-      
-      // @JEB HACK! -- All kinds of bad stuff happens if execution length is zero. For now:
-      if (m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() == 2) GetMemory().SetFlagExecuted(0);
     }
     // Death to organisms that refuse to use promoters!
     else if (m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() == 1)
@@ -4484,7 +4481,7 @@ void cHardwareCPU::NextPromoter()
     
     // Move offset, rolling over when there are not enough bits before we would have to wrap around left
     m_promoter_offset+=m_world->GetConfig().PROMOTER_EXE_LENGTH.Get();
-    if (m_promoter_offset + m_world->GetConfig().PROMOTER_EXE_LENGTH.Get() >= m_world->GetConfig().PROMOTER_CODE_SIZE.Get())
+    if (m_promoter_offset + m_world->GetConfig().PROMOTER_EXE_LENGTH.Get() > m_world->GetConfig().PROMOTER_CODE_SIZE.Get())
     {
       m_promoter_offset = 0;
     }

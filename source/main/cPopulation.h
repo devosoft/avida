@@ -135,7 +135,7 @@ private:
   void InjectGenotype(int cell_id, cGenotype* genotype);
   void InjectGenome(int cell_id, const cGenome& genome, int lineage_label);
   void InjectClone(int cell_id, cOrganism& orig_org);
-  void InjectChild(int cell_id, cOrganism& orig_org);
+  void InjectChild(int cell_id, cOrganism& parent);
 
   void LineageSetupOrganism(cOrganism* organism, cLineage* lineage, int lin_label, cGenotype* parent_genotype = NULL);
   void CCladeSetupOrganism(cOrganism* organism); 

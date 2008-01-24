@@ -1526,7 +1526,7 @@ void cHardwareExperimental::NextPromoter()
     // Move offset, rolling over when there are not enough bits before we would have to wrap around left
     const int promoter_exe_length = m_world->GetConfig().PROMOTER_EXE_LENGTH.Get();
     m_promoter_offset += promoter_exe_length;
-    if (m_promoter_offset + promoter_exe_length >= m_world->GetConfig().PROMOTER_CODE_SIZE.Get()) m_promoter_offset = 0;
+    if (m_promoter_offset + promoter_exe_length > m_world->GetConfig().PROMOTER_CODE_SIZE.Get()) m_promoter_offset = 0;
   }
 }
 
