@@ -471,6 +471,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
+    std::cout << "Genotype Count: " << m_world->GetClassificationManager().GetGenotypeCount() << std::endl;
   }
 };
 

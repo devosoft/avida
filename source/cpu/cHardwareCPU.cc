@@ -534,8 +534,7 @@ void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
   cPhenotype& phenotype = organism->GetPhenotype();
   
   // First instruction - check whether we should be starting at a promoter, when enabled.
-  if (phenotype.GetCPUCyclesUsed() == 0 && m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1)
-    Inst_Terminate(m_world->GetDefaultContext());
+  if (phenotype.GetCPUCyclesUsed() == 0 && m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1) Inst_Terminate(ctx);
   
   // Count the cpu cycles used
   phenotype.IncCPUCyclesUsed();

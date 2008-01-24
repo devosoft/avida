@@ -218,7 +218,6 @@ bool cPhenotype::OK()
 {
   assert(genome_length >= 0);
   assert(copied_size >= 0);
-  assert(executed_size >= 0);
   assert(gestation_time >= 0);
   assert(gestation_start >= 0);
   assert(fitness >= 0.0);
@@ -262,7 +261,6 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
   genome_length   = _genome.GetSize();
   copied_size     = parent_phenotype.child_copied_size;
   executed_size   = parent_phenotype.executed_size;
-  assert (executed_size > 0);
   
   gestation_time  = parent_phenotype.gestation_time;
   gestation_start = 0;
@@ -272,7 +270,6 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
 
   assert(genome_length > 0);
   assert(copied_size > 0);
-  assert(executed_size > 0);
   assert(gestation_time >= 0); //@JEB 0 valid for some fitness methods
   assert(div_type > 0);
 
@@ -828,7 +825,6 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
 
   assert(genome_length > 0);
   assert(copied_size > 0);
-  assert(executed_size > 0);
   assert(gestation_time >= 0); //@JEB 0 valid for some fitness methods
   assert(div_type > 0);
 
@@ -1266,7 +1262,6 @@ void cPhenotype::PrintStatus(ostream& fp) const
 int cPhenotype::CalcSizeMerit() const
 {
   assert(genome_length > 0);
-  assert(executed_size > 0);
   assert(copied_size > 0);
 
   int out_size;

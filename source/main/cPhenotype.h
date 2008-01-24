@@ -394,7 +394,7 @@ public:
   void SetFault(const cString& in_fault) { fault_desc = in_fault; }
   void SetNeutralMetric(double _in){ neutral_metric = _in; }
   void SetLifeFitness(double _in){ life_fitness = _in; }
-  void SetLinesExecuted(int _exe_size) { executed_size = _exe_size;   assert(executed_size > 0); }
+  void SetLinesExecuted(int _exe_size) { executed_size = _exe_size; }
   void SetLinesCopied(int _copied_size) { child_copied_size = _copied_size; }
   void SetDivType(double _div_type) { div_type = _div_type; }  
   void SetDivideSex(bool _divide_sex) { divide_sex = _divide_sex; }  

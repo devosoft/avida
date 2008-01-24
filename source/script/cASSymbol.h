@@ -25,6 +25,9 @@
 #ifndef cASSymbol_h
 #define cASSymbol_h
 
+#ifndef AvidaScript_h
+#include "AvidaScript.h"
+#endif
 #ifndef cString_h
 #include "cString.h"
 #endif
@@ -33,6 +36,9 @@ class cASSymbol
 {
 private:
   cString m_name;
+  ASType_t m_type;
+  cString* 
+  
   
   cASSymbol();
   

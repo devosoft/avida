@@ -134,8 +134,6 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     // Promoter Model
     tInstLibEntry<tMethod>("promoter", &cHardwareExperimental::Inst_Promoter, nInstFlag::PROMOTER),
     tInstLibEntry<tMethod>("terminate", &cHardwareExperimental::Inst_Terminate),
-    tInstLibEntry<tMethod>("promoter", &cHardwareExperimental::Inst_Promoter),
-    tInstLibEntry<tMethod>("terminate", &cHardwareExperimental::Inst_Terminate),
     tInstLibEntry<tMethod>("regulate", &cHardwareExperimental::Inst_Regulate),
     tInstLibEntry<tMethod>("regulate-sp", &cHardwareExperimental::Inst_RegulateSpecificPromoters),
     tInstLibEntry<tMethod>("s-regulate", &cHardwareExperimental::Inst_SenseRegulate),
@@ -248,8 +246,8 @@ void cHardwareExperimental::Reset()
     
     m_promoters.Resize(0);
 
-    for (int i=0; i < GetMemory().GetSize(); i++) {
-      if (m_inst_set->IsPromoter(GetMemory()[i])) {
+    for (int i=0; i < m_memory.GetSize(); i++) {
+      if (m_inst_set->IsPromoter(m_memory[i])) {
         int code = Numberate(i - 1, -1, m_world->GetConfig().PROMOTER_CODE_SIZE.Get());
         m_promoters.Push(cPromoter(i, code));
       }
@@ -294,7 +292,11 @@ void cHardwareExperimental::SingleProcess(cAvidaContext& ctx)
   // Mark this organism as running...
   organism->SetRunning(true);
   
-  cPhenotype & phenotype = organism->GetPhenotype();
+  cPhenotype& phenotype = organism->GetPhenotype();
+
+  // First instruction - check whether we should be starting at a promoter, when enabled.
+  if (phenotype.GetCPUCyclesUsed() == 0 && m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1) Inst_Terminate(ctx);
+  
   phenotype.IncCPUCyclesUsed();
   if (!m_world->GetConfig().NO_CPU_CYCLE_TIME.Get()) phenotype.IncTimeUsed();
 
@@ -1139,6 +1141,7 @@ bool cHardwareExperimental::Inst_TaskIO(cAvidaContext& ctx)
   const int value_in = organism->GetNextInput();
   GetRegister(reg_used) = value_in;
   organism->DoInput(value_in);
+  
   return true;
 }
 
