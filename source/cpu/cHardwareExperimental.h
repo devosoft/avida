@@ -374,6 +374,9 @@ private:
   
   bool Inst_Execurate(cAvidaContext& ctx);
   bool Inst_Execurate24(cAvidaContext& ctx);
+
+
+  bool Inst_Repro(cAvidaContext& ctx);
 };
 
 

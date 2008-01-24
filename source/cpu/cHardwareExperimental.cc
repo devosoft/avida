@@ -144,8 +144,11 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("bit-cons", &cHardwareExperimental::Inst_BitConsensus),
     tInstLibEntry<tMethod>("bit-cons-24", &cHardwareExperimental::Inst_BitConsensus24),
     tInstLibEntry<tMethod>("execurate", &cHardwareExperimental::Inst_Execurate),
-    tInstLibEntry<tMethod>("execurate-24", &cHardwareExperimental::Inst_Execurate24)
-  };
+    tInstLibEntry<tMethod>("execurate-24", &cHardwareExperimental::Inst_Execurate24),
+
+  
+    tInstLibEntry<tMethod>("repro", &cHardwareExperimental::Inst_Repro)
+};
   
   
   const int n_size = sizeof(s_n_array)/sizeof(cNOPEntry);
@@ -1640,4 +1643,64 @@ bool cHardwareExperimental::Inst_Execurate24(cAvidaContext& ctx)
   GetRegister(reg_used) = (0xFFFFFF & m_threads[m_cur_thread].GetExecurate());
   return true;
 }
+
+
+bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
+{
+  // const bool viable = Divide_CheckViable(ctx, div_point, child_size);
+  // these checks should be done, but currently they make some assumptions
+  // that crash when evaluating this kind of organism -- JEB
+
+  
+  if (organism->GetPhenotype().GetCurBonus() < m_world->GetConfig().REQUIRED_BONUS.Get()) return false;
+  
+  // Since the divide will now succeed, set up the information to be sent
+  // to the new organism
+  cGenome & child_genome = organism->ChildGenome();
+  child_genome = m_memory;
+  organism->GetPhenotype().SetLinesCopied(child_genome.GetSize());
+
+  int lines_executed = 0;
+  for (int i = 0; i < m_memory.GetSize(); i++) if (m_memory.FlagExecuted(i)) lines_executed++;
+  organism->GetPhenotype().SetLinesExecuted(lines_executed);
+  
+  
+  // Perform Copy Mutations...
+  if (organism->GetCopyMutProb() > 0) { // Skip this if no mutations....
+    for (int i = 0; i < GetMemory().GetSize(); i++) {
+      if (organism->TestCopyMut(ctx)) child_genome[i] = m_inst_set->GetRandomInst(ctx);
+    }
+  }
+  
+  // Handle Divide Mutations...
+  Divide_DoMutations(ctx);
+  
+  // Many tests will require us to run the offspring through a test CPU;
+  // this is, for example, to see if mutations need to be reverted or if
+  // lineages need to be updated.
+  Divide_TestFitnessMeasures(ctx);
+  
+#if INSTRUCTION_COSTS
+  // reset first time instruction costs
+  for (int i = 0; i < inst_ft_cost.GetSize(); i++) {
+    inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+  }
+#endif
+  
+  m_mal_active = false;
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
+    m_advance_ip = false;
+  }
+  
+  // Activate the child
+  bool parent_alive = organism->ActivateDivide(ctx);
+  
+  // Do more work if the parent lives through the birth of the offspring
+  if (parent_alive) {
+    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
+  }
+  
+  return true;
+}
+
 
