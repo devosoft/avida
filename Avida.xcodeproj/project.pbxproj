@@ -2417,6 +2417,12 @@
 				OTHER_CFLAGS = (
 					"-mno-fused-madd",
 					"-falign-loops=16",
+					"-ftree-loop-linear",
+					"-fvariable-expansion-in-unroller",
+					"-mmultiple",
+					"-mstring",
+					"-fgcse",
+					"-fgcse-las",
 				);
 				PER_ARCH_CFLAGS_i386 = "-DCOMPILE_ARCH=\\\"Intel\\\"";
 				PER_ARCH_CFLAGS_ppc = "-DCOMPILE_ARCH=\\\"G4-G5\\\"";
