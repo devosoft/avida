@@ -3003,7 +3003,7 @@ void cPopulation::InjectChild(int cell_id, cOrganism& parent)
 
   // Set the genotype...
   assert(parent.GetGenotype());  
-  cGenotype* new_genotype = m_world->GetClassificationManager().GetGenotypeInjected(child_genome, parent.GetGenotype()->GetLineageLabel());
+  cGenotype* new_genotype = m_world->GetClassificationManager().GetGenotype(child_genome, parent.GetGenotype(), NULL);
   new_organism->SetGenotype(new_genotype);
     
   // Setup the phenotype...
@@ -3212,7 +3212,7 @@ void cPopulation::NewTrial()
 
 void cPopulation::CompeteOrganisms(int competition_type, int parents_survive)
 {
-  cout << "==Compete Organisms==" << endl;
+  if (m_world->GetVerbosity() > VERBOSE_SILENT) cout << "==Compete Organisms==" << endl;
   double total_fitness = 0;
   int num_cells = GetSize();
   tArray<double> org_fitness(num_cells); 
@@ -3270,10 +3270,12 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive)
     avg_trial_fitnesses[t] /= num_competed_orgs;
   }
   
-  for (int t=0; t < min_trial_fitnesses.GetSize(); t++) 
+  if (m_world->GetVerbosity() > VERBOSE_SILENT)
   {
-    cout << "Trial #" << t << " Min Fitness = " << min_trial_fitnesses[t] << ", Avg fitness = " << avg_trial_fitnesses[t] << " Max Fitness = " << max_trial_fitnesses[t] << endl;
-    //cout << "Bonus sum = " << bonus_sums[t] << endl;
+    for (int t=0; t < min_trial_fitnesses.GetSize(); t++) 
+    {
+      cout << "Trial #" << t << " Min Fitness = " << min_trial_fitnesses[t] << ", Avg fitness = " << avg_trial_fitnesses[t] << " Max Fitness = " << max_trial_fitnesses[t] << endl;
+    }
   }
   
   bool using_trials = true;
@@ -3454,9 +3456,13 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive)
     }
   }
   
-  cout << "Competed: Min fitness = " << lowest_fitness << ", Avg fitness = " << average_fitness << " Max fitness = " << highest_fitness << endl;
-  cout << "Copied  : Min fitness = " << lowest_fitness_copied << ", Avg fitness = " << average_fitness_copied << ", Max fitness = " << highest_fitness_copied << endl;
-  cout << "Copied  : Different organisms = " << different_orgs_copied << endl;
+  
+  if (m_world->GetVerbosity() > VERBOSE_SILENT)
+  {
+    cout << "Competed: Min fitness = " << lowest_fitness << ", Avg fitness = " << average_fitness << " Max fitness = " << highest_fitness << endl;
+    cout << "Copied  : Min fitness = " << lowest_fitness_copied << ", Avg fitness = " << average_fitness_copied << ", Max fitness = " << highest_fitness_copied << endl;
+    cout << "Copied  : Different organisms = " << different_orgs_copied << endl;
+  }
   if (m_world->GetVerbosity() >= VERBOSE_DETAILS) cout << "Genotype Count: " << m_world->GetClassificationManager().GetGenotypeCount() << endl;
   
   // copy stats to cStats, so that these can be remembered and printed
