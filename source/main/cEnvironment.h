@@ -93,6 +93,9 @@ private:
   bool m_use_specific_inputs;  // Use specific inputs, rather than generating random ones
   tArray<int>  m_specific_inputs;
   
+  unsigned int m_mask;
+  unsigned int m_mask_value;
+  
   static bool ParseSetting(cString entry, cString& var_name, cString& var_value, const cString& var_type);
   static bool AssertInputInt(const cString& input, const cString& name, const cString& type);
   static bool AssertInputDouble(const cString& input, const cString& name, const cString& type);
@@ -125,8 +128,8 @@ public:
 
   // Interaction with the organisms
   void SetupInputs(cAvidaContext& ctx, tArray<int>& input_array, bool random = true) const;
-  void SetSpecificInputs(const tArray<int> in_input_array) 
-    { m_use_specific_inputs = true; m_specific_inputs = in_input_array; }
+  void SetSpecificInputs(const tArray<int> in_input_array) { m_use_specific_inputs = true; m_specific_inputs = in_input_array; }
+  void SetInputMask(unsigned int mask, unsigned int value) { m_mask = mask; m_mask_value = mask & value; }
   void SwapInputs(cAvidaContext& ctx, tArray<int>& src_input_array, tArray<int>& dest_input_array) const;
 
 
@@ -169,7 +172,7 @@ public:
 
 inline cEnvironment::cEnvironment(cWorld* world) : m_world(world) , m_tasklib(world),
   m_input_size(INPUT_SIZE_DEFAULT), m_output_size(OUTPUT_SIZE_DEFAULT), m_true_rand(false),
-  m_use_specific_inputs(false), m_specific_inputs()
+  m_use_specific_inputs(false), m_specific_inputs(), m_mask(0), m_mask_value(0)
 {
   mut_rates.Setup(world);
 }

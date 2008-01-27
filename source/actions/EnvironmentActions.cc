@@ -408,6 +408,36 @@ public:
 
 
 
+class cActionSetEnvironmentInputMask : public cAction
+{
+private:
+  unsigned int m_mask;
+  unsigned int m_value;
+  
+public:
+  cActionSetEnvironmentInputMask(cWorld* world, const cString& args) : cAction(world, args), m_mask(0), m_value(0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_mask = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_value = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: <int mask> <int value> "; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    //First change the environmental inputs
+    m_world->GetEnvironment().SetInputMask(m_mask, m_value);
+    
+    //Now immediately change the inputs in each cell and
+    //clear the input array of each organism so changes take effect
+    m_world->GetPopulation().ResetInputs(ctx);
+  }
+};
+
+
+
+
 class cActionSetTaskArgInt : public cAction
 {
 private:
@@ -678,6 +708,7 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetResourceOutflow>("SetResourceOutflow");
 
   action_lib->Register<cActionSetEnvironmentInputs>("SetEnvironmentInputs");
+  action_lib->Register<cActionSetEnvironmentInputMask>("SetEnvironmentInputMask");
 
   action_lib->Register<cActionSetPeriodicResource>("SetPeriodicResource");
   action_lib->Register<cActionSetNumInstBefore0Energy>("SetNumInstBefore0Energy");
