@@ -232,6 +232,10 @@ void cInstSet::LoadWithStringList(const cStringList& sl)
     m_lib_name_map[inst_id].prob_fail = args->GetDouble(0);
     m_lib_name_map[inst_id].addl_time_cost = args->GetInt(4);
     
+    if (m_lib_name_map[inst_id].cost > 1) m_has_costs = true;
+    if (m_lib_name_map[inst_id].ft_cost) m_has_ft_costs = true;
+    if (m_lib_name_map[inst_id].energy_cost) m_has_energy_costs = true;
+    
     
     // Parse the instruction code
     cString inst_code = args->GetString(0);
@@ -361,6 +365,10 @@ void cInstSet::LoadFromLegacyFile(const cString& filename)
     m_lib_name_map[inst_id].prob_fail = prob_fail;
     m_lib_name_map[inst_id].addl_time_cost = addl_time_cost;
     m_lib_name_map[inst_id].inst_code = 0;
+
+    if (m_lib_name_map[inst_id].cost > 1) m_has_costs = true;
+    if (m_lib_name_map[inst_id].ft_cost) m_has_ft_costs = true;
+    if (m_lib_name_map[inst_id].energy_cost) m_has_energy_costs = true;
     
     const int total_redundancy = m_mutation_chart.GetSize();
     m_mutation_chart.Resize(total_redundancy + redundancy);

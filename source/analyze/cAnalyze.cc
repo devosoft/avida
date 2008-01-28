@@ -3740,8 +3740,8 @@ void cAnalyze::CommandPrintResourceFitnessMap(cString cur_string)
 	  else cout << "function is neither f1 or f2! doh!\n";
 	  double thresh = react->GetTask()->GetArguments().GetDouble(3);
 	  double threshMax = react->GetTask()->GetArguments().GetDouble(4);
-	  double maxFx = react->GetTask()->GetArguments().GetDouble(1);
-	  double minFx = react->GetTask()->GetArguments().GetDouble(2);
+	  //double maxFx = react->GetTask()->GetArguments().GetDouble(1);
+	  //double minFx = react->GetTask()->GetArguments().GetDouble(2);
 
 	  // and pull the concentration of this resource from resource object loaded from resource.dat
 	  double concentration = resources.at(index).second.at(i);

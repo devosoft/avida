@@ -29,6 +29,9 @@
 #include <cassert>
 #include <iostream>
 
+#ifndef cInstSet_h
+#include "cInstSet.h"
+#endif
 #ifndef tBuffer_h
 #include "tBuffer.h"
 #endif
@@ -43,12 +46,10 @@ class cHardwareTracer;
 class cHeadCPU;
 class cInjectGenotype;
 class cInstruction;
-class cInstSet;
 class cMutation;
 class cOrganism;
 class cString;
 class cWorld;
-//class cStats; //AWC 06/29/06
 
 class cHardwareBase
 {
@@ -62,6 +63,7 @@ protected:
   int m_inst_cost;
   tArray<int> inst_ft_cost;
   tArray<int> inst_energy_cost;
+  bool m_has_any_costs;
   bool m_has_costs;
   bool m_has_ft_costs;
   bool m_has_energy_costs;
@@ -93,7 +95,10 @@ protected:
 public:
   cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set)
     : m_world(world), organism(in_organism), m_inst_set(inst_set), m_tracer(NULL)
+    , m_has_costs(inst_set->HasCosts()), m_has_ft_costs(inst_set->HasFTCosts())
+    , m_has_energy_costs(m_inst_set->HasEnergyCosts())
   {
+    m_has_any_costs = (m_has_costs | m_has_ft_costs | m_has_energy_costs);
     assert(organism != NULL);
   }
   virtual ~cHardwareBase() { ; }

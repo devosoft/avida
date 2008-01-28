@@ -547,7 +547,8 @@ void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
     const cInstruction& cur_inst = IP().GetInst();
     
     // Test if costs have been paid and it is okay to execute this now...
-    bool exec = SingleProcess_PayCosts(ctx, cur_inst);
+    bool exec = true;
+    if (m_has_any_costs) exec = SingleProcess_PayCosts(ctx, cur_inst);
 
     // Constitutive regulation applied here
     if (m_world->GetConfig().CONSTITUTIVE_REGULATION.Get() == 1) {

@@ -152,7 +152,9 @@ int cPopulationCell::GetFacing()
 	if(lr==1 && du==0) return 5; //E
 	if(lr==1 && du==-1) return 4; //SE
   
-	assert(false);  
+	assert(false);
+  
+  return 0;
 }
 
 void cPopulationCell::ResetInputs(cAvidaContext& ctx) 

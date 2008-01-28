@@ -839,7 +839,7 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
 {
 #if INSTRUCTION_COSTS
 
-  if(m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
+  if (m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
     // TODO:  Get rid of magic number. check avaliable energy first
     double energy_req = inst_energy_cost[cur_inst.GetOp()] * (organism->GetPhenotype().GetMerit().GetDouble() / 100.0); //compensate by factor of 100
 
@@ -875,20 +875,21 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
   }
   
   // Next, look at the per use cost
-  
-  if (m_inst_cost > 1) { // Current cost being paid, decrement and return false
-    m_inst_cost--;
-    return false;
-  }
-  
-  if (!m_inst_cost && m_has_costs && m_inst_set->GetCost(cur_inst) > 1) {
-    // no current cost, but there are costs active, and this instruction has a cost, setup the counter and return false
-    m_inst_cost = m_inst_set->GetCost(cur_inst) - 1;
-    return false;
-  }
+  if (m_has_costs) {
+    if (m_inst_cost > 1) { // Current cost being paid, decrement and return false
+      m_inst_cost--;
+      return false;
+    }
+    
+    if (!m_inst_cost && m_inst_set->GetCost(cur_inst) > 1) {
+      // no current cost, but there are costs active, and this instruction has a cost, setup the counter and return false
+      m_inst_cost = m_inst_set->GetCost(cur_inst) - 1;
+      return false;
+    }
 
-  // If we fall to here, reset the current cost count to zero
-  m_inst_cost = 0;
+    // If we fall to here, reset the current cost count to zero
+    m_inst_cost = 0;
+  }
 
   if (m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
     inst_energy_cost[cur_inst.GetOp()] = m_inst_set->GetEnergyCost(cur_inst); // reset instruction energy cost
@@ -899,25 +900,17 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
 
 void cHardwareBase::ResetInstructionCosts()
 {
-  const int num_inst_cost = m_inst_set->GetSize();
-  
   m_inst_cost = 0;
-  
-  inst_ft_cost.Resize(num_inst_cost);
-  inst_energy_cost.Resize(num_inst_cost);
-  
-  m_has_costs = false;
-  m_has_ft_costs = false;
-  m_has_energy_costs = false;
-  
-  for (int i = 0; i < num_inst_cost; i++) {
-    if (!m_has_costs && m_inst_set->GetCost(cInstruction(i))) m_has_costs = true;
-    
-    inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
-    if (!m_has_ft_costs && inst_ft_cost[i]) m_has_ft_costs = true;
-    
-    inst_energy_cost[i] = m_inst_set->GetEnergyCost(cInstruction(i));    
-    if(!m_has_energy_costs && inst_energy_cost[i]) m_has_energy_costs = true;
+
+  const int num_inst_cost = m_inst_set->GetSize();
+
+  if (m_has_ft_costs) {
+    inst_ft_cost.Resize(num_inst_cost);
+    for (int i = 0; i < num_inst_cost; i++) inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
   }
   
+  if (m_has_energy_costs) {
+    inst_energy_cost.Resize(num_inst_cost);
+    for (int i = 0; i < num_inst_cost; i++) inst_energy_cost[i] = m_inst_set->GetEnergyCost(cInstruction(i));
+  }
 }
