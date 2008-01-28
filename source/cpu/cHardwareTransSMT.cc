@@ -194,11 +194,13 @@ void cHardwareTransSMT::SingleProcess(cAvidaContext& ctx)
   cPhenotype& phenotype = organism->GetPhenotype();
   phenotype.IncTimeUsed();
 	
-  const int num_inst_exec = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1) ? GetNumThreads() : 1;
+  const int num_inst_exec = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1) ? m_threads.GetSize() : 1;
   
   for (int i = 0; i < num_inst_exec; i++) {
     // Setup the hardware for the next instruction to be executed.
-    ThreadNext();
+    m_cur_thread++;
+    if (m_cur_thread >= m_threads.GetSize()) m_cur_thread = 0;
+
     if (!ThreadIsRunning()) continue;
     
     AdvanceIP() = true;
@@ -301,7 +303,7 @@ bool cHardwareTransSMT::OK()
     if (!m_mem_array[i].OK()) return false;
   }
 	
-  for (int i = 0; i < GetNumThreads(); i++) {
+  for (int i = 0; i < m_threads.GetSize(); i++) {
     for(int j=0; j < NUM_LOCAL_STACKS; j++)
 			if (m_threads[i].local_stacks[j].OK() == false) return false;
     if (m_threads[i].next_label.OK() == false) return false;

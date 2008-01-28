@@ -231,8 +231,10 @@ public:
   // --------  Memory Manipulation  --------
   cCPUMemory& GetMemory() { return m_mem_array[0]; }
   const cCPUMemory& GetMemory() const { return m_mem_array[0]; }
+  int GetMemSize() const { return m_mem_array[0].GetSize(); }
   cCPUMemory& GetMemory(int mem_space) { return m_mem_array[NormalizeMemSpace(mem_space)]; }
   const cCPUMemory& GetMemory(int mem_space) const { return m_mem_array[NormalizeMemSpace(mem_space)]; }
+  int GetMemSize(int mem_space) const { return m_mem_array[NormalizeMemSpace(mem_space)].GetSize(); }
   int GetNumMemSpaces() const { return m_mem_array.GetSize(); }
   
   

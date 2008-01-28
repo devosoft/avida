@@ -261,8 +261,10 @@ public:
   // --------  Memory Manipulation  --------
   const cCPUMemory& GetMemory() const { return m_memory; }
   cCPUMemory& GetMemory() { return m_memory; }
+  int GetMemSize() const { return m_memory.GetSize(); }
   const cCPUMemory& GetMemory(int value) const { return m_memory; }
   cCPUMemory& GetMemory(int value) { return m_memory; }
+  int GetMemSize(int value) const { return  m_memory.GetSize(); }
   int GetNumMemSpaces() const { return 1; }
   
   
@@ -604,12 +606,12 @@ inline bool cHardwareCPU::ThreadSelect(const int thread_num)
 inline void cHardwareCPU::ThreadNext()
 {
   m_cur_thread++;
-  if (m_cur_thread >= GetNumThreads()) m_cur_thread = 0;
+  if (m_cur_thread >= m_threads.GetSize()) m_cur_thread = 0;
 }
 
 inline void cHardwareCPU::ThreadPrev()
 {
-  if (m_cur_thread == 0) m_cur_thread = GetNumThreads() - 1;
+  if (m_cur_thread == 0) m_cur_thread = m_threads.GetSize() - 1;
   else m_cur_thread--;
 }
 

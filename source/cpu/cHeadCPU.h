@@ -66,6 +66,7 @@ public:
   
   inline const cCPUMemory& GetMemory() const { return m_hardware->GetMemory(m_mem_space); }
   inline cCPUMemory& GetMemory() { return m_hardware->GetMemory(m_mem_space); }
+  inline int GetMemSize() const { return m_hardware->GetMemSize(m_mem_space); }
   
   void Adjust();
   inline void Reset(cHardwareBase* hw, int ms = 0) { m_hardware = hw; m_position = 0; m_mem_space = ms; }

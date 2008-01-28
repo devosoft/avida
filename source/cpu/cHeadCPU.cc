@@ -32,18 +32,22 @@ void cHeadCPU::Adjust()
 {
   assert(m_mem_space >= 0);
   // Ensure that m_mem_space is valid
-  if (m_mem_space >= m_hardware->GetNumMemSpaces()) m_mem_space %= m_hardware->GetNumMemSpaces();
+  if (m_mem_space != 0 && m_mem_space >= m_hardware->GetNumMemSpaces()) m_mem_space %= m_hardware->GetNumMemSpaces();
   
-  const int mem_size = GetMemory().GetSize();
+  const int mem_size = GetMemSize();
   
   // If we are still in range, stop here!
   if (m_position >= 0 && m_position < mem_size) return;
   
   // If the memory is gone, just stick it at the begining of its parent.
   // @DMB - note: this violates the circularity of memory spaces.  You can loop forward, but not backward.
-  if (mem_size == 0 || m_position < 0) m_position = 0;
+  if (mem_size == 0 || m_position < 0) {
+    m_position = 0;
+    return;
+  }
   
   // position back at the begining of the creature as necessary.
-  m_position %= GetMemory().GetSize();
+  if (m_position < (2 * mem_size)) m_position -= mem_size;
+  else m_position %= mem_size;
 }
 

@@ -342,8 +342,10 @@ public:
   // so be careful to fix these when changing the programid list.
   const cCPUMemory& GetMemory() const { assert(m_current); return m_current->m_memory; }
   cCPUMemory& GetMemory() { assert(m_current); return m_current->m_memory; }
+  int GetMemSize() const { assert(m_current); return m_current->m_memory.GetSize(); }
   const cCPUMemory& GetMemory(int value) const { return m_programids[value]->m_memory; }
   cCPUMemory& GetMemory(int value) { return m_programids[value]->m_memory; }
+  int GetMemSize(int value) const { return m_programids[value]->m_memory.GetSize(); }
   int GetNumMemSpaces() const { return m_programids.size(); }
   
   

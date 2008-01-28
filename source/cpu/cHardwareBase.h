@@ -147,8 +147,10 @@ public:
   // --------  Memory Manipulation  --------
   virtual const cCPUMemory& GetMemory() const = 0;
   virtual cCPUMemory& GetMemory() = 0;
+  virtual int GetMemSize() const = 0;
   virtual const cCPUMemory& GetMemory(int value) const = 0;
   virtual cCPUMemory& GetMemory(int value) = 0;
+  virtual int GetMemSize(int value) const = 0;
   virtual int GetNumMemSpaces() const = 0;
   
   
@@ -161,8 +163,8 @@ public:
   // --------  Thread Manipulation  --------
   virtual bool ThreadSelect(const int thread_id) = 0;
   virtual bool ThreadSelect(const cCodeLabel& in_label) = 0;
-  virtual void ThreadPrev() = 0;
   virtual void ThreadNext() = 0;
+  virtual void ThreadPrev() = 0;
   virtual cInjectGenotype* ThreadGetOwner() = 0;
   virtual void ThreadSetOwner(cInjectGenotype* in_genotype) = 0;
 

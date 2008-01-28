@@ -466,9 +466,9 @@ void cHardwareCPU::Reset()
     m_promoter_index = -1; // Meaning the last promoter was nothing
     m_promoter_offset = 0;
     m_promoters.Resize(0);
-    for (int i=0; i<GetMemory().GetSize(); i++)
+    for (int i=0; i< m_memory.GetSize(); i++)
     {
-      if ( (GetMemory())[i] == promoter_inst)
+      if (m_memory[i] == promoter_inst)
       {
         int code = Numberate(i-1, -1, m_world->GetConfig().PROMOTER_CODE_SIZE.Get());
         m_promoters.Push( cPromoter(i,code) );
@@ -521,7 +521,7 @@ void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
   phenotype.IncCPUCyclesUsed();
   if (!m_world->GetConfig().NO_CPU_CYCLE_TIME.Get()) phenotype.IncTimeUsed();
 
-  const int num_threads = GetNumThreads();
+  const int num_threads = m_threads.GetSize();
   
   // If we have threads turned on and we executed each thread in a single
   // timestep, adjust the number of instructions executed accordingly.
@@ -529,7 +529,8 @@ void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
   
   for (int i = 0; i < num_inst_exec; i++) {
     // Setup the hardware for the next instruction to be executed.
-    ThreadNext();
+    m_cur_thread++;
+    if (m_cur_thread >= num_threads) m_cur_thread = 0;
     
     m_advance_ip = true;
     IP().Adjust();
@@ -675,7 +676,7 @@ bool cHardwareCPU::OK()
   
   if (!m_memory.OK()) result = false;
   
-  for (int i = 0; i < GetNumThreads(); i++) {
+  for (int i = 0; i < m_threads.GetSize(); i++) {
     if (m_threads[i].stack.OK() == false) result = false;
     if (m_threads[i].next_label.OK() == false) result = false;
   }
@@ -714,8 +715,8 @@ void cHardwareCPU::PrintStatus(ostream& fp)
     fp << setfill(' ') << setbase(10) << endl;
   }
   
-  fp << "  Mem (" << GetMemory().GetSize() << "):"
-		  << "  " << GetMemory().AsString()
+  fp << "  Mem (" << m_memory.GetSize() << "):"
+		  << "  " << m_memory.AsString()
 		  << endl;
       
   if (m_world->GetConfig().PROMOTERS_ENABLED.Get())
@@ -987,7 +988,7 @@ bool cHardwareCPU::InjectHost(const cCodeLabel & in_label, const cGenome & injec
 {
   // Make sure the genome will be below max size after injection.
   
-  const int new_size = injection.GetSize() + GetMemory().GetSize();
+  const int new_size = injection.GetSize() + m_memory.GetSize();
   if (new_size > MAX_CREATURE_SIZE) return false; // (inject fails)
   
   const int inject_line = FindLabelFull(in_label).GetPosition();
@@ -1036,7 +1037,7 @@ void cHardwareCPU::ReadInst(const int in_inst)
 
 void cHardwareCPU::AdjustHeads()
 {
-  for (int i = 0; i < GetNumThreads(); i++) {
+  for (int i = 0; i < m_threads.GetSize(); i++) {
     for (int j = 0; j < NUM_HEADS; j++) {
       m_threads[i].heads[j].Adjust();
     }
@@ -1072,7 +1073,7 @@ void cHardwareCPU::ReadLabel(int max_size)
 
 bool cHardwareCPU::ForkThread()
 {
-  const int num_threads = GetNumThreads();
+  const int num_threads = m_threads.GetSize();
   if (num_threads == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
   
   // Make room for the new thread.
@@ -1095,7 +1096,7 @@ bool cHardwareCPU::ForkThread()
 bool cHardwareCPU::KillThread()
 {
   // Make sure that there is always at least one thread...
-  if (GetNumThreads() == 1) return false;
+  if (m_threads.GetSize() == 1) return false;
   
   // Note the current thread and set the current back one.
   const int kill_thread = m_cur_thread;
@@ -1105,13 +1106,13 @@ bool cHardwareCPU::KillThread()
   m_thread_id_chart ^= 1 << m_threads[kill_thread].GetID();
   
   // Copy the last thread into the kill position
-  const int last_thread = GetNumThreads() - 1;
+  const int last_thread = m_threads.GetSize() - 1;
   if (last_thread != kill_thread) {
     m_threads[kill_thread] = m_threads[last_thread];
   }
   
   // Kill the thread!
-  m_threads.Resize(GetNumThreads() - 1);
+  m_threads.Resize(m_threads.GetSize() - 1);
   
   if (m_cur_thread > kill_thread) m_cur_thread--;
   
@@ -1184,23 +1185,23 @@ inline int cHardwareCPU::FindNextRegister(int base_reg)
 
 bool cHardwareCPU::Allocate_Necro(const int new_size)
 {
-  GetMemory().ResizeOld(new_size);
+  m_memory.ResizeOld(new_size);
   return true;
 }
 
 bool cHardwareCPU::Allocate_Random(cAvidaContext& ctx, const int old_size, const int new_size)
 {
-  GetMemory().Resize(new_size);
+  m_memory.Resize(new_size);
 
   for (int i = old_size; i < new_size; i++) {
-    GetMemory()[i] = m_inst_set->GetRandomInst(ctx);
+    m_memory[i] = m_inst_set->GetRandomInst(ctx);
   }
   return true;
 }
 
 bool cHardwareCPU::Allocate_Default(const int new_size)
 {
-  GetMemory().Resize(new_size);
+  m_memory.Resize(new_size);
   
   // New space already defaults to default instruction...
   
@@ -1220,7 +1221,7 @@ bool cHardwareCPU::Allocate_Main(cAvidaContext& ctx, const int allocated_size)
     return false;
   }
   
-  const int old_size = GetMemory().GetSize();
+  const int old_size = m_memory.GetSize();
   const int new_size = old_size + allocated_size;
   
   // Make sure that the new size is in range.
@@ -1268,9 +1269,8 @@ bool cHardwareCPU::Allocate_Main(cAvidaContext& ctx, const int allocated_size)
 int cHardwareCPU::GetCopiedSize(const int parent_size, const int child_size)
 {
   int copied_size = 0;
-  const cCPUMemory& memory = GetMemory();
   for (int i = parent_size; i < parent_size + child_size; i++) {
-    if (memory.FlagCopied(i)) copied_size++;
+    if (m_memory.FlagCopied(i)) copied_size++;
   }
   return copied_size;
 }  
@@ -1279,7 +1279,7 @@ int cHardwareCPU::GetCopiedSize(const int parent_size, const int child_size)
 bool cHardwareCPU::Divide_Main(cAvidaContext& ctx, const int div_point,
                                const int extra_lines, double mut_multiplier)
 {
-  const int child_size = GetMemory().GetSize() - div_point - extra_lines;
+  const int child_size = m_memory.GetSize() - div_point - extra_lines;
   
   // Make sure this divide will produce a viable offspring.
   const bool viable = Divide_CheckViable(ctx, div_point, child_size);
@@ -1291,7 +1291,7 @@ bool cHardwareCPU::Divide_Main(cAvidaContext& ctx, const int div_point,
   child_genome = cGenomeUtil::Crop(m_memory, div_point, div_point+child_size);
   
   // Cut off everything in this memory past the divide point.
-  GetMemory().Resize(div_point);
+  m_memory.Resize(div_point);
   
   // Handle Divide Mutations...
   Divide_DoMutations(ctx, mut_multiplier);
@@ -1336,7 +1336,7 @@ bool cHardwareCPU::Divide_MainRS(cAvidaContext& ctx, const int div_point,
 {
 
   //cStats stats = m_world->GetStats();
-  const int child_size = GetMemory().GetSize() - div_point - extra_lines;
+  const int child_size = m_memory.GetSize() - div_point - extra_lines;
   
   // Make sure this divide will produce a viable offspring.
   const bool viable = Divide_CheckViable(ctx, div_point, child_size);
@@ -1348,7 +1348,7 @@ bool cHardwareCPU::Divide_MainRS(cAvidaContext& ctx, const int div_point,
   child_genome = cGenomeUtil::Crop(m_memory, div_point, div_point+child_size);
   
   // Cut off everything in this memory past the divide point.
-  GetMemory().Resize(div_point);
+  m_memory.Resize(div_point);
   
   unsigned 
     totalMutations = 0,
@@ -1427,7 +1427,7 @@ bool cHardwareCPU::Divide_Main1RS(cAvidaContext& ctx, const int div_point,
 {
 
   //cStats stats = m_world->GetStats();
-  const int child_size = GetMemory().GetSize() - div_point - extra_lines;
+  const int child_size = m_memory.GetSize() - div_point - extra_lines;
   
   // Make sure this divide will produce a viable offspring.
   const bool viable = Divide_CheckViable(ctx, div_point, child_size);
@@ -1439,7 +1439,7 @@ bool cHardwareCPU::Divide_Main1RS(cAvidaContext& ctx, const int div_point,
   child_genome = cGenomeUtil::Crop(m_memory, div_point, div_point+child_size);
   
   // Cut off everything in this memory past the divide point.
-  GetMemory().Resize(div_point);
+  m_memory.Resize(div_point);
   
   unsigned 
     totalMutations = 0,
@@ -1518,7 +1518,7 @@ bool cHardwareCPU::Divide_Main2RS(cAvidaContext& ctx, const int div_point,
 {
 
   //cStats stats = m_world->GetStats();
-  const int child_size = GetMemory().GetSize() - div_point - extra_lines;
+  const int child_size = m_memory.GetSize() - div_point - extra_lines;
   
   // Make sure this divide will produce a viable offspring.
   const bool viable = Divide_CheckViable(ctx, div_point, child_size);
@@ -1530,7 +1530,7 @@ bool cHardwareCPU::Divide_Main2RS(cAvidaContext& ctx, const int div_point,
   child_genome = cGenomeUtil::Crop(m_memory, div_point, div_point+child_size);
   
   // Cut off everything in this memory past the divide point.
-  GetMemory().Resize(div_point);
+  m_memory.Resize(div_point);
   
   unsigned 
     totalMutations = 0,
@@ -2423,7 +2423,7 @@ bool cHardwareCPU::Inst_Allocate(cAvidaContext& ctx)   // Allocate bx more space
 {
   const int src = REG_BX;
   const int dst = REG_AX;
-  const int size = GetMemory().GetSize();
+  const int size = m_memory.GetSize();
   if (Allocate_Main(ctx, GetRegister(src))) {
     GetRegister(dst) = size;
     return true;
@@ -2453,18 +2453,18 @@ bool cHardwareCPU::Inst_DivideRS(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_CDivide(cAvidaContext& ctx) 
 { 
-  return Divide_Main(ctx, GetMemory().GetSize() / 2);   
+  return Divide_Main(ctx, m_memory.GetSize() / 2);   
 }
 
 bool cHardwareCPU::Inst_CAlloc(cAvidaContext& ctx)  
 { 
-  return Allocate_Main(ctx, GetMemory().GetSize());   
+  return Allocate_Main(ctx, m_memory.GetSize());   
 }
 
 bool cHardwareCPU::Inst_MaxAlloc(cAvidaContext& ctx)   // Allocate maximal more
 {
   const int dst = REG_AX;
-  const int cur_size = GetMemory().GetSize();
+  const int cur_size = m_memory.GetSize();
   const int alloc_size = Min((int) (m_world->GetConfig().CHILD_SIZE_RANGE.Get() * cur_size),
                              MAX_CREATURE_SIZE - cur_size);
   if (Allocate_Main(ctx, alloc_size)) {
@@ -2477,7 +2477,7 @@ bool cHardwareCPU::Inst_MaxAlloc(cAvidaContext& ctx)   // Allocate maximal more
 bool cHardwareCPU::Inst_MaxAllocMoveWriteHead(cAvidaContext& ctx)   // Allocate maximal more
 {
   const int dst = REG_AX;
-  const int cur_size = GetMemory().GetSize();
+  const int cur_size = m_memory.GetSize();
   const int alloc_size = Min((int) (m_world->GetConfig().CHILD_SIZE_RANGE.Get() * cur_size),
                              MAX_CREATURE_SIZE - cur_size);
   if (Allocate_Main(ctx, alloc_size)) {
@@ -2545,12 +2545,12 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   
   // Setup child
   cCPUMemory& child_genome = organism->ChildGenome();
-  child_genome = GetMemory();
-  organism->GetPhenotype().SetLinesCopied(GetMemory().GetSize());
+  child_genome = m_memory;
+  organism->GetPhenotype().SetLinesCopied(m_memory.GetSize());
 
   int lines_executed = 0;
-  for ( int i = 0; i < GetMemory().GetSize(); i++ ) {
-    if ( GetMemory().FlagExecuted(i)) lines_executed++;
+  for ( int i = 0; i < m_memory.GetSize(); i++ ) {
+    if ( m_memory.FlagExecuted(i)) lines_executed++;
   }
   organism->GetPhenotype().SetLinesExecuted(lines_executed);
   
@@ -2559,7 +2559,7 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   
   // Perform Copy Mutations...
   if (organism->GetCopyMutProb() > 0) { // Skip this if no mutations....
-    for (int i = 0; i < GetMemory().GetSize(); i++) {
+    for (int i = 0; i < m_memory.GetSize(); i++) {
       if (organism->TestCopyMut(ctx)) {
         child_genome[i] = m_inst_set->GetRandomInst(ctx);
         //organism->GetPhenotype().IsMutated() = true;
@@ -2686,8 +2686,8 @@ bool cHardwareCPU::Inst_Inject(cAvidaContext& ctx)
   }
   
   // Since its legal to cut out the injected piece, do so.
-  cGenome inject_code( cGenomeUtil::Crop(GetMemory(), start_pos, end_pos) );
-  GetMemory().Remove(start_pos, inject_size);
+  cGenome inject_code( cGenomeUtil::Crop(m_memory, start_pos, end_pos) );
+  m_memory.Remove(start_pos, inject_size);
   
   // If we don't have a host, stop here.
   cOrganism * host_organism = organism->GetNeighbor();
@@ -2753,8 +2753,8 @@ bool cHardwareCPU::Inst_InjectThread(cAvidaContext& ctx)
   }
   
   // Since its legal to cut out the injected piece, do so.
-  cGenome inject_code( cGenomeUtil::Crop(GetMemory(), start_pos, end_pos) );
-  GetMemory().Remove(start_pos, inject_size);
+  cGenome inject_code( cGenomeUtil::Crop(m_memory, start_pos, end_pos) );
+  m_memory.Remove(start_pos, inject_size);
   
   // If we don't have a host, stop here.
   cOrganism * host_organism = organism->GetNeighbor();
@@ -3659,7 +3659,7 @@ bool cHardwareCPU::Inst_SearchB(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_MemSize(cAvidaContext& ctx)
 {
-  GetRegister(FindModifiedRegister(REG_BX)) = GetMemory().GetSize();
+  GetRegister(FindModifiedRegister(REG_BX)) = m_memory.GetSize();
   return true;
 }
 
@@ -3967,8 +3967,8 @@ bool cHardwareCPU::Inst_HeadDivideMut(cAvidaContext& ctx, double mut_multiplier)
   AdjustHeads();
   const int divide_pos = GetHead(nHardware::HEAD_READ).GetPosition();
   int child_end =  GetHead(nHardware::HEAD_WRITE).GetPosition();
-  if (child_end == 0) child_end = GetMemory().GetSize();
-  const int extra_lines = GetMemory().GetSize() - child_end;
+  if (child_end == 0) child_end = m_memory.GetSize();
+  const int extra_lines = m_memory.GetSize() - child_end;
   bool ret_val = Divide_Main(ctx, divide_pos, extra_lines, mut_multiplier);
   // Re-adjust heads.
   AdjustHeads();
@@ -3990,8 +3990,8 @@ bool cHardwareCPU::Inst_HeadDivideRS(cAvidaContext& ctx)
   AdjustHeads();
   const int divide_pos = GetHead(nHardware::HEAD_READ).GetPosition();
   int child_end =  GetHead(nHardware::HEAD_WRITE).GetPosition();
-  if (child_end == 0) child_end = GetMemory().GetSize();
-  const int extra_lines = GetMemory().GetSize() - child_end;
+  if (child_end == 0) child_end = m_memory.GetSize();
+  const int extra_lines = m_memory.GetSize() - child_end;
   bool ret_val = Divide_MainRS(ctx, divide_pos, extra_lines, 1);
   // Re-adjust heads.
   AdjustHeads();
@@ -4007,8 +4007,8 @@ bool cHardwareCPU::Inst_HeadDivide1RS(cAvidaContext& ctx)
   AdjustHeads();
   const int divide_pos = GetHead(nHardware::HEAD_READ).GetPosition();
   int child_end =  GetHead(nHardware::HEAD_WRITE).GetPosition();
-  if (child_end == 0) child_end = GetMemory().GetSize();
-  const int extra_lines = GetMemory().GetSize() - child_end;
+  if (child_end == 0) child_end = m_memory.GetSize();
+  const int extra_lines = m_memory.GetSize() - child_end;
   bool ret_val = Divide_Main1RS(ctx, divide_pos, extra_lines, 1);
   // Re-adjust heads.
   AdjustHeads();
@@ -4024,8 +4024,8 @@ bool cHardwareCPU::Inst_HeadDivide2RS(cAvidaContext& ctx)
   AdjustHeads();
   const int divide_pos = GetHead(nHardware::HEAD_READ).GetPosition();
   int child_end =  GetHead(nHardware::HEAD_WRITE).GetPosition();
-  if (child_end == 0) child_end = GetMemory().GetSize();
-  const int extra_lines = GetMemory().GetSize() - child_end;
+  if (child_end == 0) child_end = m_memory.GetSize();
+  const int extra_lines = m_memory.GetSize() - child_end;
   bool ret_val = Divide_Main2RS(ctx, divide_pos, extra_lines, 1);
   // Re-adjust heads.
   AdjustHeads();
@@ -4498,13 +4498,13 @@ int cHardwareCPU::Numberate(int _pos, int _dir, int _num_bits)
   if (_num_bits == 0) _num_bits = max_bits;
   
   // Enforce a boundary, sometimes -1 can be passed for _pos
-  int j = _pos + GetMemory().GetSize();
-  j %= GetMemory().GetSize();
+  int j = _pos + m_memory.GetSize();
+  j %= m_memory.GetSize();
   assert(j >=0);
-  assert(j < GetMemory().GetSize());
+  assert(j < m_memory.GetSize());
   while (code_size < _num_bits)
   {
-    unsigned int inst_code = (unsigned int) GetInstSet().GetInstructionCode( (GetMemory())[j] );
+    unsigned int inst_code = (unsigned int) GetInstSet().GetInstructionCode(m_memory[j]);
     // shift bits in, one by one ... excuse the counter variable pun
     for (int code_on = 0; (code_size < _num_bits) && (code_on < m_world->GetConfig().INST_CODE_LENGTH.Get()); code_on++)
     {
@@ -4524,8 +4524,8 @@ int cHardwareCPU::Numberate(int _pos, int _dir, int _num_bits)
     }
     
      // move back one inst
-    j += GetMemory().GetSize() + _dir;
-    j %= GetMemory().GetSize();
+    j += m_memory.GetSize() + _dir;
+    j %= m_memory.GetSize();
 
   }
   
