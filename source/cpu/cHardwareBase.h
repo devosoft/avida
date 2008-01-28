@@ -59,22 +59,17 @@ protected:
   cHardwareTracer* m_tracer; // Set this if you want execution traced.
 
   // Instruction costs...
-//#if INSTRUCTION_COSTS
-  tArray<int> inst_cost;
+  int m_inst_cost;
   tArray<int> inst_ft_cost;
   tArray<int> inst_energy_cost;
   bool m_has_costs;
   bool m_has_ft_costs;
   bool m_has_energy_costs;
-//#endif
 
   virtual int GetExecutedSize(const int parent_size);
   virtual int GetCopiedSize(const int parent_size, const int child_size) = 0;  
   
   bool Divide_CheckViable(cAvidaContext& ctx, const int parent_size, const int child_size);
-public:  //@JEB
-  unsigned Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier = 1.0, const int maxmut = INT_MAX);
-  bool Divide_TestFitnessMeasures(cAvidaContext& ctx);
 
 protected:
   unsigned Divide_DoExactMutations(cAvidaContext& ctx, double mut_multiplier = 1.0, const int pointmut = INT_MAX);
@@ -86,6 +81,10 @@ protected:
 																	 cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);
   int TriggerMutations_ScopeGlobal(cAvidaContext& ctx, const cMutation* cur_mut,
 																	 cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);
+  
+  virtual bool SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst);
+  void ResetInstructionCosts();
+  
   
   cHardwareBase(); // @not_implemented
   cHardwareBase(const cHardwareBase&); // @not_implemented
@@ -107,8 +106,10 @@ public:
   // --------  Core Functionality  --------
   virtual void Reset() = 0;
   virtual void SingleProcess(cAvidaContext& ctx) = 0;
-  virtual bool SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst);  //should be protected
   virtual void ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst) = 0;
+
+  unsigned Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier = 1.0, const int maxmut = INT_MAX);
+  bool Divide_TestFitnessMeasures(cAvidaContext& ctx);
   
   
   // --------  Helper methods  --------

@@ -167,27 +167,7 @@ void cHardwareSMT::Reset()
 		Stack(i).Clear();
 	}
 	
-#if INSTRUCTION_COSTS
-  // instruction cost arrays
-  const int num_inst_cost = m_inst_set->GetSize();
-  inst_cost.Resize(num_inst_cost);
-  inst_ft_cost.Resize(num_inst_cost);
-  inst_energy_cost.Resize(num_inst_cost);
-  m_has_costs = false;
-  m_has_ft_costs = false;
-  m_has_energy_costs = false;
-  
-  for (int i = 0; i < num_inst_cost; i++) {
-    inst_cost[i] = m_inst_set->GetCost(cInstruction(i));
-    if (!m_has_costs && inst_cost[i]) m_has_costs = true;
-    
-    inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
-    if (!m_has_ft_costs && inst_ft_cost[i]) m_has_ft_costs = true;
-
-    inst_energy_cost[i] = m_inst_set->GetEnergyCost(cInstruction(i));    
-    if(!m_has_energy_costs && inst_energy_cost[i]) m_has_energy_costs = true;
-  }
-#endif
+  ResetInstructionCosts();
   
   organism->NetReset();
 }

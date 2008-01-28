@@ -838,7 +838,6 @@ bool cHardwareBase::Inst_HalfEnergyUsage(cAvidaContext& ctx) {
 bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
 {
 #if INSTRUCTION_COSTS
-  assert(cur_inst.GetOp() < inst_cost.GetSize());
 
   if(m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
     // TODO:  Get rid of magic number. check avaliable energy first
@@ -876,18 +875,49 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
   }
   
   // Next, look at the per use cost
-  if (m_has_costs && m_inst_set->GetCost(cur_inst) > 0) {
-    if (inst_cost[cur_inst.GetOp()] > 1) {  // if isn't paid off (>1)
-      inst_cost[cur_inst.GetOp()]--;        // dec cost
-      return false;
-    } else {                                // else, reset cost array
-      inst_cost[cur_inst.GetOp()] = m_inst_set->GetCost(cur_inst);
-    }
+  
+  if (m_inst_cost > 1) { // Current cost being paid, decrement and return false
+    m_inst_cost--;
+    return false;
   }
   
+  if (!m_inst_cost && m_has_costs && m_inst_set->GetCost(cur_inst) > 1) {
+    // no current cost, but there are costs active, and this instruction has a cost, setup the counter and return false
+    m_inst_cost = m_inst_set->GetCost(cur_inst) - 1;
+    return false;
+  }
+
+  // If we fall to here, reset the current cost count to zero
+  m_inst_cost = 0;
+
   if (m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
     inst_energy_cost[cur_inst.GetOp()] = m_inst_set->GetEnergyCost(cur_inst); // reset instruction energy cost
   }
 #endif
   return true;
+}
+
+void cHardwareBase::ResetInstructionCosts()
+{
+  const int num_inst_cost = m_inst_set->GetSize();
+  
+  m_inst_cost = 0;
+  
+  inst_ft_cost.Resize(num_inst_cost);
+  inst_energy_cost.Resize(num_inst_cost);
+  
+  m_has_costs = false;
+  m_has_ft_costs = false;
+  m_has_energy_costs = false;
+  
+  for (int i = 0; i < num_inst_cost; i++) {
+    if (!m_has_costs && m_inst_set->GetCost(cInstruction(i))) m_has_costs = true;
+    
+    inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+    if (!m_has_ft_costs && inst_ft_cost[i]) m_has_ft_costs = true;
+    
+    inst_energy_cost[i] = m_inst_set->GetEnergyCost(cInstruction(i));    
+    if(!m_has_energy_costs && inst_energy_cost[i]) m_has_energy_costs = true;
+  }
+  
 }
