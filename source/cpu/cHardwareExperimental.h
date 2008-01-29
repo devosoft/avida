@@ -300,11 +300,20 @@ public:
   bool GetMalActive() const   { return m_mal_active; }
   
 private:
+  
+  // ---------- Utility Functions -----------
+  inline unsigned int BitCount(unsigned int value) const;
+  
+  
   // ---------- Instruction Library -----------
 
   // Flow Control
   bool Inst_IfNEqu(cAvidaContext& ctx);
   bool Inst_IfLess(cAvidaContext& ctx);
+  bool Inst_IfConsensus(cAvidaContext& ctx);
+  bool Inst_IfConsensus24(cAvidaContext& ctx);
+  bool Inst_IfLessConsensus(cAvidaContext& ctx);
+  bool Inst_IfLessConsensus24(cAvidaContext& ctx);
   bool Inst_Label(cAvidaContext& ctx);
     
   // Stack and Register Operations
@@ -341,17 +350,14 @@ private:
   bool Inst_HeadWrite(cAvidaContext& ctx);
   bool Inst_HeadCopy(cAvidaContext& ctx);
   bool Inst_HeadSearch(cAvidaContext& ctx);
+  bool Inst_HeadSearchLabel(cAvidaContext& ctx);
   bool Inst_SetFlow(cAvidaContext& ctx);
-  bool Inst_Goto(cAvidaContext& ctx);
   
   // Goto Variants
-  bool Inst_GotoIfNot0(cAvidaContext& ctx);
-  bool Inst_GotoIf0(cAvidaContext& ctx);
+  bool Inst_Goto(cAvidaContext& ctx);
+  bool Inst_GotoConsensus(cAvidaContext& ctx);
+  bool Inst_GotoConsensus24(cAvidaContext& ctx);
   
-  // Throw-Catch Model
-  bool Inst_Throw(cAvidaContext& ctx);
-  bool Inst_ThrowIf0(cAvidaContext& ctx);
-  bool Inst_ThrowIfNot0(cAvidaContext& ctx);
 
   // Promoter Model
   bool Inst_Promoter(cAvidaContext& ctx);
@@ -372,7 +378,6 @@ private:
   // Bit consensus functions
   bool Inst_BitConsensus(cAvidaContext& ctx);
   bool Inst_BitConsensus24(cAvidaContext& ctx);
-  bool BitConsensus(cAvidaContext& ctx, const unsigned int num_bits);
   
   bool Inst_Execurate(cAvidaContext& ctx);
   bool Inst_Execurate24(cAvidaContext& ctx);
@@ -463,5 +468,6 @@ inline void cHardwareExperimental::SwitchStack()
   m_threads[m_cur_thread].cur_stack++;
   if (m_threads[m_cur_thread].cur_stack > 1) m_threads[m_cur_thread].cur_stack = 0;
 }
+
 
 #endif

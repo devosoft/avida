@@ -51,6 +51,19 @@
 using namespace std;
 
 
+static const unsigned int CONSENSUS = (sizeof(int) * 8) / 2;
+static const unsigned int CONSENSUS24 = 12;
+static const unsigned int MASK24 = 0xFFFFFF;
+
+inline unsigned int cHardwareExperimental::BitCount(unsigned int value) const
+{
+  const unsigned int w = value - ((value >> 1) & 0x55555555);
+  const unsigned int x = (w & 0x33333333) + ((w >> 2) & 0x33333333);
+  const unsigned int bit_count = ((x + (x >> 4) & 0xF0F0F0F) * 0x1010101) >> 24;
+  return bit_count;
+}
+
+
 tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::s_inst_slib = cHardwareExperimental::initInstLib();
 
 tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(void)
@@ -82,11 +95,18 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("NULL", &cHardwareExperimental::Inst_Nop, 0, "True no-operation instruction: does nothing"),
     tInstLibEntry<tMethod>("nop-X", &cHardwareExperimental::Inst_Nop, 0, "True no-operation instruction: does nothing"),
 
+    
+    // Standard Conditionals
     tInstLibEntry<tMethod>("if-n-equ", &cHardwareExperimental::Inst_IfNEqu, nInstFlag::DEFAULT, "Execute next instruction if ?BX?!=?CX?, else skip it"),
     tInstLibEntry<tMethod>("if-less", &cHardwareExperimental::Inst_IfLess, nInstFlag::DEFAULT, "Execute next instruction if ?BX? < ?CX?, else skip it"),
-    
-    tInstLibEntry<tMethod>("label", &cHardwareExperimental::Inst_Label, (nInstFlag::DEFAULT | nInstFlag::LABEL)),
-    
+
+    tInstLibEntry<tMethod>("if-cons", &cHardwareExperimental::Inst_IfConsensus, 0, "Execute next instruction if ?BX? in consensus, else skip it"),
+    tInstLibEntry<tMethod>("if-cons-24", &cHardwareExperimental::Inst_IfConsensus24, 0, "Execute next instruction if ?BX[0:23]? in consensus , else skip it"),
+    tInstLibEntry<tMethod>("if-less-cons", &cHardwareExperimental::Inst_IfLessConsensus, 0, "Execute next instruction if Count(?BX?) < Count(?CX?), else skip it"),
+    tInstLibEntry<tMethod>("if-less-cons-24", &cHardwareExperimental::Inst_IfLessConsensus24, 0, "Execute next instruction if Count(?BX[0:23]?) < Count(?CX[0:23]?), else skip it"),
+
+
+    // Core ALU Operations
     tInstLibEntry<tMethod>("pop", &cHardwareExperimental::Inst_Pop, nInstFlag::DEFAULT, "Remove top number from stack and place into ?BX?"),
     tInstLibEntry<tMethod>("push", &cHardwareExperimental::Inst_Push, nInstFlag::DEFAULT, "Copy number from ?BX? and place it into the stack"),
     tInstLibEntry<tMethod>("swap-stk", &cHardwareExperimental::Inst_SwitchStack, nInstFlag::DEFAULT, "Toggle which stack is currently being used"),
@@ -99,38 +119,45 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
 
     tInstLibEntry<tMethod>("add", &cHardwareExperimental::Inst_Add, nInstFlag::DEFAULT, "Add BX to CX and place the result in ?BX?"),
     tInstLibEntry<tMethod>("sub", &cHardwareExperimental::Inst_Sub, nInstFlag::DEFAULT, "Subtract CX from BX and place the result in ?BX?"),
-    tInstLibEntry<tMethod>("mult", &cHardwareExperimental::Inst_Mult, 0, "Multiple BX by CX and place the result in ?BX?"),
-    tInstLibEntry<tMethod>("div", &cHardwareExperimental::Inst_Div, 0, "Divide BX by CX and place the result in ?BX?"),
-    tInstLibEntry<tMethod>("mod", &cHardwareExperimental::Inst_Mod),
     tInstLibEntry<tMethod>("nand", &cHardwareExperimental::Inst_Nand, nInstFlag::DEFAULT, "Nand BX by CX and place the result in ?BX?"),
     
     tInstLibEntry<tMethod>("IO", &cHardwareExperimental::Inst_TaskIO, nInstFlag::DEFAULT, "Output ?BX?, and input new number back into ?BX?"),
     
-    // Head-based instructions
-    tInstLibEntry<tMethod>("h-alloc", &cHardwareExperimental::Inst_HeadAlloc, nInstFlag::DEFAULT, "Allocate maximum allowed space"),
-    tInstLibEntry<tMethod>("h-divide", &cHardwareExperimental::Inst_HeadDivide, nInstFlag::DEFAULT, "Divide code between read and write heads."),
-    tInstLibEntry<tMethod>("h-read", &cHardwareExperimental::Inst_HeadRead),
-    tInstLibEntry<tMethod>("h-write", &cHardwareExperimental::Inst_HeadWrite),
-    tInstLibEntry<tMethod>("h-copy", &cHardwareExperimental::Inst_HeadCopy, nInstFlag::DEFAULT, "Copy from read-head to write-head; advance both"),
+    tInstLibEntry<tMethod>("mult", &cHardwareExperimental::Inst_Mult, 0, "Multiple BX by CX and place the result in ?BX?"),
+    tInstLibEntry<tMethod>("div", &cHardwareExperimental::Inst_Div, 0, "Divide BX by CX and place the result in ?BX?"),
+    tInstLibEntry<tMethod>("mod", &cHardwareExperimental::Inst_Mod),
+    
+    
+    // Flow Control Instructions
+    tInstLibEntry<tMethod>("label", &cHardwareExperimental::Inst_Label, (nInstFlag::DEFAULT | nInstFlag::LABEL)),
+    
     tInstLibEntry<tMethod>("h-search", &cHardwareExperimental::Inst_HeadSearch, nInstFlag::DEFAULT, "Find complement template and make with flow head"),
     tInstLibEntry<tMethod>("mov-head", &cHardwareExperimental::Inst_MoveHead, nInstFlag::DEFAULT, "Move head ?IP? to the flow head"),
+    
     tInstLibEntry<tMethod>("jmp-head", &cHardwareExperimental::Inst_JumpHead, nInstFlag::DEFAULT, "Move head ?Flow? by amount in ?CX? register"),
     tInstLibEntry<tMethod>("get-head", &cHardwareExperimental::Inst_GetHead, nInstFlag::DEFAULT, "Copy the position of the ?IP? head into ?CX?"),
+    
+    tInstLibEntry<tMethod>("h-search-lbl", &cHardwareExperimental::Inst_HeadSearchLabel, nInstFlag::LABEL, "Find complement template and make with flow head"),
+    
+    
+    // Replication Instructions
+    tInstLibEntry<tMethod>("h-alloc", &cHardwareExperimental::Inst_HeadAlloc, nInstFlag::DEFAULT, "Allocate maximum allowed space"),
+    tInstLibEntry<tMethod>("h-divide", &cHardwareExperimental::Inst_HeadDivide, nInstFlag::DEFAULT, "Divide code between read and write heads."),
+    tInstLibEntry<tMethod>("h-copy", &cHardwareExperimental::Inst_HeadCopy, nInstFlag::DEFAULT, "Copy from read-head to write-head; advance both"),
     tInstLibEntry<tMethod>("if-label", &cHardwareExperimental::Inst_IfLabel, nInstFlag::DEFAULT, "Execute next if we copied complement of attached label"),
-    tInstLibEntry<tMethod>("set-flow", &cHardwareExperimental::Inst_SetFlow, nInstFlag::DEFAULT, "Set flow-head to position in ?CX?"),
-    tInstLibEntry<tMethod>("goto", &cHardwareExperimental::Inst_Goto, 0, "Move IP to labeled position matching the label that follows"),
 
+    tInstLibEntry<tMethod>("h-read", &cHardwareExperimental::Inst_HeadRead, 0, "Read from the read-head, place into ?BX?, advance read-head"),
+    tInstLibEntry<tMethod>("h-write", &cHardwareExperimental::Inst_HeadWrite, 0, "Write from ?BX? to the write head, advance write-head"),
+    
+    tInstLibEntry<tMethod>("repro", &cHardwareExperimental::Inst_Repro, 0, "Instantly reproduces the organism"),
+
+    
     // Goto Variants
-    tInstLibEntry<tMethod>("goto-if=0", &cHardwareExperimental::Inst_GotoIf0),    
-    tInstLibEntry<tMethod>("goto-if!=0", &cHardwareExperimental::Inst_GotoIfNot0),
+    tInstLibEntry<tMethod>("goto", &cHardwareExperimental::Inst_Goto, 0, "Move IP to labeled position matching the label that follows"),
+    tInstLibEntry<tMethod>("goto-if-cons", &cHardwareExperimental::Inst_GotoConsensus, 0, "Move IP to the labeled position if BX consensus"), 
+    tInstLibEntry<tMethod>("goto-if-cons-24", &cHardwareExperimental::Inst_GotoConsensus24, 0, "Move IP to the labeled position if BX consensus"), 
     
-    // Throw-Catch Model
-    tInstLibEntry<tMethod>("throw", &cHardwareExperimental::Inst_Throw),
-    tInstLibEntry<tMethod>("throwif=0", &cHardwareExperimental::Inst_ThrowIf0),    
-    tInstLibEntry<tMethod>("throwif!=0", &cHardwareExperimental::Inst_ThrowIfNot0),
-    tInstLibEntry<tMethod>("catch", &cHardwareExperimental::Inst_Label, nInstFlag::LABEL),
     
-
     // Promoter Model
     tInstLibEntry<tMethod>("promoter", &cHardwareExperimental::Inst_Promoter, nInstFlag::PROMOTER),
     tInstLibEntry<tMethod>("terminate", &cHardwareExperimental::Inst_Terminate),
@@ -145,8 +172,9 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("execurate-24", &cHardwareExperimental::Inst_Execurate24),
 
   
-    tInstLibEntry<tMethod>("repro", &cHardwareExperimental::Inst_Repro)
-};
+    // DEPRECATED Instructions
+    tInstLibEntry<tMethod>("set-flow", &cHardwareExperimental::Inst_SetFlow, 0, "Set flow-head to position in ?CX?")
+  };
   
   
   const int n_size = sizeof(s_n_array)/sizeof(cNOPEntry);
@@ -966,6 +994,36 @@ bool cHardwareExperimental::Inst_IfLess(cAvidaContext& ctx)       // Execute nex
   return true;
 }
 
+bool cHardwareExperimental::Inst_IfConsensus(cAvidaContext& ctx)
+{
+  const int op1 = FindModifiedRegister(REG_BX);
+  if (BitCount(GetRegister(op1)) <  CONSENSUS)  IP().Advance();
+  return true;
+}
+
+bool cHardwareExperimental::Inst_IfConsensus24(cAvidaContext& ctx)
+{
+  const int op1 = FindModifiedRegister(REG_BX);
+  if (BitCount(GetRegister(op1) & MASK24) <  CONSENSUS24)  IP().Advance();
+  return true;
+}
+
+bool cHardwareExperimental::Inst_IfLessConsensus(cAvidaContext& ctx)
+{
+  const int op1 = FindModifiedRegister(REG_BX);
+  const int op2 = FindModifiedNextRegister(op1);
+  if (BitCount(GetRegister(op1)) >=  BitCount(GetRegister(op2)))  IP().Advance();
+  return true;
+}
+
+bool cHardwareExperimental::Inst_IfLessConsensus24(cAvidaContext& ctx)
+{
+  const int op1 = FindModifiedRegister(REG_BX);
+  const int op2 = FindModifiedNextRegister(op1);
+  if (BitCount(GetRegister(op1) & MASK24) >=  BitCount(GetRegister(op2) & MASK24))  IP().Advance();
+  return true;
+}
+
 bool cHardwareExperimental::Inst_Label(cAvidaContext& ctx)
 {
   ReadLabel();
@@ -1262,6 +1320,16 @@ bool cHardwareExperimental::Inst_HeadSearch(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareExperimental::Inst_HeadSearchLabel(cAvidaContext& ctx)
+{
+  ReadLabel();
+  GetLabel().Rotate(1, NUM_NOPS);
+  cHeadCPU found_pos = FindLabelStart(true);
+  GetHead(nHardware::HEAD_FLOW).Set(found_pos);
+  GetHead(nHardware::HEAD_FLOW).Advance();
+  return true;
+}
+
 bool cHardwareExperimental::Inst_SetFlow(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_CX);
@@ -1278,9 +1346,9 @@ bool cHardwareExperimental::Inst_Goto(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_GotoIfNot0(cAvidaContext& ctx)
+bool cHardwareExperimental::Inst_GotoConsensus(cAvidaContext& ctx)
 {
-  if (GetRegister(REG_BX) == 0) return true;
+  if (BitCount(GetRegister(REG_BX)) < CONSENSUS) return true;
   
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
@@ -1289,9 +1357,9 @@ bool cHardwareExperimental::Inst_GotoIfNot0(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_GotoIf0(cAvidaContext& ctx)
+bool cHardwareExperimental::Inst_GotoConsensus24(cAvidaContext& ctx)
 {
-  if (GetRegister(REG_BX) != 0) return true;
+  if (BitCount(GetRegister(REG_BX) & MASK24) < CONSENSUS24) return true;
   
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
@@ -1300,35 +1368,6 @@ bool cHardwareExperimental::Inst_GotoIf0(cAvidaContext& ctx)
   return true;
 }
 
-
-bool cHardwareExperimental::Inst_Throw(cAvidaContext& ctx)
-{
-  ReadLabel();
-  cHeadCPU found_pos = FindLabelForward(true);
-  IP().Set(found_pos);
-  return true;
-}
-
-
-bool cHardwareExperimental::Inst_ThrowIfNot0(cAvidaContext& ctx)
-{
-  if (GetRegister(REG_BX) == 0) return true;
-
-  ReadLabel();
-  cHeadCPU found_pos = FindLabelForward(true);
-  IP().Set(found_pos);
-  return true;
-}
-
-bool cHardwareExperimental::Inst_ThrowIf0(cAvidaContext& ctx)
-{
-  if (GetRegister(REG_BX) != 0) return true;
-  
-  ReadLabel();
-  cHeadCPU found_pos = FindLabelForward(true);
-  IP().Set(found_pos);
-  return true;
-}
 
 
 
@@ -1580,33 +1619,18 @@ int cHardwareExperimental::Numberate(int _pos, int _dir, int _num_bits)
 
 bool cHardwareExperimental::Inst_BitConsensus(cAvidaContext& ctx)
 {
-  return BitConsensus(ctx, sizeof(int) * 8);
+  const int reg_used = FindModifiedRegister(REG_BX);
+  const int op1 = FindModifiedNextRegister(reg_used);
+  GetRegister(reg_used) = (BitCount(GetRegister(op1)) >= CONSENSUS) ? 1 : 0;
+  return true; 
 }
 
 // Looks at only the lower 24 bits
 bool cHardwareExperimental::Inst_BitConsensus24(cAvidaContext& ctx)
 {
-  return BitConsensus(ctx, 24);
-}
-
-bool cHardwareExperimental::BitConsensus(cAvidaContext& ctx, const unsigned int num_bits)
-{
-  assert(num_bits <= sizeof(int) * 8);
-  
   const int reg_used = FindModifiedRegister(REG_BX);
   const int op1 = FindModifiedNextRegister(reg_used);
-  
-  int reg_val = GetRegister(op1);
-  unsigned int bits_on = 0;
-  
-  // @DMB - probably should use fast bit counting here 
-  
-  for (unsigned int i = 0; i < num_bits; i++) {
-    bits_on += (reg_val & 1);
-    reg_val >>= 1;
-  }
-  
-  GetRegister(reg_used) = ( bits_on >= (sizeof(int) * 8)/2 ) ? 1 : 0;
+  GetRegister(reg_used) = (BitCount(GetRegister(op1) & MASK24) >= CONSENSUS24) ? 1 : 0;
   return true; 
 }
 
@@ -1622,7 +1646,7 @@ bool cHardwareExperimental::Inst_Execurate(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_Execurate24(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_BX);
-  GetRegister(reg_used) = (0xFFFFFF & m_threads[m_cur_thread].GetExecurate());
+  GetRegister(reg_used) = (MASK24 & m_threads[m_cur_thread].GetExecurate());
   return true;
 }
 
