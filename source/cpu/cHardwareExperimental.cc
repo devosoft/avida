@@ -1348,11 +1348,7 @@ bool cHardwareExperimental::Inst_Terminate(cAvidaContext& ctx)
   // Reset the thread.
   if (m_world->GetConfig().TERMINATION_RESETS.Get())
   {
-    //const int write_head_pos = GetHead(nHardware::HEAD_WRITE).GetPosition();
-    //const int read_head_pos = GetHead(nHardware::HEAD_READ).GetPosition();
     m_threads[m_cur_thread].Reset(this, m_threads[m_cur_thread].GetID());
-    //GetHead(nHardware::HEAD_WRITE).Set(write_head_pos);
-    //GetHead(nHardware::HEAD_READ).Set(read_head_pos);
     
     //Setting this makes it harder to do things. You have to be modular.
     organism->GetOrgInterface().ResetInputs(ctx);   // Re-randomize the inputs this organism sees
@@ -1363,7 +1359,7 @@ bool cHardwareExperimental::Inst_Terminate(cAvidaContext& ctx)
   // Reset our count
   m_threads[m_cur_thread].ResetPromoterInstExecuted();
   m_advance_ip = false;
-  const int reg_used = REG_BX; // register to put chosen promoter code in, for now always BX
+  const int promoter_reg_used = REG_DX; // register to put chosen promoter code in, default to DX
   
   
   // @DMB - should the promoter index and offset be stored in cLocalThread to allow multiple threads?
@@ -1399,16 +1395,16 @@ bool cHardwareExperimental::Inst_Terminate(cAvidaContext& ctx)
         // Set defaults for when no active promoter is found
         m_promoter_index = -1;
         IP().Set(0);
-        GetRegister(reg_used) = 0;
-        
-        // @JEB HACK! -- All kinds of bad stuff happens if execution length is zero. For now:
-        if (m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() == 2) m_memory.SetFlagExecuted(0);
+        GetRegister(promoter_reg_used) = 0;
         break;
+        
       case 1: // Death to organisms that refuse to use promoters!
         organism->Die();
         break;
+        
       default:
         cout << "Unrecognized NO_ACTIVE_PROMOTER_EFFECT setting: " << m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() << endl;
+        exit(1);
         break;
     }
   } else {
@@ -1417,7 +1413,8 @@ bool cHardwareExperimental::Inst_Terminate(cAvidaContext& ctx)
     IP().Set(m_promoters[m_promoter_index].m_pos + 1);
     
     // Put its bit code in BX for the organism to have if option is set
-    if (m_world->GetConfig().PROMOTER_TO_REGISTER.Get()) GetRegister(reg_used) = m_promoters[m_promoter_index].m_bit_code;
+    if (m_world->GetConfig().PROMOTER_TO_REGISTER.Get())
+      GetRegister(promoter_reg_used) = m_promoters[m_promoter_index].m_bit_code;
   }
   return true;
 }
