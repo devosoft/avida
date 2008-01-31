@@ -1,7 +1,7 @@
 ;--- Begin Test Configuration File (test_list) ---
 [main]
 ; Command line arguments to pass to the application
-args = -a -set MAX_CONCURRENCY $(cpus)s
+args = -a -set MAX_CONCURRENCY %(cpus)s
 app = %(default_app)s
 nonzeroexit = disallow   ; Exit code handling (disallow, allow, or require)
                          ;  disallow - treat non-zero exit codes as failures
