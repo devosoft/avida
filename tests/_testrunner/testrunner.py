@@ -52,8 +52,8 @@ import xml.dom.minidom
 
 # Global Constants
 # ---------------------------------------------------------------------------------------------------------------------------
-TESTRUNNER_VERSION = "1.5"
-TESTRUNNER_COPYRIGHT = "2007"
+TESTRUNNER_VERSION = "1.5a"
+TESTRUNNER_COPYRIGHT = "2007-2008"
 
 TRUE_STRINGS = ("y","Y","yes","Yes","true","True","1")
 RESAVAIL = True
@@ -371,7 +371,9 @@ class cTest:
     # Create test directory and populate with config
     try:
       shutil.copytree(confdir, rundir)
-    except (IOError, OSError):
+    except (IOError, OSError), e:
+      print "Error: unable to create run dir"
+      print "  -- root cause: %s" % e
       self.success = False
       return
       
@@ -694,7 +696,7 @@ class cTest:
 
     try:
       shutil.copytree(rundir, expectdir)
-    except (IOError, OSError):
+    except (IOError, OSError), e:
       return False
 
     for cfile in self.confstruct.keys():
@@ -1002,7 +1004,7 @@ def main(argv):
 
   # Load the default app to test
   try:
-    settings["default_app"] = cfg.get("main", "app")
+    settings["default_app"] = os.path.abspath(cfg.get("main", "app"))
   except:
     print "Warning: No default app configured"
   
