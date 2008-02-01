@@ -39,6 +39,7 @@
 
 #include "cFLTKBox.h"
 #include "cFLTKGridView.h"
+#include "cFLTKLegend.h"
 #include "cFLTKWindow.h"
 #include "tFLTKButton.h"
 #include "tFLTKMenu.h"
@@ -69,6 +70,8 @@ private:
   cFLTKBox m_title_box;
 
   cFLTKGridView m_grid_view;
+  cFLTKLegend m_legend;
+
   tFLTKMenu<cDriver_FLTKViewer> m_grid_view_menu;
   tFLTKMenu<cDriver_FLTKViewer> m_grid_tags_menu;
   tFLTKMenu<cDriver_FLTKViewer> m_grid_symbol_menu;

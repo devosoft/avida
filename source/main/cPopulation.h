@@ -223,10 +223,10 @@ public:
 
   bool OK();
 
-  int GetSize() { return cell_array.GetSize(); }
-  int GetWorldX() { return world_x; }
-  int GetWorldY() { return world_y; }
-  int GetNumDemes() { return deme_array.GetSize(); }
+  int GetSize() const { return cell_array.GetSize(); }
+  int GetWorldX() const { return world_x; }
+  int GetWorldY() const { return world_y; }
+  int GetNumDemes() const { return deme_array.GetSize(); }
   cDeme& GetDeme(int i) { return deme_array[i]; }
 
   cPopulationCell& GetCell(int in_num);

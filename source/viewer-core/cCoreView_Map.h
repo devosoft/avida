@@ -72,7 +72,10 @@ protected:
   tArray<int> m_symbol_grid;    // Should we have special symbols at each cell?
   tArray<int> m_tag_grid;         // Track tagged cells.
 
-  int scale_max;
+  tArray<int> m_color_counts;     // A count of how many cells are of each color.
+  tArray<cString> m_color_labels; // Labels for each color.
+
+  int m_scale_max;
 
   void SetColors_Genotype(int ignore);
   void SetColors_Fitness(int ignore);
@@ -98,9 +101,13 @@ public:
   int GetSymbolMode() const { return m_symbol_mode; }
   int GetTagMode() const { return m_tag_mode; }
 
-  const tArray<int> & GetColors() { return m_color_grid; }
-  const tArray<int> & GetSymbols() { return m_symbol_grid; }
-  const tArray<int> & GetTags() { return m_tag_grid; }
+  const tArray<int> & GetColors() const { return m_color_grid; }
+  const tArray<int> & GetSymbols() const { return m_symbol_grid; }
+  const tArray<int> & GetTags() const { return m_tag_grid; }
+
+  const tArray<int> & GetColorCounts() const { return m_color_counts; }
+
+  int GetColorCount(int i) const { return m_color_counts[i]; }
 
   int GetNumModes() const { return m_view_modes.GetSize(); }
   const cString & GetModeName(int id) const { return m_view_modes[id]->GetName(); }
@@ -110,6 +117,7 @@ public:
   void UpdateMaps();
 
   void SetMode(int mode);
+  void SetScaleMax(int in_max) { m_scale_max = in_max; }
 };
 
 #endif

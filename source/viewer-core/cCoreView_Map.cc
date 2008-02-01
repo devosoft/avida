@@ -36,7 +36,7 @@ cCoreView_Map::cCoreView_Map(cCoreView_Info & info)
   , m_color_mode(0)
   , m_symbol_mode(-1)
   , m_tag_mode(-1)
-  , scale_max(80)
+  , m_scale_max(0)
 {
   // Setup the available view modes...
   AddViewMode("Genotypes",      &cCoreView_Map::SetColors_Genotype, VIEW_COLOR, COLORS_TYPES);
@@ -117,6 +117,10 @@ void cCoreView_Map::SetColors_Fitness(int ignore)
   cPopulation & pop = m_info.GetPopulation();
   m_color_grid.Resize(pop.GetSize());
 
+  // Keep track of how many times each color was assigned.
+  m_color_counts.Resize(m_scale_max);
+  m_color_counts.SetAll(0);
+
   // Determine the max and min in the population.
   double max_fit = 3;
   double min_fit = -2;
@@ -129,6 +133,7 @@ void cCoreView_Map::SetColors_Fitness(int ignore)
     fit = log(fit);
     // if (fit < min_fit) min_fit = fit;
     if (fit > max_fit) max_fit = fit;
+    if (fit < min_fit) min_fit = fit;
   }
   double fit_diff = max_fit - min_fit;
   if (fit_diff == 0.0) fit_diff = 1.0;
@@ -137,15 +142,19 @@ void cCoreView_Map::SetColors_Fitness(int ignore)
   for (int i = 0; i < pop.GetSize(); i++) {
     cOrganism * org = pop.GetCell(i).GetOrganism();
     if (org == NULL) {
-      m_color_grid[i] = -1;
+      m_color_grid[i] = 0;
+      m_color_counts[0]++;
       continue;
     }
     double fit = org->GetPhenotype().GetFitness();
     if (fit == 0.0) {
-      m_color_grid[i] = 0;
+      m_color_grid[i] = 1;
+      m_color_counts[1]++;
+      continue;
     }
     fit = log(fit);
-    m_color_grid[i] = 1 + (int) ((scale_max - 2) * ((fit - min_fit) / fit_diff));
+    m_color_grid[i] = 1 + (int) ((m_scale_max - 2) * ((fit - min_fit) / fit_diff));
+    m_color_counts[m_color_grid[i]]++;
   }
 }
 

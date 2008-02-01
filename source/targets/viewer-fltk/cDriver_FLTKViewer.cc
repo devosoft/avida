@@ -42,16 +42,26 @@
 #include "cFLTKBox.h"
 #include "tFLTKButton.h"
 
+#include "avidalogo.xpm"
+
 #include <cstdlib>
 
 #include <FL/Fl.H>
+// #include <FL/Fl_JPEG_Image.H>
 
 using namespace std;
 
 #define FLTK_MAINWIN_WIDTH  800
 #define FLTK_MAINWIN_HEIGHT 600
 #define FLTK_MENUBAR_HEIGHT 35
-#define FLTK_BODY_HEIGHT (FLTK_MAINWIN_HEIGHT - FLTK_MENUBAR_HEIGHT)
+#define FLTK_SPACING 5
+#define FLTK_GRID_SIDE 502
+
+#define FLTK_SIDEBAR_WIDTH (FLTK_MAINWIN_WIDTH - FLTK_GRID_SIDE - 3*FLTK_SPACING)
+#define FLTK_SIDEBAR_HEIGHT (FLTK_MAINWIN_HEIGHT - 2*FLTK_SPACING)
+#define FLTK_BODY_HEIGHT (FLTK_MAINWIN_HEIGHT - 2 * FLTK_MENUBAR_HEIGHT - 2 * FLTK_SPACING)
+#define FLTK_MENU1_Y FLTK_BODY_HEIGHT
+#define FLTK_MENU2_Y (FLTK_MENU1_Y + FLTK_MENUBAR_HEIGHT + FLTK_SPACING)
 
 #define FLTK_MENU_FONT_SIZE 20
 
@@ -60,15 +70,16 @@ cDriver_FLTKViewer::cDriver_FLTKViewer(cWorld* world)
   , m_info(world, 18)
   , m_done(false)
   , m_main_window(FLTK_MAINWIN_WIDTH, FLTK_MAINWIN_HEIGHT, "Avida")
-  , m_body_box(m_main_window, 0, FLTK_MENUBAR_HEIGHT, FLTK_MAINWIN_WIDTH, FLTK_BODY_HEIGHT)
-  , m_update_box(m_main_window, 0, 0, 200, FLTK_MENUBAR_HEIGHT, "Update 0")
-  , m_title_box(m_main_window, 600, 0, 200, FLTK_MENUBAR_HEIGHT, "Avida")
-  , m_grid_view(m_info, m_main_window, 10, FLTK_MENUBAR_HEIGHT+10, FLTK_MAINWIN_WIDTH-20, FLTK_BODY_HEIGHT-60)
-  , m_grid_view_menu(m_main_window,    50, FLTK_MAINWIN_HEIGHT-45, 80, 30, "View:")
-  , m_grid_tags_menu(m_main_window,   180, FLTK_MAINWIN_HEIGHT-45, 80, 30, "Tags:")
-  , m_grid_symbol_menu(m_main_window, 310, FLTK_MAINWIN_HEIGHT-45, 80, 30, "Shape:")
-  , m_pause_button(m_main_window, 600, FLTK_MAINWIN_HEIGHT - 45, 80, 30, "Pause", cGUIButton::BUTTON_LIGHT)
-  , m_quit_button(m_main_window,  700, FLTK_MAINWIN_HEIGHT - 45, 80, 30, "&Quit")
+  , m_body_box(m_main_window, 0, 0, FLTK_MAINWIN_WIDTH, FLTK_BODY_HEIGHT)
+  , m_update_box(m_main_window, 100, FLTK_MENU2_Y, 200, FLTK_MENUBAR_HEIGHT, "Update: 0")
+  , m_title_box(m_main_window,    0, FLTK_MENU2_Y,  80, FLTK_MENUBAR_HEIGHT)
+  , m_grid_view(m_info, m_main_window, FLTK_SPACING, FLTK_SPACING, FLTK_GRID_SIDE, FLTK_GRID_SIDE)
+  , m_legend(m_grid_view, m_main_window, FLTK_GRID_SIDE + 2*FLTK_SPACING, FLTK_SPACING, FLTK_SIDEBAR_WIDTH, FLTK_SIDEBAR_HEIGHT)
+  , m_grid_view_menu(m_main_window,   140, FLTK_MENU1_Y, 80, 30, "View:")
+  , m_grid_tags_menu(m_main_window,   270, FLTK_MENU1_Y, 80, 30, "Tags:")
+  , m_grid_symbol_menu(m_main_window, 400, FLTK_MENU1_Y, 80, 30, "Mark:")
+  , m_pause_button(m_main_window,     400, FLTK_MENU2_Y, 30, 30, "@||")
+  , m_quit_button(m_main_window,      440, FLTK_MENU2_Y, 30, 30, "@square")
 {
   // Setup the initial view mode (loaded from avida.cfg)
   m_info.SetViewMode(world->GetConfig().VIEW_MODE.Get());
@@ -82,10 +93,18 @@ cDriver_FLTKViewer::cDriver_FLTKViewer(cWorld* world)
 
   m_update_box.SetType(cGUIBox::BOX_NONE);
   m_update_box.SetFontSize(FLTK_MENU_FONT_SIZE);
+  m_update_box.SetFontAlign(FL_ALIGN_INSIDE | FL_ALIGN_LEFT);
+  m_update_box.SetTooltip("Updates are the natural timescale in Avida");
   m_update_box.Refresh();
  
   m_title_box.SetType(cGUIBox::BOX_NONE);
+  m_title_box.SetFont(FL_HELVETICA_BOLD);
   m_title_box.SetFontSize(FLTK_MENU_FONT_SIZE);
+  m_title_box.SetFontColor(cColor::DARK_MAGENTA);
+  cString title_tooltip;
+  title_tooltip.Set("Avida Version %s\nby Charles Ofria", VERSION);
+  m_title_box.SetTooltip(title_tooltip);
+  m_title_box.SetImage_XPM(avidalogo);
   m_title_box.Refresh();
 
   cCoreView_Map & map_info = m_grid_view.GetMapInfo();
@@ -106,7 +125,11 @@ cDriver_FLTKViewer::cDriver_FLTKViewer(cWorld* world)
   m_grid_symbol_menu.SetActive(0);
 
   m_pause_button.SetCallback(this, &cDriver_FLTKViewer::ButtonCallback_Pause);
+  m_pause_button.SetTooltip("Pause");
   m_quit_button.SetCallback(this, &cDriver_FLTKViewer::ButtonCallback_Quit);
+  m_quit_button.SetFontColor(cColor::DARK_RED);
+  m_quit_button.SetFontSize(12);
+  m_quit_button.SetTooltip("Quit");
 
   m_main_window.Finalize();
 }
@@ -360,6 +383,7 @@ void cDriver_FLTKViewer::DoUpdate()
   m_update_box.Refresh();
   
   m_grid_view.Redraw();
+  m_legend.Redraw();
 
   const int pause_level = m_info.GetPauseLevel();
 
@@ -428,7 +452,15 @@ void cDriver_FLTKViewer::ButtonCallback_Quit(double ignore)
 
 void cDriver_FLTKViewer::ButtonCallback_Pause(double ignore)
 {
-  m_info.TogglePause();
+  bool paused = m_info.TogglePause();
+  if (paused == true) {
+    m_pause_button.SetLabel("@>");
+    m_pause_button.SetTooltip("Play");
+  }
+  else {
+    m_pause_button.SetLabel("@||");
+    m_pause_button.SetTooltip("Pause");
+  }
 }
 
 

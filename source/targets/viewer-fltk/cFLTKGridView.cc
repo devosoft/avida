@@ -27,6 +27,8 @@
 #include "cCoreView_Info.h"
 #include "cPopulation.h"
 
+#include "functions.h"
+
 void cFLTKGridView::SetGenotypeColor(int color_id)
 {
   switch (color_id) {
@@ -64,23 +66,19 @@ void cFLTKGridView::Draw()
   const int world_y = m_info.GetPopulation().GetWorldY();
 
   // Determine how large each cell can be and still fit in the window.
-  int cell_w = (w() - 2) / world_x;
-  int cell_h = (h() - 2) / world_y;
-  
-  // Make sure the cells are square.
-  if (cell_w < cell_h) cell_h = cell_w;
-  else cell_w = cell_h;
+  const int cell_side = Min((w() - 2) / world_x, (h() - 2) / world_y);
+  const int grid_x = world_x * cell_side;
+  const int grid_y = world_y * cell_side;
 
-//   const int grid_offset_x = 10;
-//   const int grid_offset_y = 10;
+  const int grid_offset_x = (w() - grid_x) / 2 + 1;
+  const int grid_offset_y = (h() - grid_y) / 2 + 1;
 
-//   SetColor(cColor::WHITE);
-//   DrawBox(0,0,GetWidth(), GetHeight(), true);
+  SetColor(cColor::WHITE);
+  DrawBox(0, 0, GetWidth(), GetHeight(), true);  // White box around map
   
   SetColor(cColor::BLACK);
-  // DrawBox(0,0,GetWidth(), GetHeight(), false);
-  // DrawBox(grid_offset_x, grid_offset_y, world_x*10+10, world_y*10+10, true);
-  DrawBox(0, 0, world_x*cell_w+2, world_y*cell_h+2, true);
+  DrawBox(0, 0, GetWidth(), GetHeight(), false);   // Outline
+  DrawBox(grid_offset_x - 2, grid_offset_y - 2, grid_x+2, grid_y+2, true);  // Black grid background
 
   m_map_info.UpdateMaps();
   const tArray<int> & color_map( m_map_info.GetColors() );
@@ -89,20 +87,22 @@ void cFLTKGridView::Draw()
   
   int id = 0;
   for (int y = 0; y < world_y; y++) {
+    const int cur_y = grid_offset_y + y * cell_side;
     for (int x = 0; x < world_x; x++) {
       if (color_method == cCoreView_Map::COLORS_SCALE) {
 	if (color_map[id] < 0) SetColor(cColor::BLACK);
-	else SetColor(cColor::SET_BRIGHT[color_map[id]]);
+	else SetColor(cColor::SCALE_BRIGHT[color_map[id]]);
       } else {
 	SetGenotypeColor(color_map[id]);
       }
+      const int cur_x = grid_offset_x + x * cell_side;
+      DrawBox(cur_x, cur_y, cell_side-2, cell_side-2, true);
       //      DrawCircle(x*10, y*10, 4);
-      DrawBox(x*cell_w+2, y*cell_h+2, cell_w-2, cell_h-2, true);
 
-      //SetTagColor(tag_map[id]);
       if (tag_map[id] > 0) {
 	SetColor(cColor::GREEN);
-	DrawBox(x*cell_w+1, y*cell_h+1, cell_w, cell_h, false);
+	//	DrawBox(cur_x - 1, cur_y - 1, cell_side, cell_side, false);
+	DrawBox(cur_x, cur_y, cell_side-2, cell_side-2, false);
       }
 
       id++;

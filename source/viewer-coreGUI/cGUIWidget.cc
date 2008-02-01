@@ -26,17 +26,17 @@
 #include "cGUIContainer.h"
 
 cGUIWidget::cGUIWidget()
-  : m_parent(NULL), m_x(0), m_y(0), m_width(0), m_height(0), m_font_size(20)
+  : m_parent(NULL), m_x(0), m_y(0), m_width(0), m_height(0)
 {
 }
 
 cGUIWidget::cGUIWidget(int x, int y, int width, int height, const cString & name)
-    : m_parent(NULL), m_name(name), m_x(x), m_y(y), m_width(width), m_height(height), m_font_size(20)
+    : m_parent(NULL), m_name(name), m_x(x), m_y(y), m_width(width), m_height(height)
 {
 }
 
 cGUIWidget::cGUIWidget(cGUIContainer & parent, int x, int y, int width, int height, const cString & name)
-  : m_parent(&parent), m_name(name), m_x(x), m_y(y), m_width(width), m_height(height), m_font_size(20)
+  : m_parent(&parent), m_name(name), m_x(x), m_y(y), m_width(width), m_height(height)
 {
   parent.Add(this);
 }

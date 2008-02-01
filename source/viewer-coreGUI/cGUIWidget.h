@@ -42,7 +42,7 @@ protected:
   int m_width;
   int m_height;
 
-  int m_font_size;
+  //  int m_font_size;
 public:
   cGUIWidget();
   cGUIWidget(int x, int y, int width=0, int height=0, const cString & name="");
@@ -61,10 +61,10 @@ public:
   int GetY() const { return m_y; }
   int GetWidth() const { return m_width; }
   int GetHeight() const { return m_height; }
-  int GetFontSize() const { return m_font_size; }
+  //  int GetFontSize() const { return m_font_size; }
   
   void SetName(const cString & _name) { m_name = _name; }
-  void SetFontSize(int _size) { m_font_size = _size; }
+  //  void SetFontSize(int _size) { m_font_size = _size; }
   void Resize(int new_w, int new_h) { m_width = new_w; m_height = new_h; }
 };
 

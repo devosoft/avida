@@ -156,6 +156,7 @@ LIST(APPEND ALL_INC_DIRS ${CLASSIFICATION_DIR})
 SET(COREVIEW_DIR ${PROJECT_SOURCE_DIR}/source/viewer-core)
 SET(COREVIEW_SOURCES
   ${COREVIEW_DIR}/cCoreView_Info.cc
+  ${COREVIEW_DIR}/cCoreView_Map.cc
 )
 SOURCE_GROUP(coreview FILES ${COREVIEW_SOURCES})
 LIST(APPEND AVIDA_CORE_SOURCES ${COREVIEW_SOURCES})
@@ -165,6 +166,7 @@ LIST(APPEND ALL_INC_DIRS ${COREVIEW_DIR})
 # The core GUI  directory
 SET(COREGUI_DIR ${PROJECT_SOURCE_DIR}/source/viewer-coreGUI)
 SET(COREGUI_SOURCES
+  ${COREGUI_DIR}/cColor.cc
   ${COREGUI_DIR}/cGUIWidget.cc
 )
 SOURCE_GROUP(coregui FILES ${COREGUI_SOURCES})
@@ -268,6 +270,7 @@ SET(TOOLS_DIR ${PROJECT_SOURCE_DIR}/source/tools)
 SET(TOOLS_SOURCES
   ${TOOLS_DIR}/cArgContainer.cc
   ${TOOLS_DIR}/cArgSchema.cc
+  ${TOOLS_DIR}/cBitArray.cc
   ${TOOLS_DIR}/cChangeList.cc
   ${TOOLS_DIR}/cConstSchedule.cc
   ${TOOLS_DIR}/cDataEntry.cc
@@ -446,22 +449,15 @@ IF(AVD_GUI_PROTO_TEXT)
     SET(AVIDA_TEXT_VIEWER_DIR source/targets/viewer-text)
     SET(AVIDA_TEXT_VIEWER_SOURCES
 #      ${AVIDA_TEXT_VIEWER_DIR}/cAnalyzeScreen.cc
-#      ${AVIDA_TEXT_VIEWER_DIR}/cAnalyzeView.cc
-#      ${AVIDA_TEXT_VIEWER_DIR}/cBarScreen.cc
 #      ${AVIDA_TEXT_VIEWER_DIR}/cEnvironmentScreen.cc
 #      ${AVIDA_TEXT_VIEWER_DIR}/cHistScreen.cc
-#      ${AVIDA_TEXT_VIEWER_DIR}/cMapScreen.cc
 #      ${AVIDA_TEXT_VIEWER_DIR}/cMenuWindow.cc
 #      ${AVIDA_TEXT_VIEWER_DIR}/cOptionsScreen.cc
-#      ${AVIDA_TEXT_VIEWER_DIR}/cScreen.cc
 #      ${AVIDA_TEXT_VIEWER_DIR}/cStatsScreen.cc
-#      ${AVIDA_TEXT_VIEWER_DIR}/cSymbolUtil.cc
-      ${AVIDA_TEXT_VIEWER_DIR}/cTextWindow.cc
-#      ${AVIDA_TEXT_VIEWER_DIR}/cView.cc
-#      ${AVIDA_TEXT_VIEWER_DIR}/cViewInfo.cc
 #      ${AVIDA_TEXT_VIEWER_DIR}/cZoomScreen.cc
+      ${AVIDA_TEXT_VIEWER_DIR}/cScreen_Map.cc
+      ${AVIDA_TEXT_VIEWER_DIR}/cTextWindow.cc
       ${AVIDA_TEXT_VIEWER_DIR}/cDriver_TextViewer.cc
-#      ${AVIDA_TEXT_VIEWER_DIR}/cTextViewerManager.cc
       ${AVIDA_TEXT_VIEWER_DIR}/viewer-text.cc
     )
     SOURCE_GROUP(targets\\viewer-text FILES ${AVIDA_TEXT_VIEWER_SOURCES})
@@ -509,11 +505,13 @@ IF(AVD_GUI_PROTO_FLTK)
       ${AVIDA_FLTK_VIEWER_DIR}/cDriver_FLTKViewer.cc
       ${AVIDA_FLTK_VIEWER_DIR}/viewer-fltk.cc
       ${AVIDA_FLTK_VIEWER_DIR}/fltk-defs.cc
+      ${AVIDA_FLTK_VIEWER_DIR}/cFLTKGridView.cc
+      ${AVIDA_FLTK_VIEWER_DIR}/cFLTKLegend.cc
     )
     SOURCE_GROUP(targets\\viewer-fltk FILES ${AVIDA_FLTK_VIEWER_SOURCES})
     ADD_EXECUTABLE(avida-fltkview ${AVIDA_FLTK_VIEWER_SOURCES})
     
-    SET(AVIDA_FLTK_VIEWER_LIBS avidacore ${FLTK_BASE_LIBRARY})
+    SET(AVIDA_FLTK_VIEWER_LIBS avidacore ${FLTK_BASE_LIBRARY} ${FLTK_IMAGE_LIBRARY} $(FLTK_JPEG_LIBRARY))
     IF(NOT MSVC)
       LIST(APPEND AVIDA_FLTK_VIEWER_LIBS pthread)
     ENDIF(NOT MSVC)

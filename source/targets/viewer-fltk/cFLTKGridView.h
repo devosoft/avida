@@ -40,14 +40,20 @@ private:
   cCoreView_Info & m_info;
   cCoreView_Map m_map_info;
 
-  void SetGenotypeColor(int color_id);
 public:
   cFLTKGridView(cCoreView_Info & info, cGUIContainer & parent,
 		int x, int y, int w, int h, const cString & name="")
-    : cFLTKBaseDraw(parent, x, y, w, h, name), m_info(info), m_map_info(info) { ; }
+    : cFLTKBaseDraw(parent, x, y, w, h, name), m_info(info), m_map_info(info)
+  {
+    cColor::Setup();
+    m_map_info.SetScaleMax(cColor::SCALE_BRIGHT.GetSize());
+  }
   ~cFLTKGridView() { ; }
 
+  cCoreView_Info & GetInfo() { return m_info; }
   cCoreView_Map & GetMapInfo() { return m_map_info; }
+
+  void SetGenotypeColor(int color_id);
 
   void Draw();
 

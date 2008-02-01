@@ -57,6 +57,14 @@ FIND_LIBRARY(FLTK_BASE_LIBRARY
   NAMES fltk
   PATHS /usr/local/lib /usr/lib /lib
   )
+FIND_LIBRARY(FLTK_IMAGE_LIBRARY
+  NAMES fltk_images
+  PATHS /usr/local/lib /usr/lib /lib
+  )
+FIND_LIBRARY(FLTK_JPEG_LIBRARY
+  NAMES fltk_jpeg
+  PATHS /usr/local/lib /usr/lib /lib
+  )
 FIND_LIBRARY(XEXT_LIBRARY
   NAMES Xext
   PATHS /usr/local/lib /usr/lib /lib /usr/X11R6/lib

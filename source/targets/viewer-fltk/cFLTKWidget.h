@@ -32,11 +32,14 @@
 
 #include <FL/Fl_Widget.H>
 #include <FL/fl_draw.H>
+#include <FL/Fl_Pixmap.H>
 
 class cFLTKWidget {
 protected:
   Fl_Widget * m_widget;
   cGUIWidget * m_gui_widget;
+
+  cString m_tooltip;
 
 public:
   cFLTKWidget(cGUIWidget * gui_widget) : m_widget(NULL), m_gui_widget(gui_widget) { ; }
@@ -50,9 +53,44 @@ public:
     m_widget->color(fl_color());
   }
 
+  void SetLabel(const cString & name) {
+    assert(m_widget != NULL);
+    m_widget->copy_label(name);
+    m_gui_widget->SetName(name);
+  }
+
+  void SetFont(int id) {
+    m_widget->labelfont(id);
+  }
+  
+  void SetFontSize(int size) {
+    m_widget->labelsize(size);
+  }
+  
+  void SetFontColor(const cColor & color) {
+    assert(m_widget != NULL);
+    fl_color(color.Red(), color.Green(), color.Blue());
+    m_widget->labelcolor(fl_color());
+  }
+
+  void SetFontAlign(int id) {
+    m_widget->align(id);
+  }
+
+  void SetTooltip(const cString & in_tip) {
+    m_tooltip = in_tip;
+    m_widget->tooltip(m_tooltip);
+  }
+  
+  void SetImage_XPM(char *xpm_info[]) {
+    // @CAO Should save the pixmap?
+    Fl_Pixmap * pixmap = new Fl_Pixmap(xpm_info);
+    m_widget->image(pixmap);
+  }
+
   void Refresh() {
     m_widget->copy_label(m_gui_widget->GetName());
-    m_widget->labelsize(m_gui_widget->GetFontSize());
+    // m_widget->labelsize(m_gui_widget->GetFontSize());
     m_widget->redraw();
   }
 

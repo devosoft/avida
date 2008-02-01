@@ -33,7 +33,7 @@
 #include "FL/Fl_Button.H"
 #include "FL/Fl_Light_Button.H"
 
-template <class T> class tFLTKButton : public tGUIButton<T> {
+template <class T> class tFLTKButton : public tGUIButton<T>, public cFLTKWidget {
 protected:
   Fl_Button * m_button;
 
@@ -41,6 +41,7 @@ public:
   tFLTKButton(cGUIContainer & parent, int x, int y, int width, int height, const cString & name="",
 	      cGUIButton::eButtonType type=cGUIButton::BUTTON_NORMAL)
     : tGUIButton<T>(parent, x, y, width, height, name, type)
+    , cFLTKWidget(this)
   {
     if (type == cGUIButton::BUTTON_NORMAL) {
       m_button = new Fl_Button(x, y, width, height, name);
@@ -53,6 +54,7 @@ public:
     }
 
     m_button->callback((Fl_Callback*) GenericButtonCallback, (void*)(this));
+    SetWidget(m_button);
   }
   ~tFLTKButton() { delete m_button; }
 

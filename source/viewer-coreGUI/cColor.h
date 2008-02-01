@@ -39,6 +39,8 @@ private:
 
 public:
   cColor(int r=0, int g=0, int b=0) : m_red(r), m_green(g), m_blue(b) { ; }
+  cColor(double r, double g, double b) 
+    : m_red((int) (r*255.0)), m_green((int) (g*255.0)), m_blue((int) (b*255.0)) { ; }
   cColor(const cColor & _in) : m_red(_in.m_red), m_green(_in.m_green), m_blue(_in.m_blue) { ; }
 
   cColor & operator=(const cColor & _in) { m_red=_in.m_red; m_green=_in.m_green; m_blue=_in.m_blue; }
@@ -75,8 +77,12 @@ public:
   static const cColor DARK_CYAN;
   static const cColor DARK_MAGENTA;
 
-  static tArray<cColor> SET_BRIGHT;  
-  static tArray<cColor> SET_DARK;
+  static tArray<cColor> SCALE_FULL;
+  static tArray<cColor> SCALE_BRIGHT;  
+  static tArray<cColor> SCALE_DARK;
+  static tArray<cColor> SCALE_PASTEL;
+  static tArray<cColor> SCALE_HOT;
+  static tArray<cColor> SCALE_COLD;
 
   static void Setup();
 };
