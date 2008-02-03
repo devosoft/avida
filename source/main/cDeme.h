@@ -88,6 +88,9 @@ public:
   //! Replaces this deme's germline.
   void ReplaceGermline(const cGermline& germline);
   
+  //! Update this deme's merit from the given source.
+  void UpdateDemeMerit(cDeme& source);
+
   // -= Update support =-
   //! Called once, at the end of every update.
   void ProcessUpdate();

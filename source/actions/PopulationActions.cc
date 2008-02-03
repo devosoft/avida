@@ -995,6 +995,7 @@ public:
     'full_deme' - ...demes that have been filled up.
     'corners'   - ...demes with upper left and lower right corners filled.
     'deme-age'  - ...demes that are a certain age
+    'birth-count' ...demes that have had a certain number of births.
 */
 
 class cActionReplicateDemes : public cAction
@@ -1012,6 +1013,7 @@ public:
     else if (in_trigger == "full_deme") m_rep_trigger = 1;
     else if (in_trigger == "corners") m_rep_trigger = 2;
     else if (in_trigger == "deme-age") m_rep_trigger = 3;
+    else if (in_trigger == "birth-count") m_rep_trigger = 4;
     else {
       cString err("Unknown replication trigger '");
       err += in_trigger;

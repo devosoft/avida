@@ -293,13 +293,16 @@ public:
   CONFIG_ADD_VAR(START_CREATURE, cString, "default-classic.org", "Organism to seed the soup");
   
   CONFIG_ADD_GROUP(DEME_GROUP, "Demes and Germlines");
-  CONFIG_ADD_VAR(NUM_DEMES, int, 1, "Number of independent groups in the population.");
-  CONFIG_ADD_VAR(DEMES_USE_GERMLINE, int, 0, "Whether demes use a distinct germline; 0=off");
-  CONFIG_ADD_VAR(DEMES_HAVE_MERIT, int, 0, "Whether demes have merit; 0=no");
-  CONFIG_ADD_VAR(GERMLINE_COPY_MUT, double, 0.0075, "Prob. of copy mutations occuring during\ngermline replication.");
-  CONFIG_ADD_VAR(GERMLINE_REPLACES_SOURCE, int, 0, "Whether the source germline is updated\non replication; 0=no.");
-  CONFIG_ADD_VAR(GERMLINE_RANDOM_PLACEMENT, int, 0, "Defines how the seed for a germline is placed\n within the deme;\n0 = organisms is placed in center of deme, no orientation\n1 = organisms is placed in center of deme and oriented\n2 = organism is randomly placed in deme, no orientation");
-  CONFIG_ADD_VAR(MAX_DEME_AGE, int, 500, "The maximum age of a deme (in updates) to be\nused for age-based replication (default=500).");  
+  CONFIG_ADD_VAR(NUM_DEMES, int, 1, "Number of independent groups in the\npopulation (default=1).");
+  CONFIG_ADD_VAR(DEMES_USE_GERMLINE, int, 0, "Whether demes use a distinct germline (default=0).");
+  CONFIG_ADD_VAR(DEMES_HAVE_MERIT, int, 0, "Whether demes have merit (default=0).");
+  CONFIG_ADD_VAR(DEMES_PREVENT_STERILE, int, 0, "Whether to prevent sterile demes from\nreplicating (default=0).");
+  CONFIG_ADD_VAR(DEMES_REPLICATE_SIZE, int, 1, "Number of organisms to create or copy from the\nsource deme to the target deme (default=1).");
+  CONFIG_ADD_VAR(DEMES_ORGANISM_PLACEMENT, int, 0, "How organisms are placed during deme replication.\n0=cell-array middle (default).\n1=deme center.\n2=random placement.");
+  CONFIG_ADD_VAR(DEMES_ORGANISM_FACING, int, 0, "How organisms are facing during deme replication.\n0=unchanged (default).\n1=northwest.\n2=random.");
+  CONFIG_ADD_VAR(DEMES_MAX_AGE, int, 500, "The maximum age of a deme (in updates) to be\nused for age-based replication (default=500).");
+  CONFIG_ADD_VAR(DEMES_MAX_BIRTHS, int, 100, "The maximum number of births that can occur\nwithin a deme; used with birth-count\nreplication (default=100).");
+  CONFIG_ADD_VAR(GERMLINE_COPY_MUT, double, 0.0075, "Prob. of copy mutations occuring during\ngermline replication (default=0.0075).");
   
   CONFIG_ADD_GROUP(REPRODUCTION_GROUP, "Birth and Death");
   CONFIG_ADD_VAR(BIRTH_METHOD, int, 0, "Which organism should be replaced on birth?\n0 = Random organism in neighborhood\n1 = Oldest in neighborhood\n2 = Largest Age/Merit in neighborhood\n3 = None (use only empty cells in neighborhood)\n4 = Random from population (Mass Action)\n5 = Oldest in entire population\n6 = Random within deme\n7 = Organism faced by parent\n8 = Next grid cell (id+1)\n9 = Largest energy used in entire population\n10 = Largest energy used in neighborhood");

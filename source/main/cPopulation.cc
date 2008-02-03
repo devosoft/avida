@@ -112,6 +112,15 @@ cPopulation::cPopulation(cWorld* world)
   }
 
   // Error checking for demes vs. non-demes setup.
+
+  // The following combination of options creates an infinite rotate-loop.
+  assert(!((m_world->GetConfig().DEMES_ORGANISM_PLACEMENT.Get()==0)
+           && (m_world->GetConfig().DEMES_ORGANISM_FACING.Get()==1)
+           && (m_world->GetConfig().WORLD_GEOMETRY.Get()==1)));
+  
+  // Not yet supported:
+  assert(m_world->GetConfig().DEMES_REPLICATE_SIZE.Get()==1);
+  
 #ifdef DEBUG
   const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
 
@@ -1063,27 +1072,30 @@ void cPopulation::ReplicateDemes(int rep_trigger)
 {
   assert(GetNumDemes()>1); // Sanity check.
   
-  // Determine which demes should be replicated.
-  const int num_demes = GetNumDemes();
-  
   // Loop through all candidate demes...
-  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
-    cDeme & source_deme = deme_array[deme_id];
+  const int num_demes = GetNumDemes();
+  for(int deme_id=0; deme_id<num_demes; ++deme_id) {
+    cDeme& source_deme = deme_array[deme_id];
     
     // Doesn't make sense to try and replicate a deme that *has no organisms*.
     if(source_deme.IsEmpty()) continue;
+    
+    // Prevent sterile demes from replicating.
+    if(m_world->GetConfig().DEMES_PREVENT_STERILE.Get() && (source_deme.GetBirthCount() == 0)) {
+      continue;
+    }
     
     // Test this deme to determine if it should be replicated.  If not,
     // continue on to the next deme.
     switch (rep_trigger) {
       case 0: {
         // Replicate all non-empty demes.
-        if (source_deme.IsEmpty()) continue;
+        if(source_deme.IsEmpty()) continue;
         break;
       }
       case 1: {
         // Replicate all full demes.
-        if (source_deme.IsFull() == false) continue;
+        if(!source_deme.IsFull()) continue;
         break;
       }
       case 2: {
@@ -1097,7 +1109,12 @@ void cPopulation::ReplicateDemes(int rep_trigger)
       }
       case 3: {
         // Replicate old demes.
-        if(source_deme.GetAge() < m_world->GetConfig().MAX_DEME_AGE.Get()) continue;
+        if(source_deme.GetAge() < m_world->GetConfig().DEMES_MAX_AGE.Get()) continue;
+        break;
+      }
+      case 4: {
+        // Replicate demes that have had a certain number of births.
+        if(source_deme.GetBirthCount() < m_world->GetConfig().DEMES_MAX_BIRTHS.Get()) continue;
         break;
       }
       default: {
@@ -1107,159 +1124,212 @@ void cPopulation::ReplicateDemes(int rep_trigger)
       }
     }
     
-    // -- If we made it this far, we should replicate this deme --
-    cRandom& random = m_world->GetRandom();
-    
-    // Choose a random target deme to replicate to, and kill all the organisms
-    // in that deme.
+    // If we made it this far, we should replicate this deme.  Pick a target
+    // deme to replicate to, making sure that we don't try to replicate over ourself.
     int target_id = deme_id;
     while(target_id == deme_id) {
-      target_id = random.GetUInt(num_demes);
+      target_id = m_world->GetRandom().GetUInt(num_demes);
     }
-    cDeme& target_deme = deme_array[target_id];
-    for (int i=0; i<target_deme.GetSize(); i++) {
-      KillOrganism(cell_array[target_deme.GetCellID(i)]);
-    }
-        
-    // Ok, there are two potential places where the seed for the target deme can
-    // come from.  First, it could be a random organism in the source deme.
-    // Second, it could be an offspring of the source deme's germline, if the config
-    // option DEMES_USE_GERMLINE is set.
-    if(m_world->GetConfig().DEMES_USE_GERMLINE.Get()) {
-      // Get the latest germ from the source deme.
-      cGermline& source_germline = source_deme.GetGermline();
-      cGenome& source_germ = source_germline.GetLatest();
-      
-      // Now create the next germ by manually mutating the source.
-      // @refactor (strategy pattern)
-      cGenome next_germ(source_germ);
-      if(m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0) {
-        const cInstSet& instset = m_world->GetHardwareManager().GetInstSet();
-        cAvidaContext ctx(m_world->GetRandom());        
-        for(int i=0; i<next_germ.GetSize(); ++i) {
-          if(m_world->GetRandom().P(m_world->GetConfig().GERMLINE_COPY_MUT.Get())) {
-            next_germ[i] = instset.GetRandomInst(ctx);
-          }
-        }
-      }
-      
-      // Here we're adding the next_germ to the germline(s).  Note the
-      // config option to determine if we should update the source_germline
-      // as well.
-      target_deme.ReplaceGermline(source_germline);
-      cGermline& target_germline = target_deme.GetGermline();
-      target_germline.Add(next_germ);
-      if(m_world->GetConfig().GERMLINE_REPLACES_SOURCE.Get()) {
-        source_germline.Add(next_germ);
-      }
-      
-      // Kill all the organisms in the source deme.
-      for (int i=0; i<source_deme.GetSize(); i++) {
-        KillOrganism(cell_array[source_deme.GetCellID(i)]);
-      }
     
-      // And reset both demes, in case they have any cleanup work to do.
-      source_deme.Reset();
-      target_deme.Reset();
+    ReplaceDeme(source_deme, deme_array[target_id]);
+  }
+}
+
+
+/*! ReplaceDeme is a helper method that handles all the different configuration
+options related to the replacement of a target deme by a source.  It works with
+both CompeteDemes and ReplicateDemes (and can be called directly via an event if
+so desired).
+
+@refactor Replace manual mutation with strategy pattern.
+@todo Add insertion and deletion mutations.
+*/
+void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme) 
+{
+  // Stats tracking; pre-replication hook.
+  m_world->GetStats().DemePreReplication(source_deme, target_deme);
   
-      int source_deme_inject_cell;
-      int target_deme_inject_cell;
-      
-      if(m_world->GetConfig().GERMLINE_RANDOM_PLACEMENT.Get() == 2) {
-        // organism is randomly placed in deme
-        source_deme_inject_cell = source_deme.GetCellID(m_world->GetRandom().GetInt(0, source_deme.GetSize()-1));
-        target_deme_inject_cell = target_deme.GetCellID(m_world->GetRandom().GetInt(0, target_deme.GetSize()-1));
-      } else {
-        // organisms is placed in center of deme
-        source_deme_inject_cell = source_deme.GetCellID(source_deme.GetSize()/2);
-        target_deme_inject_cell = target_deme.GetCellID(target_deme.GetSize()/2);
-      }
-      // Lineage label is wrong here; fix.
-      InjectGenome(source_deme_inject_cell, source_germline.GetLatest(), 0); // source deme
-      InjectGenome(target_deme_inject_cell, target_germline.GetLatest(), 0); // target deme
-      
-      if(m_world->GetConfig().GERMLINE_RANDOM_PLACEMENT.Get() == 1) {
-        // Rotate both injected cells to face northwest.
-        int offset = source_deme.GetCellID(0);
-        cell_array[source_deme_inject_cell].Rotate(cell_array[GridNeighbor(source_deme_inject_cell-offset,
-                                                              source_deme.GetWidth(),
-                                                              source_deme.GetHeight(), -1, -1)+offset]);
-        offset = target_deme.GetCellID(0);
-        cell_array[target_deme_inject_cell].Rotate(cell_array[GridNeighbor(target_deme_inject_cell-offset,
-                                                              target_deme.GetWidth(), 
-                                                              target_deme.GetHeight(), -1, -1)+offset]);
-      }
-    } else {
-      // Not using germline; choose a random organism from this deme.
-      int cell1_id = -1;
-      while (cell1_id == -1 || cell_array[cell1_id].IsOccupied() == false) {
-        cell1_id = source_deme.GetCellID(random.GetUInt(source_deme.GetSize()));
-      }
-      
-      if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
-        cOrganism* seed_org = cell_array[cell1_id].GetOrganism();
-        cGenome seed_genome = seed_org->GetGenome();
-        int seed_lineage = seed_org->GetLineageLabel();
-
-        // Kill all the organisms in the source deme.  Orgs. in target deme have already been killed
-        for (int i=0; i<source_deme.GetSize(); i++) {
-          KillOrganism(cell_array[source_deme.GetCellID(i)]);
+  // Are we using germlines?  If so, we need to mutate the germline to get the
+  // genome that we're going to seed the target with.
+  if(m_world->GetConfig().DEMES_USE_GERMLINE.Get()) {
+    cGenome next_germ(source_deme.GetGermline().GetLatest());
+    if(m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0.0) {
+      const cInstSet& instset = m_world->GetHardwareManager().GetInstSet();
+      cAvidaContext ctx(m_world->GetRandom());
+      for(int i=0; i<next_germ.GetSize(); ++i) {
+        if(m_world->GetRandom().P(m_world->GetConfig().GERMLINE_COPY_MUT.Get())) {
+          next_germ[i] = instset.GetRandomInst(ctx);
         }
-
-        source_deme.Reset();
-        target_deme.Reset();
-
-        int source_deme_inject_cell = source_deme.GetCellID(source_deme.GetSize()/2);
-        int target_deme_inject_cell = target_deme.GetCellID(target_deme.GetSize()/2);
-        
-        InjectGenome(source_deme_inject_cell, seed_genome, seed_lineage); // source deme
-        InjectGenome(target_deme_inject_cell, seed_genome, seed_lineage); // target deme
-        
-        // Rotate both injected cells to face northwest.
-        int offset = source_deme.GetCellID(0);
-        cell_array[source_deme_inject_cell].Rotate(cell_array[GridNeighbor(source_deme_inject_cell-offset,
-                                                              source_deme.GetWidth(),
-                                                              source_deme.GetHeight(), -1, -1)+offset]);
-        offset = target_deme.GetCellID(0);
-        cell_array[target_deme_inject_cell].Rotate(cell_array[GridNeighbor(target_deme_inject_cell-offset,
-                                                              target_deme.GetWidth(), 
-                                                              target_deme.GetHeight(), -1, -1)+offset]);
-
-        
-      } else {
-        cOrganism* seed = cell_array[cell1_id].GetOrganism();
-        
-        // And do the replication into the central cell of the target deme...
-        const int cell2_id = target_deme.GetCellID(target_deme.GetWidth()/2, target_deme.GetHeight()/2);
-        InjectClone(cell2_id, *seed);
-        
-        // Kill all the organisms in the source deme.
-        seed = 0; // Note that we're killing the organism that seed points to.
-        for (int i=0; i<source_deme.GetSize(); i++) {
-          KillOrganism(cell_array[source_deme.GetCellID(i)]);
-        }
-        
-        // Inject the target offspring back into the source ID.
-        const int cell3_id = source_deme.GetCellID(source_deme.GetWidth()/2, source_deme.GetHeight()/2);
-        InjectClone(cell3_id, *cell_array[cell2_id].GetOrganism());
-        
-        // Rotate both injected cells to face northwest.
-        int offset=target_deme.GetCellID(0);
-        cell_array[cell2_id].Rotate(cell_array[GridNeighbor(cell2_id-offset,
-                                                            target_deme.GetWidth(), 
-                                                            target_deme.GetHeight(), -1, -1)+offset]);
-        offset = source_deme.GetCellID(0);
-        cell_array[cell3_id].Rotate(cell_array[GridNeighbor(cell3_id-offset,
-                                                            source_deme.GetWidth(),
-                                                            source_deme.GetHeight(), -1, -1)+offset]);
-
-        // This is in the wrong place.  Reset should be done after the demes are cleared and before the org. is injected.
-        source_deme.Reset();
-        target_deme.Reset();
       }
+    }
+    
+    // Replace the target deme's germline with the source deme's, and add the newly-
+    // mutated germ to ONLY the target's germline.  The source remains unchanged.
+    target_deme.ReplaceGermline(source_deme.GetGermline());
+    target_deme.GetGermline().Add(next_germ);
+    
+    // Germline stats tracking.
+    m_world->GetStats().GermlineReplication(source_deme.GetGermline(), target_deme.GetGermline());
+    
+    // All done with the germline manipulation; seed each deme.
+    SeedDeme(source_deme, source_deme.GetGermline().GetLatest());
+    SeedDeme(target_deme, target_deme.GetGermline().GetLatest());
+    
+  } else {
+    // Not using germlines; things are much simpler.  Seed the target from the source.
+    SeedDeme(source_deme, target_deme);
+  }
+
+  // If we're using deme merit, the source's merit must be transferred to the target.
+  if(m_world->GetConfig().DEMES_HAVE_MERIT.Get()) {
+    target_deme.UpdateDemeMerit(source_deme);
+  }
+  
+  // Reset both demes, in case they have any cleanup work to do.
+  source_deme.Reset();
+  target_deme.Reset();
+  
+  // All done; do our post-replication stats tracking.
+  m_world->GetStats().DemePostReplication(source_deme, target_deme);
+}
+
+
+/*! Helper method to seed a deme from the given genome.
+If the passed-in deme is populated, all resident organisms are terminated.  The
+deme's germline is left unchanged.
+
+@todo Fix lineage label on injected genomes.
+@todo Different strategies for non-random placement.
+*/
+void cPopulation::SeedDeme(cDeme& deme, cGenome& genome) {
+  // Kill all the organisms in the deme.
+  for (int i=0; i<deme.GetSize(); i++) {
+    KillOrganism(cell_array[deme.GetCellID(i)]);
+  }
+
+  // Sanity.
+  assert(m_world->GetConfig().DEMES_REPLICATE_SIZE.Get() < deme.GetSize());
+  assert(m_world->GetConfig().DEMES_REPLICATE_SIZE.Get() > 0);
+  
+  // Create the specified number of organisms in the deme.
+  for(int i=0; i< m_world->GetConfig().DEMES_REPLICATE_SIZE.Get(); ++i) {
+    int cellid = DemeSelectInjectionCell(deme, i);
+    InjectGenome(cellid, genome, 0);
+    DemePostInjection(deme, cell_array[cellid]);
+  }
+}
+
+
+/*! Helper method to seed a target deme from the organisms in the source deme.
+All organisms in the target deme are terminated, and a subset of the organisms in
+the source will be cloned to the target.
+*/
+void cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
+  cRandom& random = m_world->GetRandom();
+
+  // Select a random organism from the source.  All we need to do here is get a
+  // genome and a lineage label.
+  cOrganism* seed = 0;
+  while(seed == 0) {
+    int cellid = source_deme.GetCellID(random.GetUInt(source_deme.GetSize()));
+    if(cell_array[cellid].IsOccupied()) {
+      seed = cell_array[cellid].GetOrganism();
+    }
+  }
+
+  cGenome genome = seed->GetGenome();
+  int lineage = seed->GetLineageLabel();
+  seed = 0; // We're done with the seed organism.
+  
+  // Kill all the organisms in the source and target demes.
+  for (int i=0; i<target_deme.GetSize(); i++) {
+    KillOrganism(cell_array[target_deme.GetCellID(i)]);
+  }
+  for (int i=0; i<source_deme.GetSize(); i++) {
+    KillOrganism(cell_array[source_deme.GetCellID(i)]);
+  }
+    
+  // Repopulation the source.
+  for(int i=0; i< m_world->GetConfig().DEMES_REPLICATE_SIZE.Get(); ++i) {
+    int cellid = DemeSelectInjectionCell(source_deme, i);
+    InjectGenome(cellid, genome, lineage);
+    DemePostInjection(source_deme, cell_array[cellid]);
+  }
+  
+  // And repopulate the target.
+  for(int i=0; i< m_world->GetConfig().DEMES_REPLICATE_SIZE.Get(); ++i) {
+    int cellid = DemeSelectInjectionCell(target_deme, i);
+    InjectGenome(cellid, genome, lineage);
+    DemePostInjection(target_deme, cell_array[cellid]);
+  }
+}
+
+
+/*! Helper method that determines the cell into which an organism will be placed.
+Respects all of the different placement options that are relevant for deme replication.
+*/
+int cPopulation::DemeSelectInjectionCell(cDeme& deme, int sequence) {
+  int cellid = -1;
+  
+  assert(sequence == 0); //we only support one for now...
+  
+  switch(m_world->GetConfig().DEMES_ORGANISM_PLACEMENT.Get()) {
+    case 0: { // Array-middle.
+      cellid = deme.GetCellID(deme.GetSize()/2);
+      break;
+    }
+    case 1: { // Sequential placement, start in the center of the deme.
+      cellid = deme.GetCellID(deme.GetWidth()/2, deme.GetHeight()/2);
+      break;
+    }
+    case 2: { // Random placement.
+      cellid = deme.GetCellID(m_world->GetRandom().GetInt(0, deme.GetSize()-1));
+      while(cell_array[cellid].IsOccupied()) {
+        cellid = deme.GetCellID(m_world->GetRandom().GetInt(0, deme.GetSize()-1));
+      }
+      break;
+    }      
+    default: {
+      assert(false); // Shouldn't ever reach here.
+    }
+  }
+  
+  assert(cellid >= 0 && cellid < cell_array.GetSize());
+  assert(cellid >= deme.GetCellID(0));
+  assert(cellid <= deme.GetCellID(deme.GetSize()-1));
+  return cellid;  
+}
+
+
+/*! Helper method to perform any post-injection fixups on the organism/cell that
+was injected into a deme.  Handles all the rotation / facing options.
+*/
+void cPopulation::DemePostInjection(cDeme& deme, cPopulationCell& cell) {
+  assert(cell.GetID() >= deme.GetCellID(0));
+  assert(cell.GetID() <= deme.GetCellID(deme.GetSize()-1));
+  switch(m_world->GetConfig().DEMES_ORGANISM_FACING.Get()) {
+    case 0: { // Unchanged.
+      break;
+    }
+    case 1: { // Spin cell to face NW.
+      cell.Rotate(cell_array[GridNeighbor(cell.GetID()-deme.GetCellID(0),
+                                          deme.GetWidth(),
+                                          deme.GetHeight(), -1, -1)+deme.GetCellID(0)]);
+      break; 
+    }
+    case 2: { // Spin cell to face randomly.
+      const int rotate_count = m_world->GetRandom().GetInt(0, cell.ConnectionList().GetSize());
+      for(int i=0; i<rotate_count; ++i) {
+        cell.ConnectionList().CircNext();
+      }
+      break;
+    }
+    default: {
+      assert(false);
     }
   }
 }
+
 
 // Loop through all demes to determine if any are ready to be divided.  All
 // full demes have 1/2 of their organisms (the odd ones) moved into a new deme.

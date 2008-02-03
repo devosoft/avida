@@ -101,11 +101,22 @@ void cDeme::Reset()
 There's still some work to do here; the lineage labels of the Genomes in the germline
 are all messed up.
 
-\todo Fix lineage labels in germlines.
+@todo Fix lineage labels in germlines.
 */
 void cDeme::ReplaceGermline(const cGermline& germline) {
 	_germline = germline;
 }
+
+
+/*! Update this deme's merit from the given source.
+
+@todo We have a little bit of work to do here yet, as the deme merit isn't yet
+tied into the scheduler.  Crash.
+*/
+void cDeme::UpdateDemeMerit(cDeme& source) {
+  assert(false);
+}
+
 
 void cDeme::ModifyDemeResCount(const tArray<double> & res_change, const int absolute_cell_id) {
   // find relative cell_id in deme resource count

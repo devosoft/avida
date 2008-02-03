@@ -176,13 +176,33 @@ public:
   void SwapCells(cPopulationCell & cell1, cPopulationCell & cell2);
 
   // Deme-related methods
+  //! Compete all demes with each other based on the given competition type.
   void CompeteDemes(int competition_type);
+
+  //! Replicate all demes based on the given replication trigger.
   void ReplicateDemes(int rep_trigger);
+
+  //! Helper method that replaces a target deme with the given source deme.
+  void ReplaceDeme(cDeme& source_deme, cDeme& target_deme);
+  
+  //! Helper method that seeds a deme from the given genome.
+  void SeedDeme(cDeme& deme, cGenome& genome);
+  
+  //! Helper method that seeds a target deme from the organisms in the source deme.
+  void SeedDeme(cDeme& source_deme, cDeme& target_deme);
+  
+  //! Helper method that determines the cell into which an organism will be placed during deme replication.
+  int DemeSelectInjectionCell(cDeme& deme, int sequence=0);
+  
+  //! Helper method that performs any post-injection fixups on the cell in the given deme.
+  void DemePostInjection(cDeme& deme, cPopulationCell& cell);
+  
   void DivideDemes();
   void ResetDemes();
   void CopyDeme(int deme1_id, int deme2_id);
   void SpawnDeme(int deme1_id, int deme2_id=-1);
 
+  
   // Deme-related stats methods
   void PrintDemeAllStats();
   void PrintDemeDonor();

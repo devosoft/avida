@@ -68,6 +68,8 @@ class cInjectGenotype;
 class cWorld;
 class cOrgMessage;
 class cOrgMessagePredicate;
+class cDeme;
+class cGermline;
 
 class cStats
 {
@@ -644,6 +646,12 @@ protected:
   message_pred_ptr_list m_message_predicates;
   // -------- End messaging support --------
   
+  
+  // -------- Deme replication support --------
+public:
+  void DemePreReplication(cDeme& source_deme, cDeme& target_deme) { }
+  void DemePostReplication(cDeme& source_deme, cDeme& target_deme) { }
+  void GermlineReplication(cGermline& source_germline, cGermline& target_germline) { }
 };
 
 
