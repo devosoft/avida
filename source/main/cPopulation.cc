@@ -1152,15 +1152,28 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
   // Are we using germlines?  If so, we need to mutate the germline to get the
   // genome that we're going to seed the target with.
   if(m_world->GetConfig().DEMES_USE_GERMLINE.Get()) {
-    cGenome next_germ(source_deme.GetGermline().GetLatest());
+    cCPUMemory next_germ(source_deme.GetGermline().GetLatest());
+    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet();
+    cAvidaContext ctx(m_world->GetRandom());
+    
     if(m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0.0) {
-      const cInstSet& instset = m_world->GetHardwareManager().GetInstSet();
-      cAvidaContext ctx(m_world->GetRandom());
       for(int i=0; i<next_germ.GetSize(); ++i) {
         if(m_world->GetRandom().P(m_world->GetConfig().GERMLINE_COPY_MUT.Get())) {
           next_germ[i] = instset.GetRandomInst(ctx);
         }
       }
+    }
+    
+    if((m_world->GetConfig().GERMLINE_INS_MUT.Get() > 0.0)
+       && m_world->GetRandom().P(m_world->GetConfig().DIVIDE_INS_PROB.Get())) {
+      const unsigned int mut_line = ctx.GetRandom().GetUInt(next_germ.GetSize() + 1);
+      next_germ.Insert(mut_line, instset.GetRandomInst(ctx));
+    }
+    
+    if((m_world->GetConfig().GERMLINE_DEL_MUT.Get() > 0.0)
+       && m_world->GetRandom().P(m_world->GetConfig().DIVIDE_DEL_PROB.Get())) {
+      const unsigned int mut_line = ctx.GetRandom().GetUInt(next_germ.GetSize());
+      next_germ.Remove(mut_line);
     }
     
     // Replace the target deme's germline with the source deme's, and add the newly-

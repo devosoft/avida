@@ -303,6 +303,8 @@ public:
   CONFIG_ADD_VAR(DEMES_MAX_AGE, int, 500, "The maximum age of a deme (in updates) to be\nused for age-based replication (default=500).");
   CONFIG_ADD_VAR(DEMES_MAX_BIRTHS, int, 100, "The maximum number of births that can occur\nwithin a deme; used with birth-count\nreplication (default=100).");
   CONFIG_ADD_VAR(GERMLINE_COPY_MUT, double, 0.0075, "Prob. of copy mutations occuring during\ngermline replication (default=0.0075).");
+  CONFIG_ADD_VAR(GERMLINE_INS_MUT, double, 0.05, "Prob. of an insertion mutation occuring\nduring germline replication (default=0.05).");
+  CONFIG_ADD_VAR(GERMLINE_DEL_MUT, double, 0.05, "Prob. of a deletion mutation occuring\nduring germline replication (default=0.05).");
   
   CONFIG_ADD_GROUP(REPRODUCTION_GROUP, "Birth and Death");
   CONFIG_ADD_VAR(BIRTH_METHOD, int, 0, "Which organism should be replaced on birth?\n0 = Random organism in neighborhood\n1 = Oldest in neighborhood\n2 = Largest Age/Merit in neighborhood\n3 = None (use only empty cells in neighborhood)\n4 = Random from population (Mass Action)\n5 = Oldest in entire population\n6 = Random within deme\n7 = Organism faced by parent\n8 = Next grid cell (id+1)\n9 = Largest energy used in entire population\n10 = Largest energy used in neighborhood");
