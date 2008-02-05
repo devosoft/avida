@@ -4234,6 +4234,9 @@ bool cHardwareCPU::Inst_SetFlow(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_Sleep(cAvidaContext& ctx) {
   cPopulation& pop = m_world->GetPopulation();
   int cellID = organism->GetCellID();
+  // Fail if we're running in the test CPU.
+  if(cellID < 0) return false;
+
   if(m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1) {
     pop.AddEndSleep(cellID, m_world->GetStats().GetUpdate());
   }
@@ -4254,9 +4257,18 @@ bool cHardwareCPU::Inst_GetUpdate(cAvidaContext& ctx) {
   return true;
 }
 
+
+/*! This method places the calling organism's x-y coordinates in ?BX? and ?++BX?.
+
+Note that this method *will not work* from within the test CPU, so we have to guard
+against that.
+*/
 bool cHardwareCPU::Inst_GetCellPosition(cAvidaContext& ctx) {
   int absolute_cell_ID = organism->GetCellID();
   int deme_id = organism->GetOrgInterface().GetDemeID();
+  // Fail if we're running in the test CPU.
+  if((deme_id < 0) || (absolute_cell_ID < 0)) return false;
+  
   std::pair<int, int> pos = m_world->GetPopulation().GetDeme(deme_id).GetCellPosition(absolute_cell_ID);  
   const int xreg = FindModifiedRegister(REG_BX);
   const int yreg = FindNextRegister(xreg);
@@ -4268,6 +4280,9 @@ bool cHardwareCPU::Inst_GetCellPosition(cAvidaContext& ctx) {
 bool cHardwareCPU::Inst_GetDistanceFromDiagonal(cAvidaContext& ctx) {
   int absolute_cell_ID = organism->GetOrgInterface().GetCellID();
   int deme_id = organism->GetOrgInterface().GetDemeID();
+  // Fail if we're running in the test CPU.
+  if((deme_id < 0) || (absolute_cell_ID < 0)) return false;
+  
   std::pair<int, int> pos = m_world->GetPopulation().GetDeme(deme_id).GetCellPosition(absolute_cell_ID);  
   const int reg = FindModifiedRegister(REG_BX);
   
