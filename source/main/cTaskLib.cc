@@ -77,6 +77,7 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   
   if (name == "echo")      NewTask(name, "Echo", &cTaskLib::Task_Echo);
   else if (name == "add")  NewTask(name, "Add",  &cTaskLib::Task_Add);
+  else if (name == "add3")  NewTask(name, "Add3",  &cTaskLib::Task_Add3);  
   else if (name == "sub")  NewTask(name, "Sub",  &cTaskLib::Task_Sub);
   
   // All 1- and 2-Input Logic Functions
@@ -514,6 +515,19 @@ double cTaskLib::Task_Add(cTaskContext& ctx) const
   for (int i = 0; i < input_buffer.GetNumStored(); i++) {
     for (int j = 0; j < i; j++) {
       if (test_output == input_buffer[i] + input_buffer[j]) return 1.0;
+    }
+  }
+  return 0.0;
+}
+
+
+double cTaskLib::Task_Add3(cTaskContext& ctx) const
+{
+  const tBuffer<int>& input = ctx.GetInputBuffer();
+  const int output = ctx.GetOutputBuffer()[0];
+  for(int i=0; i<(input.GetNumStored()-2); ++i) {
+    if(output == (input[i] + input[i+1] + input[i+2])) {
+      return 1.0;
     }
   }
   return 0.0;
