@@ -474,6 +474,9 @@ private:
   bool Inst_SetCopyMut(cAvidaContext& ctx);
   bool Inst_ModCopyMut(cAvidaContext& ctx);
   bool Inst_GetCellPosition(cAvidaContext& ctx);
+  bool Inst_GetCellPositionX(cAvidaContext& ctx);
+  bool Inst_GetCellPositionY(cAvidaContext& ctx);
+
   bool Inst_GetDistanceFromDiagonal(cAvidaContext& ctx);
   // @WRE additions for movement
   bool Inst_Tumble(cAvidaContext& ctx);

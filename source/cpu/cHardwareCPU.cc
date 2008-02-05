@@ -228,6 +228,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("set-cmut", &cHardwareCPU::Inst_SetCopyMut),
     tInstLibEntry<tMethod>("mod-cmut", &cHardwareCPU::Inst_ModCopyMut),
     tInstLibEntry<tMethod>("get-cell-xy", &cHardwareCPU::Inst_GetCellPosition),
+    tInstLibEntry<tMethod>("get-cell-x", &cHardwareCPU::Inst_GetCellPositionX),
+    tInstLibEntry<tMethod>("get-cell-y", &cHardwareCPU::Inst_GetCellPositionY),
     tInstLibEntry<tMethod>("dist-from-diag", &cHardwareCPU::Inst_GetDistanceFromDiagonal),
     // @WRE additions for movement
     tInstLibEntry<tMethod>("tumble", &cHardwareCPU::Inst_Tumble),
@@ -4273,6 +4275,40 @@ bool cHardwareCPU::Inst_GetCellPosition(cAvidaContext& ctx) {
   const int xreg = FindModifiedRegister(REG_BX);
   const int yreg = FindNextRegister(xreg);
   GetRegister(xreg) = pos.first;
+  GetRegister(yreg) = pos.second;
+  return true;
+}
+
+/*! This method places the calling organism's x coordinate in ?BX?.
+
+Note that this method *will not work* from within the test CPU, so we have to guard
+against that.
+*/
+bool cHardwareCPU::Inst_GetCellPositionX(cAvidaContext& ctx) {
+  int absolute_cell_ID = organism->GetCellID();
+  int deme_id = organism->GetOrgInterface().GetDemeID();
+  // Fail if we're running in the test CPU.
+  if((deme_id < 0) || (absolute_cell_ID < 0)) return false;
+  
+  std::pair<int, int> pos = m_world->GetPopulation().GetDeme(deme_id).GetCellPosition(absolute_cell_ID);  
+  const int xreg = FindModifiedRegister(REG_BX);
+  GetRegister(xreg) = pos.first;
+  return true;
+}
+
+/*! This method places the calling organism's y coordinates in ?BX?.
+
+Note that this method *will not work* from within the test CPU, so we have to guard
+against that.
+*/
+bool cHardwareCPU::Inst_GetCellPositionY(cAvidaContext& ctx) {
+  int absolute_cell_ID = organism->GetCellID();
+  int deme_id = organism->GetOrgInterface().GetDemeID();
+  // Fail if we're running in the test CPU.
+  if((deme_id < 0) || (absolute_cell_ID < 0)) return false;
+  
+  std::pair<int, int> pos = m_world->GetPopulation().GetDeme(deme_id).GetCellPosition(absolute_cell_ID);  
+  const int yreg = FindModifiedRegister(REG_BX);
   GetRegister(yreg) = pos.second;
   return true;
 }

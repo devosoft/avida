@@ -231,7 +231,9 @@ void cOrganism::DoOutput(cAvidaContext& ctx,
   // Do the testing of tasks performed...
   
   tArray<double> global_res_change(global_resource_count.GetSize());
+  global_res_change.SetAll(0.0);
   tArray<double> deme_res_change(deme_resource_count.GetSize());
+  deme_res_change.SetAll(0.0);
   tArray<int> insts_triggered;
   
   tBuffer<int>* received_messages_point = &m_received_messages;
