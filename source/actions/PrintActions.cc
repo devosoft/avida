@@ -79,6 +79,7 @@ STATS_OUT_FILE(PrintTasksData,              tasks.dat           );
 STATS_OUT_FILE(PrintTasksExeData,           tasks_exe.dat       );
 STATS_OUT_FILE(PrintTasksQualData,          tasks_quality.dat   );
 STATS_OUT_FILE(PrintResourceData,           resource.dat        );
+STATS_OUT_FILE(PrintReactionData,           reactions.dat       );
 STATS_OUT_FILE(PrintReactionRewardData,     reaction_reward.dat );
 STATS_OUT_FILE(PrintTimeData,               time.dat            );
 STATS_OUT_FILE(PrintMutationRateData,       mutation_rates.dat  );
@@ -2616,6 +2617,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintTasksExeData>("PrintTasksExeData");
   action_lib->Register<cActionPrintTasksQualData>("PrintTasksQualData");
   action_lib->Register<cActionPrintResourceData>("PrintResourceData");
+  action_lib->Register<cActionPrintReactionData>("PrintReactionData");
   action_lib->Register<cActionPrintReactionRewardData>("PrintReactionRewardData");
   action_lib->Register<cActionPrintTimeData>("PrintTimeData");
   action_lib->Register<cActionPrintMutationRateData>("PrintMutationRateData");

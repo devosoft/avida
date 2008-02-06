@@ -30,12 +30,14 @@
 #include "cHardwareManager.h"
 #include "cInstSet.h"
 #include "cPopulation.h"
+#include "cPopulationCell.h"
 #include "cStringUtil.h"
 #include "cWorld.h"
 #include "cWorldDriver.h"
 #include "tDataEntry.h"
 #include "cOrgMessage.h"
 #include "cOrgMessagePredicate.h"
+#include "cReaction.h"
 
 #include "functions.h"
 
@@ -792,10 +794,29 @@ void cStats::PrintReactionData(const cString& filename)
   df.WriteComment("of currently living organisms each reaction has affected.");
 
   df.Write(m_update,   "Update");
-  for (int i = 0; i < reaction_count.GetSize(); i++) {
-    df.Write(reaction_count[i], reaction_names[i] );
-    task_exe_count[i] = 0;
+  
+  const int num_reactions=m_world->GetEnvironment().GetReactionLib().GetSize();
+  tArray<int> reactions(num_reactions);
+  reactions.SetAll(0);
+  
+  for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
+    cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
+    if(cell.IsOccupied()) {
+      const tArray<int>& org_rx = cell.GetOrganism()->GetPhenotype().GetCurReactionCount();
+      for(int j=0; j<num_reactions; ++j) {
+        reactions[j] += org_rx[j];
+      }
+    }
   }
+    
+  for(int i=0; i<num_reactions; ++i) {
+    df.Write(reactions[i], m_world->GetEnvironment().GetReactionLib().GetReaction(i)->GetName());
+  }
+  
+//    df.Write( 0.0, 
+//    df.Write(reaction_count[i], reaction_names[i] );
+//    task_exe_count[i] = 0;
+//  }
   df.Endl();
 }
 

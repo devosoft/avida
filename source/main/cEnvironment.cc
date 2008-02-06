@@ -886,9 +886,8 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
 
     // And lets process it!
     DoProcesses(ctx, cur_reaction->GetProcesses(), resource_count, task_quality, task_cnt, i, result);
-    
-    // Mark this reaction as occuring...
-    result.MarkReaction(cur_reaction->GetID());
+
+    // Note: the reaction is actually marked as being performed inside DoProcesses.
   }  
   
   return result.GetActive();
@@ -998,6 +997,9 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       // Mark in the results the resource consumed.
       if (cur_process->GetDepletable()) result.Consume(res_id, consumed);
     }
+    
+    // Mark the reaction as having been performed if we get here.
+    result.MarkReaction(i);
     
     // Calculate the bonus
     double bonus = consumed * cur_process->GetValue();
