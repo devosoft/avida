@@ -999,7 +999,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     }
     
     // Mark the reaction as having been performed if we get here.
-    result.MarkReaction(i);
+    result.MarkReaction(reaction_id);
     
     // Calculate the bonus
     double bonus = consumed * cur_process->GetValue();
