@@ -1,0 +1,134 @@
+# Thu Feb  7 10:31:35 2008
+# Filename........: archive/100-aaahv.org
+# Update Output...: 500
+# Is Viable.......: 1
+# Repro Cycle Size: 0
+# Depth to Viable.: 0
+# Update Created..: 326
+# Genotype ID.....: 3608
+# Parent Gen ID...: 2015
+# Tree Depth......: 9
+# Parent Distance.: 1
+# 
+# Generation: 0
+# Merit...........: 95.000000
+# Gestation Time..: 376
+# Fitness.........: 0.252660
+# Errors..........: 3
+# Genome Size.....: 100
+# Copied Size.....: 100
+# Executed Size...: 95
+# Offspring.......: SELF
+# 
+# Tasks Performed:
+# not 0 (0.000000)
+# nand 0 (0.000000)
+# and 0 (0.000000)
+# orn 0 (0.000000)
+# or 0 (0.000000)
+# andn 0 (0.000000)
+# nor 0 (0.000000)
+# xor 0 (0.000000)
+# equ 0 (0.000000)
+
+
+h-alloc
+h-search
+nop-D
+nop-A
+mov-head
+nop-C
+add
+nop-C
+nop-D
+nop-C
+inc
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+h-divide
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+dec
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+swap-stk
+nop-C
+h-alloc
+nop-C
+nop-C
+nop-C
+nop-C
+h-alloc
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+swap
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+h-search
+h-copy
+if-label
+nop-D
+nop-A
+h-divide
+mov-head
+nop-A
+add
+h-alloc
+label
+nop-A
+nop-B
