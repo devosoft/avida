@@ -230,7 +230,7 @@ public:
   static cString GetDefaultInstFilename() { return "instset-classic.cfg"; }
 
   void Reset();
-  void SingleProcess(cAvidaContext& ctx);
+  bool SingleProcess(cAvidaContext& ctx, bool speculative = false);
   void ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst);
 
   

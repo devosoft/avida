@@ -188,7 +188,7 @@ void cHardwareSMT::cLocalThread::Reset(cHardwareBase* in_hardware, int mem_space
 
 // This function processes the very next command in the genome, and is made
 // to be as optimized as possible.  This is the heart of avida.
-void cHardwareSMT::SingleProcess(cAvidaContext& ctx)
+bool cHardwareSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
 {
   // Mark this organism as running...
   organism->SetRunning(true);
@@ -246,6 +246,8 @@ void cHardwareSMT::SingleProcess(cAvidaContext& ctx)
   
   organism->SetRunning(false);
   CheckImplicitRepro(ctx);
+  
+  return true;
 }
 
 // This method will handle the actual execution of an instruction

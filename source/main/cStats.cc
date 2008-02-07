@@ -120,6 +120,9 @@ cStats::cStats(cWorld* world)
   , sense_size(0)
   , avg_competition_fitness(0)
   , num_orgs_replicated(0)
+  , m_spec_total(0)
+  , m_spec_num(0)
+  , m_spec_waste(0)
 {
   const cEnvironment& env = m_world->GetEnvironment();
   const int num_tasks = env.GetNumTasks();
@@ -486,6 +489,9 @@ void cStats::ProcessUpdate()
   num_resamplings = 0;
   num_failedResamplings = 0;
 
+  m_spec_total = 0;
+  m_spec_num = 0;
+  m_spec_waste = 0;
 }
 
 void cStats::RemoveLineage(int id_num, int parent_id, int update_born, double generation_born, int total_CPUs,

@@ -310,7 +310,7 @@ public:
   static cString GetDefaultInstFilename() { return "instset-gx.cfg"; }
 
   void Reset();
-  void SingleProcess(cAvidaContext& ctx);
+  bool SingleProcess(cAvidaContext& ctx, bool speculative = false);
   void ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst);
 
   

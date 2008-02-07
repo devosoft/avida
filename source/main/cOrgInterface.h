@@ -84,6 +84,7 @@ public:
   virtual bool UpdateMerit(double new_merit) = 0;
   virtual bool TestOnDivide() = 0;
   virtual bool SendMessage(cOrgMessage& msg) = 0;
+  
 };
 
 #endif

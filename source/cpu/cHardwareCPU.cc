@@ -507,7 +507,7 @@ void cHardwareCPU::cLocalThread::Reset(cHardwareBase* in_hardware, int in_id)
 // This function processes the very next command in the genome, and is made
 // to be as optimized as possible.  This is the heart of avida.
 
-void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
+bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
 {
 
   int last_IP_pos = IP().GetPosition();
@@ -616,6 +616,8 @@ void cHardwareCPU::SingleProcess(cAvidaContext& ctx)
   CheckImplicitRepro(ctx, last_IP_pos > IP().GetPosition());
   
   organism->SetRunning(false);
+  
+  return true;
 }
 
 // This method will handle the actual execution of an instruction

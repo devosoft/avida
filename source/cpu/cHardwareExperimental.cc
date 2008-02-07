@@ -121,7 +121,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("sub", &cHardwareExperimental::Inst_Sub, nInstFlag::DEFAULT, "Subtract CX from BX and place the result in ?BX?"),
     tInstLibEntry<tMethod>("nand", &cHardwareExperimental::Inst_Nand, nInstFlag::DEFAULT, "Nand BX by CX and place the result in ?BX?"),
     
-    tInstLibEntry<tMethod>("IO", &cHardwareExperimental::Inst_TaskIO, nInstFlag::DEFAULT, "Output ?BX?, and input new number back into ?BX?"),
+    tInstLibEntry<tMethod>("IO", &cHardwareExperimental::Inst_TaskIO, (nInstFlag::DEFAULT | nInstFlag::STALL), "Output ?BX?, and input new number back into ?BX?"),
     
     tInstLibEntry<tMethod>("mult", &cHardwareExperimental::Inst_Mult, 0, "Multiple BX by CX and place the result in ?BX?"),
     tInstLibEntry<tMethod>("div", &cHardwareExperimental::Inst_Div, 0, "Divide BX by CX and place the result in ?BX?"),
@@ -142,14 +142,14 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     
     // Replication Instructions
     tInstLibEntry<tMethod>("h-alloc", &cHardwareExperimental::Inst_HeadAlloc, nInstFlag::DEFAULT, "Allocate maximum allowed space"),
-    tInstLibEntry<tMethod>("h-divide", &cHardwareExperimental::Inst_HeadDivide, nInstFlag::DEFAULT, "Divide code between read and write heads."),
-    tInstLibEntry<tMethod>("h-copy", &cHardwareExperimental::Inst_HeadCopy, nInstFlag::DEFAULT, "Copy from read-head to write-head; advance both"),
+    tInstLibEntry<tMethod>("h-divide", &cHardwareExperimental::Inst_HeadDivide, (nInstFlag::DEFAULT | nInstFlag::STALL), "Divide code between read and write heads."),
+    tInstLibEntry<tMethod>("h-copy", &cHardwareExperimental::Inst_HeadCopy, (nInstFlag::DEFAULT | nInstFlag::STALL), "Copy from read-head to write-head; advance both"),
     tInstLibEntry<tMethod>("if-label", &cHardwareExperimental::Inst_IfLabel, nInstFlag::DEFAULT, "Execute next if we copied complement of attached label"),
 
-    tInstLibEntry<tMethod>("h-read", &cHardwareExperimental::Inst_HeadRead, 0, "Read from the read-head, place into ?BX?, advance read-head"),
+    tInstLibEntry<tMethod>("h-read", &cHardwareExperimental::Inst_HeadRead, nInstFlag::STALL, "Read from the read-head, place into ?BX?, advance read-head"),
     tInstLibEntry<tMethod>("h-write", &cHardwareExperimental::Inst_HeadWrite, 0, "Write from ?BX? to the write head, advance write-head"),
     
-    tInstLibEntry<tMethod>("repro", &cHardwareExperimental::Inst_Repro, 0, "Instantly reproduces the organism"),
+    tInstLibEntry<tMethod>("repro", &cHardwareExperimental::Inst_Repro, nInstFlag::STALL, "Instantly reproduces the organism"),
 
     
     // Goto Variants
@@ -202,6 +202,10 @@ cHardwareExperimental::cHardwareExperimental(cWorld* world, cOrganism* in_organi
   /* FIXME:  reorganize storage of m_functions.  -- kgn */
   m_functions = s_inst_slib->GetFunctions();
   /**/
+  
+  m_supports_speculative = true;
+  m_spec_die = false;
+
   m_memory = in_organism->GetGenome();  // Initialize memory...
   Reset();                            // Setup the rest of the hardware...
 }
@@ -295,10 +299,18 @@ void cHardwareExperimental::cLocalThread::Reset(cHardwareBase* in_hardware, int 
 // This function processes the very next command in the genome, and is made
 // to be as optimized as possible.  This is the heart of avida.
 
-void cHardwareExperimental::SingleProcess(cAvidaContext& ctx)
+bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
 {
+  assert(!speculative || (speculative && m_world->GetConfig().THREAD_SLICING_METHOD.Get() != 1));
+  
   // Mark this organism as running...
   organism->SetRunning(true);
+  
+  if (!speculative && m_spec_die) {
+    organism->Die();
+    organism->SetRunning(false);
+    return false;
+  }
   
   cPhenotype& phenotype = organism->GetPhenotype();
 
@@ -312,12 +324,11 @@ void cHardwareExperimental::SingleProcess(cAvidaContext& ctx)
   
   // If we have threads turned on and we executed each thread in a single
   // timestep, adjust the number of instructions executed accordingly.
-  const int num_inst_exec = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1) ?
-num_threads : 1;
+  const int num_inst_exec = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1) ? num_threads : 1;
   
   for (int i = 0; i < num_inst_exec; i++) {
     // Setup the hardware for the next instruction to be executed.
-    m_cur_thread++;
+    int last_thread = m_cur_thread++;
     if (m_cur_thread >= num_threads) m_cur_thread = 0;
     
     m_advance_ip = true;
@@ -334,6 +345,15 @@ num_threads : 1;
     
     // Find the instruction to be executed
     const cInstruction& cur_inst = IP().GetInst();
+    
+    if (speculative && (m_spec_die || m_inst_set->ShouldStall(cur_inst))) {
+      // Speculative instruction reject, flush and return
+      m_cur_thread = last_thread;
+      phenotype.DecCPUCyclesUsed();
+      if (!m_world->GetConfig().NO_CPU_CYCLE_TIME.Get()) phenotype.IncTimeUsed(-1);
+      organism->SetRunning(false);
+      return false;
+    }
     
     // Test if costs have been paid and it is okay to execute this now...
     bool exec = true;
@@ -394,13 +414,16 @@ num_threads : 1;
   
   // Kill creatures who have reached their max num of instructions executed
   const int max_executed = organism->GetMaxExecuted();
-  if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed)
-      || phenotype.GetToDie() == true) {
-    organism->Die();
+  if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed) || phenotype.GetToDie() == true) {
+    if (speculative) m_spec_die = true;
+    else organism->Die();
   }
+  if (!speculative && phenotype.GetToDelete()) m_spec_die = true;
   
   organism->SetRunning(false);
   CheckImplicitRepro(ctx);
+        
+  return !m_spec_die;
 }
 
 // This method will handle the actuall execution of an instruction
@@ -1240,20 +1263,17 @@ bool cHardwareExperimental::Inst_HeadRead(cAvidaContext& ctx)
   
   const int head_id = FindModifiedHead(nHardware::HEAD_READ);
   GetHead(head_id).Adjust();
-//  sCPUStats & cpu_stats = organism->CPUStats();
   
   // Mutations only occur on the read, for the moment.
   int read_inst = 0;
   if (organism->TestCopyMut(ctx)) {
     read_inst = m_inst_set->GetRandomInst(ctx).GetOp();
-//    cpu_stats.mut_stats.copy_mut_count++;  // @CAO, hope this is good!
   } else {
     read_inst = GetHead(head_id).GetInst().GetOp();
   }
   GetRegister(dst) = read_inst;
   ReadInst(read_inst);
   
-//  cpu_stats.mut_stats.copies_exec++;  // @CAO, this too..
   GetHead(head_id).Advance();
   return true;
 }

@@ -259,6 +259,12 @@ private:
   int num_orgs_replicated;
 
   tArray<int> numAsleep;
+  
+  // Speculative Execution Stats
+  int m_spec_total;
+  int m_spec_num;
+  int m_spec_waste;
+  
 
   cStats(); // @not_implemented
   cStats(const cStats&); // @not_implemented
@@ -495,6 +501,10 @@ public:
   void AddMarketItemSold() { num_sold++; }
   void AddMarketItemUsed() { num_used++; }
   void AddMarketOwnItemUsed() { num_own_used++; }
+  
+  
+  void AddSpeculative(int spec) { m_spec_total += spec; m_spec_num++; }
+  void AddSpeculativeWaste(int waste) { m_spec_waste += waste; }
 
   // Information retrieval section...
 
@@ -590,6 +600,9 @@ public:
   int getNumAsleep(int demeID) { return numAsleep[demeID]; }
   void incNumAsleep(int demeID) { numAsleep[demeID]++; }
   void decNumAsleep(int demeID) { numAsleep[demeID]--; }
+
+  double GetAveSpeculative() const { return (m_spec_num) ? ((double)m_spec_total / (double)m_spec_num) : 0.0; }
+  int GetSpeculativeWaste() const { return m_spec_waste; }
 
   // this value gets recorded when a creature with the particular
   // fitness value gets born. It will never change to a smaller value,

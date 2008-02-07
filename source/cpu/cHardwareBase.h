@@ -67,6 +67,9 @@ protected:
   bool m_has_costs;
   bool m_has_ft_costs;
   bool m_has_energy_costs;
+  
+  bool m_supports_speculative;
+  
 
   virtual int GetExecutedSize(const int parent_size);
   virtual int GetCopiedSize(const int parent_size, const int child_size) = 0;  
@@ -96,7 +99,7 @@ public:
   cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set)
     : m_world(world), organism(in_organism), m_inst_set(inst_set), m_tracer(NULL)
     , m_has_costs(inst_set->HasCosts()), m_has_ft_costs(inst_set->HasFTCosts())
-    , m_has_energy_costs(m_inst_set->HasEnergyCosts())
+    , m_has_energy_costs(m_inst_set->HasEnergyCosts()), m_supports_speculative(false)
   {
     m_has_any_costs = (m_has_costs | m_has_ft_costs | m_has_energy_costs);
     assert(organism != NULL);
@@ -110,11 +113,13 @@ public:
   
   // --------  Core Functionality  --------
   virtual void Reset() = 0;
-  virtual void SingleProcess(cAvidaContext& ctx) = 0;
+  virtual bool SingleProcess(cAvidaContext& ctx, bool speculative = false) = 0;
   virtual void ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst) = 0;
 
   unsigned Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier = 1.0, const int maxmut = INT_MAX);
   bool Divide_TestFitnessMeasures(cAvidaContext& ctx);
+  
+  inline bool SupportsSpeculative() const { return m_supports_speculative; }
   
   
   // --------  Helper methods  --------

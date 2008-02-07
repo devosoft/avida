@@ -252,3 +252,4 @@ bool cPopulationInterface::SendMessage(cOrgMessage& msg) {
   recvr->ReceiveMessage(msg);
   return true;
 }
+

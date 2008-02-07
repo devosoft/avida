@@ -50,16 +50,18 @@ class cPopulationCell
 
 private:
   cWorld* m_world;
+  
   cOrganism* m_organism;                    // The occupent of this cell.
   cHardwareBase* m_hardware;
+  
   tList<cPopulationCell> m_connections;  // A list of neighboring cells.
   cMutationRates* m_mut_rates;           // Mutation rates at this cell.
   tArray<int> m_inputs;                 // Environmental Inputs...
 
   int m_cell_id;           // Unique id for position of cell in population.
   int m_deme_id;           // ID of the deme that this cell is part of.
-  int m_organism_count;    // Total number of orgs to ever inhabit this cell.
   int m_cell_data;         // "data" that is local to the cell and can be retrieaved by the org.
+  int m_spec_state;
 
   // location in population
   int m_x; //!< The x-coordinate of the position of this cell in the environment.
@@ -71,7 +73,7 @@ private:
 
   
 public:
-  cPopulationCell() : m_world(NULL), m_organism(NULL), m_hardware(NULL), m_mut_rates(NULL), m_organism_count(0) { ; }
+  cPopulationCell() : m_world(NULL), m_organism(NULL), m_hardware(NULL), m_mut_rates(NULL) { ; }
   cPopulationCell(const cPopulationCell& in_cell);
   ~cPopulationCell() { delete m_mut_rates; }
 
@@ -98,9 +100,12 @@ public:
 
   inline int GetID() const { return m_cell_id; }
   inline int GetDemeID() const { return m_deme_id; }
-  inline int GetOrganismCount() const { return m_organism_count; }
   inline int GetCellData() const { return m_cell_data; }
   void SetCellData(const int data) { m_cell_data = data; }
+  
+  inline int GetSpeculativeState() const { return m_spec_state; }
+  inline void SetSpeculativeState(int count) { m_spec_state = count; }
+  inline void DecSpeculative() { m_spec_state--; }
 
   inline bool IsOccupied() const { return m_organism != NULL; }
 

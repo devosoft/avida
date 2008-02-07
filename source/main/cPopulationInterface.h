@@ -87,6 +87,7 @@ public:
   bool TestOnDivide();
   //! Send a message to the faced organism.
   bool SendMessage(cOrgMessage& msg);
+  
 };
 
 

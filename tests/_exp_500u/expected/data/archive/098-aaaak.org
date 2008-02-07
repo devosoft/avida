@@ -1,0 +1,132 @@
+# Tue Feb  5 18:36:54 2008
+# Filename........: archive/098-aaaak.org
+# Update Output...: 400
+# Is Viable.......: 1
+# Repro Cycle Size: 0
+# Depth to Viable.: 0
+# Update Created..: 274
+# Genotype ID.....: 1876
+# Parent Gen ID...: 1601
+# Tree Depth......: 8
+# Parent Distance.: 3
+# 
+# Generation: 0
+# Merit...........: 91.000000
+# Gestation Time..: 365
+# Fitness.........: 0.249315
+# Errors..........: 0
+# Genome Size.....: 98
+# Copied Size.....: 98
+# Executed Size...: 91
+# Offspring.......: SELF
+# 
+# Tasks Performed:
+# not 0 (0.000000)
+# nand 0 (0.000000)
+# and 0 (0.000000)
+# orn 0 (0.000000)
+# or 0 (0.000000)
+# andn 0 (0.000000)
+# nor 0 (0.000000)
+# xor 0 (0.000000)
+# equ 0 (0.000000)
+
+
+h-alloc
+h-search
+nop-D
+nop-A
+mov-head
+nop-C
+if-less
+nop-C
+nop-C
+nop-C
+pop
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+if-less
+nop-C
+nop-C
+pop
+nop-C
+nop-C
+nop-C
+nop-C
+get-head
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+mov-head
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+swap-stk
+nop-C
+nop-C
+dec
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+inc
+nop-C
+nop-C
+h-search
+h-copy
+if-label
+nop-D
+nop-A
+h-divide
+mov-head
+pop
+add
+label
+nop-A
+nop-B

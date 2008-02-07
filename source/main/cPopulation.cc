@@ -2143,7 +2143,31 @@ void cPopulation::ProcessStep(cAvidaContext& ctx, double step_size, int cell_id)
   cPopulationCell& cell = GetCell(cell_id);
   assert(cell.IsOccupied()); // Unoccupied cell getting processor time!
   cOrganism* cur_org = cell.GetOrganism();
-  cell.GetHardware()->SingleProcess(ctx);
+
+  cHardwareBase* hw = cell.GetHardware();
+  
+  if (hw->SupportsSpeculative()) {
+    if (cell.GetSpeculativeState()) {
+      // We have already executed this instruction, just decrement the counter
+      cell.DecSpeculative();
+    } else {
+      // Execute the actual instruction
+      if (hw->SingleProcess(ctx)) {      
+        // Speculatively execute additional instructions
+        int spec_count = 0;
+        while (spec_count < 32) {
+          if (hw->SingleProcess(ctx, true)) spec_count++;
+          else break;
+        }
+        cell.SetSpeculativeState(spec_count);
+        m_world->GetStats().AddSpeculative(spec_count);
+      }
+    }
+  } else {
+    // Just execute the instruction
+    hw->SingleProcess(ctx);    
+  }
+  
   if (cur_org->GetPhenotype().GetToDelete() == true) {
     delete cur_org;
   }

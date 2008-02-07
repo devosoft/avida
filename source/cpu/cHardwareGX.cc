@@ -412,7 +412,7 @@ void cHardwareGX::Reset()
 /*! In cHardwareGX, SingleProcess is something of a misnomer.  Each time this method
   is called, each cProgramid executes a single instruction.
   */
-void cHardwareGX::SingleProcess(cAvidaContext& ctx)
+bool cHardwareGX::SingleProcess(cAvidaContext& ctx, bool speculative)
 {
   cPhenotype& phenotype = organism->GetPhenotype();
 
@@ -510,6 +510,8 @@ void cHardwareGX::SingleProcess(cAvidaContext& ctx)
   
   organism->SetRunning(false);
   CheckImplicitRepro(ctx);
+  
+  return true;
 }
 
 //  const int num_threads = GetNumThreads();

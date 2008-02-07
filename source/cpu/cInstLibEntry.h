@@ -31,6 +31,7 @@ namespace nInstFlag {
   const unsigned int NOP = 0x2;
   const unsigned int LABEL = 0x4;
   const unsigned int PROMOTER = 0x8;
+  const unsigned int STALL = 0x10;
 }
 
 class cInstLibEntry
@@ -48,11 +49,12 @@ public:
   const cString& GetName() const { return m_name; }
   const cString& GetDescription() const { return m_desc; }
   
-  unsigned int GetFlags() const { return m_flags; }
-  bool IsDefault() const { return (m_flags & nInstFlag::DEFAULT); }
-  bool IsNop() const { return (m_flags & nInstFlag::NOP); }
-  bool IsLabel() const { return (m_flags & nInstFlag::LABEL); }
-  bool IsPromoter() const { return (m_flags & nInstFlag::PROMOTER); }
+  inline unsigned int GetFlags() const { return m_flags; }
+  inline bool IsDefault() const { return (m_flags & nInstFlag::DEFAULT); }
+  inline bool IsNop() const { return (m_flags & nInstFlag::NOP); }
+  inline bool IsLabel() const { return (m_flags & nInstFlag::LABEL); }
+  inline bool IsPromoter() const { return (m_flags & nInstFlag::PROMOTER); }
+  inline bool ShouldStall() const { return (m_flags & nInstFlag::STALL); }
 };
 
 #endif

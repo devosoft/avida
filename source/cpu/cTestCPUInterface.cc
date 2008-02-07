@@ -123,3 +123,4 @@ bool cTestCPUInterface::UpdateMerit(double new_merit)
 {
   return false;
 }
+

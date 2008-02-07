@@ -75,6 +75,7 @@ public:
   bool TestOnDivide() { return false; }
   int GetFacing() { return 0; }
   bool SendMessage(cOrgMessage& msg) { return false; }
+  
 };
 
 
