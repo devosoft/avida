@@ -184,6 +184,7 @@ void cSpatialResCount::CheckRanges() {
 
   if (inflowX2 < inflowX1) { inflowX2 += world_x; }
   if (inflowY2 < inflowY1) { inflowY2 += world_y; }
+
   if (outflowX1 < 0) { 
     outflowX1 = 0; 
   } else if (outflowX1 > world_x) { 

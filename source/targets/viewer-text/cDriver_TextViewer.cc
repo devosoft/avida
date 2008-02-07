@@ -41,6 +41,7 @@
 #include "cTextWindow.h"
 
 #include <cstdlib>
+#include <signal.h>
 
 using namespace std;
 
@@ -311,7 +312,7 @@ bool cDriver_TextViewer::ProcessKeypress(int keypress)
     m_main_window.Redraw();
     break;
   case 26: // CTRL-Z
-    kill(getpid(), SIGTSTP);
+    kill(getpid(), SIGTSTP); 
     break;
   case ERR:
     break;
