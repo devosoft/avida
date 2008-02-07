@@ -175,55 +175,55 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("compare", &cHardwareCPU::Inst_Compare),
     tInstLibEntry<tMethod>("if-n-cpy", &cHardwareCPU::Inst_IfNCpy),
     tInstLibEntry<tMethod>("allocate", &cHardwareCPU::Inst_Allocate),
-    tInstLibEntry<tMethod>("divide", &cHardwareCPU::Inst_Divide),
-    tInstLibEntry<tMethod>("divideRS", &cHardwareCPU::Inst_DivideRS),
+    tInstLibEntry<tMethod>("divide", &cHardwareCPU::Inst_Divide, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("divideRS", &cHardwareCPU::Inst_DivideRS, nInstFlag::STALL),
     tInstLibEntry<tMethod>("c-alloc", &cHardwareCPU::Inst_CAlloc),
-    tInstLibEntry<tMethod>("c-divide", &cHardwareCPU::Inst_CDivide),
-    tInstLibEntry<tMethod>("inject", &cHardwareCPU::Inst_Inject),
-    tInstLibEntry<tMethod>("inject-r", &cHardwareCPU::Inst_InjectRand),
+    tInstLibEntry<tMethod>("c-divide", &cHardwareCPU::Inst_CDivide, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("inject", &cHardwareCPU::Inst_Inject, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("inject-r", &cHardwareCPU::Inst_InjectRand, nInstFlag::STALL),
     tInstLibEntry<tMethod>("transposon", &cHardwareCPU::Inst_Transposon),
     tInstLibEntry<tMethod>("search-f", &cHardwareCPU::Inst_SearchF),
     tInstLibEntry<tMethod>("search-b", &cHardwareCPU::Inst_SearchB),
     tInstLibEntry<tMethod>("mem-size", &cHardwareCPU::Inst_MemSize),
     
-    tInstLibEntry<tMethod>("get", &cHardwareCPU::Inst_TaskGet),
-    tInstLibEntry<tMethod>("get-2", &cHardwareCPU::Inst_TaskGet2),
-    tInstLibEntry<tMethod>("stk-get", &cHardwareCPU::Inst_TaskStackGet),
-    tInstLibEntry<tMethod>("stk-load", &cHardwareCPU::Inst_TaskStackLoad),
-    tInstLibEntry<tMethod>("put", &cHardwareCPU::Inst_TaskPut),
-    tInstLibEntry<tMethod>("put-reset", &cHardwareCPU::Inst_TaskPutResetInputs),
-    tInstLibEntry<tMethod>("IO", &cHardwareCPU::Inst_TaskIO, nInstFlag::DEFAULT, "Output ?BX?, and input new number back into ?BX?"),
-    tInstLibEntry<tMethod>("IO-Feedback", &cHardwareCPU::Inst_TaskIO_Feedback, 0, "Output ?BX?, and input new number back into ?BX?,  and push 1,0,  or -1 onto stack1 if merit increased, stayed the same, or decreased"),
-    tInstLibEntry<tMethod>("IO-bc-0.001", &cHardwareCPU::Inst_TaskIO_BonusCost_0_001),
-    tInstLibEntry<tMethod>("match-strings", &cHardwareCPU::Inst_MatchStrings),
-    tInstLibEntry<tMethod>("sell", &cHardwareCPU::Inst_Sell),
-    tInstLibEntry<tMethod>("buy", &cHardwareCPU::Inst_Buy),
-    tInstLibEntry<tMethod>("send", &cHardwareCPU::Inst_Send),
-    tInstLibEntry<tMethod>("receive", &cHardwareCPU::Inst_Receive),
-    tInstLibEntry<tMethod>("sense", &cHardwareCPU::Inst_SenseLog2),           // If you add more sense instructions
-    tInstLibEntry<tMethod>("sense-unit", &cHardwareCPU::Inst_SenseUnit),      // and want to keep stats, also add
-    tInstLibEntry<tMethod>("sense-m100", &cHardwareCPU::Inst_SenseMult100),   // the names to cStats::cStats() @JEB
+    tInstLibEntry<tMethod>("get", &cHardwareCPU::Inst_TaskGet, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("get-2", &cHardwareCPU::Inst_TaskGet2, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("stk-get", &cHardwareCPU::Inst_TaskStackGet, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("stk-load", &cHardwareCPU::Inst_TaskStackLoad, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("put", &cHardwareCPU::Inst_TaskPut, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("put-reset", &cHardwareCPU::Inst_TaskPutResetInputs, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("IO", &cHardwareCPU::Inst_TaskIO, nInstFlag::DEFAULT | nInstFlag::STALL, "Output ?BX?, and input new number back into ?BX?"),
+    tInstLibEntry<tMethod>("IO-Feedback", &cHardwareCPU::Inst_TaskIO_Feedback, nInstFlag::STALL, "Output ?BX?, and input new number back into ?BX?,  and push 1,0,  or -1 onto stack1 if merit increased, stayed the same, or decreased"),
+    tInstLibEntry<tMethod>("IO-bc-0.001", &cHardwareCPU::Inst_TaskIO_BonusCost_0_001, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("match-strings", &cHardwareCPU::Inst_MatchStrings, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("sell", &cHardwareCPU::Inst_Sell, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("buy", &cHardwareCPU::Inst_Buy, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("send", &cHardwareCPU::Inst_Send, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("receive", &cHardwareCPU::Inst_Receive, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("sense", &cHardwareCPU::Inst_SenseLog2, nInstFlag::STALL),           // If you add more sense instructions
+    tInstLibEntry<tMethod>("sense-unit", &cHardwareCPU::Inst_SenseUnit, nInstFlag::STALL),      // and want to keep stats, also add
+    tInstLibEntry<tMethod>("sense-m100", &cHardwareCPU::Inst_SenseMult100, nInstFlag::STALL),   // the names to cStats::cStats() @JEB
     // Data collection
-    tInstLibEntry<tMethod>("collect-cell-data", &cHardwareCPU::Inst_CollectCellData),
+    tInstLibEntry<tMethod>("collect-cell-data", &cHardwareCPU::Inst_CollectCellData, nInstFlag::STALL),
 
-    tInstLibEntry<tMethod>("donate-rnd", &cHardwareCPU::Inst_DonateRandom),
-    tInstLibEntry<tMethod>("donate-kin", &cHardwareCPU::Inst_DonateKin),
-    tInstLibEntry<tMethod>("donate-edt", &cHardwareCPU::Inst_DonateEditDist),
-    tInstLibEntry<tMethod>("donate-gbg",  &cHardwareCPU::Inst_DonateGreenBeardGene),
-    tInstLibEntry<tMethod>("donate-tgb",  &cHardwareCPU::Inst_DonateTrueGreenBeard),
-    tInstLibEntry<tMethod>("donate-threshgb",  &cHardwareCPU::Inst_DonateThreshGreenBeard),
-    tInstLibEntry<tMethod>("donate-quantagb",  &cHardwareCPU::Inst_DonateQuantaThreshGreenBeard),
-    tInstLibEntry<tMethod>("donate-NUL", &cHardwareCPU::Inst_DonateNULL),
-    tInstLibEntry<tMethod>("donate-facing", &cHardwareCPU::Inst_DonateFacing),
+    tInstLibEntry<tMethod>("donate-rnd", &cHardwareCPU::Inst_DonateRandom, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("donate-kin", &cHardwareCPU::Inst_DonateKin, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("donate-edt", &cHardwareCPU::Inst_DonateEditDist, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("donate-gbg",  &cHardwareCPU::Inst_DonateGreenBeardGene, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("donate-tgb",  &cHardwareCPU::Inst_DonateTrueGreenBeard, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("donate-threshgb",  &cHardwareCPU::Inst_DonateThreshGreenBeard, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("donate-quantagb",  &cHardwareCPU::Inst_DonateQuantaThreshGreenBeard, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("donate-NUL", &cHardwareCPU::Inst_DonateNULL, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("donate-facing", &cHardwareCPU::Inst_DonateFacing, nInstFlag::STALL),
     
-    tInstLibEntry<tMethod>("IObuf-add1", &cHardwareCPU::Inst_IOBufAdd1),
-    tInstLibEntry<tMethod>("IObuf-add0", &cHardwareCPU::Inst_IOBufAdd0),
+    tInstLibEntry<tMethod>("IObuf-add1", &cHardwareCPU::Inst_IOBufAdd1, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("IObuf-add0", &cHardwareCPU::Inst_IOBufAdd0, nInstFlag::STALL),
 
-    tInstLibEntry<tMethod>("rotate-l", &cHardwareCPU::Inst_RotateL),
-    tInstLibEntry<tMethod>("rotate-r", &cHardwareCPU::Inst_RotateR),
-    tInstLibEntry<tMethod>("rotate-left-one", &cHardwareCPU::Inst_RotateLeftOne),
-    tInstLibEntry<tMethod>("rotate-right-one", &cHardwareCPU::Inst_RotateRightOne),
-    tInstLibEntry<tMethod>("rotate-label", &cHardwareCPU::Inst_RotateLabel),
+    tInstLibEntry<tMethod>("rotate-l", &cHardwareCPU::Inst_RotateL, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-r", &cHardwareCPU::Inst_RotateR, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-left-one", &cHardwareCPU::Inst_RotateLeftOne, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-right-one", &cHardwareCPU::Inst_RotateRightOne, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-label", &cHardwareCPU::Inst_RotateLabel, nInstFlag::STALL),
     
     tInstLibEntry<tMethod>("set-cmut", &cHardwareCPU::Inst_SetCopyMut),
     tInstLibEntry<tMethod>("mod-cmut", &cHardwareCPU::Inst_ModCopyMut),
@@ -232,8 +232,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("get-cell-y", &cHardwareCPU::Inst_GetCellPositionY),
     tInstLibEntry<tMethod>("dist-from-diag", &cHardwareCPU::Inst_GetDistanceFromDiagonal),
     // @WRE additions for movement
-    tInstLibEntry<tMethod>("tumble", &cHardwareCPU::Inst_Tumble),
-    tInstLibEntry<tMethod>("move", &cHardwareCPU::Inst_Move),
+    tInstLibEntry<tMethod>("tumble", &cHardwareCPU::Inst_Tumble, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("move", &cHardwareCPU::Inst_Move, nInstFlag::STALL),
     
     // Threading instructions
     tInstLibEntry<tMethod>("fork-th", &cHardwareCPU::Inst_ForkThread),
@@ -246,10 +246,10 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     // Head-based instructions
     tInstLibEntry<tMethod>("h-alloc", &cHardwareCPU::Inst_MaxAlloc, nInstFlag::DEFAULT, "Allocate maximum allowed space"),
     tInstLibEntry<tMethod>("h-alloc-mw", &cHardwareCPU::Inst_MaxAllocMoveWriteHead),
-    tInstLibEntry<tMethod>("h-divide", &cHardwareCPU::Inst_HeadDivide, nInstFlag::DEFAULT, "Divide code between read and write heads."),
-    tInstLibEntry<tMethod>("h-divide1RS", &cHardwareCPU::Inst_HeadDivide1RS, 0, "Divide code between read and write heads, at most one mutation on divide, resample if reverted."),
-    tInstLibEntry<tMethod>("h-divide2RS", &cHardwareCPU::Inst_HeadDivide2RS, 0, "Divide code between read and write heads, at most two mutations on divide, resample if reverted."),
-    tInstLibEntry<tMethod>("h-divideRS", &cHardwareCPU::Inst_HeadDivideRS, 0, "Divide code between read and write heads, resample if reverted."),
+    tInstLibEntry<tMethod>("h-divide", &cHardwareCPU::Inst_HeadDivide, nInstFlag::DEFAULT | nInstFlag::STALL, "Divide code between read and write heads."),
+    tInstLibEntry<tMethod>("h-divide1RS", &cHardwareCPU::Inst_HeadDivide1RS, nInstFlag::STALL, "Divide code between read and write heads, at most one mutation on divide, resample if reverted."),
+    tInstLibEntry<tMethod>("h-divide2RS", &cHardwareCPU::Inst_HeadDivide2RS, nInstFlag::STALL, "Divide code between read and write heads, at most two mutations on divide, resample if reverted."),
+    tInstLibEntry<tMethod>("h-divideRS", &cHardwareCPU::Inst_HeadDivideRS, nInstFlag::STALL, "Divide code between read and write heads, resample if reverted."),
     tInstLibEntry<tMethod>("h-read", &cHardwareCPU::Inst_HeadRead),
     tInstLibEntry<tMethod>("h-write", &cHardwareCPU::Inst_HeadWrite),
     tInstLibEntry<tMethod>("h-copy", &cHardwareCPU::Inst_HeadCopy, nInstFlag::DEFAULT, "Copy from read-head to write-head; advance both"),
@@ -275,88 +275,88 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("h-copy9", &cHardwareCPU::Inst_HeadCopy9),
     tInstLibEntry<tMethod>("h-copy10", &cHardwareCPU::Inst_HeadCopy10),
     
-    tInstLibEntry<tMethod>("divide-sex", &cHardwareCPU::Inst_HeadDivideSex),
-    tInstLibEntry<tMethod>("divide-asex", &cHardwareCPU::Inst_HeadDivideAsex),
+    tInstLibEntry<tMethod>("divide-sex", &cHardwareCPU::Inst_HeadDivideSex, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("divide-asex", &cHardwareCPU::Inst_HeadDivideAsex, nInstFlag::STALL),
     
-    tInstLibEntry<tMethod>("div-sex", &cHardwareCPU::Inst_HeadDivideSex),
-    tInstLibEntry<tMethod>("div-asex", &cHardwareCPU::Inst_HeadDivideAsex),
-    tInstLibEntry<tMethod>("div-asex-w", &cHardwareCPU::Inst_HeadDivideAsexWait),
-    tInstLibEntry<tMethod>("div-sex-MS", &cHardwareCPU::Inst_HeadDivideMateSelect),
+    tInstLibEntry<tMethod>("div-sex", &cHardwareCPU::Inst_HeadDivideSex, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("div-asex", &cHardwareCPU::Inst_HeadDivideAsex, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("div-asex-w", &cHardwareCPU::Inst_HeadDivideAsexWait, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("div-sex-MS", &cHardwareCPU::Inst_HeadDivideMateSelect, nInstFlag::STALL),
     
-    tInstLibEntry<tMethod>("h-divide1", &cHardwareCPU::Inst_HeadDivide1),
-    tInstLibEntry<tMethod>("h-divide2", &cHardwareCPU::Inst_HeadDivide2),
-    tInstLibEntry<tMethod>("h-divide3", &cHardwareCPU::Inst_HeadDivide3),
-    tInstLibEntry<tMethod>("h-divide4", &cHardwareCPU::Inst_HeadDivide4),
-    tInstLibEntry<tMethod>("h-divide5", &cHardwareCPU::Inst_HeadDivide5),
-    tInstLibEntry<tMethod>("h-divide6", &cHardwareCPU::Inst_HeadDivide6),
-    tInstLibEntry<tMethod>("h-divide7", &cHardwareCPU::Inst_HeadDivide7),
-    tInstLibEntry<tMethod>("h-divide8", &cHardwareCPU::Inst_HeadDivide8),
-    tInstLibEntry<tMethod>("h-divide9", &cHardwareCPU::Inst_HeadDivide9),
-    tInstLibEntry<tMethod>("h-divide10", &cHardwareCPU::Inst_HeadDivide10),
-    tInstLibEntry<tMethod>("h-divide16", &cHardwareCPU::Inst_HeadDivide16),
-    tInstLibEntry<tMethod>("h-divide32", &cHardwareCPU::Inst_HeadDivide32),
-    tInstLibEntry<tMethod>("h-divide50", &cHardwareCPU::Inst_HeadDivide50),
-    tInstLibEntry<tMethod>("h-divide100", &cHardwareCPU::Inst_HeadDivide100),
-    tInstLibEntry<tMethod>("h-divide500", &cHardwareCPU::Inst_HeadDivide500),
-    tInstLibEntry<tMethod>("h-divide1000", &cHardwareCPU::Inst_HeadDivide1000),
-    tInstLibEntry<tMethod>("h-divide5000", &cHardwareCPU::Inst_HeadDivide5000),
-    tInstLibEntry<tMethod>("h-divide10000", &cHardwareCPU::Inst_HeadDivide10000),
-    tInstLibEntry<tMethod>("h-divide50000", &cHardwareCPU::Inst_HeadDivide50000),
-    tInstLibEntry<tMethod>("h-divide0.5", &cHardwareCPU::Inst_HeadDivide0_5),
-    tInstLibEntry<tMethod>("h-divide0.1", &cHardwareCPU::Inst_HeadDivide0_1),
-    tInstLibEntry<tMethod>("h-divide0.05", &cHardwareCPU::Inst_HeadDivide0_05),
-    tInstLibEntry<tMethod>("h-divide0.01", &cHardwareCPU::Inst_HeadDivide0_01),
-    tInstLibEntry<tMethod>("h-divide0.001", &cHardwareCPU::Inst_HeadDivide0_001),
+    tInstLibEntry<tMethod>("h-divide1", &cHardwareCPU::Inst_HeadDivide1, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("h-divide2", &cHardwareCPU::Inst_HeadDivide2, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("h-divide3", &cHardwareCPU::Inst_HeadDivide3, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("h-divide4", &cHardwareCPU::Inst_HeadDivide4, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("h-divide5", &cHardwareCPU::Inst_HeadDivide5, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("h-divide6", &cHardwareCPU::Inst_HeadDivide6, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("h-divide7", &cHardwareCPU::Inst_HeadDivide7, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("h-divide8", &cHardwareCPU::Inst_HeadDivide8, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("h-divide9", &cHardwareCPU::Inst_HeadDivide9, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("h-divide10", &cHardwareCPU::Inst_HeadDivide10, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("h-divide16", &cHardwareCPU::Inst_HeadDivide16, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("h-divide32", &cHardwareCPU::Inst_HeadDivide32, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("h-divide50", &cHardwareCPU::Inst_HeadDivide50, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("h-divide100", &cHardwareCPU::Inst_HeadDivide100, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("h-divide500", &cHardwareCPU::Inst_HeadDivide500, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("h-divide1000", &cHardwareCPU::Inst_HeadDivide1000, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("h-divide5000", &cHardwareCPU::Inst_HeadDivide5000, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("h-divide10000", &cHardwareCPU::Inst_HeadDivide10000, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("h-divide50000", &cHardwareCPU::Inst_HeadDivide50000, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("h-divide0.5", &cHardwareCPU::Inst_HeadDivide0_5, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("h-divide0.1", &cHardwareCPU::Inst_HeadDivide0_1, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("h-divide0.05", &cHardwareCPU::Inst_HeadDivide0_05, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("h-divide0.01", &cHardwareCPU::Inst_HeadDivide0_01, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("h-divide0.001", &cHardwareCPU::Inst_HeadDivide0_001, nInstFlag::STALL),
     
     // High-level instructions
-    tInstLibEntry<tMethod>("repro", &cHardwareCPU::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-sex", &cHardwareCPU::Inst_ReproSex),
-    tInstLibEntry<tMethod>("repro-A", &cHardwareCPU::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-B", &cHardwareCPU::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-C", &cHardwareCPU::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-D", &cHardwareCPU::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-E", &cHardwareCPU::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-F", &cHardwareCPU::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-G", &cHardwareCPU::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-H", &cHardwareCPU::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-I", &cHardwareCPU::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-J", &cHardwareCPU::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-K", &cHardwareCPU::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-L", &cHardwareCPU::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-M", &cHardwareCPU::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-N", &cHardwareCPU::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-O", &cHardwareCPU::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-P", &cHardwareCPU::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-Q", &cHardwareCPU::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-R", &cHardwareCPU::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-S", &cHardwareCPU::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-T", &cHardwareCPU::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-U", &cHardwareCPU::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-V", &cHardwareCPU::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-W", &cHardwareCPU::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-X", &cHardwareCPU::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-Y", &cHardwareCPU::Inst_Repro),
-    tInstLibEntry<tMethod>("repro-Z", &cHardwareCPU::Inst_Repro),
+    tInstLibEntry<tMethod>("repro", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-sex", &cHardwareCPU::Inst_ReproSex, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-A", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-B", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-C", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-D", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-E", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-F", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-G", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-H", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-I", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-J", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-K", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-L", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-M", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-N", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-O", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-P", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-Q", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-R", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-S", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-T", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-U", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-V", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-W", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-X", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-Y", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("repro-Z", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
 
-    tInstLibEntry<tMethod>("put-repro", &cHardwareCPU::Inst_TaskPutRepro),
-    tInstLibEntry<tMethod>("metabolize", &cHardwareCPU::Inst_TaskPutResetInputsRepro),        
+    tInstLibEntry<tMethod>("put-repro", &cHardwareCPU::Inst_TaskPutRepro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("metabolize", &cHardwareCPU::Inst_TaskPutResetInputsRepro, nInstFlag::STALL),        
 
     tInstLibEntry<tMethod>("sterilize", &cHardwareCPU::Inst_Sterilize),
     
-    tInstLibEntry<tMethod>("spawn-deme", &cHardwareCPU::Inst_SpawnDeme),
+    tInstLibEntry<tMethod>("spawn-deme", &cHardwareCPU::Inst_SpawnDeme, nInstFlag::STALL),
     
     // Suicide
-    tInstLibEntry<tMethod>("kazi",	&cHardwareCPU::Inst_Kazi),
-    tInstLibEntry<tMethod>("kazi5", &cHardwareCPU::Inst_Kazi5),
-    tInstLibEntry<tMethod>("die", &cHardwareCPU::Inst_Die),
+    tInstLibEntry<tMethod>("kazi",	&cHardwareCPU::Inst_Kazi, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("kazi5", &cHardwareCPU::Inst_Kazi5, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("die", &cHardwareCPU::Inst_Die, nInstFlag::STALL),
 
     // Sleep and time
-    tInstLibEntry<tMethod>("sleep", &cHardwareCPU::Inst_Sleep),
-    tInstLibEntry<tMethod>("sleep1", &cHardwareCPU::Inst_Sleep),
-    tInstLibEntry<tMethod>("sleep2", &cHardwareCPU::Inst_Sleep),
-    tInstLibEntry<tMethod>("sleep3", &cHardwareCPU::Inst_Sleep),
-    tInstLibEntry<tMethod>("sleep4", &cHardwareCPU::Inst_Sleep),
-    tInstLibEntry<tMethod>("time", &cHardwareCPU::Inst_GetUpdate),
+    tInstLibEntry<tMethod>("sleep", &cHardwareCPU::Inst_Sleep, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("sleep1", &cHardwareCPU::Inst_Sleep, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("sleep2", &cHardwareCPU::Inst_Sleep, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("sleep3", &cHardwareCPU::Inst_Sleep, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("sleep4", &cHardwareCPU::Inst_Sleep, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("time", &cHardwareCPU::Inst_GetUpdate, nInstFlag::STALL),
     
     // Promoter Model
     tInstLibEntry<tMethod>("promoter", &cHardwareCPU::Inst_Promoter),
@@ -372,12 +372,12 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("bit-cons-24", &cHardwareCPU::Inst_BitConsensus24),
 
     // Energy usage
-    tInstLibEntry<tMethod>("double-energy-usage", &cHardwareCPU::Inst_DoubleEnergyUsage),
-    tInstLibEntry<tMethod>("half-energy-usage", &cHardwareCPU::Inst_HalfEnergyUsage),
+    tInstLibEntry<tMethod>("double-energy-usage", &cHardwareCPU::Inst_DoubleEnergyUsage, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("half-energy-usage", &cHardwareCPU::Inst_HalfEnergyUsage, nInstFlag::STALL),
 
     // Messaging
-    tInstLibEntry<tMethod>("send-msg", &cHardwareCPU::Inst_SendMessage),
-    tInstLibEntry<tMethod>("retrieve-msg", &cHardwareCPU::Inst_RetrieveMessage),
+    tInstLibEntry<tMethod>("send-msg", &cHardwareCPU::Inst_SendMessage, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("retrieve-msg", &cHardwareCPU::Inst_RetrieveMessage, nInstFlag::STALL),
         
     // Placebo instructions
     tInstLibEntry<tMethod>("skip", &cHardwareCPU::Inst_Skip),
@@ -411,6 +411,10 @@ cHardwareCPU::cHardwareCPU(cWorld* world, cOrganism* in_organism, cInstSet* in_m
   /* FIXME:  reorganize storage of m_functions.  -- kgn */
   m_functions = s_inst_slib->GetFunctions();
   /**/
+  
+  m_supports_speculative = true;
+  m_spec_die = false;
+  
   m_memory = in_organism->GetGenome();  // Initialize memory...
   Reset();                            // Setup the rest of the hardware...
 }
@@ -509,11 +513,20 @@ void cHardwareCPU::cLocalThread::Reset(cHardwareBase* in_hardware, int in_id)
 
 bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
 {
+  assert(!speculative || (speculative && m_world->GetConfig().THREAD_SLICING_METHOD.Get() != 1));
 
   int last_IP_pos = IP().GetPosition();
   
   // Mark this organism as running...
   organism->SetRunning(true);
+  
+  if (!speculative && m_spec_die) {
+    organism->Die();
+    organism->SetRunning(false);
+    return false;
+  }
+  
+  
   cPhenotype& phenotype = organism->GetPhenotype();
   
   // First instruction - check whether we should be starting at a promoter, when enabled.
@@ -531,7 +544,7 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
   
   for (int i = 0; i < num_inst_exec; i++) {
     // Setup the hardware for the next instruction to be executed.
-    m_cur_thread++;
+    int last_thread = m_cur_thread++;
     if (m_cur_thread >= num_threads) m_cur_thread = 0;
     
     m_advance_ip = true;
@@ -548,6 +561,15 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
     
     // Find the instruction to be executed
     const cInstruction& cur_inst = IP().GetInst();
+    
+    if (speculative && (m_spec_die || m_inst_set->ShouldStall(cur_inst))) {
+      // Speculative instruction reject, flush and return
+      m_cur_thread = last_thread;
+      phenotype.DecCPUCyclesUsed();
+      if (!m_world->GetConfig().NO_CPU_CYCLE_TIME.Get()) phenotype.IncTimeUsed(-1);
+      organism->SetRunning(false);
+      return false;
+    }
     
     // Test if costs have been paid and it is okay to execute this now...
     bool exec = true;
@@ -607,17 +629,18 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
 
   // Kill creatures who have reached their max num of instructions executed
   const int max_executed = organism->GetMaxExecuted();
-  if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed)
-      || phenotype.GetToDie() == true) {
-    organism->Die();
+  if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed) || phenotype.GetToDie() == true) {
+    if (speculative) m_spec_die = true;
+    else organism->Die();
   }
+  if (!speculative && phenotype.GetToDelete()) m_spec_die = true;
   
   // Note: if organism just died, this will NOT let it repro.
   CheckImplicitRepro(ctx, last_IP_pos > IP().GetPosition());
   
   organism->SetRunning(false);
   
-  return true;
+  return !m_spec_die;
 }
 
 // This method will handle the actual execution of an instruction

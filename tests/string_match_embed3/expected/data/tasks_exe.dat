@@ -1,0 +1,21 @@
+# Avida tasks execution data
+# Thu Feb  7 16:23:00 2008
+# First column gives the current update, all further columns give the number
+# of times the particular task has been executed this update.
+#  1: Update
+#  2: MatchStr
+#  3: MatchStr
+#  4: MatchStr
+#  5: MatchStr
+
+0 0 0 0 0 
+10 0 0 0 534 
+20 0 0 0 543 
+30 0 0 0 543 
+40 0 0 0 527 
+50 0 0 0 534 
+60 0 0 0 542 
+70 0 0 0 542 
+80 0 0 0 543 
+90 0 0 0 546 
+100 0 0 0 546 

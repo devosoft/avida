@@ -123,8 +123,8 @@ void cDefaultRunDriver::Run()
       //  << "Energy: " << setw(9) << setprecision(7) << stats.GetAveEnergy() << "  "
 //        << "Merit: " << setw(9) << setprecision(7) << stats.GetAveMerit() << "  "
         << "Orgs: " << setw(6) << population.GetNumOrganisms() << "  "
-        << "Spec: " << setw(6) << setprecision(4) << stats.GetAveSpeculative() << "  "
-        << "SWst: " << setw(6) << setprecision(4) << (((double)stats.GetSpeculativeWaste() / (double)UD_size) * 100.0) << "%"
+//        << "Spec: " << setw(6) << setprecision(4) << stats.GetAveSpeculative() << "  "
+//        << "SWst: " << setw(6) << setprecision(4) << (((double)stats.GetSpeculativeWaste() / (double)UD_size) * 100.0) << "%"
 //        << "Thrd: " << setw(6) << stats.GetNumThreads() << "  "
 //        << "Para: " << stats.GetNumParasites()
         << endl;

@@ -1,0 +1,24 @@
+# Avida tasks quality data
+# Thu Feb  7 16:23:00 2008
+# First column gives the current update, rest give average and max task quality
+#  1: Update
+#  2: MatchStr Average
+#  3: MatchStr Max
+#  4: MatchStr Average
+#  5: MatchStr Max
+#  6: MatchStr Average
+#  7: MatchStr Max
+#  8: MatchStr Average
+#  9: MatchStr Max
+
+0 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 
+10 0 0 0 0 0 0 0.465432 0.5625 
+20 0 0 0 0 0 0 0.458333 0.930556 
+30 0 0 0 0 0 0 0.451944 0.930556 
+40 0 0 0 0 0 0 0.44571 0.791667 
+50 0 0 0 0 0 0 0.44924 0.791667 
+60 0 0 0 0 0 0 0.458239 0.736111 
+70 0 0 0 0 0 0 0.461305 0.805556 
+80 0 0 0 0 0 0 0.455468 0.805556 
+90 0 0 0 0 0 0 0.454012 0.805556 
+100 0 0 0 0 0 0 0.465589 0.951389 

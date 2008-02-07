@@ -140,6 +140,7 @@ protected:
   bool m_mal_active;         // Has an allocate occured since last divide?
   bool m_advance_ip;         // Should the IP advance after this instruction?
   bool m_executedmatchstrings;	// Have we already executed the match strings instruction?
+  bool m_spec_die;
 
   // <-- Promoter model
   int m_promoter_index;       //site to begin looking for the next active promoter from
