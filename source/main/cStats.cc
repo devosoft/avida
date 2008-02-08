@@ -895,6 +895,7 @@ void cStats::PrintSpatialResData(const cString& filename, int i)
     df.WriteBlockElement(spatial_res_count[i][j], j, xsize);
   }
   df.WriteRaw("];");
+  df.Flush();
 }
 
 
