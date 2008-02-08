@@ -30,6 +30,7 @@
 #include "cDriverManager.h"
 #include "cGenotype.h"
 #include "cHardwareBase.h"
+#include "cHardwareManager.h"
 #include "cOrganism.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
@@ -65,6 +66,12 @@ void cDefaultRunDriver::Run()
   
   const int ave_time_slice = m_world->GetConfig().AVE_TIME_SLICE.Get();
   const double point_mut_prob = m_world->GetConfig().POINT_MUT_PROB.Get();
+  
+  void (cPopulation::*ActiveProcessStep)(cAvidaContext& ctx, double step_size, int cell_id) = &cPopulation::ProcessStep;
+  if (m_world->GetHardwareManager().SupportsSpeculative() && m_world->GetConfig().SPECULATIVE.Get() &&
+      m_world->GetConfig().THREAD_SLICING_METHOD.Get() != 1) {
+    ActiveProcessStep = &cPopulation::ProcessStepSpeculative;
+  }
   
   cAvidaContext& ctx = m_world->GetDefaultContext();
 
@@ -102,7 +109,7 @@ void cDefaultRunDriver::Run()
         m_done = true;
         break;
       }
-      population.ProcessStep(ctx, step_size);
+      (population.*ActiveProcessStep)(ctx, step_size, population.ScheduleOrganism());
     }
     
     // end of update stats...

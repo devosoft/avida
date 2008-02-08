@@ -137,10 +137,18 @@ protected:
   int m_cur_thread;
 
   // Flags...
-  bool m_mal_active;         // Has an allocate occured since last divide?
-  bool m_advance_ip;         // Should the IP advance after this instruction?
-  bool m_executedmatchstrings;	// Have we already executed the match strings instruction?
-  bool m_spec_die;
+  struct {
+    bool m_mal_active:1;         // Has an allocate occured since last divide?
+    bool m_advance_ip:1;         // Should the IP advance after this instruction?
+    bool m_executedmatchstrings:1;	// Have we already executed the match strings instruction?
+    bool m_spec_die:1;
+    
+    bool m_thread_slicing_parallel:1;
+    bool m_no_cpu_cycle_time:1;
+    
+    bool m_promoters_enabled:1;
+    bool m_constituative_regulation:1;
+  };
 
   // <-- Promoter model
   int m_promoter_index;       //site to begin looking for the next active promoter from

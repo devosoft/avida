@@ -2138,44 +2138,61 @@ void cPopulation::ProcessStep(cAvidaContext& ctx, double step_size, int cell_id)
 {
   assert(step_size > 0.0);
   assert(cell_id < cell_array.GetSize());
+  
   // If cell_id is negative, no cell could be found -- stop here.
   if (cell_id < 0) return;
+  
   cPopulationCell& cell = GetCell(cell_id);
   assert(cell.IsOccupied()); // Unoccupied cell getting processor time!
   cOrganism* cur_org = cell.GetOrganism();
 
-  cHardwareBase* hw = cell.GetHardware();
+  cell.GetHardware()->SingleProcess(ctx);    
   
-  if (hw->SupportsSpeculative()) {
-    if (cell.GetSpeculativeState()) {
-      // We have already executed this instruction, just decrement the counter
-      cell.DecSpeculative();
-    } else {
-      // Execute the actual instruction
-      if (hw->SingleProcess(ctx)) {      
-        // Speculatively execute additional instructions
-        int spec_count = 0;
-        while (spec_count < 32) {
-          if (hw->SingleProcess(ctx, true)) spec_count++;
-          else break;
-        }
-        cell.SetSpeculativeState(spec_count);
-        m_world->GetStats().AddSpeculative(spec_count);
-      }
-    }
-  } else {
-    // Just execute the instruction
-    hw->SingleProcess(ctx);    
-  }
-  
-  if (cur_org->GetPhenotype().GetToDelete() == true) {
-    delete cur_org;
-  }
+  if (cur_org->GetPhenotype().GetToDelete() == true) delete cur_org;
+
   m_world->GetStats().IncExecuted();
   resource_count.Update(step_size);
-  for(int i = 0; i < GetNumDemes(); i++) {
-    GetDeme(i).Update(step_size);
+  for(int i = 0; i < GetNumDemes(); i++) GetDeme(i).Update(step_size);
+}
+
+
+void cPopulation::ProcessStepSpeculative(cAvidaContext& ctx, double step_size, int cell_id)
+{
+  assert(step_size > 0.0);
+  assert(cell_id < cell_array.GetSize());
+  assert(m_world->GetHardwareManager().SupportsSpeculative());
+
+  // If cell_id is negative, no cell could be found -- stop here.
+  if (cell_id < 0) return;
+  
+  cPopulationCell& cell = GetCell(cell_id);
+  assert(cell.IsOccupied()); // Unoccupied cell getting processor time!
+  
+  cOrganism* cur_org = cell.GetOrganism();
+  cHardwareBase* hw = cell.GetHardware();
+  
+  if (cell.GetSpeculativeState()) {
+    // We have already executed this instruction, just decrement the counter
+    cell.DecSpeculative();
+  } else {
+    // Execute the actual instruction
+    if (hw->SingleProcess(ctx)) {
+      // Speculatively execute additional instructions
+      int spec_count = 0;
+      while (spec_count < 32) {
+        if (hw->SingleProcess(ctx, true)) spec_count++;
+        else break;
+      }
+      cell.SetSpeculativeState(spec_count);
+      m_world->GetStats().AddSpeculative(spec_count);
+    }
   }
+  
+  if (cur_org->GetPhenotype().GetToDelete() == true) delete cur_org;
+
+  m_world->GetStats().IncExecuted();
+  resource_count.Update(step_size);
+  for(int i = 0; i < GetNumDemes(); i++) GetDeme(i).Update(step_size);
 }
 
 

@@ -227,7 +227,7 @@ public:
   // Process a single organism one instruction...
   int ScheduleOrganism();          // Determine next organism to be processed.
   void ProcessStep(cAvidaContext& ctx, double step_size, int cell_id);
-  void ProcessStep(cAvidaContext& ctx, double step_size) { ProcessStep(ctx, step_size, ScheduleOrganism()); }
+  void ProcessStepSpeculative(cAvidaContext& ctx, double step_size, int cell_id);
 
   // Calculate the statistics from the most recent update.
   void CalcUpdateStats();

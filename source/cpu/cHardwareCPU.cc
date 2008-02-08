@@ -412,8 +412,13 @@ cHardwareCPU::cHardwareCPU(cWorld* world, cOrganism* in_organism, cInstSet* in_m
   m_functions = s_inst_slib->GetFunctions();
   /**/
   
-  m_supports_speculative = true;
   m_spec_die = false;
+  
+  m_thread_slicing_parallel = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1);
+  m_no_cpu_cycle_time = m_world->GetConfig().NO_CPU_CYCLE_TIME.Get();
+  
+  m_promoters_enabled = m_world->GetConfig().PROMOTERS_ENABLED.Get();
+  m_constituative_regulation = m_world->GetConfig().CONSTITUTIVE_REGULATION.Get();
   
   m_memory = in_organism->GetGenome();  // Initialize memory...
   Reset();                            // Setup the rest of the hardware...
@@ -513,7 +518,7 @@ void cHardwareCPU::cLocalThread::Reset(cHardwareBase* in_hardware, int in_id)
 
 bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
 {
-  assert(!speculative || (speculative && m_world->GetConfig().THREAD_SLICING_METHOD.Get() != 1));
+  assert(!speculative || (speculative && !m_thread_slicing_parallel));
 
   int last_IP_pos = IP().GetPosition();
   
@@ -530,7 +535,7 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
   cPhenotype& phenotype = organism->GetPhenotype();
   
   // First instruction - check whether we should be starting at a promoter, when enabled.
-  if (phenotype.GetCPUCyclesUsed() == 0 && m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1) Inst_Terminate(ctx);
+  if (phenotype.GetCPUCyclesUsed() == 0 && m_promoters_enabled) Inst_Terminate(ctx);
   
   // Count the cpu cycles used
   phenotype.IncCPUCyclesUsed();
@@ -540,7 +545,7 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
   
   // If we have threads turned on and we executed each thread in a single
   // timestep, adjust the number of instructions executed accordingly.
-  const int num_inst_exec = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1) ? num_threads : 1;
+  const int num_inst_exec = m_thread_slicing_parallel ? num_threads : 1;
   
   for (int i = 0; i < num_inst_exec; i++) {
     // Setup the hardware for the next instruction to be executed.
@@ -548,10 +553,11 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
     if (m_cur_thread >= num_threads) m_cur_thread = 0;
     
     m_advance_ip = true;
-    IP().Adjust();
+    cHeadCPU& ip = m_threads[m_cur_thread].heads[nHardware::HEAD_IP];
+    ip.Adjust();
     
 #if BREAKPOINTS
-    if (IP().FlagBreakpoint()) {
+    if (ip.FlagBreakpoint()) {
       organism->DoBreakpoint();
     }
 #endif
@@ -560,13 +566,13 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
     if (m_tracer != NULL) m_tracer->TraceHardware(*this);
     
     // Find the instruction to be executed
-    const cInstruction& cur_inst = IP().GetInst();
+    const cInstruction& cur_inst = ip.GetInst();
     
     if (speculative && (m_spec_die || m_inst_set->ShouldStall(cur_inst))) {
       // Speculative instruction reject, flush and return
       m_cur_thread = last_thread;
       phenotype.DecCPUCyclesUsed();
-      if (!m_world->GetConfig().NO_CPU_CYCLE_TIME.Get()) phenotype.IncTimeUsed(-1);
+      if (!m_no_cpu_cycle_time) phenotype.IncTimeUsed(-1);
       organism->SetRunning(false);
       return false;
     }
@@ -576,17 +582,11 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
     if (m_has_any_costs) exec = SingleProcess_PayCosts(ctx, cur_inst);
 
     // Constitutive regulation applied here
-    if (m_world->GetConfig().CONSTITUTIVE_REGULATION.Get() == 1) {
-      Inst_SenseRegulate(ctx);
-    }
-    
+    if (m_constituative_regulation) Inst_SenseRegulate(ctx); 
+
     // If there are no active promoters and a certain mode is set, then don't execute any further instructions
-    if ((m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1) 
-      && (m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() == 2) 
-      && (m_promoter_index == -1) ) { 
-      exec = false;
-    }
-    
+    if (m_promoters_enabled && m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() == 2 && m_promoter_index == -1) exec = false;
+  
     // Now execute the instruction...
     if (exec == true) {
       // NOTE: This call based on the cur_inst must occur prior to instruction
@@ -595,31 +595,27 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
       const int time_cost = m_inst_set->GetAddlTimeCost(cur_inst);
 
       // Prob of exec (moved from SingleProcess_PayCosts so that we advance IP after a fail)
-      if ( m_inst_set->GetProbFail(cur_inst) > 0.0 ) {
+      if (m_inst_set->GetProbFail(cur_inst) > 0.0) {
         exec = !( ctx.GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
       }
       
-      //Add to the promoter inst executed count before executing the inst (in case it is a terminator)
-      if (m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1) {
-        m_threads[m_cur_thread].IncPromoterInstExecuted();
-      }
+      // Add to the promoter inst executed count before executing the inst (in case it is a terminator)
+      if (m_promoters_enabled) m_threads[m_cur_thread].IncPromoterInstExecuted();
 
       if (exec == true) SingleProcess_ExecuteInst(ctx, cur_inst);
       
       // Some instruction (such as jump) may turn m_advance_ip off.  Usually
       // we now want to move to the next instruction in the memory.
-      if (m_advance_ip == true) IP().Advance();
+      if (m_advance_ip == true) ip.Advance();
       
       // Pay the time cost of the instruction now
       phenotype.IncTimeUsed(time_cost);
             
       // In the promoter model, we may force termination after a certain number of inst have been executed
-      if ( m_world->GetConfig().PROMOTERS_ENABLED.Get() == 1 )
-      {
+      if (m_promoters_enabled) {
         const double processivity = m_world->GetConfig().PROMOTER_PROCESSIVITY.Get();
-        if ( ctx.GetRandom().P(1-processivity) ) 
-          Inst_Terminate(ctx);
-        if ( m_world->GetConfig().PROMOTER_INST_MAX.Get() && (m_threads[m_cur_thread].GetPromoterInstExecuted() >= m_world->GetConfig().PROMOTER_INST_MAX.Get()) ) 
+        if (ctx.GetRandom().P(1 - processivity)) Inst_Terminate(ctx);
+        if (m_world->GetConfig().PROMOTER_INST_MAX.Get() && (m_threads[m_cur_thread].GetPromoterInstExecuted() >= m_world->GetConfig().PROMOTER_INST_MAX.Get())) 
           Inst_Terminate(ctx);
       }
 
@@ -636,7 +632,7 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
   if (!speculative && phenotype.GetToDelete()) m_spec_die = true;
   
   // Note: if organism just died, this will NOT let it repro.
-  CheckImplicitRepro(ctx, last_IP_pos > IP().GetPosition());
+  CheckImplicitRepro(ctx, last_IP_pos > m_threads[m_cur_thread].heads[nHardware::HEAD_IP].GetPosition());
   
   organism->SetRunning(false);
   

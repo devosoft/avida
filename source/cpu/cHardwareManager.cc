@@ -102,3 +102,16 @@ cHardwareBase* cHardwareManager::Create(cOrganism* in_org)
       return NULL;
   }
 }
+
+bool cHardwareManager::SupportsSpeculative()
+{
+  switch (m_type)
+  {
+    case HARDWARE_TYPE_CPU_ORIGINAL:      return true;
+    case HARDWARE_TYPE_CPU_SMT:           return false;
+    case HARDWARE_TYPE_CPU_TRANSSMT:      return false;
+    case HARDWARE_TYPE_CPU_EXPERIMENTAL:  return true;
+    case HARDWARE_TYPE_CPU_GX:            return false;
+    default:                              return false;
+  }
+}

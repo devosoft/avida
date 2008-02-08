@@ -66,6 +66,8 @@ public:
 
   const cInstSet& GetInstSet() const { return *m_inst_set; }
   cInstSet& GetInstSet() { return *m_inst_set; }
+  
+  bool SupportsSpeculative();
 };
 
 

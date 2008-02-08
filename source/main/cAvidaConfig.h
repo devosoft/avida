@@ -282,6 +282,7 @@ public:
   CONFIG_ADD_VAR(WORLD_GEOMETRY, int, 2, "1 = Bounded Grid\n2 = Torus\n3 = Clique");
   CONFIG_ADD_VAR(RANDOM_SEED, int, 0, "Random number seed (0 for based on time)");
   CONFIG_ADD_VAR(HARDWARE_TYPE, int, 0, "0 = Original CPUs\n1 = New SMT CPUs\n2 = Transitional SMT\n3 = Experimental CPU\n4 = Gene Expression CPU");
+  CONFIG_ADD_VAR(SPECULATIVE, bool, 1, "Enable speculative execution");
   
   CONFIG_ADD_GROUP(CONFIG_FILE_GROUP, "Configuration Files");
   CONFIG_ADD_VAR(DATA_DIR, cString, "data", "Directory in which config files are found");
